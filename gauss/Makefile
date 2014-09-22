@@ -14,5 +14,5 @@ main.o: main.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c main.c -o main.o
 
 clean:
-	del *.o main.exe main.s
+	del *.o *.exe
 
