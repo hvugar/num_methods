@@ -42,7 +42,7 @@ void gaussian_elimination(float** a, float* b, float* x, int n)
 	{
 		for (i=(k+1); i<n; i++)
 		{
-			double f = a[i][k] / a[k][k];
+			float f = a[i][k] / a[k][k];
 			for (j=k; j<n; j++)
 			{
 				a[i][j] = a[i][j] - a[k][j] * f;
