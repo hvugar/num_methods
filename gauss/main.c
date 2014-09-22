@@ -30,7 +30,7 @@ void check_matrix(float** a, float* b, int n)
 			if (b[i] == 0) 
 				fprintf(stderr, "Equation has infinity solutions");
 			else
-				fprintf(stderr, "Equation has not any solutions");
+				fprintf(stderr, "Equation has not any solution");
 		}			
 	}
 }
