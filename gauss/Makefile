@@ -16,6 +16,3 @@ main.o: main.c
 clean:
 	del *.o main.exe main.s
 
-asm:
-	$(CC) $(INCLUDES) -S -masm=intel -m32 -fno-asynchronous-unwind-tables -o main.s main.c
-
