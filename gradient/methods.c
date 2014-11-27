@@ -1,9 +1,14 @@
 #include "methods.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "minimum.h"
 #include "gradient.h"
 
 //Метод наискорейшего спуска
-void fast_proximal_gradient_method(RnFunction f, R1Function g, double* x, int N)
+void fast_proximal_gradient_method(RnFunction f, R1Function g, double* x, int N, double dx, double epsilon)
 {
     int i = 0;
     double module_grad = 0;
@@ -22,7 +27,7 @@ void fast_proximal_gradient_method(RnFunction f, R1Function g, double* x, int N)
 		double alpha = golden_section_search_min(g, a, b, epsilon);
 
 		double* grads = (double*) malloc( sizeof(double) * N );
-		gradient(f, x, N, h, grads);
+		gradient(f, x, N, dx, grads);
 
         module_grad = grad_module(grads, N);
 
