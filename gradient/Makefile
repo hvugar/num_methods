@@ -7,8 +7,8 @@ INCLUDES	=	-I..
 
 all: main
 
-main: minimum.o main.o
-	$(CC) -o main.exe main.o minimum.o $(LFLAGS)
+main: minimum.o gradient.o main.o
+	$(CC) -o main.exe main.o minimum.o gradient.o $(LFLAGS)
 
 main.o: main.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c main.c -o main.o
@@ -16,7 +16,9 @@ main.o: main.c
 minimum.o: minimum.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c minimum.c -o minimum.o
 	
-
+gradient.o: gradient.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c gradient.c -o gradient.o
+	
 clean:
 	del *.o *.exe
 
