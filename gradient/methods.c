@@ -19,13 +19,9 @@ void fast_proximal_gradient_method(RnFunction f, R1Function g, double* x, int n,
 
         // minimum yerleshen [a, b]
         double a,b;
-        double alpha0 = -100.0;
+        double alpha0 = 0.0;
 
-		puts("1");
-//        straight_line_search_metod(g, alpha0, 0.01, &a, &b);
-		a = -50;
-		b = +50;
-		puts("2");
+        straight_line_search_metod(g, alpha0, 0.001, &a, &b);
 
         // tapilmish [a, b] parcasinda minimum alpha axtaririq
         // Funksiyanin minimumuniu tapmaq ucun qizil bolgu qaydasinda istifade edib alphani tapiriq
@@ -45,7 +41,7 @@ void fast_proximal_gradient_method(RnFunction f, R1Function g, double* x, int n,
         }
 		
 		gradient(f, x, n, dx, grads);
-		printf("%4d %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", i, x[0], x[1], f(x, n), grads[0], grads[1], grad_module(grads, n), alpha);
+		//printf("%4d %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", i, x[0], x[1], f(x, n), grads[0], grads[1], grad_module(grads, n), alpha);
 
         free(grads);
 
@@ -69,10 +65,6 @@ void conjugate_gradient_method(RnFunction f, R1Function g, double* x, int n, dou
     double module_grad1 = 0;
     double module_grad2 = 0;
     double module_grad  = 0.0;
-
-	
-//    double **S = (double**) malloc(sizeof(double*)*n);
-//    for (i=0; i<n; i++) S[i] = (double*) malloc(sizeof(double)*n);
 	
 	double *s = (double*) malloc(sizeof(double)*n);
     double w = 0.0;
@@ -93,7 +85,7 @@ void conjugate_gradient_method(RnFunction f, R1Function g, double* x, int n, dou
             double a,b;
             double alpha0 = 0.0;
 
-            straight_line_search_metod(g, alpha0, 0.01, &a, &b);
+            straight_line_search_metod(g, alpha0, 0.0001, &a, &b);
             double alpha = golden_section_search_min(g, a, b, epsilon);
 
             //printf("%4d %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", j, x[0], x[1], f(x, n), grads1[0], grads1[1], module_grad1, alpha);
@@ -107,7 +99,7 @@ void conjugate_gradient_method(RnFunction f, R1Function g, double* x, int n, dou
             gradient(f, x, n, dx, grads2);
             module_grad2 = grad_module(grads2, n);
 			
-			printf("%4d %4d %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", k, j, x[0], x[1], f(x, n), grads2[0], grads2[1], module_grad2, alpha);
+			//printf("%4d %4d %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", k, j, x[0], x[1], f(x, n), grads2[0], grads2[1], module_grad2, alpha);
 
             w = (module_grad2*module_grad2) / (module_grad1*module_grad1);
 
@@ -116,6 +108,10 @@ void conjugate_gradient_method(RnFunction f, R1Function g, double* x, int n, dou
                 s[i] = -grads2[i] + w * s[i];
 
             module_grad = grad_module(s, n);
+			
+			printf("%4d %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", j, x[0], x[1], f(x, n), grads1[0], grads1[1], module_grad, alpha);
+			
+			free(grads2);
 			
             if (module_grad < epsilon)
             {
@@ -129,6 +125,8 @@ void conjugate_gradient_method(RnFunction f, R1Function g, double* x, int n, dou
                     break;
             }
         } while (1);
+		
+		free(grads1);
 
         if (ends == 1)
             break;
@@ -136,5 +134,7 @@ void conjugate_gradient_method(RnFunction f, R1Function g, double* x, int n, dou
 		k++;
 
     } while (1);
+	
+	free(s);
 
 }

@@ -11,31 +11,40 @@ double g(double alpha);
 double f1(double *x, int n);
 double g1(double alpha);
 
-double  *x;
+double f2(const double x);
+
+double  *X;
 int     N;
 double  epsilon;
 double  delta_x;
 
-double **S;
-double **Xj;
 int j=0;
 int k=0;
 
 int main(int argc, char** argv)
 {
-    epsilon = 0.01;
-    delta_x = 0.001;
+    epsilon = 0.001;
+    delta_x = 0.0001;
     
 	N = 2;
-    x  = (double*) malloc( sizeof(double) * N );
+    X  = (double*) malloc( sizeof(double) * N );
 
-    x[0]    = -1.2;
-    x[1]    = 1;
+    X[0]    = -0.5;
+    X[1]    = -1.0;
 	
-	fast_proximal_gradient_method(f1, g1, x, N, delta_x, epsilon);
-//	conjugate_gradient_method(f, g, x, N, delta_x, epsilon);
-
-//	puts("end");
+//	double a,b;
+//	double x0 = -0.2;
+//	straight_line_search_metod(f2, x0, delta_x, &a, &b);
+//	printf("a: %f, b: %f\n", a, b);
+//	double x = golden_section_search_min(f2, a, b, epsilon);
+//	printf("a: %f, b: %f x: %f\n", a, b, x);
+//	printf("f(a): %f, f(b): %f f(x): %f\n", f2(a), f2(b), f2(x));
+	
+	
+//	fast_proximal_gradient_method(f, g, X, N, delta_x, epsilon);
+	conjugate_gradient_method(f1, g1, X, N, delta_x, epsilon);
+	
+	free(X);
 
 	return 0;
 }
@@ -50,12 +59,12 @@ double g(double alpha)
     double* _x = (double*) malloc( sizeof(double) * N );
 
     double* gr = (double*) malloc(sizeof(double) * N);
-    gradient(f, x, N, delta_x, gr);
+    gradient(f, X, N, delta_x, gr);
 
 	int i;
     for (i=0; i<N; i++)
     {
-        _x[i] = x[i] - alpha * gr[i];
+        _x[i] = X[i] - alpha * gr[i];
     }
 
     double result = f(_x, N);
@@ -68,7 +77,9 @@ double g(double alpha)
 
 double f1(double *x, int n)
 {
-    return 100 * pow ((x[0]*x[0]-x[1]), 2) + ((x[0] - 1) * (x[0] - 1));
+	double _x = x[0];
+	double _y = x[1];
+    return ((1-_x)*(1-_x)) + 100*(_y-_x*_x)*(_y-_x*_x);
 }
 
 double g1(double alpha)
@@ -76,20 +87,23 @@ double g1(double alpha)
     double* _x = (double*) malloc( sizeof(double) * N );
 
     double* gr = (double*) malloc(sizeof(double) * N);
-    gradient(f1, x, N, delta_x, gr);
-	
-	//printf("g1: %f %f %f %f %f\n", x[0], x[1], gr[0], gr[1], alpha);
+    gradient(f1, X, N, delta_x, gr);
 	
 	int i;
     for (i=0; i<N; i++)
     {
-        _x[i] = x[i] - alpha * gr[i];
+        _x[i] = X[i] - alpha * gr[i];
     }
-
-    double result = f(_x, N);
+	
+    double result = f1(_x, N);
 
     free(gr);
     free(_x);
 
     return result;
+}
+
+double f2(const double x)
+{
+	return x*x*x*x - 3*x*x*x + 2*x*x + 2;
 }
