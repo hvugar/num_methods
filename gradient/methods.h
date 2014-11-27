@@ -1,18 +1,17 @@
-#ifndef __GRADIENT_H
-#define __GRADIENT_H
-
-#include "minimum.h"
+#ifndef __METHODS_H
+#define __METHODS_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void gradient(RnFunction f, double *x, int n, double dx, double* gradients);
-double grad_module(double* x, int n);
+//Метод наискорейшего спуска
+//Fast proximal gradient method
+void fast_proximal_gradient_method((RnFunction f, R1Function g, double* x, int N);
 
 #ifdef __cplusplus
 }
 #endif
 
 
-#endif // __GRADIENT_H
+#endif // __METHODS_H
