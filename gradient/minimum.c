@@ -48,18 +48,22 @@ double golden_section_search_min(R1Function fx, double a, double b, double epsil
 
 void straight_line_search_metod(R1Function fx, double x0, double dx, double *a, double *b)
 {
+//	printf("%f %f\n", x0, dx);
     int i = 1;
     double x1 = x0;
     double x2 = x0 + dx;
     double y1 = fx( x1 );
     double y2 = fx( x2 );
-
+	
+	printf("s: %f %f %f %f %f\n", x1, x2, y1, y2, dx);
     if ( y2 > y1 )
-        dx = -1 * dx;
-
-    x2 = x0 + dx;
-    y2 = fx(x2);
-
+	{
+     //   dx = -1 * dx;
+	}
+	
+	x2 = x0 + dx;
+	y2 = fx(x2);
+	
     while ( y2 <= y1 )
     {
         i++;
@@ -67,7 +71,20 @@ void straight_line_search_metod(R1Function fx, double x0, double dx, double *a, 
         x2 = x0 + i * dx;
         y1 = y2;
         y2 = fx(x2);
+		
+		
+		if (i==1)
+			printf("... i= %d %f %f %f <= %f\n", i, x2, x1, y2, y1);
+//		printf("%f %f %f %f\n", x1, x2, y1, y2);
+		
+		if (i%200000==0)
+		{
+			printf("...%f %f %f <= %f %f\n", x2, x1, y2, y1, dx);
+		//	puts("---");
+		//	exit(-1);
+		}
     }
+	puts("end...");
 
     *a = x1;
     *b = x2;
