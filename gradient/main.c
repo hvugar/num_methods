@@ -23,29 +23,30 @@ int k=0;
 
 int main(int argc, char** argv)
 {
-    epsilon = 0.001;
-    delta_x = 0.0001;
+//	double a,b;
+//	double x0 = -0.2;
+//	double m = straight_line_search_metod(f2, x0, 0.1, &a, &b);
+//	printf("a: %f, b: %f m: %f\n", a, b, m);
+//	double x = golden_section_search_min(f2, a, b, 0.001);
+//	printf("a: %f, b: %f x: %f\n", a, b, x);
+//	printf("f(a): %f, f(b): %f f(x): %f\n", f2(a), f2(b), f2(x));
+
+//	return 0;
+	
+    epsilon = 0.0001;
+    delta_x = 0.00001;
     
 	N = 2;
     X  = (double*) malloc( sizeof(double) * N );
 
-    X[0]    = -0.5;
-    X[1]    = -1.0;
-	
-//	double a,b;
-//	double x0 = -0.2;
-//	straight_line_search_metod(f2, x0, delta_x, &a, &b);
-//	printf("a: %f, b: %f\n", a, b);
-//	double x = golden_section_search_min(f2, a, b, epsilon);
-//	printf("a: %f, b: %f x: %f\n", a, b, x);
-//	printf("f(a): %f, f(b): %f f(x): %f\n", f2(a), f2(b), f2(x));
-	
+    X[0]    = -1.2;
+    X[1]    = +1.0;
 	
 //	fast_proximal_gradient_method(f, g, X, N, delta_x, epsilon);
 	conjugate_gradient_method(f1, g1, X, N, delta_x, epsilon);
 	
 	free(X);
-
+	
 	return 0;
 }
 

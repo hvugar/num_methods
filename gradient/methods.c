@@ -85,7 +85,7 @@ void conjugate_gradient_method(RnFunction f, R1Function g, double* x, int n, dou
             double a,b;
             double alpha0 = 0.0;
 
-            straight_line_search_metod(g, alpha0, 0.0001, &a, &b);
+            straight_line_search_metod(g, alpha0, 0.001, &a, &b);
             double alpha = golden_section_search_min(g, a, b, epsilon);
 
             //printf("%4d %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", j, x[0], x[1], f(x, n), grads1[0], grads1[1], module_grad1, alpha);
