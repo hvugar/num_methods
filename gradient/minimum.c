@@ -8,8 +8,8 @@ double golden_section_search_min(R1Function fx, double a, double b, double epsil
     double x1 = NAN;
     double x2 = NAN;
 
-    double y1 = 0;
-    double y2 = 0;
+    double y1 = 0.0;
+    double y2 = 0.0;
 
     // Lazimi epsilon deqiqliyini alana qeder
     // iterasiyalari davam edirik
@@ -57,10 +57,9 @@ double straight_line_search_metod(R1Function fx, double x0, double dx, double *a
     if ( y2 > y1 )
 	{
         dx = -1 * dx;
-	}
-	
-	x2 = x0 + dx;
-	y2 = fx(x2);
+		x2 = x0 + dx;
+		y2 = fx(x2);
+	}	
 	
     while ( y2 <= y1 )
     {
@@ -69,7 +68,7 @@ double straight_line_search_metod(R1Function fx, double x0, double dx, double *a
 		x1 = x2;
         y1 = y2;
 		
-        x2 = x1 + dx;
+        x2 = x0 + i * dx;
         y2 = fx(x2);
     }
 

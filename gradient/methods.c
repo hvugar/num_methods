@@ -8,7 +8,7 @@
 #include "gradient.h"
 
 //Метод наискорейшего спуска
-void fast_proximal_gradient_method(RnFunction f, R1Function g, double* x, int n, double dx, double epsilon)
+void fast_proximal_gradient_method(RnFunction f, R1Function g, double *x, int n, double dx, double epsilon)
 {
     int i = 0;
     double module_grad = 0;
@@ -48,22 +48,15 @@ void fast_proximal_gradient_method(RnFunction f, R1Function g, double* x, int n,
     } while ( module_grad > epsilon );
 }
 
-//   1  -0.5000  -1.0000   7.3750  -2.2501  -7.9998   8.3102   0.2805
-//   2   0.1311   1.2436  -2.2723  -2.9484   0.9744   3.1053   0.2919
-//   3   0.9917   0.9591  -3.9965  -0.0491  -0.1633   0.1706   0.2405
-//   4   1.0035   0.9984  -4.0000   0.0216  -0.0062   0.0225   0.1705
-//   5   0.9999   0.9995  -4.0000  -0.0005  -0.0020   0.0021   0.2737
-//   6   1.0000   1.0000  -4.0000   0.0003   0.0002   0.0004   0.0134
-
 //Метод сопряженных градиентов
-void conjugate_gradient_method(RnFunction f, R1Function g, double* x, int n, double dx, double epsilon)
+void conjugate_gradient_method(RnFunction f, R1Function g, double *x, int n, double dx, double epsilon)
 {
-    int i=0;
+    int i = 0;
 	int j = 0;
     int k = 1;
 
-    double module_grad1 = 0;
-    double module_grad2 = 0;
+    double module_grad1 = 0.0;
+    double module_grad2 = 0.0;
     double module_grad  = 0.0;
 	
 	double *s = (double*) malloc(sizeof(double)*n);

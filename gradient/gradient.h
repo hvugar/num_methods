@@ -7,8 +7,8 @@
 extern "C" {
 #endif
 
-void gradient(RnFunction f, double *x, int n, double dx, double* gradients);
-double grad_module(double* grads, int n);
+void gradient(RnFunction f, double *x, int n, double dx, double *gradients);
+double grad_module(double *grads, int n);
 
 #ifdef __cplusplus
 }
