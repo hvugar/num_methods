@@ -48,32 +48,58 @@ double golden_section_search_min(R1Function fx, double a, double b, double epsil
 
 double straight_line_search_metod(R1Function fx, double x0, double dx, double *a, double *b)
 {
-    int i = 1;
+	double y0 = 0.0;
+	double y1 = 0.0;
+	double y2 = 0.0;
+	
+	// if at next and last point of x0 function is greater
+	// then decrease the dx to half
+	y0 = fx( x0 );
+	y1 = fx( x0 - dx );
+	y2 = fx( x0 + dx );
+	
+	while (y1 > y0 && y2 > y0)
+	{
+		dx = dx / 2.0;
+		y1 = fx( x0 - dx );
+		y2 = fx( x0 + dx );
+	}
+	
+	if ( y2 > y0 )
+	{
+		dx = -1 * dx;
+		y2 = fx( x0 + dx );
+	}
+
     double x1 = x0;
     double x2 = x1 + dx;
-    double y1 = fx( x1 );
-    double y2 = fx( x2 );
 	
-    if ( y2 > y1 )
-	{
-        dx = -1 * dx;
-		x2 = x0 + dx;
-		y2 = fx(x2);
-	}	
+    y1 = fx( x1 );
+    y2 = fx( x2 );
 	
+    int i = 1;
     while ( y2 <= y1 )
     {
-        i++;
-        
 		x1 = x2;
         y1 = y2;
 		
+		i++;
         x2 = x0 + i * dx;
         y2 = fx(x2);
     }
-
-    *a = x1;
-    *b = x2;
+	
+	if ( dx < 0 )
+	{
+		*a = x0 + (i) * dx;
+		*b = x0 + (i-2) * dx;	
+	}
+	
+	
+	if ( dx > 0 )
+	{
+	    *a = x0 + (i-2) * dx;
+		*b = x0 + (i+0) * dx;
+	}
 	
 	return (*a+*b)/2;
 }
