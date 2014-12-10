@@ -1,4 +1,4 @@
-#include <stdio.h>f
+#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
@@ -12,27 +12,24 @@ double g(double alpha);
 double f_rosenbrock(double *x, int n);
 double g_rosenbrock(double alpha);
 
+double f1(double x);
+
 double  *X;
 int     N;
 double  epsilon;
 double  delta_x;
 double	h;
 
-double f1(double x)
-{
-	return (x-0.133)*(x-0.133)+0.2;
-}
-
 int main(int argc, char** argv)
 {
-    epsilon = 0.001;
+    epsilon = 0.0001;
     delta_x = 0.00001;
-	h = 0.1;
+	//h = 0.1;
 	
-	double a1,b1;
-	a1 = b1 = 0.0;
-	double a2,b2;
-	a2 = b2 = 0.0;
+	//double a1,b1;
+	//a1 = b1 = 0.0;
+	//double a2,b2;
+	//a2 = b2 = 0.0;
 	//straight_line_search_metod(f1, +0.10, 0.01, &a1, &b1);
 	//straight_line_search_metod(f1, -1.0, 0.01, &a2, &b2);
 	
@@ -53,6 +50,11 @@ int main(int argc, char** argv)
 	free(X);
 	
 	return 0;
+}
+
+double f1(double x)
+{
+	return (x-0.133)*(x-0.133)+0.2;
 }
 
 double f_rosenbrock(double *x, int n)
