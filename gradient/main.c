@@ -24,19 +24,6 @@ int main(int argc, char** argv)
 {
     epsilon = 0.0001;
     delta_x = 0.00001;
-	//h = 0.1;
-	
-	//double a1,b1;
-	//a1 = b1 = 0.0;
-	//double a2,b2;
-	//a2 = b2 = 0.0;
-	//straight_line_search_metod(f1, +0.10, 0.01, &a1, &b1);
-	//straight_line_search_metod(f1, -1.0, 0.01, &a2, &b2);
-	
-	//printf("%8.6f, %8.6f\n", a1, b1);
-	//printf("%8.6f, %8.6f\n", a2, b2);
-	
-	//return;
     
 	N = 2;
     X  = (double*) malloc( sizeof(double) * N );
