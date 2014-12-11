@@ -1,6 +1,11 @@
 #ifndef __METHODS_H
 #define __METHODS_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "minimum.h"
 #include "gradient.h"
 
 #ifdef __cplusplus
@@ -12,9 +17,6 @@ void fast_proximal_gradient_method(RnFunction f, R1Function g, double *x, int n,
 
 // Метод сопряженных градиентов Флетчера — Ривса 
 void conjugate_gradient_method(RnFunction f, R1Function g, double *x, int n, double dx, double epsilon);
-
-//Метод сопряженных градиентов
-void conjugate_gradient_method1(RnFunction f, R1Function g, double *x, int n, double dx, double epsilon);
 
 
 #ifdef __cplusplus

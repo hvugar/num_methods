@@ -7,7 +7,7 @@ INCLUDES	=	-I..
 
 all: main
 
-main: minimum.o gradient.o methods.o main.o
+main: minimum.o gradient.o methods_grad.o methods_conj.o methods.o main.o
 	$(CC) -o main.exe main.o minimum.o gradient.o methods.o $(LFLAGS)
 
 main.o: main.c
@@ -21,6 +21,13 @@ gradient.o: gradient.c
 	
 methods.o: methods.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c methods.c -o methods.o
+
+methods_conj.o: methods_conj.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c methods_conj.c -o methods_conj.o
+
+methods_grad.o: methods_grad.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c methods_grad.c -o methods_grad.o
+
 	
 clean:
 	del *.o *.exe
