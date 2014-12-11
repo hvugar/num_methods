@@ -20,6 +20,8 @@ double  epsilon;
 double  delta_x;
 double	h;
 
+int count = 0;
+
 int main(int argc, char** argv)
 {
     epsilon = 0.0001;
@@ -36,6 +38,8 @@ int main(int argc, char** argv)
 	
 	free(X);
 	
+	printf("Funksiyaya muraciet sayi: %d\n", count);
+	
 	return 0;
 }
 
@@ -44,8 +48,11 @@ double f1(double x)
 	return (x-0.133)*(x-0.133)+0.2;
 }
 
+
+
 double f_rosenbrock(double *x, int n)
 {
+	count++;
 	double x1 = x[0];
 	double x2 = x[1];
     return ((1-x1)*(1-x1)) + 100*(x2-x1*x1)*(x2-x1*x1);

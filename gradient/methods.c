@@ -48,13 +48,31 @@ void fast_proximal_gradient_method(RnFunction f, R1Function g, double *x, int n,
     } while ( module_grad > epsilon );
 }
 
+double minimize(double *x, double *grad, int n, RnFunction f, double alpha0, double epsilon)
+{
+	double argmin(double alpha)
+	{
+		int j;
+		for (j=0; j<n; j++) x[j] = x[j] + alpha * grad[j];
+		double result = f(x, n);
+		for (j=0; j<n; j++) x[j] = x[j] - alpha * grad[j];
+		return result;
+	}
+	
+	double a,b;
+	straight_line_search_metod(argmin, alpha0, 0.01, &a, &b);
+	double min = golden_section_search_min(argmin, a, b, epsilon);
+	
+	return min; 
+}
+
 void conjugate_gradient_method(RnFunction f, R1Function g, double *x, int n, double dx, double epsilon)
 {
     int step = 0;
     int i = 0;
     double *s = (double*) malloc(sizeof(double) * n);
 
-	//printf("%4d %8.6f %8.6f\n", step, x[0], x[1]);
+	printf("%4d %10.8f %10.8f %10.8f\n", step, x[0], x[1], f(x,n));
     do
     {
         // First iteration
@@ -68,23 +86,10 @@ void conjugate_gradient_method(RnFunction f, R1Function g, double *x, int n, dou
         int k = 0;
         do
         {
-            double a,b;
             double alpha0 = 0.0;
-			
-			double min(double alpha)
-			{
-				int j;
-				for (j=0; j<n; j++) x[j] = x[j] - alpha * gr1[j];
-				double result = f(x, n);
-				for (j=0; j<n; j++) x[j] = x[j] + alpha * gr1[j];
-				return result;
-			}
-			
-            straight_line_search_metod(min, alpha0, 0.01, &a, &b);
-            double alpha = golden_section_search_min(min, a, b, epsilon);
+			double alpha = minimize(x, s, n, f, alpha0, epsilon);
 
-            for (i=0; i<n; i++)
-                x[i] = x[i] + alpha * s[i];
+            for (i=0; i<n; i++) x[i] = x[i] + alpha * s[i];
 
 			double* gr2 = (double*) malloc(sizeof(double) * n);
             gradient(f, x, n, dx, gr2);
@@ -95,14 +100,13 @@ void conjugate_gradient_method(RnFunction f, R1Function g, double *x, int n, dou
             double w = gr2_mod / gr1_mod;
             gr1_mod = gr2_mod;
 
-			for (i=0; i<n; i++)
-				s[i] = -gr2[i] + s[i] * w;
+			for (i=0; i<n; i++) s[i] = -gr2[i] + s[i] * w;
 
             free(gr2);
             gr2 = NULL;
 			step++;
             k++;
-			printf("%4d %8.6f %8.6f\n", step, x[0], x[1]);
+			printf("%4d %10.8f %10.8f %10.8f\n", step, x[0], x[1], f(x,n));
         } while ( k < n );
         free(gr1);
         gr1 = NULL;
