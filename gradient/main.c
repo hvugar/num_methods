@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     X[1]    = +1.0;
 	
 //	fast_proximal_gradient_method(f, g, X, N, delta_x, epsilon);
-	conjugate_gradient_method(f_rosenbrock, g_rosenbrock, X, N, delta_x, epsilon);
+	conjugate_gradient_method(f_rosenbrock, X, N, delta_x, epsilon);
 	
 	free(X);
 	
@@ -58,50 +58,8 @@ double f_rosenbrock(double *x, int n)
     return ((1-x1)*(1-x1)) + 100*(x2-x1*x1)*(x2-x1*x1);
 }
 
-double g_rosenbrock(double alpha)
-{
-    double *xc = (double*) malloc( sizeof(double) * N );
-
-    double* gr = (double*) malloc(sizeof(double) * N);
-    gradient(f_rosenbrock, X, N, delta_x, gr);
-	
-	int i;
-    for (i=0; i<N; i++)
-    {
-        xc[i] = X[i] - alpha * gr[i];
-    }
-	
-    double result = f_rosenbrock(xc, N);
-
-    free(gr);
-    free(xc);
-
-    return result;
-}
-
 double f(double *x, int n)
 {
     return pow(x[0],3) + 2*pow(x[1],2) - 3*x[0] - 4*x[1];
-}
-
-double g(double alpha)
-{
-    double *xc = (double*) malloc( sizeof(double) * N );
-
-    double* gr = (double*) malloc(sizeof(double) * N);
-    gradient(f, X, N, delta_x, gr);
-
-	int i;
-    for (i=0; i<N; i++)
-    {
-        xc[i] = X[i] - alpha * gr[i];
-    }
-
-    double result = f(xc, N);
-
-    free(gr);
-    free(xc);
-
-    return result;
 }
 

@@ -8,7 +8,7 @@ INCLUDES	=	-I..
 all: main
 
 main: minimum.o gradient.o methods_grad.o methods_conj.o methods.o main.o
-	$(CC) -o main.exe main.o minimum.o gradient.o methods.o $(LFLAGS)
+	$(CC) -o main.exe main.o minimum.o gradient.o methods_grad.o methods_conj.o methods.o $(LFLAGS)
 
 main.o: main.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c main.c -o main.o

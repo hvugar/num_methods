@@ -1,8 +1,8 @@
 #include "methods.h"
 
-double minimize(double *x, double *grad, int n, RnFunction f, double alpha0, double epsilon);
+double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, double epsilon);
 
-void conjugate_gradient_method(RnFunction f, R1Function g, double *x, int n, double dx, double epsilon)
+void conjugate_gradient_method(RnFunction f, double *x, int n, double dx, double epsilon)
 {
     int step = 0;
     int i = 0;
@@ -23,7 +23,7 @@ void conjugate_gradient_method(RnFunction f, R1Function g, double *x, int n, dou
         do
         {
             double alpha0 = 0.0;
-			double alpha = minimize(x, s, n, f, alpha0, epsilon);
+			double alpha = minimize(f, x, s, n, alpha0, epsilon);
 
             for (i=0; i<n; i++) x[i] = x[i] + alpha * s[i];
 
@@ -53,7 +53,7 @@ void conjugate_gradient_method(RnFunction f, R1Function g, double *x, int n, dou
     s = NULL;
 }
 
-double minimize(double *x, double *grad, int n, RnFunction f, double alpha0, double epsilon)
+double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, double epsilon)
 {
 	double argmin(double alpha)
 	{
