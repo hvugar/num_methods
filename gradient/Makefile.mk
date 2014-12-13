@@ -2,31 +2,32 @@ CC			=	gcc
 CXX			=	g++
 DEPS		=	main.c
 OBJ			=	main.o
-CFLAGS		=	-g
+CFLAGS		=	-g -Wall
+CLDFLAGS	=    -Wl,-subsystem,console -mthreads
 INCLUDES	=	-I..
 
 all: main
 
 main: minimum.o gradient.o methods_grad.o methods_conj.o methods.o main.o
-	$(CC) -o main.exe main.o minimum.o gradient.o methods_grad.o methods_conj.o methods.o $(LFLAGS)
+	$(CC) $(CLDFLAGS) -o main.exe main.o minimum.o gradient.o methods_grad.o methods_conj.o methods.o $(LFLAGS)
 
 main.o: main.c
-	$(CC) $(CFLAGS) $(INCLUDES) -c main.c -o main.o
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o main.o main.c
 	
 minimum.o: minimum.c
-	$(CC) $(CFLAGS) $(INCLUDES) -c minimum.c -o minimum.o
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o minimum.o minimum.c 
 	
 gradient.o: gradient.c
-	$(CC) $(CFLAGS) $(INCLUDES) -c gradient.c -o gradient.o
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o gradient.o gradient.c
 	
 methods.o: methods.c
-	$(CC) $(CFLAGS) $(INCLUDES) -c methods.c -o methods.o
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o methods.o methods.c
 
 methods_conj.o: methods_conj.c
-	$(CC) $(CFLAGS) $(INCLUDES) -c methods_conj.c -o methods_conj.o
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o methods_conj.o methods_conj.c 
 
 methods_grad.o: methods_grad.c
-	$(CC) $(CFLAGS) $(INCLUDES) -c methods_grad.c -o methods_grad.o
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o methods_grad.o methods_grad.c
 
 	
 clean:
