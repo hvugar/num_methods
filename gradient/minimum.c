@@ -1,7 +1,7 @@
 #include "minimum.h"
 #include <math.h>
 
-double golden_section_search_min(R1Function fx, double a, double b, double epsilon)
+double golden_section_search_min(R1Function fx, double a, double b, double epsilon, int *count)
 {
     double phi = (1 + sqrt(5)) / 2;
 
@@ -19,12 +19,14 @@ double golden_section_search_min(R1Function fx, double a, double b, double epsil
         {
              x1 = b - (b-a)/phi;
              y1 = fx(x1);
+			 (*count)++;
         }
 
         if (isnan(x2))
         {
             x2 = a + (b-a)/phi;
             y2 = fx(x2);
+			(*count)++;
         }
 
         if (y1 >= y2)
@@ -46,7 +48,7 @@ double golden_section_search_min(R1Function fx, double a, double b, double epsil
     return (a+b)/2;
 }
 
-double straight_line_search_metod(R1Function fx, double x0, double dx, double *a, double *b)
+double straight_line_search_metod(R1Function fx, double x0, double dx, double *a, double *b, int *count)
 {
 	double y0 = 0.0;
 	double y1 = 0.0;
@@ -55,8 +57,11 @@ double straight_line_search_metod(R1Function fx, double x0, double dx, double *a
 	// if at next and last point of x0 function is greater
 	// then decrease the dx to half
 	y0 = fx( x0 );
+	(*count)++;
 	y1 = fx( x0 - dx );
+	(*count)++;
 	y2 = fx( x0 + dx );
+	(*count)++;
 	
 	while (y1 > y0 && y2 > y0)
 	{
@@ -75,7 +80,9 @@ double straight_line_search_metod(R1Function fx, double x0, double dx, double *a
     double x2 = x1 + dx;
 	
     y1 = fx( x1 );
+	(*count)++;
     y2 = fx( x2 );
+	(*count)++;
 	
     int i = 1;
     while ( y2 <= y1 )
@@ -86,6 +93,7 @@ double straight_line_search_metod(R1Function fx, double x0, double dx, double *a
 		i++;
         x2 = x0 + i * dx;
         y2 = fx(x2);
+		(*count)++;
     }
 	
 	if ( dx < 0 )

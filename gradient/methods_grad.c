@@ -48,8 +48,9 @@ double minimize1(RnFunction f, double *x, double *grad, int n, double alpha0, do
 	}
 	
 	double a,b;
-	straight_line_search_metod(argmin, alpha0, 0.01, &a, &b);
-	double min = golden_section_search_min(argmin, a, b, epsilon);
+	int c;
+	straight_line_search_metod(argmin, alpha0, 0.01, &a, &b, &c);
+	double min = golden_section_search_min(argmin, a, b, epsilon, &c);
 	
 	return min; 
 }

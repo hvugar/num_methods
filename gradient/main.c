@@ -6,49 +6,36 @@
 #include "gradient.h"
 #include "methods.h"
 
-double f(double *x, int n);
-double g(double alpha);
-
 double f_rosenbrock(double *x, int n);
-double g_rosenbrock(double alpha);
-
+double f(double *x, int n);
 double f1(double x);
 
-double  *X;
-int     N;
+double  *x;
+int     n;
 double  epsilon;
 double  delta_x;
 double	h;
 
 int count = 0;
-
+                                                                                                  
 int main(int argc, char** argv)
 {
     epsilon = 0.0001;
     delta_x = 0.00001;
     
-	N = 2;
-    X  = (double*) malloc( sizeof(double) * N );
+	n = 2;
+    x  = (double*) malloc( sizeof(double) * n );
 
-    X[0]    = -1.2;
-    X[1]    = +1.0;
+    x[0]    = -1.2;
+    x[1]    = +1.0;
 	
 //	fast_proximal_gradient_method(f, g, X, N, delta_x, epsilon);
-	conjugate_gradient_method(f_rosenbrock, X, N, delta_x, epsilon);
+	conjugate_gradient_method(f_rosenbrock, x, n, delta_x, epsilon);
 	
-	free(X);
-	
-	printf("Funksiyaya muraciet sayi: %d\n", count);
+	free(x);
 	
 	return 0;
 }
-
-double f1(double x)
-{
-	return (x-0.133)*(x-0.133)+0.2;
-}
-
-
 
 double f_rosenbrock(double *x, int n)
 {
@@ -63,3 +50,7 @@ double f(double *x, int n)
     return pow(x[0],3) + 2*pow(x[1],2) - 3*x[0] - 4*x[1];
 }
 
+double f1(double x)
+{
+	return (x-0.133)*(x-0.133)+0.2;
+}

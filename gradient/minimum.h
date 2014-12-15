@@ -8,8 +8,8 @@ extern "C" {
 typedef double (*R1Function)(double);
 typedef double (*RnFunction)(double*, int);
 
-double golden_section_search_min(R1Function fx, double a, double b, double epsilon);
-double straight_line_search_metod(R1Function fx, double x0, double dx, double *a, double *b);
+double straight_line_search_metod(R1Function fx, double x0, double dx, double *a, double *b, int *count);
+double golden_section_search_min(R1Function fx, double a, double b, double epsilon, int *count);
 
 #ifdef __cplusplus
 }
