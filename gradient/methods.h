@@ -17,7 +17,7 @@ extern "C" {
 void fast_proximal_gradient_method(RnFunction f, double *x, int n, double dx, double epsilon);
 
 // Метод сопряженных градиентов Флетчера — Ривса 
-void conjugate_gradient_method(RnFunction f, double *x, int n, double dx, double epsilon);
+void conjugate_gradient_method(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon);
 
 
 #ifdef __cplusplus

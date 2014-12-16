@@ -57,11 +57,11 @@ double straight_line_search_metod(R1Function fx, double x0, double dx, double *a
 	// if at next and last point of x0 function is greater
 	// then decrease the dx to half
 	y0 = fx( x0 );
-	(*count)++;
+//	(*count)++;
 	y1 = fx( x0 - dx );
-	(*count)++;
+//	(*count)++;
 	y2 = fx( x0 + dx );
-	(*count)++;
+//	(*count)++;
 	
 	while (y1 > y0 && y2 > y0)
 	{
@@ -80,9 +80,9 @@ double straight_line_search_metod(R1Function fx, double x0, double dx, double *a
     double x2 = x1 + dx;
 	
     y1 = fx( x1 );
-	(*count)++;
+	//(*count)++;
     y2 = fx( x2 );
-	(*count)++;
+	//(*count)++;
 	
     int i = 1;
     while ( y2 <= y1 )
@@ -93,7 +93,10 @@ double straight_line_search_metod(R1Function fx, double x0, double dx, double *a
 		i++;
         x2 = x0 + i * dx;
         y2 = fx(x2);
+
 		(*count)++;
+		
+		dx = dx*2;
     }
 	
 	if ( dx < 0 )

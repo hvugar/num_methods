@@ -1,7 +1,7 @@
 #include "gradient.h"
 #include <math.h>
 
-void gradient(RnFunction f, double *x, int n, double dx, double *gradients)
+void gradient1(RnFunction f, double *x, int n, double dx, double *gradients)
 {
     double f0 = f(x, n);
 
@@ -28,4 +28,21 @@ double grad_module(double *grads, int n)
     }
 
     return sqrt(result);
+}
+
+void gradient(RnFunction f, double *x, int n, double dx, double *gradients)
+{
+	int i = 0;
+	for (i=0; i<n; i++)
+	{
+		x[i] = x[i] - dx;
+		double f1 = f(x, n);
+		x[i] = x[i] + dx;
+		
+		x[i] = x[i] + dx;
+		double f2 = f(x, n);
+		x[i] = x[i] - dx;
+
+		gradients[i] = (f2 - f1) / (2*dx);
+	}
 }
