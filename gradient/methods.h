@@ -8,6 +8,7 @@
 
 #include "minimum.h"
 #include "gradient.h"
+#include "print.h"
 
 #ifdef __cplusplus
 extern "C" {
