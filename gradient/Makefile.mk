@@ -3,7 +3,7 @@ CXX			=	g++
 DEPS		=	main.c
 OBJ			=	main.o
 CFLAGS		=	-g -Wall
-CLDFLAGS	=    -Wl,-subsystem,console -mthreads
+LDFLAGS		=   -Wl,-subsystem,console -mthreads
 INCLUDES	=	-I..
 
 all: main
