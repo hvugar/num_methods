@@ -43,6 +43,7 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_eps, 
 
 			double alpha0 = 0.0;
 			double alpha = minimize(f, x, s1, n, alpha0, line_eps, gold_eps, &count);
+			line_eps /= 1.2;
 
             for (i=0; i<n; i++) 
 			{
