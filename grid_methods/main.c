@@ -24,6 +24,8 @@ int main(int argc, char** argv)
     double dt = 0.1;
 	
 	implicit_difference_scheme(f, fi, m1, m2, a, dx, dt, 1.0, 1.0);
+	puts("");
+	explicit_difference_scheme(f, fi, m1, m2, a, dx, dt, 1.0, 1.0);
 
     return 0;
 }

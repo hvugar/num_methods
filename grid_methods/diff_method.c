@@ -5,28 +5,30 @@
 
 /**
  * @brief Implicit difference scheme/Неявная разностная схема
- * @param f			
+ * @param f
  * @param fi		Initial condition function at t=0
  * @param m1		Boundary condition function at x=0
  * @param m2		Boundary condition function at x=l
- * @oaram a			
+ * @oaram a
  * @param delta_x	step for x
  * @param delta_t	step for t
+ * @param l
+ * @param t
  */
 void implicit_difference_scheme(FxtFunction f, fiFunction fi, m1Function m1, m2Function m2, double a, double dx, double dt, double l, double t) 
 {
-	double di = l / dx;
-	double dj = t / dt;
+    double di = l / dx;
+    double dj = t / dt;
 
     int M = (int) di; // x uzre
     int N = (int) dj; // t uzre
-	
+
     int j = 0;
     int i = 0;
 
-    int size = 9;
-	
-	printf("%d %d\n", M, N);
+    int size = M-1;
+
+    printf("%d %d\n", M, N);
 
     double** A = (double**) malloc(sizeof(double*)*size);
     double*  b = (double*)  malloc(sizeof(double)*size);
@@ -103,7 +105,72 @@ void implicit_difference_scheme(FxtFunction f, fiFunction fi, m1Function m1, m2F
     free(A);
 }
 
-//явная разностная схема
-void explicit_difference_scheme(double delta_x, double delta_t) 
+//
+/**
+ * @brief Explicit difference scheme/Явная разностная схема
+ * @param f
+ * @param fi	Initial condition function at t=0
+ * @param m1	Boundary condition function at x=0
+ * @param m2	Boundary condition function at x=l
+ * @param a
+ * @param dx	step for x
+ * @param dt	step for t
+ * @param l
+ * @param t
+ */
+void explicit_difference_scheme(FxtFunction f, fiFunction fi, m1Function m1, m2Function m2, double a, double dx, double dt, double l, double t) 
 {
+    double di = l / dx;
+    double dj = t / dt;
+
+    int M = (int) di; // x uzre
+    int N = (int) dj; // t uzre
+
+    int j = 0;
+    int i = 0;
+
+    int size = M+1;
+    double* u = (double*)  malloc(sizeof(double)*size);
+	for (i=0; i<N; i++) u[i] = 0.0;
+    
+
+    for (j=0; j<N; j++)
+    {
+        printf("Layer: %4d ", j+1);
+        if (j==0)
+        {
+            for (i=1; i<M; i++)
+            {
+                if ( i == 1 )
+                {
+                    u[i] = (dt/(dx*dx))*(m1(j*dt)-2*fi(i*dx)+fi((i+1)*dx)) + dt*f(0.0, 0.0) + fi(i*dx);
+                }
+                else if ( i == M-1 )
+                {
+                    u[i] = (dt/(dx*dx))*(fi((M-2)*dx)-2*fi((M-1)*dx)+m2(0*dt)) + dt*f(0.0, 0.0) + fi((M-1)*dx);
+                } else {
+                    u[i] = (dt/(dx*dx))*(fi((i-1)*dx)-2*fi(i*dx)+fi((i+1)*dt)) + dt*f(0.0, 0.0) + fi(i*dx);
+                }
+                printf("%8.4f ", u[i]);
+            }
+        }
+        else
+        {
+            for (i=1; i<M; i++)
+            {
+                if ( i == 1 )
+                {
+                    u[i] = (dt/(dx*dx))*(m1(j*dt)-2*u[i]+u[i+1]) + dt*f(0.0, 0.0) + u[i];
+                }
+                //else if ( i == M-1 )
+                //{
+                //    u[i] = (dt/(dx*dx))*(u[i-1]-2*u[i]+m2(j*dt)) + dt*f(0.0, 0.0) + u[i];
+                //} else {
+                //    u[i] = (dt/(dx*dx))*(u[i-1]-2*u[i]+u[i+1]) + dt*f(0.0, 0.0) + u[i];
+                //}
+                //printf("%8.4f ", u[i]);
+            }
+        }
+	    puts("");
+    }    
 }
