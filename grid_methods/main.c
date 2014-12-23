@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
+/*
 typedef double (*R1Function)(double);
 typedef double (*RnFunction)(double);
 
@@ -14,13 +14,19 @@ double m1(double t);
 double m2(double t);
 
 void tomas_algorithm(double **a, double* b, double* x, int size);
-
+*/
 int main(int argc, char** argv)
 {
+	double c1 = 1.0;
     double dx = 0.1;
-    double dt = 0.1;
-    double a  = 1.0;
+    //double dt = 0.1;
+    //double a  = 1.0;
 
+	double c = (c1/dx);
+	int d = (int) c;
+	printf("%f %d\n", c, d);
+	return 0;
+/*	
     int M = 10; // x uzre
     int N = 10; // t uzre
 
@@ -104,8 +110,9 @@ int main(int argc, char** argv)
     free(A);
 
     return 0;
+*/
 }
-
+/*
 double f(double x, double t) { return -1.0; }
 
 double fi(double x) { return x*x; }
@@ -113,5 +120,4 @@ double fi(double x) { return x*x; }
 double m1(double t) { return t; }
 
 double m2(double t) { return 1.0+t; }
-
-
+*/
