@@ -6,10 +6,10 @@ CFLAGS		=	-g
 INCLUDES	=	-I.
 LDFLAGS		= 	-L. 
 
-all: test_lib1 test_lib2 main
+all: main
 
 main: main.o
-	$(CC) -o main.exe main.o $(LDFLAGS) -ltest_lib1
+	$(CC) -o main.exe main.o $(LDFLAGS)
 
 main.o: main.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c main.c -o main.o
