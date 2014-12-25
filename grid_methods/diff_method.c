@@ -123,17 +123,51 @@ void explicit_difference_scheme(FxtFunction f, fiFunction fi, m1Function m1, m2F
     double di = l / dx;
     double dj = t / dt;
 
-    int M = (int) di; // x uzre
-    int N = (int) dj; // t uzre
+    int M = (int) di + 1; // x uzre
+    int N = (int) dj + 1; // t uzre
 
     int j = 0;
     int i = 0;
-
-    int size = M+1;
-    double* u = (double*)  malloc(sizeof(double)*size);
-	for (i=0; i<N; i++) u[i] = 0.0;
-    
-
+	
+	double** u = (double**) malloc(sizeof(double*) * N);
+	for (j=0; j<N; j++)
+	{
+		u[j] = (double*) malloc(sizeof(double) * M);
+		for (i=0; i<M; i++)
+			u[j][i] = 0.0;
+	}
+	
+	for (j=0; j<N; j++)
+	{
+		for (i=0; i<M; i++)
+		{
+			if (i == 0)
+				u[j][i] = m1(j*dt);
+			else if (i==M-1)
+				u[j][i] = m2(j*dt);
+			else
+				u[j][i] = (dt/(dx*dx))*(fi((i-1)*dx)-2*fi(i*dx)+fi((i+1)*dt)) + dt*f(0.0, 0.0) + fi(i*dx);		
+		}
+	}
+	
+	for (j=0; j<N; j++)
+	{
+		for (i=0; i<M; i++)
+		{
+			printf("%8.4f ", u[j][i]);
+		}
+		printf("\n");
+	}
+	
+	for (j=0; j<N; j++)
+	{
+		free(u[j]);
+		u[j] = NULL;
+	}
+	free(u);
+	u = NULL;
+	
+/*
     for (j=0; j<N; j++)
     {
         printf("Layer: %4d ", j+1);
@@ -173,4 +207,5 @@ void explicit_difference_scheme(FxtFunction f, fiFunction fi, m1Function m1, m2F
         }
 	    puts("");
     }    
+*/
 }
