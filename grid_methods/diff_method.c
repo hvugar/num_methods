@@ -4,7 +4,7 @@
 #include <math.h>
 
 /**
- * @brief Implicit difference scheme/РќРµСЏРІРЅР°СЏ СЂР°Р·РЅРѕСЃС‚РЅР°СЏ СЃС…РµРјР°
+ * @brief Implicit difference scheme/Неявная разностная схема
  * @param f
  * @param fi		Initial condition function at t=0
  * @param m1		Boundary condition function at x=0
@@ -107,7 +107,7 @@ void implicit_difference_scheme(FxtFunction f, fiFunction fi, m1Function m1, m2F
 
 //
 /**
- * @brief Explicit difference scheme/РЇРІРЅР°СЏ СЂР°Р·РЅРѕСЃС‚РЅР°СЏ СЃС…РµРјР°
+ * @brief Explicit difference scheme/Явная разностная схема
  * @param f
  * @param fi	Initial condition function at t=0
  * @param m1	Boundary condition function at x=0
@@ -137,16 +137,28 @@ void explicit_difference_scheme(FxtFunction f, fiFunction fi, m1Function m1, m2F
 			u[j][i] = 0.0;
 	}
 	
+	for (i=0; i<M; i++)
+	{
+		u[0][i] = fi(i*dx);
+	}
+
 	for (j=0; j<N; j++)
 	{
-		for (i=0; i<M; i++)
+		u[j][0]   = m1(j*dt);
+		u[j][M-1] = m2(j*dt);
+	}
+	
+	
+	for (j=0; j<N-1; j++)
+	{
+		for (i=1; i<M-1; i++)
 		{
-			if (i == 0)
-				u[j][i] = m1(j*dt);
-			else if (i==M-1)
-				u[j][i] = m2(j*dt);
-			else
-				u[j][i] = (dt/(dx*dx))*(fi((i-1)*dx)-2*fi(i*dx)+fi((i+1)*dt)) + dt*f(0.0, 0.0) + fi(i*dx);		
+			double r = 2.0;
+			double k = a*(dt/(dx*dx));
+			double u1 = (u[j][i-1] - 2.0 * u[j][i] + u[j][i+1]);
+			double u2 = -dt;
+			double u3 = k * u1;
+			u[j+1][i] = u3 + u[j][i] + u2;
 		}
 	}
 	
@@ -154,9 +166,14 @@ void explicit_difference_scheme(FxtFunction f, fiFunction fi, m1Function m1, m2F
 	{
 		for (i=0; i<M; i++)
 		{
-			printf("%8.4f ", u[j][i]);
+			printf("%.14f ", u[j][i]);
 		}
 		printf("\n");
+		for (i=0; i<M; i++)
+		{
+			printf("%.14f ", (i*dx)*(i*dx)+(j*dt));
+		}
+		printf("\n----------------\n");
 	}
 	
 	for (j=0; j<N; j++)
@@ -166,46 +183,4 @@ void explicit_difference_scheme(FxtFunction f, fiFunction fi, m1Function m1, m2F
 	}
 	free(u);
 	u = NULL;
-	
-/*
-    for (j=0; j<N; j++)
-    {
-        printf("Layer: %4d ", j+1);
-        if (j==0)
-        {
-            for (i=1; i<M; i++)
-            {
-                if ( i == 1 )
-                {
-                    u[i] = (dt/(dx*dx))*(m1(j*dt)-2*fi(i*dx)+fi((i+1)*dx)) + dt*f(0.0, 0.0) + fi(i*dx);
-                }
-                else if ( i == M-1 )
-                {
-                    u[i] = (dt/(dx*dx))*(fi((M-2)*dx)-2*fi((M-1)*dx)+m2(0*dt)) + dt*f(0.0, 0.0) + fi((M-1)*dx);
-                } else {
-                    u[i] = (dt/(dx*dx))*(fi((i-1)*dx)-2*fi(i*dx)+fi((i+1)*dt)) + dt*f(0.0, 0.0) + fi(i*dx);
-                }
-                printf("%8.4f ", u[i]);
-            }
-        }
-        else
-        {
-            for (i=1; i<M; i++)
-            {
-                if ( i == 1 )
-                {
-                    u[i] = (dt/(dx*dx))*(m1(j*dt)-2*u[i]+u[i+1]) + dt*f(0.0, 0.0) + u[i];
-                }
-                //else if ( i == M-1 )
-                //{
-                //    u[i] = (dt/(dx*dx))*(u[i-1]-2*u[i]+m2(j*dt)) + dt*f(0.0, 0.0) + u[i];
-                //} else {
-                //    u[i] = (dt/(dx*dx))*(u[i-1]-2*u[i]+u[i+1]) + dt*f(0.0, 0.0) + u[i];
-                //}
-                //printf("%8.4f ", u[i]);
-            }
-        }
-	    puts("");
-    }    
-*/
 }

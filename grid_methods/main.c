@@ -19,9 +19,9 @@ void tomas_algorithm(double **a, double* b, double* x, int size);
 
 int main(int argc, char** argv)
 {
-    double a  = 1.0;
-    double dx = 0.1;
-    double dt = 0.1;
+    double a  = 1.00;
+    double dx = 0.10;
+    double dt = 0.10;
 	
 	//implicit_difference_scheme(f, fi, m1, m2, a, dx, dt, 1.0, 1.0);
 	puts("");
