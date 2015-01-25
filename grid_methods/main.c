@@ -4,8 +4,11 @@
 
 #include "diff_method.h"
 
-typedef double (*R1Function)(double);
-typedef double (*RnFunction)(double);
+double f1(double x, double y)
+{
+	return x*y/2;
+}
+
 
 double f(double, double);
 
@@ -25,7 +28,10 @@ int main(int argc, char** argv)
 	
 	//implicit_difference_scheme(f, fi, m1, m2, a, dx, dt, 1.0, 1.0);
 	puts("");
-	explicit_difference_scheme(f, fi, m1, m2, a, dx, dt, 1.0, 1.0);
+	//explicit_difference_scheme(f, fi, m1, m2, a, dx, dt, 1.0, 1.0);
+	diff_euler(f1, 0.0, 1.0, 0.000001, 2.0);
+	diff_runga_kutta(f1, 0.0, 1.0, 0.000001, 2.0);
+	printf("\t\t\t%.20f\n", 2.7182818284590452353602874713527);
 
     return 0;
 }

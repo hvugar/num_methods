@@ -184,3 +184,36 @@ void explicit_difference_scheme(FxtFunction f, fiFunction fi, m1Function m1, m2F
 	free(u);
 	u = NULL;
 }
+
+/**
+*/
+double diff_euler(R2Function f, double x0, double y0, double h, double x)
+{
+	while (x0 <= x)
+	{
+		y0 = y0 + h * f(x0, y0);
+		x0 += h;
+	}
+	
+	printf("diff_euler: \t\t%.8f\n", y0);
+	
+	return 0;
+}
+
+double diff_runga_kutta(R2Function f, double x0, double y0, double h, double x)
+{
+	while (x0 <= x)
+	{
+		double k1 = f(x0, y0);
+		double k2 = f(x0+h/2.0, y0+(h/2.0)*k1);
+		double k3 = f(x0+h/2.0, y0+(h/2.0)*k2);
+		double k4 = f(x0+h, y0+h*k3);
+		
+		y0 = y0 + (h/6) * (k1 + 2*k2 + 2*k3 + k4);
+		x0 += h;
+	}
+	
+	printf("diff_runga_kutta: \t%.8f\n", y0);
+	
+	return 0;
+}
