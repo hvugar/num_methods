@@ -48,7 +48,49 @@ double golden_section_search_min(R1Function fx, double a, double b, double epsil
     return (a+b)/2;
 }
 
-double straight_line_search_metod(R1Function fx, double x0, double dx, double *a, double *b, int *count)
+double straight_line_search_metod1(R1Function f, double x0, double dx, double *a, double *b, int *count)
+{
+	double y0 = f(x0);
+	double y1 = f(x0 - dx);
+	double y2 = f(x0 + dx);
+	
+	if (y1 >= y0 && y2 >= y0)
+	{
+		*a = x0 - dx;
+		*b = x0 + dx;
+	}
+	
+	if ( y2 > y0 )
+	{
+		dx = -dx;
+		double ty = y2;
+		y2 = y1;
+		y1 = y2;
+	}
+	
+	while ( y2 < y0 )
+	{
+		x0 = x0 + dx;
+		y1 = y0;
+		y0 = y2;
+		y2 = f(x0 + h);
+	}
+	
+	if ( dx > 0 )
+	{
+		*a = x0 - dx;
+		*b = x0 + dx;
+	}
+	else
+	{
+		*a = x0 + dx;
+		*b = x0 - dx;
+	}
+	
+	return (a+b)/2.0;
+}
+
+double straight_line_search_metod1(R1Function fx, double x0, double dx, double *a, double *b, int *count)
 {
 	double y0 = 0.0;
 	double y1 = 0.0;
