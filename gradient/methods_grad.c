@@ -1,9 +1,9 @@
 #include "methods.h"
 
-double minimize1(RnFunction f, double *x, double *grad, int n,  double alpha0, double epsilon);
+double minimize1(RnFunction f, double *x, double *grad, int n, double alpha0, double line_eps, double gold_eps, int *count);
 
 //Метод наискорейшего спуска
-void fast_proximal_gradient_method(RnFunction f, double *x, int n, double dx, double epsilon)
+void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon)
 {
     int i = 0;
     double module_grad = 0;
@@ -13,11 +13,12 @@ void fast_proximal_gradient_method(RnFunction f, double *x, int n, double dx, do
         i++;
 
         double* grads = (double*) malloc(sizeof(double) * n);
-        gradient(f, x, n, dx, grads);
+        gradient(f, x, n, grad_eps, grads);
         double alpha0 = 0.0;
 		
+		int c = 0;
         // Funksiyanin minimumuniu tapmaq ucun qizil bolgu qaydasinda istifade edib alphani tapiriq
-        double alpha = minimize1(f, x, grads, n, alpha0, epsilon);
+        double alpha = minimize1(f, x, grads, n, alpha0, line_eps, gold_eps, &c);
 
         module_grad = grad_module(grads, n);
 
@@ -36,7 +37,7 @@ void fast_proximal_gradient_method(RnFunction f, double *x, int n, double dx, do
     } while ( module_grad > epsilon );
 }
 
-double minimize1(RnFunction f, double *x, double *grad, int n, double alpha0, double epsilon)
+double minimize1(RnFunction f, double *x, double *grad, int n, double alpha0, double line_eps, double gold_eps, int *count)
 {
 	double argmin(double alpha)
 	{
@@ -46,11 +47,8 @@ double minimize1(RnFunction f, double *x, double *grad, int n, double alpha0, do
 		for (j=0; j<n; j++) x[j] = x[j] + alpha * grad[j];
 		return result;
 	}
-	
 	double a,b;
-	int c;
-	straight_line_search_metod(argmin, alpha0, 0.01, &a, &b, &c);
-	double min = golden_section_search_min(argmin, a, b, epsilon, &c);
-	
+	straight_line_search_metod(argmin, alpha0, line_eps, &a, &b, count);
+	double min = golden_section_search_min(argmin, a, b, gold_eps, count);
 	return min; 
 }

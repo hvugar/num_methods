@@ -1,5 +1,7 @@
 #include "minimum.h"
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 double golden_section_search_min(R1Function fx, double a, double b, double epsilon, int *count)
 {
@@ -50,6 +52,12 @@ double golden_section_search_min(R1Function fx, double a, double b, double epsil
 
 double straight_line_search_metod(R1Function f, double x0, double dx, double *a, double *b, int *count)
 {
+	if ( dx == 0.0 )
+	{
+		fputs("dx cannot be zero", stderr);
+		exit(-1);
+	}
+
 	double y0 = f(x0);
 	double y1 = f(x0 - dx);
 	double y2 = f(x0 + dx);
