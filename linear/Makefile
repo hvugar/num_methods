@@ -9,11 +9,11 @@ INCLUDES    =  -I..
 all: main
 
 main: main.o
-    $(CC) $(CLDFLAGS) -o main.exe main.o
+	$(CC) $(CLDFLAGS) -o main.exe main.o
 
 main.o: main.c
-    $(CC) -c $(INCLUDES) -o main.o main.c
+	$(CC) -c $(INCLUDES) -o main.o main.c
 	
 clean:
-    del *.o *.exe
+	del *.o *.exe
 
