@@ -9,7 +9,7 @@ void simple_iteration(double** A, double* b, double* x0, double* x, int n, doubl
 int main(int argc, char** argv)
 {
 	int i,j;
-	int n = 4;
+	int n = 3;
 
 	double** a = (double**) malloc( sizeof(double*) * n );
 	for (i=0; i<n; i++)
@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 		for (j=0; j<n; j++)
 			a[i][j] = 0.0;
 	}
-	
+	/*
 	a[0][0] = +1.0;
 	a[0][1] = +2.0;
 	a[0][2] = -5.0;
@@ -46,14 +46,23 @@ int main(int argc, char** argv)
 	a[3][2] = +5.0;
 	a[3][3] = +4.0;
 	
-	b[0] = -22.0;
+	b[0] = -26.0;
 	b[1] = +13.0;
 	b[2] = +20.0;
 	b[3] = +33.0;
+	*/
+	
+	a[0][0] = +2.0; a[0][1] = +3.0; a[0][2] = -4.0;
+	a[1][0] = +1.0; a[1][1] = -1.0; a[1][2] = +2.0;
+	a[2][0] = +3.0; a[2][1] = +2.0; a[2][2] = -3.0;
+	b[0] = 1;
+	b[1] = 2;
+	b[2] = 3;
+		
 	
 	simple_iteration(a, b, x0, x, n, epsilon);
 	
-	printf("%f %f %f %f\n", x[0], x[1], x[2], x[3]);
+	printf("%f %f %f\n", x[0], x[1], x[2]);
 
 	return 0;
 }
@@ -84,7 +93,7 @@ void simple_iteration(double** a, double* b, double* x0, double* x, int n, doubl
 		for (j=0; j<n; j++) { if (i != j) { a[i][j] = -(a[i][j] / a[i][i]); } }
 		a[i][i] = 0.0;
 	}
-	
+	/*
 	printf("b[0] = %2.4f\n", b[0]);
 	printf("b[1] = %2.4f\n", b[1]);
 	printf("b[2] = %2.4f\n", b[2]);
@@ -99,7 +108,7 @@ void simple_iteration(double** a, double* b, double* x0, double* x, int n, doubl
 	printf("x0[1] = %2.4f\n", x0[1]);
 	printf("x0[2] = %2.4f\n", x0[2]);
 	printf("x0[3] = %2.4f\n", x0[3]);
-	
+	*/
 	for (i=0; i<n; i++) { x[i] = b[i]; }
 
 	int k=0;
@@ -121,7 +130,7 @@ void simple_iteration(double** a, double* b, double* x0, double* x, int n, doubl
 			}
 		}
 		
-		printf("%f %f %f %f\n", x[0], x[1], x[2], x[3]);
+		//printf("%f %f %f %f\n", x[0], x[1], x[2], x[3]);
 		
 		double max = 0.0;
 		for (i=0; i<n; i++)
@@ -134,9 +143,9 @@ void simple_iteration(double** a, double* b, double* x0, double* x, int n, doubl
 		if (max < epsilon)
 			break;
 			
-//		k++;
-//		if (k>10)
-//		break;			
+		k++;
+		if (k>10)
+		break;			
 	}
 	//printf("%f %f %f %f\n", x0[0], x0[1], x0[2], x0[3]);
 }
