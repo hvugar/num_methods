@@ -1,9 +1,9 @@
-CC			=	gcc
-CXX			=	g++
-DEPS		=	main.c
-OBJ			=	main.o
-CFLAGS		=	-g
-INCLUDES	=	-I..
+CC          = gcc
+CXX         = g++
+DEPS        = main.c
+OBJ         = main.o
+CFLAGS      = -g
+INCLUDES    = -I..
 
 all: main
 

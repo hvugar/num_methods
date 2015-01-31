@@ -1,10 +1,10 @@
-CC          =  gcc
-CXX         =  g++
-DEPS        =  main.c
-OBJ         =  main.o
-CFLAGS      =  -g -Wall
-CLDFLAGS    =  -Wl,-subsystem,console -mthreads
-INCLUDES    =  -I..
+CC          = gcc
+CXX         = g++
+DEPS        = main.c
+OBJ         = main.o
+CFLAGS      = -g -Wall
+CLDFLAGS    = -Wl,-subsystem,console -mthreads
+INCLUDES    = -I..
 
 all: main
 

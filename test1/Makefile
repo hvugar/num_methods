@@ -1,10 +1,10 @@
-CC			=	gcc
-CXX			=	g++
-DEPS		=	main.c
-OBJ			=	main.o
-CFLAGS		=	-g
-INCLUDES	=	-I.
-LDFLAGS		= 	-L. 
+CC          = gcc
+CXX         = g++
+DEPS        = main.c
+OBJ         = main.o
+CFLAGS      = -g
+INCLUDES    = -I.
+LDFLAGS     = -L. 
 
 all: main
 
