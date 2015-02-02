@@ -99,3 +99,29 @@ double straight_line_search_metod(R1Function f, double x0, double dx, double *a,
 	
 	return (*a+*b)/2.0;
 }
+
+void search_interval_svenn(R1Function f, double x0, double dx, double *a, double *b)
+{
+	double fl = f(x0 - dx);
+	double f0 = f(x0);
+	double fr = f(x0 + dx);
+	
+	if (fl <= f0 && f0 <= fr)
+	{
+		*a = x0 - dx;
+		*b = x0 + dx;
+	}
+	
+	if (fl <= f0 && fr <= f0)
+	{
+		fputs("Function is not unimodal.", stderr);
+	}
+	
+	if ( fr > f0 )
+	{
+		
+	}
+	
+	
+	
+}
