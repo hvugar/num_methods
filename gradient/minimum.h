@@ -9,30 +9,29 @@ typedef double (*R1Function)(double);
 typedef double (*RnFunction)(double*, int);
 
 /**
+ * @brief Метод золотого сечения
+ * @param f
+ * @param a
+ * @param b
+ * @param epsilon
+ * @return
+ */
+double straight_line_search_metod(R1Function fx, double x0, double dx, double *a, double *b);
+
+/**
  * @brief
- * @param fx
+ * @param f
  * @param x0
  * @param dx
  * @param a
  * @param b
  * @return
  */
-double straight_line_search_metod(R1Function fx, double x0, double dx, double *a, double *b, int *count);
+double golden_section_search_min(R1Function fx, double a, double b, double epsilon);
 
 /**
  * @brief
- * @param fx
- * @param x0
- * @param dx
- * @param a
- * @param b
- * @return
- */
-double golden_section_search_min(R1Function fx, double a, double b, double epsilon, int *count);
-
-/**
- * @brief
- * @param fx
+ * @param f
  * @param x0
  * @param dx
  * @param a
@@ -43,25 +42,35 @@ double search_method_dck(R1Function f, double x0, double dx, double *a, double *
 
 /**
  * @brief
- * @param fx
+ * @param f
  * @param x0
  * @param dx
  * @param a
  * @param b
  * @return
  */
-double search_method_pauella(R1Function f, double x0, double dx, double *a, double *b);
+double search_method_pauella(R1Function f, double x0, double dx, double epsilon, double *a, double *b);
 
 /**
  * @brief Этап установления границ интервала. Метод Свенна
- * @param f     function
- * @param x0    initial point
+ * @param f
+ * @param x0
  * @param dx
  * @param a
  * @param b
  * @return
  */
 void search_interval_svenn(R1Function f, double x0, double dx, double *a, double *b);
+
+/**
+ * @brief Метод деления интервала пополам
+ * @param f
+ * @param epsilon
+ * @param a
+ * @param b
+ * @return
+ */
+void halph_interval_method(R1Function f, double epsilon, double *a, double *b);
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,6 @@
 #include "methods.h"
 
-double minimize1(RnFunction f, double *x, double *grad, int n, double alpha0, double line_eps, double gold_eps, int *count);
+double minimize1(RnFunction f, double *x, double *grad, int n, double alpha0, double line_eps, double gold_eps);
 
 //Метод наискорейшего спуска
 void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon)
@@ -16,9 +16,8 @@ void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_e
         gradient(f, x, n, grad_eps, grads);
         double alpha0 = 0.0;
 		
-		int c = 0;
         // Funksiyanin minimumuniu tapmaq ucun qizil bolgu qaydasinda istifade edib alphani tapiriq
-        double alpha = minimize1(f, x, grads, n, alpha0, line_eps, gold_eps, &c);
+        double alpha = minimize1(f, x, grads, n, alpha0, line_eps, gold_eps);
 
         module_grad = grad_module(grads, n);
 
@@ -37,7 +36,7 @@ void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_e
     } while ( module_grad > epsilon );
 }
 
-double minimize1(RnFunction f, double *x, double *grad, int n, double alpha0, double line_eps, double gold_eps, int *count)
+double minimize1(RnFunction f, double *x, double *grad, int n, double alpha0, double line_eps, double gold_eps)
 {
 	double argmin(double alpha)
 	{
@@ -48,7 +47,7 @@ double minimize1(RnFunction f, double *x, double *grad, int n, double alpha0, do
 		return result;
 	}
 	double a,b;
-	straight_line_search_metod(argmin, alpha0, line_eps, &a, &b, count);
-	double min = golden_section_search_min(argmin, a, b, gold_eps, count);
+	straight_line_search_metod(argmin, alpha0, line_eps, &a, &b);
+	double min = golden_section_search_min(argmin, a, b, gold_eps);
 	return min; 
 }

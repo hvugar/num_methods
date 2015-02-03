@@ -24,6 +24,11 @@ double f_1(double x)
 	return (10.0 - x)*(10.0 - x);
 }
 
+double f_2(double x)
+{
+	return 2*x*x+16/x;
+}
+
 int main(int argc, char** argv)
 {
 	svenn_test();
@@ -34,11 +39,14 @@ void svenn_test()
 {
 	double dx = 0.5;
 	double x0 = 3.0;
-	double a = 0.0;
-	double b = 0.0;
+	double a = 6.0;
+	double b = 15.0;
 
-	search_interval_svenn(f_1, x0, dx, &a, &b);
-	printf("a=%8.2f\nb=%8.2f\n", a, b);
+//	search_interval_svenn(f_1, x0, dx, &a, &b);
+//	printf("a=%8.2f\nb=%8.2f\n", a, b);
+//	halph_interval_method(f_1, 0.001, &a, &b);
+//	printf("a=%8.2f\nb=%8.2f\n", a, b);
+	search_method_pauella(f_2, 1.0, 1.0, 0.03, &a, &b);
 }
 
 void gradient_test()

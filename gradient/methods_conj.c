@@ -1,6 +1,6 @@
 #include "methods.h"
 
-double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, double step, double epsilon, int *count);
+double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, double step, double epsilon);
 
 void conjugate_gradient_method(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon)
 {
@@ -35,14 +35,12 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_eps, 
 			gr1_mod += gr1[i]*gr1[i];
 		
         int k = 0;
-		count += 2*n;
         do
         {
 			print(iter, x, s, s1, n, f, count);
-			count = 0;
 
 			double alpha0 = 0.0;
-			double alpha = minimize(f, x, s1, n, alpha0, line_eps, gold_eps, &count);
+			double alpha = minimize(f, x, s1, n, alpha0, line_eps, gold_eps);
 			line_eps /= 1.2;
 
             for (i=0; i<n; i++) 
@@ -88,11 +86,10 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_eps, 
 	s = NULL;
 }
 
-double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, double line_eps, double gold_eps, int *count)
+double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, double line_eps, double gold_eps)
 {
 	double argmin(double alpha)
 	{
-		(*count)++;
 		int j;
 		for (j=0; j<n; j++) x[j] = x[j] + alpha * grad[j];
 		double result = f(x, n);
@@ -100,7 +97,7 @@ double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, dou
 		return result;
 	}	
 	double a,b;
-	straight_line_search_metod(argmin, alpha0, line_eps, &a, &b, count);
-	double min = golden_section_search_min(argmin, a, b, gold_eps, count);
+	straight_line_search_metod(argmin, alpha0, line_eps, &a, &b);
+	double min = golden_section_search_min(argmin, a, b, gold_eps);
 	return min; 
 }
