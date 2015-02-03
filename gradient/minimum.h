@@ -72,6 +72,19 @@ void search_interval_svenn(R1Function f, double x0, double dx, double *a, double
  */
 void halph_interval_method(R1Function f, double epsilon, double *a, double *b);
 
+/**
+ * @brief Метод Ньютона - Рафсона
+ * @param f
+ * @param x0
+ * @param epsilon
+ * @return
+ */
+double newton_raphson(R1Function f, double x0, double epsilon);
+
+double derivative_1(R1Function f, double x, double h);
+
+double derivative_2(R1Function f, double x, double h);
+
 #ifdef __cplusplus
 }
 #endif

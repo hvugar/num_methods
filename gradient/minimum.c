@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <limits.h>
 
 /**
  * @brief Метод золотого сечения
@@ -137,59 +138,34 @@ double search_method_dck(R1Function f, double x0, double dx, double *a, double *
  * @param b
  * @return
  */
-double search_method_pauella(R1Function f, double x0, double dx, double epsilon, double *a, double *b) 
-{ 
-    double x1 = x0;
-    double x2;
-    double x3;
-	double xt;
-    double xm;
+double search_method_pauella(R1Function f, double x0, double dx, double epsilon, double *a, double *b) { 
+    double x1, x2, x3, xm, xt;
+    double y1, y2, y3, ym, yt;
 	
-    double y1;
-	double y2;
-	double y3;
-    double ym;
-	double yt;
+	x1 = x0;
+	y1 = f(x1);
+	x2 = x1 + dx;
+	y2 = f(x2);
+	if (y1 > y2) {
+		x3 = x1 + dx*2.0;
+	} else {
+		x3 = x1 - dx;
+	}	
 
-    do
-    {
-        x2 = x1 + dx;
-        y1 = f(x1);
-        y2 = f(x2);
-
-        if ( y1 > y2 )
-        {
-            x3 = x1 + 2*dx;
-            y3 = f(x3);
-        }
-        else
-        {
-            x3 = x1 - dx;
-            y3 = f(x3);
-        }
-
-        if ( y1 < y2 )
-        {
-            if ( y1 < y3 )
-            {
+    do {
+        if ( y1 < y2 ) {
+            if ( y1 < y3 ) {
                 xm = x1;
                 ym = y1;
-            }
-            else
-            {
+            } else {
                 xm = x3;
                 ym = y3;
             }
-        }
-        else
-        {
-            if ( y2 < y3 )
-            {
+        } else {
+            if ( y2 < y3 ) {
                 xm = x2;
                 ym = y2;
-            }
-            else
-            {
+            } else {
                 xm = x3;
                 ym = y3;
             }
@@ -200,9 +176,19 @@ double search_method_pauella(R1Function f, double x0, double dx, double epsilon,
 		double xt = (x2+x1)/2.0 - (a1/(2.0*a2));
 		yt = f(xt);
 		
+		double dist_1 = xt - x1;
+		double dist_2 = xt - x2;
+		double dist_3 = xt - x3;
+		
+		if (fabs(dist_1) < fabs(dist_2) && fabs(dist_1) < fabs(dist_3))
+			if (dist_1 < 0) 
+			{
+				
+			}
+		
 		printf("%f %f %f %f %f %f %f %f %f %f %f %f %f\n", x1, x2, x3, y1, y2, y3, xm, ym, a1, a2, xt, yt, (ym - yt)/yt);
 		//break;
-    } while ( (ym - yt)/yt > epsilon && (xm - xt)/xt > epsilon );
+    } while ( fabs((ym - yt)/yt) > epsilon && fabs((xm - xt)/xt) > epsilon ) ;
 }
 
 /**
@@ -307,4 +293,40 @@ void halph_interval_method(R1Function f, double epsilon, double *a, double *b)
         }
         L = *b - *a;
     }
+}
+
+double derivative_1(R1Function f, double x, double h)
+{
+	return (f(x+h)-f(x-h)) / (2*h);
+}
+
+double derivative_2(R1Function f, double x, double h)
+{
+	return (f(x+2*h)-2*f(x)+f(x-2*h)) / (4*h*h);
+}
+
+/**
+ * @brief Метод Ньютона - Рафсона
+ * @param f
+ * @param x0
+ * @param epsilon
+ * @return
+ */
+double newton_raphson(R1Function f, double x0, double epsilon)
+{
+	double dx = 0.00001;
+	double f_1 = derivative_1(f, x0, dx);
+	double f_2 = derivative_2(f, x0, dx);
+	
+	double x = x0 - f_1/f_2;
+	printf("%f %f %f\n", f_1, f_2, x);
+	
+	while ( fabs(f_1) > epsilon ) {
+		f_1 = derivative_1(f, x, dx);
+		f_2 = derivative_2(f, x, dx);
+		x = x - f_1/f_2;
+		printf("%f %f %f\n", f_1, f_2, x);
+	}
+	
+	return 0;
 }
