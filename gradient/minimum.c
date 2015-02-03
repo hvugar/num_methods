@@ -100,28 +100,52 @@ double straight_line_search_metod(R1Function f, double x0, double dx, double *a,
 	return (*a+*b)/2.0;
 }
 
+double search_method_dck(R1Function f, double x0, double dx, double *a, double *b) { return 0; }
+
+double search_method_pauella(R1Function f, double x0, double dx, double *a, double *b) { return 0; }
+
 void search_interval_svenn(R1Function f, double x0, double dx, double *a, double *b)
 {
-	double fl = f(x0 - dx);
-	double f0 = f(x0);
-	double fr = f(x0 + dx);
+	double y1 = f(x0 - dx);
+	double y0 = f(x0);
+	double y2 = f(x0 + dx);
 	
-	if (fl <= f0 && f0 <= fr)
+	if (y0 <= y1 && y0 <= y2)
 	{
 		*a = x0 - dx;
 		*b = x0 + dx;
+		return;
 	}
 	
-	if (fl <= f0 && fr <= f0)
+	if (y0 >= y1 && y0 <= y2)
 	{
 		fputs("Function is not unimodal.", stderr);
+		*a = 0.0;
+		*b = 0.0;
+		return;
 	}
 	
-	if ( fr > f0 )
+	if ( y2 > y0 )
 	{
-		
+		dx *= -1;
+		y2 = y1;
+		x0 = x0 + dx;
 	}
 	
+	int k = 0;
 	
+	double x = x0 + pow(2, k)*dx;
+	double y = f(x);
 	
+	while ( y <= y0 )
+	{
+		k = k + 1;
+		x0 = x0 + pow(2, k)*dx;
+		y0 = y2;
+		y2 = f(x0);
+		printf("k=%d %8.2f %8.2f %8.2f\n", k, x0, y0, y2);
+	}
+	
+	*a = x0 - pow(2, k)*dx - pow(2, k-1)*dx;
+	*b = x0;
 }

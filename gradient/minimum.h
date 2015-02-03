@@ -11,8 +11,8 @@ typedef double (*RnFunction)(double*, int);
 double straight_line_search_metod(R1Function fx, double x0, double dx, double *a, double *b, int *count);
 double golden_section_search_min(R1Function fx, double a, double b, double epsilon, int *count);
 
-double search_method_dck(R1Function f, double x0, double dx, double *a, double *b) { return 0; }
-double search_method_pauella(R1Function f, double x0, double dx, double *a, double *b) { return 0; }
+double search_method_dck(R1Function f, double x0, double dx, double *a, double *b);
+double search_method_pauella(R1Function f, double x0, double dx, double *a, double *b);
 
 /**
 * Sven

@@ -8,6 +8,9 @@
 
 int count = 0;
 
+void gradient_test();
+void svenn_test();
+
 double f_rosenbrock(double *x, int n)
 {
 	double x1 = x[0];
@@ -16,7 +19,29 @@ double f_rosenbrock(double *x, int n)
     return ((1-x1)*(1-x1)) + 100*(x2-x1*x1)*(x2-x1*x1);
 }
 
+double f_1(double x)
+{
+	return (100.0 - x)*(100.0 - x);
+}
+
 int main(int argc, char** argv)
+{
+	svenn_test();
+	return 0;
+}
+
+void svenn_test()
+{
+	double dx = 5.0;
+	double x0 = 30.0;
+	double a = 0.0;
+	double b = 0.0;
+
+	search_interval_svenn(f_1, x0, dx, &a, &b);
+	printf("a=%8.2f\nb=%8.2f\n", a, b);
+}
+
+void gradient_test()
 {
     double epsilon	= 0.005;		//dovrun sona catma meyari
 	double grad_eps	= 0.005;		//gradient
@@ -31,6 +56,5 @@ int main(int argc, char** argv)
 	free(x);
 	
 	printf("%d\n", count);
-	return 0;
 }
 
