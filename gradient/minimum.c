@@ -2,7 +2,17 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
+/**
+ * @brief
+ * @param fx
+ * @param x0
+ * @param dx
+ * @param a
+ * @param b
+ * @return
+ */
 double golden_section_search_min(R1Function fx, double a, double b, double epsilon, int *count)
 {
     double phi = (1 + sqrt(5)) / 2;
@@ -50,6 +60,15 @@ double golden_section_search_min(R1Function fx, double a, double b, double epsil
     return (a+b)/2;
 }
 
+/**
+ * @brief
+ * @param fx
+ * @param x0
+ * @param dx
+ * @param a
+ * @param b
+ * @return
+ */
 double straight_line_search_metod(R1Function f, double x0, double dx, double *a, double *b, int *count)
 {
 	if ( dx == 0.0 )
@@ -100,16 +119,55 @@ double straight_line_search_metod(R1Function f, double x0, double dx, double *a,
 	return (*a+*b)/2.0;
 }
 
+/**
+ * @brief
+ * @param fx
+ * @param x0
+ * @param dx
+ * @param a
+ * @param b
+ * @return
+ */
 double search_method_dck(R1Function f, double x0, double dx, double *a, double *b) { return 0; }
 
+/**
+ * @brief
+ * @param fx
+ * @param x0
+ * @param dx
+ * @param a
+ * @param b
+ * @return
+ */
 double search_method_pauella(R1Function f, double x0, double dx, double *a, double *b) { return 0; }
 
+/**
+ * @brief Этап установления границ интервала. Метод Свенна
+ * @param f     function
+ * @param x0    initial point
+ * @param dx
+ * @param a
+ * @param b
+ * @return
+ */
 void search_interval_svenn(R1Function f, double x0, double dx, double *a, double *b)
 {
 	double y1 = f(x0 - dx);
 	double y0 = f(x0);
 	double y2 = f(x0 + dx);
 	
+	assert(dx==0);
+	
+	/* if y1 and y2 are both lesser than y0 then function is not unimodal */ 
+	if (y0 >= y1 && y0 >= y2)
+	{
+		*a = 0.0;
+		*b = 0.0;
+		fputs("Function is not unimodal.\n", stderr);
+		return;
+	}
+	
+	/* if y1 and y2 are both greater than y0 then x0 is minimum */
 	if (y0 <= y1 && y0 <= y2)
 	{
 		*a = x0 - dx;
@@ -117,33 +175,28 @@ void search_interval_svenn(R1Function f, double x0, double dx, double *a, double
 		return;
 	}
 	
-	if (y0 >= y1 && y0 <= y2)
-	{
-		fputs("Function is not unimodal.", stderr);
-		*a = 0.0;
-		*b = 0.0;
-		return;
-	}
-	
-	if ( y2 > y0 )
+	/* if in point x1 = x0 + dx value of function is greater than value of in point x0
+	   then dx must negativ
+	*/
+	if ( y1 < y0 && y0 < y2 )
 	{
 		dx *= -1;
-		y2 = y1;
-		x0 = x0 + dx;
 	}
 	
 	int k = 0;
-	
-	double x = x0 + pow(2, k)*dx;
-	double y = f(x);
+	x0 = x0 + dx;
+	double y = f(x0);
+	printf("k=%d %8.2f %8.2f %8.2f\n", k, x0, y0, y);
 	
 	while ( y <= y0 )
 	{
+		y0 = y;
+		
 		k = k + 1;
 		x0 = x0 + pow(2, k)*dx;
-		y0 = y2;
-		y2 = f(x0);
-		printf("k=%d %8.2f %8.2f %8.2f\n", k, x0, y0, y2);
+		y = f(x0);
+		
+		printf("k=%d %8.2f %8.2f %8.2f\n", k, x0, y0, y);
 	}
 	
 	*a = x0 - pow(2, k)*dx - pow(2, k-1)*dx;

@@ -21,7 +21,7 @@ double f_rosenbrock(double *x, int n)
 
 double f_1(double x)
 {
-	return (100.0 - x)*(100.0 - x);
+	return (10.0 - x)*(10.0 - x);
 }
 
 int main(int argc, char** argv)
@@ -32,8 +32,8 @@ int main(int argc, char** argv)
 
 void svenn_test()
 {
-	double dx = 5.0;
-	double x0 = 30.0;
+	double dx = 0.5;
+	double x0 = 3.0;
 	double a = 0.0;
 	double b = 0.0;
 
