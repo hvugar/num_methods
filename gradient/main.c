@@ -11,6 +11,25 @@ int count = 0;
 void gradient_test();
 void svenn_test();
 
+void lagrange(RnFunction f, double *x, int n, 
+			  RnFunction* h, int k, double* u, 
+			  RnFunction* g, int p, double* v, 
+			  double* w);
+
+int main(int argc, char** argv)
+{
+	svenn_test();
+	return 0;
+}
+
+void lagrange(RnFunction f, double *x, int n, RnFunction* h, int k, double* u, RnFunction* g, int p, double* v, double* w)
+{
+	double h = 0.0001;
+	double* grads = (double*) malloc( sizeof(double)*n );
+	
+	f(x,n,h,grads)+w[i]*
+}
+
 double f_rosenbrock(double *x, int n)
 {
 	double x1 = x[0];
@@ -27,12 +46,6 @@ double f_1(double x)
 double f_2(double x)
 {
 	return 2*x*x+16/x;
-}
-
-int main(int argc, char** argv)
-{
-	svenn_test();
-	return 0;
 }
 
 void svenn_test()
