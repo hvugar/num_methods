@@ -18,16 +18,12 @@ void lagrange(RnFunction f, double *x, int n,
 
 int main(int argc, char** argv)
 {
-	svenn_test();
+	gradient_test();
 	return 0;
 }
 
 void lagrange(RnFunction f, double *x, int n, RnFunction* h, int k, double* u, RnFunction* g, int p, double* v, double* w)
 {
-	double h = 0.0001;
-	double* grads = (double*) malloc( sizeof(double)*n );
-	
-	f(x,n,h,grads)+w[i]*
 }
 
 double f_rosenbrock(double *x, int n)
@@ -66,9 +62,9 @@ void svenn_test()
 
 void gradient_test()
 {
-    double epsilon	= 0.005;		//dovrun sona catma meyari
+    double epsilon	= 0.001;		//dovrun sona catma meyari
 	double grad_eps	= 0.005;		//gradient
-	double line_eps	= 1.0;			//parcani bolme
+	double line_eps	= 0.1;			//parcani bolme
 	double gold_eps	= 0.0001;		//qizil qayda ucun
     
 	int n = 2;

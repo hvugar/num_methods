@@ -14,11 +14,31 @@
 extern "C" {
 #endif
 
-//Метод наискорейшего спуска
+//
+/**
+ * @brief Метод наискорейшего спуска
+ * @param f Целевая функция
+ * @param x Независимые переменные n - измерение
+ * @param n
+ * @param line_eps
+ * @param gold_eps
+ * @param grad_eps
+ * @param epsilon
+ */
 void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon);
 
-// Метод сопряженных градиентов Флетчера — Ривса 
+/**
+ * @brief Метод сопряженных градиентов Флетчера — Ривса
+ * @param f Целевая функция
+ * @param x Независимые переменные n - измерение
+ * @param n
+ * @param line_eps
+ * @param gold_eps
+ * @param grad_eps
+ * @param epsilon
+ */
 void conjugate_gradient_method(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon);
+void conjugate_gradient_method1(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon);
 
 
 #ifdef __cplusplus
