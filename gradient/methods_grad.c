@@ -2,7 +2,6 @@
 
 double minimize1(RnFunction f, double *x, double *grad, int n, double alpha0, double line_eps, double gold_eps);
 
-//Метод наискорейшего спуска
 void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon)
 {
     int i = 0;
