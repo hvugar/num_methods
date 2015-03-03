@@ -26,7 +26,6 @@ double f_rosenbrock(double *x, int n)
 
 int main(int argc, char** argv)
 {
-/*
 	double r = 100000000.00;
 	
 	int n = 2;
@@ -45,8 +44,8 @@ int main(int argc, char** argv)
 	free(x);
 	free(h);
 	free(g);
-*/	
 	
+/*	
     double epsilon	= 0.001;		//dovrun sona catma meyari
 	double grad_eps	= 0.005;		//gradient
 	double line_eps	= 0.1;			//parcani bolme
@@ -54,10 +53,18 @@ int main(int argc, char** argv)
     
 	int n = 2;
     double* x  = (double*) malloc( sizeof(double) * n );
+    
+	x[0]    = -1.2;
+    x[1]    = +1.0;
+	conjugate_gradient_method(f_rosenbrock, x, n, line_eps, gold_eps, grad_eps, epsilon);
+	
+	puts("");
+	
     x[0]    = -1.2;
     x[1]    = +1.0;
 	conjugate_gradient_method2(f_rosenbrock, x, n, line_eps, gold_eps, grad_eps, epsilon);
+
 	free(x);
-	
+*/	
 	return 0;
 }

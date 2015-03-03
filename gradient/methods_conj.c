@@ -87,6 +87,7 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_eps, 
         gr1 = NULL;
         
         double mod_s = s[0]*s[0] + s[1]*s[1];
+
         if ( mod_s < epsilon ) break;
     } while ( 1 );
     
@@ -99,9 +100,9 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_eps, 
 void conjugate_gradient_method2(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon)
 {
     int i = 0;
-	int k = 0;
+    int k = 0;
     int iter = 0;
-	double mod_s = 0.0;
+    double mod_s = 0.0;
     double *s =  (double*) malloc(sizeof(double) * n);
     double *s1 = (double*) malloc(sizeof(double) * n);
     int count = 0;
@@ -111,77 +112,84 @@ void conjugate_gradient_method2(RnFunction f, double *x, int n, double line_eps,
         s[i]  = 0.0;
         s1[i] = 0.0;
     }
-	
-	double* gr1 = (double*) malloc(sizeof(double) * n);
-	double* gr2 = (double*) malloc(sizeof(double) * n);
-	
-	do
-	{
-		double ss = 0.0;
-		double gr1_mod = 0.0;
-		double gr2_mod = 0.0;
-		// First iteration
-		if (k == 0)
-		{
-			// First direction is gradient direction
-			gradient(f, x, n, grad_eps, gr1);
+
+    double* gr1 = (double*) malloc(sizeof(double) * n);
+    double* gr2 = (double*) malloc(sizeof(double) * n);
+
+    double ss = 0.0;
+    double gr1_mod = 0.0;
+    double gr2_mod = 0.0;
+    do
+    {
+        // First iteration
+        if (k == 0)
+        {
+            // First direction is gradient direction
+            gradient(f, x, n, grad_eps, gr1);
+
+            for (i=0; i<n; i++) s[i] = -gr1[i];
+
+            // Module of direction
+            ss = grad_module(s, n);
 			
-			for (i=0; i<n; i++) s[i] = -gr1[i];
+            // Divide direction to its module
+            for (i=0; i<n; i++) s1[i] = s[i] / ss;
+
+            // Module of gradient
+            gr1_mod = 0.0;
+            for (i=0; i<n; i++) gr1_mod = gr1_mod + gr1[i]*gr1[i];
+			//puts("---");
+        }
+        else
+        {
+            // Calculating gradient in next coordinates
+            gradient(f, x, n, grad_eps, gr2);
+
+            // Module of next gradient
+            gr2_mod = 0.0;
+            for (i=0; i<n; i++) gr2_mod = gr2_mod + gr2[i]*gr2[i];
+
+            double w = gr2_mod / gr1_mod;
+            gr1_mod = gr2_mod;
+
+            // Calculating direction for next (k+1) iteration
+            for (i=0; i<n; i++) s[i] = -gr2[i] + s[i] * w;
+
+            // Module of direction
+            ss = grad_module(s, n);
 			
-			// Module of direction
-			ss = grad_module(s, n);
-			
-			// Divide direction to its module
-			for (i=0; i<n; i++) s1[i] = s[i] / ss;
-			
-			// Module of gradient
-	        for (i=0; i<n; i++) gr1_mod += gr1[i]*gr1[i];
-		}
+            // Divide direction to its module
+            for (i=0; i<n; i++) s1[i] = s[i] / ss;
+        }
+
+        print(iter, x, s, s1, n, f, count);
+        iter++;
+
+        // Minimization in one dimensional direction
+        double alpha0 = 0.0;
+        double alpha = minimize(f, x, s1, n, alpha0, line_eps, gold_eps);
+        line_eps /= 1.2;
+
+        // Calculating next coordinates
+        for (i=0; i<n; i++)
+        {
+            x[i] = x[i] + alpha * s1[i];
+        }
+
+        mod_s = 0.0;
+        for (i=0; i<n; i++) mod_s = mod_s + s[i]*s[i];
 		
-		print(iter, x, s, s1, n, f, count);
-		iter++;
-		
-		// Minimization in one dimensional direction
-		double alpha0 = 0.0;
-		double alpha = minimize(f, x, s1, n, alpha0, line_eps, gold_eps);
-		line_eps /= 1.2;
-		
-		// Calculating next coordinates
-	    for (i=0; i<n; i++) 
-		{
-			x[i] = x[i] + alpha * s1[i];
-		}
-		
-		// Calculating gradient in next coordinates
-		gradient(f, x, n, grad_eps, gr2);
-		
-		// Module of next gradient
-        for (i=0; i<n; i++) gr2_mod += gr2[i]*gr2[i];
-		
-        double w = gr2_mod / gr1_mod;
-        gr1_mod = gr2_mod;
-		
-		// Calculating direction for next (k+1) iteration
-        for (i=0; i<n; i++) s[i] = -gr2[i] + s[i] * w;
-		
-		// Module of direction
-		ss = grad_module(s, n);
-		
-		// Divide direction to its module
-		for (i=0; i<n; i++) s1[i] = s[i] / ss;
-		
-		if ( k == n ) k = 0;
-		
-		mod_s = s[0]*s[0] + s[1]*s[1];
-		
-	} while (mod_s > epsilon);
-	
-	free(gr1);
-	free(gr2);
-	free(s1);
-	free(s);
-	
-	gr1 = gr2 = s1 = s = NULL;
+        if ( k == n ) { k = 0; } else { k++; }
+
+    } while (mod_s > epsilon);
+	print(iter, x, s, s1, n, f, count);
+
+    free(gr1);
+    free(gr2);
+    free(s1);
+    free(s);
+
+    gr1 = gr2 = s1 = s = NULL;
 }
 
 double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, double line_eps, double gold_eps)
@@ -207,26 +215,26 @@ void conjugate_gradient_method1(RnFunction f, double *x, int n, double line_eps,
     double* g2 = (double*) malloc(sizeof(double) * n);
     double module_s = 0.0;
     
-	printf("%8.4f %8.4f %8.4f\n", x[0], x[1], f(x,n));
-	
+    printf("%8.4f %8.4f %8.4f\n", x[0], x[1], f(x,n));
+
     do
-	{
+    {
         int i=0;
         int k = 0;
 
         gradient(f, x, n, grad_eps, g1);
 
         if (k == 0)
-		{
+        {
             for (i=0; i<n; i++)
             {
                 s[i] = -g1[i];
             }
-		}
+        }
 
         double alpha0 = 0.0;
         double alpha = minimize(f, x, s, n, alpha0, line_eps, gold_eps);
-//		double alpha = 0.1;
+        //		double alpha = 0.1;
 
         for (i=0; i<n; i++)
         {
@@ -247,7 +255,7 @@ void conjugate_gradient_method1(RnFunction f, double *x, int n, double line_eps,
 
         for (i=0; i<n; i++)
         {
-            s[i] = g2[i] + s[i] * w;
+            s[i] = -g2[i] + s[i] * w;
         }
         k += 1;
 
@@ -256,17 +264,17 @@ void conjugate_gradient_method1(RnFunction f, double *x, int n, double line_eps,
             k = 0;
         }
 
-		printf("%8.4f %8.4f %8.4f\n", x[0], x[1], f(x,n));
-		
-		module_s = 0.0;
-		for (i=0; i<n; i++)
+        printf("%8.4f %8.4f %8.4f\n", x[0], x[1], f(x,n));
+
+        module_s = 0.0;
+        for (i=0; i<n; i++)
         {
             module_s = module_s + s[i] * s[i];
         }
         module_s = sqrt(module_s);
-		
+
     } while ( module_s > epsilon);
-	puts("***");
+    puts("***");
 
     free(g1);
     free(g2);
