@@ -1,6 +1,6 @@
 #include "methods.h"
 
-double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, double step, double epsilon);
+double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, double line_step, double gold_step);
 
 /**
  * @brief Метод сопряженных градиентов Флетчера — Ривса
@@ -12,7 +12,7 @@ double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, dou
  * @param grad_eps
  * @param epsilon
  */
-void conjugate_gradient_method(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon)
+void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon)
 {
     int iter = 0;
     int i = 0;
@@ -30,7 +30,7 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_eps, 
     {
         // First iteration
         double* gr1 = (double*) malloc(sizeof(double) * n);
-        gradient(f, x, n, grad_eps, gr1);
+        gradient(f, x, n, grad_step, gr1);
 
         for (i=0; i<n; i++)
             s[i] = -gr1[i];
@@ -50,8 +50,8 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_eps, 
             print(iter, x, s, s1, n, f, count);
 
             double alpha0 = 0.0;
-            double alpha = minimize(f, x, s1, n, alpha0, line_eps, gold_eps);
-            line_eps /= 1.2;
+            double alpha = minimize(f, x, s1, n, alpha0, line_step, gold_step);
+            line_step /= 1.2;
 
             for (i=0; i<n; i++)
             {
@@ -59,7 +59,7 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_eps, 
             }
 
             double* gr2 = (double*) malloc(sizeof(double) * n);
-            gradient(f, x, n, grad_eps, gr2);
+            gradient(f, x, n, grad_step, gr2);
             count += 2*n+1;
 
             double gr2_mod = 0.0;
@@ -97,7 +97,7 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_eps, 
     s = NULL;
 }
 
-void conjugate_gradient_method2(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon)
+void conjugate_gradient_method1(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon)
 {
     int i = 0;
     int k = 0;
@@ -125,7 +125,7 @@ void conjugate_gradient_method2(RnFunction f, double *x, int n, double line_eps,
         if (k == 0)
         {
             // First direction is gradient direction
-            gradient(f, x, n, grad_eps, gr1);
+            gradient(f, x, n, grad_step, gr1);
 
             for (i=0; i<n; i++) s[i] = -gr1[i];
 
@@ -143,7 +143,7 @@ void conjugate_gradient_method2(RnFunction f, double *x, int n, double line_eps,
         else
         {
             // Calculating gradient in next coordinates
-            gradient(f, x, n, grad_eps, gr2);
+            gradient(f, x, n, grad_step, gr2);
 
             // Module of next gradient
             gr2_mod = 0.0;
@@ -167,8 +167,8 @@ void conjugate_gradient_method2(RnFunction f, double *x, int n, double line_eps,
 
         // Minimization in one dimensional direction
         double alpha0 = 0.0;
-        double alpha = minimize(f, x, s1, n, alpha0, line_eps, gold_eps);
-        line_eps /= 1.2;
+        double alpha = minimize(f, x, s1, n, alpha0, line_step, gold_step);
+        line_step /= 1.2;
 
         // Calculating next coordinates
         for (i=0; i<n; i++)
@@ -192,7 +192,7 @@ void conjugate_gradient_method2(RnFunction f, double *x, int n, double line_eps,
     gr1 = gr2 = s1 = s = NULL;
 }
 
-double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, double line_eps, double gold_eps)
+double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, double line_step, double gold_step)
 {
     double argmin(double alpha)
     {
@@ -202,81 +202,9 @@ double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, dou
         for (j=0; j<n; j++) x[j] = x[j] - alpha * grad[j];
         return result;
     }
+	
     double a,b;
-    straight_line_search_metod(argmin, alpha0, line_eps, &a, &b);
-    double min = golden_section_search_min(argmin, a, b, gold_eps);
+    straight_line_search_metod(argmin, alpha0, line_step, &a, &b);
+    double min = golden_section_search_min(argmin, a, b, gold_step);
     return min;
-}
-
-void conjugate_gradient_method1(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon)
-{
-    double* s = (double*) malloc(sizeof(double) * n);
-    double* g1 = (double*) malloc(sizeof(double) * n);
-    double* g2 = (double*) malloc(sizeof(double) * n);
-    double module_s = 0.0;
-    
-    printf("%8.4f %8.4f %8.4f\n", x[0], x[1], f(x,n));
-
-    do
-    {
-        int i=0;
-        int k = 0;
-
-        gradient(f, x, n, grad_eps, g1);
-
-        if (k == 0)
-        {
-            for (i=0; i<n; i++)
-            {
-                s[i] = -g1[i];
-            }
-        }
-
-        double alpha0 = 0.0;
-        double alpha = minimize(f, x, s, n, alpha0, line_eps, gold_eps);
-        //		double alpha = 0.1;
-
-        for (i=0; i<n; i++)
-        {
-            x[i] = x[i] + alpha * s[i];
-        }
-
-        gradient(f, x, n, grad_eps, g2);
-
-        double w = 0;
-        double w1 = 0.0;
-        double w2 = 0.0;
-        for (i=0; i<n; i++)
-        {
-            w1 = w1 + g1[i]*g1[i];
-            w2 = w2 + g2[i]*g2[i];
-        }
-        w = w2/w1;
-
-        for (i=0; i<n; i++)
-        {
-            s[i] = -g2[i] + s[i] * w;
-        }
-        k += 1;
-
-        if ( k == n )
-        {
-            k = 0;
-        }
-
-        printf("%8.4f %8.4f %8.4f\n", x[0], x[1], f(x,n));
-
-        module_s = 0.0;
-        for (i=0; i<n; i++)
-        {
-            module_s = module_s + s[i] * s[i];
-        }
-        module_s = sqrt(module_s);
-
-    } while ( module_s > epsilon);
-    puts("***");
-
-    free(g1);
-    free(g2);
-    free(s);
 }

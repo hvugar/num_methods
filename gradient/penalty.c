@@ -44,12 +44,12 @@ void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunc
 	{
 	
 		// Qoshma qradient usulu ucun parametrler
-		double epsilon	= 0.001;		//dovrun sona catma meyari
-		double grad_eps	= 0.005;		//gradient
-		double line_eps	= 0.1;			//parcani bolme
-		double gold_eps	= 0.0001;		//qizil qayda ucun
-		conjugate_gradient_method2(P, x, n, line_eps, gold_eps, grad_eps, epsilon);
-		puts("****************************************************************************************************************************");
+		double epsilon     = 0.001;       //dovrun sona catma meyari
+		double grad_step   = 0.005;       //gradient
+		double line_step   = 0.1;         //parcani bolme
+		double gold_step   = 0.0001;      //qizil qayda ucun
+		conjugate_gradient_method1(P, x, n, line_step, gold_step, grad_step, epsilon);
+		//puts("****************************************************************************************************************************");
 		
 		r = r * 0.1;
 	}

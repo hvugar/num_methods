@@ -24,7 +24,7 @@ extern "C" {
  * @param grad_eps
  * @param epsilon
  */
-void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon);
+void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon);
 
 /**
  * @brief Метод сопряженных градиентов Флетчера — Ривса
@@ -36,21 +36,19 @@ void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_e
  * @param grad_eps
  * @param epsilon
  */
-void conjugate_gradient_method(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon);
+void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon);
 
 /**
  * @brief Метод сопряженных градиентов Флетчера — Ривса
  * @param f Целевая функция
  * @param x Независимые переменные n - измерение
  * @param n
- * @param line_eps
- * @param gold_eps
- * @param grad_eps
+ * @param line_step
+ * @param gold_step
+ * @param grad_step
  * @param epsilon
  */
-void conjugate_gradient_method1(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon);
-
-void conjugate_gradient_method2(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon);
+void conjugate_gradient_method1(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon);
 
 #ifdef __cplusplus
 }
