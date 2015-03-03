@@ -96,6 +96,94 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_eps, 
     s = NULL;
 }
 
+void conjugate_gradient_method2(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon)
+{
+    int i = 0;
+	int k = 0;
+    int iter = 0;
+	double mod_s = 0.0;
+    double *s =  (double*) malloc(sizeof(double) * n);
+    double *s1 = (double*) malloc(sizeof(double) * n);
+    int count = 0;
+    
+    for (i=0; i<n; i++)
+    {
+        s[i]  = 0.0;
+        s1[i] = 0.0;
+    }
+	
+	double* gr1 = (double*) malloc(sizeof(double) * n);
+	double* gr2 = (double*) malloc(sizeof(double) * n);
+	
+	do
+	{
+		double ss = 0.0;
+		double gr1_mod = 0.0;
+		double gr2_mod = 0.0;
+		// First iteration
+		if (k == 0)
+		{
+			// First direction is gradient direction
+			gradient(f, x, n, grad_eps, gr1);
+			
+			for (i=0; i<n; i++) s[i] = -gr1[i];
+			
+			// Module of direction
+			ss = grad_module(s, n);
+			
+			// Divide direction to its module
+			for (i=0; i<n; i++) s1[i] = s[i] / ss;
+			
+			// Module of gradient
+	        for (i=0; i<n; i++) gr1_mod += gr1[i]*gr1[i];
+		}
+		
+		print(iter, x, s, s1, n, f, count);
+		iter++;
+		
+		// Minimization in one dimensional direction
+		double alpha0 = 0.0;
+		double alpha = minimize(f, x, s1, n, alpha0, line_eps, gold_eps);
+		line_eps /= 1.2;
+		
+		// Calculating next coordinates
+	    for (i=0; i<n; i++) 
+		{
+			x[i] = x[i] + alpha * s1[i];
+		}
+		
+		// Calculating gradient in next coordinates
+		gradient(f, x, n, grad_eps, gr2);
+		
+		// Module of next gradient
+        for (i=0; i<n; i++) gr2_mod += gr2[i]*gr2[i];
+		
+        double w = gr2_mod / gr1_mod;
+        gr1_mod = gr2_mod;
+		
+		// Calculating direction for next (k+1) iteration
+        for (i=0; i<n; i++) s[i] = -gr2[i] + s[i] * w;
+		
+		// Module of direction
+		ss = grad_module(s, n);
+		
+		// Divide direction to its module
+		for (i=0; i<n; i++) s1[i] = s[i] / ss;
+		
+		if ( k == n ) k = 0;
+		
+		mod_s = s[0]*s[0] + s[1]*s[1];
+		
+	} while (mod_s > epsilon);
+	
+	free(gr1);
+	free(gr2);
+	free(s1);
+	free(s);
+	
+	gr1 = gr2 = s1 = s = NULL;
+}
+
 double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, double line_eps, double gold_eps)
 {
     double argmin(double alpha)

@@ -48,7 +48,7 @@ void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunc
 		double grad_eps	= 0.005;		//gradient
 		double line_eps	= 0.1;			//parcani bolme
 		double gold_eps	= 0.0001;		//qizil qayda ucun
-		conjugate_gradient_method(P, x, n, line_eps, gold_eps, grad_eps, epsilon);
+		conjugate_gradient_method2(P, x, n, line_eps, gold_eps, grad_eps, epsilon);
 		puts("****************************************************************************************************************************");
 		
 		r = r * 0.1;

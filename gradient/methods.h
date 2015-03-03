@@ -50,6 +50,8 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_eps, 
  */
 void conjugate_gradient_method1(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon);
 
+void conjugate_gradient_method2(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon);
+
 #ifdef __cplusplus
 }
 #endif
