@@ -1,15 +1,15 @@
-CC			=	gcc
-CXX			=	g++
-DEPS		=	main.c
-OBJ			=	main.o
-CFLAGS		=	-g -Wall
-LDFLAGS		=   -Wl,-subsystem,console -mthreads
-INCLUDES	=	-I..
+CC          = gcc
+CXX         = g++
+DEPS        = main.c
+OBJ         = main.o
+CFLAGS      = -g -Wall
+CLDFLAGS    = -Wl,-subsystem,console -mthreads
+INCLUDES    = -I..
 
 all: main
 
-main: print.o minimum.o gradient.o methods_grad.o methods_conj.o methods.o main.o
-	$(CC) $(CLDFLAGS) -o main.exe main.o minimum.o gradient.o methods_grad.o methods_conj.o methods.o print.o $(LFLAGS)
+main: penalty.o print.o minimum.o gradient.o methods_grad.o methods_conj.o methods.o main.o
+	$(CC) $(CLDFLAGS) -o main.exe main.o minimum.o gradient.o methods_grad.o methods_conj.o methods.o print.o penalty.o $(LFLAGS)
 
 main.o: main.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o main.o main.c
@@ -31,6 +31,9 @@ methods_grad.o: methods_grad.c
 	
 print.o: print.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o print.o print.c
+	
+penalty.o: penalty.c
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o penalty.o penalty.c
 
 	
 clean:
