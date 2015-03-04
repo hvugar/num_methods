@@ -138,7 +138,9 @@ double search_method_dck(R1Function f, double x0, double dx, double *a, double *
  * @param b
  * @return
  */
-double search_method_pauella(R1Function f, double x0, double dx, double epsilon, double *a, double *b) { 
+double search_method_pauella(R1Function f, double x0, double dx, double epsilon, double *a, double *b) 
+{
+/* 
     double x1, x2, x3, xm, xt;
     double y1, y2, y3, ym, yt;
 	
@@ -189,6 +191,8 @@ double search_method_pauella(R1Function f, double x0, double dx, double epsilon,
 		printf("%f %f %f %f %f %f %f %f %f %f %f %f %f\n", x1, x2, x3, y1, y2, y3, xm, ym, a1, a2, xt, yt, (ym - yt)/yt);
 		//break;
     } while ( fabs((ym - yt)/yt) > epsilon && fabs((xm - xt)/xt) > epsilon ) ;
+*/
+	return 0.0;
 }
 
 /**

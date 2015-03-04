@@ -8,8 +8,8 @@ INCLUDES    = -I..
 
 all: main
 
-main: penalty.o print.o minimum.o gradient.o methods_grad.o methods_conj.o methods.o main.o
-	$(CC) $(CLDFLAGS) -o main.exe main.o minimum.o gradient.o methods_grad.o methods_conj.o methods.o print.o penalty.o $(LFLAGS)
+main: sample_functions.o sample_gradient.o sample_penalty.o penalty.o print.o minimum.o gradient.o methods_grad.o methods_conj.o methods.o main.o
+	$(CC) $(CLDFLAGS) -o main.exe main.o minimum.o gradient.o methods_grad.o methods_conj.o methods.o print.o penalty.o sample_functions.o sample_gradient.o sample_penalty.o $(LFLAGS)
 
 main.o: main.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o main.o main.c
@@ -34,7 +34,15 @@ print.o: print.c
 	
 penalty.o: penalty.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o penalty.o penalty.c
-
+	
+sample_penalty.o: sample_penalty.c
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o sample_penalty.o sample_penalty.c
+	
+sample_gradient.o: sample_gradient.c
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o sample_gradient.o sample_gradient.c
+	
+sample_functions.o: sample_functions.c
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o sample_functions.o sample_functions.c
 	
 clean:
 	del *.o *.exe

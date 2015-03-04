@@ -4,40 +4,37 @@ void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunc
 {
 	double epsilon_p = 0.00001;
 	
-	double P(double *x, int n)
+	double G(RnFunction g, double *x, int n)
 	{
-		int i,j;
-		double a = 0.0;
+		return 1.0 / g(x,n);
+	}
 	
-		a = f(x,n);
-
-		for (i=0; i<m; i++)
-		{
-			a += (1.0 / r) * h[i](x,n) * h[i](x,n);
-			printf("%f\n", a);
-		}
-		for (j=0; j<p; j++)
-		{
-			a += (1.0 / r) * g[j](x,n) * g[j](x,n);
-		}
-		
-		return a;
+	double H(RnFunction h, double *x, int n)
+	{
+		return h(x,n) * h(x,n);
 	}
 	
 	double R(double *x, int n)
 	{
 		int i,j;
 		double a = 0.0;
+		
 		for (i=0; i<m; i++)
 		{
-			a += (1.0 / r) * h[i](x,n) * h[i](x,n);
+			a = a + H(h[i], x, n) / r;
 		}
+		
 		for (j=0; j<p; j++)
 		{
-			a += (1.0 / r) * g[i](x,n) * g[i](x,n);
+			a = a + r * G(g[j], x, n);
 		}
 		
 		return a;
+	}
+	
+	double P(double *x, int n)
+	{	
+		return f(x,n) + R(x,n);
 	}
 	
 	while ( r * R(x,n) > epsilon_p ) 
