@@ -1,4 +1,4 @@
-#include "minimum.h"
+#include "methods.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>

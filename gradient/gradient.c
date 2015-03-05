@@ -1,5 +1,4 @@
-#include "gradient.h"
-#include <math.h>
+#include "methods.h"
 
 void gradient(RnFunction f, double *x, int n, double dx, double *gradients)
 {
@@ -47,4 +46,30 @@ double grad_module(double *grads, int n)
     }
 
     return sqrt(result);
+}
+
+double vertor_norm(double *x, int n)
+{
+    double result = 0.0;
+
+	int i;
+    for (i=0; i<n; i++)
+    {
+        result = result + x[i] * x[i];
+    }
+
+    return sqrt(result);
+}
+
+double distance(double *x1, double *x2, int n)
+{
+	double dist = 0.0;
+
+	int i;
+    for (i=0; i<n; i++)
+    {
+        dist = dist + (x1[i] - x2[i]) * (x1[i] - x2[i]);
+    }
+
+    return sqrt(dist);
 }

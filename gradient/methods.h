@@ -6,17 +6,21 @@
 #include <string.h>
 #include <math.h>
 
-#include "minimum.h"
-#include "gradient.h"
-#include "print.h"
+typedef double (*R1Function)(double);
+typedef double (*RnFunction)(double*, int);
+typedef void (*Printer)(RnFunction f, double *x, int n, ...);
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef double (*R1Function)(double);
+void gradient(RnFunction f, double *x, int n, double dx, double *gradients);
 
-typedef double (*RnFunction)(double*, int);
+double vertor_norm(double *x, int n);
+
+double grad_module(double *grads, int n);
+
+double distance(double *x1, double *x2, int n);
 
 /**
  * @brief Метод золотого сечения
@@ -101,6 +105,7 @@ double derivative_1(R1Function f, double x, double h);
  * @brief
  * @param
  *
+ */
 double derivative_2(R1Function f, double x, double h);
 
 /**

@@ -3,7 +3,11 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include "minimum.h"
+
+#include "methods.h"
+
+typedef double (*R1Function)(double);
+typedef double (*RnFunction)(double*, int);
 
 typedef void (*Printer)(RnFunction f, double *x, int n, ...);
 

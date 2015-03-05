@@ -1,4 +1,5 @@
 #include "penalty.h"
+#include "print.h"
 
 void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunction* g, int p, double r1, double r2, double epsilon)
 {

@@ -1,8 +1,5 @@
-#include <stdio.h>
-#include "minimum.h"
-#include "gradient.h"
 #include "methods.h"
-#include "penalty.h"
+#include "print.h"
 
 extern double f_rosenbrock(double *x, int n);
 

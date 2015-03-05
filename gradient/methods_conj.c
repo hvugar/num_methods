@@ -1,4 +1,5 @@
 #include "methods.h"
+#include "print.h"
 
 double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, double line_step, double gold_step);
 
