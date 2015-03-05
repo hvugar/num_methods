@@ -49,7 +49,7 @@ void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunc
 		
 	} while ( distance(x1, x, n) > epsilon );
 	free(x1);
-	printf("x1 = %.10f\nx2 = %.10f\n f=%.10f\n", x[0], x[1], f(x,n));
+	printf("x1 = %.10f\nx2 = %.10f\nf  = %.10f\n", x[0], x[1], f(x,n));
 
 	/*
 	while ( r1 * R(x,n) > epsilon_p ) 
