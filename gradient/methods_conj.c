@@ -19,8 +19,10 @@ double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, dou
     int k = 0;
     int iter = 0;
     double mod_s = 0.0;
-    double *s =  (double*) malloc(sizeof(double) * n);
+	double dist = 0.0;
+    double *s  = (double*) malloc(sizeof(double) * n);
     double *s1 = (double*) malloc(sizeof(double) * n);
+    double *x1 = (double*) malloc(sizeof(double) * n);
     int count = 0;
     
     for (i=0; i<n; i++)
@@ -77,7 +79,7 @@ double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, dou
             for (i=0; i<n; i++) s1[i] = s[i] / ss;
         }
 
-		if (printer != NULL) printer(f, x, n, iter, count, s, s1);
+		if (printer != NULL) printer(f, x, n, iter, count, s, s1, gr1, gr2);
         iter++;
 
         // Minimization in one dimensional direction
@@ -85,6 +87,8 @@ double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, dou
         double alpha = minimize(f, x, s1, n, alpha0, line_step, gold_step);
         line_step /= 1.2;
 
+		memcpy( x1, x, sizeof(double) * n);
+		
         // Calculating next coordinates
         for (i=0; i<n; i++)
         {
@@ -92,17 +96,21 @@ double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, dou
         }
 
         mod_s = 0.0;
-        for (i=0; i<n; i++) mod_s = mod_s + s[i]*s[i];
+        //for (i=0; i<n; i++) mod_s = mod_s + s[i]*s[i];
+		mod_s = vertor_norm(s, n);
+		dist = distance(x1, x, n);
 		
         if ( k == n ) { k = 0; } else { k++; }
-
-    } while (mod_s > epsilon);
-	if (printer != NULL) printer(f, x, n, iter, count, s, s1);
+		
+    } while ( mod_s > epsilon && dist > epsilon );
+	
+	if (printer != NULL) printer(f, x, n, iter, count, s, s1, gr1, gr2);
 
     free(gr1);
     free(gr2);
     free(s1);
     free(s);
+	free(x1);
 
     gr1 = gr2 = s1 = s = NULL;
 }

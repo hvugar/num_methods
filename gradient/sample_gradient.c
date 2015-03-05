@@ -5,7 +5,7 @@ extern double f_rosenbrock(double *x, int n);
 
 void sample_gradient1()
 {
-    double epsilon	= 0.001;		//dovrun sona catma meyari
+    double epsilon	= 0.0001;		//dovrun sona catma meyari
 	double grad_eps	= 0.005;		//gradient
 	double line_eps	= 0.1;			//parcani bolme
 	double gold_eps	= 0.0001;		//qizil qayda ucun

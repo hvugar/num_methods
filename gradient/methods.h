@@ -14,12 +14,28 @@ typedef void (*Printer)(RnFunction f, double *x, int n, ...);
 extern "C" {
 #endif
 
+/**
+ * @brief
+ * @param
+ */
 void gradient(RnFunction f, double *x, int n, double dx, double *gradients);
 
+/**
+ * @brief
+ * @param
+ */
 double vertor_norm(double *x, int n);
 
+/**
+ * @brief
+ * @param
+ */
 double grad_module(double *grads, int n);
 
+/**
+ * @brief
+ * @param
+ */
 double distance(double *x1, double *x2, int n);
 
 /**
@@ -104,7 +120,6 @@ double derivative_1(R1Function f, double x, double h);
 /**
  * @brief
  * @param
- *
  */
 double derivative_2(R1Function f, double x, double h);
 

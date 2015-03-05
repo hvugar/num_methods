@@ -68,7 +68,7 @@ double distance(double *x1, double *x2, int n)
 	int i;
     for (i=0; i<n; i++)
     {
-        dist = dist + (x1[i] - x2[i]) * (x1[i] - x2[i]);
+        dist = dist + (x1[i] - x2[i])*(x1[i] - x2[i]);
     }
 
     return sqrt(dist);

@@ -22,9 +22,9 @@ void print(int iter, double *x, double *s, double *s1, int n, RnFunction f, int 
 
 void printer1(RnFunction f, double *x, int n, ...)
 {
-	int n_args;
+	//int n_args;
     va_list ap;
-	va_start(ap, n_args);
+	va_start(ap, 0);
 	
 	int iter = va_arg(ap, int);
 	int count = va_arg(ap, int);
@@ -53,9 +53,9 @@ void printer1(RnFunction f, double *x, int n, ...)
 
 void printer2(RnFunction f, double *x, int n, ...)
 {
-	int n_args;
+	//int n_args;
     va_list ap;
-	va_start(ap, n_args);
+	va_start(ap, 0);
 	
 	int iter = va_arg(ap, int);
 //	int count = va_arg(ap, int);

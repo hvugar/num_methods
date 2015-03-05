@@ -1,4 +1,4 @@
-#include "penalty.h"
+#include "methods.h"
 #include "print.h"
 
 void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunction* g, int p, double r1, double r2, double epsilon)
@@ -40,17 +40,16 @@ void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunc
 		printf("\nr1 = %.10f\nr2 = %.10f\n", r1, r2);
 		printf("Minimization...\n");
 		conjugate_gradient_method(P, x, n, line_step, gold_step, grad_step, min_epsilon, printer2);
-		printf("Minimized...\nx1 = %.10f\nx2 = %.10f\n", x[0], x[1]);
+		printf("Minimized...\n");
+		//printf("x1 = %.10f\nx2 = %.10f\n", x[0], x[1]);
 		printf("********************************************************\n");
+		
 		r1 = r1 * 0.10;
 		r2 = r2 * 10.0;
-		double dist = 0.0;
-		int i=0;
-		for (i=0; i<n; i++) dist = dist + (x[i]-x1[i])*(x[i]-x1[i]);
-		dist = sqrt(dist);
-		if (dist < epsilon) break;		
-	} while (1);
+		
+	} while ( distance(x1, x, n) > epsilon );
 	free(x1);
+	printf("x1 = %.10f\nx2 = %.10f\n f=%.10f\n", x[0], x[1], f(x,n));
 
 	/*
 	while ( r1 * R(x,n) > epsilon_p ) 
