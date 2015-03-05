@@ -18,13 +18,13 @@ void sample_gradient1()
     
 	x[0]    = -1.2;
     x[1]    = +1.0;
-	conjugate_gradient_method(f_rosenbrock, x, n, line_eps, gold_eps, grad_eps, epsilon);
+	conjugate_gradient_method(f_rosenbrock, x, n, line_eps, gold_eps, grad_eps, epsilon, printer1);
 	
 	puts("");
 	
-    x[0]    = -1.2;
-    x[1]    = +1.0;
-	conjugate_gradient_method1(f_rosenbrock, x, n, line_eps, gold_eps, grad_eps, epsilon);
+    //x[0]    = -1.2;
+    //x[1]    = +1.0;
+	//conjugate_gradient_method1(f_rosenbrock, x, n, line_eps, gold_eps, grad_eps, epsilon);
 
 	free(x);
 }

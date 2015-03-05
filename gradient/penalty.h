@@ -12,6 +12,6 @@
  * @param
  * @return
  */
-void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunction* g, int p, double R);
+void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunction* g, int k, double r1, double r2, double epsilon);
 
 #endif // _PENALTY_H_
