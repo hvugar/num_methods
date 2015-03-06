@@ -168,6 +168,8 @@ void conjugate_gradient_method1(RnFunction f, double *x, int n, double line_step
  * @return
  */
 void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunction* g, int p, double r1, double r2, double epsilon);
+void penalty_method1(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunction* g, int p, double r1, double r2, double epsilon);
+void penalty_method2(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunction* g, int p, double r1, double r2, double epsilon);
 
 #ifdef __cplusplus
 }
