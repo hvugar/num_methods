@@ -56,7 +56,7 @@ void penalty_method1(RnFunction f, double *x, int n, RnFunction* h, int m, RnFun
 {
 	double G(RnFunction g, double *x, int n)
 	{
-		return 1.0 / g(x,n);
+		return - exp (g(x,n));
 	}
 	
 	double H(RnFunction h, double *x, int n)
@@ -89,7 +89,7 @@ void penalty_method1(RnFunction f, double *x, int n, RnFunction* h, int m, RnFun
 	double p2 = 0.0;
 	do
 	{
-		p1 = P(x, n);
+//		p1 = P(x, n);
 
 		memcpy( x1, x, sizeof(double) * n );
 		printf("\nr1 = %.10f\nr2 = %.10f\n", r1, r2);
@@ -101,9 +101,9 @@ void penalty_method1(RnFunction f, double *x, int n, RnFunction* h, int m, RnFun
 		
 		r1 = r1 * 0.10;
 		r2 = r2 * 10.0;
-		p2 = P(x, n); 
+//		p2 = P(x, n); 
 		
-	} while ( /*distance(x1, x, n) > epsilon &&*/ fabs(p2 - o) > epsilon );
+	} while ( distance(x1, x, n) > epsilon );
 	free(x1);
 	printf("x1 = %.10f\nx2 = %.10f\nf  = %.10f\n", x[0], x[1], f(x,n));
 }

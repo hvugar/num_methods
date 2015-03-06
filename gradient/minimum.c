@@ -15,8 +15,12 @@
  */
 double golden_section_search_min(R1Function f, double a, double b, double epsilon)
 {
-    double phi = (1 + sqrt(5)) / 2;
-
+    //double sqrt_5 = 2.2360679774997896964091736687313
+	//double phi = (sqrt(5) + 1.0) / 2.0;
+	double phi = 1.6180339887498948482045868343656;
+	//double phi = (sqrt(5) - 1) / 2.0;
+	//double phi = 1.6180339887498948482045868343656;
+	
     double x1 = NAN;
     double x2 = NAN;
 

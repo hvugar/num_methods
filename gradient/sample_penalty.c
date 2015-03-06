@@ -63,7 +63,7 @@ void penalty_sample2()
 	double r1 = 0.01;
 	double r2 = 100.0;
 	double epsilon = 0.001;
-	penalty_method1(f, x, n, h, m, g, p, r1, r2, epsilon);
+	penalty_method(f, x, n, h, m, g, p, r1, r2, epsilon);
 	
 	free(x);
 	free(h);

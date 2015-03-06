@@ -13,7 +13,7 @@ double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, dou
  * @param grad_eps
  * @param epsilon
  */
- void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer)
+void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer)
 {
     int i = 0;
     int k = 0;
