@@ -58,8 +58,13 @@ double golden_section_search_min(R1Function f, double a, double b, double epsilo
             x1 = NAN;   // x1 novbeti iterasiyada axtarilacaq
         }
     }
+	
+	double c = (a+b)/2.0;
+	
+	if (f(a)<f(b)) c = a;
+	if (f(a)>f(b)) c = b;
 
-    return (a+b)/2;
+    return c;
 }
 
 /**
@@ -79,7 +84,7 @@ double straight_line_search_metod(R1Function f, double x0, double dx, double *a,
         exit(-1);
     }
 
-    double y0 = f(x0);
+    double y0 = f(x0);	
     double y1 = f(x0 - dx);
     double y2 = f(x0 + dx);
 
@@ -115,8 +120,16 @@ double straight_line_search_metod(R1Function f, double x0, double dx, double *a,
         *a = x0 + dx;
         *b = x0 - dx;
     }
+	
+	if (*a > *b)
+	{
+		fprintf(stderr, "Value of a is grater than value of b. a=%.10f, b=%.10f\n", *a, *b);
+		system("pause");
+	}
 
-    return (*a+*b)/2.0;
+	double c = (*a + *b) / 2.0;
+	
+    return c;
 }
 
 /**

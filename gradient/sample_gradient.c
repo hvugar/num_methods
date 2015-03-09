@@ -3,6 +3,11 @@
 
 extern double f_rosenbrock(double *x, int n);
 
+double f_1(double *x, int n)
+{
+	return x[0]*x[0] + 25*x[1]*x[1];
+}
+
 void sample_gradient1()
 {
     double epsilon	= 0.0001;		//dovrun sona catma meyari
@@ -15,13 +20,17 @@ void sample_gradient1()
     
 	x[0]    = -1.2;
     x[1]    = +1.0;
-	conjugate_gradient_method(f_rosenbrock, x, n, line_eps, gold_eps, grad_eps, epsilon, printer1);
+	//fast_proximal_gradient_method(f_rosenbrock, x, n, line_eps, gold_eps, grad_eps, epsilon, printer1);
 	
-	puts("");
+	puts("----------------------------------------------------------------------------------------------------------------------------");
 	
-    //x[0]    = -1.2;
-    //x[1]    = +1.0;
-	//conjugate_gradient_method1(f_rosenbrock, x, n, line_eps, gold_eps, grad_eps, epsilon);
+    x[0]    = -1.2;
+    x[1]    = +1.0;
+	//conjugate_gradient_method(f_rosenbrock, x, n, line_eps, gold_eps, grad_eps, epsilon, printer1);
+	
+	x[0]    = +2.0;
+    x[1]    = +2.0;
+	fast_proximal_gradient_method(f_1, x, n, line_eps, gold_eps, grad_eps, epsilon, printer1);
 
 	free(x);
 }

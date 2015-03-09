@@ -51,7 +51,7 @@ void printer1(RnFunction f, double *x, int n, ...)
 	va_end(ap);
 }
 
-void printer2(RnFunction f, double *x, int n, ...)
+void printer2(RnFunction P, double *x, int n, ...)
 {
 	//int n_args;
     va_list ap;
@@ -64,16 +64,16 @@ void printer2(RnFunction f, double *x, int n, ...)
 	
 	if (iter == 0)
 	{
-		printf("No\t|x1      \t|x2      \t|f(x)      \t");
+		printf("No\t|x1      \t|x2      \t|P(x)      \t");
 		printf("\n--------+---------------+---------------+---------------+\n");
 	}
 	
-	double y = f(x,n);
+	double y = P(x,n);
 	
 	printf("%d\t", iter);
 	x[0]>=0 ? printf("|+%.10f\t", x[0]) : printf("|%.10f\t", x[0]);
 	x[1]>=0 ? printf("|+%.10f\t", x[1]) : printf("|%.10f\t", x[1]);
-	y>=0 ? printf("|+%.6f\t", y) : printf("|%.6f\t", y);
+	y>=0 ? printf("|+%.10f\t", y) : printf("|%.10f\t", y);
 //	s[0]>=0 ? printf("|+%.6f\t", s[0]) : printf("|%.6f\t", s[0]);
 //	s[1]>=0 ? printf("|+%.6f\t", s[1]) : printf("|%.6f\t", s[1]);
 //	s1[0]>=0 ? printf("|+%.6f\t", s1[0]) : printf("|%.6f\t", s1[0]);

@@ -133,7 +133,7 @@ double derivative_2(R1Function f, double x, double h);
  * @param grad_eps
  * @param epsilon
  */
-void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon);
+void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer);
 
 /**
  * @brief Метод сопряженных градиентов Флетчера — Ривса
