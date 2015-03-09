@@ -20,17 +20,17 @@ void sample_gradient1()
     
 	x[0]    = -1.2;
     x[1]    = +1.0;
-	//fast_proximal_gradient_method(f_rosenbrock, x, n, line_eps, gold_eps, grad_eps, epsilon, printer1);
+	fast_proximal_gradient_method(f_rosenbrock, x, n, line_eps, gold_eps, grad_eps, epsilon, printer3);
 	
 	puts("----------------------------------------------------------------------------------------------------------------------------");
 	
-    x[0]    = -1.2;
-    x[1]    = +1.0;
+    //x[0]    = -1.2;
+    //x[1]    = +1.0;
 	//conjugate_gradient_method(f_rosenbrock, x, n, line_eps, gold_eps, grad_eps, epsilon, printer1);
 	
 	x[0]    = +2.0;
     x[1]    = +2.0;
-	fast_proximal_gradient_method(f_1, x, n, line_eps, gold_eps, grad_eps, epsilon, printer1);
+	fast_proximal_gradient_method(f_1, x, n, line_eps, gold_eps, grad_eps, epsilon, printer3);
 
 	free(x);
 }

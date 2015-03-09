@@ -13,6 +13,7 @@ typedef void (*Printer)(RnFunction f, double *x, int n, ...);
 
 void printer1(RnFunction f, double *x, int n, ...);
 void printer2(RnFunction f, double *x, int n, ...);
+void printer3(RnFunction f, double *x, int n, ...);
 
 
 #endif //_PRINT_H_
