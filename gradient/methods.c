@@ -37,12 +37,12 @@ double distance(double *x1, double *x2, int n)
 }
 
 /**
- * @brief Gradient of function
- * @param f
- * @param x
- * @param n
- * @param dx
- * @param gradients
+ * @brief Градиент функции
+ * @param f         Целевая функция
+ * @param x         Независимые переменные
+ * @param n         Число переменных
+ * @param dx        Длина шагов для нахождение градиента
+ * @param gradients Вектор градиента функции
  */
 void gradient(RnFunction f, double *x, int n, double dx, double *gradients)
 {
@@ -50,12 +50,12 @@ void gradient(RnFunction f, double *x, int n, double dx, double *gradients)
 }
 
 /**
- * @brief Gradient of function with derivative formula f(x+dx)-f(x) / dx
- * @param f
- * @param x
- * @param n
- * @param dx
- * @param gradients
+ * @brief Градиент функции по формуле f(x+dx)-f(x) / dx
+ * @param f         Целевая функция
+ * @param x         Независимые переменные
+ * @param n         Число переменных
+ * @param dx        Длина шагов для нахождение градиента
+ * @param gradients Вектор градиента функции
  */
 void gradient1(RnFunction f, double *x, int n, double dx, double *gradients)
 {
@@ -71,12 +71,12 @@ void gradient1(RnFunction f, double *x, int n, double dx, double *gradients)
 }
 
 /**
- * @brief Gradient of function with derivative formula f(x+dx)-f(x-dx) / 2dx
- * @param f
- * @param x
- * @param n
- * @param dx
- * @param gradients
+ * @brief Градиент функции по формуле f(x+dx)-f(x-dx) / 2dx
+ * @param f         Целевая функция
+ * @param x         Независимые переменные
+ * @param n         Число переменных
+ * @param dx        Длина шагов для нахождение градиента
+ * @param gradients Вектор градиента функции
  */
 void gradient2(RnFunction f, double *x, int n, double dx, double *gradients)
 {

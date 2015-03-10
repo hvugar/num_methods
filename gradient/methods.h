@@ -8,40 +8,40 @@
 
 typedef double (*R1Function)(double);
 typedef double (*RnFunction)(double*, int);
-typedef void (*Printer)(RnFunction f, double *x, int n, ...);
+typedef void   (*Printer)(RnFunction f, double *x, int n, ...);
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * @brief Gradient of function
- * @param f
- * @param x
- * @param n
- * @param dx
- * @param gradients
+ * @brief Градиент функции
+ * @param f         Целевая функция
+ * @param x         Независимые переменные
+ * @param n         Число переменных
+ * @param dx        Длина шагов для нахождение градиента
+ * @param gradients Вектор градиента функции
  */
 void gradient(RnFunction f, double *x, int n, double dx, double *gradients);
 
 
 /**
- * @brief Gradient of function with derivative formula f(x+dx)-f(x) / dx
- * @param f
- * @param x
- * @param n
- * @param dx
- * @param gradients
+ * @brief Градиент функции по формуле f(x+dx)-f(x) / dx
+ * @param f         Целевая функция
+ * @param x         Независимые переменные
+ * @param n         Число переменных
+ * @param dx        Длина шагов для нахождение градиента
+ * @param gradients Вектор градиента функции
  */
 void gradient1(RnFunction f, double *x, int n, double dx, double *gradients);
 
 /**
- * @brief Gradient of function with derivative formula f(x+dx)-f(x-dx) / 2dx
- * @param f
- * @param x
- * @param n
- * @param dx
- * @param gradients
+ * @brief Градиент функции по формуле f(x+dx)-f(x-dx) / 2dx
+ * @param f         Целевая функция
+ * @param x         Независимые переменные
+ * @param n         Число переменных
+ * @param dx        Длина шагов для нахождение градиента
+ * @param gradients Вектор градиента функции
  */
 void gradient2(RnFunction f, double *x, int n, double dx, double *gradients);
 
@@ -91,58 +91,6 @@ double straight_line_search_metod(R1Function fx, double x0, double dx, double *a
 double golden_section_search_min(R1Function fx, double a, double b, double epsilon);
 
 /**
- * @brief
- * @param f
- * @param x0
- * @param dx
- * @param a
- * @param b
- * @return
- */
-double search_method_dck(R1Function f, double x0, double dx, double *a, double *b);
-
-/**
- * @brief
- * @param f
- * @param x0
- * @param dx
- * @param a
- * @param b
- * @return
- */
-double search_method_pauella(R1Function f, double x0, double dx, double epsilon, double *a, double *b);
-
-/**
- * @brief Этап установления границ интервала. Метод Свенна
- * @param f
- * @param x0
- * @param dx
- * @param a
- * @param b
- * @return
- */
-void search_interval_svenn(R1Function f, double x0, double dx, double *a, double *b);
-
-/**
- * @brief Метод деления интервала пополам
- * @param f
- * @param epsilon
- * @param a
- * @param b
- * @return
- */
-void halph_interval_method(R1Function f, double epsilon, double *a, double *b);
-
-/**
- * @brief Метод Ньютона - Рафсона
- * @param f
- * @param x0
- * @param epsilon
- * @return
- */
-double newton_raphson(R1Function f, double x0, double epsilon);
-
-/**
  * @brief derivative_1
  * @param f
  * @param x
@@ -162,9 +110,9 @@ double derivative_2(R1Function f, double x, double h);
 
 /**
  * @brief Метод наискорейшего спуска
- * @param f Целевая функция
- * @param x Независимые переменные
- * @param n Число переменных
+ * @param f         Целевая функция
+ * @param x         Независимые переменные
+ * @param n         Число переменных
  * @param line_step Длина шагов метода прямого поиска
  * @param gold_eps  Число эпсилон для останова метода золотого сечение
  * @param grad_step Длина шагов для нахождение градиента
@@ -240,6 +188,58 @@ void penalty_method1(RnFunction f, double *x, int n, RnFunction* h, int m, RnFun
  * @param epsilon Число эпсилон для останова метода
  */
 void penalty_method2(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunction* g, int p, double r1, double r2, double epsilon);
+
+/**
+ * @brief
+ * @param f
+ * @param x0
+ * @param dx
+ * @param a
+ * @param b
+ * @return
+ */
+double search_method_dck(R1Function f, double x0, double dx, double *a, double *b);
+
+/**
+ * @brief
+ * @param f
+ * @param x0
+ * @param dx
+ * @param a
+ * @param b
+ * @return
+ */
+double search_method_pauella(R1Function f, double x0, double dx, double epsilon, double *a, double *b);
+
+/**
+ * @brief Этап установления границ интервала. Метод Свенна
+ * @param f
+ * @param x0
+ * @param dx
+ * @param a
+ * @param b
+ * @return
+ */
+void search_interval_svenn(R1Function f, double x0, double dx, double *a, double *b);
+
+/**
+ * @brief Метод деления интервала пополам
+ * @param f
+ * @param epsilon
+ * @param a
+ * @param b
+ * @return
+ */
+void halph_interval_method(R1Function f, double epsilon, double *a, double *b);
+
+/**
+ * @brief Метод Ньютона - Рафсона
+ * @param f
+ * @param x0
+ * @param epsilon
+ * @return
+ */
+double newton_raphson(R1Function f, double x0, double epsilon);
 
 #ifdef __cplusplus
 }

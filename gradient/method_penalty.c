@@ -1,6 +1,19 @@
 #include "methods.h"
 #include "print.h"
 
+/**
+ * @brief Методы штрафных функций
+ * @param f       Целевая функция
+ * @param x       Независимые переменные
+ * @param n       Число переменных
+ * @param h       Функции ограничений в виде равенств
+ * @param m       Число ограничений в виде равенств
+ * @param g       Функции ограничений в виде неравенств
+ * @param p       Число ограничений в виде неравенств
+ * @param r1      Штрафной коэффициент для ограничений в виде равенств
+ * @param r2      Штрафной коэффициент для ограничений в виде неравенств
+ * @param epsilon Число эпсилон для останова метода
+ */
 void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunction* g, int p, double r1, double r2, double epsilon)
 {
 	double G(RnFunction g, double *x, int n)
@@ -57,6 +70,19 @@ void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunc
 	printf("x1 = %.10f\nx2 = %.10f\nf  = %.10f\n", x[0], x[1], f(x,n));
 }
 
+/**
+ * @brief Методы штрафных функций
+ * @param f       Целевая функция
+ * @param x       Независимые переменные
+ * @param n       Число переменных
+ * @param h       Функции ограничений в виде равенств
+ * @param m       Число ограничений в виде равенств
+ * @param g       Функции ограничений в виде неравенств
+ * @param p       Число ограничений в виде неравенств
+ * @param r1      Штрафной коэффициент для ограничений в виде равенств
+ * @param r2      Штрафной коэффициент для ограничений в виде неравенств
+ * @param epsilon Число эпсилон для останова метода
+ */
 void penalty_method1(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunction* g, int p, double r1, double r2, double epsilon)
 {
 	double G(RnFunction g, double *x, int n)
@@ -106,6 +132,19 @@ void penalty_method1(RnFunction f, double *x, int n, RnFunction* h, int m, RnFun
 	printf("x1 = %.10f\nx2 = %.10f\nf  = %.10f\n", x[0], x[1], f(x,n));
 }
 
+/**
+ * @brief Методы штрафных функций
+ * @param f       Целевая функция
+ * @param x       Независимые переменные
+ * @param n       Число переменных
+ * @param h       Функции ограничений в виде равенств
+ * @param m       Число ограничений в виде равенств
+ * @param g       Функции ограничений в виде неравенств
+ * @param p       Число ограничений в виде неравенств
+ * @param r1      Штрафной коэффициент для ограничений в виде равенств
+ * @param r2      Штрафной коэффициент для ограничений в виде неравенств
+ * @param epsilon Число эпсилон для останова метода
+ */
 void penalty_method2(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunction* g, int p, double r1, double r2, double epsilon)
 {
 	double G(RnFunction g, double *x, int n)
