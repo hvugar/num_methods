@@ -46,9 +46,27 @@ void gradient1(RnFunction f, double *x, int n, double dx, double *gradients);
 void gradient2(RnFunction f, double *x, int n, double dx, double *gradients);
 
 /**
+ * @brief derivative1
+ * @param f
+ * @param x
+ * @param h
+ * @return
+ */
+double derivative1(R1Function f, double x, double h);
+
+/**
+ * @brief derivative2
+ * @param f
+ * @param x
+ * @param h
+ * @return
+ */
+double derivative2(R1Function f, double x, double h);
+
+/**
  * @brief Норма вектора
- * @param vctr 
- * @param n    Число 
+ * @param vctr Вектор
+ * @param n    Число елементов вектора
  * @return
  */
 double vertor_norm(double *vctr, int n);
@@ -72,9 +90,9 @@ double distance(double *x1, double *x2, int n);
 
 /**
  * @brief Методы прямого поиска
- * @param f Целевая функция
- * @param a Начальная точка отрезка
- * @param b Конечнная точка отрезка
+ * @param f       Целевая функция
+ * @param a       Начальная точка отрезка
+ * @param b       Конечнная точка отрезка
  * @param epsilon Число эпсилон для останова метода
  * @return
  */
@@ -89,24 +107,6 @@ double straight_line_search_metod(R1Function fx, double x0, double dx, double *a
  * @return
  */
 double golden_section_search_min(R1Function fx, double a, double b, double epsilon);
-
-/**
- * @brief
- * @param f
- * @param x
- * @param h
- * @return
- */
-double derivative_1(R1Function f, double x, double h);
-
-/**
- * @brief
- * @param f
- * @param x
- * @param h
- * @return
- */
-double derivative_2(R1Function f, double x, double h);
 
 /**
  * @brief Метод наискорейшего спуска
