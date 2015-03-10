@@ -46,12 +46,12 @@ void gradient1(RnFunction f, double *x, int n, double dx, double *gradients);
 void gradient2(RnFunction f, double *x, int n, double dx, double *gradients);
 
 /**
- * @brief vertor_norm
- * @param x
- * @param n
+ * @brief Норма вектора
+ * @param vctr 
+ * @param n    Число 
  * @return
  */
-double vertor_norm(double *x, int n);
+double vertor_norm(double *vctr, int n);
 
 /**
  * @brief grad_module
@@ -71,27 +71,27 @@ double grad_module(double *grads, int n);
 double distance(double *x1, double *x2, int n);
 
 /**
- * @brief Метод золотого сечения
- * @param f
- * @param a
- * @param b
- * @param epsilon
+ * @brief Методы прямого поиска
+ * @param f Целевая функция
+ * @param a Начальная точка отрезка
+ * @param b Конечнная точка отрезка
+ * @param epsilon Число эпсилон для останова метода
  * @return
  */
 double straight_line_search_metod(R1Function fx, double x0, double dx, double *a, double *b);
 
 /**
- * @brief golden_section_search_min
- * @param fx
- * @param a
- * @param b
+ * @brief Метод золотого сечения
+ * @param fx      Целевая функция
+ * @param a       Начальная точка отрезка
+ * @param b       Конечнная точка отрезка
  * @param epsilon Число эпсилон для останова метода золотого сечение
  * @return
  */
 double golden_section_search_min(R1Function fx, double a, double b, double epsilon);
 
 /**
- * @brief derivative_1
+ * @brief
  * @param f
  * @param x
  * @param h
@@ -100,7 +100,7 @@ double golden_section_search_min(R1Function fx, double a, double b, double epsil
 double derivative_1(R1Function f, double x, double h);
 
 /**
- * @brief derivative_2
+ * @brief
  * @param f
  * @param x
  * @param h
@@ -189,56 +189,14 @@ void penalty_method1(RnFunction f, double *x, int n, RnFunction* h, int m, RnFun
  */
 void penalty_method2(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunction* g, int p, double r1, double r2, double epsilon);
 
-/**
- * @brief
- * @param f
- * @param x0
- * @param dx
- * @param a
- * @param b
- * @return
- */
 double search_method_dck(R1Function f, double x0, double dx, double *a, double *b);
 
-/**
- * @brief
- * @param f
- * @param x0
- * @param dx
- * @param a
- * @param b
- * @return
- */
 double search_method_pauella(R1Function f, double x0, double dx, double epsilon, double *a, double *b);
 
-/**
- * @brief Этап установления границ интервала. Метод Свенна
- * @param f
- * @param x0
- * @param dx
- * @param a
- * @param b
- * @return
- */
 void search_interval_svenn(R1Function f, double x0, double dx, double *a, double *b);
 
-/**
- * @brief Метод деления интервала пополам
- * @param f
- * @param epsilon
- * @param a
- * @param b
- * @return
- */
 void halph_interval_method(R1Function f, double epsilon, double *a, double *b);
 
-/**
- * @brief Метод Ньютона - Рафсона
- * @param f
- * @param x0
- * @param epsilon
- * @return
- */
 double newton_raphson(R1Function f, double x0, double epsilon);
 
 #ifdef __cplusplus
