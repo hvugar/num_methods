@@ -1,24 +1,22 @@
 #include "methods.h"
 #include "print.h"
 
-double minimize(RnFunction f, double *x, double *grad, int n, double alpha0, double line_step, double gold_step);
-
 /**
  * @brief Метод сопряженных градиентов Флетчера — Ривса
- * @param f Целевая функция
- * @param x Независимые переменные n - измерение
- * @param n
- * @param line_eps
- * @param gold_eps
- * @param grad_eps
- * @param epsilon
+ * @param f         Целевая функция
+ * @param x         Независимые переменные
+ * @param n         Число переменных
+ * @param line_step Длина шагов метода прямого поиска
+ * @param gold_eps  Число эпсилон для останова метода золотого сечение
+ * @param grad_step Длина шагов для нахождение градиента
+ * @param epsilon   Число эпсилон для останова метода сопряженных градиентов
  */
 void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer)
 {
     int i = 0;
     int k = 0;
 	
-	int iter = 0;
+	int iteration = 0;
     int count = 0;
 
 	// Direction
@@ -66,14 +64,13 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step,
             for (i=0; i<n; i++) s[i] = -gr2[i] + s[i] * w;
         }
 
-		if (printer != NULL) printer(f, x, n, iter, count, s, s, gr1, gr2);
-        iter++;
+		if (printer != NULL) printer(f, x, n, iteration, count, s, s, gr1, gr2);
+        iteration++;
 
         // Minimization in one dimensional direction
 		double argmin(double alpha)
 		{
-			int j;
-			for (j=0; j<n; j++) x2[j] = x[j] + alpha * s[j];
+			for (i=0; i<n; i++) x2[i] = x[i] + alpha * s[i];
 			return f(x2, n);
 		}
     
@@ -105,7 +102,7 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step,
 		
     } while ( vertor_norm(s, n) > epsilon && distance(x1, x, n) > epsilon );
 	
-	if (printer != NULL) printer(f, x, n, iter, count, s, s, gr1, gr2);
+	if (printer != NULL) printer(f, x, n, iteration, count, s, s, gr1, gr2);
 
     free(gr1);
     free(gr2);
@@ -115,7 +112,43 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step,
 
     gr1 = gr2 = s = NULL;
 }
- 
+
+double minimize(RnFunction f, double *x, double *s, int n, double alpha0, double line_step, double gold_step)
+{
+    double argmin(double alpha)
+    {
+        int j;
+        for (j=0; j<n; j++) x[j] = x[j] + alpha * s[j];
+        double result = f(x, n);
+	    for (j=0; j<n; j++) x[j] = x[j] - alpha * s[j];
+        return result;
+    }
+    
+    double a,b;
+    straight_line_search_metod(argmin, alpha0, line_step, &a, &b);
+    double min = golden_section_search_min(argmin, a, b, gold_step);
+	
+	if (argmin(min)>argmin(alpha0)) 
+	{
+		fprintf(stderr, "Value of function in min point is greater than value of initial point...\n");
+		fprintf(stderr, "min  := %.10f f(x) := %.10f\ninit := %.10f f(x) := %.10f\n", min, argmin(min), alpha0, argmin(alpha0));
+		system("pause");
+		min = alpha0;
+	}
+	
+    return min;
+}
+
+/**
+ * @brief Метод сопряженных градиентов Флетчера — Ривса
+ * @param f         Целевая функция
+ * @param x         Независимые переменные
+ * @param n         Число переменных
+ * @param line_step Длина шагов метода прямого поиска
+ * @param gold_eps  Число эпсилон для останова метода золотого сечение
+ * @param grad_step Длина шагов для нахождение градиента
+ * @param epsilon   Число эпсилон для останова метода сопряженных градиентов
+ */
 void conjugate_gradient_method1(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer)
 {
     int i = 0;
@@ -232,7 +265,17 @@ void conjugate_gradient_method1(RnFunction f, double *x, int n, double line_step
 
     gr1 = gr2 = s1 = s = NULL;
 }
- 
+
+/**
+ * @brief Метод сопряженных градиентов Флетчера — Ривса
+ * @param f         Целевая функция
+ * @param x         Независимые переменные
+ * @param n         Число переменных
+ * @param line_step Длина шагов метода прямого поиска
+ * @param gold_eps  Число эпсилон для останова метода золотого сечение
+ * @param grad_step Длина шагов для нахождение градиента
+ * @param epsilon   Число эпсилон для останова метода сопряженных градиентов
+ */
 void conjugate_gradient_method2(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer)
 {
     int iter = 0;
@@ -316,28 +359,4 @@ void conjugate_gradient_method2(RnFunction f, double *x, int n, double line_step
     s = NULL;
 }
 
-double minimize(RnFunction f, double *x, double *s, int n, double alpha0, double line_step, double gold_step)
-{
-    double argmin(double alpha)
-    {
-        int j;
-        for (j=0; j<n; j++) x[j] = x[j] + alpha * s[j];
-        double result = f(x, n);
-	    for (j=0; j<n; j++) x[j] = x[j] - alpha * s[j];
-        return result;
-    }
-    
-    double a,b;
-    straight_line_search_metod(argmin, alpha0, line_step, &a, &b);
-    double min = golden_section_search_min(argmin, a, b, gold_step);
-	
-	if (argmin(min)>argmin(alpha0)) 
-	{
-		fprintf(stderr, "Value of function in min point is greater than value of initial point...\n");
-		fprintf(stderr, "min  := %.10f f(x) := %.10f\ninit := %.10f f(x) := %.10f\n", min, argmin(min), alpha0, argmin(alpha0));
-		system("pause");
-		min = alpha0;
-	}
-	
-    return min;
-}
+

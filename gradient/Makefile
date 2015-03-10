@@ -10,17 +10,14 @@ DEL         = del /f
 
 all: main
 
-main: sample_functions.o sample_gradient.o sample_penalty.o penalty.o print.o minimum.o gradient.o methods_grad.o methods_conj.o methods.o main.o
-	$(CC) $(CLDFLAGS) -o main.exe main.o minimum.o gradient.o methods_grad.o methods_conj.o methods.o print.o penalty.o sample_functions.o sample_gradient.o sample_penalty.o $(LFLAGS)
+main: sample_functions.o sample_gradient.o sample_penalty.o method_penalty.o print.o minimum.o methods_grad.o methods_conj.o methods.o main.o
+	$(CC) $(CLDFLAGS) -o main.exe main.o minimum.o methods_grad.o methods_conj.o methods.o print.o method_penalty.o sample_functions.o sample_gradient.o sample_penalty.o $(LFLAGS)
 
 main.o: main.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o main.o main.c
 	
 minimum.o: minimum.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o minimum.o minimum.c 
-	
-gradient.o: gradient.c
-	$(CC) -c $(CFLAGS) $(INCLUDES) -o gradient.o gradient.c
 	
 methods.o: methods.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o methods.o methods.c
@@ -34,8 +31,8 @@ methods_grad.o: methods_grad.c
 print.o: print.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o print.o print.c
 	
-penalty.o: penalty.c
-	$(CC) -c $(CFLAGS) $(INCLUDES) -o penalty.o penalty.c
+method_penalty.o: method_penalty.c
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o method_penalty.o method_penalty.c
 	
 sample_penalty.o: sample_penalty.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o sample_penalty.o sample_penalty.c

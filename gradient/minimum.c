@@ -68,7 +68,7 @@ double golden_section_search_min(R1Function f, double a, double b, double epsilo
 }
 
 /**
- * @brief
+ * @brief Методы прямого поиска
  * @param f
  * @param x0
  * @param dx

@@ -4,14 +4,13 @@ double minimize1(RnFunction f, double *x, double *grad, int n, double alpha0, do
 
 /**
  * @brief Метод наискорейшего спуска
- * @param f
- * @param x
- * @param n
- * @param line_eps
- * @param gold_eps
- * @param grad_eps
- * @param epsilon
- * @param printer
+ * @param f Целевая функция
+ * @param x Независимые переменные
+ * @param n Число переменных
+ * @param line_step Длина шагов метода прямого поиска
+ * @param gold_eps  Число эпсилон для останова метода золотого сечение
+ * @param grad_step Длина шагов для нахождение градиента
+ * @param epsilon   Число эпсилон для останова метода наискорейшего спуска
  */
 void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon, Printer printer)
 {
