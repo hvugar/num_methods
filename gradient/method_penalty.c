@@ -18,25 +18,25 @@ void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunc
 {
 	double G(RnFunction g, double *x, int n)
 	{
-		double a = g(x,n);
-		double s = (a >= 0.0) ? 0.0 : a ;
+		double y = g(x,n);
+		double s = (y >= 0.0) ? 0.0 : y;
 		return s*s;
 	}
 	
 	double H(RnFunction h, double *x, int n)
 	{
-		double s = h(x, n);
-		return s*s;
+		double y = h(x, n);
+		return y*y;
 	}
 	
 	double R(double *x, int n)
 	{
 		int i;
-		double sum1 = 0.0;
-		double sum2 = 0.0;
-		for (i=0; i<p; i++) sum1 = sum1 + G(g[i], x, n);
-		for (i=0; i<m; i++) sum2 = sum2 + H(h[i], x, n);
-		return sum1*r2 + sum2*r2;
+		double sum_g = 0.0;
+		double sum_h = 0.0;
+		for (i=0; i<p; i++) sum_g = sum_g + G(g[i], x, n);
+		for (i=0; i<m; i++) sum_h = sum_h + H(h[i], x, n);
+		return sum_g*r2 + sum_h*r2;
 	}
 	
 	double P(double *x, int n)
@@ -54,20 +54,21 @@ void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunc
 	do
 	{
 		memcpy( x1, x, sizeof(double) * n );
-		printf("\nr1 = %.10f\nr2 = %.10f\n", r1, r2);
 		printf("Minimization...\n");
 		conjugate_gradient_method(P, x, n, line_step, gold_step, grad_step, min_epsilon, printer2);
 		printf("Minimized...\n");
-		printf("x1 = %.10f x2 = %.10f f(x,n)=%.10f\n", x[0], x[1], f(x,n));
-		printf("********************************************************\n");
+
+		//printf("r1 = %.10f\n", r1);
+		printf("R  = %.1f\n", r2);
+		printf("x1 = %.10f\n", x[0]);
+		printf("x2 = %.10f\n", x[1]);
+		printf("fx = %.10f\n", f(x,n));
 		
-		r1 = r1 * 0.10;
-		if (r2 < 1000000000)
+		//r1 = r1 * 0.10;
 		r2 = r2 * 10.0;
 		
 	} while ( distance(x1, x, n) > epsilon*0.001 );
 	free(x1);
-	printf("x1 = %.10f\nx2 = %.10f\nf  = %.10f\n", x[0], x[1], f(x,n));
 }
 
 /**

@@ -154,3 +154,29 @@ double f(double *x, int n)
 {
     return pow(x[0],3) + 2*pow(x[1],2) - 3*x[0] - 4*x[1];
 }
+
+void func1(int n, double *x, double *f)
+{
+	*f = x[0]*x[0] + 2*x[1];
+}
+
+void constr1(int n, double *x, double *f)
+{
+	f[0] = x[0]*x[0] + 2*x[1];
+	f[1] = x[0]*x[0] + 2*x[1];
+}
+
+void func2(int n, double *x, double *f)
+{
+	int m = 2;
+	func1(n, x, f);
+	
+	double *h = malloc(sizeof(double)*m);
+	constr1(n, x, h);
+	
+	int i;
+	for (i=0; i<m; i++)
+	{
+		*f += h[i]*h[i];
+	}
+}
