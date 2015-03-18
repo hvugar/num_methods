@@ -10,6 +10,9 @@ DEL         = del /f
 
 all: main
 
+dll: print.o sample_functions.o sample_gradient.o sample_penalty.o method_penalty.o method_grad.o method_conj.o methods.o minimum.o main.o
+	$(CC) -shared -o gradient.dll -Wl,--out-implib=libgradient.dll.a -Wl,--export-all-symbols -Wl,--enable-auto-import minimum.o method_grad.o method_conj.o methods.o print.o method_penalty.o sample_functions.o sample_gradient.o sample_penalty.o
+
 main: print.o sample_functions.o sample_gradient.o sample_penalty.o method_penalty.o method_grad.o method_conj.o methods.o minimum.o main.o
 	$(CC) $(CLDFLAGS) -o main.exe main.o minimum.o method_grad.o method_conj.o methods.o print.o method_penalty.o sample_functions.o sample_gradient.o sample_penalty.o $(LFLAGS)
 
