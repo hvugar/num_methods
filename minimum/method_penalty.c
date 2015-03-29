@@ -55,7 +55,7 @@ void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunc
 	{
 		memcpy( x1, x, sizeof(double) * n );
 		printf("Minimization...\n");
-		conjugate_gradient_method(P, x, n, line_step, gold_step, grad_step, min_epsilon, printer2);
+		conjugate_gradient_method(P, x, n, line_step, gold_step, grad_step, min_epsilon, printer2, NULL);
 		printf("Minimized...\n");
 
 		//printf("r1 = %.10f\n", r1);
@@ -122,7 +122,7 @@ void penalty_method1(RnFunction f, double *x, int n, RnFunction* h, int m, RnFun
 		memcpy( x1, x, sizeof(double) * n );
 		printf("\nr1 = %.10f\nr2 = %.10f\n", r1, r2);
 		printf("Minimization...\n");
-		conjugate_gradient_method(P, x, n, line_step, gold_step, grad_step, min_epsilon, printer2);
+		conjugate_gradient_method(P, x, n, line_step, gold_step, grad_step, min_epsilon, printer2, NULL);
 		printf("Minimized...\n");
 		printf("********************************************************\n");
 		

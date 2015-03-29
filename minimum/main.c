@@ -9,6 +9,7 @@ extern void sample_gradient1();
 
 int main(int argc, char** argv)
 {
-	sample_gradient1();
+//	sample_gradient1();
+	penalty_sample4();
 	return 0;
 }

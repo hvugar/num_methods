@@ -11,7 +11,7 @@
  * @param grad_step Длина шагов для нахождение градиента
  * @param epsilon   Число эпсилон для останова метода сопряженных градиентов
  */
-void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer)
+void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer, GetInfo info)
 {
     int i = 0;
     int k = 0;
@@ -63,9 +63,8 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step,
             // Direction in next (k+1) iteration
             for (i=0; i<n; i++) s[i] = -gr2[i] + s[i] * w;
         }
-
+		
         if (printer != NULL) printer(f, x, n, iteration, count, s, s, gr1, gr2);
-        iteration++;
 
         // Minimization in one dimensional direction
         double argmin(double alpha)
@@ -73,17 +72,18 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step,
             for (i=0; i<n; i++) x2[i] = x[i] + alpha * s[i];
             return f(x2, n);
         }
-
+		
         double a,b;
         double alpha0 = 0.0;
         straight_line_search_metod(argmin, alpha0, line_step, &a, &b);
         double alpha = golden_section_search_min(argmin, a, b, gold_step);
-        //double alpha = minimize(f, x, s1, n, alpha0, line_step, gold_step);
         //line_step /= 1.2;
 
         //
         if (argmin(alpha)>argmin(alpha0)) alpha = alpha0;
 
+		if (info != NULL) info(f, x, n, iteration, gr1, s, argmin, alpha, a, b);
+		
         // Saving last point coordinates
         memcpy(x1, x, sizeof(double) * n);
 
@@ -93,13 +93,8 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step,
             x[i] = x[i] + alpha * s[i];
         }
 
-        //mod_s = 0.0;
-        //for (i=0; i<n; i++) mod_s = mod_s + s[i]*s[i];
-        //mod_s = vertor_norm(s, n);
-        //dist = distance(x1, x, n);
-
         if ( k == n ) { k = 0; } else { k++; }
-
+        iteration++;
     } while ( vertor_norm(s, n) > epsilon && distance(x1, x, n) > epsilon );
 
     if (printer != NULL) printer(f, x, n, iteration, count, s, s, gr1, gr2);

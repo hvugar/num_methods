@@ -9,6 +9,7 @@
 typedef double (*R1Function)(double);
 typedef double (*RnFunction)(double*, int);
 typedef void   (*Printer)(RnFunction f, double *x, int n, ...);
+typedef void   (*GetInfo)(RnFunction f, double *x, int n, int iteration, double *grad, double *s, R1Function min, double alpha, double a, double b);
 
 #ifdef __cplusplus
 extern "C" {
@@ -130,7 +131,7 @@ void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_s
  * @param grad_step Длина шагов для нахождение градиента
  * @param epsilon   Число эпсилон для останова метода сопряженных градиентов
  */
-void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer);
+void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer, GetInfo info);
 
 /**
  * @brief Метод сопряженных градиентов Флетчера — Ривса
