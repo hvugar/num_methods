@@ -6,14 +6,15 @@
 #include <string.h>
 #include <math.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef double (*R1Function)(double);
 typedef double (*RnFunction)(double*, int);
 typedef void   (*Printer)(RnFunction f, double *x, int n, ...);
 typedef void   (*GetInfo)(RnFunction f, double *x, int n, int iteration, double *grad, double *s, R1Function min, double alpha, double a, double b);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * @brief Градиент функции
@@ -161,7 +162,7 @@ void conjugate_gradient_method1(RnFunction f, double *x, int n, double line_step
 void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunction* g, int p, double r1, double r2, double epsilon);
 
 /**
- * @brief         Метод барьерных функций [обратная штрафная функция]
+ * @brief         Метод барьерных функций [обратная штрафная функция]. Смешанной вспомогательная функция
  * @param f       Целевая функция
  * @param x       Независимые переменные
  * @param n       Число переменных
@@ -176,7 +177,7 @@ void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunc
 void penalty_method1(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunction* g, int p, double r1, double r2, double epsilon);
 
 /**
- * @brief         Метод барьерных функций [логарифмическая штрафная функция]
+ * @brief         Метод барьерных функций [логарифмическая штрафная функция]. Смешанной вспомогательная функция
  * @param f       Целевая функция
  * @param x       Независимые переменные
  * @param n       Число переменных
