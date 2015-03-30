@@ -146,7 +146,7 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step,
 void conjugate_gradient_method1(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer);
 
 /**
- * @brief Методы штрафных функций
+ * @brief         Метод штрафных функций
  * @param f       Целевая функция
  * @param x       Независимые переменные
  * @param n       Число переменных
@@ -161,7 +161,7 @@ void conjugate_gradient_method1(RnFunction f, double *x, int n, double line_step
 void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunction* g, int p, double r1, double r2, double epsilon);
 
 /**
- * @brief Методы штрафных функций
+ * @brief         Метод барьерных функций [обратная штрафная функция]
  * @param f       Целевая функция
  * @param x       Независимые переменные
  * @param n       Число переменных
@@ -176,7 +176,7 @@ void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunc
 void penalty_method1(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunction* g, int p, double r1, double r2, double epsilon);
 
 /**
- * @brief Методы штрафных функций
+ * @brief         Метод барьерных функций [логарифмическая штрафная функция]
  * @param f       Целевая функция
  * @param x       Независимые переменные
  * @param n       Число переменных

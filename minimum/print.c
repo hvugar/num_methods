@@ -64,7 +64,7 @@ void printer2(RnFunction P, double *x, int n, ...)
 	
 	if (iter == 0)
 	{
-		printf("No\t|x1      \t|x2      \t|P(x)      \t");
+		printf("No\t|x1      \t|x2      \t|F(x)      \t");
 		printf("\n--------+---------------+---------------+---------------+\n");
 	}
 	

@@ -108,22 +108,22 @@ void penalty_sample4()
 
     int n = 2;
     double* x = (double*) malloc( sizeof(double) * n );
-    x[0]    = +2.0;
-    x[1]    = +4.0;
+    x[0]    = +4.0;
+    x[1]    = +3.0;
 
     int m = 1;
     RnFunction *h = (RnFunction*) malloc(sizeof(RnFunction*) * m);
     double h1(double *x, int n) { return 25.0 - x[0]*x[0] - x[1]*x[1]; }
     h[0] = h1;
 
-    int p = 1;
+    int p = 3;
     RnFunction *g = (RnFunction*) malloc(sizeof(RnFunction*) * p);
-    double g1(double *x, int n) { return 10*x[0] - x[0]*x[0] + 10*x[1] - x[1]*x[1]- 34.0; }
+    double g1(double *x, int n) { return 10*x[0] - x[0]*x[0] + 10*x[1] - x[1]*x[1] - 34.0; }
     g[0] = g1;
-    //double g2(double *x, int n) { return x[0]; }
-    //g[1] = g2;
-    //double g3(double *x, int n) { return x[1]; }
-    //g[2] = g3;
+    double g2(double *x, int n) { return x[0]; }
+    g[1] = g2;
+    double g3(double *x, int n) { return x[1]; }
+    g[2] = g3;
 
     double r1 = 0.01;
     double r2 = 10.0;
