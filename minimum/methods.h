@@ -15,6 +15,17 @@ typedef double (*RnFunction)(double*, int);
 typedef void   (*Printer)(RnFunction f, double *x, int n, ...);
 typedef void   (*GetInfo)(RnFunction f, double *x, int n, int iteration, double *grad, double *s, R1Function min, double alpha, double a, double b);
 
+typedef struct {
+	R1Function func;
+	double x;
+} FunctionR1;
+
+typedef struct {
+	RnFunction func;
+	double *x;
+	int n;
+} FunctionRn;
+
 
 /**
  * @brief Градиент функции
