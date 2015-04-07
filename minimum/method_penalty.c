@@ -63,7 +63,7 @@ void penalty_method(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunc
 
         //printf("r1 = %.10f\n", r1);
         printf("R  = %.1f\n", r2);
-        printf("x  = (%.10f %.10f)\n", x[0]);
+        printf("x  = (%.10f %.10f)\n", x[0], x[1]);
         printf("fx = %.10f\n", f(x,n));
 		puts("---------------------");
 
