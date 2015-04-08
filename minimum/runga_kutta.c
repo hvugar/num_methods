@@ -17,17 +17,15 @@ double runga_kutta1(R2Function f, double y0, double x0, double x, double h)
 
 void runga_kutta2(RmFunction *f, double *y0, int n, double x0, double x, double h)
 {
-	double *k1 = (double*)malloc( sizeof(double) * n );
-	double *k2 = (double*)malloc( sizeof(double) * n );
-	double *k3 = (double*)malloc( sizeof(double) * n );
-	double *k4 = (double*)malloc( sizeof(double) * n );
-	double *y1 = (double*)malloc( sizeof(double) * n );
+	double *k1 = (double*) malloc( sizeof(double) * n );
+	double *k2 = (double*) malloc( sizeof(double) * n );
+	double *k3 = (double*) malloc( sizeof(double) * n );
+	double *k4 = (double*) malloc( sizeof(double) * n );
+	double *y1 = (double*) malloc( sizeof(double) * n );
 	
-	
-	while (x0 < x)
+	int i=0;
+	while (x0 <= x)
 	{
-		int i=0;
-		
 		for (i = 0; i<n; i++)
 		{
 			k1[i] = f[i](x0, y0, n);
@@ -60,4 +58,10 @@ void runga_kutta2(RmFunction *f, double *y0, int n, double x0, double x, double 
 		
 		x0 = x0 + h;
 	}
+	
+	free(y1);
+	free(k1);
+	free(k2);
+	free(k3);
+	free(k4);
 }
