@@ -7,7 +7,6 @@ typedef double (*RfFunction)(double t, double *x, int n, double *u, int r);
 
 //2.7182818284590452353602874713527
 
-double uk = 0.0;
 double *x0 = NULL;
 double *xT = NULL;
 double *x1 = NULL;
@@ -17,7 +16,7 @@ double *p  = NULL;
 
 double f0(double t, double *x, int n)
 {
-    return x[0]*x[0] + x[1]*x[1] + uk*uk;
+    return x[0]*x[0] + x[1]*x[1] + u[0]*u[0];
 }
 
 double f1(double t, double* x, int n)
@@ -27,7 +26,7 @@ double f1(double t, double* x, int n)
 
 double f2(double t, double* x, int n)
 {
-    return x[0] + x[1] + uk;
+    return x[0] + x[1] + u[0];
 }
 
 double pf1(double t, double *p, int n)
@@ -63,7 +62,7 @@ int main(int argc, char** argv)
     p  = (double*) malloc( sizeof(double) * n );
     p0 = (double*) malloc( sizeof(double) * n );
 
-    uk = 0.0;
+    u[0] = 0.0;
     double h  = 0.00001;
     double t0 = 0.0;
     double T  = +1.0;
