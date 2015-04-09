@@ -216,7 +216,7 @@ double newton_raphson(R1Function f, double x0, double epsilon);
 
 double runga_kutta1(R2Function y, double y0, double x0, double x, double h);
 
-void runga_kutta2(RmFunction *y, double *y0, int n, double x0, double x, double h);
+void runga_kutta2(RmFunction *f, double *y0, double x0, double *y1, double x1, int n, double h);
 
 #ifdef __cplusplus
 }
