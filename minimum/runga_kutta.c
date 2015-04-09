@@ -22,14 +22,14 @@ void runga_kutta2(RmFunction *f, double *y0, double x0, double *y1, double x1, i
     double *k3 = (double*) malloc( sizeof(double) * n );
     double *k4 = (double*) malloc( sizeof(double) * n );
     double *y  = (double*) malloc( sizeof(double) * n );
-	
+
     if (fabs(x0-x1) > h)
     {
         if ( x0 < x1 ) h = +fabs(h);
         if ( x0 > x1 ) h = -fabs(h);
 
         double x = x0;
-		memcpy(y1, y0, sizeof(double)*n);
+        memcpy(y1, y0, sizeof(double)*n);
         while (1)
         {
             int i=0;

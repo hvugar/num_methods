@@ -54,14 +54,14 @@ double HamiltonPantragen(RmFunction f0, RmFunction *f, double t, double *x, int 
 int main(int argc, char** argv)
 {
     int n = 2;
-	int r = 1;
-	
-	x0 = (double*) malloc( sizeof(double) * n );
-	xT = (double*) malloc( sizeof(double) * n );
-	x1 = (double*) malloc( sizeof(double) * n );
-	u  = (double*) malloc( sizeof(double) * r );
-	p  = (double*) malloc( sizeof(double) * n );
-	p0 = (double*) malloc( sizeof(double) * n );
+    int r = 1;
+
+    x0 = (double*) malloc( sizeof(double) * n );
+    xT = (double*) malloc( sizeof(double) * n );
+    x1 = (double*) malloc( sizeof(double) * n );
+    u  = (double*) malloc( sizeof(double) * r );
+    p  = (double*) malloc( sizeof(double) * n );
+    p0 = (double*) malloc( sizeof(double) * n );
 
     uk = 0.0;
     double h  = 0.00001;
@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 
     x0[0] = 1.0;
     x0[1] = 2.0;
-	
+
     RmFunction *f = (RmFunction*) malloc( sizeof(RmFunction*) * n );
     f[0] = f1;
     f[1] = f2;
@@ -90,9 +90,9 @@ int main(int argc, char** argv)
     printf("x1(1.0) = %.10f x2(1.0) = %.10f\n", xT[0], xT[1]);
     printf("x1(0.1) = %.10f x2(0.1) = %.10f\n", x1[0], x1[1]);
     printf("p1(0.1) = %.10f p2(0.1) = %.10f\n", p[0], p[1]);
-	
-	double a = HamiltonPantragen(f0, p_f, t1, x1, n, u, r, p);
-	printf("%f\n", a);
+
+    double a = HamiltonPantragen(f0, p_f, t1, x1, n, u, r, p);
+    printf("%f\n", a);
 
     return 0;
 }
