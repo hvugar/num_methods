@@ -4,15 +4,166 @@
 #include "methods.h"
 
 typedef double (*RfFunction)(double t, double *x, int n, double *u, int r);
+#define M_E1 2.7182818284590452353602874713527
 
-//2.7182818284590452353602874713527
+double f0(double t, double *x, int n);
+double f1(double t, double* x, int n);
+double f2(double t, double* x, int n);
+double pf1(double t, double *p, int n);
+double pf2(double t, double *p, int n);
+double HamiltonPantragen(RmFunction f0, RmFunction *f, double t, double *x, int n, double *u, int r, double *p);
+
+void test1();
 
 double *x0 = NULL;
 double *xT = NULL;
-double *x1 = NULL;
+//double *x1 = NULL;
 double *u  = NULL;
 double *p0 = NULL;
-double *p  = NULL;
+//double *p  = NULL;
+
+double *x1 = NULL;
+double *x10 = NULL;
+double *x2 = NULL;
+double *x20 = NULL;
+double *u0  = NULL;
+
+int j=0;
+double  *t = NULL;
+double **x = NULL;
+double **p = NULL;
+
+double J_Sum(double *u, int N);
+
+int main(int argc, char** argv)
+{
+    double t0 = 0.0;
+    double t1 = 1.0;
+    int N = 10;
+	
+	// step for time
+    double h1 = (t1-t0) / N;
+	// step for runga-kutta
+    double h2 = 0.00001;
+
+    int n = 2;
+    //int r = 1;
+
+    int i=0;
+
+    t  = (double*) malloc( sizeof(double)  * (N+1) );
+    x = (double**) malloc( sizeof(double*) * (N+1) );
+    p = (double**) malloc( sizeof(double*) * (N+1) );
+    u  = (double*) malloc( sizeof(double)  * (N+1) );
+
+    for (i=0; i<=N; i++)
+    {
+        t[i] = t0 + i*h1;
+        x[i] = (double*) malloc( sizeof(double) * n );
+        p[i] = (double*) malloc( sizeof(double) * n );
+        u[i] = 0.1;
+    }
+
+    double *x0 = (double*) malloc( sizeof(double*) * n );
+    x[0][0] = x0[0] = 1.0;
+    x[0][1] = x0[1] = 2.0;
+    p0 = (double*) malloc( sizeof(double) * n );
+
+    RmFunction *f = (RmFunction*) malloc( sizeof(RmFunction*) * n );
+    f[0] = f1;
+    f[1] = f2;
+    RmFunction *p_f = (RmFunction*) malloc( sizeof(RmFunction*) * n );
+    p_f[0] = pf1;
+    p_f[1] = pf2;
+
+    int c=0;
+
+	double J1, J2;
+	do
+    {
+		puts("---");
+        for (i=0; i<=N; i++)
+        {
+            j = i;
+			puts("---1");
+			double t2 = t[i];
+            runga_kutta2(f, x0, t0, x[i], t2, n, h2);
+			puts("---2");
+            printf("x1(%.2f) = %.10f x2(%.2f) = %.10f\n", t[i], x[i][0], t[i], x[i][1]);
+        }
+
+        puts("---");
+
+        p[N][0] = p0[0] = 2*x[N][0];
+        p[N][1] = p0[1] = 2*x[N][1];
+
+        for (i=0; i<=N; i++)
+        {
+            j = N-i;
+            runga_kutta2(p_f, p0, t1, p[j], t[j], n, h2);
+            printf("p1(%.2f) = %.10f p2(%.2f) = %.10f\n", fabs(t[j]), p[j][0], fabs(t[j]), p[j][1]);
+        }
+
+        J1 = J_Sum(u, N+1);
+
+        double* grad_J = (double*) malloc( sizeof(double) * (N+1) );
+
+        gradient(J_Sum, u, N+1, 0.000001, grad_J);
+        for (i=0; i<=N; i++)
+            printf("%.6f %.6f\n", u[i], grad_J[i]);
+
+        double *u2 = (double*) malloc(sizeof(double) * n);
+        double argmin(double alpha1)
+        {
+            int j;
+            for (j=0; j<N+1; j++) u2[j] = u[j] - alpha1 * grad_J[j];
+            return J_Sum(u2, N+1);
+        }
+
+        double a,b;
+        double alpha0 = 0.0;
+        double grad_eps	= 0.005;		//gradient
+        double line_eps	= 0.1;			//parcani bolme
+        double gold_eps	= 0.0001;		//qizil qayda ucun
+
+        straight_line_search_metod(argmin, alpha0, line_eps, &a, &b);
+        double alpha = golden_section_search_min(argmin, a, b, gold_eps);
+
+        printf("*** %f %f\n", alpha0, alpha);
+
+        for (i=0; i<=N; i++) u[i] = u[i] - grad_J[i]*alpha;
+		
+		free(grad_J);
+		grad_J =  NULL;
+		
+        J2 = J_Sum(u, N+1);
+        printf("+++ %f %f\n", J1, J2);
+
+    } while (1);
+
+    return 0;
+}
+
+double J_Sum(double *u, int n)
+{
+    double J=0.0;
+    int i=0;
+    for (i=0; i < (n-1); i++)
+    {
+        double x1_1 = x[i][0];
+        double x1_2 = x[i+1][0];
+
+        double x2_1 = x[i][1];
+        double x2_2 = x[i+1][1];
+
+        double u_1 = u[i];
+        double u_2 = u[i+1];
+
+        J += (1.0/2.0) * ((x1_1*x1_1 + x2_1*x2_1 + u_1*u_1) + (x1_2*x1_2 + x2_2*x2_2 + u_2*u_2)) * (t[i+1]-t[i]);
+    }
+    J += x[n-1][0]*x[n-1][0] + x[n-1][1]*x[n-1][1];
+    return J;
+}
 
 double f0(double t, double *x, int n)
 {
@@ -26,17 +177,17 @@ double f1(double t, double* x, int n)
 
 double f2(double t, double* x, int n)
 {
-    return x[0] + x[1] + u[0];
+    return x[0] + x[1] + u[j];
 }
 
 double pf1(double t, double *p, int n)
 {
-    return 2*x1[0] - p[0] - 2*p[1];
+    return 2*x[j][0] - p[0] - 2*p[1];
 }
 
 double pf2(double t, double *p, int n)
 {
-    return 2*x1[1] - 2*p[1];
+    return 2*x[j][1] - 2*p[1];
 }
 
 double HamiltonPantragen(RmFunction f0, RmFunction *f, double t, double *x, int n, double *u, int r, double *p)
@@ -50,8 +201,9 @@ double HamiltonPantragen(RmFunction f0, RmFunction *f, double t, double *x, int 
     return a;
 }
 
-int main(int argc, char** argv)
+void test1()
 {
+    /*
     int n = 2;
     int r = 1;
 
@@ -92,6 +244,5 @@ int main(int argc, char** argv)
 
     double a = HamiltonPantragen(f0, p_f, t1, x1, n, u, r, p);
     printf("%f\n", a);
-
-    return 0;
+*/
 }
