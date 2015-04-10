@@ -28,10 +28,10 @@ void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_e
 
         // Funksiyanin minimumuniu tapmaq ucun qizil bolgu qaydasinda istifade edib alphani tapiriq
         //double alpha = minimize1(f, x, grads, n, alpha0, line_eps, gold_eps);
-        double argmin(double alpha1)
+        double argmin(double alpha)
         {
             int j;
-            for (j=0; j<n; j++) x2[j] = x[j] - alpha1 * grads[j];
+            for (j=0; j<n; j++) x2[j] = x[j] - alpha * grads[j];
             return f(x2, n);
         }
 
