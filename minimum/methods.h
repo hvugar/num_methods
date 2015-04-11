@@ -13,7 +13,7 @@ extern "C" {
 typedef double (*R1Function)(double);
 typedef double (*R2Function)(double x, double y);
 typedef double (*RnFunction)(double*, int);
-typedef double (*RmFunction)(double, double*, int);
+typedef double (*RmFunction)(double x, double* y, int n);
 typedef void   (*Printer)(RnFunction f, double *x, int n, ...);
 typedef void   (*GetInfo)(RnFunction f, double *x, int n, int iteration, double *grad, double *s, R1Function min, double alpha, double a, double b);
 
