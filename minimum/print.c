@@ -115,3 +115,53 @@ void printer3(RnFunction f, double *x, int n, ...)
 	
 	va_end(ap);
 }
+
+void printer4(RnFunction P, double *x, int n, ...)
+{
+	//int n_args;
+    va_list ap;
+	va_start(ap, 0);
+	
+	int iter = va_arg(ap, int);
+//	int count = va_arg(ap, int);
+//	double* s = va_arg(ap, double*);
+//	double* s1 = va_arg(ap, double*);
+	
+	if (iter == 0)
+	{
+		printf("No\t|x1      \t|x2      \t|x3      \t|x4      \t|x5      \t|x6      \t|x7      \t|x8      \t|x9      \t|x10      \t|F(x)      \t");
+		printf("\n--------+---------------+---------------+---------------+---------------+---------------+---------------+---------------+---------------+---------------+---------------+---------------+\n");
+	}
+	
+	double y = P(x,n);
+	
+	printf("%d\t", iter);
+	x[0]>=0 ? printf("|+%.10f\t", x[0]) : printf("|%.10f\t", x[0]);
+	x[1]>=0 ? printf("|+%.10f\t", x[1]) : printf("|%.10f\t", x[1]);
+	x[2]>=0 ? printf("|+%.10f\t", x[2]) : printf("|%.10f\t", x[2]);
+	x[3]>=0 ? printf("|+%.10f\t", x[3]) : printf("|%.10f\t", x[3]);
+	x[4]>=0 ? printf("|+%.10f\t", x[4]) : printf("|%.10f\t", x[4]);
+	x[5]>=0 ? printf("|+%.10f\t", x[5]) : printf("|%.10f\t", x[5]);
+	x[6]>=0 ? printf("|+%.10f\t", x[6]) : printf("|%.10f\t", x[6]);
+	x[7]>=0 ? printf("|+%.10f\t", x[7]) : printf("|%.10f\t", x[7]);
+	x[8]>=0 ? printf("|+%.10f\t", x[8]) : printf("|%.10f\t", x[8]);
+	x[9]>=0 ? printf("|+%.10f\t", x[9]) : printf("|%.10f\t", x[9]);
+	y>=0 ? printf("|+%.10f\t", y) : printf("|%.10f\t", y);
+//	s[0]>=0 ? printf("|+%.6f\t", s[0]) : printf("|%.6f\t", s[0]);
+//	s[1]>=0 ? printf("|+%.6f\t", s[1]) : printf("|%.6f\t", s[1]);
+//	s1[0]>=0 ? printf("|+%.6f\t", s1[0]) : printf("|%.6f\t", s1[0]);
+//	s1[1]>=0 ? printf("|+%.6f\t", s1[1]) : printf("|%.6f\t", s1[1]);
+//	printf("|%d\t", count);
+	printf("\n");
+	
+	va_end(ap);
+}
+
+void printX(char *label, double *x, int n)
+{
+	int i;
+	printf("%s:\t", label);
+	for (i=0; i<n; i++)
+		printf("%14.10f ", x[i]);
+	printf("\n");
+}

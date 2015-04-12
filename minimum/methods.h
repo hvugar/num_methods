@@ -13,7 +13,7 @@ extern "C" {
 typedef double (*R1Function)(double);
 typedef double (*R2Function)(double x, double y);
 typedef double (*RnFunction)(double*, int);
-typedef double (*RmFunction)(double x, double* y, int n);
+typedef double (*RmFunction)(double x, double *y, int n);
 typedef void   (*Printer)(RnFunction f, double *x, int n, ...);
 typedef void   (*GetInfo)(RnFunction f, double *x, int n, int iteration, double *grad, double *s, R1Function min, double alpha, double a, double b);
 
@@ -214,9 +214,13 @@ void halph_interval_method(R1Function f, double epsilon, double *a, double *b);
 
 double newton_raphson(R1Function f, double x0, double epsilon);
 
-double runga_kutta1(R2Function y, double y0, double x0, double x, double h);
+double RungaKutta(R2Function y, double y0, double x0, double x, double h);
 
-void runga_kutta2(RmFunction *f, double *y0, double x0, double *y1, double x1, int n, double h);
+void RungaKuttaSystem(RmFunction *f, double *y0, double x0, double *y, double x, const int n, double h);
+
+double EulerMethod(R2Function f, double x0, double y0, double x, double h);
+
+void EulerMethodSystem(RmFunction *f, double x0, const double *y0, double x, double *y, int n, double h);
 
 #ifdef __cplusplus
 }
