@@ -2,17 +2,27 @@
 
 double f0(double t, double *x, int n, double u)
 {
-    return x[0]*x[0] + x[1]*x[1] + u*u;
+    //return x[0]*x[0] + x[1]*x[1] + u*u;
+	double x1 = x[0];
+	double x2 = x[1];
+	double a = x1 - t*t*t;
+	double b = 2*u - 1.0;
+	return a*a + x2*x2 - t*t + b*b;
 }
 
 double f1(double t, double *x, int n, double u)
 {
-    return 2 * x[0];
+    //return 2 * x[0];
+	double x2 = x[1];
+	return 3*x2*x2;// - t;
 }
 
 double f2(double t, double *x, int n, double u)
 {
-    return x[0] + x[1] + u;
+    //return x[0] + x[1] + u;
+	double x1 = x[0];
+	double x2 = x[1];
+	return x1 + x2 - 2*u - t*t*t + 1.0;
 }
 
 double Hamilton(double t, double *x, int n, double u, double *p)
@@ -66,6 +76,29 @@ double JSum(double *t, double *x1, double *x2, double n, double *u, int N)
     for (i=0; i<(N-1); i++)
     {
         int j=i+1;
+		
+		double a1 = x1[i] - t[i]*t[i]*t[i];
+		double b1 = 2*u[i] - 1.0;
+		
+		double a2 = x1[j] - t[j]*t[j]*t[j];
+		double b2 = 2*u[j] - 1.0;
+		
+        double f1 = a1*a1 + x2[i]*x2[i] - t[i]*t[i] + b1*b1;
+        double f2 = a2*a2 + x2[j]*x2[j] - t[j]*t[j] + b2*b2;
+        sum = sum + (f2+f1)*(t[j]-t[i]);
+    }
+	sum = sum / 2.0;
+    sum = sum + (x2[N-1]-1.0)*(x2[N-1]-1.0);
+    return sum;
+}
+
+double JSum1(double *t, double *x1, double *x2, double n, double *u, int N)
+{
+    double sum = 0.0;
+    int i=0;
+    for (i=0; i<(N-1); i++)
+    {
+        int j=i+1;
         double f1 = x1[i]*x1[i] + x2[i]*x2[i] + u[i]*u[i];
         double f2 = x1[j]*x1[j] + x2[j]*x2[j] + u[j]*u[j];
         sum = sum + (0.5 * (f2+f1)*(t[j]-t[i]));
@@ -82,8 +115,8 @@ void control1()
     double h2 = 0.000001;	//step for runga_kutta or euler method
     double t0 = 0.0;
     double t1 = 1.0;
-    double x10 = 1.0;
-    double x20 = 2.0;
+    double x10 = 0.0;
+    double x20 = 0.0;
     int M = 10;
     int N = M + 1;
 
@@ -94,32 +127,37 @@ void control1()
     double *p1 = (double*) malloc( sizeof(double) * N );
     double *p2 = (double*) malloc( sizeof(double) * N );
     double *gr = (double*) malloc( sizeof(double) * N );
+	
+	memset(u, )
 
     for (i=0; i<N; i++)
     {
         t[i] = i*h1;
-        u[i] = 1.0;
+        u[i] = sin(t[i]);
     }
 
     double j1,j2;
     do
     {
         printX("u", u, N);
+		        printX("x1", x1, N);
+        printX("x2", x2, N);
         x1[0] = x10;
         x2[0] = x20;
         for (i=0; i<N-1; i++)
         {
             double x0[] = { x1[i], x2[i] };
             double _x[] = { 0.0, 0.0 };
-            _RungaKuttaSystem1(t[i], x0, t[i+1], _x,  n, h2, u[i]);
+            _RungaKuttaSystem1(t[i], x0, t[i+1], _x, n, h2, u[i]);
             x1[i+1] = _x[0];
             x2[i+1] = _x[1];
         }
         printX("x1", x1, N);
         printX("x2", x2, N);
 
-        p1[N-1] = 2 * x1[N-1];
-        p2[N-1] = 2 * x2[N-1];
+        p1[N-1] = 0.0;
+        p2[N-1] = 2 * (x2[N-1] - 1.0);        printX("p1", p1, N);
+        printX("p2", p2, N);
         for (i=(N-1); i>0; i--)
         {
             double p0[] = { p1[i], p2[i] };
@@ -142,15 +180,15 @@ void control1()
 
         double argmin(double alpha)
         {
-            int j;
-			double u2[N];
-            for (j=0; j<N; j++) u2[j] = u[j] - alpha * gr[j];
-            return JSum(t, x1, x2, n, u2, N);
+            int i;
+			double u1[N];
+            for (i=0; i<N; i++) u1[i] = u[i] - alpha * gr[i];
+            return JSum(t, x1, x2, n, u1, N);
         }
 
         double a,b;
         double alpha0 = 0.0;
-        straight_line_search_metod(argmin, alpha0, 0.1, &a, &b);
+        straight_line_search_metod(argmin, alpha0, 0.01, &a, &b);
         double alpha = golden_section_search_min(argmin, a, b, 0.000001);
         if ( argmin(alpha) > argmin(alpha0) ) alpha = alpha0;
 
@@ -165,8 +203,8 @@ void control1()
         j2 = JSum(t, x1, x2, n, u, N);
         printf("J1=%.10f J2=%.10f\n", j1, j2);
         puts("--------------------------------");
-		if (fabs( j1 - j2 ) < 0.00001) break;
-    } while (j1 > j2);
+		//if (fabs( j1 - j2 ) < 0.00001) break;
+    } while (1);
 
     free(gr);
     free(p2);
