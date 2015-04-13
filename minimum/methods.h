@@ -216,7 +216,7 @@ double newton_raphson(R1Function f, double x0, double epsilon);
 
 double RungaKutta(R2Function y, double y0, double x0, double x, double h);
 
-void RungaKuttaSystem(RmFunction *f, double *y0, double x0, double *y, double x, const int n, double h);
+void RungaKuttaSystem(RmFunction *f, double x0, const double *y0, double x, double *y, const int n, double h);
 
 double EulerMethod(R2Function f, double x0, double y0, double x, double h);
 

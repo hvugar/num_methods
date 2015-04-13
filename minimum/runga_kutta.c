@@ -15,7 +15,7 @@ double RungaKutta(R2Function f, double y0, double x0, double x, double h)
     return y0;
 }
 
-void RungaKuttaSystem(RmFunction *f, double *y0, double x0, double *y, double x, const int n, double h)
+void RungaKuttaSystem(RmFunction *f, double x0, const double *y0, double x, double *y, const int n, double h)
 {
     memcpy(y, y0, sizeof(double)*n);
     if (fabs(x-x0) < fabs(h)) return;
@@ -28,7 +28,7 @@ void RungaKuttaSystem(RmFunction *f, double *y0, double x0, double *y, double x,
 
     if (x0 > x) h = -fabs(h);
 
-    while (fabs(x-x0)>=(fabs(h/2.0)))
+    while (fabs(x-x0)>=(fabs(h)))
     {
         int i=0;
         // Calculating k1 vector

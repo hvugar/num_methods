@@ -7,6 +7,6 @@
 
 int main(int argc, char** argv)
 {
-	sample1();
+	control1();
 	return 0;
 }

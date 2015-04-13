@@ -129,7 +129,7 @@ void printer4(RnFunction P, double *x, int n, ...)
 	
 	if (iter == 0)
 	{
-		printf("No\t|x1      \t|x2      \t|x3      \t|x4      \t|x5      \t|x6      \t|x7      \t|x8      \t|x9      \t|x10      \t|F(x)      \t");
+		printf("No\t|x1      \t|x2      \t|x3      \t|x4      \t|x5      \t|x6         \t|x7      \t|x8      \t|x9      \t|x10      \t|F(x)      \t");
 		printf("\n--------+---------------+---------------+---------------+---------------+---------------+---------------+---------------+---------------+---------------+---------------+---------------+\n");
 	}
 	
@@ -162,6 +162,6 @@ void printX(char *label, double *x, int n)
 	int i;
 	printf("%s:\t", label);
 	for (i=0; i<n; i++)
-		printf("%14.10f ", x[i]);
+		printf("%12.8f ", x[i]);
 	printf("\n");
 }
