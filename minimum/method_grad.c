@@ -51,7 +51,6 @@ void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_e
         {
             x[j] = x[j] - alpha * grads[j];
         }
-
 		i++;
     }
     while ( grad_norm > epsilon && distance(x1, x, n) > epsilon /*&& fabs(f(x1,n) - f(x,n)) > epsilon*/ );

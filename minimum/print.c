@@ -160,8 +160,13 @@ void printer4(RnFunction P, double *x, int n, ...)
 void printX(char *label, double *x, int n)
 {
 	int i;
-	printf("%s:\t", label);
+	printf("double %s[] = \t{", label);
 	for (i=0; i<n; i++)
-		printf("%12.8f ", x[i]);
+	{
+		printf("%12.8f", x[i]);
+		if (i != n-1 )
+			printf(", ");
+	}
+	printf("};");
 	printf("\n");
 }
