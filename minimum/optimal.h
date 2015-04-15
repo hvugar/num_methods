@@ -21,6 +21,7 @@ void smp1_control();
 void smp1_RungaKuttaSystem1(double t0, double *x0, double t, double *x, int n, double h, double u);
 void smp1_RungaKuttaSystem2(double t0, double *p0, double t, double *p, int n, double h, double *x, double u);
 double smp1_f0(double t, double *x, int n, double u);
+double smp1_F(double *x, int n);
 double smp1_f1(double t, double *x, int n, double u);
 double smp1_f2(double t, double *x, int n, double u);
 double smp1_Hamilton(double t, double *x, double *psi, int n, double u);

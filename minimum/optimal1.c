@@ -45,17 +45,25 @@ void smp1_control()
         x2[0] = x20;
         for (i=0; i<N-1; i++)
         {
-            double x0[] = { x1[i], x2[i] };
+		double a = x1[i];
+		double b = x2[i];
+            double x0[] = { a, b };
             double _x[] = { 0.0, 0.0 };
             smp1_RungaKuttaSystem1(t[i], x0, t[i+1], _x, n, h2, u[i]);
             x1[i+1] = _x[0];
             x2[i+1] = _x[1];
+			break;
         }
         printX("x1", x1, N);
         printX("x2", x2, N);
 
-        p1[N-1] = 0.0;
-        p2[N-1] = 2 * (x2[N-1] - 1.0);        
+		double _x[] = {x1[N-1], x2[N-1]};
+		double xg[] = {0.0, 0.0};
+		gradient(smp1_F, _x, n, 0.00001, xg);
+		printX("xg", xg, n);
+		
+        p1[N-1] = xg[0];
+        p2[N-1] = xg[1];        
         for (i=(N-1); i>0; i--)
         {
             double p0[] = { p1[i], p2[i] };
@@ -98,19 +106,17 @@ void smp1_control()
 		printf("u\t%14.10f\n", U/N);
 
         //printf("J1\t%14.10f %14.10f\n", J1, JSum(u, N));
-        j1 = smp1_JSum(t, x1, x2, n, u, N) - (x2[N-1]-1)*(x2[N-1]-1);
+        j1 = smp1_JSum(t, x1, x2, n, u, N) - smp1_F(_x, n);
         for (i=0; i<N; i++)
         {
             u[i] = u[i] - alpha*gr[i];
         }
-        j2 = smp1_JSum(t, x1, x2, n, u, N) - (x2[N-1]-1)*(x2[N-1]-1);
-        printf("J1=%.16f\nJ2=%.16f\n", j1, j2);
-		
-		
+        j2 = smp1_JSum(t, x1, x2, n, u, N) - smp1_F(_x, n);
+        printf("J1=%.16f\nJ2=%.16f %d\n", j1, j2, (j1-j2) > 0.0);
 		
         puts("--------------------------------");
 		//if (fabs( j1 - j2 ) < 0.00001) break;
-    } while (1);
+    } while ((j1-j2)>0.0);
 
     free(gr);
     free(p2);
@@ -118,6 +124,11 @@ void smp1_control()
     free(x2);
     free(x1);
     free(u);
+}
+
+double smp1_F(double *x, int n)
+{
+	return (x[1] - 1.0) * (x[1] - 1.0);
 }
 
 double smp1_f0(double t, double *x, int n, double u)
@@ -142,29 +153,19 @@ double smp1_Hamilton(double t, double *x, double *psi, int n, double u)
 
 double smp1_Dpsi1(double t, double *x, double *psi, int n, double u)
 {
-    double _x1[n];
-    double _x2[n];
     double h = 0.000001;
-    _x1[0] = x[0] + h;
-    _x1[1] = x[1];
-    _x2[0] = x[0] - h;
-    _x2[1] = x[1];
-    double dH = -1.0*(smp1_Hamilton(t, _x1, psi, n, u) - smp1_Hamilton(t, _x2, psi, n, u)) / (2.0 * h);
-    return dH;
+    double _x1[] = { x[0] + h, x[1] };
+    double _x2[] = { x[0] - h, x[1] };
+    return -1.0*(smp1_Hamilton(t, _x1, psi, n, u) - smp1_Hamilton(t, _x2, psi, n, u)) / (2.0 * h);
 //	return 2.0 * (x[0] - t*t*t) - psi[1];
 }
 
 double smp1_Dpsi2(double t, double *x, double *psi, int n, double u)
 {
-    double _x1[n];
-    double _x2[n];
     double h = 0.000001;
-    _x1[0] = x[0];
-    _x1[1] = x[1] + h;
-    _x2[0] = x[0];
-    _x2[1] = x[1] - h;
-    double dH = -1.0*(smp1_Hamilton(t, _x1, psi, n, u) - smp1_Hamilton(t, _x2, psi, n, u)) / (2.0 * h);
-    return dH;
+    double _x1[] = { x[0], x[1] + h };
+    double _x2[] = { x[0], x[1] - h };
+    return -1.0*(smp1_Hamilton(t, _x1, psi, n, u) - smp1_Hamilton(t, _x2, psi, n, u)) / (2.0 * h);
 //	return 2.0 * x[1] - 6.0*x[1]*psi[0] - psi[1];
 }
 
@@ -173,9 +174,24 @@ double smp1_Du(double t, double *x, double *psi, int n, double u)
     double h = 0.000001;
     double u1 = u + h;
     double u2 = u - h;
-    double dH = +1.0*(smp1_Hamilton(t, x, psi, n, u1) - smp1_Hamilton(t, x, psi, n, u2)) / (2.0 * h);
-    return dH;
+    return +1.0*(smp1_Hamilton(t, x, psi, n, u1) - smp1_Hamilton(t, x, psi, n, u2)) / (2.0 * h);
 //	return -2.0 * ( 2.0 * u + psi[1] - 1.0 );
+}
+
+double smp1_dFdx1(double *x, int n)
+{
+    double h = 0.000001;
+    double _x1[] = { x[0] + h, x[1] };
+    double _x2[] = { x[0] - h, x[1] };
+    return -1.0*(smp1_F(_x1, n) - smp1_F(_x2, n)) / (2.0 * h);
+}
+
+double smp1_dFdx2(double *x, int n)
+{
+    double h = 0.000001;
+    double _x1[] = { x[0], x[1] + h };
+    double _x2[] = { x[0], x[1] - h };
+    return -1.0*(smp1_F(_x1, n) - smp1_F(_x2, n)) / (2.0 * h);
 }
 
 double smp1_JSum(double *t, double *x1, double *x2, int n, double *u, int N)
@@ -196,26 +212,74 @@ double smp1_JSum(double *t, double *x1, double *x2, int n, double *u, int N)
 		double fi = (x1[i]-t[i]*t[i]*t[i])*(x1[i]-t[i]*t[i]*t[i]) + x2[i]*x2[i] - t[i]*t[i] + (2*u[i] - 1.0)*(2*u[i] - 1.0);
 		sum = sum + 0.5 * (fj+fi) * (t[j]-t[i]);
 	}
-	sum = sum + (x2[N-1]-1.0) * (x2[N-1]-1.0);
+	//sum = sum + (x2[N-1]-1.0) * (x2[N-1]-1.0);
+	double x[] = { x1[N-1], x2[N-1] };
+	sum = sum + smp1_F(x, n);
 	return sum;
 }
 
 void smp1_RungaKuttaSystem1(double t0, double *x0, double t, double *x, int n, double h, double u)
 {
-    double xf1(double _t, double *_x, int _n) { return smp1_f1(_t, _x, _n, u); }
-    double xf2(double _t, double *_x, int _n) { return smp1_f2(_t, _x, _n, u); }
-    RmFunction xf[n];
-    xf[0] = xf1;
-    xf[1] = xf2;
-    return RungaKuttaSystem(xf, t0, x0, t, x, n, h);
+//    double xf1(double _t, double *_x, int _n) { return smp1_f1(_t, _x, _n, u); }
+//    double xf2(double _t, double *_x, int _n) { return smp1_f2(_t, _x, _n, u); }
+//    RmFunction xf[] = { xf1, xf2 };
+//    RungaKuttaSystem(xf, t0, x0, t, x, n, h);
+
+	memcpy(x, x0, sizeof(double)*n);
+    if (fabs(t-t0) < fabs(h)) return;
+
+    double *k1 = (double*) malloc( sizeof(double) * n );
+    double *k2 = (double*) malloc( sizeof(double) * n );
+    double *k3 = (double*) malloc( sizeof(double) * n );
+    double *k4 = (double*) malloc( sizeof(double) * n );
+    double *xc = (double*) malloc( sizeof(double) * n );
+
+    if (t0 > t) h = -fabs(h);
+
+    while (fabs(t-t0)>=(fabs(h)))
+    {
+        int i=0;
+        // Calculating k1 vector
+        k1[0] = smp1_f1(t0, x, n, u);
+        k1[1] = smp1_f2(t0, x, n, u);
+		
+        // Calculating k2 vector
+        xc[0] = x[0] + (h/2.0) * k1[i];
+        xc[1] = x[1] + (h/2.0) * k1[1];
+        k2[0] = smp1_f1(t0+h/2.0, xc, n, u);
+        k2[1] = smp1_f2(t0+h/2.0, xc, n, u);
+
+        // Calculating k3 vector
+        xc[0] = x[0] + (h/2.0) * k2[0];
+        xc[1] = x[1] + (h/2.0) * k2[1];
+        k3[0] = smp1_f1(t0+h/2.0, xc, n, u);
+        k3[1] = smp1_f2(t0+h/2.0, xc, n, u);
+
+        // Calculating k1 vector
+        xc[0] = x[0] + h * k3[0];
+        xc[1] = x[1] + h * k3[1];
+        k4[0] = smp1_f1(t0+h, xc, n, u);
+        k4[1] = smp1_f2(t0+h, xc, n, u);
+
+        // Calculating y
+        x[0] = x[0] + (h/6.0) * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0]);
+        x[1] = x[1] + (h/6.0) * (k1[1] + 2*k2[1] + 2*k3[1] + k4[1]);
+
+        t0 = t0 + h;
+    }
+
+    free(xc);
+    free(k1);
+    free(k2);
+    free(k3);
+    free(k4);
+
 }
 
 void smp1_RungaKuttaSystem2(double t0, double *p0, double t, double *p, int n, double h, double *x, double u)
 {
     double __psi1(double _t, double *_p, int _n) { return smp1_Dpsi1(_t, x, _p, _n, u); }
     double __psi2(double _t, double *_p, int _n) { return smp1_Dpsi2(_t, x, _p, _n, u); }
-    RmFunction fp[n];
-    fp[0] = __psi1;
-    fp[1] = __psi2;
-    return RungaKuttaSystem(fp, t0, p0, t, p, n, h);
+    RmFunction fp[] = { __psi1, __psi2 };
+    RungaKuttaSystem(fp, t0, p0, t, p, n, h);
 }
