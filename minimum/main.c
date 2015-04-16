@@ -14,7 +14,7 @@ double _f1(double t, double *x, int n)
 double _f2(double t, double *x, int n)
 {
 	//printf("_f2 %.10f\n", t);
-	return x[0] + x[1] + 1.0;
+	return x[0] + x[1] - t*t*t + 1.0;
 }
 
 int main(int argc, char** argv)

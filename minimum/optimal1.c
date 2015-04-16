@@ -31,10 +31,15 @@ void smp1_control()
 	memset(p2, 0, sizeof(double) * N);
 	memset(gr, 0, sizeof(double) * N);
 	
+//	for (i=0; i<N; i++)
+//	{
+//		x1[i] = x2[0] = u[i] = t[i] = 0.0;
+//	}
+	
     for (i=0; i<N; i++)
     {
         t[i] = i*h1;
-        u[i] = sin(t[i]);
+        u[i] = t[i]/2.0;//0.0;//sin(t[i]);
     }
 
     double j1,j2;
@@ -45,20 +50,17 @@ void smp1_control()
         x2[0] = x20;
         for (i=0; i<N-1; i++)
         {
-		double a = x1[i];
-		double b = x2[i];
-            double x0[] = { a, b };
-            double _x[] = { 0.0, 0.0 };
-            smp1_RungaKuttaSystem1(t[i], x0, t[i+1], _x, n, h2, u[i]);
-            x1[i+1] = _x[0];
-            x2[i+1] = _x[1];
-			break;
+            double _x0[] = { x1[i], x2[i] };
+            double _x1[] = { 0.000, 0.000 };
+            smp1_RungaKuttaSystem1(t[i], _x0, t[i+1], _x1, n, h2, u[i]);
+            x1[i+1] = _x1[0];
+            x2[i+1] = _x1[1];
         }
         printX("x1", x1, N);
         printX("x2", x2, N);
 
-		double _x[] = {x1[N-1], x2[N-1]};
-		double xg[] = {0.0, 0.0};
+		double _x[] = { x1[N-1], x2[N-1] };
+		double xg[] = { 0.00000, 0.00000 };
 		gradient(smp1_F, _x, n, 0.00001, xg);
 		printX("xg", xg, n);
 		
@@ -92,7 +94,6 @@ void smp1_control()
             return smp1_JSum(t, x1, x2, n, u1, N);
         }
 
-
         double a,b;
         double alpha0 = 0.0;
         straight_line_search_metod(argmin1, alpha0, 0.001, &a, &b);
@@ -112,10 +113,12 @@ void smp1_control()
             u[i] = u[i] - alpha*gr[i];
         }
         j2 = smp1_JSum(t, x1, x2, n, u, N) - smp1_F(_x, n);
+		printX("u", u, N);
         printf("J1=%.16f\nJ2=%.16f %d\n", j1, j2, (j1-j2) > 0.0);
-		
+	
         puts("--------------------------------");
 		//if (fabs( j1 - j2 ) < 0.00001) break;
+		break;
     } while ((j1-j2)>0.0);
 
     free(gr);
@@ -156,7 +159,7 @@ double smp1_Dpsi1(double t, double *x, double *psi, int n, double u)
     double h = 0.000001;
     double _x1[] = { x[0] + h, x[1] };
     double _x2[] = { x[0] - h, x[1] };
-    return -1.0*(smp1_Hamilton(t, _x1, psi, n, u) - smp1_Hamilton(t, _x2, psi, n, u)) / (2.0 * h);
+    return -1.0*((smp1_Hamilton(t, _x1, psi, n, u) - smp1_Hamilton(t, _x2, psi, n, u)) / (2.0 * h));
 //	return 2.0 * (x[0] - t*t*t) - psi[1];
 }
 
@@ -165,7 +168,7 @@ double smp1_Dpsi2(double t, double *x, double *psi, int n, double u)
     double h = 0.000001;
     double _x1[] = { x[0], x[1] + h };
     double _x2[] = { x[0], x[1] - h };
-    return -1.0*(smp1_Hamilton(t, _x1, psi, n, u) - smp1_Hamilton(t, _x2, psi, n, u)) / (2.0 * h);
+    return -1.0*((smp1_Hamilton(t, _x1, psi, n, u) - smp1_Hamilton(t, _x2, psi, n, u)) / (2.0 * h));
 //	return 2.0 * x[1] - 6.0*x[1]*psi[0] - psi[1];
 }
 
@@ -174,7 +177,7 @@ double smp1_Du(double t, double *x, double *psi, int n, double u)
     double h = 0.000001;
     double u1 = u + h;
     double u2 = u - h;
-    return +1.0*(smp1_Hamilton(t, x, psi, n, u1) - smp1_Hamilton(t, x, psi, n, u2)) / (2.0 * h);
+    return 1.0*(smp1_Hamilton(t, x, psi, n, u1) - smp1_Hamilton(t, x, psi, n, u2)) / (2.0 * h);
 //	return -2.0 * ( 2.0 * u + psi[1] - 1.0 );
 }
 
@@ -220,11 +223,11 @@ double smp1_JSum(double *t, double *x1, double *x2, int n, double *u, int N)
 
 void smp1_RungaKuttaSystem1(double t0, double *x0, double t, double *x, int n, double h, double u)
 {
-//    double xf1(double _t, double *_x, int _n) { return smp1_f1(_t, _x, _n, u); }
-//    double xf2(double _t, double *_x, int _n) { return smp1_f2(_t, _x, _n, u); }
-//    RmFunction xf[] = { xf1, xf2 };
-//    RungaKuttaSystem(xf, t0, x0, t, x, n, h);
-
+    double xf1(double _t, double *_x, int _n) { return smp1_f1(_t, _x, _n, u); }
+    double xf2(double _t, double *_x, int _n) { return smp1_f2(_t, _x, _n, u); }
+    RmFunction xf[] = { xf1, xf2 };
+    RungaKuttaSystem(xf, t0, x0, t, x, n, h);
+/*
 	memcpy(x, x0, sizeof(double)*n);
     if (fabs(t-t0) < fabs(h)) return;
 
@@ -246,19 +249,22 @@ void smp1_RungaKuttaSystem1(double t0, double *x0, double t, double *x, int n, d
         // Calculating k2 vector
         xc[0] = x[0] + (h/2.0) * k1[i];
         xc[1] = x[1] + (h/2.0) * k1[1];
+		
         k2[0] = smp1_f1(t0+h/2.0, xc, n, u);
         k2[1] = smp1_f2(t0+h/2.0, xc, n, u);
 
         // Calculating k3 vector
         xc[0] = x[0] + (h/2.0) * k2[0];
         xc[1] = x[1] + (h/2.0) * k2[1];
-        k3[0] = smp1_f1(t0+h/2.0, xc, n, u);
+        
+		k3[0] = smp1_f1(t0+h/2.0, xc, n, u);
         k3[1] = smp1_f2(t0+h/2.0, xc, n, u);
 
         // Calculating k1 vector
         xc[0] = x[0] + h * k3[0];
         xc[1] = x[1] + h * k3[1];
-        k4[0] = smp1_f1(t0+h, xc, n, u);
+        
+		k4[0] = smp1_f1(t0+h, xc, n, u);
         k4[1] = smp1_f2(t0+h, xc, n, u);
 
         // Calculating y
@@ -273,13 +279,62 @@ void smp1_RungaKuttaSystem1(double t0, double *x0, double t, double *x, int n, d
     free(k2);
     free(k3);
     free(k4);
-
+*/
 }
 
 void smp1_RungaKuttaSystem2(double t0, double *p0, double t, double *p, int n, double h, double *x, double u)
 {
-    double __psi1(double _t, double *_p, int _n) { return smp1_Dpsi1(_t, x, _p, _n, u); }
-    double __psi2(double _t, double *_p, int _n) { return smp1_Dpsi2(_t, x, _p, _n, u); }
-    RmFunction fp[] = { __psi1, __psi2 };
-    RungaKuttaSystem(fp, t0, p0, t, p, n, h);
+//    double __psi1(double _t, double *_p, int _n) { return smp1_Dpsi1(_t, x, _p, _n, u); }
+//    double __psi2(double _t, double *_p, int _n) { return smp1_Dpsi2(_t, x, _p, _n, u); }
+//    RmFunction fp[] = { __psi1, __psi2 };
+//    RungaKuttaSystem(fp, t0, p0, t, p, n, h);
+
+	memcpy(p, p0, sizeof(double)*n);
+    if (fabs(t-t0) < fabs(h)) return;
+
+    double *k1 = (double*) malloc( sizeof(double) * n );
+    double *k2 = (double*) malloc( sizeof(double) * n );
+    double *k3 = (double*) malloc( sizeof(double) * n );
+    double *k4 = (double*) malloc( sizeof(double) * n );
+    double *pc = (double*) malloc( sizeof(double) * n );
+
+    if (t0 > t) h = -fabs(h);
+
+    while (fabs(t-t0)>=(fabs(h)))
+    {
+        int i=0;
+        // Calculating k1 vector
+        k1[0] = smp1_Dpsi1(t0, x, p, n, u);
+        k1[1] = smp1_Dpsi2(t0, x, p, n, u);
+		
+        // Calculating k2 vector
+        pc[0] = p[0] + (h/2.0) * k1[i];
+		pc[1] = p[1] + (h/2.0) * k1[1];
+        k2[0] = smp1_Dpsi1(t0+h/2.0, x, pc, n, u);
+        k2[1] = smp1_Dpsi2(t0+h/2.0, x, pc, n, u);
+
+        // Calculating k3 vector
+        pc[0] = p[0] + (h/2.0) * k2[0];
+        pc[1] = p[1] + (h/2.0) * k2[1];
+		k3[0] = smp1_Dpsi1(t0+h/2.0, x, pc, n, u);
+        k3[1] = smp1_Dpsi2(t0+h/2.0, x, pc, n, u);
+
+        // Calculating k1 vector
+        pc[0] = p[0] + h * k3[0];
+        pc[1] = p[1] + h * k3[1];
+		k4[0] = smp1_Dpsi1(t0+h, x, pc, n, u);
+        k4[1] = smp1_Dpsi2(t0+h, x, pc, n, u);
+
+        // Calculating y
+        p[0] = p[0] + (h/6.0) * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0]);
+        p[1] = p[1] + (h/6.0) * (k1[1] + 2*k2[1] + 2*k3[1] + k4[1]);
+
+        t0 = t0 + h;
+    }
+
+    free(pc);
+    free(k1);
+    free(k2);
+    free(k3);
+    free(k4);
 }
