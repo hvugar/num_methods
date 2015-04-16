@@ -39,7 +39,7 @@ void smp1_control()
     for (i=0; i<N; i++)
     {
         t[i] = i*h1;
-        u[i] = t[i]/2.0;//0.0;//sin(t[i]);
+        u[i] = sin(t[i]);
     }
 
     double j1,j2;
@@ -64,8 +64,8 @@ void smp1_control()
 		gradient(smp1_F, _x, n, 0.00001, xg);
 		printX("xg", xg, n);
 		
-        p1[N-1] = xg[0];
-        p2[N-1] = xg[1];        
+        p1[N-1] = -xg[0];
+        p2[N-1] = -xg[1];        
         for (i=(N-1); i>0; i--)
         {
             double p0[] = { p1[i], p2[i] };
@@ -113,12 +113,12 @@ void smp1_control()
             u[i] = u[i] - alpha*gr[i];
         }
         j2 = smp1_JSum(t, x1, x2, n, u, N) - smp1_F(_x, n);
-		printX("u", u, N);
+		//printX("u", u, N);
         printf("J1=%.16f\nJ2=%.16f %d\n", j1, j2, (j1-j2) > 0.0);
 	
         puts("--------------------------------");
 		//if (fabs( j1 - j2 ) < 0.00001) break;
-		break;
+		//break;
     } while ((j1-j2)>0.0);
 
     free(gr);
@@ -177,7 +177,7 @@ double smp1_Du(double t, double *x, double *psi, int n, double u)
     double h = 0.000001;
     double u1 = u + h;
     double u2 = u - h;
-    return 1.0*(smp1_Hamilton(t, x, psi, n, u1) - smp1_Hamilton(t, x, psi, n, u2)) / (2.0 * h);
+    return -1.0*(smp1_Hamilton(t, x, psi, n, u1) - smp1_Hamilton(t, x, psi, n, u2)) / (2.0 * h);
 //	return -2.0 * ( 2.0 * u + psi[1] - 1.0 );
 }
 
