@@ -1,16 +1,18 @@
 #include "optimal.h"
 
+void printX1(char *label, double *x, int n);
+
 void smp1_control()
 {
     int i;
     int n = 2;
-    double h1 = 0.00001;		//step for time
-    double h2 = 0.00001;	//step for runga_kutta or euler method
+    double h1 = 0.1;		//step for time
+    double h2 = 0.1;	//step for runga_kutta or euler method
     double t0 = 0.0;
     double t1 = 1.0;
     double x10 = 0.0;
     double x20 = 0.0;
-    int M = 100000;
+    int M = 10;
     int N = M + 1;
     printf("%.10f\n", h1);
 
@@ -33,14 +35,12 @@ void smp1_control()
     for (i=0; i<N; i++)
     {
         t[i] = i*h1;
-        u[i] = t[i]/2.0;
+        u[i] = 0.5*t[i];
     }
 
     double j1,j2;
     do
     {
-		printX("u", u, N);
-		printX("t", t, N);
         x1[0] = x10;
         x2[0] = x20;
         {
@@ -105,8 +105,6 @@ void smp1_control()
         //            x1[i+1] = _x1[0];
         //            x2[i+1] = _x1[1];
         //        }
-        printX("x1", x1, N);
-        printX("x2", x2, N);
 		
         p1[N-1] = 0.0;
         p2[N-1] = -2*(x2[N-1] - 1.0);
@@ -164,6 +162,9 @@ void smp1_control()
             free(k3);
             free(k4);
         }
+		printX1("u", u, N);
+        printX1("x1", x1, N);
+        printX1("x2", x2, N);
 
 //		double _x[] = { x1[N-1], x2[N-1] };
 //		double xg[] = { 0.00000, 0.00000 };
@@ -179,8 +180,8 @@ void smp1_control()
 //            p1[i-1] = _p[0];
 //            p2[i-1] = _p[1];
 //        }
-        printX("p1", p1, N);
-        printX("p2", p2, N);
+        printX1("p1", p1, N);
+        printX1("p2", p2, N);
 
         for (i=0; i<N; i++)
         {
@@ -188,7 +189,7 @@ void smp1_control()
             double _p[] = { p1[i], p2[i] };
             gr[i] = smp1_Du(t[i], _x, _p, n, u[i]);
         }
-        printX("gr", gr, N);
+        printX1("gr", gr, N);
 
         double argmin1(double alpha)
         {
@@ -218,13 +219,14 @@ void smp1_control()
             u[i] = u[i] - alpha*gr[i];
         }
         j2 = smp1_JSum(t, x1, x2, n, u, N) - smp1_F(_x, n);
-        //printX("u", u, N);
+        //printX1("u", u, N);
         printf("J1=%.16f\nJ2=%.16f %d\n", j1, j2, (j1-j2) > 0.0);
 
         puts("--------------------------------");
         //if (fabs( j1 - j2 ) < 0.00001) break;
         //break;
     } while ((j1-j2)>0.0);
+	//} while(1);
 
     free(gr);
     free(p2);
@@ -441,4 +443,20 @@ void smp1_RungaKuttaSystem2(double t0, double *p0, double t, double *p, int n, d
     free(k2);
     free(k3);
     free(k4);
+}
+
+void printX1(char *label, double *x, int n)
+{
+	int m = n / 10;
+	int i;
+	printf("double %s[] = \t{", label);
+	for (i=0; i<n; i++)
+	{
+		//if (i%10000==0)
+			printf("%12.8f", x[i]);
+		if (i != n-1 )
+			printf(", ");
+	}
+	printf("};");
+	printf("\n");
 }
