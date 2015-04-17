@@ -17,7 +17,7 @@ double RungaKutta(R2Function f, double y0, double x0, double x, double h)
 
 void RungaKuttaSystem(RmFunction *f, double x0, const double *y0, double x, double *y, const int n, double h)
 {
-	h = 0.000001;
+	//h = 0.000001;
 	memcpy(y, y0, sizeof(double)*n);
     if (fabs(x-x0) < fabs(h)) return;
 

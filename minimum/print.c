@@ -170,3 +170,20 @@ void printX(char *label, double *x, int n)
 	printf("};");
 	printf("\n");
 }
+
+void printX1(char *label, double *x, int n)
+{
+	int m = n / 10;
+	int i;
+	printf("double %s[] = \t{", label);
+	for (i=0; i<n; i++)
+	{
+		if (i%10000==0)
+			printf("%12.8f", x[i]);
+		//if (i != n-1 )
+		//	printf(", ");
+	}
+	printf("};");
+	printf("\n");
+}
+
