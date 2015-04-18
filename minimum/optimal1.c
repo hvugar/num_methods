@@ -247,7 +247,7 @@ void smp1_RungaKuttaSystem1(double t0, double *x0, double t, double *x, int n, d
         k1[1] = smp1_f2(t0, x, n, u);
 
         // Calculating k2 vector
-        xc[0] = x[0] + (h/2.0) * k1[i];
+        xc[0] = x[0] + (h/2.0) * k1[0];
         xc[1] = x[1] + (h/2.0) * k1[1];
 
         k2[0] = smp1_f1(t0+h/2.0, xc, n, u);
