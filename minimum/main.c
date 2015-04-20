@@ -23,8 +23,8 @@ double JSum(double *t, double *x1, double *x2, int n, double *u, int N)
     for (i=0; i<(N-1); i++)
     {
         int j=i+1;
-        double fj = (x1[j]-t[j]*t[j]*t[j])*(x1[j]-t[j]*t[j]*t[j]) + x2[j]*x2[j] - t[j]*t[j] + (2*u[j] - 1.0)*(2*u[j] - 1.0);
-        double fi = (x1[i]-t[i]*t[i]*t[i])*(x1[i]-t[i]*t[i]*t[i]) + x2[i]*x2[i] - t[i]*t[i] + (2*u[i] - 1.0)*(2*u[i] - 1.0);
+        double fj = (x1[j]-t[j]*t[j]*t[j])*(x1[j]-t[j]*t[j]*t[j]) + x2[j]*x2[j] - t[j]*t[j] + (2*u[j] - 1.0)*(2*u[j] - t[j]);
+        double fi = (x1[i]-t[i]*t[i]*t[i])*(x1[i]-t[i]*t[i]*t[i]) + x2[i]*x2[i] - t[i]*t[i] + (2*u[i] - 1.0)*(2*u[i] - t[i]);
         sum = sum + 0.5 * (fj+fi) * (t[j]-t[i]);
     }
     //double x[] = { x1[N-1], x2[N-1] };
@@ -120,7 +120,7 @@ int main(int argc, char** argv)
 		
         i=N-1;
         p1[i] = 0.0;
-        p2[i] = 0.0;//-2.0 * (x2[i] - 1.0);
+        p2[i] = -2.0 * (x2[i] - 1.0);
         h = -0.000001;
         //while (fabs(t1-t0) >= fabs(h/2))
         while (i>0)
@@ -199,68 +199,6 @@ int main(int argc, char** argv)
     return 0;
 }
 
-void runga_kutta_system1(double t0, double x01, double x02, double t1, double x11, double x12, int n, double h, double u)
-{
-    double __fx1(double t, double *x, int n) { return fx1(t, x[0], x[1], u); }
-    double __fx2(double t, double *x, int n) { return fx2(t, x[0], x[1], u); }
-    RmFunction f[n];
-    f[0] = __fx1;
-    f[1] = __fx2;
-    double x0[] = {x01, x02};
-    double x1[] = {x11, x12};
-    runga_kutta_system(f, t0, x0, t1, x1, n, h);
-}
-
-void runga_kutta_system(RmFunction *f, double t0, double *x0, double t1, double *x1, int n, double h)
-{
-    if (fabs(t1-t0) < fabs(h)) return;
-
-    int i;
-    double k1[n];
-    double k2[n];
-    double k3[n];
-    double k4[n];
-
-    double xc[n];
-
-    if (t1<t0) h = -fabs(h);
-
-    for (i=0; i<n; i++)
-    {
-        x1[i] = x0[i];
-    }
-
-    while ( fabs(t1-t0) <= fabs(h/2.0) )
-    {
-
-        k1[0] = f[0](t0, x1, n);
-        k1[1] = f[1](t0, x1, n);
-
-        xc[0] = x1[0] + (h/2.0) * k1[0];
-        xc[1] = x1[1] + (h/2.0) * k1[1];
-
-        k2[0] = f[0](t0+h/2.0, xc, n);
-        k2[1] = f[1](t0+h/2.0, xc, n);
-
-        xc[0] = x1[0] + (h/2.0) * k2[0];
-        xc[1] = x1[1] + (h/2.0) * k2[1];
-
-        k3[0] = f[0](t0+h/2.0, xc, n);
-        k3[1] = f[1](t0+h/2.0, xc, n);
-
-        xc[0] = x1[0] + h * k3[0];
-        xc[1] = x1[1] + h * k3[1];
-
-        k4[0] = f[0](t0+h, xc, n);
-        k4[1] = f[1](t0+h, xc, n);
-
-        t0 = t0 + h;
-
-        x1[0] = x1[0] + h/6.0 * (k1[0] + 2.0 * k2[0] + 2.0 * k3[0] + k4[0]);
-        x1[1] = x1[1] + h/6.0 * (k1[1] + 2.0 * k2[1] + 2.0 * k3[1] + k4[1]);
-    }
-}
-
 double fx1(double t, double x1, double x2, double u)
 {
     return 3.0*x2*x2;
@@ -278,12 +216,12 @@ double fp1(double t, double x1, double x2, double p1, double p2, double u)
 
 double fp2(double t, double x1, double x2, double p1, double p2, double u)
 {
-    return 2.0 * x2 - 6.0 * x2 * p1 - p2;
+    return 2.0 * (x2 - t) - 6.0 * x2 * p1 - p2;
 }
 
 double dIdu(double t, double x1, double x2, double p1, double p2, double u)
 {
-    return -2.0 * ( 4.0 * u + p2 - 2.0 );
+    return -4.0 * ( 2.0 * u - t ) - 2.0 *p2;
 }
 
 void print1(char *s, double *a, int n)

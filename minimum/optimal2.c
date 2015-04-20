@@ -6,13 +6,13 @@ void smp1_control()
 {
     int i;
     int n = 2;
-    double h1 = 0.1;		//step for time
-    double h2 = 0.1;	//step for runga_kutta or euler method
+    double h1 = 0.001;		//step for time
+    double h2 = 0.001;	//step for runga_kutta or euler method
     double t0 = 0.0;
     double t1 = 1.0;
     double x10 = 0.0;
     double x20 = 0.0;
-    int M = 10;
+    int M = 1000;
     int N = M + 1;
     printf("%.10f\n", h1);
 
@@ -213,12 +213,12 @@ void smp1_control()
 
         //printf("J1\t%14.10f %14.10f\n", J1, JSum(u, N));
 		double _x[] = { x1[N-1], x2[N-1] };
-        j1 = smp1_JSum(t, x1, x2, n, u, N) - smp1_F(_x, n);
+        j1 = smp1_JSum(t, x1, x2, n, u, N);// - smp1_F(_x, n);
         for (i=0; i<N; i++)
         {
             u[i] = u[i] - alpha*gr[i];
         }
-        j2 = smp1_JSum(t, x1, x2, n, u, N) - smp1_F(_x, n);
+        j2 = smp1_JSum(t, x1, x2, n, u, N);// - smp1_F(_x, n);
         //printX1("u", u, N);
         printf("J1=%.16f\nJ2=%.16f %d\n", j1, j2, (j1-j2) > 0.0);
 
@@ -253,6 +253,7 @@ double smp1_f1(double t, double *x, int n, double u)
 
 double smp1_f2(double t, double *x, int n, double u)
 {
+	
     return x[0] + x[1] - 2.0*u - t*t*t + 1.0;
 }
 
