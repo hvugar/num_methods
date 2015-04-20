@@ -76,7 +76,7 @@ int main(int argc, char** argv)
     //if (t1<t0) h = -fabs(h);
 
 	double j1, j2;
-    //while (1)
+    while (1)
     {
     //print1("t", t, N);
     print1("u", u, N);
@@ -148,7 +148,7 @@ int main(int argc, char** argv)
         print1("p1", p1, N);
         print1("p2", p2, N);
         seperator();
-		printf("%.10f\n", JSum(t, x1, x2, 2, u, N));
+		//printf("%.10f\n", JSum(t, x1, x2, 2, u, N));
 
         for (i=0; i<N; i++)
         {
@@ -170,7 +170,7 @@ int main(int argc, char** argv)
         double a,b;
         double alpha0 = 0.0;
         straight_line_search_metod(argmin1, alpha0, 0.001, &a, &b);
-        double alpha = golden_section_search_min(argmin1, a, b, 0.00000001);
+        double alpha = golden_section_search_min(argmin1, a, b, 0.00001);
         if ( argmin1(alpha) > argmin1(alpha0) ) alpha = alpha0;
         printf("alpha\t%14.10f\n", alpha);
 		
@@ -181,12 +181,10 @@ int main(int argc, char** argv)
         }
         j2 = JSum(t, x1, x2, 2, u, N);
 
-        double s=0.0;
-        for (i=0; i<N; i++)
-            s += (t[i]-1.0)*(t[i]-1.0)*(t[i]-1.0)/3.0;
-        printf("%.10f %.10f\n", j1, j2);
-
-
+        //double s=0.0;
+        //for (i=0; i<N; i++)
+        //    s += (t[i]-1.0)*(t[i]-1.0)*(t[i]-1.0)/3.0;
+        //printf("%.10f %.10f\n", j1, j2);
     }
 
     free(p1);
