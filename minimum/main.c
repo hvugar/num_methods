@@ -85,22 +85,23 @@ int main(int argc, char** argv)
         x1[i] = 0.0;
         x2[i] = 0.0;
         h = +0.000001;
-        while (i<N-1)
+		for (i=0; i<N-1; i++)
+//        while (i<N-1)
         {
-            k11 = fx1(t[i], x1[i], x2[i], u[i]);
-            k12 = fx2(t[i], x1[i], x2[i], u[i]);
+            k11 = fx1(t[i],       x1[i],                 x2[i],                 u[i]);
+            k12 = fx2(t[i],       x1[i],                 x2[i],                 u[i]);
             k21 = fx1(t[i]+h/2.0, x1[i] + (h/2.0) * k11, x2[i] + (h/2.0) * k12, u[i]);
             k22 = fx2(t[i]+h/2.0, x1[i] + (h/2.0) * k11, x2[i] + (h/2.0) * k12, u[i]);
             k31 = fx1(t[i]+h/2.0, x1[i] + (h/2.0) * k21, x2[i] + (h/2.0) * k22, u[i]);
             k32 = fx2(t[i]+h/2.0, x1[i] + (h/2.0) * k21, x2[i] + (h/2.0) * k22, u[i]);
-            k41 = fx1(t[i]+h, x1[i] + (h) * k31, x2[i] + (h) * k32, u[i]);
-            k42 = fx2(t[i]+h, x1[i] + (h) * k31, x2[i] + (h) * k32, u[i]);
+            k41 = fx1(t[i]+h,     x1[i] + (h) * k31,     x2[i] + (h) * k32,     u[i]);
+            k42 = fx2(t[i]+h,     x1[i] + (h) * k31,     x2[i] + (h) * k32,     u[i]);
 
             x1[i+1] = x1[i] + (h/6.0) * (k11 + 2*k21 + 2*k31 + k41);
             x2[i+1] = x2[i] + (h/6.0) * (k12 + 2*k22 + 2*k32 + k42);
 
             //t0 = t0 + h;
-            i++;
+            //i++;
             //		x1[i] = x10;
             //		x2[i] = x20;
         }
@@ -116,7 +117,7 @@ int main(int argc, char** argv)
         //double p20 = -2.0 * (x2[i] - 1.0);
         //t0 = 1.0;
         //t1 = 0.0;
-
+		
         i=N-1;
         p1[i] = 0.0;
         p2[i] = 0.0;//-2.0 * (x2[i] - 1.0);
@@ -147,6 +148,7 @@ int main(int argc, char** argv)
         print1("p1", p1, N);
         print1("p2", p2, N);
         seperator();
+		printf("%.10f\n", JSum(t, x1, x2, 2, u, N));
 
         for (i=0; i<N; i++)
         {
