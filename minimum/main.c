@@ -23,8 +23,8 @@ double JSum(double *t, double *x1, double *x2, int n, double *u, int N)
     for (i=0; i<(N-1); i++)
     {
         int j=i+1;
-        double fj = (x1[j]-t[j]*t[j]*t[j])*(x1[j]-t[j]*t[j]*t[j]) + x2[j]*x2[j] - t[j]*t[j] + (2*u[j] - 1.0)*(2*u[j] - t[j]);
-        double fi = (x1[i]-t[i]*t[i]*t[i])*(x1[i]-t[i]*t[i]*t[i]) + x2[i]*x2[i] - t[i]*t[i] + (2*u[i] - 1.0)*(2*u[i] - t[i]);
+        double fj = (x1[j]-t[j]*t[j]*t[j])*(x1[j]-t[j]*t[j]*t[j]) + (x2[j] - t[j])*(x2[j] - t[j]) + (2*u[j] - t[j])*(2*u[j] - t[j]);
+        double fi = (x1[i]-t[i]*t[i]*t[i])*(x1[i]-t[i]*t[i]*t[i]) + (x2[i] - t[i])*(x2[i] - t[i]) + (2*u[i] - t[i])*(2*u[i] - t[i]);
         sum = sum + 0.5 * (fj+fi) * (t[j]-t[i]);
     }
     //double x[] = { x1[N-1], x2[N-1] };
@@ -54,15 +54,15 @@ int main(int argc, char** argv)
     for (i=0; i<N; i++)
     {
         t[i] = i*h;
-        u[i] = t[i]/2.0;
+        u[i] = sin(t[i]);///2.0;
         x1[i] = 0.0;
         x2[i] = 0.0;
     }
     print1("t", t, N);
-    print1("u", u, N);
-    seperator();
-    print1("x1", x1, N);
-    print1("x2", x2, N);
+    //print1("u", u, N);
+    //seperator();
+    //print1("x1", x1, N);
+    //print1("x2", x2, N);
 
     double k11;
     double k12;
@@ -106,10 +106,10 @@ int main(int argc, char** argv)
             //		x2[i] = x20;
         }
 
-        seperator();
+        //seperator();
         print1("x1", x1, N);
         print1("x2", x2, N);
-        seperator();
+        //seperator();
 
         //if (t1<t0) h = -fabs(h);
 
@@ -147,7 +147,7 @@ int main(int argc, char** argv)
         }
         print1("p1", p1, N);
         print1("p2", p2, N);
-        seperator();
+        //seperator();
 		//printf("%.10f\n", JSum(t, x1, x2, 2, u, N));
 
         for (i=0; i<N; i++)
@@ -184,7 +184,8 @@ int main(int argc, char** argv)
         //double s=0.0;
         //for (i=0; i<N; i++)
         //    s += (t[i]-1.0)*(t[i]-1.0)*(t[i]-1.0)/3.0;
-        //printf("%.10f %.10f\n", j1, j2);
+        printf("%.10f %.10f\n", j1, j2);
+		seperator();
     }
 
     free(p1);
@@ -225,13 +226,13 @@ double dIdu(double t, double x1, double x2, double p1, double p2, double u)
 void print1(char *s, double *a, int n)
 {
     int i;
-    printf("%s =\t{", s);
+    printf("double %s[] =\t{", s);
     for (i=0; i<n; i++)
     {
         if ( i%((n-1)/10) == 0 )
             printf("%12.8f", a[i]);
-        //if (i != n-1 )
-        //	printf(", ");
+        if ( i%((n-1)/10) == 0 && i != n-1 )
+        	printf(", ");
     }
     printf("};");
     printf("\n");
