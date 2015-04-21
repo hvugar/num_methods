@@ -169,8 +169,8 @@ int main(int argc, char** argv)
 
         double a,b;
         double alpha0 = 0.0;
-        straight_line_search_metod(argmin1, alpha0, 0.001, &a, &b);
-        double alpha = golden_section_search_min(argmin1, a, b, 0.00001);
+        straight_line_search_metod(argmin1, alpha0, 0.01, &a, &b);
+        double alpha = golden_section_search_min(argmin1, a, b, 0.0001);
         if ( argmin1(alpha) > argmin1(alpha0) ) alpha = alpha0;
         printf("alpha\t%14.10f\n", alpha);
 		
