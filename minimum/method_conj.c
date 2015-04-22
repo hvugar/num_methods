@@ -91,8 +91,6 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step,
         for (i=0; i<n; i++)
         {
             x[i] = x[i] + alpha * s[i];
-			//if (x[i]<-1) x[i] = -1;
-			//if (x[i]>+1) x[i] = +1;
         }
 
         if ( k == n ) { k = 0; } else { k++; }

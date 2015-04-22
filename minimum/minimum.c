@@ -133,6 +133,22 @@ double straight_line_search_metod(R1Function f, double x0, double dx, double *a,
 }
 
 /**
+ *
+ *
+ *
+**/
+double R1Minimize(R1Function f, double line_step, double gold_epsilon)
+{
+	double a,b;
+	double alpha0 = 0.0;
+	straight_line_search_metod(f, alpha0, line_step, &a, &b);
+	double alpha = golden_section_search_min(f, a, b, gold_epsilon);
+	if ( f(alpha) > f(alpha0) ) alpha = alpha0;
+	return alpha;
+}
+
+
+/**
  * @brief
  * @param f
  * @param x0

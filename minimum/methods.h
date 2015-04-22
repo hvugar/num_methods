@@ -124,6 +124,13 @@ double straight_line_search_metod(R1Function fx, double x0, double dx, double *a
 double golden_section_search_min(R1Function fx, double a, double b, double epsilon);
 
 /**
+ *
+ *
+ *
+**/
+double R1Minimize(R1Function f, double line_step, double gold_epsilon);
+
+/**
  * @brief Метод наискорейшего спуска
  * @param f         Целевая функция
  * @param x         Независимые переменные

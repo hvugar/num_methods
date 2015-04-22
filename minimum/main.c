@@ -11,6 +11,6 @@ extern void __calculate();
 int main(int argc, char** argv)
 {
 	__calculate();
-	calculate();
+	//calculate();
 	return 0;
 }

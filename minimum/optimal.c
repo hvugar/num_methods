@@ -48,26 +48,6 @@ double _JSum(double *t, double *x1, double *x2, int n, double *u, int N)
     return sum;
 }
 
-void _print1(char *s, double *a, int n)
-{
-    int i;
-    printf("double %s[] =\t{", s);
-    for (i=0; i<n; i++)
-    {
-        if ( i%((n-1)/10) == 0 )
-            printf("%12.8f", a[i]);
-        if ( i%((n-1)/10) == 0 && i != n-1 )
-            printf(", ");
-    }
-    printf("};");
-    printf("\n");
-}
-
-void _seperator()
-{
-    puts("---------------------------------------------------------------------------------------------------------------------------------------------");
-}
-
 void calculate()
 {
     double h = 0.000001;
@@ -87,15 +67,9 @@ void calculate()
     for (i=0; i<N; i++)
     {
         t[i] = i*h;
-        u[i] = t[i]/2.0;
+        u[i] = sin(t[i]);//2.0;
         x1[i] = x2[i] = p1[i] = p2[i] = 0.0;
     }
-    _print1("t", t, N);
-    _print1("u", u, N);
-    _print1("x1", x1, N);
-    _print1("x2", x2, N);
-    _print1("p1", p1, N);
-    _print1("p2", p2, N);
 
     double k11;
     double k12;
@@ -190,7 +164,6 @@ void calculate()
         double argmin1(double alpha)
         {
             int i;
-            //double u1[N];
             double *u1  = (double*) malloc( sizeof(double) * N );
             for (i=0; i<N; i++) u1[i] = u[i] - alpha * gr[i];
             double J = _JSum(t, x1, x2, 2, u1, N);
@@ -198,11 +171,7 @@ void calculate()
             return J;
         }
 
-        double a,b;
-        double alpha0 = 0.0;
-        straight_line_search_metod(argmin1, alpha0, 0.01, &a, &b);
-        double alpha = golden_section_search_min(argmin1, a, b, 0.0001);
-        if ( argmin1(alpha) > argmin1(alpha0) ) alpha = alpha0;
+		double alpha = R1Minimize(argmin1, 0.01, 0.0001);
         printf("alpha\t%14.10f\n", alpha);
 
         j1 = _JSum(t, x1, x2, 2, u, N) + (x2[N-1] - 1.0)*(x2[N-1] - 1.0);
