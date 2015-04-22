@@ -92,7 +92,7 @@ void __calculate()
 {
     double t0 = 0.0;
     double t1 = 1.0;
-    double h = 0.000001;
+    double h = 0.005;
     int N = (int)ceil((t1-t0)/h) + 1;
     int n = 2;
     //int r = 1;
@@ -115,6 +115,7 @@ void __calculate()
 
     double *gr = (double*) malloc( sizeof(double) * N );
 	double *s  = (double*) malloc( sizeof(double) * N );
+	double *s1 = (double*) malloc(sizeof(double) * N);
 
     for (i=0; i<N; i++)
     {
@@ -127,7 +128,9 @@ void __calculate()
 	int k = 0;
     double gr1_mod = 0.0;
     double gr2_mod = 0.0;
-
+	double sn = 0.0;
+	j1 = j2 = 10.0;
+	int count=0;
     do
     {
         _print1("u", u, N);
@@ -139,7 +142,7 @@ void __calculate()
         x[0][0] = x0[0];
         x[1][0] = x0[1];
         double _x[] = { x[0][0], x[1][0] };
-        h = +0.000001;
+        h = +fabs(h);
         for (i=0; i<N-1; i++)
         {
             double k1[] = {0.0, 0.0};
@@ -168,7 +171,7 @@ void __calculate()
         p[0][i] = 0.0;
         p[1][i] = -2.0 * (x[1][i] - 1.0);
         double _p[] = { p[0][i], p[1][i] };
-        h = -0.000001;
+        h = -fabs(h);
         for (i=N-1; i>0; i--)
         {
             double k1[] = {0.0, 0.0};
@@ -189,6 +192,8 @@ void __calculate()
         }
         _print1("p1", p[0], N);
         _print1("p2", p[1], N);
+		//j1 = j2;
+		j2 = __JSum(t, x, n, u, N) + (x[1][N-1] - 1.0)*(x[1][N-1] - 1.0);
 
         for (i=0; i<N; i++)
         {
@@ -200,11 +205,19 @@ void __calculate()
         }
         _print1("gr", gr, N);
 		
-#ifndef _USE_CONJUGATE_GRADIENT_
+		
+#ifdef _USE_CONJUGATE_GRADIENT_
 		if (k == 0)
 		{
             // First direction is antigradient
             for (i=0; i<N; i++) s[i] = -gr[i];
+			
+			// Norm of direction
+            sn = vertor_norm(s, N);
+
+            // Divide direction to its norm
+            for (i=0; i<N; i++) s1[i] = s[i] / sn;
+			
             // Module of gradient
             gr1_mod = 0.0;
             for (i=0; i<N; i++) gr1_mod += gr[i]*gr[i];
@@ -218,33 +231,40 @@ void __calculate()
             gr1_mod = gr2_mod;
             // Direction in next (k+1) iteration
             for (i=0; i<N; i++) s[i] = -gr[i] + s[i] * w;
+			
+            // Norm of direction
+            sn = vertor_norm(s, N);
+
+            // Divide direction to its module
+            for (i=0; i<N; i++) s1[i] = s[i] / sn;
 		}
 		_print1("s", s, N);
+		_print1("s1", s1, N);
 		
 		double argmin1(double alpha)
         {
             int i;
             double *u1  = (double*) malloc( sizeof(double) * N );
-            for (i=0; i<N; i++) u1[i] = u[i] + alpha * s[i];
+            for (i=0; i<N; i++) u1[i] = u[i] - alpha * s1[i];
             double J = __JSum(t, x, n, u1, N);
             free(u1);
             return J;
         }
         double alpha = R1Minimize(argmin1, 0.01, 0.0001);
         printf("alpha = %.10f\n", alpha);
-		j1 = __JSum(t, x, n, u, N) + (x[1][N-1] - 1.0)*(x[1][N-1] - 1.0);
 		memcpy(u1, u, sizeof(double) * n);
         for (i=0; i<N; i++)
         {
-            u[i] = u[i] + alpha * s[i];
-			//if ((u[i]) < -0.3) u[i] = -0.3;
-			//if ((u[i]) > +0.3) u[i] = +0.3;
+            u[i] = u[i] - alpha * s1[i];
+			if ((u[i]) < -0.2) u[i] = -0.2;
+			if ((u[i]) > +0.2) u[i] = +0.2;
         }
 		j2 = __JSum(t, x, n, u, N) + (x[1][N-1] - 1.0)*(x[1][N-1] - 1.0);
-		printf("J(u[k])    = %.10f\n",j1);
-		printf("J(u[k+1])  = %.10f\n",j2);
+		printf("J(u[k])    = %.10f\n",j2);
+		//printf("J(u[k+1])  = %.10f\n",j2);
 		if ( k == n ) { k = 0; } else { k++; }
 #else
+	/*
         double argmin1(double alpha)
         {
             int i;
@@ -265,9 +285,11 @@ void __calculate()
         j2 = __JSum(t, x, n, u, N) + (x[1][N-1] - 1.0)*(x[1][N-1] - 1.0);
 		printf("J(u[k])  = %.10f\n",j1);
 		printf("J(u[k+1])  = %.10f\n",j2);
+	*/
 #endif
         _seperator();
-    } while ( (j1-j2) > 0.00000001 && vertor_norm(u, n) > 0.00000001 && distance(u1, u, n) > 0.00000001 );
+		if (count++ > 5) break;
+    } while ( 1/*count++ < 10;fabs(j2-j1) >= 0.0001 /*&& vertor_norm(u, N) > 0.01 && distance(u1, u, N) > 0.01*/ );
 
     free(gr);
 	free(s);

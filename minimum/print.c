@@ -179,12 +179,20 @@ void _print1(char *s, double *a, int n)
     for (i=0; i<n; i++)
     {
         if ( i%((n-1)/10) == 0 )
+		{
 			if (a[i] < 0)
+			{
 				printf("%12.8f", a[i]);
+			}
 			else
-				printf("%+12.8f", a[i]);		
+			{
+				printf("%+12.8f", a[i]);
+			}
+		}
         if ( i%((n-1)/10) == 0 && i != n-1 )
+		{
             printf(", ");
+		}
     }
     printf("};");
     printf("\n");
