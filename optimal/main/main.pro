@@ -4,7 +4,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 INCLUDEPATH = ../minimum
-LIBS += -L../debug -loptimal
+LIBS += -L. -lminimum
 
 SOURCES += main.cpp
 

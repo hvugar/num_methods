@@ -1,12 +1,16 @@
 #include <stdio.h>
 #include <methods.h>
-#include <minimum.h>
 
-using namespace std;
+double f1(double *x, int n)
+{
+    return 0.0;
+}
 
 int main()
 {
-    cout << "Hello World!" << endl;
+    double x[] = {0.0, 0.0};
+    double g[] = {0.0, 0.0};
+    gradient(f1, x, 2, 0.1, g);
     return 0;
 }
 
