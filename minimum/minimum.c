@@ -68,12 +68,70 @@ double golden_section_search_min(R1Function f, double a, double b, double epsilo
 }
 
 /**
- * @brief Методы прямого поиска
- * @param f
- * @param x0
- * @param dx
- * @param a
- * @param b
+ * @brief         Метод равномерного поиска
+ * @param f       Целевая функция
+ * @param a       Начальная точка отрезка
+ * @param b       Конечнная точка отрезка
+ * @param n       Количество вычислений функции
+ */
+void uniform_line_search_method(R1Function f, double *a, double *b, int n)
+{
+	double h = ((*a) - (*b)) / (n+1);
+	int i;
+	double x[n];
+	double y[n];
+	for (i=0; i<n; i++)
+	{
+		x[i] = (*a) + (i+1) * h;
+		y[i] = f(x[i]);
+	}
+	double min = y[0];
+	int k=0;
+	for (i=1; i<n; i++)
+	{
+		if (y[i] < min) { k = i; }
+	}
+	if (i==0) { *b = x[1]; } else
+	if (i==(k-1)) { *a = x[k-2]; } else
+	{ *a = x[k-1]; *b = x[k+1]; }
+	
+}
+
+/**
+ * @brief         Метод перебора
+ * @param f       Целевая функция
+ * @param a       Начальная точка отрезка
+ * @param b       Конечнная точка отрезка
+ * @param n       Количество вычислений функции
+ */
+void bruteforce_line_search_method1(R1Function f, double *a, double *b, int n)
+{
+	double h = ((*a) - (*b)) / (n+1);
+	int i;
+	double x[n+2];
+	double y[n+2];
+	for (i=0; i<n+2; i++)
+	{
+		x[i] = (*a) + i * h;
+		y[i] = f(x[i]);
+	}
+	double min = y[0];
+	int k=0;
+	for (i=1; i<n+2; i++)
+	{
+		if (y[i] < min) { k = i; }
+	}
+	if (i==0) { *b = x[1]; } else
+	if (i==(k-1)) { *a = x[k-2]; } else
+	{ *a = x[k-1]; *b = x[k+1]; }
+}
+
+/**
+ * @brief         Методы прямого поиска
+ * @param f       Целевая функция
+ * @param a       Начальная точка отрезка
+ * @param b       Конечнная точка отрезка
+ * @param epsilon Число эпсилон для останова метода
  * @return
  */
 double straight_line_search_metod(R1Function f, double x0, double dx, double *a, double *b)

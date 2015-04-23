@@ -104,17 +104,35 @@ double grad_module(double *grads, int n);
 double distance(double *x1, double *x2, int n);
 
 /**
- * @brief Методы прямого поиска
+ * @brief         Метод равномерного поиска
+ * @param f       Целевая функция
+ * @param a       Начальная точка отрезка
+ * @param b       Конечнная точка отрезка
+ * @param n       Количество вычислений функции
+ */
+void uniform_line_search_method(R1Function f, double *a, double *b, int n);
+
+/**
+ * @brief         Метод перебора
+ * @param f       Целевая функция
+ * @param a       Начальная точка отрезка
+ * @param b       Конечнная точка отрезка
+ * @param n       Количество вычислений функции
+ */
+void bruteforce_line_search_method1(R1Function f, double *a, double *b, int n);
+
+/**
+ * @brief         Методы прямого поиска
  * @param f       Целевая функция
  * @param a       Начальная точка отрезка
  * @param b       Конечнная точка отрезка
  * @param epsilon Число эпсилон для останова метода
  * @return
  */
-double straight_line_search_metod(R1Function fx, double x0, double dx, double *a, double *b);
+double straight_line_search_metod(R1Function f, double x0, double dx, double *a, double *b);
 
 /**
- * @brief Метод золотого сечения
+ * @brief         Метод золотого сечения
  * @param fx      Целевая функция
  * @param a       Начальная точка отрезка
  * @param b       Конечнная точка отрезка
