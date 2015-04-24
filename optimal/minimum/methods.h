@@ -109,7 +109,7 @@ double straight_line_search_metod(R1Function f, double x0, double dx, double &a,
  * @param epsilon Число эпсилон для останова метода золотого сечение
  * @return
  */
-double golden_section_search_min(R1Function fx, double a, double b, double epsilon);
+double golden_section_search_min(R1Function f, double a, double b, double epsilon);
 
 /**
  * @brief         Метод равномерного поиска

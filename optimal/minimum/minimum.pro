@@ -8,7 +8,7 @@ DESTDIR = ../main
 
 SOURCES += minimum.cpp \
     methods.cpp \
-    method_grad.cpp \
+#    method_grad.cpp \
     method_conj.cpp \
     method_penalty.cpp
 

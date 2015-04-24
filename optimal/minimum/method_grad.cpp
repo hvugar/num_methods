@@ -1,5 +1,32 @@
 #include "methods.h"
 
+class Gradient
+{
+public:
+    RnFunction *f;
+    double *x;
+    int n;
+
+    double minimize();
+
+};
+
+double minimize1(RnFunction f, double *x, double *grad, int n, double alpha0, double line_eps, double gold_eps)
+{
+    double argmin(double alpha)
+    {
+        int j;
+        for (j=0; j<n; j++) x[j] = x[j] - alpha * grad[j];
+        double result = f(x, n);
+        for (j=0; j<n; j++) x[j] = x[j] + alpha * grad[j];
+        return result;
+    }
+    double a,b;
+    straight_line_search_metod(argmin, alpha0, line_eps, &a, &b);
+    double min = golden_section_search_min(argmin, a, b, gold_eps);
+    return min;
+}
+
 void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_eps, double gold_eps, double grad_eps, double epsilon, Printer printer)
 {
     int i = 0;
@@ -46,20 +73,4 @@ void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_e
     free(x1);
     free(x2);
     free(grads);
-}
-
-double minimize1(RnFunction f, double *x, double *grad, int n, double alpha0, double line_eps, double gold_eps)
-{
-    double argmin(double alpha)
-    {
-        int j;
-        for (j=0; j<n; j++) x[j] = x[j] - alpha * grad[j];
-        double result = f(x, n);
-        for (j=0; j<n; j++) x[j] = x[j] + alpha * grad[j];
-        return result;
-    }
-    double a,b;
-    straight_line_search_metod(argmin, alpha0, line_eps, &a, &b);
-    double min = golden_section_search_min(argmin, a, b, gold_eps);
-    return min;
 }

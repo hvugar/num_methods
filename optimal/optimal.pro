@@ -1,3 +1,4 @@
 TEMPLATE = subdirs
-SUBDIRS = minimum main
+SUBDIRS = minimum main \
+    qminimum
 CONFIG += ordered
