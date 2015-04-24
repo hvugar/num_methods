@@ -146,18 +146,26 @@ double straight_line_search_metod(R1Function f, double x0, double dx, double *a,
     double y1 = f(x0 - dx);
     double y2 = f(x0 + dx);
 
-    if (y1 >= y0 && y2 >= y0)
+    if (y1 >= y0 && y0 <= y2)
     {
         *a = x0 - dx;
         *b = x0 + dx;
+		double c = (*a + *b) / 2.0;
+		return c;
     }
-
-    if ( y2 > y0 )
+	
+	if (y1 <= y0 && y0 >= y2)
+	{
+		fputs("Function is not unimodal", stderr);
+        exit(-1);
+	}
+	
+    if ( y1 <= y0 && y0 <= y2 )
     {
-        dx = -dx;
-        double ty = y2;
-        y2 = y1;
-        y1 = ty;
+        dx = -1.0 * dx;
+		y0 = f(x0);	
+		y1 = f(x0 - dx);
+		y2 = f(x0 + dx);
     }
 
     while ( y2 < y0 )
@@ -167,26 +175,10 @@ double straight_line_search_metod(R1Function f, double x0, double dx, double *a,
         y0 = y2;
         y2 = f(x0 + dx);
     }
-
-    if ( dx > 0 )
-    {
-        *a = x0 - dx;
-        *b = x0 + dx;
-    }
-    else
-    {
-        *a = x0 + dx;
-        *b = x0 - dx;
-    }
 	
-	if (*a > *b)
-	{
-		fprintf(stderr, "Value of a is grater than value of b. a=%.10f, b=%.10f\n", *a, *b);
-		system("pause");
-	}
-
+	*a = x0 - fabs(dx);
+	*b = x0 + fabs(dx);
 	double c = (*a + *b) / 2.0;
-	
     return c;
 }
 

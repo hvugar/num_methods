@@ -353,5 +353,3 @@ void conjugate_gradient_method2(RnFunction f, double *x, int n, double line_step
     free(s);
     s = NULL;
 }
-
-

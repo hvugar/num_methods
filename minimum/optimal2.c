@@ -204,6 +204,8 @@ void __calculate()
             gr[i] = __du(t[i], _x, n, _p, u[i]);
         }
         _print1("gr", gr, N);
+		j2 = __JSum(t, x, n, u, N) + (x[1][N-1] - 1.0)*(x[1][N-1] - 1.0);
+		printf("J(u[k])    = %.10f\n",j2);
 		
 		
 #ifdef _USE_CONJUGATE_GRADIENT_
@@ -238,8 +240,8 @@ void __calculate()
             // Divide direction to its module
             for (i=0; i<N; i++) s1[i] = s[i] / sn;
 		}
-		_print1("s", s, N);
-		_print1("s1", s1, N);
+		//_print1("s", s, N);
+		//_print1("s1", s1, N);
 		
 		double argmin1(double alpha)
         {
@@ -250,21 +252,18 @@ void __calculate()
             free(u1);
             return J;
         }
-        double alpha = R1Minimize(argmin1, 0.01, 0.0001);
+        double alpha = R1Minimize(argmin1, 0.001, 0.000001);
         printf("alpha = %.10f\n", alpha);
 		memcpy(u1, u, sizeof(double) * n);
         for (i=0; i<N; i++)
         {
             u[i] = u[i] - alpha * s1[i];
-			if ((u[i]) < -0.2) u[i] = -0.2;
-			if ((u[i]) > +0.2) u[i] = +0.2;
         }
-		j2 = __JSum(t, x, n, u, N) + (x[1][N-1] - 1.0)*(x[1][N-1] - 1.0);
-		printf("J(u[k])    = %.10f\n",j2);
+		
 		//printf("J(u[k+1])  = %.10f\n",j2);
 		if ( k == n ) { k = 0; } else { k++; }
 #else
-	/*
+/*	
         double argmin1(double alpha)
         {
             int i;
@@ -285,11 +284,11 @@ void __calculate()
         j2 = __JSum(t, x, n, u, N) + (x[1][N-1] - 1.0)*(x[1][N-1] - 1.0);
 		printf("J(u[k])  = %.10f\n",j1);
 		printf("J(u[k+1])  = %.10f\n",j2);
-	*/
+*/
 #endif
         _seperator();
-		if (count++ > 5) break;
-    } while ( 1/*count++ < 10;fabs(j2-j1) >= 0.0001 /*&& vertor_norm(u, N) > 0.01 && distance(u1, u, N) > 0.01*/ );
+		if (count++ > 10) break;
+    } while ( 1 /*count++ < 10;fabs(j2-j1) >= 0.0001 /*&& vertor_norm(u, N) > 0.01 && distance(u1, u, N) > 0.01*/ );
 
     free(gr);
 	free(s);
