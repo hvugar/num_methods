@@ -15,12 +15,14 @@ double func1(double x)
 
 int main(int argc, char** argv)
 {
+	sample_gradient1();
+
 //	double a, b, c;
 //	a = b = 0.0;
 //	c = straight_line_search_metod(func1, 0, 0.1, &a, &b);
 //	printf("%f %f %f\n", a, c, b);
 
-	__calculate();
+//	__calculate();
 
 	//calculate();
 	return 0;
