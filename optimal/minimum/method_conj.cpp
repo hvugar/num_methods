@@ -4,23 +4,25 @@ double __R1Minimize(RnFunction f, double *x, int n, double line_step, double gol
 {
     typedef struct
     {
-        static double argmin(double alpha)
-        {
+       // static double argmin(double alpha)
+        //{
 //            int j;
 //            for (j=0; j<n; j++) x[j] = x[j] + alpha * s[j];
 //            double result = f(x, n);
 //            for (j=0; j<n; j++) x[j] = x[j] - alpha * s[j];
 //            return result;
-            return 0.0;
-        }
+           // return 0.0;
+        //}
+
+        double f(double alpha) { return 0.0; }
     } ArgMin;
 
-    //ArgMin a;
-    R1Function f1 = ArgMin::argmin;
+    ArgMin a1;
+    R1Function f1 = a1.f;
 //    double a,b;
 //    straight_line_search_metod(argmin, alpha0, line_step, &a, &b);
 
-    return ArgMin::argmin(0.0);
+    return 0.0;//ArgMin::argmin(0.0);
 }
 
 //double minimize(RnFunction f, double *x, double *s, int n, double alpha0, double line_step, double gold_step)

@@ -2,7 +2,7 @@
 
 #define _USE_CONJUGATE_GRADIENT_
 
-double __fx0(double t, double* x, int n, double u)
+double fx0(double t, double* x, int n, double u)
 {
     double x1 = x[0];
     double x2 = x[1];
@@ -12,13 +12,13 @@ double __fx0(double t, double* x, int n, double u)
     return  a1*a1 + a2*a2 + a3*a3;
 }
 
-double __fx1(double t, double *x, int n, double u)
+double fx1(double t, double *x, int n, double u)
 {
     double x2 = x[1];
     return 3.0*x2*x2;
 }
 
-double __fx2(double t, double *x, int n, double u)
+double fx2(double t, double *x, int n, double u)
 {
     double x1 = x[0];
     double x2 = x[1];
@@ -27,10 +27,10 @@ double __fx2(double t, double *x, int n, double u)
 
 double H(double t, double *x, int n, double u, int r, double *psi)
 {
-    return -1.0 * __fx0(t, x, n, u) + psi[0] * __fx1(t, x, n, u) + psi[1] * __fx2(t, x, n, u);
+    return -1.0 * fx0(t, x, n, u) + psi[0] * fx1(t, x, n, u) + psi[1] * fx2(t, x, n, u);
 }
 
-double __fp1(double t, double *x, int n, double *psi, double u)
+double fp1(double t, double *x, int n, double *psi, double u)
 {
     double h =  0.000001;
     double x1[] = { x[0] + h, x[1] };
@@ -43,7 +43,7 @@ double __fp1(double t, double *x, int n, double *psi, double u)
 */
 }
 
-double __fp2(double t, double *x, int n, double *psi, double u)
+double fp2(double t, double *x, int n, double *psi, double u)
 {
     double h =  0.000001;
     double x1[] = { x[0], x[1] + h };
@@ -76,13 +76,14 @@ double __JSum(double *t, double **x, int n, double *u, int N)
         double fi = (x[0][i]-t[i]*t[i]*t[i])*(x[0][i]-t[i]*t[i]*t[i]) + (x[1][i] - t[i])*(x[1][i] - t[i]) + (2*u[i] - t[i])*(2*u[i] - t[i]);
         sum = sum + 0.5 * (fj+fi) * (t[j]-t[i]);
     }
+	sum = sum + (x[1][N-1] - 1.0) * (x[1][N-1] - 1.0);
     return sum;
 }
 
 void RungaKuttaSystem1(double t0, const double *x0, double t1, double *x1, const int n, double h, double u)
 {
-    double ____fx1(double _t, double *_x, int _n) { return __fx1(_t, _x, _n, u); }
-    double ____fx2(double _t, double *_x, int _n) { return __fx2(_t, _x, _n, u); }
+    double ____fx1(double _t, double *_x, int _n) { return fx1(_t, _x, _n, u); }
+    double ____fx2(double _t, double *_x, int _n) { return fx2(_t, _x, _n, u); }
     RmFunction fx[] = { ____fx1, ____fx2 };
 
     RungaKuttaSystem(fx, t0, x0, t1, x1, n, h);
@@ -136,7 +137,7 @@ void __calculate()
         _print1("u", u, N);
 
         typedef double (*RR1Function)(double t, double *x, int n, double u);
-        RR1Function fx[] = { __fx1, __fx2 };
+        RR1Function fx[] = { fx1, fx2 };
 
         i = 0;
         x[0][0] = x0[0];
@@ -165,7 +166,7 @@ void __calculate()
         _print1("x2", x[1], N);
 
         typedef double (*RR2Function)(double t, double *x, int n, double *psi, double uu);
-        RR2Function fp[] = { __fp1, __fp2 };
+        RR2Function fp[] = { fp1, fp2 };
 
         i=N-1;
         p[0][i] = 0.0;
@@ -192,8 +193,6 @@ void __calculate()
         }
         _print1("p1", p[0], N);
         _print1("p2", p[1], N);
-		//j1 = j2;
-		j2 = __JSum(t, x, n, u, N) + (x[1][N-1] - 1.0)*(x[1][N-1] - 1.0);
 
         for (i=0; i<N; i++)
         {
@@ -204,8 +203,8 @@ void __calculate()
             gr[i] = __du(t[i], _x, n, _p, u[i]);
         }
         _print1("gr", gr, N);
-		j2 = __JSum(t, x, n, u, N) + (x[1][N-1] - 1.0)*(x[1][N-1] - 1.0);
-		printf("J(u[k])    = %.10f\n",j2);
+		j2 = __JSum(t, x, n, u, N);
+		//printf("J(u[k])    = %.10f\n",j2);
 		
 		
 #ifdef _USE_CONJUGATE_GRADIENT_
@@ -222,13 +221,15 @@ void __calculate()
 			
             // Module of gradient
             gr1_mod = 0.0;
-            for (i=0; i<N; i++) gr1_mod += gr[i]*gr[i];
+            for (i=0; i<N; i++) gr1_mod = gr1_mod + gr[i]*gr[i];
+			gr1_mod = sqrt(gr1_mod);
 		}
 		else
 		{
             // Module of next gradient
             gr2_mod = 0.0;
             for (i=0; i<N; i++) gr2_mod = gr2_mod + gr[i]*gr[i];
+			gr2_mod = sqrt(gr2_mod);
             double w = gr2_mod / gr1_mod;
             gr1_mod = gr2_mod;
             // Direction in next (k+1) iteration
@@ -240,8 +241,8 @@ void __calculate()
             // Divide direction to its module
             for (i=0; i<N; i++) s1[i] = s[i] / sn;
 		}
-		//_print1("s", s, N);
-		//_print1("s1", s1, N);
+		_print1("s", s, N);
+		_print1("s1", s1, N);
 		
 		double argmin1(double alpha)
         {
@@ -252,6 +253,7 @@ void __calculate()
             free(u1);
             return J;
         }
+		
         double alpha = R1Minimize(argmin1, 0.001, 0.000001);
         printf("alpha = %.10f\n", alpha);
 		memcpy(u1, u, sizeof(double) * n);
@@ -259,11 +261,14 @@ void __calculate()
         {
             u[i] = u[i] - alpha * s1[i];
         }
+		//j2 = __JSum(t, x, n, u, N);
+		//printf("J(u[k])    = %.10f\n",j2);
 		
 		//printf("J(u[k+1])  = %.10f\n",j2);
 		if ( k == n ) { k = 0; } else { k++; }
 #else
-/*	
+	/*
+		j2 = __JSum(t, x, n, u, N);
         double argmin1(double alpha)
         {
             int i;
@@ -275,20 +280,19 @@ void __calculate()
         }
         double alpha = R1Minimize(argmin1, 0.01, 0.0001);
         printf("alpha = %.10f\n", alpha);
-        j1 = __JSum(t, x, n, u, N) + (x[1][N-1] - 1.0)*(x[1][N-1] - 1.0);
+
 		memcpy(u1, u, sizeof(double) * n);
         for (i=0; i<N; i++)
         {
             u[i] = u[i] - alpha*gr[i];
         }
-        j2 = __JSum(t, x, n, u, N) + (x[1][N-1] - 1.0)*(x[1][N-1] - 1.0);
-		printf("J(u[k])  = %.10f\n",j1);
-		printf("J(u[k+1])  = %.10f\n",j2);
-*/
+	*/
 #endif
+		printf("J(u[k])    = %.10f\n",j2);
         _seperator();
 		if (count++ > 10) break;
-    } while ( 1 /*count++ < 10;fabs(j2-j1) >= 0.0001 /*&& vertor_norm(u, N) > 0.01 && distance(u1, u, N) > 0.01*/ );
+    //} while ( 1 /*count++ < 10;fabs(j2-j1) >= 0.0001 /*&& vertor_norm(u, N) > 0.01 && distance(u1, u, N) > 0.01*/ );
+	} while (1);
 
     free(gr);
 	free(s);
