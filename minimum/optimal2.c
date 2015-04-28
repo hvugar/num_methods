@@ -80,15 +80,6 @@ double __JSum(double *t, double **x, int n, double *u, int N)
     return sum;
 }
 
-void RungaKuttaSystem1(double t0, const double *x0, double t1, double *x1, const int n, double h, double u)
-{
-    double ____fx1(double _t, double *_x, int _n) { return fx1(_t, _x, _n, u); }
-    double ____fx2(double _t, double *_x, int _n) { return fx2(_t, _x, _n, u); }
-    RmFunction fx[] = { ____fx1, ____fx2 };
-
-    RungaKuttaSystem(fx, t0, x0, t1, x1, n, h);
-}
-
 void __calculate()
 {
     double t0 = 0.0;
@@ -130,7 +121,7 @@ void __calculate()
     double gr1_mod = 0.0;
     double gr2_mod = 0.0;
 	double sn = 0.0;
-	j1 = j2 = 10.0;
+	j1 = j2 = 0.0;
 	int count=0;
     do
     {
@@ -151,15 +142,34 @@ void __calculate()
             double k3[] = {0.0, 0.0};
             double k4[] = {0.0, 0.0};
 
-            for (j=0; j<n; j++) _x[j] = x[j][i];
-            for (j=0; j<n; j++) k1[j] = fx[j](t[i], _x, n, u[i]);
-            for (j=0; j<n; j++) _x[j] = x[j][i] + (h/2.0) * k1[j];
-            for (j=0; j<n; j++) k2[j] = fx[j](t[i]+h/2.0, _x, n, u[i]);
-            for (j=0; j<n; j++) _x[j] = x[j][i] + (h/2.0) * k2[j];
-            for (j=0; j<n; j++) k3[j] = fx[j](t[i]+h/2.0, _x, n, u[i]);
-            for (j=0; j<n; j++) _x[j] = x[j][i] + h * k3[j];
-            for (j=0; j<n; j++) k4[j] = fx[j](t[i]+h, _x, n, u[i]);
-            for (j=0; j<n; j++) x[j][i+1] = x[j][i] + (h/6.0) * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
+//            for (j=0; j<n; j++) _x[j] = x[j][i];
+//            for (j=0; j<n; j++) k1[j] = fx[j](t[i], _x, n, u[i]);
+//            for (j=0; j<n; j++) _x[j] = x[j][i] + (h/2.0) * k1[j];
+//            for (j=0; j<n; j++) k2[j] = fx[j](t[i]+h/2.0, _x, n, u[i]);
+//            for (j=0; j<n; j++) _x[j] = x[j][i] + (h/2.0) * k2[j];
+//            for (j=0; j<n; j++) k3[j] = fx[j](t[i]+h/2.0, _x, n, u[i]);
+//            for (j=0; j<n; j++) _x[j] = x[j][i] + h * k3[j];
+//            for (j=0; j<n; j++) k4[j] = fx[j](t[i]+h, _x, n, u[i]);
+//            for (j=0; j<n; j++) x[j][i+1] = x[j][i] + (h/6.0) * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
+			
+			_x[0] = x[0][i];
+			_x[1] = x[1][i];
+			k1[0] = fx1(t[i], _x, n, u[i]);
+			k1[1] = fx2(t[i], _x, n, u[i]);
+            _x[0] = x[0][i] + (h/2.0) * k1[0];
+			_x[1] = x[1][i] + (h/2.0) * k1[1];
+			k2[0] = fx1(t[i]+h/2.0, _x, n, u[i]);
+			k2[1] = fx2(t[i]+h/2.0, _x, n, u[i]);
+            _x[0] = x[0][i] + (h/2.0) * k2[0];
+			_x[1] = x[1][i] + (h/2.0) * k2[1];
+			k3[0] = fx1(t[i]+h/2.0, _x, n, u[i]);
+			k3[1] = fx2(t[i]+h/2.0, _x, n, u[i]);
+            _x[0] = x[0][i] + h * k3[0];
+			_x[1] = x[1][i] + h * k3[1];
+			k4[0] = fx1(t[i]+h, _x, n, u[i]);
+			k4[1] = fx2(t[i]+h, _x, n, u[i]);
+			x[0][i+1] = x[0][i] + (h/6.0) * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0]);
+			x[1][i+1] = x[1][i] + (h/6.0) * (k1[1] + 2*k2[1] + 2*k3[1] + k4[1]);
         }
 
         _print1("x1", x[0], N);
@@ -179,7 +189,7 @@ void __calculate()
             double k2[] = {0.0, 0.0};
             double k3[] = {0.0, 0.0};
             double k4[] = {0.0, 0.0};
-
+/*
             for (j=0; j<n; j++) _x[j] = x[j][i];
             for (j=0; j<n; j++) _p[j] = p[j][i];
             for (j=0; j<n; j++) k1[j] = fp[j](t[i], _x, n, _p, u[i]);
@@ -190,10 +200,33 @@ void __calculate()
             for (j=0; j<n; j++) _p[j] = p[j][i] + h * k3[j];
             for (j=0; j<n; j++) k4[j] = fp[j](t[i]+h, _x, n, _p, u[i]);
             for (j=0; j<n; j++) p[j][i-1] = p[j][i] + (h/6.0) * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
+*/
+			_x[0] = x[0][i];
+			_x[1] = x[1][i];
+			_p[0] = p[0][i];
+			_p[1] = p[1][i];
+			
+			k1[0] = fp1(t[i], _x, n, _p, u[i]);
+			k1[1] = fp2(t[i], _x, n, _p, u[i]);
+            _p[0] = p[0][i] + (h/2.0) * k1[0];
+			_p[1] = p[1][i] + (h/2.0) * k1[1];
+			k2[0] = fp1(t[i]+h/2.0, _x, n, _p, u[i]);
+			k2[1] = fp2(t[i]+h/2.0, _x, n, _p, u[i]);
+            _p[0] = p[0][i] + (h/2.0) * k2[0];
+			_p[1] = p[1][i] + (h/2.0) * k2[1];
+			k3[0] = fp1(t[i]+h/2.0, _x, n, _p, u[i]);
+			k3[1] = fp2(t[i]+h/2.0, _x, n, _p, u[i]);
+            _p[0] = p[0][i] + h * k3[0];
+			_p[1] = p[1][i] + h * k3[1];
+			k4[0] = fp1(t[i]+h, _x, n, _p, u[i]);
+			k4[1] = fp2(t[i]+h, _x, n, _p, u[i]);
+			p[0][i-1] = p[0][i] + (h/6.0) * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0]);
+			p[1][i-1] = p[1][i] + (h/6.0) * (k1[1] + 2*k2[1] + 2*k3[1] + k4[1]);
         }
         _print1("p1", p[0], N);
         _print1("p2", p[1], N);
 
+		j2 = __JSum(t, x, n, u, N);
         for (i=0; i<N; i++)
         {
             _x[0] = x[0][i];
@@ -203,7 +236,6 @@ void __calculate()
             gr[i] = __du(t[i], _x, n, _p, u[i]);
         }
         _print1("gr", gr, N);
-		j2 = __JSum(t, x, n, u, N);
 		//printf("J(u[k])    = %.10f\n",j2);
 		
 		
@@ -307,4 +339,11 @@ void __calculate()
     free(x);
 }
 
+void RungaKuttaSystem1(double t0, const double *x0, double t1, double *x1, const int n, double h, double u)
+{
+    double ____fx1(double _t, double *_x, int _n) { return fx1(_t, _x, _n, u); }
+    double ____fx2(double _t, double *_x, int _n) { return fx2(_t, _x, _n, u); }
+    RmFunction fx[] = { ____fx1, ____fx2 };
 
+    RungaKuttaSystem(fx, t0, x0, t1, x1, n, h);
+}
