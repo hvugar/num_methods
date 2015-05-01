@@ -1,6 +1,7 @@
 #include "methods.h"
 
 double minimize1(RnFunction f, double *x, double *grad, int n, double alpha0, double line_eps, double gold_eps);
+double project(double *x, double *grads, int n, double alpha, double a, double b);
 
 /**
  * @brief Метод наискорейшего спуска
@@ -51,6 +52,14 @@ void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_e
         {
             x[j] = x[j] - alpha * grads[j];
         }
+		
+		double alpha1 = project(x, grads, n, alpha, 0.0, 0.75);
+		
+		for (j=0; j<n; j++)
+        {
+            x[j] = x1[j] - alpha1 * grads[j];
+        }
+		
 		i++;
     }
     while ( grad_norm > epsilon && distance(x1, x, n) > epsilon /*&& fabs(f(x1,n) - f(x,n)) > epsilon*/ );
@@ -59,6 +68,27 @@ void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_e
     free(x2);
     free(grads);
 }
+
+double project(double *x, double *grads, int n, double alpha, double a, double b)
+{
+	int i;
+	double alpha1= alpha;
+    for (i=0; i<n; i++)
+    {
+        if ( x[i] > b ) 
+		{
+			double alpha2 = (x[i] - b) / grads[i];
+			if (alpha2 < alpha1) alpha1 = alpha2;
+		}
+		
+		if ( x[i] < a)
+		{
+			double alpha2 = (x[i] - a) / grads[i];
+			if (alpha2 < alpha1) alpha1 = alpha2;
+		}
+    }
+	return alpha1;
+} 
 
 double minimize1(RnFunction f, double *x, double *grad, int n, double alpha0, double line_eps, double gold_eps)
 {

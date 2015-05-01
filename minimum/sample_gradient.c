@@ -18,9 +18,9 @@ void sample_gradient1()
 	int n = 2;
     double* x  = (double*) malloc( sizeof(double) * n );
     
-	x[0]    = +5.0;
-    x[1]    = +1.0;
-	fast_proximal_gradient_method(f_1, x, n, line_eps, gold_eps, grad_eps, epsilon, printer2);
+	x[0]    = -1.0;
+    x[1]    = +1.2;
+	fast_proximal_gradient_method(f_rosenbrock, x, n, line_eps, gold_eps, grad_eps, epsilon, printer2);
 
 	free(x);
 }

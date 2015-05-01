@@ -80,18 +80,52 @@ double __JSum(double *t, double **x, int n, double *u, int N)
     return sum;
 }
 
+double project1(double *u, double *gr, int n, double alpha, double a, double b)
+{
+	int i;
+	double alpha1= alpha;
+    for (i=0; i<n; i++)
+    {
+        if ( u[i] > b ) 
+		{
+		}
+		
+		if ( u[i] < a)
+		{
+		}
+    }
+	return alpha1;
+} 
+
+void project3(double *u, int n, double a, double b)
+{
+	int i;
+    for (i=0; i<n; i++)
+    {
+        if ( u[i] > b ) 
+		{
+			u[i] = b;
+		}
+		
+		if ( u[i] < a)
+		{
+			u[i] = a;
+		}
+    }
+	puts("ok");
+} 
+
+
 void __calculate()
 {
     double t0 = 0.0;
     double t1 = 1.0;
-    double h = 0.005;
+    double h = 0.001;
     int N = (int)ceil((t1-t0)/h) + 1;
     int n = 2;
     //int r = 1;
     int i,j;
     double j1, j2;
-
-    double x0[] = { 0.0, 0.0 };
 
     double **x = (double**) malloc ( sizeof(double*) * n );
     x[0] = (double*) malloc( sizeof(double) * N );
@@ -116,7 +150,7 @@ void __calculate()
 		u[i] = sin(t[i]);
         x[0][i] = x[1][i] = p[0][i] = p[1][i] = 0.0;
     }
-	
+
 	int k = 0;
     double gr1_mod = 0.0;
     double gr2_mod = 0.0;
@@ -130,28 +164,30 @@ void __calculate()
         typedef double (*RR1Function)(double t, double *x, int n, double u);
         RR1Function fx[] = { fx1, fx2 };
 
-        i = 0;
-        x[0][0] = x0[0];
-        x[1][0] = x0[1];
+		double x0[] = { 0.0, 0.0 };
+
+		i = 0;
+        x[0][i] = x0[0];
+        x[1][i] = x0[1];
         double _x[] = { x[0][0], x[1][0] };
         h = +fabs(h);
         for (i=0; i<N-1; i++)
-        {
+		{
             double k1[] = {0.0, 0.0};
             double k2[] = {0.0, 0.0};
             double k3[] = {0.0, 0.0};
             double k4[] = {0.0, 0.0};
 
-//            for (j=0; j<n; j++) _x[j] = x[j][i];
-//            for (j=0; j<n; j++) k1[j] = fx[j](t[i], _x, n, u[i]);
-//            for (j=0; j<n; j++) _x[j] = x[j][i] + (h/2.0) * k1[j];
-//            for (j=0; j<n; j++) k2[j] = fx[j](t[i]+h/2.0, _x, n, u[i]);
-//            for (j=0; j<n; j++) _x[j] = x[j][i] + (h/2.0) * k2[j];
-//            for (j=0; j<n; j++) k3[j] = fx[j](t[i]+h/2.0, _x, n, u[i]);
-//            for (j=0; j<n; j++) _x[j] = x[j][i] + h * k3[j];
-//            for (j=0; j<n; j++) k4[j] = fx[j](t[i]+h, _x, n, u[i]);
-//            for (j=0; j<n; j++) x[j][i+1] = x[j][i] + (h/6.0) * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
-			
+            for (j=0; j<n; j++) _x[j] = x[j][i];
+            for (j=0; j<n; j++) k1[j] = fx[j](t[i], _x, n, u[i]);
+            for (j=0; j<n; j++) _x[j] = x[j][i] + (h/2.0) * k1[j];
+            for (j=0; j<n; j++) k2[j] = fx[j](t[i]+h/2.0, _x, n, u[i]);
+            for (j=0; j<n; j++) _x[j] = x[j][i] + (h/2.0) * k2[j];
+            for (j=0; j<n; j++) k3[j] = fx[j](t[i]+h/2.0, _x, n, u[i]);
+            for (j=0; j<n; j++) _x[j] = x[j][i] + h * k3[j];
+            for (j=0; j<n; j++) k4[j] = fx[j](t[i]+h, _x, n, u[i]);
+            for (j=0; j<n; j++) x[j][i+1] = x[j][i] + (h/6.0) * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
+/*			
 			_x[0] = x[0][i];
 			_x[1] = x[1][i];
 			k1[0] = fx1(t[i], _x, n, u[i]);
@@ -170,10 +206,13 @@ void __calculate()
 			k4[1] = fx2(t[i]+h, _x, n, u[i]);
 			x[0][i+1] = x[0][i] + (h/6.0) * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0]);
 			x[1][i+1] = x[1][i] + (h/6.0) * (k1[1] + 2*k2[1] + 2*k3[1] + k4[1]);
+*/
         }
 
         _print1("x1", x[0], N);
         _print1("x2", x[1], N);
+		
+//		return 0;
 
         typedef double (*RR2Function)(double t, double *x, int n, double *psi, double uu);
         RR2Function fp[] = { fp1, fp2 };
@@ -189,7 +228,7 @@ void __calculate()
             double k2[] = {0.0, 0.0};
             double k3[] = {0.0, 0.0};
             double k4[] = {0.0, 0.0};
-/*
+
             for (j=0; j<n; j++) _x[j] = x[j][i];
             for (j=0; j<n; j++) _p[j] = p[j][i];
             for (j=0; j<n; j++) k1[j] = fp[j](t[i], _x, n, _p, u[i]);
@@ -200,7 +239,7 @@ void __calculate()
             for (j=0; j<n; j++) _p[j] = p[j][i] + h * k3[j];
             for (j=0; j<n; j++) k4[j] = fp[j](t[i]+h, _x, n, _p, u[i]);
             for (j=0; j<n; j++) p[j][i-1] = p[j][i] + (h/6.0) * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
-*/
+/*
 			_x[0] = x[0][i];
 			_x[1] = x[1][i];
 			_p[0] = p[0][i];
@@ -222,6 +261,7 @@ void __calculate()
 			k4[1] = fp2(t[i]+h, _x, n, _p, u[i]);
 			p[0][i-1] = p[0][i] + (h/6.0) * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0]);
 			p[1][i-1] = p[1][i] + (h/6.0) * (k1[1] + 2*k2[1] + 2*k3[1] + k4[1]);
+*/
         }
         _print1("p1", p[0], N);
         _print1("p2", p[1], N);
@@ -238,8 +278,6 @@ void __calculate()
         _print1("gr", gr, N);
 		//printf("J(u[k])    = %.10f\n",j2);
 		
-		
-#ifdef _USE_CONJUGATE_GRADIENT_
 		if (k == 0)
 		{
             // First direction is antigradient
@@ -293,39 +331,21 @@ void __calculate()
         {
             u[i] = u[i] - alpha * s1[i];
         }
+		
+		project3(u, N, -0.3, +0.3);
+		
 		//j2 = __JSum(t, x, n, u, N);
 		//printf("J(u[k])    = %.10f\n",j2);
 		
 		//printf("J(u[k+1])  = %.10f\n",j2);
 		if ( k == n ) { k = 0; } else { k++; }
-#else
-	/*
-		j2 = __JSum(t, x, n, u, N);
-        double argmin1(double alpha)
-        {
-            int i;
-            double *u1  = (double*) malloc( sizeof(double) * N );
-            for (i=0; i<N; i++) u1[i] = u[i] - alpha * gr[i];
-            double J = __JSum(t, x, n, u1, N);
-            free(u1);
-            return J;
-        }
-        double alpha = R1Minimize(argmin1, 0.01, 0.0001);
-        printf("alpha = %.10f\n", alpha);
 
-		memcpy(u1, u, sizeof(double) * n);
-        for (i=0; i<N; i++)
-        {
-            u[i] = u[i] - alpha*gr[i];
-        }
-	*/
-#endif
 		printf("J(u[k])    = %.10f\n",j2);
-        _seperator();
+		_seperator();
+		
 		if (count++ > 10) break;
-    //} while ( 1 /*count++ < 10;fabs(j2-j1) >= 0.0001 /*&& vertor_norm(u, N) > 0.01 && distance(u1, u, N) > 0.01*/ );
-	} while (1);
-
+    } while ( vertor_norm(u, N) > 0.001 && distance(u1, u, N) > 0.001 );
+	
     free(gr);
 	free(s);
     free(t);
