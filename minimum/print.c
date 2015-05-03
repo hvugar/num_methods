@@ -72,13 +72,13 @@ void printer2(RnFunction P, double *x, int n, ...)
 	double y = P(x,n);
 	
 	printf("%d\t", iter);
-	x[0]>=0 ? printf("|+%.10f\t", x[0]) : printf("|%.10f\t", x[0]);
-	x[1]>=0 ? printf("|+%.10f\t", x[1]) : printf("|%.10f\t", x[1]);
-	y>=0 ? printf("|%+10.6f\t", y) : printf("|%10.6f\t", y);
-	s[0]>=0 ? printf("|%+10.6f\t", s[0]) : printf("|%10.6f\t", s[0]);
-	s[1]>=0 ? printf("|%+10.6f\t", s[1]) : printf("|%10.6f\t", s[1]);
-	nr>=0 ? printf("|%+10.6f\t", nr) : printf("|%10.6f\t", nr);
-	alpha>=0 ? printf("|%+10.6f\t", alpha) : printf("|%10.6f\t", alpha);
+	x[0]>=0.0 ? printf("|+%.10f\t", fabs(x[0])) : printf("|%.10f\t", x[0]);
+	x[1]>=0.0 ? printf("|+%.10f\t", fabs(x[1])) : printf("|%.10f\t", x[1]);
+	y>=0.0 ? printf("|%+10.6f\t", y) : printf("|%10.6f\t", y);
+	s[0]>=0.0 ? printf("|%+10.6f\t", s[0]) : printf("|%10.6f\t", s[0]);
+	s[1]>=0.0 ? printf("|%+10.6f\t", s[1]) : printf("|%10.6f\t", s[1]);
+	nr>=0.0 ? printf("|%+10.6f\t", nr) : printf("|%10.6f\t", nr);
+	alpha>=0.0 ? printf("|%+10.6f\t", alpha) : printf("|%10.6f\t", alpha);
 //	printf("|%d\t", count);
 	printf("\n");
 	

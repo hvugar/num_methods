@@ -80,42 +80,6 @@ double __JSum(double *t, double **x, int n, double *u, int N)
     return sum;
 }
 
-double project1(double *u, double *gr, int n, double alpha, double a, double b)
-{
-	int i;
-	double alpha1= alpha;
-    for (i=0; i<n; i++)
-    {
-        if ( u[i] > b ) 
-		{
-		}
-		
-		if ( u[i] < a)
-		{
-		}
-    }
-	return alpha1;
-} 
-
-void project3(double *u, int n, double a, double b)
-{
-	int i;
-    for (i=0; i<n; i++)
-    {
-        if ( u[i] > b ) 
-		{
-			u[i] = b;
-		}
-		
-		if ( u[i] < a)
-		{
-			u[i] = a;
-		}
-    }
-	puts("ok");
-} 
-
-
 void __calculate()
 {
     double t0 = 0.0;
@@ -146,7 +110,6 @@ void __calculate()
     for (i=0; i<N; i++)
     {
         t[i] = i*h;
-        //u[i] = t[i]/2.0;
 		u[i] = sin(t[i]);
         x[0][i] = x[1][i] = p[0][i] = p[1][i] = 0.0;
     }
@@ -156,7 +119,7 @@ void __calculate()
     double gr2_mod = 0.0;
 	double sn = 0.0;
 	j1 = j2 = 0.0;
-	int count=0;
+	int count = 0;
     do
     {
         _print1("u", u, N);
@@ -209,8 +172,8 @@ void __calculate()
 */
         }
 
-        _print1("x1", x[0], N);
-        _print1("x2", x[1], N);
+        //_print1("x1", x[0], N);
+        //_print1("x2", x[1], N);
 		
 //		return 0;
 
@@ -263,8 +226,8 @@ void __calculate()
 			p[1][i-1] = p[1][i] + (h/6.0) * (k1[1] + 2*k2[1] + 2*k3[1] + k4[1]);
 */
         }
-        _print1("p1", p[0], N);
-        _print1("p2", p[1], N);
+        //_print1("p1", p[0], N);
+        //_print1("p2", p[1], N);
 
 		j2 = __JSum(t, x, n, u, N);
         for (i=0; i<N; i++)
@@ -275,7 +238,7 @@ void __calculate()
             _p[1] = p[1][i];
             gr[i] = __du(t[i], _x, n, _p, u[i]);
         }
-        _print1("gr", gr, N);
+        //_print1("gr", gr, N);
 		//printf("J(u[k])    = %.10f\n",j2);
 		
 		if (k == 0)
@@ -311,28 +274,37 @@ void __calculate()
             // Divide direction to its module
             for (i=0; i<N; i++) s1[i] = s[i] / sn;
 		}
-		_print1("s", s, N);
-		_print1("s1", s1, N);
+		//_print1("s", s, N);
+		//_print1("s1", s1, N);
+		
+		double a = -0.01;
+		double b = +0.01;
 		
 		double argmin1(double alpha)
         {
             int i;
-            double *u1  = (double*) malloc( sizeof(double) * N );
-            for (i=0; i<N; i++) u1[i] = u[i] - alpha * s1[i];
-            double J = __JSum(t, x, n, u1, N);
-            free(u1);
+            double *u2  = (double*) malloc( sizeof(double) * N );
+            for (i=0; i<N; i++) 
+			{
+				if ((u[i] - alpha * s1[i]) < a) u2[i] = a; else
+				if ((u[i] - alpha * s1[i]) > b) u2[i] = b; else
+				u2[i] = u[i] - alpha * s1[i];
+			}			
+            double J = __JSum(t, x, n, u2, N);
+            free(u2);
             return J;
         }
 		
-        double alpha = R1Minimize(argmin1, 0.001, 0.000001);
-        printf("alpha = %.10f\n", alpha);
-		memcpy(u1, u, sizeof(double) * n);
+        double alpha = R1Minimize(argmin1, 0.001, 0.0000001);
+		
+        //printf("alpha = %.10f\n", alpha);
+		memcpy(u1, u, sizeof(double) * N);
         for (i=0; i<N; i++)
         {
+			if ((u[i] - alpha * s1[i]) < a) u[i] = a; else
+			if ((u[i] - alpha * s1[i]) > b) u[i] = b; else
             u[i] = u[i] - alpha * s1[i];
         }
-		
-		project3(u, N, -0.3, +0.3);
 		
 		//j2 = __JSum(t, x, n, u, N);
 		//printf("J(u[k])    = %.10f\n",j2);
@@ -341,10 +313,11 @@ void __calculate()
 		if ( k == n ) { k = 0; } else { k++; }
 
 		printf("J(u[k])    = %.10f\n",j2);
-		_seperator();
+		//_seperator();
 		
-		if (count++ > 10) break;
-    } while ( vertor_norm(u, N) > 0.001 && distance(u1, u, N) > 0.001 );
+		//if (count++ > 100) break;
+    } while ( distance(u1, u, N) > 0.0000001 );
+	_print1("u", u, N);
 	
     free(gr);
 	free(s);
