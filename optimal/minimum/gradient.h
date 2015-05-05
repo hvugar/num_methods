@@ -16,10 +16,15 @@ public:
     void fast_proximal_gradient_method();
     double argmin(double);
     double R1Minimize();
+protected:
+    virtual void show();
+
 private:
     int count;
     std::vector<double> x0;
-    std::vector<double> x;
+    std::vector<double> x1;
+    double *x;
+    double *grads;
     double epsilon;
     int n;
     double alpha;
