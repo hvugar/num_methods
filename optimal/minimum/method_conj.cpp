@@ -18,7 +18,7 @@ double __R1Minimize(RnFunction f, double *x, int n, double line_step, double gol
     } ArgMin;
 
     ArgMin a1;
-    R1Function f1 = a1.f;
+   // R1Function f1 = a1.f;
 //    double a,b;
 //    straight_line_search_metod(argmin, alpha0, line_step, &a, &b);
 

@@ -15,8 +15,3 @@ SOURCES += qgradient.cpp
 
 HEADERS += qgradient.h\
         qminimum_global.h
-
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}

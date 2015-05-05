@@ -6,12 +6,19 @@ CONFIG += dll
 
 DESTDIR = ../main
 
-SOURCES += minimum.cpp \
-    methods.cpp \
+SOURCES += \
+#    minimum.cpp \
+#    methods.cpp \
 #    method_grad.cpp \
-    method_conj.cpp \
-    method_penalty.cpp
+#    method_conj.cpp \
+#    method_penalty.cpp \
+    function.cpp \
+    methods1.cpp \
+    minimum1.cpp \
+    gradient.cpp
 
 HEADERS += \
-    methods.h
+    methods.h \
+    function.h \
+    gradient.h
 
