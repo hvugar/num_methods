@@ -1,9 +1,10 @@
 #ifndef GRADIENT_H
 #define GRADIENT_H
 
+#include "global.h"
 #include "methods.h"
 
-class Gradient
+class MINIMUMSHARED_EXPORT Gradient
 {
 public:
     Gradient();

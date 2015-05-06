@@ -6,6 +6,8 @@ CONFIG += dll
 
 DESTDIR = ../main
 
+DEFINES += MINIMUM_LIBRARY
+
 SOURCES += \
 #    minimum.cpp \
 #    methods.cpp \
@@ -20,5 +22,6 @@ SOURCES += \
 HEADERS += \
     methods.h \
     function.h \
-    gradient.h
+    gradient.h \
+    global.h
 
