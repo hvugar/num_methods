@@ -17,11 +17,17 @@ SOURCES += \
     function.cpp \
     methods1.cpp \
     minimum1.cpp \
-    gradient.cpp
+    gradient.cpp \
+    r1minimize.cpp
 
 HEADERS += \
     methods.h \
     function.h \
+<<<<<<< .mine
+    gradient.h \
+    r1minimize.h
+=======
     gradient.h \
     global.h
+>>>>>>> .r165
 
