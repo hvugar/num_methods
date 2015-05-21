@@ -84,7 +84,7 @@ void __calculate()
 {
     double t0 = 0.0;
     double t1 = 1.0;
-    double h = 0.01;
+    double h = 0.1;
     int N = (int)ceil((t1-t0)/h) + 1;
     int n = 2;
     //int r = 1;
@@ -110,7 +110,7 @@ void __calculate()
     for (i=0; i<N; i++)
     {
         t[i] = i*h;
-        u[i] = 0.0001;//sin(t[i]);
+        u[i] = 0.5*t[i];//0.0001;//sin(t[i]);
         x[0][i] = x[1][i] = p[0][i] = p[1][i] = 0.0;
     }
 
@@ -154,6 +154,8 @@ void __calculate()
             for (j=0; j<n; j++) k4[j] = fx[j](t[i]+h, _x, n, u[i]);
             for (j=0; j<n; j++) x[j][i+1] = x[j][i] + (h/6.0) * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
         }
+		
+		for (i=0; i<N; i++) { x[0][i] = t[i]*t[i]*t[i]; x[1][i] = t[i]; }
 
         typedef double (*RR2Function)(double t, double *x, int n, double *psi, double uu);
         RR2Function fp[] = { fp1, fp2 };
