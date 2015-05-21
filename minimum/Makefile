@@ -40,8 +40,8 @@ runga_kutta.o: runga_kutta.c
 optimal.o: optimal.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o optimal.o optimal.c
 	
-optimal2.o: optimal2.c
-	$(CC) -c $(CFLAGS) $(INCLUDES) -o optimal2.o optimal2.c
+optimal2.o: optimal3.c
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o optimal2.o optimal3.c
 	
 sample_penalty.o: sample_penalty.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o sample_penalty.o sample_penalty.c
