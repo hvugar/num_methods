@@ -23,11 +23,8 @@ SOURCES += \
 HEADERS += \
     methods.h \
     function.h \
-<<<<<<< .mine
     gradient.h \
-    r1minimize.h
-=======
+    r1minimize.h \
     gradient.h \
     global.h
->>>>>>> .r165
 

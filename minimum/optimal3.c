@@ -62,7 +62,7 @@ double __du(double t, double *x, int n, double *psi, double u)
     double h =  0.000001;
     double u1 = u + h;
     double u2 = u - h;
-    return (H(t, x, n, u1, 1, psi) - H(t, x, n, u2, 1, psi)) / (2 * h);
+    return (H(t, x, n, u1, 1, psi) - H(t, x, n, u2, 1, psi)) / (2.0 * h);
 }
 
 double __JSum(double *t, double **x, int n, double *u, int N)
@@ -84,12 +84,13 @@ void __calculate()
 {
     double t0 = 0.0;
     double t1 = 1.0;
-    double h = 0.1;
+    double h = 0.001;
     int N = (int)ceil((t1-t0)/h) + 1;
     int n = 2;
     //int r = 1;
     int i,j;
-    double j1, j2;
+    double j1;
+	printf("%d\n", N);
 
     double **x = (double**) malloc ( sizeof(double*) * n );
     x[0] = (double*) malloc( sizeof(double) * N );
@@ -105,21 +106,15 @@ void __calculate()
 
     double *gr = (double*) malloc( sizeof(double) * N );
     double *s  = (double*) malloc( sizeof(double) * N );
-    double *s1 = (double*) malloc(sizeof(double) * N);
 
     for (i=0; i<N; i++)
     {
         t[i] = i*h;
-        u[i] = 0.5*t[i];//0.0001;//sin(t[i]);
+        u[i] = sin(t[i]);
         x[0][i] = x[1][i] = p[0][i] = p[1][i] = 0.0;
     }
 
-    int k = 0;
-    double gr1_mod = 0.0;
-    double gr2_mod = 0.0;
-    double sn = 0.0;
-    j1 = j2 = 0.0;
-    int count = 0;
+    j1 = 0.0;
     do
     {
         double k1[] = {0.0, 0.0};
@@ -154,8 +149,6 @@ void __calculate()
             for (j=0; j<n; j++) k4[j] = fx[j](t[i]+h, _x, n, u[i]);
             for (j=0; j<n; j++) x[j][i+1] = x[j][i] + (h/6.0) * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
         }
-		
-		for (i=0; i<N; i++) { x[0][i] = t[i]*t[i]*t[i]; x[1][i] = t[i]; }
 
         typedef double (*RR2Function)(double t, double *x, int n, double *psi, double uu);
         RR2Function fp[] = { fp1, fp2 };
@@ -178,7 +171,7 @@ void __calculate()
             for (j=0; j<n; j++) k4[j] = fp[j](t[i]+h, _x, n, _p, u[i]);
             for (j=0; j<n; j++) p[j][i-1] = p[j][i] + (h/6.0) * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
         }
-        j2 = __JSum(t, x, n, u, N);
+        j1 = __JSum(t, x, n, u, N);
 		
         for (i=0; i<N; i++)
         {
@@ -188,13 +181,14 @@ void __calculate()
             _p[1] = p[1][i];
             gr[i] = __du(t[i], _x, n, _p, u[i]);
         }
-        _print1("u", u, N);
-        _print1("x1", x[0], N);
-        _print1("x2", x[1], N);
-        _print1("p1", p[0], N);
-        _print1("p2", p[1], N);
-        _print1("gr", gr, N);
-        printf("J(u[k])    = %.10f\n",j2);
+        //_print1("u", u, N);
+        //_print1("x1", x[0], N);
+        //_print1("x2", x[1], N);
+        //_print1("p1", p[0], N);
+        //_print1("p2", p[1], N);
+        //_print1("gr", gr, N);
+        printf("J(u[k])    = %.10f\n",j1);
+		//_seperator();
 		
 		double argmin(double alpha)
         {
@@ -210,8 +204,6 @@ void __calculate()
 		
 		memcpy(u1, u, sizeof(double) * N);
 		for (i=0; i<N; i++) { u[i] = u[i] - alpha * gr[i]; }
-		
-		_seperator();
     } while ( distance(u1, u, N) > 0.0000001 );
 
     free(gr);

@@ -20,13 +20,39 @@ double Gradient::argmin(double alpha)
     return fx(x2, n);
 }
 
-double Gradient::R1Minimize()
+double Gradient::minimize()
 {
-    //    double a,b;
-    //    double alpha0 = 0.0;
-    //    straight_line_search_metod(argmin, alpha0, line_eps, &a, &b);
-    //    double alpha = golden_section_search_min(argmin, a, b, gold_eps);
-    //    if ( argmin(alpha) > argmin(alpha0) ) alpha = alpha0;
+    class ArgMin : public R1Minimize
+    {
+    public:
+        int n;
+        std::vector<double> x0;
+        std::vector<double> x1;
+        double *grads;
+        Gradient *gradient;
+
+        virtual double fx(double alpha)
+        {
+            for (int i=0; i<n; i++) x1[i] = x0[i] - alpha * grads[i];
+            return gradient->fx(x1);
+        }
+    };
+
+    ArgMin argmin;
+    argmin.n = n;
+    argmin.x0 = x0;
+    argmin.grads = grads;
+    argmin.gradient = this;
+
+    double alpha0 = 0.0;
+    argmin.setX0(alpha0);
+    argmin.setStep(0.1);
+    argmin.setEpsilon(0.0001);
+
+    argmin.straightLineSearch();
+    double alpha = argmin.goldenSectionSearch();
+    if ( argmin.fx(alpha) > argmin.fx(alpha0) ) alpha = alpha0;
+    return alpha;
 }
 
 void Gradient::fast_proximal_gradient_method()
@@ -43,7 +69,7 @@ void Gradient::fast_proximal_gradient_method()
         //grad_norm = vertor_norm(grads, n);
         //memcpy(x1, x, sizeof(double) * n);
 
-        alpha = R1Minimize();
+        alpha = minimize();
 
         show();
 

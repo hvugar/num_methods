@@ -6,65 +6,172 @@
 #include <limits.h>
 
 /**
- * @brief Метод золотого сечения
- * @param f
- * @param a
- * @param b
- * @param epsilon
+ * @brief         Методы прямого поиска
+ * @param f       Целевая функция
+ * @param x0      Произвольно выбранная начальная точка
+ * @param dx      Величина шага
+ * @param a       Начальная точка отрезка
+ * @param b       Конечнная точка отрезка
  * @return
  */
-double golden_section_search_min(R1Function f, double a, double b, double epsilon)
+double straight_line_search_metod(R1Function f, double x0, double dx, double *a, double *b)
 {
-    //double sqrt_5 = 2.2360679774997896964091736687313
-    //double phi = (sqrt(5) + 1.0) / 2.0;
-    double phi = 1.6180339887498948482045868343656;
-    //double phi = (sqrt(5) - 1) / 2.0;
-    //double phi = 1.6180339887498948482045868343656;
-
-    double x1 = NAN;
-    double x2 = NAN;
-
-    double y1 = 0.0;
-    double y2 = 0.0;
-
-    // Lazimi epsilon deqiqliyini alana qeder
-    // iterasiyalari davam edirik
-    while ( fabs(b-a) > epsilon )
+    if ( dx == 0.0 )
     {
-        if (isnan(x1))
-        {
-            x1 = b - fabs(b-a)/phi;
-            y1 = f(x1);
-        }
+        fputs("dx cannot be zero", stderr);
+        exit(-1);
+    }
 
-        if (isnan(x2))
-        {
-            x2 = a + fabs(b-a)/phi;
-            y2 = f(x2);
-        }
+    double y0 = f(x0);
+    double y1 = f(x0 - dx);
+    double y2 = f(x0 + dx);
 
-        if (y1 >= y2)
+    // if y1 and y2 are both greater than y0
+    // minimum point is inside x1 and x2
+    if (y1 >= y0 && y0 <= y2)
+    {
+        *a = x0 - dx;
+        *b = x0 + dx;
+        double c = (*a + *b) / 2.0;
+        return c;
+    }
+
+    // if y1 and y2 are both lesser than y0
+    // in this case there is not minimum
+    // function is not unimodal
+    if (y1 <= y0 && y0 >= y2)
+    {
+        fputs("Function is not unimodal", stderr);
+        exit(-1);
+    }
+
+    {
+        if ( y1 >= y0 && y0 >= y2 )
         {
-            a = x1;
-            x1 = x2;    // Tapilmish x2 noqtesi ve bu noqtede funkisiyanin qiymeti
-            y1 = y2;    // sonraki iterasiyada x1 qiymeti kimi istifade olunacaq.
-            x2 = NAN;   // x2 novbeti iterasiyada axtarilacaq
+            while ( y2 < y0 )
+            {
+                x0 = x0 + dx;
+                y1 = y0;
+                y0 = y2;
+                y2 = f(x0 + fabs(dx));
+            }
+            *a = x0 - fabs(dx);
+            *b = x0 + fabs(dx);
+            double c = (*a + *b) / 2.0;
+            return c;
         }
-        else
+		
+		if ( y1 <= y0 && y0 <= y2 )
         {
-            b = x2;
-            x2 = x1;    // Tapilmish x1 noqtesi ve bu noqtede funkisiyanin qiymeti
-            y2 = y1;    // sonraki iterasiyada x2 qiymeti kimi istifade olunacaq.
-            x1 = NAN;   // x1 novbeti iterasiyada axtarilacaq
+            while ( y1 < y0 )
+            {
+                x0 = x0 - fabs(dx);
+                y2 = y0;
+                y0 = y1;
+                y1 = f(x0 - fabs(dx));
+            }
+            *a = x0 - fabs(dx);
+            *b = x0 + fabs(dx);
+            double c = (*a + *b) / 2.0;
+            return c;
         }
     }
 
-    double c = (a+b)/2.0;
+    /*
+    if ( y1 <= y0 && y0 <= y2 )
+    {
+        dx = -1.0 * dx;
+        y0 = f(x0);
+        y1 = f(x0 - dx);
+        y2 = f(x0 + dx);
+    }
 
-    if (f(a)<f(b)) c = a;
-    if (f(a)>f(b)) c = b;
+    while ( y2 < y0 )
+    {
+        x0 = x0 + dx;
+        y1 = y0;
+        y0 = y2;
+        y2 = f(x0 + dx);
+    }
+*/
 
+    *a = x0 - fabs(dx);
+    *b = x0 + fabs(dx);
+    double c = (*a + *b) / 2.0;
     return c;
+}
+
+/**
+ * @brief           Метод Свенна. Установления границ интервала.
+ * @param f         Целевая функция
+ * @param x0        Произвольно выбранная начальная точка
+ * @param dx        Величина шага
+ * @param a         Начальная точка отрезка
+ * @param b         Конечнная точка отрезка
+ * @return
+ */
+void search_interval_svenn(R1Function f, double x0, double dx, double *a, double *b)
+{
+    if ( dx == 0.0 )
+    {
+        fputs("dx cannot be zero", stderr);
+        exit(-1);
+    }
+	
+    double y0 = f(x0);
+    double y1 = f(x0 - dx);
+    double y2 = f(x0 + dx);
+
+    // if y1 and y2 are both greater than y0
+    // minimum point is inside x1 and x2
+    if (y1 >= y0 && y0 <= y2)
+    {
+        *a = x0 - dx;
+        *b = x0 + dx;
+        return;
+    }
+	
+    // if y1 and y2 are both lesser than y0
+    // in this case there is not minimum
+    // function is not unimodal
+    if (y1 <= y0 && y0 >= y2)
+    {
+        fputs("Function is not unimodal", stderr);
+		exit(-1);
+    }
+
+	{
+		if ( y1 >= y0 && y0 >= y2 )
+		{
+		}
+	}
+	
+    /* if in point x1 = x0 + dx value of function is greater than value of in point x0
+       then dx must negativ
+    */
+    if ( y1 < y0 && y0 < y2 )
+    {
+        dx *= -1;
+    }
+
+    int k = 0;
+    x0 = x0 + dx;
+    double y = f(x0);
+    printf("k=%d %8.2f %8.2f %8.2f\n", k, x0, y0, y);
+
+    while ( y <= y0 )
+    {
+        y0 = y;
+
+        k = k + 1;
+        x0 = x0 + pow(2, k)*dx;
+        y = f(x0);
+
+        printf("k=%d %8.2f %8.2f %8.2f\n", k, x0, y0, y);
+    }
+
+    *a = x0 - pow(2, k)*dx - pow(2, k-1)*dx;
+    *b = x0;
 }
 
 /**
@@ -127,98 +234,111 @@ void bruteforce_line_search_method1(R1Function f, double *a, double *b, int n)
 }
 
 /**
- * @brief         Методы прямого поиска
+ * @brief         Метод золотого сечения
  * @param f       Целевая функция
  * @param a       Начальная точка отрезка
  * @param b       Конечнная точка отрезка
- * @param epsilon Число эпсилон для останова метода
+ * @param epsilon
  * @return
  */
-double straight_line_search_metod(R1Function f, double x0, double dx, double *a, double *b)
+double golden_section_search_min(R1Function f, double a, double b, double epsilon)
 {
-    if ( dx == 0.0 )
-    {
-        fputs("dx cannot be zero", stderr);
-        exit(-1);
-    }
+    //double sqrt_5 = 2.2360679774997896964091736687313
+    //double phi = (sqrt(5) + 1.0) / 2.0;
+    double phi = 1.6180339887498948482045868343656;
+    //double phi = (sqrt(5) - 1) / 2.0;
+    //double phi = 1.6180339887498948482045868343656;
 
-    double y0 = f(x0);
-    double y1 = f(x0 - dx);
-    double y2 = f(x0 + dx);
+    double x1 = NAN;
+    double x2 = NAN;
 
-    // if y1 and y2 are both greater than y0
-    // minimum point is inside x1 and x2
-    if (y1 >= y0 && y0 <= y2)
-    {
-        *a = x0 - dx;
-        *b = x0 + dx;
-        double c = (*a + *b) / 2.0;
-        return c;
-    }
+    double y1 = 0.0;
+    double y2 = 0.0;
 
-    // if y1 and y2 are both lesser than y0
-    // in this case there is not minimum
-    // function is not unimodal
-    if (y1 <= y0 && y0 >= y2)
+    // Lazimi epsilon deqiqliyini alana qeder
+    // iterasiyalari davam edirik
+    while ( fabs(b-a) > epsilon )
     {
-        fputs("Function is not unimodal", stderr);
-        exit(-1);
-    }
-
-    {
-        if ( y1 >= y0 && y0 >= y2 )
+        if (isnan(x1))
         {
-            while ( y2 < y0 )
-            {
-                x0 = x0 + dx;
-                y1 = y0;
-                y0 = y2;
-                y2 = f(x0 + fabs(dx));
-            }
-            *a = x0 - fabs(dx);
-            *b = x0 + fabs(dx);
-            double c = (*a + *b) / 2.0;
-            return c;
+            x1 = b - fabs(b-a)/phi;
+            y1 = f(x1);
         }
 
-        if ( y1 <= y0 && y0 <= y2 )
+        if (isnan(x2))
         {
-            while ( y1 < y0 )
-            {
-                x0 = x0 - fabs(dx);
-                y2 = y0;
-                y0 = y1;
-                y1 = f(x0 - fabs(dx));
-            }
-            *a = x0 - fabs(dx);
-            *b = x0 + fabs(dx);
-            double c = (*a + *b) / 2.0;
-            return c;
+            x2 = a + fabs(b-a)/phi;
+            y2 = f(x2);
+        }
+
+        if (y1 >= y2)
+        {
+            a = x1;
+            x1 = x2;    // Tapilmish x2 noqtesi ve bu noqtede funkisiyanin qiymeti
+            y1 = y2;    // sonraki iterasiyada x1 qiymeti kimi istifade olunacaq.
+            x2 = NAN;   // x2 novbeti iterasiyada axtarilacaq
+        }
+        else
+        {
+            b = x2;
+            x2 = x1;    // Tapilmish x1 noqtesi ve bu noqtede funkisiyanin qiymeti
+            y2 = y1;    // sonraki iterasiyada x2 qiymeti kimi istifade olunacaq.
+            x1 = NAN;   // x1 novbeti iterasiyada axtarilacaq
         }
     }
 
-    /*
-    if ( y1 <= y0 && y0 <= y2 )
-    {
-        dx = -1.0 * dx;
-        y0 = f(x0);
-        y1 = f(x0 - dx);
-        y2 = f(x0 + dx);
-    }
+    double c = (a+b)/2.0;
 
-    while ( y2 < y0 )
-    {
-        x0 = x0 + dx;
-        y1 = y0;
-        y0 = y2;
-        y2 = f(x0 + dx);
-    }
-*/
+    if (f(a)<f(b)) c = a;
+    if (f(a)>f(b)) c = b;
 
-    *a = x0 - fabs(dx);
-    *b = x0 + fabs(dx);
-    double c = (*a + *b) / 2.0;
     return c;
+}
+
+/**
+ * @brief         Метод деления интервала пополам
+ * @param f       Целевая функция
+ * @param a       Начальная точка отрезка
+ * @param b       Конечнная точка отрезка
+ * @param epsilon
+ * @return
+ */
+double halph_interval_method(R1Function f, double *a, double *b, double epsilon)
+{
+    double L = *b - *a;
+
+    while ( L > epsilon )
+    {
+        double xm = (*a+*b)/2.0;
+        double x1 = *a + L/4.0;
+        double x2 = *b - L/4.0;
+
+        double f_xm = f(xm);
+        double f_x1 = f(x1);
+        double f_x2 = f(x2);
+
+        if (f_x1 < f_xm)
+        {
+            *b = xm;
+            xm = x1;
+        }
+        else
+        {
+            if ( f_x2 < f_xm )
+            {
+                *a = xm;
+                xm = x2;
+            }
+            else
+            {
+                *a = x1;
+                *b = x2;
+            }
+        }
+        L = *b - *a;
+    }
+	
+	return L;
 }
 
 /**
@@ -235,7 +355,6 @@ double R1Minimize(R1Function f, double line_step, double gold_epsilon)
     if ( f(alpha) > f(alpha0) ) alpha = alpha0;
     return alpha;
 }
-
 
 /**
  * @brief
@@ -315,110 +434,6 @@ double search_method_pauella(R1Function f, double x0, double dx, double epsilon,
     } while ( fabs((ym - yt)/yt) > epsilon && fabs((xm - xt)/xt) > epsilon ) ;
 */
     return 0.0;
-}
-
-/**
- * @brief Этап установления границ интервала. Метод Свенна
- * @param f
- * @param x0
- * @param dx
- * @param a
- * @param b
- * @return
- */
-void search_interval_svenn(R1Function f, double x0, double dx, double *a, double *b)
-{
-    double y1 = f(x0 - dx);
-    double y0 = f(x0);
-    double y2 = f(x0 + dx);
-
-    /* if y1 and y2 are both lesser than y0 then function is not unimodal */
-    if (y0 >= y1 && y0 >= y2)
-    {
-        *a = 0.0;
-        *b = 0.0;
-        fputs("Function is not unimodal.\n", stderr);
-        return;
-    }
-
-    /* if y1 and y2 are both greater than y0 then x0 is minimum */
-    if (y0 <= y1 && y0 <= y2)
-    {
-        *a = x0 - dx;
-        *b = x0 + dx;
-        return;
-    }
-
-    /* if in point x1 = x0 + dx value of function is greater than value of in point x0
-       then dx must negativ
-    */
-    if ( y1 < y0 && y0 < y2 )
-    {
-        dx *= -1;
-    }
-
-    int k = 0;
-    x0 = x0 + dx;
-    double y = f(x0);
-    printf("k=%d %8.2f %8.2f %8.2f\n", k, x0, y0, y);
-
-    while ( y <= y0 )
-    {
-        y0 = y;
-
-        k = k + 1;
-        x0 = x0 + pow(2, k)*dx;
-        y = f(x0);
-
-        printf("k=%d %8.2f %8.2f %8.2f\n", k, x0, y0, y);
-    }
-
-    *a = x0 - pow(2, k)*dx - pow(2, k-1)*dx;
-    *b = x0;
-}
-
-/**
- * @brief Метод деления интервала пополам
- * @param f
- * @param epsilon
- * @param a
- * @param b
- * @return
- */
-void halph_interval_method(R1Function f, double epsilon, double *a, double *b)
-{
-    double L = *b - *a;
-
-    while ( L > epsilon )
-    {
-        double xm = (*a+*b)/2.0;
-        double x1 = *a + L/4.0;
-        double x2 = *b - L/4.0;
-
-        double f_xm = f(xm);
-        double f_x1 = f(x1);
-        double f_x2 = f(x2);
-
-        if (f_x1 < f_xm)
-        {
-            *b = xm;
-            xm = x1;
-        }
-        else
-        {
-            if ( f_x2 < f_xm )
-            {
-                *a = xm;
-                xm = x2;
-            }
-            else
-            {
-                *a = x1;
-                *b = x2;
-            }
-        }
-        L = *b - *a;
-    }
 }
 
 double derivative_1(R1Function f, double x, double h)

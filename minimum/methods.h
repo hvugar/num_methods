@@ -235,7 +235,7 @@ double search_method_pauella(R1Function f, double x0, double dx, double epsilon,
 
 void search_interval_svenn(R1Function f, double x0, double dx, double *a, double *b);
 
-void halph_interval_method(R1Function f, double epsilon, double *a, double *b);
+double halph_interval_method(R1Function f, double *a, double *b, double epsilon);
 
 double newton_raphson(R1Function f, double x0, double epsilon);
 
