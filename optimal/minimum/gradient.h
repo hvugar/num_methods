@@ -2,35 +2,32 @@
 #define GRADIENT_H
 
 #include "global.h"
-#include "r1minimize.h"
-#include "methods.h"
+#include <vector>
+
+using namespace std;
 
 class MINIMUMSHARED_EXPORT Gradient
 {
 public:
     Gradient();
 
-    virtual double fx(double *x, int n) = 0;
-    virtual double fx(std::vector<double> x) = 0;
+    void setPoint(const std::vector<double>& x);
+    const std::vector<double>& x() const;
+    void setEpsilon(double);
+    double epsilon() const;
 
-    void fast_proximal_gradient_method(RnFunction *f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon);
-    void conjugate_gradient_method(RnFunction *f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon);
+    virtual void gradient();
+    virtual double minimize();
+    void fastProximalGradientMethod();
 
-    void fast_proximal_gradient_method();
-    double argmin(double);
-    double minimize();
 protected:
-    virtual void show();
+    virtual double fx(std::vector<double> x) = 0;
+    virtual void iterationInfo();
 
 private:
-    int count;
-    std::vector<double> x0;
-    std::vector<double> x1;
-    double *x;
-    double *grads;
-    double epsilon;
-    int n;
-    double alpha;
+    std::vector<double> mx;
+    std::vector<double> mgrads;
+    double eps;
 };
 
 #endif // GRADIENT_H

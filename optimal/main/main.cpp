@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <function.h>
 #include <r1minimize.h>
+#include <gradient.h>
 #include <methods.h>
 
 class R1Function1 : public R1Function
@@ -22,19 +23,26 @@ public:
     virtual double fx(double x) { return (x+1.0)*(x+1.0) + 1.0; }
 };
 
+class SampleGradient : public Gradient1
+{
+protected:
+    virtual double fx(std::vector<double> x)
+    {
+        double x1 = x[0];
+        double x2 = x[1];
+        return ((1-x1)*(1-x1)) + 100*(x2-x1*x1)*(x2-x1*x1);
+    }
+};
+
 int main()
 {
-    R1Minimize1 r1;
-    r1.setX0(0.0);
-    r1.setStep(0.02);
-    r1.setEpsilon(0.0);
+    std::vector<double> x;
+    x.push_back(-1.0);
+    x.push_back(+1.2);
 
-    double c = 0.0;
-    r1.straightLineSearch();
-    printf("[%.6f, %.6f]\n", r1.a(), r1.b());
-    r1.setEpsilon(0.00001);
-    c = r1.goldenSectionSearch();
-    printf("%.6f [%.6f, %.6f]\n", c, r1.a(), r1.b());
-    return 0;
+    SampleGradient gm;
+    gm.setEpsilon(0.00001);
+    gm.setPoint(x);
+    gm.fastProximalGradientMethod();
 }
 

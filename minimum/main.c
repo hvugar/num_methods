@@ -7,16 +7,19 @@
 
 extern void calculate();
 extern void __calculate();
+extern sample_gradient1();
 
 double func1(double *x, int n)
 {
 	return 2*x[0]*x[0] + x[1]*x[1] + 2*x[0]*x[1];
 }
 
+
+
 int main(int argc, char** argv)
 {
-	//sample_gradient1();
-	__calculate();
+	sample_gradient1();
+	//__calculate();
 	//calculate();
 	/*
 	double epsilon	= 0.1;		//dovrun sona catma meyari
