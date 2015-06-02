@@ -11,7 +11,7 @@
  * @param grad_step Длина шагов для нахождение градиента
  * @param epsilon   Число эпсилон для останова метода сопряженных градиентов
  */
-void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer, GetInfo info)
+void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer)
 {
     int i = 0;
     int k = 0;
@@ -66,6 +66,7 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step,
 		
         if (printer != NULL) printer(f, x, n, iteration, count, s, s, gr1, gr2);
 
+
         // Minimization in one dimensional direction
         double argmin(double alpha)
         {
@@ -81,8 +82,6 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step,
 
         //
         if (argmin(alpha)>argmin(alpha0)) alpha = alpha0;
-
-		if (info != NULL) info(f, x, n, iteration, gr1, s, argmin, alpha, a, b);
 		
         // Saving last point coordinates
         memcpy(x1, x, sizeof(double) * n);

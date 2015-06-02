@@ -170,7 +170,7 @@ void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_s
  * @param grad_step Длина шагов для нахождение градиента
  * @param epsilon   Число эпсилон для останова метода сопряженных градиентов
  */
-void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer, GetInfo info);
+void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer);
 
 /**
  * @brief Метод сопряженных градиентов Флетчера — Ривса
