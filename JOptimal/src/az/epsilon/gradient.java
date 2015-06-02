@@ -1,19 +1,16 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package az.epsilon;
 
-/**
- *
- * @author Vugar
- */
-public class gradient {
+public interface Gradient {
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        // TODO code application logic here
-    }
+    double f(double[] x);
+
+    void gradient(double[] gradients);
+    
+    double argmin(double alpha);
+
+    double minimize();
+    
+    void calculate(double[] x0);
+    
+    double norm(double[] gradients);
 }
