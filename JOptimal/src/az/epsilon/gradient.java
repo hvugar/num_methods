@@ -12,5 +12,5 @@ public interface Gradient {
     
     void calculate(double[] x0);
     
-    double norm(double[] gradients);
+    double norm(double[] x);
 }

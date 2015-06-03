@@ -3,6 +3,10 @@ package az.epsilon;
 public class Main {
 
     public static void main(String[] args) {
-        // TODO code application logic here
+        
+        double[] x0 = {-1.0, +1.2};
+        
+        Gradient g = new Gradient1();
+        g.calculate(x0);
     }
 }
