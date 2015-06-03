@@ -5,7 +5,7 @@ import az.epsilon.r1.R1Minimize;
 import az.epsilon.RnFunction;
 import java.util.Arrays;
 
-public class FastProximalGradien implements Gradient {
+public class FastProximalGradient implements Gradient {
 
     private double[] x;
     private double[] g;

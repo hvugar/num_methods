@@ -65,6 +65,7 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step,
         }
 		
         if (printer != NULL) printer(f, x, n, iteration, count, s, s, gr1, gr2);
+		//if (printer != NULL) printer(f, x, n, iteration, grads, grad_norm, alpha);
 
 
         // Minimization in one dimensional direction
@@ -97,6 +98,7 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step,
     } while ( vertor_norm(s, n) > epsilon && distance(x1, x, n) > epsilon );
 
     if (printer != NULL) printer(f, x, n, iteration, count, s, s, gr1, gr2);
+	//if (printer != NULL) printer(f, x, n, iteration, grads, grad_norm, alpha);
 
     free(gr1);
     free(gr2);

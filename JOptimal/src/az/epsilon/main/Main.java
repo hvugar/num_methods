@@ -2,14 +2,14 @@ package az.epsilon.main;
 
 import az.epsilon.RnFunction;
 import az.epsilon.rn.Gradient;
-import az.epsilon.rn.FastProximalGradien;
+import az.epsilon.rn.FastProximalGradient;
 
 public class Main {
 
     public static void main(String[] args) {
 
         double[] x0 = {-1.0, +1.2};
-        Gradient g = new FastProximalGradien();
+        Gradient g = new FastProximalGradient();
         g.setFunction(new RnFunction() {
             @Override
             public double f(double[] x) {
