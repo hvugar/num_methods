@@ -27,7 +27,7 @@ extern "C" {
  * @param dx Длина шагов для нахождение градиента
  * @param gr Вектор градиента функции
  */
-void gradient(RnFunction *f, double *x, int n, double dx, double *gr);
+void gradient(RnFunction *f, std::vector<double> x, int n, double dx, double *gr);
 
 /**
  * @brief    Градиент функции по формуле f(x+dx)-f(x) / dx
@@ -37,7 +37,7 @@ void gradient(RnFunction *f, double *x, int n, double dx, double *gr);
  * @param dx Длина шагов для нахождение градиента
  * @param gr Вектор градиента функции
  */
-void gradient1(RnFunction *f, double *x, int n, double dx, double *gradients);
+void gradient1(RnFunction *f, std::vector<double> x, int n, double dx, double *gradients);
 
 /**
  * @brief    Градиент функции по формуле f(x+dx)-f(x-dx) / 2dx
@@ -47,7 +47,7 @@ void gradient1(RnFunction *f, double *x, int n, double dx, double *gradients);
  * @param dx Длина шагов для нахождение градиента
  * @param gr Вектор градиента функции
  */
-void gradient2(RnFunction *f, double *x, int n, double dx, double *gradients);
+void gradient2(RnFunction *f, std::vector<double> x, int n, double dx, double *gradients);
 
 /**
  * @brief derivative1

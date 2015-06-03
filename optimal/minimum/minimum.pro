@@ -11,10 +11,12 @@ SOURCES += \
     methods1.cpp \
     minimum1.cpp \
     r1minimize.cpp \
-    gradient.cpp
+    gradient.cpp \
+    fpgradient.cpp
 
 HEADERS += global.h \
     methods.h \
     function.h \
     r1minimize.h \
-    gradient.h
+    gradient.h \
+    fpgradient.h

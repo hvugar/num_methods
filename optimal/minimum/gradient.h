@@ -3,31 +3,34 @@
 
 #include "global.h"
 #include <vector>
+#include <math.h>
+#include <stdio.h>
+#include "function.h"
+#include "r1minimize.h"
 
 using namespace std;
 
 class MINIMUMSHARED_EXPORT Gradient
 {
 public:
-    Gradient();
+    virtual ~Gradient();
 
-    void setPoint(const std::vector<double>& x);
     const std::vector<double>& x() const;
-    void setEpsilon(double);
+    void setX(const std::vector<double>& x);
     double epsilon() const;
+    void setEpsilon(double epsilon);
 
-    virtual void gradient();
-    virtual double minimize();
-    void fastProximalGradientMethod();
+    virtual RnFunction* f() const = 0;
+    virtual void setF(RnFunction* f) = 0;
 
 protected:
-    virtual double fx(std::vector<double> x) = 0;
-    virtual void iterationInfo();
+    virtual void gradient() = 0;
+    virtual double argmin(double alpha) = 0;
+    virtual double minimize() = 0;
+    virtual void calculate() = 0;
 
-private:
     std::vector<double> mx;
-    std::vector<double> mgrads;
-    double eps;
+    double mepsilon;
 };
 
 #endif // GRADIENT_H
