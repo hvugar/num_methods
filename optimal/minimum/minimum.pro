@@ -6,6 +6,9 @@ CONFIG += dll
 
 DEFINES += MINIMUM_LIBRARY
 
+DESTDIR += ../bin
+DESTDIR_TARGET += ../lib
+
 SOURCES += \
     function.cpp \
     methods1.cpp \
