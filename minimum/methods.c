@@ -83,11 +83,22 @@ void gradient2(RnFunction f, double *x, int n, double dx, double *gradients)
 	int i = 0;
 	for (i=0; i<n; i++)
 	{
-		x[i] = x[i] - dx;
+/*		x[i] = x[i] - dx;
 		double f1 = f(x, n);
 		x[i] = x[i] + 2*dx;
 		double f2 = f(x, n);
 		x[i] = x[i] - dx;
 		gradients[i] = (f2 - f1) / (2 * dx);
+*/		
+		double _x = x[i];
+		x[i] = x[i] - dx;
+		double f1 = f(x, n);
+		x[i] = _x;
+		x[i] = x[i] + dx;
+		double f2 = f(x, n);
+		x[i] = x[i] - dx;
+		x[i] = _x;
+		gradients[i] = (f2 - f1) / (2 * dx);
+
 	}
 }

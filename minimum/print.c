@@ -33,7 +33,7 @@ void printer1(RnFunction f, double *x, int n, ...)
 	
 	if (iter == 0)
 	{
-		printf("No\t|x1      \t|x2      \t|f(x)      \t|grad1      \t|grad2      \t|grad1/norm \t|grad2/norm\t|say      \t");
+		printf("No\t|x1      \t|x2      \t|f(x)      \t|grad1      \t|grad2      \t|s1         \t|s2       \t|say      \t");
 		printf("\n--------+---------------+---------------+---------------+---------------+---------------+---------------+---------------+---\n");
 	}
 	

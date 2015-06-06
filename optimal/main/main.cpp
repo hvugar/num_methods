@@ -3,6 +3,7 @@
 #include <r1minimize.h>
 #include <gradient.h>
 #include <fpgradient.h>
+#include <cjtgradient.h>
 #include <methods.h>
 
 struct Rosenbrock : public RnFunction
@@ -19,15 +20,21 @@ double Rosenbrock::fx(std::vector<double> x)
 
 int main()
 {
+    /* Function */
     Rosenbrock r;
+
+    /* initial point */
     std::vector<double> x;
     x.push_back(-1.0);
     x.push_back(+1.2);
 
-    FastProximalGradient fg;
-//    fg.setF(&r);
-//    fg.setEpsilon(0.000001);
-//    fg.setX(x);
-//    fg.calculate();
+    /* Minimization */
+    ConjugateGradient fg;
+    fg.setF(&r);
+    fg.setEpsilon(0.000001);
+    fg.setGradientStep(0.000001);
+    fg.setR1MinimizeEpsilon(0.1, 0.000001);
+    fg.setX(x);
+    fg.calculate();
 }
 

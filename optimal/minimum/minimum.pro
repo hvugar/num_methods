@@ -7,7 +7,6 @@ CONFIG += dll
 DEFINES += MINIMUM_LIBRARY
 
 DESTDIR += ../bin
-DESTDIR_TARGET += ../lib
 
 SOURCES += \
     function.cpp \
@@ -15,11 +14,13 @@ SOURCES += \
     minimum1.cpp \
     r1minimize.cpp \
     gradient.cpp \
-    fpgradient.cpp
+    fpgradient.cpp \
+    cjtgradient.cpp
 
 HEADERS += global.h \
     methods.h \
     function.h \
     r1minimize.h \
     gradient.h \
-    fpgradient.h
+    fpgradient.h \
+    cjtgradient.h

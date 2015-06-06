@@ -27,9 +27,9 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step,
     double *x2 = (double*) malloc(sizeof(double) * n);
 
     // Gradient of x(k) point
-    double* gr1 = (double*) malloc(sizeof(double) * n);
+    double* gr = (double*) malloc(sizeof(double) * n);
     // Gradinet of x(k+1) point
-    double* gr2 = (double*) malloc(sizeof(double) * n);
+    //double* gr2 = (double*) malloc(sizeof(double) * n);
 
     double gr1_mod = 0.0;
     double gr2_mod = 0.0;
@@ -39,32 +39,32 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step,
         if (k == 0)
         {
             // Gradient of objectiv function in current point
-            gradient(f, x, n, grad_step, gr1);
+            gradient(f, x, n, grad_step, gr);
 
             // First direction is antigradient
-            for (i=0; i<n; i++) s[i] = -gr1[i];
+            for (i=0; i<n; i++) s[i] = -gr[i];
 
             // Module of gradient
             gr1_mod = 0.0;
-            for (i=0; i<n; i++) gr1_mod += gr1[i]*gr1[i];
+            for (i=0; i<n; i++) gr1_mod += gr[i]*gr[i];
         }
         else
         {
             /// Gradient of objectiv function in next point
-            gradient(f, x, n, grad_step, gr2);
+            gradient(f, x, n, grad_step, gr);
 
             // Module of next gradient
             gr2_mod = 0.0;
-            for (i=0; i<n; i++) gr2_mod = gr2_mod + gr2[i]*gr2[i];
+            for (i=0; i<n; i++) gr2_mod = gr2_mod + gr[i]*gr[i];
 
             double w = gr2_mod / gr1_mod;
             gr1_mod = gr2_mod;
 
             // Direction in next (k+1) iteration
-            for (i=0; i<n; i++) s[i] = -gr2[i] + s[i] * w;
+            for (i=0; i<n; i++) s[i] = -gr[i] + s[i] * w;
         }
 		
-        if (printer != NULL) printer(f, x, n, iteration, count, s, s, gr1, gr2);
+        if (printer != NULL) printer(f, x, n, iteration, count, gr, s, gr, gr);
 		//if (printer != NULL) printer(f, x, n, iteration, grads, grad_norm, alpha);
 
 
@@ -86,6 +86,8 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step,
 		
         // Saving last point coordinates
         memcpy(x1, x, sizeof(double) * n);
+		
+		//printf("%.6f %.6f %.6f\n", alpha, s[0], s[1]);
 
         // Calculating next point coordinates
         for (i=0; i<n; i++)
@@ -97,16 +99,16 @@ void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step,
         iteration++;
     } while ( vertor_norm(s, n) > epsilon && distance(x1, x, n) > epsilon );
 
-    if (printer != NULL) printer(f, x, n, iteration, count, s, s, gr1, gr2);
+    if (printer != NULL) printer(f, x, n, iteration, count, gr, s, gr, gr);
 	//if (printer != NULL) printer(f, x, n, iteration, grads, grad_norm, alpha);
 
-    free(gr1);
-    free(gr2);
+    free(gr);
+//    free(gr2);
     free(s);
     free(x1);
     free(x2);
 
-    gr1 = gr2 = s = x1 = x2 = NULL;
+//    gr1 = gr2 = s = x1 = x2 = NULL;
 }
 
 double minimize(RnFunction f, double *x, double *s, int n, double alpha0, double line_step, double gold_step)

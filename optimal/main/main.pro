@@ -4,7 +4,9 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 INCLUDEPATH = ../minimum
-LIBS += -L. -lminimum
+LIBS += -L. -l../bin/minimum
+
+DESTDIR += ../bin
 
 SOURCES += main.cpp
 

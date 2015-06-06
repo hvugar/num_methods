@@ -13,24 +13,39 @@ using namespace std;
 class MINIMUMSHARED_EXPORT Gradient
 {
 public:
+    Gradient();
     virtual ~Gradient();
+
+    virtual RnFunction* f() const;
+    virtual void setF(RnFunction* f);
 
     const std::vector<double>& x() const;
     void setX(const std::vector<double>& x);
+
     double epsilon() const;
     void setEpsilon(double epsilon);
 
-    virtual RnFunction* f() const = 0;
-    virtual void setF(RnFunction* f) = 0;
-
-protected:
-    virtual void gradient() = 0;
-    virtual double argmin(double alpha) = 0;
-    virtual double minimize() = 0;
+    virtual void calcGradient();
+    virtual double minimize();
     virtual void calculate() = 0;
 
+    void setR1MinimizeEpsilon(double step, double epsilon);
+    void setGradientStep(double step);
+    int count() const;
+
+protected:
+    virtual double gradientNorm() const;
+    virtual double distance() const;
+
+    RnFunction *mf;
     std::vector<double> mx;
+    std::vector<double> mg;
+    double malpha;
     double mepsilon;
+    double grad_step;
+    double min_epsilon;
+    double min_step;
+    int mcount;
 };
 
 #endif // GRADIENT_H
