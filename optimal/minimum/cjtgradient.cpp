@@ -2,33 +2,17 @@
 
 ConjugateGradient::ConjugateGradient() : Gradient()
 {
+    mf1 = new ConjugateGradient::ArgMin(mx, s, this);
 }
 
 ConjugateGradient::~ConjugateGradient()
 {}
 
-class Argmin1 : public R1Minimize
-{
-public:
-    std::vector<double>& x;
-    std::vector<double>& s;
-    Gradient* g;
-    Argmin1(std::vector<double>& x, std::vector<double>& s, Gradient* g) :
-        R1Minimize(), x(x), s(s), g(g) {}
-
-protected:
-    double fx(double alpha) {
-        std::vector<double> x1;
-        for (unsigned int i=0; i < x.size(); i++) x1.push_back(x[i] + alpha * s[i]);
-        return g->f()->fx(x1);
-    }
-};
-
 double ConjugateGradient::minimize()
 {
-    double x0 = 0.0;
-    Argmin1 r1(mx, s, this);
-    r1.setX0(x0);
+    R1Minimize r1;
+    r1.setF(mf1);
+    r1.setX0(0.0);
     r1.setStep(min_step);
     r1.setEpsilon(min_epsilon);
     r1.straightLineSearch();
@@ -79,10 +63,6 @@ void ConjugateGradient::calculate()
 
         mcount++;
 
-        //char c;
-        //if (mcount % 10 == 0)
-        //    scanf("%c", &c);
-
         malpha = minimize();
 
         print();
@@ -101,4 +81,18 @@ void ConjugateGradient::calculate()
 void ConjugateGradient::print()
 {
     printf("%12.6f %12.6f %12.6f %12.6f %12.6f %12.6f %12.6f %12.6f %12.6f\n", mx[0], mx[1], mg[0], mg[1], s[0], s[1],  malpha, gradientNorm(), f()->fx(mx));
+}
+
+ConjugateGradient::ArgMin::ArgMin(std::vector<double> &x, std::vector<double> &g, Gradient *gradient) :
+    x(x), g(g), gradient(gradient)
+{}
+
+double ConjugateGradient::ArgMin::fx(double alpha)
+{
+    std::vector<double> x1 = x;
+    for (unsigned int i=0; i < x.size(); i++)
+    {
+        x1[i] = x[i] + alpha * g[i];
+    }
+    return gradient->f()->fx(x1);
 }

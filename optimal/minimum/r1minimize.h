@@ -1,6 +1,8 @@
 #ifndef R1MINIMIZE_H
 #define R1MINIMIZE_H
 
+#include "function.h"
+#include "r1minimize.h"
 #include "global.h"
 
 class MINIMUMSHARED_EXPORT R1Minimize
@@ -8,6 +10,9 @@ class MINIMUMSHARED_EXPORT R1Minimize
 public:
     R1Minimize();
     virtual ~R1Minimize();
+
+    void setF(R1Function *f);
+    R1Function* f() const;
 
     double x0() const;
     void setX0(double);
@@ -26,10 +31,8 @@ public:
     double goldenSectionSearch();
     double halphIntervalMethod();
 
-protected:
-    virtual double fx(double x) = 0;
-
 private:
+    R1Function *mf;
     double m_x0;
     double m_step;
     double m_epsilon;

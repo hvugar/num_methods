@@ -9,12 +9,20 @@ public:
     ConjugateGradient();
     virtual ~ConjugateGradient();
 
-    void calculate();
-    double minimize();
+    virtual void calculate();
+    virtual double minimize();
     void print();
 
 private:
     std::vector<double> s;
+    struct ArgMin : public R1Function
+    {
+        ArgMin(std::vector<double> &x, std::vector<double> &g, Gradient *gradient);
+        std::vector<double> &x;
+        std::vector<double> &g;
+        Gradient *gradient;
+        virtual double fx(double alpha);
+    };
 };
 
 #endif // CONJUGATEGRADIENT_H

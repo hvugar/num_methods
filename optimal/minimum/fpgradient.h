@@ -9,8 +9,19 @@ public:
     FastProximalGradient();
     virtual ~FastProximalGradient();
 
-    void calculate();
+    virtual double minimize();
+    virtual void calculate();
     void print();
+
+private:
+    struct ArgMin : public R1Function
+    {
+        ArgMin(std::vector<double> &x, std::vector<double> &g, Gradient *gradient);
+        std::vector<double> &x;
+        std::vector<double> &g;
+        Gradient *gradient;
+        virtual double fx(double alpha);
+    };
 };
 
 #endif // FPGRADIENT_H

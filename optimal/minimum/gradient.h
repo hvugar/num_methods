@@ -26,7 +26,7 @@ public:
     void setEpsilon(double epsilon);
 
     virtual void calcGradient();
-    virtual double minimize();
+    virtual double minimize() = 0;
     virtual void calculate() = 0;
 
     void setR1MinimizeEpsilon(double step, double epsilon);
@@ -37,7 +37,8 @@ protected:
     virtual double gradientNorm() const;
     virtual double distance() const;
 
-    RnFunction *mf;
+    RnFunction *mfn;
+    R1Function *mf1;
     std::vector<double> mx;
     std::vector<double> mg;
     double malpha;

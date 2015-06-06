@@ -1,11 +1,13 @@
 #include "gradient.h"
 
-Gradient::Gradient()
+Gradient::Gradient() : mfn(NULL), mf1(NULL)
 {
-    mf = 0;
-    mepsilon = 0.000001;
-    mcount = 0;
     malpha = 1.0;
+    mepsilon = 0.000001;
+    grad_step = 0.000001;
+    min_step = 0.1;
+    min_epsilon = 0.000001;
+    mcount = 0;
 }
 
 Gradient::~Gradient()
@@ -14,12 +16,12 @@ Gradient::~Gradient()
 
 void Gradient::setF(RnFunction *f)
 {
-    mf = f;
+    mfn = f;
 }
 
 RnFunction* Gradient::f() const
 {
-    return mf;
+    return mfn;
 }
 
 void Gradient::setX(const std::vector<double> &x)
@@ -49,41 +51,12 @@ void Gradient::calcGradient()
     for (unsigned i=0; i<mx.size(); i++)
     {
         mx[i] = mx[i] - h;
-        double f1 = mf->fx(mx);
+        double f1 = mfn->fx(mx);
         mx[i] = mx[i] + 2*h;
-        double f2 = mf->fx(mx);
+        double f2 = mfn->fx(mx);
         mx[i] = mx[i] - h;
         mg[i] = (f2 - f1) / (2 * h);
     }
-}
-
-class Argmin : public R1Minimize
-{
-public:
-    std::vector<double>& x;
-    std::vector<double>& g;
-    Gradient* gm;
-    Argmin(std::vector<double>& x, std::vector<double>& g, Gradient* gm) :
-        R1Minimize(), x(x), g(g), gm(gm) {}
-
-protected:
-    double fx(double alpha) {
-        std::vector<double> x1;
-        for (unsigned int i=0; i < x.size(); i++) x1.push_back(x[i] - alpha * g[i]);
-        return gm->f()->fx(x1);
-    }
-};
-
-double Gradient::minimize()
-{
-    double x0 = 0.0;
-    Argmin r1(mx, mg, this);
-    r1.setX0(x0);
-    r1.setStep(min_step);
-    r1.setEpsilon(min_epsilon);
-    r1.straightLineSearch();
-    double alpha = r1.goldenSectionSearch();
-    return alpha;
 }
 
 void Gradient::setR1MinimizeEpsilon(double step, double epsilon)
