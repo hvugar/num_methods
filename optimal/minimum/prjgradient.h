@@ -2,12 +2,21 @@
 #define PRJGRADIENT_H
 
 #include "gradient.h"
+#include "fpgradient.h"
 
-class MINIMUMSHARED_EXPORT ProjectionGradient
+class MINIMUMSHARED_EXPORT ProjectionGradient : public FastProximalGradient
 {
 public:
     ProjectionGradient();
     virtual ~ProjectionGradient();
+
+    virtual void calculate();
+
+    double a;
+    double b;
+
+protected:
+    double fx(double alpha);
 };
 
 #endif // PRJGRADIENT_H

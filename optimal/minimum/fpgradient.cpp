@@ -55,6 +55,16 @@ void FastProximalGradient::calculate()
     } while (distance() > epsilon());
 }
 
+double FastProximalGradient::fx(double alpha)
+{
+    std::vector<double> x1 = mx;
+    for (unsigned int i=0; i < mx.size(); i++)
+    {
+        x1[i] = mx[i] - alpha * mg[i];
+    }
+    return mfn->fx(x1);
+}
+
 void FastProximalGradient::print()
 {
     if (mcount == 1)
@@ -76,29 +86,3 @@ void FastProximalGradient::print()
     malpha>=0.0 ? printf("|%+10.6f\t", malpha) : printf("|%10.6f\t", malpha);
     printf("\n");
 }
-
-double FastProximalGradient::fx(double alpha)
-{
-    std::vector<double> x1 = mx;
-    for (unsigned int i=0; i < mx.size(); i++)
-    {
-        x1[i] = mx[i] - alpha * mg[i];
-    }
-    return mfn->fx(x1);
-}
-
-//FastProximalGradient::ArgMin::ArgMin(std::vector<double> &x, std::vector<double> &g, Gradient *gradient) :
-//    x(x), g(g), gradient(gradient)
-//{}
-
-//double FastProximalGradient::ArgMin::fx(double alpha)
-//{
-//    std::vector<double> x1 = x;
-//    for (unsigned int i=0; i < x.size(); i++)
-//    {
-//        x1[i] = x[i] - alpha * g[i];
-//    }
-//    return gradient->f()->fx(x1);
-//}
-
-

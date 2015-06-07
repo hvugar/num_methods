@@ -4,6 +4,7 @@
 #include <gradient.h>
 #include <fpgradient.h>
 #include <cjtgradient.h>
+#include <prjgradient.h>
 #include <methods.h>
 #include "cfunction.h"
 #include "samplecontrol.h"
@@ -33,7 +34,9 @@ int main()
     x.push_back(+1.2);
 
     /* Minimization */
-    FastProximalGradient fg;
+    ProjectionGradient fg;
+    fg.a = 0.4;
+    fg.b = 0.7;
     fg.setF(&r);
     fg.setEpsilon(0.000001);
     fg.setGradientStep(0.000001);
