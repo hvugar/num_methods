@@ -77,7 +77,7 @@ double straight_line_search_metod(R1Function f, double x0, double dx, double *a,
         }
     }
 
-    /*
+/*
     if ( y1 <= y0 && y0 <= y2 )
     {
         dx = -1.0 * dx;
@@ -353,6 +353,7 @@ double R1Minimize(R1Function f, double line_step, double gold_epsilon)
     straight_line_search_metod(f, alpha0, line_step, &a, &b);
     double alpha = golden_section_search_min(f, a, b, gold_epsilon);
     if ( f(alpha) > f(alpha0) ) alpha = alpha0;
+	//printf("alpha = %.10f %.10f %.10f\n", alpha, a, b);
     return alpha;
 }
 

@@ -17,7 +17,7 @@ struct R2Function
 
 struct RnFunction
 {
-    virtual double fx(std::vector<double> x) = 0;
+    virtual double fx(const std::vector<double>& x) = 0;
 };
 
 #endif // R1FUNCTION_H

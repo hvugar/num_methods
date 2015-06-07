@@ -3,7 +3,7 @@
 
 #include "gradient.h"
 
-class MINIMUMSHARED_EXPORT ConjugateGradient : public Gradient
+class MINIMUMSHARED_EXPORT ConjugateGradient : public Gradient, protected R1Function
 {
 public:
     ConjugateGradient();
@@ -11,18 +11,12 @@ public:
 
     virtual void calculate();
     virtual double minimize();
-    void print();
+    virtual double distance() const;
+    virtual void print();
 
-private:
+protected:
+    virtual double fx(double alpha);
     std::vector<double> s;
-    struct ArgMin : public R1Function
-    {
-        ArgMin(std::vector<double> &x, std::vector<double> &g, Gradient *gradient);
-        std::vector<double> &x;
-        std::vector<double> &g;
-        Gradient *gradient;
-        virtual double fx(double alpha);
-    };
 };
 
 #endif // CONJUGATEGRADIENT_H

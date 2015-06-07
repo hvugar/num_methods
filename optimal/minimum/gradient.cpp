@@ -1,12 +1,12 @@
 #include "gradient.h"
 
-Gradient::Gradient() : mfn(NULL), mf1(NULL)
+Gradient::Gradient() : mfn(NULL)//, mf1(NULL)
 {
-    malpha = 1.0;
-    mepsilon = 0.000001;
-    grad_step = 0.000001;
-    min_step = 0.1;
-    min_epsilon = 0.000001;
+    malpha = 0.0;
+    mepsilon = 0.0;
+    grad_step = 0.0;
+    min_step = 0.0;
+    min_epsilon = 0.0;
     mcount = 0;
 }
 

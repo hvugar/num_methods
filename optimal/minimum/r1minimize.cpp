@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 
-R1Minimize::R1Minimize() : mf(0), m_x0(0.0), m_step(0.1), m_epsilon(0.000001), m_a(0.0), m_b(0.0)
+R1Minimize::R1Minimize() : mf(0), m_x0(0.0), m_step(0.0), m_epsilon(0.0), m_a(0.0), m_b(0.0)
 {}
 
 R1Minimize::~R1Minimize()
@@ -32,6 +32,7 @@ double R1Minimize::step() const
 {
     return m_step;
 }
+
 void R1Minimize::setStep(double step)
 {
     m_step = step;
@@ -162,6 +163,8 @@ double R1Minimize::halphIntervalMethod()
 
 double R1Minimize::goldenSectionSearch()
 {
+    double a = m_a;
+    double b = m_b;
     //double sqrt_5 = 2.2360679774997896964091736687313
     //double phi = (sqrt(5) + 1.0) / 2.0;
     //double phi = (sqrt(5) - 1) / 2.0;
@@ -175,40 +178,40 @@ double R1Minimize::goldenSectionSearch()
 
     // Lazimi epsilon deqiqliyini alana qeder
     // iterasiyalari davam edirik
-    while ( fabs(m_b-m_a) > m_epsilon )
+    while ( fabs(b-a) > m_epsilon )
     {
         if (isnan(x1))
         {
-            x1 = m_b - fabs(m_b-m_a)/phi;
+            x1 = b - fabs(b-a)/phi;
             y1 = mf->fx(x1);
         }
 
         if (isnan(x2))
         {
-            x2 = m_a + fabs(m_b-m_a)/phi;
+            x2 = a + fabs(b-a)/phi;
             y2 = mf->fx(x2);
         }
 
         if (y1 >= y2)
         {
-            m_a = x1;
+            a = x1;
             x1 = x2;    // Tapilmish x2 noqtesi ve bu noqtede funkisiyanin qiymeti
             y1 = y2;    // sonraki iterasiyada x1 qiymeti kimi istifade olunacaq.
             x2 = NAN;   // x2 novbeti iterasiyada axtarilacaq
         }
         else
         {
-            m_b = x2;
+            b = x2;
             x2 = x1;    // Tapilmish x1 noqtesi ve bu noqtede funkisiyanin qiymeti
             y2 = y1;    // sonraki iterasiyada x2 qiymeti kimi istifade olunacaq.
             x1 = NAN;   // x1 novbeti iterasiyada axtarilacaq
         }
     }
 
-    double c = (m_a+m_b)/2.0;
+    double c = (a+b)/2.0;
 
-    if (mf->fx(m_a)<mf->fx(m_b)) c = m_a;
-    if (mf->fx(m_a)>mf->fx(m_b)) c = m_b;
+    if (mf->fx(a)<mf->fx(b)) c = a;
+    if (mf->fx(a)>mf->fx(b)) c = b;
 
     return c;
 }

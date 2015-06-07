@@ -38,7 +38,6 @@ protected:
     virtual double distance() const;
 
     RnFunction *mfn;
-    R1Function *mf1;
     std::vector<double> mx;
     std::vector<double> mg;
     double malpha;

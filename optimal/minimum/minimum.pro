@@ -15,7 +15,8 @@ SOURCES += \
     r1minimize.cpp \
     gradient.cpp \
     fpgradient.cpp \
-    cjtgradient.cpp
+    cjtgradient.cpp \
+    prjgradient.cpp
 
 HEADERS += global.h \
     methods.h \
@@ -23,4 +24,5 @@ HEADERS += global.h \
     r1minimize.h \
     gradient.h \
     fpgradient.h \
-    cjtgradient.h
+    cjtgradient.h \
+    prjgradient.h

@@ -2,7 +2,7 @@
 
 FastProximalGradient::FastProximalGradient() : Gradient()
 {
-    mf1 = new FastProximalGradient::ArgMin(mx, mg, this);
+    //mf1 = new FastProximalGradient::ArgMin(mx, mg, this);
 }
 
 FastProximalGradient::~FastProximalGradient()
@@ -10,13 +10,15 @@ FastProximalGradient::~FastProximalGradient()
 
 double FastProximalGradient::minimize()
 {
+    double alpha0 = 0.0;
     R1Minimize r1;
-    r1.setF(mf1);
-    r1.setX0(0.0);
+    r1.setF(this);
+    r1.setX0(alpha0);
     r1.setStep(min_step);
     r1.setEpsilon(min_epsilon);
     r1.straightLineSearch();
     double alpha = r1.goldenSectionSearch();
+    if ( this->fx(alpha) > this->fx(alpha0) ) alpha = alpha0;
     return alpha;
 }
 
@@ -34,6 +36,11 @@ void FastProximalGradient::calculate()
 
         mcount++;
 
+        double gn = 0.0;
+        for (unsigned int i=0; i<mg.size(); i++) gn = gn + mg[i]*mg[i];
+        gn = sqrt(gn);
+        for (unsigned int i=0; i<mg.size(); i++) mg[i] = mg[i] / gn;
+
         /* R1 minimization in direct of antigradient */
         malpha = minimize();
 
@@ -50,21 +57,48 @@ void FastProximalGradient::calculate()
 
 void FastProximalGradient::print()
 {
-    printf("%12.8f %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", mx[0], mx[1], mg[0], mg[1], malpha, gradientNorm(), f()->fx(mx));
-}
-
-FastProximalGradient::ArgMin::ArgMin(std::vector<double> &x, std::vector<double> &g, Gradient *gradient) :
-    x(x), g(g), gradient(gradient)
-{}
-
-double FastProximalGradient::ArgMin::fx(double alpha)
-{
-    std::vector<double> x1 = x;
-    for (unsigned int i=0; i < x.size(); i++)
+    if (mcount == 1)
     {
-        x1[i] = x[i] - alpha * g[i];
+        printf("No\t|x1      \t|x2      \t|f(x)      \t|grad1      \t|grad2      \t|grad_norm  \t|alpha  \t");
+        printf("\n--------+---------------+---------------+---------------+---------------+---------------+---------------+-------------\n");
     }
-    return gradient->f()->fx(x1);
+
+    double y = f()->fx(mx);
+    double nr = gradientNorm();
+
+    printf("%d\t", mcount);
+    mx[0]>=0.0 ? printf("|+%.10f\t", fabs(mx[0])) : printf("|%.10f\t", mx[0]);
+    mx[1]>=0.0 ? printf("|+%.10f\t", fabs(mx[1])) : printf("|%.10f\t", mx[1]);
+    y>=0.0 ? printf("|%+10.6f\t", y) : printf("|%10.6f\t", y);
+    mg[0]>=0.0 ? printf("|%+10.6f\t", mg[0]) : printf("|%10.6f\t", mg[0]);
+    mg[1]>=0.0 ? printf("|%+10.6f\t", mg[1]) : printf("|%10.6f\t", mg[1]);
+    nr>=0.0 ? printf("|%+10.6f\t", nr) : printf("|%10.6f\t", nr);
+    malpha>=0.0 ? printf("|%+10.6f\t", malpha) : printf("|%10.6f\t", malpha);
+    printf("\n");
 }
+
+double FastProximalGradient::fx(double alpha)
+{
+    std::vector<double> x1 = mx;
+    for (unsigned int i=0; i < mx.size(); i++)
+    {
+        x1[i] = mx[i] - alpha * mg[i];
+    }
+    return mfn->fx(x1);
+}
+
+//FastProximalGradient::ArgMin::ArgMin(std::vector<double> &x, std::vector<double> &g, Gradient *gradient) :
+//    x(x), g(g), gradient(gradient)
+//{}
+
+//double FastProximalGradient::ArgMin::fx(double alpha)
+//{
+//    std::vector<double> x1 = x;
+//    for (unsigned int i=0; i < x.size(); i++)
+//    {
+//        x1[i] = x[i] - alpha * g[i];
+//    }
+//    return gradient->f()->fx(x1);
+//}
 
 

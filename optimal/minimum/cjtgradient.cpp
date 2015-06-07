@@ -2,7 +2,6 @@
 
 ConjugateGradient::ConjugateGradient() : Gradient()
 {
-    mf1 = new ConjugateGradient::ArgMin(mx, s, this);
 }
 
 ConjugateGradient::~ConjugateGradient()
@@ -10,58 +9,62 @@ ConjugateGradient::~ConjugateGradient()
 
 double ConjugateGradient::minimize()
 {
+    double alpha0 = 0.0;
     R1Minimize r1;
-    r1.setF(mf1);
-    r1.setX0(0.0);
+    r1.setF(this);
+    r1.setX0(alpha0);
     r1.setStep(min_step);
     r1.setEpsilon(min_epsilon);
     r1.straightLineSearch();
     double alpha = r1.goldenSectionSearch();
+    if ( fx(alpha) > fx(alpha0) ) alpha = alpha0;
+    //printf("alpha = %.10f %.10f %.10f\n", alpha, r1.a(), r1.b());
     return alpha;
 }
 
 void ConjugateGradient::calculate()
 {
     unsigned int k = 0;
+    double gr0_mod = 0.0;
     double gr1_mod = 0.0;
     double gr2_mod = 0.0;
     s = mx;
 
     do
     {
-        // First iteration
-        if (k == 0)
-        {
-            // Gradient of objectiv function in current point
-            calcGradient();
-
-            // First direction is antigradient
-            for (unsigned int i=0; i<mg.size(); i++) s[i] = -mg[i];
-
-            // Module of gradient
-            gr1_mod = 0.0;
-            for (unsigned int i=0; i<mg.size(); i++) gr1_mod = gr1_mod + mg[i]*mg[i];
-        }
-        else
-        {
-            // Gradient of objectiv function in next point
-            calcGradient();
-
-            // Module of next gradient
-            gr2_mod = 0.0;
-            for (unsigned int i=0; i<mg.size(); i++) gr2_mod = gr2_mod + mg[i]*mg[i];
-
-            double w = gr2_mod / gr1_mod;
-            gr1_mod = gr2_mod;
-
-            // Direction in next (k+1) iteration
-            for (unsigned int i=0; i<mg.size(); i++) s[i] = -mg[i] + s[i] * w;
-        }
+        // Gradient of objectiv function in current point
+        calcGradient();
 
         if (gradientNorm() < epsilon())
             break;
 
         mcount++;
+
+        // Module of gradient
+        gr0_mod = 0.0;
+        for (unsigned int i=0; i<mg.size(); i++) gr0_mod = gr0_mod + mg[i]*mg[i];
+        //gr0_mod = sqrt(gr0_mod);
+
+        // First iteration
+        if (k == 0)
+        {
+            gr1_mod = gr0_mod;
+            // First direction is antigradient
+            for (unsigned int i=0; i<mg.size(); i++) s[i] = -mg[i];
+        }
+        else
+        {
+            gr2_mod = gr0_mod;
+            double w = gr2_mod / gr1_mod;
+            gr1_mod = gr2_mod;
+            // Direction in next (k+1) iteration
+            for (unsigned int i=0; i<mg.size(); i++) s[i] = -mg[i] + s[i] * w;
+        }
+
+        double sn = 0.0;
+        for (unsigned int i=0; i<s.size(); i++) sn = sn + s[i]*s[i];
+        sn = sqrt(sn);
+        for (unsigned int i=0; i<s.size(); i++) s[i] = s[i] / sn;
 
         malpha = minimize();
 
@@ -78,21 +81,45 @@ void ConjugateGradient::calculate()
     } while (distance() > epsilon());
 }
 
-void ConjugateGradient::print()
+double ConjugateGradient::distance() const
 {
-    printf("%12.6f %12.6f %12.6f %12.6f %12.6f %12.6f %12.6f %12.6f %12.6f\n", mx[0], mx[1], mg[0], mg[1], s[0], s[1],  malpha, gradientNorm(), f()->fx(mx));
+    double dist = 0.0;
+    for (unsigned int i=0; i<mx.size(); i++)
+    {
+        dist = dist + (malpha * s[i]) * (malpha * s[i]);
+    }
+    dist = sqrt(dist);
+    return dist;
 }
 
-ConjugateGradient::ArgMin::ArgMin(std::vector<double> &x, std::vector<double> &g, Gradient *gradient) :
-    x(x), g(g), gradient(gradient)
-{}
-
-double ConjugateGradient::ArgMin::fx(double alpha)
+void ConjugateGradient::print()
 {
-    std::vector<double> x1 = x;
-    for (unsigned int i=0; i < x.size(); i++)
+    if (mcount == 1)
     {
-        x1[i] = x[i] + alpha * g[i];
+        printf("No\t|x1      \t|x2      \t|f(x)      \t|s1      \t|s2      \t|grad_norm  \t|alpha  \t");
+        printf("\n--------+---------------+---------------+---------------+---------------+---------------+---------------+-------------\n");
     }
-    return gradient->f()->fx(x1);
+
+    double y = f()->fx(mx);
+    double nr = gradientNorm();
+
+    printf("%d\t", mcount);
+    mx[0]>=0.0 ? printf("|+%.10f\t", fabs(mx[0])) : printf("|%.10f\t", mx[0]);
+    mx[1]>=0.0 ? printf("|+%.10f\t", fabs(mx[1])) : printf("|%.10f\t", mx[1]);
+    y>=0.0 ? printf("|%+10.6f\t", y) : printf("|%10.6f\t", y);
+    s[0]>=0.0 ? printf("|%+10.6f\t", s[0]) : printf("|%10.6f\t", s[0]);
+    s[1]>=0.0 ? printf("|%+10.6f\t", s[1]) : printf("|%10.6f\t", s[1]);
+    nr>=0.0 ? printf("|%+10.6f\t", nr) : printf("|%10.6f\t", nr);
+    malpha>=0.0 ? printf("|%+10.6f\t", malpha) : printf("|%10.6f\t", malpha);
+    printf("\n");
+}
+
+double ConjugateGradient::fx(double alpha)
+{
+    std::vector<double> x1 = mx;
+    for (unsigned int i=0; i < mx.size(); i++)
+    {
+        x1[i] = mx[i] + alpha * s[i];
+    }
+    return mfn->fx(x1);
 }

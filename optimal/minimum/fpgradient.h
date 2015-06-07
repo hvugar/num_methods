@@ -3,7 +3,7 @@
 
 #include "gradient.h"
 
-class MINIMUMSHARED_EXPORT FastProximalGradient : public Gradient
+class MINIMUMSHARED_EXPORT FastProximalGradient : public Gradient, protected R1Function
 {
 public:
     FastProximalGradient();
@@ -11,17 +11,10 @@ public:
 
     virtual double minimize();
     virtual void calculate();
-    void print();
+    virtual void print();
 
-private:
-    struct ArgMin : public R1Function
-    {
-        ArgMin(std::vector<double> &x, std::vector<double> &g, Gradient *gradient);
-        std::vector<double> &x;
-        std::vector<double> &g;
-        Gradient *gradient;
-        virtual double fx(double alpha);
-    };
+protected:
+    virtual double fx(double alpha);
 };
 
 #endif // FPGRADIENT_H
