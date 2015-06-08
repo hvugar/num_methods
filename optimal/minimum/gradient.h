@@ -45,7 +45,8 @@ protected:
     double grad_step;
     double min_epsilon;
     double min_step;
-    int mcount;
+    int k;
+    int M;
 };
 
 #endif // GRADIENT_H

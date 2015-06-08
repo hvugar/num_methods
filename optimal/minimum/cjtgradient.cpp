@@ -18,13 +18,12 @@ double ConjugateGradient::minimize()
     r1.straightLineSearch();
     double alpha = r1.goldenSectionSearch();
     if ( fx(alpha) > fx(alpha0) ) alpha = alpha0;
-    //printf("alpha = %.10f %.10f %.10f\n", alpha, r1.a(), r1.b());
     return alpha;
 }
 
 void ConjugateGradient::calculate()
 {
-    unsigned int k = 0;
+    unsigned int n = 0;
     double gr0_mod = 0.0;
     double gr1_mod = 0.0;
     double gr2_mod = 0.0;
@@ -38,7 +37,9 @@ void ConjugateGradient::calculate()
         if (gradientNorm() < epsilon())
             break;
 
-        mcount++;
+        printf("gradient: %.10f epsilon: %.10f\n", gradientNorm(), epsilon());
+
+        k++;
 
         // Module of gradient
         gr0_mod = 0.0;
@@ -46,7 +47,7 @@ void ConjugateGradient::calculate()
         //gr0_mod = sqrt(gr0_mod);
 
         // First iteration
-        if (k == 0)
+        if (n == 0)
         {
             gr1_mod = gr0_mod;
             // First direction is antigradient
@@ -75,7 +76,9 @@ void ConjugateGradient::calculate()
             mx[i] = mx[i] + malpha * s[i];
         }
 
-        if ( k == mx.size() ) { k = 0; } else { k++; }
+        if ( n == mx.size() ) { n = 0; } else { n++; }
+
+        printf("distance: %.10f epsilon: %.10f alpha: %.10f\n", distance(), epsilon(), malpha);
 
         /* calculating distance previous and new point */
     } while (distance() > epsilon());
@@ -94,7 +97,7 @@ double ConjugateGradient::distance() const
 
 void ConjugateGradient::print()
 {
-    if (mcount == 1)
+    if (k == 1)
     {
         printf("No\t|x1      \t|x2      \t|f(x)      \t|s1      \t|s2      \t|grad_norm  \t|alpha  \t");
         printf("\n--------+---------------+---------------+---------------+---------------+---------------+---------------+-------------\n");
@@ -103,7 +106,7 @@ void ConjugateGradient::print()
     double y = f()->fx(mx);
     double nr = gradientNorm();
 
-    printf("%d\t", mcount);
+    printf("%d\t", k);
     mx[0]>=0.0 ? printf("|+%.10f\t", fabs(mx[0])) : printf("|%.10f\t", mx[0]);
     mx[1]>=0.0 ? printf("|+%.10f\t", fabs(mx[1])) : printf("|%.10f\t", mx[1]);
     y>=0.0 ? printf("|%+10.6f\t", y) : printf("|%10.6f\t", y);

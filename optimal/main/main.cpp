@@ -6,7 +6,9 @@
 #include <cjtgradient.h>
 #include <prjgradient.h>
 #include <methods.h>
-#include "cfunction.h"
+
+#include "cfunction1.h"
+#include "cfunction2.h"
 #include "samplecontrol.h"
 
 struct Rosenbrock : public RnFunction
@@ -21,7 +23,7 @@ double Rosenbrock::fx(const std::vector<double>& x)
     return ((1 - x1) * (1 - x1)) + 100 * (x2 - x1 * x1) * (x2 - x1 * x1);
 }
 
-#define first
+#define first1
 int main()
 {
 #ifdef first
@@ -45,14 +47,14 @@ int main()
     fg.calculate();
 
 #else
-    CFunction* f = new CFunction(0.0, 1.0, 0.001);
-    std::vector<double> u(f->N);
-    for (int i=0; i<f->N; i++) u[i] = 0.01;
+    CFunction2* f = new CFunction2(0.0, 1.0, 0.01);
+    std::vector<double> u(f->n);
+    for (int i=0; i<f->n; i++) u[i] = 0.00001;//3*f->t[i];//*f->t[i];
 
     SampleControl sc;
     sc.setF(f);
     sc.setX(u);
-    sc.setEpsilon(0.0000001);
+    sc.setEpsilon(0.01);
     sc.setGradientStep(0.000001);
     sc.setR1MinimizeEpsilon(0.01, 0.000001);
     sc.calculate();

@@ -1,13 +1,13 @@
 #include "gradient.h"
 
-Gradient::Gradient() : mfn(NULL)//, mf1(NULL)
+Gradient::Gradient() : mfn(NULL)
 {
     malpha = 0.0;
     mepsilon = 0.0;
     grad_step = 0.0;
     min_step = 0.0;
     min_epsilon = 0.0;
-    mcount = 0;
+    k = M = 0;
 }
 
 Gradient::~Gradient()
@@ -72,7 +72,7 @@ void Gradient::setGradientStep(double step)
 
 int Gradient::count() const
 {
-    return mcount;
+    return k;
 }
 
 double Gradient::gradientNorm() const

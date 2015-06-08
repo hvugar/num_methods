@@ -11,7 +11,7 @@ ProjectionGradient::~ProjectionGradient()
 
 void ProjectionGradient::calculate()
 {
-    mcount = 0;
+    k = 0;
     do
     {
         /* calculating function gradient at current point */
@@ -21,7 +21,7 @@ void ProjectionGradient::calculate()
         if (gradientNorm() < epsilon())
             break;
 
-        mcount++;
+        k++;
 
         double gn = 0.0;
         for (unsigned int i=0; i<mg.size(); i++) gn = gn + mg[i]*mg[i];

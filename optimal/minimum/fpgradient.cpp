@@ -2,7 +2,6 @@
 
 FastProximalGradient::FastProximalGradient() : Gradient()
 {
-    //mf1 = new FastProximalGradient::ArgMin(mx, mg, this);
 }
 
 FastProximalGradient::~FastProximalGradient()
@@ -24,7 +23,7 @@ double FastProximalGradient::minimize()
 
 void FastProximalGradient::calculate()
 {
-    mcount = 0;
+    k = 0;
     do
     {
         /* calculating function gradient at current point */
@@ -34,7 +33,7 @@ void FastProximalGradient::calculate()
         if (gradientNorm() < epsilon())
             break;
 
-        mcount++;
+        k++;
 
         double gn = 0.0;
         for (unsigned int i=0; i<mg.size(); i++) gn = gn + mg[i]*mg[i];
@@ -67,7 +66,7 @@ double FastProximalGradient::fx(double alpha)
 
 void FastProximalGradient::print()
 {
-    if (mcount == 1)
+    if (k == 1)
     {
         printf("No\t|x1      \t|x2      \t|f(x)      \t|grad1      \t|grad2      \t|grad_norm  \t|alpha  \t");
         printf("\n--------+---------------+---------------+---------------+---------------+---------------+---------------+-------------\n");
@@ -76,7 +75,7 @@ void FastProximalGradient::print()
     double y = f()->fx(mx);
     double nr = gradientNorm();
 
-    printf("%d\t", mcount);
+    printf("%d\t", k);
     mx[0]>=0.0 ? printf("|+%.10f\t", fabs(mx[0])) : printf("|%.10f\t", mx[0]);
     mx[1]>=0.0 ? printf("|+%.10f\t", fabs(mx[1])) : printf("|%.10f\t", mx[1]);
     y>=0.0 ? printf("|%+10.6f\t", y) : printf("|%10.6f\t", y);

@@ -1,4 +1,4 @@
-#include "cfunction.h"
+#include "cfunction1.h"
 #include <math.h>
 #include <stdio.h>
 
@@ -29,20 +29,20 @@ void printX(char* s, std::vector<double> a)
     printf("\n");
 }
 
-CFunction::CFunction(double t0, double t1, double h) : RnFunction()
+CFunction1::CFunction1(double t0, double t1, double h) : RnFunction()
 {
     this->t0 = t0;
     this->t1 = t1;
     this->h = h;
-    N = (int)ceil((t1-t0)/h) + 1;
+    n = (int)ceil((t1-t0)/h) + 1;
 
-    t = std::vector<double>(N);
-    x1 = std::vector<double>(N);
-    x2 = std::vector<double>(N);
-    psi1 = std::vector<double>(N);
-    psi2 = std::vector<double>(N);
+    t = std::vector<double>(n);
+    x1 = std::vector<double>(n);
+    x2 = std::vector<double>(n);
+    psi1 = std::vector<double>(n);
+    psi2 = std::vector<double>(n);
 
-    for (int i=0; i<N; i++)
+    for (int i=0; i<n; i++)
     {
         t[i] = i*h;
         x1[i] = 0.0;
@@ -52,50 +52,55 @@ CFunction::CFunction(double t0, double t1, double h) : RnFunction()
     }
 }
 
-CFunction::~CFunction()
+CFunction1::~CFunction1()
 {}
 
-double CFunction::fx(const std::vector<double>& u)
+double CFunction1::fx(const std::vector<double>& u)
 {
     double sum = 0.0;
     int i=0;
-    for (i=0; i<(N-1); i++)
+    std::vector<double> x(2);
+    for (i=0; i<(n-1); i++)
     {
         int j=i+1;
-        double fj = (x1[j]-t[j]*t[j]*t[j])*(x1[j]-t[j]*t[j]*t[j]) + (x2[j] - t[j])*(x2[j] - t[j]) + (2*u[j] - t[j])*(2*u[j] - t[j]);
-        double fi = (x1[i]-t[i]*t[i]*t[i])*(x1[i]-t[i]*t[i]*t[i]) + (x2[i] - t[i])*(x2[i] - t[i]) + (2*u[i] - t[i])*(2*u[i] - t[i]);
+        //double fj = (x1[j]-t[j]*t[j]*t[j])*(x1[j]-t[j]*t[j]*t[j]) + (x2[j] - t[j])*(x2[j] - t[j]) + (2*u[j] - t[j])*(2*u[j] - t[j]);
+        //double fi = (x1[i]-t[i]*t[i]*t[i])*(x1[i]-t[i]*t[i]*t[i]) + (x2[i] - t[i])*(x2[i] - t[i]) + (2*u[i] - t[i])*(2*u[i] - t[i]);
+        x[0] = x1[j]; x[1] = x2[j];
+        double fj = fx0(t[j], x, u[j]);
+        x[0] = x1[i]; x[1] = x2[i];
+        double fi = fx0(t[i], x, u[i]);
         sum = sum + 0.5 * (fj+fi) * (t[j]-t[i]);
     }
-    sum = sum + (x2[N-1] - 1.0) * (x2[N-1] - 1.0);
+    sum = sum + (x2[n-1] - 1.0) * (x2[n-1] - 1.0);
     return sum;
 }
 
-double CFunction::fx0(double t, std::vector<double> x, double u)
+double CFunction1::fx0(double t, std::vector<double> x, double u)
 {
     double x1 = x[0];
     double x2 = x[1];
     double a1 = x1-t*t*t;
     double a2 = x2-t;
     double a3 = 2*u-t;
-    return  a1*a1 + a2*a2 + a3*a3;
+    return a1*a1 + a2*a2 + a3*a3;
 }
 
-double CFunction::fx1(double t, std::vector<double> x, double u)
+double CFunction1::fx1(double t, std::vector<double> x, double u)
 {
     double x2 = x[1];
     return 3.0*x2*x2;
 }
 
-double CFunction::fx2(double t, std::vector<double> x, double u)
+double CFunction1::fx2(double t, std::vector<double> x, double u)
 {
     double x1 = x[0];
     double x2 = x[1];
     return x1 + x2 - 2.0*u - t*t*t + 1.0;
 }
 
-double CFunction::fp1(double t, std::vector<double> x, std::vector<double> psi, double u)
+double CFunction1::fp1(double t, std::vector<double> x, std::vector<double> psi, double u)
 {
-    /*
+/*
     double h =  0.000001;
     double x1[] = { x[0] + h, x[1] };
     double x2[] = { x[0] - h, x[1] };
@@ -106,9 +111,9 @@ double CFunction::fp1(double t, std::vector<double> x, std::vector<double> psi, 
     return 2.0 * (x1 - t*t*t) - p2;
 }
 
-double CFunction::fp2(double t, std::vector<double> x, std::vector<double> psi, double u)
+double CFunction1::fp2(double t, std::vector<double> x, std::vector<double> psi, double u)
 {
-    /*
+/*
     double h =  0.000001;
     double x1[] = { x[0], x[1] + h };
     double x2[] = { x[0], x[1] - h };
@@ -120,12 +125,12 @@ double CFunction::fp2(double t, std::vector<double> x, std::vector<double> psi, 
     return 2.0 * (x2 - t) - 6.0 * x2 * p1 - p2;
 }
 
-double CFunction::H(double t, std::vector<double> x, double u, int r, std::vector<double> psi)
+double CFunction1::H(double t, std::vector<double> x, double u, int r, std::vector<double> psi)
 {
     return -1.0 * fx0(t, x, u) + psi[0] * fx1(t, x, u) + psi[1] * fx2(t, x, u);
 }
 
-double CFunction::gradJ(double t, std::vector<double> x, std::vector<double> psi, double u)
+double CFunction1::gradJ(double t, std::vector<double> x, std::vector<double> psi, double u)
 {
     double h =  0.000001;
     double u1 = u + h;
@@ -133,7 +138,7 @@ double CFunction::gradJ(double t, std::vector<double> x, std::vector<double> psi
     return (H(t, x, u1, 1, psi) - H(t, x, u2, 1, psi)) / (2 * h);
 }
 
-void CFunction::gradientJ(double grad_step, std::vector<double>& g, const std::vector<double>& u)
+void CFunction1::gradientJ(double grad_step, std::vector<double>& g, const std::vector<double>& u)
 {
     std::vector<double> x(2);
     std::vector<double> psi(2);
@@ -146,7 +151,7 @@ void CFunction::gradientJ(double grad_step, std::vector<double>& g, const std::v
 //    printX("p1", psi1);
 //    printX("p2", psi2);
 
-    for (int i=0; i<N; i++)
+    for (int i=0; i<n; i++)
     {
         x[0] = x1[i];
         x[1] = x2[i];
@@ -154,14 +159,15 @@ void CFunction::gradientJ(double grad_step, std::vector<double>& g, const std::v
         psi[0] = psi1[i];
         psi[1] = psi2[i];
 
-        double u1 = u[i] + grad_step;
-        double u2 = u[i] - grad_step;
-
-        g[i] = (H(t[i], x, u1, 1, psi) - H(t[i], x, u2, 1, psi)) / (2 * grad_step);
+//        double u1 = u[i] + grad_step;
+//        double u2 = u[i] - grad_step;
+//        g[i] = (H(t[i], x, u1, 1, psi) - H(t[i], x, u2, 1, psi)) / (2 * grad_step);
+        g[i] = -4.0*(2.0*u[i] - t[i]) - 2.0*psi2[i];
     }
+    printX("gr", g);
 }
 
-void CFunction::test(const std::vector<double>& u)
+void CFunction1::test(const std::vector<double>& u)
 {
     double k1[] = {0.0, 0.0};
     double k2[] = {0.0, 0.0};
@@ -175,7 +181,7 @@ void CFunction::test(const std::vector<double>& u)
     _x[1] = x2[0];
 
     h = +fabs(h);
-    for (int i=0; i<N-1; i++)
+    for (int i=0; i<n-1; i++)
     {
         _x[0] = x1[i];
         _x[1] = x2[i];
@@ -201,14 +207,14 @@ void CFunction::test(const std::vector<double>& u)
         x2[i+1] = x2[i] + (h/6.0) * (k1[1] + 2*k2[1] + 2*k3[1] + k4[1]);
     }
 
-    psi1[N-1] = 0.0;
-    psi2[N-1] = -2.0 * (x2[N-1] - 1.0);
+    psi1[n-1] = 0.0;
+    psi2[n-1] = -2.0 * (x2[n-1] - 1.0);
     std::vector<double> _psi(2);
-    _psi[0] = psi1[N-1];
-    _psi[1] = psi2[N-1];
+    _psi[0] = psi1[n-1];
+    _psi[1] = psi2[n-1];
 
     h = -fabs(h);
-    for (int i=N-1; i>0; i--)
+    for (int i=n-1; i>0; i--)
     {
         _x[0] = x1[i];
         _x[1] = x2[i];

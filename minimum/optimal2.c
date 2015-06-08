@@ -83,6 +83,21 @@ double __JSum(double *t, double **x, int n, double *u, int N)
     return sum;
 }
 
+double u_sum(double *u, double *t, int N)
+{
+    double sum = 0.0;
+    int i=0;
+    for (i=0; i<(N-1); i++)
+    {
+        int j=i+1;
+        double fj = u[j]*u[j];
+        double fi = u[i]*u[i];
+        sum = sum + 0.5 * (fj+fi) * (t[j]-t[i]);
+    }
+	sum = sqrt(sum);
+    return sum;
+}
+
 void __calculate()
 {
     double t0 = 0.0;
@@ -126,7 +141,7 @@ void __calculate()
     int count = 0;
     do
     {
-        //_print1("u", u, N);
+        _print1("u", u, N);
 
         double k1[] = {0.0, 0.0};
         double k2[] = {0.0, 0.0};
@@ -273,14 +288,19 @@ void __calculate()
         {
             int i;
             double *u2  = (double*) malloc( sizeof(double) * N );
-			/*
-            for (i=0; i<N; i++) {
-                if ((u[i] - alpha * s1[i]) < a) u2[i] = a; else
-                    if ((u[i] - alpha * s1[i]) > b) u2[i] = b; else
-                        u2[i] = u[i] - alpha * s1[i];
+			memcmp(u2, u, sizeof(double) * N);
+			
+            for (i=0; i<N; i++) 
+			{
+				u2[i] = u[i] + alpha * s[i];
+				double u_s = u_sum(u2, t, N);
+				if (u_s > 1)
+				{
+					u2[i] = u2[i] / u_s;
+				}
             }
-			*/
-			for (i=0; i<N; i++) { u2[i] = u[i] + alpha * s[i]; }
+		
+			//for (i=0; i<N; i++) { u2[i] = u[i] + alpha * s[i]; }
             double J = __JSum(t, x, n, u2, N);
             free(u2);
             return J;
