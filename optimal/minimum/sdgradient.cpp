@@ -30,15 +30,14 @@ void SteepestDescentGradient::calculate()
         calcGradient();
 
         /* if norm of gradinet at current point is less than epsilon break. no minimize */
-        if (gradientNorm() < epsilon())
+        double gradient_norm = gradientNorm();
+        if (gradient_norm < epsilon())
             break;
 
         k++;
 
-        double gn = 0.0;
-        for (unsigned int i=0; i<mg.size(); i++) gn = gn + mg[i]*mg[i];
-        gn = sqrt(gn);
-        for (unsigned int i=0; i<mg.size(); i++) mg[i] = mg[i] / gn;
+        /* calculating unit vectors */
+        for (unsigned int i=0; i<mg.size(); i++) mg[i] = mg[i] / gradient_norm;
 
         /* R1 minimization in direct of antigradient */
         malpha = minimize();
