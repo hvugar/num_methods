@@ -71,7 +71,7 @@ void SteepestDescentGradient::print()
         printf("\n--------+---------------+---------------+---------------+---------------+---------------+---------------+-------------\n");
     }
 
-    double y = f()->fx(mx);
+    double y = function()->fx(mx);
     double nr = gradientNorm();
 
     printf("%d\t", k);

@@ -4,7 +4,7 @@
 #include <sdgradient.h>
 #include <cjtgradient.h>
 
-class SampleControl : public ConjugateGradient
+class SampleControl : public SteepestDescentGradient
 {
 public:
     SampleControl();

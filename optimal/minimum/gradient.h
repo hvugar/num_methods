@@ -16,8 +16,8 @@ public:
     Gradient();
     virtual ~Gradient();
 
-    virtual RnFunction* f() const;
-    virtual void setF(RnFunction* f);
+    virtual RnFunction* function() const;
+    virtual void setFunction(RnFunction* function);
 
     const std::vector<double>& x() const;
     void setX(const std::vector<double>& x);

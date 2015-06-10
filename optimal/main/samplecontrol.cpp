@@ -2,7 +2,7 @@
 #include "cfunction1.h"
 #include "cfunction2.h"
 
-SampleControl::SampleControl() : ConjugateGradient()
+SampleControl::SampleControl() : SteepestDescentGradient()
 {}
 
 SampleControl::~SampleControl()
@@ -11,7 +11,7 @@ SampleControl::~SampleControl()
 
 void SampleControl::calcGradient()
 {
-    CFunction2* func = dynamic_cast<CFunction2*>(f());
+    CFunction1* func = dynamic_cast<CFunction1*>(function());
 
     func->gradientJ(grad_step, mg, mx);
 
@@ -19,4 +19,6 @@ void SampleControl::calcGradient()
 }
 
 void SampleControl::print()
-{}
+{
+//    SteepestDescentGradient::print();
+}

@@ -14,12 +14,12 @@ Gradient::~Gradient()
 {
 }
 
-void Gradient::setF(RnFunction *f)
+void Gradient::setFunction(RnFunction *f)
 {
     mfn = f;
 }
 
-RnFunction* Gradient::f() const
+RnFunction* Gradient::function() const
 {
     return mfn;
 }
