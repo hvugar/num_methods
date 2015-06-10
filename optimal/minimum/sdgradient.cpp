@@ -1,13 +1,13 @@
-#include "fpgradient.h"
+#include "sdgradient.h"
 
-FastProximalGradient::FastProximalGradient() : Gradient()
+SteepestDescentGradient::SteepestDescentGradient() : Gradient()
 {
 }
 
-FastProximalGradient::~FastProximalGradient()
+SteepestDescentGradient::~SteepestDescentGradient()
 {}
 
-double FastProximalGradient::minimize()
+double SteepestDescentGradient::minimize()
 {
     double alpha0 = 0.0;
     R1Minimize r1;
@@ -21,7 +21,7 @@ double FastProximalGradient::minimize()
     return alpha;
 }
 
-void FastProximalGradient::calculate()
+void SteepestDescentGradient::calculate()
 {
     k = 0;
     do
@@ -54,7 +54,7 @@ void FastProximalGradient::calculate()
     } while (distance() > epsilon());
 }
 
-double FastProximalGradient::fx(double alpha)
+double SteepestDescentGradient::fx(double alpha)
 {
     std::vector<double> x1 = mx;
     for (unsigned int i=0; i < mx.size(); i++)
@@ -64,7 +64,7 @@ double FastProximalGradient::fx(double alpha)
     return mfn->fx(x1);
 }
 
-void FastProximalGradient::print()
+void SteepestDescentGradient::print()
 {
     if (k == 1)
     {

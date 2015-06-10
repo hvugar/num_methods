@@ -2,9 +2,9 @@
 #define PRJGRADIENT_H
 
 #include "gradient.h"
-#include "fpgradient.h"
+#include "sdgradient.h"
 
-class MINIMUMSHARED_EXPORT ProjectionGradient : public FastProximalGradient
+class MINIMUMSHARED_EXPORT ProjectionGradient : public SteepestDescentGradient
 {
 public:
     ProjectionGradient();

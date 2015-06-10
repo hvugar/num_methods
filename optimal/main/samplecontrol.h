@@ -1,7 +1,7 @@
 #ifndef SAMPLECONTROL_H
 #define SAMPLECONTROL_H
 
-#include <fpgradient.h>
+#include <sdgradient.h>
 #include <cjtgradient.h>
 
 class SampleControl : public ConjugateGradient

@@ -1,6 +1,6 @@
 #include "prjgradient.h"
 
-ProjectionGradient::ProjectionGradient() : FastProximalGradient(), a(-INFINITY), b(INFINITY)
+ProjectionGradient::ProjectionGradient() : SteepestDescentGradient(), a(-INFINITY), b(INFINITY)
 {
 }
 

@@ -1,9 +1,9 @@
 #ifndef CFUNCTION1_H
 #define CFUNCTION1_H
 
-#include "function.h"
-
-void printX(char* s, std::vector<double> x);
+#include <math.h>
+#include <function.h>
+#include "utils.h"
 
 struct CFunction1 : public RnFunction
 {

@@ -14,15 +14,15 @@ SOURCES += \
     minimum1.cpp \
     r1minimize.cpp \
     gradient.cpp \
-    fpgradient.cpp \
     cjtgradient.cpp \
-    prjgradient.cpp
+    prjgradient.cpp \
+    sdgradient.cpp
 
 HEADERS += global.h \
     methods.h \
     function.h \
     r1minimize.h \
     gradient.h \
-    fpgradient.h \
     cjtgradient.h \
-    prjgradient.h
+    prjgradient.h \
+    sdgradient.h

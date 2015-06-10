@@ -2,7 +2,7 @@
 #include <function.h>
 #include <r1minimize.h>
 #include <gradient.h>
-#include <fpgradient.h>
+#include <sdgradient.h>
 #include <cjtgradient.h>
 #include <prjgradient.h>
 #include <methods.h>

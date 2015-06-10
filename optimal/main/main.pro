@@ -11,10 +11,12 @@ DESTDIR += ../bin
 SOURCES += main.cpp \
     samplecontrol.cpp \
     cfunction1.cpp \
-    cfunction2.cpp
+    cfunction2.cpp \
+    utils.cpp
 
 HEADERS += \
     samplecontrol.h \
     cfunction1.h \
-    cfunction2.h
+    cfunction2.h \
+    utils.h
 

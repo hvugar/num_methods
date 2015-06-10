@@ -1,33 +1,4 @@
 #include "cfunction1.h"
-#include <math.h>
-#include <stdio.h>
-
-void printX(char* s, std::vector<double> a)
-{
-    unsigned int i;
-    unsigned int n = a.size();
-    printf("double %s[] =\t{", s);
-    for (i=0; i<n; i++)
-    {
-        if ( i%((n-1)/10) == 0 )
-        {
-            if (a[i] < 0)
-            {
-                printf("%12.8f", a[i]);
-            }
-            else
-            {
-                printf("%+12.8f", a[i]);
-            }
-        }
-        if ( i%((n-1)/10) == 0 && i != n-1 )
-        {
-            printf(", ");
-        }
-    }
-    printf("};");
-    printf("\n");
-}
 
 CFunction1::CFunction1(double t0, double t1, double h) : RnFunction()
 {
@@ -164,7 +135,7 @@ void CFunction1::gradientJ(double grad_step, std::vector<double>& g, const std::
 //        g[i] = (H(t[i], x, u1, 1, psi) - H(t[i], x, u2, 1, psi)) / (2 * grad_step);
         g[i] = -4.0*(2.0*u[i] - t[i]) - 2.0*psi2[i];
     }
-    printX("gr", g);
+//    printX("gr", g);
 }
 
 void CFunction1::test(const std::vector<double>& u)

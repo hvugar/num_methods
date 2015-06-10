@@ -1,7 +1,4 @@
 #include "cfunction2.h"
-#include "cfunction1.h"
-
-#include <math.h>
 
 CFunction2::CFunction2(double t0, double t1, double h)
 {

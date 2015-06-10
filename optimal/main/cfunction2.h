@@ -1,7 +1,9 @@
 #ifndef CFUNCTION2_H
 #define CFUNCTION2_H
 
+#include <math.h>
 #include <function.h>
+#include "utils.h"
 
 class CFunction2 : public RnFunction
 {
