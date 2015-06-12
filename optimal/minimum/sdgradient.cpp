@@ -29,7 +29,7 @@ void SteepestDescentGradient::calculate()
         /* calculating function gradient at current point */
         calcGradient();
 
-        /* if norm of gradinet at current point is less than epsilon break. no minimize */
+        /* if gradinet norm at current point is less than epsilon then break. no minimize */
         double gradient_norm = gradientNorm();
         if (gradient_norm < epsilon())
             break;

@@ -158,7 +158,7 @@ double R1Minimize(R1Function f, double line_step, double gold_epsilon);
  * @param grad_step Длина шагов для нахождение градиента
  * @param epsilon   Число эпсилон для останова метода наискорейшего спуска
  */
-void fast_proximal_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer);
+void steepest_descent_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer);
 
 /**
  * @brief Метод сопряженных градиентов Флетчера — Ривса

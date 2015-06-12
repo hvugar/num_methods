@@ -11,8 +11,8 @@ extern void sample_gradient1();
 
 int main(int argc, char** argv)
 {
-	//sample_gradient1();
-	__calculate();
+	sample_gradient1();
+	//__calculate();
 	//calculate();
 	return 0;
 }
