@@ -3,11 +3,6 @@
 
 extern double f_rosenbrock(double *x, int n);
 
-double f_1(double *x, int n)
-{
-	return x[0]*x[0] + 5*x[1]*x[1];
-}
-
 void sample_gradient1()
 {
     double epsilon	= 0.000001;		//dovrun sona catma meyari
@@ -20,8 +15,8 @@ void sample_gradient1()
     
 	x[0]    = -1.0;
     x[1]    = +1.2;
-	//steepest_descent_gradient_method(f_rosenbrock, x, n, step, gold_eps, grad_eps, epsilon, printer2);
-	conjugate_gradient_method(f_rosenbrock, x, n, step, gold_eps, grad_eps, epsilon, printer1);
+	//steepest_descent_gradient_method(f_rosenbrock, x, n, step, gold_eps, grad_eps, epsilon, printer1);
+	conjugate_gradient_method(f_rosenbrock, x, n, step, gold_eps, grad_eps, epsilon, printer2);
 
 	free(x);
 }

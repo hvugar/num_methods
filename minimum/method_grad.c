@@ -5,8 +5,8 @@ double minimize1(RnFunction f, double *x, double *grad, int n, double line_eps, 
 	double *x1 = (double*) malloc(sizeof(double) * n);
     double argmin(double alpha)
     {
-        int j;
-        for (j=0; j<n; j++) x1[j] = x[j] - alpha * grad[j];
+        int i;
+        for (i=0; i<n; i++) x1[i] = x[i] - alpha * grad[i];
         double result = f(x1, n);
         return result;
     }
