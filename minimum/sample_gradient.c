@@ -16,7 +16,8 @@ void sample_gradient1()
 	x[0]    = -1.0;
     x[1]    = +1.2;
 	//steepest_descent_gradient_method(f_rosenbrock, x, n, step, gold_eps, grad_eps, epsilon, printer1);
-	conjugate_gradient_method(f_rosenbrock, x, n, step, gold_eps, grad_eps, epsilon, printer2);
+	projection_gradient_method(f_rosenbrock, x, n, step, gold_eps, grad_eps, epsilon, -1.5, +0.2, printer1);
+	//conjugate_gradient_method(f_rosenbrock, x, n, step, gold_eps, grad_eps, epsilon, printer2);
 
 	free(x);
 }

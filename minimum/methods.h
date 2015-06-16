@@ -153,36 +153,50 @@ double R1Minimize(R1Function f, double line_step, double gold_epsilon);
  * @param f         Целевая функция
  * @param x         Независимые переменные
  * @param n         Число переменных
- * @param line_step Длина шагов метода прямого поиска
+ * @param step      Длина шагов метода прямого поиска
  * @param gold_eps  Число эпсилон для останова метода золотого сечение
  * @param grad_step Длина шагов для нахождение градиента
  * @param epsilon   Число эпсилон для останова метода наискорейшего спуска
  */
-void steepest_descent_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer);
+void steepest_descent_gradient_method(RnFunction f, double *x, int n, double step, double gold_step, double grad_step, double epsilon, Printer printer);
 
 /**
  * @brief Метод сопряженных градиентов Флетчера — Ривса
  * @param f         Целевая функция
  * @param x         Независимые переменные
  * @param n         Число переменных
- * @param line_step Длина шагов метода прямого поиска
+ * @param step      Длина шагов метода прямого поиска
  * @param gold_eps  Число эпсилон для останова метода золотого сечение
  * @param grad_step Длина шагов для нахождение градиента
  * @param epsilon   Число эпсилон для останова метода сопряженных градиентов
  */
-void conjugate_gradient_method(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer);
+void conjugate_gradient_method(RnFunction f, double *x, int n, double step, double gold_step, double grad_step, double epsilon, Printer printer);
 
 /**
  * @brief Метод сопряженных градиентов Флетчера — Ривса
  * @param f         Целевая функция
  * @param x         Независимые переменные
  * @param n         Число переменных
- * @param line_step Длина шагов метода прямого поиска
+ * @param step      Длина шагов метода прямого поиска
  * @param gold_eps  Число эпсилон для останова метода золотого сечение
  * @param grad_step Длина шагов для нахождение градиента
  * @param epsilon   Число эпсилон для останова метода сопряженных градиентов
  */
-void conjugate_gradient_method1(RnFunction f, double *x, int n, double line_step, double gold_step, double grad_step, double epsilon, Printer printer);
+void conjugate_gradient_method1(RnFunction f, double *x, int n, double step, double gold_step, double grad_step, double epsilon, Printer printer);
+
+/**
+ * @brief Метод проекции градиента
+ * @param f         Целевая функция
+ * @param x         Независимые переменные
+ * @param n         Число переменных
+ * @param step      Длина шагов метода прямого поиска
+ * @param gold_eps  Число эпсилон для останова метода золотого сечение
+ * @param grad_step Длина шагов для нахождение градиента
+ * @param epsilon   Число эпсилон для останова метода наискорейшего спуска
+ * @param a         Левая граница
+ * @param b         Правая граница
+ */
+void projection_gradient_method(RnFunction f, double *x, int n, double step, double gold_eps, double grad_eps, double epsilon, double a, double b, Printer printer);
 
 /**
  * @brief         Метод штрафных функций
