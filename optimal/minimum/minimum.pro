@@ -16,7 +16,8 @@ SOURCES += \
     gradient.cpp \
     cjtgradient.cpp \
     prjgradient.cpp \
-    sdgradient.cpp
+    sdgradient.cpp \
+    penalty.cpp
 
 HEADERS += global.h \
     methods.h \
@@ -25,4 +26,5 @@ HEADERS += global.h \
     gradient.h \
     cjtgradient.h \
     prjgradient.h \
-    sdgradient.h
+    sdgradient.h \
+    penalty.h
