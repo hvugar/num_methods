@@ -68,8 +68,11 @@ double ___JSum(double *t, double *x1, double *x2, double *u, int N)
     for (i=0; i<(N-1); i++)
     {
         int j=i+1;
-        double fj = (x1[j]-t[j]*t[j]*t[j])*(x1[j]-t[j]*t[j]*t[j]) + (x2[j] - t[j])*(x2[j] - t[j]) + (2*u[j] - t[j])*(2*u[j] - t[j]);
-        double fi = (x1[i]-t[i]*t[i]*t[i])*(x1[i]-t[i]*t[i]*t[i]) + (x2[i] - t[i])*(x2[i] - t[i]) + (2*u[i] - t[i])*(2*u[i] - t[i]);
+        //double fj = (x1[j]-t[j]*t[j]*t[j])*(x1[j]-t[j]*t[j]*t[j]) + (x2[j] - t[j])*(x2[j] - t[j]) + (2*u[j] - t[j])*(2*u[j] - t[j]);
+        //double fi = (x1[i]-t[i]*t[i]*t[i])*(x1[i]-t[i]*t[i]*t[i]) + (x2[i] - t[i])*(x2[i] - t[i]) + (2*u[i] - t[i])*(2*u[i] - t[i]);
+		double fj = __fx0(t[j], x1[j], x2[j], u[j]);
+		double fi = __fx0(t[i], x1[i], x2[i], u[i]);
+		
         sum = sum + 0.5 * (fj+fi) * (t[j]-t[i]);
     }
     sum = sum + (x2[N-1] - 1.0) * (x2[N-1] - 1.0);
@@ -202,7 +205,7 @@ void calculate_params(Process *p)
 
 void calculate_gradient(Process *p)
 {
-	calculate_params(p);
+	//calculate_params(p);
 	
     int i;
     for (i=0; i<p->n; i++)
@@ -216,77 +219,78 @@ void __calculate()
     Process p;
     init_process(&p);
 
-    int k = 0;
-    double gr0_mod = 0.0;
-    double gr1_mod = 0.0;
-    double gr2_mod = 0.0;
     double dstnc = 0.0;
     int i=0;
 
     do
     {
-        //calculate_params(&p);
+        calculate_params(&p);
         calculate_gradient(&p);
-/*
-        _print1("t", p.t, p.n);
-        _print1("u", p.u, p.n);
-        _print1("x1", p.x1, p.n);
-        _print1("x2", p.x2, p.n);
-        _print1("p1", p.psi1, p.n);
-        _print1("p2", p.psi2, p.n);
-        _print1("gr", p.gradJ, p.n);
-*/
-        double J = ___JSum(p.t, p.x1, p.x2, p.u, p.n);
-        printf("J = %.10f\n", J);
+
+        //_print1("t", p.t, p.n);
+        //_print1("u", p.u, p.n);
+        //_print1("x1", p.x1, p.n);
+        //_print1("x2", p.x2, p.n);
+        //_print1("p1", p.psi1, p.n);
+        //_print1("p2", p.psi2, p.n);
+        //_print1("gr", p.gradJ, p.n);
+
+        //double J = ___JSum(p.t, p.x1, p.x2, p.u, p.n);
+        //printf("J = %.10f\n", J);
         //_seperator();
 
-        // Module of gradient
-        gr0_mod = 0.0;
-        for (i=0; i<p.n; i++) gr0_mod = gr0_mod + p.gradJ[i]*p.gradJ[i];
-
-        if (k == 0)
-        {
-            gr1_mod = gr0_mod;
-            // First direction is antigradient
-            for (i=0; i<p.n; i++) p.s[i] = -p.gradJ[i];
-        }
-        else
-        {
-            gr2_mod = gr0_mod;
-            double w = gr2_mod / gr1_mod;
-            gr1_mod = gr2_mod;
-            // Direction in next (k+1) iteration
-            for (i=0; i<p.n; i++) p.s[i] = -p.gradJ[i] + p.s[i] * w;
-        }
-		
-		double grad_norm = vertor_norm(p.s, p.n);
-        for (i=0; i<p.n; i++) p.s[i] = p.s[i] / grad_norm;
+		//double grad_norm = vertor_norm(p.gradJ, p.n);
+        //for (i=0; i<p.n; i++) p.gradJ[i] = p.gradJ[i] / grad_norm;
 
         double argmin1(double alpha)
         {
+			//calculate_params(&p);
+			//calculate_gradient(&p);
+		
             int i;
             double *u1  = (double*) malloc( sizeof(double) * p.n );
             for (i=0; i<p.n; i++)
             {
-                u1[i] = p.u[i] + alpha * p.s[i];
+                u1[i] = p.u[i] - alpha * p.gradJ[i];
             }
             double J = ___JSum(p.t, p.x1, p.x2, u1, p.n);
             free(u1);
             return J;
         }
+		
+		//_print1("t", p.t, p.n);
+        //_print1("u", p.u, p.n);
+        //_print1("x1", p.x1, p.n);
+        //_print1("x2", p.x2, p.n);
+        //_print1("p1", p.psi1, p.n);
+        //_print1("p2", p.psi2, p.n);
+        //_print1("gr", p.gradJ, p.n);
 
         double alpha = R1Minimize(argmin1, 0.01, 0.000001);
+		
+		//puts("+++++");
+		//_print1("t", p.t, p.n);
+        //_print1("u", p.u, p.n);
+        //_print1("x1", p.x1, p.n);
+        //_print1("x2", p.x2, p.n);
+        //_print1("p1", p.psi1, p.n);
+        //_print1("p2", p.psi2, p.n);
+        //_print1("gr", p.gradJ, p.n);
+		//puts("+++++");
+		double J = ___JSum(p.t, p.x1, p.x2, p.u, p.n);
+        printf("J = %.10f\n", J);
+		//_seperator();
 
         dstnc = 0.0;
-        for (i=0; i<p.n; i++)
-        {
-            p.u[i] = p.u[i] + alpha * p.s[i];
-            dstnc = dstnc + (alpha * p.s[i]) * (alpha * p.s[i]);
+        
+		calculate_params(&p);
+		calculate_gradient(&p);
+		for (i=0; i<p.n; i++)
+        {			
+            p.u[i] = p.u[i] - alpha * p.gradJ[i];
+            dstnc = dstnc + (alpha * p.gradJ[i]) * (alpha * p.gradJ[i]);
         }
         dstnc = sqrt(dstnc);
-
-        if ( k == p.n ) { k = 0; } else { k++; }
-
     } while (dstnc > 0.0000001);
 
 
