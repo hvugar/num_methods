@@ -8,6 +8,7 @@ void printer1(RnFunction f, double *x, int n, ...)
     int i = va_arg(ap, int);
     double* gr = va_arg(ap, double*);
     double nr = va_arg(ap, double);
+	nr = nr;
     double alpha = va_arg(ap, double);
 
     if (i == 0)
