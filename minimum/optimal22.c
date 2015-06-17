@@ -29,9 +29,23 @@ typedef struct
     double *s;
 } Process;
 
+double fx0(double t, double x1, double x2, double u);
+double fx1(double t, double x1, double x2, double u);
+double fx2(double t, double x1, double x2, double u);
+double H(double t, double x1, double x2, double u, double psi1, double psi2);
+double fp1(double t, double x1, double x2, double psi1, double psi2, double u);
+double fp2(double t, double x1, double x2, double psi1, double psi2, double u);
+double gradJ(double t, double x1, double x2, double psi1, double psi2, double u);
+double JSum(double *t, double *x1, double *x2, double *u, int N);
+void init_process(Process *p);
+void free_process(Process *p);
+void calculate_x(Process *p);
+void calculate_psi(Process *p);
+void calculate_gradient(Process *p);
+
 double fx0(double t, double x1, double x2, double u)
 {
-    return (x1-cos(t))*(x1-cos(t)) + (x2-sin(t))*(x2-sin(t)) + (2*u-t)*(2*u-t);
+    return (x1-cos(t))*(x1-cos(t)) + (x2-sin(t))*(x2-sin(t)) + (2.0*u-t)*(2.0*u-t);
 }
 
 double T(double t, double x1, double x2, double u)
@@ -46,7 +60,7 @@ double fx1(double t, double x1, double x2, double u)
 
 double fx2(double t, double x1, double x2, double u)
 {
-    return x1 + x2 - sin(t)- 2.0*u + t;
+    return x1 + x2 - sin(t) - 2.0*u + t;
 }
 
 //-------------------------------------------------------------------------------
@@ -58,7 +72,7 @@ double H(double t, double x1, double x2, double u, double psi1, double psi2)
 
 double fp1(double t, double x1, double x2, double psi1, double psi2, double u)
 {
-	return 2.0*(x1-cos(t)) + psi2;
+	return 2.0*(x1-cos(t)) - psi2;
 }
 
 double fp2(double t, double x1, double x2, double psi1, double psi2, double u)
@@ -68,13 +82,25 @@ double fp2(double t, double x1, double x2, double psi1, double psi2, double u)
 
 double gradJ(double t, double x1, double x2, double psi1, double psi2, double u)
 {
-    return -4.0*(2.0*u - t) - 2.0*psi2;
+    return -4.0*(2.0*u - t) - psi2;
 }
 
 //--------------------------------------------------------------------------------
 
 double JSum(double *t, double *x1, double *x2, double *u, int N)
 {
+	Process p;
+	p.t  = t;
+	p.x1 = x1;
+	p.x2 = x2;
+	p.u  = u;
+	p.n  = N;
+	p.x01 = 0.0;
+	p.x02 = 0.0;
+	p.h = 0.001;
+	
+	calculate_x(&p);
+
     double sum = 0.0;
     int i=0;
     for (i=0; i<(N-1); i++)
@@ -84,7 +110,7 @@ double JSum(double *t, double *x1, double *x2, double *u, int N)
         double fi = fx0(t[i], x1[i], x2[i], u[i]);
         sum = sum + 0.5 * (fj+fi) * (t[j]-t[i]);
     }
-    sum = sum + T(0.0, x1[N-1], x2[N-1], 0.0);
+    sum = sum + (x2[N-1] - sin(1.0)) * (x2[N-1] - sin(1.0));
     return sum;
 }
 
@@ -132,19 +158,20 @@ void free_process(Process *p)
     free(p->gradJ);
 }
 
-void calculate_params(Process *p)
+void calculate_x(Process *p)
 {
-
     double k1[] = {0.0, 0.0};
     double k2[] = {0.0, 0.0};
     double k3[] = {0.0, 0.0};
     double k4[] = {0.0, 0.0};
 
     double h = +fabs(p->h);
+	int n = p->n;
     int i = 0;
+	
     p->x1[i] = p->x01;
     p->x2[i] = p->x02;
-    for (i=0; i<p->n-1; i++)
+    for (i=0; i<n-1; i++)
     {
         double t  = p->t[i];
         double u  = p->u[i];
@@ -172,17 +199,22 @@ void calculate_params(Process *p)
         p->x1[i+1] = p->x1[i] + (h/6.0) * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0]);
         p->x2[i+1] = p->x2[i] + (h/6.0) * (k1[1] + 2*k2[1] + 2*k3[1] + k4[1]);
     }
+}
 
-
-    h = -fabs(p->h);
-    i=p->n-1;
+void calculate_psi(Process *p)
+{
+    double k1[] = {0.0, 0.0};
+    double k2[] = {0.0, 0.0};
+    double k3[] = {0.0, 0.0};
+    double k4[] = {0.0, 0.0};
+	
+    double h = -fabs(p->h);
+	int n = p->n;
+    int i=n-1;
 	
     p->psi1[i] = 0.0;
     p->psi2[i] = -2.0 * (p->x2[i] - sin(1.0));
-	//p->psi1[i] = -((T(0.0, p->x1[i] + dx, p->x2[i], 0.0) - T(0.0, p->x1[i] - dx, p->x2[i], 0.0)) / (2.0*dx));
-    //p->psi2[i] = -((T(0.0, p->x1[i], p->x2[i] + dx, 0.0) - T(0.0, p->x1[i], p->x2[i] - dx, 0.0)) / (2.0*dx));
-    
-	for (i=p->n-1; i>0; i--)
+    for (i=n-1; i>0; i--)
     {
         double t = p->t[i];
         double u = p->u[i];
@@ -216,8 +248,9 @@ void calculate_params(Process *p)
 
 void calculate_gradient(Process *p)
 {
-	//calculate_params(p);
-	
+	calculate_x(p);
+	calculate_psi(p);
+
     int i;
     for (i=0; i<p->n; i++)
     {
@@ -238,36 +271,35 @@ void calculate()
 
     do
     {
-        calculate_params(&p);
-        calculate_gradient(&p);
+		calculate_gradient(&p);
 
-        //_print1("t", p.t, p.n);
+        _print1("t", p.t, p.n);
         _print1("u", p.u, p.n);
-        //_print1("x1", p.x1, p.n);
-        //_print1("x2", p.x2, p.n);
-        //_print1("p1", p.psi1, p.n);
-        //_print1("p2", p.psi2, p.n);
-        //_print1("gr", p.gradJ, p.n);
+        _print1("x1", p.x1, p.n);
+        _print1("x2", p.x2, p.n);
+        _print1("p1", p.psi1, p.n);
+        _print1("p2", p.psi2, p.n);
+        _print1("gr", p.gradJ, p.n);
 
         double J = JSum(p.t, p.x1, p.x2, p.u, p.n);
         printf("J = %.10f\n", J);
-        //_seperator();
+        _seperator();
 
-        //double grad_norm = vertor_norm(p.gradJ, p.n);
-        //for (i=0; i<p.n; i++) p.gradJ[i] = p.gradJ[i] / grad_norm;
+        double grad_norm = vertor_norm(p.gradJ, p.n);
+        for (i=0; i<p.n; i++) p.gradJ[i] = p.gradJ[i] / grad_norm;
 
         double argmin1(double alpha)
         {
-			//calculate_params(&p);
-			//calculate_gradient(&p);
-		
             int i;
             double *u  = (double*) malloc( sizeof(double) * p.n );
+			
             for (i=0; i<p.n; i++)
             {
                 u[i] = p.u[i] - alpha * p.gradJ[i];
             }
-            double J = JSum(p.t, p.x1, p.x2, u, p.n);
+            
+			double J = JSum(p.t, p.x1, p.x2, u, p.n);
+			
             free(u);
             return J;
         }
@@ -296,9 +328,6 @@ void calculate()
 		//_seperator();
 
         dstnc = 0.0;
-        
-		calculate_params(&p);
-		calculate_gradient(&p);
 		for (i=0; i<p.n; i++)
         {			
             p.u[i] = p.u[i] - alpha * p.gradJ[i];

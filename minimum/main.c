@@ -4,6 +4,7 @@
 #include "methods.h"
 #include "print.h"
 #include "optimal.h"
+#include <math.h>
 
 extern void calculate();
 extern void sample_gradient1();

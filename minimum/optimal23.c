@@ -58,7 +58,7 @@ double H(double t, double x1, double x2, double u, double psi1, double psi2)
 
 double fp1(double t, double x1, double x2, double psi1, double psi2, double u)
 {
-	return 2.0*(x1-exp(t)) - psi1 - 9.0*x1*x1*psi2;
+	return 2.0*(x1-exp(t)) - psi1 - 9.0*(x1*x1)*psi2;
 }
 
 double fp2(double t, double x1, double x2, double psi1, double psi2, double u)
@@ -94,8 +94,8 @@ void init_process(Process *p)
     p->t2 = 1.0;
     p->h  = 0.001;
     p->n  = (int)(ceil((p->t2-p->t1)/p->h)) + 1;
-    p->x01 = X01;
-    p->x02 = X02;
+    p->x01 = 1.0;
+    p->x02 = 1.0;
 
     p->t = (double*) malloc( sizeof(double) * p->n );
     p->u = (double*) malloc( sizeof(double) * p->n );
@@ -305,6 +305,7 @@ void calculate()
             dstnc = dstnc + (alpha * p.gradJ[i]) * (alpha * p.gradJ[i]);
         }
         dstnc = sqrt(dstnc);
+		
     } while (dstnc > 0.0000001);
 
 
