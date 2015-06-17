@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define dx 0.00000001
+#define dx 0.000001
 #define X01 1.0
-#define X02 0.0
+#define X02 1.0
 
 typedef struct 
 {
@@ -31,26 +31,22 @@ typedef struct
 
 double fx0(double t, double x1, double x2, double u)
 {
-    return (x1-cos(t))*(x1-cos(t)) + (x2-sin(t))*(x2-sin(t)) + (2*u-t)*(2*u-t);
-	//return (x1-t*t*t)*(x1-t*t*t) + (x2-t)*(x2-t) + (2*u-t)*(2*u-t);
+    return (x1-exp(t))*(x1-exp(t)) + (x2-exp(3*t))*(x2-exp(3*t)) + (u-t)*(u-t);
 }
 
 double T(double t, double x1, double x2, double u)
 {
-	return (x2-sin(1.0)) * (x2-sin(1.0)); 
-	//return (x2-1.0) * (x2-1.0); 
+	return (x2-exp(3.0)) * (x2-exp(3.0)); 
 }
 
 double fx1(double t, double x1, double x2, double u)
 {
-    return -x2;
-	//return 3.0*x2*x2;
+    return x1+x2-exp(3.0*t)+u-t;
 }
 
 double fx2(double t, double x1, double x2, double u)
 {
-    return x1 + x2 - sin(t)- 2.0*u + t;
-	//return x1 + x2 - 2.0*u - t*t*t + 1.0;
+    return 3.0*x1*x1*x1;
 }
 
 //-------------------------------------------------------------------------------
@@ -62,18 +58,20 @@ double H(double t, double x1, double x2, double u, double psi1, double psi2)
 
 double fp1(double t, double x1, double x2, double psi1, double psi2, double u)
 {
-	return -( H(t,x1+dx,x2,psi1,psi2,u) - H(t,x1-dx,x2,psi1,psi2,u) ) / ( 2.0 * dx );
+	return 2.0*(x1-exp(t)) - psi1 - 9.0*x1*x1*psi2;
 }
 
 double fp2(double t, double x1, double x2, double psi1, double psi2, double u)
 {
-	return -( H(t,x1,x2+dx,psi1,psi2,u) - H(t,x1,x2-dx,psi1,psi2,u) ) / ( 2.0 * dx );
+	return 2.0*(x2-exp(3.0*t)) - psi1;
 }
 
 double gradJ(double t, double x1, double x2, double psi1, double psi2, double u)
 {
-    return (H(t, x1, x2, u + dx, psi1, psi2) - H(t, x1, x2, u - dx, psi1, psi2)) / (2 * dx);
+    return -2.0*(u-t) + psi1;
 }
+
+//--------------------------------------------------------------------------------
 
 double JSum(double *t, double *x1, double *x2, double *u, int N)
 {
@@ -86,7 +84,7 @@ double JSum(double *t, double *x1, double *x2, double *u, int N)
         double fi = fx0(t[i], x1[i], x2[i], u[i]);
         sum = sum + 0.5 * (fj+fi) * (t[j]-t[i]);
     }
-    sum = sum + T(0.0, x1[N-1], x2[N-1], 0.0);
+    sum = sum + (x2[N-1]-exp(3.0)) * (x2[N-1]-exp(3.0));
     return sum;
 }
 
@@ -115,7 +113,7 @@ void init_process(Process *p)
     for (i=0; i<p->n; i++)
     {
         p->t[i]    = i*p->h;
-        p->u[i]    = 0.01;
+        p->u[i]    = p->t[i]/2.0;//0.01;
         p->x1[i]   = 0.0;
         p->x2[i]   = 0.0;
         p->psi1[i] = 0.0;
@@ -180,9 +178,9 @@ void calculate_params(Process *p)
     i=p->n-1;
 	
     p->psi1[i] = 0.0;
-    p->psi2[i] = -2.0 * (p->x2[i] - sin(1.0));
-	p->psi1[i] = -((T(0.0, p->x1[i] + dx, p->x2[i], 0.0) - T(0.0, p->x1[i] - dx, p->x2[i], 0.0)) / (2.0*dx));
-    p->psi2[i] = -((T(0.0, p->x1[i], p->x2[i] + dx, 0.0) - T(0.0, p->x1[i], p->x2[i] - dx, 0.0)) / (2.0*dx));
+    p->psi2[i] = -2.0 * (p->x2[i] - exp(3.0));
+	//p->psi1[i] = -((T(0.0, p->x1[i] + dx, p->x2[i], 0.0) - T(0.0, p->x1[i] - dx, p->x2[i], 0.0)) / (2.0*dx));
+    //p->psi2[i] = -((T(0.0, p->x1[i], p->x2[i] + dx, 0.0) - T(0.0, p->x1[i], p->x2[i] - dx, 0.0)) / (2.0*dx));
     
 	for (i=p->n-1; i>0; i--)
     {
@@ -243,10 +241,10 @@ void calculate()
         calculate_params(&p);
         calculate_gradient(&p);
 
-        //_print1("t", p.t, p.n);
+        _print1("t", p.t, p.n);
         _print1("u", p.u, p.n);
-        //_print1("x1", p.x1, p.n);
-        //_print1("x2", p.x2, p.n);
+        _print1("x1", p.x1, p.n);
+        _print1("x2", p.x2, p.n);
         //_print1("p1", p.psi1, p.n);
         //_print1("p2", p.psi2, p.n);
         //_print1("gr", p.gradJ, p.n);

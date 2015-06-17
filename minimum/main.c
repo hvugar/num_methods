@@ -5,12 +5,12 @@
 #include "print.h"
 #include "optimal.h"
 
-extern void __calculate();
+extern void calculate();
 extern void sample_gradient1();
 
 int main(int argc, char** argv)
 {
 	//sample_gradient1();
-	__calculate();
+	calculate();
 	return 0;
 }

@@ -25,43 +25,44 @@ typedef struct
     double *s;
 } Process;
 
-double __fx0(double t, double x1, double x2, double u)
+double fx0(double t, double x1, double x2, double u)
 {
     return (x1-t*t*t)*(x1-t*t*t) + (x2-t)*(x2-t) + (2*u-t)*(2*u-t);
 }
 
-double __fx1(double t, double x1, double x2, double u)
+double fx1(double t, double x1, double x2, double u)
 {
     return 3.0*x2*x2;
 }
 
-double __fx2(double t, double x1, double x2, double u)
+double fx2(double t, double x1, double x2, double u)
 {
     return x1 + x2 - 2.0*u - t*t*t + 1.0;
 }
 
-double _H(double t, double x1, double x2, double u, double psi1, double psi2)
+double H(double t, double x1, double x2, double u, double psi1, double psi2)
 {
-    return -1.0 * __fx0(t, x1, x2, u) + psi1 * __fx1(t, x1, x2, u) + psi2 * __fx2(t, x1, x2, u);
+    return -1.0 * fx0(t, x1, x2, u) + psi1 * fx1(t, x1, x2, u) + psi2 * fx2(t, x1, x2, u);
 }
 
-double __fp1(double t, double x1, double x2, double psi1, double psi2, double u)
+double fp1(double t, double x1, double x2, double psi1, double psi2, double u)
 {
     return 2.0 * (x1 - t*t*t) - psi2;
 }
 
-double __fp2(double t, double x1, double x2, double psi1, double psi2, double u)
+double fp2(double t, double x1, double x2, double psi1, double psi2, double u)
 {
     return 2.0 * (x2 - t) - 6.0 * x2 * psi1 - psi2;
 }
 
 double gradJ(double t, double x1, double x2, double psi1, double psi2, double u)
 {
-    double h =  0.000001;
-    return (_H(t, x1, x2, u + h, psi1, psi2) - _H(t, x1, x2, u - h, psi1, psi2)) / (2 * h);
+    //double h =  0.000001;
+    //return (H(t, x1, x2, u + h, psi1, psi2) - H(t, x1, x2, u - h, psi1, psi2)) / (2 * h);
+	return -4.0*(2.0*u-t) - 2.0*psi2;
 }
 
-double ___JSum(double *t, double *x1, double *x2, double *u, int N)
+double JSum(double *t, double *x1, double *x2, double *u, int N)
 {
     double sum = 0.0;
     int i=0;
@@ -70,9 +71,8 @@ double ___JSum(double *t, double *x1, double *x2, double *u, int N)
         int j=i+1;
         //double fj = (x1[j]-t[j]*t[j]*t[j])*(x1[j]-t[j]*t[j]*t[j]) + (x2[j] - t[j])*(x2[j] - t[j]) + (2*u[j] - t[j])*(2*u[j] - t[j]);
         //double fi = (x1[i]-t[i]*t[i]*t[i])*(x1[i]-t[i]*t[i]*t[i]) + (x2[i] - t[i])*(x2[i] - t[i]) + (2*u[i] - t[i])*(2*u[i] - t[i]);
-		double fj = __fx0(t[j], x1[j], x2[j], u[j]);
-		double fi = __fx0(t[i], x1[i], x2[i], u[i]);
-		
+        double fj = fx0(t[j], x1[j], x2[j], u[j]);
+        double fi = fx0(t[i], x1[i], x2[i], u[i]);
         sum = sum + 0.5 * (fj+fi) * (t[j]-t[i]);
     }
     sum = sum + (x2[N-1] - 1.0) * (x2[N-1] - 1.0);
@@ -144,23 +144,23 @@ void calculate_params(Process *p)
         double x1 = p->x1[i];
         double x2 = p->x2[i];
 
-        k1[0] = __fx1(t, x1, x2, p->u[i]);
-        k1[1] = __fx2(t, x1, x2, p->u[i]);
+        k1[0] = fx1(t, x1, x2, p->u[i]);
+        k1[1] = fx2(t, x1, x2, p->u[i]);
         
         x1 = p->x1[i] + (h/2.0) * k1[0];
         x2 = p->x2[i] + (h/2.0) * k1[1];
-        k2[0] = __fx1(t+h/2.0, x1, x2, u);
-        k2[1] = __fx2(t+h/2.0, x1, x2, u);
+        k2[0] = fx1(t+h/2.0, x1, x2, u);
+        k2[1] = fx2(t+h/2.0, x1, x2, u);
 
         x1 = p->x1[i] + (h/2.0) * k2[0];
         x2 = p->x2[i] + (h/2.0) * k2[1];
-        k3[0] = __fx1(t+h/2.0, x1, x2, u);
-        k3[1] = __fx2(t+h/2.0, x1, x2, u);
+        k3[0] = fx1(t+h/2.0, x1, x2, u);
+        k3[1] = fx2(t+h/2.0, x1, x2, u);
         
         x1 = p->x1[i] + h * k3[0];
         x2 = p->x2[i] + h * k3[1];
-        k4[0] = __fx1(t+h, x1, x2, u);
-        k4[1] = __fx2(t+h, x1, x2, u);
+        k4[0] = fx1(t+h, x1, x2, u);
+        k4[1] = fx2(t+h, x1, x2, u);
         
         p->x1[i+1] = p->x1[i] + (h/6.0) * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0]);
         p->x2[i+1] = p->x2[i] + (h/6.0) * (k1[1] + 2*k2[1] + 2*k3[1] + k4[1]);
@@ -180,23 +180,23 @@ void calculate_params(Process *p)
         double psi1 = p->psi1[i];
         double psi2 = p->psi2[i];
 
-        k1[0] = __fp1(t, x1, x2, psi1, psi2, u);
-        k1[1] = __fp2(t, x1, x2, psi1, psi2, u);
+        k1[0] = fp1(t, x1, x2, psi1, psi2, u);
+        k1[1] = fp2(t, x1, x2, psi1, psi2, u);
 
         psi1 = p->psi1[i] + (h/2.0) * k1[0];
         psi2 = p->psi2[i] + (h/2.0) * k1[1];
-        k2[0] = __fp1(t+h/2.0, x1, x2, psi1, psi2, u);
-        k2[1] = __fp2(t+h/2.0, x1, x2, psi1, psi2, u);
+        k2[0] = fp1(t+h/2.0, x1, x2, psi1, psi2, u);
+        k2[1] = fp2(t+h/2.0, x1, x2, psi1, psi2, u);
 
         psi1 = p->psi1[i] + (h/2.0) * k2[0];
         psi2 = p->psi2[i] + (h/2.0) * k2[1];
-        k3[0] = __fp1(t+h/2.0, x1, x2, psi1, psi2, u);
-        k3[1] = __fp2(t+h/2.0, x1, x2, psi1, psi2, u);
+        k3[0] = fp1(t+h/2.0, x1, x2, psi1, psi2, u);
+        k3[1] = fp2(t+h/2.0, x1, x2, psi1, psi2, u);
 
         psi1 = p->psi1[i] + h * k3[0];
         psi2 = p->psi2[i] + h * k3[1];
-        k4[0] = __fp1(t+h, x1, x2, psi1, psi2, u);
-        k4[1] = __fp2(t+h, x1, x2, psi1, psi2, u);
+        k4[0] = fp1(t+h, x1, x2, psi1, psi2, u);
+        k4[1] = fp2(t+h, x1, x2, psi1, psi2, u);
 
         p->psi1[i-1] = p->psi1[i] + (h/6.0) * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0]);
         p->psi2[i-1] = p->psi2[i] + (h/6.0) * (k1[1] + 2*k2[1] + 2*k3[1] + k4[1]);
@@ -214,13 +214,16 @@ void calculate_gradient(Process *p)
     }
 }
 
-void __calculate()
+void calculate()
 {
     Process p;
     init_process(&p);
 
     double dstnc = 0.0;
     int i=0;
+	
+	double step = 0.01;
+	double gold_epsilon = 0.000001;
 
     do
     {
@@ -235,11 +238,11 @@ void __calculate()
         //_print1("p2", p.psi2, p.n);
         //_print1("gr", p.gradJ, p.n);
 
-        //double J = ___JSum(p.t, p.x1, p.x2, p.u, p.n);
-        //printf("J = %.10f\n", J);
+        double J = JSum(p.t, p.x1, p.x2, p.u, p.n);
+        printf("J = %.10f\n", J);
         //_seperator();
 
-		//double grad_norm = vertor_norm(p.gradJ, p.n);
+        //double grad_norm = vertor_norm(p.gradJ, p.n);
         //for (i=0; i<p.n; i++) p.gradJ[i] = p.gradJ[i] / grad_norm;
 
         double argmin1(double alpha)
@@ -248,13 +251,13 @@ void __calculate()
 			//calculate_gradient(&p);
 		
             int i;
-            double *u1  = (double*) malloc( sizeof(double) * p.n );
+            double *u  = (double*) malloc( sizeof(double) * p.n );
             for (i=0; i<p.n; i++)
             {
-                u1[i] = p.u[i] - alpha * p.gradJ[i];
+                u[i] = p.u[i] - alpha * p.gradJ[i];
             }
-            double J = ___JSum(p.t, p.x1, p.x2, u1, p.n);
-            free(u1);
+            double J = JSum(p.t, p.x1, p.x2, u, p.n);
+            free(u);
             return J;
         }
 		
@@ -266,7 +269,7 @@ void __calculate()
         //_print1("p2", p.psi2, p.n);
         //_print1("gr", p.gradJ, p.n);
 
-        double alpha = R1Minimize(argmin1, 0.01, 0.000001);
+        double alpha = R1Minimize(argmin1, step, gold_epsilon);
 		
 		//puts("+++++");
 		//_print1("t", p.t, p.n);
@@ -277,8 +280,8 @@ void __calculate()
         //_print1("p2", p.psi2, p.n);
         //_print1("gr", p.gradJ, p.n);
 		//puts("+++++");
-		double J = ___JSum(p.t, p.x1, p.x2, p.u, p.n);
-        printf("J = %.10f\n", J);
+        //double J = ___JSum(p.t, p.x1, p.x2, p.u, p.n);
+        //printf("J = %.10f\n", J);
 		//_seperator();
 
         dstnc = 0.0;
