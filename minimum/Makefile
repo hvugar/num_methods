@@ -38,8 +38,8 @@ method_penalty.o: method_penalty.c
 runga_kutta.o: runga_kutta.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o runga_kutta.o runga_kutta.c
 
-optimal.o: optimal22.c
-	$(CC) -c $(CFLAGS) $(INCLUDES) -o optimal.o optimal22.c
+optimal.o: optimal21.c
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o optimal.o optimal21.c
 	
 sample_penalty.o: sample_penalty.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o sample_penalty.o sample_penalty.c
