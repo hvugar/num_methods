@@ -49,7 +49,7 @@ double fx0(double t, double x1, double x2, double u)
 
 double T(double t, double x1, double x2, double u)
 {
-	return (x2 - 1.0) * ( x2 - 1.0 );
+	return (x2 - 1.0) * (x2 - 1.0);
 }
 
 double fx1(double t, double x1, double x2, double u)
@@ -76,7 +76,7 @@ double fp1(double t, double x1, double x2, double psi1, double psi2, double u)
 double fp2(double t, double x1, double x2, double psi1, double psi2, double u)
 {
 	return -1.0*(H(t, x1, x2 + dx, u, psi1, psi2) - H(t, x1, x2 - dx, u, psi1, psi2)) / (2 * dx);
-    return 2.0 * (x2 - t) - 6.0 * x2 * psi1 - psi2;
+    //return 2.0 * (x2 - t) - 6.0 * x2 * psi1 - psi2;
 }
 
 double gradJ(double t, double x1, double x2, double psi1, double psi2, double u)
@@ -265,17 +265,17 @@ void calculate()
 		calculate_psi(&p);
 		calculate_gradient(&p);
 	
-        //_print1("t", p.t, p.n);
-        //_print1("u", p.u, p.n);
-        //_print1("x1", p.x1, p.n);
-        //_print1("x2", p.x2, p.n);
-        //_print1("p1", p.psi1, p.n);
-        //_print1("p2", p.psi2, p.n);
-        //_print1("gr", p.gradJ, p.n);
+        _print1("t", p.t, p.n);
+        _print1("u", p.u, p.n);
+        _print1("x1", p.x1, p.n);
+        _print1("x2", p.x2, p.n);
+        _print1("p1", p.psi1, p.n);
+        _print1("p2", p.psi2, p.n);
+        _print1("gr", p.gradJ, p.n);
 
         double J1 = JSum(&p);
         printf("J1 = %.18f\n", J1);
-        //_seperator();
+        _seperator();
 
         double grad_norm = vertor_norm(p.gradJ, p.n);
         for (i=0; i<p.n; i++) p.gradJ[i] = p.gradJ[i] / grad_norm;
@@ -283,7 +283,6 @@ void calculate()
         double argmin1(double alpha)
         {
             int i;
-			
             double *u  = (double*) malloc( sizeof(double) * p.n );
 			memcpy(u, p.u, sizeof(double)*p.n);
             for (i=0; i<p.n; i++)
