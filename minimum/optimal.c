@@ -4,70 +4,36 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define dx 0.00000001
-
-typedef struct 
-{
-    double *t;
-    double *u;
-    double *x1;
-    double *x2;
-    double *psi1;
-    double *psi2;
-    double *gradJ;
-
-    double t1;
-    double t2;
-    double h;
-    double n;
-
-    double x01;
-    double x02;
-
-    double *s;
-} Process;
-
-double fx0(double t, double x1, double x2, double u);
-double T(double t, double x1, double x2, double u);
-double fx1(double t, double x1, double x2, double u);
-double fx2(double t, double x1, double x2, double u);
-double H(double t, double x1, double x2, double u, double psi1, double psi2);
-double fp1(double t, double x1, double x2, double psi1, double psi2, double u);
-double fp2(double t, double x1, double x2, double psi1, double psi2, double u);
-double gradJ(double t, double x1, double x2, double psi1, double psi2, double u);
-double JSum(Process *p);
-void init_process(Process *p);
-void free_process(Process *p);
-void calculate_x(Process *p);
-void calculate_psi(Process *p);
-void calculate_gradient(Process *p);
-
 double fx0(double t, double x1, double x2, double u)
 {
-	return (x1-t*t*t)*(x1-t*t*t) + (x2-t)*(x2-t) + (2*u-t)*(2*u-t);
+	//return (x1-t*t*t)*(x1-t*t*t) + (x2-t)*(x2-t) + (2*u-t)*(2*u-t);
     //return (x1-cos(t))*(x1-cos(t)) + (x2-sin(t))*(x2-sin(t)) + (2*u-t)*(2*u-t);
 	//return (x1-exp(t))*(x1-exp(t)) + (x2-exp(3*t))*(x2-exp(3*t)) + (u-t)*(u-t);
+	return (x1-(t*t)/2.0)*(x1-(t*t)/2.0) + (x2-t)*(x2-t);
 }
 
 double T(double t, double x1, double x2, double u)
 {
-	return (x2 - 1.0) * (x2 - 1.0);
+	//return (x2 - 1.0) * (x2 - 1.0);
 	//return (x2-sin(1.0)) * (x2-sin(1.0));
 	//return (x2-exp(3.0)) * (x2-exp(3.0)); 
+	return 0.0;
 }
 
 double fx1(double t, double x1, double x2, double u)
 {
-    return 3.0*x2*x2;
+    //return 3.0*x2*x2;
     //return -x2;
 	//return x1+x2-exp(3.0*t)+u-t;
+	return x2;
 }
 
 double fx2(double t, double x1, double x2, double u)
 {
-	return x1 + x2 - 2.0*u - t*t*t + 1.0;
+	//return x1 + x2 - 2.0*u - t*t*t + 1.0;
     //return x1 + x2 - sin(t)- 2.0*u + t;
 	//return 3.0*x1*x1*x1;
+	return -6.0*x1 + x2 + u - t + 1.0;
 }
 
 //-------------------------------------------------------------------------------
@@ -80,16 +46,28 @@ double H(double t, double x1, double x2, double u, double psi1, double psi2)
 double fp1(double t, double x1, double x2, double psi1, double psi2, double u)
 {
 	return -1.0 * ( H(t, x1 + dx, x2, u, psi1, psi2) - H(t, x1 - dx, x2, u, psi1, psi2) ) / (2 * dx);
+	//return 2.0 * (x1 - t*t*t) - psi2;
+	//return 2.0 * (x1-cos(t)) - psi2;
+	//return 2.0 * (x1-exp(t)) - psi1 - 9.0*(x1*x1)*psi2;
+	//return 2.0 * x1 - t * t + 6 * psi2;
 }
 
 double fp2(double t, double x1, double x2, double psi1, double psi2, double u)
 {
 	return -1.0 * ( H(t, x1, x2 + dx, u, psi1, psi2) - H(t, x1, x2 - dx, u, psi1, psi2) ) / (2 * dx);
+	//return 2.0 * (x2 - t) - 6.0 * x2 * psi1 - psi2;
+	//return 2.0 * (x2-sin(t)) + psi1 - psi2;
+	//return 2.0 * (x2-exp(3.0*t)) - psi1;
+	//return 2.0 * (x2 - t) - psi1 - psi2;
 }
 
 double gradJ(double t, double x1, double x2, double psi1, double psi2, double u)
 {
     return ( H(t, x1, x2, u + dx, psi1, psi2) - H(t, x1, x2, u - dx, psi1, psi2) ) / (2 * dx);
+	//return -4.0*(2.0*u - t) - 2.0*psi2;
+	//return -4.0*(2.0*u - t) - psi2;
+	//return -2.0*(u-t) + psi1;
+	//return psi2;
 }
 
 double JSum(Process *p)
@@ -107,6 +85,9 @@ double JSum(Process *p)
         sum = sum + 0.5 * (fj+fi) * (p->t[j]-p->t[i]);
     }
     sum = sum + T(0.0, p->x1[n-1], p->x2[n-1], 0.0);
+	//sum = sum + (p->x2[n-1] - 1.0) * (p->x2[n-1] - 1.0);
+	//sum = sum + (x2[n-1] - sin(1.0)) * (x2[n-1] - sin(1.0));
+	//sum = sum + (x2[n-1]-exp(3.0)) * (x2[n-1]-exp(3.0));
     return sum;
 }
 
