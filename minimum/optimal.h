@@ -8,7 +8,7 @@
 #include "print.h"
 
 #define M_E1 2.7182818284590452353602874713527
-#define dx 0.00000001
+#define dx 0.000000001
 
 typedef struct 
 {
