@@ -7,7 +7,7 @@ CLDFLAGS    = -Wl,-subsystem,console -mthreads
 INCLUDES    = -I..
 OBJ_DIR     = .
 DEL         = del /f
-OBJECTS     = method_prj_grad.o print.o sample_functions.o sample_gradient.o sample_penalty.o runga_kutta.o optimal.o method_penalty.o method_grad.o method_conj.o methods.o minimum.o main.o
+OBJECTS     = method_prj_grad.o print.o sample_functions.o sample_gradient.o sample_penalty.o runga_kutta.o optimal.o method_penalty.o method_grad.o method_conj.o method_grid.o methods.o minimum.o main.o
 
 all: main
 
@@ -37,6 +37,9 @@ method_penalty.o: method_penalty.c
 
 runga_kutta.o: runga_kutta.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o runga_kutta.o runga_kutta.c
+	
+method_grid.o: method_grid.c
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o method_grid.o method_grid.c
 
 optimal.o: optimal.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o optimal.o optimal.c
