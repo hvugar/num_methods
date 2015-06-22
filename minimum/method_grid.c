@@ -39,7 +39,7 @@ void tomas_algorithm(double **a, double* b, double* x, int size)
     q = NULL;
 }
 
-void implicit_difference_scheme(R2Function f, R1Function fi, R1Function m1, R1Function m2, double alpha, double dx, double dt, double x0, double x1, double t0, double t1, grid *g)
+void implicit_difference_scheme(R2Function f, R1Function fi, R1Function m1, R1Function m2, double alpha, double dx, double dt, double x0, double x1, double t0, double t1, Grid *g)
 {
     double x = x1 - x0;
     double t = t1 - t0;
