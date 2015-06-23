@@ -21,6 +21,8 @@ typedef struct {
 	int m;
 	
 	double **f;
+	double **u;
+	double **p;
 	double **g;
 	
 } Process1;
