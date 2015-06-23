@@ -8,6 +8,12 @@ double _m2(double t) { return t*t*t; }
 double _fi(double x) { return x*x*x*x - 1.0 ; }
 double _f(double x, double t) { return 3.0*t*t -12.0*x*x; }
 
+double _m11(double t) { return 0.0; }
+double _m21(double t) { return 0.0; }
+double _fi1(double x) { return x*x*x*x - 1.0 ; }
+double _f(double x, double t) { return 3.0*t*t -12.0*x*x; }
+
+
 double _JSum() 
 {	
 }
@@ -62,6 +68,9 @@ void _calculate()
 
     Grid g1;
     implicit_difference_scheme(_f, _fi, _m1, _m2, p.alpha, p.dx, p.dt, p.x0, p.x1, p.t0, p.t1, &g1);
+	
+    Grid g2;
+    implicit_difference_scheme(_f, _fi, _m11, _m21, p.alpha, p.dx, p.dt, p.x0, p.x1, p.t0, p.t1, &g2);
 
     _printM(g1.u, g1.m, g1.n);
     puts("-----------------------------");
