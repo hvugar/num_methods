@@ -26,7 +26,7 @@ void calculate_grid()
     double t0 = 0.0;
     double t1 = 1.0;
 	
-	grid g;
+	Grid g;
     implicit_difference_scheme(f1, fi, m1, m2, alpha, dx, dt, x0, x1, t0, t1, &g);
 	
     int i,j;
