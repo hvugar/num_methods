@@ -17,8 +17,11 @@ typedef struct {
 	double dt;
 	
 	double alpha;
+	int n;
+	int m;
 	
 	double **f;
+	double **g;
 	
 } Process1;
 
