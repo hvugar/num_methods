@@ -2,6 +2,7 @@
 #define _OPTIMAL1_H_
 
 #include "method_grid.h"
+#include "print.h"
 
 typedef struct {
 	double *x;

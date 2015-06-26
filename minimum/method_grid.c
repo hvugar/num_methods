@@ -118,3 +118,77 @@ void implicit_difference_scheme(R2Function f, R1Function fi, R1Function m1, R1Fu
     free(a);
     free(b);
 }
+
+void implicit_difference_scheme1(R2Function f, R1Function fi, R1Function m1, R1Function m2, double alpha, double dx, double dt, double x0, double x1, double t0, double t1, Grid *g)
+{
+    int i,j;
+	
+    double x = x1 - x0;
+    double t = t1 - t0;
+
+    int n    = (int)(ceil(x/dx)) + 1;
+    int m    = (int)(ceil(t/dt)) + 1;
+    int k    = n - 2;
+
+	// initilizing
+    g->u = (double**) malloc( sizeof(double*) * m );
+    g->n = n;
+    g->m = m;
+	
+	for (j=0; j<m; j++)
+	{
+		g->u[j] = (double*)  malloc( sizeof(double)  * n );
+		g->u[j][0]   = m1( dt * j );
+		g->u[j][n-1] = m2( dt * j );
+	}
+	
+	for (i=0; i<n; i++) 
+	{
+		g->u[0][i] = fi( dx * i );
+	}
+	
+	/////////////////////////////////////////////////
+
+    double  *b = (double*)  malloc( sizeof(double)  * k );
+    double **a = (double**) malloc( sizeof(double*) * k );
+	for (i=0; i<k; i++) a[i] = (double*)  malloc( sizeof(double)  * k );
+	
+	////////////////////////////////////////////////
+    double c1 = -alpha * (dt / (dx*dx));
+	double c2 = 1.0 + (2.0*alpha) * (dt / (dx*dx));
+	
+	for (j=1; j<m; j++)
+	{
+		for (i=1; i<=k; i++)
+		{			
+			if ( i == 1 )
+            {
+                a[i-1][0] = c2;
+                a[i-1][1] = c1;
+				b[i-1] = -c1*g->u[j][0] + g->u[j-1][1] + dt * f(i*dx, j*dt);
+            }
+            else if ( i == k )
+            {
+                a[i-1][i-2] = c1;
+                a[i-1][i-1] = c2;
+				b[i-1] = -c1*g->u[j][k+1] + g->u[j-1][k] + dt * f(i*dx, j*dt);
+            }
+            else
+            {
+                a[i-1][i+0] = c1;
+                a[i-1][i-1] = c2;
+                a[i-1][i-2] = c1;
+				b[i-1] = g->u[j-1][i] + dt * f(i*dx, j*dt);
+            }
+		}
+		
+		tomas_algorithm(a, b, (g->u[j]+1), k);
+	}
+
+    for (i=0; i<k; i++)
+    {
+        free(a[i]);
+    }
+    free(a);
+    free(b);
+}

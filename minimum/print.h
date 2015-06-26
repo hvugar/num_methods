@@ -20,4 +20,6 @@ void printX(char *label, double *x, int n);
 void _print1(char *s, double *a, int n);
 void _seperator();
 
+void _printM(double **x, int m, int n);
+
 #endif //_PRINT_H_

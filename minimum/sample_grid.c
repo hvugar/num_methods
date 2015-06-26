@@ -19,20 +19,22 @@ double f1(double x, double t) { return 3.0*t*t - 12.0*x*x; }
 void calculate_grid()
 {
 	double alpha = 1.0;
-    double dx = 0.01;
-    double dt = 0.01;
+    double dx = 0.001;
+    double dt = 0.001;
     double x0 = 0.0;
     double x1 = 1.0;
     double t0 = 0.0;
     double t1 = 1.0;
 	
 	Grid g;
-    implicit_difference_scheme(f1, fi, m1, m2, alpha, dx, dt, x0, x1, t0, t1, &g);
+    implicit_difference_scheme1(f1, fi, m1, m2, alpha, dx, dt, x0, x1, t0, t1, &g);
 	
     int i,j;
     printf("n=%d m=%d\n", g.n, g.m);
     for (j=0; j<g.m; j++)
     {
+		if (j%(g.n/10)==0)
+		{
         for (i=0; i<g.n; i++)
         {
             if (i%(g.n/10)==0)
@@ -45,6 +47,7 @@ void calculate_grid()
                 printf("%12.8f", u(dx*i, dt*j));
         }
 		puts("\n---");
+		}
     }
     return 0;
 }
