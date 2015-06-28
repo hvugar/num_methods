@@ -88,7 +88,7 @@ double _JSum(Process1 *p)
         int i1=i+1;
         double fj = p->u[m-1][i1] - _y(p->dx*i1);
         double fi = p->u[m-1][i]; - _y(p->dx*i);
-        double f0 = (fj*fj+fi*fi);
+        double f0 = fj*fj + fi*fi;
         sum = sum + 0.5 * f0 * (p->dx);
     }
 

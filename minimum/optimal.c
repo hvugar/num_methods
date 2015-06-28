@@ -250,8 +250,8 @@ void calculate()
 
     double J1, J2;
 
-    double a = -0.3;
-    double b = +0.3;
+    //double a = -0.3;
+    //double b = +0.3;
 
     do
     {

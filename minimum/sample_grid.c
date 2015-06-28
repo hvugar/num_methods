@@ -49,5 +49,4 @@ void calculate_grid()
 		puts("\n---");
 		}
     }
-    return 0;
 }

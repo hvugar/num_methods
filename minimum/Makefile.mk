@@ -7,7 +7,7 @@ CLDFLAGS    = -Wl,-subsystem,console -mthreads
 INCLUDES    = -I..
 OBJ_DIR     = .
 DEL         = del /f
-OBJECTS     = method_prj_grad.o print.o sample_functions.o sample_gradient.o sample_penalty.o runga_kutta.o optimal.o method_penalty.o method_grad.o method_conj.o methods.o minimum.o main.o
+OBJECTS     = method_prj_grad.o print.o sample_functions.o sample_gradient.o sample_penalty.o sample_grid.o runga_kutta.o optimal.o method_penalty.o method_grad.o method_conj.o method_grid.o methods.o minimum.o main.o
 
 all: main
 
@@ -37,9 +37,12 @@ method_penalty.o: method_penalty.c
 
 runga_kutta.o: runga_kutta.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o runga_kutta.o runga_kutta.c
+	
+method_grid.o: method_grid.c
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o method_grid.o method_grid.c
 
-optimal.o: optimal.c
-	$(CC) -c $(CFLAGS) $(INCLUDES) -o optimal.o optimal.c
+optimal.o: optimal1.c
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o optimal.o optimal1.c
 	
 sample_penalty.o: sample_penalty.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o sample_penalty.o sample_penalty.c
@@ -52,6 +55,9 @@ sample_functions.o: sample_functions.c
 	
 sample_project.o: sample_project.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o sample_project.o sample_project.c
+	
+sample_grid.o: sample_grid.c
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o sample_grid.o sample_grid.c
 	
 method_prj_grad.o: method_prj_grad.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o method_prj_grad.o method_prj_grad.c

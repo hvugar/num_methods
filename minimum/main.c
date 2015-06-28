@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 {
     //sample_gradient1();
     //calculate();
-	_calculate();
+    _calculate();
 	//calculate_grid();
 	return 0;
 }
