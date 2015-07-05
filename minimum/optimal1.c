@@ -1,17 +1,17 @@
 #include "optimal1.h"
 
-double _y(double x) { return x*x*x*x; }
-double _u(double x, double t) { return x*x*x*x + t*t*t - 1.0; }
+double y(double x) { return x*x + 2.0*x + 1.0; }
+double u(double x, double t) { return x*x + t*t - 2.0*x; }
+double f(double x, double t) { return 2.0*t - 2.0; }
 
-double _m11(double t) { return t*t*t - 1.0; }
-double _m21(double t) { return t*t*t; }
-double _fi1(double x) { return x*x*x*x - 1.0 ; }
-double _f(double x, double t) { return 3.0*t*t -12.0*x*x; }
+double fi(double x) { return x*x - 2.0*x ; }
+double m1(double t) { return t*t; }
+double m2(double t) { return t*t + 3.0; }
 
-double _m12(double t) { return 0.0; }
-double _m22(double t) { return 0.0; }
-double _fi2(double x) { return -2.0*(_u(x,1.0) - _y(x)); }
-double _f2(double x, double t) { return 0.0; }
+//double p_fi(double x) { return -2.0*(u(x,1.0) - y(x)); }
+double p_m1(double t) { return 0.0; }
+double p_m2(double t) { return 0.0; }
+double f2(double x, double t) { return 0.0; }
 
 Process1 p;
 
@@ -27,18 +27,18 @@ double fxt2(double x, double t)
     return 0.0;
 }
 
-double __fi(double x)
+double p_fi(double x)
 {
     int i = (int)(ceil(x/p.dx));
     int j = (int)(ceil(p.t1/p.dt));
-    return -2.0 * (p.u[j][i] - _y(x));
+    return -2.0 * (p.u[j][i] - y(x));
 }
 
 void calculate_u(Process1 *p)
 {
     int j;
     Grid g;
-    implicit_difference_scheme1(fxt1, _fi1, _m11, _m21, p->alpha, p->dx, p->dt, p->x0, p->x1, p->t0, p->t1, &g);
+    implicit_difference_scheme1(fxt1, fi, m1, m2, p->alpha, p->dx, p->dt, p->x0, p->x1, p->t0, p->t1, &g);
     for (j=0; j<g.m; j++)
     {
         memcpy(p->u[j], g.u[j], sizeof(double) * g.n);
@@ -51,7 +51,7 @@ void calculate_p(Process1 *p)
 {
     int j;
     Grid g;
-    implicit_difference_scheme1(fxt2, __fi, _m12, _m22, p->alpha, p->dx, p->dt, p->x0, p->x1, p->t0, p->t1, &g);
+    implicit_difference_scheme1(fxt2, p_fi, p_m1, p_m2, p->alpha, p->dx, p->dt, p->x0, p->x1, p->t0, p->t1, &g);
     for (j=0; j<g.m; j++)
     {
         memcpy(p->p[g.m-1-j], g.u[j], sizeof(double) * g.n);
@@ -85,22 +85,23 @@ double _JSum(Process1 *p)
 
     for (i=0; i<(n-1); i++)
     {
+		int i0=i;
         int i1=i+1;
-        double fj = p->u[m-1][i1] - _y(p->dx*i1);
-        double fi = p->u[m-1][i]; - _y(p->dx*i);
+        double fj = p->u[m-1][i1] - y(p->dx*i1);
+        double fi = p->u[m-1][i0] - y(p->dx*i0);
         double f0 = fj*fj + fi*fi;
         sum = sum + 0.5 * f0 * (p->dx);
     }
 
-    double f = 0.0;
+    double F = 0.0;
     for (j=0; j<m; j++)
     {
         for (i=0; i<n; i++)
         {
-            f += p->f[j][i]*p->f[j][i];
+            F = (p->f[j][i]-(2*p->dt*j-2.0))*(p->f[j][i]-(2*p->dt*j-2.0));
         }
     }
-    sum = sum + f;
+    sum = sum + F;
     return sum;
 }
 
@@ -151,8 +152,8 @@ void _calculate()
 
     do
     {
-	_printM(p.f, p.m, p.n);
-	_seperator();
+	//_printM(p.f, p.m, p.n);
+	//_seperator();
         calculate_u(&p);
         calculate_p(&p);
 

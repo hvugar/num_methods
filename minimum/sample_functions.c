@@ -8,7 +8,7 @@ double f_rosenbrock(double *x, int n)
     return ((1-x1)*(1-x1)) + 100*(x2-x1*x1)*(x2-x1*x1);
 }
 
-double f(double *x, int n)
+double f_1(double *x, int n)
 {
 	return (x[0]-4.0)*(x[0]-4.0)+(x[1]-4.0)*(x[1]-4.0);
 }
