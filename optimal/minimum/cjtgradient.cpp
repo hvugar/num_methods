@@ -59,7 +59,7 @@ void ConjugateGradient::calculate()
             double w = gr2_mod / gr1_mod;
             gr1_mod = gr2_mod;
             // Direction in next (k+1) iteration
-            for (unsigned int i=0; i<mg.size(); i++) s[i] = -mg[i] + s[i] * w;
+            for (unsigned int i=0; i<mg.size(); i++) l  = -mg[i] + s[i] * w;
         }
 
         double sn = 0.0;
