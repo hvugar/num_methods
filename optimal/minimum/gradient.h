@@ -25,7 +25,7 @@ public:
     double epsilon() const;
     void setEpsilon(double epsilon);
 
-    virtual void calcGradient();
+    virtual void calculateGradient();
     virtual double minimize() = 0;
     virtual void calculate() = 0;
 

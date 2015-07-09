@@ -8,12 +8,12 @@ PenaltyMethod::~PenaltyMethod()
 {
 }
 
-std::vector<RnFunction*>& PenaltyMethod::h() const
+const PRnFunctionList& PenaltyMethod::h() const
 {
     return m_h;
 }
 
-std::vector<RnFunction*>& PenaltyMethod::g() const
+const PRnFunctionList& PenaltyMethod::g() const
 {
     return m_g;
 }

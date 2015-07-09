@@ -4,7 +4,7 @@
 #include "gradient.h"
 
 /**
- * @brief Method of Steepest Descent
+ * @brief Method of Steepest Descent Gradient
  */
 class MINIMUMSHARED_EXPORT SteepestDescentGradient : public Gradient, protected R1Function
 {

@@ -15,7 +15,7 @@ void ProjectionGradient::calculate()
     do
     {
         /* calculating function gradient at current point */
-        calcGradient();
+        calculateGradient();
 
         /* if norm of gradinet at current point is less than epsilon break. no minimize */
         if (gradientNorm() < epsilon())

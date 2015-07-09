@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 
-R1Minimize::R1Minimize() : mf(0), m_x0(0.0), m_step(0.0), m_epsilon(0.0), m_a(0.0), m_b(0.0)
+R1Minimize::R1Minimize() : m_f(0), m_x0(0.0), m_step(0.0), m_epsilon(0.0), m_a(0.0), m_b(0.0)
 {}
 
 R1Minimize::~R1Minimize()
@@ -10,12 +10,12 @@ R1Minimize::~R1Minimize()
 
 void R1Minimize::setF(R1Function *f)
 {
-    mf = f;
+    m_f = f;
 }
 
 R1Function* R1Minimize::f() const
 {
-    return mf;
+    return m_f;
 }
 
 double R1Minimize::x0() const
@@ -60,12 +60,12 @@ double R1Minimize::b() const
 
 double R1Minimize::straightLineSearch()
 {
-    if ( mf == NULL ) return NAN;
+    if ( m_f == NULL ) return NAN;
     if ( m_step == 0.0 ) return NAN;
 
-    double y0 = mf->fx(m_x0);
-    double y1 = mf->fx(m_x0 - m_step);
-    double y2 = mf->fx(m_x0 + m_step);
+    double y0 = m_f->fx(m_x0);
+    double y1 = m_f->fx(m_x0 - m_step);
+    double y2 = m_f->fx(m_x0 + m_step);
 
     // if y1 and y2 are both greater than y0 then minimum point is inside x1 and x2
     if (y1 >= y0 && y0 <= y2)
@@ -91,7 +91,7 @@ double R1Minimize::straightLineSearch()
                 m_x0 = m_x0 + fabs(m_step);
                 y1 = y0;
                 y0 = y2;
-                y2 = mf->fx(m_x0 + fabs(m_step));
+                y2 = m_f->fx(m_x0 + fabs(m_step));
             }
             m_a = m_x0 - fabs(m_step);
             m_b = m_x0 + fabs(m_step);
@@ -106,7 +106,7 @@ double R1Minimize::straightLineSearch()
                 m_x0 = m_x0 - fabs(m_step);
                 y2 = y0;
                 y0 = y1;
-                y1 = mf->fx(m_x0 - fabs(m_step));
+                y1 = m_f->fx(m_x0 - fabs(m_step));
             }
             m_a = m_x0 - fabs(m_step);
             m_b = m_x0 + fabs(m_step);
@@ -123,7 +123,7 @@ double R1Minimize::straightLineSearch()
 
 double R1Minimize::halphIntervalMethod()
 {
-    if ( mf == NULL ) return NAN;
+    if ( m_f == NULL ) return NAN;
 
     double L = m_b - m_a;
 
@@ -133,9 +133,9 @@ double R1Minimize::halphIntervalMethod()
         double x1 = m_a + L/4.0;
         double x2 = m_b - L/4.0;
 
-        double f_xm = mf->fx(xm);
-        double f_x1 = mf->fx(x1);
-        double f_x2 = mf->fx(x2);
+        double f_xm = m_f->fx(xm);
+        double f_x1 = m_f->fx(x1);
+        double f_x2 = m_f->fx(x2);
 
         if (f_x1 < f_xm)
         {
@@ -183,13 +183,13 @@ double R1Minimize::goldenSectionSearch()
         if (isnan(x1))
         {
             x1 = b - fabs(b-a)/phi;
-            y1 = mf->fx(x1);
+            y1 = m_f->fx(x1);
         }
 
         if (isnan(x2))
         {
             x2 = a + fabs(b-a)/phi;
-            y2 = mf->fx(x2);
+            y2 = m_f->fx(x2);
         }
 
         if (y1 >= y2)
@@ -210,8 +210,8 @@ double R1Minimize::goldenSectionSearch()
 
     double c = (a+b)/2.0;
 
-    if (mf->fx(a)<mf->fx(b)) c = a;
-    if (mf->fx(a)>mf->fx(b)) c = b;
+    if (m_f->fx(a)<m_f->fx(b)) c = a;
+    if (m_f->fx(a)>m_f->fx(b)) c = b;
 
     return c;
 }

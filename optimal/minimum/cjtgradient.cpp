@@ -32,7 +32,7 @@ void ConjugateGradient::calculate()
     do
     {
         // Gradient of objectiv function in current point
-        calcGradient();
+        calculateGradient();
 
         if (gradientNorm() < epsilon())
             break;

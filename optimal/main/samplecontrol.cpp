@@ -9,7 +9,7 @@ SampleControl::~SampleControl()
 {
 }
 
-void SampleControl::calcGradient()
+void SampleControl::calculateGradient()
 {
     CFunction1* func = dynamic_cast<CFunction1*>(function());
 

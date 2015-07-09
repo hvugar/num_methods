@@ -32,7 +32,7 @@ public:
     double halphIntervalMethod();
 
 private:
-    R1Function *mf;
+    R1Function *m_f;
     double m_x0;
     double m_step;
     double m_epsilon;

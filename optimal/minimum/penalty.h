@@ -10,15 +10,15 @@ public:
     PenaltyMethod();
     virtual ~PenaltyMethod();
 
-    std::vector<RnFunction*>& h() const;
-    std::vector<RnFunction*>& g() const;
+    const PRnFunctionList& h() const;
+    const PRnFunctionList& g() const;
 
     virtual void calculate();
 
 private:
     RnFunction* m_f;
-    std::vector<RnFunction*> m_h;
-    std::vector<RnFunction*> m_g;
+    PRnFunctionList m_h;
+    PRnFunctionList m_g;
     double m_R;
     double m_r;
 };

@@ -45,7 +45,7 @@ void Gradient::setEpsilon(double epsilon)
     mepsilon = epsilon;
 }
 
-void Gradient::calcGradient()
+void Gradient::calculateGradient()
 {
     double h = grad_step;
     for (unsigned i=0; i<mx.size(); i++)

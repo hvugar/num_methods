@@ -20,4 +20,7 @@ struct RnFunction
     virtual double fx(const std::vector<double>& x) = 0;
 };
 
+typedef std::vector<RnFunction> RnFunctionList;
+typedef std::vector<RnFunction*> PRnFunctionList;
+
 #endif // R1FUNCTION_H

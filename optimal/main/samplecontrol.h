@@ -10,7 +10,7 @@ public:
     SampleControl();
     ~SampleControl();
 
-    virtual void calcGradient();
+    virtual void calculateGradient();
     virtual void print();
 };
 
