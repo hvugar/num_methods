@@ -25,6 +25,7 @@ typedef struct {
 	double **u;
 	double **p;
 	double **g;
+	double **u1;
 	
 } Process1;
 

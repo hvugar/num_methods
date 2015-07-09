@@ -1,10 +1,10 @@
 #include "optimal1.h"
 
 double y(double x) { return x*x + 2.0*x + 1.0; }
-double u(double x, double t) { return x*x + t*t - 2.0*x; }
+double u(double x, double t) { return x*x + t*t + 2.0*x; }
 double f(double x, double t) { return 2.0*t - 2.0; }
 
-double fi(double x) { return x*x - 2.0*x ; }
+double fi(double x) { return x*x + 2.0*x ; }
 double m1(double t) { return t*t; }
 double m2(double t) { return t*t + 3.0; }
 
@@ -49,7 +49,7 @@ void calculate_u(Process1 *p)
 
 void calculate_p(Process1 *p)
 {
-    int j;
+    int j,i;
     Grid g;
     implicit_difference_scheme1(fxt2, p_fi, p_m1, p_m2, p->alpha, p->dx, p->dt, p->x0, p->x1, p->t0, p->t1, &g);
     for (j=0; j<g.m; j++)
@@ -58,6 +58,14 @@ void calculate_p(Process1 *p)
         free(g.u[j]);
     }
     free(g.u);
+	
+	for (j=0; j<p->m; j++)
+    {
+        for (i=0; i<p->n; i++)
+        {
+            p->p[j][i] = p->p[j][i] + 2.0 * (p->f[j][i] - f(p->dx*i, p->dt*j));
+        }
+    }
 }
 
 double norm_f(Process1 *p)
@@ -111,8 +119,8 @@ void init_process(Process1 *p)
     p->t1 = 1.0;
     p->x0 = 0.0;
     p->x1 = 1.0;
-    p->dx = 0.01;
-    p->dt = 0.01;
+    p->dx = 0.005;
+    p->dt = 0.005;
 
     p->n = (int)(ceil((p->x1-p->x0)/p->dx)) + 1;
     p->m = (int)(ceil((p->t1-p->x0)/p->dt)) + 1;
@@ -122,16 +130,23 @@ void init_process(Process1 *p)
     p->u = (double **) malloc( sizeof(double*) * p->m );
     p->f = (double **) malloc( sizeof(double*) * p->m );
     p->p = (double **) malloc( sizeof(double*) * p->m );
+	p->u1 = (double **) malloc( sizeof(double*) * p->m );
+	
+	p->t = (double*) malloc( sizeof(double) * p->m );
+	for (j=0; j<p->m; j++) p->t[j] = p->dx * j;
+	
     for (j=0; j<p->m; j++)
     {
         p->u[j] = (double*) malloc( sizeof(double) * p->n );
         p->f[j] = (double*) malloc( sizeof(double) * p->n );
         p->p[j] = (double*) malloc( sizeof(double) * p->n );
+		p->u1[j] = (double*) malloc( sizeof(double) * p->n );
+
         for (i=0; i<p->n; i++)
         {
             p->u[j][i] = 0.0;
             p->p[j][i] = 0.0;
-            p->f[j][i] = sin(j*p->dt)*cos(i*p->dx);
+            p->f[j][i] = 2.0;//2.0*p->t[j] - 2.0;
         }
     }
 }
@@ -152,10 +167,24 @@ void _calculate()
 
     do
     {
-	//_printM(p.f, p.m, p.n);
-	//_seperator();
+		_seperator();
+		//printX("t", p.t, p.m);
         calculate_u(&p);
         calculate_p(&p);
+		_printM(p.f, p.m, p.n);
+		puts("---");
+		_printM(p.u, p.m, p.n);
+		
+		for (j=0; j<p.m; j++)
+		{
+			for (i=0; i<p.n; i++)
+			{
+				p.u1[j][i] = u(p.dx*i, p.dt*j);				
+			}
+		}		
+		puts("---");
+		
+		_printM(p.u1, p.m, p.n);
 
         J1 = _JSum(&p);
         printf("J1 = %.18f\n", J1);
