@@ -119,8 +119,8 @@ void init_process(Process1 *p)
     p->t1 = 1.0;
     p->x0 = 0.0;
     p->x1 = 1.0;
-    p->dx = 0.005;
-    p->dt = 0.005;
+    p->dx = 0.01;
+    p->dt = 0.01;
 
     p->n = (int)(ceil((p->x1-p->x0)/p->dx)) + 1;
     p->m = (int)(ceil((p->t1-p->x0)/p->dt)) + 1;
