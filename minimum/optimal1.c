@@ -171,6 +171,7 @@ void _calculate()
 		//printX("t", p.t, p.m);
         calculate_u(&p);
         calculate_p(&p);
+
 		_printM(p.f, p.m, p.n);
 		puts("---");
 		_printM(p.u, p.m, p.n);
