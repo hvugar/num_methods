@@ -14,9 +14,9 @@ SOURCES += \
     minimum1.cpp \
     r1minimize.cpp \
     gradient.cpp \
-    cjtgradient.cpp \
-    prjgradient.cpp \
-    sdgradient.cpp \
+    gradient_cjt.cpp \
+    gradient_sd.cpp \
+    gradient_prj.cpp \
     penalty.cpp
 
 HEADERS += global.h \
@@ -24,7 +24,7 @@ HEADERS += global.h \
     function.h \
     r1minimize.h \
     gradient.h \
-    cjtgradient.h \
-    prjgradient.h \
-    sdgradient.h \
+    gradient_cjt.h \
+    gradient_sd.h \
+    gradient_prj.h \
     penalty.h

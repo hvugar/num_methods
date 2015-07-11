@@ -1,9 +1,9 @@
 #include "gradient.h"
 
-Gradient::Gradient() : mfn(NULL)
+Gradient::Gradient() : m_fn(NULL)
 {
-    malpha = 0.0;
-    mepsilon = 0.0;
+    m_alpha = 0.0;
+    m_epsilon = 0.0;
     grad_step = 0.0;
     min_step = 0.0;
     min_epsilon = 0.0;
@@ -16,46 +16,47 @@ Gradient::~Gradient()
 
 void Gradient::setFunction(RnFunction *f)
 {
-    mfn = f;
+    m_fn = f;
 }
 
 RnFunction* Gradient::function() const
 {
-    return mfn;
+    return m_fn;
 }
 
 void Gradient::setX(const std::vector<double> &x)
 {
-    mx = x;
-    mg = x;
+    m_x = x;
+    m_g.resize(x.size(), 0.0);
 }
 
 const std::vector<double>& Gradient::x() const
 {
-    return mx;
+    return m_x;
 }
 
 double Gradient::epsilon() const
 {
-    return mepsilon;
+    return m_epsilon;
 }
 
 void Gradient::setEpsilon(double epsilon)
 {
-    mepsilon = epsilon;
+    m_epsilon = epsilon;
 }
 
 void Gradient::calculateGradient()
 {
     double h = grad_step;
-    for (unsigned i=0; i<mx.size(); i++)
+    for (unsigned i=0; i<m_x.size(); i++)
     {
-        mx[i] = mx[i] - h;
-        double f1 = mfn->fx(mx);
-        mx[i] = mx[i] + 2*h;
-        double f2 = mfn->fx(mx);
-        mx[i] = mx[i] - h;
-        mg[i] = (f2 - f1) / (2 * h);
+        m_x[i] = m_x[i] - h;
+        double f1 = m_fn->fx(m_x);
+        m_x[i] = m_x[i] + 2*h;
+        double f2 = m_fn->fx(m_x);
+        m_x[i] = m_x[i] - h;
+
+        m_g[i] = (f2 - f1) / (2 * h);
     }
 }
 
@@ -78,9 +79,9 @@ int Gradient::count() const
 double Gradient::gradientNorm() const
 {
     double grad_norm = 0.0;
-    for (unsigned int i=0; i<mg.size(); i++)
+    for (unsigned int i=0; i<m_g.size(); i++)
     {
-        grad_norm = grad_norm + mg[i]*mg[i];
+        grad_norm = grad_norm + m_g[i]*m_g[i];
     }
     grad_norm = sqrt(grad_norm);
     return grad_norm;
@@ -89,9 +90,9 @@ double Gradient::gradientNorm() const
 double Gradient::distance() const
 {
     double dist = 0.0;
-    for (unsigned int i=0; i<mx.size(); i++)
+    for (unsigned int i=0; i<m_x.size(); i++)
     {
-        dist = dist + (malpha * mg[i]) * (malpha * mg[i]);
+        dist = dist + (m_alpha * m_g[i]) * (m_alpha * m_g[i]);
     }
     dist = sqrt(dist);
     return dist;

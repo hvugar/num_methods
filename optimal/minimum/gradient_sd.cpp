@@ -1,4 +1,4 @@
-#include "sdgradient.h"
+#include "gradient_sd.h"
 
 SteepestDescentGradient::SteepestDescentGradient() : Gradient()
 {
@@ -37,16 +37,16 @@ void SteepestDescentGradient::calculate()
         k++;
 
         /* calculating unit vectors */
-        for (unsigned int i=0; i<mg.size(); i++) mg[i] = mg[i] / gradient_norm;
+        for (unsigned int i=0; i<m_g.size(); i++) m_g[i] = m_g[i] / gradient_norm;
 
         /* R1 minimization in direct of antigradient */
-        malpha = minimize();
+        m_alpha = minimize();
 
         print();
 
-        for (unsigned int i=0; i<mx.size(); i++)
+        for (unsigned int i=0; i<m_x.size(); i++)
         {
-            mx[i] = mx[i] - malpha * mg[i];
+            m_x[i] = m_x[i] - m_alpha * m_g[i];
         }
 
         /* calculating distance previous and new point */
@@ -55,12 +55,12 @@ void SteepestDescentGradient::calculate()
 
 double SteepestDescentGradient::fx(double alpha)
 {
-    std::vector<double> x1 = mx;
-    for (unsigned int i=0; i < mx.size(); i++)
+    std::vector<double> x1 = m_x;
+    for (unsigned int i=0; i < m_x.size(); i++)
     {
-        x1[i] = mx[i] - alpha * mg[i];
+        x1[i] = m_x[i] - alpha * m_g[i];
     }
-    return mfn->fx(x1);
+    return m_fn->fx(x1);
 }
 
 void SteepestDescentGradient::print()
@@ -71,16 +71,16 @@ void SteepestDescentGradient::print()
         printf("\n--------+---------------+---------------+---------------+---------------+---------------+---------------+-------------\n");
     }
 
-    double y = function()->fx(mx);
+    double y = function()->fx(m_x);
     double nr = gradientNorm();
 
     printf("%d\t", k);
-    mx[0]>=0.0 ? printf("|+%.10f\t", fabs(mx[0])) : printf("|%.10f\t", mx[0]);
-    mx[1]>=0.0 ? printf("|+%.10f\t", fabs(mx[1])) : printf("|%.10f\t", mx[1]);
+    m_x[0]>=0.0 ? printf("|+%.10f\t", fabs(m_x[0])) : printf("|%.10f\t", m_x[0]);
+    m_x[1]>=0.0 ? printf("|+%.10f\t", fabs(m_x[1])) : printf("|%.10f\t", m_x[1]);
     y>=0.0 ? printf("|%+10.6f\t", y) : printf("|%10.6f\t", y);
-    mg[0]>=0.0 ? printf("|%+10.6f\t", mg[0]) : printf("|%10.6f\t", mg[0]);
-    mg[1]>=0.0 ? printf("|%+10.6f\t", mg[1]) : printf("|%10.6f\t", mg[1]);
+    m_g[0]>=0.0 ? printf("|%+10.6f\t", m_g[0]) : printf("|%10.6f\t", m_g[0]);
+    m_g[1]>=0.0 ? printf("|%+10.6f\t", m_g[1]) : printf("|%10.6f\t", m_g[1]);
     nr>=0.0 ? printf("|%+10.6f\t", nr) : printf("|%10.6f\t", nr);
-    malpha>=0.0 ? printf("|%+10.6f\t", malpha) : printf("|%10.6f\t", malpha);
+    m_alpha>=0.0 ? printf("|%+10.6f\t", m_alpha) : printf("|%10.6f\t", m_alpha);
     printf("\n");
 }

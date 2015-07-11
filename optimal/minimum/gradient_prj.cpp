@@ -1,4 +1,4 @@
-#include "prjgradient.h"
+#include "gradient_prj.h"
 
 ProjectionGradient::ProjectionGradient() : SteepestDescentGradient(), a(-INFINITY), b(INFINITY)
 {
@@ -24,20 +24,20 @@ void ProjectionGradient::calculate()
         k++;
 
         double gn = 0.0;
-        for (unsigned int i=0; i<mg.size(); i++) gn = gn + mg[i]*mg[i];
+        for (unsigned int i=0; i<m_g.size(); i++) gn = gn + m_g[i]*m_g[i];
         gn = sqrt(gn);
-        for (unsigned int i=0; i<mg.size(); i++) mg[i] = mg[i] / gn;
+        for (unsigned int i=0; i<m_g.size(); i++) m_g[i] = m_g[i] / gn;
 
         /* R1 minimization in direct of antigradient */
-        malpha = minimize();
+        m_alpha = minimize();
 
         print();
 
-        for (unsigned int i=0; i<mx.size(); i++)
+        for (unsigned int i=0; i<m_x.size(); i++)
         {
-            mx[i] = mx[i] - malpha * mg[i];
-            if (mx[i] < a) { mx[i] = a; }
-            if (mx[i] > b) { mx[i] = b; }
+            m_x[i] = m_x[i] - m_alpha * m_g[i];
+            if (m_x[i] < a) { m_x[i] = a; }
+            if (m_x[i] > b) { m_x[i] = b; }
         }
 
         /* calculating distance previous and new point */
@@ -46,14 +46,14 @@ void ProjectionGradient::calculate()
 
 double ProjectionGradient::fx(double alpha)
 {
-    unsigned int n = mx.size();
+    unsigned int n = m_x.size();
     std::vector<double> x2(n);
     for (unsigned int i=0; i<n; i++)
     {
-        x2[i] = mx[i] - alpha * mg[i];
+        x2[i] = m_x[i] - alpha * m_g[i];
         if ( x2[i] < a ) x2[i] = a;
         if ( x2[i] > b ) x2[i] = b;
     }
-    return mfn->fx(x2);
+    return m_fn->fx(x2);
 }
 

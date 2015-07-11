@@ -12,12 +12,12 @@ public:
     SteepestDescentGradient();
     virtual ~SteepestDescentGradient();
 
-    virtual double minimize();
     virtual void calculate();
-    virtual void print();
 
 protected:
+    virtual double minimize();
     virtual double fx(double alpha);
+    virtual void print();
 };
 
 #endif // STEEPEST_DESCENT_GRADIENT_H
