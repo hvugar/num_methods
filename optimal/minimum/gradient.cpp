@@ -7,7 +7,7 @@ Gradient::Gradient() : m_fn(NULL)
     grad_step = 0.0;
     min_step = 0.0;
     min_epsilon = 0.0;
-    k = M = 0;
+    iterationCount = M = 0;
 }
 
 Gradient::~Gradient()
@@ -73,7 +73,7 @@ void Gradient::setGradientStep(double step)
 
 int Gradient::count() const
 {
-    return k;
+    return iterationCount;
 }
 
 double Gradient::gradientNorm() const

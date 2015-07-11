@@ -47,7 +47,7 @@ protected:
     double grad_step;
     double min_epsilon;
     double min_step;
-    int k;
+    int iterationCount;
     int M;
 };
 

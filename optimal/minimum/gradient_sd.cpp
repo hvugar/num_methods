@@ -23,7 +23,7 @@ double SteepestDescentGradient::minimize()
 
 void SteepestDescentGradient::calculate()
 {
-    k = 0;
+    iterationCount = 0;
     do
     {
         /* calculating function gradient at current point */
@@ -34,7 +34,7 @@ void SteepestDescentGradient::calculate()
         if (gradient_norm < epsilon())
             break;
 
-        k++;
+        iterationCount++;
 
         /* calculating unit vectors */
         for (unsigned int i=0; i<m_g.size(); i++) m_g[i] = m_g[i] / gradient_norm;
@@ -65,7 +65,7 @@ double SteepestDescentGradient::fx(double alpha)
 
 void SteepestDescentGradient::print()
 {
-    if (k == 1)
+    if (iterationCount == 1)
     {
         printf("No\t|x1      \t|x2      \t|f(x)      \t|grad1      \t|grad2      \t|grad_norm  \t|alpha  \t");
         printf("\n--------+---------------+---------------+---------------+---------------+---------------+---------------+-------------\n");
@@ -74,7 +74,7 @@ void SteepestDescentGradient::print()
     double y = function()->fx(m_x);
     double nr = gradientNorm();
 
-    printf("%d\t", k);
+    printf("%d\t", iterationCount);
     m_x[0]>=0.0 ? printf("|+%.10f\t", fabs(m_x[0])) : printf("|%.10f\t", m_x[0]);
     m_x[1]>=0.0 ? printf("|+%.10f\t", fabs(m_x[1])) : printf("|%.10f\t", m_x[1]);
     y>=0.0 ? printf("|%+10.6f\t", y) : printf("|%10.6f\t", y);

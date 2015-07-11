@@ -28,7 +28,7 @@ void ConjugateGradient::calculate()
         if (gradientNorm() < epsilon())
             break;
 
-        k++;
+        iterationCount++;
 
         // Module of gradient
         gr0_mod = 0.0;
@@ -97,7 +97,7 @@ double ConjugateGradient::distance() const
 
 void ConjugateGradient::print()
 {
-    if (k == 1)
+    if (iterationCount == 1)
     {
         printf("No\t|x1      \t|x2      \t|f(x)      \t|s1      \t|s2      \t|grad_norm  \t|alpha  \t");
         printf("\n--------+---------------+---------------+---------------+---------------+---------------+---------------+-------------\n");
@@ -106,7 +106,7 @@ void ConjugateGradient::print()
     double y = function()->fx(m_x);
     double nr = gradientNorm();
 
-    printf("%d\t", k);
+    printf("%d\t", iterationCount);
     m_x[0]>=0.0 ? printf("|+%.10f\t", fabs(m_x[0])) : printf("|%.10f\t", m_x[0]);
     m_x[1]>=0.0 ? printf("|+%.10f\t", fabs(m_x[1])) : printf("|%.10f\t", m_x[1]);
     y>=0.0 ? printf("|%+10.6f\t", y) : printf("|%10.6f\t", y);
