@@ -18,14 +18,12 @@ void ProjectionGradient::calculate()
         calculateGradient();
 
         /* if norm of gradinet at current point is less than epsilon break. no minimize */
-        if (gradientNorm() < epsilon())
+        double gn = gradientNorm();
+        if (gn < epsilon())
             break;
 
         k++;
 
-        double gn = 0.0;
-        for (unsigned int i=0; i<m_g.size(); i++) gn = gn + m_g[i]*m_g[i];
-        gn = sqrt(gn);
         for (unsigned int i=0; i<m_g.size(); i++) m_g[i] = m_g[i] / gn;
 
         /* R1 minimization in direct of antigradient */
@@ -36,6 +34,7 @@ void ProjectionGradient::calculate()
         for (unsigned int i=0; i<m_x.size(); i++)
         {
             m_x[i] = m_x[i] - m_alpha * m_g[i];
+
             if (m_x[i] < a) { m_x[i] = a; }
             if (m_x[i] > b) { m_x[i] = b; }
         }
@@ -47,13 +46,13 @@ void ProjectionGradient::calculate()
 double ProjectionGradient::fx(double alpha)
 {
     unsigned int n = m_x.size();
-    std::vector<double> x2(n);
+    std::vector<double> x(n, 0.0);
     for (unsigned int i=0; i<n; i++)
     {
-        x2[i] = m_x[i] - alpha * m_g[i];
-        if ( x2[i] < a ) x2[i] = a;
-        if ( x2[i] > b ) x2[i] = b;
+        x[i] = m_x[i] - alpha * m_g[i];
+        if ( x[i] < a ) x[i] = a;
+        if ( x[i] > b ) x[i] = b;
     }
-    return m_fn->fx(x2);
+    return m_fn->fx(x);
 }
 
