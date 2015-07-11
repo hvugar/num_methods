@@ -2,14 +2,16 @@
 #include <function.h>
 #include <r1minimize.h>
 #include <gradient.h>
-#include <sdgradient.h>
-#include <cjtgradient.h>
-#include <prjgradient.h>
+#include <gradient_sd.h>
+#include <gradient_cjt.h>
+#include <gradient_prj.h>
 #include <methods.h>
 
 #include "cfunction1.h"
 #include "cfunction2.h"
 #include "samplecontrol.h"
+
+#define ROZENBROCK
 
 struct Rosenbrock : public RnFunction
 {
@@ -23,10 +25,9 @@ double Rosenbrock::fx(const std::vector<double>& x)
     return ((1 - x1) * (1 - x1)) + 1000 * (x2 - x1 * x1) * (x2 - x1 * x1);
 }
 
-#define first1
 int main()
 {
-#ifdef first
+#ifdef ROZENBROCK
     /* Function */
     Rosenbrock r;
 
@@ -36,7 +37,7 @@ int main()
     x.push_back(+1.2);
 
     /* Minimization */
-    SteepestDescentGradient g;
+    ConjugateGradient g;
     g.setFunction(&r);
     g.setEpsilon(0.000001);
     g.setGradientStep(0.000001);

@@ -1,8 +1,8 @@
 #ifndef SAMPLECONTROL_H
 #define SAMPLECONTROL_H
 
-#include <sdgradient.h>
-#include <cjtgradient.h>
+#include <gradient_sd.h>
+#include <gradient_cjt.h>
 
 class SampleControl : public SteepestDescentGradient
 {

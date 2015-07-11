@@ -13,9 +13,9 @@ void SampleControl::calculateGradient()
 {
     CFunction1* func = dynamic_cast<CFunction1*>(function());
 
-    func->gradientJ(grad_step, mg, mx);
+    func->gradientJ(grad_step, m_g, m_x);
 
-    printf("J[%d] = %.10f\n", k, func->fx(mx));
+    printf("J[%d] = %.10f\n", k, func->fx(m_x));
 }
 
 void SampleControl::print()
