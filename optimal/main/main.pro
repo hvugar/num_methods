@@ -12,11 +12,13 @@ SOURCES += main.cpp \
     samplecontrol.cpp \
     cfunction1.cpp \
     cfunction2.cpp \
-    utils.cpp
+    utils.cpp \
+    headcontrol.cpp
 
 HEADERS += \
     samplecontrol.h \
     cfunction1.h \
     cfunction2.h \
-    utils.h
+    utils.h \
+    headcontrol.h
 
