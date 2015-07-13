@@ -21,7 +21,6 @@ HeatControl::HeatControl() : gradient(NULL)
     for (int i=0; i<n; i++) x[i] = dx * i;
     for (int j=0; j<m; j++) t[j] = dt * j;
 
-    u.resize(m, std::vector<double>(n, 0.0));
     //p->u = (double **) malloc( sizeof(double*) * p->m );
     //p->f = (double **) malloc( sizeof(double*) * p->m );
     //p->p = (double **) malloc( sizeof(double*) * p->m );
