@@ -123,7 +123,7 @@ void init_process(Process1 *p)
     p->dt = 0.01;
 
     p->n = (int)(ceil((p->x1-p->x0)/p->dx)) + 1;
-    p->m = (int)(ceil((p->t1-p->x0)/p->dt)) + 1;
+    p->m = (int)(ceil((p->t1-p->t0)/p->dt)) + 1;
     p->alpha = 1.0;
 
     int i,j;
@@ -133,7 +133,7 @@ void init_process(Process1 *p)
 	p->u1 = (double **) malloc( sizeof(double*) * p->m );
 	
 	p->t = (double*) malloc( sizeof(double) * p->m );
-	for (j=0; j<p->m; j++) p->t[j] = p->dx * j;
+	for (j=0; j<p->m; j++) p->t[j] = p->dt * j;
 	
     for (j=0; j<p->m; j++)
     {
