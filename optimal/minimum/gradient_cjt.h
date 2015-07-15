@@ -3,6 +3,9 @@
 
 #include "gradient.h"
 
+/**
+ * @brief Method of Conjugate Gradient
+ */
 class MINIMUMSHARED_EXPORT ConjugateGradient : public Gradient, protected R1Function
 {
 public:
