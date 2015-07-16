@@ -17,7 +17,9 @@ SOURCES += \
     gradient_cjt.cpp \
     gradient_sd.cpp \
     gradient_prj.cpp \
-    penalty.cpp
+    penalty.cpp \
+    doublevector.cpp \
+    gridmethod.cpp
 
 HEADERS += global.h \
     methods.h \
@@ -27,4 +29,6 @@ HEADERS += global.h \
     gradient_cjt.h \
     gradient_sd.h \
     gradient_prj.h \
-    penalty.h
+    penalty.h \
+    doublevector.h \
+    gridmethod.h

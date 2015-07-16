@@ -6,7 +6,7 @@
 /**
  * @brief Method of Steepest Descent Gradient
  */
-class MINIMUMSHARED_EXPORT SteepestDescentGradient : public Gradient, protected R1Function
+class MINIMUMSHARED_EXPORT SteepestDescentGradient : public GradientMethod, protected R1Function
 {
 public:
     SteepestDescentGradient();

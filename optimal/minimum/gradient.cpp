@@ -1,6 +1,6 @@
 #include "gradient.h"
 
-Gradient::Gradient() : m_fn(NULL)
+GradientMethod::GradientMethod() : m_fn(NULL)
 {
     m_alpha = 0.0;
     m_epsilon = 0.0;
@@ -10,42 +10,42 @@ Gradient::Gradient() : m_fn(NULL)
     iterationCount = M = 0;
 }
 
-Gradient::~Gradient()
+GradientMethod::~GradientMethod()
 {
 }
 
-void Gradient::setFunction(RnFunction *f)
+void GradientMethod::setFunction(RnFunction *f)
 {
     m_fn = f;
 }
 
-RnFunction* Gradient::function() const
+RnFunction* GradientMethod::function() const
 {
     return m_fn;
 }
 
-void Gradient::setX(const std::vector<double> &x)
+void GradientMethod::setX(const DoubleVector &x)
 {
     m_x = x;
     m_g.resize(x.size(), 0.0);
 }
 
-const std::vector<double>& Gradient::x() const
+const DoubleVector& GradientMethod::x() const
 {
     return m_x;
 }
 
-double Gradient::epsilon() const
+double GradientMethod::epsilon() const
 {
     return m_epsilon;
 }
 
-void Gradient::setEpsilon(double epsilon)
+void GradientMethod::setEpsilon(double epsilon)
 {
     m_epsilon = epsilon;
 }
 
-void Gradient::calculateGradient()
+void GradientMethod::calculateGradient()
 {
     double h = grad_step;
     for (unsigned i=0; i<m_x.size(); i++)
@@ -60,23 +60,23 @@ void Gradient::calculateGradient()
     }
 }
 
-void Gradient::setR1MinimizeEpsilon(double step, double epsilon)
+void GradientMethod::setR1MinimizeEpsilon(double step, double epsilon)
 {
     min_step = step;
     min_epsilon = epsilon;
 }
 
-void Gradient::setGradientStep(double step)
+void GradientMethod::setGradientStep(double step)
 {
     grad_step = step;
 }
 
-int Gradient::count() const
+int GradientMethod::count() const
 {
     return iterationCount;
 }
 
-double Gradient::gradientNorm() const
+double GradientMethod::gradientNorm() const
 {
     double grad_norm = 0.0;
     for (unsigned int i=0; i<m_g.size(); i++)
@@ -87,7 +87,7 @@ double Gradient::gradientNorm() const
     return grad_norm;
 }
 
-double Gradient::distance() const
+double GradientMethod::distance() const
 {
     double dist = 0.0;
     for (unsigned int i=0; i<m_x.size(); i++)

@@ -32,12 +32,12 @@ int main()
     Rosenbrock r;
 
     /* initial point */
-    std::vector<double> x;
+    DoubleVector x;
     x.push_back(-1.0);
     x.push_back(+1.2);
 
     /* Minimization */
-    ConjugateGradient g;
+    SteepestDescentGradient g;
     g.setFunction(&r);
     g.setEpsilon(0.000001);
     g.setGradientStep(0.000001);

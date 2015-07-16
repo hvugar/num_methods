@@ -45,9 +45,8 @@ void ProjectionGradient::calculate()
 
 double ProjectionGradient::fx(double alpha)
 {
-    unsigned int n = m_x.size();
-    std::vector<double> x(n, 0.0);
-    for (unsigned int i=0; i<n; i++)
+    DoubleVector x(m_x.size(), 0.0);
+    for (unsigned int i=0; i<m_x.size(); i++)
     {
         x[i] = m_x[i] - alpha * m_g[i];
         if ( x[i] < a ) x[i] = a;

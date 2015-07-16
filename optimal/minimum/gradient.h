@@ -9,20 +9,19 @@
 
 #include "function.h"
 #include "r1minimize.h"
+#include "doublevector.h"
 
-using namespace std;
-
-class MINIMUMSHARED_EXPORT Gradient
+class MINIMUMSHARED_EXPORT GradientMethod
 {
 public:
-    Gradient();
-    virtual ~Gradient();
+    GradientMethod();
+    virtual ~GradientMethod();
 
     virtual RnFunction* function() const;
     virtual void setFunction(RnFunction* function);
 
-    virtual const std::vector<double>& x() const;
-    virtual void setX(const std::vector<double>& x);
+    virtual const DoubleVector& x() const;
+    virtual void setX(const DoubleVector& x);
 
     virtual void calculate() = 0;
 
@@ -40,8 +39,8 @@ protected:
     virtual double distance() const;
 
     RnFunction *m_fn;
-    std::vector<double> m_x;
-    std::vector<double> m_g;
+    DoubleVector m_x;
+    DoubleVector m_g;
     double m_alpha;
     double m_epsilon;
     double grad_step;

@@ -4,37 +4,48 @@
 #include "gradient.h"
 #include "gradient_sd.h"
 #include "gradient_cjt.h"
+#include "gridmethod.h"
 
 #include <vector>
 
-typedef std::vector<double> DoubleVector;
+class HeatControl;
 
-class HeatControl : public SteepestDescentGradient
+class HeatGradientMethod : public SteepestDescentGradient
+{
+public:
+    HeatControl* heatControl;
+    virtual void calculateGradient();
+};
+
+class HeatControl : public RnFunction
 {
 public:
     HeatControl();
     ~HeatControl();
 
-    double _y(double x, double t);
-    double _f(double x, double t);
-    double _u(double x, double t);
+    double u(double x, double t);
+    double f(double x, double t);
 
-    double _fi(double x);
-    double _m1(double t);
-    double _m2(double t);
+    double U(double x);
+    double fxt1(double x, double t);
 
-    double JSum();
+    double fi(double x);
+    double m1(double t);
+    double m2(double t);
 
-protected:
-    virtual void calculateGradient();
+    void calculate_u();
+    void calculate();
+    virtual double fx(const std::vector<double>& x);
 
 private:
-    Gradient* gradient;
+    HeatGradientMethod gradient;
 
-    std::vector<double> x;
-    std::vector<double> t;
-    std::vector<DoubleVector> u;
-    //std::vector<DoubleVector> f;
+    DoubleVector mx;
+    DoubleVector mt;
+
+    DoubleVector mu;
+    DoubleVector mg;
+    DoubleVector mf;
 
     double x0; // length start
     double x1; // length end
@@ -44,8 +55,10 @@ private:
     double dx; // length grid delta
     double dt; // time grid delta
 
-    double n; // length grid size
-    double m; // time grid size
+    double n;  // length grid size
+    double m;  // time grid size
+
+    friend class HeatGradientMethod;
 };
 
 #endif // HEATCONTROL_H

@@ -1,7 +1,6 @@
 #ifndef PRJGRADIENT_H
 #define PRJGRADIENT_H
 
-#include "gradient.h"
 #include "gradient_sd.h"
 
 class MINIMUMSHARED_EXPORT ProjectionGradient : public SteepestDescentGradient

@@ -106,7 +106,7 @@ double _JSum(Process1 *p)
     {
         for (i=0; i<n; i++)
         {
-            F = (p->f[j][i]-(2*p->dt*j-2.0))*(p->f[j][i]-(2*p->dt*j-2.0));
+            F += (p->f[j][i]-(2*p->dt*j-2.0))*(p->f[j][i]-(2*p->dt*j-2.0));
         }
     }
     sum = sum + F;

@@ -6,13 +6,13 @@
 /**
  * @brief Method of Conjugate Gradient
  */
-class MINIMUMSHARED_EXPORT ConjugateGradient : public Gradient, protected R1Function
+class MINIMUMSHARED_EXPORT ConjugateGradient : public GradientMethod, protected R1Function
 {
 public:
     ConjugateGradient();
     virtual ~ConjugateGradient();
 
-    virtual void setX(const std::vector<double>& x);
+    virtual void setX(const DoubleVector& x);
 
     virtual void calculate();
 
@@ -23,7 +23,7 @@ protected:
     virtual void print();
 
 private:
-    std::vector<double> s;
+    DoubleVector s;
 };
 
 #endif // CONJUGATEGRADIENT_H
