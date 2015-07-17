@@ -32,3 +32,5 @@ HEADERS += global.h \
     penalty.h \
     doublevector.h \
     gridmethod.h
+
+DISTFILES += minimum.pri

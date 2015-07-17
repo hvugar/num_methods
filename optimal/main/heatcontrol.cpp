@@ -90,21 +90,21 @@ double HeatControl::m2(double t)
 void HeatControl::calculate_u()
 {
     GridMethod gm;
-    gm.alpha = 1.0;
-    gm.dt = dt;
-    gm.dx = dx;
-    gm.t0 = t0;
-    gm.t1 = t1;
-    gm.x0 = x0;
-    gm.x1 = x1;
+//    gm.alpha = 1.0;
+//    gm.dt = dt;
+//    gm.dx = dx;
+//    gm.t0 = t0;
+//    gm.t1 = t1;
+//    gm.x0 = x0;
+//    gm.x1 = x1;
 
-    gm.m = m;
-    gm.n = n;
+//    gm.m = m;
+//    gm.n = n;
 
-    gm.setF(f);
-    gm.m1 = m1;
-    gm.m2 = m2;
-    gm.fi = fi;
+//    gm.setF(f);
+//    gm.m1 = m1;
+//    gm.m2 = m2;
+//    gm.fi = fi;
 
     gm.implicitDifferenceScheme();
 

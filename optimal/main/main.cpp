@@ -11,53 +11,22 @@
 #include "cfunction2.h"
 #include "samplecontrol.h"
 
-#define ROZENBROCK
+#include "rosenbrock.h"
 
-struct Rosenbrock : public RnFunction
+struct Function1 : public RnFunction
 {
-    virtual double fx(const std::vector<double>& x);
+    virtual double fx(const std::vector<double> &x);
 };
 
-double Rosenbrock::fx(const std::vector<double>& x)
+double Function1::fx(const std::vector<double> &x)
 {
-    double x1 = x[0];
-    double x2 = x[1];
-    return ((1 - x1) * (1 - x1)) + 1000 * (x2 - x1 * x1) * (x2 - x1 * x1);
+    return x[0]*x[0] + 2.0*x[1]*x[1]*x[1]*x[1] + x[2]*x[2];
 }
 
 int main()
 {
-#ifdef ROZENBROCK
-    /* Function */
-    Rosenbrock r;
-
-    /* initial point */
-    DoubleVector x;
-    x.push_back(-1.0);
-    x.push_back(+1.2);
-
-    /* Minimization */
-    SteepestDescentGradient g;
-    g.setFunction(&r);
-    g.setEpsilon(0.000001);
-    g.setGradientStep(0.000001);
-    g.setR1MinimizeEpsilon(0.1, 0.000001);
-    g.setX(x);
-    g.calculate();
-
-#else
-    CFunction1* f = new CFunction1(0.0, 1.0, 0.01);
-    std::vector<double> u(f->n);
-    for (int i=0; i<f->n; i++) u[i] = 0.00001;//3*f->t[i];//*f->t[i];
-
-    SampleControl sc;
-    sc.setFunction(f);
-    sc.setX(u);
-    sc.setEpsilon(0.01);
-    sc.setGradientStep(0.000001);
-    sc.setR1MinimizeEpsilon(0.01, 0.000001);
-    sc.calculate();
-#endif
+    Rosenbrock::Main();
+//    SampleControl::Main();
     return 0;
 }
 

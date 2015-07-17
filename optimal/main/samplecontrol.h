@@ -12,6 +12,8 @@ public:
 
     virtual void calculateGradient();
     virtual void print();
+
+    static void Main();
 };
 
 #endif // SAMPLECONTROL_H

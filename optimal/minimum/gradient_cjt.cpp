@@ -26,7 +26,11 @@ void ConjugateGradient::calculate()
         calculateGradient();
 
         double gradNorm = m_g.L2Norm();
-        if (gradNorm < epsilon()) break;
+        if (gradNorm < epsilon())
+        {
+            puts("Optimisation ends, because L2 norm of gradient is less than epsilon...");
+            break;
+        }
 
         iterationCount++;
 
@@ -55,7 +59,7 @@ void ConjugateGradient::calculate()
         //sn = sqrt(sn);
         //for (unsigned int i=0; i<s.size(); i++) s[i] = s[i] / sn;
 
-        s.L2Normalize();
+        //s.L2Normalize();
 
         m_alpha = minimize();
 
@@ -66,7 +70,7 @@ void ConjugateGradient::calculate()
             m_x[i] = m_x[i] + m_alpha * s[i];
         }
 
-        if ( n == m_x.size() ) { n = 0; } else { n++; }
+        if ( n == (m_x.size()-1) ) { n = 0; } else { n++; }
 
         /* calculating distance previous and new point */
     } while (distance() > epsilon());

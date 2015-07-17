@@ -2,20 +2,21 @@
 #define R1FUNCTION_H
 
 #include <vector>
+#include "global.h"
 
 using namespace std;
 
-struct R1Function
+struct MINIMUMSHARED_EXPORT R1Function
 {
     virtual double fx(double x) = 0;
 };
 
-struct R2Function
+struct MINIMUMSHARED_EXPORT R2Function
 {
     virtual double fx(double x, double y) = 0;
 };
 
-struct RnFunction
+struct MINIMUMSHARED_EXPORT RnFunction
 {
     virtual double fx(const std::vector<double>& x) = 0;
 };
