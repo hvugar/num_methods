@@ -1,11 +1,11 @@
 #include "methods.h"
 
-void gradient(RnFunction f, double *x, int n, double dx, double *gr)
+void gradient(RnFunction f, double *x, int n, double dx, DoubleVector& gr)
 {
     gradient2(f, x, n, dx, gr);
 }
 
-void gradient1(RnFunction f, double *x, int n, double dx, double *gr)
+void gradient1(RnFunction f, double *x, int n, double dx, DoubleVector& gr)
 {
     double f0 = f(x, n);
     int i;
@@ -18,7 +18,7 @@ void gradient1(RnFunction f, double *x, int n, double dx, double *gr)
     }
 }
 
-void gradient2(RnFunction f, double *x, int n, double dx, double *gr)
+void gradient2(RnFunction f, double *x, int n, double dx, DoubleVector& gr)
 {
     int i = 0;
     for (i=0; i<n; i++)

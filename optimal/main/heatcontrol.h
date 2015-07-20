@@ -1,12 +1,11 @@
 #ifndef HEATCONTROL_H
 #define HEATCONTROL_H
 
+#include "control.h"
 #include "gradient.h"
 #include "gradient_sd.h"
 #include "gradient_cjt.h"
 #include "gridmethod.h"
-
-#include <vector>
 
 class HeatControl;
 
@@ -17,27 +16,29 @@ public:
     virtual void calculateGradient();
 };
 
-class HeatControl : public RnFunction
+class HeatControl : public Control, public RnFunction, public SteepestDescentGradient
 {
 public:
     HeatControl();
     ~HeatControl();
 
     double u(double x, double t);
-    double f(double x, double t);
 
     double U(double x);
-    double fxt1(double x, double t);
-
-    double fi(double x);
+    double F(double x, double t);
     double m1(double t);
     double m2(double t);
+    double fi(double x);
+
+    double fxt1(double x, double t);
+
 
     void calculate_u();
-    void calculate();
-    virtual double fx(const std::vector<double>& x);
 
-private:
+    void calculate();
+    virtual double fx(const DoubleVector& x);
+
+public:
     HeatGradientMethod gradient;
 
     DoubleVector mx;

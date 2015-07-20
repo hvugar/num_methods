@@ -54,7 +54,7 @@ void ConjugateGradient::calculate()
             for (unsigned int i=0; i<m_g.size(); i++) s[i] = -m_g[i] + s[i] * w;
         }
 
-        //s.L2Normalize();
+        s.L2Normalize();
 
         m_alpha = minimize();
 

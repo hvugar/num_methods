@@ -50,31 +50,19 @@ HeatControl::~HeatControl()
     mg.clear();
 }
 
+double HeatControl::u(double x, double t)
+{
+    return x*x + t*t + 2.0*x;
+}
+
 double HeatControl::U(double x)
 {
     return x*x + 2.0*x + 1.0;
 }
 
-double HeatControl::f(double x, double t)
+double HeatControl::F(double x, double t)
 {
    return 2.0*t - 2.0;
-}
-
-double HeatControl::fxt1(double x, double t)
-{
-    unsigned int j = (unsigned int)(ceil(t/dt));
-    unsigned int i = (unsigned int)(ceil(x/dx));
-    return mf[j*m+i];
-}
-
-double HeatControl::u(double x, double t)
-{
-    return 0.0;
-}
-
-double HeatControl::fi(double x)
-{
-    return x*x + 2.0*x;
 }
 
 double HeatControl::m1(double t)
@@ -87,26 +75,99 @@ double HeatControl::m2(double t)
     return t*t + 3.0;
 }
 
+double HeatControl::fi(double x)
+{
+    return x*x + 2.0*x;
+}
+
+void HeatControl::calculate()
+{
+
+}
+
+double HeatControl::fxt1(double x, double t)
+{
+    unsigned int j = (unsigned int)(ceil(t/dt));
+    unsigned int i = (unsigned int)(ceil(x/dx));
+    return mf[j*m+i];
+}
+
+
 void HeatControl::calculate_u()
 {
     GridMethod gm;
-//    gm.alpha = 1.0;
-//    gm.dt = dt;
-//    gm.dx = dx;
-//    gm.t0 = t0;
-//    gm.t1 = t1;
-//    gm.x0 = x0;
-//    gm.x1 = x1;
+    gm.setLengthInterval(x0, x1);
+    gm.setTimeInterval(t0, t1);
+    gm.setLengthTimeStepCount(n, m);
 
-//    gm.m = m;
-//    gm.n = n;
+    struct FXT : public R2Function
+    {
+        HeatControl* c;
+        virtual double fx(double x, double t) { return c->fxt1(x, t); }
+    };
 
-//    gm.setF(f);
+    struct FI : public R1Function
+    {
+        HeatControl* c;
+        virtual double fx(double x) { return c->fi(x); }
+    };
+
+    struct M1 : public R1Function
+    {
+        HeatControl* c;
+        virtual double fx(double t) { return c->m1(t); }
+    };
+
+    struct M2 : public R1Function
+    {
+        HeatControl* c;
+        virtual double fx(double t) { return c->m2(t); }
+    };
+
+    struct F1 : public R2Function
+    {
+        HeatControl* c;
+        double dx;
+        double dt;
+        unsigned int m;
+        DoubleVector* f;
+        virtual double fx(double x, double t)
+        {
+            int j = (int)(ceil(t/dt));
+            int i = (int)(ceil(x/dx));
+            return (*f)[j*m+i];
+        }
+    };
+
+    FXT fxt;
+    fxt.c = this;
+    gm.setF(&fxt);
+
+    FI fi;
+    fi.c = this;
+    gm.setFi(&fi);
+
+    M1 m1;
+    m1.c = this;
+    gm.setM1(&m1);
+
+    M2 m2;
+    m2.c = this;
+    gm.setM2(&m2);
+
+//    F1 f1;
+//    f1.c = this;
+//    f1.f = &mf;
+//    f1.dx = dx;
+//    f1.dt = dt;
+//    f1.m = m;
+//    gm.setF(&f1);
+
+    gm.implicitDifferenceScheme();
+
 //    gm.m1 = m1;
 //    gm.m2 = m2;
 //    gm.fi = fi;
-
-    gm.implicitDifferenceScheme();
 
 //    int j;
 //    implicit_difference_scheme1(fxt1, fi, m1, m2, p->alpha, p->dx, p->dt, p->x0, p->x1, p->t0, p->t1, &g);
@@ -118,7 +179,7 @@ void HeatControl::calculate_u()
 //    free(g.u);
 }
 
-double HeatControl::fx( const std::vector<double>& f )
+double HeatControl::fx( const DoubleVector& f )
 {
     double sum = 0.0;
     for (int i=0; i<(n-1); i++)

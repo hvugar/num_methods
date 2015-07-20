@@ -1,11 +1,11 @@
 #include "methods.h"
 
-void gradient(RnFunction *f, std::vector<double> x, int n, double dx, double *gradients)
+void gradient(RnFunction *f, DoubleVector& x, int n, double dx, DoubleVector& gradients)
 {
     gradient2(f, x, n, dx, gradients);
 }
 
-void gradient1(RnFunction *f, std::vector<double> x, int n, double dx, double *gradients)
+void gradient1(RnFunction *f, DoubleVector& x, int n, double dx, DoubleVector& gradients)
 {
     double f0 = f->fx(x);
     int i;
@@ -19,7 +19,7 @@ void gradient1(RnFunction *f, std::vector<double> x, int n, double dx, double *g
     }
 }
 
-void gradient2(RnFunction *f, std::vector<double> x, int n, double dx, double *gradients)
+void gradient2(RnFunction *f, DoubleVector& x, int n, double dx, DoubleVector& gradients)
 {
     int i = 0;
     for (i=0; i<n; i++)

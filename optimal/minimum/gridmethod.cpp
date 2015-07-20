@@ -3,25 +3,70 @@
 
 GridMethod::GridMethod()
 {
+    this->alpha = 1.0;
+}
+
+void GridMethod::setLengthInterval(double x0, double x1)
+{
+    this->x0 = x0;
+    this->x1 = x1;
+}
+
+void GridMethod::setTimeInterval(double t0, double t1)
+{
+    this->t0 = t0;
+    this->t1 = t1;
+}
+
+void GridMethod::setLengthTimeStep(double dx, double dt)
+{
+    this->dx = dx;
+    this->dt = dt;
+    this->n = (unsigned int)(ceil(x1-x0)/dx) + 1;
+    this->m = (unsigned int)(ceil(t1-t0)/dt) + 1;
+}
+
+void GridMethod::setLengthTimeStepCount(unsigned int n, unsigned int m)
+{
+    this->n = n;
+    this->m = m;
+    this->dx = (x1 - x0) / (n - 1);
+    this->dt = (t1 - t0) / (m - 1);
+}
+
+void GridMethod::setF(R2Function* f)
+{
+    this->f = f;
+}
+
+void GridMethod::setM1(R1Function* m1)
+{
+    this->m1 = m1;
+}
+
+void GridMethod::setM2(R1Function* m2)
+{
+    this->m2 = m2;
+}
+
+void GridMethod::setFi(R1Function* fi)
+{
+    this->fi = fi;
 }
 
 void GridMethod::implicitDifferenceScheme()
 {
-    double x = x1 - x0;
-    double t = t1 - t0;
-
-    unsigned int n = (unsigned int)(ceil(x/dx)) + 1;
-    unsigned int m = (unsigned int)(ceil(t/dt)) + 1;
     unsigned int k = n - 2;
 
     // initilizing
 
     for (unsigned int i=0; i<m; i++) u.push_back(DoubleVector(m));
 
+
     for (unsigned int j=0; j<m; j++)
     {
-        u[j][0]   = m1->fx(dt * j );
-        u[j][n-1] = m2->fx( dt * j );
+        u[j][0]   = m1->fx(dt * j);
+        u[j][n-1] = m2->fx(dt * j);
     }
 
     for (unsigned int i=0; i<n; i++)
@@ -34,7 +79,9 @@ void GridMethod::implicitDifferenceScheme()
     DoubleVector b(k);
     std::vector<DoubleVector> a;
     for (unsigned int i=0; i<k; i++)
+    {
         a.push_back(DoubleVector(k));
+    }
 
     ////////////////////////////////////////////////
     double c1 = -alpha * (dt / (dx*dx));
@@ -76,6 +123,18 @@ void GridMethod::implicitDifferenceScheme()
     }
     a.clear();
     b.clear();
+
+    for (int i=0; i<m; i++)
+    {
+        if (i%100==0 || i==999) {
+        for (int j=0; j<n; j++)
+        {
+            if (j%100==0 || j==999) printf("%f ", u[i][j]);
+        }
+        puts("");
+        }
+    }
+    printf("%d %d\n", m, n);
 }
 
 void GridMethod::tomas_algorithm(std::vector<DoubleVector> &a, const DoubleVector& b, DoubleVector& x)
@@ -85,8 +144,7 @@ void GridMethod::tomas_algorithm(std::vector<DoubleVector> &a, const DoubleVecto
     DoubleVector p(size);
     DoubleVector q(size);
 
-    unsigned int i=0;
-    for (i=0; i<size; i++)
+    for (int i=0; i<size; i++)
     {
         if (i==0)
         {
@@ -105,7 +163,7 @@ void GridMethod::tomas_algorithm(std::vector<DoubleVector> &a, const DoubleVecto
         }
     }
 
-    for (i=size-1; i>=0; i--)
+    for (int i=size-1; i>=0; i--)
     {
         if (i==size-1)
             x[i] = q[i];
@@ -113,12 +171,6 @@ void GridMethod::tomas_algorithm(std::vector<DoubleVector> &a, const DoubleVecto
             x[i] = p[i]*x[i+1] + q[i];
     }
 
-
     p.clear();
     q.clear();
-}
-
-void GridMethod::setF(R2Function *f)
-{
-    this->f = f;
 }

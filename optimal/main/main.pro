@@ -15,7 +15,8 @@ SOURCES += main.cpp \
     cfunction2.cpp \
     utils.cpp \
     heatcontrol.cpp \
-    rosenbrock.cpp
+    rosenbrock.cpp \
+    control.cpp
 
 HEADERS += \
     samplecontrol.h \
@@ -23,5 +24,6 @@ HEADERS += \
     cfunction2.h \
     utils.h \
     heatcontrol.h \
-    rosenbrock.h
+    rosenbrock.h \
+    control.h
 

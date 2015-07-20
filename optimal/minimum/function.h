@@ -1,7 +1,7 @@
 #ifndef R1FUNCTION_H
 #define R1FUNCTION_H
 
-#include <vector>
+#include "doublevector.h"
 #include "global.h"
 
 using namespace std;
@@ -18,7 +18,7 @@ struct MINIMUMSHARED_EXPORT R2Function
 
 struct MINIMUMSHARED_EXPORT RnFunction
 {
-    virtual double fx(const std::vector<double>& x) = 0;
+    virtual double fx(const DoubleVector& x) = 0;
 };
 
 typedef std::vector<RnFunction> RnFunctionList;

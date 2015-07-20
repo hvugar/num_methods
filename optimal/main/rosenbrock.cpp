@@ -6,7 +6,7 @@ double Rosenbrock::fx(const std::vector<double>& x)
 {
     double x1 = x[0];
     double x2 = x[1];
-    return ((1 - x1) * (1 - x1)) + 1000 * (x2 - x1 * x1) * (x2 - x1 * x1);
+    return ((1 - x1) * (1 - x1)) + 100 * (x2 - x1 * x1) * (x2 - x1 * x1);
 }
 
 void Rosenbrock::Main()
@@ -16,8 +16,8 @@ void Rosenbrock::Main()
 
     /* initial point */
     DoubleVector x;
-    x.push_back(-1.0);
-    x.push_back(+1.2);
+    x.push_back(-1.2);
+    x.push_back(+1.0);
 
     /* Minimization */
     ConjugateGradient g;

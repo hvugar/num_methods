@@ -174,7 +174,7 @@ void _calculate()
 
 		_printM(p.f, p.m, p.n);
 		puts("---");
-		_printM(p.u, p.m, p.n);
+		//_printM(p.u, p.m, p.n);
 		
 		for (j=0; j<p.m; j++)
 		{
@@ -183,9 +183,8 @@ void _calculate()
 				p.u1[j][i] = u(p.dx*i, p.dt*j);				
 			}
 		}		
-		puts("---");
-		
-		_printM(p.u1, p.m, p.n);
+		//puts("---");
+		//_printM(p.u1, p.m, p.n);
 
         J1 = _JSum(&p);
         printf("J1 = %.18f\n", J1);
