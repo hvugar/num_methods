@@ -1,12 +1,13 @@
 #include "optimal2.h"
 
-double y(double x) { return x*x + 3.0; }
-double u(double x, double t) { return x*x + t*t + 2.0*t; }
-double f(double x, double t) { return 2.0*t; }
+double u(double x, double t) { return x*x + t*t + 2.0*x; }
 
-double fi(double x) { return x*x ; }
-double m1(double t) { return t*t + 2.0*t; }
-double m2(double t) { return t*t + 2.0*t + 1.0; }
+double y(double x) { return x*x + 2.0*x + 1.0; }
+double F(double x, double t) { return 2.0*t - 2.0; }
+
+double fi(double x) { return x*x + 2.0*x ; }
+double m1(double t) { return t*t; }
+double m2(double t) { return t*t + 3.0; }
 
 //double p_fi(double x) { return -2.0*(u(x,1.0) - y(x)); }
 double p_m1(double t) { return 0.0; }
@@ -62,7 +63,9 @@ void calculate_p(Process2 *p)
 	int size = p->m * p->n;
 	for (j=0; j<size; j++)
     {
-        p->p[j] = p->p[j] + 2.0 * (p->f[j] - f(p->dx*(j%p->n), p->dt*(j/p->m)));
+		double x = p->dx*(j%p->n);
+		double t = p->dt*(j/p->m);
+        p->p[j] = p->p[j] + 2.0 * (p->f[j] - F(x, t));
     }
 }
 
@@ -95,13 +98,17 @@ double _JSum(Process2 *p)
         double f0 = fj*fj + fi*fi;
         sum = sum + 0.5 * f0 * (p->dx);
     }
+	
 
-    double F = 0.0;
+    double f_sum = 0.0;
     for (j=0; j<m*n; j++)
     {
-        F += (p->f[j]-(2*p->dt*(j/m)))*(p->f[j]-(2*p->dt*(j/m)));
+		double x = p->dx*(j%p->n);
+		double t = p->dt*(j/p->m) ;
+		
+        f_sum += (p->f[j]-F(x,t))*(p->f[j]-F(x,t));
     }
-    sum = sum + F;
+    sum = sum + f_sum;
     return sum;
 }
 
@@ -227,10 +234,4 @@ void _calculate()
     } while (1);
 
     _printV(p.f, p.m, p.n);
-	
-	int i;
-	double s = 0.0;
-	for (i=0; i<p.n*p.m; i++)
-		s += p.f[i]*0.001;
-	printf("%f\n", sqrt(s));
 }

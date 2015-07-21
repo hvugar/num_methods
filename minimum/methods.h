@@ -15,19 +15,6 @@ typedef double (*R2Function)(double x, double y);
 typedef double (*RnFunction)(double*, int);
 typedef double (*RmFunction)(double x, double *y, int n);
 typedef void   (*Printer)(RnFunction f, double *x, int n, ...);
-typedef void   (*GetInfo)(RnFunction f, double *x, int n, int iteration, double *grad, double *s, R1Function min, double alpha, double a, double b);
-
-typedef struct {
-	R1Function func;
-	double x;
-} FunctionR1;
-
-typedef struct {
-	RnFunction func;
-	double *x;
-	int n;
-} FunctionRn;
-
 
 /**
  * @brief Градиент функции
@@ -243,23 +230,78 @@ void penalty_method1(RnFunction f, double *x, int n, RnFunction* h, int m, RnFun
  */
 void penalty_method2(RnFunction f, double *x, int n, RnFunction* h, int m, RnFunction* g, int p, double r1, double r2, double epsilon);
 
+/**
+ * @brief
+ * @param f       Целевая функция
+ */
 double search_method_dck(R1Function f, double x0, double dx, double *a, double *b);
 
+/**
+ * @brief
+ * @param f       Целевая функция
+ */
 double search_method_pauella(R1Function f, double x0, double dx, double epsilon, double *a, double *b);
 
+/**
+ * @brief
+ * @param f       Целевая функция
+ */
 void search_interval_svenn(R1Function f, double x0, double dx, double *a, double *b);
 
+/**
+ * @brief
+ * @param f       Целевая функция
+ */
 double halph_interval_method(R1Function f, double *a, double *b, double epsilon);
 
+/**
+ * @brief
+ * @param f       Целевая функция
+ */
 double newton_raphson(R1Function f, double x0, double epsilon);
 
+/**
+ * @brief
+ * @param f       Целевая функция
+ */
 double RungaKutta(R2Function y, double y0, double x0, double x, double h);
 
+/**
+ * @brief
+ * @param f       Целевая функция
+ */
 void RungaKuttaSystem(RmFunction *f, double x0, const double *y0, double x, double *y, const int n, double h);
 
+/**
+ * @brief
+ * @param f       Целевая функция
+ */
 double EulerMethod(R2Function f, double x0, double y0, double x, double h);
 
+/**
+ * @brief
+ * @param f       Целевая функция
+ */
 void EulerMethodSystem(RmFunction *f, double x0, const double *y0, double x, double *y, int n, double h);
+
+/**
+ * @brief
+ * @param f       Целевая функция
+ */
+double integeral_trapezoidal_rule1(double *fx, double *x, int n);
+
+/**
+ * @brief
+ * @param f       Целевая функция
+ */
+double integeral_trapezoidal_rule2(double *fx, double dx, int n);
+
+
+/**
+ * @brief
+ * @param f       Целевая функция
+ */
+double integeral_trapezoidal_rule3(R1Function f, double *x, int n);
 
 #ifdef __cplusplus
 }

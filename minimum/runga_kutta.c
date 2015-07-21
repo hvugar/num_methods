@@ -111,26 +111,38 @@ void EulerMethodSystem(RmFunction *f, double x0, const double *y0, double x, dou
     }
 }
 
-double integeral_trapezoidal_rule1(double *y, double *x, int n)
+double integeral_trapezoidal_rule1(double *fx, double *x, int n)
 {
     int i=0;
     double sum = 0.0;
 
     for (i=0; i<(n-1); i++)
     {
-        sum += (( y[i+1] + y[i] ) * ( x[i+1] - x[i] )) / 2.0;
+        sum += ((fx[i+1] + fx[i]) * (x[i+1] - x[i])) / 2.0;
     }
     return sum;
 }
 
-double integeral_trapezoidal_rule2(R1Function f, double *x, int n)
+double integeral_trapezoidal_rule2(double *fx, double dx, int n)
 {
     int i=0;
     double sum = 0.0;
 
     for (i=0; i<(n-1); i++)
     {
-        sum += (( f(x[i+1]) + f(x[i]) ) * ( x[i+1] - x[i] )) / 2.0;
+        sum += ((fx[i+1] + fx[i]) * dx) / 2.0;
+    }
+    return sum;	
+}
+
+double integeral_trapezoidal_rule3(R1Function f, double *x, int n)
+{
+    int i=0;
+    double sum = 0.0;
+
+    for (i=0; i<(n-1); i++)
+    {
+        sum += ((f(x[i+1]) + f(x[i])) * (x[i+1] - x[i])) / 2.0;
     }
     return sum;
 }
