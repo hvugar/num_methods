@@ -204,3 +204,22 @@ void _printM(double **x, int m, int n)
         }
     }
 }
+
+void _printV(double *x, int m, int n)
+{
+    int i,j;
+    for (j=0; j<m; j++)
+    {
+        if (j%(m/10)==0)
+        {
+			printf("%6d|", j);
+            for (i=0; i<n; i++)
+            {
+                if (i%(n/10)==0)
+                    printf("%12.6f", x[j*m+i]);
+            }
+            puts("");
+        }
+    }
+}
+

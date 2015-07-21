@@ -21,5 +21,6 @@ void _print1(char *s, double *a, int n);
 void _seperator();
 
 void _printM(double **x, int m, int n);
+void _printV(double *x, int m, int n);
 
 #endif //_PRINT_H_

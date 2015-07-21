@@ -42,8 +42,8 @@ runga_kutta.o: runga_kutta.c
 method_grid.o: method_grid.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o method_grid.o method_grid.c
 
-optimal.o: optimal1.c
-	$(CC) -c $(CFLAGS) $(INCLUDES) -o optimal.o optimal1.c
+optimal.o: optimal2.c
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o optimal.o optimal2.c
 	
 sample_penalty.o: sample_penalty.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o sample_penalty.o sample_penalty.c
