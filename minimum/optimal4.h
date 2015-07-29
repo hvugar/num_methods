@@ -8,24 +8,27 @@ typedef struct
 	double dx;
 	double dt;
 	
-	unsigned int n;
+	unsigned int N;
 
-	double *x;
 	double *t;
-	
-	double x0;
-	double x1;
+	double *x;
+	double *psi;
 	
 	double t0;
 	double t1;
+
+	double x0;
+	double x1;
 	
-	double *f;
+	double psi0;
+	double psi1;
 	
-	double T1;
 	
+	double T[2];
+	double p[2];
+	double grad[2];
+
 	double epsilon;
-	
-	double *p;
 } Process4;
 
 #endif // _OPTIMAL4_H_
