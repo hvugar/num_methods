@@ -19,7 +19,7 @@ public:
 protected:
     virtual double minimize();
     virtual double distance() const;
-    virtual double fx(double alpha);
+    virtual double fx(double alpha) const;
     virtual void print();
 
 private:

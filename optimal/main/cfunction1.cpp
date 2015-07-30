@@ -26,7 +26,7 @@ CFunction1::CFunction1(double t0, double t1, double h) : RnFunction()
 CFunction1::~CFunction1()
 {}
 
-double CFunction1::fx(const std::vector<double>& u)
+double CFunction1::fx(const DoubleVector& u) const
 {
     double sum = 0.0;
     int i=0;
@@ -46,7 +46,11 @@ double CFunction1::fx(const std::vector<double>& u)
     return sum;
 }
 
-double CFunction1::fx0(double t, std::vector<double> x, double u)
+void CFunction1::gradient(DoubleVector &g) const
+{
+}
+
+double CFunction1::fx0(double t, std::vector<double> x, double u) const
 {
     double x1 = x[0];
     double x2 = x[1];
@@ -56,13 +60,13 @@ double CFunction1::fx0(double t, std::vector<double> x, double u)
     return a1*a1 + a2*a2 + a3*a3;
 }
 
-double CFunction1::fx1(double t, std::vector<double> x, double u)
+double CFunction1::fx1(double t, std::vector<double> x, double u) const
 {
     double x2 = x[1];
     return 3.0*x2*x2;
 }
 
-double CFunction1::fx2(double t, std::vector<double> x, double u)
+double CFunction1::fx2(double t, std::vector<double> x, double u) const
 {
     double x1 = x[0];
     double x2 = x[1];

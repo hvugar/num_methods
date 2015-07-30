@@ -96,7 +96,7 @@ double ConjugateGradient::distance() const
     return dist;
 }
 
-double ConjugateGradient::fx(double alpha)
+double ConjugateGradient::fx(double alpha) const
 {
     DoubleVector x(m_x.size());
     for (unsigned int i=0; i < m_x.size(); i++)

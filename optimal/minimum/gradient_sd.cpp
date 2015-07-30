@@ -1,8 +1,7 @@
 #include "gradient_sd.h"
 
 SteepestDescentGradient::SteepestDescentGradient() : GradientMethod()
-{
-}
+{}
 
 SteepestDescentGradient::~SteepestDescentGradient()
 {}
@@ -52,7 +51,7 @@ void SteepestDescentGradient::calculate()
     } while (distance() > epsilon());
 }
 
-double SteepestDescentGradient::fx(double alpha)
+double SteepestDescentGradient::fx(double alpha) const
 {
     DoubleVector x(m_x.size());
     for (unsigned int i=0; i < m_x.size(); i++)

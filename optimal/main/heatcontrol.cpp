@@ -38,7 +38,7 @@ HeatControl::HeatControl()
 //    for (int j=0; j<m; j++) mf.push_back(DoubleVector(n, 0.0));
 //    for (int j=0; j<m; j++) mg.push_back(DoubleVector(n, 0.0));
 
-    gradient.heatControl = this;
+    gradient1.heatControl = this;
 }
 
 HeatControl::~HeatControl()
@@ -55,7 +55,7 @@ double HeatControl::u(double x, double t)
     return x*x + t*t + 2.0*x;
 }
 
-double HeatControl::U(double x)
+double HeatControl::U(double x) const
 {
     return x*x + 2.0*x + 1.0;
 }
@@ -92,7 +92,6 @@ double HeatControl::fxt1(double x, double t)
     return mf[j*m+i];
 }
 
-
 void HeatControl::calculate_u()
 {
     GridMethod gm;
@@ -103,25 +102,25 @@ void HeatControl::calculate_u()
     struct FXT : public R2Function
     {
         HeatControl* c;
-        virtual double fx(double x, double t) { return c->fxt1(x, t); }
+        virtual double fx(double x, double t) const { return c->fxt1(x, t); }
     };
 
     struct FI : public R1Function
     {
         HeatControl* c;
-        virtual double fx(double x) { return c->fi(x); }
+        virtual double fx(double x) const { return c->fi(x); }
     };
 
     struct M1 : public R1Function
     {
         HeatControl* c;
-        virtual double fx(double t) { return c->m1(t); }
+        virtual double fx(double t) const { return c->m1(t); }
     };
 
     struct M2 : public R1Function
     {
         HeatControl* c;
-        virtual double fx(double t) { return c->m2(t); }
+        virtual double fx(double t) const { return c->m2(t); }
     };
 
     struct F1 : public R2Function
@@ -131,7 +130,7 @@ void HeatControl::calculate_u()
         double dt;
         unsigned int m;
         DoubleVector* f;
-        virtual double fx(double x, double t)
+        virtual double fx(double x, double t) const
         {
             int j = (int)(ceil(t/dt));
             int i = (int)(ceil(x/dx));
@@ -179,7 +178,7 @@ void HeatControl::calculate_u()
 //    free(g.u);
 }
 
-double HeatControl::fx( const DoubleVector& f )
+double HeatControl::fx( const DoubleVector& f ) const
 {
     double sum = 0.0;
     for (int i=0; i<(n-1); i++)
@@ -205,4 +204,7 @@ double HeatControl::fx( const DoubleVector& f )
     return sum;
 }
 
+void HeatControl::gradient(DoubleVector &g) const
+{
+}
 

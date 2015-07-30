@@ -24,7 +24,7 @@ public:
 
     double u(double x, double t);
 
-    double U(double x);
+    double U(double x) const;
     double F(double x, double t);
     double m1(double t);
     double m2(double t);
@@ -36,10 +36,12 @@ public:
     void calculate_u();
 
     void calculate();
-    virtual double fx(const DoubleVector& x);
+
+    virtual double fx(const DoubleVector& x) const;
+    virtual void gradient(DoubleVector &g) const;
 
 public:
-    HeatGradientMethod gradient;
+    HeatGradientMethod gradient1;
 
     DoubleVector mx;
     DoubleVector mt;

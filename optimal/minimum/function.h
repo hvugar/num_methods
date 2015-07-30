@@ -8,17 +8,18 @@ using namespace std;
 
 struct MINIMUMSHARED_EXPORT R1Function
 {
-    virtual double fx(double x) = 0;
+    virtual double fx(double x) const = 0;
 };
 
 struct MINIMUMSHARED_EXPORT R2Function
 {
-    virtual double fx(double x, double y) = 0;
+    virtual double fx(double x, double y) const = 0;
 };
 
 struct MINIMUMSHARED_EXPORT RnFunction
 {
-    virtual double fx(const DoubleVector& x) = 0;
+    virtual double fx(const DoubleVector& x) const = 0;
+    virtual void gradient(DoubleVector& g) const = 0;
 };
 
 typedef std::vector<RnFunction> RnFunctionList;

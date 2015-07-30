@@ -16,7 +16,7 @@ public:
 
 protected:
     virtual double minimize();
-    virtual double fx(double alpha);
+    virtual double fx(double alpha) const;
     virtual void print();
 };
 
