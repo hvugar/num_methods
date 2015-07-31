@@ -23,7 +23,8 @@ void ConjugateGradient::calculate()
     do
     {
         // Gradient of objectiv function in current point
-        calculateGradient();
+        //calculateGradient();
+        m_fn->gradient(grad_step, m_x, m_g);
 
         double gradNorm = m_g.L2Norm();
         if (gradNorm < epsilon())
@@ -58,7 +59,7 @@ void ConjugateGradient::calculate()
 
         m_alpha = minimize();
 
-        print();
+        if (printer != NULL) printer->print(iterationCount, m_x, s, m_alpha, function());
 
         for (unsigned int i=0; i<m_x.size(); i++)
         {
@@ -81,7 +82,7 @@ double ConjugateGradient::minimize()
     r1.setEpsilon(min_epsilon);
     r1.straightLineSearch();
     double alpha = r1.goldenSectionSearch();
-    if ( fx(alpha) > fx(alpha0) ) alpha = alpha0;
+    if (fx(alpha) > fx(alpha0)) alpha = alpha0;
     return alpha;
 }
 
@@ -96,7 +97,7 @@ double ConjugateGradient::distance() const
     return dist;
 }
 
-double ConjugateGradient::fx(double alpha) const
+double ConjugateGradient::fx(double alpha)
 {
     DoubleVector x(m_x.size());
     for (unsigned int i=0; i < m_x.size(); i++)

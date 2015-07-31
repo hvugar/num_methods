@@ -16,7 +16,7 @@ double SteepestDescentGradient::minimize()
     r1.setEpsilon(min_epsilon);
     r1.straightLineSearch();
     double alpha = r1.goldenSectionSearch();
-    if ( this->fx(alpha) > this->fx(alpha0) ) alpha = alpha0;
+    if (fx(alpha) > fx(alpha0)) alpha = alpha0;
     return alpha;
 }
 
@@ -26,7 +26,8 @@ void SteepestDescentGradient::calculate()
     do
     {
         /* calculating function gradient at current point */
-        calculateGradient();
+        //calculateGradient();
+        m_fn->gradient(grad_step, m_x, m_g);
 
         /* if gradinet norm at current point is less than epsilon then break. no minimize */
         double gradient_norm = m_g.L2Norm();
@@ -40,7 +41,7 @@ void SteepestDescentGradient::calculate()
         /* R1 minimization in direct of antigradient */
         m_alpha = minimize();
 
-        print();
+        if (printer != NULL) printer->print(iterationCount, m_x, m_g, m_alpha, function());
 
         for (unsigned int i=0; i<m_x.size(); i++)
         {
@@ -51,7 +52,7 @@ void SteepestDescentGradient::calculate()
     } while (distance() > epsilon());
 }
 
-double SteepestDescentGradient::fx(double alpha) const
+double SteepestDescentGradient::fx(double alpha)
 {
     DoubleVector x(m_x.size());
     for (unsigned int i=0; i < m_x.size(); i++)

@@ -124,10 +124,10 @@ void GridMethod::implicitDifferenceScheme()
     a.clear();
     b.clear();
 
-    for (int i=0; i<m; i++)
+    for (unsigned int i=0; i<m; i++)
     {
         if (i%100==0 || i==999) {
-        for (int j=0; j<n; j++)
+        for (unsigned int j=0; j<n; j++)
         {
             if (j%100==0 || j==999) printf("%f ", u[i][j]);
         }
@@ -144,7 +144,7 @@ void GridMethod::tomas_algorithm(std::vector<DoubleVector> &a, const DoubleVecto
     DoubleVector p(size);
     DoubleVector q(size);
 
-    for (int i=0; i<size; i++)
+    for (unsigned int i=0; i<size; i++)
     {
         if (i==0)
         {
@@ -163,9 +163,9 @@ void GridMethod::tomas_algorithm(std::vector<DoubleVector> &a, const DoubleVecto
         }
     }
 
-    for (int i=size-1; i>=0; i--)
+    for (unsigned int i=size-1; i>=0; i--)
     {
-        if (i==size-1)
+        if (i==(size-1))
             x[i] = q[i];
         else
             x[i] = p[i]*x[i+1] + q[i];

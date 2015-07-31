@@ -10,6 +10,7 @@
 #include "function.h"
 #include "r1minimize.h"
 #include "doublevector.h"
+#include "printer.h"
 
 class MINIMUMSHARED_EXPORT GradientMethod
 {
@@ -32,6 +33,8 @@ public:
     void setGradientStep(double step);
     int count() const;
 
+    void setPrinter(GrPrinter* printer);
+
 protected:
     virtual double minimize() = 0;
     virtual void calculateGradient();
@@ -48,6 +51,7 @@ protected:
     double min_step;
     int iterationCount;
     int M;
+    GrPrinter* printer;
 };
 
 #endif // GRADIENT_H

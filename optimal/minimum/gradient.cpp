@@ -1,6 +1,6 @@
 #include "gradient.h"
 
-GradientMethod::GradientMethod() : m_fn(NULL)
+GradientMethod::GradientMethod() : m_fn(NULL), printer(NULL)
 {
     m_alpha = 0.0;
     m_epsilon = 0.0;
@@ -48,13 +48,20 @@ void GradientMethod::setEpsilon(double epsilon)
 void GradientMethod::calculateGradient()
 {
     double h = grad_step;
-    for (unsigned i=0; i<m_x.size(); i++)
+    for (unsigned int i=0; i<m_x.size(); i++)
     {
-        m_x[i] = m_x[i] - h;
+//        m_x[i] = m_x[i] - h;
+//        double f1 = m_fn->fx(m_x);
+//        m_x[i] = m_x[i] + 2*h;
+//        double f2 = m_fn->fx(m_x);
+//        m_x[i] = m_x[i] - h;
+
+        double x = m_x[i];
+        m_x[i] = x - h;
         double f1 = m_fn->fx(m_x);
-        m_x[i] = m_x[i] + 2*h;
+        m_x[i] = x + h;
         double f2 = m_fn->fx(m_x);
-        m_x[i] = m_x[i] - h;
+        m_x[i] = x;
 
         m_g[i] = (f2 - f1) / (2 * h);
     }
@@ -96,4 +103,9 @@ double GradientMethod::distance() const
     }
     dist = sqrt(dist);
     return dist;
+}
+
+void GradientMethod::setPrinter(GrPrinter *printer)
+{
+    this->printer = printer;
 }
