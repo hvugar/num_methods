@@ -10,7 +10,7 @@ public:
     virtual double fx(const DoubleVector& x);
     virtual void gradient(double gradient_step, const DoubleVector& x, DoubleVector& g);
 
-    static void Main();
+    static void main();
 
 private:
     double grad_step;

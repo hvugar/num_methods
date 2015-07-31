@@ -23,7 +23,7 @@ void RosenbrockPrinter::print(unsigned int iterationCount, const DoubleVector& m
     }
 
     double y = f->fx(m_x);
-    double nr = m_x.EuclideanNorm();
+    double nr = s.EuclideanNorm();
 
     printf("%d\t", iterationCount);
     m_x[0]>=0.0 ? printf("|+%.10f\t", fabs(m_x[0])) : printf("|%.10f\t", m_x[0]);
@@ -36,7 +36,7 @@ void RosenbrockPrinter::print(unsigned int iterationCount, const DoubleVector& m
     printf("\n");
 }
 
-void Rosenbrock::Main()
+void Rosenbrock::main()
 {
     /* Function */
     Rosenbrock r;

@@ -19,6 +19,7 @@ void ConjugateGradient::calculate()
     double gr0_mod = 0.0;
     double gr1_mod = 0.0;
     double gr2_mod = 0.0;
+    double distance = 0.0;
 
     do
     {
@@ -61,15 +62,20 @@ void ConjugateGradient::calculate()
 
         if (printer != NULL) printer->print(iterationCount, m_x, s, m_alpha, function());
 
+        distance = 0.0;
         for (unsigned int i=0; i<m_x.size(); i++)
         {
+            double x = m_x[i];
             m_x[i] = m_x[i] + m_alpha * s[i];
-        }
 
-        if ( n == (m_x.size()-1) ) { n = 0; } else { n++; }
+            distance += (m_x[i]-x)*(m_x[i]-x);
+        }
+        distance = sqrt(distance);
+
+        if ( n == (m_x.size()) ) { n = 0; } else { n++; }
 
         /* calculating distance previous and new point */
-    } while (distance() > epsilon());
+    } while (distance > epsilon());
 }
 
 double ConjugateGradient::minimize()
@@ -105,26 +111,4 @@ double ConjugateGradient::fx(double alpha)
         x[i] = m_x[i] + alpha * s[i];
     }
     return m_fn->fx(x);
-}
-
-void ConjugateGradient::print()
-{
-    if (iterationCount == 1)
-    {
-        printf("No\t|x1      \t|x2      \t|f(x)      \t|s1      \t|s2      \t|grad_norm  \t|alpha  \t");
-        printf("\n--------+---------------+---------------+---------------+---------------+---------------+---------------+-------------\n");
-    }
-
-    double y = function()->fx(m_x);
-    double nr = gradientNorm();
-
-    printf("%d\t", iterationCount);
-    m_x[0]>=0.0 ? printf("|+%.10f\t", fabs(m_x[0])) : printf("|%.10f\t", m_x[0]);
-    m_x[1]>=0.0 ? printf("|+%.10f\t", fabs(m_x[1])) : printf("|%.10f\t", m_x[1]);
-    y>=0.0 ? printf("|%+.10f\t", y) : printf("|%.10f\t", y);
-    s[0]>=0.0 ? printf("|%+.10f\t", s[0]) : printf("|%0.10f\t", s[0]);
-    s[1]>=0.0 ? printf("|%+.10f\t", s[1]) : printf("|%0.10f\t", s[1]);
-    nr>=0.0 ? printf("|%+.10f\t", nr) : printf("|%.10f\t", nr);
-    m_alpha>=0.0 ? printf("|%+.10f\t", m_alpha) : printf("|%.10f\t", m_alpha);
-    printf("\n");
 }

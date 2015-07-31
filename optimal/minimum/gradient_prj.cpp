@@ -12,35 +12,42 @@ ProjectionGradient::~ProjectionGradient()
 void ProjectionGradient::calculate()
 {
     iterationCount = 0;
+
+    double distance = 0.0;
     do
     {
         /* calculating function gradient at current point */
-        calculateGradient();
+        m_fn->gradient(grad_step, m_x, m_g);
 
         /* if norm of gradinet at current point is less than epsilon break. no minimize */
-        double gn = gradientNorm();
-        if (gn < epsilon())
-            break;
+        double gradient_norm = m_g.L2Norm();
+        if (gradient_norm < epsilon()) break;
 
         iterationCount++;
 
-        for (unsigned int i=0; i<m_g.size(); i++) m_g[i] = m_g[i] / gn;
+        /* Normalize vector */
+        m_g.L2Normalize();
 
         /* R1 minimization in direct of antigradient */
         m_alpha = minimize();
 
-        print();
+        if (printer != NULL) printer->print(iterationCount, m_x, m_g, m_alpha, function());
 
+        distance = 0.0;
         for (unsigned int i=0; i<m_x.size(); i++)
         {
+            double x = m_x[i];
             m_x[i] = m_x[i] - m_alpha * m_g[i];
 
             if (m_x[i] < a) { m_x[i] = a; }
             if (m_x[i] > b) { m_x[i] = b; }
+
+            distance += (m_x[i]-x)*(m_x[i]-x);
         }
+        distance = sqrt(distance);
 
         /* calculating distance previous and new point */
-    } while (distance() > epsilon());
+    } while (distance > epsilon());
 }
 
 double ProjectionGradient::fx(double alpha)

@@ -13,7 +13,7 @@ struct MINIMUMSHARED_EXPORT Function
     virtual double fx(double x, double y, double z) const = 0;
     virtual double fx(const DoubleVector& x) const = 0;
 
-    virtual double gradient(double gradient_step, const DoubleVector& x, DoubleVector& gradient) const = 0;
+    virtual double gradient(double step, const DoubleVector& x, DoubleVector& g) const = 0;
 };
 
 struct MINIMUMSHARED_EXPORT R1Function
@@ -30,10 +30,10 @@ struct MINIMUMSHARED_EXPORT RnFunction
 {
     virtual double fx(const DoubleVector& x) = 0;
 
-    virtual void gradient(double gradient_step, const DoubleVector& x, DoubleVector& g) = 0;
+    virtual void gradient(double step, const DoubleVector& x, DoubleVector& g) = 0;
 
 protected:
-    static void Gradient(RnFunction *f, double gradient_step, const DoubleVector &x, DoubleVector &g);
+    static void Gradient(RnFunction *f, double step, const DoubleVector &x, DoubleVector &g);
 };
 
 typedef std::vector<RnFunction> RnFunctionList;

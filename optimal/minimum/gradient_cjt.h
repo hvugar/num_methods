@@ -12,15 +12,14 @@ public:
     ConjugateGradient();
     virtual ~ConjugateGradient();
 
-    virtual void setX(const DoubleVector& x);
-
     virtual void calculate();
+
+    virtual void setX(const DoubleVector& x);
 
 protected:
     virtual double minimize();
     virtual double distance() const;
     virtual double fx(double alpha);
-    virtual void print();
 
 private:
     DoubleVector s;

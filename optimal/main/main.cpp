@@ -14,7 +14,8 @@
 
 int main()
 {
-    CFunction2::main();
+//    CFunction2::main();
+    Rosenbrock::main();
     return 0;
 }
 

@@ -45,28 +45,6 @@ void GradientMethod::setEpsilon(double epsilon)
     m_epsilon = epsilon;
 }
 
-void GradientMethod::calculateGradient()
-{
-    double h = grad_step;
-    for (unsigned int i=0; i<m_x.size(); i++)
-    {
-//        m_x[i] = m_x[i] - h;
-//        double f1 = m_fn->fx(m_x);
-//        m_x[i] = m_x[i] + 2*h;
-//        double f2 = m_fn->fx(m_x);
-//        m_x[i] = m_x[i] - h;
-
-        double x = m_x[i];
-        m_x[i] = x - h;
-        double f1 = m_fn->fx(m_x);
-        m_x[i] = x + h;
-        double f2 = m_fn->fx(m_x);
-        m_x[i] = x;
-
-        m_g[i] = (f2 - f1) / (2 * h);
-    }
-}
-
 void GradientMethod::setR1MinimizeEpsilon(double step, double epsilon)
 {
     min_step = step;
@@ -81,28 +59,6 @@ void GradientMethod::setGradientStep(double step)
 int GradientMethod::count() const
 {
     return iterationCount;
-}
-
-double GradientMethod::gradientNorm() const
-{
-    double grad_norm = 0.0;
-    for (unsigned int i=0; i<m_g.size(); i++)
-    {
-        grad_norm = grad_norm + m_g[i]*m_g[i];
-    }
-    grad_norm = sqrt(grad_norm);
-    return grad_norm;
-}
-
-double GradientMethod::distance() const
-{
-    double dist = 0.0;
-    for (unsigned int i=0; i<m_x.size(); i++)
-    {
-        dist = dist + (m_alpha * m_g[i]) * (m_alpha * m_g[i]);
-    }
-    dist = sqrt(dist);
-    return dist;
 }
 
 void GradientMethod::setPrinter(GrPrinter *printer)

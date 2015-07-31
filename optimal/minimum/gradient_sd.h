@@ -17,7 +17,6 @@ public:
 protected:
     virtual double minimize();
     virtual double fx(double alpha);
-    virtual void print();
 };
 
 #endif // STEEPEST_DESCENT_GRADIENT_H

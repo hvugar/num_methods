@@ -264,7 +264,7 @@ void CFunction1::main()
 
 void CFunction1Printer::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const
 {
-    printf("J[%2d]: %.10f\t", iterationCount, f->fx(m_x));
+    printf("J[%2d]: %.10f  ", iterationCount, f->fx(m_x));
     print("u", m_x);
 }
 
@@ -272,18 +272,18 @@ void CFunction1Printer::print(const char* s, const std::vector<double>& x) const
 {
     unsigned int i;
     unsigned int n = x.size();
-    printf("%s: \t", s);
+    printf("%s: ", s);
     for (i=0; i<n; i++)
     {
         if ( i%((n-1)/10) == 0 )
         {
             if (x[i] < 0)
             {
-                printf("%12.8f", x[i]);
+                printf("%10.8f", x[i]);
             }
             else
             {
-                printf("%+12.8f", x[i]);
+                printf("%+10.8f", x[i]);
             }
         }
         if ( i%((n-1)/10) == 0 && i != n-1 )

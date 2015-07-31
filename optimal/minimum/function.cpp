@@ -1,8 +1,8 @@
 #include "function.h"
 
-void RnFunction::Gradient(RnFunction *f, double gradient_step, const DoubleVector &x, DoubleVector &g)
+void RnFunction::Gradient(RnFunction *f, double step, const DoubleVector &x, DoubleVector &g)
 {
-    double h = gradient_step;
+    double h = step;
     for (unsigned int i=0; i<g.size(); i++)
     {
         double cx = x[i];
