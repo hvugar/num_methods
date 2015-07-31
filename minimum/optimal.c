@@ -117,7 +117,7 @@ void init_process(Process *p)
     for (i=0; i<p->n; i++)
     {
         p->t[i]     = i*p->h;
-        p->u[i]     = sin(p->t[i]);//0.02;
+        p->u[i]     = 0.00001;
         p->x1[i]    = 0.0;
         p->x2[i]    = 0.0;
         p->psi1[i]  = 0.0;
@@ -259,16 +259,17 @@ void calculate()
         calculate_psi(&p);
         calculate_gradient(&p);
 
-        _print1("t", p.t, p.n);
-        _print1("u", p.u, p.n);
-        _print1("x1", p.x1, p.n);
-        _print1("x2", p.x2, p.n);
-        _print1("p1", p.psi1, p.n);
-        _print1("p2", p.psi2, p.n);
-        _print1("gr", p.gradJ, p.n);
-
         J1 = JSum(&p);
-        printf("J1 = %.18f\n", J1);
+        printf("J1 = %.10f\t", J1);
+
+        //_print1("t", p.t, p.n);
+        _print1("u", p.u, p.n);
+        //_print1("x1", p.x1, p.n);
+        //_print1("x2", p.x2, p.n);
+        //_print1("p1", p.psi1, p.n);
+        //_print1("p2", p.psi2, p.n);
+        //_print1("gr", p.gradJ, p.n);
+
         //_seperator();
 
         double grad_norm = vertor_norm(p.gradJ, p.n);

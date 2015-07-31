@@ -10,20 +10,16 @@ DESTDIR += ../bin
 #include(../minimum/minimum.pri)
 
 SOURCES += main.cpp \
-    samplecontrol.cpp \
     cfunction1.cpp \
     cfunction2.cpp \
     utils.cpp \
-    heatcontrol.cpp \
-    rosenbrock.cpp \
-    control.cpp
+#    heatcontrol.cpp \
+    rosenbrock.cpp
 
 HEADERS += \
-    samplecontrol.h \
     cfunction1.h \
     cfunction2.h \
     utils.h \
-    heatcontrol.h \
-    rosenbrock.h \
-    control.h
+#    heatcontrol.h \
+    rosenbrock.h
 

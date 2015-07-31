@@ -2,7 +2,8 @@
 #include "cfunction1.h"
 #include "cfunction2.h"
 
-SampleControl::SampleControl() : SteepestDescentGradient()
+
+SampleControl::SampleControl() : ConjugateGradient()
 {}
 
 SampleControl::~SampleControl()
@@ -20,7 +21,7 @@ void SampleControl::calculateGradient()
 
 void SampleControl::print()
 {
-//    SteepestDescentGradient::print();
+    //    SteepestDescentGradient::print();
 }
 
 void SampleControl::Main()
@@ -36,4 +37,33 @@ void SampleControl::Main()
     sc.setGradientStep(0.000001);
     sc.setR1MinimizeEpsilon(0.01, 0.000001);
     sc.calculate();
+
+    /* Function */
+    CFunction1 c(0.0, 1.0, 0.01);
+
+    /* initial point */
+    DoubleVector u0(c.n);
+
+    for (int i=0; i<c.n; i++) u0[i] = 0.00001;
+    /* Minimization */
+    ConjugateGradient g1;
+    g1.setFunction(&c);
+    g1.setEpsilon(0.01);
+    g1.setGradientStep(0.000001);
+    g1.setR1MinimizeEpsilon(0.01, 0.000001);
+    g1.setX(u0);
+    g1.setPrinter(new CFunction1Printer);
+    g1.calculate();
+
+    puts("-----------------------------------------------------------------");
+    for (int i=0; i<c.n; i++) u0[i] = 0.00001;
+    /* Minimization */
+    SteepestDescentGradient g2;
+    g2.setFunction(&c);
+    g2.setEpsilon(0.01);
+    g2.setGradientStep(0.000001);
+    g2.setR1MinimizeEpsilon(0.01, 0.000001);
+    g2.setX(u0);
+    g2.setPrinter(new CFunction1Printer);
+    g2.calculate();
 }

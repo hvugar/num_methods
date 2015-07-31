@@ -4,7 +4,7 @@ void printX(const char* s, const std::vector<double>& x)
 {
     unsigned int i;
     unsigned int n = x.size();
-    printf("double %s[] =\t{", s);
+    printf("%s =\t{", s);
     for (i=0; i<n; i++)
     {
         if ( i%((n-1)/10) == 0 )
