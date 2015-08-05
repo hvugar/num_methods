@@ -13,6 +13,7 @@ public:
     virtual ~SteepestDescentGradient();
 
     virtual void calculate();
+    virtual void calculate(DoubleVector &x);
 
 protected:
     virtual double minimize();

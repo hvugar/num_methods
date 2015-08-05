@@ -14,12 +14,14 @@ SOURCES += main.cpp \
     cfunction2.cpp \
     utils.cpp \
 #    heatcontrol.cpp \
-    rosenbrock.cpp
+    rosenbrock.cpp \
+    cfunction.cpp
 
 HEADERS += \
     cfunction1.h \
     cfunction2.h \
     utils.h \
 #    heatcontrol.h \
-    rosenbrock.h
+    rosenbrock.h \
+    cfunction.h
 

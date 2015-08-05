@@ -78,11 +78,14 @@ void ConjugateGradient::calculate()
     } while (distance > epsilon());
 }
 
+void ConjugateGradient::calculate(DoubleVector& x0)
+{}
+
 double ConjugateGradient::minimize()
 {
     double alpha0 = 0.0;
     R1Minimize r1;
-    r1.setF(this);
+    r1.setFunction(this);
     r1.setX0(alpha0);
     r1.setStep(min_step);
     r1.setEpsilon(min_epsilon);

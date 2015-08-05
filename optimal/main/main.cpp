@@ -10,12 +10,16 @@
 
 #include "cfunction1.h"
 #include "cfunction2.h"
+#include "cfunction.h"
 #include "rosenbrock.h"
 
 int main()
 {
+//    Rosenbrock::main();
+//    CFunction1::main();
 //    CFunction2::main();
-    Rosenbrock::main();
+    ControlFunction::main();
+
     return 0;
 }
 

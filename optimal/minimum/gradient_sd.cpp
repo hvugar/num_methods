@@ -10,7 +10,7 @@ double SteepestDescentGradient::minimize()
 {
     double alpha0 = 0.0;
     R1Minimize r1;
-    r1.setF(this);
+    r1.setFunction(this);
     r1.setX0(alpha0);
     r1.setStep(min_step);
     r1.setEpsilon(min_epsilon);
@@ -43,7 +43,10 @@ void SteepestDescentGradient::calculate()
         /* R1 minimization in direct of antigradient */
         m_alpha = minimize();
 
-        if (printer != NULL) printer->print(iterationCount, m_x, m_g, m_alpha, function());
+        if (printer != NULL)
+        {
+            printer->print(iterationCount, m_x, m_g, m_alpha, function());
+        }
 
         distance = 0.0;
         for (unsigned int i=0; i<m_x.size(); i++)
@@ -51,12 +54,17 @@ void SteepestDescentGradient::calculate()
             double x = m_x[i];
             m_x[i] = m_x[i] - m_alpha * m_g[i];
 
+            // calculating distance
             distance += (m_x[i]-x)*(m_x[i]-x);
         }
         distance = sqrt(distance);
 
         /* calculating distance previous and new point */
     } while (distance > epsilon());
+}
+
+void SteepestDescentGradient::calculate(DoubleVector &x)
+{
 }
 
 double SteepestDescentGradient::fx(double alpha)

@@ -13,6 +13,7 @@ public:
     virtual ~ConjugateGradient();
 
     virtual void calculate();
+    virtual void calculate(DoubleVector& x0);
 
     virtual void setX(const DoubleVector& x);
 

@@ -10,6 +10,7 @@ public:
     virtual ~ProjectionGradient();
 
     virtual void calculate();
+    virtual void calculate(DoubleVector& x);
 
     double a;
     double b;

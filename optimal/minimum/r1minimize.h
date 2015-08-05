@@ -11,8 +11,8 @@ public:
     R1Minimize();
     virtual ~R1Minimize();
 
-    void setF(R1Function *f);
-    R1Function* f() const;
+    void setFunction(R1Function *f);
+    R1Function* function() const;
 
     double x0() const;
     void setX0(double);

@@ -12,6 +12,9 @@
 #include "doublevector.h"
 #include "printer.h"
 
+/**
+ * @brief The GradientMethod class
+ */
 class MINIMUMSHARED_EXPORT GradientMethod
 {
 public:
@@ -19,6 +22,7 @@ public:
     virtual ~GradientMethod();
 
     virtual void calculate() = 0;
+    virtual void calculate(DoubleVector& x0) = 0;
 
     virtual RnFunction* function() const;
     virtual void setFunction(RnFunction* function);

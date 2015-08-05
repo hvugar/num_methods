@@ -8,12 +8,12 @@ R1Minimize::R1Minimize() : m_f(0), m_x0(0.0), m_step(0.0), m_epsilon(0.0), m_a(0
 R1Minimize::~R1Minimize()
 {}
 
-void R1Minimize::setF(R1Function *f)
+void R1Minimize::setFunction(R1Function *f)
 {
     m_f = f;
 }
 
-R1Function* R1Minimize::f() const
+R1Function* R1Minimize::function() const
 {
     return m_f;
 }

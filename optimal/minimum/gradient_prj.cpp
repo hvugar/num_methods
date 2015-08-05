@@ -50,6 +50,11 @@ void ProjectionGradient::calculate()
     } while (distance > epsilon());
 }
 
+void ProjectionGradient::calculate(DoubleVector& x)
+{
+
+}
+
 double ProjectionGradient::fx(double alpha)
 {
     DoubleVector x(m_x.size(), 0.0);
