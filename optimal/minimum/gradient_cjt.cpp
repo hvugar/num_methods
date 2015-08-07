@@ -83,9 +83,34 @@ void ConjugateGradient::calculate(DoubleVector& x0)
 
 double ConjugateGradient::minimize()
 {
+    struct R1FunctionX : public R1Function
+    {
+        virtual double fx(double alpha)
+        {
+            DoubleVector x(n);
+            for (unsigned int i=0; i < n; i++)
+            {
+                x[i] = (*m_x)[i] + alpha * (*s)[i];
+            }
+            return f->fx(x);
+        }
+
+        DoubleVector *m_x;
+        DoubleVector *s;
+        RnFunction *f;
+        unsigned int n;
+    };
+
+    R1FunctionX r1X;
+    r1X.m_x = &m_x;
+    r1X.s = &s;
+    r1X.n = m_x.size();
+    r1X.f = m_fn;
+
+
     double alpha0 = 0.0;
     R1Minimize r1;
-    r1.setFunction(this);
+    r1.setFunction(&r1X);
     r1.setX0(alpha0);
     r1.setStep(min_step);
     r1.setEpsilon(min_epsilon);
@@ -93,17 +118,6 @@ double ConjugateGradient::minimize()
     double alpha = r1.goldenSectionSearch();
     if (fx(alpha) > fx(alpha0)) alpha = alpha0;
     return alpha;
-}
-
-double ConjugateGradient::distance() const
-{
-    double dist = 0.0;
-    for (unsigned int i=0; i<m_x.size(); i++)
-    {
-        dist = dist + ((m_alpha * s[i]) * (m_alpha * s[i]));
-    }
-    dist = sqrt(dist);
-    return dist;
 }
 
 double ConjugateGradient::fx(double alpha)

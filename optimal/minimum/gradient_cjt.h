@@ -19,7 +19,6 @@ public:
 
 protected:
     virtual double minimize();
-    virtual double distance() const;
     virtual double fx(double alpha);
 
 private:

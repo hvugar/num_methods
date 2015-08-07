@@ -18,6 +18,7 @@ int main()
 //    Rosenbrock::main();
 //    CFunction1::main();
 //    CFunction2::main();
+    puts("*****************************************************************");
     ControlFunction::main();
 
     return 0;

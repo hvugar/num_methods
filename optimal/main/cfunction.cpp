@@ -27,9 +27,9 @@ ControlFunction::~ControlFunction()
 {
 }
 
-double ControlFunction::Hamilton(double t, const DoubleVector &x, double u, const DoubleVector &psi)
+double ControlFunction::fx(const DoubleVector &u)
 {
-    return -1.0 * fx0->fx(t, x, u) + psi[0] * fx1->fx(t, x, u) + psi[1] * fx2->fx(t, x, u);
+    return Integral(u);
 }
 
 void ControlFunction::gradient(double gradient_step, const DoubleVector& u, DoubleVector &g)
@@ -50,6 +50,11 @@ void ControlFunction::gradient(double gradient_step, const DoubleVector& u, Doub
         double u2 = u[i] - gradient_step;
         g[i] = (Hamilton(t[i], x, u1, psi) - Hamilton(t[i], x, u2, psi)) / (2 * gradient_step);
     }
+}
+
+double ControlFunction::Hamilton(double t, const DoubleVector &x, double u, const DoubleVector &psi)
+{
+    return -1.0 * fx0->fx(t, x, u) + psi[0] * fx1->fx(t, x, u) + psi[1] * fx2->fx(t, x, u);
 }
 
 void ControlFunction::calculate_x(const DoubleVector& u)
@@ -102,22 +107,22 @@ void ControlFunction::calculate_psi(const DoubleVector& u)
 
     DoubleVector _x(2);
 
-    psi1[n-1] = 0.0;
-    psi2[n-1] = -2.0 * (x2[n-1] - 1.0);
+//    psi1[n-1] = 0.0;
+//    psi2[n-1] = -2.0 * (x2[n-1] - 1.0);
 
-//    DoubleVector _x1(2);
-//    DoubleVector _x2(2);
-//    double dx = 0.000001;
-//    _x1[0] = x1[n-1] + dx;
-//    _x1[1] = x2[n-1];
-//    _x2[0] = x1[n-1] - dx;
-//    _x2[1] = x2[n-1];
-//    psi1[n-1] = -1.0*(F(0.0, _x1, 0.0)-F(0.0, _x2, 0.0))/(2.0*dx);
-//    _x1[0] = x1[n-1];
-//    _x1[1] = x2[n-1] + dx;
-//    _x2[0] = x1[n-1];
-//    _x2[1] = x2[n-1] - dx;
-//    psi2[n-1] = -1.0*(F(0.0, _x1, 0.0)-F(0.0, _x2, 0.0))/(2.0*dx);
+    DoubleVector _x1(2);
+    DoubleVector _x2(2);
+    double dx = 0.000001;
+    _x1[0] = x1[n-1] + dx;
+    _x1[1] = x2[n-1];
+    _x2[0] = x1[n-1] - dx;
+    _x2[1] = x2[n-1];
+    psi1[n-1] = -1.0*(T->fx(0.0, _x1) - T->fx(0.0, _x2))/(2.0*dx);
+    _x1[0] = x1[n-1];
+    _x1[1] = x2[n-1] + dx;
+    _x2[0] = x1[n-1];
+    _x2[1] = x2[n-1] - dx;
+    psi2[n-1] = -1.0*(T->fx(0.0, _x1) - T->fx(0.0, _x2))/(2.0*dx);
 
     DoubleVector _psi(2);
     _psi[0] = psi1[n-1];
@@ -131,28 +136,68 @@ void ControlFunction::calculate_psi(const DoubleVector& u)
         _psi[0] = psi1[i];
         _psi[1] = psi2[i];
 
-        k1[0] = fp1->fx(t[i], _x, _psi, u[i]);
-        k1[1] = fp2->fx(t[i], _x, _psi, u[i]);
+        double h1 = 0.000001;
+
+        _x1[0] = x1[i] + h1;
+        _x1[1] = x2[i];
+        _x2[0] = x1[i] - h1;
+        _x2[1] = x2[i];
+        k1[0] = -1.0 * (Hamilton(t[i], _x1, u[i], _psi) - Hamilton(t[i], _x2, u[i], _psi)) / (2 * h);
+        _x1[0] = x1[i];
+        _x1[1] = x2[i] + h1;
+        _x2[0] = x1[i];
+        _x2[1] = x2[i] - h1;
+        k1[1] = -1.0 * (Hamilton(t[i], _x1, u[i], _psi) - Hamilton(t[i], _x2, u[i], _psi)) / (2 * h);
+        //k1[0] = fp1->fx(t[i], _x, _psi, u[i]);
+        //k1[1] = fp2->fx(t[i], _x, _psi, u[i]);
         _psi[0] = psi1[i] + (h/2.0) * k1[0];
         _psi[1] = psi2[i] + (h/2.0) * k1[1];
-        k2[0] = fp1->fx(t[i]+h/2.0, _x, _psi, u[i]);
-        k2[1] = fp2->fx(t[i]+h/2.0, _x, _psi, u[i]);
+
+        _x1[0] = x1[i] + h1;
+        _x1[1] = x2[i];
+        _x2[0] = x1[i] - h1;
+        _x2[1] = x2[i];
+        k2[0] = -1.0 * (Hamilton(t[i]+h/2.0, _x1, u[i], _psi) - Hamilton(t[i], _x2, u[i], _psi)) / (2 * h);
+        _x1[0] = x1[i];
+        _x1[1] = x2[i] + h1;
+        _x2[0] = x1[i];
+        _x2[1] = x2[i] - h1;
+        k2[1] = -1.0 * (Hamilton(t[i]+h/2.0, _x1, u[i], _psi) - Hamilton(t[i], _x2, u[i], _psi)) / (2 * h);
+        //k2[0] = fp1->fx(t[i]+h/2.0, _x, _psi, u[i]);
+        //k2[1] = fp2->fx(t[i]+h/2.0, _x, _psi, u[i]);
         _psi[0] = psi1[i] + (h/2.0) * k2[0];
         _psi[1] = psi2[i] + (h/2.0) * k2[1];
-        k3[0] = fp1->fx(t[i]+h/2.0, _x, _psi, u[i]);
-        k3[1] = fp2->fx(t[i]+h/2.0, _x, _psi, u[i]);
+
+        _x1[0] = x1[i] + h1;
+        _x1[1] = x2[i];
+        _x2[0] = x1[i] - h1;
+        _x2[1] = x2[i];
+        k3[0] = -1.0 * (Hamilton(t[i]+h/2.0, _x1, u[i], _psi) - Hamilton(t[i], _x2, u[i], _psi)) / (2 * h);
+        _x1[0] = x1[i];
+        _x1[1] = x2[i] + h1;
+        _x2[0] = x1[i];
+        _x2[1] = x2[i] - h1;
+        k3[1] = -1.0 * (Hamilton(t[i]+h/2.0, _x1, u[i], _psi) - Hamilton(t[i], _x2, u[i], _psi)) / (2 * h);
+        //k3[0] = fp1->fx(t[i]+h/2.0, _x, _psi, u[i]);
+        //k3[1] = fp2->fx(t[i]+h/2.0, _x, _psi, u[i]);
         _psi[0] = psi1[i] + h * k3[0];
         _psi[1] = psi2[i] + h * k3[1];
-        k4[0] = fp1->fx(t[i]+h, _x, _psi, u[i]);
-        k4[1] = fp2->fx(t[i]+h, _x, _psi, u[i]);
+
+        _x1[0] = x1[i] + h1;
+        _x1[1] = x2[i];
+        _x2[0] = x1[i] - h1;
+        _x2[1] = x2[i];
+        k4[0] = -1.0 * (Hamilton(t[i]+h, _x1, u[i], _psi) - Hamilton(t[i], _x2, u[i], _psi)) / (2 * h);
+        _x1[0] = x1[i];
+        _x1[1] = x2[i] + h1;
+        _x2[0] = x1[i];
+        _x2[1] = x2[i] - h1;
+        k4[1] = -1.0 * (Hamilton(t[i]+h, _x1, u[i], _psi) - Hamilton(t[i], _x2, u[i], _psi)) / (2 * h);
+        //k4[0] = fp1->fx(t[i]+h, _x, _psi, u[i]);
+        //k4[1] = fp2->fx(t[i]+h, _x, _psi, u[i]);
         psi1[i-1] = psi1[i] + (h/6.0) * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0]);
         psi2[i-1] = psi2[i] + (h/6.0) * (k1[1] + 2*k2[1] + 2*k3[1] + k4[1]);
     }
-}
-
-double ControlFunction::fx(const DoubleVector &u)
-{
-    return Integral(u);
 }
 
 double ControlFunction::Integral(const DoubleVector &u)
@@ -182,17 +227,16 @@ double ControlFunction::Integral(const DoubleVector &u)
     return sum;
 }
 
-
 void ControlFunction::main()
 {
     struct t_fx0 : public CFunction { virtual double fx(double t, const DoubleVector &x, double u) { return (x[0] - t*t*t)*(x[0] - t*t*t)+(x[1]-t)*(x[1]-t)+(2*u-t)*(2*u-t); } };
     struct t_trm : public CFunction { virtual double fx(double t, const DoubleVector &x) { return (x[1] - 1.0) * (x[1] - 1.0); } };
 
-    struct t_fx1 : public CFunction { virtual double fx(double t, const DoubleVector &x, double u) { return (x[1] - 1.0) * (x[1] - 1.0); } };
-    struct t_fx2 : public CFunction { virtual double fx(double t, const DoubleVector &x, double u) { return 3.0*x[1]*x[1]; } };
+    struct t_fx1 : public CFunction { virtual double fx(double t, const DoubleVector &x, double u) { return 3.0 * x[1] * x[1]; } };
+    struct t_fx2 : public CFunction { virtual double fx(double t, const DoubleVector &x, double u) { return x[0] + x[1] - 2.0*u - t*t*t + 1.0; } };
 
-    struct t_px1 : public CFunction { virtual double fx(double t, const DoubleVector &x, const DoubleVector &psi, double u) { return 2.0 * (x[0] - t*t*t) - psi[1]; } };
-    struct t_px2 : public CFunction { virtual double fx(double t, const DoubleVector &x, const DoubleVector &psi, double u) { return 2.0 * (x[1] - t) - 6.0 * x[1] * psi[0] - psi[1]; } };
+    //struct t_px1 : public CFunction { virtual double fx(double t, const DoubleVector &x, const DoubleVector &psi, double u) { return 2.0 * (x[0] - t*t*t) - psi[1]; } };
+    //struct t_px2 : public CFunction { virtual double fx(double t, const DoubleVector &x, const DoubleVector &psi, double u) { return 2.0 * (x[1] - t) - 6.0 * x[1] * psi[0] - psi[1]; } };
 
     /* Function */
     ControlFunction c(0.0, 1.0, 0.001);
@@ -200,8 +244,8 @@ void ControlFunction::main()
     c.T   = new t_trm;
     c.fx1 = new t_fx1;
     c.fx2 = new t_fx2;
-    c.fp1 = new t_px1;
-    c.fp2 = new t_px2;
+    //c.fp1 = new t_px1;
+    //c.fp2 = new t_px2;
 
     /* initial point */
     DoubleVector u0(c.n);
@@ -229,7 +273,6 @@ void ControlFunction::main()
     g2.setPrinter(new ControlFunctionPrinter);
     g2.calculate();
 }
-
 
 void ControlFunctionPrinter::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const
 {

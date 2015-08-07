@@ -39,13 +39,20 @@ double CFunction1::fx(const DoubleVector& u)
         int j=i+1;
         //double fj = (x1[j]-t[j]*t[j]*t[j])*(x1[j]-t[j]*t[j]*t[j]) + (x2[j] - t[j])*(x2[j] - t[j]) + (2*u[j] - t[j])*(2*u[j] - t[j]);
         //double fi = (x1[i]-t[i]*t[i]*t[i])*(x1[i]-t[i]*t[i]*t[i]) + (x2[i] - t[i])*(x2[i] - t[i]) + (2*u[i] - t[i])*(2*u[i] - t[i]);
-        x[0] = x1[j]; x[1] = x2[j];
+        x[0] = x1[j];
+        x[1] = x2[j];
         double fj = fx0(t[j], x, u[j]);
-        x[0] = x1[i]; x[1] = x2[i];
+
+        x[0] = x1[i];
+        x[1] = x2[i];
         double fi = fx0(t[i], x, u[i]);
+
         sum = sum + 0.5 * (fj+fi) * (t[j]-t[i]);
     }
-    sum = sum + (x2[n-1] - 1.0) * (x2[n-1] - 1.0);
+
+    x[0] = x1[n-1];
+    x[1] = x2[n-1];
+    sum = sum + T(t[n-1], x);
     return sum;
 }
 
@@ -72,59 +79,44 @@ void CFunction1::gradient(double gradient_step, const DoubleVector& u, DoubleVec
 
 double CFunction1::fx0(double t, const DoubleVector& x, double u) const
 {
-    double x1 = x[0];
-    double x2 = x[1];
-    double a1 = x1-t*t*t;
-    double a2 = x2-t;
-    double a3 = 2*u-t;
-    return a1*a1 + a2*a2 + a3*a3;
+    return (x[0] - t*t*t)*(x[0] - t*t*t)+(x[1]-t)*(x[1]-t)+(2*u-t)*(2*u-t);
 }
 
-double CFunction1::F(double t, const DoubleVector& x, double u) const
+double CFunction1::T(double t, const DoubleVector& x) const
 {
     return (x[1] - 1.0) * (x[1] - 1.0);
 }
 
 double CFunction1::fx1(double t, const DoubleVector& x, double u) const
 {
-    double x2 = x[1];
-    return 3.0*x2*x2;
+    return 3.0 * x[1] * x[1];
 }
 
 double CFunction1::fx2(double t, const DoubleVector& x, double u) const
 {
-    double x1 = x[0];
-    double x2 = x[1];
-    return x1 + x2 - 2.0*u - t*t*t + 1.0;
+    return x[0] + x[1] - 2.0*u - t*t*t + 1.0;
 }
 
 double CFunction1::fp1(double t, const DoubleVector& x, const DoubleVector& psi, double u)
 {
-    double h = 0.000001;
-    DoubleVector x1(2);
-    x1[0] = x[0] + h; x1[1] = x[1];
-    DoubleVector x2(2);
-    x2[0] = x[0] - h; x2[1] = x[1];
-    return -1.0 * (H(t, x1, u, psi) - H(t, x2, u, psi)) / (2 * h);
-
-    //double x1 = x[0];
-    //double p2 = psi[1];
-    //return 2.0 * (x1 - t*t*t) - p2;
+//    double h = 0.000001;
+//    DoubleVector x1(2);
+//    x1[0] = x[0] + h; x1[1] = x[1];
+//    DoubleVector x2(2);
+//    x2[0] = x[0] - h; x2[1] = x[1];
+//    return -1.0 * (H(t, x1, u, psi) - H(t, x2, u, psi)) / (2 * h);
+    return 2.0 * (x[0] - t*t*t) - psi[1];
 }
 
 double CFunction1::fp2(double t, const DoubleVector& x, const DoubleVector& psi, double u)
 {
-    double h = 0.000001;
-    DoubleVector x1(2);
-    x1[0] = x[0]; x1[1] = x[1] + h;
-    DoubleVector x2(2);
-    x2[0] = x[0]; x2[1] = x[1] - h;
-    return -1.0 * (H(t, x1, u, psi) - H(t, x2, u, psi)) / (2 * h);
-
-    //double x2 = x[1];
-    //double p1 = psi[0];
-    //double p2 = psi[1];
-    //return 2.0 * (x2 - t) - 6.0 * x2 * p1 - p2;
+//    double h = 0.000001;
+//    DoubleVector x1(2);
+//    x1[0] = x[0]; x1[1] = x[1] + h;
+//    DoubleVector x2(2);
+//    x2[0] = x[0]; x2[1] = x[1] - h;
+//    return -1.0 * (H(t, x1, u, psi) - H(t, x2, u, psi)) / (2 * h);
+    return 2.0 * (x[1] - t) - 6.0 * x[1] * psi[0] - psi[1];
 }
 
 double CFunction1::H(double t, const DoubleVector& x, double u, const DoubleVector& psi)
@@ -182,22 +174,22 @@ void CFunction1::calculate_psi(const DoubleVector& u)
 
     DoubleVector _x(2);
 
-    psi1[n-1] = 0.0;
-    psi2[n-1] = -2.0 * (x2[n-1] - 1.0);
+    //psi1[n-1] = 0.0;
+    //psi2[n-1] = -2.0 * (x2[n-1] - 1.0);
 
-//    DoubleVector _x1(2);
-//    DoubleVector _x2(2);
-//    double dx = 0.000001;
-//    _x1[0] = x1[n-1] + dx;
-//    _x1[1] = x2[n-1];
-//    _x2[0] = x1[n-1] - dx;
-//    _x2[1] = x2[n-1];
-//    psi1[n-1] = -1.0*(F(0.0, _x1, 0.0)-F(0.0, _x2, 0.0))/(2.0*dx);
-//    _x1[0] = x1[n-1];
-//    _x1[1] = x2[n-1] + dx;
-//    _x2[0] = x1[n-1];
-//    _x2[1] = x2[n-1] - dx;
-//    psi2[n-1] = -1.0*(F(0.0, _x1, 0.0)-F(0.0, _x2, 0.0))/(2.0*dx);
+    DoubleVector _x1(2);
+    DoubleVector _x2(2);
+    double dx = 0.000001;
+    _x1[0] = x1[n-1] + dx;
+    _x1[1] = x2[n-1];
+    _x2[0] = x1[n-1] - dx;
+    _x2[1] = x2[n-1];
+    psi1[n-1] = -1.0*(T(0.0, _x1)-T(0.0, _x2))/(2.0*dx);
+    _x1[0] = x1[n-1];
+    _x1[1] = x2[n-1] + dx;
+    _x2[0] = x1[n-1];
+    _x2[1] = x2[n-1] - dx;
+    psi2[n-1] = -1.0*(T(0.0, _x1)-T(0.0, _x2))/(2.0*dx);
 
     DoubleVector _psi(2);
     _psi[0] = psi1[n-1];

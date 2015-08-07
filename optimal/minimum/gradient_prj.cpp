@@ -46,8 +46,10 @@ void ProjectionGradient::calculate()
         }
         distance = sqrt(distance);
 
+        if (distance < epsilon()) break;
+
         /* calculating distance previous and new point */
-    } while (distance > epsilon());
+    } while (true);
 }
 
 void ProjectionGradient::calculate(DoubleVector& x)

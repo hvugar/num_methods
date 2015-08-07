@@ -19,16 +19,17 @@ struct ControlFunction : public RnFunction
     ControlFunction(double t0, double t1, double h);
     virtual ~ControlFunction();
 
+protected:
+    virtual double fx(const DoubleVector& u);
+    virtual void gradient(double gradient_step, const DoubleVector& u, DoubleVector &g);
+
+public:
     CFunction *fx0;
     CFunction *T;
     CFunction *fx1;
     CFunction *fx2;
     CFunction *fp1;
     CFunction *fp2;
-
-protected:
-    virtual double fx(const DoubleVector& u);
-    virtual void gradient(double gradient_step, const DoubleVector& u, DoubleVector &g);
 
 private:
     double Hamilton(double t, const DoubleVector &x, double u, const DoubleVector &psi);
