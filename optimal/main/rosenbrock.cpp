@@ -42,18 +42,32 @@ void Rosenbrock::main()
     Rosenbrock r;
 
     /* initial point */
-    DoubleVector x0;
-    x0.push_back(-1.2);
-    x0.push_back(+1.0);
+    DoubleVector x0(2);
+    x0[0] = -1.2;
+    x0[1] = +1.0;
 
     /* Minimization */
-    ConjugateGradient g;
-    g.setFunction(&r);
-    g.setEpsilon(0.000001);
-    g.setGradientStep(0.000001);
-    g.setR1MinimizeEpsilon(0.1, 0.000001);
-    g.setX(x0);
-    g.setPrinter(new RosenbrockPrinter);
-    g.calculate();
+    SteepestDescentGradient g1;
+    g1.setFunction(&r);
+    g1.setEpsilon(0.000001);
+    g1.setGradientStep(0.000001);
+    g1.setR1MinimizeEpsilon(0.1, 0.000001);
+//    g1.setX(x0);
+    g1.setPrinter(new RosenbrockPrinter);
+    g1.calculate(x0);
+
+
+    puts("-----------------------------------------------------------------");
+    x0[0] = -1.2;
+    x0[1] = +1.0;
+    /* Minimization */
+    ConjugateGradient g2;
+    g2.setFunction(&r);
+    g2.setEpsilon(0.000001);
+    g2.setGradientStep(0.000001);
+    g2.setR1MinimizeEpsilon(0.1, 0.000001);
+//    g2.setX(x0);
+    g2.setPrinter(new RosenbrockPrinter);
+    g2.calculate(x0);
 }
 

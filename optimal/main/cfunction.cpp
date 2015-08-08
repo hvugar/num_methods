@@ -257,9 +257,9 @@ void ControlFunction::main()
     g1.setEpsilon(0.0000001);
     g1.setGradientStep(0.0000001);
     g1.setR1MinimizeEpsilon(0.01, 0.0000001);
-    g1.setX(u0);
+//    g1.setX(u0);
     g1.setPrinter(new ControlFunctionPrinter);
-    g1.calculate();
+    g1.calculate(u0);
 
     puts("-----------------------------------------------------------------");
     for (int i=0; i<c.n; i++) u0[i] = 0.00001;
@@ -269,9 +269,9 @@ void ControlFunction::main()
     g2.setEpsilon(0.0000001);
     g2.setGradientStep(0.0000001);
     g2.setR1MinimizeEpsilon(0.01, 0.0000001);
-    g2.setX(u0);
+//    g2.setX(u0);
     g2.setPrinter(new ControlFunctionPrinter);
-    g2.calculate();
+    g2.calculate(u0);
 }
 
 void ControlFunctionPrinter::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const

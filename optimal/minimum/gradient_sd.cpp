@@ -6,56 +6,47 @@ SteepestDescentGradient::SteepestDescentGradient() : GradientMethod()
 SteepestDescentGradient::~SteepestDescentGradient()
 {}
 
-double SteepestDescentGradient::minimize()
+void SteepestDescentGradient::calculate(DoubleVector &x)
 {
-    double alpha0 = 0.0;
-    R1Minimize r1;
-    r1.setFunction(this);
-    r1.setX0(alpha0);
-    r1.setStep(min_step);
-    r1.setEpsilon(min_epsilon);
-    r1.straightLineSearch();
-    double alpha = r1.goldenSectionSearch();
-    if (fx(alpha) > fx(alpha0)) alpha = alpha0;
-    return alpha;
-}
+    unsigned int n = x.size();
 
-void SteepestDescentGradient::calculate()
-{
     iterationCount = 0;
     double distance = 0.0;
+    double alpha = 0.0;
+
+    DoubleVector g(n);
 
     do
     {
         /* calculating function gradient at current point */
         //calculateGradient();
-        m_fn->gradient(grad_step, m_x, m_g);
+        m_fn->gradient(grad_step, x, g);
 
         /* if gradinet norm at current point is less than epsilon then break. no minimize */
-        double gradient_norm = m_g.L2Norm();
+        double gradient_norm = g.L2Norm();
         if (gradient_norm < epsilon()) break;
 
         iterationCount++;
 
         /* Normalize vector */
-        m_g.L2Normalize();
+        g.L2Normalize();
 
         /* R1 minimization in direct of antigradient */
-        m_alpha = minimize();
+        alpha = minimize(x, g);
 
         if (printer != NULL)
         {
-            printer->print(iterationCount, m_x, m_g, m_alpha, function());
+            printer->print(iterationCount, x, g, alpha, function());
         }
 
         distance = 0.0;
-        for (unsigned int i=0; i<m_x.size(); i++)
+        for (unsigned int i=0; i < n; i++)
         {
-            double x = m_x[i];
-            m_x[i] = m_x[i] - m_alpha * m_g[i];
+            double cx = x[i];
+            x[i] = x[i] - alpha * g[i];
 
             // calculating distance
-            distance += (m_x[i]-x)*(m_x[i]-x);
+            distance += (x[i]-cx)*(x[i]-cx);
         }
         distance = sqrt(distance);
 
@@ -63,16 +54,37 @@ void SteepestDescentGradient::calculate()
     } while (distance > epsilon());
 }
 
-void SteepestDescentGradient::calculate(DoubleVector &x)
+double SteepestDescentGradient::minimize(const DoubleVector &x, const DoubleVector &g)
 {
-}
-
-double SteepestDescentGradient::fx(double alpha)
-{
-    DoubleVector x(m_x.size());
-    for (unsigned int i=0; i < m_x.size(); i++)
+    struct SteepestDescentR1Function : public R1Function
     {
-        x[i] = m_x[i] - alpha * m_g[i];
-    }
-    return m_fn->fx(x);
+        virtual double fx(double alpha)
+        {
+            DoubleVector cx(n);
+            for (unsigned int i=0; i < n; i++)
+            {
+                cx[i] = x[i] - alpha * g[i];
+            }
+            return f->fx(cx);
+        }
+
+        SteepestDescentR1Function(const DoubleVector &x, const DoubleVector &g, RnFunction *f, unsigned int n) : x(x), g(g), f(f), n(n) {}
+        DoubleVector x;
+        DoubleVector g;
+        RnFunction *f;
+        unsigned int n;
+    };
+
+    SteepestDescentR1Function r1X(x, g, m_fn, x.size());
+
+    double alpha0 = 0.0;
+    R1Minimize r1;
+    r1.setFunction(&r1X);
+    r1.setX0(alpha0);
+    r1.setStep(min_step);
+    r1.setEpsilon(min_epsilon);
+    r1.straightLineSearch();
+    double alpha = r1.goldenSectionSearch();
+    if (r1X.fx(alpha) > r1X.fx(alpha0)) alpha = alpha0;
+    return alpha;
 }

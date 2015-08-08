@@ -6,18 +6,15 @@
 /**
  * @brief Method of Steepest Descent Gradient
  */
-class MINIMUMSHARED_EXPORT SteepestDescentGradient : public GradientMethod, protected R1Function
+class MINIMUMSHARED_EXPORT SteepestDescentGradient : public GradientMethod
 {
 public:
     SteepestDescentGradient();
     virtual ~SteepestDescentGradient();
 
-    virtual void calculate();
     virtual void calculate(DoubleVector &x);
-
 protected:
-    virtual double minimize();
-    virtual double fx(double alpha);
+    virtual double minimize(const DoubleVector &x, const DoubleVector &g);
 };
 
 #endif // STEEPEST_DESCENT_GRADIENT_H

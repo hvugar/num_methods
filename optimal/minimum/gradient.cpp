@@ -2,12 +2,11 @@
 
 GradientMethod::GradientMethod() : m_fn(NULL), printer(NULL)
 {
-    m_alpha = 0.0;
     m_epsilon = 0.0;
     grad_step = 0.0;
     min_step = 0.0;
     min_epsilon = 0.0;
-    iterationCount = M = 0;
+    iterationCount = 0;
 }
 
 GradientMethod::~GradientMethod()
@@ -22,17 +21,6 @@ void GradientMethod::setFunction(RnFunction *f)
 RnFunction* GradientMethod::function() const
 {
     return m_fn;
-}
-
-void GradientMethod::setX(const DoubleVector &x)
-{
-    m_x = x;
-    m_g.resize(x.size(), 0.0);
-}
-
-const DoubleVector& GradientMethod::x() const
-{
-    return m_x;
 }
 
 double GradientMethod::epsilon() const

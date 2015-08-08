@@ -7,27 +7,26 @@ ConjugateGradient::ConjugateGradient() : GradientMethod()
 ConjugateGradient::~ConjugateGradient()
 {}
 
-void ConjugateGradient::setX(const DoubleVector &x)
+void ConjugateGradient::calculate(DoubleVector& x)
 {
-    GradientMethod::setX(x);
-    s.resize(x.size(), 0.0);
-}
+    unsigned int n1 = x.size();
 
-void ConjugateGradient::calculate()
-{
     unsigned int n = 0;
     double gr0_mod = 0.0;
     double gr1_mod = 0.0;
     double gr2_mod = 0.0;
     double distance = 0.0;
+    double alpha = 0.0;
 
+    DoubleVector g(n1);
+    DoubleVector s(n1);
     do
     {
         // Gradient of objectiv function in current point
         //calculateGradient();
-        m_fn->gradient(grad_step, m_x, m_g);
+        m_fn->gradient(grad_step, x, g);
 
-        double gradNorm = m_g.L2Norm();
+        double gradNorm = g.L2Norm();
         if (gradNorm < epsilon())
         {
             puts("Optimisation ends, because L2 norm of gradient is less than epsilon...");
@@ -38,14 +37,14 @@ void ConjugateGradient::calculate()
 
         // Module of gradient
         gr0_mod = 0.0;
-        for (unsigned int i=0; i<m_g.size(); i++) gr0_mod = gr0_mod + (m_g[i]*m_g[i]);
+        for (unsigned int i=0; i<n1; i++) gr0_mod = gr0_mod + (g[i]*g[i]);
         //gr0_mod = sqrt(gr0_mod);
 
         if (n == 0)
         {
             gr1_mod = gr0_mod;
             // First direction is antigradient
-            for (unsigned int i=0; i<m_g.size(); i++) s[i] = -m_g[i];
+            for (unsigned int i=0; i<n1; i++) s[i] = -g[i];
         }
         else
         {
@@ -53,60 +52,53 @@ void ConjugateGradient::calculate()
             double w = gr2_mod / gr1_mod;
             gr1_mod = gr2_mod;
             // Direction in next iteration (n != 0)
-            for (unsigned int i=0; i<m_g.size(); i++) s[i] = -m_g[i] + s[i] * w;
+            for (unsigned int i=0; i<n1; i++) s[i] = -g[i] + s[i] * w;
         }
 
         s.L2Normalize();
 
-        m_alpha = minimize();
+        alpha = minimize(x, s);
 
-        if (printer != NULL) printer->print(iterationCount, m_x, s, m_alpha, function());
+        if (printer != NULL) printer->print(iterationCount, x, s, alpha, function());
 
         distance = 0.0;
-        for (unsigned int i=0; i<m_x.size(); i++)
+        for (unsigned int i=0; i<n1; i++)
         {
-            double x = m_x[i];
-            m_x[i] = m_x[i] + m_alpha * s[i];
+            double cx = x[i];
+            x[i] = x[i] + alpha * s[i];
 
-            distance += (m_x[i]-x)*(m_x[i]-x);
+            distance += (x[i]-cx)*(x[i]-cx);
         }
         distance = sqrt(distance);
 
-        if ( n == (m_x.size()) ) { n = 0; } else { n++; }
+        if ( n == (x.size()) ) { n = 0; } else { n++; }
 
         /* calculating distance previous and new point */
     } while (distance > epsilon());
 }
 
-void ConjugateGradient::calculate(DoubleVector& x0)
-{}
-
-double ConjugateGradient::minimize()
+double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
 {
-    struct R1FunctionX : public R1Function
+    struct ConjugateR1Function : public R1Function
     {
         virtual double fx(double alpha)
         {
-            DoubleVector x(n);
+            DoubleVector cx(n);
             for (unsigned int i=0; i < n; i++)
             {
-                x[i] = (*m_x)[i] + alpha * (*s)[i];
+                cx[i] = x[i] + alpha * s[i];
             }
-            return f->fx(x);
+            return f->fx(cx);
         }
 
-        DoubleVector *m_x;
-        DoubleVector *s;
+        ConjugateR1Function(const DoubleVector &x, const DoubleVector &s, RnFunction *f, unsigned int n) : x(x), s(s), f(f), n(n) {}
+        DoubleVector x;
+        DoubleVector s;
         RnFunction *f;
         unsigned int n;
     };
 
-    R1FunctionX r1X;
-    r1X.m_x = &m_x;
-    r1X.s = &s;
-    r1X.n = m_x.size();
-    r1X.f = m_fn;
-
+    ConjugateR1Function r1X(x, s, m_fn, x.size());
 
     double alpha0 = 0.0;
     R1Minimize r1;
@@ -116,16 +108,6 @@ double ConjugateGradient::minimize()
     r1.setEpsilon(min_epsilon);
     r1.straightLineSearch();
     double alpha = r1.goldenSectionSearch();
-    if (fx(alpha) > fx(alpha0)) alpha = alpha0;
+    if (r1X.fx(alpha) > r1X.fx(alpha0)) alpha = alpha0;
     return alpha;
-}
-
-double ConjugateGradient::fx(double alpha)
-{
-    DoubleVector x(m_x.size());
-    for (unsigned int i=0; i < m_x.size(); i++)
-    {
-        x[i] = m_x[i] + alpha * s[i];
-    }
-    return m_fn->fx(x);
 }

@@ -21,14 +21,10 @@ public:
     GradientMethod();
     virtual ~GradientMethod();
 
-    virtual void calculate() = 0;
-    virtual void calculate(DoubleVector& x0) = 0;
+    virtual void calculate(DoubleVector& x) = 0;
 
     virtual RnFunction* function() const;
     virtual void setFunction(RnFunction* function);
-
-    virtual const DoubleVector& x() const;
-    virtual void setX(const DoubleVector& x);
 
     double epsilon() const;
     void setEpsilon(double epsilon);
@@ -40,18 +36,14 @@ public:
     void setPrinter(GrPrinter* printer);
 
 protected:
-    virtual double minimize() = 0;
+    virtual double minimize(const DoubleVector &x, const DoubleVector &g) = 0;
 
     RnFunction *m_fn;
-    DoubleVector m_x;
-    DoubleVector m_g;
-    double m_alpha;
     double m_epsilon;
     double grad_step;
     double min_epsilon;
     double min_step;
     int iterationCount;
-    int M;
     GrPrinter* printer;
 };
 
