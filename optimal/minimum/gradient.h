@@ -5,7 +5,6 @@
 
 #include <vector>
 #include <math.h>
-#include <stdio.h>
 
 #include "function.h"
 #include "r1minimize.h"
@@ -34,6 +33,7 @@ public:
     int count() const;
 
     void setPrinter(GrPrinter* printer);
+    void setNormalize(bool normalize);
 
 protected:
     virtual double minimize(const DoubleVector &x, const DoubleVector &g) = 0;
@@ -44,6 +44,7 @@ protected:
     double min_epsilon;
     double min_step;
     int iterationCount;
+    bool normalize;
     GrPrinter* printer;
 };
 

@@ -7,6 +7,7 @@ GradientMethod::GradientMethod() : m_fn(NULL), printer(NULL)
     min_step = 0.0;
     min_epsilon = 0.0;
     iterationCount = 0;
+    normalize = true;
 }
 
 GradientMethod::~GradientMethod()
@@ -52,4 +53,9 @@ int GradientMethod::count() const
 void GradientMethod::setPrinter(GrPrinter *printer)
 {
     this->printer = printer;
+}
+
+void GradientMethod::setNormalize(bool normalize)
+{
+    this->normalize = normalize;
 }

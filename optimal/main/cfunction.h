@@ -28,14 +28,16 @@ public:
     CFunction *T;
     CFunction *fx1;
     CFunction *fx2;
-    CFunction *fp1;
-    CFunction *fp2;
+//    CFunction *fp1;
+//    CFunction *fp2;
+
+    CFunction **dx;
 
 private:
-    double Hamilton(double t, const DoubleVector &x, double u, const DoubleVector &psi);
+    double H(double t, const DoubleVector &x, double u, const DoubleVector &psi);
     double Integral(const DoubleVector &u);
-    void calculate_x(const DoubleVector& u);
-    void calculate_psi(const DoubleVector& u);
+    void calculate_x(const DoubleVector& u, DoubleVector& x1, DoubleVector& x2);
+    void calculate_psi(const DoubleVector& u, DoubleVector& psi1, DoubleVector& psi2, DoubleVector& x1, DoubleVector& x2);
 
     double t0;
     double t1;
@@ -43,10 +45,10 @@ private:
     int n;
 
     DoubleVector t;
-    DoubleVector x1;
-    DoubleVector x2;
-    DoubleVector psi1;
-    DoubleVector psi2;
+//    DoubleVector x1;
+//    DoubleVector x2;
+//    DoubleVector psi1;
+//    DoubleVector psi2;
 
 public:
     static void main();
@@ -55,7 +57,7 @@ public:
 struct ControlFunctionPrinter : public GrPrinter
 {
     virtual void print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const;
-    void print(const char* s, const std::vector<double>& x) const;
+    void print(const char* s, const DoubleVector& x) const;
 };
 
 #endif // CFUNCTION_H

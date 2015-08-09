@@ -8,18 +8,18 @@ ControlFunction::ControlFunction(double t0, double t1, double h) : RnFunction()
     n = (int)ceil((t1-t0)/h) + 1;
 
     t = DoubleVector(n);
-    x1 = DoubleVector(n);
-    x2 = DoubleVector(n);
-    psi1 = DoubleVector(n);
-    psi2 = DoubleVector(n);
+    //    x1 = DoubleVector(n);
+    //    x2 = DoubleVector(n);
+    //    psi1 = DoubleVector(n);
+    //    psi2 = DoubleVector(n);
 
     for (int i=0; i<n; i++)
     {
         t[i] = i*h;
-        x1[i] = 0.0;
-        x2[i] = 0.0;
-        psi1[i] = 0.0;
-        psi2[i] = 0.0;
+        //        x1[i] = 0.0;
+        //        x2[i] = 0.0;
+        //        psi1[i] = 0.0;
+        //        psi2[i] = 0.0;
     }
 }
 
@@ -34,10 +34,16 @@ double ControlFunction::fx(const DoubleVector &u)
 
 void ControlFunction::gradient(double gradient_step, const DoubleVector& u, DoubleVector &g)
 {
+    DoubleVector psi1(n);
+    DoubleVector psi2(n);
+
+    DoubleVector x1(n);
+    DoubleVector x2(n);
+
     DoubleVector x(2);
     DoubleVector psi(2);
-    calculate_x(u);
-    calculate_psi(u);
+    calculate_x(u, x1, x2);
+    calculate_psi(u, psi1, psi2, x1, x2);
     for (int i=0; i<n; i++)
     {
         x[0] = x1[i];
@@ -48,16 +54,16 @@ void ControlFunction::gradient(double gradient_step, const DoubleVector& u, Doub
 
         double u1 = u[i] + gradient_step;
         double u2 = u[i] - gradient_step;
-        g[i] = (Hamilton(t[i], x, u1, psi) - Hamilton(t[i], x, u2, psi)) / (2 * gradient_step);
+        g[i] = (H(t[i], x, u1, psi) - H(t[i], x, u2, psi)) / (2 * gradient_step);
     }
 }
 
-double ControlFunction::Hamilton(double t, const DoubleVector &x, double u, const DoubleVector &psi)
+double ControlFunction::H(double t, const DoubleVector &x, double u, const DoubleVector &psi)
 {
     return -1.0 * fx0->fx(t, x, u) + psi[0] * fx1->fx(t, x, u) + psi[1] * fx2->fx(t, x, u);
 }
 
-void ControlFunction::calculate_x(const DoubleVector& u)
+void ControlFunction::calculate_x(const DoubleVector& u, DoubleVector& x1, DoubleVector& x2)
 {
     double k1[] = {0.0, 0.0};
     double k2[] = {0.0, 0.0};
@@ -98,7 +104,7 @@ void ControlFunction::calculate_x(const DoubleVector& u)
     }
 }
 
-void ControlFunction::calculate_psi(const DoubleVector& u)
+void ControlFunction::calculate_psi(const DoubleVector& u, DoubleVector& psi1, DoubleVector& psi2, DoubleVector& x1, DoubleVector& x2)
 {
     double k1[] = {0.0, 0.0};
     double k2[] = {0.0, 0.0};
@@ -106,9 +112,6 @@ void ControlFunction::calculate_psi(const DoubleVector& u)
     double k4[] = {0.0, 0.0};
 
     DoubleVector _x(2);
-
-//    psi1[n-1] = 0.0;
-//    psi2[n-1] = -2.0 * (x2[n-1] - 1.0);
 
     DoubleVector _x1(2);
     DoubleVector _x2(2);
@@ -136,63 +139,63 @@ void ControlFunction::calculate_psi(const DoubleVector& u)
         _psi[0] = psi1[i];
         _psi[1] = psi2[i];
 
-        double h1 = 0.000001;
+        double h_grad = 0.000001;
 
-        _x1[0] = x1[i] + h1;
+        _x1[0] = x1[i] + h_grad;
         _x1[1] = x2[i];
-        _x2[0] = x1[i] - h1;
+        _x2[0] = x1[i] - h_grad;
         _x2[1] = x2[i];
-        k1[0] = -1.0 * (Hamilton(t[i], _x1, u[i], _psi) - Hamilton(t[i], _x2, u[i], _psi)) / (2 * h);
+        k1[0] = -1.0 * (H(t[i], _x1, u[i], _psi) - H(t[i], _x2, u[i], _psi)) / (2 * h);
         _x1[0] = x1[i];
-        _x1[1] = x2[i] + h1;
+        _x1[1] = x2[i] + h_grad;
         _x2[0] = x1[i];
-        _x2[1] = x2[i] - h1;
-        k1[1] = -1.0 * (Hamilton(t[i], _x1, u[i], _psi) - Hamilton(t[i], _x2, u[i], _psi)) / (2 * h);
+        _x2[1] = x2[i] - h_grad;
+        k1[1] = -1.0 * (H(t[i], _x1, u[i], _psi) - H(t[i], _x2, u[i], _psi)) / (2 * h);
         //k1[0] = fp1->fx(t[i], _x, _psi, u[i]);
         //k1[1] = fp2->fx(t[i], _x, _psi, u[i]);
         _psi[0] = psi1[i] + (h/2.0) * k1[0];
         _psi[1] = psi2[i] + (h/2.0) * k1[1];
 
-        _x1[0] = x1[i] + h1;
+        _x1[0] = x1[i] + h_grad;
         _x1[1] = x2[i];
-        _x2[0] = x1[i] - h1;
+        _x2[0] = x1[i] - h_grad;
         _x2[1] = x2[i];
-        k2[0] = -1.0 * (Hamilton(t[i]+h/2.0, _x1, u[i], _psi) - Hamilton(t[i], _x2, u[i], _psi)) / (2 * h);
+        k2[0] = -1.0 * (H(t[i]+h/2.0, _x1, u[i], _psi) - H(t[i], _x2, u[i], _psi)) / (2 * h);
         _x1[0] = x1[i];
-        _x1[1] = x2[i] + h1;
+        _x1[1] = x2[i] + h_grad;
         _x2[0] = x1[i];
-        _x2[1] = x2[i] - h1;
-        k2[1] = -1.0 * (Hamilton(t[i]+h/2.0, _x1, u[i], _psi) - Hamilton(t[i], _x2, u[i], _psi)) / (2 * h);
+        _x2[1] = x2[i] - h_grad;
+        k2[1] = -1.0 * (H(t[i]+h/2.0, _x1, u[i], _psi) - H(t[i], _x2, u[i], _psi)) / (2 * h);
         //k2[0] = fp1->fx(t[i]+h/2.0, _x, _psi, u[i]);
         //k2[1] = fp2->fx(t[i]+h/2.0, _x, _psi, u[i]);
         _psi[0] = psi1[i] + (h/2.0) * k2[0];
         _psi[1] = psi2[i] + (h/2.0) * k2[1];
 
-        _x1[0] = x1[i] + h1;
+        _x1[0] = x1[i] + h_grad;
         _x1[1] = x2[i];
-        _x2[0] = x1[i] - h1;
+        _x2[0] = x1[i] - h_grad;
         _x2[1] = x2[i];
-        k3[0] = -1.0 * (Hamilton(t[i]+h/2.0, _x1, u[i], _psi) - Hamilton(t[i], _x2, u[i], _psi)) / (2 * h);
+        k3[0] = -1.0 * (H(t[i]+h/2.0, _x1, u[i], _psi) - H(t[i], _x2, u[i], _psi)) / (2 * h);
         _x1[0] = x1[i];
-        _x1[1] = x2[i] + h1;
+        _x1[1] = x2[i] + h_grad;
         _x2[0] = x1[i];
-        _x2[1] = x2[i] - h1;
-        k3[1] = -1.0 * (Hamilton(t[i]+h/2.0, _x1, u[i], _psi) - Hamilton(t[i], _x2, u[i], _psi)) / (2 * h);
+        _x2[1] = x2[i] - h_grad;
+        k3[1] = -1.0 * (H(t[i]+h/2.0, _x1, u[i], _psi) - H(t[i], _x2, u[i], _psi)) / (2 * h);
         //k3[0] = fp1->fx(t[i]+h/2.0, _x, _psi, u[i]);
         //k3[1] = fp2->fx(t[i]+h/2.0, _x, _psi, u[i]);
         _psi[0] = psi1[i] + h * k3[0];
         _psi[1] = psi2[i] + h * k3[1];
 
-        _x1[0] = x1[i] + h1;
+        _x1[0] = x1[i] + h_grad;
         _x1[1] = x2[i];
-        _x2[0] = x1[i] - h1;
+        _x2[0] = x1[i] - h_grad;
         _x2[1] = x2[i];
-        k4[0] = -1.0 * (Hamilton(t[i]+h, _x1, u[i], _psi) - Hamilton(t[i], _x2, u[i], _psi)) / (2 * h);
+        k4[0] = -1.0 * (H(t[i]+h, _x1, u[i], _psi) - H(t[i], _x2, u[i], _psi)) / (2 * h);
         _x1[0] = x1[i];
-        _x1[1] = x2[i] + h1;
+        _x1[1] = x2[i] + h_grad;
         _x2[0] = x1[i];
-        _x2[1] = x2[i] - h1;
-        k4[1] = -1.0 * (Hamilton(t[i]+h, _x1, u[i], _psi) - Hamilton(t[i], _x2, u[i], _psi)) / (2 * h);
+        _x2[1] = x2[i] - h_grad;
+        k4[1] = -1.0 * (H(t[i]+h, _x1, u[i], _psi) - H(t[i], _x2, u[i], _psi)) / (2 * h);
         //k4[0] = fp1->fx(t[i]+h, _x, _psi, u[i]);
         //k4[1] = fp2->fx(t[i]+h, _x, _psi, u[i]);
         psi1[i-1] = psi1[i] + (h/6.0) * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0]);
@@ -202,7 +205,10 @@ void ControlFunction::calculate_psi(const DoubleVector& u)
 
 double ControlFunction::Integral(const DoubleVector &u)
 {
-    calculate_x(u);
+    DoubleVector x1(n);
+    DoubleVector x2(n);
+
+    calculate_x(u, x1, x2);
 
     double sum = 0.0;
     int i=0;
@@ -238,6 +244,8 @@ void ControlFunction::main()
     //struct t_px1 : public CFunction { virtual double fx(double t, const DoubleVector &x, const DoubleVector &psi, double u) { return 2.0 * (x[0] - t*t*t) - psi[1]; } };
     //struct t_px2 : public CFunction { virtual double fx(double t, const DoubleVector &x, const DoubleVector &psi, double u) { return 2.0 * (x[1] - t) - 6.0 * x[1] * psi[0] - psi[1]; } };
 
+    ControlFunctionPrinter cfp;
+
     /* Function */
     ControlFunction c(0.0, 1.0, 0.001);
     c.fx0 = new t_fx0;
@@ -246,6 +254,10 @@ void ControlFunction::main()
     c.fx2 = new t_fx2;
     //c.fp1 = new t_px1;
     //c.fp2 = new t_px2;
+
+    c.dx = new CFunction*[2];
+    c.dx[0] = new t_fx1;
+    c.dx[1] = new t_fx2;
 
     /* initial point */
     DoubleVector u0(c.n);
@@ -257,8 +269,7 @@ void ControlFunction::main()
     g1.setEpsilon(0.0000001);
     g1.setGradientStep(0.0000001);
     g1.setR1MinimizeEpsilon(0.01, 0.0000001);
-//    g1.setX(u0);
-    g1.setPrinter(new ControlFunctionPrinter);
+    g1.setPrinter(&cfp);
     g1.calculate(u0);
 
     puts("-----------------------------------------------------------------");
@@ -269,8 +280,7 @@ void ControlFunction::main()
     g2.setEpsilon(0.0000001);
     g2.setGradientStep(0.0000001);
     g2.setR1MinimizeEpsilon(0.01, 0.0000001);
-//    g2.setX(u0);
-    g2.setPrinter(new ControlFunctionPrinter);
+    g2.setPrinter(&cfp);
     g2.calculate(u0);
 }
 
@@ -280,7 +290,7 @@ void ControlFunctionPrinter::print(unsigned int iterationCount, const DoubleVect
     print("u", m_x);
 }
 
-void ControlFunctionPrinter::print(const char* s, const std::vector<double>& x) const
+void ControlFunctionPrinter::print(const char* s, const DoubleVector& x) const
 {
     unsigned int i;
     unsigned int n = x.size();
@@ -305,3 +315,4 @@ void ControlFunctionPrinter::print(const char* s, const std::vector<double>& x) 
     }
     printf("\n");
 }
+

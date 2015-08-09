@@ -2,6 +2,7 @@
 
 ConjugateGradient::ConjugateGradient() : GradientMethod()
 {
+    setNormalize(true);
 }
 
 ConjugateGradient::~ConjugateGradient()
@@ -55,7 +56,8 @@ void ConjugateGradient::calculate(DoubleVector& x)
             for (unsigned int i=0; i<n1; i++) s[i] = -g[i] + s[i] * w;
         }
 
-        s.L2Normalize();
+        /* Normalize vector */
+        if (normalize) s.L2Normalize();
 
         alpha = minimize(x, s);
 
@@ -92,22 +94,29 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
         }
 
         ConjugateR1Function(const DoubleVector &x, const DoubleVector &s, RnFunction *f, unsigned int n) : x(x), s(s), f(f), n(n) {}
-        DoubleVector x;
-        DoubleVector s;
+        const DoubleVector &x;
+        const DoubleVector &s;
         RnFunction *f;
         unsigned int n;
     };
 
     ConjugateR1Function r1X(x, s, m_fn, x.size());
 
+//    double alpha0 = 0.0;
+//    R1Minimize r1;
+//    r1.setFunction(&r1X);
+//    r1.setX0(alpha0);
+//    r1.setStep(min_step);
+//    r1.setEpsilon(min_epsilon);
+//    r1.straightLineSearch();
+//    double alpha = r1.goldenSectionSearch();
+//    if (r1X.fx(alpha) > r1X.fx(alpha0)) alpha = alpha0;
+//    return alpha;
+
     double alpha0 = 0.0;
-    R1Minimize r1;
-    r1.setFunction(&r1X);
-    r1.setX0(alpha0);
-    r1.setStep(min_step);
-    r1.setEpsilon(min_epsilon);
-    r1.straightLineSearch();
-    double alpha = r1.goldenSectionSearch();
+    double a,b,alpha;
+    R1Minimize::StranghLineSearch(alpha0, min_step, a, b, &r1X);
+    R1Minimize::GoldenSectionSearch(a, b, alpha, &r1X, min_epsilon);
     if (r1X.fx(alpha) > r1X.fx(alpha0)) alpha = alpha0;
     return alpha;
 }

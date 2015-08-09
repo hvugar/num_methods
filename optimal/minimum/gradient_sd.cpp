@@ -1,7 +1,9 @@
 #include "gradient_sd.h"
 
 SteepestDescentGradient::SteepestDescentGradient() : GradientMethod()
-{}
+{
+    setNormalize(true);
+}
 
 SteepestDescentGradient::~SteepestDescentGradient()
 {}
@@ -29,7 +31,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
         iterationCount++;
 
         /* Normalize vector */
-        g.L2Normalize();
+        if (normalize) g.L2Normalize();
 
         /* R1 minimization in direct of antigradient */
         alpha = minimize(x, g);
@@ -52,6 +54,8 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
 
         /* calculating distance previous and new point */
     } while (distance > epsilon());
+
+    g.clear();
 }
 
 double SteepestDescentGradient::minimize(const DoubleVector &x, const DoubleVector &g)
@@ -69,8 +73,8 @@ double SteepestDescentGradient::minimize(const DoubleVector &x, const DoubleVect
         }
 
         SteepestDescentR1Function(const DoubleVector &x, const DoubleVector &g, RnFunction *f, unsigned int n) : x(x), g(g), f(f), n(n) {}
-        DoubleVector x;
-        DoubleVector g;
+        const DoubleVector &x;
+        const DoubleVector &g;
         RnFunction *f;
         unsigned int n;
     };
@@ -87,4 +91,11 @@ double SteepestDescentGradient::minimize(const DoubleVector &x, const DoubleVect
     double alpha = r1.goldenSectionSearch();
     if (r1X.fx(alpha) > r1X.fx(alpha0)) alpha = alpha0;
     return alpha;
+
+//    double alpha0 = 0.0;
+//    double a,b,alpha;
+//    R1Minimize::StranghLineSearch(alpha0, min_step, a, b, &r1X);
+//    R1Minimize::GoldenSectionSearch(a, b, alpha, &r1X, min_epsilon);
+//    if (r1X.fx(alpha) > r1X.fx(alpha0)) alpha = alpha0;
+//    return alpha;
 }

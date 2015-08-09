@@ -40,6 +40,7 @@ void Rosenbrock::main()
 {
     /* Function */
     Rosenbrock r;
+    RosenbrockPrinter rp;
 
     /* initial point */
     DoubleVector x0(2);
@@ -52,8 +53,7 @@ void Rosenbrock::main()
     g1.setEpsilon(0.000001);
     g1.setGradientStep(0.000001);
     g1.setR1MinimizeEpsilon(0.1, 0.000001);
-//    g1.setX(x0);
-    g1.setPrinter(new RosenbrockPrinter);
+    g1.setPrinter(&rp);
     g1.calculate(x0);
 
 
@@ -66,8 +66,8 @@ void Rosenbrock::main()
     g2.setEpsilon(0.000001);
     g2.setGradientStep(0.000001);
     g2.setR1MinimizeEpsilon(0.1, 0.000001);
-//    g2.setX(x0);
-    g2.setPrinter(new RosenbrockPrinter);
+    g2.setPrinter(&rp);
+    g2.setNormalize(false);
     g2.calculate(x0);
 }
 
