@@ -19,7 +19,7 @@ struct R1Function1 : public R1Function
 
 double R1Function1::fx(double x)
 {
-    return (x-5)*(x-5);
+    return 2.0*x*x - 12.0*x;
 }
 
 int main()
@@ -31,10 +31,22 @@ int main()
 //    ControlFunction::main();
 
     R1Function1 f;
-    double a, b;
-    a = b = 0.0;
-    R1Minimize::Swann(1.0, 1.0, a, b, &f);
-    printf("%f %f\n", a, b);
+    double x = 5.0;
+    double a = NAN;
+    double b = NAN;
+    double c = NAN;
+
+    double step = 5.0;
+    //double epsilon = 0.15;
+
+    unsigned int n = 9;
+    //double step1 = 0.2;
+
+    R1Minimize::Swann(x, step, a, b, &f);
+    printf("[%.6f, %.6f]\n", a, b);
+
+    R1Minimize::BruteForceLineSearch(a, b, c, n, &f);
+    printf("[%.6f, %.6f] %.6f\n", a, b, (a+b)/2.0);
 
     return 0;
 }

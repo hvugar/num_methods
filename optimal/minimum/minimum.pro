@@ -10,8 +10,6 @@ DESTDIR += ../bin
 
 SOURCES += \
     function.cpp \
-    methods1.cpp \
-    minimum1.cpp \
     r1minimize.cpp \
     gradient.cpp \
     gradient_cjt.cpp \
@@ -23,7 +21,6 @@ SOURCES += \
     printer.cpp
 
 HEADERS += global.h \
-    methods.h \
     function.h \
     r1minimize.h \
     gradient.h \

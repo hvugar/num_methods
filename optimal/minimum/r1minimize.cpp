@@ -216,7 +216,7 @@ double R1Minimize::goldenSectionSearch()
 }
 
 /**
- * @brief         Методы прямого поиска
+ * @brief         Методы прямого поиска. Установления границ интервала.
  * @param x       Произвольно выбранная начальная точка
  * @param step    Величина шага
  * @param a       Начальная точка отрезка
@@ -352,6 +352,12 @@ void R1Minimize::Swann(double x, double step, double &a, double &b, R1Function *
 
 /**
  * @brief          Метод золотого сечения
+ *                 Метод относится к последовательным стратегиям. Задается начальный интервал неопределенности и
+ *                 требуемая точность. Алгоритм уменьшения интервала опирается на анализ значений функции в двух точках.
+ *                 В качестве точек вычисления функции выбираются точки золотого сечения. Тогда с учетом свойств золотого
+ *                 сечения на каждой итерации, кроме первой, требуется только одно новое вычисление функции. Условия
+ *                 окончания процесса поиска стандартные: поиск заканчивается, когда длина текущего интервала
+ *                 неопределенности оказывается меньше установленной величины.
  * @param a        Начальная точка отрезка
  * @param b        Конечнная точка отрезка
  * @param x
@@ -359,8 +365,7 @@ void R1Minimize::Swann(double x, double step, double &a, double &b, R1Function *
  * @param epsilon  Число эпсилон для останова метода
  * @return
  */
-
-double R1Minimize::GoldenSectionSearch(double a, double b, double &x, R1Function *f, double epsilon)
+double R1Minimize::GoldenSectionSearch(double &a, double &b, double &x, R1Function *f, double epsilon)
 {
     double phi = 1.6180339887498948482045868343656;
 
@@ -412,7 +417,14 @@ double R1Minimize::GoldenSectionSearch(double a, double b, double &x, R1Function
 }
 
 /**
- * @brief          Метод деления интервала пополам
+ * @brief          Метод деления интервала пополам.
+ *                 Метод относится к последовательным стратегиям и позволяет исключить из дальнейшего
+ *                 рассмотрения на каждой итерации в точности половину текущего интервала неопределенности.
+ *                 Задается начальный интервал неопределенности, а алгоритм уменьшения интервала, являясь, как и
+ *                 в общем случае, "гарантирующим", основан на анализе величин функции в трех точках, равномерно
+ *                 распределенных на текущем интервале (делящих его на четыре равные части). Условия окончания
+ *                 процесса поиска стандартные: поиск заканчивается, когда длина текущего интервала неопределенности
+ *                 оказывается меньше установленной величины.
  * @param a        Начальная точка отрезка
  * @param b        Конечнная точка отрезка
  * @param x
@@ -420,7 +432,7 @@ double R1Minimize::GoldenSectionSearch(double a, double b, double &x, R1Function
  * @param epsilon  Число эпсилон для останова метода
  * @return
  */
-double HalphIntervalMethod(double a, double b, double &x, R1Function *f, double epsilon)
+double R1Minimize::HalphIntervalMethod(double &a, double &b, double &x, R1Function *f, double epsilon)
 {
     if ( f == NULL ) return NAN;
 
@@ -457,5 +469,142 @@ double HalphIntervalMethod(double a, double b, double &x, R1Function *f, double 
         L = b - a;
     }
 
+    x = (b + a) /  2.0;
+    if (f->fx(a)<f->fx(b)) x = a;
+    if (f->fx(a)>f->fx(b)) x = b;
+
     return L;
+}
+
+/**
+ * @brief          Метод равномерного поиска.
+ *                 Метод относится к пассивным стратегиям. Задается начальный интервал
+ *                 неопределенности [a, b] и количество вычислений функции n.
+ *                 Вычисления производятся в n равноотстоящих друг от друга точках (при этом
+ *                 интервал делится на n + 1 равных интервалов). Путем сравнения величин
+ *                 f(xi), i = 1,...,n находится точка xк, в которой значение функции наименьшее.
+ *                 Искомая точка минимума х* считается заключенной в интервале [хk-1, хk+1]
+ * @param a        Начальная точка отрезка
+ * @param b        Конечнная точка отрезка
+ * @param n        Количество вычислений функции
+ * @param f        Целевая функция
+ */
+void R1Minimize::UniformLineSearch(double &a, double &b, double &c, unsigned int n, R1Function *f)
+{
+    if ( f == NULL ) return;
+
+    double step = (b - a) / (n+1);
+    DoubleVector x(n);
+    DoubleVector y(n);
+
+    for (unsigned int i=1; i<=n; i++)
+    {
+        x[i-1] = a + i * step;
+        y[i-1] = f->fx(x[i-1]);
+    }
+
+    unsigned int k=0;
+    double min = y[k];
+    for (unsigned int i=1; i<n; i++)
+    {
+        if (y[i] < min) { k = i; min = y[i]; }
+    }
+
+    a = x[k-1];
+    b = x[k+1];
+    c = x[k];
+
+    x.clear();
+    y.clear();
+}
+
+/**
+ * @brief          Метод перебора.
+ *                 Метод относится к пассивным стратегиям. Задается начальный интервал
+ *                 неопределенности [a, b] и количество вычислений функции n.
+ *                 Вычисления производятся в n равноотстоящих друг от друга точках (при этом
+ *                 интервал делится на n + 1 равных интервалов). Путем сравнения величин
+ *                 f(xi), i = 0,...,n+1 находится точка xк, в которой значение функции наименьшее.
+ *                 Искомая точка минимума х* считается заключенной в интервале [хk-1, хk+1]
+ * @param a        Начальная точка отрезка
+ * @param b        Конечнная точка отрезка
+ * @param n        Количество вычислений функции
+ * @param f        Целевая функция
+ */
+void R1Minimize::BruteForceLineSearch(double &a, double &b, double &c, unsigned int n, R1Function *f)
+{
+    if ( f == NULL ) return;
+
+    double step = (b - a) / (n+1);
+    DoubleVector x(n+2);
+    DoubleVector y(n+2);
+
+    for (unsigned int i=0; i<=n+1; i++)
+    {
+        x[i-1] = a + i * step;
+        y[i-1] = f->fx(x[i-1]);
+    }
+
+    unsigned int k=0;
+    double min = y[k];
+    for (unsigned int i=1; i<=n+1; i++)
+    {
+        if (y[i] < min) { k = i; min = y[i]; }
+    }
+
+    if (k == 0)
+    {
+        a = x[0];
+        b = x[1];
+    }
+    else if (k == n+1)
+    {
+        a = x[n];
+        b = x[n+1];
+    } else {
+        a = x[k-1];
+        b = x[k+1];
+    }
+    c = x[k];
+
+    x.clear();
+    y.clear();
+}
+
+/**
+ * @brief          Метод дихотомии
+ *                 Метод относится к последовательным стратегиям. Задается начальный интервал неопределенности и
+ *                 требуемая точность. Алгоритм опирается на анализ значений функции в двух точках. Для их нахождения
+ *                 текущий интервал неопределенности делится пополам и в обе стороны от середины откладывается по — step/2,
+ *                 где step - малое положительное число. Условия окончания процесса поиска стандартные: поиск заканчивается,
+ *                 когда длина текущего интервала неопределенности оказывается меньше установленной величины.
+
+ * @param a        Начальная точка отрезка
+ * @param b        Конечнная точка отрезка
+ * @param c
+ * @param f        Целевая функция
+ * @param step     Малое число
+ * @param epsilon  Число эпсилон для останова метода
+ */
+void R1Minimize::DichotomyMethod(double &a, double &b, double &c, R1Function *f, double step, double epsilon)
+{
+    if ( f == NULL ) return;
+
+    while ( fabs(b - a) > epsilon )
+    {
+        double y = (a + b - step) / 2.0;
+        double z = (a + b + step) / 2.0;
+        double f_y = f->fx(y);
+        double f_z = f->fx(z);
+
+        if (f_y <= f_z)
+        {
+            b = z;
+        }
+        else
+        {
+            a = y;
+        }
+    }
+    c = (a + b)/2.0;
 }
