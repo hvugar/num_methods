@@ -34,6 +34,7 @@ public:
     static void Swann(double x, double step, double &a, double &b, R1Function *f);
 
     static double GoldenSectionSearch(double &a, double &b, double &x, R1Function *f, double epsilon);
+    static void FibonachiMethod(double &a, double &b, double &c, double step, double epsilon, R1Function *f);
     static double HalphIntervalMethod(double &a, double &b, double &x, R1Function *f, double epsilon);
     static void UniformLineSearch(double &a, double &b, double &c, unsigned int n, R1Function *f);
     static void BruteForceLineSearch(double &a, double &b, double &c, unsigned int n, R1Function *f);

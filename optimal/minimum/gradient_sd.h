@@ -5,6 +5,7 @@
 
 /**
  * @brief Method of Steepest Descent Gradient
+ * Метод наискорейшего градиентного спуска.
  */
 class MINIMUMSHARED_EXPORT SteepestDescentGradient : public GradientMethod
 {

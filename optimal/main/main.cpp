@@ -24,7 +24,7 @@ double R1Function1::fx(double x)
 
 int main()
 {
-//    Rosenbrock::main();
+    Rosenbrock::main();
 //    puts("*****************************************************************");
 //    CFunction1::main();
 //    CFunction2::main();
@@ -37,16 +37,16 @@ int main()
     double c = NAN;
 
     double step = 5.0;
-    //double epsilon = 0.15;
+    double epsilon = 0.15;
 
     unsigned int n = 9;
-    //double step1 = 0.2;
+    double step1 = 0.2;
 
     R1Minimize::Swann(x, step, a, b, &f);
     printf("[%.6f, %.6f]\n", a, b);
 
-    R1Minimize::BruteForceLineSearch(a, b, c, n, &f);
-    printf("[%.6f, %.6f] %.6f\n", a, b, (a+b)/2.0);
+    R1Minimize::FibonachiMethod(a, b, c, step1, epsilon, &f);
+    //printf("[%.6f, %.6f] %.6f\n", a, b, (a+b)/2.0);
 
     return 0;
 }

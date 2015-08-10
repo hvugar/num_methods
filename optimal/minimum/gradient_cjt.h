@@ -5,6 +5,7 @@
 
 /**
  * @brief Method of Conjugate Gradient
+ * Метод Флетчера-Ривса (Метод сопряженных градиентов).
  */
 class MINIMUMSHARED_EXPORT ConjugateGradient : public GradientMethod
 {

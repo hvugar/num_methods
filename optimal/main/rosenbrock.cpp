@@ -1,6 +1,7 @@
 #include "rosenbrock.h"
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
+#include <gradient_cs.h>
 
 double Rosenbrock::fx(const DoubleVector& x)
 {
@@ -54,8 +55,7 @@ void Rosenbrock::main()
     g1.setGradientStep(0.000001);
     g1.setR1MinimizeEpsilon(0.1, 0.000001);
     g1.setPrinter(&rp);
-    g1.calculate(x0);
-
+//    g1.calculate(x0);
 
     puts("-----------------------------------------------------------------");
     x0[0] = -1.2;
@@ -68,6 +68,19 @@ void Rosenbrock::main()
     g2.setR1MinimizeEpsilon(0.1, 0.000001);
     g2.setPrinter(&rp);
     g2.setNormalize(false);
-    g2.calculate(x0);
+//    g2.calculate(x0);
+
+    puts("-----------------------------------------------------------------");
+    x0[0] = -1.2;
+    x0[1] = +1.0;
+    /* Minimization */
+    ConstStepGradient g3;
+    g3.setFunction(&r);
+    g3.setEpsilon(0.000001);
+    g3.setGradientStep(0.000001);
+    g3.setR1MinimizeEpsilon(0.1, 0.000001);
+    g3.setPrinter(&rp);
+    g3.setNormalize(false);
+    g3.calculate(x0);
 }
 

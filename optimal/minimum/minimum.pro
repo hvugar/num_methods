@@ -18,7 +18,8 @@ SOURCES += \
     penalty.cpp \
     doublevector.cpp \
     gridmethod.cpp \
-    printer.cpp
+    printer.cpp \
+    gradient_cs.cpp
 
 HEADERS += global.h \
     function.h \
@@ -30,6 +31,7 @@ HEADERS += global.h \
     penalty.h \
     doublevector.h \
     gridmethod.h \
-    printer.h
+    printer.h \
+    gradient_cs.h
 
 DISTFILES += minimum.pri
