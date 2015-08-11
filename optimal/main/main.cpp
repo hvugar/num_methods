@@ -29,11 +29,7 @@ double R1Function1::fx(double x)
 
 int main()
 {
-    DoubleVector p(2,0.0);
-    PointControl pc(0.0, 1.0, 0.0, 1.7391017563, 0.00001, 0.00001);
-    pc.fx(p);
-
-
+    PointControl::main();
 //    Rosenbrock::main();
 //    BealesFunction::main();
 //    BoothFunction::main();
@@ -42,6 +38,7 @@ int main()
 //    CFunction2::main();
 //    ControlFunction::main();
 //    HeatControl::main();
+
     return 0;
 }
 

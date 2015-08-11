@@ -1,15 +1,16 @@
 #include "pointcontrol.h"
+#include <gradient_cjt.h>
 #include <math.h>
 #include "utils.h"
 
 PointControl::PointControl(double t0, double t1, double x0, double x1, double dt, double dx)
 {
-    this->t0 = 0.0;
-    this->t1 = 1.0;
-    this->x0 = 0.0;
-    this->x1 = 1.7391017563;
-    this->dx = 0.00001;
-    this->dt = 0.00001;
+    this->t0 = t0;
+    this->t1 = t1;
+    this->x0 = x0;
+    this->x1 = x1;
+    this->dx = dx;
+    this->dt = dt;
 
     n = (unsigned int)(ceil((t1 - t0)/dt))+1;
     epsilon = 0.02;
@@ -18,54 +19,66 @@ PointControl::PointControl(double t0, double t1, double x0, double x1, double dt
     T[0] = 0.2;
     T[1] = 0.5;
 
-    p.resize(2);
-    p[0] = 0.3;
-    p[1] = 0.4;
+//    p.resize(2);
+//    p[0] = 0.3;
+//    p[1] = 0.4;
 }
 
 double PointControl::fx(const DoubleVector &p)
 {
+    this->p = p;
     DoubleVector x(n, 0.0);
     calculate_x(x);
-
-    printX("x:",x);
-    return 0.0;
+    return (x[n-1] - x1)*(x[n-1] - x1);
 }
 
-void PointControl::gradient(double step, const DoubleVector &x, DoubleVector &g)
+void PointControl::gradient(double step, const DoubleVector &p, DoubleVector &g)
 {
+    DoubleVector x(n, 0.0);
+    DoubleVector psi(n, 0.0);
+
+    calculate_x(x);
+    calculate_psi(x, psi);
+
+    g[0] = psi[30000];
+    g[1] = psi[40000];
+
+    printX("x:", x);
+    printX("psi:", psi);
+    printf("g: %f %f\n", g[0], g[1]);
 }
 
-void PointControl::calculate()
+double PointControl::f(double t, double x)
 {
-}
-
-double PointControl::f(double x, double t)
-{
-    return 3.0*t*t - t*t*t + x;
+    return 3.0*t*t + t*t*t - x;
 }
 
 double PointControl::delta(double t)
 {
-//    for (unsigned int i=0; i<T.size(); i++)
-//    {
-//        if (fabs(T[i] - t) < ((epsilon / 2.0) + 0.000001)) return 1.0 / epsilon;
-//    }
-//    return 0.0;
-    double dlt = 0.0;
-    if (fabs(t - T[0]) <= ((epsilon / 2.0) + 0.000001)) dlt = 1.0 / epsilon;
-    if (fabs(t - T[1]) <= ((epsilon / 2.0) + 0.000001)) dlt = 1.0 / epsilon;
-    return dlt;
+    for (unsigned int i=0; i<T.size(); i++)
+    {
+        if (fabs(T[i] - t) < ((epsilon / 2.0) + 0.000001)) return 1.0 / epsilon;
+    }
+    return 0.0;
+//    double dlt = 0.0;
+//    if (fabs(t - T[0]) <= ((epsilon / 2.0) + 0.000001)) dlt = 1.0 / epsilon;
+//    if (fabs(t - T[1]) <= ((epsilon / 2.0) + 0.000001)) dlt = 1.0 / epsilon;
+//    return dlt;
 }
 
-double PointControl::dxdt(double x, double t)
+double PointControl::dxdt(double t, double x)
 {
-    double sum = f(x, t);
-//    for (unsigned int i=0; i<p.size(); i++)
-//    {
-//        sum += p[i]*delta(t);
-//    }
+    double sum = f(t, x);
+    for (unsigned int i=0; i<p.size(); i++)
+    {
+        sum += p[i]*delta(t);
+    }
     return sum;
+}
+
+double PointControl::px(double t, double psi)
+{
+    return psi;
 }
 
 void PointControl::calculate_x(DoubleVector &x)
@@ -80,10 +93,10 @@ void PointControl::calculate_x(DoubleVector &x)
 
     while (_t0 <= _t1)
     {
-        double k1 = dxdt(_t0, _x0);
+        double k1 = dxdt(_t0,        _x0);
         double k2 = dxdt(_t0+dt/2.0, _x0+(dt/2.0)*k1);
         double k3 = dxdt(_t0+dt/2.0, _x0+(dt/2.0)*k2);
-        double k4 = dxdt(_t0+dt, _x0+dt*k3);
+        double k4 = dxdt(_t0+dt,     _x0+dt*k3);
 
         _x0 = _x0 + (dt/6.0) * (k1 + 2.0*k2 + 2.0*k3 + k4);
         _t0 = _t0 + dt;
@@ -91,4 +104,52 @@ void PointControl::calculate_x(DoubleVector &x)
         i++;
         x[i] = _x0;
     }
+}
+
+void PointControl::calculate_psi(DoubleVector &x, DoubleVector &psi)
+{
+    int i = n-1;
+    psi[i] = -1;
+
+    double _t0 = t0;
+    double _t1 = t1;
+    double psi1 = psi[i];
+//    double _x1 = x1;
+    double h = -dt;
+
+    i = n - 2;
+    while (_t0 <= _t1)
+    {
+        double k1 = px(_t1, psi1);
+        double k2 = px(_t1+h/2.0, psi1+(h/2.0)*k1);
+        double k3 = px(_t1+h/2.0, psi1+(h/2.0)*k2);
+        double k4 = px(_t1+h, psi1+h*k3);
+
+        psi1 = psi1 + (h/6) * (k1 + 2*k2 + 2*k3 + k4);
+        _t1 = _t1 + h;
+
+        //printf("%f %f %f %d\n", t0, _t1, psi1, i);
+        psi[i+1] = psi1;
+        i--;
+    }
+}
+
+void PointControl::main()
+{
+    DoubleVector p0(2,0.0);
+    PointControl pc(0.0, 1.0, 0.0, +1.73923724, 0.00001, 0.00001);
+
+//    /* initial point */
+//    for (unsigned int i=0; i<p0.size(); i++) p0[i] = 0.00001;
+    p0[0] = +10.0;
+    p0[1] = +0.7925423850;
+//    /* Minimization */
+    ConjugateGradient g1;
+    g1.setFunction(&pc);
+    g1.setEpsilon1(0.0000001);
+    g1.setEpsilon2(0.0000001);
+    g1.setGradientStep(0.0000001);
+    g1.setR1MinimizeEpsilon(0.01, 0.0000001);
+//    g1.setPrinter(&cfp);
+    g1.calculate(p0);
 }

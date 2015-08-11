@@ -242,7 +242,7 @@ void R1Minimize::StranghLineSearch(double x, double step, double &a, double &b, 
     // if y1 and y2 are both lesser than y0 then there is not minimum. function is not unimodal
     if (y1 <= y0 && y0 >= y2)
     {
-        fputs("Function is not unimodal", stderr);
+        fputs("Function is not unimodal\n", stderr);
         return;
     }
 
@@ -312,7 +312,7 @@ void R1Minimize::Swann(double x, double step, double &a, double &b, R1Function *
     /* функция не является  */
     if ( y1 <= y0 && y0 >= y2 )
     {
-        fputs("Function is not unimodal", stderr);
+        fputs("Function is not unimodal\n", stderr);
         a = b = NAN;
         return;
     }

@@ -9,7 +9,7 @@ public:
     PointControl(double t0, double t1, double x0, double x1, double dt, double dx);
 
     virtual double fx(const DoubleVector& p);
-    virtual void gradient(double step, const DoubleVector& x, DoubleVector& g);
+    virtual void gradient(double step, const DoubleVector& p, DoubleVector& g);
 
     void calculate();
 
@@ -26,11 +26,16 @@ private:
     DoubleVector T;
     DoubleVector p;
 
-    double f(double x, double t);
+    double f(double t, double x);
     double delta(double t);
-    double dxdt(double x, double t);
+    double dxdt(double t, double x);
+    double px(double t, double psi);
 
     void calculate_x(DoubleVector &x);
+    void calculate_psi(DoubleVector &x, DoubleVector &p);
+
+public:
+    static void main();
 };
 
 #endif // POINTCONTROL_H
