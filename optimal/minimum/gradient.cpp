@@ -1,11 +1,12 @@
 #include "gradient.h"
 
-GradientMethod::GradientMethod() : m_fn(NULL), printer(NULL)
+GradientMethod::GradientMethod() : m_fn(NULL), printer(NULL), projection(NULL)
 {
-    m_epsilon = 0.0;
-    grad_step = 0.0;
-    min_step = 0.0;
-    min_epsilon = 0.0;
+    m_epsilon1 = 0.1;
+    m_epsilon1 = 0.1;
+    grad_step = 0.01;
+    min_step = 0.1;
+    min_epsilon = 0.01;
     iterationCount = 0;
     normalize = true;
 }
@@ -24,15 +25,26 @@ RnFunction* GradientMethod::function() const
     return m_fn;
 }
 
-double GradientMethod::epsilon() const
+double GradientMethod::epsilon1() const
 {
-    return m_epsilon;
+    return m_epsilon1;
 }
 
-void GradientMethod::setEpsilon(double epsilon)
+void GradientMethod::setEpsilon1(double epsilon)
 {
-    m_epsilon = epsilon;
+    m_epsilon1 = epsilon;
 }
+
+double GradientMethod::epsilon2() const
+{
+    return m_epsilon2;
+}
+
+void GradientMethod::setEpsilon2(double epsilon)
+{
+    m_epsilon2 = epsilon;
+}
+
 
 void GradientMethod::setR1MinimizeEpsilon(double step, double epsilon)
 {
@@ -50,9 +62,14 @@ int GradientMethod::count() const
     return iterationCount;
 }
 
-void GradientMethod::setPrinter(GrPrinter *printer)
+void GradientMethod::setPrinter(Printer *printer)
 {
     this->printer = printer;
+}
+
+void GradientMethod::setProjection(Projection *proj)
+{
+    this->projection = proj;
 }
 
 void GradientMethod::setNormalize(bool normalize)

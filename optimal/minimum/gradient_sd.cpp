@@ -21,12 +21,11 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
     do
     {
         /* calculating function gradient at current point */
-        //calculateGradient();
         m_fn->gradient(grad_step, x, g);
 
         /* if gradinet norm at current point is less than epsilon then break. no minimize */
         double gradient_norm = g.L2Norm();
-        if (gradient_norm < epsilon()) break;
+        if (gradient_norm < epsilon1()) break;
 
         iterationCount++;
 
@@ -53,7 +52,13 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
         distance = sqrt(distance);
 
         /* calculating distance previous and new point */
-    } while (distance > epsilon());
+        if (distance < epsilon2())
+        {
+            puts("Optimisation ends, because distance beetween last and current point less than epsilon...");
+            break;
+        }
+
+    } while (true);
 
     g.clear();
 }

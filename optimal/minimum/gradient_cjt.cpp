@@ -28,7 +28,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
         m_fn->gradient(grad_step, x, g);
 
         double gradNorm = g.L2Norm();
-        if (gradNorm < epsilon())
+        if (gradNorm < epsilon1())
         {
             puts("Optimisation ends, because L2 norm of gradient is less than epsilon...");
             break;
@@ -69,6 +69,8 @@ void ConjugateGradient::calculate(DoubleVector& x)
             double cx = x[i];
             x[i] = x[i] + alpha * s[i];
 
+            if (projection != NULL) projection->project(x[i]);
+
             distance += (x[i]-cx)*(x[i]-cx);
         }
         distance = sqrt(distance);
@@ -76,7 +78,13 @@ void ConjugateGradient::calculate(DoubleVector& x)
         if ( n == (x.size()) ) { n = 0; } else { n++; }
 
         /* calculating distance previous and new point */
-    } while (distance > epsilon());
+        if (distance < epsilon2())
+        {
+            puts("Optimisation ends, because distance beetween last and current point less than epsilon...");
+            break;
+        }
+
+    } while (distance > epsilon2());
 }
 
 double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)

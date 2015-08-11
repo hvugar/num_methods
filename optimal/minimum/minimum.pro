@@ -14,12 +14,12 @@ SOURCES += \
     gradient.cpp \
     gradient_cjt.cpp \
     gradient_sd.cpp \
-    gradient_prj.cpp \
     penalty.cpp \
     doublevector.cpp \
     gridmethod.cpp \
     printer.cpp \
-    gradient_cs.cpp
+    gradient_cs.cpp \
+    projection.cpp
 
 HEADERS += global.h \
     function.h \
@@ -27,11 +27,11 @@ HEADERS += global.h \
     gradient.h \
     gradient_cjt.h \
     gradient_sd.h \
-    gradient_prj.h \
     penalty.h \
     doublevector.h \
     gridmethod.h \
     printer.h \
-    gradient_cs.h
+    gradient_cs.h \
+    projection.h
 
 DISTFILES += minimum.pri

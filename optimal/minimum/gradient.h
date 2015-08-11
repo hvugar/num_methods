@@ -10,6 +10,7 @@
 #include "r1minimize.h"
 #include "doublevector.h"
 #include "printer.h"
+#include "projection.h"
 
 /**
  * @brief The GradientMethod class
@@ -25,27 +26,33 @@ public:
     virtual RnFunction* function() const;
     virtual void setFunction(RnFunction* function);
 
-    double epsilon() const;
-    void setEpsilon(double epsilon);
+    double epsilon1() const;
+    void setEpsilon1(double epsilon);
 
-    void setR1MinimizeEpsilon(double step, double epsilon);
+    double epsilon2() const;
+    void setEpsilon2(double epsilon);
+
+    void setR1MinimizeEpsilon(double step, double epsilon1);
     void setGradientStep(double step);
     int count() const;
 
-    void setPrinter(GrPrinter* printer);
+    void setPrinter(Printer* printer);
+    void setProjection(Projection* proj);
     void setNormalize(bool normalize);
 
 protected:
     virtual double minimize(const DoubleVector &x, const DoubleVector &g) = 0;
 
     RnFunction *m_fn;
-    double m_epsilon;
+    double m_epsilon1;
+    double m_epsilon2;
     double grad_step;
     double min_epsilon;
     double min_step;
     int iterationCount;
     bool normalize;
-    GrPrinter* printer;
+    Printer* printer;
+    Projection *projection;
 };
 
 #endif // GRADIENT_H
