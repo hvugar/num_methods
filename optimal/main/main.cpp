@@ -11,6 +11,7 @@
 #include "cfunction2.h"
 #include "cfunction.h"
 #include "rosenbrock.h"
+#include "bealesfunction.h"
 
 struct R1Function1 : public R1Function
 {
@@ -24,7 +25,8 @@ double R1Function1::fx(double x)
 
 int main()
 {
-    Rosenbrock::main();
+//    Rosenbrock::main();
+    BealesFunction::main();
 //    puts("*****************************************************************");
 //    CFunction1::main();
 //    CFunction2::main();

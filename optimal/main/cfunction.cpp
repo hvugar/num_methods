@@ -266,7 +266,8 @@ void ControlFunction::main()
     /* Minimization */
     SteepestDescentGradient g1;
     g1.setFunction(&c);
-    g1.setEpsilon(0.0000001);
+    g1.setEpsilon1(0.0000001);
+    g1.setEpsilon2(0.000001);
     g1.setGradientStep(0.0000001);
     g1.setR1MinimizeEpsilon(0.01, 0.0000001);
     g1.setPrinter(&cfp);
@@ -277,7 +278,8 @@ void ControlFunction::main()
     /* Minimization */
     ConjugateGradient g2;
     g2.setFunction(&c);
-    g2.setEpsilon(0.0000001);
+    g2.setEpsilon1(0.0000001);
+    g2.setEpsilon2(0.000001);
     g2.setGradientStep(0.0000001);
     g2.setR1MinimizeEpsilon(0.01, 0.0000001);
     g2.setPrinter(&cfp);

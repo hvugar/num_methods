@@ -1,10 +1,13 @@
-#ifndef ROSENBROCK_H
-#define ROSENBROCK_H
+#ifndef BEALESFUNCTION_H
+#define BEALESFUNCTION_H
 
 #include <function.h>
 #include <printer.h>
 
-struct Rosenbrock : public RnFunction
+/**
+ * @brief The Beales Function. Range -4.5 <= x,y <= 4.5
+ */
+struct BealesFunction : public RnFunction
 {
 public:
     virtual double fx(const DoubleVector& x);
@@ -16,9 +19,9 @@ private:
     double grad_step;
 };
 
-struct RosenbrockPrinter : public Printer
+struct BealesPrinter : public Printer
 {
     void print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const;
 };
 
-#endif // ROSENBROCK_H
+#endif // BEALESFUNCTION_H

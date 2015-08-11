@@ -15,7 +15,8 @@ SOURCES += main.cpp \
     utils.cpp \
 #    heatcontrol.cpp \
     rosenbrock.cpp \
-    cfunction.cpp
+    cfunction.cpp \
+    bealesfunction.cpp
 
 HEADERS += \
     cfunction1.h \
@@ -23,5 +24,6 @@ HEADERS += \
     utils.h \
 #    heatcontrol.h \
     rosenbrock.h \
-    cfunction.h
+    cfunction.h \
+    bealesfunction.h
 

@@ -54,7 +54,7 @@ public:
     static void main();
 };
 
-struct CFunction2Printer : public GrPrinter
+struct CFunction2Printer : public Printer
 {
     virtual void print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const;
     void print(const char* s, const std::vector<double>& x) const;
