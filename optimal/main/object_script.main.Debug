@@ -1,4 +1,15 @@
 INPUT(
+./debug\doublevector.o
+./debug\function.o
+./debug\r1minimize.o
+./debug\gradient.o
+./debug\gradient_cjt.o
+./debug\gradient_sd.o
+./debug\gradient_cs.o
+./debug\gridmethod.o
+./debug\penalty.o
+./debug\projection.o
+./debug\printer.o
 ./debug\main.o
 ./debug\utils.o
 ./debug\rosenbrock.o
@@ -7,6 +18,5 @@ INPUT(
 ./debug\cfunction.o
 ./debug\cfunction1.o
 ./debug\cfunction2.o
-./debug\heatcontrol1.o
 ./debug\heatcontrol.o
 );

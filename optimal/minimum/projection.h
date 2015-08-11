@@ -6,8 +6,7 @@
 class Projection
 {
 public:
-    void project(DoubleVector& x);
-    void project(double &x);
+    void project(DoubleVector &x, int index);
 
     double a;
     double b;

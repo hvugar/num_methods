@@ -13,7 +13,7 @@
 #include "projection.h"
 
 /**
- * @brief The GradientMethod class
+ * @brief The Abstract Gradient Method class
  */
 class MINIMUMSHARED_EXPORT GradientMethod
 {

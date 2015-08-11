@@ -64,21 +64,23 @@ void ConjugateGradient::calculate(DoubleVector& x)
         if (printer != NULL) printer->print(iterationCount, x, s, alpha, function());
 
         distance = 0.0;
+        double f1 = m_fn->fx(x);
         for (unsigned int i=0; i<n1; i++)
         {
             double cx = x[i];
             x[i] = x[i] + alpha * s[i];
 
-            if (projection != NULL) projection->project(x[i]);
+            if (projection != NULL) projection->project(x, i);
 
             distance += (x[i]-cx)*(x[i]-cx);
         }
         distance = sqrt(distance);
+        double f2 = m_fn->fx(x);
 
         if ( n == (x.size()) ) { n = 0; } else { n++; }
 
         /* calculating distance previous and new point */
-        if (distance < epsilon2())
+        if (distance < epsilon2() && fabs(f2 - f1) < epsilon2())
         {
             puts("Optimisation ends, because distance beetween last and current point less than epsilon...");
             break;

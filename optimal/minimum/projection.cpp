@@ -1,12 +1,8 @@
 #include "projection.h"
 
-void Projection::project(DoubleVector &x)
+void Projection::project(DoubleVector &x, int index)
 {
-}
-
-void Projection::project(double &x)
-{
-    if (x < a) x = a;
+    if (x[index] < a) x[index] = a;
     else
-    if (x > b) x = b;
+    if (x[index] > b) x[index] = b;
 }

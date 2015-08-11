@@ -1,4 +1,15 @@
 INPUT(
+./release\doublevector.o
+./release\function.o
+./release\r1minimize.o
+./release\gradient.o
+./release\gradient_cjt.o
+./release\gradient_sd.o
+./release\gradient_cs.o
+./release\gridmethod.o
+./release\penalty.o
+./release\projection.o
+./release\printer.o
 ./release\main.o
 ./release\utils.o
 ./release\rosenbrock.o
@@ -7,6 +18,5 @@ INPUT(
 ./release\cfunction.o
 ./release\cfunction1.o
 ./release\cfunction2.o
-./release\heatcontrol1.o
 ./release\heatcontrol.o
 );

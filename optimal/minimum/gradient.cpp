@@ -15,31 +15,55 @@ GradientMethod::~GradientMethod()
 {
 }
 
+/**
+ * @brief Objective function
+ * @param f
+ */
 void GradientMethod::setFunction(RnFunction *f)
 {
     m_fn = f;
 }
 
+/**
+ * @brief Objective function
+ * @return
+ */
 RnFunction* GradientMethod::function() const
 {
     return m_fn;
 }
 
+/**
+ * @brief Epsilon for gradient norm
+ * @return
+ */
 double GradientMethod::epsilon1() const
 {
     return m_epsilon1;
 }
 
+/**
+ * @brief Epsilon for gradient norm
+ * @param epsilon
+ */
 void GradientMethod::setEpsilon1(double epsilon)
 {
     m_epsilon1 = epsilon;
 }
 
+/**
+ * @brief Epsilon for distance between points
+ * @return
+ */
 double GradientMethod::epsilon2() const
 {
     return m_epsilon2;
 }
 
+/**
+ * @brief Epsilon for distance between points
+ * @param epsilon
+ */
 void GradientMethod::setEpsilon2(double epsilon)
 {
     m_epsilon2 = epsilon;

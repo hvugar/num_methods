@@ -45,6 +45,7 @@ void ConstStepGradient::calculate(DoubleVector &x)
         }
 
         distance = 0.0;
+        double f1 = m_fn->fx(x);
         for (unsigned int i=0; i < n; i++)
         {
             double cx = x[i];
@@ -54,9 +55,10 @@ void ConstStepGradient::calculate(DoubleVector &x)
             distance += (x[i]-cx)*(x[i]-cx);
         }
         distance = sqrt(distance);
+        double f2 = m_fn->fx(x);
 
         /* calculating distance previous and new point */
-        if (distance < epsilon2())
+        if (distance < epsilon2() && fabs(f2 - f1) < epsilon2())
         {
             puts("Optimisation ends, because distance beetween last and current point less than epsilon...");
             break;

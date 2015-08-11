@@ -32,8 +32,8 @@ int main()
 //    puts("*****************************************************************");
 //    CFunction1::main();
 //    CFunction2::main();
-    ControlFunction::main();
-    HeatControl::main();
+//    ControlFunction::main();
+//    HeatControl::main();
     return 0;
 }
 

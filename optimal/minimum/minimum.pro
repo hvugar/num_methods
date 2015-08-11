@@ -33,5 +33,3 @@ HEADERS += global.h \
     printer.h \
     gradient_cs.h \
     projection.h
-
-DISTFILES += minimum.pri
