@@ -3,13 +3,12 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
-#INCLUDEPATH = ../minimum
-#LIBS += -L../bin -lminimum
+INCLUDEPATH = ../minimum
+LIBS += -L../bin -lminimum
 DESTDIR += ../bin
 
-DEFINES += MINIMUM_LIBRARY
-
-include(../minimum/minimum.pri)
+#DEFINES += MINIMUM_LIBRARY
+#include(../minimum/minimum.pri)
 
 SOURCES += main.cpp \
     utils.cpp \
@@ -19,7 +18,8 @@ SOURCES += main.cpp \
     cfunction.cpp \
     cfunction1.cpp \
     cfunction2.cpp \
-    heatcontrol.cpp
+    heatcontrol.cpp \
+    pointcontrol.cpp
 
 HEADERS += \
     utils.h \
@@ -29,4 +29,5 @@ HEADERS += \
     cfunction.h \
     cfunction1.h \
     cfunction2.h \
-    heatcontrol.h
+    heatcontrol.h \
+    pointcontrol.h

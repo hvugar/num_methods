@@ -29,7 +29,6 @@ struct MINIMUMSHARED_EXPORT R2Function
 struct MINIMUMSHARED_EXPORT RnFunction
 {
     virtual double fx(const DoubleVector& x) = 0;
-
     virtual void gradient(double step, const DoubleVector& x, DoubleVector& g) = 0;
 
 protected:

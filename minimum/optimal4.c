@@ -18,15 +18,12 @@ double _RungaKutta1(R2Function f, double y0, double x0, double x, double h)
 
         y0 = y0 + (h/6) * (k1 + 2*k2 + 2*k3 + k4);
         x0 = x0 + h;
-<<<<<<< .mine
-=======
 
 		i++;
 		p.x[i] = y0;
 		p.t[i] = x0;
->>>>>>> .r248
     }
-	printf("t: %f %f\n", x0, x);
+	//printf("t: %f %f\n", x0, x);
     return y0;
 }
 
@@ -63,20 +60,13 @@ void init_process(Process4 *p)
 	p->psi0 = 0.0;
 	p->psi1 = -1.0;
 
-	p->dx = 0.000001;
+	p->dx = 0.00001;
 	p->dt = 0.00001;
 	
-<<<<<<< .mine
-	p->t0 = 0.0;
-	p->t1 = 0.3;
-=======
 	p->N = (unsigned int)(ceil((p->t1 - p->t0)/p->dt))+1;
->>>>>>> .r248
-	
-<<<<<<< .mine
-	p->T1 = 0.1;
-	p->epsilon = 0.002;
-=======
+
+	p->epsilon = 0.02;
+
 	p->x   = (double*) malloc( sizeof(double)* p->N);
 	p->t   = (double*) malloc( sizeof(double)* p->N);	
 	p->psi = (double*) malloc( sizeof(double)* p->N);	
@@ -86,40 +76,20 @@ void init_process(Process4 *p)
 
 	p->p[0] = 0.3;
 	p->p[1] = 0.4;
-
-	p->epsilon = 0.02;
->>>>>>> .r248
 }
 
 double delta(double t)
 {
-<<<<<<< .mine
-	double d = 0.0;
-	if ( fabs(t - 0.3) <= (p.epsilon / 2.0 + 0.000001))
-		d = 1.0 / p.epsilon;
-//	return d;
-	
-	if (fabs(t-0.1) <= 0.000001) return 1;
-	else 
-		return 0.0;
-=======
 	double dlt = 0.0;
-	if (fabs(t - p.T[0]) <= ((p.epsilon / 2.0))) dlt = 1.0 / p.epsilon;
-	if (fabs(t - p.T[1]) <= ((p.epsilon / 2.0))) dlt = 1.0 / p.epsilon;
+	if (fabs(t - p.T[0]) <= ((p.epsilon / 2.0) + 0.000001)) dlt = 1.0 / p.epsilon;
+	if (fabs(t - p.T[1]) <= ((p.epsilon / 2.0) + 0.000001)) dlt = 1.0 / p.epsilon;
 	return dlt;
->>>>>>> .r248
 }
 
 double f(double t, double x)
 {
-<<<<<<< .mine
 	double d = delta(t);
-	printf("time: %8.6f x: %8.6f delta: %f\n", t, x, d);
-	//printf("%8.6f %8.6f\n", t, x);
-	return 3*t*t+ t*t*t - x + 0.2 * d;
-=======
 	return 3*t*t+ t*t*t - x;
->>>>>>> .r248
 }
 
 double px(double t, double psi)
@@ -135,13 +105,11 @@ double dx(double t, double x)
 void calculate_x(Process4 *p)
 {
 	double x1 = _RungaKutta1(dx, p->x0, p->t0, p->t1, p->dt);
-	//printf("%.10f\n", x1);
 }
 
 void calculate_psi(Process4 *p)
 {
 	double psi0 = _RungaKutta2(px, p->psi1, p->t0, p->t1, -p->dt);
-	//printf("%.10f\n", psi0);
 }
 
 double J(Process4 *p)
@@ -182,7 +150,7 @@ void calculate()
 		printf("p[0]: %.10f p[1]: %.10f\n", p.p[0], p.p[1]);
 
         J1 = J(&p);
-        printf("J1 = %.18f\n", J1);
+        //printf("J1 = %.18f\n", J1);
 		
 		//printX("x", p.x, p.N);
 		

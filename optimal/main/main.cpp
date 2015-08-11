@@ -13,6 +13,7 @@
 #include "bealesfunction.h"
 #include "boothfunction.h"
 #include "heatcontrol.h"
+#include "pointcontrol.h"
 
 struct R1Function1 : public R1Function
 {
@@ -24,8 +25,15 @@ double R1Function1::fx(double x)
     return 2.0*x*x - 12.0*x;
 }
 
+
+
 int main()
 {
+    DoubleVector p(2,0.0);
+    PointControl pc(0.0, 1.0, 0.0, 1.7391017563, 0.00001, 0.00001);
+    pc.fx(p);
+
+
 //    Rosenbrock::main();
 //    BealesFunction::main();
 //    BoothFunction::main();
