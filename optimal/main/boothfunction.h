@@ -1,13 +1,13 @@
-#ifndef BEALESFUNCTION_H
-#define BEALESFUNCTION_H
+#ifndef BOOTHFUNCTION_H
+#define BOOTHFUNCTION_H
 
 #include <function.h>
 #include <printer.h>
 
 /**
- * @brief The Beales Function. Range -4.5 <= x,y <= 4.5. Optimal f(3, 0.5)=0;
+ * @brief The Booth's function. Range -10.0 <= x,y <= +10.0. Optimal f(1, 3)=0;
  */
-struct BealesFunction : public RnFunction
+struct BoothFunction : public RnFunction
 {
 public:
     virtual double fx(const DoubleVector& x);
@@ -19,9 +19,9 @@ private:
     double grad_step;
 };
 
-struct BealesPrinter : public Printer
+struct BoothPrinter : public Printer
 {
     void print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const;
 };
 
-#endif // BEALESFUNCTION_H
+#endif // BOOTHFUNCTION_H

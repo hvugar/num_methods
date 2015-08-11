@@ -1,0 +1,12 @@
+INPUT(
+./release\main.o
+./release\utils.o
+./release\rosenbrock.o
+./release\bealesfunction.o
+./release\boothfunction.o
+./release\cfunction.o
+./release\cfunction1.o
+./release\cfunction2.o
+./release\heatcontrol1.o
+./release\heatcontrol.o
+);

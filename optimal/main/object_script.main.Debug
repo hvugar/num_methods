@@ -1,0 +1,12 @@
+INPUT(
+./debug\main.o
+./debug\utils.o
+./debug\rosenbrock.o
+./debug\bealesfunction.o
+./debug\boothfunction.o
+./debug\cfunction.o
+./debug\cfunction1.o
+./debug\cfunction2.o
+./debug\heatcontrol1.o
+./debug\heatcontrol.o
+);
