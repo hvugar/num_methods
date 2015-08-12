@@ -19,7 +19,8 @@ SOURCES += \
     gridmethod.cpp \
     printer.cpp \
     gradient_cs.cpp \
-    projection.cpp
+    projection.cpp \
+    rungekutta.cpp
 
 HEADERS += global.h \
     function.h \
@@ -32,4 +33,5 @@ HEADERS += global.h \
     gridmethod.h \
     printer.h \
     gradient_cs.h \
-    projection.h
+    projection.h \
+    rungekutta.h

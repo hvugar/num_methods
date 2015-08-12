@@ -19,7 +19,8 @@ SOURCES += main.cpp \
     cfunction1.cpp \
     cfunction2.cpp \
     heatcontrol.cpp \
-    pointcontrol.cpp
+    pointcontrol.cpp \
+    pointcontrol1.cpp
 
 HEADERS += \
     utils.h \
@@ -30,4 +31,5 @@ HEADERS += \
     cfunction1.h \
     cfunction2.h \
     heatcontrol.h \
-    pointcontrol.h
+    pointcontrol.h \
+    pointcontrol1.h

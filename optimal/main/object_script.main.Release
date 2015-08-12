@@ -9,4 +9,5 @@ INPUT(
 ./release\cfunction2.o
 ./release\heatcontrol.o
 ./release\pointcontrol.o
+./release\pointcontrol1.o
 );

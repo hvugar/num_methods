@@ -434,8 +434,8 @@ double R1Minimize::GoldenSectionSearch(double &a, double &b, double &x, R1Functi
  */
 void R1Minimize::FibonachiMethod(double &a, double &b, double &c, double step, double epsilon, R1Function *f)
 {
-    double k = fabs(b-a)/epsilon;
-    unsigned int FN = (unsigned int)ceil(k);
+//    double k = fabs(b-a)/epsilon;
+//    unsigned int FN = (unsigned int)ceil(k);
 }
 
 /**

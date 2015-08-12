@@ -29,9 +29,9 @@ private:
     double f(double t, double x);
     double delta(double t);
     double dxdt(double t, double x);
-    double px(double t, double psi);
+    double px(double t, double psi, double x);
 
-    void calculate_x(DoubleVector &x);
+    void calculate_x(DoubleVector &x, const DoubleVector& p);
     void calculate_psi(DoubleVector &x, DoubleVector &p);
 
 public:
