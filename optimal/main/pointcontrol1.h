@@ -34,6 +34,8 @@ private:
     DoubleVector psi;
     DoubleVector p;
 
+    void write(DoubleVector &x);
+
 public:
     static void main();
 };

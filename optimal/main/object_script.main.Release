@@ -10,4 +10,5 @@ INPUT(
 ./release\heatcontrol.o
 ./release\pointcontrol.o
 ./release\pointcontrol1.o
+./release\pointcontrol2.o
 );

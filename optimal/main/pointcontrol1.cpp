@@ -1,6 +1,8 @@
 #include "pointcontrol1.h"
 #include <math.h>
 #include <gradient_cjt.h>
+#include <gradient_sd.h>
+#include <gradient_cs.h>
 #include "utils.h"
 
 PointControl1::PointControl1(double t0, double t1, double x0, double x1, double dt, double dx)
@@ -26,22 +28,20 @@ PointControl1::PointControl1(double t0, double t1, double x0, double x1, double 
 double PointControl1::fx(const DoubleVector &p)
 {
     calculate_x(p);
+//    printX("          fx: x", x);
     return (x[n-1] - x1)*(x[n-1] - x1);
 }
 
 void PointControl1::gradient(double step, const DoubleVector& p, DoubleVector& g)
 {
     calculate_x(p);
+    printX("x", x);
     calculate_psi();
+    printX("psi", psi);
 
     g[0] = psi[2000];
     g[1] = psi[5000];
     g[2] = psi[8000];
-
-//    printf("p: %f %f %f\n", p[0], p[1], p[2]);
-//    printX("x:", x);
-//    printX("psi:", psi);
-//    printf("g: %f %f %f\n", g[0], g[1], g[2]);
 }
 
 void PointControl1::calculate_x(const DoubleVector &p)
@@ -60,15 +60,6 @@ void PointControl1::calculate_x(const DoubleVector &p)
         t = t + dt;
         x[i] = _x0;
     }
-//    printX("x:", x);
-
-            FILE *f = fopen("d:/test.txt", "w");
-            for (unsigned int i=0; i<x.size(); i++)
-            {
-                if (i%100==0)
-                fprintf(f, "%f\n", x[i]);
-            }
-            fclose(f);
 }
 
 double PointControl1::px(double t, double psi, double x)
@@ -97,24 +88,15 @@ void PointControl1::calculate_psi()
 
 double PointControl1::f(double t, double x)
 {
-    return 3*t*t + t*t*t - x;
+    return 2*t - x + t*t;
 }
 
 double PointControl1::dxdt(double t, double x, const DoubleVector& p)
 {
     double sum = f(t, x);
-
-    for (unsigned int i=0; i<T.size(); i++)
-    {
-        double t_ = T[i];
-        double diff = fabs(t - t_);
-
-        if (diff <= (dt/10.0))
-        {
-            sum += p[i]*1000;
-        }
-    }
-
+    if (fabs(t-T[0]) < dt/10.0) sum += p[0];
+    if (fabs(t-T[1]) < dt/10.0) sum += p[1];
+    if (fabs(t-T[2]) < dt/10.0) sum += p[2];
     return sum;
 }
 
@@ -127,25 +109,39 @@ void PointControl1::main()
 {
 
     DoubleVector p(3, 0.0);
-    p[0] = 20.4659868736;//2.3;
-    p[1] = 28.5725057266;//3.5;
-    p[2] = 22.0457546073;//1.7;
+    p[0] = 0.0;
+    p[1] = 0.0;
+    p[2] = 0.0;
 
-    PointControl1 f(0.0, 1.0, 0.0, +2.17901513, 0.0001, 0.0001);
+    PointControl1 f(0.0, 1.0, 0.0, +2.0, 0.0001, 0.0001);
     PointControl1Printer printer;
 
-    ConjugateGradient g1;
+    SteepestDescentGradient g1;
     g1.setFunction(&f);
     g1.setEpsilon1(0.0000001);
-    g1.setEpsilon2(0.000000000001);
+    g1.setEpsilon2(0.0000001);
     g1.setGradientStep(0.0000001);
-    g1.setR1MinimizeEpsilon(0.01, 0.0000001);
+    g1.setR1MinimizeEpsilon(1, 0.001);
     g1.setPrinter(&printer);
     g1.calculate(p);
     printf("p: %f %f %f\n", p[0], p[1], p[2]);
+
+    f.write(f.x);
 }
 
 void PointControl1Printer::print(unsigned int iterationCount, const DoubleVector &p, const DoubleVector &s, double m_alpha, RnFunction *f) const
 {
     printf("J[%2d]: %.10f %.10f %.10f %.10f\n", iterationCount, f->fx(p), p[0], p[1], p[2]);
+    puts("*******************************************************************************");
+}
+
+void PointControl1::write(DoubleVector &x)
+{
+    FILE *f = fopen("d:/test.txt", "w");
+    for (unsigned int i=0; i<x.size(); i++)
+    {
+        if (i%10==0)
+        fprintf(f, "%.10f\n", x[i]);
+    }
+    fclose(f);
 }

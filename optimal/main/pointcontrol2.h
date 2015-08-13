@@ -1,13 +1,13 @@
-#ifndef POINTCONTROL_H
-#define POINTCONTROL_H
+#ifndef POINTCONTROL2_H
+#define POINTCONTROL2_H
 
 #include <function.h>
 #include <printer.h>
 
-class PointControl : public RnFunction
+class PointControl2 : public RnFunction
 {
 public:
-    PointControl(double t0, double t1, double x0, double x1, double dt, double dx);
+    PointControl2(double t0, double t1, double x0, double x1, double dt, double dx);
 
     virtual double fx(const DoubleVector &p);
     virtual void gradient(double step, const DoubleVector& p, DoubleVector& g);
@@ -41,7 +41,7 @@ public:
     static void main();
 };
 
-struct PointControlPrinter : public Printer
+struct PointControl2Printer : public Printer
 {
     virtual void print(unsigned int iterationCount, const DoubleVector& x, const DoubleVector &g, double m_alpha, RnFunction* f) const;
 };

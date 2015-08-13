@@ -1,11 +1,11 @@
-#include "pointcontrol.h"
+#include "pointcontrol2.h"
 #include <math.h>
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
 #include <gradient_cs.h>
 #include "utils.h"
 
-PointControl::PointControl(double t0, double t1, double x0, double x1, double dt, double dx)
+PointControl2::PointControl2(double t0, double t1, double x0, double x1, double dt, double dx)
 {
     this->t0 = t0;
     this->t1 = t1;
@@ -26,14 +26,14 @@ PointControl::PointControl(double t0, double t1, double x0, double x1, double dt
     T[2] = 0.8;
 }
 
-double PointControl::fx(const DoubleVector &p)
+double PointControl2::fx(const DoubleVector &p)
 {
     calculate_x(p);
     //    printX("          fx: x", x);
     return (x[n-1] - x1)*(x[n-1] - x1);
 }
 
-void PointControl::gradient(double step, const DoubleVector& p, DoubleVector& g)
+void PointControl2::gradient(double step, const DoubleVector& p, DoubleVector& g)
 {
     calculate_x(p);
     printX("x", x);
@@ -45,7 +45,7 @@ void PointControl::gradient(double step, const DoubleVector& p, DoubleVector& g)
     g[2] = psi[8000];
 }
 
-void PointControl::calculate_x(const DoubleVector &p)
+void PointControl2::calculate_x(const DoubleVector &p)
 {
     x[0] = x0;
     double t = t0;
@@ -53,6 +53,10 @@ void PointControl::calculate_x(const DoubleVector &p)
 
     for (unsigned int i=0; i<n; i++)
     {
+        if (fabs(t-T[0]) < dt/10.0) _x0 = _x0 + p[0];
+        if (fabs(t-T[1]) < dt/10.0) _x0 = _x0 + p[1];
+        if (fabs(t-T[2]) < dt/10.0) _x0 = _x0 + p[2];
+
         double k1 = dxdt(t,        _x0, p);
         double k2 = dxdt(t+dt/2.0, _x0+(dt/2.0)*k1, p);
         double k3 = dxdt(t+dt/2.0, _x0+(dt/2.0)*k2, p);
@@ -63,12 +67,12 @@ void PointControl::calculate_x(const DoubleVector &p)
     }
 }
 
-double PointControl::px(double t, double psi, double x)
+double PointControl2::px(double t, double psi, double x)
 {
     return psi;
 }
 
-void PointControl::calculate_psi()
+void PointControl2::calculate_psi()
 {
     double t = t1;
     psi[n-1] = -1.0;
@@ -87,21 +91,21 @@ void PointControl::calculate_psi()
     }
 }
 
-double PointControl::f(double t, double x)
+double PointControl2::f(double t, double x)
 {
     return 2*t - x + t*t;
 }
 
-double PointControl::dxdt(double t, double x, const DoubleVector& p)
+double PointControl2::dxdt(double t, double x, const DoubleVector& p)
 {
     double sum = f(t, x);
-    if (fabs(t - T[0]) < ((epsilon / 2.0) + dt/10.0)) sum += (1.0 / epsilon) * p[0];
-    if (fabs(t - T[1]) < ((epsilon / 2.0) + dt/10.0)) sum += (1.0 / epsilon) * p[1];
-    if (fabs(t - T[2]) < ((epsilon / 2.0) + dt/10.0)) sum += (1.0 / epsilon) * p[2];
+//    if (fabs(t - T[0]) < ((epsilon / 2.0) + dt/10.0)) sum += (1.0 / epsilon) * p[0];
+//    if (fabs(t - T[1]) < ((epsilon / 2.0) + dt/10.0)) sum += (1.0 / epsilon) * p[1];
+//    if (fabs(t - T[2]) < ((epsilon / 2.0) + dt/10.0)) sum += (1.0 / epsilon) * p[2];
     return sum;
 }
 
-double PointControl::delta(double t)
+double PointControl2::delta(double t)
 {
     for (unsigned int i=0; i<T.size(); i++)
     {
@@ -110,16 +114,15 @@ double PointControl::delta(double t)
     return 0.0;
 }
 
-void PointControl::main()
+void PointControl2::main()
 {
-
     DoubleVector p(3, 0.0);
     p[0] = 0.0;
     p[1] = 0.0;
     p[2] = 0.0;
 
-    PointControl f(0.0, 1.0, 0.0, +2.0, 0.0001, 0.0001);
-    PointControlPrinter printer;
+    PointControl2 f(0.0, 1.0, 0.0, +2.0, 0.0001, 0.0001);
+    PointControl2Printer printer;
 
     SteepestDescentGradient g1;
     g1.setFunction(&f);
@@ -134,13 +137,13 @@ void PointControl::main()
     f.write(f.x);
 }
 
-void PointControlPrinter::print(unsigned int iterationCount, const DoubleVector &p, const DoubleVector &s, double m_alpha, RnFunction *f) const
+void PointControl2Printer::print(unsigned int iterationCount, const DoubleVector &p, const DoubleVector &s, double m_alpha, RnFunction *f) const
 {
     printf("J[%2d]: %.10f %.10f %.10f %.10f\n", iterationCount, f->fx(p), p[0], p[1], p[2]);
     puts("*******************************************************************************");
 }
 
-void PointControl::write(DoubleVector &x)
+void PointControl2::write(DoubleVector &x)
 {
     FILE *f = fopen("d:/test.txt", "w");
     for (unsigned int i=0; i<x.size(); i++)
