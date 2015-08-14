@@ -15,6 +15,8 @@ public:
     void calculate_x(const DoubleVector& p);
     void calculate_psi();
 
+    void calculate();
+
 private:
     double t0;
     double t1;
@@ -35,7 +37,7 @@ private:
     DoubleVector psi;
     DoubleVector p;
 
-    void write(DoubleVector &x);
+    void write(DoubleVector &x, char* filename);
 
 public:
     static void main();

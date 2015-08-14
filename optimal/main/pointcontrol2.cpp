@@ -11,8 +11,10 @@ PointControl2::PointControl2(double t0, double t1, double x0, double x1, double 
     this->t1 = t1;
     this->x0 = x0;
     this->x1 = x1;
+
     this->dt = dt;
     this->dx = dx;
+
     this->epsilon = 0.02;
 
     n = (unsigned int)(ceil(fabs(t1 - t0)/dt))+1;
@@ -29,8 +31,8 @@ PointControl2::PointControl2(double t0, double t1, double x0, double x1, double 
 double PointControl2::fx(const DoubleVector &p)
 {
     calculate_x(p);
-    //    printX("          fx: x", x);
-    return (x[n-1] - x1)*(x[n-1] - x1);
+    return (x[n-1] - x1)*(x[n-1] - x1);// + (p[0] - 10.5)*(p[0] - 10.5) + (p[1] - 11.4)*(p[1] - 11.4) + (p[2] - 12.4)*(p[2] - 12.4);
+    //    return (x[n-1] - x1)*(x[n-1] - x1) + (p[0]*p[0] + p[1]*p[1] + p[1]*p[1]);
 }
 
 void PointControl2::gradient(double step, const DoubleVector& p, DoubleVector& g)
@@ -51,11 +53,11 @@ void PointControl2::calculate_x(const DoubleVector &p)
     double t = t0;
     double _x0 = x0;
 
-    for (unsigned int i=0; i<n; i++)
+    for (unsigned int i=1; i<n; i++)
     {
-        if (fabs(t-T[0]) < dt/10.0) _x0 = _x0 + p[0];
-        if (fabs(t-T[1]) < dt/10.0) _x0 = _x0 + p[1];
-        if (fabs(t-T[2]) < dt/10.0) _x0 = _x0 + p[2];
+//        if (fabs(t-T[0]) < dt/10.0) _x0 = _x0 + p[0];
+//        if (fabs(t-T[1]) < dt/10.0) _x0 = _x0 + p[1];
+//        if (fabs(t-T[2]) < dt/10.0) _x0 = _x0 + p[2];
 
         double k1 = dxdt(t,        _x0, p);
         double k2 = dxdt(t+dt/2.0, _x0+(dt/2.0)*k1, p);
@@ -65,6 +67,8 @@ void PointControl2::calculate_x(const DoubleVector &p)
         t = t + dt;
         x[i] = _x0;
     }
+
+    //printf("p: [%.10f %.10f]\n", x[0], x[n-1]);
 }
 
 double PointControl2::px(double t, double psi, double x)
@@ -98,10 +102,14 @@ double PointControl2::f(double t, double x)
 
 double PointControl2::dxdt(double t, double x, const DoubleVector& p)
 {
+    if (fabs(t-T[0]) < dt/10.0) x = x + p[0];
+    if (fabs(t-T[1]) < dt/10.0) x = x + p[1];
+    if (fabs(t-T[2]) < dt/10.0) x = x + p[2];
+
     double sum = f(t, x);
-//    if (fabs(t - T[0]) < ((epsilon / 2.0) + dt/10.0)) sum += (1.0 / epsilon) * p[0];
-//    if (fabs(t - T[1]) < ((epsilon / 2.0) + dt/10.0)) sum += (1.0 / epsilon) * p[1];
-//    if (fabs(t - T[2]) < ((epsilon / 2.0) + dt/10.0)) sum += (1.0 / epsilon) * p[2];
+//    if (fabs(t-T[0]) < dt/10.0) sum += p[0];
+//    if (fabs(t-T[1]) < dt/10.0) sum += p[1];
+//    if (fabs(t-T[2]) < dt/10.0) sum += p[2];
     return sum;
 }
 
@@ -117,24 +125,33 @@ double PointControl2::delta(double t)
 void PointControl2::main()
 {
     DoubleVector p(3, 0.0);
+
+    p[0] = 10.5;
+    p[1] = 11.4;
+    p[2] = 12.4;
+    PointControl2 f(0.0, 1.0, 0.0, 22.7846649821, 0.0001, 0.0001);
+    //    f.calculate_x(p);
+    //    printf("x: [%.10f %.10f]\n", f.x[0], f.x[f.n-1]);
+    //    printf("p: [%.10f %.10f %.10f]\n", p[0], p[1], p[2]);
+    //    f.write(f.x, "d:/test1.txt");
+    //    return;
+
+    PointControl2Printer printer;
+
     p[0] = 0.0;
     p[1] = 0.0;
     p[2] = 0.0;
-
-    PointControl2 f(0.0, 1.0, 0.0, +2.0, 0.0001, 0.0001);
-    PointControl2Printer printer;
-
     SteepestDescentGradient g1;
     g1.setFunction(&f);
     g1.setEpsilon1(0.0000001);
     g1.setEpsilon2(0.0000001);
     g1.setGradientStep(0.0000001);
-    g1.setR1MinimizeEpsilon(1, 0.001);
+    g1.setR1MinimizeEpsilon(1, 0.01);
     g1.setPrinter(&printer);
     g1.calculate(p);
-    printf("p: %f %f %f\n", p[0], p[1], p[2]);
-
-    f.write(f.x);
+    printf("x: [%.10f %.10f]\n", f.x[0], f.x[f.n-1]);
+    printf("p: [%.10f %.10f %.10f]\n", p[0], p[1], p[2]);
+    f.write(f.x, "d:/test3.txt");
 }
 
 void PointControl2Printer::print(unsigned int iterationCount, const DoubleVector &p, const DoubleVector &s, double m_alpha, RnFunction *f) const
@@ -143,9 +160,9 @@ void PointControl2Printer::print(unsigned int iterationCount, const DoubleVector
     puts("*******************************************************************************");
 }
 
-void PointControl2::write(DoubleVector &x)
+void PointControl2::write(DoubleVector &x, char* filename)
 {
-    FILE *f = fopen("d:/test.txt", "w");
+    FILE *f = fopen(filename, "w");
     for (unsigned int i=0; i<x.size(); i++)
     {
         if (i%10==0)
