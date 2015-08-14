@@ -46,4 +46,4 @@ struct PointControl2Printer : public Printer
     virtual void print(unsigned int iterationCount, const DoubleVector& x, const DoubleVector &g, double m_alpha, RnFunction* f) const;
 };
 
-#endif // POINTCONTROL_H
+#endif // POINTCONTROL2_H
