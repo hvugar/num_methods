@@ -25,7 +25,12 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
 
         /* if gradinet norm at current point is less than epsilon then break. no minimize */
         double gradient_norm = g.L2Norm();
-        if (gradient_norm < epsilon1()) break;
+        if (gradient_norm < epsilon1())
+        {
+            puts("Optimisation ends, because L2 norm of gradient is less than epsilon...");
+            break;
+        }
+
 
         iterationCount++;
 

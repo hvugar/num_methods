@@ -10,25 +10,24 @@ ConjugateGradient::~ConjugateGradient()
 
 void ConjugateGradient::calculate(DoubleVector& x)
 {
-    unsigned int n1 = x.size();
+    unsigned int n = x.size();
 
-    unsigned int n = 0;
+    unsigned int k = 0;
     double gr0_mod = 0.0;
     double gr1_mod = 0.0;
     double gr2_mod = 0.0;
     double distance = 0.0;
     double alpha = 0.0;
 
-    DoubleVector g(n1);
-    DoubleVector s(n1);
+    DoubleVector g(n);
+    DoubleVector s(n);
     do
     {
         // Gradient of objectiv function in current point
-        //calculateGradient();
         m_fn->gradient(grad_step, x, g);
 
-        double gradNorm = g.L2Norm();
-        if (gradNorm < epsilon1())
+        double gradient_norm = g.L2Norm();
+        if (gradient_norm < epsilon1())
         {
             puts("Optimisation ends, because L2 norm of gradient is less than epsilon...");
             break;
@@ -38,34 +37,35 @@ void ConjugateGradient::calculate(DoubleVector& x)
 
         // Module of gradient
         gr0_mod = 0.0;
-        for (unsigned int i=0; i<n1; i++) gr0_mod = gr0_mod + (g[i]*g[i]);
+        for (unsigned int i=0; i<n; i++) gr0_mod = gr0_mod + (g[i]*g[i]);
         //gr0_mod = sqrt(gr0_mod);
 
-        if (n == 0)
+        if (k == 0)
         {
             gr1_mod = gr0_mod;
             // First direction is antigradient
-            for (unsigned int i=0; i<n1; i++) s[i] = -g[i];
+            for (unsigned int i=0; i<n; i++) s[i] = -g[i];
         }
         else
         {
             gr2_mod = gr0_mod;
             double w = gr2_mod / gr1_mod;
             gr1_mod = gr2_mod;
-            // Direction in next iteration (n != 0)
-            for (unsigned int i=0; i<n1; i++) s[i] = -g[i] + s[i] * w;
+            // Direction in next iteration (k != 0)
+            for (unsigned int i=0; i<n; i++) s[i] = -g[i] + s[i] * w;
         }
 
         /* Normalize vector */
         if (normalize) s.L2Normalize();
 
+        /* R1 minimization in direct of antigradient */
         alpha = minimize(x, s);
 
         if (printer != NULL) printer->print(iterationCount, x, s, alpha, function());
 
         distance = 0.0;
         double f1 = m_fn->fx(x);
-        for (unsigned int i=0; i<n1; i++)
+        for (unsigned int i=0; i<n; i++)
         {
             double cx = x[i];
             x[i] = x[i] + alpha * s[i];
@@ -77,7 +77,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
         distance = sqrt(distance);
         double f2 = m_fn->fx(x);
 
-        if ( n == (x.size()) ) { n = 0; } else { n++; }
+        if ( k == x.size() ) { k = 0; } else { k++; }
 
         /* calculating distance previous and new point */
         if (distance < epsilon2() && fabs(f2 - f1) < epsilon2())

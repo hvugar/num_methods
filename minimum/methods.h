@@ -6,15 +6,11 @@
 #include <string.h>
 #include <math.h>
 
+#include "function.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef double (*R1Function)(double);
-typedef double (*R2Function)(double x, double y);
-typedef double (*RnFunction)(double*, int);
-typedef double (*RmFunction)(double x, double *y, int n);
-typedef void   (*Printer)(RnFunction f, double *x, int n, ...);
 
 /**
  * @brief Градиент функции
