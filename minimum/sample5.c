@@ -1,7 +1,7 @@
-#include "optimal4.h"
+#include "sample5.h"
 #include "methods.h"
 
-Process4 p;
+Process5 p;
 
 double _RungaKutta1(R2Function f, double y0, double x0, double x, double h)
 {
@@ -49,7 +49,7 @@ double _RungaKutta2(R2Function f, double psi1, double t0, double t1, double h)
     return psi1;
 }
 
-void init_process(Process4 *p)
+void init_process(Process5 *p)
 {
 	p->t0 = 0.0;
 	p->t1 = 1.0;
@@ -102,17 +102,17 @@ double dx(double t, double x)
 	return f(t, x) + p.p[0]*delta(t) + p.p[1]*delta(t);
 }
 
-void calculate_x(Process4 *p)
+void calculate_x(Process5 *p)
 {
 	double x1 = _RungaKutta1(dx, p->x0, p->t0, p->t1, p->dt);
 }
 
-void calculate_psi(Process4 *p)
+void calculate_psi(Process5 *p)
 {
 	double psi0 = _RungaKutta2(px, p->psi1, p->t0, p->t1, -p->dt);
 }
 
-double J(Process4 *p)
+double J(Process5 *p)
 {
 	calculate_x(p);
 	

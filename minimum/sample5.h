@@ -1,5 +1,5 @@
-#ifndef _OPTIMAL4_H_
-#define _OPTIMAL4_H_
+#ifndef _SAMPLE5_H_
+#define _SAMPLE5_H_
 
 #include <stdio.h>
 
@@ -29,6 +29,6 @@ typedef struct
 	double grad[2];
 
 	double epsilon;
-} Process4;
+} Process5;
 
-#endif // _OPTIMAL4_H_
+#endif // _SAMPLE5_H_
