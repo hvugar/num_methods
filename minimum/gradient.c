@@ -15,7 +15,7 @@ double L2Norm(double *vctr, int n)
     return sqrt(sum);
 }
 
-void Gradient(RnFunction f, double dx, double *x, double *gr, int n)
+void Gradient(RnFunction f, double dx, double *x, int n, double *gr)
 {
     int i = 0;
     for (i=0; i<n; i++)
@@ -46,7 +46,7 @@ void SteepestDescentMethod(RnFunction f, GFunction gradient, double *x, int n, d
     do
     {
         /* calculating function gradient at current point */
-        gradient(f, grad_eps, x, gr, n);
+        gradient(f, grad_eps, x, n, gr);
 
         /* if gradinet norm at current point is less than epsilon then break. no minimize */
         double gradient_norm = L2Norm(gr, n);
@@ -93,6 +93,12 @@ void SteepestDescentMethod(RnFunction f, GFunction gradient, double *x, int n, d
         distance = sqrt(distance);
         double f2 = f(x, n);
 
+        if (f2 > f1)
+        {
+            puts("VValue of the function in the previous point less than in the current point...");
+            break;
+        }
+
         /* calculating distance previous and new point */
         if (distance < epsilon2 && fabs(f2 - f1) < epsilon2)
         {
@@ -129,7 +135,7 @@ void ConjugateGradientMethod(RnFunction f, GFunction gradient, double *x, int n,
     {
         printf("%.6f %.6f %.6f\n", x[0], x[1], f(x, n));
         // Gradient of objectiv function in current point
-        gradient(f, grad_eps, x, gr, n);
+        gradient(f, grad_eps, x, n, gr);
 
         double gradient_norm = L2Norm(gr, n);
         if (gradient_norm < epsilon1)
@@ -200,6 +206,12 @@ void ConjugateGradientMethod(RnFunction f, GFunction gradient, double *x, int n,
         double f2 = f(x, n);
 
         if ( k == n ) { k = 0; } else { k++; }
+
+        if (f2 > f1)
+        {
+            puts("VValue of the function in the previous point less than in the current point...");
+            break;
+        }
 
         /* calculating distance previous and new point */
         if (distance < epsilon2 && fabs(f2 - f1) < epsilon2)

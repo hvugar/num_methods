@@ -3,9 +3,27 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
-SOURCES += main.c minimum.c methods.c method_grad.c method_conj.c method_prj_grad.c print.c sample_functions.c sample_gradient.c sample_penalty.c sample_grid.c runga_kutta.c method_penalty.c method_grid.c \
-    gradient.c
+SOURCES += main.c \
+    minimum.c \
+    methods.c \
+    method_grad.c \
+    method_conj.c \
+    method_prj_grad.c \
+    print.c \
+    sample_functions.c \
+    sample_gradient.c \
+    sample_penalty.c \
+    sample_grid.c \
+    runga_kutta.c \
+    method_penalty.c \
+    method_grid.c \
+    gradient.c #\
+#    sample2.c
 
-HEADERS += minimum.h methods.h print.h method_grid.h optimal.h optimal1.h \
+HEADERS += minimum.h \
+    methods.h \
+    print.h \
+    method_grid.h \
     gradient.h \
-    function.h
+    function.h #\
+#    sample2.h

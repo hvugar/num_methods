@@ -1,4 +1,4 @@
-#include "optimal1.h"
+#include "sample2.h"
 
 double y(double x) { return x*x + 2.0*x + 1.0; }
 double u(double x, double t) { return x*x + t*t + 2.0*x; }
@@ -13,7 +13,7 @@ double p_m1(double t) { return 0.0; }
 double p_m2(double t) { return 0.0; }
 double f2(double x, double t) { return 0.0; }
 
-Process1 p;
+Process2 p;
 
 double fxt1(double x, double t)
 {
@@ -34,7 +34,7 @@ double p_fi(double x)
     return -2.0 * (p.u[j][i] - y(x));
 }
 
-void calculate_u(Process1 *p)
+void calculate_u(Process2 *p)
 {
     int j;
     Grid g;
@@ -47,7 +47,7 @@ void calculate_u(Process1 *p)
     free(g.u);
 }
 
-void calculate_p(Process1 *p)
+void calculate_p(Process2 *p)
 {
     int j,i;
     Grid g;
@@ -68,7 +68,7 @@ void calculate_p(Process1 *p)
     }
 }
 
-double norm_f(Process1 *p)
+double norm_f(Process2 *p)
 {
     int j,i;
     double norm = 0.0;
@@ -82,7 +82,7 @@ double norm_f(Process1 *p)
     return sqrt(norm);
 }
 
-double _JSum(Process1 *p) 
+double _JSum(Process2 *p)
 {
     calculate_u(p);
 
@@ -113,7 +113,7 @@ double _JSum(Process1 *p)
     return sum;
 }
 
-void init_process(Process1 *p)
+void init_process(Process2 *p)
 {
     p->t0 = 0.0;
     p->t1 = 1.0;

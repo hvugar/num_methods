@@ -1,4 +1,4 @@
-#include "optimal.h"
+#include "sample1.h"
 #include "print.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -70,7 +70,7 @@ double gradJ(double t, double x1, double x2, double psi1, double psi2, double u)
     //return -2.0*(u-t) + psi1;
 }
 
-double JSum(Process *p)
+double JSum(Process1 *p)
 {
     calculate_x(p);
 
@@ -91,7 +91,7 @@ double JSum(Process *p)
     return sum;
 }
 
-void init_process(Process *p)
+void init_process(Process1 *p)
 {
     p->t1    = 0.0;
     p->t2    = 1.0;
@@ -127,7 +127,7 @@ void init_process(Process *p)
     }
 }
 
-void free_process(Process *p)
+void free_process(Process1 *p)
 {
     free(p->t);
     free(p->u);
@@ -138,7 +138,7 @@ void free_process(Process *p)
     free(p->gradJ);
 }
 
-void calculate_x(Process *p)
+void calculate_x(Process1 *p)
 {
     double k1[] = {0.0, 0.0};
     double k2[] = {0.0, 0.0};
@@ -181,7 +181,7 @@ void calculate_x(Process *p)
     }
 }
 
-void calculate_psi(Process *p)
+void calculate_psi(Process1 *p)
 {
     double k1[] = {0.0, 0.0};
     double k2[] = {0.0, 0.0};
@@ -226,7 +226,7 @@ void calculate_psi(Process *p)
     }
 }
 
-void calculate_gradient(Process *p)
+void calculate_gradient(Process1 *p)
 {
     int i;
     for (i=0; i<p->n; i++)
@@ -237,7 +237,7 @@ void calculate_gradient(Process *p)
 
 void calculate()
 {
-    Process p;
+    Process1 p;
     init_process(&p);
 
     double dstnc = 0.0;

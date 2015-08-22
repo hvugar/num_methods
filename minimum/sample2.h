@@ -1,5 +1,5 @@
-#ifndef _OPTIMAL1_H_
-#define _OPTIMAL1_H_
+#ifndef _SAMPLE2_H_
+#define _SAMPLE2_H_
 
 #include "method_grid.h"
 #include "print.h"
@@ -27,6 +27,6 @@ typedef struct {
 	double **g;
 	double **u1;
 	
-} Process1;
+} Process2;
 
-#endif //_OPTIMAL1_H_
+#endif //_SAMPLE2_H_
