@@ -107,7 +107,7 @@ void process_destroy(Process4 *p)
 	free(p->x); free(p->t); free(p->u); free(p->f); free(p->p);
 }
 
-void _calculate()
+void calculate()
 {
 	process_init(&p);
 	

@@ -1,4 +1,30 @@
-#include "sample2.h"
+#include "method_grid.h"
+#include "print.h"
+
+typedef struct {
+    double *x;
+    double *t;
+
+    double x0;
+    double x1;
+
+    double t0;
+    double t1;
+
+    double dx;
+    double dt;
+
+    double alpha;
+    int n;
+    int m;
+
+    double **f;
+    double **u;
+    double **p;
+    double **g;
+    double **u1;
+
+} Process2;
 
 double y(double x) { return x*x + 2.0*x + 1.0; }
 double u(double x, double t) { return x*x + t*t + 2.0*x; }
@@ -151,7 +177,7 @@ void init_process(Process2 *p)
     }
 }
 
-void _calculate()
+void calculate()
 {
     int i,j;
 
