@@ -13,17 +13,17 @@ SOURCES += main.c \
     sample_functions.c \
     sample_gradient.c \
     sample_penalty.c \
-    sample_grid.c \
+#    sample_grid.c \
     runga_kutta.c \
     method_penalty.c \
     method_grid.c \
-    gradient.c #\
-#    sample2.c
+    gradient.c \
+    sample3.c
 
 HEADERS += minimum.h \
     methods.h \
     print.h \
     method_grid.h \
     gradient.h \
-    function.h #\
-#    sample2.h
+    function.h \
+    sample3.h
