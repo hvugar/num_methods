@@ -18,7 +18,7 @@ SOURCES += main.c \
     method_penalty.c \
     method_grid.c \
     gradient.c \
-    sample3.c
+    sample4.c
 
 HEADERS += minimum.h \
     methods.h \
@@ -26,4 +26,4 @@ HEADERS += minimum.h \
     method_grid.h \
     gradient.h \
     function.h \
-    sample3.h
+    optimal3.h

@@ -1,4 +1,3 @@
-#include "optimal2.h"
 #include "method_grid.h"
 #include "print.h"
 #include <math.h>
@@ -26,9 +25,9 @@ typedef struct {
 	double *p;
 	
 	double alpha;
-} Process3;
+} Process4;
 
-Process3 p;
+Process4 p;
 
 double delta(double x)
 {
@@ -54,7 +53,7 @@ double fxt(double x, double t)
     return p.f[j*p.m+i];
 }
 
-void process_init(Process3 *p)
+void process_init(Process4 *p)
 {
 	p->x0 = 0.0;  p->x1 = 1.0;
 	p->t0 = 0.0;  p->t1 = 1.0;
@@ -90,7 +89,7 @@ void process_init(Process3 *p)
 	_printV(p->f, p->m, p->n);
 }
 
-void calculate_u(Process3 *p)
+void calculate_u(Process4 *p)
 {
     int i;
     Grid g;
@@ -103,7 +102,7 @@ void calculate_u(Process3 *p)
     free(g.u);
 }
 
-void process_destroy(Process3 *p)
+void process_destroy(Process4 *p)
 {
 	free(p->x); free(p->t); free(p->u); free(p->f); free(p->p);
 }
