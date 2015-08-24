@@ -1,4 +1,5 @@
 #include "methods.h"
+#include "print.h"
 
 typedef struct
 {
@@ -115,7 +116,7 @@ double delta(double t)
 
 double f(double t, double x)
 {
-	double d = delta(t);
+	//double d = delta(t);
 	return 3*t*t+ t*t*t - x;
 }
 
@@ -131,12 +132,12 @@ double dx(double t, double x)
 
 void calculate_x(Process5 *p)
 {
-	double x1 = _RungaKutta1(dx, p->x0, p->t0, p->t1, p->dt);
+	_RungaKutta1(dx, p->x0, p->t0, p->t1, p->dt);
 }
 
 void calculate_psi(Process5 *p)
 {
-	double psi0 = _RungaKutta2(px, p->psi1, p->t0, p->t1, -p->dt);
+	_RungaKutta2(px, p->psi1, p->t0, p->t1, -p->dt);
 }
 
 double J(Process5 *p)
@@ -172,8 +173,8 @@ void calculate()
 		calculate_x(&p);
 		calculate_psi(&p);
 		
-		_print2("x:\t", p.x, p.N);
-		_print2("psi:\t", p.psi, p.N);
+		_print1("x:\t", p.x, p.N);
+		_print1("psi:\t", p.psi, p.N);
 		printf("p[0]: %.10f p[1]: %.10f\n", p.p[0], p.p[1]);
 
         J1 = J(&p);
@@ -212,7 +213,7 @@ void calculate()
             return sum;
         }
 
-        double alpha = R1Minimize(argmin, step, gold_epsilon);
+        alpha = R1Minimize(argmin, step, gold_epsilon);
 		
         dstnc = 0.0;
         for (i=0; i<2; i++)
@@ -237,8 +238,8 @@ void calculate()
     }
     while ( 1 );
 	
-	_print2("x:\t", p.x, p.N);
-	_print2("psi:\t", p.psi, p.N);
+	_print1("x:\t", p.x, p.N);
+	_print1("psi:\t", p.psi, p.N);
 	printf("p[0]: %.10f p[1]: %.10f\n", p.p[0], p.p[1]);
 	
 /*	
