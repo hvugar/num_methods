@@ -107,16 +107,15 @@ double PointControl1::delta(double t)
 
 void PointControl1::main()
 {
-
     DoubleVector p(3, 0.0);
     p[0] = 0.0;
     p[1] = 0.0;
     p[2] = 0.0;
 
-    PointControl1 f(0.0, 1.0, 0.0, +2.0, 0.0001, 0.0001);
+    PointControl1 f(0.0, 1.0, 0.0, +22.0, 0.0001, 0.0001);
     PointControl1Printer printer;
 
-    SteepestDescentGradient g1;
+    ConjugateGradient g1;
     g1.setFunction(&f);
     g1.setEpsilon1(0.0000001);
     g1.setEpsilon2(0.0000001);
@@ -137,7 +136,7 @@ void PointControl1Printer::print(unsigned int iterationCount, const DoubleVector
 
 void PointControl1::write(DoubleVector &x)
 {
-    FILE *f = fopen("d:/test.txt", "w");
+    FILE *f = fopen("pointcontrol1.txt", "w");
     for (unsigned int i=0; i<x.size(); i++)
     {
         if (i%10==0)
