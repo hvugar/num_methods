@@ -11,17 +11,20 @@
  * @brief Optimal control problem
  * @param x1' = 3.0 * x2^2;
  * @param x2' = x1 + x2 - 2.0 * u - t^3 + 1.0;
- * @param x1(0) = x10;
- * @param x2(0) = x20;
- * @param F(x(T)) = (x2[T] - 1.0)^2;
- * @param J = integral( (x1-t^3)^2 + (x2-t)^2 + (2*u-t)^2 ) + F(x(T));
+ * @param x1(0) = 0.0;
+ * @param x2(0) = 0.0;
+ * @param T(x(T)) = (x2[T] - 1.0)^2;
+ * @param J = integral( (x1-t^3)^2 + (x2-t)^2 + (2*u-t)^2 ) + T(x(T));
+ *
+ * u*(t) = t/2;
+ * x1*(t) = t^3;
+ * x2*(t) = t;
  */
 struct CFunction1 : public RnFunction
 {
     CFunction1(double t0, double t1, double h);
     virtual ~CFunction1();
 
-protected:
     virtual double fx(const DoubleVector& u);
     virtual void gradient(double gradient_step, const DoubleVector& u, DoubleVector &g);
 

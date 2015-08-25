@@ -9,24 +9,25 @@
 
 /**
  * @brief Optimal control problem
- * @param x1' = 3.0 * x2^2;
- * @param x2' = x1 + x2 - 2.0 * u - t^3 + 1.0;
- * @param x1(0) = x10;
- * @param x2(0) = x20;
- * @param F(x(T)) = (x2[T] - 1.0)^2;
- * @param J = integral( (x1-t^3)^2 + (x2-t)^2 + (2*u-t)^2 ) + F(x(T));
+ * @param x1' = x2
+ * @param x2' = -6*x1 + x2 + u - t + 1;
+ * @param x1(0) = 0.0;
+ * @param x2(0) = 0.0;
+ * @param F(x(T)) = 0.0;
+ * @param J = integral( (x1-t^2/2)^2 + (x2-t)^2 ) + F(x(T));
+ *
+ * u*(t) = t^2/2;
+ * x1*(t) = t^2/2;
+ * x2*(t) = t;
  */
-class CFunction2 : public RnFunction
+struct CFunction2 : public RnFunction
 {
-public:
     CFunction2(double t0, double t1, double h);
     virtual ~CFunction2();
 
-protected:
     virtual double fx(const DoubleVector& u);
     virtual void gradient(double gradient_step, const DoubleVector& u, DoubleVector &g);
 
-private:
     double fx0(double t, const DoubleVector& x, double u) const;
     double F(double t, const DoubleVector& x, double u) const;
     double fx1(double t, const DoubleVector& x, double u) const;
@@ -47,9 +48,6 @@ private:
     DoubleVector x2;
     DoubleVector psi1;
     DoubleVector psi2;
-
-
-
 public:
     static void main();
 };

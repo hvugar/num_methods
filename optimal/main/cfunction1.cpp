@@ -235,7 +235,8 @@ void CFunction1::main()
     SteepestDescentGradient g1;
     g1.setFunction(&c);
     g1.setEpsilon1(0.0000001);
-    g1.setGradientStep(0.0000001);
+    g1.setEpsilon2(0.0000001);
+    g1.setGradientStep(0.000001);
     g1.setR1MinimizeEpsilon(0.01, 0.0000001);
     g1.setPrinter(new CFunction1Printer);
     g1.calculate(u0);
@@ -246,16 +247,17 @@ void CFunction1::main()
     ConjugateGradient g2;
     g2.setFunction(&c);
     g2.setEpsilon1(0.0000001);
+    g2.setEpsilon2(0.0000001);
     g2.setGradientStep(0.0000001);
     g2.setR1MinimizeEpsilon(0.01, 0.0000001);
     g2.setPrinter(new CFunction1Printer);
     g2.calculate(u0);
 }
 
-void CFunction1Printer::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const
+void CFunction1Printer::print(unsigned int iterationCount, const DoubleVector& u, const DoubleVector &s, double alpha, RnFunction* f) const
 {
-    printf("J[%2d]: %.10f  ", iterationCount, f->fx(m_x));
-    print("u", m_x);
+    printf("J[%2d]: %.10f  ", iterationCount, f->fx(u));
+    print("u", u);
 }
 
 void CFunction1Printer::print(const char* s, const std::vector<double>& x) const

@@ -61,16 +61,14 @@ void CFunction2::gradient(double gradient_step, const DoubleVector& u, DoubleVec
 
         double u1 = u[i] + gradient_step;
         double u2 = u[i] - gradient_step;
-        g[i] = (H(t[i], x, u1, psi) - H(t[i], x, u2, psi)) / (2 * gradient_step);
-        //g[i] = -psi2[i];
+        //g[i] = (H(t[i], x, u1, psi) - H(t[i], x, u2, psi)) / (2 * gradient_step);
+        g[i] = psi2[i];
     }
 }
 
 double CFunction2::fx0(double t, const DoubleVector& x, double u) const
 {
-    double x1 = x[0];
-    double x2 = x[1];
-    return (x1-(t*t)/2.0)*(x1-(t*t)/2.0) + (x2 - t)*(x2 - t);
+    return (x[0]-(t*t)/2.0)*(x[0]-(t*t)/2.0) + (x[1] - t)*(x[1] - t);
 }
 
 double CFunction2::F(double t, const DoubleVector &x, double u) const
@@ -80,15 +78,12 @@ double CFunction2::F(double t, const DoubleVector &x, double u) const
 
 double CFunction2::fx1(double t, const DoubleVector& x, double u) const
 {
-    double x2 = x[1];
-    return x2;
+    return x[1];
 }
 
 double CFunction2::fx2(double t, const DoubleVector& x, double u) const
 {
-    double x1 = x[0];
-    double x2 = x[1];
-    return -6.0*x1 + x2 + u - t + 1.0;
+    return -6.0*x[0] + x[1] + u - t + 1.0;
 }
 
 double CFunction2::fp1(double t, const DoubleVector& x, const DoubleVector& psi, double u) const
@@ -221,7 +216,7 @@ void CFunction2::calculate_psi(const DoubleVector& u)
 void CFunction2::main()
 {
     /* Function */
-    CFunction2 c(0.0, 1.0, 0.001);
+    CFunction2 c(0.0, 1.0, 0.0001);
 
     /* initial point */
     DoubleVector u0(c.n);
@@ -231,6 +226,7 @@ void CFunction2::main()
     SteepestDescentGradient g1;
     g1.setFunction(&c);
     g1.setEpsilon1(0.0000001);
+    g1.setEpsilon2(0.0000001);
     g1.setGradientStep(0.0000001);
     g1.setR1MinimizeEpsilon(0.01, 0.0000001);
     g1.setPrinter(new CFunction2Printer);
@@ -242,23 +238,29 @@ void CFunction2::main()
     ConjugateGradient g2;
     g2.setFunction(&c);
     g2.setEpsilon1(0.0000001);
+    g2.setEpsilon2(0.0000001);
     g2.setGradientStep(0.0000001);
     g2.setR1MinimizeEpsilon(0.01, 0.0000001);
     g2.setPrinter(new CFunction2Printer);
-    g2.calculate(u0);
+//    g2.calculate(u0);
 }
 
-void CFunction2Printer::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const
+void CFunction2Printer::print(unsigned int iterationCount, const DoubleVector& u, const DoubleVector &s, double alpha, RnFunction* f) const
 {
-    printf("J[%2d]: %.10f\t", iterationCount, f->fx(m_x));
-    print("u", m_x);
+    CFunction2* f2 = dynamic_cast<CFunction2*>(f);
+    printf("J[%2d]: %.10f\n", iterationCount, f->fx(u));
+    print("psi1", f2->x1);
+    print("psi2", f2->x2);
+    print("psi1", f2->psi1);
+    print("psi2", f2->psi2);
+    print("u", u);
 }
 
 void CFunction2Printer::print(const char* s, const std::vector<double>& x) const
 {
     unsigned int i;
     unsigned int n = x.size();
-    printf("%s:", s);
+    printf("%s:\t", s);
     for (i=0; i<n; i++)
     {
         if ( i%((n-1)/10) == 0 )
