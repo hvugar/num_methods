@@ -23,8 +23,8 @@ void PenaltyMethod::calculate()
 
 }
 
-void PenaltyMethod::P(double x)
+double PenaltyMethod::P(double x)
 {
-
+    return x;
 }
 
