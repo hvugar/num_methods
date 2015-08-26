@@ -21,7 +21,7 @@
 
 int main()
 {
-    CFunction2::main();
+    CFunction1::main();
     return 0;
 }
 
