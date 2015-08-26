@@ -21,7 +21,7 @@
 
 int main()
 {
-    CFunction1::main();
+    ControlFunction::main();
     return 0;
 }
 
