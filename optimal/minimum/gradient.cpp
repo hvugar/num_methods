@@ -3,7 +3,7 @@
 GradientMethod::GradientMethod() : m_fn(NULL), printer(NULL), projection(NULL)
 {
     m_epsilon1 = 0.1;
-    m_epsilon1 = 0.1;
+    m_epsilon2 = 0.1;
     grad_step = 0.01;
     min_step = 0.1;
     min_epsilon = 0.01;
