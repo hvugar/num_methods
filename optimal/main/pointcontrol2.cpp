@@ -94,7 +94,9 @@ void PointControl2::calculate_psi()
 
 double PointControl2::f(double t, double x)
 {
-    return 2*t - x + t*t;
+//    return 2*t - x + t*t;
+//    return x + 2*t - t*t;
+    return 2*t;
 }
 
 double PointControl2::dxdt(double t, double x, const DoubleVector& p)
@@ -119,7 +121,7 @@ void PointControl2::main()
     p[0] = 10.5;
     p[1] = 11.4;
     p[2] = 12.4;
-    PointControl2 f(0.0, 1.0, 0.0, 22.7846649821, 0.0001, 0.0001);
+    PointControl2 f(0.0, 1.0, 0.0, 1.5, 0.0001, 0.0001);
 //    f.calculate_x(p);
 //    printf("x: [%.10f %.10f]\n", f.x[0], f.x[f.n-1]);
 //    printf("p: [%.10f %.10f %.10f]\n", p[0], p[1], p[2]);

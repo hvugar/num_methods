@@ -34,8 +34,8 @@ void write(const double *x, unsigned int n, const char* filename)
 
 double f(double t, double x)
 {
-//    return x + 2*t - t*t;
-    return 2*t - x + t*t;
+    return x + 2*t - t*t;
+//    return 2*t - x + t*t;
 }
 
 void a()
@@ -50,9 +50,9 @@ void a()
 
     for (unsigned int i=1; i<n; i++)
     {
-        if (fabs(t-0.2) < dt/10.0) _x0 = _x0 + 7.8927885838;
-        if (fabs(t-0.5) < dt/10.0) _x0 = _x0 + 0.0;//10.6541501861;
-        if (fabs(t-0.8) < dt/10.0) _x0 = _x0 + 0.0;// 14.3815984660;
+        if (fabs(t-0.2) < dt/10.0) _x0 = _x0 + 10.0;
+        //if (fabs(t-0.5) < dt/10.0) _x0 = _x0 + 0.0;//10.6541501861;
+        //if (fabs(t-0.8) < dt/10.0) _x0 = _x0 + 0.0;// 14.3815984660;
 
 //        if (fabs(t-0.2) < dt/10.0) _x0 = _x0 + 0.3;
 //        if (fabs(t-0.5) < dt/10.0) _x0 = _x0 + 0.4;
@@ -79,8 +79,8 @@ void a()
 
 int main()
 {
-    a();
-//    PointControl2::main();
+//    a();
+    PointControl2::main();
     return 0;
 }
 
