@@ -31,8 +31,8 @@ struct CFunction3 : public RnFunction
 private:
     double fx0(double t, const DoubleVector& x, const DoubleVector& u) const;
     double T(double t, const DoubleVector& x) const;
-    double fx1(double t, const DoubleVector& x, double u) const;
-    double fx2(double t, const DoubleVector& x, double u) const;
+    double fx1(double t, const DoubleVector& x, const DoubleVector& u) const;
+    double fx2(double t, const DoubleVector& x, const DoubleVector& u) const;
     double fp1(double t, const DoubleVector& x, const DoubleVector& psi, double u);
     double fp2(double t, const DoubleVector& x, const DoubleVector& psi, double u);
     double H(double t, const DoubleVector& x, const DoubleVector& u, const DoubleVector& psi);

@@ -68,18 +68,30 @@ void CFunction3::gradient(double gradient_step, const DoubleVector& u, DoubleVec
     calculate_psi(u);
     for (int i=0; i<n; i++)
     {
+        int j = i+n;
         x[0] = x1[i];
         x[1] = x2[i];
 
         psi[0] = psi1[i];
         psi[1] = psi2[i];
 
-        DoubleVector u1(2);
-        DoubleVector u2(2);
+        DoubleVector up(2);
+        DoubleVector ud(2);
 
-        double u1 = u[i] + gradient_step;
-        double u2 = u[i] - gradient_step;
-        g[i] = (H(t[i], x, u1, psi) - H(t[i], x, u2, psi)) / (2 * gradient_step);
+        up[0] = u[i] + gradient_step;
+        up[1] = u[j];
+
+        ud[0] = u[i] - gradient_step;
+        ud[1] = u[j];
+
+        g[i] = (H(t[i], x, up, psi) - H(t[i], x, ud, psi)) / (2 * gradient_step);
+
+        up[0] = u[i];
+        up[1] = u[j] + gradient_step;
+
+        ud[0] = u[i];
+        ud[1] = u[j] - gradient_step;
+        g[i+n] = (H(t[i], x, up, psi) - H(t[i], x, ud, psi)) / (2 * gradient_step);
     }
 }
 
@@ -96,14 +108,14 @@ double CFunction3::T(double t, const DoubleVector& x) const
     return (x[1] - 1.0) * (x[1] - 1.0);
 }
 
-double CFunction3::fx1(double t, const DoubleVector& x, double u) const
+double CFunction3::fx1(double t, const DoubleVector& x, const DoubleVector& u) const
 {
-    return 3.0 * x[1] * x[1];
+    return 2.0 * u[0] + t;
 }
 
-double CFunction3::fx2(double t, const DoubleVector& x, double u) const
+double CFunction3::fx2(double t, const DoubleVector& x, const DoubleVector& u) const
 {
-    return x[0] + x[1] - 2.0*u - t*t*t + 1.0;
+    return u[1] + 3.0*t*t - 2.0*t;
 }
 
 double CFunction3::fp1(double t, const DoubleVector& x, const DoubleVector& psi, double u)
@@ -143,31 +155,35 @@ void CFunction3::calculate_x(const DoubleVector& u)
     x1[0] = 0.0;
     x2[0] = 0.0;
     DoubleVector _x(2);
+    DoubleVector _u(2);
     _x[0] = x1[0];
     _x[1] = x2[0];
 
     h = +fabs(h);
     for (int i=0; i<n-1; i++)
     {
+        _u[0] = u[i];
+        _u[1] = u[i+n];
+
         _x[0] = x1[i];
         _x[1] = x2[i];
-        k1[0] = fx1(t[i], _x, u[i]);
-        k1[1] = fx2(t[i], _x, u[i]);
+        k1[0] = fx1(t[i], _x, _u);
+        k1[1] = fx2(t[i], _x, _u);
 
         _x[0] = x1[i] + (h/2.0) * k1[0];
         _x[1] = x2[i] + (h/2.0) * k1[1];
-        k2[0] = fx1(t[i]+h/2.0, _x, u[i]);
-        k2[1] = fx2(t[i]+h/2.0, _x, u[i]);
+        k2[0] = fx1(t[i]+h/2.0, _x, _u);
+        k2[1] = fx2(t[i]+h/2.0, _x, _u);
 
         _x[0] = x1[i] + (h/2.0) * k2[0];
         _x[1] = x2[i] + (h/2.0) * k2[1];
-        k3[0] = fx1(t[i]+h/2.0, _x, u[i]);
-        k3[1] = fx2(t[i]+h/2.0, _x, u[i]);
+        k3[0] = fx1(t[i]+h/2.0, _x, _u);
+        k3[1] = fx2(t[i]+h/2.0, _x, _u);
 
         _x[0] = x1[i] + h * k3[0];
         _x[1] = x2[i] + h * k3[1];
-        k4[0] = fx1(t[i]+h, _x, u[i]);
-        k4[1] = fx2(t[i]+h, _x, u[i]);
+        k4[0] = fx1(t[i]+h, _x, _u);
+        k4[1] = fx2(t[i]+h, _x, _u);
 
         x1[i+1] = x1[i] + (h/6.0) * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0]);
         x2[i+1] = x2[i] + (h/6.0) * (k1[1] + 2*k2[1] + 2*k3[1] + k4[1]);
