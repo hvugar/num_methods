@@ -18,6 +18,7 @@ SOURCES += main.cpp \
     cfunction.cpp \
     cfunction1.cpp \
     cfunction2.cpp \
+    cfunction3.cpp \
     heatcontrol.cpp \
     pointcontrol.cpp \
     pointcontrol1.cpp \
@@ -31,6 +32,7 @@ HEADERS += \
     cfunction.h \
     cfunction1.h \
     cfunction2.h \
+    cfunction3.h \
     heatcontrol.h \
     pointcontrol.h \
     pointcontrol1.h \
