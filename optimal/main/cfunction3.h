@@ -33,12 +33,13 @@ private:
     double T(double t, const DoubleVector& x) const;
     double fx1(double t, const DoubleVector& x, const DoubleVector& u) const;
     double fx2(double t, const DoubleVector& x, const DoubleVector& u) const;
-    double fp1(double t, const DoubleVector& x, const DoubleVector& psi, double u);
-    double fp2(double t, const DoubleVector& x, const DoubleVector& psi, double u);
+    double fp1(double t, const DoubleVector& x, const DoubleVector& psi, const DoubleVector& u);
+    double fp2(double t, const DoubleVector& x, const DoubleVector& psi, const DoubleVector& u);
     double H(double t, const DoubleVector& x, const DoubleVector& u, const DoubleVector& psi);
     void calculate_x(const DoubleVector& u);
     void calculate_psi(const DoubleVector& u);
 
+public:
     double t0;
     double t1;
     double h;

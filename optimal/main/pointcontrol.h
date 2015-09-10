@@ -35,7 +35,7 @@ private:
     DoubleVector psi;
     DoubleVector p;
 
-    void write(DoubleVector &x);
+    void write(const DoubleVector &x, const char* filename);
 
 public:
     static void main();

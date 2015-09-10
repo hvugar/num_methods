@@ -24,7 +24,7 @@
 
 int main()
 {
-    CFunction3::main();
+    PointControl2::main();
     return 0;
 }
 

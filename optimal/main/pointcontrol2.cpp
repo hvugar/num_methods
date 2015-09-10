@@ -54,9 +54,34 @@ void PointControl2::calculate_x(const DoubleVector &p)
 
     for (unsigned int i=1; i<n; i++)
     {
-        if (fabs(t-T[0]) < dt/10.0) _x0 = _x0 + p[0];
-        if (fabs(t-T[1]) < dt/10.0) _x0 = _x0 + p[1];
-        if (fabs(t-T[2]) < dt/10.0) _x0 = _x0 + p[2];
+
+//        if (fabs(t-T[0]) < dt/10.0) _x0 = _x0 + p[0];
+//        if (fabs(t-T[1]) < dt/10.0) _x0 = _x0 + p[1];
+//        if (fabs(t-T[2]) < dt/10.0) _x0 = _x0 + p[2];
+
+        if (fabs(t-T[0]) < dt/10.0)
+        {
+            _x0 = _x0 + p[0];
+            t = t + dt;
+            x[i] = _x0;
+            continue;
+        }
+
+        if (fabs(t-T[1]) < dt/10.0)
+        {
+            _x0 = _x0 + p[1];
+            t = t + dt;
+            x[i] = _x0;
+            continue;
+        }
+
+        if (fabs(t-T[2]) < dt/10.0)
+        {
+            _x0 = _x0 + p[2];
+            t = t + dt;
+            x[i] = _x0;
+            continue;
+        }
 
         double k1 = dxdt(t,        _x0, p);
         double k2 = dxdt(t+dt/2.0, _x0+(dt/2.0)*k1, p);
@@ -94,9 +119,10 @@ void PointControl2::calculate_psi()
 
 double PointControl2::f(double t, double x)
 {
+     return 2*t - x + t*t;
+//        return x + 2*t - t*t;
 //    return 2*t - x + t*t;
-//    return x + 2*t - t*t;
-    return 2*t;
+//    return 2*t;
 }
 
 double PointControl2::dxdt(double t, double x, const DoubleVector& p)
@@ -121,12 +147,7 @@ void PointControl2::main()
     p[0] = 10.5;
     p[1] = 11.4;
     p[2] = 12.4;
-    PointControl2 f(0.0, 1.0, 0.0, 1.5, 0.0001, 0.0001);
-//    f.calculate_x(p);
-//    printf("x: [%.10f %.10f]\n", f.x[0], f.x[f.n-1]);
-//    printf("p: [%.10f %.10f %.10f]\n", p[0], p[1], p[2]);
-//    f.write(f.x, "pointcontrol21.txt");
-//    return;
+    PointControl2 f(0.0, 1.0, 0.0, 22.5, 0.0001, 0.0001);
 
     PointControl2Printer printer;
 
@@ -139,18 +160,16 @@ void PointControl2::main()
     g1.setEpsilon1(0.0000001);
     g1.setEpsilon2(0.0000001);
     g1.setGradientStep(0.0000001);
-    g1.setR1MinimizeEpsilon(1, 0.01);
+    g1.setR1MinimizeEpsilon(1.0, 0.01);
     g1.setPrinter(&printer);
     g1.calculate(p);
-    printf("x: [%.10f %.10f]\n", f.x[0], f.x[f.n-1]);
-    printf("p: [%.10f %.10f %.10f]\n", p[0], p[1], p[2]);
 
     f.write(f.x, "pointcontrol2.txt");
 }
 
 void PointControl2Printer::print(unsigned int iterationCount, const DoubleVector &p, const DoubleVector &s, double m_alpha, RnFunction *f) const
 {
-    printf("J[%2d]: %.10f %.10f %.10f %.10f\n", iterationCount, f->fx(p), p[0], p[1], p[2]);
+    printf("J[%2d]: %.10f %.10f %.10f %.10f %.10f\n", iterationCount, f->fx(p), p[0], p[1], p[2], p[0]+p[1]+p[2]);
     puts("*******************************************************************************");
 }
 
