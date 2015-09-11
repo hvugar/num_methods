@@ -59,29 +59,29 @@ void PointControl2::calculate_x(const DoubleVector &p)
 //        if (fabs(t-T[1]) < dt/10.0) _x0 = _x0 + p[1];
 //        if (fabs(t-T[2]) < dt/10.0) _x0 = _x0 + p[2];
 
-        if (fabs(t-T[0]) < dt/10.0)
-        {
-            _x0 = _x0 + p[0];
-            t = t + dt;
-            x[i] = _x0;
-            continue;
-        }
+//        if (fabs(t-T[0]) < dt/10.0)
+//        {
+//            _x0 = _x0 + p[0];
+//            t = t + dt;
+//            x[i] = _x0;
+//            continue;
+//        }
 
-        if (fabs(t-T[1]) < dt/10.0)
-        {
-            _x0 = _x0 + p[1];
-            t = t + dt;
-            x[i] = _x0;
-            continue;
-        }
+//        if (fabs(t-T[1]) < dt/10.0)
+//        {
+//            _x0 = _x0 + p[1];
+//            t = t + dt;
+//            x[i] = _x0;
+//            continue;
+//        }
 
-        if (fabs(t-T[2]) < dt/10.0)
-        {
-            _x0 = _x0 + p[2];
-            t = t + dt;
-            x[i] = _x0;
-            continue;
-        }
+//        if (fabs(t-T[2]) < dt/10.0)
+//        {
+//            _x0 = _x0 + p[2];
+//            t = t + dt;
+//            x[i] = _x0;
+//            continue;
+//        }
 
         double k1 = dxdt(t,        _x0, p);
         double k2 = dxdt(t+dt/2.0, _x0+(dt/2.0)*k1, p);
@@ -89,7 +89,12 @@ void PointControl2::calculate_x(const DoubleVector &p)
         double k4 = dxdt(t+dt,     _x0+dt*k3, p);
         _x0 = _x0 + (dt/6.0) * (k1 + 2.0*k2 + 2.0*k3 + k4);
         t = t + dt;
+
         x[i] = _x0;
+
+        if (t >= T[0]) x[i] += p[0];
+        if (t >= T[1]) x[i] += p[1];
+        if (t >= T[2]) x[i] += p[2];
     }
 }
 
@@ -119,8 +124,8 @@ void PointControl2::calculate_psi()
 
 double PointControl2::f(double t, double x)
 {
-     return 2*t - x + t*t;
-//        return x + 2*t - t*t;
+     return x + 2*t - t*t;
+//     return 2*t - x + t*t;
 //    return 2*t - x + t*t;
 //    return 2*t;
 }
@@ -147,7 +152,7 @@ void PointControl2::main()
     p[0] = 10.5;
     p[1] = 11.4;
     p[2] = 12.4;
-    PointControl2 f(0.0, 1.0, 0.0, 22.5, 0.0001, 0.0001);
+    PointControl2 f(0.0, 1.0, 2.0, 2.5, 0.0001, 0.0001);
 
     PointControl2Printer printer;
 
