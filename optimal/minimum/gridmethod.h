@@ -26,6 +26,17 @@ public:
     void setM2(R1Function* m2);
     void setFi(R1Function* fi);
 
+//    static double _u(double x, double y, double t);
+//    static double _f(double x, double y, double t);
+//    static double _fi(double x, double y);
+//    static double _m1(double y, double t);
+//    static double _m2(double y, double t);
+//    static double _m3(double x, double t);
+//    static double _m4(double x, double t);
+    static void VariableDirectionsMethod(R2Function *fi, R2Function *m1, R2Function *m2, R2Function *m3, R2Function *m4, R3Function *f);
+    static void TomasAlgorithm(const DoubleVector& a, const DoubleVector& b, const DoubleVector& c, const DoubleVector& d, DoubleVector& x);
+    static void printResult(unsigned int k, unsigned int N, unsigned int M);
+
 private:
     double t0;
     double t1;
