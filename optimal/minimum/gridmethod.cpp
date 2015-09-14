@@ -243,7 +243,7 @@ void GridMethod::VariableDirectionsMethod(R2Function *fi, R2Function *m1, R2Func
 {
     unsigned int N = 1000;
     unsigned int M = 1000;
-    unsigned int K = 4;
+    unsigned int K = 20;
     double l1 = 1.0;
     double l2 = 1.0;
     double dx = l1 / N;

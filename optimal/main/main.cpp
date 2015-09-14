@@ -68,7 +68,7 @@ int main()
         }
     }
 
-    //GridMethod::VariableDirectionsMethod(0, 0, 0, 0, 0, 0);
+//    GridMethod::VariableDirectionsMethod(0, 0, 0, 0, 0, 0);
     return 0;
 }
 
