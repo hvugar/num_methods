@@ -22,8 +22,17 @@
 #include "pointcontrol2.h"
 #include "utils.h"
 
+#include "heat2d.h"
+
 int main()
 {
+    DoubleMatrix u;
+    DoubleMatrix f;
+    DoubleMatrix x1;
+    DoubleMatrix x2;
+
+    Heat2DControl hc;
+    hc.calculateX(u, f, x1, x2);
 //    GridMethod::VariableDirectionsMethod(0, 0, 0, 0, 0, 0);
     return 0;
 }
