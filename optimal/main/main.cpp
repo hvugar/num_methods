@@ -26,13 +26,7 @@
 
 int main()
 {
-    DoubleMatrix u;
-    DoubleMatrix f;
-    DoubleMatrix x1;
-    DoubleMatrix x2;
-
-    Heat2DControl hc;
-    hc.calculateX(u, f, x1, x2);
+    Heat2DControl::main();
 //    GridMethod::VariableDirectionsMethod(0, 0, 0, 0, 0, 0);
     return 0;
 }

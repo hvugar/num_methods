@@ -59,8 +59,8 @@ void CFunction2::gradient(double gradient_step, const DoubleVector& u, DoubleVec
         psi[0] = psi1[i];
         psi[1] = psi2[i];
 
-        double u1 = u[i] + gradient_step;
-        double u2 = u[i] - gradient_step;
+        //double u1 = u[i] + gradient_step;
+        //double u2 = u[i] - gradient_step;
         //g[i] = (H(t[i], x, u1, psi) - H(t[i], x, u2, psi)) / (2 * gradient_step);
         g[i] = psi2[i];
     }

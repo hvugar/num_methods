@@ -45,8 +45,8 @@ runga_kutta.o: runga_kutta.c
 method_grid.o: method_grid.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o method_grid.o method_grid.c
 
-sample.o: sample5.c
-	$(CC) -c $(CFLAGS) $(INCLUDES) -o sample.o sample5.c
+sample.o: sample3.c
+	$(CC) -c $(CFLAGS) $(INCLUDES) -o sample.o sample3.c
 	
 sample_penalty.o: sample_penalty.c
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o sample_penalty.o sample_penalty.c

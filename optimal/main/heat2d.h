@@ -2,6 +2,7 @@
 #define HEAT2D_H
 
 #include <function.h>
+#include <printer.h>
 #include <doublevector.h>
 
 struct Heat2DControl : public RnFunction
@@ -23,14 +24,16 @@ public:
     double m3(double x1, double t);
     double m4(double x1, double t);
 
-    double psi_fi(double x1, double x2);
+    double psi_fi(int i, int j);
     double psi_m1(double x2, double t);
     double psi_m2(double x2, double t);
     double psi_m3(double x1, double t);
     double psi_m4(double x1, double t);
 
-    void calculateX(const DoubleMatrix& u, const DoubleMatrix &f, DoubleMatrix& x1, DoubleMatrix& x2);
-    void calculatePsi(const DoubleMatrix& u, DoubleMatrix& x1, DoubleMatrix& x2);
+    void calculateU(const DoubleVector& f);
+    void calculateP(const DoubleVector& f, DoubleVector& g);
+
+    static void main();
 
 private:
     double t0;
@@ -44,19 +47,20 @@ private:
     double h1;
     double h2;
 
-    unsigned int N1;
-    unsigned int N2;
-    unsigned int M;
+    int N1;
+    int N2;
+    int M;
+    int C;
 
     double a1;
     double a2;
 
     DoubleMatrix mu;
-    DoubleMatrix u0;
-    DoubleMatrix mf;
-    DoubleMatrix mp;
-    DoubleMatrix mx1;
-    DoubleMatrix mx2;
+};
+
+struct Heat2DControlPrinter : public Printer
+{
+    virtual void print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const;
 };
 
 #endif // HEAT2D_H

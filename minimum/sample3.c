@@ -28,8 +28,8 @@ typedef struct {
 
 double u(double x, double t) { return x*x + t*t + 2.0*x; }
 
-double y(double x) { return x*x + 2.0*x + 1.0; }
-double F(double x, double t) { return 2.0*t - 2.0; }
+double U(double x) { return x*x + 2.0*x + 1.0; }
+double f(double x, double t) { return 2.0*t - 2.0; }
 
 double fi(double x) { return x*x + 2.0*x ; }
 double m1(double t) { return t*t; }
@@ -38,7 +38,7 @@ double m2(double t) { return t*t + 3.0; }
 //double p_fi(double x) { return -2.0*(u(x,1.0) - y(x)); }
 double p_m1(double t) { return 0.0; }
 double p_m2(double t) { return 0.0; }
-double f2(double x, double t) { return 0.0; }
+double p_f(double x, double t) { return 0.0; }
 
 Process3 p;
 
@@ -58,7 +58,7 @@ double p_fi(double x)
 {
     int i = (int)(ceil(x/p.dx));
     int j = (int)(ceil(p.t1/p.dt));
-    return -2.0 * (p.u[j*p.m+i] - y(x));
+    return -2.0 * (p.u[j*p.m+i] - U(x));
 }
 
 void calculate_u(Process3 *p)
@@ -91,7 +91,7 @@ void calculate_p(Process3 *p)
     {
 		double x = p->dx*(j%p->n);
 		double t = p->dt*(j/p->m);
-        p->p[j] = p->p[j] + 2.0 * (p->f[j] - F(x, t));
+        p->p[j] = -p->p[j] + 2.0 * (p->f[j] - f(x, t));
     }
 }
 
@@ -119,12 +119,11 @@ double _JSum(Process3 *p)
     {
 		int i0=i;
         int i1=i+1;
-        double fj = p->u[(m-1)*n+i1] - y(p->dx*i1);
-        double fi = p->u[(m-1)*n+i0] - y(p->dx*i0);
+        double fj = p->u[(m-1)*n+i1] - U(p->dx*i1);
+        double fi = p->u[(m-1)*n+i0] - U(p->dx*i0);
         double f0 = fj*fj + fi*fi;
         sum = sum + 0.5 * f0 * (p->dx);
     }
-	
 
     double f_sum = 0.0;
     for (j=0; j<m*n; j++)
@@ -132,7 +131,7 @@ double _JSum(Process3 *p)
 		double x = p->dx*(j%p->n);
 		double t = p->dt*(j/p->m) ;
 		
-        f_sum += (p->f[j]-F(x,t))*(p->f[j]-F(x,t));
+        f_sum += (p->f[j]-f(x,t))*(p->f[j]-f(x,t));
     }
     sum = sum + f_sum;
     return sum;
@@ -259,5 +258,9 @@ void calculate()
 
     } while (1);
 
-    _printV(p.f, p.m, p.n);
+	_printV(p.u, p.m, p.n);
+	puts("");
+	_printV(p.p, p.m, p.n);
+    puts("");
+	_printV(p.f, p.m, p.n);
 }
