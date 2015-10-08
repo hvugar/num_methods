@@ -13,4 +13,5 @@ INPUT(
 ./debug\pointcontrol1.o
 ./debug\pointcontrol2.o
 ./debug\heat2d.o
+./debug\headcontrol2d.o
 );

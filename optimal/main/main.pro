@@ -23,7 +23,8 @@ SOURCES += main.cpp \
     pointcontrol.cpp \
     pointcontrol1.cpp \
     pointcontrol2.cpp \
-    heat2d.cpp
+    heat2d.cpp \
+    headcontrol2d.cpp
 
 HEADERS += \
     utils.h \
@@ -38,4 +39,5 @@ HEADERS += \
     pointcontrol.h \
     pointcontrol1.h \
     pointcontrol2.h \
-    heat2d.h
+    heat2d.h \
+    headcontrol2d.h

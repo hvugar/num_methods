@@ -23,10 +23,14 @@
 #include "utils.h"
 
 #include "heat2d.h"
+#include "headcontrol2d.h"
 
 int main()
 {
-    Heat2DControl::main();
+    HeadControl2D hc2;
+    hc2.calculateU();
+
+//    Heat2DControl::main();
 //    GridMethod::VariableDirectionsMethod(0, 0, 0, 0, 0, 0);
     return 0;
 }
