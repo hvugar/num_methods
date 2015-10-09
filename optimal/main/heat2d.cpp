@@ -152,7 +152,7 @@ double Heat2DControl::m4(double x1, double t) { return x1*x1 + t*t + 1.0; }
 
 double Heat2DControl::psi_fi(int i, int j)
 {
-    return 0.0;//2*mu(0, 0, t1);// - U(x1, x2);
+    return 0.0;
 }
 double Heat2DControl::psi_m1(double x2, double t) { return 0.0; }
 double Heat2DControl::psi_m2(double x2, double t) { return 0.0; }

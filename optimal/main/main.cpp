@@ -27,8 +27,7 @@
 
 int main()
 {
-    HeadControl2D hc2;
-    hc2.calculateU();
+    HeadControl2D::main();
 
 //    Heat2DControl::main();
 //    GridMethod::VariableDirectionsMethod(0, 0, 0, 0, 0, 0);
