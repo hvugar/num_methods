@@ -16,7 +16,7 @@ HeadControl2D::HeadControl2D()
     M  = 1000;
 
     L = 3;
-    C = 2*L*(M+1);
+    C = 2*L;
 
     h1 = (x11-x10) / N1;
     h2 = (x21-x20) / N2;
@@ -30,8 +30,6 @@ HeadControl2D::HeadControl2D()
 
 void HeadControl2D::calculateU(const DoubleVector& E, DoubleMatrix& u)
 {
-    printf("E: %d\n", E.size());
-
     DoubleMatrix u0;
     DoubleMatrix u1;
 
@@ -184,36 +182,43 @@ void HeadControl2D::calculateP(const DoubleVector& E, DoubleVector& g)
         for (unsigned int i=0; i<N1+1; i++)
         {
             psi0[j][i] = -2.0*(mu[j][i] - U[j][i]);
-            //g[M*(N2+1)*(N1+1) + j*(N1+1) + i] = -p0[j][i] + 2.0*(f0[M*(N2+1)*(N1+1) + j*(N1+1) + i] - f(i*h1, j*h2, t1));
         }
     }
 
     for (unsigned int i=0; i<=g.size(); i++) g[i] = 0.0;
 
-    //    printf("%d %d\n", (int)(round(E[0]/h1)), (int)(round(E[1]/h2)));
-    //    printf("%d %d\n", (int)(round(E[2]/h1)), (int)(round(E[3]/h2)));
-    //    printf("%d %d\n", (int)(round(E[4]/h1)), (int)(round(E[5]/h2)));
+    printf("%f %d %f %d\n", E[0], (int)(round(E[0]/h1)), E[1], (int)(round(E[1]/h2)));
+    printf("%f %d %f %d\n", E[0], (int)(round(E[2]/h1)), E[1], (int)(round(E[3]/h2)));
+    printf("%f %d %f %d\n", E[0], (int)(round(E[4]/h1)), E[1], (int)(round(E[5]/h2)));
 
-    int i1 = (int)(round(E[2*M*L + 0] / h1));
-    int i2 = (int)(round(E[2*M*L + 2] / h1));
-    int i3 = (int)(round(E[2*M*L + 4] / h1));
-    int j1 = (int)(round(E[2*M*L + 0] / h1));
-    int j2 = (int)(round(E[2*M*L + 2] / h1));
-    int j3 = (int)(round(E[2*M*L + 4] / h1));
+    int x1 = (int)(round(E[0]/h1));
+    int x2 = (int)(round(E[1]/h2));
 
-    for (unsigned int j=0; j<=N2; j++)
+    for (unsigned int i=0; i<M; i++)
     {
-        g[2*M*L + 0] = -g1(t1) * ((psi0[j][i1+1] - psi0[j][i1-1]) / (2*h1));
-        g[2*M*L + 2] = -g2(t1) * ((psi0[j][i2+1] - psi0[j][i2-1]) / (2*h1));
-        g[2*M*L + 4] = -g3(t1) * ((psi0[j][i3+1] - psi0[j][i3-1]) / (2*h1));
+        int j = i+1;
+
+        double f1 = g1(j*ht) * (psi0[x2][x1+1] - psi0[x2][x1-1])/(2.0*h1);
+        double f2 = mu[j1][i2] - U[j1][i2];
+
+        sum = sum + (0.25*(h1*h2))*(f1*f1 + f2*f2 + f3*f3 + f4*f4);
     }
 
-    for (unsigned int i=0; i<=N1; i++)
-    {
-        g[2*M*L + 1] = -g1(t1) * ((psi0[j1+1][i] - psi0[j1-1][i]) / (2*h2));
-        g[2*M*L + 3] = -g2(t1) * ((psi0[j2+1][i] - psi0[j2-1][i]) / (2*h2));
-        g[2*M*L + 5] = -g3(t1) * ((psi0[j3+1][i] - psi0[j3-1][i]) / (2*h2));
-    }
+
+
+//    for (unsigned int j=0; j<=N2; j++)
+//    {
+//        g[2*M*L + 0] = -g1(t1) * ((psi0[j][i1+1] - psi0[j][i1-1]) / (2*h1));
+//        g[2*M*L + 2] = -g2(t1) * ((psi0[j][i2+1] - psi0[j][i2-1]) / (2*h1));
+//        g[2*M*L + 4] = -g3(t1) * ((psi0[j][i3+1] - psi0[j][i3-1]) / (2*h1));
+//    }
+
+//    for (unsigned int i=0; i<=N1; i++)
+//    {
+//        g[2*M*L + 1] = -g1(t1) * ((psi0[j1+1][i] - psi0[j1-1][i]) / (2*h2));
+//        g[2*M*L + 3] = -g2(t1) * ((psi0[j2+1][i] - psi0[j2-1][i]) / (2*h2));
+//        g[2*M*L + 5] = -g3(t1) * ((psi0[j3+1][i] - psi0[j3-1][i]) / (2*h2));
+//    }
 
     DoubleVector a;
     DoubleVector b;
@@ -360,8 +365,6 @@ double HeadControl2D::fx(const DoubleVector& E)
 {
     calculateU(E, mu);
 
-    printMatrix1(mu);
-
     double sum = 0.0;
 
     for (unsigned int j=0; j<N2; j++)
@@ -388,7 +391,6 @@ double HeadControl2D::fx(const DoubleVector& E)
 void HeadControl2D::gradient(double step, const DoubleVector& E, DoubleVector& g)
 {
     calculateU(E, mu);
-    printMatrix1(mu);
     calculateP(E, g);
 }
 
@@ -456,8 +458,7 @@ void HeadControl2D::main()
     DoubleVector E0;
     E0.resize(hc.C);
 
-    for (unsigned int i=0; i<E0.size(); i++)
-        E0[i] = 0.1;
+    for (unsigned int i=0; i<E0.size(); i++) E0[i] = 0.1*(i+1);
 
     /* Minimization */
 //    SteepestDescentGradient g1;
