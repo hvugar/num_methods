@@ -7,6 +7,11 @@
 #include <math.h>
 #include <printer.h>
 
+/**
+ * @brief The HeadControl2D class
+ * du/dt = a1 * d^2u/dx1^2 + a2 * d^2u/dx2^2 + SUM(fi(t)*delta(x1-E1i)*delta(x2-E2i)
+ */
+
 class HeadControl2D : public RnFunction
 {
 public:
@@ -41,9 +46,9 @@ protected:
     double psi_m3(double x1, double t);
     double psi_m4(double x1, double t);
 
-    double g1(double t) { return t*t; }
-    double g2(double t) { return t; }
-    double g3(double t) { return t*t*t; }
+    double g1(double t) { return 100*t*t; }
+    double g2(double t) { return 1000*t; }
+    double g3(double t) { return 100000*t*t*t; }
 
 private:
     double t0;

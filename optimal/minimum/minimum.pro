@@ -20,7 +20,8 @@ SOURCES += \
     printer.cpp \
     gradient_cs.cpp \
     projection.cpp \
-    rungekutta.cpp
+    rungekutta.cpp \
+    tomasmethod.cpp
 
 HEADERS += global.h \
     function.h \
@@ -34,4 +35,5 @@ HEADERS += global.h \
     printer.h \
     gradient_cs.h \
     projection.h \
-    rungekutta.h
+    rungekutta.h \
+    tomasmethod.h

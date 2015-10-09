@@ -2,63 +2,7 @@
 #include <printer.h>
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
-
-void TomasAlgorithm(const DoubleVector &a, const DoubleVector &b, const DoubleVector &c, const DoubleVector &d, DoubleVector &x)
-{
-    if (x.size() != a.size() || x.size() != b.size() || x.size() != c.size() || x.size() != d.size())
-        return;
-
-    int n = x.size();
-    DoubleVector p(n);
-    DoubleVector q(n);
-
-    for (int i=0; i<n; i++)
-    {
-        if (i==0)
-        {
-            p[0] = d[0]/b[0];
-            q[0] = -c[0]/b[0];
-        } else
-            if(i==n-1)
-            {
-                p[n-1] = (d[i]-a[i]*p[i-1])/(b[i]+a[i]*q[i-1]);
-                q[n-1] = 0.0;
-            }
-            else
-            {
-                p[i] = (d[i]-a[i]*p[i-1])/(b[i]+a[i]*q[i-1]);
-                q[i] = -c[i]/(b[i]+a[i]*q[i-1]);
-            }
-    }
-
-    for (int i=n-1; i>=0; i--)
-    {
-        if (i==n-1)
-        {
-            x[i] = p[i];
-        }
-        else
-        {
-            x[i] = p[i] + q[i]*x[i+1];
-        }
-    }
-}
-
-void printLayer(const DoubleMatrix& x)
-{
-    int m = x.size()/10;
-    for (int j=0; j<x.size(); j++)
-    {
-        if (j%m==0)
-        {
-            for (int i=0; i<x[j].size(); i++)
-            {
-                if (i%m==0) printf("%14.10f ", x[j][i]);
-            }
-            puts("");
-        }
-    }
-}
+#include <tomasmethod.h>
 
 Heat2DControl::Heat2DControl()
 {
@@ -471,7 +415,7 @@ void Heat2DControl::main()
     DoubleVector f0;
     f0.resize(hc.C);
 
-    for (int i=0; i<f0.size(); i++)
+    for (unsigned int i=0; i<f0.size(); i++)
         f0[i] = 2.01*(hc.dt*(i/((hc.N1+1)*(hc.N2+1))))-2.0*hc.a1-2.0*hc.a2;
 
     /* Minimization */
