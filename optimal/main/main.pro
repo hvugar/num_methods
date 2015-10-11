@@ -19,14 +19,14 @@ SOURCES += main.cpp \
     cfunction1.cpp \
     cfunction2.cpp \
     cfunction3.cpp \
-    heatcontrol.cpp \
-    heatcontroldelta.cpp \
+    heat/heatcontrol.cpp \
+    heat/heatcontroldelta.cpp \
     pointcontrol.cpp \
     pointcontrol1.cpp \
     pointcontrol2.cpp \
-    heat2d.cpp \
-    headcontrol2d.cpp \
-    headcontrol2d1.cpp
+    heat/heat2d.cpp \
+    heat/headcontrol2d.cpp \
+    heat/headcontrol2d1.cpp
 
 HEADERS += \
     utils.h \
@@ -37,11 +37,11 @@ HEADERS += \
     cfunction1.h \
     cfunction2.h \
     cfunction3.h \
-    heatcontrol.h \
-    heatcontroldelta.h \
+    heat/heatcontrol.h \
+    heat/heatcontroldelta.h \
     pointcontrol.h \
     pointcontrol1.h \
     pointcontrol2.h \
-    heat2d.h \
-    headcontrol2d.h \
-    headcontrol2d1.h
+    heat/heat2d.h \
+    heat/headcontrol2d.h \
+    heat/headcontrol2d1.h
