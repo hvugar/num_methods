@@ -9,6 +9,7 @@ INPUT(
 ./debug\cfunction2.o
 ./debug\cfunction3.o
 ./debug\heatcontrol.o
+./debug\heatcontroldelta.o
 ./debug\pointcontrol.o
 ./debug\pointcontrol1.o
 ./debug\pointcontrol2.o

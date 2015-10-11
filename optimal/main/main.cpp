@@ -25,15 +25,13 @@
 
 #include "heat2d.h"
 #include "heatcontrol.h"
+#include "heatcontroldelta.h"
 #include "headcontrol2d.h"
 #include "headcontrol2d1.h"
 
 int main()
 {
-    HeatControl::main();
-
-//    Heat2DControl::main();
-//    GridMethod::VariableDirectionsMethod(0, 0, 0, 0, 0, 0);
+    HeatControlDelta::main();
     return 0;
 }
 

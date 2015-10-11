@@ -9,6 +9,7 @@ INPUT(
 ./release\cfunction2.o
 ./release\cfunction3.o
 ./release\heatcontrol.o
+./release\heatcontroldelta.o
 ./release\pointcontrol.o
 ./release\pointcontrol1.o
 ./release\pointcontrol2.o
