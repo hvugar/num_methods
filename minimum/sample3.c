@@ -28,12 +28,12 @@ typedef struct {
 
 double u(double x, double t) { return x*x + t*t + 2.0*x; }
 
-double U(double x) { return x*x + 2.0*x + 1.0; }
+double U(double x) { return u(x, 1.0); }
 double f(double x, double t) { return 2.0*t - 2.0; }
 
-double fi(double x) { return x*x + 2.0*x ; }
-double m1(double t) { return t*t; }
-double m2(double t) { return t*t + 3.0; }
+double fi(double x) { return u(x, 0.0) ; }
+double m1(double t) { return u(0.0, t); }
+double m2(double t) { return u(1.0, t); }
 
 //double p_fi(double x) { return -2.0*(u(x,1.0) - y(x)); }
 double p_m1(double t) { return 0.0; }
@@ -126,6 +126,7 @@ double _JSum(Process3 *p)
     }
 
     double f_sum = 0.0;
+	
     for (j=0; j<m*n; j++)
     {
 		double x = p->dx*(j%p->n);
@@ -133,6 +134,7 @@ double _JSum(Process3 *p)
 		
         f_sum += (p->f[j]-f(x,t))*(p->f[j]-f(x,t));
     }
+	
     sum = sum + f_sum;
     return sum;
 }

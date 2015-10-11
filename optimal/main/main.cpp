@@ -17,21 +17,19 @@
 #include "rosenbrock.h"
 #include "bealesfunction.h"
 #include "boothfunction.h"
-#include "heatcontrol.h"
 #include "pointcontrol.h"
 #include "pointcontrol1.h"
 #include "pointcontrol2.h"
 #include "utils.h"
 
-#include "heat2d.h"
-#include "heatcontrol.h"
-#include "heatcontroldelta.h"
-#include "headcontrol2d.h"
-#include "headcontrol2d1.h"
+#include "heat/heatcontrol.h"
+#include "heat/heatcontrol2d.h"
+#include "heat/heatcontroldelta.h"
+#include "heat/headcontrol2d.h"
 
 int main()
 {
-    HeatControlDelta::main();
+    HeatControl2D::main();
     return 0;
 }
 

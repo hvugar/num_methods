@@ -39,4 +39,15 @@ public:
     virtual ~DoubleMatrix();
 };
 
+class MINIMUMSHARED_EXPORT DoubleCube : public std::vector<DoubleMatrix>
+{
+public:
+    DoubleCube();
+    virtual ~DoubleCube();
+
+    void Resize(unsigned int Nz, unsigned int Ny, unsigned Nx);
+    void Clear();
+};
+
+
 #endif // DOUBLEVECTOR_H
