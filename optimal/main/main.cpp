@@ -8,6 +8,7 @@
 #include <gradient_cjt.h>
 #include <gridmethod.h>
 #include <rungekutta.h>
+#include <doublevector.h>
 
 #include "cfunction1.h"
 #include "cfunction2.h"
@@ -23,11 +24,13 @@
 #include "utils.h"
 
 #include "heat2d.h"
+#include "heatcontrol.h"
 #include "headcontrol2d.h"
+#include "headcontrol2d1.h"
 
 int main()
 {
-    HeadControl2D::main();
+    HeatControl::main();
 
 //    Heat2DControl::main();
 //    GridMethod::VariableDirectionsMethod(0, 0, 0, 0, 0, 0);

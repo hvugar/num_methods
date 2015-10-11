@@ -33,10 +33,10 @@ protected:
     double u(double x1, double x2, double t);
 
     double fi(double x1, double x2);
-    double m1(double x1, double t);
-    double m2(double x1, double t);
-    double m3(double x2, double t);
-    double m4(double x2, double t);
+    double m1(double x2, double t);
+    double m2(double x2, double t);
+    double m3(double x1, double t);
+    double m4(double x1, double t);
 
     double f(const DoubleVector& e, double x1, double x2, unsigned int k);
 
