@@ -30,14 +30,11 @@ public:
     double a2;
 
     DoubleMatrix U;
-    DoubleCube f;
-    DoubleCube g;
+    DoubleMatrix uT;
 
     void calculateU(const DoubleVector& f);
-    void calculateU1(const DoubleVector& f);
-    void calculateP(const DoubleVector& f, DoubleCube& g);
-    void calculateP1(const DoubleVector& f);
-    void calculateP2(const DoubleVector& f);
+    void calculateU1(const DoubleVector &f);
+    void calculateP(const DoubleVector &f, DoubleVector& g);
 
     static void main();
 
@@ -54,7 +51,17 @@ private:
     double m3(double x1, double t);
     double m4(double x1, double t);
 
+    double pm1(double x2, double t) { return 0.0; }
+    double pm2(double x2, double t) { return 0.0; }
+    double pm3(double x1, double t) { return 0.0; }
+    double pm4(double x1, double t) { return 0.0; }
+
     double fxt(double x1, double x2, double t);
+};
+
+struct HeatControl2DPrinter : public Printer
+{
+    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
 };
 
 #endif // HEATCONTROL2D_H
