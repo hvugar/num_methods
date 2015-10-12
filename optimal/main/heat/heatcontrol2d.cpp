@@ -581,19 +581,26 @@ void HeatControl2D::main()
     g2.setNormalize(false);
     g2.calculate(f);
 
-    for (unsigned int i=0; i<f.size(); i++)
+    for (unsigned int c=0; c<f.size(); c++)
     {
-        unsigned int k = i/((hc.N1+1)*(hc.N2+1));
+        unsigned int k = c/((hc.N1+1)*(hc.N2+1));
+        printf("%d %d %d\n", k, k*((hc.N1+1)*(hc.N2+1)), (k+1)*((hc.N1+1)*(hc.N2+1)));
 
-        for (unsigned int i=k*((hc.N1+1)*(hc.N2+1)); i<(k+1)*((hc.N1+1)*(hc.N2+1)); i++)
-        {
+//        for (unsigned int j1=k*((hc.N1+1)*(hc.N2+1)); j1<(k+1)*((hc.N1+1)*(hc.N2+1)); j1++)
+//        {
+//            DoubleMatrix m;
+//            m.resize((hc.N2+1)*(hc.N1+1));
 
-        }
-
-        if (k%100==hc.M)
-        {
-            printf("%d\n", k);
-        }
+//            for (unsigned j=0; j<=hc.N2; j++)
+//            {
+//                for (unsigned i=0; i<=hc.N1; i++)
+//                {
+//                    m[j][i] = f[j1];
+//                    Printer::printMatrix(m, hc.N2/10, hc.N1/10);
+//                    printf("---");
+//                }
+//            }
+//        }
     }
 
 //    for (unsigned int j=0; j<=hc.M; j++)
