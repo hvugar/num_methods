@@ -12,6 +12,9 @@ public:
     double fx(const DoubleVector& x);
     void gradient(double step, const DoubleVector& x, DoubleVector& g);
 
+    void calculateU(const DoubleVector& f);
+    void calculateP(const DoubleVector& f, DoubleVector& g);
+
 private:
 
 };

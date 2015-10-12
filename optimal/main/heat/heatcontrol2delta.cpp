@@ -20,3 +20,9 @@ void HeatControl2Delta::gradient(double step, const DoubleVector &x, DoubleVecto
 
 }
 
+void HeatControl2Delta::calculateU(const DoubleVector &f)
+{}
+
+void HeatControl2Delta::calculateP(const DoubleVector &f, DoubleVector &g)
+{}
+
