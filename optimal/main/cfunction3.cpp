@@ -60,7 +60,7 @@ double CFunction3::fx(const DoubleVector& u)
     return sum;
 }
 
-void CFunction3::gradient(double gradient_step, const DoubleVector& u, DoubleVector &g)
+void CFunction3::gradient(const DoubleVector& u, DoubleVector &g, double gradient_step)
 {
     DoubleVector x(2);
     DoubleVector psi(2);

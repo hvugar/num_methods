@@ -8,7 +8,7 @@ struct Rosenbrock : public RnFunction
 {
 public:
     virtual double fx(const DoubleVector& x);
-    virtual void gradient(double gradient_step, const DoubleVector& x, DoubleVector& g);
+    virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step);
 
     static void main();
 

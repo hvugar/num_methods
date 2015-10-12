@@ -10,7 +10,7 @@ public:
     PointControl2(double t0, double t1, double x0, double x1, double dt, double dx);
 
     virtual double fx(const DoubleVector &p);
-    virtual void gradient(double step, const DoubleVector& p, DoubleVector& g);
+    virtual void gradient(const DoubleVector& p, DoubleVector& g, double gradient_step);
 
     void calculate_x(const DoubleVector& p);
     void calculate_psi();

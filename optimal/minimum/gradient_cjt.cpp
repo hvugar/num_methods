@@ -24,7 +24,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
     do
     {
         // Gradient of objectiv function in current point
-        m_fn->gradient(grad_step, x, g);
+        m_fn->gradient(x, g, grad_step);
 
         double gradient_norm = g.L2Norm();
         if (gradient_norm < epsilon1())

@@ -34,7 +34,7 @@ struct MINIMUMSHARED_EXPORT R3Function
 struct MINIMUMSHARED_EXPORT RnFunction
 {
     virtual double fx(const DoubleVector& x) = 0;
-    virtual void gradient(double step, const DoubleVector& x, DoubleVector& g) = 0;
+    virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step=0.000001) = 0;
 
 protected:
     static void Gradient(RnFunction *f, double step, const DoubleVector &x, DoubleVector &g);

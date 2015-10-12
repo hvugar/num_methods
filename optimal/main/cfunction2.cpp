@@ -45,7 +45,7 @@ double CFunction2::fx(const DoubleVector& u)
     return sum;
 }
 
-void CFunction2::gradient(double gradient_step, const DoubleVector& u, DoubleVector &g)
+void CFunction2::gradient(const DoubleVector& u, DoubleVector &g, double gradient_step)
 {
     DoubleVector x(2);
     DoubleVector psi(2);

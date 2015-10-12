@@ -26,7 +26,7 @@ struct CFunction2 : public RnFunction
     virtual ~CFunction2();
 
     virtual double fx(const DoubleVector& u);
-    virtual void gradient(double gradient_step, const DoubleVector& u, DoubleVector &g);
+    virtual void gradient(const DoubleVector& u, DoubleVector &g, double gradient_step);
 
     double fx0(double t, const DoubleVector& x, double u) const;
     double F(double t, const DoubleVector& x, double u) const;

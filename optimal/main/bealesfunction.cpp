@@ -10,7 +10,7 @@ double BealesFunction::fx(const DoubleVector& x)
     return (1.5 - x1 + x1*x2)*(1.5 - x1 + x1*x2) + (2.25 - x1 + x1*x2*x2)*(2.25 - x1 + x1*x2*x2) + (2.625 - x1 + x1*x2*x2*x2)*(2.625 - x1 + x1*x2*x2*x2);
 }
 
-void BealesFunction::gradient(double gradient_step, const DoubleVector& x, DoubleVector &g)
+void BealesFunction::gradient(const DoubleVector& x, DoubleVector &g, double gradient_step)
 {
     RnFunction::Gradient(this, gradient_step, x, g);
 }

@@ -10,7 +10,7 @@ double Rosenbrock::fx(const DoubleVector& x)
     return ((1 - x1) * (1 - x1)) + 100 * (x2 - x1 * x1) * (x2 - x1 * x1);
 }
 
-void Rosenbrock::gradient(double gradient_step, const DoubleVector& x, DoubleVector &g)
+void Rosenbrock::gradient(const DoubleVector& x, DoubleVector &g, double gradient_step)
 {
     RnFunction::Gradient(this, gradient_step, x, g);
 }

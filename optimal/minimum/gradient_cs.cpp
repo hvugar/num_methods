@@ -21,7 +21,7 @@ void ConstStepGradient::calculate(DoubleVector &x)
     do
     {
         /* calculating function gradient at current point */
-        m_fn->gradient(grad_step, x, g);
+        m_fn->gradient(x, g, grad_step);
 
         /* if gradinet norm at current point is less than epsilon then break. no minimize */
         double gradNorm = g.L2Norm();

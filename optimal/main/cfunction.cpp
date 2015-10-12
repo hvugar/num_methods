@@ -32,7 +32,7 @@ double ControlFunction::fx(const DoubleVector &u)
     return Integral(u);
 }
 
-void ControlFunction::gradient(double gradient_step, const DoubleVector& u, DoubleVector &g)
+void ControlFunction::gradient(const DoubleVector& u, DoubleVector &g, double gradient_step)
 {
     DoubleVector psi1(n);
     DoubleVector psi2(n);

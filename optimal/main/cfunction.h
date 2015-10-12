@@ -21,7 +21,7 @@ struct ControlFunction : public RnFunction
 
 protected:
     virtual double fx(const DoubleVector& u);
-    virtual void gradient(double gradient_step, const DoubleVector& u, DoubleVector &g);
+    virtual void gradient(const DoubleVector& u, DoubleVector &g, double gradient_step);
 
 public:
     CFunction *fx0;

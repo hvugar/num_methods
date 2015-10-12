@@ -32,7 +32,7 @@ double PointControl1::fx(const DoubleVector &p)
     return (x[n-1] - x1)*(x[n-1] - x1);
 }
 
-void PointControl1::gradient(double step, const DoubleVector& p, DoubleVector& g)
+void PointControl1::gradient(const DoubleVector& p, DoubleVector& g, double gradient_step)
 {
     calculate_x(p);
     printX("x", x);

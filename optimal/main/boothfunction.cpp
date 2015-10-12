@@ -10,7 +10,7 @@ double BoothFunction::fx(const DoubleVector& x)
     return (x1 + 2.0*x2 - 7.0)*(x1 + 2.0*x2 - 7.0) + (2.0*x1 + x2 - 5.0)*(2.0*x1 + x2 - 5.0);
 }
 
-void BoothFunction::gradient(double gradient_step, const DoubleVector& x, DoubleVector &g)
+void BoothFunction::gradient(const DoubleVector& x, DoubleVector &g, double gradient_step)
 {
     RnFunction::Gradient(this, gradient_step, x, g);
 }
