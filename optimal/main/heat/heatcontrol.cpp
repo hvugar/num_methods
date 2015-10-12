@@ -47,7 +47,7 @@ double HeatControl::fx(const DoubleVector &f)
     return sum + norm;
 }
 
-void HeatControl::gradient(double step, const DoubleVector &f, DoubleVector &g)
+void HeatControl::gradient(const DoubleVector &f, DoubleVector &g, double gradient_step)
 {
     calculateU(f);
     calculateP(f, g);

@@ -1,4 +1,4 @@
-#include "heatcontrol2d.h"
+﻿#include "heatcontrol2d.h"
 #include <tomasmethod.h>
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
@@ -101,7 +101,7 @@ double HeatControl2D::fx(const DoubleVector &f)
     return sum + norm;
 }
 
-void HeatControl2D::gradient(double step, const DoubleVector &f, DoubleVector &g)
+void HeatControl2D::gradient(const DoubleVector &f, DoubleVector &g, double gradient_step)
 {
     calculateU(f);
     calculateP(f, g);
@@ -239,9 +239,6 @@ void HeatControl2D::calculateU(const DoubleVector &f)
     }
 
     uT = u0;
-
-    //    Printer::printMatrix(u0, N2/10, N1/10);
-    //    puts("---");
 }
 
 void HeatControl2D::calculateP(const DoubleVector &f, DoubleVector& g)
@@ -576,11 +573,16 @@ double HeatControl2D::fxt(double x1, double x2, double t)
 void HeatControl2D::main()
 {
     /* Function */
-    HeatControl2D hc(1000, 100, 100);
+    HeatControl2D hc(1000, 10, 10);
 
     DoubleVector f;
     f.resize(hc.C);
-    for (unsigned int i=0; i<hc.C; i++) f[i] = 0.1;//(i/((hc.N1+1)*(hc.N2+1)))*hc.ht-4.0;
+    for (unsigned int i=0; i<hc.C; i++)
+    {
+        unsigned int k = i/((hc.N1+1)*(hc.N2+1));
+        double t = k*hc.ht;
+        f[i] = 3.0*t-4.0;
+    }
 
     //    DoubleVector g;
     //    puts("---");

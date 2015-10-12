@@ -40,7 +40,7 @@ public:
 
 protected:
     virtual double fx(const DoubleVector& x);
-    virtual void gradient(double step, const DoubleVector& x, DoubleVector& g);
+    virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step);
 
 private:
     double u(double x1, double x2, double t);
@@ -57,6 +57,12 @@ private:
     double pm4(double x1, double t) { return 0.0; }
 
     double fxt(double x1, double x2, double t);
+
+    R2Function *_fi;
+    R2Function *_m1;
+    R2Function *_m2;
+    R2Function *_m3;
+    R2Function *_m4;
 };
 
 struct HeatControl2DPrinter : public Printer

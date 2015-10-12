@@ -23,7 +23,7 @@ public:
 
 protected:
     virtual double fx(const DoubleVector& u);
-    virtual void gradient(double gradient_step, const DoubleVector& f, DoubleVector &g);
+    virtual void gradient(const DoubleVector& f, DoubleVector &g, double gradient_step);
 
 private:
     double t0;
