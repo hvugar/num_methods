@@ -38,9 +38,9 @@ private:
     double pm3(double x1, double t) { return 0.0; }
     double pm4(double x1, double t) { return 0.0; }
 
-    double f1(double t) { return 3.0*t*t; }
-    double f2(double t) { return 2.0*t - 4.0; }
-    double f3(double t) { return 0.5*t; }
+    double f1(double t) { return 100.0*t*t; }
+    double f2(double t) { return 200.0*t*t - 100.0*t; }
+    double f3(double t) { return 500*t; }
 
     double t0;
     double t1;

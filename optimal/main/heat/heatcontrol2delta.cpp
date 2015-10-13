@@ -100,15 +100,6 @@ void HeatControl2Delta::gradient(const DoubleVector &e, DoubleVector &g, double 
 {
     calculateU(e, uT);
     calculateP(e, g);
-
-    puts("+++++++++++++++++++++++++++++++++++++++++");
-    printf("e[0]: %16.8f e[1]: %16.8f\n", e[0], e[1]);
-    printf("e[2]: %16.8f e[3]: %16.8f\n", e[2], e[3]);
-    printf("e[4]: %16.8f e[5]: %16.8f\n", e[4], e[5]);
-    printf("g[0]: %16.8f g[1]: %16.8f\n", g[0], g[1]);
-    printf("g[2]: %16.8f g[3]: %16.8f\n", g[2], g[3]);
-    printf("g[4]: %16.8f g[5]: %16.8f\n", g[4], g[5]);
-    puts("+++++++++++++++++++++++++++++++++++++++++");
 }
 
 void HeatControl2Delta::calculateU(const DoubleVector &e, DoubleMatrix& u)
@@ -389,16 +380,16 @@ void HeatControl2Delta::calculateP(const DoubleVector &e, DoubleVector &g)
             unsigned int j;
 
             i = round(e[0]/h1); j = round(e[1]/h2);
-            g[0] += f1(k*ht) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1));
-            g[1] += f1(k*ht) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2));
+            g[0] += f1(k*fabs(ht)) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1));
+            g[1] += f1(k*fabs(ht)) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2));
 
             i = round(e[2]/h1); j = round(e[3]/h2);
-            g[2] += f2(k*ht) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1));
-            g[3] += f2(k*ht) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2));
+            g[2] += f2(k*fabs(ht)) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1));
+            g[3] += f2(k*fabs(ht)) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2));
 
             i = round(e[4]/h1); j = round(e[5]/h2);
-            g[4] += f3(k*ht) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1));
-            g[5] += f3(k*ht) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2));
+            g[4] += f3(k*fabs(ht)) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1));
+            g[5] += f3(k*fabs(ht)) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2));
         }
         else
         {
@@ -406,26 +397,25 @@ void HeatControl2Delta::calculateP(const DoubleVector &e, DoubleVector &g)
             unsigned int j;
 
             i = round(e[0]/h1); j = round(e[1]/h2);
-            g[0] += 2.0*f1(k*ht) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1));
-            g[1] += 2.0*f1(k*ht) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2));
+            g[0] += 2.0*(f1(k*fabs(ht)) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1)));
+            g[1] += 2.0*(f1(k*fabs(ht)) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2)));
 
             i = round(e[2]/h1); j = round(e[3]/h2);
-            g[2] += 2.0*f2(k*ht) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1));
-            g[3] += 2.0*f2(k*ht) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2));
+            g[2] += 2.0*(f2(k*fabs(ht)) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1)));
+            g[3] += 2.0*(f2(k*fabs(ht)) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2)));
 
             i = round(e[4]/h1); j = round(e[5]/h2);
-            g[4] += 2.0*f3(k*ht) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1));
-            g[5] += 2.0*f3(k*ht) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2));
+            g[4] += 2.0*(f3(k*fabs(ht)) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1)));
+            g[5] += 2.0*(f3(k*fabs(ht)) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2)));
         }
     }
 
-    g[0] = -(ht/2.0) * g[0];
-    g[1] = -(ht/2.0) * g[1];
-    g[2] = -(ht/2.0) * g[2];
-    g[3] = -(ht/2.0) * g[3];
-    g[4] = -(ht/2.0) * g[4];
-    g[5] = -(ht/2.0) * g[5];
-
+    g[0] = -(fabs(ht)/2.0) * g[0];
+    g[1] = -(fabs(ht)/2.0) * g[1];
+    g[2] = -(fabs(ht)/2.0) * g[2];
+    g[3] = -(fabs(ht)/2.0) * g[3];
+    g[4] = -(fabs(ht)/2.0) * g[4];
+    g[5] = -(fabs(ht)/2.0) * g[5];
     //    a1 = -a1;
     //    a2 = -a2;
     ht = -ht;
@@ -443,21 +433,22 @@ double HeatControl2Delta::fxt(double x1, double x2, double t, const DoubleVector
 
 void HeatControl2Delta::main()
 {
-    HeatControl2Delta hc(1000, 100, 100);
+    HeatControl2Delta hc(1000, 10, 10);
 
     DoubleVector e;
     e.resize(2*hc.L);
-    for (unsigned int i=0; i<e.size(); i++) e[i] = 0.5;
 
-    DoubleVector g;
-    g.resize(e.size());
-    for (unsigned int i=0; i<e.size(); i++) g[i] = 0.5;
+//    DoubleVector g;
+//    g.resize(e.size());
+//    for (unsigned int i=0; i<e.size(); i++) g[i] = 0.5;
 
-    printf("Result: %12.8f\n", hc.fx(e));
+//    e[0] = 0.2; e[1] = 0.5;
+//    e[2] = 0.5; e[3] = 0.6;
+//    e[4] = 0.8; e[5] = 0.7;
+//    printf("Result: %12.8f\n", hc.fx(e));
 
-//    e[0] = 0.21; e[1] = 0.51;
-//    e[2] = 0.51; e[3] = 0.61;
-//    e[4] = 0.81; e[5] = 0.71;
+    for (unsigned int i=0; i<e.size(); i++) e[i] = 0.1;
+
 //    printf("Result: %12.8f\n", hc.fx(e));
 
 //    hc.gradient(e, g, 0.0);

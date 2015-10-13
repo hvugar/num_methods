@@ -237,9 +237,11 @@ void HeatControl2D::calculateP(const DoubleVector &f, DoubleVector& g)
 {
     DoubleMatrix psi0;
     DoubleMatrix psi1;
+    DoubleMatrix gr;
 
     psi0.resize(N2+1); for (unsigned int j=0; j<=N2; j++) psi0[j].resize(N1+1);
     psi1.resize(N2+1); for (unsigned int j=0; j<=N2; j++) psi1[j].resize(N1+1);
+    gr.resize(N2+1); for (unsigned int j=0; j<=N2; j++) gr[j].resize(N1+1);
 
     double alpha1 = 0;
     double beta1  = 0;
@@ -374,9 +376,23 @@ void HeatControl2D::calculateP(const DoubleVector &f, DoubleVector& g)
             for (unsigned i=0; i<=N1; i++)
             {
                 int index = k*(N1+1)*(N2+1)+j*(N1+1)+i;
-                g[index] = -psi0[j][i] + 2*(f[index] - fxt(i*h1, j*h2, k*ht));
+                g[index] = -psi0[j][i] + 2*(f[index] - fxt(i*h1, j*h2, k*(-ht)));
             }
         }
+
+        for (unsigned int j=0; j<=N2; j++)
+        {
+            for (unsigned i=0; i<=N1; i++)
+            {
+                int index = k*(N1+1)*(N2+1)+j*(N1+1)+i;
+                gr[j][i] = -psi0[j][i] + 2*(f[index] - fxt(i*h1, j*h2, k*(-ht)));
+            }
+        }
+        //        if (k%100==0)
+        //        {
+        //            Printer::printMatrix(gr, N2/10, N1/10);
+        //            puts("-----");
+        //        }
     }
 
     //    a1 = -a1;
@@ -524,7 +540,7 @@ void HeatControl2D::calculateU1(const DoubleVector &f)
 
     ht = -ht;
 
-    Printer::printMatrix(u0, N2/10, N1/10);
+    //    Printer::printMatrix(u0, N2/10, N1/10);
 }
 
 double HeatControl2D::u(double x1, double x2, double t)
@@ -559,67 +575,26 @@ double HeatControl2D::m4(double x1, double t)
 
 double HeatControl2D::fxt(double x1, double x2, double t)
 {
-    return 2.0*t - 2.0*a1 - 2.0*a2;
+    return 2.0*t - 2.0 - 2.0;
 }
 
-void HeatControl2D::main()
+void printCube(const DoubleVector& x, unsigned int M, unsigned int N2, unsigned int N1, double ht)
 {
-    /* Function */
-    HeatControl2D hc(1000, 10, 10);
-
-    DoubleVector f;
-    f.resize(hc.C);
-    for (unsigned int i=0; i<hc.C; i++)
+    for (unsigned int k=0; k<=M; k++)
     {
-        unsigned int k = i/((hc.N1+1)*(hc.N2+1));
-        double t = k*hc.ht;
-        f[i] = 3.0*t-4.0;
-    }
-
-    //    DoubleVector g;
-    //    puts("---");
-    //    hc.calculateU(f);
-    //    puts("---");
-    //    hc.calculateP(f, g);
-
-    /* Minimization */
-//        SteepestDescentGradient g1;
-//        g1.setFunction(&hc);
-//        g1.setEpsilon1(0.0000001);
-//        g1.setEpsilon2(0.0000001);
-//        g1.setGradientStep(0.000001);
-//        g1.setR1MinimizeEpsilon(0.0001, 0.0000001);
-//        g1.setNormalize(true);
-//        g1.setPrinter(new HeatControl2DPrinter);
-//        g1.calculate(f);
-
-    /* Minimization */
-    ConjugateGradient g2;
-    g2.setFunction(&hc);
-    g2.setEpsilon1(0.0000001);
-    g2.setEpsilon2(0.0000001);
-    g2.setGradientStep(0.000001);
-    g2.setR1MinimizeEpsilon(0.1, 0.0000001);
-    g2.setPrinter(new HeatControl2DPrinter);
-    g2.setNormalize(false);
-    g2.calculate(f);
-
-
-    for (unsigned int k=0; k<=hc.M; k++)
-    {
-        if (k%(hc.M/10)==0)
+        if (k%(M/10)==0)
         {
-            printf("t: %.3f k: %d\n", k*hc.ht, k);
-            for (unsigned int j=0; j<=hc.N2; j++)
+            printf("t: %.3f k: %d\n", k*ht, k);
+            for (unsigned int j=0; j<=N2; j++)
             {
-                if (j%(hc.N2/10)==0)
+                if (j%(N2/10)==0)
                 {
                     //printf("%6d| ", j);
-                    for (unsigned int i=0; i<=hc.N1; i++)
+                    for (unsigned int i=0; i<=N1; i++)
                     {
-                        if (i%(hc.N1/10)==0)
+                        if (i%(N1/10)==0)
                         {
-                            printf("%12.8f ", f[k*(hc.N2+1)*(hc.N1+1) + j*(hc.N1+1) + i]);
+                            printf("%12.8f ", x[k*(N2+1)*(N1+1) + j*(N1+1) + i]);
                         }
                     }
                     puts("");
@@ -629,8 +604,50 @@ void HeatControl2D::main()
     }
 }
 
+void HeatControl2D::main()
+{
+    /* Function */
+    HeatControl2D hc(100, 10, 10);
+
+    DoubleVector f;
+    f.resize(hc.C);
+    for (unsigned int i=0; i<hc.C; i++)
+    {
+        unsigned int k = i/((hc.N1+1)*(hc.N2+1));
+        double t = k*hc.ht;
+        f[i] = 0.001;
+    }
+
+    /* Minimization */
+    SteepestDescentGradient g1;
+    g1.setFunction(&hc);
+    g1.setEpsilon1(0.0000001);
+    g1.setEpsilon2(0.0000001);
+    g1.setGradientStep(0.000001);
+    g1.setR1MinimizeEpsilon(0.1, 0.0000001);
+    g1.setNormalize(true);
+    g1.setPrinter(new HeatControl2DPrinter);
+    g1.calculate(f);
+
+    /* Minimization */
+    //    ConjugateGradient g2;
+    //    g2.setFunction(&hc);
+    //    g2.setEpsilon1(0.0000001);
+    //    g2.setEpsilon2(0.0000001);
+    //    g2.setGradientStep(0.000001);
+    //    g2.setR1MinimizeEpsilon(0.1, 0.0000001);
+    //    g2.setPrinter(new HeatControl2DPrinter);
+    //    g2.setNormalize(false);
+    //    g2.calculate(f);
+
+
+    printCube(f, hc.M, hc.N2, hc.N1, hc.ht);
+}
+
 void HeatControl2DPrinter::print(unsigned int i, const DoubleVector &f0, const DoubleVector &s, double a, RnFunction *f) const
 {
-    printf("J: %.16f\n", f->fx(f0));
+    HeatControl2D *hc = dynamic_cast<HeatControl2D*>(f);
+
+    printf("J: %.16f\n", hc->fx(f0));
 }
 

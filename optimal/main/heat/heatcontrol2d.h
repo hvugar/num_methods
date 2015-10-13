@@ -38,7 +38,6 @@ public:
 
     static void main();
 
-protected:
     virtual double fx(const DoubleVector& x);
     virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step);
 
