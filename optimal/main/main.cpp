@@ -24,6 +24,7 @@
 
 #include "heat/heatcontrol.h"
 #include "heat/heatcontrol2d.h"
+#include "heat/heatcontrol2delta.h"
 
 double fxt(double x, double y, double z) { return x*y*z; }
 
@@ -69,7 +70,7 @@ int main()
 
 //    printf("%.8f\n", norm);
 
-    HeatControl2D::main();
+    HeatControl2Delta::main();
     return 0;
 }
 

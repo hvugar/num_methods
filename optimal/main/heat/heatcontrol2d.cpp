@@ -90,14 +90,6 @@ double HeatControl2D::fx(const DoubleVector &f)
     }
     norm = norm * (h1*h2*ht)*0.125;
 
-    //    for (unsigned int i=0; i<f.size(); i++)
-    //    {
-    //        double x1 = ((i%((N1+1)*(N2+1)))%(N2+1)) * h1;
-    //        double x2 = ((i%((N1+1)*(N2+1)))%(N1+1)) * h2;
-    //        double t = (i/((N1+1)*(N2+1))) * ht;
-    //        norm += (f[i] - fxt(x1, x2, t)) * (f[i] - fxt(x1, x2, t));
-    //    }
-
     return sum + norm;
 }
 
