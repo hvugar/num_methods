@@ -63,8 +63,6 @@ private:
     double h2;
     double ht;
 
-    DoubleVector E;
-
     void initialize();
 };
 

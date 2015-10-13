@@ -59,9 +59,11 @@ double HeatControl2Delta::fx(const DoubleVector &e)
             double f3 = uT[j2][i1] - U[j2][i1];
             double f4 = uT[j2][i2] - U[j2][i2];
 
-            sum = sum + (0.25*(h1*h2))*(f1*f1 + f2*f2 + f3*f3 + f4*f4);
+            sum += (f1*f1 + f2*f2 + f3*f3 + f4*f4);
         }
     }
+
+    sum = (0.25*(h1*h2))*sum;
 
     double norm = 0.0;
 
@@ -255,10 +257,6 @@ void HeatControl2Delta::calculateP(const DoubleVector &e, DoubleVector &g)
     DoubleVector d;
     DoubleVector x;
 
-    ht = -ht;
-    //    a1 = -a1;
-    //    a2 = -a2;
-
     g[0] = g[1] = g[2] = g[3] = g[4] = g[5] = 0.0;
 
     for (unsigned int k1=0; k1<=M; k1++)
@@ -271,17 +269,17 @@ void HeatControl2Delta::calculateP(const DoubleVector &e, DoubleVector &g)
             {
                 for (unsigned i=0; i<=N1; i++)
                 {
-                    psi0[j][i] = -2.0*(uT[j][i] - U[j][i]);/*u(i*h1, j*h2, 1.0)*/;
+                    psi0[j][i] = -2.0*(uT[j][i] - U[j][i]);
                 }
             }
         }
         else
         {
             // Approximation to x1 direction
-            alpha1 = (a1*ht)/(2.0*h1*h1);
-            beta1  = 1.0 - (a1*ht)/(h1*h1);
-            alpha2 = -(a2*ht)/(2.0*h2*h2);
-            beta2  = 1.0 + (a2*ht)/(h2*h2);
+            alpha1 = -(a1*ht)/(2.0*h1*h1);
+            beta1  = 1.0 + (a1*ht)/(h1*h1);
+            alpha2 = +(a2*ht)/(2.0*h2*h2);
+            beta2  = 1.0 - (a2*ht)/(h2*h2);
 
             a.resize(N1-1);
             b.resize(N1-1);
@@ -327,10 +325,10 @@ void HeatControl2Delta::calculateP(const DoubleVector &e, DoubleVector &g)
             x.clear();
 
             // Approximation to x2 direction
-            alpha1 = +(a2*ht)/(2.0*h2*h2);
-            beta1  = 1.0 - (a2*ht)/(h2*h2);
-            alpha2 = -(a1*ht)/(2.0*h1*h1);
-            beta2  = 1.0 + (a1*ht)/(h1*h1);
+            alpha1 = -(a2*ht)/(2.0*h2*h2);
+            beta1  = 1.0 + (a2*ht)/(h2*h2);
+            alpha2 = +(a1*ht)/(2.0*h1*h1);
+            beta2  = 1.0 - (a1*ht)/(h1*h1);
 
             a.resize(N2-1);
             b.resize(N2-1);
@@ -349,22 +347,22 @@ void HeatControl2Delta::calculateP(const DoubleVector &e, DoubleVector &g)
                 }
                 a[0]     = 0.0;
                 c[N2-2]  = 0.0;
-                d[0]    -= alpha1 * pm3(h1*i, ht*(k));
-                d[N2-2] -= alpha1 * pm4(h1*i, ht*(k));
+                d[0]    -= alpha1 * pm3(h1*i, ht*k);
+                d[N2-2] -= alpha1 * pm4(h1*i, ht*k);
                 TomasAlgorithm(a, b, c, d, x);
 
-                psi0[0][i]  = pm3(h1*i, ht*(k));
+                psi0[0][i]  = pm3(h1*i, ht*k);
                 for (unsigned int j=1; j<N2; j++)
                 {
                     psi0[j][i] = x[j-1];
                 }
-                psi0[N2][i] = pm4(h1*i, ht*(k));
+                psi0[N2][i] = pm4(h1*i, ht*k);
             }
 
             for (unsigned int j=0; j<=N2; j++)
             {
-                psi0[j][0]  = pm1(h2*j, ht*(k));
-                psi0[j][N1] = pm2(h2*j, ht*(k));
+                psi0[j][0]  = pm1(h2*j, ht*k);
+                psi0[j][N1] = pm2(h2*j, ht*k);
             }
 
             a.clear();
@@ -374,51 +372,55 @@ void HeatControl2Delta::calculateP(const DoubleVector &e, DoubleVector &g)
             x.clear();
         }
 
+        // calculating gradient
         if (k==M || k==0)
         {
             unsigned int i;
             unsigned int j;
 
-            i = round(e[0]/h1); j = round(e[1]/h2);
-            g[0] += f1(k*fabs(ht)) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1));
-            g[1] += f1(k*fabs(ht)) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2));
+            i = (unsigned int)round(e[0]/h1);
+            j = (unsigned int)round(e[1]/h2);
+            g[0] += f1(k*ht) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1));
+            g[1] += f1(k*ht) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2));
 
-            i = round(e[2]/h1); j = round(e[3]/h2);
-            g[2] += f2(k*fabs(ht)) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1));
-            g[3] += f2(k*fabs(ht)) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2));
+            i = (unsigned int)round(e[2]/h1);
+            j = (unsigned int)round(e[3]/h2);
+            g[2] += f2(k*ht) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1));
+            g[3] += f2(k*ht) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2));
 
-            i = round(e[4]/h1); j = round(e[5]/h2);
-            g[4] += f3(k*fabs(ht)) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1));
-            g[5] += f3(k*fabs(ht)) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2));
+            i = (unsigned int)round(e[4]/h1);
+            j = (unsigned int)round(e[5]/h2);
+            g[4] += f3(k*ht) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1));
+            g[5] += f3(k*ht) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2));
         }
         else
         {
             unsigned int i;
             unsigned int j;
 
-            i = round(e[0]/h1); j = round(e[1]/h2);
-            g[0] += 2.0*(f1(k*fabs(ht)) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1)));
-            g[1] += 2.0*(f1(k*fabs(ht)) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2)));
+            i = (unsigned int)round(e[0]/h1);
+            j = (unsigned int)round(e[1]/h2);
+            g[0] += 2.0*(f1(k*ht) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1)));
+            g[1] += 2.0*(f1(k*ht) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2)));
 
-            i = round(e[2]/h1); j = round(e[3]/h2);
-            g[2] += 2.0*(f2(k*fabs(ht)) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1)));
-            g[3] += 2.0*(f2(k*fabs(ht)) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2)));
+            i = (unsigned int)round(e[2]/h1);
+            j = (unsigned int)round(e[3]/h2);
+            g[2] += 2.0*(f2(k*ht) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1)));
+            g[3] += 2.0*(f2(k*ht) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2)));
 
-            i = round(e[4]/h1); j = round(e[5]/h2);
-            g[4] += 2.0*(f3(k*fabs(ht)) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1)));
-            g[5] += 2.0*(f3(k*fabs(ht)) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2)));
+            i = (unsigned int)round(e[4]/h1);
+            j = (unsigned int)round(e[5]/h2);
+            g[4] += 2.0*(f3(k*ht) * ((psi0[j][i+1]-psi0[j][i-1])/(2.0*h1)));
+            g[5] += 2.0*(f3(k*ht) * ((psi0[j+1][i]-psi0[j-1][i])/(2.0*h2)));
         }
     }
 
-    g[0] = -(fabs(ht)/2.0) * g[0];
-    g[1] = -(fabs(ht)/2.0) * g[1];
-    g[2] = -(fabs(ht)/2.0) * g[2];
-    g[3] = -(fabs(ht)/2.0) * g[3];
-    g[4] = -(fabs(ht)/2.0) * g[4];
-    g[5] = -(fabs(ht)/2.0) * g[5];
-    //    a1 = -a1;
-    //    a2 = -a2;
-    ht = -ht;
+    g[0] = -(ht/2.0) * g[0];
+    g[1] = -(ht/2.0) * g[1];
+    g[2] = -(ht/2.0) * g[2];
+    g[3] = -(ht/2.0) * g[3];
+    g[4] = -(ht/2.0) * g[4];
+    g[5] = -(ht/2.0) * g[5];
 }
 
 double HeatControl2Delta::fxt(double x1, double x2, double t, const DoubleVector &e)
@@ -433,7 +435,7 @@ double HeatControl2Delta::fxt(double x1, double x2, double t, const DoubleVector
 
 void HeatControl2Delta::main()
 {
-    HeatControl2Delta hc(1000, 10, 10);
+    HeatControl2Delta hc(10, 100, 100);
 
     DoubleVector e;
     e.resize(2*hc.L);
@@ -447,9 +449,9 @@ void HeatControl2Delta::main()
 //    e[4] = 0.8; e[5] = 0.7;
 //    printf("Result: %12.8f\n", hc.fx(e));
 
-    for (unsigned int i=0; i<e.size(); i++) e[i] = 0.1;
+    for (unsigned int i=0; i<e.size(); i++) e[i] = 0.511;
 
-//    printf("Result: %12.8f\n", hc.fx(e));
+    printf("Result: %.16f\n", hc.fx(e));
 
 //    hc.gradient(e, g, 0.0);
 
@@ -493,6 +495,7 @@ void HeatControl2Delta::main()
 
 void HeatControl2Delta::initialize()
 {
+    DoubleVector E;
     E.resize(2*L);
     E[0] = 0.2; E[1] = 0.5;
     E[2] = 0.5; E[3] = 0.6;
@@ -525,5 +528,8 @@ void HeatControl2Delta::initialize()
 
 void HeatControl2DeltaPrinter::print(unsigned int i, const DoubleVector &e, const DoubleVector &s, double a, RnFunction *f) const
 {
+    printf("e[0]: %16.8f e[1]: %16.8f\n", e[0], e[1]);
+    printf("e[2]: %16.8f e[3]: %16.8f\n", e[2], e[3]);
+    printf("e[4]: %16.8f e[5]: %16.8f\n", e[4], e[5]);
     printf("J: %.16f\n", f->fx(e));
 }
