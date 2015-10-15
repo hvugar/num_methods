@@ -172,7 +172,7 @@ void HeatControl2D::calculateU(const DoubleVector &f)
             for (unsigned int j=0; j<=N2; j++)
             {
                 u1[j][0]  = m1(h2*j, ht*(k-0.5));
-                u1[j][N2] = m2(h2*j, ht*(k-0.5));
+                u1[j][N1] = m2(h2*j, ht*(k-0.5));
             }
 
             a.clear();
@@ -219,7 +219,7 @@ void HeatControl2D::calculateU(const DoubleVector &f)
             for (unsigned int i=0; i<=N1; i++)
             {
                 u0[0][i]  = m3(h1*i, ht*(k));
-                u0[N1][i] = m4(h1*i, ht*(k));
+                u0[N2][i] = m4(h1*i, ht*(k));
             }
 
             a.clear();
