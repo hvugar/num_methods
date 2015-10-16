@@ -4,6 +4,7 @@
 #include <function.h>
 #include <doublevector.h>
 #include <printer.h>
+#include <projection.h>
 
 class HeatControl2Delta : public RnFunction
 {
@@ -41,7 +42,7 @@ private:
 
     double f1(double t) { return t; }
     double f2(double t) { return t*t; }
-    double f3(double t) { return t*t + t; }
+    double f3(double t) { return t*t*t; }
 
     double t0;
     double t1;
@@ -70,6 +71,11 @@ private:
 struct HeatControl2DeltaPrinter : public Printer
 {
     virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
+};
+
+struct HeatControl2DeltaProjection : public Projection
+{
+    virtual void project(DoubleVector &x, int index);
 };
 
 #endif // HEATCONTROL2DELTA_H
