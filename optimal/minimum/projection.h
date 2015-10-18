@@ -1,9 +1,10 @@
 #ifndef PROJECTION_H
 #define PROJECTION_H
 
+#include "global.h"
 #include "doublevector.h"
 
-class Projection
+class MINIMUMSHARED_EXPORT Projection
 {
 public:
     virtual void project(DoubleVector &x, int index);

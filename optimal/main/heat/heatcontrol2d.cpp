@@ -252,6 +252,9 @@ void HeatControl2D::calculateP(const DoubleVector &f, DoubleVector& g)
     DoubleVector d;
     DoubleVector x;
 
+    //double a1 = -this->a1;
+    //double a2 = -this->a2;
+
     for (unsigned int k1=0; k1<=M; k1++)
     {
         unsigned int k = M-k1;
@@ -588,22 +591,26 @@ void HeatControl2D::main()
     {
         unsigned int k = i/((hc.N1+1)*(hc.N2+1));
         double t = k*hc.ht;
-        f[i] = 2000.0;//2.0*t - 4.0;
+        f[i] = 20.0;//2.0*t - 4.0;
     }
-    //    puts("----------------------------------------");
-    //    hc.calculateU1(f);
 
+    //DoubleVector g(hc.C);
+    //puts("----------------------------------------");
+    //hc.calculateU(f);
+    //hc.calculateP(f,g);
+    //for (unsigned int i=0; i<g.size(); i++) printf("%.6f ", g[i]);
+    //return;
 
     /* Minimization */
-//    SteepestDescentGradient g1;
-//    g1.setFunction(&hc);
-//    g1.setEpsilon1(0.0000001);
-//    g1.setEpsilon2(0.0000001);
-//    g1.setGradientStep(0.000001);
-//    g1.setR1MinimizeEpsilon(0.1, 0.0000001);
-//    g1.setNormalize(true);
-//    g1.setPrinter(new HeatControl2DPrinter);
-//    g1.calculate(f);
+    //    SteepestDescentGradient g1;
+    //    g1.setFunction(&hc);
+    //    g1.setEpsilon1(0.0000001);
+    //    g1.setEpsilon2(0.0000001);
+    //    g1.setGradientStep(0.000001);
+    //    g1.setR1MinimizeEpsilon(0.1, 0.0000001);
+    //    g1.setNormalize(true);
+    //    g1.setPrinter(new HeatControl2DPrinter);
+    //    g1.calculate(f);
 
     /* Minimization */
     ConjugateGradient g2;
@@ -615,7 +622,6 @@ void HeatControl2D::main()
     g2.setPrinter(new HeatControl2DPrinter);
     g2.setNormalize(false);
     g2.calculate(f);
-
 
     printCube(f, hc.M, hc.N2, hc.N1, hc.ht);
 }

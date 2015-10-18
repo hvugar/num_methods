@@ -21,7 +21,8 @@ SOURCES += \
     gradient_cs.cpp \
     projection.cpp \
     rungekutta.cpp \
-    tomasmethod.cpp
+    tomasmethod.cpp \
+    integral.cpp
 
 HEADERS += global.h \
     function.h \
@@ -36,4 +37,5 @@ HEADERS += global.h \
     gradient_cs.h \
     projection.h \
     rungekutta.h \
-    tomasmethod.h
+    tomasmethod.h \
+    integral.h

@@ -69,7 +69,6 @@ void GradientMethod::setEpsilon2(double epsilon)
     m_epsilon2 = epsilon;
 }
 
-
 void GradientMethod::setR1MinimizeEpsilon(double step, double epsilon)
 {
     min_step = step;

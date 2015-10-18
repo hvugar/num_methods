@@ -1,5 +1,5 @@
-#ifndef HEATCONTROL2DELTA_H
-#define HEATCONTROL2DELTA_H
+#ifndef HEATCONTROL2DELTAF_H
+#define HEATCONTROL2DELTAF_H
 
 #include <function.h>
 #include <doublevector.h>
@@ -7,29 +7,23 @@
 #include <projection.h>
 #include <stdlib.h>
 
-class HeatControl2Delta : public RnFunction
+class HeatControl2DeltaF : public RnFunction
 {
 public:
-    HeatControl2Delta(unsigned int M, unsigned int N2, unsigned int N1);
-    ~HeatControl2Delta();
+    HeatControl2DeltaF(unsigned int M, unsigned int N2, unsigned int N1);
+    ~HeatControl2DeltaF();
 
     double fx(const DoubleVector& e);
     void gradient(const DoubleVector& e, DoubleVector& g, double gradient_step);
 
-    void calculateU(const DoubleVector& e, DoubleMatrix& u);
-    void calculateP(const DoubleVector& e, DoubleVector& g);
-    void calculateG(const DoubleVector &e, DoubleVector &g, const std::vector<DoubleMatrix>& psi);
+    void calculateU(const DoubleVector& f, DoubleMatrix& u);
+    void calculateP(const DoubleVector& f, DoubleVector& g);
+    void calculateG(const DoubleVector &f, DoubleVector &g, const std::vector<DoubleMatrix>& psi);
 
     double u(double x1, double x2, double t) { return x1*x1 + x2*x2 + t*t; }
 
     DoubleMatrix U;
     DoubleMatrix uT;
-
-    unsigned int M;
-    unsigned int N1;
-    unsigned int N2;
-    unsigned int C;
-    unsigned int L;
 
     static void main();
 
@@ -40,7 +34,7 @@ private:
     double m3(double x1, double t) { return u(x1, x20, t); }
     double m4(double x1, double t) { return u(x1, x21, t); }
 
-    double fxt(unsigned int i, unsigned int j, unsigned k, const DoubleVector& e);
+    double fxt(unsigned int i, unsigned int j, unsigned k, const DoubleVector &f);
 
     double pm1(double x2, double t) { return 0.0; }
     double pm2(double x2, double t) { return 0.0; }
@@ -61,6 +55,12 @@ private:
     double x20;
     double x21;
 
+    unsigned int M;
+    unsigned int N1;
+    unsigned int N2;
+    unsigned int C;
+    unsigned int L;
+
     double a1;
     double a2;
 
@@ -70,17 +70,19 @@ private:
 
     double alpha;
 
+    DoubleVector E;
+
     void initialize();
 };
 
-struct HeatControl2DeltaPrinter : public Printer
+struct HeatControl2DeltaFPrinter : public Printer
 {
     virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
 };
 
-struct HeatControl2DeltaProjection : public Projection
+struct HeatControl2DeltaFProjection : public Projection
 {
     virtual void project(DoubleVector &x, int index);
 };
 
-#endif // HEATCONTROL2DELTA_H
+#endif // HEATCONTROL2DELTAF_H

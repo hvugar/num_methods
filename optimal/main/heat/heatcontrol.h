@@ -20,10 +20,15 @@ struct HeatControl : public RnFunction
 {
 public:
     HeatControl();
-
-protected:
     virtual double fx(const DoubleVector& u);
     virtual void gradient(const DoubleVector& f, DoubleVector &g, double gradient_step);
+
+    unsigned int N;
+    unsigned int M;
+    unsigned int C;
+
+protected:
+    void initializeU();
 
 private:
     double t0;
@@ -32,34 +37,30 @@ private:
     double x0;
     double x1;
 
-    double dt;
-    double h;
+    double ht;
+    double hx;
 
     double a1;
 
-    unsigned int N;
-    unsigned int M;
-    unsigned int C;
+    inline double u(double x, double t) const { return x*x+t*t; }
 
-    double u(double x, double t) const;
-//    double U(double x) const;
+    inline double fi(double x) { return u(x, 0.0); }
+    inline double m1(double t) { return u(0.0, t); }
+    inline double m2(double t) { return u(1.0, t); }
 
-    double fi(double x);
-    double m1(double t);
-    double m2(double t);
+    inline double pfi(double x) { return 0.0; }
+    inline double pm1(double t) { return 0.0; }
+    inline double pm2(double t) { return 0.0; }
 
-    double pfi(double x);
-    double pm1(double t);
-    double pm2(double t);
+    inline double fxt(double x, double t) { return 2.0*t - 2.0*a1; }
 
-    double fxt(double x, double t);
-
-    void calculateU(const DoubleVector& f);
-    void calculateP(const DoubleVector& f, DoubleVector& g);
+    inline void calculateU(const DoubleVector& f, DoubleVector& u);
+    inline void calculateU1(const DoubleVector &f);
+    inline void calculateP(const DoubleVector& f, DoubleVector& g);
+    inline void calculateG(const DoubleVector& f, const DoubleVector& p, DoubleVector& g, unsigned int j);
 
     DoubleVector uT;
     DoubleVector U;
-    DoubleVector mf;
 
 public:
     static void main();
