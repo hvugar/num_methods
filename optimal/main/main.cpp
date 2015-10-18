@@ -24,6 +24,7 @@
 
 #include "heat/heatcontrol.h"
 #include "heat/heatcontroldeltaf.h"
+#include "heat/heatcontroldeltax.h"
 #include "heat/heatcontrol2d.h"
 #include "heat/heatcontrol2delta.h"
 #include "heat/heatcontrol2deltaf.h"
@@ -32,7 +33,7 @@ double fxt(double x, double y, double z) { return x*y*z; }
 
 int main()
 {
-    HeatControlDeltaF::main();
+    HeatControlDeltaX::main();
     return 0;
 }
 

@@ -22,7 +22,8 @@ SOURCES += \
     projection.cpp \
     rungekutta.cpp \
     tomasmethod.cpp \
-    integral.cpp
+    integral.cpp \
+    heatequation.cpp
 
 HEADERS += global.h \
     function.h \
@@ -38,4 +39,5 @@ HEADERS += global.h \
     projection.h \
     rungekutta.h \
     tomasmethod.h \
-    integral.h
+    integral.h \
+    heatequation.h

@@ -12,7 +12,6 @@ public:
     virtual double fx(const DoubleVector& x);
     virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step=0.000001);
 
-
     inline double u(double x, double t) { return x*x + t*t; }
     inline double fxt(unsigned int i, unsigned int j, const DoubleVector &f);
 
