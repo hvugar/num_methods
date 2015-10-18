@@ -26,7 +26,8 @@ SOURCES += main.cpp \
     heat/heatcontrol2d.cpp \
     heat/heatcontrol2delta.cpp \
     heat/heatcontrol2deltaf.cpp \
-    heat/heatcontroldeltaf.cpp
+    heat/heatcontroldeltaf.cpp \
+    heat/heatcontroldeltax.cpp
 
 HEADERS += \
     utils.h \
@@ -44,4 +45,5 @@ HEADERS += \
     heat/heatcontrol2d.h \
     heat/heatcontrol2delta.h \
     heat/heatcontrol2deltaf.h \
-    heat/heatcontroldeltaf.h
+    heat/heatcontroldeltaf.h \
+    heat/heatcontroldeltax.h
