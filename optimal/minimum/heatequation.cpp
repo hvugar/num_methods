@@ -3,12 +3,11 @@
 
 HeatEquation::HeatEquation()
 {
-
+    a = 1.0;
 }
 
 HeatEquation::~HeatEquation()
 {
-
 }
 
 void HeatEquation::setLengthInterval(double x0, double x1)
@@ -27,11 +26,12 @@ void HeatEquation::setPartNumber(unsigned int M, unsigned int N)
 {
     this->M = M;
     this->N = N;
-    this->ht = (t1-t0)/ht;
-    this->hx = (x1-x0)/hx;
+    this->ht = (t1-t0)/M;
+    this->hx = (x1-x0)/N;
+    this->C = (M+1)*(N+1);
 }
 
-void HeatEquation::calculateU(DoubleVector &u)
+void HeatEquation::calculate_u(DoubleVector &u)
 {
     u.clear();
     u.resize(N+1);
@@ -57,7 +57,7 @@ void HeatEquation::calculateU(DoubleVector &u)
         {
             for (unsigned int i=0; i<=N; i++)
             {
-                u[i] = fi(i);
+                u[i] = fi(i*hx, i);
             }
         }
         else
@@ -67,23 +67,23 @@ void HeatEquation::calculateU(DoubleVector &u)
                 a1[i-1] = alpha;
                 b1[i-1] = beta;
                 c1[i-1] = alpha;
-                d1[i-1] = u[i] + ht * f(i, j);
+                d1[i-1] = u[i] + ht * f(i*hx, i, j*ht, j);
                 //d1[i-1] = u1[i] + ht * f[j*(N+1)+i];
             }
 
             a1[0]   = 0.0;
             c1[N-2] = 0.0;
-            d1[0]   -= alpha * m1(j);
-            d1[N-2] -= alpha * m2(j);
+            d1[0]   -= alpha * m1(j*ht, j);
+            d1[N-2] -= alpha * m2(j*ht, j);
 
             TomasAlgorithm(a1, b1, c1, d1, x1);
 
-            u[0] = m1(j);
+            u[0] = m1(j*ht, j);
             for (unsigned int i=1; i<=N-1; i++)
             {
                 u[i] = x1[i-1];
             }
-            u[N] = m2(j);
+            u[N] = m2(j*ht, j);
         }
     }
 
@@ -92,7 +92,5 @@ void HeatEquation::calculateU(DoubleVector &u)
     c1.clear();
     d1.clear();
     x1.clear();
-
-    u.clear();
 }
 

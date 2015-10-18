@@ -29,11 +29,9 @@
 #include "heat/heatcontrol2delta.h"
 #include "heat/heatcontrol2deltaf.h"
 
-double fxt(double x, double y, double z) { return x*y*z; }
-
 int main()
 {
-    HeatControlDeltaX::main();
+    HeatControl::main();
     return 0;
 }
 

@@ -1,26 +1,33 @@
 #ifndef HEATEQUATION_H
 #define HEATEQUATION_H
 
+#include "global.h"
 #include "tomasmethod.h"
 
-class HeatEquation
+class MINIMUMSHARED_EXPORT HeatEquation
 {
 public:
     HeatEquation();
-    ~HeatEquation();
+    virtual ~HeatEquation();
 
     void setTimeInterval(double t0, double t1);
     void setLengthInterval(double x0, double x1);
     void setPartNumber(unsigned int M, unsigned int N);
 
-    virtual double fi(unsigned int i) const = 0;
-    virtual double m1(unsigned int j) const = 0;
-    virtual double m2(unsigned int j) const = 0;
-    virtual double f(unsigned int j, unsigned int i) = 0;
+    virtual double fi(double x, unsigned int i) const = 0;
+    virtual double m1(double t, unsigned int j) const = 0;
+    virtual double m2(double t, unsigned int j) const = 0;
+    virtual double f(double x, unsigned int i, double t, unsigned int j) const = 0;
 
-    void calculateU(DoubleVector& u);
+    void calculate_u(DoubleVector& u);
 
-private:
+    /* number of parts of time */
+    unsigned int M;
+    /* number of parts of length */
+    unsigned int N;
+    unsigned int C;
+
+public:
     double t0;
     double t1;
     double x0;
@@ -28,10 +35,6 @@ private:
     double a;
     double ht;
     double hx;
-    /* number of parts of time */
-    unsigned int M;
-    /* number of parts of length */
-    unsigned int N;
 };
 
 #endif // HEATEQUATION_H
