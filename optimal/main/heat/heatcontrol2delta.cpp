@@ -26,8 +26,8 @@ void HeatControl2Delta::main()
     g2.setEpsilon2(0.000000001);
     g2.setGradientStep(0.000001);
     g2.setR1MinimizeEpsilon(0.01, 0.000001);
-    g2.setPrinter(new HeatControl2DeltaPrinter);
-    g2.setProjection(new HeatControl2DeltaProjection);
+    g2.setPrinter(&hc);
+    g2.setProjection(&hc);
     g2.setNormalize(false);
     g2.calculate(e);
 
@@ -555,7 +555,7 @@ void HeatControl2Delta::initialize()
     //exit(-1);
 }
 
-void HeatControl2DeltaPrinter::print(unsigned int i, const DoubleVector &e, const DoubleVector &g, double a, RnFunction *f) const
+void HeatControl2Delta::print(unsigned int i, const DoubleVector &e, const DoubleVector &g, double a, RnFunction *f) const
 {
     HeatControl2Delta *hc = dynamic_cast<HeatControl2Delta*>(f);
     printf("J[%d]: %.16f %.16f\n", i, f->fx(e), a);
@@ -573,7 +573,7 @@ void HeatControl2DeltaPrinter::print(unsigned int i, const DoubleVector &e, cons
     puts("+++++++++++++++++++++++++++++++++++++++++");
 }
 
-void HeatControl2DeltaProjection::project(DoubleVector &e, int index)
+void HeatControl2Delta::project(DoubleVector &e, int index)
 {
     for (unsigned int i=0; i<6; i++)
     {

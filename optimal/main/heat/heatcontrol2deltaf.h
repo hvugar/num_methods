@@ -7,7 +7,7 @@
 #include <projection.h>
 #include <stdlib.h>
 
-class HeatControl2DeltaF : public RnFunction
+class HeatControl2DeltaF : public RnFunction, Printer, Projection
 {
 public:
     HeatControl2DeltaF(unsigned int M, unsigned int N2, unsigned int N1);
@@ -73,15 +73,7 @@ private:
     DoubleVector E;
 
     void initialize();
-};
-
-struct HeatControl2DeltaFPrinter : public Printer
-{
     virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
-};
-
-struct HeatControl2DeltaFProjection : public Projection
-{
     virtual void project(DoubleVector &x, int index);
 };
 

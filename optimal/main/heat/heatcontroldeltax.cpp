@@ -14,6 +14,8 @@ void HeatControlDeltaX::main()
     {
         E[i] = 0.4;
     }
+//    E[0] = 0.2;
+//    E[1] = 0.8;
 
     /* Minimization */
     ConjugateGradient g2;
@@ -21,7 +23,7 @@ void HeatControlDeltaX::main()
     g2.setEpsilon1(0.0000001);
     g2.setEpsilon2(0.0000001);
     g2.setGradientStep(0.000001);
-    g2.setR1MinimizeEpsilon(0.1, 0.0000001);
+    g2.setR1MinimizeEpsilon(10.0, 1.0);
     g2.setPrinter(&hc);
     g2.setProjection(&hc);
     g2.setNormalize(false);

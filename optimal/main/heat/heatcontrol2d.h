@@ -5,7 +5,7 @@
 #include <doublevector.h>
 #include <printer.h>
 
-class HeatControl2D :public RnFunction
+class HeatControl2D :public RnFunction, public Printer
 {
 public:
     HeatControl2D(unsigned int M, unsigned int N2, unsigned int N1);
@@ -57,15 +57,12 @@ private:
 
     double fxt(double x1, double x2, double t);
 
-    R2Function *_fi;
-    R2Function *_m1;
-    R2Function *_m2;
-    R2Function *_m3;
-    R2Function *_m4;
-};
+//    R2Function *_fi;
+//    R2Function *_m1;
+//    R2Function *_m2;
+//    R2Function *_m3;
+//    R2Function *_m4;
 
-struct HeatControl2DPrinter : public Printer
-{
     virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
 };
 

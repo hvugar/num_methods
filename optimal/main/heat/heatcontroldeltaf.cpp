@@ -24,7 +24,7 @@ void HeatControlDeltaF::main()
     g2.setEpsilon2(0.0000001);
     g2.setGradientStep(0.000001);
     g2.setR1MinimizeEpsilon(0.1, 0.0000001);
-    g2.setPrinter(new HeatControlDeltaFPrinter);
+    g2.setPrinter(&hc);
     g2.setNormalize(false);
     g2.calculate(f);
 }
@@ -264,7 +264,7 @@ void HeatControlDeltaF::initializeU()
 
 }
 
-void HeatControlDeltaFPrinter::print(unsigned int i, const DoubleVector &f0, const DoubleVector &s, double a, RnFunction *f) const
+void HeatControlDeltaF::print(unsigned int i, const DoubleVector &f0, const DoubleVector &s, double a, RnFunction *f) const
 {
     HeatControlDeltaF *hc = dynamic_cast<HeatControlDeltaF*>(f);
     printf("J: %.16f\n", hc->fx(f0));

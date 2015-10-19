@@ -16,7 +16,7 @@
  * u(l,t) = m2(t);
  */
 
-struct HeatControl : public RnFunction
+struct HeatControl : public RnFunction, public Printer
 {
 public:
     HeatControl();
@@ -62,13 +62,10 @@ private:
     DoubleVector uT;
     DoubleVector U;
 
+    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
+
 public:
     static void main();
-};
-
-struct HeatControlPrinter : public Printer
-{
-    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
 };
 
 #endif // HEATCONTROL_H

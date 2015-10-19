@@ -619,14 +619,14 @@ void HeatControl2D::main()
     g2.setEpsilon2(0.0000001);
     g2.setGradientStep(0.000001);
     g2.setR1MinimizeEpsilon(0.1, 0.0000001);
-    g2.setPrinter(new HeatControl2DPrinter);
+    g2.setPrinter(&hc);
     g2.setNormalize(false);
     g2.calculate(f);
 
     printCube(f, hc.M, hc.N2, hc.N1, hc.ht);
 }
 
-void HeatControl2DPrinter::print(unsigned int i, const DoubleVector &f0, const DoubleVector &s, double a, RnFunction *f) const
+void HeatControl2D::print(unsigned int i, const DoubleVector &f0, const DoubleVector &s, double a, RnFunction *f) const
 {
     HeatControl2D *hc = dynamic_cast<HeatControl2D*>(f);
 

@@ -4,8 +4,11 @@
 int main()
 {
     int n;
+    double k;
     printf("n: ");
     scanf("%d", &n);
+    printf("k: ");
+    scanf("%lf", &k);
 
     double* w = new double[n];
     double* x = new double[n];
@@ -28,7 +31,7 @@ int main()
     {
         sum += w[i]*x[i];
     }
-    double y = 1.0/(1.0+exp(-sum));
+    double y = k*sum;
 
     printf("y: %f\n", y);
 

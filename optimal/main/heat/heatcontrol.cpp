@@ -306,7 +306,7 @@ void HeatControl::main()
     g2.setEpsilon2(0.0000001);
     g2.setGradientStep(0.000001);
     g2.setR1MinimizeEpsilon(0.1, 0.0000001);
-    g2.setPrinter(new HeatControlPrinter);
+    g2.setPrinter(&hc);
     g2.setNormalize(true);
     g2.calculate(f0);
 
@@ -325,7 +325,7 @@ void HeatControl::main()
     }
 }
 
-void HeatControlPrinter::print(unsigned int i, const DoubleVector &f0, const DoubleVector &s, double a, RnFunction *f) const
+void HeatControl::print(unsigned int i, const DoubleVector &f0, const DoubleVector &s, double a, RnFunction *f) const
 {
     HeatControl *hc = dynamic_cast<HeatControl*>(f);
     printf("J: %.16f\n", hc->fx(f0));

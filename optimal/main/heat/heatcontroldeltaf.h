@@ -4,7 +4,7 @@
 #include <function.h>
 #include <printer.h>
 
-class HeatControlDeltaF : public RnFunction
+class HeatControlDeltaF : public RnFunction, Printer
 {
 public:
     HeatControlDeltaF(unsigned int M, unsigned int N, double a1);
@@ -51,10 +51,6 @@ private:
 
     DoubleVector U;
     DoubleVector uT;
-};
-
-struct HeatControlDeltaFPrinter : public Printer
-{
     virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
 };
 

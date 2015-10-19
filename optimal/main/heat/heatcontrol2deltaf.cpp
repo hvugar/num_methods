@@ -22,8 +22,8 @@ void HeatControl2DeltaF::main()
     g2.setEpsilon2(0.000000001);
     g2.setGradientStep(0.000001);
     g2.setR1MinimizeEpsilon(0.1, 0.000000001);
-    g2.setPrinter(new HeatControl2DeltaFPrinter);
-    g2.setProjection(new HeatControl2DeltaFProjection);
+    g2.setPrinter(&hc);
+    g2.setProjection(&hc);
     g2.setNormalize(false);
     g2.calculate(f);
 
@@ -517,12 +517,12 @@ void HeatControl2DeltaF::initialize()
     //exit(-1);
 }
 
-void HeatControl2DeltaFPrinter::print(unsigned int i, const DoubleVector &e, const DoubleVector &s, double a, RnFunction *f) const
+void HeatControl2DeltaF::print(unsigned int i, const DoubleVector &e, const DoubleVector &s, double a, RnFunction *f) const
 {
     printf("J: %.16f\n", f->fx(e));
 }
 
-void HeatControl2DeltaFProjection::project(DoubleVector &e, int index)
+void HeatControl2DeltaF::project(DoubleVector &e, int index)
 {
 //    for (unsigned int i=0; i<6; i++)
 //    {

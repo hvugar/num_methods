@@ -125,6 +125,26 @@ DoubleMatrix::DoubleMatrix() : std::vector<DoubleVector>()
 DoubleMatrix::~DoubleMatrix()
 {}
 
+void DoubleMatrix::Clear()
+{
+    for (unsigned int j=0; j<size(); j++)
+    {
+        this[j].clear();
+    }
+    this->clear();
+}
+
+void DoubleMatrix::Resize(unsigned int Ny, unsigned Nx)
+{
+    Clear();
+
+    resize(Ny);
+    for (unsigned int j=0; j<size(); j++)
+    {
+        this[j].resize(Nx);
+    }
+}
+
 DoubleCube::DoubleCube() : std::vector<DoubleMatrix>()
 {}
 

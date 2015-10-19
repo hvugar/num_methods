@@ -37,6 +37,8 @@ class MINIMUMSHARED_EXPORT DoubleMatrix : public std::vector<DoubleVector>
 public:
     DoubleMatrix();
     virtual ~DoubleMatrix();
+    void Clear();
+    void Resize(unsigned int Ny, unsigned Nx);
 };
 
 class MINIMUMSHARED_EXPORT DoubleCube : public std::vector<DoubleMatrix>
