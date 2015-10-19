@@ -22,7 +22,8 @@ public:
     //
     void calculateU(const DoubleVector& e, DoubleMatrix& u);
     void calculateP(const DoubleVector& e, DoubleVector& g);
-    void calculateG();
+    void calculateG1(const DoubleVector& e, const DoubleMatrix& psi, DoubleVector& g);
+    void calculateG2(const DoubleVector& e, DoubleVector& g);
 
     double t0;
     double t1;
