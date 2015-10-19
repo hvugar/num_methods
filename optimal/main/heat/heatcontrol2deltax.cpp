@@ -423,3 +423,14 @@ void HeatControl2DeltaX::initialize()
     puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
     //exit(-1);
 }
+
+//Printer
+void HeatControl2DeltaX::print(unsigned int i, const DoubleVector& e, const DoubleVector &gradient, double alpha, RnFunction* fn) const
+{
+    HeatControl2DeltaX *hc = dynamic_cast<HeatControl2DeltaX*>(fn);
+    printf("J: %.16f\n", hc->fx(e));
+}
+
+//Projection
+void HeatControl2DeltaX::HeatControl2DeltaX::project(DoubleVector &x, int index)
+{}
