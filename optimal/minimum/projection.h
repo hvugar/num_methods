@@ -7,10 +7,7 @@
 class MINIMUMSHARED_EXPORT Projection
 {
 public:
-    virtual void project(DoubleVector &x, int index);
-
-    double a;
-    double b;
+    virtual void project(DoubleVector &x, int index) = 0;
 };
 
 #endif // PROJECTION_H

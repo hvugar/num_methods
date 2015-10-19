@@ -15,7 +15,7 @@ void BoothFunction::gradient(const DoubleVector& x, DoubleVector &g, double grad
     RnFunction::Gradient(this, gradient_step, x, g);
 }
 
-void BoothPrinter::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const
+void BoothFunction::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const
 {
     if (iterationCount == 1)
     {
@@ -37,15 +37,17 @@ void BoothPrinter::print(unsigned int iterationCount, const DoubleVector& m_x, c
     printf("\n");
 }
 
+void BoothFunction::project(DoubleVector &x, int index)
+{
+}
+
 void BoothFunction::main()
 {
     /* Function */
     BoothFunction func;
-    BoothPrinter print;
-    Projection proj;
 
-    proj.a = -10.0;
-    proj.b = +10.0;
+    func.a = -10.0;
+    func.b = +10.0;
 
     /* initial point */
     DoubleVector x0(2);
@@ -59,7 +61,7 @@ void BoothFunction::main()
     g1.setEpsilon2(0.000001);
     g1.setGradientStep(0.000001);
     g1.setR1MinimizeEpsilon(0.1, 0.000001);
-    g1.setPrinter(&print);
+    g1.setPrinter(&func);
 //    g1.calculate(x0);
 
     puts("-----------------------------------------------------------------");
@@ -72,8 +74,8 @@ void BoothFunction::main()
     g2.setEpsilon2(0.000001);
     g2.setGradientStep(0.000001);
     g2.setR1MinimizeEpsilon(0.1, 0.000001);
-    g2.setPrinter(&print);
-    g2.setProjection(&proj);
+    g2.setPrinter(&func);
+    g2.setProjection(&func);
     g2.setNormalize(false);
     g2.calculate(x0);
 
@@ -87,7 +89,7 @@ void BoothFunction::main()
     g3.setEpsilon2(0.000001);
     g3.setGradientStep(0.000001);
     g3.setR1MinimizeEpsilon(0.1, 0.000001);
-    g3.setPrinter(&print);
+    g3.setPrinter(&func);
     g3.setNormalize(false);
 //    g3.calculate(x0);
 }

@@ -29,6 +29,7 @@
 #include "heat/heatcontrol2d.h"
 #include "heat/heatcontrol2delta.h"
 #include "heat/heatcontrol2deltaf.h"
+#include "heat/heatcontrol2deltax.h"
 
 struct HeatEquation1 : public HeatEquation
 {
@@ -79,7 +80,7 @@ struct HeatEquation2D1 : public HeatEquation2D
 
 int main()
 {
-//    HeatControlDeltaX::main();
+    HeatControl2DeltaX::main();
 
 //    DoubleVector u;
 //    HeatEquation1 he;
@@ -90,12 +91,12 @@ int main()
 //    he.calculate_u1(u);
 //    Printer::printVector(u, he.N/10);
 
-    DoubleMatrix m;
-    HeatEquation2D1 he2;
-    he2.setBorders(0.0, 1.0, 0.0, 1.0, 0.0, 1.0);
-    he2.setPartNumbers(100, 100, 1000);
-    he2.calculateBack(m);
-    Printer::printMatrix(m, he2.N2/10, he2.N1/10);
+//    DoubleMatrix m;
+//    HeatEquation2D1 he2;
+//    he2.setBorders(0.0, 1.0, 0.0, 1.0, 0.0, 1.0);
+//    he2.setPartNumbers(100, 100, 1000);
+//    he2.calculateBack(m);
+//    Printer::printMatrix(m, he2.N2/10, he2.N1/10);
 
     return 0;
 }

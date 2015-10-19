@@ -15,7 +15,7 @@ void BealesFunction::gradient(const DoubleVector& x, DoubleVector &g, double gra
     RnFunction::Gradient(this, gradient_step, x, g);
 }
 
-void BealesPrinter::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const
+void BealesFunction::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const
 {
     if (iterationCount == 1)
     {
@@ -37,15 +37,17 @@ void BealesPrinter::print(unsigned int iterationCount, const DoubleVector& m_x, 
     printf("\n");
 }
 
+void BealesFunction::project(DoubleVector& x, int index)
+{
+}
+
 void BealesFunction::main()
 {
     /* Function */
     BealesFunction func;
-    BealesPrinter print;
-    Projection proj;
 
-    proj.a = -4.5;
-    proj.b = +4.5;
+    func.a = -4.5;
+    func.b = +4.5;
 
     /* initial point */
     DoubleVector x0(2);
@@ -59,7 +61,7 @@ void BealesFunction::main()
     g1.setEpsilon2(0.000001);
     g1.setGradientStep(0.000001);
     g1.setR1MinimizeEpsilon(0.1, 0.000001);
-    g1.setPrinter(&print);
+    g1.setPrinter(&func);
 //    g1.calculate(x0);
 
     puts("-----------------------------------------------------------------");
@@ -72,8 +74,8 @@ void BealesFunction::main()
     g2.setEpsilon2(0.000001);
     g2.setGradientStep(0.000001);
     g2.setR1MinimizeEpsilon(0.1, 0.000001);
-    g2.setPrinter(&print);
-    g2.setProjection(&proj);
+    g2.setPrinter(&func);
+    g2.setProjection(&func);
     g2.setNormalize(false);
     g2.calculate(x0);
 
@@ -87,7 +89,7 @@ void BealesFunction::main()
     g3.setEpsilon2(0.000001);
     g3.setGradientStep(0.000001);
     g3.setR1MinimizeEpsilon(0.1, 0.000001);
-    g3.setPrinter(&print);
+    g3.setPrinter(&func);
     g3.setNormalize(false);
 //    g3.calculate(x0);
 }
