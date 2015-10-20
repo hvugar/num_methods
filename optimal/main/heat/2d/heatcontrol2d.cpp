@@ -589,8 +589,8 @@ void HeatControl2D::main()
     f.resize(hc.C);
     for (unsigned int i=0; i<hc.C; i++)
     {
-        unsigned int k = i/((hc.N1+1)*(hc.N2+1));
-        double t = k*hc.ht;
+        //unsigned int k = i/((hc.N1+1)*(hc.N2+1));
+        //double t = k*hc.ht;
         f[i] = 20.0;//2.0*t - 4.0;
     }
 

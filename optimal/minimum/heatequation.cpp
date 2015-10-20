@@ -124,7 +124,6 @@ void HeatEquation::calculate_u1(DoubleVector &u1)
             {
                 u1[i] = fi(i*hx, i);
             }
-            Printer::printVector(u1, N/10);
         }
         else
         {
@@ -149,9 +148,6 @@ void HeatEquation::calculate_u1(DoubleVector &u1)
                 u1[i] = x1[i-1];
             }
             u1[N] = m2(j*ht, j);
-            //Printer::printVector(u1, N/10);
-            int p;
-            //scanf("%d", &p);
         }
     }
 

@@ -461,7 +461,7 @@ double HeatControl2DeltaF::fxt(unsigned int i, unsigned int j, unsigned k, const
 {
     double x1 = i*h1;
     double x2 = j*h2;
-    double t  = k*ht;
+    //double t  = k*ht;
     double sum = 0.0;
 
     if (fabs(x1-E[0])<=h1 && fabs(x2-E[1])<=h2)

@@ -442,7 +442,7 @@ void HeatControl2Delta::calculateG(const DoubleVector &e, DoubleVector &g, const
             p = 1.0 * -(ht/2.0);
         else
             p = 2.0 * -(ht/2.0);
-        double t = k*ht;
+        //double t = k*ht;
 
         psiDerivative(psiX1, psiX2, e[0], e[1], psi[k]);
         g[0] = g[0] + p * e[6+0*(M+1)+k] * psiX1;
@@ -468,7 +468,7 @@ double HeatControl2Delta::fxt(unsigned int i, unsigned int j, unsigned k, const 
 {
     double x1 = i*h1;
     double x2 = j*h2;
-    double t  = k*ht;
+    //double t  = k*ht;
     double sum = 0.0;
 
     if (fabs(x1-e[0])<h1 && fabs(x2-e[1])<h2)
@@ -557,7 +557,7 @@ void HeatControl2Delta::initialize()
 
 void HeatControl2Delta::print(unsigned int i, const DoubleVector &e, const DoubleVector &g, double a, RnFunction *f) const
 {
-    HeatControl2Delta *hc = dynamic_cast<HeatControl2Delta*>(f);
+    //HeatControl2Delta *hc = dynamic_cast<HeatControl2Delta*>(f);
     printf("J[%d]: %.16f %.16f\n", i, f->fx(e), a);
     printf("e[0]:%10.6f e[1]:%10.6f e[0]:%10.6f e[1]:%10.6f e[0]:%10.6f e[1]:%10.6f\n", e[0], e[1], e[2], e[3], e[4], e[5]);
     printf("g[0]:%10.6f g[1]:%10.6f g[0]:%10.6f g[1]:%10.6f g[0]:%10.6f g[1]:%10.6f\n", g[0], g[1], g[2], g[3], g[4], g[5]);
