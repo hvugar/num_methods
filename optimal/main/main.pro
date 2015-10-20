@@ -22,13 +22,13 @@ SOURCES += main.cpp \
     pointcontrol.cpp \
     pointcontrol1.cpp \
     pointcontrol2.cpp \
-    heat/heatcontrol.cpp \
-    heat/heatcontrol2d.cpp \
-    heat/heatcontrol2delta.cpp \
-    heat/heatcontrol2deltaf.cpp \
-    heat/heatcontroldeltaf.cpp \
-    heat/heatcontroldeltax.cpp \
-    heat/heatcontrol2deltax.cpp
+    heat/1d/heatcontrol.cpp \
+    heat/1d/heatcontroldeltaf.cpp \
+    heat/1d/heatcontroldeltax.cpp \
+    heat/2d/heatcontrol2d.cpp \
+    heat/2d/heatcontrol2delta.cpp \
+    heat/2d/heatcontrol2deltaf.cpp \
+    heat/2d/heatcontrol2deltax.cpp
 
 HEADERS += \
     utils.h \
@@ -42,10 +42,10 @@ HEADERS += \
     pointcontrol.h \
     pointcontrol1.h \
     pointcontrol2.h \
-    heat/heatcontrol.h \
-    heat/heatcontrol2d.h \
-    heat/heatcontrol2delta.h \
-    heat/heatcontrol2deltaf.h \
-    heat/heatcontroldeltaf.h \
-    heat/heatcontroldeltax.h \
-    heat/heatcontrol2deltax.h
+    heat/1d/heatcontrol.h \
+    heat/1d/heatcontroldeltaf.h \
+    heat/1d/heatcontroldeltax.h \
+    heat/2d/heatcontrol2d.h \
+    heat/2d/heatcontrol2delta.h \
+    heat/2d/heatcontrol2deltaf.h \
+    heat/2d/heatcontrol2deltax.h
