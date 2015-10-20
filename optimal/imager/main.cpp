@@ -1,5 +1,5 @@
 #include <QApplication>
-#include <QPixmap>
+#include <QtGui/QPixmap>
 #include <QPainter>
 #include <QTextStream>
 #include <QFile>
@@ -19,15 +19,16 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv, false);
 
-    int width = 1001;
-    int height = 1001;
+    int width = 101;
+    int height = 101;
     QPixmap pixmap(QSize(width, height));
     pixmap.fill(Qt::white);
+    QPainter painter(&pixmap);
+    painter.drawPoint(0,0);
 
-    QFile file("data.txt");
+    QFile file("optimal.txt");
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream in(&file);
-    QPainter painter(&pixmap);
 
     double maximum = -999999999999.9;
     double minimum = +999999999999.9;
@@ -53,6 +54,10 @@ int main(int argc, char *argv[])
     }
     file.close();
 
+    qDebug() << minimum << maximum << m.size() << m[0].size() << width << height;
+
+//    minimum = 1.0;
+//    maximum = 3.0;
     for (int j=0; j<m.size(); j++)
     {
         for (int i=0; i<m[j].size(); i++)
@@ -64,12 +69,13 @@ int main(int argc, char *argv[])
             int g = 255 - b - r;
             QColor c(r, g, b);
             painter.setPen(c);
-            painter.drawPoint(i,height-j);
+            painter.drawPoint(i,height-j-1);
         }
     }
 
 
-    pixmap.save("image.png");
+    pixmap.save(file.fileName()+".png", "PNG");
 
-    return 0;
+    qDebug() << "end";
+    return a.exec();
 }

@@ -75,6 +75,7 @@ private:
     double f2(double t) { return t*t; }
     double f3(double t) { return t*t*t; }
 
+    void write(const char* fileName, const DoubleMatrix& m);
 };
 
 #endif // HEATCONTROL2DELTAX_H
