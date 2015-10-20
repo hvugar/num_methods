@@ -6,7 +6,7 @@
 
 void HeatControl2DeltaX::main()
 {
-    HeatControl2DeltaX hc(100, 100, 100);
+    HeatControl2DeltaX hc(1000, 1000, 1000);
 
     DoubleVector e;
     e.resize(2*hc.L);
@@ -272,7 +272,7 @@ void HeatControl2DeltaX::calculateP(const DoubleVector &e, DoubleVector &g)
 
     for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;
 
-    std::vector<DoubleMatrix> psi(M+1);
+    //std::vector<DoubleMatrix> psi(M+1);
 
     for (unsigned int k1=0; k1<=M; k1++)
     {
@@ -387,57 +387,57 @@ void HeatControl2DeltaX::calculateP(const DoubleVector &e, DoubleVector &g)
             x.clear();
         }
 
-        psi[k] = psi0;
+        //psi[k] = psi0;
 
-//        unsigned int i,j;
-//        if (k==0 || k==M)
-//        {
-//            i = (unsigned int)round(e[0]/h1);
-//            j = (unsigned int)round(e[1]/h2);
-//            g[0] = g[0] + f1((k)*ht) * (psi0[j][i+1] - psi0[j][i-1])/(2.0*h1);
-//            g[1] = g[1] + f1((k)*ht) * (psi0[j+1][i] - psi0[j-1][i])/(2.0*h2);
-//            i = (unsigned int)round(e[2]/h1);
-//            j = (unsigned int)round(e[3]/h2);
-//            g[2] = g[2] + f2((k)*ht) * (psi0[j][i+1] - psi0[j][i-1])/(2.0*h1);
-//            g[3] = g[3] + f2((k)*ht) * (psi0[j+1][i] - psi0[j-1][i])/(2.0*h2);
-//            i = (unsigned int)round(e[4]/h1);
-//            j = (unsigned int)round(e[5]/h2);
-//            g[4] = g[4] + f3((k)*ht) * (psi0[j][i+1] - psi0[j][i-1])/(2.0*h1);
-//            g[5] = g[5] + f3((k)*ht) * (psi0[j+1][i] - psi0[j-1][i])/(2.0*h2);
-//        }
-//        else
-//        {
-//            i = (unsigned int)round(e[0]/h1);
-//            j = (unsigned int)round(e[1]/h2);
-//            g[0] = g[0] + 2.0*f1((k)*ht) * (psi0[j][i+1] - psi0[j][i-1])/(2.0*h1);
-//            g[1] = g[1] + 2.0*f1((k)*ht) * (psi0[j+1][i] - psi0[j-1][i])/(2.0*h2);
-//            i = (unsigned int)round(e[2]/h1);
-//            j = (unsigned int)round(e[3]/h2);
-//            g[2] = g[2] + 2.0*f2((k)*ht) * (psi0[j][i+1] - psi0[j][i-1])/(2.0*h1);
-//            g[3] = g[3] + 2.0*f2((k)*ht) * (psi0[j+1][i] - psi0[j-1][i])/(2.0*h2);
-//            i = (unsigned int)round(e[4]/h1);
-//            j = (unsigned int)round(e[5]/h2);
-//            g[4] = g[4] + 2.0*f3((k)*ht) * (psi0[j][i+1] - psi0[j][i-1])/(2.0*h1);
-//            g[5] = g[5] + 2.0*f3((k)*ht) * (psi0[j+1][i] - psi0[j-1][i])/(2.0*h2);
-//        }
+        unsigned int i,j;
+        if (k==0 || k==M)
+        {
+            i = (unsigned int)round(e[0]/h1);
+            j = (unsigned int)round(e[1]/h2);
+            g[0] = g[0] + f1((k)*ht) * (psi0[j][i+1] - psi0[j][i-1])/(2.0*h1);
+            g[1] = g[1] + f1((k)*ht) * (psi0[j+1][i] - psi0[j-1][i])/(2.0*h2);
+            i = (unsigned int)round(e[2]/h1);
+            j = (unsigned int)round(e[3]/h2);
+            g[2] = g[2] + f2((k)*ht) * (psi0[j][i+1] - psi0[j][i-1])/(2.0*h1);
+            g[3] = g[3] + f2((k)*ht) * (psi0[j+1][i] - psi0[j-1][i])/(2.0*h2);
+            i = (unsigned int)round(e[4]/h1);
+            j = (unsigned int)round(e[5]/h2);
+            g[4] = g[4] + f3((k)*ht) * (psi0[j][i+1] - psi0[j][i-1])/(2.0*h1);
+            g[5] = g[5] + f3((k)*ht) * (psi0[j+1][i] - psi0[j-1][i])/(2.0*h2);
+        }
+        else
+        {
+            i = (unsigned int)round(e[0]/h1);
+            j = (unsigned int)round(e[1]/h2);
+            g[0] = g[0] + 2.0*f1((k)*ht) * (psi0[j][i+1] - psi0[j][i-1])/(2.0*h1);
+            g[1] = g[1] + 2.0*f1((k)*ht) * (psi0[j+1][i] - psi0[j-1][i])/(2.0*h2);
+            i = (unsigned int)round(e[2]/h1);
+            j = (unsigned int)round(e[3]/h2);
+            g[2] = g[2] + 2.0*f2((k)*ht) * (psi0[j][i+1] - psi0[j][i-1])/(2.0*h1);
+            g[3] = g[3] + 2.0*f2((k)*ht) * (psi0[j+1][i] - psi0[j-1][i])/(2.0*h2);
+            i = (unsigned int)round(e[4]/h1);
+            j = (unsigned int)round(e[5]/h2);
+            g[4] = g[4] + 2.0*f3((k)*ht) * (psi0[j][i+1] - psi0[j][i-1])/(2.0*h1);
+            g[5] = g[5] + 2.0*f3((k)*ht) * (psi0[j+1][i] - psi0[j-1][i])/(2.0*h2);
+        }
     }
 
-    unsigned int i,j;
-    for (unsigned int k=0; k<M; k++)
-    {
-        i = (unsigned int)round(e[0]/h1);
-        j = (unsigned int)round(e[1]/h2);
-        g[0] = g[0] + (f1((k+1)*ht) * (psi[k+1][j][i+1] - psi[k+1][j][i-1])/(2.0*h1))+(f1((k)*ht) * (psi[k][j][i+1] - psi[k][j][i-1])/(2.0*h1));
-        g[1] = g[1] + (f1((k+1)*ht) * (psi[k+1][j+1][i] - psi[k+1][j-1][i])/(2.0*h2))+(f1((k)*ht) * (psi[k][j+1][i] - psi[k][j-1][i])/(2.0*h2));
-        i = (unsigned int)round(e[2]/h1);
-        j = (unsigned int)round(e[3]/h2);
-        g[2] = g[2] + (f2((k+1)*ht) * (psi[k+1][j][i+1] - psi[k+1][j][i-1])/(2.0*h1))+(f2((k)*ht) * (psi[k][j][i+1] - psi[k][j][i-1])/(2.0*h1));
-        g[3] = g[3] + (f2((k+1)*ht) * (psi[k+1][j+1][i] - psi[k+1][j-1][i])/(2.0*h2))+(f2((k)*ht) * (psi[k][j+1][i] - psi[k][j-1][i])/(2.0*h2));
-        i = (unsigned int)round(e[4]/h1);
-        j = (unsigned int)round(e[5]/h2);
-        g[4] = g[4] + (f3((k+1)*ht) * (psi[k+1][j][i+1] - psi[k+1][j][i-1])/(2.0*h1))+(f3((k)*ht) * (psi[k][j][i+1] - psi[k][j][i-1])/(2.0*h1));
-        g[5] = g[5] + (f3((k+1)*ht) * (psi[k+1][j+1][i] - psi[k+1][j-1][i])/(2.0*h2))+(f3((k)*ht) * (psi[k][j+1][i] - psi[k][j-1][i])/(2.0*h2));
-    }
+//    unsigned int i,j;
+//    for (unsigned int k=0; k<M; k++)
+//    {
+//        i = (unsigned int)round(e[0]/h1);
+//        j = (unsigned int)round(e[1]/h2);
+//        g[0] = g[0] + (f1((k+1)*ht) * (psi[k+1][j][i+1] - psi[k+1][j][i-1])/(2.0*h1))+(f1((k)*ht) * (psi[k][j][i+1] - psi[k][j][i-1])/(2.0*h1));
+//        g[1] = g[1] + (f1((k+1)*ht) * (psi[k+1][j+1][i] - psi[k+1][j-1][i])/(2.0*h2))+(f1((k)*ht) * (psi[k][j+1][i] - psi[k][j-1][i])/(2.0*h2));
+//        i = (unsigned int)round(e[2]/h1);
+//        j = (unsigned int)round(e[3]/h2);
+//        g[2] = g[2] + (f2((k+1)*ht) * (psi[k+1][j][i+1] - psi[k+1][j][i-1])/(2.0*h1))+(f2((k)*ht) * (psi[k][j][i+1] - psi[k][j][i-1])/(2.0*h1));
+//        g[3] = g[3] + (f2((k+1)*ht) * (psi[k+1][j+1][i] - psi[k+1][j-1][i])/(2.0*h2))+(f2((k)*ht) * (psi[k][j+1][i] - psi[k][j-1][i])/(2.0*h2));
+//        i = (unsigned int)round(e[4]/h1);
+//        j = (unsigned int)round(e[5]/h2);
+//        g[4] = g[4] + (f3((k+1)*ht) * (psi[k+1][j][i+1] - psi[k+1][j][i-1])/(2.0*h1))+(f3((k)*ht) * (psi[k][j][i+1] - psi[k][j][i-1])/(2.0*h1));
+//        g[5] = g[5] + (f3((k+1)*ht) * (psi[k+1][j+1][i] - psi[k+1][j-1][i])/(2.0*h2))+(f3((k)*ht) * (psi[k][j+1][i] - psi[k][j-1][i])/(2.0*h2));
+//    }
 
     g[0] = -(ht/2.0)*g[0];
     g[1] = -(ht/2.0)*g[1];
@@ -481,20 +481,14 @@ double HeatControl2DeltaX::fxt(unsigned int i, unsigned int j, unsigned k, const
     if (fabs(x1-e[0])<=h1 && fabs(x2-e[1])<=h2)
     {
         sum += f1(t) * ((h1-fabs(x1-e[0]))/(h1*h1))*((h2-fabs(x2-e[1]))/(h2*h2));
-        //        sum += f[0*(M+1)+k] * ((h1-fabs(x1-E[0]))/(h1*h1))*((h2-fabs(x2-E[1]))/(h2*h2));
-        //sum += (e[6+0*(M+1)+k] - f1(t)) * ((h1-fabs(x1-e[0]))/(h1*h1))*((h2-fabs(x2-e[1]))/(h2*h2));
     }
     if (fabs(x1-e[2])<=h1 && fabs(x2-e[3])<=h2)
     {
         sum += f2(t) * ((h1-fabs(x1-e[2]))/(h1*h1))*((h2-fabs(x2-e[3]))/(h2*h2));
-        //        sum += f[0*(M+1)+k] * ((h1-fabs(x1-E[0]))/(h1*h1))*((h2-fabs(x2-E[1]))/(h2*h2));
-        //sum += (e[6+0*(M+1)+k] - f1(t)) * ((h1-fabs(x1-e[0]))/(h1*h1))*((h2-fabs(x2-e[1]))/(h2*h2));
     }
     if (fabs(x1-e[4])<=h1 && fabs(x2-e[5])<=h2)
     {
         sum += f3(t) * ((h1-fabs(x1-e[4]))/(h1*h1))*((h2-fabs(x2-e[5]))/(h2*h2));
-        //        sum += f[0*(M+1)+k] * ((h1-fabs(x1-E[0]))/(h1*h1))*((h2-fabs(x2-E[1]))/(h2*h2));
-        //sum += (e[6+0*(M+1)+k] - f1(t)) * ((h1-fabs(x1-e[0]))/(h1*h1))*((h2-fabs(x2-e[1]))/(h2*h2));
     }
     return sum;
 }
@@ -518,7 +512,10 @@ void HeatControl2DeltaX::initialize()
     {
         for (unsigned int i=0; i<=N1; i++)
         {
-            fprintf(f, "%.10f ", U[j][i]);
+            if (i==0)
+                fprintf(f, "%.10f", U[j][i]);
+            else
+                fprintf(f, " %.10f", U[j][i]);
         }
         fprintf(f, "\n");
     }
