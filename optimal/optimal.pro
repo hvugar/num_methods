@@ -1,4 +1,3 @@
 TEMPLATE = subdirs
-SUBDIRS = minimum main \ #qminimum
-    imager
+SUBDIRS = minimum main imager
 CONFIG += ordered
