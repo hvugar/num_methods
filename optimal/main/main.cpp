@@ -23,13 +23,13 @@
 #include "pointcontrol2.h"
 #include "utils.h"
 
-#include "heat/heatcontrol.h"
-#include "heat/heatcontroldeltaf.h"
-#include "heat/heatcontroldeltax.h"
-#include "heat/heatcontrol2d.h"
-#include "heat/heatcontrol2delta.h"
-#include "heat/heatcontrol2deltaf.h"
-#include "heat/heatcontrol2deltax.h"
+#include "heat/1d/heatcontrol.h"
+#include "heat/1d/heatcontroldeltaf.h"
+#include "heat/1d/heatcontroldeltax.h"
+#include "heat/2d/heatcontrol2d.h"
+#include "heat/2d/heatcontrol2delta.h"
+#include "heat/2d/heatcontrol2deltaf.h"
+#include "heat/2d/heatcontrol2deltax.h"
 
 struct HeatEquation1 : public HeatEquation
 {
