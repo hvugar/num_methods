@@ -6,7 +6,7 @@
 
 void HeatControl2DeltaX::main()
 {
-    HeatControl2DeltaX hc(2000, 2000, 2000);
+    HeatControl2DeltaX hc(100, 100, 100);
 
     DoubleVector e;
     e.resize(2*hc.L);
@@ -114,7 +114,7 @@ void HeatControl2DeltaX::gradient(const DoubleVector& e, DoubleVector& g, double
     printf("e1: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", e[0], e[1], e[2], e[3], e[4], e[5]);
     printf("g1: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", g[0], g[1], g[2], g[3], g[4], g[5]);
 
-    calculateG2(e, g);
+    //calculateG2(e, g);
 }
 
 void HeatControl2DeltaX::calculateU(const DoubleVector &e, DoubleMatrix& u)
