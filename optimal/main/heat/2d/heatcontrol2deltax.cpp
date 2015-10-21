@@ -10,17 +10,23 @@ void HeatControl2DeltaX::main()
 
     DoubleVector e;
     e.resize(2*hc.L);
+
+    //Optimal
+    //e[0] = 0.7; e[1] = 0.2;
+    //e[2] = 0.5; e[3] = 0.8;
+    //e[4] = 0.2; e[5] = 0.3;
+
     e[0] = 0.75; e[1] = 0.25;
     e[2] = 0.55; e[3] = 0.85;
     e[4] = 0.25; e[5] = 0.35;
 
-    e[0] = 0.65; e[1] = 0.15;
-    e[2] = 0.45; e[3] = 0.75;
-    e[4] = 0.15; e[5] = 0.25;
+    //e[0] = 0.65; e[1] = 0.15;
+    //e[2] = 0.45; e[3] = 0.75;
+    //e[4] = 0.15; e[5] = 0.25;
 
-    //e[0] = 0.7; e[1] = 0.2;
-    //e[2] = 0.5; e[3] = 0.8;
-    //e[4] = 0.2; e[5] = 0.3;
+    //e[0] = 0.5; e[1] = 0.6;
+    //e[2] = 0.8; e[3] = 0.2;
+    //e[4] = 0.4; e[5] = 0.3;
 
     /* Minimization */
     ConjugateGradient g2;
@@ -64,7 +70,6 @@ HeatControl2DeltaX::HeatControl2DeltaX(unsigned int M, unsigned int N2, unsigned
     initialize();
 }
 
-//RnFunction
 double HeatControl2DeltaX::fx(const DoubleVector& e)
 {
     calculateU(e, uT);
@@ -109,7 +114,6 @@ double HeatControl2DeltaX::fx(const DoubleVector& e)
     return sum;
 }
 
-
 void HeatControl2DeltaX::gradient(const DoubleVector& e, DoubleVector& g, double gradient_step)
 {
     calculateU(e, uT);
@@ -117,7 +121,6 @@ void HeatControl2DeltaX::gradient(const DoubleVector& e, DoubleVector& g, double
     puts("-----------------------------------------------------------");
     printf("e1: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", e[0], e[1], e[2], e[3], e[4], e[5]);
     printf("g1: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", g[0], g[1], g[2], g[3], g[4], g[5]);
-
     //calculateG2(e, g);
 }
 
@@ -276,8 +279,6 @@ void HeatControl2DeltaX::calculateP(const DoubleVector &e, DoubleVector &g)
 
     for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;
 
-    //std::vector<DoubleMatrix> psi(M+1);
-
     for (unsigned int k1=0; k1<=M; k1++)
     {
         unsigned int k = M-k1;
@@ -391,69 +392,58 @@ void HeatControl2DeltaX::calculateP(const DoubleVector &e, DoubleVector &g)
             x.clear();
         }
 
-        //psi[k] = psi0;
-
-        unsigned int i,j;
-        if (k==0 || k==M)
-        {
-            i = (unsigned int)round(e[0]/h1);
-            j = (unsigned int)round(e[1]/h2);
-            g[0] = g[0] + f1((k)*ht) * (psi0[j][i+1] - psi0[j][i-1])/(2.0*h1);
-            g[1] = g[1] + f1((k)*ht) * (psi0[j+1][i] - psi0[j-1][i])/(2.0*h2);
-            i = (unsigned int)round(e[2]/h1);
-            j = (unsigned int)round(e[3]/h2);
-            g[2] = g[2] + f2((k)*ht) * (psi0[j][i+1] - psi0[j][i-1])/(2.0*h1);
-            g[3] = g[3] + f2((k)*ht) * (psi0[j+1][i] - psi0[j-1][i])/(2.0*h2);
-            i = (unsigned int)round(e[4]/h1);
-            j = (unsigned int)round(e[5]/h2);
-            g[4] = g[4] + f3((k)*ht) * (psi0[j][i+1] - psi0[j][i-1])/(2.0*h1);
-            g[5] = g[5] + f3((k)*ht) * (psi0[j+1][i] - psi0[j-1][i])/(2.0*h2);
-        }
-        else
-        {
-            i = (unsigned int)round(e[0]/h1);
-            j = (unsigned int)round(e[1]/h2);
-            g[0] = g[0] + 2.0*f1((k)*ht) * (psi0[j][i+1] - psi0[j][i-1])/(2.0*h1);
-            g[1] = g[1] + 2.0*f1((k)*ht) * (psi0[j+1][i] - psi0[j-1][i])/(2.0*h2);
-            i = (unsigned int)round(e[2]/h1);
-            j = (unsigned int)round(e[3]/h2);
-            g[2] = g[2] + 2.0*f2((k)*ht) * (psi0[j][i+1] - psi0[j][i-1])/(2.0*h1);
-            g[3] = g[3] + 2.0*f2((k)*ht) * (psi0[j+1][i] - psi0[j-1][i])/(2.0*h2);
-            i = (unsigned int)round(e[4]/h1);
-            j = (unsigned int)round(e[5]/h2);
-            g[4] = g[4] + 2.0*f3((k)*ht) * (psi0[j][i+1] - psi0[j][i-1])/(2.0*h1);
-            g[5] = g[5] + 2.0*f3((k)*ht) * (psi0[j+1][i] - psi0[j-1][i])/(2.0*h2);
-        }
+        calculateGX(e, psi0, g, k);
+        calculateGF(e, g);
     }
-
-    //    unsigned int i,j;
-    //    for (unsigned int k=0; k<M; k++)
-    //    {
-    //        i = (unsigned int)round(e[0]/h1);
-    //        j = (unsigned int)round(e[1]/h2);
-    //        g[0] = g[0] + (f1((k+1)*ht) * (psi[k+1][j][i+1] - psi[k+1][j][i-1])/(2.0*h1))+(f1((k)*ht) * (psi[k][j][i+1] - psi[k][j][i-1])/(2.0*h1));
-    //        g[1] = g[1] + (f1((k+1)*ht) * (psi[k+1][j+1][i] - psi[k+1][j-1][i])/(2.0*h2))+(f1((k)*ht) * (psi[k][j+1][i] - psi[k][j-1][i])/(2.0*h2));
-    //        i = (unsigned int)round(e[2]/h1);
-    //        j = (unsigned int)round(e[3]/h2);
-    //        g[2] = g[2] + (f2((k+1)*ht) * (psi[k+1][j][i+1] - psi[k+1][j][i-1])/(2.0*h1))+(f2((k)*ht) * (psi[k][j][i+1] - psi[k][j][i-1])/(2.0*h1));
-    //        g[3] = g[3] + (f2((k+1)*ht) * (psi[k+1][j+1][i] - psi[k+1][j-1][i])/(2.0*h2))+(f2((k)*ht) * (psi[k][j+1][i] - psi[k][j-1][i])/(2.0*h2));
-    //        i = (unsigned int)round(e[4]/h1);
-    //        j = (unsigned int)round(e[5]/h2);
-    //        g[4] = g[4] + (f3((k+1)*ht) * (psi[k+1][j][i+1] - psi[k+1][j][i-1])/(2.0*h1))+(f3((k)*ht) * (psi[k][j][i+1] - psi[k][j][i-1])/(2.0*h1));
-    //        g[5] = g[5] + (f3((k+1)*ht) * (psi[k+1][j+1][i] - psi[k+1][j-1][i])/(2.0*h2))+(f3((k)*ht) * (psi[k][j+1][i] - psi[k][j-1][i])/(2.0*h2));
-    //    }
-
-    g[0] = -(ht/2.0)*g[0];
-    g[1] = -(ht/2.0)*g[1];
-    g[2] = -(ht/2.0)*g[2];
-    g[3] = -(ht/2.0)*g[3];
-    g[4] = -(ht/2.0)*g[4];
-    g[5] = -(ht/2.0)*g[5];
 }
 
-void HeatControl2DeltaX::calculateG1(const DoubleVector& e, const DoubleMatrix& psi, DoubleVector& g)
+void HeatControl2DeltaX::calculateGX(const DoubleVector& e, const DoubleMatrix& psi, DoubleVector& g, unsigned int k)
 {
+    unsigned int i,j;
+    if (k==0 || k==M)
+    {
+        i = (unsigned int)round(e[0]/h1);
+        j = (unsigned int)round(e[1]/h2);
+        g[0] = g[0] + f1((k)*ht) * (psi[j][i+1] - psi[j][i-1])/(2.0*h1);
+        g[1] = g[1] + f1((k)*ht) * (psi[j+1][i] - psi[j-1][i])/(2.0*h2);
+        i = (unsigned int)round(e[2]/h1);
+        j = (unsigned int)round(e[3]/h2);
+        g[2] = g[2] + f2((k)*ht) * (psi[j][i+1] - psi[j][i-1])/(2.0*h1);
+        g[3] = g[3] + f2((k)*ht) * (psi[j+1][i] - psi[j-1][i])/(2.0*h2);
+        i = (unsigned int)round(e[4]/h1);
+        j = (unsigned int)round(e[5]/h2);
+        g[4] = g[4] + f3((k)*ht) * (psi[j][i+1] - psi[j][i-1])/(2.0*h1);
+        g[5] = g[5] + f3((k)*ht) * (psi[j+1][i] - psi[j-1][i])/(2.0*h2);
+    }
+    else
+    {
+        i = (unsigned int)round(e[0]/h1);
+        j = (unsigned int)round(e[1]/h2);
+        g[0] = g[0] + 2.0*f1((k)*ht) * (psi[j][i+1] - psi[j][i-1])/(2.0*h1);
+        g[1] = g[1] + 2.0*f1((k)*ht) * (psi[j+1][i] - psi[j-1][i])/(2.0*h2);
+        i = (unsigned int)round(e[2]/h1);
+        j = (unsigned int)round(e[3]/h2);
+        g[2] = g[2] + 2.0*f2((k)*ht) * (psi[j][i+1] - psi[j][i-1])/(2.0*h1);
+        g[3] = g[3] + 2.0*f2((k)*ht) * (psi[j+1][i] - psi[j-1][i])/(2.0*h2);
+        i = (unsigned int)round(e[4]/h1);
+        j = (unsigned int)round(e[5]/h2);
+        g[4] = g[4] + 2.0*f3((k)*ht) * (psi[j][i+1] - psi[j][i-1])/(2.0*h1);
+        g[5] = g[5] + 2.0*f3((k)*ht) * (psi[j+1][i] - psi[j-1][i])/(2.0*h2);
+    }
 
+    if (k==0)
+    {
+        g[0] = -(ht/2.0)*g[0];
+        g[1] = -(ht/2.0)*g[1];
+        g[2] = -(ht/2.0)*g[2];
+        g[3] = -(ht/2.0)*g[3];
+        g[4] = -(ht/2.0)*g[4];
+        g[5] = -(ht/2.0)*g[5];
+    }
+}
+
+void HeatControl2DeltaX::calculateGF(const DoubleVector &e, DoubleVector& g)
+{
 }
 
 void HeatControl2DeltaX::calculateG2(const DoubleVector &e, DoubleVector& g1)
@@ -501,6 +491,7 @@ void HeatControl2DeltaX::initialize()
 {
     DoubleVector E;
     E.resize(2*L);
+
     E[0] = 0.7; E[1] = 0.2;
     E[2] = 0.5; E[3] = 0.8;
     E[4] = 0.2; E[5] = 0.3;
@@ -518,7 +509,8 @@ void HeatControl2DeltaX::initialize()
 void HeatControl2DeltaX::print(unsigned int i, const DoubleVector& e, const DoubleVector &gradient, double alpha, RnFunction* fn) const
 {
     HeatControl2DeltaX *hc = dynamic_cast<HeatControl2DeltaX*>(fn);
-    printf("J: %.16f\n", hc->fx(e));
+    printf("J[%d]: %.16f\n", i, hc->fx(e));
+    printf("e2: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", e[0], e[1], e[2], e[3], e[4], e[5]);
 
 //    hc->calculateU(e, hc->uT);
 //    char buffer [12];
