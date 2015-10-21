@@ -56,6 +56,8 @@ public:
 
     static void main();
 
+    void test();
+
 private:
     double u(double x1, double x2, double t) { return x1*x1 + x2*x2 + t*t; }
 

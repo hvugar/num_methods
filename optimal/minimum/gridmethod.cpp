@@ -411,8 +411,10 @@ void GridMethod::TomasAlgorithm(const DoubleVector &a, const DoubleVector &b, co
             }
     }
 
-    for (int i=n-1; i>=0; i--)
+    for (unsigned int i1=0; i1<=n-1; i1++)
+//    for (int i=n-1; i>=0; i--)
     {
+        unsigned int i=(n-1)-i1;
         if (i==n-1)
         {
             x[i] = p[i];

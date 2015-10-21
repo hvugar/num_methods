@@ -80,7 +80,7 @@ struct HeatEquation2D1 : public HeatEquation2D
 
 int main()
 {
-    HeatControl2Delta::main();
+    HeatControl2DeltaX::main();
 
 //    DoubleVector u;
 //    HeatEquation1 he;
