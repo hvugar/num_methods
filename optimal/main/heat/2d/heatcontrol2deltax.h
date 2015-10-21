@@ -25,6 +25,7 @@ public:
     void calculateGX(const DoubleVector& e, const DoubleMatrix& psi, DoubleVector& g, unsigned int k);
     void calculateGF(const DoubleVector &e, const DoubleMatrix& psi, DoubleVector& g, unsigned int k);
     void calculateG2(const DoubleVector& e, DoubleVector& g);
+    void psiDerivative(double &psiX1, double& psiX2, double e1, double e2, const DoubleMatrix& psi);
 
     double t0;
     double t1;

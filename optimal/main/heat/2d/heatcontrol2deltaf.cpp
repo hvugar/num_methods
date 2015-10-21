@@ -13,7 +13,7 @@ void HeatControl2DeltaF::main()
     DoubleVector f;
     f.resize(count);
 
-    for (unsigned int i=0; i<f.size(); i++) f[i] = 10.5;
+    for (unsigned int i=0; i<f.size(); i++) f[i] = 0.5;
 
     /* Minimization */
     ConjugateGradient g2;
