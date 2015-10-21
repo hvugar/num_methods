@@ -393,7 +393,7 @@ void HeatControl2DeltaX::calculateP(const DoubleVector &e, DoubleVector &g)
         }
 
         calculateGX(e, psi0, g, k);
-        calculateGF(e, g);
+        calculateGF(e, psi0, g, k);
     }
 }
 
@@ -442,7 +442,7 @@ void HeatControl2DeltaX::calculateGX(const DoubleVector& e, const DoubleMatrix& 
     }
 }
 
-void HeatControl2DeltaX::calculateGF(const DoubleVector &e, DoubleVector& g)
+void HeatControl2DeltaX::calculateGF(const DoubleVector &e, const DoubleMatrix& psi, DoubleVector& g, unsigned int k)
 {
 }
 
@@ -505,7 +505,6 @@ void HeatControl2DeltaX::initialize()
     write("optimal.txt", U);
 }
 
-//Printer
 void HeatControl2DeltaX::print(unsigned int i, const DoubleVector& e, const DoubleVector &gradient, double alpha, RnFunction* fn) const
 {
     HeatControl2DeltaX *hc = dynamic_cast<HeatControl2DeltaX*>(fn);
@@ -518,8 +517,7 @@ void HeatControl2DeltaX::print(unsigned int i, const DoubleVector& e, const Doub
 //    hc->write(buffer, hc->uT);
 }
 
-//Projection
-void HeatControl2DeltaX::HeatControl2DeltaX::project(DoubleVector &e, int index)
+void HeatControl2DeltaX::project(DoubleVector &e, int index)
 {
     for (unsigned int i=0; i<e.size(); i++)
     {
