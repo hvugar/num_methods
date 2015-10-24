@@ -24,7 +24,7 @@ void HeatControl2DeltaX::main()
     g2.setEpsilon1(0.000000001);
     g2.setEpsilon2(0.000000001);
     g2.setGradientStep(0.000001);
-    g2.setR1MinimizeEpsilon(0.1, 0.001);
+    g2.setR1MinimizeEpsilon(1.0, 0.001);
     g2.setPrinter(&hc);
     g2.setProjection(&hc);
     g2.setNormalize(true);
@@ -515,26 +515,20 @@ void HeatControl2DeltaX::initialize()
 {
     DoubleVector E;
     E.resize(2*L);
-
-    E[0] = 0.7; E[1] = 0.2;
-    E[2] = 0.5; E[3] = 0.8;
-    E[4] = 0.2; E[5] = 0.3;
-
+    E[0] = 0.70; E[1] = 0.20; E[2] = 0.50; E[3] = 0.80; E[4] = 0.20; E[5] = 0.30;
     calculateU(E, U);
-
     puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
     Printer::printMatrix(U, N2/10, N1/10);
     puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
     printf("eo: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", E[0], E[1], E[2], E[3], E[4], E[5]);
-
-    //    write("optimal.txt", U);
+    //write("optimal.txt", U);
 }
 
 void HeatControl2DeltaX::print(unsigned int i, const DoubleVector& e, const DoubleVector &gradient, double alpha, RnFunction* fn) const
 {
     HeatControl2DeltaX *hc = dynamic_cast<HeatControl2DeltaX*>(fn);
     printf("J[%d]: %.16f\n", i, hc->fx(e));
-    //    printf("e2: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", e[0], e[1], e[2], e[3], e[4], e[5]);
+    //printf("e2: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", e[0], e[1], e[2], e[3], e[4], e[5]);
 
     //    hc->calculateU(e, hc->uT);
     //    char buffer [12];
