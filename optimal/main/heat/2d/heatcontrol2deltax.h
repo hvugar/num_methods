@@ -20,12 +20,17 @@ public:
     virtual void project(DoubleVector &x, int index);
 
     //
-    void calculateU(const DoubleVector& e, DoubleMatrix& u);
-    void calculateP(const DoubleVector& e, DoubleVector& g);
-    void calculateGX(const DoubleVector& e, const DoubleMatrix& psi, DoubleVector& g, unsigned int k);
-    void calculateGF(const DoubleVector &e, const DoubleMatrix& psi, DoubleVector& g, unsigned int k);
-    void calculateG2(const DoubleVector& e, DoubleVector& g);
-    void psiDerivative(double &psiX1, double& psiX2, double e1, double e2, const DoubleMatrix& psi);
+    inline void calculateU(const DoubleVector& e, DoubleMatrix& u);
+    inline void calculateP(const DoubleVector& e, DoubleVector& g);
+    inline void calculateGX(const DoubleVector& e, const DoubleMatrix& psi, DoubleVector& g, unsigned int k);
+    inline void calculateGF(const DoubleVector &e, const DoubleMatrix& psi, DoubleVector& g, unsigned int k);
+    inline void calculateG2(const DoubleVector& e, DoubleVector& g);
+    inline void psiDerivative(double &psiX1, double& psiX2, double e1, double e2, const DoubleMatrix& psi);
+    void initialize();
+    void test();
+
+    double calculateIntegral(const DoubleVector& x);
+    double calculareNorm(const DoubleVector& x);
 
     double t0;
     double t1;
@@ -50,14 +55,10 @@ public:
 
     double alpha;
 
-    void initialize();
-
     DoubleMatrix U;
     DoubleMatrix uT;
 
     static void main();
-
-    void test();
 
 private:
     double u(double x1, double x2, double t) { return x1*x1 + x2*x2 + t*t; }

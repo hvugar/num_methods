@@ -13,21 +13,10 @@ void HeatControl2DeltaX::main()
     e.resize(2*hc.L);
 
     //Optimal
-    //e[0] = 0.7; e[1] = 0.2;
-    //e[2] = 0.5; e[3] = 0.8;
-    //e[4] = 0.2; e[5] = 0.3;
-
-    //e[0] = 0.75; e[1] = 0.25;
-    //e[2] = 0.55; e[3] = 0.85;
-    //e[4] = 0.25; e[5] = 0.35;
-
-    //e[0] = 0.65; e[1] = 0.15;
-    //e[2] = 0.45; e[3] = 0.75;
-    //e[4] = 0.15; e[5] = 0.25;
-
-    e[0] = 0.4; e[1] = 0.6;
-    e[2] = 0.7; e[3] = 0.6;
-    e[4] = 0.6; e[5] = 0.2;
+    //e[0] = 0.70; e[1] = 0.20; e[2] = 0.50; e[3] = 0.80; e[4] = 0.20; e[5] = 0.30;
+    //e[0] = 0.75; e[1] = 0.25; e[2] = 0.55; e[3] = 0.85; e[4] = 0.25; e[5] = 0.35;
+    //e[0] = 0.65; e[1] = 0.15; e[2] = 0.45; e[3] = 0.75; e[4] = 0.15; e[5] = 0.25;
+    e[0] = 0.40; e[1] = 0.60; e[2] = 0.70; e[3] = 0.60; e[4] = 0.60; e[5] = 0.20;
 
     /* Minimization */
     ConjugateGradient g2;
@@ -35,7 +24,7 @@ void HeatControl2DeltaX::main()
     g2.setEpsilon1(0.000000001);
     g2.setEpsilon2(0.000000001);
     g2.setGradientStep(0.000001);
-    g2.setR1MinimizeEpsilon(0.1, 0.0001);
+    g2.setR1MinimizeEpsilon(0.1, 0.001);
     g2.setPrinter(&hc);
     g2.setProjection(&hc);
     g2.setNormalize(true);
@@ -74,7 +63,12 @@ HeatControl2DeltaX::HeatControl2DeltaX(unsigned int M, unsigned int N2, unsigned
 double HeatControl2DeltaX::fx(const DoubleVector& e)
 {
     calculateU(e, uT);
+    double sum = calculateIntegral(e) + calculareNorm(e);
+    return sum;
+}
 
+double HeatControl2DeltaX::calculateIntegral(const DoubleVector &e)
+{
     double sum = 0.0;
     for (unsigned int j=0; j<N2; j++)
     {
@@ -94,9 +88,13 @@ double HeatControl2DeltaX::fx(const DoubleVector& e)
         }
     }
     sum = (0.25*(h1*h2))*sum;
+    return sum;
+}
 
+double HeatControl2DeltaX::calculareNorm(const DoubleVector &e)
+{
     //    double p;
-    //    double norm = 0.0;
+        double norm = 0.0;
     //    for (unsigned int l=0; l<L; l++)
     //    {
     //        for (unsigned int k=0; k<=M; k++)
@@ -111,18 +109,17 @@ double HeatControl2DeltaX::fx(const DoubleVector& e)
     //            }
     //        }
     //    }
-
-    return sum;
+        return norm;
 }
 
 void HeatControl2DeltaX::gradient(const DoubleVector& e, DoubleVector& g, double gradient_step)
 {
-    //    calculateU(e, uT);
-    //    calculateP(e, g);
-    //    puts("-----------------------------------------------------------");
-    //    printf("e1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", e[0], e[1], e[2], e[3], e[4], e[5]);
-    //    printf("g1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", g[0], g[1], g[2], g[3], g[4], g[5]);
-    calculateG2(e, g);
+    calculateU(e, uT);
+    calculateP(e, g);
+    puts("-----------------------------------------------------------");
+    printf("e1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", e[0], e[1], e[2], e[3], e[4], e[5]);
+    printf("g1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", g[0], g[1], g[2], g[3], g[4], g[5]);
+    //calculateG2(e, g);
 }
 
 void HeatControl2DeltaX::calculateU(const DoubleVector &e, DoubleMatrix& u)
@@ -488,18 +485,29 @@ double HeatControl2DeltaX::fxt(unsigned int i, unsigned int j, unsigned k, const
     double t  = k*ht;
     double sum = 0.0;
 
-    if (fabs(x1-e[0])<=h1 && fabs(x2-e[1])<=h2)
-    {
-        sum += f1(t) * ((h1-fabs(x1-e[0]))/(h1*h1))*((h2-fabs(x2-e[1]))/(h2*h2));
-    }
-    if (fabs(x1-e[2])<=h1 && fabs(x2-e[3])<=h2)
-    {
-        sum += f2(t) * ((h1-fabs(x1-e[2]))/(h1*h1))*((h2-fabs(x2-e[3]))/(h2*h2));
-    }
-    if (fabs(x1-e[4])<=h1 && fabs(x2-e[5])<=h2)
-    {
-        sum += f3(t) * ((h1-fabs(x1-e[4]))/(h1*h1))*((h2-fabs(x2-e[5]))/(h2*h2));
-    }
+//    if (fabs(x1-e[0])<=h1 && fabs(x2-e[1])<=h2)
+//    {
+//        sum += f1(t) * ((h1-fabs(x1-e[0]))/(h1*h1))*((h2-fabs(x2-e[1]))/(h2*h2));
+//    }
+//    if (fabs(x1-e[2])<=h1 && fabs(x2-e[3])<=h2)
+//    {
+//        sum += f2(t) * ((h1-fabs(x1-e[2]))/(h1*h1))*((h2-fabs(x2-e[3]))/(h2*h2));
+//    }
+//    if (fabs(x1-e[4])<=h1 && fabs(x2-e[5])<=h2)
+//    {
+//        sum += f3(t) * ((h1-fabs(x1-e[4]))/(h1*h1))*((h2-fabs(x2-e[5]))/(h2*h2));
+//    }
+
+    static double sgm1 = 10*h1;
+    static double sgm2 = 10*h2;
+    static double a1 = 2.0*M_1_PI*sgm1*sgm2;\
+    static double a2 = 2.0*sgm1*sgm2;
+    double b,c,d;
+
+    sum += f1(t) * (exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/a2)/a1);
+    sum += f2(t) * (exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/a2)/a1);
+    sum += f3(t) * (exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/a2)/a1);
+
     return sum;
 }
 
