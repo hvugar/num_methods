@@ -41,14 +41,13 @@ void Hiperbolic1DX::print(unsigned int i, const DoubleVector &e, const DoubleVec
 
 }
 
-void Hiperbolic1DX::calculateU(const DoubleVector &e, DoubleVector &ut)
+void Hiperbolic1DX::calculateU(const DoubleVector &e, DoubleVector &u)
 {
-    ut.clear();
-    ut.resize(N+1);
+    u.clear();
+    u.resize(N+1);
 
     DoubleVector u0(N+1);
     DoubleVector u1(N+1);
-    DoubleVector U1(N+1);
 
     DoubleVector a1;
     DoubleVector b1;
@@ -62,12 +61,12 @@ void Hiperbolic1DX::calculateU(const DoubleVector &e, DoubleVector &ut)
     d1.resize(N-1);
     x1.resize(N-1);
 
-    double alpha1 = -0.25;//-(lamda*a*a)*((ht*ht)/(hx*hx));
-    double beta1  = 1.5;//1.0 + (2.0*lamda*a*a*(ht*ht))/(hx*hx);
-    double alpha2 = 0.5;//(1.0-2.0*lamda)*a*a*((ht*ht)/(hx*hx));
-    double alpha3 = 0.25;//+(lamda*a*a)*((ht*ht)/(hx*hx));
+    double alpha1 = -(lamda*a*a)*((ht*ht)/(hx*hx));
+    double beta1  = 1.0 + (2.0*lamda*a*a*(ht*ht))/(hx*hx);
+    double alpha2 = (1.0-2.0*lamda)*a*a*((ht*ht)/(hx*hx));
+    double alpha3 = +(lamda*a*a)*((ht*ht)/(hx*hx));
 
-    for (unsigned int j=0; j<M; j++)
+    for (unsigned int j=0; j<=M-1; j++)
     {
         switch (j)
         {
@@ -77,16 +76,14 @@ void Hiperbolic1DX::calculateU(const DoubleVector &e, DoubleVector &ut)
             {
                 u0[i] = fi1(i*hx);
             }
-            Printer::printVector(u0, N/10);
         }
             break;
         case 1:
         {
             for (unsigned int i=0; i<=N; i++)
             {
-                u1[i] = u0[i] + ht*fi2(i*hx);
+                u1[i] = fi1(i*hx) + ht*fi2(i*hx);
             }
-            Printer::printVector(u1, N/10);
         }
             break;
         default:
@@ -96,7 +93,7 @@ void Hiperbolic1DX::calculateU(const DoubleVector &e, DoubleVector &ut)
                 a1[i-1] = alpha1;
                 b1[i-1] = beta1;
                 c1[i-1] = alpha1;
-                d1[i-1] = alpha2*(u1[i-1]-2.0*u1[i]+u1[i+1]) + 2.0*u1[i] + alpha3*(u0[i+1] - 2.0*u0[i] + u0[i-1]) + (ht*ht)*f(i*hx, j*ht);
+                d1[i-1] = alpha2*(u1[i-1]-2.0*u1[i]+u1[i+1]) + 2.0*u1[i] - u0[i] + alpha3*(u0[i+1] - 2.0*u0[i] + u0[i-1]) + (ht*ht)*f(i*hx, j*ht);
             }
 
             a1[0]   = 0.0;
@@ -105,23 +102,18 @@ void Hiperbolic1DX::calculateU(const DoubleVector &e, DoubleVector &ut)
             d1[N-2] -= alpha1 * mu2((j+1)*ht);
             TomasAlgorithm(a1, b1, c1, d1, x1);
 
-            ut[0] = mu1((j+1)*ht);
+            u[0] = mu1((j+1)*ht);
             for (unsigned int i=1; i<=N-1; i++)
             {
-                ut[i] = x1[i-1];
+                u[i] = x1[i-1];
             }
-            ut[N] = mu2((j+1)*ht);
+            u[N] = mu2((j+1)*ht);
 
             for (unsigned int i=0; i<=N; i++)
             {
                 u0[i] = u1[i];
-                u1[i] = ut[i];
-                U1[i] = u(i*hx, j*ht);
+                u1[i] = u[i];
             }
-
-            Printer::printVector(ut, N/10);
-            Printer::printVector(U1, N/10);
-            exit(-1);
         }
             break;
         }
@@ -133,15 +125,15 @@ void Hiperbolic1DX::calculateU(const DoubleVector &e, DoubleVector &ut)
     d1.clear();
     x1.clear();
 
-    Printer::printVector(ut, N/10);
+    Printer::printVector(u, N/10);
 }
 
-double Hiperbolic1DX::u(double x, double t)  { return x*x*x*x + t*t*t*t; }
-double Hiperbolic1DX::fi1(double x) { return u(x, 0.0); }
-double Hiperbolic1DX::fi2(double x) { return 0.0/*(u(x, +0.000001) - u(x, -0.000001))/(2.0*0.000001)*/; }
-double Hiperbolic1DX::mu1(double t) { return u(0.0, t); }
-double Hiperbolic1DX::mu2(double t) { return u(1.0, t); }
-double Hiperbolic1DX::f(double x, double t) { return 12.0*(t*t-x*x*a*a); }
+double Hiperbolic1DX::u(double x, double t)  { return x*x + t*t; }
+double Hiperbolic1DX::fi1(double x) { return x*x; }
+double Hiperbolic1DX::fi2(double x) { return 0.0; }
+double Hiperbolic1DX::mu1(double t) { return t*t; }
+double Hiperbolic1DX::mu2(double t) { return t*t+1.0; }
+double Hiperbolic1DX::f(double x, double t) { return 2.0-2.0*a*a; }
 
 void Hiperbolic1DX::main()
 {
