@@ -61,7 +61,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
         /* R1 minimization in direct of antigradient */
         alpha = minimize(x, s);
 
-        if (printer != NULL) printer->print(iterationCount, x, s, alpha, function());
+        if (printer != NULL) printer->print(iterationCount, x, g, alpha, function());
 
         distance = 0.0;
         double f1 = m_fn->fx(x);
