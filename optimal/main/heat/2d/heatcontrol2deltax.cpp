@@ -14,7 +14,6 @@ void HeatControl2DeltaX::main()
 
     //Optimal
     //e[0] = 0.70; e[1] = 0.20; e[2] = 0.50; e[3] = 0.80; e[4] = 0.20; e[5] = 0.30;
-
     //e[0] = 0.75; e[1] = 0.25; e[2] = 0.55; e[3] = 0.85; e[4] = 0.25; e[5] = 0.35;
     //e[0] = 0.65; e[1] = 0.15; e[2] = 0.45; e[3] = 0.75; e[4] = 0.15; e[5] = 0.25;
     e[0] = 0.40; e[1] = 0.60; e[2] = 0.70; e[3] = 0.60; e[4] = 0.60; e[5] = 0.20;
@@ -25,7 +24,7 @@ void HeatControl2DeltaX::main()
     g2.setEpsilon1(0.000000001);
     g2.setEpsilon2(0.000000001);
     g2.setGradientStep(0.000001);
-    g2.setR1MinimizeEpsilon(1.0, 0.001);
+    g2.setR1MinimizeEpsilon(1.0, 0.0001);
     g2.setPrinter(&hc);
     g2.setProjection(&hc);
     g2.setNormalize(true);
@@ -117,9 +116,9 @@ void HeatControl2DeltaX::gradient(const DoubleVector& e, DoubleVector& g, double
 {
     calculateU(e, uT);
     calculateP(e, g);
-    puts("-----------------------------------------------------------");
-    printf("e1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", e[0], e[1], e[2], e[3], e[4], e[5]);
-    printf("g1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", g[0], g[1], g[2], g[3], g[4], g[5]);
+    //puts("-----------------------------------------------------------");
+    //printf("e1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", e[0], e[1], e[2], e[3], e[4], e[5]);
+    //printf("g1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", g[0], g[1], g[2], g[3], g[4], g[5]);
     //calculateG2(e, g);
 }
 
@@ -445,19 +444,13 @@ void HeatControl2DeltaX::psiDerivative(double &psiX1, double &psiX2, double e1, 
     unsigned int i = (unsigned int)round(e1/h1);
     unsigned int j = (unsigned int)round(e2/h2);
 
-    if (i==0)
-        psiX1  = (psi[j][i+1] - psi[j][i])/h1;
-    else if (i==N1)
-        psiX1 = (psi[j][i] - psi[j][i-1])/h1;
-    else
-        psiX1 = (psi[j][i+1] - psi[j][i-1])/(2.0*h1);
+    if (i==0) psiX1  = (psi[j][i+1] - psi[j][i])/h1;
+    else if (i==N1) psiX1 = (psi[j][i] - psi[j][i-1])/h1;
+    else psiX1 = (psi[j][i+1] - psi[j][i-1])/(2.0*h1);
 
-    if (j==0)
-        psiX2 = (psi[j+1][i] - psi[j][i])/h2;
-    else if (j==N2)
-        psiX2 = (psi[j][i] - psi[j-1][i])/h2;
-    else
-        psiX2 = (psi[j+1][i] - psi[j-1][i])/(2.0*h2);
+    if (j==0) psiX2 = (psi[j+1][i] - psi[j][i])/h2;
+    else if (j==N2) psiX2 = (psi[j][i] - psi[j-1][i])/h2;
+    else psiX2 = (psi[j+1][i] - psi[j-1][i])/(2.0*h2);
 }
 
 void HeatControl2DeltaX::calculateG2(const DoubleVector &e, DoubleVector& g)
@@ -499,15 +492,14 @@ double HeatControl2DeltaX::fxt(unsigned int i, unsigned int j, unsigned k, const
 //        sum += f3(t) * ((h1-fabs(x1-e[4]))/(h1*h1))*((h2-fabs(x2-e[5]))/(h2*h2));
 //    }
 
-    static double sgm1 = 10*h1;
-    static double sgm2 = 10*h2;
-    static double a1 = 2.0*M_1_PI*sgm1*sgm2;\
-    static double a2 = 2.0*sgm1*sgm2;
-    double b,c,d;
+    double sgm1 = 10*h1;
+    double sgm2 = 10*h2;
+    double a = 1.0/(2.0*M_PI*sgm1*sgm2);\
+    double b = 2.0*sgm1*sgm2;
 
-    sum += f1(t) * (exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/a2)/a1);
-    sum += f2(t) * (exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/a2)/a1);
-    sum += f3(t) * (exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/a2)/a1);
+    sum += f1(t) * a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b);
+    sum += f2(t) * a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/b);
+    sum += f3(t) * a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/b);
 
     return sum;
 }
@@ -525,11 +517,13 @@ void HeatControl2DeltaX::initialize()
     //write("optimal.txt", U);
 }
 
-void HeatControl2DeltaX::print(unsigned int i, const DoubleVector& e, const DoubleVector &gradient, double alpha, RnFunction* fn) const
+void HeatControl2DeltaX::print(unsigned int i, const DoubleVector& e, const DoubleVector &g, double alpha, RnFunction* fn) const
 {
     HeatControl2DeltaX *hc = dynamic_cast<HeatControl2DeltaX*>(fn);
     printf("J[%d]: %.16f\n", i, hc->fx(e));
-    //printf("e2: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", e[0], e[1], e[2], e[3], e[4], e[5]);
+    puts("-----------------------------------------------------------");
+    printf("e1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", e[0], e[1], e[2], e[3], e[4], e[5]);
+    printf("g1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", g[0], g[1], g[2], g[3], g[4], g[5]);
 
     //    hc->calculateU(e, hc->uT);
     //    char buffer [12];
@@ -567,9 +561,7 @@ void HeatControl2DeltaX::test()
 {
     DoubleVector e(2*L);
     //Optimal
-    e[0] = 0.48617228; e[1] = 0.75739841;
-    e[2] = 0.99550440; e[3] = 0.73459089;
-    e[4] = 0.67315450; e[5] = 0.21889750;
+    e[0] = 0.70; e[1] = 0.20; e[2] = 0.50; e[3] = 0.80; e[4] = 0.20; e[5] = 0.30;
 
     for (unsigned int i=0; i<=N1; i++)
     {

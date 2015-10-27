@@ -76,9 +76,9 @@ private:
     double pm3(double x1, double t) { return 0.0; }
     double pm4(double x1, double t) { return 0.0; }
 
-    double f1(double t) { return t+2.0; }
-    double f2(double t) { return t*t+1.0; }
-    double f3(double t) { return t*t*t+3.0; }
+    double f1(double t) { return t; }
+    double f2(double t) { return t*t; }
+    double f3(double t) { return t*t*t; }
 
     void write(const char* fileName, const DoubleMatrix& m);
 };

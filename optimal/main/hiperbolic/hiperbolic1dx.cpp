@@ -372,7 +372,7 @@ double Hiperbolic1DX::fxt(unsigned int i, unsigned int j, const DoubleVector &e)
 //        sum += f3(t) * ((hx-fabs(x-e[2]))/(hx*hx));
 //    }
 
-    double sgm = 4.0*hx;
+    double sgm = 10.0*hx;
     double a1 = 1.0 / (sgm*sqrt(2.0*M_PI));
 
     sum += f1(t) * a1*exp(-((x-e[0])*(x-e[0]))/(2.0*sgm*sgm));
@@ -389,11 +389,11 @@ double Hiperbolic1DX::pmu2(double t) const { return 0.0; }
 
 void Hiperbolic1DX::main()
 {
-    Hiperbolic1DX hc(1000, 1000);
-    //hc.test(2);
+    Hiperbolic1DX hc(100, 100);
+//    hc.test(2);
 
     DoubleVector e(hc.L);
-    e[0] = 0.1; e[1] = 0.8; e[2] = 0.4;
+    e[0] = 0.6; e[1] = 0.9; e[2] = 0.3;
     //e[0] = 0.2; e[1] = 0.4; e[2] = 0.7;
 
     //DoubleVector u;
@@ -409,7 +409,7 @@ void Hiperbolic1DX::main()
     g2.setEpsilon1(0.000000001);
     g2.setEpsilon2(0.000000001);
     g2.setGradientStep(0.000001);
-    g2.setR1MinimizeEpsilon(1.0, 0.01);
+    g2.setR1MinimizeEpsilon(1.0, 0.00001);
     g2.setPrinter(&hc);
     g2.setProjection(&hc);
     g2.setNormalize(true);
@@ -418,7 +418,7 @@ void Hiperbolic1DX::main()
 
 void Hiperbolic1DX::test(int j)
 {
-    DoubleVector e(2*L);
+    DoubleVector e(L);
     //Optimal
     e[0] = 0.2; e[1] = 0.4; e[2] = 0.7;
 
