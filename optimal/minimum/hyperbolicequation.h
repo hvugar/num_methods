@@ -35,4 +35,36 @@ private:
     double hx;
 };
 
+struct MINIMUMSHARED_EXPORT HyperbolicEquation2D
+{
+    HyperbolicEquation2D(double t0 = 0.0, double t1 = 1.0, double x10 = 0.0, double x11 = 1.0, double x20 = 0.0, double x21 = 1.0, double a1 = 1.0, double a2 = 1.0, unsigned int M = 100, unsigned int N1 = 100, unsigned int N2 = 100);
+    virtual ~HyperbolicEquation2D();
+
+    virtual double fi(unsigned int i, unsigned int j) const = 0;
+    virtual double m1(unsigned int j, unsigned int k) const = 0;
+    virtual double m2(unsigned int j, unsigned int k) const = 0;
+    virtual double m3(unsigned int i, unsigned int k) const = 0;
+    virtual double m4(unsigned int i, unsigned int k) const = 0;
+    virtual double f(unsigned int i, unsigned int j, unsigned int k) const = 0;
+
+    void calculateImplicitly(DoubleMatrix& m);
+    void calculateExplicitly(DoubleMatrix& m);
+
+private:
+    double t0;
+    double t1;
+    double x10;
+    double x11;
+    double x20;
+    double x21;
+    double a1;
+    double a2;
+    unsigned int M;
+    unsigned int N1;
+    unsigned int N2;
+    double ht;
+    double h1;
+    double h2;
+};
+
 #endif // HYPERBOLICEQUATION_H
