@@ -29,7 +29,8 @@ SOURCES += main.cpp \
     heat/2d/heatcontrol2delta.cpp \
     heat/2d/heatcontrol2deltaf.cpp \
     heat/2d/heatcontrol2deltax.cpp \
-    hiperbolic/hiperbolic1dx.cpp
+    hiperbolic/hiperbolic1dx.cpp \
+    heat/1d/heatcontrol1.cpp
 
 HEADERS += \
     utils.h \
@@ -50,4 +51,5 @@ HEADERS += \
     heat/2d/heatcontrol2delta.h \
     heat/2d/heatcontrol2deltaf.h \
     heat/2d/heatcontrol2deltax.h \
-    hiperbolic/hiperbolic1dx.h
+    hiperbolic/hiperbolic1dx.h \
+    heat/1d/heatcontrol1.h

@@ -23,8 +23,8 @@ SOURCES += \
     rungekutta.cpp \
     tomasmethod.cpp \
     integral.cpp \
-    heatequation.cpp \
-    hyperbolicequation.cpp
+    hyperbolicequation.cpp \
+    parabolicequation.cpp
 
 HEADERS += global.h \
     function.h \
@@ -41,5 +41,5 @@ HEADERS += global.h \
     rungekutta.h \
     tomasmethod.h \
     integral.h \
-    heatequation.h \
-    hyperbolicequation.h
+    hyperbolicequation.h \
+    parabolicequation.h

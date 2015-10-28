@@ -1,37 +1,40 @@
-#include "heatequation.h"
+#include "parabolicequation.h"
 #include "tomasmethod.h"
 
-HeatEquation::HeatEquation()
+ParabolicEquation::ParabolicEquation(double t0, double t1, double x0, double x1, double a, unsigned int M, unsigned int N)
+    : t0(t0), t1(t1), x0(x0), x1(x1 ), a(a), M(M), N(N)
 {
-    a = 1.0;
+    ht = (t1 - t0) / M;
+    hx = (x1 - x0) / N;
 }
 
-HeatEquation::~HeatEquation()
+ParabolicEquation::~ParabolicEquation()
 {
 }
 
-void HeatEquation::setLengthInterval(double x0, double x1)
+void ParabolicEquation::setLengthInterval(double x0, double x1)
 {
     this->x0 = x0;
     this->x1 = x1;
+    hx = (x1 - x0) / N;
 }
 
-void HeatEquation::setTimeInterval(double t0, double t1)
+void ParabolicEquation::setTimeInterval(double t0, double t1)
 {
     this->t0 = t0;
     this->t1 = t1;
+    ht = (t1 - t0) / M;
 }
 
-void HeatEquation::setPartNumber(unsigned int M, unsigned int N)
+void ParabolicEquation::setPartNumber(unsigned int M, unsigned int N)
 {
     this->M = M;
     this->N = N;
     this->ht = (t1-t0)/M;
     this->hx = (x1-x0)/N;
-    this->C = (M+1)*(N+1);
 }
 
-void HeatEquation::calculate_u(DoubleVector &u)
+void ParabolicEquation::calculateU(DoubleVector &u)
 {
     u.clear();
     u.resize(N+1);
@@ -57,7 +60,7 @@ void HeatEquation::calculate_u(DoubleVector &u)
         {
             for (unsigned int i=0; i<=N; i++)
             {
-                u[i] = fi(i*hx, i);
+                u[i] = fi(i, 0);
             }
         }
         else
@@ -67,23 +70,22 @@ void HeatEquation::calculate_u(DoubleVector &u)
                 a1[i-1] = alpha;
                 b1[i-1] = beta;
                 c1[i-1] = alpha;
-                d1[i-1] = u[i] + ht * f(i*hx, i, j*ht, j);
-                //d1[i-1] = u1[i] + ht * f[j*(N+1)+i];
+                d1[i-1] = u[i] + ht * f(i, 0.0,  j, 0.0);
             }
 
             a1[0]   = 0.0;
             c1[N-2] = 0.0;
-            d1[0]   -= alpha * m1(j*ht, j);
-            d1[N-2] -= alpha * m2(j*ht, j);
+            d1[0]   -= alpha * m1(j, 0.0);
+            d1[N-2] -= alpha * m2(j, 0.0);
 
             TomasAlgorithm(a1, b1, c1, d1, x1);
 
-            u[0] = m1(j*ht, j);
+            u[0] = m1(j, 0.0);
             for (unsigned int i=1; i<=N-1; i++)
             {
                 u[i] = x1[i-1];
             }
-            u[N] = m2(j*ht, j);
+            u[N] = m2(j, 0.0);
         }
     }
 
@@ -93,80 +95,30 @@ void HeatEquation::calculate_u(DoubleVector &u)
     d1.clear();
     x1.clear();
 }
-
-void HeatEquation::calculate_u1(DoubleVector &u1)
-{
-    u1.clear();
-    u1.resize(N+1);
-
-    DoubleVector a1;
-    DoubleVector b1;
-    DoubleVector c1;
-    DoubleVector d1;
-    DoubleVector x1;
-
-    a1.resize(N-1);
-    b1.resize(N-1);
-    c1.resize(N-1);
-    d1.resize(N-1);
-    x1.resize(N-1);
-
-    double alpha = (a*ht)/(hx*hx);
-    double beta  = 1.0 - (2.0*a*ht)/(hx*hx);
-
-    for (unsigned int k=0; k<=M; k++)
-    {
-        unsigned int j=M-k;
-
-        if (j == M)
-        {
-            for (unsigned int i=0; i<=N; i++)
-            {
-                u1[i] = fi(i*hx, i);
-            }
-        }
-        else
-        {
-            for (unsigned int i=1; i<=N-1; i++)
-            {
-                a1[i-1] = alpha;
-                b1[i-1] = beta;
-                c1[i-1] = alpha;
-                d1[i-1] = u1[i] - ht * f(i*hx, i, j*ht, j);
-            }
-
-            a1[0]   = 0.0;
-            c1[N-2] = 0.0;
-            d1[0]   -= alpha * m1(j*ht, j);
-            d1[N-2] -= alpha * m2(j*ht, j);
-
-            TomasAlgorithm(a1, b1, c1, d1, x1);
-
-            u1[0] = m1(j*ht, j);
-            for (unsigned int i=1; i<=N-1; i++)
-            {
-                u1[i] = x1[i-1];
-            }
-            u1[N] = m2(j*ht, j);
-        }
-    }
-
-    a1.clear();
-    b1.clear();
-    c1.clear();
-    d1.clear();
-    x1.clear();
-}
-
 
 ///////////////////////////////////////////////////////////////
 
-HeatEquation2D::HeatEquation2D()
+ConjuctionParabolicEquation::ConjuctionParabolicEquation(double t0, double t1, double x0, double x1, double a, unsigned int M, unsigned int N)
+    : t0(t0), t1(t1), x0(x0), x1(x1 ), a(a), M(M), N(N)
+{}
+
+ConjuctionParabolicEquation::~ConjuctionParabolicEquation()
+{}
+
+void ConjuctionParabolicEquation::calculateU(DoubleVector &u)
+{}
+
+///////////////////////////////////////////////////////////////
+
+ParabolicEquation2D::ParabolicEquation2D(double t0, double t1, double x10, double x11, double x20, double x21, double a1, double a2, unsigned int M, unsigned int N1, unsigned int N2)
+    : t0(t0), t1(t1), x10(x10), x11(x11), x20(x20), x21(x21), a1(a1), a2(a2), M(M), N1(N1), N2(N2)
 {
-    this->a1 = this->a2 = 1.0;
+    this->ht = (t1 - t0)   / M;
+    this->h1 = (x11 - x10) / N1;
+    this->h2 = (x21 - x20) / N2;
 }
 
-void HeatEquation2D::setBorders(double t0, double t1, double x10, double x11, double x20, double x21)
+void ParabolicEquation2D::setBorders(double t0, double t1, double x10, double x11, double x20, double x21)
 {
     this->t0 = t0;
     this->t1 = t1;
@@ -176,7 +128,7 @@ void HeatEquation2D::setBorders(double t0, double t1, double x10, double x11, do
     this->x21 = x21;
 }
 
-void HeatEquation2D::setPartNumbers(unsigned int N1, unsigned int N2, unsigned M)
+void ParabolicEquation2D::setPartNumbers(unsigned int N1, unsigned int N2, unsigned M)
 {
     this->N1 = N1;
     this->N2 = N2;
@@ -186,7 +138,7 @@ void HeatEquation2D::setPartNumbers(unsigned int N1, unsigned int N2, unsigned M
     this->ht = (t1-t0)/M;
 }
 
-void HeatEquation2D::calculate(DoubleMatrix& u)
+void ParabolicEquation2D::calculate(DoubleMatrix& u)
 {
     DoubleMatrix u0;
     DoubleMatrix u1;
@@ -320,7 +272,7 @@ void HeatEquation2D::calculate(DoubleMatrix& u)
     u = u0;
 }
 
-void HeatEquation2D::calculateBack(DoubleMatrix& u)
+void ParabolicEquation2D::calculateBack(DoubleMatrix& u)
 {
     u.Clear();
 

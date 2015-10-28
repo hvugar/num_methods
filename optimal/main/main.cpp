@@ -9,7 +9,7 @@
 #include <gridmethod.h>
 #include <rungekutta.h>
 #include <doublevector.h>
-#include <heatequation.h>
+#include <parabolicequation.h>
 
 #include "cfunction1.h"
 #include "cfunction2.h"
@@ -24,6 +24,7 @@
 #include "utils.h"
 
 #include "heat/1d/heatcontrol.h"
+#include "heat/1d/heatcontrol1.h"
 #include "heat/1d/heatcontroldeltaf.h"
 #include "heat/1d/heatcontroldeltax.h"
 #include "heat/2d/heatcontrol2d.h"
@@ -36,7 +37,11 @@
 int main()
 {
 //    HeatControl2DeltaX::main();
-    Hiperbolic1DX::main();
+//    Hiperbolic1DX::main();
+    HeatControl1 hc;
+    DoubleVector u;
+    hc.calculateU(u);
+    Printer::printVector(u, 100);
 
     return 0;
 }
