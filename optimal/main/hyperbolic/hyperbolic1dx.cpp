@@ -1,10 +1,10 @@
-#include "hiperbolic1dx.h"
+#include "hyperbolic1dx.h"
 #include <tomasmethod.h>
 #include <gradient_cjt.h>
 #include <stdlib.h>
 #include <math.h>
 
-Hiperbolic1DX::Hiperbolic1DX(unsigned int M, unsigned int N)
+Hyperbolic1DX::Hyperbolic1DX(unsigned int M, unsigned int N)
 {
     t0 = 0.0;
     t1 = 1.0;
@@ -21,25 +21,25 @@ Hiperbolic1DX::Hiperbolic1DX(unsigned int M, unsigned int N)
     initialize();
 }
 
-void Hiperbolic1DX::initialize()
+void Hyperbolic1DX::initialize()
 {
     DoubleVector E(L);
     E[0] = 0.20; E[1] = 0.40; E[2] = 0.70;
     calculateU(E, U);
     puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
-    Printer::printVector(U, N/10);
+    Printer::printVector(U);
     puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
     printf("eo: %12.8f %12.8f %12.8f\n", E[0], E[1], E[2]);
 
 }
 
-double Hiperbolic1DX::fx(const DoubleVector &e)
+double Hyperbolic1DX::fx(const DoubleVector &e)
 {
     calculateU(e, uT);
     return calculateIntegral(e); //calculateNorm(e);
 }
 
-double Hiperbolic1DX::calculateIntegral(const DoubleVector& e)
+double Hyperbolic1DX::calculateIntegral(const DoubleVector& e)
 {
     double sum = 0.0;
     for (unsigned int i=0; i<N; i++)
@@ -54,7 +54,7 @@ double Hiperbolic1DX::calculateIntegral(const DoubleVector& e)
     return 0.5*hx*sum;
 }
 
-double Hiperbolic1DX::calculateNorm(const DoubleVector& e)
+double Hyperbolic1DX::calculateNorm(const DoubleVector& e)
 {
     double norm = 0.0;
 //    for (unsigned int j=0; j<M; j++)
@@ -77,7 +77,7 @@ double Hiperbolic1DX::calculateNorm(const DoubleVector& e)
     return (hx*ht)*0.25*norm;
 }
 
-void Hiperbolic1DX::gradient(const DoubleVector &e, DoubleVector &g, double gradient_step)
+void Hyperbolic1DX::gradient(const DoubleVector &e, DoubleVector &g, double gradient_step)
 {
     calculateU(e, uT);
     calculateP(e, g);
@@ -86,7 +86,7 @@ void Hiperbolic1DX::gradient(const DoubleVector &e, DoubleVector &g, double grad
 //    calculateG1(e, g);
 }
 
-void Hiperbolic1DX::project(DoubleVector &e, int k)
+void Hyperbolic1DX::project(DoubleVector &e, int k)
 {
     for (unsigned int i=0; i<e.size(); i++)
     {
@@ -95,15 +95,15 @@ void Hiperbolic1DX::project(DoubleVector &e, int k)
     }
 }
 
-void Hiperbolic1DX::print(unsigned int i, const DoubleVector &e, const DoubleVector &g, double a, RnFunction *fn) const
+void Hyperbolic1DX::print(unsigned int i, const DoubleVector &e, const DoubleVector &g, double a, RnFunction *fn) const
 {
-    Hiperbolic1DX *hc = dynamic_cast<Hiperbolic1DX*>(fn);
+    Hyperbolic1DX *hc = dynamic_cast<Hyperbolic1DX*>(fn);
     printf("J[%d]: %.16f\n", i, hc->fx(e));
     printf("e1: %12.8f %12.8f %12.8f\n", e[0], e[1], e[2]);
     printf("g1: %12.8f %12.8f %12.8f\n", g[0], g[1], g[2]);
 }
 
-void Hiperbolic1DX::calculateU(const DoubleVector &e, DoubleVector &u)
+void Hyperbolic1DX::calculateU(const DoubleVector &e, DoubleVector &u)
 {
     u.clear();
     u.resize(N+1);
@@ -178,7 +178,7 @@ void Hiperbolic1DX::calculateU(const DoubleVector &e, DoubleVector &u)
     //Printer::printVector(u, N/10);
 }
 
-void Hiperbolic1DX::calculateP(const DoubleVector &e, DoubleVector &g)
+void Hyperbolic1DX::calculateP(const DoubleVector &e, DoubleVector &g)
 {
     DoubleVector p(N+1);
     DoubleVector p0(N+1);
@@ -260,7 +260,7 @@ void Hiperbolic1DX::calculateP(const DoubleVector &e, DoubleVector &g)
     //Printer::printVector(p, N/10);
 }
 
-void Hiperbolic1DX::calculateG(const DoubleVector& e, const DoubleVector& psi, DoubleVector& g, unsigned int j)
+void Hyperbolic1DX::calculateG(const DoubleVector& e, const DoubleVector& psi, DoubleVector& g, unsigned int j)
 {
     double psiX;
     if (j==0 || j==M)
@@ -290,7 +290,7 @@ void Hiperbolic1DX::calculateG(const DoubleVector& e, const DoubleVector& psi, D
     }
 }
 
-void Hiperbolic1DX::calculateG1(const DoubleVector &e, DoubleVector &g)
+void Hyperbolic1DX::calculateG1(const DoubleVector &e, DoubleVector &g)
 {
     double h = 0.000001;
     DoubleVector E(L);
@@ -308,7 +308,7 @@ void Hiperbolic1DX::calculateG1(const DoubleVector &e, DoubleVector &g)
     printf("g2: %12.8f, %12.8f %12.8f\n", g[0], g[1], g[2]);
 }
 
-void Hiperbolic1DX::psiDerivative(double &psiX, double e, const DoubleVector& psi)
+void Hyperbolic1DX::psiDerivative(double &psiX, double e, const DoubleVector& psi)
 {
     unsigned int i = (unsigned int)round(e/hx);
 
@@ -320,37 +320,37 @@ void Hiperbolic1DX::psiDerivative(double &psiX, double e, const DoubleVector& ps
         psiX = (psi[i+1] - psi[i-1])/(2.0*hx);
 }
 
-double Hiperbolic1DX::u(double x, double t)
+double Hyperbolic1DX::u(double x, double t)
 {
     return x*x + t*t;
 }
 
-double Hiperbolic1DX::fi1(double x)
+double Hyperbolic1DX::fi1(double x)
 {
     return x*x;
 }
 
-double Hiperbolic1DX::fi2(double x)
+double Hyperbolic1DX::fi2(double x)
 {
     return 0.0;
 }
 
-double Hiperbolic1DX::mu1(double t)
+double Hyperbolic1DX::mu1(double t)
 {
     return t*t;
 }
 
-double Hiperbolic1DX::mu2(double t)
+double Hyperbolic1DX::mu2(double t)
 {
     return t*t+1.0;
 }
 
-double Hiperbolic1DX::f(double x, double t)
+double Hyperbolic1DX::f(double x, double t)
 {
     return 2.0-2.0*a*a;
 }
 
-double Hiperbolic1DX::fxt(unsigned int i, unsigned int j, const DoubleVector &e)
+double Hyperbolic1DX::fxt(unsigned int i, unsigned int j, const DoubleVector &e)
 {
     double x = i*hx;
     double t = j*ht;
@@ -382,14 +382,14 @@ double Hiperbolic1DX::fxt(unsigned int i, unsigned int j, const DoubleVector &e)
     return sum;
 }
 
-double Hiperbolic1DX::pfi1(double x) const { return 0.0; }
-double Hiperbolic1DX::pfi2(unsigned int i) const { return 2.0*(uT[i] - U[i]); }
-double Hiperbolic1DX::pmu1(double t) const { return 0.0; }
-double Hiperbolic1DX::pmu2(double t) const { return 0.0; }
+double Hyperbolic1DX::pfi1(double x) const { return 0.0; }
+double Hyperbolic1DX::pfi2(unsigned int i) const { return 2.0*(uT[i] - U[i]); }
+double Hyperbolic1DX::pmu1(double t) const { return 0.0; }
+double Hyperbolic1DX::pmu2(double t) const { return 0.0; }
 
-void Hiperbolic1DX::main()
+void Hyperbolic1DX::main()
 {
-    Hiperbolic1DX hc(100, 100);
+    Hyperbolic1DX hc(100, 100);
 //    hc.test(2);
 
     DoubleVector e(hc.L);
@@ -416,7 +416,7 @@ void Hiperbolic1DX::main()
     g2.calculate(e);
 }
 
-void Hiperbolic1DX::test(int j)
+void Hyperbolic1DX::test(int j)
 {
     DoubleVector e(L);
     //Optimal

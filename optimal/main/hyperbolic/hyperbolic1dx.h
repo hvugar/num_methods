@@ -6,10 +6,10 @@
 #include <projection.h>
 #include <doublevector.h>
 
-class Hiperbolic1DX : public RnFunction, Projection, Printer
+class Hyperbolic1DX : public RnFunction, Projection, Printer
 {
 public:
-    Hiperbolic1DX(unsigned int M, unsigned int N);
+    Hyperbolic1DX(unsigned int M, unsigned int N);
 
     virtual double fx(const DoubleVector& x);
     virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step=0.000001);

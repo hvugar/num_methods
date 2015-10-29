@@ -9,8 +9,8 @@ struct MINIMUMSHARED_EXPORT Printer
 {
     virtual void print(unsigned int iteration, const DoubleVector& x, const DoubleVector &gradient, double alpha, RnFunction* fn) const = 0;
 
-    static void printMatrix(const DoubleMatrix& x, int m, int n, FILE* f = stdout, const char* s=NULL);
-    static void printVector(const DoubleVector& x, int n, FILE* f = stdout, const char* s=NULL);
+    static void printMatrix(const DoubleMatrix& x, unsigned int m = 10, unsigned int n = 10, const char* s = NULL, FILE* f = stdout);
+    static void printVector(const DoubleVector& x, unsigned int n = 10, const char* s=NULL, FILE* f = stdout);
 };
 
 #endif // PRINTER_H

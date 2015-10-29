@@ -32,16 +32,16 @@
 #include "heat/2d/heatcontrol2deltaf.h"
 #include "heat/2d/heatcontrol2deltax.h"
 
-#include "hiperbolic/hiperbolic1dx.h"
+#include "hyperbolic/hyperbolic1dx.h"
 
 int main()
 {
 //    HeatControl2DeltaX::main();
-//    Hiperbolic1DX::main();
-    HeatControl1 hc;
-    DoubleVector u;
-    hc.calculateU(u);
-    Printer::printVector(u, 100);
+    Hyperbolic1DX::main();
+//    HeatControl1 hc;
+//    DoubleVector u;
+//    hc.calculateU(u);
+//    Printer::printVector(u);
 
     return 0;
 }
