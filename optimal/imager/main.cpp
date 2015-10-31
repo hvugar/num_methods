@@ -19,14 +19,14 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv, false);
 
-    int width = 101;
-    int height = 101;
+    int width = 2001;
+    int height = 2001;
     QPixmap pixmap(QSize(width, height));
     pixmap.fill(Qt::white);
     QPainter painter(&pixmap);
     painter.drawPoint(0,0);
 
-    QFile file("optimal.txt");
+    QFile file("data2000.txt");
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream in(&file);
 
@@ -63,6 +63,8 @@ int main(int argc, char *argv[])
         for (int i=0; i<m[j].size(); i++)
         {
             double u = m[j][i];
+
+            //unsigned int c = (u-minimum)*(maximum-minimum)*0xffffff;
             double ratio = 2.0 * (u-minimum) / (maximum - minimum);
             int b = int(MAX(0, 255*(1 - ratio)));
             int r = int(MAX(0, 255*(ratio - 1)));

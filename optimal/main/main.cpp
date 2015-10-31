@@ -10,6 +10,7 @@
 #include <rungekutta.h>
 #include <doublevector.h>
 #include <parabolicequation.h>
+#include <hyperbolicequation.h>
 
 #include "cfunction1.h"
 #include "cfunction2.h"
@@ -34,10 +35,26 @@
 
 #include "hyperbolic/hyperbolic1dx.h"
 
+struct HyperbolicEquation2D1 : public HyperbolicEquation2D
+{
+    HyperbolicEquation2D1(double t0, double t1, double x10, double x11, double x20, double x21, double a1, double a2, unsigned int M, unsigned int N1, unsigned int N2);
+    virtual ~HyperbolicEquation2D1();
+
+    virtual double fi1(unsigned int i, unsigned int j) const { return u(i*h1, j*h2, 0.0); }
+    virtual double fi2(unsigned int i, unsigned int j) const { return 0.0; }
+    virtual double m1(unsigned int j, unsigned int k) const { return u(x10, j*h2, k*ht); }
+    virtual double m2(unsigned int j, unsigned int k) const { return u(x11, j*h2, k*ht); }
+    virtual double m3(unsigned int i, unsigned int k) const { return u(i*h1, x20, k*ht); }
+    virtual double m4(unsigned int i, unsigned int k) const { return u(i*h1, x21, k*ht); }
+    virtual double f(unsigned int i, unsigned int j, unsigned int k) const { return 0.0; }
+
+    double u(double x1, double x2, double t) const { return x1*x1*x1 + x2*x2*x2 + t*t*t; }
+};
+
 int main()
 {
 //    HeatControl2DeltaX::main();
-    Hyperbolic1DX::main();
+//    Hyperbolic1DX::main();
 //    HeatControl1 hc;
 //    DoubleVector u;
 //    hc.calculateU(u);
