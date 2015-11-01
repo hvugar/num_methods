@@ -119,8 +119,17 @@ void DoubleVector::EuclideanNormalize(DoubleVector& p)
     p.EuclideanNormalize();
 }
 
-DoubleMatrix::DoubleMatrix() : std::vector<DoubleVector>()
-{}
+/**
+ * @brief DoubleMatrix::DoubleMatrix
+ * @param m Number of rows
+ * @param n Number of columns in row
+ * @param value
+ */
+DoubleMatrix::DoubleMatrix(unsigned int m, unsigned int n, double value) : std::vector<DoubleVector>()
+{
+    resize(m);
+    for (unsigned int j=0; j<m; j++) this[j].resize(n);
+}
 
 DoubleMatrix::~DoubleMatrix()
 {}
@@ -134,14 +143,19 @@ void DoubleMatrix::Clear()
     this->clear();
 }
 
-void DoubleMatrix::Resize(unsigned int Ny, unsigned Nx)
+/**
+ * @brief DoubleMatrix::Resize
+ * @param m Number of rows
+ * @param n Number of columns in row
+ */
+void DoubleMatrix::Resize(unsigned int m, unsigned n)
 {
     Clear();
 
-    resize(Ny);
+    resize(m);
     for (unsigned int j=0; j<size(); j++)
     {
-        this[j].resize(Nx);
+        this[j].resize(n);
     }
 }
 

@@ -51,7 +51,21 @@ HyperbolicEquation2D::~HyperbolicEquation2D()
 
 void HyperbolicEquation2D::calculateImplicitly(DoubleMatrix& m)
 {
+    DoubleMatrix u0(N2+1, N1+1);
+    DoubleMatrix u1(N2+1, N1+1);
+    DoubleMatrix u2(N2+1, N1+1);
 
+    for (unsigned int k=0; k<M; k++)
+    {
+        if (k==0)
+        {
+
+        }
+        else
+        {
+
+        }
+    }
 }
 
 void HyperbolicEquation2D::calculateExplicitly(DoubleMatrix& m)

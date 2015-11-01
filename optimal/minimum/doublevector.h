@@ -35,10 +35,10 @@ public:
 class MINIMUMSHARED_EXPORT DoubleMatrix : public std::vector<DoubleVector>
 {
 public:
-    DoubleMatrix();
+    DoubleMatrix(unsigned int m = 0, unsigned int n = 0, double value = 0.0);
     virtual ~DoubleMatrix();
     void Clear();
-    void Resize(unsigned int Ny, unsigned Nx);
+    void Resize(unsigned int m, unsigned n);
 };
 
 class MINIMUMSHARED_EXPORT DoubleCube : public std::vector<DoubleMatrix>
