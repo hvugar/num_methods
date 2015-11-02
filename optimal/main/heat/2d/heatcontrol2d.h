@@ -57,12 +57,6 @@ private:
 
     double fxt(double x1, double x2, double t);
 
-//    R2Function *_fi;
-//    R2Function *_m1;
-//    R2Function *_m2;
-//    R2Function *_m3;
-//    R2Function *_m4;
-
     virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
 };
 

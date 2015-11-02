@@ -1,6 +1,5 @@
 #include "heatcontrol1.h"
 
-
 HeatControl1::HeatControl1() : RnFunction(), ParabolicEquation(0.0, 1.0, 0.0, 1.0, 1.0, 1000, 1000)
 {
 }

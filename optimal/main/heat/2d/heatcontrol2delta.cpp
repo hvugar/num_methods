@@ -126,11 +126,11 @@ void HeatControl2Delta::gradient(const DoubleVector& e, DoubleVector& g, double 
 
 void HeatControl2Delta::calculateU(const DoubleVector &e, DoubleMatrix& u)
 {
-    DoubleMatrix u0;
-    DoubleMatrix u1;
+    DoubleMatrix u0(N2+1, N1+1);
+    DoubleMatrix u1(N2+1, N1+1);
 
-    u0.resize(N2+1); for (unsigned int j=0; j<=N2; j++) u0[j].resize(N1+1);
-    u1.resize(N2+1); for (unsigned int j=0; j<=N2; j++) u1[j].resize(N1+1);
+//    u0.resize(N2+1); for (unsigned int j=0; j<=N2; j++) u0[j].resize(N1+1);
+//    u1.resize(N2+1); for (unsigned int j=0; j<=N2; j++) u1[j].resize(N1+1);
 
     double alpha1 = 0;
     double beta1  = 0;

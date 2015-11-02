@@ -1,8 +1,8 @@
 #include "parabolicequation.h"
 #include "tomasmethod.h"
 
-ParabolicEquation::ParabolicEquation(double t0, double t1, double x0, double x1, double a, unsigned int M, unsigned int N)
-    : t0(t0), t1(t1), x0(x0), x1(x1 ), a(a), M(M), N(N)
+ParabolicEquation::ParabolicEquation(double t0, double t1, double x0, double x1, unsigned int M, unsigned int N, double a)
+    : t0(t0), t1(t1), x0(x0), x1(x1 ), M(M), N(N), a(a)
 {
     ht = (t1 - t0) / M;
     hx = (x1 - x0) / N;
@@ -60,7 +60,7 @@ void ParabolicEquation::calculateU(DoubleVector &u)
         {
             for (unsigned int i=0; i<=N; i++)
             {
-                u[i] = fi(i, 0);
+                u[i] = fi(i);
             }
         }
         else
@@ -70,22 +70,22 @@ void ParabolicEquation::calculateU(DoubleVector &u)
                 a1[i-1] = alpha;
                 b1[i-1] = beta;
                 c1[i-1] = alpha;
-                d1[i-1] = u[i] + ht * f(i, 0.0,  j, 0.0);
+                d1[i-1] = u[i] + ht * f(i, j);
             }
 
             a1[0]   = 0.0;
             c1[N-2] = 0.0;
-            d1[0]   -= alpha * m1(j, 0.0);
-            d1[N-2] -= alpha * m2(j, 0.0);
+            d1[0]   -= alpha * m1(j);
+            d1[N-2] -= alpha * m2(j);
 
             TomasAlgorithm(a1, b1, c1, d1, x1);
 
-            u[0] = m1(j, 0.0);
+            u[0] = m1(j);
             for (unsigned int i=1; i<=N-1; i++)
             {
                 u[i] = x1[i-1];
             }
-            u[N] = m2(j, 0.0);
+            u[N] = m2(j);
         }
     }
 
@@ -98,20 +98,8 @@ void ParabolicEquation::calculateU(DoubleVector &u)
 
 ///////////////////////////////////////////////////////////////
 
-ConjuctionParabolicEquation::ConjuctionParabolicEquation(double t0, double t1, double x0, double x1, double a, unsigned int M, unsigned int N)
-    : t0(t0), t1(t1), x0(x0), x1(x1 ), a(a), M(M), N(N)
-{}
-
-ConjuctionParabolicEquation::~ConjuctionParabolicEquation()
-{}
-
-void ConjuctionParabolicEquation::calculateU(DoubleVector &u)
-{}
-
-///////////////////////////////////////////////////////////////
-
-ParabolicEquation2D::ParabolicEquation2D(double t0, double t1, double x10, double x11, double x20, double x21, double a1, double a2, unsigned int M, unsigned int N1, unsigned int N2)
-    : t0(t0), t1(t1), x10(x10), x11(x11), x20(x20), x21(x21), a1(a1), a2(a2), M(M), N1(N1), N2(N2)
+ParabolicEquation2D::ParabolicEquation2D(double t0, double t1, double x10, double x11, double x20, double x21, unsigned int M, unsigned int N1, unsigned int N2, double a1, double a2)
+    : t0(t0), t1(t1), x10(x10), x11(x11), x20(x20), x21(x21), M(M), N1(N1), N2(N2), a1(a1), a2(a2)
 {
     this->ht = (t1 - t0)   / M;
     this->h1 = (x11 - x10) / N1;
