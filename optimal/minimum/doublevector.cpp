@@ -128,7 +128,7 @@ void DoubleVector::EuclideanNormalize(DoubleVector& p)
 DoubleMatrix::DoubleMatrix(unsigned int m, unsigned int n, double value) : std::vector<DoubleVector>()
 {
     resize(m);
-    for (unsigned int j=0; j<m; j++) this[j].resize(n);
+    for (unsigned int j=0; j<m; j++) this->at(j).resize(n, value);
 }
 
 DoubleMatrix::~DoubleMatrix()

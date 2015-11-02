@@ -122,7 +122,6 @@ double PointControl::delta(double t)
 
 void PointControl::main()
 {
-
     DoubleVector p(3, 0.0);
     p[0] = 10.5;
     p[1] = 11.4;
@@ -143,9 +142,9 @@ void PointControl::main()
     f.write(f.x, "pointcontrol.txt");
 }
 
-void PointControlPrinter::print(unsigned int iterationCount, const DoubleVector &p, const DoubleVector &s, double m_alpha, RnFunction *f) const
+void PointControlPrinter::print(unsigned int i, const DoubleVector &p, const DoubleVector &g, double a, RnFunction *f) const
 {
-    printf("J[%2d]: %.10f %.10f %.10f %.10f\n", iterationCount, f->fx(p), p[0], p[1], p[2]);
+    printf("J[%2d]: %.10f %.10f %.10f %.10f\n", i, f->fx(p), p[0], p[1], p[2]);
     puts("*******************************************************************************");
 }
 

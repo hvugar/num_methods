@@ -53,7 +53,7 @@ struct HyperbolicEquation2D1 : public HyperbolicEquation2D
 
 int main()
 {
-//    HeatControl2DeltaX::main();
+    HeatControl2DeltaX::main();
 //    Hyperbolic1DX::main();
 //    HeatControl1 hc;
 //    DoubleVector u;
