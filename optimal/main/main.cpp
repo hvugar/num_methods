@@ -35,30 +35,33 @@
 
 #include "hyperbolic/hyperbolic1dx.h"
 
-struct HyperbolicEquation2D1 : public HyperbolicEquation2D
+struct HyperbolicEquation1 : public HyperbolicEquation
 {
-    HyperbolicEquation2D1(double t0, double t1, double x10, double x11, double x20, double x21, double a1, double a2, unsigned int M, unsigned int N1, unsigned int N2);
-    virtual ~HyperbolicEquation2D1();
+    HyperbolicEquation1(double t0=0.0, double t1=1.0, double x0=0.0, double x1=1.0, unsigned int M=1000, unsigned int N=1000, double a=1.0)
+        : HyperbolicEquation(t0, t1, x0, x1, M, N, a) {}
+    virtual ~HyperbolicEquation1() {}
 
-    virtual double fi1(unsigned int i, unsigned int j) const { return u(i*h1, j*h2, 0.0); }
-    virtual double fi2(unsigned int i, unsigned int j) const { return 0.0; }
-    virtual double m1(unsigned int j, unsigned int k) const { return u(x10, j*h2, k*ht); }
-    virtual double m2(unsigned int j, unsigned int k) const { return u(x11, j*h2, k*ht); }
-    virtual double m3(unsigned int i, unsigned int k) const { return u(i*h1, x20, k*ht); }
-    virtual double m4(unsigned int i, unsigned int k) const { return u(i*h1, x21, k*ht); }
-    virtual double f(unsigned int i, unsigned int j, unsigned int k) const { return 0.0; }
+    virtual double fi1(unsigned int i) const { return u(i*hx, 0.0); }
+    virtual double fi2(unsigned int i) const { return 0.0; }
+    virtual double m1(unsigned int j) const { return u(x0, j*ht); }
+    virtual double m2(unsigned int j) const { return u(x1, j*ht); }
+    virtual double f(unsigned int i, unsigned int j) const { return 6.0*(j*ht-i*hx); }
 
-    double u(double x1, double x2, double t) const { return x1*x1*x1 + x2*x2*x2 + t*t*t; }
+    double u(double x, double t) const { return x*x*x + t*t*t; }
 };
 
 int main()
 {
-    HeatControl2DeltaX::main();
+//    HeatControl2DeltaX::main();
 //    Hyperbolic1DX::main();
 //    HeatControl1 hc;
-//    DoubleVector u;
+    DoubleVector u;
 //    hc.calculateU(u);
 //    Printer::printVector(u);
+
+    HyperbolicEquation1 he;
+    he.calculate(u);
+    Printer::printVector(u);
 
     return 0;
 }
