@@ -45,9 +45,9 @@ struct HyperbolicEquation1 : public HyperbolicEquation
     virtual double fi2(unsigned int i) const { return 0.0; }
     virtual double m1(unsigned int j) const { return u(x0, j*ht); }
     virtual double m2(unsigned int j) const { return u(x1, j*ht); }
-    virtual double f(unsigned int i, unsigned int j) const { return 6.0*(j*ht-i*hx); }
+    virtual double f(unsigned int i, unsigned int j) const { return 0.0; }
 
-    double u(double x, double t) const { return x*x*x + t*t*t; }
+    double u(double x, double t) const { return x*x + t*t; }
 };
 
 int main()
