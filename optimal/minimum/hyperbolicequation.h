@@ -7,7 +7,7 @@
 class MINIMUMSHARED_EXPORT HyperbolicEquation
 {
 public:
-    HyperbolicEquation(double t0 = 0.0, double t1 = 1.0, double x0 = 0.0, double x1 = 1.0, unsigned int M = 100, unsigned int N = 100, double a = 1.0);
+    HyperbolicEquation(unsigned int M = 100, unsigned int N = 100, double t0 = 0.0, double t1 = 1.0, double x0 = 0.0, double x1 = 1.0, double a = 1.0);
     virtual ~HyperbolicEquation();
 
     void setTimeInterval(double t0, double t1);

@@ -2,8 +2,8 @@
 #include "tomasmethod.h"
 #include "printer.h"
 
-HyperbolicEquation::HyperbolicEquation(double t0, double t1, double x0, double x1, unsigned int M, unsigned int N, double a)
-    : t0(t0), t1(t1), x0(x0), x1(x1 ), M(M), N(N), a(a)
+HyperbolicEquation::HyperbolicEquation(unsigned int M, unsigned int N, double t0, double t1, double x0, double x1,  double a)
+    : M(M), N(N), t0(t0), t1(t1), x0(x0), x1(x1 ), a(a)
 {
     ht = (t1 - t0) / M;
     hx = (x1 - x0) / N;
