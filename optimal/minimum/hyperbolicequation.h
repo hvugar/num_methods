@@ -4,7 +4,20 @@
 #include "global.h"
 #include "doublevector.h"
 
-class MINIMUMSHARED_EXPORT HyperbolicEquation
+struct MINIMUMSHARED_EXPORT HyperbolicEquationInterface
+{
+public:
+    virtual double fi1(unsigned int i) const = 0;
+    virtual double fi2(unsigned int i) const = 0;
+    virtual double m1(unsigned int j) const = 0;
+    virtual double m2(unsigned int j) const = 0;
+    virtual double f(unsigned int i, unsigned int j) const = 0;
+protected:
+    virtual void calculateU(DoubleVector& u, unsigned int M = 1000, unsigned int N = 1000, double t0 = 0.0, double t1 = 1.0, double x0 = 0.0, double x1 = 1.0, double a = 1.0, double lamda=0.25) const;
+    virtual void calculateP(DoubleVector& u, unsigned int M = 1000, unsigned int N = 1000, double t0 = 0.0, double t1 = 1.0, double x0 = 0.0, double x1 = 1.0, double a = 1.0, double lamda=0.25) const;
+};
+
+struct MINIMUMSHARED_EXPORT HyperbolicEquation
 {
 public:
     HyperbolicEquation(unsigned int M = 100, unsigned int N = 100, double t0 = 0.0, double t1 = 1.0, double x0 = 0.0, double x1 = 1.0, double a = 1.0);
@@ -23,14 +36,14 @@ public:
     virtual void calculate(DoubleVector& u);
 
 protected:
-    double t0;
-    double t1;
-    double x0;
-    double x1;
     /* number of parts of time */
     unsigned int M;
     /* number of parts of length */
     unsigned int N;
+    double t0;
+    double t1;
+    double x0;
+    double x1;
     double a;
     double ht;
     double hx;

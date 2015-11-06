@@ -7,7 +7,7 @@
 #include <printer.h>
 #include <projection.h>
 
-class HyperbolicControl1D : public RnFunction, HyperbolicEquation, Printer
+class HyperbolicControl1D : public RnFunction, HyperbolicEquationInterface, Printer
 {
 public:
     HyperbolicControl1D();
@@ -27,7 +27,17 @@ public:
     static void main();
 
 protected:
+    double t0;
+    double t1;
+    double x0;
+    double x1;
+    double a;
+    double ht;
+    double hx;
     double dt;
+
+    unsigned int M;
+    unsigned int N;
 };
 
 #endif
