@@ -1,27 +1,27 @@
-#include "hyperboliccontrol1d.h"
+#include "hyperboliccontrol1d2.h"
 #include <tomasmethod.h>
 #include <gradient_cjt.h>
 
-void HyperbolicControl1D::main()
+void HyperbolicControl1D2::main()
 {
     DoubleVector v;
-    HyperbolicControl1D hc;
+    HyperbolicControl1D2 hc;
 
-    v.resize(2*(hc.M+1));
-    for (unsigned int j=0; j<=hc.M; j++)
-    {
-        double t = j*hc.ht;
-        v[j] = t*t;
-        v[(hc.M+1)+j] = t*t + 1.0;
-    }
+    v.resize(2*(hc.M+hc.DM+1));
+//    for (unsigned int j=0; j<=hc.M; j++)
+//    {
+//        double t = j*hc.ht;
+//        v[j] = t*t;
+//        v[(hc.M+1)+j] = t*t + 1.0;
+//    }
 
     hc.initialize();
 
-    for (unsigned int j=0; j<=hc.M; j++)
+    for (unsigned int j=0; j<=hc.M+hc.DM; j++)
     {
         double t = j*hc.ht;
         v[j] = 2.0*t;
-        v[(hc.M+1)+j] = 2.0*t + 2.0;
+        v[(hc.M+hc.DM+1)+j] = 2.0*t + 2.0;
     }
 
     //DoubleVector u;
@@ -29,42 +29,42 @@ void HyperbolicControl1D::main()
     //Printer::printVector(u);
 
     /* Minimization */
-    ConjugateGradient g2;
-    g2.setFunction(&hc);
-    g2.setEpsilon1(0.0001);
-    g2.setEpsilon2(0.0001);
-    g2.setGradientStep(0.000001);
-    g2.setR1MinimizeEpsilon(0.1, 0.000001);
-    g2.setPrinter(&hc);
-    g2.setProjection(&hc);
-    g2.setNormalize(false);
-    g2.calculate(v);
+//    ConjugateGradient g2;
+//    g2.setFunction(&hc);
+//    g2.setEpsilon1(0.0001);
+//    g2.setEpsilon2(0.0001);
+//    g2.setGradientStep(0.000001);
+//    g2.setR1MinimizeEpsilon(0.1, 0.000001);
+//    g2.setPrinter(&hc);
+//    g2.setProjection(&hc);
+//    g2.setNormalize(false);
+    //g2.calculate(v);
 
-    DoubleVector v1(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v1[j] = v[j];
-    DoubleVector v2(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v2[j] = v[hc.M+1+j];
-    Printer::printVector(v1);
-    Printer::printVector(v2);
+//    DoubleVector v1(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v1[j] = v[j];
+//    DoubleVector v2(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v2[j] = v[hc.M+1+j];
+//    Printer::printVector(v1);
+//    Printer::printVector(v2);
 }
 
-HyperbolicControl1D::HyperbolicControl1D() : RnFunction(), Printer()
+HyperbolicControl1D2::HyperbolicControl1D2() : RnFunction(), Printer()
 {
     t0 = 0.0; t1 = 1.0;
     x0 = 0.0; x1 = 1.0;
     a = 1.0;
-    M  = 100;
-    N  = 100;
-    //DM = 0;
-    //dt = 0.0;
-    ht = (t1-t0)/M;
+    M  = 1000;
+    N  = 1000;
+    DM = 50;
+    dt = 0.050;
+    ht = (t1+dt-t0)/(M+DM);
     hx = (x1-x0)/N;
     lamda = 0.25;
 }
 
-HyperbolicControl1D::~HyperbolicControl1D()
+HyperbolicControl1D2::~HyperbolicControl1D2()
 {
 }
 
-double HyperbolicControl1D::fx(const DoubleVector& v)
+double HyperbolicControl1D2::fx(const DoubleVector& v)
 {
     calculateU(v, uT);
 
@@ -119,41 +119,13 @@ double HyperbolicControl1D::fx(const DoubleVector& v)
     return sum + integral + norm1 + norm2;
 }
 
-void HyperbolicControl1D::gradient(const DoubleVector& v, DoubleVector& g, double gradient_step)
+void HyperbolicControl1D2::gradient(const DoubleVector& v, DoubleVector& g, double gradient_step)
 {
     calculateU(v, uT);
     calculareP(uT, g);
 }
 
-double HyperbolicControl1D::fi1(unsigned int i) const
-{
-    double x = i*hx;
-    return x*x;
-}
-
-double HyperbolicControl1D::fi2(unsigned int i) const
-{
-    return 0.0;
-}
-
-double HyperbolicControl1D::m1(unsigned int j) const
-{
-    return (*pv)[j];
-}
-
-double HyperbolicControl1D::m2(unsigned int j) const
-{
-    unsigned int i = M+1 + j;
-    return (*pv)[i];
-}
-
-double HyperbolicControl1D::f(unsigned int i, unsigned int j) const
-{
-    return 0.0;
-}
-
-
-void HyperbolicControl1D::calculateU(const DoubleVector& v, DoubleVector &u)
+void HyperbolicControl1D2::calculateU(const DoubleVector& v, DoubleVector &u)
 {
     pv = &v;
 
@@ -180,7 +152,7 @@ void HyperbolicControl1D::calculateU(const DoubleVector& v, DoubleVector &u)
     double alpha2 = (1.0-2.0*lamda)*a*a*((ht*ht)/(hx*hx));
     double alpha3 = +(lamda*a*a)*((ht*ht)/(hx*hx));
 
-    for (unsigned int j=0; j<=M-1; j++)
+    for (unsigned int j=0; j<=M+DM-1; j++)
     {
         if (j==0)
         {
@@ -188,8 +160,6 @@ void HyperbolicControl1D::calculateU(const DoubleVector& v, DoubleVector &u)
             {
                 u0[i] = fi1(i);
                 u1[i] = fi1(i) + ht*fi2(i);
-                //u[0][i] = u0[i];
-                //u[1][i] = u1[i];
             }
         }
         else
@@ -231,10 +201,11 @@ void HyperbolicControl1D::calculateU(const DoubleVector& v, DoubleVector &u)
 
     u1.clear();
     u0.clear();
+
+    Printer::printVector(u);
 }
 
-
-void HyperbolicControl1D::calculareP(const DoubleVector &u, DoubleVector &g)
+void HyperbolicControl1D2::calculareP(const DoubleVector &u, DoubleVector &g)
 {
     DoubleVector p(N+1);
     DoubleVector p0(N+1);
@@ -313,28 +284,28 @@ void HyperbolicControl1D::calculareP(const DoubleVector &u, DoubleVector &g)
     p1.clear();
 }
 
-void HyperbolicControl1D::calculateG(const DoubleVector& psi, DoubleVector& g, unsigned int j)
+void HyperbolicControl1D2::calculateG(const DoubleVector& psi, DoubleVector& g, unsigned int j)
 {
     double t = j*ht;
     g[j]     = -(a*a)*(psi[1]-psi[0])/ht   + 2.0*((*pv)[j] - g1(t));
     g[M+1+j] = -(a*a)*(psi[N-1]-psi[N])/ht + 2.0*((*pv)[M+1+j] - g2(t));
 }
 
-void HyperbolicControl1D::print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double a, RnFunction *fn) const
+void HyperbolicControl1D2::print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double a, RnFunction *fn) const
 {
-    HyperbolicControl1D *hc = dynamic_cast<HyperbolicControl1D*>(fn);
+    HyperbolicControl1D2 *hc = dynamic_cast<HyperbolicControl1D2*>(fn);
     printf("J[%d]: %.16f\n", i, hc->fx(v));
 }
 
-void HyperbolicControl1D::initialize()
+void HyperbolicControl1D2::initialize()
 {
     DoubleVector v;
-    v.resize(2*(M+1));
-    for (unsigned int j=0; j<=M; j++)
+    v.resize(2*(M+1+DM));
+    for (unsigned int j=0; j<=M+DM; j++)
     {
         double t = j*ht;
         v[j] = g1(t);
-        v[(M+1)+j] = g2(t);
+        v[(M+1+DM)+j] = g2(t);
     }
     calculateU(v, U);
     puts("-------------------------");

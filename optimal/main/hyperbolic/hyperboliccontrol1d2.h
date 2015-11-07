@@ -1,5 +1,5 @@
-#ifndef HYPERBOLICCONTROL1D_H
-#define HYPERBOLICCONTROL1D_H
+#ifndef HYPERBOLICCONTROL1D2_H
+#define HYPERBOLICCONTROL1D2_H
 
 #include <function.h>
 #include <hyperbolicequation.h>
@@ -7,20 +7,20 @@
 #include <printer.h>
 #include <projection.h>
 
-class HyperbolicControl1D : public RnFunction, Printer, Projection
+class HyperbolicControl1D2 : public RnFunction, Printer, Projection
 {
 public:
-    HyperbolicControl1D();
-    virtual ~HyperbolicControl1D();
+    HyperbolicControl1D2();
+    virtual ~HyperbolicControl1D2();
 
     virtual double fx(const DoubleVector& x);
     virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step=0.000001);
 
-    virtual double fi1(unsigned int i) const;
-    virtual double fi2(unsigned int i) const;
-    virtual double m1(unsigned int j) const;
-    virtual double m2(unsigned int j) const;
-    virtual double f(unsigned int i, unsigned int j) const;
+    virtual double fi1(unsigned int i) const { return i*hx*i*hx; }
+    virtual double fi2(unsigned int i) const { return 0.0; }
+    virtual double m1(unsigned int j) const {  return (*pv)[j]; }
+    virtual double m2(unsigned int j) const { return (*pv)[M+1+DM + j]; }
+    virtual double f(unsigned int i, unsigned int j) const { return 0.0; }
 
     double pfi1(double x) const { return 0.0; }
     double pfi2(unsigned int i) const { return 2.0*(uT[i] - U[i]); }
@@ -49,11 +49,11 @@ protected:
     double a;
     double ht;
     double hx;
-    //double dt;
+    double dt;
 
     unsigned int M;
     unsigned int N;
-    //unsigned int DM;
+    unsigned int DM;
     double lamda;
     DoubleVector U;
     DoubleVector uT;
