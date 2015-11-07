@@ -34,11 +34,11 @@
 #include "heat/2d/heatcontrol2deltax.h"
 
 #include "hyperbolic/hyperbolic1dx.h"
-#include "hyperbolic/hyperboliccontrol1d.h"
+#include "hyperbolic/hyperboliccontrol1d2.h"
 
 int main()
 {
-    HyperbolicControl1D::main();
+    HyperbolicControl1D2::main();
     return 0;
 }
 

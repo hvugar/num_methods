@@ -38,7 +38,7 @@ void HyperbolicControl1D2::main()
 //    g2.setPrinter(&hc);
 //    g2.setProjection(&hc);
 //    g2.setNormalize(false);
-    //g2.calculate(v);
+//    g2.calculate(v);
 
 //    DoubleVector v1(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v1[j] = v[j];
 //    DoubleVector v2(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v2[j] = v[hc.M+1+j];
