@@ -80,7 +80,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
         if ( k == x.size() ) { k = 0; } else { k++; }
 
         /* calculating distance previous and new point */
-        if (distance < epsilon2() && fabs(f2 - f1) < epsilon2() && f2 < 0.00001)
+        if (distance < epsilon2() && fabs(f2 - f1) < epsilon2())
         {
             puts("Optimisation ends, because distance beetween last and current point less than epsilon...");
             break;

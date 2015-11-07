@@ -81,6 +81,9 @@ void HyperbolicEquationInterface::calculateU(DoubleVector& u, unsigned int M, un
     u0.clear();
 }
 
+void HyperbolicEquationInterface::calculateU(DoubleMatrix& u, unsigned int M, unsigned int N, double t0, double t1, double x0, double x1, double a, double lamda) const
+{}
+
 void HyperbolicEquationInterface::calculateP(DoubleVector &u, unsigned int M, unsigned int N, double t0, double t1, double x0, double x1, double a, double lamda) const
 {}
 

@@ -14,6 +14,7 @@ public:
     virtual double f(unsigned int i, unsigned int j) const = 0;
 protected:
     virtual void calculateU(DoubleVector& u, unsigned int M = 1000, unsigned int N = 1000, double t0 = 0.0, double t1 = 1.0, double x0 = 0.0, double x1 = 1.0, double a = 1.0, double lamda=0.25) const;
+    virtual void calculateU(DoubleMatrix& u, unsigned int M = 1000, unsigned int N = 1000, double t0 = 0.0, double t1 = 1.0, double x0 = 0.0, double x1 = 1.0, double a = 1.0, double lamda=0.25) const;
     virtual void calculateP(DoubleVector& u, unsigned int M = 1000, unsigned int N = 1000, double t0 = 0.0, double t1 = 1.0, double x0 = 0.0, double x1 = 1.0, double a = 1.0, double lamda=0.25) const;
 };
 
