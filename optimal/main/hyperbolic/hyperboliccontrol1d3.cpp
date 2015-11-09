@@ -25,7 +25,7 @@ void HyperbolicControl1D3::main()
     //g2.setGradientStep(0.000001);
     g2.setR1MinimizeEpsilon(0.5, 0.00001);
     g2.setPrinter(&hc);
-    //g2.setProjection(&hc);
+    g2.setProjection(&hc);
     g2.setNormalize(true);
     g2.calculate(v);
 
