@@ -33,7 +33,9 @@ SOURCES += main.cpp \
     hyperbolic/hyperbolic2dx.cpp \
     hyperbolic/hyperbolic1dx.cpp \
     hyperbolic/hyperboliccontrol1d.cpp \
-    hyperbolic/hyperboliccontrol1d2.cpp
+    hyperbolic/hyperboliccontrol1d2.cpp \
+    hyperbolic/hyperboliccontrol1d3.cpp \
+    hyperbolic/hyperboliccontrol1dt.cpp
 
 HEADERS += \
     utils.h \
@@ -58,4 +60,6 @@ HEADERS += \
     hyperbolic/hyperbolic2dx.h \
     hyperbolic/hyperbolic1dx.h \
     hyperbolic/hyperboliccontrol1d.h \
-    hyperbolic/hyperboliccontrol1d2.h
+    hyperbolic/hyperboliccontrol1d2.h \
+    hyperbolic/hyperboliccontrol1d3.h \
+    hyperbolic/hyperboliccontrol1dt.h

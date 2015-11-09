@@ -35,10 +35,12 @@
 
 #include "hyperbolic/hyperbolic1dx.h"
 #include "hyperbolic/hyperboliccontrol1d2.h"
+#include "hyperbolic/hyperboliccontrol1d3.h"
+#include "hyperbolic/hyperboliccontrol1dt.h"
 
 int main()
 {
-    HyperbolicControl1D2::main();
+    HyperbolicControl1D3::main();
     return 0;
 }
 
