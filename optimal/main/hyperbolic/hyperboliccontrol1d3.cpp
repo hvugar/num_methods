@@ -25,7 +25,7 @@ void HyperbolicControl1D3::main()
     //g2.setGradientStep(0.000001);
     g2.setR1MinimizeEpsilon(0.5, 0.00001);
     g2.setPrinter(&hc);
-    g2.setProjection(&hc);
+    //g2.setProjection(&hc);
     g2.setNormalize(true);
     g2.calculate(v);
 
@@ -40,15 +40,28 @@ void HyperbolicControl1D3::main()
     hc.calculareP(u, gr);
 
     puts("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-    DoubleVector gr1(hc.M+hc.DM+1); for (unsigned j=0; j<=hc.M+hc.DM; j++) gr1[j] = gr[j];
-    DoubleVector gr2(hc.M+hc.DM+1); for (unsigned j=0; j<=hc.M+hc.DM; j++) gr2[j] = gr[hc.M+hc.DM+1+j];
+    Printer::printVector(u[hc.M]);
+    DoubleVector v1(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v1[j] = v[j];
+    DoubleVector v2(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v2[j] = v[hc.M+hc.DM+1+j];
+    Printer::printVector(v1);
+    Printer::printVector(v2);
+    DoubleVector gr1(hc.M+1); for (unsigned j=0; j<=hc.M; j++) gr1[j] = gr[j];
+    DoubleVector gr2(hc.M+1); for (unsigned j=0; j<=hc.M; j++) gr2[j] = gr[hc.M+hc.DM+1+j];
     Printer::printVector(gr1);
     Printer::printVector(gr2);
-    printf("%.10f\n", gr[gr.size()-1]);
 
-//    DoubleMatrix u;
-    hc.calculateU(v, u);
-    Printer::printVector(u[hc.M]);
+    double integral = 0.0;
+    for (unsigned int i=0; i<=hc.N-1; i++)
+    {
+        unsigned int j = i+1;
+        double f1 = (u[hc.M+hc.DM][i] + u[hc.M][i] - 2*hc.U)*(u[hc.M+hc.DM][i] - u[hc.M][i]);
+        double f2 = (u[hc.M+hc.DM][j] + u[hc.M][j] - 2*hc.U)*(u[hc.M+hc.DM][i] - u[hc.M][j]);
+        integral += f1+f2;
+    }
+    integral = 0.5 * hc.hx * integral;
+    gr[gr.size()-1] = 1.0 + integral;
+
+    printf("%.10f\n", gr[gr.size()-1]);
 }
 
 HyperbolicControl1D3::HyperbolicControl1D3() : RnFunction(), Printer()
@@ -122,13 +135,13 @@ void HyperbolicControl1D3::gradient(const DoubleVector& v, DoubleVector& g, doub
 
     Printer::printVector(u[M]);
 
-    DoubleVector v1(M+DM+1); for (unsigned j=0; j<=M+DM; j++) v1[j] = v[j];
-    DoubleVector v2(M+DM+1); for (unsigned j=0; j<=M+DM; j++) v2[j] = v[M+DM+1+j];
+    DoubleVector v1(M+1); for (unsigned j=0; j<=M; j++) v1[j] = v[j];
+    DoubleVector v2(M+1); for (unsigned j=0; j<=M; j++) v2[j] = v[M+DM+1+j];
     Printer::printVector(v1);
     Printer::printVector(v2);
 
-    DoubleVector g1(M+DM+1); for (unsigned j=0; j<=M+DM; j++) g1[j] = g[j];
-    DoubleVector g2(M+DM+1); for (unsigned j=0; j<=M+DM; j++) g2[j] = g[M+DM+1+j];
+    DoubleVector g1(M+1); for (unsigned j=0; j<=M; j++) g1[j] = g[j];
+    DoubleVector g2(M+1); for (unsigned j=0; j<=M; j++) g2[j] = g[M+DM+1+j];
     Printer::printVector(g1);
     Printer::printVector(g2);
 
