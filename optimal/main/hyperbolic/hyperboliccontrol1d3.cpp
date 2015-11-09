@@ -1,106 +1,167 @@
-#include "hyperboliccontrol1d2.h"
+#include "hyperboliccontrol1d3.h"
 
-void HyperbolicControl1D2::main()
+void HyperbolicControl1D3::main()
 {
+    HyperbolicControl1D3 hc;
+    //hc.doSettings();
+    //hc.initialize();
+
     DoubleVector v;
-    HyperbolicControl1D2 hc;
-    hc.doSettings();
-
-    v.resize(2*(hc.M+hc.DM+1));
-//    for (unsigned int j=0; j<=hc.M; j++)
-//    {
-//        double t = j*hc.ht;
-//        v[j] = t*t;
-//        v[(hc.M+1)+j] = t*t + 1.0;
-//    }
-
-    hc.initialize();
+    v.resize(2*(hc.M+hc.DM+1)+1);
 
     for (unsigned int j=0; j<=hc.M+hc.DM; j++)
     {
         double t = j*hc.ht;
-        v[j] = 2.0*t;
-        v[(hc.M+hc.DM+1)+j] = 2.0*t + 2.0;
+        v[j] = t*t;
+        v[(hc.M+hc.DM+1)+j] = t*t+1.0;
     }
+    v[v.size()-1]=0.8;
 
     /* Minimization */
     ConjugateGradient g2;
     g2.setFunction(&hc);
-    g2.setEpsilon1(0.00001);
-    g2.setEpsilon2(0.00001);
-    g2.setGradientStep(0.000001);
-    g2.setR1MinimizeEpsilon(0.1, 0.0001);
+    g2.setEpsilon1(0.0000001);
+    g2.setEpsilon2(0.0000001);
+    //g2.setGradientStep(0.000001);
+    g2.setR1MinimizeEpsilon(0.5, 0.00001);
     g2.setPrinter(&hc);
     g2.setProjection(&hc);
-    g2.setNormalize(false);
+    g2.setNormalize(true);
     g2.calculate(v);
 
-    DoubleVector v1(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v1[j] = v[j];
-    DoubleVector v2(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v2[j] = v[hc.M+hc.DM+1+j];
-    Printer::printVector(v1);
-    Printer::printVector(v2);
+//    DoubleVector v1(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v1[j] = v[j];
+//    DoubleVector v2(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v2[j] = v[hc.M+hc.DM+1+j];
+//    Printer::printVector(v1);
+//    Printer::printVector(v2);
+
+    DoubleMatrix u;
+    DoubleVector gr(v.size());
+    hc.calculateU(v, u);
+    hc.calculareP(u, gr);
+
+    puts("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    DoubleVector gr1(hc.M+hc.DM+1); for (unsigned j=0; j<=hc.M+hc.DM; j++) gr1[j] = gr[j];
+    DoubleVector gr2(hc.M+hc.DM+1); for (unsigned j=0; j<=hc.M+hc.DM; j++) gr2[j] = gr[hc.M+hc.DM+1+j];
+    Printer::printVector(gr1);
+    Printer::printVector(gr2);
+    printf("%.10f\n", gr[gr.size()-1]);
+
+//    DoubleMatrix u;
+    hc.calculateU(v, u);
+    Printer::printVector(u[hc.M]);
 }
 
-HyperbolicControl1D2::HyperbolicControl1D2() : RnFunction(), Printer()
+HyperbolicControl1D3::HyperbolicControl1D3() : RnFunction(), Printer()
 {
     t0 = 0.0; t1 = 1.0;
     x0 = 0.0; x1 = 1.0;
+    U = 1.0;
+    doSettings(t1);
 }
 
-HyperbolicControl1D2::~HyperbolicControl1D2()
+HyperbolicControl1D3::~HyperbolicControl1D3()
 {
 }
 
-void HyperbolicControl1D2::doSettings()
+void HyperbolicControl1D3::doSettings(double t)
 {
+    t0 = 0.0; t1 = t;
+    x0 = 0.0; x1 = 1.0;
     a = 1.0;
     M  = 100;
     N  = 100;
     DM = 10;
-    dt = 0.10;
-    ht = (t1+dt-t0)/(M+DM);
+
+    ht = (t1-t0)/M;
     hx = (x1-x0)/N;
+
+    dt = ht*DM;
+
     lamda = 0.25;
-    R = 1.0;
+    R = 1000.0;
+
+    //printf("%f %f %f %f %f %f %d %d %d\n", t0, t1, x0, x1, ht, hx, M, N, DM);
 }
 
-double HyperbolicControl1D2::fx(const DoubleVector& v)
+double HyperbolicControl1D3::fx(const DoubleVector& v)
 {
     DoubleMatrix u;
+    doSettings(v[v.size()-1]);
     calculateU(v, u);
 
-    double sum = 0.0;//t1;
+    double sum = v[v.size()-1];
 
     double integral = 0.0;
     for (unsigned int j=M; j<=M+DM-1; j++)
     {
         for (unsigned int i=0; i<=N-1; i++)
         {
-            double f1 = u[j+0][i+0] - 4.0;//U[M][i+0];
-            double f2 = u[j+0][i+1] - 4.0;//U[M][i+1];
-            double f3 = u[j+1][i+0] - 4.0;//U[M][i+0];
-            double f4 = u[j+1][i+1] - 4.0;//U[M][i+1];
+            double f1 = u[j+0][i+0] - U;
+            double f2 = u[j+0][i+1] - U;
+            double f3 = u[j+1][i+0] - U;
+            double f4 = u[j+1][i+1] - U;
 
             integral = integral + (f1*f1 + f2*f2 + f3*f3 + f4*f4);
         }
     }
-    integral = R*integral * 0.25 * ht *hx;
+    integral = R*integral * 0.25 * ht * hx;
 
     return sum + integral;
 }
 
-void HyperbolicControl1D2::gradient(const DoubleVector& v, DoubleVector& g, double)
+void HyperbolicControl1D3::gradient(const DoubleVector& v, DoubleVector& g, double gs)
 {
-    calculateU(v, uT);
-    calculareP(uT, g);
-    //R *= 2.0;
+    puts("--------------------------------------------------------------------");
+    double t = v[v.size()-1];
+    printf("T: %.10f\n", t);
+    doSettings(t);
+
+    DoubleMatrix u;
+    calculateU(v, u);
+    calculateG2(v, g);
+
+    Printer::printVector(u[M]);
+
+    DoubleVector v1(M+DM+1); for (unsigned j=0; j<=M+DM; j++) v1[j] = v[j];
+    DoubleVector v2(M+DM+1); for (unsigned j=0; j<=M+DM; j++) v2[j] = v[M+DM+1+j];
+    Printer::printVector(v1);
+    Printer::printVector(v2);
+
+    DoubleVector g1(M+DM+1); for (unsigned j=0; j<=M+DM; j++) g1[j] = g[j];
+    DoubleVector g2(M+DM+1); for (unsigned j=0; j<=M+DM; j++) g2[j] = g[M+DM+1+j];
+    Printer::printVector(g1);
+    Printer::printVector(g2);
+
+    printf("TG: %.10f\n", g[g.size()-1]);
+
+
+//    DoubleMatrix u;
+//    calculateU(v, u);
+//    calculareP(u, g);
+
+//    double integral = 0.0;
+//    for (unsigned int i=0; i<=N-1; i++)
+//    {
+//        unsigned int j = i+1;
+//        double f1 = (u[M+DM][i] + u[M][i] - 2*U)*(u[M+DM][i] - u[M][i]);
+//        double f2 = (u[M+DM][j] + u[M][j] - 2*U)*(u[M+DM][i] - u[M][j]);
+//        integral += f1+f2;
+//    }
+//    integral = 0.5 * hx * integral;
+
+//    g[g.size()-1] = 1.0 + integral;
 }
 
-void HyperbolicControl1D2::calculateU(const DoubleVector& v, DoubleMatrix &u)
+void HyperbolicControl1D3::calculateU(const DoubleVector& v, DoubleMatrix &u)
 {
     pv = &v;
+    double t = v[v.size()-1];
+    doSettings(t);
 
+    // Clear
+    for (unsigned int j=0; j<u.size(); j++) u[j].size();
     u.clear();
+    // Resize
     u.resize(M+DM+1);
     for (unsigned int j=0; j<=M+DM; j++) u[j].resize(N+1);
 
@@ -134,6 +195,8 @@ void HyperbolicControl1D2::calculateU(const DoubleVector& v, DoubleMatrix &u)
                 u1[i] = fi1(i) + ht*fi2(i);
                 u[0][i] = u0[i];
                 u[1][i] = u1[i];
+                //Printer::printVector(u[0]);
+                //Printer::printVector(u[1]);
             }
         }
         else
@@ -164,6 +227,8 @@ void HyperbolicControl1D2::calculateU(const DoubleVector& v, DoubleMatrix &u)
                 u0[i] = u1[i];
                 u1[i] = u[j+1][i];
             }
+
+            //Printer::printVector(u[j+1]);
         }
 
         //if (j+1==M) Printer::printVector(u[j+1]);
@@ -179,7 +244,7 @@ void HyperbolicControl1D2::calculateU(const DoubleVector& v, DoubleMatrix &u)
     u0.clear();
 }
 
-void HyperbolicControl1D2::calculareP(const DoubleMatrix &u, DoubleVector &g)
+void HyperbolicControl1D3::calculareP(const DoubleMatrix &u, DoubleVector &g)
 {
     DoubleVector p(N+1);
     DoubleVector p0(N+1);
@@ -227,7 +292,7 @@ void HyperbolicControl1D2::calculareP(const DoubleMatrix &u, DoubleVector &g)
 
                 if (M<=j-1 && j-1<=M+DM)
                 {
-                    rd[i-1] -= (ht*ht)*(2*R*(u[j][i]-4.0/*U[j][i]*/));
+                    rd[i-1] -= (ht*ht)*(2*R*(u[j][i]-U));
                 }
             }
 
@@ -263,37 +328,49 @@ void HyperbolicControl1D2::calculareP(const DoubleMatrix &u, DoubleVector &g)
     p1.clear();
 }
 
-void HyperbolicControl1D2::calculateG(const DoubleVector& psi, DoubleVector& g, unsigned int j)
+void HyperbolicControl1D3::calculateG(const DoubleVector& psi, DoubleVector& g, unsigned int j)
 {
     g[j]        = -(a*a)*(psi[1]-psi[0])/ht;
     g[M+DM+1+j] = -(a*a)*(psi[N-1]-psi[N])/ht;
 }
 
-void HyperbolicControl1D2::print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double a, RnFunction *fn) const
+void HyperbolicControl1D3::calculateG2(const DoubleVector &v, DoubleVector &g)
 {
-    HyperbolicControl1D2 *hc = dynamic_cast<HyperbolicControl1D2*>(fn);
-    printf("J[%d]: %.16f\n", i, hc->fx(v));
-//    DoubleVector v1(M+1); for (unsigned j=0; j<=M; j++) v1[j] = v[j];
-//    DoubleVector v2(M+1); for (unsigned j=0; j<=M; j++) v2[j] = v[M+DM+1+j];
-//    Printer::printVector(v1);
-//    Printer::printVector(v2);
+    double f0 = fx(v);
+
+    DoubleVector vc = v;
+    double h = 0.000001;
+    for (unsigned int i=0; i<v.size(); i++)
+    {
+        vc = v;
+        vc[i] = vc[i] + h;
+        double f1 = fx(vc);
+        g[i] = (f1-f0)/h;
+    }
 }
 
-void HyperbolicControl1D2::initialize()
+void HyperbolicControl1D3::print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double a, RnFunction *fn) const
+{
+    HyperbolicControl1D3 *hc = dynamic_cast<HyperbolicControl1D3*>(fn);
+    printf("J[%d]: %.16f\n", i, hc->fx(v));
+}
+
+void HyperbolicControl1D3::initialize()
 {
     DoubleVector v;
-    v.resize(2*(M+1+DM));
+    v.resize(2*(M+DM+1));
     for (unsigned int j=0; j<=M+DM; j++)
     {
         double t = j*ht;
         v[j] = g1(t);
-        v[(M+1+DM)+j] = g2(t);
+        v[(M+DM+1)+j] = g2(t);
     }
-    calculateU(v, U);
-    //puts("-------------------------");
-    //Printer::printVector(U[U.size()-1]);
-    //Printer::printVector(U[M]);
-    //puts("-------------------------");
+    DoubleMatrix u;
+    calculateU(v, u);
+    puts("-------------------------");
+    //Printer::printVector(u[u.size()-1]);
+    Printer::printVector(u[M]);
+    puts("-------------------------");
 
 //    DoubleMatrix u;
 //    calculateU(u);

@@ -1,5 +1,5 @@
-#ifndef HYPERBOLICCONTROL1D2_H
-#define HYPERBOLICCONTROL1D2_H
+#ifndef HYPERBOLICCONTROL1D3_H
+#define HYPERBOLICCONTROL1D3_H
 
 #include <function.h>
 #include <doublevector.h>
@@ -10,13 +10,13 @@
 #include <tomasmethod.h>
 #include <stdlib.h>
 
-class HyperbolicControl1D2 : public RnFunction, public Printer, public Projection
+class HyperbolicControl1D3 : public RnFunction, public Printer, public Projection
 {
 public:
-    HyperbolicControl1D2();
-    virtual ~HyperbolicControl1D2();
+    HyperbolicControl1D3();
+    virtual ~HyperbolicControl1D3();
 
-    void doSettings();
+    void doSettings(double t);
 
     virtual double fx(const DoubleVector& x);
     virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step=0.000001);
@@ -34,11 +34,12 @@ public:
 
     virtual void print(unsigned int iteration, const DoubleVector& x, const DoubleVector &gradient, double alpha, RnFunction* fn) const;
 
-    void project(DoubleVector &x, int index) {}
+    void project(DoubleVector &x, int index) { if (x[x.size()-1] < 0.0) x[x.size()-1] = 1.0; }
 
     void calculateU(const DoubleVector& v, DoubleMatrix &u);
     void calculareP(const DoubleMatrix &u, DoubleVector &g);
     void calculateG(const DoubleVector& psi, DoubleVector& g, unsigned int j);
+    void calculateG2(const DoubleVector& v, DoubleVector &g);
     void initialize();
 
     double g1(double t) const { return t*t; }
@@ -60,13 +61,10 @@ public:
     unsigned int N;
     unsigned int DM;
     double lamda;
-    DoubleMatrix U;
-    DoubleMatrix uT;
+    double U;
 
     const DoubleVector *pv;
     double R;
-
-    double UT;
 };
 
 #endif

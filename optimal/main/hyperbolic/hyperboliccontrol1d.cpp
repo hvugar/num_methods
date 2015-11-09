@@ -7,13 +7,13 @@ void HyperbolicControl1D::main()
     DoubleVector v;
     HyperbolicControl1D hc;
 
-    v.resize(2*(hc.M+1));
-    for (unsigned int j=0; j<=hc.M; j++)
-    {
-        double t = j*hc.ht;
-        v[j] = t*t;
-        v[(hc.M+1)+j] = t*t + 1.0;
-    }
+    v.resize(2*(hc.M+1)+1);
+//    for (unsigned int j=0; j<=hc.M; j++)
+//    {
+//        double t = j*hc.ht;
+//        v[j] = t*t;
+//        v[(hc.M+1)+j] = t*t + 1.0;
+//    }
 
     hc.initialize();
 
@@ -23,10 +23,6 @@ void HyperbolicControl1D::main()
         v[j] = 2.0*t;
         v[(hc.M+1)+j] = 2.0*t + 2.0;
     }
-
-    //DoubleVector u;
-    //hc.calculateU(u);
-    //Printer::printVector(u);
 
     /* Minimization */
     ConjugateGradient g2;
@@ -53,10 +49,10 @@ HyperbolicControl1D::HyperbolicControl1D() : RnFunction(), Printer()
     a = 1.0;
     M  = 100;
     N  = 100;
-    //DM = 0;
-    //dt = 0.0;
+    DM = 10;
     ht = (t1-t0)/M;
     hx = (x1-x0)/N;
+    dt = DM * ht;
     lamda = 0.25;
 }
 

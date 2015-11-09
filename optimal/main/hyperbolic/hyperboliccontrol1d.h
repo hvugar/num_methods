@@ -22,10 +22,10 @@ public:
     virtual double m2(unsigned int j) const;
     virtual double f(unsigned int i, unsigned int j) const;
 
-    double pfi1(double x) const { return 0.0; }
+    double pfi1(unsigned int i) const { return 0.0; }
     double pfi2(unsigned int i) const { return 2.0*(uT[i] - U[i]); }
-    double pmu1(double t) const { return 0.0; }
-    double pmu2(double t) const { return 0.0; }
+    double pmu1(unsigned int j) const { return 0.0; }
+    double pmu2(unsigned int j) const { return 0.0; }
 
     virtual void print(unsigned int iteration, const DoubleVector& x, const DoubleVector &gradient, double alpha, RnFunction* fn) const;
 
@@ -49,11 +49,11 @@ protected:
     double a;
     double ht;
     double hx;
-    //double dt;
+    double dt;
 
     unsigned int M;
     unsigned int N;
-    //unsigned int DM;
+    unsigned int DM;
     double lamda;
     DoubleVector U;
     DoubleVector uT;
