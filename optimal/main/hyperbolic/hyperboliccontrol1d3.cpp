@@ -12,18 +12,18 @@ void HyperbolicControl1D3::main()
     for (unsigned int j=0; j<=hc.M+hc.DM; j++)
     {
         double t = j*hc.ht;
-        v[j] = t*t;
-        v[(hc.M+hc.DM+1)+j] = t*t+1.0;
+        v[j] = t*t+1.5;
+        v[(hc.M+hc.DM+1)+j] = t*t+2.5;
     }
     v[v.size()-1]=0.8;
 
     /* Minimization */
     ConjugateGradient g2;
     g2.setFunction(&hc);
-    g2.setEpsilon1(0.0000001);
-    g2.setEpsilon2(0.0000001);
+    g2.setEpsilon1(0.000000001);
+    g2.setEpsilon2(0.000000001);
     //g2.setGradientStep(0.000001);
-    g2.setR1MinimizeEpsilon(0.5, 0.00001);
+    g2.setR1MinimizeEpsilon(0.1, 0.0000001);
     g2.setPrinter(&hc);
     g2.setProjection(&hc);
     g2.setNormalize(true);
@@ -68,7 +68,7 @@ HyperbolicControl1D3::HyperbolicControl1D3() : RnFunction(), Printer()
 {
     t0 = 0.0; t1 = 1.0;
     x0 = 0.0; x1 = 1.0;
-    U = 1.0;
+    U = 4.0;
     doSettings(t1);
 }
 
