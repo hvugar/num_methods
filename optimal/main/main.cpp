@@ -40,7 +40,7 @@
 
 int main()
 {
-    HyperbolicControl1D3::main();
+    HyperbolicControl1DT::main();
     return 0;
 }
 

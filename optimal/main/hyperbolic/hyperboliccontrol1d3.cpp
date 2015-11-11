@@ -69,6 +69,7 @@ HyperbolicControl1D3::HyperbolicControl1D3() : RnFunction(), Printer()
     t0 = 0.0; t1 = 1.0;
     x0 = 0.0; x1 = 1.0;
     U = 4.0;
+    R = 1.0;
     doSettings(t1);
 }
 
@@ -91,7 +92,7 @@ void HyperbolicControl1D3::doSettings(double t)
     dt = ht*DM;
 
     lamda = 0.25;
-    R = 1000.0;
+
 
     //printf("%f %f %f %f %f %f %d %d %d\n", t0, t1, x0, x1, ht, hx, M, N, DM);
 }
@@ -125,8 +126,9 @@ double HyperbolicControl1D3::fx(const DoubleVector& v)
 void HyperbolicControl1D3::gradient(const DoubleVector& v, DoubleVector& g, double gs)
 {
     puts("--------------------------------------------------------------------");
+    if (R < 10000.0) R *= 2.0;
     double t = v[v.size()-1];
-    printf("T: %.10f\n", t);
+    printf("T: %.10f R: %f\n", t, R);
     doSettings(t);
 
     DoubleMatrix u;

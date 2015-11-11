@@ -13,10 +13,8 @@
 class HyperbolicControl1D2 : public RnFunction, public Printer, public Projection
 {
 public:
-    HyperbolicControl1D2();
+    HyperbolicControl1D2(double t0, double t1);
     virtual ~HyperbolicControl1D2();
-
-    void doSettings();
 
     virtual double fx(const DoubleVector& x);
     virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step=0.000001);
@@ -54,7 +52,7 @@ public:
     double a;
     double ht;
     double hx;
-    double dt;
+    //double dt;
 
     unsigned int M;
     unsigned int N;

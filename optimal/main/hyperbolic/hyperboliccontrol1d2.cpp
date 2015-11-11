@@ -3,9 +3,7 @@
 void HyperbolicControl1D2::main()
 {
     DoubleVector v;
-    HyperbolicControl1D2 hc;
-    hc.doSettings();
-
+    HyperbolicControl1D2 hc(0.0, 1.0);
     v.resize(2*(hc.M+hc.DM+1));
 //    for (unsigned int j=0; j<=hc.M; j++)
 //    {
@@ -41,27 +39,30 @@ void HyperbolicControl1D2::main()
     Printer::printVector(v2);
 }
 
-HyperbolicControl1D2::HyperbolicControl1D2() : RnFunction(), Printer()
+HyperbolicControl1D2::HyperbolicControl1D2(double t0, double t1) : RnFunction(), Printer()
 {
-    t0 = 0.0; t1 = 1.0;
-    x0 = 0.0; x1 = 1.0;
+    this->t0 = t0;
+    this->t1 = t1;
+    x0 = 0.0;
+    x1 = 1.0;
+    UT = 4.0;
+    a = 1.0;
+
+    ht = 0.01;
+
+    M  = round((t1-t0)/ht);
+
+    N  = 100;
+    DM = 10;
+    //ht = (t1-t0)/M;
+    //dt = ht*DM;
+    hx = (x1-x0)/N;
+    lamda = 0.25;
+    R = 1.0;
 }
 
 HyperbolicControl1D2::~HyperbolicControl1D2()
 {
-}
-
-void HyperbolicControl1D2::doSettings()
-{
-    a = 1.0;
-    M  = 100;
-    N  = 100;
-    DM = 10;
-    dt = 0.10;
-    ht = (t1+dt-t0)/(M+DM);
-    hx = (x1-x0)/N;
-    lamda = 0.25;
-    R = 1.0;
 }
 
 double HyperbolicControl1D2::fx(const DoubleVector& v)
@@ -76,10 +77,10 @@ double HyperbolicControl1D2::fx(const DoubleVector& v)
     {
         for (unsigned int i=0; i<=N-1; i++)
         {
-            double f1 = u[j+0][i+0] - 4.0;//U[M][i+0];
-            double f2 = u[j+0][i+1] - 4.0;//U[M][i+1];
-            double f3 = u[j+1][i+0] - 4.0;//U[M][i+0];
-            double f4 = u[j+1][i+1] - 4.0;//U[M][i+1];
+            double f1 = u[j+0][i+0] - UT;//U[M][i+0];
+            double f2 = u[j+0][i+1] - UT;//U[M][i+1];
+            double f3 = u[j+1][i+0] - UT;//U[M][i+0];
+            double f4 = u[j+1][i+1] - UT;//U[M][i+1];
 
             integral = integral + (f1*f1 + f2*f2 + f3*f3 + f4*f4);
         }
@@ -227,7 +228,7 @@ void HyperbolicControl1D2::calculareP(const DoubleMatrix &u, DoubleVector &g)
 
                 if (M<=j-1 && j-1<=M+DM)
                 {
-                    rd[i-1] -= (ht*ht)*(2*R*(u[j][i]-4.0/*U[j][i]*/));
+                    rd[i-1] -= (ht*ht)*(2*R*(u[j][i]-UT/*U[j][i]*/));
                 }
             }
 
