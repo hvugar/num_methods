@@ -48,7 +48,7 @@ double HyperbolicControl1DT::fx(double t)
     Printer::printVector(v2, 10, "v2:\t");
 
     puts("++++++++++");
-    FILE* f = fopen("d:/u.txt", "a");
+    FILE* f = fopen("d:/u1000.txt", "a");
     fprintf(f, "------------------------------------------------------------\n");
     fprintf(f, "T: %f\n", t);
     for (unsigned int j=hc.M; j<=hc.M+hc.DM; j++)
@@ -75,7 +75,7 @@ void HyperbolicControl1DT::main()
 {
     HyperbolicControl1DT hc;
 
-    double t0 = 0.8;
+    double t0 = 1.0;
     double a,b,t;
     R1Minimize::StranghLineSearch(t0, 0.2, a, b, &hc);
     R1Minimize::GoldenSectionSearch(a, b, t, &hc, 0.000001);
