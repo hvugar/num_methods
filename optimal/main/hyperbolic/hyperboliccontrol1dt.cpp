@@ -75,7 +75,7 @@ void HyperbolicControl1DT::main()
 {
     HyperbolicControl1DT hc;
 
-    double t0 = 1.05;
+    double t0 = 1.1;
     double a,b,t;
     R1Minimize::StranghLineSearch(t0, 0.2, a, b, &hc);
     R1Minimize::GoldenSectionSearch(a, b, t, &hc, 0.000001);
