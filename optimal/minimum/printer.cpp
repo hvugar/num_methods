@@ -19,7 +19,7 @@ void Printer::printMatrix(const DoubleMatrix& x, unsigned int m, unsigned int n,
     fflush(f);
 }
 
-void Printer::printVector(const DoubleVector& x, unsigned int n, const char *s, FILE *f)
+void Printer::printVector(const DoubleVector& x, unsigned int n, const char* s, FILE* f)
 {
     unsigned int N = x.size() / n;
     fprintf(f, "%s", s);
