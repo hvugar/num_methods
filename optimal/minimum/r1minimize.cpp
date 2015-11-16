@@ -146,7 +146,7 @@ double goldenSectionSearch(double &a, double &b, double &x, R1Function *f, doubl
         }
     }
 
-    double c = -1;//(a+b)/2.0;
+    double c = (a+b)/2.0;
 
     double fa = f->fx(a);
     double fb = f->fx(b);
