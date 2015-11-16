@@ -42,70 +42,8 @@
 #include "hyperbolic/hyperboliccontrol1d3.h"
 #include "hyperbolic/hyperboliccontrol1dt.h"
 
-struct MyFunc : public R1Function {
-    double fx(double x) { return x*x; }
-};
-
 int main()
 {
-    MyFunc fx;
-
-    double a,b,x;
-    try {
-        stranghLineSearch(4.0, 0.001, a, b, &fx);
-        printf("a: %f b: %f\n", a, b);
-        goldenSectionSearch(a, b, x, &fx, 0.00001);
-        printf("a: %f b: %f x: %f\n", a, b, x);
-    } catch (std::invalid_argument &ex) {
-        std::cout << "Invalid argument: " << ex.what() << std::endl;
-    } catch (std::runtime_error &ex) {
-        std::cout << "Runtime error: " << ex.what() << std::endl;
-    }
-
-    std::cout << "(after exception)\n";
-
-
-//    std::vector<unsigned char> v;
-//    v.resize(10);
-//    printf("0x%X %d 0x%X\n", v.data(), v.size(), &v);
-//    v.resize(20);
-//    printf("0x%X %d 0x%X\n", v.data(), v.size(), &v);
-//    v.resize(30);
-//    printf("0x%X %d 0x%X\n", v.data(), v.size(), &v);
-//    printf("%u\n", v.max_size());
-    //DblVector v(10);
-//    printf("Size: %d\n", v.size());
-//    for (unsigned int i=0; i<v.size(); i++)
-//    {
-//        v.data()[i] = i+1.0;
-//        printf("%2.1f\n", v.at(i));
-//    }
-
-//    puts("add");
-//    v.add(11.0);
-//    printf("Size: %d\n", v.size());
-//    v.data()[10]=11.0;
-//    for (unsigned int i=0; i<v.size(); i++)
-//    {
-//        printf("%2.1f\n", v.at(i));
-//    }
-
-//    puts("insert");
-//    v.insert(11, 12.0);
-//    printf("Size: %d\n", v.size());
-//    for (unsigned int i=0; i<v.size(); i++)
-//    {
-//        printf("%2.1f\n", v.at(i));
-//    }
-
-//    puts("delete");
-//    v.remove(11);
-//    printf("Size: %d\n", v.size());
-//    for (unsigned int i=0; i<v.size(); i++)
-//    {
-//        printf("%2.1f\n", v.at(i));
-//    }
-
     HyperbolicControl1DT::main();
     return 0;
 }

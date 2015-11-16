@@ -22,7 +22,10 @@ void Printer::printMatrix(const DoubleMatrix& x, unsigned int m, unsigned int n,
 void Printer::printVector(const DoubleVector& x, unsigned int n, const char *s, FILE *f)
 {
     unsigned int N = x.size() / n;
-    fprintf(f, "%s", s);
+    if (s!=NULL)
+    {
+        fprintf(f, "%s", s);
+    }
     for (unsigned int i=0; i<x.size(); i++)
     {
         if (i%N==0) fprintf(f, "%14.10f ", x[i]);
