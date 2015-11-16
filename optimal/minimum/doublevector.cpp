@@ -1,8 +1,6 @@
 #include "doublevector.h"
 #include <math.h>
 
-const DoubleVector DoubleVector::null = DoubleVector(0, 0.0);
-
 DoubleVector::DoubleVector(unsigned int size, double value) : std::vector<double>(size, value)
 {
 }
