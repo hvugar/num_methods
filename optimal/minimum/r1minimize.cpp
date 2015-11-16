@@ -4,15 +4,27 @@
 #include <stdexcept>
 #include <string>
 
+/**
+ * @brief         Методы прямого поиска. Установления границ интервала.
+ * @param x       Произвольно выбранная начальная точка
+ * @param step    Величина шага
+ * @param a       Начальная точка отрезка
+ * @param b       Конечнная точка отрезка
+ * @param f       Целевая функция
+ */
 void stranghLineSearch(double x, double step, double &a, double &b, R1Function *f)
 {
     if ( f == NULL )
     {
-        std::string msg;
+        std::string msg = "in function \"stranghLineSearch\" function pointer is null.";
         throw std::runtime_error(msg);
     }
 
-    if ( step == 0.0 ) return;
+    if ( step <= 0.0 )
+    {
+        std::string msg = "in function \"stranghLineSearch\" step value is less than zero.";
+        throw std::invalid_argument(msg);
+    }
 
     double fstep = fabs(step);
 
@@ -64,6 +76,86 @@ void stranghLineSearch(double x, double step, double &a, double &b, R1Function *
 
     a = x - fstep;
     b = x + fstep;
+}
+
+/**
+ * @brief          Метод золотого сечения.
+ *                 Метод относится к последовательным стратегиям. Задается начальный интервал неопределенности и
+ *                 требуемая точность. Алгоритм уменьшения интервала опирается на анализ значений функции в двух точках.
+ *                 В качестве точек вычисления функции выбираются точки золотого сечения. Тогда с учетом свойств золотого
+ *                 сечения на каждой итерации, кроме первой, требуется только одно новое вычисление функции. Условия
+ *                 окончания процесса поиска стандартные: поиск заканчивается, когда длина текущего интервала
+ *                 неопределенности оказывается меньше установленной величины.
+ * @param a        Начальная точка отрезка
+ * @param b        Конечнная точка отрезка
+ * @param x
+ * @param f        Целевая функция
+ * @param epsilon  Число эпсилон для останова метода
+ * @return
+ */
+double goldenSectionSearch(double &a, double &b, double &x, R1Function *f, double epsilon)
+{
+    if ( f == NULL )
+    {
+        std::string msg = "in function \"goldenSectionSearch\" function pointer is null.";
+        throw std::runtime_error(msg);
+    }
+
+    if ( epsilon <= 0.0 )
+    {
+        std::string msg = "in function \"goldenSectionSearch\" epsilon value is equal to or less than zero.";
+        throw std::invalid_argument(msg);
+    }
+
+    double phi = 1.6180339887498948482045868343656;
+
+    double x1 = NAN;
+    double x2 = NAN;
+
+    double y1 = 0.0;
+    double y2 = 0.0;
+
+    // Lazimi epsilon deqiqliyini alana qeder iterasiyalari davam edirik
+    while ( fabs(b-a) > epsilon )
+    {
+        if (isnan(x1))
+        {
+            x1 = b - fabs(b-a)/phi;
+            y1 = f->fx(x1);
+        }
+
+        if (isnan(x2))
+        {
+            x2 = a + fabs(b-a)/phi;
+            y2 = f->fx(x2);
+        }
+
+        if (y1 >= y2)
+        {
+            a = x1;
+            x1 = x2;    // Tapilmish x2 noqtesi ve bu noqtede funkisiyanin qiymeti
+            y1 = y2;    // sonraki iterasiyada x1 qiymeti kimi istifade olunacaq.
+            x2 = NAN;   // x2 novbeti iterasiyada axtarilacaq
+        }
+        else
+        {
+            b = x2;
+            x2 = x1;    // Tapilmish x1 noqtesi ve bu noqtede funkisiyanin qiymeti
+            y2 = y1;    // sonraki iterasiyada x2 qiymeti kimi istifade olunacaq.
+            x1 = NAN;   // x1 novbeti iterasiyada axtarilacaq
+        }
+    }
+
+    double c = -1;//(a+b)/2.0;
+
+    double fa = f->fx(a);
+    double fb = f->fx(b);
+    if (fa==fb) c = (a+b)/2.0;
+    if (fa<fb)  c = a;
+    if (fa>fb)  c = b;
+
+    x = c;
+    return c;
 }
 
 R1Minimize::R1Minimize() : m_f(0), m_x0(0.0), m_step(0.0), m_epsilon(0.0), m_a(0.0), m_b(0.0)

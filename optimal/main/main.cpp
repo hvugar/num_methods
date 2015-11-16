@@ -11,6 +11,10 @@
 #include <doublevector.h>
 #include <parabolicequation.h>
 #include <hyperbolicequation.h>
+#include <r1minimize.h>
+
+#include <iostream>
+#include <stdexcept>
 
 #include "cfunction1.h"
 #include "cfunction2.h"
@@ -38,8 +42,29 @@
 #include "hyperbolic/hyperboliccontrol1d3.h"
 #include "hyperbolic/hyperboliccontrol1dt.h"
 
+struct MyFunc : public R1Function {
+    double fx(double x) { return x*x; }
+};
+
 int main()
 {
+    MyFunc fx;
+
+    double a,b,x;
+    try {
+        stranghLineSearch(4.0, 0.001, a, b, &fx);
+        printf("a: %f b: %f\n", a, b);
+        goldenSectionSearch(a, b, x, &fx, 0.00001);
+        printf("a: %f b: %f x: %f\n", a, b, x);
+    } catch (std::invalid_argument &ex) {
+        std::cout << "Invalid argument: " << ex.what() << std::endl;
+    } catch (std::runtime_error &ex) {
+        std::cout << "Runtime error: " << ex.what() << std::endl;
+    }
+
+    std::cout << "(after exception)\n";
+
+
 //    std::vector<unsigned char> v;
 //    v.resize(10);
 //    printf("0x%X %d 0x%X\n", v.data(), v.size(), &v);
