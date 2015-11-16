@@ -40,6 +40,47 @@
 
 int main()
 {
+//    std::vector<unsigned char> v;
+//    v.resize(10);
+//    printf("0x%X %d 0x%X\n", v.data(), v.size(), &v);
+//    v.resize(20);
+//    printf("0x%X %d 0x%X\n", v.data(), v.size(), &v);
+//    v.resize(30);
+//    printf("0x%X %d 0x%X\n", v.data(), v.size(), &v);
+//    printf("%u\n", v.max_size());
+    //DblVector v(10);
+//    printf("Size: %d\n", v.size());
+//    for (unsigned int i=0; i<v.size(); i++)
+//    {
+//        v.data()[i] = i+1.0;
+//        printf("%2.1f\n", v.at(i));
+//    }
+
+//    puts("add");
+//    v.add(11.0);
+//    printf("Size: %d\n", v.size());
+//    v.data()[10]=11.0;
+//    for (unsigned int i=0; i<v.size(); i++)
+//    {
+//        printf("%2.1f\n", v.at(i));
+//    }
+
+//    puts("insert");
+//    v.insert(11, 12.0);
+//    printf("Size: %d\n", v.size());
+//    for (unsigned int i=0; i<v.size(); i++)
+//    {
+//        printf("%2.1f\n", v.at(i));
+//    }
+
+//    puts("delete");
+//    v.remove(11);
+//    printf("Size: %d\n", v.size());
+//    for (unsigned int i=0; i<v.size(); i++)
+//    {
+//        printf("%2.1f\n", v.at(i));
+//    }
+
     HyperbolicControl1DT::main();
     return 0;
 }

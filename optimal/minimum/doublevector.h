@@ -4,6 +4,9 @@
 #include <vector>
 #include "global.h"
 
+#include <string.h>
+#include <stdlib.h>
+
 using namespace std;
 
 class MINIMUMSHARED_EXPORT DoubleVector : public std::vector<double>
@@ -51,5 +54,22 @@ public:
     void Clear();
 };
 
+class MINIMUMSHARED_EXPORT DblVector
+{
+public:
+    DblVector(unsigned int n=0);
+    virtual ~DblVector();
+
+    unsigned int size() const;
+    double at(unsigned int i) const;
+    double* data() const;
+    void add(double d);
+    void insert(unsigned int i, double d);
+    void remove(unsigned int i);
+    void clear();
+private:
+    double* pdata;
+    unsigned int msize;
+};
 
 #endif // DOUBLEVECTOR_H

@@ -24,7 +24,8 @@ SOURCES += \
     tomasmethod.cpp \
     integral.cpp \
     hyperbolicequation.cpp \
-    parabolicequation.cpp
+    parabolicequation.cpp \
+    exceptions.cpp
 
 HEADERS += global.h \
     function.h \
@@ -42,4 +43,5 @@ HEADERS += global.h \
     tomasmethod.h \
     integral.h \
     hyperbolicequation.h \
-    parabolicequation.h
+    parabolicequation.h \
+    exceptions.h

@@ -1,6 +1,71 @@
 #include "r1minimize.h"
 #include <math.h>
 
+#include <stdexcept>
+#include <string>
+
+void stranghLineSearch(double x, double step, double &a, double &b, R1Function *f)
+{
+    if ( f == NULL )
+    {
+        std::string msg;
+        throw std::runtime_error(msg);
+    }
+
+    if ( step == 0.0 ) return;
+
+    double fstep = fabs(step);
+
+    double y0 = f->fx(x);
+    double y1 = f->fx(x - fstep);
+    double y2 = f->fx(x + fstep);
+
+    // if y1 and y2 are both greater than y0 then minimum point is inside x1 and x2
+    if (y1 >= y0 && y0 <= y2)
+    {
+        a = x - fstep;
+        b = x + fstep;
+        return;
+    }
+
+    // if y1 and y2 are both lesser than y0 then there is not minimum. function is not unimodal
+    if (y1 <= y0 && y0 >= y2)
+    {
+        a = b = NAN;
+        fputs("Function is not unimodal\n", stderr);
+        return;
+    }
+
+    if ( y1 >= y0 && y0 >= y2 )
+    {
+        while ( y2 < y0 )
+        {
+            x = x + fstep;
+            y1 = y0;
+            y0 = y2;
+            y2 = f->fx(x + fstep);
+        }
+        a = x - fstep;
+        b = x + fstep;
+    }
+
+    if ( y1 <= y0 && y0 <= y2 )
+    {
+        while ( y1 < y0 )
+        {
+            x = x - fstep;
+            y2 = y0;
+            y0 = y1;
+            y1 = f->fx(x - fstep);
+        }
+        a = x - fstep;
+        b = x + fstep;
+    }
+
+    a = x - fstep;
+    b = x + fstep;
+}
+
 R1Minimize::R1Minimize() : m_f(0), m_x0(0.0), m_step(0.0), m_epsilon(0.0), m_a(0.0), m_b(0.0)
 {}
 
@@ -228,54 +293,56 @@ void R1Minimize::StranghLineSearch(double x, double step, double &a, double &b, 
     if ( f == NULL ) return;
     if ( step == 0.0 ) return;
 
+    double fstep = fabs(step);
+
     double y0 = f->fx(x);
-    double y1 = f->fx(x - step);
-    double y2 = f->fx(x + step);
+    double y1 = f->fx(x - fstep);
+    double y2 = f->fx(x + fstep);
 
     // if y1 and y2 are both greater than y0 then minimum point is inside x1 and x2
     if (y1 >= y0 && y0 <= y2)
     {
-        a = x - fabs(step);
-        b = x + fabs(step);
+        a = x - fstep;
+        b = x + fstep;
+        return;
     }
 
     // if y1 and y2 are both lesser than y0 then there is not minimum. function is not unimodal
     if (y1 <= y0 && y0 >= y2)
     {
+        a = b = NAN;
         fputs("Function is not unimodal\n", stderr);
         return;
     }
 
+    if ( y1 >= y0 && y0 >= y2 )
     {
-        if ( y1 >= y0 && y0 >= y2 )
+        while ( y2 < y0 )
         {
-            while ( y2 < y0 )
-            {
-                x = x + fabs(step);
-                y1 = y0;
-                y0 = y2;
-                y2 = f->fx(x + fabs(step));
-            }
-            a = x - fabs(step);
-            b = x + fabs(step);
+            x = x + fstep;
+            y1 = y0;
+            y0 = y2;
+            y2 = f->fx(x + fstep);
         }
-
-        if ( y1 <= y0 && y0 <= y2 )
-        {
-            while ( y1 < y0 )
-            {
-                x = x - fabs(step);
-                y2 = y0;
-                y0 = y1;
-                y1 = f->fx(x - fabs(step));
-            }
-            a = x - fabs(step);
-            b = x + fabs(step);
-        }
+        a = x - fstep;
+        b = x + fstep;
     }
 
-    a = x - fabs(step);
-    b = x + fabs(step);
+    if ( y1 <= y0 && y0 <= y2 )
+    {
+        while ( y1 < y0 )
+        {
+            x = x - fstep;
+            y2 = y0;
+            y0 = y1;
+            y1 = f->fx(x - fstep);
+        }
+        a = x - fstep;
+        b = x + fstep;
+    }
+
+    a = x - fstep;
+    b = x + fstep;
 }
 
 /**
@@ -434,8 +501,8 @@ double R1Minimize::GoldenSectionSearch(double &a, double &b, double &x, R1Functi
  */
 void R1Minimize::FibonachiMethod(double &a, double &b, double &c, double step, double epsilon, R1Function *f)
 {
-//    double k = fabs(b-a)/epsilon;
-//    unsigned int FN = (unsigned int)ceil(k);
+    //    double k = fabs(b-a)/epsilon;
+    //    unsigned int FN = (unsigned int)ceil(k);
 }
 
 /**

@@ -192,3 +192,59 @@ void DoubleCube::Clear()
     }
     this->clear();
 }
+
+DblVector::DblVector(unsigned int n)
+{
+//    msize = n;
+//    pdata = (double*)malloc(sizeof(double)*n);
+}
+
+DblVector::~DblVector()
+{
+    //clear();
+}
+
+unsigned int DblVector::size() const
+{
+    return msize;
+}
+
+double DblVector::at(unsigned int i) const
+{
+    //if (i<msize) throw std::
+    return pdata[i];
+}
+
+double* DblVector::data() const
+{
+    return this->pdata;
+}
+
+void DblVector::add(double d)
+{
+    pdata = (double*)realloc(pdata, sizeof(double)*(msize+1));
+    pdata[msize] = d;
+    msize++;
+}
+
+void DblVector::insert(unsigned int i, double d)
+{
+    pdata = (double*)realloc(pdata, sizeof(double)*(msize+1));
+    memcpy(pdata+i+1, pdata+i, sizeof(double)*(msize-i));
+    pdata[i]=d;
+    msize++;
+}
+
+void DblVector::remove(unsigned int i)
+{
+    memcpy(pdata+i, pdata+i+1, sizeof(double)*(msize-i-1));
+    pdata = (double*)realloc(pdata, sizeof(double)*(msize-1));
+    msize--;
+}
+
+void DblVector::clear()
+{
+    free(pdata);
+    pdata=NULL;
+    msize=0;
+}

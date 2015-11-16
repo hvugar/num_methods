@@ -4,6 +4,14 @@
 #include "global.h"
 #include "function.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+void stranghLineSearch(double x, double step, double &a, double &b, R1Function *fn);
+#ifdef __cplusplus
+}
+#endif
+
 class MINIMUMSHARED_EXPORT R1Minimize
 {
 public:
