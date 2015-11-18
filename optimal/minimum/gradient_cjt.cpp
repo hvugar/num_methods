@@ -130,3 +130,34 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
     if (r1X.fx(alpha) > r1X.fx(alpha0)) alpha = alpha0;
     return alpha;
 }
+
+//double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
+//{
+//    printf("%d %d\n", x.size(), s.size());
+
+//    mx = &x;
+//    ms = &s;
+
+//    printf("%d %d\n", x.size(), s.size());
+
+//    double alpha0 = 0.0;
+//    double a,b,alpha;
+//    R1Minimize::StranghLineSearch(alpha0, min_step, a, b, this);
+//    R1Minimize::GoldenSectionSearch(a, b, alpha, this, min_epsilon);
+//    if (this->fx(alpha) > this->fx(alpha0)) alpha = alpha0;
+
+//    mx = ms = NULL;
+
+//    return alpha;
+//}
+
+//double ConjugateGradient::fx(double alpha)
+//{
+//    unsigned int n = mx->size();
+//    DoubleVector cx(n);
+//    for (unsigned int i=0; i < n; i++)
+//    {
+//        cx[i] = (*mx)[i] + alpha * (*ms)[i];
+//    }
+//    return m_fn->fx(cx);
+//}

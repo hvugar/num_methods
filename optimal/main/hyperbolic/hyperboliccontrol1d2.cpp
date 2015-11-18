@@ -48,11 +48,11 @@ HyperbolicControl1D2::HyperbolicControl1D2(double t0, double t1) : RnFunction(),
     UT = 4.0;
     a = 1.0;
 
-    ht = 0.01;
+    ht = 0.001;
 
     M  = round((t1-t0)/ht);
 
-    N  = 100;
+    N  = 1000;
     DM = 10;
     //ht = (t1-t0)/M;
     //dt = ht*DM;
