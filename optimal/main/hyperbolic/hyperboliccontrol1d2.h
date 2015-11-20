@@ -21,8 +21,8 @@ public:
 
     virtual double fi1(unsigned int i) const { return i*hx*i*hx; }
     virtual double fi2(unsigned int i) const { return 0.0; }
-    virtual double m1(unsigned int j) const {  return (*pv)[j]; }
-    virtual double m2(unsigned int j) const { return (*pv)[M+1+DM + j]; }
+    virtual double m1(unsigned int j) const {  return 4.0/*(*pv)[j]*/; }
+    virtual double m2(unsigned int j) const { return 4.0/*(*pv)[M+1+DM + j]*/; }
     virtual double f(unsigned int i, unsigned int j) const { return 0.0; }
 
     double pfi1(unsigned int x) const { return 0.0; }

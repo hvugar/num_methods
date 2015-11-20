@@ -9,16 +9,28 @@
 #include <stdlib.h>
 #include <QVector>
 
+#include "widget2.h"
+
+void createHeatImage();
+
+int main(int argc, char *argv[])
+{
+    QApplication a(argc, argv);
+
+    Widget2 w;
+    w.show();
+
+    return a.exec();
+}
+
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
 typedef QVector<double> QDoubleVector;
 typedef QVector<QDoubleVector> QDoubleMatrix;
 
-int main(int argc, char *argv[])
+void createHeatImage()
 {
-    QApplication a(argc, argv, false);
-
     int width = 2001;
     int height = 2001;
     QPixmap pixmap(QSize(width, height));
@@ -56,8 +68,8 @@ int main(int argc, char *argv[])
 
     qDebug() << minimum << maximum << m.size() << m[0].size() << width << height;
 
-//    minimum = 1.0;
-//    maximum = 3.0;
+    //    minimum = 1.0;
+    //    maximum = 3.0;
     for (int j=0; j<m.size(); j++)
     {
         for (int i=0; i<m[j].size(); i++)
@@ -79,5 +91,4 @@ int main(int argc, char *argv[])
     pixmap.save(file.fileName()+".png", "PNG");
 
     qDebug() << "end";
-    return a.exec();
 }

@@ -5,7 +5,6 @@
 #-------------------------------------------------
 
 QT       += core
-
 QT       += gui
 
 TARGET = imager
@@ -15,4 +14,8 @@ DESTDIR += ../bin
 TEMPLATE = app
 
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    widget2.cpp
+
+HEADERS += \
+    widget2.h

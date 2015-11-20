@@ -2,47 +2,89 @@
 
 void HyperbolicControl1D2::main()
 {
-    DoubleVector v;
-    HyperbolicControl1D2 hc(0.0, 1.0);
-    v.resize(2*(hc.M+hc.DM+1));
-//    for (unsigned int j=0; j<=hc.M; j++)
+//    DoubleVector v;
+//    HyperbolicControl1D2 hc(0.0, 1.0);
+//    v.resize(2*(hc.M+hc.DM+1));
+////    for (unsigned int j=0; j<=hc.M; j++)
+////    {
+////        double t = j*hc.ht;
+////        v[j] = t*t;
+////        v[(hc.M+1)+j] = t*t + 1.0;
+////    }
+
+//    hc.initialize();
+
+//    for (unsigned int j=0; j<=hc.M+hc.DM; j++)
 //    {
 //        double t = j*hc.ht;
-//        v[j] = t*t;
-//        v[(hc.M+1)+j] = t*t + 1.0;
+//        v[j] = 2.0*t;
+//        v[(hc.M+hc.DM+1)+j] = 2.0*t + 2.0;
 //    }
 
-    hc.initialize();
+//    /* Minimization */
+//    ConjugateGradient g2;
+//    g2.setFunction(&hc);
+//    g2.setEpsilon1(0.00001);
+//    g2.setEpsilon2(0.00001);
+//    g2.setGradientStep(0.000001);
+//    g2.setR1MinimizeEpsilon(0.1, 0.0001);
+//    g2.setPrinter(&hc);
+//    g2.setProjection(&hc);
+//    g2.setNormalize(false);
+//    g2.calculate(v);
 
-    for (unsigned int j=0; j<=hc.M+hc.DM; j++)
-    {
-        double t = j*hc.ht;
-        v[j] = 2.0*t;
-        v[(hc.M+hc.DM+1)+j] = 2.0*t + 2.0;
-    }
+//    DoubleVector v1(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v1[j] = v[j];
+//    DoubleVector v2(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v2[j] = v[hc.M+hc.DM+1+j];
+//    Printer::printVector(v1);
+//    Printer::printVector(v2);
 
-    /* Minimization */
-    ConjugateGradient g2;
-    g2.setFunction(&hc);
-    g2.setEpsilon1(0.00001);
-    g2.setEpsilon2(0.00001);
-    g2.setGradientStep(0.000001);
-    g2.setR1MinimizeEpsilon(0.1, 0.0001);
-    g2.setPrinter(&hc);
-    g2.setProjection(&hc);
-    g2.setNormalize(false);
-    g2.calculate(v);
 
-    DoubleVector v1(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v1[j] = v[j];
-    DoubleVector v2(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v2[j] = v[hc.M+hc.DM+1+j];
-    Printer::printVector(v1);
-    Printer::printVector(v2);
+    double integral = 0.0;
+    double epsilon = 0.01;
+    double t1=0.1;
+
+    FILE* f = fopen("data1.txt", "w");
+
+    do {
+        HyperbolicControl1D2 hc(0.0, t1);
+        //printf("%f %f %d %d\n", hc.hx, hc.ht, hc.N, hc.M);
+        DoubleVector v;
+        //v.resize(2*(hc.M+1));
+        //for (unsigned int i=0; i<v.size(); i++) v[i] = 4.0;
+        DoubleMatrix u;
+        hc.calculateU(v, u);
+        printf("T: %f\t", t1);
+        Printer::printVector(u[u.size()-1]);
+
+        integral = 0.0;
+        DoubleVector &v1 = u[u.size()-1];
+        for (unsigned int i=0; i<hc.N; i++)
+        {
+            integral += (v1[i] - 4.0)*(v1[i] - 4.0) + (v1[i+1] - 4.0)*(v1[i+1] - 4.0);
+        };
+        integral = hc.hx/2.0 * integral;
+
+        fprintf(f, "%.8f ", t1);
+        fprintf(f, "%.8f ", integral);
+
+        for (unsigned int i=0; i<u[u.size()-1].size(); i++)
+        {
+            fprintf(f, "%.8f ", u[u.size()-1][i]);
+        }
+        fprintf(f, "\n");
+        fflush(f);
+
+        t1+=0.1;
+    } while (integral > epsilon);
+
+    fclose(f);
 }
 
 HyperbolicControl1D2::HyperbolicControl1D2(double t0, double t1) : RnFunction(), Printer()
 {
     this->t0 = t0;
     this->t1 = t1;
+
     x0 = 0.0;
     x1 = 1.0;
     UT = 4.0;

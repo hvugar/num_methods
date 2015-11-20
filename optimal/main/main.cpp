@@ -45,7 +45,7 @@
 int main()
 {
 //    Rosenbrock::main();
-    HyperbolicControl1DT::main();
+    HyperbolicControl1D2::main();
     return 0;
 }
 
