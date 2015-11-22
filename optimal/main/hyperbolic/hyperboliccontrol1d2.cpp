@@ -60,7 +60,7 @@ void HyperbolicControl1D2::main()
         DoubleVector &v1 = u[u.size()-1];
         for (unsigned int i=0; i<hc.N; i++)
         {
-            integral += (v1[i] - 4.0)*(v1[i] - 4.0) + (v1[i+1] - 4.0)*(v1[i+1] - 4.0);
+            integral += (v1[i] - hc.UT)*(v1[i] - hc.UT) + (v1[i+1] - hc.UT)*(v1[i+1] - hc.UT);
         };
         integral = hc.hx/2.0 * integral;
 
@@ -87,14 +87,14 @@ HyperbolicControl1D2::HyperbolicControl1D2(double t0, double t1) : RnFunction(),
 
     x0 = 0.0;
     x1 = 1.0;
-    UT = 4.0;
+    UT = 0.0;
     a = 1.0;
 
-    ht = 0.001;
+    ht = 0.01;
 
     M  = round((t1-t0)/ht);
 
-    N  = 1000;
+    N  = 100;
     DM = 10;
     //ht = (t1-t0)/M;
     //dt = ht*DM;
@@ -134,9 +134,34 @@ double HyperbolicControl1D2::fx(const DoubleVector& v)
 
 void HyperbolicControl1D2::gradient(const DoubleVector& v, DoubleVector& g, double)
 {
-    calculateU(v, uT);
-    calculareP(uT, g);
+    DoubleMatrix u;
+    calculateU(v, u);
+    calculareP(u, g);
     //R *= 2.0;
+}
+
+double HyperbolicControl1D2::fi1(unsigned int i) const
+{
+    return i*hx*i*hx;
+}
+
+double HyperbolicControl1D2::fi2(unsigned int i) const
+{
+    return 0.0;
+}
+
+double HyperbolicControl1D2::m1(unsigned int j) const
+{
+    double v = (*pv)[j];
+    if (M <= j && j <= M+DM) v = UT;
+    return v;
+}
+
+double HyperbolicControl1D2::m2(unsigned int j) const
+{
+    double v = (*pv)[M+1+DM + j];
+    if (M <= j && j <= M+DM) v = UT;
+    return v;
 }
 
 void HyperbolicControl1D2::calculateU(const DoubleVector& v, DoubleMatrix &u)
@@ -322,32 +347,3 @@ void HyperbolicControl1D2::print(unsigned int i, const DoubleVector &v, const Do
 //    Printer::printVector(v2);
 }
 
-void HyperbolicControl1D2::initialize()
-{
-    DoubleVector v;
-    v.resize(2*(M+1+DM));
-    for (unsigned int j=0; j<=M+DM; j++)
-    {
-        double t = j*ht;
-        v[j] = g1(t);
-        v[(M+1+DM)+j] = g2(t);
-    }
-    calculateU(v, U);
-    //puts("-------------------------");
-    //Printer::printVector(U[U.size()-1]);
-    //Printer::printVector(U[M]);
-    //puts("-------------------------");
-
-//    DoubleMatrix u;
-//    calculateU(u);
-//    U = 0.0;
-
-//    for (unsigned int j=M; j<=M+DM; j++)
-//    {
-//        //printf("%d\n", j);
-//        for (unsigned int i=0; i<=N; i++)
-//        {
-//            U = u[j][i];
-//        }
-//    }
-}
