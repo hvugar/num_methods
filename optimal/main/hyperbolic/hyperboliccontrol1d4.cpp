@@ -1,15 +1,18 @@
 #include "hyperboliccontrol1d4.h"
 
-#define L_1
-//#define L_2
-//#define L_3
-
 void HyperbolicControl1D4::main()
 {
     HyperbolicControl1D4 hc;
-    //hc.fx(0.25);
+    hc.calculateSettings();
+    //hc.fx(1.0);
 
-    for (double t=0.1; t<1.11; t+=0.1) hc.fx(t);
+    for (double e = 0.1; e < 1.01; e+=0.1)
+    {
+        hc.e[0] = e;
+        for (double t=0.1; t<2.01; t+=0.1) hc.fx(t);
+    }
+
+    //for (double t=0.1; t<1.11; t+=0.1) hc.fx(t);
 }
 
 HyperbolicControl1D4::HyperbolicControl1D4()
@@ -34,28 +37,15 @@ void HyperbolicControl1D4::calculateSettings()
 
     ht = 0.01;
     M = (unsigned int) round((t1-t0)/ht);
-
     D = 10;
-
-    L = 0;
-#ifdef L_1
-    L=1;
-#endif
-#ifdef L_2
-    L=2;
-#endif
-#ifdef L_3
-    L=3;
-#endif
-    e.resize(L);
 
     a = 1.0;
     lamda = 0.25;
     R = 1.0;
-
     U = 0.0;
 
-    //printf("%.8f %.8f %.8f %.8f %.8f %.8f %u %u %u\n", t0, t1, x0, x1, ht, hx, M, N, D);
+    L = 1;
+    e.resize(L);
 }
 
 double HyperbolicControl1D4::fx(const DoubleVector &v)
@@ -95,15 +85,9 @@ double HyperbolicControl1D4::fx(double t)
 {
     t1 = t;
     calculateSettings();
-#ifdef L_1
-    e[0] = 0.5;
-#endif
-#ifdef L_2
-    e[1] = 0.66;
-#endif
-#ifdef L_3
-    e[2] = 0.75;
-#endif
+    //e[0] = 0.25;
+    //e[1] = 0.66;
+    //e[2] = 0.75;
 
     //puts("------------------------------------------------------------------------------------------------------");
     //printf("T: %.8f\n", t);
@@ -112,17 +96,11 @@ double HyperbolicControl1D4::fx(double t)
     for (unsigned int j=0; j<=(M+D); j++)
     {
         //double t = j*ht;
-        v[0*(M+D+1)+j] = U;
-        v[1*(M+D+1)+j] = U;
-#ifdef L_1
-        v[2*(M+D+1)+j] = U;
-#endif
-#ifdef L_2
-        v[3*(M+D+1)+j] = U;
-#endif
-#ifdef L_3
-        v[4*(M+D+1)+j] = U;
-#endif
+        v[0*(M+D+1)+j] = U+1.0;
+        v[1*(M+D+1)+j] = U+2.0;
+        v[2*(M+D+1)+j] = U+1.5;
+        //v[3*(M+D+1)+j] = U;
+        //v[4*(M+D+1)+j] = U;
     }
 
     //printf("%.8f %.8f %.8f %.8f %.8f %.8f %u %u %u\n", t0, t1, x0, x1, ht, hx, M, N, D);
@@ -132,10 +110,11 @@ double HyperbolicControl1D4::fx(double t)
     g.setEpsilon1(0.000000001);
     g.setEpsilon2(0.000000001);
     //g.setGradientStep(0.000000001);
-    g.setR1MinimizeEpsilon(0.1, 0.000000001);
+    g.setR1MinimizeEpsilon(0.2, 0.000000001);
     g.setPrinter(this);
     g.setProjection(this);
     g.setNormalize(true);
+    g.showEndMessage(false);
     g.calculate(v);
 
     double rf = fx(v);
@@ -201,7 +180,7 @@ double HyperbolicControl1D4::m1(unsigned int j) const
 
 double HyperbolicControl1D4::m2(unsigned int j) const
 {
-    double v = (*pv)[M+1+D + j];
+    double v = (*pv)[M+D+1 + j];
     //if (M <= j && j <= M+D) v = U;
     return v;
 }
@@ -209,29 +188,27 @@ double HyperbolicControl1D4::m2(unsigned int j) const
 double HyperbolicControl1D4::f(unsigned int i, unsigned int j) const
 {
     double x = i*hx;
-    double t = j*ht;
+    //double t = j*ht;
     double sum = 0.0;
 
-#ifdef L_1
-    if (fabs(x-e[0]) < hx)
+    if (fabs(x-e[0]) < (hx+0.000001))
     {
-        sum += (1.0/hx) * (*pv)[2*(M+1+D)+j] * ((hx-fabs(x-e[0]))/hx);
+        double v = (*pv)[2*(M+D+1)+j];
+        sum += (1.0/hx) * v * ((hx-fabs(x-e[0]))/hx);
+        //printf("x: %f e: %f sum: %f %.20f %.20f\n", x, e[0], sum, fabs(x-e[0]), hx);
     }
-#endif
 
-#ifdef L_2
-    if (fabs(x-e[1]) < hx)
-    {
-        sum += (1.0/hx) * (*pv)[3*(M+1+D)+j] * ((hx-fabs(x-e[1]))/hx);
-    }
-#endif
+    //if (fabs(x-e[1]) < (hx+0.000001))
+    //{
+    //    double v = (*pv)[3*(M+D+1)+j];
+    //    sum += (1.0/hx) * v * ((hx-fabs(x-e[1]))/hx);
+    //}
 
-#ifdef L_3
-    if (fabs(x-e[2]) < hx)
-    {
-        sum += (1.0/hx) * f3(t) * ((hx-fabs(x-e[2]))/hx);
-    }
-#endif
+    //if (fabs(x-e[2]) < (hx+0.000001))
+    //{
+    //    double v = (*pv)[4*(M+D+1)+j];
+    //    sum += (1.0/hx) * v * ((hx-fabs(x-e[2]))/hx);
+    //}
 
     return sum;
 }
@@ -405,18 +382,14 @@ void HyperbolicControl1D4::calculateG(const DoubleVector& psi, DoubleVector& g, 
 {
     g[0*(M+D+1)+j] = -(a*a)*(psi[1]-psi[0])/ht;
     g[1*(M+D+1)+j] = -(a*a)*(psi[N-1]-psi[N])/ht;
-#ifdef L_1
+
     unsigned int i1 = (unsigned int)(round(e[0]/hx));
     g[2*(M+D+1)+j] = -psi[i1];
-#endif
-#ifdef L_2
-    unsigned int i2 = (unsigned int)(round(e[1]/hx));
-    g[3*(M+D+1)+j] = -psi[i2];
-#endif
-#ifdef L_3
-    unsigned int i3 = (unsigned int)(round(e[2]/hx));
-    g[4*(M+D+1)+j] = -psi[i3];
-#endif
-    //printf("%d %d %d\n", i1, i2, i3);
+
+    //unsigned int i2 = (unsigned int)(round(e[1]/hx));
+    //g[3*(M+D+1)+j] = -psi[i2];
+
+    //unsigned int i3 = (unsigned int)(round(e[2]/hx));
+    //g[4*(M+D+1)+j] = -psi[i3];
 }
 

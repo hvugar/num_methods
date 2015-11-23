@@ -9,6 +9,7 @@ GradientMethod::GradientMethod() : m_fn(NULL), printer(NULL), projection(NULL)
     min_epsilon = 0.01;
     iterationCount = 0;
     normalize = true;
+    mshowEndMessage = true;
 }
 
 GradientMethod::~GradientMethod()
@@ -98,4 +99,9 @@ void GradientMethod::setProjection(Projection *proj)
 void GradientMethod::setNormalize(bool normalize)
 {
     this->normalize = normalize;
+}
+
+void GradientMethod::showEndMessage(bool showEndMessage)
+{
+    mshowEndMessage = showEndMessage;
 }

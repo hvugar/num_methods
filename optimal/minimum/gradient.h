@@ -39,6 +39,7 @@ public:
     void setPrinter(Printer* printer);
     void setProjection(Projection* proj);
     void setNormalize(bool normalize);
+    void showEndMessage(bool showEndMessage);
 
 protected:
     virtual double minimize(const DoubleVector &x, const DoubleVector &g) = 0;
@@ -53,6 +54,8 @@ protected:
     bool normalize;
     Printer* printer;
     Projection *projection;
+
+    bool mshowEndMessage;
 };
 
 #endif // GRADIENT_H

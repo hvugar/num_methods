@@ -24,7 +24,7 @@ double HyperbolicControl1DT::fx(double t)
 
     for (unsigned int j=0; j<=(hc.M+hc.DM); j++)
     {
-        double t = j*hc.ht;
+        //double t = j*hc.ht;
         v[j] = hc.UT;///t*t+1.5;
         v[(hc.M+hc.DM+1)+j] = hc.UT;//t*t+2.5;
     }
