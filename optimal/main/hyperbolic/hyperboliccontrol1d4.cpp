@@ -6,7 +6,7 @@ void HyperbolicControl1D4::main()
     hc.calculateSettings();
     //hc.fx(1.0);
 
-    for (double e = 0.1; e < 1.01; e+=0.1)
+    for (double e = 0.0; e < 1.01; e+=0.1)
     {
         hc.e[0] = e;
         for (double t=0.1; t<2.01; t+=0.1) hc.fx(t);
@@ -96,9 +96,9 @@ double HyperbolicControl1D4::fx(double t)
     for (unsigned int j=0; j<=(M+D); j++)
     {
         //double t = j*ht;
-        v[0*(M+D+1)+j] = U+1.0;
-        v[1*(M+D+1)+j] = U+2.0;
-        v[2*(M+D+1)+j] = U+1.5;
+        v[0*(M+D+1)+j] = U;
+        v[1*(M+D+1)+j] = U;
+        v[2*(M+D+1)+j] = U;
         //v[3*(M+D+1)+j] = U;
         //v[4*(M+D+1)+j] = U;
     }
@@ -107,10 +107,10 @@ double HyperbolicControl1D4::fx(double t)
 
     ConjugateGradient g;
     g.setFunction(this);
-    g.setEpsilon1(0.000000001);
-    g.setEpsilon2(0.000000001);
-    //g.setGradientStep(0.000000001);
-    g.setR1MinimizeEpsilon(0.2, 0.000000001);
+    g.setEpsilon1(0.000001);
+    g.setEpsilon2(0.000001);
+    //g.setGradientStep(0.000001);
+    g.setR1MinimizeEpsilon(0.2, 0.000001);
     g.setPrinter(this);
     g.setProjection(this);
     g.setNormalize(true);
