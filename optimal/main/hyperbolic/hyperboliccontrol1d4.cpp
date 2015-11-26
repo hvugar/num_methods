@@ -6,10 +6,10 @@ void HyperbolicControl1D4::main()
     hc.calculateSettings();
     //hc.fx(1.0);
 
-    for (double e = 0.0; e < 1.01; e+=0.1)
+    for (double e = 0.1; e < 1.0; e+=0.1)
     {
         hc.e[0] = e;
-        for (double t=0.1; t<2.01; t+=0.1) hc.fx(t);
+        for (double t=0.1; t<1.41; t+=0.1) hc.fx(t);
     }
 
     //for (double t=0.1; t<1.11; t+=0.1) hc.fx(t);
@@ -96,9 +96,9 @@ double HyperbolicControl1D4::fx(double t)
     for (unsigned int j=0; j<=(M+D); j++)
     {
         //double t = j*ht;
-        v[0*(M+D+1)+j] = U;
-        v[1*(M+D+1)+j] = U;
-        v[2*(M+D+1)+j] = U;
+        v[0*(M+D+1)+j] = 1.0;
+        v[1*(M+D+1)+j] = 1.5;
+        v[2*(M+D+1)+j] = 2.0;
         //v[3*(M+D+1)+j] = U;
         //v[4*(M+D+1)+j] = U;
     }
@@ -129,27 +129,30 @@ double HyperbolicControl1D4::fx(double t)
     DoubleMatrix u;
     calculateU(v, u);
 
-    //FILE* f = fopen("vugar2.txt", "a");
-    //fprintf(f, "------------------------------------------------------------\n");
-    //fprintf(f, "T: %.8f Integral: %.16f\n", t, rf);
-    //for (unsigned int j=M; j<=M+D; j++)
-    //{
+    FILE* f = fopen("20151126.dat", "a");
+    fprintf(f, "------------------------------------------------------------\n");
+    fprintf(f, "e1: %f T: %.8f Functional: %.16f\n", e[0], t, rf);
+    for (unsigned int j=M; j<=M+D; j++)
+    {
         //printf("u[%d]:\t", j);
         //Printer::printVector(u[j]);
 
-        //fprintf(f, "u[%d]:\t", j);
-        //for (unsigned int i=0; i<=N; i++)
-        //{
-        //    fprintf(f, "%.8f ", u[j][i]);
-        //}
-        //fprintf(f, "\n");
-    //}
-    //fclose(f);
+        fprintf(f, "u[%d]:\t", j);
+        for (unsigned int i=0; i<=N; i++)
+        {
+            double uji = u[j][i];
+            if (uji<0)
+                fprintf(f, "%10.8f ", uji);
+            else
+                fprintf(f, "+%10.8f ", uji);
+        }
+        fprintf(f, "\n");
+    }
+    fclose(f);
     //Printer::printVector(u[M], 10, "u[M]:\t");
     //Printer::printVector(u[M+D], 10, "u[M+D]:");
 
     printf("e1: %f T: %.8f Integral: %.16f M: %d\n", e[0], t, rf, M);
-    //printf("%.8f %.16f\n", t, rf);
 
     return rf;
 }
