@@ -129,7 +129,7 @@ double HyperbolicControl1D4::fx(double t)
     DoubleMatrix u;
     calculateU(v, u);
 
-    FILE* f = fopen("20151126.dat", "a");
+    FILE* f = fopen("20151127.dat", "a");
     fprintf(f, "------------------------------------------------------------\n");
     fprintf(f, "e1: %f T: %.8f Functional: %.16f\n", e[0], t, rf);
     for (unsigned int j=M; j<=M+D; j++)
