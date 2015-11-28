@@ -1,16 +1,26 @@
 #include "hyperboliccontrol1d4.h"
+#include <r1minimize.h>
 
 void HyperbolicControl1D4::main()
 {
     HyperbolicControl1D4 hc;
     hc.calculateSettings();
+
+    hc.e[0] = 0.4;
+
+    double a, b, t;
+    a = 0.6;
+    b = 1.2;
+    goldenSectionSearch(a, b, t, &hc, 0.000001);
+
     //hc.fx(1.0);
 
-    for (double e = 0.1; e < 1.0; e+=0.1)
-    {
-        hc.e[0] = e;
-        for (double t=0.1; t<1.41; t+=0.1) hc.fx(t);
-    }
+//    for (double e = 0.1; e < 1.0; e+=0.1)
+//    {
+//        hc.e[0] = e;
+//        //for (double t=0.4; t<1.21; t+=0.1) hc.fx(t);
+//        hc.fx(1.0);
+//    }
 
     //for (double t=0.1; t<1.11; t+=0.1) hc.fx(t);
 }
@@ -76,9 +86,44 @@ double HyperbolicControl1D4::fx(const DoubleVector &v)
 void HyperbolicControl1D4::gradient(const DoubleVector &v, DoubleVector &g, double a)
 {
     //printf("%u %u\n", v.size(), g.size());
-    DoubleMatrix u;
-    calculateU(v, u);
-    calculareP(u, g);
+//    DoubleMatrix u;
+//    calculateU(v, u);
+//    calculareP(u, g);
+
+//    for (unsigned int j=0; j<=M+D; j++)
+//    {
+//        DoubleVector v1 = v;
+//        v1[2*(M+D+1)+j] = v[2*(M+D+1)+j]+ht;
+//        double f1 = fx(v1);
+
+//        DoubleVector v2 = v;
+//        v2[2*(M+D+1)+j] = v[2*(M+D+1)+j]-ht;
+//        double f2 = fx(v2);
+
+//        g[2*(M+D+1)+j] = (f2-f1)/(2.0*ht);
+//    }
+
+    double f0 = fx(v);
+    for (unsigned int j=0; j<=M+D; j++)
+    {
+        DoubleVector v1 = v;
+        v1[0*(M+D+1)+j] = v[0*(M+D+1)+j]+ht;
+        double f1 = fx(v1);
+
+        DoubleVector v2 = v;
+        v2[1*(M+D+1)+j] = v[1*(M+D+1)+j]+ht;
+        double f2 = fx(v2);
+
+        DoubleVector v3 = v;
+        v3[2*(M+D+1)+j] = v[2*(M+D+1)+j]+ht;
+        double f3 = fx(v3);
+
+        g[0*(M+D+1)+j] = (f1-f0)/(ht);
+        g[1*(M+D+1)+j] = (f2-f0)/(ht);
+        g[2*(M+D+1)+j] = (f3-f0)/(ht);
+    }
+
+
 }
 
 double HyperbolicControl1D4::fx(double t)
@@ -129,9 +174,43 @@ double HyperbolicControl1D4::fx(double t)
     DoubleMatrix u;
     calculateU(v, u);
 
-    FILE* f = fopen("20151127.dat", "a");
+    FILE* f = fopen("20151128_6.txt", "a");
     fprintf(f, "------------------------------------------------------------\n");
     fprintf(f, "e1: %f T: %.8f Functional: %.16f\n", e[0], t, rf);
+
+    fprintf(f, "v1:\t");
+    for (unsigned int j=0; j<=M+D; j++)
+    {
+        double v1 = v[0*(M+D+1)+j];
+        if (v1<0)
+            fprintf(f, "%14.8f ", v1);
+        else
+            fprintf(f, "%+14.8f ", v1);
+    }
+    fprintf(f, "\n");
+
+    fprintf(f, "v2:\t");
+    for (unsigned int j=0; j<=M+D; j++)
+    {
+        double v2 = v[1*(M+D+1)+j];
+        if (v2<0)
+            fprintf(f, "%14.8f ", v2);
+        else
+            fprintf(f, "%+14.8f ", v2);
+    }
+    fprintf(f, "\n");
+
+    fprintf(f, "v3:\t");
+    for (unsigned int j=0; j<=M+D; j++)
+    {
+        double v3 = v[2*(M+D+1)+j];
+        if (v3<0)
+            fprintf(f, "%14.8f ", v3);
+        else
+            fprintf(f, "%+14.8f ", v3);
+    }
+    fprintf(f, "\n");
+
     for (unsigned int j=M; j<=M+D; j++)
     {
         //printf("u[%d]:\t", j);
@@ -383,16 +462,10 @@ void HyperbolicControl1D4::calculareP(const DoubleMatrix &u, DoubleVector &g)
 
 void HyperbolicControl1D4::calculateG(const DoubleVector& psi, DoubleVector& g, unsigned int j)
 {
-    g[0*(M+D+1)+j] = -(a*a)*(psi[1]-psi[0])/ht;
-    g[1*(M+D+1)+j] = -(a*a)*(psi[N-1]-psi[N])/ht;
+    g[0*(M+D+1)+j] = -(a*a)*(psi[1]-psi[0])/hx;
+    g[1*(M+D+1)+j] = -(a*a)*(psi[N-1]-psi[N])/hx;
 
-    unsigned int i1 = (unsigned int)(round(e[0]/hx));
-    g[2*(M+D+1)+j] = -psi[i1];
-
-    //unsigned int i2 = (unsigned int)(round(e[1]/hx));
-    //g[3*(M+D+1)+j] = -psi[i2];
-
-    //unsigned int i3 = (unsigned int)(round(e[2]/hx));
-    //g[4*(M+D+1)+j] = -psi[i3];
+    //unsigned int i1 = (unsigned int)(round(e[0]/hx));
+    //g[2*(M+D+1)+j] = -psi[i1];
 }
 
