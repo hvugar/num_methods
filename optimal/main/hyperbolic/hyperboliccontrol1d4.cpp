@@ -103,27 +103,34 @@ void HyperbolicControl1D4::gradient(const DoubleVector &v, DoubleVector &g, doub
 //        g[2*(M+D+1)+j] = (f2-f1)/(2.0*ht);
 //    }
 
+//    double f0 = fx(v);
+//    for (unsigned int j=0; j<=M+D; j++)
+//    {
+//        DoubleVector v1 = v;
+//        v1[0*(M+D+1)+j] = v[0*(M+D+1)+j]+ht;
+//        double f1 = fx(v1);
+
+//        DoubleVector v2 = v;
+//        v2[1*(M+D+1)+j] = v[1*(M+D+1)+j]+ht;
+//        double f2 = fx(v2);
+
+//        DoubleVector v3 = v;
+//        v3[2*(M+D+1)+j] = v[2*(M+D+1)+j]+ht;
+//        double f3 = fx(v3);
+
+//        g[0*(M+D+1)+j] = (f1-f0)/(ht);
+//        g[1*(M+D+1)+j] = (f2-f0)/(ht);
+//        g[2*(M+D+1)+j] = (f3-f0)/(ht);
+//    }
+
     double f0 = fx(v);
-    for (unsigned int j=0; j<=M+D; j++)
+    for (unsigned int j=0; j<v.size(); j++)
     {
         DoubleVector v1 = v;
-        v1[0*(M+D+1)+j] = v[0*(M+D+1)+j]+ht;
+        v1[j] = v[j]+ht;
         double f1 = fx(v1);
-
-        DoubleVector v2 = v;
-        v2[1*(M+D+1)+j] = v[1*(M+D+1)+j]+ht;
-        double f2 = fx(v2);
-
-        DoubleVector v3 = v;
-        v3[2*(M+D+1)+j] = v[2*(M+D+1)+j]+ht;
-        double f3 = fx(v3);
-
-        g[0*(M+D+1)+j] = (f1-f0)/(ht);
-        g[1*(M+D+1)+j] = (f2-f0)/(ht);
-        g[2*(M+D+1)+j] = (f3-f0)/(ht);
+        g[j] = (f1-f0)/(ht);
     }
-
-
 }
 
 double HyperbolicControl1D4::fx(double t)
