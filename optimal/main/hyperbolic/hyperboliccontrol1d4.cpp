@@ -9,8 +9,8 @@ void HyperbolicControl1D4::main()
     hc.e[0] = 0.4;
 
     double a, b, t;
-    a = 0.6;
-    b = 1.2;
+    a = 0.1;
+    b = 2.0;
     goldenSectionSearch(a, b, t, &hc, 0.000001);
 
     //hc.fx(1.0);
