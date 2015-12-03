@@ -1,5 +1,5 @@
-#ifndef GLOBAL_H
-#define GLOBAL_H
+#ifndef CGLOBAL_H
+#define CGLOBAL_H
 
 #include <stdio.h>
 
@@ -9,4 +9,4 @@
 #  define C_MINIMUMSHARED_EXPORT __declspec(dllimport)
 #endif
 
-#endif // GLOBAL
+#endif // CGLOBAL_H

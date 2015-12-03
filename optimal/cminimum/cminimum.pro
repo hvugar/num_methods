@@ -8,9 +8,9 @@ DEFINES += C_MINIMUM_LIBRARY
 DESTDIR += ../bin
 
 SOURCES += \
-    methods.c
+    cmethods.c
 
 HEADERS += \
-    methods.h \
-    global.h
+    cmethods.h \
+    cglobal.h
 
