@@ -1,9 +1,5 @@
 #include "tomasmethod.h"
 
-TomasMethod::TomasMethod()
-{
-}
-
 void TomasAlgorithm(const DoubleVector &a, const DoubleVector &b, const DoubleVector &c, const DoubleVector &d, DoubleVector &x)
 {
     if (x.size() != a.size() || x.size() != b.size() || x.size() != c.size() || x.size() != d.size()) return;
