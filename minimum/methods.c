@@ -102,3 +102,49 @@ void gradient2(RnFunction f, double *x, int n, double dx, double *gradients)
 
 	}
 }
+
+void check_matrix(float** a, float* b, int n)
+{
+	int i,j,k;
+	for (i=0; i<n; i++)
+	{
+		int c = 0;
+		for (j=0; j<n; j++)
+		{
+			if (a[i][j] != 0) c++;
+		}
+		if (c==0)
+		{
+			if (b[i] == 0) 
+				fprintf(stderr, "Equation has infinity solutions");
+			else
+				fprintf(stderr, "Equation has not any solution");
+		}			
+	}
+}
+
+void gaussian_elimination(float** a, float* b, float* x, int n)
+{
+	int i,j,k;
+	for (k=0; k<n-1; k++)
+	{
+		for (i=(k+1); i<n; i++)
+		{
+			float f = a[i][k] / a[k][k];
+			for (j=k; j<n; j++)
+			{
+				a[i][j] = a[i][j] - a[k][j] * f;
+			}
+			b[i] = b[i] - b[k] * f;
+		}
+		check_matrix(a, b, n);
+	}
+	
+	for (i=(n-1); i>=0; i--)
+	{
+		for (j=(n-1); j>i; j--)
+			b[i] -= (a[i][j] * x[j]);
+		
+		x[i] = b[i] / a[i][i];
+	}
+}
