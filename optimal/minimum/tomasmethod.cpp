@@ -46,7 +46,6 @@ void TomasAlgorithm(const DoubleVector &a, const DoubleVector &b, const DoubleVe
     q.clear();
 }
 
-
 void tomasAlgorithm(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int n)
 {
     double *p = (double*)malloc(sizeof(double)*n);
