@@ -43,12 +43,14 @@
 #include "hyperbolic/hyperboliccontrol1d4.h"
 #include "hyperbolic/hyperboliccontrol1dt.h"
 
+#include <cmethods.h>
+
 int main()
 {
     //HyperbolicControl1DT::main();
     //puts("------------------------------------------------------------------------------------------------");
-    HyperbolicControl1D4::main();
-    //HeatControl2DeltaX::main();
+    //HyperbolicControl1D4::main();
+    HeatControl2DeltaX::main();
     return 0;
 }
 

@@ -8,7 +8,7 @@ DEFINES += MINIMUM_LIBRARY
 
 DESTDIR += ../bin
 
-INCLUDEPATH = ../cminimum
+INCLUDEPATH += ../cminimum
 LIBS += -L../bin -lcminimum
 
 SOURCES += \

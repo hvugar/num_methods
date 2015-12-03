@@ -1,5 +1,10 @@
 #include "cmethods.h"
 
+double derivative(CR1Function fx)
+{
+    return fx(5.0);
+}
+
 double derivative1(CR1Function fx, double x, double h)
 {
     return (fx(x+h) - fx(x)) / h;

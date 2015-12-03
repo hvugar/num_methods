@@ -2,12 +2,14 @@ TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
+#QMAKE_CXXFLAGS += -O3
+#QMAKE_CXXFLAGS -= -O2
+#QMAKE_CXXFLAGS_RELEASE = -O3
+#QMAKE_CFLAGS += -O3
 
-INCLUDEPATH = ../minimum
-LIBS += -L../bin -lminimum
-
-INCLUDEPATH = ../cminimum
-#LIBS += -L../bin -lcminimum
+INCLUDEPATH += ../minimum
+INCLUDEPATH += ../cminimum
+LIBS += -L../bin -lminimum -lcminimum
 
 DESTDIR += ../bin
 
