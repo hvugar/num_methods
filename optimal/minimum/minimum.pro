@@ -8,6 +8,9 @@ DEFINES += MINIMUM_LIBRARY
 
 DESTDIR += ../bin
 
+INCLUDEPATH = ../cminimum
+LIBS += -L../bin -lcminimum
+
 SOURCES += \
     function.cpp \
     r1minimize.cpp \

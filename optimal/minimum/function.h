@@ -1,5 +1,5 @@
-#ifndef R1FUNCTION_H
-#define R1FUNCTION_H
+#ifndef FUNCTION_H
+#define FUNCTION_H
 
 #include "doublevector.h"
 #include "global.h"
@@ -43,4 +43,4 @@ protected:
 typedef std::vector<RnFunction> RnFunctionList;
 typedef std::vector<RnFunction*> PRnFunctionList;
 
-#endif // R1FUNCTION_H
+#endif // FUNCTION_H

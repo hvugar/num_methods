@@ -218,8 +218,7 @@ void HyperbolicControl1D2::calculateU(const DoubleVector& v, DoubleMatrix &u)
             dc[N-2] = 0.0;
             rd[0]   -= alpha1 * m1(j+1);
             rd[N-2] -= alpha1 * m2(j+1);
-            //TomasAlgorithm(da, db, dc, rd, rx);
-            tomasAlgorithm(da.data(), db.data(), dc.data(), rd.data(), rx.data(), rx.size());
+            TomasAlgorithm(da, db, dc, rd, rx);
 
             u[j+1][0] = m1(j+1);
             for (unsigned int i=1; i<=N-1; i++)

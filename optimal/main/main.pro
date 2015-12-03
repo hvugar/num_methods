@@ -5,6 +5,10 @@ CONFIG -= qt
 
 INCLUDEPATH = ../minimum
 LIBS += -L../bin -lminimum
+
+INCLUDEPATH = ../cminimum
+#LIBS += -L../bin -lcminimum
+
 DESTDIR += ../bin
 
 #DEFINES += MINIMUM_LIBRARY
