@@ -22,14 +22,14 @@ SOURCES += main.cpp \
     pointcontrol.cpp \
     pointcontrol1.cpp \
     pointcontrol2.cpp \
-    heat/1d/heatcontrol.cpp \
-    heat/1d/heatcontroldeltaf.cpp \
-    heat/1d/heatcontroldeltax.cpp \
-    heat/2d/heatcontrol2d.cpp \
-    heat/2d/heatcontrol2delta.cpp \
-    heat/2d/heatcontrol2deltaf.cpp \
-    heat/2d/heatcontrol2deltax.cpp \
-    heat/1d/heatcontrol1.cpp \
+    parabolic/1d/heatcontrol.cpp \
+    parabolic/1d/heatcontroldeltaf.cpp \
+    parabolic/1d/heatcontroldeltax.cpp \
+    parabolic/2d/heatcontrol2d.cpp \
+    parabolic/2d/heatcontrol2delta.cpp \
+    parabolic/2d/heatcontrol2deltaf.cpp \
+    parabolic/2d/heatcontrol2deltax.cpp \
+    parabolic/1d/heatcontrol1.cpp \
     hyperbolic/hyperbolic2dx.cpp \
     hyperbolic/hyperbolic1dx.cpp \
     hyperbolic/hyperboliccontrol1d.cpp \
@@ -50,14 +50,14 @@ HEADERS += \
     pointcontrol.h \
     pointcontrol1.h \
     pointcontrol2.h \
-    heat/1d/heatcontrol.h \
-    heat/1d/heatcontroldeltaf.h \
-    heat/1d/heatcontroldeltax.h \
-    heat/2d/heatcontrol2d.h \
-    heat/2d/heatcontrol2delta.h \
-    heat/2d/heatcontrol2deltaf.h \
-    heat/2d/heatcontrol2deltax.h \
-    heat/1d/heatcontrol1.h \
+    parabolic/1d/heatcontrol.h \
+    parabolic/1d/heatcontroldeltaf.h \
+    parabolic/1d/heatcontroldeltax.h \
+    parabolic/2d/heatcontrol2d.h \
+    parabolic/2d/heatcontrol2delta.h \
+    parabolic/2d/heatcontrol2deltaf.h \
+    parabolic/2d/heatcontrol2deltax.h \
+    parabolic/1d/heatcontrol1.h \
     hyperbolic/hyperbolic2dx.h \
     hyperbolic/hyperbolic1dx.h \
     hyperbolic/hyperboliccontrol1d.h \
