@@ -69,7 +69,7 @@ void createHeatImage(int width, int height, const QString &inFile, const QString
     }
     file.close();
 
-    //qDebug() << minimum << maximum << m.size() << m[0].size() << width << height;
+    qDebug() << minimum << maximum << m.size() << m[0].size() << width << height;
 
     for (int j=0; j<m.size(); j++)
     {
