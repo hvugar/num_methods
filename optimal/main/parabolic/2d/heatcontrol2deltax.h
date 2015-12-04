@@ -68,7 +68,6 @@ private:
     double m2(double x2, double t) { return u(x11, x2, t); }
     double m3(double x1, double t) { return u(x1, x20, t); }
     double m4(double x1, double t) { return u(x1, x21, t); }
-
     double fxt(unsigned int i, unsigned int j, unsigned k, const DoubleVector& f);
 
     double pm1(double x2, double t) { return 0.0; }
@@ -76,9 +75,9 @@ private:
     double pm3(double x1, double t) { return 0.0; }
     double pm4(double x1, double t) { return 0.0; }
 
-    double f1(double t) { return t; }
-    double f2(double t) { return t*t; }
-    double f3(double t) { return t*t*t; }
+    double g1(double t) { return t; }
+    double g2(double t) { return t*t; }
+    double g3(double t) { return t*t*t; }
 
     void write(const char* fileName, const DoubleMatrix& m);
 };

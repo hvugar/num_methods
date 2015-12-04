@@ -1,0 +1,1 @@
+imager.exe -w 101 -h 101 -i optimal.txt -o images/optimal.png

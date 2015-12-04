@@ -33,7 +33,7 @@ public:
     DoubleMatrix uT;
 
     void calculateU(const DoubleVector& f);
-    void calculateU1(const DoubleVector &f);
+    //void calculateU1(const DoubleVector &f);
     void calculateP(const DoubleVector &f, DoubleVector& g);
 
     static void main();
@@ -49,6 +49,7 @@ private:
     double m2(double x2, double t);
     double m3(double x1, double t);
     double m4(double x1, double t);
+    double f1(unsigned int i, unsigned j, unsigned int k);
 
     double pm1(double x2, double t) { return 0.0; }
     double pm2(double x2, double t) { return 0.0; }
@@ -58,6 +59,8 @@ private:
     double fxt(double x1, double x2, double t);
 
     virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
+
+    const DoubleVector *pf;
 };
 
 #endif // HEATCONTROL2D_H

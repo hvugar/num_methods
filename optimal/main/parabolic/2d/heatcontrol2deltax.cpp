@@ -7,7 +7,6 @@
 void HeatControl2DeltaX::main()
 {
     HeatControl2DeltaX hc(100, 100, 100);
-    //hc.test();
 
     DoubleVector e;
     e.resize(2*hc.L);
@@ -147,7 +146,7 @@ void HeatControl2DeltaX::calculateU(const DoubleVector &e, DoubleMatrix& u)
         {
             for (unsigned int j=0; j<=N2; j++)
             {
-                for (unsigned i=0; i<=N1; i++)
+                for (unsigned int i=0; i<=N1; i++)
                 {
                     u0[j][i] = fi(i*h1, j*h2);
                 }
@@ -402,26 +401,26 @@ void HeatControl2DeltaX::calculateGX(const DoubleVector& e, const DoubleMatrix& 
     if (k==0 || k==M)
     {
         psiDerivative(psiX1, psiX2, e[0], e[1], psi);
-        g[0] = g[0] + f1((k)*ht) * psiX1;
-        g[1] = g[1] + f1((k)*ht) * psiX2;
+        g[0] = g[0] + g1((k)*ht) * psiX1;
+        g[1] = g[1] + g1((k)*ht) * psiX2;
         psiDerivative(psiX1, psiX2, e[2], e[3], psi);
-        g[2] = g[2] + f2((k)*ht) * psiX1;
-        g[3] = g[3] + f2((k)*ht) * psiX2;
+        g[2] = g[2] + g2((k)*ht) * psiX1;
+        g[3] = g[3] + g2((k)*ht) * psiX2;
         psiDerivative(psiX1, psiX2, e[4], e[5], psi);
-        g[4] = g[4] + f3((k)*ht) * psiX1;
-        g[5] = g[5] + f3((k)*ht) * psiX2;
+        g[4] = g[4] + g3((k)*ht) * psiX1;
+        g[5] = g[5] + g3((k)*ht) * psiX2;
     }
     else
     {
         psiDerivative(psiX1, psiX2, e[0], e[1], psi);
-        g[0] = g[0] + 2.0*f1((k)*ht) * psiX1;
-        g[1] = g[1] + 2.0*f1((k)*ht) * psiX2;
+        g[0] = g[0] + 2.0*g1((k)*ht) * psiX1;
+        g[1] = g[1] + 2.0*g1((k)*ht) * psiX2;
         psiDerivative(psiX1, psiX2, e[2], e[3], psi);
-        g[2] = g[2] + 2.0*f2((k)*ht) * psiX1;
-        g[3] = g[3] + 2.0*f2((k)*ht) * psiX2;
+        g[2] = g[2] + 2.0*g2((k)*ht) * psiX1;
+        g[3] = g[3] + 2.0*g2((k)*ht) * psiX2;
         psiDerivative(psiX1, psiX2, e[4], e[5], psi);
-        g[4] = g[4] + 2.0*f3((k)*ht) * psiX1;
-        g[5] = g[5] + 2.0*f3((k)*ht) * psiX2;
+        g[4] = g[4] + 2.0*g3((k)*ht) * psiX1;
+        g[5] = g[5] + 2.0*g3((k)*ht) * psiX2;
     }
 
     if (k==0)
@@ -497,9 +496,9 @@ double HeatControl2DeltaX::fxt(unsigned int i, unsigned int j, unsigned k, const
     double a = 1.0/(2.0*M_PI*sgm1*sgm2);\
     double b = 2.0*sgm1*sgm2;
 
-    sum += f1(t) * a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b);
-    sum += f2(t) * a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/b);
-    sum += f3(t) * a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/b);
+    sum += g1(t) * a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b);
+    sum += g2(t) * a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/b);
+    sum += g3(t) * a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/b);
 
     return sum;
 }

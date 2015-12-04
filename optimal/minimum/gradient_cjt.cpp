@@ -29,8 +29,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
         double gradient_norm = g.L2Norm();
         if (gradient_norm < epsilon1())
         {
-            if (mshowEndMessage)
-                puts("Optimisation ends, because L2 norm of gradient is less than epsilon...");
+            if (mshowEndMessage) puts("Optimisation ends, because L2 norm of gradient is less than epsilon...");
             break;
         }
 
@@ -83,8 +82,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
         /* calculating distance previous and new point */
         if (distance < epsilon2() && fabs(f2 - f1) < epsilon2())
         {
-            if (mshowEndMessage)
-                puts("Optimisation ends, because distance beetween last and current point less than epsilon...");
+            if (mshowEndMessage) puts("Optimisation ends, because distance beetween last and current point less than epsilon...");
             break;
         }
 

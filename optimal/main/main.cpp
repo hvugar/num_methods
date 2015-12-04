@@ -50,7 +50,7 @@ int main()
     //HyperbolicControl1DT::main();
     //puts("------------------------------------------------------------------------------------------------");
     //HyperbolicControl1D4::main();
-    HeatControl2DeltaX::main();
+    HeatControl2Delta::main();
     return 0;
 }
 

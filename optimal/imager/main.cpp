@@ -8,20 +8,7 @@
 #include <QPen>
 #include <stdlib.h>
 #include <QVector>
-
 #include "widget2.h"
-
-void createHeatImage();
-
-int main(int argc, char *argv[])
-{
-    QApplication a(argc, argv);
-
-    Widget2 w;
-    w.show();
-
-    return a.exec();
-}
 
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
@@ -29,16 +16,32 @@ int main(int argc, char *argv[])
 typedef QVector<double> QDoubleVector;
 typedef QVector<QDoubleVector> QDoubleMatrix;
 
-void createHeatImage()
+void createHeatImage(int width, int height, const QString &inFile, const QString &outFile);
+
+int main(int argc, char *argv[])
 {
-    int width = 2001;
-    int height = 2001;
+    QApplication a(argc, argv, false);
+
+    if (argc < 9)
+    {
+        printf("Usage: images.exe -w 100 -h 100 -i filename.txt -o filename.png\n");
+    }
+    else
+    {
+        createHeatImage(QString(argv[2]).toInt(), QString(argv[4]).toInt(), QString(argv[6]), QString(argv[8]));
+    }
+
+    return 0;
+}
+
+void createHeatImage(int width, int height, const QString &inFile, const QString &outFile)
+{
     QPixmap pixmap(QSize(width, height));
     pixmap.fill(Qt::white);
     QPainter painter(&pixmap);
     painter.drawPoint(0,0);
 
-    QFile file("data2000.txt");
+    QFile file(inFile);
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream in(&file);
 
@@ -66,10 +69,8 @@ void createHeatImage()
     }
     file.close();
 
-    qDebug() << minimum << maximum << m.size() << m[0].size() << width << height;
+    //qDebug() << minimum << maximum << m.size() << m[0].size() << width << height;
 
-    //    minimum = 1.0;
-    //    maximum = 3.0;
     for (int j=0; j<m.size(); j++)
     {
         for (int i=0; i<m[j].size(); i++)
@@ -88,7 +89,7 @@ void createHeatImage()
     }
 
 
-    pixmap.save(file.fileName()+".png", "PNG");
+    pixmap.save(outFile, "PNG");
 
-    qDebug() << "end";
+    //qDebug() << "end";
 }
