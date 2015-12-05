@@ -73,10 +73,6 @@ HyperbolicControl1D3::HyperbolicControl1D3() : RnFunction(), Printer()
     doSettings(t1);
 }
 
-HyperbolicControl1D3::~HyperbolicControl1D3()
-{
-}
-
 void HyperbolicControl1D3::doSettings(double t)
 {
     t0 = 0.0; t1 = t;

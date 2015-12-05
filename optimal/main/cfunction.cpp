@@ -244,8 +244,6 @@ void ControlFunction::main()
     //struct t_px1 : public CFunction { virtual double fx(double t, const DoubleVector &x, const DoubleVector &psi, double u) { return 2.0 * (x[0] - t*t*t) - psi[1]; } };
     //struct t_px2 : public CFunction { virtual double fx(double t, const DoubleVector &x, const DoubleVector &psi, double u) { return 2.0 * (x[1] - t) - 6.0 * x[1] * psi[0] - psi[1]; } };
 
-    ControlFunctionPrinter cfp;
-
     /* Function */
     ControlFunction c(0.0, 1.0, 0.001);
     c.fx0 = new t_fx0;
@@ -270,7 +268,7 @@ void ControlFunction::main()
     g1.setEpsilon2(0.0000001);
     g1.setGradientStep(0.0000001);
     g1.setR1MinimizeEpsilon(0.01, 0.0000001);
-    g1.setPrinter(&cfp);
+    g1.setPrinter(&c);
     g1.calculate(u0);
 
     puts("-----------------------------------------------------------------");
@@ -282,17 +280,17 @@ void ControlFunction::main()
     g2.setEpsilon2(0.0000001);
     g2.setGradientStep(0.0000001);
     g2.setR1MinimizeEpsilon(0.01, 0.0000001);
-    g2.setPrinter(&cfp);
+    g2.setPrinter(&c);
     g2.calculate(u0);
 }
 
-void ControlFunctionPrinter::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const
+void ControlFunction::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const
 {
     printf("J[%2d]: %.10f  ", iterationCount, f->fx(m_x));
     print("u", m_x);
 }
 
-void ControlFunctionPrinter::print(const char* s, const DoubleVector& x) const
+void ControlFunction::print(const char* s, const DoubleVector& x) const
 {
     unsigned int i;
     unsigned int n = x.size();

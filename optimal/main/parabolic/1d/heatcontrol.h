@@ -20,6 +20,8 @@ struct HeatControl : public RnFunction, public Printer
 {
 public:
     HeatControl();
+    virtual ~HeatControl() {}
+
     virtual double fx(const DoubleVector& u);
     virtual void gradient(const DoubleVector& f, DoubleVector &g, double gradient_step);
 

@@ -31,10 +31,6 @@ HyperbolicControl1D4::HyperbolicControl1D4()
     //calculateSettings();
 }
 
-HyperbolicControl1D4::~HyperbolicControl1D4()
-{
-}
-
 void HyperbolicControl1D4::calculateSettings()
 {
     t0 = 0.0;

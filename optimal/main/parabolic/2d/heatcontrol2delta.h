@@ -9,6 +9,7 @@ class HeatControl2Delta : public RnFunction, Printer, Projection
 {
 public:
     HeatControl2Delta(unsigned int M, unsigned int N2, unsigned int N1);
+    virtual ~HeatControl2Delta() {}
 
     //RnFunction
     virtual double fx(const DoubleVector& x);
@@ -17,13 +18,14 @@ public:
     virtual void print(unsigned int iteration, const DoubleVector& x, const DoubleVector &gradient, double alpha, RnFunction* fn) const;
     //Projection
     virtual void project(DoubleVector &x, int index);
-
     //
     void calculateU(const DoubleVector &x, DoubleMatrix &u);
     void calculateP(const DoubleVector &x, DoubleVector &g, const DoubleMatrix &u);
     void calculateGX(const DoubleVector &x, const DoubleMatrix& psi, DoubleVector& g, unsigned int k);
     void calculateGF(const DoubleVector &x, const DoubleMatrix& psi, DoubleVector& g, unsigned int k);
     void calculateG2(const DoubleVector &x, DoubleVector& g);
+
+    double norm(const DoubleVector& x) const;
 
     double t0;
     double t1;
@@ -69,9 +71,9 @@ private:
     inline double pm3(double x1, double t) { return 0.0; }
     inline double pm4(double x1, double t) { return 0.0; }
 
-    inline double g1(double t) { return t; }
-    inline double g2(double t) { return t; }
-    inline double g3(double t) { return t; }
+    inline double g1(double t) const { return t; }
+    inline double g2(double t) const { return t; }
+    inline double g3(double t) const { return t; }
 
     inline void psiDerivative(double &psiX1, double &psiX2, double e1, double e2, const DoubleMatrix &psi);
     void write(const char* fileName, const DoubleMatrix& m);

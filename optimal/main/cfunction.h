@@ -14,7 +14,7 @@ struct CFunction
     virtual double fx(double t, const DoubleVector &x)  { return 0.0; }
 };
 
-struct ControlFunction : public RnFunction
+struct ControlFunction : public RnFunction, public Printer
 {
     ControlFunction(double t0, double t1, double h);
     virtual ~ControlFunction();
@@ -22,6 +22,9 @@ struct ControlFunction : public RnFunction
 protected:
     virtual double fx(const DoubleVector& u);
     virtual void gradient(const DoubleVector& u, DoubleVector &g, double gradient_step);
+
+    virtual void print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const;
+    void print(const char* s, const DoubleVector& x) const;
 
 public:
     CFunction *fx0;
@@ -52,12 +55,6 @@ private:
 
 public:
     static void main();
-};
-
-struct ControlFunctionPrinter : public Printer
-{
-    virtual void print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const;
-    void print(const char* s, const DoubleVector& x) const;
 };
 
 #endif // CFUNCTION_H

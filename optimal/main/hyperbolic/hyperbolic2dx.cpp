@@ -4,9 +4,6 @@ Hyperbolic2DX::Hyperbolic2DX()
 {
 }
 
-Hyperbolic2DX::~Hyperbolic2DX()
-{}
-
 double Hyperbolic2DX::fx(const DoubleVector& x)
 {
     return 0.0;

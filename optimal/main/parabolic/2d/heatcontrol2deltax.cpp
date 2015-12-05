@@ -59,6 +59,8 @@ HeatControl2DeltaX::HeatControl2DeltaX(unsigned int M, unsigned int N2, unsigned
     initialize();
 }
 
+HeatControl2DeltaX::~HeatControl2DeltaX() {}
+
 double HeatControl2DeltaX::fx(const DoubleVector& e)
 {
     calculateU(e, uT);

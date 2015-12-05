@@ -103,10 +103,6 @@ HyperbolicControl1D2::HyperbolicControl1D2(double t0, double t1) : RnFunction(),
     R = 1.0;
 }
 
-HyperbolicControl1D2::~HyperbolicControl1D2()
-{
-}
-
 double HyperbolicControl1D2::fx(const DoubleVector& v)
 {
     DoubleMatrix u;

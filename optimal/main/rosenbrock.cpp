@@ -15,7 +15,7 @@ void Rosenbrock::gradient(const DoubleVector& x, DoubleVector &g, double gradien
     RnFunction::Gradient(this, gradient_step, x, g);
 }
 
-void RosenbrockPrinter::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const
+void Rosenbrock::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const
 {
     if (iterationCount == 1)
     {
@@ -41,7 +41,6 @@ void Rosenbrock::main()
 {
     /* Function */
     Rosenbrock r;
-    RosenbrockPrinter rp;
 
     /* initial point */
     DoubleVector x0(2);
@@ -55,7 +54,7 @@ void Rosenbrock::main()
     g1.setEpsilon2(0.000001);
     g1.setGradientStep(0.000001);
     g1.setR1MinimizeEpsilon(0.1, 0.000001);
-    g1.setPrinter(&rp);
+    g1.setPrinter(&r);
 //    g1.calculate(x0);
 
     puts("-----------------------------------------------------------------");
@@ -68,7 +67,7 @@ void Rosenbrock::main()
     g2.setEpsilon2(0.000001);
     g2.setGradientStep(0.000001);
     g2.setR1MinimizeEpsilon(0.1, 0.000001);
-    g2.setPrinter(&rp);
+    g2.setPrinter(&r);
     g2.setNormalize(false);
     g2.calculate(x0);
 
@@ -82,7 +81,7 @@ void Rosenbrock::main()
     g3.setEpsilon2(0.000001);
     g3.setGradientStep(0.000001);
     g3.setR1MinimizeEpsilon(0.1, 0.000001);
-    g3.setPrinter(&rp);
+    g3.setPrinter(&r);
     g3.setNormalize(false);
     g3.calculate(x0);
 }

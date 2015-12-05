@@ -56,10 +56,6 @@ HyperbolicControl1D::HyperbolicControl1D() : RnFunction(), Printer()
     lamda = 0.25;
 }
 
-HyperbolicControl1D::~HyperbolicControl1D()
-{
-}
-
 double HyperbolicControl1D::fx(const DoubleVector& v)
 {
     calculateU(v, uT);

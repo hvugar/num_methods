@@ -229,7 +229,7 @@ void CFunction2::main()
     g1.setEpsilon2(0.0000001);
     g1.setGradientStep(0.0000001);
     g1.setR1MinimizeEpsilon(0.01, 0.0000001);
-    g1.setPrinter(new CFunction2Printer);
+    g1.setPrinter(&c);
     g1.calculate(u0);
 
     puts("-----------------------------------------------------------------");
@@ -241,11 +241,11 @@ void CFunction2::main()
     g2.setEpsilon2(0.0000001);
     g2.setGradientStep(0.0000001);
     g2.setR1MinimizeEpsilon(0.01, 0.0000001);
-    g2.setPrinter(new CFunction2Printer);
+    g2.setPrinter(&c);
 //    g2.calculate(u0);
 }
 
-void CFunction2Printer::print(unsigned int iterationCount, const DoubleVector& u, const DoubleVector &s, double alpha, RnFunction* f) const
+void CFunction2::print(unsigned int iterationCount, const DoubleVector& u, const DoubleVector &s, double alpha, RnFunction* f) const
 {
     CFunction2* f2 = dynamic_cast<CFunction2*>(f);
     printf("J[%2d]: %.10f\n", iterationCount, f->fx(u));
@@ -256,7 +256,7 @@ void CFunction2Printer::print(unsigned int iterationCount, const DoubleVector& u
     print("u", u);
 }
 
-void CFunction2Printer::print(const char* s, const std::vector<double>& x) const
+void CFunction2::print(const char* s, const std::vector<double>& x) const
 {
     unsigned int i;
     unsigned int n = x.size();

@@ -32,9 +32,7 @@ HeatControl2D::HeatControl2D(unsigned int m, unsigned int n2, unsigned int n1) :
     }
 }
 
-HeatControl2D::~HeatControl2D()
-{
-}
+HeatControl2D::~HeatControl2D() {}
 
 double HeatControl2D::fx(const DoubleVector &f)
 {

@@ -35,9 +35,9 @@ double PointControl1::fx(const DoubleVector &p)
 void PointControl1::gradient(const DoubleVector& p, DoubleVector& g, double gradient_step)
 {
     calculate_x(p);
-    printX("x", x);
+    Printer::printVector(x, 10, "x");
     calculate_psi();
-    printX("psi", psi);
+    Printer::printVector(psi, 10, "psi");
 
     g[0] = psi[2000];
     g[1] = psi[5000];
@@ -113,7 +113,6 @@ void PointControl1::main()
     p[2] = 0.0;
 
     PointControl1 f(0.0, 1.0, 0.0, +22.0, 0.0001, 0.0001);
-    PointControl1Printer printer;
 
     ConjugateGradient g1;
     g1.setFunction(&f);
@@ -121,14 +120,14 @@ void PointControl1::main()
     g1.setEpsilon2(0.0000001);
     g1.setGradientStep(0.0000001);
     g1.setR1MinimizeEpsilon(1, 0.001);
-    g1.setPrinter(&printer);
+    g1.setPrinter(&f);
     g1.calculate(p);
     printf("p: %f %f %f\n", p[0], p[1], p[2]);
 
     f.write(f.x);
 }
 
-void PointControl1Printer::print(unsigned int iterationCount, const DoubleVector &p, const DoubleVector &s, double m_alpha, RnFunction *f) const
+void PointControl1::print(unsigned int iterationCount, const DoubleVector &p, const DoubleVector &s, double m_alpha, RnFunction *f) const
 {
     printf("J[%2d]: %.10f %.10f %.10f %.10f\n", iterationCount, f->fx(p), p[0], p[1], p[2]);
     puts("*******************************************************************************");

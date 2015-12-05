@@ -288,7 +288,7 @@ void CFunction3::main()
     g1.setEpsilon2(0.0000001);
     g1.setGradientStep(0.000001);
     g1.setR1MinimizeEpsilon(0.01, 0.0000001);
-    g1.setPrinter(new CFunction3Printer);
+    g1.setPrinter(&c);
     g1.calculate(u0);
 
 
@@ -303,7 +303,7 @@ void CFunction3::main()
 //    g2.calculate(u0);
 }
 
-void CFunction3Printer::print(unsigned int iterationCount, const DoubleVector& u, const DoubleVector &s, double alpha, RnFunction* f) const
+void CFunction3::print(unsigned int iterationCount, const DoubleVector& u, const DoubleVector &s, double alpha, RnFunction* f) const
 {
     CFunction3 *c = dynamic_cast<CFunction3*>(f);
 
@@ -317,15 +317,15 @@ void CFunction3Printer::print(unsigned int iterationCount, const DoubleVector& u
         u1[i] = u[i];
         u2[i] = u[i+c->n];
     }
-    printX("x1", c->x1);
-    printX("x2", c->x2);
-    printX("p1", c->psi1);
-    printX("p2", c->psi2);
-    printX("u1", u1);
-    printX("u2", u2);
+    Printer::printVector(c->x1, 10, "x1");
+    Printer::printVector(c->x2, 10, "x2");
+    Printer::printVector(c->psi1, 10, "p1");
+    Printer::printVector(c->psi2, 10, "p2");
+    Printer::printVector(u1, 10, "u1");
+    Printer::printVector(u2, 10, "u2");
 }
 
-void CFunction3Printer::print(const char* s, const std::vector<double>& x) const
+void CFunction3::print(const char* s, const std::vector<double>& x) const
 {
     unsigned int i;
 

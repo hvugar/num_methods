@@ -20,13 +20,16 @@
  * x1*(t) = t^3;
  * x2*(t) = t;
  */
-struct CFunction3 : public RnFunction
+struct CFunction3 : public RnFunction, public Printer
 {
     CFunction3(double t0, double t1, double h);
     virtual ~CFunction3();
 
     virtual double fx(const DoubleVector& u);
     virtual void gradient(const DoubleVector& u, DoubleVector &g, double gradient_step);
+
+    virtual void print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const;
+    void print(const char* s, const std::vector<double>& x) const;
 
 private:
     double fx0(double t, const DoubleVector& x, const DoubleVector& u) const;
@@ -53,12 +56,6 @@ public:
 
 public:
     static void main();
-};
-
-struct CFunction3Printer : public Printer
-{
-    virtual void print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const;
-    void print(const char* s, const std::vector<double>& x) const;
 };
 
 #endif // CFUNCTION3_H

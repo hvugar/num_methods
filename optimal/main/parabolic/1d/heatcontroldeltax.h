@@ -9,6 +9,7 @@ class HeatControlDeltaX : public RnFunction, public Printer, Projection
 {
 public:
     HeatControlDeltaX(unsigned int M, unsigned int N, double a1);
+    virtual ~HeatControlDeltaX() {}
 
     virtual double fx(const DoubleVector& x);
     virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step=0.000001);

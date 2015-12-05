@@ -9,7 +9,7 @@ class HeatControl2D :public RnFunction, public Printer
 {
 public:
     HeatControl2D(unsigned int M, unsigned int N2, unsigned int N1);
-    ~HeatControl2D();
+    virtual ~HeatControl2D();
 
     unsigned int N1;
     unsigned int N2;

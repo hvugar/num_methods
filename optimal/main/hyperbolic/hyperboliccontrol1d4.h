@@ -14,7 +14,7 @@ class HyperbolicControl1D4 : public RnFunction, public R1Function, public Printe
 {
 public:
     HyperbolicControl1D4();
-    virtual ~HyperbolicControl1D4();
+    virtual ~HyperbolicControl1D4() {}
 
     void calculateSettings();
 

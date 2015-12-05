@@ -8,6 +8,7 @@ class HeatControlDeltaF : public RnFunction, Printer
 {
 public:
     HeatControlDeltaF(unsigned int M, unsigned int N, double a1);
+    virtual ~HeatControlDeltaF() {}
 
     virtual double fx(const DoubleVector& x);
     virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step=0.000001);

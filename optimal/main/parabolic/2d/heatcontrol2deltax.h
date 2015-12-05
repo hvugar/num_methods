@@ -9,6 +9,7 @@ class HeatControl2DeltaX : public RnFunction, Printer, Projection
 {
 public:
     HeatControl2DeltaX(unsigned int M, unsigned int N2, unsigned int N1);
+    virtual ~HeatControl2DeltaX();
 
 public:
     //RnFunction

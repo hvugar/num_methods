@@ -7,6 +7,7 @@
 struct HeatControl1 : public RnFunction, ParabolicEquation
 {
     HeatControl1();
+    virtual ~HeatControl1() {}
 
     virtual double fx(const DoubleVector& x);
     virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step=0.000001);

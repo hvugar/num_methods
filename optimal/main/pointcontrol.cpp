@@ -128,7 +128,6 @@ void PointControl::main()
     p[2] = 12.4;
 
     PointControl f(0.0, 1.0, 0.0, +1.5, 0.0001, 0.0001);
-    PointControlPrinter printer;
 
     SteepestDescentGradient g1;
     g1.setFunction(&f);
@@ -136,13 +135,13 @@ void PointControl::main()
     g1.setEpsilon2(0.0000001);
     g1.setGradientStep(0.0000001);
     g1.setR1MinimizeEpsilon(1, 0.001);
-    g1.setPrinter(&printer);
+    g1.setPrinter(&f);
     g1.calculate(p);
 
     f.write(f.x, "pointcontrol.txt");
 }
 
-void PointControlPrinter::print(unsigned int i, const DoubleVector &p, const DoubleVector &g, double a, RnFunction *f) const
+void PointControl::print(unsigned int i, const DoubleVector &p, const DoubleVector &g, double a, RnFunction *f) const
 {
     printf("J[%2d]: %.10f %.10f %.10f %.10f\n", i, f->fx(p), p[0], p[1], p[2]);
     puts("*******************************************************************************");

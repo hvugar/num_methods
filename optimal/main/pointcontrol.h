@@ -4,13 +4,16 @@
 #include <function.h>
 #include <printer.h>
 
-class PointControl : public RnFunction
+class PointControl : public RnFunction, public Printer
 {
 public:
     PointControl(double t0, double t1, double x0, double x1, double dt, double dx);
+    virtual ~PointControl() {}
 
     virtual double fx(const DoubleVector &p);
     virtual void gradient(const DoubleVector& p, DoubleVector& g, double gradient_step);
+
+    virtual void print(unsigned int iterationCount, const DoubleVector& x, const DoubleVector &g, double m_alpha, RnFunction* f) const;
 
     void calculate_x(const DoubleVector& p);
     void calculate_psi();
@@ -39,11 +42,6 @@ private:
 
 public:
     static void main();
-};
-
-struct PointControlPrinter : public Printer
-{
-    virtual void print(unsigned int iterationCount, const DoubleVector& x, const DoubleVector &g, double m_alpha, RnFunction* f) const;
 };
 
 #endif // POINTCONTROL_H

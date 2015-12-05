@@ -11,7 +11,7 @@ class HeatControl2DeltaF : public RnFunction, Printer, Projection
 {
 public:
     HeatControl2DeltaF(unsigned int M, unsigned int N2, unsigned int N1);
-    ~HeatControl2DeltaF();
+    virtual ~HeatControl2DeltaF();
 
     double fx(const DoubleVector& e);
     void gradient(const DoubleVector& e, DoubleVector& g, double gradient_step);

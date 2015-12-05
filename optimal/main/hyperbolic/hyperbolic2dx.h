@@ -8,7 +8,7 @@
 struct Hyperbolic2DX : public RnFunction, Projection, Printer
 {
     Hyperbolic2DX();
-    virtual ~Hyperbolic2DX();
+    virtual ~Hyperbolic2DX() {}
 
     virtual double fx(const DoubleVector& x);
     virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step=0.000001);

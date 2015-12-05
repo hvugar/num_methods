@@ -10,6 +10,7 @@ class Hyperbolic1DX : public RnFunction, Projection, Printer
 {
 public:
     Hyperbolic1DX(unsigned int M, unsigned int N);
+    virtual ~Hyperbolic1DX() {}
 
     virtual double fx(const DoubleVector& x);
     virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step=0.000001);

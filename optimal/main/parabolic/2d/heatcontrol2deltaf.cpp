@@ -64,8 +64,7 @@ HeatControl2DeltaF::HeatControl2DeltaF(unsigned int m, unsigned int n2, unsigned
     initialize();
 }
 
-HeatControl2DeltaF::~HeatControl2DeltaF()
-{}
+HeatControl2DeltaF::~HeatControl2DeltaF() {}
 
 double HeatControl2DeltaF::fx(const DoubleVector &f)
 {

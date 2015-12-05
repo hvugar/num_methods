@@ -5,10 +5,6 @@ HyperbolicControl1DT::HyperbolicControl1DT()
 {
 }
 
-HyperbolicControl1DT::~HyperbolicControl1DT()
-{
-}
-
 double HyperbolicControl1DT::fx(double t)
 {
     puts("------------------------------------------------------------------------------------------------------");

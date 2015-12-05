@@ -14,7 +14,7 @@ class HyperbolicControl1D3 : public RnFunction, public Printer, public Projectio
 {
 public:
     HyperbolicControl1D3();
-    virtual ~HyperbolicControl1D3();
+    virtual ~HyperbolicControl1D3() {}
 
     void doSettings(double t);
 

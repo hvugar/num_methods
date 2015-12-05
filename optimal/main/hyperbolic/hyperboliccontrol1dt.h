@@ -7,7 +7,7 @@ class HyperbolicControl1DT : public R1Function
 {
 public:
     HyperbolicControl1DT();
-    ~HyperbolicControl1DT();
+    virtual ~HyperbolicControl1DT() {}
 
     virtual double fx(double x);
 

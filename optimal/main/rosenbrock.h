@@ -4,21 +4,19 @@
 #include <function.h>
 #include <printer.h>
 
-struct Rosenbrock : public RnFunction
+struct Rosenbrock : public RnFunction, public Printer
 {
 public:
+    virtual ~Rosenbrock() {}
+
     virtual double fx(const DoubleVector& x);
     virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step);
 
-    static void main();
+    void print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const;
 
+    static void main();
 private:
     double grad_step;
-};
-
-struct RosenbrockPrinter : public Printer
-{
-    void print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const;
 };
 
 #endif // ROSENBROCK_H

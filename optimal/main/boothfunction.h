@@ -11,6 +11,7 @@
 struct BoothFunction : public RnFunction, Printer, Projection
 {
 public:
+    virtual ~BoothFunction() {}
     //RnFunction
     virtual double fx(const DoubleVector& x);
     virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step);
