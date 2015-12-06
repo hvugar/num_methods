@@ -25,9 +25,6 @@ SOURCES += main.cpp \
     cfunction1.cpp \
     cfunction2.cpp \
     cfunction3.cpp \
-    pointcontrol.cpp \
-    pointcontrol1.cpp \
-    pointcontrol2.cpp \
     parabolic/1d/heatcontrol.cpp \
     parabolic/1d/heatcontroldeltaf.cpp \
     parabolic/1d/heatcontroldeltax.cpp \
@@ -43,8 +40,10 @@ SOURCES += main.cpp \
     hyperbolic/hyperboliccontrol1d3.cpp \
     hyperbolic/hyperboliccontrol1dt.cpp \
     hyperbolic/hyperboliccontrol1d4.cpp \
-    point/ \
-    point/pointcontrol1.cpp
+    point/pointcontrol.cpp \
+    point/pointcontrol1.cpp \
+    point/pointcontrol2.cpp \
+    point/pointcontrol11.cpp
 
 HEADERS += \
     utils.h \
@@ -55,9 +54,6 @@ HEADERS += \
     cfunction1.h \
     cfunction2.h \
     cfunction3.h \
-    pointcontrol.h \
-    pointcontrol1.h \
-    pointcontrol2.h \
     parabolic/1d/heatcontrol.h \
     parabolic/1d/heatcontroldeltaf.h \
     parabolic/1d/heatcontroldeltax.h \
@@ -73,4 +69,7 @@ HEADERS += \
     hyperbolic/hyperboliccontrol1d3.h \
     hyperbolic/hyperboliccontrol1dt.h \
     hyperbolic/hyperboliccontrol1d4.h \
-    point/pointcontrol1.h
+    point/pointcontrol.h \
+    point/pointcontrol1.h \
+    point/pointcontrol2.h \
+    point/pointcontrol11.h

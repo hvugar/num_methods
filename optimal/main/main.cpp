@@ -43,14 +43,17 @@
 #include "hyperbolic/hyperboliccontrol1d4.h"
 #include "hyperbolic/hyperboliccontrol1dt.h"
 
+#include "point/pointcontrol11.h"
+
 #include <cmethods.h>
 
 int main()
 {
     //HyperbolicControl1DT::main();
     //puts("------------------------------------------------------------------------------------------------");
-    HyperbolicControl1D4::main();
+    //HyperbolicControl1D4::main();
     //HeatControl2Delta::main();
+    PointControl11::main();
     return 0;
 }
 

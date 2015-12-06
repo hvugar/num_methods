@@ -428,6 +428,6 @@ void HyperbolicControl1D4::calculateG(const DoubleVector& psi, DoubleVector& g, 
     g[1*(M+D+1)+j] = +(a*a)*(psi[N]-psi[N-1])/hx;
 
     unsigned int i1 = (unsigned int)(round(e[0]/hx));
-    g[2*(M+D+1)+j] = -psi[40];
+    g[2*(M+D+1)+j] = -psi[i1];
 }
 
