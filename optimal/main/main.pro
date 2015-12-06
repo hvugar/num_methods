@@ -42,7 +42,9 @@ SOURCES += main.cpp \
     hyperbolic/hyperboliccontrol1d2.cpp \
     hyperbolic/hyperboliccontrol1d3.cpp \
     hyperbolic/hyperboliccontrol1dt.cpp \
-    hyperbolic/hyperboliccontrol1d4.cpp
+    hyperbolic/hyperboliccontrol1d4.cpp \
+    point/ \
+    point/pointcontrol1.cpp
 
 HEADERS += \
     utils.h \
@@ -70,4 +72,5 @@ HEADERS += \
     hyperbolic/hyperboliccontrol1d2.h \
     hyperbolic/hyperboliccontrol1d3.h \
     hyperbolic/hyperboliccontrol1dt.h \
-    hyperbolic/hyperboliccontrol1d4.h
+    hyperbolic/hyperboliccontrol1d4.h \
+    point/pointcontrol1.h

@@ -15,8 +15,8 @@ public:
 
     virtual void print(unsigned int iterationCount, const DoubleVector& x, const DoubleVector &g, double m_alpha, RnFunction* f) const;
 
-    void calculate_x(const DoubleVector& p);
-    void calculate_psi();
+    void calculateX(const DoubleVector& p);
+    void calculateP();
 
 private:
     double t0;

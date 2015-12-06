@@ -28,21 +28,21 @@ PointControl::PointControl(double t0, double t1, double x0, double x1, double dt
 
 double PointControl::fx(const DoubleVector &p)
 {
-    calculate_x(p);
+    calculateX(p);
     return (x[n-1] - x1)*(x[n-1] - x1);
 }
 
 void PointControl::gradient(const DoubleVector& p, DoubleVector& g, double gradient_step)
 {
-    calculate_x(p);
-    calculate_psi();
+    calculateX(p);
+    calculateP();
 
     g[0] = psi[2000];
     g[1] = psi[5000];
     g[2] = psi[8000];
 }
 
-void PointControl::calculate_x(const DoubleVector &p)
+void PointControl::calculateX(const DoubleVector &p)
 {
     x[0] = x0;
     double t = t0;
@@ -65,7 +65,7 @@ double PointControl::px(double t, double psi, double x)
     return psi;
 }
 
-void PointControl::calculate_psi()
+void PointControl::calculateP()
 {
     double t = t1;
     psi[n-1] = -1.0;
