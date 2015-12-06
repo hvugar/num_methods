@@ -117,7 +117,7 @@ void HeatControl2Delta::gradient(const DoubleVector& x, DoubleVector& g, double 
     double nrm = norm(x);
     if (nrm < 0.0000201) alpha = 0.0;
 
-    static int i=1;
+    //static int i=1;
     DoubleMatrix u;
     calculateU(x, u);
     calculateP(x, g, u);
@@ -520,7 +520,7 @@ double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k)
 {
     double x1 = i*h1;
     double x2 = j*h2;
-    double t  = k*ht;
+    //double t  = k*ht;
     double sum = 0.0;
 
     DoubleVector e(2*L);

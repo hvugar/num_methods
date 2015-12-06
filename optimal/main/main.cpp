@@ -49,8 +49,8 @@ int main()
 {
     //HyperbolicControl1DT::main();
     //puts("------------------------------------------------------------------------------------------------");
-    //HyperbolicControl1D4::main();
-    HeatControl2Delta::main();
+    HyperbolicControl1D4::main();
+    //HeatControl2Delta::main();
     return 0;
 }
 
