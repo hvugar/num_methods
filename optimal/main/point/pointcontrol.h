@@ -1,22 +1,22 @@
-#ifndef POINTCONTROL1_H
-#define POINTCONTROL1_H
+#ifndef POINTCONTROL_H
+#define POINTCONTROL_H
 
 #include <function.h>
 #include <printer.h>
 
-class PointControl1 : public RnFunction, public Printer
+class PointControl : public RnFunction, public Printer
 {
 public:
-    PointControl1(double t0, double t1, double x0, double x1, double dt, double dx);
-    virtual ~PointControl1() {}
+    PointControl(double t0, double t1, double x0, double x1, double dt, double dx);
+    virtual ~PointControl() {}
 
     virtual double fx(const DoubleVector &p);
     virtual void gradient(const DoubleVector& p, DoubleVector& g, double gradient_step);
 
     virtual void print(unsigned int iterationCount, const DoubleVector& x, const DoubleVector &g, double m_alpha, RnFunction* f) const;
 
-    void calculate_x(const DoubleVector& p);
-    void calculate_psi();
+    void calculateX(const DoubleVector& p);
+    void calculateP();
 
 private:
     double t0;
@@ -27,6 +27,7 @@ private:
     double dx;
     unsigned int n;
     DoubleVector T;
+    double epsilon;
 
     double f(double t, double x);
     double dxdt(double t, double x, const DoubleVector& p);
@@ -37,10 +38,10 @@ private:
     DoubleVector psi;
     DoubleVector p;
 
-    void write(DoubleVector &x);
+    void write(const DoubleVector &x, const char* filename);
 
 public:
     static void main();
 };
 
-#endif // POINTCONTROL1_H
+#endif // POINTCONTROL_H
