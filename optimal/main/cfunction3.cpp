@@ -1,5 +1,4 @@
 #include "cfunction3.h"
-#include "utils.h"
 
 CFunction3::CFunction3(double t0, double t1, double h) : RnFunction()
 {

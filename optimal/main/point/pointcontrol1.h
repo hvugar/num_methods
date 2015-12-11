@@ -1,6 +1,10 @@
 #ifndef POINTCONTROL1_H
 #define POINTCONTROL1_H
 
+#include <math.h>
+#include <gradient_cjt.h>
+#include <gradient_sd.h>
+#include <gradient_cs.h>
 #include <function.h>
 #include <printer.h>
 

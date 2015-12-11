@@ -1,8 +1,13 @@
 #ifndef POINTCONTROL_H
 #define POINTCONTROL_H
 
+#include <math.h>
 #include <function.h>
 #include <printer.h>
+#include <gradient_cjt.h>
+#include <gradient_sd.h>
+#include <gradient_cs.h>
+
 
 class PointControl : public RnFunction, public Printer
 {

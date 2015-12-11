@@ -6,8 +6,10 @@
 #include <printer.h>
 #include <doublevector.h>
 #include <gradient_cjt.h>
+#include <gradient_sd.h>
 #include <hyperbolicequation.h>
 #include <tomasmethod.h>
+#include <r1minimize.h>
 #include <stdlib.h>
 
 class HyperbolicControl1D4 : public RnFunction, public R1Function, public Printer, public Projection
@@ -18,7 +20,7 @@ public:
 
     void calculateSettings();
 
-    virtual double fx(const DoubleVector& x);
+    virtual double fx(const DoubleVector& v);
     virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step=0.000001);
 
     virtual double fx(double x);

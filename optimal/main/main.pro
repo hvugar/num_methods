@@ -17,7 +17,6 @@ DESTDIR += ../bin
 #include(../minimum/minimum.pri)
 
 SOURCES += main.cpp \
-    utils.cpp \
     rosenbrock.cpp \
     bealesfunction.cpp \
     boothfunction.cpp \
@@ -46,7 +45,6 @@ SOURCES += main.cpp \
     point/pointcontrol11.cpp
 
 HEADERS += \
-    utils.h \
     rosenbrock.h \
     bealesfunction.h \
     boothfunction.h \

@@ -1,5 +1,4 @@
 #include "hyperboliccontrol1d4.h"
-#include <r1minimize.h>
 
 void HyperbolicControl1D4::main()
 {
@@ -24,6 +23,7 @@ void HyperbolicControl1D4::main()
 
     hc.e[0] = 0.4;
     hc.fx(0.9);
+    hc.fx(1.0);
 }
 
 HyperbolicControl1D4::HyperbolicControl1D4()
@@ -85,6 +85,20 @@ void HyperbolicControl1D4::gradient(const DoubleVector &v, DoubleVector &g, doub
     DoubleMatrix u;
     calculateU(v, u);
     calculareP(u, g);
+
+    double h = 0.01;
+    DoubleVector v1 = v;
+    for (unsigned int j=0; j<=M; j++)
+    {
+        double i = 2*(M+D+1)+j;
+        double _v = v1[i];
+        v1[i] = _v + h;
+        double f1 = fx(v1);
+        v1[i] = _v - h;
+        double f2 = fx(v1);
+        g[i] = (f1 - f2) / (2.0*h);
+        printf("%.16f %.16f %.16f\n", f1, f2, g[i]);
+    }
 }
 
 double HyperbolicControl1D4::fx(double t)
@@ -102,21 +116,22 @@ double HyperbolicControl1D4::fx(double t)
     for (unsigned int j=0; j<=(M+D); j++)
     {
         //double t = j*ht;
-        v[0*(M+D+1)+j] = 0.0;
-        v[1*(M+D+1)+j] = 0.0;
-        v[2*(M+D+1)+j] = 0.0;
+        v[0*(M+D+1)+j] = 1.0;
+        v[1*(M+D+1)+j] = 1.0;
+        v[2*(M+D+1)+j] = 1.0;
         //v[3*(M+D+1)+j] = U;
         //v[4*(M+D+1)+j] = U;
     }
 
     //printf("%.8f %.8f %.8f %.8f %.8f %.8f %u %u %u\n", t0, t1, x0, x1, ht, hx, M, N, D);
 
-    ConjugateGradient g;
+    SteepestDescentGradient g;
     g.setFunction(this);
     g.setEpsilon1(0.000001);
     g.setEpsilon2(0.000001);
     //g.setGradientStep(0.000001);
-    g.setR1MinimizeEpsilon(0.2, 0.000001);
+//    g.setR1MinimizeEpsilon(20.0, 0.01);
+    g.setR1MinimizeEpsilon(20.0, 0.000001);
     g.setPrinter(this);
     g.setProjection(this);
     g.setNormalize(true);
@@ -135,7 +150,7 @@ double HyperbolicControl1D4::fx(double t)
     DoubleMatrix u;
     calculateU(v, u);
 
-    FILE* f = fopen("20151206_1.txt", "a");
+    FILE* f = fopen("20151211_5.txt", "a");
     fprintf(f, "------------------------------------------------------------\n");
     fprintf(f, "e1: %f T: %.8f Functional: %.16f\n", e[0], t, rf);
 
@@ -198,7 +213,9 @@ double HyperbolicControl1D4::fx(double t)
 }
 
 void HyperbolicControl1D4::print(unsigned int iteration, const DoubleVector &x, const DoubleVector &gradient, double alpha, RnFunction *fn) const
-{}
+{
+    //printf("alpha: %.16f\n", alpha);
+}
 
 void HyperbolicControl1D4::project(DoubleVector &v, int index)
 {}
@@ -427,7 +444,7 @@ void HyperbolicControl1D4::calculateG(const DoubleVector& psi, DoubleVector& g, 
     g[0*(M+D+1)+j] = -(a*a)*(psi[1]-psi[0])/hx;
     g[1*(M+D+1)+j] = +(a*a)*(psi[N]-psi[N-1])/hx;
 
-    unsigned int i1 = (unsigned int)(round(e[0]/hx));
-    g[2*(M+D+1)+j] = -psi[i1];
+//    unsigned int i1 = (unsigned int)(round(e[0]/hx));
+//    g[2*(M+D+1)+j] = -psi[i1];
 }
 

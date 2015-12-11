@@ -23,10 +23,6 @@
 #include "rosenbrock.h"
 #include "bealesfunction.h"
 #include "boothfunction.h"
-#include "pointcontrol.h"
-#include "pointcontrol1.h"
-#include "pointcontrol2.h"
-#include "utils.h"
 
 #include "parabolic/1d/heatcontrol.h"
 #include "parabolic/1d/heatcontrol1.h"
@@ -44,6 +40,9 @@
 #include "hyperbolic/hyperboliccontrol1dt.h"
 
 #include "point/pointcontrol11.h"
+#include "point/pointcontrol.h"
+#include "point/pointcontrol1.h"
+#include "point/pointcontrol2.h"
 
 #include <cmethods.h>
 
@@ -51,9 +50,9 @@ int main()
 {
     //HyperbolicControl1DT::main();
     //puts("------------------------------------------------------------------------------------------------");
-    //HyperbolicControl1D4::main();
-    //HeatControl2Delta::main();
-    PointControl11::main();
+    HyperbolicControl1D4::main();
+//    HeatControl2Delta::main();
+    //PointControl11::main();
     return 0;
 }
 

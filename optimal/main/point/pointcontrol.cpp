@@ -1,9 +1,4 @@
 #include "pointcontrol.h"
-#include <math.h>
-#include <gradient_cjt.h>
-#include <gradient_sd.h>
-#include <gradient_cs.h>
-#include "utils.h"
 
 PointControl::PointControl(double t0, double t1, double x0, double x1, double dt, double dx)
 {

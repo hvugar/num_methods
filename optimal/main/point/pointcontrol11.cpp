@@ -6,15 +6,9 @@ void PointControl11::main()
     q[0] = 0.0;
     q[1] = 0.0;
     q[2] = 0.0;
-    //    q[3] = 0.0;
-    //    q[4] = 0.0;
-    //    q[5] = 0.0;
-    //    q[6] = 0.0;
-    //    q[7] = 0.0;
-    //    q[8] = 0.0;
-    //    q[9] = 0.0;
 
     PointControl11 pc;
+    pc.x1 = 4.61141362;
 
     /* Minimization */
     ConjugateGradient g;
@@ -32,9 +26,14 @@ void PointControl11::main()
 
     DoubleVector x;
     pc.calculateX(q, x);
+    printf("x[N]: %.8f\n", x[pc.N]);
 
     FILE* f =  fopen("data.txt", "w");
-    Printer::printVector(x, pc.N+1, "x:", f);
+    for (unsigned int i=0; i<=pc.N; i++)
+    {
+        fprintf(f, "%.16f\n", x[i]);
+    }
+    //Printer::printVector(x, pc.N+1, "x:", f);
     fclose(f);
 }
 
@@ -43,11 +42,9 @@ PointControl11::PointControl11()
     t0 = 0.0;
     t1 = 1.0;
     x0 = 0.0;
-    x1 = 4.0;
 
     N = 10000;
     ht = (t1-t0)/N;
-    //hx = (x1-x0)/N;
 }
 
 PointControl11::~PointControl11()
@@ -70,15 +67,6 @@ void PointControl11::gradient(const DoubleVector &q, DoubleVector &g, double gra
     g[0] = p[(unsigned int)(0.2*N)];
     g[1] = p[(unsigned int)(0.5*N)];
     g[2] = p[(unsigned int)(0.8*N)];
-    //    g[3] = p[(unsigned int)(0.4*N)];
-    //    g[4] = p[(unsigned int)(0.5*N)];
-    //    g[5] = p[(unsigned int)(0.6*N)];
-    //    g[6] = p[(unsigned int)(0.7*N)];
-    //    g[7] = p[(unsigned int)(0.8*N)];
-    //    g[8] = p[(unsigned int)(0.9*N)];
-    //    g[9] = p[(unsigned int)(0.85*N)];
-
-    //printf("%.8f %.8f %.8f\n", g[0], g[1], g[2]);
 }
 
 void PointControl11::print(unsigned int iteration, const DoubleVector &x, const DoubleVector &gr, double alpha, RnFunction *fn) const
@@ -91,69 +79,36 @@ void PointControl11::calculateX(const DoubleVector &q, DoubleVector &x)
     x.clear();
     x.resize(N+1);
 
-    double sgm = 5.0*ht;
-    double a = 1.0/(sgm*sqrt(2.0*M_PI));\
-    double b = 2.0*sgm*sgm;
+//    double sgm = 5.0*ht;
+//    double a = 1.0/(sgm*sqrt(2.0*M_PI));
+//    double b = 2.0*sgm*sgm;
 
     x[0] = x0;
     double t = t0;
     for (unsigned int j=0; j<N; j++)
     {
-        //        double k1 = f(t, x[j]);
-        //        double k2 = f(t+ht/2.0, x[j]+(ht/2.0)*k1);
-        //        double k3 = f(t+ht/2.0, x[j]+(ht/2.0)*k2);
-        //        double k4 = f(t+ht, x[j]+ht*k3);
-        //        x[j+1] = x[j] + (ht/6.0) * (k1 + 2.0*k2 + 2.0*k3 + k4);
-        x[j+1] = x[j] + f(t, x[j])*ht;
+        double k1 = f(t, x[j]);
+        double k2 = f(t+ht/2.0, x[j]+(ht/2.0)*k1);
+        double k3 = f(t+ht/2.0, x[j]+(ht/2.0)*k2);
+        double k4 = f(t+ht, x[j]+ht*k3);
+        x[j+1] = x[j] + (ht/6.0) * (k1 + 2.0*k2 + 2.0*k3 + k4);
+        //x[j+1] = x[j] + f(t, x[j])*ht;
 
         //x[j] = x[j] + q[0];// * a * exp(-((t-0.2)*(t-0.2))/b);
         //x[j] = x[j] + q[1];// * a * exp(-((t-0.5)*(t-0.5))/b);
         //x[j] = x[j] + q[2];// * a * exp(-((t-0.8)*(t-0.8))/b);
 
-        if (j>(unsigned int)(0.2*N)) x[j+1] = x[j+1] + q[0];
-        if (j>(unsigned int)(0.5*N)) x[j+1] = x[j+1] + q[1];
-        if (j>(unsigned int)(0.8*N)) x[j+1] = x[j+1] + q[2];
+        if (j == (unsigned int)(0.2*N)) x[j+1] = x[j+1] + q[0];
+        if (j == (unsigned int)(0.5*N)) x[j+1] = x[j+1] + q[1];
+        if (j == (unsigned int)(0.8*N)) x[j+1] = x[j+1] + q[2];
 
         t = t + ht;
-
-
-
-
-        //        if (j>(unsigned int)(0.2*N)) x[j] = x[j] + q[0];
-        //        if (j>(unsigned int)(0.5*N)) x[j] = x[j] + q[1];
-        //        if (j>(unsigned int)(0.8*N)) x[j] = x[j] + q[2];
-
-        //        if (j>(unsigned int)(0.2*N)) x[j] = x[j] + q[0] * (1.0/hx) * ((hx-fabs(t-0.2))/hx);
-        //        if (j>(unsigned int)(0.5*N)) x[j] = x[j] + q[1] * (1.0/hx) * ((hx-fabs(t-0.4))/hx);
-        //        if (j>(unsigned int)(0.8*N)) x[j] = x[j] + q[2] * (1.0/hx) * ((hx-fabs(t-0.8))/hx);
-        //        if (j==(unsigned int)(0.4*N)) x[j-1] = x[j-1] + q[3];
-        //        if (j==(unsigned int)(0.5*N)) x[j-1] = x[j-1] + q[4];
-        //        if (j==(unsigned int)(0.6*N)) x[j-1] = x[j-1] + q[5];
-        //        if (j==(unsigned int)(0.7*N)) x[j-1] = x[j-1] + q[6];
-        //        if (j==(unsigned int)(0.8*N)) x[j-1] = x[j-1] + q[7];
-        //        if (j==(unsigned int)(0.9*N)) x[j-1] = x[j-1] + q[8];
-        //        if (j==(unsigned int)(0.85*N)) x[j-1] = x[j-1] + q[9];
-
-        //        if (j>(unsigned int)(0.2*N)) x[j-1] = x[j-1] + q[0];
-        //        if (j>(unsigned int)(0.5*N)) x[j-1] = x[j-1] + q[1];
-        //        if (j>(unsigned int)(0.8*N)) x[j-1] = x[j-1] + q[2];
-        //        if (j>(unsigned int)(0.4*N)) x[j-1] = x[j-1] + q[3];
-        //        if (j>(unsigned int)(0.5*N)) x[j-1] = x[j-1] + q[4];
-        //        if (j>(unsigned int)(0.6*N)) x[j-1] = x[j-1] + q[5];
-        //        if (j>(unsigned int)(0.7*N)) x[j-1] = x[j-1] + q[6];
-        //        if (j>(unsigned int)(0.8*N)) x[j-1] = x[j-1] + q[7];
-        //        if (j>(unsigned int)(0.9*N)) x[j-1] = x[j-1] + q[8];
-        //        if (j>(unsigned int)(0.85*N)) x[j-1] = x[j-1] + q[9];
-
-        //        if (fabs(t-0.20)<hx+0.000001) x[j-1] = x[j-1] + q[0] * ((hx-fabs(t-0.2))/hx);
-        //        if (fabs(t-0.50)<hx+0.000001) x[j-1] = x[j-1] + q[1] * ((hx-fabs(t-0.4))/hx);
-        //        if (fabs(t-0.80)<hx+0.000001) x[j-1] = x[j-1] + q[2] * ((hx-fabs(t-0.8))/hx);
     }
     //x[N] = x[N] + q[0]+q[1]+q[2]+q[3]+q[4]+q[5]+q[6]+q[7]+q[8]+q[9];
     //x[N] = x[N] + (q[0]+q[1]+q[2]);
 
     //Printer::printVector(x, 10, "x:");
-    //    for (unsigned int j=0; j<x.size(); j++) printf("%.8f\n", x[j]);
+    //for (unsigned int j=0; j<x.size(); j++) printf("%.8f\n", x[j]);
 }
 
 double PointControl11::f(double t, double x) const
@@ -173,12 +128,12 @@ void PointControl11::calculateP(const DoubleVector &q, const DoubleVector &x, Do
     double t = t1;
     for (unsigned int j=N; j>0; j--)
     {
-        //        double k1 = pf(t, p[j], x[j]);
-        //        double k2 = pf(t-ht/2.0, p[j]-(ht/2.0)*k1, x[j]);
-        //        double k3 = pf(t-ht/2.0, p[j]-(ht/2.0)*k2, x[j]);
-        //        double k4 = pf(t-ht,     p[j]-ht*k3, x[j]);
-        //        p[j-1] = p[j] - (ht/6) * (k1 + 2*k2 + 2*k3 + k4);
-        p[j-1] = p[j] - pf(t, p[j], x[j])*ht;
+        double k1 = pf(t, p[j], x[j]);
+        double k2 = pf(t-ht/2.0, p[j]-(ht/2.0)*k1, x[j]);
+        double k3 = pf(t-ht/2.0, p[j]-(ht/2.0)*k2, x[j]);
+        double k4 = pf(t-ht,     p[j]-ht*k3, x[j]);
+        p[j-1] = p[j] - (ht/6) * (k1 + 2*k2 + 2*k3 + k4);
+        //p[j-1] = p[j] - pf(t, p[j], x[j])*ht;
         t = t - ht;
     }
 
@@ -188,6 +143,6 @@ void PointControl11::calculateP(const DoubleVector &q, const DoubleVector &x, Do
 double PointControl11::pf(double t, double p, double x) const
 {
     //return p;
-    double h = 0.00001;
+    double h = ht/100.0;
     return -p * (f(t, x+h)-f(t, x-h))/(2.0*h);
 }

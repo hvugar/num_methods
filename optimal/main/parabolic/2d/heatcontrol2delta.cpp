@@ -4,24 +4,34 @@
 #include <math.h>
 #include <stdlib.h>
 
+//#define PLACE_OPTIMIZE
+//#define POWER_OPTIMIZE
+
 void HeatControl2Delta::main()
 {
     HeatControl2Delta hc(100, 100, 100);
     hc.initialize();
 
     DoubleVector x;
+
+#ifdef POWER_OPTIMIZE
     x.resize( 2*hc.L + (hc.M+1)*hc.L );
+#else
+    x.resize( 2*hc.L );
+#endif
 
     //    //x[0] = 0.75; x[1] = 0.25; x[2] = 0.55; x[3] = 0.85; x[4] = 0.25; x[5] = 0.35;
     //    //x[0] = 0.65; x[1] = 0.15; x[2] = 0.45; x[3] = 0.75; x[4] = 0.15; x[5] = 0.25;
     x[0] = 0.80; x[1] = 0.20; x[2] = 0.50; x[3] = 0.60; x[4] = 0.40; x[5] = 0.30;
 
+#ifdef POWER_OPTIMIZE
     for (unsigned int k=0; k<=hc.M; k++)
     {
         x[2*hc.L + 0*(hc.M+1) + k] = 0.0;//hc.g1(k*hc.ht);
         x[2*hc.L + 1*(hc.M+1) + k] = 0.0;//hc.g2(k*hc.ht);
         x[2*hc.L + 2*(hc.M+1) + k] = 0.0;//hc.g3(k*hc.ht);
     }
+#endif
 
     /* Minimization */
     ConjugateGradient g2;
@@ -87,7 +97,10 @@ double HeatControl2Delta::fx(const DoubleVector& x)
     }
     sum = (0.25*(h1*h2))*sum;
 
-    return sum + alpha*norm(x);
+#ifdef POWER_OPTIMIZE
+    sum = sum + alpha*norm(x);
+#endif
+    return sum;
 }
 
 double HeatControl2Delta::norm(const DoubleVector& x) const
@@ -114,8 +127,8 @@ double HeatControl2Delta::norm(const DoubleVector& x) const
 
 void HeatControl2Delta::gradient(const DoubleVector& x, DoubleVector& g, double gradient_step)
 {
-    double nrm = norm(x);
-    if (nrm < 0.0000201) alpha = 0.0;
+//    double nrm = norm(x);
+//    if (nrm < 0.0000201) alpha = 0.0;
 
     //static int i=1;
     DoubleMatrix u;
@@ -409,7 +422,9 @@ void HeatControl2Delta::calculateP(const DoubleVector &x, DoubleVector &g, const
         }
 
         calculateGX(x, psi0, g, k);
+#ifdef POWER_OPTIMIZE
         calculateGF(x, psi0, g, k);
+#endif
     }
 }
 
@@ -520,7 +535,7 @@ double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k)
 {
     double x1 = i*h1;
     double x2 = j*h2;
-    //double t  = k*ht;
+    double t  = k*ht;
     double sum = 0.0;
 
     DoubleVector e(2*L);
@@ -548,6 +563,8 @@ double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k)
     double a = 1.0/(2.0*M_PI*sgm1*sgm2);\
     double b = 2.0*sgm1*sgm2;
 
+#ifdef POWER_OPTIMIZE
+
     double _g1 = (*px)[2*L + 0*(M+1) + k];
     double _g2 = (*px)[2*L + 1*(M+1) + k];
     double _g3 = (*px)[2*L + 2*(M+1) + k];
@@ -555,6 +572,11 @@ double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k)
     sum += (_g1) * a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b);
     sum += (_g2) * a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/b);
     sum += (_g3) * a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/b);
+#else
+    sum += g1(t) * a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b);
+    sum += g2(t) * a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/b);
+    sum += g3(t) * a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/b);
+#endif
 
     e.clear();
     return sum;
@@ -571,18 +593,24 @@ void HeatControl2Delta::initialize()
     for (unsigned int j=0; j<=N2; j++) U[j].resize(N1+1);
 
     DoubleVector x;
+#ifdef POWER_OPTIMIZE
     x.resize( 2*L + (M+1)*L );
+#else
+    x.resize( 2*L );
+#endif
 
     x[0] = 0.5; x[1] = 0.8;
     x[2] = 0.7; x[3] = 0.2;
     x[4] = 0.2; x[5] = 0.3;
 
+#ifdef POWER_OPTIMIZE
     for (unsigned int k=0; k<=M; k++)
     {
         x[2*L + 0*(M+1) + k] = g1(k*ht);
         x[2*L + 1*(M+1) + k] = g2(k*ht);
         x[2*L + 2*(M+1) + k] = g3(k*ht);
     }
+#endif
 
     calculateU(x, U);
 
