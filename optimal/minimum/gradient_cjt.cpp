@@ -18,9 +18,17 @@ void ConjugateGradient::calculate(DoubleVector& x)
     double gr2_mod = 0.0;
     double distance = 0.0;
     double alpha = 0.0;
+    double f1 = 0.0;
+    double f2 = 0.0;
+    bool firstIteration = true;
 
     DoubleVector g(n);
     DoubleVector s(n);
+
+    mx = &x;
+    ms = &s;
+    iterationCount = 0;
+
     do
     {
         // Gradient of objectiv function in current point
@@ -56,26 +64,31 @@ void ConjugateGradient::calculate(DoubleVector& x)
         }
 
         /* Normalize vector */
-        if (normalize) s.L2Normalize();
+        if (m_normalize) s.L2Normalize();
 
         /* R1 minimization in direct of antigradient */
         alpha = minimize(x, s);
 
-        if (printer != NULL) printer->print(iterationCount, x, g, alpha, function());
+        if (m_printer != NULL) m_printer->print(iterationCount, x, g, alpha, function());
 
         distance = 0.0;
-        double f1 = m_fn->fx(x);
+        f1 = f2;
+        if (firstIteration)
+        {
+            f1 = m_fn->fx(x);
+            firstIteration = false;
+        }
         for (unsigned int i=0; i<n; i++)
         {
             double cx = x[i];
             x[i] = x[i] + alpha * s[i];
 
-            if (projection != NULL) projection->project(x, i);
+            if (m_projection != NULL) m_projection->project(x, i);
 
             distance += (x[i]-cx)*(x[i]-cx);
         }
         distance = sqrt(distance);
-        double f2 = m_fn->fx(x);
+        f2 = m_fn->fx(x);
 
         if ( k == x.size() ) { k = 0; } else { k++; }
 
@@ -86,78 +99,32 @@ void ConjugateGradient::calculate(DoubleVector& x)
             break;
         }
 
-    } while (true/*distance > epsilon2()*/);
+    } while (true);
 }
 
 double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
 {
-    struct ConjugateR1Function : public R1Function
-    {
-        virtual double fx(double alpha)
-        {
-            DoubleVector cx(n);
-            for (unsigned int i=0; i < n; i++)
-            {
-                cx[i] = x[i] + alpha * s[i];
-            }
-            return f->fx(cx);
-        }
-
-        ConjugateR1Function(const DoubleVector &x, const DoubleVector &s, RnFunction *f, unsigned int n) : x(x), s(s), f(f), n(n) {}
-        const DoubleVector &x;
-        const DoubleVector &s;
-        RnFunction *f;
-        unsigned int n;
-    };
-
-    ConjugateR1Function r1X(x, s, m_fn, x.size());
-
-    //    double alpha0 = 0.0;
-    //    R1Minimize r1;
-    //    r1.setFunction(&r1X);
-    //    r1.setX0(alpha0);
-    //    r1.setStep(min_step);
-    //    r1.setEpsilon(min_epsilon);
-    //    r1.straightLineSearch();
-    //    double alpha = r1.goldenSectionSearch();
-    //    if (r1X.fx(alpha) > r1X.fx(alpha0)) alpha = alpha0;
-    //    return alpha;
-
     double alpha0 = 0.0;
     double a,b,alpha;
-    R1Minimize::StranghLineSearch(alpha0, min_step, a, b, &r1X);
-    R1Minimize::GoldenSectionSearch(a, b, alpha, &r1X, min_epsilon);
-    if (r1X.fx(alpha) > r1X.fx(alpha0)) alpha = alpha0;
+
+    stranghLineSearch(alpha0, min_step, a, b, this);
+    goldenSectionSearch(a, b, alpha, this, min_epsilon);
+
+    if (this->fx(alpha) > this->fx(alpha0)) alpha = alpha0;
     return alpha;
 }
 
-//double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
-//{
-//    printf("%d %d\n", x.size(), s.size());
+double ConjugateGradient::fx(double alpha)
+{
+    DoubleVector &x = *mx;
+    DoubleVector &s = *ms;
+    unsigned int n = x.size();
 
-//    mx = &x;
-//    ms = &s;
+    DoubleVector cx(n);
+    for (unsigned int i=0; i<n; i++)
+    {
+        cx[i] = x[i] + alpha * s[i];
+    }
 
-//    printf("%d %d\n", x.size(), s.size());
-
-//    double alpha0 = 0.0;
-//    double a,b,alpha;
-//    R1Minimize::StranghLineSearch(alpha0, min_step, a, b, this);
-//    R1Minimize::GoldenSectionSearch(a, b, alpha, this, min_epsilon);
-//    if (this->fx(alpha) > this->fx(alpha0)) alpha = alpha0;
-
-//    mx = ms = NULL;
-
-//    return alpha;
-//}
-
-//double ConjugateGradient::fx(double alpha)
-//{
-//    unsigned int n = mx->size();
-//    DoubleVector cx(n);
-//    for (unsigned int i=0; i < n; i++)
-//    {
-//        cx[i] = (*mx)[i] + alpha * (*ms)[i];
-//    }
-//    return m_fn->fx(cx);
-//}
+    return m_fn->fx(cx);
+}

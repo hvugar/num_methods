@@ -34,14 +34,14 @@ void ConstStepGradient::calculate(DoubleVector &x)
         iterationCount++;
 
         /* Normalize vector */
-        if (normalize) g.L2Normalize();
+        if (m_normalize) g.L2Normalize();
 
         /* R1 minimization in direct of antigradient */
         alpha = minimize(x, g);
 
-        if (printer != NULL)
+        if (m_printer != NULL)
         {
-            printer->print(iterationCount, x, g, alpha, function());
+            m_printer->print(iterationCount, x, g, alpha, function());
         }
 
         distance = 0.0;

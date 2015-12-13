@@ -22,14 +22,18 @@ void HyperbolicControl1D4::main()
     }
 
     hc.e[0] = 0.4;
-    hc.fx(0.9);
+//    hc.fx(0.9);
+//    printf("Function call count: %u\n", hc.count);
+    hc.count = 0;
     hc.fx(1.0);
+    printf("Function call count: %u\n", hc.count);
 }
 
 HyperbolicControl1D4::HyperbolicControl1D4()
 {
     t1 = 1.0;
     //calculateSettings();
+    count = 0;
 }
 
 void HyperbolicControl1D4::calculateSettings()
@@ -39,10 +43,10 @@ void HyperbolicControl1D4::calculateSettings()
     x0 = 0.0;
     x1 = 1.0;
 
-    N = 100;
+    N = 1000;
     hx = (x1-x0)/N;
 
-    ht = 0.01;
+    ht = 0.001;
     M = (unsigned int) round((t1-t0)/ht);
     D = 10;
 
@@ -57,6 +61,7 @@ void HyperbolicControl1D4::calculateSettings()
 
 double HyperbolicControl1D4::fx(const DoubleVector &v)
 {
+    count++;
     DoubleMatrix u;
     calculateU(v, u);
 
@@ -75,7 +80,7 @@ double HyperbolicControl1D4::fx(const DoubleVector &v)
             integral = integral + (f1*f1 + f2*f2 + f3*f3 + f4*f4);
         }
     }
-    integral = R*integral * 0.25 * ht *hx;
+    integral = integral * 0.25 * ht *hx;
 
     return sum + integral;
 }
@@ -86,19 +91,19 @@ void HyperbolicControl1D4::gradient(const DoubleVector &v, DoubleVector &g, doub
     calculateU(v, u);
     calculareP(u, g);
 
-    double h = 0.01;
-    DoubleVector v1 = v;
-    for (unsigned int j=0; j<=M; j++)
-    {
-        double i = 2*(M+D+1)+j;
-        double _v = v1[i];
-        v1[i] = _v + h;
-        double f1 = fx(v1);
-        v1[i] = _v - h;
-        double f2 = fx(v1);
-        g[i] = (f1 - f2) / (2.0*h);
-        printf("%.16f %.16f %.16f\n", f1, f2, g[i]);
-    }
+//    double h = 0.01;
+//    DoubleVector v1 = v;
+//    for (unsigned int j=0; j<=M; j++)
+//    {
+//        double i = 2*(M+D+1)+j;
+//        double _v = v1[i];
+//        v1[i] = _v + h;
+//        double f1 = fx(v1);
+//        v1[i] = _v - h;
+//        double f2 = fx(v1);
+//        g[i] = (f1 - f2) / (2.0*h);
+//        //printf("%.16f %.16f %.16f\n", f1, f2, g[i]);
+//    }
 }
 
 double HyperbolicControl1D4::fx(double t)
@@ -125,18 +130,21 @@ double HyperbolicControl1D4::fx(double t)
 
     //printf("%.8f %.8f %.8f %.8f %.8f %.8f %u %u %u\n", t0, t1, x0, x1, ht, hx, M, N, D);
 
-    SteepestDescentGradient g;
-    g.setFunction(this);
-    g.setEpsilon1(0.000001);
-    g.setEpsilon2(0.000001);
+    double min_step = 2.0;
+    double gold_eps = 0.001;
+
+    ConjugateGradient cg;
+    cg.setFunction(this);
+    cg.setEpsilon1(0.000001);
+    cg.setEpsilon2(0.000001);
     //g.setGradientStep(0.000001);
 //    g.setR1MinimizeEpsilon(20.0, 0.01);
-    g.setR1MinimizeEpsilon(20.0, 0.000001);
-    g.setPrinter(this);
-    g.setProjection(this);
-    g.setNormalize(true);
-    g.showEndMessage(false);
-    g.calculate(v);
+    cg.setR1MinimizeEpsilon(min_step, gold_eps);
+    cg.setPrinter(this);
+    cg.setProjection(this);
+    cg.setNormalize(true);
+    cg.showEndMessage(false);
+    cg.calculate(v);
 
     double rf = fx(v);
 
@@ -148,14 +156,18 @@ double HyperbolicControl1D4::fx(double t)
     //    Printer::printVector(v3, 10, "v2:\t");
 
     DoubleMatrix u;
+    DoubleVector gr(3*(M+D+1));
     calculateU(v, u);
+    calculareP(u, gr);
 
-    FILE* f = fopen("20151211_5.txt", "a");
+    printf("Norm: %.12f %d\n", gr.L2Norm(), cg.count());
+
+    FILE* f = fopen("20151212.txt", "a");
     fprintf(f, "------------------------------------------------------------\n");
-    fprintf(f, "e1: %f T: %.8f Functional: %.16f\n", e[0], t, rf);
+    fprintf(f, "e1: %f T: %.8f Functional: %.16f hx: %f ht: %f step: %f gold_epsilon: %f\n", e[0], t, rf, hx, ht, min_step, gold_eps);
 
     fprintf(f, "v1:\t");
-    for (unsigned int j=M; j<=M+D; j++)
+    for (unsigned int j=0; j<=M+D; j++)
     {
         double v1 = v[0*(M+D+1)+j];
         if (v1<0)
@@ -166,7 +178,7 @@ double HyperbolicControl1D4::fx(double t)
     fprintf(f, "\n");
 
     fprintf(f, "v2:\t");
-    for (unsigned int j=M; j<=M+D; j++)
+    for (unsigned int j=0; j<=M+D; j++)
     {
         double v2 = v[1*(M+D+1)+j];
         if (v2<0)
@@ -177,13 +189,46 @@ double HyperbolicControl1D4::fx(double t)
     fprintf(f, "\n");
 
     fprintf(f, "v3:\t");
-    for (unsigned int j=M; j<=M+D; j++)
+    for (unsigned int j=0; j<=M+D; j++)
     {
         double v3 = v[2*(M+D+1)+j];
         if (v3<0)
             fprintf(f, "%14.8f ", v3);
         else
             fprintf(f, "%+14.8f ", v3);
+    }
+    fprintf(f, "\n");
+
+    fprintf(f, "g1:\t");
+    for (unsigned int j=0; j<=M+D; j++)
+    {
+        double g1 = gr[0*(M+D+1)+j];
+        if (g1<0)
+            fprintf(f, "%14.8f ", g1);
+        else
+            fprintf(f, "%+14.8f ", g1);
+    }
+    fprintf(f, "\n");
+
+    fprintf(f, "g2:\t");
+    for (unsigned int j=0; j<=M+D; j++)
+    {
+        double g2 = gr[1*(M+D+1)+j];
+        if (g2<0)
+            fprintf(f, "%14.8f ", g2);
+        else
+            fprintf(f, "%+14.8f ", g2);
+    }
+    fprintf(f, "\n");
+
+    fprintf(f, "g3:\t");
+    for (unsigned int j=0; j<=M+D; j++)
+    {
+        double g3 = gr[2*(M+D+1)+j];
+        if (g3<0)
+            fprintf(f, "%14.8f ", g3);
+        else
+            fprintf(f, "%+14.8f ", g3);
     }
     fprintf(f, "\n");
 
@@ -233,16 +278,18 @@ double HyperbolicControl1D4::fi2(unsigned int i) const
 
 double HyperbolicControl1D4::m1(unsigned int j) const
 {
-    double v = (*pv)[j];
+    const DoubleVector &v = *pv;
+    double v1 = v[j];
     //if (M <= j && j <= M+D) v = U;
-    return v;
+    return v1;
 }
 
 double HyperbolicControl1D4::m2(unsigned int j) const
 {
-    double v = (*pv)[M+D+1 + j];
+    const DoubleVector &v = *pv;
+    double v2 = v[M+D+1 + j];
     //if (M <= j && j <= M+D) v = U;
-    return v;
+    return v2;
 }
 
 double HyperbolicControl1D4::f(unsigned int i, unsigned int j) const
@@ -253,9 +300,10 @@ double HyperbolicControl1D4::f(unsigned int i, unsigned int j) const
 
     if (fabs(x-e[0]) < (hx+0.000001))
     {
-        double v = (*pv)[2*(M+D+1)+j];
+        const DoubleVector &v = *pv;
+        double v2 = v[2*(M+D+1)+j];
         //if (M <= j && j <= M+D) v = U;
-        sum += (1.0/hx) * v * ((hx-fabs(x-e[0]))/hx);
+        sum += (1.0/hx) * v2 * ((hx-fabs(x-e[0]))/hx);
         //printf("x: %f e: %f sum: %f %.20f %.20f\n", x, e[0], sum, fabs(x-e[0]), hx);
     }
 
@@ -444,7 +492,8 @@ void HyperbolicControl1D4::calculateG(const DoubleVector& psi, DoubleVector& g, 
     g[0*(M+D+1)+j] = -(a*a)*(psi[1]-psi[0])/hx;
     g[1*(M+D+1)+j] = +(a*a)*(psi[N]-psi[N-1])/hx;
 
-//    unsigned int i1 = (unsigned int)(round(e[0]/hx));
-//    g[2*(M+D+1)+j] = -psi[i1];
+    unsigned int i1 = (unsigned int)(round(e[0]/hx));
+    g[2*(M+D+1)+j] = -psi[i1];
+    //if (j==M+D) printf("%.8f\n", -psi[i1]);
 }
 

@@ -48,11 +48,12 @@
 
 int main()
 {
-    //HyperbolicControl1DT::main();
-    //puts("------------------------------------------------------------------------------------------------");
+//    HyperbolicControl1DT::main();
+    puts("------------------------------------------------------------------------------------------------");
     HyperbolicControl1D4::main();
 //    HeatControl2Delta::main();
-    //PointControl11::main();
+//    PointControl11::main();
+//    Rosenbrock::main();
     return 0;
 }
 

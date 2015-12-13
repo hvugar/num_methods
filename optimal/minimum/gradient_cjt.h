@@ -7,7 +7,7 @@
  * @brief Method of Conjugate Gradient
  * Метод Флетчера-Ривса (Метод сопряженных градиентов).
  */
-class MINIMUMSHARED_EXPORT ConjugateGradient : public GradientMethod//, protected R1Function
+class MINIMUMSHARED_EXPORT ConjugateGradient : public GradientMethod, protected R1Function
 {
 public:
     ConjugateGradient();
@@ -16,10 +16,10 @@ public:
     virtual void calculate(DoubleVector& x);
 protected:
     virtual double minimize(const DoubleVector &x, const DoubleVector &g);
-    //virtual double fx(double alpa);
+    virtual double fx(double alpha);
     
-    const DoubleVector *mx;
-    const DoubleVector *ms;
+    DoubleVector *mx;
+    DoubleVector *ms;
 };
 
 #endif // CONJUGATEGRADIENT_H

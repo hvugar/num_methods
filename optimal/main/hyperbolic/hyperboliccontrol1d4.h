@@ -69,6 +69,8 @@ private:
     double R;
 
     const DoubleVector *pv;
+
+    unsigned int count;
 };
 
 #endif // HYPERBOLICCONTROL1D4_H

@@ -7,6 +7,7 @@
 struct Rosenbrock : public RnFunction, public Printer
 {
 public:
+    Rosenbrock() : count(0) {}
     virtual ~Rosenbrock() {}
 
     virtual double fx(const DoubleVector& x);
@@ -17,6 +18,7 @@ public:
     static void main();
 private:
     double grad_step;
+    unsigned int count;
 };
 
 #endif // ROSENBROCK_H

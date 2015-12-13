@@ -1,6 +1,6 @@
 #include "gradient.h"
 
-GradientMethod::GradientMethod() : m_fn(NULL), printer(NULL), projection(NULL)
+GradientMethod::GradientMethod() : m_fn(NULL), m_printer(NULL), m_projection(NULL)
 {
     m_epsilon1 = 0.1;
     m_epsilon2 = 0.1;
@@ -8,7 +8,7 @@ GradientMethod::GradientMethod() : m_fn(NULL), printer(NULL), projection(NULL)
     min_step = 0.1;
     min_epsilon = 0.01;
     iterationCount = 0;
-    normalize = true;
+    m_normalize = true;
     mshowEndMessage = true;
 }
 
@@ -88,17 +88,17 @@ int GradientMethod::count() const
 
 void GradientMethod::setPrinter(Printer *printer)
 {
-    this->printer = printer;
+    this->m_printer = printer;
 }
 
-void GradientMethod::setProjection(Projection *proj)
+void GradientMethod::setProjection(Projection *projection)
 {
-    this->projection = proj;
+    this->m_projection = projection;
 }
 
 void GradientMethod::setNormalize(bool normalize)
 {
-    this->normalize = normalize;
+    this->m_normalize = normalize;
 }
 
 void GradientMethod::showEndMessage(bool showEndMessage)

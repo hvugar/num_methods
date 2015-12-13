@@ -37,7 +37,7 @@ public:
     int count() const;
 
     void setPrinter(Printer* printer);
-    void setProjection(Projection* proj);
+    void setProjection(Projection* projection);
     void setNormalize(bool normalize);
     void showEndMessage(bool showEndMessage);
 
@@ -51,9 +51,9 @@ protected:
     double min_epsilon;
     double min_step;
     int iterationCount;
-    bool normalize;
-    Printer* printer;
-    Projection *projection;
+    bool m_normalize;
+    Printer* m_printer;
+    Projection *m_projection;
 
     bool mshowEndMessage;
 };
