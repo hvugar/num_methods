@@ -64,13 +64,14 @@ double Trapesium(R3Function *f, unsigned int N1, unsigned int N2, unsigned int N
     return sum;
 }
 
-Integral::Integral()
+double trapesium(R1Function *f, unsigned int N, double a, double b)
 {
-
+    double h = (b - a) / N;
+    double sum = 0;
+    sum = sum + f->fx(a) + f->fx(b);
+    for (unsigned int i=1; i<=N-1; i++)
+    {
+        sum += f->fx(a + i*h);
+    }
+    return sum;
 }
-
-Integral::~Integral()
-{
-
-}
-

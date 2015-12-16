@@ -1,4 +1,5 @@
 #include "hyperboliccontrol1d4.h"
+#include <integral.h>
 
 void HyperbolicControl1D4::main()
 {
@@ -65,6 +66,12 @@ double HyperbolicControl1D4::fx(const DoubleVector &v)
     DoubleMatrix u;
     calculateU(v, u);
 
+//    struct Integral : public R1Function {
+//        virtual double fx(double x)
+//        {
+//            return x - U;
+//        }
+//    } intf;
     double sum = 0.0;
 
     double integral = 0.0;
@@ -131,7 +138,7 @@ double HyperbolicControl1D4::fx(double t)
     //printf("%.8f %.8f %.8f %.8f %.8f %.8f %u %u %u\n", t0, t1, x0, x1, ht, hx, M, N, D);
 
     double min_step = 2.0;
-    double gold_eps = 0.001;
+    double gold_eps = 0.00001;
 
     ConjugateGradient cg;
     cg.setFunction(this);
