@@ -3,6 +3,7 @@
 #include <gradient_cjt.h>
 #include <math.h>
 #include <stdlib.h>
+#include <windows.h>
 
 //#define PLACE_OPTIMIZE
 //#define POWER_OPTIMIZE
@@ -12,9 +13,7 @@ void HeatControl2Delta::main()
     HeatControl2Delta hc(100, 100, 100);
     hc.initialize();
 
-
     DoubleVector x;
-
 #ifdef POWER_OPTIMIZE
     x.resize( 2*hc.L + (hc.M+1)*hc.L );
 #else
@@ -24,6 +23,19 @@ void HeatControl2Delta::main()
     //    //x[0] = 0.75; x[1] = 0.25; x[2] = 0.55; x[3] = 0.85; x[4] = 0.25; x[5] = 0.35;
     //    //x[0] = 0.65; x[1] = 0.15; x[2] = 0.45; x[3] = 0.75; x[4] = 0.15; x[5] = 0.25;
     x[0] = 0.80; x[1] = 0.20; x[2] = 0.50; x[3] = 0.60; x[4] = 0.40; x[5] = 0.30;
+
+//    x[0] = 0.5; x[1] = 0.8;
+//    x[2] = 0.7; x[3] = 0.2;
+//    x[4] = 0.2; x[5] = 0.3;
+//    for (unsigned int i=0; i<=hc.N1; i++)
+//    {
+//        x[5] = i*hc.h1;
+//        double result = hc.fx(x);
+//        printf("%.16f\n", result);
+//    }
+//    return;
+
+
 
 #ifdef POWER_OPTIMIZE
     for (unsigned int k=0; k<=hc.M; k++)
@@ -40,7 +52,7 @@ void HeatControl2Delta::main()
     g2.setEpsilon1(0.000001);
     g2.setEpsilon2(0.000001);
     g2.setGradientStep(0.000001);
-    g2.setR1MinimizeEpsilon(1.0, 0.0001);
+    g2.setR1MinimizeEpsilon(1.0, 0.01);
     g2.setPrinter(&hc);
     g2.setProjection(&hc);
     g2.setNormalize(true);
@@ -646,26 +658,37 @@ void HeatControl2Delta::print(unsigned int i, const DoubleVector& x, const Doubl
 {
     HeatControl2Delta *hc = dynamic_cast<HeatControl2Delta*>(fn);
     printf("J[%d]: %.16f\n", i, hc->fx(x));
-    printf("Norm: %.16f Alpha: %.16f\n", hc->norm(x), hc->alpha);
+    printf("Norm: %.16f Alpha: %.16f %.16f\n", hc->norm(x), hc->alpha, alpha);
     printf("eo: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", 0.50, 0.80, 0.70, 0.20, 0.20, 0.30);
     printf("e1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", x[0], x[1], x[2], x[3], x[4], x[5]);
     printf("g1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", g[0], g[1], g[2], g[3], g[4], g[5]);
 
-    DoubleVector f(hc->M+1);
-    for (unsigned int k=0; k<=M; k++) f[k] = x[2*hc->L+0*(M+1)+k];
-    Printer::printVector(f, 10, "g1");
-    for (unsigned int k=0; k<=M; k++) f[k] = x[2*hc->L+1*(M+1)+k];
-    Printer::printVector(f, 10, "g2");
-    for (unsigned int k=0; k<=M; k++) f[k] = x[2*hc->L+2*(M+1)+k];
-    Printer::printVector(f, 10, "g3");
+//    DoubleMatrix u;
+//    hc->calculateU(x, u);
+//    char filename1[100];
+//    char filename2[100];
+//    int count1 = sprintf(filename1, "optimal%d.txt", i);
+//    filename1[count1] = '\0';
+//    int count2 = sprintf(filename2, "optimal%d.png", i);
+//    filename2[count2] = '\0';
+//    hc->write(filename2, u);
+//    system("imager.exe -w 101 -h 101 -i optimal1.txt -o optimal3.png");
 
-    DoubleVector fg(hc->M+1);
-    for (unsigned int k=0; k<=M; k++) fg[k] = g[2*hc->L+0*(M+1)+k];
-    Printer::printVector(fg, 10, "fg1");
-    for (unsigned int k=0; k<=M; k++) fg[k] = g[2*hc->L+1*(M+1)+k];
-    Printer::printVector(fg, 10, "fg2");
-    for (unsigned int k=0; k<=M; k++) fg[k] = g[2*hc->L+2*(M+1)+k];
-    Printer::printVector(fg, 10, "fg3");
+//    DoubleVector f(hc->M+1);
+//    for (unsigned int k=0; k<=M; k++) f[k] = x[2*hc->L+0*(M+1)+k];
+//    Printer::printVector(f, 10, "g1");
+//    for (unsigned int k=0; k<=M; k++) f[k] = x[2*hc->L+1*(M+1)+k];
+//    Printer::printVector(f, 10, "g2");
+//    for (unsigned int k=0; k<=M; k++) f[k] = x[2*hc->L+2*(M+1)+k];
+//    Printer::printVector(f, 10, "g3");
+
+//    DoubleVector fg(hc->M+1);
+//    for (unsigned int k=0; k<=M; k++) fg[k] = g[2*hc->L+0*(M+1)+k];
+//    Printer::printVector(fg, 10, "fg1");
+//    for (unsigned int k=0; k<=M; k++) fg[k] = g[2*hc->L+1*(M+1)+k];
+//    Printer::printVector(fg, 10, "fg2");
+//    for (unsigned int k=0; k<=M; k++) fg[k] = g[2*hc->L+2*(M+1)+k];
+//    Printer::printVector(fg, 10, "fg3");
     puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
 
     //    hc->calculateU(e, hc->uT);
