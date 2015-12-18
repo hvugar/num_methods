@@ -1,6 +1,8 @@
 #include "hyperboliccontrol1d4.h"
 #include <integral.h>
 
+double gause;
+
 void HyperbolicControl1D4::main()
 {
     HyperbolicControl1D4 hc;
@@ -44,10 +46,10 @@ void HyperbolicControl1D4::calculateSettings()
     x0 = 0.0;
     x1 = 1.0;
 
-    N = 1000;
+    N = 100;
     hx = (x1-x0)/N;
 
-    ht = 0.001;
+    ht = 0.01;
     M = (unsigned int) round((t1-t0)/ht);
     D = 10;
 
@@ -138,7 +140,7 @@ double HyperbolicControl1D4::fx(double t)
     //printf("%.8f %.8f %.8f %.8f %.8f %.8f %u %u %u\n", t0, t1, x0, x1, ht, hx, M, N, D);
 
     double min_step = 2.0;
-    double gold_eps = 0.00001;
+    double gold_eps = 0.001;
 
     ConjugateGradient cg;
     cg.setFunction(this);
@@ -169,9 +171,9 @@ double HyperbolicControl1D4::fx(double t)
 
     printf("Norm: %.12f %d\n", gr.L2Norm(), cg.count());
 
-    FILE* f = fopen("20151212.txt", "a");
+    FILE* f = fopen("20151218_1.txt", "a");
     fprintf(f, "------------------------------------------------------------\n");
-    fprintf(f, "e1: %f T: %.8f Functional: %.16f hx: %f ht: %f step: %f gold_epsilon: %f\n", e[0], t, rf, hx, ht, min_step, gold_eps);
+    fprintf(f, "e1: %f T: %.8f Functional: %.16f hx: %f ht: %f step: %f gold_epsilon: %f N: %d M: %d\n", e[0], t, rf, hx, ht, min_step, gold_eps, N, M);
 
     fprintf(f, "v1:\t");
     for (unsigned int j=0; j<=M+D; j++)
@@ -305,14 +307,24 @@ double HyperbolicControl1D4::f(unsigned int i, unsigned int j) const
     //double t = j*ht;
     double sum = 0.0;
 
-    if (fabs(x-e[0]) < (hx+0.000001))
-    {
-        const DoubleVector &v = *pv;
-        double v2 = v[2*(M+D+1)+j];
-        //if (M <= j && j <= M+D) v = U;
-        sum += (1.0/hx) * v2 * ((hx-fabs(x-e[0]))/hx);
-        //printf("x: %f e: %f sum: %f %.20f %.20f\n", x, e[0], sum, fabs(x-e[0]), hx);
-    }
+    const DoubleVector &v = *pv;
+    double v3 = v[2*(M+D+1)+j];
+
+    double sgm = 6.0*hx;
+    double a = 1.0/(sgm*sqrt(2.0*M_PI));\
+    double b = 2.0*sgm*sgm;
+    sum += v3 * a * exp(-((x-e[0])*(x-e[0]))/b) * hx;
+
+    gause += a * exp(-((x-e[0])*(x-e[0]))/b);
+
+//    if (fabs(x-e[0]) < (hx+0.000001))
+//    {
+//        const DoubleVector &v = *pv;
+//        double v2 = v[2*(M+D+1)+j];
+//        //if (M <= j && j <= M+D) v = U;
+//        sum += (1.0/hx) * v2 * ((hx-fabs(x-e[0]))/hx);
+//        //printf("x: %f e: %f sum: %f %.20f %.20f\n", x, e[0], sum, fabs(x-e[0]), hx);
+//    }
 
     //if (fabs(x-e[1]) < (hx+0.000001))
     //{
@@ -359,6 +371,7 @@ void HyperbolicControl1D4::calculateU(const DoubleVector &v, DoubleMatrix &u)
 
     for (unsigned int j=0; j<=M+D-1; j++)
     {
+
         if (j==0)
         {
             for (unsigned int i=0; i<=N; i++)
@@ -371,6 +384,7 @@ void HyperbolicControl1D4::calculateU(const DoubleVector &v, DoubleMatrix &u)
         }
         else
         {
+            gause = 0.0;
             for (unsigned int i=1; i<=N-1; i++)
             {
                 da[i-1] = alpha1;
@@ -397,6 +411,7 @@ void HyperbolicControl1D4::calculateU(const DoubleVector &v, DoubleMatrix &u)
                 u0[i] = u1[i];
                 u1[i] = u[j+1][i];
             }
+            //printf("gause: %.8f %.8f\n", gause, gause*hx);
         }
     }
 

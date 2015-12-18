@@ -56,6 +56,11 @@ public:
 
     static void main();
 
+    double gause1;
+    double gause2;
+    double gause3;
+    FILE* file;
+
 private:
     double u(double x1, double x2, double t) { return x1*x1 + x2*x2 + t*t; }
 
@@ -71,9 +76,9 @@ private:
     inline double pm3(double x1, double t) { return 0.0; }
     inline double pm4(double x1, double t) { return 0.0; }
 
-    inline double g1(double t) const { return t; }
-    inline double g2(double t) const { return t; }
-    inline double g3(double t) const { return t; }
+    inline double g1(double t) const { return 10000; }
+    inline double g2(double t) const { return 20000; }
+    inline double g3(double t) const { return 30000; }
 
     inline void psiDerivative(double &psiX1, double &psiX2, double e1, double e2, const DoubleMatrix &psi);
     void write(const char* fileName, const DoubleMatrix& m);

@@ -12,6 +12,7 @@ void HeatControl2Delta::main()
     HeatControl2Delta hc(100, 100, 100);
     hc.initialize();
 
+
     DoubleVector x;
 
 #ifdef POWER_OPTIMIZE
@@ -176,6 +177,7 @@ void HeatControl2Delta::calculateU(const DoubleVector &x, DoubleMatrix& u)
 
     for (unsigned int k=0; k<=M; k++)
     {
+
         if (k==0)
         {
             for (unsigned int j=0; j<=N2; j++)
@@ -194,6 +196,7 @@ void HeatControl2Delta::calculateU(const DoubleVector &x, DoubleMatrix& u)
             //            dc1.resize(N1-1);
             //            dd1.resize(N1-1);
             //            rx1.resize(N1-1);
+
 
             for (unsigned int i=1; i<N1; i++)
             {
@@ -239,6 +242,8 @@ void HeatControl2Delta::calculateU(const DoubleVector &x, DoubleMatrix& u)
             //            dd2.resize(N2-1);
             //            rx2.resize(N2-1);
 
+            gause1 = gause2 = gause3 = 0.0;
+            file = fopen("gause.txt", "w");
             for (unsigned int j=1; j<N2; j++)
             {
                 for (unsigned int i=1; i<N1; i++)
@@ -268,6 +273,8 @@ void HeatControl2Delta::calculateU(const DoubleVector &x, DoubleMatrix& u)
                 u0[0][i]  = m3(h1*i, ht*(k));
                 u0[N2][i] = m4(h1*i, ht*(k));
             }
+            fclose(file);
+            //printf("gause1: %.8f %.8f\n", gause1, gause1*h1*h2);
 
             //            da2.clear();
             //            db2.clear();
@@ -558,8 +565,8 @@ double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k)
     //        sum += g3(t) * ((h1-fabs(x1-e[4]))/(h1*h1))*((h2-fabs(x2-e[5]))/(h2*h2));
     //    }
 
-    double sgm1 = 5.0*h1;
-    double sgm2 = 5.0*h2;
+    double sgm1 = 3.0*h1;
+    double sgm2 = 3.0*h2;
     double a = 1.0/(2.0*M_PI*sgm1*sgm2);\
     double b = 2.0*sgm1*sgm2;
 
@@ -573,9 +580,22 @@ double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k)
     sum += (_g2) * a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/b);
     sum += (_g3) * a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/b);
 #else
-    sum += g1(t) * a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b);
-    sum += g2(t) * a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/b);
-    sum += g3(t) * a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/b);
+    sum += g1(t) * a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b) * h1*h2;
+    sum += g2(t) * a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/b) * h1*h2;
+    sum += g3(t) * a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/b) * h1*h2;
+
+    double pp = a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b);
+    //if (i==50 && j==80)
+    //printf("%3d %3d %3d %.16f %.16f %.16f %.16f %.16f %.16f %.16f\n", k, j, i, pp, e[0], e[1], x1, x2, exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b), a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b));
+    gause1 += a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b);
+
+    if (k==M)//
+    //if (pp > 0.0000001)
+    {
+        fprintf(file, "%.16f ", pp);
+        if (i == 99) fputs("\n", file);
+        //printf("%d %d %d\n", i, j, k);
+    }
 #endif
 
     e.clear();
