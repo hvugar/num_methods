@@ -34,7 +34,7 @@ public:
     virtual double m2(unsigned int j) const;
     virtual double f(unsigned int i, unsigned int j) const;
 
-    double pfi1(unsigned int i) const { return 0.0/*((*pu)[M+D][i]-U)*hx*/; }
+    double pfi1(unsigned int i) const { return ((*pu)[M+D][i]-U)*hx; }
     double pfi2(unsigned int i) const { return 0.0; }
     double pmu1(unsigned int t) const { return 0.0; }
     double pmu2(unsigned int t) const { return 0.0; }
