@@ -93,11 +93,11 @@ void ConjugateGradient::calculate(DoubleVector& x)
         if ( k == x.size() ) { k = 0; } else { k++; }
 
         /* calculating distance previous and new point */
-//        if (distance < epsilon2() && fabs(f2 - f1) < epsilon2())
-//        {
-//            if (mshowEndMessage) puts("Optimisation ends, because distance beetween last and current point less than epsilon...");
-//            break;
-//        }
+        if (distance < epsilon2() && fabs(f2 - f1) < epsilon2())
+        {
+            if (mshowEndMessage) puts("Optimisation ends, because distance beetween last and current point less than epsilon...");
+            break;
+        }
 
     } while (true);
 }
@@ -124,6 +124,7 @@ double ConjugateGradient::fx(double alpha)
     for (unsigned int i=0; i<n; i++)
     {
         cx[i] = x[i] + alpha * s[i];
+        if (m_projection != NULL) m_projection->project(cx, i);
     }
 
     return m_fn->fx(cx);

@@ -98,6 +98,7 @@ void HyperbolicControl1D4::gradient(const DoubleVector &v, DoubleVector &g, doub
 {
     DoubleMatrix u;
     calculateU(v, u);
+    pu = &u;
     calculareP(u, g);
 
 //    double h = 0.01;
@@ -167,11 +168,12 @@ double HyperbolicControl1D4::fx(double t)
     DoubleMatrix u;
     DoubleVector gr(3*(M+D+1));
     calculateU(v, u);
+    pu = &u;
     calculareP(u, gr);
 
     printf("Norm: %.12f %d\n", gr.L2Norm(), cg.count());
 
-    FILE* f = fopen("20151218_1.txt", "a");
+    FILE* f = fopen("20151221.txt", "a");
     fprintf(f, "------------------------------------------------------------\n");
     fprintf(f, "e1: %f T: %.8f Functional: %.16f hx: %f ht: %f step: %f gold_epsilon: %f N: %d M: %d\n", e[0], t, rf, hx, ht, min_step, gold_eps, N, M);
 
