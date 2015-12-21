@@ -49,8 +49,6 @@ public:
 
     static void main();
 
-
-
 private:
     double t0;
     double t1;
