@@ -33,3 +33,26 @@ void Printer::printVector(const DoubleVector& x, unsigned int n, const char *s, 
     fputs("\n", f);
     fflush(f);
 }
+
+void Printer::printVector(const DoubleVector &x, const char *s, unsigned int n, unsigned int start, unsigned int end, FILE *file)
+{
+    if (s!='\0') fprintf(file, "%s", s);
+    if (start != 0 || end != 0)
+    {
+        unsigned int N = (end-start+1) / n;
+        for (unsigned int i=start; i<=end; i++)
+        {
+            if ((i-start)%N==0) fprintf(file, "%14.8f ", x[i]);
+        }
+    }
+    else
+    {
+        unsigned int N = x.size() / n;
+        for (unsigned int i=0; i<x.size(); i++)
+        {
+            if (i%N==0) fprintf(file, "%14.8f ", x[i]);
+        }
+    }
+    fputs("\n", file);
+    fflush(file);
+}

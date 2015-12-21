@@ -11,6 +11,14 @@
 void HeatControl2Delta::main()
 {
     HeatControl2Delta hc(100, 100, 100);
+    hc.optimal.resize(2*hc.L);
+    hc.optimal[0] = 0.50;
+    hc.optimal[1] = 0.80;
+    hc.optimal[2] = 0.70;
+    hc.optimal[3] = 0.20;
+    hc.optimal[4] = 0.20;
+    hc.optimal[5] = 0.30;
+
     hc.initialize();
 
     DoubleVector x;
@@ -20,19 +28,22 @@ void HeatControl2Delta::main()
     x.resize( 2*hc.L );
 #endif
 
-    //    //x[0] = 0.75; x[1] = 0.25; x[2] = 0.55; x[3] = 0.85; x[4] = 0.25; x[5] = 0.35;
-    //    //x[0] = 0.65; x[1] = 0.15; x[2] = 0.45; x[3] = 0.75; x[4] = 0.15; x[5] = 0.25;
-    x[0] = 0.80; x[1] = 0.20; x[2] = 0.50; x[3] = 0.60; x[4] = 0.40; x[5] = 0.30;
+    //x[0] = 0.50; x[1] = 0.80; x[2] = 0.70; x[3] = 0.20; x[4] = 0.20; x[5] = 0.30; optimal
+    x[0] = 0.60; x[1] = 0.70; x[2] = 0.65; x[3] = 0.25; x[4] = 0.25; x[5] = 0.35; //ishleyir eps1:0.0001 eps2:0.0001 min:1.0, 0.0001
+    //x[0] = 0.60; x[1] = 0.70; x[2] = 0.60; x[3] = 0.30; x[4] = 0.30; x[5] = 0.40; //ishleyir eps1:0.0001 eps2:0.0001 min:1.0, 0.0001
 
 //    x[0] = 0.5; x[1] = 0.8;
 //    x[2] = 0.7; x[3] = 0.2;
 //    x[4] = 0.2; x[5] = 0.3;
+//    FILE* file = fopen("e.txt", "w");
 //    for (unsigned int i=0; i<=hc.N1; i++)
 //    {
 //        x[5] = i*hc.h1;
 //        double result = hc.fx(x);
-//        printf("%.16f\n", result);
+//        fprintf(file, "%.16f\n", result);
+//        fflush(file);
 //    }
+//    fclose(file);
 //    return;
 
 
@@ -46,17 +57,29 @@ void HeatControl2Delta::main()
     }
 #endif
 
+    hc.initial.resize(2*hc.L);
+    hc.initial[0] = x[0];
+    hc.initial[1] = x[1];
+    hc.initial[2] = x[2];
+    hc.initial[3] = x[3];
+    hc.initial[4] = x[4];
+    hc.initial[5] = x[5];
+
     /* Minimization */
     ConjugateGradient g2;
     g2.setFunction(&hc);
-    g2.setEpsilon1(0.000001);
-    g2.setEpsilon2(0.000001);
+    g2.setEpsilon1(0.0001);
+    g2.setEpsilon2(0.0001);
     g2.setGradientStep(0.000001);
-    g2.setR1MinimizeEpsilon(1.0, 0.01);
+    g2.setR1MinimizeEpsilon(1.0, 0.0001);
     g2.setPrinter(&hc);
     g2.setProjection(&hc);
     g2.setNormalize(true);
     g2.calculate(x);
+
+    printf("J[%d]: %.16f\n", 0, hc.fx(x));
+    printf("eo: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", 0.50, 0.80, 0.70, 0.20, 0.20, 0.30);
+    printf("e1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", x[0], x[1], x[2], x[3], x[4], x[5]);
 }
 
 HeatControl2Delta::HeatControl2Delta(unsigned int M, unsigned int N2, unsigned int N1)
@@ -140,8 +163,8 @@ double HeatControl2Delta::norm(const DoubleVector& x) const
 
 void HeatControl2Delta::gradient(const DoubleVector& x, DoubleVector& g, double gradient_step)
 {
-//    double nrm = norm(x);
-//    if (nrm < 0.0000201) alpha = 0.0;
+    //    double nrm = norm(x);
+    //    if (nrm < 0.0000201) alpha = 0.0;
 
     //static int i=1;
     DoubleMatrix u;
@@ -189,7 +212,6 @@ void HeatControl2Delta::calculateU(const DoubleVector &x, DoubleMatrix& u)
 
     for (unsigned int k=0; k<=M; k++)
     {
-
         if (k==0)
         {
             for (unsigned int j=0; j<=N2; j++)
@@ -255,7 +277,7 @@ void HeatControl2Delta::calculateU(const DoubleVector &x, DoubleMatrix& u)
             //            rx2.resize(N2-1);
 
             gause1 = gause2 = gause3 = 0.0;
-            file = fopen("gause.txt", "w");
+            //file = fopen("gause.txt", "w");
             for (unsigned int j=1; j<N2; j++)
             {
                 for (unsigned int i=1; i<N1; i++)
@@ -285,8 +307,11 @@ void HeatControl2Delta::calculateU(const DoubleVector &x, DoubleMatrix& u)
                 u0[0][i]  = m3(h1*i, ht*(k));
                 u0[N2][i] = m4(h1*i, ht*(k));
             }
-            fclose(file);
-            //printf("gause1: %.8f %.8f\n", gause1, gause1*h1*h2);
+            //fclose(file);
+//            puts("------------------------------------------------------------------------");
+//            printf("gause1: %.8f %.8f [%.8f %.8f]\n", gause1, gause1 * h1 * h2, x[0], x[1]);
+//            printf("gause2: %.8f %.8f [%.8f %.8f]\n", gause2, gause2 * h1 * h2, x[2], x[3]);
+//            printf("gause3: %.8f %.8f [%.8f %.8f]\n", gause3, gause3 * h1 * h2, x[4], x[5]);
 
             //            da2.clear();
             //            db2.clear();
@@ -503,51 +528,51 @@ void HeatControl2Delta::psiDerivative(double &psiX1, double &psiX2, double x1, d
 
 void HeatControl2Delta::calculateGF(const DoubleVector &x, const DoubleMatrix& psi, DoubleVector& g, unsigned int k)
 {
-    for (unsigned k=0; k<=M; k++)
-    {
-        if (alpha < 1.0)
-        {
-            g[2*L+0*(M+1)+k] = 0.0;
-            g[2*L+1*(M+1)+k] = 0.0;
-            g[2*L+2*(M+1)+k] = 0.0;
-        }
-        else
-        {
-            double p[L];
-            p[0]=p[1]=p[2]=0.0;
-            for (unsigned int j=0; j<=N2; j++)
-            {
-                for (unsigned int i=0; i<=N1; i++)
-                {
-                    if (fabs(x[0]-i*h1)<h1 && fabs(x[1]-j*h2)<h2) p[0] += psi[j][i]*((h1-fabs(x[0]-i*h1))/h1)*((h2-fabs(x[1]-j*h2))/h2);
-                    if (fabs(x[2]-i*h1)<h1 && fabs(x[3]-j*h2)<h2) p[1] += psi[j][i]*((h1-fabs(x[2]-i*h1))/h1)*((h2-fabs(x[3]-j*h2))/h2);
-                    if (fabs(x[4]-i*h1)<h1 && fabs(x[5]-j*h2)<h2) p[2] += psi[j][i]*((h1-fabs(x[4]-i*h1))/h1)*((h2-fabs(x[5]-j*h2))/h2);
-                }
-            }
-            g[2*L+0*(M+1)+k] = -p[0] + 2.0*alpha*(x[2*L+0*(M+1)+k] - g1(k*ht));
-            g[2*L+1*(M+1)+k] = -p[1] + 2.0*alpha*(x[2*L+1*(M+1)+k] - g2(k*ht));
-            g[2*L+2*(M+1)+k] = -p[2] + 2.0*alpha*(x[2*L+2*(M+1)+k] - g3(k*ht));
-        }
-    }
+//    for (unsigned k=0; k<=M; k++)
+//    {
+//        if (alpha < 1.0)
+//        {
+//            g[2*L+0*(M+1)+k] = 0.0;
+//            g[2*L+1*(M+1)+k] = 0.0;
+//            g[2*L+2*(M+1)+k] = 0.0;
+//        }
+//        else
+//        {
+//            double p[L];
+//            p[0]=p[1]=p[2]=0.0;
+//            for (unsigned int j=0; j<=N2; j++)
+//            {
+//                for (unsigned int i=0; i<=N1; i++)
+//                {
+//                    if (fabs(x[0]-i*h1)<h1 && fabs(x[1]-j*h2)<h2) p[0] += psi[j][i]*((h1-fabs(x[0]-i*h1))/h1)*((h2-fabs(x[1]-j*h2))/h2);
+//                    if (fabs(x[2]-i*h1)<h1 && fabs(x[3]-j*h2)<h2) p[1] += psi[j][i]*((h1-fabs(x[2]-i*h1))/h1)*((h2-fabs(x[3]-j*h2))/h2);
+//                    if (fabs(x[4]-i*h1)<h1 && fabs(x[5]-j*h2)<h2) p[2] += psi[j][i]*((h1-fabs(x[4]-i*h1))/h1)*((h2-fabs(x[5]-j*h2))/h2);
+//                }
+//            }
+//            g[2*L+0*(M+1)+k] = -p[0] + 2.0*alpha*(x[2*L+0*(M+1)+k] - g1(k*ht));
+//            g[2*L+1*(M+1)+k] = -p[1] + 2.0*alpha*(x[2*L+1*(M+1)+k] - g2(k*ht));
+//            g[2*L+2*(M+1)+k] = -p[2] + 2.0*alpha*(x[2*L+2*(M+1)+k] - g3(k*ht));
+//        }
+//    }
 }
 
-void HeatControl2Delta::calculateG2(const DoubleVector &e, DoubleVector& g1)
+void HeatControl2Delta::calculateG2(const DoubleVector &x, DoubleVector& g1)
 {
-    double h = 0.01;
-    DoubleVector E(2*L);
-    DoubleVector g(2*L);
-    double f0 = fx(e);
+//    double h = 0.01;
+//    DoubleVector E(2*L);
+//    DoubleVector g(2*L);
+//    double f0 = fx(x);
 
-    for (unsigned int i=0; i<e.size(); i++)
-    {
-        E = e;
-        E[i] += h;
-        double f1 = fx(E);
-        g[i] = (f1-f0)/h;
-    }
+//    for (unsigned int i=0; i<x.size(); i++)
+//    {
+//        E = x;
+//        E[i] += h;
+//        double f1 = fx(E);
+//        g[i] = (f1-f0)/h;
+//    }
 
-    printf("e2: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", e[0], e[1], e[2], e[3], e[4], e[5]);
-    printf("g2: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", g[0], g[1], g[2], g[3], g[4], g[5]);
+//    printf("e2: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", x[0], x[1], x[2], x[3], x[4], x[5]);
+//    printf("g2: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", g[0], g[1], g[2], g[3], g[4], g[5]);
 }
 
 double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k)
@@ -557,12 +582,21 @@ double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k)
     double t  = k*ht;
     double sum = 0.0;
 
-    DoubleVector e(2*L);
-    for (unsigned int l=0; l<L; l++)
-    {
-        e[2*l+0] = (*px)[2*l+0];
-        e[2*l+1] = (*px)[2*l+1];
-    }
+    DoubleVector e(6);
+    e[0] = (*px)[0];
+    e[1] = (*px)[1];
+    e[2] = (*px)[2];
+    e[3] = (*px)[3];
+    e[4] = (*px)[4];
+    e[5] = (*px)[5];
+
+
+//    DoubleVector e(2*L);
+//    for (unsigned int l=0; l<L; l++)
+//    {
+//        e[2*l+0] = (*px)[2*l+0];
+//        e[2*l+1] = (*px)[2*l+1];
+//    }
 
     //    if (fabs(x1-e[0])<=h1 && fabs(x2-e[1])<=h2)
     //    {
@@ -574,7 +608,7 @@ double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k)
     //    }
     //    if (fabs(x1-e[4])<=h1 && fabs(x2-e[5])<=h2)
     //    {
-    //        sum += g3(t) * ((h1-fabs(x1-e[4]))/(h1*h1))*((h2-fabs(x2-e[5]))/(h2*h2));
+    //        sum += g3(t) * ((h1-fabs(x1-e[4]))/(h1*h1))*((h2-fabs  v c  v (x2-e[5]))/(h2*h2));
     //    }
 
     double sgm1 = 3.0*h1;
@@ -596,18 +630,20 @@ double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k)
     sum += g2(t) * a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/b) * h1*h2;
     sum += g3(t) * a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/b) * h1*h2;
 
-    double pp = a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b);
+    //double pp = a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b);
     //if (i==50 && j==80)
     //printf("%3d %3d %3d %.16f %.16f %.16f %.16f %.16f %.16f %.16f\n", k, j, i, pp, e[0], e[1], x1, x2, exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b), a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b));
     gause1 += a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b);
+    gause2 += a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/b);
+    gause3 += a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/b);
 
-    if (k==M)//
-    //if (pp > 0.0000001)
-    {
-        fprintf(file, "%.16f ", pp);
-        if (i == 99) fputs("\n", file);
-        //printf("%d %d %d\n", i, j, k);
-    }
+    //    if (k==M)//
+    //    //if (pp > 0.0000001)
+    //    {
+    //        fprintf(file, "%.16f ", pp);
+    //        if (i == 99) fputs("\n", file);
+    //        //printf("%d %d %d\n", i, j, k);
+    //    }
 #endif
 
     e.clear();
@@ -620,20 +656,16 @@ void HeatControl2Delta::initialize()
     for (unsigned int j=0; j<U.size(); j++) U[j].clear();
     U.clear();
 
+    DoubleVector x = optimal;
     // initializing U
     U.resize(N2+1);
     for (unsigned int j=0; j<=N2; j++) U[j].resize(N1+1);
 
-    DoubleVector x;
 #ifdef POWER_OPTIMIZE
     x.resize( 2*L + (M+1)*L );
 #else
     x.resize( 2*L );
 #endif
-
-    x[0] = 0.5; x[1] = 0.8;
-    x[2] = 0.7; x[3] = 0.2;
-    x[4] = 0.2; x[5] = 0.3;
 
 #ifdef POWER_OPTIMIZE
     for (unsigned int k=0; k<=M; k++)
@@ -644,7 +676,7 @@ void HeatControl2Delta::initialize()
     }
 #endif
 
-    calculateU(x, U);
+    calculateU(optimal, U);
 
     puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
     Printer::printMatrix(U, 10, 10);
@@ -663,32 +695,32 @@ void HeatControl2Delta::print(unsigned int i, const DoubleVector& x, const Doubl
     printf("e1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", x[0], x[1], x[2], x[3], x[4], x[5]);
     printf("g1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", g[0], g[1], g[2], g[3], g[4], g[5]);
 
-//    DoubleMatrix u;
-//    hc->calculateU(x, u);
-//    char filename1[100];
-//    char filename2[100];
-//    int count1 = sprintf(filename1, "optimal%d.txt", i);
-//    filename1[count1] = '\0';
-//    int count2 = sprintf(filename2, "optimal%d.png", i);
-//    filename2[count2] = '\0';
-//    hc->write(filename2, u);
-//    system("imager.exe -w 101 -h 101 -i optimal1.txt -o optimal3.png");
+    //    DoubleMatrix u;
+    //    hc->calculateU(x, u);
+    //    char filename1[100];
+    //    char filename2[100];
+    //    int count1 = sprintf(filename1, "optimal%d.txt", i);
+    //    filename1[count1] = '\0';
+    //    int count2 = sprintf(filename2, "optimal%d.png", i);
+    //    filename2[count2] = '\0';
+    //    hc->write(filename2, u);
+    //    system("imager.exe -w 101 -h 101 -i optimal1.txt -o optimal3.png");
 
-//    DoubleVector f(hc->M+1);
-//    for (unsigned int k=0; k<=M; k++) f[k] = x[2*hc->L+0*(M+1)+k];
-//    Printer::printVector(f, 10, "g1");
-//    for (unsigned int k=0; k<=M; k++) f[k] = x[2*hc->L+1*(M+1)+k];
-//    Printer::printVector(f, 10, "g2");
-//    for (unsigned int k=0; k<=M; k++) f[k] = x[2*hc->L+2*(M+1)+k];
-//    Printer::printVector(f, 10, "g3");
+    //    DoubleVector f(hc->M+1);
+    //    for (unsigned int k=0; k<=M; k++) f[k] = x[2*hc->L+0*(M+1)+k];
+    //    Printer::printVector(f, 10, "g1");
+    //    for (unsigned int k=0; k<=M; k++) f[k] = x[2*hc->L+1*(M+1)+k];
+    //    Printer::printVector(f, 10, "g2");
+    //    for (unsigned int k=0; k<=M; k++) f[k] = x[2*hc->L+2*(M+1)+k];
+    //    Printer::printVector(f, 10, "g3");
 
-//    DoubleVector fg(hc->M+1);
-//    for (unsigned int k=0; k<=M; k++) fg[k] = g[2*hc->L+0*(M+1)+k];
-//    Printer::printVector(fg, 10, "fg1");
-//    for (unsigned int k=0; k<=M; k++) fg[k] = g[2*hc->L+1*(M+1)+k];
-//    Printer::printVector(fg, 10, "fg2");
-//    for (unsigned int k=0; k<=M; k++) fg[k] = g[2*hc->L+2*(M+1)+k];
-//    Printer::printVector(fg, 10, "fg3");
+    //    DoubleVector fg(hc->M+1);
+    //    for (unsigned int k=0; k<=M; k++) fg[k] = g[2*hc->L+0*(M+1)+k];
+    //    Printer::printVector(fg, 10, "fg1");
+    //    for (unsigned int k=0; k<=M; k++) fg[k] = g[2*hc->L+1*(M+1)+k];
+    //    Printer::printVector(fg, 10, "fg2");
+    //    for (unsigned int k=0; k<=M; k++) fg[k] = g[2*hc->L+2*(M+1)+k];
+    //    Printer::printVector(fg, 10, "fg3");
     puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
 
     //    hc->calculateU(e, hc->uT);
@@ -699,11 +731,16 @@ void HeatControl2Delta::print(unsigned int i, const DoubleVector& x, const Doubl
 
 void HeatControl2Delta::project(DoubleVector &e, int index)
 {
-    for (unsigned int i=0; i<e.size(); i++)
+    if (index<6)
     {
-        if (e[i]>1.0) e[i]=1.0;
-        if (e[i]<0.0) e[i]=0.0;
+        if (e[index] > 1.0) e[index] = 1.0;
+        if (e[index] < 0.0) e[index] = 0.0;
     }
+    //    for (unsigned int i=0; i<e.size(); i++)
+    //    {
+    //        if (e[i]>1.0) e[i]=1.0;
+    //        if (e[i]<0.0) e[i]=0.0;
+    //    }
 }
 
 void HeatControl2Delta::write(const char *fileName, const DoubleMatrix& m)
