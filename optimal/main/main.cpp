@@ -44,6 +44,8 @@
 #include "point/pointcontrol1.h"
 #include "point/pointcontrol2.h"
 
+#include "discrete/discreteheat.h"
+
 #include <cmethods.h>
 
 double f(double x, double y)
@@ -93,7 +95,9 @@ int main()
 
 //    HyperbolicControl1DT::main();
     puts("------------------------------------------------------------------------------------------------");
-    HyperbolicControl1D4::main();
+//    HyperbolicControl1D4::main();
+    DiscreteHeat::main();
+//    HeatControl1::main();
 //    HeatControl2Delta::main();
 //    PointControl11::main();
 //    Rosenbrock::main();

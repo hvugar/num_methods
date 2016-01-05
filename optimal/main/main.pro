@@ -43,7 +43,8 @@ SOURCES += main.cpp \
     point/pointcontrol.cpp \
     point/pointcontrol1.cpp \
     point/pointcontrol2.cpp \
-    point/pointcontrol11.cpp
+    point/pointcontrol11.cpp \
+    discrete/discreteheat.cpp
 
 HEADERS += \
     rosenbrock.h \
@@ -71,4 +72,5 @@ HEADERS += \
     point/pointcontrol.h \
     point/pointcontrol1.h \
     point/pointcontrol2.h \
-    point/pointcontrol11.h
+    point/pointcontrol11.h \
+    discrete/discreteheat.h
