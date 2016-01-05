@@ -46,58 +46,13 @@
 
 #include "discrete/discreteheat.h"
 
-#include <cmethods.h>
-
-double f(double x, double y)
-{
-    return x*x + y*y;
-}
-
 int main()
 {
-//    double Nx = 10;
-//    double Ny = 10;
-//    double hx = 0.1;
-//    double hy = 0.1;
-
-//    double sum = 0.25*hx*hy*(f(0*hx, 0*hy) + f(0*hx,Ny*hy) + f(Nx*hx, 0*hy) + f(Nx*hx, Ny*hy));
-//    for (unsigned int i=1; i<=Nx-1; i++)
-//    {
-//        sum += 0.50*hx*hy*f(i*hx, 0*hy);
-//        sum += 0.50*hx*hy*f(i*hx, Ny*hy);
-//    }
-//    for (unsigned int j=1; j<=Ny-1; j++)
-//    {
-//        sum += 0.50*hx*hy*f(0*hx, j*hy);
-//        sum += 0.50*hx*hy*f(Nx*hx, j*hy);
-//    }
-//        for (unsigned int i=1; i<=Nx-1; i++)
-//        {
-//            for (unsigned int j=1; j<=Ny-1; j++)
-//            {
-//                sum += hx*hy*f(i*hx, j*hy);
-//            }
-//        }
-//    printf("%.12f\n", sum);
-
-
-//    sum = 0.0;
-//    for (unsigned int i=0; i<=Nx-1; i++)
-//    {
-//        for (unsigned int j=0; j<=Ny-1; j++)
-//        {
-//            sum += f(i*hx, j*hy) + f(i*hx, (j+1)*hy) + f((i+1)*hx, j*hy) + f((i+1)*hx, (j+1)*hy);
-//        }
-//    }
-//    sum = sum * 0.25 * hx *hy;
-//    printf("%.12f\n", sum);
-
-
 //    HyperbolicControl1DT::main();
     puts("------------------------------------------------------------------------------------------------");
 //    HyperbolicControl1D4::main();
-    DiscreteHeat::main();
-//    HeatControl1::main();
+//    DiscreteHeat::main();
+    HeatControl1::main();
 //    HeatControl2Delta::main();
 //    PointControl11::main();
 //    Rosenbrock::main();
