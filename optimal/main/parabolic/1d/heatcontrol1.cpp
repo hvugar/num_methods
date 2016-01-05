@@ -94,9 +94,9 @@ void HeatControl1::gradient(const DoubleVector &f, DoubleVector &g, double)
 void HeatControl1::print(unsigned int iteration, const DoubleVector &f, const DoubleVector &gradient, double alpha, RnFunction *fn) const
 {
     HeatControl1* dh =dynamic_cast<HeatControl1*>(fn);
-    printf("J[%d]: %.12f\n", iteration, fn->fx(f));
-    Printer::printAsMatrix(f, dh->M, dh->N);
-    puts("-------");
+    printf("J[%d]: %.16f\n", iteration, fn->fx(f));
+//    Printer::printAsMatrix(f, dh->M, dh->N);
+//    puts("-------");
 }
 
 double HeatControl1::fi(unsigned int i) const
