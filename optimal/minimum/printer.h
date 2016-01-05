@@ -12,6 +12,7 @@ struct MINIMUMSHARED_EXPORT Printer
     static void printMatrix(const DoubleMatrix &x, unsigned int m = 10, unsigned int n = 10, const char* s = NULL, FILE* f = stdout);
     static void printVector(const DoubleVector &x, unsigned int n = 10, const char* s=NULL, FILE* f = stdout);
     static void printVector(const DoubleVector &x, const char *s = NULL, unsigned int n = 10, unsigned int start = 0, unsigned int end = 0, FILE *file = stdout);
+    static void printAsMatrix(const DoubleVector &x, unsigned int M, unsigned int N, unsigned int m = 10, unsigned int n = 10, const char* s = NULL, FILE* f = stdout);
 };
 
 #endif // PRINTER_H

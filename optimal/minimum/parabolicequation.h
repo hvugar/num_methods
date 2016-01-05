@@ -5,6 +5,17 @@
 #include "tomasmethod.h"
 #include "printer.h"
 
+struct MINIMUMSHARED_EXPORT IParabolicEquation
+{
+    virtual double fi(unsigned int i) const = 0;
+    virtual double m1(unsigned int j) const = 0;
+    virtual double m2(unsigned int j) const = 0;
+    virtual double f(unsigned int i, unsigned int j) const = 0;
+
+    virtual void calculateU(DoubleVector &u, double hx, double ht, unsigned int N, unsigned int M, double a) const;
+    virtual void calculateU(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a) const;
+};
+
 struct MINIMUMSHARED_EXPORT ParabolicEquation
 {
     ParabolicEquation(double t0 = 0.0, double t1 = 1.0, double x0 = 0.0, double x1 = 1.0, unsigned int M = 100, unsigned int N = 100, double a = 1.0);
