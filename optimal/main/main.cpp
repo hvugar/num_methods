@@ -51,8 +51,8 @@ int main()
 //    HyperbolicControl1DT::main();
     puts("------------------------------------------------------------------------------------------------");
 //    HyperbolicControl1D4::main();
-//    DiscreteHeat::main();
-    HeatControl1::main();
+    DiscreteHeat::main();
+//    HeatControl1::main();
 //    HeatControl2Delta::main();
 //    PointControl11::main();
 //    Rosenbrock::main();

@@ -10,7 +10,8 @@ void DiscreteHeat::main()
         unsigned int j = k / (dh.M+1);
         //unsigned int i = k % (dh.N+1);
         double t = j * dh.ht;
-        f0[k] = 0.0;//2.0*t - 2.0*dh.a;
+        //f0[k] = 2.0*t - 2.0*dh.a;
+        f0[k] = 0.0;
     }
 
     //Printer::printAsMatrix(f0, dh.M, dh.N);
@@ -18,10 +19,10 @@ void DiscreteHeat::main()
 
     ConjugateGradient g2;
     g2.setFunction(&dh);
-    g2.setEpsilon1(0.0000001);
-    g2.setEpsilon2(0.0000001);
-    g2.setGradientStep(0.000001);
-    g2.setR1MinimizeEpsilon(0.1, 0.0000001);
+    g2.setEpsilon1(0.01);
+    g2.setEpsilon2(0.01);
+    g2.setGradientStep(0.001);
+    g2.setR1MinimizeEpsilon(0.1, 0.0001);
     g2.setPrinter(&dh);
     //g2.setNormalize(true);
     g2.calculate(f0);
@@ -97,7 +98,7 @@ void DiscreteHeat::gradient(const DoubleVector& f, DoubleVector& g, double)
         if (i==0 || i==N || j==0 || j==M ) b = 0.5;
         if ((i==0 && j==0) || (i==0 && j==M) || (i==N && j==0) || (i==N && j==M)) b = 0.25;
 
-        g[k] = -ht*psi[j][i] + 2.0*hx*ht*b*(f[k]-fxt(i*hx, j*ht));
+        g[k] = -psi[j][i] + 2.0*b*(f[k]-fxt(i*hx, j*ht));
     }
 }
 
