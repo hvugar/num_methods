@@ -7,9 +7,9 @@ void HeatControl1::main()
     DoubleVector f0((hc.M+1)*(hc.N+1));
     for (unsigned int k=0; k<f0.size(); k++)
     {
-        unsigned int j = k / (hc.M+1);
+        //unsigned int j = k / (hc.M+1);
         //unsigned int i = k % (dh.N+1);
-        double t = j * hc.ht;
+        //double t = j * hc.ht;
         //f0[k] = 2.0*t - 2.0*hc.a;
         f0[k] = 10.0;
     }
@@ -93,10 +93,10 @@ void HeatControl1::gradient(const DoubleVector &f, DoubleVector &g, double)
 
 void HeatControl1::print(unsigned int iteration, const DoubleVector &f, const DoubleVector &gradient, double alpha, RnFunction *fn) const
 {
-    HeatControl1* dh =dynamic_cast<HeatControl1*>(fn);
+    //HeatControl1* dh =dynamic_cast<HeatControl1*>(fn);
     printf("J[%d]: %.16f\n", iteration, fn->fx(f));
-//    Printer::printAsMatrix(f, dh->M, dh->N);
-//    puts("-------");
+    //Printer::printAsMatrix(f, dh->M, dh->N);
+    //puts("-------");
 }
 
 double HeatControl1::fi(unsigned int i) const

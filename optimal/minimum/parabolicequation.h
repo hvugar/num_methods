@@ -5,15 +5,55 @@
 #include "tomasmethod.h"
 #include "printer.h"
 
+/**
+ * @brief Параболического уравнения
+ */
 struct MINIMUMSHARED_EXPORT IParabolicEquation
 {
+    /* initial condition */
     virtual double fi(unsigned int i) const = 0;
+    /* border conditions */
     virtual double m1(unsigned int j) const = 0;
     virtual double m2(unsigned int j) const = 0;
+    /* функция тепловых источников */
     virtual double f(unsigned int i, unsigned int j) const = 0;
 
+    /**
+     * @brief calculateU
+     * @param u
+     * @param hx
+     * @param ht
+     * @param N
+     * @param M
+     * @param a положительная константа. число a^2 является коэффициентом температуропроводности
+     */
     virtual void calculateU(DoubleVector &u, double hx, double ht, unsigned int N, unsigned int M, double a) const;
+    /**
+     * @brief calculateU
+     * @param u
+     * @param hx
+     * @param ht
+     * @param N
+     * @param M
+     * @param a положительная константа. число a^2 является коэффициентом температуропроводности
+     */
     virtual void calculateU(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a) const;
+};
+
+/**
+ * @brief Обратная параболического уравнения
+ *
+ */
+struct MINIMUMSHARED_EXPORT IBackwardParabolicEquation
+{
+    virtual double fi(unsigned int i) const = 0;
+//    /* initial condition */
+//    virtual double bfi(unsigned int i) const = 0;
+//    /* border conditions */
+//    virtual double bm1(unsigned int j) const = 0;
+//    virtual double bm2(unsigned int j) const = 0;
+//    /* функция тепловых источников */
+//    virtual double bf(unsigned int i, unsigned int j) const = 0;
 };
 
 struct MINIMUMSHARED_EXPORT ParabolicEquation

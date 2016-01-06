@@ -102,7 +102,7 @@ void DiscreteHeat::gradient(const DoubleVector& f, DoubleVector& g, double)
     }
 }
 
-double DiscreteHeat::fi(unsigned int i) const
+double DiscreteHeat::IParabolicEquation::fi(unsigned int i) const
 {
     double x = hx*i;
     return x*x;

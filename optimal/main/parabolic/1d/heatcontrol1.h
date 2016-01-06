@@ -34,6 +34,14 @@ struct HeatControl1 : public RnFunction, public IParabolicEquation, public Print
 
     static void main();
 
+//    struct IBackwardParabolicEquation
+//    {
+//        virtual double bfi(unsigned int i) const { return 0.0; }
+//        virtual double bm1(unsigned int j) const { return 0.0; }
+//        virtual double bm2(unsigned int j) const { return 0.0; }
+//        virtual double bf(unsigned int i, unsigned int j) const { return 0.0; }
+//    } cpe;
+
 private:
     double t0;
     double t1;

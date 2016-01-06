@@ -313,7 +313,7 @@ void DiscreteHyperbolic::calculateP(const DoubleMatrix &u, DoubleVector &g)
     double C1 = -(1.0-2.0*lamda)*(a*a*ht*ht)/(hx*hx);
     double D1 = 2.0*(((1.0-2.0*lamda)*(a*a*ht*ht) - hx*hx)/(hx*hx));
     double E1 = 1.0 + (2.0*lamda*a*a*ht*ht)/(hx*hx);
-    double F1 = -ht*ht;
+    //double F1 = -ht*ht;
 
     DoubleVector da(N-1);
     DoubleVector db(N-1);
