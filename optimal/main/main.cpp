@@ -38,6 +38,7 @@
 #include "hyperbolic/hyperboliccontrol1d3.h"
 #include "hyperbolic/hyperboliccontrol1d4.h"
 #include "hyperbolic/hyperboliccontrol1dt.h"
+#include "hyperbolic/discretehyperbolic.h"
 
 #include "point/pointcontrol11.h"
 #include "point/pointcontrol.h"
@@ -50,9 +51,14 @@ int main()
 {
 //    HyperbolicControl1DT::main();
     puts("------------------------------------------------------------------------------------------------");
+<<<<<<< .mine
+    DiscreteHyperbolic::main();
+//    HyperbolicControl1D4::main();
+=======
 //    HyperbolicControl1D4::main();
     DiscreteHeat::main();
 //    HeatControl1::main();
+>>>>>>> .r426
 //    HeatControl2Delta::main();
 //    PointControl11::main();
 //    Rosenbrock::main();

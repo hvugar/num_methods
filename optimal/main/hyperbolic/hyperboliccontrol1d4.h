@@ -40,7 +40,7 @@ public:
     double pmu2(unsigned int t) const { return 0.0; }
 
     void calculateU(const DoubleVector& v, DoubleMatrix &u);
-    void calculareP(const DoubleMatrix &u, DoubleVector &g);
+    void calculateP(const DoubleMatrix &u, DoubleVector &g);
     void calculateG(const DoubleVector& psi, DoubleVector& g, unsigned int j);
 
     //double f1(double t) const { return U; }

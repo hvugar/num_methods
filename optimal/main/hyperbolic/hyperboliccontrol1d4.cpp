@@ -146,7 +146,7 @@ void HyperbolicControl1D4::gradient(const DoubleVector &v, DoubleVector &g, doub
     DoubleMatrix u;
     calculateU(v, u);
     pu = &u;
-    calculareP(u, g);
+    calculateP(u, g);
 
     //    double h = 0.01;
     //    DoubleVector v1 = v;
@@ -219,7 +219,7 @@ double HyperbolicControl1D4::fx(double t)
     DoubleVector gr(3*(M+D+1));
     calculateU(v, u);
     pu = &u;
-    calculareP(u, gr);
+    calculateP(u, gr);
 
     printf("Norm: %.12f %d\n", gr.L2Norm(), cg.count());
 
@@ -485,7 +485,7 @@ void HyperbolicControl1D4::calculateU(const DoubleVector &v, DoubleMatrix &u)
     u0.clear();
 }
 
-void HyperbolicControl1D4::calculareP(const DoubleMatrix &u, DoubleVector &g)
+void HyperbolicControl1D4::calculateP(const DoubleMatrix &u, DoubleVector &g)
 {
     DoubleVector p(N+1);
     DoubleVector p0(N+1);

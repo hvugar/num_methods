@@ -316,12 +316,12 @@ void CFunction3::print(unsigned int iterationCount, const DoubleVector& u, const
         u1[i] = u[i];
         u2[i] = u[i+c->n];
     }
-    Printer::printVector(c->x1, 10, "x1");
-    Printer::printVector(c->x2, 10, "x2");
-    Printer::printVector(c->psi1, 10, "p1");
-    Printer::printVector(c->psi2, 10, "p2");
-    Printer::printVector(u1, 10, "u1");
-    Printer::printVector(u2, 10, "u2");
+    Printer::printVector(c->x1, "x1", 10);
+    Printer::printVector(c->x2, "x2", 10);
+    Printer::printVector(c->psi1, "p1", 10);
+    Printer::printVector(c->psi2, "p2", 10);
+    Printer::printVector(u1, "u1", 10);
+    Printer::printVector(u2, "u2", 10);
 }
 
 void CFunction3::print(const char* s, const std::vector<double>& x) const
