@@ -6,7 +6,7 @@ void DiscreteParabolic::main()
     DiscreteParabolic dp;
 
     DoubleVector f((dp.N+1)*(dp.M+1));
-    for (unsigned int i=0; i<=f.size(); i++) f[i] = dp.f()
+    //for (unsigned int i=0; i<=f.size(); i++) f[i] = dp.f()
 }
 
 DiscreteParabolic::DiscreteParabolic()

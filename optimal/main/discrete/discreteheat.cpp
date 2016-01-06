@@ -7,9 +7,9 @@ void DiscreteHeat::main()
     DoubleVector f0((dh.M+1)*(dh.N+1));
     for (unsigned int k=0; k<f0.size(); k++)
     {
-        unsigned int j = k / (dh.M+1);
+        //unsigned int j = k / (dh.M+1);
         //unsigned int i = k % (dh.N+1);
-        double t = j * dh.ht;
+        //double t = j * dh.ht;
         //f0[k] = 2.0*t - 2.0*dh.a;
         f0[k] = 0.0;
     }
@@ -220,8 +220,8 @@ void DiscreteHeat::calculateP(const DoubleVector &f, const DoubleVector &u, Doub
 
 void DiscreteHeat::print(unsigned int iteration, const DoubleVector &f, const DoubleVector &gradient, double alpha, RnFunction *fn) const
 {
-    DiscreteHeat* dh =dynamic_cast<DiscreteHeat*>(fn);
+    //DiscreteHeat* dh =dynamic_cast<DiscreteHeat*>(fn);
     printf("J[%d]: %.12f\n", iteration, fn->fx(f));
-    Printer::printAsMatrix(f, dh->M, dh->N);
-    puts("-------");
+    //Printer::printAsMatrix(f, dh->M, dh->N);
+    //puts("-------");
 }
