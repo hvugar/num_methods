@@ -82,6 +82,7 @@ double DiscreteHyperbolic::fx(double t)
     cg.setFunction(this);
     cg.setEpsilon1(0.000001);
     cg.setEpsilon2(0.000001);
+
     //g.setGradientStep(0.000001);
     //    g.setR1MinimizeEpsilon(20.0, 0.01);
     cg.setR1MinimizeEpsilon(min_step, gold_eps);
@@ -309,11 +310,18 @@ void DiscreteHyperbolic::calculateP(const DoubleMatrix &u, DoubleVector &g)
     for (unsigned int j=0; j<=M+D; j++) psi[j].resize(N+1);
 
     double A1 = -(lamda*a*a*ht*ht)/(hx*hx);
-    double B1 = 1.0 + (2.0*lamda*a*a*ht*ht)/(hx*hx);
+    double B0 = 1.0 + (2.0*lamda*a*a*ht*ht)/(hx*hx);
+    double A2 = -(lamda*a*a*ht*ht)/(hx*hx);
+
     double C1 = -(1.0-2.0*lamda)*(a*a*ht*ht)/(hx*hx);
-    double D1 = 2.0*(((1.0-2.0*lamda)*(a*a*ht*ht) - hx*hx)/(hx*hx));
-    double E1 = 1.0 + (2.0*lamda*a*a*ht*ht)/(hx*hx);
-    //double F1 = -ht*ht;
+    double D0 = 2.0*(((1.0-2.0*lamda)*(a*a*ht*ht) - hx*hx)/(hx*hx));
+    double C2 = -(1.0-2.0*lamda)*(a*a*ht*ht)/(hx*hx);
+
+    double E1 = -(lamda*a*a*ht*ht)/(hx*hx);
+    double F0 = 1.0 + (2.0*lamda*a*a*ht*ht)/(hx*hx);
+    double E2 = -(lamda*a*a*ht*ht)/(hx*hx);
+
+    double G0 = -ht*ht;
 
     DoubleVector da(N-1);
     DoubleVector db(N-1);
@@ -330,8 +338,8 @@ void DiscreteHyperbolic::calculateP(const DoubleMatrix &u, DoubleVector &g)
             for (unsigned int i=1; i<=N-1; i++)
             {
                 da[i-1] = A1;
-                db[i-1] = B1;
-                dc[i-1] = A1;
+                db[i-1] = B0;
+                dc[i-1] = A2;
                 rd[i-1] = -2.0*hx*ht*0.5*(u[j][i]-U);
             }
             da[0]=0.0;
@@ -341,8 +349,8 @@ void DiscreteHyperbolic::calculateP(const DoubleMatrix &u, DoubleVector &g)
             {
                 psi[j][i] = rd[i-1];
             }
-            psi[j][0]   = -(A1*psi[j][1]  +2.0*hx*ht*0.25*(u[j][0]-U));
-            psi[j][N]   = -(A1*psi[j][N-1]+2.0*hx*ht*0.25*(u[j][N]-U));
+            psi[j][0]   = -(A1*psi[j][1]   + 2.0*hx*ht*0.25*(u[j][0]-U));
+            psi[j][N]   = -(A1*psi[j][N-1] + 2.0*hx*ht*0.25*(u[j][N]-U));
             Printer::printVector(psi[j]);
         }
         else if (j==(M+D-1))
@@ -350,21 +358,21 @@ void DiscreteHyperbolic::calculateP(const DoubleMatrix &u, DoubleVector &g)
             for (unsigned int i=1; i<=N-1; i++)
             {
                 da[i-1] = A1;
-                db[i-1] = B1;
+                db[i-1] = B0;
                 dc[i-1] = A1;
                 rd[i-1] = 0.0;
 
                 if (i==1)
                 {
-                    rd[i-1] = -(D1*psi[j+1][i] + C1*psi[j+1][i+1]+2.0*hx*ht*(u[j][i]-U));
+                    //rd[i-1] = -(D1*psi[j+1][i] + C1*psi[j+1][i+1]+2.0*hx*ht*(u[j][i]-U));
                 }
                 else if (i==N-1)
                 {
-                    rd[i-1] = -(C1*psi[j+1][i-1] + D1*psi[j+1][i]+2.0*hx*ht*(u[j][i]-U));
+                    //rd[i-1] = -(C1*psi[j+1][i-1] + D1*psi[j+1][i]+2.0*hx*ht*(u[j][i]-U));
                 }
                 else
                 {
-                    rd[i-1] = -(C1*psi[j+1][i-1] + D1*psi[j+1][i] + C1*psi[j+1][i+1]+2.0*hx*ht*(u[j][i]-U));
+                    //rd[i-1] = -(C1*psi[j+1][i-1] + D1*psi[j+1][i] + C1*psi[j+1][i+1]+2.0*hx*ht*(u[j][i]-U));
                 }
             }
             da[0]=0.0;
@@ -383,21 +391,21 @@ void DiscreteHyperbolic::calculateP(const DoubleMatrix &u, DoubleVector &g)
             for (unsigned int i=1; i<=N-1; i++)
             {
                 da[i-1] = A1;
-                db[i-1] = B1;
+                db[i-1] = B0;
                 dc[i-1] = A1;
                 rd[i-1] = 0.0;
 
                 if (i==1)
                 {
-                    rd[i-1] = -(D1*psi[j+1][i] + C1*psi[j+1][i+1] + E1*psi[j+2][i] + A1*psi[j+2][i+1]);
+                    //rd[i-1] = -(D1*psi[j+1][i] + C1*psi[j+1][i+1] + E1*psi[j+2][i] + A1*psi[j+2][i+1]);
                 }
                 else if (i==N-1)
                 {
-                    rd[i-1] = -(C1*psi[j+1][i-1] + D1*psi[j+1][i] + A1*psi[j+2][i-1] + E1*psi[j+2][i]);
+                    //rd[i-1] = -(C1*psi[j+1][i-1] + D1*psi[j+1][i] + A1*psi[j+2][i-1] + E1*psi[j+2][i]);
                 }
                 else
                 {
-                    rd[i-1] = -(C1*psi[j+1][i-1] + D1*psi[j+1][i] + C1*psi[j+1][i+1] + A1*psi[j+2][i-1] + E1*psi[j+2][i] + A1*psi[j+2][i+1]);
+                    //rd[i-1] = -(C1*psi[j+1][i-1] + D1*psi[j+1][i] + C1*psi[j+1][i+1] + A1*psi[j+2][i-1] + E1*psi[j+2][i] + A1*psi[j+2][i+1]);
                 }
 
 //                if (j>=M)

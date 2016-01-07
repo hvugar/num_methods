@@ -40,6 +40,12 @@ protected:
     static void Gradient(RnFunction *f, double step, const DoubleVector &x, DoubleVector &g);
 };
 
+class MINIMUMSHARED_EXPORT IGradient
+{
+public:
+    virtual void gradient(const DoubleVector &x, DoubleVector &g) = 0;
+};
+
 typedef std::vector<RnFunction> RnFunctionList;
 typedef std::vector<RnFunction*> PRnFunctionList;
 

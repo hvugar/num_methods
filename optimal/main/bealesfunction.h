@@ -8,7 +8,7 @@
 /**
  * @brief The Beales Function. Range -4.5 <= x,y <= 4.5. Optimal f(3, 0.5)=0;
  */
-struct BealesFunction : public RnFunction, Printer, Projection
+struct BealesFunction : public RnFunction, public Printer, public Projection
 {
 public:
     virtual ~BealesFunction() {}

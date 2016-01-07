@@ -5,7 +5,9 @@
 
 double Rosenbrock::fx(const DoubleVector& x)
 {
-    count++;
+    Rosenbrock* r = const_cast<Rosenbrock*>(this);
+    r->count++;
+
     double x1 = x[0];
     double x2 = x[1];
     return ((1 - x1) * (1 - x1)) + 100 * (x2 - x1 * x1) * (x2 - x1 * x1);
@@ -14,6 +16,11 @@ double Rosenbrock::fx(const DoubleVector& x)
 void Rosenbrock::gradient(const DoubleVector& x, DoubleVector &g, double gradient_step)
 {
     RnFunction::Gradient(this, gradient_step, x, g);
+}
+
+void Rosenbrock::gradient(const DoubleVector &x, DoubleVector &g)
+{
+    RnFunction::Gradient(this, grad_step, x, g);
 }
 
 void Rosenbrock::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const

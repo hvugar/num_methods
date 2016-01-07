@@ -46,16 +46,11 @@
 #include "point/pointcontrol2.h"
 
 #include "discrete/discreteheat.h"
+#include "discrete/discretehyperbolic1.h"
 
 int main()
 {
-//    HyperbolicControl1DT::main();
-//    HyperbolicControl1D4::main();
-    DiscreteHeat::main();
-//    HeatControl1::main();
-//    HeatControl2Delta::main();
-//    PointControl11::main();
-//    Rosenbrock::main();
+    Discretehyperbolic1::main();
     return 0;
 }
 
