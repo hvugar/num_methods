@@ -33,7 +33,7 @@ public:
     void calculateP(const DoubleVector &f, const DoubleVector &u, DoubleMatrix &psi, DoubleVector &g);
 
     static void main();
-    double hx;
+
 private:
     double x0;
     double x1;
@@ -41,7 +41,7 @@ private:
     double t0;
     unsigned int N;
     unsigned int M;
-
+    double hx;
     double ht;
     double a;
 

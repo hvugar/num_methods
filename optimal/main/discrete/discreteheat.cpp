@@ -72,7 +72,7 @@ double DiscreteHeat::fx(const DoubleVector& f)
             double b = 1.0;
             if (i==0 || i==N || j==0 || j==M) b = 0.5;
             if ((i==0 && j==0) || (i==0 && j==M) || (i==N && j==0) || (i==N && j==M)) b = 0.25;
-            double f1 = ((*pf)[j*(N+1)+i] - fxt(i*hx, j*ht));
+            double f1 = (f[j*(N+1)+i] - fxt(i*hx, j*ht));
             norm += b*f1*f1;
         }
     }
