@@ -133,8 +133,8 @@ void Discretehyperbolic1::gradient(const DoubleVector& f0, DoubleVector& g, doub
             }
         }
     }
-    //puts("---");
-    //Printer::printAsMatrix(g, M, N);
+    puts("---");
+    Printer::printAsMatrix(g, M, N);
 }
 
 void Discretehyperbolic1::print(unsigned int iteration, const DoubleVector &x, const DoubleVector &gradient, double alpha, RnFunction *fn) const
