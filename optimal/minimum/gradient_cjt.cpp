@@ -10,6 +10,16 @@ ConjugateGradient::~ConjugateGradient()
 
 void ConjugateGradient::calculate(DoubleVector& x)
 {
+//    if (m_fn==NULL)
+//    {
+//        throw FunctionException();
+//    }
+
+//    if (m_gr==NULL)
+//    {
+//        throw FunctionException();
+//    }
+
     unsigned int n = x.size();
 
     unsigned int k = 0;
@@ -33,6 +43,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
     {
         // Gradient of objectiv function in current point
         m_fn->gradient(x, g, grad_step);
+        //m_gr->gradient(x, g);
 
         double gradient_norm = g.L2Norm();
         if (gradient_norm < epsilon1())

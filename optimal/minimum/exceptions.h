@@ -17,4 +17,12 @@ class invalid_step_exception : public std::invalid_argument
 
 };
 
+class FunctionException : public std::exception
+{
+public:
+    FunctionException() throw() {}
+    virtual ~FunctionException() throw();
+    virtual const char* what() const throw();
+};
+
 #endif // EXCEPTIONS_H

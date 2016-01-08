@@ -34,6 +34,16 @@ RnFunction* GradientMethod::function() const
     return m_fn;
 }
 
+IGradient* GradientMethod::gradientFormula() const
+{
+    return m_gr;
+}
+
+void GradientMethod::setGradientFormula(IGradient *gr)
+{
+    m_gr = gr;
+}
+
 /**
  * @brief Epsilon for gradient norm
  * @return

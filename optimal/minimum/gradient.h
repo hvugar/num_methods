@@ -11,6 +11,7 @@
 #include "doublevector.h"
 #include "printer.h"
 #include "projection.h"
+#include "exceptions.h"
 
 /**
  * @brief The Abstract Gradient Method class
@@ -25,6 +26,9 @@ public:
 
     virtual RnFunction* function() const;
     virtual void setFunction(RnFunction* function);
+
+    virtual IGradient* gradientFormula() const;
+    virtual void setGradientFormula(IGradient *gr);
 
     double epsilon1() const;
     void setEpsilon1(double epsilon);
@@ -45,6 +49,7 @@ protected:
     virtual double minimize(const DoubleVector &x, const DoubleVector &g) = 0;
 
     RnFunction *m_fn;
+    IGradient *m_gr;
     double m_epsilon1;
     double m_epsilon2;
     double grad_step;

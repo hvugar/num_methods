@@ -133,7 +133,10 @@ void Discretehyperbolic1::gradient(const DoubleVector& f0, DoubleVector& g, doub
             }
         }
     }
-    puts("---");
+
+    puts("Conjaction...");
+    Printer::printMatrix(psi);
+    puts("Gradient...");
     Printer::printAsMatrix(g, M, N);
 }
 
