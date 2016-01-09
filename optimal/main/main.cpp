@@ -38,7 +38,6 @@
 #include "hyperbolic/hyperboliccontrol1d3.h"
 #include "hyperbolic/hyperboliccontrol1d4.h"
 #include "hyperbolic/hyperboliccontrol1dt.h"
-#include "hyperbolic/discretehyperbolic.h"
 
 #include "point/pointcontrol11.h"
 #include "point/pointcontrol.h"
@@ -46,11 +45,13 @@
 #include "point/pointcontrol2.h"
 
 #include "discrete/discreteheat.h"
-#include "discrete/discretehyperbolic1.h"
+#include "discrete/discretehyperbolic.h"
 
 int main()
 {
+    //DiscreteHeat::main();
     Discretehyperbolic1::main();
+
     return 0;
 }
 

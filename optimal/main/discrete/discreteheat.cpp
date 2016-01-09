@@ -19,12 +19,11 @@ void DiscreteHeat::main()
 
     ConjugateGradient g2;
     g2.setFunction(&dh);
-    g2.setEpsilon1(0.01);
-    g2.setEpsilon2(0.01);
+    g2.setEpsilon1(0.0001);
+    g2.setEpsilon2(0.0001);
     g2.setGradientStep(0.001);
-    g2.setR1MinimizeEpsilon(0.1, 0.0001);
+    g2.setR1MinimizeEpsilon(0.1, 0.001);
     g2.setPrinter(&dh);
-    //g2.setNormalize(true);
     g2.calculate(f0);
 
     Printer::printAsMatrix(f0, dh.M, dh.N);
@@ -69,11 +68,15 @@ double DiscreteHeat::fx(const DoubleVector& f)
     {
         for (unsigned int i=0; i<=N; i++)
         {
-            double b = 1.0;
-            if (i==0 || i==N || j==0 || j==M) b = 0.5;
-            if ((i==0 && j==0) || (i==0 && j==M) || (i==N && j==0) || (i==N && j==M)) b = 0.25;
+            double alpha = 1.0;
+            if (i==0 || i==N || j==0 || j==M) alpha = 0.5;
+            if (i==0 && j==0) alpha = 0.25;
+            if (i==0 && j==M) alpha = 0.25;
+            if (i==N && j==0) alpha = 0.25;
+            if (i==N && j==M) alpha = 0.25;
+
             double f1 = (f[j*(N+1)+i] - fxt(i*hx, j*ht));
-            norm += b*f1*f1;
+            norm += alpha*f1*f1;
         }
     }
     norm = hx*ht*norm;
@@ -89,16 +92,21 @@ void DiscreteHeat::gradient(const DoubleVector& f, DoubleVector& g, double)
     DoubleMatrix psi;
     calculateP(f, u, psi, g);
 
-    for (unsigned int k=0; k<g.size(); k++)
+
+    for (unsigned int j=0; j<=M; j++)
     {
-        unsigned int j = k / (M+1);
-        unsigned int i = k % (N+1);
+        for (unsigned int i=0; i<=N; i++)
+        {
+            double alpha = 1.0;
+            if (i==0 || i==N || j==0 || j==M) alpha = 0.5;
+            if (i==0 && j==0) alpha = 0.25;
+            if (i==0 && j==M) alpha = 0.25;
+            if (i==N && j==0) alpha = 0.25;
+            if (i==N && j==M) alpha = 0.25;
 
-        double b = 1.0;
-        if (i==0 || i==N || j==0 || j==M ) b = 0.5;
-        if ((i==0 && j==0) || (i==0 && j==M) || (i==N && j==0) || (i==N && j==M)) b = 0.25;
-
-        g[k] = -psi[j][i] + 2.0*b*(f[k]-fxt(i*hx, j*ht));
+            unsigned int k = j*(N+1)+i;
+            g[k] = -psi[j][i] + 2.0*alpha*(f[k]-fxt(i*hx, j*ht));
+        }
     }
 }
 
@@ -135,26 +143,17 @@ void DiscreteHeat::calculateP(const DoubleVector &f, const DoubleVector &u, Doub
     double lamda = -(a*ht)/(hx*hx);
     double k = 1.0-2.0*lamda;
 
-    for (unsigned int i=0; i<psi.size(); i++)
-        psi[i].clear();
+    for (unsigned int i=0; i<psi.size(); i++) psi[i].clear();
     psi.clear();
 
     psi.resize(M+1);
-    for (unsigned int i=0; i<psi.size(); i++)
-        psi[i].resize(N+1);
+    for (unsigned int i=0; i<psi.size(); i++) psi[i].resize(N+1);
 
-    DoubleVector a1;
-    DoubleVector b1;
-    DoubleVector c1;
-    DoubleVector d1;
-    DoubleVector x1;
-
-    a1.resize(N-1);
-    b1.resize(N-1);
-    c1.resize(N-1);
-    d1.resize(N-1);
-    x1.resize(N-1);
-
+    DoubleVector a1(N-1);
+    DoubleVector b1(N-1);
+    DoubleVector c1(N-1);
+    DoubleVector d1(N-1);
+    DoubleVector x1(N-1);
 
     for (unsigned int m=0; m<=M; m++)
     {
