@@ -87,24 +87,7 @@ double DiscreteHyperbolic1::fx(const DoubleVector& v)
     }
     sum = hx*ht*sum;
 
-    double norm = 0.0;
-    //    for (unsigned int j=0; j<=M; j++)
-    //    {
-    //        for (unsigned int i=0; i<=N; i++)
-    //        {
-    //            double alpha = 1.0;
-    //            if (i==0 || i==N || j==0 || j==M) alpha = 0.5;
-    //            if (i==0 && j==0) alpha = 0.25;
-    //            if (i==0 && j==M) alpha = 0.25;
-    //            if (i==N && j==0) alpha = 0.25;
-    //            if (i==N && j==M) alpha = 0.25;
-    //            double f1 = (f0[j*(N+1)+i] - F(i, j));
-    //            norm += alpha*f1*f1;
-    //        }
-    //    }
-    //    norm = hx*ht*norm;
-
-    return sum+norm;
+    return sum;
 }
 
 void DiscreteHyperbolic1::gradient(const DoubleVector& v, DoubleVector& g, double)
@@ -116,9 +99,21 @@ void DiscreteHyperbolic1::gradient(const DoubleVector& v, DoubleVector& g, doubl
     calculateP(v, u, psi, g);
 }
 
-void DiscreteHyperbolic1::print(unsigned int iteration, const DoubleVector &x, const DoubleVector &gradient, double alpha, RnFunction *fn) const
+void DiscreteHyperbolic1::print(unsigned int iteration, const DoubleVector &v, const DoubleVector &g, double alpha, RnFunction *fn) const
 {
-    printf("J[%d]: %.12f\n", iteration, fn->fx(x));
+    printf("J[%d]: %.12f\n", iteration, fn->fx(v));
+
+//    DoubleMatrix u;
+//    calculateU(u, hx, ht, M+D, N, a);
+//    for (unsigned int j=M; j<=M+D; j++)
+//    {
+//        char buffer[20];
+//        int n = sprintf(buffer, "u[%d]:\t", j);
+//        buffer[n] = 0;
+//        Printer::printVector(u[j], buffer, 10, 0, 0, file);
+//    }
+    Printer::printVector(g, "g1:\t", 11, 0, M+D, file);
+    Printer::printVector(g, "g2:\t", 11, M+D+1, (2*(M+D)+1), file);
 }
 
 double DiscreteHyperbolic1::fi1(unsigned int i) const
@@ -144,7 +139,7 @@ double DiscreteHyperbolic1::m2(unsigned int j) const
 
 double DiscreteHyperbolic1::f(unsigned int i, unsigned int j) const
 {
-    return 0.0;
+    return 2.0-2.0*a*a;
 }
 
 //double DiscreteHyperbolic1::F(unsigned int i, unsigned int j) const
