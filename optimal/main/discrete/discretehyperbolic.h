@@ -24,7 +24,7 @@ public:
     virtual double f(unsigned int i, unsigned int j) const;
 
     double F(unsigned int i, unsigned int j) const;
-    void calculateP(const DoubleVector &u, DoubleMatrix &psi);
+    void calculateP(const DoubleVector& f0, const DoubleMatrix &u, DoubleMatrix &psi, DoubleVector &g);
 
     //virtual void calculateP();
 

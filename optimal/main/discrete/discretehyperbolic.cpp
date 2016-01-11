@@ -22,8 +22,10 @@ void DiscreteHyperbolic::main()
 
     ConjugateGradient g2;
     g2.setFunction(&dh);
-    g2.setEpsilon1(0.000000001);
-    g2.setEpsilon2(0.000000001);
+    //    g2.setEpsilon1(0.000000001);
+    //    g2.setEpsilon2(0.000000001);
+    g2.setEpsilon1(0.01);
+    g2.setEpsilon2(0.01);
     //g2.setGradientStep(0.001);
     g2.setR1MinimizeEpsilon(0.1, 0.00001);
     g2.setPrinter(&dh);
@@ -31,6 +33,7 @@ void DiscreteHyperbolic::main()
 
     Printer::printAsMatrix(f0, dh.M, dh.N);
     DoubleVector u;
+    dh.pf = &f0;
     dh.calculateU(u, dh.hx, dh.ht, dh.M, dh.N);
     puts("-----");
     Printer::printVector(dh.U);
@@ -41,8 +44,8 @@ DiscreteHyperbolic::DiscreteHyperbolic()
 {
     t0 = x0 = 0.0;
     t1 = x1 = 1.0;
-    M = 20;
-    N = 20;
+    M = 100;
+    N = 100;
     ht = (t1 - t0) / M;
     hx = (x1 - x0) / N;
     a = 1.0;
@@ -94,37 +97,10 @@ double DiscreteHyperbolic::fx(const DoubleVector& f0)
 void DiscreteHyperbolic::gradient(const DoubleVector& f0, DoubleVector& g, double)
 {
     pf = &f0;
-    double G0 = -ht*ht;
-
-    DoubleVector u;
+    DoubleMatrix u;
     calculateU(u, hx, ht, M, N, a, lamda);
-    //Printer::printVector(u);
     DoubleMatrix psi;
-    calculateP(u, psi);
-    //Printer::printMatrix(psi);
-
-    for (unsigned int j=0; j<=M; j++)
-    {
-        for (unsigned int i=0; i<=N; i++)
-        {
-            double alpha = 1.0;
-            if (i==0 || i==N || j==0 || j==M) alpha = 0.5;
-            if (i==0 && j==0) alpha = 0.25;
-            if (i==0 && j==M) alpha = 0.25;
-            if (i==N && j==0) alpha = 0.25;
-            if (i==N && j==M) alpha = 0.25;
-
-            unsigned int k = j*(N+1)+i;
-            g[k] = 2.0*alpha*ht*hx*(f0[k]-F(i, j));
-            if (j>=2 && 1<=i && i<=(N-1))
-                g[k] += G0*psi[j][i];
-        }
-    }
-
-    //puts("Conjaction...");
-    //Printer::printMatrix(psi);
-    //puts("Gradient...");
-    //Printer::printAsMatrix(g, M, N);
+    calculateP(f0, u, psi, g);
 }
 
 void DiscreteHyperbolic::print(unsigned int iteration, const DoubleVector &x, const DoubleVector &gradient, double alpha, RnFunction *fn) const
@@ -170,7 +146,7 @@ double DiscreteHyperbolic::F(unsigned int i, unsigned int j) const
     return 6.0*t - 6.0*x*a;
 }
 
-void DiscreteHyperbolic::calculateP(const DoubleVector &u, DoubleMatrix &psi)
+void DiscreteHyperbolic::calculateP(const DoubleVector& f0, const DoubleMatrix &u, DoubleMatrix &psi, DoubleVector &g)
 {
     for (unsigned int j=0; j<psi.size(); j++) psi[j].clear();
     psi.clear();
@@ -189,6 +165,18 @@ void DiscreteHyperbolic::calculateP(const DoubleVector &u, DoubleMatrix &psi)
     double E1 = -(lamda*a*a*ht*ht)/(hx*hx);
     double F0 = 1.0 + (2.0*lamda*a*a*ht*ht)/(hx*hx);
     double E2 = -(lamda*a*a*ht*ht)/(hx*hx);
+    double G0 = -ht*ht;
+
+    A1 /= G0;
+    B0 /= G0;
+    A2 /= G0;
+    C1 /= G0;
+    D0 /= G0;
+    C2 /= G0;
+    E1 /= G0;
+    F0 /= G0;
+    E2 /= G0;
+    G0 = 1.0;
 
     DoubleVector da(N-1);
     DoubleVector db(N-1);
@@ -207,7 +195,7 @@ void DiscreteHyperbolic::calculateP(const DoubleVector &u, DoubleMatrix &psi)
                 da[i-1] = A1;
                 db[i-1] = B0;
                 dc[i-1] = A2;
-                rd[i-1] = -2.0*hx*1.0*(u[i]-U[i]);
+                rd[i-1] = -2.0*hx*1.0*(u[M][i]-U[i]);
             }
             da[0]=0.0;
             dc[N-2]=0.0;
@@ -216,8 +204,8 @@ void DiscreteHyperbolic::calculateP(const DoubleVector &u, DoubleMatrix &psi)
             {
                 psi[M][i] = rx[i-1];
             }
-            psi[M][0]   = -(A2*psi[M][1]   + 2.0*hx*0.5*(u[0]-U[0]));
-            psi[M][N]   = -(A1*psi[M][N-1] + 2.0*hx*0.5*(u[N]-U[N]));
+            psi[M][0]   = -(A2*psi[M][1]   + 2.0*hx*0.5*(u[M][0]-U[0]));
+            psi[M][N]   = -(A1*psi[M][N-1] + 2.0*hx*0.5*(u[M][N]-U[N]));
         }
         else if (j==(M-1))
         {
@@ -338,4 +326,23 @@ void DiscreteHyperbolic::calculateP(const DoubleVector &u, DoubleMatrix &psi)
     dc.clear();
     db.clear();
     da.clear();
+
+    for (unsigned int j=0; j<=M; j++)
+    {
+        for (unsigned int i=0; i<=N; i++)
+        {
+            double alpha = 1.0;
+            if (i==0 || i==N || j==0 || j==M) alpha = 0.5;
+            if (i==0 && j==0) alpha = 0.25;
+            if (i==0 && j==M) alpha = 0.25;
+            if (i==N && j==0) alpha = 0.25;
+            if (i==N && j==M) alpha = 0.25;
+
+            unsigned int k = j*(N+1)+i;
+            g[k] = 2.0*alpha*(f0[k]-F(i, j));
+            //            g[k] = 2.0*alpha*hx*ht*(f0[k]-F(i, j));
+            if (j>=2 && 1<=i && i<=(N-1))
+                g[k] += psi[j][i];
+        }
+    }
 }

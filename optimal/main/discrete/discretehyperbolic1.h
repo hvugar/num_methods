@@ -13,7 +13,7 @@ public:
     virtual ~DiscreteHyperbolic1() {}
 
     virtual double fx(const DoubleVector& x);
-    virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step=0.000001);
+    virtual void gradient(const DoubleVector& v, DoubleVector& g, double gradient_step=0.000001);
 
     virtual void print(unsigned int iteration, const DoubleVector& x, const DoubleVector &gradient, double alpha, RnFunction* fn) const;
 
@@ -24,7 +24,7 @@ public:
     virtual double f(unsigned int i, unsigned int j) const;
 
     double F(unsigned int i, unsigned int j) const;
-    void calculateP(const DoubleVector &u, DoubleMatrix &psi);
+    void calculateP(const DoubleVector& v, const DoubleMatrix &u, DoubleMatrix &psi, DoubleVector &g);
 
     //virtual void calculateP();
 
@@ -37,12 +37,13 @@ private:
     double x1;
     unsigned int N;
     unsigned int M;
+    unsigned int D;
     double ht;
     double hx;
     double a;
     double lamda;
-    DoubleVector U;
-    const DoubleVector *pf;
+    double U;
+    const DoubleVector *pv;
 };
 
 #endif // DISCRETEHYPERBOLIC_H

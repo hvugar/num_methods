@@ -46,11 +46,12 @@
 
 #include "discrete/discreteheat.h"
 #include "discrete/discretehyperbolic.h"
+#include "discrete/discretehyperbolic1.h"
 
 int main()
 {
     //DiscreteHeat::main();
-    DiscreteHyperbolic::main();
+    DiscreteHyperbolic1::main();
     return 0;
 }
 
