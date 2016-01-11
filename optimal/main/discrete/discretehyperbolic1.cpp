@@ -1,10 +1,10 @@
-#include "discretehyperbolic.h"
+#include "discretehyperbolic1.h"
 #include <tomasmethod.h>
 #include <gradient_cjt.h>
 
-void DiscreteHyperbolic::main()
+void DiscreteHyperbolic1::main()
 {
-    DiscreteHyperbolic dh;
+    DiscreteHyperbolic1 dh;
 
     DoubleVector f0((dh.M+1)*(dh.N+1));
     for (unsigned int j=0; j<=dh.M; j++)
@@ -37,7 +37,7 @@ void DiscreteHyperbolic::main()
     Printer::printVector(u);
 }
 
-DiscreteHyperbolic::DiscreteHyperbolic()
+DiscreteHyperbolic1::DiscreteHyperbolic1()
 {
     t0 = x0 = 0.0;
     t1 = x1 = 1.0;
@@ -55,7 +55,7 @@ DiscreteHyperbolic::DiscreteHyperbolic()
     }
 }
 
-double DiscreteHyperbolic::fx(const DoubleVector& f0)
+double DiscreteHyperbolic1::fx(const DoubleVector& f0)
 {
     pf = &f0;
 
@@ -91,7 +91,7 @@ double DiscreteHyperbolic::fx(const DoubleVector& f0)
     return sum+norm;
 }
 
-void DiscreteHyperbolic::gradient(const DoubleVector& f0, DoubleVector& g, double)
+void DiscreteHyperbolic1::gradient(const DoubleVector& f0, DoubleVector& g, double)
 {
     pf = &f0;
     double G0 = -ht*ht;
@@ -127,35 +127,35 @@ void DiscreteHyperbolic::gradient(const DoubleVector& f0, DoubleVector& g, doubl
     //Printer::printAsMatrix(g, M, N);
 }
 
-void DiscreteHyperbolic::print(unsigned int iteration, const DoubleVector &x, const DoubleVector &gradient, double alpha, RnFunction *fn) const
+void DiscreteHyperbolic1::print(unsigned int iteration, const DoubleVector &x, const DoubleVector &gradient, double alpha, RnFunction *fn) const
 {
     printf("J[%d]: %.12f\n", iteration, fn->fx(x));
 }
 
-double DiscreteHyperbolic::fi1(unsigned int i) const
+double DiscreteHyperbolic1::fi1(unsigned int i) const
 {
     double x = i*hx;
     return x*x*x;
 }
 
-double DiscreteHyperbolic::fi2(unsigned int i) const
+double DiscreteHyperbolic1::fi2(unsigned int i) const
 {
     return 0.0;
 }
 
-double DiscreteHyperbolic::m1(unsigned int j) const
+double DiscreteHyperbolic1::m1(unsigned int j) const
 {
     double t = j*ht;
     return t*t*t;
 }
 
-double DiscreteHyperbolic::m2(unsigned int j) const
+double DiscreteHyperbolic1::m2(unsigned int j) const
 {
     double t = j*ht;
     return t*t*t+1.0;
 }
 
-double DiscreteHyperbolic::f(unsigned int i, unsigned int j) const
+double DiscreteHyperbolic1::f(unsigned int i, unsigned int j) const
 {
     return (*pf)[j*(N+1)+i];
     //    double x = i*hx;
@@ -163,14 +163,14 @@ double DiscreteHyperbolic::f(unsigned int i, unsigned int j) const
     //    return 6.0*t - 6.0*x*a;
 }
 
-double DiscreteHyperbolic::F(unsigned int i, unsigned int j) const
+double DiscreteHyperbolic1::F(unsigned int i, unsigned int j) const
 {
     double x = i*hx;
     double t = j*ht;
     return 6.0*t - 6.0*x*a;
 }
 
-void DiscreteHyperbolic::calculateP(const DoubleVector &u, DoubleMatrix &psi)
+void DiscreteHyperbolic1::calculateP(const DoubleVector &u, DoubleMatrix &psi)
 {
     for (unsigned int j=0; j<psi.size(); j++) psi[j].clear();
     psi.clear();

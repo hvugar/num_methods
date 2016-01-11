@@ -49,19 +49,8 @@
 
 int main()
 {
-    double a = 1.0;
-    double b = 1.0;
-    double e = 1.0;
-    while (a + e != b)
-    {
-        e = 0.1*e;
-        printf("%.40f %.40f\n", e, a + e);
-    }
-    printf("%.40f\n", a+e);
-
     //DiscreteHeat::main();
-    //Discretehyperbolic::main();
-
+    DiscreteHyperbolic::main();
     return 0;
 }
 

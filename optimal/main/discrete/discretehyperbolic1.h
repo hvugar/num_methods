@@ -1,16 +1,16 @@
-#ifndef DISCRETEHYPERBOLIC_H
-#define DISCRETEHYPERBOLIC_H
+#ifndef DISCRETEHYPERBOLIC1_H
+#define DISCRETEHYPERBOLIC1_H
 
 #include <function.h>
 #include <doublevector.h>
 #include <hyperbolicequation.h>
 #include <printer.h>
 
-class DiscreteHyperbolic : public RnFunction, public IHyperbolicEquation, public Printer
+class DiscreteHyperbolic1 : public RnFunction, public IHyperbolicEquation, public Printer
 {
 public:
-    DiscreteHyperbolic();
-    virtual ~DiscreteHyperbolic() {}
+    DiscreteHyperbolic1();
+    virtual ~DiscreteHyperbolic1() {}
 
     virtual double fx(const DoubleVector& x);
     virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step=0.000001);
