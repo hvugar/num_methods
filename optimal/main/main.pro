@@ -18,9 +18,9 @@ DESTDIR += ../bin
 #include(../minimum/minimum.pri)
 
 SOURCES += main.cpp \
-    rosenbrock.cpp \
-    bealesfunction.cpp \
-    boothfunction.cpp \
+    rnfunction/rosenbrock.cpp \
+    rnfunction/bealesfunction.cpp \
+    rnfunction/boothfunction.cpp \
     cfunction.cpp \
     cfunction1.cpp \
     cfunction2.cpp \
@@ -49,9 +49,9 @@ SOURCES += main.cpp \
     discrete/discretehyperbolic1.cpp
 
 HEADERS += \
-    rosenbrock.h \
-    bealesfunction.h \
-    boothfunction.h \
+    rnfunction/rosenbrock.h \
+    rnfunction/bealesfunction.h \
+    rnfunction/boothfunction.h \
     cfunction.h \
     cfunction1.h \
     cfunction2.h \

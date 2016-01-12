@@ -6,11 +6,13 @@
 #include <hyperbolicequation.h>
 #include <printer.h>
 
-class DiscreteHyperbolic1 : public RnFunction, public IHyperbolicEquation, public Printer
+class DiscreteHyperbolic1 : public RnFunction, public R1Function, public IHyperbolicEquation, public Printer
 {
 public:
     DiscreteHyperbolic1();
     virtual ~DiscreteHyperbolic1() {}
+
+    virtual double fx(double t);
 
     virtual double fx(const DoubleVector& x);
     virtual void gradient(const DoubleVector& v, DoubleVector& g, double gradient_step=0.000001);
