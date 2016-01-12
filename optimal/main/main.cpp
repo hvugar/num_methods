@@ -53,7 +53,7 @@ int main()
 {
 //    DiscreteHeat::main();
 //    DiscreteHyperbolic1::main();
-    CFunction3::main();
+    ControlFunction::main();
     return 0;
 }
 
