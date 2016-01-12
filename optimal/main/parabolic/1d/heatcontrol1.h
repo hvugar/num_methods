@@ -7,13 +7,13 @@
 #include <parabolicequation.h>
 #include <printer.h>
 
-struct HeatControl1 : public RnFunction, public IParabolicEquation, public Printer
+struct HeatControl1 : public RnFunction, public IGradient, public IParabolicEquation, public Printer
 {
     HeatControl1();
     virtual ~HeatControl1() {}
 
     virtual double fx(const DoubleVector& x);
-    virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step);
+    virtual void gradient(const DoubleVector& x, DoubleVector& g);
 
     virtual void print(unsigned int iteration, const DoubleVector& x, const DoubleVector &gradient, double alpha, RnFunction* fn) const;
 
@@ -33,14 +33,6 @@ struct HeatControl1 : public RnFunction, public IParabolicEquation, public Print
     void calculateG(const DoubleVector &f, const DoubleVector& psi, DoubleVector& g, unsigned int j);
 
     static void main();
-
-//    struct IBackwardParabolicEquation
-//    {
-//        virtual double bfi(unsigned int i) const { return 0.0; }
-//        virtual double bm1(unsigned int j) const { return 0.0; }
-//        virtual double bm2(unsigned int j) const { return 0.0; }
-//        virtual double bf(unsigned int i, unsigned int j) const { return 0.0; }
-//    } cpe;
 
 private:
     double t0;

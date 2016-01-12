@@ -157,7 +157,6 @@ void PointControl2::main()
     g1.setFunction(&f);
     g1.setEpsilon1(0.0000001);
     g1.setEpsilon2(0.0000001);
-    g1.setGradientStep(0.0000001);
     g1.setR1MinimizeEpsilon(1.0, 0.01);
     g1.setPrinter(&f);
     g1.calculate(p);

@@ -57,7 +57,7 @@ double HeatControl::fx(const DoubleVector &f)
     return sum + norm;
 }
 
-void HeatControl::gradient(const DoubleVector &f, DoubleVector &g, double gradient_step)
+void HeatControl::gradient(const DoubleVector &f, DoubleVector &g)
 {
     calculateU(f, uT);
     calculateP(f, g);
@@ -301,10 +301,10 @@ void HeatControl::main()
     /* Minimization */
     //SteepestDescentGradient g2;
     ConjugateGradient g2;
+    g2.setGradient(&hc);
     g2.setFunction(&hc);
     g2.setEpsilon1(0.0000001);
     g2.setEpsilon2(0.0000001);
-    g2.setGradientStep(0.000001);
     g2.setR1MinimizeEpsilon(0.1, 0.0000001);
     g2.setPrinter(&hc);
     g2.setNormalize(true);

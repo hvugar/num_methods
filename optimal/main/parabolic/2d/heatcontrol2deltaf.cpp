@@ -20,7 +20,6 @@ void HeatControl2DeltaF::main()
     g2.setFunction(&hc);
     g2.setEpsilon1(0.000000001);
     g2.setEpsilon2(0.000000001);
-    g2.setGradientStep(0.000001);
     g2.setR1MinimizeEpsilon(0.1, 0.000000001);
     g2.setPrinter(&hc);
     g2.setProjection(&hc);

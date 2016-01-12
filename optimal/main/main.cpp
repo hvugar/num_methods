@@ -20,9 +20,9 @@
 #include "cfunction2.h"
 #include "cfunction3.h"
 #include "cfunction.h"
-#include "rosenbrock.h"
-#include "bealesfunction.h"
-#include "boothfunction.h"
+#include "rnfunction/rosenbrock.h"
+#include "rnfunction/bealesfunction.h"
+#include "rnfunction/boothfunction.h"
 
 #include "parabolic/1d/heatcontrol.h"
 #include "parabolic/1d/heatcontrol1.h"
@@ -50,8 +50,9 @@
 
 int main()
 {
-    //DiscreteHeat::main();
-    DiscreteHyperbolic1::main();
+//    DiscreteHeat::main();
+//    DiscreteHyperbolic1::main();
+    Rosenbrock::main();
     return 0;
 }
 

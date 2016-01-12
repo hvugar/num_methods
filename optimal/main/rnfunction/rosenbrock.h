@@ -7,11 +7,11 @@
 struct Rosenbrock : public RnFunction, public Printer, public IGradient
 {
 public:
-    Rosenbrock() : count(0) {}
+    Rosenbrock();
     virtual ~Rosenbrock() {}
 
     virtual double fx(const DoubleVector& x);
-    virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step);
+    //virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step);
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
 
     void print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const;

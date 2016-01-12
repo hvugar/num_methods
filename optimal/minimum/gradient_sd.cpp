@@ -21,7 +21,8 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
     do
     {
         /* calculating function gradient at current point */
-        m_fn->gradient(x, g, grad_step);
+        //m_fn->gradient(x, g, grad_step);
+        m_gr->gradient(x, g);
 
         /* if gradinet norm at current point is less than epsilon then break. no minimize */
         double gradient_norm = g.L2Norm();

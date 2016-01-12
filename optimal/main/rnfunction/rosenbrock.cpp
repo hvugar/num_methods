@@ -3,6 +3,54 @@
 #include <gradient_sd.h>
 #include <gradient_cs.h>
 
+void Rosenbrock::main()
+{
+    /* Function */
+    Rosenbrock r;
+    r.grad_step = 0.000001;
+
+    /* initial point */
+    DoubleVector x0(2);
+    x0[0] = -1.2;
+    x0[1] = +1.0;
+
+    puts("-----------------------------------------------------------------");
+    x0[0] = -1.2;
+    x0[1] = +1.0;
+    /* Minimization */
+    ConjugateGradient g2;
+    g2.setGradient(&r);
+    g2.setFunction(&r);
+    g2.setEpsilon1(0.000001);
+    g2.setEpsilon2(0.000001);
+    g2.setR1MinimizeEpsilon(0.1, 0.000001);
+    g2.setPrinter(&r);
+    g2.setNormalize(true);
+    g2.calculate(x0);
+
+    printf("Function call count: %u\n", r.count);
+
+//    puts("-----------------------------------------------------------------");
+//    x0[0] = -1.2;
+//    x0[1] = +1.0;
+//    /* Minimization */
+//    ConstStepGradient g3;
+//    g3.setFunction(&r);
+//    g3.setEpsilon1(0.000001);
+//    g3.setEpsilon2(0.000001);
+//    g3.setGradientStep(0.000001);
+//    g3.setR1MinimizeEpsilon(0.1, 0.000001);
+//    g3.setPrinter(&r);
+//    g3.setNormalize(false);
+//    g3.calculate(x0);
+}
+
+Rosenbrock::Rosenbrock()
+{
+    count = 0;
+    grad_step = 0.000001;
+}
+
 double Rosenbrock::fx(const DoubleVector& x)
 {
     Rosenbrock* r = const_cast<Rosenbrock*>(this);
@@ -13,14 +61,9 @@ double Rosenbrock::fx(const DoubleVector& x)
     return ((1 - x1) * (1 - x1)) + 100 * (x2 - x1 * x1) * (x2 - x1 * x1);
 }
 
-void Rosenbrock::gradient(const DoubleVector& x, DoubleVector &g, double gradient_step)
+void Rosenbrock::gradient(const DoubleVector& x, DoubleVector &g)
 {
-    RnFunction::Gradient(this, gradient_step, x, g);
-}
-
-void Rosenbrock::gradient(const DoubleVector &x, DoubleVector &g)
-{
-    RnFunction::Gradient(this, grad_step, x, g);
+    IGradient::Gradient(this, grad_step, x, g);
 }
 
 void Rosenbrock::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const
@@ -45,54 +88,4 @@ void Rosenbrock::print(unsigned int iterationCount, const DoubleVector& m_x, con
     printf("\n");
 }
 
-void Rosenbrock::main()
-{
-    /* Function */
-    Rosenbrock r;
-
-    /* initial point */
-    DoubleVector x0(2);
-    x0[0] = -1.2;
-    x0[1] = +1.0;
-
-    /* Minimization */
-//    SteepestDescentGradient g1;
-//    g1.setFunction(&r);
-//    g1.setEpsilon1(0.000001);
-//    g1.setEpsilon2(0.000001);
-//    g1.setGradientStep(0.000001);
-//    g1.setR1MinimizeEpsilon(0.1, 0.000001);
-//    g1.setPrinter(&r);
-//    g1.calculate(x0);
-
-    puts("-----------------------------------------------------------------");
-    x0[0] = -1.2;
-    x0[1] = +1.0;
-    /* Minimization */
-    ConjugateGradient g2;
-    g2.setFunction(&r);
-    g2.setEpsilon1(0.000001);
-    g2.setEpsilon2(0.000001);
-    g2.setGradientStep(0.000001);
-    g2.setR1MinimizeEpsilon(0.1, 0.000001);
-    g2.setPrinter(&r);
-    g2.setNormalize(true);
-    g2.calculate(x0);
-
-    printf("Function call count: %u\n", r.count);
-
-//    puts("-----------------------------------------------------------------");
-//    x0[0] = -1.2;
-//    x0[1] = +1.0;
-//    /* Minimization */
-//    ConstStepGradient g3;
-//    g3.setFunction(&r);
-//    g3.setEpsilon1(0.000001);
-//    g3.setEpsilon2(0.000001);
-//    g3.setGradientStep(0.000001);
-//    g3.setR1MinimizeEpsilon(0.1, 0.000001);
-//    g3.setPrinter(&r);
-//    g3.setNormalize(false);
-//    g3.calculate(x0);
-}
 

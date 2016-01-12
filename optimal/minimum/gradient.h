@@ -27,8 +27,8 @@ public:
     virtual RnFunction* function() const;
     virtual void setFunction(RnFunction* function);
 
-    virtual IGradient* gradientFormula() const;
-    virtual void setGradientFormula(IGradient *gr);
+    virtual IGradient* gradient() const;
+    virtual void setGradient(IGradient *gradient);
 
     double epsilon1() const;
     void setEpsilon1(double epsilon);
@@ -37,7 +37,7 @@ public:
     void setEpsilon2(double epsilon);
 
     void setR1MinimizeEpsilon(double step, double epsilon1);
-    void setGradientStep(double step);
+    //void setGradientStep(double step);
     int count() const;
 
     void setPrinter(Printer* printer);
@@ -52,7 +52,7 @@ protected:
     IGradient *m_gr;
     double m_epsilon1;
     double m_epsilon2;
-    double grad_step;
+    //double grad_step;
     double min_epsilon;
     double min_step;
     int iterationCount;

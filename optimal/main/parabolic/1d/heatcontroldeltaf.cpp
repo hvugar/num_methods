@@ -18,15 +18,15 @@ void HeatControlDeltaF::main()
     }
 
     /* Minimization */
-    ConjugateGradient g2;
-    g2.setFunction(&hc);
-    g2.setEpsilon1(0.0000001);
-    g2.setEpsilon2(0.0000001);
-    g2.setGradientStep(0.000001);
-    g2.setR1MinimizeEpsilon(0.1, 0.0000001);
-    g2.setPrinter(&hc);
-    g2.setNormalize(false);
-    g2.calculate(f);
+    ConjugateGradient g;
+    g.setGradient(&hc);
+    g.setFunction(&hc);
+    g.setEpsilon1(0.0000001);
+    g.setEpsilon2(0.0000001);
+    g.setR1MinimizeEpsilon(0.1, 0.0000001);
+    g.setPrinter(&hc);
+    g.setNormalize(false);
+    g.calculate(f);
 }
 
 HeatControlDeltaF::HeatControlDeltaF(unsigned int M, unsigned int N, double a1)
@@ -78,7 +78,7 @@ double HeatControlDeltaF::fx(const DoubleVector &f)
     return sum + norm;
 }
 
-void HeatControlDeltaF::gradient(const DoubleVector &f, DoubleVector &g, double gradient_step)
+void HeatControlDeltaF::gradient(const DoubleVector &f, DoubleVector &g)
 {
     calculateU(f, uT);
     calculateP(f, g);

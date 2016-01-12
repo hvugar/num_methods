@@ -18,10 +18,10 @@ void DiscreteHeat::main()
     //printf("----\n");
 
     ConjugateGradient g2;
+    g2.setGradient(&dh);
     g2.setFunction(&dh);
     g2.setEpsilon1(0.0001);
     g2.setEpsilon2(0.0001);
-    g2.setGradientStep(0.001);
     g2.setR1MinimizeEpsilon(0.1, 0.001);
     g2.setPrinter(&dh);
     g2.calculate(f0);
@@ -84,7 +84,7 @@ double DiscreteHeat::fx(const DoubleVector& f)
     return sum+norm;
 }
 
-void DiscreteHeat::gradient(const DoubleVector& f, DoubleVector& g, double)
+void DiscreteHeat::gradient(const DoubleVector& f, DoubleVector& g)
 {
     pf = &f;
     DoubleVector u;

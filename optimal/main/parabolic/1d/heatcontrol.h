@@ -17,14 +17,14 @@
  * u(l,t) = m2(t);
  */
 
-struct HeatControl : public RnFunction, public Printer
+struct HeatControl : public RnFunction, public IGradient, public Printer
 {
 public:
     HeatControl();
     virtual ~HeatControl() {}
 
     virtual double fx(const DoubleVector& u);
-    virtual void gradient(const DoubleVector& f, DoubleVector &g, double gradient_step);
+    virtual void gradient(const DoubleVector& f, DoubleVector &g);
 
     unsigned int N;
     unsigned int M;

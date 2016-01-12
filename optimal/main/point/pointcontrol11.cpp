@@ -15,7 +15,6 @@ void PointControl11::main()
     g.setFunction(&pc);
     g.setEpsilon1(0.000001);
     g.setEpsilon2(0.000001);
-    g.setGradientStep(0.000001);
     g.setR1MinimizeEpsilon(0.1, 0.00001);
     g.setPrinter(&pc);
     g.setNormalize(true);

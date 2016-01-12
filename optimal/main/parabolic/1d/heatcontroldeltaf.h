@@ -4,14 +4,14 @@
 #include <function.h>
 #include <printer.h>
 
-class HeatControlDeltaF : public RnFunction, Printer
+class HeatControlDeltaF : public RnFunction, public IGradient, public Printer
 {
 public:
     HeatControlDeltaF(unsigned int M, unsigned int N, double a1);
     virtual ~HeatControlDeltaF() {}
 
     virtual double fx(const DoubleVector& x);
-    virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step=0.000001);
+    virtual void gradient(const DoubleVector& x, DoubleVector& g);
 
     inline double u(double x, double t) { return x*x + t*t; }
     inline double fxt(unsigned int i, unsigned int j, const DoubleVector &f);

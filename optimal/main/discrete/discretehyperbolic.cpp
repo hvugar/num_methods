@@ -94,7 +94,7 @@ double DiscreteHyperbolic::fx(const DoubleVector& f0)
     return sum+norm;
 }
 
-void DiscreteHyperbolic::gradient(const DoubleVector& f0, DoubleVector& g, double)
+void DiscreteHyperbolic::gradient(const DoubleVector& f0, DoubleVector& g)
 {
     pf = &f0;
     DoubleMatrix u;

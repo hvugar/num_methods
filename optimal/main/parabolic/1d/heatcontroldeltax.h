@@ -5,14 +5,15 @@
 #include <printer.h>
 #include <projection.h>
 
-class HeatControlDeltaX : public RnFunction, public Printer, Projection
+class HeatControlDeltaX : public RnFunction, public IGradient, public Printer, public Projection
 {
 public:
     HeatControlDeltaX(unsigned int M, unsigned int N, double a1);
     virtual ~HeatControlDeltaX() {}
 
     virtual double fx(const DoubleVector& x);
-    virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step=0.000001);
+    virtual void gradient(const DoubleVector& f, DoubleVector& g);
+
     virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
     virtual void project(DoubleVector &x, int index);
 

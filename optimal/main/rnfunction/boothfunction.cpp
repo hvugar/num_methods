@@ -10,9 +10,9 @@ double BoothFunction::fx(const DoubleVector& x)
     return (x1 + 2.0*x2 - 7.0)*(x1 + 2.0*x2 - 7.0) + (2.0*x1 + x2 - 5.0)*(2.0*x1 + x2 - 5.0);
 }
 
-void BoothFunction::gradient(const DoubleVector& x, DoubleVector &g, double gradient_step)
+void BoothFunction::gradient(const DoubleVector& x, DoubleVector &g)
 {
-    RnFunction::Gradient(this, gradient_step, x, g);
+    IGradient::Gradient(this, grad_step, x, g);
 }
 
 void BoothFunction::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const
@@ -45,6 +45,7 @@ void BoothFunction::main()
 {
     /* Function */
     BoothFunction func;
+    func.grad_step = 0.000001;
 
     func.a = -10.0;
     func.b = +10.0;
@@ -56,10 +57,10 @@ void BoothFunction::main()
 
     /* Minimization */
     SteepestDescentGradient g1;
+    g1.setGradient(&func);
     g1.setFunction(&func);
     g1.setEpsilon1(0.000001);
     g1.setEpsilon2(0.000001);
-    g1.setGradientStep(0.000001);
     g1.setR1MinimizeEpsilon(0.1, 0.000001);
     g1.setPrinter(&func);
 //    g1.calculate(x0);
@@ -69,10 +70,10 @@ void BoothFunction::main()
     x0[1] = -14.0;
     /* Minimization */
     ConjugateGradient g2;
+    g2.setGradient(&func);
     g2.setFunction(&func);
     g2.setEpsilon1(0.000001);
     g2.setEpsilon2(0.000001);
-    g2.setGradientStep(0.000001);
     g2.setR1MinimizeEpsilon(0.1, 0.000001);
     g2.setPrinter(&func);
     g2.setProjection(&func);
@@ -87,7 +88,6 @@ void BoothFunction::main()
     g3.setFunction(&func);
     g3.setEpsilon1(0.000001);
     g3.setEpsilon2(0.000001);
-    g3.setGradientStep(0.000001);
     g3.setR1MinimizeEpsilon(0.1, 0.000001);
     g3.setPrinter(&func);
     g3.setNormalize(false);

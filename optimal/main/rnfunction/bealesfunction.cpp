@@ -10,9 +10,9 @@ double BealesFunction::fx(const DoubleVector& x)
     return (1.5 - x1 + x1*x2)*(1.5 - x1 + x1*x2) + (2.25 - x1 + x1*x2*x2)*(2.25 - x1 + x1*x2*x2) + (2.625 - x1 + x1*x2*x2*x2)*(2.625 - x1 + x1*x2*x2*x2);
 }
 
-void BealesFunction::gradient(const DoubleVector& x, DoubleVector &g, double gradient_step)
+void BealesFunction::gradient(const DoubleVector& x, DoubleVector &g)
 {
-    RnFunction::Gradient(this, gradient_step, x, g);
+    IGradient::Gradient(this, grad_step, x, g);
 }
 
 void BealesFunction::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const
@@ -56,10 +56,10 @@ void BealesFunction::main()
 
     /* Minimization */
     SteepestDescentGradient g1;
+    g1.setGradient(&func);
     g1.setFunction(&func);
     g1.setEpsilon1(0.000001);
     g1.setEpsilon2(0.000001);
-    g1.setGradientStep(0.000001);
     g1.setR1MinimizeEpsilon(0.1, 0.000001);
     g1.setPrinter(&func);
 //    g1.calculate(x0);
@@ -69,10 +69,10 @@ void BealesFunction::main()
     x0[1] = -4.0;
     /* Minimization */
     ConjugateGradient g2;
+    g2.setGradient(&func);
     g2.setFunction(&func);
     g2.setEpsilon1(0.000001);
     g2.setEpsilon2(0.000001);
-    g2.setGradientStep(0.000001);
     g2.setR1MinimizeEpsilon(0.1, 0.000001);
     g2.setPrinter(&func);
     g2.setProjection(&func);
@@ -87,7 +87,6 @@ void BealesFunction::main()
     g3.setFunction(&func);
     g3.setEpsilon1(0.000001);
     g3.setEpsilon2(0.000001);
-    g3.setGradientStep(0.000001);
     g3.setR1MinimizeEpsilon(0.1, 0.000001);
     g3.setPrinter(&func);
     g3.setNormalize(false);

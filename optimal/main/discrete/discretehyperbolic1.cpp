@@ -2,75 +2,78 @@
 #include <tomasmethod.h>
 #include <gradient_cjt.h>
 
-FILE *file;
 
+FILE *file;
 void DiscreteHyperbolic1::main()
 {
     //file = fopen("20160111.txt", "a");
     file = stdout;
-    fprintf(file, "---\n");
     DiscreteHyperbolic1 dh;
+    dh.fx(1.0);
+    //fclose(file);
+}
 
-    DoubleVector v(2*(dh.M+dh.D+1));
-    for (unsigned int j=0; j<=dh.M+dh.D; j++)
+double DiscreteHyperbolic1::fx(double t)
+{
+    t0 = 0.0;
+    x0 = 0.0;
+    x1 = 1.0;
+    t1 = t;
+
+    hx = 0.001;
+    N = 100;
+    ht = 0.001;
+    M = (unsigned int) round((t1-t0)/ht);
+
+    D = 10;
+    a = 1.0;
+    lamda = 0.25;
+    U = 0.0;
+
+    fprintf(file, "---\n");
+
+    DoubleVector v(2*(M+D+1));
+    for (unsigned int j=0; j<=M+D; j++)
     {
-        double t = j*dh.ht;
+        //double t = j*ht;
         v[j] = 1.0;//t*t;
-        v[(dh.M+dh.D+1)+j] = 1.0;//t*t+1.0;
+        v[(M+D+1)+j] = 1.0;//t*t+1.0;
     }
 
-    v[0] = 0.0;
-    v[1] = 0.0;//dh.ht*dh.ht;
-    v[(dh.M+dh.D+1)] = 0.0;//1.0;
-    v[(dh.M+dh.D+1)] = 0.0;//dh.ht*dh.ht+1.0;
+//    v[0] = 0.0;
+//    v[1] = 0.0;//dh.ht*dh.ht;
+//    v[(M+D+1)] = 0.0;//1.0;
+//    v[(M+D+1)] = 0.0;//dh.ht*dh.ht+1.0;
 
 
-    ConjugateGradient g2;
-    g2.setFunction(&dh);
-    g2.setEpsilon1(0.0000001);
-    g2.setEpsilon2(0.0000001);
-    //g2.setGradientStep(0.001);
-    g2.setR1MinimizeEpsilon(1.0, 0.0000001);
-    //g2.setNormalize(false);
-    g2.setPrinter(&dh);
-    g2.calculate(v);
+    ConjugateGradient g;
+    g.setGradient(this);
+    g.setFunction(this);
+    g.setEpsilon1(0.00001);
+    g.setEpsilon2(0.00001);
+    g.setR1MinimizeEpsilon(1.0, 0.00001);
+    g.setPrinter(this);
+    g.calculate(v);
 
-    Printer::printVector(v, "v1:\t", 11, 0, dh.M+dh.D, file);
-    Printer::printVector(v, "v2:\t", 11, dh.M+dh.D+1, (2*(dh.M+dh.D)+1), file);
+    Printer::printVector(v, "v1:\t", D+1, 0, M+D, file);
+    Printer::printVector(v, "v2:\t", D+1, M+D+1, (2*(M+D)+1), file);
 
-    Printer::printVector(v, "x1:\t", 11, dh.M,               dh.M+dh.D, file);
-    Printer::printVector(v, "x2:\t", 11, (dh.M+dh.D+1)+dh.M, (dh.M+dh.D+1)+dh.M+dh.D, file);
+    Printer::printVector(v, "x1:\t", D+1, M, M+D, file);
+    Printer::printVector(v, "x2:\t", D+1, (M+D+1)+M, (M+D+1)+M+D, file);
 
     DoubleMatrix u;
-    dh.pv = &v;
-    dh.calculateU(u, dh.hx, dh.ht, dh.M+dh.D, dh.N);
+    pv = &v;
+    calculateU(u, hx, ht, M+D, N);
     puts("-----");
-    for (unsigned int j=dh.M; j<=dh.M+dh.D; j++)
+    for (unsigned int j=M; j<=M+D; j++)
     {
         char buffer[20];
         int n = sprintf(buffer, "u[%d]:\t", j);
         buffer[n] = 0;
         Printer::printVector(u[j], buffer, 10, 0, 0, file);
     }
-    fclose(file);
-}
 
-DiscreteHyperbolic1::DiscreteHyperbolic1()
-{
-    t0 = x0 = 0.0;
-    t1 = x1 = 1.0;
-    N = 1000;
-    M = 1000;
-    ht = 0.001;
-    hx = 0.001;
-    D = 10;
-    a = 1.0;
-    lamda = 0.25;
-    U = 0.0;
-}
-
-double DiscreteHyperbolic1::fx(double t)
-{
+    return fx(v);
 }
 
 double DiscreteHyperbolic1::fx(const DoubleVector& v)
@@ -98,7 +101,7 @@ double DiscreteHyperbolic1::fx(const DoubleVector& v)
     return sum;
 }
 
-void DiscreteHyperbolic1::gradient(const DoubleVector& v, DoubleVector& g, double)
+void DiscreteHyperbolic1::gradient(const DoubleVector& v, DoubleVector& g)
 {
     pv = &v;
     DoubleMatrix u;

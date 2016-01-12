@@ -4,7 +4,7 @@ GradientMethod::GradientMethod() : m_fn(NULL), m_printer(NULL), m_projection(NUL
 {
     m_epsilon1 = 0.1;
     m_epsilon2 = 0.1;
-    grad_step = 0.01;
+    //grad_step = 0.01;
     min_step = 0.1;
     min_epsilon = 0.01;
     iterationCount = 0;
@@ -34,12 +34,12 @@ RnFunction* GradientMethod::function() const
     return m_fn;
 }
 
-IGradient* GradientMethod::gradientFormula() const
+IGradient* GradientMethod::gradient() const
 {
     return m_gr;
 }
 
-void GradientMethod::setGradientFormula(IGradient *gr)
+void GradientMethod::setGradient(IGradient *gr)
 {
     m_gr = gr;
 }
@@ -86,10 +86,10 @@ void GradientMethod::setR1MinimizeEpsilon(double step, double epsilon)
     min_epsilon = epsilon;
 }
 
-void GradientMethod::setGradientStep(double step)
-{
-    grad_step = step;
-}
+//void GradientMethod::setGradientStep(double step)
+//{
+//    grad_step = step;
+//}
 
 int GradientMethod::count() const
 {

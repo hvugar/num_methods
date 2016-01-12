@@ -17,14 +17,14 @@ void HeatControl1::main()
     Printer::printAsMatrix(f0, hc.M, hc.N);
     printf("----\n");
 
-    ConjugateGradient g2;
-    g2.setFunction(&hc);
-    g2.setEpsilon1(0.0000001);
-    g2.setEpsilon2(0.0000001);
-    g2.setGradientStep(0.000001);
-    g2.setR1MinimizeEpsilon(0.1, 0.0000001);
-    g2.setPrinter(&hc);
-    g2.calculate(f0);
+    ConjugateGradient g;
+    g.setGradient(&hc);
+    g.setFunction(&hc);
+    g.setEpsilon1(0.0000001);
+    g.setEpsilon2(0.0000001);
+    g.setR1MinimizeEpsilon(0.1, 0.0000001);
+    g.setPrinter(&hc);
+    g.calculate(f0);
 
     Printer::printAsMatrix(f0, hc.M, hc.N);
 }
@@ -83,7 +83,7 @@ double HeatControl1::fx(const DoubleVector &f)
     return sum+norm;
 }
 
-void HeatControl1::gradient(const DoubleVector &f, DoubleVector &g, double)
+void HeatControl1::gradient(const DoubleVector &f, DoubleVector &g)
 {
     DoubleVector u;
     pf = &f;
