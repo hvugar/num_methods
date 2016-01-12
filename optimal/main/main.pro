@@ -21,10 +21,10 @@ SOURCES += main.cpp \
     rnfunction/rosenbrock.cpp \
     rnfunction/bealesfunction.cpp \
     rnfunction/boothfunction.cpp \
-    cfunction.cpp \
-    cfunction1.cpp \
-    cfunction2.cpp \
-    cfunction3.cpp \
+    control/cfunction.cpp \
+    control/cfunction1.cpp \
+    control/cfunction2.cpp \
+    control/cfunction3.cpp \
     parabolic/1d/heatcontrol.cpp \
     parabolic/1d/heatcontroldeltaf.cpp \
     parabolic/1d/heatcontroldeltax.cpp \
@@ -52,10 +52,10 @@ HEADERS += \
     rnfunction/rosenbrock.h \
     rnfunction/bealesfunction.h \
     rnfunction/boothfunction.h \
-    cfunction.h \
-    cfunction1.h \
-    cfunction2.h \
-    cfunction3.h \
+    control/cfunction.h \
+    control/cfunction1.h \
+    control/cfunction2.h \
+    control/cfunction3.h \
     parabolic/1d/heatcontrol.h \
     parabolic/1d/heatcontroldeltaf.h \
     parabolic/1d/heatcontroldeltax.h \

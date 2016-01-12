@@ -59,7 +59,7 @@ double CFunction3::fx(const DoubleVector& u)
     return sum;
 }
 
-void CFunction3::gradient(const DoubleVector& u, DoubleVector &g, double gradient_step)
+void CFunction3::gradient(const DoubleVector& u, DoubleVector &g)
 {
     DoubleVector x(2);
     DoubleVector psi(2);
@@ -85,24 +85,6 @@ void CFunction3::gradient(const DoubleVector& u, DoubleVector &g, double gradien
 
         g1[i] = g[i];
         g2[i] = g[j];
-
-        //        DoubleVector up(2);
-        //        DoubleVector ud(2);
-
-        //        up[0] = u[i] + gradient_step;
-        //        up[1] = u[j];
-
-        //        ud[0] = u[i] - gradient_step;
-        //        ud[1] = u[j];
-
-        //        g[i] = (H(t[i], x, up, psi) - H(t[i], x, ud, psi)) / (2 * gradient_step);
-
-        //        up[0] = u[i];
-        //        up[1] = u[j] + gradient_step;
-
-        //        ud[0] = u[i];
-        //        ud[1] = u[j] - gradient_step;
-        //        g[i+n] = (H(t[i], x, up, psi) - H(t[i], x, ud, psi)) / (2 * gradient_step);
     }
 }
 
@@ -282,6 +264,7 @@ void CFunction3::main()
 
     /* Minimization */
     SteepestDescentGradient g1;
+    g1.setGradient(&c);
     g1.setFunction(&c);
     g1.setEpsilon1(0.0000001);
     g1.setEpsilon2(0.0000001);
@@ -303,76 +286,20 @@ void CFunction3::main()
 
 void CFunction3::print(unsigned int iterationCount, const DoubleVector& u, const DoubleVector &s, double alpha, RnFunction* f) const
 {
-    CFunction3 *c = dynamic_cast<CFunction3*>(f);
-
     printf("J[%2d]: %.10f  \n", iterationCount, f->fx(u));
 
-    DoubleVector u1(c->n);
-    DoubleVector u2(c->n);
+    DoubleVector u1(n);
+    DoubleVector u2(n);
 
-    for (int i=0; i<c->n; i++)
+    for (int i=0; i<n; i++)
     {
         u1[i] = u[i];
-        u2[i] = u[i+c->n];
+        u2[i] = u[i+n];
     }
-    Printer::printVector(c->x1, "x1", 10);
-    Printer::printVector(c->x2, "x2", 10);
-    Printer::printVector(c->psi1, "p1", 10);
-    Printer::printVector(c->psi2, "p2", 10);
-    Printer::printVector(u1, "u1", 10);
-    Printer::printVector(u2, "u2", 10);
+    Printer::printVector(x1, "x1");
+    Printer::printVector(x2, "x2");
+    Printer::printVector(psi1, "p1");
+    Printer::printVector(psi2, "p2");
+    Printer::printVector(u1, "u1");
+    Printer::printVector(u2, "u2");
 }
-
-void CFunction3::print(const char* s, const std::vector<double>& x) const
-{
-    unsigned int i;
-
-    unsigned int n1 = x.size()/2.0;
-    unsigned int n2 = x.size();
-
-    printf("----------- %d %d\n", n1, n2);
-
-    printf("%s1: ", s);
-    for (i=0; i<n1; i++)
-    {
-        if ( i%((n1-1)/10) == 0 )
-        {
-            if (x[i] < 0)
-            {
-                printf("%10.8f", x[i]);
-            }
-            else
-            {
-                printf("%+10.8f", x[i]);
-            }
-        }
-        if ( i%((n1-1)/10) == 0 && i != n1-1 )
-        {
-            printf(", ");
-        }
-    }
-    printf("\n");
-
-    printf("%s2: ", s);
-    for (i=n1; i<n2; i++)
-    {
-        if ( i%((n1-1)/10) == 0 )
-        {
-            if (x[i] < 0)
-            {
-                printf("%10.8f", x[i]);
-            }
-            else
-            {
-                printf("%+10.8f", x[i]);
-            }
-        }
-        if ( i%((n1-2)/10) == 0 && i != n1-1 )
-        {
-            printf(", ");
-        }
-    }
-    printf("\n");
-
-}
-

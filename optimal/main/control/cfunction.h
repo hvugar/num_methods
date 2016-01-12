@@ -14,14 +14,14 @@ struct CFunction
     virtual double fx(double t, const DoubleVector &x)  { return 0.0; }
 };
 
-struct ControlFunction : public RnFunction, public Printer
+struct ControlFunction : public RnFunction, public IGradient, public Printer
 {
     ControlFunction(double t0, double t1, double h);
     virtual ~ControlFunction();
 
 protected:
     virtual double fx(const DoubleVector& u);
-    virtual void gradient(const DoubleVector& u, DoubleVector &g, double gradient_step);
+    virtual void gradient(const DoubleVector& u, DoubleVector &g);
 
     virtual void print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const;
     void print(const char* s, const DoubleVector& x) const;

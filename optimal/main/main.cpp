@@ -16,10 +16,10 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "cfunction.h"
 #include "cfunction1.h"
 #include "cfunction2.h"
 #include "cfunction3.h"
-#include "cfunction.h"
 
 #include "rnfunction/rosenbrock.h"
 #include "rnfunction/bealesfunction.h"
@@ -53,7 +53,7 @@ int main()
 {
 //    DiscreteHeat::main();
 //    DiscreteHyperbolic1::main();
-    CFunction1::main();
+    CFunction3::main();
     return 0;
 }
 

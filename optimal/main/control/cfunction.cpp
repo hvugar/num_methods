@@ -32,7 +32,7 @@ double ControlFunction::fx(const DoubleVector &u)
     return Integral(u);
 }
 
-void ControlFunction::gradient(const DoubleVector& u, DoubleVector &g, double gradient_step)
+void ControlFunction::gradient(const DoubleVector& u, DoubleVector &g)
 {
     DoubleVector psi1(n);
     DoubleVector psi2(n);
@@ -52,6 +52,7 @@ void ControlFunction::gradient(const DoubleVector& u, DoubleVector &g, double gr
         psi[0] = psi1[i];
         psi[1] = psi2[i];
 
+        double gradient_step = 0.000001;
         double u1 = u[i] + gradient_step;
         double u2 = u[i] - gradient_step;
         g[i] = (H(t[i], x, u1, psi) - H(t[i], x, u2, psi)) / (2 * gradient_step);
@@ -263,6 +264,7 @@ void ControlFunction::main()
     for (int i=0; i<c.n; i++) u0[i] = 0.00001;
     /* Minimization */
     SteepestDescentGradient g1;
+    g1.setGradient(&c);
     g1.setFunction(&c);
     g1.setEpsilon1(0.0000001);
     g1.setEpsilon2(0.0000001);
@@ -274,6 +276,7 @@ void ControlFunction::main()
     for (int i=0; i<c.n; i++) u0[i] = 0.00001;
     /* Minimization */
     ConjugateGradient g2;
+    g2.setGradient(&c);
     g2.setFunction(&c);
     g2.setEpsilon1(0.0000001);
     g2.setEpsilon2(0.0000001);
