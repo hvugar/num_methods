@@ -6,22 +6,30 @@
 FILE *file;
 void DiscreteHyperbolic1::main()
 {
-    //file = fopen("20160111.txt", "a");
-    file = stdout;
+    file = fopen("20160112.txt", "w");
+    //file = stdout;
     DiscreteHyperbolic1 dh;
-    dh.fx(1.0);
-    //fclose(file);
+    dh.fx(0.996462);
+
+//    double a = 0.5;
+//    double b = 1.5;
+//    double t = 0.0;
+//    goldenSectionSearch(a, b, t, &dh, 0.0001);
+//    printf("%f\n", t);
+
+    fclose(file);
 }
 
 double DiscreteHyperbolic1::fx(double t)
 {
+    printf("t: %f\n", t);
     t0 = 0.0;
     x0 = 0.0;
     x1 = 1.0;
     t1 = t;
 
     hx = 0.001;
-    N = 100;
+    N = 1000;
     ht = 0.001;
     M = (unsigned int) round((t1-t0)/ht);
 
@@ -30,7 +38,7 @@ double DiscreteHyperbolic1::fx(double t)
     lamda = 0.25;
     U = 0.0;
 
-    fprintf(file, "---\n");
+    //fprintf(file, "---\n");
 
     DoubleVector v(2*(M+D+1));
     for (unsigned int j=0; j<=M+D; j++)
@@ -49,17 +57,18 @@ double DiscreteHyperbolic1::fx(double t)
     ConjugateGradient g;
     g.setGradient(this);
     g.setFunction(this);
-    g.setEpsilon1(0.00001);
-    g.setEpsilon2(0.00001);
-    g.setR1MinimizeEpsilon(1.0, 0.00001);
+    g.setEpsilon1(0.0000001);
+    g.setEpsilon2(0.0000001);
+    g.setEpsilon3(0.0000001);
+    g.setR1MinimizeEpsilon(1.0, 0.01);
     g.setPrinter(this);
     g.calculate(v);
 
-    Printer::printVector(v, "v1:\t", D+1, 0, M+D, file);
-    Printer::printVector(v, "v2:\t", D+1, M+D+1, (2*(M+D)+1), file);
+//    Printer::printVector(v, "v1:", D+1, 0, M+D, file);
+//    Printer::printVector(v, "v2:", D+1, M+D+1, (2*(M+D)+1), file);
 
-    Printer::printVector(v, "x1:\t", D+1, M, M+D, file);
-    Printer::printVector(v, "x2:\t", D+1, (M+D+1)+M, (M+D+1)+M+D, file);
+//    Printer::printVector(v, "x1:", D+1, M, M+D, file);
+//    Printer::printVector(v, "x2:", D+1, (M+D+1)+M, (M+D+1)+M+D, file);
 
     DoubleMatrix u;
     pv = &v;
@@ -68,9 +77,9 @@ double DiscreteHyperbolic1::fx(double t)
     for (unsigned int j=M; j<=M+D; j++)
     {
         char buffer[20];
-        int n = sprintf(buffer, "u[%d]:\t", j);
+        int n = sprintf(buffer, "u[%d]: ", j);
         buffer[n] = 0;
-        Printer::printVector(u[j], buffer, 10, 0, 0, file);
+        Printer::printVector(u[j], buffer, u[j].size(), 0, 0, file);
     }
 
     return fx(v);
@@ -165,17 +174,17 @@ void DiscreteHyperbolic1::calculateP(const DoubleVector& f0, const DoubleMatrix 
     {
         unsigned int j = M+D-j1;
 
-        if (D<=j && j<=M+D)
+        if (j==M+D)
         {
             for (unsigned int i=1; i<=N-1; i++)
             {
-                double alpha = 1.0;
-                if (j==M+D) alpha = 0.50;
+                //double alpha = 1.0;
+                //if (j==M+D) alpha = 0.50;
 
                 da[i-1] = A1;
                 db[i-1] = B0;
                 dc[i-1] = A2;
-                rd[i-1] = -2.0*hx*ht*alpha*(u[j][i]-U);
+                rd[i-1] = -2.0*hx*ht*0.50*(u[j][i]-U);
             }
             da[0]=0.0;
             dc[N-2]=0.0;
@@ -185,11 +194,11 @@ void DiscreteHyperbolic1::calculateP(const DoubleVector& f0, const DoubleMatrix 
                 psi[j][i] = rx[i-1];
             }
 
-            double alpha = 0.50;
-            if (j==M+D) alpha = 0.25;
+            //double alpha = 0.50;
+            //if (j==M+D) alpha = 0.25;
 
-            psi[j][0] = -(A2*psi[j][1]   + 2.0*hx*ht*alpha*(u[j][0]-U));
-            psi[j][N] = -(A1*psi[j][N-1] + 2.0*hx*ht*alpha*(u[j][N]-U));
+            psi[M+D][0] = -(A2*psi[M+D][1]   + 2.0*hx*ht*0.25*(u[j][0]-U));
+            psi[M+D][N] = -(A1*psi[M+D][N-1] + 2.0*hx*ht*0.25*(u[j][N]-U));
         }
         else if (j==(M+D-1))
         {
@@ -212,6 +221,8 @@ void DiscreteHyperbolic1::calculateP(const DoubleVector& f0, const DoubleMatrix 
                 {
                     rd[i-1] = -(C1*psi[M+D][i-1] + D0*psi[M+D][i] + C2*psi[M+D][i+1]);
                 }
+
+                rd[i-1] -= 2.0*hx*ht*1.0*(u[j][i]-U);
             }
             da[0]=0.0;
             dc[N-2]=0.0;
@@ -220,8 +231,8 @@ void DiscreteHyperbolic1::calculateP(const DoubleVector& f0, const DoubleMatrix 
             {
                 psi[M-1][i] = rx[i-1];
             }
-            psi[M+D-1][0] = -(A2*psi[M-1][1]  +C2*psi[M+D][1]);
-            psi[M+D-1][N] = -(A1*psi[M-1][N-1]+C1*psi[M+D][N-1]);
+            psi[M+D-1][0] = -(A2*psi[M-1][1]  +C2*psi[M+D][1]  + 2.0*hx*ht*0.5*(u[j][0]-U));
+            psi[M+D-1][N] = -(A1*psi[M-1][N-1]+C1*psi[M+D][N-1]+ 2.0*hx*ht*0.5*(u[j][N]-U));
         }
         else
         {
@@ -246,6 +257,11 @@ void DiscreteHyperbolic1::calculateP(const DoubleVector& f0, const DoubleMatrix 
                     {
                         rd[i-1] = -(C1*psi[j+1][i-1] + D0*psi[j+1][i] + C2*psi[j+1][i+1] + E1*psi[j+2][i-1] + F0*psi[j+2][i] + E2*psi[j+2][i+1]);
                     }
+
+                    if (j>=M)
+                    {
+                        rd[i-1] -= 2.0*hx*ht*1.0*(u[j][i]-U);
+                    }
                 }
 
                 da[0]=0.0;
@@ -260,6 +276,12 @@ void DiscreteHyperbolic1::calculateP(const DoubleVector& f0, const DoubleMatrix 
 
                 psi[j][0] = -(A2*psi[j][1]   + C2*psi[j+1][1]   + E2*psi[j+2][1]);
                 psi[j][N] = -(A1*psi[j][N-1] + C1*psi[j+1][N-1] + E2*psi[j+2][N-1]);
+
+                if (j>=M)
+                {
+                    psi[j][0] -= 2.0*hx*ht*0.5*(u[j][0]-U);
+                    psi[j][N] -= 2.0*hx*ht*0.5*(u[j][N]-U);
+                }
             }
             if (j==1)
             {
@@ -314,7 +336,7 @@ void DiscreteHyperbolic1::calculateP(const DoubleVector& f0, const DoubleMatrix 
 
 void DiscreteHyperbolic1::print(unsigned int iteration, const DoubleVector &v, const DoubleVector &g, double alpha, RnFunction *fn) const
 {
-    printf("J[%d]: %.12f\n", iteration, fn->fx(v));
+    printf("J[%d]: %.16f\n", iteration, fn->fx(v));
 
 //    DoubleMatrix u;
 //    calculateU(u, hx, ht, M+D, N, a);
@@ -354,10 +376,3 @@ double DiscreteHyperbolic1::f(unsigned int i, unsigned int j) const
 {
     return 2.0-2.0*a*a;
 }
-
-//double DiscreteHyperbolic1::F(unsigned int i, unsigned int j) const
-//{
-//    double x = i*hx;
-//    double t = j*ht;
-//    return 6.0*t - 6.0*x*a;
-//}

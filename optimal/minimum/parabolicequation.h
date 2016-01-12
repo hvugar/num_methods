@@ -8,16 +8,34 @@
 /**
  * @brief Параболического уравнения
  */
-struct MINIMUMSHARED_EXPORT IParabolicEquation
+class MINIMUMSHARED_EXPORT IParabolicEquation
 {
-    /* initial condition */
+public:
+    /**
+     * @brief fi initial condition
+     * @param i - number of web by x
+     * @return
+     */
     virtual double fi(unsigned int i) const = 0;
-    /* border conditions */
+    /**
+     * @brief m1 left border condition
+     * @param j
+     * @return
+     */
     virtual double m1(unsigned int j) const = 0;
+    /**
+     * @brief m2 right border condition
+     * @param j
+     * @return
+     */
     virtual double m2(unsigned int j) const = 0;
-    /* функция тепловых источников */
+    /**
+     * @brief f функция тепловых источников
+     * @param i
+     * @param j
+     * @return
+     */
     virtual double f(unsigned int i, unsigned int j) const = 0;
-
     /**
      * @brief calculateU
      * @param u
@@ -44,83 +62,33 @@ struct MINIMUMSHARED_EXPORT IParabolicEquation
  * @brief Обратная параболического уравнения
  *
  */
-struct MINIMUMSHARED_EXPORT IBackwardParabolicEquation
+class MINIMUMSHARED_EXPORT IBackwardParabolicEquation
 {
+public:
     virtual double fi(unsigned int i) const = 0;
-//    /* initial condition */
-//    virtual double bfi(unsigned int i) const = 0;
-//    /* border conditions */
-//    virtual double bm1(unsigned int j) const = 0;
-//    virtual double bm2(unsigned int j) const = 0;
-//    /* функция тепловых источников */
-//    virtual double bf(unsigned int i, unsigned int j) const = 0;
+    //    /* initial condition */
+    //    virtual double bfi(unsigned int i) const = 0;
+    //    /* border conditions */
+    //    virtual double bm1(unsigned int j) const = 0;
+    //    virtual double bm2(unsigned int j) const = 0;
+    //    /* функция тепловых источников */
+    //    virtual double bf(unsigned int i, unsigned int j) const = 0;
 };
 
-struct MINIMUMSHARED_EXPORT ParabolicEquation
+/**
+ * @brief The IParabolicEquation2D class
+ */
+class MINIMUMSHARED_EXPORT IParabolicEquation2D
 {
-    ParabolicEquation(double t0 = 0.0, double t1 = 1.0, double x0 = 0.0, double x1 = 1.0, unsigned int M = 100, unsigned int N = 100, double a = 1.0);
-    virtual ~ParabolicEquation();
-
-    void setTimeInterval(double t0, double t1);
-    void setLengthInterval(double x0, double x1);
-    void setPartNumber(unsigned int M, unsigned int N);
-
-    virtual double fi(unsigned int i) const = 0;
-    virtual double m1(unsigned int j) const = 0;
-    virtual double m2(unsigned int j) const = 0;
-    virtual double f(unsigned int i, unsigned int j) const = 0;
-
-    virtual void calculateU(DoubleVector& u);
-
-protected:
-    /* initial time */
-    double t0;
-    /* end time */
-    double t1;
-    /* start point of length */
-    double x0;
-    /* end point of length */
-    double x1;
-    /* number of parts of time */
-    unsigned int M;
-    /* number of parts of length */
-    unsigned int N;
-    double ht;
-    double hx;
-    double a;
-};
-
-struct MINIMUMSHARED_EXPORT ParabolicEquation2D
-{
-    ParabolicEquation2D(double t0 = 0.0, double t1 = 1.0, double x10 = 0.0, double x11 = 1.0, double x20 = 0.0, double x21 = 1.0, unsigned int M = 100, unsigned int N1 = 100, unsigned int N2 = 100, double a1 = 1.0, double a2 = 1.0);
+public:
     virtual double fi(unsigned int i, unsigned int j) const = 0;
-    virtual double m1(unsigned int j, unsigned int k) const = 0;
-    virtual double m2(unsigned int j, unsigned int k) const = 0;
-    virtual double m3(unsigned int i, unsigned int k) const = 0;
-    virtual double m4(unsigned int i, unsigned int k) const = 0;
-    virtual double f(unsigned int i, unsigned int j, unsigned int k) const = 0;
+    virtual double m1(unsigned int j, double k) const = 0;
+    virtual double m2(unsigned int j, double k) const = 0;
+    virtual double m3(unsigned int i, double k) const = 0;
+    virtual double m4(unsigned int i, double k) const = 0;
+    virtual double f(unsigned int i, unsigned int j, double k) const = 0;
 
-    void setBorders(double t0, double t1, double x10, double x11, double x20, double x21);
-    void setPartNumbers(unsigned int N1, unsigned int N2, unsigned M);
-
-    void calculate(DoubleMatrix& u);
-    void calculateBack(DoubleMatrix& u);
-
-private:
-    double t0;
-    double t1;
-    double x10;
-    double x11;
-    double x20;
-    double x21;
-    unsigned int M;
-    unsigned int N1;
-    unsigned int N2;
-    double a1;
-    double a2;
-    double ht;
-    double h1;
-    double h2;
+    void calculateU(DoubleMatrix &u, double hx1, double hx2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const;
 };
 
 #endif // HEATEQUATION_H

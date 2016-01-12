@@ -28,8 +28,6 @@ public:
     //double F(unsigned int i, unsigned int j) const;
     void calculateP(const DoubleVector& v, const DoubleMatrix &u, DoubleMatrix &psi, DoubleVector &g);
 
-    //virtual void calculateP();
-
     static void main();
 
 private:

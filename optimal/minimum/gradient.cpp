@@ -4,7 +4,7 @@ GradientMethod::GradientMethod() : m_fn(NULL), m_printer(NULL), m_projection(NUL
 {
     m_epsilon1 = 0.1;
     m_epsilon2 = 0.1;
-    //grad_step = 0.01;
+    m_epsilon3 = 0.1;
     min_step = 0.1;
     min_epsilon = 0.01;
     iterationCount = 0;
@@ -78,6 +78,24 @@ double GradientMethod::epsilon2() const
 void GradientMethod::setEpsilon2(double epsilon)
 {
     m_epsilon2 = epsilon;
+}
+
+/**
+ * @brief Epsilon for distance between points
+ * @param epsilon
+ */
+void GradientMethod::setEpsilon3(double epsilon)
+{
+    m_epsilon3 = epsilon;
+}
+
+/**
+ * @brief Epsilon for distance between points
+ * @return
+ */
+double GradientMethod::epsilon3() const
+{
+    return m_epsilon3;
 }
 
 void GradientMethod::setR1MinimizeEpsilon(double step, double epsilon)

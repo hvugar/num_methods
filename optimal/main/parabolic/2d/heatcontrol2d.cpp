@@ -3,7 +3,7 @@
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
 
-HeatControl2D::HeatControl2D(unsigned int m, unsigned int n2, unsigned int n1) : RnFunction()
+HeatControl2D::HeatControl2D(unsigned int m, unsigned int n2, unsigned int n1)
 {
     N1 = n1;
     N2 = n2;
@@ -28,7 +28,7 @@ HeatControl2D::HeatControl2D(unsigned int m, unsigned int n2, unsigned int n1) :
     for (unsigned int j=0; j<=N2; j++)
     {
         U[j].resize(N1+1);
-        for (unsigned int i=0; i<=N1; i++) U[j][i] = u(i*h1, j*h2, t1);
+        for (unsigned int i=0; i<=N1; i++) U[j][i] = u1(i*h1, j*h2, t1);
     }
 }
 
@@ -36,7 +36,8 @@ HeatControl2D::~HeatControl2D() {}
 
 double HeatControl2D::fx(const DoubleVector &f)
 {
-    calculateU(f);
+    DoubleMatrix u;
+    calculateU(u, h1, h2, ht, N1, N2, M, a1, a2);
 
     double sum = 0.0;
 
@@ -44,19 +45,29 @@ double HeatControl2D::fx(const DoubleVector &f)
     {
         for (unsigned int i=0; i<N1; i++)
         {
-            int j1 = j;
-            int j2 = j+1;
-            int i1 = i;
-            int i2 = i+1;
+            double alpha = 1.0;
+            if (j==0 || j==N2 || i==0 || j==N1) alpha = 0.5;
+            if (j==0 && i==0)   alpha = 0.25;
+            if (j==0 && i==N1)  alpha = 0.25;
+            if (j==N2 && i==0)  alpha = 0.25;
+            if (j==N2 && i==N1) alpha = 0.25;
 
-            double f1 = uT[j1][i1] - U[j1][i1];
-            double f2 = uT[j1][i2] - U[j1][i2];
-            double f3 = uT[j2][i1] - U[j2][i1];
-            double f4 = uT[j2][i2] - U[j2][i2];
+            sum += alpha*(u[j][i] - U[j][i])*(u[j][i] - U[j][i]);
 
-            sum = sum + (0.25*(h1*h2))*(f1*f1 + f2*f2 + f3*f3 + f4*f4);
+//            int j1 = j;
+//            int j2 = j+1;
+//            int i1 = i;
+//            int i2 = i+1;
+
+//            double f1 = u[j1][i1] - U[j1][i1];
+//            double f2 = u[j1][i2] - U[j1][i2];
+//            double f3 = u[j2][i1] - U[j2][i1];
+//            double f4 = u[j2][i2] - U[j2][i2];
+
+//            sum = sum + (0.25*(h1*h2))*(f1*f1 + f2*f2 + f3*f3 + f4*f4);
         }
     }
+    sum *= h1*h2;
 
     double norm = 0.0;
 
@@ -91,151 +102,16 @@ double HeatControl2D::fx(const DoubleVector &f)
     return sum + norm;
 }
 
-void HeatControl2D::gradient(const DoubleVector &f, DoubleVector &g, double gradient_step)
+void HeatControl2D::gradient(const DoubleVector &f0, DoubleVector &g)
 {
-    calculateU(f);
-    calculateP(f, g);
+    pf = &f0;
+    DoubleMatrix u;
+    calculateU(u, h1, h2, ht, N1, N2, M, a1, a2);
+    calculateP(f0, u, g);
 }
 
-void HeatControl2D::calculateU(const DoubleVector &f)
-{
-    pf = &f;
 
-    DoubleMatrix u0;
-    DoubleMatrix u1;
-
-    u0.resize(N2+1); for (unsigned int j=0; j<=N2; j++) u0[j].resize(N1+1);
-    u1.resize(N2+1); for (unsigned int j=0; j<=N2; j++) u1[j].resize(N1+1);
-
-    double alpha1 = 0;
-    double beta1  = 0;
-    double alpha2 = 0;
-    double beta2  = 0;
-
-    DoubleVector a;
-    DoubleVector b;
-    DoubleVector c;
-    DoubleVector d;
-    DoubleVector x;
-
-    for (unsigned int k=0; k<=M; k++)
-    {
-        if (k==0)
-        {
-            for (unsigned int j=0; j<=N2; j++)
-            {
-                for (unsigned i=0; i<=N1; i++)
-                {
-                    u0[j][i] = fi(i*h1, j*h2);
-                }
-            }
-        }
-        else
-        {
-            // Approximation to x1 direction
-            alpha1 = -(a2*ht)/(2.0*h2*h2);
-            beta1  = 1.0 + (a2*ht)/(h2*h2);
-            alpha2 = (a1*ht)/(2.0*h1*h1);
-            beta2  = 1.0 - (a1*ht)/(h1*h1);
-
-            a.resize(N2-1);
-            b.resize(N2-1);
-            c.resize(N2-1);
-            d.resize(N2-1);
-            x.resize(N2-1);
-
-            for (unsigned int i=1; i<N1; i++)
-            {
-                for (unsigned int j=1; j<N2; j++)
-                {
-                    a[j-1] = alpha1;
-                    b[j-1] = beta1;
-                    c[j-1] = alpha1;
-//                    d[j-1] = alpha2*u0[j][i-1] + beta2*u0[j][i] + alpha2*u0[j][i+1] + (ht/2.0) * f[k*(N1+1)*(N2+1)+i*(N2+1)+j]/*fxt(i*h1, j*h2, (k-1.0)*ht)*/;
-                    d[j-1] = alpha2*u0[j][i-1] + beta2*u0[j][i] + alpha2*u0[j][i+1] + (ht/2.0) * f1(i, j, k);
-                }
-
-                a[0]     = 0.0;
-                c[N2-2]  = 0.0;
-                d[0]    -= alpha1 * m3(h1*i, ht*(k-0.5));
-                d[N2-2] -= alpha1 * m4(h1*i, ht*(k-0.5));
-
-                TomasAlgorithm(a, b, c, d, x);
-
-                u1[0][i]  = m3(h1*i, ht*(k-0.5));
-                for (unsigned int j=1; j<N2; j++)
-                {
-                    u1[j][i] = x[j-1];
-                }
-                u1[N2][i] = m4(h1*i, ht*(k-0.5));
-            }
-
-            for (unsigned int j=0; j<=N2; j++)
-            {
-                u1[j][0]  = m1(h2*j, ht*(k-0.5));
-                u1[j][N1] = m2(h2*j, ht*(k-0.5));
-            }
-
-            a.clear();
-            b.clear();
-            c.clear();
-            d.clear();
-            x.clear();
-
-            // Approximation to x2 direction
-            alpha1 = -(a1*ht)/(2.0*h1*h1);
-            beta1  = 1.0 + (a1*ht)/(h1*h1);
-            alpha2 = (a2*ht)/(2.0*h2*h2);
-            beta2  = 1.0 - (a2*ht)/(h2*h2);
-
-            a.resize(N1-1);
-            b.resize(N1-1);
-            c.resize(N1-1);
-            d.resize(N1-1);
-            x.resize(N1-1);
-
-            for (unsigned int j=1; j<N2; j++)
-            {
-                for (unsigned int i=1; i<N1; i++)
-                {
-                    a[i-1] = alpha1;
-                    b[i-1] = beta1;
-                    c[i-1] = alpha1;
-//                    d[i-1] = alpha2*u1[j-1][i] + beta2*u1[j][i] + alpha2*u1[j+1][i] + (ht/2.0) * f[k*(N1+1)*(N2+1)+j*(N1+1)+i]/*fxt(i*h1, j*h2, (k-1)*ht)*/;
-                    d[i-1] = alpha2*u1[j-1][i] + beta2*u1[j][i] + alpha2*u1[j+1][i] + (ht/2.0) * f1(i, j, k)/*fxt(i*h1, j*h2, (k-1)*ht)*/;
-                }
-                a[0]     = 0.0;
-                c[N1-2]  = 0.0;
-                d[0]    -= alpha1 * m1(h2*j, ht*(k));
-                d[N1-2] -= alpha1 * m2(h2*j, ht*(k));
-                TomasAlgorithm(a, b, c, d, x);
-
-                u0[j][0]  = m1(h2*j, ht*(k));
-                for (unsigned int i=1; i<N1; i++)
-                {
-                    u0[j][i] = x[i-1];
-                }
-                u0[j][N1] = m2(h2*j, ht*(k));
-            }
-
-            for (unsigned int i=0; i<=N1; i++)
-            {
-                u0[0][i]  = m3(h1*i, ht*(k));
-                u0[N2][i] = m4(h1*i, ht*(k));
-            }
-
-            a.clear();
-            b.clear();
-            c.clear();
-            d.clear();
-            x.clear();
-        }
-    }
-
-    uT = u0;
-}
-
-void HeatControl2D::calculateP(const DoubleVector &f, DoubleVector& g)
+void HeatControl2D::calculateP(const DoubleVector &f, const DoubleMatrix &u, DoubleVector& g)
 {
     DoubleMatrix psi0;
     DoubleMatrix psi1;
@@ -254,9 +130,6 @@ void HeatControl2D::calculateP(const DoubleVector &f, DoubleVector& g)
     DoubleVector d;
     DoubleVector x;
 
-    //double a1 = -this->a1;
-    //double a2 = -this->a2;
-
     for (unsigned int k1=0; k1<=M; k1++)
     {
         unsigned int k = M-k1;
@@ -267,7 +140,7 @@ void HeatControl2D::calculateP(const DoubleVector &f, DoubleVector& g)
             {
                 for (unsigned i=0; i<=N1; i++)
                 {
-                    psi0[j][i] = -2.0*(uT[j][i] - U[j][i]);
+                    psi0[j][i] = -2.0*(u[j][i] - U[j][i]);
                 }
             }
         }
@@ -382,175 +255,50 @@ void HeatControl2D::calculateP(const DoubleVector &f, DoubleVector& g)
     }
 }
 
-//void HeatControl2D::calculateU1(const DoubleVector &f)
-//{
-//    DoubleMatrix u0;
-//    DoubleMatrix u1;
-
-//    u0.resize(N2+1); for (unsigned int j=0; j<=N2; j++) u0[j].resize(N1+1);
-//    u1.resize(N2+1); for (unsigned int j=0; j<=N2; j++) u1[j].resize(N1+1);
-
-//    double alpha1 = 0;
-//    double beta1  = 0;
-//    double alpha2 = 0;
-//    double beta2  = 0;
-
-//    DoubleVector a;
-//    DoubleVector b;
-//    DoubleVector c;
-//    DoubleVector d;
-//    DoubleVector x;
-
-//    for (unsigned int k1=0; k1<=M; k1++)
-//    {
-//        unsigned int k = M-k1;
-
-//        if (k==M)
-//        {
-//            for (unsigned int j=0; j<=N2; j++)
-//            {
-//                for (unsigned i=0; i<=N1; i++)
-//                {
-//                    u0[j][i] = u(i*h1, j*h2, t1);
-//                }
-//            }
-//        }
-//        else
-//        {
-//            // Approximation to x1 direction
-//            alpha1 = -(a1*ht)/(2.0*h1*h1);
-//            beta1  = 1.0 + (a1*ht)/(h1*h1);
-//            alpha2 = +(a2*ht)/(2.0*h2*h2);
-//            beta2  = 1.0 - (a2*ht)/(h2*h2);
-
-//            a.resize(N1-1);
-//            b.resize(N1-1);
-//            c.resize(N1-1);
-//            d.resize(N1-1);
-//            x.resize(N1-1);
-
-//            for (unsigned int j=1; j<N2; j++)
-//            {
-//                for (unsigned int i=1; i<N1; i++)
-//                {
-//                    a[i-1] = alpha1;
-//                    b[i-1] = beta1;
-//                    c[i-1] = alpha1;
-//                    d[i-1] = alpha2*u0[j-1][i] + beta2*u0[j][i] + alpha2*u0[j+1][i] + (ht/2.0) * /*f[k*(N1+1)*(N2+1)+j*(N1+1)+i]*/fxt(i*h1, j*h2, k*ht);
-//                }
-
-//                a[0]     = 0.0;
-//                c[N1-2]  = 0.0;
-//                d[0]    -= alpha1 * m1(h2*j, ht*(k+0.5));
-//                d[N1-2] -= alpha1 * m2(h2*j, ht*(k+0.5));
-
-//                TomasAlgorithm(a, b, c, d, x);
-
-//                u1[j][0]  = m1(h2*j, ht*(k+0.5));
-//                for (unsigned int i=1; i<N1; i++)
-//                {
-//                    u1[j][i] = x[i-1];
-//                }
-//                u1[j][N1] = m2(h2*j, ht*(k+0.5));
-//            }
-
-//            for (unsigned int i=0; i<=N1; i++)
-//            {
-//                u1[0][i]  = m3(h1*i, ht*(k+0.5));
-//                u1[N2][i] = m4(h1*i, ht*(k+0.5));
-//            }
-
-//            a.clear();
-//            b.clear();
-//            c.clear();
-//            d.clear();
-//            x.clear();
-
-//            // Approximation to x2 direction
-//            alpha1 = -(a2*ht)/(2.0*h2*h2);
-//            beta1  = 1.0 + (a2*ht)/(h2*h2);
-//            alpha2 = +(a1*ht)/(2.0*h1*h1);
-//            beta2  = 1.0 - (a1*ht)/(h1*h1);
-
-//            a.resize(N2-1);
-//            b.resize(N2-1);
-//            c.resize(N2-1);
-//            d.resize(N2-1);
-//            x.resize(N2-1);
-
-//            for (unsigned int i=1; i<N1; i++)
-//            {
-//                for (unsigned int j=1; j<N2; j++)
-//                {
-//                    a[j-1] = alpha1;
-//                    b[j-1] = beta1;
-//                    c[j-1] = alpha1;
-//                    d[j-1] = alpha2*u1[j][i-1] + beta2*u1[j][i] + alpha2*u1[j][i+1] + (ht/2.0) * /*f[k*(N1+1)*(N2+1)+i*(N2+1)+j]*/fxt(i*h1, j*h2, k*ht);
-//                }
-//                a[0]     = 0.0;
-//                c[N2-2]  = 0.0;
-//                d[0]    -= alpha1 * m3(h1*i, ht*k);
-//                d[N2-2] -= alpha1 * m4(h1*i, ht*k);
-//                TomasAlgorithm(a, b, c, d, x);
-
-//                u0[0][i]  = m3(h1*i, ht*k);
-//                for (unsigned int j=1; j<N2; j++)
-//                {
-//                    u0[j][i] = x[j-1];
-//                }
-//                u0[N2][i] = m4(h1*i, ht*k);
-//            }
-
-//            for (unsigned int j=0; j<=N2; j++)
-//            {
-//                u0[j][0]  = m1(h2*j, ht*k);
-//                u0[j][N1] = m2(h2*j, ht*k);
-//            }
-
-//            a.clear();
-//            b.clear();
-//            c.clear();
-//            d.clear();
-//            x.clear();
-//        }
-//    }
-
-//    Printer::printMatrix(u0, N2/10, N1/10);
-//}
-
-double HeatControl2D::u(double x1, double x2, double t)
+double HeatControl2D::u1(double x1, double x2, double t) const
 {
     return x1*x1 + x2*x2 + t*t;
 }
 
-double HeatControl2D::fi(double x1, double x2)
+double HeatControl2D::fi(unsigned int i, unsigned int j) const
 {
-    return u(x1, x2, t0);
+    double x1 = i*h1;
+    double x2 = j*h2;
+    return u1(x1, x2, t0);
 }
 
-double HeatControl2D::m1(double x2, double t)
+double HeatControl2D::m1(unsigned int j, double k) const
 {
-    return u(x10, x2, t);
+    double x2 = j*h2;
+    double t = k*ht;
+    return u1(x10, x2, t);
 }
 
-double HeatControl2D::m2(double x2, double t)
+double HeatControl2D::m2(unsigned int j, double k) const
 {
-    return u(x11, x2, t);
+    double x2 = j*h2;
+    double t = k*ht;
+    return u1(x11, x2, t);
 }
 
-double HeatControl2D::m3(double x1, double t)
+double HeatControl2D::m3(unsigned int i, double k) const
 {
-    return u(x1, x20, t);
+    double x1 = i*h1;
+    double t = k*ht;
+    return u1(x1, x20, t);
 }
 
-double HeatControl2D::m4(double x1, double t)
+double HeatControl2D::m4(unsigned int i, double k) const
 {
-    return u(x1, x21, t);
+    double x1 = i*h1;
+    double t = k*ht;
+    return u1(x1, x21, t);
 }
 
-double HeatControl2D::f1(unsigned int i, unsigned j, unsigned int k)
+double HeatControl2D::f(unsigned int i, unsigned j, double k) const
 {
-    return (*pf)[k*(N1+1)*(N2+1)+j*(N1+1)+i];
+    unsigned int n = k*(N1+1)*(N2+1)+j*(N1+1)+i;
+    return (*pf)[n];
 }
 
 double HeatControl2D::fxt(double x1, double x2, double t)
@@ -589,9 +337,6 @@ void HeatControl2D::main()
     /* Function */
     HeatControl2D hc(100, 10, 10);
 
-    //    Printer::printMatrix(hc.U, hc.N2/10, hc.N1/10);
-    //    puts("----------------------------------------");
-
     DoubleVector f;
     f.resize(hc.C);
     for (unsigned int i=0; i<hc.C; i++)
@@ -613,6 +358,7 @@ void HeatControl2D::main()
     //    g1.setFunction(&hc);
     //    g1.setEpsilon1(0.0000001);
     //    g1.setEpsilon2(0.0000001);
+    //    g1.setEpsilon3(0.0000001);
     //    g1.setGradientStep(0.000001);
     //    g1.setR1MinimizeEpsilon(0.1, 0.0000001);
     //    g1.setNormalize(true);
@@ -621,9 +367,11 @@ void HeatControl2D::main()
 
     /* Minimization */
     ConjugateGradient g2;
+    g2.setGradient(&hc);
     g2.setFunction(&hc);
     g2.setEpsilon1(0.0000001);
     g2.setEpsilon2(0.0000001);
+    g2.setEpsilon3(0.0000001);
     g2.setR1MinimizeEpsilon(0.1, 0.0000001);
     g2.setPrinter(&hc);
     g2.setNormalize(false);

@@ -30,14 +30,28 @@ public:
     virtual IGradient* gradient() const;
     virtual void setGradient(IGradient *gradient);
 
+    /**
+     * @brief Epsilon for gradient norm
+     * @return
+     */
     double epsilon1() const;
     void setEpsilon1(double epsilon);
 
+    /**
+     * @brief Epsilon for points distance
+     * @return
+     */
     double epsilon2() const;
     void setEpsilon2(double epsilon);
 
+    /**
+     * @brief Epsilon for function result
+     * @return
+     */
+    double epsilon3() const;
+    void setEpsilon3(double epsilon);
+
     void setR1MinimizeEpsilon(double step, double epsilon1);
-    //void setGradientStep(double step);
     int count() const;
 
     void setPrinter(Printer* printer);
@@ -52,6 +66,7 @@ protected:
     IGradient *m_gr;
     double m_epsilon1;
     double m_epsilon2;
+    double m_epsilon3;
     //double grad_step;
     double min_epsilon;
     double min_step;

@@ -52,8 +52,9 @@
 int main()
 {
 //    DiscreteHeat::main();
-//    DiscreteHyperbolic1::main();
-    ControlFunction::main();
+    DiscreteHyperbolic1::main();
+//    HeatControl2D::main();
+//    Rosenbrock::main();
     return 0;
 }
 

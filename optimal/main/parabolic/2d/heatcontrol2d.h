@@ -4,8 +4,9 @@
 #include <function.h>
 #include <doublevector.h>
 #include <printer.h>
+#include <parabolicequation.h>
 
-class HeatControl2D :public RnFunction, public Printer
+class HeatControl2D :public RnFunction, public IGradient, public Printer, public IParabolicEquation2D
 {
 public:
     HeatControl2D(unsigned int M, unsigned int N2, unsigned int N1);
@@ -30,26 +31,26 @@ public:
     double a2;
 
     DoubleMatrix U;
-    DoubleMatrix uT;
+    //DoubleMatrix uT;
 
-    void calculateU(const DoubleVector& f);
+    //void calculateU(const DoubleVector& f);
     //void calculateU1(const DoubleVector &f);
-    void calculateP(const DoubleVector &f, DoubleVector& g);
+    void calculateP(const DoubleVector &f, const DoubleMatrix &u, DoubleVector& g);
 
     static void main();
 
     virtual double fx(const DoubleVector& x);
-    virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step);
+    virtual void gradient(const DoubleVector& x, DoubleVector& g);
 
 private:
-    double u(double x1, double x2, double t);
+    double u1(double x1, double x2, double t) const;
 
-    double fi(double x1, double x2);
-    double m1(double x2, double t);
-    double m2(double x2, double t);
-    double m3(double x1, double t);
-    double m4(double x1, double t);
-    double f1(unsigned int i, unsigned j, unsigned int k);
+    double fi(unsigned int i, unsigned int j) const;
+    double m1(unsigned int j, double k) const;
+    double m2(unsigned int j, double k) const;
+    double m3(unsigned int i, double k) const;
+    double m4(unsigned int i, double k) const;
+    double f(unsigned int i, unsigned j, double k) const;
 
     double pm1(double x2, double t) { return 0.0; }
     double pm2(double x2, double t) { return 0.0; }
