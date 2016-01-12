@@ -20,6 +20,7 @@
 #include "cfunction2.h"
 #include "cfunction3.h"
 #include "cfunction.h"
+
 #include "rnfunction/rosenbrock.h"
 #include "rnfunction/bealesfunction.h"
 #include "rnfunction/boothfunction.h"
@@ -52,7 +53,7 @@ int main()
 {
 //    DiscreteHeat::main();
 //    DiscreteHyperbolic1::main();
-    Rosenbrock::main();
+    CFunction1::main();
     return 0;
 }
 

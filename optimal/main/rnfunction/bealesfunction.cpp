@@ -44,7 +44,8 @@ void BealesFunction::project(DoubleVector& x, int index)
 void BealesFunction::main()
 {
     /* Function */
-    BealesFunction func;
+    BealesFunction func;\
+    func.grad_step = 0.000001;
 
     func.a = -4.5;
     func.b = +4.5;
