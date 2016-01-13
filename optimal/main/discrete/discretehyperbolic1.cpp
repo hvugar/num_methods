@@ -6,7 +6,7 @@
 FILE *file;
 void DiscreteHyperbolic1::main()
 {
-    file = fopen("20160112.txt", "w");
+    file = fopen("20160113.txt", "w");
     //file = stdout;
     DiscreteHyperbolic1 dh;
     dh.fx(0.996462);
@@ -14,7 +14,7 @@ void DiscreteHyperbolic1::main()
 //    double a = 0.5;
 //    double b = 1.5;
 //    double t = 0.0;
-//    goldenSectionSearch(a, b, t, &dh, 0.0001);
+//    goldenSectionSearch(a, b, t, &dh, 0.0000001);
 //    printf("%f\n", t);
 
     fclose(file);
@@ -32,6 +32,7 @@ double DiscreteHyperbolic1::fx(double t)
     N = 1000;
     ht = 0.001;
     M = (unsigned int) round((t1-t0)/ht);
+    L = 1.0;
 
     D = 10;
     a = 1.0;
@@ -40,12 +41,13 @@ double DiscreteHyperbolic1::fx(double t)
 
     //fprintf(file, "---\n");
 
-    DoubleVector v(2*(M+D+1));
+    DoubleVector v((2+L)*(M+D+1));
     for (unsigned int j=0; j<=M+D; j++)
     {
         //double t = j*ht;
-        v[j] = 1.0;//t*t;
-        v[(M+D+1)+j] = 1.0;//t*t+1.0;
+        v[0*(M+D+1)+j] = 1.0;//t*t;
+        v[1*(M+D+1)+j] = 1.0;//t*t+1.0;
+        v[2*(M+D+1)+j] = 0.0;
     }
 
 //    v[0] = 0.0;
@@ -67,8 +69,9 @@ double DiscreteHyperbolic1::fx(double t)
 //    Printer::printVector(v, "v1:", D+1, 0, M+D, file);
 //    Printer::printVector(v, "v2:", D+1, M+D+1, (2*(M+D)+1), file);
 
-//    Printer::printVector(v, "x1:", D+1, M, M+D, file);
-//    Printer::printVector(v, "x2:", D+1, (M+D+1)+M, (M+D+1)+M+D, file);
+    Printer::printVector(v, "v1:", D+1, 0*(M+D+1)+M, 0*(M+D+1)+(M+D), file);
+    Printer::printVector(v, "v2:", D+1, 1*(M+D+1)+M, 1*(M+D+1)+(M+D), file);
+    Printer::printVector(v, "v3:", D+1, 2*(M+D+1)+M, 2*(M+D+1)+(M+D), file);
 
     DoubleMatrix u;
     pv = &v;
@@ -79,7 +82,7 @@ double DiscreteHyperbolic1::fx(double t)
         char buffer[20];
         int n = sprintf(buffer, "u[%d]: ", j);
         buffer[n] = 0;
-        Printer::printVector(u[j], buffer, u[j].size(), 0, 0, file);
+        Printer::printVector(u[j], NULL, u[j].size(), 0, 0, file);
     }
 
     return fx(v);
@@ -118,16 +121,28 @@ void DiscreteHyperbolic1::gradient(const DoubleVector& v, DoubleVector& g)
     DoubleMatrix psi;
     calculateP(v, u, psi, g);
 
-    for (unsigned int j=0; j<=M+D; j++)
+    for (unsigned int j=2; j<=M+D; j++)
     {
-        g[j]       = -psi[j][0];
-        g[M+D+1+j] = -psi[j][N];
+        g[0*(M+D+1)+j] = -psi[j][0];
+        g[1*(M+D+1)+j] = -psi[j][N];
+        g[2*(M+D+1)+j] = +psi[j][400];
+
+//        g[2*(M+D+1)+j] = 0.0;
+//        for (unsigned int i=1; i<=N-1; i++)
+//        {
+//            g[2*(M+D+1)+j] += psi[j][i];
+//        }
+        //printf("%.12f %.12f %.12f %.12f\n", g[2*(M+D+1)+j], g[1*(M+D+1)+j], g[1*(M+D+1)+j], psi[j][400]);
     }
 
-//    g[0] = 0.0;
-//    g[1] = 0.0;
-//    g[M+D+2] = 0.0;
-//    g[M+D+3] = 0.0;
+    g[0*(M+D+1)+0] = 0.0;
+    g[0*(M+D+1)+1] = 0.0;
+
+    g[1*(M+D+1)+0] = 0.0;
+    g[1*(M+D+1)+1] = 0.0;
+
+    g[2*(M+D+1)+0] = 0.0;
+    g[2*(M+D+1)+1] = 0.0;
     //Printer::printVector(g, "g1:\t", 11, 0, M+D, file);
     //Printer::printVector(g, "g2:\t", 11, M+D+1, (2*(M+D)+1), file);
 }
@@ -364,15 +379,36 @@ double DiscreteHyperbolic1::fi2(unsigned int i) const
 
 double DiscreteHyperbolic1::m1(unsigned int j) const
 {
-    return (*pv)[j];
+    return (*pv)[0*(M+D+1)+j];
 }
 
 double DiscreteHyperbolic1::m2(unsigned int j) const
 {
-    return (*pv)[M+D+1+j];
+    return (*pv)[1*(M+D+1)+j];
 }
 
 double DiscreteHyperbolic1::f(unsigned int i, unsigned int j) const
 {
-    return 2.0-2.0*a*a;
+    double sum = 0.0;
+    if (i==400)
+    {
+        sum = (*pv)[2*(M+D+1)+j];
+    }
+    return sum;
+
+//    double x = i*hx;
+//    double sum = 0.0;
+
+//    const DoubleVector &v = *pv;
+//    double v3 = v[2*(M+D+1)+j];
+
+//    double sgm = 6.0*hx;
+//    double a = 1.0/(sgm*sqrt(2.0*M_PI));
+//    double b = 2.0*sgm*sgm;
+//    double g = a * exp(-((x-0.4)*(x-0.4))/b);
+//    sum += v3 * g * hx;
+//    return sum;
+
+
+    //return 2.0-2.0*a*a;
 }

@@ -38,6 +38,7 @@ private:
     unsigned int N;
     unsigned int M;
     unsigned int D;
+    unsigned int L;
     double ht;
     double hx;
     double a;
