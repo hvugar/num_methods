@@ -9,13 +9,13 @@ void DiscreteHyperbolic1::main()
     file = fopen("20160113.txt", "w");
     //file = stdout;
     DiscreteHyperbolic1 dh;
-    dh.fx(0.996462);
+//    dh.fx(0.996462);
 
-//    double a = 0.5;
-//    double b = 1.5;
-//    double t = 0.0;
-//    goldenSectionSearch(a, b, t, &dh, 0.0000001);
-//    printf("%f\n", t);
+    double a = 0.5;
+    double b = 1.5;
+    double t = 0.0;
+    goldenSectionSearch(a, b, t, &dh, 0.0000001);
+    printf("%f\n", t);
 
     fclose(file);
 }
@@ -47,7 +47,7 @@ double DiscreteHyperbolic1::fx(double t)
         //double t = j*ht;
         v[0*(M+D+1)+j] = 1.0;//t*t;
         v[1*(M+D+1)+j] = 1.0;//t*t+1.0;
-        v[2*(M+D+1)+j] = 0.0;
+        v[2*(M+D+1)+j] = 1.0;
     }
 
 //    v[0] = 0.0;
@@ -113,7 +113,7 @@ double DiscreteHyperbolic1::fx(const DoubleVector& v)
     return sum;
 }
 
-void DiscreteHyperbolic1::gradient(const DoubleVector& v, DoubleVector& g)
+void DiscreteHyperbolic1::gradient(const DoubleVector &v, DoubleVector &g)
 {
     pv = &v;
     DoubleMatrix u;
@@ -121,17 +121,27 @@ void DiscreteHyperbolic1::gradient(const DoubleVector& v, DoubleVector& g)
     DoubleMatrix psi;
     calculateP(v, u, psi, g);
 
+    double sgm = 6.0*hx;
+    double a = 1.0/(sgm*sqrt(2.0*M_PI));
+    double b = 2.0*sgm*sgm;
+
     for (unsigned int j=2; j<=M+D; j++)
     {
         g[0*(M+D+1)+j] = -psi[j][0];
         g[1*(M+D+1)+j] = -psi[j][N];
-        g[2*(M+D+1)+j] = +psi[j][400];
+        //g[2*(M+D+1)+j] = +psi[j][400];
 
-//        g[2*(M+D+1)+j] = 0.0;
-//        for (unsigned int i=1; i<=N-1; i++)
-//        {
-//            g[2*(M+D+1)+j] += psi[j][i];
-//        }
+        double sum = 0.0;
+        g[2*(M+D+1)+j] = 0.0;
+        for (unsigned int i=0; i<=N; i++)
+        {
+            double x = i*hx;
+            double c = a * exp(-((x-0.4)*(x-0.4))/b);
+
+            g[2*(M+D+1)+j] += psi[j][i] * c * hx;
+            sum += c*hx;
+        }
+        printf("sum: %f\n", sum);
         //printf("%.12f %.12f %.12f %.12f\n", g[2*(M+D+1)+j], g[1*(M+D+1)+j], g[1*(M+D+1)+j], psi[j][400]);
     }
 
@@ -389,25 +399,25 @@ double DiscreteHyperbolic1::m2(unsigned int j) const
 
 double DiscreteHyperbolic1::f(unsigned int i, unsigned int j) const
 {
-    double sum = 0.0;
-    if (i==400)
-    {
-        sum = (*pv)[2*(M+D+1)+j];
-    }
-    return sum;
-
-//    double x = i*hx;
 //    double sum = 0.0;
-
-//    const DoubleVector &v = *pv;
-//    double v3 = v[2*(M+D+1)+j];
-
-//    double sgm = 6.0*hx;
-//    double a = 1.0/(sgm*sqrt(2.0*M_PI));
-//    double b = 2.0*sgm*sgm;
-//    double g = a * exp(-((x-0.4)*(x-0.4))/b);
-//    sum += v3 * g * hx;
+//    if (i==400)
+//    {
+//        sum = (*pv)[2*(M+D+1)+j];
+//    }
 //    return sum;
+
+    double x = i*hx;
+    double sum = 0.0;
+
+    const DoubleVector &v = *pv;
+    double v3 = v[2*(M+D+1)+j];
+
+    double sgm = 6.0*hx;
+    double a = 1.0/(sgm*sqrt(2.0*M_PI));
+    double b = 2.0*sgm*sgm;
+    double g = a * exp(-((x-0.4)*(x-0.4))/b);
+    sum += v3 * g * hx;
+    return sum;
 
 
     //return 2.0-2.0*a*a;

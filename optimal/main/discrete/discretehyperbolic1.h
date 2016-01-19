@@ -14,8 +14,8 @@ public:
 
     virtual double fx(double t);
 
-    virtual double fx(const DoubleVector& x);
-    virtual void gradient(const DoubleVector& v, DoubleVector& g);
+    virtual double fx(const DoubleVector &x);
+    virtual void gradient(const DoubleVector &v, DoubleVector &g);
 
     virtual void print(unsigned int iteration, const DoubleVector& x, const DoubleVector &gradient, double alpha, RnFunction* fn) const;
 
