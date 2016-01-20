@@ -5,7 +5,7 @@
 #include <printer.h>
 #include <projection.h>
 
-class HeatControl2Delta : public RnFunction, Printer, Projection
+class HeatControl2Delta : public RnFunction, public IGradient, public Printer, public Projection
 {
 public:
     HeatControl2Delta(unsigned int M, unsigned int N2, unsigned int N1);
@@ -13,7 +13,7 @@ public:
 
     //RnFunction
     virtual double fx(const DoubleVector& x);
-    virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step);
+    virtual void gradient(const DoubleVector& x, DoubleVector& g);
     //Printer
     virtual void print(unsigned int iteration, const DoubleVector& x, const DoubleVector &gradient, double alpha, RnFunction* fn) const;
     //Projection

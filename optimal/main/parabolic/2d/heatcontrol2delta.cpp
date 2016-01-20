@@ -68,6 +68,7 @@ void HeatControl2Delta::main()
     /* Minimization */
     ConjugateGradient g2;
     g2.setFunction(&hc);
+    g2.setGradient(&hc);
     g2.setEpsilon1(0.0001);
     g2.setEpsilon2(0.0001);
     g2.setR1MinimizeEpsilon(1.0, 0.0001);
@@ -160,7 +161,7 @@ double HeatControl2Delta::norm(const DoubleVector& x) const
     return nrm;
 }
 
-void HeatControl2Delta::gradient(const DoubleVector& x, DoubleVector& g, double gradient_step)
+void HeatControl2Delta::gradient(const DoubleVector& x, DoubleVector& g)
 {
     //    double nrm = norm(x);
     //    if (nrm < 0.0000201) alpha = 0.0;

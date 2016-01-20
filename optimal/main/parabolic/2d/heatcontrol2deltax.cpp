@@ -20,6 +20,7 @@ void HeatControl2DeltaX::main()
     /* Minimization */
     ConjugateGradient g2;
     g2.setFunction(&hc);
+    g2.setGradient(&hc);
     g2.setEpsilon1(0.000000001);
     g2.setEpsilon2(0.000000001);
     g2.setR1MinimizeEpsilon(1.0, 0.0001);
@@ -112,7 +113,7 @@ double HeatControl2DeltaX::calculareNorm(const DoubleVector &e)
         return norm;
 }
 
-void HeatControl2DeltaX::gradient(const DoubleVector& e, DoubleVector& g, double gradient_step)
+void HeatControl2DeltaX::gradient(const DoubleVector& e, DoubleVector& g)
 {
     calculateU(e, uT);
     calculateP(e, g);
