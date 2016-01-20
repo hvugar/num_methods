@@ -12,7 +12,7 @@
 #include <r1minimize.h>
 #include <stdlib.h>
 
-class HyperbolicControl1D4 : public RnFunction, public R1Function, public Printer, public Projection
+class HyperbolicControl1D4 : public RnFunction, public R1Function, public IGradient, public Printer, public Projection
 {
 public:
     HyperbolicControl1D4();
@@ -21,7 +21,7 @@ public:
     void calculateSettings();
 
     virtual double fx(const DoubleVector& v);
-    virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step=0.000001);
+    virtual void gradient(const DoubleVector& x, DoubleVector& g);
 
     virtual double fx(double x);
 
