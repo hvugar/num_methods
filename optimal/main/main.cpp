@@ -35,9 +35,7 @@
 #include "parabolic/2d/heatcontrol2deltax.h"
 
 #include "hyperbolic/hyperbolic1dx.h"
-#include "hyperbolic/hyperboliccontrol1d3.h"
 #include "hyperbolic/hyperboliccontrol1d4.h"
-#include "hyperbolic/hyperboliccontrol1dt.h"
 #include "hyperbolic/hyperboliccontrolx.h"
 
 #include "point/pointcontrol11.h"

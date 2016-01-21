@@ -17,4 +17,18 @@ public:
     virtual void calculateU(DoubleVector &u, double hx, double ht, unsigned int M, unsigned int N, double a=1.0, double lamda=0.25) const;
 };
 
+struct MINIMUMSHARED_EXPORT IBackwardHyperbolicEquation
+{
+public:
+    virtual double bfi1(unsigned int i) const = 0;
+    virtual double bfi2(unsigned int i) const = 0;
+    virtual double bm1(unsigned int j) const = 0;
+    virtual double bm2(unsigned int j) const = 0;
+    virtual double bf(unsigned int i, unsigned int j) const = 0;
+
+    virtual void calculateU(DoubleMatrix &p, double hx, double ht, unsigned int M, unsigned int N, double a=1.0, double lamda=0.25) const;
+    virtual void calculateU(DoubleVector &p, double hx, double ht, unsigned int M, unsigned int N, double a=1.0, double lamda=0.25) const;
+};
+
+
 #endif // HYPERBOLICEQUATION_H
