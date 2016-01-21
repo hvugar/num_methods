@@ -10,7 +10,7 @@
 #include <tomasmethod.h>
 #include <stdlib.h>
 
-class HyperbolicControl1D3 : public RnFunction, public Printer, public Projection
+class HyperbolicControl1D3 : public RnFunction, public IPrinter, public Projection
 {
 public:
     HyperbolicControl1D3();

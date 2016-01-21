@@ -37,11 +37,11 @@ void HyperbolicControl1D::main()
 
     DoubleVector v1(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v1[j] = v[j];
     DoubleVector v2(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v2[j] = v[hc.M+1+j];
-    Printer::printVector(v1);
-    Printer::printVector(v2);
+    IPrinter::printVector(v1);
+    IPrinter::printVector(v2);
 }
 
-HyperbolicControl1D::HyperbolicControl1D() : RnFunction(), Printer()
+HyperbolicControl1D::HyperbolicControl1D() : RnFunction(), IPrinter()
 {
     t0 = 0.0; t1 = 1.0;
     x0 = 0.0; x1 = 1.0;
@@ -329,7 +329,7 @@ void HyperbolicControl1D::initialize()
     }
     calculateU(v, U);
     puts("-------------------------");
-    Printer::printVector(U);
+    IPrinter::printVector(U);
     puts("-------------------------");
 
 //    DoubleMatrix u;

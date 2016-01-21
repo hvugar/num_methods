@@ -54,7 +54,7 @@ void HyperbolicControl1D2::main()
         DoubleMatrix u;
         hc.calculateU(v, u);
         printf("T: %f\t", t1);
-        Printer::printVector(u[u.size()-1]);
+        IPrinter::printVector(u[u.size()-1]);
 
         integral = 0.0;
         DoubleVector &v1 = u[u.size()-1];
@@ -80,7 +80,7 @@ void HyperbolicControl1D2::main()
     fclose(f);
 }
 
-HyperbolicControl1D2::HyperbolicControl1D2(double t0, double t1) : RnFunction(), Printer()
+HyperbolicControl1D2::HyperbolicControl1D2(double t0, double t1) : RnFunction(), IPrinter()
 {
     this->t0 = t0;
     this->t1 = t1;

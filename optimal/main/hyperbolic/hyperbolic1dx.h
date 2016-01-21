@@ -6,7 +6,7 @@
 #include <projection.h>
 #include <doublevector.h>
 
-class Hyperbolic1DX : public RnFunction, Projection, Printer
+class Hyperbolic1DX : public RnFunction, Projection, IPrinter
 {
 public:
     Hyperbolic1DX(unsigned int M, unsigned int N);

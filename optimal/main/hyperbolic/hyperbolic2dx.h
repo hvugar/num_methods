@@ -5,7 +5,7 @@
 #include <printer.h>
 #include <projection.h>
 
-struct Hyperbolic2DX : public RnFunction, Projection, Printer
+struct Hyperbolic2DX : public RnFunction, Projection, IPrinter
 {
     Hyperbolic2DX();
     virtual ~Hyperbolic2DX() {}

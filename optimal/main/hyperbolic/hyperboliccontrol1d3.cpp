@@ -40,15 +40,15 @@ void HyperbolicControl1D3::main()
     hc.calculareP(u, gr);
 
     puts("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-    Printer::printVector(u[hc.M]);
+    IPrinter::printVector(u[hc.M]);
     DoubleVector v1(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v1[j] = v[j];
     DoubleVector v2(hc.M+1); for (unsigned j=0; j<=hc.M; j++) v2[j] = v[hc.M+hc.DM+1+j];
-    Printer::printVector(v1);
-    Printer::printVector(v2);
+    IPrinter::printVector(v1);
+    IPrinter::printVector(v2);
     DoubleVector gr1(hc.M+1); for (unsigned j=0; j<=hc.M; j++) gr1[j] = gr[j];
     DoubleVector gr2(hc.M+1); for (unsigned j=0; j<=hc.M; j++) gr2[j] = gr[hc.M+hc.DM+1+j];
-    Printer::printVector(gr1);
-    Printer::printVector(gr2);
+    IPrinter::printVector(gr1);
+    IPrinter::printVector(gr2);
 
     double integral = 0.0;
     for (unsigned int i=0; i<=hc.N-1; i++)
@@ -64,7 +64,7 @@ void HyperbolicControl1D3::main()
     printf("%.10f\n", gr[gr.size()-1]);
 }
 
-HyperbolicControl1D3::HyperbolicControl1D3() : RnFunction(), Printer()
+HyperbolicControl1D3::HyperbolicControl1D3() : RnFunction(), IPrinter()
 {
     t0 = 0.0; t1 = 1.0;
     x0 = 0.0; x1 = 1.0;
@@ -131,17 +131,17 @@ void HyperbolicControl1D3::gradient(const DoubleVector& v, DoubleVector& g, doub
     calculateU(v, u);
     calculateG2(v, g);
 
-    Printer::printVector(u[M]);
+    IPrinter::printVector(u[M]);
 
     DoubleVector v1(M+1); for (unsigned j=0; j<=M; j++) v1[j] = v[j];
     DoubleVector v2(M+1); for (unsigned j=0; j<=M; j++) v2[j] = v[M+DM+1+j];
-    Printer::printVector(v1);
-    Printer::printVector(v2);
+    IPrinter::printVector(v1);
+    IPrinter::printVector(v2);
 
     DoubleVector g1(M+1); for (unsigned j=0; j<=M; j++) g1[j] = g[j];
     DoubleVector g2(M+1); for (unsigned j=0; j<=M; j++) g2[j] = g[M+DM+1+j];
-    Printer::printVector(g1);
-    Printer::printVector(g2);
+    IPrinter::printVector(g1);
+    IPrinter::printVector(g2);
 
     printf("TG: %.10f\n", g[g.size()-1]);
 
@@ -380,7 +380,7 @@ void HyperbolicControl1D3::initialize()
     calculateU(v, u);
     puts("-------------------------");
     //Printer::printVector(u[u.size()-1]);
-    Printer::printVector(u[M]);
+    IPrinter::printVector(u[M]);
     puts("-------------------------");
 
 //    DoubleMatrix u;

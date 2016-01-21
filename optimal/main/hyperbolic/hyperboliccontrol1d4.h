@@ -12,7 +12,7 @@
 #include <r1minimize.h>
 #include <stdlib.h>
 
-class HyperbolicControl1D4 : public RnFunction, public R1Function, public IGradient, public Printer, public Projection
+class HyperbolicControl1D4 : public RnFunction, public R1Function, public IGradient, public IPrinter, public Projection
 {
 public:
     HyperbolicControl1D4();

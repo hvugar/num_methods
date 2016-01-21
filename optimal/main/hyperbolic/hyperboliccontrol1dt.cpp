@@ -54,7 +54,7 @@ double HyperbolicControl1DT::fx(double t)
     for (unsigned int j=hc.M; j<=hc.M+hc.DM; j++)
     {
         printf("u[%d]:\t", j);
-        Printer::printVector(u[j]);
+        IPrinter::printVector(u[j]);
 
         //fprintf(f, "u[%d]:\t", j);
         //for (unsigned int i=0; i<=hc.N; i++)
