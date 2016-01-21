@@ -6,7 +6,7 @@
 #include <hyperbolicequation.h>
 #include <printer.h>
 
-class DiscreteHyperbolic : public RnFunction, public IGradient, public IHyperbolicEquation, public Printer
+class DiscreteHyperbolic : public RnFunction, public IGradient, public IHyperbolicEquation, public IPrinter
 {
 public:
     DiscreteHyperbolic();

@@ -8,7 +8,7 @@
 /**
  * @brief The Booth's function. Range -10.0 <= x,y <= +10.0. Optimal f(1, 3)=0;
  */
-struct BoothFunction : public RnFunction, public IGradient, public Printer, public Projection
+struct BoothFunction : public RnFunction, public IGradient, public IPrinter, public Projection
 {
 public:
     virtual ~BoothFunction() {}

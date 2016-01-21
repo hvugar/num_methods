@@ -17,7 +17,7 @@
  * u(l,t) = m2(t);
  */
 
-struct HeatControl : public RnFunction, public IGradient, public Printer
+struct HeatControl : public RnFunction, public IGradient, public IPrinter
 {
 public:
     HeatControl();

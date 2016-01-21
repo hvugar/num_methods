@@ -6,7 +6,7 @@
 #include <gradient_cjt.h>
 #include <doublevector.h>
 
-class PointControl11 : public RnFunction, public Printer
+class PointControl11 : public RnFunction, public IPrinter
 {
 public:
     PointControl11();

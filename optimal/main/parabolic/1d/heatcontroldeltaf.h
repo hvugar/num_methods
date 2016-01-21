@@ -4,7 +4,7 @@
 #include <function.h>
 #include <printer.h>
 
-class HeatControlDeltaF : public RnFunction, public IGradient, public Printer
+class HeatControlDeltaF : public RnFunction, public IGradient, public IPrinter
 {
 public:
     HeatControlDeltaF(unsigned int M, unsigned int N, double a1);

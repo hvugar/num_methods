@@ -20,7 +20,7 @@
  * x1*(t) = t^3;
  * x2*(t) = t;
  */
-struct CFunction3 : public RnFunction, public IGradient, public Printer
+struct CFunction3 : public RnFunction, public IGradient, public IPrinter
 {
 public:
     CFunction3(double t0, double t1, double h);

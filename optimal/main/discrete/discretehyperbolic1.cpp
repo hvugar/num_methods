@@ -81,13 +81,13 @@ double DiscreteHyperbolic1::fx(double t)
 
     fprintf(file, "----\n");
 
-    Printer::printVector(v, "v1:", M+D+1, 0*(M+D+1), 0*(M+D+1)+(M+D), file);
-    Printer::printVector(v, "v2:", M+D+1, 1*(M+D+1), 1*(M+D+1)+(M+D), file);
-    Printer::printVector(v, "v3:", M+D+1, 2*(M+D+1), 2*(M+D+1)+(M+D), file);
+    IPrinter::printVector(v, "v1:", M+D+1, 0*(M+D+1), 0*(M+D+1)+(M+D), file);
+    IPrinter::printVector(v, "v2:", M+D+1, 1*(M+D+1), 1*(M+D+1)+(M+D), file);
+    IPrinter::printVector(v, "v3:", M+D+1, 2*(M+D+1), 2*(M+D+1)+(M+D), file);
 
-    Printer::printVector(gr, "g1:", M+D+1, 0*(M+D+1), 0*(M+D+1)+(M+D), file);
-    Printer::printVector(gr, "g2:", M+D+1, 1*(M+D+1), 1*(M+D+1)+(M+D), file);
-    Printer::printVector(gr, "g3:", M+D+1, 2*(M+D+1), 2*(M+D+1)+(M+D), file);
+    IPrinter::printVector(gr, "g1:", M+D+1, 0*(M+D+1), 0*(M+D+1)+(M+D), file);
+    IPrinter::printVector(gr, "g2:", M+D+1, 1*(M+D+1), 1*(M+D+1)+(M+D), file);
+    IPrinter::printVector(gr, "g3:", M+D+1, 2*(M+D+1), 2*(M+D+1)+(M+D), file);
 
 //    Printer::printVector(v, "v1:", D+1, 0, M+D, file);
 //    Printer::printVector(v, "v2:", D+1, M+D+1, (2*(M+D)+1), file);

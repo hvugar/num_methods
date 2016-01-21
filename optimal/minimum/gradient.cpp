@@ -114,7 +114,7 @@ int GradientMethod::count() const
     return iterationCount;
 }
 
-void GradientMethod::setPrinter(Printer *printer)
+void GradientMethod::setPrinter(IPrinter *printer)
 {
     this->m_printer = printer;
 }

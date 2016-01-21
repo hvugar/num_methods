@@ -26,7 +26,7 @@ void DiscreteHeat::main()
     g2.setPrinter(&dh);
     g2.calculate(f0);
 
-    Printer::printAsMatrix(f0, dh.M, dh.N);
+    IPrinter::printAsMatrix(f0, dh.M, dh.N);
 }
 
 DiscreteHeat::DiscreteHeat()

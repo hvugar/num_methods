@@ -150,9 +150,51 @@ double goldenSectionSearch(double &a, double &b, double &x, R1Function *f, doubl
 
     double fa = f->fx(a);
     double fb = f->fx(b);
-    if (fa==fb) c = (a+b)/2.0;
+
+    //if (fa==fb) c = (a+b)/2.0;
+
     if (fa<fb)  c = a;
     if (fa>fb)  c = b;
+
+    x = c;
+    return c;
+}
+
+double goldenSectionSearch1(double &a, double &b, double &x, R1Function *f, double epsilon)
+{
+    double phi = 0.38196601125010515179541316563436;
+    double x1 = a + phi * (b-a);
+    double x2 = a + b  - x1;
+
+    double fx1 = f->fx(x1);
+    double fx2 = f->fx(x2);
+
+    while (fabs(b-a) > epsilon)
+    {
+        if (fx1 <= fx2)
+        {
+            b = x2;
+            x2 = x1;
+            x1 = a + b - x1;
+            fx2 = fx1;
+            fx1 = f->fx(x1);
+        }
+        else
+        {
+            a = x1;
+            x1 = x2;
+            x2 = a + b - x2;
+            fx1 = fx2;
+            fx2 = f->fx(x2);
+        }
+    }
+
+    double c = (a+b)/2.0;
+    double fa = f->fx(a);
+    double fb = f->fx(b);
+
+    if (fa<fb) c = a;
+    if (fa>fb) c = b;
 
     x = c;
     return c;

@@ -14,7 +14,7 @@ struct CFunction
     virtual double fx(double t, const DoubleVector &x)  { return 0.0; }
 };
 
-struct ControlFunction : public RnFunction, public IGradient, public Printer
+struct ControlFunction : public RnFunction, public IGradient, public IPrinter
 {
     ControlFunction(double t0, double t1, double h);
     virtual ~ControlFunction();

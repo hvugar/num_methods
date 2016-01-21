@@ -54,7 +54,7 @@ public:
     void setR1MinimizeEpsilon(double step, double epsilon1);
     int count() const;
 
-    void setPrinter(Printer* printer);
+    void setPrinter(IPrinter* printer);
     void setProjection(Projection* projection);
     void setNormalize(bool normalize);
     void showEndMessage(bool showEndMessage);
@@ -72,7 +72,7 @@ protected:
     double min_step;
     int iterationCount;
     bool m_normalize;
-    Printer* m_printer;
+    IPrinter* m_printer;
     Projection *m_projection;
 
     bool mshowEndMessage;

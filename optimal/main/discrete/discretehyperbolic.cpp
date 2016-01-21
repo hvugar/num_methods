@@ -31,13 +31,13 @@ void DiscreteHyperbolic::main()
     g2.setPrinter(&dh);
     g2.calculate(f0);
 
-    Printer::printAsMatrix(f0, dh.M, dh.N);
+    IPrinter::printAsMatrix(f0, dh.M, dh.N);
     DoubleVector u;
     dh.pf = &f0;
     dh.calculateU(u, dh.hx, dh.ht, dh.M, dh.N);
     puts("-----");
-    Printer::printVector(dh.U);
-    Printer::printVector(u);
+    IPrinter::printVector(dh.U);
+    IPrinter::printVector(u);
 }
 
 DiscreteHyperbolic::DiscreteHyperbolic()

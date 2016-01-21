@@ -14,7 +14,7 @@ void HeatControl1::main()
         f0[k] = 10.0;
     }
 
-    Printer::printAsMatrix(f0, hc.M, hc.N);
+    IPrinter::printAsMatrix(f0, hc.M, hc.N);
     printf("----\n");
 
     ConjugateGradient g;
@@ -26,7 +26,7 @@ void HeatControl1::main()
     g.setPrinter(&hc);
     g.calculate(f0);
 
-    Printer::printAsMatrix(f0, hc.M, hc.N);
+    IPrinter::printAsMatrix(f0, hc.M, hc.N);
 }
 
 HeatControl1::HeatControl1()

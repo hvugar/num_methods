@@ -296,10 +296,10 @@ void CFunction3::print(unsigned int iterationCount, const DoubleVector& u, const
         u1[i] = u[i];
         u2[i] = u[i+n];
     }
-    Printer::printVector(x1, "x1");
-    Printer::printVector(x2, "x2");
-    Printer::printVector(psi1, "p1");
-    Printer::printVector(psi2, "p2");
-    Printer::printVector(u1, "u1");
-    Printer::printVector(u2, "u2");
+    IPrinter::printVector(x1, "x1");
+    IPrinter::printVector(x2, "x2");
+    IPrinter::printVector(psi1, "p1");
+    IPrinter::printVector(psi2, "p2");
+    IPrinter::printVector(u1, "u1");
+    IPrinter::printVector(u2, "u2");
 }

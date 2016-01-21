@@ -35,10 +35,10 @@
 #include "parabolic/2d/heatcontrol2deltax.h"
 
 #include "hyperbolic/hyperbolic1dx.h"
-#include "hyperbolic/hyperboliccontrol1d2.h"
 #include "hyperbolic/hyperboliccontrol1d3.h"
 #include "hyperbolic/hyperboliccontrol1d4.h"
 #include "hyperbolic/hyperboliccontrol1dt.h"
+#include "hyperbolic/hyperboliccontrolx.h"
 
 #include "point/pointcontrol11.h"
 #include "point/pointcontrol.h"
@@ -53,7 +53,8 @@ int main()
 {
 //    DiscreteHeat::main();
 //    DiscreteHyperbolic1::main();
-    HyperbolicControl1D4::main();
+//    HyperbolicControl1D4::main();
+    HyperbolicControlX::main();
 //    HeatControl2D::main();
 //    Rosenbrock::main();
     return 0;

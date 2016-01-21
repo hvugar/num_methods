@@ -20,7 +20,7 @@
  * x1*(t) = t^2/2;
  * x2*(t) = t;
  */
-struct CFunction2 : public RnFunction, public IGradient, public Printer
+struct CFunction2 : public RnFunction, public IGradient, public IPrinter
 {
     CFunction2(double t0, double t1, double h);
     virtual ~CFunction2();

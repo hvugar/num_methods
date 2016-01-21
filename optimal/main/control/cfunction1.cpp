@@ -257,5 +257,5 @@ void CFunction1::main()
 void CFunction1::print(unsigned int iterationCount, const DoubleVector& u, const DoubleVector &s, double alpha, RnFunction* f) const
 {
     printf("J[%2d]: %.10f  ", iterationCount, f->fx(u));
-    Printer::printVector(u, "u:");
+    IPrinter::printVector(u, "u:");
 }

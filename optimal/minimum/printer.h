@@ -5,7 +5,7 @@
 #include "function.h"
 #include "global.h"
 
-struct MINIMUMSHARED_EXPORT Printer
+struct MINIMUMSHARED_EXPORT IPrinter
 {
     virtual void print(unsigned int iteration, const DoubleVector& x, const DoubleVector &gradient, double alpha, RnFunction* fn) const = 0;
 

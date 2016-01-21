@@ -5,7 +5,7 @@
 #include <printer.h>
 #include <projection.h>
 
-class HeatControlDeltaX : public RnFunction, public IGradient, public Printer, public Projection
+class HeatControlDeltaX : public RnFunction, public IGradient, public IPrinter, public Projection
 {
 public:
     HeatControlDeltaX(unsigned int M, unsigned int N, double a1);

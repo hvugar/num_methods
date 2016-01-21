@@ -1,6 +1,6 @@
 #include "printer.h"
 
-void Printer::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n, const char* s, FILE* f)
+void IPrinter::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n, const char* s, FILE* f)
 {
     unsigned int M = x.size() / m;
 
@@ -34,7 +34,7 @@ void Printer::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n,
 //    fflush(f);
 //}
 
-void Printer::printAsMatrix(const DoubleVector &x, unsigned int M, unsigned int N, unsigned int m, unsigned int n, const char* s, FILE* f)
+void IPrinter::printAsMatrix(const DoubleVector &x, unsigned int M, unsigned int N, unsigned int m, unsigned int n, const char* s, FILE* f)
 {
     for (unsigned int j=0; j<=M; j++)
     {
@@ -50,7 +50,7 @@ void Printer::printAsMatrix(const DoubleVector &x, unsigned int M, unsigned int 
     fflush(f);
 }
 
-void Printer::printVector(const DoubleVector &x, const char *s, unsigned int n, unsigned int start, unsigned int end, FILE *file)
+void IPrinter::printVector(const DoubleVector &x, const char *s, unsigned int n, unsigned int start, unsigned int end, FILE *file)
 {
     if (s!='\0') fprintf(file, "%s", s);
     if (start != 0 || end != 0)

@@ -8,7 +8,7 @@
 #include <function.h>
 #include <printer.h>
 
-class PointControl2 : public RnFunction, public Printer
+class PointControl2 : public RnFunction, public IPrinter
 {
 public:
     PointControl2(double t0, double t1, double x0, double x1, double dt, double dx);

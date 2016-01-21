@@ -7,7 +7,7 @@
 #include <parabolicequation.h>
 #include <printer.h>
 
-struct HeatControl1 : public RnFunction, public IGradient, public IParabolicEquation, public Printer
+struct HeatControl1 : public RnFunction, public IGradient, public IParabolicEquation, public IPrinter
 {
     HeatControl1();
     virtual ~HeatControl1() {}

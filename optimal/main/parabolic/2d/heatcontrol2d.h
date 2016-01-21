@@ -6,7 +6,7 @@
 #include <printer.h>
 #include <parabolicequation.h>
 
-class HeatControl2D :public RnFunction, public IGradient, public Printer, public IParabolicEquation2D
+class HeatControl2D :public RnFunction, public IGradient, public IPrinter, public IParabolicEquation2D
 {
 public:
     HeatControl2D(unsigned int M, unsigned int N2, unsigned int N1);
@@ -41,6 +41,7 @@ public:
 
     virtual double fx(const DoubleVector& x);
     virtual void gradient(const DoubleVector& x, DoubleVector& g);
+    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
 
 private:
     double u1(double x1, double x2, double t) const;
@@ -59,7 +60,6 @@ private:
 
     double fxt(double x1, double x2, double t);
 
-    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
 
     const DoubleVector *pf;
 };

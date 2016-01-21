@@ -4,7 +4,7 @@
 #include <function.h>
 #include <printer.h>
 
-struct Rosenbrock : public RnFunction, public Printer, public IGradient
+struct Rosenbrock : public RnFunction, public IPrinter, public IGradient
 {
 public:
     Rosenbrock();

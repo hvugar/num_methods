@@ -248,9 +248,9 @@ void CFunction2::main()
 void CFunction2::print(unsigned int i, const DoubleVector &u, const DoubleVector &s, double alpha, RnFunction* f) const
 {
     printf("J[%2d]: %.10f\n", i, f->fx(u));
-    Printer::printVector(x1, "x1:");
-    Printer::printVector(x1, "x2:");
-    Printer::printVector(psi1, "p1:");
-    Printer::printVector(psi2, "p2:");
-    Printer::printVector(u, "u:");
+    IPrinter::printVector(x1, "x1:");
+    IPrinter::printVector(x1, "x2:");
+    IPrinter::printVector(psi1, "p1:");
+    IPrinter::printVector(psi2, "p2:");
+    IPrinter::printVector(u, "u:");
 }

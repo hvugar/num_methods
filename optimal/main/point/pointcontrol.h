@@ -9,7 +9,7 @@
 #include <gradient_cs.h>
 
 
-class PointControl : public RnFunction, public Printer
+class PointControl : public RnFunction, public IPrinter
 {
 public:
     PointControl(double t0, double t1, double x0, double x1, double dt, double dx);

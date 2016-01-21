@@ -18,7 +18,7 @@
  * x1*(t) = t^3;
  * x2*(t) = t;
  */
-struct CFunction1 : public RnFunction, public IGradient, public Printer
+struct CFunction1 : public RnFunction, public IGradient, public IPrinter
 {
     CFunction1(double t0, double t1, double h);
     virtual ~CFunction1();
