@@ -32,7 +32,7 @@ public:
     virtual double bf(unsigned int i, unsigned int j) const
     {
         const DoubleMatrix &u = *pu;
-        if (M<=j && j<=M+D-2)
+        if (M<=j)
         {
             return -(2.0*(u[j][i]-U));
         }

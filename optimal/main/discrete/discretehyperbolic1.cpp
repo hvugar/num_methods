@@ -238,7 +238,7 @@ void DiscreteHyperbolic1::calculateP(const DoubleVector& f0, const DoubleMatrix 
     double E1 = -(lamda*a*a*ht*ht)/(hx*hx);
     double F0 = 1.0 + (2.0*lamda*a*a*ht*ht)/(hx*hx);
     double E2 = -(lamda*a*a*ht*ht)/(hx*hx);
-    double G0 = -ht*ht;
+    //double G0 = -ht*ht;
 
 //    A1 /= G0;
 //    B0 /= G0;

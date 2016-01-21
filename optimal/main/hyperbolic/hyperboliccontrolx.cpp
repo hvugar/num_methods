@@ -4,15 +4,16 @@ void HyperbolicControlX::main()
 {
     HyperbolicControlX hcx;
 
-    //double a = 0.7;
-    //double b = 1.1;
+    double a = 0.7;
+    double b = 1.1;
     double t = 0.8945911255;
+    //0.9544858420
 
     //    printf("%.8f %.16f\n", a, hcx.fx(a));
     //    printf("%.8f %.16f\n", b, hcx.fx(b));
 
-    //goldenSectionSearch(a, b, t, &hcx, 0.001);
-    hcx.fx(t);
+    goldenSectionSearch(a, b, t, &hcx, 0.001);
+    //hcx.fx(t);
     printf("optimal t: %.10f\n", t);
 }
 
@@ -72,7 +73,7 @@ double HyperbolicControlX::fx(double t)
     gradient(v, gr2);
     gr2.L2Normalize();
 
-    FILE* file = fopen("20160121.txt", "a");
+    FILE* file = fopen("20160121_1.txt", "a");
     fprintf(file, "------------------------------------------------------------\n");
     fprintf(file, "t: %f h: %f\n", t, 0.001);
     IPrinter::printVector(v, "v1: ", (M+D+1)/10, 0*(M+D+1), 0*(M+D+1)+(M+D), file);

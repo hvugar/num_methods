@@ -90,7 +90,7 @@ void IHyperbolicEquation::calculateU(DoubleVector &u, double hx, double ht, unsi
     double alpha2 = (1.0-2.0*lamda)*a*a*((ht*ht)/(hx*hx));
     double alpha3 = +(lamda*a*a)*((ht*ht)/(hx*hx));
 
-    for (unsigned int j=1; j<=M-1; j++)
+    for (unsigned int j=1; j<=M; j++)
     {
         if (j==1)
         {
@@ -189,7 +189,7 @@ void IBackwardHyperbolicEquation::calculateU(DoubleMatrix &p, double hx, double 
                 dc[i-1] = alpha1;
                 rd[i-1] = (alpha2*(p[j+1][i+1] - 2.0*p[j+1][i] + p[j+1][i-1]) + 2.0*p[j+1][i])
                         + (alpha3*(p[j+2][i+1] - 2.0*p[j+2][i] + p[j+2][i-1]) - p[j+2][i])
-                        + (ht*ht)*bf(i, j);
+                        + (ht*ht)*bf(i, j+1);
             }
 
             da[0]   = 0.0;
@@ -266,7 +266,7 @@ void IBackwardHyperbolicEquation::calculateU(DoubleVector &p, double hx, double 
                 dc[i-1] = alpha1;
                 rd[i-1] = (alpha2*(p1[i+1] - 2.0*p1[i] + p1[i-1]) + 2.0*p1[i])
                         + (alpha3*(p0[i+1] - 2.0*p0[i] + p0[i-1]) - p0[i])
-                        + (ht*ht)*bf(i, j);
+                        + (ht*ht)*bf(i, j+1);
             }
 
             da[0]   = 0.0;
