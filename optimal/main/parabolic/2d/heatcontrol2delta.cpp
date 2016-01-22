@@ -618,7 +618,6 @@ double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k)
     double b = 2.0*sgm1*sgm2;
 
 #ifdef POWER_OPTIMIZE
-
     double _g1 = (*px)[2*L + 0*(M+1) + k];
     double _g2 = (*px)[2*L + 1*(M+1) + k];
     double _g3 = (*px)[2*L + 2*(M+1) + k];
