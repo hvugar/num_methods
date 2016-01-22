@@ -9,6 +9,7 @@ void IPrinter::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n
         unsigned int N = x[j].size() / n;
         if (j%M==0)
         {
+            printf("%5d: ", j);
             for (unsigned int i=0; i<x[j].size(); i++)
             {
                 if (i%N==0) fprintf(f, "%14.10f ", x[j][i]);

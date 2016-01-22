@@ -25,32 +25,16 @@ public:
     virtual double m2(unsigned int j) const;
     virtual double f(unsigned int i, unsigned int j) const;
 
-    virtual double bfi1(unsigned int i) const { return 0.0; }
-    virtual double bfi2(unsigned int i) const { return 0.0; }
-    virtual double bm1(unsigned int j) const { return 0.0; }
-    virtual double bm2(unsigned int j) const { return 0.0; }
-    virtual double bf(unsigned int i, unsigned int j) const
-    {
-        const DoubleMatrix &u = *pu;
-        if (M<=j)
-        {
-            return -(2.0*(u[j][i]-U));
-        }
-        return 0.0;
-    }
+    virtual double bfi1(unsigned int i) const;
+    virtual double bfi2(unsigned int i) const;
+    virtual double bm1(unsigned int j) const;
+    virtual double bm2(unsigned int j) const;
+    virtual double bf(unsigned int i, unsigned int j) const;
 
     virtual void print(unsigned int iteration, const DoubleVector& v, const DoubleVector &gradient, double alpha, RnFunction* fn) const;
 
-//    void calculateP(const DoubleMatrix &u, const DoubleVector &v, DoubleVector &g);
-//    void calculateG(const DoubleVector &p, DoubleVector &g,  unsigned int j);
-
     static void main();
     void gradient1(const DoubleVector &v, DoubleVector &g);
-
-//    inline virtual double pfi1(unsigned int i) const { return 0.0; }
-//    inline virtual double pfi2(unsigned int i) const { return 0.0; }
-//    inline virtual double pm1(unsigned int j) const { return 0.0; }
-//    inline virtual double pm2(unsigned int j) const { return 0.0; }
 
 private:
     double t0;

@@ -76,9 +76,9 @@ private:
     inline double pm3(double x1, double t) { return 0.0; }
     inline double pm4(double x1, double t) { return 0.0; }
 
-    inline double g1(double t) const { return 100*t; }
-    inline double g2(double t) const { return 200*t; }
-    inline double g3(double t) const { return 300*t; }
+    inline double g1(double t) const { return 1*t; }
+    inline double g2(double t) const { return 2*t; }
+    inline double g3(double t) const { return 3*t; }
 
     inline void psiDerivative(double &psiX1, double &psiX2, double e1, double e2, const DoubleMatrix &psi);
     void write(const char* fileName, const DoubleMatrix& m);

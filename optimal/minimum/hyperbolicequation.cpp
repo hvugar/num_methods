@@ -36,6 +36,8 @@ void IHyperbolicEquation::calculateU(DoubleMatrix &u, double hx, double ht, unsi
                 u[j-1][i] = fi1(i);
                 u[j][i] = u[j-1][i] + ht*fi2(i);
             }
+            //u[j][0] = m1(j);
+            //u[j][N] = m2(j);
         }
         else
         {
@@ -168,6 +170,7 @@ void IBackwardHyperbolicEquation::calculateU(DoubleMatrix &p, double hx, double 
     double alpha2 = (1.0-2.0*lamda)*a*a*((ht*ht)/(hx*hx));
     double alpha3 = +(lamda*a*a)*((ht*ht)/(hx*hx));
 
+    //const unsigned int k = (unsigned)0-1;
     for (unsigned int j1=1; j1<=M; j1++)
     {
         unsigned int j = M-j1;
@@ -179,6 +182,8 @@ void IBackwardHyperbolicEquation::calculateU(DoubleMatrix &p, double hx, double 
                 p[j+1][i] = bfi1(i);
                 p[j][i] = p[j+1][i] - ht*bfi2(i);
             }
+            //p[j][0] = bm1(j);
+            //p[j][N] = bm2(j);
         }
         else
         {
@@ -189,7 +194,7 @@ void IBackwardHyperbolicEquation::calculateU(DoubleMatrix &p, double hx, double 
                 dc[i-1] = alpha1;
                 rd[i-1] = (alpha2*(p[j+1][i+1] - 2.0*p[j+1][i] + p[j+1][i-1]) + 2.0*p[j+1][i])
                         + (alpha3*(p[j+2][i+1] - 2.0*p[j+2][i] + p[j+2][i-1]) - p[j+2][i])
-                        + (ht*ht)*bf(i, j+1);
+                        + (ht*ht)*bf(i,j+1);
             }
 
             da[0]   = 0.0;

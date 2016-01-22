@@ -12,8 +12,8 @@ void HyperbolicControlX::main()
     //    printf("%.8f %.16f\n", a, hcx.fx(a));
     //    printf("%.8f %.16f\n", b, hcx.fx(b));
 
-    goldenSectionSearch(a, b, t, &hcx, 0.001);
-    //hcx.fx(t);
+//    goldenSectionSearch(a, b, t, &hcx, 0.001);
+    hcx.fx(t);
     printf("optimal t: %.10f\n", t);
 }
 
@@ -32,15 +32,15 @@ HyperbolicControlX::HyperbolicControlX()
 
 double HyperbolicControlX::fx(double t)
 {
-    N = 100;
+    N = 1000;
     hx = (x1-x0)/N;
 
     t1 = t;
-    ht = 0.01;
+    ht = 0.001;
     M = (unsigned int) round((t1-t0)/ht);
     D = 10;
     xi = 0.4;
-    Xi = 40;
+    Xi = 400;
 
     DoubleVector v((L+2)*(M+D+1));
     for (unsigned int j=0; j<=(M+D); j++)
@@ -51,14 +51,14 @@ double HyperbolicControlX::fx(double t)
     }
 
     double min_step = 1.0;
-    double gold_eps = 0.0001;
+    double gold_eps = 0.001;
 
     ConjugateGradient cg;
     cg.setFunction(this);
     cg.setGradient(this);
-    cg.setEpsilon1(0.00001);
-    cg.setEpsilon2(0.00001);
-    cg.setEpsilon3(0.00001);
+    cg.setEpsilon1(0.001);
+    cg.setEpsilon2(0.001);
+    cg.setEpsilon3(0.001);
     cg.setR1MinimizeEpsilon(min_step, gold_eps);
     cg.setPrinter(this);
     cg.setNormalize(true);
@@ -73,7 +73,7 @@ double HyperbolicControlX::fx(double t)
     gradient(v, gr2);
     gr2.L2Normalize();
 
-    FILE* file = fopen("20160121_1.txt", "a");
+    FILE* file = fopen("20160121_2.txt", "a");
     fprintf(file, "------------------------------------------------------------\n");
     fprintf(file, "t: %f h: %f\n", t, 0.001);
     IPrinter::printVector(v, "v1: ", (M+D+1)/10, 0*(M+D+1), 0*(M+D+1)+(M+D), file);
@@ -137,14 +137,14 @@ void HyperbolicControlX::gradient(const DoubleVector &v, DoubleVector &g)
     IHyperbolicEquation::calculateU(u, hx, ht, M+D, N);
 
     pu = &u;
-    DoubleMatrix psi;
-    IBackwardHyperbolicEquation::calculateU(psi, hx, ht, M+D, N);
+    DoubleMatrix p;
+    IBackwardHyperbolicEquation::calculateU(p, hx, ht, M+D, N);
 
     for (unsigned j=0; j<=M+D; j++)
     {
-        g[0*(M+D+1)+j] = -(psi[j][1]-psi[j][0])/hx;
-        g[1*(M+D+1)+j] = +(psi[j][N]-psi[j][N-1])/hx;
-        g[2*(M+D+1)+j] = -psi[j][Xi];
+        g[0*(M+D+1)+j] = -(p[j][1]-p[j][0])/hx;
+        g[1*(M+D+1)+j] = +(p[j][N]-p[j][N-1])/hx;
+        g[2*(M+D+1)+j] = -p[j][Xi];
     }
 
     //    gradient1(v, g);
@@ -193,102 +193,15 @@ double HyperbolicControlX::f(unsigned int i, unsigned int j) const
     return sum;
 }
 
-//void HyperbolicControlX::calculateP(const DoubleMatrix &u, const DoubleVector &v, DoubleVector &g)
-//{
-//    DoubleVector p(N+1);
-//    DoubleVector p0(N+1);
-//    DoubleVector p1(N+1);
-
-//    DoubleVector da;
-//    DoubleVector db;
-//    DoubleVector dc;
-//    DoubleVector rd;
-//    DoubleVector rx;
-
-//    da.resize(N-1);
-//    db.resize(N-1);
-//    dc.resize(N-1);
-//    rd.resize(N-1);
-//    rx.resize(N-1);
-
-//    double alpha1 = -(lamda*a*a)*((ht*ht)/(hx*hx));
-//    double beta1  = 1.0 + (2.0*lamda*a*a*(ht*ht))/(hx*hx);
-//    double alpha2 = (1.0-2.0*lamda)*a*a*((ht*ht)/(hx*hx));
-//    double alpha3 = +(lamda*a*a)*((ht*ht)/(hx*hx));
-
-//    for (unsigned int j1=0; j1<=M+D; j1++)
-//    {
-//        unsigned int j = M+D-j1;
-
-//        if (j==M+D)
-//        {
-//            for (unsigned int i=0; i<=N; i++)
-//            {
-//                p0[i] = pfi1(i);
-//            }
-//            calculateG(p0, g, M+D);
-//        }
-//        else if (j==(M+D-1))
-//        {
-//            for (unsigned int i=0; i<=N; i++)
-//            {
-//                p1[i] = p0[i] - ht*pfi2(i);
-//            }
-//            calculateG(p1, g, M+D-1);
-//        }
-//        else
-//        {
-//            for (unsigned int i=1; i<=N-1; i++)
-//            {
-//                da[i-1] = alpha1;
-//                db[i-1] = beta1;
-//                dc[i-1] = alpha1;
-//                rd[i-1] = alpha2*(p1[i+1]-2.0*p1[i]+p1[i-1]) + 2.0*p1[i] + alpha3*(p0[i+1] - 2.0*p0[i] + p0[i-1]) - p0[i];
-
-//                if (M<=j && j<=M+D-2)
-//                {
-//                    rd[i-1] -= (ht*ht)*(2*(u[j][i]-U));
-//                }
-//            }
-
-//            da[0]   = 0.0;
-//            dc[N-2] = 0.0;
-//            rd[0]   -= alpha1 * pm1(j);
-//            rd[N-2] -= alpha1 * pm2(j);
-//            TomasAlgorithm(da, db, dc, rd, rx);
-
-//            p[0] = pm1(j);
-//            for (unsigned int i=1; i<=N-1; i++)
-//            {
-//                p[i] = rx[i-1];
-//            }
-//            p[N] = pm2(j);
-
-//            for (unsigned int i=0; i<=N; i++)
-//            {
-//                p0[i] = p1[i];
-//                p1[i] = p[i];
-//            }
-//            calculateG(p, g, j);
-//        }
-//    }
-
-//    da.clear();
-//    db.clear();
-//    dc.clear();
-//    rd.clear();
-//    rx.clear();
-
-//    p0.clear();
-//    p1.clear();
-//}
-
-//void HyperbolicControlX::calculateG(const DoubleVector &psi, DoubleVector &g, unsigned int j)
-//{
-//    g[0*(M+D+1)+j] = -(psi[1]-psi[0])/hx;
-//    g[1*(M+D+1)+j] = +(psi[N]-psi[N-1])/hx;
-//    g[2*(M+D+1)+j] = -psi[Xi];
-//}
+double HyperbolicControlX::bf(unsigned int i, unsigned int j) const
+{
+    const DoubleMatrix &u = *pu;
+    if (M<=j)
+    {
+        return -(2.0*(u[j-1][i]-U));
+    }
+    return 0.0;
+}
 
 double HyperbolicControlX::fi1(unsigned int i) const
 {
@@ -315,7 +228,27 @@ double HyperbolicControlX::m2(unsigned int j) const
     return v2;
 }
 
+double HyperbolicControlX::bfi1(unsigned int i) const
+{
+    return 0.0;
+}
+
+double HyperbolicControlX::bfi2(unsigned int i) const
+{
+    return 0.0;
+}
+
+double HyperbolicControlX::bm1(unsigned int j) const
+{
+    return 0.0;
+}
+
+double HyperbolicControlX::bm2(unsigned int j) const
+{
+    return 0.0;
+}
+
 void HyperbolicControlX::print(unsigned int iteration, const DoubleVector &v, const DoubleVector &gradient, double alpha, RnFunction *fn) const
 {
-    //printf("J[%d]: %.16f\n", iteration, fn->fx(v));
+    printf("J[%d]: %.16f\n", iteration, fn->fx(v));
 }

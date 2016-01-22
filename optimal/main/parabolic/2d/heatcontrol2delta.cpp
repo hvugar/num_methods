@@ -69,8 +69,9 @@ void HeatControl2Delta::main()
     ConjugateGradient g2;
     g2.setFunction(&hc);
     g2.setGradient(&hc);
-    g2.setEpsilon1(0.0001);
-    g2.setEpsilon2(0.0001);
+    g2.setEpsilon1(0.00001);
+    g2.setEpsilon2(0.00001);
+    g2.setEpsilon3(0.00001);
     g2.setR1MinimizeEpsilon(1.0, 0.0001);
     g2.setPrinter(&hc);
     g2.setProjection(&hc);
@@ -626,9 +627,9 @@ double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k)
     sum += (_g2) * a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/b);
     sum += (_g3) * a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/b);
 #else
-    sum += g1(t) * a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b) * h1*h2;
-    sum += g2(t) * a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/b) * h1*h2;
-    sum += g3(t) * a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/b) * h1*h2;
+    sum += g1(t) * a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b);// * h1*h2;
+    sum += g2(t) * a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/b);// * h1*h2;
+    sum += g3(t) * a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/b);// * h1*h2;
 
     //double pp = a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b);
     //if (i==50 && j==80)
