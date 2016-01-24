@@ -27,7 +27,6 @@ void IGradient::Gradient(RnFunction *f, double step, const DoubleVector &x, Doub
         const_cast<DoubleVector&>(x)[i] = cx + h;
         double f2 = f->fx(x);
         const_cast<DoubleVector&>(x)[i] = cx;
-
         g[i] = (f2 - f1) / (2 * h);
     }
 }

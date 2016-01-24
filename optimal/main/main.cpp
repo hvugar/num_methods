@@ -138,20 +138,25 @@ int main()
 {
 //    B a;
 //    a.t0 = 0.0;
-//    a.t1 = 0.9;
+//    a.t1 = 1.0;
+
 //    a.x0 = 0.0;
 //    a.x1 = 1.0;
+
 //    a.a = 1.0;
+
 //    a.hx = 0.0001;
 //    a.ht = 0.0001;
+
 //    a.N = (unsigned int)ceil((a.x1 - a.x0) / a.hx);
 //    a.M = (unsigned int)ceil((a.t1 - a.t0) / a.ht);
+
 //    printf("%u %u\n", a.N, a.M);
 
-//    //a.t0 = 0.1;
+//    a.t0 = 0.0;
 //    puts("Matrix:");
 //    DoubleMatrix u;
-//    a.calculateU(u, a.hx, a.ht, a.M, a.N, a.a);
+//    a.calculateU1(u, a.hx, a.ht, a.M, a.N, a.a);
 //    IPrinter::printMatrix(u,a.M);
 
 //    puts("Vector:");
@@ -162,8 +167,8 @@ int main()
 //    DiscreteHeat::main();
 //    DiscreteHyperbolic1::main();
 //    HyperbolicControl1D4::main();
-//    HyperbolicControlX::main();
-    HeatControl2Delta::main();
+    HyperbolicControlX::main();
+//    HeatControl2Delta::main();
 //    Rosenbrock::main();
     return 0;
 }

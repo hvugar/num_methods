@@ -37,7 +37,7 @@ HeatControl2D::~HeatControl2D() {}
 double HeatControl2D::fx(const DoubleVector &f)
 {
     DoubleMatrix u;
-    calculateU(u, h1, h2, ht, N1, N2, M, a1, a2);
+    //calculateU(u, h1, h2, ht, N1, N2, M, a1, a2);
 
     double sum = 0.0;
 
@@ -106,7 +106,7 @@ void HeatControl2D::gradient(const DoubleVector &f0, DoubleVector &g)
 {
     pf = &f0;
     DoubleMatrix u;
-    calculateU(u, h1, h2, ht, N1, N2, M, a1, a2);
+    //calculateU(u, h1, h2, ht, N1, N2, M, a1, a2);
     calculateP(f0, u, g);
 }
 

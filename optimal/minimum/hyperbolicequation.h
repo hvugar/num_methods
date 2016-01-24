@@ -3,6 +3,9 @@
 
 #include "global.h"
 #include "doublevector.h"
+#include <cmethods.h>
+#include "tomasmethod.h"
+#include "printer.h"
 
 struct MINIMUMSHARED_EXPORT IHyperbolicEquation
 {
@@ -15,6 +18,7 @@ public:
 
     virtual void calculateU(DoubleMatrix &u, double hx, double ht, unsigned int M, unsigned int N, double a=1.0, double lamda=0.25) const;
     virtual void calculateU(DoubleVector &u, double hx, double ht, unsigned int M, unsigned int N, double a=1.0, double lamda=0.25) const;
+    virtual void calculateU1(DoubleMatrix &u, double hx, double ht, unsigned int M, unsigned int N, double a=1.0, double lamda=0.25) const;
 };
 
 struct MINIMUMSHARED_EXPORT IBackwardHyperbolicEquation
@@ -28,6 +32,7 @@ public:
 
     virtual void calculateU(DoubleMatrix &p, double hx, double ht, unsigned int M, unsigned int N, double a=1.0, double lamda=0.25) const;
     virtual void calculateU(DoubleVector &p, double hx, double ht, unsigned int M, unsigned int N, double a=1.0, double lamda=0.25) const;
+    virtual void calculateU1(DoubleMatrix &p, double hx, double ht, unsigned int M, unsigned int N, double a=1.0, double lamda=0.25) const;
 };
 
 

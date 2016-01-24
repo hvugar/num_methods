@@ -34,7 +34,6 @@ public:
     virtual void print(unsigned int iteration, const DoubleVector& v, const DoubleVector &gradient, double alpha, RnFunction* fn) const;
 
     static void main();
-    void gradient1(const DoubleVector &v, DoubleVector &g);
 
 private:
     double t0;

@@ -82,13 +82,27 @@ class MINIMUMSHARED_EXPORT IParabolicEquation2D
 {
 public:
     virtual double fi(unsigned int i, unsigned int j) const = 0;
-    virtual double m1(unsigned int j, double k) const = 0;
-    virtual double m2(unsigned int j, double k) const = 0;
-    virtual double m3(unsigned int i, double k) const = 0;
-    virtual double m4(unsigned int i, double k) const = 0;
-    virtual double f(unsigned int i, unsigned int j, double k) const = 0;
+    virtual double m1(unsigned int j, unsigned int k) const = 0;
+    virtual double m2(unsigned int j, unsigned int k) const = 0;
+    virtual double m3(unsigned int i, unsigned int k) const = 0;
+    virtual double m4(unsigned int i, unsigned int k) const = 0;
+    virtual double f(unsigned int i, unsigned int j, unsigned int k) const = 0;
 
     void calculateU(DoubleMatrix &u, double hx1, double hx2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const;
+};
+
+class MINIMUMSHARED_EXPORT IBackwardParabolicEquation2D
+{
+public:
+    virtual double bfi(unsigned int i, unsigned int j) const = 0;
+    virtual double bm1(unsigned int j, unsigned int k) const = 0;
+    virtual double bm2(unsigned int j, unsigned int k) const = 0;
+    virtual double bm3(unsigned int i, unsigned int k) const = 0;
+    virtual double bm4(unsigned int i, unsigned int k) const = 0;
+    virtual double bf(unsigned int i, unsigned int j, unsigned int k) const = 0;
+
+    void calculateU(std::vector<DoubleMatrix> &psi, double hx1, double hx2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const;
+    virtual void A(DoubleMatrix& psi, double k) {}
 };
 
 #endif // HEATEQUATION_H

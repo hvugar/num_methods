@@ -693,8 +693,11 @@ double R1Minimize::HalphIntervalMethod(double &a, double &b, double &x, R1Functi
     }
 
     x = (b + a) /  2.0;
-    if (f->fx(a)<f->fx(b)) x = a;
-    if (f->fx(a)>f->fx(b)) x = b;
+    double fa = f->fx(a);
+    double fb = f->fx(b);
+
+    if (fa<fb) x = a;
+    if (fa>fb) x = b;
 
     return L;
 }

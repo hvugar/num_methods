@@ -6,7 +6,7 @@
 #include <printer.h>
 #include <parabolicequation.h>
 
-class HeatControl2D :public RnFunction, public IGradient, public IPrinter, public IParabolicEquation2D
+class HeatControl2D :public RnFunction, public IGradient, public IPrinter
 {
 public:
     HeatControl2D(unsigned int M, unsigned int N2, unsigned int N1);
