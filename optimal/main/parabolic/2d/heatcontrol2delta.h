@@ -80,7 +80,6 @@ private:
     const DoubleVector *px;
     const DoubleMatrix *pu;
     DoubleVector O;
-    DoubleVector I;
 };
 
 #endif // HEATCONTROL2DELTA_H

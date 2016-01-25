@@ -1,6 +1,7 @@
 #include "heatcontrol2delta.h"
 #include <tomasmethod.h>
 #include <gradient_cjt.h>
+#include <gradient_sd.h>
 #include <math.h>
 #include <stdlib.h>
 #include <windows.h>
@@ -42,14 +43,6 @@ void HeatControl2Delta::main()
     }
 #endif
 
-    hc.I.resize(2*hc.L);
-    hc.I[0] = x[0];
-    hc.I[1] = x[1];
-    hc.I[2] = x[2];
-    hc.I[3] = x[3];
-    hc.I[4] = x[4];
-    hc.I[5] = x[5];
-
     /* Minimization */
     ConjugateGradient g2;
     g2.setFunction(&hc);
@@ -80,7 +73,7 @@ void HeatControl2Delta::main()
 
 HeatControl2Delta::HeatControl2Delta(unsigned int M, unsigned int N2, unsigned int N1)
 {
-    alpha = 0.0;
+    alpha = 1.0;
 
     this->M  = M;
     this->N2 = N2;
@@ -170,31 +163,32 @@ double HeatControl2Delta::norm(const DoubleVector& x) const
 
 void HeatControl2Delta::gradient(const DoubleVector& x, DoubleVector& g)
 {
-//#ifdef POWER_OPTIMIZE
-//    double nm = norm(x);
-//    if (nm < 0.00001) alpha = 0.0;
-//    printf("Norma: %.16f Alha: %.f\n", nm, alpha);
-//#endif
+////#ifdef POWER_OPTIMIZE
+////    double nm = norm(x);
+////    if (nm < 0.00001) alpha = 0.0;
+////    printf("Norma: %.16f Alha: %.f\n", nm, alpha);
+////#endif
 
-    px = &x;
-    DoubleMatrix u;
-    IParabolicEquation2D::calculateU(u, h1, h2, ht, N1, N2, M, a1, a2);
+//    px = &x;
+//    DoubleMatrix u;
+//    IParabolicEquation2D::calculateU(u, h1, h2, ht, N1, N2, M, a1, a2);
 
-    pu = &u;
-    std::vector<DoubleMatrix> psi;
-    IBackwardParabolicEquation2D::calculateU(psi, h1, h2, ht, N1, N2, M, a1, a2);
+//    pu = &u;
+//    std::vector<DoubleMatrix> psi;
+//    IBackwardParabolicEquation2D::calculateU(psi, h1, h2, ht, N1, N2, M, a1, a2);
 
-    for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;
+//    for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;
 
-    for (unsigned int k=M; k!=(unsigned int)0-1; k--)
-    {
-        calculateGX(x, psi[k], g, k);
-//#ifdef POWER_OPTIMIZE
-//        calculateGF(x, psi[k], g, k);
-//#endif
-    }
+//    for (unsigned int k=M; k!=(unsigned int)0-1; k--)
+//    {
+//        calculateGX(x, psi[k], g, k);
+////#ifdef POWER_OPTIMIZE
+////        calculateGF(x, psi[k], g, k);
+////#endif
+//    }
 
-    psi.clear();
+//    psi.clear();
+    IGradient::Gradient(this, 0.0001, x, g);
 }
 
 void HeatControl2Delta::calculateGX(const DoubleVector& x, const DoubleMatrix& psi, DoubleVector& g, unsigned int k)
@@ -317,7 +311,7 @@ double HeatControl2Delta::m1(unsigned int j, unsigned int k) const
 double HeatControl2Delta::m2(unsigned int j, unsigned int k) const
 {
     double x2 = j*h2;
-    double t  = 0.5*k*ht;
+    double t  = 0.5*(k*ht);
     return u(x11, x2, t);
 }
 
