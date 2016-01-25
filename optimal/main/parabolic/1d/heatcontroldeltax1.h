@@ -1,15 +1,15 @@
-#ifndef HEATCONTROLDELTAX_H
-#define HEATCONTROLDELTAX_H
+#ifndef HEATCONTROLDELTAX1_H
+#define HEATCONTROLDELTAX1_H
 
 #include <function.h>
 #include <printer.h>
 #include <projection.h>
 
-class HeatControlDeltaX : public RnFunction, public IGradient, public IPrinter, public Projection
+class HeatControlDeltaX1 : public RnFunction, public IGradient, public IPrinter, public Projection
 {
 public:
-    HeatControlDeltaX(unsigned int M, unsigned int N, double a1);
-    virtual ~HeatControlDeltaX() {}
+    HeatControlDeltaX1(unsigned int M, unsigned int N, double a1);
+    virtual ~HeatControlDeltaX1() {}
 
     virtual double fx(const DoubleVector& x);
     virtual void gradient(const DoubleVector& f, DoubleVector& g);
@@ -58,4 +58,4 @@ private:
     DoubleVector uT;
 };
 
-#endif // HEATCONTROLDELTAX_H
+#endif // HEATCONTROLDELTAX1_H

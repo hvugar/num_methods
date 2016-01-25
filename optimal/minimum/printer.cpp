@@ -9,7 +9,6 @@ void IPrinter::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n
         unsigned int N = x[j].size() / n;
         if (j%M==0)
         {
-            printf("%5d: ", j);
             for (unsigned int i=0; i<x[j].size(); i++)
             {
                 if (i%N==0) fprintf(f, "%14.10f ", x[j][i]);
@@ -72,4 +71,29 @@ void IPrinter::printVector(const DoubleVector &x, const char *s, unsigned int n,
     }
     fputs("\n", file);
     fflush(file);
+}
+
+void IPrinter::printCube(const DoubleVector& x, unsigned int M, unsigned int N2, unsigned int N1, FILE *file)
+{
+    for (unsigned int k=0; k<=M; k++)
+    {
+        if (k%(M/10)==0)
+        {
+            fprintf(file, "k: %d\n", k);
+            for (unsigned int j=0; j<=N2; j++)
+            {
+                if (j%(N2/10)==0)
+                {
+                    for (unsigned int i=0; i<=N1; i++)
+                    {
+                        if (i%(N1/10)==0)
+                        {
+                            fprintf(file, "%14.10f ", x[k*(N2+1)*(N1+1) + j*(N1+1) + i]);
+                        }
+                    }
+                    fprintf(file, "\n");
+                }
+            }
+        }
+    }
 }

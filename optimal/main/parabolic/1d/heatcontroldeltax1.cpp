@@ -1,12 +1,12 @@
-#include "heatcontroldeltax.h"
+#include "heatcontroldeltax1.h"
 #include <gradient_cjt.h>
 #include <math.h>
 #include <tomasmethod.h>
 
-void HeatControlDeltaX::main()
+void HeatControlDeltaX1::main()
 {
     /* Function */
-    HeatControlDeltaX hc(1000, 10, 1.0);
+    HeatControlDeltaX1 hc(1000, 10, 1.0);
 
     DoubleVector E;
     E.resize(hc.C);
@@ -30,7 +30,7 @@ void HeatControlDeltaX::main()
     g.calculate(E);
 }
 
-HeatControlDeltaX::HeatControlDeltaX(unsigned int M, unsigned int N, double a1)
+HeatControlDeltaX1::HeatControlDeltaX1(unsigned int M, unsigned int N, double a1)
 {
     t0 = 0.0;
     t1 = 1.0;
@@ -47,7 +47,7 @@ HeatControlDeltaX::HeatControlDeltaX(unsigned int M, unsigned int N, double a1)
     initializeU();
 }
 
-double HeatControlDeltaX::fx(const DoubleVector &f)
+double HeatControlDeltaX1::fx(const DoubleVector &f)
 {
     calculateU(f, uT);
 
@@ -79,13 +79,13 @@ double HeatControlDeltaX::fx(const DoubleVector &f)
     return sum + norm;
 }
 
-void HeatControlDeltaX::gradient(const DoubleVector &f, DoubleVector &g)
+void HeatControlDeltaX1::gradient(const DoubleVector &f, DoubleVector &g)
 {
     calculateU(f, uT);
     calculateP(f, g);
 }
 
-void HeatControlDeltaX::calculateU(const DoubleVector &E, DoubleVector &u)
+void HeatControlDeltaX1::calculateU(const DoubleVector &E, DoubleVector &u)
 {
     DoubleVector u1;
     u1.resize(N+1);
@@ -150,7 +150,7 @@ void HeatControlDeltaX::calculateU(const DoubleVector &E, DoubleVector &u)
     u1.clear();
 }
 
-void HeatControlDeltaX::calculateP(const DoubleVector &E, DoubleVector &g)
+void HeatControlDeltaX1::calculateP(const DoubleVector &E, DoubleVector &g)
 {
     DoubleVector psi;
     psi.resize(N+1);
@@ -243,11 +243,11 @@ void HeatControlDeltaX::calculateP(const DoubleVector &E, DoubleVector &g)
     psi.clear();
 }
 
-void HeatControlDeltaX::calculateG(const DoubleVector& f, const std::vector<DoubleVector>& psi, DoubleVector& g, unsigned int j)
+void HeatControlDeltaX1::calculateG(const DoubleVector& f, const std::vector<DoubleVector>& psi, DoubleVector& g, unsigned int j)
 {
 }
 
-double HeatControlDeltaX::fxt(unsigned int i, unsigned int j, const DoubleVector& E)
+double HeatControlDeltaX1::fxt(unsigned int i, unsigned int j, const DoubleVector& E)
 {
     double x = i*hx;
     //double t  = k*ht;
@@ -263,7 +263,7 @@ double HeatControlDeltaX::fxt(unsigned int i, unsigned int j, const DoubleVector
     return sum;
 }
 
-void HeatControlDeltaX::initializeU()
+void HeatControlDeltaX1::initializeU()
 {
     DoubleVector E;
     E.resize(L);
@@ -279,15 +279,15 @@ void HeatControlDeltaX::initializeU()
 }
 
 
-void HeatControlDeltaX::print(unsigned int i, const DoubleVector &e, const DoubleVector &s, double a, RnFunction *f) const
+void HeatControlDeltaX1::print(unsigned int i, const DoubleVector &e, const DoubleVector &s, double a, RnFunction *f) const
 {
-    HeatControlDeltaX *hc = dynamic_cast<HeatControlDeltaX*>(f);
+    HeatControlDeltaX1 *hc = dynamic_cast<HeatControlDeltaX1*>(f);
     printf("J: %.16f\n", hc->fx(e));
     printf("Printing e[0]: %.12f e[1]: %.12f\n", e[0], e[1]);
     printf("Printing g[0]: %.12f g[1]: %.12f\n", s[0], s[1]);
 }
 
-void HeatControlDeltaX::project(DoubleVector &e, int index)
+void HeatControlDeltaX1::project(DoubleVector &e, int index)
 {
     for (unsigned int l=0; l<L; l++)
     {

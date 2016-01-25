@@ -34,7 +34,7 @@ public:
     unsigned int M;
     unsigned int N1;
     unsigned int N2;
-    unsigned int C;
+    //unsigned int C;
     unsigned int L;
 
     double a1;
@@ -79,8 +79,8 @@ private:
 
     const DoubleVector *px;
     const DoubleMatrix *pu;
-    DoubleVector optimal;
-    DoubleVector initial;
+    DoubleVector O;
+    DoubleVector I;
 };
 
 #endif // HEATCONTROL2DELTA_H

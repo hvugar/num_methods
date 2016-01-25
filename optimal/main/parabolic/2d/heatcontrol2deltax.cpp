@@ -23,6 +23,7 @@ void HeatControl2DeltaX::main()
     g2.setGradient(&hc);
     g2.setEpsilon1(0.000000001);
     g2.setEpsilon2(0.000000001);
+    g2.setEpsilon3(0.000000001);
     g2.setR1MinimizeEpsilon(1.0, 0.0001);
     g2.setPrinter(&hc);
     g2.setProjection(&hc);

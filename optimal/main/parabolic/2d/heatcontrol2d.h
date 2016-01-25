@@ -3,19 +3,44 @@
 
 #include <function.h>
 #include <doublevector.h>
-#include <printer.h>
 #include <parabolicequation.h>
+#include <gradient_cjt.h>
+#include <gradient_sd.h>
+#include <printer.h>
 
-class HeatControl2D :public RnFunction, public IGradient, public IPrinter
+class HeatControl2D :public RnFunction, public IGradient, public IParabolicEquation2D, public IBackwardParabolicEquation2D, public IPrinter
 {
 public:
     HeatControl2D(unsigned int M, unsigned int N2, unsigned int N1);
     virtual ~HeatControl2D();
 
+    virtual double fx(const DoubleVector &x);
+    virtual void gradient(const DoubleVector &x, DoubleVector &g);
+    virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &s, double a, RnFunction *f) const;
+
+    static void main();
+private:
+    double u(double x1, double x2, double t) const;
+
+    double fi(unsigned int i, unsigned int j) const;
+    double m1(unsigned int j, unsigned int k) const;
+    double m2(unsigned int j, unsigned int k) const;
+    double m3(unsigned int i, unsigned int k) const;
+    double m4(unsigned int i, unsigned int k) const;
+    double f(unsigned int i, unsigned j, unsigned int k) const;
+
+    double bfi(unsigned int i, unsigned int j) const;
+    double bm1(unsigned int j, unsigned int k) const;
+    double bm2(unsigned int j, unsigned int k) const;
+    double bm3(unsigned int i, unsigned int k) const;
+    double bm4(unsigned int i, unsigned int k) const;
+    double bf(unsigned int i, unsigned int j, unsigned int k) const;
+
+    double fxt(double x1, double x2, double t);
+
     unsigned int N1;
     unsigned int N2;
     unsigned int M;
-    unsigned int C;
     double h1;
     double h2;
     double ht;
@@ -31,37 +56,8 @@ public:
     double a2;
 
     DoubleMatrix U;
-    //DoubleMatrix uT;
-
-    //void calculateU(const DoubleVector& f);
-    //void calculateU1(const DoubleVector &f);
-    void calculateP(const DoubleVector &f, const DoubleMatrix &u, DoubleVector& g);
-
-    static void main();
-
-    virtual double fx(const DoubleVector& x);
-    virtual void gradient(const DoubleVector& x, DoubleVector& g);
-    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
-
-private:
-    double u1(double x1, double x2, double t) const;
-
-    double fi(unsigned int i, unsigned int j) const;
-    double m1(unsigned int j, double k) const;
-    double m2(unsigned int j, double k) const;
-    double m3(unsigned int i, double k) const;
-    double m4(unsigned int i, double k) const;
-    double f(unsigned int i, unsigned j, double k) const;
-
-    double pm1(double x2, double t) { return 0.0; }
-    double pm2(double x2, double t) { return 0.0; }
-    double pm3(double x1, double t) { return 0.0; }
-    double pm4(double x1, double t) { return 0.0; }
-
-    double fxt(double x1, double x2, double t);
-
-
     const DoubleVector *pf;
+    const DoubleMatrix *pu;
 };
 
 #endif // HEATCONTROL2D_H

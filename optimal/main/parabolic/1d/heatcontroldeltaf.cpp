@@ -37,14 +37,14 @@ HeatControlDeltaF::HeatControlDeltaF()
     this->x1 = 1.0;
     this->a  = 1.0;
 
-    this->N = 1000;
-    this->M = 1000;
-    this->hx  = (x1-x0)/N;
+    this->N = 100;
+    this->M = 100;
+    this->hx = (x1-x0)/N;
     this->ht = (t1-t0)/M;
 
     this->L = 1;
     this->e = 0.2;
-    this->E = 200;
+    this->E = (unsigned int)ceil(0.2/hx);
 
     // initialize U
     DoubleVector f;

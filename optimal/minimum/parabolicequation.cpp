@@ -1,25 +1,19 @@
 #include "parabolicequation.h"
-#include "tomasmethod.h"
+#include "cmethods.h"
 
 void IParabolicEquation::calculateU(DoubleVector &u, double hx, double ht, unsigned int N, unsigned int M, double a) const
 {
     u.clear();
     u.resize(N+1);
 
-    DoubleVector a1;
-    DoubleVector b1;
-    DoubleVector c1;
-    DoubleVector d1;
-    DoubleVector x1;
+    DoubleVector da(N-1);
+    DoubleVector db(N-1);
+    DoubleVector dc(N-1);
+    DoubleVector dd(N-1);
+    DoubleVector rx(N-1);
 
-    a1.resize(N-1);
-    b1.resize(N-1);
-    c1.resize(N-1);
-    d1.resize(N-1);
-    x1.resize(N-1);
-
-    double alpha = -(a*ht)/(hx*hx);
-    double beta  = 1.0 + (2.0*a*ht)/(hx*hx);
+    double alpha = -(a*a*ht)/(hx*hx);
+    double beta  = 1.0 + (2.0*a*a*ht)/(hx*hx);
 
     for (unsigned int j=0; j<=M; j++)
     {
@@ -34,59 +28,53 @@ void IParabolicEquation::calculateU(DoubleVector &u, double hx, double ht, unsig
         {
             for (unsigned int i=1; i<=N-1; i++)
             {
-                a1[i-1] = alpha;
-                b1[i-1] = beta;
-                c1[i-1] = alpha;
-                d1[i-1] = u[i] + ht * f(i, j);
+                da[i-1] = alpha;
+                db[i-1] = beta;
+                dc[i-1] = alpha;
+                dd[i-1] = u[i] + ht * f(i, j);
             }
 
-            a1[0]   = 0.0;
-            c1[N-2] = 0.0;
-            d1[0]   -= alpha * m1(j);
-            d1[N-2] -= alpha * m2(j);
-
-            TomasAlgorithm(a1, b1, c1, d1, x1);
+            da[0]   = 0.0;
+            dc[N-2] = 0.0;
 
             u[0] = m1(j);
+            u[N] = m2(j);
+
+            dd[0]   -= alpha * u[0];
+            dd[N-2] -= alpha * u[N];
+
+            tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size());
+
             for (unsigned int i=1; i<=N-1; i++)
             {
-                u[i] = x1[i-1];
+                u[i] = rx[i-1];
             }
-            u[N] = m2(j);
         }
     }
 
-    a1.clear();
-    b1.clear();
-    c1.clear();
-    d1.clear();
-    x1.clear();
+    da.clear();
+    db.clear();
+    dc.clear();
+    dd.clear();
+    rx.clear();
 }
 
 void IParabolicEquation::calculateU(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a) const
 {
-    for (unsigned int i=0; i<u.size(); i++)
-        u[i].clear();
+    for (unsigned int i=0; i<u.size(); i++) u[i].clear();
     u.clear();
 
     u.resize(M+1);
-    for (unsigned int i=0; i<u.size(); i++)
-        u[i].resize(N+1);
+    for (unsigned int i=0; i<u.size(); i++) u[i].resize(N+1);
 
-    DoubleVector a1;
-    DoubleVector b1;
-    DoubleVector c1;
-    DoubleVector d1;
-    DoubleVector x1;
+    DoubleVector da(N-1);
+    DoubleVector db(N-1);
+    DoubleVector dc(N-1);
+    DoubleVector dd(N-1);
+    DoubleVector rx(N-1);
 
-    a1.resize(N-1);
-    b1.resize(N-1);
-    c1.resize(N-1);
-    d1.resize(N-1);
-    x1.resize(N-1);
-
-    double alpha = -(a*ht)/(hx*hx);
-    double beta  = 1.0 + (2.0*a*ht)/(hx*hx);
+    double alpha = -(a*a*ht)/(hx*hx);
+    double beta  = 1.0 + (2.0*a*a*ht)/(hx*hx);
 
     for (unsigned int j=0; j<=M; j++)
     {
@@ -101,33 +89,98 @@ void IParabolicEquation::calculateU(DoubleMatrix &u, double hx, double ht, unsig
         {
             for (unsigned int i=1; i<=N-1; i++)
             {
-                a1[i-1] = alpha;
-                b1[i-1] = beta;
-                c1[i-1] = alpha;
-                d1[i-1] = u[j-1][i] + ht * f(i, j);
+                da[i-1] = alpha;
+                db[i-1] = beta;
+                dc[i-1] = alpha;
+                dd[i-1] = u[j-1][i] + ht * f(i, j);
             }
 
-            a1[0]   = 0.0;
-            c1[N-2] = 0.0;
-            d1[0]   -= alpha * m1(j);
-            d1[N-2] -= alpha * m2(j);
-
-            TomasAlgorithm(a1, b1, c1, d1, x1);
+            da[0]   = 0.0;
+            dc[N-2] = 0.0;
 
             u[j][0] = m1(j);
+            u[j][N] = m2(j);
+
+            dd[0]   -= alpha * u[j][0];
+            dd[N-2] -= alpha * u[j][N];
+
+            tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size());
+
             for (unsigned int i=1; i<=N-1; i++)
             {
-                u[j][i] = x1[i-1];
+                u[j][i] = rx[i-1];
             }
-            u[j][N] = m2(j);
         }
     }
 
-    a1.clear();
-    b1.clear();
-    c1.clear();
-    d1.clear();
-    x1.clear();
+    da.clear();
+    db.clear();
+    dc.clear();
+    dd.clear();
+    rx.clear();
+}
+
+void IBackwardParabolicEquation::calculateU(DoubleMatrix &psi, double hx, double ht, unsigned int N, unsigned int M, double a) const
+{
+    for (unsigned int i=0; i<psi.size(); i++) psi[i].clear();
+    psi.clear();
+
+    psi.resize(M+1);
+    for (unsigned int j=0; j<psi.size(); j++) psi[j].resize(N+1);
+
+    DoubleVector da(N-1);
+    DoubleVector db(N-1);
+    DoubleVector dc(N-1);
+    DoubleVector dd(N-1);
+    DoubleVector rx(N-1);
+
+    double alpha = -(a*ht)/(hx*hx);
+    double beta  = 1.0 + (2.0*a*ht)/(hx*hx);
+
+    for (unsigned int k=0; k<=M; k++)
+    {
+        unsigned int j = M-k;
+
+        if (j == M)
+        {
+            for (unsigned i=0; i<=N; i++)
+            {
+                psi[j][i] = bfi(i);
+            }
+        }
+        else
+        {
+            for (unsigned int i=1; i<=N-1; i++)
+            {
+                da[i-1] = alpha;
+                db[i-1] = beta;
+                dc[i-1] = alpha;
+                dd[i-1] = psi[j+1][i] - ht * bf(i, j);
+            }
+
+            da[0]   = 0.0;
+            dc[N-2] = 0.0;
+
+            psi[j][0] = bm1(j);
+            psi[j][N] = bm2(j);
+
+            dd[0]   -= alpha * bm1(j);
+            dd[N-2] -= alpha * bm2(j);
+
+            TomasAlgorithm(da, db, dc, dd, rx);
+
+            for (unsigned int i=1; i<=N-1; i++)
+            {
+                psi[j][i] = rx[i-1];
+            }
+        }
+    }
+
+    da.clear();
+    db.clear();
+    dc.clear();
+    dd.clear();
+    rx.clear();
 }
 
 void IParabolicEquation2D::calculateU(DoubleMatrix &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
@@ -301,7 +354,7 @@ void IBackwardParabolicEquation2D::calculateU(std::vector<DoubleMatrix> &psi, do
             {
                 for (unsigned i=0; i<=N1; i++)
                 {
-                    psi0[j][i] = bfi(i, j);//-2.0*(u[j][i] - U[j][i]);
+                    psi0[j][i] = bfi(i, j);
                 }
             }
             psi[k] = psi0;
@@ -315,7 +368,7 @@ void IBackwardParabolicEquation2D::calculateU(std::vector<DoubleMatrix> &psi, do
                     da1[i-1] = x1_alpha1;
                     db1[i-1] = x1_beta1;
                     dc1[i-1] = x1_alpha1;
-                    dd1[i-1] = x1_alpha2*psi0[j-1][i] + x1_beta2*psi0[j][i] + x1_alpha2*psi0[j+1][i] + (ht/2.0) * bf(i, j, 2*k+1);
+                    dd1[i-1] = x1_alpha2*psi0[j-1][i] + x1_beta2*psi0[j][i] + x1_alpha2*psi0[j+1][i] - (ht/2.0) * bf(i, j, 2*k+1);
                 }
 
                 da1[0]     = 0.0;
@@ -346,7 +399,7 @@ void IBackwardParabolicEquation2D::calculateU(std::vector<DoubleMatrix> &psi, do
                     da2[j-1] = x2_alpha1;
                     db2[j-1] = x2_beta1;
                     dc2[j-1] = x2_alpha1;
-                    dd2[j-1] = x2_alpha2*psi1[j][i-1] + x2_beta2*psi1[j][i] + x2_alpha2*psi1[j][i+1] + (ht/2.0) * bf(i, j, 2*k);
+                    dd2[j-1] = x2_alpha2*psi1[j][i-1] + x2_beta2*psi1[j][i] + x2_alpha2*psi1[j][i+1] - (ht/2.0) * bf(i, j, 2*k);
                 }
                 da2[0]     = 0.0;
                 dc2[N2-2]  = 0.0;

@@ -27,6 +27,7 @@ SOURCES += main.cpp \
     control/cfunction3.cpp \
     parabolic/1d/heatcontrol.cpp \
     parabolic/1d/heatcontroldeltaf.cpp \
+    parabolic/1d/heatcontroldeltax.cpp \
     parabolic/2d/heatcontrol2d.cpp \
     parabolic/2d/heatcontrol2delta.cpp \
     parabolic/2d/heatcontrol2deltaf.cpp \
@@ -55,6 +56,7 @@ HEADERS += \
     control/cfunction3.h \
     parabolic/1d/heatcontrol.h \
     parabolic/1d/heatcontroldeltaf.h \
+    parabolic/1d/heatcontroldeltax.h \
     parabolic/2d/heatcontrol2d.h \
     parabolic/2d/heatcontrol2delta.h \
     parabolic/2d/heatcontrol2deltaf.h \
