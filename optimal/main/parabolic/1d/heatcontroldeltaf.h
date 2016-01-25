@@ -1,58 +1,64 @@
 #ifndef HEATCONTROLDELTAF_H
 #define HEATCONTROLDELTAF_H
 
+#include <math.h>
+#include <stdlib.h>
 #include <function.h>
+#include <parabolicequation.h>
 #include <printer.h>
+#include <gradient_cjt.h>
+#include <gradient_sd.h>
 
-class HeatControlDeltaF : public RnFunction, public IGradient, public IPrinter
+/**
+ * @brief The HeatControl struct
+ * du/dt = a(d^2u/dx^2) + f(x,t);
+ * u(x,0) = fi(x);
+ * u(0,t) = m1(t);
+ * u(l,t) = m2(t);
+ */
+
+struct HeatControlDeltaF : public RnFunction, public IGradient, public IParabolicEquation, public IBackwardParabolicEquation, public IPrinter
 {
 public:
-    HeatControlDeltaF(unsigned int M, unsigned int N, double a1);
+    HeatControlDeltaF();
     virtual ~HeatControlDeltaF() {}
 
-    virtual double fx(const DoubleVector& x);
-    virtual void gradient(const DoubleVector& x, DoubleVector& g);
+    virtual double fx(const DoubleVector& f);
+    virtual void gradient(const DoubleVector& f, DoubleVector &g);
 
-    inline double u(double x, double t) { return x*x + t*t; }
-    inline double fxt(unsigned int i, unsigned int j, const DoubleVector &f);
+    inline virtual double fi(unsigned int i) const;
+    inline virtual double m1(unsigned int j) const;
+    inline virtual double m2(unsigned int j) const;
+    inline virtual double f(unsigned int i, unsigned int j) const;
 
-    inline double fi(double x) { return u(x, 0.0); }
-    inline double m1(double t) { return u(x0, t); }
-    inline double m2(double t) { return u(x1, t); }
+    virtual double bfi(unsigned int i) const;
+    virtual double bm1(unsigned int j) const;
+    virtual double bm2(unsigned int j) const;
+    virtual double bf(unsigned int i, unsigned int j) const;
 
-    inline double pfi(double x) { return 0.0; }
-    inline double pm1(double t) { return 0.0; }
-    inline double pm2(double t) { return 0.0; }
-
-    double f1(double t) { return t*t; }
-
-    static void main();
-
-    unsigned int N;
-    unsigned int M;
-    unsigned int C;
-
-protected:
-    void calculateU(const DoubleVector& f, DoubleVector& u);
-    void calculateP(const DoubleVector& f, DoubleVector& g);
-    void calculateG(const DoubleVector& f, const std::vector<DoubleVector>& psi, DoubleVector& g, unsigned int j);
-    void initializeU();
-
+    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
 private:
     double t0;
     double t1;
     double x0;
     double x1;
-    double a1;
-    double hx;
     double ht;
-
+    double hx;
+    unsigned int N;
+    unsigned int M;
+    double a;
     unsigned int L;
-    DoubleVector E;
+    double e;
+    unsigned int E;
 
+    double f1(double t) { return 2*t; }
+    inline double u(double x, double t) const { return x*x+t*t; }
+    const DoubleVector* pf;
+    const DoubleVector* pu;
     DoubleVector U;
-    DoubleVector uT;
-    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
+
+public:
+    static void main();
 };
 
 #endif // HEATCONTROLDELTAF_H

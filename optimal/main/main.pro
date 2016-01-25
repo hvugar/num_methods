@@ -27,12 +27,10 @@ SOURCES += main.cpp \
     control/cfunction3.cpp \
     parabolic/1d/heatcontrol.cpp \
     parabolic/1d/heatcontroldeltaf.cpp \
-    parabolic/1d/heatcontroldeltax.cpp \
     parabolic/2d/heatcontrol2d.cpp \
     parabolic/2d/heatcontrol2delta.cpp \
     parabolic/2d/heatcontrol2deltaf.cpp \
     parabolic/2d/heatcontrol2deltax.cpp \
-    parabolic/1d/heatcontrol1.cpp \
     hyperbolic/hyperbolic2dx.cpp \
     hyperbolic/hyperbolic1dx.cpp \
     hyperbolic/hyperboliccontrol1d.cpp \
@@ -44,7 +42,8 @@ SOURCES += main.cpp \
     discrete/discreteheat.cpp \
     discrete/discretehyperbolic.cpp \
     discrete/discretehyperbolic1.cpp \
-    hyperbolic/hyperboliccontrolx.cpp
+    hyperbolic/hyperboliccontrolx.cpp \
+    parabolic/1d/heatcontroldeltax1.cpp
 
 HEADERS += \
     rnfunction/rosenbrock.h \
@@ -56,12 +55,10 @@ HEADERS += \
     control/cfunction3.h \
     parabolic/1d/heatcontrol.h \
     parabolic/1d/heatcontroldeltaf.h \
-    parabolic/1d/heatcontroldeltax.h \
     parabolic/2d/heatcontrol2d.h \
     parabolic/2d/heatcontrol2delta.h \
     parabolic/2d/heatcontrol2deltaf.h \
     parabolic/2d/heatcontrol2deltax.h \
-    parabolic/1d/heatcontrol1.h \
     hyperbolic/hyperbolic2dx.h \
     hyperbolic/hyperbolic1dx.h \
     hyperbolic/hyperboliccontrol1d.h \
@@ -73,4 +70,5 @@ HEADERS += \
     discrete/discreteheat.h \
     discrete/discretehyperbolic.h \
     discrete/discretehyperbolic1.h \
-    hyperbolic/hyperboliccontrolx.h
+    hyperbolic/hyperboliccontrolx.h \
+    parabolic/1d/heatcontroldeltax1.h

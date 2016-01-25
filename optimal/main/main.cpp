@@ -26,9 +26,9 @@
 #include "rnfunction/boothfunction.h"
 
 #include "parabolic/1d/heatcontrol.h"
-#include "parabolic/1d/heatcontrol1.h"
 #include "parabolic/1d/heatcontroldeltaf.h"
 #include "parabolic/1d/heatcontroldeltax.h"
+
 #include "parabolic/2d/heatcontrol2d.h"
 #include "parabolic/2d/heatcontrol2delta.h"
 #include "parabolic/2d/heatcontrol2deltaf.h"
@@ -46,6 +46,49 @@
 #include "discrete/discreteheat.h"
 #include "discrete/discretehyperbolic.h"
 #include "discrete/discretehyperbolic1.h"
+
+struct A;
+struct B;
+
+int main()
+{
+//    B a;
+//    a.t0 = 0.0;
+//    a.t1 = 1.0;
+
+//    a.x0 = 0.0;
+//    a.x1 = 1.0;
+
+//    a.a = 1.0;
+
+//    a.hx = 0.0001;
+//    a.ht = 0.0001;
+
+//    a.N = (unsigned int)ceil((a.x1 - a.x0) / a.hx);
+//    a.M = (unsigned int)ceil((a.t1 - a.t0) / a.ht);
+
+//    printf("%u %u\n", a.N, a.M);
+
+//    a.t0 = 0.0;
+//    puts("Matrix:");
+//    DoubleMatrix u;
+//    a.calculateU1(u, a.hx, a.ht, a.M, a.N, a.a);
+//    IPrinter::printMatrix(u,a.M);
+
+//    puts("Vector:");
+//    DoubleVector v;
+//    a.calculateU(v, a.hx, a.ht, a.M, a.N, a.a);
+//    IPrinter::printVector(v);
+
+//    DiscreteHeat::main();
+//    DiscreteHyperbolic1::main();
+//    HyperbolicControl1D4::main();
+//    HyperbolicControlX::main();
+//    HeatControl2Delta::main();
+//    Rosenbrock::main();
+    HeatControlDeltaF::main();
+    return 0;
+}
 
 struct A : public IHyperbolicEquation
 {
@@ -90,7 +133,6 @@ struct A : public IHyperbolicEquation
     double x0;
 };
 
-
 struct B : public IBackwardHyperbolicEquation
 {
     double bfi1(unsigned int i) const
@@ -133,45 +175,3 @@ struct B : public IBackwardHyperbolicEquation
     double x1;
     double x0;
 };
-
-int main()
-{
-//    B a;
-//    a.t0 = 0.0;
-//    a.t1 = 1.0;
-
-//    a.x0 = 0.0;
-//    a.x1 = 1.0;
-
-//    a.a = 1.0;
-
-//    a.hx = 0.0001;
-//    a.ht = 0.0001;
-
-//    a.N = (unsigned int)ceil((a.x1 - a.x0) / a.hx);
-//    a.M = (unsigned int)ceil((a.t1 - a.t0) / a.ht);
-
-//    printf("%u %u\n", a.N, a.M);
-
-//    a.t0 = 0.0;
-//    puts("Matrix:");
-//    DoubleMatrix u;
-//    a.calculateU1(u, a.hx, a.ht, a.M, a.N, a.a);
-//    IPrinter::printMatrix(u,a.M);
-
-//    puts("Vector:");
-//    DoubleVector v;
-//    a.calculateU(v, a.hx, a.ht, a.M, a.N, a.a);
-//    IPrinter::printVector(v);
-
-//    DiscreteHeat::main();
-//    DiscreteHyperbolic1::main();
-//    HyperbolicControl1D4::main();
-    HyperbolicControlX::main();
-//    HeatControl2Delta::main();
-//    Rosenbrock::main();
-    return 0;
-}
-
-
-

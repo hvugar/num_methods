@@ -17,55 +17,43 @@
  * u(l,t) = m2(t);
  */
 
-struct HeatControl : public RnFunction, public IGradient, public IPrinter
+struct HeatControl : public RnFunction, public IGradient, public IParabolicEquation, public IBackwardParabolicEquation, public IPrinter
 {
 public:
     HeatControl();
     virtual ~HeatControl() {}
 
-    virtual double fx(const DoubleVector& u);
+    virtual double fx(const DoubleVector& f);
     virtual void gradient(const DoubleVector& f, DoubleVector &g);
 
-    unsigned int N;
-    unsigned int M;
-    unsigned int C;
+    inline virtual double fi(unsigned int i) const;
+    inline virtual double m1(unsigned int j) const;
+    inline virtual double m2(unsigned int j) const;
+    inline virtual double f(unsigned int i, unsigned int j) const;
 
-protected:
-    void initializeU();
+    virtual double bfi(unsigned int i) const;
+    virtual double bm1(unsigned int j) const;
+    virtual double bm2(unsigned int j) const;
+    virtual double bf(unsigned int i, unsigned int j) const;
+
+    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
 
 private:
     double t0;
     double t1;
-
     double x0;
     double x1;
-
     double ht;
     double hx;
-
-    double a1;
+    unsigned int N;
+    unsigned int M;
+    double a;
 
     inline double u(double x, double t) const { return x*x+t*t; }
-
-    inline double fi(double x) { return u(x, 0.0); }
-    inline double m1(double t) { return u(0.0, t); }
-    inline double m2(double t) { return u(1.0, t); }
-
-    inline double pfi(double x) { return 0.0; }
-    inline double pm1(double t) { return 0.0; }
-    inline double pm2(double t) { return 0.0; }
-
-    inline double fxt(double x, double t) { return 2.0*t - 2.0*a1; }
-
-    inline void calculateU(const DoubleVector& f, DoubleVector& u);
-    inline void calculateU1(const DoubleVector &f);
-    inline void calculateP(const DoubleVector& f, DoubleVector& g);
-    inline void calculateG(const DoubleVector& f, const DoubleVector& p, DoubleVector& g, unsigned int j);
-
-    DoubleVector uT;
+    inline double fxt(double x, double t) { return 2.0*t - 2.0*a; }
+    const DoubleVector* pf;
+    const DoubleVector* pu;
     DoubleVector U;
-
-    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
 
 public:
     static void main();

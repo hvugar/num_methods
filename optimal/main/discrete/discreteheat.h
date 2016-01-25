@@ -7,7 +7,7 @@
 #include <parabolicequation.h>
 #include <printer.h>
 
-class DiscreteHeat : public RnFunction, public IGradient, public IPrinter, public IParabolicEquation, public IBackwardParabolicEquation
+class DiscreteHeat : public RnFunction, public IGradient, public IPrinter, public IParabolicEquation
 {
 public:
     DiscreteHeat();
