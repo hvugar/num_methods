@@ -50,7 +50,9 @@ private:
     double a;
     unsigned int L;
 
-    double f1(double t) const { return 2.0*t; }
+    double g1(double t) const { return 20.0*t; }
+    double g2(double t) const { return 30.0*t; }
+
     inline double u(double x, double t) const { return x*x+t*t; }
     const DoubleVector* pe;
     const DoubleVector* pu;

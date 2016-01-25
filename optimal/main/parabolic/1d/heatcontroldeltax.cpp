@@ -5,25 +5,23 @@ void HeatControlDeltaX::main()
     /* Function */
     HeatControlDeltaX hc;
 
-    DoubleVector e0(hc.L);
-    for (unsigned int i=0; i<e0.size(); i++)
-    {
-        e0[i] = 0.1;
-    }
+    DoubleVector e(hc.L);
+    e[0] = 0.35;
+    e[1] = 0.75;
 
     /* Minimization */
     ConjugateGradient g2;
     g2.setGradient(&hc);
     g2.setFunction(&hc);
-    g2.setEpsilon1(0.0001);
-    g2.setEpsilon2(0.0001);
-    g2.setEpsilon3(0.0001);
-    g2.setR1MinimizeEpsilon(1.0, 0.001);
+    g2.setEpsilon1(0.0000001);
+    g2.setEpsilon2(0.0000001);
+    g2.setEpsilon3(0.0000001);
+    g2.setR1MinimizeEpsilon(1.0, 0.00001);
     g2.setPrinter(&hc);
     g2.setNormalize(true);
-    g2.calculate(e0);
+    g2.calculate(e);
 
-    IPrinter::printVector(e0, "e:", hc.L);
+    IPrinter::printVector(e, "e:", hc.L);
 }
 
 HeatControlDeltaX::HeatControlDeltaX()
@@ -38,11 +36,12 @@ HeatControlDeltaX::HeatControlDeltaX()
     this->M = 100;
     this->hx = (x1-x0)/N;
     this->ht = (t1-t0)/M;
-    this->L = 1;
+    this->L = 2;
 
     // initialize U
     DoubleVector e(L);
-    e[0] = 0.6;
+    e[0] = 0.4;
+    e[1] = 0.8;
     pe = &e;
     IParabolicEquation::calculateU(U, hx, ht, N, M);
     FILE *file = fopen("heat_e.txt", "w");
@@ -101,13 +100,27 @@ void HeatControlDeltaX::gradient(const DoubleVector &e, DoubleVector &g)
         if (j==0 || j==M) alpha = 0.5;
         unsigned int i = (unsigned int)round(e[0]/hx);
         if (i==0)
-            g[0] += alpha * f1(j*ht) * (psi[j][1] - psi[j][0])/(2.0*hx);
+            g[0] += alpha * g1(j*ht) * (psi[j][1] - psi[j][0])/(2.0*hx);
         else if (i==N)
-            g[0] += alpha * f1(j*ht) * (psi[j][N] - psi[j][N-1])/(2.0*hx);
+            g[0] += alpha * g1(j*ht) * (psi[j][N] - psi[j][N-1])/(2.0*hx);
         else
-            g[0] += alpha * f1(j*ht) * (psi[j][i+1] - psi[j][i-1])/(2.0*hx);
+            g[0] += alpha * g1(j*ht) * (psi[j][i+1] - psi[j][i-1])/(2.0*hx);
     }
     g[0] = -ht*g[0];
+
+    for (unsigned int j=0; j<=M; j++)
+    {
+        double alpha = 1.0;
+        if (j==0 || j==M) alpha = 0.5;
+        unsigned int i = (unsigned int)round(e[1]/hx);
+        if (i==0)
+            g[1] += alpha * g1(j*ht) * (psi[j][1] - psi[j][0])/(2.0*hx);
+        else if (i==N)
+            g[1] += alpha * g1(j*ht) * (psi[j][N] - psi[j][N-1])/(2.0*hx);
+        else
+            g[1] += alpha * g1(j*ht) * (psi[j][i+1] - psi[j][i-1])/(2.0*hx);
+    }
+    g[1] = -ht*g[1];
 }
 
 double HeatControlDeltaX::fi(unsigned int i) const
@@ -136,7 +149,12 @@ double HeatControlDeltaX::f(unsigned int i, unsigned int j) const
     double sum = 0.0;
     if (fabs(x-e[0]) < (hx+0.000001))
     {
-        sum += (1.0/hx) * f1(j*ht) * ((hx-fabs(x-e[0]))/hx);
+        sum += (1.0/hx) * g1(j*ht) * ((hx-fabs(x-e[0]))/hx);
+    }
+
+    if (fabs(x-e[1]) < (hx+0.000001))
+    {
+        sum += (1.0/hx) * g2(j*ht) * ((hx-fabs(x-e[1]))/hx);
     }
 
     return sum;
