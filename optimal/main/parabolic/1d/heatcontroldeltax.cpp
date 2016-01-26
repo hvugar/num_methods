@@ -6,8 +6,9 @@ void HeatControlDeltaX::main()
     HeatControlDeltaX hc;
 
     DoubleVector e(hc.L);
-    e[0] = 0.35;
-    e[1] = 0.75;
+    e[0] = 0.40;
+    e[1] = 0.70;
+    e[2] = 0.30;
 
     /* Minimization */
     ConjugateGradient g2;
@@ -16,8 +17,9 @@ void HeatControlDeltaX::main()
     g2.setEpsilon1(0.0000001);
     g2.setEpsilon2(0.0000001);
     g2.setEpsilon3(0.0000001);
-    g2.setR1MinimizeEpsilon(1.0, 0.00001);
+    g2.setR1MinimizeEpsilon(1.0, 0.0001);
     g2.setPrinter(&hc);
+    g2.setProjection(&hc);
     g2.setNormalize(true);
     g2.calculate(e);
 
@@ -36,12 +38,13 @@ HeatControlDeltaX::HeatControlDeltaX()
     this->M = 100;
     this->hx = (x1-x0)/N;
     this->ht = (t1-t0)/M;
-    this->L = 2;
+    this->L = 3;
 
     // initialize U
     DoubleVector e(L);
     e[0] = 0.4;
     e[1] = 0.8;
+    e[2] = 0.2;
     pe = &e;
     IParabolicEquation::calculateU(U, hx, ht, N, M);
     FILE *file = fopen("heat_e.txt", "w");
@@ -100,9 +103,9 @@ void HeatControlDeltaX::gradient(const DoubleVector &e, DoubleVector &g)
         if (j==0 || j==M) alpha = 0.5;
         unsigned int i = (unsigned int)round(e[0]/hx);
         if (i==0)
-            g[0] += alpha * g1(j*ht) * (psi[j][1] - psi[j][0])/(2.0*hx);
+            g[0] += alpha * g1(j*ht) * (psi[j][1] - psi[j][0])/(hx);
         else if (i==N)
-            g[0] += alpha * g1(j*ht) * (psi[j][N] - psi[j][N-1])/(2.0*hx);
+            g[0] += alpha * g1(j*ht) * (psi[j][N] - psi[j][N-1])/(hx);
         else
             g[0] += alpha * g1(j*ht) * (psi[j][i+1] - psi[j][i-1])/(2.0*hx);
     }
@@ -114,13 +117,27 @@ void HeatControlDeltaX::gradient(const DoubleVector &e, DoubleVector &g)
         if (j==0 || j==M) alpha = 0.5;
         unsigned int i = (unsigned int)round(e[1]/hx);
         if (i==0)
-            g[1] += alpha * g1(j*ht) * (psi[j][1] - psi[j][0])/(2.0*hx);
+            g[1] += alpha * g2(j*ht) * (psi[j][1] - psi[j][0])/(hx);
         else if (i==N)
-            g[1] += alpha * g1(j*ht) * (psi[j][N] - psi[j][N-1])/(2.0*hx);
+            g[1] += alpha * g2(j*ht) * (psi[j][N] - psi[j][N-1])/(hx);
         else
-            g[1] += alpha * g1(j*ht) * (psi[j][i+1] - psi[j][i-1])/(2.0*hx);
+            g[1] += alpha * g2(j*ht) * (psi[j][i+1] - psi[j][i-1])/(2.0*hx);
     }
     g[1] = -ht*g[1];
+
+    for (unsigned int j=0; j<=M; j++)
+    {
+        double alpha = 1.0;
+        if (j==0 || j==M) alpha = 0.5;
+        unsigned int i = (unsigned int)round(e[2]/hx);
+        if (i==0)
+            g[2] += alpha * g3(j*ht) * (psi[j][1] - psi[j][0])/(hx);
+        else if (i==N)
+            g[2] += alpha * g3(j*ht) * (psi[j][N] - psi[j][N-1])/(hx);
+        else
+            g[2] += alpha * g3(j*ht) * (psi[j][i+1] - psi[j][i-1])/(2.0*hx);
+    }
+    g[2] = -ht*g[2];
 }
 
 double HeatControlDeltaX::fi(unsigned int i) const
@@ -144,18 +161,27 @@ double HeatControlDeltaX::m2(unsigned int j) const
 double HeatControlDeltaX::f(unsigned int i, unsigned int j) const
 {
     double x = i*hx;
+    double t = j*ht;
     const DoubleVector &e = *pe;
-
     double sum = 0.0;
-    if (fabs(x-e[0]) < (hx+0.000001))
-    {
-        sum += (1.0/hx) * g1(j*ht) * ((hx-fabs(x-e[0]))/hx);
-    }
 
-    if (fabs(x-e[1]) < (hx+0.000001))
-    {
-        sum += (1.0/hx) * g2(j*ht) * ((hx-fabs(x-e[1]))/hx);
-    }
+    double sgm = 3.0*hx;
+    double gause_a = 1.0/(sqrt(2.0*M_PI)*sgm);
+    double gause_b = 2.0*sgm*sgm;
+
+    sum += g1(t) * gause_a * exp(-((x-e[0])*(x-e[0]))/gause_b);// * h1*h2;
+    sum += g2(t) * gause_a * exp(-((x-e[1])*(x-e[1]))/gause_b);// * h1*h2;
+    sum += g3(t) * gause_a * exp(-((x-e[2])*(x-e[2]))/gause_b);// * h1*h2;
+
+//    if (fabs(x-e[0]) < (hx+0.000001))
+//    {
+//        sum += (1.0/hx) * g1(j*ht) * ((hx-fabs(x-e[0]))/hx);
+//    }
+
+//    if (fabs(x-e[1]) < (hx+0.000001))
+//    {
+//        sum += (1.0/hx) * g2(j*ht) * ((hx-fabs(x-e[1]))/hx);
+//    }
 
     return sum;
 }

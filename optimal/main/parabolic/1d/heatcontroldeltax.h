@@ -52,6 +52,7 @@ private:
 
     double g1(double t) const { return 20.0*t; }
     double g2(double t) const { return 30.0*t; }
+    double g3(double t) const { return 25.0*t; }
 
     inline double u(double x, double t) const { return x*x+t*t; }
     const DoubleVector* pe;

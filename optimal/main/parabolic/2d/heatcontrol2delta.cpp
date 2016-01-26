@@ -11,7 +11,7 @@
 
 void HeatControl2Delta::main()
 {
-    HeatControl2Delta hc(100, 100, 100);
+    HeatControl2Delta hc(1000, 1000, 1000);
 
     hc.O.resize(2*hc.L);
     hc.O[0] = 0.50;
@@ -22,6 +22,7 @@ void HeatControl2Delta::main()
     hc.O[5] = 0.30;
 
     hc.initialize();
+    return;
 
     DoubleVector x;
 #ifdef POWER_OPTIMIZE
@@ -163,32 +164,32 @@ double HeatControl2Delta::norm(const DoubleVector& x) const
 
 void HeatControl2Delta::gradient(const DoubleVector& x, DoubleVector& g)
 {
-////#ifdef POWER_OPTIMIZE
-////    double nm = norm(x);
-////    if (nm < 0.00001) alpha = 0.0;
-////    printf("Norma: %.16f Alha: %.f\n", nm, alpha);
-////#endif
+//#ifdef POWER_OPTIMIZE
+//    double nm = norm(x);
+//    if (nm < 0.00001) alpha = 0.0;
+//    printf("Norma: %.16f Alha: %.f\n", nm, alpha);
+//#endif
 
-//    px = &x;
-//    DoubleMatrix u;
-//    IParabolicEquation2D::calculateU(u, h1, h2, ht, N1, N2, M, a1, a2);
+    px = &x;
+    DoubleMatrix u;
+    IParabolicEquation2D::calculateU(u, h1, h2, ht, N1, N2, M, a1, a2);
 
-//    pu = &u;
-//    std::vector<DoubleMatrix> psi;
-//    IBackwardParabolicEquation2D::calculateU(psi, h1, h2, ht, N1, N2, M, a1, a2);
+    pu = &u;
+    std::vector<DoubleMatrix> psi;
+    IBackwardParabolicEquation2D::calculateU(psi, h1, h2, ht, N1, N2, M, a1, a2);
 
-//    for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;
+    for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;
 
-//    for (unsigned int k=M; k!=(unsigned int)0-1; k--)
-//    {
-//        calculateGX(x, psi[k], g, k);
-////#ifdef POWER_OPTIMIZE
-////        calculateGF(x, psi[k], g, k);
-////#endif
-//    }
+    for (unsigned int k=M; k!=(unsigned int)0-1; k--)
+    {
+        calculateGX(x, psi[k], g, k);
+//#ifdef POWER_OPTIMIZE
+//        calculateGF(x, psi[k], g, k);
+//#endif
+    }
 
-//    psi.clear();
-    IGradient::Gradient(this, 0.0001, x, g);
+    psi.clear();
+//    IGradient::Gradient(this, 0.0001, x, g);
 }
 
 void HeatControl2Delta::calculateGX(const DoubleVector& x, const DoubleMatrix& psi, DoubleVector& g, unsigned int k)
@@ -334,7 +335,6 @@ double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k) cons
     double x1 = i*h1;
     double x2 = j*h2;
     double t  = 0.5*k*ht;
-    double sum = 0.0;
 
     DoubleVector e(6);
     e[0] = (*px)[0];
@@ -343,6 +343,16 @@ double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k) cons
     e[3] = (*px)[3];
     e[4] = (*px)[4];
     e[5] = (*px)[5];
+
+    double sgm1 = 3.0*h1;
+    double sgm2 = 3.0*h2;
+    double gause_a = 1.0/(2.0*M_PI*sgm1*sgm2);
+    double gause_b = 2.0*sgm1*sgm2;
+
+    double sum = 0.0;
+    sum += g1(t) * gause_a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/gause_b);// * h1*h2;
+    sum += g2(t) * gause_a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/gause_b);// * h1*h2;
+    sum += g3(t) * gause_a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/gause_b);// * h1*h2;
 
     //    DoubleVector e(2*L);
     //    for (unsigned int l=0; l<L; l++)
@@ -373,15 +383,6 @@ double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k) cons
     //    sum += (_g2) * a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/b);
     //    sum += (_g3) * a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/b);
     //#else
-
-    double sgm1 = 3.0*h1;
-    double sgm2 = 3.0*h2;
-    double gause_a = 1.0/(2.0*M_PI*sgm1*sgm2);
-    double gause_b = 2.0*sgm1*sgm2;
-
-    sum += g1(t) * gause_a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/gause_b);// * h1*h2;
-    sum += g2(t) * gause_a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/gause_b);// * h1*h2;
-    sum += g3(t) * gause_a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/gause_b);// * h1*h2;
 
     e.clear();
     return sum;
@@ -505,8 +506,8 @@ void HeatControl2Delta::project(DoubleVector &e, int index)
 {
     if (index<6)
     {
-        if (e[index] > 1.0) e[index] = 0.8;
-        if (e[index] < 0.0) e[index] = 0.2;
+        if (e[index] > 1.0) e[index] = 1.0;
+        if (e[index] < 0.0) e[index] = 0.0;
     }
     //    for (unsigned int i=0; i<e.size(); i++)
     //    {
