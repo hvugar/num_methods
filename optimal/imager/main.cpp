@@ -53,16 +53,22 @@ void createHeatImage(int width, int height, const QString &inFile, const QString
 
     unsigned int j=0;
     QString line = in.readLine();
-    while (!line.isNull())
+    while (!line.isNull() && !line.isEmpty())
     {
+        unsigned int i=0;
         QStringList list = line.split(" ");
         m[j].resize(width);
-        for (int i=0; i<list.size(); i++)
+        for (int k=0; k<list.size(); k++)
         {
-            double u = list[i].toDouble();
-            m[j][i] = u;
-            if (u<minimum) minimum = u;
-            if (u>maximum) maximum = u;
+            QString str = list[k];
+            if (!str.isNull() && !str.isEmpty())
+            {
+                double u = str.toDouble();
+                m[j][i] = u;
+                if (u<minimum) minimum = u;
+                if (u>maximum) maximum = u;
+                i++;
+            }
         }
         line = in.readLine();
         j++;

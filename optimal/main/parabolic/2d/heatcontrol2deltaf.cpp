@@ -1,530 +1,354 @@
 #include "heatcontrol2deltaf.h"
-#include <tomasmethod.h>
-#include <gradient_cjt.h>
-#include <gradient_sd.h>
-#include <math.h>
-#include <stdio.h>
 
 void HeatControl2DeltaF::main()
 {
-    HeatControl2DeltaF hc(100, 10, 10);
+    HeatControl2DeltaF hc(100, 100, 100);
 
-    unsigned int count = (hc.M+1)*hc.L;
-    DoubleVector f;
-    f.resize(count);
-
-    for (unsigned int i=0; i<f.size(); i++) f[i] = 0.5;
+    DoubleVector v((hc.M+1)*hc.L);
+    for (unsigned int k=0; k<=hc.M; k++)
+    {
+        v[0*(hc.M+1) + k] = 1.0;//hc.g1(k*hc.ht);
+        v[1*(hc.M+1) + k] = 1.0;//hc.g2(k*hc.ht);
+        v[2*(hc.M+1) + k] = 1.0;//hc.g3(k*hc.ht);
+    }
 
     /* Minimization */
-    ConjugateGradient g2;
+    SteepestDescentGradient g2;
     g2.setFunction(&hc);
-    g2.setEpsilon1(0.000000001);
-    g2.setEpsilon2(0.000000001);
-    g2.setR1MinimizeEpsilon(0.1, 0.000000001);
+    g2.setGradient(&hc);
+    g2.setEpsilon1(0.00001);
+    g2.setEpsilon2(0.00001);
+    g2.setEpsilon3(0.00001);
+    g2.setR1MinimizeEpsilon(1.0, 0.00001);
     g2.setPrinter(&hc);
     g2.setProjection(&hc);
-    g2.setNormalize(false);
-    g2.calculate(f);
+    g2.setNormalize(true);
+    g2.calculate(v);
 
-    for (unsigned int l=0; l<hc.L; l++)
-    {
-        for (unsigned int k=0; k<=hc.M; k++)
-        {
-            if (k%(hc.M/10)==0) printf("%12.4f", f[l*(hc.M+1)+k]);
-        }
-        puts("");
-    }
-    puts("+++++++++++++++++++++++++++++++++++++++++");
+    DoubleVector gr1(v.size());
+    IGradient::Gradient(&hc, 0.00001, v, gr1);
+    gr1.L2Normalize();
+
+    DoubleVector gr2(v.size());
+    hc.gradient(v, gr2);
+    gr2.L2Normalize();
+
+    printf("J[%d]: %.16f\n", 0, hc.fx(v));
 }
 
-HeatControl2DeltaF::HeatControl2DeltaF(unsigned int m, unsigned int n2, unsigned int n1) : RnFunction()
+HeatControl2DeltaF::HeatControl2DeltaF(unsigned int m, unsigned int n2, unsigned int n1)
 {
     alpha = 1.0;
 
-    M = m;
-    N2 = n2;
-    N1 = n1;
-    C = (M+1)*(N2+1)*(N1+1);
-    L = 3;
+    this->M  = m;
+    this->N2 = n2;
+    this->N1 = n1;
+    this->L  = 3;
 
     t0 = 0.0;
     t1 = 1.0;
+
     x10 = 0.0;
     x11 = 1.0;
+
     x20 = 0.0;
     x21 = 1.0;
 
     a1 = a2 = 1.0;
 
-    ht = (t1-t0)/M;
-    h1 = (x11-x10)/N1;
-    h2 = (x21-x20)/N2;
+    ht = (t1-t0)/m;
+    h1 = (x11-x10)/n1;
+    h2 = (x21-x20)/n2;
 
-    initialize();
+    double sgm1 = 3.0*h1;
+    double sgm2 = 3.0*h2;
+    gause_a = 1.0/(2.0*M_PI*sgm1*sgm2);
+    gause_b = 2.0*sgm1*sgm2;
+
+    //initilize
+    E.resize(2*L);
+    E[0] = 0.50;
+    E[1] = 0.80;
+    E[2] = 0.70;
+    E[3] = 0.20;
+    E[4] = 0.20;
+    E[5] = 0.30;
+
+    DoubleVector v((M+1)*L);
+    for (unsigned int k=0; k<=M; k++)
+    {
+        v[0*(m+1)+k] = v1(k*ht);
+        v[1*(m+1)+k] = v2(k*ht);
+        v[2*(m+1)+k] = v3(k*ht);
+    }
+
+    pv = &v;
+    IParabolicEquation2D::calculateU(U, h1, h2, ht, N1, N2, M, a1, a2);
+
+    puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
+    IPrinter::printMatrix(U, 10, 10);
+    puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
+
+    FILE* f = fopen("heat_optimal_v.txt", "w");
+    IPrinter::printMatrix(U, N1, N2, NULL, f);
+    fclose(f);
 }
 
-HeatControl2DeltaF::~HeatControl2DeltaF() {}
-
-double HeatControl2DeltaF::fx(const DoubleVector &f)
+double HeatControl2DeltaF::fx(const DoubleVector& v)
 {
-    calculateU(f, uT);
+    pv = &v;
+    DoubleMatrix u;
+    IParabolicEquation2D::calculateU(u, h1, h2, ht, N1, N2, M, a1, a2);
 
     double sum = 0.0;
-    for (unsigned int j=0; j<N2; j++)
+    for (unsigned int j=0; j<=N2; j++)
     {
-        for (unsigned int i=0; i<N1; i++)
+        for (unsigned int i=0; i<=N1; i++)
         {
-            int j1 = j;
-            int j2 = j+1;
-            int i1 = i;
-            int i2 = i+1;
-
-            double f1 = uT[j1][i1] - U[j1][i1];
-            double f2 = uT[j1][i2] - U[j1][i2];
-            double f3 = uT[j2][i1] - U[j2][i1];
-            double f4 = uT[j2][i2] - U[j2][i2];
-
-            sum += (f1*f1 + f2*f2 + f3*f3 + f4*f4);
+            double betta = 1.0;
+            if (i==0 || i==N1 || j==0 || j==N2) betta = 0.5;
+            if (i==0  && j==0)  betta = 0.25;
+            if (i==0  && j==N2) betta = 0.25;
+            if (i==N1 && j==0)  betta = 0.25;
+            if (i==N1 && j==N2) betta = 0.25;
+            sum += betta*(u[j][i] - U[j][i])*(u[j][i] - U[j][i]);
         }
     }
-    sum = (0.25*(h1*h2))*sum;
+    sum = (h1*h2)*sum;
 
-    double p;
-    double norm = 0.0;
-    for (unsigned int l=0; l<L; l++)
-    {
-        for (unsigned int k=0; k<=M; k++)
-        {
-            if (k==0 || k==M) p = 1.0; else p = 2.0;
-
-            switch(l)
-            {
-            case 0: { norm += p*(ht/2.0)*(f[0*(M+1)+k] - f1(k*ht))*(f[0*(M+1)+k] - f1(k*ht)); } break;
-            case 1: { norm += p*(ht/2.0)*(f[1*(M+1)+k] - f2(k*ht))*(f[1*(M+1)+k] - f2(k*ht)); } break;
-            case 2: { norm += p*(ht/2.0)*(f[2*(M+1)+k] - f3(k*ht))*(f[2*(M+1)+k] - f3(k*ht)); } break;
-            }
-        }
-    }
-
-    return sum + alpha*norm;
+    double nrm = 0.0;
+    nrm = norm(v);
+    return sum + alpha*nrm;
 }
 
-void HeatControl2DeltaF::gradient(const DoubleVector &f, DoubleVector &g, double gradient_step)
+double HeatControl2DeltaF::norm(const DoubleVector& v) const
 {
-    calculateU(f, uT);
-    calculateP(f, g);
-}
-
-void HeatControl2DeltaF::calculateU(const DoubleVector &f, DoubleMatrix& u)
-{
-    DoubleMatrix u0;
-    DoubleMatrix u1;
-
-    u0.resize(N2+1); for (unsigned int j=0; j<=N2; j++) u0[j].resize(N1+1);
-    u1.resize(N2+1); for (unsigned int j=0; j<=N2; j++) u1[j].resize(N1+1);
-
-    double alpha1 = 0;
-    double beta1  = 0;
-    double alpha2 = 0;
-    double beta2  = 0;
-
-    DoubleVector a;
-    DoubleVector b;
-    DoubleVector c;
-    DoubleVector d;
-    DoubleVector x;
-
+    double nrm = 0.0;
     for (unsigned int k=0; k<=M; k++)
     {
-        if (k==0)
-        {
-            for (unsigned int j=0; j<=N2; j++)
-            {
-                for (unsigned i=0; i<=N1; i++)
-                {
-                    u0[j][i] = fi(i*h1, j*h2);
-                }
-            }
-        }
-        else
-        {
-            // Approximation to x1 direction
-            alpha1 = -(a2*ht)/(2.0*h2*h2);
-            beta1  = 1.0 + (a2*ht)/(h2*h2);
-            alpha2 = (a1*ht)/(2.0*h1*h1);
-            beta2  = 1.0 - (a1*ht)/(h1*h1);
-
-            a.resize(N1-1);
-            b.resize(N1-1);
-            c.resize(N1-1);
-            d.resize(N1-1);
-            x.resize(N1-1);
-
-            for (unsigned int i=1; i<N1; i++)
-            {
-                for (unsigned int j=1; j<N2; j++)
-                {
-                    a[j-1] = alpha1;
-                    b[j-1] = beta1;
-                    c[j-1] = alpha1;
-                    d[j-1] = alpha2*u0[j][i-1] + beta2*u0[j][i] + alpha2*u0[j][i+1] + (ht/2.0) * fxt(i, j, k, f);
-                }
-
-                a[0]     = 0.0;
-                c[N2-2]  = 0.0;
-                d[0]    -= alpha1 * m3(h1*i, ht*(k));
-                d[N2-2] -= alpha1 * m4(h1*i, ht*(k));
-
-                TomasAlgorithm(a, b, c, d, x);
-
-                u1[0][i]  = m3(h1*i, ht*(k-0.5));
-                for (unsigned int j=1; j<N2; j++)
-                {
-                    u1[j][i] = x[j-1];
-                }
-                u1[N2][i] = m4(h1*i, ht*(k-0.5));
-            }
-
-            for (unsigned int j=0; j<=N2; j++)
-            {
-                u1[j][0]  = m1(h2*j, ht*(k-0.5));
-                u1[j][N1] = m2(h2*j, ht*(k-0.5));
-            }
-
-            a.clear();
-            b.clear();
-            c.clear();
-            d.clear();
-            x.clear();
-
-            // Approximation to x2 direction
-            alpha1 = -(a1*ht)/(2.0*h1*h1);
-            beta1  = 1.0 + (a1*ht)/(h1*h1);
-            alpha2 = (a2*ht)/(2.0*h2*h2);
-            beta2  = 1.0 - (a2*ht)/(h2*h2);
-
-            a.resize(N2-1);
-            b.resize(N2-1);
-            c.resize(N2-1);
-            d.resize(N2-1);
-            x.resize(N2-1);
-
-            for (unsigned int j=1; j<N2; j++)
-            {
-                for (unsigned int i=1; i<N1; i++)
-                {
-                    a[i-1] = alpha1;
-                    b[i-1] = beta1;
-                    c[i-1] = alpha1;
-                    d[i-1] = alpha2*u1[j-1][i] + beta2*u1[j][i] + alpha2*u1[j+1][i] + (ht/2.0) * fxt(i, j, k, f);
-                }
-                a[0]     = 0.0;
-                c[N1-2]  = 0.0;
-                d[0]    -= alpha1 * m1(h2*j, ht*(k));
-                d[N1-2] -= alpha1 * m2(h2*j, ht*(k));
-                TomasAlgorithm(a, b, c, d, x);
-
-                u0[j][0]  = m1(h2*j, ht*(k));
-                for (unsigned int i=1; i<N1; i++)
-                {
-                    u0[j][i] = x[i-1];
-                }
-                u0[j][N1] = m2(h2*j, ht*(k));
-            }
-
-            for (unsigned int i=0; i<=N1; i++)
-            {
-                u0[0][i]  = m3(h1*i, ht*(k));
-                u0[N2][i] = m4(h1*i, ht*(k));
-            }
-
-            a.clear();
-            b.clear();
-            c.clear();
-            d.clear();
-            x.clear();
-        }
+        double betta = 1.0;
+        if (k==0 || k==M) betta = 0.5;
+        nrm += betta*(v[0*(M+1)+k] - v1(k*ht))*(v[0*(M+1)+k] - v1(k*ht));
+        nrm += betta*(v[1*(M+1)+k] - v2(k*ht))*(v[1*(M+1)+k] - v2(k*ht));
+        nrm += betta*(v[2*(M+1)+k] - v3(k*ht))*(v[2*(M+1)+k] - v3(k*ht));
     }
-
-    u = u0;
+    nrm = ht * nrm;
+    return nrm;
 }
 
-void HeatControl2DeltaF::calculateP(const DoubleVector &f, DoubleVector &g)
+void HeatControl2DeltaF::gradient(const DoubleVector& v, DoubleVector& g)
 {
-    DoubleMatrix psi0;
-    DoubleMatrix psi1;
+    pv = &v;
+    DoubleMatrix u;
+    IParabolicEquation2D::calculateU(u, h1, h2, ht, N1, N2, M, a1, a2);
 
+    pu = &u;
     std::vector<DoubleMatrix> psi;
-    psi.resize(M+1);
-    for (unsigned int k=0; k<=M; k++)
-    {
-        psi[k].resize(N2+1);
-        for (unsigned int j=0; j<=N2; j++)
-            psi[k][j].resize(N1+1);
-    }
+    IBackwardParabolicEquation2D::calculateU(psi, h1, h2, ht, N1, N2, M, a1, a2);
 
-    psi0.resize(N2+1); for (unsigned int j=0; j<=N2; j++) psi0[j].resize(N1+1);
-    psi1.resize(N2+1); for (unsigned int j=0; j<=N2; j++) psi1[j].resize(N1+1);
-
-    double alpha1 = 0;
-    double beta1  = 0;
-    double alpha2 = 0;
-    double beta2  = 0;
-
-    DoubleVector a;
-    DoubleVector b;
-    DoubleVector c;
-    DoubleVector d;
-    DoubleVector x;
-
-    for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;
-
-    for (unsigned int k1=0; k1<=M; k1++)
-    {
-        unsigned int k = M-k1;
-
-        if (k==M)
-        {
-            for (unsigned int j=0; j<=N2; j++)
-            {
-                for (unsigned i=0; i<=N1; i++)
-                {
-                    psi0[j][i] = -2.0*(uT[j][i] - U[j][i]);
-                }
-            }
-        }
-        else
-        {
-            // Approximation to x1 direction
-            alpha1 = -(a1*ht)/(2.0*h1*h1);
-            beta1  = 1.0 + (a1*ht)/(h1*h1);
-            alpha2 = +(a2*ht)/(2.0*h2*h2);
-            beta2  = 1.0 - (a2*ht)/(h2*h2);
-
-            a.resize(N1-1);
-            b.resize(N1-1);
-            c.resize(N1-1);
-            d.resize(N1-1);
-            x.resize(N1-1);
-
-            for (unsigned int j=1; j<N2; j++)
-            {
-                for (unsigned int i=1; i<N1; i++)
-                {
-                    a[i-1] = alpha1;
-                    b[i-1] = beta1;
-                    c[i-1] = alpha1;
-                    d[i-1] = alpha2*psi0[j-1][i] + beta2*psi0[j][i] + alpha2*psi0[j+1][i];
-                }
-
-                a[0]     = 0.0;
-                c[N1-2]  = 0.0;
-                d[0]    -= alpha1 * pm1(h2*j, ht*(k+0.5));
-                d[N1-2] -= alpha1 * pm2(h2*j, ht*(k+0.5));
-
-                TomasAlgorithm(a, b, c, d, x);
-
-                psi1[j][0]  = pm1(h2*j, ht*(k+0.5));
-                for (unsigned int i=1; i<N1; i++)
-                {
-                    psi1[j][i] = x[i-1];
-                }
-                psi1[j][N1] = pm2(h2*j, ht*(k+0.5));
-            }
-
-            for (unsigned int i=0; i<=N1; i++)
-            {
-                psi1[0][i]  = pm3(h1*i, ht*(k+0.5));
-                psi1[N2][i] = pm4(h1*i, ht*(k+0.5));
-            }
-
-            a.clear();
-            b.clear();
-            c.clear();
-            d.clear();
-            x.clear();
-
-            // Approximation to x2 direction
-            alpha1 = -(a2*ht)/(2.0*h2*h2);
-            beta1  = 1.0 + (a2*ht)/(h2*h2);
-            alpha2 = +(a1*ht)/(2.0*h1*h1);
-            beta2  = 1.0 - (a1*ht)/(h1*h1);
-
-            a.resize(N2-1);
-            b.resize(N2-1);
-            c.resize(N2-1);
-            d.resize(N2-1);
-            x.resize(N2-1);
-
-            for (unsigned int i=1; i<N1; i++)
-            {
-                for (unsigned int j=1; j<N2; j++)
-                {
-                    a[j-1] = alpha1;
-                    b[j-1] = beta1;
-                    c[j-1] = alpha1;
-                    d[j-1] = alpha2*psi1[j][i-1] + beta2*psi1[j][i] + alpha2*psi1[j][i+1];
-                }
-                a[0]     = 0.0;
-                c[N2-2]  = 0.0;
-                d[0]    -= alpha1 * pm3(h1*i, ht*k);
-                d[N2-2] -= alpha1 * pm4(h1*i, ht*k);
-                TomasAlgorithm(a, b, c, d, x);
-
-                psi0[0][i]  = pm3(h1*i, ht*k);
-                for (unsigned int j=1; j<N2; j++)
-                {
-                    psi0[j][i] = x[j-1];
-                }
-                psi0[N2][i] = pm4(h1*i, ht*k);
-            }
-
-            for (unsigned int j=0; j<=N2; j++)
-            {
-                psi0[j][0]  = pm1(h2*j, ht*k);
-                psi0[j][N1] = pm2(h2*j, ht*k);
-            }
-
-            a.clear();
-            b.clear();
-            c.clear();
-            d.clear();
-            x.clear();
-        }
-
-        psi[k] = psi0;
-    }
-
-    calculateG(f, g, psi);
-}
-
-void HeatControl2DeltaF::psiDerivative(double& psiX1, double& psiX2, double e1, double e2, const DoubleMatrix& psi)
-{
-    unsigned int i = (unsigned int)round(e1/h1);
-    unsigned int j = (unsigned int)round(e2/h2);
-
-    if (i==0)
-        psiX1  = (psi[j][i+1] - psi[j][i])/h1;
-    else if (i==N1)
-        psiX1 = (psi[j][i] - psi[j][i-1])/h1;
-    else
-        psiX1 = (psi[j][i+1] - psi[j][i-1])/(2.0*h1);
-
-    if (j==0)
-        psiX2 = (psi[j+1][i] - psi[j][i])/h2;
-    else if (j==N2)
-        psiX2 = (psi[j][i] - psi[j-1][i])/h2;
-    else
-        psiX2 = (psi[j+1][i] - psi[j-1][i])/(2.0*h2);
-}
-
-void HeatControl2DeltaF::calculateG(const DoubleVector &f, DoubleVector &g, const std::vector<DoubleMatrix>& psi)
-{
-//    unsigned int i,j;
-//    /* gradient of power */
-//    for (unsigned k=0; k<=M; k++)
+//    for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;
+//    for (unsigned int k=M; k!=(unsigned int)0-1; k--)
 //    {
-//        i = (unsigned int)round(E[0]/h1);
-//        j = (unsigned int)round(E[1]/h2);
-//        g[0*(M+1)+k] = -psi[k][j][i] + 2.0*alpha*(f[0*(M+1)+k] - f1(k*ht));
-//        i = (unsigned int)round(E[2]/h1);
-//        j = (unsigned int)round(E[3]/h2);
-//        g[1*(M+1)+k] = -psi[k][j][i] + 2.0*alpha*(f[1*(M+1)+k] - f2(k*ht));
-//        i = (unsigned int)round(E[4]/h1);
-//        j = (unsigned int)round(E[5]/h2);
-//        g[2*(M+1)+k] = -psi[k][j][i] + 2.0*alpha*(f[2*(M+1)+k] - f3(k*ht));
+//        calculateGF(v, psi[k], g, k);
 //    }
 
-    /* gradient of power */
+    for (unsigned int k=0; k<=M; k++)
+    {
+        unsigned int i1 = (unsigned int)round(E[0]/h1);
+        unsigned int j1 = (unsigned int)round(E[1]/h2);
+        g[0*(M+1)+k] = -psi[k][j1][i1] + 2.0*alpha*(v[0*(M+1)+k] - v1(k*ht));
+
+        unsigned int i2 = (unsigned int)round(E[2]/h1);
+        unsigned int j2 = (unsigned int)round(E[3]/h2);
+        g[1*(M+1)+k] = -psi[k][j2][i2] + 2.0*alpha*(v[1*(M+1)+k] - v2(k*ht));
+
+        unsigned int i3 = (unsigned int)round(E[4]/h1);
+        unsigned int j3 = (unsigned int)round(E[5]/h2);
+        g[2*(M+1)+k] = -psi[k][j3][i3] + 2.0*alpha*(v[2*(M+1)+k] - v3(k*ht));
+    }
+
+    psi.clear();
+    //    IGradient::Gradient(this, 0.0001, x, g);
+}
+
+void HeatControl2DeltaF::psiDerivative(double &psiX1, double &psiX2, double x1, double x2, const DoubleMatrix &psi)
+{
+    unsigned int i = (unsigned int)round(x1/h1);
+    unsigned int j = (unsigned int)round(x2/h2);
+
+    if (i==0) psiX1  = (psi[j][i+1] - psi[j][i])/h1;
+    else if (i==N1) psiX1 = (psi[j][i] - psi[j][i-1])/h1;
+    else psiX1 = (psi[j][i+1] - psi[j][i-1])/(2.0*h1);
+
+    if (j==0) psiX2 = (psi[j+1][i] - psi[j][i])/h2;
+    else if (j==N2) psiX2 = (psi[j][i] - psi[j-1][i])/h2;
+    else psiX2 = (psi[j+1][i] - psi[j-1][i])/(2.0*h2);
+}
+
+void HeatControl2DeltaF::calculateGF(const DoubleVector &v, const DoubleMatrix& psi, DoubleVector& g, unsigned int k)
+{
     for (unsigned k=0; k<=M; k++)
     {
-        double p[L];
-        p[0]=p[1]=p[2]=0.0;
-        for (unsigned int j=0; j<=N2; j++)
+        if (alpha < 1.0)
         {
-            for (unsigned int i=0; i<=N1; i++)
-            {
-                if (fabs(E[0]-i*h1)<h1 && fabs(E[1]-j*h2)<h2) p[0] += psi[k][j][i]*((h1-fabs(E[0]-i*h1))/h1)*((h2-fabs(E[1]-j*h2))/h2);
-                if (fabs(E[2]-i*h1)<h1 && fabs(E[3]-j*h2)<h2) p[1] += psi[k][j][i]*((h1-fabs(E[2]-i*h1))/h1)*((h2-fabs(E[3]-j*h2))/h2);
-                if (fabs(E[4]-i*h1)<h1 && fabs(E[5]-j*h2)<h2) p[2] += psi[k][j][i]*((h1-fabs(E[4]-i*h1))/h1)*((h2-fabs(E[5]-j*h2))/h2);
-            }
+            g[2*L+0*(M+1)+k] = 0.0;
+            g[2*L+1*(M+1)+k] = 0.0;
+            g[2*L+2*(M+1)+k] = 0.0;
         }
-        g[0*(M+1)+k] = -p[0] + 2.0*alpha*(f[0*(M+1)+k] - f1(k*ht));
-        g[1*(M+1)+k] = -p[1] + 2.0*alpha*(f[1*(M+1)+k] - f2(k*ht));
-        g[2*(M+1)+k] = -p[2] + 2.0*alpha*(f[2*(M+1)+k] - f3(k*ht));
+        else
+        {
+            double p[L];
+            p[0]=p[1]=p[2]=0.0;
+            for (unsigned int j=0; j<=N2; j++)
+            {
+                for (unsigned int i=0; i<=N1; i++)
+                {
+                    if (fabs(E[0]-i*h1)<h1 && fabs(E[1]-j*h2)<h2) p[0] += psi[j][i]*((h1-fabs(E[0]-i*h1))/h1)*((h2-fabs(E[1]-j*h2))/h2);
+                    if (fabs(E[2]-i*h1)<h1 && fabs(E[3]-j*h2)<h2) p[1] += psi[j][i]*((h1-fabs(E[2]-i*h1))/h1)*((h2-fabs(E[3]-j*h2))/h2);
+                    if (fabs(E[4]-i*h1)<h1 && fabs(E[5]-j*h2)<h2) p[2] += psi[j][i]*((h1-fabs(E[4]-i*h1))/h1)*((h2-fabs(E[5]-j*h2))/h2);
+                }
+            }
+            g[2*L+0*(M+1)+k] = -p[0] + 2.0*alpha*(v[0*(M+1)+k] - v1(k*ht));
+            g[2*L+1*(M+1)+k] = -p[1] + 2.0*alpha*(v[1*(M+1)+k] - v2(k*ht));
+            g[2*L+2*(M+1)+k] = -p[2] + 2.0*alpha*(v[2*(M+1)+k] - v3(k*ht));
+        }
     }
 }
 
-double HeatControl2DeltaF::fxt(unsigned int i, unsigned int j, unsigned k, const DoubleVector &f)
+double HeatControl2DeltaF::fi(unsigned int i, unsigned int j) const
 {
     double x1 = i*h1;
     double x2 = j*h2;
-    //double t  = k*ht;
-    double sum = 0.0;
+    return u(x1, x2, t0);
+}
 
-    if (fabs(x1-E[0])<=h1 && fabs(x2-E[1])<=h2)
-    {
-        //sum += f1(t) * ((h1-fabs(x1-E[0]))/(h1*h1))*((h2-fabs(x2-E[1]))/(h2*h2));
-        sum += f[0*(M+1)+k] * ((h1-fabs(x1-E[0]))/(h1*h1))*((h2-fabs(x2-E[1]))/(h2*h2));
-        //sum += (e[6+0*(M+1)+k] - f1(t)) * ((h1-fabs(x1-e[0]))/(h1*h1))*((h2-fabs(x2-e[1]))/(h2*h2));
-    }
-    if (fabs(x1-E[2])<=h1 && fabs(x2-E[3])<=h2)
-    {
-        //sum += f2(t) * ((h1-fabs(x1-E[2]))/(h1*h1))*((h2-fabs(x2-E[3]))/(h2*h2));
-        sum += f[1*(M+1)+k] * ((h1-fabs(x1-E[2]))/(h1*h1))*((h2-fabs(x2-E[3]))/(h2*h2));
-        //sum += (e[6+1*(M+1)+k] - f2(t)) * ((h1-fabs(x1-e[2]))/(h1*h1))*((h2-fabs(x2-e[3]))/(h2*h2));
-    }
-    if (fabs(x1-E[4])<=h1 && fabs(x2-E[5])<=h2)
-    {
-        //sum += f3(t) * ((h1-fabs(x1-E[4]))/(h1*h1))*((h2-fabs(x2-E[5]))/(h2*h2));
-        sum += f[2*(M+1)+k] * ((h1-fabs(x1-E[4]))/(h1*h1))*((h2-fabs(x2-E[5]))/(h2*h2));
-        //sum += (e[6+2*(M+1)+k]-f3(t)) * ((h1-fabs(x1-e[4]))/(h1*h1))*((h2-fabs(x2-e[5]))/(h2*h2));
-    }
+double HeatControl2DeltaF::m1(unsigned int j, unsigned int k) const
+{
+    double x2 = j*h2;
+    double t  = 0.5*k*ht;
+    return u(x10, x2, t);
+}
+
+double HeatControl2DeltaF::m2(unsigned int j, unsigned int k) const
+{
+    double x2 = j*h2;
+    double t  = 0.5*(k*ht);
+    return u(x11, x2, t);
+}
+
+double HeatControl2DeltaF::m3(unsigned int i, unsigned int k) const
+{
+    double x1 = i*h1;
+    double t  = 0.5*k*ht;
+    return u(x1, x20, t);
+}
+
+double HeatControl2DeltaF::m4(unsigned int i, unsigned int k) const
+{
+    double x1 = i*h1;
+    double t  = 0.5*k*ht;
+    return u(x1, x21, t);
+}
+
+double HeatControl2DeltaF::f(unsigned int i, unsigned int j, unsigned int k) const
+{
+    //double x1 = i*h1;
+    //double x2 = j*h2;
+    //double t  = 0.5*k*ht;
+
+    double sum = 0.0;
+    double k1 = (k%2==0 ? k/2 : (k+1)/2);
+
+    double _v1 = (*pv)[0*(M+1)+k1];
+    double _v2 = (*pv)[1*(M+1)+k1];
+    double _v3 = (*pv)[2*(M+1)+k1];
+
+    unsigned int i1 = (unsigned int)round(E[0]/h1);
+    unsigned int j1 = (unsigned int)round(E[1]/h2);
+    if (i==i1 && j==j1) sum += (1.0/(h1*h2)) * _v1;
+
+    unsigned int i2 = (unsigned int)round(E[2]/h1);
+    unsigned int j2 = (unsigned int)round(E[3]/h2);
+    if (i==i2 && j==j2) sum += (1.0/(h1*h2)) * _v2;
+
+    unsigned int i3 = (unsigned int)round(E[4]/h1);
+    unsigned int j3 = (unsigned int)round(E[5]/h2);
+    if (i==i3 && j==j3) sum += (1.0/(h1*h2)) * _v3;
+
+    //    double sgm1 = 3.0*h1;
+    //    double sgm2 = 3.0*h2;
+    //    double gause_a = 1.0/(2.0*M_PI*sgm1*sgm2);
+    //    double gause_b = 2.0*sgm1*sgm2;
+
+    //    sum += _v1 * gause_a * exp(-((x1-E[0])*(x1-E[0]) + (x2-E[1])*(x2-E[1]))/gause_b);
+    //    sum += _v2 * gause_a * exp(-((x1-E[2])*(x1-E[2]) + (x2-E[3])*(x2-E[3]))/gause_b);
+    //    sum += _v3 * gause_a * exp(-((x1-E[4])*(x1-E[4]) + (x2-E[5])*(x2-E[5]))/gause_b);
+
+    //    sum += g1(t) * gause_a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/gause_b);// * h1*h2;
+    //    sum += g2(t) * gause_a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/gause_b);// * h1*h2;
+    //    sum += g3(t) * gause_a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/gause_b);// * h1*h2;
+
+    //    DoubleVector e(2*L);
+    //    for (unsigned int l=0; l<L; l++)
+    //    {
+    //        e[2*l+0] = (*px)[2*l+0];
+    //        e[2*l+1] = (*px)[2*l+1];
+    //    }
+
+    //    if (fabs(x1-e[0])<=h1 && fabs(x2-e[1])<=h2)
+    //    {
+    //        sum += g1(t) * ((h1-fabs(x1-e[0]))/(h1*h1))*((h2-fabs(x2-e[1]))/(h2*h2));
+    //    }
+    //    if (fabs(x1-e[2])<=h1 && fabs(x2-e[3])<=h2)
+    //    {
+    //        sum += g2(t) * ((h1-fabs(x1-e[2]))/(h1*h1))*((h2-fabs(x2-e[3]))/(h2*h2));
+    //    }
+    //    if (fabs(x1-e[4])<=h1 && fabs(x2-e[5])<=h2)
+    //    {
+    //        sum += g3(t) * ((h1-fabs(x1-e[4]))/(h1*h1))*((h2-fabs  v c  v (x2-e[5]))/(h2*h2));
+    //    }
 
     return sum;
 }
 
-void HeatControl2DeltaF::initialize()
+double HeatControl2DeltaF::bfi(unsigned int i, unsigned int j) const { return -2.0*((*pu)[j][i] - U[j][i]); }
+
+double HeatControl2DeltaF::bm1(unsigned int j, unsigned int k) const
 {
-    DoubleVector f;
-    f.resize((M+1)*L);
-
-    E.resize(2*L);
-    E[0] = 0.2; E[1] = 0.5;
-    E[2] = 0.5; E[3] = 0.6;
-    E[4] = 0.8; E[5] = 0.7;
-
-    for (unsigned int k=0; k<=M; k++)
-    {
-        f[0*(M+1)+k] = f1(k*ht);
-        f[1*(M+1)+k] = f2(k*ht);
-        f[2*(M+1)+k] = f3(k*ht);
-    }
-
-    U.resize(N2+1);
-    for (unsigned int j=0; j<=N2; j++)
-    {
-        U[j].resize(N1+1);
-    }
-
-    calculateU(f, U);
-
-    puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
-    IPrinter::printMatrix(U, N2/10, N1/10);
-    puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
-    //exit(-1);
+    return 0.0;
 }
 
-void HeatControl2DeltaF::print(unsigned int i, const DoubleVector &e, const DoubleVector &s, double a, RnFunction *f) const
+double HeatControl2DeltaF::bm2(unsigned int j, unsigned int k) const
 {
-    printf("J: %.16f\n", f->fx(e));
+    return 0.0;
+}
+
+double HeatControl2DeltaF::bm3(unsigned int i, unsigned int k) const
+{
+    return 0.0;
+}
+
+double HeatControl2DeltaF::bm4(unsigned int i, unsigned int k) const
+{
+    return 0.0;
+}
+
+double HeatControl2DeltaF::bf(unsigned int i, unsigned int j, unsigned int k) const { return 0.0; }
+
+void HeatControl2DeltaF::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double alpha, RnFunction* fn) const
+{
+    HeatControl2DeltaF *hc = dynamic_cast<HeatControl2DeltaF*>(fn);
+    printf("J[%d]: %.16f\n", i, hc->fx(x));
+    IPrinter::printVector(x, "v1:", 10, 0*(M+1), 0*(M+1) + M);
+    IPrinter::printVector(x, "v2:", 10, 1*(M+1), 1*(M+1) + M);
+    IPrinter::printVector(x, "v3:", 10, 2*(M+1), 2*(M+1) + M);
 }
 
 void HeatControl2DeltaF::project(DoubleVector &e, int index)
 {
-//    for (unsigned int i=0; i<6; i++)
-//    {
-//        if (e[i] < 0.0) e[i] = 0.0;
-//        if (e[i] > 1.0) e[i] = 1.0;
-//    }
+    if (index<6)
+    {
+        if (e[index] > 1.0) e[index] = 1.0;
+        if (e[index] < 0.0) e[index] = 0.0;
+    }
 }

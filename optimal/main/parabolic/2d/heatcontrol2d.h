@@ -18,10 +18,6 @@ public:
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
     virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &s, double a, RnFunction *f) const;
 
-    static void main();
-private:
-    double u(double x1, double x2, double t) const;
-
     double fi(unsigned int i, unsigned int j) const;
     double m1(unsigned int j, unsigned int k) const;
     double m2(unsigned int j, unsigned int k) const;
@@ -36,6 +32,9 @@ private:
     double bm4(unsigned int i, unsigned int k) const;
     double bf(unsigned int i, unsigned int j, unsigned int k) const;
 
+    static void main();
+private:
+    double u(double x1, double x2, double t) const;
     double fxt(double x1, double x2, double t);
 
     unsigned int N1;

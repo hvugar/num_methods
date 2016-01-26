@@ -1,51 +1,55 @@
 #ifndef HEATCONTROL2DELTAF_H
 #define HEATCONTROL2DELTAF_H
 
+#include <math.h>
+#include <stdlib.h>
+#include <windows.h>
+
 #include <function.h>
-#include <doublevector.h>
+#include <parabolicequation.h>
 #include <printer.h>
 #include <projection.h>
-#include <stdlib.h>
+#include <tomasmethod.h>
+#include <gradient_cjt.h>
+#include <gradient_sd.h>
 
-class HeatControl2DeltaF : public RnFunction, IPrinter, Projection
+class HeatControl2DeltaF : public RnFunction, public IGradient, public IParabolicEquation2D, public IBackwardParabolicEquation2D, public IPrinter, public Projection
 {
 public:
-    HeatControl2DeltaF(unsigned int M, unsigned int N2, unsigned int N1);
-    virtual ~HeatControl2DeltaF();
+    HeatControl2DeltaF(unsigned int m, unsigned int n2, unsigned int n1);
+    virtual ~HeatControl2DeltaF() {}
 
-    double fx(const DoubleVector& e);
-    void gradient(const DoubleVector& e, DoubleVector& g, double gradient_step);
+    virtual double fx(const DoubleVector &v);
+    virtual void gradient(const DoubleVector &v, DoubleVector &g);
+    virtual void print(unsigned int iteration, const DoubleVector &v, const DoubleVector &g, double alpha, RnFunction* fn) const;
+    virtual void project(DoubleVector &v, int index);
 
-    void calculateU(const DoubleVector& f, DoubleMatrix& u);
-    void calculateP(const DoubleVector& f, DoubleVector& g);
-    void calculateG(const DoubleVector &f, DoubleVector &g, const std::vector<DoubleMatrix>& psi);
+    virtual double fi(unsigned int i, unsigned int j) const;
+    virtual double m1(unsigned int j, unsigned int k) const;
+    virtual double m2(unsigned int j, unsigned int k) const;
+    virtual double m3(unsigned int i, unsigned int k) const;
+    virtual double m4(unsigned int i, unsigned int k) const;
+    virtual double f(unsigned int i, unsigned int j, unsigned int k) const;
 
-    double u(double x1, double x2, double t) { return x1*x1 + x2*x2 + t*t; }
+    virtual double bfi(unsigned int i, unsigned int j) const;
+    virtual double bm1(unsigned int j, unsigned int k) const;
+    virtual double bm2(unsigned int j, unsigned int k) const;
+    virtual double bm3(unsigned int i, unsigned int k) const;
+    virtual double bm4(unsigned int i, unsigned int k) const;
+    virtual double bf(unsigned int i, unsigned int j, unsigned int k) const;
 
-    DoubleMatrix U;
-    DoubleMatrix uT;
+    void calculateGF(const DoubleVector &v, const DoubleMatrix& psi, DoubleVector& g, unsigned int k);
 
     static void main();
-
 private:
-    double fi(double x1, double x2) { return u(x1, x2, t0); }
-    double m1(double x2, double t) { return u(x10, x2, t); }
-    double m2(double x2, double t) { return u(x11, x2, t); }
-    double m3(double x1, double t) { return u(x1, x20, t); }
-    double m4(double x1, double t) { return u(x1, x21, t); }
+    double u(double x1, double x2, double t) const { return x1*x1 + x2*x2 + t*t; }
+    double norm(const DoubleVector& v) const;
 
-    double fxt(unsigned int i, unsigned int j, unsigned k, const DoubleVector &f);
+    inline double v1(double t) const { return 10*t; }
+    inline double v2(double t) const { return 20*t; }
+    inline double v3(double t) const { return 30*t; }
 
-    double pm1(double x2, double t) { return 0.0; }
-    double pm2(double x2, double t) { return 0.0; }
-    double pm3(double x1, double t) { return 0.0; }
-    double pm4(double x1, double t) { return 0.0; }
-
-    double f1(double t) { return t; }
-    double f2(double t) { return t*t; }
-    double f3(double t) { return t*t*t; }
-
-    void psiDerivative(double &psiX1, double& psiX2, double e1, double e2, const DoubleMatrix& psi);
+    inline void psiDerivative(double &psiX1, double &psiX2, double e1, double e2, const DoubleMatrix &psi);
 
     double t0;
     double t1;
@@ -58,7 +62,6 @@ private:
     unsigned int M;
     unsigned int N1;
     unsigned int N2;
-    unsigned int C;
     unsigned int L;
 
     double a1;
@@ -69,12 +72,13 @@ private:
     double ht;
 
     double alpha;
+    double gause_a;
+    double gause_b;
 
+    DoubleMatrix U;
+    const DoubleVector *pv;
+    const DoubleMatrix *pu;
     DoubleVector E;
-
-    void initialize();
-    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
-    virtual void project(DoubleVector &x, int index);
 };
 
 #endif // HEATCONTROL2DELTAF_H

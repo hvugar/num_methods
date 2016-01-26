@@ -14,9 +14,9 @@ void HeatControlDeltaX::main()
     ConjugateGradient g2;
     g2.setGradient(&hc);
     g2.setFunction(&hc);
-    g2.setEpsilon1(0.0000001);
-    g2.setEpsilon2(0.0000001);
-    g2.setEpsilon3(0.0000001);
+    g2.setEpsilon1(0.0001);
+    g2.setEpsilon2(0.0001);
+    g2.setEpsilon3(0.0001);
     g2.setR1MinimizeEpsilon(1.0, 0.0001);
     g2.setPrinter(&hc);
     g2.setProjection(&hc);
@@ -220,7 +220,7 @@ void HeatControlDeltaX::project(DoubleVector &e, int index)
 {
     for (unsigned int l=0; l<L; l++)
     {
-        if (e[l] < x0) e[l] = x0;
-        if (e[l] > x1) e[l] = x1;
+        if (e[l] < x0) e[l] = x0+hx;
+        if (e[l] > x1) e[l] = x1-hx;
     }
 }

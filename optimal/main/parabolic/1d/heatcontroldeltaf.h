@@ -51,7 +51,7 @@ private:
     double e;
     unsigned int E;
 
-    double f1(double t) { return 2*t; }
+    double f1(double t) { return 2.0*t+3.0; }
     inline double u(double x, double t) const { return x*x+t*t; }
     const DoubleVector* pf;
     const DoubleVector* pu;

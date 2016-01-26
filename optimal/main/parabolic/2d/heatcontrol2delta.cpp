@@ -1,17 +1,11 @@
 #include "heatcontrol2delta.h"
-#include <tomasmethod.h>
-#include <gradient_cjt.h>
-#include <gradient_sd.h>
-#include <math.h>
-#include <stdlib.h>
-#include <windows.h>
 
 //#define PLACE_OPTIMIZE
 //#define POWER_OPTIMIZE
 
 void HeatControl2Delta::main()
 {
-    HeatControl2Delta hc(1000, 1000, 1000);
+    HeatControl2Delta hc(100, 100, 100);
 
     hc.O.resize(2*hc.L);
     hc.O[0] = 0.50;
@@ -22,7 +16,6 @@ void HeatControl2Delta::main()
     hc.O[5] = 0.30;
 
     hc.initialize();
-    return;
 
     DoubleVector x;
 #ifdef POWER_OPTIMIZE
@@ -137,9 +130,9 @@ double HeatControl2Delta::norm(const DoubleVector& x) const
     {
         double betta = 1.0;
         if (k==0 || k==M) betta = 0.5;
-        nrm += betta*(x[2*L+0*(M+1)+k] - g1(k*ht))*(x[2*L+0*(M+1)+k] - g1(k*ht));
-        nrm += betta*(x[2*L+1*(M+1)+k] - g2(k*ht))*(x[2*L+1*(M+1)+k] - g2(k*ht));
-        nrm += betta*(x[2*L+2*(M+1)+k] - g3(k*ht))*(x[2*L+2*(M+1)+k] - g3(k*ht));
+        nrm += betta*(x[2*L+0*(M+1)+k] - v1(k*ht))*(x[2*L+0*(M+1)+k] - v1(k*ht));
+        nrm += betta*(x[2*L+1*(M+1)+k] - v2(k*ht))*(x[2*L+1*(M+1)+k] - v2(k*ht));
+        nrm += betta*(x[2*L+2*(M+1)+k] - v3(k*ht))*(x[2*L+2*(M+1)+k] - v3(k*ht));
     }
     nrm = ht * nrm;
 
@@ -199,26 +192,26 @@ void HeatControl2Delta::calculateGX(const DoubleVector& x, const DoubleMatrix& p
     if (k==0 || k==M)
     {
         psiDerivative(psiX1, psiX2, x[0], x[1], psi);
-        g[0] = g[0] + g1(k*ht) * psiX1;
-        g[1] = g[1] + g1(k*ht) * psiX2;
+        g[0] = g[0] + v1(k*ht) * psiX1;
+        g[1] = g[1] + v1(k*ht) * psiX2;
         psiDerivative(psiX1, psiX2, x[2], x[3], psi);
-        g[2] = g[2] + g2(k*ht) * psiX1;
-        g[3] = g[3] + g2(k*ht) * psiX2;
+        g[2] = g[2] + v2(k*ht) * psiX1;
+        g[3] = g[3] + v2(k*ht) * psiX2;
         psiDerivative(psiX1, psiX2, x[4], x[5], psi);
-        g[4] = g[4] + g3(k*ht) * psiX1;
-        g[5] = g[5] + g3(k*ht) * psiX2;
+        g[4] = g[4] + v3(k*ht) * psiX1;
+        g[5] = g[5] + v3(k*ht) * psiX2;
     }
     else
     {
         psiDerivative(psiX1, psiX2, x[0], x[1], psi);
-        g[0] = g[0] + 2.0*g1(k*ht) * psiX1;
-        g[1] = g[1] + 2.0*g1(k*ht) * psiX2;
+        g[0] = g[0] + 2.0*v1(k*ht) * psiX1;
+        g[1] = g[1] + 2.0*v1(k*ht) * psiX2;
         psiDerivative(psiX1, psiX2, x[2], x[3], psi);
-        g[2] = g[2] + 2.0*g2(k*ht) * psiX1;
-        g[3] = g[3] + 2.0*g2(k*ht) * psiX2;
+        g[2] = g[2] + 2.0*v2(k*ht) * psiX1;
+        g[3] = g[3] + 2.0*v2(k*ht) * psiX2;
         psiDerivative(psiX1, psiX2, x[4], x[5], psi);
-        g[4] = g[4] + 2.0*g3(k*ht) * psiX1;
-        g[5] = g[5] + 2.0*g3(k*ht) * psiX2;
+        g[4] = g[4] + 2.0*v3(k*ht) * psiX1;
+        g[5] = g[5] + 2.0*v3(k*ht) * psiX2;
     }
 
     if (k==0)
@@ -269,9 +262,9 @@ void HeatControl2Delta::calculateGF(const DoubleVector &x, const DoubleMatrix& p
                     if (fabs(x[4]-i*h1)<h1 && fabs(x[5]-j*h2)<h2) p[2] += psi[j][i]*((h1-fabs(x[4]-i*h1))/h1)*((h2-fabs(x[5]-j*h2))/h2);
                 }
             }
-            g[2*L+0*(M+1)+k] = -p[0] + 2.0*alpha*(x[2*L+0*(M+1)+k] - g1(k*ht));
-            g[2*L+1*(M+1)+k] = -p[1] + 2.0*alpha*(x[2*L+1*(M+1)+k] - g2(k*ht));
-            g[2*L+2*(M+1)+k] = -p[2] + 2.0*alpha*(x[2*L+2*(M+1)+k] - g3(k*ht));
+            g[2*L+0*(M+1)+k] = -p[0] + 2.0*alpha*(x[2*L+0*(M+1)+k] - v1(k*ht));
+            g[2*L+1*(M+1)+k] = -p[1] + 2.0*alpha*(x[2*L+1*(M+1)+k] - v2(k*ht));
+            g[2*L+2*(M+1)+k] = -p[2] + 2.0*alpha*(x[2*L+2*(M+1)+k] - v3(k*ht));
         }
     }
 }
@@ -350,9 +343,9 @@ double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k) cons
     double gause_b = 2.0*sgm1*sgm2;
 
     double sum = 0.0;
-    sum += g1(t) * gause_a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/gause_b);// * h1*h2;
-    sum += g2(t) * gause_a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/gause_b);// * h1*h2;
-    sum += g3(t) * gause_a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/gause_b);// * h1*h2;
+    sum += v1(t) * gause_a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/gause_b);// * h1*h2;
+    sum += v2(t) * gause_a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/gause_b);// * h1*h2;
+    sum += v3(t) * gause_a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/gause_b);// * h1*h2;
 
     //    DoubleVector e(2*L);
     //    for (unsigned int l=0; l<L; l++)
@@ -448,9 +441,9 @@ void HeatControl2Delta::initialize()
 
     write("optimal.txt", U);
 
-//    FILE* f = fopen("optimal1.txt", "w");
-//    IPrinter::printMatrix(U, N1, N2, NULL, f);
-//    fclose(f);
+    FILE* f = fopen("optimal1.txt", "w");
+    IPrinter::printMatrix(U, N1, N2, NULL, f);
+    fclose(f);
 }
 
 void HeatControl2Delta::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double alpha, RnFunction* fn) const
