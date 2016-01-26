@@ -129,23 +129,6 @@ double HeatControl2DeltaX::norm(const DoubleVector& v) const
         nrm += betta*(v[2*L+2*(M+1)+k] - v3(k*ht))*(v[2*L+2*(M+1)+k] - v3(k*ht));
     }
     nrm = ht * nrm;
-
-    //    double p;
-    //    for (unsigned int l=0; l<L; l++)
-    //    {
-    //        for (unsigned int k=0; k<=M; k++)
-    //        {
-    //            if (k==0 || k==M) p = 1.0; else p = 2.0;
-
-    //            switch(l)
-    //            {
-    //            case 0: { nrm += p*(ht/2.0)*(x[2*L+0*(M+1)+k] - g1(k*ht))*(x[2*L+0*(M+1)+k] - g1(k*ht)); } break;
-    //            case 1: { nrm += p*(ht/2.0)*(x[2*L+1*(M+1)+k] - g2(k*ht))*(x[2*L+1*(M+1)+k] - g2(k*ht)); } break;
-    //            case 2: { nrm += p*(ht/2.0)*(x[2*L+2*(M+1)+k] - g3(k*ht))*(x[2*L+2*(M+1)+k] - g3(k*ht)); } break;
-    //            }
-    //        }
-    //    }
-
     return nrm;
 }
 

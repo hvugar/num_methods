@@ -1,7 +1,8 @@
 #include "heatcontrol2delta.h"
 
-//#define PLACE_OPTIMIZE
-//#define POWER_OPTIMIZE
+// Optimal points [0.50,0.80] [0.70,0.20] [0.20,0.30]
+// Working points [0.60,0.70] [0.65,0.25] [0.25,0.35] epsilon1 0.0001 epsilon2 0.0001 epsilon3: 0.0001. min:1.0 0.0001
+// Working points [0.60,0.70] [0.60,0.30] [0.30,0.40] epsilon1 0.0001 epsilon2 0.0001 epsilon3: 0.0001. min:1.0 0.0001
 
 void HeatControl2Delta::main()
 {
@@ -17,25 +18,15 @@ void HeatControl2Delta::main()
 
     hc.initialize();
 
-    DoubleVector x;
-#ifdef POWER_OPTIMIZE
-    x.resize( 2*hc.L + (hc.M+1)*hc.L );
-#else
-    x.resize( 2*hc.L );
-#endif
+    DoubleVector x(2*hc.L + (hc.M+1)*hc.L);
+    x[0] = 0.60; x[1] = 0.70; x[2] = 0.65; x[3] = 0.25; x[4] = 0.25; x[5] = 0.35;
 
-    //x[0] = 0.50; x[1] = 0.80; x[2] = 0.70; x[3] = 0.20; x[4] = 0.20; x[5] = 0.30; optimal
-    x[0] = 0.60; x[1] = 0.70; x[2] = 0.65; x[3] = 0.25; x[4] = 0.25; x[5] = 0.35; //ishleyir eps1:0.0001 eps2:0.0001 min:1.0, 0.0001
-    //x[0] = 0.60; x[1] = 0.70; x[2] = 0.60; x[3] = 0.30; x[4] = 0.30; x[5] = 0.40; //ishleyir eps1:0.0001 eps2:0.0001 min:1.0, 0.0001
-
-#ifdef POWER_OPTIMIZE
     for (unsigned int k=0; k<=hc.M; k++)
     {
-        x[2*hc.L + 0*(hc.M+1) + k] = 1.0;//hc.g1(k*hc.ht);
-        x[2*hc.L + 1*(hc.M+1) + k] = 1.0;//hc.g2(k*hc.ht);
-        x[2*hc.L + 2*(hc.M+1) + k] = 1.0;//hc.g3(k*hc.ht);
+        x[2*hc.L + 0*(hc.M+1) + k] = 1.0;//hc.v1(k*hc.ht);
+        x[2*hc.L + 1*(hc.M+1) + k] = 1.0;//hc.v2(k*hc.ht);
+        x[2*hc.L + 2*(hc.M+1) + k] = 1.0;//hc.v3(k*hc.ht);
     }
-#endif
 
     /* Minimization */
     ConjugateGradient g2;
@@ -117,10 +108,9 @@ double HeatControl2Delta::fx(const DoubleVector& x)
     }
     sum = (h1*h2)*sum;
 
-#ifdef POWER_OPTIMIZE
-    sum = sum + alpha*norm(x);
-#endif
-    return sum;
+    double nrm = 0.0;
+    //nrm = norm(x);
+    return sum + alpha*nrm;
 }
 
 double HeatControl2Delta::norm(const DoubleVector& x) const
@@ -135,34 +125,12 @@ double HeatControl2Delta::norm(const DoubleVector& x) const
         nrm += betta*(x[2*L+2*(M+1)+k] - v3(k*ht))*(x[2*L+2*(M+1)+k] - v3(k*ht));
     }
     nrm = ht * nrm;
-
-    //    double p;
-    //    for (unsigned int l=0; l<L; l++)
-    //    {
-    //        for (unsigned int k=0; k<=M; k++)
-    //        {
-    //            if (k==0 || k==M) p = 1.0; else p = 2.0;
-
-    //            switch(l)
-    //            {
-    //            case 0: { nrm += p*(ht/2.0)*(x[2*L+0*(M+1)+k] - g1(k*ht))*(x[2*L+0*(M+1)+k] - g1(k*ht)); } break;
-    //            case 1: { nrm += p*(ht/2.0)*(x[2*L+1*(M+1)+k] - g2(k*ht))*(x[2*L+1*(M+1)+k] - g2(k*ht)); } break;
-    //            case 2: { nrm += p*(ht/2.0)*(x[2*L+2*(M+1)+k] - g3(k*ht))*(x[2*L+2*(M+1)+k] - g3(k*ht)); } break;
-    //            }
-    //        }
-    //    }
-
+    if (nrm < 0.00001) const_cast<HeatControl2Delta*>(this)->alpha = 0.0;
     return nrm;
 }
 
 void HeatControl2Delta::gradient(const DoubleVector& x, DoubleVector& g)
 {
-//#ifdef POWER_OPTIMIZE
-//    double nm = norm(x);
-//    if (nm < 0.00001) alpha = 0.0;
-//    printf("Norma: %.16f Alha: %.f\n", nm, alpha);
-//#endif
-
     px = &x;
     DoubleMatrix u;
     IParabolicEquation2D::calculateU(u, h1, h2, ht, N1, N2, M, a1, a2);
@@ -176,10 +144,23 @@ void HeatControl2Delta::gradient(const DoubleVector& x, DoubleVector& g)
     for (unsigned int k=M; k!=(unsigned int)0-1; k--)
     {
         calculateGX(x, psi[k], g, k);
-//#ifdef POWER_OPTIMIZE
-//        calculateGF(x, psi[k], g, k);
-//#endif
+        //calculateGF(x, psi[k], g, k);
     }
+
+//    for (unsigned int k=0; k<=M; k++)
+//    {
+//        unsigned int i1 = (unsigned int)round(E[0]/h1);
+//        unsigned int j1 = (unsigned int)round(E[1]/h2);
+//        g[0*(M+1)+k] = -psi[k][j1][i1] + 2.0*alpha*(v[0*(M+1)+k] - v1(k*ht));
+
+//        unsigned int i2 = (unsigned int)round(E[2]/h1);
+//        unsigned int j2 = (unsigned int)round(E[3]/h2);
+//        g[1*(M+1)+k] = -psi[k][j2][i2] + 2.0*alpha*(v[1*(M+1)+k] - v2(k*ht));
+
+//        unsigned int i3 = (unsigned int)round(E[4]/h1);
+//        unsigned int j3 = (unsigned int)round(E[5]/h2);
+//        g[2*(M+1)+k] = -psi[k][j3][i3] + 2.0*alpha*(v[2*(M+1)+k] - v3(k*ht));
+//    }
 
     psi.clear();
 //    IGradient::Gradient(this, 0.0001, x, g);
@@ -327,32 +308,18 @@ double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k) cons
 {
     double x1 = i*h1;
     double x2 = j*h2;
-    double t  = 0.5*k*ht;
+    //double t  = 0.5*k*ht;
+    double k1 = (k%2==0 ? k/2 : (k+1)/2);
+    const DoubleVector &x = *px;
 
-    DoubleVector e(6);
-    e[0] = (*px)[0];
-    e[1] = (*px)[1];
-    e[2] = (*px)[2];
-    e[3] = (*px)[3];
-    e[4] = (*px)[4];
-    e[5] = (*px)[5];
-
-    double sgm1 = 3.0*h1;
-    double sgm2 = 3.0*h2;
-    double gause_a = 1.0/(2.0*M_PI*sgm1*sgm2);
-    double gause_b = 2.0*sgm1*sgm2;
+    double _v1 = x[2*L+0*(M+1)+k1];
+    double _v2 = x[2*L+1*(M+1)+k1];
+    double _v3 = x[2*L+2*(M+1)+k1];
 
     double sum = 0.0;
-    sum += v1(t) * gause_a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/gause_b);// * h1*h2;
-    sum += v2(t) * gause_a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/gause_b);// * h1*h2;
-    sum += v3(t) * gause_a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/gause_b);// * h1*h2;
-
-    //    DoubleVector e(2*L);
-    //    for (unsigned int l=0; l<L; l++)
-    //    {
-    //        e[2*l+0] = (*px)[2*l+0];
-    //        e[2*l+1] = (*px)[2*l+1];
-    //    }
+    sum += _v1 * gause_a * exp(-((x1-x[0])*(x1-x[0]) + (x2-x[1])*(x2-x[1]))/gause_b);
+    sum += _v2 * gause_a * exp(-((x1-x[2])*(x1-x[2]) + (x2-x[3])*(x2-x[3]))/gause_b);
+    sum += _v3 * gause_a * exp(-((x1-x[4])*(x1-x[4]) + (x2-x[5])*(x2-x[5]))/gause_b);
 
     //    if (fabs(x1-e[0])<=h1 && fabs(x2-e[1])<=h2)
     //    {
@@ -366,18 +333,6 @@ double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k) cons
     //    {
     //        sum += g3(t) * ((h1-fabs(x1-e[4]))/(h1*h1))*((h2-fabs  v c  v (x2-e[5]))/(h2*h2));
     //    }
-
-    //#ifdef POWER_OPTIMIZE
-    //    double _g1 = (*px)[2*L + 0*(M+1) + k];
-    //    double _g2 = (*px)[2*L + 1*(M+1) + k];
-    //    double _g3 = (*px)[2*L + 2*(M+1) + k];
-
-    //    sum += (_g1) * a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/b);
-    //    sum += (_g2) * a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/b);
-    //    sum += (_g3) * a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/b);
-    //#else
-
-    e.clear();
     return sum;
 }
 
