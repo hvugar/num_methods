@@ -16,17 +16,17 @@ void HeatControl2DeltaF::main()
     SteepestDescentGradient g2;
     g2.setFunction(&hc);
     g2.setGradient(&hc);
-    g2.setEpsilon1(0.00001);
-    g2.setEpsilon2(0.00001);
-    g2.setEpsilon3(0.00001);
-    g2.setR1MinimizeEpsilon(1.0, 0.00001);
+    g2.setEpsilon1(0.0001);
+    g2.setEpsilon2(0.0001);
+    g2.setEpsilon3(0.0001);
+    g2.setR1MinimizeEpsilon(1.0, 0.0001);
     g2.setPrinter(&hc);
     g2.setProjection(&hc);
     g2.setNormalize(true);
     g2.calculate(v);
 
     DoubleVector gr1(v.size());
-    IGradient::Gradient(&hc, 0.00001, v, gr1);
+    IGradient::Gradient(&hc, 0.0001, v, gr1);
     gr1.L2Normalize();
 
     DoubleVector gr2(v.size());
