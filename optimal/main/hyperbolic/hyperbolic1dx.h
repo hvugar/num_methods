@@ -6,14 +6,14 @@
 #include <projection.h>
 #include <doublevector.h>
 
-class Hyperbolic1DX : public RnFunction, Projection, IPrinter
+class Hyperbolic1DX : public RnFunction, public IGradient, Projection, IPrinter
 {
 public:
     Hyperbolic1DX(unsigned int M, unsigned int N);
     virtual ~Hyperbolic1DX() {}
 
-    virtual double fx(const DoubleVector& x);
-    virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step=0.000001);
+    virtual double fx(const DoubleVector &e);
+    virtual void gradient(const DoubleVector &e, DoubleVector &g);
     virtual void project(DoubleVector &x, int index);
     virtual void print(unsigned int iteration, const DoubleVector& x, const DoubleVector &gradient, double alpha, RnFunction* fn) const;
 

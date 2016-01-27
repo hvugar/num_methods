@@ -110,7 +110,7 @@ double HyperbolicControl1D::fx(const DoubleVector& v)
     return sum + integral + norm1 + norm2;
 }
 
-void HyperbolicControl1D::gradient(const DoubleVector& v, DoubleVector& g, double gradient_step)
+void HyperbolicControl1D::gradient(const DoubleVector& v, DoubleVector& g)
 {
     calculateU(v, uT);
     calculareP(uT, g);

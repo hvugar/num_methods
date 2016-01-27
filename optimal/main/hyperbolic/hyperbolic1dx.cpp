@@ -77,8 +77,9 @@ double Hyperbolic1DX::calculateNorm(const DoubleVector& e)
     return (hx*ht)*0.25*norm;
 }
 
-void Hyperbolic1DX::gradient(const DoubleVector &e, DoubleVector &g, double gradient_step)
+void Hyperbolic1DX::gradient(const DoubleVector &e, DoubleVector &g)
 {
+    DoubleVector u;
     calculateU(e, uT);
     calculateP(e, g);
 //    printf("e1: %12.8f %12.8f %12.8f\n", e[0], e[1], e[2]);
@@ -406,6 +407,7 @@ void Hyperbolic1DX::main()
     /* Minimization */
     ConjugateGradient g2;
     g2.setFunction(&hc);
+    g2.setGradient(&hc);
     g2.setEpsilon1(0.000000001);
     g2.setEpsilon2(0.000000001);
     g2.setR1MinimizeEpsilon(1.0, 0.00001);

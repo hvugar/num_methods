@@ -85,7 +85,8 @@ int main()
 //    HyperbolicControl1D4::main();
 //    HyperbolicControlX::main();
 //    HeatControlDeltaF::main();
-    HeatControl2DeltaF::main();
+//    HeatControl2DeltaF::main();
+    Hyperbolic1DX::main();
 //    Rosenbrock::main();
     return 0;
 }

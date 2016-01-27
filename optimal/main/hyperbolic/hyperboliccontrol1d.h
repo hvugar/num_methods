@@ -7,14 +7,14 @@
 #include <printer.h>
 #include <projection.h>
 
-class HyperbolicControl1D : public RnFunction, IPrinter, Projection
+class HyperbolicControl1D : public RnFunction, public IGradient, IPrinter, Projection
 {
 public:
     HyperbolicControl1D();
     virtual ~HyperbolicControl1D() {}
 
     virtual double fx(const DoubleVector& x);
-    virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step=0.000001);
+    virtual void gradient(const DoubleVector& x, DoubleVector& g);
 
     virtual double fi1(unsigned int i) const;
     virtual double fi2(unsigned int i) const;
@@ -40,7 +40,6 @@ public:
     double g2(double t) const { return t*t + 1.0; }
 
     static void main();
-
 protected:
     double t0;
     double t1;
