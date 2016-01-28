@@ -65,7 +65,7 @@ double DiscreteHyperbolic::fx(const DoubleVector& f0)
     double sum = 0.0;
 
     DoubleVector u;
-    calculateU(u, hx, ht, M, N, a);
+    IHyperbolicEquation::calculateU(u, hx, ht, M, N, a);
     for (unsigned int i=0; i<=N; i++)
     {
         double b = 1.0;
@@ -98,7 +98,7 @@ void DiscreteHyperbolic::gradient(const DoubleVector& f0, DoubleVector& g)
 {
     pf = &f0;
     DoubleMatrix u;
-    calculateU(u, hx, ht, M, N, a, lamda);
+    IHyperbolicEquation::calculateU(u, hx, ht, M, N, a, lamda);
     DoubleMatrix psi;
     calculateP(f0, u, psi, g);
 }

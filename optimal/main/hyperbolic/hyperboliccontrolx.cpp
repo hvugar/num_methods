@@ -87,7 +87,7 @@ double HyperbolicControlX::fx(double t)
     //    gradient(v, gr2);
     //    gr2.L2Normalize();
 
-        FILE* file = fopen("20160124_3.txt", "a");
+    FILE* file = fopen("20160124_3.txt", "a");
     //    fprintf(file, "------------------------------------------------------------\n");
     //    fprintf(file, "t: %f h: %f e: %f %.20f\n", t, h, xi, fx(v));
     //    IPrinter::printVector(v, "v1: ", (M+D+1)/10, 0*(M+D+1), 0*(M+D+1)+(M+D), file);
@@ -103,18 +103,18 @@ double HyperbolicControlX::fx(double t)
     //    IPrinter::printVector(gr2, "gr3:", (M+D+1)/10, 2*(M+D+1), 2*(M+D+1)+(M+D), file);
     //    fputs("\n", file);
 
-        DoubleMatrix u;
-        pv = &v;
-        IHyperbolicEquation::calculateU1(u, hx, ht, M+D, N);
+    DoubleMatrix u;
+    pv = &v;
+    IHyperbolicEquation::calculateU(u, hx, ht, M+D, N);
 
-        for (unsigned int j=M; j<=M+D; j++)
-        {
-            char buffer[20];
-            int n = sprintf(buffer, "u[%d]: ", j);
-            buffer[n] = 0;
-            IPrinter::printVector(u[j], buffer, u[j].size(), 0, 0, file);
-        }
-        fclose(file);
+    for (unsigned int j=M; j<=M+D; j++)
+    {
+        char buffer[20];
+        int n = sprintf(buffer, "u[%d]: ", j);
+        buffer[n] = 0;
+        IPrinter::printVector(u[j], buffer, u[j].size(), 0, 0, file);
+    }
+    fclose(file);
 
     double rf = fx(v);
     printf("%.8f %.16f\n", t, rf);
@@ -132,7 +132,7 @@ double HyperbolicControlX::fx(const DoubleVector &v)
 
     pv = &v;
     DoubleMatrix u;
-    IHyperbolicEquation::calculateU1(u, hx, ht, M+D, N);
+    IHyperbolicEquation::calculateU(u, hx, ht, M+D, N);
 
     double sum = 0.0;
     for (unsigned int j=M; j<=M+D; j++)
@@ -163,17 +163,17 @@ void HyperbolicControlX::gradient(const DoubleVector &v, DoubleVector &g)
 #ifndef USE_NUMERICAL_GRADIENT
     pv = &v;
     DoubleMatrix u;
-    IHyperbolicEquation::calculateU1(u, hx, ht, M+D, N);
+    IHyperbolicEquation::calculateU(u, hx, ht, M+D, N);
 
     pu = &u;
     DoubleMatrix p;
-    IBackwardHyperbolicEquation::calculateU1(p, hx, ht, M+D, N);
+    IBackwardHyperbolicEquation::calculateU(p, hx, ht, M+D, N);
 
     for (unsigned j=2; j<=M+D; j++)
     {
         g[0*(M+D+1)+j] = -(p[j][1]-p[j][0])/hx;
         g[1*(M+D+1)+j] = +(p[j][N]-p[j][N-1])/hx;
-        g[2*(M+D+1)+j] = -p[j][Xi]/hx;
+        g[2*(M+D+1)+j] = -p[j][Xi];
     }
 
     g[0*(M+D+1)+0] = 0;
@@ -197,7 +197,7 @@ double HyperbolicControlX::f(unsigned int i, unsigned int j) const
     //version 1
     if (i==Xi)
     {
-        sum = (1.0/(hx*hx)) * v3;
+        sum = (1.0/(hx)) * v3;
     }
 
     // version 2
@@ -274,7 +274,7 @@ double HyperbolicControlX::bm2(unsigned int j) const
 
 void HyperbolicControlX::print(unsigned int iteration, const DoubleVector &v, const DoubleVector &g, double alpha, RnFunction *fn) const
 {
-   // const_cast<DoubleVector&>(g).L2Normalize();
+    // const_cast<DoubleVector&>(g).L2Normalize();
     printf("J[%d]: %.16f\n", iteration, fn->fx(v));
 #ifndef USE_NUMERICAL_GRADIENT
     FILE* file = fopen("20160124_11.txt", "a");

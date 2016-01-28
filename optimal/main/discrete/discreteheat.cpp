@@ -22,6 +22,7 @@ void DiscreteHeat::main()
     g2.setFunction(&dh);
     g2.setEpsilon1(0.0001);
     g2.setEpsilon2(0.0001);
+    g2.setEpsilon3(0.0001);
     g2.setR1MinimizeEpsilon(0.1, 0.001);
     g2.setPrinter(&dh);
     g2.calculate(f0);
@@ -50,9 +51,9 @@ double DiscreteHeat::fx(const DoubleVector& f)
 {
     double sum  = 0.0;
 
-    DoubleVector u;
     pf = &f;
-    calculateU(u, hx, ht, N, M, a);
+    DoubleVector u;
+    IParabolicEquation::calculateU(u, hx, ht, N, M, a);
 
     double alpha;
     for (unsigned int i=0; i<u.size(); i++)
@@ -88,7 +89,8 @@ void DiscreteHeat::gradient(const DoubleVector& f, DoubleVector& g)
 {
     pf = &f;
     DoubleVector u;
-    calculateU(u, hx, ht, N, M, a);
+    IParabolicEquation::calculateU(u, hx, ht, N, M, a);
+
     DoubleMatrix psi;
     calculateP(f, u, psi, g);
 

@@ -118,7 +118,7 @@ double DiscreteHyperbolic1::fx(const DoubleVector& v)
     double sum = 0.0;
 
     DoubleMatrix u;
-    calculateU(u, hx, ht, M+D, N, a);
+    IHyperbolicEquation::calculateU(u, hx, ht, M+D, N, a);
 
     for (unsigned int j=M; j<=M+D; j++)
     {

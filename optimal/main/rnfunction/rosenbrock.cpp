@@ -60,7 +60,7 @@ double Rosenbrock::fx(const DoubleVector& x)
 
     double x1 = x[0];
     double x2 = x[1];
-    return ((1 - x1) * (1 - x1)) + 100 * (x2 - x1 * x1) * (x2 - x1 * x1);
+    return ((x1-1.0) * (x1-1.0)) + 100 * (x2 - x1 * x1) * (x2 - x1 * x1);
 }
 
 void Rosenbrock::gradient(const DoubleVector& x, DoubleVector &g)

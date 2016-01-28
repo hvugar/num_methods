@@ -7,14 +7,16 @@
 #include <printer.h>
 #include <projection.h>
 
-class HyperbolicControl1D : public RnFunction, public IGradient, IPrinter, Projection
+class HyperbolicControl1D : public RnFunction, public IGradient, public IHyperbolicEquation, public IBackwardHyperbolicEquation, public IPrinter, public Projection
 {
 public:
     HyperbolicControl1D();
     virtual ~HyperbolicControl1D() {}
 
-    virtual double fx(const DoubleVector& x);
-    virtual void gradient(const DoubleVector& x, DoubleVector& g);
+    virtual double fx(const DoubleVector &v);
+    virtual void gradient(const DoubleVector &v, DoubleVector &g);
+    virtual void print(unsigned int iteration, const DoubleVector &v, const DoubleVector &g, double alpha, RnFunction *fn) const;
+    virtual void project(DoubleVector &x, int index) {}
 
     virtual double fi1(unsigned int i) const;
     virtual double fi2(unsigned int i) const;
@@ -22,22 +24,11 @@ public:
     virtual double m2(unsigned int j) const;
     virtual double f(unsigned int i, unsigned int j) const;
 
-    double pfi1(unsigned int i) const { return 0.0; }
-    double pfi2(unsigned int i) const { return 2.0*(uT[i] - U[i]); }
-    double pmu1(unsigned int j) const { return 0.0; }
-    double pmu2(unsigned int j) const { return 0.0; }
-
-    virtual void print(unsigned int iteration, const DoubleVector& x, const DoubleVector &gradient, double alpha, RnFunction* fn) const;
-
-    void project(DoubleVector &x, int index) {}
-
-    void calculateU(const DoubleVector& v, DoubleVector &u);
-    void calculareP(const DoubleVector &u, DoubleVector &g);
-    void calculateG(const DoubleVector& psi, DoubleVector& g, unsigned int j);
-    void initialize();
-
-    double g1(double t) const { return t*t; }
-    double g2(double t) const { return t*t + 1.0; }
+    virtual double bfi1(unsigned int i) const;
+    virtual double bfi2(unsigned int i) const;
+    virtual double bm1(unsigned int j) const;
+    virtual double bm2(unsigned int j) const;
+    virtual double bf(unsigned int i, unsigned int j) const;
 
     static void main();
 protected:
@@ -52,12 +43,14 @@ protected:
 
     unsigned int M;
     unsigned int N;
-    unsigned int DM;
     double lamda;
-    DoubleVector U;
-    DoubleVector uT;
+
+    double v1(double t) const { return t*t; }
+    double v2(double t) const { return t*t + 1.0; }
 
     const DoubleVector *pv;
+    const DoubleVector *pu;
+    DoubleVector U;
 };
 
 #endif

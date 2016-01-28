@@ -5,8 +5,13 @@
 #include <printer.h>
 #include <projection.h>
 #include <doublevector.h>
+#include <hyperbolicequation.h>
+#include <tomasmethod.h>
+#include <gradient_cjt.h>
+#include <stdlib.h>
+#include <math.h>
 
-class Hyperbolic1DX : public RnFunction, public IGradient, Projection, IPrinter
+class Hyperbolic1DX : public RnFunction, public IGradient, public IHyperbolicEquation, public IBackwardHyperbolicEquation, public Projection, public IPrinter
 {
 public:
     Hyperbolic1DX(unsigned int M, unsigned int N);
@@ -17,38 +22,19 @@ public:
     virtual void project(DoubleVector &x, int index);
     virtual void print(unsigned int iteration, const DoubleVector& x, const DoubleVector &gradient, double alpha, RnFunction* fn) const;
 
-    void calculateU(const DoubleVector& e, DoubleVector& u);
-    void calculateP(const DoubleVector& e, DoubleVector& g);
-    void calculateG(const DoubleVector& e, const DoubleVector& psi, DoubleVector& g, unsigned int j);
-    void calculateG1(const DoubleVector& e, DoubleVector& g);
+    virtual double fi1(unsigned int i) const;
+    virtual double fi2(unsigned int i) const;
+    virtual double m1(unsigned int j) const;
+    virtual double m2(unsigned int j) const;
+    virtual double f(unsigned int i, unsigned int j) const;
 
-    double calculateIntegral(const DoubleVector& e);
-    double calculateNorm(const DoubleVector& e);
-    void psiDerivative(double &psiX, double e, const DoubleVector& psi);
-
-    double u(double x, double t);
-    double fi1(double x);
-    double fi2(double x);
-    double mu1(double t);
-    double mu2(double t);
-    double f(double x, double t);
-
-    double fxt(unsigned int i, unsigned int j, const DoubleVector& e);
+    virtual double bfi1(unsigned int i) const;
+    virtual double bfi2(unsigned int i) const;
+    virtual double bm1(unsigned int j) const;
+    virtual double bm2(unsigned int j) const;
+    virtual double bf(unsigned int i, unsigned int j) const;
 
     static void main();
-
-    double pfi1(double x) const;
-    double pfi2(unsigned int i) const;
-    double pmu1(double t) const;
-    double pmu2(double t) const;
-
-    double f1(double t) const { return t; }
-    double f2(double t) const { return t*t; }
-    double f3(double t) const { return t*t*t; }
-
-    void initialize();
-    void test(int j);
-
 private:
     double t0;
     double t1;
@@ -62,8 +48,16 @@ private:
     double a;
     double lamda;
 
-    DoubleVector uT;
+    double v1(double t) const { return 3.0*t; }
+    double v2(double t) const { return 2.5*t; }
+    double v3(double t) const { return 4.0*t; }
+
+    void calculateG(const DoubleVector& e, const DoubleVector& psi, DoubleVector& g, unsigned int j);
+    void psiDerivative(double &psiX, double e, const DoubleVector& psi);
+
     DoubleVector U;
+    const DoubleVector *pe;
+    const DoubleVector *pu;
 };
 
 #endif // HYPERBOLIC1DX_H
