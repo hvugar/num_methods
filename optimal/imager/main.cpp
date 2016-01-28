@@ -65,8 +65,8 @@ void createHeatImage(int width, int height, const QString &inFile, const QString
             {
                 double u = str.toDouble();
                 m[j][i] = u;
-                if (u<minimum) minimum = u;
-                if (u>maximum) maximum = u;
+                if (u<=minimum) minimum = u;
+                if (u>=maximum) maximum = u;
                 i++;
             }
         }
@@ -75,7 +75,7 @@ void createHeatImage(int width, int height, const QString &inFile, const QString
     }
     file.close();
 
-    qDebug() << minimum << maximum << m.size() << m[0].size() << width << height;
+    printf("Minimum: %.10f Maximum: %.10f width: %d height %d\n", minimum, maximum, width, height);
 
     for (int j=0; j<m.size(); j++)
     {
