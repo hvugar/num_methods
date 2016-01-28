@@ -84,7 +84,9 @@ void createHeatImage(int width, int height, const QString &inFile, const QString
             double u = m[j][i];
 
             //unsigned int c = (u-minimum)*(maximum-minimum)*0xffffff;
-            double ratio = 2.0 * (u-minimum) / (maximum - minimum);
+            double ratio = 0.0;
+            if (minimum!=maximum)
+                ratio = 2.0 * (u-minimum) / (maximum - minimum);
             int b = int(MAX(0, 255*(1 - ratio)));
             int r = int(MAX(0, 255*(ratio - 1)));
             int g = 255 - b - r;

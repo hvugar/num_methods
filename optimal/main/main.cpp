@@ -52,6 +52,7 @@ struct B;
 
 int main()
 {
+//    HyperbolicControlX::main();
     HyperbolicControlX::main();
     return 0;
 }

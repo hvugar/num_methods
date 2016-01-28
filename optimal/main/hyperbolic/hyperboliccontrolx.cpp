@@ -37,7 +37,7 @@ HyperbolicControlX::HyperbolicControlX()
     x0 = 0.0;
     x1 = 1.0;
     a = 1.0;
-    hx = 0.01;
+    hx = 0.002;
     lamda = 0.25;
     L = 1;
 }
@@ -45,22 +45,24 @@ HyperbolicControlX::HyperbolicControlX()
 double HyperbolicControlX::fx(double t)
 {
     //printf("%.8f\n", t);
-    N = 100;
-    hx = (x1-x0)/N;
+    N = 500;
+    hx = 0.002;
 
     t1 = t;
-    ht = 0.01;
+    ht = 0.002;
     M = (unsigned int) round((t1-t0)/ht);
     D = 10;
     xi = 0.2;
-    Xi = 20;
+    Xi = 40;
+
+    printf("%d %d %f %f\n", M, N, ht, hx);
 
     DoubleVector v((L+2)*(M+D+1));
     for (unsigned int j=0; j<=(M+D); j++)
     {
-        v[0*(M+D+1)+j] = 5.0;
-        v[1*(M+D+1)+j] = 5.0;
-        v[2*(M+D+1)+j] = 5.0;
+        v[0*(M+D+1)+j] = 0.0;
+        v[1*(M+D+1)+j] = 0.0;
+        v[2*(M+D+1)+j] = 0.0;
     }
 
     double min_step = 1.0;
@@ -87,21 +89,21 @@ double HyperbolicControlX::fx(double t)
     //    gradient(v, gr2);
     //    gr2.L2Normalize();
 
-    FILE* file = fopen("20160124_3.txt", "a");
-    //    fprintf(file, "------------------------------------------------------------\n");
-    //    fprintf(file, "t: %f h: %f e: %f %.20f\n", t, h, xi, fx(v));
-    //    IPrinter::printVector(v, "v1: ", (M+D+1)/10, 0*(M+D+1), 0*(M+D+1)+(M+D), file);
-    //    IPrinter::printVector(v, "v2: ", (M+D+1)/10, 1*(M+D+1), 1*(M+D+1)+(M+D), file);
-    //    IPrinter::printVector(v, "v3: ", (M+D+1)/10, 2*(M+D+1), 2*(M+D+1)+(M+D), file);
-    //    fputs("Numerical gradient\n", file);
-    //    IPrinter::printVector(gr1, "gr1:", (M+D+1)/10, 0*(M+D+1), 0*(M+D+1)+(M+D), file);
-    //    IPrinter::printVector(gr1, "gr2:", (M+D+1)/10, 1*(M+D+1), 1*(M+D+1)+(M+D), file);
-    //    IPrinter::printVector(gr1, "gr3:", (M+D+1)/10, 2*(M+D+1), 2*(M+D+1)+(M+D), file);
-    //    fputs("Analytic gradient\n", file);
-    //    IPrinter::printVector(gr2, "gr1:", (M+D+1)/10, 0*(M+D+1), 0*(M+D+1)+(M+D), file);
-    //    IPrinter::printVector(gr2, "gr2:", (M+D+1)/10, 1*(M+D+1), 1*(M+D+1)+(M+D), file);
-    //    IPrinter::printVector(gr2, "gr3:", (M+D+1)/10, 2*(M+D+1), 2*(M+D+1)+(M+D), file);
-    //    fputs("\n", file);
+    FILE* file = fopen("20160128_1.txt", "a");
+        fprintf(file, "------------------------------------------------------------\n");
+//        fprintf(file, "t: %f h: %f e: %f %.20f\n", t, h, xi, fx(v));
+        IPrinter::printVector(v, "v1: ", (M+D+1), 0*(M+D+1), 0*(M+D+1)+(M+D), file);
+        IPrinter::printVector(v, "v2: ", (M+D+1), 1*(M+D+1), 1*(M+D+1)+(M+D), file);
+        IPrinter::printVector(v, "v3: ", (M+D+1), 2*(M+D+1), 2*(M+D+1)+(M+D), file);
+//        fputs("Numerical gradient\n", file);
+//        IPrinter::printVector(gr1, "gr1:", (M+D+1)/10, 0*(M+D+1), 0*(M+D+1)+(M+D), file);
+//        IPrinter::printVector(gr1, "gr2:", (M+D+1)/10, 1*(M+D+1), 1*(M+D+1)+(M+D), file);
+//        IPrinter::printVector(gr1, "gr3:", (M+D+1)/10, 2*(M+D+1), 2*(M+D+1)+(M+D), file);
+//        fputs("Analytic gradient\n", file);
+//        IPrinter::printVector(gr2, "gr1:", (M+D+1)/10, 0*(M+D+1), 0*(M+D+1)+(M+D), file);
+//        IPrinter::printVector(gr2, "gr2:", (M+D+1)/10, 1*(M+D+1), 1*(M+D+1)+(M+D), file);
+//        IPrinter::printVector(gr2, "gr3:", (M+D+1)/10, 2*(M+D+1), 2*(M+D+1)+(M+D), file);
+        fputs("\n", file);
 
     DoubleMatrix u;
     pv = &v;
@@ -229,8 +231,8 @@ double HyperbolicControlX::bf(unsigned int i, unsigned int j) const
 
 double HyperbolicControlX::fi1(unsigned int i) const
 {
-    double x = i*hx;
-    return x*x;
+    //double x = i*hx;
+    return 2.0;
 }
 
 double HyperbolicControlX::fi2(unsigned int i) const
