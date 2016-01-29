@@ -61,9 +61,9 @@ double HyperbolicControlX::fx(double t)
     DoubleVector v((L+2)*(M+D-1));
     for (unsigned int j=0; j<=(M+D-2); j++)
     {
-        v[0*(M+D-1)+j] = 1.0;
-        v[1*(M+D-1)+j] = 1.0;
-        v[2*(M+D-1)+j] = 1.0;
+        v[0*(M+D-1)+j] = 5.0;
+        v[1*(M+D-1)+j] = 5.0;
+        v[2*(M+D-1)+j] = 5.0;
     }
 
     double min_step = 1.0;
