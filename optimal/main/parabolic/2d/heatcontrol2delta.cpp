@@ -136,7 +136,7 @@ void HeatControl2Delta::gradient(const DoubleVector& x, DoubleVector& g)
     IParabolicEquation2D::calculateU(u, h1, h2, ht, N1, N2, M, a1, a2);
 
     pu = &u;
-    std::vector<DoubleMatrix> psi;
+    DoubleCube psi;
     IBackwardParabolicEquation2D::calculateU(psi, h1, h2, ht, N1, N2, M, a1, a2);
 
     for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;

@@ -52,7 +52,7 @@ struct B;
 
 int main()
 {
-//    HyperbolicControlX::main();
+//    HeatControl2DeltaX::main();
     HyperbolicControlX::main();
     return 0;
 }

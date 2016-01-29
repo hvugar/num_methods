@@ -78,7 +78,7 @@ public:
     virtual double bm4(unsigned int i, unsigned int k) const = 0;
     virtual double bf(unsigned int i, unsigned int j, unsigned int k) const = 0;
 
-    void calculateU(std::vector<DoubleMatrix> &psi, double hx1, double hx2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1=1.0, double a2=1.0) const;
+    void calculateU(DoubleCube &psi, double hx1, double hx2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1=1.0, double a2=1.0) const;
 };
 
 #endif // HEATEQUATION_H

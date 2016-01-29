@@ -58,8 +58,8 @@ double HeatDeltaCenter::f(unsigned int i, unsigned int j, unsigned int k) const
     double t  = 0.5*k*ht;
     double sum = 0.0;
 
-    double sgm1 = 3.0*hx;
-    double sgm2 = 3.0*hy;
+    double sgm1 = 20.0*hx;
+    double sgm2 = 20.0*hy;
     double gause_a = 1.0/(2.0*M_PI*sgm1*sgm2);
     double gause_b = 2.0*sgm1*sgm2;
 
@@ -69,6 +69,6 @@ double HeatDeltaCenter::f(unsigned int i, unsigned int j, unsigned int k) const
 
 double HeatDeltaCenter::v1(double t) const
 {
-    return 10.0*t;
+    return 2.0*t;
 }
 
