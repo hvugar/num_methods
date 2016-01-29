@@ -3,7 +3,6 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <windows.h>
 
 #include <function.h>
 #include <parabolicequation.h>
