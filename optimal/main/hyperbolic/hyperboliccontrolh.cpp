@@ -40,15 +40,15 @@ double HyperbolicControlH::fx(double t)
     t1 = t;
     x0 = 0.0;
     x1 = 1.0;
-    N = 100;
-    hx = 0.01;
+    N = 1000;
+    hx = 0.001;
 
     t1 = t;
-    ht = 0.01;
+    ht = 0.001;
     M = (unsigned int) round((t1-t0)/ht);
     D = 10;
     xi = 0.2;
-    Xi = 20;
+    Xi = 200;
 
     printf("%d %d %f %f\n", M, N, ht, hx);
 
