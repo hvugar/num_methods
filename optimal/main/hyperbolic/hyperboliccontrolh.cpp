@@ -1,23 +1,20 @@
-#include "hyperboliccontrolx.h"
+#include "hyperboliccontrolh.h"
 #include <gradient_sd.h>
 
-#define USE_NUMERICAL_GRADIENT1
-//#define USE_DELTA_FUNCTION
-
-void HyperbolicControlX::main()
+void HyperbolicControlH::main()
 {
-    HyperbolicControlX hcx;
+    HyperbolicControlH hcx;
 
-//    double a = 0.6;
-//    double b = 1.4;
-    double t = 0.92;
+    double a = 0.6;
+    double b = 1.4;
+    double t = 0.98;
     //0.9544858420
 
     //    printf("%.8f %.16f\n", a, hcx.fx(a));
     //    printf("%.8f %.16f\n", b, hcx.fx(b));
 
-    //    goldenSectionSearch(a, b, t, &hcx, 0.001);
-    //    R1Minimize::HalphIntervalMethod(a, b, t, &hcx, 0.01);
+        goldenSectionSearch(a, b, t, &hcx, 0.001);
+//        R1Minimize::HalphIntervalMethod(a, b, t, &hcx, 0.01);
     //stranghLineSearch(0.8, 0.5, a, b, &hcx);
     //printf("%.10f %.10f\n", a, b);
 
@@ -30,35 +27,29 @@ void HyperbolicControlX::main()
     printf("optimal t: %.10f\n", t);
 }
 
-HyperbolicControlX::HyperbolicControlX()
+HyperbolicControlH::HyperbolicControlH()
 {
     U = 0.0;
     lamda = 0.25;
     a = 1.0;
-#ifdef USE_DELTA_FUNCTION
     L = 1;
-#else
-    L = 0;
-#endif
 }
 
-double HyperbolicControlX::fx(double t)
+double HyperbolicControlH::fx(double t)
 {
     t0 = 0.0;
     t1 = t;
     x0 = 0.0;
     x1 = 1.0;
-    N = 1000;
-    hx = 0.001;
+    N = 100;
+    hx = 0.01;
 
     t1 = t;
-    ht = 0.001;
+    ht = 0.01;
     M = (unsigned int) round((t1-t0)/ht);
     D = 10;
-#ifdef USE_DELTA_FUNCTION
-    xi = 0.4;
-    Xi = 400;
-#endif
+    xi = 0.2;
+    Xi = 20;
 
     printf("%d %d %f %f\n", M, N, ht, hx);
 
@@ -67,9 +58,7 @@ double HyperbolicControlX::fx(double t)
     {
         v[0*(M+D-1)+j] = 1.0;
         v[1*(M+D-1)+j] = 1.0;
-#ifdef USE_DELTA_FUNCTION
         v[2*(M+D-1)+j] = 1.0;
-#endif
     }
 
     double min_step = 1.0;
@@ -85,39 +74,33 @@ double HyperbolicControlX::fx(double t)
     cg.setPrinter(this);
     cg.setNormalize(true);
     cg.showEndMessage(false);
-    //cg.calculate(v);
+    cg.calculate(v);
 
-    //    double h = 0.01;
-    //    DoubleVector gr1(v.size());
-    //    IGradient::Gradient(this, h, v, gr1);
-    //    gr1.L2Normalize();
+    double h = 0.01;
+    DoubleVector gr1(v.size());
+    IGradient::Gradient(this, h, v, gr1);
+    gr1.L2Normalize();
 
-    //    DoubleVector gr2(v.size());
-    //    gradient(v, gr2);
-    //    gr2.L2Normalize();
+    DoubleVector gr2(v.size());
+    gradient(v, gr2);
+    gr2.L2Normalize();
 
-    FILE* file = fopen("20160130.txt", "a");
+    FILE* file = fopen("20160130_1.txt", "a");
     fprintf(file, "------------------------------------------------------------------------------------------------------------------------\n");
-#ifdef USE_DELTA_FUNCTION
     fprintf(file, "T:%f hx:%f ht:%f M:%d N:%d x:%f X:%d J[v]:%.20f\n", t, hx, ht, M, N, xi, Xi, fx(v));
-#else
-    fprintf(file, "T:%f hx:%f ht:%f M:%d N:%d J[v]:%.20f\n", t, hx, ht, M, N, fx(v));
-#endif
     unsigned int div = (M+D-1);
     fprintf(file, "Controls. Count:%d\n", div);
     IPrinter::printVector(v, "v1: ", div, 0*(M+D-1), 0*(M+D-1)+(M+D-2), file);
     IPrinter::printVector(v, "v2: ", div, 1*(M+D-1), 1*(M+D-1)+(M+D-2), file);
-#ifdef USE_DELTA_FUNCTION
     IPrinter::printVector(v, "v3: ", div, 2*(M+D-1), 2*(M+D-1)+(M+D-2), file);
-#endif
-    //    fprintf(file, "Numerical gradients. Count:%d\n", div);
-    //    IPrinter::printVector(gr1, "gr1:", (M+D+1), 0*(M+D+1), 0*(M+D+1)+(M+D), file);
-    //    IPrinter::printVector(gr1, "gr2:", (M+D+1), 1*(M+D+1), 1*(M+D+1)+(M+D), file);
-    //    IPrinter::printVector(gr1, "gr3:", (M+D+1), 2*(M+D+1), 2*(M+D+1)+(M+D), file);
-    //    fprintf(file, "Analytic gradient. Count:%d\n", div);
-    //    IPrinter::printVector(gr2, "gr1:", (M+D+1), 0*(M+D+1), 0*(M+D+1)+(M+D), file);
-    //    IPrinter::printVector(gr2, "gr2:", (M+D+1), 1*(M+D+1), 1*(M+D+1)+(M+D), file);
-    //    IPrinter::printVector(gr2, "gr3:", (M+D+1), 2*(M+D+1), 2*(M+D+1)+(M+D), file);
+    fprintf(file, "Numerical gradients. Count:%d\n", div);
+    IPrinter::printVector(gr1, "gr1:", (M+D+1), 0*(M+D+1), 0*(M+D+1)+(M+D), file);
+    IPrinter::printVector(gr1, "gr2:", (M+D+1), 1*(M+D+1), 1*(M+D+1)+(M+D), file);
+    IPrinter::printVector(gr1, "gr3:", (M+D+1), 2*(M+D+1), 2*(M+D+1)+(M+D), file);
+    fprintf(file, "Analytic gradient. Count:%d\n", div);
+    IPrinter::printVector(gr2, "gr1:", (M+D+1), 0*(M+D+1), 0*(M+D+1)+(M+D), file);
+    IPrinter::printVector(gr2, "gr2:", (M+D+1), 1*(M+D+1), 1*(M+D+1)+(M+D), file);
+    IPrinter::printVector(gr2, "gr3:", (M+D+1), 2*(M+D+1), 2*(M+D+1)+(M+D), file);
     fputs("Amplitudes:\n", file);
     DoubleMatrix u;
     pv = &v;
@@ -137,7 +120,7 @@ double HyperbolicControlX::fx(double t)
     return rf;
 }
 
-double HyperbolicControlX::fx(const DoubleVector &v)
+double HyperbolicControlH::fx(const DoubleVector &v)
 {
     pv = &v;
     DoubleMatrix u;
@@ -160,9 +143,8 @@ double HyperbolicControlX::fx(const DoubleVector &v)
     return sum;
 }
 
-void HyperbolicControlX::gradient(const DoubleVector &v, DoubleVector &g)
+void HyperbolicControlH::gradient(const DoubleVector &v, DoubleVector &g)
 {
-#ifndef USE_NUMERICAL_GRADIENT
     pv = &v;
     DoubleMatrix u;
     IHyperbolicEquation::calculateU(u, hx, ht, M+D, N);
@@ -175,26 +157,29 @@ void HyperbolicControlX::gradient(const DoubleVector &v, DoubleVector &g)
     {
         g[0*(M+D-1)+(j-2)] = -(p[j][1]-p[j][0])/hx;
         g[1*(M+D-1)+(j-2)] = +(p[j][N]-p[j][N-1])/hx;
-#ifdef USE_DELTA_FUNCTION
-        g[2*(M+D-1)+(j-2)] = -p[j][Xi];
-#endif
+        g[2*(M+D-1)+(j-2)] = 0.0;
+        for (unsigned int i=Xi; i<=N; i++)
+        {
+            double alpha = 1.0;
+            if (i==Xi || i==N) alpha = 0.5;
+            g[2*(M+D-1)+(j-2)] += alpha*p[j][i];
+        }
+        g[2*(M+D-1)+(j-2)] = -hx*g[2*(M+D-1)+(j-2)];
+
     }
-#else
-    IGradient::Gradient(this, 0.01, v, g);
-#endif
+//    IGradient::Gradient(this, 0.01, v, g);
 }
 
-double HyperbolicControlX::f(unsigned int i, unsigned int j) const
+double HyperbolicControlH::f(unsigned int i, unsigned int j) const
 {
     double sum  = 0.0;
-#ifdef USE_DELTA_FUNCTION
     double x = i*hx;
     const DoubleVector &v = *pv;
     double v3 = v[2*(M+D-1)+(j-2)];
     //version 1
-    if (i==Xi)
+    if (i>=Xi)
     {
-        sum = (1.0/(hx)) * v3;
+        sum = v3;
     }
     // version 2
     //    if (fabs(x-xi) < (hx+0.000001))
@@ -207,11 +192,10 @@ double HyperbolicControlX::f(unsigned int i, unsigned int j) const
     //    double b = 2.0*sgm*sgm;
     //    double g = a * exp(-((x-e[0])*(x-e[0]))/b);
     //    sum += v3 * g;
-#endif
     return sum;
 }
 
-double HyperbolicControlX::bf(unsigned int i, unsigned int j) const
+double HyperbolicControlH::bf(unsigned int i, unsigned int j) const
 {
     const DoubleMatrix &u = *pu;
     if (M<=j)
@@ -221,74 +205,51 @@ double HyperbolicControlX::bf(unsigned int i, unsigned int j) const
     return 0.0;
 }
 
-double HyperbolicControlX::fi1(unsigned int i) const
+double HyperbolicControlH::fi1(unsigned int i) const
 {
-    //double x = i*hx;
     return 2.0;
 }
 
-double HyperbolicControlX::fi2(unsigned int i) const
+double HyperbolicControlH::fi2(unsigned int i) const
 {
     return 0.0;
 }
 
-double HyperbolicControlX::m1(unsigned int j) const
+double HyperbolicControlH::m1(unsigned int j) const
 {
     const DoubleVector &v = *pv;
     double v1 = v[0*(M+D-1)+(j-2)];
     return v1;
 }
 
-double HyperbolicControlX::m2(unsigned int j) const
+double HyperbolicControlH::m2(unsigned int j) const
 {
     const DoubleVector &v = *pv;
     double v2 = v[1*(M+D-1)+(j-2)];
     return v2;
 }
 
-double HyperbolicControlX::bfi1(unsigned int i) const
+double HyperbolicControlH::bfi1(unsigned int i) const
 {
     return 0.0;
 }
 
-double HyperbolicControlX::bfi2(unsigned int i) const
+double HyperbolicControlH::bfi2(unsigned int i) const
 {
     return 0.0;
 }
 
-double HyperbolicControlX::bm1(unsigned int j) const
+double HyperbolicControlH::bm1(unsigned int j) const
 {
     return 0.0;
 }
 
-double HyperbolicControlX::bm2(unsigned int j) const
+double HyperbolicControlH::bm2(unsigned int j) const
 {
     return 0.0;
 }
 
-void HyperbolicControlX::print(unsigned int iteration, const DoubleVector &v, const DoubleVector &g, double alpha, RnFunction *fn) const
+void HyperbolicControlH::print(unsigned int iteration, const DoubleVector &v, const DoubleVector &g, double alpha, RnFunction *fn) const
 {
-    // const_cast<DoubleVector&>(g).L2Normalize();
     printf("J[%d]: %.16f\n", iteration, fn->fx(v));
-    //#ifndef USE_NUMERICAL_GRADIENT
-    //    FILE* file = fopen("20160124_11.txt", "a");
-    //#else
-    //    FILE* file = fopen("20160124_2.txt", "a");
-    //#endif
-    //    fprintf(file, "------------------------------------------------------------\n");
-    //    fprintf(file, "i:%d e: %f Functional: %.20f alpha: %.8f Norma: %.10f\n", iteration, xi, fn->fx(v), alpha, g.L2Norm());
-    //    fputs("Control:\n", file);
-    //    IPrinter::printVector(v, "v1: ", (M+D+1)/10, 0*(M+D+1), 0*(M+D+1)+(M+D), file);
-    //    IPrinter::printVector(v, "v2: ", (M+D+1)/10, 1*(M+D+1), 1*(M+D+1)+(M+D), file);
-    //    IPrinter::printVector(v, "v3: ", (M+D+1)/10, 2*(M+D+1), 2*(M+D+1)+(M+D), file);
-    //#ifndef USE_NUMERICAL_GRADIENT
-    //    fputs("Analytic Gradient:\n", file);
-    //#else
-    //    fputs("Numerical Gradient:\n", file);
-    //#endif
-    //    IPrinter::printVector(g, "gr1:", (M+D+1)/10, 0*(M+D+1), 0*(M+D+1)+(M+D), file);
-    //    IPrinter::printVector(g, "gr2:", (M+D+1)/10, 1*(M+D+1), 1*(M+D+1)+(M+D), file);
-    //    IPrinter::printVector(g, "gr3:", (M+D+1)/10, 2*(M+D+1), 2*(M+D+1)+(M+D), file);
-    //    fputs("\n", file);
-    //    fclose(file);
 }

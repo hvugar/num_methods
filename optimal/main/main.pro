@@ -34,6 +34,7 @@ SOURCES += main.cpp \
     parabolic/2d/heatcontrol2deltax.cpp \
     hyperbolic/hyperbolic1dx.cpp \
     hyperbolic/hyperboliccontrol1d.cpp \
+    hyperbolic/hyperboliccontrolh.cpp \
     point/pointcontrol.cpp \
     point/pointcontrol1.cpp \
     point/pointcontrol2.cpp \
@@ -60,6 +61,7 @@ HEADERS += \
     parabolic/2d/heatcontrol2deltax.h \
     hyperbolic/hyperbolic1dx.h \
     hyperbolic/hyperboliccontrol1d.h \
+    hyperbolic/hyperboliccontrolh.h \
     point/pointcontrol.h \
     point/pointcontrol1.h \
     point/pointcontrol2.h \

@@ -37,6 +37,7 @@
 #include "hyperbolic/hyperbolic1dx.h"
 #include "hyperbolic/hyperboliccontrol1d.h"
 #include "hyperbolic/hyperboliccontrolx.h"
+#include "hyperbolic/hyperboliccontrolh.h"
 
 #include "point/pointcontrol11.h"
 #include "point/pointcontrol.h"
@@ -47,12 +48,27 @@
 #include "discrete/discretehyperbolic.h"
 #include "discrete/discretehyperbolic1.h"
 
-struct A;
-struct B;
+struct A : public IParabolicEquation
+{
+    A() : hx(0.01), ht(0.01), N(100), M(100) { }
+    virtual double fi(unsigned int i) const { return hx*i*hx*i; }
+    virtual double m1(unsigned int j) const { return 0.0; }
+    virtual double m2(unsigned int j) const { return 2.0; }
+    virtual double f(unsigned int i, unsigned int j) const { return 2.0*j*ht - 2.0; }
+
+    double hx;
+    double ht;
+    unsigned int N;
+    unsigned int M;
+};
 
 int main()
 {
+//    A a;
+//    DoubleMatrix u;
+//    a.calculateN(u, a.hx, a.ht, a.N, a.M);
+//    IPrinter::printMatrix(u);
 //    HeatControl2DeltaX::main();
-    HyperbolicControlX::main();
+    HyperbolicControlH::main();
     return 0;
 }
