@@ -1,22 +1,21 @@
 #include "hyperboliccontrolh.h"
-#include <gradient_sd.h>
 
 void HyperbolicControlH::main()
 {
     HyperbolicControlH hcx;
 
     double a = 0.6;
-    double b = 1.4;
-    double t = 0.98;
+    double b = 1.1;
+    double t = 0.92;
     //0.9544858420
 
     //    printf("%.8f %.16f\n", a, hcx.fx(a));
     //    printf("%.8f %.16f\n", b, hcx.fx(b));
 
-        goldenSectionSearch(a, b, t, &hcx, 0.001);
-//        R1Minimize::HalphIntervalMethod(a, b, t, &hcx, 0.01);
-    //stranghLineSearch(0.8, 0.5, a, b, &hcx);
-    //printf("%.10f %.10f\n", a, b);
+    //    goldenSectionSearch(a, b, t, &hcx, 0.001);
+    //    R1Minimize::HalphIntervalMethod(a, b, t, &hcx, 0.01);
+    //    stranghLineSearch(0.8, 0.5, a, b, &hcx);
+    //    printf("%.10f %.10f\n", a, b);
 
     //    for (double t=0.80; t<1.10; t+=0.01)
     //    {
@@ -76,16 +75,16 @@ double HyperbolicControlH::fx(double t)
     cg.showEndMessage(false);
     cg.calculate(v);
 
-    double h = 0.01;
-    DoubleVector gr1(v.size());
-    IGradient::Gradient(this, h, v, gr1);
-    gr1.L2Normalize();
+//    double h = 0.001;
+//    DoubleVector gr1(v.size());
+//    IGradient::Gradient(this, h, v, gr1);
+//    gr1.L2Normalize();
 
-    DoubleVector gr2(v.size());
-    gradient(v, gr2);
-    gr2.L2Normalize();
+//    DoubleVector gr2(v.size());
+//    gradient(v, gr2);
+//    gr2.L2Normalize();
 
-    FILE* file = fopen("20160130_1.txt", "a");
+    FILE* file = fopen("20160130_4.txt", "a");
     fprintf(file, "------------------------------------------------------------------------------------------------------------------------\n");
     fprintf(file, "T:%f hx:%f ht:%f M:%d N:%d x:%f X:%d J[v]:%.20f\n", t, hx, ht, M, N, xi, Xi, fx(v));
     unsigned int div = (M+D-1);
@@ -93,14 +92,14 @@ double HyperbolicControlH::fx(double t)
     IPrinter::printVector(v, "v1: ", div, 0*(M+D-1), 0*(M+D-1)+(M+D-2), file);
     IPrinter::printVector(v, "v2: ", div, 1*(M+D-1), 1*(M+D-1)+(M+D-2), file);
     IPrinter::printVector(v, "v3: ", div, 2*(M+D-1), 2*(M+D-1)+(M+D-2), file);
-    fprintf(file, "Numerical gradients. Count:%d\n", div);
-    IPrinter::printVector(gr1, "gr1:", (M+D+1), 0*(M+D+1), 0*(M+D+1)+(M+D), file);
-    IPrinter::printVector(gr1, "gr2:", (M+D+1), 1*(M+D+1), 1*(M+D+1)+(M+D), file);
-    IPrinter::printVector(gr1, "gr3:", (M+D+1), 2*(M+D+1), 2*(M+D+1)+(M+D), file);
-    fprintf(file, "Analytic gradient. Count:%d\n", div);
-    IPrinter::printVector(gr2, "gr1:", (M+D+1), 0*(M+D+1), 0*(M+D+1)+(M+D), file);
-    IPrinter::printVector(gr2, "gr2:", (M+D+1), 1*(M+D+1), 1*(M+D+1)+(M+D), file);
-    IPrinter::printVector(gr2, "gr3:", (M+D+1), 2*(M+D+1), 2*(M+D+1)+(M+D), file);
+//    fprintf(file, "Numerical gradients. Count:%d\n", div);
+//    IPrinter::printVector(gr1, "gr1:", (M+D+1), 0*(M+D+1), 0*(M+D+1)+(M+D), file);
+//    IPrinter::printVector(gr1, "gr2:", (M+D+1), 1*(M+D+1), 1*(M+D+1)+(M+D), file);
+//    IPrinter::printVector(gr1, "gr3:", (M+D+1), 2*(M+D+1), 2*(M+D+1)+(M+D), file);
+//    fprintf(file, "Analytic gradient. Count:%d\n", div);
+//    IPrinter::printVector(gr2, "gr1:", (M+D+1), 0*(M+D+1), 0*(M+D+1)+(M+D), file);
+//    IPrinter::printVector(gr2, "gr2:", (M+D+1), 1*(M+D+1), 1*(M+D+1)+(M+D), file);
+//    IPrinter::printVector(gr2, "gr3:", (M+D+1), 2*(M+D+1), 2*(M+D+1)+(M+D), file);
     fputs("Amplitudes:\n", file);
     DoubleMatrix u;
     pv = &v;
@@ -157,17 +156,17 @@ void HyperbolicControlH::gradient(const DoubleVector &v, DoubleVector &g)
     {
         g[0*(M+D-1)+(j-2)] = -(p[j][1]-p[j][0])/hx;
         g[1*(M+D-1)+(j-2)] = +(p[j][N]-p[j][N-1])/hx;
-        g[2*(M+D-1)+(j-2)] = 0.0;
+
+        double sum = 0.0;
         for (unsigned int i=Xi; i<=N; i++)
         {
             double alpha = 1.0;
             if (i==Xi || i==N) alpha = 0.5;
-            g[2*(M+D-1)+(j-2)] += alpha*p[j][i];
+            sum += alpha*p[j][i];
         }
-        g[2*(M+D-1)+(j-2)] = -hx*g[2*(M+D-1)+(j-2)];
-
+        g[2*(M+D-1)+(j-2)] = -hx*sum;
     }
-//    IGradient::Gradient(this, 0.01, v, g);
+    //    IGradient::Gradient(this, 0.01, v, g);
 }
 
 double HyperbolicControlH::f(unsigned int i, unsigned int j) const
