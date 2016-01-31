@@ -69,6 +69,7 @@ int main()
 //    a.calculateN(u, a.hx, a.ht, a.N, a.M);
 //    IPrinter::printMatrix(u);
 //    HeatControl2DeltaX::main();
+//    DiscreteHyperbolic1::main();
     HyperbolicControlH::main();
     return 0;
 }
