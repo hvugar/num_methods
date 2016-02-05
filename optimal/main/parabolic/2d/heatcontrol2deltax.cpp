@@ -25,11 +25,11 @@ void HeatControl2DeltaX::main()
     g2.calculate(x);
 
     DoubleVector gr1(x.size());
-    IGradient::Gradient(&hc, 0.00001, x, gr1);
+    hc.gradient(x, gr1);
     gr1.L2Normalize();
 
     DoubleVector gr2(x.size());
-    hc.gradient(x, gr2);
+    IGradient::Gradient(&hc, 0.00001, x, gr2);
     gr2.L2Normalize();
 
     printf("J[%d]: %.16f\n", 0, hc.fx(x));
@@ -143,7 +143,8 @@ void HeatControl2DeltaX::gradient(const DoubleVector& x, DoubleVector& g)
     IBackwardParabolicEquation2D::calculateU(psi, h1, h2, ht, N1, N2, M, a1, a2);
 
     for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;
-    for (unsigned int k=M; k!=(unsigned int)0-1; k--)
+
+    for (unsigned int k=M; k>=1; k--)
     {
         calculateGX(x, psi[k], g, k);
     }
@@ -156,7 +157,7 @@ void HeatControl2DeltaX::calculateGX(const DoubleVector& x, const DoubleMatrix& 
 {
     double psiX1;
     double psiX2;
-    if (k==0 || k==M)
+    if (k==1 || k==M)
     {
         psiDerivative(psiX1, psiX2, x[0], x[1], psi);
         g[0] = g[0] + v1(k*ht) * psiX1;
@@ -181,7 +182,7 @@ void HeatControl2DeltaX::calculateGX(const DoubleVector& x, const DoubleMatrix& 
         g[5] = g[5] + 2.0*v3(k*ht) * psiX2;
     }
 
-    if (k==0)
+    if (k==1)
     {
         g[0] = -(ht/2.0)*g[0];
         g[1] = -(ht/2.0)*g[1];
@@ -307,9 +308,11 @@ void HeatControl2DeltaX::print(unsigned int i, const DoubleVector& x, const Doub
 {
     HeatControl2DeltaX *hc = dynamic_cast<HeatControl2DeltaX*>(fn);
     printf("J[%d]: %.16f\n", i, hc->fx(x));
+    DoubleVector g1 = g;
+    g1.L2Normalize();
     printf("eo: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", 0.50, 0.80, 0.70, 0.20, 0.20, 0.30);
     printf("e1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", x[0], x[1], x[2], x[3], x[4], x[5]);
-    printf("g1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", g[0], g[1], g[2], g[3], g[4], g[5]);
+    printf("g1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", g1[0], g1[1], g1[2], g1[3], g1[4], g1[5]);
     puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
 }
 
