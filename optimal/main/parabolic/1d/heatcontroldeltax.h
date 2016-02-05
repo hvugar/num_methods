@@ -39,6 +39,9 @@ public:
     virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
     virtual void project(DoubleVector &x, int index);
 private:
+    inline double u(double x, double t) const { return x*x+t*t; }
+    double norm(const DoubleVector& v) const;
+
     double t0;
     double t1;
     double x0;
@@ -50,11 +53,10 @@ private:
     double a;
     unsigned int L;
 
-    double g1(double t) const { return 20.0*t; }
-    double g2(double t) const { return 30.0*t; }
-    double g3(double t) const { return 25.0*t; }
+    double v1(double t) const { return 20.0*t; }
+    double v2(double t) const { return 30.0*t; }
+    double v3(double t) const { return 25.0*t; }
 
-    inline double u(double x, double t) const { return x*x+t*t; }
     const DoubleVector* pe;
     const DoubleVector* pu;
     DoubleVector U;

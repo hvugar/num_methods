@@ -68,7 +68,8 @@ int main()
 //    DoubleMatrix u;
 //    a.calculateN(u, a.hx, a.ht, a.N, a.M);
 //    IPrinter::printMatrix(u);
-    HeatControl2DeltaX::main();
+//    HeatControl2DeltaX::main();
+    HeatControlDeltaX::main();
 //    DiscreteHyperbolic1::main();
 //    HyperbolicControlH::main();
     return 0;
