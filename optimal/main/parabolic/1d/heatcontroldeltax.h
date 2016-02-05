@@ -48,9 +48,9 @@ private:
     double x1;
     double ht;
     double hx;
+    double a;
     unsigned int N;
     unsigned int M;
-    double a;
     unsigned int L;
 
     double v1(double t) const { return 20.0*t; }
