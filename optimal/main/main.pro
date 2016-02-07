@@ -42,7 +42,8 @@ SOURCES += main.cpp \
     discrete/discreteheat.cpp \
     discrete/discretehyperbolic.cpp \
     discrete/discretehyperbolic1.cpp \
-    hyperbolic/hyperboliccontrolx.cpp
+    hyperbolic/hyperboliccontrolx.cpp \
+    hyperboliccontrol2.cpp
 
 HEADERS += \
     rnfunction/rosenbrock.h \
@@ -69,4 +70,5 @@ HEADERS += \
     discrete/discreteheat.h \
     discrete/discretehyperbolic.h \
     discrete/discretehyperbolic1.h \
-    hyperbolic/hyperboliccontrolx.h
+    hyperbolic/hyperboliccontrolx.h \
+    hyperboliccontrol2.h
