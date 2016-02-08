@@ -222,6 +222,7 @@ void HeatControl2Delta::psiDerivative(double &psiX1, double &psiX2, double x1, d
 
 void HeatControl2Delta::calculateGF(const DoubleVector &x, const DoubleMatrix& psi, DoubleVector& g, unsigned int k)
 {
+    C_UNUSED(k);
     for (unsigned k=0; k<=M; k++)
     {
         if (alpha < 1.0)
@@ -252,6 +253,9 @@ void HeatControl2Delta::calculateGF(const DoubleVector &x, const DoubleMatrix& p
 
 void HeatControl2Delta::calculateG2(const DoubleVector &x, DoubleVector& g1)
 {
+    C_UNUSED(x);
+    C_UNUSED(g1);
+
     //    double h = 0.01;
     //    DoubleVector E(2*L);
     //    DoubleVector g(2*L);
@@ -336,29 +340,46 @@ double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k) cons
     return sum;
 }
 
-double HeatControl2Delta::bfi(unsigned int i, unsigned int j) const { return -2.0*((*pu)[j][i] - U[j][i]); }
+double HeatControl2Delta::bfi(unsigned int i, unsigned int j) const
+{
+    return -2.0*((*pu)[j][i] - U[j][i]);
+}
 
 double HeatControl2Delta::bm1(unsigned int j, unsigned int k) const
 {
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HeatControl2Delta::bm2(unsigned int j, unsigned int k) const
 {
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HeatControl2Delta::bm3(unsigned int i, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HeatControl2Delta::bm4(unsigned int i, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(k);
     return 0.0;
 }
 
-double HeatControl2Delta::bf(unsigned int i, unsigned int j, unsigned int k) const { return 0.0; }
+double HeatControl2Delta::bf(unsigned int i, unsigned int j, unsigned int k) const
+{
+    C_UNUSED(i);
+    C_UNUSED(j);
+    C_UNUSED(k);
+    return 0.0;
+}
 
 void HeatControl2Delta::initialize()
 {

@@ -260,18 +260,18 @@ double HeatControl2DeltaX::f(unsigned int i, unsigned int j, unsigned int k) con
     sum += v3(t) * gause_a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/gause_b);
     return sum;
 
-//    if (fabs(x1-e[0])<=h1 && fabs(x2-e[1])<=h2)
-//    {
-//        sum += v1(t) * ((h1-fabs(x1-e[0]))/(h1*h1))*((h2-fabs(x2-e[1]))/(h2*h2));
-//    }
-//    if (fabs(x1-e[2])<=h1 && fabs(x2-e[3])<=h2)
-//    {
-//        sum += v1(t) * ((h1-fabs(x1-e[2]))/(h1*h1))*((h2-fabs(x2-e[3]))/(h2*h2));
-//    }
-//    if (fabs(x1-e[4])<=h1 && fabs(x2-e[5])<=h2)
-//    {
-//        sum += v1(t) * ((h1-fabs(x1-e[4]))/(h1*h1))*((h2-fabs(x2-e[5]))/(h2*h2));
-//    }
+    //    if (fabs(x1-e[0])<=h1 && fabs(x2-e[1])<=h2)
+    //    {
+    //        sum += v1(t) * ((h1-fabs(x1-e[0]))/(h1*h1))*((h2-fabs(x2-e[1]))/(h2*h2));
+    //    }
+    //    if (fabs(x1-e[2])<=h1 && fabs(x2-e[3])<=h2)
+    //    {
+    //        sum += v1(t) * ((h1-fabs(x1-e[2]))/(h1*h1))*((h2-fabs(x2-e[3]))/(h2*h2));
+    //    }
+    //    if (fabs(x1-e[4])<=h1 && fabs(x2-e[5])<=h2)
+    //    {
+    //        sum += v1(t) * ((h1-fabs(x1-e[4]))/(h1*h1))*((h2-fabs(x2-e[5]))/(h2*h2));
+    //    }
 }
 
 double HeatControl2DeltaX::bfi(unsigned int i, unsigned int j) const
@@ -281,26 +281,37 @@ double HeatControl2DeltaX::bfi(unsigned int i, unsigned int j) const
 
 double HeatControl2DeltaX::bm1(unsigned int j, unsigned int k) const
 {
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HeatControl2DeltaX::bm2(unsigned int j, unsigned int k) const
 {
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HeatControl2DeltaX::bm3(unsigned int i, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HeatControl2DeltaX::bm4(unsigned int i, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HeatControl2DeltaX::bf(unsigned int i, unsigned int j, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 

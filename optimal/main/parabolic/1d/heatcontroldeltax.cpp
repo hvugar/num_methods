@@ -86,6 +86,7 @@ double HeatControlDeltaX::fx(const DoubleVector &e)
 
 double HeatControlDeltaX::norm(const DoubleVector &v) const
 {
+    C_UNUSED(v);
     double norm = 0.0;
     //    for (unsigned int j=0; j<=M; j++)
     //    {
@@ -245,7 +246,8 @@ void HeatControlDeltaX::print(unsigned int i, const DoubleVector &e, const Doubl
 
 void HeatControlDeltaX::project(DoubleVector &e, int index)
 {
-    for (unsigned int l=0; l<L; l++)
+    C_UNUSED(index)
+            for (unsigned int l=0; l<L; l++)
     {
         if (e[l] < x0) e[l] = x0+hx;
         if (e[l] > x1) e[l] = x1-hx;

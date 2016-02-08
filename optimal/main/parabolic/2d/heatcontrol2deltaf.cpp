@@ -146,11 +146,11 @@ void HeatControl2DeltaF::gradient(const DoubleVector& v, DoubleVector& g)
     DoubleCube psi;
     IBackwardParabolicEquation2D::calculateU(psi, h1, h2, ht, N1, N2, M, a1, a2);
 
-//    for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;
-//    for (unsigned int k=M; k!=(unsigned int)0-1; k--)
-//    {
-//        calculateGF(v, psi[k], g, k);
-//    }
+    //    for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;
+    //    for (unsigned int k=M; k!=(unsigned int)0-1; k--)
+    //    {
+    //        calculateGF(v, psi[k], g, k);
+    //    }
 
     for (unsigned int k=0; k<=M; k++)
     {
@@ -187,6 +187,7 @@ void HeatControl2DeltaF::psiDerivative(double &psiX1, double &psiX2, double x1, 
 
 void HeatControl2DeltaF::calculateGF(const DoubleVector &v, const DoubleMatrix& psi, DoubleVector& g, unsigned int k)
 {
+    C_UNUSED(k);
     for (unsigned k=0; k<=M; k++)
     {
         if (alpha < 1.0)
@@ -311,32 +312,51 @@ double HeatControl2DeltaF::f(unsigned int i, unsigned int j, unsigned int k) con
     return sum;
 }
 
-double HeatControl2DeltaF::bfi(unsigned int i, unsigned int j) const { return -2.0*((*pu)[j][i] - U[j][i]); }
+double HeatControl2DeltaF::bfi(unsigned int i, unsigned int j) const
+{
+    return -2.0*((*pu)[j][i] - U[j][i]);
+}
 
 double HeatControl2DeltaF::bm1(unsigned int j, unsigned int k) const
 {
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HeatControl2DeltaF::bm2(unsigned int j, unsigned int k) const
 {
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HeatControl2DeltaF::bm3(unsigned int i, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HeatControl2DeltaF::bm4(unsigned int i, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(k);
     return 0.0;
 }
 
-double HeatControl2DeltaF::bf(unsigned int i, unsigned int j, unsigned int k) const { return 0.0; }
-
-void HeatControl2DeltaF::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double alpha, RnFunction* fn) const
+double HeatControl2DeltaF::bf(unsigned int i, unsigned int j, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
+    C_UNUSED(k);
+    return 0.0;
+}
+
+void HeatControl2DeltaF::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double alpha, RnFunction* fn) const
+{
+    C_UNUSED(g);
+    C_UNUSED(alpha);
     HeatControl2DeltaF *hc = dynamic_cast<HeatControl2DeltaF*>(fn);
     printf("J[%d]: %.16f\n", i, hc->fx(x));
     IPrinter::printVector(x, "v1:", 10, 0*(M+1), 0*(M+1) + M);

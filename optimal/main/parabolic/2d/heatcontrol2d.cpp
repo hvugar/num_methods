@@ -188,36 +188,52 @@ double HeatControl2D::bfi(unsigned int i, unsigned int j) const
 
 double HeatControl2D::bm1(unsigned int j, unsigned int k) const
 {
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HeatControl2D::bm2(unsigned int j, unsigned int k) const
 {
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HeatControl2D::bm3(unsigned int i, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HeatControl2D::bm4(unsigned int i, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HeatControl2D::bf(unsigned int i, unsigned int j, unsigned int k) const
 {
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HeatControl2D::fxt(double x1, double x2, double t)
 {
+    C_UNUSED(x1);
+    C_UNUSED(x2);
     return 2.0*t - 2.0*a1 - 2.0*a2;
 }
 
-void HeatControl2D::print(unsigned int i, const DoubleVector &f0, const DoubleVector &s, double a, RnFunction *f) const
+void HeatControl2D::print(unsigned int i, const DoubleVector &f0, const DoubleVector &s, double alpha, RnFunction *f) const
 {
+    C_UNUSED(i);
+    C_UNUSED(s);
+    C_UNUSED(alpha);
+
     HeatControl2D *hc = dynamic_cast<HeatControl2D*>(f);
     printf("J: %.16f\n", hc->fx(f0));
 }
