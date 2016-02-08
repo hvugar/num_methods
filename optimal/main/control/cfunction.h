@@ -9,9 +9,9 @@
 
 struct CFunction
 {
-    virtual double fx(double t, const DoubleVector &x, double u) { return 0.0; }
-    virtual double fx(double t, const DoubleVector &x, const DoubleVector &psi, double u)  { return 0.0; }
-    virtual double fx(double t, const DoubleVector &x)  { return 0.0; }
+    virtual double fx(double t, const DoubleVector &x, double u);
+    virtual double fx(double t, const DoubleVector &x, const DoubleVector &psi, double u);
+    virtual double fx(double t, const DoubleVector &x);
 };
 
 struct ControlFunction : public RnFunction, public IGradient, public IPrinter

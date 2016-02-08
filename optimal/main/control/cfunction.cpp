@@ -1,5 +1,29 @@
 #include "cfunction.h"
 
+double CFunction::fx(double t, const DoubleVector &x, double u)
+{
+    C_UNUSED(t);
+    C_UNUSED(x);
+    C_UNUSED(u);
+    return 0.0;
+}
+
+double CFunction::fx(double t, const DoubleVector &x, const DoubleVector &psi, double u)
+{
+    C_UNUSED(t);
+    C_UNUSED(x);
+    C_UNUSED(psi);
+    C_UNUSED(u);
+    return 0.0;
+}
+
+double CFunction::fx(double t, const DoubleVector &x)
+{
+    C_UNUSED(t);
+    C_UNUSED(x);
+    return 0.0;
+}
+
 ControlFunction::ControlFunction(double t0, double t1, double h) : RnFunction()
 {
     this->t0 = t0;
