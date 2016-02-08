@@ -16,7 +16,7 @@ public:
     virtual double fx(const DoubleVector &v);
     virtual void gradient(const DoubleVector &v, DoubleVector &g);
     virtual void print(unsigned int iteration, const DoubleVector &v, const DoubleVector &g, double alpha, RnFunction *fn) const;
-    virtual void project(DoubleVector &x, int index) {}
+    virtual void project(DoubleVector &x, int index);
 
     virtual double fi1(unsigned int i) const;
     virtual double fi2(unsigned int i) const;

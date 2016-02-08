@@ -185,3 +185,9 @@ void HyperbolicControl1D::print(unsigned int i, const DoubleVector &v, const Dou
     HyperbolicControl1D *hc = dynamic_cast<HyperbolicControl1D*>(fn);
     printf("J[%d]: %.16f\n", i, hc->fx(v));
 }
+
+void HyperbolicControl1D::HyperbolicControl1D::project(DoubleVector &x, int index)
+{
+    C_UNUSED(x);
+    C_UNUSED(index);
+}

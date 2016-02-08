@@ -87,31 +87,39 @@ double HyperbolicControl2::m2(unsigned int j) const
 
 double HyperbolicControl2::f(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HyperbolicControl2::bfi1(unsigned int i) const
 {
+    C_UNUSED(i);
     return 0.0;
 }
 
 double HyperbolicControl2::bfi2(unsigned int i) const
 {
+    C_UNUSED(i);
     return 0.0;
 }
 
 double HyperbolicControl2::bm1(unsigned int j) const
 {
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HyperbolicControl2::bm2(unsigned int j) const
 {
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HyperbolicControl2::bf(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
 
