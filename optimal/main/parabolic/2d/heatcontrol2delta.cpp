@@ -422,10 +422,12 @@ void HeatControl2Delta::initialize()
     fclose(f);
 }
 
-void HeatControl2Delta::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double alpha, RnFunction* fn) const
+void HeatControl2Delta::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double alpha, RnFunction* fn) const
 {
+    C_UNUSED(alpha);
+
     HeatControl2Delta *hc = dynamic_cast<HeatControl2Delta*>(fn);
-    printf("J[%d]: %.16f %d\n", i, hc->fx(x), x.size());
+    printf("J[%d]: %.16f\n", i, hc->fx(x));
     //printf("Norm: %.16f Alpha: %.16f %.16f\n", hc->norm(x), hc->alpha, alpha);
     printf("eo: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", O[0], O[1], O[2], O[3], O[4], O[5]);
     printf("e1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", x[0], x[1], x[2], x[3], x[4], x[5]);

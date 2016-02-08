@@ -34,10 +34,10 @@
 #include "parabolic/2d/heatcontrol2deltaf.h"
 #include "parabolic/2d/heatcontrol2deltax.h"
 
-#include "hyperbolic/hyperbolic1dx.h"
-#include "hyperbolic/hyperboliccontrol1d.h"
-#include "hyperbolic/hyperboliccontrolx.h"
-#include "hyperbolic/hyperboliccontrolh.h"
+#include "hyperbolic/1d/hyperbolic1dx.h"
+#include "hyperbolic/1d/hyperboliccontrol1d.h"
+#include "hyperbolic/1d/hyperboliccontrolx.h"
+#include "hyperbolic/1d/hyperboliccontrolh.h"
 
 #include "point/pointcontrol11.h"
 #include "point/pointcontrol.h"

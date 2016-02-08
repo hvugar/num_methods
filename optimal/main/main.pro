@@ -35,18 +35,18 @@ SOURCES += main.cpp \
     parabolic/2d/heatcontrol2delta.cpp \
     parabolic/2d/heatcontrol2deltaf.cpp \
     parabolic/2d/heatcontrol2deltax.cpp \
-    hyperbolic/hyperbolic1dx.cpp \
-    hyperbolic/hyperboliccontrol1d.cpp \
-    hyperbolic/hyperboliccontrolh.cpp \
+    hyperbolic/1d/hyperbolic1dx.cpp \
+    hyperbolic/1d/hyperboliccontrol1d.cpp \
+    hyperbolic/1d/hyperboliccontrolh.cpp \
+    hyperbolic/1d/hyperboliccontrolx.cpp \
+    hyperbolic/2d/hyperboliccontrol2.cpp \
     point/pointcontrol.cpp \
     point/pointcontrol1.cpp \
     point/pointcontrol2.cpp \
     point/pointcontrol11.cpp \
     discrete/discreteheat.cpp \
     discrete/discretehyperbolic.cpp \
-    discrete/discretehyperbolic1.cpp \
-    hyperbolic/hyperboliccontrolx.cpp \
-    hyperboliccontrol2.cpp
+    discrete/discretehyperbolic1.cpp
 
 HEADERS += \
     rnfunction/rosenbrock.h \
@@ -63,15 +63,16 @@ HEADERS += \
     parabolic/2d/heatcontrol2delta.h \
     parabolic/2d/heatcontrol2deltaf.h \
     parabolic/2d/heatcontrol2deltax.h \
-    hyperbolic/hyperbolic1dx.h \
-    hyperbolic/hyperboliccontrol1d.h \
-    hyperbolic/hyperboliccontrolh.h \
+    hyperbolic/1d/hyperbolic1dx.h \
+    hyperbolic/1d/hyperboliccontrol1d.h \
+    hyperbolic/1d/hyperboliccontrolh.h \
+    hyperbolic/1d/hyperboliccontrolx.h \
+    hyperbolic/2d/hyperboliccontrol2.h \
     point/pointcontrol.h \
     point/pointcontrol1.h \
     point/pointcontrol2.h \
     point/pointcontrol11.h \
     discrete/discreteheat.h \
     discrete/discretehyperbolic.h \
-    discrete/discretehyperbolic1.h \
-    hyperbolic/hyperboliccontrolx.h \
-    hyperboliccontrol2.h
+    discrete/discretehyperbolic1.h
+
