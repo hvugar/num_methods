@@ -9,5 +9,7 @@
 #  define MINIMUMSHARED_EXPORT __declspec(dllimport)
 #endif
 
+#define C_UNUSED(x) (void)x;
+
 #endif // GLOBAL
 
