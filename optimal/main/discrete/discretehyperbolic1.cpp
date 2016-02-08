@@ -152,6 +152,8 @@ void DiscreteHyperbolic1::gradient(const DoubleVector &v, DoubleVector &g)
 
 void DiscreteHyperbolic1::calculateP(const DoubleVector& f0, const DoubleMatrix &u, DoubleMatrix &psi, DoubleVector &g)
 {
+    C_UNUSED(f0);
+
     for (unsigned int j=0; j<psi.size(); j++) psi[j].clear();
     psi.clear();
 
@@ -359,11 +361,13 @@ void DiscreteHyperbolic1::print(unsigned int iteration, const DoubleVector &v, c
 
 double DiscreteHyperbolic1::fi1(unsigned int i) const
 {
+    C_UNUSED(i);
     return 2.0;
 }
 
 double DiscreteHyperbolic1::fi2(unsigned int i) const
 {
+    C_UNUSED(i);
     return 0.0;
 }
 

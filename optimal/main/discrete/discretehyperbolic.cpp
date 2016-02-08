@@ -103,9 +103,11 @@ void DiscreteHyperbolic::gradient(const DoubleVector& f0, DoubleVector& g)
     calculateP(f0, u, psi, g);
 }
 
-void DiscreteHyperbolic::print(unsigned int iteration, const DoubleVector &x, const DoubleVector &gradient, double alpha, RnFunction *fn) const
+void DiscreteHyperbolic::print(unsigned int i, const DoubleVector &x, const DoubleVector &g , double alpha, RnFunction *fn) const
 {
-    printf("J[%d]: %.12f\n", iteration, fn->fx(x));
+    C_UNUSED(alpha);
+    C_UNUSED(g);
+    printf("J[%d]: %.12f\n", i, fn->fx(x));
 }
 
 double DiscreteHyperbolic::fi1(unsigned int i) const

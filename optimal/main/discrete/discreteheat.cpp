@@ -137,11 +137,13 @@ double DiscreteHeat::f(unsigned int i, unsigned int j) const
 
 double DiscreteHeat::fxt(double x, double t)
 {
+    C_UNUSED(x);
     return 2.0*t - 2.0*a;
 }
 
 void DiscreteHeat::calculateP(const DoubleVector &f, const DoubleVector &u, DoubleMatrix &psi, DoubleVector &g)
 {
+    C_UNUSED(f);
     double lamda = -(a*ht)/(hx*hx);
     double k = 1.0-2.0*lamda;
 
@@ -219,10 +221,9 @@ void DiscreteHeat::calculateP(const DoubleVector &f, const DoubleVector &u, Doub
     x1.clear();
 }
 
-void DiscreteHeat::print(unsigned int iteration, const DoubleVector &f, const DoubleVector &gradient, double alpha, RnFunction *fn) const
+void DiscreteHeat::print(unsigned int i, const DoubleVector &f, const DoubleVector &g, double alpha, RnFunction *fn) const
 {
-    //DiscreteHeat* dh =dynamic_cast<DiscreteHeat*>(fn);
-    printf("J[%d]: %.12f\n", iteration, fn->fx(f));
-    //Printer::printAsMatrix(f, dh->M, dh->N);
-    //puts("-------");
+    C_UNUSED(g);
+    C_UNUSED(alpha);
+    printf("J[%d]: %.12f\n", i, fn->fx(f));
 }

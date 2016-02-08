@@ -58,6 +58,7 @@ double PointControl11::fx(const DoubleVector &q)
 
 void PointControl11::gradient(const DoubleVector &q, DoubleVector &g, double gradient_step)
 {
+    C_UNUSED(gradient_step);
     DoubleVector x;
     DoubleVector p;
     calculateX(q, x);
@@ -80,9 +81,9 @@ void PointControl11::calculateX(const DoubleVector &q, DoubleVector &x)
     x.clear();
     x.resize(N+1);
 
-//    double sgm = 5.0*ht;
-//    double a = 1.0/(sgm*sqrt(2.0*M_PI));
-//    double b = 2.0*sgm*sgm;
+    //    double sgm = 5.0*ht;
+    //    double a = 1.0/(sgm*sqrt(2.0*M_PI));
+    //    double b = 2.0*sgm*sgm;
 
     x[0] = x0;
     double t = t0;

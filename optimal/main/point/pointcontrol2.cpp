@@ -130,6 +130,7 @@ double PointControl2::f(double t, double x)
 
 double PointControl2::dxdt(double t, double x, const DoubleVector& p)
 {
+    C_UNUSED(p);
     double sum = f(t, x);
     return sum;
 }
