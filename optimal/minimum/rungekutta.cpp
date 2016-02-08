@@ -2,7 +2,14 @@
 #include <math.h>
 
 void RungeKutta::calculate(R2Function *f, double x0, double x1, double y0, double &y1, double dx)
-{}
+{
+    C_UNUSED(f);
+    C_UNUSED(x0);
+    C_UNUSED(x1);
+    C_UNUSED(y0);
+    C_UNUSED(y1);
+    C_UNUSED(dx);
+}
 
 unsigned int RungeKutta::calculate(R2Function *f, double x0, double x1, double y0, DoubleVector &y, double dx)
 {

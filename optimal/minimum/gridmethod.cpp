@@ -241,6 +241,13 @@ void GridMethod::printResult(unsigned int k, unsigned int N, unsigned int M)
 
 void GridMethod::VariableDirectionsMethod(R2Function *fi, R2Function *m1, R2Function *m2, R2Function *m3, R2Function *m4, R3Function *f)
 {
+    C_UNUSED(fi);
+    C_UNUSED(m1);
+    C_UNUSED(m2);
+    C_UNUSED(m3);
+    C_UNUSED(m4);
+    C_UNUSED(f);
+
     unsigned int N = 1000;
     unsigned int M = 1000;
     unsigned int K = 20;
