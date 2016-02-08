@@ -216,6 +216,7 @@ double HeatControl2D::bm4(unsigned int i, unsigned int k) const
 
 double HeatControl2D::bf(unsigned int i, unsigned int j, unsigned int k) const
 {
+    C_UNUSED(i);
     C_UNUSED(j);
     C_UNUSED(k);
     return 0.0;
