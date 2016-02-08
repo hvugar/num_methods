@@ -39,6 +39,8 @@ void BoothFunction::print(unsigned int iterationCount, const DoubleVector& m_x, 
 
 void BoothFunction::project(DoubleVector &x, int index)
 {
+    C_UNUSED(x);
+    C_UNUSED(index);
 }
 
 void BoothFunction::main()

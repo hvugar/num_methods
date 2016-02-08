@@ -253,8 +253,10 @@ void CFunction2::main()
     //    g2.calculate(u0);
 }
 
-void CFunction2::print(unsigned int i, const DoubleVector &u, const DoubleVector &s, double alpha, RnFunction* f) const
+void CFunction2::print(unsigned int i, const DoubleVector &u, const DoubleVector &g, double alpha, RnFunction* f) const
 {
+    C_UNUSED(g);
+    C_UNUSED(alpha);
     printf("J[%2d]: %.10f\n", i, f->fx(u));
     IPrinter::printVector(x1, "x1:");
     IPrinter::printVector(x1, "x2:");

@@ -339,35 +339,10 @@ void ControlFunction::main()
     g2.calculate(u0);
 }
 
-void ControlFunction::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const
+void ControlFunction::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double alpha, RnFunction* f) const
 {
-    printf("J[%2d]: %.10f  ", iterationCount, f->fx(m_x));
-    print("u", m_x);
+    C_UNUSED(g);
+    C_UNUSED(alpha);
+    printf("J[%2d]: %.10f  ", i, f->fx(x));
+    IPrinter::printVector(x, "u");
 }
-
-void ControlFunction::print(const char* s, const DoubleVector& x) const
-{
-    unsigned int i;
-    unsigned int n = x.size();
-    printf("%s: ", s);
-    for (i=0; i<n; i++)
-    {
-        if ( i%((n-1)/10) == 0 )
-        {
-            if (x[i] < 0)
-            {
-                printf("%10.8f", x[i]);
-            }
-            else
-            {
-                printf("%+10.8f", x[i]);
-            }
-        }
-        if ( i%((n-1)/10) == 0 && i != n-1 )
-        {
-            printf(", ");
-        }
-    }
-    printf("\n");
-}
-

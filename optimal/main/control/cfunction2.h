@@ -28,7 +28,7 @@ struct CFunction2 : public RnFunction, public IGradient, public IPrinter
     virtual double fx(const DoubleVector& u);
     virtual void gradient(const DoubleVector& u, DoubleVector &g);
 
-    virtual void print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const;
+    virtual void print(unsigned int i, const DoubleVector& u, const DoubleVector &g, double alpha, RnFunction* f) const;
 
     double fx0(double t, const DoubleVector& x, double u) const;
     double F(double t, const DoubleVector& x, double u) const;

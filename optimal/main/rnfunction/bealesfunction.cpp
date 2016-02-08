@@ -39,6 +39,8 @@ void BealesFunction::print(unsigned int iterationCount, const DoubleVector& m_x,
 
 void BealesFunction::project(DoubleVector& x, int index)
 {
+    C_UNUSED(x);
+    C_UNUSED(index);
 }
 
 void BealesFunction::main()

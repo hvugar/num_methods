@@ -261,8 +261,10 @@ void CFunction1::main()
     g2.calculate(u0);
 }
 
-void CFunction1::print(unsigned int iterationCount, const DoubleVector& u, const DoubleVector &s, double alpha, RnFunction* f) const
+void CFunction1::print(unsigned int i, const DoubleVector& u, const DoubleVector &g, double alpha, RnFunction* f) const
 {
-    printf("J[%2d]: %.10f  ", iterationCount, f->fx(u));
+    C_UNUSED(g);
+    C_UNUSED(alpha);
+    printf("J[%2d]: %.10f  ", i, f->fx(u));
     IPrinter::printVector(u, "u:");
 }
