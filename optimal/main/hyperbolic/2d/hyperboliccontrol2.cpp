@@ -29,6 +29,8 @@ HyperbolicControl2::~HyperbolicControl2()
 
 double HyperbolicControl2::fx(const DoubleVector &x)
 {
+    C_UNUSED(x);
+
     DoubleVector u1;
     IHyperbolicEquation::calculateU(u1, hx, ht, M, N, a);
     DoubleVector u2;
@@ -61,15 +63,19 @@ double HyperbolicControl2::fx(const DoubleVector &x)
 
 void HyperbolicControl2::gradient(const DoubleVector &x, DoubleVector &g)
 {
+    C_UNUSED(x);
+    C_UNUSED(g);
 }
 
 double HyperbolicControl2::fi1(unsigned int i) const
 {
+    C_UNUSED(i);
     return 2.0;
 }
 
 double HyperbolicControl2::fi2(unsigned int i) const
 {
+    C_UNUSED(i);
     return 0.0;
 }
 

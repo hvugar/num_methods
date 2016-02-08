@@ -29,6 +29,7 @@ double PointControl::fx(const DoubleVector &p)
 
 void PointControl::gradient(const DoubleVector& p, DoubleVector& g, double gradient_step)
 {
+    C_UNUSED(gradient_step);
     calculateX(p);
     calculateP();
 
@@ -57,6 +58,8 @@ void PointControl::calculateX(const DoubleVector &p)
 
 double PointControl::px(double t, double psi, double x)
 {
+    C_UNUSED(t);
+    C_UNUSED(x);
     return psi;
 }
 
