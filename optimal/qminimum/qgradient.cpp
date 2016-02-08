@@ -16,8 +16,9 @@ QGradient::~QGradient()
 
 double QGradient::minimize(double alpha)
 {
+    Q_UNUSED(alpha);
     double *x1 = (double*) malloc( sizeof(double) * n );
-    int j;
+    //int j;
     //for (j=0; j<n; j++) x1[j] = x[j] - alpha * grads[j];
     double min = fn(x1, n);
     free(x1);
@@ -27,7 +28,7 @@ double QGradient::minimize(double alpha)
 void QGradient::calculate()
 {
     int i = 0;
-    double grad_norm = 0.0;
+    //double grad_norm = 0.0;
 
     double* grads = (double*) malloc(sizeof(double) * n);
     // Saves last point coordinates
@@ -47,7 +48,7 @@ void QGradient::calculate()
 
 //        double a,b;
 //        double alpha0 = 0.0;
-        double alpha = 0.0;
+        //double alpha = 0.0;
 //        straight_line_search_metod(argmin, alpha0, line_eps, &a, &b);
 //        double alpha = golden_section_search_min(argmin, a, b, gold_eps);
 //        if ( argmin(alpha) > argmin(alpha0) ) alpha = alpha0;

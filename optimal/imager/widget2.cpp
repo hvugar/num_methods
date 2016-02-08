@@ -17,7 +17,7 @@ Widget2::Widget2(QWidget *parent) :
 
 void Widget2::paintEvent(QPaintEvent *e)
 {
-    //if (painted) return;
+    Q_UNUSED(e);
 
     QPainter painter(this);
 
