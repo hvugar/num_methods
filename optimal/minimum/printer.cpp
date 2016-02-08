@@ -2,14 +2,16 @@
 
 void IPrinter::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n, const char* s, FILE* f)
 {
+    unsigned int size = x.size();
     unsigned int M = x.size() / m;
 
-    for (unsigned int j=0; j<x.size(); j++)
+    for (unsigned int j=0; j<size; j++)
     {
-        unsigned int N = x[j].size() / n;
+        unsigned int xj_size = x[j].size();
+        unsigned int N = xj_size / n;
         if (j%M==0)
         {
-            for (unsigned int i=0; i<x[j].size(); i++)
+            for (unsigned int i=0; i<xj_size; i++)
             {
                 if (i%N==0) fprintf(f, "%14.10f ", x[j][i]);
             }
