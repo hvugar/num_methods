@@ -24,27 +24,27 @@ HeatDeltaCenter::HeatDeltaCenter()
     hy = 0.001;
 }
 
-double HeatDeltaCenter::fi(unsigned int i, unsigned int j) const
+double HeatDeltaCenter::fi(unsigned int, unsigned int) const
 {
     return 0.0;
 }
 
-double HeatDeltaCenter::m1(unsigned int j, unsigned int k) const
+double HeatDeltaCenter::m1(unsigned int, unsigned int) const
 {
     return 0.0;
 }
 
-double HeatDeltaCenter::m2(unsigned int j, unsigned int k) const
+double HeatDeltaCenter::m2(unsigned int, unsigned int) const
 {
     return 0.0;
 }
 
-double HeatDeltaCenter::m3(unsigned int i, unsigned int k) const
+double HeatDeltaCenter::m3(unsigned int, unsigned int) const
 {
     return 0.0;
 }
 
-double HeatDeltaCenter::m4(unsigned int i, unsigned int k) const
+double HeatDeltaCenter::m4(unsigned int, unsigned int) const
 {
     return 0.0;
 }
