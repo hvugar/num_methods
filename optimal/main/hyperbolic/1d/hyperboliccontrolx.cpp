@@ -227,41 +227,41 @@ double HyperbolicControlX::fi1(unsigned int i) const
     return 2.0;
 }
 
-double HyperbolicControlX::fi2(unsigned int i) const
+double HyperbolicControlX::fi2(unsigned int i __attribute__((unused))) const
 {
     return 0.0;
 }
 
-double HyperbolicControlX::m1(unsigned int j) const
+double HyperbolicControlX::m1(unsigned int j __attribute__((unused))) const
 {
     const DoubleVector &v = *pv;
     double v1 = v[0*(M+D-1)+(j-2)];
     return v1;
 }
 
-double HyperbolicControlX::m2(unsigned int j) const
+double HyperbolicControlX::m2(unsigned int j __attribute__((unused))) const
 {
     const DoubleVector &v = *pv;
     double v2 = v[1*(M+D-1)+(j-2)];
     return v2;
 }
 
-double HyperbolicControlX::bfi1(unsigned int i) const
+double HyperbolicControlX::bfi1(unsigned int i __attribute__((unused))) const
 {
     return 0.0;
 }
 
-double HyperbolicControlX::bfi2(unsigned int i) const
+double HyperbolicControlX::bfi2(unsigned int i __attribute__((unused))) const
 {
     return 0.0;
 }
 
-double HyperbolicControlX::bm1(unsigned int j) const
+double HyperbolicControlX::bm1(unsigned int j __attribute__((unused))) const
 {
     return 0.0;
 }
 
-double HyperbolicControlX::bm2(unsigned int j) const
+double HyperbolicControlX::bm2(unsigned int j __attribute__((unused))) const
 {
     return 0.0;
 }

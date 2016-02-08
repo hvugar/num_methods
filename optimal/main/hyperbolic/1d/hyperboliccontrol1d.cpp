@@ -125,6 +125,7 @@ double HyperbolicControl1D::fi1(unsigned int i) const
 
 double HyperbolicControl1D::fi2(unsigned int i) const
 {
+    C_UNUSED(i);
     return 0.0;
 }
 
@@ -141,11 +142,14 @@ double HyperbolicControl1D::m2(unsigned int j) const
 
 double HyperbolicControl1D::f(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HyperbolicControl1D::bfi1(unsigned int i) const
 {
+    C_UNUSED(i);
     return 0.0;
 }
 
@@ -157,21 +161,27 @@ double HyperbolicControl1D::bfi2(unsigned int i) const
 
 double HyperbolicControl1D::bm1(unsigned int j) const
 {
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HyperbolicControl1D::bm2(unsigned int j) const
 {
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HyperbolicControl1D::bf(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
 
-void HyperbolicControl1D::print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double a, RnFunction *fn) const
+void HyperbolicControl1D::print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double alpha, RnFunction *fn) const
 {
+    C_UNUSED(g);
+    C_UNUSED(alpha);
     HyperbolicControl1D *hc = dynamic_cast<HyperbolicControl1D*>(fn);
     printf("J[%d]: %.16f\n", i, hc->fx(v));
 }
