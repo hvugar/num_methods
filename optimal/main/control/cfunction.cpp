@@ -260,11 +260,41 @@ double ControlFunction::Integral(const DoubleVector &u)
 
 void ControlFunction::main()
 {
-    struct t_fx0 : public CFunction { virtual double fx(double t, const DoubleVector &x, double u) { return (x[0] - t*t*t)*(x[0] - t*t*t)+(x[1]-t)*(x[1]-t)+(2*u-t)*(2*u-t); } };
-    struct t_trm : public CFunction { virtual double fx(double t, const DoubleVector &x) { return (x[1] - 1.0) * (x[1] - 1.0); } };
+    struct t_fx0 : public CFunction
+    {
+        virtual double fx(double t, const DoubleVector &x, double u)
+        {
+            return (x[0] - t*t*t)*(x[0] - t*t*t)+(x[1]-t)*(x[1]-t)+(2*u-t)*(2*u-t);
+        }
+    };
 
-    struct t_fx1 : public CFunction { virtual double fx(double t, const DoubleVector &x, double u) { return 3.0 * x[1] * x[1]; } };
-    struct t_fx2 : public CFunction { virtual double fx(double t, const DoubleVector &x, double u) { return x[0] + x[1] - 2.0*u - t*t*t + 1.0; } };
+    struct t_trm : public CFunction
+    {
+        virtual double fx(double t, const DoubleVector &x)
+        {
+            C_UNUSED(t);
+            return (x[1] - 1.0) * (x[1] - 1.0);
+        }
+    };
+
+    struct t_fx1 : public CFunction
+    {
+        virtual double fx(double t, const DoubleVector &x, double u)
+        {
+            C_UNUSED(t);
+            C_UNUSED(u);
+            return 3.0 * x[1] * x[1];
+        }
+    };
+
+    struct t_fx2 : public CFunction
+    {
+        virtual double fx(double t, const DoubleVector &x, double u)
+        {
+            C_UNUSED(u);
+            return x[0] + x[1] - 2.0*u - t*t*t + 1.0;
+        }
+    };
 
     //struct t_px1 : public CFunction { virtual double fx(double t, const DoubleVector &x, const DoubleVector &psi, double u) { return 2.0 * (x[0] - t*t*t) - psi[1]; } };
     //struct t_px2 : public CFunction { virtual double fx(double t, const DoubleVector &x, const DoubleVector &psi, double u) { return 2.0 * (x[1] - t) - 6.0 * x[1] * psi[0] - psi[1]; } };

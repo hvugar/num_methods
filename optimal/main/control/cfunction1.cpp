@@ -84,38 +84,45 @@ double CFunction1::fx0(double t, const DoubleVector& x, double u) const
 
 double CFunction1::T(double t, const DoubleVector& x) const
 {
+    C_UNUSED(t);
     return (x[1] - 1.0) * (x[1] - 1.0);
 }
 
 double CFunction1::fx1(double t, const DoubleVector& x, double u) const
 {
+    C_UNUSED(t);
+    C_UNUSED(u);
     return 3.0 * x[1] * x[1];
 }
 
 double CFunction1::fx2(double t, const DoubleVector& x, double u) const
 {
+    C_UNUSED(t);
+    C_UNUSED(u);
     return x[0] + x[1] - 2.0*u - t*t*t + 1.0;
 }
 
 double CFunction1::fp1(double t, const DoubleVector& x, const DoubleVector& psi, double u)
 {
-//    double h = 0.000001;
-//    DoubleVector x1(2);
-//    x1[0] = x[0] + h; x1[1] = x[1];
-//    DoubleVector x2(2);
-//    x2[0] = x[0] - h; x2[1] = x[1];
-//    return -1.0 * (H(t, x1, u, psi) - H(t, x2, u, psi)) / (2 * h);
+    C_UNUSED(u);
+    //    double h = 0.000001;
+    //    DoubleVector x1(2);
+    //    x1[0] = x[0] + h; x1[1] = x[1];
+    //    DoubleVector x2(2);
+    //    x2[0] = x[0] - h; x2[1] = x[1];
+    //    return -1.0 * (H(t, x1, u, psi) - H(t, x2, u, psi)) / (2 * h);
     return 2.0 * (x[0] - t*t*t) - psi[1];
 }
 
 double CFunction1::fp2(double t, const DoubleVector& x, const DoubleVector& psi, double u)
 {
-//    double h = 0.000001;
-//    DoubleVector x1(2);
-//    x1[0] = x[0]; x1[1] = x[1] + h;
-//    DoubleVector x2(2);
-//    x2[0] = x[0]; x2[1] = x[1] - h;
-//    return -1.0 * (H(t, x1, u, psi) - H(t, x2, u, psi)) / (2 * h);
+    C_UNUSED(u);
+    //    double h = 0.000001;
+    //    DoubleVector x1(2);
+    //    x1[0] = x[0]; x1[1] = x[1] + h;
+    //    DoubleVector x2(2);
+    //    x2[0] = x[0]; x2[1] = x[1] - h;
+    //    return -1.0 * (H(t, x1, u, psi) - H(t, x2, u, psi)) / (2 * h);
     return 2.0 * (x[1] - t) - 6.0 * x[1] * psi[0] - psi[1];
 }
 

@@ -99,6 +99,7 @@ double CFunction3::fx0(double t, const DoubleVector& x, const DoubleVector& u) c
 
 double CFunction3::T(double t, const DoubleVector& x) const
 {
+    C_UNUSED(t);
     double x1 = x[0];
     double x2 = x[1];
     return (x1 - 1.0)*(x1 - 1.0) + (x2 - 1.0)*(x2 - 1.0);
@@ -124,6 +125,7 @@ double CFunction3::fx2(double t, const DoubleVector& x, const DoubleVector& u) c
 
 double CFunction3::fp1(double t, const DoubleVector& x, const DoubleVector& psi, const DoubleVector& u)
 {
+    C_UNUSED(u);
     double x1 = x[0];
     double psi2 = psi[1];
     return 2.0 * (x1-t*t) - psi2;
@@ -131,6 +133,7 @@ double CFunction3::fp1(double t, const DoubleVector& x, const DoubleVector& psi,
 
 double CFunction3::fp2(double t, const DoubleVector& x, const DoubleVector& psi, const DoubleVector& u)
 {
+    C_UNUSED(u);
     double x2 = x[1];
     double psi1 = psi[0];
     return 2.0 * (x2-t*t*t) - psi1;
@@ -274,14 +277,14 @@ void CFunction3::main()
 
 
     /* Minimization */
-//    ConjugateGradient g2;
-//    g2.setFunction(&c);
-//    g2.setEpsilon1(0.0000001);
-//    g2.setEpsilon2(0.0000001);
-//    g2.setGradientStep(0.0000001);
-//    g2.setR1MinimizeEpsilon(0.01, 0.0000001);
-//    g2.setPrinter(new CFunction3Printer);
-//    g2.calculate(u0);
+    //    ConjugateGradient g2;
+    //    g2.setFunction(&c);
+    //    g2.setEpsilon1(0.0000001);
+    //    g2.setEpsilon2(0.0000001);
+    //    g2.setGradientStep(0.0000001);
+    //    g2.setR1MinimizeEpsilon(0.01, 0.0000001);
+    //    g2.setPrinter(new CFunction3Printer);
+    //    g2.calculate(u0);
 }
 
 void CFunction3::print(unsigned int iterationCount, const DoubleVector& u, const DoubleVector &s, double alpha, RnFunction* f) const

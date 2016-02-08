@@ -68,16 +68,22 @@ void CFunction2::gradient(const DoubleVector& u, DoubleVector &g)
 
 double CFunction2::fx0(double t, const DoubleVector& x, double u) const
 {
+    C_UNUSED(u);
     return (x[0]-(t*t)/2.0)*(x[0]-(t*t)/2.0) + (x[1] - t)*(x[1] - t);
 }
 
 double CFunction2::F(double t, const DoubleVector &x, double u) const
 {
+    C_UNUSED(t);
+    C_UNUSED(x);
+    C_UNUSED(u);
     return 0.0;
 }
 
 double CFunction2::fx1(double t, const DoubleVector& x, double u) const
 {
+    C_UNUSED(t);
+    C_UNUSED(u);
     return x[1];
 }
 
@@ -88,24 +94,26 @@ double CFunction2::fx2(double t, const DoubleVector& x, double u) const
 
 double CFunction2::fp1(double t, const DoubleVector& x, const DoubleVector& psi, double u) const
 {
-//    double h = 0.000001;
-//    DoubleVector x1(2);
-//    x1[0] = x[0] + h; x1[1] = x[1];
-//    DoubleVector x2(2);
-//    x2[0] = x[0] - h; x2[1] = x[1];
-//    return -1.0 * (H(t, x1, u, psi) - H(t, x2, u, psi)) / (2 * h);
+    C_UNUSED(u);
+    //    double h = 0.000001;
+    //    DoubleVector x1(2);
+    //    x1[0] = x[0] + h; x1[1] = x[1];
+    //    DoubleVector x2(2);
+    //    x2[0] = x[0] - h; x2[1] = x[1];
+    //    return -1.0 * (H(t, x1, u, psi) - H(t, x2, u, psi)) / (2 * h);
 
     return 2.0*x[0] - t*t + 6.0*psi[1];
 }
 
 double CFunction2::fp2(double t, const DoubleVector& x, const DoubleVector& psi, double u) const
 {
-//    double h = 0.000001;
-//    DoubleVector x1(2);
-//    x1[0] = x[0]; x1[1] = x[1] + h;
-//    DoubleVector x2(2);
-//    x2[0] = x[0]; x2[1] = x[1] - h;
-//    return -1.0 * (H(t, x1, u, psi) - H(t, x2, u, psi)) / (2 * h);
+    C_UNUSED(u);
+    //    double h = 0.000001;
+    //    DoubleVector x1(2);
+    //    x1[0] = x[0]; x1[1] = x[1] + h;
+    //    DoubleVector x2(2);
+    //    x2[0] = x[0]; x2[1] = x[1] - h;
+    //    return -1.0 * (H(t, x1, u, psi) - H(t, x2, u, psi)) / (2 * h);
 
     return 2.0*(x[1]-t) - psi[0] - psi[1];
 }
@@ -168,19 +176,19 @@ void CFunction2::calculate_psi(const DoubleVector& u)
     psi1[n-1] = 0.0;
     psi2[n-1] = 0.0;
 
-//    DoubleVector _x1(2);
-//    DoubleVector _x2(2);
-//    double dx = 0.000001;
-//    _x1[0] = x1[n-1] + dx;
-//    _x1[1] = x2[n-1];
-//    _x2[0] = x1[n-1] - dx;
-//    _x2[1] = x2[n-1];
-//    psi1[n-1] = -1.0*(F(0.0, _x1, 0.0)-F(0.0, _x2, 0.0))/(2.0*dx);
-//    _x1[0] = x1[n-1];
-//    _x1[1] = x2[n-1] + dx;
-//    _x2[0] = x1[n-1];
-//    _x2[1] = x2[n-1] - dx;
-//    psi2[n-1] = -1.0*(F(0.0, _x1, 0.0)-F(0.0, _x2, 0.0))/(2.0*dx);
+    //    DoubleVector _x1(2);
+    //    DoubleVector _x2(2);
+    //    double dx = 0.000001;
+    //    _x1[0] = x1[n-1] + dx;
+    //    _x1[1] = x2[n-1];
+    //    _x2[0] = x1[n-1] - dx;
+    //    _x2[1] = x2[n-1];
+    //    psi1[n-1] = -1.0*(F(0.0, _x1, 0.0)-F(0.0, _x2, 0.0))/(2.0*dx);
+    //    _x1[0] = x1[n-1];
+    //    _x1[1] = x2[n-1] + dx;
+    //    _x2[0] = x1[n-1];
+    //    _x2[1] = x2[n-1] - dx;
+    //    psi2[n-1] = -1.0*(F(0.0, _x1, 0.0)-F(0.0, _x2, 0.0))/(2.0*dx);
 
     DoubleVector _psi(2);
     _psi[0] = psi1[n-1];
@@ -242,7 +250,7 @@ void CFunction2::main()
     g2.setEpsilon2(0.0000001);
     g2.setR1MinimizeEpsilon(0.01, 0.0000001);
     g2.setPrinter(&c);
-//    g2.calculate(u0);
+    //    g2.calculate(u0);
 }
 
 void CFunction2::print(unsigned int i, const DoubleVector &u, const DoubleVector &s, double alpha, RnFunction* f) const
