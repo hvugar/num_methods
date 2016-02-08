@@ -104,6 +104,9 @@ void ConjugateGradient::calculate(DoubleVector& x)
 
 double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
 {
+    C_UNUSED(x);
+    C_UNUSED(s);
+
     double alpha0 = 0.0;
     double a,b,alpha;
 

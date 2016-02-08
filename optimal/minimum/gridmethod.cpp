@@ -163,7 +163,7 @@ void GridMethod::tomas_algorithm(std::vector<DoubleVector> &a, const DoubleVecto
         }
     }
 
-    for (unsigned int i=size-1; i>=0; i--)
+    for (unsigned int i=size-1; i>=(unsigned int)0-1; i--)
     {
         if (i==(size-1))
             x[i] = q[i];

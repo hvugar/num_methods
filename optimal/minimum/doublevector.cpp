@@ -195,6 +195,7 @@ void DoubleCube::Clear()
 
 DblVector::DblVector(unsigned int n)
 {
+    C_UNUSED(n);
 //    msize = n;
 //    pdata = (double*)malloc(sizeof(double)*n);
 }

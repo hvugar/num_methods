@@ -93,6 +93,9 @@ double SteepestDescentGradient::fx(double alpha)
 
 double SteepestDescentGradient::minimize(const DoubleVector &x, const DoubleVector &g)
 {
+    C_UNUSED(x);
+    C_UNUSED(g);
+
     double alpha0 = 0.0;
     double a,b,alpha;
 
