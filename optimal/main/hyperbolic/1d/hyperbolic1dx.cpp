@@ -93,8 +93,10 @@ void Hyperbolic1DX::project(DoubleVector &e, int i)
     if (e[i]<0.0) e[i]=0.0;
 }
 
-void Hyperbolic1DX::print(unsigned int i, const DoubleVector &e, const DoubleVector &g, double a, RnFunction *fn) const
+void Hyperbolic1DX::print(unsigned int i, const DoubleVector &e, const DoubleVector &g, double alpha, RnFunction *fn) const
 {
+    C_UNUSED(g);
+    C_UNUSED(alpha);
     Hyperbolic1DX *hc = dynamic_cast<Hyperbolic1DX*>(fn);
     printf("J[%d]: %.16f\n", i, hc->fx(e));
     printf("e1: %12.8f %12.8f %12.8f\n", e[0], e[1], e[2]);
@@ -109,6 +111,7 @@ double Hyperbolic1DX::fi1(unsigned int i) const
 
 double Hyperbolic1DX::fi2(unsigned int i) const
 {
+    C_UNUSED(i);
     return 0.0;
 }
 
@@ -156,6 +159,7 @@ double Hyperbolic1DX::f(unsigned int i, unsigned int j) const
 
 double Hyperbolic1DX::bfi1(unsigned int i) const
 {
+    C_UNUSED(i);
     return 0.0;
 }
 
@@ -167,16 +171,20 @@ double Hyperbolic1DX::bfi2(unsigned int i) const
 
 double Hyperbolic1DX::bm1(unsigned int j) const
 {
+    C_UNUSED(j);
     return 0.0;
 }
 
 double Hyperbolic1DX::bm2(unsigned int j) const
 {
+    C_UNUSED(j);
     return 0.0;
 }
 
 double Hyperbolic1DX::bf(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
 

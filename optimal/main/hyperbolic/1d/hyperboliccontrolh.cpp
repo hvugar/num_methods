@@ -215,11 +215,13 @@ double HyperbolicControlH::bf(unsigned int i, unsigned int j) const
 
 double HyperbolicControlH::fi1(unsigned int i) const
 {
+    C_UNUSED(i);
     return 2.0;
 }
 
 double HyperbolicControlH::fi2(unsigned int i) const
 {
+    C_UNUSED(i);
     return 0.0;
 }
 
@@ -239,25 +241,31 @@ double HyperbolicControlH::m2(unsigned int j) const
 
 double HyperbolicControlH::bfi1(unsigned int i) const
 {
+    C_UNUSED(i);
     return 0.0;
 }
 
 double HyperbolicControlH::bfi2(unsigned int i) const
 {
+    C_UNUSED(i);
     return 0.0;
 }
 
 double HyperbolicControlH::bm1(unsigned int j) const
 {
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HyperbolicControlH::bm2(unsigned int j) const
 {
+    C_UNUSED(j);
     return 0.0;
 }
 
-void HyperbolicControlH::print(unsigned int iteration, const DoubleVector &v, const DoubleVector &g, double alpha, RnFunction *fn) const
+void HyperbolicControlH::print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double alpha, RnFunction *fn) const
 {
-    printf("J[%d]: %.16f\n", iteration, fn->fx(v));
+    C_UNUSED(g);
+    C_UNUSED(alpha);
+    printf("J[%d]: %.16f\n", i, fn->fx(v));
 }
