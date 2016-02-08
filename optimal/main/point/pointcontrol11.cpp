@@ -68,9 +68,11 @@ void PointControl11::gradient(const DoubleVector &q, DoubleVector &g, double gra
     g[2] = p[(unsigned int)(0.8*N)];
 }
 
-void PointControl11::print(unsigned int iteration, const DoubleVector &x, const DoubleVector &gr, double alpha, RnFunction *fn) const
+void PointControl11::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double alpha, RnFunction *fn) const
 {
-    printf("J[%d]: %.14f\n", iteration, fn->fx(x));
+    C_UNUSED(g);
+    C_UNUSED(alpha);
+    printf("J[%d]: %.14f\n", i, fn->fx(x));
 }
 
 void PointControl11::calculateX(const DoubleVector &q, DoubleVector &x)

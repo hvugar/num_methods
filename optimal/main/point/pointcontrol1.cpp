@@ -23,7 +23,7 @@ PointControl1::PointControl1(double t0, double t1, double x0, double x1, double 
 double PointControl1::fx(const DoubleVector &p)
 {
     calculate_x(p);
-//    printX("          fx: x", x);
+    //    printX("          fx: x", x);
     return (x[n-1] - x1)*(x[n-1] - x1);
 }
 
@@ -60,6 +60,8 @@ void PointControl1::calculate_x(const DoubleVector &p)
 
 double PointControl1::px(double t, double psi, double x)
 {
+    C_UNUSED(t);
+    C_UNUSED(x);
     return psi;
 }
 
@@ -98,6 +100,7 @@ double PointControl1::dxdt(double t, double x, const DoubleVector& p)
 
 double PointControl1::delta(double t)
 {
+    C_UNUSED(t);
     return 0.0;
 }
 
@@ -122,9 +125,11 @@ void PointControl1::main()
     f.write(f.x);
 }
 
-void PointControl1::print(unsigned int iterationCount, const DoubleVector &p, const DoubleVector &s, double m_alpha, RnFunction *f) const
+void PointControl1::print(unsigned int i, const DoubleVector &p, const DoubleVector &s, double alpha, RnFunction *f) const
 {
-    printf("J[%2d]: %.10f %.10f %.10f %.10f\n", iterationCount, f->fx(p), p[0], p[1], p[2]);
+    C_UNUSED(s);
+    C_UNUSED(alpha);
+    printf("J[%2d]: %.10f %.10f %.10f %.10f\n", i, f->fx(p), p[0], p[1], p[2]);
     puts("*******************************************************************************");
 }
 
@@ -134,7 +139,7 @@ void PointControl1::write(DoubleVector &x)
     for (unsigned int i=0; i<x.size(); i++)
     {
         if (i%10==0)
-        fprintf(f, "%.10f\n", x[i]);
+            fprintf(f, "%.10f\n", x[i]);
     }
     fclose(f);
 }

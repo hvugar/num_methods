@@ -138,8 +138,10 @@ void PointControl::main()
     f.write(f.x, "pointcontrol.txt");
 }
 
-void PointControl::print(unsigned int i, const DoubleVector &p, const DoubleVector &g, double a, RnFunction *f) const
+void PointControl::print(unsigned int i, const DoubleVector &p, const DoubleVector &g, double alpha, RnFunction *f) const
 {
+    C_UNUSED(g);
+    C_UNUSED(alpha);
     printf("J[%2d]: %.10f %.10f %.10f %.10f\n", i, f->fx(p), p[0], p[1], p[2]);
     puts("*******************************************************************************");
 }

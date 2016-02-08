@@ -96,6 +96,8 @@ void PointControl2::calculate_x(const DoubleVector &p)
 
 double PointControl2::px(double t, double psi, double x)
 {
+    C_UNUSED(t);
+    C_UNUSED(x);
     return psi;
 }
 
@@ -165,9 +167,11 @@ void PointControl2::main()
     f.write(f.x, "pointcontrol2.txt");
 }
 
-void PointControl2::print(unsigned int iterationCount, const DoubleVector &p, const DoubleVector &s, double m_alpha, RnFunction *f) const
+void PointControl2::print(unsigned int i, const DoubleVector &p, const DoubleVector &g, double alpha, RnFunction *f) const
 {
-    printf("J[%2d]: %.10f %.10f %.10f %.10f %.10f\n", iterationCount, f->fx(p), p[0], p[1], p[2], p[0]+p[1]+p[2]);
+    C_UNUSED(g);
+    C_UNUSED(alpha);
+    printf("J[%2d]: %.10f %.10f %.10f %.10f %.10f\n", i, f->fx(p), p[0], p[1], p[2], p[0]+p[1]+p[2]);
     puts("*******************************************************************************");
 }
 
