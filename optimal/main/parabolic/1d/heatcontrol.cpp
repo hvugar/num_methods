@@ -159,3 +159,15 @@ void HeatControl::print(unsigned int i, const DoubleVector &f0, const DoubleVect
     //    printf("Printing g-------------------------------\n");
     //    IPrinter::printAsMatrix(g, M, N);
 }
+
+double HeatControl::u(double x, double t) const
+{
+    return x*x+t*t;
+}
+
+double HeatControl::fxt(double x, double t)
+{
+    C_UNUSED(x);
+    return 2.0*t - 2.0*a;
+}
+

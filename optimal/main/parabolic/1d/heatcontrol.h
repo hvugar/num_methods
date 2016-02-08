@@ -49,8 +49,8 @@ private:
     unsigned int M;
     double a;
 
-    inline double u(double x, double t) const { return x*x+t*t; }
-    inline double fxt(double x, double t) { return 2.0*t - 2.0*a; }
+    double u(double x, double t) const;
+    double fxt(double x, double t);
     const DoubleVector* pf;
     const DoubleVector* pu;
     DoubleVector U;

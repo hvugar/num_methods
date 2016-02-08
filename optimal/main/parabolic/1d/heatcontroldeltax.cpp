@@ -87,20 +87,20 @@ double HeatControlDeltaX::fx(const DoubleVector &e)
 double HeatControlDeltaX::norm(const DoubleVector &v) const
 {
     double norm = 0.0;
-//    for (unsigned int j=0; j<=M; j++)
-//    {
-//        for (unsigned int i=0; i<=N; i++)
-//        {
-//            double alpha = 1.0;
-//            if (i==0 || i==N || j==0 || j==M) alpha = 0.5;
-//            if (i==0 && j==0) alpha = 0.25;
-//            if (i==0 && j==M) alpha = 0.25;
-//            if (i==N && j==0) alpha = 0.25;
-//            if (i==N && j==M) alpha = 0.25;
-//            norm += alpha*(v[j] - f1(j*ht))*(v[j] - f1(j*ht));
-//        }
-//    }
-//    norm = hx*ht*norm;
+    //    for (unsigned int j=0; j<=M; j++)
+    //    {
+    //        for (unsigned int i=0; i<=N; i++)
+    //        {
+    //            double alpha = 1.0;
+    //            if (i==0 || i==N || j==0 || j==M) alpha = 0.5;
+    //            if (i==0 && j==0) alpha = 0.25;
+    //            if (i==0 && j==M) alpha = 0.25;
+    //            if (i==N && j==0) alpha = 0.25;
+    //            if (i==N && j==M) alpha = 0.25;
+    //            norm += alpha*(v[j] - f1(j*ht))*(v[j] - f1(j*ht));
+    //        }
+    //    }
+    //    norm = hx*ht*norm;
     return norm;
 }
 
@@ -210,21 +210,27 @@ double HeatControlDeltaX::bfi(unsigned int i) const
 
 double HeatControlDeltaX::bm1(unsigned int j) const
 {
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HeatControlDeltaX::bm2(unsigned int j) const
 {
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HeatControlDeltaX::bf(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
 
-void HeatControlDeltaX::print(unsigned int i, const DoubleVector &e, const DoubleVector &g, double a, RnFunction *f) const
+void HeatControlDeltaX::print(unsigned int i, const DoubleVector &e, const DoubleVector &g, double alpha, RnFunction *f) const
 {
+    C_UNUSED(alpha);
+
     HeatControlDeltaX *hc = dynamic_cast<HeatControlDeltaX*>(f);
     printf("J[%d]: %.16f\n", i, hc->fx(e));
 

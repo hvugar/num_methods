@@ -154,21 +154,28 @@ double HeatControlDeltaF::bfi(unsigned int i) const
 
 double HeatControlDeltaF::bm1(unsigned int j) const
 {
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HeatControlDeltaF::bm2(unsigned int j) const
 {
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HeatControlDeltaF::bf(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
 
-void HeatControlDeltaF::print(unsigned int i, const DoubleVector &f0, const DoubleVector &g, double a, RnFunction *f) const
+void HeatControlDeltaF::print(unsigned int i, const DoubleVector &f0, const DoubleVector &g, double alpha, RnFunction *f) const
 {
+    C_UNUSED(g);
+    C_UNUSED(alpha);
+
     HeatControlDeltaF *hc = dynamic_cast<HeatControlDeltaF*>(f);
     printf("J[%d]: %.20f\n", i, hc->fx(f0));
     //    printf("Printing f-------------------------------\n");
