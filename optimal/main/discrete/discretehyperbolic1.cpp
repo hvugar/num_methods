@@ -7,11 +7,11 @@ void DiscreteHyperbolic1::main()
     DiscreteHyperbolic1 dh;
     dh.fx(0.92);
 
-//    double a = 0.8;
-//    double b = 1.0;
-//    double t = 0.0;
-//    goldenSectionSearch(a, b, t, &dh, 0.00001);
-//    printf("%f\n", t);
+    //    double a = 0.8;
+    //    double b = 1.0;
+    //    double t = 0.0;
+    //    goldenSectionSearch(a, b, t, &dh, 0.00001);
+    //    printf("%f\n", t);
 }
 
 double DiscreteHyperbolic1::fx(double t)
@@ -153,6 +153,7 @@ void DiscreteHyperbolic1::gradient(const DoubleVector &v, DoubleVector &g)
 void DiscreteHyperbolic1::calculateP(const DoubleVector& f0, const DoubleMatrix &u, DoubleMatrix &psi, DoubleVector &g)
 {
     C_UNUSED(f0);
+    C_UNUSED(g);
 
     for (unsigned int j=0; j<psi.size(); j++) psi[j].clear();
     psi.clear();
@@ -354,9 +355,11 @@ void DiscreteHyperbolic1::calculateP(const DoubleVector& f0, const DoubleMatrix 
     da.clear();
 }
 
-void DiscreteHyperbolic1::print(unsigned int iteration, const DoubleVector &v, const DoubleVector &g, double alpha, RnFunction *fn) const
+void DiscreteHyperbolic1::print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double alpha, RnFunction *fn) const
 {
-    printf("J[%d]: %.16f\n", iteration, fn->fx(v));
+    C_UNUSED(g);
+    C_UNUSED(alpha);
+    printf("J[%d]: %.16f\n", i, fn->fx(v));
 }
 
 double DiscreteHyperbolic1::fi1(unsigned int i) const

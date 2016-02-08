@@ -118,6 +118,7 @@ double DiscreteHyperbolic::fi1(unsigned int i) const
 
 double DiscreteHyperbolic::fi2(unsigned int i) const
 {
+    C_UNUSED(i);
     return 0.0;
 }
 

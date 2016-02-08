@@ -122,6 +122,7 @@ double PointControl11::f(double t, double x) const
 
 void PointControl11::calculateP(const DoubleVector &q, const DoubleVector &x, DoubleVector &p)
 {
+    C_UNUSED(q);
     p.clear();
     p.resize(N+1);
 

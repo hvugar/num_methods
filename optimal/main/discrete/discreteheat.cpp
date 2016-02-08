@@ -144,6 +144,8 @@ double DiscreteHeat::fxt(double x, double t)
 void DiscreteHeat::calculateP(const DoubleVector &f, const DoubleVector &u, DoubleMatrix &psi, DoubleVector &g)
 {
     C_UNUSED(f);
+    C_UNUSED(g);
+
     double lamda = -(a*ht)/(hx*hx);
     double k = 1.0-2.0*lamda;
 
