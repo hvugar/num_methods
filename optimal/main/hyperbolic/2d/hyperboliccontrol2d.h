@@ -1,15 +1,15 @@
-#ifndef HYPERBOLICCONTROL2_H
-#define HYPERBOLICCONTROL2_H
+#ifndef HYPERBOLICCONTROL2D_H
+#define HYPERBOLICCONTROL2D_H
 
 #include <function.h>
 #include <hyperbolicequation.h>
 #include <printer.h>
 
-class HyperbolicControl2 : public RnFunction, public IGradient, public IHyperbolicEquation, public IBackwardHyperbolicEquation, public IPrinter
+class HyperbolicControl2D : public RnFunction, public IGradient, public IHyperbolicEquation, public IBackwardHyperbolicEquation, public IPrinter
 {
 public:
-    HyperbolicControl2();
-    virtual ~HyperbolicControl2();
+    HyperbolicControl2D();
+    virtual ~HyperbolicControl2D();
 
     virtual double fx(const DoubleVector &x);
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
@@ -48,4 +48,4 @@ private:
     DoubleVector U1;
 };
 
-#endif // HYPERBOLICCONTROL2_H
+#endif // HYPERBOLICCONTROL2D_H

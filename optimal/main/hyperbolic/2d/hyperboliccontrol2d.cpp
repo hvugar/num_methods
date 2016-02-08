@@ -1,6 +1,6 @@
-#include "hyperboliccontrol2.h"
+#include "hyperboliccontrol2d.h"
 
-HyperbolicControl2::HyperbolicControl2()
+HyperbolicControl2D::HyperbolicControl2D()
 {
     x0 = 0.0;
     x1 = 1.0;
@@ -23,11 +23,11 @@ HyperbolicControl2::HyperbolicControl2()
     }
 }
 
-HyperbolicControl2::~HyperbolicControl2()
+HyperbolicControl2D::~HyperbolicControl2D()
 {
 }
 
-double HyperbolicControl2::fx(const DoubleVector &x)
+double HyperbolicControl2D::fx(const DoubleVector &x)
 {
     C_UNUSED(x);
 
@@ -61,85 +61,85 @@ double HyperbolicControl2::fx(const DoubleVector &x)
     return sum;
 }
 
-void HyperbolicControl2::gradient(const DoubleVector &x, DoubleVector &g)
+void HyperbolicControl2D::gradient(const DoubleVector &x, DoubleVector &g)
 {
     C_UNUSED(x);
     C_UNUSED(g);
 }
 
-double HyperbolicControl2::fi1(unsigned int i) const
+double HyperbolicControl2D::fi1(unsigned int i) const
 {
     C_UNUSED(i);
     return 2.0;
 }
 
-double HyperbolicControl2::fi2(unsigned int i) const
+double HyperbolicControl2D::fi2(unsigned int i) const
 {
     C_UNUSED(i);
     return 0.0;
 }
 
-double HyperbolicControl2::m1(unsigned int j) const
+double HyperbolicControl2D::m1(unsigned int j) const
 {
     double t = j*ht;
     return t*t;
 }
 
-double HyperbolicControl2::m2(unsigned int j) const
+double HyperbolicControl2D::m2(unsigned int j) const
 {
     double t = j*ht;
     return t*t+1.0;
 }
 
-double HyperbolicControl2::f(unsigned int i, unsigned int j) const
+double HyperbolicControl2D::f(unsigned int i, unsigned int j) const
 {
     C_UNUSED(i);
     C_UNUSED(j);
     return 0.0;
 }
 
-double HyperbolicControl2::bfi1(unsigned int i) const
+double HyperbolicControl2D::bfi1(unsigned int i) const
 {
     C_UNUSED(i);
     return 0.0;
 }
 
-double HyperbolicControl2::bfi2(unsigned int i) const
+double HyperbolicControl2D::bfi2(unsigned int i) const
 {
     C_UNUSED(i);
     return 0.0;
 }
 
-double HyperbolicControl2::bm1(unsigned int j) const
+double HyperbolicControl2D::bm1(unsigned int j) const
 {
     C_UNUSED(j);
     return 0.0;
 }
 
-double HyperbolicControl2::bm2(unsigned int j) const
+double HyperbolicControl2D::bm2(unsigned int j) const
 {
     C_UNUSED(j);
     return 0.0;
 }
 
-double HyperbolicControl2::bf(unsigned int i, unsigned int j) const
+double HyperbolicControl2D::bf(unsigned int i, unsigned int j) const
 {
     C_UNUSED(i);
     C_UNUSED(j);
     return 0.0;
 }
 
-double HyperbolicControl2::v1(double t) const
+double HyperbolicControl2D::v1(double t) const
 {
     return t;
 }
 
-double HyperbolicControl2::v2(double t) const
+double HyperbolicControl2D::v2(double t) const
 {
     return t;
 }
 
-double HyperbolicControl2::fxt(double x, double t) const
+double HyperbolicControl2D::fxt(double x, double t) const
 {
     return x+t;
 }
