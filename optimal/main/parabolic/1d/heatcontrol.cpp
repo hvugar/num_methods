@@ -130,21 +130,28 @@ double HeatControl::bfi(unsigned int i) const
 
 double HeatControl::bm1(unsigned int j) const
 {
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HeatControl::bm2(unsigned int j) const
 {
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HeatControl::bf(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
 
 void HeatControl::print(unsigned int i, const DoubleVector &f0, const DoubleVector &g, double a, RnFunction *f) const
 {
+    C_UNUSED(g);
+    C_UNUSED(a);
+
     HeatControl *hc = dynamic_cast<HeatControl*>(f);
     printf("J[%d]: %.20f\n", i, hc->fx(f0));
     //    printf("Printing f-------------------------------\n");

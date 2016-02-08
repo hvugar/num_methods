@@ -135,6 +135,8 @@ double HeatControlDeltaF::m2(unsigned int j) const
 
 double HeatControlDeltaF::f(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+
 //    double x = i*hx;
     double sum = 0.0;
     if (i==E) sum = (1.0/hx) * (*pf)[j];
@@ -147,7 +149,7 @@ double HeatControlDeltaF::f(unsigned int i, unsigned int j) const
 
 double HeatControlDeltaF::bfi(unsigned int i) const
 {
-    return -2.0 * ((*pu)[i] - U[i]);;
+    return -2.0 * ((*pu)[i] - U[i]);
 }
 
 double HeatControlDeltaF::bm1(unsigned int j) const
