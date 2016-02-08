@@ -29,6 +29,7 @@ double PointControl1::fx(const DoubleVector &p)
 
 void PointControl1::gradient(const DoubleVector& p, DoubleVector& g, double gradient_step)
 {
+    C_UNUSED(gradient_step);
     calculate_x(p);
     IPrinter::printVector(x, "x", 10);
     calculate_psi();

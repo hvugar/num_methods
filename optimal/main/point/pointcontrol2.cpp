@@ -29,8 +29,9 @@ double PointControl2::fx(const DoubleVector &p)
     return (x[n-1] - x1)*(x[n-1] - x1);
 }
 
-void PointControl2::gradient(const DoubleVector& p, DoubleVector& g, double gradient_step)
+void PointControl2::gradient(const DoubleVector &p, DoubleVector &g, double gradient_step)
 {
+    C_UNUSED(gradient_step);
     calculate_x(p);
     IPrinter::printVector(x, "x", 10);
     calculate_psi();
