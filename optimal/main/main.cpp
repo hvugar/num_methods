@@ -78,6 +78,7 @@ public:
 class P1 : public IParabolicEquation2D
 {
 public:
+    double u(double x1, double x2, double t) { return x1*x1 + x2*x2 + t*t; }
     virtual double fi(unsigned int i, unsigned int j) const { return (i*hx1)*(i*hx1) + (j*hx2)*(j*hx2); }
     virtual double m1(unsigned int j, unsigned int k) const { return (j*hx2)*(j*hx2) + (k*ht)*(k*ht); }
     virtual double m2(unsigned int j, unsigned int k) const { return 1.0 + (j*hx2)*(j*hx2) + (k*ht)*(k*ht); }
