@@ -7,7 +7,7 @@
 #include "tomasmethod.h"
 #include "printer.h"
 
-struct MINIMUMSHARED_EXPORT IHyperbolicEquation
+class MINIMUMSHARED_EXPORT IHyperbolicEquation
 {
 public:
     virtual double fi1(unsigned int i) const = 0;
@@ -20,7 +20,7 @@ public:
     virtual void calculateU(DoubleMatrix &u, double hx, double ht, unsigned int M, unsigned int N, double a=1.0, double lamda=0.25) const;
 };
 
-struct MINIMUMSHARED_EXPORT IBackwardHyperbolicEquation
+class MINIMUMSHARED_EXPORT IBackwardHyperbolicEquation
 {
 public:
     virtual double bfi1(unsigned int i) const = 0;
@@ -31,6 +31,20 @@ public:
 
     virtual void calculateU(DoubleVector &p, double hx, double ht, unsigned int M, unsigned int N, double a=1.0, double lamda=0.25) const;
     virtual void calculateU(DoubleMatrix &p, double hx, double ht, unsigned int M, unsigned int N, double a=1.0, double lamda=0.25) const;
+};
+
+class MINIMUMSHARED_EXPORT IHyperbolicEquation2D
+{
+public:
+    virtual double fi1(unsigned int i, unsigned int j) const = 0;
+    virtual double fi2(unsigned int i, unsigned int j) const = 0;
+    virtual double m1(unsigned int j, unsigned int k) const = 0;
+    virtual double m2(unsigned int j, unsigned int k) const = 0;
+    virtual double m3(unsigned int i, unsigned int k) const = 0;
+    virtual double m4(unsigned int i, unsigned int k) const = 0;
+    virtual double f(unsigned int i, unsigned int j, unsigned int k) const = 0;
+
+    virtual void calculate(DoubleMatrix &u, double hx1, double hx2, double ht, double N1, double N2, double M, double a1=1.0, double a2=1.0) const;
 };
 
 
