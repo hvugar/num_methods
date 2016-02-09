@@ -75,26 +75,59 @@ public:
     double a2;
 };
 
+class P1 : public IParabolicEquation2D
+{
+public:
+    virtual double fi(unsigned int i, unsigned int j) const { return (i*hx1)*(i*hx1) + (j*hx2)*(j*hx2); }
+    virtual double m1(unsigned int j, unsigned int k) const { return (j*hx2)*(j*hx2) + (k*ht)*(k*ht); }
+    virtual double m2(unsigned int j, unsigned int k) const { return 1.0 + (j*hx2)*(j*hx2) + (k*ht)*(k*ht); }
+    virtual double m3(unsigned int i, unsigned int k) const { return (i*hx1)*(i*hx1) + (k*ht)*(k*ht); }
+    virtual double m4(unsigned int i, unsigned int k) const { return 1.0 + (i*hx1)*(i*hx1) + (k*ht)*(k*ht); }
+    virtual double f(unsigned int i, unsigned int j, unsigned int k) const
+    {
+        return 2.0*(0.5*k*ht) - 2.0*a1 - 2.0*a2;
+    }
+
+    double ht;
+    double hx1;
+    double hx2;
+    unsigned int M;
+    unsigned int N1;
+    unsigned int N2;
+    double t0;
+    double t1;
+    double x10;
+    double x11;
+    double x20;
+    double x21;
+    double a1;
+    double a2;
+};
+
 int main()
 {
-    A a;
+    P1 a;
     a.x10 = a.x20 = a.t0 = 0.0;
     a.x11 = a.x21 = a.t1 = 1.0;
-    a.M = a.N2 = a.N1 = 1000;
-    a.ht = a.hx1 = a.hx2 = 0.001;
+    a.M = a.N2 = a.N1 = 100;
+    a.ht = a.hx1 = a.hx2 = 0.01;
     a.a1 = a.a2 = 1.0;
     DoubleMatrix u;
-    a.calculate(u, a.hx1, a.hx2, a.ht, a.N1, a.N2, a.M, a.a1, a.a2);
+    a.calculateU(u, a.hx1, a.hx2, a.ht, a.N1, a.N2, a.M, a.a1, a.a2);
     IPrinter::printMatrix(u);
+    puts("---");
+    DoubleMatrix u1;
+    a.calculateU1(u1, a.hx1, a.hx2, a.ht, a.N1, a.N2, a.M, a.a1, a.a2);
+    IPrinter::printMatrix(u1);
 
 
-//    A a;
-//    DoubleMatrix u;
-//    a.calculateN(u, a.hx, a.ht, a.N, a.M);
-//    IPrinter::printMatrix(u);
-//    HeatControl2DeltaX::main();
-//    HeatControlDeltaX::main();
-//    DiscreteHyperbolic1::main();
-//    HyperbolicControlH::main();
+    //    A a;
+    //    DoubleMatrix u;
+    //    a.calculateN(u, a.hx, a.ht, a.N, a.M);
+    //    IPrinter::printMatrix(u);
+    //    HeatControl2DeltaX::main();
+    //    HeatControlDeltaX::main();
+    //    DiscreteHyperbolic1::main();
+    //    HyperbolicControlH::main();
     return 0;
 }

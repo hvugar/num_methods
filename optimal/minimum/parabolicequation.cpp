@@ -293,7 +293,7 @@ void IParabolicEquation2D::calculateU(DoubleMatrix &u, double h1, double h2, dou
         }
         else
         {
-            // Approximation to x1 direction
+            // Approximation to x2 direction
             for (unsigned int i=1; i<N1; i++)
             {
                 for (unsigned int j=1; j<N2; j++)
@@ -327,7 +327,7 @@ void IParabolicEquation2D::calculateU(DoubleMatrix &u, double h1, double h2, dou
                 uh[j][N1] = m2(j, 2*k-1);
             }
 
-            // Approximation to x2 direction
+            // Approximation to x1 direction
             for (unsigned int j=1; j<N2; j++)
             {
                 for (unsigned int i=1; i<N1; i++)
@@ -360,13 +360,143 @@ void IParabolicEquation2D::calculateU(DoubleMatrix &u, double h1, double h2, dou
                 u[N2][i] = m4(i, 2*k);
             }
         }
+    }
 
-//        char buffer[20];
-//        int n = sprintf(buffer, "data/1000/heat_%d.txt", k);
-//        buffer[n] = 0;
-//        FILE *file = fopen(buffer, "w");
-//        IPrinter::printMatrix(u, N2, N1, NULL, file);
-//        fclose(file);
+    da1.clear();
+    db1.clear();
+    dc1.clear();
+    dd1.clear();
+    rx1.clear();
+
+    da2.clear();
+    db2.clear();
+    dc2.clear();
+    dd2.clear();
+    rx2.clear();
+}
+
+void IParabolicEquation2D::calculateU1(DoubleMatrix &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
+{
+    //cleaning matrix
+    for (unsigned int j=0; j<u.size(); j++) u[j].clear();
+    u.clear();
+    u.resize(N2+1); for (unsigned int j=0; j<=N2; j++) u[j].resize(N1+1);
+
+    DoubleVector da1(N1-1);
+    DoubleVector db1(N1-1);
+    DoubleVector dc1(N1-1);
+    DoubleVector dd1(N1-1);
+    DoubleVector rx1(N1-1);
+
+    DoubleVector da2(N2-1);
+    DoubleVector db2(N2-1);
+    DoubleVector dc2(N2-1);
+    DoubleVector dd2(N2-1);
+    DoubleVector rx2(N2-1);
+
+    double x1_alpha1 = -(a2*ht)/(2.0*h2*h2);
+    double x1_beta1  = 1.0 + (a2*ht)/(h2*h2);
+    double x1_alpha2 = (a1*ht)/(2.0*h1*h1);
+    double x1_beta2  = 1.0 - (a1*ht)/(h1*h1);
+
+    double x2_alpha1 = -(a1*ht)/(2.0*h1*h1);
+    double x2_beta1  = 1.0 + (a1*ht)/(h1*h1);
+    double x2_alpha2 = (a2*ht)/(2.0*h2*h2);
+    double x2_beta2  = 1.0 - (a2*ht)/(h2*h2);
+
+    for (unsigned int k=0; k<=M; k++)
+    {
+        if (k==0)
+        {
+            for (unsigned int j=0; j<=N2; j++)
+            {
+                for (unsigned int i=0; i<=N1; i++)
+                {
+                    u[j][i] = fi(i, j);
+                }
+            }
+        }
+        else
+        {
+            // Approximation to x2 direction
+            for (unsigned int j=0; j<=N2; j++)
+            {
+                u[j][0]  = m1(j, 2*k-1);
+                u[j][N1] = m2(j, 2*k-1);
+            }
+
+            for (unsigned int i=1; i<N1; i++)
+            {
+                u[0][i]  = m3(i, 2*k-1);
+                u[N2][i] = m4(i, 2*k-1);
+            }
+
+            for (unsigned int i=1; i<N1; i++)
+            {
+//                u[0][i]  = m3(i, 2*k-1);
+//                u[N2][i] = m4(i, 2*k-1);
+
+                for (unsigned int j=1; j<N2; j++)
+                {
+                    da1[j-1] = x1_alpha1;
+                    db1[j-1] = x1_beta1;
+                    dc1[j-1] = x1_alpha1;
+                    dd1[j-1] = x1_alpha2*u[j][i-1] + x1_beta2*u[j][i] + x1_alpha2*u[j][i+1] + (ht/2.0) * f(i, j, 2*k-1);
+                }
+
+                da1[0]     = 0.0;
+                dc1[N2-2]  = 0.0;
+
+                dd1[0]    -= x1_alpha1 * u[0][i];
+                dd1[N2-2] -= x1_alpha1 * u[N2][i];
+
+                tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.size());
+
+                for (unsigned int j=1; j<N2; j++)
+                {
+                    u[j][i] = rx1[j-1];
+                }
+            }
+
+            // Approximation to x1 direction
+            for (unsigned int i=0; i<=N1; i++)
+            {
+                u[0][i]  = m3(i, 2*k);
+                u[N2][i] = m4(i, 2*k);
+            }
+
+            for (unsigned int j=1; j<N2; j++)
+            {
+                u[j][0]  = m1(j, 2*k);
+                u[j][N1] = m2(j, 2*k);
+            }
+
+            for (unsigned int j=1; j<N2; j++)
+            {
+                u[j][0]  = m1(j, 2*k);
+                u[j][N1] = m2(j, 2*k);
+
+                for (unsigned int i=1; i<N1; i++)
+                {
+                    da2[i-1] = x2_alpha1;
+                    db2[i-1] = x2_beta1;
+                    dc2[i-1] = x2_alpha1;
+                    dd2[i-1] = x2_alpha2*u[j-1][i] + x2_beta2*u[j][i] + x2_alpha2*u[j+1][i] + (ht/2.0) * f(i, j, 2*k);
+                }
+                da2[0]     = 0.0;
+                dc2[N1-2]  = 0.0;
+
+                dd2[0]    -= x2_alpha1 * u[j][0];
+                dd2[N1-2] -= x2_alpha1 * u[j][N1];
+
+                tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.size());
+
+                for (unsigned int i=1; i<N1; i++)
+                {
+                    u[j][i] = rx2[i-1];
+                }
+            }
+        }
     }
 
     da1.clear();
