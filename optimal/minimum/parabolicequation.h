@@ -5,9 +5,6 @@
 #include "tomasmethod.h"
 #include "printer.h"
 
-/**
- * @brief Параболического уравнения
- */
 class MINIMUMSHARED_EXPORT IParabolicEquation
 {
 public:
@@ -15,33 +12,11 @@ public:
     virtual double m1(unsigned int j) const = 0;
     virtual double m2(unsigned int j) const = 0;
     virtual double f(unsigned int i, unsigned int j) const = 0;
-    /**
-     * @brief calculateU
-     * @param u
-     * @param hx
-     * @param ht
-     * @param N
-     * @param M
-     * @param a положительная константа. число a^2 является коэффициентом температуропроводности
-     */
     virtual void calculateU(DoubleVector &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0) const;
-    /**
-     * @brief calculateU
-     * @param u
-     * @param hx
-     * @param ht
-     * @param N
-     * @param M
-     * @param a положительная константа. число a^2 является коэффициентом температуропроводности
-     */
     virtual void calculateU(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0) const;
     virtual void calculateN(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0) const;
 };
 
-/**
- * @brief Обратная параболического уравнения
- *
- */
 class MINIMUMSHARED_EXPORT IBackwardParabolicEquation
 {
 public:
@@ -52,9 +27,6 @@ public:
     virtual void calculateU(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0) const;
 };
 
-/**
- * @brief The IParabolicEquation2D class
- */
 class MINIMUMSHARED_EXPORT IParabolicEquation2D
 {
 public:
@@ -66,7 +38,6 @@ public:
     virtual double f(unsigned int i, unsigned int j, unsigned int k) const = 0;
 
     void calculateU(DoubleMatrix &u, double hx1, double hx2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1=1.0, double a2=1.0) const;
-    void calculateU1(DoubleMatrix &u, double hx1, double hx2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1=1.0, double a2=1.0) const;
     void calculateU(DoubleCube &u, double hx1, double hx2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1=1.0, double a2=1.0) const;
 };
 

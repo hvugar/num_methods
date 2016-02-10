@@ -44,7 +44,7 @@ public:
     virtual double m4(unsigned int i, unsigned int k) const = 0;
     virtual double f(unsigned int i, unsigned int j, unsigned int k) const = 0;
 
-    virtual void calculate(DoubleMatrix &u, double hx1, double hx2, double ht, double N1, double N2, double M, double a1=1.0, double a2=1.0) const;
+    virtual void calculateU(DoubleMatrix &u, double h1, double h2, double ht, double N1, double N2, double M, double a1=1.0, double a2=1.0) const;
 };
 
 
