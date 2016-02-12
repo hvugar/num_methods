@@ -341,8 +341,14 @@ void IHyperbolicEquation2D::calculateU(DoubleMatrix &u, double h1, double h2, do
         }
         else
         {
-            //if ((k % 2) == 0)
+            if ((k % 2) == 0)
             {
+                for (unsigned int i=0; i<=N1; i++)
+                {
+                    u[0][i]  = m3(i, k);
+                    u[N2][i] = m4(i, k);
+                }
+
                 // Approximation to x1 direction
                 for (unsigned int j=1; j<N2; j++)
                 {
@@ -351,9 +357,7 @@ void IHyperbolicEquation2D::calculateU(DoubleMatrix &u, double h1, double h2, do
                         da1[i-1] = x1_a;
                         db1[i-1] = x1_b;
                         dc1[i-1] = x1_a;
-                        dd1[i-1] = x1_c*(u1[j-1][i] - 2.0*u1[j][i] + u1[j+1][i])
-                                 + 2.0*u1[j][i] - u0[j][i] + (ht*ht) * f(i, j, k);
-                        //dd1[i-1] = x1_c*u[j-1][i] + x1_d*u[j][i] + x1_c*u[j+1][i] + (ht/2.0) * f(i, j, 2*k-1);
+                        dd1[i-1] = x1_c*(u1[j-1][i] - 2.0*u1[j][i] + u1[j+1][i]) + 2.0*u1[j][i] - u0[j][i] + (ht*ht) * f(i, j, k);
                     }
 
                     da1[0]     = 0.0;
@@ -373,14 +377,15 @@ void IHyperbolicEquation2D::calculateU(DoubleMatrix &u, double h1, double h2, do
                     }
                 }
 
-                for (unsigned int i=0; i<=N1; i++)
-                {
-                    u[0][i]  = m3(i, k);
-                    u[N2][i] = m4(i, k);
-                }
             }
-            //else
+            else
             {
+                for (unsigned int j=0; j<=N2; j++)
+                {
+                    u[j][0]  = m1(j, k);
+                    u[j][N1] = m2(j, k);
+                }
+
                 // Approximation to x2 direction
                 for (unsigned int i=1; i<N1; i++)
                 {
@@ -389,9 +394,7 @@ void IHyperbolicEquation2D::calculateU(DoubleMatrix &u, double h1, double h2, do
                         da2[j-1] = x2_a;
                         db2[j-1] = x2_b;
                         dc2[j-1] = x2_a;
-                        dd2[j-1] = x2_c*(u1[j][i-1] - 2.0*u1[j][i] + u1[j][i+1])
-                                 + 2.0*u1[j][i] - u0[j][i] + (ht*ht) * f(i, j, k);
-                        //dd2[j-1] = x2_c*uh[j][i-1] + x2_d*uh[j][i] + x2_c*uh[j][i+1] + (ht/2.0) * f(i, j, 2*k);
+                        dd2[j-1] = x2_c*(u1[j][i-1] - 2.0*u1[j][i] + u1[j][i+1]) + 2.0*u1[j][i] - u0[j][i] + (ht*ht) * f(i, j, k);
                     }
                     da2[0]     = 0.0;
                     dc2[N2-2]  = 0.0;
@@ -409,11 +412,151 @@ void IHyperbolicEquation2D::calculateU(DoubleMatrix &u, double h1, double h2, do
                         u[j][i] = rx2[j-1];
                     }
                 }
+            }
 
+            for (unsigned int j=0; j<=N2; j++)
+            {
+                for (unsigned int i=0; i<=N1; i++)
+                {
+                    u0[j][i] = u1[j][i];
+                    u1[j][i] = u[j][i];
+                }
+            }
+        }
+    }
+
+    da1.clear();
+    db1.clear();
+    dc1.clear();
+    dd1.clear();
+    rx1.clear();
+
+    da2.clear();
+    db2.clear();
+    dc2.clear();
+    dd2.clear();
+    rx2.clear();
+}
+
+void IHyperbolicEquation2D::calculateU1(DoubleMatrix &u, double h1, double h2, double ht, double N1, double N2, double M, double a1, double a2) const
+{
+    //cleaning matrix
+    for (unsigned int j=0; j<u.size(); j++) u[j].clear();
+    u.clear();
+    u.resize(N2+1); for (unsigned int j=0; j<=N2; j++) u[j].resize(N1+1);
+
+    DoubleMatrix u0;
+    u0.resize(N2+1); for (unsigned int j=0; j<=N2; j++) u0[j].resize(N1+1);
+    DoubleMatrix u1;
+    u1.resize(N2+1); for (unsigned int j=0; j<=N2; j++) u1[j].resize(N1+1);
+
+    DoubleVector da1(N1-1);
+    DoubleVector db1(N1-1);
+    DoubleVector dc1(N1-1);
+    DoubleVector dd1(N1-1);
+    DoubleVector rx1(N1-1);
+
+    DoubleVector da2(N2-1);
+    DoubleVector db2(N2-1);
+    DoubleVector dc2(N2-1);
+    DoubleVector dd2(N2-1);
+    DoubleVector rx2(N2-1);
+
+    double x1_a = -(a1*a1*ht*ht)/(h1*h1);
+    double x1_b  = 1.0 + (2.0*a1*a1*ht*ht)/(h1*h1);
+    double x1_c = (a2*a2*ht*ht)/(h2*h2);
+    //    double x1_d = 1.0 - (a2*a2*ht)/(h2*h2);
+
+    double x2_a = -(a2*a2*ht*ht)/(h2*h2);
+    double x2_b  = 1.0 + (2.0*a2*a2*ht*ht)/(h2*h2);
+    double x2_c = (a1*a1*ht*ht)/(h1*h1);
+    //double x2_d = 1.0 - (a1*a1*ht)/(h1*h1);
+
+    for (unsigned int k=1; k<=M; k++)
+    {
+        if (k==1)
+        {
+            for (unsigned int j=0; j<=N2; j++)
+            {
+                for (unsigned int i=0; i<=N1; i++)
+                {
+                    u0[j][i] = fi1(i, j);
+                    u1[j][i] = u0[j][i] + ht*fi2(i, j);
+                }
+            }
+        }
+        else
+        {
+            if ((k % 2) == 0)
+            {
+                for (unsigned int i=0; i<=N1; i++)
+                {
+                    u[0][i]  = m3(i, k);
+                    u[N2][i] = m4(i, k);
+                }
+
+                // Approximation to x1 direction
+                for (unsigned int j=1; j<N2; j++)
+                {
+                    for (unsigned int i=1; i<N1; i++)
+                    {
+                        da1[i-1] = x1_a;
+                        db1[i-1] = x1_b;
+                        dc1[i-1] = x1_a;
+                        dd1[i-1] = x1_c*(u1[j-1][i] - 2.0*u1[j][i] + u1[j+1][i]) + 2.0*u1[j][i] - u0[j][i] + (ht*ht) * f(i, j, k);
+                    }
+
+                    da1[0]     = 0.0;
+                    dc1[N1-2]  = 0.0;
+
+                    u[j][0]  = m1(j, k);
+                    u[j][N1] = m2(j, k);
+
+                    dd1[0]    -= x1_a * u[j][0];
+                    dd1[N1-2] -= x1_a * u[j][N1];
+
+                    tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.size());
+
+                    for (unsigned int i=1; i<N1; i++)
+                    {
+                        u[j][i] = rx1[i-1];
+                    }
+                }
+
+            }
+            else
+            {
                 for (unsigned int j=0; j<=N2; j++)
                 {
                     u[j][0]  = m1(j, k);
                     u[j][N1] = m2(j, k);
+                }
+
+                // Approximation to x2 direction
+                for (unsigned int i=1; i<N1; i++)
+                {
+                    for (unsigned int j=1; j<N2; j++)
+                    {
+                        da2[j-1] = x2_a;
+                        db2[j-1] = x2_b;
+                        dc2[j-1] = x2_a;
+                        dd2[j-1] = x2_c*(u1[j][i-1] - 2.0*u1[j][i] + u1[j][i+1]) + 2.0*u1[j][i] - u0[j][i] + (ht*ht) * f(i, j, k);
+                    }
+                    da2[0]     = 0.0;
+                    dc2[N2-2]  = 0.0;
+
+                    u[0][i]  = m3(i, k);
+                    u[N2][i] = m4(i, k);
+
+                    dd2[0]    -= x2_a * u[0][i];
+                    dd2[N2-2] -= x2_a * u[N2][i];
+
+                    tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.size());
+
+                    for (unsigned int j=1; j<N2; j++)
+                    {
+                        u[j][i] = rx2[j-1];
+                    }
                 }
             }
 

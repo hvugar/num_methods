@@ -53,8 +53,8 @@ class H1 : public IHyperbolicEquation2D
 public:
     double u(unsigned int i, unsigned int j, unsigned int k) const
     {
-        double x1 = i*hx1;
-        double x2 = j*hx2;
+        double x1 = i*h1;
+        double x2 = j*h2;
         double t  = k*ht;
         return x1*x1*x1 + x2*x2*x2 + t*t*t;
     }
@@ -67,15 +67,15 @@ public:
     virtual double m4(unsigned int i, unsigned int k) const { return u(i, N2, k); }
     virtual double f(unsigned int i, unsigned int j, unsigned int k) const
     {
-        double x1 = i*hx1;
-        double x2 = j*hx2;
+        double x1 = i*h1;
+        double x2 = j*h2;
         double t  = k*ht;
         return 6.0*t - 6.0*x1*a1*a1 - 6.0*x2*a2*a2;
     }
 
     double ht;
-    double hx1;
-    double hx2;
+    double h1;
+    double h2;
     unsigned int M;
     unsigned int N1;
     unsigned int N2;
@@ -94,9 +94,9 @@ class P1 : public IParabolicEquation2D
 public:
     double u(unsigned int i, unsigned int j, unsigned int k) const
     {
-        double x1 = i*hx1;
-        double x2 = j*hx2;
-        double t  = 0.5*k*ht;
+        double x1 = i*h1;
+        double x2 = j*h2;
+        double t  = k*ht;
         return x1*x1 + x2*x2 + t*t;
     }
 
@@ -107,12 +107,13 @@ public:
     virtual double m4(unsigned int i, unsigned int k) const { return u(i, N2, k); }
     virtual double f(unsigned int i, unsigned int j, unsigned int k) const
     {
-        return 2.0*(0.5*k*ht) - 2.0*a1 - 2.0*a2;
+        double t = k*ht;
+        return 2.0*t - 2.0*a1 - 2.0*a2;
     }
 
     double ht;
-    double hx1;
-    double hx2;
+    double h1;
+    double h2;
     unsigned int M;
     unsigned int N1;
     unsigned int N2;
@@ -137,15 +138,15 @@ int main()
 
     a.N1 = 100;
     a.N2 = 100;
-    a.M  = 100;
+    a.M  = 1000;
 
-    a.hx1 = 0.01;
-    a.hx2 = 0.01;
-    a.ht  = 0.01;
+    a.h1 = a.x11/a.N1;
+    a.h2 = a.x21/a.N2;
+    a.ht  = a.t1/a.M;
     a.a1 = a.a2 = 1.0;
 
     DoubleMatrix u;
-    a.calculateU(u, a.hx1, a.hx2, a.ht, a.N1, a.N2, a.M, a.a1, a.a2);
+    a.calculateU(u, a.h1, a.h2, a.ht, a.N1, a.N2, a.M, a.a1, a.a2);
     IPrinter::printMatrix(u);
 
     //    puts("---");
