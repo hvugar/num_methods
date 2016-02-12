@@ -46,7 +46,8 @@ SOURCES += main.cpp \
     point/pointcontrol11.cpp \
     discrete/discreteheat.cpp \
     discrete/discretehyperbolic.cpp \
-    discrete/discretehyperbolic1.cpp
+    discrete/discretehyperbolic1.cpp \
+    border/borderparabolic2d.cpp
 
 HEADERS += \
     rnfunction/rosenbrock.h \
@@ -74,5 +75,6 @@ HEADERS += \
     point/pointcontrol11.h \
     discrete/discreteheat.h \
     discrete/discretehyperbolic.h \
-    discrete/discretehyperbolic1.h
+    discrete/discretehyperbolic1.h \
+    border/borderparabolic2d.h
 
