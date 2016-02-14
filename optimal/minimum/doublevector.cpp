@@ -63,7 +63,10 @@ double DoubleVector::EuclideanDistance(const DoubleVector &p) const
 void DoubleVector::L2Normalize()
 {
     double norm = L2Norm();
-    for (unsigned int i=0; i<size(); i++) (*this)[i] /= norm;
+    if (norm != 0.0)
+    {
+        for (unsigned int i=0; i<size(); i++) (*this)[i] /= norm;
+    }
 }
 
 void DoubleVector::L1Normalize()
@@ -196,8 +199,8 @@ void DoubleCube::Clear()
 DblVector::DblVector(unsigned int n)
 {
     C_UNUSED(n);
-//    msize = n;
-//    pdata = (double*)malloc(sizeof(double)*n);
+    //    msize = n;
+    //    pdata = (double*)malloc(sizeof(double)*n);
 }
 
 DblVector::~DblVector()

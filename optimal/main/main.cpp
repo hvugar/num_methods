@@ -38,6 +38,7 @@
 #include "hyperbolic/1d/hyperboliccontrol1d.h"
 #include "hyperbolic/1d/hyperboliccontrolx.h"
 #include "hyperbolic/1d/hyperboliccontrolh.h"
+#include "hyperbolic/2d/hyperboliccontrol2d.h"
 
 #include "point/pointcontrol11.h"
 #include "point/pointcontrol.h"
@@ -48,121 +49,27 @@
 #include "discrete/discretehyperbolic.h"
 #include "discrete/discretehyperbolic1.h"
 
-class H1 : public IHyperbolicEquation2D
-{
-public:
-    double u(unsigned int i, unsigned int j, unsigned int k) const
-    {
-        double x1 = i*h1;
-        double x2 = j*h2;
-        double t  = k*ht;
-        return x1*x1*x1 + x2*x2*x2 + t*t*t;
-    }
-
-    virtual double fi1(unsigned int i, unsigned int j) const { return u(j, j, 0); }
-    virtual double fi2(unsigned int i, unsigned int j) const { return 0.0; }
-    virtual double m1(unsigned int j, unsigned int k) const { return u(0, j, k); }
-    virtual double m2(unsigned int j, unsigned int k) const { return u(N1, j, k); }
-    virtual double m3(unsigned int i, unsigned int k) const { return u(i, 0, k); }
-    virtual double m4(unsigned int i, unsigned int k) const { return u(i, N2, k); }
-    virtual double f(unsigned int i, unsigned int j, unsigned int k) const
-    {
-        double x1 = i*h1;
-        double x2 = j*h2;
-        double t  = k*ht;
-        return 6.0*t - 6.0*x1*a1*a1 - 6.0*x2*a2*a2;
-    }
-
-    double ht;
-    double h1;
-    double h2;
-    unsigned int M;
-    unsigned int N1;
-    unsigned int N2;
-    double t0;
-    double t1;
-    double x10;
-    double x11;
-    double x20;
-    double x21;
-    double a1;
-    double a2;
-};
-
-class P1 : public IParabolicEquation2D
-{
-public:
-    double u(unsigned int i, unsigned int j, unsigned int k) const
-    {
-        double x1 = i*h1;
-        double x2 = j*h2;
-        double t  = k*ht;
-        return x1*x1 + x2*x2 + t*t;
-    }
-
-    virtual double fi(unsigned int i, unsigned int j) const { return u(j, j, 0); }
-    virtual double m1(unsigned int j, unsigned int k) const { return u(0, j, k); }
-    virtual double m2(unsigned int j, unsigned int k) const { return u(N1, j, k); }
-    virtual double m3(unsigned int i, unsigned int k) const { return u(i, 0, k); }
-    virtual double m4(unsigned int i, unsigned int k) const { return u(i, N2, k); }
-    virtual double f(unsigned int i, unsigned int j, unsigned int k) const
-    {
-        double t = k*ht;
-        return 2.0*t - 2.0*a1 - 2.0*a2;
-    }
-
-    double ht;
-    double h1;
-    double h2;
-    unsigned int M;
-    unsigned int N1;
-    unsigned int N2;
-    double t0;
-    double t1;
-    double x10;
-    double x11;
-    double x20;
-    double x21;
-    double a1;
-    double a2;
-};
+#include "border/borderparabolic2d.h"
+#include "border/borderhyperbolic2d.h"
 
 int main()
 {
-    H1 a;
-    a.x10 = a.x20 = a.t0 = 0.0;
+//    DoubleMatrix u;
+//    BorderHyperbolic2D s;
+//    s.calculateU(u, s.h1, s.h2, s.ht, s.N1, s.N2, s.M);
+//    //IPrinter::printMatrix(u3[u3.size()-1]);
+//    IPrinter::printMatrix(u);
+//    printf("---\n");
+//    FILE *file = fopen("u.txt", "w");
+//    IPrinter::printMatrix(u, s.N2, s.N1, NULL, file);
+//    fclose(file);
 
-    a.x11 = 1.0;
-    a.x21 = 1.0;
-    a.t1  = 1.0;
+//    HeatControl2DeltaX::main();
+//    HeatControlDeltaX::main();
+//    DiscreteHyperbolic1::main();
+//    HyperbolicControlH::main();
 
-    a.N1 = 100;
-    a.N2 = 100;
-    a.M  = 1000;
+    HyperbolicControl2D::main();
 
-    a.h1 = a.x11/a.N1;
-    a.h2 = a.x21/a.N2;
-    a.ht  = a.t1/a.M;
-    a.a1 = a.a2 = 1.0;
-
-    DoubleMatrix u;
-    a.calculateU(u, a.h1, a.h2, a.ht, a.N1, a.N2, a.M, a.a1, a.a2);
-    IPrinter::printMatrix(u);
-
-    //    puts("---");
-    //    DoubleCube c;
-    //    a.calculateU(c, a.hx1, a.hx2, a.ht, a.N1, a.N2, a.M, a.a1, a.a2);
-    //    IPrinter::printMatrix(c[c.size()-1]);
-
-
-
-    //    A a;
-    //    DoubleMatrix u;
-    //    a.calculateN(u, a.hx, a.ht, a.N, a.M);
-    //    IPrinter::printMatrix(u);
-    //        HeatControl2DeltaX::main();
-    //    HeatControlDeltaX::main();
-    //    DiscreteHyperbolic1::main();
-    //    HyperbolicControlH::main();
     return 0;
 }
