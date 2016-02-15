@@ -69,6 +69,7 @@ int main()
 //    DiscreteHyperbolic1::main();
 //    HyperbolicControlH::main();
 
+    IPrinter::printDateTime();
     HyperbolicControl2D::main();
 
     return 0;

@@ -6,12 +6,13 @@
 #include <printer.h>
 #include <gradient_cjt.h>
 
-class HyperbolicControl2D : public RnFunction, public IGradient, public IHyperbolicEquation2D, public IBackwardHyperbolicEquation2D, public IPrinter
+class HyperbolicControl2D : public R1Function, public RnFunction, public IGradient, public IHyperbolicEquation2D, public IBackwardHyperbolicEquation2D, public IPrinter
 {
 public:
     HyperbolicControl2D();
     virtual ~HyperbolicControl2D();
 
+    virtual double fx(double x);
     virtual double fx(const DoubleVector &x);
     virtual void gradient(const DoubleVector &v, DoubleVector &g);
 

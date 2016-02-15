@@ -28,5 +28,6 @@ void IGradient::Gradient(RnFunction *f, double step, const DoubleVector &x, Doub
         double f2 = f->fx(x);
         const_cast<DoubleVector&>(x)[i] = cx;
         g[i] = (f2 - f1) / (2 * h);
+       // printf("%d %.20f %.20f %.20f %.20f\n", i, f2, f1, g[i], f2-f1);
     }
 }
