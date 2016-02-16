@@ -7,8 +7,8 @@ void HyperbolicControl2DM::main()
 
     for (unsigned int k=0; k<=hc.M; k++)
     {
-        x[/*2*hc.L + */0*(hc.M+1)+k] = 2.0;
-        x[/*2*hc.L + */1*(hc.M+1)+k] = 2.0;
+        x[/*2*hc.L + */0*(hc.M+1)+k] = 0.0;
+        x[/*2*hc.L + */1*(hc.M+1)+k] = 0.0;
     }
 
     double min_step = 1.0;
@@ -29,10 +29,11 @@ void HyperbolicControl2DM::main()
 
     DoubleVector g1(x.size());
     DoubleVector g2(x.size());
-    FILE *file = fopen("gradients1.txt", "a");
+    FILE *file = fopen("gradients.txt", "a");
+    fprintf(file, "--------------------------------------------------------------------\n");
     IPrinter::printDateTime(file);
     double h = 0.01;
-    fprintf(file, "L: %d h:%f\n", hc.L, h);
+    fprintf(file, "L: %d h:%f %.20f\n", hc.L, h, hc.fx(x));
     IPrinter::printVector(x, "v1:", (hc.M+1), 0*(hc.M+1), 0*(hc.M+1)+hc.M, file);
     IPrinter::printVector(x, "v2:", (hc.M+1), 1*(hc.M+1), 1*(hc.M+1)+hc.M, file);
 
@@ -48,7 +49,6 @@ void HyperbolicControl2DM::main()
     IPrinter::printVector(g2, "g1:", (hc.M+1), 0*(hc.M+1), 0*(hc.M+1)+hc.M, file);
     IPrinter::printVector(g2, "g2:", (hc.M+1), 1*(hc.M+1), 1*(hc.M+1)+hc.M, file);
     IPrinter::printDateTime(file);
-    fprintf(file, "--------------------------------------------------------------------\n");
     fclose(file);
 }
 
@@ -68,11 +68,11 @@ HyperbolicControl2DM::HyperbolicControl2DM()
     ht = (t1 - t0) / M;
 
     L = 2;
-    g.resize(2*L);
-    g[0] = 0.3;
-    g[1] = 0.4;
-    g[2] = 0.7;
-    g[3] = 0.7;
+    d.resize(2*L);
+    d[0] = 0.3;
+    d[1] = 0.4;
+    d[2] = 0.7;
+    d[3] = 0.7;
 
     e.resize(2);
     e[0] = 0.2;
@@ -91,6 +91,21 @@ HyperbolicControl2DM::HyperbolicControl2DM()
     U0 = 0.0;
     U1 = 0.0;
     a = 1.0;
+
+//    puts("1");
+//    DoubleVector x((M+1)*L);
+//    for (unsigned int k=0; k<=M; k++)
+//    {
+//        x[/*2*hc.L + */0*(M+1)+k] = 2.0;
+//        x[/*2*hc.L + */1*(M+1)+k] = 2.0;
+//    }
+//    px = &x;
+//    DoubleCube c;
+//    IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
+//    FILE *file = fopen("data_u.txt", "w");
+//    IPrinter::printMatrix(c[c.size()-1], 100, 100, NULL, file);
+//    fclose(file);
+//    puts("2");
 }
 
 HyperbolicControl2DM::~HyperbolicControl2DM()
@@ -103,11 +118,11 @@ double HyperbolicControl2DM::fx(double x)
     return 0.0;
 }
 
-double HyperbolicControl2DM::fx(const DoubleVector &v)
+double HyperbolicControl2DM::fx(const DoubleVector &x)
 {
-    px = &v;
+    px = &x;
     DoubleCube c;
-    IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M);
+    IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
 
     DoubleMatrix &u0 = c[M];
     DoubleMatrix &u1 = c[M-2];
@@ -140,7 +155,7 @@ double HyperbolicControl2DM::fx(const DoubleVector &v)
     }
     sum2 = h1*h2*sum2;
 
-    sum = alpha0*sum1 + alpha1*sum2;
+    sum = sum1 + alpha0*sum2;
     return sum;// + norm(v);
 }
 
@@ -162,21 +177,21 @@ void HyperbolicControl2DM::gradient(const DoubleVector &x, DoubleVector &g)
 {
     px = &x;
     DoubleCube u;
-    IHyperbolicEquation2D::calculateU1(u, h1, h2, ht, N1, N2, M);
+    IHyperbolicEquation2D::calculateU1(u, h1, h2, ht, N1, N2, M, a, a, qamma);
 
     pu = &u;
     DoubleCube p;
-    IBackwardHyperbolicEquation2D::calculateU1(p, h1, h2, ht, N1, N2, M);
+    IBackwardHyperbolicEquation2D::calculateU1(p, h1, h2, ht, N1, N2, M, a, a, qamma);
 
     unsigned int i,j;
     for (unsigned int k=0; k<=M; k++)
     {
-        i = (unsigned int)round(g[0]/h1);
-        j = (unsigned int)round(g[1]/h2);
+        i = (unsigned int)round(d[0]/h1);
+        j = (unsigned int)round(d[1]/h2);
         g[/*2*L+*/0*(M+1)+k] = -p[k][j][i];
 
-        i = (unsigned int)round(g[0]/h1);
-        j = (unsigned int)round(g[1]/h2);
+        i = (unsigned int)round(d[2]/h1);
+        j = (unsigned int)round(d[3]/h2);
         g[/*2*L+*/1*(M+1)+k] = -p[k][j][i];
     }
 }
@@ -226,8 +241,8 @@ double HyperbolicControl2DM::f(unsigned int i, unsigned int j, unsigned int k) c
     double _v1 = x[/*2*L+*/0*(M+1)+k];
     double _v2 = x[/*2*L+*/1*(M+1)+k];
 
-    sum += _v1 * gause_a * exp(-((x1-g[0])*(x1-g[0]) + (x2-g[1])*(x2-g[1]))/gause_b);
-    sum += _v2 * gause_a * exp(-((x1-g[2])*(x1-g[2]) + (x2-g[3])*(x2-g[3]))/gause_b);
+    sum += _v1 * gause_a * exp(-((x1-d[0])*(x1-d[0]) + (x2-d[1])*(x2-d[1]))/gause_b);
+    sum += _v2 * gause_a * exp(-((x1-d[2])*(x1-d[2]) + (x2-d[3])*(x2-d[3]))/gause_b);
 
     sum += fxt(i, j, k);
 

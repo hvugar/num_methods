@@ -67,7 +67,7 @@ private:
     double U0;
     double U1;
 
-    DoubleVector g;
+    DoubleVector d;
     DoubleVector e;
     const DoubleVector *px;
     const DoubleCube *pu;
