@@ -1043,7 +1043,7 @@ void IBackwardHyperbolicEquation2D::calculateU1(DoubleCube &p, double h1, double
     DoubleVector rx2(N2-1);
 
     double x1_a = -(a1*a1*ht*ht)/(h1*h1);
-    double x1_b  = 1.0 + (2.0*a1*a1*ht*ht)/(h1*h1) + qamma*ht;
+    double x1_b  = 1.0 + (2.0*a1*a1*ht*ht)/(h1*h1) - qamma*ht;
     double x1_c = (a2*a2*ht*ht)/(h2*h2);
     //    double x1_d = 1.0 - (a2*a2*ht)/(h2*h2);
 
@@ -1090,7 +1090,7 @@ void IBackwardHyperbolicEquation2D::calculateU1(DoubleCube &p, double h1, double
                         da1[i-1] = x1_a;
                         db1[i-1] = x1_b;
                         dc1[i-1] = x1_a;
-                        dd1[i-1] = x1_c*(p[k+1][j-1][i] - 2.0*p[k+1][j][i] + p[k+1][j+1][i]) + 2.0*p[k+1][j][i] - p[k+2][j][i] + qamma*ht*p[k+1][j][i] + (ht*ht) * bf(i, j, k);
+                        dd1[i-1] = x1_c*(p[k+1][j-1][i] - 2.0*p[k+1][j][i] + p[k+1][j+1][i]) + 2.0*p[k+1][j][i] - p[k+2][j][i] - qamma*ht*p[k+1][j][i] + (ht*ht) * bf(i, j, k);
                     }
 
                     da1[0]     = 0.0;

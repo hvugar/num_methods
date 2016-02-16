@@ -6,7 +6,7 @@ void HyperbolicControl2D::main()
     DoubleVector v(hc.L*(hc.M+1));
     for (unsigned int k=0; k<=hc.M; k++)
     {
-        v[0*(hc.M+1)+k] = 0.0;//hc.v1(k*hc.ht);
+        v[0*(hc.M+1)+k] = 1.0;//hc.v1(k*hc.ht);
         //v[1*(hc.M+1)+k] = 0.0;//hc.v2(k*hc.ht);
         //v[2*(hc.M+1)+k] = 0.0;//hc.v3(k*hc.ht);
     }
@@ -26,7 +26,7 @@ void HyperbolicControl2D::main()
     cg.setPrinter(&hc);
     cg.setNormalize(true);
     cg.showEndMessage(false);
-    cg.calculate(v);
+    //cg.calculate(v);
 
     FILE *file = fopen("gradients.txt", "a");
     IPrinter::printDateTime(file);
@@ -291,7 +291,7 @@ double HyperbolicControl2D::fxt(unsigned int i, unsigned int j, unsigned int k) 
     double alpha_2 = 1.0;
     double alpha_3 = 1.0;
 
-    sum += alpha_1*exp(-alpha_2*((x1-E[0])*(x1-E[0])+(x2-E[1])*(x2-E[1]))-alpha_3*t);
+    sum += alpha_1*exp(-alpha_2*((x1-0.2)*(x1-0.2)+(x2-0.2)*(x2-0.2))-alpha_3*t);
     //sum += alpha_1*exp(-alpha_2*((x1-E[2])*(x1-E[2])+(x2-E[3])*(x2-E[3]))-alpha_3*t);
     //sum += alpha_1*exp(-alpha_2*((x1-E[4])*(x1-E[4])+(x2-E[5])*(x2-E[5]))-alpha_3*t);
 

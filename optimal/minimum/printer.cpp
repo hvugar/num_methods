@@ -93,5 +93,5 @@ void IPrinter::printDateTime(FILE *file)
     struct tm * now = localtime( & t );
     char buf[80];
     strftime(buf, sizeof(buf), "%Y-%m-%d %X", now);
-    printf("%s\n", buf);
+    fprintf(file, "%s\n", buf);
 }

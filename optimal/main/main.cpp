@@ -39,6 +39,7 @@
 #include "hyperbolic/1d/hyperboliccontrolx.h"
 #include "hyperbolic/1d/hyperboliccontrolh.h"
 #include "hyperbolic/2d/hyperboliccontrol2d.h"
+#include "hyperbolic/2d/hyperboliccontrol2dm.h"
 
 #include "point/pointcontrol11.h"
 #include "point/pointcontrol.h"
@@ -69,8 +70,7 @@ int main()
 //    DiscreteHyperbolic1::main();
 //    HyperbolicControlH::main();
 
-    IPrinter::printDateTime();
-    HyperbolicControl2D::main();
+    HyperbolicControl2DM::main();
 
     return 0;
 }
