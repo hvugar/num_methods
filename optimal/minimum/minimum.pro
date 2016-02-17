@@ -3,6 +3,7 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += dll
+#DEFINES += OS_UNIX
 
 #QMAKE_CXXFLAGS += -O3
 #QMAKE_CXXFLAGS -= -O2
