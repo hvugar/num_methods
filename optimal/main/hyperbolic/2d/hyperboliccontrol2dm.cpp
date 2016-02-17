@@ -33,7 +33,8 @@ void HyperbolicControl2DM::main()
     fprintf(file, "--------------------------------------------------------------------\n");
     IPrinter::printDateTime(file);
     double h = 0.01;
-    fprintf(file, "L: %d h:%f %.20f\n", hc.L, h, hc.fx(x));
+    fprintf(file, "T: %f L: %d h:%f Functional: %.20f\n", hc.t1, hc.L, h, hc.fx(x));
+    fprintf(file, "N1: %d N2: %d M: %d h1: %f h2: %f ht: %f\n", hc.N1, hc.N2, hc.M, hc.h1, hc.h2, hc.ht);
     IPrinter::printVector(x, "v1:", (hc.M+1), 0*(hc.M+1), 0*(hc.M+1)+hc.M, file);
     IPrinter::printVector(x, "v2:", (hc.M+1), 1*(hc.M+1), 1*(hc.M+1)+hc.M, file);
 
@@ -59,13 +60,17 @@ HyperbolicControl2DM::HyperbolicControl2DM()
     x20 = 0.0;
     x21 = 1.0;
     t0 = 0.0;
-    t1 = 1.0;
-    N1 = 100;
-    N2 = 100;
-    M = 200;
-    h1 = (x11 - x10) / N1;
-    h2 = (x21 - x20) / N2;
-    ht = (t1 - t0) / M;
+    t1 = 1.6;
+
+    h1 = 0.01;
+    h2 = 0.01;
+    ht = 0.005;
+
+    N1 = (unsigned)ceil((x11 - x10)/h1);
+    N2 = (unsigned)ceil((x21 - x20)/h2);
+    M  = (unsigned)ceil((t1 - t0)/ht);
+
+    printf("%d %d %d\n", N1, N2, M);
 
     L = 2;
     d.resize(2*L);
