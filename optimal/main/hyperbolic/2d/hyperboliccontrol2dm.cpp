@@ -84,7 +84,7 @@ double HyperbolicControl2DM::fx(double t)
     cg.setProjection(this);
     cg.setNormalize(true);
     //cg.showEndMessage(false);
-    cg.calculate(x);
+//    cg.calculate(x);
 
     double rf = fx(x);
 
@@ -99,13 +99,13 @@ double HyperbolicControl2DM::fx(double t)
     IPrinter::printVector(x, "v1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
     IPrinter::printVector(x, "v2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
 
-    gradient(x, g1);
+//    gradient(x, g1);
     fprintf(file, "Analytic Gradients: %.20f\n", g1.L2Norm());
     g1.L2Normalize();
     IPrinter::printVector(g1, "g1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
     IPrinter::printVector(g1, "g2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
 
-    IGradient::Gradient(this, h, x, g2);
+//    IGradient::Gradient(this, h, x, g2);
     fprintf(file, "Numerical Gradients: %.20f\n", g2.L2Norm());
     g2.L2Normalize();
     IPrinter::printVector(g2, "g1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
