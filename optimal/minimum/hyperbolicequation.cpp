@@ -1018,7 +1018,7 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
     rx2.clear();
 }
 
-void IBackwardHyperbolicEquation2D::calculateU1(DoubleCube &p, double h1, double h2, double ht, double N1, double N2, double M, double a1, double a2, double qamma) const
+void IBackwardHyperbolicEquation2D::calculateU2(DoubleCube &p, double h1, double h2, double ht, double N1, double N2, double M, double a1, double a2, double qamma) const
 {
     //cleaning cube
     for (unsigned int k=0; k<p.size(); k++)
