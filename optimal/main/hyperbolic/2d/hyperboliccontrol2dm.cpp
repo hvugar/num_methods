@@ -66,8 +66,8 @@ double HyperbolicControl2DM::fx(double t)
     DoubleVector x(/*2*hc.L + */(M+1)*L);
     for (unsigned int k=0; k<=M; k++)
     {
-        x[/*2*hc.L + */0*(M+1)+k] = 2.0;
-        x[/*2*hc.L + */1*(M+1)+k] = 2.0;
+        x[/*2*hc.L + */0*(M+1)+k] = 1.9;
+        x[/*2*hc.L + */1*(M+1)+k] = 1.9;
     }
 
     double min_step = 1.0;
@@ -117,6 +117,8 @@ double HyperbolicControl2DM::fx(double t)
     calculateU2(c, h1, h2, ht, N1, N2, M, a, a, qamma);
     IPrinter::printMatrix(c[c.size()-1], N2, N1, NULL, file);
     fclose(file);
+
+    x.clear();
 
     return rf;
 }
@@ -331,7 +333,7 @@ void HyperbolicControl2DM::project(DoubleVector &x, int i)
     //    }
     //    if (i>3)
     {
-        if (x[i] <= vd) x[i] = vd;
-        if (x[i] >= vu) x[i] = vu;
+        if (x[i] < vd) x[i] = vd;
+        if (x[i] > vu) x[i] = vu;
     }
 }
