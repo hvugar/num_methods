@@ -2,6 +2,8 @@
 #define WIDGET_H
 
 #include <QWidget>
+#include <QPainter>
+#include <QPaintEvent>
 
 class Widget : public QWidget
 {
@@ -10,6 +12,9 @@ class Widget : public QWidget
 public:
     Widget(QWidget *parent = 0);
     ~Widget();
+
+protected:
+    virtual void paintEvent(QPaintEvent *evt);
 };
 
 #endif // WIDGET_H
