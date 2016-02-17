@@ -3,12 +3,12 @@
 void HyperbolicControl2DM::main()
 {
     HyperbolicControl2DM hc;
-    hc.fx(0.4);
-    hc.fx(0.8);
-    hc.fx(1.0);
+    //    hc.fx(0.4);
+    //    hc.fx(0.8);
+    //    hc.fx(1.0);
     hc.fx(1.2);
-    hc.fx(1.6);
-    hc.fx(2.0);
+    //    hc.fx(1.6);
+    //    hc.fx(2.0);
 }
 
 HyperbolicControl2DM::HyperbolicControl2DM()
@@ -39,11 +39,11 @@ double HyperbolicControl2DM::fx(double t)
     printf("%d %d %d\n", N1, N2, M);
 
     L = 2;
-    d.resize(2*L);
-    d[0] = 0.3;
-    d[1] = 0.4;
-    d[2] = 0.7;
-    d[3] = 0.7;
+    //    d.resize(2*L);
+    //    d[0] = 0.3;
+    //    d[1] = 0.4;
+    //    d[2] = 0.7;
+    //    d[3] = 0.7;
 
     e.resize(2);
     e[0] = 0.2;
@@ -63,12 +63,16 @@ double HyperbolicControl2DM::fx(double t)
     U1 = 0.0;
     a = 1.0;
 
-    DoubleVector x(/*2*hc.L + */(M+1)*L);
+    DoubleVector x(2*L + (M+1)*L);
     for (unsigned int k=0; k<=M; k++)
     {
-        x[/*2*hc.L + */0*(M+1)+k] = 1.9;
-        x[/*2*hc.L + */1*(M+1)+k] = 1.9;
+        x[2*L + 0*(M+1)+k] = 1.9;
+        x[2*L + 1*(M+1)+k] = 1.9;
     }
+    x[0] = 0.3;
+    x[1] = 0.4;
+    x[2] = 0.7;
+    x[3] = 0.7;
 
     double min_step = 1.0;
     double gold_eps = 0.001;
@@ -86,7 +90,9 @@ double HyperbolicControl2DM::fx(double t)
     //cg.showEndMessage(false);
     cg.calculate(x);
 
+    puts("1");
     double rf = fx(x);
+    puts("2");
 
     DoubleVector g1(x.size());
     DoubleVector g2(x.size());
@@ -96,22 +102,25 @@ double HyperbolicControl2DM::fx(double t)
     double h = 0.01;
     fprintf(file, "T: %f L: %d h:%f Functional: %.20f\n", t1, L, h, rf);
     fprintf(file, "N1: %d N2: %d M: %d h1: %f h2: %f ht: %f\n", N1, N2, M, h1, h2, ht);
-    IPrinter::printVector(x, "v1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
-    IPrinter::printVector(x, "v2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
-
+    printf("x: %.8f %.8f %.8f %.8f\n", x[0], x[1], x[2], x[3]);
+    IPrinter::printVector(x, "v1:", (M+1), 0*(M+1)+2*L, 0*(M+1)+2*L+M, file);
+    IPrinter::printVector(x, "v2:", (M+1), 1*(M+1)+2*L, 1*(M+1)+2*L+M, file);
+ puts("3");
     gradient(x, g1);
     fprintf(file, "Analytic Gradients: %.20f\n", g1.L2Norm());
     g1.L2Normalize();
-    IPrinter::printVector(g1, "g1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
-    IPrinter::printVector(g1, "g2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
-
+    printf("gx: %.8f %.8f %.8f %.8f\n", g1[0], g1[1], g1[2], g1[3]);
+    IPrinter::printVector(g1, "g1:", (M+1), 0*(M+1)+2*L, 0*(M+1)+2*L+M, file);
+    IPrinter::printVector(g1, "g2:", (M+1), 1*(M+1)+2*L, 1*(M+1)+2*L+M, file);
+ puts("4");
     IGradient::Gradient(this, h, x, g2);
     fprintf(file, "Numerical Gradients: %.20f\n", g2.L2Norm());
     g2.L2Normalize();
-    IPrinter::printVector(g2, "g1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
-    IPrinter::printVector(g2, "g2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
+    printf("gx: %.8f %.8f %.8f %.8f\n", g2[0], g2[1], g2[2], g2[3]);
+    IPrinter::printVector(g2, "g1:", (M+1), 0*(M+1)+2*L, 0*(M+1)+2*L+M, file);
+    IPrinter::printVector(g2, "g2:", (M+1), 1*(M+1)+2*L, 1*(M+1)+2*L+M, file);
     IPrinter::printDateTime(file);
-
+ puts("5");
     fprintf(file, "U\n");
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
@@ -191,14 +200,86 @@ void HyperbolicControl2DM::gradient(const DoubleVector &x, DoubleVector &g)
     unsigned int i,j;
     for (unsigned int k=0; k<=M; k++)
     {
-        i = (unsigned int)round(d[0]/h1);
-        j = (unsigned int)round(d[1]/h2);
-        g[/*2*L+*/0*(M+1)+k] = -p[k][j][i];
+        i = (unsigned int)round(x[0]/h1);
+        j = (unsigned int)round(x[1]/h2);
+        g[2*L+0*(M+1)+k] = -p[k][j][i];
 
-        i = (unsigned int)round(d[2]/h1);
-        j = (unsigned int)round(d[3]/h2);
-        g[/*2*L+*/1*(M+1)+k] = -p[k][j][i];
+        i = (unsigned int)round(x[2]/h1);
+        j = (unsigned int)round(x[3]/h2);
+        g[2*L+1*(M+1)+k] = -p[k][j][i];
     }
+
+    double psiX1;
+    double psiX2;
+    for (unsigned int k=0; k<=M; k++)
+    {
+        double m = 1.0;
+        if (k==0 || k==M) m *= 0.5;
+        psiDerivative(psiX1, psiX2, x[0], x[1], p[k]);
+        g[0] = g[0] + m * x[2*L+0*(M+1)+k] * psiX1;
+        g[1] = g[1] + m * x[2*L+0*(M+1)+k] * psiX2;
+        psiDerivative(psiX1, psiX2, x[2], x[3], p[k]);
+        g[2] = g[2] + m * x[2*L+1*(M+1)+k] * psiX1;
+        g[3] = g[3] + m * x[2*L+1*(M+1)+k] * psiX2;
+    }
+    g[0] = ht*g[0];
+    g[1] = ht*g[1];
+    g[2] = ht*g[2];
+    g[3] = ht*g[3];
+}
+
+void HyperbolicControl2DM::calculateGX(const DoubleVector& x, const DoubleMatrix& psi, DoubleVector& g, unsigned int k)
+{
+    //    double psiX1;
+    //    double psiX2;
+    //    if (k==1 || k==M)
+    //    {
+    //        psiDerivative(psiX1, psiX2, x[0], x[1], psi);
+    //        g[0] = g[0] + v1(k*ht) * psiX1;
+    //        g[1] = g[1] + v1(k*ht) * psiX2;
+    //        psiDerivative(psiX1, psiX2, x[2], x[3], psi);
+    //        g[2] = g[2] + v2(k*ht) * psiX1;
+    //        g[3] = g[3] + v2(k*ht) * psiX2;
+    //        psiDerivative(psiX1, psiX2, x[4], x[5], psi);
+    //        g[4] = g[4] + v3(k*ht) * psiX1;
+    //        g[5] = g[5] + v3(k*ht) * psiX2;
+    //    }
+    //    else
+    //    {
+    //        psiDerivative(psiX1, psiX2, x[0], x[1], psi);
+    //        g[0] = g[0] + 2.0*v1(k*ht) * psiX1;
+    //        g[1] = g[1] + 2.0*v1(k*ht) * psiX2;
+    //        psiDerivative(psiX1, psiX2, x[2], x[3], psi);
+    //        g[2] = g[2] + 2.0*v2(k*ht) * psiX1;
+    //        g[3] = g[3] + 2.0*v2(k*ht) * psiX2;
+    //        psiDerivative(psiX1, psiX2, x[4], x[5], psi);
+    //        g[4] = g[4] + 2.0*v3(k*ht) * psiX1;
+    //        g[5] = g[5] + 2.0*v3(k*ht) * psiX2;
+    //    }
+
+    //    if (k==1)
+    //    {
+    //        g[0] = -(ht/2.0)*g[0];
+    //        g[1] = -(ht/2.0)*g[1];
+    //        g[2] = -(ht/2.0)*g[2];
+    //        g[3] = -(ht/2.0)*g[3];
+    //        g[4] = -(ht/2.0)*g[4];
+    //        g[5] = -(ht/2.0)*g[5];
+    //    }
+}
+
+void HyperbolicControl2DM::psiDerivative(double &psiX1, double &psiX2, double x1, double x2, const DoubleMatrix &psi)
+{
+    unsigned int i = (unsigned int)round(x1/h1);
+    unsigned int j = (unsigned int)round(x2/h2);
+
+    if (i==0) psiX1  = (psi[j][i+1] - psi[j][i])/h1;
+    else if (i==N1) psiX1 = (psi[j][i] - psi[j][i-1])/h1;
+    else psiX1 = (psi[j][i+1] - psi[j][i-1])/(2.0*h1);
+
+    if (j==0) psiX2 = (psi[j+1][i] - psi[j][i])/h2;
+    else if (j==N2) psiX2 = (psi[j][i] - psi[j-1][i])/h2;
+    else psiX2 = (psi[j+1][i] - psi[j-1][i])/(2.0*h2);
 }
 
 double HyperbolicControl2DM::fi1(unsigned int i, unsigned int j) const
@@ -243,11 +324,11 @@ double HyperbolicControl2DM::f(unsigned int i, unsigned int j, unsigned int k) c
     double x2 = j*h2;
     const DoubleVector &x = *px;
 
-    double _v1 = x[/*2*L+*/0*(M+1)+k];
-    double _v2 = x[/*2*L+*/1*(M+1)+k];
+    double _v1 = x[2*L+0*(M+1)+k];
+    double _v2 = x[2*L+1*(M+1)+k];
 
-    sum += _v1 * gause_a * exp(-((x1-d[0])*(x1-d[0]) + (x2-d[1])*(x2-d[1]))/gause_b);
-    sum += _v2 * gause_a * exp(-((x1-d[2])*(x1-d[2]) + (x2-d[3])*(x2-d[3]))/gause_b);
+    sum += _v1 * gause_a * exp(-((x1-x[0])*(x1-x[0]) + (x2-x[1])*(x2-x[1]))/gause_b);
+    sum += _v2 * gause_a * exp(-((x1-x[2])*(x1-x[2]) + (x2-x[3])*(x2-x[3]))/gause_b);
 
     sum += fxt(i, j, k);
 
@@ -311,27 +392,27 @@ void HyperbolicControl2DM::print(unsigned int i, const DoubleVector &x, const Do
 
 void HyperbolicControl2DM::project(DoubleVector &x, int i)
 {
-    //    if (i==0)
-    //    {
-    //        if (x[i] <= 0.0) x[i] = 0.0 + h1;
-    //        if (x[i] >= 0.5) x[i] = 0.5 - h1;
-    //    }
-    //    if (i==1)
-    //    {
-    //        if (x[i] <= 0.0) x[i] = 0.0 + h1;
-    //        if (x[i] >= 0.5) x[i] = 0.5 - h1;
-    //    }
-    //    if (i==2)
-    //    {
-    //        if (x[i] <= 0.5) x[i] = 0.5 + h1;
-    //        if (x[i] >= 1.0) x[i] = 1.0 - h1;
-    //    }
-    //    if (i==3)
-    //    {
-    //        if (x[i] <= 0.5) x[i] = 0.5 + h1;
-    //        if (x[i] >= 1.0) x[i] = 1.0 - h1;
-    //    }
-    //    if (i>3)
+    if (i==0)
+    {
+        if (x[i] <= 0.0) x[i] = 0.0 + h1;
+        if (x[i] >= 0.5) x[i] = 0.5 - h1;
+    }
+    if (i==1)
+    {
+        if (x[i] <= 0.0) x[i] = 0.0 + h1;
+        if (x[i] >= 0.5) x[i] = 0.5 - h1;
+    }
+    if (i==2)
+    {
+        if (x[i] <= 0.5) x[i] = 0.5 + h1;
+        if (x[i] >= 1.0) x[i] = 1.0 - h1;
+    }
+    if (i==3)
+    {
+        if (x[i] <= 0.5) x[i] = 0.5 + h1;
+        if (x[i] >= 1.0) x[i] = 1.0 - h1;
+    }
+    if (i>3)
     {
         if (x[i] < vd) x[i] = vd;
         if (x[i] > vu) x[i] = vu;

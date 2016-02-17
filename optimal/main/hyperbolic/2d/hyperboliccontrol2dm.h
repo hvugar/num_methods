@@ -40,6 +40,9 @@ public:
     double fxt(unsigned int i, unsigned int j, unsigned int k) const;
     double norm(const DoubleVector& v) const;
 
+    void calculateGX(const DoubleVector& x, const DoubleMatrix& psi, DoubleVector& g, unsigned int k);
+    void psiDerivative(double &psiX1, double &psiX2, double x1, double x2, const DoubleMatrix &psi);
+
     static void main();
 
 private:
@@ -67,7 +70,7 @@ private:
     double U0;
     double U1;
 
-    DoubleVector d;
+    //DoubleVector d;
     DoubleVector e;
     const DoubleVector *px;
     const DoubleCube *pu;
