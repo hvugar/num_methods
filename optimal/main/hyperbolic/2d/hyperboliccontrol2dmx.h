@@ -40,7 +40,6 @@ public:
     double fxt(unsigned int i, unsigned int j, unsigned int k) const;
     double norm(const DoubleVector& v) const;
 
-    void calculateGX(const DoubleVector& x, const DoubleMatrix& psi, DoubleVector& g, unsigned int k);
     void psiDerivative(double &psiX1, double &psiX2, double x1, double x2, const DoubleMatrix &psi);
 
     static void main();
@@ -75,8 +74,8 @@ private:
     const DoubleVector *px;
     const DoubleCube *pu;
 
-    double vd;
-    double vu;
+    double v1(double t) const;
+    double v2(double t) const;
 };
 
 #endif // HYPERBOLICCONTROL2DMXS_H

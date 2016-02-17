@@ -6,7 +6,7 @@ void HyperbolicControl2DM::main()
     //    hc.fx(0.4);
     //    hc.fx(0.8);
     //    hc.fx(1.0);
-    hc.fx(1.2);
+    hc.fx(1.0);
     //    hc.fx(1.6);
     //    hc.fx(2.0);
 }
@@ -88,7 +88,7 @@ double HyperbolicControl2DM::fx(double t)
     cg.setProjection(this);
     cg.setNormalize(true);
     //cg.showEndMessage(false);
-    cg.calculate(x);
+    //cg.calculate(x);
 
     puts("1");
     double rf = fx(x);
@@ -222,10 +222,10 @@ void HyperbolicControl2DM::gradient(const DoubleVector &x, DoubleVector &g)
         g[2] = g[2] + m * x[2*L+1*(M+1)+k] * psiX1;
         g[3] = g[3] + m * x[2*L+1*(M+1)+k] * psiX2;
     }
-    g[0] = ht*g[0];
-    g[1] = ht*g[1];
-    g[2] = ht*g[2];
-    g[3] = ht*g[3];
+    g[0] = -ht*g[0];
+    g[1] = -ht*g[1];
+    g[2] = -ht*g[2];
+    g[3] = -ht*g[3];
 }
 
 void HyperbolicControl2DM::calculateGX(const DoubleVector& x, const DoubleMatrix& psi, DoubleVector& g, unsigned int k)

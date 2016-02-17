@@ -5,8 +5,8 @@ void HyperbolicControl2DMV::main()
     HyperbolicControl2DMV hc;
     //    hc.fx(0.4);
     //    hc.fx(0.8);
-    //    hc.fx(1.0);
     hc.fx(1.0);
+    //    hc.fx(1.2);
     //    hc.fx(1.6);
     //    hc.fx(2.0);
 }
@@ -84,7 +84,7 @@ double HyperbolicControl2DMV::fx(double t)
     cg.setProjection(this);
     cg.setNormalize(true);
     //cg.showEndMessage(false);
-    //cg.calculate(v);
+    cg.calculate(v);
 
     double rf = fx(v);
 
@@ -94,8 +94,7 @@ double HyperbolicControl2DMV::fx(double t)
     fprintf(file, "--------------------------------------------------------------------\n");
     IPrinter::printDateTime(file);
     double h = 0.01;
-    fprintf(file, "T: %f L: %d h:%f Functional: %.20f\n", t1, L, h, rf);
-    fprintf(file, "N1: %d N2: %d M: %d h1: %f h2: %f ht: %f\n", N1, N2, M, h1, h2, ht);
+    fprintf(file, "T: %f L: %d h:%f Functional: %.20f N1: %d N2: %d M: %d h1: %f h2: %f ht: %f\n", t1, L, h, rf, N1, N2, M, h1, h2, ht);
     IPrinter::printVector(v, "v1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
     IPrinter::printVector(v, "v2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
     gradient(v, g1);
@@ -106,7 +105,6 @@ double HyperbolicControl2DMV::fx(double t)
     IGradient::Gradient(this, h, v, g2);
     fprintf(file, "Numerical Gradients: %.20f\n", g2.L2Norm());
     g2.L2Normalize();
-    printf("gx: %.8f %.8f %.8f %.8f\n", g2[0], g2[1], g2[2], g2[3]);
     IPrinter::printVector(g2, "g1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
     IPrinter::printVector(g2, "g2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
     IPrinter::printDateTime(file);
@@ -309,29 +307,6 @@ void HyperbolicControl2DMV::print(unsigned int i, const DoubleVector &x, const D
 
 void HyperbolicControl2DMV::project(DoubleVector &x, int i)
 {
-//    if (i==0)
-//    {
-//        if (x[i] <= 0.0) x[i] = 0.0 + h1;
-//        if (x[i] >= 0.5) x[i] = 0.5 - h1;
-//    }
-//    if (i==1)
-//    {
-//        if (x[i] <= 0.0) x[i] = 0.0 + h1;
-//        if (x[i] >= 0.5) x[i] = 0.5 - h1;
-//    }
-//    if (i==2)
-//    {
-//        if (x[i] <= 0.5) x[i] = 0.5 + h1;
-//        if (x[i] >= 1.0) x[i] = 1.0 - h1;
-//    }
-//    if (i==3)
-//    {
-//        if (x[i] <= 0.5) x[i] = 0.5 + h1;
-//        if (x[i] >= 1.0) x[i] = 1.0 - h1;
-//    }
-//    if (i>3)
-    {
-        if (x[i] < vd) x[i] = vd;
-        if (x[i] > vu) x[i] = vu;
-    }
+    if (x[i] < vd) x[i] = vd;
+    if (x[i] > vu) x[i] = vu;
 }
