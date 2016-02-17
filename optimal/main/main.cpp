@@ -40,6 +40,7 @@
 #include "hyperbolic/1d/hyperboliccontrolh.h"
 #include "hyperbolic/2d/hyperboliccontrol2d.h"
 #include "hyperbolic/2d/hyperboliccontrol2dm.h"
+#include "hyperbolic/2d/hyperboliccontrol2dmv.h"
 
 #include "point/pointcontrol11.h"
 #include "point/pointcontrol.h"
@@ -70,7 +71,7 @@ int main()
 //    DiscreteHyperbolic1::main();
 //    HyperbolicControlH::main();
 
-    HyperbolicControl2DM::main();
+    HyperbolicControl2DMV::main();
 
     return 0;
 }
