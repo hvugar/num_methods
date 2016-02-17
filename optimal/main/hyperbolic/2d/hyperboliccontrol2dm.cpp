@@ -28,9 +28,9 @@ double HyperbolicControl2DM::fx(double t)
     t0 = 0.0;
     t1 = t;
 
-    h1 = 0.005;
-    h2 = 0.005;
-    ht = 0.0025;
+    h1 = 0.01;
+    h2 = 0.01;
+    ht = 0.005;
 
     N1 = (unsigned)ceil((x11 - x10)/h1);
     N2 = (unsigned)ceil((x21 - x20)/h2);
