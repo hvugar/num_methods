@@ -114,7 +114,7 @@ double HyperbolicControl2DM::fx(double t)
 
     fprintf(file, "U\n");
     DoubleCube c;
-    calculateU2(c, h1, h2, ht, N1, N2, M, a, a, qamma);
+    IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
     IPrinter::printMatrix(c[c.size()-1], N2, N1, NULL, file);
     fclose(file);
 
@@ -186,7 +186,7 @@ void HyperbolicControl2DM::gradient(const DoubleVector &x, DoubleVector &g)
 
     pu = &u;
     DoubleCube p;
-    IBackwardHyperbolicEquation2D::calculateU2(p, h1, h2, ht, N1, N2, M, a, a, qamma);
+    IBackwardHyperbolicEquation2D::calculateU1(p, h1, h2, ht, N1, N2, M, a, a, qamma);
 
     unsigned int i,j;
     for (unsigned int k=0; k<=M; k++)

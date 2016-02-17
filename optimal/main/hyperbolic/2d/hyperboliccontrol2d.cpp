@@ -201,7 +201,7 @@ void HyperbolicControl2D::gradient(const DoubleVector &v, DoubleVector &g)
 
     pu = &u;
     DoubleCube p;
-    IBackwardHyperbolicEquation2D::calculateU2(p, h1, h2, ht, N1, N2, M);
+    IBackwardHyperbolicEquation2D::calculateU1(p, h1, h2, ht, N1, N2, M);
 
     unsigned int i,j;
     for (unsigned int k=0; k<=M; k++)
