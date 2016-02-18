@@ -31,4 +31,5 @@ INPUT(
 ./release\discretehyperbolic1.o
 ./release\borderparabolic2d.o
 ./release\borderhyperbolic2d.o
+./release\borderhyperbolic2ds1.o
 );
