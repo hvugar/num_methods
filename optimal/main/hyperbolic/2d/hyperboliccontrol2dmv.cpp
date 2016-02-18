@@ -3,12 +3,12 @@
 void HyperbolicControl2DMV::main()
 {
     HyperbolicControl2DMV hc;
-    //    hc.fx(0.4);
-    //    hc.fx(0.8);
+    hc.fx(0.4);
+    hc.fx(0.8);
     hc.fx(1.0);
-    //    hc.fx(1.2);
-    //    hc.fx(1.6);
-    //    hc.fx(2.0);
+    hc.fx(1.2);
+    hc.fx(1.6);
+    hc.fx(2.0);
 }
 
 HyperbolicControl2DMV::HyperbolicControl2DMV()
@@ -66,8 +66,8 @@ double HyperbolicControl2DMV::fx(double t)
     DoubleVector v((M+1)*L);
     for (unsigned int k=0; k<=M; k++)
     {
-        v[0*(M+1)+k] = 1.9;
-        v[1*(M+1)+k] = 1.9;
+        v[0*(M+1)+k] = 2.0;
+        v[1*(M+1)+k] = 2.0;
     }
 
     double min_step = 1.0;
@@ -84,13 +84,13 @@ double HyperbolicControl2DMV::fx(double t)
     cg.setProjection(this);
     cg.setNormalize(true);
     //cg.showEndMessage(false);
-    cg.calculate(v);
+//    cg.calculate(v);
 
     double rf = fx(v);
 
     DoubleVector g1(v.size());
     DoubleVector g2(v.size());
-    FILE *file = fopen("gradients.txt", "a");
+    FILE *file = fopen("gradient1.txt", "a");
     fprintf(file, "--------------------------------------------------------------------\n");
     IPrinter::printDateTime(file);
     double h = 0.01;
@@ -109,9 +109,9 @@ double HyperbolicControl2DMV::fx(double t)
     IPrinter::printVector(g2, "g2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
     IPrinter::printDateTime(file);
     fprintf(file, "U\n");
-    DoubleCube c;
-    IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
-    IPrinter::printMatrix(c[c.size()-1], N2, N1, NULL, file);
+//    DoubleCube c;
+//    IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
+//    IPrinter::printMatrix(c[c.size()-1], N2, N1, NULL, file);
     fclose(file);
 
     v.clear();
