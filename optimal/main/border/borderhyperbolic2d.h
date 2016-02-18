@@ -33,6 +33,8 @@ public:
     unsigned int M;
     double a1;
     double a2;
+
+    double qamma;
 };
 
 #endif // BORDERHYPERBOLIC2D_H

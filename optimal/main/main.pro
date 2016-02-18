@@ -51,8 +51,7 @@ SOURCES += main.cpp \
     discrete/discretehyperbolic.cpp \
     discrete/discretehyperbolic1.cpp \
     border/borderparabolic2d.cpp \
-    border/borderhyperbolic2d.cpp \
-    border/borderhyperbolic2ds1.cpp
+    border/borderhyperbolic2d.cpp
 
 HEADERS += \
     rnfunction/rosenbrock.h \
@@ -85,5 +84,4 @@ HEADERS += \
     discrete/discretehyperbolic.h \
     discrete/discretehyperbolic1.h \
     border/borderparabolic2d.h \
-    border/borderhyperbolic2d.h \
-    border/borderhyperbolic2ds1.h
+    border/borderhyperbolic2d.h
