@@ -3,12 +3,12 @@
 void HyperbolicControl2DMX::main()
 {
     HyperbolicControl2DMX hc;
-    //    hc.fx(0.4);
-    //    hc.fx(0.8);
-    //    hc.fx(1.0);
+    hc.fx(0.4);
+    hc.fx(0.8);
+    hc.fx(1.0);
     hc.fx(1.2);
-    //    hc.fx(1.6);
-    //    hc.fx(2.0);
+    hc.fx(1.6);
+    hc.fx(2.0);
 }
 
 HyperbolicControl2DMX::HyperbolicControl2DMX()
@@ -55,51 +55,51 @@ double HyperbolicControl2DMX::fx(double t)
     a = 1.0;
 
     DoubleVector x(2*L);
-    x[0] = 0.2;
-    x[1] = 0.2;
-    x[2] = 0.6;
-    x[3] = 0.6;
+    x[0] = 0.3;
+    x[1] = 0.4;
+    x[2] = 0.7;
+    x[3] = 0.7;
 
-    double min_step = 1.0;
-    double gold_eps = 0.001;
+    //    double min_step = 1.0;
+    //    double gold_eps = 0.001;
 
-    ConjugateGradient cg;
-    cg.setFunction(this);
-    cg.setGradient(this);
-    cg.setEpsilon1(0.001);
-    cg.setEpsilon2(0.001);
-    cg.setEpsilon3(0.001);
-    cg.setR1MinimizeEpsilon(min_step, gold_eps);
-    cg.setPrinter(this);
-    cg.setProjection(this);
-    cg.setNormalize(true);
-    //cg.showEndMessage(false);
-    cg.calculate(x);
+    //    ConjugateGradient cg;
+    //    cg.setFunction(this);
+    //    cg.setGradient(this);
+    //    cg.setEpsilon1(0.001);
+    //    cg.setEpsilon2(0.001);
+    //    cg.setEpsilon3(0.001);
+    //    cg.setR1MinimizeEpsilon(min_step, gold_eps);
+    //    cg.setPrinter(this);
+    //    cg.setProjection(this);
+    //    cg.setNormalize(true);
+    //    cg.showEndMessage(false);
+    //    cg.calculate(x);
 
     double rf = fx(x);
 
+    double h = 0.001;
     DoubleVector g1(x.size());
     DoubleVector g2(x.size());
-    FILE *file = fopen("gradients.txt", "a");
+    gradient(x, g1);
+    g1.L2Normalize();
+    IGradient::Gradient(this, h, x, g2);
+    g2.L2Normalize();
+
+    FILE *file = fopen("gradient_x.txt", "a");
     fprintf(file, "--------------------------------------------------------------------\n");
     IPrinter::printDateTime(file);
-    double h = 0.01;
-    fprintf(file, "T: %f L: %d h:%f Functional: %.20f\n", t1, L, h, rf);
-    fprintf(file, "N1: %d N2: %d M: %d h1: %f h2: %f ht: %f\n", N1, N2, M, h1, h2, ht);
-    printf("x: %.8f %.8f %.8f %.8f\n", x[0], x[1], x[2], x[3]);
-    gradient(x, g1);
-    fprintf(file, "Analytic Gradients: %.20f\n", g1.L2Norm());
-    g1.L2Normalize();
-    printf("gx: %.8f %.8f %.8f %.8f\n", g1[0], g1[1], g1[2], g1[3]);
-    IGradient::Gradient(this, h, x, g2);
-    fprintf(file, "Numerical Gradients: %.20f\n", g2.L2Norm());
-    g2.L2Normalize();
-    printf("gx: %.8f %.8f %.8f %.8f\n", g2[0], g2[1], g2[2], g2[3]);
+    fprintf(file, "T: %f L: %d h:%f Functional: %.20f N1: %d N2: %d M: %d h1: %f h2: %f ht: %f\n", t1, L, h, rf, N1, N2, M, h1, h2, ht);
+    fprintf(file, "x: %.8f %.8f %.8f %.8f\n", x[0], x[1], x[2], x[3]);
+    fprintf(file, "Agx: %.8f %.8f %.8f %.8f\n", g1[0], g1[1], g1[2], g1[3]);
+    fprintf(file, "Ngx: %.8f %.8f %.8f %.8f\n", g2[0], g2[1], g2[2], g2[3]);
+    //fprintf(file, "Analytic Gradients: %.20f\n", g1.L2Norm());
+    //fprintf(file, "Numerical Gradients: %.20f\n", g2.L2Norm());
     IPrinter::printDateTime(file);
-    fprintf(file, "U\n");
-    DoubleCube c;
-    IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
-    IPrinter::printMatrix(c[c.size()-1], N2, N1, NULL, file);
+    //    fprintf(file, "U\n");
+    //    DoubleCube c;
+    //    IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
+    //    IPrinter::printMatrix(c[c.size()-1], N2, N1, NULL, file);
     fclose(file);
 
     x.clear();
@@ -365,10 +365,10 @@ void HyperbolicControl2DMX::project(DoubleVector &x, int i)
 
 double HyperbolicControl2DMX::v1(double t) const
 {
-    return t*t;
+    return 2.0;
 }
 
 double HyperbolicControl2DMX::v2(double t) const
 {
-    return t*t;
+    return 2.0;
 }

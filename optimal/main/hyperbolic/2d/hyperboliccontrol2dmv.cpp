@@ -70,52 +70,52 @@ double HyperbolicControl2DMV::fx(double t)
         v[1*(M+1)+k] = 2.0;
     }
 
-    double min_step = 1.0;
-    double gold_eps = 0.001;
-
-    ConjugateGradient cg;
-    cg.setFunction(this);
-    cg.setGradient(this);
-    cg.setEpsilon1(0.001);
-    cg.setEpsilon2(0.001);
-    cg.setEpsilon3(0.001);
-    cg.setR1MinimizeEpsilon(min_step, gold_eps);
-    cg.setPrinter(this);
-    cg.setProjection(this);
-    cg.setNormalize(true);
-    //cg.showEndMessage(false);
+//    double min_step = 1.0;
+//    double gold_eps = 0.001;
+//    ConjugateGradient cg;
+//    cg.setFunction(this);
+//    cg.setGradient(this);
+//    cg.setEpsilon1(0.001);
+//    cg.setEpsilon2(0.001);
+//    cg.setEpsilon3(0.001);
+//    cg.setR1MinimizeEpsilon(min_step, gold_eps);
+//    cg.setPrinter(this);
+//    cg.setProjection(this);
+//    cg.setNormalize(true);
+//    cg.showEndMessage(false);
 //    cg.calculate(v);
 
     double rf = fx(v);
 
+    double h = 0.01;
     DoubleVector g1(v.size());
     DoubleVector g2(v.size());
-    FILE *file = fopen("gradient1.txt", "a");
+    gradient(v, g1);
+    g1.L2Normalize();
+    IGradient::Gradient(this, h, v, g2);
+    g2.L2Normalize();
+
+    FILE *file = fopen("gradient2.txt", "a");
     fprintf(file, "--------------------------------------------------------------------\n");
     IPrinter::printDateTime(file);
-    double h = 0.01;
     fprintf(file, "T: %f L: %d h:%f Functional: %.20f N1: %d N2: %d M: %d h1: %f h2: %f ht: %f\n", t1, L, h, rf, N1, N2, M, h1, h2, ht);
     IPrinter::printVector(v, "v1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
+    IPrinter::printVector(g1, "Ag1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
+    IPrinter::printVector(g2, "Ng1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
+
     IPrinter::printVector(v, "v2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
-    gradient(v, g1);
-    fprintf(file, "Analytic Gradients: %.20f\n", g1.L2Norm());
-    g1.L2Normalize();
-    IPrinter::printVector(g1, "g1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
-    IPrinter::printVector(g1, "g2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
-    IGradient::Gradient(this, h, v, g2);
-    fprintf(file, "Numerical Gradients: %.20f\n", g2.L2Norm());
-    g2.L2Normalize();
-    IPrinter::printVector(g2, "g1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
-    IPrinter::printVector(g2, "g2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
+    IPrinter::printVector(g1, "Ag2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
+    IPrinter::printVector(g2, "Ng2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
+    //fprintf(file, "Analytic Gradients: %.20f\n", g1.L2Norm());
+    //fprintf(file, "Numerical Gradients: %.20f\n", g2.L2Norm());
     IPrinter::printDateTime(file);
-    fprintf(file, "U\n");
+//    fprintf(file, "U\n");
 //    DoubleCube c;
 //    IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
 //    IPrinter::printMatrix(c[c.size()-1], N2, N1, NULL, file);
     fclose(file);
 
     v.clear();
-
     return rf;
 }
 

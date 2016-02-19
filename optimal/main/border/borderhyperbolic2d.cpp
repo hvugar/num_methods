@@ -1,6 +1,6 @@
 #include "borderhyperbolic2d.h"
 
-#define SAMPLE2
+#define SAMPLE5
 
 BorderHyperbolic2D::BorderHyperbolic2D()
 {
@@ -9,7 +9,7 @@ BorderHyperbolic2D::BorderHyperbolic2D()
     x11 = x21 = t1 = 1.0;
     h1 = 0.01;
     h2 = 0.01;
-    ht = 0.005;
+    ht = 0.0005;
     N1 = (unsigned int)(ceil(x11-x10)/h1);
     N2 = (unsigned int)(ceil(x21-x20)/h2);
     M  = (unsigned int)(ceil(t1-t0)/ht);
@@ -38,6 +38,9 @@ double BorderHyperbolic2D::u(unsigned int i, unsigned int j, unsigned int k) con
 #ifdef SAMPLE4
     return sin(t) + exp(x1) + x2*x2;
 #endif
+#ifdef SAMPLE5
+    return x1*x1 + x1*x2 + 5.0*sin(10.0*x1) + cos(5.0*x2) + 4.0*cos(5.0*x2*t);
+#endif
 }
 
 double BorderHyperbolic2D::fi1(unsigned int i, unsigned int j) const
@@ -58,6 +61,9 @@ double BorderHyperbolic2D::fi2(unsigned int i, unsigned int j) const
 #endif
 #ifdef SAMPLE4
     return 1.0;
+#endif
+#ifdef SAMPLE5
+    return 0.0;
 #endif
 }
 
@@ -100,6 +106,9 @@ double BorderHyperbolic2D::f(unsigned int i, unsigned int j, unsigned int k) con
 #endif
 #ifdef SAMPLE4
     return -sin(t) - (a1*a1)*exp(x1) - (a2*a2)*2.0;
+#endif
+#ifdef SAMPLE5
+    return -100.0*x1*x1*cos(5.0*x1*t) - a1*a1*(2.0 - 500.0*sin(10.0*x1) - 100.0*t*t*cos(5.0*x1*t)) - a2*a2*(-75.0*cos(5.0*x2));
 #endif
 }
 

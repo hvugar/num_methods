@@ -1,7 +1,5 @@
 #include "headers.h"
 
-
-
 int main()
 {
     DoubleMatrix u;
@@ -23,7 +21,7 @@ int main()
 //    DiscreteHyperbolic1::main();
 //    HyperbolicControlH::main();
 
-//    HyperbolicControl2DMV::main();
+//    HyperbolicControl2DMX::main();
 
     return 0;
 }
