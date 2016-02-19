@@ -84,4 +84,5 @@ HEADERS += \
     discrete/discretehyperbolic.h \
     discrete/discretehyperbolic1.h \
     border/borderparabolic2d.h \
-    border/borderhyperbolic2d.h
+    border/borderhyperbolic2d.h \
+    headers.h
