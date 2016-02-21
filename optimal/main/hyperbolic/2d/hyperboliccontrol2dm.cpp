@@ -58,33 +58,33 @@ double HyperbolicControl2DM::fx(double T)
     DoubleVector x( 2*L + (M+1)*L);
     for (unsigned int k=0; k<=M; k++)
     {
-        x[2*L + 0*(M+1)+k] = 3.0;
-        x[2*L + 1*(M+1)+k] = 4.0;
+        x[2*L + 0*(M+1)+k] = 2.0;
+        x[2*L + 1*(M+1)+k] = 2.0;
     }
-    x[0] = 0.2;
-    x[1] = 0.3;
-    x[2] = 0.5;
-    x[3] = 0.6;
+    x[0] = 0.3;
+    x[1] = 0.4;
+    x[2] = 0.7;
+    x[3] = 0.7;
 
     // limits of v
     vd = -2.0;
     vu = +2.0;
 
-    //    double min_step = 1.0;
-    //    double gold_eps = 0.001;
+    double min_step = 0.1;
+    double gold_eps = 0.001;
 
-    //    ConjugateGradient cg;
-    //    cg.setFunction(this);
-    //    cg.setGradient(this);
-    //    cg.setEpsilon1(0.001);
-    //    cg.setEpsilon2(0.001);
-    //    cg.setEpsilon3(0.001);
-    //    cg.setR1MinimizeEpsilon(min_step, gold_eps);
-    //    cg.setPrinter(this);
-    //    cg.setProjection(this);
-    //    cg.setNormalize(true);
-    //    cg.showEndMessage(false);
-    //    cg.calculate(x);
+    ConjugateGradient cg;
+    cg.setFunction(this);
+    cg.setGradient(this);
+    cg.setEpsilon1(0.0001);
+    cg.setEpsilon2(0.0001);
+    cg.setEpsilon3(0.0001);
+    cg.setR1MinimizeEpsilon(min_step, gold_eps);
+    cg.setPrinter(this);
+    cg.setProjection(this);
+    //cg.setNormalize(false);
+    cg.showEndMessage(true);
+    cg.calculate(x);
 
     double rf = fx(x);
 
@@ -192,14 +192,14 @@ void HyperbolicControl2DM::gradient(const DoubleVector &x, DoubleVector &g)
     DoubleCube u;
     IHyperbolicEquation2D::calculateU1(u, h1, h2, ht, N1, N2, M, a, a, qamma);
 
-    IPrinter::printMatrix(u[u.size()-1]);
+    //    IPrinter::printMatrix(u[u.size()-1]);
 
     pu = &u;
     DoubleCube p;
     IBackwardHyperbolicEquation2D::calculateU1(p, h1, h2, ht, N1, N2, M, a, a, qamma);
 
-    puts("---");
-    IPrinter::printMatrix(p[p.size()-1]);
+    //    puts("---");
+    //    IPrinter::printMatrix(p[p.size()-1]);
 
     double psiX1;
     double psiX2;
@@ -221,7 +221,7 @@ void HyperbolicControl2DM::gradient(const DoubleVector &x, DoubleVector &g)
     g[2] = -ht*g[2];
     g[3] = -ht*g[3];
 
-    printf("gx: %.8f %.8f %.8f %.8f\n", g[0], g[1], g[2], g[3]);
+    //    printf("gx: %.8f %.8f %.8f %.8f\n", g[0], g[1], g[2], g[3]);
 
     unsigned int i,j;
     for (unsigned int k=0; k<=M; k++)
@@ -380,6 +380,31 @@ void HyperbolicControl2DM::print(unsigned int i, const DoubleVector &x, const Do
     C_UNUSED(g);
     C_UNUSED(alpha);
     printf("J[%d]: %.16f\n", i, fn->fx(x));
+
+    FILE *file = fopen("gradients_xv.txt", "a");
+    fprintf(file, "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+    IPrinter::printDateTime(file);
+    fprintf(file, "T: %f L: %d Functional: %.20f N1: %d N2: %d M: %d h1: %f h2: %f ht: %f\n", t1, L, fn->fx(x), N1, N2, M, h1, h2, ht);
+    fprintf(file, "x: %.8f %.8f %.8f %.8f\n", x[0], x[1], x[2], x[3]);
+    //fprintf(file, "AGx: %.8f %.8f %.8f %.8f\n", agx[0], agx[1], agx[2], agx[3]);
+    //fprintf(file, "NGx: %.8f %.8f %.8f %.8f\n", ngx[0], ngx[1], ngx[2], ngx[3]);
+    IPrinter::printVector(x, "v1:", (M+1), 0*(M+1)+2*L, 0*(M+1)+2*L+M, file);
+    //    IPrinter::printVector(g12, "AG1:", (M+1), 0*(M+1)+2*L, 0*(M+1)+2*L+M, file);
+    //    IPrinter::printVector(g21, "NG1:", (M+1), 0*(M+1)+2*L, 0*(M+1)+2*L+M, file);
+    //IPrinter::printVector(agv, "AG1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
+    //IPrinter::printVector(ngv, "NG1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
+    IPrinter::printVector(x, "v2:", (M+1), 1*(M+1)+2*L, 1*(M+1)+2*L+M, file);
+    //    IPrinter::printVector(g12, "AG2:", (M+1), 1*(M+1)+2*L, 1*(M+1)+2*L+M, file);
+    //    IPrinter::printVector(g22, "NG2:", (M+1), 1*(M+1)+2*L, 1*(M+1)+2*L+M, file);
+    //IPrinter::printVector(agv, "AG2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
+    //IPrinter::printVector(ngv, "NG2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
+    IPrinter::printDateTime(file);
+    //    fprintf(file, "U\n");
+    //    DoubleCube c;
+    //    IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
+    //    IPrinter::printMatrix(c[c.size()-1], N2, N1, NULL, file);
+    fprintf(file, "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+    fclose(file);
 }
 
 void HyperbolicControl2DM::project(DoubleVector &x, int i)

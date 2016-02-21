@@ -61,21 +61,21 @@ double HyperbolicControl2DMX::fx(double T)
     x[2] = 0.7;
     x[3] = 0.7;
 
-    //    double min_step = 1.0;
-    //    double gold_eps = 0.001;
+//    double min_step = 1.0;
+//    double gold_eps = 0.001;
 
-    //    ConjugateGradient cg;
-    //    cg.setFunction(this);
-    //    cg.setGradient(this);
-    //    cg.setEpsilon1(0.001);
-    //    cg.setEpsilon2(0.001);
-    //    cg.setEpsilon3(0.001);
-    //    cg.setR1MinimizeEpsilon(min_step, gold_eps);
-    //    cg.setPrinter(this);
-    //    cg.setProjection(this);
-    //    cg.setNormalize(true);
-    //    cg.showEndMessage(false);
-    //    cg.calculate(x);
+//    ConjugateGradient cg;
+//    cg.setFunction(this);
+//    cg.setGradient(this);
+//    cg.setEpsilon1(0.001);
+//    cg.setEpsilon2(0.001);
+//    cg.setEpsilon3(0.001);
+//    cg.setR1MinimizeEpsilon(min_step, gold_eps);
+//    cg.setPrinter(this);
+//    cg.setProjection(this);
+//    cg.setNormalize(false);
+//    cg.showEndMessage(false);
+//    cg.calculate(x);
 
     double rf = fx(x);
 

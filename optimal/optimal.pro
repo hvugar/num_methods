@@ -1,4 +1,3 @@
 TEMPLATE = subdirs
-SUBDIRS = cminimum minimum main imager animator qminimum \
-    grapher
+SUBDIRS = cminimum minimum main imager animator qminimum
 CONFIG += ordered
