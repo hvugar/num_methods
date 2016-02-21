@@ -3,12 +3,15 @@
 void HyperbolicControl2DMV::main()
 {
     HyperbolicControl2DMV hc;
-    hc.fx(0.4);
-    hc.fx(0.8);
+//    hc.fx(0.4);
+//    hc.fx(0.6);
+//    hc.fx(0.8);
     hc.fx(1.0);
-    hc.fx(1.2);
-    hc.fx(1.6);
-    hc.fx(2.0);
+//    hc.fx(1.2);
+//    hc.fx(1.4);
+//    hc.fx(1.6);
+//    hc.fx(1.8);
+//    hc.fx(2.0);
 }
 
 HyperbolicControl2DMV::HyperbolicControl2DMV()
@@ -19,14 +22,14 @@ HyperbolicControl2DMV::~HyperbolicControl2DMV()
 {
 }
 
-double HyperbolicControl2DMV::fx(double t)
+double HyperbolicControl2DMV::fx(double T)
 {
     x10 = 0.0;
     x11 = 1.0;
     x20 = 0.0;
     x21 = 1.0;
     t0 = 0.0;
-    t1 = t;
+    t1 = T;
 
     h1 = 0.01;
     h2 = 0.01;
@@ -70,49 +73,50 @@ double HyperbolicControl2DMV::fx(double t)
         v[1*(M+1)+k] = 2.0;
     }
 
-//    double min_step = 1.0;
-//    double gold_eps = 0.001;
-//    ConjugateGradient cg;
-//    cg.setFunction(this);
-//    cg.setGradient(this);
-//    cg.setEpsilon1(0.001);
-//    cg.setEpsilon2(0.001);
-//    cg.setEpsilon3(0.001);
-//    cg.setR1MinimizeEpsilon(min_step, gold_eps);
-//    cg.setPrinter(this);
-//    cg.setProjection(this);
-//    cg.setNormalize(true);
-//    cg.showEndMessage(false);
-//    cg.calculate(v);
+    //    double min_step = 1.0;
+    //    double gold_eps = 0.001;
+    //    ConjugateGradient cg;
+    //    cg.setFunction(this);
+    //    cg.setGradient(this);
+    //    cg.setEpsilon1(0.001);
+    //    cg.setEpsilon2(0.001);
+    //    cg.setEpsilon3(0.001);
+    //    cg.setR1MinimizeEpsilon(min_step, gold_eps);
+    //    cg.setPrinter(this);
+    //    cg.setProjection(this);
+    //    cg.setNormalize(true);
+    //    cg.showEndMessage(false);
+    //    cg.calculate(v);
 
     double rf = fx(v);
 
-    double h = 0.01;
-    DoubleVector g1(v.size());
-    DoubleVector g2(v.size());
-    gradient(v, g1);
-    g1.L2Normalize();
-    IGradient::Gradient(this, h, v, g2);
-    g2.L2Normalize();
-
-    FILE *file = fopen("gradient2.txt", "a");
+    double h = 0.001;
+    DoubleVector ag(v.size());
+    DoubleVector ng(v.size());
+    FILE *file = fopen("gradient_v.txt", "a");
     fprintf(file, "--------------------------------------------------------------------\n");
     IPrinter::printDateTime(file);
-    fprintf(file, "T: %f L: %d h:%f Functional: %.20f N1: %d N2: %d M: %d h1: %f h2: %f ht: %f\n", t1, L, h, rf, N1, N2, M, h1, h2, ht);
-    IPrinter::printVector(v, "v1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
-    IPrinter::printVector(g1, "Ag1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
-    IPrinter::printVector(g2, "Ng1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
 
-    IPrinter::printVector(v, "v2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
-    IPrinter::printVector(g1, "Ag2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
-    IPrinter::printVector(g2, "Ng2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
+    gradient(v, ag);
+    ag.L2Normalize();
+    IGradient::Gradient(this, h, v, ng);
+    ng.L2Normalize();
+
+    fprintf(file, "T: %f L: %d h:%f Functional: %.20f N1: %d N2: %d M: %d h1: %f h2: %f ht: %f\n", t1, L, h, rf, N1, N2, M, h1, h2, ht);
+    IPrinter::printVector(v,  "v1: ", (M+1), 0*(M+1), 0*(M+1)+M, file);
+    IPrinter::printVector(ag, "AG1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
+    IPrinter::printVector(ng, "NG1:", (M+1), 0*(M+1), 0*(M+1)+M, file);
+
+    IPrinter::printVector(v,  "v2: ", (M+1), 1*(M+1), 1*(M+1)+M, file);
+    IPrinter::printVector(ag, "AG2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
+    IPrinter::printVector(ng, "NG2:", (M+1), 1*(M+1), 1*(M+1)+M, file);
     //fprintf(file, "Analytic Gradients: %.20f\n", g1.L2Norm());
     //fprintf(file, "Numerical Gradients: %.20f\n", g2.L2Norm());
     IPrinter::printDateTime(file);
-//    fprintf(file, "U\n");
-//    DoubleCube c;
-//    IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
-//    IPrinter::printMatrix(c[c.size()-1], N2, N1, NULL, file);
+    //    fprintf(file, "U\n");
+    //    DoubleCube c;
+    //    IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
+    //    IPrinter::printMatrix(c[c.size()-1], N2, N1, NULL, file);
     fclose(file);
 
     v.clear();
@@ -180,9 +184,14 @@ void HyperbolicControl2DMV::gradient(const DoubleVector &v, DoubleVector &g)
     DoubleCube u;
     IHyperbolicEquation2D::calculateU1(u, h1, h2, ht, N1, N2, M, a, a, qamma);
 
+    IPrinter::printMatrix(u[u.size()-1]);
+
     pu = &u;
     DoubleCube p;
     IBackwardHyperbolicEquation2D::calculateU1(p, h1, h2, ht, N1, N2, M, a, a, qamma);
+
+    puts("---");
+    IPrinter::printMatrix(p[p.size()-1]);
 
     unsigned int i,j;
     for (unsigned int k=0; k<=M; k++)

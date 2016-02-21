@@ -83,7 +83,7 @@ HeatControl2DeltaF::HeatControl2DeltaF(unsigned int m, unsigned int n2, unsigned
     }
 
     pv = &v;
-    IParabolicEquation2D::calculateU(U, h1, h2, ht, N1, N2, M, a1, a2);
+    IParabolicEquation2D::caluclateMVD(U, h1, h2, ht, N1, N2, M, a1, a2);
 
     puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
     IPrinter::printMatrix(U, 10, 10);
@@ -98,7 +98,7 @@ double HeatControl2DeltaF::fx(const DoubleVector& v)
 {
     pv = &v;
     DoubleMatrix u;
-    IParabolicEquation2D::calculateU(u, h1, h2, ht, N1, N2, M, a1, a2);
+    IParabolicEquation2D::caluclateMVD(u, h1, h2, ht, N1, N2, M, a1, a2);
 
     double sum = 0.0;
     for (unsigned int j=0; j<=N2; j++)
@@ -140,11 +140,11 @@ void HeatControl2DeltaF::gradient(const DoubleVector& v, DoubleVector& g)
 {
     pv = &v;
     DoubleMatrix u;
-    IParabolicEquation2D::calculateU(u, h1, h2, ht, N1, N2, M, a1, a2);
+    IParabolicEquation2D::caluclateMVD(u, h1, h2, ht, N1, N2, M, a1, a2);
 
     pu = &u;
     DoubleCube psi;
-    IBackwardParabolicEquation2D::calculateU(psi, h1, h2, ht, N1, N2, M, a1, a2);
+    IBackwardParabolicEquation2D::caluclateMVD(psi, h1, h2, ht, N1, N2, M, a1, a2);
 
     //    for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;
     //    for (unsigned int k=M; k!=(unsigned int)0-1; k--)
@@ -258,7 +258,9 @@ double HeatControl2DeltaF::f(unsigned int i, unsigned int j, unsigned int k) con
     //double t  = 0.5*k*ht;
 
     double sum = 0.0;
-    double k1 = (k%2==0 ? k/2 : (k+1)/2);
+    unsigned int k1 = (k%2==0 ? k/2 : (k+1)/2);
+
+    //printf("k: %d k1: %d j: %d i: %d\n", k, k1, j, i);
 
     double _v1 = (*pv)[0*(M+1)+k1];
     double _v2 = (*pv)[1*(M+1)+k1];

@@ -78,7 +78,7 @@ HeatControl2DeltaX::HeatControl2DeltaX(unsigned int M, unsigned int N2, unsigned
     e[5] = 0.30;
 
     px = &e;
-    IParabolicEquation2D::calculateU(U, h1, h2, ht, N1, N2, M, a1, a2);
+    IParabolicEquation2D::caluclateMVD(U, h1, h2, ht, N1, N2, M, a1, a2);
 
     puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
     IPrinter::printMatrix(U, 10, 10);
@@ -94,7 +94,7 @@ double HeatControl2DeltaX::fx(const DoubleVector& x)
 {
     px = &x;
     DoubleMatrix u;
-    IParabolicEquation2D::calculateU(u, h1, h2, ht, N1, N2, M, a1, a2);
+    IParabolicEquation2D::caluclateMVD(u, h1, h2, ht, N1, N2, M, a1, a2);
 
     double sum = 0.0;
     for (unsigned int j=0; j<=N2; j++)
@@ -136,11 +136,11 @@ void HeatControl2DeltaX::gradient(const DoubleVector& x, DoubleVector& g)
 {
     px = &x;
     DoubleMatrix u;
-    IParabolicEquation2D::calculateU(u, h1, h2, ht, N1, N2, M, a1, a2);
+    IParabolicEquation2D::caluclateMVD(u, h1, h2, ht, N1, N2, M, a1, a2);
 
     pu = &u;
     DoubleCube psi;
-    IBackwardParabolicEquation2D::calculateU(psi, h1, h2, ht, N1, N2, M, a1, a2);
+    IBackwardParabolicEquation2D::caluclateMVD(psi, h1, h2, ht, N1, N2, M, a1, a2);
 
     for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;
 

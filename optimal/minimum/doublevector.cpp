@@ -81,6 +81,14 @@ void DoubleVector::EuclideanNormalize()
     for (unsigned int i=0; i<size(); i++) (*this)[i] /= norm;
 }
 
+DoubleVector DoubleVector::mid(unsigned int start, unsigned int end) const
+{
+    unsigned int size = end - start + 1;
+    DoubleVector vector(size);
+    for (unsigned int i=start; i<=end; i++) vector[i-start] = (*this)[i];
+    return vector;
+}
+
 double DoubleVector::L2Norm(const DoubleVector& p)
 {
     return p.L2Norm();

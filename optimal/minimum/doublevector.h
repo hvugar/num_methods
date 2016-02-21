@@ -24,6 +24,8 @@ public:
     void L1Normalize();
     void EuclideanNormalize();
 
+    DoubleVector mid(unsigned int s, unsigned int e) const;
+
     /* static methods */
     static double L2Norm(const DoubleVector&);
     static double L1Norm(const DoubleVector&);

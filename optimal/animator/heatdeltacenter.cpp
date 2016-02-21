@@ -5,7 +5,7 @@ void HeatDeltaCenter::main()
     HeatDeltaCenter hc;
 
     DoubleMatrix u;
-    hc.calculateU(u, hc.hx, hc.hy, hc.ht, hc.N1, hc.N2, hc.M);
+    hc.caluclateMVD(u, hc.hx, hc.hy, hc.ht, hc.N1, hc.N2, hc.M);
 }
 
 HeatDeltaCenter::HeatDeltaCenter()

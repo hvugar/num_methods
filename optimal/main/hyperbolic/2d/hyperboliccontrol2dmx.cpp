@@ -3,12 +3,15 @@
 void HyperbolicControl2DMX::main()
 {
     HyperbolicControl2DMX hc;
-    hc.fx(0.4);
-    hc.fx(0.8);
-    hc.fx(1.0);
-    hc.fx(1.2);
-    hc.fx(1.6);
-    hc.fx(2.0);
+    //    hc.fx(0.4);
+    //    hc.fx(0.6);
+    //    hc.fx(0.8);
+        hc.fx(1.0);
+    //    hc.fx(1.2);
+    //    hc.fx(1.4);
+    //    hc.fx(1.6);
+    //    hc.fx(1.8);
+    //    hc.fx(2.0);
 }
 
 HyperbolicControl2DMX::HyperbolicControl2DMX()
@@ -19,14 +22,14 @@ HyperbolicControl2DMX::~HyperbolicControl2DMX()
 {
 }
 
-double HyperbolicControl2DMX::fx(double t)
+double HyperbolicControl2DMX::fx(double T)
 {
     x10 = 0.0;
     x11 = 1.0;
     x20 = 0.0;
     x21 = 1.0;
     t0 = 0.0;
-    t1 = t;
+    t1 = T;
 
     h1 = 0.01;
     h2 = 0.01;
@@ -35,10 +38,8 @@ double HyperbolicControl2DMX::fx(double t)
     N1 = (unsigned)ceil((x11 - x10)/h1);
     N2 = (unsigned)ceil((x21 - x20)/h2);
     M  = (unsigned)ceil((t1 - t0)/ht);
-
-    printf("%d %d %d\n", N1, N2, M);
-
     L = 2;
+    printf("T: %f %d %d %d\n", T, N1, N2, M);
 
     e.resize(2);
     e[0] = 0.2;
@@ -80,9 +81,9 @@ double HyperbolicControl2DMX::fx(double t)
 
     double h = 0.001;
     DoubleVector g1(x.size());
-    DoubleVector g2(x.size());
     gradient(x, g1);
     g1.L2Normalize();
+    DoubleVector g2(x.size());
     IGradient::Gradient(this, h, x, g2);
     g2.L2Normalize();
 
@@ -93,15 +94,12 @@ double HyperbolicControl2DMX::fx(double t)
     fprintf(file, "x: %.8f %.8f %.8f %.8f\n", x[0], x[1], x[2], x[3]);
     fprintf(file, "Agx: %.8f %.8f %.8f %.8f\n", g1[0], g1[1], g1[2], g1[3]);
     fprintf(file, "Ngx: %.8f %.8f %.8f %.8f\n", g2[0], g2[1], g2[2], g2[3]);
-    //fprintf(file, "Analytic Gradients: %.20f\n", g1.L2Norm());
-    //fprintf(file, "Numerical Gradients: %.20f\n", g2.L2Norm());
     IPrinter::printDateTime(file);
     //    fprintf(file, "U\n");
     //    DoubleCube c;
     //    IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
     //    IPrinter::printMatrix(c[c.size()-1], N2, N1, NULL, file);
     fclose(file);
-
     x.clear();
 
     return rf;
@@ -168,9 +166,14 @@ void HyperbolicControl2DMX::gradient(const DoubleVector &x, DoubleVector &g)
     DoubleCube u;
     IHyperbolicEquation2D::calculateU1(u, h1, h2, ht, N1, N2, M, a, a, qamma);
 
+    IPrinter::printMatrix(u[u.size()-1]);
+
     pu = &u;
     DoubleCube p;
     IBackwardHyperbolicEquation2D::calculateU1(p, h1, h2, ht, N1, N2, M, a, a, qamma);
+
+    puts("---");
+    IPrinter::printMatrix(p[p.size()-1]);
 
     double psiX1;
     double psiX2;
@@ -191,6 +194,8 @@ void HyperbolicControl2DMX::gradient(const DoubleVector &x, DoubleVector &g)
     g[1] = -ht*g[1];
     g[2] = -ht*g[2];
     g[3] = -ht*g[3];
+
+    printf("gx: %.8f %.8f %.8f %.8f\n", g[0], g[1], g[2], g[3]);
 }
 
 void HyperbolicControl2DMX::psiDerivative(double &psiX1, double &psiX2, double x1, double x2, const DoubleMatrix &psi)
@@ -235,16 +240,16 @@ double HyperbolicControl2DMX::m2(unsigned int j, unsigned int k) const
     return 0.0;
 }
 
-double HyperbolicControl2DMX::m3(unsigned int j, unsigned int k) const
+double HyperbolicControl2DMX::m3(unsigned int i, unsigned int k) const
 {
-    C_UNUSED(j);
+    C_UNUSED(i);
     C_UNUSED(k);
     return 0.0;
 }
 
-double HyperbolicControl2DMX::m4(unsigned int j, unsigned int k) const
+double HyperbolicControl2DMX::m4(unsigned int i, unsigned int k) const
 {
-    C_UNUSED(j);
+    C_UNUSED(i);
     C_UNUSED(k);
     return 0.0;
 }
