@@ -69,8 +69,6 @@ void ConjugateGradient::calculate(DoubleVector& x)
         /* R1 minimization in direct of antigradient */
         alpha = minimize(x, s);
 
-        if (m_printer != NULL) m_printer->print(iterationCount, x, g, alpha, m_fn);
-
         distance = 0.0;
         f1 = f2;
         if (firstIteration)
@@ -91,6 +89,8 @@ void ConjugateGradient::calculate(DoubleVector& x)
         f2 = m_fn->fx(x);
 
         if ( k == x.size() ) { k = 0; } else { k++; }
+
+        if (m_printer != NULL) m_printer->print(iterationCount, x, g, alpha, m_fn);
 
         /* calculating distance previous and new point */
         if (distance < epsilon2() && fabs(f2 - f1) < epsilon3())
@@ -122,9 +122,6 @@ double ConjugateGradient::fx(double alpha)
     DoubleVector &x = *mx;
     DoubleVector &s = *ms;
     unsigned int n = x.size();
-
-    //DoubleVector s = *ms;
-    //s.L2Normalize();
 
     DoubleVector cx(n);
     for (unsigned int i=0; i<n; i++)

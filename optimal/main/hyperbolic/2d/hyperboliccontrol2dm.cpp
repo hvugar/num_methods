@@ -6,8 +6,8 @@ void HyperbolicControl2DM::main()
     //    hc.fx(0.4);
     //    hc.fx(0.6);
     //    hc.fx(0.8);
-    hc.fx(1.0);
-    //    hc.fx(1.2);
+//    hc.fx(1.0);
+        hc.fx(1.2);
     //    hc.fx(1.4);
     //    hc.fx(1.6);
     //    hc.fx(1.8);
@@ -72,7 +72,7 @@ double HyperbolicControl2DM::fx(double T)
     vd = -2.0;
     vu = +2.0;
 
-    double min_step = 0.01;
+    double min_step = 0.1;
     double gold_eps = 0.001;
 
     ConjugateGradient cg;
@@ -86,7 +86,7 @@ double HyperbolicControl2DM::fx(double T)
     cg.setProjection(this);
     //cg.setNormalize(false);
     cg.showEndMessage(true);
-    //cg.calculate(x);
+    cg.calculate(x);
 
     double rf = fx(x);
 
@@ -369,10 +369,10 @@ void HyperbolicControl2DM::print(unsigned int i, const DoubleVector &x, const Do
 {
     C_UNUSED(g);
     C_UNUSED(alpha);
-    printf("J[%d]: %.16f\n", i, fn->fx(x));
+    printf("\nJ[%d]: %.16f ALPHA: %.8f\n", i, fn->fx(x), alpha);
 
     DoubleVector ng(x.size());
-    IGradient::Gradient(fn, h, x, ng);
+//    IGradient::Gradient(fn, h, x, ng);
     DoubleVector ngx = ng.mid(0, 3);
     DoubleVector ngv = ng.mid(4, ng.size()-1);
     ngx.L2Normalize();
@@ -409,23 +409,24 @@ void HyperbolicControl2DM::project(DoubleVector &x, int i)
 {
     if (i==0)
     {
-        if (x[i] <= 0.0) x[i] = 0.0 + 6*h1;
-        if (x[i] >= 0.5) x[i] = 0.5 - 6*h1;
+        if (x[i] <= 0.0) { x[i] = 0.0; }
+        if (x[i] >= 0.5) { x[i] = 0.5; }
+
     }
     if (i==1)
     {
-        if (x[i] <= 0.0) x[i] = 0.0 + 6*h1;
-        if (x[i] >= 0.5) x[i] = 0.5 - 6*h1;
+        if (x[i] <= 0.0) { x[i] = 0.0; }
+        if (x[i] >= 0.5) { x[i] = 0.5; }
     }
     if (i==2)
     {
-        if (x[i] <= 0.5) x[i] = 0.5 + 6*h1;
-        if (x[i] >= 1.0) x[i] = 1.0 - 6*h1;
+        if (x[i] <= 0.5) { x[i] = 0.5; }
+        if (x[i] >= 1.0) { x[i] = 1.0; }
     }
     if (i==3)
     {
-        if (x[i] <= 0.5) x[i] = 0.5 + 6*h1;
-        if (x[i] >= 1.0) x[i] = 1.0 - 6*h1;
+        if (x[i] <= 0.5) { x[i] = 0.5; }
+        if (x[i] >= 1.0) { x[i] = 1.0; }
     }
     if (i>3)
     {
