@@ -3,15 +3,15 @@
 void HyperbolicControl2DMV::main()
 {
     HyperbolicControl2DMV hc;
-//    hc.fx(0.4);
-//    hc.fx(0.6);
-//    hc.fx(0.8);
+    //    hc.fx(0.4);
+    //    hc.fx(0.6);
+    //    hc.fx(0.8);
     hc.fx(1.0);
-//    hc.fx(1.2);
-//    hc.fx(1.4);
-//    hc.fx(1.6);
-//    hc.fx(1.8);
-//    hc.fx(2.0);
+    //    hc.fx(1.2);
+    //    hc.fx(1.4);
+    //    hc.fx(1.6);
+    //    hc.fx(1.8);
+    //    hc.fx(2.0);
 }
 
 HyperbolicControl2DMV::HyperbolicControl2DMV()
@@ -208,36 +208,49 @@ void HyperbolicControl2DMV::gradient(const DoubleVector &v, DoubleVector &g)
 
 double HyperbolicControl2DMV::fi1(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HyperbolicControl2DMV::fi2(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HyperbolicControl2DMV::m1(unsigned int j, unsigned int k) const
 {
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HyperbolicControl2DMV::m2(unsigned int j, unsigned int k) const
 {
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 
-double HyperbolicControl2DMV::m3(unsigned int j, unsigned int k) const
+double HyperbolicControl2DMV::m3(unsigned int i, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(k);
     return 0.0;
 }
 
-double HyperbolicControl2DMV::m4(unsigned int j, unsigned int k) const
+double HyperbolicControl2DMV::m4(unsigned int i, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HyperbolicControl2DMV::f(unsigned int i, unsigned int j, unsigned int k) const
 {
+    C_UNUSED(k);
     double sum = 0.0;
     static double sgm1 = 3.0*h1;
     static double sgm2 = 3.0*h2;
@@ -274,26 +287,37 @@ double HyperbolicControl2DMV::bfi2(unsigned int i, unsigned int j) const
 
 double HyperbolicControl2DMV::bm1(unsigned int j, unsigned int k) const
 {
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HyperbolicControl2DMV::bm2(unsigned int j, unsigned int k) const
 {
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HyperbolicControl2DMV::bm3(unsigned int i, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HyperbolicControl2DMV::bm4(unsigned int i, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HyperbolicControl2DMV::bf(unsigned int i, unsigned int j, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j );
+    C_UNUSED(k);
     return 0.0;
 }
 
