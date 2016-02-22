@@ -123,13 +123,13 @@ double ConjugateGradient::fx(double alpha)
     DoubleVector &s = *ms;
     unsigned int n = x.size();
 
-    DoubleVector s1 = *ms;
-    s1.L2Normalize();
+    //DoubleVector s = *ms;
+    //s.L2Normalize();
 
     DoubleVector cx(n);
     for (unsigned int i=0; i<n; i++)
     {
-        cx[i] = x[i] + alpha * s1[i];
+        cx[i] = x[i] + alpha * s[i];
         if (m_projection != NULL) m_projection->project(cx, i);
     }
 
