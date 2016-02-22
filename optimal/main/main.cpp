@@ -1,9 +1,5 @@
 #include "headers.h"
 
-#include <libxl.h>
-
-using namespace libxl;
-
 int main()
 {
 //    DoubleCube c;

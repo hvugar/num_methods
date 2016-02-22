@@ -74,6 +74,7 @@ private:
     DoubleVector e;
     const DoubleVector *px;
     const DoubleCube *pu;
+    double h;
 
     double vd;
     double vu;

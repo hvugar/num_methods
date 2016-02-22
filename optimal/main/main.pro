@@ -15,9 +15,6 @@ INCLUDEPATH += ../minimum
 INCLUDEPATH += ../cminimum
 LIBS += -L../bin -lminimum -lcminimum
 
-INCLUDEPATH += D:/libxl-3.6.5.0/include_cpp
-LIBS += D:/libxl-3.6.5.0/lib/libxl.lib
-
 DESTDIR += ../bin
 
 #DEFINES += MINIMUM_LIBRARY
