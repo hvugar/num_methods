@@ -45,6 +45,7 @@
 #include "hyperbolic/2d/hyperboliccontrol2dm.h"
 #include "hyperbolic/2d/hyperboliccontrol2dmv.h"
 #include "hyperbolic/2d/hyperboliccontrol2dmx.h"
+#include "hyperbolic/2d/hyperboliccontrol2d1.h"
 
 #include "point/pointcontrol11.h"
 #include "point/pointcontrol.h"

@@ -31,11 +31,11 @@ int main()
 //    DiscreteHyperbolic1::main();
 //    HyperbolicControlH::main();
 
-    HyperbolicControl2DM::main();
-    puts("--------------------------------------");
+    HyperbolicControl2D1::main();
+    //puts("--------------------------------------");
     //HyperbolicControl2DMX::main();
-    puts("--------------------------------------");
+    //puts("--------------------------------------");
     //HyperbolicControl2DMV::main();
-    puts("--------------------------------------");
+    //puts("--------------------------------------");
     return 0;
 }
