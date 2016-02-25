@@ -1,6 +1,10 @@
 #ifndef HYPERBOLICCONTROL2D1_H
 #define HYPERBOLICCONTROL2D1_H
 
+#define ONLY_POWER
+//#define ONLY_COORDINATE
+//#define POWER_COORDINATE
+
 #include <function.h>
 #include <hyperbolicequation.h>
 #include <printer.h>
@@ -71,6 +75,7 @@ public:
     DoubleMatrix U1;
 
     DoubleVector e;
+    DoubleVector c;
     const DoubleVector *px;
     const DoubleCube *pu;
     double h;

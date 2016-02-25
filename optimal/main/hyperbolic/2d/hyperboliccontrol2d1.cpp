@@ -22,15 +22,15 @@ double HyperbolicControl2D1::fx(double T)
     h1 = 0.01;
     h2 = 0.01;
     ht = 0.005;
+    h = 0.001;
 
     N1 = (unsigned)ceil((x11 - x10)/h1);
     N2 = (unsigned)ceil((x21 - x20)/h2);
     M  = (unsigned)ceil((t1 - t0)/ht);
     L = 2;
-    printf("T: %f %d %d %d\n", T, N1, N2, M);
 
     U0.resize(N2+1); for (unsigned int j=0; j<=N2; j++) U0[j].resize(N1+1);
-    U1.resize(N2+1); for (unsigned int j=0; j<=N2; j++) U0[j].resize(N1+1);
+    U1.resize(N2+1); for (unsigned int j=0; j<=N2; j++) U1[j].resize(N1+1);
 
     e.resize(2);
     e[0] = 0.2;
@@ -46,30 +46,71 @@ double HyperbolicControl2D1::fx(double T)
     U1 = 0.0;
     a = 1.0;
 
-    DoubleVector x(2*L + (M+1)*L);
+#ifdef ONLY_POWER
+    DoubleVector x((M+1)*L);
     for (unsigned int k=0; k<=M; k++)
     {
-        x[2*L + 0*(M+1)+k] = v1(k*ht);
-        x[2*L + 1*(M+1)+k] = v2(k*ht);
+        x[0*(M+1)+k] = 5.0;
+        x[1*(M+1)+k] = 5.0;
     }
-    x[0] = 0.2;
-    x[1] = 0.3;
-    x[2] = 0.6;
-    x[3] = 0.6;
+    c.resize(2*L);
+    c[0] = 0.2;
+    c[1] = 0.3;
+    c[2] = 0.6;
+    c[3] = 0.6;
+#endif
 
-    h = 0.001;
+#ifdef ONLY_COORDINATE
+    DoubleVector x(2*L);
+    x[0] = 0.3;
+    x[1] = 0.4;
+    x[2] = 0.7;
+    x[3] = 0.7;
+#endif
+
+#if defined(POWER_COORDINATE)
+    DoubleVector x(2*L + (M+1)*LL);
+    for (unsigned int k=0; k<=M; k++)
+    {
+        x[2*L + 0*(M+1)+k] = v1(k*ht)+0.1;
+        x[2*L + 1*(M+1)+k] = v2(k*ht)+0.1;
+    }
+    x[0] = 0.3;
+    x[1] = 0.4;
+    x[2] = 0.7;
+    x[3] = 0.7;
+#endif
 
     {
+#ifdef ONLY_POWER
+        DoubleVector x0((M+1)*L);
+        for (unsigned int k=0; k<=M; k++)
+        {
+            x0[0*(M+1)+k] = v1(k*ht);
+            x0[1*(M+1)+k] = v2(k*ht);
+        }
+#endif
+
+#ifdef ONLY_COORDINATE
+        DoubleVector x0(2*L);
+        x0[0] = 0.2;
+        x0[1] = 0.3;
+        x0[2] = 0.6;
+        x0[3] = 0.6;
+#endif
+
+#ifdef POWER_COORDINATE
         DoubleVector x0(2*L + (M+1)*L);
         for (unsigned int k=0; k<=M; k++)
         {
-            x[2*L + 0*(M+1)+k] = v1(k*ht);
-            x[2*L + 1*(M+1)+k] = v2(k*ht);
+            x0[2*L + 0*(M+1)+k] = v1(k*ht);
+            x0[2*L + 1*(M+1)+k] = v2(k*ht);
         }
         x0[0] = 0.2;
         x0[1] = 0.3;
         x0[2] = 0.6;
         x0[3] = 0.6;
+#endif
 
         DoubleCube c;
         px = &x0;
@@ -81,9 +122,11 @@ double HyperbolicControl2D1::fx(double T)
         IPrinter::printMatrix(U1);
     }
 
-    printf("J[%d]: %.16f  ", 0, fx(x));
-    printf("x: %12.8f %12.8f %12.8f %12.8f\n", x[0], x[1], x[2], x[3]);
-
+    //    printf("J[%d]: %20.16f  ", 0, fx(x));
+    //    printf("x: %12.8f %12.8f %12.8f %12.8f\n", x[0], x[1], x[2], x[3]);
+    //    IPrinter::printVector(x, "v1: ", 10, 0*(M+1)+2*L, 0*(M+1)+2*L+M);
+    //    IPrinter::printVector(x, "v2: ", 10, 1*(M+1)+2*L, 1*(M+1)+2*L+M);
+    print(0, x, x, 0.0, this);
     // limits of v
     //vd = -2.0;
     //vu = +2.0;
@@ -100,7 +143,7 @@ double HyperbolicControl2D1::fx(double T)
     cg.setR1MinimizeEpsilon(min_step, gold_eps);
     cg.setPrinter(this);
     cg.setProjection(this);
-    //cg.setNormalize(false);
+    cg.setNormalize(false);
     cg.showEndMessage(true);
     cg.calculate(x);
 
@@ -120,11 +163,11 @@ double HyperbolicControl2D1::fx(double T)
     //    ngx.L2Normalize();
     //    ngv.L2Normalize();
 
-    FILE *file = stdout;//fopen("gradients_xv.txt", "a");
+    //FILE *file = stdout;//fopen("gradients_xv.txt", "a");
     //    fprintf(file, "--------------------------------------------------------------------\n");
     //    IPrinter::printDateTime(file);
     //    fprintf(file, "T: %f L: %d h:%f Functional: %.20f N1: %d N2: %d M: %d h1: %f h2: %f ht: %f\n", t1, L, h, rf, N1, N2, M, h1, h2, ht);
-    fprintf(file, "x: %.8f %.8f %.8f %.8f\n", x[0], x[1], x[2], x[3]);
+    //    fprintf(file, "x: %.8f %.8f %.8f %.8f\n", x[0], x[1], x[2], x[3]);
     //    fprintf(file, "AGx: %.8f %.8f %.8f %.8f\n", agx[0], agx[1], agx[2], agx[3]);
     //    fprintf(file, "NGx: %.8f %.8f %.8f %.8f\n", ngx[0], ngx[1], ngx[2], ngx[3]);
     //    unsigned int part = 10;//(M+1)
@@ -183,7 +226,12 @@ double HyperbolicControl2D1::fx(const DoubleVector &x)
     sum2 = h1*h2*sum2;
 
     sum = sum1 + alpha0*sum2;
-    return sum + norm(x);
+
+#if defined(ONLY_POWER) || defined(POWER_COORDINATE)
+    sum = sum + norm(x);
+#endif
+
+    return sum;
 }
 
 double HyperbolicControl2D1::norm(const DoubleVector& x) const
@@ -211,6 +259,21 @@ void HyperbolicControl2D1::gradient(const DoubleVector &x, DoubleVector &g)
     DoubleCube p;
     IBackwardHyperbolicEquation2D::calculateU1(p, h1, h2, ht, N1, N2, M, a, a, qamma);
 
+#if defined(ONLY_POWER)
+    for (unsigned int k=0; k<=M; k++)
+    {
+        unsigned int i,j;
+        i = (unsigned int)round(c[0]/h1);
+        j = (unsigned int)round(c[1]/h2);
+        g[0*(M+1)+k] = -p[k][j][i] + 2*(x[0*(M+1)+k]-v1(k*ht));
+
+        i = (unsigned int)round(c[2]/h1);
+        j = (unsigned int)round(c[3]/h2);
+        g[1*(M+1)+k] = -p[k][j][i] + 2*(x[1*(M+1)+k]-v2(k*ht));
+    }
+#endif
+
+#if defined(ONLY_COORDINATE)
     for (unsigned int k=0; k<=M; k++)
     {
         double psiX1;
@@ -219,33 +282,65 @@ void HyperbolicControl2D1::gradient(const DoubleVector &x, DoubleVector &g)
         if (k==0 || k==M) m *= 0.5;
 
         psiDerivative(psiX1, psiX2, x[0], x[1], p[k]);
-        //g[0] = g[0] + m * v1(k*ht) * psiX1;//x[2*L+0*(M+1)+k] * psiX1;
-        //g[1] = g[1] + m * v1(k*ht) * psiX2;//x[2*L+0*(M+1)+k] * psiX2;
-        g[0] = g[0] + m * x[2*L+0*(M+1)+k] * psiX1;
-        g[1] = g[1] + m * x[2*L+0*(M+1)+k] * psiX2;
-
+        g[0] = g[0] + m * v1(k*ht) * psiX1;
+        g[1] = g[1] + m * v1(k*ht) * psiX2;
         psiDerivative(psiX1, psiX2, x[2], x[3], p[k]);
-        //g[2] = g[2] + m * v2(k*ht) * psiX1;//x[2*L+1*(M+1)+k] * psiX1;
-        //g[3] = g[3] + m * v2(k*ht) * psiX2;;//x[2*L+1*(M+1)+k] * psiX2;
-        g[2] = g[2] + m * x[2*L+1*(M+1)+k] * psiX1;
-        g[3] = g[3] + m * x[2*L+1*(M+1)+k] * psiX2;
+        g[2] = g[2] + m * v2(k*ht) * psiX1;
+        g[3] = g[3] + m * v2(k*ht) * psiX2;
     }
     g[0] = -ht*g[0];
     g[1] = -ht*g[1];
     g[2] = -ht*g[2];
     g[3] = -ht*g[3];
+#endif
 
+#if defined(ONLY_POWER) && defined(POWER_COORDINATE)
     for (unsigned int k=0; k<=M; k++)
     {
         unsigned int i,j;
-        i = (unsigned int)round(x[0]/h1);
-        j = (unsigned int)round(x[1]/h2);
-        g[2*L+0*(M+1)+k] = -p[k][j][i] + 2*(x[2*L+0*(M+1)+k]-v1(k*ht));
+        i = (unsigned int)round(c[0]/h1);
+        j = (unsigned int)round(c[1]/h2);
+        g[2*L+0*(M+1)+k] = -p[k][j][i] + 2*(x[0*(M+1)+k]-v1(k*ht));
 
-        i = (unsigned int)round(x[2]/h1);
-        j = (unsigned int)round(x[3]/h2);
-        g[2*L+1*(M+1)+k] = -p[k][j][i] + 2*(x[2*L+1*(M+1)+k]-v2(k*ht));
+        i = (unsigned int)round(c[2]/h1);
+        j = (unsigned int)round(c[3]/h2);
+        g[2*L+1*(M+1)+k] = -p[k][j][i] + 2*(x[1*(M+1)+k]-v2(k*ht));
     }
+#endif
+
+#if defined(ONLY_COORDINATE) && defined(POWER_COORDINATE)
+    for (unsigned int k=0; k<=M; k++)
+    {
+        double psiX1;
+        double psiX2;
+        double m = 1.0;
+        if (k==0 || k==M) m *= 0.5;
+
+        psiDerivative(psiX1, psiX2, x[0], x[1], p[k]);
+#ifdef ONLY_COORDINATE
+        g[0] = g[0] + m * v1(k*ht) * psiX1;
+        g[1] = g[1] + m * v1(k*ht) * psiX2;
+#endif
+#ifdef POWER_COORDINATE
+        g[0] = g[0] + m * x[2*L+0*(M+1)+k] * psiX1;
+        g[1] = g[1] + m * x[2*L+0*(M+1)+k] * psiX2;
+#endif
+
+        psiDerivative(psiX1, psiX2, x[2], x[3], p[k]);
+#ifdef ONLY_COORDINATE
+        g[2] = g[2] + m * v2(k*ht) * psiX1;
+        g[3] = g[3] + m * v2(k*ht) * psiX2;
+#endif
+#ifdef POWER_COORDINATE
+        g[2] = g[2] + m * x[2*L+1*(M+1)+k] * psiX1;
+        g[3] = g[3] + m * x[2*L+1*(M+1)+k] * psiX2;
+#endif
+    }
+    g[0] = -ht*g[0];
+    g[1] = -ht*g[1];
+    g[2] = -ht*g[2];
+    g[3] = -ht*g[3];
+#endif
 }
 
 void HyperbolicControl2D1::psiDerivative(double &psiX1, double &psiX2, double x1, double x2, const DoubleMatrix &psi)
@@ -305,11 +400,26 @@ double HyperbolicControl2D1::f(unsigned int i, unsigned int j, unsigned int k) c
     //double t = k*ht;
     const DoubleVector &x = *px;
 
-    double _v1 = x[2*L+0*(M+1)+k];
-    double _v2 = x[2*L+1*(M+1)+k];
+#if defined(ONLY_POWER)
+    double _v1 = x[0*(M+1)+k];
+    double _v2 = x[1*(M+1)+k];
+    sum += _v1 * gause_a * exp(-((x1-c[0])*(x1-c[0]) + (x2-c[1])*(x2-c[1]))/gause_b);
+    sum += _v2 * gause_a * exp(-((x1-c[2])*(x1-c[2]) + (x2-c[3])*(x2-c[3]))/gause_b);
+#endif
 
+#if defined(ONLY_COORDINATE)
+    double _v1 = v1(k*ht);
+    double _v2 = v2(k*ht);;
     sum += _v1 * gause_a * exp(-((x1-x[0])*(x1-x[0]) + (x2-x[1])*(x2-x[1]))/gause_b);
     sum += _v2 * gause_a * exp(-((x1-x[2])*(x1-x[2]) + (x2-x[3])*(x2-x[3]))/gause_b);
+#endif
+
+#if defined(POWER_COORDINATE)
+    double _v1 = x[2*L+0*(M+1)+k];
+    double _v2 = x[2*L+1*(M+1)+k];
+    sum += _v1 * gause_a * exp(-((x1-x[0])*(x1-x[0]) + (x2-x[1])*(x2-x[1]))/gause_b);
+    sum += _v2 * gause_a * exp(-((x1-x[2])*(x1-x[2]) + (x2-x[3])*(x2-x[3]))/gause_b);
+#endif
 
     sum += fxt(i, j, k);
 
@@ -368,17 +478,27 @@ void HyperbolicControl2D1::print(unsigned int i, const DoubleVector& x, const Do
 {
     C_UNUSED(g);
     C_UNUSED(alpha);
-    printf("J[%d]: %.16f  ", i, fn->fx(x));
+
+#ifdef ONLY_POWER
+    printf("J[%d]: %20.16f\n", i, fn->fx(x));
+    IPrinter::printVector(x, "v1: ", 10, 0*(M+1), 0*(M+1)+M);
+    IPrinter::printVector(x, "v2: ", 10, 1*(M+1), 1*(M+1)+M);
+#endif
+#ifdef ONLY_COORDINATE
+    printf("J[%d]: %20.16f ", i, fn->fx(x));
     printf("x: %12.8f %12.8f %12.8f %12.8f\n", x[0], x[1], x[2], x[3]);
-    IPrinter::printVector(x, "v1: ", 10, 0*(M+1)+2*L, 0*(M+1)+2*L+M);
-    IPrinter::printVector(x, "v2: ", 10, 1*(M+1)+2*L, 1*(M+1)+2*L+M);
+#endif
 }
 
 void HyperbolicControl2D1::project(DoubleVector &x, int i)
 {
-    if (x[i] <= 0.0) { x[i] = 0.0; }
-    if (x[i] >= 1.0) { x[i] = 1.0; }
-
+#ifdef ONLY_COORDINATE
+    if (i<4)
+    {
+        if (x[i] <= 0.0) { x[i] = 0.0; }
+        if (x[i] >= 1.0) { x[i] = 1.0; }
+    }
+#endif
 }
 
 double HyperbolicControl2D1::u(double i, double j, double k) const
