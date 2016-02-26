@@ -39,6 +39,7 @@ public:
     virtual void print(unsigned int iteration, const DoubleVector& x, const DoubleVector &gradient, double alpha, RnFunction* fn) const;
     virtual void project(DoubleVector &x, int index);
 
+
 public:
     static void main();
 
@@ -46,6 +47,7 @@ public:
     void psiDerivative(double &psiX1, double &psiX2, double x1, double x2, const DoubleMatrix &psi);
     double fxt(unsigned int i, unsigned int j, unsigned int k) const;
     double norm(const DoubleVector& v) const;
+    void initialize();
 
     double v1(double t) const;
     double v2(double t) const;
