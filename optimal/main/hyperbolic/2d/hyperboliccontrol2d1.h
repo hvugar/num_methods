@@ -1,9 +1,9 @@
 #ifndef HYPERBOLICCONTROL2D1_H
 #define HYPERBOLICCONTROL2D1_H
 
-#define ONLY_POWER
+//#define ONLY_POWER
 //#define ONLY_COORDINATE
-//#define POWER_COORDINATE
+#define POWER_COORDINATE
 
 #include <function.h>
 #include <hyperbolicequation.h>
@@ -82,8 +82,8 @@ public:
     const DoubleCube *pu;
     double h;
 
-//    double vd;
-//    double vu;
+    double vd;
+    double vu;
 };
 
 #endif // HYPERBOLICCONTROL2D1_H
