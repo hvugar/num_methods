@@ -97,7 +97,6 @@ double HyperbolicControl2D1::fx(double T)
     IPrinter::printMatrix(U1);
     printf("------------------\n");
     //..................................................................
-    printf("%.16f\n", fx(x0));
 
 #ifdef ONLY_POWER
     DoubleVector x((M+1)*L);
@@ -124,8 +123,8 @@ double HyperbolicControl2D1::fx(double T)
     DoubleVector x(2*L + (M+1)*L);
     for (unsigned int k=0; k<=M; k++)
     {
-        x[2*L + 0*(M+1)+k] = v1(k*ht)-1.0;
-        x[2*L + 1*(M+1)+k] = v2(k*ht)+1.0;
+        x[2*L + 0*(M+1)+k] = v1(k*ht)+0.5;
+        x[2*L + 1*(M+1)+k] = v2(k*ht)+0.5;
     }
     x[0] = 0.3;
     x[1] = 0.4;
@@ -133,7 +132,6 @@ double HyperbolicControl2D1::fx(double T)
     x[3] = 0.7;
 #endif
 
-    printf("%.16f\n", fx(x));
     print(0, x, x, 0.0, (RnFunction*)this);
     // limits of v
     //vd = -2.0;
@@ -152,7 +150,7 @@ double HyperbolicControl2D1::fx(double T)
     cg.setPrinter(this);
     cg.setProjection(this);
 #ifdef POWER_COORDINATE
-    cg.setNormalize(false);
+   // cg.setNormalize(false);
 #endif
     cg.showEndMessage(true);
     cg.calculate(x);

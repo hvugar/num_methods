@@ -58,5 +58,6 @@
 
 #include "border/borderparabolic2d.h"
 #include "border/borderhyperbolic2d.h"
+#include "border/borderhyperbolic.h"
 
 #endif // HEADERS_H

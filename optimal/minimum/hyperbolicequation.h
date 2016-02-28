@@ -47,7 +47,9 @@ public:
     virtual void calculateMVD(DoubleMatrix &u, double h1, double h2, double ht, double N1, double N2, double M, double a1=1.0, double a2=1.0) const;
     virtual void calculateMVD(DoubleCube &u, double h1, double h2, double ht, double N1, double N2, double M, double a1=1.0, double a2=1.0) const;
     //virtual void calculateMFS(DoubleCube &u, double h1, double h2, double ht, double N1, double N2, double M, double a1=1.0, double a2=1.0) const;
+    //virtual void calculateMFS(DoubleMatrix &u, double h1, double h2, double ht, double N1, double N2, double M, double a1=1.0, double a2=1.0) const;
     virtual void calculateU1(DoubleCube &u, double h1, double h2, double ht, double N1, double N2, double M, double a1=1.0, double a2=1.0, double qamma=1.0) const;
+    virtual void calculateU1(DoubleMatrix &u, double h1, double h2, double ht, double N1, double N2, double M, double a1=1.0, double a2=1.0, double qamma=1.0) const;
 };
 
 class MINIMUMSHARED_EXPORT IBackwardHyperbolicEquation2D

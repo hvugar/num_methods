@@ -13,7 +13,8 @@ BorderHyperbolic2D::BorderHyperbolic2D()
 {
     a1 = a2 = 1.0;
     x10 = x20 = t0 = 0.0;
-    x11 = x21 = t1 = 1.0;
+    x11 = x21 = 1.0;
+    t1 = 20.0;
     h1 = 0.010;
     h2 = 0.010;
     ht = 0.005;

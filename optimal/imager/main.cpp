@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <QVector>
 #include "widget2.h"
+#include <math.h>
 
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
@@ -76,7 +77,14 @@ void createHeatImage(int width, int height, const QString &inFile, const QString
     file.close();
 
     printf("Minimum: %.10f Maximum: %.10f width: %d height %d\n", minimum, maximum, width, height);
+    minimum = -0.09900679249999990000;
+    maximum = +0.12911580289999900000;
 
+//    FILE *file1 = fopen("minmax.txt1", "a");
+//    fprintf(file1, "%.20f %.20f\n", minimum, maximum);
+//    fclose(file1);
+
+    double sum = 0.0;
     for (int j=0; j<m.size(); j++)
     {
         for (int i=0; i<m[j].size(); i++)
@@ -93,8 +101,13 @@ void createHeatImage(int width, int height, const QString &inFile, const QString
             QColor c(r, g, b);
             painter.setPen(c);
             painter.drawPoint(i,height-j-1);
+
+            sum += u*u;
         }
     }
+    sum = sqrt(sum);
+    painter.setPen(Qt::black);
+    painter.drawText(10, 10, QString::number(sum, 'f', 6));
 
 
     pixmap.save(outFile, "PNG");
