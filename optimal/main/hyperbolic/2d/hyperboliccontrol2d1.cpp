@@ -1,9 +1,13 @@
 #include "hyperboliccontrol2d1.h"
 
+FILE *file;
 void HyperbolicControl2D1::main()
 {
+    file = fopen("result.txt", "a");
     HyperbolicControl2D1 hc;
-    hc.fx(1.0);
+    hc.fx(0.8);
+    fputs("-----------------------------------------------------------------------------------------------------------", file);
+    fclose(file);
 }
 
 HyperbolicControl2D1::HyperbolicControl2D1()
@@ -28,6 +32,8 @@ double HyperbolicControl2D1::fx(double T)
     N2 = (unsigned)ceil((x21 - x20)/h2);
     M  = (unsigned)ceil((t1 - t0)/ht);
     L = 2;
+
+    count = 0;
 
     e.resize(2);
     e[0] = 0.2;
@@ -92,10 +98,10 @@ double HyperbolicControl2D1::fx(double T)
         }
     }
 
-    IPrinter::printMatrix(U0);
-    printf("------------------\n");
-    IPrinter::printMatrix(U1);
-    printf("------------------\n");
+    IPrinter::printMatrix(U0, 10, 10, NULL, file);
+    fprintf(file, "------------------\n");
+    IPrinter::printMatrix(U1, 10, 10, NULL, file);
+    fprintf(file, "------------------\n");
     //..................................................................
 
 #ifdef ONLY_POWER
@@ -123,8 +129,8 @@ double HyperbolicControl2D1::fx(double T)
     DoubleVector x(2*L + (M+1)*L);
     for (unsigned int k=0; k<=M; k++)
     {
-        x[2*L + 0*(M+1)+k] = v1(k*ht)+0.5;
-        x[2*L + 1*(M+1)+k] = v2(k*ht)+0.5;
+        x[2*L + 0*(M+1)+k] = 1.0;
+        x[2*L + 1*(M+1)+k] = 2.0;
     }
     x[0] = 0.3;
     x[1] = 0.4;
@@ -132,12 +138,12 @@ double HyperbolicControl2D1::fx(double T)
     x[3] = 0.7;
 #endif
 
-    print(0, x, x, 0.0, (RnFunction*)this);
+    print(0, x, x, 0.0, this);
     // limits of v
     //vd = -2.0;
     //vu = +2.0;
 
-    double min_step = 1.0;
+    double min_step = 0.1;
     double gold_eps = 0.001;
 
     ConjugateGradient cg;
@@ -156,6 +162,7 @@ double HyperbolicControl2D1::fx(double T)
     cg.calculate(x);
 
     double rf = fx(x);
+    count--;
 
     //    DoubleVector ag(x.size());
     //    gradient(x, ag);
@@ -202,6 +209,7 @@ void HyperbolicControl2D1::initialize()
 
 double HyperbolicControl2D1::fx(const DoubleVector &x)
 {
+    count++;
     px = &x;
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
@@ -346,54 +354,6 @@ void HyperbolicControl2D1::gradient(const DoubleVector &x, DoubleVector &g)
         g[2*L+1*(M+1)+k] = -p[k][j][i] + 2.0 * (x[2*L+1*(M+1)+k]-v2(k*ht));
     }
 #endif
-
-    //#if defined(ONLY_POWER) && defined(POWER_COORDINATE)
-    //    for (unsigned int k=0; k<=M; k++)
-    //    {
-    //        unsigned int i,j;
-    //        i = (unsigned int)round(c[0]/h1);
-    //        j = (unsigned int)round(c[1]/h2);
-    //        g[2*L+0*(M+1)+k] = -p[k][j][i] + 2*(x[0*(M+1)+k]-v1(k*ht));
-
-    //        i = (unsigned int)round(c[2]/h1);
-    //        j = (unsigned int)round(c[3]/h2);
-    //        g[2*L+1*(M+1)+k] = -p[k][j][i] + 2*(x[1*(M+1)+k]-v2(k*ht));
-    //    }
-    //#endif
-
-    //#if defined(ONLY_COORDINATE) && defined(POWER_COORDINATE)
-    //    for (unsigned int k=0; k<=M; k++)
-    //    {
-    //        double psiX1;
-    //        double psiX2;
-    //        double m = 1.0;
-    //        if (k==0 || k==M) m *= 0.5;
-
-    //        psiDerivative(psiX1, psiX2, x[0], x[1], p[k]);
-    //#ifdef ONLY_COORDINATE
-    //        g[0] = g[0] + m * v1(k*ht) * psiX1;
-    //        g[1] = g[1] + m * v1(k*ht) * psiX2;
-    //#endif
-    //#ifdef POWER_COORDINATE
-    //        g[0] = g[0] + m * x[2*L+0*(M+1)+k] * psiX1;
-    //        g[1] = g[1] + m * x[2*L+0*(M+1)+k] * psiX2;
-    //#endif
-
-    //        psiDerivative(psiX1, psiX2, x[2], x[3], p[k]);
-    //#ifdef ONLY_COORDINATE
-    //        g[2] = g[2] + m * v2(k*ht) * psiX1;
-    //        g[3] = g[3] + m * v2(k*ht) * psiX2;
-    //#endif
-    //#ifdef POWER_COORDINATE
-    //        g[2] = g[2] + m * x[2*L+1*(M+1)+k] * psiX1;
-    //        g[3] = g[3] + m * x[2*L+1*(M+1)+k] * psiX2;
-    //#endif
-    //    }
-    //    g[0] = -ht*g[0];
-    //    g[1] = -ht*g[1];
-    //    g[2] = -ht*g[2];
-    //    g[3] = -ht*g[3];
-    //#endif
 }
 
 void HyperbolicControl2D1::psiDerivative(double &psiX1, double &psiX2, double x1, double x2, const DoubleMatrix &psi)
@@ -545,12 +505,16 @@ void HyperbolicControl2D1::print(unsigned int i, const DoubleVector& x, const Do
 #endif
 
 #ifdef POWER_COORDINATE
-    printf("J[%d]: %20.16f ", i, fn->fx(x));
-    printf("x: %12.8f %12.8f %12.8f %12.8f\n", x[0], x[1], x[2], x[3]);
-    IPrinter::printVector(x, "v1: ", 10, 2*L+0*(M+1), 2*L+0*(M+1)+M);
-    IPrinter::printVector(x, "v2: ", 10, 2*L+1*(M+1), 2*L+1*(M+1)+M);
+    double res = fn->fx(x);
+    const_cast<HyperbolicControl2D1*>(this)->count--;
+    printf("J[%d]: %20.16f T: %f Count: %d \n", i, res, t1, count);
+    fprintf(file, "J[%d]: %20.16f T: %f Count: %d ", i, res, t1, count);
+    fprintf(file, "x: %12.8f %12.8f %12.8f %12.8f\n", x[0], x[1], x[2], x[3]);
+    IPrinter::printVector(x, "v1: ", 10, 2*L+0*(M+1), 2*L+0*(M+1)+M, file);
+    IPrinter::printVector(x, "v2: ", 10, 2*L+1*(M+1), 2*L+1*(M+1)+M, file);
+    IPrinter::printVector(x, "v1: ", M+1, 2*L+0*(M+1), 2*L+0*(M+1)+M, file);
+    IPrinter::printVector(x, "v2: ", M+1, 2*L+1*(M+1), 2*L+1*(M+1)+M, file);
 #endif
-
 }
 
 void HyperbolicControl2D1::project(DoubleVector &x, int i)

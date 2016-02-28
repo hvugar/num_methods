@@ -84,6 +84,7 @@ public:
 
     double vd;
     double vu;
+    unsigned int count;
 };
 
 #endif // HYPERBOLICCONTROL2D1_H
