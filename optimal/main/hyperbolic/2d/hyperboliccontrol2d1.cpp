@@ -3,11 +3,11 @@
 FILE *file;
 void HyperbolicControl2D1::main()
 {
-    file = fopen("result.txt", "a");
+    file = fopen("result1.txt", "a");
     HyperbolicControl2D1 hc;
-    for (double t=0.5; t<=2.1; t+=0.1)
+//    for (double t=0.5; t<=2.1; t+=0.1)
     {
-        hc.fx(t);
+        hc.fx(1.0);
         fputs("-----------------------------------------------------------------------------------------------------------\n", file);
     }
     fclose(file);
@@ -90,14 +90,14 @@ double HyperbolicControl2D1::fx(double T)
     px = &x0;
     U0.resize(N2+1); for (unsigned int j=0; j<=N2; j++) U0[j].resize(N1+1);
     U1.resize(N2+1); for (unsigned int j=0; j<=N2; j++) U1[j].resize(N1+1);
-    DoubleCube c;
-    IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
+    //DoubleCube c;
+    //IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
     for (unsigned int j=0; j<=N2; j++)
     {
         for (unsigned int i=0; i<=N1; i++)
         {
-            U0[j][i] = c[M][j][i];
-            U1[j][i] = (c[M][j][i]-c[M-2][j][i])/(2.0*ht);
+            U0[j][i] = 0.0;//c[M][j][i];
+            U1[j][i] = 0.0;//(c[M][j][i]-c[M-2][j][i])/(2.0*ht);
         }
     }
 
@@ -251,7 +251,7 @@ double HyperbolicControl2D1::fx(const DoubleVector &x)
     sum = sum1 + alpha0*sum2;
 
 #if defined(ONLY_POWER) || defined(POWER_COORDINATE)
-    sum = sum + norm(x);
+    //sum = sum + norm(x);
 #endif
     return sum;
 }
@@ -350,11 +350,11 @@ void HyperbolicControl2D1::gradient(const DoubleVector &x, DoubleVector &g)
         unsigned int i,j;
         i = (unsigned int)round(x[0]/h1);
         j = (unsigned int)round(x[1]/h2);
-        g[2*L+0*(M+1)+k] = -p[k][j][i] + 2.0 * (x[2*L+0*(M+1)+k]-v1(k*ht));
+        g[2*L+0*(M+1)+k] = -p[k][j][i];// + 2.0 * (x[2*L+0*(M+1)+k]-v1(k*ht));
 
         i = (unsigned int)round(x[2]/h1);
         j = (unsigned int)round(x[3]/h2);
-        g[2*L+1*(M+1)+k] = -p[k][j][i] + 2.0 * (x[2*L+1*(M+1)+k]-v2(k*ht));
+        g[2*L+1*(M+1)+k] = -p[k][j][i];// + 2.0 * (x[2*L+1*(M+1)+k]-v2(k*ht));
     }
 #endif
 }
