@@ -5,8 +5,11 @@ void HyperbolicControl2D1::main()
 {
     file = fopen("result.txt", "a");
     HyperbolicControl2D1 hc;
-    hc.fx(0.8);
-    fputs("-----------------------------------------------------------------------------------------------------------", file);
+    for (double t=0.5; t<=2.1; t+=0.1)
+    {
+        hc.fx(t);
+        fputs("-----------------------------------------------------------------------------------------------------------\n", file);
+    }
     fclose(file);
 }
 
@@ -143,7 +146,7 @@ double HyperbolicControl2D1::fx(double T)
     //vd = -2.0;
     //vu = +2.0;
 
-    double min_step = 0.1;
+    double min_step = 1.0;
     double gold_eps = 0.001;
 
     ConjugateGradient cg;
@@ -156,7 +159,7 @@ double HyperbolicControl2D1::fx(double T)
     cg.setPrinter(this);
     cg.setProjection(this);
 #ifdef POWER_COORDINATE
-   // cg.setNormalize(false);
+    // cg.setNormalize(false);
 #endif
     cg.showEndMessage(true);
     cg.calculate(x);
