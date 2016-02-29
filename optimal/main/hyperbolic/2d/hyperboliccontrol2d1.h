@@ -47,7 +47,6 @@ public:
     void psiDerivative(double &psiX1, double &psiX2, double x1, double x2, const DoubleMatrix &psi);
     double fxt(unsigned int i, unsigned int j, unsigned int k) const;
     double norm(const DoubleVector& v) const;
-    void initialize();
 
     double v1(double t) const;
     double v2(double t) const;
@@ -71,7 +70,8 @@ public:
     double alpha2;
     double alpha3;
     double qamma;
-    double a;
+    double a1;
+    double a2;
 
     DoubleMatrix U0;
     DoubleMatrix U1;

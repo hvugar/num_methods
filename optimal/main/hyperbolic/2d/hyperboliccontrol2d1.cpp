@@ -3,11 +3,11 @@
 FILE *file;
 void HyperbolicControl2D1::main()
 {
-    file = fopen("result1.txt", "a");
+    file = fopen("result.txt", "a");
     HyperbolicControl2D1 hc;
-//    for (double t=0.5; t<=2.1; t+=0.1)
+    //    for (double t=0.5; t<=2.1; t+=0.1)
     {
-        hc.fx(1.0);
+        hc.fx(1.4);
         fputs("-----------------------------------------------------------------------------------------------------------\n", file);
     }
     fclose(file);
@@ -15,28 +15,22 @@ void HyperbolicControl2D1::main()
 
 HyperbolicControl2D1::HyperbolicControl2D1()
 {
-}
-
-double HyperbolicControl2D1::fx(double T)
-{
     x10 = 0.0;
     x11 = 1.0;
     x20 = 0.0;
     x21 = 1.0;
     t0 = 0.0;
-    t1 = T;
+    t1 = 1.0;
 
     h1 = 0.01;
     h2 = 0.01;
     ht = 0.005;
     h = 0.001;
-
     N1 = (unsigned)ceil((x11 - x10)/h1);
     N2 = (unsigned)ceil((x21 - x20)/h2);
     M  = (unsigned)ceil((t1 - t0)/ht);
-    L = 2;
 
-    count = 0;
+    L = 2;
 
     e.resize(2);
     e[0] = 0.2;
@@ -48,11 +42,16 @@ double HyperbolicControl2D1::fx(double T)
     alpha3 = 4.0;
     qamma = 0.2;
 
-    U0 = 0.0;
-    U1 = 0.0;
-    a = 1.0;
+    double sigma = 0.0;
 
+    a1 = 1.0;
+    a2 = 1.0;
+    count = 0;
+
+    U0.resize(N2+1); for (unsigned int j=0; j<=N2; j++) U0[j].resize(N1+1);
+    U1.resize(N2+1); for (unsigned int j=0; j<=N2; j++) U1[j].resize(N1+1);
     c.resize(2*L);
+
     // Initializing........................................
 #ifdef ONLY_POWER
     DoubleVector x0((M+1)*L);
@@ -88,16 +87,14 @@ double HyperbolicControl2D1::fx(double T)
 #endif
 
     px = &x0;
-    U0.resize(N2+1); for (unsigned int j=0; j<=N2; j++) U0[j].resize(N1+1);
-    U1.resize(N2+1); for (unsigned int j=0; j<=N2; j++) U1[j].resize(N1+1);
-    //DoubleCube c;
-    //IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
+    DoubleCube c;
+    IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a1, a2, qamma);
     for (unsigned int j=0; j<=N2; j++)
     {
         for (unsigned int i=0; i<=N1; i++)
         {
-            U0[j][i] = 0.0;//c[M][j][i];
-            U1[j][i] = 0.0;//(c[M][j][i]-c[M-2][j][i])/(2.0*ht);
+            U0[j][i] = c[M][j][i];
+            U1[j][i] = (c[M][j][i]-c[M-2][j][i])/(2.0*ht);
         }
     }
 
@@ -106,6 +103,12 @@ double HyperbolicControl2D1::fx(double T)
     IPrinter::printMatrix(U1, 10, 10, NULL, file);
     fprintf(file, "------------------\n");
     //..................................................................
+}
+
+double HyperbolicControl2D1::fx(double T)
+{
+    t1 = T;
+    M  = (unsigned)ceil((t1 - t0)/ht);
 
 #ifdef ONLY_POWER
     DoubleVector x((M+1)*L);
@@ -132,13 +135,13 @@ double HyperbolicControl2D1::fx(double T)
     DoubleVector x(2*L + (M+1)*L);
     for (unsigned int k=0; k<=M; k++)
     {
-        x[2*L + 0*(M+1)+k] = 1.0;
-        x[2*L + 1*(M+1)+k] = 2.0;
+        x[2*L + 0*(M+1)+k] = 5.0;
+        x[2*L + 1*(M+1)+k] = 5.0;
     }
-    x[0] = 0.3;
-    x[1] = 0.4;
-    x[2] = 0.7;
-    x[3] = 0.7;
+    x[0] = 0.30;
+    x[1] = 0.40;
+    x[2] = 0.70;
+    x[3] = 0.70;
 #endif
 
     print(0, x, x, 0.0, this);
@@ -206,16 +209,12 @@ double HyperbolicControl2D1::fx(double T)
     return rf;
 }
 
-void HyperbolicControl2D1::initialize()
-{
-}
-
 double HyperbolicControl2D1::fx(const DoubleVector &x)
 {
     count++;
     px = &x;
     DoubleCube c;
-    IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
+    IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a1, a2, qamma);
 
     DoubleMatrix &u0 = c[M];
     DoubleMatrix &u1 = c[M-2];
@@ -251,7 +250,7 @@ double HyperbolicControl2D1::fx(const DoubleVector &x)
     sum = sum1 + alpha0*sum2;
 
 #if defined(ONLY_POWER) || defined(POWER_COORDINATE)
-    //sum = sum + norm(x);
+    sum = sum + norm(x);
 #endif
     return sum;
 }
@@ -283,11 +282,11 @@ void HyperbolicControl2D1::gradient(const DoubleVector &x, DoubleVector &g)
 {
     px = &x;
     DoubleCube u;
-    IHyperbolicEquation2D::calculateU1(u, h1, h2, ht, N1, N2, M, a, a, qamma);
+    IHyperbolicEquation2D::calculateU1(u, h1, h2, ht, N1, N2, M, a1, a2, qamma);
 
     pu = &u;
     DoubleCube p;
-    IBackwardHyperbolicEquation2D::calculateU1(p, h1, h2, ht, N1, N2, M, a, a, qamma);
+    IBackwardHyperbolicEquation2D::calculateU1(p, h1, h2, ht, N1, N2, M, a1, a2, qamma);
 
 #if defined(ONLY_POWER)
     for (unsigned int k=0; k<=M; k++)
@@ -350,11 +349,11 @@ void HyperbolicControl2D1::gradient(const DoubleVector &x, DoubleVector &g)
         unsigned int i,j;
         i = (unsigned int)round(x[0]/h1);
         j = (unsigned int)round(x[1]/h2);
-        g[2*L+0*(M+1)+k] = -p[k][j][i];// + 2.0 * (x[2*L+0*(M+1)+k]-v1(k*ht));
+        g[2*L+0*(M+1)+k] = -p[k][j][i] + 2.0 * (x[2*L+0*(M+1)+k]-v1(k*ht));
 
         i = (unsigned int)round(x[2]/h1);
         j = (unsigned int)round(x[3]/h2);
-        g[2*L+1*(M+1)+k] = -p[k][j][i];// + 2.0 * (x[2*L+1*(M+1)+k]-v2(k*ht));
+        g[2*L+1*(M+1)+k] = -p[k][j][i] + 2.0 * (x[2*L+1*(M+1)+k]-v2(k*ht));
     }
 #endif
 }
