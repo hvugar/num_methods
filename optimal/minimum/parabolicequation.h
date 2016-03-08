@@ -1,5 +1,5 @@
-#ifndef HEATEQUATION_H
-#define HEATEQUATION_H
+#ifndef PARABOLICQUATION_H
+#define PARABOLICQUATION_H
 
 #include "global.h"
 #include "tomasmethod.h"
@@ -39,7 +39,9 @@ public:
 
     void caluclateMVD(DoubleMatrix &u, double hx1, double hx2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1=1.0, double a2=1.0) const;
     void caluclateMVD(DoubleCube &u, double hx1, double hx2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1=1.0, double a2=1.0) const;
-    void calculateU1(DoubleMatrix &u, double hx1, double hx2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1=1.0, double a2=1.0) const;
+
+    void caluclateMVD1(DoubleMatrix &u, double hx1, double hx2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1=1.0, double a2=1.0) const;
+    void caluclateMVD1(DoubleCube &u, double hx1, double hx2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1=1.0, double a2=1.0) const;
 };
 
 class MINIMUMSHARED_EXPORT IBackwardParabolicEquation2D
@@ -55,4 +57,4 @@ public:
     void caluclateMVD(DoubleCube &psi, double hx1, double hx2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1=1.0, double a2=1.0) const;
 };
 
-#endif // HEATEQUATION_H
+#endif // PARABOLICQUATION_H

@@ -738,7 +738,7 @@ void saveData(const DoubleMatrix& m, int i, unsigned int N2, unsigned int N1)
     if (i<10000 && i>=1000) n = sprintf(buffer, "data/0000%d.txt", i);
     buffer[n] = '\0';
     FILE *file = fopen(buffer, "w");
-    IPrinter::printMatrix(m, 10, 10, NULL, file);
+    IPrinter::printMatrix(m, N2, N1, NULL, file);
     fclose(file);
 }
 
