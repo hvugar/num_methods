@@ -1,6 +1,6 @@
 #include "borderhyperbolic2d.h"
 
-#define SAMPLE1
+#define SAMPLE6
 
 double k1;
 double k2;

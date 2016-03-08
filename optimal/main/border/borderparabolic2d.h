@@ -33,6 +33,8 @@ public:
     unsigned int M;
     double a1;
     double a2;
+
+    static void main();
 };
 
 #endif // BORDERPARABOLIC2D_H

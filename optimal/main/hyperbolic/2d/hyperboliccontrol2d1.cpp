@@ -42,7 +42,7 @@ HyperbolicControl2D1::HyperbolicControl2D1()
     alpha3 = 4.0;
     qamma = 0.2;
 
-    double sigma = 0.0;
+    //double sigma = 0.0;
 
     a1 = 1.0;
     a2 = 1.0;

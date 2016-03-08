@@ -42,6 +42,8 @@ public:
     double alpha3;
 
     DoubleVector e;
+
+    static void main();
 };
 
 #endif // BORDERHYPERBOLIC_H

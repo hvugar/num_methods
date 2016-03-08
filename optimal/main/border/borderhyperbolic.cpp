@@ -1,11 +1,18 @@
 #include "borderhyperbolic.h"
 
+void BorderHyperbolic::main()
+{
+    DoubleMatrix m;
+    BorderHyperbolic bh;
+    bh.calculateU1(m, bh.h1, bh.h2, bh.ht, bh.N1, bh.N2, bh.M, bh.a1, bh.a2, bh.qamma);
+}
+
 BorderHyperbolic::BorderHyperbolic()
 {
     x10 = x20 = 0.0;
     x11 = x21 = 1.0;
     t0 = 0.0;
-    t1 = 30.0;
+    t1 = 10.0;
 
     h1 = 0.010;
     h2 = 0.010;
