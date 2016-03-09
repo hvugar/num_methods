@@ -13,6 +13,7 @@ int main()
     //HyperbolicControl2DMV::main();
     //puts("--------------------------------------");
     //BorderHyperbolic::main();
-    BorderParabolic2D::main();
+    //BorderParabolic2D::main();
+    HyperbolicControl2D2::main();
     return 0;
 }

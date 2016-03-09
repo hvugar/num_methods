@@ -43,6 +43,7 @@ SOURCES += main.cpp \
     hyperbolic/2d/hyperboliccontrol2dm.cpp \
     hyperbolic/2d/hyperboliccontrol2dmx.cpp \
     hyperbolic/2d/hyperboliccontrol2dmv.cpp \
+    hyperbolic/2d/hyperboliccontrol2d1.cpp \
     point/pointcontrol.cpp \
     point/pointcontrol1.cpp \
     point/pointcontrol2.cpp \
@@ -52,8 +53,8 @@ SOURCES += main.cpp \
     discrete/discretehyperbolic1.cpp \
     border/borderparabolic2d.cpp \
     border/borderhyperbolic2d.cpp \
-    hyperbolic/2d/hyperboliccontrol2d1.cpp \
-    border/borderhyperbolic.cpp
+    border/borderhyperbolic.cpp \
+    hyperbolic/2d/hyperboliccontrol2d21.cpp
 
 HEADERS += \
     rnfunction/rosenbrock.h \
@@ -78,6 +79,7 @@ HEADERS += \
     hyperbolic/2d/hyperboliccontrol2dm.h \
     hyperbolic/2d/hyperboliccontrol2dmx.h \
     hyperbolic/2d/hyperboliccontrol2dmv.h \
+    hyperbolic/2d/hyperboliccontrol2d1.h \
     point/pointcontrol.h \
     point/pointcontrol1.h \
     point/pointcontrol2.h \
@@ -88,5 +90,5 @@ HEADERS += \
     border/borderparabolic2d.h \
     border/borderhyperbolic2d.h \
     headers.h \
-    hyperbolic/2d/hyperboliccontrol2d1.h \
-    border/borderhyperbolic.h
+    border/borderhyperbolic.h \
+    hyperbolic/2d/hyperboliccontrol2d21.h
