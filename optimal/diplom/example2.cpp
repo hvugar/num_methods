@@ -21,7 +21,6 @@ BorderParabolic1D2::BorderParabolic1D2()
     ht = 0.001;
     N = (unsigned int)(ceil(x1-x0)/hx);
     M = (unsigned int)(ceil(t1-t0)/ht);
-
     e1 = 0.20;
     e2 = 0.55;
     e3 = 0.84;

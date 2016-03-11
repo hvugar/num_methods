@@ -23,8 +23,8 @@ void createHeatImage2(int argc, char *argv[]);
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv, true);
-    //createHeatImage1(argc, argv);
-    createHeatImage2(argc, argv);
+    createHeatImage1(argc, argv);
+    //createHeatImage2(argc, argv);
 
     return 0;
 }
