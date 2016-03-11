@@ -9,7 +9,9 @@ LIBS += -L../bin -lminimum -lcminimum
 DESTDIR += ../bin
 
 SOURCES += main.cpp \
-    borderparabolic1d.cpp
+    example1.cpp \
+    example2.cpp
 
 HEADERS += \
-    borderparabolic1d.h
+    example1.h \
+    example2.h

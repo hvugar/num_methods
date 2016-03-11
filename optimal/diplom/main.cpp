@@ -1,7 +1,7 @@
-#include "borderparabolic1d.h"
-
+#include "example1.h"
+#include "example2.h"
 
 int main(int argc, char *argv[])
 {
-    BorderParabolic1D::main();
+    BorderParabolic1D2::main();
 }
