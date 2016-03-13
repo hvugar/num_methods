@@ -1,20 +1,21 @@
 #include "hyperboliccontrol2d21.h"
 
 
-void HyperbolicControl2D2::main()
+void HyperbolicControl2D21::main()
 {
-    HyperbolicControl2D2 hc;
-    hc.file = fopen("hyperboliccontrol2D21.txt", "w");
-//    hc.file = stdout;
+    HyperbolicControl2D21 hc;
+    //hc.file = fopen("hyperboliccontrol2d21.txt", "w");
+    //hc.file = stdout;
     for (double t=0.1; t<=10.1; t+=0.1)
     {
-        fprintf(hc.file, "%f %.10f\n", t, hc.fx(t));
-        fflush(hc.file);
+        printf("%f %.10f\n", t, hc.fx(t));
+        //fprintf(hc.file, "%f %.10f\n", t, hc.fx(t));
+        //fflush(hc.file);
     }
-    fclose(hc.file);
+    //fclose(hc.file);
 }
 
-HyperbolicControl2D2::HyperbolicControl2D2()
+HyperbolicControl2D21::HyperbolicControl2D21()
 {
     x10 = 0.0;
     x11 = 1.0;
@@ -46,7 +47,7 @@ HyperbolicControl2D2::HyperbolicControl2D2()
     a2 = 1.0;
 }
 
-double HyperbolicControl2D2::fx(double T)
+double HyperbolicControl2D21::fx(double T)
 {
     t1 = T;
     M  = (unsigned)ceil((t1 - t0)/ht);
@@ -55,7 +56,7 @@ double HyperbolicControl2D2::fx(double T)
     return rf;
 }
 
-double HyperbolicControl2D2::fx(const DoubleVector &x)
+double HyperbolicControl2D21::fx(const DoubleVector &x)
 {
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a1, a2, qamma);
@@ -79,59 +80,59 @@ double HyperbolicControl2D2::fx(const DoubleVector &x)
     sum1 = h1*h2*sum1;
 
     double sum2 = 0.0;
-//    for (unsigned int j=0; j<=N2; j++)
-//    {
-//        for (unsigned int i=0; i<=N1; i++)
-//        {
-//            double k = 1.0;
-//            if (i==0 || i==N1) k *= 0.5;
-//            if (j==0 || j==N2) k *= 0.5;
-//            sum2 = sum2 + k * ((u0[j][i]-u1[j][i])/(2.0*ht) - U1) * ((u0[j][i]-u1[j][i])/(2.0*ht) - U1);
-//        }
-//    }
-//    sum2 = h1*h2*sum2;
+    for (unsigned int j=0; j<=N2; j++)
+    {
+        for (unsigned int i=0; i<=N1; i++)
+        {
+            double k = 1.0;
+            if (i==0 || i==N1) k *= 0.5;
+            if (j==0 || j==N2) k *= 0.5;
+            sum2 = sum2 + k * ((u0[j][i]-u1[j][i])/(2.0*ht) - U1) * ((u0[j][i]-u1[j][i])/(2.0*ht) - U1);
+        }
+    }
+    sum2 = h1*h2*sum2;
 
     sum = sum1 + alpha0*sum2;
     return sum;
 }
 
-double HyperbolicControl2D2::fi1(unsigned int i, unsigned int j) const
+double HyperbolicControl2D21::fi1(unsigned int i, unsigned int j) const
 {
     return 0.0;
 }
 
-double HyperbolicControl2D2::fi2(unsigned int i, unsigned int j) const
+double HyperbolicControl2D21::fi2(unsigned int i, unsigned int j) const
 {
     return 0.0;
 }
 
-double HyperbolicControl2D2::m1(unsigned int j, unsigned int k) const
+double HyperbolicControl2D21::m1(unsigned int j, unsigned int k) const
 {
     return 0.0;
 }
 
-double HyperbolicControl2D2::m2(unsigned int j, unsigned int k) const
+double HyperbolicControl2D21::m2(unsigned int j, unsigned int k) const
 {
     return 0.0;
 }
 
-double HyperbolicControl2D2::m3(unsigned int i, unsigned int k) const
+double HyperbolicControl2D21::m3(unsigned int i, unsigned int k) const
 {
     return 0.0;
 }
 
-double HyperbolicControl2D2::m4(unsigned int i, unsigned int k) const
+double HyperbolicControl2D21::m4(unsigned int i, unsigned int k) const
 {
     return 0.0;
 }
 
-double HyperbolicControl2D2::f(unsigned int i, unsigned int j, unsigned int k) const
+double HyperbolicControl2D21::f(unsigned int i, unsigned int j, unsigned int k) const
 {
     double sum = fxt(i, j, k);
     return sum;
 }
 
-double HyperbolicControl2D2::fxt(unsigned int i, unsigned int j, unsigned int k) const
+double HyperbolicControl2D21::fxt(unsigned int i, unsigned int j, unsigned int k) const
 {
     double sum = 0.0;
     double x1 = i*h1;

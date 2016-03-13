@@ -14,7 +14,8 @@ void IPrinter::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n
         {
             for (unsigned int i=0; i<xj_size; i++)
             {
-                if (i%N==0) fprintf(f, "%14.10f ", x[j][i]);
+                //if (i%N==0) fprintf(f, "%14.10f ", x[j][i]);
+                if (i%N==0) fprintf(f, "%7.3f ", x[j][i]);
             }
             fputs("\n", f);
         }

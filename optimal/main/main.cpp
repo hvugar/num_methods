@@ -14,6 +14,6 @@ int main()
     //puts("--------------------------------------");
     //BorderHyperbolic::main();
     //BorderParabolic2D::main();
-    HyperbolicControl2D2::main();
+    HyperbolicControl2D21::main();
     return 0;
 }

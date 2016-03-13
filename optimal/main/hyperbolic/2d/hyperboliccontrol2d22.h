@@ -1,19 +1,24 @@
-#ifndef HYPERBOLICCONTROL2D21_H
-#define HYPERBOLICCONTROL2D21_H
+#ifndef HYPERBOLICCONTROL2D22_H
+#define HYPERBOLICCONTROL2D22_H
 
 #include <function.h>
 #include <hyperbolicequation.h>
 #include <printer.h>
 #include <gradient_cjt.h>
 
-class HyperbolicControl2D21 : public R1Function, public RnFunction, public IHyperbolicEquation2D
+class HyperbolicControl2D22 : public R1Function, public RnFunction,
+        public IHyperbolicEquation2D, public IBackwardHyperbolicEquation2D,
+        public IGradient, public IPrinter
 {
 public:
-    HyperbolicControl2D21();
-    virtual ~HyperbolicControl2D21() {}
+    HyperbolicControl2D22();
+    virtual ~HyperbolicControl2D22() {}
 
     virtual double fx(double x);
     virtual double fx(const DoubleVector &x);
+
+    virtual void gradient(const DoubleVector &v, DoubleVector &g);
+    virtual void print(unsigned int iteration, const DoubleVector& x, const DoubleVector &gradient, double alpha, RnFunction* fn) const;
 
     virtual double fi1(unsigned int i, unsigned int j) const;
     virtual double fi2(unsigned int i, unsigned int j) const;
@@ -22,6 +27,14 @@ public:
     virtual double m3(unsigned int i, unsigned int k) const;
     virtual double m4(unsigned int i, unsigned int k) const;
     virtual double f(unsigned int i, unsigned int j, unsigned int k) const;
+
+    virtual double bfi1(unsigned int i, unsigned int j) const;
+    virtual double bfi2(unsigned int i, unsigned int j) const;
+    virtual double bm1(unsigned int j, unsigned int k) const;
+    virtual double bm2(unsigned int j, unsigned int k) const;
+    virtual double bm3(unsigned int i, unsigned int k) const;
+    virtual double bm4(unsigned int i, unsigned int k) const;
+    virtual double bf(unsigned int i, unsigned int j, unsigned int k) const;
 
 public:
     static void main();
@@ -54,8 +67,11 @@ public:
     double U1;
 
     DoubleVector e;
+    DoubleVector x;
+    const DoubleVector *pv;
+    const DoubleCube *pu;
 
     FILE *file;
 };
 
-#endif // HYPERBOLICCONTROL2D21_H
+#endif // HYPERBOLICCONTROL2D22_H

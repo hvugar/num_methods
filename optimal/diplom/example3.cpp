@@ -22,9 +22,9 @@ BorderParabolic2D1::BorderParabolic2D1()
     t0 = 0.0;
     t1 = 1.0;
 
-    h1 = 0.01;
-    h2 = 0.01;
-    ht = 0.01;
+    h1 = 0.005;
+    h2 = 0.005;
+    ht = 0.005;
 
     N1 = (unsigned int)(ceil(x11-x10)/h1);
     N2 = (unsigned int)(ceil(x21-x20)/h2);
@@ -47,29 +47,29 @@ double BorderParabolic2D1::fi(unsigned int i, unsigned int j) const
 
 double BorderParabolic2D1::m1(unsigned int j, unsigned int k) const
 {
-    double t = k*ht;
+    double t = 0.5*k*ht;
     double x2 = j*h2;
     return 2.0 + t + 2.0*x2;
 }
 
 double BorderParabolic2D1::m2(unsigned int j, unsigned int k) const
 {
+    double t = 0.5*k*ht;
     double x2 = j*h2;
-    double t = k*ht;
     return 2.0 + 0.8*t + 0.2*x2;
 }
 
 double BorderParabolic2D1::m3(unsigned int i, unsigned int k) const
 {
+    double t = 0.5*k*ht;
     double x1 = i*h1;
-    double t = k*ht;
     return 2.0 + 1.2*t + sin(x1);
 }
 
 double BorderParabolic2D1::m4(unsigned int i, unsigned int k) const
 {
+    double t = 0.5*k*ht;
     double x1 = i*h1;
-    double t = k*ht;
     return 2.0 + 1.5*t + 0.5*x1;
 }
 
