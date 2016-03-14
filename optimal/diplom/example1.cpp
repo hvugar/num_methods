@@ -1,5 +1,7 @@
 #include "example1.h"
 
+// u(x,t)=t(x+1)
+
 void BorderParabolic1D1::main()
 {
     DoubleMatrix m;

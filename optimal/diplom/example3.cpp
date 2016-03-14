@@ -29,48 +29,54 @@ BorderParabolic2D1::BorderParabolic2D1()
     N1 = (unsigned int)(ceil(x11-x10)/h1);
     N2 = (unsigned int)(ceil(x21-x20)/h2);
     M = (unsigned int)(ceil(t1-t0)/ht);
+    S = 3;
 
-    e11 = 0.20;
-    e12 = 0.30;
-
-    e21 = 0.40;
-    e22 = 0.70;
-
-    e31 = 0.80;
-    e32 = 0.50;
+    e.resize(2*S);
+    e[0] = 0.20;
+    e[1] = 0.30;
+    e[2] = 0.40;
+    e[3] = 0.70;
+    e[4] = 0.80;
+    e[5] = 0.50;
 }
 
 double BorderParabolic2D1::fi(unsigned int i, unsigned int j) const
 {
-    return 2.0;
+    double x1 = i*h1;
+    double x2 = j*h2;
+    return x1*x2;
 }
 
 double BorderParabolic2D1::m1(unsigned int j, unsigned int k) const
 {
-    double t = 0.5*k*ht;
+    double x1 = 0.0*h1;
     double x2 = j*h2;
-    return 2.0 + t + 2.0*x2;
+    double t  = 0.5*k*ht;
+    return x1*t + x2*t*t + x1*x2;
 }
 
 double BorderParabolic2D1::m2(unsigned int j, unsigned int k) const
 {
-    double t = 0.5*k*ht;
+    double x1 = N1*h1;
     double x2 = j*h2;
-    return 2.0 + 0.8*t + 0.2*x2;
+    double t  = 0.5*k*ht;
+    return x1*t + x2*t*t + x1*x2;
 }
 
 double BorderParabolic2D1::m3(unsigned int i, unsigned int k) const
 {
-    double t = 0.5*k*ht;
     double x1 = i*h1;
-    return 2.0 + 1.2*t + sin(x1);
+    double x2 = 0.0*h2;
+    double t  = 0.5*k*ht;
+    return x1*t + x2*t*t + x1*x2;
 }
 
 double BorderParabolic2D1::m4(unsigned int i, unsigned int k) const
 {
-    double t = 0.5*k*ht;
     double x1 = i*h1;
-    return 2.0 + 1.5*t + 0.5*x1;
+    double x2 = N2*h2;
+    double t  = 0.5*k*ht;
+    return x1*t + x2*t*t + x1*x2;
 }
 
 double BorderParabolic2D1::f(unsigned int i, unsigned int j, unsigned int k) const
@@ -85,9 +91,9 @@ double BorderParabolic2D1::f(unsigned int i, unsigned int j, unsigned int k) con
     double gause_a = 1.0/(2.0*M_PI*sgm1*sgm2);
     double gause_b = 2.0*sgm1*sgm2;
 
-    sum += v1(t) * gause_a * exp(-((x1-e11)*(x1-e11) + (x2-e12)*(x2-e12))/gause_b);
-    sum += v2(t) * gause_a * exp(-((x1-e21)*(x1-e21) + (x2-e22)*(x2-e22))/gause_b);
-    sum += v3(t) * gause_a * exp(-((x1-e31)*(x1-e31) + (x2-e32)*(x2-e32))/gause_b);
+    sum += v1(t) * gause_a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/gause_b);
+    sum += v2(t) * gause_a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/gause_b);
+    sum += v3(t) * gause_a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/gause_b);
     return sum;
 }
 

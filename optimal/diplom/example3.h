@@ -33,13 +33,8 @@ private:
     unsigned int N1;
     unsigned int N2;
     unsigned int M;
-
-    double e11;
-    double e12;
-    double e21;
-    double e22;
-    double e31;
-    double e32;
+    unsigned int S;
+    DoubleVector e;
 
     double v1(double t) const;
     double v2(double t) const;

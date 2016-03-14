@@ -1,5 +1,7 @@
 #include "example2.h"
 
+// u(x,t)=sin(x)+e^t
+
 void BorderParabolic1D2::main()
 {
     DoubleMatrix m;

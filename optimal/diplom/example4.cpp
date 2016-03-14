@@ -4,7 +4,7 @@ void BorderParabolic2D2::main()
 {
     DoubleMatrix m;
     BorderParabolic2D2 bp;
-    bp.caluclateMVD(m, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, 1.0, 1.0);
+    bp.caluclateMVD(m, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, 2.0, 2.0);
     IPrinter::printMatrix(m);
     FILE *file = fopen("example4.txt", "w");
     IPrinter::printMatrix(m, bp.N2, bp.N1, NULL, file);
@@ -22,9 +22,9 @@ BorderParabolic2D2::BorderParabolic2D2()
     t0 = 0.0;
     t1 = 1.0;
 
-    h1 = 0.001;
-    h2 = 0.001;
-    ht = 0.001;
+    h1 = 0.005;
+    h2 = 0.005;
+    ht = 0.005;
 
     N1 = (unsigned int)(ceil(x11-x10)/h1);
     N2 = (unsigned int)(ceil(x21-x20)/h2);
