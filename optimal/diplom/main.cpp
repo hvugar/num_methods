@@ -2,8 +2,9 @@
 #include "example2.h"
 #include "example3.h"
 #include "example4.h"
+#include "example321.h"
 
 int main(int argc, char *argv[])
 {
-    BorderParabolic2D1::main();
+    Parabolic1DControl321::main();
 }

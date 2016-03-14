@@ -50,28 +50,24 @@ double BorderParabolic2D2::fi(unsigned int i, unsigned int j) const
 double BorderParabolic2D2::m1(unsigned int j, unsigned int k) const
 {
     double t = 0.5*k*ht;
-    //double x2 = j*h2;
     return 1.0+t;
 }
 
 double BorderParabolic2D2::m2(unsigned int j, unsigned int k) const
 {
     double t = 0.5*k*ht;
-    //double x2 = j*h2;
     return 1.0+t;
 }
 
 double BorderParabolic2D2::m3(unsigned int i, unsigned int k) const
 {
     double t = 0.5*k*ht;
-    //double x1 = i*h1;
     return 1.0+t;
 }
 
 double BorderParabolic2D2::m4(unsigned int i, unsigned int k) const
 {
     double t = 0.5*k*ht;
-    //double x1 = i*h1;
     return 1.0+t;
 }
 

@@ -99,7 +99,7 @@ double BorderParabolic2D1::f(unsigned int i, unsigned int j, unsigned int k) con
 
 double BorderParabolic2D1::v1(double t) const
 {
-    return 4.0*t;
+    return 8.0*t;
 }
 
 double BorderParabolic2D1::v2(double t) const

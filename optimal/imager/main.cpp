@@ -23,8 +23,14 @@ void createHeatImage2(int argc, char *argv[]);
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv, true);
-    createHeatImage1(argc, argv);
-    //createHeatImage2(argc, argv);
+
+    for (int i=0; i<argc; i++)
+    {
+        if (QString(argv[i]).compare("dim2") == 0)
+            createHeatImage1(argc, argv);
+        if (QString(argv[i]).compare("dim1") == 0)
+            createHeatImage2(argc, argv);
+    }
 
     return 0;
 }
@@ -176,8 +182,8 @@ void createHeatImage2(int argc, char *argv[])
     }
     file.close();
 
-    minimum = 0.0;
     printf("Minimum: %.10f Maximum: %.10f width: %d\n", minimum, maximum, width);
+    minimum = 1.0;
 
     for (int i=0; i<m.size(); i++)
     {
