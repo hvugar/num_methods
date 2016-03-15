@@ -63,6 +63,32 @@ void IPrinter::printVector(const DoubleVector &x, const char *s, unsigned int n,
     fflush(file);
 }
 
+void IPrinter::printVector(const DoubleVector &x, short d, short e, const char *s, unsigned int n, unsigned int start, unsigned int end, FILE *file)
+{
+    char pattern[10];
+    n = sprintf(pattern, "%%%d.%df ", d, e);
+    pattern[n] = 0;
+    if (s!='\0') fprintf(file, "%s", s);
+    if (start != 0 || end != 0)
+    {
+        unsigned int N = (end-start+1) / n;
+        for (unsigned int i=start; i<=end; i++)
+        {
+            if ((i-start)%N==0) fprintf(file, pattern, x[i]);
+        }
+    }
+    else
+    {
+        unsigned int N = x.size() / n;
+        for (unsigned int i=0; i<x.size(); i++)
+        {
+            if (i%N==0) fprintf(file, "%14.10f ", x[i]);
+        }
+    }
+    fputs("\n", file);
+    fflush(file);
+}
+
 void IPrinter::printCube(const DoubleVector& x, unsigned int M, unsigned int N2, unsigned int N1, FILE *file)
 {
     for (unsigned int k=0; k<=M; k++)
