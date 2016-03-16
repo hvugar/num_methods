@@ -29,7 +29,9 @@ int main(int argc, char *argv[])
         if (QString(argv[i]).compare("dim2") == 0)
             createHeatImage1(argc, argv);
         if (QString(argv[i]).compare("dim1") == 0)
+        {
             createHeatImage2(argc, argv);
+        }
     }
 
     return 0;

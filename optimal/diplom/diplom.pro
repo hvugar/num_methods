@@ -13,11 +13,13 @@ SOURCES += main.cpp \
     example2.cpp \
     example3.cpp \
     example4.cpp \
-    example331.cpp
+    example331.cpp \
+    example332.cpp
 
 HEADERS += \
     example1.h \
     example2.h \
     example3.h \
     example4.h \
-    example331.h
+    example331.h \
+    example332.h

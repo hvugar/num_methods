@@ -13,20 +13,20 @@ void Parabolic1DControl331::main()
         v0[1*(pc.M+1)+j] = cos(t);
     }
 
-    IPrinter::printVector(v0, 8, 3, "v1:", 10 , 0*(pc.M+1), 0*(pc.M+1)+pc.M, stdout);
-    IPrinter::printVector(v0, 8, 3, "v2:", 10 , 1*(pc.M+1), 1*(pc.M+1)+pc.M, stdout);
+    IPrinter::printVector(v0, "v1:", 10 , 0*(pc.M+1), 0*(pc.M+1)+pc.M, stdout);
+    IPrinter::printVector(v0, "v2:", 10 , 1*(pc.M+1), 1*(pc.M+1)+pc.M, stdout);
     printf("J[%d]: %.16f\n", 0, pc.fx(v0));
     DoubleVector gn(v0.size());
     IGradient::Gradient(&pc, 0.0001, v0, gn);
     gn.L2Normalize();
-    IPrinter::printVector(gn, 8, 3, "gn1:", 10 , 0*(pc.M+1), 0*(pc.M+1)+pc.M, stdout);
-    IPrinter::printVector(gn, 8, 3, "gn2:", 10 , 1*(pc.M+1), 1*(pc.M+1)+pc.M, stdout);
+    IPrinter::printVector(gn, "gn1:", 10 , 0*(pc.M+1), 0*(pc.M+1)+pc.M, stdout);
+    IPrinter::printVector(gn, "gn2:", 10 , 1*(pc.M+1), 1*(pc.M+1)+pc.M, stdout);
 
     DoubleVector ga(v0.size());
     pc.gradient(v0, ga);
     ga.L2Normalize();
-    IPrinter::printVector(ga, 8, 3, "ga1:", 10 , 0*(pc.M+1), 0*(pc.M+1)+pc.M, stdout);
-    IPrinter::printVector(ga, 8, 3, "ga2:", 10 , 1*(pc.M+1), 1*(pc.M+1)+pc.M, stdout);
+    IPrinter::printVector(ga, "ga1:", 10 , 0*(pc.M+1), 0*(pc.M+1)+pc.M, stdout);
+    IPrinter::printVector(ga, "ga2:", 10 , 1*(pc.M+1), 1*(pc.M+1)+pc.M, stdout);
 
     /* Minimization */
     ConjugateGradient g2;
@@ -40,8 +40,8 @@ void Parabolic1DControl331::main()
     g2.setNormalize(true);
     g2.calculate(v0);
 
-    IPrinter::printVector(v0, 6, 3, "v1:", 10 , 0*(pc.M+1), 0*(pc.M+1)+pc.M, stdout);
-    IPrinter::printVector(v0, 6, 3, "v2:", 10 , 1*(pc.M+1), 1*(pc.M+1)+pc.M, stdout);
+    IPrinter::printVector(v0, "v1:", 10 , 0*(pc.M+1), 0*(pc.M+1)+pc.M, stdout);
+    IPrinter::printVector(v0, "v2:", 10 , 1*(pc.M+1), 1*(pc.M+1)+pc.M, stdout);
 }
 
 Parabolic1DControl331::Parabolic1DControl331()
@@ -61,8 +61,17 @@ Parabolic1DControl331::Parabolic1DControl331()
     e[0] = 0.25;
     e[1] = 0.65;
 
+    DoubleVector v((M+1)*L);
+    for (unsigned int j=0; j<=M; j++)
+    {
+        double t = j*ht;
+        v[0*(M+1)+j] = v1(t);
+        v[1*(M+1)+j] = v2(t);
+    }
+    pv = &v;
     IParabolicEquation::calculateU(U, hx, ht, N, M, a);
-    IPrinter::printVector(U);
+    IPrinter::printVector(U, "U: ");
+    puts("-----------------------");
     FILE *file = fopen("example331.txt", "w");
     IPrinter::printVector(U, NULL, N, 0, 0, file);
     fclose(file);
