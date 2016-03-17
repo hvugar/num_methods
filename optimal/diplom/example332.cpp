@@ -6,39 +6,29 @@ void Parabolic1DControl332::main()
     Parabolic1DControl332 pc;
 
     DoubleVector e0(pc.L);
-    e0[0] = 0.25;
-    e0[1] = 0.65;
+    e0[0] = 0.15;
+    e0[1] = 0.55;
 
-    printf("J[%d]: %.16f\n", 0, pc.fx(e0));
+    printf("J[%d]: %.16f ", 0, pc.fx(e0));
     printf("e:  %10.6f %10.6f\n", e0[0], e0[1]);
 
-    DoubleVector gn(e0.size());
-    IGradient::Gradient(&pc, 0.1, e0, gn);
-    gn.L2Normalize();
-    printf("gn: %10.8f %10.8f\n", gn[0], gn[1]);
+    /* Minimization */
+    ConjugateGradient g2;
+    g2.setGradient(&pc);
+    g2.setFunction(&pc);
+    g2.setEpsilon1(0.0001);
+    g2.setEpsilon2(0.0001);
+    g2.setEpsilon3(0.0001);
+    g2.setR1MinimizeEpsilon(0.1, 0.00001);
+    g2.setPrinter(&pc);
+    g2.setProjection(&pc);
+    g2.setNormalize(true);
+    g2.calculate(e0);
 
-    DoubleVector ga(e0.size());
-    pc.gradient(e0, ga);
-    ga.L2Normalize();
-    printf("ga: %10.8f %10.8f\n", ga[0], ga[1]);
-
-//    /* Minimization */
-//    ConjugateGradient g2;
-//    g2.setGradient(&pc);
-//    g2.setFunction(&pc);
-//    g2.setEpsilon1(0.00001);
-//    g2.setEpsilon2(0.00001);
-//    g2.setEpsilon3(0.00001);
-//    g2.setR1MinimizeEpsilon(1.0, 0.00001);
-//    g2.setPrinter(&pc);
-//    g2.setProjection(&pc);
-//    g2.setNormalize(true);
-//    g2.calculate(e0);
-
-//    printf("J[%d]: %.16f\n", 0, pc.fx(e0));
-//    printf("e:  %10.6f %10.6f\n", e0[0], e0[1]);
+    printf("J[%d]: %.16f ", 0, pc.fx(e0));
+    printf("e:  %10.6f %10.6f\n", e0[0], e0[1]);
 //    IGradient::Gradient(&pc, 0.0001, e0, gn);
-//    gn.L2Normalize();
+//    //gn.L2Normalize();
 //    printf("gn: %10.8f %10.8f\n", gn[0], gn[1]);
 //    pc.gradient(e0, ga);
 //    ga.L2Normalize();
@@ -51,7 +41,7 @@ Parabolic1DControl332::Parabolic1DControl332()
     x1 = 1.0;
     t0 = 0.0;
     t1 = 1.0;
-    hx = 0.001;
+    hx = 0.01;
     ht = 0.001;
     N = (unsigned int)(ceil(x1-x0)/hx);
     M = (unsigned int)(ceil(t1-t0)/ht);
@@ -64,7 +54,7 @@ Parabolic1DControl332::Parabolic1DControl332()
     e[1] = 0.65;
     pe = &e;
     IParabolicEquation::calculateU(U, hx, ht, N, M, a);
-    IPrinter::printVector(U, "U: ");
+    IPrinter::printVector(U);
     puts("-----------------------");
     FILE *file = fopen("example332.txt", "w");
     IPrinter::printVector(U, NULL, N, 0, 0, file);
@@ -136,32 +126,32 @@ void Parabolic1DControl332::print(unsigned int i, const DoubleVector &e, const D
 {
     C_UNUSED(alpha);
     Parabolic1DControl332 *hc = dynamic_cast<Parabolic1DControl332*>(fn);
-    printf("J[%d]: %.16f\n", i, hc->fx(e));
+    printf("J[%d]: %.16f ", i, hc->fx(e));
     printf("e:  %10.6f %10.6f\n", e[0], e[1]);
 }
 
 void Parabolic1DControl332::project(DoubleVector &e, int i)
 {
-    if (e[i] < 0.0) e[i] = 0.0+hx;
-    if (e[i] > 1.0) e[i] = 1.0-hx;
+    if (e[i] < 0.0) e[i] = 0.0;
+    if (e[i] > 1.0) e[i] = 1.0;
 }
 
 double Parabolic1DControl332::fi(unsigned int i) const
 {
     double x = i*hx;
-    return x+cos(x);
+    return 0.5*x;
 }
 
 double Parabolic1DControl332::m1(unsigned int j) const
 {
     double t = j*ht;
-    return t*t+1.0;
+    return t*t;
 }
 
 double Parabolic1DControl332::m2(unsigned int j) const
 {
     double t = j*ht;
-    return t*t+1.0+cos(1.0);
+    return t*t+0.5;
 }
 
 double Parabolic1DControl332::f(unsigned int i, unsigned int j) const
@@ -204,11 +194,11 @@ double Parabolic1DControl332::bf(unsigned int i, unsigned int j) const
 
 double Parabolic1DControl332::v1(double t) const
 {
-    return 10.0*t;
+    return 16.0*t;
 }
 
 double Parabolic1DControl332::v2(double t) const
 {
-    return 12.0*t;
+    return 18.0*t;
 }
 

@@ -8,6 +8,8 @@
 #include <gradient_cjt.h>
 #include <math.h>
 
+// u(x,t) = x^2 + cos(x) + e^t
+
 class Parabolic1DControl331 : public IParabolicEquation, public IBackwardParabolicEquation, public RnFunction, public IGradient, public IPrinter
 {
 public:
