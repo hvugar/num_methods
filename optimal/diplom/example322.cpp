@@ -1,17 +1,17 @@
-#include "example4.h"
+#include "example322.h"
 
-void BorderParabolic2D2::main()
+void BorderParabolic2D322::main()
 {
     DoubleMatrix m;
-    BorderParabolic2D2 bp;
+    BorderParabolic2D322 bp;
     bp.caluclateMVD(m, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, 2.0, 2.0);
     IPrinter::printMatrix(m);
-    FILE *file = fopen("example4.txt", "w");
+    FILE *file = fopen("example322.txt", "w");
     IPrinter::printMatrix(m, bp.N2, bp.N1, NULL, file);
     fclose(file);
 }
 
-BorderParabolic2D2::BorderParabolic2D2()
+BorderParabolic2D322::BorderParabolic2D322()
 {
     x10 = 0.0;
     x11 = 1.0;
@@ -42,36 +42,36 @@ BorderParabolic2D2::BorderParabolic2D2()
     e[7] = 0.75;
 }
 
-double BorderParabolic2D2::fi(unsigned int i, unsigned int j) const
+double BorderParabolic2D322::fi(unsigned int i, unsigned int j) const
 {
     return 1.0;
 }
 
-double BorderParabolic2D2::m1(unsigned int j, unsigned int k) const
+double BorderParabolic2D322::m1(unsigned int j, unsigned int k) const
 {
     double t = 0.5*k*ht;
     return 1.0+t;
 }
 
-double BorderParabolic2D2::m2(unsigned int j, unsigned int k) const
+double BorderParabolic2D322::m2(unsigned int j, unsigned int k) const
 {
     double t = 0.5*k*ht;
     return 1.0+t;
 }
 
-double BorderParabolic2D2::m3(unsigned int i, unsigned int k) const
+double BorderParabolic2D322::m3(unsigned int i, unsigned int k) const
 {
     double t = 0.5*k*ht;
     return 1.0+t;
 }
 
-double BorderParabolic2D2::m4(unsigned int i, unsigned int k) const
+double BorderParabolic2D322::m4(unsigned int i, unsigned int k) const
 {
     double t = 0.5*k*ht;
     return 1.0+t;
 }
 
-double BorderParabolic2D2::f(unsigned int i, unsigned int j, unsigned int k) const
+double BorderParabolic2D322::f(unsigned int i, unsigned int j, unsigned int k) const
 {
     double x1 = i*h1;
     double x2 = j*h2;
@@ -90,22 +90,22 @@ double BorderParabolic2D2::f(unsigned int i, unsigned int j, unsigned int k) con
     return sum;
 }
 
-double BorderParabolic2D2::v1(double t) const
+double BorderParabolic2D322::v1(double t) const
 {
     return 10.4*t;
 }
 
-double BorderParabolic2D2::v2(double t) const
+double BorderParabolic2D322::v2(double t) const
 {
     return 9.2*t;
 }
 
-double BorderParabolic2D2::v3(double t) const
+double BorderParabolic2D322::v3(double t) const
 {
     return 8.3*t;
 }
 
-double BorderParabolic2D2::v4(double t) const
+double BorderParabolic2D322::v4(double t) const
 {
     return 6.5*t;
 }

@@ -9,17 +9,17 @@ LIBS += -L../bin -lminimum -lcminimum
 DESTDIR += ../bin
 
 SOURCES += main.cpp \
-    example1.cpp \
-    example2.cpp \
-    example3.cpp \
-    example4.cpp \
     example331.cpp \
-    example332.cpp
+    example332.cpp \
+    example311.cpp \
+    example312.cpp \
+    example321.cpp \
+    example322.cpp
 
 HEADERS += \
-    example1.h \
-    example2.h \
-    example3.h \
-    example4.h \
     example331.h \
-    example332.h
+    example332.h \
+    example311.h \
+    example312.h \
+    example321.h \
+    example322.h

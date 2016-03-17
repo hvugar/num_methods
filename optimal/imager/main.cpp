@@ -185,7 +185,7 @@ void createHeatImage2(int argc, char *argv[])
     file.close();
 
     printf("Minimum: %.10f Maximum: %.10f width: %d\n", minimum, maximum, width);
-    minimum = 1.0;
+    //minimum = 1.0;
 
     for (int i=0; i<m.size(); i++)
     {

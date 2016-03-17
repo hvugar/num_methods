@@ -1,17 +1,17 @@
-#include "example3.h"
+#include "example321.h"
 
-void BorderParabolic2D1::main()
+void BorderParabolic2D321::main()
 {
     DoubleMatrix m;
-    BorderParabolic2D1 bp;
+    BorderParabolic2D321 bp;
     bp.caluclateMVD(m, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, 1.0, 1.0);
     IPrinter::printMatrix(m);
-    FILE *file = fopen("example3.txt", "w");
+    FILE *file = fopen("example321.txt", "w");
     IPrinter::printMatrix(m, bp.N2, bp.N1, NULL, file);
     fclose(file);
 }
 
-BorderParabolic2D1::BorderParabolic2D1()
+BorderParabolic2D321::BorderParabolic2D321()
 {
     x10 = 0.0;
     x11 = 1.0;
@@ -40,14 +40,14 @@ BorderParabolic2D1::BorderParabolic2D1()
     e[5] = 0.50;
 }
 
-double BorderParabolic2D1::fi(unsigned int i, unsigned int j) const
+double BorderParabolic2D321::fi(unsigned int i, unsigned int j) const
 {
     double x1 = i*h1;
     double x2 = j*h2;
     return x1*x2;
 }
 
-double BorderParabolic2D1::m1(unsigned int j, unsigned int k) const
+double BorderParabolic2D321::m1(unsigned int j, unsigned int k) const
 {
     double x1 = 0.0*h1;
     double x2 = j*h2;
@@ -55,7 +55,7 @@ double BorderParabolic2D1::m1(unsigned int j, unsigned int k) const
     return x1*t + x2*t*t + x1*x2;
 }
 
-double BorderParabolic2D1::m2(unsigned int j, unsigned int k) const
+double BorderParabolic2D321::m2(unsigned int j, unsigned int k) const
 {
     double x1 = N1*h1;
     double x2 = j*h2;
@@ -63,7 +63,7 @@ double BorderParabolic2D1::m2(unsigned int j, unsigned int k) const
     return x1*t + x2*t*t + x1*x2;
 }
 
-double BorderParabolic2D1::m3(unsigned int i, unsigned int k) const
+double BorderParabolic2D321::m3(unsigned int i, unsigned int k) const
 {
     double x1 = i*h1;
     double x2 = 0.0*h2;
@@ -71,7 +71,7 @@ double BorderParabolic2D1::m3(unsigned int i, unsigned int k) const
     return x1*t + x2*t*t + x1*x2;
 }
 
-double BorderParabolic2D1::m4(unsigned int i, unsigned int k) const
+double BorderParabolic2D321::m4(unsigned int i, unsigned int k) const
 {
     double x1 = i*h1;
     double x2 = N2*h2;
@@ -79,7 +79,7 @@ double BorderParabolic2D1::m4(unsigned int i, unsigned int k) const
     return x1*t + x2*t*t + x1*x2;
 }
 
-double BorderParabolic2D1::f(unsigned int i, unsigned int j, unsigned int k) const
+double BorderParabolic2D321::f(unsigned int i, unsigned int j, unsigned int k) const
 {
     double x1 = i*h1;
     double x2 = j*h2;
@@ -97,17 +97,17 @@ double BorderParabolic2D1::f(unsigned int i, unsigned int j, unsigned int k) con
     return sum;
 }
 
-double BorderParabolic2D1::v1(double t) const
+double BorderParabolic2D321::v1(double t) const
 {
     return 8.0*t;
 }
 
-double BorderParabolic2D1::v2(double t) const
+double BorderParabolic2D321::v2(double t) const
 {
     return 5.0*t;
 }
 
-double BorderParabolic2D1::v3(double t) const
+double BorderParabolic2D321::v3(double t) const
 {
     return 6.0*t;
 }

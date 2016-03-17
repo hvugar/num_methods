@@ -41,7 +41,7 @@ Parabolic1DControl332::Parabolic1DControl332()
     x1 = 1.0;
     t0 = 0.0;
     t1 = 1.0;
-    hx = 0.01;
+    hx = 0.001;
     ht = 0.001;
     N = (unsigned int)(ceil(x1-x0)/hx);
     M = (unsigned int)(ceil(t1-t0)/ht);

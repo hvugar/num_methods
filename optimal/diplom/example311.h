@@ -1,15 +1,15 @@
-#ifndef BORDERPARABOLIC1D2_H
-#define BORDERPARABOLIC1D2_H
+#ifndef BORDERPARABOLIC1D311_H
+#define BORDERPARABOLIC1D311_H
 
 #include <parabolicequation.h>
 #include <doublevector.h>
 #include <math.h>
 
-class BorderParabolic1D2 : public IParabolicEquation
+class BorderParabolic1D311 : public IParabolicEquation
 {
 public:
-    BorderParabolic1D2();
-    virtual ~BorderParabolic1D2() {}
+    BorderParabolic1D311();
+    virtual ~BorderParabolic1D311() {}
 
     virtual double fi(unsigned int i) const;
     virtual double m1(unsigned int j) const;
@@ -34,7 +34,6 @@ private:
 
     double v1(double t) const;
     double v2(double t) const;
-    double v3(double t) const;
 };
 
-#endif // BORDERPARABOLIC1D2_H
+#endif // BORDERPARABOLIC1D311_H
