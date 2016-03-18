@@ -19,13 +19,14 @@ void Parabolic1DControl334::main()
     e1[4] = 0.20;
     e1[5] = 0.30;
     DoubleVector rf(hc.N1+1);
-    FILE *file = fopen("example334_6.txt", "w");
+    FILE *file = fopen("example334_4.txt", "w");
     for (unsigned int i=0; i<=hc.N2; i++)
     {
-        e1[5] = i*hc.h1;
+        e1[4] = i*hc.h1;
         rf[i] = hc.fx(e1);
     }
-    IPrinter::printVector(rf, NULL, hc.N1+1, 0, 0, file);
+    IPrinter::printVector(rf, NULL, hc.N1, 0, 0, file);
+    rf.clear();
     fclose(file);
 
     /* Minimization */
