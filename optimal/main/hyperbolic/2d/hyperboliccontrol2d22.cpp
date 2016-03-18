@@ -3,15 +3,15 @@
 void HyperbolicControl2D22::main()
 {
     HyperbolicControl2D22 hc;
-//    hc.file = fopen("hyperboliccontrol2d22.txt", "w");
-    hc.file = stdout;
+    hc.file = fopen("hyperboliccontrol2d22.txt", "w");
+    //hc.file = stdout;
     for (double t=0.1; t<=10.1; t+=0.1)
     {
         double rf = hc.fx(t);
         fprintf(hc.file, "%f %.16f\n", t, rf);
-        //fflush(hc.file);
+        fflush(hc.file);
     }
-    //fclose(hc.file);
+    fclose(hc.file);
 }
 
 HyperbolicControl2D22::HyperbolicControl2D22()
