@@ -11,32 +11,49 @@ void Parabolic1DControl334::main()
     DoubleVector x(2*hc.L);
     x[0] = 0.60; x[1] = 0.70; x[2] = 0.65; x[3] = 0.25; x[4] = 0.25; x[5] = 0.35;
 
+    DoubleVector e1(2*hc.L);
+    e1[0] = 0.50;
+    e1[1] = 0.80;
+    e1[2] = 0.70;
+    e1[3] = 0.20;
+    e1[4] = 0.20;
+    e1[5] = 0.30;
+    DoubleVector rf(hc.N1+1);
+    FILE *file = fopen("example334_6.txt", "w");
+    for (unsigned int i=0; i<=hc.N2; i++)
+    {
+        e1[5] = i*hc.h1;
+        rf[i] = hc.fx(e1);
+    }
+    IPrinter::printVector(rf, NULL, hc.N1+1, 0, 0, file);
+    fclose(file);
+
     /* Minimization */
-    ConjugateGradient g2;
-    g2.setFunction(&hc);
-    g2.setGradient(&hc);
-    g2.setEpsilon1(0.0001);
-    g2.setEpsilon2(0.0001);
-    g2.setEpsilon3(0.0001);
-    g2.setR1MinimizeEpsilon(1.0, 0.0001);
-    g2.setPrinter(&hc);
-    g2.setProjection(&hc);
-    g2.setNormalize(true);
-    g2.calculate(x);
+//    ConjugateGradient g2;
+//    g2.setFunction(&hc);
+//    g2.setGradient(&hc);
+//    g2.setEpsilon1(0.0001);
+//    g2.setEpsilon2(0.0001);
+//    g2.setEpsilon3(0.0001);
+//    g2.setR1MinimizeEpsilon(1.0, 0.0001);
+//    g2.setPrinter(&hc);
+//    g2.setProjection(&hc);
+//    g2.setNormalize(true);
+//    g2.calculate(x);
 
-    DoubleVector gr1(x.size());
-    hc.gradient(x, gr1);
-    gr1.L2Normalize();
+//    DoubleVector gr1(x.size());
+//    hc.gradient(x, gr1);
+//    gr1.L2Normalize();
 
-    DoubleVector gr2(x.size());
-    IGradient::Gradient(&hc, 0.00001, x, gr2);
-    gr2.L2Normalize();
+//    DoubleVector gr2(x.size());
+//    IGradient::Gradient(&hc, 0.00001, x, gr2);
+//    gr2.L2Normalize();
 
-    printf("J[%d]: %.16f\n", 0, hc.fx(x));
-    printf("eo: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", 0.50, 0.80, 0.70, 0.20, 0.20, 0.30);
-    printf("e1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", x[0], x[1], x[2], x[3], x[4], x[5]);
-    printf("gr1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", gr1[0], gr1[1], gr1[2], gr1[3], gr1[4], gr1[5]);
-    printf("gr2: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", gr2[0], gr2[1], gr2[2], gr2[3], gr2[4], gr2[5]);
+//    printf("J[%d]: %.16f\n", 0, hc.fx(x));
+//    printf("eo: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", 0.50, 0.80, 0.70, 0.20, 0.20, 0.30);
+//    printf("e1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", x[0], x[1], x[2], x[3], x[4], x[5]);
+//    printf("gr1: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", gr1[0], gr1[1], gr1[2], gr1[3], gr1[4], gr1[5]);
+//    printf("gr2: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", gr2[0], gr2[1], gr2[2], gr2[3], gr2[4], gr2[5]);
 }
 
 Parabolic1DControl334::Parabolic1DControl334()
@@ -86,10 +103,6 @@ Parabolic1DControl334::Parabolic1DControl334()
     IPrinter::printMatrix(U, 10, 10);
     printf("eo: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", e[0], e[1], e[2], e[3], e[4], e[5]);
     puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
-
-    FILE* f = fopen("heat_optimal_e.txt", "w");
-    IPrinter::printMatrix(U, N1, N2, NULL, f);
-    fclose(f);
 }
 
 double Parabolic1DControl334::fx(const DoubleVector& x)
