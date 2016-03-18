@@ -1,5 +1,5 @@
-#ifndef HEATCONTROL2DELTAF_H
-#define HEATCONTROL2DELTAF_H
+#ifndef PARABOLICCONTROL2D333_H
+#define PARABOLICCONTROL2D333_H
 
 #include <math.h>
 #include <stdlib.h>
@@ -44,11 +44,9 @@ private:
     double u(double x1, double x2, double t) const { return x1*x1 + x2*x2 + t*t; }
     double norm(const DoubleVector& v) const;
 
-    inline double v1(double t) const { return 10*t; }
-    inline double v2(double t) const { return 20*t; }
-    inline double v3(double t) const { return 30*t; }
-
-    inline void psiDerivative(double &psiX1, double &psiX2, double e1, double e2, const DoubleMatrix &psi);
+    inline double v1(double t) const { return 22*t; }
+    inline double v2(double t) const { return 18*t; }
+    inline double v3(double t) const { return 25*t; }
 
     double t0;
     double t1;
@@ -80,4 +78,4 @@ private:
     DoubleVector E;
 };
 
-#endif // HEATCONTROL2DELTAF_H
+#endif // PARABOLICCONTROL2D333_H

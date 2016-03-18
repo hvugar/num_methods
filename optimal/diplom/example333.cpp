@@ -1,4 +1,4 @@
-#include "heatcontrol2deltaf.h"
+#include "example333.h"
 
 void Parabolic1DControl333::main()
 {
@@ -7,9 +7,9 @@ void Parabolic1DControl333::main()
     DoubleVector v((hc.M+1)*hc.L);
     for (unsigned int k=0; k<=hc.M; k++)
     {
-        v[0*(hc.M+1) + k] = 1.0;//hc.g1(k*hc.ht);
-        v[1*(hc.M+1) + k] = 1.0;//hc.g2(k*hc.ht);
-        v[2*(hc.M+1) + k] = 1.0;//hc.g3(k*hc.ht);
+        v[0*(hc.M+1) + k] = 1.0;
+        v[1*(hc.M+1) + k] = 1.0;
+        v[2*(hc.M+1) + k] = 1.0;
     }
 
     /* Minimization */
@@ -89,9 +89,9 @@ Parabolic1DControl333::Parabolic1DControl333(unsigned int m, unsigned int n2, un
     IPrinter::printMatrix(U, 10, 10);
     puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
 
-    FILE* f = fopen("heat_optimal_v.txt", "w");
-    IPrinter::printMatrix(U, N1, N2, NULL, f);
-    fclose(f);
+    FILE* file = fopen("example333.txt", "w");
+    IPrinter::printMatrix(U, N1, N2, NULL, file);
+    fclose(file);
 }
 
 double Parabolic1DControl333::fx(const DoubleVector& v)
@@ -146,12 +146,6 @@ void Parabolic1DControl333::gradient(const DoubleVector& v, DoubleVector& g)
     DoubleCube psi;
     IBackwardParabolicEquation2D::caluclateMVD(psi, h1, h2, ht, N1, N2, M, a1, a2);
 
-    //    for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;
-    //    for (unsigned int k=M; k!=(unsigned int)0-1; k--)
-    //    {
-    //        calculateGF(v, psi[k], g, k);
-    //    }
-
     for (unsigned int k=0; k<=M; k++)
     {
         unsigned int i1 = (unsigned int)round(E[0]/h1);
@@ -169,20 +163,6 @@ void Parabolic1DControl333::gradient(const DoubleVector& v, DoubleVector& g)
 
     psi.clear();
     //    IGradient::Gradient(this, 0.0001, x, g);
-}
-
-void Parabolic1DControl333::psiDerivative(double &psiX1, double &psiX2, double x1, double x2, const DoubleMatrix &psi)
-{
-    unsigned int i = (unsigned int)round(x1/h1);
-    unsigned int j = (unsigned int)round(x2/h2);
-
-    if (i==0) psiX1  = (psi[j][i+1] - psi[j][i])/h1;
-    else if (i==N1) psiX1 = (psi[j][i] - psi[j][i-1])/h1;
-    else psiX1 = (psi[j][i+1] - psi[j][i-1])/(2.0*h1);
-
-    if (j==0) psiX2 = (psi[j+1][i] - psi[j][i])/h2;
-    else if (j==N2) psiX2 = (psi[j][i] - psi[j-1][i])/h2;
-    else psiX2 = (psi[j+1][i] - psi[j-1][i])/(2.0*h2);
 }
 
 void Parabolic1DControl333::calculateGF(const DoubleVector &v, const DoubleMatrix& psi, DoubleVector& g, unsigned int k)
@@ -253,8 +233,8 @@ double Parabolic1DControl333::m4(unsigned int i, unsigned int k) const
 
 double Parabolic1DControl333::f(unsigned int i, unsigned int j, unsigned int k) const
 {
-    //double x1 = i*h1;
-    //double x2 = j*h2;
+    double x1 = i*h1;
+    double x2 = j*h2;
     //double t  = 0.5*k*ht;
 
     double sum = 0.0;
@@ -266,30 +246,26 @@ double Parabolic1DControl333::f(unsigned int i, unsigned int j, unsigned int k) 
     double _v2 = (*pv)[1*(M+1)+k1];
     double _v3 = (*pv)[2*(M+1)+k1];
 
-    unsigned int i1 = (unsigned int)round(E[0]/h1);
-    unsigned int j1 = (unsigned int)round(E[1]/h2);
-    if (i==i1 && j==j1) sum += (1.0/(h1*h2)) * _v1;
+    //    unsigned int i1 = (unsigned int)round(E[0]/h1);
+    //    unsigned int j1 = (unsigned int)round(E[1]/h2);
+    //    if (i==i1 && j==j1) sum += (1.0/(h1*h2)) * _v1;
 
-    unsigned int i2 = (unsigned int)round(E[2]/h1);
-    unsigned int j2 = (unsigned int)round(E[3]/h2);
-    if (i==i2 && j==j2) sum += (1.0/(h1*h2)) * _v2;
+    //    unsigned int i2 = (unsigned int)round(E[2]/h1);
+    //    unsigned int j2 = (unsigned int)round(E[3]/h2);
+    //    if (i==i2 && j==j2) sum += (1.0/(h1*h2)) * _v2;
 
-    unsigned int i3 = (unsigned int)round(E[4]/h1);
-    unsigned int j3 = (unsigned int)round(E[5]/h2);
-    if (i==i3 && j==j3) sum += (1.0/(h1*h2)) * _v3;
+    //    unsigned int i3 = (unsigned int)round(E[4]/h1);
+    //    unsigned int j3 = (unsigned int)round(E[5]/h2);
+    //    if (i==i3 && j==j3) sum += (1.0/(h1*h2)) * _v3;
 
-    //    double sgm1 = 3.0*h1;
-    //    double sgm2 = 3.0*h2;
-    //    double gause_a = 1.0/(2.0*M_PI*sgm1*sgm2);
-    //    double gause_b = 2.0*sgm1*sgm2;
+    double sgm1 = 3.0*h1;
+    double sgm2 = 3.0*h2;
+    double gause_a = 1.0/(2.0*M_PI*sgm1*sgm2);
+    double gause_b = 2.0*sgm1*sgm2;
 
-    //    sum += _v1 * gause_a * exp(-((x1-E[0])*(x1-E[0]) + (x2-E[1])*(x2-E[1]))/gause_b);
-    //    sum += _v2 * gause_a * exp(-((x1-E[2])*(x1-E[2]) + (x2-E[3])*(x2-E[3]))/gause_b);
-    //    sum += _v3 * gause_a * exp(-((x1-E[4])*(x1-E[4]) + (x2-E[5])*(x2-E[5]))/gause_b);
-
-    //    sum += g1(t) * gause_a * exp(-((x1-e[0])*(x1-e[0]) + (x2-e[1])*(x2-e[1]))/gause_b);// * h1*h2;
-    //    sum += g2(t) * gause_a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/gause_b);// * h1*h2;
-    //    sum += g3(t) * gause_a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/gause_b);// * h1*h2;
+    sum += _v1 * gause_a * exp(-((x1-E[0])*(x1-E[0]) + (x2-E[1])*(x2-E[1]))/gause_b);
+    sum += _v2 * gause_a * exp(-((x1-E[2])*(x1-E[2]) + (x2-E[3])*(x2-E[3]))/gause_b);
+    sum += _v3 * gause_a * exp(-((x1-E[4])*(x1-E[4]) + (x2-E[5])*(x2-E[5]))/gause_b);
 
     //    DoubleVector e(2*L);
     //    for (unsigned int l=0; l<L; l++)

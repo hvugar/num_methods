@@ -4,8 +4,10 @@
 #include "example322.h"
 #include "example331.h"
 #include "example332.h"
+#include "example333.h"
+#include "example334.h"
 
 int main(int argc, char *argv[])
 {
-    Parabolic1DControl332::main();
+    Parabolic1DControl334::main();
 }

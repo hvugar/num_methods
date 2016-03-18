@@ -1,4 +1,4 @@
-#include "heatcontrol2deltax.h"
+#include "example334.h"
 
 // Optimal points [0.50,0.80] [0.70,0.20] [0.20,0.30]
 // Working points [0.60,0.70] [0.65,0.25] [0.25,0.35] epsilon1 0.0001 epsilon2 0.0001 epsilon3: 0.0001. min:1.0 0.0001
@@ -6,7 +6,7 @@
 
 void Parabolic1DControl334::main()
 {
-    Parabolic1DControl334 hc(100, 100, 100);
+    Parabolic1DControl334 hc;
 
     DoubleVector x(2*hc.L);
     x[0] = 0.60; x[1] = 0.70; x[2] = 0.65; x[3] = 0.25; x[4] = 0.25; x[5] = 0.35;
@@ -39,29 +39,31 @@ void Parabolic1DControl334::main()
     printf("gr2: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", gr2[0], gr2[1], gr2[2], gr2[3], gr2[4], gr2[5]);
 }
 
-Parabolic1DControl334::Parabolic1DControl334(unsigned int M, unsigned int N2, unsigned int N1)
+Parabolic1DControl334::Parabolic1DControl334()
 {
     alpha = 1.0;
+
+    x10 = 0.0;
+    x11 = 1.0;
+    x20 = 0.0;
+    x21 = 1.0;
+    t0 = 0.0;
+    t1 = 1.0;
+
+    h1 = 0.01;
+    h2 = 0.01;
+    ht = 0.01;
+
+    N1 = (unsigned int)(ceil(x11-x10)/h1);
+    N2 = (unsigned int)(ceil(x21-x20)/h2);
+    M  = (unsigned int)(ceil(t1-t0)/ht);
 
     this->M  = M;
     this->N2 = N2;
     this->N1 = N1;
     this->L  = 3;
 
-    t0 = 0.0;
-    t1 = 1.0;
-
-    x10 = 0.0;
-    x11 = 1.0;
-
-    x20 = 0.0;
-    x21 = 1.0;
-
     a1 = a2 = 1.0;
-
-    ht = (t1-t0)/M;
-    h1 = (x11-x10)/N1;
-    h2 = (x21-x20)/N2;
 
     double sgm1 = 3.0*h1;
     double sgm2 = 3.0*h2;
@@ -150,7 +152,6 @@ void Parabolic1DControl334::gradient(const DoubleVector& x, DoubleVector& g)
     }
 
     psi.clear();
-    //    IGradient::Gradient(this, 0.0001, x, g);
 }
 
 void Parabolic1DControl334::calculateGX(const DoubleVector& x, const DoubleMatrix& psi, DoubleVector& g, unsigned int k)
