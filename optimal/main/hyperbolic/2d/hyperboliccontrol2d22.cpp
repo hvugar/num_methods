@@ -7,7 +7,7 @@ void HyperbolicControl2D22::main(int argc, char ** argv)
     //hc.file = stdout;
     for (double t=0.1; t<=10.1; t+=0.1)
     {
-        double rf = hc.fx(t);
+        hc.fx(t);
     }
     fclose(hc.file);
 }
@@ -110,7 +110,7 @@ double HyperbolicControl2D22::fx(double t)
     cg.calculate(v0);
 
     double rf = fx(v0);
-    fprintf(hc.file, "%f %.16f\n", t, rf);
+    fprintf(file, "%f %.16f\n", t, rf);
     IPrinter::printVector(v0, "v21", v0.size()/2, 0, v0.size()/2-1, file);
     IPrinter::printVector(v0, "v22", v0.size()/2, v0.size()/2, v0.size()-1, file);
     fflush(file);
