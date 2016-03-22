@@ -24,7 +24,7 @@ public:
     virtual double f(unsigned int i, unsigned int j, unsigned int k) const;
 
 public:
-    static void main();
+    static void main(int argc, char ** argv);
 
     double fxt(unsigned int i, unsigned int j, unsigned int k) const;
 

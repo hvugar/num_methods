@@ -39,7 +39,7 @@ public:
 
     void calculateGF(const DoubleVector &v, const DoubleMatrix& psi, DoubleVector& g, unsigned int k);
 
-    static void main();
+    static void main(int argc, char *argv[]);
 private:
     double u(double x1, double x2, double t) const { return x1*x1 + x2*x2 + t*t; }
     double norm(const DoubleVector& v) const;

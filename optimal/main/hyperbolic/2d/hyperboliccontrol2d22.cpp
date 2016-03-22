@@ -35,9 +35,9 @@ HyperbolicControl2D22::HyperbolicControl2D22()
     e[1] = 0.2;
 
     alpha0 = 1.0;
-    alpha1 = 5.0;
-    alpha2 = 6.0;
-    alpha3 = 4.0;
+    alpha1 = 10.0;
+    alpha2 = 2.0;
+    alpha3 = 1.0;
     qamma = 0.2;
 
     a1 = 1.0;
@@ -46,12 +46,6 @@ HyperbolicControl2D22::HyperbolicControl2D22()
     e.resize(2);
     e[0] = 0.2;
     e[1] = 0.2;
-
-    alpha0 = 4.0;
-    alpha1 = 5.0;
-    alpha2 = 6.0;
-    alpha3 = 4.0;
-    qamma = 0.2;
 
     U0 = 0.0;
     U1 = 0.0;

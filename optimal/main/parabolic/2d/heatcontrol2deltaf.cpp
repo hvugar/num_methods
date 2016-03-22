@@ -1,6 +1,6 @@
 #include "heatcontrol2deltaf.h"
 
-void Parabolic1DControl333::main()
+void Parabolic1DControl333::main(int argc, char *argv[])
 {
     Parabolic1DControl333 hc(100, 100, 100);
 

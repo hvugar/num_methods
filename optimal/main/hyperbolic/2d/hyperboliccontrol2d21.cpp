@@ -1,7 +1,7 @@
 #include "hyperboliccontrol2d21.h"
 
 
-void HyperbolicControl2D21::main()
+void HyperbolicControl2D21::main(int argc, char ** argv)
 {
     HyperbolicControl2D21 hc;
     //hc.file = fopen("hyperboliccontrol2d21.txt", "w");
@@ -38,9 +38,9 @@ HyperbolicControl2D21::HyperbolicControl2D21()
     e[1] = 0.2;
 
     alpha0 = 1.0;
-    alpha1 = 5.0;
-    alpha2 = 6.0;
-    alpha3 = 4.0;
+    alpha1 = 10.0;
+    alpha2 = 2.0;
+    alpha3 = 1.0;
     qamma = 0.2;
 
     a1 = 1.0;
