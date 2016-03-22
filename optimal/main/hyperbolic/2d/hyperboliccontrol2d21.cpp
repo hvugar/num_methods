@@ -8,7 +8,7 @@ void HyperbolicControl2D21::main()
     //hc.file = stdout;
     for (double t=0.1; t<=10.1; t+=0.1)
     {
-        printf("%f %.10f\n", t, hc.fx(t));
+        printf("%f %.8f\n", t, hc.fx(t));
         //fprintf(hc.file, "%f %.10f\n", t, hc.fx(t));
         //fflush(hc.file);
     }

@@ -66,7 +66,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
         /* calculating distance previous and new point */
         if (distance < epsilon2() && fabs(f2 - f1) < epsilon3())
         {
-            puts("Optimisation ends, because distance beetween last and current point less than epsilon...");
+            puts("Optimisation ends, because distance between last and current point less than epsilon...");
             break;
         }
 

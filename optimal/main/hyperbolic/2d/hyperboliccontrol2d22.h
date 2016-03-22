@@ -37,7 +37,7 @@ public:
     virtual double bf(unsigned int i, unsigned int j, unsigned int k) const;
 
 public:
-    static void main();
+    static void main(int argc, char ** argv);
 
     double fxt(unsigned int i, unsigned int j, unsigned int k) const;
 
@@ -70,6 +70,7 @@ public:
     DoubleVector x;
     const DoubleVector *pv;
     const DoubleCube *pu;
+    DoubleVector v0;
 
     FILE *file;
 };

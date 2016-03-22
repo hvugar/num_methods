@@ -1,6 +1,6 @@
 #include "headers.h"
 
-int main()
+int main(int argc, char ** argv)
 {
     //HeatControl2DeltaF::main();
     //HeatControlDeltaX::main();
@@ -14,6 +14,7 @@ int main()
     //puts("--------------------------------------");
     //BorderHyperbolic::main();
     //BorderParabolic2D::main();
-    HyperbolicControl2D22::main();
+
+    HyperbolicControl2D22::main(argc, argv);
     return 0;
 }
