@@ -6,8 +6,10 @@
 #include "example332.h"
 #include "example333.h"
 #include "example334.h"
+#include "example335.h"
+#include "example336.h"
 
 int main(int argc, char *argv[])
 {
-    Parabolic1DControl334::main();
+    Parabolic1DControl335::main(argc, argv);
 }

@@ -1,5 +1,5 @@
-#ifndef PARABOLICCONTROL2D333_H
-#define PARABOLICCONTROL2D333_H
+#ifndef PARABOLICCONTROL2D335_H
+#define PARABOLICCONTROL2D335_H
 
 #include <math.h>
 #include <stdlib.h>
@@ -12,11 +12,11 @@
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
 
-class Parabolic1DControl333 : public RnFunction, public IGradient, public IParabolicEquation2D, public IBackwardParabolicEquation2D, public IPrinter, public Projection
+class Parabolic1DControl335 : public RnFunction, public IGradient, public IParabolicEquation2D, public IBackwardParabolicEquation2D, public IPrinter, public Projection
 {
 public:
-    Parabolic1DControl333(unsigned int m, unsigned int n2, unsigned int n1);
-    virtual ~Parabolic1DControl333() {}
+    Parabolic1DControl335();
+    virtual ~Parabolic1DControl335() {}
 
     virtual double fx(const DoubleVector &v);
     virtual void gradient(const DoubleVector &v, DoubleVector &g);
@@ -37,16 +37,12 @@ public:
     virtual double bm4(unsigned int i, unsigned int k) const;
     virtual double bf(unsigned int i, unsigned int j, unsigned int k) const;
 
-    void calculateGF(const DoubleVector &v, const DoubleMatrix& psi, DoubleVector& g, unsigned int k);
+//    void calculateGF(const DoubleVector &v, const DoubleMatrix& psi, DoubleVector& g, unsigned int k);
 
     static void main(int argc, char *argv[]);
 private:
     double u(double x1, double x2, double t) const { return x1*x1 + x2*x2 + t*t; }
     double norm(const DoubleVector& v) const;
-
-    inline double v1(double t) const { return 22*t; }
-    inline double v2(double t) const { return 18*t; }
-    inline double v3(double t) const { return 25*t; }
 
     double t0;
     double t1;
@@ -78,4 +74,4 @@ private:
     DoubleVector E;
 };
 
-#endif // PARABOLICCONTROL2D333_H
+#endif // PARABOLICCONTROL2D335_H
