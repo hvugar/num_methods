@@ -3,7 +3,7 @@
 void HyperbolicControl2D22::main(int argc, char ** argv)
 {
     HyperbolicControl2D22 hc;
-    hc.file = fopen("hyperboliccontrol2d22.txt", "w");
+    hc.file = fopen("20160322.txt", "w");
     //hc.file = stdout;
     for (double t=0.1; t<=10.1; t+=0.1)
     {
