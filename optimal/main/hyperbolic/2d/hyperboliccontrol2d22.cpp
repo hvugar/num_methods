@@ -7,7 +7,6 @@ void HyperbolicControl2D22::main(int argc, char ** argv)
     //hc.file = stdout;
     for (double t=0.1; t<=10.1; t+=0.1)
     {
-        //double t = 1.5;
         double rf = hc.fx(t);
         fprintf(hc.file, "%f %.16f\n", t, rf);
         fflush(hc.file);
@@ -82,9 +81,6 @@ double HyperbolicControl2D22::fx(double t)
 
     printf("t: %f M: %d m %d\n", t1, M, m);
 
-    IPrinter::printVector(v0, "v01", v0.size()/2, 0, v0.size()/2-1, file);
-    IPrinter::printVector(v0, "v02", v0.size()/2, v0.size()/2, v0.size()-1, file);
-
     v0.resize((M+1)*L);
 
     for (unsigned int k=0; k<=m; k++)
@@ -99,9 +95,6 @@ double HyperbolicControl2D22::fx(double t)
         v0[0*(M+1)+k] = v0[0*(M+1)+m];
         v0[1*(M+1)+k] = v0[1*(M+1)+m];
     }
-
-    IPrinter::printVector(v0, "v11", v0.size()/2, 0, v0.size()/2-1, file);
-    IPrinter::printVector(v0, "v12", v0.size()/2, v0.size()/2, v0.size()-1, file);
 
     double min_step = 10.0;
     double gold_eps = 0.001;
@@ -120,7 +113,8 @@ double HyperbolicControl2D22::fx(double t)
 
     IPrinter::printVector(v0, "v21", v0.size()/2, 0, v0.size()/2-1, file);
     IPrinter::printVector(v0, "v22", v0.size()/2, v0.size()/2, v0.size()-1, file);
-    //IPrinter::printVector(v0, NULL, v0.size(), 0, 0, file);
+    fflush(file);
+
     double rf = fx(v0);
     return rf;
 }
