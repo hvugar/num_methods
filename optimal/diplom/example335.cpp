@@ -10,6 +10,7 @@ void Parabolic1DControl335::main(int argc, char *argv[])
         v[0*(hc.M+1) + k] = 1.0;
         v[1*(hc.M+1) + k] = 1.0;
         v[2*(hc.M+1) + k] = 1.0;
+        v[3*(hc.M+1) + k] = 1.0;
     }
 
     /* Minimization */
@@ -53,28 +54,30 @@ Parabolic1DControl335::Parabolic1DControl335()
     N1 = (unsigned int)(ceil(x11-x10)/h1);
     N2 = (unsigned int)(ceil(x21-x20)/h2);
     M  = (unsigned int)(ceil(t1-t0)/ht);
-    L  = 3;
+    L  = 4;
 
-    double sgm1 = 3.0*h1;
-    double sgm2 = 3.0*h2;
+    double sgm1 = 5.0*h1;
+    double sgm2 = 5.0*h2;
     gause_a = 1.0/(2.0*M_PI*sgm1*sgm2);
     gause_b = 2.0*sgm1*sgm2;
 
     //initilize
     E.resize(2*L);
-    E[0] = 0.50;
-    E[1] = 0.80;
-    E[2] = 0.70;
-    E[3] = 0.20;
-    E[4] = 0.20;
-    E[5] = 0.30;
+    E[0] = 0.20;
+    E[1] = 0.20;
+    E[2] = 0.20;
+    E[3] = 0.80;
+    E[4] = 0.80;
+    E[5] = 0.20;
+    E[6] = 0.80;
+    E[7] = 0.80;
 
     U.resize(N2+1); for (unsigned int j=0; j<=N2; j++) U[j].resize(N1+1);
     for (unsigned int j=0; j<=N2; j++)
     {
         for (unsigned int i=0; i<=N1; i++)
         {
-            U[j][i] = 5.0;
+            U[j][i] = 3.0;
         }
     }
 
@@ -124,6 +127,7 @@ double Parabolic1DControl335::norm(const DoubleVector& v) const
         nrm += betta*(v[0*(M+1)+k])*(v[0*(M+1)+k]);
         nrm += betta*(v[1*(M+1)+k])*(v[1*(M+1)+k]);
         nrm += betta*(v[2*(M+1)+k])*(v[2*(M+1)+k]);
+        nrm += betta*(v[3*(M+1)+k])*(v[3*(M+1)+k]);
     }
     nrm = ht * nrm;
     return nrm;
@@ -152,10 +156,13 @@ void Parabolic1DControl335::gradient(const DoubleVector& v, DoubleVector& g)
         unsigned int i3 = (unsigned int)round(E[4]/h1);
         unsigned int j3 = (unsigned int)round(E[5]/h2);
         g[2*(M+1)+k] = -psi[k][j3][i3] + 2.0*alpha*(v[2*(M+1)+k]);
+
+        unsigned int i4 = (unsigned int)round(E[4]/h1);
+        unsigned int j4 = (unsigned int)round(E[5]/h2);
+        g[3*(M+1)+k] = -psi[k][j4][i4] + 2.0*alpha*(v[3*(M+1)+k]);
     }
 
     psi.clear();
-    //    IGradient::Gradient(this, 0.0001, x, g);
 }
 
 double Parabolic1DControl335::fi(unsigned int i, unsigned int j) const
@@ -163,7 +170,7 @@ double Parabolic1DControl335::fi(unsigned int i, unsigned int j) const
     double x1 = i*h1;
     double x2 = j*h2;
 //    return u(x1, x2, t0);
-    return 1.0;
+    return 2.0;
 }
 
 double Parabolic1DControl335::m1(unsigned int j, unsigned int k) const
@@ -212,6 +219,7 @@ double Parabolic1DControl335::f(unsigned int i, unsigned int j, unsigned int k) 
     double _v1 = (*pv)[0*(M+1)+k1];
     double _v2 = (*pv)[1*(M+1)+k1];
     double _v3 = (*pv)[2*(M+1)+k1];
+    double _v4 = (*pv)[3*(M+1)+k1];
 
     //    unsigned int i1 = (unsigned int)round(E[0]/h1);
     //    unsigned int j1 = (unsigned int)round(E[1]/h2);
@@ -225,14 +233,15 @@ double Parabolic1DControl335::f(unsigned int i, unsigned int j, unsigned int k) 
     //    unsigned int j3 = (unsigned int)round(E[5]/h2);
     //    if (i==i3 && j==j3) sum += (1.0/(h1*h2)) * _v3;
 
-    double sgm1 = 3.0*h1;
-    double sgm2 = 3.0*h2;
+    double sgm1 = 5.0*h1;
+    double sgm2 = 5.0*h2;
     double gause_a = 1.0/(2.0*M_PI*sgm1*sgm2);
     double gause_b = 2.0*sgm1*sgm2;
 
     sum += _v1 * gause_a * exp(-((x1-E[0])*(x1-E[0]) + (x2-E[1])*(x2-E[1]))/gause_b);
     sum += _v2 * gause_a * exp(-((x1-E[2])*(x1-E[2]) + (x2-E[3])*(x2-E[3]))/gause_b);
     sum += _v3 * gause_a * exp(-((x1-E[4])*(x1-E[4]) + (x2-E[5])*(x2-E[5]))/gause_b);
+    sum += _v4 * gause_a * exp(-((x1-E[6])*(x1-E[6]) + (x2-E[7])*(x2-E[7]))/gause_b);
 
     //    DoubleVector e(2*L);
     //    for (unsigned int l=0; l<L; l++)
@@ -329,7 +338,7 @@ void Parabolic1DControl335::project(DoubleVector &e, int index)
 //        if (e[index] < 0.0) e[index] = 0.0;
 //    }
 
-    if (e[index] <= 0.0) e[index] = 0.0;
-    if (e[index] >= 3.5) e[index] = 3.5;
+   // if (e[index] <= 10.0) e[index] = 10.0;
+  //  if (e[index] >= 103.5) e[index] = 103.5;
 
 }

@@ -37,8 +37,6 @@ public:
     virtual double bm4(unsigned int i, unsigned int k) const;
     virtual double bf(unsigned int i, unsigned int j, unsigned int k) const;
 
-//    void calculateGF(const DoubleVector &v, const DoubleMatrix& psi, DoubleVector& g, unsigned int k);
-
     static void main(int argc, char *argv[]);
 private:
     double u(double x1, double x2, double t) const { return x1*x1 + x2*x2 + t*t; }
