@@ -54,6 +54,7 @@ public:
     unsigned int N1;
     unsigned int N2;
     unsigned int M;
+    unsigned int D;
 
     double alpha0;
     double alpha1;
