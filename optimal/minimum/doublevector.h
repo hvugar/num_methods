@@ -35,6 +35,7 @@ public:
     static void L2Normalize(DoubleVector&);
     static void L1Normalize(DoubleVector&);
     static void EuclideanNormalize(DoubleVector&);
+    static DoubleVector null;
 };
 
 class MINIMUMSHARED_EXPORT DoubleMatrix : public std::vector<DoubleVector>

@@ -4,7 +4,7 @@
 #include "global.h"
 #include "doublevector.h"
 
-class MINIMUMSHARED_EXPORT Projection
+class MINIMUMSHARED_EXPORT IProjection
 {
 public:
     virtual void project(DoubleVector &x, int index) = 0;

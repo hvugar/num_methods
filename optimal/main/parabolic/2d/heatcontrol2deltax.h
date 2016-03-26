@@ -12,7 +12,7 @@
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
 
-class Parabolic1DControl334 : public RnFunction, public IGradient, public IParabolicEquation2D, public IBackwardParabolicEquation2D, public IPrinter, public Projection
+class Parabolic1DControl334 : public RnFunction, public IGradient, public IParabolicEquation2D, public IBackwardParabolicEquation2D, public IPrinter, public IProjection
 {
 public:
     Parabolic1DControl334(unsigned int M, unsigned int N2, unsigned int N1);

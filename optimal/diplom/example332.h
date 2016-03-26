@@ -6,11 +6,13 @@
 #include <gradient.h>
 #include <function.h>
 #include <gradient_cjt.h>
+#include <printer.h>
+#include <projection.h>
 #include <math.h>
 
 // u(x,t) = 0.5*x + t^2
 
-class Parabolic1DControl332 : public IParabolicEquation, public IBackwardParabolicEquation, public RnFunction, public IGradient, public IPrinter, public Projection
+class Parabolic1DControl332 : public IParabolicEquation, public IBackwardParabolicEquation, public RnFunction, public IGradient, public IPrinter, public IProjection
 {
 public:
     Parabolic1DControl332();

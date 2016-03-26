@@ -9,7 +9,7 @@
 
 class HyperbolicControl2DM : public R1Function, public RnFunction,
         public IGradient, public IHyperbolicEquation2D, public IBackwardHyperbolicEquation2D,
-        public IPrinter, public Projection
+        public IPrinter, public IProjection
 {
 public:
     HyperbolicControl2DM();

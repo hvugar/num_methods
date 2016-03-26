@@ -1,4 +1,8 @@
 #include "gradient_cjt.h"
+#include "printer.h"
+#include "projection.h"
+#include "function.h"
+#include <math.h>
 
 ConjugateGradient::ConjugateGradient() : GradientMethod()
 {
@@ -69,13 +73,14 @@ void ConjugateGradient::calculate(DoubleVector& x)
         /* R1 minimization in direct of antigradient */
         alpha = minimize(x, s);
 
-        distance = 0.0;
         f1 = f2;
         if (firstIteration)
         {
             f1 = m_fn->fx(x);
             firstIteration = false;
         }
+
+        distance = 0.0;
         for (unsigned int i=0; i<n; i++)
         {
             double cx = x[i];
@@ -91,6 +96,17 @@ void ConjugateGradient::calculate(DoubleVector& x)
         if ( k == x.size() ) { k = 0; } else { k++; }
 
         if (m_printer != NULL) m_printer->print(iterationCount, x, g, alpha, m_fn);
+//        GradientIterationInfo info;
+//        info.fxResult = f2;
+//        info.number = iterationCount;
+//        info.alpha = alpha;
+//        info.gradientNorm = gradient_norm;
+//        info.x = x;
+//        info.g = g;
+//        info.s = s;
+//        info.distance = distance;
+//        info.difference = f2 - f1;
+//        if (m_printer != NULL) m_printer->print(info);
 
         /* calculating distance previous and new point */
         if (distance < epsilon2() && fabs(f2 - f1) < epsilon3())

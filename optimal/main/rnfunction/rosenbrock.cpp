@@ -1,7 +1,5 @@
 #include "rosenbrock.h"
-#include <gradient_cjt.h>
-#include <gradient_sd.h>
-#include <gradient_cs.h>
+#include <math.h>
 
 void Rosenbrock::main()
 {

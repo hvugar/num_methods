@@ -9,7 +9,6 @@
 #include <gradient.h>
 #include <gradient_sd.h>
 #include <gradient_cjt.h>
-#include <gridmethod.h>
 #include <rungekutta.h>
 #include <doublevector.h>
 #include <parabolicequation.h>

@@ -7,7 +7,7 @@
 #include <printer.h>
 #include <projection.h>
 
-class HyperbolicControl1D : public RnFunction, public IGradient, public IHyperbolicEquation, public IBackwardHyperbolicEquation, public IPrinter, public Projection
+class HyperbolicControl1D : public RnFunction, public IGradient, public IHyperbolicEquation, public IBackwardHyperbolicEquation, public IPrinter, public IProjection
 {
 public:
     HyperbolicControl1D();

@@ -1,7 +1,5 @@
 #include "boothfunction.h"
-#include <gradient_cjt.h>
-#include <gradient_sd.h>
-#include <gradient_cs.h>
+#include <math.h>
 
 double BoothFunction::fx(const DoubleVector& x)
 {

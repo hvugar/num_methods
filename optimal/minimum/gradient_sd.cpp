@@ -1,4 +1,8 @@
 #include "gradient_sd.h"
+#include "printer.h"
+#include "projection.h"
+#include "function.h"
+#include <math.h>
 
 SteepestDescentGradient::SteepestDescentGradient() : GradientMethod()
 {

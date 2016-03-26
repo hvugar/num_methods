@@ -137,6 +137,12 @@ void HyperbolicControl2D23::print(unsigned int i, const DoubleVector &v, const D
     printf("J[%d]: %.16f\n", i, fn->fx(v));
 }
 
+void HyperbolicControl2D23::print(GradientIterationInfo &info) const
+{
+    C_UNUSED(info);
+    printf("----- %.16f %.16f %.16f %.16f %.16f\n", info.fxResult, info.gradientNorm, info.distance, info.difference, info.alpha);
+}
+
 double HyperbolicControl2D23::fx(const DoubleVector &v)
 {
     pv = &v;

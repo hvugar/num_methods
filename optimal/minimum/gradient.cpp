@@ -1,4 +1,6 @@
 #include "gradient.h"
+#include "function.h"
+#include <math.h>
 
 GradientMethod::GradientMethod() : m_fn(NULL), m_printer(NULL), m_projection(NULL)
 {
@@ -119,7 +121,7 @@ void GradientMethod::setPrinter(IPrinter *printer)
     this->m_printer = printer;
 }
 
-void GradientMethod::setProjection(Projection *projection)
+void GradientMethod::setProjection(IProjection *projection)
 {
     this->m_projection = projection;
 }

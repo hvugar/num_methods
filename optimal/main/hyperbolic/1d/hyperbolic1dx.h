@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-class Hyperbolic1DX : public RnFunction, public IGradient, public IHyperbolicEquation, public IBackwardHyperbolicEquation, public Projection, public IPrinter
+class Hyperbolic1DX : public RnFunction, public IGradient, public IHyperbolicEquation, public IBackwardHyperbolicEquation, public IProjection, public IPrinter
 {
 public:
     Hyperbolic1DX(unsigned int M, unsigned int N);

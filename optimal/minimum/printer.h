@@ -1,15 +1,16 @@
 #ifndef PRINTER_H
 #define PRINTER_H
 
+#include "global.h"
 #include "doublevector.h"
 #include "function.h"
-#include "global.h"
-#include <stdio.h>
-#include <time.h>
+#include "gradient.h"
 
-struct MINIMUMSHARED_EXPORT IPrinter
+class MINIMUMSHARED_EXPORT IPrinter
 {
+public:
     virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &gradient, double alpha, RnFunction *fn) const = 0;
+    virtual void print(GradientIterationInfo &info) const;
 
     static void printMatrix(const DoubleMatrix &x, unsigned int m = 10, unsigned int n = 10, const char* s = NULL, FILE* f = stdout);
     static void printVector(const DoubleVector &x, const char *s = NULL, unsigned int n = 10, unsigned int start = 0, unsigned int end = 0, FILE *file = stdout);

@@ -12,7 +12,7 @@
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
 
-class HeatControl2Delta : public RnFunction, public IGradient, public IParabolicEquation2D, public IBackwardParabolicEquation2D, public IPrinter, public Projection
+class HeatControl2Delta : public RnFunction, public IGradient, public IParabolicEquation2D, public IBackwardParabolicEquation2D, public IPrinter, public IProjection
 {
 public:
     HeatControl2Delta(unsigned int M, unsigned int N2, unsigned int N1);

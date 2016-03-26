@@ -1,4 +1,8 @@
 #include "gradient_cs.h"
+#include "printer.h"
+#include "projection.h"
+#include "function.h"
+#include <math.h>
 
 ConstStepGradient::ConstStepGradient() : GradientMethod()
 {

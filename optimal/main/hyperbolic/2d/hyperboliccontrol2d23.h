@@ -19,6 +19,7 @@ public:
 
     virtual void gradient(const DoubleVector &v, DoubleVector &g);
     virtual void print(unsigned int iteration, const DoubleVector& x, const DoubleVector &gradient, double alpha, RnFunction* fn) const;
+    virtual void print(GradientIterationInfo &info) const;
 
     virtual double fi1(unsigned int i, unsigned int j) const;
     virtual double fi2(unsigned int i, unsigned int j) const;

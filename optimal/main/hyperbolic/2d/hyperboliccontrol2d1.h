@@ -8,9 +8,11 @@
 #include <function.h>
 #include <hyperbolicequation.h>
 #include <printer.h>
+#include <projection.h>
 #include <gradient_cjt.h>
 
-class HyperbolicControl2D1 : public R1Function, public RnFunction, public IGradient, public IHyperbolicEquation2D, public IBackwardHyperbolicEquation2D, public IPrinter, public Projection
+class HyperbolicControl2D1 : public R1Function, public RnFunction, public IGradient, public IHyperbolicEquation2D,
+        public IBackwardHyperbolicEquation2D, public IPrinter, public IProjection
 {
 public:
     HyperbolicControl2D1();

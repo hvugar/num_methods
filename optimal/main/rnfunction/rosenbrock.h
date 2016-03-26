@@ -3,6 +3,10 @@
 
 #include <function.h>
 #include <printer.h>
+#include <projection.h>
+#include <gradient_cjt.h>
+#include <gradient_sd.h>
+#include <gradient_cs.h>
 
 struct Rosenbrock : public RnFunction, public IPrinter, public IGradient
 {

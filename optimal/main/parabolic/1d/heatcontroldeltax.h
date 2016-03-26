@@ -6,6 +6,7 @@
 #include <function.h>
 #include <parabolicequation.h>
 #include <printer.h>
+#include <projection.h>
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
 
@@ -17,7 +18,8 @@
  * u(l,t) = m2(t);
  */
 
-struct HeatControlDeltaX : public RnFunction, public IGradient, public IParabolicEquation, public IBackwardParabolicEquation, public IPrinter, public Projection
+struct HeatControlDeltaX : public RnFunction, public IGradient, public IParabolicEquation,
+        public IBackwardParabolicEquation, public IPrinter, public IProjection
 {
 public:
     HeatControlDeltaX();

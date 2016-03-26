@@ -25,7 +25,6 @@ SOURCES += \
     gradient_sd.cpp \
     penalty.cpp \
     doublevector.cpp \
-    gridmethod.cpp \
     printer.cpp \
     gradient_cs.cpp \
     projection.cpp \
@@ -44,7 +43,6 @@ HEADERS += global.h \
     gradient_sd.h \
     penalty.h \
     doublevector.h \
-    gridmethod.h \
     printer.h \
     gradient_cs.h \
     projection.h \

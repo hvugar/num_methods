@@ -3,15 +3,28 @@
 
 #include "global.h"
 
-#include <vector>
-#include <math.h>
-
-#include "function.h"
 #include "r1minimize.h"
 #include "doublevector.h"
-#include "printer.h"
-#include "projection.h"
 #include "exceptions.h"
+
+class RnFunction;
+class IGradient;
+class IPrinter;
+class IProjection;
+
+struct GradientIterationInfo
+{
+    unsigned int number;
+    DoubleVector x;
+    DoubleVector g;
+    DoubleVector s;
+    double alpha;
+    double fxResult;
+    RnFunction *fx;
+    double gradientNorm;
+    double distance;
+    double difference;
+};
 
 /**
  * @brief The Abstract Gradient Method class
@@ -22,10 +35,10 @@ public:
     GradientMethod();
     virtual ~GradientMethod();
 
-    virtual void calculate(DoubleVector& x) = 0;
+    virtual void calculate(DoubleVector &x) = 0;
 
     virtual RnFunction* function() const;
-    virtual void setFunction(RnFunction* function);
+    virtual void setFunction(RnFunction *function);
 
     virtual IGradient* gradient() const;
     virtual void setGradient(IGradient *gradient);
@@ -51,12 +64,41 @@ public:
     double epsilon3() const;
     void setEpsilon3(double epsilon);
 
-    void setR1MinimizeEpsilon(double step, double epsilon1);
+    /**
+     * @brief setR1MinimizeEpsilon
+     * @param step
+     * @param epsilon1
+     */
+    void setR1MinimizeEpsilon(double step, double epsilon);
+
+    /**
+     * @brief count
+     * @return
+     */
     int count() const;
 
-    void setPrinter(IPrinter* printer);
-    void setProjection(Projection* projection);
+    /**
+     * @brief setPrinter
+     * @param printer
+     */
+    void setPrinter(IPrinter *printer);
+
+    /**
+     * @brief setProjection
+     * @param projection
+     */
+    void setProjection(IProjection *projection);
+
+    /**
+     * @brief setNormalize
+     * @param normalize
+     */
     void setNormalize(bool normalize);
+
+    /**
+     * @brief showEndMessage
+     * @param showEndMessage
+     */
     void showEndMessage(bool showEndMessage);
 
 protected:
@@ -73,7 +115,7 @@ protected:
     int iterationCount;
     bool m_normalize;
     IPrinter* m_printer;
-    Projection *m_projection;
+    IProjection *m_projection;
 
     bool mshowEndMessage;
 };
