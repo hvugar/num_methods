@@ -1,6 +1,6 @@
 #include "pointcontrol11.h"
 
-void PointControl11::main()
+void PointControl11::main(int argc, char ** argv)
 {
     DoubleVector q(3);
     q[0] = 0.0;

@@ -4,14 +4,16 @@
 void HyperbolicControl2D21::main(int argc, char ** argv)
 {
     HyperbolicControl2D21 hc;
+    hc.fx(10.0);
+
     //hc.file = fopen("hyperboliccontrol2d21.txt", "w");
     //hc.file = stdout;
-    for (double t=0.1; t<=10.1; t+=0.1)
-    {
-        printf("%f %.8f\n", t, hc.fx(t));
-        //fprintf(hc.file, "%f %.10f\n", t, hc.fx(t));
-        //fflush(hc.file);
-    }
+//    for (double t=0.1; t<=10.1; t+=0.1)
+//    {
+//        printf("%f %.8f\n", t, hc.fx(t));
+//        //fprintf(hc.file, "%f %.10f\n", t, hc.fx(t));
+//        //fflush(hc.file);
+//    }
     //fclose(hc.file);
 }
 
@@ -24,13 +26,12 @@ HyperbolicControl2D21::HyperbolicControl2D21()
     t0 = 0.0;
     t1 = 1.0;
 
-    h1 = 0.01;
-    h2 = 0.01;
-    ht = 0.005;
+    h1 = 0.005;
+    h2 = 0.005;
+    ht = 0.0025;
     N1 = (unsigned)ceil((x11 - x10)/h1);
     N2 = (unsigned)ceil((x21 - x20)/h2);
     M  = (unsigned)ceil((t1 - t0)/ht);
-
     L = 2;
 
     e.resize(2);
@@ -51,6 +52,10 @@ double HyperbolicControl2D21::fx(double T)
 {
     t1 = T;
     M  = (unsigned)ceil((t1 - t0)/ht);
+
+    DoubleMatrix m;
+    IHyperbolicEquation2D::calculateU1(m, h1, h2, ht, N1, N2, M, a1, a2, qamma);
+
     DoubleVector x;
     double rf = fx(x);
     return rf;

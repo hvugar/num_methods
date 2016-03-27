@@ -19,7 +19,7 @@ public:
     void calculateX(const DoubleVector &q, DoubleVector &x);
     void calculateP(const DoubleVector &q, const DoubleVector& x, DoubleVector& p);
 
-    static void main();
+    static void main(int argc, char ** argv);
 
     double f(double t, double x) const;
     double pf(double t, double p, double x) const;

@@ -41,7 +41,7 @@ void BealesFunction::project(DoubleVector& x, int index)
     C_UNUSED(index);
 }
 
-void BealesFunction::main()
+void BealesFunction::main(int argc, char ** argv)
 {
     /* Function */
     BealesFunction func;\

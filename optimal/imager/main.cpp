@@ -27,7 +27,9 @@ int main(int argc, char *argv[])
     for (int i=0; i<argc; i++)
     {
         if (QString(argv[i]).compare("dim2") == 0)
+        {
             createHeatImage1(argc, argv);
+        }
         if (QString(argv[i]).compare("dim1") == 0)
         {
             createHeatImage2(argc, argv);
@@ -50,18 +52,17 @@ void createHeatImage1(int argc, char *argv[])
     QString inFile = QString(argv[6]);
     QString outFile = QString(argv[8]);
 
-
     QPixmap pixmap(QSize(width, height));
     pixmap.fill(Qt::white);
     QPainter painter(&pixmap);
-    //painter.drawPoint(0,0);
+    painter.drawPoint(0,0);
 
     QFile file(inFile);
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream in(&file);
 
-    double maximum = -999999999999.9;
-    double minimum = +999999999999.9;
+    double maximum = -9999.9;
+    double minimum = +9999.9;
 
     QDoubleMatrix m;
     m.resize(height);
@@ -91,11 +92,12 @@ void createHeatImage1(int argc, char *argv[])
     file.close();
 
     //minimum = 4.0;
-    printf("Minimum: %.10f Maximum: %.10f width: %d height %d\n", minimum, maximum, width, height);
-    //minimum = -0.15603702370000000000;
-    //maximum = +0.19309054760000000000;
+    minimum = -0.37206;
+    maximum = +0.75926;
 
-    //FILE *file1 = fopen("00minmax.txt1", "a");
+    printf("File: %s Minimum: %.10f Maximum: %.10f width: %d height %d\n", inFile.toAscii().data(), minimum, maximum, width, height);
+
+    //FILE *file1 = fopen("minmax.txt", "a");
     //fprintf(file1, "%.20f %.20f\n", minimum, maximum);
     //fclose(file1);
 
@@ -121,22 +123,22 @@ void createHeatImage1(int argc, char *argv[])
         }
     }
 
-    //    double sum = 0.0;
-    //    for (unsigned int j=0; j<=100; j++)
-    //    {
-    //        for (unsigned int i=0; i<=100; i++)
-    //        {
-    //            double k = 1.0;
-    //            if (i==0 || i==100) k *= 0.5;
-    //            if (j==0 || j==100) k *= 0.5;
-    //            sum = sum + k * (m[j][i]) * (m[j][i]);
-    //        }
-    //    }
-    //    double h1 = 0.010;
-    //    double h2 = 0.010;
-    //    sum = h1*h2*sum;
-    //    painter.setPen(Qt::black);
-    //    painter.drawText(10, 10, QString::number(sum, 'f', 6));
+        double sum = 0.0;
+        for (unsigned int j=0; j<height; j++)
+        {
+            for (unsigned int i=0; i<width; i++)
+            {
+                double k = 1.0;
+                if (i==0 || i==width-1)  k *= 0.5;
+                if (j==0 || j==height-1) k *= 0.5;
+                sum = sum + k * (m[j][i]) * (m[j][i]);
+            }
+        }
+        double h1 = 1.0 / (height-1);
+        double h2 = 1.0 / (width-1);
+        sum = h1*h2*sum;
+        painter.setPen(Qt::black);
+        painter.drawText(10, 10, QString::number(sum, 'f', 6));
 
     pixmap.save(outFile, "PNG");
 }

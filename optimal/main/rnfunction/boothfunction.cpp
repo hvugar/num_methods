@@ -41,7 +41,7 @@ void BoothFunction::project(DoubleVector &x, int index)
     C_UNUSED(index);
 }
 
-void BoothFunction::main()
+void BoothFunction::main(int argc, char ** argv)
 {
     /* Function */
     BoothFunction func;

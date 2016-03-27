@@ -24,7 +24,7 @@ public:
     //Projection
     virtual void project(DoubleVector &x, int index);
 
-    static void main();
+    static void main(int argc, char ** argv);
 
     double a;
     double b;

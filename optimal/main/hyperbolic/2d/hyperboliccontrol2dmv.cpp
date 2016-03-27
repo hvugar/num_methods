@@ -276,7 +276,7 @@ double HyperbolicControl2DMV::bfi1(unsigned int i, unsigned int j) const
 {
     const DoubleMatrix &u0 = (*pu)[M];
     const DoubleMatrix &u1 = (*pu)[M-2];
-    return -2.0 * alpha1 * ((u0[j][i]-u1[j][i])/(2.0*ht) - U1);
+    return -2.0 * alpha0 * ((u0[j][i]-u1[j][i])/(2.0*ht) - U1);
 }
 
 double HyperbolicControl2DMV::bfi2(unsigned int i, unsigned int j) const

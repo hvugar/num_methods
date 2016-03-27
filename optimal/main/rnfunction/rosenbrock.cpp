@@ -1,7 +1,7 @@
 #include "rosenbrock.h"
 #include <math.h>
 
-void Rosenbrock::main()
+void Rosenbrock::main(int argc, char ** argv)
 {
     /* Function */
     Rosenbrock r;

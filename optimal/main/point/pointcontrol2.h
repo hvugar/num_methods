@@ -45,7 +45,7 @@ private:
 
     void write(DoubleVector &x, const char* filename);
 public:
-    static void main();
+    static void main(int argc, char ** argv);
 };
 
 #endif // POINTCONTROL2_H

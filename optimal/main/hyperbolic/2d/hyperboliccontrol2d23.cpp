@@ -95,10 +95,10 @@ double HyperbolicControl2D23::fx(double t)
     //    v0[1*(M+D+1)+k] = v0[1*(M+D+1)+m];
     //}
 
-    size = v0.size();
-    fprintf(file, "size2: %d\n", size);
-    IPrinter::printVector(v0, "v11", size/2, 0, size/2-1, file);
-    IPrinter::printVector(v0, "v12", size/2, size/2, size-1, file);
+//    size = v0.size();
+//    fprintf(file, "size2: %d\n", size);
+//    IPrinter::printVector(v0, "v11", size/2, 0, size/2-1, file);
+//    IPrinter::printVector(v0, "v12", size/2, size/2, size-1, file);
 
     double min_step = 10.0;
     double gold_eps = 0.001;
@@ -113,15 +113,15 @@ double HyperbolicControl2D23::fx(double t)
     //cg.setProjection(this);
     cg.setNormalize(true);
     //cg.showEndMessage(false);
-    cg.calculate(v0);
+    //cg.calculate(v0);
 
     double rf = fx(v0);
     fprintf(file, "%f %.16f\n", t, rf);
     size = v0.size();
-    fprintf(file, "size2: %d\n", size);
-    IPrinter::printVector(v0, "v21", size/2, 0, size/2-1, file);
-    IPrinter::printVector(v0, "v22", size/2, size/2, size-1, file);
-    fputs("---------------\n", file);
+//    fprintf(file, "size2: %d\n", size);
+//    IPrinter::printVector(v0, "v21", size/2, 0, size/2-1, file);
+//    IPrinter::printVector(v0, "v22", size/2, size/2, size-1, file);
+//    fputs("---------------\n", file);
     fflush(file);
     return rf;
 }

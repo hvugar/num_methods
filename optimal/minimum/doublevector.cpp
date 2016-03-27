@@ -81,6 +81,34 @@ void DoubleVector::EuclideanNormalize()
     for (unsigned int i=0; i<size(); i++) (*this)[i] /= norm;
 }
 
+double DoubleVector::min() const
+{
+    double _min = NAN;
+    if (size() != 0)
+    {
+        _min = at(0);
+        for (unsigned int i=1; i<size(); i++)
+        {
+            if (_min > at(i)) _min = at(i);
+        }
+    }
+    return _min;
+}
+
+double DoubleVector::max() const
+{
+    double _max = NAN;
+    if (size()!=0)
+    {
+        _max = at(0);
+        for (unsigned int i=1; i<size(); i++)
+        {
+            if (_max < at(i)) _max = at(i);
+        }
+    }
+    return _max;
+}
+
 DoubleVector DoubleVector::mid(unsigned int start, unsigned int end) const
 {
     unsigned int size = end - start + 1;
@@ -144,6 +172,36 @@ DoubleMatrix::DoubleMatrix(unsigned int m, unsigned int n, double value) : std::
 
 DoubleMatrix::~DoubleMatrix()
 {}
+
+double DoubleMatrix::min() const
+{
+    double _min = NAN;
+    if (size() != 0)
+    {
+        _min = at(0).min();
+        for (unsigned int i=1; i<size(); i++)
+        {
+            double _vmin = at(i).min();
+            if (_min > _vmin) _min = _vmin;
+        }
+    }
+    return _min;
+}
+
+double DoubleMatrix::max() const
+{
+    double _max = NAN;
+    if (size() != 0)
+    {
+        _max = at(0).max();
+        for (unsigned int i=1; i<size(); i++)
+        {
+            double _vmax = at(i).max();
+            if (_max < _vmax) _max = _vmax;
+        }
+    }
+    return _max;
+}
 
 void DoubleMatrix::Clear()
 {

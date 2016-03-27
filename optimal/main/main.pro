@@ -1,7 +1,7 @@
 TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
-CONFIG -= qt
+#CONFIG -= qt
 TARGET = main
 #QMAKE_CXXFLAGS += -O3
 #QMAKE_CXXFLAGS -= -O2

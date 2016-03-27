@@ -20,7 +20,7 @@ public:
 
     void print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const;
 
-    static void main();
+    static void main(int argc, char ** argv);
 private:
     double grad_step;
     unsigned int count;

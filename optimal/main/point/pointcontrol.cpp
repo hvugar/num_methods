@@ -118,7 +118,7 @@ double PointControl::delta(double t)
     return 0.0;
 }
 
-void PointControl::main()
+void PointControl::main(int argc, char ** argv)
 {
     DoubleVector p(3, 0.0);
     p[0] = 10.5;

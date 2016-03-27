@@ -24,6 +24,9 @@ public:
     void L1Normalize();
     void EuclideanNormalize();
 
+    double min() const;
+    double max() const;
+
     DoubleVector mid(unsigned int s, unsigned int e) const;
 
     /* static methods */
@@ -35,7 +38,6 @@ public:
     static void L2Normalize(DoubleVector&);
     static void L1Normalize(DoubleVector&);
     static void EuclideanNormalize(DoubleVector&);
-    static DoubleVector null;
 };
 
 class MINIMUMSHARED_EXPORT DoubleMatrix : public std::vector<DoubleVector>
@@ -45,6 +47,9 @@ public:
     virtual ~DoubleMatrix();
     void Clear();
     void Resize(unsigned int m, unsigned n);
+
+    double min() const;
+    double max() const;
 };
 
 class MINIMUMSHARED_EXPORT DoubleCube : public std::vector<DoubleMatrix>

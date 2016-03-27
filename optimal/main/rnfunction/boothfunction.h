@@ -19,12 +19,12 @@ public:
     virtual void gradient(const DoubleVector& x, DoubleVector& g);
     void print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const;
     virtual void project(DoubleVector &x, int index);
-    static void main();
-    double a;
-    double b;
+    static void main(int argc, char ** argv);
 
 private:
     double grad_step;
+    double a;
+    double b;
 };
 
 #endif // BOOTHFUNCTION_H

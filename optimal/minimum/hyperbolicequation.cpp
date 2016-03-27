@@ -728,8 +728,16 @@ void IHyperbolicEquation2D::calculateU1(DoubleCube &u, double h1, double h2, dou
     rx2.clear();
 }
 
+double MIN = +100.0;
+double MAX = -100.0;
+
 void saveData(const DoubleMatrix& m, int i, unsigned int N2, unsigned int N1)
 {
+    double min = m.min();
+    double max = m.max();
+    if (MIN > min) MIN = min;
+    if (MAX < max) MAX = max;
+
     char buffer[20];
     int n = 0;
     if (i<10) n = sprintf(buffer, "data/0000000%d.txt", i);
@@ -740,6 +748,8 @@ void saveData(const DoubleMatrix& m, int i, unsigned int N2, unsigned int N1)
     FILE *file = fopen(buffer, "w");
     IPrinter::printMatrix(m, N2, N1, NULL, file);
     fclose(file);
+
+    printf("File: %s min: %.16f max: %.16f\n", buffer, MIN, MAX);
 }
 
 void IHyperbolicEquation2D::calculateU1(DoubleMatrix &u, double h1, double h2, double ht, double N1, double N2, double M, double a1, double a2, double qamma) const
