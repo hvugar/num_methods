@@ -25,8 +25,8 @@ void IHyperbolicEquation::calculateU(DoubleVector &u, double hx, double ht, unsi
         {
             for (unsigned int i=0; i<=N; i++)
             {
-                u0[i] = fi1(i);
-                u1[i] = u0[i] + ht*fi2(i);
+                u0[i] = initial1(i);
+                u1[i] = u0[i] + ht*initial2(i);
             }
         }
         else
@@ -44,8 +44,8 @@ void IHyperbolicEquation::calculateU(DoubleVector &u, double hx, double ht, unsi
             da[0]   = 0.0;
             dc[N-2] = 0.0;
 
-            u[0] = m1(j+1);
-            u[N] = m2(j+1);
+            u[0] = boundary(Left, j+1); //m1(j+1);
+            u[N] = boundary(Right, j+1); //m2(j+1);
 
             rd[0]   -= alpha1 * u[0];
             rd[N-2] -= alpha1 * u[N];
@@ -103,14 +103,14 @@ void IHyperbolicEquation::calculateU(DoubleMatrix &u, double hx, double ht, unsi
         {
             for (unsigned int i=0; i<=N; i++)
             {
-                u[0][i] = fi1(i);
-                u[1][i] = u[0][i] + ht*fi2(i);
+                u[0][i] = initial1(i);
+                u[1][i] = u[0][i] + ht*initial2(i);
             }
         }
         else
         {
-            u[j+1][0] = m1(j+1);
-            u[j+1][N] = m2(j+1);
+            u[j+1][0] = boundary(Left,j+1);//m1(j+1);
+            u[j+1][N] = boundary(Right,j+1);//m2(j+1);
 
             for (unsigned int i=1; i<=N-1; i++)
             {
@@ -171,8 +171,8 @@ void IBackwardHyperbolicEquation::calculateU(DoubleVector &p, double hx, double 
         {
             for (unsigned int i=0; i<=N; i++)
             {
-                p0[i] = bfi1(i);
-                p1[i] = p0[i] - ht*bfi2(i);
+                p0[i] = binitial1(i);
+                p1[i] = p0[i] - ht*binitial2(i);
             }
         }
         else
@@ -190,8 +190,8 @@ void IBackwardHyperbolicEquation::calculateU(DoubleVector &p, double hx, double 
             da[0]   = 0.0;
             dc[N-2] = 0.0;
 
-            p[0] = bm1(j-1);
-            p[N] = bm2(j-1);
+            p[0] = bboundary(Left, j-1);//bm1(j-1);
+            p[N] = bboundary(Right, j-1);//bm2(j-1);
 
             rd[0]   -= alpha1 * p[0];
             rd[N-2] -= alpha1 * p[N];
@@ -252,14 +252,14 @@ void IBackwardHyperbolicEquation::calculateU(DoubleMatrix &p, double hx, double 
         {
             for (unsigned int i=0; i<=N; i++)
             {
-                p[M][i] = bfi1(i);
-                p[M-1][i] = p[M][i] - ht*bfi2(i);
+                p[M][i] = binitial1(i);
+                p[M-1][i] = p[M][i] - ht*binitial2(i);
             }
         }
         else
         {
-            p[j-1][0] = bm1(j-1);
-            p[j-1][N] = bm2(j-1);
+            p[j-1][0] = bboundary(Left, j-1);//bm1(j-1);
+            p[j-1][N] = bboundary(Right, j-1);//bm2(j-1);
 
             for (unsigned int i=1; i<=N-1; i++)
             {
@@ -334,8 +334,8 @@ void IHyperbolicEquation2D::calculateMVD(DoubleMatrix &u, double h1, double h2, 
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    u0[j][i] = fi1(i, j);
-                    u1[j][i] = u0[j][i] + ht*fi2(i, j);
+                    u0[j][i] = initial1(i, j);
+                    u1[j][i] = u0[j][i] + ht*initial2(i, j);
                 }
             }
         }
@@ -345,8 +345,8 @@ void IHyperbolicEquation2D::calculateMVD(DoubleMatrix &u, double h1, double h2, 
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    u[0][i]  = m3(i, k);
-                    u[N2][i] = m4(i, k);
+                    u[0][i]  = boundary(i, 0, k);//m3(i, k);
+                    u[N2][i] = boundary(i, N2, k);//m4(i, k);
                 }
 
                 // Approximation to x1 direction
@@ -363,8 +363,8 @@ void IHyperbolicEquation2D::calculateMVD(DoubleMatrix &u, double h1, double h2, 
                     da1[0]     = 0.0;
                     dc1[N1-2]  = 0.0;
 
-                    u[j][0]  = m1(j, k);
-                    u[j][N1] = m2(j, k);
+                    u[j][0]  = boundary(0, j, k);//m1(j, k);
+                    u[j][N1] = boundary(N1, j, k);//m2(j, k);
 
                     dd1[0]    -= x1_a * u[j][0];
                     dd1[N1-2] -= x1_a * u[j][N1];
@@ -382,8 +382,8 @@ void IHyperbolicEquation2D::calculateMVD(DoubleMatrix &u, double h1, double h2, 
             {
                 for (unsigned int j=0; j<=N2; j++)
                 {
-                    u[j][0]  = m1(j, k);
-                    u[j][N1] = m2(j, k);
+                    u[j][0]  = boundary(0, j, k);//m1(j, k);
+                    u[j][N1] = boundary(N1, j, k);//m2(j, k);
                 }
 
                 // Approximation to x2 direction
@@ -399,8 +399,8 @@ void IHyperbolicEquation2D::calculateMVD(DoubleMatrix &u, double h1, double h2, 
                     da2[0]     = 0.0;
                     dc2[N2-2]  = 0.0;
 
-                    u[0][i]  = m3(i, k);
-                    u[N2][i] = m4(i, k);
+                    u[0][i]  = boundary(i, 0, k);//m3(i, k);
+                    u[N2][i] = boundary(i, N2, k);//m4(i, k);
 
                     dd2[0]    -= x2_a * u[0][i];
                     dd2[N2-2] -= x2_a * u[N2][i];
@@ -485,8 +485,8 @@ void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, do
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    u[0][j][i] = fi1(i, j);
-                    u[1][j][i] = u[0][j][i] + ht*fi2(i, j);
+                    u[0][j][i] = initial1(i, j);
+                    u[1][j][i] = u[0][j][i] + ht*initial2(i, j);
                 }
             }
         }
@@ -499,8 +499,8 @@ void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, do
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    u[k][0][i]  = m3(i, k);
-                    u[k][N2][i] = m4(i, k);
+                    u[k][0][i]  = boundary(i, 0, k);//m3(i, k);
+                    u[k][N2][i] = boundary(i, N2, k);//m4(i, k);
                 }
 
                 // Approximation to x1 direction
@@ -517,8 +517,8 @@ void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, do
                     da1[0]     = 0.0;
                     dc1[N1-2]  = 0.0;
 
-                    u[k][j][0]  = m1(j, k);
-                    u[k][j][N1] = m2(j, k);
+                    u[k][j][0]  = boundary(0, j, k);//m1(j, k);
+                    u[k][j][N1] = boundary(N1, j, k);//m2(j, k);
 
                     dd1[0]    -= x1_a * u[k][j][0];
                     dd1[N1-2] -= x1_a * u[k][j][N1];
@@ -536,8 +536,8 @@ void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, do
             {
                 for (unsigned int j=0; j<=N2; j++)
                 {
-                    u[k][j][0]  = m1(j, k);
-                    u[k][j][N1] = m2(j, k);
+                    u[k][j][0]  = boundary(0, j, k);//m1(j, k);
+                    u[k][j][N1] = boundary(N1, j, k);//m2(j, k);
                 }
 
                 // Approximation to x2 direction
@@ -553,8 +553,8 @@ void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, do
                     da2[0]     = 0.0;
                     dc2[N2-2]  = 0.0;
 
-                    u[k][0][i]  = m3(i, k);
-                    u[k][N2][i] = m4(i, k);
+                    u[k][0][i]  = boundary(i, 0, k);//m3(i, k);
+                    u[k][N2][i] = boundary(i, N2, k);//m4(i, k);
 
                     dd2[0]    -= x2_a * u[k][0][i];
                     dd2[N2-2] -= x2_a * u[k][N2][i];
@@ -630,8 +630,8 @@ void IHyperbolicEquation2D::calculateU1(DoubleCube &u, double h1, double h2, dou
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    u[0][j][i] = fi1(i, j);
-                    u[1][j][i] = u[0][j][i] + ht*fi2(i, j);
+                    u[0][j][i] = initial1(i, j);
+                    u[1][j][i] = u[0][j][i] + ht*initial2(i, j);
                 }
             }
         }
@@ -644,8 +644,8 @@ void IHyperbolicEquation2D::calculateU1(DoubleCube &u, double h1, double h2, dou
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    u[k][0][i]  = m3(i, k);
-                    u[k][N2][i] = m4(i, k);
+                    u[k][0][i]  = boundary(i, 0, k);//m3(i, k);
+                    u[k][N2][i] = boundary(i, N2, k);//m4(i, k);
                 }
 
                 // Approximation to x1 direction
@@ -662,8 +662,8 @@ void IHyperbolicEquation2D::calculateU1(DoubleCube &u, double h1, double h2, dou
                     da1[0]     = 0.0;
                     dc1[N1-2]  = 0.0;
 
-                    u[k][j][0]  = m1(j, k);
-                    u[k][j][N1] = m2(j, k);
+                    u[k][j][0]  = boundary(0, j, k);//m1(j, k);
+                    u[k][j][N1] = boundary(N1, j, k);//m2(j, k);
 
                     dd1[0]    -= x1_a * u[k][j][0];
                     dd1[N1-2] -= x1_a * u[k][j][N1];
@@ -681,8 +681,8 @@ void IHyperbolicEquation2D::calculateU1(DoubleCube &u, double h1, double h2, dou
             {
                 for (unsigned int j=0; j<=N2; j++)
                 {
-                    u[k][j][0]  = m1(j, k);
-                    u[k][j][N1] = m2(j, k);
+                    u[k][j][0]  = boundary(0, j, k);//m1(j, k);
+                    u[k][j][N1] = boundary(N1, j, k);//m2(j, k);
                 }
 
                 // Approximation to x2 direction
@@ -698,8 +698,8 @@ void IHyperbolicEquation2D::calculateU1(DoubleCube &u, double h1, double h2, dou
                     da2[0]     = 0.0;
                     dc2[N2-2]  = 0.0;
 
-                    u[k][0][i]  = m3(i, k);
-                    u[k][N2][i] = m4(i, k);
+                    u[k][0][i]  = boundary(i, 0, k);//m3(i, k);
+                    u[k][N2][i] = boundary(i, N2, k);//m4(i, k);
 
                     dd2[0]    -= x2_a * u[k][0][i];
                     dd2[N2-2] -= x2_a * u[k][N2][i];
@@ -797,8 +797,8 @@ void IHyperbolicEquation2D::calculateU1(DoubleMatrix &u, double h1, double h2, d
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    u0[j][i] = fi1(i, j);
-                    u1[j][i] = u0[j][i] + ht*fi2(i, j);
+                    u0[j][i] = initial1(i, j);
+                    u1[j][i] = u0[j][i] + ht*initial2(i, j);
                 }
             }
 
@@ -811,8 +811,8 @@ void IHyperbolicEquation2D::calculateU1(DoubleMatrix &u, double h1, double h2, d
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    u[0][i]  = m3(i, k);
-                    u[N2][i] = m4(i, k);
+                    u[0][i]  = boundary(i, 0, k);//m3(i, k);
+                    u[N2][i] = boundary(i, N2, k);//m4(i, k);
                 }
 
                 // Approximation to x1 direction
@@ -829,8 +829,8 @@ void IHyperbolicEquation2D::calculateU1(DoubleMatrix &u, double h1, double h2, d
                     da1[0]     = 0.0;
                     dc1[N1-2]  = 0.0;
 
-                    u[j][0]  = m1(j, k);
-                    u[j][N1] = m2(j, k);
+                    u[j][0]  = boundary(0, j, k);//m1(j, k);
+                    u[j][N1] = boundary(N1, j, k);//m2(j, k);
 
                     dd1[0]    -= x1_a * u[j][0];
                     dd1[N1-2] -= x1_a * u[j][N1];
@@ -848,8 +848,8 @@ void IHyperbolicEquation2D::calculateU1(DoubleMatrix &u, double h1, double h2, d
             {
                 for (unsigned int j=0; j<=N2; j++)
                 {
-                    u[j][0]  = m1(j, k);
-                    u[j][N1] = m2(j, k);
+                    u[j][0]  = boundary(0, j, k);//m1(j, k);
+                    u[j][N1] = boundary(N1, j, k);//m2(j, k);
                 }
 
                 // Approximation to x2 direction
@@ -865,8 +865,8 @@ void IHyperbolicEquation2D::calculateU1(DoubleMatrix &u, double h1, double h2, d
                     da2[0]     = 0.0;
                     dc2[N2-2]  = 0.0;
 
-                    u[0][i]  = m3(i, k);
-                    u[N2][i] = m4(i, k);
+                    u[0][i]  = boundary(i, 0, k);//m3(i, k);
+                    u[N2][i] = boundary(i, N2, k);//m4(i, k);
 
                     dd2[0]    -= x2_a * u[0][i];
                     dd2[N2-2] -= x2_a * u[N2][i];
@@ -948,8 +948,8 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleMatrix &u, double h1, doubl
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    u0[j][i] = bfi1(i, j);
-                    u1[j][i] = u0[j][i] + ht*bfi2(i, j);
+                    u0[j][i] = binitial1(i, j);
+                    u1[j][i] = u0[j][i] + ht*binitial2(i, j);
                 }
             }
         }
@@ -959,8 +959,8 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleMatrix &u, double h1, doubl
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    u[0][i]  = bm3(i, k);
-                    u[N2][i] = bm4(i, k);
+                    u[0][i]  = bboundary(i, 0, k); //bm3(i, k);
+                    u[N2][i] = bboundary(i, N2, k);//bm4(i, k);
                 }
 
                 // Approximation to x1 direction
@@ -977,8 +977,8 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleMatrix &u, double h1, doubl
                     da1[0]     = 0.0;
                     dc1[N1-2]  = 0.0;
 
-                    u[j][0]  = bm1(j, k);
-                    u[j][N1] = bm2(j, k);
+                    u[j][0]  = bboundary(0, j, k); //bm1(j, k);
+                    u[j][N1] = bboundary(N1, j, k);//bm2(j, k);
 
                     dd1[0]    -= x1_a * u[j][0];
                     dd1[N1-2] -= x1_a * u[j][N1];
@@ -996,8 +996,8 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleMatrix &u, double h1, doubl
             {
                 for (unsigned int j=0; j<=N2; j++)
                 {
-                    u[j][0]  = bm1(j, k);
-                    u[j][N1] = bm2(j, k);
+                    u[j][0]  = bboundary(0, j, k);//bm1(j, k);
+                    u[j][N1] = bboundary(N1, j, k);//bm2(j, k);
                 }
 
                 // Approximation to x2 direction
@@ -1013,8 +1013,8 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleMatrix &u, double h1, doubl
                     da2[0]     = 0.0;
                     dc2[N2-2]  = 0.0;
 
-                    u[0][i]  = bm3(i, k);
-                    u[N2][i] = bm4(i, k);
+                    u[0][i]  = bboundary(i, 0, k);//bm3(i, k);
+                    u[N2][i] = bboundary(i, N2, k);//bm4(i, k);
 
                     dd2[0]    -= x2_a * u[0][i];
                     dd2[N2-2] -= x2_a * u[N2][i];
@@ -1099,8 +1099,8 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    p[M][j][i] = bfi1(i, j);
-                    p[M-1][j][i] = p[M][j][i] - ht*bfi2(i, j);
+                    p[M][j][i] = binitial1(i, j);
+                    p[M-1][j][i] = p[M][j][i] - ht*binitial2(i, j);
                 }
             }
         }
@@ -1112,8 +1112,8 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    p[k][0][i]  = bm3(i, k);
-                    p[k][N2][i] = bm4(i, k);
+                    p[k][0][i]  = bboundary(i, 0, k);//bm3(i, k);
+                    p[k][N2][i] = bboundary(i, N2, k);//bm4(i, k);
                 }
 
                 // Approximation to x1 direction
@@ -1130,8 +1130,8 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
                     da1[0]     = 0.0;
                     dc1[N1-2]  = 0.0;
 
-                    p[k][j][0]  = bm1(j, k);
-                    p[k][j][N1] = bm2(j, k);
+                    p[k][j][0]  = bboundary(0, j, k);//bm1(j, k);
+                    p[k][j][N1] = bboundary(N1, j, k);//bm2(j, k);
 
                     dd1[0]    -= x1_a * p[k][j][0];
                     dd1[N1-2] -= x1_a * p[k][j][N1];
@@ -1149,8 +1149,8 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
             {
                 for (unsigned int j=0; j<=N2; j++)
                 {
-                    p[k][j][0]  = bm1(j, k);
-                    p[k][j][N1] = bm2(j, k);
+                    p[k][j][0]  = bboundary(0, j, k);//bm1(j, k);
+                    p[k][j][N1] = bboundary(N1, j, k);//bm2(j, k);
                 }
 
                 // Approximation to x2 direction
@@ -1166,8 +1166,8 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
                     da2[0]     = 0.0;
                     dc2[N2-2]  = 0.0;
 
-                    p[k][0][i]  = bm3(i, k);
-                    p[k][N2][i] = bm4(i, k);
+                    p[k][0][i]  = bboundary(i, 0, k);//bm3(i, k);
+                    p[k][N2][i] = bboundary(i, N2, k);//bm4(i, k);
 
                     dd2[0]    -= x2_a * p[k][0][i];
                     dd2[N2-2] -= x2_a * p[k][N2][i];
@@ -1243,8 +1243,8 @@ void IBackwardHyperbolicEquation2D::calculateU1(DoubleCube &p, double h1, double
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    p[M][j][i] = bfi1(i, j);
-                    p[M-1][j][i] = p[M][j][i] - ht*bfi2(i, j);
+                    p[M][j][i] = binitial1(i, j);
+                    p[M-1][j][i] = p[M][j][i] - ht*binitial2(i, j);
                 }
             }
         }
@@ -1256,8 +1256,8 @@ void IBackwardHyperbolicEquation2D::calculateU1(DoubleCube &p, double h1, double
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    p[k][0][i]  = bm3(i, k);
-                    p[k][N2][i] = bm4(i, k);
+                    p[k][0][i]  = bboundary(i, 0, k);//bm3(i, k);
+                    p[k][N2][i] = bboundary(i, N2, k);//bm4(i, k);
                 }
 
                 // Approximation to x1 direction
@@ -1274,8 +1274,8 @@ void IBackwardHyperbolicEquation2D::calculateU1(DoubleCube &p, double h1, double
                     da1[0]     = 0.0;
                     dc1[N1-2]  = 0.0;
 
-                    p[k][j][0]  = bm1(j, k);
-                    p[k][j][N1] = bm2(j, k);
+                    p[k][j][0]  = bboundary(0, j, k);//bm1(j, k);
+                    p[k][j][N1] = bboundary(N1, j, k);//bm2(j, k);
 
                     dd1[0]    -= x1_a * p[k][j][0];
                     dd1[N1-2] -= x1_a * p[k][j][N1];
@@ -1293,8 +1293,8 @@ void IBackwardHyperbolicEquation2D::calculateU1(DoubleCube &p, double h1, double
             {
                 for (unsigned int j=0; j<=N2; j++)
                 {
-                    p[k][j][0]  = bm1(j, k);
-                    p[k][j][N1] = bm2(j, k);
+                    p[k][j][0]  = bboundary(0, j, k);//bm1(j, k);
+                    p[k][j][N1] = bboundary(N1, j, k);//bm2(j, k);
                 }
 
                 // Approximation to x2 direction
@@ -1310,8 +1310,8 @@ void IBackwardHyperbolicEquation2D::calculateU1(DoubleCube &p, double h1, double
                     da2[0]     = 0.0;
                     dc2[N2-2]  = 0.0;
 
-                    p[k][0][i]  = bm3(i, k);
-                    p[k][N2][i] = bm4(i, k);
+                    p[k][0][i]  = bboundary(i, 0, k);//bm3(i, k);
+                    p[k][N2][i] = bboundary(i, N2, k);//bm4(i, k);
 
                     dd2[0]    -= x2_a * p[k][0][i];
                     dd2[N2-2] -= x2_a * p[k][N2][i];

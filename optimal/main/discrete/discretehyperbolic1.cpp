@@ -362,30 +362,24 @@ void DiscreteHyperbolic1::print(unsigned int i, const DoubleVector &v, const Dou
     printf("J[%d]: %.16f\n", i, fn->fx(v));
 }
 
-double DiscreteHyperbolic1::fi1(unsigned int i) const
+double DiscreteHyperbolic1::initial1(unsigned int i) const
 {
     C_UNUSED(i);
     return 2.0;
 }
 
-double DiscreteHyperbolic1::fi2(unsigned int i) const
+double DiscreteHyperbolic1::initial2(unsigned int i) const
 {
     C_UNUSED(i);
     return 0.0;
 }
 
-double DiscreteHyperbolic1::m1(unsigned int j) const
+double DiscreteHyperbolic1::boundary(Boundary type, unsigned int j) const
 {
     const DoubleVector &v = *pv;
-    double v1 = v[0*(M+D+1)+j];
-    return v1;
-}
-
-double DiscreteHyperbolic1::m2(unsigned int j) const
-{
-    const DoubleVector &v = *pv;
-    double v2 = v[1*(M+D+1)+j];
-    return v2;
+    if (type==Left)  return v[0*(M+D+1)+j];
+    if (type==Right) return v[1*(M+D+1)+j];
+    return 0.0;
 }
 
 double DiscreteHyperbolic1::f(unsigned int i, unsigned int j) const

@@ -6,7 +6,7 @@ void HyperbolicControl2DMX::main()
     //    hc.fx(0.4);
     //    hc.fx(0.6);
     //    hc.fx(0.8);
-        hc.fx(1.0);
+    hc.fx(1.0);
     //    hc.fx(1.2);
     //    hc.fx(1.4);
     //    hc.fx(1.6);
@@ -61,21 +61,21 @@ double HyperbolicControl2DMX::fx(double T)
     x[2] = 0.7;
     x[3] = 0.7;
 
-//    double min_step = 1.0;
-//    double gold_eps = 0.001;
+    //    double min_step = 1.0;
+    //    double gold_eps = 0.001;
 
-//    ConjugateGradient cg;
-//    cg.setFunction(this);
-//    cg.setGradient(this);
-//    cg.setEpsilon1(0.001);
-//    cg.setEpsilon2(0.001);
-//    cg.setEpsilon3(0.001);
-//    cg.setR1MinimizeEpsilon(min_step, gold_eps);
-//    cg.setPrinter(this);
-//    cg.setProjection(this);
-//    cg.setNormalize(false);
-//    cg.showEndMessage(false);
-//    cg.calculate(x);
+    //    ConjugateGradient cg;
+    //    cg.setFunction(this);
+    //    cg.setGradient(this);
+    //    cg.setEpsilon1(0.001);
+    //    cg.setEpsilon2(0.001);
+    //    cg.setEpsilon3(0.001);
+    //    cg.setR1MinimizeEpsilon(min_step, gold_eps);
+    //    cg.setPrinter(this);
+    //    cg.setProjection(this);
+    //    cg.setNormalize(false);
+    //    cg.showEndMessage(false);
+    //    cg.calculate(x);
 
     double rf = fx(x);
 
@@ -212,44 +212,24 @@ void HyperbolicControl2DMX::psiDerivative(double &psiX1, double &psiX2, double x
     else psiX2 = (psi[j+1][i] - psi[j-1][i])/(2.0*h2);
 }
 
-double HyperbolicControl2DMX::fi1(unsigned int i, unsigned int j) const
+double HyperbolicControl2DMX::initial1(unsigned int i, unsigned int j) const
 {
     C_UNUSED(i);
     C_UNUSED(j);
     return 0.0;
 }
 
-double HyperbolicControl2DMX::fi2(unsigned int i, unsigned int j) const
+double HyperbolicControl2DMX::initial2(unsigned int i, unsigned int j) const
 {
     C_UNUSED(i);
     C_UNUSED(j);
     return 0.0;
 }
 
-double HyperbolicControl2DMX::m1(unsigned int j, unsigned int k) const
-{
-    C_UNUSED(j);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double HyperbolicControl2DMX::m2(unsigned int j, unsigned int k) const
-{
-    C_UNUSED(j);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double HyperbolicControl2DMX::m3(unsigned int i, unsigned int k) const
+double HyperbolicControl2DMX::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     C_UNUSED(i);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double HyperbolicControl2DMX::m4(unsigned int i, unsigned int k) const
-{
-    C_UNUSED(i);
+    C_UNUSED(j);
     C_UNUSED(k);
     return 0.0;
 }
@@ -278,43 +258,23 @@ double HyperbolicControl2DMX::f(unsigned int i, unsigned int j, unsigned int k) 
     return sum;
 }
 
-double HyperbolicControl2DMX::bfi1(unsigned int i, unsigned int j) const
+double HyperbolicControl2DMX::binitial1(unsigned int i, unsigned int j) const
 {
     const DoubleMatrix &u0 = (*pu)[M];
     const DoubleMatrix &u1 = (*pu)[M-2];
     return -2.0 * alpha1 * ( (u0[j][i]-u1[j][i])/(2.0*ht) - U1);
 }
 
-double HyperbolicControl2DMX::bfi2(unsigned int i, unsigned int j) const
+double HyperbolicControl2DMX::binitial2(unsigned int i, unsigned int j) const
 {
     const DoubleMatrix &u0 = (*pu)[M];
-    return +2.0 * (u0[j][i] - U0) + qamma*(bfi1(i,j));
+    return +2.0 * (u0[j][i] - U0) + qamma*(binitial1(i,j));
 }
 
-double HyperbolicControl2DMX::bm1(unsigned int j, unsigned int k) const
-{
-    C_UNUSED(j);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double HyperbolicControl2DMX::bm2(unsigned int j, unsigned int k) const
-{
-    C_UNUSED(j);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double HyperbolicControl2DMX::bm3(unsigned int i, unsigned int k) const
+double HyperbolicControl2DMX::bboundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     C_UNUSED(i);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double HyperbolicControl2DMX::bm4(unsigned int i, unsigned int k) const
-{
-    C_UNUSED(i);
+    C_UNUSED(j);
     C_UNUSED(k);
     return 0.0;
 }

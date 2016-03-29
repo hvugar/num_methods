@@ -15,5 +15,19 @@
 
 #define C_UNUSED(x) (void)x;
 
+enum Boundary
+{
+    Left = 0,
+    Right = 0
+};
+
+enum BoundaryCondition
+{
+    Dirichlet = 0,
+    Neumann = 1,
+    Robin = 2,
+    Mixed = 3
+};
+
 #endif // GLOBAL
 

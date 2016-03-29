@@ -213,53 +213,42 @@ double HyperbolicControlH::bf(unsigned int i, unsigned int j) const
     return 0.0;
 }
 
-double HyperbolicControlH::fi1(unsigned int i) const
+double HyperbolicControlH::initial1(unsigned int i) const
 {
     C_UNUSED(i);
     return 2.0;
 }
 
-double HyperbolicControlH::fi2(unsigned int i) const
+double HyperbolicControlH::initial2(unsigned int i) const
 {
     C_UNUSED(i);
     return 0.0;
 }
 
-double HyperbolicControlH::m1(unsigned int j) const
+double HyperbolicControlH::boundary(Boundary type, unsigned int j) const
 {
     const DoubleVector &v = *pv;
-    double v1 = v[0*(M+D-1)+(j-2)];
-    return v1;
+    if (type==Left)  return v[0*(M+D-1)+(j-2)];
+    if (type==Right) return v[1*(M+D-1)+(j-2)];
+    return 0.0;
 }
 
-double HyperbolicControlH::m2(unsigned int j) const
-{
-    const DoubleVector &v = *pv;
-    double v2 = v[1*(M+D-1)+(j-2)];
-    return v2;
-}
-
-double HyperbolicControlH::bfi1(unsigned int i) const
+double HyperbolicControlH::binitial1(unsigned int i) const
 {
     C_UNUSED(i);
     return 0.0;
 }
 
-double HyperbolicControlH::bfi2(unsigned int i) const
+double HyperbolicControlH::binitial2(unsigned int i) const
 {
     C_UNUSED(i);
     return 0.0;
 }
 
-double HyperbolicControlH::bm1(unsigned int j) const
+double HyperbolicControlH::bboundary(Boundary type, unsigned int j) const
 {
     C_UNUSED(j);
-    return 0.0;
-}
-
-double HyperbolicControlH::bm2(unsigned int j) const
-{
-    C_UNUSED(j);
+    C_UNUSED(type);
     return 0.0;
 }
 

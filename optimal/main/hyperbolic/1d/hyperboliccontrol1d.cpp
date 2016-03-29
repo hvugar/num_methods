@@ -117,28 +117,36 @@ void HyperbolicControl1D::gradient(const DoubleVector& v, DoubleVector& g)
     }
 }
 
-double HyperbolicControl1D::fi1(unsigned int i) const
+double HyperbolicControl1D::initial1(unsigned int i) const
 {
     double x = i*hx;
     return x*x;
 }
 
-double HyperbolicControl1D::fi2(unsigned int i) const
+double HyperbolicControl1D::initial2(unsigned int i) const
 {
     C_UNUSED(i);
     return 0.0;
 }
 
-double HyperbolicControl1D::m1(unsigned int j) const
+double HyperbolicControl1D::boundary(Boundary type, unsigned int j) const
 {
-    return (*pv)[j];
+    const DoubleVector &v = *pv;
+    if (type==Left)  return v[0*(M+1)+j];
+    if (type==Right) return v[1*(M+1)+j];
+    return 0.0;
 }
 
-double HyperbolicControl1D::m2(unsigned int j) const
-{
-    unsigned int i = M+1 + j;
-    return (*pv)[i];
-}
+//double HyperbolicControl1D::m1(unsigned int j) const
+//{
+//    return (*pv)[j];
+//}
+
+//double HyperbolicControl1D::m2(unsigned int j) const
+//{
+//    unsigned int i = M+1 + j;
+//    return (*pv)[i];
+//}
 
 double HyperbolicControl1D::f(unsigned int i, unsigned int j) const
 {
@@ -147,25 +155,19 @@ double HyperbolicControl1D::f(unsigned int i, unsigned int j) const
     return 0.0;
 }
 
-double HyperbolicControl1D::bfi1(unsigned int i) const
+double HyperbolicControl1D::binitial1(unsigned int i) const
 {
     C_UNUSED(i);
     return 0.0;
 }
 
-double HyperbolicControl1D::bfi2(unsigned int i) const
+double HyperbolicControl1D::binitial2(unsigned int i) const
 {
     const DoubleVector &u = *pu;
     return 2.0*(u[i] - U[i]);
 }
 
-double HyperbolicControl1D::bm1(unsigned int j) const
-{
-    C_UNUSED(j);
-    return 0.0;
-}
-
-double HyperbolicControl1D::bm2(unsigned int j) const
+double HyperbolicControl1D::bboundary(Boundary type, unsigned int j) const
 {
     C_UNUSED(j);
     return 0.0;

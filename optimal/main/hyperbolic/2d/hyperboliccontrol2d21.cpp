@@ -101,32 +101,17 @@ double HyperbolicControl2D21::fx(const DoubleVector &x)
     return sum;
 }
 
-double HyperbolicControl2D21::fi1(unsigned int i, unsigned int j) const
+double HyperbolicControl2D21::initial1(unsigned int i, unsigned int j) const
 {
     return 0.0;
 }
 
-double HyperbolicControl2D21::fi2(unsigned int i, unsigned int j) const
+double HyperbolicControl2D21::initial2(unsigned int i, unsigned int j) const
 {
     return 0.0;
 }
 
-double HyperbolicControl2D21::m1(unsigned int j, unsigned int k) const
-{
-    return 0.0;
-}
-
-double HyperbolicControl2D21::m2(unsigned int j, unsigned int k) const
-{
-    return 0.0;
-}
-
-double HyperbolicControl2D21::m3(unsigned int i, unsigned int k) const
-{
-    return 0.0;
-}
-
-double HyperbolicControl2D21::m4(unsigned int i, unsigned int k) const
+double HyperbolicControl2D21::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     return 0.0;
 }

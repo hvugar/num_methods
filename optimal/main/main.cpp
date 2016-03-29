@@ -15,6 +15,6 @@ int main(int argc, char ** argv)
     //BorderHyperbolic::main();
     //BorderParabolic2D::main();
 
-    HyperbolicControl2D21::main(argc, argv);
+    HyperbolicControl2D23::main(argc, argv);
     return 0;
 }

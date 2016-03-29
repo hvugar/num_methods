@@ -103,29 +103,37 @@ void Hyperbolic1DX::print(unsigned int i, const DoubleVector &e, const DoubleVec
     printf("g1: %12.8f %12.8f %12.8f\n", g[0], g[1], g[2]);
 }
 
-double Hyperbolic1DX::fi1(unsigned int i) const
+double Hyperbolic1DX::initial1(unsigned int i) const
 {
     double x = i*hx;
     return x*x + t0*t0;
 }
 
-double Hyperbolic1DX::fi2(unsigned int i) const
+double Hyperbolic1DX::initial2(unsigned int i) const
 {
     C_UNUSED(i);
     return 0.0;
 }
 
-double Hyperbolic1DX::m1(unsigned int j) const
+double Hyperbolic1DX::boundary(Boundary type, unsigned int j) const
 {
     double t = j*ht;
-    return x0*x0 + t*t;
+    if (type==Left) return x0*x0 + t*t;
+    if (type==Right)   return x1*x1 + t*t;
+    return 0.0;
 }
 
-double Hyperbolic1DX::m2(unsigned int j) const
-{
-    double t = j*ht;
-    return x1*x1 + t*t;
-}
+//double Hyperbolic1DX::m1(unsigned int j) const
+//{
+//    double t = j*ht;
+//    return x0*x0 + t*t;
+//}
+
+//double Hyperbolic1DX::m2(unsigned int j) const
+//{
+//    double t = j*ht;
+//    return x1*x1 + t*t;
+//}
 
 double Hyperbolic1DX::f(unsigned int i, unsigned int j) const
 {
@@ -157,25 +165,19 @@ double Hyperbolic1DX::f(unsigned int i, unsigned int j) const
     return sum;
 }
 
-double Hyperbolic1DX::bfi1(unsigned int i) const
+double Hyperbolic1DX::binitial1(unsigned int i) const
 {
     C_UNUSED(i);
     return 0.0;
 }
 
-double Hyperbolic1DX::bfi2(unsigned int i) const
+double Hyperbolic1DX::binitial2(unsigned int i) const
 {
     const DoubleVector &u = *pu;
     return 2.0*(u[i] - U[i]);
 }
 
-double Hyperbolic1DX::bm1(unsigned int j) const
-{
-    C_UNUSED(j);
-    return 0.0;
-}
-
-double Hyperbolic1DX::bm2(unsigned int j) const
+double Hyperbolic1DX::bboundary(Boundary type, unsigned int j) const
 {
     C_UNUSED(j);
     return 0.0;

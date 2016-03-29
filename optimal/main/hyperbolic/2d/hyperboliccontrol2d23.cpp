@@ -68,7 +68,6 @@ double HyperbolicControl2D23::fx(double t)
 {
     DoubleVector vt = v0;
     unsigned int m = M+D;
-    unsigned int size;
 
     t1 = t;
     M  = (unsigned)round((t1 - t0)/ht);
@@ -113,11 +112,11 @@ double HyperbolicControl2D23::fx(double t)
     //cg.setProjection(this);
     cg.setNormalize(true);
     //cg.showEndMessage(false);
-    //cg.calculate(v0);
+    cg.calculate(v0);
 
     double rf = fx(v0);
     fprintf(file, "%f %.16f\n", t, rf);
-    size = v0.size();
+//    unsigned int size = v0.size();
 //    fprintf(file, "size2: %d\n", size);
 //    IPrinter::printVector(v0, "v21", size/2, 0, size/2-1, file);
 //    IPrinter::printVector(v0, "v22", size/2, size/2, size-1, file);
@@ -220,32 +219,17 @@ void HyperbolicControl2D23::gradient(const DoubleVector &v, DoubleVector &g)
 //    IPrinter::printVector(g, "g2", size/2, size/2, size-1, file);
 }
 
-double HyperbolicControl2D23::fi1(unsigned int i, unsigned int j) const
+double HyperbolicControl2D23::initial1(unsigned int i, unsigned int j) const
 {
     return 0.0;
 }
 
-double HyperbolicControl2D23::fi2(unsigned int i, unsigned int j) const
+double HyperbolicControl2D23::initial2(unsigned int i, unsigned int j) const
 {
     return 0.0;
 }
 
-double HyperbolicControl2D23::m1(unsigned int j, unsigned int k) const
-{
-    return 0.0;
-}
-
-double HyperbolicControl2D23::m2(unsigned int j, unsigned int k) const
-{
-    return 0.0;
-}
-
-double HyperbolicControl2D23::m3(unsigned int i, unsigned int k) const
-{
-    return 0.0;
-}
-
-double HyperbolicControl2D23::m4(unsigned int i, unsigned int k) const
+double HyperbolicControl2D23::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     return 0.0;
 }
@@ -276,7 +260,7 @@ double HyperbolicControl2D23::f(unsigned int i, unsigned int j, unsigned int k) 
     return sum;
 }
 
-double HyperbolicControl2D23::bfi1(unsigned int i, unsigned int j) const
+double HyperbolicControl2D23::binitial1(unsigned int i, unsigned int j) const
 {
     //const DoubleMatrix &u0 = (*pu)[M];
     //const DoubleMatrix &u1 = (*pu)[M-2];
@@ -284,37 +268,17 @@ double HyperbolicControl2D23::bfi1(unsigned int i, unsigned int j) const
     return 0.0;
 }
 
-double HyperbolicControl2D23::bfi2(unsigned int i, unsigned int j) const
+double HyperbolicControl2D23::binitial2(unsigned int i, unsigned int j) const
 {
     //const DoubleMatrix &u0 = (*pu)[M];
     //return +2.0 * (u0[j][i] - U0) + qamma*(bfi1(i,j));
-    return qamma*(bfi1(i,j));
+    return qamma*(binitial1(i,j));
 }
 
-double HyperbolicControl2D23::bm1(unsigned int j, unsigned int k) const
-{
-    C_UNUSED(j);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double HyperbolicControl2D23::bm2(unsigned int j, unsigned int k) const
-{
-    C_UNUSED(j);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double HyperbolicControl2D23::bm3(unsigned int i, unsigned int k) const
+double HyperbolicControl2D23::bboundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     C_UNUSED(i);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double HyperbolicControl2D23::bm4(unsigned int i, unsigned int k) const
-{
-    C_UNUSED(i);
+    C_UNUSED(j);
     C_UNUSED(k);
     return 0.0;
 }

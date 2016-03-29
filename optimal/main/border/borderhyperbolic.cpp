@@ -39,32 +39,17 @@ BorderHyperbolic::~BorderHyperbolic()
 {
 }
 
-double BorderHyperbolic::fi1(unsigned int i, unsigned int j) const
+double BorderHyperbolic::initial1(unsigned int i, unsigned int j) const
 {
     return 0.0;
 }
 
-double BorderHyperbolic::fi2(unsigned int i, unsigned int j) const
+double BorderHyperbolic::initial2(unsigned int i, unsigned int j) const
 {
     return 0.0;
 }
 
-double BorderHyperbolic::m1(unsigned int j, unsigned int k) const
-{
-    return 0.0;
-}
-
-double BorderHyperbolic::m2(unsigned int j, unsigned int k) const
-{
-    return 0.0;
-}
-
-double BorderHyperbolic::m3(unsigned int i, unsigned int k) const
-{
-    return 0.0;
-}
-
-double BorderHyperbolic::m4(unsigned int i, unsigned int k) const
+double BorderHyperbolic::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     return 0.0;
 }

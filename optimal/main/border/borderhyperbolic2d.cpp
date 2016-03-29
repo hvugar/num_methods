@@ -62,12 +62,12 @@ double BorderHyperbolic2D::u(unsigned int i, unsigned int j, unsigned int k) con
 #endif
 }
 
-double BorderHyperbolic2D::fi1(unsigned int i, unsigned int j) const
+double BorderHyperbolic2D::initial1(unsigned int i, unsigned int j) const
 {
     return u(i, j, 0);
 }
 
-double BorderHyperbolic2D::fi2(unsigned int i, unsigned int j) const
+double BorderHyperbolic2D::initial2(unsigned int i, unsigned int j) const
 {
 #ifdef SAMPLE1
     return 0.0;

@@ -224,53 +224,43 @@ double HyperbolicControlX::bf(unsigned int i, unsigned int j) const
     return 0.0;
 }
 
-double HyperbolicControlX::fi1(unsigned int i) const
+double HyperbolicControlX::initial1(unsigned int i) const
 {
     C_UNUSED(i);
     return 2.0;
 }
 
-double HyperbolicControlX::fi2(unsigned int i) const
+double HyperbolicControlX::initial2(unsigned int i) const
 {
     C_UNUSED(i);
     return 0.0;
 }
 
-double HyperbolicControlX::m1(unsigned int j) const
+double HyperbolicControlX::boundary(Boundary type, unsigned int j) const
 {
     const DoubleVector &v = *pv;
-    double v1 = v[0*(M+D-1)+(j-2)];
-    return v1;
+    if (type==Left) return v[0*(M+D-1)+(j-2)];
+    if (type==Right) return v[1*(M+D-1)+(j-2)];
+    return 0.0;
 }
 
-double HyperbolicControlX::m2(unsigned int j) const
-{
-    const DoubleVector &v = *pv;
-    double v2 = v[1*(M+D-1)+(j-2)];
-    return v2;
-}
-
-double HyperbolicControlX::bfi1(unsigned int i) const
+double HyperbolicControlX::binitial1(unsigned int i) const
 {
     C_UNUSED(i);
     return 0.0;
 }
 
-double HyperbolicControlX::bfi2(unsigned int i) const
+double HyperbolicControlX::binitial2(unsigned int i) const
 {
     C_UNUSED(i);
     return 0.0;
 }
 
-double HyperbolicControlX::bm1(unsigned int j) const
-{
-    C_UNUSED(j);
-    return 0.0;
-}
 
-double HyperbolicControlX::bm2(unsigned int j) const
+double HyperbolicControlX::bboundary(Boundary type, unsigned int j) const
 {
     C_UNUSED(j);
+    C_UNUSED(type);
     return 0.0;
 }
 

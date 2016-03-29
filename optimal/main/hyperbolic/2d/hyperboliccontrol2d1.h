@@ -22,20 +22,14 @@ public:
     virtual double fx(const DoubleVector &x);
     virtual void gradient(const DoubleVector &v, DoubleVector &g);
 
-    virtual double fi1(unsigned int i, unsigned int j) const;
-    virtual double fi2(unsigned int i, unsigned int j) const;
-    virtual double m1(unsigned int j, unsigned int k) const;
-    virtual double m2(unsigned int j, unsigned int k) const;
-    virtual double m3(unsigned int i, unsigned int k) const;
-    virtual double m4(unsigned int i, unsigned int k) const;
+    virtual double initial1(unsigned int i, unsigned int j) const;
+    virtual double initial2(unsigned int i, unsigned int j) const;
+    virtual double boundary(unsigned int i, unsigned int j, unsigned int k) const;
     virtual double f(unsigned int i, unsigned int j, unsigned int k) const;
 
-    virtual double bfi1(unsigned int i, unsigned int j) const;
-    virtual double bfi2(unsigned int i, unsigned int j) const;
-    virtual double bm1(unsigned int j, unsigned int k) const;
-    virtual double bm2(unsigned int j, unsigned int k) const;
-    virtual double bm3(unsigned int i, unsigned int k) const;
-    virtual double bm4(unsigned int i, unsigned int k) const;
+    virtual double binitial1(unsigned int i, unsigned int j) const;
+    virtual double binitial2(unsigned int i, unsigned int j) const;
+    virtual double bboundary(unsigned int i, unsigned int j, unsigned int k) const;
     virtual double bf(unsigned int i, unsigned int j, unsigned int k) const;
 
     virtual void print(unsigned int iteration, const DoubleVector& x, const DoubleVector &gradient, double alpha, RnFunction* fn) const;

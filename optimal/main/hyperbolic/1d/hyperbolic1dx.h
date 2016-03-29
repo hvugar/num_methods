@@ -22,16 +22,14 @@ public:
     virtual void project(DoubleVector &x, int index);
     virtual void print(unsigned int iteration, const DoubleVector& x, const DoubleVector &gradient, double alpha, RnFunction* fn) const;
 
-    virtual double fi1(unsigned int i) const;
-    virtual double fi2(unsigned int i) const;
-    virtual double m1(unsigned int j) const;
-    virtual double m2(unsigned int j) const;
+    virtual double initial1(unsigned int i) const;
+    virtual double initial2(unsigned int i) const;
+    virtual double boundary(Boundary type, unsigned int j) const;
     virtual double f(unsigned int i, unsigned int j) const;
 
-    virtual double bfi1(unsigned int i) const;
-    virtual double bfi2(unsigned int i) const;
-    virtual double bm1(unsigned int j) const;
-    virtual double bm2(unsigned int j) const;
+    virtual double binitial1(unsigned int i) const;
+    virtual double binitial2(unsigned int i) const;
+    virtual double bboundary(Boundary type, unsigned int j) const;
     virtual double bf(unsigned int i, unsigned int j) const;
 
     static void main();

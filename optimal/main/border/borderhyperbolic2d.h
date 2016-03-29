@@ -9,8 +9,8 @@ public:
     BorderHyperbolic2D();
     virtual ~BorderHyperbolic2D();
 
-    virtual double fi1(unsigned int i, unsigned int j) const;
-    virtual double fi2(unsigned int i, unsigned int j) const;
+    virtual double initial1(unsigned int i, unsigned int j) const;
+    virtual double initial2(unsigned int i, unsigned int j) const;
     virtual double m1(unsigned int j, unsigned int k) const;
     virtual double m2(unsigned int j, unsigned int k) const;
     virtual double m3(unsigned int i, unsigned int k) const;
