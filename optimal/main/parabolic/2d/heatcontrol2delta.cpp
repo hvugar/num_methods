@@ -273,39 +273,18 @@ void HeatControl2Delta::calculateG2(const DoubleVector &x, DoubleVector& g1)
     //    printf("g2: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", g[0], g[1], g[2], g[3], g[4], g[5]);
 }
 
-double HeatControl2Delta::fi(unsigned int i, unsigned int j) const
+double HeatControl2Delta::initial(unsigned int i, unsigned int j) const
 {
     double x1 = i*h1;
     double x2 = j*h2;
     return u(x1, x2, t0);
 }
 
-double HeatControl2Delta::m1(unsigned int j, unsigned int k) const
+double HeatControl2Delta::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     double x2 = j*h2;
     double t  = 0.5*k*ht;
     return u(x10, x2, t);
-}
-
-double HeatControl2Delta::m2(unsigned int j, unsigned int k) const
-{
-    double x2 = j*h2;
-    double t  = 0.5*(k*ht);
-    return u(x11, x2, t);
-}
-
-double HeatControl2Delta::m3(unsigned int i, unsigned int k) const
-{
-    double x1 = i*h1;
-    double t  = 0.5*k*ht;
-    return u(x1, x20, t);
-}
-
-double HeatControl2Delta::m4(unsigned int i, unsigned int k) const
-{
-    double x1 = i*h1;
-    double t  = 0.5*k*ht;
-    return u(x1, x21, t);
 }
 
 double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k) const

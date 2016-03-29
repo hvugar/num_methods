@@ -222,39 +222,19 @@ void Parabolic1DControl336::psiDerivative(double &psiX1, double &psiX2, double x
     else psiX2 = (psi[j+1][i] - psi[j-1][i])/(2.0*h2);
 }
 
-double Parabolic1DControl336::fi(unsigned int i, unsigned int j) const
+double Parabolic1DControl336::initial(unsigned int i, unsigned int j) const
 {
     double x1 = i*h1;
     double x2 = j*h2;
     return u(x1, x2, t0);
 }
 
-double Parabolic1DControl336::m1(unsigned int j, unsigned int k) const
-{
-    double x2 = j*h2;
-    double t  = 0.5*k*ht;
-    return u(x10, x2, t);
-}
-
-double Parabolic1DControl336::m2(unsigned int j, unsigned int k) const
-{
-    double x2 = j*h2;
-    double t  = 0.5*(k*ht);
-    return u(x11, x2, t);
-}
-
-double Parabolic1DControl336::m3(unsigned int i, unsigned int k) const
+double Parabolic1DControl336::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     double x1 = i*h1;
+    double x2 = j*h2;
     double t  = 0.5*k*ht;
-    return u(x1, x20, t);
-}
-
-double Parabolic1DControl336::m4(unsigned int i, unsigned int k) const
-{
-    double x1 = i*h1;
-    double t  = 0.5*k*ht;
-    return u(x1, x21, t);
+    return u(x1, x2, t);
 }
 
 double Parabolic1DControl336::f(unsigned int i, unsigned int j, unsigned int k) const

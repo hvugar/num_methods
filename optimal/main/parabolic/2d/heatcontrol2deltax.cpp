@@ -4,7 +4,7 @@
 // Working points [0.60,0.70] [0.65,0.25] [0.25,0.35] epsilon1 0.0001 epsilon2 0.0001 epsilon3: 0.0001. min:1.0 0.0001
 // Working points [0.60,0.70] [0.60,0.30] [0.30,0.40] epsilon1 0.0001 epsilon2 0.0001 epsilon3: 0.0001. min:1.0 0.0001
 
-void HeatControl2DDeltaX::main()
+void HeatControl2DDeltaX::main(int argc, char ** argv)
 {
     HeatControl2DDeltaX hc(100, 100, 100);
 
@@ -207,39 +207,19 @@ void HeatControl2DDeltaX::psiDerivative(double &psiX1, double &psiX2, double x1,
     else psiX2 = (psi[j+1][i] - psi[j-1][i])/(2.0*h2);
 }
 
-double HeatControl2DDeltaX::fi(unsigned int i, unsigned int j) const
+double HeatControl2DDeltaX::initial(unsigned int i, unsigned int j) const
 {
     double x1 = i*h1;
     double x2 = j*h2;
     return u(x1, x2, t0);
 }
 
-double HeatControl2DDeltaX::m1(unsigned int j, unsigned int k) const
-{
-    double x2 = j*h2;
-    double t  = 0.5*k*ht;
-    return u(x10, x2, t);
-}
-
-double HeatControl2DDeltaX::m2(unsigned int j, unsigned int k) const
-{
-    double x2 = j*h2;
-    double t  = 0.5*(k*ht);
-    return u(x11, x2, t);
-}
-
-double HeatControl2DDeltaX::m3(unsigned int i, unsigned int k) const
+double HeatControl2DDeltaX::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     double x1 = i*h1;
+    double x2 = j*h2;
     double t  = 0.5*k*ht;
-    return u(x1, x20, t);
-}
-
-double HeatControl2DDeltaX::m4(unsigned int i, unsigned int k) const
-{
-    double x1 = i*h1;
-    double t  = 0.5*k*ht;
-    return u(x1, x21, t);
+    return u(x1, x2, t);
 }
 
 double HeatControl2DDeltaX::f(unsigned int i, unsigned int j, unsigned int k) const

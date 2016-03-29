@@ -38,7 +38,7 @@ double BorderParabolic2D::u(unsigned int i, unsigned int j, unsigned int k) cons
     return x1*x1 + x2*x2 + t*t;
 }
 
-double BorderParabolic2D::fi(unsigned int i, unsigned int j) const
+double BorderParabolic2D::initial(unsigned int i, unsigned int j) const
 {
 #ifdef SAMPLE1
     return u(i, j, 0);
@@ -48,47 +48,14 @@ double BorderParabolic2D::fi(unsigned int i, unsigned int j) const
 #endif
 }
 
-double BorderParabolic2D::m1(unsigned int j, unsigned int k) const
+double BorderParabolic2D::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     double t = k*ht;
 #ifdef SAMPLE1
-    return u(0, j, k);
+    return u(i, j, k);
 #endif
 #ifdef SAMPLE2
-    return fi(0,j)+3.0*t;
-#endif
-}
-
-double BorderParabolic2D::m2(unsigned int j, unsigned int k) const
-{
-    double t = k*ht;
-#ifdef SAMPLE1
-    return u(N1, j, k);
-#endif
-#ifdef SAMPLE2
-    return fi(N1,j)+1.0*t;
-#endif
-}
-
-double BorderParabolic2D::m3(unsigned int i, unsigned int k) const
-{
-    double t = k*ht;
-#ifdef SAMPLE1
-    return u(i, 0, k);
-#endif
-#ifdef SAMPLE2
-    return fi(i,0)+3.0*t;
-#endif
-}
-
-double BorderParabolic2D::m4(unsigned int i, unsigned int k) const
-{
-    double t = k*ht;
-#ifdef SAMPLE1
-    return u(i, N2, k);
-#endif
-#ifdef SAMPLE2
-    return fi(i,N2)+4.0*t;
+    return initial(i,j)+3.0*t;
 #endif
 }
 

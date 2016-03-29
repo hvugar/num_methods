@@ -165,53 +165,18 @@ void Parabolic1DControl335::gradient(const DoubleVector& v, DoubleVector& g)
     psi.clear();
 }
 
-double Parabolic1DControl335::fi(unsigned int i, unsigned int j) const
+double Parabolic1DControl335::initial(unsigned int i, unsigned int j) const
 {
     C_UNUSED(i);
     C_UNUSED(j);
-    //    double x1 = i*h1;
-    //    double x2 = j*h2;
-    //    return u(x1, x2, t0);
     return 2.0;
 }
 
-double Parabolic1DControl335::m1(unsigned int j, unsigned int k) const
-{
-    C_UNUSED(j);
-    C_UNUSED(k);
-    //    double x2 = j*h2;
-    //    double t  = 0.5*k*ht;
-    //    return u(x10, x2, t);
-    return 2.0;
-}
-
-double Parabolic1DControl335::m2(unsigned int j, unsigned int k) const
-{
-    C_UNUSED(j);
-    C_UNUSED(k);
-    //    double x2 = j*h2;
-    //    double t  = 0.5*(k*ht);
-    //    return u(x11, x2, t);
-    return 2.0;
-}
-
-double Parabolic1DControl335::m3(unsigned int i, unsigned int k) const
+double Parabolic1DControl335::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     C_UNUSED(i);
+    C_UNUSED(j);
     C_UNUSED(k);
-    //    double x1 = i*h1;
-    //    double t  = 0.5*k*ht;
-    //    return u(x1, x20, t);
-    return 2.0;
-}
-
-double Parabolic1DControl335::m4(unsigned int i, unsigned int k) const
-{
-    C_UNUSED(i);
-    C_UNUSED(k);
-    //    double x1 = i*h1;
-    //    double t  = 0.5*k*ht;
-    //    return u(x1, x21, t);
     return 2.0;
 }
 

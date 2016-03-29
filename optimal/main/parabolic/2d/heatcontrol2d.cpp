@@ -139,39 +139,19 @@ double HeatControl2D::u(double x1, double x2, double t) const
     return x1*x1 + x2*x2 + t*t;
 }
 
-double HeatControl2D::fi(unsigned int i, unsigned int j) const
+double HeatControl2D::initial(unsigned int i, unsigned int j) const
 {
     double x1 = i*h1;
     double x2 = j*h2;
     return u(x1, x2, t0);
 }
 
-double HeatControl2D::m1(unsigned int j, unsigned int k) const
+double HeatControl2D::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
-    double x2 = j*h2;
-    double t  = 0.5*k*ht;
-    return u(x10, x2, t);
-}
-
-double HeatControl2D::m2(unsigned int j, unsigned int k) const
-{
-    double x2 = j*h2;
-    double t  = 0.5*k*ht;
-    return u(x11, x2, t);
-}
-
-double HeatControl2D::m3(unsigned int i, unsigned int k) const
-{
-    double x1 = i*h1;
-    double t  = 0.5*k*ht;
-    return u(x1, x20, t);
-}
-
-double HeatControl2D::m4(unsigned int i, unsigned int k) const
-{
-    double x1 = i*h1;
-    double t  = 0.5*k*ht;
-    return u(x1, x21, t);
+   double x1 = i*h1;
+   double x2 = j*h2;
+   double t  = 0.5*k*ht;
+   return u(x1, x2, t);
 }
 
 double HeatControl2D::f(unsigned int i, unsigned int j, unsigned int k) const

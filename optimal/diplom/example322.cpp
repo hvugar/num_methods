@@ -42,30 +42,12 @@ BorderParabolic2D322::BorderParabolic2D322()
     e[7] = 0.75;
 }
 
-double BorderParabolic2D322::fi(unsigned int i, unsigned int j) const
+double BorderParabolic2D322::initial(unsigned int i, unsigned int j) const
 {
     return 1.0;
 }
 
-double BorderParabolic2D322::m1(unsigned int j, unsigned int k) const
-{
-    double t = 0.5*k*ht;
-    return 1.0+t;
-}
-
-double BorderParabolic2D322::m2(unsigned int j, unsigned int k) const
-{
-    double t = 0.5*k*ht;
-    return 1.0+t;
-}
-
-double BorderParabolic2D322::m3(unsigned int i, unsigned int k) const
-{
-    double t = 0.5*k*ht;
-    return 1.0+t;
-}
-
-double BorderParabolic2D322::m4(unsigned int i, unsigned int k) const
+double BorderParabolic2D322::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     double t = 0.5*k*ht;
     return 1.0+t;

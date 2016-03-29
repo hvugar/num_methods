@@ -287,7 +287,7 @@ void IParabolicEquation2D::caluclateMVD(DoubleMatrix &u, double h1, double h2, d
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    u[j][i] = fi(i, j);
+                    u[j][i] = initial(i, j);
                 }
             }
         }
@@ -308,8 +308,8 @@ void IParabolicEquation2D::caluclateMVD(DoubleMatrix &u, double h1, double h2, d
                 da1[0]     = 0.0;
                 dc1[N1-2]  = 0.0;
 
-                uh[j][0]  = m1(j, 2*k-1);
-                uh[j][N1] = m2(j, 2*k-1);
+                uh[j][0]  = boundary(0, j, 2*k-1);//m1(j, 2*k-1);
+                uh[j][N1] = boundary(N1, j, 2*k-1);//m2(j, 2*k-1);
 
                 dd1[0]    -= x1_a * uh[j][0];
                 dd1[N1-2] -= x1_a * uh[j][N1];
@@ -324,8 +324,8 @@ void IParabolicEquation2D::caluclateMVD(DoubleMatrix &u, double h1, double h2, d
 
             for (unsigned int i=0; i<=N1; i++)
             {
-                uh[0][i]  = m3(i, 2*k-1);
-                uh[N2][i] = m4(i, 2*k-1);
+                uh[0][i]  = boundary(i, 0, 2*k-1);//m3(i, 2*k-1);
+                uh[N2][i] = boundary(i, N2, 2*k-1);//m4(i, 2*k-1);
             }
 
             // Approximation to x2 direction
@@ -342,8 +342,8 @@ void IParabolicEquation2D::caluclateMVD(DoubleMatrix &u, double h1, double h2, d
                 da2[0]     = 0.0;
                 dc2[N2-2]  = 0.0;
 
-                u[0][i]  = m3(i, 2*k);
-                u[N2][i] = m4(i, 2*k);
+                u[0][i]  = boundary(i, 0, 2*k);//m3(i, 2*k);
+                u[N2][i] = boundary(i, N2, 2*k);//m4(i, 2*k);
 
                 dd2[0]    -= x2_a * u[0][i];
                 dd2[N2-2] -= x2_a * u[N2][i];
@@ -358,8 +358,8 @@ void IParabolicEquation2D::caluclateMVD(DoubleMatrix &u, double h1, double h2, d
 
             for (unsigned int j=0; j<=N2; j++)
             {
-                u[j][0]  = m1(j, 2*k);
-                u[j][N1] = m2(j, 2*k);
+                u[j][0]  = boundary(0, j, 2*k);//m1(j, 2*k);
+                u[j][N1] = boundary(N1, j, 2*k);//m2(j, 2*k);
             }
         }
     }
@@ -417,7 +417,7 @@ void IParabolicEquation2D::caluclateMVD1(DoubleMatrix &u, double h1, double h2, 
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    u[j][i] = fi(i, j);
+                    u[j][i] = initial(i, j);
                 }
             }
         }
@@ -440,8 +440,8 @@ void IParabolicEquation2D::caluclateMVD1(DoubleMatrix &u, double h1, double h2, 
                     da1[0]     = 0.0;
                     dc1[N1-2]  = 0.0;
 
-                    uh[j][0]  = m1(j, k);
-                    uh[j][N1] = m2(j, k);
+                    uh[j][0]  = boundary(0, j, k);//m1(j, k);
+                    uh[j][N1] = boundary(N1, j, k);//m2(j, k);
 
                     dd1[0]    -= x1_a * uh[j][0];
                     dd1[N1-2] -= x1_a * uh[j][N1];
@@ -456,8 +456,8 @@ void IParabolicEquation2D::caluclateMVD1(DoubleMatrix &u, double h1, double h2, 
 
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    uh[0][i]  = m3(i, k);
-                    uh[N2][i] = m4(i, k);
+                    uh[0][i]  = boundary(i, 0, k);//m3(i, k);
+                    uh[N2][i] = boundary(i, N2, k);//m4(i, k);
                 }
             }
             else
@@ -476,8 +476,8 @@ void IParabolicEquation2D::caluclateMVD1(DoubleMatrix &u, double h1, double h2, 
                     da2[0]     = 0.0;
                     dc2[N2-2]  = 0.0;
 
-                    u[0][i]  = m3(i, k);
-                    u[N2][i] = m4(i, k);
+                    u[0][i]  = boundary(i, 0, k);//m3(i, k);
+                    u[N2][i] = boundary(i, N2, k);//m4(i, k);
 
                     dd2[0]    -= x2_a * u[0][i];
                     dd2[N2-2] -= x2_a * u[N2][i];
@@ -492,8 +492,8 @@ void IParabolicEquation2D::caluclateMVD1(DoubleMatrix &u, double h1, double h2, 
 
                 for (unsigned int j=0; j<=N2; j++)
                 {
-                    u[j][0]  = m1(j, k);
-                    u[j][N1] = m2(j, k);
+                    u[j][0]  = boundary(0, j, k);//m1(j, k);
+                    u[j][N1] = boundary(N1, j, k);//m2(j, k);
                 }
             }
         }
@@ -559,7 +559,7 @@ void IParabolicEquation2D::caluclateMVD(DoubleCube &u, double h1, double h2, dou
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    u0[j][i] = fi(i, j);
+                    u0[j][i] = initial(i, j);
                 }
                 u[k] = u0;
             }
@@ -581,8 +581,8 @@ void IParabolicEquation2D::caluclateMVD(DoubleCube &u, double h1, double h2, dou
                 da1[0]     = 0.0;
                 dc1[N1-2]  = 0.0;
 
-                u1[j][0]  = m1(j, 2*k-1);
-                u1[j][N1] = m2(j, 2*k-1);
+                u1[j][0]  = boundary(0, j, 2*k-1);//m1(j, 2*k-1);
+                u1[j][N1] = boundary(N1, j, 2*k-1);//m2(j, 2*k-1);
 
                 dd1[0]    -= x1_a * u1[j][0];
                 dd1[N1-2] -= x1_a * u1[j][N1];
@@ -597,8 +597,8 @@ void IParabolicEquation2D::caluclateMVD(DoubleCube &u, double h1, double h2, dou
 
             for (unsigned int i=0; i<=N1; i++)
             {
-                u1[0][i]  = m3(i, 2*k-1);
-                u1[N2][i] = m4(i, 2*k-1);
+                u1[0][i]  = boundary(i, 0, 2*k-1);//m3(i, 2*k-1);
+                u1[N2][i] = boundary(i, N2, 2*k-1);//m4(i, 2*k-1);
             }
 
             // Approximation to x2 direction
@@ -615,8 +615,8 @@ void IParabolicEquation2D::caluclateMVD(DoubleCube &u, double h1, double h2, dou
                 da2[0]     = 0.0;
                 dc2[N2-2]  = 0.0;
 
-                u0[0][i]  = m3(i, 2*k);
-                u0[N2][i] = m4(i, 2*k);
+                u0[0][i]  = boundary(i, 0, 2*k);//m3(i, 2*k);
+                u0[N2][i] = boundary(i, N2, 2*k);//m4(i, 2*k);
 
                 dd2[0]    -= x2_a * u0[0][i];
                 dd2[N2-2] -= x2_a * u0[N2][i];
@@ -631,8 +631,8 @@ void IParabolicEquation2D::caluclateMVD(DoubleCube &u, double h1, double h2, dou
 
             for (unsigned int j=0; j<=N2; j++)
             {
-                u0[j][0]  = m1(j, 2*k);
-                u0[j][N1] = m2(j, 2*k);
+                u0[j][0]  = boundary(0, j, 2*k);//m1(j, 2*k);
+                u0[j][N1] = boundary(N1, j, 2*k);//m2(j, 2*k);
             }
 
             u[k] = u0;

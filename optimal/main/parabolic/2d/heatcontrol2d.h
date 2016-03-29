@@ -18,16 +18,13 @@ public:
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
     virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &s, double a, RnFunction *f) const;
 
-    double fi(unsigned int i, unsigned int j) const;
-    double m1(unsigned int j, unsigned int k) const;
-    double m2(unsigned int j, unsigned int k) const;
-    double m3(unsigned int i, unsigned int k) const;
-    double m4(unsigned int i, unsigned int k) const;
-    double f(unsigned int i, unsigned j, unsigned int k) const;
+    virtual double initial(unsigned int i, unsigned int j) const;
+    virtual double boundary(unsigned int i, unsigned int j, unsigned int k) const;
+    virtual double f(unsigned int i, unsigned j, unsigned int k) const;
 
-    double binitial(unsigned int i, unsigned int j) const;
-    double bboundary(unsigned int i, unsigned int j, unsigned int k) const;
-    double bf(unsigned int i, unsigned int j, unsigned int k) const;
+    virtual double binitial(unsigned int i, unsigned int j) const;
+    virtual double bboundary(unsigned int i, unsigned int j, unsigned int k) const;
+    virtual double bf(unsigned int i, unsigned int j, unsigned int k) const;
 
     static void main();
 private:

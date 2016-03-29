@@ -23,11 +23,8 @@ public:
     virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double alpha, RnFunction* fn) const;
     virtual void project(DoubleVector &x, int index);
 
-    virtual double fi(unsigned int i, unsigned int j) const;
-    virtual double m1(unsigned int j, unsigned int k) const;
-    virtual double m2(unsigned int j, unsigned int k) const;
-    virtual double m3(unsigned int i, unsigned int k) const;
-    virtual double m4(unsigned int i, unsigned int k) const;
+    virtual double initial(unsigned int i, unsigned int j) const;
+    virtual double boundary(unsigned int i, unsigned int j, unsigned int k) const;
     virtual double f(unsigned int i, unsigned int j, unsigned int k) const;
 
     virtual double binitial(unsigned int i, unsigned int j) const;

@@ -40,43 +40,22 @@ BorderParabolic2D321::BorderParabolic2D321()
     e[5] = 0.50;
 }
 
-double BorderParabolic2D321::fi(unsigned int i, unsigned int j) const
+double BorderParabolic2D321::initial(unsigned int i, unsigned int j) const
 {
     double x1 = i*h1;
     double x2 = j*h2;
     return x1*x2;
 }
 
-double BorderParabolic2D321::m1(unsigned int j, unsigned int k) const
+double BorderParabolic2D321::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     double x1 = 0.0*h1;
     double x2 = j*h2;
     double t  = 0.5*k*ht;
-    return x1*t + x2*t*t + x1*x2;
-}
-
-double BorderParabolic2D321::m2(unsigned int j, unsigned int k) const
-{
-    double x1 = N1*h1;
-    double x2 = j*h2;
-    double t  = 0.5*k*ht;
-    return x1*t + x2*t*t + x1*x2;
-}
-
-double BorderParabolic2D321::m3(unsigned int i, unsigned int k) const
-{
-    double x1 = i*h1;
-    double x2 = 0.0*h2;
-    double t  = 0.5*k*ht;
-    return x1*t + x2*t*t + x1*x2;
-}
-
-double BorderParabolic2D321::m4(unsigned int i, unsigned int k) const
-{
-    double x1 = i*h1;
-    double x2 = N2*h2;
-    double t  = 0.5*k*ht;
-    return x1*t + x2*t*t + x1*x2;
+    if (i==0)  return x1*t + x2*t*t + x1*x2;
+    if (i==N1) return x1*t + x2*t*t + x1*x2;
+    if (j==0)  return x1*t + x2*t*t + x1*x2;
+    if (j==N2) return x1*t + x2*t*t + x1*x2;
 }
 
 double BorderParabolic2D321::f(unsigned int i, unsigned int j, unsigned int k) const
