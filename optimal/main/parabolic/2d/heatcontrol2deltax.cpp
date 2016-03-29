@@ -4,9 +4,9 @@
 // Working points [0.60,0.70] [0.65,0.25] [0.25,0.35] epsilon1 0.0001 epsilon2 0.0001 epsilon3: 0.0001. min:1.0 0.0001
 // Working points [0.60,0.70] [0.60,0.30] [0.30,0.40] epsilon1 0.0001 epsilon2 0.0001 epsilon3: 0.0001. min:1.0 0.0001
 
-void Parabolic1DControl334::main()
+void HeatControl2DDeltaX::main()
 {
-    Parabolic1DControl334 hc(100, 100, 100);
+    HeatControl2DDeltaX hc(100, 100, 100);
 
     DoubleVector x(2*hc.L);
     x[0] = 0.60; x[1] = 0.70; x[2] = 0.65; x[3] = 0.25; x[4] = 0.25; x[5] = 0.35;
@@ -39,7 +39,7 @@ void Parabolic1DControl334::main()
     printf("gr2: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", gr2[0], gr2[1], gr2[2], gr2[3], gr2[4], gr2[5]);
 }
 
-Parabolic1DControl334::Parabolic1DControl334(unsigned int M, unsigned int N2, unsigned int N1)
+HeatControl2DDeltaX::HeatControl2DDeltaX(unsigned int M, unsigned int N2, unsigned int N1)
 {
     alpha = 1.0;
 
@@ -90,7 +90,7 @@ Parabolic1DControl334::Parabolic1DControl334(unsigned int M, unsigned int N2, un
     fclose(f);
 }
 
-double Parabolic1DControl334::fx(const DoubleVector& x)
+double HeatControl2DDeltaX::fx(const DoubleVector& x)
 {
     px = &x;
     DoubleMatrix u;
@@ -117,7 +117,7 @@ double Parabolic1DControl334::fx(const DoubleVector& x)
     return sum + alpha*nrm;
 }
 
-double Parabolic1DControl334::norm(const DoubleVector& v) const
+double HeatControl2DDeltaX::norm(const DoubleVector& v) const
 {
     double nrm = 0.0;
     for (unsigned int k=0; k<=M; k++)
@@ -132,7 +132,7 @@ double Parabolic1DControl334::norm(const DoubleVector& v) const
     return nrm;
 }
 
-void Parabolic1DControl334::gradient(const DoubleVector& x, DoubleVector& g)
+void HeatControl2DDeltaX::gradient(const DoubleVector& x, DoubleVector& g)
 {
     px = &x;
     DoubleMatrix u;
@@ -153,7 +153,7 @@ void Parabolic1DControl334::gradient(const DoubleVector& x, DoubleVector& g)
     //    IGradient::Gradient(this, 0.0001, x, g);
 }
 
-void Parabolic1DControl334::calculateGX(const DoubleVector& x, const DoubleMatrix& psi, DoubleVector& g, unsigned int k)
+void HeatControl2DDeltaX::calculateGX(const DoubleVector& x, const DoubleMatrix& psi, DoubleVector& g, unsigned int k)
 {
     double psiX1;
     double psiX2;
@@ -193,7 +193,7 @@ void Parabolic1DControl334::calculateGX(const DoubleVector& x, const DoubleMatri
     }
 }
 
-void Parabolic1DControl334::psiDerivative(double &psiX1, double &psiX2, double x1, double x2, const DoubleMatrix &psi)
+void HeatControl2DDeltaX::psiDerivative(double &psiX1, double &psiX2, double x1, double x2, const DoubleMatrix &psi)
 {
     unsigned int i = (unsigned int)round(x1/h1);
     unsigned int j = (unsigned int)round(x2/h2);
@@ -207,42 +207,42 @@ void Parabolic1DControl334::psiDerivative(double &psiX1, double &psiX2, double x
     else psiX2 = (psi[j+1][i] - psi[j-1][i])/(2.0*h2);
 }
 
-double Parabolic1DControl334::fi(unsigned int i, unsigned int j) const
+double HeatControl2DDeltaX::fi(unsigned int i, unsigned int j) const
 {
     double x1 = i*h1;
     double x2 = j*h2;
     return u(x1, x2, t0);
 }
 
-double Parabolic1DControl334::m1(unsigned int j, unsigned int k) const
+double HeatControl2DDeltaX::m1(unsigned int j, unsigned int k) const
 {
     double x2 = j*h2;
     double t  = 0.5*k*ht;
     return u(x10, x2, t);
 }
 
-double Parabolic1DControl334::m2(unsigned int j, unsigned int k) const
+double HeatControl2DDeltaX::m2(unsigned int j, unsigned int k) const
 {
     double x2 = j*h2;
     double t  = 0.5*(k*ht);
     return u(x11, x2, t);
 }
 
-double Parabolic1DControl334::m3(unsigned int i, unsigned int k) const
+double HeatControl2DDeltaX::m3(unsigned int i, unsigned int k) const
 {
     double x1 = i*h1;
     double t  = 0.5*k*ht;
     return u(x1, x20, t);
 }
 
-double Parabolic1DControl334::m4(unsigned int i, unsigned int k) const
+double HeatControl2DDeltaX::m4(unsigned int i, unsigned int k) const
 {
     double x1 = i*h1;
     double t  = 0.5*k*ht;
     return u(x1, x21, t);
 }
 
-double Parabolic1DControl334::f(unsigned int i, unsigned int j, unsigned int k) const
+double HeatControl2DDeltaX::f(unsigned int i, unsigned int j, unsigned int k) const
 {
     double x1 = i*h1;
     double x2 = j*h2;
@@ -274,40 +274,12 @@ double Parabolic1DControl334::f(unsigned int i, unsigned int j, unsigned int k) 
     //    }
 }
 
-double Parabolic1DControl334::bfi(unsigned int i, unsigned int j) const
+double HeatControl2DDeltaX::binitial(unsigned int i, unsigned int j) const
 {
     return -2.0*((*pu)[j][i] - U[j][i]);
 }
 
-double Parabolic1DControl334::bm1(unsigned int j, unsigned int k) const
-{
-    C_UNUSED(j);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double Parabolic1DControl334::bm2(unsigned int j, unsigned int k) const
-{
-    C_UNUSED(j);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double Parabolic1DControl334::bm3(unsigned int i, unsigned int k) const
-{
-    C_UNUSED(i);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double Parabolic1DControl334::bm4(unsigned int i, unsigned int k) const
-{
-    C_UNUSED(i);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double Parabolic1DControl334::bf(unsigned int i, unsigned int j, unsigned int k) const
+double HeatControl2DDeltaX::bboundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     C_UNUSED(i);
     C_UNUSED(j);
@@ -315,10 +287,18 @@ double Parabolic1DControl334::bf(unsigned int i, unsigned int j, unsigned int k)
     return 0.0;
 }
 
-void Parabolic1DControl334::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double alpha, RnFunction* fn) const
+double HeatControl2DDeltaX::bf(unsigned int i, unsigned int j, unsigned int k) const
+{
+    C_UNUSED(i);
+    C_UNUSED(j);
+    C_UNUSED(k);
+    return 0.0;
+}
+
+void HeatControl2DDeltaX::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double alpha, RnFunction* fn) const
 {
     C_UNUSED(alpha);
-    Parabolic1DControl334 *hc = dynamic_cast<Parabolic1DControl334*>(fn);
+    HeatControl2DDeltaX *hc = dynamic_cast<HeatControl2DDeltaX*>(fn);
     printf("J[%d]: %.16f\n", i, hc->fx(x));
     DoubleVector g1 = g;
     g1.L2Normalize();
@@ -328,7 +308,7 @@ void Parabolic1DControl334::print(unsigned int i, const DoubleVector& x, const D
     puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
 }
 
-void Parabolic1DControl334::project(DoubleVector &e, int index)
+void HeatControl2DDeltaX::project(DoubleVector &e, int index)
 {
     if (index<6)
     {

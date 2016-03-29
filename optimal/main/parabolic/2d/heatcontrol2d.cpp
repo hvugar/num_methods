@@ -180,36 +180,16 @@ double HeatControl2D::f(unsigned int i, unsigned int j, unsigned int k) const
     return (*pf)[n];
 }
 
-double HeatControl2D::bfi(unsigned int i, unsigned int j) const
+double HeatControl2D::binitial(unsigned int i, unsigned int j) const
 {
     const DoubleMatrix &u = *pu;
     return -2.0*(u[j][i] - U[j][i]);
 }
 
-double HeatControl2D::bm1(unsigned int j, unsigned int k) const
-{
-    C_UNUSED(j);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double HeatControl2D::bm2(unsigned int j, unsigned int k) const
-{
-    C_UNUSED(j);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double HeatControl2D::bm3(unsigned int i, unsigned int k) const
+double HeatControl2D::bboundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     C_UNUSED(i);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double HeatControl2D::bm4(unsigned int i, unsigned int k) const
-{
-    C_UNUSED(i);
+    C_UNUSED(j);
     C_UNUSED(k);
     return 0.0;
 }

@@ -25,11 +25,8 @@ public:
     double m4(unsigned int i, unsigned int k) const;
     double f(unsigned int i, unsigned j, unsigned int k) const;
 
-    double bfi(unsigned int i, unsigned int j) const;
-    double bm1(unsigned int j, unsigned int k) const;
-    double bm2(unsigned int j, unsigned int k) const;
-    double bm3(unsigned int i, unsigned int k) const;
-    double bm4(unsigned int i, unsigned int k) const;
+    double binitial(unsigned int i, unsigned int j) const;
+    double bboundary(unsigned int i, unsigned int j, unsigned int k) const;
     double bf(unsigned int i, unsigned int j, unsigned int k) const;
 
     static void main();

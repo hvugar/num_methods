@@ -340,35 +340,15 @@ double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k) cons
     return sum;
 }
 
-double HeatControl2Delta::bfi(unsigned int i, unsigned int j) const
+double HeatControl2Delta::binitial(unsigned int i, unsigned int j) const
 {
     return -2.0*((*pu)[j][i] - U[j][i]);
 }
 
-double HeatControl2Delta::bm1(unsigned int j, unsigned int k) const
-{
-    C_UNUSED(j);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double HeatControl2Delta::bm2(unsigned int j, unsigned int k) const
-{
-    C_UNUSED(j);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double HeatControl2Delta::bm3(unsigned int i, unsigned int k) const
+double HeatControl2Delta::bboundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     C_UNUSED(i);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double HeatControl2Delta::bm4(unsigned int i, unsigned int k) const
-{
-    C_UNUSED(i);
+    C_UNUSED(j);
     C_UNUSED(k);
     return 0.0;
 }

@@ -30,11 +30,8 @@ public:
     virtual double m4(unsigned int i, unsigned int k) const;
     virtual double f(unsigned int i, unsigned int j, unsigned int k) const;
 
-    virtual double bfi(unsigned int i, unsigned int j) const;
-    virtual double bm1(unsigned int j, unsigned int k) const;
-    virtual double bm2(unsigned int j, unsigned int k) const;
-    virtual double bm3(unsigned int i, unsigned int k) const;
-    virtual double bm4(unsigned int i, unsigned int k) const;
+    virtual double binitial(unsigned int i, unsigned int j) const;
+    virtual double bboundary(unsigned int i, unsigned int j, unsigned int k) const;
     virtual double bf(unsigned int i, unsigned int j, unsigned int k) const;
 
     static void main(int argc, char *argv[]);

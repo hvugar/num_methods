@@ -12,11 +12,11 @@
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
 
-class Parabolic2DControl333 : public RnFunction, public IGradient, public IParabolicEquation2D, public IBackwardParabolicEquation2D, public IPrinter, public IProjection
+class HeatControl2DDeltaF : public RnFunction, public IGradient, public IParabolicEquation2D, public IBackwardParabolicEquation2D, public IPrinter, public IProjection
 {
 public:
-    Parabolic2DControl333(unsigned int m, unsigned int n2, unsigned int n1);
-    virtual ~Parabolic2DControl333() {}
+    HeatControl2DDeltaF(unsigned int m, unsigned int n2, unsigned int n1);
+    virtual ~HeatControl2DDeltaF() {}
 
     virtual double fx(const DoubleVector &v);
     virtual void gradient(const DoubleVector &v, DoubleVector &g);
@@ -30,11 +30,8 @@ public:
     virtual double m4(unsigned int i, unsigned int k) const;
     virtual double f(unsigned int i, unsigned int j, unsigned int k) const;
 
-    virtual double bfi(unsigned int i, unsigned int j) const;
-    virtual double bm1(unsigned int j, unsigned int k) const;
-    virtual double bm2(unsigned int j, unsigned int k) const;
-    virtual double bm3(unsigned int i, unsigned int k) const;
-    virtual double bm4(unsigned int i, unsigned int k) const;
+    virtual double binitial(unsigned int i, unsigned int j) const;
+    virtual double bboundary(unsigned int i, unsigned int j, unsigned int k) const;
     virtual double bf(unsigned int i, unsigned int j, unsigned int k) const;
 
     void calculateGF(const DoubleVector &v, const DoubleMatrix& psi, DoubleVector& g, unsigned int k);

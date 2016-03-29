@@ -701,7 +701,7 @@ void IBackwardParabolicEquation2D::caluclateMVD(DoubleCube &psi, double h1, doub
             {
                 for (unsigned i=0; i<=N1; i++)
                 {
-                    psi0[j][i] = bfi(i, j);
+                    psi0[j][i] = binitial(i, j);
                 }
             }
             psi[k] = psi0;
@@ -722,8 +722,8 @@ void IBackwardParabolicEquation2D::caluclateMVD(DoubleCube &psi, double h1, doub
                 da1[0]     = 0.0;
                 dc1[N1-2]  = 0.0;
 
-                psi1[j][0]  = bm1(j, 2*k+1);
-                psi1[j][N1] = bm2(j, 2*k+1);
+                psi1[j][0]  = bboundary(0, j, 2*k+1);//bm1(j, 2*k+1);
+                psi1[j][N1] = bboundary(N1, j, 2*k+1);//bm2(j, 2*k+1);
 
                 dd1[0]    -= x1_a * psi1[j][0];
                 dd1[N1-2] -= x1_a * psi1[j][N1];
@@ -738,8 +738,8 @@ void IBackwardParabolicEquation2D::caluclateMVD(DoubleCube &psi, double h1, doub
 
             for (unsigned int i=0; i<=N1; i++)
             {
-                psi1[0][i]  = bm3(i, 2*k+1);
-                psi1[N2][i] = bm4(i, 2*k+1);
+                psi1[0][i]  = bboundary(i, 0, 2*k+1);//bm3(i, 2*k+1);
+                psi1[N2][i] = bboundary(i, N2, 2*k+1);//bm4(i, 2*k+1);
             }
 
             for (unsigned int i=1; i<N1; i++)
@@ -755,8 +755,8 @@ void IBackwardParabolicEquation2D::caluclateMVD(DoubleCube &psi, double h1, doub
                 da2[0]     = 0.0;
                 dc2[N2-2]  = 0.0;
 
-                psi0[0][i]  = bm3(i, 2*k);
-                psi0[N2][i] = bm4(i, 2*k);
+                psi0[0][i]  = bboundary(i, 0, 2*k);//bm3(i, 2*k);
+                psi0[N2][i] = bboundary(i, N2, 2*k);//bm4(i, 2*k);
 
                 dd2[0]    -= x2_a * psi0[0][i];
                 dd2[N2-2] -= x2_a *psi0[N2][i];
@@ -771,8 +771,8 @@ void IBackwardParabolicEquation2D::caluclateMVD(DoubleCube &psi, double h1, doub
 
             for (unsigned int j=0; j<=N2; j++)
             {
-                psi0[j][0]  = bm1(j, 2*k);
-                psi0[j][N1] = bm2(j, 2*k);
+                psi0[j][0]  = bboundary(0, j, 2*k);//bm1(j, 2*k);
+                psi0[j][N1] = bboundary(N1, j, 2*k);//bm2(j, 2*k);
             }
 
             psi[k] = psi0;

@@ -289,35 +289,15 @@ double Parabolic1DControl334::f(unsigned int i, unsigned int j, unsigned int k) 
     //    }
 }
 
-double Parabolic1DControl334::bfi(unsigned int i, unsigned int j) const
+double Parabolic1DControl334::binitial(unsigned int i, unsigned int j) const
 {
     return -2.0*((*pu)[j][i] - U[j][i]);
 }
 
-double Parabolic1DControl334::bm1(unsigned int j, unsigned int k) const
-{
-    C_UNUSED(j);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double Parabolic1DControl334::bm2(unsigned int j, unsigned int k) const
-{
-    C_UNUSED(j);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double Parabolic1DControl334::bm3(unsigned int i, unsigned int k) const
+double Parabolic1DControl334::bboundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     C_UNUSED(i);
-    C_UNUSED(k);
-    return 0.0;
-}
-
-double Parabolic1DControl334::bm4(unsigned int i, unsigned int k) const
-{
-    C_UNUSED(i);
+    C_UNUSED(j);
     C_UNUSED(k);
     return 0.0;
 }
