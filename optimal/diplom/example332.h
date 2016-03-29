@@ -27,9 +27,8 @@ public:
     virtual double boundary(Boundary type, unsigned int j) const;
     virtual double f(unsigned int i, unsigned int j) const;
 
-    virtual double bfi(unsigned int i) const;
-    virtual double bm1(unsigned int j) const;
-    virtual double bm2(unsigned int j) const;
+    virtual double binitial(unsigned int i) const;
+    virtual double bboundary(Boundary type, unsigned int j) const;
     virtual double bf(unsigned int i, unsigned int j) const;
 
     static void main();

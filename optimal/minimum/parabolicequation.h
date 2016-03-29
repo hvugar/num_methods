@@ -19,9 +19,8 @@ public:
 class MINIMUMSHARED_EXPORT IBackwardParabolicEquation
 {
 public:
-    virtual double bfi(unsigned int i) const = 0;
-    virtual double bm1(unsigned int j) const = 0;
-    virtual double bm2(unsigned int j) const = 0;
+    virtual double binitial(unsigned int i) const = 0;
+    virtual double bboundary(Boundary type, unsigned int j) const = 0;
     virtual double bf(unsigned int i, unsigned int j) const = 0;
     virtual void calculateU(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0) const;
 };

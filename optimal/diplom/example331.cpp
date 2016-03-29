@@ -1,6 +1,6 @@
 #include "example331.h"
 
-void Parabolic1DControl331::main()
+void Parabolic1DControl331::main(int argc, char ** argv)
 {
     /* Function */
     Parabolic1DControl331 pc;
@@ -144,6 +144,7 @@ double Parabolic1DControl331::boundary(Boundary type, unsigned int j) const
      double t = j*ht;
      if (type == Left) return t*t+1.0;
      if (type == Right) return t*t+1.0+cos(1.0);
+     return 0.0;
 }
 
 double Parabolic1DControl331::f(unsigned int i, unsigned int j) const
@@ -162,19 +163,14 @@ double Parabolic1DControl331::f(unsigned int i, unsigned int j) const
     return sum;
 }
 
-double Parabolic1DControl331::bfi(unsigned int i) const
+double Parabolic1DControl331::binitial(unsigned int i) const
 {
     return -2.0 * ((*pu)[i] - U[i]);
 }
 
-double Parabolic1DControl331::bm1(unsigned int j) const
+double Parabolic1DControl331::bboundary(Boundary type, unsigned int j) const
 {
-    C_UNUSED(j);
-    return 0.0;
-}
-
-double Parabolic1DControl331::bm2(unsigned int j) const
-{
+    C_UNUSED(type);
     C_UNUSED(j);
     return 0.0;
 }

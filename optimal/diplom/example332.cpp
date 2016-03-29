@@ -183,19 +183,14 @@ double Parabolic1DControl332::f(unsigned int i, unsigned int j) const
     return sum;
 }
 
-double Parabolic1DControl332::bfi(unsigned int i) const
+double Parabolic1DControl332::binitial(unsigned int i) const
 {
     return -2.0 * ((*pu)[i] - U[i]);
 }
 
-double Parabolic1DControl332::bm1(unsigned int j) const
+double Parabolic1DControl332::bboundary(Boundary type, unsigned int j) const
 {
-    C_UNUSED(j);
-    return 0.0;
-}
-
-double Parabolic1DControl332::bm2(unsigned int j) const
-{
+    C_UNUSED(type);
     C_UNUSED(j);
     return 0.0;
 }

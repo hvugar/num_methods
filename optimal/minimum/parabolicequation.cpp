@@ -209,7 +209,7 @@ void IBackwardParabolicEquation::calculateU(DoubleMatrix &psi, double hx, double
         {
             for (unsigned i=0; i<=N; i++)
             {
-                psi[j][i] = bfi(i);
+                psi[j][i] = binitial(i);
             }
         }
         else
@@ -225,11 +225,11 @@ void IBackwardParabolicEquation::calculateU(DoubleMatrix &psi, double hx, double
             da[0]   = 0.0;
             dc[N-2] = 0.0;
 
-            psi[j][0] = bm1(j);
-            psi[j][N] = bm2(j);
+            psi[j][0] = bboundary(Left, j);//bm1(j);
+            psi[j][N] = bboundary(Right, j);//bm2(j);
 
-            dd[0]   -= alpha * bm1(j);
-            dd[N-2] -= alpha * bm2(j);
+            dd[0]   -= alpha * psi[j][0];
+            dd[N-2] -= alpha * psi[j][N];
 
             TomasAlgorithm(da, db, dc, dd, rx);
 

@@ -32,9 +32,8 @@ public:
     virtual double boundary(Boundary type, unsigned int j) const;
     inline virtual double f(unsigned int i, unsigned int j) const;
 
-    virtual double bfi(unsigned int i) const;
-    virtual double bm1(unsigned int j) const;
-    virtual double bm2(unsigned int j) const;
+    virtual double binitial(unsigned int i) const;
+    virtual double bboundary(Boundary type, unsigned int j) const;
     virtual double bf(unsigned int i, unsigned int j) const;
 
     virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
@@ -63,7 +62,7 @@ private:
     DoubleVector U;
 
 public:
-    static void main();
+    static void main(int argc, char ** argv);
 };
 
 #endif // HEATCONTROLDELTAX_H

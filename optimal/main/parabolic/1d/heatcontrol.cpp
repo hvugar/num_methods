@@ -119,19 +119,14 @@ double HeatControl::f(unsigned int i, unsigned int j) const
     return (*pf)[j*(N+1)+i];
 }
 
-double HeatControl::bfi(unsigned int i) const
+double HeatControl::binitial(unsigned int i) const
 {
     return -2.0 * ((*pu)[i] - U[i]);;
 }
 
-double HeatControl::bm1(unsigned int j) const
+double HeatControl::bboundary(Boundary type, unsigned int j) const
 {
-    C_UNUSED(j);
-    return 0.0;
-}
-
-double HeatControl::bm2(unsigned int j) const
-{
+    C_UNUSED(type);
     C_UNUSED(j);
     return 0.0;
 }

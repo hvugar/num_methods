@@ -1,8 +1,8 @@
 #include "example333.h"
 
-void Parabolic1DControl333::main(int argc, char *argv[])
+void Parabolic2DControl333::main(int argc, char *argv[])
 {
-    Parabolic1DControl333 hc(100, 100, 100);
+    Parabolic2DControl333 hc(100, 100, 100);
 
     DoubleVector v((hc.M+1)*hc.L);
     for (unsigned int k=0; k<=hc.M; k++)
@@ -36,7 +36,7 @@ void Parabolic1DControl333::main(int argc, char *argv[])
     printf("J[%d]: %.16f\n", 0, hc.fx(v));
 }
 
-Parabolic1DControl333::Parabolic1DControl333(unsigned int m, unsigned int n2, unsigned int n1)
+Parabolic2DControl333::Parabolic2DControl333(unsigned int m, unsigned int n2, unsigned int n1)
 {
     alpha = 1.0;
 
@@ -94,7 +94,7 @@ Parabolic1DControl333::Parabolic1DControl333(unsigned int m, unsigned int n2, un
     fclose(file);
 }
 
-double Parabolic1DControl333::fx(const DoubleVector& v)
+double Parabolic2DControl333::fx(const DoubleVector& v)
 {
     pv = &v;
     DoubleMatrix u;
@@ -121,7 +121,7 @@ double Parabolic1DControl333::fx(const DoubleVector& v)
     return sum + alpha*nrm;
 }
 
-double Parabolic1DControl333::norm(const DoubleVector& v) const
+double Parabolic2DControl333::norm(const DoubleVector& v) const
 {
     double nrm = 0.0;
     for (unsigned int k=0; k<=M; k++)
@@ -136,7 +136,7 @@ double Parabolic1DControl333::norm(const DoubleVector& v) const
     return nrm;
 }
 
-void Parabolic1DControl333::gradient(const DoubleVector& v, DoubleVector& g)
+void Parabolic2DControl333::gradient(const DoubleVector& v, DoubleVector& g)
 {
     pv = &v;
     DoubleMatrix u;
@@ -165,7 +165,7 @@ void Parabolic1DControl333::gradient(const DoubleVector& v, DoubleVector& g)
     //    IGradient::Gradient(this, 0.0001, x, g);
 }
 
-void Parabolic1DControl333::calculateGF(const DoubleVector &v, const DoubleMatrix& psi, DoubleVector& g, unsigned int k)
+void Parabolic2DControl333::calculateGF(const DoubleVector &v, const DoubleMatrix& psi, DoubleVector& g, unsigned int k)
 {
     C_UNUSED(k);
     for (unsigned k=0; k<=M; k++)
@@ -196,42 +196,42 @@ void Parabolic1DControl333::calculateGF(const DoubleVector &v, const DoubleMatri
     }
 }
 
-double Parabolic1DControl333::fi(unsigned int i, unsigned int j) const
+double Parabolic2DControl333::fi(unsigned int i, unsigned int j) const
 {
     double x1 = i*h1;
     double x2 = j*h2;
     return u(x1, x2, t0);
 }
 
-double Parabolic1DControl333::m1(unsigned int j, unsigned int k) const
+double Parabolic2DControl333::m1(unsigned int j, unsigned int k) const
 {
     double x2 = j*h2;
     double t  = 0.5*k*ht;
     return u(x10, x2, t);
 }
 
-double Parabolic1DControl333::m2(unsigned int j, unsigned int k) const
+double Parabolic2DControl333::m2(unsigned int j, unsigned int k) const
 {
     double x2 = j*h2;
     double t  = 0.5*(k*ht);
     return u(x11, x2, t);
 }
 
-double Parabolic1DControl333::m3(unsigned int i, unsigned int k) const
+double Parabolic2DControl333::m3(unsigned int i, unsigned int k) const
 {
     double x1 = i*h1;
     double t  = 0.5*k*ht;
     return u(x1, x20, t);
 }
 
-double Parabolic1DControl333::m4(unsigned int i, unsigned int k) const
+double Parabolic2DControl333::m4(unsigned int i, unsigned int k) const
 {
     double x1 = i*h1;
     double t  = 0.5*k*ht;
     return u(x1, x21, t);
 }
 
-double Parabolic1DControl333::f(unsigned int i, unsigned int j, unsigned int k) const
+double Parabolic2DControl333::f(unsigned int i, unsigned int j, unsigned int k) const
 {
     double x1 = i*h1;
     double x2 = j*h2;
@@ -290,40 +290,40 @@ double Parabolic1DControl333::f(unsigned int i, unsigned int j, unsigned int k) 
     return sum;
 }
 
-double Parabolic1DControl333::bfi(unsigned int i, unsigned int j) const
+double Parabolic2DControl333::bfi(unsigned int i, unsigned int j) const
 {
     return -2.0*((*pu)[j][i] - U[j][i]);
 }
 
-double Parabolic1DControl333::bm1(unsigned int j, unsigned int k) const
+double Parabolic2DControl333::bm1(unsigned int j, unsigned int k) const
 {
     C_UNUSED(j);
     C_UNUSED(k);
     return 0.0;
 }
 
-double Parabolic1DControl333::bm2(unsigned int j, unsigned int k) const
+double Parabolic2DControl333::bm2(unsigned int j, unsigned int k) const
 {
     C_UNUSED(j);
     C_UNUSED(k);
     return 0.0;
 }
 
-double Parabolic1DControl333::bm3(unsigned int i, unsigned int k) const
+double Parabolic2DControl333::bm3(unsigned int i, unsigned int k) const
 {
     C_UNUSED(i);
     C_UNUSED(k);
     return 0.0;
 }
 
-double Parabolic1DControl333::bm4(unsigned int i, unsigned int k) const
+double Parabolic2DControl333::bm4(unsigned int i, unsigned int k) const
 {
     C_UNUSED(i);
     C_UNUSED(k);
     return 0.0;
 }
 
-double Parabolic1DControl333::bf(unsigned int i, unsigned int j, unsigned int k) const
+double Parabolic2DControl333::bf(unsigned int i, unsigned int j, unsigned int k) const
 {
     C_UNUSED(i);
     C_UNUSED(j);
@@ -331,18 +331,18 @@ double Parabolic1DControl333::bf(unsigned int i, unsigned int j, unsigned int k)
     return 0.0;
 }
 
-void Parabolic1DControl333::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double alpha, RnFunction* fn) const
+void Parabolic2DControl333::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double alpha, RnFunction* fn) const
 {
     C_UNUSED(g);
     C_UNUSED(alpha);
-    Parabolic1DControl333 *hc = dynamic_cast<Parabolic1DControl333*>(fn);
+    Parabolic2DControl333 *hc = dynamic_cast<Parabolic2DControl333*>(fn);
     printf("J[%d]: %.16f\n", i, hc->fx(x));
     IPrinter::printVector(x, "v1:", 10, 0*(M+1), 0*(M+1) + M);
     IPrinter::printVector(x, "v2:", 10, 1*(M+1), 1*(M+1) + M);
     IPrinter::printVector(x, "v3:", 10, 2*(M+1), 2*(M+1) + M);
 }
 
-void Parabolic1DControl333::project(DoubleVector &e, int index)
+void Parabolic2DControl333::project(DoubleVector &e, int index)
 {
     if (index<6)
     {

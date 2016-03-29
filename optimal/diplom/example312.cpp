@@ -41,6 +41,7 @@ double BorderParabolic1D312::boundary(Boundary type, unsigned int j) const
     double t = j*ht;
     if (type == Left) return exp(t);
     if (type == Right) return exp(t)+sin(1.0);
+    return 0.0;
 }
 
 double BorderParabolic1D312::f(unsigned int i, unsigned int j) const

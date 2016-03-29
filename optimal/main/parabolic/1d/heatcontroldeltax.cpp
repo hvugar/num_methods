@@ -1,6 +1,6 @@
 #include "heatcontroldeltax.h"
 
-void HeatControlDeltaX::main()
+void HeatControlDeltaX::main(int argc, char ** argv)
 {
     /* Function */
     HeatControlDeltaX hc;
@@ -200,19 +200,14 @@ double HeatControlDeltaX::f(unsigned int i, unsigned int j) const
     return sum;
 }
 
-double HeatControlDeltaX::bfi(unsigned int i) const
+double HeatControlDeltaX::binitial(unsigned int i) const
 {
     return -2.0 * ((*pu)[i] - U[i]);;
 }
 
-double HeatControlDeltaX::bm1(unsigned int j) const
+double HeatControlDeltaX::bboundary(Boundary type, unsigned int j) const
 {
-    C_UNUSED(j);
-    return 0.0;
-}
-
-double HeatControlDeltaX::bm2(unsigned int j) const
-{
+    C_UNUSED(type);
     C_UNUSED(j);
     return 0.0;
 }

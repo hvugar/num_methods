@@ -12,11 +12,11 @@
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
 
-class Parabolic1DControl333 : public RnFunction, public IGradient, public IParabolicEquation2D, public IBackwardParabolicEquation2D, public IPrinter, public IProjection
+class Parabolic2DControl333 : public RnFunction, public IGradient, public IParabolicEquation2D, public IBackwardParabolicEquation2D, public IPrinter, public IProjection
 {
 public:
-    Parabolic1DControl333(unsigned int m, unsigned int n2, unsigned int n1);
-    virtual ~Parabolic1DControl333() {}
+    Parabolic2DControl333(unsigned int m, unsigned int n2, unsigned int n1);
+    virtual ~Parabolic2DControl333() {}
 
     virtual double fx(const DoubleVector &v);
     virtual void gradient(const DoubleVector &v, DoubleVector &g);
