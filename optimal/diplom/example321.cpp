@@ -56,6 +56,7 @@ double BorderParabolic2D321::boundary(unsigned int i, unsigned int j, unsigned i
     if (i==N1) return x1*t + x2*t*t + x1*x2;
     if (j==0)  return x1*t + x2*t*t + x1*x2;
     if (j==N2) return x1*t + x2*t*t + x1*x2;
+    return 0.0;
 }
 
 double BorderParabolic2D321::f(unsigned int i, unsigned int j, unsigned int k) const
