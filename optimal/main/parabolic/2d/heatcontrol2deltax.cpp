@@ -4,9 +4,9 @@
 // Working points [0.60,0.70] [0.65,0.25] [0.25,0.35] epsilon1 0.0001 epsilon2 0.0001 epsilon3: 0.0001. min:1.0 0.0001
 // Working points [0.60,0.70] [0.60,0.30] [0.30,0.40] epsilon1 0.0001 epsilon2 0.0001 epsilon3: 0.0001. min:1.0 0.0001
 
-void HeatControl2DDeltaX::main(int argc, char ** argv)
+void HeatControl2DeltaX::main(int argc, char ** argv)
 {
-    HeatControl2DDeltaX hc(100, 100, 100);
+    HeatControl2DeltaX hc(100, 100, 100);
 
     DoubleVector x(2*hc.L);
     x[0] = 0.60; x[1] = 0.70; x[2] = 0.65; x[3] = 0.25; x[4] = 0.25; x[5] = 0.35;
@@ -39,7 +39,7 @@ void HeatControl2DDeltaX::main(int argc, char ** argv)
     printf("gr2: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", gr2[0], gr2[1], gr2[2], gr2[3], gr2[4], gr2[5]);
 }
 
-HeatControl2DDeltaX::HeatControl2DDeltaX(unsigned int M, unsigned int N2, unsigned int N1)
+HeatControl2DeltaX::HeatControl2DeltaX(unsigned int M, unsigned int N2, unsigned int N1)
 {
     alpha = 1.0;
 
@@ -90,7 +90,7 @@ HeatControl2DDeltaX::HeatControl2DDeltaX(unsigned int M, unsigned int N2, unsign
     fclose(f);
 }
 
-double HeatControl2DDeltaX::fx(const DoubleVector& x)
+double HeatControl2DeltaX::fx(const DoubleVector& x)
 {
     px = &x;
     DoubleMatrix u;
@@ -117,7 +117,7 @@ double HeatControl2DDeltaX::fx(const DoubleVector& x)
     return sum + alpha*nrm;
 }
 
-double HeatControl2DDeltaX::norm(const DoubleVector& v) const
+double HeatControl2DeltaX::norm(const DoubleVector& v) const
 {
     double nrm = 0.0;
     for (unsigned int k=0; k<=M; k++)
@@ -132,7 +132,7 @@ double HeatControl2DDeltaX::norm(const DoubleVector& v) const
     return nrm;
 }
 
-void HeatControl2DDeltaX::gradient(const DoubleVector& x, DoubleVector& g)
+void HeatControl2DeltaX::gradient(const DoubleVector& x, DoubleVector& g)
 {
     px = &x;
     DoubleMatrix u;
@@ -153,7 +153,7 @@ void HeatControl2DDeltaX::gradient(const DoubleVector& x, DoubleVector& g)
     //    IGradient::Gradient(this, 0.0001, x, g);
 }
 
-void HeatControl2DDeltaX::calculateGX(const DoubleVector& x, const DoubleMatrix& psi, DoubleVector& g, unsigned int k)
+void HeatControl2DeltaX::calculateGX(const DoubleVector& x, const DoubleMatrix& psi, DoubleVector& g, unsigned int k)
 {
     double psiX1;
     double psiX2;
@@ -193,7 +193,7 @@ void HeatControl2DDeltaX::calculateGX(const DoubleVector& x, const DoubleMatrix&
     }
 }
 
-void HeatControl2DDeltaX::psiDerivative(double &psiX1, double &psiX2, double x1, double x2, const DoubleMatrix &psi)
+void HeatControl2DeltaX::psiDerivative(double &psiX1, double &psiX2, double x1, double x2, const DoubleMatrix &psi)
 {
     unsigned int i = (unsigned int)round(x1/h1);
     unsigned int j = (unsigned int)round(x2/h2);
@@ -207,14 +207,14 @@ void HeatControl2DDeltaX::psiDerivative(double &psiX1, double &psiX2, double x1,
     else psiX2 = (psi[j+1][i] - psi[j-1][i])/(2.0*h2);
 }
 
-double HeatControl2DDeltaX::initial(unsigned int i, unsigned int j) const
+double HeatControl2DeltaX::initial(unsigned int i, unsigned int j) const
 {
     double x1 = i*h1;
     double x2 = j*h2;
     return u(x1, x2, t0);
 }
 
-double HeatControl2DDeltaX::boundary(unsigned int i, unsigned int j, unsigned int k) const
+double HeatControl2DeltaX::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     double x1 = i*h1;
     double x2 = j*h2;
@@ -222,7 +222,7 @@ double HeatControl2DDeltaX::boundary(unsigned int i, unsigned int j, unsigned in
     return u(x1, x2, t);
 }
 
-double HeatControl2DDeltaX::f(unsigned int i, unsigned int j, unsigned int k) const
+double HeatControl2DeltaX::f(unsigned int i, unsigned int j, unsigned int k) const
 {
     double x1 = i*h1;
     double x2 = j*h2;
@@ -254,12 +254,12 @@ double HeatControl2DDeltaX::f(unsigned int i, unsigned int j, unsigned int k) co
     //    }
 }
 
-double HeatControl2DDeltaX::binitial(unsigned int i, unsigned int j) const
+double HeatControl2DeltaX::binitial(unsigned int i, unsigned int j) const
 {
     return -2.0*((*pu)[j][i] - U[j][i]);
 }
 
-double HeatControl2DDeltaX::bboundary(unsigned int i, unsigned int j, unsigned int k) const
+double HeatControl2DeltaX::bboundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     C_UNUSED(i);
     C_UNUSED(j);
@@ -267,7 +267,7 @@ double HeatControl2DDeltaX::bboundary(unsigned int i, unsigned int j, unsigned i
     return 0.0;
 }
 
-double HeatControl2DDeltaX::bf(unsigned int i, unsigned int j, unsigned int k) const
+double HeatControl2DeltaX::bf(unsigned int i, unsigned int j, unsigned int k) const
 {
     C_UNUSED(i);
     C_UNUSED(j);
@@ -275,7 +275,7 @@ double HeatControl2DDeltaX::bf(unsigned int i, unsigned int j, unsigned int k) c
     return 0.0;
 }
 
-void HeatControl2DDeltaX::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double alpha, RnFunction* fn) const
+void HeatControl2DeltaX::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double alpha, RnFunction* fn) const
 {
     C_UNUSED(alpha);
     HeatControl2DDeltaX *hc = dynamic_cast<HeatControl2DDeltaX*>(fn);
@@ -288,7 +288,7 @@ void HeatControl2DDeltaX::print(unsigned int i, const DoubleVector& x, const Dou
     puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
 }
 
-void HeatControl2DDeltaX::project(DoubleVector &e, int index)
+void HeatControl2DeltaX::project(DoubleVector &e, int index)
 {
     if (index<6)
     {

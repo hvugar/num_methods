@@ -2,7 +2,7 @@
 
 int main(int argc, char ** argv)
 {
-    HeatControl2DDeltaX::main(argc, argv);
+    HeatControl2DeltaX::main(argc, argv);
 //    HeatControlDeltaF::main();
 //    HeatControlDeltaX::main(argc, argv);
 //    DiscreteHyperbolic1::main();

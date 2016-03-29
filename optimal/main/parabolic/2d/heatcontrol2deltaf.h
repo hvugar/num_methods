@@ -12,11 +12,11 @@
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
 
-class HeatControl2DDeltaF : public RnFunction, public IGradient, public IParabolicEquation2D, public IBackwardParabolicEquation2D, public IPrinter, public IProjection
+class HeatControl2DeltaF : public RnFunction, public IGradient, public IParabolicEquation2D, public IBackwardParabolicEquation2D, public IPrinter, public IProjection
 {
 public:
-    HeatControl2DDeltaF(unsigned int m, unsigned int n2, unsigned int n1);
-    virtual ~HeatControl2DDeltaF() {}
+    HeatControl2DeltaF(unsigned int m, unsigned int n2, unsigned int n1);
+    virtual ~HeatControl2DeltaF() {}
 
     virtual double fx(const DoubleVector &v);
     virtual void gradient(const DoubleVector &v, DoubleVector &g);
