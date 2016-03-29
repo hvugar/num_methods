@@ -100,22 +100,18 @@ void HeatControl::gradient(const DoubleVector &f, DoubleVector &g)
     }
 }
 
-double HeatControl::fi(unsigned int i) const
+double HeatControl::initial(unsigned int i) const
 {
     double x = i*hx;
     return u(x, t0);
 }
 
-double HeatControl::m1(unsigned int j) const
+double HeatControl::boundary(Boundary type, unsigned int j) const
 {
     double t = j*ht;
-    return u(x0, t);
-}
-
-double HeatControl::m2(unsigned int j) const
-{
-    double t = j*ht;
-    return u(x1, t);
+    if (type == Left) return u(x0, t);
+    if (type == Right) return u(x1, t);
+    return 0.0;
 }
 
 double HeatControl::f(unsigned int i, unsigned int j) const

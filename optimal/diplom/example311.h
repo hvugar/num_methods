@@ -11,9 +11,8 @@ public:
     BorderParabolic1D311();
     virtual ~BorderParabolic1D311() {}
 
-    virtual double fi(unsigned int i) const;
-    virtual double m1(unsigned int j) const;
-    virtual double m2(unsigned int j) const;
+    virtual double initial(unsigned int i) const;
+    virtual double boundary(Boundary type, unsigned int j) const;
     virtual double f(unsigned int i, unsigned int j) const;
 
     static void main();

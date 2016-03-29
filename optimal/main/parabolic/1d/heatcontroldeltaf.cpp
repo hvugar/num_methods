@@ -115,22 +115,18 @@ void HeatControlDeltaF::gradient(const DoubleVector &f, DoubleVector &g)
 //    IGradient::Gradient(this, 0.00001, f, g);
 }
 
-double HeatControlDeltaF::fi(unsigned int i) const
+double HeatControlDeltaF::initial(unsigned int i) const
 {
     double x = i*hx;
     return u(x, t0);
 }
 
-double HeatControlDeltaF::m1(unsigned int j) const
+double HeatControlDeltaF::boundary(Boundary type, unsigned int j) const
 {
     double t = j*ht;
-    return u(x0, t);
-}
-
-double HeatControlDeltaF::m2(unsigned int j) const
-{
-    double t = j*ht;
-    return u(x1, t);
+    if (type == Left) return u(x0, t);
+    if (type == Right) return u(x1, t);
+    return 0.0;
 }
 
 double HeatControlDeltaF::f(unsigned int i, unsigned int j) const

@@ -30,22 +30,17 @@ BorderParabolic1D312::BorderParabolic1D312()
     e[2] = 0.84;
 }
 
-double BorderParabolic1D312::fi(unsigned int i) const
+double BorderParabolic1D312::initial(unsigned int i) const
 {
     double x = i*hx;
     return sin(x)+1.0;
 }
 
-double BorderParabolic1D312::m1(unsigned int j) const
+double BorderParabolic1D312::boundary(Boundary type, unsigned int j) const
 {
     double t = j*ht;
-    return exp(t);
-}
-
-double BorderParabolic1D312::m2(unsigned int j) const
-{
-    double t = j*ht;
-    return exp(t)+sin(1.0);
+    if (type == Left) return exp(t);
+    if (type == Right) return exp(t)+sin(1.0);
 }
 
 double BorderParabolic1D312::f(unsigned int i, unsigned int j) const

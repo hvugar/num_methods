@@ -158,22 +158,18 @@ void HeatControlDeltaX::gradient(const DoubleVector &e, DoubleVector &g)
     g[2] = -ht*g[2];
 }
 
-double HeatControlDeltaX::fi(unsigned int i) const
+double HeatControlDeltaX::initial(unsigned int i) const
 {
     double x = i*hx;
     return u(x, t0);
 }
 
-double HeatControlDeltaX::m1(unsigned int j) const
+double HeatControlDeltaX::boundary(Boundary type, unsigned int j) const
 {
     double t = j*ht;
-    return u(x0, t);
-}
-
-double HeatControlDeltaX::m2(unsigned int j) const
-{
-    double t = j*ht;
-    return u(x1, t);
+    if (type == Left) return u(x0, t);
+    if (type == Right) return u(x1, t);
+    return 0.0;
 }
 
 double HeatControlDeltaX::f(unsigned int i, unsigned int j) const

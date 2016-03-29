@@ -112,22 +112,17 @@ void DiscreteHeat::gradient(const DoubleVector& f, DoubleVector& g)
     }
 }
 
-double DiscreteHeat::fi(unsigned int i) const
+double DiscreteHeat::initial(unsigned int i) const
 {
     double x = hx*i;
     return x*x;
 }
 
-double DiscreteHeat::m1(unsigned int j) const
+double DiscreteHeat::boundary(Boundary type, unsigned int j) const
 {
     double t = j*ht;
-    return t*t;
-}
-
-double DiscreteHeat::m2(unsigned int j) const
-{
-    double t = j*ht;
-    return t*t+1.0;
+    if (type == Left) return t*t;
+    if (type == Right) return t*t+1.0;
 }
 
 double DiscreteHeat::f(unsigned int i, unsigned int j) const

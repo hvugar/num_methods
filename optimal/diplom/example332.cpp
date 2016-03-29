@@ -19,17 +19,17 @@ void Parabolic1DControl332::main()
     printf("e:  %10.6f %10.6f ga:  %10.6f %10.6f gn:  %10.6f %10.6f\n", e0[0], e0[1], ga0[0], ga0[1], gn0[0], gn0[1]);
 
     /* Minimization */
-//    ConjugateGradient g2;
-//    g2.setGradient(&pc);
-//    g2.setFunction(&pc);
-//    g2.setEpsilon1(0.0001);
-//    g2.setEpsilon2(0.0001);
-//    g2.setEpsilon3(0.0001);
-//    g2.setR1MinimizeEpsilon(0.1, 0.00001);
-//    g2.setPrinter(&pc);
-//    g2.setProjection(&pc);
-//    g2.setNormalize(true);
-//    g2.calculate(e0);
+    //    ConjugateGradient g2;
+    //    g2.setGradient(&pc);
+    //    g2.setFunction(&pc);
+    //    g2.setEpsilon1(0.0001);
+    //    g2.setEpsilon2(0.0001);
+    //    g2.setEpsilon3(0.0001);
+    //    g2.setR1MinimizeEpsilon(0.1, 0.00001);
+    //    g2.setPrinter(&pc);
+    //    g2.setProjection(&pc);
+    //    g2.setNormalize(true);
+    //    g2.calculate(e0);
 
     DoubleVector e(pc.L);
     e[0] = 0.25;
@@ -155,22 +155,18 @@ void Parabolic1DControl332::project(DoubleVector &e, int i)
     if (e[i] > 1.0) e[i] = 1.0;
 }
 
-double Parabolic1DControl332::fi(unsigned int i) const
+double Parabolic1DControl332::initial(unsigned int i) const
 {
     double x = i*hx;
     return 0.5*x;
 }
 
-double Parabolic1DControl332::m1(unsigned int j) const
+double Parabolic1DControl332::boundary(Boundary type, unsigned int j) const
 {
     double t = j*ht;
-    return t*t;
-}
-
-double Parabolic1DControl332::m2(unsigned int j) const
-{
-    double t = j*ht;
-    return t*t+0.5;
+    if (type == Left) return t*t;
+    if (type == Right) return t*t+0.5;
+    return 0.0;
 }
 
 double Parabolic1DControl332::f(unsigned int i, unsigned int j) const

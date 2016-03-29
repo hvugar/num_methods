@@ -133,22 +133,17 @@ void Parabolic1DControl331::print(unsigned int i, const DoubleVector &v, const D
     printf("J[%d]: %.16f\n", i, hc->fx(v));
 }
 
-double Parabolic1DControl331::fi(unsigned int i) const
+double Parabolic1DControl331::initial(unsigned int i) const
 {
     double x = i*hx;
     return x+cos(x);
 }
 
-double Parabolic1DControl331::m1(unsigned int j) const
+double Parabolic1DControl331::boundary(Boundary type, unsigned int j) const
 {
-    double t = j*ht;
-    return t*t+1.0;
-}
-
-double Parabolic1DControl331::m2(unsigned int j) const
-{
-    double t = j*ht;
-    return t*t+1.0+cos(1.0);
+     double t = j*ht;
+     if (type == Left) return t*t+1.0;
+     if (type == Right) return t*t+1.0+cos(1.0);
 }
 
 double Parabolic1DControl331::f(unsigned int i, unsigned int j) const

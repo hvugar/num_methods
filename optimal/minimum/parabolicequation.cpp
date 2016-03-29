@@ -21,7 +21,7 @@ void IParabolicEquation::calculateU(DoubleVector &u, double hx, double ht, unsig
         {
             for (unsigned int i=0; i<=N; i++)
             {
-                u[i] = fi(i);
+                u[i] = initial(i);
             }
         }
         else
@@ -37,8 +37,8 @@ void IParabolicEquation::calculateU(DoubleVector &u, double hx, double ht, unsig
             da[0]   = 0.0;
             dc[N-2] = 0.0;
 
-            u[0] = m1(j);
-            u[N] = m2(j);
+            u[0] = boundary(Left, j);//m1(j);
+            u[N] = boundary(Right, j);//m2(j);
 
             dd[0]   -= alpha * u[0];
             dd[N-2] -= alpha * u[N];
@@ -82,7 +82,7 @@ void IParabolicEquation::calculateU(DoubleMatrix &u, double hx, double ht, unsig
         {
             for (unsigned int i=0; i<=N; i++)
             {
-                u[j][i] = fi(i);
+                u[j][i] = initial(i);
             }
         }
         else
@@ -98,8 +98,8 @@ void IParabolicEquation::calculateU(DoubleMatrix &u, double hx, double ht, unsig
             da[0]   = 0.0;
             dc[N-2] = 0.0;
 
-            u[j][0] = m1(j);
-            u[j][N] = m2(j);
+            u[j][0] = boundary(Left, j);//m1(j);
+            u[j][N] = boundary(Right, j);//m2(j);
 
             dd[0]   -= alpha * u[j][0];
             dd[N-2] -= alpha * u[j][N];
@@ -143,7 +143,7 @@ void IParabolicEquation::calculateN(DoubleMatrix &u, double hx, double ht, unsig
         {
             for (unsigned int i=0; i<=N; i++)
             {
-                u[j][i] = fi(i);
+                u[j][i] = initial(i);
             }
         }
         else
@@ -162,8 +162,8 @@ void IParabolicEquation::calculateN(DoubleMatrix &u, double hx, double ht, unsig
             db[0]   = alpha+beta;
             db[N-2] = alpha+beta;
 
-            dd[0]   += alpha * hx * m1(j);
-            dd[N-2] -= alpha * hx * m2(j);
+            dd[0]   += alpha * hx * boundary(Left, j);//m1(j);
+            dd[N-2] -= alpha * hx * boundary(Right, j);//m2(j);
 
             tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size());
 
@@ -172,8 +172,8 @@ void IParabolicEquation::calculateN(DoubleMatrix &u, double hx, double ht, unsig
                 u[j][i] = rx[i-1];
             }
 
-            u[j][0] = u[j][1]   - hx * m1(j);
-            u[j][N] = u[j][N-1] + hx * m2(j);
+            u[j][0] = u[j][1]   - hx * boundary(Left, j);//m1(j);
+            u[j][N] = u[j][N-1] + hx * boundary(Right, j);//m2(j);
         }
     }
 

@@ -26,9 +26,8 @@ public:
     virtual double fx(const DoubleVector& f);
     virtual void gradient(const DoubleVector& f, DoubleVector &g);
 
-    inline virtual double fi(unsigned int i) const;
-    inline virtual double m1(unsigned int j) const;
-    inline virtual double m2(unsigned int j) const;
+    virtual double initial(unsigned int i) const;
+    virtual double boundary(Boundary type, unsigned int j) const;
     inline virtual double f(unsigned int i, unsigned int j) const;
 
     virtual double bfi(unsigned int i) const;

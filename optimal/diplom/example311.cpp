@@ -27,21 +27,17 @@ BorderParabolic1D311::BorderParabolic1D311()
     e2 = 0.75;
 }
 
-double BorderParabolic1D311::fi(unsigned int i) const
+double BorderParabolic1D311::initial(unsigned int i) const
 {
     return 0.0;
 }
 
-double BorderParabolic1D311::m1(unsigned int j) const
+double BorderParabolic1D311::boundary(Boundary type, unsigned int j) const
 {
     double t = j*ht;
-    return t;
-}
-
-double BorderParabolic1D311::m2(unsigned int j) const
-{
-    double t = j*ht;
-    return 2.0*t;
+    if (type == Left) return t;
+    if (type == Left) return 2.0*t;
+    return 0.0;
 }
 
 double BorderParabolic1D311::f(unsigned int i, unsigned int j) const
