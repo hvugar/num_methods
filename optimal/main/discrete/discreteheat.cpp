@@ -123,6 +123,7 @@ double DiscreteHeat::boundary(Boundary type, unsigned int j) const
     double t = j*ht;
     if (type == Left) return t*t;
     if (type == Right) return t*t+1.0;
+    return 0.0;
 }
 
 double DiscreteHeat::f(unsigned int i, unsigned int j) const
