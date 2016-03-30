@@ -29,6 +29,7 @@ BorderParabolic1D311::BorderParabolic1D311()
 
 double BorderParabolic1D311::initial(unsigned int i) const
 {
+    C_UNUSED(i);
     return 0.0;
 }
 

@@ -2,6 +2,9 @@
 
 void Parabolic2DControl333::main(int argc, char *argv[])
 {
+    C_UNUSED(argc);
+    C_UNUSED(argv);
+
     Parabolic2DControl333 hc(100, 100, 100);
 
     DoubleVector v((hc.M+1)*hc.L);

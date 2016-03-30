@@ -2,6 +2,9 @@
 
 void Parabolic1DControl335::main(int argc, char *argv[])
 {
+    C_UNUSED(argc);
+    C_UNUSED(argv);
+
     Parabolic1DControl335 hc;
 
     DoubleVector v((hc.M+1)*hc.L);
@@ -290,6 +293,9 @@ void Parabolic1DControl335::print(unsigned int i, const DoubleVector &v, const D
 
 void Parabolic1DControl335::project(DoubleVector &e, int index)
 {
+    C_UNUSED(e);
+    C_UNUSED(index);
+
     //    if (index<6)
     //    {
     //        if (e[index] > 1.0) e[index] = 1.0;

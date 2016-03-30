@@ -2,6 +2,9 @@
 
 void Parabolic1DControl331::main(int argc, char ** argv)
 {
+    C_UNUSED(argc);
+    C_UNUSED(argv);
+
     /* Function */
     Parabolic1DControl331 pc;
 
@@ -129,6 +132,8 @@ void Parabolic1DControl331::gradient(const DoubleVector &v, DoubleVector &g)
 void Parabolic1DControl331::print(unsigned int i, const DoubleVector &v, const DoubleVector &gr, double alpha, RnFunction *fn) const
 {
     C_UNUSED(alpha);
+    C_UNUSED(gr);
+
     Parabolic1DControl331 *hc = dynamic_cast<Parabolic1DControl331*>(fn);
     printf("J[%d]: %.16f\n", i, hc->fx(v));
 }

@@ -6,6 +6,9 @@
 
 void Parabolic1DControl336::main(int argc, char **argv)
 {
+    C_UNUSED(argc);
+    C_UNUSED(argv);
+
     Parabolic1DControl336 hc;
 
     DoubleVector x(2*hc.L);
