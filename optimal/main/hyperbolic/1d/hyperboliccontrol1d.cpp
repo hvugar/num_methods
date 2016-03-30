@@ -137,17 +137,6 @@ double HyperbolicControl1D::boundary(Boundary type, unsigned int j) const
     return 0.0;
 }
 
-//double HyperbolicControl1D::m1(unsigned int j) const
-//{
-//    return (*pv)[j];
-//}
-
-//double HyperbolicControl1D::m2(unsigned int j) const
-//{
-//    unsigned int i = M+1 + j;
-//    return (*pv)[i];
-//}
-
 double HyperbolicControl1D::f(unsigned int i, unsigned int j) const
 {
     C_UNUSED(i);
@@ -169,6 +158,7 @@ double HyperbolicControl1D::binitial2(unsigned int i) const
 
 double HyperbolicControl1D::bboundary(Boundary type, unsigned int j) const
 {
+    C_UNUSED(type);
     C_UNUSED(j);
     return 0.0;
 }

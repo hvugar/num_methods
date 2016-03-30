@@ -127,12 +127,11 @@ HyperbolicControl2D::HyperbolicControl2D()
     fclose(file2);
 }
 
-HyperbolicControl2D::~HyperbolicControl2D()
-{
-}
+HyperbolicControl2D::~HyperbolicControl2D() {}
 
 double HyperbolicControl2D::fx(double x)
 {
+    C_UNUSED(x);
     return 0.0;
 }
 

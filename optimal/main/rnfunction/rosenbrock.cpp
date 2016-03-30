@@ -3,6 +3,9 @@
 
 void Rosenbrock::main(int argc, char ** argv)
 {
+    C_UNUSED(argc);
+    C_UNUSED(argv);
+
     /* Function */
     Rosenbrock r;
     r.grad_step = 0.000001;

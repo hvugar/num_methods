@@ -1,48 +1,11 @@
 #include "bealesfunction.h"
 #include <math.h>
 
-double BealesFunction::fx(const DoubleVector& x)
-{
-    double x1 = x[0];
-    double x2 = x[1];
-    return (1.5 - x1 + x1*x2)*(1.5 - x1 + x1*x2) + (2.25 - x1 + x1*x2*x2)*(2.25 - x1 + x1*x2*x2) + (2.625 - x1 + x1*x2*x2*x2)*(2.625 - x1 + x1*x2*x2*x2);
-}
-
-void BealesFunction::gradient(const DoubleVector& x, DoubleVector &g)
-{
-    IGradient::Gradient(this, grad_step, x, g);
-}
-
-void BealesFunction::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const
-{
-    if (iterationCount == 1)
-    {
-        printf("No\t|x1      \t|x2      \t|f(x)      \t|s1      \t|s2      \t|grad_norm  \t|alpha  \t");
-        printf("\n--------+---------------+---------------+---------------+---------------+---------------+---------------+-------------\n");
-    }
-
-    double y = f->fx(m_x);
-    double nr = s.EuclideanNorm();
-
-    printf("%d\t", iterationCount);
-    m_x[0]>=0.0 ? printf("|+%.10f\t", fabs(m_x[0])) : printf("|%.10f\t", m_x[0]);
-    m_x[1]>=0.0 ? printf("|+%.10f\t", fabs(m_x[1])) : printf("|%.10f\t", m_x[1]);
-    y>=0.0 ? printf("|+%.6f\t", y) : printf("|%.6f\t", y);
-    s[0]>=0.0 ? printf("|+%.6f\t", s[0]) : printf("|%.6f\t", s[0]);
-    s[1]>=0.0 ? printf("|+%.6f\t", s[1]) : printf("|%.6f\t", s[1]);
-    nr>=0.0 ? printf("|+%.6f\t", nr) : printf("|%.6f\t", nr);
-    m_alpha>=0.0 ? printf("|%+.10f\t", m_alpha) : printf("|%.10f\t", m_alpha);
-    printf("\n");
-}
-
-void BealesFunction::project(DoubleVector& x, int index)
-{
-    C_UNUSED(x);
-    C_UNUSED(index);
-}
-
 void BealesFunction::main(int argc, char ** argv)
 {
+    C_UNUSED(argc);
+    C_UNUSED(argv);
+
     /* Function */
     BealesFunction func;\
     func.grad_step = 0.000001;
@@ -94,3 +57,42 @@ void BealesFunction::main(int argc, char ** argv)
 //    g3.calculate(x0);
 }
 
+double BealesFunction::fx(const DoubleVector& x)
+{
+    double x1 = x[0];
+    double x2 = x[1];
+    return (1.5 - x1 + x1*x2)*(1.5 - x1 + x1*x2) + (2.25 - x1 + x1*x2*x2)*(2.25 - x1 + x1*x2*x2) + (2.625 - x1 + x1*x2*x2*x2)*(2.625 - x1 + x1*x2*x2*x2);
+}
+
+void BealesFunction::gradient(const DoubleVector& x, DoubleVector &g)
+{
+    IGradient::Gradient(this, grad_step, x, g);
+}
+
+void BealesFunction::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const
+{
+    if (iterationCount == 1)
+    {
+        printf("No\t|x1      \t|x2      \t|f(x)      \t|s1      \t|s2      \t|grad_norm  \t|alpha  \t");
+        printf("\n--------+---------------+---------------+---------------+---------------+---------------+---------------+-------------\n");
+    }
+
+    double y = f->fx(m_x);
+    double nr = s.EuclideanNorm();
+
+    printf("%d\t", iterationCount);
+    m_x[0]>=0.0 ? printf("|+%.10f\t", fabs(m_x[0])) : printf("|%.10f\t", m_x[0]);
+    m_x[1]>=0.0 ? printf("|+%.10f\t", fabs(m_x[1])) : printf("|%.10f\t", m_x[1]);
+    y>=0.0 ? printf("|+%.6f\t", y) : printf("|%.6f\t", y);
+    s[0]>=0.0 ? printf("|+%.6f\t", s[0]) : printf("|%.6f\t", s[0]);
+    s[1]>=0.0 ? printf("|+%.6f\t", s[1]) : printf("|%.6f\t", s[1]);
+    nr>=0.0 ? printf("|+%.6f\t", nr) : printf("|%.6f\t", nr);
+    m_alpha>=0.0 ? printf("|%+.10f\t", m_alpha) : printf("|%.10f\t", m_alpha);
+    printf("\n");
+}
+
+void BealesFunction::project(DoubleVector& x, int index)
+{
+    C_UNUSED(x);
+    C_UNUSED(index);
+}

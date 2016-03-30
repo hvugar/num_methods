@@ -6,6 +6,9 @@
 
 void HeatControl2DeltaX::main(int argc, char ** argv)
 {
+    C_UNUSED(argc);
+    C_UNUSED(argv);
+
     HeatControl2DeltaX hc(100, 100, 100);
 
     DoubleVector x(2*hc.L);

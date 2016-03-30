@@ -180,6 +180,7 @@ double Hyperbolic1DX::binitial2(unsigned int i) const
 double Hyperbolic1DX::bboundary(Boundary type, unsigned int j) const
 {
     C_UNUSED(j);
+    C_UNUSED(type);
     return 0.0;
 }
 
