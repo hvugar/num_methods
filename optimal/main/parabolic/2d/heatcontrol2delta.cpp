@@ -282,9 +282,10 @@ double HeatControl2Delta::initial(unsigned int i, unsigned int j) const
 
 double HeatControl2Delta::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
+    double x1 = i*h1;
     double x2 = j*h2;
     double t  = 0.5*k*ht;
-    return u(x10, x2, t);
+    return u(x1, x2, t);
 }
 
 double HeatControl2Delta::f(unsigned int i, unsigned int j, unsigned int k) const

@@ -2,6 +2,9 @@
 
 void HyperbolicControl2D23::main(int argc, char ** argv)
 {
+    C_UNUSED(argc);
+    C_UNUSED(argv);
+
     HyperbolicControl2D23 hc;
     hc.file = fopen("20160326.txt", "w");
     //hc.file = stdout;
@@ -221,16 +224,23 @@ void HyperbolicControl2D23::gradient(const DoubleVector &v, DoubleVector &g)
 
 double HyperbolicControl2D23::initial1(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HyperbolicControl2D23::initial2(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HyperbolicControl2D23::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 

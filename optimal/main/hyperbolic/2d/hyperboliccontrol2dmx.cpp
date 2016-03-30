@@ -148,6 +148,7 @@ double HyperbolicControl2DMX::fx(const DoubleVector &x)
 
 double HyperbolicControl2DMX::norm(const DoubleVector& v) const
 {
+    C_UNUSED(v);
     double nrm = 0.0;
     for (unsigned int k=0; k<=M; k++)
     {

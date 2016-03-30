@@ -3,6 +3,9 @@
 
 void HyperbolicControl2D21::main(int argc, char ** argv)
 {
+    C_UNUSED(argc);
+    C_UNUSED(argv);
+
     HyperbolicControl2D21 hc;
     hc.fx(10.0);
 
@@ -63,6 +66,8 @@ double HyperbolicControl2D21::fx(double T)
 
 double HyperbolicControl2D21::fx(const DoubleVector &x)
 {
+    C_UNUSED(x);
+
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a1, a2, qamma);
 
@@ -103,16 +108,23 @@ double HyperbolicControl2D21::fx(const DoubleVector &x)
 
 double HyperbolicControl2D21::initial1(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HyperbolicControl2D21::initial2(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HyperbolicControl2D21::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 
