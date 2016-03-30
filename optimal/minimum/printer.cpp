@@ -4,7 +4,7 @@
 
 void IPrinter::print(GradientIterationInfo &info) const
 {
-
+    C_UNUSED(info);
 }
 
 void IPrinter::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n, const char* s, FILE* f)
