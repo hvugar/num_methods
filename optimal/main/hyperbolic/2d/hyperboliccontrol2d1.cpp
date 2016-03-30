@@ -379,11 +379,16 @@ double HyperbolicControl2D1::initial1(unsigned int i, unsigned int j) const
 
 double HyperbolicControl2D1::initial2(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HyperbolicControl2D1::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
+    C_UNUSED(k);
     return u(i, j, k);
 }
 

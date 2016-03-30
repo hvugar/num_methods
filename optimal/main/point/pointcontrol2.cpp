@@ -1,5 +1,32 @@
 #include "pointcontrol2.h"
 
+void PointControl2::main(int argc, char ** argv)
+{
+    C_UNUSED(argc);
+    C_UNUSED(argv);
+
+    DoubleVector p(3, 0.0);
+
+    p[0] = 10.5;
+    p[1] = 11.4;
+    p[2] = 12.4;
+    PointControl2 f(0.0, 1.0, 2.0, 2.5, 0.0001, 0.0001);
+
+    p[0] = 0.0;
+    p[1] = 0.0;
+    p[2] = 0.0;
+
+    SteepestDescentGradient g1;
+    g1.setFunction(&f);
+    g1.setEpsilon1(0.0000001);
+    g1.setEpsilon2(0.0000001);
+    g1.setR1MinimizeEpsilon(1.0, 0.01);
+    g1.setPrinter(&f);
+    g1.calculate(p);
+
+    f.write(f.x, "pointcontrol2.txt");
+}
+
 PointControl2::PointControl2(double t0, double t1, double x0, double x1, double dt, double dx)
 {
     this->t0 = t0;
@@ -142,30 +169,6 @@ double PointControl2::delta(double t)
         if (fabs(t - T[i]) < ((epsilon / 2.0) + 0.000001)) return 1.0 / epsilon;
     }
     return 0.0;
-}
-
-void PointControl2::main(int argc, char ** argv)
-{
-    DoubleVector p(3, 0.0);
-
-    p[0] = 10.5;
-    p[1] = 11.4;
-    p[2] = 12.4;
-    PointControl2 f(0.0, 1.0, 2.0, 2.5, 0.0001, 0.0001);
-
-    p[0] = 0.0;
-    p[1] = 0.0;
-    p[2] = 0.0;
-
-    SteepestDescentGradient g1;
-    g1.setFunction(&f);
-    g1.setEpsilon1(0.0000001);
-    g1.setEpsilon2(0.0000001);
-    g1.setR1MinimizeEpsilon(1.0, 0.01);
-    g1.setPrinter(&f);
-    g1.calculate(p);
-
-    f.write(f.x, "pointcontrol2.txt");
 }
 
 void PointControl2::print(unsigned int i, const DoubleVector &p, const DoubleVector &g, double alpha, RnFunction *f) const

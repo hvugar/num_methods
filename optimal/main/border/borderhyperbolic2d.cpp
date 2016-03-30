@@ -69,6 +69,8 @@ double BorderHyperbolic2D::initial1(unsigned int i, unsigned int j) const
 
 double BorderHyperbolic2D::initial2(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
 #ifdef SAMPLE1
     return 0.0;
 #endif
@@ -89,25 +91,11 @@ double BorderHyperbolic2D::initial2(unsigned int i, unsigned int j) const
 #endif
 }
 
-double BorderHyperbolic2D::m1(unsigned int j, unsigned int k) const
+double BorderHyperbolic2D::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
-    return u(0, j, k);
+    return u(i, j, k);
 }
 
-double BorderHyperbolic2D::m2(unsigned int j, unsigned int k) const
-{
-    return u(N1, j, k);
-}
-
-double BorderHyperbolic2D::m3(unsigned int i, unsigned int k) const
-{
-    return u(i, 0, k);
-}
-
-double BorderHyperbolic2D::m4(unsigned int i, unsigned int k) const
-{
-    return u(i, N2, k);
-}
 double BorderHyperbolic2D::f(unsigned int i, unsigned int j, unsigned int k) const
 {
     double x1 = i*h1;

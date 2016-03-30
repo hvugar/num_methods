@@ -331,10 +331,12 @@ void HyperbolicControl2DMX::project(DoubleVector &x, int i)
 
 double HyperbolicControl2DMX::v1(double t) const
 {
+    C_UNUSED(t);
     return 2.0;
 }
 
 double HyperbolicControl2DMX::v2(double t) const
 {
+    C_UNUSED(t);
     return 2.0;
 }

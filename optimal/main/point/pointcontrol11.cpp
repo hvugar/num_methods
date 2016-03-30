@@ -2,6 +2,9 @@
 
 void PointControl11::main(int argc, char ** argv)
 {
+    C_UNUSED(argc);
+    C_UNUSED(argv);
+
     DoubleVector q(3);
     q[0] = 0.0;
     q[1] = 0.0;

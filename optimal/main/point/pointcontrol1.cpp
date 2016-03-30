@@ -1,5 +1,29 @@
 #include "pointcontrol1.h"
 
+void PointControl1::main(int argc, char ** argv)
+{
+    C_UNUSED(argc);
+    C_UNUSED(argv);
+
+    DoubleVector p(3, 0.0);
+    p[0] = 0.0;
+    p[1] = 0.0;
+    p[2] = 0.0;
+
+    PointControl1 f(0.0, 1.0, 0.0, +22.0, 0.0001, 0.0001);
+
+    ConjugateGradient g1;
+    g1.setFunction(&f);
+    g1.setEpsilon1(0.0000001);
+    g1.setEpsilon2(0.0000001);
+    g1.setR1MinimizeEpsilon(1, 0.001);
+    g1.setPrinter(&f);
+    g1.calculate(p);
+    printf("p: %f %f %f\n", p[0], p[1], p[2]);
+
+    f.write(f.x);
+}
+
 PointControl1::PointControl1(double t0, double t1, double x0, double x1, double dt, double dx)
 {
     this->t0 = t0;
@@ -102,27 +126,6 @@ double PointControl1::delta(double t)
 {
     C_UNUSED(t);
     return 0.0;
-}
-
-void PointControl1::main(int argc, char ** argv)
-{
-    DoubleVector p(3, 0.0);
-    p[0] = 0.0;
-    p[1] = 0.0;
-    p[2] = 0.0;
-
-    PointControl1 f(0.0, 1.0, 0.0, +22.0, 0.0001, 0.0001);
-
-    ConjugateGradient g1;
-    g1.setFunction(&f);
-    g1.setEpsilon1(0.0000001);
-    g1.setEpsilon2(0.0000001);
-    g1.setR1MinimizeEpsilon(1, 0.001);
-    g1.setPrinter(&f);
-    g1.calculate(p);
-    printf("p: %f %f %f\n", p[0], p[1], p[2]);
-
-    f.write(f.x);
 }
 
 void PointControl1::print(unsigned int i, const DoubleVector &p, const DoubleVector &s, double alpha, RnFunction *f) const

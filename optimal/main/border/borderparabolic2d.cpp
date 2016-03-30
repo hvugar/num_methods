@@ -40,6 +40,9 @@ double BorderParabolic2D::u(unsigned int i, unsigned int j, unsigned int k) cons
 
 double BorderParabolic2D::initial(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
+
 #ifdef SAMPLE1
     return u(i, j, 0);
 #endif
