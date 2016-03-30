@@ -278,7 +278,7 @@ double HeatControl2DeltaX::bf(unsigned int i, unsigned int j, unsigned int k) co
 void HeatControl2DeltaX::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double alpha, RnFunction* fn) const
 {
     C_UNUSED(alpha);
-    HeatControl2DDeltaX *hc = dynamic_cast<HeatControl2DDeltaX*>(fn);
+    HeatControl2DeltaX *hc = dynamic_cast<HeatControl2DeltaX*>(fn);
     printf("J[%d]: %.16f\n", i, hc->fx(x));
     DoubleVector g1 = g;
     g1.L2Normalize();

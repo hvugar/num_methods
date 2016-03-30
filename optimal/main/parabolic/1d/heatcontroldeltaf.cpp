@@ -1,7 +1,10 @@
 #include "heatcontroldeltaf.h"
 
-void HeatControlDeltaF::main()
+void HeatControlDeltaF::main(int argc, char ** argv)
 {
+    C_UNUSED(argc);
+    C_UNUSED(argv);
+
     /* Function */
     HeatControlDeltaF hc;
 

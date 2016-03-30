@@ -2,6 +2,9 @@
 
 void HeatControl2DeltaF::main(int argc, char *argv[])
 {
+    C_UNUSED(argc);
+    C_UNUSED(argv);
+
     HeatControl2DeltaF hc(100, 100, 100);
 
     DoubleVector v((hc.M+1)*hc.L);

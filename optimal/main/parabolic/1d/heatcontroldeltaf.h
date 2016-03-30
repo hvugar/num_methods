@@ -56,7 +56,7 @@ private:
     DoubleVector U;
 
 public:
-    static void main();
+    static void main(int argc, char ** argv);
 };
 
 #endif // HEATCONTROLDELTAF_H
