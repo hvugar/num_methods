@@ -135,6 +135,8 @@ void Parabolic1DControl332::gradient(const DoubleVector &e, DoubleVector &g)
 void Parabolic1DControl332::print(unsigned int i, const DoubleVector &e, const DoubleVector &gr, double alpha, RnFunction *fn) const
 {
     C_UNUSED(alpha);
+    C_UNUSED(gr);
+
     Parabolic1DControl332 *hc = dynamic_cast<Parabolic1DControl332*>(fn);
     printf("J[%d]: %.16f ", i, hc->fx(e));
 
