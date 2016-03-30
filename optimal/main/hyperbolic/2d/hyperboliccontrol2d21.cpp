@@ -11,12 +11,12 @@ void HyperbolicControl2D21::main(int argc, char ** argv)
 
     //hc.file = fopen("hyperboliccontrol2d21.txt", "w");
     //hc.file = stdout;
-//    for (double t=0.1; t<=10.1; t+=0.1)
-//    {
-//        printf("%f %.8f\n", t, hc.fx(t));
-//        //fprintf(hc.file, "%f %.10f\n", t, hc.fx(t));
-//        //fflush(hc.file);
-//    }
+    //    for (double t=0.1; t<=10.1; t+=0.1)
+    //    {
+    //        printf("%f %.8f\n", t, hc.fx(t));
+    //        //fprintf(hc.file, "%f %.10f\n", t, hc.fx(t));
+    //        //fflush(hc.file);
+    //    }
     //fclose(hc.file);
 }
 

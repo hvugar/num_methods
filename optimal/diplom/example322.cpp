@@ -44,11 +44,15 @@ BorderParabolic2D322::BorderParabolic2D322()
 
 double BorderParabolic2D322::initial(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 1.0;
 }
 
 double BorderParabolic2D322::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     double t = 0.5*k*ht;
     return 1.0+t;
 }
@@ -69,6 +73,7 @@ double BorderParabolic2D322::f(unsigned int i, unsigned int j, unsigned int k) c
     sum += v2(t) * gause_a * exp(-((x1-e[2])*(x1-e[2]) + (x2-e[3])*(x2-e[3]))/gause_b);
     sum += v3(t) * gause_a * exp(-((x1-e[4])*(x1-e[4]) + (x2-e[5])*(x2-e[5]))/gause_b);
     sum += v4(t) * gause_a * exp(-((x1-e[6])*(x1-e[6]) + (x2-e[7])*(x2-e[7]))/gause_b);
+
     return sum;
 }
 

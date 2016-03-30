@@ -82,7 +82,8 @@ double HyperbolicControl2D23::fx(double t)
 
     v0.clear();
     v0.resize((M+D+1)*L, 0.0);
-    printf("t: %f M: %d M+D: %d m %d size: %u\n", t1, M, M+D, m, v0.size());
+    unsigned size = v0.size();
+    printf("t: %f M: %d M+D: %d m %d size: %u\n", t1, M, M+D, m, size);
 
     //for (unsigned int k=0; k<=m; k++)
     //{
@@ -279,7 +280,7 @@ double HyperbolicControl2D23::binitial1(unsigned int i, unsigned int j) const
 
 double HyperbolicControl2D23::binitial2(unsigned int i, unsigned int j) const
 {
-    return qamma*(binitial1(i,j));
+    return qamma * binitial1(i,j);
 }
 
 double HyperbolicControl2D23::bboundary(unsigned int i, unsigned int j, unsigned int k) const

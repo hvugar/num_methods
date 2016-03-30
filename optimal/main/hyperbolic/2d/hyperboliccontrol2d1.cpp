@@ -455,6 +455,7 @@ double HyperbolicControl2D1::bboundary(unsigned int i, unsigned int j, unsigned 
 double HyperbolicControl2D1::bf(unsigned int i, unsigned int j, unsigned int k) const
 {
     C_UNUSED(i);
+    C_UNUSED(j);
     C_UNUSED(k);
     return 0.0;
 }

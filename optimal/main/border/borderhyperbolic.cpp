@@ -41,22 +41,29 @@ BorderHyperbolic::~BorderHyperbolic()
 
 double BorderHyperbolic::initial1(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
 
 double BorderHyperbolic::initial2(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
 
 double BorderHyperbolic::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double BorderHyperbolic::f(unsigned int i, unsigned int j, unsigned int k) const
 {
-    return fxt(i,j,k);
+    return fxt(i, j, k);
 }
 
 double BorderHyperbolic::fxt(unsigned int i, unsigned int j, unsigned int k) const
