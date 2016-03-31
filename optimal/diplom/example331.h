@@ -17,7 +17,7 @@ public:
     virtual ~Parabolic1DControl331() {}
 
     virtual double fx(const DoubleVector &v);
-    virtual void gradient(const DoubleVector &x, DoubleVector &g);
+    virtual void gradient(const DoubleVector &v, DoubleVector &g);
     virtual void print(unsigned int iteration, const DoubleVector &v, const DoubleVector &gradient, double alpha, RnFunction *fn) const;
 
     virtual double initial(unsigned int i) const;
