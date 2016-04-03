@@ -10,6 +10,7 @@ TARGET = main
 #QMAKE_CXXFLAGS += -Wunused
 #QMAKE_CXXFLAGS += -Werror
 #QMAKE_CXXFLAGS -= -Wall
+QMAKE_CXXFLAGS += -Wno-unused-variable
 
 INCLUDEPATH += ../minimum
 INCLUDEPATH += ../cminimum
@@ -47,6 +48,7 @@ SOURCES += main.cpp \
     hyperbolic/2d/hyperboliccontrol2d21.cpp \
     hyperbolic/2d/hyperboliccontrol2d22.cpp \
     hyperbolic/2d/hyperboliccontrol2d23.cpp \
+    hyperbolic/2d/hyperboliccontrol2d24.cpp \
     point/pointcontrol.cpp \
     point/pointcontrol1.cpp \
     point/pointcontrol2.cpp \
@@ -85,6 +87,7 @@ HEADERS += \
     hyperbolic/2d/hyperboliccontrol2d21.h \
     hyperbolic/2d/hyperboliccontrol2d22.h \
     hyperbolic/2d/hyperboliccontrol2d23.h \
+    hyperbolic/2d/hyperboliccontrol2d24.h \
     point/pointcontrol.h \
     point/pointcontrol1.h \
     point/pointcontrol2.h \
