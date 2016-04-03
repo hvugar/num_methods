@@ -3,22 +3,10 @@
 void HyperbolicControl2DM::main()
 {
     HyperbolicControl2DM hc;
-    //    hc.fx(0.4);
-    //    hc.fx(0.6);
-    //    hc.fx(0.8);
-//    hc.fx(1.0);
-        hc.fx(1.2);
-    //    hc.fx(1.4);
-    //    hc.fx(1.6);
-    //    hc.fx(1.8);
-    //    hc.fx(2.0);
+    hc.fx(1.0);
 }
 
 HyperbolicControl2DM::HyperbolicControl2DM()
-{
-}
-
-HyperbolicControl2DM::~HyperbolicControl2DM()
 {
 }
 
@@ -58,8 +46,8 @@ double HyperbolicControl2DM::fx(double T)
     DoubleVector x( 2*L + (M+1)*L);
     for (unsigned int k=0; k<=M; k++)
     {
-        x[2*L + 0*(M+1)+k] = 2.0;
-        x[2*L + 1*(M+1)+k] = 2.0;
+        x[2*L + 0*(M+1)+k] = 0.0;
+        x[2*L + 1*(M+1)+k] = 0.0;
     }
     x[0] = 0.3;
     x[1] = 0.4;
@@ -333,7 +321,7 @@ void HyperbolicControl2DM::print(unsigned int i, const DoubleVector &x, const Do
     printf("\nJ[%d]: %.16f ALPHA: %.8f\n", i, fn->fx(x), alpha);
 
     DoubleVector ng(x.size());
-//    IGradient::Gradient(fn, h, x, ng);
+    //    IGradient::Gradient(fn, h, x, ng);
     DoubleVector ngx = ng.mid(0, 3);
     DoubleVector ngv = ng.mid(4, ng.size()-1);
     ngx.L2Normalize();

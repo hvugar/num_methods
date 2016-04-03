@@ -8,6 +8,7 @@ void HyperbolicControl2D22::main(int argc, char ** argv)
     HyperbolicControl2D22 hc;
     hc.file = fopen("20160322.txt", "w");
     //hc.file = stdout;
+
     for (double t=0.1; t<=10.1; t+=0.1)
     {
         hc.fx(t);
@@ -17,20 +18,15 @@ void HyperbolicControl2D22::main(int argc, char ** argv)
 
 HyperbolicControl2D22::HyperbolicControl2D22()
 {
-    x10 = 0.0;
-    x11 = 1.0;
-    x20 = 0.0;
-    x21 = 1.0;
-    t0  = 0.0;
-    t1  = 0.1;
+    x10 = x20 = t0 = 0.0;
+    x11 = x21 = t1 = 1.0;
 
-    h1 = 0.01;
-    h2 = 0.01;
+    h1 = h2 = 0.01;
     ht = 0.005;
 
-    N1 = (unsigned)ceil((x11 - x10)/h1);
-    N2 = (unsigned)ceil((x21 - x20)/h2);
-    M  = (unsigned)ceil((t1 - t0)/ht);
+    N1 = (unsigned)round((x11 - x10)/h1);
+    N2 = (unsigned)round((x21 - x20)/h2);
+    M  = (unsigned)round((t1 - t0)/ht);
     L = 2;
 
     e.resize(2);
@@ -38,9 +34,11 @@ HyperbolicControl2D22::HyperbolicControl2D22()
     e[1] = 0.2;
 
     alpha0 = 1.0;
+
     alpha1 = 10.0;
     alpha2 = 2.0;
     alpha3 = 1.0;
+
     qamma = 0.2;
 
     a1 = 1.0;
