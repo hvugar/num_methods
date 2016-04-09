@@ -2,11 +2,17 @@
 
 void HyperbolicControl2D24::main(int argc, char ** argv)
 {
+//    for (int i=0; i<argc; i++)
+//    {
+
+//    }
+
+
     C_UNUSED(argc);
     C_UNUSED(argv);
 
     HyperbolicControl2D24 hc;
-    hc.file = fopen("20160403.txt", "w");
+    hc.file = fopen("20160409_1.txt", "w");
     //for (double t=0.1; t<=10.1; t+=0.1)
     {
         hc.fx(1.0);
@@ -68,10 +74,10 @@ double HyperbolicControl2D24::fx(double t)
         x0[2*L+0*(M+1)+k] = 0.0;
         x0[2*L+1*(M+1)+k] = 0.0;
     }
-    x0[0] = 0.3;
-    x0[1] = 0.4;
-    x0[2] = 0.7;
-    x0[3] = 0.7;
+    x0[0] = 0.25;//0.3
+    x0[1] = 0.25;//0.4
+    x0[2] = 0.85;//0.7
+    x0[3] = 0.85;//0.7
 
     printGradients(x0, 0, file);
 
