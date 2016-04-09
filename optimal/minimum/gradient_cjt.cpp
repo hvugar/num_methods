@@ -120,6 +120,7 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
     printf("%.16f %.16f\n", a, b);
     goldenSectionSearch(a, b, alpha, this, min_epsilon);
     printf("%.16f %.16f %.16f\n", a, alpha, b);
+    printf("%.16f %.16f %.16f\n", fx(a), fx(alpha), fx(b));
     double a1 = fx(alpha);
     double a2 = fx(alpha0);
     if (this->fx(alpha) > this->fx(alpha0)) alpha = alpha0;
