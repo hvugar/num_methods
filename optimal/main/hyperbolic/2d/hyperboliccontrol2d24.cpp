@@ -144,7 +144,7 @@ void HyperbolicControl2D24::print(unsigned int i, const DoubleVector &x, const D
 {
     C_UNUSED(g);
     C_UNUSED(alpha);
-    printf("%f\n", alpha);
+    printf("%16f\n", alpha);
     printGradients(x, i, file);
     //    fprintf(file, "J[%d]: %.16f\n", i, fn->fx(x));
     //    fprintf(file, "%f %f %f %f\n", x[0], x[1], x[2], x[3]);
