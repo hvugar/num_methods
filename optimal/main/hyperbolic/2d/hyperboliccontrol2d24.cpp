@@ -12,7 +12,7 @@ void HyperbolicControl2D24::main(int argc, char ** argv)
     C_UNUSED(argv);
 
     HyperbolicControl2D24 hc;
-    hc.file = fopen("20160409_2.txt", "w");
+    hc.file = fopen("20160409_3.txt", "w");
     //for (double t=0.1; t<=10.1; t+=0.1)
     {
         hc.fx(1.0);
