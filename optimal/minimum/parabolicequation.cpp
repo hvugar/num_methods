@@ -207,7 +207,7 @@ void IBackwardParabolicEquation::calculateU(DoubleMatrix &psi, double hx, double
 
         if (j == M)
         {
-            for (unsigned i=0; i<=N; i++)
+            for (unsigned int i=0; i<=N; i++)
             {
                 psi[j][i] = binitial(i);
             }
@@ -699,7 +699,7 @@ void IBackwardParabolicEquation2D::caluclateMVD(DoubleCube &psi, double h1, doub
         {
             for (unsigned int j=0; j<=N2; j++)
             {
-                for (unsigned i=0; i<=N1; i++)
+                for (unsigned int i=0; i<=N1; i++)
                 {
                     psi0[j][i] = binitial(i, j);
                 }
