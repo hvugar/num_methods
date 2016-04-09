@@ -116,6 +116,7 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
     double a,b,alpha;
 
     stranghLineSearch(alpha0, min_step, a, b, this);
+    printf("%.16f %.16f\n", a, b);
     goldenSectionSearch(a, b, alpha, this, min_epsilon);
     printf("%.16f %.16f %.16f\n", a, alpha, b);
     double a1 = fx(alpha);
