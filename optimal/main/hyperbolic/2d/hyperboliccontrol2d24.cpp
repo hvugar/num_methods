@@ -144,6 +144,7 @@ void HyperbolicControl2D24::print(unsigned int i, const DoubleVector &x, const D
 {
     C_UNUSED(g);
     C_UNUSED(alpha);
+    C_UNUSED(fn);
     printf("%.16f\n", alpha);
     printGradients(x, i, file);
     //    fprintf(file, "J[%d]: %.16f\n", i, fn->fx(x));
@@ -275,7 +276,7 @@ void HyperbolicControl2D24::psiDerivative(double &psiX1, double &psiX2, double x
     else psiX2 = (psi[j+1][i] - psi[j-1][i])/(2.0*h2);
 }
 
-double HyperbolicControl2D24::initial1(unsigned int i, unsigned int j) const
+double HyperbolicControl2D24::initial1(unsigned int, unsigned int) const
 {
     return 0.0;
 }
