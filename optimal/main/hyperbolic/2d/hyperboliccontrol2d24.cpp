@@ -369,23 +369,23 @@ void HyperbolicControl2D24::project(DoubleVector &x, int i)
 
     if (i==0)
     {
-        if (x[i] <= 0.0 + 5.0*h1) { x[i] = 0.0 + 5.0*h1; puts("01"); }
-        if (x[i] >= 0.5 - 5.0*h1) { x[i] = 0.5 - 5.0*h1; puts("02"); }
+        if (x[i] <= 0.0 + 5.0*h1) { x[i] = 0.0 + 5.0*h1; printf("01 %d %f\n", i, x[i]); }
+        if (x[i] >= 0.5 - 5.0*h1) { x[i] = 0.5 - 5.0*h1; printf("02 %d %f\n", i, x[i]);  }
     }
     if (i==1)
     {
-        if (x[i] <= 0.0 + 5.0*h2) { x[i] = 0.0 + 5.0*h2; puts("11"); }
-        if (x[i] >= 0.5 - 5.0*h2) { x[i] = 0.5 - 5.0*h2; puts("12"); }
+        if (x[i] <= 0.0 + 5.0*h2) { x[i] = 0.0 + 5.0*h2; printf("11 %d %f\n", i, x[i]);  }
+        if (x[i] >= 0.5 - 5.0*h2) { x[i] = 0.5 - 5.0*h2; printf("12 %d %f\n", i, x[i]);  }
     }
     if (i==2)
     {
-        if (x[i] <= 0.5 + 5.0*h1) { x[i] = 0.5 + 5.0*h1; puts("21"); }
-        if (x[i] >= 1.0 - 5.0*h1) { x[i] = 1.0 - 5.0*h1; puts("22"); }
+        if (x[i] <= 0.5 + 5.0*h1) { x[i] = 0.5 + 5.0*h1; printf("21 %d %f\n", i, x[i]);  }
+        if (x[i] >= 1.0 - 5.0*h1) { x[i] = 1.0 - 5.0*h1; printf("22 %d %f\n", i, x[i]);  }
     }
     if (i==3)
     {
-        if (x[i] <= 0.5 + 5.0*h2) { x[i] = 0.5 + 5.0*h2; puts("31"); }
-        if (x[i] >= 1.0 - 5.0*h2) { x[i] = 1.0 - 5.0*h2; puts("32"); }
+        if (x[i] <= 0.5 + 5.0*h2) { x[i] = 0.5 + 5.0*h2; printf("31 %d %f\n", i, x[i]);  }
+        if (x[i] >= 1.0 - 5.0*h2) { x[i] = 1.0 - 5.0*h2; printf("32 %d %f\n", i, x[i]);  }
     }
 
     //    if (i==0)
