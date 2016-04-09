@@ -112,7 +112,7 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
     C_UNUSED(x);
     C_UNUSED(s);
 
-    double alpha0 = 0.0;
+    double alpha0 = 1.0;
     double a,b,alpha;
 
     stranghLineSearch(alpha0, min_step, a, b, this);
