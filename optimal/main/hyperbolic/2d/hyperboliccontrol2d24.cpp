@@ -109,7 +109,8 @@ double HyperbolicControl2D24::fx(double t)
 
 void HyperbolicControl2D24::printGradients(const DoubleVector &x, unsigned int i, FILE* f) const
 {
-    printf("J[%d]: %.16f\n", i, const_cast<HyperbolicControl2D24*>(this)->fx(x));
+    printf("J[%d]: %.16f %f %f %f %f\n", i, const_cast<HyperbolicControl2D24*>(this)->fx(x), x[0], x[1], x[2], x[3]);
+
     fprintf(f, "J[%d]: %.16f\n", i, const_cast<HyperbolicControl2D24*>(this)->fx(x));
     DoubleVector g(x.size());
     const_cast<HyperbolicControl2D24*>(this)->gradient(x, g);

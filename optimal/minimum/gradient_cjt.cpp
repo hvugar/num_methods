@@ -96,17 +96,6 @@ void ConjugateGradient::calculate(DoubleVector& x)
         if ( k == x.size() ) { k = 0; } else { k++; }
 
         if (m_printer != NULL) m_printer->print(iterationCount, x, g, alpha, m_fn);
-//        GradientIterationInfo info;
-//        info.fxResult = f2;
-//        info.number = iterationCount;
-//        info.alpha = alpha;
-//        info.gradientNorm = gradient_norm;
-//        info.x = x;
-//        info.g = g;
-//        info.s = s;
-//        info.distance = distance;
-//        info.difference = f2 - f1;
-//        if (m_printer != NULL) m_printer->print(info);
 
         /* calculating distance previous and new point */
         if (distance < epsilon2() && fabs(f2 - f1) < epsilon3())
