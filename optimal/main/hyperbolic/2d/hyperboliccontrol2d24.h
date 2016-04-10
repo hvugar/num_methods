@@ -37,7 +37,7 @@ public:
 
     double fxt(unsigned int i, unsigned int j, unsigned int k) const;
     void psiDerivative(double &psiX1, double &psiX2, double x1, double x2, const DoubleMatrix &psi);
-    void printGradients(const DoubleVector &x, unsigned int i, FILE* f) const;
+    void printGradients(const DoubleVector &x, unsigned int i, double alpha, FILE* f) const;
 
     double t0;
     double t1;

@@ -75,9 +75,9 @@ double HyperbolicControl2D24::fx(double t)
     x0[2] = X[2];//0.85;//0.7
     x0[3] = X[3];//0.85;//0.7
 
-    printGradients(x0, 0, file);
+    printGradients(x0, 0, 0.0, file);
 
-    double min_step = 1.0;
+    double min_step = 10.0;
     double gold_eps = 0.001;
     ConjugateGradient cg;
     cg.setFunction(this);
@@ -92,7 +92,7 @@ double HyperbolicControl2D24::fx(double t)
     //cg.showEndMessage(false);
     cg.calculate(x0);
 
-    printGradients(x0, 0, file);
+    printGradients(x0, 0, 0.0, file);
 
     double rf = fx(x0);
     fprintf(file, "%f %.16f\n", t, rf);
@@ -103,35 +103,42 @@ double HyperbolicControl2D24::fx(double t)
     return rf;
 }
 
-void HyperbolicControl2D24::printGradients(const DoubleVector &x, unsigned int i, FILE* f) const
+void HyperbolicControl2D24::printGradients(const DoubleVector &x, unsigned int i, double alpha, FILE* f) const
 {
-    printf("J[%d]: %.16f\n", i, const_cast<HyperbolicControl2D24*>(this)->fx(x));
+    printf("J[%d]: %.16f %.16f\n", i, const_cast<HyperbolicControl2D24*>(this)->fx(x), alpha);
 
-    fprintf(f, "J[%d]: %.16f\n", i, const_cast<HyperbolicControl2D24*>(this)->fx(x));
+    fprintf(f, "J[%d]: %.16f %.16f\n", i, const_cast<HyperbolicControl2D24*>(this)->fx(x), alpha);
+
     DoubleVector g(x.size());
     const_cast<HyperbolicControl2D24*>(this)->gradient(x, g);
-    DoubleVector g1 = g.mid(0, 1);
-    DoubleVector g2 = g.mid(2, 3);
+    DoubleVector eg1 = g.mid(0, 1);
+    DoubleVector eg2 = g.mid(2, 3);
+    DoubleVector vg1 = g.mid(4,   M+4);
+    DoubleVector vg2 = g.mid(M+5, 2*M+5);
+
     DoubleVector v1 = x.mid(4,   M+4);
     DoubleVector v2 = x.mid(M+5, 2*M+5);
 
-    fprintf(f, "N: %10.6f G: %10.6f %10.6f P: %10.6f %10.6f\n", g1.L2Norm(), g1[0], g1[1], x[0], x[1]);
-    g1.L2Normalize();
-    fprintf(f, "N: %10.6f G: %10.6f %10.6f P: %10.6f %10.6f\n", g1.L2Norm(), g1[0], g1[1], x[0], x[1]);
+    fprintf(f, "P1: %10.6f %10.6f Gr: %10.6f %10.6f Nr: %10.6f ", x[0], x[1], eg1[0], eg1[1], eg1.L2Norm());
+    eg1.L2Normalize();
+    fprintf(f, "Gr: %10.6f %10.6f Nr: %10.6f\n", eg1[0], eg1[1], eg1.L2Norm());
+    fprintf(f, "P2: %10.6f %10.6f Gr: %10.6f %10.6f Nr: %10.6f ", x[2], x[3], eg2[0], eg2[1], eg2.L2Norm());
+    eg2.L2Normalize();
+    fprintf(f, "Gr: %10.6f %10.6f Nr: %10.6f\n", eg2[0], eg2[1], eg2.L2Norm());
     fprintf(f, "---\n");
-    fprintf(f, "N: %10.6f G: %10.6f %10.6f P: %10.6f %10.6f\n", g2.L2Norm(), g2[0], g2[1], x[2], x[3]);
-    g2.L2Normalize();
-    fprintf(f, "N: %10.6f G: %10.6f %10.6f P: %10.6f %10.6f\n", g2.L2Norm(), g2[0], g2[1], x[2], x[3]);
+
+    IPrinter::printVector(v1, "v1:", 10, 0, M, f);
+    fprintf(f, "N:  %10.6f\n", vg1.L2Norm());
+    IPrinter::printVector(vg1, "vg1:", 10, 0, M, f);
+    vg1.L2Normalize();
+    IPrinter::printVector(vg1, "ng1:", 10, 0, M, f);
     fprintf(f, "---\n");
-    fprintf(f, "N:  %10.6f\n", v1.L2Norm());
-    IPrinter::printVector(v1, "vg1:", 10, 0, M, f);
-    v1.L2Normalize();
-    IPrinter::printVector(v1, "ng1:", 10, 0, M, f);
-    fprintf(f, "---\n");
-    fprintf(f, "N:  %10.6f\n", v2.L2Norm());
-    IPrinter::printVector(v2, "vg2:", 10, 0, M, f);
-    v2.L2Normalize();
-    IPrinter::printVector(v2, "ng2:", 10, 0, M, f);
+
+    IPrinter::printVector(v2, "v2:", 10, 0, M, f);
+    fprintf(f, "N:  %10.6f\n", vg2.L2Norm());
+    IPrinter::printVector(vg2, "vg2:", 10, 0, M, f);
+    vg2.L2Normalize();
+    IPrinter::printVector(vg2, "ng2:", 10, 0, M, f);
     fprintf(f, "--------------------------------------------------------------------------------------------------\n");
     fflush(f);
 }
@@ -141,8 +148,8 @@ void HyperbolicControl2D24::print(unsigned int i, const DoubleVector &x, const D
     C_UNUSED(g);
     C_UNUSED(alpha);
     C_UNUSED(fn);
-    printf("%.16f\n", alpha);
-    printGradients(x, i, file);
+    //printf("%.16f\n", alpha);
+    printGradients(x, i, alpha, file);
     //    fprintf(file, "J[%d]: %.16f\n", i, fn->fx(x));
     //    fprintf(file, "%f %f %f %f\n", x[0], x[1], x[2], x[3]);
     //    IPrinter::printVector(x, "v1", M+1, 2*L,       2*L+M,       file);
