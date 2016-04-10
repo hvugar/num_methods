@@ -67,8 +67,8 @@ double HyperbolicControl2D24::fx(double t)
     DoubleVector x0(2*L + (M+1)*L);
     for (unsigned int k=0; k<=M; k++)
     {
-        x0[2*L+0*(M+1)+k] = 0.0;
-        x0[2*L+1*(M+1)+k] = 0.0;
+        x0[2*L+0*(M+1)+k] = 1.0;
+        x0[2*L+1*(M+1)+k] = 1.0;
     }
     x0[0] = X[0];//0.25;//0.3
     x0[1] = X[1];//0.25;//0.4
@@ -77,7 +77,7 @@ double HyperbolicControl2D24::fx(double t)
 
     printGradients(x0, 0, 0.0, file);
 
-    double min_step = 10.0;
+    double min_step = 1.0;
     double gold_eps = 0.001;
     ConjugateGradient cg;
     cg.setFunction(this);
@@ -105,9 +105,9 @@ double HyperbolicControl2D24::fx(double t)
 
 void HyperbolicControl2D24::printGradients(const DoubleVector &x, unsigned int i, double alpha, FILE* f) const
 {
-    printf("J[%d]: %.16f %.16f\n", i, const_cast<HyperbolicControl2D24*>(this)->fx(x), alpha);
-
-    fprintf(f, "J[%d]: %.16f %.16f\n", i, const_cast<HyperbolicControl2D24*>(this)->fx(x), alpha);
+    double _fx = const_cast<HyperbolicControl2D24*>(this)->fx(x);
+    printf("J[%d]: %.16f %.16f\n", i, _fx, alpha);
+    fprintf(f, "J[%d]: %.16f %.16f\n", i, _fx, alpha);
 
     DoubleVector g(x.size());
     const_cast<HyperbolicControl2D24*>(this)->gradient(x, g);
