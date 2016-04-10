@@ -93,7 +93,7 @@ void stranghLineSearch(double x, double step, double &a, double &b, R1Function *
  * @param epsilon  Число эпсилон для останова метода
  * @return
  */
-double goldenSectionSearch(double a, double b, double &x, R1Function *f, double epsilon)
+double goldenSectionSearch(double &a, double &b, double &x, R1Function *f, double epsilon)
 {
     if ( f == NULL )
     {

@@ -68,6 +68,8 @@ public:
     const DoubleVector *px;
     const DoubleCube *pu;
     FILE *file;
+
+    DoubleVector X;
 };
 
 #endif

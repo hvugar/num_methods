@@ -2,17 +2,22 @@
 
 void HyperbolicControl2D24::main(int argc, char ** argv)
 {
-    //    for (int i=0; i<argc; i++)
-    //    {
-
-    //    }
-
-
     C_UNUSED(argc);
     C_UNUSED(argv);
 
     HyperbolicControl2D24 hc;
-    hc.file = fopen("20160409_4.txt", "w");
+    hc.X.resize(2*hc.L);
+
+    if (strcmp(argv[1], "-f") == 0)
+        hc.file = fopen(argv[2], "w");
+    else
+        hc.file = fopen("20160410.txt", "w");
+
+    hc.X[0] = atof(argv[4]);
+    hc.X[1] = atof(argv[5]);
+    hc.X[2] = atof(argv[7]);
+    hc.X[3] = atof(argv[8]);
+
     //for (double t=0.1; t<=10.1; t+=0.1)
     {
         hc.fx(1.0);
@@ -24,14 +29,7 @@ HyperbolicControl2D24::HyperbolicControl2D24()
 {
     x10 = x20 = t0 = 0.0;
     x11 = x21 = t1 = 1.0;
-
-    h1 = h2 = 0.01;
-    ht = 0.005;
-
-    N1 = (unsigned)round((x11 - x10)/h1);
-    N2 = (unsigned)round((x21 - x20)/h2);
-    M  = (unsigned)round((t1 - t0)/ht);
-    L = 2;
+    a1  = a2  = 1.0;
 
     e.resize(2);
     e[0] = 0.2;
@@ -42,19 +40,17 @@ HyperbolicControl2D24::HyperbolicControl2D24()
     alpha1 = 10.0;
     alpha2 = 2.0;
     alpha3 = 1.0;
-
     qamma = 0.2;
 
-    a1 = 1.0;
-    a2 = 1.0;
-
-    e.resize(2);
-    e[0] = 0.2;
-    e[1] = 0.2;
+    h1 = h2 = 0.01;
+    ht = 0.005;
+    N1 = (unsigned)round((x11 - x10)/h1);
+    N2 = (unsigned)round((x21 - x20)/h2);
+    M  = (unsigned)round((t1 - t0)/ht);
+    L = 2;
 
     U0 = 0.0;
     U1 = 0.0;
-    a1 = a2 = 1.0;
 
     px = NULL;
     pu = NULL;
@@ -74,14 +70,14 @@ double HyperbolicControl2D24::fx(double t)
         x0[2*L+0*(M+1)+k] = 0.0;
         x0[2*L+1*(M+1)+k] = 0.0;
     }
-    x0[0] = 0.25;//0.3
-    x0[1] = 0.25;//0.4
-    x0[2] = 0.85;//0.7
-    x0[3] = 0.85;//0.7
+    x0[0] = X[0];//0.25;//0.3
+    x0[1] = X[1];//0.25;//0.4
+    x0[2] = X[2];//0.85;//0.7
+    x0[3] = X[3];//0.85;//0.7
 
     printGradients(x0, 0, file);
 
-    double min_step = 10.0;
+    double min_step = 1.0;
     double gold_eps = 0.001;
     ConjugateGradient cg;
     cg.setFunction(this);
@@ -194,7 +190,6 @@ double HyperbolicControl2D24::fx(const DoubleVector &x)
             if (i==0 || i==N1) k *= 0.5;
             if (j==0 || j==N2) k *= 0.5;
             sum1 = sum1 + k * (u0[j][i]-U0) * (u0[j][i]-U0);
-
         }
     }
     sum1 = h1*h2*sum1;
@@ -349,26 +344,26 @@ double HyperbolicControl2D24::fxt(unsigned int i, unsigned int j, unsigned int k
 
 void HyperbolicControl2D24::project(DoubleVector &x, int i)
 {
-//    if (i==0)
-//    {
-//        if (x[i] <= 0.0 + 5.0*h1) { x[i] = 0.0 + 5.0*h1; }
-//        if (x[i] >= 1.0 - 5.0*h1) { x[i] = 1.0 - 5.0*h1; }
-//    }
-//    if (i==1)
-//    {
-//        if (x[i] <= 0.0 + 5.0*h2) { x[i] = 0.0 + 5.0*h2; }
-//        if (x[i] >= 1.0 - 5.0*h2) { x[i] = 1.0 - 5.0*h2; }
-//    }
-//    if (i==2)
-//    {
-//        if (x[i] <= 0.0 + 5.0*h1) { x[i] = 0.0 + 5.0*h1; }
-//        if (x[i] >= 1.0 - 5.0*h1) { x[i] = 1.0 - 5.0*h1; }
-//    }
-//    if (i==3)
-//    {
-//        if (x[i] <= 0.0 + 5.0*h2) { x[i] = 0.0 + 5.0*h2; }
-//        if (x[i] >= 1.0 - 5.0*h2) { x[i] = 1.0 - 5.0*h2; }
-//    }
+    if (i==0)
+    {
+        if (x[i] <= 0.0 + 5.0*h1) { x[i] = 0.0 + 5.0*h1; }
+        if (x[i] >= 1.0 - 5.0*h1) { x[i] = 1.0 - 5.0*h1; }
+    }
+    if (i==1)
+    {
+        if (x[i] <= 0.0 + 5.0*h2) { x[i] = 0.0 + 5.0*h2; }
+        if (x[i] >= 1.0 - 5.0*h2) { x[i] = 1.0 - 5.0*h2; }
+    }
+    if (i==2)
+    {
+        if (x[i] <= 0.0 + 5.0*h1) { x[i] = 0.0 + 5.0*h1; }
+        if (x[i] >= 1.0 - 5.0*h1) { x[i] = 1.0 - 5.0*h1; }
+    }
+    if (i==3)
+    {
+        if (x[i] <= 0.0 + 5.0*h2) { x[i] = 0.0 + 5.0*h2; }
+        if (x[i] >= 1.0 - 5.0*h2) { x[i] = 1.0 - 5.0*h2; }
+    }
 
 //    if (i==0)
 //    {
