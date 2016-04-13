@@ -133,14 +133,14 @@ double goldenSectionSearch(double &a, double &b, double &x, R1Function *f, doubl
         if (y1 >= y2)
         {
             a = x1;
-            x1 = x2;    // Tapilmish x2 noqtesi ve bu noqtede funkisiyanin qiymeti
+            x1 = x2;    // Tapilmish x2 noqtesi ve bu noqtede funksiyanin qiymeti
             y1 = y2;    // sonraki iterasiyada x1 qiymeti kimi istifade olunacaq.
             x2 = NAN;   // x2 novbeti iterasiyada axtarilacaq
         }
         else
         {
             b = x2;
-            x2 = x1;    // Tapilmish x1 noqtesi ve bu noqtede funkisiyanin qiymeti
+            x2 = x1;    // Tapilmish x1 noqtesi ve bu noqtede funksiyanin qiymeti
             y2 = y1;    // sonraki iterasiyada x2 qiymeti kimi istifade olunacaq.
             x1 = NAN;   // x1 novbeti iterasiyada axtarilacaq
         }
