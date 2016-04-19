@@ -18,9 +18,13 @@ void HyperbolicControl2D24::main(int argc, char ** argv)
     hc.X[2] = atof(argv[7]);
     hc.X[3] = atof(argv[8]);
 
+    double T = 0.0;
+    if (argc > 9)
+        T = atof(argv[10]);
+
     //for (double t=0.1; t<=10.1; t+=0.1)
     {
-        hc.fx(1.0);
+        hc.fx(T);
     }
     fclose(hc.file);
 }
@@ -67,8 +71,8 @@ double HyperbolicControl2D24::fx(double t)
     DoubleVector x0(2*L + (M+1)*L);
     for (unsigned int k=0; k<=M; k++)
     {
-        x0[2*L+0*(M+1)+k] = 1.0;
-        x0[2*L+1*(M+1)+k] = 1.0;
+        x0[2*L+0*(M+1)+k] = 0.0;
+        x0[2*L+1*(M+1)+k] = 0.0;
     }
     x0[0] = X[0];//0.25;//0.3
     x0[1] = X[1];//0.25;//0.4
