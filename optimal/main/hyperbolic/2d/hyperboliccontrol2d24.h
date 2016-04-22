@@ -65,11 +65,12 @@ public:
     double U1;
 
     DoubleVector e;
-    const DoubleVector *px;
+    const DoubleVector *pw;
     const DoubleCube *pu;
     FILE *file;
 
-    DoubleVector X;
+    DoubleVector x0;
+    DoubleVector v0;
 };
 
 #endif

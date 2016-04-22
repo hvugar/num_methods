@@ -5,27 +5,28 @@ void HyperbolicControl2D24::main(int argc, char ** argv)
     C_UNUSED(argc);
     C_UNUSED(argv);
 
-    HyperbolicControl2D24 hc;
-    hc.X.resize(2*hc.L);
-
-    if (strcmp(argv[1], "-f") == 0)
-        hc.file = fopen(argv[2], "w");
-    else
-        hc.file = fopen("20160410.txt", "w");
-
-    hc.X[0] = atof(argv[4]);
-    hc.X[1] = atof(argv[5]);
-    hc.X[2] = atof(argv[7]);
-    hc.X[3] = atof(argv[8]);
-
-    double T = 0.0;
-    if (argc > 9)
-        T = atof(argv[10]);
-
-    //for (double t=0.1; t<=10.1; t+=0.1)
+    if (argc < 2)
     {
-        hc.fx(T);
+        puts("usage: -f filename -x1 x1_1 x_12 -x2 x_21 x_22 -v1 v_1 -v2 v_2 -T T");
+        return;
     }
+
+    HyperbolicControl2D24 hc;
+
+    hc.file = stdout;
+    if (strcmp(argv[1], "-f") == 0)hc.file = fopen(argv[2], "w");
+
+    hc.x0[0] = atof(argv[4]);
+    hc.x0[1] = atof(argv[5]);
+
+    hc.x0[2] = atof(argv[7]);
+    hc.x0[3] = atof(argv[8]);
+
+    hc.v0[0] = atof(argv[10]);
+    hc.v0[1] = atof(argv[12]);
+
+    double T = atof(argv[14]);
+    hc.fx(T);
     fclose(hc.file);
 }
 
@@ -35,12 +36,14 @@ HyperbolicControl2D24::HyperbolicControl2D24()
     x11 = x21 = t1 = 1.0;
     a1  = a2  = 1.0;
 
+    // zerbe noqtesi
     e.resize(2);
     e[0] = 0.2;
     e[1] = 0.2;
 
     alpha0 = 1.0;
 
+    // parametrler
     alpha1 = 10.0;
     alpha2 = 2.0;
     alpha3 = 1.0;
@@ -51,14 +54,16 @@ HyperbolicControl2D24::HyperbolicControl2D24()
     N1 = (unsigned)round((x11 - x10)/h1);
     N2 = (unsigned)round((x21 - x20)/h2);
     M  = (unsigned)round((t1 - t0)/ht);
+
     L = 2;
+    x0.resize(2*L);
+    v0.resize(L);
 
     U0 = 0.0;
     U1 = 0.0;
 
-    px = NULL;
+    pw = NULL;
     pu = NULL;
-    file = stdout;
 }
 
 double HyperbolicControl2D24::fx(double t)
@@ -66,20 +71,56 @@ double HyperbolicControl2D24::fx(double t)
     t1 = t;
     M  = (unsigned)ceil((t1 - t0)/ht);
 
-    printf("t: %f M: %d\n--------------------\n", t1, M);
+    printf("T: %f M: %d\n--------------------\n", t1, M);
 
-    DoubleVector x0(2*L + (M+1)*L);
+    DoubleVector w(2*L + (M+1)*L, 0.0);
     for (unsigned int k=0; k<=M; k++)
     {
-        x0[2*L+0*(M+1)+k] = 0.0;
-        x0[2*L+1*(M+1)+k] = 0.0;
+        w[2*L+0*(M+1)+k] = this->v0[0];
+        w[2*L+1*(M+1)+k] = this->v0[1];
     }
-    x0[0] = X[0];//0.25;//0.3
-    x0[1] = X[1];//0.25;//0.4
-    x0[2] = X[2];//0.85;//0.7
-    x0[3] = X[3];//0.85;//0.7
+    w[0] = this->x0[0];
+    w[1] = this->x0[1];
+    w[2] = this->x0[2];
+    w[3] = this->x0[3];
 
-    printGradients(x0, 0, 0.0, file);
+    //    {
+    //        DoubleVector ga1(x0.size());
+    //        gradient(x0, ga1);
+    //        DoubleVector ga = ga1.mid(0, 3);
+    //        printf("%f %f %f %f\n", ga[0], ga[1], ga[2], ga[3]);
+    //        ga.L2Normalize();
+    //        printf("%f %f %f %f\n", ga[0], ga[1], ga[2], ga[3]);
+    //        DoubleVector ga_v1 = ga1.mid(4+0*(M+1), 4+0*(M+1)+M);
+    //        DoubleVector ga_v2 = ga1.mid(4+1*(M+1), 4+1*(M+1)+M);
+    //        IPrinter::printVector(ga_v1, "ga_v1");
+    //        IPrinter::printVector(ga_v2, "ga_v2");
+    //        ga_v1.L2Normalize();
+    //        ga_v2.L2Normalize();
+    //        IPrinter::printVector(ga_v1, "ga_v1");
+    //        IPrinter::printVector(ga_v2, "ga_v2");
+    //    }
+
+    //    {
+    //        DoubleVector gn1(x0.size());
+    //        IGradient::Gradient(this, 0.0001, x0, gn1);
+    //        DoubleVector gn = gn1.mid(0, 3);
+    //        printf("%f %f %f %f\n", gn[0], gn[1], gn[2], gn[3]);
+    //        gn.L2Normalize();
+    //        printf("%f %f %f %f\n", gn[0], gn[1], gn[2], gn[3]);
+    //        DoubleVector gn_v1 = gn1.mid(4+0*(M+1), 4+0*(M+1)+M);
+    //        DoubleVector gn_v2 = gn1.mid(4+1*(M+1), 4+1*(M+1)+M);
+    //        IPrinter::printVector(gn_v1, "gn_v1");
+    //        IPrinter::printVector(gn_v2, "gn_v2");
+    //        gn_v1.L2Normalize();
+    //        gn_v2.L2Normalize();
+    //        IPrinter::printVector(gn_v1, "gn_v1");
+    //        IPrinter::printVector(gn_v2, "gn_v2");
+
+    //        return 0.0;
+    //    }
+
+    printGradients(w, 0, 0.0, file);
 
     double min_step = 1.0;
     double gold_eps = 0.001;
@@ -94,15 +135,15 @@ double HyperbolicControl2D24::fx(double t)
     cg.setProjection(this);
     cg.setNormalize(true);
     //cg.showEndMessage(false);
-    cg.calculate(x0);
+    cg.calculate(w);
 
-    printGradients(x0, 0, 0.0, file);
+    printGradients(w, 0, 0.0, file);
 
-    double rf = fx(x0);
+    double rf = fx(w);
     fprintf(file, "%f %.16f\n", t, rf);
-    fprintf(file, "%f %f %f %f\n", x0[0], x0[1], x0[2], x0[3]);
-    IPrinter::printVector(x0, "v1", M+1, 2*L,       2*L+M,       file);
-    IPrinter::printVector(x0, "v2", M+1, 2*L+(M+1), 2*L+(2*M+1), file);
+    fprintf(file, "%f %f %f %f\n", w[0], w[1], w[2], w[3]);
+    IPrinter::printVector(w, "v1", M+1, 2*L,       2*L+M,       file);
+    IPrinter::printVector(w, "v2", M+1, 2*L+(M+1), 2*L+(2*M+1), file);
     fflush(file);
     return rf;
 }
@@ -152,39 +193,12 @@ void HyperbolicControl2D24::print(unsigned int i, const DoubleVector &x, const D
     C_UNUSED(g);
     C_UNUSED(alpha);
     C_UNUSED(fn);
-    //printf("%.16f\n", alpha);
     printGradients(x, i, alpha, file);
-    //    fprintf(file, "J[%d]: %.16f\n", i, fn->fx(x));
-    //    fprintf(file, "%f %f %f %f\n", x[0], x[1], x[2], x[3]);
-    //    IPrinter::printVector(x, "v1", M+1, 2*L,       2*L+M,       file);
-    //    IPrinter::printVector(x, "v2", M+1, 2*L+(M+1), 2*L+(2*M+1), file);
-    //    fflush(file);
-
-    //    printf("J[%d]: %.16f\n", i, fn->fx(x));
-    //    printf("%.6f %.6f %.6f %.6f\n", x[0], x[1], x[2], x[3]);
-    //    IPrinter::printVector(x, "v1", 10, 2*L,       2*L+M);
-    //    IPrinter::printVector(x, "v2", 10, 2*L+(M+1), 2*L+(2*M+1));
-    //    fprintf(file, "-----------------------\n");
-    //    fflush(file);
-
-    //    DoubleVector g1(x.size());
-    //    const_cast<HyperbolicControl2D24*>(this)->gradient(x, g1);
-    //    DoubleVector ge = g1.mid(0, 3);
-    //    DoubleVector v1 = g1.mid(4,   M+4);
-    //    DoubleVector v2 = g1.mid(M+5, 2*M+5);
-    //    printf("%.6f %.6f %.6f %.6f %.6f\n", ge[0], ge[1], ge[2], ge[3], ge.L2Norm());
-    //    ge.L2Normalize();
-    //    printf("%.6f %.6f %.6f %.6f\n", ge[0], ge[1], ge[2], ge[3]);
-    //    v1.L2Normalize();
-    //    IPrinter::printVector(v1, "gv1", 10, 0, M);
-    //    v2.L2Normalize();
-    //    IPrinter::printVector(v2, "gv2", 10, 0, M);
-    //    printf("-----------------------\n");
 }
 
-double HyperbolicControl2D24::fx(const DoubleVector &x)
+double HyperbolicControl2D24::fx(const DoubleVector &w)
 {
-    px = &x;
+    pw = &w;
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a1, a2, qamma);
 
@@ -224,7 +238,7 @@ double HyperbolicControl2D24::fx(const DoubleVector &x)
 
 void HyperbolicControl2D24::gradient(const DoubleVector &x, DoubleVector &g)
 {
-    px = &x;
+    pw = &x;
     DoubleCube u;
     IHyperbolicEquation2D::calculateU1(u, h1, h2, ht, N1, N2, M, a1, a2, qamma);
 
@@ -308,7 +322,7 @@ double HyperbolicControl2D24::f(unsigned int i, unsigned int j, unsigned int k) 
 
     double x1 = i*h1;
     double x2 = j*h2;
-    const DoubleVector x = *px;
+    const DoubleVector x = *pw;
 
     double _v1 = x[2*L+0*(M+1)+k];
     double _v2 = x[2*L+1*(M+1)+k];
@@ -355,47 +369,48 @@ double HyperbolicControl2D24::fxt(unsigned int i, unsigned int j, unsigned int k
 
 void HyperbolicControl2D24::project(DoubleVector &x, int i)
 {
+
+    //    if (i==0)
+    //    {
+    //        if (x[i] <= 0.0 + 5.0*h1) { x[i] = 0.0 + 5.0*h1; }
+    //        if (x[i] >= 1.0 - 5.0*h1) { x[i] = 1.0 - 5.0*h1; }
+    //    }
+    //    if (i==1)
+    //    {
+    //        if (x[i] <= 0.0 + 5.0*h2) { x[i] = 0.0 + 5.0*h2; }
+    //        if (x[i] >= 1.0 - 5.0*h2) { x[i] = 1.0 - 5.0*h2; }
+    //    }
+    //    if (i==2)
+    //    {
+    //        if (x[i] <= 0.0 + 5.0*h1) { x[i] = 0.0 + 5.0*h1; }
+    //        if (x[i] >= 1.0 - 5.0*h1) { x[i] = 1.0 - 5.0*h1; }
+    //    }
+    //    if (i==3)
+    //    {
+    //        if (x[i] <= 0.0 + 5.0*h2) { x[i] = 0.0 + 5.0*h2; }
+    //        if (x[i] >= 1.0 - 5.0*h2) { x[i] = 1.0 - 5.0*h2; }
+    //    }
+
     if (i==0)
     {
         if (x[i] <= 0.0 + 5.0*h1) { x[i] = 0.0 + 5.0*h1; }
-        if (x[i] >= 1.0 - 5.0*h1) { x[i] = 1.0 - 5.0*h1; }
+        if (x[i] >= 0.5 - 5.0*h1) { x[i] = 0.5 - 5.0*h1; }
     }
     if (i==1)
     {
         if (x[i] <= 0.0 + 5.0*h2) { x[i] = 0.0 + 5.0*h2; }
-        if (x[i] >= 1.0 - 5.0*h2) { x[i] = 1.0 - 5.0*h2; }
+        if (x[i] >= 0.5 - 5.0*h2) { x[i] = 0.5 - 5.0*h2; }
     }
     if (i==2)
     {
-        if (x[i] <= 0.0 + 5.0*h1) { x[i] = 0.0 + 5.0*h1; }
+        if (x[i] <= 0.5 + 5.0*h1) { x[i] = 0.5 + 5.0*h1; }
         if (x[i] >= 1.0 - 5.0*h1) { x[i] = 1.0 - 5.0*h1; }
     }
     if (i==3)
     {
-        if (x[i] <= 0.0 + 5.0*h2) { x[i] = 0.0 + 5.0*h2; }
+        if (x[i] <= 0.5 + 5.0*h2) { x[i] = 0.5 + 5.0*h2; }
         if (x[i] >= 1.0 - 5.0*h2) { x[i] = 1.0 - 5.0*h2; }
     }
-
-//    if (i==0)
-//    {
-//        if (x[i] <= 0.0 + 5.0*h1) { x[i] = 0.0 + 5.0*h1; }
-//        if (x[i] >= 0.5 - 5.0*h1) { x[i] = 0.5 - 5.0*h1; }
-//    }
-//    if (i==1)
-//    {
-//        if (x[i] <= 0.0 + 5.0*h2) { x[i] = 0.0 + 5.0*h2; }
-//        if (x[i] >= 0.5 - 5.0*h2) { x[i] = 0.5 - 5.0*h2; }
-//    }
-//    if (i==2)
-//    {
-//        if (x[i] <= 0.5 + 5.0*h1) { x[i] = 0.5 + 5.0*h1; }
-//        if (x[i] >= 1.0 - 5.0*h1) { x[i] = 1.0 - 5.0*h1; }
-//    }
-//    if (i==3)
-//    {
-//        if (x[i] <= 0.5 + 5.0*h2) { x[i] = 0.5 + 5.0*h2; }
-//        if (x[i] >= 1.0 - 5.0*h2) { x[i] = 1.0 - 5.0*h2; }
-//    }
 
     //    if (i==0)
     //    {
