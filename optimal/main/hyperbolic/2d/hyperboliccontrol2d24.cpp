@@ -434,9 +434,9 @@ void HyperbolicControl2D24::project(DoubleVector &x, int i)
     //        if (x[i] >= 1.0) { x[i] = 1.0; }
     //    }
 
-    //    if (i>3)
-    //    {
-    //        if (x[i] < -2.0) x[i] = -2.0;
-    //        if (x[i] > +2.0) x[i] = +2.0;
-    //    }
+    if (i>3)
+    {
+        if (x[i] < -2.0) x[i] = -2.0;
+        if (x[i] > +2.0) x[i] = +2.0;
+    }
 }
