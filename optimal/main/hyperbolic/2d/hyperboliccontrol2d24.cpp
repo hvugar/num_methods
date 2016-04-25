@@ -50,7 +50,7 @@ HyperbolicControl2D24::HyperbolicControl2D24()
     qamma = 0.2;
 
     h1 = h2 = 0.01;
-    ht = 0.005;
+    ht = 0.0025;
     N1 = (unsigned)round((x11 - x10)/h1);
     N2 = (unsigned)round((x21 - x20)/h2);
     M  = (unsigned)round((t1 - t0)/ht);
