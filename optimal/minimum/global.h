@@ -18,7 +18,7 @@
 enum Boundary
 {
     Left = 0,
-    Right = 0
+    Right = 1
 };
 
 enum BoundaryCondition

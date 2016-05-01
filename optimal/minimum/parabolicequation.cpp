@@ -162,8 +162,8 @@ void IParabolicEquation::calculateN(DoubleMatrix &u, double hx, double ht, unsig
             db[0]   = alpha+beta;
             db[N-2] = alpha+beta;
 
-            dd[0]   += alpha * hx * boundary(Left, j);//m1(j);
-            dd[N-2] -= alpha * hx * boundary(Right, j);//m2(j);
+            dd[0]   += alpha * hx * boundary(Left, j);
+            dd[N-2] -= alpha * hx * boundary(Right, j);
 
             tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size());
 
@@ -172,8 +172,8 @@ void IParabolicEquation::calculateN(DoubleMatrix &u, double hx, double ht, unsig
                 u[j][i] = rx[i-1];
             }
 
-            u[j][0] = u[j][1]   - hx * boundary(Left, j);//m1(j);
-            u[j][N] = u[j][N-1] + hx * boundary(Right, j);//m2(j);
+            u[j][0] = u[j][1]   - hx * boundary(Left, j);
+            u[j][N] = u[j][N-1] + hx * boundary(Right, j);
         }
     }
 

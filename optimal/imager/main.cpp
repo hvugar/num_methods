@@ -163,8 +163,8 @@ void createHeatImage2(int argc, char *argv[])
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream in(&file);
 
-    double maximum = -999999999999.9;
-    double minimum = +999999999999.9;
+    double maximum = 6.6724519545;
+    double minimum = 0.0;
 
     QDoubleVector m;
     m.resize(width);
@@ -186,7 +186,7 @@ void createHeatImage2(int argc, char *argv[])
     }
     file.close();
 
-    printf("Minimum: %.10f Maximum: %.10f width: %d\n", minimum, maximum, width);
+    printf("Minimum: %.10f Maximum: %.10f width: %d output: %s\n", minimum, maximum, width, outFile.toAscii().data());
     //minimum = 1.0;
 
     for (int i=0; i<m.size(); i++)

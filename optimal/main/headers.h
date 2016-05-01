@@ -63,4 +63,6 @@
 #include "border/borderhyperbolic2d.h"
 #include "border/borderhyperbolic.h"
 
+#include "parabolic/1d/neuman/heatexample1.h"
+
 #endif // HEADERS_H
