@@ -18,9 +18,9 @@ BorderParabolic2D::BorderParabolic2D()
     a1 = a2 = 1.0;
     x10 = x20 = t0 = 0.0;
     x11 = x21 = t1 = 1.0;
-    h1 = 0.0025;
-    h2 = 0.0025;
-    ht = 0.00125;
+    h1 = 0.01;
+    h2 = 0.01;
+    ht = 0.005;
     N1 = (unsigned int)(ceil(x11-x10)/h1);
     N2 = (unsigned int)(ceil(x21-x20)/h2);
     M  = (unsigned int)(ceil(t1-t0)/ht);
