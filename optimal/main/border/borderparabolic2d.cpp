@@ -4,7 +4,7 @@
 
 void BorderParabolic2D::main()
 {
-    FILE* file = fopen("file1.txt", "w");
+    FILE* file = fopen("20160511.txt", "w");
     BorderParabolic2D bp;
     DoubleMatrix m;
     bp.caluclateMVD1(m, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M);
@@ -18,9 +18,9 @@ BorderParabolic2D::BorderParabolic2D()
     a1 = a2 = 1.0;
     x10 = x20 = t0 = 0.0;
     x11 = x21 = t1 = 1.0;
-    h1 = 0.01;
-    h2 = 0.01;
-    ht = 0.005;
+    h1 = 0.0025;
+    h2 = 0.0025;
+    ht = 0.00125;
     N1 = (unsigned int)(ceil(x11-x10)/h1);
     N2 = (unsigned int)(ceil(x21-x20)/h2);
     M  = (unsigned int)(ceil(t1-t0)/ht);
@@ -78,10 +78,11 @@ double BorderParabolic2D::f(unsigned int i, unsigned int j, unsigned int k) cons
 #ifdef SAMPLE1
     return 2.0*t - 2.0*a1 - 2.0*a2;
 #endif
+
 #ifdef SAMPLE2
     double sum = 0.0;
     sum += (10*t) * gause_a * exp(-((x1-0.5)*(x1-0.5) + (x2-0.5)*(x2-0.5))/gause_b);
-    //if (i==50 && j==50) return (100*t)/(h1*h2);
+//    if (i==N1/2 && j==N2/2) return (100*t)/(h1*h2);
 #endif
     return sum;
 }
