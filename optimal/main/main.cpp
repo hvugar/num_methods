@@ -2,8 +2,7 @@
 
 int main(int argc, char ** argv)
 {
-//    HyperbolicControl2D24::main(argc, argv);
-    HeatExample1::main(argc, argv);
-
+//    BorderHyperbolic::main();
+    BorderParabolic2D::main();
     return 0;
 }
