@@ -303,11 +303,16 @@ double HyperbolicControl2D24::initial1(unsigned int, unsigned int) const
 
 double HyperbolicControl2D24::initial2(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
 
 double HyperbolicControl2D24::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 
@@ -349,11 +354,17 @@ double HyperbolicControl2D24::binitial2(unsigned int i, unsigned int j) const
 
 double HyperbolicControl2D24::bboundary(unsigned int i, unsigned int j, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 
 double HyperbolicControl2D24::bf(unsigned int i, unsigned int j, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
 

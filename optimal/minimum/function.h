@@ -21,8 +21,9 @@ struct MINIMUMSHARED_EXPORT R3Function
     virtual double fx(double x, double y, double z) = 0;
 };
 
-struct MINIMUMSHARED_EXPORT RnFunction
+class MINIMUMSHARED_EXPORT RnFunction
 {
+public:
     virtual double fx(const DoubleVector &x) = 0;
 };
 

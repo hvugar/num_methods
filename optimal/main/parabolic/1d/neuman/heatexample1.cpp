@@ -2,6 +2,9 @@
 
 void HeatExample1::main(int argc, char **argv)
 {
+    C_UNUSED(argc);
+    C_UNUSED(argv);
+
     HeatExample1 h1;
     DoubleMatrix u;
     h1.calculateN(u, h1.hx, h1.ht, h1.N, h1.M);
@@ -61,6 +64,7 @@ double HeatExample1::boundary(Boundary type, unsigned int j) const
 
 double HeatExample1::f(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
     double t = j*ht;
     return 0.0;//2.0*t - 2.0*a*a;
 }

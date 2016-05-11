@@ -10,8 +10,8 @@ public:
     PenaltyMethod();
     virtual ~PenaltyMethod();
 
-    const std::vector<RnFunction>& h() const;
-    const std::vector<RnFunction>& g() const;
+    const std::vector<RnFunction*>& h() const;
+    const std::vector<RnFunction*>& g() const;
 
     virtual void calculate();
 
@@ -19,8 +19,8 @@ public:
 
 private:
     RnFunction* m_f;
-    std::vector<RnFunction> m_h;
-    std::vector<RnFunction> m_g;
+    std::vector<RnFunction*> m_h;
+    std::vector<RnFunction*> m_g;
     double m_R;
     double m_r;
 };
