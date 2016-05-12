@@ -59,7 +59,8 @@ SOURCES += main.cpp \
     border/borderparabolic2d.cpp \
     border/borderhyperbolic2d.cpp \
     border/borderhyperbolic.cpp \
-    parabolic/1d/neuman/heatexample1.cpp
+    parabolic/1d/neuman/heatexample1.cpp \
+    border/borderparabolic.cpp
 
 HEADERS += \
     rnfunction/rosenbrock.h \
@@ -100,4 +101,5 @@ HEADERS += \
     border/borderhyperbolic2d.h \
     headers.h \
     border/borderhyperbolic.h \
-    parabolic/1d/neuman/heatexample1.h
+    parabolic/1d/neuman/heatexample1.h \
+    border/borderparabolic.h

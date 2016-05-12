@@ -92,8 +92,8 @@ void createHeatImage1(int argc, char *argv[])
     file.close();
 
     //minimum = 4.0;
-    //    minimum = 7.0;
-    //    maximum = 11.0;
+        minimum = -1.00;
+        maximum = +20.00;
 
     printf("File: %s Minimum: %.10f Maximum: %.10f width: %d height %d\n", inFile.toAscii().data(), minimum, maximum, width, height);
     //    return;
@@ -124,22 +124,23 @@ void createHeatImage1(int argc, char *argv[])
         }
     }
 
-//    double sum = 0.0;
-//    for (unsigned int j=0; j<height; j++)
-//    {
-//        for (unsigned int i=0; i<width; i++)
-//        {
+    double sum = 0.0;
+    for (unsigned int j=0; j<height; j++)
+    {
+        for (unsigned int i=0; i<width; i++)
+        {
 //            double k = 1.0;
 //            if (i==0 || i==width-1)  k *= 0.5;
 //            if (j==0 || j==height-1) k *= 0.5;
 //            sum = sum + k * (m[j][i]) * (m[j][i]);
-//        }
-//    }
-//    double h1 = 1.0 / (height-1);
-//    double h2 = 1.0 / (width-1);
+            sum = sum + m[j][i];
+        }
+    }
+    double h1 = 1.0 / (height-1);
+    double h2 = 1.0 / (width-1);
 //    sum = h1*h2*sum;
-//    painter.setPen(Qt::black);
-//    painter.drawText(10, 10, QString::number(sum, 'f', 6));
+    painter.setPen(Qt::black);
+    painter.drawText(10, 10, QString::number(sum, 'f', 6));
 
     pixmap.save(outFile, "PNG");
 }

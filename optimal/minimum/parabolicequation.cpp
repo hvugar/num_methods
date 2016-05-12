@@ -1,6 +1,30 @@
 #include "parabolicequation.h"
 #include "cmethods.h"
 
+double MIN1 = +10000.0;
+double MAX1 = -10000.0;
+
+void saveData1(const DoubleMatrix& m, int i, unsigned int N2, unsigned int N1)
+{
+    double min = m.min();
+    double max = m.max();
+    if (MIN1 > min) MIN1 = min;
+    if (MAX1 < max) MAX1 = max;
+
+    char buffer[20];
+    int n = 0;
+    if (i<10) n = sprintf(buffer, "data/0000000%d.txt", i);
+    if (i<100 && i>=10) n = sprintf(buffer, "data/000000%d.txt", i);
+    if (i<1000 && i>=100) n = sprintf(buffer, "data/00000%d.txt", i);
+    if (i<10000 && i>=1000) n = sprintf(buffer, "data/0000%d.txt", i);
+    buffer[n] = '\0';
+    FILE *file = fopen(buffer, "w");
+    IPrinter::printMatrix(m, N2, N1, NULL, file);
+    fclose(file);
+
+    printf("File: %s min: %.10f max: %.10f min: %.10f max: %.10f\n", buffer, MIN1, MAX1, min, max);
+}
+
 void IParabolicEquation::calculateU(DoubleVector &u, double hx, double ht, unsigned int N, unsigned int M, double a) const
 {
     u.clear();
@@ -362,6 +386,8 @@ void IParabolicEquation2D::caluclateMVD(DoubleMatrix &u, double h1, double h2, d
                 u[j][N1] = boundary(N1, j, 2*k);//m2(j, 2*k);
             }
         }
+
+        saveData1(u, k, N2, N1);
     }
 
     da1.clear();
@@ -434,14 +460,13 @@ void IParabolicEquation2D::caluclateMVD1(DoubleMatrix &u, double h1, double h2, 
                         db1[i-1] = x1_b;
                         dc1[i-1] = x1_a;
                         dd1[i-1] = x1_c*(u[j-1][i] - 2.0*u[j][i] + u[j+1][i]) + u[j][i] + ht * f(i, j, k);
-                        //dd1[i-1] = x1_c*u[j-1][i] + x1_d*u[j][i] + x1_c*u[j+1][i] + (ht/2.0) * f(i, j, k);
                     }
 
                     da1[0]     = 0.0;
                     dc1[N1-2]  = 0.0;
 
-                    uh[j][0]  = boundary(0, j, k);//m1(j, k);
-                    uh[j][N1] = boundary(N1, j, k);//m2(j, k);
+                    uh[j][0]  = boundary(0, j, k);
+                    uh[j][N1] = boundary(N1, j, k);
 
                     dd1[0]    -= x1_a * uh[j][0];
                     dd1[N1-2] -= x1_a * uh[j][N1];
@@ -456,8 +481,8 @@ void IParabolicEquation2D::caluclateMVD1(DoubleMatrix &u, double h1, double h2, 
 
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    uh[0][i]  = boundary(i, 0, k);//m3(i, k);
-                    uh[N2][i] = boundary(i, N2, k);//m4(i, k);
+                    uh[0][i]  = boundary(i, 0, k);
+                    uh[N2][i] = boundary(i, N2, k);
                 }
             }
             else
@@ -471,13 +496,12 @@ void IParabolicEquation2D::caluclateMVD1(DoubleMatrix &u, double h1, double h2, 
                         db2[j-1] = x2_b;
                         dc2[j-1] = x2_a;
                         dd2[j-1] = x2_c*(uh[j][i-1] - 2.0*uh[j][i] + uh[j][i+1]) + uh[j][i] + ht * f(i, j, k);
-                        //dd2[j-1] = x2_c*uh[j][i-1] + x2_d*uh[j][i] + x2_c*uh[j][i+1] + (ht/2.0) * f(i, j, k);
                     }
                     da2[0]     = 0.0;
                     dc2[N2-2]  = 0.0;
 
-                    u[0][i]  = boundary(i, 0, k);//m3(i, k);
-                    u[N2][i] = boundary(i, N2, k);//m4(i, k);
+                    u[0][i]  = boundary(i, 0, k);
+                    u[N2][i] = boundary(i, N2, k);
 
                     dd2[0]    -= x2_a * u[0][i];
                     dd2[N2-2] -= x2_a * u[N2][i];
@@ -492,11 +516,13 @@ void IParabolicEquation2D::caluclateMVD1(DoubleMatrix &u, double h1, double h2, 
 
                 for (unsigned int j=0; j<=N2; j++)
                 {
-                    u[j][0]  = boundary(0, j, k);//m1(j, k);
-                    u[j][N1] = boundary(N1, j, k);//m2(j, k);
+                    u[j][0]  = boundary(0, j, k);
+                    u[j][N1] = boundary(N1, j, k);
                 }
             }
         }
+
+        if (k%2==0) saveData1(u, k/2, N2, N1);
     }
 
     da1.clear();
