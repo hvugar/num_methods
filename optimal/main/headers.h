@@ -59,6 +59,7 @@
 #include "discrete/discretehyperbolic.h"
 #include "discrete/discretehyperbolic1.h"
 
+#include "border/borderparabolic.h"
 #include "border/borderparabolic2d.h"
 #include "border/borderhyperbolic2d.h"
 #include "border/borderhyperbolic.h"

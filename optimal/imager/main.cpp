@@ -92,8 +92,8 @@ void createHeatImage1(int argc, char *argv[])
     file.close();
 
     //minimum = 4.0;
-        minimum = -1.00;
-        maximum = +20.00;
+//        minimum = -1.00;
+//        maximum = +20.00;
 
     printf("File: %s Minimum: %.10f Maximum: %.10f width: %d height %d\n", inFile.toAscii().data(), minimum, maximum, width, height);
     //    return;
