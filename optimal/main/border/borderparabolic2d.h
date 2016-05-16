@@ -8,7 +8,7 @@ class BorderParabolic2D : public IParabolicEquation2D
 {
 public:
     BorderParabolic2D();
-    virtual ~BorderParabolic2D();
+    virtual ~BorderParabolic2D() {}
 
     virtual double initial(unsigned int i, unsigned int j) const;
     virtual double boundary(unsigned int i, unsigned int j, unsigned int k) const;
@@ -31,7 +31,7 @@ public:
     double a1;
     double a2;
 
-    static void main();
+    static void main(int argc, char **argv);
 };
 
 #endif // BORDERPARABOLIC2D_H

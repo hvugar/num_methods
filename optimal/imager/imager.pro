@@ -14,8 +14,7 @@ DESTDIR += ../bin
 TEMPLATE = app
 
 
-SOURCES += main.cpp \
-    widget2.cpp
+SOURCES += main.cpp widget2.cpp
 
 HEADERS += \
     widget2.h

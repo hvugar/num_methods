@@ -10,7 +10,7 @@ void BorderParabolic::main(int argc, char **argv)
 
     IPrinter::printMatrix(u, 10, 10, NULL, stdout);
 
-    FILE* file = fopen("20160512.txt", "w");
+    FILE* file = fopen("20160516.txt", "w");
     //    IPrinter::printVector(u, NULL, bp.N, 0, 0, file);
     //    IPrinter::printVector(u, NULL, 10, 0, 0, stdout);
     IPrinter::printMatrix(u, bp.M, bp.N, NULL, file);
@@ -22,11 +22,11 @@ BorderParabolic::BorderParabolic()
     x0 = 0.0;
     x1 = 1.0;
     t0 = 0.0;
-    t1 = 5.0;
+    t1 = 3.0;
     hx = 0.001;
     ht = 0.001;
     N  = 1000;
-    M  = 1000;
+    M  = 3000;
 }
 
 BorderParabolic::~BorderParabolic() {}

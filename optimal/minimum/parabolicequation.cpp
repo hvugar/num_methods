@@ -522,7 +522,7 @@ void IParabolicEquation2D::caluclateMVD1(DoubleMatrix &u, double h1, double h2, 
             }
         }
 
-        if (k%2==0) saveData1(u, k/2, N2, N1);
+        if (k%2==1) saveData1(u, k/2, N2, N1);
     }
 
     da1.clear();
