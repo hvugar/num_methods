@@ -435,6 +435,8 @@ void IParabolicEquation2D::caluclateMVD1(DoubleMatrix &u, double h1, double h2, 
     double x2_c = (a1*a1*ht)/(h1*h1);
     //double x2_d = 1.0 - (a1*a1*ht)/(h1*h1);
 
+    //printf("%d %f %f %f %f %f %f %d %d\n", M, x1_a, x1_b, x1_c, x2_a, x2_b, x2_c, N1, N2);
+
     for (unsigned int k=0; k<=M; k++)
     {
         if (k==0)
@@ -503,9 +505,11 @@ void IParabolicEquation2D::caluclateMVD1(DoubleMatrix &u, double h1, double h2, 
                     u[0][i]  = boundary(i, 0, k);
                     u[N2][i] = boundary(i, N2, k);
 
+                    //if (k==2) printf("%d %d %f %f %f\n", k, i, dd2[0], dd2[1], dd2[2]);
                     dd2[0]    -= x2_a * u[0][i];
                     dd2[N2-2] -= x2_a * u[N2][i];
 
+                    //if (k==2) printf("%d %d %f %f %f\n", k, i, dd2[0], dd2[1], dd2[2]);
                     tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.size());
 
                     for (unsigned int j=1; j<N2; j++)
@@ -519,10 +523,16 @@ void IParabolicEquation2D::caluclateMVD1(DoubleMatrix &u, double h1, double h2, 
                     u[j][0]  = boundary(0, j, k);
                     u[j][N1] = boundary(N1, j, k);
                 }
+
+                if (k==2)
+                saveData1(u, k, N2, N1);
             }
         }
 
-        if (k%2==1) saveData1(u, k/2, N2, N1);
+        if (k%2==0)
+        {
+            saveData1(u, k/2, N2, N1);
+        }
     }
 
     da1.clear();
