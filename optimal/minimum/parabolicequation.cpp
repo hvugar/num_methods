@@ -17,6 +17,7 @@ void saveData1(const DoubleMatrix& m, int i, unsigned int N2, unsigned int N1)
     if (i<100 && i>=10) n = sprintf(buffer, "data/000000%d.txt", i);
     if (i<1000 && i>=100) n = sprintf(buffer, "data/00000%d.txt", i);
     if (i<10000 && i>=1000) n = sprintf(buffer, "data/0000%d.txt", i);
+    if (i<100000 && i>=10000) n = sprintf(buffer, "data/000%d.txt", i);
     buffer[n] = '\0';
     FILE *file = fopen(buffer, "w");
     IPrinter::printMatrix(m, N2, N1, NULL, file);
@@ -385,6 +386,7 @@ void IParabolicEquation2D::caluclateMVD(DoubleMatrix &u, double h1, double h2, d
             }
         }
 
+        if (k%100==0)
         saveData1(u, k, N2, N1);
     }
 
@@ -553,11 +555,13 @@ void IParabolicEquation2D::caluclateMFS(DoubleMatrix &u, double h1, double h2, d
     DoubleVector dd2(N2-1);
     DoubleVector rx2(N2-1);
 
-    double x1_a = -(a1*a1*ht)/(h1*h1);
-    double x1_b  = 1.0 + 2.0*(a1*a1*ht)/(h1*h1);
+    double lamda1 = (a1*a1)*(ht/(h1*h1));
+    double x1_a = -lamda1/2.0;
+    double x1_b  = 1.0 + lamda1;
 
-    double x2_a = -(a2*a2*ht)/(h2*h2);
-    double x2_b  = 1.0 + 2.0*(a2*a2*ht)/(h2*h2);
+    double lamda2 = (a2*a2)*(ht/(h2*h2));
+    double x2_a = -lamda2/2.0;
+    double x2_b  = 1.0 + lamda2;
 
     for (unsigned int k=0; k<=M; k++)
     {
@@ -581,14 +585,14 @@ void IParabolicEquation2D::caluclateMFS(DoubleMatrix &u, double h1, double h2, d
                     da1[i-1] = x1_a;
                     db1[i-1] = x1_b;
                     dc1[i-1] = x1_a;
-                    dd1[i-1] = u[j][i] + (ht/2.0) * f(i, j, k);
+                    dd1[i-1] = u[j][i] + (ht/2.0) * f(i, j, 2*k-1);
                 }
 
                 da1[0]     = 0.0;
                 dc1[N1-2]  = 0.0;
 
-                uh[j][0]  = boundary(0, j, k);
-                uh[j][N1] = boundary(N1, j, k);
+                uh[j][0]  = boundary(0, j, 2*k-1);
+                uh[j][N1] = boundary(N1, j, 2*k-1);
 
                 dd1[0]    -= x1_a * uh[j][0];
                 dd1[N1-2] -= x1_a * uh[j][N1];
@@ -603,8 +607,8 @@ void IParabolicEquation2D::caluclateMFS(DoubleMatrix &u, double h1, double h2, d
 
             for (unsigned int i=0; i<=N1; i++)
             {
-                uh[0][i]  = boundary(i, 0, k);
-                uh[N2][i] = boundary(i, N2, k);
+                uh[0][i]  = boundary(i, 0, 2*k-1);
+                uh[N2][i] = boundary(i, N2, 2*k-1);
             }
 
             // Approximation to x2 direction
@@ -615,13 +619,13 @@ void IParabolicEquation2D::caluclateMFS(DoubleMatrix &u, double h1, double h2, d
                     da2[j-1] = x2_a;
                     db2[j-1] = x2_b;
                     dc2[j-1] = x2_a;
-                    dd2[j-1] = uh[j][i] + (ht/2.0) * f(i, j, k);
+                    dd2[j-1] = uh[j][i] + (ht/2.0) * f(i, j, 2*k);
                 }
                 da2[0]     = 0.0;
                 dc2[N2-2]  = 0.0;
 
-                u[0][i]  = boundary(i, 0, k);
-                u[N2][i] = boundary(i, N2, k);
+                u[0][i]  = boundary(i, 0, 2*k);
+                u[N2][i] = boundary(i, N2, 2*k);
 
                 dd2[0]    -= x2_a * u[0][i];
                 dd2[N2-2] -= x2_a * u[N2][i];
@@ -636,8 +640,8 @@ void IParabolicEquation2D::caluclateMFS(DoubleMatrix &u, double h1, double h2, d
 
             for (unsigned int j=0; j<=N2; j++)
             {
-                u[j][0]  = boundary(0, j, k);
-                u[j][N1] = boundary(N1, j, k);
+                u[j][0]  = boundary(0, j, 2*k);
+                u[j][N1] = boundary(N1, j, 2*k);
             }
         }
 
