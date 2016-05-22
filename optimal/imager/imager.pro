@@ -13,6 +13,9 @@ CONFIG   -= app_bundle
 DESTDIR += ../bin
 TEMPLATE = app
 
+INCLUDEPATH += ../minimum
+LIBS += -L../bin -lminimum -lcminimum
+
 
 SOURCES += main.cpp widget2.cpp
 

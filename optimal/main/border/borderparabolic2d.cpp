@@ -15,23 +15,24 @@ void BorderParabolic2D::main(int argc, char **argv)
     //    FILE* file = fopen("20160516.txt", "w");
     //    IPrinter::printMatrix(m, bp.N2, bp.N1, NULL, file);
     //    fclose(file);
+
 }
 
 BorderParabolic2D::BorderParabolic2D()
 {
-    a1 = 0.38;
-    a2 = 0.38;
+    a1 = 1.0;
+    a2 = 1.0;
     x10 = x20 = t0 = 0.0;
     x11 = x21 = 1.0;
     t1 = 1.0;
 
-    h1 = 0.001;
-    h2 = 0.001;
-    ht = 0.0000005;
+    h1 = 0.01;
+    h2 = 0.01;
+    ht = 0.0002;
 
-    N1 = 1000;//(unsigned int)(ceil((x11-x10)/h1));
-    N2 = 1000;//(unsigned int)(ceil((x21-x20)/h2));
-    M  = 2000000;//(unsigned int)(ceil((t1-t0)/ht));
+    N1 = 100;//(unsigned int)(ceil((x11-x10)/h1));
+    N2 = 100;//(unsigned int)(ceil((x21-x20)/h2));
+    M  = 5000;//(unsigned int)(ceil((t1-t0)/ht));
 }
 
 double BorderParabolic2D::u(unsigned int i, unsigned int j, unsigned int k) const
@@ -55,7 +56,6 @@ double BorderParabolic2D::initial(unsigned int i, unsigned int j) const
     return 4.0;
 #endif
 #ifdef SAMPLE3
-    //    if (i<=2 || i>=N1-2 || j<=2 || j>=N2-2) return 5.0;
     return 0.0;
 #endif
 }
@@ -70,14 +70,12 @@ double BorderParabolic2D::boundary(unsigned int i, unsigned int j, unsigned int 
 #ifdef SAMPLE1
     return u(i, j, k);
 #endif
-    //#ifdef SAMPLE2
-    //    return initial(i,j)+3.0*t;
-    //#endif
-    //#ifdef SAMPLE3
-    //    return 1.0;
-    //#endif
-
+#ifdef SAMPLE2
+    return initial(i,j)+3.0*t;
+#endif
+#ifdef SAMPLE3
     return 1.0;
+#endif
 }
 
 double BorderParabolic2D::f(unsigned int i, unsigned int j, unsigned int k) const
@@ -111,6 +109,7 @@ double BorderParabolic2D::f(unsigned int i, unsigned int j, unsigned int k) cons
     //    double delta2 = (1.0/h2);//(1.0/(sqrt(2.0*M_PI)*sgm2)) * exp(-((x1-j*h2)*(x1-j*h2))/(2.0*sgm2*sgm2));
     //    if ( (i==N1/2) && (j==(N2/2)) && (k <= 20) ) sum = power * delta1 * delta2;
     //    if ( k <= 20) sum = 10000.0;
+    return 0.0;
 #endif
     return 0.0;
 }

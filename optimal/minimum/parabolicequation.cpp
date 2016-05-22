@@ -302,6 +302,17 @@ void IParabolicEquation2D::caluclateMVD(DoubleMatrix &u, double h1, double h2, d
     double x2_b  = 1.0 + (a2*a2*ht)/(h2*h2);
     double x2_c = (a1*a1*ht)/(2.0*h1*h1);
 
+//    double lamda1 = ((a1*a1)*ht)/(h1*h1);
+//    double lamda2 = ((a2*a2)*ht)/(h2*h2);
+
+//    double x1_a = -0.5 * lamda1;
+//    double x1_b = +1.0 + lamda1;
+//    double x1_c = +0.5 * lamda2;
+
+//    double x2_a = -0.5 * lamda2;
+//    double x2_b = +1.0 + lamda2;
+//    double x2_c = +0.5 * lamda1;
+
     for (unsigned int k=0; k<=M; k++)
     {
         if (k==0)
@@ -386,7 +397,7 @@ void IParabolicEquation2D::caluclateMVD(DoubleMatrix &u, double h1, double h2, d
             }
         }
 
-        if (k%100==0)
+        //if (k%100==0)
         saveData1(u, k, N2, N1);
     }
 

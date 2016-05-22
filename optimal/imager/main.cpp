@@ -11,6 +11,8 @@
 #include "widget2.h"
 #include <math.h>
 
+#include <doublevector.h>
+
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
@@ -39,6 +41,34 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+void MatrixHeatImaging(const DoubleMatrix &m, double minimum, double maximum, QPixmap &pixmap, int width, int height)
+{
+    pixmap = QPixmap(QSize(width, height));
+    pixmap.fill(Qt::white);
+    QPainter painter(&pixmap);
+
+    int m_size = m.size();
+
+    for (int j=0; j<m_size; j++)
+    {
+        const DoubleVector &v = m[j];
+        int v_size = v.size();
+        for (int i=0; i<v_size; i++)
+        {
+            double u = v[i];
+            double ratio = 0.0;
+            if (minimum!=maximum)
+                ratio = 2.0 * (u-minimum) / (maximum - minimum);
+            int b = int(MAX(0, 255*(1 - ratio)));
+            int r = int(MAX(0, 255*(ratio - 1)));
+            int g = 255 - b - r;
+            QColor c(r, g, b);
+            painter.setPen(c);
+            painter.drawPoint(i,height-j-1);
+        }
+    }
+}
+
 void createHeatImage1(int argc, char *argv[])
 {
     if (argc < 9)
@@ -54,10 +84,10 @@ void createHeatImage1(int argc, char *argv[])
     double min = QString(argv[10]).toDouble();
     double max = QString(argv[12]).toDouble();
 
-    QPixmap pixmap(QSize(width, height));
-    pixmap.fill(Qt::white);
-    QPainter painter(&pixmap);
-    painter.drawPoint(0,0);
+    //    QPixmap pixmap(QSize(width, height));
+    //    pixmap.fill(Qt::white);
+    //    QPainter painter(&pixmap);
+    //    painter.drawPoint(0,0);
 
     QFile file(inFile);
     file.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -66,7 +96,7 @@ void createHeatImage1(int argc, char *argv[])
     double maximum = -9999.9;
     double minimum = +9999.9;
 
-    QDoubleMatrix m;
+    DoubleMatrix m;
     m.resize(height);
 
     unsigned int j=0;
@@ -100,22 +130,25 @@ void createHeatImage1(int argc, char *argv[])
     }
     printf("File: %s Minimum: %.10f Maximum: %.10f width: %d height %d\n", inFile.toAscii().data(), minimum, maximum, width, height);
 
-    for (int j=0; j<m.size(); j++)
-    {
-        for (int i=0; i<m[j].size(); i++)
-        {
-            double u = m[j][i];
-            double ratio = 0.0;
-            if (minimum!=maximum)
-                ratio = 2.0 * (u-minimum) / (maximum - minimum);
-            int b = int(MAX(0, 255*(1 - ratio)));
-            int r = int(MAX(0, 255*(ratio - 1)));
-            int g = 255 - b - r;
-            QColor c(r, g, b);
-            painter.setPen(c);
-            painter.drawPoint(i,height-j-1);
-        }
-    }
+    QPixmap pixmap;
+    MatrixHeatImaging(m, minimum, maximum, pixmap, width, height);
+
+//    for (int j=0; j<m.size(); j++)
+//    {
+//        for (int i=0; i<m[j].size(); i++)
+//        {
+//            double u = m[j][i];
+//            double ratio = 0.0;
+//            if (minimum!=maximum)
+//                ratio = 2.0 * (u-minimum) / (maximum - minimum);
+//            int b = int(MAX(0, 255*(1 - ratio)));
+//            int r = int(MAX(0, 255*(ratio - 1)));
+//            int g = 255 - b - r;
+//            QColor c(r, g, b);
+//            painter.setPen(c);
+//            painter.drawPoint(i,height-j-1);
+//        }
+//    }
 
 //    double sum = 0.0;
 //    for (unsigned int j=0; j<height; j++)
