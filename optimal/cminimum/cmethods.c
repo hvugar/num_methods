@@ -142,3 +142,70 @@ void tomasAlgorithm(const double *a, const double *b, const double *c, const dou
     free(p);
     free(q);
 }
+
+void euler(double x0, double y0, double xN, double yN, unsigned int N, double *x, double *y, ODE1stOrderEquation eq)
+{
+
+}
+
+void eulerMod(double x0, double y0, double xN, double yN, unsigned int N, double *x, double *y, ODE1stOrderEquation eq)
+{
+
+}
+
+void runge_kutta_rk3(double x0, double y0, double xN, double yN, unsigned int N, double *x, double *y, ODE1stOrderEquation eq)
+{
+
+}
+
+void runge_kutta_rk4(double x0, double y0, double xN, double yN, unsigned int N, double *x, double *y, ODE1stOrderEquation eq)
+{
+    if (N == 0) return;
+
+    double k1 = 0.0;
+    double k2 = 0.0;
+    double k3 = 0.0;
+    double k4 = 0.0;
+
+    double h = (xN - x0) / N;
+//    x = (double*)malloc(sizeof(double)*(N+1));
+//    y = (double*)malloc(sizeof(double)*(N+1));
+
+    if (h > 0)
+    {
+        x[0] = x0;
+        y[0] = y0;
+        int i = 1;
+        for (i=1; i<=N; i++)
+        {
+            k1 = eq(x0, y0);
+            k2 = eq(x0+h/2.0, y0+(h/2.0)*k1);
+            k3 = eq(x0+h/2.0, y0+(h/2.0)*k2);
+            k4 = eq(x0+h, y0+h*k3);
+            y0 = y0 + (h/6.0) * (k1 + 2.0*k2 + 2.0*k3 + k4);
+            x0 = x0 + h;
+            x[i] = x0;
+            y[i] = y0;
+        }
+        yN = y[N];
+    }
+
+    if (h < 0)
+    {
+        x[N] = x0;
+        y[N] = y0;
+        int i = N-1;
+        for (i=N-1; i>=0; i--)
+        {
+            k1 = eq(x0,       y0);
+            k2 = eq(x0+h/2.0, y0+(h/2.0)*k1);
+            k3 = eq(x0+h/2.0, y0+(h/2.0)*k2);
+            k4 = eq(x0+h,     y0+h*k3);
+            y0 = y0 + (h/6.0) * (k1 + 2.0*k2 + 2.0*k3 + k4);
+            x0 = x0 + h;
+            x[i] = x0;
+            y[i] = y0;
+        }
+        yN = y[0];
+    }
+}

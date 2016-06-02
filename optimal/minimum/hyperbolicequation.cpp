@@ -1,5 +1,20 @@
 #include "hyperbolicequation.h"
 
+void saveVectorFiles(const DoubleVector& v, int i, unsigned int N)
+{
+    char buffer[20];
+    int n = 0;
+    if (i<10) n = sprintf(buffer, "data/0000000%d.txt", i);
+    if (i<100 && i>=10) n = sprintf(buffer, "data/000000%d.txt", i);
+    if (i<1000 && i>=100) n = sprintf(buffer, "data/00000%d.txt", i);
+    if (i<10000 && i>=1000) n = sprintf(buffer, "data/0000%d.txt", i);
+    if (i<100000 && i>=10000) n = sprintf(buffer, "data/000%d.txt", i);
+    buffer[n] = '\0';
+    FILE *file = fopen(buffer, "w");
+    IPrinter::printVector(v, NULL, N, 0, 0, file);
+    fclose(file);
+}
+
 void IHyperbolicEquation::calculateU(DoubleVector &u, double hx, double ht, unsigned int M, unsigned int N, double a, double lamda) const
 {
     u.clear();
@@ -63,6 +78,7 @@ void IHyperbolicEquation::calculateU(DoubleVector &u, double hx, double ht, unsi
                 u1[i] = u[i];
             }
         }
+     //   saveVectorFiles(u, j, N);
     }
 
     da.clear();
