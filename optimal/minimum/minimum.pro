@@ -33,7 +33,8 @@ SOURCES += \
     integral.cpp \
     hyperbolicequation.cpp \
     parabolicequation.cpp \
-    exceptions.cpp
+    exceptions.cpp \
+    ode1storder.cpp
 
 HEADERS += global.h \
     function.h \
@@ -51,4 +52,5 @@ HEADERS += global.h \
     integral.h \
     hyperbolicequation.h \
     parabolicequation.h \
-    exceptions.h
+    exceptions.h \
+    ode1storder.h
