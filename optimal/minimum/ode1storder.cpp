@@ -57,13 +57,13 @@ void NonLinearODE1stOrder::solveNonLinearBoundaryProblem(double t0, double a, do
 
         virtual double a(double t, unsigned int i) const
         {
-            double f1 = nl->f((i+1)*h, x[i+1], i+1);
-            double f2 = nl->f((i-1)*h, x[i-1], i-1);
-            printf("%d %.10f %.10f %.10f\n", i,
-                   (f1 - f2) / (x[i+1]-x[i-1]),
-                   2.0 - sin(x[i]) + x[i]*cos(x[i]), h);
-            //return (f1 - f2) / (x[i]-x[i-1]);
-            return 2.0 + sin(x[i]) + x[i]*cos(x[i]);
+            double f1 = nl->f(i*h, x[i+1], i);
+            double f2 = nl->f(i*h, x[i-1], i);
+            //printf("%d %.10f %.10f %.10f\n", i,
+            //       (f1 - f2) / (x[i+1]-x[i-1]),
+            //       2.0 + sin(x[i]) + x[i]*cos(x[i]), h);
+            return (f1 - f2) / (x[i+1]-x[i-1]);
+            //return 2.0 + sin(x[i]) + x[i]*cos(x[i]);
         }
 
         virtual double b(double t, unsigned int i) const
@@ -107,12 +107,12 @@ void NonLinearODE1stOrder::solveNonLinearBoundaryProblem(double t0, double a, do
     do {
         double dx0 = a - x0[0];
         double dx1 = b - x0[N];
-        for (unsigned int i=0; i<=N; i++) if (i%(N/10)==0) printf("%14.6f", x0[i]);
+        for (unsigned int i=0; i<=N; i++) if (i%(N/10)==0) printf("%14.8f", x0[i]);
         printf("\n");
         line.solveLinearBoundaryProblem(t0, dx0, b, dx1, N, dx);
-        //for (unsigned int i=0; i<=N; i++) fprintf(file, "%14.6f", x0[i]);
+        //for (unsigned int i=0; i<=N; i++) fprintf(file, "%14.8f", x0[i]);
         //fprintf(file, "\n");
-        for (unsigned int i=0; i<=N; i++) if (i%(N/10)==0) printf("%14.6f", x0[i]);
+        for (unsigned int i=0; i<=N; i++) if (i%(N/10)==0) printf("%14.8f", x0[i]);
         printf("\n");
 
         for (unsigned int i=0; i<=N; i++) { x0[i] += dx[i]; }

@@ -107,9 +107,35 @@ public:
     unsigned int N;
 };
 
+double f(double t, double x)
+{
+    return x*x + t*t;
+}
+
 int main(int argc, char ** argv)
 {
     unsigned int N = 1000;
+
+//    double *x = (double*)malloc(sizeof(double)*(N+1));
+//    double *t = (double*)malloc(sizeof(double)*(N+1));
+//    for (unsigned int i=0; i<=N; i++)
+//    {
+//        t[i] = i*0.001;
+//        x[i] = t[i]*t[i];
+//    }
+//    double *d = (double*)malloc(sizeof(double)*(N+1));
+//    for (unsigned int i=1; i<=N-1; i++)
+//    {
+//        printf("%f %f %f %f %f %f\n",
+//               t[i],
+//               x[i],
+//               2.0*x[i],
+//               2.0*t[i],
+//               (f(x[i+1], t[i])-f(x[i-1], t[i]))/(x[i+1]-x[i-1]),
+//               (f(x[i], t[i+1])-f(x[i], t[i-1]))/(t[i+1]-t[i-1]));
+//    }
+
+//    return 0;
 
     //    double t0 = 0.0;
     //    double t1 = 1.0;
@@ -137,7 +163,7 @@ int main(int argc, char ** argv)
     nla.x2 = 1.0;
     nla.N = 1000;
     double *x0 = (double*)malloc(sizeof(double)*(N+1));
-    for (unsigned int i=0; i<=nla.N; i++) x0[i] = sin(0.01*i);
+    for (unsigned int i=0; i<=nla.N; i++) x0[i] = sin(0.1*i);
     nla.solveNonLinearBoundaryProblem(nla.t1, nla.x1, nla.t2, nla.x2, nla.N, x0);
 
     //    FILE* file = fopen("data.txt", "w");
@@ -162,7 +188,7 @@ int main(int argc, char ** argv)
 
     //    fclose(file);
 
-    for (unsigned int i=0; i<=N; i++) if (i%(N/10)==0) printf("%14.6f", x0[i]);
+    for (unsigned int i=0; i<=N; i++) if (i%(N/10)==0) printf("%14.8f", x0[i]);
     printf("\n");
 
     return 0;
