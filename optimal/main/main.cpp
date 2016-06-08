@@ -114,6 +114,8 @@ double f(double t, double x)
 
 int main(int argc, char ** argv)
 {
+    SampleBorderHyperBolic::main(argc, argv);
+    return 0;
     unsigned int N = 1000;
 
 //    double *x = (double*)malloc(sizeof(double)*(N+1));
