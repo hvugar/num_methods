@@ -165,7 +165,7 @@ int main(int argc, char ** argv)
     nla.x2 = 1.0;
     nla.N = 1000;
     double *x0 = (double*)malloc(sizeof(double)*(N+1));
-    for (unsigned int i=0; i<=nla.N; i++) x0[i] = sin(0.1*i);
+    for (unsigned int i=0; i<=nla.N; i++) x0[i] = 1.0;
     nla.solveNonLinearBoundaryProblem(nla.t1, nla.x1, nla.t2, nla.x2, nla.N, x0);
 
     //    FILE* file = fopen("data.txt", "w");
