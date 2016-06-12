@@ -14,6 +14,7 @@
 #include <parabolicequation.h>
 #include <hyperbolicequation.h>
 #include <r1minimize.h>
+#include <ode1storder.h>
 
 #include <iostream>
 #include <stdexcept>

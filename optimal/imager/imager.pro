@@ -14,14 +14,9 @@ DESTDIR += ../bin
 TEMPLATE = app
 
 INCLUDEPATH += ../minimum
+INCLUDEPATH += ../cminimum
 LIBS += -L../bin -lminimum -lcminimum
 
+SOURCES += main.cpp widget2.cpp sample1.cpp heatimager.cpp
 
-SOURCES += main.cpp widget2.cpp \
-    sample1.cpp \
-    heatimager.cpp
-
-HEADERS += \
-    widget2.h \
-    sample1.h \
-    heatimager.h
+HEADERS += widget2.h sample1.h heatimager.h
