@@ -62,11 +62,11 @@ public:
     void Clear();
 };
 
-class MINIMUMSHARED_EXPORT DblVector
+class MINIMUMSHARED_EXPORT Vector
 {
 public:
-    DblVector(unsigned int n=0);
-    virtual ~DblVector();
+    Vector(unsigned int n=0);
+    virtual ~Vector();
 
     unsigned int size() const;
     double at(unsigned int i) const;
@@ -78,6 +78,24 @@ public:
 private:
     double* pdata;
     unsigned int msize;
+};
+
+class MINIMUMSHARED_EXPORT Matrix
+{
+public:
+    explicit Matrix(unsigned int rows, unsigned int cols);
+    virtual ~Matrix();
+
+    unsigned int rows() const;
+    unsigned int columns() const;
+
+    double*& operator[](unsigned int j);
+    const double*& operator[](unsigned int j) const;
+
+private:
+    unsigned int mrows;
+    unsigned int mcols;
+    double **mitems;
 };
 
 #endif // DOUBLEVECTOR_H

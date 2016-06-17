@@ -262,42 +262,42 @@ void DoubleCube::Clear()
     this->clear();
 }
 
-DblVector::DblVector(unsigned int n)
+Vector::Vector(unsigned int n)
 {
     C_UNUSED(n);
     //    msize = n;
     //    pdata = (double*)malloc(sizeof(double)*n);
 }
 
-DblVector::~DblVector()
+Vector::~Vector()
 {
     //clear();
 }
 
-unsigned int DblVector::size() const
+unsigned int Vector::size() const
 {
     return msize;
 }
 
-double DblVector::at(unsigned int i) const
+double Vector::at(unsigned int i) const
 {
     //if (i<msize) throw std::
     return pdata[i];
 }
 
-double* DblVector::data() const
+double* Vector::data() const
 {
     return this->pdata;
 }
 
-void DblVector::add(double d)
+void Vector::add(double d)
 {
     pdata = (double*)realloc(pdata, sizeof(double)*(msize+1));
     pdata[msize] = d;
     msize++;
 }
 
-void DblVector::insert(unsigned int i, double d)
+void Vector::insert(unsigned int i, double d)
 {
     pdata = (double*)realloc(pdata, sizeof(double)*(msize+1));
     memcpy(pdata+i+1, pdata+i, sizeof(double)*(msize-i));
@@ -305,16 +305,51 @@ void DblVector::insert(unsigned int i, double d)
     msize++;
 }
 
-void DblVector::remove(unsigned int i)
+void Vector::remove(unsigned int i)
 {
     memcpy(pdata+i, pdata+i+1, sizeof(double)*(msize-i-1));
     pdata = (double*)realloc(pdata, sizeof(double)*(msize-1));
     msize--;
 }
 
-void DblVector::clear()
+void Vector::clear()
 {
     free(pdata);
     pdata=NULL;
     msize=0;
 }
+
+Matrix::Matrix(unsigned int rows, unsigned int cols) : mrows(rows), mcols(cols)
+{
+    mitems = new double*[rows];
+    for (unsigned int j=0; j<rows; j++)
+        mitems[j] = new double[cols];
+}
+
+Matrix::~Matrix()
+{
+    for (unsigned int j=0; j<mrows; j++) delete[] mitems[j];
+    delete[] mitems;
+}
+
+unsigned int Matrix::rows() const
+{
+    return  mrows;
+}
+
+unsigned int Matrix::columns() const
+{
+    return  mcols;
+}
+
+double*& Matrix::operator[](unsigned int j)
+{
+    return mitems[j];
+}
+
+const double*& Matrix::operator[](unsigned int j) const
+{
+    return mitems[j];
+}
+
+

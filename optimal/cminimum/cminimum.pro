@@ -8,9 +8,11 @@ DEFINES += C_MINIMUM_LIBRARY
 DESTDIR += ../bin
 
 SOURCES += \
-    cmethods.c
+    cmethods.c \
+    matrix.c
 
 HEADERS += \
     cmethods.h \
-    cglobal.h
+    cglobal.h \
+    matrix.h
 
