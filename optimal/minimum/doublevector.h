@@ -1,9 +1,8 @@
 #ifndef DOUBLEVECTOR_H
 #define DOUBLEVECTOR_H
 
-#include <vector>
 #include "global.h"
-
+#include <vector>
 #include <string.h>
 #include <stdlib.h>
 
@@ -27,17 +26,7 @@ public:
     double min() const;
     double max() const;
 
-    DoubleVector mid(unsigned int s, unsigned int e) const;
-
-    /* static methods */
-    static double L2Norm(const DoubleVector&);
-    static double L1Norm(const DoubleVector&);
-    static double LInfNorm(const DoubleVector&);
-    static double EuclideanNorm(const DoubleVector&);
-    static double EuclideanDistance(const DoubleVector&, const DoubleVector&);
-    static void L2Normalize(DoubleVector&);
-    static void L1Normalize(DoubleVector&);
-    static void EuclideanNormalize(DoubleVector&);
+    DoubleVector* mid(unsigned int s, unsigned int e) const;
 };
 
 class MINIMUMSHARED_EXPORT DoubleMatrix : public std::vector<DoubleVector>
@@ -46,10 +35,23 @@ public:
     DoubleMatrix(unsigned int m = 0, unsigned int n = 0, double value = 0.0);
     virtual ~DoubleMatrix();
     void Clear();
-    void Resize(unsigned int m, unsigned n);
+    void Resize(unsigned int m, unsigned int n);
 
     double min() const;
     double max() const;
+
+    double determinant() const;
+    DoubleMatrix* transpose() const;
+    DoubleMatrix* inverse() const;
+    DoubleMatrix* minor(size_t row, size_t col) const;
+    DoubleMatrix* multiply(const DoubleMatrix &m) const;
+    DoubleMatrix* multiply(const DoubleVector &v) const;
+
+    DoubleMatrix operator+(const DoubleMatrix &A) const;
+    DoubleMatrix operator-(const DoubleMatrix &A) const;
+    DoubleMatrix operator*(const DoubleMatrix &A) const;
+    DoubleMatrix operator/(const DoubleMatrix &A) const;
+    DoubleMatrix operator*(double c) const;
 };
 
 class MINIMUMSHARED_EXPORT DoubleCube : public std::vector<DoubleMatrix>
@@ -60,42 +62,6 @@ public:
 
     void Resize(unsigned int Nz, unsigned int Ny, unsigned Nx);
     void Clear();
-};
-
-class MINIMUMSHARED_EXPORT Vector
-{
-public:
-    Vector(unsigned int n=0);
-    virtual ~Vector();
-
-    unsigned int size() const;
-    double at(unsigned int i) const;
-    double* data() const;
-    void add(double d);
-    void insert(unsigned int i, double d);
-    void remove(unsigned int i);
-    void clear();
-private:
-    double* pdata;
-    unsigned int msize;
-};
-
-class MINIMUMSHARED_EXPORT Matrix
-{
-public:
-    explicit Matrix(unsigned int rows, unsigned int cols);
-    virtual ~Matrix();
-
-    unsigned int rows() const;
-    unsigned int columns() const;
-
-    double*& operator[](unsigned int j);
-    const double*& operator[](unsigned int j) const;
-
-private:
-    unsigned int mrows;
-    unsigned int mcols;
-    double **mitems;
 };
 
 #endif // DOUBLEVECTOR_H

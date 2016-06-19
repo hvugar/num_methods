@@ -34,7 +34,8 @@ SOURCES += \
     hyperbolicequation.cpp \
     parabolicequation.cpp \
     exceptions.cpp \
-    ode1storder.cpp
+    ode1storder.cpp \
+    matrix.cpp
 
 HEADERS += global.h \
     function.h \
@@ -53,4 +54,5 @@ HEADERS += global.h \
     hyperbolicequation.h \
     parabolicequation.h \
     exceptions.h \
-    ode1storder.h
+    ode1storder.h \
+    matrix.h

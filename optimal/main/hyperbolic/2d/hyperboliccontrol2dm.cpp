@@ -80,32 +80,32 @@ double HyperbolicControl2DM::fx(double T)
 
     DoubleVector ag(x.size());
     gradient(x, ag);
-    DoubleVector agx = ag.mid(0, 3);
-    DoubleVector agv = ag.mid(4, ag.size()-1);
-    agx.L2Normalize();
-    agv.L2Normalize();
+    DoubleVector *agx = ag.mid(0, 3);
+    DoubleVector *agv = ag.mid(4, ag.size()-1);
+    agx->L2Normalize();
+    agv->L2Normalize();
 
     DoubleVector ng(x.size());
     IGradient::Gradient(this, h, x, ng);
-    DoubleVector ngx = ng.mid(0, 3);
-    DoubleVector ngv = ng.mid(4, ng.size()-1);
-    ngx.L2Normalize();
-    ngv.L2Normalize();
+    DoubleVector *ngx = ng.mid(0, 3);
+    DoubleVector *ngv = ng.mid(4, ng.size()-1);
+    ngx->L2Normalize();
+    ngv->L2Normalize();
 
     FILE *file = fopen("gradients_xv.txt", "a");
     fprintf(file, "--------------------------------------------------------------------\n");
     IPrinter::printDateTime(file);
     fprintf(file, "T: %f L: %d h:%f Functional: %.20f N1: %d N2: %d M: %d h1: %f h2: %f ht: %f\n", t1, L, h, rf, N1, N2, M, h1, h2, ht);
     fprintf(file, "x: %.8f %.8f %.8f %.8f\n", x[0], x[1], x[2], x[3]);
-    fprintf(file, "AGx: %.8f %.8f %.8f %.8f\n", agx[0], agx[1], agx[2], agx[3]);
-    fprintf(file, "NGx: %.8f %.8f %.8f %.8f\n", ngx[0], ngx[1], ngx[2], ngx[3]);
+    fprintf(file, "AGx: %.8f %.8f %.8f %.8f\n", (*agx)[0], (*agx)[1], (*agx)[2], (*agx)[3]);
+    fprintf(file, "NGx: %.8f %.8f %.8f %.8f\n", (*ngx)[0], (*ngx)[1], (*ngx)[2], (*ngx)[3]);
     unsigned int part = 10;//(M+1)
-    IPrinter::printVector(x,   "v1: ", part, 0*(M+1)+2*L, 0*(M+1)+2*L+M, file);
-    IPrinter::printVector(agv, "AG1:", part, 0*(M+1),     0*(M+1)+M,     file);
-    IPrinter::printVector(ngv, "NG1:", part, 0*(M+1),     0*(M+1)+M,     file);
-    IPrinter::printVector(x,   "v2: ", part, 1*(M+1)+2*L, 1*(M+1)+2*L+M, file);
-    IPrinter::printVector(agv, "AG2:", part, 1*(M+1),     1*(M+1)+M,     file);
-    IPrinter::printVector(ngv, "NG2:", part, 1*(M+1),     1*(M+1)+M,     file);
+    IPrinter::printVector(x,    "v1: ", part, 0*(M+1)+2*L, 0*(M+1)+2*L+M, file);
+    IPrinter::printVector(*agv, "AG1:", part, 0*(M+1),     0*(M+1)+M,     file);
+    IPrinter::printVector(*ngv, "NG1:", part, 0*(M+1),     0*(M+1)+M,     file);
+    IPrinter::printVector(x,    "v2: ", part, 1*(M+1)+2*L, 1*(M+1)+2*L+M, file);
+    IPrinter::printVector(*agv, "AG2:", part, 1*(M+1),     1*(M+1)+M,     file);
+    IPrinter::printVector(*ngv, "NG2:", part, 1*(M+1),     1*(M+1)+M,     file);
     IPrinter::printDateTime(file);
     //    fprintf(file, "U\n");
     //    DoubleCube c;
@@ -322,29 +322,29 @@ void HyperbolicControl2DM::print(unsigned int i, const DoubleVector &x, const Do
 
     DoubleVector ng(x.size());
     //    IGradient::Gradient(fn, h, x, ng);
-    DoubleVector ngx = ng.mid(0, 3);
-    DoubleVector ngv = ng.mid(4, ng.size()-1);
-    ngx.L2Normalize();
-    ngv.L2Normalize();
+    DoubleVector *ngx = ng.mid(0, 3);
+    DoubleVector *ngv = ng.mid(4, ng.size()-1);
+    ngx->L2Normalize();
+    ngv->L2Normalize();
 
-    DoubleVector agx = g.mid(0, 3);
-    DoubleVector agv = g.mid(4, g.size()-1);
-    agx.L2Normalize();
-    agv.L2Normalize();
+    DoubleVector *agx = g.mid(0, 3);
+    DoubleVector *agv = g.mid(4, g.size()-1);
+    agx->L2Normalize();
+    agv->L2Normalize();
 
     FILE *file = fopen("gradients_xv.txt", "a");
     fprintf(file, "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
     IPrinter::printDateTime(file);
     fprintf(file, "T: %f L: %d Functional: %.20f N1: %d N2: %d M: %d h1: %f h2: %f ht: %f\n", t1, L, fn->fx(x), N1, N2, M, h1, h2, ht);
     fprintf(file, "x: %.8f %.8f %.8f %.8f\n", x[0], x[1], x[2], x[3]);
-    fprintf(file, "AGx: %.8f %.8f %.8f %.8f\n", agx[0], agx[1], agx[2], agx[3]);
-    fprintf(file, "NGx: %.8f %.8f %.8f %.8f\n", ngx[0], ngx[1], ngx[2], ngx[3]);
-    IPrinter::printVector(x,   "v1: ", (M+1), 0*(M+1)+2*L, 0*(M+1)+2*L+M, file);
-    IPrinter::printVector(agv, "AG1:", (M+1), 0*(M+1),     0*(M+1)+M,     file);
-    IPrinter::printVector(ngv, "NG1:", (M+1), 0*(M+1),     0*(M+1)+M,     file);
-    IPrinter::printVector(x,   "v2: ", (M+1), 1*(M+1)+2*L, 1*(M+1)+2*L+M, file);
-    IPrinter::printVector(agv, "AG2:", (M+1), 1*(M+1),     1*(M+1)+M,     file);
-    IPrinter::printVector(ngv, "NG2:", (M+1), 1*(M+1),     1*(M+1)+M,     file);
+    fprintf(file, "AGx: %.8f %.8f %.8f %.8f\n", (*agx)[0], (*agx)[1], (*agx)[2], (*agx)[3]);
+    fprintf(file, "NGx: %.8f %.8f %.8f %.8f\n", (*ngx)[0], (*ngx)[1], (*ngx)[2], (*ngx)[3]);
+    IPrinter::printVector(x,    "v1: ", (M+1), 0*(M+1)+2*L, 0*(M+1)+2*L+M, file);
+    IPrinter::printVector(*agv, "AG1:", (M+1), 0*(M+1),     0*(M+1)+M,     file);
+    IPrinter::printVector(*ngv, "NG1:", (M+1), 0*(M+1),     0*(M+1)+M,     file);
+    IPrinter::printVector(x,    "v2: ", (M+1), 1*(M+1)+2*L, 1*(M+1)+2*L+M, file);
+    IPrinter::printVector(*agv, "AG2:", (M+1), 1*(M+1),     1*(M+1)+M,     file);
+    IPrinter::printVector(*ngv, "NG2:", (M+1), 1*(M+1),     1*(M+1)+M,     file);
     IPrinter::printDateTime(file);
     //    fprintf(file, "U\n");
     //    DoubleCube c;

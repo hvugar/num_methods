@@ -109,53 +109,12 @@ double DoubleVector::max() const
     return _max;
 }
 
-DoubleVector DoubleVector::mid(unsigned int start, unsigned int end) const
+DoubleVector* DoubleVector::mid(unsigned int start, unsigned int end) const
 {
     unsigned int size = end - start + 1;
-    DoubleVector vector(size);
-    for (unsigned int i=start; i<=end; i++) vector[i-start] = (*this)[i];
+    DoubleVector *vector = new DoubleVector(size);
+    for (unsigned int i=start; i<=end; i++) (*vector)[i-start] = (*this)[i];
     return vector;
-}
-
-double DoubleVector::L2Norm(const DoubleVector& p)
-{
-    return p.L2Norm();
-}
-
-double DoubleVector::L1Norm(const DoubleVector& p)
-{
-    return p.L1Norm();
-}
-
-double DoubleVector::LInfNorm(const DoubleVector& p)
-{
-    return p.LInfNorm();
-}
-
-double DoubleVector::EuclideanNorm(const DoubleVector& p)
-{
-    return L2Norm(p);
-}
-
-double DoubleVector::EuclideanDistance(const DoubleVector& p, const DoubleVector& q)
-{
-    return p.EuclideanDistance(q);
-}
-
-void DoubleVector::L2Normalize(DoubleVector& p)
-{
-    p.L2Normalize();
-}
-
-void DoubleVector::L1Normalize(DoubleVector& p)
-{
-
-    p.L1Normalize();
-}
-
-void DoubleVector::EuclideanNormalize(DoubleVector& p)
-{
-    p.EuclideanNormalize();
 }
 
 /**
@@ -201,6 +160,65 @@ double DoubleMatrix::max() const
         }
     }
     return _max;
+}
+
+double DoubleMatrix::determinant() const
+{
+    double det = 0.0;
+
+    //    if (m->rows != m->columns)
+    //        return NAN;
+
+    //    if (m->rows == 1 && m->columns == 1)
+    //        return m->items[0][0];
+    //    else if (m->rows == 2 && m->columns == 2)
+    //        return m->items[0][0] * m->items[1][1] - m->items[0][1] * m->items[1][0];
+    //    else
+    //    {
+    //        int i;
+    //        for (i=0; i<m->columns; i++)
+    //        {
+    //            struct Matrix *mnr = matrix_minor(m, 0, i);
+    //            det += (i%2==0 ? +1 : -1) * m->items[0][i] * matrix_det(mnr);
+    //            matrix_free(mnr);
+    //        }
+    //    }
+
+    return det;
+}
+
+DoubleMatrix* DoubleMatrix::transpose() const
+{
+    return NULL;
+}
+
+DoubleMatrix* DoubleMatrix::inverse() const
+{
+    return NULL;
+}
+
+DoubleMatrix* DoubleMatrix::minor(size_t row, size_t col) const
+{
+    C_UNUSED(row);
+    C_UNUSED(col);
+    return NULL;
+}
+
+DoubleMatrix* DoubleMatrix::multiply(const DoubleMatrix &m) const
+{
+    C_UNUSED(m);
+    return NULL;
+}
+
+DoubleMatrix* DoubleMatrix::multiply(const DoubleVector &v) const
+{
+    C_UNUSED(v);
+    return NULL;
+}
+
+DoubleMatrix DoubleMatrix::operator+(const DoubleMatrix &A) const
+{
+    return (*this);
 }
 
 void DoubleMatrix::Clear()
@@ -261,95 +279,3 @@ void DoubleCube::Clear()
     }
     this->clear();
 }
-
-Vector::Vector(unsigned int n)
-{
-    C_UNUSED(n);
-    //    msize = n;
-    //    pdata = (double*)malloc(sizeof(double)*n);
-}
-
-Vector::~Vector()
-{
-    //clear();
-}
-
-unsigned int Vector::size() const
-{
-    return msize;
-}
-
-double Vector::at(unsigned int i) const
-{
-    //if (i<msize) throw std::
-    return pdata[i];
-}
-
-double* Vector::data() const
-{
-    return this->pdata;
-}
-
-void Vector::add(double d)
-{
-    pdata = (double*)realloc(pdata, sizeof(double)*(msize+1));
-    pdata[msize] = d;
-    msize++;
-}
-
-void Vector::insert(unsigned int i, double d)
-{
-    pdata = (double*)realloc(pdata, sizeof(double)*(msize+1));
-    memcpy(pdata+i+1, pdata+i, sizeof(double)*(msize-i));
-    pdata[i]=d;
-    msize++;
-}
-
-void Vector::remove(unsigned int i)
-{
-    memcpy(pdata+i, pdata+i+1, sizeof(double)*(msize-i-1));
-    pdata = (double*)realloc(pdata, sizeof(double)*(msize-1));
-    msize--;
-}
-
-void Vector::clear()
-{
-    free(pdata);
-    pdata=NULL;
-    msize=0;
-}
-
-Matrix::Matrix(unsigned int rows, unsigned int cols) : mrows(rows), mcols(cols)
-{
-    mitems = new double*[rows];
-    for (unsigned int j=0; j<rows; j++)
-        mitems[j] = new double[cols];
-}
-
-Matrix::~Matrix()
-{
-    for (unsigned int j=0; j<mrows; j++) delete[] mitems[j];
-    delete[] mitems;
-}
-
-unsigned int Matrix::rows() const
-{
-    return  mrows;
-}
-
-unsigned int Matrix::columns() const
-{
-    return  mcols;
-}
-
-double*& Matrix::operator[](unsigned int j)
-{
-    return mitems[j];
-}
-
-const double*& Matrix::operator[](unsigned int j) const
-{
-    return mitems[j];
-}
-
-

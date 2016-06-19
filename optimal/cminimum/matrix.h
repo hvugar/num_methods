@@ -17,7 +17,8 @@ struct Vector
     double* items;
 } ;
 
-struct Matrix{
+struct Matrix
+{
     unsigned int rows;
     unsigned int columns;
     double** items;
