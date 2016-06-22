@@ -209,3 +209,48 @@ void runge_kutta_rk4(double x0, double y0, double xN, double yN, unsigned int N,
         yN = y[0];
     }
 }
+
+//void RungaKuttaSystem(RmFunction *f, double x0, const double *y0, double x, double *y, const int n, double h)
+//{
+//    //h = 0.000001;
+//    memcpy(y, y0, sizeof(double)*n);
+//    if (fabs(x-x0) < fabs(h)) return;
+
+//    double *k1 = (double*) malloc( sizeof(double) * n );
+//    double *k2 = (double*) malloc( sizeof(double) * n );
+//    double *k3 = (double*) malloc( sizeof(double) * n );
+//    double *k4 = (double*) malloc( sizeof(double) * n );
+//    double *yc = (double*) malloc( sizeof(double) * n );
+
+//    if (x0 > x) h = -fabs(h);
+
+//    while (fabs(x-x0)>=(fabs(h)))
+//    {
+//        int i=0;
+//        // Calculating k1 vector
+//        for (i = 0; i<n; i++) k1[i] = f[i](x0, y, n);
+
+//        // Calculating k2 vector
+//        for (i = 0; i<n; i++) yc[i] = y[i] + (h/2.0) * k1[i];
+//        for (i = 0; i<n; i++) k2[i] = f[i](x0+h/2.0, yc, n);
+
+//        // Calculating k3 vector
+//        for (i = 0; i<n; i++) yc[i] = y[i] + (h/2.0) * k2[i];
+//        for (i = 0; i<n; i++) k3[i] = f[i](x0+h/2.0, yc, n);
+
+//        // Calculating k1 vector
+//        for (i = 0; i<n; i++) yc[i] = y[i] + h * k3[i];
+//        for (i = 0; i<n; i++) k4[i] = f[i](x0+h, yc, n);
+
+//        // Calculating y
+//        for (i = 0; i<n; i++) y[i] = y[i] + (h/6.0) * (k1[i] + 2*k2[i] + 2*k3[i] + k4[i]);
+
+//        x0 = x0 + h;
+//    }
+
+//    free(yc);
+//    free(k1);
+//    free(k2);
+//    free(k3);
+//    free(k4);
+//}

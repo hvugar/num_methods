@@ -35,6 +35,8 @@ void eulerMod(double x0, double y0, double xN, double yN, unsigned int N, double
 void runge_kutta_rk3(double x0, double y0, double xN, double yN, unsigned int N, double *x, double *y, ODE1stOrderEquation eq);
 void runge_kutta_rk4(double x0, double y0, double xN, double yN, unsigned int N, double *x, double *y, ODE1stOrderEquation eq);
 
+//void RungaKuttaSystem(RmFunction *f, double x0, const double *y0, double x, double *y, const int n, double h);
+
 #ifdef __cplusplus
 }
 #endif
