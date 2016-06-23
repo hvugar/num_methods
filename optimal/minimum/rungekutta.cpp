@@ -177,26 +177,26 @@ void CauchyProblemSystem(std::vector<RnFunction*> fs, double x0, const DoubleVec
 
         // Calculating k1 vector
         arg[0] = x0;
-        for (unsigned int i = 0; i<n; i++) arg[i+1] = y[j][i];
+        for (unsigned int i = 0; i<n; i++) arg[i+1] = y[i][j];
         for (unsigned int i = 0; i<n; i++) k1[i] = fs[i]->fx(arg);
 
         // Calculating k2 vector
         arg[0] = x0+h/2.0;
-        for (unsigned int i = 0; i<n; i++) arg[i+1] = y[j][i] + (h/2.0) * k1[i];
+        for (unsigned int i = 0; i<n; i++) arg[i+1] = y[i][j] + (h/2.0) * k1[i];
         for (unsigned int i = 0; i<n; i++) k2[i] = fs[i]->fx(arg);
 
         // Calculating k3 vector
         arg[0] = x0+h/2.0;
-        for (unsigned int i = 0; i<n; i++) arg[i+1] = y[j][i] + (h/2.0) * k2[i];
-        for (unsigned int i = 0; i<n; i++) k2[i] = fs[i]->fx(arg);
+        for (unsigned int i = 0; i<n; i++) arg[i+1] = y[i][j] + (h/2.0) * k2[i];
+        for (unsigned int i = 0; i<n; i++) k3[i] = fs[i]->fx(arg);
 
         // Calculating k4 vector
         arg[0] = x0+h;
-        for (unsigned int i = 0; i<n; i++) arg[i+1] = y[j][i] + h * k3[i];
-        for (unsigned int i = 0; i<n; i++) k2[i] = fs[i]->fx(arg);
+        for (unsigned int i = 0; i<n; i++) arg[i+1] = y[i][j] + h * k3[i];
+        for (unsigned int i = 0; i<n; i++) k4[i] = fs[i]->fx(arg);
 
         // Calculating y
-        for (unsigned int i = 0; i<n; i++) y[j+1][i] = y[j][i] + (h/6.0) * (k1[i] + 2*k2[i] + 2*k3[i] + k4[i]);
+        for (unsigned int i = 0; i<n; i++) y[i][j+1] = y[i][j] + (h/6.0) * (k1[i] + 2*k2[i] + 2*k3[i] + k4[i]);
 
         x0 = x0 + h;
     }

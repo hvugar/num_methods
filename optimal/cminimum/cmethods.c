@@ -210,6 +210,52 @@ void runge_kutta_rk4(double x0, double y0, double xN, double yN, unsigned int N,
     }
 }
 
+void runge_kutta_rk4_system(double x0, double x1, double *y0, double **y, size_t n, unsigned int N, double h, ODE1stOrderEquationN *eq)
+{
+    double *k1 = (double *)malloc(sizeof(double) * n);
+    double *k2 = (double *)malloc(sizeof(double) * n);
+    double *k3 = (double *)malloc(sizeof(double) * n);
+    double *k4 = (double *)malloc(sizeof(double) * n);
+
+    unsigned int i, j;
+    for (i=0; i<n; i++) y[i][0] = y0[i];
+
+    for (i=0; i<N; i++)
+    {
+        double *arg = (double*) malloc(sizeof(double) * n);
+
+        // Calculating k1 vector
+        for (j = 0; j<n; j++) arg[j] = y[j][i];
+        for (j = 0; j<n; j++) k1[j] = eq[j](x0, arg, n);
+
+        // Calculating k2 vector
+        for (j = 0; j<n; j++) arg[j] = y[j][i] + (h/2.0) * k1[j];
+        for (j = 0; j<n; j++) k2[j] = eq[j](x0+h/2.0, arg, n);
+
+
+        // Calculating k3 vector
+        for (j = 0; j<n; j++) arg[j] = y[j][i] + (h/2.0) * k2[j];
+        for (j = 0; j<n; j++) k3[j] = eq[j](x0+h/2.0, arg, n);
+
+        // Calculating k4 vector
+        for (j = 0; j<n; j++) arg[j] = y[j][i] + h * k3[j];
+        for (j = 0; j<n; j++) k4[j] = eq[j](x0+h, arg, n);
+
+        // Calculating y
+        for (j = 0; j<n; j++) y[j][i+1] = y[j][i] + (h/6.0) * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
+
+        x0 = x0 + h;
+
+        free(arg);
+    }
+
+    free(k1);
+    free(k2);
+    free(k3);
+    free(k4);
+}
+
+
 //void RungaKuttaSystem(RmFunction *f, double x0, const double *y0, double x, double *y, const int n, double h)
 //{
 //    //h = 0.000001;

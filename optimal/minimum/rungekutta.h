@@ -30,6 +30,6 @@ private:
     double my0;
 };
 
-void CauchyProblemSystem(std::vector<RnFunction*> fs, double x0, const DoubleVector &y0, DoubleMatrix &y, double x, double h, unsigned int N);
+void MINIMUMSHARED_EXPORT CauchyProblemSystem(std::vector<RnFunction*> fs, double x0, const DoubleVector &y0, DoubleMatrix &y, double x, double h, unsigned int N);
 
 #endif // RUNGEKUTTA_H

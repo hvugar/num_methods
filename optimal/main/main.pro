@@ -62,7 +62,8 @@ SOURCES += main.cpp \
     parabolic/1d/neuman/heatexample1.cpp \
     border/borderparabolic.cpp \
     border/sampleborderhyperbolic.cpp \
-    widget/qsimplewavewidget.cpp
+    widget/qsimplewavewidget.cpp \
+    border/sampleloaderborder.cpp
 
 HEADERS += \
     rnfunction/rosenbrock.h \
@@ -106,4 +107,5 @@ HEADERS += \
     parabolic/1d/neuman/heatexample1.h \
     border/borderparabolic.h \
     border/sampleborderhyperbolic.h \
-    widget/qsimplewavewidget.h
+    widget/qsimplewavewidget.h \
+    border/sampleloaderborder.h
