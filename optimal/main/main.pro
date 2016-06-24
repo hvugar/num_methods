@@ -63,7 +63,9 @@ SOURCES += main.cpp \
     border/borderparabolic.cpp \
     border/sampleborderhyperbolic.cpp \
     widget/qsimplewavewidget.cpp \
-    border/sampleloaderborder.cpp
+    border/sampleloaderborder.cpp \
+    border/sampleexample1.cpp \
+    border/sampleexample2.cpp
 
 HEADERS += \
     rnfunction/rosenbrock.h \
@@ -108,4 +110,6 @@ HEADERS += \
     border/borderparabolic.h \
     border/sampleborderhyperbolic.h \
     widget/qsimplewavewidget.h \
-    border/sampleloaderborder.h
+    border/sampleloaderborder.h \
+    border/sampleexample1.h \
+    border/sampleexample2.h

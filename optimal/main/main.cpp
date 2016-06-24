@@ -3,6 +3,7 @@
 #include "widget/qsimplewavewidget.h"
 #include <matrix.h>
 #include <time.h>
+#include "border/sampleexample1.h"
 
 double fx1(double t, double *x, unsigned int n)
 {
@@ -31,6 +32,10 @@ double fx3(double t, double *x, unsigned int n)
 int main(int argc, char ** argv)
 {
     srand(time(NULL));
+
+    SampleMain();
+    return 0;
+
 
 //    double y0[] = {0.0, 0.0, 1.0};
 //    ODE1stOrderEquationN equations[3];

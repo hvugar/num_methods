@@ -249,18 +249,18 @@ void SampleLoaderBorder::main()
     }
 
     {
-        ODE1stOrderEquationN equations1[n];
-        equations1[0] = Alpha1_11;
-        equations1[1] = Alpha1_12;
-        equations1[2] = Alpha1_21;
-        equations1[3] = Alpha1_22;
-        equations1[4] = Betta11;
-        equations1[5] = Betta12;
-        equations1[6] = Betta21;
-        equations1[7] = Betta22;
-        equations1[8] = Qamma1;
-        equations1[9] = Qamma2;
-        equations1[10] = M;
+//        ODE1stOrderEquationN equations1[n];
+//        equations1[0] = Alpha1_11;
+//        equations1[1] = Alpha1_12;
+//        equations1[2] = Alpha1_21;
+//        equations1[3] = Alpha1_22;
+//        equations1[4] = Betta11;
+//        equations1[5] = Betta12;
+//        equations1[6] = Betta21;
+//        equations1[7] = Betta22;
+//        equations1[8] = Qamma1;
+//        equations1[9] = Qamma2;
+//        equations1[10] = M;
     }
 }
 
