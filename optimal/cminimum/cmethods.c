@@ -168,8 +168,8 @@ void runge_kutta_rk4(double x0, double y0, double xN, double yN, unsigned int N,
     double k4 = 0.0;
 
     double h = (xN - x0) / N;
-//    x = (double*)malloc(sizeof(double)*(N+1));
-//    y = (double*)malloc(sizeof(double)*(N+1));
+    //    x = (double*)malloc(sizeof(double)*(N+1));
+    //    y = (double*)malloc(sizeof(double)*(N+1));
 
     if (h > 0)
     {
@@ -231,7 +231,6 @@ void runge_kutta_rk4_system(double x0, double x1, double *y0, double **y, size_t
         // Calculating k2 vector
         for (j = 0; j<n; j++) arg[j] = y[j][i] + (h/2.0) * k1[j];
         for (j = 0; j<n; j++) k2[j] = eq[j](x0+h/2.0, arg, n);
-
 
         // Calculating k3 vector
         for (j = 0; j<n; j++) arg[j] = y[j][i] + (h/2.0) * k2[j];

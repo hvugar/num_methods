@@ -44,7 +44,7 @@ double S10(double t, double *x, unsigned int n)
     double qamma1    = x[4];
     double M         = x[5];
     return (alpha1_11*alpha1_11*A11(t) + alpha1_11*alpha1_12*(A12(t)+A21(t)) + alpha1_12*alpha1_12*A22(t))
-            + (alpha1_11*(B11(t)*beta11 + B12(t)*beta12)+alpha1_12*(B21(t)*beta11 + B22(t)*beta12))
+            + (alpha1_11*(beta11*B11(t) + beta12*B21(t))+alpha1_12*(beta11*B12(t) + beta12*B22(t)))
             - (qamma1*(alpha1_11*C1(t)+alpha1_12*C2(t))) / R10(t, x, n);
 }
 
@@ -57,7 +57,7 @@ double S20(double t, double *x, unsigned int n)
     double qamma2    = x[4];
     double M         = x[5];
     return (alpha1_21*alpha1_21*A11(t) + alpha1_21*alpha1_22*(A12(t)+A21(t)) + alpha1_22*alpha1_22*A22(t))
-            + (alpha1_21*(B11(t)*beta21 + B12(t)*beta22)+alpha1_22*(B21(t)*beta21 + B22(t)*beta22))
+            + (alpha1_21*(beta21*B11(t) + beta22*B21(t))+alpha1_22*(beta21*B12(t) + beta22*B22(t)))
             - (qamma2*(alpha1_21*C1(t)+alpha1_22*C2(t))) / R20(t, x, n);
 }
 
@@ -69,7 +69,7 @@ double Alpha1_11(double t, double *x, unsigned int n)
     double beta12    = x[3];
     double qamma1    = x[4];
     double M         = x[5];
-    return S10(t, x, n) * alpha1_11 - alpha1_11*A11(t) - alpha1_12*A21(t);
+    return S10(t, x, n) * alpha1_11 - (alpha1_11*A11(t) + alpha1_12*A21(t));
 }
 
 double Alpha1_12(double t, double *x, unsigned int n)
@@ -80,7 +80,7 @@ double Alpha1_12(double t, double *x, unsigned int n)
     double beta12    = x[3];
     double qamma1    = x[4];
     double M         = x[5];
-    return S10(t, x, n) * alpha1_12 - alpha1_11*A12(t) - alpha1_12*A22(t);
+    return S10(t, x, n) * alpha1_12 - (alpha1_11*A12(t) + alpha1_12*A22(t));
 }
 
 double Alpha1_21(double t, double *x, unsigned int n)
@@ -91,7 +91,7 @@ double Alpha1_21(double t, double *x, unsigned int n)
     double beta22    = x[3];
     double qamma2    = x[4];
     double M         = x[5];
-    return S20(t, x, n) * alpha1_21 - alpha1_21*A11(t) - alpha1_22*A21(t);
+    return S20(t, x, n) * alpha1_21 - (alpha1_21*A11(t) + alpha1_22*A21(t));
 }
 
 double Alpha1_22(double t, double *x, unsigned int n)
@@ -102,7 +102,7 @@ double Alpha1_22(double t, double *x, unsigned int n)
     double beta22    = x[3];
     double qamma2    = x[4];
     double M         = x[5];
-    return S20(t, x, n) * alpha1_22 - alpha1_21*A12(t) - alpha1_22*A22(t);
+    return S20(t, x, n) * alpha1_22 - (alpha1_21*A12(t) + alpha1_22*A22(t));
 }
 
 double Betta11(double t, double *x, unsigned int n)
@@ -113,7 +113,7 @@ double Betta11(double t, double *x, unsigned int n)
     double beta12    = x[3];
     double qamma1    = x[4];
     double M         = x[5];
-    return S10(t, x, n) * beta11 - alpha1_11*B11(t) - alpha1_12*B21(t);
+    return S10(t, x, n) * beta11 - (alpha1_11*B11(t) + alpha1_12*B21(t));
 }
 
 double Betta12(double t, double *x, unsigned int n)
@@ -124,7 +124,7 @@ double Betta12(double t, double *x, unsigned int n)
     double beta12    = x[3];
     double qamma1    = x[4];
     double M         = x[5];
-    return S10(t, x, n) * beta12 - alpha1_11*B12(t) - alpha1_12*B22(t);
+    return S10(t, x, n) * beta12 - (alpha1_11*B12(t) + alpha1_12*B22(t));
 }
 
 double Betta21(double t, double *x, unsigned int n)
@@ -135,7 +135,7 @@ double Betta21(double t, double *x, unsigned int n)
     double beta22    = x[3];
     double qamma2    = x[4];
     double M         = x[5];
-    return S20(t, x, n) * beta21 - alpha1_21*B11(t) - alpha1_22*B21(t);
+    return S20(t, x, n) * beta21 - (alpha1_21*B11(t) + alpha1_22*B21(t));
 }
 
 double Betta22(double t, double *x, unsigned int n)
@@ -146,7 +146,7 @@ double Betta22(double t, double *x, unsigned int n)
     double beta22    = x[3];
     double qamma2    = x[4];
     double M         = x[5];
-    return S20(t, x, n) * beta22 - alpha1_21*B12(t) - alpha1_22*B22(t);
+    return S20(t, x, n) * beta22 - (alpha1_21*B12(t) + alpha1_22*B22(t));
 }
 
 double Qamma1(double t, double *x, unsigned int n)
@@ -157,7 +157,7 @@ double Qamma1(double t, double *x, unsigned int n)
     double beta12    = x[3];
     double qamma1    = x[4];
     double M         = x[5];
-    return S10(t, x, n) * qamma1 + alpha1_11*C1(t);
+    return S10(t, x, n) * qamma1 + alpha1_11*C1(t) + alpha1_12*C2(t);
 }
 
 double Qamma2(double t, double *x, unsigned int n)
@@ -168,7 +168,7 @@ double Qamma2(double t, double *x, unsigned int n)
     double beta22    = x[3];
     double qamma2    = x[4];
     double M         = x[5];
-    return S20(t, x, n) * qamma2 + alpha1_21*C1(t);
+    return S20(t, x, n) * qamma2 + alpha1_21*C1(t) + alpha1_22*C2(t);
 }
 
 double M(double t, double *x, unsigned int n)
@@ -211,12 +211,12 @@ void SampleLoaderBorder::main()
         for (unsigned int j=0; j<n; j++) x1[j] = (double*)malloc(sizeof(double)*(N+1));
         runge_kutta_rk4_system(t0, t1, x10, x1, n, N, h, equations1);
 
-        IPrinter::printVector(x1[0], N+1, "alpha1_11");
-        IPrinter::printVector(x1[1], N+1, "alpha1_12");
-        IPrinter::printVector(x1[2], N+1, "betta1_11");
-        IPrinter::printVector(x1[3], N+1, "betta1_12");
-        IPrinter::printVector(x1[4], N+1, "qamma_1  ");
-        IPrinter::printVector(x1[5], N+1, "M        ");
+        IPrinter::printVector(x1[0], N+1, "a1_11");
+        IPrinter::printVector(x1[1], N+1, "a1_12");
+        IPrinter::printVector(x1[2], N+1, "b1_11");
+        IPrinter::printVector(x1[3], N+1, "b1_12");
+        IPrinter::printVector(x1[4], N+1, "q_1  ");
+        IPrinter::printVector(x1[5], N+1, "M    ");
     }
     puts("----");
     {
@@ -240,12 +240,12 @@ void SampleLoaderBorder::main()
         for (unsigned int j=0; j<n; j++) x2[j] = (double*)malloc(sizeof(double)*(N+1));
         runge_kutta_rk4_system(t0, t1, x20, x2, n, N, h, equations2);
 
-        IPrinter::printVector(x2[0], N+1, "alpha1_21");
-        IPrinter::printVector(x2[1], N+1, "alpha1_22");
-        IPrinter::printVector(x2[2], N+1, "betta1_21");
-        IPrinter::printVector(x2[3], N+1, "betta1_22");
-        IPrinter::printVector(x2[4], N+1, "qamma_2  ");
-        IPrinter::printVector(x2[5], N+1, "M        ");
+        IPrinter::printVector(x2[0], N+1, "a1_21");
+        IPrinter::printVector(x2[1], N+1, "a1_22");
+        IPrinter::printVector(x2[2], N+1, "b1_21");
+        IPrinter::printVector(x2[3], N+1, "b1_22");
+        IPrinter::printVector(x2[4], N+1, "q_2  ");
+        IPrinter::printVector(x2[5], N+1, "M    ");
     }
 
     {

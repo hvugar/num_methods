@@ -10,5 +10,8 @@
 #include <printer.h>
 
 void SampleMain();
+void SampleMain1();
+void SampleMain2();
+void SampleMain3();
 
 #endif // SAMPLEEXAMPLE1_H

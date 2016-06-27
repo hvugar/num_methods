@@ -18,18 +18,13 @@ public:
 
 class MINIMUMSHARED_EXPORT CauchyProblem : public R2Function
 {
-    virtual double fx(double x, double y) = 0;
+    virtual double fx(double x, const DoubleVector &y) const = 0;
 
-    void initial(double x0, double y0);
-
-    void calculate();
-//    void rungeKutta(double x0, double y0);
+    static void rungeKutta(const CauchyProblem *cp, double x0, double y0, double h, unsigned int N, DoubleVector &y);
 
 private:
     double mx0;
     double my0;
 };
-
-void MINIMUMSHARED_EXPORT CauchyProblemSystem(std::vector<RnFunction*> fs, double x0, const DoubleVector &y0, DoubleMatrix &y, double x, double h, unsigned int N);
 
 #endif // RUNGEKUTTA_H

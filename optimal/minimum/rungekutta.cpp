@@ -147,10 +147,51 @@ void RungeKutta::calculate(R2FunctionX f, double x0, double y0, DoubleVector &y,
     }
 }
 
-void CauchyProblem::initial(double x0, double y0)
+void CauchyProblem::rungeKutta(const CauchyProblem *f, double x0, double y0, double h, unsigned int N, DoubleVector &y)
 {
-    this->mx0 = x0;
-    this->my0 = y0;
+    if (h == 0.0) return;
+
+    double k1 = 0.0;
+    double k2 = 0.0;
+    double k3 = 0.0;
+    double k4 = 0.0;
+
+    unsigned int n = y.size();
+
+    if (h > 0.0)
+    {
+        y[0] = y0;
+        for (unsigned int i=1; i<n; i++)
+        {
+            DoubleVector Y(1);
+            Y[0] = y0;
+            k1 = f->fx(x0, Y);
+            Y[0] = y0+(h/2.0)*k1;
+            k2 = f->fx(x0+h/2.0, Y);
+            Y[0] = y0+(h/2.0)*k2;
+            k3 = f->fx(x0+h/2.0, Y);
+            Y[0] = y0+h*k2;
+            k4 = f->fx(x0+h, Y);
+            y0 = y0 + (h/6.0) * (k1 + 2.0*k2 + 2.0*k3 + k4);
+            x0 = x0 + h;
+            y[i] = y0;
+        }
+    }
+
+//    if (h < 0.0)
+//    {
+//        y[n-1] = y0;
+//        for (int i=n-2; i>=0; i--)
+//        {
+//            k1 = f->fx(x0,        y0);
+//            k2 = f->fx(x0+dx/2.0, y0+(dx/2.0)*k1);
+//            k3 = f->fx(x0+dx/2.0, y0+(dx/2.0)*k2);
+//            k4 = f->fx(x0+dx,     y0+dx*k3);
+//            y0 = y0 + (dx/6.0) * (k1 + 2.0*k2 + 2.0*k3 + k4);
+//            x0 = x0 + dx;
+//            y[i] = y0;
+//        }
+//    }
 }
 
 void CauchyProblemSystem(std::vector<RnFunction*> fs, double x0, const DoubleVector &y0, DoubleMatrix &y, double x, double h, unsigned int N)
