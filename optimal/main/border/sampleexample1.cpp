@@ -43,7 +43,7 @@ void gaussian_elimination(double** a, double* b, double* x, int n)
             }
             else
             {
-               // printf("%d %f\n", k, a[k][k]);
+                // printf("%d %f\n", k, a[k][k]);
             }
             check_matrix(a, b, n);
         }
@@ -305,17 +305,17 @@ void SampleMain()
 
     puts("----------------------------");
     FILE *file = stdout;//fopen("data_a.txt", "w");
-        for (unsigned int k=0; k<3; k++)
+    for (unsigned int k=0; k<3; k++)
+    {
+        for (unsigned int j=0; j<3; j++)
         {
-            for (unsigned int j=0; j<3; j++)
+            for (unsigned int i=0; i<3; i++)
             {
-                for (unsigned int i=0; i<3; i++)
-                {
-                    IPrinter::printVector(a[k][j][i], N+1, NULL, 8, 0, 0, file);
-                }
+                IPrinter::printVector(a[k][j][i], N+1, NULL, 8, 0, 0, file);
             }
-            puts("");
         }
+        puts("");
+    }
 
     //    for (unsigned int k=0; k<2; k++)
     //    {
@@ -437,8 +437,9 @@ void SampleMain()
         A[14][9]  = b[0][2][0][120]; A[14][10] = b[0][2][1][120]; A[14][11] = b[0][2][2][120];
         A[14][12] = b[1][2][0][120]; A[14][13] = b[1][2][1][120]; A[14][14] = b[1][2][2][120];
 
-        B[0]  = c[0][0];
-        B[1]  = c[1][0];
+        double t = 0.0;
+        B[0]  = 2*t + sin(t);//c[0][0];
+        B[1]  = t*t - 2*cos(t);//c[1][0];
         B[2]  = c[2][0];
         B[3]  = c[0][30];
         B[4]  = c[1][30];
@@ -556,28 +557,29 @@ void SampleMain1()
 
         FILE* file = stdout;//fopen("file1.txt", "w");
         unsigned int M = 4;
-        //        IPrinter::printVector(x11[0], N+1, "alpha1_11", M, 0, 0, file);
-        //        IPrinter::printVector(x11[1], N+1, "alpha1_12", M, 0, 0, file);
-        //        IPrinter::printVector(x11[2], N+1, "alpha1_13", M, 0, 0, file);
-        //        puts("");
-        //        IPrinter::printVector(x11[3], N+1, "betta1_11", M, 0, 0, file);
-        //        IPrinter::printVector(x11[4], N+1, "betta1_12", M, 0, 0, file);
-        //        IPrinter::printVector(x11[5], N+1, "betta1_13", M, 0, 0, file);
-        //        puts("");
-        //        IPrinter::printVector(x11[6], N+1, "betta2_11", M, 0, 0, file);
-        //        IPrinter::printVector(x11[7], N+1, "betta2_12", M, 0, 0, file);
-        //        IPrinter::printVector(x11[8], N+1, "betta2_13", M, 0, 0, file);
-        //        puts("");
+        IPrinter::printVector(x11[0], N+1, "alpha1_11", M, 0, 0, file);
+        IPrinter::printVector(x11[1], N+1, "alpha1_12", M, 0, 0, file);
+        IPrinter::printVector(x11[2], N+1, "alpha1_13", M, 0, 0, file);
+        puts("");
+        IPrinter::printVector(a211, N+1, "alpha2_11", M, 0, 0, file);
+        IPrinter::printVector(a212, N+1, "alpha2_12", M, 0, 0, file);
+        IPrinter::printVector(a213, N+1, "alpha2_13", M, 0, 0, file);
+        puts("");
+        IPrinter::printVector(a311, N+1, "alpha3_11", M, 0, 0, file);
+        IPrinter::printVector(a312, N+1, "alpha3_12", M, 0, 0, file);
+        IPrinter::printVector(a313, N+1, "alpha3_13", M, 0, 0, file);
+        puts("");
+        IPrinter::printVector(x11[3], N+1, "betta1_11", M, 0, 0, file);
+        IPrinter::printVector(x11[4], N+1, "betta1_12", M, 0, 0, file);
+        IPrinter::printVector(x11[5], N+1, "betta1_13", M, 0, 0, file);
+        puts("");
+        IPrinter::printVector(x11[6], N+1, "betta2_11", M, 0, 0, file);
+        IPrinter::printVector(x11[7], N+1, "betta2_12", M, 0, 0, file);
+        IPrinter::printVector(x11[8], N+1, "betta2_13", M, 0, 0, file);
+        puts("");
         IPrinter::printVector(x11[9], N+1, "qamma_1  ", M, 0, 0, file);
-        //        IPrinter::printVector(x11[10], N+1, "M        ", M, 0, 0, file);
-        //        puts("");
-        //        IPrinter::printVector(a211, N+1, "alpha2_11", M, 0, 0, file);
-        //        IPrinter::printVector(a212, N+1, "alpha2_12", M, 0, 0, file);
-        //        IPrinter::printVector(a213, N+1, "alpha2_13", M, 0, 0, file);
-        //        puts("");
-        //        IPrinter::printVector(a311, N+1, "alpha3_11", M, 0, 0, file);
-        //        IPrinter::printVector(a312, N+1, "alpha3_12", M, 0, 0, file);
-        //        IPrinter::printVector(a313, N+1, "alpha3_13", M, 0, 0, file);
+//        IPrinter::printVector(x11[10], N+1, "M        ", M, 0, 0, file);
+
         //fclose(file);
 
         for (unsigned int i=0; i<=N; i++)
@@ -669,24 +671,24 @@ void SampleMain1()
 
         FILE* file = stdout;//fopen("file1.txt", "w");
         unsigned int M = 4;
-        //        IPrinter::printVector(x11[0], N+1, "alpha2_11", M, 0, 0, file);
-        //        IPrinter::printVector(x11[1], N+1, "alpha2_12", M, 0, 0, file);
-        //        IPrinter::printVector(x11[2], N+1, "alpha2_13", M, 0, 0, file);
-        //        puts("");
-        //        IPrinter::printVector(x11[3], N+1, "betta1_11", M, 0, 0, file);
-        //        IPrinter::printVector(x11[4], N+1, "betta1_12", M, 0, 0, file);
-        //        IPrinter::printVector(x11[5], N+1, "betta1_13", M, 0, 0, file);
-        //        puts("");
-        //        IPrinter::printVector(x11[6], N+1, "betta2_11", M, 0, 0, file);
-        //        IPrinter::printVector(x11[7], N+1, "betta2_12", M, 0, 0, file);
-        //        IPrinter::printVector(x11[8], N+1, "betta2_13", M, 0, 0, file);
-        //        puts("");
+        IPrinter::printVector(x11[0], N+1, "alpha2_11", M, 0, 0, file);
+        IPrinter::printVector(x11[1], N+1, "alpha2_12", M, 0, 0, file);
+        IPrinter::printVector(x11[2], N+1, "alpha2_13", M, 0, 0, file);
+        puts("");
+        IPrinter::printVector(a311, N+1, "alpha3_11", M, 0, 0, file);
+        IPrinter::printVector(a312, N+1, "alpha3_12", M, 0, 0, file);
+        IPrinter::printVector(a313, N+1, "alpha3_13", M, 0, 0, file);
+        puts("");
+        IPrinter::printVector(x11[3], N+1, "betta1_11", M, 0, 0, file);
+        IPrinter::printVector(x11[4], N+1, "betta1_12", M, 0, 0, file);
+        IPrinter::printVector(x11[5], N+1, "betta1_13", M, 0, 0, file);
+        puts("");
+        IPrinter::printVector(x11[6], N+1, "betta2_11", M, 0, 0, file);
+        IPrinter::printVector(x11[7], N+1, "betta2_12", M, 0, 0, file);
+        IPrinter::printVector(x11[8], N+1, "betta2_13", M, 0, 0, file);
+        puts("");
         IPrinter::printVector(x11[9], N+1, "qamma_1  ", M, 0, 0, file);
-        //        IPrinter::printVector(x11[10], N+1, "M        ", M, 0, 0, file);
-        //        puts("");
-        //        IPrinter::printVector(a311, N+1, "alpha3_11", M, 0, 0, file);
-        //        IPrinter::printVector(a312, N+1, "alpha3_12", M, 0, 0, file);
-        //        IPrinter::printVector(a313, N+1, "alpha3_13", M, 0, 0, file);
+//        IPrinter::printVector(x11[10], N+1, "M        ", M, 0, 0, file);
         //fclose(file);
 
         for (unsigned int i=0; i<=N; i++)
@@ -781,28 +783,28 @@ void SampleMain2()
 
     FILE* file = stdout;//fopen("file1.txt", "w");
     unsigned int K = 8;
-    //    IPrinter::printVector(x11[0], N+1, "alpha1_21", K, 0, 0, file);
-    //    IPrinter::printVector(x11[1], N+1, "alpha1_22", K, 0, 0, file);
-    //    IPrinter::printVector(x11[2], N+1, "alpha1_23", K, 0, 0, file);
-    //    puts("");
-    //    IPrinter::printVector(x11[3], N+1, "betta1_21", K, 0, 0, file);
-    //    IPrinter::printVector(x11[4], N+1, "betta1_22", K, 0, 0, file);
-    //    IPrinter::printVector(x11[5], N+1, "betta1_23", K, 0, 0, file);
-    //    puts("");
-    //    IPrinter::printVector(x11[6], N+1, "betta2_21", K, 0, 0, file);
-    //    IPrinter::printVector(x11[7], N+1, "betta2_22", K, 0, 0, file);
-    //    IPrinter::printVector(x11[8], N+1, "betta2_23", K, 0, 0, file);
-    //    puts("");
+    IPrinter::printVector(x11[0], N+1, "alpha1_21", K, 0, 0, file);
+    IPrinter::printVector(x11[1], N+1, "alpha1_22", K, 0, 0, file);
+    IPrinter::printVector(x11[2], N+1, "alpha1_23", K, 0, 0, file);
+    puts("");
+    IPrinter::printVector(a221, N+1, "alpha2_21", K, 0, 0, file);
+    IPrinter::printVector(a222, N+1, "alpha2_22", K, 0, 0, file);
+    IPrinter::printVector(a223, N+1, "alpha2_23", K, 0, 0, file);
+    puts("");
+    IPrinter::printVector(a321, N+1, "alpha3_21", K, 0, 0, file);
+    IPrinter::printVector(a322, N+1, "alpha3_22", K, 0, 0, file);
+    IPrinter::printVector(a323, N+1, "alpha3_23", K, 0, 0, file);
+    puts("");
+    IPrinter::printVector(x11[3], N+1, "betta1_21", K, 0, 0, file);
+    IPrinter::printVector(x11[4], N+1, "betta1_22", K, 0, 0, file);
+    IPrinter::printVector(x11[5], N+1, "betta1_23", K, 0, 0, file);
+    puts("");
+    IPrinter::printVector(x11[6], N+1, "betta2_21", K, 0, 0, file);
+    IPrinter::printVector(x11[7], N+1, "betta2_22", K, 0, 0, file);
+    IPrinter::printVector(x11[8], N+1, "betta2_23", K, 0, 0, file);
+    puts("");
     IPrinter::printVector(x11[9], N+1, "qamma_2  ", K, 0, 0, file);
-    //    IPrinter::printVector(x11[10], N+1, "M        ", K, 0, 0, file);
-    //    puts("");
-    //    IPrinter::printVector(a221, N+1, "alpha2_21", K, 0, 0, file);
-    //    IPrinter::printVector(a222, N+1, "alpha2_22", K, 0, 0, file);
-    //    IPrinter::printVector(a223, N+1, "alpha2_23", K, 0, 0, file);
-    //    puts("");
-    //    IPrinter::printVector(a321, N+1, "alpha3_21", K, 0, 0, file);
-    //    IPrinter::printVector(a322, N+1, "alpha3_22", K, 0, 0, file);
-    //    IPrinter::printVector(a323, N+1, "alpha3_23", K, 0, 0, file);
+//    IPrinter::printVector(x11[10], N+1, "M        ", K, 0, 0, file);
     //fclose(file);
 
     for (unsigned int i=0; i<=N; i++)
@@ -900,28 +902,28 @@ void SampleMain3()
 
     FILE* file = stdout;//fopen("file1.txt", "w");
     unsigned int K = 8;
-    //    IPrinter::printVector(x11[0], N+1, "alpha1_31", K, 0, 0, file);
-    //    IPrinter::printVector(x11[1], N+1, "alpha1_32", K, 0, 0, file);
-    //    IPrinter::printVector(x11[2], N+1, "alpha1_33", K, 0, 0, file);
-    //    puts("");
-    //    IPrinter::printVector(x11[3], N+1, "betta1_31", K, 0, 0, file);
-    //    IPrinter::printVector(x11[4], N+1, "betta1_32", K, 0, 0, file);
-    //    IPrinter::printVector(x11[5], N+1, "betta1_33", K, 0, 0, file);
-    //    puts("");
-    //    IPrinter::printVector(x11[6], N+1, "betta2_31", K, 0, 0, file);
-    //    IPrinter::printVector(x11[7], N+1, "betta2_32", K, 0, 0, file);
-    //    IPrinter::printVector(x11[8], N+1, "betta2_33", K, 0, 0, file);
+    IPrinter::printVector(x11[0], N+1, "alpha1_31", K, 0, 0, file);
+    IPrinter::printVector(x11[1], N+1, "alpha1_32", K, 0, 0, file);
+    IPrinter::printVector(x11[2], N+1, "alpha1_33", K, 0, 0, file);
+    puts("");
+    IPrinter::printVector(a231, N+1, "alpha2_31", K, 0, 0, file);
+    IPrinter::printVector(a232, N+1, "alpha2_32", K, 0, 0, file);
+    IPrinter::printVector(a233, N+1, "alpha2_33", K, 0, 0, file);
+    puts("");
+    IPrinter::printVector(a331, N+1, "alpha3_31", K, 0, 0, file);
+    IPrinter::printVector(a332, N+1, "alpha3_32", K, 0, 0, file);
+    IPrinter::printVector(a333, N+1, "alpha3_33", K, 0, 0, file);
+    puts("");
+    IPrinter::printVector(x11[3], N+1, "betta1_31", K, 0, 0, file);
+    IPrinter::printVector(x11[4], N+1, "betta1_32", K, 0, 0, file);
+    IPrinter::printVector(x11[5], N+1, "betta1_33", K, 0, 0, file);
+    puts("");
+    IPrinter::printVector(x11[6], N+1, "betta2_31", K, 0, 0, file);
+    IPrinter::printVector(x11[7], N+1, "betta2_32", K, 0, 0, file);
+    IPrinter::printVector(x11[8], N+1, "betta2_33", K, 0, 0, file);
     //    puts("");
     IPrinter::printVector(x11[9], N+1, "qamma_3  ", K, 0, 0, file);
-    //    IPrinter::printVector(x11[10], N+1, "M        ", K, 0, 0, file);
-    //    puts("");
-    //    IPrinter::printVector(a231, N+1, "alpha2_31", K, 0, 0, file);
-    //    IPrinter::printVector(a232, N+1, "alpha2_32", K, 0, 0, file);
-    //    IPrinter::printVector(a233, N+1, "alpha2_33", K, 0, 0, file);
-    //    puts("");
-    //    IPrinter::printVector(a331, N+1, "alpha3_31", K, 0, 0, file);
-    //    IPrinter::printVector(a332, N+1, "alpha3_32", K, 0, 0, file);
-    //    IPrinter::printVector(a333, N+1, "alpha3_33", K, 0, 0, file);
+//    IPrinter::printVector(x11[10], N+1, "M        ", K, 0, 0, file);
     //fclose(file);
 
     for (unsigned int i=0; i<=N; i++)
