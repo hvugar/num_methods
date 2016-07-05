@@ -66,6 +66,7 @@
 #include "border/borderhyperbolic.h"
 #include "border/sampleborderhyperbolic.h"
 #include "border/sampleloaderborder.h"
+#include "border/sampleexample1.h"
 
 #include "parabolic/1d/neuman/heatexample1.h"
 

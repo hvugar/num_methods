@@ -1,6 +1,5 @@
 #include "hyperboliccontrol2d21.h"
 
-
 void HyperbolicControl2D21::main(int argc, char ** argv)
 {
     C_UNUSED(argc);
