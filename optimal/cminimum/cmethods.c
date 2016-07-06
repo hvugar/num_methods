@@ -143,6 +143,62 @@ void tomasAlgorithm(const double *a, const double *b, const double *c, const dou
     free(q);
 }
 
+void gaussianElimination(double **A, double *b, double *x, unsigned int n)
+{
+    unsigned int k;
+    for (k=0; k<n-1; k++)
+    {
+        unsigned int j;
+        unsigned int i;
+
+        for (j=(k+1); j<n; j++)
+        {
+            if (A[k][k] != 0.0)
+            {
+                double f = A[j][k]/A[k][k];
+                for (i=k; i<n; i++) A[j][i] += A[k][i] * f;
+                b[j] += b[k] *f;
+            }
+        }
+    }
+
+    //    int k;
+    //    for (k=0; k<n-1; k++)
+    //    {
+    //        int i,j;
+    //        for (i=(k+1); i<n; i++)
+    //        {
+    //            if (a[k][k] != 0.0)
+    //            {
+    //                double f = a[i][k] / a[k][k];
+    //                for (j=k; j<n; j++)
+    //                {
+    //                    a[i][j] = a[i][j] - a[k][j] * f;
+    //                }
+    //                b[i] = b[i] - b[k] * f;
+    //            }
+    //            else
+    //            {
+    //                // printf("%d %f\n", k, a[k][k]);
+    //            }
+    //            check_matrix(a, b, n);
+    //        }
+    //    }
+
+    //    int i;
+    //    for (i=(n-1); i>=0; i--)
+    //    {
+    //        int j;
+    //        for (j=(n-1); j>i; j--) b[i] -= (a[i][j] * x[j]);
+    //        x[i] = b[i] / a[i][i];
+    //    }
+}
+
+void gaussJordanElimination(double **a, double *b, double *x, unsigned int n)
+{
+
+}
+
 void euler(double x0, double y0, double xN, double yN, unsigned int N, double *x, double *y, ODE1stOrderEquation eq)
 {
 

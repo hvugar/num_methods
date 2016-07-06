@@ -30,6 +30,9 @@ double trapesium1(CR1Function fx, unsigned int n, double a, double b);
 double trapesium2(CR1Function fx, double h, double a, double b);
 
 void tomasAlgorithm(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int n);
+void gaussianElimination(double **a, double *b, double *x, unsigned int n);
+void gaussJordanElimination(double **a, double *b, double *x, unsigned int n);
+
 
 void euler(double x0, double y0, double xN, double yN, unsigned int N, double *x, double *y, ODE1stOrderEquation eq);
 void eulerMod(double x0, double y0, double xN, double yN, unsigned int N, double *x, double *y, ODE1stOrderEquation eq);
