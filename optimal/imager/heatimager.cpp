@@ -87,46 +87,10 @@ void createHeatImage1(int argc, char *argv[])
         minimum = min;
         maximum = max;
     }
-    printf("File: %s Minimum: %.10f Maximum: %.10f width: %d height %d\n", inFile.toAscii().data(), minimum, maximum, width, height);
+    printf("File: %s Minimum: %.10f Maximum: %.10f width: %d height %d\n", inFile.toLatin1().data(), minimum, maximum, width, height);
 
     QPixmap pixmap;
     MatrixHeatImaging(m, minimum, maximum, pixmap, width, height);
-
-//    for (int j=0; j<m.size(); j++)
-//    {
-//        for (int i=0; i<m[j].size(); i++)
-//        {
-//            double u = m[j][i];
-//            double ratio = 0.0;
-//            if (minimum!=maximum)
-//                ratio = 2.0 * (u-minimum) / (maximum - minimum);
-//            int b = int(MAX(0, 255*(1 - ratio)));
-//            int r = int(MAX(0, 255*(ratio - 1)));
-//            int g = 255 - b - r;
-//            QColor c(r, g, b);
-//            painter.setPen(c);
-//            painter.drawPoint(i,height-j-1);
-//        }
-//    }
-
-//    double sum = 0.0;
-//    for (unsigned int j=0; j<height; j++)
-//    {
-//        for (unsigned int i=0; i<width; i++)
-//        {
-//            //            double k = 1.0;
-//            //            if (i==0 || i==width-1)  k *= 0.5;
-//            //            if (j==0 || j==height-1) k *= 0.5;
-//            //            sum = sum + k * (m[j][i]) * (m[j][i]);
-//            sum = sum + m[j][i];
-//        }
-//    }
-//    double h1 = 1.0 / (height-1);
-//    double h2 = 1.0 / (width-1);
-//    //    sum = h1*h2*sum;
-//    painter.setPen(Qt::black);
-//    painter.drawText(10, 10, QString::number(sum, 'f', 6));
-
     pixmap.save(outFile, "PNG");
 }
 
@@ -173,7 +137,7 @@ void createHeatImage2(int argc, char *argv[])
     }
     file.close();
 
-    printf("Minimum: %.10f Maximum: %.10f width: %d output: %s\n", minimum, maximum, width, outFile.toAscii().data());
+    printf("Minimum: %.10f Maximum: %.10f width: %d output: %s\n", minimum, maximum, width, outFile.toLatin1().data());
     //minimum = 1.0;
 
     for (int i=0; i<m.size(); i++)

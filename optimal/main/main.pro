@@ -18,6 +18,8 @@ LIBS += -L../bin -lminimum -lcminimum
 
 DESTDIR += ../bin
 
+QT += widgets
+
 #DEFINES += MINIMUM_LIBRARY
 #include(../minimum/minimum.pri)
 

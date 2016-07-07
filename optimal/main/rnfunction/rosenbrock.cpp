@@ -30,22 +30,22 @@ void Rosenbrock::main(int argc, char ** argv)
     g2.setNormalize(true);
     g2.calculate(x0);
 
-    printf("Function call count: %u\n", r.count);
+//    printf("Function call count: %u\n", r.count);
 
-    puts("-----------------------------------------------------------------");
-    x0[0] = -1.2;
-    x0[1] = +1.0;
-    /* Minimization */
-    SteepestDescentGradient g3;
-    g3.setGradient(&r);
-    g3.setFunction(&r);
-    g3.setEpsilon1(0.000001);
-    g3.setEpsilon2(0.000001);
-    g3.setEpsilon3(0.000001);
-    g3.setR1MinimizeEpsilon(0.1, 0.000001);
-    g3.setPrinter(&r);
-    g3.setNormalize(false);
-    g3.calculate(x0);
+//    puts("-----------------------------------------------------------------");
+//    x0[0] = -1.2;
+//    x0[1] = +1.0;
+//    /* Minimization */
+//    SteepestDescentGradient g3;
+//    g3.setGradient(&r);
+//    g3.setFunction(&r);
+//    g3.setEpsilon1(0.000001);
+//    g3.setEpsilon2(0.000001);
+//    g3.setEpsilon3(0.000001);
+//    g3.setR1MinimizeEpsilon(0.1, 0.000001);
+//    g3.setPrinter(&r);
+//    g3.setNormalize(false);
+//    g3.calculate(x0);
 }
 
 Rosenbrock::Rosenbrock()
