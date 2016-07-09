@@ -578,7 +578,7 @@ void SampleMain1()
         IPrinter::printVector(x11[8], N+1, "betta2_13", M, 0, 0, file);
         puts("");
         IPrinter::printVector(x11[9], N+1, "qamma_1  ", M, 0, 0, file);
-//        IPrinter::printVector(x11[10], N+1, "M        ", M, 0, 0, file);
+        IPrinter::printVector(x11[10], N+1, "M        ", M, 0, 0, file);
 
         //fclose(file);
 
@@ -688,7 +688,7 @@ void SampleMain1()
         IPrinter::printVector(x11[8], N+1, "betta2_13", M, 0, 0, file);
         puts("");
         IPrinter::printVector(x11[9], N+1, "qamma_1  ", M, 0, 0, file);
-//        IPrinter::printVector(x11[10], N+1, "M        ", M, 0, 0, file);
+        IPrinter::printVector(x11[10], N+1, "M        ", M, 0, 0, file);
         //fclose(file);
 
         for (unsigned int i=0; i<=N; i++)
@@ -804,7 +804,7 @@ void SampleMain2()
     IPrinter::printVector(x11[8], N+1, "betta2_23", K, 0, 0, file);
     puts("");
     IPrinter::printVector(x11[9], N+1, "qamma_2  ", K, 0, 0, file);
-//    IPrinter::printVector(x11[10], N+1, "M        ", K, 0, 0, file);
+    IPrinter::printVector(x11[10], N+1, "M        ", K, 0, 0, file);
     //fclose(file);
 
     for (unsigned int i=0; i<=N; i++)
@@ -923,7 +923,7 @@ void SampleMain3()
     IPrinter::printVector(x11[8], N+1, "betta2_33", K, 0, 0, file);
     //    puts("");
     IPrinter::printVector(x11[9], N+1, "qamma_3  ", K, 0, 0, file);
-//    IPrinter::printVector(x11[10], N+1, "M        ", K, 0, 0, file);
+    IPrinter::printVector(x11[10], N+1, "M        ", K, 0, 0, file);
     //fclose(file);
 
     for (unsigned int i=0; i<=N; i++)
