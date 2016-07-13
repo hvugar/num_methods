@@ -30,7 +30,7 @@ public:
     double fx1(double t, double x1, double x2, double u1, double u2);
     double fx2(double t, double x1, double x2, double u1, double u2);
 
-    static void Main(int argc, char* agrv[]);
+    static void Main(int argc, char* argv[]);
 
 private:
     double t0;
