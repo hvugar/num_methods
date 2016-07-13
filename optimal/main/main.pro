@@ -67,7 +67,8 @@ SOURCES += main.cpp \
     widget/qsimplewavewidget.cpp \
     border/sampleloaderborder.cpp \
     border/sampleexample1.cpp \
-    border/sampleexample2.cpp
+    border/sampleexample2.cpp \
+    control/cfunction4.cpp
 
 HEADERS += \
     rnfunction/rosenbrock.h \
@@ -114,4 +115,5 @@ HEADERS += \
     widget/qsimplewavewidget.h \
     border/sampleloaderborder.h \
     border/sampleexample1.h \
-    border/sampleexample2.h
+    border/sampleexample2.h \
+    control/cfunction4.h
