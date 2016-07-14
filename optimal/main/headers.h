@@ -19,10 +19,10 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "control/cfunction.h"
 #include "control/cfunction1.h"
 #include "control/cfunction2.h"
 #include "control/cfunction3.h"
+#include "control/cfunction4.h"
 
 #include "rnfunction/rosenbrock.h"
 #include "rnfunction/bealesfunction.h"

@@ -10,7 +10,7 @@
 /**
  * @brief Optimal control problem
  * @param x1' = 3.0 * x2^2; x1(0) = 0.0;
- * @param x2' = x1 + x2 - 2.0 * u - t^3 + 1.0; x2(0) = 0.0;
+ * @param x2' = x1 + x2 - 2.0u - t^3 + 1.0; x2(0) = 0.0;
  * @param T(x(T)) = (x2[T] - 1.0)^2;
  * @param J = integral( (x1-t^3)^2 + (x2-t)^2 + (2*u-t)^2 ) + T(x(T));
  *
@@ -28,7 +28,7 @@ struct CFunction1 : public RnFunction, public IGradient, public IPrinter
     virtual void gradient(const DoubleVector& u, DoubleVector &g);
 
     virtual void print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const;
-    void print(const char* s, const std::vector<double>& x) const;
+    void print(const char* s, const DoubleVector &x) const;
 
 private:
     double fx0(double t, const DoubleVector& x, double u) const;

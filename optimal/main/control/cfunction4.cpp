@@ -1,6 +1,6 @@
 #include "cfunction4.h"
 
-void ControlFunction4::Main(int argc, char *argv[])
+void ControlFunction4::main(int argc, char *argv[])
 {
     C_UNUSED(argc);
     C_UNUSED(argv);
@@ -32,22 +32,22 @@ ControlFunction4::ControlFunction4()
 {
     t0 = 0.0;
     t1 = 1.0;
-    N = 1000000;
+    N = 100000;
     h = (t1 - t0) / N;
 }
 
 ControlFunction4::~ControlFunction4()
 {}
 
-double ControlFunction4::fx(const DoubleVector &x)
+double ControlFunction4::fx(const DoubleVector &u)
 {
-    C_UNUSED(x);
+    C_UNUSED(u);
     return 0.0;
 }
 
-void ControlFunction4::gradient(const DoubleVector &x, DoubleVector &g)
+void ControlFunction4::gradient(const DoubleVector &u, DoubleVector &g)
 {
-    C_UNUSED(x);
+    C_UNUSED(u);
     C_UNUSED(g);
 }
 
@@ -97,6 +97,15 @@ void ControlFunction4::calculate_X(const DoubleVector &u1, const DoubleVector &u
         x1[i+1] = x1[i] + (h/6.0) * (k1[0] + 2.0*k2[0] + 2.0*k3[0] + k4[0]);
         x2[i+1] = x2[i] + (h/6.0) * (k1[1] + 2.0*k2[1] + 2.0*k3[1] + k4[1]);
     }
+}
+
+void ControlFunction4::calculate_P(const DoubleVector &u1, const DoubleVector &u2, DoubleVector &x1, DoubleVector &x2)
+{
+}
+
+double ControlFunction4::H(double t, double x1, double x2, double u1, double u2, double p1, double p2)
+{
+    return p1 * fx1(t, x1, x2, u1, u2) + p2 * fx2(t, x1, x2, u1, u2);
 }
 
 double ControlFunction4::fx1(double t, double x1, double x2, double u1, double u2)

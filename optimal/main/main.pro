@@ -1,7 +1,7 @@
 TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
-#CONFIG -= qt
+CONFIG -= qt
 TARGET = main
 #QMAKE_CXXFLAGS += -O3
 #QMAKE_CXXFLAGS -= -O2
@@ -18,7 +18,7 @@ LIBS += -L../bin -lminimum -lcminimum
 
 DESTDIR += ../bin
 
-QT += widgets
+#QT += widgets
 
 #DEFINES += MINIMUM_LIBRARY
 #include(../minimum/minimum.pri)
@@ -27,7 +27,6 @@ SOURCES += main.cpp \
     rnfunction/rosenbrock.cpp \
     rnfunction/bealesfunction.cpp \
     rnfunction/boothfunction.cpp \
-    control/cfunction.cpp \
     control/cfunction1.cpp \
     control/cfunction2.cpp \
     control/cfunction3.cpp \
@@ -64,7 +63,7 @@ SOURCES += main.cpp \
     parabolic/1d/neuman/heatexample1.cpp \
     border/borderparabolic.cpp \
     border/sampleborderhyperbolic.cpp \
-    widget/qsimplewavewidget.cpp \
+#    widget/qsimplewavewidget.cpp \
     border/sampleloaderborder.cpp \
     border/sampleexample1.cpp \
     border/sampleexample2.cpp \
@@ -74,7 +73,6 @@ HEADERS += \
     rnfunction/rosenbrock.h \
     rnfunction/bealesfunction.h \
     rnfunction/boothfunction.h \
-    control/cfunction.h \
     control/cfunction1.h \
     control/cfunction2.h \
     control/cfunction3.h \
@@ -112,7 +110,7 @@ HEADERS += \
     parabolic/1d/neuman/heatexample1.h \
     border/borderparabolic.h \
     border/sampleborderhyperbolic.h \
-    widget/qsimplewavewidget.h \
+#    widget/qsimplewavewidget.h \
     border/sampleloaderborder.h \
     border/sampleexample1.h \
     border/sampleexample2.h \
