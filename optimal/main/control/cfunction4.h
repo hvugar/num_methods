@@ -34,7 +34,7 @@ public:
     double px1(double t, double x1, double x2, double u1, double u2);
     double px2(double t, double x1, double x2, double u1, double u2);
 
-    double H(double t, double x1, double x2, double u1, double u2);
+    double H(double t, double x1, double x2, double u1, double u2, double p1, double p2);
 
     static void main(int argc, char* argv[]);
 

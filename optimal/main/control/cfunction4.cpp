@@ -118,3 +118,13 @@ double ControlFunction4::fx2(double t, double x1, double x2, double u1, double u
 {
     return 4.0*x1 + x2 + 2.0*u1 + 3.0*u2 - (t*t + t*t*t + 13.0*t);
 }
+
+double ControlFunction4::px1(double t, double x1, double x2, double u1, double u2)
+{
+    return 0.0;
+}
+
+double ControlFunction4::px2(double t, double x1, double x2, double u1, double u2)
+{
+    return 0.0;
+}
