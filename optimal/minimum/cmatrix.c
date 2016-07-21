@@ -104,7 +104,7 @@ double matrix_det(struct Matrix *m)
         return m->items[0][0] * m->items[1][1] - m->items[0][1] * m->items[1][0];
     else
     {
-        int i;
+        unsigned int i;
         for (i=0; i<m->columns; i++)
         {
             struct Matrix *mnr = matrix_minor(m, 0, i);
@@ -124,7 +124,7 @@ double matrix_det(struct Matrix *m)
 struct Matrix* matrix_transpose(struct Matrix *m)
 {
     struct Matrix *transpose = matrix_new(m->columns, m->rows);
-    int i,j;
+    unsigned int i,j;
     for (i=0; i<m->rows; i++)
     {
         for (j=0; j<m->columns; j++)
@@ -147,7 +147,7 @@ struct Matrix* matrix_inverse(struct Matrix *m)
         }
         else
         {
-            int j,i;
+            unsigned int j,i;
             for (j=0; j<m->rows; j++)
             {
                 for (i=0; i<m->columns; i++)
@@ -173,7 +173,7 @@ struct Matrix* matrix_inverse(struct Matrix *m)
 struct Matrix* matrix_minor(struct Matrix *m, unsigned int row, unsigned int column)
 {
     struct Matrix *minor = matrix_new(m->rows-1, m->columns-1);
-    int i,j;
+    unsigned int i,j;
     for (j=0; j<m->rows; j++)
     {
         for (i=0; i<m->columns; i++)
@@ -193,7 +193,7 @@ struct Matrix* matrix_mult(struct Matrix *m1, struct Matrix *m2)
     if (m1->columns != m2->rows) return NULL;
 
     struct Matrix *mult = matrix_new(m1->rows, m2->columns);
-    int i,j,k;
+    unsigned int i,j,k;
     for (j=0; j<mult->rows; j++)
     {
         for (i=0; i<mult->columns; i++)
@@ -208,7 +208,7 @@ struct Matrix* matrix_mult(struct Matrix *m1, struct Matrix *m2)
 
 void matrix_print(struct Matrix *m)
 {
-    int i,j;
+    unsigned int i,j;
     for (j=0; j<m->rows; j++)
     {
         for (i=0; i<m->columns; i++)
@@ -221,7 +221,7 @@ void matrix_print(struct Matrix *m)
 
 void matrix_rand(struct Matrix *m)
 {
-    int i,j;
+    unsigned int i,j;
     for (j=0; j<m->rows; j++)
     {
         for (i=0; i<m->columns; i++)

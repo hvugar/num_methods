@@ -1,20 +1,22 @@
 #include "sampleloaderborder.h"
 
-double A11(double t) { return 3.0; }
-double A12(double t) { return 1.0; }
-double A21(double t) { return 1.0; }
-double A22(double t) { return 2.0; }
+double A11(double t) { C_UNUSED(t); return 3.0; }
+double A12(double t) { C_UNUSED(t); return 1.0; }
+double A21(double t) { C_UNUSED(t); return 1.0; }
+double A22(double t) { C_UNUSED(t); return 2.0; }
 
-double B11(double t) { return 1.0; }
-double B12(double t) { return 2.0; }
-double B21(double t) { return 3.0; }
-double B22(double t) { return 1.0; }
+double B11(double t) { C_UNUSED(t); return 1.0; }
+double B12(double t) { C_UNUSED(t); return 2.0; }
+double B21(double t) { C_UNUSED(t); return 3.0; }
+double B22(double t) { C_UNUSED(t); return 1.0; }
 
 double C1(double t) { return t - 3.0*t*t - 0.44; }
 double C2(double t) { return -2.0*t - t*t + 0.68; }
 
 double R10(double t, double *x, unsigned int n)
 {
+    C_UNUSED(t);
+    C_UNUSED(n);
     double alpha1_11 = x[0];
     double alpha1_12 = x[1];
     double beta11    = x[2];
@@ -26,6 +28,8 @@ double R10(double t, double *x, unsigned int n)
 
 double R20(double t, double *x, unsigned int n)
 {
+    C_UNUSED(t);
+    C_UNUSED(n);
     double alpha1_21 = x[0];
     double alpha1_22 = x[1];
     double beta21    = x[2];

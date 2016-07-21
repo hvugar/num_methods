@@ -172,7 +172,7 @@ void DiscreteHeat::calculateP(const DoubleVector &f, const DoubleVector &u, Doub
             }
             a1[0]   = 0.0;
             c1[N-2] = 0.0;
-            TomasAlgorithm(a1, b1, c1, d1, x1);
+            tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), x1.data(), x1.size());
 
             for (unsigned int i=1; i<=N-1; i++)
             {
@@ -202,7 +202,7 @@ void DiscreteHeat::calculateP(const DoubleVector &f, const DoubleVector &u, Doub
             }
             a1[0]   = 0.0;
             c1[N-2] = 0.0;
-            TomasAlgorithm(a1, b1, c1, d1, x1);
+            tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), x1.data(), x1.size());
 
             for (unsigned int i=1; i<=N-1; i++)
             {

@@ -101,6 +101,7 @@ void ControlFunction4::calculate_X(const DoubleVector &u1, const DoubleVector &u
 
 void ControlFunction4::calculate_P(const DoubleVector &u1, const DoubleVector &u2, DoubleVector &x1, DoubleVector &x2)
 {
+    C_UNUSED(u1);C_UNUSED(u2);C_UNUSED(x1);C_UNUSED(x2);
 }
 
 double ControlFunction4::H(double t, double x1, double x2, double u1, double u2, double p1, double p2)
@@ -121,10 +122,12 @@ double ControlFunction4::fx2(double t, double x1, double x2, double u1, double u
 
 double ControlFunction4::px1(double t, double x1, double x2, double u1, double u2)
 {
+    C_UNUSED(t); C_UNUSED(x1); C_UNUSED(x2); C_UNUSED(u1); C_UNUSED(u2);
     return 0.0;
 }
 
 double ControlFunction4::px2(double t, double x1, double x2, double u1, double u2)
 {
+    C_UNUSED(t); C_UNUSED(x1); C_UNUSED(x2); C_UNUSED(u1); C_UNUSED(u2);
     return 0.0;
 }

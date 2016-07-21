@@ -6,6 +6,7 @@
 #include <gradient_cjt.h>
 #include <parabolicequation.h>
 #include <printer.h>
+#include "cmethods.h"
 
 class DiscreteHeat : public RnFunction, public IGradient, public IPrinter, public IParabolicEquation
 {

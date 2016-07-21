@@ -256,7 +256,7 @@ void IBackwardParabolicEquation::calculateU(DoubleMatrix &psi, double hx, double
             dd[0]   -= alpha * psi[j][0];
             dd[N-2] -= alpha * psi[j][N];
 
-            TomasAlgorithm(da, db, dc, dd, rx);
+            tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size());
 
             for (unsigned int i=1; i<=N-1; i++)
             {

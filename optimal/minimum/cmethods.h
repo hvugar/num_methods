@@ -29,7 +29,7 @@ void gradient3(CRnFunction fx, double *x, double *g, unsigned int n, double h);
 double trapesium1(CR1Function fx, unsigned int n, double a, double b);
 double trapesium2(CR1Function fx, double h, double a, double b);
 
-void tomasAlgorithm(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int n);
+void MINIMUMSHARED_EXPORT tomasAlgorithm(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int n);
 void gaussianElimination(double **a, double *b, double *x, unsigned int n);
 void gaussJordanElimination(double **a, double *b, double *x, unsigned int n);
 

@@ -145,6 +145,8 @@ void tomasAlgorithm(const double *a, const double *b, const double *c, const dou
 
 void gaussianElimination(double **A, double *b, double *x, unsigned int n)
 {
+    C_UNUSED(x);
+
     unsigned int k;
     for (k=0; k<n-1; k++)
     {
@@ -196,25 +198,28 @@ void gaussianElimination(double **A, double *b, double *x, unsigned int n)
 
 void gaussJordanElimination(double **a, double *b, double *x, unsigned int n)
 {
+    C_UNUSED(a); C_UNUSED(b); C_UNUSED(x); C_UNUSED(n);
 }
 
 void euler(double x0, double y0, double xN, double yN, unsigned int N, double *x, double *y, ODE1stOrderEquation eq)
 {
-
+    C_UNUSED(x0); C_UNUSED(y0); C_UNUSED(xN); C_UNUSED(yN); C_UNUSED(N); C_UNUSED(x); C_UNUSED(y); C_UNUSED(eq);
 }
 
 void eulerMod(double x0, double y0, double xN, double yN, unsigned int N, double *x, double *y, ODE1stOrderEquation eq)
 {
-
+    C_UNUSED(x0); C_UNUSED(y0); C_UNUSED(xN); C_UNUSED(yN); C_UNUSED(N); C_UNUSED(x); C_UNUSED(y); C_UNUSED(eq);
 }
 
 void runge_kutta_rk3(double x0, double y0, double xN, double yN, unsigned int N, double *x, double *y, ODE1stOrderEquation eq)
 {
-
+    C_UNUSED(x0); C_UNUSED(y0); C_UNUSED(xN); C_UNUSED(yN); C_UNUSED(N); C_UNUSED(x); C_UNUSED(y); C_UNUSED(eq);
 }
 
 void runge_kutta_rk4(double x0, double y0, double xN, double yN, unsigned int N, double *x, double *y, ODE1stOrderEquation eq)
 {
+    C_UNUSED(yN);
+
     if (N == 0) return;
 
     double k1 = 0.0;
@@ -230,7 +235,7 @@ void runge_kutta_rk4(double x0, double y0, double xN, double yN, unsigned int N,
     {
         x[0] = x0;
         y[0] = y0;
-        int i = 1;
+        unsigned int i = 1;
         for (i=1; i<=N; i++)
         {
             k1 = eq(x0, y0);
@@ -267,6 +272,8 @@ void runge_kutta_rk4(double x0, double y0, double xN, double yN, unsigned int N,
 
 void runge_kutta_rk4_system(double x0, double x1, double *y0, double **y, size_t n, unsigned int N, double h, ODE1stOrderEquationN *eq)
 {
+    C_UNUSED(x1);
+
     double *k1 = (double *)malloc(sizeof(double) * n);
     double *k2 = (double *)malloc(sizeof(double) * n);
     double *k3 = (double *)malloc(sizeof(double) * n);

@@ -57,6 +57,7 @@ void NonLinearODE1stOrder::solveNonLinearBoundaryProblem(double t0, double a, do
 
         virtual double a(double t, unsigned int i) const
         {
+            C_UNUSED(t);
             double f1 = nl->f(i*h, x[i+1], i);
             double f2 = nl->f(i*h, x[i-1], i);
             //printf("%d %.10f %.10f %.10f\n", i,
@@ -77,10 +78,11 @@ void NonLinearODE1stOrder::solveNonLinearBoundaryProblem(double t0, double a, do
             //return 2.0*x[i] + x[i]*sin(x[i]) + 2.0*i*h - 2.0*i*h*i*h - i*h*i*h*sin(i*h*i*h) - (x[i+1] - x[i-1])/(2.0*h);
         }
 
-        virtual double initial(double t, unsigned int i) const { return 0.0; }
+        virtual double initial(double t, unsigned int i) const { C_UNUSED(t); C_UNUSED(i); return 0.0; }
 
         virtual double boundary(double t, unsigned int i) const
         {
+            C_UNUSED(t);
             if (i == 0) return _a - x[0];
             if (i == N) return _b - x[N];
             return 0.0;

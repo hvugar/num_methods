@@ -209,7 +209,7 @@ void DiscreteHyperbolic1::calculateP(const DoubleVector& f0, const DoubleMatrix 
             }
             da[0]=0.0;
             dc[N-2]=0.0;
-            TomasAlgorithm(da, db, dc, rd, rx);
+            tomasAlgorithm(da.data(), db.data(), dc.data(), rd.data(), rx.data(), rx.size());
             for (unsigned int i=1; i<=N-1; i++)
             {
                 psi[j][i] = rx[i-1];
@@ -247,7 +247,7 @@ void DiscreteHyperbolic1::calculateP(const DoubleVector& f0, const DoubleMatrix 
             }
             da[0]=0.0;
             dc[N-2]=0.0;
-            TomasAlgorithm(da, db, dc, rd, rx);
+            tomasAlgorithm(da.data(), db.data(), dc.data(), rd.data(), rx.data(), rx.size());
             for (unsigned int i=1; i<=N-1; i++)
             {
                 psi[M+D-1][i] = rx[i-1];
@@ -288,7 +288,7 @@ void DiscreteHyperbolic1::calculateP(const DoubleVector& f0, const DoubleMatrix 
                 da[0]=0.0;
                 dc[N-2]=0.0;
 
-                TomasAlgorithm(da, db, dc, rd, rx);
+                tomasAlgorithm(da.data(), db.data(), dc.data(), rd.data(), rx.data(), rx.size());
 
                 for (unsigned int i=1; i<=N-1; i++)
                 {

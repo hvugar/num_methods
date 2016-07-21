@@ -3,6 +3,7 @@
 
 int main(int argc, char *argv[])
 {
+    C_UNUSED(argc); C_UNUSED(argv);
     Example1 e;
 //    ControlFunction4::main(argc, argv);
 //    SampleMain();

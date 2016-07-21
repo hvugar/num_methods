@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-void MINIMUMSHARED_EXPORT TomasAlgorithm(const DoubleVector &a, const DoubleVector &b, const DoubleVector &c, const DoubleVector &d, DoubleVector &x);
+//void MINIMUMSHARED_EXPORT TomasAlgorithm(const DoubleVector &a, const DoubleVector &b, const DoubleVector &c, const DoubleVector &d, DoubleVector &x);
 
 #ifdef __cplusplus
 }

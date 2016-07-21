@@ -41,10 +41,14 @@ double SampleBorderHyperBolic::initial2(unsigned int i) const
 
 double SampleBorderHyperBolic::boundary(Boundary type, unsigned int j) const
 {
+    C_UNUSED(type);
+    C_UNUSED(j);
     return 0.0;
 }
 
 double SampleBorderHyperBolic::f(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
