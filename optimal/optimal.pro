@@ -1,4 +1,9 @@
 TEMPLATE = subdirs
-SUBDIRS = cminimum minimum main imager \ #diplom
+
+#SUBDIRS += cminimum
+SUBDIRS += minimum
+SUBDIRS += main
+SUBDIRS += imager
+#SUBDIRS += diplom
 
 CONFIG += ordered

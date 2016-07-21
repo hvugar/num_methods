@@ -5,7 +5,7 @@
 #include <doublevector.h>
 #include <rungekutta.h>
 #include <printer.h>
-#include <cmethods.h>
+#include "cmethods.h"
 
 double A11(double t);
 double A12(double t);

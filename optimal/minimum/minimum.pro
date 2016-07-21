@@ -18,6 +18,8 @@ DESTDIR += ../bin
 #LIBS += -L../bin -lcminimum
 
 SOURCES += \
+    cmethods.c \
+    cmatrix.c \
     function.cpp \
     r1minimize.cpp \
     gradient.cpp \
@@ -35,11 +37,11 @@ SOURCES += \
     parabolicequation.cpp \
     exceptions.cpp \
     ode1storder.cpp \
-    matrix.cpp \
-    cmethods.c \
-    cmatrix.c
+    matrix.cpp
 
 HEADERS += global.h \
+    cmethods.h \
+    cmatrix.h \
     function.h \
     r1minimize.h \
     gradient.h \
@@ -57,6 +59,4 @@ HEADERS += global.h \
     parabolicequation.h \
     exceptions.h \
     ode1storder.h \
-    matrix.h \
-    cmethods.h \
-    cmatrix.h
+    matrix.h
