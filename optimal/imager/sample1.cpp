@@ -122,6 +122,8 @@ QSample1::QSample1(QWidget *parent) : QWidget(parent)
 
 void QSample1::paintEvent(QPaintEvent *e)
 {
+    Q_UNUSED(e);
+
     double minimum = m.min();
     double maximum = m.max();
 

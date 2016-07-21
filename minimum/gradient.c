@@ -209,7 +209,7 @@ void ConjugateGradientMethod(RnFunction f, GFunction gradient, double *x, int n,
 
         if (f2 > f1)
         {
-            puts("VValue of the function in the previous point less than in the current point...");
+            puts("Value of the function in the previous point less than in the current point...");
             break;
         }
 

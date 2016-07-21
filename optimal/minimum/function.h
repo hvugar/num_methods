@@ -36,6 +36,11 @@ protected:
     static void Gradient(RnFunction *f, double step, const DoubleVector &x, DoubleVector &g);
 };
 
+struct MINIMUMSHARED_EXPORT OrdDifEquation
+{
+    virtual double fx(double x, double y) const = 0;
+};
+
 typedef std::vector<RnFunction> RnFunctionList;
 typedef std::vector<RnFunction*> PRnFunctionList;
 

@@ -67,7 +67,8 @@ SOURCES += main.cpp \
     border/sampleloaderborder.cpp \
     border/sampleexample1.cpp \
     border/sampleexample2.cpp \
-    control/cfunction4.cpp
+    control/cfunction4.cpp \
+    control/example1.cpp
 
 HEADERS += \
     rnfunction/rosenbrock.h \
@@ -114,4 +115,5 @@ HEADERS += \
     border/sampleloaderborder.h \
     border/sampleexample1.h \
     border/sampleexample2.h \
-    control/cfunction4.h
+    control/cfunction4.h \
+    control/example1.h

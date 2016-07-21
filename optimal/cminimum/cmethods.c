@@ -196,7 +196,6 @@ void gaussianElimination(double **A, double *b, double *x, unsigned int n)
 
 void gaussJordanElimination(double **a, double *b, double *x, unsigned int n)
 {
-
 }
 
 void euler(double x0, double y0, double xN, double yN, unsigned int N, double *x, double *y, ODE1stOrderEquation eq)
