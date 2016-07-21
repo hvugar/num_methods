@@ -218,6 +218,7 @@ DoubleMatrix* DoubleMatrix::multiply(const DoubleVector &v) const
 
 DoubleMatrix DoubleMatrix::operator+(const DoubleMatrix &A) const
 {
+    C_UNUSED(A);
     return (*this);
 }
 

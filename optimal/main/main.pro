@@ -13,8 +13,9 @@ TARGET = main
 QMAKE_CXXFLAGS += -Wno-unused-variable
 
 INCLUDEPATH += ../minimum
-INCLUDEPATH += ../cminimum
-LIBS += -L../bin -lminimum -lcminimum
+#INCLUDEPATH += ../cminimum
+LIBS += -L../bin -lminimum
+#LIBS += -L../bin -lcminimum
 
 DESTDIR += ../bin
 

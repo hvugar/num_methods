@@ -149,6 +149,8 @@ void RungeKutta::calculate(R2FunctionX f, double x0, double y0, DoubleVector &y,
 
 void CauchyProblem::rungeKutta(const CauchyProblem *f, double x0, double y0, double h, unsigned int N, DoubleVector &y)
 {
+    C_UNUSED(N);
+
     if (h == 0.0) return;
 
     double k1 = 0.0;
@@ -196,6 +198,8 @@ void CauchyProblem::rungeKutta(const CauchyProblem *f, double x0, double y0, dou
 
 void CauchyProblemSystem(std::vector<RnFunction*> fs, double x0, const DoubleVector &y0, DoubleMatrix &y, double x, double h, unsigned int N)
 {
+    C_UNUSED(x);
+
     unsigned int n = fs.size();
 
     DoubleVector k1(n);

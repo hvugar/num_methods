@@ -14,8 +14,8 @@ DEFINES += MINIMUM_LIBRARY
 
 DESTDIR += ../bin
 
-INCLUDEPATH += ../cminimum
-LIBS += -L../bin -lcminimum
+#INCLUDEPATH += ../cminimum
+#LIBS += -L../bin -lcminimum
 
 SOURCES += \
     function.cpp \
@@ -35,7 +35,9 @@ SOURCES += \
     parabolicequation.cpp \
     exceptions.cpp \
     ode1storder.cpp \
-    matrix.cpp
+    matrix.cpp \
+    cmethods.c \
+    cmatrix.c
 
 HEADERS += global.h \
     function.h \
@@ -55,4 +57,6 @@ HEADERS += global.h \
     parabolicequation.h \
     exceptions.h \
     ode1storder.h \
-    matrix.h
+    matrix.h \
+    cmethods.h \
+    cmatrix.h

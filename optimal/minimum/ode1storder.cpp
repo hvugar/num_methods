@@ -68,6 +68,7 @@ void NonLinearODE1stOrder::solveNonLinearBoundaryProblem(double t0, double a, do
 
         virtual double b(double t, unsigned int i) const
         {
+            C_UNUSED(t);
             //printf("%d %.10f %.10f\n", i,
             //       nl->f(i*h, x[i], i) - (x[i+1] - x[i-1])/(2.0*h),
             //       2.0*x[i] + x[i]*sin(x[i]) + 2.0*(i*h) - 2.0*(i*h)*(i*h) - (i*h)*(i*h)*sin((i*h)*(i*h)) - (x[i+1] - x[i-1])/(2.0*h));

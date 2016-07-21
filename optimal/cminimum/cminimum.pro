@@ -9,10 +9,10 @@ DESTDIR += ../bin
 
 SOURCES += \
     cmethods.c \
-    matrix.c
+    cmatrix.c
 
 HEADERS += \
     cmethods.h \
     cglobal.h \
-    matrix.h
+    cmatrix.h
 
