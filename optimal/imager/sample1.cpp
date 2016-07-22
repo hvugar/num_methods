@@ -168,17 +168,22 @@ double QSample1::initial1(unsigned int i) const
 
 double QSample1::initial2(unsigned int i) const
 {
+    C_UNUSED(i);
     //double x = i*hx;
     return 0.0;
 }
 
 double QSample1::boundary(Boundary type, unsigned int j) const
 {
+    C_UNUSED(type);
+    C_UNUSED(j);
     return 0.0;
 }
 
 double QSample1::f(unsigned int i, unsigned int j) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
     return 0.0;
 }
 
