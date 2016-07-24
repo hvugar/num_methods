@@ -178,13 +178,12 @@ void Example2::gradient(const DoubleVector &K, DoubleVector &g)
     IPrinter::printVector(psi, "psi ");
 
     // s=3;
-    for (unsigned int i=0; i<=N; i++)
+    for (unsigned int i=0; i<=M; i++)
     {
-
     }
 }
 
-void Example2::print(unsigned int i, const DoubleVector &x, const DoubleVector &gradient, double alpha, RnFunction *fn) const
+void Example2::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double a, RnFunction *fn) const
 {
 
 }
