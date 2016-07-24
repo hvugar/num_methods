@@ -31,6 +31,7 @@ private:
     unsigned int M;
 
     double x0;
+    double xT;
 
     const DoubleVector *pK;
     const DoubleVector *px;

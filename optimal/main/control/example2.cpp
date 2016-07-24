@@ -3,7 +3,10 @@
 
 void Example2::main(int argc, char *argv[])
 {
+    C_UNUSED(argc);
+    C_UNUSED(argv);
     Example2 e2;
+    C_UNUSED(e2);
 }
 
 Example2::Example2()
@@ -15,6 +18,9 @@ Example2::Example2()
 
     DoubleVector k0(8);
 
+    x0 = 0.0;
+    xT = 18.42060880;
+
     k0[0] = +40.0;
     k0[1] = +30.0;
     k0[2] = +50.0;
@@ -25,17 +31,17 @@ Example2::Example2()
     k0[7] = +1.0;
     pK = &k0;
 
-    ConjugateGradient cg;
-    cg.setFunction(this);
-    cg.setGradient(this);
-    cg.setPrinter(this);
-    cg.setProjection(NULL);
-    cg.calculate(k0);
+    //    ConjugateGradient cg;
+    //    cg.setFunction(this);
+    //    cg.setGradient(this);
+    //    cg.setPrinter(this);
+    //    cg.setProjection(NULL);
+    //    cg.calculate(k0);
 
     double xT = 19.2116600200;
 
-    //    DoubleVector x(N+1);
-    //    calculateX(x);
+    DoubleVector x(M+1);
+    calculateX(x);
 }
 
 double Example2::fx(double t, double x) const
@@ -69,51 +75,22 @@ double Example2::getK(double x) const
 
 void Example2::calculateX(DoubleVector &x)
 {
-    DoubleVector _x;
+    double _x0 = x0;
+    for (unsigned int i=0; i<10; i++)
+    {
+        t0 = (i*100)*h;
+        double K = getK(_x0);
+        printf("%.1f %.1f x0:%5.2f K:%5.2f ", t0, t0+0.1, _x0, K);
 
-    t0 = 0.0;
-    x0 = 0.0;
-    runge_kutta(this, t0, x0, 100, _x, h);
-    printf("%10.6f %10.6f\t", x0, getK(x0));
-    IPrinter::printVector(_x, "x[0.1]");
-    for (unsigned int i=0; i<=100; i++) x[i] = _x[i];
+        DoubleVector _x;
+        runge_kutta(this, t0, _x0, 100, _x, h);
 
-    t0 = 0.1;
-    x0 = _x[100];
-    runge_kutta(this, t0, x0, 100, _x, h);
-    printf("%10.6f %10.6f\t", x0, getK(x0));
-    IPrinter::printVector(_x, "x[0.2]");
-    for (unsigned int i=0; i<= 100; i++) x[100+i] = _x[i];
+        IPrinter::printVector(_x, NULL);
+        for (unsigned int j=0; j<=100; j++) x[i*100+j] = _x[j];
+        _x0 = _x[100];
+    }
 
-    t0 = 0.2;
-    x0 = _x[100];
-    runge_kutta(this, t0, x0, 100, _x, h);
-    printf("%10.6f %10.6f\t", x0, getK(x0));
-    IPrinter::printVector(_x, "x[0.3]");
-    for (unsigned int i=0; i<= 100; i++) x[200+i] = _x[i];
-
-    t0 = 0.3;
-    x0 = _x[100];
-    runge_kutta(this, t0, x0, 100, _x, h);
-    printf("%10.6f %10.6f\t", x0, getK(x0));
-    IPrinter::printVector(_x, "x[0.4]");
-    for (unsigned int i=0; i<= 100; i++) x[300+i] = _x[i];
-
-    t0 = 0.4;
-    x0 = _x[100];
-    runge_kutta(this, t0, x0, 200, _x, h);
-    printf("%10.6f %10.6f\t", x0, getK(x0));
-    IPrinter::printVector(_x, "x[0.6]");
-    for (unsigned int i=0; i<= 200; i++) x[400+i] = _x[i];
-
-    t0 = 0.6;
-    x0 = _x[200];
-    runge_kutta(this, t0, x0, 400, _x, h);
-    printf("%10.6f %10.6f\t", x0, getK(x0));
-    IPrinter::printVector(_x, "x[1.0]");
-    for (unsigned int i=0; i<= 400; i++) x[600+i] = _x[i];
-
-    //    IPrinter::printVector(x, "x:");
+    IPrinter::printVector(x, "x:");
     IPrinter::printVector(x.data(), x.size(), "", x.size(), 0, 0, "data.txt");
 }
 
