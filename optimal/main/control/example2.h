@@ -36,12 +36,14 @@ public:
 
     static void main(int argc, char* argv[]);
 
-    void calculateX(DoubleVector &x);
+    void calculateX(DoubleVector &x, const DoubleVector &K);
     void calculateP(DoubleVector &p);
 
     double A(double t) { return 3.0*t; }
-    double B(double t) { return 1.0; }
-    double C(double t) { return 2.0*t - 3.0*t*t; }
+    double B(double t) { C_UNUSED(t); return 1.0; }
+    double C(double t) { return 2.0*t - 3.0*t*t*t; }
+
+    void NumericalGradient(const DoubleVector &k, DoubleVector &g, double h);
 
 private:
     double t0;

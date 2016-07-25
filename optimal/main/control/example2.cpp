@@ -39,26 +39,29 @@ Example2::Example2()
     k0[5] = +1.0;
     k0[6] = -1.0;
 
-    pK = &k0;
-    xT = 25.03126661;
+    DoubleVector k1(S);
+    k1[0] = +1.0;
+    k1[1] = +1.0;
+    k1[2] = +1.0;
+    k1[3] = +1.0;
+    k1[4] = +1.0;
+    k1[5] = +1.0;
+    k1[6] = +1.0;
+
+    DoubleVector x;
+    calculateX(x, k0);
+    xT = 0.0;//x[M];
+    //printf("x(T): %.8f\n", x[M]);
 
     DoubleVector ga(S);
-
     this->gradient(k0, ga);
-    printf("%.10f %.10f %.10f %.10f %.10f %.10f %.10f %.10f\n", ga[0], ga[1], ga[2], ga[3], ga[4], ga[5], ga[6], ga[7]);
+    ga.L2Normalize();
+    printf("%10.6f %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f\n", ga[0], ga[1], ga[2], ga[3], ga[4], ga[5], ga[6], ga[7]);
 
-    DoubleVector gn(S);
-    for (unsigned int s=0; s<k0.size(); s++)
-    {
-        double h1 = 0.0001;
-        DoubleVector k1 = k0;
-        DoubleVector k2 = k0;
-        k1[s] = k1[s] - h1;
-        k2[s] = k2[s] + h1;
-        gn[s] = (fx(k2) - fx(k1))/(2.0*h1);
-    }
+    DoubleVector gn;
+    NumericalGradient(k0, gn, 0.001);
     gn.L2Normalize();
-    printf("%.10f %.10f %.10f %.10f %.10f %.10f %.10f %.10f\n", gn[0], gn[1], gn[2], gn[3], gn[4], gn[5], gn[6], gn[7]);
+    printf("%10.6f %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f\n", gn[0], gn[1], gn[2], gn[3], gn[4], gn[5], gn[6], gn[7]);
 }
 
 unsigned int Example2::getKS(double x) const
@@ -79,8 +82,10 @@ double Example2::getK(double x) const
     return (*pK)[getKS(x)];
 }
 
-void Example2::calculateX(DoubleVector &x)
+void Example2::calculateX(DoubleVector &x, const DoubleVector &K)
 {
+    pK = &K;
+
     double k1 = 0.0;
     double k2 = 0.0;
     double k3 = 0.0;
@@ -109,7 +114,7 @@ double Ex2OrdDifEquationX::fx(double t, double x) const
 {
     double xi = e->xi;
     double K = e->getK(xi);
-    return 3.0*t*x + K*xi + (2.0*t - 3.0*t*t*t);
+    return e->A(t)*x + e->B(t)*K*xi + e->C(t);
 }
 
 void Example2::calculateP(DoubleVector &p)
@@ -125,7 +130,7 @@ void Example2::calculateP(DoubleVector &p)
     p.resize(M+1);
 
     t[M] = t1;
-    p[M] = -2.0*(*px)[M];
+    p[M] = -2.0*fabs((*px)[M]-xT);
 
     for (unsigned int i=M; i>=1; i--)
     {
@@ -146,7 +151,7 @@ double Ex2OrdDifEquationP::fx(double t, double p, unsigned int j) const
         if (i*100 == j)
         {
             double int_sum = 0.0;
-            for (unsigned int k=j; k<(j+99); k++)
+            for (unsigned int k=j; k<(j+100); k++)
             {
                 double x = e->px->at(j);
                 double P = e->pp->at(k);
@@ -159,21 +164,20 @@ double Ex2OrdDifEquationP::fx(double t, double p, unsigned int j) const
             sum += int_sum;
         }
     }
-    return -(3.0*t)*p - (1/e->h)*sum;
+    return -e->A(t)*p - (1/e->h)*sum;
 }
 
 double Example2::fx(const DoubleVector &k)
 {
-    pK = &k;
     DoubleVector x;
-    calculateX(x);
-    return x[M];
+    calculateX(x, k);
+    return fabs(x[M]-xT);
 }
 
 void Example2::gradient(const DoubleVector &K, DoubleVector &g)
 {
     DoubleVector x(M+1);
-    calculateX(x);
+    calculateX(x, K);
     px = &x;
     IPrinter::printVector(x);
     IPrinter::printVector(x.data(), x.size(), "", x.size(), 0, 0, "dataX.txt");
@@ -205,22 +209,35 @@ void Example2::gradient(const DoubleVector &K, DoubleVector &g)
                 for (unsigned int k=i*100; k<i*100+99; k++)
                 {
                     double t = k*h;
-                    double a1 = p[k+0]*B(t)*x[k+0];
-                    double a2 = p[k+1]*B(t)*x[k+1];
+                    double a1 = p[k+0]*B(t);
+                    double a2 = p[k+1]*B(t);
 
                     local_sum += (h/2.0)*(a1+a2)*xi;
                 }
                 global_sum += local_sum;
             }
-            printf("%4d %10.6f %10.6f %.4d %10.6f %10.6f\n", s, xi, i*100*h, inS, xs[s-1], xs[s]);
+            //printf("%4d %10.6f %10.6f %.4d %10.6f %10.6f\n", s, xi, i*100*h, inS, xs[s-1], xs[s]);
         }
-        g[s] = global_sum;
-        puts("");
+        g[s] = -global_sum;
+        //puts("");
     }
-    g.L2Normalize();
 }
 
 void Example2::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double a, RnFunction *fn) const
 {
     C_UNUSED(i); C_UNUSED(x); C_UNUSED(g); C_UNUSED(a); C_UNUSED(fn);
+}
+
+void Example2::NumericalGradient(const DoubleVector &k, DoubleVector &g, double h)
+{
+    g.clear();
+    g.resize(k.size());
+    for (unsigned int s=0; s<k.size(); s++)
+    {
+        DoubleVector k1 = k;
+        DoubleVector k2 = k;
+        k1[s] = k1[s] - h;
+        k2[s] = k2[s] + h;
+        g[s] = (fx(k2) - fx(k1))/(2.0*h);
+    }
 }
