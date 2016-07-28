@@ -41,7 +41,7 @@ struct MINIMUMSHARED_EXPORT OrdDifEquation
     virtual double fx(double x, double y) const = 0;
 };
 
-typedef std::vector<RnFunction> RnFunctionList;
-typedef std::vector<RnFunction*> PRnFunctionList;
+//typedef std::vector<RnFunction> RnFunctionList;
+//typedef std::vector<RnFunction*> PRnFunctionList;
 
 #endif // FUNCTION_H

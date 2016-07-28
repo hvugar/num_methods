@@ -1,5 +1,6 @@
 #include "parabolicequation.h"
 #include "cmethods.h"
+#include <rungekutta.h>
 
 double MIN1 = +10000.0;
 double MAX1 = -10000.0;
@@ -302,16 +303,16 @@ void IParabolicEquation2D::caluclateMVD(DoubleMatrix &u, double h1, double h2, d
     double x2_b  = 1.0 + (a2*a2*ht)/(h2*h2);
     double x2_c = (a1*a1*ht)/(2.0*h1*h1);
 
-//    double lamda1 = ((a1*a1)*ht)/(h1*h1);
-//    double lamda2 = ((a2*a2)*ht)/(h2*h2);
+    //    double lamda1 = ((a1*a1)*ht)/(h1*h1);
+    //    double lamda2 = ((a2*a2)*ht)/(h2*h2);
 
-//    double x1_a = -0.5 * lamda1;
-//    double x1_b = +1.0 + lamda1;
-//    double x1_c = +0.5 * lamda2;
+    //    double x1_a = -0.5 * lamda1;
+    //    double x1_b = +1.0 + lamda1;
+    //    double x1_c = +0.5 * lamda2;
 
-//    double x2_a = -0.5 * lamda2;
-//    double x2_b = +1.0 + lamda2;
-//    double x2_c = +0.5 * lamda1;
+    //    double x2_a = -0.5 * lamda2;
+    //    double x2_b = +1.0 + lamda2;
+    //    double x2_c = +0.5 * lamda1;
 
     for (unsigned int k=0; k<=M; k++)
     {
@@ -950,4 +951,65 @@ void IBackwardParabolicEquation2D::caluclateMVD(DoubleCube &psi, double h1, doub
     dc2.clear();
     dd2.clear();
     rx2.clear();
+}
+
+void IParabolicEquation::calculateL(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a) const
+{
+    u.clear();
+
+    u.resize(M+1);
+    for (unsigned int j=0; j<=M; j++)
+    {
+        u[j].resize(N+1);
+        u[j][0] = boundary(Left, j);
+        u[j][N] = boundary(Right, j);
+    }
+    for (unsigned int i=0; i<=N; i++) u[0][i] = initial(i);
+
+    double betta = (a*a)/(hx*hx);
+    double alpha = -2.0*betta;
+
+    class A : public CauchyProblem
+    {
+    public:
+        virtual double f(double t, const DoubleVector &y) const
+        {
+            unsigned int j=(unsigned int)(t/0.001);
+            if (i==1)          { return bt * (p->boundary(Left, j) - 2.0*y[i] + y[i+1])       + p->f(i, j); }
+            else if (i==(N-1)) { return bt * (y[i-1]       - 2.0*y[i] + p->boundary(Right, j)) + p->f(i, j); }
+            else               { return bt * (y[i-1]       - 2.0*y[i] + y[i+1])       + p->f(i, j); }
+        }
+        unsigned int i;
+        double al;
+        double bt;
+        DoubleMatrix *u;
+        unsigned int N;
+        const IParabolicEquation *p;
+    };
+
+    std::vector<CauchyProblem*> cps;
+    cps.resize(N-1);
+    for (unsigned int i=1; i<=N-1; i++)
+    {
+        A *cp = new A;
+        cp->al = alpha;
+        cp->bt = betta;
+        cp->N = N;
+        cp->i = i;
+        cp->x0 = 0.0;
+        cp->y0 = u[0][i];
+        cp->p = this;
+        cp->u = &u;
+        cps[i-1] = cp;
+    }
+
+    DoubleMatrix m;
+    CauchyProblem::euler1(cps, 0.0, ht, M, m);
+    for (unsigned int j=1; j<=M; j++)
+    {
+        for (unsigned int i=1; i<=N-1; i++)
+        {
+            u[j][i] = m[j-1][i-1];
+        }
+    }
 }
