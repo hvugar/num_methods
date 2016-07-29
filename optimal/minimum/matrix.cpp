@@ -1,264 +1,297 @@
 #include "matrix.h"
+#include <string.h>
+#include <stdlib.h>
+#include <math.h>
 
-CMatrix::CMatrix(size_t rows, size_t cols) : mrows(rows), mcols(cols)
+Vector::Vector(unsigned int size, double value) : sz(size), pdata(NULL)
 {
-    pvector = new CVector[rows];
-    for (unsigned int j=0; j<rows; j++) pvector[j].resize(cols);
+    if (size > 0) pdata = (double*)malloc(sizeof(double) * size);
+    for (unsigned int i=0; i<size; i++) pdata[i] = value;
 }
 
-CMatrix::~CMatrix()
-{
-    for (size_t j=0; j<mrows; j++) pvector[j].clear();
-    delete [] pvector;
-}
-
-size_t CMatrix::rows() const
-{
-    return mrows;
-}
-
-size_t CMatrix::columns() const
-{
-    return mcols;
-}
-
-void CMatrix::clear()
-{
-    size_t sz = rows();
-    for (size_t j=0; j<sz; j++)
-    {
-        this[j].clear();
-    }
-    delete [] pvector;
-    pvector = NULL;
-}
-
-void CMatrix::resize(size_t rows, size_t cols)
-{
-    clear();
-
-    pvector = new CVector[rows];
-    for (size_t j=0; j<rows; j++)
-    {
-        pvector[j].resize(cols);
-    }
-}
-
-double CMatrix::min() const
-{
-    double _min = NAN;
-    //    if (rows() != 0)
-    //    {
-    //        _min = at(0);
-    //        for (unsigned int i=1; i<rows(); i++)
-    //        {
-    //            if (_min > (*this)(i)) _min = at(i);
-    //        }
-    //    }
-    return _min;
-}
-
-double CMatrix::max() const
-{
-    double _max = NAN;
-    //    if (rows()!=0)
-    //    {
-    //        _max = at(0);
-    //        for (unsigned int i=1; i<size(); i++)
-    //        {
-    //            if (_max < at(i)) _max = at(i);
-    //        }
-    //    }
-    return _max;
-}
-
-CVector& CMatrix::operator[](size_t i)
-{
-    return pvector[i];
-}
-
-const CVector& CMatrix::operator[](size_t i) const
-{
-    return pvector[i];
-}
-
-CVector::CVector(size_t size)
-{
-    msize = size;
-    pdata = (double*)malloc(sizeof(double)*size);
-}
-
-CVector::~CVector()
+Vector::~Vector()
 {
     clear();
 }
 
-size_t CVector::size() const
+double& Vector::at(unsigned int n)
 {
-    return msize;
+    return pdata[n];
 }
 
-void CVector::resize(size_t size)
+const double& Vector::at(unsigned int n) const
 {
-    pdata = (double*)realloc(pdata, size);
+    return pdata[n];
 }
 
-double& CVector::operator[](unsigned int i)
-{
-    return pdata[i];
-}
 
-const double& CVector::operator[](unsigned int i) const
+void Vector::clear()
 {
-    return pdata[i];
-}
-
-void CVector::clear()
-{
-    free(pdata);
-    pdata=NULL;
-    msize=0;
-}
-
-double CVector::L2Norm() const
-{
-    double norm = 0.0;
-    size_t sz = size();
-    for (size_t i=0; i<sz; i++)
+    if (pdata != NULL)
     {
-        double item = operator [](i);
-        norm += item*item;
+        free(pdata);
+        pdata = NULL;
+        sz = 0;
     }
-    return sqrt(norm);
 }
 
-double CVector::L1Norm() const
+double* Vector::data() noexcept
+{
+    return pdata;
+}
+
+const double* Vector::data() const noexcept
+{
+    return pdata;
+}
+
+bool Vector::empty() const
+{
+    return sz == 0;
+}
+
+void Vector::resize (unsigned int size, double val)
+{
+    if (size == sz) return;
+    if (size > sz)
+    {
+        pdata = (double*)realloc(pdata, sizeof(double)*size);
+        for (unsigned int i=sz; i<size; i++) pdata[i] = val;
+        sz = size;
+        return;
+    }
+    if (size < sz)
+    {
+        pdata = (double*)realloc(pdata, sizeof(double)*size);
+        sz = size;
+        return;
+    }
+}
+
+unsigned int Vector::size() const
+{
+    return sz;
+}
+
+Vector& Vector::operator= (const Vector& x)
+{
+    resize(x.sz, 0.0);
+    return *this;
+}
+
+double& Vector::operator[] (unsigned int n)
+{
+    return pdata[n];
+}
+
+double Vector::operator[] (unsigned int n) const
+{
+    return pdata[n];
+}
+
+double Vector::L2Norm() const
 {
     double norm = 0.0;
-    size_t sz = size();
-    for (size_t i=0; i<sz; i++)
+    if (!empty())
     {
-        norm += fabs(operator [](i));
+        for (unsigned int i=0; i<sz; i++)
+        {
+            double item = pdata[i];
+            norm += item*item;
+        }
+        return sqrt(norm);
     }
     return norm;
 }
 
-double CVector::LInfNorm() const
+double Vector::L1Norm() const
 {
     double norm = 0.0;
-    size_t sz = size();
-    for (unsigned int i=0; i<sz; i++)
+    if (!empty())
     {
-        double item = operator [](i);
-
-        if (norm == NAN)
-            norm = fabs(item);
-        else
-            if (norm < fabs(item)) norm = fabs(item);
+        for (unsigned int i=0; i<sz; i++)
+        {
+            norm += fabs(pdata[i]);
+        }
     }
     return norm;
 }
 
-double CVector::EuclideanDistance(const CVector &v) const
+double Vector::LInfNorm() const
 {
-    if ( size() != v.size() ) return INFINITY;
+    double norm = 0.0;
+    if (!empty())
+    {
+        for (unsigned int i=0; i<sz; i++)
+        {
+            if ( i == 0 )
+                norm = fabs(pdata[i]);
+            else if (norm < fabs(pdata[i]))
+                norm = fabs(pdata[i]);
+        }
+    }
+    return norm;
+}
+
+double Vector::EuclideanNorm() const
+{
+    return L2Norm();
+}
+
+double Vector::EuclideanDistance(const Vector &p) const
+{
+    if ( size() != p.size() ) return INFINITY;
 
     double distance = 0.0;
     for (unsigned int i=0; i<size(); i++)
     {
-        double item = operator [](i);
-        distance += (item-v[i])*(item-v[i]);
+        distance += (at(i)-p.at(i))*(at(i)-p.at(i));
     }
     return sqrt(distance);
 }
 
-void CVector::L2Normalize()
+void Vector::L2Normalize()
 {
     double norm = L2Norm();
-    if (norm != 0.0)
-    {
-        for (size_t i=0; i<size(); i++) (*this)[i] /= norm;
-    }
+    if (norm != 0.0) for (unsigned int i=0; i<sz; i++) pdata[i] /= norm;
 }
 
-void CVector::L1Normalize()
+void Vector::L1Normalize()
 {
     double norm = L1Norm();
-    for (size_t i=0; i<size(); i++) (*this)[i] /= norm;
+    for (unsigned int i=0; i<sz; i++) pdata[i] /= norm;
 }
 
-void CVector::EuclideanNormalize()
+void Vector::EuclideanNormalize()
 {
-    double norm = L2Norm();
-    for (size_t i=0; i<size(); i++) (*this)[i] /= norm;
+    L2Normalize();
 }
 
-double CVector::min() const
+double Vector::min() const
 {
     double _min = NAN;
-    if (size() != 0)
+    if (!empty())
     {
-        _min = (*this)[0];
-        for (size_t i=1; i<size(); i++)
-        {
-            if (_min > (*this)[i]) _min = (*this)[i];
-        }
+        _min = at(0);
+        for (unsigned int i=1; i<sz; i++)
+            if (_min > pdata[i]) _min = pdata[i];
     }
     return _min;
 }
 
-double CVector::max() const
+double Vector::max() const
 {
-    double _max = NAN;
-    if (size()!=0)
+    double _max = 0.0;
+    if (!empty())
     {
-        _max = (*this)[0];
-        for (unsigned int i=1; i<size(); i++)
-        {
-            if (_max < (*this)[i]) _max = (*this)[i];
-        }
+        _max = pdata[0];
+        for (unsigned int i=1; i<sz; i++)
+            if (_max < pdata[i]) _max = pdata[i];
     }
     return _max;
 }
 
-CVector CVector::mid(size_t start, size_t end) const
+Vector Vector::mid(unsigned int s, unsigned int e) const
 {
-    size_t size = end - start + 1;
-    CVector vector(size);
-    for (size_t i=start; i<=end; i++) vector[i-start] = (*this)[i];
+    Vector vector(e-s+1);
+    for (unsigned int i=s; i<=e; i++) vector[i] = (*this)[i];
     return vector;
 }
 
-//double Vector::at(unsigned int i) const
-//{
-//    //if (i<msize) throw std::
-//    return pdata[i];
-//}
+Matrix::Matrix(unsigned int rows, unsigned int cols, double val) : mrows(rows), mcols(cols), pdata(NULL)
+{
+    if (mcols > 0 && mrows > 0)
+    {
+        pdata = new Vector[rows];
+        for (unsigned int j=0; j<rows; j++)
+        {
+            pdata[j].resize(cols, val);
+        }
+    }
+}
 
-//double* Vector::data() const
-//{
-//    return this->pdata;
-//}
+Matrix::~Matrix()
+{
+    for (unsigned int j=0; j<mrows; j++)
+    {
+        pdata[j].clear();
+    }
+    delete pdata;
+}
 
-//void Vector::add(double d)
-//{
-//    pdata = (double*)realloc(pdata, sizeof(double)*(msize+1));
-//    pdata[msize] = d;
-//    msize++;
-//}
+Vector& Matrix::row(unsigned int r)
+{
+    return pdata[r];
+}
 
-//void Vector::insert(unsigned int i, double d)
-//{
-//    pdata = (double*)realloc(pdata, sizeof(double)*(msize+1));
-//    memcpy(pdata+i+1, pdata+i, sizeof(double)*(msize-i));
-//    pdata[i]=d;
-//    msize++;
-//}
+const Vector& Matrix::row(unsigned int r) const
+{
+    return pdata[r];
+}
 
-//void Vector::remove(unsigned int i)
-//{
-//    memcpy(pdata+i, pdata+i+1, sizeof(double)*(msize-i-1));
-//    pdata = (double*)realloc(pdata, sizeof(double)*(msize-1));
-//    msize--;
-//}
+unsigned int Matrix::rows() const { return mrows; }
+unsigned int Matrix::cols() const { return mcols; }
+unsigned int Matrix::size() const { return mrows; }
+
+Vector& Matrix::operator[] (unsigned int j) { return pdata[j]; }
+const Vector& Matrix::operator[] (unsigned int j) const { return pdata[j]; }
+
+void Matrix::clear()
+{
+
+}
+
+void Matrix::resize(unsigned int rows)
+{
+    if (rows > mrows)
+    {
+        Vector *cdata = pdata;
+        pdata = new Vector[rows];
+        for (unsigned int i=0; i<mrows; i++) pdata[i] = cdata[i];
+        for (unsigned int i=mrows; i<rows; i++) pdata[i].resize(mcols);
+        delete [] cdata;
+    }
+    if (rows < mrows)
+    {
+        Vector *cdata = pdata;
+        pdata = new Vector[rows];
+        for (unsigned int i=0; i<rows; i++) pdata[i] = cdata[i];
+        delete [] cdata;
+    }
+    mrows = rows;
+}
+
+DoubleCube::DoubleCube() : std::vector<DoubleMatrix>()
+{}
+
+DoubleCube::~DoubleCube()
+{}
+
+void DoubleCube::Resize(unsigned int Nz, unsigned int Ny, unsigned Nx)
+{
+    Clear();
+
+    resize(Nz);
+    for (unsigned int k=0; k<size(); k++)
+    {
+        this[k].resize(Ny);
+        for (unsigned int m=0; m<this[k].size(); m++)
+        {
+            this[k][m].resize(Nx);
+        }
+    }
+}
+
+void DoubleCube::Clear()
+{
+    for (unsigned int k=0; k<size(); k++)
+    {
+        for (unsigned int m=0; m<this[k].size(); m++)
+        {
+            this[k][m].clear();
+        }
+        this[k].clear();
+    }
+    this->clear();
+}
 

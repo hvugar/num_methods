@@ -69,53 +69,39 @@ int main(int argc, char *argv[])
     C_UNUSED(argc);
     C_UNUSED(argv);
 
-    //    DoubleMatrix u;
-    //    P p;
-    //    p.hx = 0.001;
-    //    p.ht = 0.001;
-    //    p.N = 1000;
-    //    p.M = 1000;
-    //    p.a = 1.0;
-    //    p.calculateL(u, p.hx, p.ht, p.N, p.M, p.a);
-    //    IPrinter::printMatrix(u);
+    {
+        DoubleMatrix u;
+        P p;
+        p.hx = 0.01;
+        p.N = 100;
 
-    //    Vector a(1, 1.0);
-    //    printf("%f %f %f\n", a[0], a[1], a[2]);
-    //    double &r = a[0];
-    //    r = 2.0;
-    //    printf("%f %f %f\n", a[0], a[1], a[2]);
-    //    printf("size: %d\n", a.size());
-    //    int in;
-    //    scanf("%d", &in);
-    //    a.resize(100*1024*1024, 10.0);
-    //    scanf("%d", &in);
-    //    a.resize(1, 10.0);
-    //    printf("size: %d\n", a.size());
-    //    printf("%f %f %f %f %f\n", a[0], a[1], a[2], a[3], a[4]);
-    //    scanf("%d", &in);
+        p.ht = 0.00005;
+        p.M = 20000;
 
-    Matrix m(3, 4, 2.0);
-    printf("%f %f %f %f\n", m.row(0)[0], m.row(0)[1], m.row(0)[2], m.row(0)[3]);
-    printf("%f %f %f %f\n", m.row(1)[0], m.row(1)[1], m.row(1)[2], m.row(1)[3]);
-    printf("%f %f %f %f\n", m.row(2)[0], m.row(2)[1], m.row(2)[2], m.row(2)[3]);
+        p.a = 1.0;
+        p.calculateL(u, p.hx, p.ht, p.N, p.M, p.a);
+        IPrinter::printMatrix(u);
+//        IPrinter::printVector(u[10]);
+    }
 
-
-    //    std::vector<CauchyProblem*> cps;
-    //    cps.resize(3);
-    //    cps[0] = new A;
-    //    cps[0]->x0 = 0.0;
-    //    cps[0]->y0 = 0.0;
-    //    cps[1] = new B;
-    //    cps[1]->x0 = 0.0;
-    //    cps[1]->y0 = 0.0;
-    //    cps[2] = new C;
-    //    cps[2]->x0 = 0.0;
-    //    cps[2]->y0 = 0.0;
-    //    DoubleMatrix m;
-    //    CauchyProblem::rungeKutta(cps, 0.0, 0.001, 1000, m);
-    //    IPrinter::printVector(m[0]);
-    //    IPrinter::printVector(m[1]);
-    //    IPrinter::printVector(m[2]);
+//    {
+//        std::vector<CauchyProblem*> cps;
+//        cps.resize(3);
+//        cps[0] = new A;
+//        cps[0]->x0 = 0.0;
+//        cps[0]->y0 = 0.0;
+//        cps[1] = new B;
+//        cps[1]->x0 = 0.0;
+//        cps[1]->y0 = 0.0;
+//        cps[2] = new C;
+//        cps[2]->x0 = 0.0;
+//        cps[2]->y0 = 0.0;
+//        DoubleMatrix m;
+//        CauchyProblem::rungeKutta(cps, 0.0, 0.001, 1000, m);
+//        IPrinter::printVector(m[0]);
+//        IPrinter::printVector(m[1]);
+//        IPrinter::printVector(m[2]);
+//    }
 
     //    Example2::main(argc, argv);
 

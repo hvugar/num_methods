@@ -10,6 +10,7 @@ void IPrinter::print(GradientIterationInfo &info) const
 void IPrinter::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n, const char* s, FILE* f)
 {
     C_UNUSED(s);
+
     unsigned int size = x.size();
     unsigned int M = x.size() / m;
 

@@ -91,6 +91,8 @@ void IParabolicEquation::calculateU(DoubleMatrix &u, double hx, double ht, unsig
     u.clear();
 
     u.resize(M+1);
+    //printf("%d\n", u.size());
+
     for (unsigned int i=0; i<u.size(); i++) u[i].resize(N+1);
 
     DoubleVector da(N-1);
@@ -974,15 +976,17 @@ void IParabolicEquation::calculateL(DoubleMatrix &u, double hx, double ht, unsig
     public:
         virtual double f(double t, const DoubleVector &y) const
         {
-            unsigned int j=(unsigned int)(t/0.001);
-            if (i==1)          { return bt * (p->boundary(Left, j) - 2.0*y[i] + y[i+1])       + p->f(i, j); }
-            else if (i==(N-1)) { return bt * (y[i-1]       - 2.0*y[i] + p->boundary(Right, j)) + p->f(i, j); }
-            else               { return bt * (y[i-1]       - 2.0*y[i] + y[i+1])       + p->f(i, j); }
+            unsigned int j=(unsigned int)(t/ht);
+            if (i==0)          { return bt * (p->boundary(Left, j) - 2.0*y[i] + y[i+1])        + p->f(i+1, j); }
+            else if (i==(N-2)) { return bt * (y[i-1]       - 2.0*y[i] + p->boundary(Right, j)) + p->f(i+1, j); }
+            else               { return bt * (y[i-1]       - 2.0*y[i] + y[i+1])                + p->f(i+1, j); }
         }
         unsigned int i;
         double al;
         double bt;
-        DoubleMatrix *u;
+        double ht;
+        double hx;
+        double a;
         unsigned int N;
         const IParabolicEquation *p;
     };
@@ -995,21 +999,24 @@ void IParabolicEquation::calculateL(DoubleMatrix &u, double hx, double ht, unsig
         cp->al = alpha;
         cp->bt = betta;
         cp->N = N;
-        cp->i = i;
+        cp->i = i-1;
         cp->x0 = 0.0;
         cp->y0 = u[0][i];
         cp->p = this;
-        cp->u = &u;
+        //cp->u = &u;
+        cp->ht = ht;
+        cp->hx = hx;
+        cp->a = a;
         cps[i-1] = cp;
     }
 
     DoubleMatrix m;
-    CauchyProblem::euler1(cps, 0.0, ht, M, m);
+    CauchyProblem::rungeKutta(cps, 0.0, ht, M, m);
     for (unsigned int j=1; j<=M; j++)
     {
         for (unsigned int i=1; i<=N-1; i++)
         {
-            u[j][i] = m[j-1][i-1];
+            u[j][i] = m[i-1][j-1];
         }
     }
 }
