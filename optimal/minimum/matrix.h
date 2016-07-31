@@ -77,6 +77,8 @@ public:
     //Swap content. Exchanges the content of the container by the content of x, which is another vector object of the same type. Sizes may differ.
     void swap(Vector& x);
 
+    void print(unsigned int cols = 10, char* label = NULL, unsigned int start=0, unsigned int end=0, FILE* file=stdout);
+
 private:
     unsigned int sz;
     double *pdata;
@@ -98,6 +100,9 @@ public:
     Vector& operator[] (unsigned int j);
     const Vector& operator[] (unsigned int j) const;
 
+    double& operator()(unsigned int row, unsigned int col);
+    const double& operator()(unsigned int row, unsigned int col) const;
+
     void clear();
     void resize(unsigned int rows);
 
@@ -108,6 +113,38 @@ private:
     unsigned int mrows;
     unsigned int mcols;
     Vector *pdata;
+};
+
+class MINIMUMSHARED_EXPORT Matrix2D
+{
+public:
+    explicit Matrix2D(unsigned int rows=0, unsigned int cols=0, double value=0.0);
+    virtual ~Matrix2D();
+
+    unsigned int rows() const;
+    unsigned int cols() const;
+
+    void clear();
+    void resize(unsigned int rows, unsigned int cols);
+
+    double& operator()(unsigned int row, unsigned int col);
+    const double& operator()(unsigned int row, unsigned int col) const;
+
+    double& at(unsigned int row, unsigned int col);
+    const double& at(unsigned int row, unsigned int col) const;
+
+    Matrix2D& operator=(const Matrix2D &matrix);
+    Matrix2D& operator+(const Matrix2D &matrix);
+    Matrix2D& operator-(const Matrix2D &matrix);
+    Matrix2D& operator*(const Matrix2D &matrix);
+    Matrix2D& operator/(const Matrix2D &matrix);
+    Matrix2D& operator*(const double scalar);
+
+
+private:
+    unsigned int mRows;
+    unsigned int mCols;
+    double **mData;
 };
 
 typedef Vector DoubleVector;

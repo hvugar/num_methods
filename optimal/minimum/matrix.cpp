@@ -73,9 +73,15 @@ unsigned int Vector::size() const
     return sz;
 }
 
-Vector& Vector::operator= (const Vector& x)
+Vector& Vector::operator=(const Vector& other)
 {
-    resize(x.sz, 0.0);
+    if (this != &other)
+    {
+        clear();
+        unsigned int size = other.size();
+        resize(size, 0.0);
+        for (unsigned int i=0; i<size; i++) pdata[i] = other.pdata[i];
+    }
     return *this;
 }
 
@@ -193,9 +199,33 @@ double Vector::max() const
 
 Vector Vector::mid(unsigned int s, unsigned int e) const
 {
-    Vector vector(e-s+1);
-    for (unsigned int i=s; i<=e; i++) vector[i] = (*this)[i];
+    Vector vector((e-s)+1);
+    for (unsigned int i=s; i<=e; i++) vector[i-s] = pdata[i];
     return vector;
+}
+
+void Vector::print(unsigned int cols, char *label, unsigned int start, unsigned int end, FILE *file)
+{
+    if (label != NULL) fprintf(file, "%s", label);
+
+    if (start != 0 || end != 0)
+    {
+        unsigned int N = (end-start+1) / cols;
+        for (unsigned int i=start; i<=end; i++)
+        {
+            if ((i-start)%N==0) fprintf(file, "%12.8f ", pdata[i]);
+        }
+    }
+    else
+    {
+        unsigned int N = sz / cols;
+        for (unsigned int i=0; i<sz; i++)
+        {
+            if (i%N==0) fprintf(file, "%12.8f ", pdata[i]);
+        }
+    }
+    fputs("\n", file);
+    fflush(file);
 }
 
 Matrix::Matrix(unsigned int rows, unsigned int cols, double val) : mrows(rows), mcols(cols), pdata(NULL)
@@ -238,7 +268,10 @@ const Vector& Matrix::operator[] (unsigned int j) const { return pdata[j]; }
 
 void Matrix::clear()
 {
+    //    for (unsigned int i=0; i<size(); i++)
+    //    {
 
+    //    }
 }
 
 void Matrix::resize(unsigned int rows)
@@ -293,5 +326,93 @@ void DoubleCube::Clear()
         this[k].clear();
     }
     this->clear();
+}
+
+Matrix2D::Matrix2D(unsigned int rows, unsigned int cols, double value) : mRows(rows), mCols(cols), mData(NULL)
+{
+    if (mRows > 0 && mCols > 0 && mData == NULL)
+    {
+        mData = (double**)(malloc(sizeof(double*)*rows));
+        for (unsigned int i=0; i<rows; i++)
+        {
+            mData[i] = (double*)malloc(sizeof(double)*cols);
+            for (unsigned int j=0; j<cols; j++) mData[i][j] = value;
+        }
+    }
+}
+
+Matrix2D::~Matrix2D()
+{
+    clear();
+}
+
+unsigned int Matrix2D::rows() const
+{
+    return mRows;
+}
+
+unsigned int Matrix2D::cols() const
+{
+    return mCols;
+}
+
+void Matrix2D::clear()
+{
+    if (mData!=NULL)
+    {
+        for (unsigned int i=0; i<mCols; i++) free(mData[i]);
+        free(mData);
+        mData = NULL;
+        mRows = 0.0;
+        mCols = 0.0;
+    }
+}
+
+void Matrix2D::resize(unsigned int rows, unsigned int cols)
+{
+    // not empty
+    if (mRows > 0 && mCols > 0 && mData != NULL)
+    {
+    }
+    else
+    {
+
+    }
+
+    if (mRows*mCols < rows*cols) {}
+
+    if (mRows*mCols > rows*cols) {}
+}
+
+double& Matrix2D::operator()(unsigned int row, unsigned int col)
+{
+    return mData[row][col];
+}
+
+const double& Matrix2D::operator()(unsigned int row, unsigned int col) const
+{
+    return mData[row][col];
+}
+
+double& Matrix2D::at(unsigned int row, unsigned int col)
+{
+    return mData[row][col];
+}
+
+const double& Matrix2D::at(unsigned int row, unsigned int col) const
+{
+    return mData[row][col];
+}
+
+Matrix2D& Matrix2D::operator =(const Matrix2D &matrix)
+{
+    if (this != &other)
+    {
+        clear();
+        unsigned int size = other.size();
+        resize(size, 0.0);
+        for (unsigned int i=0; i<size; i++) pdata[i] = other.pdata[i];
+    }
+    return *this;
 }
 

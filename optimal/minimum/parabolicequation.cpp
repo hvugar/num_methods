@@ -1020,3 +1020,69 @@ void IParabolicEquation::calculateL(DoubleMatrix &u, double hx, double ht, unsig
         }
     }
 }
+
+void IParabolicEquation::calculateN1(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a) const
+{
+    for (unsigned int i=0; i<u.size(); i++) u[i].clear();
+    u.clear();
+
+    u.resize(M+1);
+    for (unsigned int i=0; i<u.size(); i++) u[i].resize(N+1);
+
+    DoubleVector da(N+1);
+    DoubleVector db(N+1);
+    DoubleVector dc(N+1);
+    DoubleVector dd(N+1);
+    DoubleVector rx(N+1);
+
+    double alpha = -(a*a*ht)/(hx*hx);
+    double beta  = 1.0 + (2.0*a*a*ht)/(hx*hx);
+
+    for (unsigned int j=0; j<=M; j++)
+    {
+        if (j == 0)
+        {
+            for (unsigned int i=0; i<=N; i++)
+            {
+                u[j][i] = initial(i);
+            }
+        }
+        else
+        {
+            for (unsigned int i=0; i<=N; i++)
+            {
+                da[i] = alpha;
+                db[i] = beta;
+                dc[i] = alpha;
+                dd[i] = u[j-1][i] + ht * f(i, j);
+            }
+
+            da[0] = 0.0;
+            db[0] = 1.0 + (a*a*ht)/(hx*hx);
+            dc[0] = -(a*a*ht)/(hx*hx);
+
+            da[N] = -(a*a*ht)/(hx*hx);
+            db[N] = 1.0 + (a*a*ht)/(hx*hx);
+            dc[N] = 0.0;
+
+            dd[0] -= (a*a*ht)/(hx) * boundary(Left, j);
+            dd[N] += (a*a*ht)/(hx) * boundary(Right, j);
+
+            tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size());
+
+            for (unsigned int i=0; i<=N; i++)
+            {
+                u[j][i] = rx[i];
+            }
+
+            //u[j][0] = u[j][1]   - hx * boundary(Left, j);
+            //u[j][N] = u[j][N-1] + hx * boundary(Right, j);
+        }
+    }
+
+    da.clear();
+    db.clear();
+    dc.clear();
+    dd.clear();
+    rx.clear();
+}

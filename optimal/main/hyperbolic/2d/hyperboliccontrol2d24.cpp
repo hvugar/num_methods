@@ -156,44 +156,36 @@ void HyperbolicControl2D24::printGradients(const DoubleVector &x, unsigned int i
 
     DoubleVector g(x.size());
     const_cast<HyperbolicControl2D24*>(this)->gradient(x, g);
-    DoubleVector *eg1 = g.mid(0, 1);
-    DoubleVector *eg2 = g.mid(2, 3);
-    DoubleVector *vg1 = g.mid(4,   M+4);
-    DoubleVector *vg2 = g.mid(M+5, 2*M+5);
+    DoubleVector eg1 = g.mid(0, 1);
+    DoubleVector eg2 = g.mid(2, 3);
+    DoubleVector vg1 = g.mid(4,   M+4);
+    DoubleVector vg2 = g.mid(M+5, 2*M+5);
 
-    DoubleVector *v1 = x.mid(4,   M+4);
-    DoubleVector *v2 = x.mid(M+5, 2*M+5);
+    DoubleVector v1 = x.mid(4,   M+4);
+    DoubleVector v2 = x.mid(M+5, 2*M+5);
 
-    fprintf(f, "P1: %10.6f %10.6f Gr: %10.6f %10.6f Nr: %10.6f ", x[0], x[1], (*eg1)[0], (*eg1)[1], eg1->L2Norm());
-    eg1->L2Normalize();
-    fprintf(f, "Gr: %10.6f %10.6f Nr: %10.6f\n", (*eg1)[0], (*eg1)[1], eg1->L2Norm());
-    fprintf(f, "P2: %10.6f %10.6f Gr: %10.6f %10.6f Nr: %10.6f ", x[2], x[3], (*eg2)[0], (*eg2)[1], eg2->L2Norm());
-    eg2->L2Normalize();
-    fprintf(f, "Gr: %10.6f %10.6f Nr: %10.6f\n", (*eg2)[0], (*eg2)[1], eg2->L2Norm());
+    fprintf(f, "P1: %10.6f %10.6f Gr: %10.6f %10.6f Nr: %10.6f ", x[0], x[1], eg1[0], eg1[1], eg1.L2Norm());
+    eg1.L2Normalize();
+    fprintf(f, "Gr: %10.6f %10.6f Nr: %10.6f\n", eg1[0], eg1[1], eg1.L2Norm());
+    fprintf(f, "P2: %10.6f %10.6f Gr: %10.6f %10.6f Nr: %10.6f ", x[2], x[3], eg2[0], eg2[1], eg2.L2Norm());
+    eg2.L2Normalize();
+    fprintf(f, "Gr: %10.6f %10.6f Nr: %10.6f\n", eg2[0], eg2[1], eg2.L2Norm());
     fprintf(f, "---\n");
 
-    IPrinter::printVector(*v1, "v1:", 10, 0, M, f);
-    fprintf(f, "N:  %10.6f\n", vg1->L2Norm());
-    IPrinter::printVector(*vg1, "vg1:", 10, 0, M, f);
-    vg1->L2Normalize();
-    IPrinter::printVector(*vg1, "ng1:", 10, 0, M, f);
+    IPrinter::printVector(v1, "v1:", 10, 0, M, f);
+    fprintf(f, "N:  %10.6f\n", vg1.L2Norm());
+    IPrinter::printVector(vg1, "vg1:", 10, 0, M, f);
+    vg1.L2Normalize();
+    IPrinter::printVector(vg1, "ng1:", 10, 0, M, f);
     fprintf(f, "---\n");
 
-    IPrinter::printVector(*v2, "v2:", 10, 0, M, f);
-    fprintf(f, "N:  %10.6f\n", vg2->L2Norm());
-    IPrinter::printVector(*vg2, "vg2:", 10, 0, M, f);
-    vg2->L2Normalize();
-    IPrinter::printVector(*vg2, "ng2:", 10, 0, M, f);
+    IPrinter::printVector(v2, "v2:", 10, 0, M, f);
+    fprintf(f, "N:  %10.6f\n", vg2.L2Norm());
+    IPrinter::printVector(vg2, "vg2:", 10, 0, M, f);
+    vg2.L2Normalize();
+    IPrinter::printVector(vg2, "ng2:", 10, 0, M, f);
     fprintf(f, "--------------------------------------------------------------------------------------------------\n");
     fflush(f);
-
-    delete eg1;
-    delete eg2;
-    delete vg1;
-    delete vg2;
-
-    delete v1;
-    delete v2;
 }
 
 void HyperbolicControl2D24::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double alpha, RnFunction* fn) const
