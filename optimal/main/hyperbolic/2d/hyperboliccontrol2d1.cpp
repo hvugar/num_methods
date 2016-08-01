@@ -48,8 +48,8 @@ HyperbolicControl2D1::HyperbolicControl2D1()
     a2 = 1.0;
     count = 0;
 
-    U0.resize(N2+1); for (unsigned int j=0; j<=N2; j++) U0[j].resize(N1+1);
-    U1.resize(N2+1); for (unsigned int j=0; j<=N2; j++) U1[j].resize(N1+1);
+    U0.resize(N2+1, N1+1); //for (unsigned int j=0; j<=N2; j++) U0[j].resize(N1+1);
+    U1.resize(N2+1, N1+1); //for (unsigned int j=0; j<=N2; j++) U1[j].resize(N1+1);
     c.resize(2*L);
 
     // Initializing........................................

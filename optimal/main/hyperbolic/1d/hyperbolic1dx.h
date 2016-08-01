@@ -4,9 +4,9 @@
 #include <function.h>
 #include <printer.h>
 #include <projection.h>
-#include <doublevector.h>
+#include <vector2d.h>
+#include <matrix2d.h>
 #include <hyperbolicequation.h>
-#include <tomasmethod.h>
 #include <gradient_cjt.h>
 #include <stdlib.h>
 #include <math.h>

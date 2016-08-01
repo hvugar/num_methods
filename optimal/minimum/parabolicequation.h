@@ -2,7 +2,9 @@
 #define PARABOLICQUATION_H
 
 #include "global.h"
-#include "tomasmethod.h"
+#include "vector2d.h"
+#include "matrix2d.h"
+#include "matrix3d.h"
 #include "printer.h"
 
 class MINIMUMSHARED_EXPORT IParabolicEquation

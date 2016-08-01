@@ -115,49 +115,4 @@ private:
     Vector *pdata;
 };
 
-class MINIMUMSHARED_EXPORT Matrix2D
-{
-public:
-    explicit Matrix2D(unsigned int rows=0, unsigned int cols=0, double value=0.0);
-    virtual ~Matrix2D();
-
-    unsigned int rows() const;
-    unsigned int cols() const;
-
-    void clear();
-    void resize(unsigned int rows, unsigned int cols);
-
-    double& operator()(unsigned int row, unsigned int col);
-    const double& operator()(unsigned int row, unsigned int col) const;
-
-    double& at(unsigned int row, unsigned int col);
-    const double& at(unsigned int row, unsigned int col) const;
-
-    Matrix2D& operator=(const Matrix2D &matrix);
-    Matrix2D& operator+(const Matrix2D &matrix);
-    Matrix2D& operator-(const Matrix2D &matrix);
-    Matrix2D& operator*(const Matrix2D &matrix);
-    Matrix2D& operator/(const Matrix2D &matrix);
-    Matrix2D& operator*(const double scalar);
-
-
-private:
-    unsigned int mRows;
-    unsigned int mCols;
-    double **mData;
-};
-
-typedef Vector DoubleVector;
-typedef Matrix DoubleMatrix;
-
-class MINIMUMSHARED_EXPORT DoubleCube : public std::vector<DoubleMatrix>
-{
-public:
-    DoubleCube();
-    virtual ~DoubleCube();
-
-    void Resize(unsigned int Nz, unsigned int Ny, unsigned Nx);
-    void Clear();
-};
-
 #endif // MATRIX_H

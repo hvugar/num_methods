@@ -1,5 +1,4 @@
 #include "hyperboliccontrol1d.h"
-#include <tomasmethod.h>
 #include <gradient_cjt.h>
 
 void HyperbolicControl1D::main()

@@ -4,7 +4,6 @@
 #include "global.h"
 
 #include "r1minimize.h"
-#include "doublevector.h"
 #include "exceptions.h"
 
 class RnFunction;

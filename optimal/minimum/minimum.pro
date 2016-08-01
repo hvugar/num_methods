@@ -26,19 +26,22 @@ SOURCES += \
     gradient_cjt.cpp \
     gradient_sd.cpp \
     penalty.cpp \
-    doublevector.cpp \
+#    doublevector.cpp \
     printer.cpp \
     gradient_cs.cpp \
     projection.cpp \
     rungekutta.cpp \
-    tomasmethod.cpp \
+#    tomasmethod.cpp \
     integral.cpp \
     hyperbolicequation.cpp \
     parabolicequation.cpp \
     exceptions.cpp \
     ode1storder.cpp \
-    matrix.cpp \
-    cgradient.c
+#    matrix.cpp \
+    cgradient.c \
+    matrix2d.cpp \
+    vector2d.cpp \
+    matrix3d.cpp
 
 HEADERS += global.h \
     cmethods.h \
@@ -49,16 +52,19 @@ HEADERS += global.h \
     gradient_cjt.h \
     gradient_sd.h \
     penalty.h \
-    doublevector.h \
+#    doublevector.h \
     printer.h \
     gradient_cs.h \
     projection.h \
     rungekutta.h \
-    tomasmethod.h \
+#    tomasmethod.h \
     integral.h \
     hyperbolicequation.h \
     parabolicequation.h \
     exceptions.h \
     ode1storder.h \
-    matrix.h \
-    cgradient.h
+#    matrix.h \
+    cgradient.h \
+    matrix2d.h \
+    vector2d.h \
+    matrix3d.h

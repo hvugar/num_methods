@@ -73,8 +73,8 @@ HyperbolicControl2D::HyperbolicControl2D()
     alpha1 = 1.0;
     qamma = 1.0;
 
-    U0.resize(N2+1); for (unsigned int j=0; j<=N2; j++) U0[j].resize(N1+1);
-    U1.resize(N2+1); for (unsigned int j=0; j<=N2; j++) U1[j].resize(N1+1);
+    U0.resize(N2+1, N1+1); //for (unsigned int j=0; j<=N2; j++) U0[j].resize(N1+1);
+    U1.resize(N2+1, N1+1); //for (unsigned int j=0; j<=N2; j++) U1[j].resize(N1+1);
 
     L = 1;
     E.resize(2*L);
@@ -86,8 +86,8 @@ HyperbolicControl2D::HyperbolicControl2D()
     //E[5] = 0.8;//80
 
     //initialize
-    U0.resize(N2+1); for (unsigned int j=0; j<=N2; j++) U0[j].resize(N1+1);
-    U1.resize(N2+1); for (unsigned int j=0; j<=N2; j++) U1[j].resize(N1+1);
+    U0.resize(N2+1, N1+1); //for (unsigned int j=0; j<=N2; j++) U0[j].resize(N1+1);
+    U1.resize(N2+1, N1+1); //for (unsigned int j=0; j<=N2; j++) U1[j].resize(N1+1);
 
     DoubleVector v(L*(M+1));
     for (unsigned int k=0; k<=M; k++)

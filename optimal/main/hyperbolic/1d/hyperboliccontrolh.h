@@ -7,7 +7,6 @@
 #include <hyperbolicequation.h>
 #include <printer.h>
 #include <gradient_cjt.h>
-#include <tomasmethod.h>
 
 class HyperbolicControlH : public R1Function, public RnFunction, public IGradient, public IHyperbolicEquation, public IBackwardHyperbolicEquation, public IPrinter
 {

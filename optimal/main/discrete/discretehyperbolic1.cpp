@@ -1,5 +1,4 @@
 #include "discretehyperbolic1.h"
-#include <tomasmethod.h>
 #include <gradient_cjt.h>
 
 void DiscreteHyperbolic1::main()
@@ -158,8 +157,8 @@ void DiscreteHyperbolic1::calculateP(const DoubleVector& f0, const DoubleMatrix 
     for (unsigned int j=0; j<psi.size(); j++) psi[j].clear();
     psi.clear();
 
-    psi.resize(M+D+1);
-    for (unsigned int j=0; j<psi.size(); j++) psi[j].resize(N+1);
+    psi.resize(M+D+1, N+1);
+    //for (unsigned int j=0; j<psi.size(); j++) psi[j].resize(N+1);
 
     double A1 = -(lamda*a*a*ht*ht)/(hx*hx);
     double B0 = 1.0 + (2.0*lamda*a*a*ht*ht)/(hx*hx);

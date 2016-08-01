@@ -55,8 +55,7 @@ void createHeatImage1(int argc, char *argv[])
     double maximum = -9999.9;
     double minimum = +9999.9;
 
-    DoubleMatrix m;
-    m.resize(height);
+    DoubleMatrix m(height, width);
 
     unsigned int j=0;
     QString line = in.readLine();

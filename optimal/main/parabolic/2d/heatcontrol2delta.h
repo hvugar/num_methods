@@ -8,7 +8,6 @@
 #include <parabolicequation.h>
 #include <printer.h>
 #include <projection.h>
-#include <tomasmethod.h>
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
 

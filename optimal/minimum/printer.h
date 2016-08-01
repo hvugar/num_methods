@@ -2,9 +2,9 @@
 #define PRINTER_H
 
 #include "global.h"
-#include "doublevector.h"
 #include "function.h"
 #include "gradient.h"
+#include "matrix2d.h"
 
 class MINIMUMSHARED_EXPORT IPrinter
 {

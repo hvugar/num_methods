@@ -1,8 +1,9 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
-#include "doublevector.h"
+//#include "doublevector.h"
 #include "global.h"
+#include "vector2d.h"
 
 using namespace std;
 

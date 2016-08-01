@@ -90,10 +90,8 @@ void IParabolicEquation::calculateU(DoubleMatrix &u, double hx, double ht, unsig
     for (unsigned int i=0; i<u.size(); i++) u[i].clear();
     u.clear();
 
-    u.resize(M+1);
-    //printf("%d\n", u.size());
-
-    for (unsigned int i=0; i<u.size(); i++) u[i].resize(N+1);
+    u.resize(M+1, N+1);
+    //for (unsigned int i=0; i<u.size(); i++) u[i].resize(N+1);
 
     DoubleVector da(N-1);
     DoubleVector db(N-1);
@@ -153,8 +151,8 @@ void IParabolicEquation::calculateN(DoubleMatrix &u, double hx, double ht, unsig
     for (unsigned int i=0; i<u.size(); i++) u[i].clear();
     u.clear();
 
-    u.resize(M+1);
-    for (unsigned int i=0; i<u.size(); i++) u[i].resize(N+1);
+    u.resize(M+1, N+1);
+    //for (unsigned int i=0; i<u.size(); i++) u[i].resize(N+1);
 
     DoubleVector da(N-1);
     DoubleVector db(N-1);
@@ -217,8 +215,8 @@ void IBackwardParabolicEquation::calculateU(DoubleMatrix &psi, double hx, double
     for (unsigned int i=0; i<psi.size(); i++) psi[i].clear();
     psi.clear();
 
-    psi.resize(M+1);
-    for (unsigned int j=0; j<psi.size(); j++) psi[j].resize(N+1);
+    psi.resize(M+1, N+1);
+    //for (unsigned int j=0; j<psi.size(); j++) psi[j].resize(N+1);
 
     DoubleVector da(N-1);
     DoubleVector db(N-1);
@@ -280,10 +278,10 @@ void IParabolicEquation2D::caluclateMVD(DoubleMatrix &u, double h1, double h2, d
     //cleaning matrix
     for (unsigned int j=0; j<u.size(); j++) u[j].clear();
     u.clear();
-    u.resize(N2+1); for (unsigned int j=0; j<=N2; j++) u[j].resize(N1+1);
+    u.resize(N2+1, N1+1);// for (unsigned int j=0; j<=N2; j++) u[j].resize(N1+1);
 
     DoubleMatrix uh;
-    uh.resize(N2+1); for (unsigned int j=0; j<=N2; j++) uh[j].resize(N1+1);
+    uh.resize(N2+1, N1+1);// for (unsigned int j=0; j<=N2; j++) uh[j].resize(N1+1);
 
     DoubleVector da1(N1-1);
     DoubleVector db1(N1-1);
@@ -422,10 +420,10 @@ void IParabolicEquation2D::caluclateMVD1(DoubleMatrix &u, double h1, double h2, 
     //cleaning matrix
     for (unsigned int j=0; j<u.size(); j++) u[j].clear();
     u.clear();
-    u.resize(N2+1); for (unsigned int j=0; j<=N2; j++) u[j].resize(N1+1);
+    u.resize(N2+1, N1+1);// for (unsigned int j=0; j<=N2; j++) u[j].resize(N1+1);
 
     DoubleMatrix uh;
-    uh.resize(N2+1); for (unsigned int j=0; j<=N2; j++) uh[j].resize(N1+1);
+    uh.resize(N2+1, N1+1);// for (unsigned int j=0; j<=N2; j++) uh[j].resize(N1+1);
 
     DoubleVector da1(N1-1);
     DoubleVector db1(N1-1);
@@ -552,10 +550,10 @@ void IParabolicEquation2D::caluclateMFS(DoubleMatrix &u, double h1, double h2, d
     //cleaning matrix
     for (unsigned int j=0; j<u.size(); j++) u[j].clear();
     u.clear();
-    u.resize(N2+1); for (unsigned int j=0; j<=N2; j++) u[j].resize(N1+1);
+    u.resize(N2+1, N1+1);// for (unsigned int j=0; j<=N2; j++) u[j].resize(N1+1);
 
     DoubleMatrix uh;
-    uh.resize(N2+1); for (unsigned int j=0; j<=N2; j++) uh[j].resize(N1+1);
+    uh.resize(N2+1, N1+1);// for (unsigned int j=0; j<=N2; j++) uh[j].resize(N1+1);
 
     DoubleVector da1(N1-1);
     DoubleVector db1(N1-1);
@@ -959,10 +957,10 @@ void IParabolicEquation::calculateL(DoubleMatrix &u, double hx, double ht, unsig
 {
     u.clear();
 
-    u.resize(M+1);
+    u.resize(M+1, N+1);
     for (unsigned int j=0; j<=M; j++)
     {
-        u[j].resize(N+1);
+        //u[j].resize(N+1);
         u[j][0] = boundary(Left, j);
         u[j][N] = boundary(Right, j);
     }
@@ -1026,8 +1024,8 @@ void IParabolicEquation::calculateN1(DoubleMatrix &u, double hx, double ht, unsi
     for (unsigned int i=0; i<u.size(); i++) u[i].clear();
     u.clear();
 
-    u.resize(M+1);
-    for (unsigned int i=0; i<u.size(); i++) u[i].resize(N+1);
+    u.resize(M+1, N+1);
+    //for (unsigned int i=0; i<u.size(); i++) u[i].resize(N+1);
 
     DoubleVector da(N+1);
     DoubleVector db(N+1);

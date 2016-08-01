@@ -2,7 +2,7 @@
 #define SAMPLELOADERBORDER_H
 
 #include <function.h>
-#include <doublevector.h>
+#include <matrix2d.h>
 #include <rungekutta.h>
 #include <printer.h>
 #include "cmethods.h"

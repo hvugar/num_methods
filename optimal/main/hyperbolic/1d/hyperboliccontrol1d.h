@@ -3,7 +3,8 @@
 
 #include <function.h>
 #include <hyperbolicequation.h>
-#include <doublevector.h>
+#include <vector2d.h>
+#include <matrix2d.h>
 #include <printer.h>
 #include <projection.h>
 

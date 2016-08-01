@@ -3,6 +3,9 @@
 #include "control/example1.h"
 #include "control/example2.h"
 
+#include <matrix2d.h>
+#include <time.h>
+
 struct A : public CauchyProblem
 {
     double f(double x, const DoubleVector &y) const
@@ -96,14 +99,15 @@ int main(int argc, char *argv[])
 {
     C_UNUSED(argc);
     C_UNUSED(argv);
+    srand(time(NULL));
 
-    Matrix2D *m = new Matrix2D(100, 200);
-    printf("%d %d\n", m->rows(), m->cols());
-    printf("%f\n", (*m)(0,0));
-    (*m)(0,0) = 10;
-    printf("%f\n", (*m)(0,0));
-    m->at(10, 20) = 12.0f;
-    printf("%f\n", m->at(10,20));
+    DoubleMatrix m;
+    m.resize(6, 5);
+    m.randomData();
+    m.print();
+    puts("---");
+    m.resize(9, 8);
+    m.print();
 
     //    {
     //        DoubleMatrix u;

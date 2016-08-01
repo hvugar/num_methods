@@ -349,8 +349,8 @@ void HeatControl2Delta::initialize()
 
     DoubleVector x = O;
     // initializing U
-    U.resize(N2+1);
-    for (unsigned int j=0; j<=N2; j++) U[j].resize(N1+1);
+    U.resize(N2+1, N1+1);
+    //for (unsigned int j=0; j<=N2; j++) U[j].resize(N1+1);
 
 #ifdef POWER_OPTIMIZE
     x.resize( 2*L + (M+1)*L );

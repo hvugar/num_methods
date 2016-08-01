@@ -2,7 +2,6 @@
 #define TOMASMETHOD_H
 
 #include "global.h"
-#include "doublevector.h"
 
 #ifdef __cplusplus
 extern "C" {

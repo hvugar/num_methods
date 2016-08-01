@@ -5,7 +5,6 @@
 #include <vector>
 #include <string.h>
 #include <stdlib.h>
-#include "matrix.h"
 
 using namespace std;
 

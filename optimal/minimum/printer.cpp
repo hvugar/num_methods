@@ -11,10 +11,10 @@ void IPrinter::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n
 {
     C_UNUSED(s);
 
-    unsigned int size = x.size();
-    unsigned int M = x.size() / m;
+    unsigned int rows = x.rows();
+    unsigned int M = rows / m;
 
-    for (unsigned int j=0; j<size; j++)
+    for (unsigned int j=0; j<rows; j++)
     {
         unsigned int xj_size = x[j].size();
         unsigned int N = xj_size / n;
@@ -33,6 +33,7 @@ void IPrinter::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n
 void IPrinter::printAsMatrix(const DoubleVector &x, unsigned int M, unsigned int N, unsigned int m, unsigned int n, const char* s, FILE* f)
 {
     C_UNUSED(s);
+
     for (unsigned int j=0; j<=M; j++)
     {
         if (j%(M/m)==0)

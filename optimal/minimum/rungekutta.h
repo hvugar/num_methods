@@ -3,6 +3,7 @@
 
 #include "global.h"
 #include "function.h"
+#include "matrix2d.h"
 #include <vector>
 
 typedef double (*R2FunctionX)(double x, double y);

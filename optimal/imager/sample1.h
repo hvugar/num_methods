@@ -13,7 +13,8 @@
 #include <QTimer>
 #include <QRunnable>
 #include <QVector>
-#include <doublevector.h>
+#include <vector2d.h>
+#include <matrix2d.h>
 #include <hyperbolicequation.h>
 
 class QSample1 : public QWidget, public IHyperbolicEquation

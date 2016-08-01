@@ -11,7 +11,9 @@
 #include <stdlib.h>
 #include <QVector>
 #include <math.h>
-#include <doublevector.h>
+//#include <doublevector.h>
+#include <vector2d.h>
+#include <matrix2d.h>
 
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))

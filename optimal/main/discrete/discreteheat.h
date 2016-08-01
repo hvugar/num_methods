@@ -2,7 +2,8 @@
 #define DISCRETEHEAT_H
 
 #include <function.h>
-#include <doublevector.h>
+#include <vector2d.h>
+#include <matrix2d.h>
 #include <gradient_cjt.h>
 #include <parabolicequation.h>
 #include <printer.h>

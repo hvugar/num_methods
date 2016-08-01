@@ -47,10 +47,10 @@ HeatControl2D::HeatControl2D(unsigned int m, unsigned int n2, unsigned int n1)
     h1 = (x11-x10)/N1;
     h2 = (x21-x20)/N2;
 
-    U.resize(N2+1);
+    U.resize(N2+1, N1+1);
     for (unsigned int j=0; j<=N2; j++)
     {
-        U[j].resize(N1+1);
+        //U[j].resize(N1+1);
         for (unsigned int i=0; i<=N1; i++) U[j][i] = u(i*h1, j*h2, M*ht);
     }
 }

@@ -3,6 +3,7 @@
 
 #include "global.h"
 #include "function.h"
+#include <vector>
 
 class MINIMUMSHARED_EXPORT PenaltyMethod
 {

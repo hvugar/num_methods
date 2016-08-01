@@ -148,8 +148,8 @@ void DiscreteHeat::calculateP(const DoubleVector &f, const DoubleVector &u, Doub
     for (unsigned int i=0; i<psi.size(); i++) psi[i].clear();
     psi.clear();
 
-    psi.resize(M+1);
-    for (unsigned int i=0; i<psi.size(); i++) psi[i].resize(N+1);
+    psi.resize(M+1, N+1);
+    //for (unsigned int i=0; i<psi.size(); i++) psi[i].resize(N+1);
 
     DoubleVector a1(N-1);
     DoubleVector b1(N-1);

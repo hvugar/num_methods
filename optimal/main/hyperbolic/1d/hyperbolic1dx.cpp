@@ -191,7 +191,7 @@ double Hyperbolic1DX::bf(unsigned int i, unsigned int j) const
     return 0.0;
 }
 
-void Hyperbolic1DX::calculateG(const DoubleVector& e, const DoubleVector& psi, DoubleVector& g, unsigned int j)
+void Hyperbolic1DX::calculateG(const DoubleVector &e, const DoubleVector& psi, DoubleVector& g, unsigned int j)
 {
     double psiX;
     if (j==0 || j==M)

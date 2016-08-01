@@ -2,7 +2,8 @@
 #define HEATCONTROL2D_H
 
 #include <function.h>
-#include <doublevector.h>
+#include <vector2d.h>
+#include <matrix2d.h>
 #include <parabolicequation.h>
 #include <gradient_cjt.h>
 #include <gradient_sd.h>

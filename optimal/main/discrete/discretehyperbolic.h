@@ -2,7 +2,8 @@
 #define DISCRETEHYPERBOLIC_H
 
 #include <function.h>
-#include <doublevector.h>
+#include <vector2d.h>
+#include <matrix2d.h>
 #include <hyperbolicequation.h>
 #include <printer.h>
 

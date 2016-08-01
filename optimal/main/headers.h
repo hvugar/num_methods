@@ -10,7 +10,8 @@
 #include <gradient_sd.h>
 #include <gradient_cjt.h>
 #include <rungekutta.h>
-#include <doublevector.h>
+#include <vector2d.h>
+#include <matrix2d.h>
 #include <parabolicequation.h>
 #include <hyperbolicequation.h>
 #include <r1minimize.h>

@@ -2,9 +2,10 @@
 #define HYPERBOLICEQUATION_H
 
 #include "global.h"
-#include "doublevector.h"
-#include <cmethods.h>
-#include "tomasmethod.h"
+#include "vector2d.h"
+#include "matrix2d.h"
+#include "matrix3d.h"
+#include "cmethods.h"
 #include "printer.h"
 
 class MINIMUMSHARED_EXPORT IHyperbolicEquation
