@@ -36,9 +36,9 @@
 //    this->clear();
 //}
 
-DoubleCube::DoubleCube(unsigned int z, unsigned int rows, unsigned int cols, double value) : mZ(z), mRows(rows), mCols(cols), pData(NULL)
+DoubleCube::DoubleCube(unsigned int z, unsigned int rows, unsigned int cols, double value) : mDepth(z), mRows(rows), mCols(cols), pData(NULL)
 {
-    if (mZ != 0 && mRows != 0 && mCols != 0)
+    if (mDepth != 0 && mRows != 0 && mCols != 0)
     {
         pData = (double***) malloc(sizeof(double**) * z);
         for (unsigned int k=0; k<z; k++)
@@ -62,7 +62,7 @@ void DoubleCube::clear()
 {
     if (pData == NULL)
     {
-        for (unsigned int k=0; k<mZ; k++)
+        for (unsigned int k=0; k<mDepth; k++)
         {
             for (unsigned int j=0; j<mRows; j++)
             {
@@ -77,7 +77,7 @@ void DoubleCube::clear()
 
         mCols = 0;
         mRows = 0;
-        mZ = 0;
+        mDepth = 0;
     }
 }
 
@@ -88,4 +88,19 @@ void DoubleCube::resize(unsigned int z, unsigned int rows, unsigned int cols, do
 
 DoubleMatrix DoubleCube::operator [](unsigned int z) const
 {
+}
+
+unsigned int DoubleCube::depth() const
+{
+    return mDepth;
+}
+
+unsigned int DoubleCube::rows() const
+{
+    return mRows;
+}
+
+unsigned int DoubleCube::cols() const
+{
+    return mCols;
 }

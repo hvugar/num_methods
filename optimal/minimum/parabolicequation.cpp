@@ -676,14 +676,15 @@ void IParabolicEquation2D::caluclateMFS(DoubleMatrix &u, double h1, double h2, d
 void IParabolicEquation2D::caluclateMVD(DoubleCube &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
 {
     //cleaning cube
-    for (unsigned int k=0; k<u.size(); k++)
-    {
-        unsigned int uk_size = u[k].size();
-        for (unsigned int j=0; j<uk_size; j++) u[k][j].clear();
-        u[k].clear();
-    }
-    u.clear();
-    u.resize(M+1);
+//    for (unsigned int k=0; k<u.size(); k++)
+//    {
+//        unsigned int uk_size = u[k].size();
+//        for (unsigned int j=0; j<uk_size; j++) u[k][j].clear();
+//        u[k].clear();
+//    }
+//    u.clear();
+//    u.resize(M+1);
+    u.resize(M+1, N2+1, N1+1);
 
     DoubleMatrix u0(N2+1);
     for (unsigned int j=0; j<=N2; j++) u0[j].resize(N1+1);
@@ -742,8 +743,8 @@ void IParabolicEquation2D::caluclateMVD(DoubleCube &u, double h1, double h2, dou
                 da1[0]     = 0.0;
                 dc1[N1-2]  = 0.0;
 
-                u1[j][0]  = boundary(0, j, 2*k-1);//m1(j, 2*k-1);
-                u1[j][N1] = boundary(N1, j, 2*k-1);//m2(j, 2*k-1);
+                u1[j][0]  = boundary(0, j, 2*k-1);
+                u1[j][N1] = boundary(N1, j, 2*k-1);
 
                 dd1[0]    -= x1_a * u1[j][0];
                 dd1[N1-2] -= x1_a * u1[j][N1];
@@ -758,8 +759,8 @@ void IParabolicEquation2D::caluclateMVD(DoubleCube &u, double h1, double h2, dou
 
             for (unsigned int i=0; i<=N1; i++)
             {
-                u1[0][i]  = boundary(i, 0, 2*k-1);//m3(i, 2*k-1);
-                u1[N2][i] = boundary(i, N2, 2*k-1);//m4(i, 2*k-1);
+                u1[0][i]  = boundary(i, 0, 2*k-1);
+                u1[N2][i] = boundary(i, N2, 2*k-1);
             }
 
             // Approximation to x2 direction
@@ -816,14 +817,15 @@ void IParabolicEquation2D::caluclateMVD(DoubleCube &u, double h1, double h2, dou
 void IBackwardParabolicEquation2D::caluclateMVD(DoubleCube &psi, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
 {
     //cleaning cube
-    for (unsigned int k=0; k<psi.size(); k++)
-    {
-        unsigned int uk_size = psi[k].size();
-        for (unsigned int j=0; j<uk_size; j++) psi[k][j].clear();
-        psi[k].clear();
-    }
-    psi.clear();
-    psi.resize(M+1);
+//    for (unsigned int k=0; k<psi.size(); k++)
+//    {
+//        unsigned int uk_size = psi[k].size();
+//        for (unsigned int j=0; j<uk_size; j++) psi[k][j].clear();
+//        psi[k].clear();
+//    }
+//    psi.clear();
+//    psi.resize(M+1);
+    psi.resize(M+1, N2+1, N1+1);
 
     DoubleMatrix psi0(N2+1);
     for (unsigned int j=0; j<=N2; j++) psi0[j].resize(N1+1);

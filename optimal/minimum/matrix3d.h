@@ -28,8 +28,12 @@ public:
 
     DoubleMatrix operator[] (unsigned int z) const;
 
+    unsigned int depth() const;
+    unsigned int rows() const;
+    unsigned int cols() const;
+
 private:
-    unsigned int mZ;
+    unsigned int mDepth;
     unsigned int mRows;
     unsigned int mCols;
     double ***pData;

@@ -102,8 +102,8 @@ HyperbolicControl2D::HyperbolicControl2D()
     pv = &v;
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M);
-    DoubleMatrix &u0 = c[M];
-    DoubleMatrix &u1 = c[M-2];
+    const DoubleMatrix &u0 = c[M];
+    const DoubleMatrix &u1 = c[M-2];
     for (unsigned int j=0; j<=N2; j++)
     {
         for (unsigned int i=0; i<=N1; i++)
@@ -141,8 +141,8 @@ double HyperbolicControl2D::fx(const DoubleVector &v)
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M);
 
-    DoubleMatrix &u0 = c[M];
-    DoubleMatrix &u1 = c[M-2];
+    const DoubleMatrix &u0 = c[M];
+    const DoubleMatrix &u1 = c[M-2];
 
     double sum = 0.0;
 

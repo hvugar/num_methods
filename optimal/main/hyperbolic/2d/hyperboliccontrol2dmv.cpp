@@ -129,8 +129,8 @@ double HyperbolicControl2DMV::fx(const DoubleVector &v)
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
 
-    DoubleMatrix &u0 = c[M];
-    DoubleMatrix &u1 = c[M-2];
+    const DoubleMatrix &u0 = c[M];
+    const DoubleMatrix &u1 = c[M-2];
 
     double sum = 0.0;
 
@@ -185,14 +185,14 @@ void HyperbolicControl2DMV::gradient(const DoubleVector &v, DoubleVector &g)
     DoubleCube u;
     IHyperbolicEquation2D::calculateU1(u, h1, h2, ht, N1, N2, M, a, a, qamma);
 
-    IPrinter::printMatrix(u[u.size()-1]);
+    IPrinter::printMatrix(u[u.depth()-1]);
 
     pu = &u;
     DoubleCube p;
     IBackwardHyperbolicEquation2D::calculateU1(p, h1, h2, ht, N1, N2, M, a, a, qamma);
 
     puts("---");
-    IPrinter::printMatrix(p[p.size()-1]);
+    IPrinter::printMatrix(p[p.depth()-1]);
 
     unsigned int i,j;
     for (unsigned int k=0; k<=M; k++)

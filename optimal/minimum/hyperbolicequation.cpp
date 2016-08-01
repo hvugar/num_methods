@@ -427,14 +427,16 @@ void IHyperbolicEquation2D::calculateMVD(DoubleMatrix &u, double h1, double h2, 
 void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, double ht, double N1, double N2, double M, double a1, double a2) const
 {
     //cleaning cube
-    for (unsigned int k=0; k<u.size(); k++)
-    {
-        unsigned int uk_size = u[k].size();
-        for (unsigned int j=0; j<uk_size; j++) u[k][j].clear();
-        u[k].clear();
-    }
-    u.clear();
-    u.resize(M+1);
+//    for (unsigned int k=0; k<u.size(); k++)
+//    {
+//        unsigned int uk_size = u[k].size();
+//        for (unsigned int j=0; j<uk_size; j++) u[k][j].clear();
+//        u[k].clear();
+//    }
+//    u.clear();
+//    u.resize(M+1);
+
+    u.resize(M+1, N2+1, N1+1);
 
     DoubleVector da1(N1-1);
     DoubleVector db1(N1-1);
@@ -462,8 +464,8 @@ void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, do
     {
         if (k==1)
         {
-            u[0].resize(N2+1, N1+1);
-            u[1].resize(N2+1, N1+1);
+            //u[0].resize(N2+1, N1+1);
+            //u[1].resize(N2+1, N1+1);
 
             for (unsigned int j=0; j<=N2; j++)
             {
@@ -476,7 +478,7 @@ void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, do
         }
         else
         {
-            u[k].resize(N2+1, N1+1);
+            //u[k].resize(N2+1, N1+1);
 
             if ((k % 2) == 0)
             {
@@ -569,14 +571,15 @@ void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, do
 void IHyperbolicEquation2D::calculateU1(DoubleCube &u, double h1, double h2, double ht, double N1, double N2, double M, double a1, double a2, double qamma) const
 {
     //cleaning cube
-    for (unsigned int k=0; k<u.size(); k++)
-    {
-        unsigned int uk_size = u[k].size();
-        for (unsigned int j=0; j<uk_size; j++) u[k][j].clear();
-        u[k].clear();
-    }
-    u.clear();
-    u.resize(M+1);
+//    for (unsigned int k=0; k<u.size(); k++)
+//    {
+//        unsigned int uk_size = u[k].size();
+//        for (unsigned int j=0; j<uk_size; j++) u[k][j].clear();
+//        u[k].clear();
+//    }
+//    u.clear();
+//    u.resize(M+1);
+    u.resize(M+1, N2+1, N1+1);
 
     DoubleVector da1(N1-1);
     DoubleVector db1(N1-1);
@@ -602,8 +605,8 @@ void IHyperbolicEquation2D::calculateU1(DoubleCube &u, double h1, double h2, dou
     {
         if (k==1)
         {
-            u[0].resize(N2+1, N1+1);
-            u[1].resize(N2+1, N1+1);
+            //u[0].resize(N2+1, N1+1);
+            //u[1].resize(N2+1, N1+1);
 
             for (unsigned int j=0; j<=N2; j++)
             {
@@ -616,7 +619,7 @@ void IHyperbolicEquation2D::calculateU1(DoubleCube &u, double h1, double h2, dou
         }
         else
         {
-            u[k].resize(N2+1, N1+1);
+            //u[k].resize(N2+1, N1+1);
 
             if ((k % 2) == 0)
             {
@@ -1017,14 +1020,15 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleMatrix &u, double h1, doubl
 void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double h2, double ht, double N1, double N2, double M, double a1, double a2) const
 {
     //cleaning cube
-    for (unsigned int k=0; k<p.size(); k++)
-    {
-        unsigned int uk_size = p[k].size();
-        for (unsigned int j=0; j<uk_size; j++) p[k][j].clear();
-        p[k].clear();
-    }
-    p.clear();
-    p.resize(M+1);
+//    for (unsigned int k=0; k<p.size(); k++)
+//    {
+//        unsigned int uk_size = p[k].size();
+//        for (unsigned int j=0; j<uk_size; j++) p[k][j].clear();
+//        p[k].clear();
+//    }
+//    p.clear();
+//    p.resize(M+1);
+    p.resize(M+1, N2+1, N1+1);
 
     DoubleVector da1(N1-1);
     DoubleVector db1(N1-1);
@@ -1041,12 +1045,10 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
     double x1_a = -(a1*a1*ht*ht)/(h1*h1);
     double x1_b  = 1.0 + (2.0*a1*a1*ht*ht)/(h1*h1);
     double x1_c = (a2*a2*ht*ht)/(h2*h2);
-    //    double x1_d = 1.0 - (a2*a2*ht)/(h2*h2);
 
     double x2_a = -(a2*a2*ht*ht)/(h2*h2);
     double x2_b  = 1.0 + (2.0*a2*a2*ht*ht)/(h2*h2);
     double x2_c = (a1*a1*ht*ht)/(h1*h1);
-    //double x2_d = 1.0 - (a1*a1*ht)/(h1*h1);
 
     for (unsigned int k1=1; k1<=M; k1++)
     {
@@ -1054,8 +1056,8 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
 
         if (k==(M-1))
         {
-            p[M].resize(N2+1, N1+1);   //for (unsigned int j=0; j<=N2; j++) p[M][j].resize(N1+1);
-            p[M-1].resize(N2+1, N1+1); //for (unsigned int j=0; j<=N2; j++) p[M-1][j].resize(N1+1);
+            //p[M].resize(N2+1, N1+1);   //for (unsigned int j=0; j<=N2; j++) p[M][j].resize(N1+1);
+            //p[M-1].resize(N2+1, N1+1); //for (unsigned int j=0; j<=N2; j++) p[M-1][j].resize(N1+1);
 
             for (unsigned int j=0; j<=N2; j++)
             {
@@ -1068,7 +1070,7 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
         }
         else
         {
-            p[k].resize(N2+1, N1+1);
+            //p[k].resize(N2+1, N1+1);
 
             if ((k % 2) == 0)
             {
@@ -1161,14 +1163,15 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
 void IBackwardHyperbolicEquation2D::calculateU1(DoubleCube &p, double h1, double h2, double ht, double N1, double N2, double M, double a1, double a2, double qamma) const
 {
     //cleaning cube
-    for (unsigned int k=0; k<p.size(); k++)
-    {
-        unsigned int uk_size = p[k].size();
-        for (unsigned int j=0; j<uk_size; j++) p[k][j].clear();
-        p[k].clear();
-    }
-    p.clear();
-    p.resize(M+1);
+//    for (unsigned int k=0; k<p.size(); k++)
+//    {
+//        unsigned int uk_size = p[k].size();
+//        for (unsigned int j=0; j<uk_size; j++) p[k][j].clear();
+//        p[k].clear();
+//    }
+//    p.clear();
+//    p.resize(M+1);
+    p.resize(M+1, N2+1, N1+1);
 
     DoubleVector da1(N1-1);
     DoubleVector db1(N1-1);
@@ -1196,8 +1199,8 @@ void IBackwardHyperbolicEquation2D::calculateU1(DoubleCube &p, double h1, double
 
         if (k==(M-1))
         {
-            p[M].resize(N2+1, N1+1);
-            p[M-1].resize(N2+1, N1+1);
+            //p[M].resize(N2+1, N1+1);
+            //p[M-1].resize(N2+1, N1+1);
 
             for (unsigned int j=0; j<=N2; j++)
             {
@@ -1210,7 +1213,7 @@ void IBackwardHyperbolicEquation2D::calculateU1(DoubleCube &p, double h1, double
         }
         else
         {
-            p[k].resize(N2+1, N1+1);
+            //p[k].resize(N2+1, N1+1);
 
             if ((k % 2) == 0)
             {

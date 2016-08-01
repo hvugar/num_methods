@@ -129,8 +129,8 @@ double HyperbolicControl2D22::fx(const DoubleVector &v)
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a1, a2, qamma);
 
-    DoubleMatrix &u0 = c[M];
-    DoubleMatrix &u1 = c[M-2];
+    const DoubleMatrix &u0 = c[M];
+    const DoubleMatrix &u1 = c[M-2];
     double sum = 0.0;
 
     double sum1 = 0.0;
