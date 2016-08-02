@@ -33,16 +33,17 @@ void HeatControl::main(int argc, char ** argv)
 
 HeatControl::HeatControl()
 {
-    this->t0 = 0.0;
-    this->t1 = 1.0;
-    this->x0 = 0.0;
-    this->x1 = 1.0;
-    this->a  = 1.0;
+    t0 = 0.0;
+    t1 = 1.0;
+    x0 = 0.0;
+    x1 = 1.0;
+    a  = 1.0;
 
     N = 100;
     M = 100;
-    this->hx  = (x1-x0)/N;
-    this->ht = (t1-t0)/M;
+    hx = 0.01;
+    ht = 0.01;
+
     // initialize U
     U.resize(N+1);
     for (unsigned int i=0; i<=N; i++) U[i] = u(i*hx, t1);
@@ -145,13 +146,7 @@ void HeatControl::print(unsigned int i, const DoubleVector &f0, const DoubleVect
 {
     C_UNUSED(g);
     C_UNUSED(a);
-
-    HeatControl *hc = dynamic_cast<HeatControl*>(f);
-    printf("J[%d]: %.20f\n", i, hc->fx(f0));
-    //    printf("Printing f-------------------------------\n");
-    //    IPrinter::printAsMatrix(f0, M, N);
-    //    printf("Printing g-------------------------------\n");
-    //    IPrinter::printAsMatrix(g, M, N);
+    printf("J[%d]: %.20f\n", i, f->fx(f0));
 }
 
 double HeatControl::u(double x, double t) const

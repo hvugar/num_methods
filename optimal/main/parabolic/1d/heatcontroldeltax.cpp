@@ -48,11 +48,11 @@ HeatControlDeltaX::HeatControlDeltaX()
     this->x1 = 1.0;
     this->a  = 1.0;
 
-    this->N = 100;
-    this->M = 100;
-    this->hx = (x1-x0)/N;
-    this->ht = (t1-t0)/M;
-    this->L = 3;
+    this->N  = 100;
+    this->M  = 100;
+    this->hx = 0.01;
+    this->ht = 0.01;
+    this->L  = 3;
 
     // initialize U
     DoubleVector e(L);
@@ -61,9 +61,9 @@ HeatControlDeltaX::HeatControlDeltaX()
     e[2] = 0.2;
     pe = &e;
     IParabolicEquation::calculateU(U, hx, ht, N, M);
-    FILE *file = fopen("heat_e.txt", "w");
-    IPrinter::printVector(U, NULL, N, 0, 0, file);
-    fclose(file);
+    //FILE *file = fopen("heat_e.txt", "w");
+    //IPrinter::printVector(U, NULL, N, 0, 0, file);
+    //fclose(file);
 }
 
 double HeatControlDeltaX::fx(const DoubleVector &e)

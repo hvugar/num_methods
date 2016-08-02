@@ -101,15 +101,9 @@ int main(int argc, char *argv[])
     C_UNUSED(argv);
     srand(time(NULL));
 
-    DoubleMatrix m;
-    m.resize(6, 5);
-    m.randomData();
-    m.print();
-    puts("---");
-    m.resize(9, 8);
-    m.print();
+    HeatControl2D::main(argc, argv);
 
-    //    {
+   //    {
     //        DoubleMatrix u;
     //        P p;
     //        p.hx = 0.01;

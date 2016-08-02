@@ -1,7 +1,9 @@
 ﻿#include "heatcontrol2d.h"
 
-void HeatControl2D::main()
+void HeatControl2D::main(int argc, char *argv[])
 {
+    C_UNUSED(argc);
+    C_UNUSED(argv);
     /* Function */
     HeatControl2D hc(100, 10, 10);
 
@@ -115,10 +117,11 @@ void HeatControl2D::gradient(const DoubleVector &f, DoubleVector &g)
     pf = &f;
     DoubleMatrix u;
     IParabolicEquation2D::caluclateMVD(u, h1, h2, ht, N1, N2, M, a1, a2);
+
     pu = &u;
     DoubleCube psi;
     IBackwardParabolicEquation2D::caluclateMVD(psi, h1, h2, ht, N1, N2, M, a1, a2);
-    //calculateP(f0, u, g);
+
     for (unsigned int k=0; k<=M; k++)
     {
         // calculating gradient
@@ -127,7 +130,7 @@ void HeatControl2D::gradient(const DoubleVector &f, DoubleVector &g)
             for (unsigned i=0; i<=N1; i++)
             {
                 int index = k*(N1+1)*(N2+1)+j*(N1+1)+i;
-                g[index] = -psi[k][j][i] + 2*(f[index] - fxt(i*h1, j*h2, k*ht));
+                g[index] = -psi.at(k,j,i)/*psi[k][j][i]*/ + 2*(f[index] - fxt(i*h1, j*h2, k*ht));
             }
         }
     }

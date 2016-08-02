@@ -27,7 +27,7 @@ public:
     virtual double bboundary(unsigned int i, unsigned int j, unsigned int k) const;
     virtual double bf(unsigned int i, unsigned int j, unsigned int k) const;
 
-    static void main();
+    static void main(int argc, char *argv[]);
 private:
     double u(double x1, double x2, double t) const;
     double fxt(double x1, double x2, double t);

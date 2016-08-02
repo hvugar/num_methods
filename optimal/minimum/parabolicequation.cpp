@@ -276,12 +276,9 @@ void IBackwardParabolicEquation::calculateU(DoubleMatrix &psi, double hx, double
 void IParabolicEquation2D::caluclateMVD(DoubleMatrix &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
 {
     //cleaning matrix
-    for (unsigned int j=0; j<u.size(); j++) u[j].clear();
-    u.clear();
-    u.resize(N2+1, N1+1);// for (unsigned int j=0; j<=N2; j++) u[j].resize(N1+1);
+    u.resize(N2+1, N1+1);
 
-    DoubleMatrix uh;
-    uh.resize(N2+1, N1+1);// for (unsigned int j=0; j<=N2; j++) uh[j].resize(N1+1);
+    DoubleMatrix uh(N2+1, N1+1);
 
     DoubleVector da1(N1-1);
     DoubleVector db1(N1-1);
@@ -343,8 +340,8 @@ void IParabolicEquation2D::caluclateMVD(DoubleMatrix &u, double h1, double h2, d
                 da1[0]     = 0.0;
                 dc1[N1-2]  = 0.0;
 
-                uh[j][0]  = boundary(0, j, 2*k-1);//m1(j, 2*k-1);
-                uh[j][N1] = boundary(N1, j, 2*k-1);//m2(j, 2*k-1);
+                uh[j][0]  = boundary(0, j, 2*k-1);
+                uh[j][N1] = boundary(N1, j, 2*k-1);
 
                 dd1[0]    -= x1_a * uh[j][0];
                 dd1[N1-2] -= x1_a * uh[j][N1];
@@ -359,8 +356,8 @@ void IParabolicEquation2D::caluclateMVD(DoubleMatrix &u, double h1, double h2, d
 
             for (unsigned int i=0; i<=N1; i++)
             {
-                uh[0][i]  = boundary(i, 0, 2*k-1);//m3(i, 2*k-1);
-                uh[N2][i] = boundary(i, N2, 2*k-1);//m4(i, 2*k-1);
+                uh[0][i]  = boundary(i, 0, 2*k-1);
+                uh[N2][i] = boundary(i, N2, 2*k-1);
             }
 
             // Approximation to x2 direction
@@ -377,8 +374,8 @@ void IParabolicEquation2D::caluclateMVD(DoubleMatrix &u, double h1, double h2, d
                 da2[0]     = 0.0;
                 dc2[N2-2]  = 0.0;
 
-                u[0][i]  = boundary(i, 0, 2*k);//m3(i, 2*k);
-                u[N2][i] = boundary(i, N2, 2*k);//m4(i, 2*k);
+                u[0][i]  = boundary(i, 0, 2*k);
+                u[N2][i] = boundary(i, N2, 2*k);
 
                 dd2[0]    -= x2_a * u[0][i];
                 dd2[N2-2] -= x2_a * u[N2][i];
@@ -393,13 +390,13 @@ void IParabolicEquation2D::caluclateMVD(DoubleMatrix &u, double h1, double h2, d
 
             for (unsigned int j=0; j<=N2; j++)
             {
-                u[j][0]  = boundary(0, j, 2*k);//m1(j, 2*k);
-                u[j][N1] = boundary(N1, j, 2*k);//m2(j, 2*k);
+                u[j][0]  = boundary(0, j, 2*k);
+                u[j][N1] = boundary(N1, j, 2*k);
             }
         }
 
         //if (k%100==0)
-        saveData1(u, k, N2, N1);
+        //saveData1(u, k, N2, N1);
     }
 
     da1.clear();
@@ -817,21 +814,11 @@ void IParabolicEquation2D::caluclateMVD(DoubleCube &u, double h1, double h2, dou
 void IBackwardParabolicEquation2D::caluclateMVD(DoubleCube &psi, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
 {
     //cleaning cube
-//    for (unsigned int k=0; k<psi.size(); k++)
-//    {
-//        unsigned int uk_size = psi[k].size();
-//        for (unsigned int j=0; j<uk_size; j++) psi[k][j].clear();
-//        psi[k].clear();
-//    }
-//    psi.clear();
-//    psi.resize(M+1);
     psi.resize(M+1, N2+1, N1+1);
 
-    DoubleMatrix psi0(N2+1);
-    for (unsigned int j=0; j<=N2; j++) psi0[j].resize(N1+1);
-    DoubleMatrix psi1(N2+1);
-    for (unsigned int j=0; j<=N2; j++) psi1[j].resize(N1+1);
-
+    DoubleMatrix psi0(N2+1, N1+1);
+    DoubleMatrix psi1(N2+1, N1+1);
+\
     DoubleVector da1(N1-1);
     DoubleVector db1(N1-1);
     DoubleVector dc1(N1-1);
@@ -847,12 +834,10 @@ void IBackwardParabolicEquation2D::caluclateMVD(DoubleCube &psi, double h1, doub
     double x1_a = -(a1*a1*ht)/(2.0*h1*h1);
     double x1_b  = 1.0 + (a1*a1*ht)/(h1*h1);
     double x1_c = (a2*a2*ht)/(2.0*h2*h2);
-    //double x1_d = 1.0 - (a2*a2*ht)/(h2*h2);
 
     double x2_a = -(a2*a2*ht)/(2.0*h2*h2);
     double x2_b  = 1.0 + (a2*a2*ht)/(h2*h2);
     double x2_c = (a1*a1*ht)/(2.0*h1*h1);
-    //double x2_d = 1.0 - (a1*a1*ht)/(h1*h1);
 
     for (unsigned int k1=0; k1<=M; k1++)
     {
@@ -879,14 +864,14 @@ void IBackwardParabolicEquation2D::caluclateMVD(DoubleCube &psi, double h1, doub
                     db1[i-1] = x1_b;
                     dc1[i-1] = x1_a;
                     dd1[i-1] = x1_c*(psi0[j-1][i] - 2.0*psi0[j][i] + psi0[j+1][i]) + psi0[j][i] - (ht/2.0) * bf(i, j, 2*k+1);
-                    //                    dd1[i-1] = x1_c*psi0[j-1][i] + x1_d*psi0[j][i] + x1_c*psi0[j+1][i] - (ht/2.0) * bf(i, j, 2*k+1);
+                    //dd1[i-1] = x1_c*psi0[j-1][i] + x1_d*psi0[j][i] + x1_c*psi0[j+1][i] - (ht/2.0) * bf(i, j, 2*k+1);
                 }
 
                 da1[0]     = 0.0;
                 dc1[N1-2]  = 0.0;
 
-                psi1[j][0]  = bboundary(0, j, 2*k+1);//bm1(j, 2*k+1);
-                psi1[j][N1] = bboundary(N1, j, 2*k+1);//bm2(j, 2*k+1);
+                psi1[j][0]  = bboundary(0, j, 2*k+1);
+                psi1[j][N1] = bboundary(N1, j, 2*k+1);
 
                 dd1[0]    -= x1_a * psi1[j][0];
                 dd1[N1-2] -= x1_a * psi1[j][N1];
@@ -901,8 +886,8 @@ void IBackwardParabolicEquation2D::caluclateMVD(DoubleCube &psi, double h1, doub
 
             for (unsigned int i=0; i<=N1; i++)
             {
-                psi1[0][i]  = bboundary(i, 0, 2*k+1);//bm3(i, 2*k+1);
-                psi1[N2][i] = bboundary(i, N2, 2*k+1);//bm4(i, 2*k+1);
+                psi1[0][i]  = bboundary(i, 0, 2*k+1);
+                psi1[N2][i] = bboundary(i, N2, 2*k+1);
             }
 
             for (unsigned int i=1; i<N1; i++)
@@ -913,13 +898,13 @@ void IBackwardParabolicEquation2D::caluclateMVD(DoubleCube &psi, double h1, doub
                     db2[j-1] = x2_b;
                     dc2[j-1] = x2_a;
                     dd2[j-1] = x2_c*(psi1[j][i-1] - 2.0*psi1[j][i] + psi1[j][i+1]) + psi1[j][i] - (ht/2.0) * bf(i, j, 2*k);
-                    //                    dd2[j-1] = x2_c*psi1[j][i-1] + x2_d*psi1[j][i] + x2_c*psi1[j][i+1] - (ht/2.0) * bf(i, j, 2*k);
+                    //dd2[j-1] = x2_c*psi1[j][i-1] + x2_d*psi1[j][i] + x2_c*psi1[j][i+1] - (ht/2.0) * bf(i, j, 2*k);
                 }
                 da2[0]     = 0.0;
                 dc2[N2-2]  = 0.0;
 
-                psi0[0][i]  = bboundary(i, 0, 2*k);//bm3(i, 2*k);
-                psi0[N2][i] = bboundary(i, N2, 2*k);//bm4(i, 2*k);
+                psi0[0][i]  = bboundary(i, 0, 2*k);
+                psi0[N2][i] = bboundary(i, N2, 2*k);
 
                 dd2[0]    -= x2_a * psi0[0][i];
                 dd2[N2-2] -= x2_a *psi0[N2][i];
@@ -934,8 +919,8 @@ void IBackwardParabolicEquation2D::caluclateMVD(DoubleCube &psi, double h1, doub
 
             for (unsigned int j=0; j<=N2; j++)
             {
-                psi0[j][0]  = bboundary(0, j, 2*k);//bm1(j, 2*k);
-                psi0[j][N1] = bboundary(N1, j, 2*k);//bm2(j, 2*k);
+                psi0[j][0]  = bboundary(0, j, 2*k);
+                psi0[j][N1] = bboundary(N1, j, 2*k);
             }
 
             psi[k] = psi0;

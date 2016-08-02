@@ -74,11 +74,11 @@ void DoubleMatrix::resize(unsigned int rows, unsigned int cols, double value)
         if (mData == NULL)
         {
 
-            mData = (double**)(malloc(sizeof(double*)*rows));
-            for (unsigned int i=0; i<rows; i++)
+            mData = (double**) malloc(sizeof(double*)*rows);
+            for (unsigned int j=0; j<rows; j++)
             {
-                mData[i] = (double*)malloc(sizeof(double)*cols);
-                for (unsigned int j=0; j<cols; j++) mData[i][j] = value;
+                mData[j] = (double*) malloc(sizeof(double)*cols);
+                for (unsigned int i=0; i<cols; i++) mData[j][i] = value;
             }
             mRows = rows;
             mCols = cols;
@@ -88,7 +88,7 @@ void DoubleMatrix::resize(unsigned int rows, unsigned int cols, double value)
         {
             if (rows != mRows)
             {
-                double **ptr = (double **)realloc(mData, sizeof(double*) * rows);
+                double **ptr = (double **) realloc(mData, sizeof(double*) * rows);
                 if (cols != mCols)
                 {
                     for (unsigned int j=0; j<mRows; j++)

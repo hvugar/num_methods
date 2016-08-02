@@ -17,7 +17,7 @@ void HeatControlDeltaF::main(int argc, char ** argv)
     }
 
     /* Minimization */
-    SteepestDescentGradient g2;
+    ConjugateGradient g2;
     g2.setGradient(&hc);
     g2.setFunction(&hc);
     g2.setEpsilon1(0.00001);
@@ -41,23 +41,22 @@ HeatControlDeltaF::HeatControlDeltaF()
 
     this->N = 100;
     this->M = 100;
-    this->hx = (x1-x0)/N;
-    this->ht = (t1-t0)/M;
+    this->hx = 0.01;
+    this->ht = 0.01;
 
     this->L = 1;
     this->e = 0.2;
-    this->E = (unsigned int)ceil(0.2/hx);
+    this->E = 20;
 
     // initialize U
-    DoubleVector f;
-    f.resize((M+1)*L);
+    DoubleVector f((M+1)*L);
     for (unsigned int j=0; j<=M; j++) f[j] = f1(j*ht);
     U.resize(N+1);
     pf = &f;
-    IParabolicEquation::calculateU(U,hx,ht,N,M);
-    FILE *file = fopen("heat.txt", "w");
-    IPrinter::printVector(U,NULL,N,0,0,file);
-    fclose(file);
+    IParabolicEquation::calculateU(U, hx, ht, N, M);
+    //FILE *file = fopen("heat.txt", "w");
+    //IPrinter::printVector(U,NULL,N,0,0,file);
+    //fclose(file);
 }
 
 double HeatControlDeltaF::fx(const DoubleVector &f)
