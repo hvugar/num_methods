@@ -226,3 +226,13 @@ void DoubleMatrix::randomData()
         }
     }
 }
+
+double** DoubleMatrix::data() const
+{
+    return mData;
+}
+
+double** DoubleMatrix::data()
+{
+    return mData;
+}

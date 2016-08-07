@@ -6,6 +6,8 @@
 #include <matrix2d.h>
 #include <time.h>
 
+#include <gaussianelimination.h>
+
 struct A : public CauchyProblem
 {
     double f(double x, const DoubleVector &y) const
@@ -101,7 +103,11 @@ int main(int argc, char *argv[])
     C_UNUSED(argv);
     srand(time(NULL));
 
-    HeatControl2D::main(argc, argv);
+    GaussianEliminationTester::main(argc, argv);
+
+
+//    HeatControl2D::main(argc, argv);
+
 
    //    {
     //        DoubleMatrix u;

@@ -51,6 +51,10 @@ public:
     void inverse();
     DoubleMatrix minor(unsigned int row, unsigned int col);
 
+    double** data() const;
+    double** data();
+
+
 private:
     unsigned int mRows;
     unsigned int mCols;

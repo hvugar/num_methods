@@ -5,7 +5,7 @@
 #include "global.h"
 #include "vector2d.h"
 
-using namespace std;
+//using namespace std;
 
 struct MINIMUMSHARED_EXPORT R1Function
 {

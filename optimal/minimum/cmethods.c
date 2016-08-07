@@ -157,11 +157,20 @@ void gaussianElimination(double **A, double *b, double *x, unsigned int n)
         {
             if (A[k][k] != 0.0)
             {
-                double f = A[j][k]/A[k][k];
-                for (i=k; i<n; i++) A[j][i] += A[k][i] * f;
-                b[j] += b[k] *f;
+                double c = A[j][k]/A[k][k];
+                printf("%f\n", c);
+                for (i=k; i<n; i++) A[j][i] = A[j][i] - A[k][i] * c;
+                b[j] += b[k] *c;
             }
         }
+
+        for (unsigned int j=0; j<n; j++)
+        {
+            for (unsigned int i=0; i<n; i++)
+                printf("%10.4f ", A[j][i]);
+            puts("");
+        }
+        puts("---");
     }
 
     //    int k;

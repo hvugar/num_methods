@@ -77,6 +77,11 @@ double* DoubleVector::data() noexcept
     return mData;
 }
 
+const double* DoubleVector::data() const noexcept
+{
+    return mData;
+}
+
 double DoubleVector::L2Norm() const
 {
     double norm = 0.0;

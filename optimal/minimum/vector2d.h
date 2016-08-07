@@ -2,7 +2,6 @@
 #define VECTOR2D_H
 
 #include <global.h>
-#include <exception>
 
 class MINIMUMSHARED_EXPORT DoubleVector
 {
