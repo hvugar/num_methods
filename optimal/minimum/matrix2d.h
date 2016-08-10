@@ -3,12 +3,12 @@
 
 #include <global.h>
 #include <vector2d.h>
-#include <vector>
 
 class MINIMUMSHARED_EXPORT DoubleMatrix
 {
 public:
     explicit DoubleMatrix(unsigned int rows=0, unsigned int cols=0, double value=0.0);
+    DoubleMatrix(const DoubleMatrix &matrix);
     virtual ~DoubleMatrix();
 
     unsigned int rows() const;
@@ -54,11 +54,15 @@ public:
     double** data() const;
     double** data();
 
+    void changeRows(unsigned int i, unsigned int j);
+
 
 private:
     unsigned int mRows;
     unsigned int mCols;
     double **mData;
 };
+
+void MINIMUMSHARED_EXPORT GaussianElimination(DoubleMatrix m, DoubleVector b, DoubleVector &x);
 
 #endif // MATRIX2D_H

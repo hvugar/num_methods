@@ -1,4 +1,5 @@
 #include "cmethods.h"
+#include <float.h>
 
 double derivative(CR1Function fx)
 {
@@ -66,7 +67,7 @@ void gradient3(CRnFunction fx, double *x, double *g, unsigned int n, double h)
     }
 }
 
-double trapesium1(CR1Function fx, unsigned int n, double a, double b)
+ double trapesium1(CR1Function fx, unsigned int n, double a, double b)
 {
     double sum = 0.0;
     double h = (a-b)/n;
@@ -143,66 +144,77 @@ void tomasAlgorithm(const double *a, const double *b, const double *c, const dou
     free(q);
 }
 
-void gaussianElimination(double **A, double *b, double *x, unsigned int n)
+void printMat(double **a, double *b, unsigned int n)
+{
+    for (unsigned int j=0; j<n; j++)
+    {
+        for (unsigned int i=0; i<n; i++)
+            printf("%10.4f ", a[j][i]);
+        printf("| %10.4f\n", b[j]);
+    }
+}
+
+//void changeMatrixRow(double **a, double *b, unsigned int n)
+//{
+//}
+
+void gaussianElimination(double **a, double *b, double *x, unsigned int n)
 {
     C_UNUSED(x);
 
     unsigned int k;
+    unsigned int j;
+    unsigned int i;
+    const unsigned int ui = (unsigned)0-1;
+
+
     for (k=0; k<n-1; k++)
     {
-        unsigned int j;
-        unsigned int i;
+        //a[k][k] = 0.0;
+//        printf("\nIteration: %d matrix status\n", k);
+//        printMat(a, b, n);
+//        puts("matrix printed.");
 
-        for (j=(k+1); j<n; j++)
+        if (fabs(a[k][k]) <= DBL_EPSILON)
         {
-            if (A[k][k] != 0.0)
+            for (unsigned int k1 = k+1; k1 < n; k1++)
             {
-                double c = A[j][k]/A[k][k];
-                printf("%f\n", c);
-                for (i=k; i<n; i++) A[j][i] = A[j][i] - A[k][i] * c;
-                b[j] += b[k] *c;
+                if (a[k][k1] != 0.0)
+                {
+//                    printf("Changing row: %d to row %d\n", k, k1);
+                    for (unsigned int k2=k; k2 < n; k2++)
+                    {
+                        double _a = a[k1][k2];
+                        a[k1][k2] = a[k][k2];
+                        a[k][k2] = _a;
+                    }
+                    double _b = b[k1];
+                    b[k1] = b[k];
+                    b[k] = _b;
+//                    printMat(a, b, n);
+//                    printf("Row: %d changed to row %d\n", k, k1);
+                    break;
+                }
             }
         }
 
-        for (unsigned int j=0; j<n; j++)
+//        printf("Relaxing\n");
+        for (j=(k+1); j<n; j++)
         {
-            for (unsigned int i=0; i<n; i++)
-                printf("%10.4f ", A[j][i]);
-            puts("");
+            double c = a[j][k]/a[k][k];
+            for (i=k; i<n; i++) a[j][i] = a[j][i] - a[k][i] * c;
+            b[j] = b[j] - b[k] *c;
         }
-        puts("---");
+//        printMat(a, b, n);
+//        printf("Relaxed\n");
     }
 
-    //    int k;
-    //    for (k=0; k<n-1; k++)
-    //    {
-    //        int i,j;
-    //        for (i=(k+1); i<n; i++)
-    //        {
-    //            if (a[k][k] != 0.0)
-    //            {
-    //                double f = a[i][k] / a[k][k];
-    //                for (j=k; j<n; j++)
-    //                {
-    //                    a[i][j] = a[i][j] - a[k][j] * f;
-    //                }
-    //                b[i] = b[i] - b[k] * f;
-    //            }
-    //            else
-    //            {
-    //                // printf("%d %f\n", k, a[k][k]);
-    //            }
-    //            check_matrix(a, b, n);
-    //        }
-    //    }
-
-    //    int i;
-    //    for (i=(n-1); i>=0; i--)
-    //    {
-    //        int j;
-    //        for (j=(n-1); j>i; j--) b[i] -= (a[i][j] * x[j]);
-    //        x[i] = b[i] / a[i][i];
-    //    }
+    for (i=(n-1); i!=ui; i--)
+    {
+        for (j=(n-1); j>i; j--) b[i] -= (a[i][j] * x[j]);
+        x[i] = b[i] / a[i][i];
+    }
+//    for (unsigned int i=0; i<n; i++) x[i] = 0.0;
 }
 
 void gaussJordanElimination(double **a, double *b, double *x, unsigned int n)

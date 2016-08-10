@@ -5,6 +5,7 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
+#include <float.h>
 #include <exception>
 
 MatrixException::MatrixException(int messageType) : messageType(messageType)
@@ -15,15 +16,32 @@ const char* MatrixException::what() const noexcept
     return "Message!";
 }
 
-DoubleMatrix::DoubleMatrix(unsigned int rows, unsigned int cols, double value) : mRows(rows), mCols(cols), mData(NULL)
+DoubleMatrix::DoubleMatrix(unsigned int rows, unsigned int cols, double value) : mRows(0), mCols(0), mData(NULL)
 {
     if (rows > 0 && cols > 0)
     {
+        mRows = rows;
+        mCols = cols;
         mData = (double**)(malloc(sizeof(double*)*rows));
-        for (unsigned int i=0; i<rows; i++)
+        for (unsigned int j=0; j<rows; j++)
         {
-            mData[i] = (double*)malloc(sizeof(double)*cols);
-            for (unsigned int j=0; j<cols; j++) mData[i][j] = value;
+            mData[j] = (double*)malloc(sizeof(double)*cols);
+            for (unsigned int i=0; i<cols; i++) mData[j][i] = value;
+        }
+    }
+}
+
+DoubleMatrix::DoubleMatrix(const DoubleMatrix &matrix) : mRows(0), mCols(0), mData(NULL)
+{
+    if (matrix.mRows > 0 && matrix.mCols > 0)
+    {
+        mRows = matrix.mRows;
+        mCols = matrix.mCols;
+        mData = (double**) (malloc(sizeof(double*)*mRows));
+        for (unsigned int j=0; j<mRows; j++)
+        {
+            mData[j] = (double*)malloc(sizeof(double)*mCols);
+            memcpy(mData[j], matrix.mData[j], sizeof(double)*mCols);
         }
     }
 }
@@ -73,7 +91,6 @@ void DoubleMatrix::resize(unsigned int rows, unsigned int cols, double value)
     {
         if (mData == NULL)
         {
-
             mData = (double**) malloc(sizeof(double*)*rows);
             for (unsigned int j=0; j<rows; j++)
             {
@@ -82,7 +99,6 @@ void DoubleMatrix::resize(unsigned int rows, unsigned int cols, double value)
             }
             mRows = rows;
             mCols = cols;
-
         }
         else
         {
@@ -141,17 +157,25 @@ DoubleVector DoubleMatrix::operator [](unsigned int row) const
     return vector;
 }
 
-DoubleMatrix& DoubleMatrix::operator =(const DoubleMatrix &matrix)
+DoubleMatrix& DoubleMatrix::operator= (const DoubleMatrix &matrix)
 {
     if (this != &matrix)
     {
-        this->resize(matrix.rows(), matrix.cols());
-        for (unsigned int j=0; j<mRows; j++)
+        if (matrix.mRows > 0 && matrix.mCols > 0)
         {
-            for (unsigned int i=0; i<mCols; i++)
+            mRows = matrix.mRows;
+            mCols = matrix.mCols;
+            mData = (double**)malloc(sizeof(double*)*mRows);
+            for (unsigned int j=0; j<mRows; j++)
             {
-                mData[j][i] = matrix.mData[j][i];
+                mData[j] = (double *)malloc(sizeof(double)*mCols);
+                memcpy(mData[j], matrix.mData[j], sizeof(double)*mCols);
             }
+        }
+        else
+        {
+            mRows = mCols = 0;
+            mData = NULL;
         }
     }
     return *this;
@@ -159,7 +183,7 @@ DoubleMatrix& DoubleMatrix::operator =(const DoubleMatrix &matrix)
 
 bool DoubleMatrix::dimEquals(const DoubleMatrix &matrix) const
 {
-    return (rows() == matrix.rows() && cols() == matrix.cols());
+    return (mRows == matrix.mRows && mCols == matrix.mCols);
 }
 
 bool DoubleMatrix::equals(const DoubleMatrix &matrix) const
@@ -222,7 +246,7 @@ void DoubleMatrix::randomData()
     {
         for (unsigned int i=0; i<mCols; i++)
         {
-            mData[j][i] = rand() % 100;
+            mData[j][i] = (rand() % 100) * 0.01;
         }
     }
 }
@@ -235,4 +259,47 @@ double** DoubleMatrix::data() const
 double** DoubleMatrix::data()
 {
     return mData;
+}
+
+void DoubleMatrix::changeRows(unsigned int i, unsigned int j)
+{
+    double *row = (double*)malloc(sizeof(double) * mCols);
+    memcpy(row, mData[i], sizeof(double)*mCols);
+    memcpy(mData[i], mData[j], sizeof(double)*mCols);
+    memcpy(mData[j], row, sizeof(double)*mCols);
+    free(row);
+}
+
+void GaussianElimination(DoubleMatrix m, DoubleVector b, DoubleVector &x)
+{
+    const unsigned int ui = (unsigned)0-1;
+
+    unsigned int n = x.size();
+    for (unsigned k=0; k < n-1; k++)
+    {
+        if (fabs(m.at(k,k)) <= DBL_EPSILON)
+        {
+            for (unsigned int p = k+1; p < n; p++)
+            {
+                if (m[k][p] != 0.0)
+                {
+                    m.changeRows(k, p);
+                    break;
+                }
+            }
+        }
+
+        for (unsigned int j=(k+1); j<n; j++)
+        {
+            double c = m.at(j,k)/m.at(k,k);
+            for (unsigned int i=k; i<n; i++) m.at(j,i) = m.at(j,i) - m.at(k,i) * c;
+            b[j] = b[j] - b[k] *c;
+        }
+    }
+
+    for (unsigned int i=(n-1); i!=ui; i--)
+    {
+        for (unsigned int j=(n-1); j>i; j--) b[i] -= (m.at(i,j) * x[j]);
+        x[i] = b[i] / m.at(i,i);
+    }
 }

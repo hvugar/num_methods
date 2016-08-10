@@ -10,9 +10,20 @@ DoubleVector::DoubleVector(unsigned int size, double val) : mSize(size), mData(N
 {
     if (size > 0)
     {
+        mSize = size;
         mData = (double*) malloc(sizeof(double) * size);
         for (unsigned int i=0; i<size; i++) mData[i] = val;
+//        memset(mData, val, size);
     }
+}
+
+DoubleVector::DoubleVector(const DoubleVector &vector)
+{
+    if (vector.mSize == 0) return;
+
+    mSize = vector.mSize;
+    mData = (double*) (malloc(sizeof(double)*mSize));
+    memcpy(mData, vector.mData, sizeof(double)*mSize);
 }
 
 DoubleVector::~DoubleVector()

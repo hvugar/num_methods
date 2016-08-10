@@ -7,6 +7,7 @@ class MINIMUMSHARED_EXPORT DoubleVector
 {
 public:
     explicit DoubleVector(unsigned int size=0, double val = 0.0);
+    DoubleVector(const DoubleVector &vector);
     virtual ~DoubleVector();
 
     void clear();

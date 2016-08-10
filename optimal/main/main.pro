@@ -71,7 +71,9 @@ SOURCES += main.cpp \
     control/cfunction4.cpp \
     control/example1.cpp \
     control/example2.cpp \
-    gaussianelimination.cpp
+    gaussianelimination.cpp \
+    problem1.cpp \
+    cauchyproblemtest.cpp
 
 HEADERS += \
     rnfunction/rosenbrock.h \
@@ -121,4 +123,6 @@ HEADERS += \
     control/cfunction4.h \
     control/example1.h \
     control/example2.h \
-    gaussianelimination.h
+    gaussianelimination.h \
+    problem1.h \
+    cauchyproblemtest.h
