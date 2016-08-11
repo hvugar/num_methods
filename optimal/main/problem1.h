@@ -4,17 +4,15 @@
 #include <parabolicequation.h>
 #include <cmethods.h>
 
-class Problem1 : IParabolicEquation
+class Problem1
 {
 public:
     Problem1();
-
-    double initial(unsigned int i) const;
-    double boundary(Boundary type, unsigned int j) const;
-    double f(unsigned int i, unsigned int j) const;
     double v(unsigned int j) const;
 
-    void calculate();
+    void calculate1();
+    void calculate2();
+    void calculate3();
 
 private:
     double t0;

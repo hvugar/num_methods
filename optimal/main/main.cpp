@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     srand(time(NULL));
 
     Problem1 p;
-    p.calculate();
+    p.calculate3();
 
     //GaussianEliminationTester::main(argc, argv);
     //HeatControl2D::main(argc, argv);

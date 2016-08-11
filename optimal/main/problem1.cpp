@@ -7,39 +7,21 @@ Problem1::Problem1()
     //x0 = 0.0;
     //x1 = 1.0;
     a = 1.0;
-    lambda = -1.0;
+    lambda = 1.0;
     Te = 1.0;
     hx = 0.001;
     ht = 0.001;
     N = 1000;
-    M = 10000;
-}
-
-double Problem1::initial(unsigned int i) const
-{
-    double x = i*ht;
-    return x*x*x;
-}
-
-double Problem1::boundary(Boundary type, unsigned int j) const
-{
-    double t = j*ht;
-    if (type == Left) return lambda * (t*t - u.at(0, j));
-    if (type == Right) return lambda * (u.at(0, j));
-    return 0.0;
-}
-
-double Problem1::f(unsigned int i, unsigned int j) const
-{
-    return 0.0;
+    M = 1000;
 }
 
 double Problem1::v(unsigned int j) const
 {
+    C_UNUSED(j);
     return 2.0;
 }
 
-void Problem1::calculate()
+void Problem1::calculate1()
 {
     DoubleMatrix u(M+1, N+1);
 
@@ -59,22 +41,22 @@ void Problem1::calculate()
         else
         {
             a1[0] = 0.0;
-            b1[0] = 1.0 + (a*a*ht)/(hx*hx) + (a*a*ht*lambda)/hx - lambda*ht;
+            b1[0] = 1.0 + (a*a*ht)/(hx*hx) - (lambda*a*a*ht)/hx + lambda*ht;
             c1[0] = -(a*a*ht)/(hx*hx);
-            d1[0] = u.at(j-1,0) + v(j)*((lambda*(a*a)*ht)/(hx)) - lambda*ht*Te;
+            d1[0] = u.at(j-1,0) - v(j)*((lambda*(a*a)*ht)/(hx)) + lambda*ht*Te;
 
             for (uint32_t i=1; i<=N-1; i++)
             {
                 a1[i] = -(a*a*ht)/(hx*hx);
-                b1[i] = 1.0 + 2.0*((a*a)*ht)/(hx*hx) - ht*lambda;
+                b1[i] = 1.0 + 2.0*((a*a)*ht)/(hx*hx) + ht*lambda;
                 c1[i] = -(a*a*ht)/(hx*hx);
-                d1[i] = u.at(j-1, i) - lambda*ht*Te;
+                d1[i] = u.at(j-1, i) + lambda*ht*Te;
             }
 
             a1[N] = -(a*a*ht)/(hx*hx);
-            b1[N] = 1.0 + (a*a*ht)/(hx*hx) - (a*a*ht*lambda)/hx - lambda*ht;
+            b1[N] = 1.0 + (a*a*ht)/(hx*hx) + (a*a*ht*lambda)/hx + lambda*ht;
             c1[N] = 0.0;
-            d1[N] = u.at(j-1,N) - ((lambda*(a*a)*ht)/(hx))*Te - lambda*ht*Te;
+            d1[N] = u.at(j-1,N) + ((lambda*(a*a)*ht)/(hx))*Te + lambda*ht*Te;
 
             tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), rx.data(), rx.size());
 
@@ -88,3 +70,136 @@ void Problem1::calculate()
     IPrinter::printMatrix(u);
 }
 
+void Problem1::calculate2()
+{
+    double hx = 0.001;
+    double ht = 0.001;
+    double N = 1000;
+    double M = 20000;
+    double a = 1.0;
+    double lambda1 = -1.0;
+    double lambda2 = 0.0;
+    double lambda3 = 0.0;
+    double T0 = 1.0;
+    double T1 = 2.0;
+    double T2 = 2.0;
+    double T3 = 2.0;
+
+    DoubleMatrix u(M+1, N+1);
+
+    DoubleVector a1(N+1);
+    DoubleVector b1(N+1);
+    DoubleVector c1(N+1);
+    DoubleVector d1(N+1);
+    DoubleVector rx(N+1);
+
+    for (uint32_t j=0; j<=M; j++)
+    {
+        if (j==0)
+        {
+            for (uint32_t i=0; i<=N; i++)
+                u.at(j,i) = T0;
+        }
+        else
+        {
+            a1[0] = 0.0;
+            b1[0] = 1.0 + (a*a*ht)/(hx*hx) + (lambda2*a*a*ht)/hx - lambda1*ht;
+            c1[0] = -(a*a*ht)/(hx*hx);
+            d1[0] = u.at(j-1,0) + ((lambda2*a*a*ht)/(hx))*T2 - lambda1*ht*T1;
+
+            for (uint32_t i=1; i<=N-1; i++)
+            {
+                a1[i] = -(a*a*ht)/(hx*hx);
+                b1[i] = 1.0 + 2.0*((a*a)*ht)/(hx*hx) - ht*lambda1;
+                c1[i] = -(a*a*ht)/(hx*hx);
+                d1[i] = u.at(j-1, i) - lambda1*ht*T1;
+            }
+
+            a1[N] = -(a*a*ht)/(hx*hx);
+            b1[N] = 1.0 + (a*a*ht)/(hx*hx) - lambda3*(a*a*ht)/hx - lambda1*ht;
+            c1[N] = 0.0;
+            d1[N] = u.at(j-1,N) - ((lambda3*a*a*ht)/(hx))*T3 - lambda1*ht*T1;
+
+            tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), rx.data(), rx.size());
+
+            for (uint32_t i=0; i<=N; i++) u.at(j,i) = rx[i];
+        }
+    }
+
+    IPrinter::printVector(u[0]);
+    IPrinter::printVector(u[1]);
+    IPrinter::printVector(u[2]);
+    puts("...");
+    IPrinter::printVector(u[M-2]);
+    IPrinter::printVector(u[M-1]);
+    IPrinter::printVector(u[M]);
+    puts("---");
+    IPrinter::printMatrix(u);
+}
+
+void Problem1::calculate3()
+{
+    double hx = 0.001;
+    double ht = 0.001;
+    double N = 1000;
+    double M = 10000;
+    double a = 1.0;
+    double lambda1 = +1.0;
+    double lambda2 = +1.0;
+    double lambda3 = +1.0;
+    double T0 = 0.0;
+    double T1 = 1.0;
+    double T2 = 3.0;
+    double T3 = 1.0;
+
+    DoubleMatrix u(M+1, N+1);
+
+    DoubleVector a1(N+1);
+    DoubleVector b1(N+1);
+    DoubleVector c1(N+1);
+    DoubleVector d1(N+1);
+    DoubleVector rx(N+1);
+
+    for (uint32_t j=0; j<=M; j++)
+    {
+        if (j==0)
+        {
+            for (uint32_t i=0; i<=N; i++)
+                u.at(j,i) = T0;
+        }
+        else
+        {
+            a1[0] = 0.0;
+            b1[0] = 1.0 + (a*a*ht)/(hx*hx) + (lambda2*a*a*ht)/hx + lambda1*ht;
+            c1[0] = -(a*a*ht)/(hx*hx);
+            d1[0] = u.at(j-1,0) + ((lambda2*a*a*ht)/(hx))*T2 + lambda1*ht*T1;
+
+            for (uint32_t i=1; i<=N-1; i++)
+            {
+                a1[i] = -(a*a*ht)/(hx*hx);
+                b1[i] = 1.0 + 2.0*((a*a)*ht)/(hx*hx) + lambda1*ht;
+                c1[i] = -(a*a*ht)/(hx*hx);
+                d1[i] = u.at(j-1, i) + lambda1*ht*T1;
+            }
+
+            a1[N] = -(a*a*ht)/(hx*hx);
+            b1[N] = 1.0 + (a*a*ht)/(hx*hx) + lambda3*(a*a*ht)/hx + lambda1*ht;
+            c1[N] = 0.0;
+            d1[N] = u.at(j-1,N) + ((lambda3*a*a*ht)/(hx))*T3 + lambda1*ht*T1;
+
+            tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), rx.data(), rx.size());
+
+            for (uint32_t i=0; i<=N; i++) u.at(j,i) = rx[i];
+        }
+    }
+
+    IPrinter::printVector(u[0]);
+    IPrinter::printVector(u[1]);
+    IPrinter::printVector(u[2]);
+    puts("...");
+    IPrinter::printVector(u[M-2]);
+    IPrinter::printVector(u[M-1]);
+    IPrinter::printVector(u[M]);
+    puts("---");
+    IPrinter::printMatrix(u);
+}
