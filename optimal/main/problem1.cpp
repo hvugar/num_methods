@@ -1,4 +1,5 @@
 #include "problem1.h"
+#include <imaging.h>
 
 Problem1::Problem1()
 {
@@ -64,9 +65,9 @@ void Problem1::calculate1()
         }
     }
 
-    IPrinter::printVector(u[0]);
-    IPrinter::printVector(u[1]);
-    IPrinter::printVector(u[2]);
+    IPrinter::printVector(u.row(0));
+    IPrinter::printVector(u.row(1));
+    IPrinter::printVector(u.row(2));
     IPrinter::printMatrix(u);
 }
 
@@ -126,13 +127,13 @@ void Problem1::calculate2()
         }
     }
 
-    IPrinter::printVector(u[0]);
-    IPrinter::printVector(u[1]);
-    IPrinter::printVector(u[2]);
+    IPrinter::printVector(u.row(0));
+    IPrinter::printVector(u.row(1));
+    IPrinter::printVector(u.row(2));
     puts("...");
-    IPrinter::printVector(u[M-2]);
-    IPrinter::printVector(u[M-1]);
-    IPrinter::printVector(u[M]);
+    IPrinter::printVector(u.row(M-2));
+    IPrinter::printVector(u.row(M-1));
+    IPrinter::printVector(u.row(M));
     puts("---");
     IPrinter::printMatrix(u);
 }
@@ -142,12 +143,12 @@ void Problem1::calculate3()
     double hx = 0.001;
     double ht = 0.001;
     double N = 1000;
-    double M = 10000;
-    double a = 1.0;
-    double lambda1 = +1.0;
+    double M = 1000;
+    double a = 2.0;
+    double lambda1 = +0.0;
     double lambda2 = +1.0;
-    double lambda3 = +1.0;
-    double T0 = 0.0;
+    double lambda3 = +0.0;
+    double T0 = 1.0;
     double T1 = 1.0;
     double T2 = 3.0;
     double T3 = 1.0;
@@ -193,13 +194,26 @@ void Problem1::calculate3()
         }
     }
 
-    IPrinter::printVector(u[0]);
-    IPrinter::printVector(u[1]);
-    IPrinter::printVector(u[2]);
-    puts("...");
-    IPrinter::printVector(u[M-2]);
-    IPrinter::printVector(u[M-1]);
-    IPrinter::printVector(u[M]);
-    puts("---");
-    IPrinter::printMatrix(u);
+    printf("%f %f\n", u.min(), u.max());
+    QPixmap img;
+    visualizeMatrixHeat(u, 1.0, 3.0, img);
+    img.save("img.png");
+
+//    for (unsigned int j=0; j<=M; j++)
+//    {
+//        QPixmap img;
+//        visualizeVectorHeat(u[j], 1.0, 3.0, img, N);
+//        img.save(QString("img%1.png").arg(j));
+//        IPrinter::printVector(u[j]);
+//    }
+//    return;
+//    IPrinter::printVector(u[0]);
+//    IPrinter::printVector(u[1]);
+//    IPrinter::printVector(u[2]);
+//    puts("...");
+//    IPrinter::printVector(u[M-2]);
+//    IPrinter::printVector(u[M-1]);
+//    IPrinter::printVector(u[M]);
+//    puts("---");
+//    IPrinter::printMatrix(u,);
 }

@@ -127,7 +127,7 @@ double HyperbolicControlX::fx(double t)
         char buffer[20];
         int n = sprintf(buffer, "u[%d]: ", j);
         buffer[n] = 0;
-        IPrinter::printVector(u[j], buffer, u[j].size(), 0, 0, file);
+        IPrinter::printVector(u.row(j), buffer, u.cols(), 0, 0, file);
     }
     fputs("------------------------------------------------------------------------------------------------------------------------\n", file);
     fclose(file);

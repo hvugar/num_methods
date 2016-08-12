@@ -145,11 +145,8 @@ void DiscreteHeat::calculateP(const DoubleVector &f, const DoubleVector &u, Doub
     double lamda = -(a*ht)/(hx*hx);
     double k = 1.0-2.0*lamda;
 
-    for (unsigned int i=0; i<psi.size(); i++) psi[i].clear();
     psi.clear();
-
     psi.resize(M+1, N+1);
-    //for (unsigned int i=0; i<psi.size(); i++) psi[i].resize(N+1);
 
     DoubleVector a1(N-1);
     DoubleVector b1(N-1);

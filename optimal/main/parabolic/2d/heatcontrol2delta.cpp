@@ -343,14 +343,10 @@ double HeatControl2Delta::bf(unsigned int i, unsigned int j, unsigned int k) con
 
 void HeatControl2Delta::initialize()
 {
-    // cleaning U
-    for (unsigned int j=0; j<U.size(); j++) U[j].clear();
     U.clear();
+    U.resize(N2+1, N1+1);
 
     DoubleVector x = O;
-    // initializing U
-    U.resize(N2+1, N1+1);
-    //for (unsigned int j=0; j<=N2; j++) U[j].resize(N1+1);
 
 #ifdef POWER_OPTIMIZE
     x.resize( 2*L + (M+1)*L );
@@ -450,9 +446,9 @@ void HeatControl2Delta::project(DoubleVector &e, int index)
 void HeatControl2Delta::write(const char *fileName, const DoubleMatrix& m)
 {
     FILE* f = fopen(fileName, "w");
-    for (unsigned int j=0; j<m.size(); j++)
+    for (unsigned int j=0; j<m.rows(); j++)
     {
-        for (unsigned int i=0; i<m[j].size(); i++)
+        for (unsigned int i=0; i<m.cols(); i++)
         {
             if (i==0)
                 fprintf(f, "%.10f", m[j][i]);

@@ -83,7 +83,7 @@ void Hyperbolic1DX::gradient(const DoubleVector &e, DoubleVector &g)
 
     for (unsigned int j=0; j<=M; j++)
     {
-        calculateG(e, p[j], g, j);
+        calculateG(e, p.row(j), g, j);
     }
 }
 

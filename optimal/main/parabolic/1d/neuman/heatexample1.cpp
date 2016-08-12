@@ -19,7 +19,7 @@ void HeatExample1::main(int argc, char **argv)
         if (i<10000 && i>=1000) n = sprintf(buffer, "data/0000%d.txt", i);
         buffer[n] = '\0';
         FILE *file = fopen(buffer, "w");
-        IPrinter::printVector(u[i], NULL, h1.N, 0, 0, file);
+        IPrinter::printVector(u.row(i), NULL, h1.N, 0, 0, file);
         fclose(file);
     }
 

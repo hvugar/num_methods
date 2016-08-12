@@ -1,7 +1,7 @@
 TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
-CONFIG -= qt
+#CONFIG -= qt
 TARGET = main
 #QMAKE_CXXFLAGS += -O3
 #QMAKE_CXXFLAGS -= -O2
@@ -13,13 +13,13 @@ TARGET = main
 QMAKE_CXXFLAGS += -Wno-unused-variable
 
 INCLUDEPATH += ../minimum
-#INCLUDEPATH += ../cminimum
 LIBS += -L../bin -lminimum
-#LIBS += -L../bin -lcminimum
+INCLUDEPATH += ../imaging
+LIBS += -L../bin -limaging
 
 DESTDIR += ../bin
 
-#QT += widgets
+QT += core gui widgets
 
 #DEFINES += MINIMUM_LIBRARY
 #include(../minimum/minimum.pri)
