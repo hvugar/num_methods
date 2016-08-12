@@ -2,40 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//DoubleCube::DoubleCube() : std::vector<DoubleMatrix>()
-//{}
-
-//DoubleCube::~DoubleCube()
-//{}
-
-//void DoubleCube::Resize(unsigned int Nz, unsigned int Ny, unsigned Nx)
-//{
-//    Clear();
-
-//    resize(Nz);
-//    for (unsigned int k=0; k<size(); k++)
-//    {
-//        this[k].resize(Ny);
-//        for (unsigned int m=0; m<this[k].size(); m++)
-//        {
-//            //this[k][m].resize(Nx);
-//        }
-//    }
-//}
-
-//void DoubleCube::Clear()
-//{
-//    for (unsigned int k=0; k<size(); k++)
-//    {
-//        for (unsigned int m=0; m<this[k].size(); m++)
-//        {
-//            this[k][m].clear();
-//        }
-//        this[k].clear();
-//    }
-//    this->clear();
-//}
-
 DoubleCube::DoubleCube(unsigned int depth, unsigned int rows, unsigned int cols, double value) : mDepth(depth), mRows(rows), mCols(cols), pData(NULL)
 {
     if (mDepth != 0 && mRows != 0 && mCols != 0)
@@ -161,6 +127,16 @@ unsigned int DoubleCube::rows() const
 unsigned int DoubleCube::cols() const
 {
     return mCols;
+}
+
+double& DoubleCube::operator ()(unsigned int depth, unsigned int row, unsigned int col)
+{
+    return pData[depth][row][col];
+}
+
+const double& DoubleCube::operator ()(unsigned int depth, unsigned int row, unsigned int col) const
+{
+    return pData[depth][row][col];
 }
 
 double& DoubleCube::at(unsigned int k, unsigned int j, unsigned int i)

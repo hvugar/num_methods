@@ -4,6 +4,8 @@
 #include <global.h>
 #include <vector2d.h>
 
+//void randomData(DoubleMatrix &m);
+
 class MINIMUMSHARED_EXPORT DoubleMatrix
 {
 public:
@@ -13,7 +15,6 @@ public:
 
     unsigned int rows() const;
     unsigned int cols() const;
-    unsigned int size() const;
 
     void clear();
     void resize(unsigned int rows, unsigned int cols, double value=0.0);
@@ -24,7 +25,8 @@ public:
     double& at(unsigned int row, unsigned int col);
     const double& at(unsigned int row, unsigned int col) const;
 
-    DoubleVector operator [](unsigned int row) const;
+    double* operator [](unsigned int row) const;
+    double* operator [](unsigned int row);
 
     DoubleVector row(unsigned int r) const;
     DoubleVector col(unsigned int c) const;
@@ -43,8 +45,8 @@ public:
     bool equals(const DoubleMatrix& matrix) const;
     bool dimEquals(const DoubleMatrix& matrix) const;
 
-    double min() const { return 0.0; }
-    double max() const { return 0.0; }
+    double min() const;
+    double max() const;
 
     double determinant();
     void transpose();

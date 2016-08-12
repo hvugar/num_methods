@@ -61,10 +61,10 @@ unsigned int DoubleMatrix::cols() const
     return mCols;
 }
 
-unsigned int DoubleMatrix::size() const
-{
-    return rows();
-}
+//unsigned int DoubleMatrix::size() const
+//{
+//    return rows();
+//}
 
 void DoubleMatrix::clear()
 {
@@ -150,11 +150,19 @@ const double& DoubleMatrix::at(unsigned int row, unsigned int col) const
     return mData[row][col];
 }
 
-DoubleVector DoubleMatrix::operator [](unsigned int row) const
+double* DoubleMatrix::operator [](unsigned int row) const
 {
-    DoubleVector vector(mCols);
-    for (unsigned int i=0; i<mCols; i++) vector[i] = mData[row][i];
-    return vector;
+    return mData[row];
+}
+
+double* DoubleMatrix::operator [](unsigned int row)
+{
+    return mData[row];
+}
+
+DoubleVector DoubleMatrix::row(unsigned int r) const
+{
+    return DoubleVector(mData[r], mCols);
 }
 
 DoubleMatrix& DoubleMatrix::operator= (const DoubleMatrix &matrix)
@@ -208,6 +216,33 @@ bool DoubleMatrix::equals(const DoubleMatrix &matrix) const
     else
         return false;
 }
+
+double DoubleMatrix::min() const
+{
+    double _min = DBL_MAX;
+    for (unsigned int j=0; j<mRows; j++)
+    {
+        for (unsigned int i=0; i<mCols; i++)
+        {
+            if (mData[j][i] < _min) _min = mData[j][i];
+        }
+    }
+    return _min;
+}
+
+double DoubleMatrix::max() const
+{
+    double _max = DBL_MIN;
+    for (unsigned int j=0; j<mRows; j++)
+    {
+        for (unsigned int i=0; i<mCols; i++)
+        {
+            if (mData[j][i] > _max) _max = mData[j][i];
+        }
+    }
+    return _max;
+}
+
 
 DoubleMatrix& DoubleMatrix::operator +(const DoubleMatrix &matrix)
 {

@@ -12,17 +12,17 @@ void IPrinter::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n
     C_UNUSED(s);
 
     unsigned int rows = x.rows();
+    unsigned int cols = x.cols();
     unsigned int M = rows / m;
 
     for (unsigned int j=0; j<rows; j++)
     {
-        unsigned int xj_size = x[j].size();
-        unsigned int N = xj_size / n;
+        unsigned int N = cols / n;
         if (j%M==0)
         {
-            for (unsigned int i=0; i<xj_size; i++)
+            for (unsigned int i=0; i<cols; i++)
             {
-                if (i%N==0) fprintf(f, "%14.10f ", x[j][i]);
+                if (i%N==0) fprintf(f, "%14.10f ", x.at(j,i));
             }
             fputs("\n", f);
         }

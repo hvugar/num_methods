@@ -285,7 +285,7 @@ void IBackwardHyperbolicEquation::calculateU(DoubleMatrix &p, double hx, double 
     rx.clear();
 }
 
-void IHyperbolicEquation2D::calculateMVD(DoubleMatrix &u, double h1, double h2, double ht, double N1, double N2, double M, double a1, double a2) const
+void IHyperbolicEquation2D::calculateMVD(DoubleMatrix &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
 {
     u.resize(N2+1, N1+1);
 
@@ -424,7 +424,7 @@ void IHyperbolicEquation2D::calculateMVD(DoubleMatrix &u, double h1, double h2, 
     rx2.clear();
 }
 
-void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, double ht, double N1, double N2, double M, double a1, double a2) const
+void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
 {
     //cleaning cube
 //    for (unsigned int k=0; k<u.size(); k++)
@@ -568,7 +568,7 @@ void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, do
     rx2.clear();
 }
 
-void IHyperbolicEquation2D::calculateU1(DoubleCube &u, double h1, double h2, double ht, double N1, double N2, double M, double a1, double a2, double qamma) const
+void IHyperbolicEquation2D::calculateU1(DoubleCube &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2, double qamma) const
 {
     //cleaning cube
 //    for (unsigned int k=0; k<u.size(); k++)
@@ -733,7 +733,7 @@ void saveData(const DoubleMatrix& m, int i, unsigned int N2, unsigned int N1)
     printf("File: %s min: %.16f max: %.16f\n", buffer, MIN, MAX);
 }
 
-void IHyperbolicEquation2D::calculateU1(DoubleMatrix &u, double h1, double h2, double ht, double N1, double N2, double M, double a1, double a2, double qamma) const
+void IHyperbolicEquation2D::calculateU1(DoubleMatrix &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2, double qamma) const
 {
     //cleaning matrix
     u.resize(N2+1, N1+1);
@@ -878,7 +878,7 @@ void IHyperbolicEquation2D::calculateU1(DoubleMatrix &u, double h1, double h2, d
     rx2.clear();
 }
 
-void IBackwardHyperbolicEquation2D::calculateU(DoubleMatrix &u, double h1, double h2, double ht, double N1, double N2, double M, double a1, double a2) const
+void IBackwardHyperbolicEquation2D::calculateU(DoubleMatrix &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
 {
     //cleaning matrix
     u.resize(N2+1, N1+1);
@@ -1017,7 +1017,7 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleMatrix &u, double h1, doubl
     rx2.clear();
 }
 
-void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double h2, double ht, double N1, double N2, double M, double a1, double a2) const
+void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
 {
     //cleaning cube
 //    for (unsigned int k=0; k<p.size(); k++)
@@ -1160,7 +1160,7 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
     rx2.clear();
 }
 
-void IBackwardHyperbolicEquation2D::calculateU1(DoubleCube &p, double h1, double h2, double ht, double N1, double N2, double M, double a1, double a2, double qamma) const
+void IBackwardHyperbolicEquation2D::calculateU1(DoubleCube &p, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2, double qamma) const
 {
     //cleaning cube
 //    for (unsigned int k=0; k<p.size(); k++)

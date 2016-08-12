@@ -13,7 +13,17 @@ DoubleVector::DoubleVector(unsigned int size, double val) : mSize(size), mData(N
         mSize = size;
         mData = (double*) malloc(sizeof(double) * size);
         for (unsigned int i=0; i<size; i++) mData[i] = val;
-//        memset(mData, val, size);
+        //        memset(mData, val, size);
+    }
+}
+
+DoubleVector::DoubleVector(const double *data, unsigned int size) : mSize(size), mData(NULL)
+{
+    if (size > 0)
+    {
+        mSize = size;
+        mData = (double*) malloc(sizeof(double) * size);
+        memcpy(mData, data, sizeof(double)*size);
     }
 }
 

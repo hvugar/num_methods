@@ -87,11 +87,8 @@ void IParabolicEquation::calculateU(DoubleVector &u, double hx, double ht, unsig
 
 void IParabolicEquation::calculateU(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a) const
 {
-    for (unsigned int i=0; i<u.size(); i++) u[i].clear();
     u.clear();
-
     u.resize(M+1, N+1);
-    //for (unsigned int i=0; i<u.size(); i++) u[i].resize(N+1);
 
     DoubleVector da(N-1);
     DoubleVector db(N-1);
@@ -148,11 +145,8 @@ void IParabolicEquation::calculateU(DoubleMatrix &u, double hx, double ht, unsig
 
 void IParabolicEquation::calculateN(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a) const
 {
-    for (unsigned int i=0; i<u.size(); i++) u[i].clear();
     u.clear();
-
     u.resize(M+1, N+1);
-    //for (unsigned int i=0; i<u.size(); i++) u[i].resize(N+1);
 
     DoubleVector da(N-1);
     DoubleVector db(N-1);
@@ -212,11 +206,8 @@ void IParabolicEquation::calculateN(DoubleMatrix &u, double hx, double ht, unsig
 
 void IBackwardParabolicEquation::calculateU(DoubleMatrix &psi, double hx, double ht, unsigned int N, unsigned int M, double a) const
 {
-    for (unsigned int i=0; i<psi.size(); i++) psi[i].clear();
     psi.clear();
-
     psi.resize(M+1, N+1);
-    //for (unsigned int j=0; j<psi.size(); j++) psi[j].resize(N+1);
 
     DoubleVector da(N-1);
     DoubleVector db(N-1);
@@ -414,13 +405,10 @@ void IParabolicEquation2D::caluclateMVD(DoubleMatrix &u, double h1, double h2, d
 
 void IParabolicEquation2D::caluclateMVD1(DoubleMatrix &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
 {
-    //cleaning matrix
-    for (unsigned int j=0; j<u.size(); j++) u[j].clear();
     u.clear();
-    u.resize(N2+1, N1+1);// for (unsigned int j=0; j<=N2; j++) u[j].resize(N1+1);
+    u.resize(N2+1, N1+1);
 
-    DoubleMatrix uh;
-    uh.resize(N2+1, N1+1);// for (unsigned int j=0; j<=N2; j++) uh[j].resize(N1+1);
+    DoubleMatrix uh(N2+1, N1+1);
 
     DoubleVector da1(N1-1);
     DoubleVector db1(N1-1);
@@ -544,13 +532,10 @@ void IParabolicEquation2D::caluclateMVD1(DoubleMatrix &u, double h1, double h2, 
 
 void IParabolicEquation2D::caluclateMFS(DoubleMatrix &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
 {
-    //cleaning matrix
-    for (unsigned int j=0; j<u.size(); j++) u[j].clear();
     u.clear();
-    u.resize(N2+1, N1+1);// for (unsigned int j=0; j<=N2; j++) u[j].resize(N1+1);
+    u.resize(N2+1, N1+1);
 
-    DoubleMatrix uh;
-    uh.resize(N2+1, N1+1);// for (unsigned int j=0; j<=N2; j++) uh[j].resize(N1+1);
+    DoubleMatrix uh(N2+1, N1+1);
 
     DoubleVector da1(N1-1);
     DoubleVector db1(N1-1);
@@ -672,21 +657,11 @@ void IParabolicEquation2D::caluclateMFS(DoubleMatrix &u, double h1, double h2, d
 
 void IParabolicEquation2D::caluclateMVD(DoubleCube &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
 {
-    //cleaning cube
-//    for (unsigned int k=0; k<u.size(); k++)
-//    {
-//        unsigned int uk_size = u[k].size();
-//        for (unsigned int j=0; j<uk_size; j++) u[k][j].clear();
-//        u[k].clear();
-//    }
-//    u.clear();
-//    u.resize(M+1);
+    u.clear();
     u.resize(M+1, N2+1, N1+1);
 
-    DoubleMatrix u0(N2+1);
-    for (unsigned int j=0; j<=N2; j++) u0[j].resize(N1+1);
-    DoubleMatrix u1(N2+1);
-    for (unsigned int j=0; j<=N2; j++) u1[j].resize(N1+1);
+    DoubleMatrix u0(N2+1, N1+1);
+    DoubleMatrix u1(N2+1, N1+1);
 
     DoubleVector da1(N1-1);
     DoubleVector db1(N1-1);
@@ -1008,11 +983,8 @@ void IParabolicEquation::calculateL(DoubleMatrix &u, double hx, double ht, unsig
 
 void IParabolicEquation::calculateN1(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a) const
 {
-    for (unsigned int i=0; i<u.size(); i++) u[i].clear();
     u.clear();
-
     u.resize(M+1, N+1);
-    //for (unsigned int i=0; i<u.size(); i++) u[i].resize(N+1);
 
     DoubleVector da(N+1);
     DoubleVector db(N+1);
