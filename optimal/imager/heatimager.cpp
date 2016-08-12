@@ -6,15 +6,14 @@ void MatrixHeatImaging(const DoubleMatrix &m, double minimum, double maximum, QP
     pixmap.fill(Qt::white);
     QPainter painter(&pixmap);
 
-    int m_size = m.size();
+    unsigned int rows = m.rows();
+    unsigned int cols = m.cols();
 
-    for (int j=0; j<m_size; j++)
+    for (unsigned int j=0; j<rows; j++)
     {
-        const DoubleVector &v = m[j];
-        int v_size = v.size();
-        for (int i=0; i<v_size; i++)
+        for (unsigned int i=0; i<cols; i++)
         {
-            double u = v[i];
+            double u = m.at(j,i);
             double ratio = 0.0;
             if (minimum!=maximum)
                 ratio = 2.0 * (u-minimum) / (maximum - minimum);
@@ -43,11 +42,6 @@ void createHeatImage1(int argc, char *argv[])
     double min = QString(argv[10]).toDouble();
     double max = QString(argv[12]).toDouble();
 
-    //    QPixmap pixmap(QSize(width, height));
-    //    pixmap.fill(Qt::white);
-    //    QPainter painter(&pixmap);
-    //    painter.drawPoint(0,0);
-
     QFile file(inFile);
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream in(&file);
@@ -63,7 +57,6 @@ void createHeatImage1(int argc, char *argv[])
     {
         unsigned int i=0;
         QStringList list = line.split(" ");
-        m[j].resize(width);
         for (int k=0; k<list.size(); k++)
         {
             QString str = list[k];
