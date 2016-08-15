@@ -145,9 +145,9 @@ void Problem1::calculate3()
     double N = 1000;
     double M = 1000;
     double a = 2.0;
-    double lambda1 = +0.0;
+    double lambda1 = +1.0;
     double lambda2 = +1.0;
-    double lambda3 = +0.0;
+    double lambda3 = +1.0;
     double T0 = 1.0;
     double T1 = 1.0;
     double T2 = 3.0;
@@ -216,4 +216,78 @@ void Problem1::calculate3()
 //    IPrinter::printVector(u[M]);
 //    puts("---");
 //    IPrinter::printMatrix(u,);
+}
+
+/**
+ * @brief Problem1::calculate4
+ * u_t = a^2 u_xx
+ * u(x,0) = T_e
+ * u_x(0,t) = lambda * (v(t) - u(0,t)
+ * u_x(l,t) = 0
+ */
+void Problem1::calculate4()
+{
+    double hx = 0.001;
+    double ht = 0.001;
+    double N = 1000;
+    double M = 1000;
+    double a = 1.0;
+    double lambda1 = +1.0;
+    double lambda2 = -1.0;
+    double lambda3 = +1.0;
+    double T0 = 1.0;
+    //double T1 = 1.0;
+    double T2 = 2.0;
+    //double T3 = 1.0;
+
+    DoubleMatrix u(M+1, N+1);
+
+    DoubleVector a1(N+1);
+    DoubleVector b1(N+1);
+    DoubleVector c1(N+1);
+    DoubleVector d1(N+1);
+    DoubleVector rx(N+1);
+
+    for (uint32_t j=0; j<=M; j++)
+    {
+        if (j==0)
+        {
+            for (uint32_t i=0; i<=N; i++)
+                u.at(j,i) = T0;
+        }
+        else
+        {
+            a1[0] = 0.0;
+            b1[0] = 1.0 + (a*a*ht)/(hx*hx) - (lambda2*a*a*ht)/hx;
+            c1[0] = -(a*a*ht)/(hx*hx);
+            d1[0] = u.at(j-1,0) - ((lambda2*a*a*ht)/(hx))*T2;
+
+            for (uint32_t i=1; i<=N-1; i++)
+            {
+                a1[i] = -(a*a*ht)/(hx*hx);
+                b1[i] = 1.0 + 2.0*((a*a)*ht)/(hx*hx);
+                c1[i] = -(a*a*ht)/(hx*hx);
+                d1[i] = u.at(j-1, i);
+            }
+
+            a1[N] = -(a*a*ht)/(hx*hx);
+            b1[N] = 1.0 + (a*a*ht)/(hx*hx);
+            c1[N] = 0.0;
+            d1[N] = u.at(j-1,N);
+
+            tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), rx.data(), rx.size());
+
+            for (uint32_t i=0; i<=N; i++) u.at(j,i) = rx[i];
+        }
+    }
+
+    IPrinter::printVector(u.row(0));
+    IPrinter::printVector(u.row(1));
+    IPrinter::printVector(u.row(2));
+    puts("...");
+    IPrinter::printVector(u.row(M-2));
+    IPrinter::printVector(u.row(M-1));
+    IPrinter::printVector(u.row(M));
+    puts("---");
+    IPrinter::printMatrix(u);
 }

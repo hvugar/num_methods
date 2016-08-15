@@ -11,14 +11,10 @@ int main(int argc, char *argv[])
     C_UNUSED(argv);
     srand(time(NULL));
 
-    QGuiApplication app(argc, argv);
+//    QGuiApplication app(argc, argv);
 
-//    Problem1 p;
-//    p.calculate3();
-
-    DoubleMatrix m(10,10);
-    m(0,0) = 1.0;
-    m.print();
+    Problem1 p;
+    p.calculate4();
 
     //GaussianEliminationTester::main(argc, argv);
     //HeatControl2D::main(argc, argv);

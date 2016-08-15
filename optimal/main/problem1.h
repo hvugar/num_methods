@@ -13,6 +13,7 @@ public:
     void calculate1();
     void calculate2();
     void calculate3();
+    void calculate4();
 
 private:
     double t0;
