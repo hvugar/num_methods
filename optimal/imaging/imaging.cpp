@@ -52,3 +52,37 @@ void visualizeMatrixHeat(const DoubleMatrix& m, double min, double max, QPixmap 
         }
     }
 }
+
+void visualHeatColorGradinet1(QPixmap &img, int w, int h)
+{
+    QLinearGradient gradient(0,0,w,h);
+    gradient.setColorAt(0.00, Qt::blue);
+    gradient.setColorAt(0.25, Qt::cyan);
+    gradient.setColorAt(0.50, Qt::green);
+    gradient.setColorAt(0.75, Qt::yellow);
+    gradient.setColorAt(1.00, Qt::red);
+
+    img = QPixmap(w,h);
+    img.fill(Qt::transparent);
+    QPainter painter(&img);
+    painter.fillRect(0,0,w,h,QBrush(gradient));
+    painter.end();
+}
+
+void visualHeatColorGradinet2(QPixmap &img, int w, int h)
+{
+    QLinearGradient gradient(0,0,w,h);
+    gradient.setColorAt(0.000, Qt::black);
+    gradient.setColorAt(0.167, Qt::blue);
+    gradient.setColorAt(0.333, Qt::cyan);
+    gradient.setColorAt(0.500, Qt::green);
+    gradient.setColorAt(0.667, Qt::yellow);
+    gradient.setColorAt(0.833, Qt::red);
+    gradient.setColorAt(1.000, Qt::white);
+
+    img = QPixmap(w,h);
+    img.fill(Qt::transparent);
+    QPainter painter(&img);
+    painter.fillRect(0,0,w,h,QBrush(gradient));
+    painter.end();
+}

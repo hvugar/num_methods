@@ -1,8 +1,8 @@
 TEMPLATE = subdirs
 
-SUBDIRS += minimum \
-    imaging
+SUBDIRS += minimum
 SUBDIRS += main
+SUBDIRS += imaging
 SUBDIRS += imager
 #SUBDIRS += diplom
 

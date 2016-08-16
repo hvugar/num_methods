@@ -73,7 +73,9 @@ SOURCES += main.cpp \
     control/example2.cpp \
     gaussianelimination.cpp \
     problem1.cpp \
-    cauchyproblemtest.cpp
+    cauchyproblemtest.cpp \
+    newtonheatprocess.cpp \
+    problem2.cpp
 
 HEADERS += \
     rnfunction/rosenbrock.h \
@@ -125,4 +127,6 @@ HEADERS += \
     control/example2.h \
     gaussianelimination.h \
     problem1.h \
-    cauchyproblemtest.h
+    cauchyproblemtest.h \
+    newtonheatprocess.h \
+    problem2.h

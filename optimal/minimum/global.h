@@ -15,6 +15,12 @@
 
 #define C_UNUSED(x) (void)x;
 
+#ifdef __GNUC__
+#define UNUSED_PARAM __attribute__ ((unused))
+#else
+#define UNUSED_PARAM
+#endif
+
 enum Boundary
 {
     Left = 0,

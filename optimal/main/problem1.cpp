@@ -76,7 +76,7 @@ void Problem1::calculate2()
     double hx = 0.001;
     double ht = 0.001;
     double N = 1000;
-    double M = 20000;
+    double M = 50000;
     double a = 1.0;
     double lambda1 = -1.0;
     double lambda2 = 0.0;
@@ -143,15 +143,15 @@ void Problem1::calculate3()
     double hx = 0.001;
     double ht = 0.001;
     double N = 1000;
-    double M = 1000;
-    double a = 2.0;
+    double M = 5000;
+    double a = 1.0;
     double lambda1 = +1.0;
     double lambda2 = +1.0;
     double lambda3 = +1.0;
     double T0 = 1.0;
-    double T1 = 1.0;
+    double T1 = 3.0;
     double T2 = 3.0;
-    double T3 = 1.0;
+    double T3 = 3.0;
 
     DoubleMatrix u(M+1, N+1);
 
@@ -165,8 +165,7 @@ void Problem1::calculate3()
     {
         if (j==0)
         {
-            for (uint32_t i=0; i<=N; i++)
-                u.at(j,i) = T0;
+            for (uint32_t i=0; i<=N; i++) u.at(j,i) = T0;
         }
         else
         {
@@ -194,10 +193,9 @@ void Problem1::calculate3()
         }
     }
 
-    printf("%f %f\n", u.min(), u.max());
-    QPixmap img;
-    visualizeMatrixHeat(u, 1.0, 3.0, img);
-    img.save("img.png");
+//    QPixmap img;
+//    visualizeMatrixHeat(u, 1.0, 3.0, img);
+//    img.save("img.png");
 
 //    for (unsigned int j=0; j<=M; j++)
 //    {
@@ -206,16 +204,15 @@ void Problem1::calculate3()
 //        img.save(QString("img%1.png").arg(j));
 //        IPrinter::printVector(u[j]);
 //    }
-//    return;
-//    IPrinter::printVector(u[0]);
-//    IPrinter::printVector(u[1]);
-//    IPrinter::printVector(u[2]);
-//    puts("...");
-//    IPrinter::printVector(u[M-2]);
-//    IPrinter::printVector(u[M-1]);
-//    IPrinter::printVector(u[M]);
-//    puts("---");
-//    IPrinter::printMatrix(u,);
+    IPrinter::printVector(u.row(0));
+    IPrinter::printVector(u.row(1));
+    IPrinter::printVector(u.row(2));
+    puts("...");
+    IPrinter::printVector(u.row(M-2));
+    IPrinter::printVector(u.row(M-1));
+    IPrinter::printVector(u.row(M));
+    puts("---");
+    IPrinter::printMatrix(u);
 }
 
 /**
