@@ -3,12 +3,17 @@
 
 #include "newtonheatprocess.h"
 #include <cmethods.h>
+#include <function.h>
+#include <printer.h>
 
-class Problem2 : public NewtonHeatProcess
+class Problem2 : public NewtonHeatProcess, public RnFunction, public IGradient
 {
 public:
     Problem2();
     virtual ~Problem2();
+
+    virtual double fx(const DoubleVector &x);
+    virtual void gradient(const DoubleVector &x, DoubleVector &g);
 
     virtual double vm(unsigned int j) const;
     virtual double vl(unsigned int j) const;
@@ -16,7 +21,12 @@ public:
 
     virtual double initial(unsigned int i) const;
 
-    void calculate1(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double lambdaM, double lambdaL, double lambdaR, double a);
+    virtual double mu(unsigned int i) const;
+
+    void calculateU(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double lambdaM, double lambdaL, double lambdaR, double a);
+    void calculateP(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double lambdaM, double lambdaL, double lambdaR, double a);
+
+    static void Main(int argc, char* argv[]);
 
 public:
     double t0;
@@ -37,8 +47,17 @@ public:
     DoubleVector k;
     DoubleVector xi;
     DoubleVector z;
+    DoubleVector Xi;
+    double Te;
+    double Ti;
 
     DoubleMatrix *pm;
+
+    double alpha1;
+    double alpha2;
+
+    DoubleVector V;
+    const DoubleMatrix *pu;
 };
 
 #endif // PROBLEM2_H

@@ -64,7 +64,7 @@ void IPrinter::printVector(const DoubleVector &x, const char *s, unsigned int n,
         unsigned int N = x.size() / n;
         for (unsigned int i=0; i<x.size(); i++)
         {
-            if (i%N==0) fprintf(file, "%12.8f ", x[i]);
+            if (i%N==0) fprintf(file, "%14.10f ", x[i]);
         }
     }
     fputs("\n", file);

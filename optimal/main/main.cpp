@@ -13,15 +13,7 @@ int main(int argc, char *argv[])
     C_UNUSED(argv);
     srand(time(NULL));
 
-//    Problem1 p;
-//    p.calculate3();
-
-    DoubleMatrix m;
-
-    Problem2 p2;
-    p2.calculate1(m, p2.ht, p2.hx, p2.M, p2.N, p2.lambdaM, p2.lambdaL, p2.lambdaR, p2.a);
-
-    IPrinter::printMatrix(m);
+    Problem2::Main(argc, argv);
 
     return 0;
 }
