@@ -3,13 +3,33 @@
 void Problem2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     Problem2 p;
-    DoubleMatrix u;
-    p.calculateU(u, p.ht, p.hx, p.M, p.N, p.lambdaM, p.lambdaL, p.lambdaR, p.a);
-    IPrinter::printMatrix(u);
-    p.pu = &u;
-    DoubleMatrix psi;
-    p.calculateP(psi, p.ht, p.hx, p.M, p.N, p.lambdaM, p.lambdaL, p.lambdaR, p.a);
-    IPrinter::printMatrix(psi);
+
+    DoubleVector k0(p.L);
+    k0[0] = 1.0;
+    k0[1] = 1.0;
+    p.calculateV(k0);
+//    IPrinter::printVector(p.V);
+
+    DoubleVector k(p.L);
+    k[0] = 2.1;
+    k[1] = 2.2;
+
+    puts("Analitic");
+    DoubleVector g(p.L,0.0);
+    p.gradient(k, g);
+    printf("%f %f\n", k[0], k[1]);
+    printf("%f %f\n", g[0], g[1]);
+    g.L2Normalize();
+    printf("%f %f\n", g[0], g[1]);
+
+    puts("Numerical");
+    double h = 0.01;
+    DoubleVector gn(p.L,0.0);
+    IGradient::Gradient(&p, h, k, gn);
+    printf("%f %f\n", k[0], k[1]);
+    printf("%f %f\n", gn[0], gn[1]);
+    gn.L2Normalize();
+    printf("%f %f\n", gn[0], gn[1]);
 }
 
 Problem2::Problem2()
@@ -28,10 +48,6 @@ Problem2::Problem2()
 
     L = 2;
 
-    k.resize(L);
-    k[0] = 1.0;
-    k[1] = 1.0;
-
     xi.resize(L);
     xi[0] = 0.4;
     xi[1] = 0.7;
@@ -48,131 +64,143 @@ Problem2::Problem2()
     alpha2 = 0.0;
 
     Te = 3.0;
-
-    V.resize(N+1);
-    DoubleMatrix u;
-    calculateU(u, ht, hx, M, N, lambdaM, lambdaL, lambdaR, a);
-    V = u.row(M);
-    IPrinter::printVector(V);
 }
 
 Problem2::~Problem2()
 {}
 
-double Problem2::fx(const DoubleVector &x)
+double Problem2::fx(const DoubleVector &k)
 {
-    k = x;
+    pk = &k;
     DoubleMatrix u;
-    calculate(u, ht, hx, M, N, lambdaM, lambdaL, lambdaR, a);
+    calculateU(u, ht, hx, M, N, lambdaM, lambdaL, lambdaR, a);
     pu = &u;
+    //IPrinter::printVector(u.row(M));
 
     double sum = 0.0;
-    for (unsigned int i=0; i<=N-1; i++)
+    for (unsigned int n=0; n<=N-1; n++)
     {
-        unsigned int i1 = i;
-        unsigned int i2 = i + 1;
-        double f1 = mu(i1) * (u(M, i1) - V[i1])*(u(M, i1) - V[i1]);
-        double f2 = mu(i2) * (u(M, i2) - V[i2])*(u(M, i2) - V[i2]);
-        sum += (f1 + f2);
+        unsigned int n1 = n;
+        unsigned int n2 = n + 1;
+        double f1 = mu(n1) * (u.at(M, n1) - V[n1])*(u.at(M, n1) - V[n1]);
+        double f2 = mu(n2) * (u.at(M, n2) - V[n2])*(u.at(M, n2) - V[n2]);
+        sum = sum + (f1 + f2);
     }
-    sum *= 0.5*hx;
+    sum = 0.5*hx*sum;
 
     double norm = 0.0;
-    for (unsigned int j=0; j<=M-1; j++)
+    for (unsigned int m=0; m<=M-1; m++)
     {
-        unsigned int j1 = j;
-        unsigned int j2 = j + 1;
-        sum += (vl(j1) + vl(j2));
+        unsigned int m1 = m + 0;
+        unsigned int m2 = m + 1;
+        //norm += (vl(m1) + vl(m2));
+        norm = norm + (k[0]*(u.at(m1,Xi[0])-z[0]) + k[1]*(u.at(m1,Xi[1])-z[1]))
+                    + (k[0]*(u.at(m2,Xi[0])-z[0]) + k[1]*(u.at(m2,Xi[1])-z[1]));
     }
-    norm *= 0.5*ht;
+    norm = 0.5*ht * norm;
 
     return alpha1*sum + alpha2*norm;
 }
 
-void Problem2::gradient(const DoubleVector &x, DoubleVector &g)
+void Problem2::gradient(const DoubleVector &k UNUSED_PARAM, DoubleVector &g UNUSED_PARAM)
 {
+    pk = &k;
+    //puts("---");
+    DoubleMatrix u;
+    calculateU(u, ht, hx, M, N, lambdaM, lambdaL, lambdaR, a);
+    pu = &u;
+    //IPrinter::printMatrix(u);
+
+    //puts("---");
+    DoubleMatrix psi;
+    calculateP(psi, ht, hx, M, N, lambdaM, lambdaL, lambdaR, a);
+    pp = &psi;
+    //IPrinter::printMatrix(psi);
+
+    g[0] = g[1] = 0.0;
+    for (unsigned int s = 0; s<L; s++)
+    {
+        double sum = 0.0;
+        for (unsigned int m=0; m<=M-1; m++)
+        {
+            unsigned int m1 = m + 0;
+            unsigned int m2 = m + 1;
+            double g1 = (u.at(m1, Xi[s]) - z[s]) * (-lambdaM*a*a*psi.at(m1, 0) + 2.0*alpha2*(k[0]*(u.at(m1,Xi[0]) - z[0]) + k[1]*(u.at(m1,Xi[1]) - z[1])));
+            double g2 = (u.at(m2, Xi[s]) - z[s]) * (-lambdaM*a*a*psi.at(m2, 0) + 2.0*alpha2*(k[0]*(u.at(m2,Xi[0]) - z[0]) + k[1]*(u.at(m2,Xi[1]) - z[1])));
+            sum = sum + (g1 + g2);
+        }
+        sum = 0.5 * ht * sum;
+        g[s] = sum;
+    }
 }
 
 double Problem2::initial(unsigned int i UNUSED_PARAM) const { return 1.0; }
 
-double Problem2::vm(unsigned int j UNUSED_PARAM) const { return Te; }
+double Problem2::vm(unsigned int j UNUSED_PARAM) const
+{
+    return Te;
+}
 
 double Problem2::vl(unsigned int j UNUSED_PARAM) const
 {
-    const DoubleMatrix &u =*pu;
+    const DoubleVector &k = *pk;
+    const DoubleMatrix &u = *pu;
     return k[0] * (u.at(j, Xi[0]) - z[0]) + k[1] * (u.at(j, Xi[1]) - z[1]);
 }
 
-double Problem2::vr(unsigned int j UNUSED_PARAM) const { return 3.0; }
-
-void Problem2::calculateU(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double lambdaM, double lambdaL, double lambdaR, double a)
+double Problem2::vr(unsigned int j UNUSED_PARAM) const
 {
-    m.clear();
-    m.resize(M+1, N+1);
+    return Te;
+}
 
-    DoubleVector a1(N+1);
-    DoubleVector b1(N+1);
-    DoubleVector c1(N+1);
-    DoubleVector d1(N+1);
+void Problem2::calculateU(DoubleMatrix &u, double ht, double hx, unsigned int M, unsigned int N, double lambdaM, double lambdaL, double lambdaR, double a)
+{
+    const DoubleVector &k = *pk;
+
+    u.clear();
+    u.resize(M+1, N+1);
+
+    DoubleVector rb(N+1);
     DoubleVector rx(N+1);
 
     for (unsigned int j=0; j<=M; j++)
     {
         if (j==0)
         {
-            for (unsigned int i=0; i<=N; i++) m.at(0,i) = initial(i);
+            for (unsigned int i=0; i<=N; i++) u.at(0,i) = initial(i);
         }
         else
         {
-            DoubleMatrix u(N+1, N+1, 0.0);
-            u(0,0) = 1.0 + (a*a*ht)/(hx*hx) + (lambdaL*a*a*ht)/hx + lambdaM*ht;
-            u(0,1) = -(a*a*ht)/(hx*hx);
-            d1[0] = m.at(j-1,0) + ((lambdaL*a*a*ht)/(hx))*(-(k[0]*z[0]-k[1]*z[1])) + lambdaM*ht*vm(j);
+            DoubleMatrix ra(N+1, N+1, 0.0);
+            ra(0,0) = 1.0 + (a*a*ht)/(hx*hx) + (lambdaL*a*a*ht)/hx + lambdaM*ht;
+            ra(0,1) = -(a*a*ht)/(hx*hx);
+            rb[0] = u.at(j-1,0) + ((lambdaL*a*a*ht)/(hx))*(-(k[0]*z[0]-k[1]*z[1])) + lambdaM*ht*vm(j);
 
-            u(0, Xi[0]) = -k[0] * ((lambdaL*a*a*ht)/(hx));
-            u(0, Xi[1]) = -k[1] * ((lambdaL*a*a*ht)/(hx));
+            ra(0, Xi[0]) = -k[0] * ((lambdaL*a*a*ht)/(hx));
+            ra(0, Xi[1]) = -k[1] * ((lambdaL*a*a*ht)/(hx));
 
             for (unsigned int i=1; i<=N-1; i++)
             {
-                u(i,i-1) = -(a*a*ht)/(hx*hx);
-                u(i,i) = 1.0 + 2.0*((a*a)*ht)/(hx*hx) + lambdaM*ht;
-                u(i,i+1) = -(a*a*ht)/(hx*hx);
-                d1[i] = m.at(j-1, i) + lambdaM*ht*vm(j);
+                ra(i,i-1) = -(a*a*ht)/(hx*hx);
+                ra(i,i) = 1.0 + 2.0*((a*a)*ht)/(hx*hx) + lambdaM*ht;
+                ra(i,i+1) = -(a*a*ht)/(hx*hx);
+                rb[i] = u.at(j-1, i) + lambdaM*ht*vm(j);
             }
 
-            u(N,N-1) = -(a*a*ht)/(hx*hx);
-            u(N,N)   = 1.0 + (a*a*ht)/(hx*hx) + (lambdaL*a*a*ht)/hx + lambdaM*ht;
-            d1[N] = m.at(j-1,N) + ((lambdaR*a*a*ht)/(hx))*vr(j) + lambdaM*ht*vm(j);
+            ra(N,N-1) = -(a*a*ht)/(hx*hx);
+            ra(N,N)   = 1.0 + (a*a*ht)/(hx*hx) + (lambdaL*a*a*ht)/hx + lambdaM*ht;
+            rb[N] = u.at(j-1,N) + ((lambdaR*a*a*ht)/(hx))*vr(j) + lambdaM*ht*vm(j);
 
-            GaussianElimination(u, d1, rx);
+            GaussianElimination(ra, rb, rx);
 
-            //            a1[0] = 0.0;
-            //            b1[0] = 1.0 + (a*a*ht)/(hx*hx) + (lambdaL*a*a*ht)/hx + lambdaM*ht;
-            //            c1[0] = -(a*a*ht)/(hx*hx);
-            //            d1[0] = m.at(j-1,0) + ((lambdaL*a*a*ht)/(hx))*vl(j) + lambdaM*ht*vm(j);
-
-            //            for (unsigned int i=1; i<=N-1; i++)
-            //            {
-            //                a1[i] = -(a*a*ht)/(hx*hx);
-            //                b1[i] = 1.0 + 2.0*((a*a)*ht)/(hx*hx) + lambdaM*ht;
-            //                c1[i] = -(a*a*ht)/(hx*hx);
-            //                d1[i] = m.at(j-1, i) + lambdaM*ht*vm(j);
-            //            }
-
-            //            a1[N] = -(a*a*ht)/(hx*hx);
-            //            b1[N] = 1.0 + (a*a*ht)/(hx*hx) + lambdaR*(a*a*ht)/hx + lambdaM*ht;
-            //            c1[N] = 0.0;
-            //            d1[N] = m.at(j-1,N) + ((lambdaR*a*a*ht)/(hx))*vr(j) + lambdaM*ht*vm(j);
-
-            //            tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), rx.data(), rx.size());
-
-            for (unsigned int i=0; i<=N; i++) m.at(j,i) = rx[i];
+            for (unsigned int i=0; i<=N; i++) u.at(j,i) = rx[i];
         }
     }
 }
 
-void Problem2::calculateP(DoubleMatrix &psi, double ht, double hx, unsigned int M, unsigned int N, double lambdaM, double lambdaL, double lambdaR, double a)
+void Problem2::calculateP(DoubleMatrix &psi, double ht, double hx, unsigned int M, unsigned int N, double lambdaM, double lambdaL, double lambdaR UNUSED_PARAM, double a)
 {
+    const DoubleVector &k = *pk;
     const DoubleMatrix &u = *pu;
 
     psi.clear();
@@ -196,7 +224,7 @@ void Problem2::calculateP(DoubleMatrix &psi, double ht, double hx, unsigned int 
 
             p.at(0,0) = -1.0 - (a*a*ht)/(hx*hx) - (lambdaL*a*a*ht)/hx - lambdaM*ht;
             p.at(0,1) = (a*a*ht)/(hx*hx);
-            d1[0] = -psi.at(m+1,0);
+            d1[0]     = -psi.at(m+1,0);
 
             //p(0, Xi[0]) = -k[0] * ((lambdaL*a*a*ht)/(hx));
             //p(0, Xi[1]) = -k[1] * ((lambdaL*a*a*ht)/(hx));
@@ -204,12 +232,12 @@ void Problem2::calculateP(DoubleMatrix &psi, double ht, double hx, unsigned int 
             for (unsigned int n=1; n<=N-1; n++)
             {
                 p.at(n,n-1) = (a*a*ht)/(hx*hx);
-                p.at(n,n) = -1.0 - 2.0*((a*a)*ht)/(hx*hx) - lambdaM*ht;
+                p.at(n,n)   = -1.0 - 2.0*((a*a)*ht)/(hx*hx) - lambdaM*ht;
                 p.at(n,n+1) = (a*a*ht)/(hx*hx);
 
-                p.at(n,0) = 0;
+                if (n>1) p.at(n,0) = 0.0;
                 if (n==Xi[0]) p.at(n,0) = p.at(n,0) + (1/hx)*lambdaM*a*a*ht*k[0];
-                if (n==Xi[1]) p.at(n,0) = p.at(n,0) + (1/hx)*lambdaM*a*a*ht*k[0];
+                if (n==Xi[1]) p.at(n,0) = p.at(n,0) + (1/hx)*lambdaM*a*a*ht*k[1];
 
                 d1[n] = -psi.at(m+1, n);
                 for (unsigned int j=0; j<L; j++)
@@ -218,7 +246,7 @@ void Problem2::calculateP(DoubleMatrix &psi, double ht, double hx, unsigned int 
                     {
                         for (unsigned i=0; n<L; i++)
                         {
-                            d1[n] += (1/hx)*2*alpha2*ht*k[j]*k[i]*(u.at(M,Xi[i]) - z[i]);
+                            d1[n] += (1/hx)*2*alpha2*ht*k[j]*k[i]*(u.at(m,Xi[i]) - z[i]);
                         }
                     }
                 }
@@ -227,14 +255,14 @@ void Problem2::calculateP(DoubleMatrix &psi, double ht, double hx, unsigned int 
                 {
                     if (n==Xi[i])
                     {
-                        d1[n] += (1/hx)*k[i]*k[i]*(u.at(M,Xi[i]) - z[i]);
+                        d1[n] += (1/hx)*2*alpha2*ht*k[i]*k[i]*(u.at(m,n) - z[i]);
                     }
                 }
             }
 
             p.at(N,N-1) = (a*a*ht)/(hx*hx);
             p.at(N,N)   = -1.0 - (a*a*ht)/(hx*hx) - (lambdaL*a*a*ht)/hx - lambdaM*ht;
-            d1[N] = -psi.at(m+1,N);
+            d1[N]       = -psi.at(m+1,N);
 
             GaussianElimination(p, d1, rx);
 
@@ -246,5 +274,13 @@ void Problem2::calculateP(DoubleMatrix &psi, double ht, double hx, unsigned int 
 double Problem2::mu(unsigned int i UNUSED_PARAM) const
 {
     return 1.0;
+}
+
+void Problem2::calculateV(const DoubleVector &k)
+{
+    pk = &k;
+    DoubleMatrix u;
+    calculateU(u, ht, hx, M, N, lambdaM, lambdaL, lambdaR, a);
+    V = u.row(M);
 }
 

@@ -305,20 +305,20 @@ void DoubleMatrix::changeRows(unsigned int i, unsigned int j)
     free(row);
 }
 
-void GaussianElimination(DoubleMatrix m, DoubleVector b, DoubleVector &x)
+void GaussianElimination(DoubleMatrix A, DoubleVector b, DoubleVector &x)
 {
     const unsigned int ui = (unsigned)0-1;
 
     unsigned int n = x.size();
     for (unsigned k=0; k < n-1; k++)
     {
-        if (fabs(m.at(k,k)) <= DBL_EPSILON)
+        if (fabs(A.at(k,k)) <= DBL_EPSILON)
         {
             for (unsigned int p = k+1; p < n; p++)
             {
-                if (m[k][p] != 0.0)
+                if (A[k][p] != 0.0)
                 {
-                    m.changeRows(k, p);
+                    A.changeRows(k, p);
                     break;
                 }
             }
@@ -326,15 +326,15 @@ void GaussianElimination(DoubleMatrix m, DoubleVector b, DoubleVector &x)
 
         for (unsigned int j=(k+1); j<n; j++)
         {
-            double c = m.at(j,k)/m.at(k,k);
-            for (unsigned int i=k; i<n; i++) m.at(j,i) = m.at(j,i) - m.at(k,i) * c;
+            double c = A.at(j,k)/A.at(k,k);
+            for (unsigned int i=k; i<n; i++) A.at(j,i) = A.at(j,i) - A.at(k,i) * c;
             b[j] = b[j] - b[k] *c;
         }
     }
 
     for (unsigned int i=(n-1); i!=ui; i--)
     {
-        for (unsigned int j=(n-1); j>i; j--) b[i] -= (m.at(i,j) * x[j]);
-        x[i] = b[i] / m.at(i,i);
+        for (unsigned int j=(n-1); j>i; j--) b[i] -= (A.at(i,j) * x[j]);
+        x[i] = b[i] / A.at(i,i);
     }
 }

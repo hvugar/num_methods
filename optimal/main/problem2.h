@@ -5,8 +5,10 @@
 #include <cmethods.h>
 #include <function.h>
 #include <printer.h>
+#include <gradient_cjt.h>
+#include <vector>
 
-class Problem2 : public NewtonHeatProcess, public RnFunction, public IGradient
+class Problem2 : public RnFunction, public IGradient
 {
 public:
     Problem2();
@@ -25,6 +27,7 @@ public:
 
     void calculateU(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double lambdaM, double lambdaL, double lambdaR, double a);
     void calculateP(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double lambdaM, double lambdaL, double lambdaR, double a);
+    void calculateV(const DoubleVector &k);
 
     static void Main(int argc, char* argv[]);
 
@@ -44,20 +47,21 @@ public:
     double lambdaR;
 
     unsigned int L;
-    DoubleVector k;
+    //DoubleVector k;
     DoubleVector xi;
     DoubleVector z;
-    DoubleVector Xi;
+    std::vector<unsigned int> Xi;
     double Te;
     double Ti;
 
-    DoubleMatrix *pm;
 
     double alpha1;
     double alpha2;
 
     DoubleVector V;
+    const DoubleVector *pk;
     const DoubleMatrix *pu;
+    const DoubleMatrix *pp;
 };
 
 #endif // PROBLEM2_H
