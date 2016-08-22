@@ -33,10 +33,13 @@ void ConjugateGradient::calculate(DoubleVector& x)
     ms = &s;
     iterationCount = 0;
 
+    printf("%f %f\n", x[0], x[1]);
+
     do
     {
         // Gradient of objectiv function in current point
         m_gr->gradient(x, g);
+        printf("%f %f\n", g[0], g[1]);
 
         double gradient_norm = g.L2Norm();
         if (gradient_norm < epsilon1())

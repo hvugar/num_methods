@@ -4,6 +4,7 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
+#include <float.h>
 #include <exception>
 
 DoubleVector::DoubleVector(unsigned int size, double val) : mSize(size), mData(NULL)
@@ -167,13 +168,13 @@ double DoubleVector::EuclideanDistance(const DoubleVector &p) const
 void DoubleVector::L2Normalize()
 {
     double norm = L2Norm();
-    if (norm != 0.0) for (unsigned int i=0; i<mSize; i++) mData[i] /= norm;
+    if (norm > DBL_EPSILON) for (unsigned int i=0; i<mSize; i++) mData[i] /= norm;
 }
 
 void DoubleVector::L1Normalize()
 {
     double norm = L1Norm();
-    for (unsigned int i=0; i<mSize; i++) mData[i] /= norm;
+    if (norm > DBL_EPSILON) for (unsigned int i=0; i<mSize; i++) mData[i] /= norm;
 }
 
 void DoubleVector::EuclideanNormalize()

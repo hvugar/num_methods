@@ -8,7 +8,7 @@
 #include <gradient_cjt.h>
 #include <vector>
 
-class Problem2 : public RnFunction, public IGradient
+class Problem2 : public RnFunction, public IGradient, public IPrinter, public ConjugateGradient
 {
 public:
     Problem2();
@@ -16,6 +16,7 @@ public:
 
     virtual double fx(const DoubleVector &x);
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
+    virtual void print(unsigned int iteration, const DoubleVector &k, const DoubleVector &g, double alpha, RnFunction *fn) const;
 
     virtual double vm(unsigned int j) const;
     virtual double vl(unsigned int j) const;
@@ -28,6 +29,8 @@ public:
     void calculateU(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double lambdaM, double lambdaL, double lambdaR, double a);
     void calculateP(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double lambdaM, double lambdaL, double lambdaR, double a);
     void calculateV(const DoubleVector &k);
+
+    double vs(double j) const;
 
     static void Main(int argc, char* argv[]);
 
@@ -54,7 +57,6 @@ public:
     double Te;
     double Ti;
 
-
     double alpha1;
     double alpha2;
 
@@ -62,6 +64,8 @@ public:
     const DoubleVector *pk;
     const DoubleMatrix *pu;
     const DoubleMatrix *pp;
+
+    DoubleVector ks;
 };
 
 #endif // PROBLEM2_H
