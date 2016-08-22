@@ -1,9 +1,9 @@
 TEMPLATE = subdirs
 
-SUBDIRS += minimum
-SUBDIRS += main
 SUBDIRS += imaging
 SUBDIRS += imager
+SUBDIRS += minimum
+SUBDIRS += main
 #SUBDIRS += diplom
 
 CONFIG += ordered
