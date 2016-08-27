@@ -316,7 +316,7 @@ void GaussianElimination(DoubleMatrix A, DoubleVector b, DoubleVector &x)
         {
             for (unsigned int p = k+1; p < n; p++)
             {
-                if (A[k][p] != 0.0)
+                if (fabs(A[k][p]) <= DBL_EPSILON)
                 {
                     A.changeRows(k, p);
                     break;

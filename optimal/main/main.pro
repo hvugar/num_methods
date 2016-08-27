@@ -75,7 +75,8 @@ SOURCES += main.cpp \
     problem1.cpp \
     cauchyproblemtest.cpp \
     newtonheatprocess.cpp \
-    problem2.cpp
+    problem2.cpp \
+    problem3.cpp
 
 HEADERS += \
     rnfunction/rosenbrock.h \
@@ -129,4 +130,5 @@ HEADERS += \
     problem1.h \
     cauchyproblemtest.h \
     newtonheatprocess.h \
-    problem2.h
+    problem2.h \
+    problem3.h
