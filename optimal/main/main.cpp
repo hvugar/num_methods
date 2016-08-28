@@ -8,13 +8,12 @@
 #include <QtGui/QGuiApplication>
 #include <imaging.h>
 
-
 int main(int argc, char *argv[])
 {
     C_UNUSED(argc);
     C_UNUSED(argv);
+
     //srand(time(NULL));
-    //Problem2::Main(argc, argv);
     Problem2::Main(argc, argv);
     return 0;
 }

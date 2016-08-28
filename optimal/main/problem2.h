@@ -7,6 +7,7 @@
 #include <printer.h>
 #include <gradient_cjt.h>
 #include <vector>
+#include <rungekutta.h>
 
 class Problem2 : public RnFunction, public IGradient, public IPrinter, public ConjugateGradient
 {
@@ -26,8 +27,9 @@ public:
 
     virtual double mu(unsigned int i) const;
 
-    void calculateU(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double lambdaM, double lambdaL, double lambdaR, double a);
-    void calculateP(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double lambdaM, double lambdaL, double lambdaR, double a);
+    void calculateU(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
+    void calculateU1(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
+    void calculateP(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
     void calculateV(const DoubleVector &k);
 
     double vs(double j) const;
@@ -45,9 +47,9 @@ public:
     unsigned int N;
     double a;
 
-    double lambdaM;
-    double lambdaL;
-    double lambdaR;
+    double alpha;
+    double lambda0;
+    double lambdal;
 
     unsigned int L;
     //DoubleVector k;
