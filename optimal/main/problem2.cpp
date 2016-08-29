@@ -5,8 +5,8 @@ void Problem2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     Problem2 p;
 
     DoubleVector k(p.L);
-    k[0] = 2.5;
-    k[1] = 2.6;
+    k[0] = 0.5;
+    k[1] = 0.6;
 
     //    DoubleMatrix m1;
     //    p.calculateU(m1, p.ht, p.hx, p.M, p.N, p.alpha, p.lambda0, p.lambdal, p.a);
@@ -21,33 +21,35 @@ void Problem2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //k[0] = -0.96916037;
     //k[1] = +1.07008630;
 
-    puts("Analitic");
-    DoubleVector ga(p.L,0.0);
-    p.gradient(k, ga);
-    printf("%.10f %.10f\n", k[0], k[1]);
-    printf("%.10f %.10f %.10f\n", ga[0], ga[1], ga.L2Norm());
-    ga.L2Normalize();
-    printf("%.10f %.10f\n", ga[0], ga[1]);
+//    puts("Analitic");
+//    DoubleVector ga(p.L,0.0);
+//    p.gradient(k, ga);
+//    printf("%.10f %.10f\n", k[0], k[1]);
+//    printf("%.10f %.10f %.10f\n", ga[0], ga[1], ga.L2Norm());
+//    ga.L2Normalize();
+//    printf("%.10f %.10f\n", ga[0], ga[1]);
 
-    puts("Numerical");
-    double h = 0.001;
-    DoubleVector gn(p.L,0.0);
-    IGradient::Gradient(&p, h, k, gn);
-    printf("%.10f %.10f\n", k[0], k[1]);
-    printf("%.10f %.10f %.10f\n", gn[0], gn[1], gn.L2Norm());
-    gn.L2Normalize();
-    printf("%.10f %.10f\n", gn[0], gn[1]);
+//    puts("Numerical");
+//    double h = 0.001;
+//    DoubleVector gn(p.L,0.0);
+//    IGradient::Gradient(&p, h, k, gn);
+//    printf("%.10f %.10f\n", k[0], k[1]);
+//    printf("%.10f %.10f %.10f\n", gn[0], gn[1], gn.L2Norm());
+//    gn.L2Normalize();
+//    printf("%.10f %.10f\n", gn[0], gn[1]);
 
-    //    ConjugateGradient g;
-    //    g.setFunction(&p);
-    //    g.setGradient(&p);
-    //    g.setPrinter(&p);
-    //    g.setEpsilon1(0.0001);
-    //    g.setEpsilon2(0.0001);
-    //    g.setEpsilon3(0.0001);
-    //    g.setR1MinimizeEpsilon(0.1, 0.0001);
-    //    g.setNormalize(true);
-    //    g.calculate(k);
+    printf("J[0]: %.10f\n", p.fx(k));
+
+        ConjugateGradient g;
+        g.setFunction(&p);
+        g.setGradient(&p);
+        g.setPrinter(&p);
+        g.setEpsilon1(0.0001);
+        g.setEpsilon2(0.0001);
+        g.setEpsilon3(0.0001);
+        g.setR1MinimizeEpsilon(0.1, 0.0001);
+        g.setNormalize(true);
+        g.calculate(k);
 
 }
 
@@ -129,7 +131,7 @@ double Problem2::fx(const DoubleVector &k)
         double vs1 = vs(m1);
         double vs2 = vs(m2);
 
-        norm = norm + ((vm1-vs1)*(vm1-vs1) + (vm2-vs2)*(vm2-vs2));
+        norm = norm + ((vm1)*(vm1) + (vm2)*(vm2));
     }
     norm = 0.5*ht*norm;
 
@@ -490,21 +492,21 @@ struct CauchyProblemPM : public CauchyProblem
         double a2 = +(2.0*a*a)/(hx*hx) + alpha;
         double res = a1*u[i+1] + a2*u[i] + a1*u[i-1];
 
-        if (i==Xi[0]) {}
-        if (i==Xi[1]) {}
+//        if (i==Xi[0]) {}
+//        if (i==Xi[1]) {}
 
-        for (unsigned int j=0; j<L; j++)
-        {
-            if (n==)
-            {
-                double A = 0.0;
-                for (unsigned int i=0; i<L; i++)
-                {
-                    A = A + k[i] * (u.at(m, Xi[i]) - z[i]);
-                }
-                d1[n] += 2*alpha2*ht*(1.0/hx)*k[j]*A;
-            }
-        }
+//        for (unsigned int j=0; j<L; j++)
+//        {
+//            if (n==)
+//            {
+//                double A = 0.0;
+//                for (unsigned int i=0; i<L; i++)
+//                {
+//                    A = A + k[i] * (u.at(m, Xi[i]) - z[i]);
+//                }
+//                d1[n] += 2*alpha2*ht*(1.0/hx)*k[j]*A;
+//            }
+//        }
 
         return res;
     }
