@@ -61,10 +61,10 @@ unsigned int DoubleMatrix::cols() const
     return mCols;
 }
 
-//unsigned int DoubleMatrix::size() const
-//{
-//    return rows();
-//}
+bool DoubleMatrix::empty() const
+{
+    return (mRows == 0 || mCols == 0 || mData == NULL);
+}
 
 void DoubleMatrix::clear()
 {
@@ -243,6 +243,28 @@ double DoubleMatrix::max() const
     return _max;
 }
 
+double DoubleMatrix::determinant() const
+{
+    return 0.0;
+}
+
+void DoubleMatrix::transpose()
+{
+    if (empty()) return;
+
+    unsigned int rows = mCols;
+    unsigned int cols = mRows;
+    double **data = (double**)(malloc(sizeof(double*)*rows));
+    for (unsigned int j=0; j<rows; j++)
+    {
+       data[j] = (double*)malloc(sizeof(double)*cols);
+       for (unsigned int i=0; i<cols; i++) data[j][i] = mData[i][j];
+    }
+    clear();
+    mRows = rows;
+    mCols = cols;
+    mData = data;
+}
 
 DoubleMatrix& DoubleMatrix::operator +(const DoubleMatrix &matrix)
 {

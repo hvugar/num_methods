@@ -5,17 +5,18 @@ void Problem2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     Problem2 p;
 
     DoubleVector k(p.L);
-    k[0] = 1.1;
-    k[1] = 1.2;
+    k[0] = 2.5;
+    k[1] = 2.6;
 
-    DoubleMatrix m1;
-    p.calculateU(m1, p.ht, p.hx, p.M, p.N, p.alpha, p.lambda0, p.lambdal, p.a);
-    IPrinter::printMatrix(m1);
-    puts("---");
-    DoubleMatrix m2;
-    p.calculateU1(m2, p.ht, p.hx, p.M, p.N, p.alpha, p.lambda0, p.lambdal, p.a);
-    IPrinter::printMatrix(m2);
-    return;
+    //    DoubleMatrix m1;
+    //    p.calculateU(m1, p.ht, p.hx, p.M, p.N, p.alpha, p.lambda0, p.lambdal, p.a);
+    //    IPrinter::printMatrix(m1);
+    //    puts("---");
+    //    DoubleMatrix m2;
+    //    p.calculateU1(m2, p.ht, p.hx, p.M, p.N, p.alpha, p.lambda0, p.lambdal, p.a);
+    //    m2.transpose();
+    //    IPrinter::printMatrix(m2);
+    //    return;
 
     //k[0] = -0.96916037;
     //k[1] = +1.07008630;
@@ -54,15 +55,15 @@ Problem2::Problem2()
 {
     t0 = 0.0; t1 = 1.0;
     x0 = 0.0; x1 = 1.0;
-    hx = 0.1;
-    ht = 0.005;
-    N = 10;
-    M = 200;
+    hx = 0.01;
+    ht = 0.001;//0.00005;
+    N = 100;
+    M = 1000;//20000;
     a = 1.0;
 
     alpha   = 1.0;
-    lambda0 = 0.0;
-    lambdal = 0.0;
+    lambda0 = 1.0;
+    lambdal = 1.0;
 
     L = 2;
 
@@ -85,8 +86,8 @@ Problem2::Problem2()
 
     //DoubleVector ks;
     ks.resize(L);
-    ks[0] = 0.1;
-    ks[1] = 0.2;
+    ks[0] = 1.1;
+    ks[1] = 1.2;
     calculateV(ks);
     //IPrinter::printVector(V);
 }
@@ -94,11 +95,16 @@ Problem2::Problem2()
 Problem2::~Problem2()
 {}
 
+void Problem2::calculateU0(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
+{
+    calculateU(m, ht, hx, M, N, alpha, lambda0, lambdal, a);
+}
+
 double Problem2::fx(const DoubleVector &k)
 {
     pk = &k;
     DoubleMatrix u;
-    calculateU(u, ht, hx, M, N, alpha, lambda0, lambdal, a);
+    calculateU0(u, ht, hx, M, N, alpha, lambda0, lambdal, a);
     pu = &u;
 
     double sum = 0.0;
@@ -132,11 +138,9 @@ double Problem2::fx(const DoubleVector &k)
 
 void Problem2::gradient(const DoubleVector &k, DoubleVector &g)
 {
-    //    IGradient::Gradient(this, 0.001, k, g);
-
     pk = &k;
     DoubleMatrix u;
-    calculateU(u, ht, hx, M, N, alpha, lambda0, lambdal, a);
+    calculateU0(u, ht, hx, M, N, alpha, lambda0, lambdal, a);
     pu = &u;
 
     DoubleMatrix psi;
@@ -204,37 +208,39 @@ void Problem2::calculateU(DoubleMatrix &u, double ht, double hx, unsigned int M,
     DoubleVector rb(N+1);
     DoubleVector rx(N+1);
 
-    for (unsigned int j=0; j<=M; j++)
+    for (unsigned int m=0; m<=M; m++)
     {
-        if (j==0)
+        if (m==0)
         {
-            for (unsigned int i=0; i<=N; i++) u.at(0,i) = initial(i);
+            for (unsigned int n=0; n<=N; n++) u.at(0,n) = initial(n);
         }
         else
         {
             DoubleMatrix ra(N+1, N+1, 0.0);
+
             ra(0,0) = 1.0 + (a*a*ht)/(hx*hx) + (lambda0*a*a*ht)/hx + alpha*ht;
             ra(0,1) = -(a*a*ht)/(hx*hx);
-            rb[0] = u.at(j-1,0) + ((lambda0*a*a*ht)/(hx))*/*((-(k[0]*z[0]-k[1]*z[1]))*/Te + alpha*ht*vm(j);
+            rb[0] = u.at(m-1,0) + alpha*ht*vm(m) - ((lambda0*a*a*ht)/(hx))*(k[0]*z[0]+k[1]*z[1]);
 
             ra(0, Xi[0]) = -k[0] * ((lambda0*a*a*ht)/(hx));
             ra(0, Xi[1]) = -k[1] * ((lambda0*a*a*ht)/(hx));
+            //rb[0] = rb[0] - ((lambda0*a*a*ht)/(hx))*((k[0]*z[0]+k[1]*z[1]));
 
             for (unsigned int i=1; i<=N-1; i++)
             {
                 ra(i,i-1) = -(a*a*ht)/(hx*hx);
                 ra(i,i) = 1.0 + 2.0*((a*a)*ht)/(hx*hx) + alpha*ht;
                 ra(i,i+1) = -(a*a*ht)/(hx*hx);
-                rb[i] = u.at(j-1, i) + alpha*ht*vm(j);
+                rb[i] = u.at(m-1, i) + alpha*ht*vm(m);
             }
 
             ra(N,N-1) = -(a*a*ht)/(hx*hx);
             ra(N,N)   = 1.0 + (a*a*ht)/(hx*hx) + (lambda0*a*a*ht)/hx + alpha*ht;
-            rb[N] = u.at(j-1,N) + ((lambdal*a*a*ht)/(hx))*vr(j) + alpha*ht*vm(j);
+            rb[N] = u.at(m-1,N) + ((lambdal*a*a*ht)/(hx))*vr(m) + alpha*ht*vm(m);
 
             GaussianElimination(ra, rb, rx);
 
-            for (unsigned int i=0; i<=N; i++) u.at(j,i) = rx[i];
+            for (unsigned int i=0; i<=N; i++) u.at(m,i) = rx[i];
         }
     }
 }
@@ -243,30 +249,37 @@ struct CauchyProblem0 : public CauchyProblem
 {
     double f(double t UNUSED_PARAM, const DoubleVector &u) const
     {
-        double a1 = -(_a*_a)/(_hx*_hx) - (_lambda0*_a*_a)/(_hx) - _alpha;
-        double a2 = +(_a*_a)/(_hx*_hx);
-        return a1*u[0] + a2*u[1] + _alpha*_Te + _Te*(_lambda0*_a*_a)/_hx;
+        const DoubleVector &k = *pk;
+        const DoubleVector &z = *pz;
+
+        double a1 = -(a*a)/(hx*hx) - (lambda0*a*a)/(hx) - alpha;
+        double a2 = +(a*a)/(hx*hx);
+        double res = a1*u[0] + a2*u[1] + alpha*Te + ((lambda0*a*a)/hx)*( k[0]*(u[Xi[0]]-z[0]) + k[1]*(u[Xi[1]] - z[1]));
+        return res;
     }
-    double _a;
-    double _hx;
-    double _lambda0;
-    double _alpha;
-    double _Te;
-    unsigned int N;
+    double a;
+    double hx;
+    double alpha;
+    double Te;
+    double lambda0;
+    const DoubleVector *pk;
+    const DoubleVector *pz;
+    std::vector<unsigned int> Xi;
 };
 
 struct CauchyProblemO : public CauchyProblem
 {
     double f(double t UNUSED_PARAM, const DoubleVector &u) const
     {
-        double a1 = +(_a*_a)/(_hx*_hx);
-        double a2 = -(2.0*_a*_a)/(_hx*_hx) - _alpha;
-         return a1*u[i+1] + a2*u[i] + a1*u[i-1] + _alpha*_Te;
+        double a1 = +(a*a)/(hx*hx);
+        double a2 = -(2.0*a*a)/(hx*hx) - alpha;
+        double res = a1*u[i+1] + a2*u[i] + a1*u[i-1] + alpha*Te;
+        return res;
     }
-    double _a;
-    double _hx;
-    double _alpha;
-    double _Te;
+    double a;
+    double hx;
+    double alpha;
+    double Te;
     unsigned int i;
 };
 
@@ -274,15 +287,16 @@ struct CauchyProblemN : public CauchyProblem
 {
     double f(double t UNUSED_PARAM, const DoubleVector &u) const
     {
-        double a1 = +(_a*_a)/(_hx*_hx);
-        double a2 = -(_a*_a)/(_hx*_hx) - (_lambdal*_a*_a)/(_hx) - _alpha;
-        return a1*u[N-1] + a2*u[N] + _alpha*_Te + _Te*(_lambdal*_a*_a)/_hx;
+        double a1 = +(a*a)/(hx*hx);
+        double a2 = -(a*a)/(hx*hx) - (lambdal*a*a)/(hx) - alpha;
+        double res = a1*u[N-1] + a2*u[N] + alpha*Te + Te*(lambdal*a*a)/hx;
+        return res;
     }
-    double _a;
-    double _hx;
-    double _lambdal;
-    double _alpha;
-    double _Te;
+    double a;
+    double hx;
+    double alpha;
+    double Te;
+    double lambdal;
     unsigned int N;
 };
 
@@ -297,11 +311,14 @@ void Problem2::calculateU1(DoubleMatrix &u, double ht, double hx, unsigned int M
             cps[0]  = cp;
             cp->x0  = 0.0;
             cp->y0  = initial(0);
-            cp->_a  = a;
-            cp->_hx = hx;
-            cp->_lambda0 = lambda0;
-            cp->_alpha = alpha;
-            cp->_Te = Te;
+            cp->a  = a;
+            cp->hx = hx;
+            cp->lambda0 = lambda0;
+            cp->alpha = alpha;
+            cp->Te = Te;
+            cp->pk = pk;
+            cp->pz = &z;
+            cp->Xi = Xi;
         }
         else if (i==N)
         {
@@ -309,11 +326,12 @@ void Problem2::calculateU1(DoubleMatrix &u, double ht, double hx, unsigned int M
             cps[N]  = cp;
             cp->x0  = 0.0;
             cp->y0  = initial(N);
-            cp->_a  = a;
-            cp->_hx = hx;
-            cp->_lambdal = lambdal;
-            cp->_alpha = alpha;
-            cp->_Te = Te;
+            cp->a  = a;
+            cp->hx = hx;
+            cp->lambdal = lambdal;
+            cp->alpha = alpha;
+            cp->Te = Te;
+            cp->N = N;
         }
         else
         {
@@ -321,14 +339,15 @@ void Problem2::calculateU1(DoubleMatrix &u, double ht, double hx, unsigned int M
             cps[i]  = cp;
             cp->x0  = 0.0;
             cp->y0  = initial(i);
-            cp->_a  = a;
-            cp->_hx = hx;
-            cp->_alpha = alpha;
-            cp->_Te = Te;
+            cp->a  = a;
+            cp->hx = hx;
+            cp->alpha = alpha;
+            cp->Te = Te;
             cp->i = i;
         }
     }
     CauchyProblem::rungeKutta(cps, 0.0, ht, M, u);
+    u.transpose();
 }
 
 void Problem2::calculateP(DoubleMatrix &psi, double ht, double hx, unsigned int M, unsigned int N, double lambdaM, double lambdaL, double lambdaR UNUSED_PARAM, double a)
@@ -442,6 +461,136 @@ void Problem2::calculateP(DoubleMatrix &psi, double ht, double hx, unsigned int 
     }
 }
 
+struct CauchyProblemP0 : public CauchyProblem
+{
+    double f(double t UNUSED_PARAM, const DoubleVector &p) const
+    {
+        const DoubleVector &k = *pk;
+        double a1 = +(a*a)/(hx*hx) + (lambda0*a*a)/(hx) + alpha;
+        double a2 = -(a*a)/(hx*hx);
+        double res = a1*p[0] + a2*p[1];
+        return res;
+    }
+    double a;
+    double hx;
+    double alpha;
+    double Te;
+    double lambda0;
+    const DoubleVector *pk;
+    const DoubleVector *pz;
+    std::vector<unsigned int> Xi;
+    const DoubleMatrix *pu;
+};
+
+struct CauchyProblemPM : public CauchyProblem
+{
+    double f(double t UNUSED_PARAM, const DoubleVector &u) const
+    {
+        double a1 = -(a*a)/(hx*hx);
+        double a2 = +(2.0*a*a)/(hx*hx) + alpha;
+        double res = a1*u[i+1] + a2*u[i] + a1*u[i-1];
+
+        if (i==Xi[0]) {}
+        if (i==Xi[1]) {}
+
+        for (unsigned int j=0; j<L; j++)
+        {
+            if (n==)
+            {
+                double A = 0.0;
+                for (unsigned int i=0; i<L; i++)
+                {
+                    A = A + k[i] * (u.at(m, Xi[i]) - z[i]);
+                }
+                d1[n] += 2*alpha2*ht*(1.0/hx)*k[j]*A;
+            }
+        }
+
+        return res;
+    }
+    double a;
+    double hx;
+    double alpha;
+    double Te;
+    unsigned int i;
+    const DoubleMatrix *pu;
+};
+
+struct CauchyProblemPN : public CauchyProblem
+{
+    double f(double t UNUSED_PARAM, const DoubleVector &u) const
+    {
+        double a1 = -(a*a)/(hx*hx);
+        double a2 = +(a*a)/(hx*hx) + (lambdal*a*a)/(hx) + alpha;
+        double res = a1*u[N-1] + a2*u[N];
+        //res+ alpha*Te + Te*(lambdal*a*a)/hx;
+        return res;
+    }
+    double a;
+    double hx;
+    double alpha;
+    double Te;
+    double lambdal;
+    unsigned int N;
+    const DoubleMatrix *pu;
+};
+
+void Problem2::calculateP1(DoubleMatrix &psi, double ht, double hx, unsigned int M, unsigned int N, double lambdaM, double lambdaL, double lambdaR UNUSED_PARAM, double a)
+{
+    const DoubleVector &k = *pk;
+    const DoubleMatrix &u = *pu;
+
+    std::vector<CauchyProblem*> cps(N+1);
+    for (unsigned int i=0; i<=N; i++)
+    {
+        if (i==0)
+        {
+            CauchyProblemP0 *cp = new CauchyProblemP0;
+            cps[0]  = cp;
+            cp->x0  = 0.0;
+            cp->y0  = -2.0*alpha1*mu(i)*u.at(M,i)-V[i];
+            cp->a  = a;
+            cp->hx = hx;
+            cp->lambda0 = lambda0;
+            cp->alpha = alpha;
+            cp->Te = Te;
+            cp->pk = pk;
+            cp->pz = &z;
+            cp->Xi = Xi;
+            cp->pu = pu;
+        }
+        else if (i==N)
+        {
+            CauchyProblemPN *cp = new CauchyProblemPN;
+            cps[N]  = cp;
+            cp->x0  = 0.0;
+            cp->y0  = -2.0*alpha1*mu(i)*u.at(M,i)-V[i];
+            cp->a  = a;
+            cp->hx = hx;
+            cp->lambdal = lambdal;
+            cp->alpha = alpha;
+            cp->Te = Te;
+            cp->N = N;
+            cp->pu = pu;
+        }
+        else
+        {
+            CauchyProblemPM *cp = new CauchyProblemPM;
+            cps[i]  = cp;
+            cp->x0  = 0.0;
+            cp->y0  = -2.0*alpha1*mu(i)*u.at(M,i)-V[i];
+            cp->a  = a;
+            cp->hx = hx;
+            cp->alpha = alpha;
+            cp->Te = Te;
+            cp->i = i;
+            cp->pu = pu;
+        }
+    }
+    CauchyProblem::rungeKutta(cps, 0.0, ht, M, psi);
+    psi.transpose();
+}
+
 double Problem2::mu(unsigned int i UNUSED_PARAM) const
 {
     return 1.0;
@@ -451,7 +600,7 @@ void Problem2::calculateV(const DoubleVector &k)
 {
     pk = &k;
     DoubleMatrix u;
-    calculateU(u, ht, hx, M, N, alpha, lambda0, lambdal, a);
+    calculateU0(u, ht, hx, M, N, alpha, lambda0, lambdal, a);
     V = u.row(M);
 }
 

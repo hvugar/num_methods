@@ -16,6 +16,7 @@ public:
     unsigned int rows() const;
     unsigned int cols() const;
 
+    bool empty() const;
     void clear();
     void resize(unsigned int rows, unsigned int cols, double value=0.0);
 
@@ -48,7 +49,7 @@ public:
     double min() const;
     double max() const;
 
-    double determinant();
+    double determinant() const;
     void transpose();
     void inverse();
     DoubleMatrix minor(unsigned int row, unsigned int col);
