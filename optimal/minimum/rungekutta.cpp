@@ -179,20 +179,20 @@ void CauchyProblem::rungeKutta(CauchyProblem *cp, double x0, double y0, double h
         }
     }
 
-//    if (h < 0.0)
-//    {
-//        y[n-1] = y0;
-//        for (int i=n-2; i>=0; i--)
-//        {
-//            k1 = f->fx(x0,        y0);
-//            k2 = f->fx(x0+dx/2.0, y0+(dx/2.0)*k1);
-//            k3 = f->fx(x0+dx/2.0, y0+(dx/2.0)*k2);
-//            k4 = f->fx(x0+dx,     y0+dx*k3);
-//            y0 = y0 + (dx/6.0) * (k1 + 2.0*k2 + 2.0*k3 + k4);
-//            x0 = x0 + dx;
-//            y[i] = y0;
-//        }
-//    }
+    //    if (h < 0.0)
+    //    {
+    //        y[n-1] = y0;
+    //        for (int i=n-2; i>=0; i--)
+    //        {
+    //            k1 = f->fx(x0,        y0);
+    //            k2 = f->fx(x0+dx/2.0, y0+(dx/2.0)*k1);
+    //            k3 = f->fx(x0+dx/2.0, y0+(dx/2.0)*k2);
+    //            k4 = f->fx(x0+dx,     y0+dx*k3);
+    //            y0 = y0 + (dx/6.0) * (k1 + 2.0*k2 + 2.0*k3 + k4);
+    //            x0 = x0 + dx;
+    //            y[i] = y0;
+    //        }
+    //    }
 }
 
 void CauchyProblem::rungeKutta(std::vector<CauchyProblem*> cps, double x0, double h, unsigned int N, DoubleMatrix &my)
@@ -206,36 +206,74 @@ void CauchyProblem::rungeKutta(std::vector<CauchyProblem*> cps, double x0, doubl
     DoubleVector k3(M);
     DoubleVector k4(M);
 
-    for (unsigned int j=0; j<M; j++) my.at(j,0) = cps[j]->y0;
-
-    for (unsigned int i=0; i<N; i++)
+    if (h > 0.0)
     {
-        DoubleVector y(M);
+        for (unsigned int j=0; j<M; j++) my.at(j,0) = cps[j]->y0;
 
-        // Calculating k1 vector
-        double x = x0;
-        for (unsigned int j=0; j<M; j++) y[j] = my[j][i];
-        for (unsigned int j=0; j<M; j++) k1[j] = cps[j]->f(x, y);
+        for (unsigned int i=0; i<N; i++)
+        {
+            DoubleVector y(M);
 
-        // Calculating k2 vector
-        x = x0+h/2.0;
-        for (unsigned int j=0; j<M; j++) y[j] = my[j][i] + (h/2.0) * k1[j];
-        for (unsigned int j=0; j<M; j++) k2[j] = cps[j]->f(x, y);
+            // Calculating k1 vector
+            double x = x0;
+            for (unsigned int j=0; j<M; j++) y[j] = my[j][i];
+            for (unsigned int j=0; j<M; j++) k1[j] = cps[j]->f(x, y);
 
-        // Calculating k3 vector
-        x = x0+h/2.0;
-        for (unsigned int j=0; j<M; j++) y[j] = my[j][i] + (h/2.0) * k2[j];
-        for (unsigned int j=0; j<M; j++) k3[j] = cps[j]->f(x, y);
+            // Calculating k2 vector
+            x = x0+h/2.0;
+            for (unsigned int j=0; j<M; j++) y[j] = my[j][i] + (h/2.0) * k1[j];
+            for (unsigned int j=0; j<M; j++) k2[j] = cps[j]->f(x, y);
 
-        // Calculating k4 vector
-        x = x0+h;
-        for (unsigned int j=0; j<M; j++) y[j] = my[j][i] + h * k3[j];
-        for (unsigned int j=0; j<M; j++) k4[j] = cps[j]->f(x, y);
+            // Calculating k3 vector
+            x = x0+h/2.0;
+            for (unsigned int j=0; j<M; j++) y[j] = my[j][i] + (h/2.0) * k2[j];
+            for (unsigned int j=0; j<M; j++) k3[j] = cps[j]->f(x, y);
 
-        // Calculating y
-        for (unsigned int j=0; j<M; j++) my[j][i+1] = my[j][i] + (h/6.0) * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
+            // Calculating k4 vector
+            x = x0+h;
+            for (unsigned int j=0; j<M; j++) y[j] = my[j][i] + h * k3[j];
+            for (unsigned int j=0; j<M; j++) k4[j] = cps[j]->f(x, y);
 
-        x0 = x0 + h;
+            // Calculating y
+            for (unsigned int j=0; j<M; j++) my[j][i+1] = my[j][i] + (h/6.0) * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
+
+            x0 = x0 + h;
+        }
+    }
+
+    if (h < 0.0)
+    {
+        for (unsigned int j=0; j<M; j++) my.at(j,N) = cps[j]->y0;
+
+        for (unsigned int i=N; i>=1; i--)
+        {
+            DoubleVector y(M);
+
+            // Calculating k1 vector
+            double x = x0;
+            for (unsigned int j=0; j<M; j++) y[j] = my[j][i];
+            for (unsigned int j=0; j<M; j++) k1[j] = cps[j]->f(x, y);
+
+            // Calculating k2 vector
+            x = x0+h/2.0;
+            for (unsigned int j=0; j<M; j++) y[j] = my[j][i] + (h/2.0) * k1[j];
+            for (unsigned int j=0; j<M; j++) k2[j] = cps[j]->f(x, y);
+
+            // Calculating k3 vector
+            x = x0+h/2.0;
+            for (unsigned int j=0; j<M; j++) y[j] = my[j][i] + (h/2.0) * k2[j];
+            for (unsigned int j=0; j<M; j++) k3[j] = cps[j]->f(x, y);
+
+            // Calculating k4 vector
+            x = x0+h;
+            for (unsigned int j=0; j<M; j++) y[j] = my[j][i] + h * k3[j];
+            for (unsigned int j=0; j<M; j++) k4[j] = cps[j]->f(x, y);
+
+            // Calculating y
+            for (unsigned int j=0; j<M; j++) my[j][i-1] = my[j][i] + (h/6.0) * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
+
+            x0 = x0 + h;
+        }
     }
 }
 
@@ -261,29 +299,29 @@ void CauchyProblem::euler1(std::vector<CauchyProblem *> cps, double x0, double h
 
 void CauchyProblem::euler2(std::vector<CauchyProblem *> cps, double x0, double h, unsigned int N, DoubleMatrix &m)
 {
-//    for (unsigned int i=0; i<m.size(); i++) m[i].clear();
-//    m.clear();
+    //    for (unsigned int i=0; i<m.size(); i++) m[i].clear();
+    //    m.clear();
 
-//    unsigned int C = cps.size();
-//    m.resize(C);
-//    DoubleVector k1(C);
-//    DoubleVector k2(C);
+    //    unsigned int C = cps.size();
+    //    m.resize(C);
+    //    DoubleVector k1(C);
+    //    DoubleVector k2(C);
 
-//    for (unsigned int j=0; j<C; j++)
-//    {
-//        m[j].resize(N+1);
-//        m[j][0] = cps[j]->y0;
-//    }
+    //    for (unsigned int j=0; j<C; j++)
+    //    {
+    //        m[j].resize(N+1);
+    //        m[j][0] = cps[j]->y0;
+    //    }
 
-//    for (unsigned int i=0; i<N; i++)
-//    {
-//        double x = x0;
-//        DoubleVector y(C);
-//        for (unsigned int j=0; j<C; j++) y[j] = m[j][i];
-//        for (unsigned int j=0; j<C; j++) k1[j] = cps[j]->f(x, y);
-//        for (unsigned int j=0; j<C; j++) y[j] = m[j][i]+h*k1[j];
-//        for (unsigned int j=0; j<C; j++) k2[j] = cps[j]->f(x+h, y);
-//        for (unsigned int j=0; j<C; j++) m[j][i+1] = m[j][i] + h/2.0 * (k1[j]+k2[j]);
-//        x0 = x0 + h;
-//    }
+    //    for (unsigned int i=0; i<N; i++)
+    //    {
+    //        double x = x0;
+    //        DoubleVector y(C);
+    //        for (unsigned int j=0; j<C; j++) y[j] = m[j][i];
+    //        for (unsigned int j=0; j<C; j++) k1[j] = cps[j]->f(x, y);
+    //        for (unsigned int j=0; j<C; j++) y[j] = m[j][i]+h*k1[j];
+    //        for (unsigned int j=0; j<C; j++) k2[j] = cps[j]->f(x+h, y);
+    //        for (unsigned int j=0; j<C; j++) m[j][i+1] = m[j][i] + h/2.0 * (k1[j]+k2[j]);
+    //        x0 = x0 + h;
+    //    }
 }
