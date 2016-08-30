@@ -51,7 +51,7 @@ void Problem2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     g.setEpsilon1(0.00000001);
     g.setEpsilon2(0.00000001);
     g.setEpsilon3(0.00000001);
-    g.setR1MinimizeEpsilon(0.001, 0.00000001);
+    g.setR1MinimizeEpsilon(1.0, 0.00000001);
     g.setNormalize(true);
     g.calculate(k);
 
@@ -61,10 +61,10 @@ Problem2::Problem2()
 {
     t0 = 0.0; t1 = 1.0;
     x0 = 0.0; x1 = 1.0;
-    hx = 0.005;
-    ht = 0.0000125;
-    N = 200;
-    M = 80000;
+    hx = 0.01;
+    ht = 0.00005;
+    N = 100;
+    M = 20000;
     a = 1.0;
 
     alpha   = 1.0;
@@ -86,14 +86,14 @@ Problem2::Problem2()
     z[1] = 2.81;
 
     alpha1 = 1.0;
-    alpha2 = 0.0;
+    alpha2 = 1.0;
 
     Te = 3.0;
 
     //DoubleVector ks;
     ks.resize(L);
-    ks[0] = 1.1;
-    ks[1] = 1.2;
+    ks[0] = 1.0;
+    ks[1] = 1.0;
     calculateV(ks);
     //IPrinter::printVector(V);
 }
@@ -143,6 +143,8 @@ double Problem2::fx(const DoubleVector &k)
         norm = norm + ((vm1-vs1)*(vm1-vs1) + (vm2-vs2)*(vm2-vs2));
     }
     norm = 0.5*ht*norm;
+
+    //printf("%.10f %.10f\n", sum, norm);
 
     return alpha1*sum + alpha2*norm;
 }
