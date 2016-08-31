@@ -1,5 +1,5 @@
-#ifndef PROBLEM2_H
-#define PROBLEM2_H
+#ifndef PROBLEM1Z_H
+#define PROBLEM1Z_H
 
 #include "newtonheatprocess.h"
 #include <cmethods.h>
@@ -9,11 +9,11 @@
 #include <vector>
 #include <rungekutta.h>
 
-class Problem2 : public RnFunction, public IGradient, public IPrinter, public ConjugateGradient
+class Problem1Z : public RnFunction, public IGradient, public IPrinter, public ConjugateGradient
 {
 public:
-    Problem2();
-    virtual ~Problem2();
+    Problem1Z();
+    virtual ~Problem1Z();
 
     virtual double fx(const DoubleVector &x);
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
@@ -27,13 +27,11 @@ public:
 
     virtual double mu(unsigned int i) const;
 
-    void calculateU0(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
     void calculateU(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
-    void calculateU1(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
+    void calculateU2(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
 
-    void calculateP0(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
     void calculateP(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
-    void calculateP1(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
+    void calculateP2(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
 
     void calculateV(const DoubleVector &k);
 
@@ -55,24 +53,22 @@ public:
     double alpha;
     double lambda0;
     double lambdal;
-
-    unsigned int L;
-    //DoubleVector k;
-    DoubleVector xi;
-    DoubleVector z;
-    std::vector<unsigned int> Xi;
-    double Te;
-    double Ti;
-
     double alpha1;
     double alpha2;
 
+    double Te;
+
+    unsigned int L;
+    DoubleVector k;
+    DoubleVector xi;
+    std::vector<unsigned int> Xi;
+
     DoubleVector V;
-    const DoubleVector *pk;
+    const DoubleVector *pz;
     const DoubleMatrix *pu;
     const DoubleMatrix *pp;
 
-    DoubleVector ks;
+    DoubleVector zs;
 };
 
-#endif // PROBLEM2_H
+#endif // PROBLEM1Z_H

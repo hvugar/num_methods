@@ -2,7 +2,8 @@
 #include <time.h>
 #include "gaussianelimination.h"
 #include "problem1.h"
-#include "problem2.h"
+#include "problem1k.h"
+#include "problem1z.h"
 #include "problem3.h"
 
 #include <QtGui/QGuiApplication>
@@ -14,6 +15,6 @@ int main(int argc, char *argv[])
     C_UNUSED(argv);
 
     //srand(time(NULL));
-    Problem2::Main(argc, argv);
+    Problem1K::Main(argc, argv);
     return 0;
 }
