@@ -5,8 +5,8 @@ void Problem1Z::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     Problem1Z p;
 
     DoubleVector z(p.L);
-    z[0] = 0.5;
-    z[1] = 0.6;
+    z[0] = 1.6;
+    z[1] = 1.4;
 
     printf("Optimal:   %.10f %.10f\n", p.zs[0], p.zs[1]);
     printf("Initial:   %.10f %.10f\n", z[0], z[1]);
@@ -165,7 +165,7 @@ void Problem1Z::print(unsigned int i, const DoubleVector &z, const DoubleVector 
 {
     C_UNUSED(alpha);
     C_UNUSED(alpha);
-    printf("J[%d]: %.16f\n", i, fn->fx(k));
+    printf("J[%d]: %.16f\n", i, fn->fx(z));
     printf("k:  %14.10f, %14.10f\n", z[0], z[1]);
     printf("g:  %14.10f, %14.10f\n", g[0], g[1]);
     puts("------------------------------------------");

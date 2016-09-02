@@ -77,7 +77,8 @@ SOURCES += main.cpp \
     newtonheatprocess.cpp \
     problem3.cpp \
     problem1k.cpp \
-    problem1z.cpp
+    problem1z.cpp \
+    problem1kz.cpp
 
 HEADERS += \
     rnfunction/rosenbrock.h \
@@ -133,4 +134,5 @@ HEADERS += \
     newtonheatprocess.h \
     problem3.h \
     problem1k.h \
+    problem1kz.h \
     problem1z.h
