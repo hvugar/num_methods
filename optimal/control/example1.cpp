@@ -92,14 +92,14 @@ double Example1::A(double t) const
     return t;
 }
 
-double Example1::B(double t, unsigned int k) const
+double Example1::B(double t UNUSED_PARAM, unsigned int k) const
 {
     double K = 0.5;
     if (k==1) return -3.0*K;
     return 0.0;
 }
 
-double Example1::C(double t) const
+double Example1::C(double t UNUSED_PARAM) const
 {
     return 2.0;
 }

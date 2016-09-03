@@ -14,9 +14,6 @@ DEFINES += MINIMUM_LIBRARY
 
 DESTDIR += ../bin
 
-#INCLUDEPATH += ../cminimum
-#LIBS += -L../bin -lcminimum
-
 SOURCES += \
     cmethods.c \
     cmatrix.c \

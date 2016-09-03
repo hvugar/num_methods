@@ -23,10 +23,10 @@ DoubleMatrix::DoubleMatrix(unsigned int rows, unsigned int cols, double value) :
         mRows = rows;
         mCols = cols;
         mData = (double**)(malloc(sizeof(double*)*rows));
-        for (unsigned int j=0; j<rows; j++)
+        for (unsigned int i=0; i<rows; i++)
         {
-            mData[j] = (double*)malloc(sizeof(double)*cols);
-            for (unsigned int i=0; i<cols; i++) mData[j][i] = value;
+            mData[i] = (double*)malloc(sizeof(double)*cols);
+            for (unsigned int j=0; j<cols; j++) mData[i][j] = value;
         }
     }
 }
@@ -38,10 +38,10 @@ DoubleMatrix::DoubleMatrix(const DoubleMatrix &matrix) : mRows(0), mCols(0), mDa
         mRows = matrix.mRows;
         mCols = matrix.mCols;
         mData = (double**) (malloc(sizeof(double*)*mRows));
-        for (unsigned int j=0; j<mRows; j++)
+        for (unsigned int i=0; i<mRows; i++)
         {
-            mData[j] = (double*)malloc(sizeof(double)*mCols);
-            memcpy(mData[j], matrix.mData[j], sizeof(double)*mCols);
+            mData[i] = (double*)malloc(sizeof(double)*mCols);
+            memcpy(mData[i], matrix.mData[i], sizeof(double)*mCols);
         }
     }
 }
@@ -70,7 +70,7 @@ void DoubleMatrix::clear()
 {
     if (mData != NULL)
     {
-        for (unsigned int i=0; i < mRows; i++)
+        for (unsigned int i=0; i<mRows; i++)
         {
             free(mData[i]);
             mData[i] = NULL;
@@ -92,10 +92,10 @@ void DoubleMatrix::resize(unsigned int rows, unsigned int cols, double value)
         if (mData == NULL)
         {
             mData = (double**) malloc(sizeof(double*)*rows);
-            for (unsigned int j=0; j<rows; j++)
+            for (unsigned int i=0; i<rows; i++)
             {
-                mData[j] = (double*) malloc(sizeof(double)*cols);
-                for (unsigned int i=0; i<cols; i++) mData[j][i] = value;
+                mData[i] = (double*) malloc(sizeof(double)*cols);
+                for (unsigned int j=0; j<cols; j++) mData[i][j] = value;
             }
             mRows = rows;
             mCols = cols;
@@ -107,18 +107,18 @@ void DoubleMatrix::resize(unsigned int rows, unsigned int cols, double value)
                 double **ptr = (double **) realloc(mData, sizeof(double*) * rows);
                 if (cols != mCols)
                 {
-                    for (unsigned int j=0; j<mRows; j++)
+                    for (unsigned int i=0; i<mRows; i++)
                     {
-                        double *pRow = (double *) realloc(ptr[j], sizeof(double) * cols);
-                        for (unsigned int i=mCols; i<cols; i++) pRow[i] = value;
-                        ptr[j] = pRow;
+                        double *pRow = (double *) realloc(ptr[i], sizeof(double) * cols);
+                        for (unsigned int j=mCols; j<cols; j++) pRow[j] = value;
+                        ptr[i] = pRow;
                     }
 
-                    for (unsigned int j=mRows; j<rows; j++)
+                    for (unsigned int i=mRows; i<rows; i++)
                     {
-                        double *pRow = (double *) realloc(ptr[j], sizeof(double) * cols);
-                        for (unsigned int i=0; i<cols; i++) pRow[i] = value;
-                        ptr[j] = pRow;
+                        double *pRow = (double *) realloc(ptr[i], sizeof(double) * cols);
+                        for (unsigned int j=0; j<cols; j++) pRow[j] = value;
+                        ptr[i] = pRow;
                     }
 
                     mCols = cols;
@@ -174,10 +174,10 @@ DoubleMatrix& DoubleMatrix::operator= (const DoubleMatrix &matrix)
             mRows = matrix.mRows;
             mCols = matrix.mCols;
             mData = (double**)malloc(sizeof(double*)*mRows);
-            for (unsigned int j=0; j<mRows; j++)
+            for (unsigned int i=0; i<mRows; i++)
             {
-                mData[j] = (double *)malloc(sizeof(double)*mCols);
-                memcpy(mData[j], matrix.mData[j], sizeof(double)*mCols);
+                mData[i] = (double *)malloc(sizeof(double)*mCols);
+                memcpy(mData[i], matrix.mData[i], sizeof(double)*mCols);
             }
         }
         else
@@ -199,11 +199,11 @@ bool DoubleMatrix::equals(const DoubleMatrix &matrix) const
     if (dimEquals(matrix))
     {
         bool equals = true;
-        for (unsigned int j=0; j<mRows; j++)
+        for (unsigned int i=0; i<mRows; i++)
         {
-            for (unsigned int i=0; i<mCols; i++)
+            for (unsigned int j=0; j<mCols; j++)
             {
-                if (mData[j][i] != matrix.mData[j][i])
+                if (mData[i][j] != matrix.mData[i][j])
                 {
                     equals = false;
                     break;
@@ -220,11 +220,11 @@ bool DoubleMatrix::equals(const DoubleMatrix &matrix) const
 double DoubleMatrix::min() const
 {
     double _min = DBL_MAX;
-    for (unsigned int j=0; j<mRows; j++)
+    for (unsigned int i=0; i<mRows; i++)
     {
-        for (unsigned int i=0; i<mCols; i++)
+        for (unsigned int j=0; j<mCols; j++)
         {
-            if (mData[j][i] < _min) _min = mData[j][i];
+            if (mData[i][j] < _min) _min = mData[i][j];
         }
     }
     return _min;
@@ -233,11 +233,11 @@ double DoubleMatrix::min() const
 double DoubleMatrix::max() const
 {
     double _max = DBL_MIN;
-    for (unsigned int j=0; j<mRows; j++)
+    for (unsigned int i=0; i<mRows; i++)
     {
-        for (unsigned int i=0; i<mCols; i++)
+        for (unsigned int j=0; j<mCols; j++)
         {
-            if (mData[j][i] > _max) _max = mData[j][i];
+            if (mData[i][j] > _max) _max = mData[i][j];
         }
     }
     return _max;
@@ -255,15 +255,37 @@ void DoubleMatrix::transpose()
     unsigned int rows = mCols;
     unsigned int cols = mRows;
     double **data = (double**)(malloc(sizeof(double*)*rows));
-    for (unsigned int j=0; j<rows; j++)
+    for (unsigned int i=0; i<rows; i++)
     {
-       data[j] = (double*)malloc(sizeof(double)*cols);
-       for (unsigned int i=0; i<cols; i++) data[j][i] = mData[i][j];
+       data[i] = (double*)malloc(sizeof(double)*cols);
+       for (unsigned int j=0; j<cols; j++) data[i][j] = mData[j][i];
     }
     clear();
     mRows = rows;
     mCols = cols;
     mData = data;
+}
+
+void DoubleMatrix::inverse()
+{
+
+}
+
+DoubleMatrix DoubleMatrix::minor(unsigned int row, unsigned int col)
+{
+    DoubleMatrix m(mRows-1, mCols-1);
+    for (unsigned int i=0; i<mRows; i++)
+    {
+        for (unsigned int j=0; j<mCols; j++)
+        {
+            if (i == row && j == col) continue;
+            if (i < row  && j <  col) { m.mData[i][j]     = mData[i][j]; continue; }
+            if (i < row  && j >  col) { m.mData[i][j-1]   = mData[i][j]; continue; }
+            if (i > row  && j <  col) { m.mData[i-1][j]   = mData[i][j]; continue; }
+            if (i > row  && j >  col) { m.mData[i-1][j-1] = mData[i][j]; continue; }
+        }
+    }
+    return m;
 }
 
 DoubleMatrix& DoubleMatrix::operator +(const DoubleMatrix &matrix)
@@ -274,11 +296,11 @@ DoubleMatrix& DoubleMatrix::operator +(const DoubleMatrix &matrix)
     }
     else
     {
-        for (unsigned int j=0; j<mRows; j++)
+        for (unsigned int i=0; i<mRows; i++)
         {
-            for (unsigned int i=0; i<mCols; i++)
+            for (unsigned int j=0; j<mCols; j++)
             {
-                mData[j][i] += matrix.mData[j][i];
+                mData[i][j] += matrix.mData[i][j];
             }
         }
     }
@@ -287,11 +309,11 @@ DoubleMatrix& DoubleMatrix::operator +(const DoubleMatrix &matrix)
 
 void DoubleMatrix::print()
 {
-    for (unsigned int j=0; j<mRows; j++)
+    for (unsigned int i=0; i<mRows; i++)
     {
-        for (unsigned int i=0; i<mCols; i++)
+        for (unsigned int j=0; j<mCols; j++)
         {
-            printf("%10.6f ", mData[j][i]);
+            printf("%10.6f ", mData[i][j]);
         }
         puts("");
     }
@@ -299,11 +321,11 @@ void DoubleMatrix::print()
 
 void DoubleMatrix::randomData()
 {
-    for (unsigned int j=0; j<mRows; j++)
+    for (unsigned int i=0; i<mRows; i++)
     {
-        for (unsigned int i=0; i<mCols; i++)
+        for (unsigned int j=0; j<mCols; j++)
         {
-            mData[j][i] = (rand() % 100) * 0.01;
+            mData[i][j] = (rand() % 100) * 0.01;
         }
     }
 }
@@ -318,13 +340,17 @@ double** DoubleMatrix::data()
     return mData;
 }
 
-void DoubleMatrix::changeRows(unsigned int i, unsigned int j)
+void DoubleMatrix::switchRows(unsigned int row1, unsigned int row2)
 {
     double *row = (double*)malloc(sizeof(double) * mCols);
-    memcpy(row, mData[i], sizeof(double)*mCols);
-    memcpy(mData[i], mData[j], sizeof(double)*mCols);
-    memcpy(mData[j], row, sizeof(double)*mCols);
+    memcpy(row, mData[row1], sizeof(double)*mCols);
+    memcpy(mData[row1], mData[row2], sizeof(double)*mCols);
+    memcpy(mData[row2], row, sizeof(double)*mCols);
     free(row);
+}
+
+void DoubleMatrix::switchCols(unsigned int col1 UNUSED_PARAM, unsigned int col2 UNUSED_PARAM)
+{
 }
 
 void GaussianElimination(DoubleMatrix A, DoubleVector b, DoubleVector &x)
@@ -340,7 +366,7 @@ void GaussianElimination(DoubleMatrix A, DoubleVector b, DoubleVector &x)
             {
                 if (fabs(A[k][p]) <= DBL_EPSILON)
                 {
-                    A.changeRows(k, p);
+                    A.switchRows(k, p);
                     break;
                 }
             }

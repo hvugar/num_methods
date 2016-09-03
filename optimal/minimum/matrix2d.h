@@ -4,8 +4,6 @@
 #include <global.h>
 #include <vector2d.h>
 
-//void randomData(DoubleMatrix &m);
-
 class MINIMUMSHARED_EXPORT DoubleMatrix
 {
 public:
@@ -57,8 +55,8 @@ public:
     double** data() const;
     double** data();
 
-    void changeRows(unsigned int i, unsigned int j);
-
+    void switchRows(unsigned int row1, unsigned int row2);
+    void switchCols(unsigned int col1, unsigned int col2);
 
 private:
     unsigned int mRows;

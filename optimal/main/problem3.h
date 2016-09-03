@@ -1,7 +1,6 @@
 #ifndef PROBLEM3_H
 #define PROBLEM3_H
 
-#include "newtonheatprocess.h"
 #include <cmethods.h>
 #include <function.h>
 #include <printer.h>

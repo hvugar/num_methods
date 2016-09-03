@@ -48,23 +48,23 @@ HeatExample1::HeatExample1() : IParabolicEquation()
     M  = 1000;
 }
 
-double HeatExample1::initial(unsigned int i) const
+double HeatExample1::initial(unsigned int i UNUSED_PARAM) const
 {
-    double x = i*hx;
+    //double x = i*hx;
     return 0.0;
 }
 
-double HeatExample1::boundary(Boundary type, unsigned int j) const
+double HeatExample1::boundary(Boundary type, unsigned int j UNUSED_PARAM) const
 {
-    double t = j*ht;
+    //double t = j*ht;
     if (type == Left)  return 0.0;
     if (type == Right) return 5.0;
     return 0.0;
 }
 
-double HeatExample1::f(unsigned int i, unsigned int j) const
+double HeatExample1::f(unsigned int i, unsigned int j UNUSED_PARAM) const
 {
     C_UNUSED(i);
-    double t = j*ht;
+    //double t = j*ht;
     return 0.0;//2.0*t - 2.0*a*a;
 }
