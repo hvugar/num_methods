@@ -7,12 +7,14 @@
 #include <QtGui/QGuiApplication>
 #include <imaging.h>
 
+#include <float.h>
+
 int main(int argc, char *argv[])
 {
     C_UNUSED(argc);
     C_UNUSED(argv);
 
     //srand(time(NULL));
-//    Problem1KZ::Main(argc, argv);
+    Problem1K::Main(argc, argv);
     return 0;
 }

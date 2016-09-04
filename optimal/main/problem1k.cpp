@@ -5,8 +5,8 @@ void Problem1K::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     Problem1K p;
 
     DoubleVector k(p.L);
-    k[0] = 2.5;
-    k[1] = 2.6;
+    k[0] = 0.5;
+    k[1] = 0.6;
 
     printf("Optimal:   %.10f %.10f\n", p.ks[0], p.ks[1]);
     printf("Initial:   %.10f %.10f\n", k[0], k[1]);
@@ -40,6 +40,9 @@ void Problem1K::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     g.setNormalize(true);
     g.calculate(k);
 
+    DoubleVector g2(p.L);
+    p.gradient(k, g2);
+    p.print(0, k, g2, 0.0, &p);
 }
 
 Problem1K::Problem1K()
@@ -74,6 +77,7 @@ Problem1K::Problem1K()
     alpha2 = 1.0;
 
     Te = 3.0;
+    Ti = 2.0;
 
     //DoubleVector ks;
     ks.resize(L);
@@ -99,68 +103,93 @@ void Problem1K::calculateP(DoubleMatrix &m, double ht, double hx, unsigned int M
 double Problem1K::fx(const DoubleVector &k)
 {
     pk = &k;
-    DoubleMatrix u;
-    calculateU(u, ht, hx, M, N, alpha, lambda0, lambdal, a);
-    pu = &u;
 
-    double sum = 0.0;
-    for (unsigned int n=0; n<=N-1; n++)
+    double SUM = 0.0;
+    for (unsigned int i=0; i<5; i++)
     {
-        unsigned int n1 = n;
-        unsigned int n2 = n + 1;
-        double f1 = mu(n1) * (u.at(M, n1) - V[n1])*(u.at(M, n1) - V[n1]);
-        double f2 = mu(n2) * (u.at(M, n2) - V[n2])*(u.at(M, n2) - V[n2]);
-        sum = sum + (f1 + f2);
+        Ti = 1.8 + i*0.1;
+        for (unsigned int j=0; j<5; j++)
+        {
+            Te = 2.8 + j*0.1;
+
+            DoubleMatrix u;
+            calculateU(u, ht, hx, M, N, alpha, lambda0, lambdal, a);
+            pu = &u;
+
+            double sum = 0.0;
+            for (unsigned int n=0; n<=N-1; n++)
+            {
+                unsigned int n1 = n;
+                unsigned int n2 = n + 1;
+                double f1 = mu(n1) * (u.at(M, n1) - V[n1])*(u.at(M, n1) - V[n1]);
+                double f2 = mu(n2) * (u.at(M, n2) - V[n2])*(u.at(M, n2) - V[n2]);
+                sum = sum + (f1 + f2);
+            }
+            sum = 0.5*hx*sum;
+
+            double norm = 0.0;
+            for (unsigned int m=0; m<=M-1; m++)
+            {
+                unsigned int m1 = m + 0;
+                unsigned int m2 = m + 1;
+
+                double vm1 = vl(m1);
+                double vm2 = vl(m2);
+
+                double vs1 = vs(m1);
+                double vs2 = vs(m2);
+
+                norm = norm + ((vm1-vs1)*(vm1-vs1) + (vm2-vs2)*(vm2-vs2));
+            }
+            norm = 0.5*ht*norm;
+
+            SUM += alpha1*sum + alpha2*norm;
+        }
     }
-    sum = 0.5*hx*sum;
-
-    double norm = 0.0;
-    for (unsigned int m=0; m<=M-1; m++)
-    {
-        unsigned int m1 = m + 0;
-        unsigned int m2 = m + 1;
-
-        double vm1 = vl(m1);// k[0]*(u.at(m1,Xi[0])-z[0]) + k[1]*(u.at(m1,Xi[1])-z[1]);
-        double vm2 = vl(m2);//k[0]*(u.at(m2,Xi[0])-z[0]) + k[1]*(u.at(m2,Xi[1])-z[1]);
-
-        double vs1 = vs(m1);
-        double vs2 = vs(m2);
-
-        norm = norm + ((vm1-vs1)*(vm1-vs1) + (vm2-vs2)*(vm2-vs2));
-    }
-    norm = 0.5*ht*norm;
-
-    //printf("%.10f %.10f\n", sum, norm);
-
-    return alpha1*sum + alpha2*norm;
+    return (SUM*0.1*0.1) / 25.0;
 }
 
 void Problem1K::gradient(const DoubleVector &k, DoubleVector &g)
 {
     pk = &k;
-    DoubleMatrix u;
-    calculateU(u, ht, hx, M, N, alpha, lambda0, lambdal, a);
-    pu = &u;
 
-    DoubleMatrix psi;
-    calculateP(psi, ht, hx, M, N, alpha, lambda0, lambdal, a);
-    pp = &psi;
+    for (unsigned int s = 0; s<L; s++) g[s] = 0.0;
 
-    for (unsigned int s = 0; s<L; s++)
+    for (unsigned int i=0; i<5; i++)
     {
-        g[s] = 0.0;
-        double sum = 0.0;
-        for (unsigned int m=0; m<=M-1; m++)
+        Ti = 1.8 + i*0.1;
+        for (unsigned int j=0; j<5; j++)
         {
-            unsigned int m1 = m + 0;
-            unsigned int m2 = m + 1;
-            double g1 = (u.at(m1, Xi[s]) - z[s]) * ( -alpha*a*a*psi.at(m1, 0) + 2.0*alpha2*(vl(m1)-vs(m1)) );
-            double g2 = (u.at(m2, Xi[s]) - z[s]) * ( -alpha*a*a*psi.at(m2, 0) + 2.0*alpha2*(vl(m2)-vs(m2)) );
-            sum = sum + (g1 + g2);
+            Te = 2.8 + j*0.1;
+
+            DoubleMatrix u;
+            calculateU(u, ht, hx, M, N, alpha, lambda0, lambdal, a);
+            pu = &u;
+
+            DoubleMatrix psi;
+            calculateP(psi, ht, hx, M, N, alpha, lambda0, lambdal, a);
+            pp = &psi;
+
+            for (unsigned int s = 0; s<L; s++)
+            {
+                //g[s] = 0.0;
+                double sum = 0.0;
+                for (unsigned int m=0; m<=M-1; m++)
+                {
+                    unsigned int m1 = m + 0;
+                    unsigned int m2 = m + 1;
+                    double g1 = (u.at(m1, Xi[s]) - z[s]) * ( -alpha*a*a*psi.at(m1, 0) + 2.0*alpha2*(vl(m1)-vs(m1)) );
+                    double g2 = (u.at(m2, Xi[s]) - z[s]) * ( -alpha*a*a*psi.at(m2, 0) + 2.0*alpha2*(vl(m2)-vs(m2)) );
+                    sum = sum + (g1 + g2);
+                }
+                sum = 0.5 * ht * sum;
+                g[s] += sum;
+            }
         }
-        sum = 0.5 * ht * sum;
-        g[s] = sum;
     }
+
+    for (unsigned int s = 0; s<L; s++) g[s] = (g[s]*0.1*0.1)/25.0;
+
 }
 
 void Problem1K::print(unsigned int i, const DoubleVector &k, const DoubleVector &g, double alpha, RnFunction *fn) const
@@ -174,7 +203,7 @@ void Problem1K::print(unsigned int i, const DoubleVector &k, const DoubleVector 
 
 double Problem1K::initial(unsigned int i UNUSED_PARAM) const
 {
-    return Te;
+    return Ti;
 }
 
 double Problem1K::vm(unsigned int j UNUSED_PARAM) const
@@ -257,7 +286,7 @@ void Problem1K::calculateU2(DoubleMatrix &u, double ht, double hx, unsigned int 
 struct CauchyProblemKP : public CauchyProblem
 {
     CauchyProblemKP(double a, double hx, double ht, double alpha, double alpha2, double lambda0, double lambdal, double Te, unsigned int i, unsigned int N,
-                   const DoubleVector &k, const DoubleVector &z, const std::vector<unsigned int> &Xi, const DoubleMatrix &u) :
+                    const DoubleVector &k, const DoubleVector &z, const std::vector<unsigned int> &Xi, const DoubleMatrix &u) :
         a(a), hx(hx), ht(ht), alpha(alpha), alpha2(alpha2), lambda0(lambda0), lambdal(lambdal), Te(Te), i(i), N(N), k(k), z(z), Xi(Xi), u(u)  {}
 
     double f(double t UNUSED_PARAM, const DoubleVector &p) const
