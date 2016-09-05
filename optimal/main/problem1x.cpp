@@ -1,8 +1,8 @@
-#include "problem1k.h"
+#include "problem1x.h"
 
-void Problem1K::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
+void Problem1X::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    Problem1K p;
+    Problem1X p;
 
     DoubleVector k(p.L);
     k[0] = 2.5;
@@ -45,7 +45,7 @@ void Problem1K::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     p.print(0, k, g2, 0.0, &p);
 }
 
-Problem1K::Problem1K()
+Problem1X::Problem1X()
 {
     t0 = 0.0; t1 = 1.0;
     x0 = 0.0; x1 = 1.0;
@@ -87,20 +87,20 @@ Problem1K::Problem1K()
     //IPrinter::printVector(V);
 }
 
-Problem1K::~Problem1K()
+Problem1X::~Problem1X()
 {}
 
-void Problem1K::calculateU(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
+void Problem1X::calculateU(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
 {
     calculateU2(m, ht, hx, M, N, alpha, lambda0, lambdal, a);
 }
 
-void Problem1K::calculateP(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
+void Problem1X::calculateP(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
 {
     calculateP2(m, ht, hx, M, N, alpha, lambda0, lambdal, a);
 }
 
-double Problem1K::fx(const DoubleVector &k)
+double Problem1X::fx(const DoubleVector &k)
 {
     pk = &k;
 
@@ -151,7 +151,7 @@ double Problem1K::fx(const DoubleVector &k)
     return (SUM*0.1*0.1) / 25.0;
 }
 
-void Problem1K::gradient(const DoubleVector &k, DoubleVector &g)
+void Problem1X::gradient(const DoubleVector &k, DoubleVector &g)
 {
     pk = &k;
 
@@ -196,7 +196,7 @@ void Problem1K::gradient(const DoubleVector &k, DoubleVector &g)
 
 }
 
-void Problem1K::print(unsigned int i, const DoubleVector &k, const DoubleVector &g, double alpha, RnFunction *fn) const
+void Problem1X::print(unsigned int i, const DoubleVector &k, const DoubleVector &g, double alpha, RnFunction *fn) const
 {
     C_UNUSED(alpha);
     printf("J[%d]: %.16f\n", i, fn->fx(k));
@@ -205,31 +205,31 @@ void Problem1K::print(unsigned int i, const DoubleVector &k, const DoubleVector 
     puts("------------------------------------------");
 }
 
-double Problem1K::initial(unsigned int i UNUSED_PARAM) const
+double Problem1X::initial(unsigned int i UNUSED_PARAM) const
 {
     return Ti;
 }
 
-double Problem1K::vm(unsigned int j UNUSED_PARAM) const
+double Problem1X::vm(unsigned int j UNUSED_PARAM) const
 {
     return Te;
 }
 
-double Problem1K::vl(unsigned int j UNUSED_PARAM) const
+double Problem1X::vl(unsigned int j UNUSED_PARAM) const
 {
     const DoubleVector &k = *pk;
     const DoubleMatrix &u = *pu;
     return k[0]*(u.at(j, Xi[0])-z[0]) + k[1]*(u.at(j, Xi[1])-z[1]);
 }
 
-double Problem1K::vr(unsigned int j UNUSED_PARAM) const
+double Problem1X::vr(unsigned int j UNUSED_PARAM) const
 {
     return Te;
 }
 
-struct CauchyProblemU : public CauchyProblem
+struct CauchyProblemXU : public CauchyProblem
 {
-    CauchyProblemU(double a, double hx, double alpha, double lambda0, double lambdal, double Te, unsigned int i, unsigned int N,
+    CauchyProblemXU(double a, double hx, double alpha, double lambda0, double lambdal, double Te, unsigned int i, unsigned int N,
                    const DoubleVector &k, const DoubleVector &z, const std::vector<unsigned int> &Xi) :
         a(a), hx(hx), alpha(alpha), lambda0(lambda0), lambdal(lambdal), Te(Te), i(i), N(N), k(k), z(z), Xi(Xi) {}
 
@@ -271,14 +271,14 @@ struct CauchyProblemU : public CauchyProblem
     const std::vector<unsigned int> &Xi;
 };
 
-void Problem1K::calculateU2(DoubleMatrix &u, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
+void Problem1X::calculateU2(DoubleMatrix &u, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
 {
     const DoubleVector &k = *pk;
 
     std::vector<CauchyProblem*> cps(N+1);
     for (unsigned int n=0; n<=N; n++)
     {
-        CauchyProblem *cp = new CauchyProblemU(a,hx, alpha, lambda0, lambdal, Te, n, N, k, z, Xi);
+        CauchyProblem *cp = new CauchyProblemXU(a,hx, alpha, lambda0, lambdal, Te, n, N, k, z, Xi);
         cp->x0 = 0.0;
         cp->y0 = initial(n);
         cps[n] = cp;
@@ -287,9 +287,9 @@ void Problem1K::calculateU2(DoubleMatrix &u, double ht, double hx, unsigned int 
     u.transpose();
 }
 
-struct CauchyProblemKP : public CauchyProblem
+struct CauchyProblemXP : public CauchyProblem
 {
-    CauchyProblemKP(double a, double hx, double ht, double alpha, double alpha2, double lambda0, double lambdal, double Te, unsigned int i, unsigned int N,
+    CauchyProblemXP(double a, double hx, double ht, double alpha, double alpha2, double lambda0, double lambdal, double Te, unsigned int i, unsigned int N,
                     const DoubleVector &k, const DoubleVector &z, const std::vector<unsigned int> &Xi, const DoubleMatrix &u) :
         a(a), hx(hx), ht(ht), alpha(alpha), alpha2(alpha2), lambda0(lambda0), lambdal(lambdal), Te(Te), i(i), N(N), k(k), z(z), Xi(Xi), u(u)  {}
 
@@ -318,7 +318,7 @@ struct CauchyProblemKP : public CauchyProblem
         if (i==Xi[1]) { res += -lambda0*a*a*k[1]*(1.0/hx)*p[0]; }
 
         unsigned int j = (unsigned int)(t/ht);
-        double dd = /*k[0]*(u.at(j, Xi[0])-z.at(0)) + k[1]*(u.at(j, Xi[1])-z.at(1))*/p2->vl(j) - p2->vs(j);
+        double dd = p2->vl(j) - p2->vs(j);
 
         if (i==Xi[0]) { res += 2.0 * alpha2 * dd * k[0] * (1.0/hx); }
         if (i==Xi[1]) { res += 2.0 * alpha2 * dd * k[1] * (1.0/hx); }
@@ -339,10 +339,10 @@ struct CauchyProblemKP : public CauchyProblem
     const DoubleVector &z;
     const std::vector<unsigned int> &Xi;
     const DoubleMatrix &u;
-    Problem1K *p2;
+    Problem1X *p2;
 };
 
-void Problem1K::calculateP2(DoubleMatrix &psi, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
+void Problem1X::calculateP2(DoubleMatrix &psi, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
 {
     const DoubleVector &k = *pk;
     const DoubleMatrix &u = *pu;
@@ -351,7 +351,7 @@ void Problem1K::calculateP2(DoubleMatrix &psi, double ht, double hx, unsigned in
 
     for (unsigned int n=0; n<=N; n++)
     {
-        CauchyProblemKP *cp = new CauchyProblemKP(a,hx, ht, alpha, alpha2, lambda0, lambdal, Te, n, N, k, z, Xi, u);
+        CauchyProblemXP *cp = new CauchyProblemXP(a,hx, ht, alpha, alpha2, lambda0, lambdal, Te, n, N, k, z, Xi, u);
         cp->x0 = 1.0;
         cp->y0 = -2.0*alpha1*mu(n)*(u.at(M,n)-V[n]);
         cp->p2 = this;
@@ -361,12 +361,12 @@ void Problem1K::calculateP2(DoubleMatrix &psi, double ht, double hx, unsigned in
     psi.transpose();
 }
 
-double Problem1K::mu(unsigned int i UNUSED_PARAM) const
+double Problem1X::mu(unsigned int i UNUSED_PARAM) const
 {
     return 1.0;
 }
 
-void Problem1K::calculateV(const DoubleVector &k)
+void Problem1X::calculateV(const DoubleVector &k)
 {
     pk = &k;
     DoubleMatrix u;
@@ -374,13 +374,13 @@ void Problem1K::calculateV(const DoubleVector &k)
     V = u.row(M);
 }
 
-double Problem1K::vs(double j) const
+double Problem1X::vs(double j) const
 {
     const DoubleMatrix &u = *pu;
     return ks[0]*(u(j, Xi[0])-z[0]) + ks[1]*(u(j, Xi[1])-z[1]);
 }
 
-void Problem1K::calculateU1(DoubleMatrix &u, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
+void Problem1X::calculateU1(DoubleMatrix &u, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
 {
     const DoubleVector &k = *pk;
 
@@ -427,7 +427,7 @@ void Problem1K::calculateU1(DoubleMatrix &u, double ht, double hx, unsigned int 
     }
 }
 
-void Problem1K::calculateP1(DoubleMatrix &psi, double ht, double hx, unsigned int M, unsigned int N, double lambdaM, double lambdaL, double lambdaR UNUSED_PARAM, double a)
+void Problem1X::calculateP1(DoubleMatrix &psi, double ht, double hx, unsigned int M, unsigned int N, double lambdaM, double lambdaL, double lambdaR UNUSED_PARAM, double a)
 {
     const DoubleVector &k = *pk;
     const DoubleMatrix &u = *pu;

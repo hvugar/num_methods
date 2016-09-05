@@ -26,11 +26,13 @@ SOURCES += main.cpp \
     problem3.cpp \
     problem1k.cpp \
     problem1z.cpp \
+    problem1x.cpp \
     problem1kz.cpp
 
 HEADERS += \
     problem1.h \
     problem3.h \
     problem1k.h \
+    problem1x.h \
     problem1kz.h \
     problem1z.h
