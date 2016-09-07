@@ -2,6 +2,7 @@
 #include "problem1k.h"
 #include "problem1z.h"
 #include "problem1x.h"
+#include "problem1x1.h"
 #include "problem1kz.h"
 #include "problem3.h"
 
@@ -16,6 +17,6 @@ int main(int argc, char *argv[])
     C_UNUSED(argv);
 
     //srand(time(NULL));
-    Problem1X::Main(argc, argv);
+    Problem1X1::Main(argc, argv);
     return 0;
 }
