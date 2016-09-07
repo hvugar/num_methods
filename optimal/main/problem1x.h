@@ -7,8 +7,11 @@
 #include <gradient_cjt.h>
 #include <vector>
 #include <rungekutta.h>
+#include <projection.h>
+#include <limits.h>
+#include <float.h>
 
-class Problem1X : public RnFunction, public IGradient, public IPrinter, public ConjugateGradient
+class Problem1X : public RnFunction, public IGradient, public IPrinter, public ConjugateGradient, public IProjection
 {
 public:
     Problem1X();
@@ -17,6 +20,7 @@ public:
     virtual double fx(const DoubleVector &x);
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
     virtual void print(unsigned int iteration, const DoubleVector &k, const DoubleVector &g, double alpha, RnFunction *fn) const;
+    virtual void project(DoubleVector &x, int index);
 
     virtual double vm(unsigned int j) const;
     virtual double vl(unsigned int j) const;
@@ -27,11 +31,11 @@ public:
     virtual double mu(unsigned int i) const;
 
     void calculateU(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
-    void calculateU1(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
+    //void calculateU1(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
     void calculateU2(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
 
     void calculateP(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
-    void calculateP1(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
+    //void calculateP1(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
     void calculateP2(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
 
     void calculateV(const DoubleVector &k);
@@ -56,10 +60,8 @@ public:
     double lambdal;
 
     unsigned int L;
-    //DoubleVector k;
-    DoubleVector xi;
+    DoubleVector k;
     DoubleVector z;
-    std::vector<unsigned int> Xi;
     double Te;
     double Ti;
 
@@ -67,11 +69,11 @@ public:
     double alpha2;
 
     DoubleVector V;
-    const DoubleVector *pk;
+    const DoubleVector *pxi;
     const DoubleMatrix *pu;
     const DoubleMatrix *pp;
 
-    DoubleVector ks;
+    DoubleVector xis;
 };
 
 #endif // PROBLEM1X_H

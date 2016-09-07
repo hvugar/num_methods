@@ -41,12 +41,12 @@ void stranghLineSearch(double x, double step, double &a, double &b, R1Function *
     }
 
     // if y1 and y2 are both lesser than y0 then there is not minimum. function is not unimodal
-    if (y1 <= y0 && y0 >= y2)
-    {
-        a = b = NAN;
-        fputs("Function is not unimodal\n", stderr);
-        return;
-    }
+//    if (y1 <= y0 && y0 >= y2)
+//    {
+//        a = b = NAN;
+//        fputs("Function is not unimodal\n", stderr);
+//        return;
+//    }
 
     if ( y1 >= y0 && y0 >= y2 )
     {
