@@ -23,7 +23,7 @@ public:
     virtual void project(DoubleVector &x, int index);
 
     virtual double vm(unsigned int j) const;
-    virtual double vl(unsigned int j) const;
+    //virtual double vl(unsigned int j) const;
     virtual double vr(unsigned int j) const;
 
     virtual double initial(unsigned int i) const;
@@ -31,7 +31,7 @@ public:
     void calculateU(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
     void calculateP(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a);
     void calculateV(const DoubleVector &k);
-    double vs(double j) const;
+    //double vs(double j) const;
 
     static void Main(int argc, char* argv[]);
 

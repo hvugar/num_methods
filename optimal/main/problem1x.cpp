@@ -9,7 +9,7 @@ void Problem1X::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     // 0.35 0.65
     DoubleVector xi(p.L);
     xi[0] = 0.45;
-    xi[1] = 0.75;
+    xi[1] = 0.65;
 
 //    DoubleMatrix m(p.N+1, p.N+1,0.0);
 //    DoubleVector x(p.L);
@@ -178,19 +178,41 @@ void Problem1X::gradient(const DoubleVector &xi, DoubleVector &g)
             unsigned int m1 = m + 0;
             unsigned int m2 = m + 1;
             double g1 = k[s] * ((u.at(m1, Xi[s]+1) - u.at(m1, Xi[s]-1))/(2.0*hx)) * ( -alpha*a*a*psi.at(m1, 0) + 2.0*alpha2*(vl(m1)-vs(m1)) );
-            double g2 = k[s] * ((u.at(m2, Xi[s]+1) - u.at(m1, Xi[s]-1))/(2.0*hx)) * ( -alpha*a*a*psi.at(m2, 0) + 2.0*alpha2*(vl(m2)-vs(m2)) );
+            double g2 = k[s] * ((u.at(m2, Xi[s]+1) - u.at(m2, Xi[s]-1))/(2.0*hx)) * ( -alpha*a*a*psi.at(m2, 0) + 2.0*alpha2*(vl(m2)-vs(m2)) );
             sum = sum + (g1 + g2);
         }
         g[s] = 0.5 * ht * sum;
     }
 }
 
-void Problem1X::print(unsigned int i, const DoubleVector &k, const DoubleVector &g, double alpha, RnFunction *fn) const
+void Problem1X::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double alpha, RnFunction *fn) const
 {
+//    C_UNUSED(alpha);
+//    printf("J[%d]: %.16f\n", i, fn->fx(k));
+//    printf("k:  %14.10f, %14.10f\n", k[0], k[1]);
+//    printf("g:  %14.10f, %14.10f\n", g[0], g[1]);
+//    puts("------------------------------------------");
+
     C_UNUSED(alpha);
-    printf("J[%d]: %.16f\n", i, fn->fx(k));
-    printf("k:  %14.10f, %14.10f\n", k[0], k[1]);
-    printf("g:  %14.10f, %14.10f\n", g[0], g[1]);
+    printf("J[%d]: %.16f\n", i, fn->fx(x));
+//    DoubleVector gr(x.size());
+//    const_cast<Problem1X1*>(this)->gradient(x, gr);
+    printf("k:  %14.10f, %14.10f\n", x[0], x[1]);
+//    printf("g:  %14.10f, %14.10f\n", gr[0], gr[1]);
+//    puts("------------------------------------------");
+
+    DoubleVector ga1(L,0.0);
+    const_cast<Problem1X*>(this)->gradient(x, ga1);
+    DoubleVector ga2 = ga1;
+    ga2.L2Normalize();
+    printf("Analytic:  %12.8f %12.8f %12.8f %12.8f %12.8f\n", ga1[0], ga1[1], ga1.L2Norm(), ga2[0], ga2[1]);
+
+    double h = 0.01;
+    DoubleVector gn1(L,0.0);
+    IGradient::Gradient(const_cast<Problem1X*>(this), h, x, gn1);
+    DoubleVector gn2 = gn1;
+    gn2.L2Normalize();
+    printf("Numerical: %12.8f %12.8f %12.8f %12.8f %12.8f\n", gn1[0], gn1[1], gn1.L2Norm(), gn2[0], gn2[1]);
     puts("------------------------------------------");
 }
 
