@@ -54,6 +54,8 @@ void DoubleVector::clear()
 
 void DoubleVector::resize(unsigned int size, double value)
 {
+    if (size == mSize) return;
+
     if (size == 0) clear();
 
     if (size > 0)

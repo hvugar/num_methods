@@ -22,7 +22,7 @@ void IPrinter::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n
         {
             for (unsigned int i=0; i<cols; i++)
             {
-                if (i%N==0) fprintf(f, "%14.10f ", x.at(j,i));
+                if (i%N==0) fprintf(f, "%10.6f ", x.at(j,i));
             }
             fputs("\n", f);
         }
@@ -64,7 +64,7 @@ void IPrinter::printVector(const DoubleVector &x, const char *s, unsigned int n,
         unsigned int N = x.size() / n;
         for (unsigned int i=0; i<x.size(); i++)
         {
-            if (i%N==0) fprintf(file, "%14.10f ", x[i]);
+            if (i%N==0) fprintf(file, "%14.4f ", x[i]);
         }
     }
     fputs("\n", file);
