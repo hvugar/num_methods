@@ -56,6 +56,8 @@ public:
     DoubleVector& operator= (const DoubleVector& x);
     double& operator[] (unsigned int n);
     double operator[] (unsigned int n) const;
+    DoubleVector& operator<<(double value);
+
     void swap(DoubleVector& x);
 
     void print(unsigned int cols, char* label = NULL, unsigned int start=0, unsigned int end=0, FILE* file=stdout);

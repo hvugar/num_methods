@@ -157,9 +157,10 @@ void Problem1X::gradient(const DoubleVector &xi, DoubleVector &g)
 {
     pxi = &xi;
     std::vector<unsigned int> Xi(L);
-    Xi[0] = (unsigned int) round(xi[0] * N);
-    Xi[1] = (unsigned int) round(xi[1] * N);
-
+//    Xi[0] = (unsigned int) round(xi[0] * N);
+//    Xi[1] = (unsigned int) round(xi[1] * N);
+    Xi[0] = (unsigned int) floor(xi[0] * N);
+    Xi[1] = (unsigned int) floor(xi[1] * N);
     for (unsigned int s = 0; s<L; s++) g[s] = 0.0;
 
     DoubleMatrix u;
@@ -177,8 +178,10 @@ void Problem1X::gradient(const DoubleVector &xi, DoubleVector &g)
         {
             unsigned int m1 = m + 0;
             unsigned int m2 = m + 1;
-            double g1 = k[s] * ((u.at(m1, Xi[s]+1) - u.at(m1, Xi[s]-1))/(2.0*hx)) * ( -alpha*a*a*psi.at(m1, 0) + 2.0*alpha2*(vl(m1)-vs(m1)) );
-            double g2 = k[s] * ((u.at(m2, Xi[s]+1) - u.at(m2, Xi[s]-1))/(2.0*hx)) * ( -alpha*a*a*psi.at(m2, 0) + 2.0*alpha2*(vl(m2)-vs(m2)) );
+//            double g1 = k[s] * ((u.at(m1, Xi[s]+1) - u.at(m1, Xi[s]-1))/(2.0*hx)) * ( -alpha*a*a*psi.at(m1, 0) + 2.0*alpha2*(vl(m1)-vs(m1)) );
+//            double g2 = k[s] * ((u.at(m2, Xi[s]+1) - u.at(m2, Xi[s]-1))/(2.0*hx)) * ( -alpha*a*a*psi.at(m2, 0) + 2.0*alpha2*(vl(m2)-vs(m2)) );
+            double g1 = k[s] * ((u.at(m1, Xi[s]+1) - u.at(m1, Xi[s]))/(hx)) * ( -lambda0*a*a*psi.at(m1, 0) + 2.0*alpha2*(vl(m1)-vs(m1)) );
+            double g2 = k[s] * ((u.at(m2, Xi[s]+1) - u.at(m2, Xi[s]))/(hx)) * ( -lambda0*a*a*psi.at(m2, 0) + 2.0*alpha2*(vl(m2)-vs(m2)) );
             sum = sum + (g1 + g2);
         }
         g[s] = 0.5 * ht * sum;

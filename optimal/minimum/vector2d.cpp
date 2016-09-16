@@ -236,6 +236,23 @@ double DoubleVector::operator[] (unsigned int n) const
     return mData[n];
 }
 
+DoubleVector& DoubleVector::operator<<(double value)
+{
+    if (mData==NULL)
+    {
+        mSize = 1;
+        mData = (double*) malloc(sizeof(double)*mSize);
+        mData[0] = value;
+    }
+    else
+    {
+        mSize++;
+        mData = (double*)realloc(mData, sizeof(double)*mSize);
+        mData[mSize-1] = value;
+    }
+    return *this;
+}
+
 void DoubleVector::randomData()
 {
     for (unsigned int i=0; i<mSize; i++) mData[i] = rand() % 100;

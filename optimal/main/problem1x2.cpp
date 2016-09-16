@@ -1,8 +1,8 @@
-#include "problem1x1.h"
+#include "problem1x2.h"
 
-void Problem1X1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
+void Problem1X2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    Problem1X1 p;
+    Problem1X2 p;
 
     // 0.45 0.75
     // 0.45 0.65
@@ -66,7 +66,7 @@ void Problem1X1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     p.print(0, xi, g2, 0.0, &p);
 }
 
-Problem1X1::Problem1X1()
+Problem1X2::Problem1X2()
 {
     t0 = 0.0; t1 = 1.0;
     x0 = 0.0; x1 = 1.0;
@@ -102,10 +102,10 @@ Problem1X1::Problem1X1()
     calculateV(xis);
 }
 
-Problem1X1::~Problem1X1()
+Problem1X2::~Problem1X2()
 {}
 
-double Problem1X1::fx(const DoubleVector &xi)
+double Problem1X2::fx(const DoubleVector &xi)
 {
     pxi = &xi;
 
@@ -143,12 +143,12 @@ double Problem1X1::fx(const DoubleVector &xi)
     return alpha1*sum + alpha2*norm;
 }
 
-void Problem1X1::gradient(const DoubleVector &xi, DoubleVector &g)
+void Problem1X2::gradient(const DoubleVector &xi, DoubleVector &g)
 {
     pxi = &xi;
-//    std::vector<unsigned int> Xi(L);
-//    Xi[0] = (unsigned int) round(xi[0] * N);
-//    Xi[1] = (unsigned int) round(xi[1] * N);
+    std::vector<unsigned int> Xi(L);
+    Xi[0] = (unsigned int) round(xi[0] * N);
+    Xi[1] = (unsigned int) round(xi[1] * N);
 
     for (unsigned int s = 0; s<L; s++) g[s] = 0.0;
 
@@ -164,8 +164,8 @@ void Problem1X1::gradient(const DoubleVector &xi, DoubleVector &g)
     {
         unsigned int r = (unsigned int)floor(xi[s]*N);
 
-//        double h1 = fabs(xi[s] - (r+1)*hx)/hx;
-//        double h2 = fabs(xi[s] - (r+0)*hx)/hx;
+        double h1 = fabs(xi[s] - (r+1)*hx)/hx;
+        double h2 = fabs(xi[s] - (r+0)*hx)/hx;
 
         double sum = 0.0;
         for (unsigned int m=0; m<=M-1; m++)
@@ -174,17 +174,17 @@ void Problem1X1::gradient(const DoubleVector &xi, DoubleVector &g)
             unsigned int m2 = m + 1;
             //double g1 = k[s] * ((h2*u.at(m1, r+1) - h1*u.at(m1, r+0))/(hx)) * ( -alpha*a*a*psi.at(m1, 0) /*+ 2.0*alpha2*(vl(m1)-vs(m1))*/ );
             //double g2 = k[s] * ((h2*u.at(m2, r+1) - h1*u.at(m2, r+0))/(hx)) * ( -alpha*a*a*psi.at(m2, 0) /*+ 2.0*alpha2*(vl(m2)-vs(m2))*/ );
-//            double g1 = k[s] * ((u.at(m1, Xi[s]+1) - u.at(m1, Xi[s]-1))/(2.0*hx)) * ( -alpha*a*a*psi.at(m1, 0) /*+ 2.0*alpha2*(vl(m1)-vs(m1))*/ );
-//            double g2 = k[s] * ((u.at(m2, Xi[s]+1) - u.at(m2, Xi[s]-1))/(2.0*hx)) * ( -alpha*a*a*psi.at(m2, 0) /*+ 2.0*alpha2*(vl(m2)-vs(m2))*/ );
-            double g1 = k[s] * ((u.at(m1, r+1) - u.at(m1, r+0))/(hx)) * ( -lambda0*a*a*psi.at(m1, 0) /*+ 2.0*alpha2*(vl(m1)-vs(m1))*/ );
-            double g2 = k[s] * ((u.at(m2, r+1) - u.at(m2, r+0))/(hx)) * ( -lambda0*a*a*psi.at(m2, 0) /*+ 2.0*alpha2*(vl(m2)-vs(m2))*/ );
+            double g1 = k[s] * ((u.at(m1, Xi[s]+1) - u.at(m1, Xi[s]-1))/(2.0*hx)) * ( -alpha*a*a*psi.at(m1, 0) /*+ 2.0*alpha2*(vl(m1)-vs(m1))*/ );
+            double g2 = k[s] * ((u.at(m2, Xi[s]+1) - u.at(m2, Xi[s]-1))/(2.0*hx)) * ( -alpha*a*a*psi.at(m2, 0) /*+ 2.0*alpha2*(vl(m2)-vs(m2))*/ );
+            //double g1 = k[s] * ((u.at(m1, r+1) - u.at(m1, r+0))/(hx)) * ( -alpha*a*a*psi.at(m1, 0) /*+ 2.0*alpha2*(vl(m1)-vs(m1))*/ );
+            //double g2 = k[s] * ((u.at(m2, r+1) - u.at(m2, r+0))/(hx)) * ( -alpha*a*a*psi.at(m2, 0) /*+ 2.0*alpha2*(vl(m2)-vs(m2))*/ );
             sum = sum + (g1 + g2);
         }
         g[s] = 0.5 * ht * sum;
     }
 }
 
-void Problem1X1::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double alpha, RnFunction *fn) const
+void Problem1X2::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double alpha, RnFunction *fn) const
 {
     C_UNUSED(alpha);
     printf("J[%d]: %.16f\n", i, fn->fx(x));
@@ -195,14 +195,14 @@ void Problem1X1::print(unsigned int i, const DoubleVector &x, const DoubleVector
 //    puts("------------------------------------------");
 
     DoubleVector ga1(L,0.0);
-    const_cast<Problem1X1*>(this)->gradient(x, ga1);
+    const_cast<Problem1X2*>(this)->gradient(x, ga1);
     DoubleVector ga2 = ga1;
     ga2.L2Normalize();
     printf("Analytic:  %12.8f %12.8f %12.8f %12.8f %12.8f\n", ga1[0], ga1[1], ga1.L2Norm(), ga2[0], ga2[1]);
 
     double h = 0.01;
     DoubleVector gn1(L,0.0);
-    IGradient::Gradient(const_cast<Problem1X1*>(this), h, x, gn1);
+    IGradient::Gradient(const_cast<Problem1X2*>(this), h, x, gn1);
     DoubleVector gn2 = gn1;
     gn2.L2Normalize();
     printf("Numerical: %12.8f %12.8f %12.8f %12.8f %12.8f\n", gn1[0], gn1[1], gn1.L2Norm(), gn2[0], gn2[1]);
@@ -210,46 +210,34 @@ void Problem1X1::print(unsigned int i, const DoubleVector &x, const DoubleVector
 
 }
 
-void Problem1X1::project(DoubleVector &x, int index)
+void Problem1X2::project(DoubleVector &x, int index)
 {
     if (x[index] <= 0.0) x[index] = 2.0*hx;
     if (x[index] >= 1.0) x[index] = 1.0 - 2.0*hx;
 }
 
-double Problem1X1::initial(unsigned int i UNUSED_PARAM) const
+double Problem1X2::initial(unsigned int i UNUSED_PARAM) const
 {
     return Ti;
 }
 
-double Problem1X1::vm(unsigned int j UNUSED_PARAM) const
+double Problem1X2::vm(unsigned int j UNUSED_PARAM) const
 {
     return Te;
 }
 
-//double Problem1X1::vl(unsigned int j UNUSED_PARAM) const
-//{
-//    const DoubleMatrix &u  = *pu;
-
-//    const DoubleVector &xi = *pxi;
-//    std::vector<unsigned int> Xi(L);
-//    Xi[0] = (unsigned int) round(xi[0] * N);
-//    Xi[1] = (unsigned int) round(xi[1] * N);
-
-//    return k[0]*(u.at(j, Xi[0])-z[0]) + k[1]*(u.at(j, Xi[1])-z[1]);
-//}
-
-double Problem1X1::vr(unsigned int j UNUSED_PARAM) const
+double Problem1X2::vr(unsigned int j UNUSED_PARAM) const
 {
     return Te;
 }
 
-struct CauchyProblemX1U : public CauchyProblem
+struct CauchyProblemX2U : public CauchyProblem
 {
-    CauchyProblemX1U(double a, double hx, double alpha, double lambda0, double lambdal, double Te, unsigned int i, unsigned int N,
+    CauchyProblemX2U(double a, double hx, double alpha, double lambda0, double lambdal, double Te, unsigned int i, unsigned int N,
                     const DoubleVector &k, const DoubleVector &z, const DoubleVector &x) :
         a(a), hx(hx), alpha(alpha), lambda0(lambda0), lambdal(lambdal), Te(Te), i(i), N(N), k(k), z(z), x(x) {}
 
-    virtual ~CauchyProblemX1U() {}
+    virtual ~CauchyProblemX2U() {}
 
     double f(double t UNUSED_PARAM, const DoubleVector &u) const
     {
@@ -302,14 +290,14 @@ struct CauchyProblemX1U : public CauchyProblem
     const DoubleVector &x;
 };
 
-void Problem1X1::calculateU(DoubleMatrix &u, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
+void Problem1X2::calculateU(DoubleMatrix &u, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
 {
     const DoubleVector &xi = *pxi;
 
     std::vector<CauchyProblem*> cps(N+1);
     for (unsigned int n=0; n<=N; n++)
     {
-        CauchyProblem *cp = new CauchyProblemX1U(a,hx, alpha, lambda0, lambdal, Te, n, N, k, z, *pxi);
+        CauchyProblem *cp = new CauchyProblemX2U(a,hx, alpha, lambda0, lambdal, Te, n, N, k, z, *pxi);
         cp->x0 = 0.0;
         cp->y0 = initial(n);
         cps[n] = cp;
@@ -319,18 +307,18 @@ void Problem1X1::calculateU(DoubleMatrix &u, double ht, double hx, unsigned int 
 
     for (unsigned int n=0; n<=N; n++)
     {
-        CauchyProblemX1U *cp = dynamic_cast<CauchyProblemX1U*>(cps[n]);
+        CauchyProblemX2U *cp = dynamic_cast<CauchyProblemX2U*>(cps[n]);
         delete cp;
     }
 }
 
-struct CauchyProblemX1P1 : public CauchyProblem
+struct CauchyProblemX2P1 : public CauchyProblem
 {
-    CauchyProblemX1P1(double a, double hx, double ht, double alpha, double alpha2, double lambda0, double lambdal, double Te, unsigned int i, unsigned int N,
+    CauchyProblemX2P1(double a, double hx, double ht, double alpha, double alpha2, double lambda0, double lambdal, double Te, unsigned int i, unsigned int N,
                      const DoubleVector &k, const DoubleVector &z, const std::vector<unsigned int> &Xi, const DoubleMatrix &u) :
         a(a), hx(hx), ht(ht), alpha(alpha), alpha2(alpha2), lambda0(lambda0), lambdal(lambdal), Te(Te), i(i), N(N), k(k), z(z), Xi(Xi), u(u)  {}
 
-    virtual ~CauchyProblemX1P1() {}
+    virtual ~CauchyProblemX2P1() {}
 
     double f(double t UNUSED_PARAM, const DoubleVector &p) const
     {
@@ -378,10 +366,10 @@ struct CauchyProblemX1P1 : public CauchyProblem
     const DoubleVector &z;
     const std::vector<unsigned int> &Xi;
     const DoubleMatrix &u;
-    Problem1X1 *p2;
+    Problem1X2 *p2;
 };
 
-void Problem1X1::calculateP(DoubleMatrix &psi, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
+void Problem1X2::calculateP(DoubleMatrix &psi, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
 {
     const DoubleVector &xi = *pxi;
     std::vector<unsigned int> Xi(L);
@@ -392,7 +380,7 @@ void Problem1X1::calculateP(DoubleMatrix &psi, double ht, double hx, unsigned in
     std::vector<CauchyProblem*> cps(N+1);
     for (unsigned int n=0; n<=N; n++)
     {
-        CauchyProblemX1P1 *cp = new CauchyProblemX1P1(a,hx, ht, alpha, alpha2, lambda0, lambdal, Te, n, N, k, z, Xi, u);
+        CauchyProblemX2P1 *cp = new CauchyProblemX2P1(a,hx, ht, alpha, alpha2, lambda0, lambdal, Te, n, N, k, z, Xi, u);
         cp->x0 = 1.0;
         cp->y0 = -2.0*alpha1*mu(n)*(u.at(M,n)-V[n]);
         cp->p2 = this;
@@ -402,30 +390,20 @@ void Problem1X1::calculateP(DoubleMatrix &psi, double ht, double hx, unsigned in
     psi.transpose();
     for (unsigned int n=0; n<=N; n++)
     {
-        CauchyProblemX1P1 *cp = dynamic_cast<CauchyProblemX1P1*>(cps[n]);
+        CauchyProblemX2P1 *cp = dynamic_cast<CauchyProblemX2P1*>(cps[n]);
         delete cp;
     }
 }
 
-double Problem1X1::mu(unsigned int i UNUSED_PARAM) const
+double Problem1X2::mu(unsigned int i UNUSED_PARAM) const
 {
     return 1.0;
 }
 
-void Problem1X1::calculateV(const DoubleVector &xi)
+void Problem1X2::calculateV(const DoubleVector &xi)
 {
     pxi = &xi;
     DoubleMatrix u;
     calculateU(u, ht, hx, M, N, alpha, lambda0, lambdal, a);
     V = u.row(M);
 }
-
-//double Problem1X1::vs(double j) const
-//{
-//    const DoubleMatrix &u = *pu;
-//    std::vector<unsigned int> Xi(L);
-//    Xi[0] = (unsigned int) round(xis[0] * N);
-//    Xi[1] = (unsigned int) round(xis[1] * N);
-
-//    return k[0]*(u(j, Xi[0])-z[0]) + k[1]*(u(j, Xi[1])-z[1]);
-//}

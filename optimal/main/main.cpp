@@ -18,8 +18,8 @@ int main(int argc, char *argv[])
     C_UNUSED(argv);
 
     //srand(time(NULL));
-    //Problem1X1::Main(argc, argv);
-    LoadedSystems ls;
+    Problem1X1::Main(argc, argv);
+//    LoadedSystems ls;
 
     return 0;
 }
