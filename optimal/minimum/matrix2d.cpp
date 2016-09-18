@@ -307,6 +307,30 @@ DoubleMatrix& DoubleMatrix::operator +(const DoubleMatrix &matrix)
     return *this;
 }
 
+DoubleMatrix& DoubleMatrix::operator *(const DoubleMatrix &matrix)
+{
+    if (mCols == 0 && mCols != matrix.mRows) return *this;
+
+    return *this;
+}
+
+DoubleMatrix mult(const DoubleMatrix &m1, const DoubleMatrix &m2)
+{
+    DoubleMatrix m;
+    m.resize(m1.rows(), m2.cols());
+
+    for (unsigned int i=0; i<m.rows(); i++)
+    {
+        for (unsigned int j=0; j<m.cols(); j++)
+        {
+            double sum = 0.0;
+            for (unsigned int p=0; p<m1.cols(); p++) sum += m1.at(i,p)*m2.at(p,j);
+            m.at(i,j) = sum;
+        }
+    }
+    return m;
+}
+
 void DoubleMatrix::print()
 {
     for (unsigned int i=0; i<mRows; i++)

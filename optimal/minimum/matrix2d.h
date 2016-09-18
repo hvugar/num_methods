@@ -33,10 +33,12 @@ public:
     DoubleMatrix& operator=(const DoubleMatrix &matrix);
     DoubleMatrix& operator+(const DoubleMatrix &matrix);
     DoubleMatrix& operator-(const DoubleMatrix &matrix);
-    DoubleMatrix& operator*(const DoubleMatrix &matrix);
     DoubleMatrix& operator/(const DoubleMatrix &matrix);
     DoubleMatrix& operator*(const double scalar);
     DoubleMatrix& operator*(const DoubleVector &vector);
+    DoubleMatrix& operator*(const DoubleMatrix &matrix);
+
+    friend MINIMUMSHARED_EXPORT DoubleMatrix mult(const DoubleMatrix &m1, const DoubleMatrix &m2);
 
     void print();
     void randomData();
