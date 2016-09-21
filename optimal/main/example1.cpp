@@ -3,10 +3,15 @@
 Example1::Example1()
 {
     N = 4;
+    double a = x1(0.0) - 2.0*x3(0.0) - x1(2.0) + 2.0*x3(2.0);
+    printf("%.10f\n", a);
 }
 
 struct CauchyProblemA : public CauchyProblem
 {
+    CauchyProblemA(const Example1 &e, int tp, int i, double x0, double y0) : e(e), tp(tp), i(i)
+        { this->x0 = x0; this->y0 = y0; }
+
     virtual double f(double t, const DoubleVector &x) const
     {
 //        double a01 = x[0];
@@ -17,16 +22,16 @@ struct CauchyProblemA : public CauchyProblem
 //        double M   = x[5];
 
         DoubleVector a = x.mid(0, 3);
-        double s0 = e->S0(a, x[4], t);
+        double s0 = e.S0(a, x[4], t);
 
-        if (tp == 0) return s0 * x[i] - (e->A(0,i,t)*x[0] + e->A(1,i,t)*x[1] + e->A(2,i,t)*x[2] + e->A(3,i,t)*x[3]);
-        if (tp == 1) return s0 * x[4] + (e->B(0,t)  *x[0] + e->B(1,t)  *x[1] + e->B(2,t)  *x[2] + e->B(3,t)  *x[3]);
+        if (tp == 0) return s0 * x[i] - (e.A(0,i,t)*x[0] + e.A(1,i,t)*x[1] + e.A(2,i,t)*x[2] + e.A(3,i,t)*x[3]);
+        if (tp == 1) return s0 * x[4] + (e.B(0,t)  *x[0] + e.B(1,t)  *x[1] + e.B(2,t)  *x[2] + e.B(3,t)  *x[3]);
         if (tp == 2) return s0 * x[5];
         return 0.0;
     }
+    const Example1 &e;
     int tp;
     int i;
-    Example1 *e;
 };
 
 void Example1::calculate()
@@ -38,32 +43,10 @@ void Example1::calculate()
     a.at(3) = +0.0;
 
     std::vector<CauchyProblem*> cps(N+2);
-    for (unsigned int i=0; i<N; i++)
-    {
-        CauchyProblemA* cp = new CauchyProblemA;
-        cp->i  = i;
-        cp->tp = 0;
-        cp->x0 = 0.0;
-        cp->y0 = a[i];
-        cp->e = this;
-        cps[i] = cp;
-    }
 
-    CauchyProblemA* cp1 = new CauchyProblemA;
-    cp1->i  = 0;
-    cp1->tp = 1;
-    cp1->x0 = 0.0;
-    cp1->y0 = 10.7551;
-    cp1->e = this;
-    cps[N] = cp1;
-
-    CauchyProblemA* cp2 = new CauchyProblemA;
-    cp2->i  = 0;
-    cp2->tp = 2;
-    cp2->x0 = 0.0;
-    cp2->y0 = 1.0;
-    cp2->e = this;
-    cps[N+1] = cp2;
+    for (unsigned int i=0; i<N; i++) cps[i] = new CauchyProblemA(*this, 0, i, 0.0, a[i]);
+    cps[N+0] = new CauchyProblemA(*this, 1, 0, 0.0, 10.7552899194);
+    cps[N+1] = new CauchyProblemA(*this, 2, 0, 0.0, 1.0);
 
     double h = 0.025;
     DoubleMatrix m;
@@ -73,8 +56,8 @@ void Example1::calculate()
     IPrinter::printVector(m.row(1), NULL, 8);
     IPrinter::printVector(m.row(2), NULL, 8);
     IPrinter::printVector(m.row(3), NULL, 8);
-    IPrinter::printVector(m.row(4), NULL, 8);
-    IPrinter::printVector(m.row(5), NULL, 8);
+//    IPrinter::printVector(m.row(4), NULL, 81);
+//    IPrinter::printVector(m.row(5), NULL, 81);
 }
 
 double Example1::A(unsigned int i, unsigned int j, double t UNUSED_PARAM) const
@@ -84,7 +67,7 @@ double Example1::A(unsigned int i, unsigned int j, double t UNUSED_PARAM) const
         {+2.0, -1.0, +1.0, +0.0},
         {+0.0, +0.0, +1.0, +2.0},
         {+1.0, -3.0, +0.0, +1.0},
-        {+0.0, +2.0, -3.0, +0.0}
+        {+0.0, +2.0, -1.0, +0.0}
     };
     return data[i][j];
 }

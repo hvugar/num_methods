@@ -1,5 +1,76 @@
 #include "problem1x1.h"
 
+void qovma(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e, unsigned int *E, unsigned int L)
+{
+    double *p = (double*)malloc(sizeof(double)*n);
+    double *q = (double*)malloc(sizeof(double)*n);
+    double **k = (double**) malloc(sizeof(double*)*L);
+    for (unsigned int s=0; s<L; s++) k[s] = (double*)malloc(sizeof(double)*n);
+
+    for (unsigned int i=0; i<n; i++)
+    {
+        if (i == 0)
+        {
+            p[0] = +d[0]/b[0];
+            q[0] = -c[0]/b[0];
+
+            for (unsigned int s=0; s<L; s++)
+            {
+                k[s][0] = -e[s]/b[0];
+                //if (i%2==0) k[s][i] *= -1.0;
+            }
+        }
+        else if (i == (n-1))
+        {
+            p[i] = +(d[i]-a[i]*p[i-1])/(b[i]+a[i]*q[i-1]);
+            q[i] = 0.0;
+
+            for (unsigned int s=0; s<L; s++) k[s][i] = 0.0;
+        }
+        else
+        {
+            p[i] = +(d[i]-a[i]*p[i-1])/(b[i]+a[i]*q[i-1]);
+            q[i] = -c[i]/(b[i]+a[i]*q[i-1]);
+
+            for (unsigned int s=0; s<L; s++)
+            {
+                if (i<(E[s]-1))
+                    k[s][i] = -(a[i]*k[s][i-1])/(b[i]+a[i]*q[i-1]);
+                else
+                    k[s][i] = 0.0;
+            }
+
+            for (unsigned int s=0; s<L; s++) if (i==E[s]-1) q[i] += -(a[i]*k[s][i-1])/(b[i]+a[i]*q[i-1]);
+        }
+    }
+
+    const unsigned int j = (unsigned)0-1;
+    for (unsigned int i=n-1; i != j; i--)
+    {
+        if (i==(n-1))
+        {
+            x[i] = p[i];
+        }
+        else
+        {
+            x[i] = p[i] + q[i]*x[i+1];
+
+            for (unsigned int s=0; s<L; s++)
+            {
+                if (i<=E[s]-1)
+                {
+                    x[i] = x[i] + k[s][i]*x[E[s]];
+                }
+            }
+        }
+    }
+
+    free(q);
+    free(q);
+    for (unsigned int s=0; s<L; s++) free(k[s]);
+    free(k);
+}
+
 void Problem1X1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     Problem1X1 p;
@@ -304,24 +375,30 @@ struct CauchyProblemX1U : public CauchyProblem
 
 void Problem1X1::calculateU(DoubleMatrix &u, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
 {
-    const DoubleVector &xi = *pxi;
+//    const DoubleVector &xi = *pxi;
 
-    std::vector<CauchyProblem*> cps(N+1);
-    for (unsigned int n=0; n<=N; n++)
-    {
-        CauchyProblem *cp = new CauchyProblemX1U(a,hx, alpha, lambda0, lambdal, Te, n, N, k, z, *pxi);
-        cp->x0 = 0.0;
-        cp->y0 = initial(n);
-        cps[n] = cp;
-    }
-    CauchyProblem::rungeKutta(cps, 0.0, ht, M, u);
-    u.transpose();
+//    std::vector<CauchyProblem*> cps(N+1);
+//    for (unsigned int n=0; n<=N; n++)
+//    {
+//        CauchyProblem *cp = new CauchyProblemX1U(a,hx, alpha, lambda0, lambdal, Te, n, N, k, z, *pxi);
+//        cp->x0 = 0.0;
+//        cp->y0 = initial(n);
+//        cps[n] = cp;
+//    }
+//    CauchyProblem::rungeKutta(cps, 0.0, ht, M, u);
+//    u.transpose();
 
-    for (unsigned int n=0; n<=N; n++)
-    {
-        CauchyProblemX1U *cp = dynamic_cast<CauchyProblemX1U*>(cps[n]);
-        delete cp;
-    }
+//    for (unsigned int n=0; n<=N; n++)
+//    {
+//        CauchyProblemX1U *cp = dynamic_cast<CauchyProblemX1U*>(cps[n]);
+//        delete cp;
+//    }
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
 }
 
 struct CauchyProblemX1P1 : public CauchyProblem

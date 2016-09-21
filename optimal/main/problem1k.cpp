@@ -287,6 +287,47 @@ void Problem1K::calculateU2(DoubleMatrix &u, double ht, double hx, unsigned int 
     u.transpose();
 }
 
+void Problem1K::calculateU3(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
+{
+    m.clear();
+    m.resize(M+1, N+1);
+
+    DoubleVector da(N+1);
+    DoubleVector db(N+1);
+    DoubleVector dc(N+1);
+    DoubleVector dd(N+1);
+    DoubleVector rx(N+1);
+
+    for (unsigned int j=0; j<=M; j++)
+    {
+        if (j==0)
+        {
+            for (unsigned int i=0;i<=N; i++)
+            m[0][i] = initial(i);
+        }
+        else
+        {
+            da[0] = 0.0;
+            db[0] = 1.0+(a*a*ht)/(hx*hx)+lambda0*(a*a*ht)/(hx)+alpha*ht;
+            dc[0] = -(a*a*ht)/(hx*hx);
+            dd[0] = m.at(j-1,0) + alpha * ht * Te;
+
+            for (unsigned int i=1; i<=N-1; i++)
+            {
+                da[i] = -(a*a*ht)/(hx*hx);
+                db[i] = 1.0+2.0*(a*a*ht)/(hx*hx) + alpha*ht;
+                dc[i] = -(a*a*ht)/(hx*hx);
+                dd[i] = m.at(j-1,i) + alpha*ht*Te;
+            }
+
+            da[N] = -(a*a*ht)/(hx*hx);
+            db[N] = 1.0+(a*a*ht)/(hx*hx)+lambdal*(a*a*ht)/(hx)+alpha*ht;
+            dc[N] = 0.0;
+            dd[N] = m.at(j-1,0) + lambdal*(a*a*ht)*Te/(hx) + alpha*ht*Te;
+        }
+    }
+}
+
 struct CauchyProblemKP : public CauchyProblem
 {
     CauchyProblemKP(double a, double hx, double ht, double alpha, double alpha2, double lambda0, double lambdal, double Te, unsigned int i, unsigned int N,
