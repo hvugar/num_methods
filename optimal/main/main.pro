@@ -32,7 +32,8 @@ SOURCES += main.cpp \
     problem1kz.cpp \
     loadedsystems.cpp \
     r1functionvector.cpp \
-    example1.cpp
+    example1.cpp \
+    problem1kzx.cpp
 
 HEADERS += \
     problem1.h \
@@ -45,4 +46,5 @@ HEADERS += \
     problem1z.h \
     loadedsystems.h \
     r1functionvector.h \
-    example1.h
+    example1.h \
+    problem1kzx.h

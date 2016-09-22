@@ -287,6 +287,7 @@ void Problem1K::calculateU2(DoubleMatrix &u, double ht, double hx, unsigned int 
     u.transpose();
 }
 
+// qovma
 void Problem1K::calculateU3(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
 {
     m.clear();
@@ -298,6 +299,10 @@ void Problem1K::calculateU3(DoubleMatrix &m, double ht, double hx, unsigned int 
     DoubleVector dd(N+1);
     DoubleVector rx(N+1);
 
+    DoubleVector de(L);
+    unsigned int *E = (unsigned int*)malloc(sizeof(unsigned int)*L);
+
+
     for (unsigned int j=0; j<=M; j++)
     {
         if (j==0)
@@ -308,22 +313,24 @@ void Problem1K::calculateU3(DoubleMatrix &m, double ht, double hx, unsigned int 
         else
         {
             da[0] = 0.0;
-            db[0] = 1.0+(a*a*ht)/(hx*hx)+lambda0*(a*a*ht)/(hx)+alpha*ht;
+            db[0] = 1.0+(a*a*ht)/(hx*hx) + (lambda0*a*a*ht)/hx + alpha*ht;
             dc[0] = -(a*a*ht)/(hx*hx);
-            dd[0] = m.at(j-1,0) + alpha * ht * Te;
+            dd[0] = m.at(j-1,0) + alpha*ht*Te;
 
             for (unsigned int i=1; i<=N-1; i++)
             {
                 da[i] = -(a*a*ht)/(hx*hx);
-                db[i] = 1.0+2.0*(a*a*ht)/(hx*hx) + alpha*ht;
+                db[i] = 1.0+(2.0*a*a*ht)/(hx*hx) + alpha*ht;
                 dc[i] = -(a*a*ht)/(hx*hx);
                 dd[i] = m.at(j-1,i) + alpha*ht*Te;
             }
 
             da[N] = -(a*a*ht)/(hx*hx);
-            db[N] = 1.0+(a*a*ht)/(hx*hx)+lambdal*(a*a*ht)/(hx)+alpha*ht;
+            db[N] = 1.0+(a*a*ht)/(hx*hx) + (lambdal*a*a*ht)/hx + alpha*ht;
             dc[N] = 0.0;
-            dd[N] = m.at(j-1,0) + lambdal*(a*a*ht)*Te/(hx) + alpha*ht*Te;
+            dd[N] = m.at(j-1,N) + (lambdal*a*a*ht*Te)/hx + alpha*ht*Te;
+
+            qovmaE(da.data(), db.data(), dc.data(), dd.data(), rx.data(), N, de.data(), E, L);
         }
     }
 }
