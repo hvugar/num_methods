@@ -7,53 +7,53 @@ void Problem1KZX::Main(int argc, char *argv[])
 
     Problem1KZX p;
 
-    DoubleMatrix u2;
-    p.calculateU3(u2, p.ht, p.hx, p.M, p.N, p.alpha, p.lambda0, p.lambdal, p.a);
-    IPrinter::printMatrix(u2);
-    puts("---");
+//    DoubleMatrix u2;
+//    p.calculateU3(u2, p.ht, p.hx, p.M, p.N, p.alpha, p.lambda0, p.lambdal, p.a);
+//    IPrinter::printMatrix(u2);
+//    puts("---");
 
-    DoubleMatrix u1;
-    p.calculateU1(u1, p.ht, p.hx, p.M, p.N, p.alpha, p.lambda0, p.lambdal, p.a);
-    IPrinter::printMatrix(u1);
+//    DoubleMatrix u1;
+//    p.calculateU1(u1, p.ht, p.hx, p.M, p.N, p.alpha, p.lambda0, p.lambdal, p.a);
+//    IPrinter::printMatrix(u1);
 
-    //    DoubleVector k(p.L);
-    //    k[0] = 2.5;
-    //    k[1] = 2.6;
+    DoubleVector k(p.L);
+    k[0] = 2.5;
+    k[1] = 2.6;
 
-    //    printf("Optimal:   %.10f %.10f\n", p.ks[0], p.ks[1]);
-    //    printf("Initial:   %.10f %.10f\n", k[0], k[1]);
-    //    double h = 0.001;
-    //    DoubleVector gn1(p.L,0.0);
-    //    IGradient::Gradient(&p, h, k, gn1);
-    //    DoubleVector gn2 = gn1;
-    //    gn2.L2Normalize();
-    //    printf("Numerical: %12.8f %12.8f %12.8f %12.8f %12.8f\n", gn1[0], gn1[1], gn1.L2Norm(), gn2[0], gn2[1]);
+    printf("Optimal:   %.10f %.10f\n", p.ks[0], p.ks[1]);
+    printf("Initial:   %.10f %.10f\n", k[0], k[1]);
+    double h = 0.001;
+    DoubleVector gn1(p.L,0.0);
+    IGradient::Gradient(&p, h, k, gn1);
+    DoubleVector gn2 = gn1;
+    gn2.L2Normalize();
+    printf("Numerical: %12.8f %12.8f %12.8f %12.8f %12.8f\n", gn1[0], gn1[1], gn1.L2Norm(), gn2[0], gn2[1]);
 
-    //    DoubleVector ga1(p.L,0.0);
-    //    p.gradient(k, ga1);
-    //    DoubleVector ga2 = ga1;
-    //    ga2.L2Normalize();
-    //    printf("Analytic:  %12.8f %12.8f %12.8f %12.8f %12.8f\n", ga1[0], ga1[1], ga1.L2Norm(), ga2[0], ga2[1]);
-    //    puts("------------------------------------------");
+    DoubleVector ga1(p.L,0.0);
+    p.gradient(k, ga1);
+    DoubleVector ga2 = ga1;
+    ga2.L2Normalize();
+    printf("Analytic:  %12.8f %12.8f %12.8f %12.8f %12.8f\n", ga1[0], ga1[1], ga1.L2Norm(), ga2[0], ga2[1]);
+    puts("------------------------------------------");
 
-    //    DoubleVector g1(p.L);
-    //    p.gradient(k, g1);
-    //    p.print(0, k, g1, 0.0, &p);
+    DoubleVector g1(p.L);
+    p.gradient(k, g1);
+    p.print(0, k, g1, 0.0, &p);
 
-    //    ConjugateGradient g;
-    //    g.setFunction(&p);
-    //    g.setGradient(&p);
-    //    g.setPrinter(&p);
-    //    g.setEpsilon1(0.00000001);
-    //    g.setEpsilon2(0.00000001);
-    //    g.setEpsilon3(0.00000001);
-    //    g.setR1MinimizeEpsilon(1.0, 0.00000001);
-    //    g.setNormalize(true);
-    //    g.calculate(k);
+    ConjugateGradient g;
+    g.setFunction(&p);
+    g.setGradient(&p);
+    g.setPrinter(&p);
+    g.setEpsilon1(0.00000001);
+    g.setEpsilon2(0.00000001);
+    g.setEpsilon3(0.00000001);
+    g.setR1MinimizeEpsilon(1.0, 0.00000001);
+    g.setNormalize(true);
+    g.calculate(k);
 
-    //    DoubleVector g2(p.L);
-    //    p.gradient(k, g2);
-    //    p.print(0, k, g2, 0.0, &p);
+    DoubleVector g2(p.L);
+    p.gradient(k, g2);
+    p.print(0, k, g2, 0.0, &p);
 }
 
 Problem1KZX::Problem1KZX()
@@ -68,7 +68,7 @@ Problem1KZX::Problem1KZX()
     lambdal = 1.0;
     L = 2;
     alpha1 = 1.0;
-    alpha2 = 0.0;
+    alpha2 = 1.0;
     Te = 3.0;
     Ti = 2.0;
 
@@ -85,6 +85,10 @@ Problem1KZX::Problem1KZX()
     calculateU3(u, ht, hx, M, N, alpha, lambda0, lambdal, a);
     V = u.row(M);
     u.clear();
+
+    pk = NULL;
+    pz = NULL;
+    pe = NULL;
     // initialize --------------------------------------------------------
 
     pk = new DoubleVector;
@@ -95,8 +99,6 @@ Problem1KZX::Problem1KZX()
 
     pe = new DoubleVector;
     (*pe) << 0.40 << 0.70;
-
-    DoubleVector V;
 }
 
 double Problem1KZX::fx(const DoubleVector &x)
@@ -143,10 +145,6 @@ void Problem1KZX::gradient(const DoubleVector &x UNUSED_PARAM, DoubleVector &g U
     DoubleVector &z = *pz;
     DoubleVector &e = *pe;
 
-    DoubleVector E;
-    E[0] = (unsigned int) round(e[0]/hx);
-    E[1] = (unsigned int) round(e[1]/hx);
-
     for (unsigned int s = 0; s<L; s++) g[s] = 0.0;
 
     DoubleMatrix u;
@@ -157,9 +155,12 @@ void Problem1KZX::gradient(const DoubleVector &x UNUSED_PARAM, DoubleVector &g U
     calculateP3(psi, ht, hx, M, N, alpha, lambda0, lambdal, a);
     pp = &psi;
 
+    DoubleVector E(L);
+    E[0] = (unsigned int) round(e[0]/hx);
+    E[1] = (unsigned int) round(e[1]/hx);
     for (unsigned int s = 0; s<L; s++)
     {
-        //g[s] = 0.0;
+        g[s] = 0.0;
         double sum = 0.0;
         for (unsigned int m=0; m<=M-1; m++)
         {
@@ -170,7 +171,7 @@ void Problem1KZX::gradient(const DoubleVector &x UNUSED_PARAM, DoubleVector &g U
             sum = sum + (g1 + g2);
         }
         sum = 0.5 * ht * sum;
-        g[s] += sum;
+        g[s] = sum;
     }
 }
 
@@ -237,7 +238,6 @@ void Problem1KZX::calculateU1(DoubleMatrix &u, double ht, double hx, unsigned in
     }
 }
 
-
 void Problem1KZX::calculateU3(DoubleMatrix &u, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
 {
     DoubleVector &k = *pk;
@@ -303,18 +303,19 @@ void Problem1KZX::calculateP3(DoubleMatrix &p, double ht, double hx, unsigned in
     DoubleVector &e = *pe;
     DoubleMatrix &u = *pu;
 
-    u.clear();
-    u.resize(M+1, N+1);
+    p.clear();
+    p.resize(M+1, N+1);
 
     DoubleVector da(N+1);
     DoubleVector db(N+1);
     DoubleVector dc(N+1);
     DoubleVector dd(N+1);
     DoubleVector rx(N+1);
+    DoubleVector de(N+1);
 
-    std::vector<unsigned int> X(L);
-    X[0] = (unsigned int)round(e[0]/hx);
-    X[1] = (unsigned int)round(e[1]/hx);
+    std::vector<unsigned int> E(L);
+    E[0] = (unsigned int)round(e[0]/hx);
+    E[1] = (unsigned int)round(e[1]/hx);
 
     for (unsigned int m1=0; m1<=M; m1++)
     {
@@ -331,30 +332,34 @@ void Problem1KZX::calculateP3(DoubleMatrix &p, double ht, double hx, unsigned in
             dc[0] = +(a*a*ht)/(hx*hx);
             dd[0] = -p.at(m+1,0);
 
+            de[0] = 0.0;
+            de[1] = 0.0;
+
             for (unsigned int n=1; n<=N-1; n++)
             {
                 da[n] = +(a*a*ht)/(hx*hx);
                 db[n] = -1.0-(2.0*a*a*ht)/(hx*hx) - alpha*ht;
                 dc[n] = +(a*a*ht)/(hx*hx);
-                dd[n] = p.at(m+1,n) + alpha*ht*Te;
+                dd[n] = -p.at(m+1,n) + alpha*ht*Te;
 
-                double sum = k[0]*(u.at(m, X[0]) - z[0]) + k[1]*(u.at(m, X[1]) - z[1]);
+                double sum = k[0]*(u.at(m, E[0]) - z[0]) + k[1]*(u.at(m, E[1]) - z[1]);
 
-                if (n==X[0]) dd[n] += 2*alpha2*ht*k[0]*sum*(1.0/hx);
-                if (n==X[1]) dd[n] += 2*alpha2*ht*k[1]*sum*(1.0/hx);
+                if (n==E[0]) dd[n] += 2*alpha2*ht*k[0]*sum*(1.0/hx);
+                if (n==E[1]) dd[n] += 2*alpha2*ht*k[1]*sum*(1.0/hx);
 
-                if (n==X[0]) db[0] += lambda0*a*a*ht*k[0]*(1.0/hx);
-                if (n==X[0]) db[0] += lambda0*a*a*ht*k[1]*(1.0/hx);
+                if (n==E[0]) de[n] = lambda0*a*a*ht*k[0]*(1.0/hx);
+                if (n==E[1]) de[n] = lambda0*a*a*ht*k[1]*(1.0/hx);
             }
 
             da[N] = +(a*a*ht)/(hx*hx);
             db[N] = -1.0-(a*a*ht)/(hx*hx) - (lambdal*a*a*ht)/hx - alpha*ht;
             dc[N] = 0.0;
             dd[N] = -p.at(m+1,N);
+            de[N] = 0.0;
 
-            qovmaE(da.data(), db.data(), dc.data(), dd.data(), rx.data(), N+1, de.data(), E.data(), L);
+            qovma2(da.data(), db.data(), dc.data(), dd.data(), rx.data(), N+1, de.data());
 
-            for (unsigned int i=0; i<=N; i++) u.at(m, i) = rx[i];
+            for (unsigned int i=0; i<=N; i++) p.at(m, i) = rx[i];
         }
     }
 }

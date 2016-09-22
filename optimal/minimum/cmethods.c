@@ -67,7 +67,7 @@ void gradient3(CRnFunction fx, double *x, double *g, unsigned int n, double h)
     }
 }
 
- double trapesium1(CR1Function fx, unsigned int n, double a, double b)
+double trapesium1(CR1Function fx, unsigned int n, double a, double b)
 {
     double sum = 0.0;
     double h = (a-b)/n;
@@ -214,6 +214,75 @@ void qovmaE(double *a, double *b, double *c, double *d, double *x, unsigned int 
     free(k);
 }
 
+void qovma2(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e)
+{
+    double *p = (double*)malloc(sizeof(double)*n);
+    double *q = (double*)malloc(sizeof(double)*n);
+    double *k = (double*)malloc(sizeof(double)*n);
+
+    const unsigned int j = (unsigned)0-1;
+
+    for (unsigned int i1=1; i1 <= n; i1++)
+    {
+        unsigned int i = n - i1;
+
+        if (i == n-1)
+        {
+            p[i] = +d[i]/b[i];
+            q[i] = -a[i]/b[i];
+            k[i] = -e[i]/b[i];
+        }
+        else if (i == 1)
+        {
+            double m = b[i]+c[i]*q[i+1];
+            p[i] = +(d[i]-c[i]*p[i+1])/m;
+            q[i] = -(a[i]+c[i]*k[i+1])/m;
+            k[i] = 0.0;
+        }
+        else if (i == 0)
+        {
+            double m = b[i]+c[i]*q[i+1];
+            p[i] = +(d[i]-c[i]*p[i+1])/m;
+            q[i] = 0.0;
+            k[i] = 0.0;
+        }
+        else
+        {
+            double m = b[i]+c[i]*q[i+1];
+            p[i] = +(d[i]-c[i]*p[i+1])/m;
+            q[i] = -a[i]/m;
+            k[i] = -(e[i]+c[i]*k[i+1])/m;
+        }
+    }
+//    printf("%10.6f %10.6f %10.6f\n", p[6], q[6], k[6]);
+//    printf("%10.6f %10.6f %10.6f\n", p[5], q[5], k[5]);
+//    printf("%10.6f %10.6f %10.6f\n", p[4], q[4], k[4]);
+//    printf("%10.6f %10.6f %10.6f\n", p[3], q[3], k[3]);
+//    printf("%10.6f %10.6f %10.6f\n", p[2], q[2], k[2]);
+//    printf("%10.6f %10.6f %10.6f\n", p[1], q[1], k[1]);
+//    printf("%10.6f %10.6f %10.6f\n", p[0], q[0], k[0]);
+
+    for (unsigned int i=0; i < n; i++)
+    {
+        if (i==0)
+        {
+            x[i] = p[i];
+        }
+        else if (i==1)
+        {
+            x[i] = p[i] + q[i]*x[i-1];
+        }
+        else
+        {
+            x[i] = p[i] + q[i]*x[i-1] + k[i]*x[0];
+        }
+    }
+
+    free(k);
+    free(p);
+    free(q);
+}
+
 void printMat(double **a, double *b, unsigned int n)
 {
     for (unsigned int j=0; j<n; j++)
@@ -241,9 +310,9 @@ void gaussianElimination(double **a, double *b, double *x, unsigned int n)
     for (k=0; k<n-1; k++)
     {
         //a[k][k] = 0.0;
-//        printf("\nIteration: %d matrix status\n", k);
-//        printMat(a, b, n);
-//        puts("matrix printed.");
+        //        printf("\nIteration: %d matrix status\n", k);
+        //        printMat(a, b, n);
+        //        puts("matrix printed.");
 
         if (fabs(a[k][k]) <= DBL_EPSILON)
         {
@@ -251,7 +320,7 @@ void gaussianElimination(double **a, double *b, double *x, unsigned int n)
             {
                 if (a[k][k1] != 0.0)
                 {
-//                    printf("Changing row: %d to row %d\n", k, k1);
+                    //                    printf("Changing row: %d to row %d\n", k, k1);
                     for (unsigned int k2=k; k2 < n; k2++)
                     {
                         double _a = a[k1][k2];
@@ -261,22 +330,22 @@ void gaussianElimination(double **a, double *b, double *x, unsigned int n)
                     double _b = b[k1];
                     b[k1] = b[k];
                     b[k] = _b;
-//                    printMat(a, b, n);
-//                    printf("Row: %d changed to row %d\n", k, k1);
+                    //                    printMat(a, b, n);
+                    //                    printf("Row: %d changed to row %d\n", k, k1);
                     break;
                 }
             }
         }
 
-//        printf("Relaxing\n");
+        //        printf("Relaxing\n");
         for (j=(k+1); j<n; j++)
         {
             double c = a[j][k]/a[k][k];
             for (i=k; i<n; i++) a[j][i] = a[j][i] - a[k][i] * c;
             b[j] = b[j] - b[k] *c;
         }
-//        printMat(a, b, n);
-//        printf("Relaxed\n");
+        //        printMat(a, b, n);
+        //        printf("Relaxed\n");
     }
 
     for (i=(n-1); i!=ui; i--)
@@ -284,7 +353,7 @@ void gaussianElimination(double **a, double *b, double *x, unsigned int n)
         for (j=(n-1); j>i; j--) b[i] -= (a[i][j] * x[j]);
         x[i] = b[i] / a[i][i];
     }
-//    for (unsigned int i=0; i<n; i++) x[i] = 0.0;
+    //    for (unsigned int i=0; i<n; i++) x[i] = 0.0;
 }
 
 void gaussJordanElimination(double **a, double *b, double *x, unsigned int n)
