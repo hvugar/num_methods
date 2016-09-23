@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     Problem1KZX::Main(argc, argv);
 
     //srand(time(NULL));
-    //Problem1K::Main(argc, argv);
+//    Problem1K::Main(argc, argv);
     //    LoadedSystems ls;
 
     //    Example1 ex;

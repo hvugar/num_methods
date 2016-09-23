@@ -105,14 +105,14 @@ double Problem1K::fx(const DoubleVector &k)
     pk = &k;
 
     double SUM = 0.0;
-    for (unsigned int i=0; i<5; i++)
-    {
-        Ti = 1.8 + i*0.1;
-        for (unsigned int j=0; j<5; j++)
-        {
-            Te = 2.8 + j*0.1;
-            calculateV(ks);
-            pk = &k;
+//    for (unsigned int i=0; i<5; i++)
+//    {
+//        Ti = 1.8 + i*0.1;
+//        for (unsigned int j=0; j<5; j++)
+//        {
+//            Te = 2.8 + j*0.1;
+//            calculateV(ks);
+//            pk = &k;
 
             DoubleMatrix u;
             calculateU(u, ht, hx, M, N, alpha, lambda0, lambdal, a);
@@ -146,25 +146,26 @@ double Problem1K::fx(const DoubleVector &k)
             norm = 0.5*ht*norm;
 
             SUM += alpha1*sum + alpha2*norm;
-        }
-    }
-    return (SUM*0.1*0.1) / 25.0;
+            return SUM;
+//        }
+//    }
+//    return (SUM*0.1*0.1) / 25.0;
 }
 
 void Problem1K::gradient(const DoubleVector &k, DoubleVector &g)
 {
     pk = &k;
 
-    for (unsigned int s = 0; s<L; s++) g[s] = 0.0;
+//    for (unsigned int s = 0; s<L; s++) g[s] = 0.0;
 
-    for (unsigned int i=0; i<5; i++)
-    {
-        Ti = 1.8 + i*0.1;
-        for (unsigned int j=0; j<5; j++)
-        {
-            Te = 2.8 + j*0.1;
-            calculateV(ks);
-            pk = &k;
+//    for (unsigned int i=0; i<5; i++)
+//    {
+//        Ti = 1.8 + i*0.1;
+//        for (unsigned int j=0; j<5; j++)
+//        {
+//            Te = 2.8 + j*0.1;
+//            calculateV(ks);
+//            pk = &k;
 
             DoubleMatrix u;
             calculateU(u, ht, hx, M, N, alpha, lambda0, lambdal, a);
@@ -189,11 +190,10 @@ void Problem1K::gradient(const DoubleVector &k, DoubleVector &g)
                 sum = 0.5 * ht * sum;
                 g[s] += sum;
             }
-        }
-    }
+//        }
+//    }
 
-    for (unsigned int s = 0; s<L; s++) g[s] = (g[s]*0.1*0.1)/25.0;
-
+//    for (unsigned int s = 0; s<L; s++) g[s] = (g[s]*0.1*0.1)/25.0;
 }
 
 void Problem1K::print(unsigned int i, const DoubleVector &k, const DoubleVector &g, double alpha, RnFunction *fn) const
