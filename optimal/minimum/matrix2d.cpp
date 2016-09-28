@@ -377,6 +377,11 @@ void DoubleMatrix::switchCols(unsigned int col1 UNUSED_PARAM, unsigned int col2 
 {
 }
 
+bool DoubleMatrix::isIdentityMatrix() const
+{
+    return false;
+}
+
 void GaussianElimination(DoubleMatrix A, DoubleVector b, DoubleVector &x)
 {
     const unsigned int ui = (unsigned)0-1;

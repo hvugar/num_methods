@@ -60,6 +60,10 @@ public:
     void switchRows(unsigned int row1, unsigned int row2);
     void switchCols(unsigned int col1, unsigned int col2);
 
+    bool isIdentityMatrix() const;
+    bool isDiagonalMatrix() const;
+    bool isSquareMatrix() const;
+
 private:
     unsigned int mRows;
     unsigned int mCols;

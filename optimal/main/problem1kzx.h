@@ -17,7 +17,7 @@ public:
     virtual double fx(const DoubleVector &x);
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
     virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &gradient, double alpha, RnFunction *fn) const;
-    virtual double mu(unsigned int i) const { return 1.0; }
+    virtual double mu(unsigned int i UNUSED_PARAM) const { return 1.0; }
 
     static void Main(int argc, char* argv[]);
 
