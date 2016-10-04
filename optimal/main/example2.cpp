@@ -5,13 +5,13 @@ Example2::Example2()
 
 double my_rand()
 {
-   return ((rand() % 400) + 1 - 200) / 100.0;
+   return ((rand() % 400) + 1 - 200) / 1000.0;
 }
 
 void Example2::calculate()
 {
-    unsigned int N = 10;
-    unsigned int K = 3;
+    unsigned int N = 100;
+    unsigned int K = 2;
 
     DoubleMatrix a(N-K+1, K+1);
 
@@ -24,24 +24,25 @@ void Example2::calculate()
     }
 
     DoubleVector x(N+1);
-    for (unsigned int i=0; i<K; i++) x[N-i] = my_rand();
+    for (unsigned int i=0; i<K; i++) x.at(N-i) = my_rand();
+    printf("%f %f %f\n", x[N-2], x[N-1], x[N]);
 
     for (unsigned int i=N-K; i != UINT_MAX; i--)
     {
         x[i] = a.at(i,0);
-        for (unsigned int j=1; j<=K; j++) x[i] += a.at(i,j)*x[i+j];
+        for (unsigned int j=1; j<=K; j++) x.at(i) += a.at(i,j)*x[i+j];
     }
     IPrinter::printVector(x,"x:");
 
     DoubleMatrix beta(K,N+1);
-    beta.at(0,1) = my_rand(); beta.at(0,5) = my_rand(); beta.at(0,10) = my_rand();
-    beta.at(1,1) = my_rand(); beta.at(1,5) = my_rand(); beta.at(1,10) = my_rand();
-    beta.at(2,1) = my_rand(); beta.at(2,5) = my_rand(); beta.at(2,10) = my_rand();
+    beta.at(0,0) = my_rand(); beta.at(0,1) = my_rand();
+    beta.at(1,2) = my_rand(); beta.at(1,4) = my_rand(); beta.at(1,N-1) = my_rand(); beta.at(1,N) = my_rand();
+    //beta.at(2,0) = my_rand(); beta.at(2,5) = my_rand(); beta.at(2,10) = my_rand();
 
     DoubleVector qamma(K);
-    qamma[0] = beta.at(0,1)*x[1] + beta.at(0,5)*x[5] + beta.at(0,10)*x[10];
-    qamma[1] = beta.at(1,1)*x[1] + beta.at(1,5)*x[5] + beta.at(1,10)*x[10];
-    qamma[2] = beta.at(2,1)*x[1] + beta.at(2,5)*x[5] + beta.at(2,10)*x[10];
+    qamma[0] = beta.at(0,0)*x[0] + beta.at(0,1)*x[1];
+    qamma[1] = beta.at(1,2)*x[2] + beta.at(1,4)*x[4] + beta.at(1,N-1)*x[N-1] + beta.at(1,N)*x[N];
+    //qamma[2] = beta.at(2,0)*x[0] + beta.at(2,5)*x[5] + beta.at(2,10)*x[10];
 
     for (unsigned int i=0; i<=N; i++) x[i] = 0.0;
     calculate(N,K,a,beta,qamma,x);
