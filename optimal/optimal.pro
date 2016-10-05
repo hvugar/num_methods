@@ -1,8 +1,8 @@
 TEMPLATE = subdirs
 
 SUBDIRS += minimum
-SUBDIRS += imaging
-SUBDIRS += imager
+#SUBDIRS += imaging
+#SUBDIRS += imager
 #SUBDIRS += rnfunction
 #SUBDIRS += control
 #SUBDIRS += point
