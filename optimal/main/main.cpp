@@ -25,9 +25,8 @@ int main(int argc, char *argv[])
 
     srand(time(NULL));
 
-    Problem1KZX::Main(argc, argv);
-//    Example2 ex;
-//    ex.calculate();
+//    Problem1KZX::Main(argc, argv);
+    Example2 ex;
 
     return 0;
 }

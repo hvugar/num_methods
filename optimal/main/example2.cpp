@@ -2,11 +2,48 @@
 #include <math.h>
 
 Example2::Example2()
-{}
+{
+    init();
+}
 
 double my_rand()
 {
    return ((rand() % 200) + 1) / 100.0;
+}
+
+void Example2::init()
+{
+    unsigned int N = 100;
+    unsigned int K = 2;
+
+    DoubleMatrix a(N-K+1, K+1);
+    DoubleVector x(N+1);
+
+    for (unsigned int i=0; i<=N; i++)
+    {
+        x[i] = cos((M_PI/500.0)*i);
+    }
+    IPrinter::printVector(x,"x:");
+
+    for (unsigned int i=0; i<(N+1)-K; i++)
+    {
+        a.at(i,1) = 3.0*cos(i/1000.0);
+        a.at(i,2) = sin(i/100.0)/2.0;
+        a.at(i,0) = x[i] - a.at(i,1)*x.at(i+1) - a.at(i,2)*x.at(i+2);
+    }
+
+    DoubleMatrix beta(K,N+1);
+    beta.at(0,0) = 2.0; beta.at(0,1) = -1.0;
+    beta.at(1,2) = 1.0; beta.at(1,4) = +3.0; beta.at(1,N-1) = -2.0; beta.at(1,N) = 1.0;
+
+    DoubleVector qamma(K);
+    qamma[0] = beta.at(0,0)*x[0] + beta.at(0,1)*x[1];
+    qamma[1] = beta.at(1,2)*x[2] + beta.at(1,4)*x[4] + beta.at(1,N-1)*x[N-1] + beta.at(1,N)*x[N];
+
+    DoubleVector x1(N+1);
+    for (unsigned int i=0; i<=N; i++) x1[i] = 0.0;
+    calculate(N,K,a,beta,qamma,x1);
+    IPrinter::printVector(x1,"x:");
 }
 
 void Example2::calculate()

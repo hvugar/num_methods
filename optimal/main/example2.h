@@ -10,6 +10,7 @@ class Example2
 public:
     Example2();
 
+    void init();
     void calculate();
     void calculate(unsigned int N, unsigned int k, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x);
 };
