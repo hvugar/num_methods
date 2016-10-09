@@ -12,7 +12,8 @@ public:
 
     void init();
     void calculate();
-    void calculate(unsigned int N, unsigned int k, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x);
+    void calculate1(unsigned int N, unsigned int k, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x);
+    void calculate2(unsigned int N, unsigned int k, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x);
 };
 
 #endif // EXAMPLE2_H

@@ -10,6 +10,7 @@
 #include "loadedsystems.h"
 #include "example1.h"
 #include "example2.h"
+#include "example3.h"
 #include <cmethods.h>
 
 #include <QtGui/QGuiApplication>
@@ -26,6 +27,7 @@ int main(int argc, char *argv[])
     srand(time(NULL));
 
 //    Problem1KZX::Main(argc, argv);
+//    Example3::Main(argc, argv);
     Example2 ex;
 
     return 0;
