@@ -53,9 +53,6 @@ void Example2::init()
         a1.at(i,1) = -a.at(i,1)/a.at(i,2);
         a1.at(i,2) = 1.0/a.at(i,2);
         a1.at(i,0) = -a.at(i,0)/a.at(i,2);
-
-        //printf("%d %f %f %f\n", i, a.at(i,0), a.at(i,1), a.at(i,2));
-        //printf("%d %f %f %f\n", i, a1.at(i,0), a1.at(i,1), a1.at(i,2));
     }
     puts("---");
     DoubleMatrix beta1(K,N+1);
@@ -67,7 +64,7 @@ void Example2::init()
     DoubleVector x2(N+1);
     for (unsigned int i=0; i<=N; i++) x2[i] = 0.0;
     calculate2(N,K,a1,beta1,qamma1,x2);
-    //IPrinter::printVector(x2,"x:");
+    IPrinter::printVector(x2,"x:");
 }
 
 void Example2::calculate()
@@ -135,7 +132,7 @@ void Example2::calculate1(unsigned int N, unsigned int K, const DoubleMatrix &a,
     DoubleVector x1(K);
     GaussianElimination(m, b, x1);
 
-    //printf("%12.8f %12.8f\n", x1[0], x1[1]);
+    printf("%12.8f %12.8f\n", x1[0], x1[1]);
 
     for (unsigned int i=0; i<K; i++) x[N-i] = x1.at((K-1)-i);
 
@@ -154,6 +151,7 @@ void Example2::calculate2(unsigned int N, unsigned int K, const DoubleMatrix &a,
         {
             for (unsigned int j=1; j<=K; j++)
             {
+                //printf("%d %d %d %f %f %f\n", eq, i-K, j, a.at(i-K,0), a.at(i-K,1), a.at(i-K,2));
                 beta.at(eq,i-j) = beta.at(eq,i-j) + beta.at(eq,i)*a.at(i-K,j);
             }
             qamma[eq] = qamma[eq] - beta.at(eq,i)*a.at(i-K,0);
@@ -163,27 +161,24 @@ void Example2::calculate2(unsigned int N, unsigned int K, const DoubleMatrix &a,
     DoubleMatrix m(K,K);
     for (unsigned int j=0; j<K; j++)
     {
-        for (unsigned int i=0; i <= K; i++) m.at(j,i) = beta.at(j,i);
+        for (unsigned int i=0; i<K; i++) m.at(j,i) = beta.at(j,i);
     }
+    DoubleVector b(K);
+    for (unsigned int i=0; i<K; i++) b.at(i) = qamma.at(i);
 
-    DoubleVector b2;
-//    DoubleVector b1(K);
-//    for (unsigned int i=0; i<K; i++) b1.at(i) = qamma.at(i);
+    DoubleVector x1(K);
+    GaussianElimination(m, b, x1);
 
-    //DoubleVector x1(K);
-//    GaussianElimination(m, b, x1);
+    printf("%12.8f %12.8f\n", x1[0], x1[1]);
 
-//    printf("%12.8f %12.8f\n", x1[0], x1[1]);
+    for (unsigned int i=0; i<K; i++) x[i] = x1.at(i);
 
-//    for (unsigned int i=0; i<K; i++) x[i] = x1.at(i);
-
-//    for (unsigned int i=K; i < N; i++)
-//    {
-//        x[i] = a.at(i-K,0);
-//        for (unsigned int j=1; j<=K; j++)
-//        {
-//            printf("%d %d\n", i-K, j);
-//            x[i] += a.at(i-K,j)*x[i-j];
-//        }
-//    }
+    for (unsigned int i=K; i <= N; i++)
+    {
+        x[i] = a.at(i-K,0);
+        for (unsigned int j=1; j<=K; j++)
+        {
+            x[i] += a.at(i-K,j)*x[i-j];
+        }
+    }
 }
