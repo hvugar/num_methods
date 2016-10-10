@@ -14,7 +14,7 @@
 #include <cmethods.h>
 
 #include <QtGui/QGuiApplication>
-#include <imaging.h>
+//#include <imaging.h>
 
 #include <float.h>
 #include <time.h>
@@ -27,8 +27,9 @@ int main(int argc, char *argv[])
     srand(time(NULL));
 
 //    Problem1KZX::Main(argc, argv);
-//    Example3::Main(argc, argv);
-    Example2 ex;
+    Example3::Main(argc, argv);
+//    Example2 ex;
+//    Problem1K::Main(argc, argv);
 
     return 0;
 }

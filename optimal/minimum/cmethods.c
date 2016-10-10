@@ -214,7 +214,7 @@ void qovmaE(double *a, double *b, double *c, double *d, double *x, unsigned int 
     free(k);
 }
 
-void qovma1(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e)
+void qovmaFirstRow(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e)
 {
     double *p = (double*)malloc(sizeof(double)*n);
     double *q = (double*)malloc(sizeof(double)*n);
@@ -226,10 +226,11 @@ void qovma1(double *a, double *b, double *c, double *d, double *x, unsigned int 
     unsigned int i = 0;
     for (unsigned int s=2; s<n; s++)
     {
-        if (e[s] != 0.0) E[i] = s;
-        i++;
+        if (e[s] != 0.0)
+        {
+            E[i++] = s;
+        }
     }
-    printf("%d %d\n", E[0], E[1]);
 
     double **k = (double**) malloc(sizeof(double*)*L);
     for (unsigned int s=0; s<L; s++) k[s] = (double*)malloc(sizeof(double)*n);
@@ -243,7 +244,7 @@ void qovma1(double *a, double *b, double *c, double *d, double *x, unsigned int 
 
             for (unsigned int s=0; s<L; s++)
             {
-                k[s][0] = -e[s]/b[0];
+                k[s][0] = -e[E[s]]/b[0];
             }
         }
         else if (i == (n-1))
@@ -270,8 +271,7 @@ void qovma1(double *a, double *b, double *c, double *d, double *x, unsigned int 
         }
     }
 
-    const unsigned int j = (unsigned)0-1;
-    for (unsigned int i=n-1; i != j; i--)
+    for (unsigned int i=n-1; i != UINT_MAX; i--)
     {
         if (i==(n-1))
         {
@@ -302,8 +302,6 @@ void qovma2(double *a, double *b, double *c, double *d, double *x, unsigned int 
     double *p = (double*)malloc(sizeof(double)*n);
     double *q = (double*)malloc(sizeof(double)*n);
     double *k = (double*)malloc(sizeof(double)*n);
-
-    const unsigned int j = (unsigned)0-1;
 
     for (unsigned int i1=1; i1 <= n; i1++)
     {
@@ -337,13 +335,6 @@ void qovma2(double *a, double *b, double *c, double *d, double *x, unsigned int 
             k[i] = -(e[i]+c[i]*k[i+1])/m;
         }
     }
-//    printf("%10.6f %10.6f %10.6f\n", p[6], q[6], k[6]);
-//    printf("%10.6f %10.6f %10.6f\n", p[5], q[5], k[5]);
-//    printf("%10.6f %10.6f %10.6f\n", p[4], q[4], k[4]);
-//    printf("%10.6f %10.6f %10.6f\n", p[3], q[3], k[3]);
-//    printf("%10.6f %10.6f %10.6f\n", p[2], q[2], k[2]);
-//    printf("%10.6f %10.6f %10.6f\n", p[1], q[1], k[1]);
-//    printf("%10.6f %10.6f %10.6f\n", p[0], q[0], k[0]);
 
     for (unsigned int i=0; i < n; i++)
     {

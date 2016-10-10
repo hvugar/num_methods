@@ -1,5 +1,5 @@
 #include "problem1.h"
-#include <imaging.h>
+//#include <imaging.h>
 
 Problem1::Problem1()
 {

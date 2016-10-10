@@ -295,7 +295,7 @@ void Problem1KZX::calculateU3(DoubleMatrix &u, double ht, double hx, unsigned in
             dc[N] = 0.0;
             dd[N] = u.at(m-1,N) + (lambdal*a*a*ht*Te)/hx + alpha*ht*Te;
 
-            qovma1(da.data(), db.data(), dc.data(), dd.data(), rx.data(), N+1, de.data());
+            qovmaFirstRow(da.data(), db.data(), dc.data(), dd.data(), rx.data(), N+1, de.data());
             //qovmaE(da.data(), db.data(), dc.data(), dd.data(), rx.data(), N+1, de.data(), E.data(), L);
 
             for (unsigned int i=0; i<=N; i++) u.at(m, i) = rx[i];

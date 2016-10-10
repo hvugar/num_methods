@@ -8,7 +8,7 @@ Example2::Example2()
 
 double my_rand()
 {
-    return ((rand() % 200) + 1) / 100.0;
+    return ((rand() % 100) + 1) / 100.0;
 }
 
 void Example2::init()
@@ -31,6 +31,22 @@ void Example2::init()
         a.at(i,2) = ((i+1)*(i+2))/2000.0;
         a.at(i,0) = x[i] - a.at(i,1)*x.at(i+1) - a.at(i,2)*x.at(i+2);
     }
+
+//    for (unsigned int i=0; i<(N+1)-K; i++)
+//    {
+//        a.at(i,1) = my_rand();//(i+1)/20.0;
+//        a.at(i,2) = my_rand();//((i+1)*(i+2))/2000.0;
+//        a.at(i,0) = my_rand();//x[i] - a.at(i,1)*x.at(i+1) - a.at(i,2)*x.at(i+2);
+//    }
+
+
+//    for (unsigned int i=0; i<K; i++) x.at(N-i) = my_rand();
+//    for (unsigned int i=N-K; i != UINT_MAX; i--)
+//    {
+//        x[i] = a.at(i,0);
+//        for (unsigned int j=1; j<=K; j++) x.at(i) += a.at(i,j)*x[i+j];
+//    }
+//    IPrinter::printVector(x,"x:");
 
     DoubleMatrix beta(K,N+1);
     beta.at(0,0) = 2.0; beta.at(0,1) = -1.0;

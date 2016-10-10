@@ -21,16 +21,26 @@ public:
     virtual void project(DoubleVector &x, int index);
 
     double mu(unsigned int i UNUSED_PARAM) const { return 1.0; }
+    // qovma 1
     void calculateU(DoubleMatrix &u, const DoubleVector &x);
     void calculateP(DoubleMatrix& p, const DoubleMatrix &u, const DoubleVector &x);
 
     double initial(unsigned int i) const;
 
+    //GaussianElimination
+    void calculateU1(DoubleMatrix &u, const DoubleVector &x);
+    // qovma E
+    void calculateU2(DoubleMatrix &u, const DoubleVector &x);
+    // teze qovma
+    void calculateU3(DoubleMatrix &u, const DoubleVector &x);
+    void calculate1(unsigned int N, unsigned int K, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x);
+
+
 private:
     unsigned int N = 1000;
     unsigned int M = 1000;
-    double dx = 0.001;
-    double dt = 0.001;
+    double hx = 0.001;
+    double ht = 0.001;
     unsigned int L = 2;
     double a = 1.0;
 
@@ -38,7 +48,7 @@ private:
     double Te = 3.0;
     double alpha = 1.0;
     double lambda0 = 1.0;
-    double lambda1 = 1.0;
+    double lambdal = 1.0;
 
     double alpha0 = 1.0;
     double alpha1 = 1.0;
@@ -48,6 +58,10 @@ private:
     const DoubleVector *px;
     const DoubleVector *sx;
     DoubleVector V;
+
+//    DoubleVector k;
+//    DoubleVector z;
+//    DoubleVector e;
 
 public:
     static void Main(int argc, char* argv[]);

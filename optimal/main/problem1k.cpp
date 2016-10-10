@@ -5,44 +5,44 @@ void Problem1K::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     Problem1K p;
 
     DoubleVector k(p.L);
-    k[0] = 2.5;
-    k[1] = 2.6;
+//    k[0] = 3.0;
+//    k[1] = 3.0;
 
-    printf("Optimal:   %.10f %.10f\n", p.ks[0], p.ks[1]);
-    printf("Initial:   %.10f %.10f\n", k[0], k[1]);
-    double h = 0.001;
-    DoubleVector gn1(p.L,0.0);
-    IGradient::Gradient(&p, h, k, gn1);
-    DoubleVector gn2 = gn1;
-    gn2.L2Normalize();
-    printf("Numerical: %12.8f %12.8f %12.8f %12.8f %12.8f\n", gn1[0], gn1[1], gn1.L2Norm(), gn2[0], gn2[1]);
+//    printf("Optimal:   %.10f %.10f\n", p.ks[0], p.ks[1]);
+//    printf("Initial:   %.10f %.10f\n", k[0], k[1]);
+//    double h = 0.001;
+//    DoubleVector gn1(p.L,0.0);
+//    IGradient::Gradient(&p, h, k, gn1);
+//    DoubleVector gn2 = gn1;
+//    gn2.L2Normalize();
+//    printf("Numerical: %12.8f %12.8f %12.8f %12.8f %12.8f\n", gn1[0], gn1[1], gn1.L2Norm(), gn2[0], gn2[1]);
 
-    DoubleVector ga1(p.L,0.0);
-    p.gradient(k, ga1);
-    DoubleVector ga2 = ga1;
-    ga2.L2Normalize();
-    printf("Analytic:  %12.8f %12.8f %12.8f %12.8f %12.8f\n", ga1[0], ga1[1], ga1.L2Norm(), ga2[0], ga2[1]);
-    puts("------------------------------------------");
+//    DoubleVector ga1(p.L,0.0);
+//    p.gradient(k, ga1);
+//    DoubleVector ga2 = ga1;
+//    ga2.L2Normalize();
+//    printf("Analytic:  %12.8f %12.8f %12.8f %12.8f %12.8f\n", ga1[0], ga1[1], ga1.L2Norm(), ga2[0], ga2[1]);
+//    puts("------------------------------------------");
 
 
-    DoubleVector g1(p.L);
-    p.gradient(k, g1);
-    p.print(0, k, g1, 0.0, &p);
+//    DoubleVector g1(p.L);
+//    p.gradient(k, g1);
+//    p.print(0, k, g1, 0.0, &p);
 
-    ConjugateGradient g;
-    g.setFunction(&p);
-    g.setGradient(&p);
-    g.setPrinter(&p);
-    g.setEpsilon1(0.00000001);
-    g.setEpsilon2(0.00000001);
-    g.setEpsilon3(0.00000001);
-    g.setR1MinimizeEpsilon(1.0, 0.00000001);
-    g.setNormalize(true);
-    g.calculate(k);
+//    ConjugateGradient g;
+//    g.setFunction(&p);
+//    g.setGradient(&p);
+//    g.setPrinter(&p);
+//    g.setEpsilon1(0.00000001);
+//    g.setEpsilon2(0.00000001);
+//    g.setEpsilon3(0.00000001);
+//    g.setR1MinimizeEpsilon(1.0, 0.00000001);
+//    g.setNormalize(true);
+//    g.calculate(k);
 
-    DoubleVector g2(p.L);
-    p.gradient(k, g2);
-    p.print(0, k, g2, 0.0, &p);
+//    DoubleVector g2(p.L);
+//    p.gradient(k, g2);
+//    p.print(0, k, g2, 0.0, &p);
 }
 
 Problem1K::Problem1K()
@@ -50,9 +50,9 @@ Problem1K::Problem1K()
     t0 = 0.0; t1 = 1.0;
     x0 = 0.0; x1 = 1.0;
     hx = 0.01;
-    ht = 0.00005;
+    ht = 0.01;
     N = 100;
-    M = 20000;
+    M = 100;
     a = 1.0;
 
     alpha   = 1.0;
@@ -70,21 +70,21 @@ Problem1K::Problem1K()
     Xi[1] = 70;
 
     z.resize(L);
-    z[0] = 2.89;
-    z[1] = 2.81;
+    z[0] = 1.52;
+    z[1] = 1.71;
 
     alpha1 = 1.0;
-    alpha2 = 1.0;
+    alpha2 = 0.0;
 
     Te = 3.0;
     Ti = 2.0;
 
     //DoubleVector ks;
     ks.resize(L);
-    ks[0] = 1.5;
-    ks[1] = 1.7;
+    ks[0] = 2.5;
+    ks[1] = 2.7;
     calculateV(ks);
-    //IPrinter::printVector(V);
+    IPrinter::printVector(V);
 }
 
 Problem1K::~Problem1K()
@@ -92,12 +92,12 @@ Problem1K::~Problem1K()
 
 void Problem1K::calculateU(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
 {
-    calculateU2(m, ht, hx, M, N, alpha, lambda0, lambdal, a);
+    calculateU1(m, ht, hx, M, N, alpha, lambda0, lambdal, a);
 }
 
 void Problem1K::calculateP(DoubleMatrix &m, double ht, double hx, unsigned int M, unsigned int N, double alpha, double lambda0, double lambdal, double a)
 {
-    calculateP2(m, ht, hx, M, N, alpha, lambda0, lambdal, a);
+    calculateP1(m, ht, hx, M, N, alpha, lambda0, lambdal, a);
 }
 
 double Problem1K::fx(const DoubleVector &k)
@@ -177,7 +177,7 @@ void Problem1K::gradient(const DoubleVector &k, DoubleVector &g)
 
             for (unsigned int s = 0; s<L; s++)
             {
-                //g[s] = 0.0;
+                g[s] = 0.0;
                 double sum = 0.0;
                 for (unsigned int m=0; m<=M-1; m++)
                 {
@@ -472,6 +472,7 @@ void Problem1K::calculateU1(DoubleMatrix &u, double ht, double hx, unsigned int 
 
             for (unsigned int i=0; i<=N; i++) u.at(m,i) = rx[i];
         }
+        //IPrinter::printVector(u.row(m));
     }
 }
 
