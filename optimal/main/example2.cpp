@@ -13,7 +13,7 @@ double my_rand()
 
 void Example2::init()
 {
-    unsigned int N = 10;
+    unsigned int N = 50;
     unsigned int K = 2;
 
     DoubleMatrix a(N-K+1, K+1);
@@ -24,6 +24,7 @@ void Example2::init()
         x[i] = (5.0/(i+3.0))*cos((M_PI/50.0)*i);
     }
     IPrinter::printVector(x,"x:");
+    printf("%12.8f %12.8f\n", x[N-1], x[N]);
 
     for (unsigned int i=0; i<(N+1)-K; i++)
     {
@@ -62,25 +63,25 @@ void Example2::init()
     IPrinter::printVector(x1,"x:");
 
 
-    puts("-----------------------------------");
-    DoubleMatrix a1(N-K+1, K+1);
-    for (unsigned int i=0; i<(N+1)-K; i++)
-    {
-        a1.at(i,1) = -a.at(i,1)/a.at(i,2);
-        a1.at(i,2) = 1.0/a.at(i,2);
-        a1.at(i,0) = -a.at(i,0)/a.at(i,2);
-    }
-    puts("---");
-    DoubleMatrix beta1(K,N+1);
-    beta1.at(0,0) = 2.0; beta1.at(0,1) = -1.0;
-    beta1.at(1,2) = 1.0; beta1.at(1,4) = +3.0; beta1.at(1,N-1) = -2.0; beta1.at(1,N) = 1.0;
-    DoubleVector qamma1(K);
-    qamma1[0] = beta1.at(0,0)*x[0] + beta1.at(0,1)*x[1];
-    qamma1[1] = beta1.at(1,2)*x[2] + beta1.at(1,4)*x[4] + beta1.at(1,N-1)*x[N-1] + beta1.at(1,N)*x[N];
-    DoubleVector x2(N+1);
-    for (unsigned int i=0; i<=N; i++) x2[i] = 0.0;
-    calculate2(N,K,a1,beta1,qamma1,x2);
-    IPrinter::printVector(x2,"x:");
+//    puts("-----------------------------------");
+//    DoubleMatrix a1(N-K+1, K+1);
+//    for (unsigned int i=0; i<(N+1)-K; i++)
+//    {
+//        a1.at(i,1) = -a.at(i,1)/a.at(i,2);
+//        a1.at(i,2) = 1.0/a.at(i,2);
+//        a1.at(i,0) = -a.at(i,0)/a.at(i,2);
+//    }
+//    puts("---");
+//    DoubleMatrix beta1(K,N+1);
+//    beta1.at(0,0) = 2.0; beta1.at(0,1) = -1.0;
+//    beta1.at(1,2) = 1.0; beta1.at(1,4) = +3.0; beta1.at(1,N-1) = -2.0; beta1.at(1,N) = 1.0;
+//    DoubleVector qamma1(K);
+//    qamma1[0] = beta1.at(0,0)*x[0] + beta1.at(0,1)*x[1];
+//    qamma1[1] = beta1.at(1,2)*x[2] + beta1.at(1,4)*x[4] + beta1.at(1,N-1)*x[N-1] + beta1.at(1,N)*x[N];
+//    DoubleVector x2(N+1);
+//    for (unsigned int i=0; i<=N; i++) x2[i] = 0.0;
+//    calculate2(N,K,a1,beta1,qamma1,x2);
+//    IPrinter::printVector(x2,"x:");
 }
 
 void Example2::calculate()
