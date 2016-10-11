@@ -262,10 +262,6 @@ void Problem1KZX::calculateU3(DoubleMatrix &u, double ht, double hx, unsigned in
 
     DoubleVector de(L);
 
-//    std::vector<unsigned int> E(L);
-//    E[0] = (unsigned int)round(e[0]/hx);
-//    E[1] = (unsigned int)round(e[1]/hx);
-
     for (unsigned int m=0; m<=M; m++)
     {
         if (m==0)
@@ -296,7 +292,6 @@ void Problem1KZX::calculateU3(DoubleMatrix &u, double ht, double hx, unsigned in
             dd[N] = u.at(m-1,N) + (lambdal*a*a*ht*Te)/hx + alpha*ht*Te;
 
             qovmaFirstRow(da.data(), db.data(), dc.data(), dd.data(), rx.data(), N+1, de.data());
-            //qovmaE(da.data(), db.data(), dc.data(), dd.data(), rx.data(), N+1, de.data(), E.data(), L);
 
             for (unsigned int i=0; i<=N; i++) u.at(m, i) = rx[i];
         }

@@ -9,11 +9,16 @@
 #include <printer.h>
 #include <projection.h>
 
+void qovmaFirstCol(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e);
+void qovmaFirstRow(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e);
+
 class Example3 : public RnFunction, public IGradient, public ConjugateGradient, public IPrinter, public IProjection
 {
 public:
     Example3();
     virtual ~Example3() {}
+
+    void initialize();
 
     virtual double fx(const DoubleVector &x);
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
@@ -35,16 +40,14 @@ public:
 //    void calculateU3(DoubleMatrix &u, const DoubleVector &x);
 //    void calculate1(unsigned int N, unsigned int K, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x);
 
-    void qovmaFirstCol(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e);
-
-
 private:
+    double a = 1.0;
+    unsigned int L = 2;
     unsigned int N = 1000;
     unsigned int M = 1000;
     double hx = 0.001;
     double ht = 0.001;
-    unsigned int L = 2;
-    double a = 1.0;
+    double h = 0.001;
 
     double Ti = 2.0;
     double Te = 3.0;
@@ -54,11 +57,12 @@ private:
 
     double alpha0 = 1.0;
     double alpha1 = 1.0;
-    double alpha2 = 1.0;
-    double alpha3 = 1.0;
+    double alpha2 = 0.0;
+    double alpha3 = 0.0;
 
     const DoubleVector *px;
     DoubleVector V;
+    DoubleVector xs;
 
     DoubleVector z;
     DoubleVector e;

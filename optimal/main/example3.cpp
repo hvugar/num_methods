@@ -9,58 +9,71 @@ void Example3::Main(int argc, char *argv[])
     C_UNUSED(argv);
 
     Example3 e3;
+    e3.initialize();
 }
 
 Example3::Example3()
+{}
+
+void Example3::initialize()
 {
-    z << 1.52 << 1.71;
-    e << 0.40 << 0.70;
+    z.resize(2);
+    z.at(0) = 1.52;
+    z.at(1) = 1.71;
 
-    DoubleVector x0;
-    x0.resize(2);
-    x0[0] = 2.50;
-    x0[1] = 2.70; //k
+    e.resize(2);
+    e.at(0) = 0.40;
+    e.at(1) = 0.70;
 
-//    x0 << 1.52 << 1.71; //z
-//    x0 << 0.40 << 0.70; //e
-
-    px = &x0;
+    // initial /////////////////////////////////
+    xs.resize(2);
+    xs.at(0) = 2.50;
+    xs.at(1) = 2.70;
+    px = &xs;
     DoubleMatrix u;
     calculateU(u);
     IPrinter::printVector(u.row(M));
     V = u.row(M);
+    ///////////////////////////////////////////
 
-    DoubleVector x1;
-    x1.resize(2);
-    x1[0] = 3.50;
-    x1[1] = 3.70; //k
-//    x1 << 1.52 << 1.71; //z
-//    x1 << 0.40 << 0.70; //x
-    px = &x1;
+    DoubleVector k1;
+    k1.resize(2);
+    k1.at(0) = 3.50;
+    k1.at(1) = 3.70;
+    px = &k1;
 
-    printf("Optimal:   %.10f %.10f %.10f %.10f %.10f %.10f\n", x0.at(0), x0.at(1), x0.at(2), x0.at(3), x0.at(4), x0.at(5));
-    printf("Initial:   %.10f %.10f %.10f %.10f %.10f %.10f\n", x1.at(0), x1.at(1), x1.at(2), x1.at(3), x1.at(4), x1.at(5));
+    printf("Optimal:   %.10f %.10f %.10f %.10f %.10f %.10f\n", xs.at(0), xs.at(1), xs.at(2), xs.at(3), xs.at(4), xs.at(5));
+    printf("Initial:   %.10f %.10f %.10f %.10f %.10f %.10f\n", k1.at(0), k1.at(1), k1.at(2), k1.at(3), k1.at(4), k1.at(5));
 
-    double h = 0.001;
-    DoubleVector g2(2, 0.0);
-    IGradient::Gradient(this, h, x1, g2);
-    //DoubleVector gn2 = g2;
+    DoubleVector g2;
+    g2.resize(L);
+    IGradient::Gradient(this, h, k1, g2);
+//    DoubleVector gn2 = g2;
     g2.L2Normalize();
     printf("Numerical: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", g2[0], g2[1], g2[2], g2[3], g2[4], g2[5]);
 
-    DoubleVector g1(x0.size(),0.0);
-    gradient(x1, g1);
+    DoubleVector g1;
+    g1.resize(L);
+    gradient(k1, g1);
     //DoubleVector gn1 = g1;
     g1.L2Normalize();
     printf("Analytic:  %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", g1[0], g1[1], g1[2], g1[3], g1[4], g1[5]);
 
     puts("------------------------------------------");
+}
 
+double Example3::initial(unsigned int i UNUSED_PARAM) const
+{
+    return Ti;
 }
 
 double Example3::fx(const DoubleVector &x)
 {
     px = &x;
+
+//    DoubleVector k = x.mid(0, 1);
+//    DoubleVector z = x.mid(2, 3);
+//    DoubleVector e = x.mid(4, 5);
 
     DoubleMatrix u;
     calculateU(u);
@@ -70,18 +83,17 @@ double Example3::fx(const DoubleVector &x)
     {
         unsigned int n1 = n+0;
         unsigned int n2 = n+1;
-
         double f1 = mu(n1)*(u.at(M, n1)-V.at(n1))*(u.at(M, n1)-V.at(n1));
         double f2 = mu(n2)*(u.at(M, n2)-V.at(n2))*(u.at(M, n2)-V.at(n2));
         sum = sum + (f1 + f2);
     }
     sum = 0.5*hx*sum;
 
-    DoubleVector k = x.mid(0, 1);
-//    DoubleVector z = x.mid(2, 3);
-//    DoubleVector e = x.mid(4, 5);
+    double norm1 = sqrt((x[0]-xs[0])*(x[0]-xs[0])+(x[1]-xs[1])*(x[1]-xs[1]));
+    double norm2 = z.L2Norm();
+    double norm3 = e.L2Norm();
 
-    return alpha0*sum + alpha1*x.EuclideanNorm() + alpha2*z.EuclideanNorm() + alpha3*e.EuclideanNorm();
+    return alpha0*sum + alpha1*norm1 + alpha2*norm2 + alpha3*norm3;
 }
 
 void Example3::gradient(const DoubleVector &x, DoubleVector &g)
@@ -99,30 +111,26 @@ void Example3::gradient(const DoubleVector &x, DoubleVector &g)
     double sum = 0.0;
 
     // k gradient
-    g[0] = 0.0;
     for (unsigned int m=0; m<=M-1; m++)
     {
         unsigned int m1 = m + 0;
         unsigned int m2 = m + 1;
-        double g1 = -lambda0*a*a*psi.at(m1, 0)*(u.at(m1, 400) - z[0]);
-        double g2 = -lambda0*a*a*psi.at(m2, 0)*(u.at(m2, 400) - z[0]);
+        double g1 = psi.at(m1, 0)*(u.at(m1, 400) - z[0]);
+        double g2 = psi.at(m2, 0)*(u.at(m2, 400) - z[0]);
         sum = sum + (g1 + g2);
     }
-    sum = 0.5*ht*sum + 2.0*alpha1*x.at(0);
-    g[0] += sum;
+    g[0] = 0.5*ht*(-lambda0*a*a)*sum + 2.0*alpha1*(x.at(0)-xs.at(0));
 
     sum = 0.0;
-    g[1] = 0.0;
     for (unsigned int m=0; m<=M-1; m++)
     {
         unsigned int m1 = m + 0;
         unsigned int m2 = m + 1;
-        double g1 = -lambda0*a*a*psi.at(m1, 0)*(u.at(m1, 700) - z[1]);
-        double g2 = -lambda0*a*a*psi.at(m2, 0)*(u.at(m2, 700) - z[1]);
+        double g1 = psi.at(m1, 0)*(u.at(m1, 700) - z[1]);
+        double g2 = psi.at(m2, 0)*(u.at(m2, 700) - z[1]);
         sum = sum + (g1 + g2);
     }
-    sum = 0.5*ht*sum + 2.0*alpha1*x.at(1);
-    g[1] += sum;
+    g[1] = 0.5*ht*(-lambda0*a*a)*sum + 2.0*alpha1*(x.at(1)-xs.at(1));
 
 //    for (unsigned int s = 0; s<L; s++)
 //    {
@@ -140,7 +148,7 @@ void Example3::gradient(const DoubleVector &x, DoubleVector &g)
 //        g[s] += sum;
 //    }
 
-    g[2] = g[3] = g[4] = g[5] = 0.0;
+    //g[2] = g[3] = g[4] = g[5] = 0.0;
 }
 
 void Example3::print(unsigned int i UNUSED_PARAM, const DoubleVector &x UNUSED_PARAM, const DoubleVector &g UNUSED_PARAM, double alpha UNUSED_PARAM, RnFunction *fn UNUSED_PARAM) const
@@ -216,7 +224,7 @@ void Example3::calculateU(DoubleMatrix &u)
 void Example3::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
 {
     DoubleVector x = *px;
-    DoubleVector k = x.mid(0, 1);
+//    DoubleVector k = x.mid(0, 1);
 //    DoubleVector z = x.mid(2, 3);
 //    DoubleVector e = x.mid(4, 5);
 
@@ -262,8 +270,8 @@ void Example3::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
             for (unsigned int n=0; n<=N; n++)
             {
                 de[n] = 0.0;
-                if (fabs(n*hx - e.at(0)) <= DBL_EPSILON) de[n] = -k[0]*(lambda0*(a*a*ht)/hx);
-                if (fabs(n*hx - e.at(1)) <= DBL_EPSILON) de[n] = -k[1]*(lambda0*(a*a*ht)/hx);
+                if (fabs(n*hx - e.at(0)) <= DBL_EPSILON) de[n] = +x[0]*(lambda0*(a*a*ht)/hx);
+                if (fabs(n*hx - e.at(1)) <= DBL_EPSILON) de[n] = +x[1]*(lambda0*(a*a*ht)/hx);
             }
 
             qovmaFirstCol(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size(), de.data());
@@ -280,7 +288,7 @@ void Example3::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
     de.clear();
 }
 
-void Example3::qovmaFirstCol(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e)
+void qovmaFirstCol(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e)
 {
     double *p = (double*)malloc(sizeof(double)*n);
     double *q = (double*)malloc(sizeof(double)*n);
@@ -338,9 +346,87 @@ void Example3::qovmaFirstCol(double *a, double *b, double *c, double *d, double 
     free(q);
 }
 
-double Example3::initial(unsigned int i UNUSED_PARAM) const
+void qovmaFirstRow(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e)
 {
-    return Ti;
+    double *p = (double*)malloc(sizeof(double)*n);
+    double *q = (double*)malloc(sizeof(double)*n);
+
+    unsigned int L = 0;
+    for (unsigned int s=2; s<n; s++) if (e[s] != 0.0) L+=1;
+    unsigned int *E = (unsigned int *)malloc(sizeof(unsigned int)*L);
+
+    unsigned int i = 0;
+    for (unsigned int s=2; s<n; s++)
+    {
+        if (e[s] != 0.0)
+        {
+            E[i++] = s;
+        }
+    }
+
+    double **k = (double**) malloc(sizeof(double*)*L);
+    for (unsigned int s=0; s<L; s++) k[s] = (double*)malloc(sizeof(double)*n);
+
+    for (unsigned int i=0; i<n; i++)
+    {
+        if (i == 0)
+        {
+            p[0] = +d[0]/b[0];
+            q[0] = -c[0]/b[0];
+
+            for (unsigned int s=0; s<L; s++)
+            {
+                k[s][0] = -e[E[s]]/b[0];
+            }
+        }
+        else if (i == (n-1))
+        {
+            p[i] = +(d[i]-a[i]*p[i-1])/(b[i]+a[i]*q[i-1]);
+            q[i] = 0.0;
+
+            for (unsigned int s=0; s<L; s++) k[s][i] = 0.0;
+        }
+        else
+        {
+            p[i] = +(d[i]-a[i]*p[i-1])/(b[i]+a[i]*q[i-1]);
+            q[i] = -c[i]/(b[i]+a[i]*q[i-1]);
+
+            for (unsigned int s=0; s<L; s++)
+            {
+                if (i<(E[s]-1))
+                    k[s][i] = -(a[i]*k[s][i-1])/(b[i]+a[i]*q[i-1]);
+                else
+                    k[s][i] = 0.0;
+            }
+
+            for (unsigned int s=0; s<L; s++) if (i==E[s]-1) q[i] += -(a[i]*k[s][i-1])/(b[i]+a[i]*q[i-1]);
+        }
+    }
+
+    for (unsigned int i=n-1; i != UINT_MAX; i--)
+    {
+        if (i==(n-1))
+        {
+            x[i] = p[i];
+        }
+        else
+        {
+            x[i] = p[i] + q[i]*x[i+1];
+
+            for (unsigned int s=0; s<L; s++)
+            {
+                if (i<=E[s]-1)
+                {
+                    x[i] = x[i] + k[s][i]*x[E[s]];
+                }
+            }
+        }
+    }
+
+    free(q);
+    free(q);
+    for (unsigned int s=0; s<L; s++) free(k[s]);
+    free(k);
 }
 
 /*

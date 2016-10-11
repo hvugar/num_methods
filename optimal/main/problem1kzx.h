@@ -7,6 +7,7 @@
 #include <gradient_cjt.h>
 #include <vector>
 #include <rungekutta.h>
+#include <example3.h>
 
 class Problem1KZX : public RnFunction, public IGradient, public IPrinter, public ConjugateGradient
 {
