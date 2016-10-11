@@ -6,6 +6,7 @@
 #include <math.h>
 #include <float.h>
 #include <exception>
+#include <stdexcept>
 
 DoubleVector::DoubleVector(unsigned int size, double val) : mSize(size), mData(NULL)
 {
@@ -83,11 +84,20 @@ bool DoubleVector::empty() const
 
 double& DoubleVector::at(unsigned int n)
 {
+    if (n>=mSize)
+    {
+        throw std::out_of_range("out of range");
+    }
     return mData[n];
 }
 
 const double& DoubleVector::at(unsigned int n) const
 {
+    if (n>=mSize)
+    {
+        throw std::out_of_range("out of range");
+    }
+
     return mData[n];
 }
 

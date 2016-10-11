@@ -1,53 +1,66 @@
 #include "example2.h"
 #include <math.h>
 
-Example2::Example2()
-{
-    init();
-}
-
 double my_rand()
 {
     return ((rand() % 100) + 1) / 100.0;
 }
 
+void Example2::Main(int argc, char *argv[])
+{
+    C_UNUSED(argc);
+    C_UNUSED(argv);
+
+    Example2 e2;
+    e2.init();
+}
+
+Example2::Example2()
+{
+}
+
 void Example2::init()
 {
-    unsigned int N = 50;
+    unsigned int N = 1000;
     unsigned int K = 2;
 
     DoubleMatrix a(N-K+1, K+1);
     DoubleVector x(N+1);
 
-    for (unsigned int i=0; i<=N; i++)
-    {
-        x[i] = (5.0/(i+3.0))*cos((M_PI/50.0)*i);
-    }
-    IPrinter::printVector(x,"x:");
-    printf("%12.8f %12.8f\n", x[N-1], x[N]);
-
-    for (unsigned int i=0; i<(N+1)-K; i++)
-    {
-        a.at(i,1) = (i+1)/20.0;
-        a.at(i,2) = ((i+1)*(i+2))/2000.0;
-        a.at(i,0) = x[i] - a.at(i,1)*x.at(i+1) - a.at(i,2)*x.at(i+2);
-    }
+//    for (unsigned int i=0; i<=N; i++)
+//    {
+//        x[i] = (5.0/(i+3.0))*cos((M_PI/50.0)*i);
+//    }
+//    IPrinter::printVector(x,"x:");
+//    printf("%12.8f %12.8f\n", x[N-1], x[N]);
 
 //    for (unsigned int i=0; i<(N+1)-K; i++)
 //    {
-//        a.at(i,1) = my_rand();//(i+1)/20.0;
-//        a.at(i,2) = my_rand();//((i+1)*(i+2))/2000.0;
-//        a.at(i,0) = my_rand();//x[i] - a.at(i,1)*x.at(i+1) - a.at(i,2)*x.at(i+2);
+//        a.at(i,1) = (i+1)/20.0;
+//        a.at(i,2) = ((i+1)*(i+2))/2000.0;
+//        a.at(i,0) = x[i] - a.at(i,1)*x.at(i+1) - a.at(i,2)*x.at(i+2);
 //    }
 
+    for (unsigned int i=0; i<(N+1)-K; i++)
+    {
+        a.at(i,1) = 0.9;//my_rand();//(i+1)/20.0;
+        a.at(i,2) = 1.5;//my_rand();//((i+1)*(i+2))/2000.0;
+        a.at(i,0) = 0.2;//my_rand();//x[i] - a.at(i,1)*x.at(i+1) - a.at(i,2)*x.at(i+2);
 
-//    for (unsigned int i=0; i<K; i++) x.at(N-i) = my_rand();
-//    for (unsigned int i=N-K; i != UINT_MAX; i--)
-//    {
-//        x[i] = a.at(i,0);
-//        for (unsigned int j=1; j<=K; j++) x.at(i) += a.at(i,j)*x[i+j];
-//    }
-//    IPrinter::printVector(x,"x:");
+        if (fabs(a.at(i,1) > fabs(1.0) + fabs(a.at(i,2))))
+            puts("error");
+    }
+
+
+    for (unsigned int i=0; i<K; i++) x.at(N-i) = my_rand();
+    printf("%f %f\n", x.at(N-1), x.at(N));
+
+    for (unsigned int i=N-K; i != UINT_MAX; i--)
+    {
+        x[i] = a.at(i,0);
+        for (unsigned int j=1; j<=K; j++) x.at(i) += a.at(i,j)*x[i+j];
+    }
+    IPrinter::printVector(x,"x:");
 
     DoubleMatrix beta(K,N+1);
     beta.at(0,0) = 2.0; beta.at(0,1) = -1.0;

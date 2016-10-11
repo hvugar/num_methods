@@ -13,7 +13,8 @@ void Example3::Main(int argc, char *argv[])
 }
 
 Example3::Example3()
-{}
+{
+}
 
 void Example3::initialize()
 {
@@ -32,8 +33,8 @@ void Example3::initialize()
     px = &xs;
     DoubleMatrix u;
     calculateU(u);
-    IPrinter::printVector(u.row(M));
     V = u.row(M);
+    //IPrinter::printVector(V);
     ///////////////////////////////////////////
 
     DoubleVector k1;
@@ -42,22 +43,22 @@ void Example3::initialize()
     k1.at(1) = 3.70;
     px = &k1;
 
-    printf("Optimal:   %.10f %.10f %.10f %.10f %.10f %.10f\n", xs.at(0), xs.at(1), xs.at(2), xs.at(3), xs.at(4), xs.at(5));
-    printf("Initial:   %.10f %.10f %.10f %.10f %.10f %.10f\n", k1.at(0), k1.at(1), k1.at(2), k1.at(3), k1.at(4), k1.at(5));
+    printf("Optimal:   %12.8f %12.8f\n", xs.at(0), xs.at(1));
+    printf("Initial:   %12.8f %12.8f\n", k1.at(0), k1.at(1));
 
     DoubleVector g2;
     g2.resize(L);
     IGradient::Gradient(this, h, k1, g2);
 //    DoubleVector gn2 = g2;
     g2.L2Normalize();
-    printf("Numerical: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", g2[0], g2[1], g2[2], g2[3], g2[4], g2[5]);
+    printf("Numerical: %12.8f %12.8f\n", g2.at(0), g2.at(1));
 
     DoubleVector g1;
     g1.resize(L);
     gradient(k1, g1);
-    //DoubleVector gn1 = g1;
+//    //DoubleVector gn1 = g1;
     g1.L2Normalize();
-    printf("Analytic:  %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", g1[0], g1[1], g1[2], g1[3], g1[4], g1[5]);
+    printf("Analytic:  %12.8f %12.8f\n", g1.at(0), g1.at(1));
 
     puts("------------------------------------------");
 }
