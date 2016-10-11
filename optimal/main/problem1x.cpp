@@ -188,7 +188,7 @@ void Problem1X::gradient(const DoubleVector &xi, DoubleVector &g)
     }
 }
 
-void Problem1X::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double alpha, RnFunction *fn) const
+void Problem1X::print(unsigned int i, const DoubleVector &x, const DoubleVector &g UNUSED_PARAM, double alpha, RnFunction *fn) const
 {
 //    C_UNUSED(alpha);
 //    printf("J[%d]: %.16f\n", i, fn->fx(k));

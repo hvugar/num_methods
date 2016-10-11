@@ -21,7 +21,7 @@ void conjucate_gradient(struct c_gradient_t *gr)
 //    mx = &x;
 //    ms = &s;
 
-    double minimize(double *x, unsigned int n)
+    double minimize(double *x UNUSED_PARAM, unsigned int n UNUSED_PARAM)
     {
 //        double alpha0 = 0.0;
 //        double a,b,alpha;
@@ -113,12 +113,19 @@ void conjucate_gradient(struct c_gradient_t *gr)
 
 void steepest_descent_gradient(struct c_gradient_t *gr)
 {
+    C_UNUSED(gr);
 }
 
 double c_vector_L2Norm(double *x, unsigned int n)
 {
+    C_UNUSED(x);
+    C_UNUSED(n);
     return 0.0;
 }
 
 void c_vector_L2Normalize(double *x, unsigned int n)
-{}
+{
+    C_UNUSED(x);
+    C_UNUSED(n);
+
+}

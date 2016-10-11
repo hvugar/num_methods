@@ -22,18 +22,20 @@ public:
 
     double mu(unsigned int i UNUSED_PARAM) const { return 1.0; }
     // qovma 1
-    void calculateU(DoubleMatrix &u, const DoubleVector &x);
-    void calculateP(DoubleMatrix& p, const DoubleMatrix &u, const DoubleVector &x);
+    void calculateU(DoubleMatrix &u);
+    void calculateP(DoubleMatrix& p, const DoubleMatrix &u);
 
     double initial(unsigned int i) const;
 
-    //GaussianElimination
-    void calculateU1(DoubleMatrix &u, const DoubleVector &x);
-    // qovma E
-    void calculateU2(DoubleMatrix &u, const DoubleVector &x);
-    // teze qovma
-    void calculateU3(DoubleMatrix &u, const DoubleVector &x);
-    void calculate1(unsigned int N, unsigned int K, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x);
+//    //GaussianElimination
+//    void calculateU1(DoubleMatrix &u, const DoubleVector &x);
+//    // qovma E
+//    void calculateU2(DoubleMatrix &u, const DoubleVector &x);
+//    // teze qovma
+//    void calculateU3(DoubleMatrix &u, const DoubleVector &x);
+//    void calculate1(unsigned int N, unsigned int K, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x);
+
+    void qovmaFirstCol(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e);
 
 
 private:
@@ -56,12 +58,10 @@ private:
     double alpha3 = 1.0;
 
     const DoubleVector *px;
-    const DoubleVector *sx;
     DoubleVector V;
 
-//    DoubleVector k;
-//    DoubleVector z;
-//    DoubleVector e;
+    DoubleVector z;
+    DoubleVector e;
 
 public:
     static void Main(int argc, char* argv[]);

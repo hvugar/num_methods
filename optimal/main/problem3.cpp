@@ -244,7 +244,7 @@ void Problem3::calculateV(const DoubleVector &v)
     V = u.row(M);
 }
 
-double Problem3::vs(unsigned int j) const
+double Problem3::vs(unsigned int j UNUSED_PARAM) const
 {
     return 4.0;
 }

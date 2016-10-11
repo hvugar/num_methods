@@ -334,7 +334,7 @@ double Problem1Z::mu(unsigned int i UNUSED_PARAM) const
     return 1.0;
 }
 
-void Problem1Z::calculateV(const DoubleVector &z)
+void Problem1Z::calculateV(const DoubleVector &z UNUSED_PARAM)
 {
     //pz = &z;
     DoubleMatrix u;
