@@ -128,8 +128,8 @@ void Example2::init2()
 
     //beta.at(0,0) = my_rand(); beta.at(0,N) = my_rand();
     //beta.at(0,N-1) = +1.2; beta.at(0,N) = -1.1;
-    //beta.at(0,0) = +0.4; beta.at(0,N) = +0.5;
-    beta.at(0,0) = +0.5; beta.at(0,n11) = +0.3; beta.at(0,n12) = -0.8; beta.at(0,N-1) = +1.4; beta.at(0,N) = +2.1;
+    //beta.at(0,0) = +1.4; beta.at(0,1) = -2.5;
+    beta.at(0,0) = -0.5; beta.at(0,n11) = +0.3; beta.at(0,n12) = -0.8; beta.at(0,N-1) = +1.4; beta.at(0,N) = +2.1;
     beta.at(1,0) = +1.0; beta.at(1,n21) = +0.1; beta.at(1,n22) = +1.3; beta.at(1,N-1) = -1.2; beta.at(1,N) = +1.1;
 
     DoubleVector qamma(K);
@@ -185,12 +185,12 @@ void Example2::calculate1(unsigned int N, unsigned int K, const DoubleMatrix &a,
     {
         for (unsigned int i=0; i<=N-K; i++)
         {
-//            for (unsigned int j=1; j<=K; j++)
-//            {
-//                beta.at(eq,i+j) = beta.at(eq,i+j) + beta.at(eq,i)*a.at(i,j);
-//            }
-            beta.at(eq,i+1) = beta.at(eq,i+1) + beta.at(eq,i)*a.at(i,1);
-            beta.at(eq,i+2) = beta.at(eq,i+2) + beta.at(eq,i)*a.at(i,2);
+            for (unsigned int j=1; j<=K; j++)
+            {
+                beta.at(eq,i+j) = beta.at(eq,i+j) + beta.at(eq,i)*a.at(i,j);
+            }
+            //beta.at(eq,i+1) = beta.at(eq,i+1) + beta.at(eq,i)*a.at(i,1);
+            //beta.at(eq,i+2) = beta.at(eq,i+2) + beta.at(eq,i)*a.at(i,2);
             qamma.at(eq) = qamma.at(eq) - beta.at(eq,i)*a.at(i,0);
 
             if (eq == 0)
@@ -209,27 +209,33 @@ void Example2::calculate1(unsigned int N, unsigned int K, const DoubleMatrix &a,
     fclose(file2);
 
     DoubleMatrix m(K,K);
-    m.at(0,0) = beta.at(0,N-1); m.at(0,1) = beta.at(0,N);
-    m.at(1,0) = beta.at(1,N-1); m.at(1,1) = beta.at(1,N);
+//    m.at(0,0) = beta.at(0,N-1); m.at(0,1) = beta.at(0,N);
+//    m.at(1,0) = beta.at(1,N-1); m.at(1,1) = beta.at(1,N);
+
+    for (unsigned int j=0; j<K; j++)
+    {
+        for (unsigned int i=0; i<K; i++) m.at(j,i) = beta.at(j,N-K+1+i);
+    }
+
 
 //    for (unsigned int j=0; j<K; j++)
 //    {
 //        for (unsigned int i=K-1; i != UINT_MAX; i--) m.at(j,(K-1)-i) = beta.at(j,N-i);
 //    }
     DoubleVector b(K);
-    b.at(0) = qamma.at(0);
-    b.at(1) = qamma.at(1);
+    //b.at(0) = qamma.at(0);
+    //b.at(1) = qamma.at(1);
 
-//    for (unsigned int i=0; i<K; i++) b.at(i) = qamma.at(i);
+    for (unsigned int i=0; i<K; i++) b.at(i) = qamma.at(i);
 
     DoubleVector x1(K);
 
-    //GaussianElimination(m, b, x1);
-    double a1 = m.at(1,1) - m.at(0,1)*m.at(1,0)/m.at(0,0);
-    double b1 = b.at(1) - b.at(0)*m.at(1,0)/m.at(0,0);
-    x1.at(1) = b1/a1;
-    printf("%18.14f %18.14f\n", b1, a1);
-    x1.at(0) = -(m.at(0,1)/m.at(0,0))*x1.at(1) + b.at(0)/m.at(0,0);
+    GaussianElimination(m, b, x1);
+    //double a1 = m.at(1,1) - m.at(0,1)*m.at(1,0)/m.at(0,0);
+    //double b1 = b.at(1) - b.at(0)*m.at(1,0)/m.at(0,0);
+    //x1.at(1) = b1/a1;
+    //printf("%18.14f %18.14f\n", b1, a1);
+    //x1.at(0) = -(m.at(0,1)/m.at(0,0))*x1.at(1) + b.at(0)/m.at(0,0);
 
     printf("x0 %18.14f %18.14f\n", x0.at(N-1), x0.at(N));
     printf("x1 %18.14f %18.14f\n", x1.at(0), x1.at(1));
