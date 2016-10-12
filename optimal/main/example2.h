@@ -12,7 +12,7 @@ public:
 
     void init1();
     void init2();
-    void calculate();
+    void init3();
     void calculate1(unsigned int N, unsigned int k, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x, const DoubleVector &x0);
     void calculate2(unsigned int N, unsigned int k, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x);
 
