@@ -126,10 +126,10 @@ void Example2::init2()
     unsigned int n21 = 2*N/10;
     unsigned int n22 = 4*N/10;
 
-    //beta.at(0,0) = my_rand(); beta.at(0,N) = my_rand();
-    //beta.at(0,N-1) = +1.2; beta.at(0,N) = -1.1;
-    //beta.at(0,0) = +1.4; beta.at(0,1) = -2.5;
-    beta.at(0,0) = -0.5; beta.at(0,n11) = +0.3; beta.at(0,n12) = -0.8; beta.at(0,N-1) = +1.4; beta.at(0,N) = +2.1;
+    beta.at(0,0) = my_rand(); beta.at(0,1) = my_rand();
+    //beta.at(0,N-1) = my_rand(); beta.at(0,N) = my_rand();
+    //beta.at(0,0) = -1.0; beta.at(0,1) = -1.5;
+    //beta.at(0,0) = -0.5; beta.at(0,n11) = +0.3; beta.at(0,n12) = -0.8; beta.at(0,N-1) = +1.4; beta.at(0,N) = +2.1;
     beta.at(1,0) = +1.0; beta.at(1,n21) = +0.1; beta.at(1,n22) = +1.3; beta.at(1,N-1) = -1.2; beta.at(1,N) = +1.1;
 
     DoubleVector qamma(K);
@@ -230,12 +230,12 @@ void Example2::calculate1(unsigned int N, unsigned int K, const DoubleMatrix &a,
 
     DoubleVector x1(K);
 
-    GaussianElimination(m, b, x1);
-    //double a1 = m.at(1,1) - m.at(0,1)*m.at(1,0)/m.at(0,0);
-    //double b1 = b.at(1) - b.at(0)*m.at(1,0)/m.at(0,0);
-    //x1.at(1) = b1/a1;
-    //printf("%18.14f %18.14f\n", b1, a1);
-    //x1.at(0) = -(m.at(0,1)/m.at(0,0))*x1.at(1) + b.at(0)/m.at(0,0);
+    //GaussianElimination(m, b, x1);
+    double a1 = m.at(1,1) - m.at(0,1)*m.at(1,0)/m.at(0,0);
+    double b1 = b.at(1) - b.at(0)*m.at(1,0)/m.at(0,0);
+    x1.at(1) = b1/a1;
+    printf("%18.14f %18.14f\n", b1, a1);
+    x1.at(0) = -(m.at(0,1)/m.at(0,0))*x1.at(1) + b.at(0)/m.at(0,0);
 
     printf("x0 %18.14f %18.14f\n", x0.at(N-1), x0.at(N));
     printf("x1 %18.14f %18.14f\n", x1.at(0), x1.at(1));
@@ -246,7 +246,7 @@ void Example2::calculate1(unsigned int N, unsigned int K, const DoubleMatrix &a,
 
     printf("%18.14f %18.14f %18.14f %18.14f %18.14f\n", m.at(0,0), m.at(0,1), b.at(0), c1, e1);
     printf("%18.14f %18.14f %18.14f %18.14f %18.14f\n", m.at(1,0), m.at(1,1), b.at(1), c2, e2);
-    printf("%18.14f %18.14f %18.14f %18.14f %18.14f\n", m.at(1,0)/m.at(0,0), m.at(1,1)/m.at(0,1), b.at(1)/b.at(0), 0.0, 0.0);
+    printf("%18.14f %18.14f %18.14f\n", m.at(1,0)/m.at(0,0), m.at(1,1)/m.at(0,1), b.at(1)/b.at(0));
 
     for (unsigned int i=0; i<K; i++) x.at(N-i) = x1.at((K-1)-i);
 
