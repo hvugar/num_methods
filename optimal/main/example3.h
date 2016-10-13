@@ -47,7 +47,7 @@ private:
     unsigned int M = 1000;
     double hx = 0.001;
     double ht = 0.001;
-    double h = 0.001;
+    double h  = 0.001;
 
     double Ti = 2.0;
     double Te = 3.0;
@@ -57,15 +57,16 @@ private:
 
     double alpha0 = 1.0;
     double alpha1 = 1.0;
-    double alpha2 = 0.0;
-    double alpha3 = 0.0;
+    double alpha2 = 1.0;
+    double alpha3 = 1.0;
 
     const DoubleVector *px;
     DoubleVector V;
     DoubleVector xs;
 
-    DoubleVector z;
-    DoubleVector e;
+    //DoubleVector k;
+    //DoubleVector z;
+    //DoubleVector e;
 
 public:
     static void Main(int argc, char* argv[]);

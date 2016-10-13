@@ -27,8 +27,8 @@ int main(int argc, char *argv[])
     srand(time(NULL));
 
 //    Problem1KZX::Main(argc, argv);
-//    Example3::Main(argc, argv);
-    Example2::Main(argc, argv);
+    Example3::Main(argc, argv);
+//    Example2::Main(argc, argv);
 //    Problem1K::Main(argc, argv);
 
     return 0;

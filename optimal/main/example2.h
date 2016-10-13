@@ -13,8 +13,8 @@ public:
     void init1();
     void init2();
     void init3();
-    void calculate1(unsigned int N, unsigned int k, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x, const DoubleVector &x0);
-    void calculate2(unsigned int N, unsigned int k, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x);
+    void calculateLeft2Right(unsigned int N, unsigned int k, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x, const DoubleVector &x0);
+    void calculateRight2Left(unsigned int N, unsigned int k, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x, const DoubleVector &x0);
 
     static void Main(int argc, char* argv[]);
 };

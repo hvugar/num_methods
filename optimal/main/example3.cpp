@@ -18,18 +18,27 @@ Example3::Example3()
 
 void Example3::initialize()
 {
-    z.resize(2);
-    z.at(0) = 1.52;
-    z.at(1) = 1.71;
+    //k.resize(2);
+    //k.at(0) = 2.50;
+    //k.at(1) = 2.70;
 
-    e.resize(2);
-    e.at(0) = 0.40;
-    e.at(1) = 0.70;
+    //z.resize(2);
+    //z.at(0) = 1.52;
+    //z.at(1) = 1.71;
+
+    //e.resize(2);
+    //e.at(0) = 0.40;
+    //e.at(1) = 0.70;
 
     // initial /////////////////////////////////
-    xs.resize(2);
+    xs.resize(6);
     xs.at(0) = 2.50;
     xs.at(1) = 2.70;
+    xs.at(2) = 1.52;
+    xs.at(3) = 1.71;
+    xs.at(4) = 0.25;
+    xs.at(5) = 0.75;
+
     px = &xs;
     DoubleMatrix u;
     calculateU(u);
@@ -37,30 +46,56 @@ void Example3::initialize()
     //IPrinter::printVector(V);
     ///////////////////////////////////////////
 
-    DoubleVector k1;
-    k1.resize(2);
-    k1.at(0) = 3.50;
-    k1.at(1) = 3.70;
-    px = &k1;
+    DoubleVector x0;
+    x0.resize(6);
+    x0.at(0) = 3.50;
+    x0.at(1) = 3.70;
+    x0.at(2) = 2.52;
+    x0.at(3) = 2.71;
+    x0.at(4) = 0.35;
+    x0.at(5) = 0.65;
+    px = &x0;
 
-    printf("Optimal:   %12.8f %12.8f\n", xs.at(0), xs.at(1));
-    printf("Initial:   %12.8f %12.8f\n", k1.at(0), k1.at(1));
+    printf("Optimal:   %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", xs.at(0), xs.at(1), xs.at(2), xs.at(3), xs.at(4), xs.at(5));
+    printf("Initial:   %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", x0.at(0), x0.at(1), x0.at(2), x0.at(3), x0.at(4), x0.at(5));
 
     DoubleVector g2;
-    g2.resize(L);
-    IGradient::Gradient(this, h, k1, g2);
-//    DoubleVector gn2 = g2;
+    g2.resize(6);
+    IGradient::Gradient(this, h, x0, g2);
+    //g2[0] = g2[1] = 0.0;
+    //g2[2] = g2[3] = 0.0;
+    //DoubleVector gn2 = g2;
+    //printf("Numerical: %12.8f %12.8f\n", g2.at(0), g2.at(1));
     g2.L2Normalize();
-    printf("Numerical: %12.8f %12.8f\n", g2.at(0), g2.at(1));
+    printf("Numerical: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", g2.at(0), g2.at(1), g2.at(2), g2.at(3), g2.at(4), g2.at(5));
 
     DoubleVector g1;
-    g1.resize(L);
-    gradient(k1, g1);
-//    //DoubleVector gn1 = g1;
+    g1.resize(6);
+    gradient(x0, g1);
+    //g1[4] = g1[5] = 0.0;
+    //DoubleVector gn1 = g1;
+    //printf("Analytic:  %12.8f %12.8f\n", g1.at(0), g1.at(1));
     g1.L2Normalize();
-    printf("Analytic:  %12.8f %12.8f\n", g1.at(0), g1.at(1));
+    printf("Analytic:  %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", g1.at(0), g1.at(1), g1.at(2), g1.at(3), g1.at(4), g1.at(5));
 
     puts("------------------------------------------");
+
+    //    DoubleVector g1(2*p.L);
+    //    p.gradient(kz, g1);
+    //    p.print(0, kz, g1, 0.0, &p);
+
+    ConjugateGradient g;
+    g.setFunction(this);
+    g.setGradient(this);
+    g.setPrinter(this);
+    g.setProjection(this);
+    g.setEpsilon1(0.00000001);
+    g.setEpsilon2(0.00000001);
+    g.setEpsilon3(0.00000001);
+    g.setR1MinimizeEpsilon(1.0, 0.00000001);
+    g.setNormalize(true);
+    g.calculate(x0);
+    puts("-----------------Finished--------------");
 }
 
 double Example3::initial(unsigned int i UNUSED_PARAM) const
@@ -71,10 +106,9 @@ double Example3::initial(unsigned int i UNUSED_PARAM) const
 double Example3::fx(const DoubleVector &x)
 {
     px = &x;
-
-//    DoubleVector k = x.mid(0, 1);
-//    DoubleVector z = x.mid(2, 3);
-//    DoubleVector e = x.mid(4, 5);
+    DoubleVector k = x.mid(0, 1);
+    DoubleVector z = x.mid(2, 3);
+    DoubleVector e = x.mid(4, 5);
 
     DoubleMatrix u;
     calculateU(u);
@@ -90,9 +124,9 @@ double Example3::fx(const DoubleVector &x)
     }
     sum = 0.5*hx*sum;
 
-    double norm1 = sqrt((x[0]-xs[0])*(x[0]-xs[0])+(x[1]-xs[1])*(x[1]-xs[1]));
-    double norm2 = z.L2Norm();
-    double norm3 = e.L2Norm();
+    double norm1 = sqrt((k[0]-xs[0])*(k[0]-xs[0])+(k[1]-xs[1])*(k[1]-xs[1]));
+    double norm2 = sqrt((z[0]-xs[2])*(z[0]-xs[2])+(z[1]-xs[3])*(z[1]-xs[3]));
+    double norm3 = sqrt((e[0]-xs[4])*(e[0]-xs[4])+(e[1]-xs[5])*(e[1]-xs[5]));
 
     return alpha0*sum + alpha1*norm1 + alpha2*norm2 + alpha3*norm3;
 }
@@ -100,8 +134,9 @@ double Example3::fx(const DoubleVector &x)
 void Example3::gradient(const DoubleVector &x, DoubleVector &g)
 {
     px = &x;
-//    DoubleVector z = x.mid(2, 3);
-//    DoubleVector e = x.mid(4, 5);
+    DoubleVector k = x.mid(0, 1);
+    DoubleVector z = x.mid(2, 3);
+    DoubleVector e = x.mid(4, 5);
 
     DoubleMatrix u;
     calculateU(u);
@@ -109,61 +144,78 @@ void Example3::gradient(const DoubleVector &x, DoubleVector &g)
     DoubleMatrix psi;
     calculateP(psi, u);
 
-    double sum = 0.0;
-
     // k gradient
-    for (unsigned int m=0; m<=M-1; m++)
+    for (unsigned int s=0; s<L; s++)
     {
-        unsigned int m1 = m + 0;
-        unsigned int m2 = m + 1;
-        double g1 = psi.at(m1, 0)*(u.at(m1, 400) - z[0]);
-        double g2 = psi.at(m2, 0)*(u.at(m2, 400) - z[0]);
-        sum = sum + (g1 + g2);
+        unsigned int xi = (unsigned int)round(e.at(s) * N);
+        double sum = 0.0;
+        for (unsigned int m=0; m<=M-1; m++)
+        {
+            unsigned int m1 = m + 0;
+            unsigned int m2 = m + 1;
+            double g1 = psi.at(m1, 0)*(u.at(m1, xi) - z[s]);
+            double g2 = psi.at(m2, 0)*(u.at(m2, xi) - z[s]);
+            sum = sum + (g1 + g2);
+        }
+        g[s] = 0.5*ht*(-lambda0*a*a)*sum + 2.0*alpha1*(k.at(s)-xs.at(s));
     }
-    g[0] = 0.5*ht*(-lambda0*a*a)*sum + 2.0*alpha1*(x.at(0)-xs.at(0));
 
-    sum = 0.0;
-    for (unsigned int m=0; m<=M-1; m++)
+    // z gradient
+    for (unsigned int s=0; s<L; s++)
     {
-        unsigned int m1 = m + 0;
-        unsigned int m2 = m + 1;
-        double g1 = psi.at(m1, 0)*(u.at(m1, 700) - z[1]);
-        double g2 = psi.at(m2, 0)*(u.at(m2, 700) - z[1]);
-        sum = sum + (g1 + g2);
+        double sum = 0.0;
+        for (unsigned int m=0; m<=M-1; m++)
+        {
+            unsigned int m1 = m + 0;
+            unsigned int m2 = m + 1;
+            double g1 = psi.at(m1, 0);
+            double g2 = psi.at(m2, 0);
+            sum = sum + (g1 + g2);
+        }
+        g[L+s] = 0.5*ht*(lambda0*a*a)*k[s]*sum + 2.0*alpha2*(z.at(s)-xs.at(L+s));
     }
-    g[1] = 0.5*ht*(-lambda0*a*a)*sum + 2.0*alpha1*(x.at(1)-xs.at(1));
 
-//    for (unsigned int s = 0; s<L; s++)
-//    {
-//        g[s] = 0.0;
-//        double sum = 0.0;
-//        for (unsigned int m=0; m<=M-1; m++)
-//        {
-//            unsigned int m1 = m + 0;
-//            unsigned int m2 = m + 1;
-//            double g1 = -lambda0*a*a*psi.at(m1, 0)*(u.at(m1, Xi[s]) - z[s]);
-//            double g2 = -lambda0*a*a*psi.at(m2, 0)*(u.at(m2, Xi[s]) - z[s]);
-//            sum = sum + (g1 + g2);
-//        }
-//        sum = 0.5*ht*sum + 2.0*alpha1*k[s];
-//        g[s] += sum;
-//    }
-
-    //g[2] = g[3] = g[4] = g[5] = 0.0;
+    // e gradient
+    for (unsigned int s=0; s<L; s++)
+    {
+        unsigned int xi = (unsigned int)round(e.at(s) * N);
+        double sum = 0.0;
+        for (unsigned int m=0; m<=M-1; m++)
+        {
+            unsigned int m1 = m + 0;
+            unsigned int m2 = m + 1;
+            double g1 = psi.at(m1, 0)*((u.at(m1, xi+1) - u.at(m1, xi-1))/(2.0*hx));
+            double g2 = psi.at(m2, 0)*((u.at(m2, xi+1) - u.at(m2, xi-1))/(2.0*hx));
+            sum = sum + (g1 + g2);
+        }
+        g[2*L+s] = 0.5*ht*(-lambda0*a*a)*k[s]*sum + 2.0*alpha3*(e.at(s)-xs.at(2*L+s));
+    }
 }
 
 void Example3::print(unsigned int i UNUSED_PARAM, const DoubleVector &x UNUSED_PARAM, const DoubleVector &g UNUSED_PARAM, double alpha UNUSED_PARAM, RnFunction *fn UNUSED_PARAM) const
-{}
+{
+    C_UNUSED(alpha);
+    printf("J[%d]: %.16f %.16f \n", i, fn->fx(x), alpha);
+    printf("k:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", x[0], x[1], x[2], x[3], x[4], x[5]);
+    printf("g:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", g[0], g[1], g[2], g[3], g[4], g[5]);
+    puts("------------------------------------------");
+}
 
 void Example3::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
-{}
+{
+    if (x.at(4) < 0.10) x.at(4) = 0.10;
+    if (x.at(4) > 0.90) x.at(4) = 0.90;
+
+    if (x.at(5) < 0.10) x.at(5) = 0.10;
+    if (x.at(5) > 0.90) x.at(5) = 0.90;
+}
 
 void Example3::calculateU(DoubleMatrix &u)
 {
-    DoubleVector k = *px;
-//    DoubleVector k = x.mid(0, 1);
-//    DoubleVector z = x.mid(2, 3);
-//    DoubleVector e = x.mid(4, 5);
+    DoubleVector x = *px;
+    DoubleVector k = x.mid(0, 1);
+    DoubleVector z = x.mid(2, 3);
+    DoubleVector e = x.mid(4, 5);
 
     u.clear();
     u.resize(M+1, N+1);
@@ -182,7 +234,7 @@ void Example3::calculateU(DoubleMatrix &u)
         {
             // n = 0
             da[0] = 0.0;
-            db[0] = 1.0+(a*a*ht)/(hx*hx) + (lambda0*a*a*ht)/hx + alpha*ht;
+            db[0] = 1.0 + (a*a*ht)/(hx*hx) + (lambda0*a*a*ht)/hx + alpha*ht;
             dc[0] = -(a*a*ht)/(hx*hx);
             dd[0] = u.at(m-1,0) + alpha*ht*Te - ((lambda0*a*a*ht)/hx)*(k[0]*z[0] + k[1]*z[1]);
 
@@ -190,14 +242,14 @@ void Example3::calculateU(DoubleMatrix &u)
             for (unsigned int n=1; n<=N-1; n++)
             {
                 da[n] = -(a*a*ht)/(hx*hx);
-                db[n] = 1.0+(2.0*a*a*ht)/(hx*hx) + alpha*ht;
+                db[n] = 1.0 + (2.0*a*a*ht)/(hx*hx) + alpha*ht;
                 dc[n] = -(a*a*ht)/(hx*hx);
                 dd[n] = u.at(m-1,n) + alpha*ht*Te;
             }
 
             // n = N
             da[N] = -(a*a*ht)/(hx*hx);
-            db[N] = 1.0+(a*a*ht)/(hx*hx) + (lambdal*a*a*ht)/hx + alpha*ht;
+            db[N] = 1.0 + (a*a*ht)/(hx*hx) + (lambdal*a*a*ht)/hx + alpha*ht;
             dc[N] = 0.0;
             dd[N] = u.at(m-1,N) + (lambdal*a*a*ht*Te)/hx + alpha*ht*Te;
 
@@ -224,10 +276,9 @@ void Example3::calculateU(DoubleMatrix &u)
 
 void Example3::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
 {
-    DoubleVector x = *px;
-//    DoubleVector k = x.mid(0, 1);
-//    DoubleVector z = x.mid(2, 3);
-//    DoubleVector e = x.mid(4, 5);
+    DoubleVector k = px->mid(0, 1);
+    DoubleVector z = px->mid(2, 3);
+    DoubleVector e = px->mid(4, 5);
 
     p.clear();
     p.resize(M+1, N+1);
@@ -249,7 +300,7 @@ void Example3::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
         {
             // n = 0
             da[0] = 0.0;
-            db[0] = -1.0-(a*a*ht)/(hx*hx) - (lambda0*a*a*ht)/hx - alpha*ht;
+            db[0] = -1.0 - (a*a*ht)/(hx*hx) - (lambda0*a*a*ht)/hx - alpha*ht;
             dc[0] = (a*a*ht)/(hx*hx);
             dd[0] = -p.at(m+1,0);
 
@@ -271,8 +322,8 @@ void Example3::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
             for (unsigned int n=0; n<=N; n++)
             {
                 de[n] = 0.0;
-                if (fabs(n*hx - e.at(0)) <= DBL_EPSILON) de[n] = +x[0]*(lambda0*(a*a*ht)/hx);
-                if (fabs(n*hx - e.at(1)) <= DBL_EPSILON) de[n] = +x[1]*(lambda0*(a*a*ht)/hx);
+                if (fabs(n*hx - e.at(0)) <= DBL_EPSILON) de[n] = +k.at(0)*(lambda0*(a*a*ht)/hx);
+                if (fabs(n*hx - e.at(1)) <= DBL_EPSILON) de[n] = +k.at(1)*(lambda0*(a*a*ht)/hx);
             }
 
             qovmaFirstCol(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size(), de.data());
@@ -306,8 +357,8 @@ void qovmaFirstCol(double *a, double *b, double *c, double *d, double *x, unsign
         else if (i == 1)
         {
             double m = b[i]+c[i]*p[i+1];
-            p[i] = +(d[i]-c[i]*q[i+1])/m;
-            q[i] = -(a[i]+c[i]*k[i+1])/m;
+            p[i] = -(a[i]+c[i]*k[i+1])/m;
+            q[i] = +(d[i]-c[i]*q[i+1])/m;
             k[i] = 0.0;
         }
         else if (i == 0)
@@ -320,8 +371,8 @@ void qovmaFirstCol(double *a, double *b, double *c, double *d, double *x, unsign
         else
         {
             double m = b[i]+c[i]*p[i+1];
-            p[i] = +(d[i]-c[i]*q[i+1])/m;
-            q[i] = -a[i]/m;
+            p[i] = -a[i]/m;
+            q[i] = +(d[i]-c[i]*q[i+1])/m;
             k[i] = -(e[i]+c[i]*k[i+1])/m;
         }
     }
@@ -330,15 +381,15 @@ void qovmaFirstCol(double *a, double *b, double *c, double *d, double *x, unsign
     {
         if (i==0)
         {
-            x[i] = p[i];
+            x[i] = q[i];
         }
         else if (i==1)
         {
-            x[i] = p[i] + q[i]*x[i-1];
+            x[i] = p[i]*x[i-1] + q[i];
         }
         else
         {
-            x[i] = p[i] + q[i]*x[i-1] + k[i]*x[0];
+            x[i] = p[i]*x[i-1] + q[i] + k[i]*x[0];
         }
     }
 
@@ -424,10 +475,11 @@ void qovmaFirstRow(double *a, double *b, double *c, double *d, double *x, unsign
         }
     }
 
-    free(q);
-    free(q);
     for (unsigned int s=0; s<L; s++) free(k[s]);
     free(k);
+    free(E);
+    free(q);
+    free(p);
 }
 
 /*
