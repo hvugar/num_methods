@@ -26,12 +26,13 @@ public:
     virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &gradient, double alpha, RnFunction *fn) const;
     virtual void project(DoubleVector &x, int index);
 
+    double initial(unsigned int i) const;
     double mu(unsigned int i UNUSED_PARAM) const { return 1.0; }
     // qovma 1
     void calculateU(DoubleMatrix &u);
     void calculateP(DoubleMatrix& p, const DoubleMatrix &u);
+    void calculateU1(DoubleMatrix &u);
 
-    double initial(unsigned int i) const;
 
 //    //GaussianElimination
 //    void calculateU1(DoubleMatrix &u, const DoubleVector &x);

@@ -524,6 +524,10 @@ void qovmaFirstRow(double *a, double *b, double *c, double *d, double *x, unsign
     free(p);
 }
 
+void Example3::calculateU1(DoubleMatrix &u)
+{
+}
+
 /*
 void Example3::calculateU1(DoubleMatrix &u, const DoubleVector &x)
 {
