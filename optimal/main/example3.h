@@ -2,6 +2,7 @@
 #define EXAMPLE3_H
 
 #include <gradient_cjt.h>
+#include <gradient_sd.h>
 #include <function.h>
 #include <gradient.h>
 #include <vector2d.h>
@@ -43,11 +44,11 @@ public:
 private:
     double a = 1.0;
     unsigned int L = 2;
-    unsigned int N = 1000;
-    unsigned int M = 1000;
-    double hx = 0.001;
-    double ht = 0.001;
-    double h  = 0.001;
+    unsigned int N = 100;
+    unsigned int M = 100;
+    double hx = 0.01;
+    double ht = 0.01;
+    double h  = 0.01;
 
     double Ti = 2.0;
     double Te = 3.0;
@@ -56,9 +57,9 @@ private:
     double lambdal = 1.0;
 
     double alpha0 = 1.0;
-    double alpha1 = 1.0;
-    double alpha2 = 1.0;
-    double alpha3 = 1.0;
+    double alpha1 = 0.0;
+    double alpha2 = 0.0;
+    double alpha3 = 0.0;
 
     const DoubleVector *px;
     DoubleVector V;

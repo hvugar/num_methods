@@ -48,16 +48,18 @@ void Example3::initialize()
 
     DoubleVector x0;
     x0.resize(6);
-    x0.at(0) = 3.50;
-    x0.at(1) = 3.70;
-    x0.at(2) = 2.52;
-    x0.at(3) = 2.71;
-    x0.at(4) = 0.35;
-    x0.at(5) = 0.65;
+    x0.at(0) = 2.50;
+    x0.at(1) = 2.70;
+    x0.at(2) = 1.52;
+    x0.at(3) = 1.71;
+    x0.at(4) = 0.25;
+    x0.at(5) = 0.75;
     px = &x0;
 
     printf("Optimal:   %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", xs.at(0), xs.at(1), xs.at(2), xs.at(3), xs.at(4), xs.at(5));
     printf("Initial:   %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", x0.at(0), x0.at(1), x0.at(2), x0.at(3), x0.at(4), x0.at(5));
+    //printf("Optimal:   %12.8f %12.8f\n", xs.at(0), xs.at(1));
+    //printf("Initial:   %12.8f %12.8f\n", x0.at(0), x0.at(1));
 
     DoubleVector g2;
     g2.resize(6);
@@ -68,15 +70,19 @@ void Example3::initialize()
     //printf("Numerical: %12.8f %12.8f\n", g2.at(0), g2.at(1));
     g2.L2Normalize();
     printf("Numerical: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", g2.at(0), g2.at(1), g2.at(2), g2.at(3), g2.at(4), g2.at(5));
+    //printf("Numerical: %12.8f %12.8f\n", g2.at(0), g2.at(1));
 
     DoubleVector g1;
     g1.resize(6);
     gradient(x0, g1);
+    //g1[0] = g1[1] = 0.0;
+    //g1[2] = g1[3] = 0.0;
     //g1[4] = g1[5] = 0.0;
     //DoubleVector gn1 = g1;
     //printf("Analytic:  %12.8f %12.8f\n", g1.at(0), g1.at(1));
     g1.L2Normalize();
     printf("Analytic:  %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", g1.at(0), g1.at(1), g1.at(2), g1.at(3), g1.at(4), g1.at(5));
+    //printf("Analytic:  %12.8f %12.8f\n", g1.at(0), g1.at(1));
 
     puts("------------------------------------------");
 
@@ -84,18 +90,49 @@ void Example3::initialize()
     //    p.gradient(kz, g1);
     //    p.print(0, kz, g1, 0.0, &p);
 
-    ConjugateGradient g;
-    g.setFunction(this);
-    g.setGradient(this);
-    g.setPrinter(this);
-    g.setProjection(this);
-    g.setEpsilon1(0.00000001);
-    g.setEpsilon2(0.00000001);
-    g.setEpsilon3(0.00000001);
-    g.setR1MinimizeEpsilon(1.0, 0.00000001);
-    g.setNormalize(true);
-    g.calculate(x0);
-    puts("-----------------Finished--------------");
+//    FILE *file1=fopen("test.txt", "w");
+//    for (unsigned int i=0; i<N; i++)
+//    {
+//        double x = i*hx;
+//        x0.at(4) = x;
+//        double y = fx(x0);
+//        fprintf(file1, "%.10f %.10f\n", x, y);
+//    }
+//    fclose(file1);
+
+    DoubleMatrix m(N+1, N+1,0.0);
+    for (unsigned int j=0; j<=N; j++)
+    {
+        x0.at(4) = j*hx;
+        for (unsigned int i=0; i<=N; i++)
+        {
+            x0.at(5) = i*hx;
+            m.at(j,i) = fx(x0);
+
+            //printf("%d %d %10.6f\n", j, i, m.at(j,i));
+        }
+    }
+    FILE *f = fopen("d:\\data2.txt", "w");
+    IPrinter::printMatrix(m, 100, 100, NULL,f);
+    fclose(f);
+
+    x0.at(4) = 0.25;
+    x0.at(5) = 0.75;
+
+    printf("%.10f\n", fx(x0));
+
+
+//    ConjugateGradient g;
+//    g.setFunction(this);
+//    g.setGradient(this);
+//    g.setPrinter(this);
+//    g.setProjection(this);
+//    g.setEpsilon1(0.00000001);
+//    g.setEpsilon2(0.00000001);
+//    g.setEpsilon3(0.00000001);
+//    g.setR1MinimizeEpsilon(2.0, 0.1);
+//    g.setNormalize(false);
+//    g.calculate(x0);
 }
 
 double Example3::initial(unsigned int i UNUSED_PARAM) const
@@ -184,8 +221,8 @@ void Example3::gradient(const DoubleVector &x, DoubleVector &g)
         {
             unsigned int m1 = m + 0;
             unsigned int m2 = m + 1;
-            double g1 = psi.at(m1, 0)*((u.at(m1, xi+1) - u.at(m1, xi-1))/(2.0*hx));
-            double g2 = psi.at(m2, 0)*((u.at(m2, xi+1) - u.at(m2, xi-1))/(2.0*hx));
+            double g1 = psi.at(m1, 0) * ((u.at(m1, xi+1) - u.at(m1, xi-1))/(2.0*hx));
+            double g2 = psi.at(m2, 0) * ((u.at(m2, xi+1) - u.at(m2, xi-1))/(2.0*hx));
             sum = sum + (g1 + g2);
         }
         g[2*L+s] = 0.5*ht*(-lambda0*a*a)*k[s]*sum + 2.0*alpha3*(e.at(s)-xs.at(2*L+s));
@@ -198,16 +235,21 @@ void Example3::print(unsigned int i UNUSED_PARAM, const DoubleVector &x UNUSED_P
     printf("J[%d]: %.16f %.16f \n", i, fn->fx(x), alpha);
     printf("k:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", x[0], x[1], x[2], x[3], x[4], x[5]);
     printf("g:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", g[0], g[1], g[2], g[3], g[4], g[5]);
+    //printf("x:  %14.10f, %14.10f\n", x[0], x[1]);
+    //printf("g:  %14.10f, %14.10f\n", g[0], g[1]);
+    DoubleVector g1 = g;
+    g1.L2Normalize();
+    printf("g:  %14.10f, %14.10f\n", g1[0], g1[1]);
     puts("------------------------------------------");
 }
 
 void Example3::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
 {
-    if (x.at(4) < 0.10) x.at(4) = 0.10;
-    if (x.at(4) > 0.90) x.at(4) = 0.90;
+    if (x.at(0) < 0.01) x.at(0) = 0.01;
+    if (x.at(0) > 0.99) x.at(0) = 0.99;
 
-    if (x.at(5) < 0.10) x.at(5) = 0.10;
-    if (x.at(5) > 0.90) x.at(5) = 0.90;
+    if (x.at(1) < 0.01) x.at(1) = 0.01;
+    if (x.at(1) > 0.99) x.at(1) = 0.99;
 }
 
 void Example3::calculateU(DoubleMatrix &u)
@@ -256,8 +298,8 @@ void Example3::calculateU(DoubleMatrix &u)
             for (unsigned int n=0; n<=N; n++)
             {
                 de[n] = 0.0;
-                if (fabs(n*hx - e.at(0)) <= DBL_EPSILON) de[n] = -k[0]*(lambda0*(a*a*ht)/hx);
-                if (fabs(n*hx - e.at(1)) <= DBL_EPSILON) de[n] = -k[1]*(lambda0*(a*a*ht)/hx);
+                if (fabs(n*hx - e.at(0)) <= DBL_EPSILON) { de[n] = -k[0]*(lambda0*(a*a*ht)/hx); }
+                if (fabs(n*hx - e.at(1)) <= DBL_EPSILON) { de[n] = -k[1]*(lambda0*(a*a*ht)/hx); }
             }
 
             qovmaFirstRow(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size(), de.data());
