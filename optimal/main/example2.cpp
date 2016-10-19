@@ -12,7 +12,7 @@ void Example2::Main(int argc, char *argv[])
     C_UNUSED(argv);
 
     Example2 e2;
-    e2.init2();
+    e2.init4();
 }
 
 Example2::Example2()
@@ -90,19 +90,19 @@ void Example2::init2()
 
     for (unsigned int i=0; i<(N+1)-K; i++)
     {
-//        a.at(i,1) = 0.9;
-//        a.at(i,2) = 0.5;
-//        a.at(i,0) = 0.2;
+        //a.at(i,1) = 1.6;
+        //a.at(i,2) = 0.5;
+        //a.at(i,0) = 0.2;
 
         a.at(i,1) = my_rand();
         a.at(i,2) = my_rand();
-        a.at(i,0) = my_rand();
+       a.at(i,0) = my_rand();
     }
 
     for (unsigned int i=N; i>N-K; i--)
     {
         x.at(i) = my_rand();
-//        x.at(i) = 0.1*i;
+        //x.at(i) = 0.1*i;
     }
 
     for (unsigned int i=N-K; i != UINT_MAX; i--)
@@ -110,6 +110,8 @@ void Example2::init2()
         x[i] = a.at(i,0);
         for (unsigned int j=1; j<=K; j++) x.at(i) += a.at(i,j)*x.at(i+j);
     }
+    IPrinter::printVector(x, "x: ");
+
     FILE* file1 = fopen("data.txt", "w");
     IPrinter::printVector(x,NULL,x.size(),0,0,file1);
     fclose(file1);
@@ -216,6 +218,67 @@ void Example2::init3()
     IPrinter::printVector(x1,"x:");
 }
 
+void Example2::init4()
+{
+    unsigned int N = 1000;
+    unsigned int K = 2;
+    double h = 0.001;
+
+    FILE *file1 = fopen("data_x.txt", "w");
+
+    DoubleVector x0(N+1);
+    for (unsigned int i=0; i<=N; i++)
+    {
+        double t = i*h;
+        x0.at(i) = 5.0*sin(t) + 3.0*t;
+    }
+    IPrinter::printVector(x0,"x0:",N+1,0,0,file1);
+
+    DoubleMatrix a(N-K+1, K+1);
+
+    DoubleVector x1(N+1);
+    x1.at(N)   = 5.0*sin(N*h) + 3.0*N*h;
+    x1.at(N-1) = 5.0*sin((N-1)*h) + 3.0*(N-1)*h;
+    for (unsigned int i=N-K; i != UINT_MAX; i--)
+    {
+        double t = (i+1)*h;
+        double a1 = (2.0-h*h)/(h+1.0);
+        double a2 = (h-1.0)/(h+1.0);
+        double a0 = ((h*h)/(h+1.0))*(3.0*t-10.0*cos(t)-6.0);
+
+        a.at(i,0) = a0;
+        a.at(i,1) = a1;
+        a.at(i,2) = a2;
+
+        x1.at(i) = a.at(i,1)*x1.at(i+1) + a.at(i,2)*x1.at(i+2) + a.at(i,0);
+    }
+    IPrinter::printVector(x1,"x1:",N+1,0,0,file1);
+
+    unsigned int n11 = 5*N/10;
+    unsigned int n12 = 8*N/10;
+    unsigned int n21 = 2*N/10;
+    unsigned int n22 = 4*N/10;
+
+    DoubleMatrix beta(K, N+1);
+    beta.at(0,0) = 0.5; beta.at(0,1) = 1.5;
+    beta.at(1,0) = +1.0; beta.at(1,n21) = +0.1; beta.at(1,n22) = +1.3; beta.at(1,N-1) = -1.2; beta.at(1,N) = +1.1;
+
+    DoubleVector qamma(K);
+    qamma.at(0) = 0.0;
+    qamma.at(1) = 0.0;
+    for (unsigned int i=0; i<=N; i++)
+    {
+        qamma.at(0) += beta.at(0,i)*x1.at(i);
+        qamma.at(1) += beta.at(1,i)*x1.at(i);
+    }
+    printf("%.10f %.10f\n", qamma.at(0), qamma.at(1));
+
+    DoubleVector x2(N+1, 0.0);
+    calculateLeft2Right(N,K,a,beta,qamma,x2, x1);
+    IPrinter::printVector(x2,"x2:",x2.size(),0,0,file1);
+    fclose(file1);
+}
+
 void Example2::calculateLeft2Right(unsigned int N, unsigned int K, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x, const DoubleVector &x0)
 {
     FILE *file1 = fopen("data1.txt", "w");
@@ -306,6 +369,67 @@ void Example2::calculateLeft2Right(unsigned int N, unsigned int K, const DoubleM
     }
 }
 
+void Example2::init5()
+{
+    unsigned int N = 1000;
+    unsigned int K = 2;
+    double h = 0.001;
+
+    FILE *file1 = fopen("data_x.txt", "w");
+
+    DoubleVector x0(N+1);
+    for (unsigned int i=0; i<=N; i++)
+    {
+        double t = i*h;
+        x0.at(i) = 5.0*sin(t) + 3.0*t;
+    }
+    IPrinter::printVector(x0,"x0:",N+1,0,0,file1);
+
+    DoubleMatrix a(N-K+1, K+1);
+
+    DoubleVector x1(N+1);
+    x1.at(0) = 5.0*sin(0*h) + 3.0*0*h;
+    x1.at(1) = 5.0*sin(1*h) + 3.0*1*h;
+    for (unsigned int i=2; i<=N; i++)
+    {
+        double t = (i-1)*h;
+        double a1 = (h*h-2.0)/(h-1.0);
+        double a2 = (h+1.0)/(h-1.0);
+        double a0 = (-(h*h)/(h-1.0))*(3.0*t-10.0*cos(t)-6.0);
+
+        a.at(i-2,0) = a0;
+        a.at(i-2,1) = a1;
+        a.at(i-2,2) = a2;
+
+        x1.at(i) = a.at(i-2,1)*x1.at(i-1) + a.at(i-2,2)*x1.at(i-2) + a.at(i-2,0);
+    }
+    IPrinter::printVector(x1,"x1:",N+1,0,0,file1);
+
+    unsigned int n11 = 5*N/10;
+    unsigned int n12 = 8*N/10;
+    unsigned int n21 = 2*N/10;
+    unsigned int n22 = 4*N/10;
+
+    DoubleMatrix beta(K, N+1);
+    beta.at(0,0) = 0.5; beta.at(0,N) = 1.5;
+    beta.at(1,0) = +1.0; beta.at(1,n21) = +0.1; beta.at(1,n22) = +1.3; beta.at(1,N-1) = -1.2; beta.at(1,N) = +1.1;
+
+    DoubleVector qamma(K);
+    qamma.at(0) = 0.0;
+    qamma.at(1) = 0.0;
+    for (unsigned int i=0; i<=N; i++)
+    {
+        qamma.at(0) += beta.at(0,i)*x1.at(i);
+        qamma.at(1) += beta.at(1,i)*x1.at(i);
+    }
+    printf("%.10f %.10f\n", qamma.at(0), qamma.at(1));
+
+    DoubleVector x2(N+1, 0.0);
+    calculateRight2Left(N,K,a,beta,qamma,x2, x1);
+    IPrinter::printVector(x2,"x2:",x2.size(),0,0,file1);
+    fclose(file1);
+}
+
 void Example2::calculateRight2Left(unsigned int N, unsigned int K, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x, const DoubleVector &x0)
 {
     for (unsigned int eq=0; eq<K; eq++)
@@ -336,13 +460,13 @@ void Example2::calculateRight2Left(unsigned int N, unsigned int K, const DoubleM
     x1.at(0) = -(m.at(0,1)/m.at(0,0))*x1.at(1) + b.at(0)/m.at(0,0);
     //printf("%18.14f %18.14f\n", b1, a1);
 
-    printf("x0 %18.14f %18.14f\n", x0.at(N-1), x0.at(N));
+    printf("x0 %18.14f %18.14f\n", x0.at(0), x0.at(1));
     printf("x1 %18.14f %18.14f\n", x1.at(0), x1.at(1));
 
-    double c1 = m.at(0,0)*x0.at(N-1)+m.at(0,1)*x0.at(N);
+    double c1 = m.at(0,0)*x0.at(0)+m.at(0,1)*x0.at(1);
     double e1 = m.at(0,0)*x1.at(0)+m.at(0,1)*x1.at(1);
 
-    double c2 = m.at(1,0)*x0.at(N-1)+m.at(1,1)*x0.at(N);
+    double c2 = m.at(1,0)*x0.at(0)+m.at(1,1)*x0.at(1);
     double e2 = m.at(1,0)*x1.at(0)+m.at(1,1)*x1.at(1);
 
     printf("a00: %18.14f a01: %18.14f b0 : %18.14f x0: %18.14f x1: %18.14f\n", m.at(0,0), m.at(0,1), b.at(0), c1, e1);

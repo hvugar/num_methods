@@ -13,6 +13,8 @@ public:
     void init1();
     void init2();
     void init3();
+    void init4();
+    void init5();
     void calculateLeft2Right(unsigned int N, unsigned int k, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x, const DoubleVector &x0);
     void calculateRight2Left(unsigned int N, unsigned int k, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x, const DoubleVector &x0);
 
