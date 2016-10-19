@@ -19,16 +19,13 @@
 #include <float.h>
 #include <time.h>
 
-int main(int argc, char *argv[])
+int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    C_UNUSED(argc);
-    C_UNUSED(argv);
-
     srand(time(NULL));
 
 //    Problem1KZX::Main(argc, argv);
-    Example3::Main(argc, argv);
-//    Example2::Main(argc, argv);
+//    Example3::Main(argc, argv);
+    Example2::Main(argc, argv);
 //    Problem1K::Main(argc, argv);
 
     return 0;

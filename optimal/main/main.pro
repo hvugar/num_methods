@@ -35,7 +35,8 @@ SOURCES += main.cpp \
     example1.cpp \
     problem1kzx.cpp \
     example2.cpp \
-    example3.cpp
+    example3.cpp \
+    example4.cpp
 
 HEADERS += \
     problem1.h \
@@ -51,4 +52,5 @@ HEADERS += \
     example1.h \
     problem1kzx.h \
     example2.h \
-    example3.h
+    example3.h \
+    example4.h
