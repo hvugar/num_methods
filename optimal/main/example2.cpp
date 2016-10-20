@@ -251,17 +251,20 @@ void Example2::calculateRight2Left(unsigned int N, unsigned int K, const DoubleM
 
 double Example2::A(double t) const
 {
-    return t;
+//    return t;
+    return 2.0;
 }
 
 double Example2::B(double t) const
 {
-    return 50.0*(t*t-t)*cos(50.0*t) + (2.0*t-1)*sin(50.0*t) - t*(t*t-t)*sin(50.0*t);
+//    return 50.0*(t*t-t)*cos(50.0*t) + (2.0*t-1)*sin(50.0*t) - t*(t*t-t)*sin(50.0*t);
+    return 2.0*t - 3.0*t*t;
 }
 
 double Example2::X(double t) const
 {
-    return (t*t-t)*sin(50.0*t);
+//    return (t*t-t)*sin(50.0*t);
+    return t*t;
 }
 
 void Example2::sample1()
@@ -346,17 +349,22 @@ void Example2::sample_n4()
 
     for (unsigned int i=N-K; i != UINT_MAX; i--)
     {
-        double t = (i+2)*h;
+        //double t = (i+2)*h;
+        printf("%f\n", i*h);
 
-        a.at(i,0) = +12.0*h*B(t);
-        a.at(i,1) = +8.0;
-        a.at(i,2) = +12.0*h*A(t);
-        a.at(i,3) = -8.0;
-        a.at(i,4) = +1.0;
+        double m = -25.0 - 12.0*h*A(i*h);
 
-        x1.at(i) = a.at(i,1)*x0.at(i+1) + a.at(i,2)*x0.at(i+2) + a.at(i,3)*x0.at(i+3) + a.at(i,4)*x0.at(i+4) + a.at(i,0);
+        a.at(i,0) = +(12.0*h*B(i*h))/m;//+12.0*h*B(t);
+        a.at(i,1) = -48.0/m;//+8.0;
+        a.at(i,2) = +36.0/m;//+12.0*h*A(t);
+        a.at(i,3) = -16.0/m;//-8.0;
+        a.at(i,4) = +3.0/m;//+1.0;
+
+        x1.at(i) = a.at(i,1)*x1.at(i+1) + a.at(i,2)*x1.at(i+2) + a.at(i,3)*x1.at(i+3) + a.at(i,4)*x1.at(i+4) + a.at(i,0);
+        //if (i==N-K-5) break;
     }
     IPrinter::printVector(x1,"x1:",N+1,0,0,file1);
+    return;
 
     DoubleMatrix beta(K, N+1);
     beta.at(0,0) = -25.0-12.0*h*A(0.0);
