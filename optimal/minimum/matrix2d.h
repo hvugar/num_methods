@@ -52,7 +52,7 @@ public:
     double determinant() const;
     void transpose();
     void inverse();
-    DoubleMatrix minor(unsigned int row, unsigned int col);
+    DoubleMatrix minor(unsigned int row, unsigned int col) const;
 
     double** data() const;
     double** data();

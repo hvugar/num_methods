@@ -245,7 +245,26 @@ double DoubleMatrix::max() const
 
 double DoubleMatrix::determinant() const
 {
-    return 0.0;
+    double det = 0.0;
+
+    if (mRows != mCols)
+        throw std::exception();
+
+    if (mRows == 1 && mCols == 1)
+        return mData[0][0];
+    else if (mRows == 2 && mCols == 2)
+        return mData[0][0]*mData[1][1] - mData[0][1]*mData[1][0];
+    else
+    {
+        unsigned int i;
+        for (i=0; i<mCols; i++)
+        {
+            DoubleMatrix mnr = minor(0, i);
+            det += (i%2==0 ? +1 : -1) * mData[0][i] * mnr.determinant();
+        }
+    }
+
+    return det;
 }
 
 void DoubleMatrix::transpose()
@@ -271,7 +290,7 @@ void DoubleMatrix::inverse()
 
 }
 
-DoubleMatrix DoubleMatrix::minor(unsigned int row, unsigned int col)
+DoubleMatrix DoubleMatrix::minor(unsigned int row, unsigned int col) const
 {
     DoubleMatrix m(mRows-1, mCols-1);
     for (unsigned int i=0; i<mRows; i++)
@@ -404,7 +423,10 @@ void GaussianElimination(DoubleMatrix A, DoubleVector b, DoubleVector &x)
         for (unsigned int j=(k+1); j<n; j++)
         {
             double c = A.at(j,k)/A.at(k,k);
-            for (unsigned int i=k; i<n; i++) A.at(j,i) = A.at(j,i) - A.at(k,i) * c;
+            for (unsigned int i=k; i<n; i++)
+            {
+                A.at(j,i) = A.at(j,i) - A.at(k,i) * c;
+            }
             b[j] = b[j] - b[k] *c;
         }
     }
