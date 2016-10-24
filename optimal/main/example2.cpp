@@ -33,7 +33,7 @@ void Example2::calculateLeft2RightSample()
         double t = i*h;
         x0.at(i) = 5.0*sin(t) + 3.0*t;
     }
-    IPrinter::printVector(x0,"x0:",N+1,0,0,file1);
+    IPrinter::printVector(x0,"x0:",x0.size(),0,0,file1);
 
     DoubleMatrix a(N-K+1, K+1);
 
@@ -341,55 +341,34 @@ void Example2::sample_n4()
         double t = i*h;
         x0.at(i) = X(t);
     }
-    IPrinter::printVector(x0,"x0:",N+1,0,0,file1);
+    IPrinter::printVector(18, 14, x0, "x0:", x0.size(), 0, 0, file1);
 
     DoubleMatrix a(N-K+1, K+1);
-
-    DoubleVector x2(N+1);
-    x2.at(0) = X(0*h);
-    x2.at(1) = X(1*h);
-    x2.at(2) = X(2*h);
-    x2.at(3) = X(3*h);
-    for (unsigned int i=4; i<=N; i++)
-    {
-        double t  = (i-2)*h;
-        a.at(i-4,0) = -12.0*h*B(t);
-        a.at(i-4,1) = +8.0;
-        a.at(i-4,2) = -12.0*h*A(t);
-        a.at(i-4,3) = -8.0;
-        a.at(i-4,4) = +1.0;
-        x2.at(i) = a.at(i-4,1)*x2.at(i-1) + a.at(i-4,2)*x2.at(i-2) + a.at(i-4,3)*x2.at(i-3) + a.at(i-4,4)*x2.at(i-4) + a.at(i-4,0);
-    }
-    IPrinter::printVector(x2,"x2:",x2.size(),0,0,file1);
-    return;
-
     DoubleVector x1(N+1);
     x1.at(N-0) = X((N-0)*h);
     x1.at(N-1) = X((N-1)*h);
     x1.at(N-2) = X((N-2)*h);
     x1.at(N-3) = X((N-3)*h);
-
     for (unsigned int i=N-K; i != UINT_MAX; i--)
     {
-        double t  = (i+2)*h;
-        a.at(i,0) = +12.0*h*B(t);
-        a.at(i,1) = +8.0;
-        a.at(i,2) = +12.0*h*A(t);
-        a.at(i,3) = -8.0;
-        a.at(i,4) = +1.0;
+//        double t  = (i+2)*h;
+//        a.at(i,0) = +12.0*h*B(t);
+//        a.at(i,1) = +8.0;
+//        a.at(i,2) = +12.0*h*A(t);
+//        a.at(i,3) = -8.0;
+//        a.at(i,4) = +1.0;
 
-        //        double t  = i*h;
-        //        double m = -25.0 - 12.0*h*A(t);
-        //        a.at(i,0) = +(12.0*h*B(t))/m;
-        //        a.at(i,1) = -48.0/m;
-        //        a.at(i,2) = +36.0/m;
-        //        a.at(i,3) = -16.0/m;
-        //        a.at(i,4) = +3.0/m;
+        double t  = i*h;
+        double m = -25.0 - 12.0*h*A(t);
+        a.at(i,0) = +(12.0*h*B(t))/m;
+        a.at(i,1) = -48.0/m;
+        a.at(i,2) = +36.0/m;
+        a.at(i,3) = -16.0/m;
+        a.at(i,4) = +3.0/m;
 
         x1.at(i) = a.at(i,1)*x1.at(i+1) + a.at(i,2)*x1.at(i+2) + a.at(i,3)*x1.at(i+3) + a.at(i,4)*x1.at(i+4) + a.at(i,0);
     }
-    IPrinter::printVector(x1,"x1:",N+1,0,0,file1);
-    return;
+    IPrinter::printVector(18, 14, x1, "x1:", x1.size(), 0, 0, file1);
 
     FILE *file2 = fopen("alpha.txt", "w");
     for (unsigned int i=0; i<a.rows(); i++)
@@ -400,32 +379,38 @@ void Example2::sample_n4()
 
     DoubleMatrix beta(K, N+1);
 
-    //    beta.at(0,0) = -25.0-12.0*h*A(0.0);
-    //    beta.at(0,1) = +48.0;
-    //    beta.at(0,2) = -36.0;
-    //    beta.at(0,3) = +16.0;
-    //    beta.at(0,4) = -3.0;
+//    beta.at(0,0) = -25.0-12.0*h*A(0.0);
+//    beta.at(0,1) = +48.0;
+//    beta.at(0,2) = -36.0;
+//    beta.at(0,3) = +16.0;
+//    beta.at(0,4) = -3.0;
+    beta.at(0,0)   = +2.5;
+    beta.at(0,N)   = +0.8;
 
-    beta.at(1,0) = -3.0;
-    beta.at(1,1) = -10.0-12.0*h*A(h);
-    beta.at(1,2) = +18.0;
-    beta.at(1,3) = -6.0;
-    beta.at(1,4) = +1.0;
+//    beta.at(1,0) = -3.0;
+//    beta.at(1,1) = -10.0-12.0*h*A(h);
+//    beta.at(1,2) = +18.0;
+//    beta.at(1,3) = -6.0;
+//    beta.at(1,4) = +1.0;
+    beta.at(1,0)   = +3.5;
+    beta.at(1,N)   = +1.1;
 
-    beta.at(2,N-4) = -1.0;
-    beta.at(2,N-3) = +6.0;
-    beta.at(2,N-2) = -18.0;
-    beta.at(2,N-1) = +10.0-12.0*h*A((N-1)*h);
-    beta.at(2,N-0) = +3.0;
+//    beta.at(2,N-4) = -1.0;
+//    beta.at(2,N-3) = +6.0;
+//    beta.at(2,N-2) = -18.0;
+//    beta.at(2,N-1) = +10.0-12.0*h*A((N-1)*h);
+//    beta.at(2,N-0) = +3.0;
+    beta.at(2,0)   = +5.5;
+    beta.at(2,N)   = +2.1;
 
-    beta.at(3,0) = +25.0-12.0*h*A(N*h);
-    beta.at(3,1) = +3.0;
-    beta.at(3,2) = -16.0;
-    beta.at(3,3) = +36.0;
-    beta.at(3,4) = -48.0;
+//    beta.at(3,0) = +25.0-12.0*h*A(N*h);
+//    beta.at(3,1) = +3.0;
+//    beta.at(3,2) = -16.0;
+//    beta.at(3,3) = +36.0;
+//    beta.at(3,4) = -48.0;
 
-    beta.at(0,0)   = -0.5;
-    beta.at(0,N)   = +1.1;
+    beta.at(3,0)   = -0.5;
+    beta.at(3,N)   = +1.1;
 
     DoubleVector qamma(K);
     qamma.at(0) = 0.0;//+12.0*h*B(0.0);
@@ -442,7 +427,7 @@ void Example2::sample_n4()
 
     DoubleVector x(N+1, 0.0);
     calculateLeft2Right4(N,K,a,beta,qamma, x, x1);
-    IPrinter::printVector(x,"x2:",x.size(),0,0,file1);
+    IPrinter::printVector(18, 14, x, "x2:", x.size(), 0, 0, file1);
     fclose(file1);
 }
 
@@ -505,6 +490,10 @@ void Example2::calculateLeft2Right4(unsigned int N, unsigned int K, const Double
     m.at(3,1) = beta.at(3,N-2);
     m.at(3,2) = beta.at(3,N-1);
     m.at(3,3) = beta.at(3,N-0);
+
+    puts("------------------------------------");
+    IPrinter::printMatrix(18, 14, m, m.rows(), m.cols());
+    puts("------------------------------------");
 
     printf("Determinant: %.14f\n", m.determinant());
 

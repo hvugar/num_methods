@@ -30,6 +30,33 @@ void IPrinter::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n
     fflush(f);
 }
 
+void IPrinter::printMatrix(unsigned int width, unsigned int presicion, const DoubleMatrix &x, unsigned int m, unsigned int n, const char* s, FILE* f)
+{
+    C_UNUSED(s);
+
+    char format[10] = {0};
+    int sz = sprintf(format, "%%%d.%df ", width, presicion);
+    format[sz] = '\0';
+
+    unsigned int rows = x.rows();
+    unsigned int cols = x.cols();
+    unsigned int M = rows / m;
+
+    for (unsigned int j=0; j<rows; j++)
+    {
+        unsigned int N = cols / n;
+        if (j%M==0)
+        {
+            for (unsigned int i=0; i<cols; i++)
+            {
+                if (i%N==0) fprintf(f, format, x.at(j,i));
+            }
+            fputs("\n", f);
+        }
+    }
+    fflush(f);
+}
+
 void IPrinter::printAsMatrix(const DoubleVector &x, unsigned int M, unsigned int N, unsigned int m, unsigned int n, const char* s, FILE* f)
 {
     C_UNUSED(s);
@@ -70,6 +97,8 @@ void IPrinter::printVector(const DoubleVector &x, const char *s, unsigned int n,
     fputs("\n", file);
     fflush(file);
 }
+
+
 
 void IPrinter::printVector(double *x, unsigned int size, const char *s, unsigned int n, unsigned int start, unsigned int end, FILE *file)
 {
@@ -112,6 +141,33 @@ void IPrinter::printVector(double *x, unsigned int size, const char *s, unsigned
         for (unsigned int i=0; i<size; i++)
         {
             if (i%N==0) fprintf(file, "%14.10f ", x[i]);
+        }
+    }
+    fputs("\n", file);
+    fflush(file);
+}
+
+void IPrinter::printVector(unsigned int width, unsigned int presicion, const DoubleVector &x, const char *s, unsigned int n, unsigned int start, unsigned int end, FILE *file)
+{
+    char format[10] = {0};
+    int sz = sprintf(format, "%%%d.%df ", width, presicion);
+    format[sz] = '\0';
+
+    if (s!='\0') fprintf(file, "%s", s);
+    if (start != 0 || end != 0)
+    {
+        unsigned int N = (end-start+1) / n;
+        for (unsigned int i=start; i<=end; i++)
+        {
+            if ((i-start)%N==0) fprintf(file, format, x[i]);
+        }
+    }
+    else
+    {
+        unsigned int N = x.size() / n;
+        for (unsigned int i=0; i<x.size(); i++)
+        {
+            if (i%N==0) fprintf(file, format, x[i]);
         }
     }
     fputs("\n", file);
