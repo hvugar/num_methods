@@ -11,8 +11,9 @@ void Example2::Main(int argc, char *argv[])
     C_UNUSED(argv);
 
     Example2 e2;
-    e2.sample_n4();
+    //    e2.sample_n4();
     //    e2.sample1();
+    e2.sample_n6();
 }
 
 Example2::Example2()
@@ -75,12 +76,12 @@ void Example2::calculateLeft2RightSample()
     printf("%.10f %.10f\n", qamma.at(0), qamma.at(1));
 
     DoubleVector x2(N+1, 0.0);
-    calculateLeft2Right(N,K,a,beta,qamma,x2, x1);
+    calculateLeft2Right(N,K,a,beta,qamma,x2);
     IPrinter::printVector(x2,"x2:",x2.size(),0,0,file1);
     fclose(file1);
 }
 
-void Example2::calculateLeft2Right(unsigned int N, unsigned int K, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x, const DoubleVector &x0)
+void Example2::calculateLeft2Right(unsigned int N, unsigned int K, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x)
 {
     for (unsigned int eq=0; eq<K; eq++)
     {
@@ -106,31 +107,11 @@ void Example2::calculateLeft2Right(unsigned int N, unsigned int K, const DoubleM
 
     DoubleVector x1(K);
     GaussianElimination(m, b, x1);
-    //double a1 = m.at(1,1) - m.at(0,1)*m.at(1,0)/m.at(0,0);
-    //double b1 = b.at(1) - b.at(0)*m.at(1,0)/m.at(0,0);
-    //x1.at(1) = b1/a1;
-    //x1.at(0) = -(m.at(0,1)/m.at(0,0))*x1.at(1) + b.at(0)/m.at(0,0);
-
-    printf("x0 %18.14f %18.14f\n", x0.at(N-1), x0.at(N));
-    printf("x1 %18.14f %18.14f\n", x1.at(0), x1.at(1));
-
-    double c1 = m.at(0,0)*x0.at(N-1)+m.at(0,1)*x0.at(N);
-    double e1 = m.at(0,0)*x1.at(0)+m.at(0,1)*x1.at(1);
-
-    double c2 = m.at(1,0)*x0.at(N-1)+m.at(1,1)*x0.at(N);
-    double e2 = m.at(1,0)*x1.at(0)+m.at(1,1)*x1.at(1);
-
-    printf("a00: %18.14f a01: %18.14f b0 : %18.14f x0: %18.14f x1: %18.14f\n", m.at(0,0), m.at(0,1), b.at(0), c1, e1);
-    printf("a10: %18.14f a11: %18.14f b1 : %18.14f x0: %18.14f x1: %18.14f\n", m.at(1,0), m.at(1,1), b.at(1), c2, e2);
-    printf("k00: %18.14f k01: %18.14f k02: %18.14f\n", m.at(0,0)/m.at(1,0), m.at(0,1)/m.at(1,1), b.at(0)/b.at(1));
-    printf("k01: %18.14f k11: %18.14f k12: %18.14f\n", m.at(1,0)/m.at(0,0), m.at(1,1)/m.at(0,1), b.at(1)/b.at(0));
-
     for (unsigned int i=0; i<K; i++) x.at(N-i) = x1.at((K-1)-i);
-
     for (unsigned int i=N-K; i != UINT_MAX; i--)
     {
-        x[i] = a.at(i,0);
-        for (unsigned int j=1; j<=K; j++) x[i] += a.at(i,j)*x.at(i+j);
+        x.at(i) = a.at(i,0);
+        for (unsigned int j=1; j<=K; j++) x.at(i) += a.at(i,j)*x.at(i+j);
     }
 }
 
@@ -205,7 +186,7 @@ void Example2::calculateRight2Left(unsigned int N, unsigned int K, const DoubleM
             {
                 beta.at(eq,i-j) = beta.at(eq,i-j) + beta.at(eq,i)*a.at(i-K,j);
             }
-            qamma[eq] = qamma[eq] - beta.at(eq,i)*a.at(i-K,0);
+            qamma.at(eq) = qamma.at(eq) - beta.at(eq,i)*a.at(i-K,0);
         }
     }
 
@@ -219,56 +200,36 @@ void Example2::calculateRight2Left(unsigned int N, unsigned int K, const DoubleM
 
     DoubleVector x1(K);
     GaussianElimination(m, b, x1);
-    //double a1 = m.at(1,1) - m.at(0,1)*m.at(1,0)/m.at(0,0);
-    //double b1 = b.at(1) - b.at(0)*m.at(1,0)/m.at(0,0);
-    //x1.at(1) = b1/a1;
-    //x1.at(0) = -(m.at(0,1)/m.at(0,0))*x1.at(1) + b.at(0)/m.at(0,0);
-
-    printf("x0 %18.14f %18.14f\n", x0.at(0), x0.at(1));
-    printf("x1 %18.14f %18.14f\n", x1.at(0), x1.at(1));
-
-    double c1 = m.at(0,0)*x0.at(0)+m.at(0,1)*x0.at(1);
-    double e1 = m.at(0,0)*x1.at(0)+m.at(0,1)*x1.at(1);
-
-    double c2 = m.at(1,0)*x0.at(0)+m.at(1,1)*x0.at(1);
-    double e2 = m.at(1,0)*x1.at(0)+m.at(1,1)*x1.at(1);
-
-    printf("a00: %18.14f a01: %18.14f b0 : %18.14f x0: %18.14f x1: %18.14f\n", m.at(0,0), m.at(0,1), b.at(0), c1, e1);
-    printf("a10: %18.14f a11: %18.14f b1 : %18.14f x0: %18.14f x1: %18.14f\n", m.at(1,0), m.at(1,1), b.at(1), c2, e2);
-    printf("k00: %18.14f k01: %18.14f k02: %18.14f\n", m.at(0,0)/m.at(1,0), m.at(0,1)/m.at(1,1), b.at(0)/b.at(1));
-    printf("k01: %18.14f k11: %18.14f k12: %18.14f\n", m.at(1,0)/m.at(0,0), m.at(1,1)/m.at(0,1), b.at(1)/b.at(0));
-
-    for (unsigned int i=0; i<K; i++) x[i] = x1.at(i);
-
+    for (unsigned int i=0; i<K; i++) x.at(i) = x1.at(i);
     for (unsigned int i=K; i <= N; i++)
     {
         x[i] = a.at(i-K,0);
         for (unsigned int j=1; j<=K; j++)
         {
-            x[i] += a.at(i-K,j)*x[i-j];
+            x.at(i) += a.at(i-K,j)*x.at(i-j);
         }
     }
 }
 
 double Example2::X(double t) const
 {
-    //    return 3.0*sin(t);
+    //return 3.0*sin(t);
     return t*t;
-    //    return (t*t-t)*sin(50.0*t);
+    //return (t*t-t)*sin(50.0*t);
 }
 
 double Example2::A(double t) const
 {
-    //    return t;
+    //return t;
     return 3.0;
-    //    return t;
+    //return t;
 }
 
 double Example2::B(double t) const
 {
-    //    return 3.0*cos(t) - 3.0*t*sin(t);
+    //return 3.0*cos(t) - 3.0*t*sin(t);
     return 2.0*t - 3.0*t*t;
-    //    return 50.0*(t*t-t)*cos(50.0*t) + (2.0*t-1)*sin(50.0*t) - t*(t*t-t)*sin(50.0*t);
+    //return 50.0*(t*t-t)*cos(50.0*t) + (2.0*t-1)*sin(50.0*t) - t*(t*t-t)*sin(50.0*t);
 }
 
 void Example2::sample1()
@@ -323,12 +284,12 @@ void Example2::sample1()
     printf("%.10f %.10f\n", qamma.at(0), qamma.at(1));
 
     DoubleVector x2(N+1, 0.0);
-    calculateLeft2Right(N,K,a,beta,qamma,x2, x1);
+    calculateLeft2Right(N,K,a,beta,qamma,x2);
     IPrinter::printVector(x2,"x2:",x2.size(),0,0,file1);
     fclose(file1);
 }
 
-void Example2::sample_n4()
+void Example2::sample_n4_()
 {
     unsigned int N = 100;
     unsigned int K = 4;
@@ -351,12 +312,12 @@ void Example2::sample_n4()
     x1.at(N-3) = X((N-3)*h);
     for (unsigned int i=N-K; i != UINT_MAX; i--)
     {
-//        double t  = (i+2)*h;
-//        a.at(i,0) = +12.0*h*B(t);
-//        a.at(i,1) = +8.0;
-//        a.at(i,2) = +12.0*h*A(t);
-//        a.at(i,3) = -8.0;
-//        a.at(i,4) = +1.0;
+        //        double t  = (i+2)*h;
+        //        a.at(i,0) = +12.0*h*B(t);
+        //        a.at(i,1) = +8.0;
+        //        a.at(i,2) = +12.0*h*A(t);
+        //        a.at(i,3) = -8.0;
+        //        a.at(i,4) = +1.0;
 
         double t  = i*h;
         double m = -25.0 - 12.0*h*A(t);
@@ -379,35 +340,35 @@ void Example2::sample_n4()
 
     DoubleMatrix beta(K, N+1);
 
-//    beta.at(0,0) = -25.0-12.0*h*A(0.0);
-//    beta.at(0,1) = +48.0;
-//    beta.at(0,2) = -36.0;
-//    beta.at(0,3) = +16.0;
-//    beta.at(0,4) = -3.0;
+    //    beta.at(0,0) = -25.0-12.0*h*A(0.0);
+    //    beta.at(0,1) = +48.0;
+    //    beta.at(0,2) = -36.0;
+    //    beta.at(0,3) = +16.0;
+    //    beta.at(0,4) = -3.0;
     beta.at(0,0)   = +2.5;
     beta.at(0,N)   = +0.8;
 
-//    beta.at(1,0) = -3.0;
-//    beta.at(1,1) = -10.0-12.0*h*A(h);
-//    beta.at(1,2) = +18.0;
-//    beta.at(1,3) = -6.0;
-//    beta.at(1,4) = +1.0;
+    //    beta.at(1,0) = -3.0;
+    //    beta.at(1,1) = -10.0-12.0*h*A(h);
+    //    beta.at(1,2) = +18.0;
+    //    beta.at(1,3) = -6.0;
+    //    beta.at(1,4) = +1.0;
     beta.at(1,0)   = +3.5;
     beta.at(1,N)   = +1.1;
 
-//    beta.at(2,N-4) = -1.0;
-//    beta.at(2,N-3) = +6.0;
-//    beta.at(2,N-2) = -18.0;
-//    beta.at(2,N-1) = +10.0-12.0*h*A((N-1)*h);
-//    beta.at(2,N-0) = +3.0;
+    //    beta.at(2,N-4) = -1.0;
+    //    beta.at(2,N-3) = +6.0;
+    //    beta.at(2,N-2) = -18.0;
+    //    beta.at(2,N-1) = +10.0-12.0*h*A((N-1)*h);
+    //    beta.at(2,N-0) = +3.0;
     beta.at(2,0)   = +5.5;
     beta.at(2,N)   = +2.1;
 
-//    beta.at(3,0) = +25.0-12.0*h*A(N*h);
-//    beta.at(3,1) = +3.0;
-//    beta.at(3,2) = -16.0;
-//    beta.at(3,3) = +36.0;
-//    beta.at(3,4) = -48.0;
+    //    beta.at(3,0) = +25.0-12.0*h*A(N*h);
+    //    beta.at(3,1) = +3.0;
+    //    beta.at(3,2) = -16.0;
+    //    beta.at(3,3) = +36.0;
+    //    beta.at(3,4) = -48.0;
 
     beta.at(3,0)   = -0.5;
     beta.at(3,N)   = +1.1;
@@ -426,149 +387,230 @@ void Example2::sample_n4()
     }
 
     DoubleVector x(N+1, 0.0);
-    calculateLeft2Right4(N,K,a,beta,qamma, x, x1);
+    calculateLeft2Right(N,K,a,beta,qamma, x);
     IPrinter::printVector(18, 14, x, "x2:", x.size(), 0, 0, file1);
     fclose(file1);
 }
 
-void Example2::calculateLeft2Right4(unsigned int N, unsigned int K, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x, const DoubleVector &x0)
+void Example2::sample_n4()
 {
-    //    FILE *f = fopen("betta_1.txt", "w");
-    //    IPrinter::printVector(beta.row(eq), NULL, beta.cols(), 0, 0, f);
-    //    for (unsigned int i=0; i<=N-K; i++)
-    //    {
-    //        beta.at(eq,i+1) = beta.at(eq,i+1) + beta.at(eq,i)*a.at(i,1);
-    //        beta.at(eq,i+2) = beta.at(eq,i+2) + beta.at(eq,i)*a.at(i,2);
-    //        beta.at(eq,i+3) = beta.at(eq,i+3) + beta.at(eq,i)*a.at(i,3);
-    //        beta.at(eq,i+4) = beta.at(eq,i+4) + beta.at(eq,i)*a.at(i,4);
-    //        qamma.at(eq)    = qamma.at(eq)    - beta.at(eq,i)*a.at(i,0);
-    //        IPrinter::printVector(beta.row(eq), NULL, beta.cols(), 0, 0, f);
-    //    }
-    //    fclose(f);
+    FILE *file1 = fopen("sample2_x.txt", "w");
 
-    for (unsigned int eq=0; eq<K; eq++)
+    unsigned int N = 100;
+    unsigned int K = 4;
+    double h = 1.0/N;
+
+    DoubleVector x0(N+1);
+    for (unsigned int i=0; i<=N; i++)
     {
-        FILE *f = NULL;
-        if (eq==0) f = fopen("betta_1.txt", "w");
-        if (eq==1) f = fopen("betta_2.txt", "w");
-        if (eq==2) f = fopen("betta_3.txt", "w");
-        if (eq==3) f = fopen("betta_4.txt", "w");
-        IPrinter::printVector(beta.row(eq), NULL, beta.cols(), 0, 0, f);
-        for (unsigned int i=0; i<=N-K; i++)
-        {
-            beta.at(eq,i+1) = beta.at(eq,i+1) + beta.at(eq,i)*a.at(i,1);
-            beta.at(eq,i+2) = beta.at(eq,i+2) + beta.at(eq,i)*a.at(i,2);
-            beta.at(eq,i+3) = beta.at(eq,i+3) + beta.at(eq,i)*a.at(i,3);
-            beta.at(eq,i+4) = beta.at(eq,i+4) + beta.at(eq,i)*a.at(i,4);
-            qamma.at(eq)    = qamma.at(eq)    - beta.at(eq,i)*a.at(i,0);
-            IPrinter::printVector(beta.row(eq), NULL, beta.cols(), 0, 0, f);
-            //            for (unsigned int j=1; j<=K; j++)
-            //            {
-            //                beta.at(eq,i+j) = beta.at(eq,i+j) + beta.at(eq,i)*a.at(i,j);
-            //            }
-        }
-        fclose(f);
+        double t = i*h;
+        x0.at(i) = X(t);
     }
+    IPrinter::printVector(18, 14, x0, "x0:", x0.size(), 0, 0, file1);
 
-    DoubleMatrix m(K,K);
-    m.at(0,0) = beta.at(0,N-3);
-    m.at(0,1) = beta.at(0,N-2);
-    m.at(0,2) = beta.at(0,N-1);
-    m.at(0,3) = beta.at(0,N-0);
+    DoubleMatrix a(N-K+1, K+1);
 
-    m.at(1,0) = beta.at(1,N-3);
-    m.at(1,1) = beta.at(1,N-2);
-    m.at(1,2) = beta.at(1,N-1);
-    m.at(1,3) = beta.at(1,N-0);
+    DoubleVector x1(N+1);
 
-    m.at(2,0) = beta.at(2,N-3);
-    m.at(2,1) = beta.at(2,N-2);
-    m.at(2,2) = beta.at(2,N-1);
-    m.at(2,3) = beta.at(2,N-0);
-
-    m.at(3,0) = beta.at(3,N-3);
-    m.at(3,1) = beta.at(3,N-2);
-    m.at(3,2) = beta.at(3,N-1);
-    m.at(3,3) = beta.at(3,N-0);
-
-    puts("------------------------------------");
-    IPrinter::printMatrix(18, 14, m, m.rows(), m.cols());
-    puts("------------------------------------");
-
-    printf("Determinant: %.14f\n", m.determinant());
-
-    //    for (unsigned int j=0; j<K; j++)
-    //    {
-    //        for (unsigned int i=0; i<K; i++) m.at(j,i) = beta.at(j,N-K+1+i);
-    //    }
-
-    DoubleVector b(K);
-    //    for (unsigned int i=0; i<K; i++) b.at(i) = qamma.at(i);
-    b.at(0) = qamma.at(0);
-    b.at(1) = qamma.at(1);
-    b.at(2) = qamma.at(2);
-    b.at(3) = qamma.at(3);
-
-    puts("------------------------------------------------------------------");
-    printf("%18.14f %18.14f %18.14f %18.14f | %18.14f | %18.14f\n", m.at(0,0), m.at(0,1), m.at(0,2), m.at(0,3), b.at(0),
-           m.at(0,0)*x0.at(N-3)+m.at(0,1)*x0.at(N-2)+m.at(0,2)*x0.at(N-1)+m.at(0,3)*x0.at(N-0));
-    printf("%18.14f %18.14f %18.14f %18.14f | %18.14f | %18.14f\n", m.at(1,0), m.at(1,1), m.at(1,2), m.at(1,3), b.at(1),
-           m.at(1,0)*x0.at(N-3)+m.at(1,1)*x0.at(N-2)+m.at(1,2)*x0.at(N-1)+m.at(1,3)*x0.at(N-0));
-    printf("%18.14f %18.14f %18.14f %18.14f | %18.14f | %18.14f\n", m.at(2,0), m.at(2,1), m.at(2,2), m.at(2,3), b.at(2),
-           m.at(2,0)*x0.at(N-3)+m.at(2,1)*x0.at(N-2)+m.at(2,2)*x0.at(N-1)+m.at(2,3)*x0.at(N-0));
-    printf("%18.14f %18.14f %18.14f %18.14f | %18.14f | %18.14f\n", m.at(3,0), m.at(3,1), m.at(3,2), m.at(3,3), b.at(3),
-           m.at(3,0)*x0.at(N-3)+m.at(3,1)*x0.at(N-2)+m.at(3,2)*x0.at(N-1)+m.at(3,3)*x0.at(N-0));
-    puts("------------------------------------------------------------------");
-
-    //DoubleMatrix m1 = m;
-    //DoubleVector b1 = b;
-
-    DoubleVector x1(K);
-    //printf("%18.10f %18.10f %18.10f %18.10f\n", m.at(0,0), m.at(0,1), m.at(0,2), m.at(0,3));
-    //printf("%18.10f %18.10f %18.10f %18.10f\n", m.at(1,0), m.at(1,1), m.at(1,2), m.at(1,3));
-    //printf("%18.10f %18.10f %18.10f %18.10f\n", m.at(2,0), m.at(2,1), m.at(2,2), m.at(2,3));
-    //printf("%18.10f %18.10f %18.10f %18.10f\n", m.at(3,0), m.at(3,1), m.at(3,2), m.at(3,3));
-    GaussianElimination(m, b, x1);
-    //printf("%18.10f %18.10f %18.10f %18.10f\n", m.at(0,0), m.at(0,1), m.at(0,2), m.at(0,3));
-    //printf("%18.10f %18.10f %18.10f %18.10f\n", m.at(1,0), m.at(1,1), m.at(1,2), m.at(1,3));
-    //printf("%18.10f %18.10f %18.10f %18.10f\n", m.at(2,0), m.at(2,1), m.at(2,2), m.at(2,3));
-    //printf("%18.10f %18.10f %18.10f %18.10f\n", m.at(3,0), m.at(3,1), m.at(3,2), m.at(3,3));
-
-    puts("------------------------------------------------------------------");
-    printf("%18.14f %18.14f %18.14f %18.14f | %18.14f | %18.14f\n", m.at(0,0), m.at(0,1), m.at(0,2), m.at(0,3), b.at(0),
-           m.at(0,0)*x1.at(0)+m.at(0,1)*x1.at(1)+m.at(0,2)*x1.at(2)+m.at(0,3)*x1.at(3));
-    printf("%18.14f %18.14f %18.14f %18.14f | %18.14f | %18.14f\n", m.at(1,0), m.at(1,1), m.at(1,2), m.at(1,3), b.at(1),
-           m.at(1,0)*x1.at(0)+m.at(1,1)*x1.at(1)+m.at(1,2)*x1.at(2)+m.at(1,3)*x1.at(3));
-    printf("%18.14f %18.14f %18.14f %18.14f | %18.14f | %18.14f\n", m.at(2,0), m.at(2,1), m.at(2,2), m.at(2,3), b.at(2),
-           m.at(2,0)*x1.at(0)+m.at(2,1)*x1.at(1)+m.at(2,2)*x1.at(2)+m.at(2,3)*x1.at(3));
-    printf("%18.14f %18.14f %18.14f %18.14f | %18.14f | %18.14f\n", m.at(3,0), m.at(3,1), m.at(3,2), m.at(3,3), b.at(3),
-           m.at(3,0)*x1.at(0)+m.at(3,1)*x1.at(1)+m.at(3,2)*x1.at(2)+m.at(3,3)*x1.at(3));
-    puts("------------------------------------------------------------------");
-
-    printf("x0 %18.14f %18.14f %18.14f %18.14f\n", x0.at(N-3), x0.at(N-2), x0.at(N-1), x0.at(N));
-    printf("x1 %18.14f %18.14f %18.14f %18.14f\n", x1.at(0), x1.at(1), x1.at(2), x1.at(3));
-
-    double c1 = m.at(0,0)*x0.at(N-3)+m.at(0,1)*x0.at(N-2)+m.at(0,2)*x0.at(N-1)+m.at(0,3)*x0.at(N);
-    double e1 = m.at(0,0)*x1.at(0)+m.at(0,1)*x1.at(1)+m.at(0,2)*x1.at(2)+m.at(0,3)*x1.at(3);
-
-    double c2 = m.at(1,0)*x0.at(N-3)+m.at(1,1)*x0.at(N-2)+m.at(1,2)*x0.at(N-1)+m.at(1,3)*x0.at(N);
-    double e2 = m.at(1,0)*x1.at(0)+m.at(1,1)*x1.at(1)+m.at(1,2)*x1.at(2)+m.at(1,3)*x1.at(3);
-
-    puts("------------------------------------------------------------------");
-    printf("%18.14f %18.14f %18.14f %18.14f | %18.14f | x1: %18.14f | x0: %18.14f\n", m.at(0,0), m.at(0,1), m.at(0,2), m.at(0,3), b.at(0), c1, e1);
-    printf("%18.14f %18.14f %18.14f %18.14f | %18.14f | x1: %18.14f | x0: %18.14f\n", m.at(1,0), m.at(1,1), m.at(1,2), m.at(1,3), b.at(1), c2, e2);
-    printf("%18.14f %18.14f %18.14f %18.14f | %18.14f | x1: %18.14f | x0: %18.14f\n", m.at(1,0), m.at(1,1), m.at(1,2), m.at(1,3), b.at(2), c2, e2);
-    printf("%18.14f %18.14f %18.14f %18.14f | %18.14f | x1: %18.14f | x0: %18.14f\n", m.at(1,0), m.at(1,1), m.at(1,2), m.at(1,3), b.at(3), c2, e2);
-    puts("------------------------------------------------------------------");
-
-    //printf("k00: %18.14f k01: %18.14f k02: %18.14f\n", m.at(0,0)/m.at(1,0), m.at(0,1)/m.at(1,1), b.at(0)/b.at(1));
-    //printf("k01: %18.14f k11: %18.14f k12: %18.14f\n", m.at(1,0)/m.at(0,0), m.at(1,1)/m.at(0,1), b.at(1)/b.at(0));
-
-    for (unsigned int i=0; i<K; i++) x.at(N-i) = x1.at((K-1)-i);
+    x1.at(N-0) = X((N-0)*h);
+    x1.at(N-1) = X((N-1)*h);
+    x1.at(N-2) = X((N-2)*h);
+    x1.at(N-3) = X((N-3)*h);
 
     for (unsigned int i=N-K; i != UINT_MAX; i--)
     {
-        x[i] = a.at(i,0);
-        for (unsigned int j=1; j<=K; j++) x[i] += a.at(i,j)*x.at(i+j);
+        double t  = i*h;
+        double m  = 25.0+12.0*h*A(t);
+        a.at(i,0) = -12.0*h*B(t)/m;
+        a.at(i,1) = +48.0/m;
+        a.at(i,2) = -36.0/m;
+        a.at(i,3) = +16.0/m;
+        a.at(i,4) = -3.0/m;
+
+        x1.at(i) = a.at(i,1)*x1.at(i+1) + a.at(i,2)*x1.at(i+2) + a.at(i,3)*x1.at(i+3) + a.at(i,4)*x1.at(i+4) + a.at(i,0);
     }
+    IPrinter::printVector(18, 14, x1, "x1:", x1.size(), 0, 0, file1);
+
+    DoubleMatrix beta(K, N+1, 0.0);
+
+    beta.at(0,N-4) = -3.0;
+    beta.at(0,N-3) = -10.0-12.0*h*A((N-3)*h);
+    beta.at(0,N-2) = +18.0;
+    beta.at(0,N-1) = -6.0;
+    beta.at(0,N-0) = +1.0;
+
+    beta.at(1,N-4) = +1.0;
+    beta.at(1,N-3) = -8.0;
+    beta.at(1,N-2) = -12.0*h*A((N-2)*h);
+    beta.at(1,N-1) = +8.0;
+    beta.at(1,N-0) = -1.0;
+
+    beta.at(2,N-4) = -1.0;
+    beta.at(2,N-3) = +6.0;
+    beta.at(2,N-2) = -18.0;
+    beta.at(2,N-1) = +10.0-12.0*h*A((N-1)*h);
+    beta.at(2,N-0) = +3.0;
+
+    //beta.at(3,N-4) = +3.0;
+    //beta.at(3,N-3) = -16.0;
+    //beta.at(3,N-2) = +36.0;
+    //beta.at(3,N-1) = -48.0;
+    //beta.at(3,N-0) = +25.0-12.0*h*A((N-0)*h);
+
+    beta.at(3,0) = +3.0;
+    //beta.at(3,N/2) = -1.0;
+    beta.at(3,N) = -2.0;
+
+    DoubleVector qamma(K);
+    qamma.at(0) = 0.0;
+    qamma.at(1) = 0.0;
+    qamma.at(2) = 0.0;
+    qamma.at(3) = 0.0;
+    for (unsigned int i=0; i<=N; i++)
+    {
+        qamma.at(0) += beta.at(0,i)*x1.at(i);
+        qamma.at(1) += beta.at(1,i)*x1.at(i);
+        qamma.at(2) += beta.at(2,i)*x1.at(i);
+        qamma.at(3) += beta.at(3,i)*x1.at(i);
+    }
+
+    //    printf("%18.14f %18.14f\n", qamma.at(0), 12.0*h*B((N-3)*h));
+    //    printf("%18.14f %18.14f\n", qamma.at(1), 12.0*h*B((N-2)*h));
+    //    printf("%18.14f %18.14f\n", qamma.at(2), 12.0*h*B((N-1)*h));
+    //    printf("%18.14f %18.14f\n", qamma.at(3), 12.0*h*B((N-0)*h));
+
+    DoubleVector x2(N+1, 0.0);
+    calculateLeft2Right(N, K, a, beta, qamma, x2);
+    IPrinter::printVector(18, 14, x2, "x2:", x2.size(), 0, 0, file1);
+
+    fclose(file1);
+}
+
+void Example2::sample_n6()
+{
+    FILE *file1 = fopen("sample3_x.txt", "w");
+
+    unsigned int N = 20;
+    unsigned int K = 6;
+    double h = 1.0/N;
+
+    DoubleVector x0(N+1);
+    for (unsigned int i=0; i<=N; i++)
+    {
+        double t = i*h;
+        x0.at(i) = X(t);
+    }
+    IPrinter::printVector(18, 14, x0, "x0:", x0.size(), 0, 0, file1);
+
+    DoubleMatrix a(N-K+1, K+1);
+
+    DoubleVector x1(N+1);
+
+    x1.at(N-0) = X((N-0)*h);
+    x1.at(N-1) = X((N-1)*h);
+    x1.at(N-2) = X((N-2)*h);
+    x1.at(N-3) = X((N-3)*h);
+    x1.at(N-4) = X((N-4)*h);
+    x1.at(N-5) = X((N-5)*h);
+
+    for (unsigned int i=N-K; i != UINT_MAX; i--)
+    {
+        double t  = i*h;
+        double m  = 147.0+60.0*h*A(t);
+
+        a.at(i,0) = -60.0*h*B(t)/m;
+        a.at(i,1) = +360.0/m;
+        a.at(i,2) = -450.0/m;
+        a.at(i,3) = +400.0/m;
+        a.at(i,4) = -225.0/m;
+        a.at(i,5) = +72.0/m;
+        a.at(i,6) = -10.0/m;
+
+        x1.at(i) = a.at(i,1)*x1.at(i+1) + a.at(i,2)*x1.at(i+2) + a.at(i,3)*x1.at(i+3) + a.at(i,4)*x1.at(i+4) + a.at(i,5)*x1.at(i+5) + a.at(i,6)*x1.at(i+6) + a.at(i,0);
+    }
+    IPrinter::printVector(18, 14, x1, "x1:", x1.size(), 0, 0, file1);
+
+    DoubleMatrix beta(K, N+1, 0.0);
+
+    beta.at(0,N-6) = -10.0;
+    beta.at(0,N-5) = -77.0-60.0*h*A((N-5)*h);
+    beta.at(0,N-4) = +150.0;
+    beta.at(0,N-3) = -100.0;
+    beta.at(0,N-2) = +50.0;
+    beta.at(0,N-1) = -15.0;
+    beta.at(0,N-0) = +2.0;
+
+    beta.at(1,N-6) = +2.0;
+    beta.at(1,N-5) = -24.0;
+    beta.at(1,N-4) = -35.0-60.0*h*A((N-4)*h);
+    beta.at(1,N-3) = +80.0;
+    beta.at(1,N-2) = -30.0;
+    beta.at(1,N-1) = +8.0;
+    beta.at(1,N-0) = -1.0;
+
+    beta.at(2,N-6) = -1.0;
+    beta.at(2,N-5) = +9.0;
+    beta.at(2,N-4) = -45.0;
+    beta.at(2,N-3) = -60.0*h*A((N-3)*h);
+    beta.at(2,N-2) = +45.0;
+    beta.at(2,N-1) = -9.0;
+    beta.at(2,N-0) = +1.0;
+
+    beta.at(3,N-6) = +1.0;
+    beta.at(3,N-5) = -8.0;
+    beta.at(3,N-4) = +30.0;
+    beta.at(3,N-3) = -80.0;
+    beta.at(3,N-2) = +35.0-60.0*h*A((N-2)*h);
+    beta.at(3,N-1) = +24.0;
+    beta.at(3,N-0) = -2.0;
+
+    beta.at(4,N-6) = -2.0;
+    beta.at(4,N-5) = +15.0;
+    beta.at(4,N-4) = -50.0;
+    beta.at(4,N-3) = +100.0;
+    beta.at(4,N-2) = -150.0;
+    beta.at(4,N-1) = +77.0-60.0*h*A((N-1)*h);
+    beta.at(4,N-0) = +10.0;
+
+    //    beta.at(5,N-6) = +10.0;
+    //    beta.at(5,N-5) = -72.0;
+    //    beta.at(5,N-4) = +225.0;
+    //    beta.at(5,N-3) = -400.0;
+    //    beta.at(5,N-2) = +450.0;
+    //    beta.at(5,N-1) = -360.0;
+    //    beta.at(5,N-0) = +147.0-60.0*h*A((N-0)*h);
+
+    beta.at(5,0) = +3.0;
+    //beta.at(3,N/2) = -1.0;
+    beta.at(5,N) = -2.0;
+
+    DoubleVector qamma(K);
+    qamma.at(0) = 0.0;
+    qamma.at(1) = 0.0;
+    qamma.at(2) = 0.0;
+    qamma.at(3) = 0.0;
+    qamma.at(4) = 0.0;
+    qamma.at(5) = 0.0;
+    for (unsigned int i=0; i<=N; i++)
+    {
+        qamma.at(0) += beta.at(0,i)*x1.at(i);
+        qamma.at(1) += beta.at(1,i)*x1.at(i);
+        qamma.at(2) += beta.at(2,i)*x1.at(i);
+        qamma.at(3) += beta.at(3,i)*x1.at(i);
+        qamma.at(4) += beta.at(4,i)*x1.at(i);
+        qamma.at(5) += beta.at(5,i)*x1.at(i);
+    }
+
+    printf("%18.14f %18.14f\n", qamma.at(0), 60.0*h*B((N-5)*h));
+    printf("%18.14f %18.14f\n", qamma.at(1), 60.0*h*B((N-4)*h));
+    printf("%18.14f %18.14f\n", qamma.at(2), 60.0*h*B((N-3)*h));
+    printf("%18.14f %18.14f\n", qamma.at(3), 60.0*h*B((N-2)*h));
+    printf("%18.14f %18.14f\n", qamma.at(4), 60.0*h*B((N-1)*h));
+    printf("%18.14f %18.14f\n", qamma.at(5), 60.0*h*B((N-0)*h));
+
+    DoubleVector x2(N+1, 0.0);
+    calculateLeft2Right(N, K, a, beta, qamma, x2);
+    IPrinter::printVector(18, 14, x2, "x2:", x2.size(), 0, 0, file1);
+
+    fclose(file1);
 }
