@@ -6,6 +6,8 @@
 #include <printer.h>
 #include <math.h>
 
+#define SAMPLE2
+
 class Example2
 {
 public:
@@ -23,7 +25,7 @@ public:
     double X(double t) const;
 
     void sample1();
-    void sample_n4_();
+    void sample2();
 
     void sample_n4();
     void sample_n6();

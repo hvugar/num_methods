@@ -11,9 +11,8 @@ void Example2::Main(int argc, char *argv[])
     C_UNUSED(argv);
 
     Example2 e2;
-    //    e2.sample_n4();
-    //    e2.sample1();
-    e2.sample_n6();
+    e2.sample_n4();
+    //e2.sample_n6();
 }
 
 Example2::Example2()
@@ -101,6 +100,9 @@ void Example2::calculateLeft2Right(unsigned int N, unsigned int K, const DoubleM
     {
         for (unsigned int i=0; i<K; i++) m.at(j,i) = beta.at(j,N-K+1+i);
     }
+
+    printf("Determinant: %.14f\n", m.determinant());
+    IPrinter::printMatrix(18, 14, m, m.rows(), m.cols());
 
     DoubleVector b(K);
     for (unsigned int i=0; i<K; i++) b.at(i) = qamma.at(i);
@@ -213,23 +215,41 @@ void Example2::calculateRight2Left(unsigned int N, unsigned int K, const DoubleM
 
 double Example2::X(double t) const
 {
-    //return 3.0*sin(t);
+#ifdef SAMPLE1
     return t*t;
-    //return (t*t-t)*sin(50.0*t);
+#endif
+#ifdef SAMPLE2
+    return 3.0*sin(t);
+#endif
+#ifdef SAMPLE3
+    return (t*t-t)*sin(50.0*t);
+#endif
 }
 
 double Example2::A(double t) const
 {
-    //return t;
+#ifdef SAMPLE1
     return 3.0;
-    //return t;
+#endif
+#ifdef SAMPLE2
+    return t;
+#endif
+#ifdef SAMPLE3
+    return t;
+#endif
 }
 
 double Example2::B(double t) const
 {
-    //return 3.0*cos(t) - 3.0*t*sin(t);
+#ifdef SAMPLE1
     return 2.0*t - 3.0*t*t;
-    //return 50.0*(t*t-t)*cos(50.0*t) + (2.0*t-1)*sin(50.0*t) - t*(t*t-t)*sin(50.0*t);
+#endif
+#ifdef SAMPLE2
+    return 3.0*cos(t) - 3.0*t*sin(t);
+#endif
+#ifdef SAMPLE3
+    return 50.0*(t*t-t)*cos(50.0*t) + (2.0*t-1)*sin(50.0*t) - t*(t*t-t)*sin(50.0*t);
+#endif
 }
 
 void Example2::sample1()
@@ -289,7 +309,7 @@ void Example2::sample1()
     fclose(file1);
 }
 
-void Example2::sample_n4_()
+void Example2::sample2()
 {
     unsigned int N = 100;
     unsigned int K = 4;
@@ -389,6 +409,7 @@ void Example2::sample_n4_()
     DoubleVector x(N+1, 0.0);
     calculateLeft2Right(N,K,a,beta,qamma, x);
     IPrinter::printVector(18, 14, x, "x2:", x.size(), 0, 0, file1);
+
     fclose(file1);
 }
 
@@ -451,14 +472,7 @@ void Example2::sample_n4()
     beta.at(2,N-1) = +10.0-12.0*h*A((N-1)*h);
     beta.at(2,N-0) = +3.0;
 
-    //beta.at(3,N-4) = +3.0;
-    //beta.at(3,N-3) = -16.0;
-    //beta.at(3,N-2) = +36.0;
-    //beta.at(3,N-1) = -48.0;
-    //beta.at(3,N-0) = +25.0-12.0*h*A((N-0)*h);
-
     beta.at(3,0) = +3.0;
-    //beta.at(3,N/2) = -1.0;
     beta.at(3,N) = -2.0;
 
     DoubleVector qamma(K);
@@ -474,15 +488,11 @@ void Example2::sample_n4()
         qamma.at(3) += beta.at(3,i)*x1.at(i);
     }
 
-    //    printf("%18.14f %18.14f\n", qamma.at(0), 12.0*h*B((N-3)*h));
-    //    printf("%18.14f %18.14f\n", qamma.at(1), 12.0*h*B((N-2)*h));
-    //    printf("%18.14f %18.14f\n", qamma.at(2), 12.0*h*B((N-1)*h));
-    //    printf("%18.14f %18.14f\n", qamma.at(3), 12.0*h*B((N-0)*h));
-
     DoubleVector x2(N+1, 0.0);
     calculateLeft2Right(N, K, a, beta, qamma, x2);
     IPrinter::printVector(18, 14, x2, "x2:", x2.size(), 0, 0, file1);
-
+    IPrinter::printVector(18, 14, x0, "x0:", 10);
+    IPrinter::printVector(18, 14, x2, "x2:", 10);
     fclose(file1);
 }
 
@@ -490,7 +500,7 @@ void Example2::sample_n6()
 {
     FILE *file1 = fopen("sample3_x.txt", "w");
 
-    unsigned int N = 20;
+    unsigned int N = 100;
     unsigned int K = 6;
     double h = 1.0/N;
 
@@ -601,16 +611,10 @@ void Example2::sample_n6()
         qamma.at(5) += beta.at(5,i)*x1.at(i);
     }
 
-    printf("%18.14f %18.14f\n", qamma.at(0), 60.0*h*B((N-5)*h));
-    printf("%18.14f %18.14f\n", qamma.at(1), 60.0*h*B((N-4)*h));
-    printf("%18.14f %18.14f\n", qamma.at(2), 60.0*h*B((N-3)*h));
-    printf("%18.14f %18.14f\n", qamma.at(3), 60.0*h*B((N-2)*h));
-    printf("%18.14f %18.14f\n", qamma.at(4), 60.0*h*B((N-1)*h));
-    printf("%18.14f %18.14f\n", qamma.at(5), 60.0*h*B((N-0)*h));
-
     DoubleVector x2(N+1, 0.0);
     calculateLeft2Right(N, K, a, beta, qamma, x2);
     IPrinter::printVector(18, 14, x2, "x2:", x2.size(), 0, 0, file1);
-
+    IPrinter::printVector(18, 14, x0, "x0:", 10);
+    IPrinter::printVector(18, 14, x2, "x2:", 10);
     fclose(file1);
 }
