@@ -6,7 +6,7 @@
 #include <printer.h>
 #include <math.h>
 
-#define SAMPLE2
+#define SAMPLE3
 
 class Example2
 {
@@ -27,6 +27,8 @@ public:
     void sample1();
     void sample2();
 
+    void true_solution(FILE* file, unsigned int N, unsigned int K, double h, DoubleVector &x);
+    void sample_n3();
     void sample_n4();
     void sample_n6();
 

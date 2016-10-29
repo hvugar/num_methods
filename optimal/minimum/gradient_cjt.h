@@ -24,17 +24,20 @@ protected:
     DoubleVector *ms;
 };
 
-class MINIMUMSHARED_EXPORT IConjugateGradient : public GradientMethod, public IGradient, public RnFunction, protected R1Function, public IProjection, public IPrinter
+class MINIMUMSHARED_EXPORT IConjugateGradient : public GradientMethod, protected RnFunction, protected R1Function
 {
 public:
     IConjugateGradient() {}
-    virtual ~IConjugateGradient() = 0;
+    virtual ~IConjugateGradient() {}
+    virtual void calculate(DoubleVector &x);
 
+public:
     virtual void gradient(const DoubleVector &x, DoubleVector &g) = 0;
     virtual double fx(const DoubleVector &x) = 0;
-    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &gradient, double alpha, RnFunction *fn) const = 0;
 
-    virtual void calculate(DoubleVector &x);
+    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &gradient, double alpha) const;
+    virtual void project(DoubleVector &x, int index);
+
 protected:
     virtual double fx(double x) = 0;
     virtual double minimize(const DoubleVector &x, const DoubleVector &g);

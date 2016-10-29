@@ -11,8 +11,9 @@ void Example2::Main(int argc, char *argv[])
     C_UNUSED(argv);
 
     Example2 e2;
+    e2.sample_n3();
     e2.sample_n4();
-    //e2.sample_n6();
+    e2.sample_n6();
 }
 
 Example2::Example2()
@@ -101,8 +102,8 @@ void Example2::calculateLeft2Right(unsigned int N, unsigned int K, const DoubleM
         for (unsigned int i=0; i<K; i++) m.at(j,i) = beta.at(j,N-K+1+i);
     }
 
-    printf("Determinant: %.14f\n", m.determinant());
-    IPrinter::printMatrix(18, 14, m, m.rows(), m.cols());
+//    printf("Determinant: %.14f\n", m.determinant());
+//    IPrinter::printMatrix(18, 14, m, m.rows(), m.cols());
 
     DoubleVector b(K);
     for (unsigned int i=0; i<K; i++) b.at(i) = qamma.at(i);
@@ -413,11 +414,83 @@ void Example2::sample2()
     fclose(file1);
 }
 
+void Example2::true_solution(FILE *file, unsigned int N, unsigned int K, double h, DoubleVector &x)
+{
+
+}
+
+void Example2::sample_n3()
+{
+    FILE *file1 = fopen("sample2_n3_x.txt", "w");
+
+    unsigned int N = 1000;
+    unsigned int K = 3;
+    double h = 1.0/N;
+
+    DoubleVector x0(N+1);
+    for (unsigned int i=0; i<=N; i++)
+    {
+        double t = i*h;
+        x0.at(i) = X(t);
+    }
+    IPrinter::printVector(18, 14, x0, "x0:", x0.size(), 0, 0, file1);
+
+    DoubleMatrix a(N-K+1, K+1);
+
+    DoubleVector x1(N+1);
+
+    x1.at(N-0) = X((N-0)*h);
+    x1.at(N-1) = X((N-1)*h);
+    x1.at(N-2) = X((N-2)*h);
+    for (unsigned int i=N-K; i != UINT_MAX; i--)
+    {
+        double t  = i*h;
+        double m  = 11.0+6.0*h*A(t);
+        a.at(i,0) = -6.0*h*B(t)/m;
+        a.at(i,1) = +18.0/m;
+        a.at(i,2) = -9.0/m;
+        a.at(i,3) = +2.0/m;
+
+        x1.at(i) = a.at(i,1)*x1.at(i+1) + a.at(i,2)*x1.at(i+2) + a.at(i,3)*x1.at(i+3) + a.at(i,0);
+    }
+    IPrinter::printVector(18, 14, x1, "x1:", x1.size(), 0, 0, file1);
+
+    DoubleMatrix beta(K, N+1, 0.0);
+
+    beta.at(0,N-3) = -2.0;
+    beta.at(0,N-2) = -3.0 - 6.0*h*A((N-2)*h);
+    beta.at(0,N-1) = +6.0;
+    beta.at(0,N-0) = -1.0;
+
+    beta.at(1,N-3) = +1.0;
+    beta.at(1,N-2) = -6.0;
+    beta.at(1,N-1) = +3.0-6.0*h*A((N-1)*h);
+    beta.at(1,N-0) = +2.0;
+
+    beta.at(2,0) = +3.0;
+    beta.at(2,N) = -2.0;
+
+    DoubleVector qamma(K, 0.0);
+    for (unsigned int i=0; i<=N; i++)
+    {
+        qamma.at(0) += beta.at(0,i)*x1.at(i);
+        qamma.at(1) += beta.at(1,i)*x1.at(i);
+        qamma.at(2) += beta.at(2,i)*x1.at(i);
+    }
+
+    DoubleVector x2(N+1, 0.0);
+    calculateLeft2Right(N, K, a, beta, qamma, x2);
+    IPrinter::printVector(18, 14, x2, "x2:", x2.size(), 0, 0, file1);
+    IPrinter::printVector(18, 14, x0, "x0:", 10);
+    IPrinter::printVector(18, 14, x2, "x2:", 10);
+    fclose(file1);
+}
+
 void Example2::sample_n4()
 {
     FILE *file1 = fopen("sample2_x.txt", "w");
 
-    unsigned int N = 100;
+    unsigned int N = 1000;
     unsigned int K = 4;
     double h = 1.0/N;
 
@@ -500,7 +573,7 @@ void Example2::sample_n6()
 {
     FILE *file1 = fopen("sample3_x.txt", "w");
 
-    unsigned int N = 100;
+    unsigned int N = 1000;
     unsigned int K = 6;
     double h = 1.0/N;
 

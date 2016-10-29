@@ -138,7 +138,7 @@ double ConjugateGradient::fx(double alpha)
     return m_fn->fx(cx);
 }
 
-void IConjugateGradient::calculate(DoubleVector& x)
+void IConjugateGradient::calculate(DoubleVector &x)
 {
     unsigned int n = x.size();
 
@@ -219,7 +219,7 @@ void IConjugateGradient::calculate(DoubleVector& x)
 
         if ( k == x.size() ) { k = 0; } else { k++; }
 
-        print(iterationCount, x, g, alpha, this);
+        print(iterationCount, x, g, alpha);
 
         /* calculating distance previous and new point */
         if (distance < epsilon2() && fabs(f2 - f1) < epsilon3())
@@ -245,3 +245,9 @@ double IConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s
 
     return alpha;
 }
+
+void IConjugateGradient::project(DoubleVector &x, int index)
+{}
+
+void IConjugateGradient::print(unsigned int iteration, const DoubleVector &x, const DoubleVector &gradient, double alpha) const
+{}

@@ -23,9 +23,10 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     srand(time(NULL));
 
+//    Problem3::Main(argc, argv);
 //    Problem1KZX::Main(argc, argv);
-//    Example3::Main(argc, argv);
-    Example2::Main(argc, argv);
+    Example3::Main(argc, argv);
+//    Example2::Main(argc, argv);
 //    Problem1K::Main(argc, argv);
 
     return 0;

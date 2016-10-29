@@ -8,6 +8,11 @@ void Example3::Main(int argc, char *argv[])
     C_UNUSED(argc);
     C_UNUSED(argv);
 
+#if !defined (_OPTIMIZE_K_) && !defined (_OPTIMIZE_Z_) && !defined (_OPTIMIZE_E_)
+    puts("Nothing to optimize...");
+    return;
+#endif
+
     Example3 e3;
     e3.initialize();
 }
@@ -18,121 +23,161 @@ Example3::Example3()
 
 void Example3::initialize()
 {
-    //k.resize(2);
-    //k.at(0) = 2.50;
-    //k.at(1) = 2.70;
+#ifndef _OPTIMIZE_K_
+    k << 2.50 << 2.70;
+#endif
+#ifndef _OPTIMIZE_Z_
+    z << 1.52 << 1.71;
+#endif
+#ifndef _OPTIMIZE_E_
+    e << 0.40 << 0.70;
+#endif
 
-    //z.resize(2);
-    //z.at(0) = 1.52;
-    //z.at(1) = 1.71;
-
-    //e.resize(2);
-    //e.at(0) = 0.40;
-    //e.at(1) = 0.70;
-
-    // initial /////////////////////////////////
-    xs.resize(6);
-    xs.at(0) = 2.50;
-    xs.at(1) = 2.70;
-    xs.at(2) = 1.52;
-    xs.at(3) = 1.71;
-    xs.at(4) = 0.25;
-    xs.at(5) = 0.75;
+    /***************************************************************/
+#ifdef _OPTIMIZE_K_
+    xs << 2.50 << 2.70;
+#endif
+#ifdef _OPTIMIZE_Z_
+    xs << 1.52 << 1.71;
+#endif
+#ifdef _OPTIMIZE_E_
+    xs << 0.40 << 0.70;
+#endif
+    /***************************************************************/
 
     px = &xs;
     DoubleMatrix u;
     calculateU(u);
     V = u.row(M);
-    //IPrinter::printVector(V);
-    ///////////////////////////////////////////
+
+//    FILE *file = fopen("e2_data.txt", "w");
+//    for (unsigned int i=0; i<=N; i++)
+//    {
+//        xs.at(5) = i*hx;
+//        double a = fx(xs);
+//        printf("%.3f %.14f\n", i*hx, a);
+//        fprintf(file, "%.3f %.14f\n", i*hx, a);
+//    }
+//    fclose(file);
 
     DoubleVector x0;
-    x0.resize(6);
-    x0.at(0) = 2.50;
-    x0.at(1) = 2.70;
-    x0.at(2) = 1.52;
-    x0.at(3) = 1.71;
-    x0.at(4) = 0.25;
-    x0.at(5) = 0.75;
+#ifdef _OPTIMIZE_K_
+    x0 << 3.50 << 3.70;
+#endif
+#ifdef _OPTIMIZE_Z_
+    x0 << 2.52 << 2.71;
+#endif
+#ifdef _OPTIMIZE_E_
+    x0 << 0.30 << 0.60;
+#endif
     px = &x0;
 
-    printf("Optimal:   %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", xs.at(0), xs.at(1), xs.at(2), xs.at(3), xs.at(4), xs.at(5));
-    printf("Initial:   %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", x0.at(0), x0.at(1), x0.at(2), x0.at(3), x0.at(4), x0.at(5));
-    //printf("Optimal:   %12.8f %12.8f\n", xs.at(0), xs.at(1));
-    //printf("Initial:   %12.8f %12.8f\n", x0.at(0), x0.at(1));
+    printNAGradinets(x0);
 
-    DoubleVector g2;
-    g2.resize(6);
-    IGradient::Gradient(this, h, x0, g2);
-    //g2[0] = g2[1] = 0.0;
-    //g2[2] = g2[3] = 0.0;
-    //DoubleVector gn2 = g2;
-    //printf("Numerical: %12.8f %12.8f\n", g2.at(0), g2.at(1));
-    g2.L2Normalize();
-    printf("Numerical: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", g2.at(0), g2.at(1), g2.at(2), g2.at(3), g2.at(4), g2.at(5));
-    //printf("Numerical: %12.8f %12.8f\n", g2.at(0), g2.at(1));
+    ConjugateGradient g;
+    g.setFunction(this);
+    g.setGradient(this);
+    g.setPrinter(this);
+    g.setProjection(this);
+    g.setEpsilon1(0.00000001);
+    g.setEpsilon2(0.00000001);
+    g.setEpsilon3(0.00000001);
+    g.setR1MinimizeEpsilon(0.1, 0.00000001);
+    g.setNormalize(true);
+    g.calculate(x0);
+}
 
-    DoubleVector g1;
-    g1.resize(6);
-    gradient(x0, g1);
-    //g1[0] = g1[1] = 0.0;
-    //g1[2] = g1[3] = 0.0;
-    //g1[4] = g1[5] = 0.0;
-    //DoubleVector gn1 = g1;
-    //printf("Analytic:  %12.8f %12.8f\n", g1.at(0), g1.at(1));
-    g1.L2Normalize();
-    printf("Analytic:  %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", g1.at(0), g1.at(1), g1.at(2), g1.at(3), g1.at(4), g1.at(5));
-    //printf("Analytic:  %12.8f %12.8f\n", g1.at(0), g1.at(1));
-
+void Example3::printNAGradinets(const DoubleVector &x0)
+{
     puts("------------------------------------------");
 
-    //    DoubleVector g1(2*p.L);
-    //    p.gradient(kz, g1);
-    //    p.print(0, kz, g1, 0.0, &p);
+    // Calculating numerical gradients
+    DoubleVector gn(x0.size());
+    IGradient::Gradient(this, h, x0, gn);
+    gn.L2Normalize();
 
-//    FILE *file1=fopen("test.txt", "w");
-//    for (unsigned int i=0; i<N; i++)
-//    {
-//        double x = i*hx;
-//        x0.at(4) = x;
-//        double y = fx(x0);
-//        fprintf(file1, "%.10f %.10f\n", x, y);
-//    }
-//    fclose(file1);
+    // Calculating analitical gradients
+    DoubleVector ga(x0.size());
+    gradient(x0, ga);
+    ga.L2Normalize();
 
-    DoubleMatrix m(N+1, N+1,0.0);
-    for (unsigned int j=0; j<=N; j++)
-    {
-        x0.at(4) = j*hx;
-        for (unsigned int i=0; i<=N; i++)
-        {
-            x0.at(5) = i*hx;
-            m.at(j,i) = fx(x0);
+    unsigned int i;
+    printf("Optimal:   ");
+    i = 0;
+#if defined(_OPTIMIZE_K_)
+    printf("%12.8f %12.8f ", xs.at(i), xs.at(i+1));
+    i+=2;
+#endif
+#if defined(_OPTIMIZE_Z_)
+    printf("%12.8f %12.8f ", xs.at(i), xs.at(i+1));
+    i+=2;
+#endif
+#if defined(_OPTIMIZE_E_)
+    printf("%12.8f %12.8f ", xs.at(i), xs.at(i+1));
+    i+=2;
+#endif
+    puts("");
 
-            //printf("%d %d %10.6f\n", j, i, m.at(j,i));
-        }
-    }
-    FILE *f = fopen("d:\\data2.txt", "w");
-    IPrinter::printMatrix(m, 100, 100, NULL,f);
-    fclose(f);
+    printf("Initial:   ");
+    i = 0;
+#if defined(_OPTIMIZE_K_)
+    printf("%12.8f %12.8f ", x0.at(i), x0.at(i+1));
+    i+=2;
+#endif
+#if defined(_OPTIMIZE_Z_)
+    printf("%12.8f %12.8f ", x0.at(i), x0.at(i+1));
+    i+=2;
+#endif
+#if defined(_OPTIMIZE_E_)
+    printf("%12.8f %12.8f ", x0.at(i), x0.at(i+1));
+    i+=2;
+#endif
+    puts("");
 
-    x0.at(4) = 0.25;
-    x0.at(5) = 0.75;
+    printf("Numerical: ");
+    i = 0;
+#if defined(_OPTIMIZE_K_)
+    printf("%12.8f %12.8f ", gn.at(i), gn.at(i+1));
+    i+=2;
+#endif
+#if defined(_OPTIMIZE_Z_)
+    printf("%12.8f %12.8f ", gn.at(i), gn.at(i+1));
+    i+=2;
+#endif
+#if defined(_OPTIMIZE_E_)
+    printf("%12.8f %12.8f ", gn.at(i), gn.at(i+1));
+    i+=2;
+#endif
+    puts("");
 
-    printf("%.10f\n", fx(x0));
+    printf("Analytic:  ");
+    i = 0;
+#if defined(_OPTIMIZE_K_)
+    printf("%12.8f %12.8f ", ga.at(i), ga.at(i+1));
+    i+=2;
+#endif
+#if defined(_OPTIMIZE_Z_)
+    printf("%12.8f %12.8f ", ga.at(i), ga.at(i+1));
+    i+=2;
+#endif
+#if defined(_OPTIMIZE_E_)
+    printf("%12.8f %12.8f ", ga.at(i), ga.at(i+1));
+    i+=2;
+#endif
+    puts("");
 
-
-//    ConjugateGradient g;
-//    g.setFunction(this);
-//    g.setGradient(this);
-//    g.setPrinter(this);
-//    g.setProjection(this);
-//    g.setEpsilon1(0.00000001);
-//    g.setEpsilon2(0.00000001);
-//    g.setEpsilon3(0.00000001);
-//    g.setR1MinimizeEpsilon(2.0, 0.1);
-//    g.setNormalize(false);
-//    g.calculate(x0);
+    //#if defined (_OPTIMIZE_K_) && defined (_OPTIMIZE_Z_) && defined (_OPTIMIZE_E_)
+    //    printf("Optimal:   %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", xs.at(0), xs.at(1), xs.at(2), xs.at(3), xs.at(4), xs.at(5));
+    //    printf("Initial:   %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", x0.at(0), x0.at(1), x0.at(2), x0.at(3), x0.at(4), x0.at(5));
+    //    printf("Numerical: %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", g2.at(0), g2.at(1), g2.at(2), g2.at(3), g2.at(4), g2.at(5));
+    //    printf("Analytic:  %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", g1.at(0), g1.at(1), g1.at(2), g1.at(3), g1.at(4), g1.at(5));
+    //#else
+    //    printf("Optimal:   %12.8f %12.8f\n", xs.at(0), xs.at(1));
+    //    printf("Initial:   %12.8f %12.8f\n", x0.at(0), x0.at(1));
+    //    printf("Numerical: %12.8f %12.8f\n", gn.at(0), gn.at(1));
+    //    printf("Analytic:  %12.8f %12.8f\n", ga.at(0), ga.at(1));
+    //#endif
+    puts("------------------------------------------");
 }
 
 double Example3::initial(unsigned int i UNUSED_PARAM) const
@@ -143,9 +188,9 @@ double Example3::initial(unsigned int i UNUSED_PARAM) const
 double Example3::fx(const DoubleVector &x)
 {
     px = &x;
-    DoubleVector k = x.mid(0, 1);
-    DoubleVector z = x.mid(2, 3);
-    DoubleVector e = x.mid(4, 5);
+
+    DoubleVector k,z,e;
+    getComponents(k,z,e,x);
 
     DoubleMatrix u;
     calculateU(u);
@@ -171,9 +216,9 @@ double Example3::fx(const DoubleVector &x)
 void Example3::gradient(const DoubleVector &x, DoubleVector &g)
 {
     px = &x;
-    DoubleVector k = x.mid(0, 1);
-    DoubleVector z = x.mid(2, 3);
-    DoubleVector e = x.mid(4, 5);
+
+    DoubleVector k,z,e;
+    getComponents(k,z,e,x);
 
     DoubleMatrix u;
     calculateU(u);
@@ -181,7 +226,9 @@ void Example3::gradient(const DoubleVector &x, DoubleVector &g)
     DoubleMatrix psi;
     calculateP(psi, u);
 
+    unsigned int i = 0;
     // k gradient
+#ifdef _OPTIMIZE_K_
     for (unsigned int s=0; s<L; s++)
     {
         unsigned int xi = (unsigned int)round(e.at(s) * N);
@@ -194,10 +241,13 @@ void Example3::gradient(const DoubleVector &x, DoubleVector &g)
             double g2 = psi.at(m2, 0)*(u.at(m2, xi) - z[s]);
             sum = sum + (g1 + g2);
         }
-        g[s] = 0.5*ht*(-lambda0*a*a)*sum + 2.0*alpha1*(k.at(s)-xs.at(s));
+        g.at(i) = 0.5*ht*(-lambda0*a*a)*sum + 2.0*alpha1*(k.at(s)-xs.at(i));
+        i++;
     }
+#endif
 
     // z gradient
+#ifdef _OPTIMIZE_Z_
     for (unsigned int s=0; s<L; s++)
     {
         double sum = 0.0;
@@ -209,10 +259,13 @@ void Example3::gradient(const DoubleVector &x, DoubleVector &g)
             double g2 = psi.at(m2, 0);
             sum = sum + (g1 + g2);
         }
-        g[L+s] = 0.5*ht*(lambda0*a*a)*k[s]*sum + 2.0*alpha2*(z.at(s)-xs.at(L+s));
+        g.at(i) = 0.5*ht*(lambda0*a*a)*k[s]*sum + 2.0*alpha2*(z.at(s)-xs.at(i));
+        i++;
     }
+#endif
 
     // e gradient
+#ifdef _OPTIMIZE_E_
     for (unsigned int s=0; s<L; s++)
     {
         unsigned int xi = (unsigned int)round(e.at(s) * N);
@@ -225,39 +278,61 @@ void Example3::gradient(const DoubleVector &x, DoubleVector &g)
             double g2 = psi.at(m2, 0) * ((u.at(m2, xi+1) - u.at(m2, xi-1))/(2.0*hx));
             sum = sum + (g1 + g2);
         }
-        g[2*L+s] = 0.5*ht*(-lambda0*a*a)*k[s]*sum + 2.0*alpha3*(e.at(s)-xs.at(2*L+s));
+        g.at(i) = 0.5*ht*(-lambda0*a*a)*k.at(s)*sum + 2.0*alpha3*(e.at(s)-xs.at(i));
+        i++;
     }
+#endif
 }
 
 void Example3::print(unsigned int i UNUSED_PARAM, const DoubleVector &x UNUSED_PARAM, const DoubleVector &g UNUSED_PARAM, double alpha UNUSED_PARAM, RnFunction *fn UNUSED_PARAM) const
 {
     C_UNUSED(alpha);
-    printf("J[%d]: %.16f %.16f \n", i, fn->fx(x), alpha);
-    printf("k:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", x[0], x[1], x[2], x[3], x[4], x[5]);
-    printf("g:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", g[0], g[1], g[2], g[3], g[4], g[5]);
-    //printf("x:  %14.10f, %14.10f\n", x[0], x[1]);
-    //printf("g:  %14.10f, %14.10f\n", g[0], g[1]);
-    DoubleVector g1 = g;
-    g1.L2Normalize();
-    printf("g:  %14.10f, %14.10f\n", g1[0], g1[1]);
-    puts("------------------------------------------");
+    printf("J[%d]: %18.14f %16.12f ", i, fn->fx(x), alpha);
+
+    int j = 0;
+#ifdef _OPTIMIZE_K_
+    printf("%14.10f %14.10f ", x.at(j), x.at(j+1));
+    j+=2;
+#endif
+#ifdef _OPTIMIZE_Z_
+    printf("%14.10f %14.10f ", x.at(j), x.at(j+1));
+    j+=2;
+#endif
+#ifdef _OPTIMIZE_E_
+    printf("%14.10f %14.10f ", x.at(j), x.at(j+1));
+    j+=2;
+#endif
+    puts("");
+
+//#ifdef OPTIMIZE_REPLACEMENT
+//    printf("k:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", x.at(0), x.at(1), x.at(2), x.at(3), x.at(4), x.at(5));
+//    printf("g:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", g.at(0), g.at(1), g.at(2), g.at(3), g.at(4), g.at(5));
+//    DoubleVector w = g;
+//    w.L2Normalize();
+//    printf("g:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", w.at(0), w.at(1), w.at(2), w.at(3), w.at(4), w.at(5));
+//#else
+//    printf("x:  %14.10f, %14.10f %14.10f, %14.10f\n", x.at(0), x.at(1), x.at(2), x.at(3));
+//    printf("g:  %14.10f, %14.10f %14.10f, %14.10f\n", g.at(0), g.at(1), g.at(2), g.at(3));
+//#endif
 }
 
 void Example3::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
 {
-    if (x.at(0) < 0.01) x.at(0) = 0.01;
-    if (x.at(0) > 0.99) x.at(0) = 0.99;
+#ifdef _OPTIMIZE_E_
+    if (x.at(4) < 0.10) x.at(4) = 0.10;
+    if (x.at(4) > 0.90) x.at(4) = 0.90;
 
-    if (x.at(1) < 0.01) x.at(1) = 0.01;
-    if (x.at(1) > 0.99) x.at(1) = 0.99;
+    if (x.at(5) < 0.10) x.at(5) = 0.10;
+    if (x.at(5) > 0.90) x.at(5) = 0.90;
+#endif
 }
 
 void Example3::calculateU(DoubleMatrix &u)
 {
     DoubleVector x = *px;
-    DoubleVector k = x.mid(0, 1);
-    DoubleVector z = x.mid(2, 3);
-    DoubleVector e = x.mid(4, 5);
+
+    DoubleVector k,z,e;
+    getComponents(k,z,e,x);
 
     u.clear();
     u.resize(M+1, N+1);
@@ -318,9 +393,8 @@ void Example3::calculateU(DoubleMatrix &u)
 
 void Example3::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
 {
-    DoubleVector k = px->mid(0, 1);
-    DoubleVector z = px->mid(2, 3);
-    DoubleVector e = px->mid(4, 5);
+    DoubleVector k,z,e;
+    getComponents(k,z,e,*px);
 
     p.clear();
     p.resize(M+1, N+1);
@@ -380,6 +454,35 @@ void Example3::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
     dd.clear();
     rx.clear();
     de.clear();
+}
+
+void Example3::getComponents(DoubleVector &k1, DoubleVector &z1, DoubleVector &e1, const DoubleVector &x)
+{
+    unsigned int is = 0;
+    unsigned int ie = 1;
+#ifdef _OPTIMIZE_K_
+    k1 = x.mid(is, ie);
+    is += L;
+    ie += L;
+#else
+    k1 = k;
+#endif
+
+#ifdef _OPTIMIZE_Z_
+    z1 = x.mid(is, ie);
+    is += L;
+    ie += L;
+#else
+    z1 = z;
+#endif
+
+#ifdef _OPTIMIZE_E_
+    e1 = x.mid(is, ie);
+    is += L;
+    ie += L;
+#else
+    e1 = e;
+#endif
 }
 
 void qovmaFirstCol(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e)
@@ -522,10 +625,6 @@ void qovmaFirstRow(double *a, double *b, double *c, double *d, double *x, unsign
     free(E);
     free(q);
     free(p);
-}
-
-void Example3::calculateU1(DoubleMatrix &u)
-{
 }
 
 /*
