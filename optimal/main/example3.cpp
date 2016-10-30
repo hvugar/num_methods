@@ -46,19 +46,52 @@ void Example3::initialize()
     /***************************************************************/
 
     px = &xs;
-    DoubleMatrix u;
-    calculateU(u);
-    V = u.row(M);
+//    DoubleMatrix u;
+//    calculateU(u);
+//    V = u.row(M);
 
-//    FILE *file = fopen("e2_data.txt", "w");
-//    for (unsigned int i=0; i<=N; i++)
-//    {
-//        xs.at(5) = i*hx;
-//        double a = fx(xs);
-//        printf("%.3f %.14f\n", i*hx, a);
-//        fprintf(file, "%.3f %.14f\n", i*hx, a);
-//    }
-//    fclose(file);
+    FILE *file1 = fopen("temp.txt", "w");
+    DoubleMatrix u0;
+    calculateU(u0);
+    IPrinter::printVector(u0.row(M),NULL,u0.cols(),0,0,file1);
+
+    DoubleMatrix u1;
+    calculateU1(u1);
+    IPrinter::printVector(u1.row(M),NULL,u1.cols(),0,0,file1);
+    fclose(file1);
+    return;
+
+    //xs.at(4) = 0.40;
+    //xs.at(5) = 0.70;
+    //printf("%.14f\n", fx(xs));
+    return;
+
+    DoubleMatrix m(N/10+1, N/10+1);
+    for (uint32_t i=0; i<=N/10; i++)
+    {
+        for (uint32_t j=0; j<=N/10; j++)
+        {
+            xs.at(4) = i*hx*10.0;
+            xs.at(5) = j*hx*10.0;
+            double a = fx(xs);
+            m.at(i,j) = a;
+            printf("%.3f %.3f %20.14f\n", xs.at(4), xs.at(5), a);
+        }
+    }
+    FILE *file = fopen("e_matrix.txt", "w");
+    IPrinter::printMatrix(20, 14, m, m.rows(), m.cols(), NULL, file);
+    fclose(file);
+    return;
+
+    //    FILE *file = fopen("e2_data.txt", "w");
+    //    for (unsigned int i=0; i<=N; i++)
+    //    {
+    //        xs.at(5) = i*hx;
+    //        double a = fx(xs);
+    //        printf("%.3f %.14f\n", i*hx, a);
+    //        fprintf(file, "%.3f %.14f\n", i*hx, a);
+    //    }
+    //    fclose(file);
 
     DoubleVector x0;
 #ifdef _OPTIMIZE_K_
@@ -304,16 +337,16 @@ void Example3::print(unsigned int i UNUSED_PARAM, const DoubleVector &x UNUSED_P
 #endif
     puts("");
 
-//#ifdef OPTIMIZE_REPLACEMENT
-//    printf("k:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", x.at(0), x.at(1), x.at(2), x.at(3), x.at(4), x.at(5));
-//    printf("g:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", g.at(0), g.at(1), g.at(2), g.at(3), g.at(4), g.at(5));
-//    DoubleVector w = g;
-//    w.L2Normalize();
-//    printf("g:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", w.at(0), w.at(1), w.at(2), w.at(3), w.at(4), w.at(5));
-//#else
-//    printf("x:  %14.10f, %14.10f %14.10f, %14.10f\n", x.at(0), x.at(1), x.at(2), x.at(3));
-//    printf("g:  %14.10f, %14.10f %14.10f, %14.10f\n", g.at(0), g.at(1), g.at(2), g.at(3));
-//#endif
+    //#ifdef OPTIMIZE_REPLACEMENT
+    //    printf("k:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", x.at(0), x.at(1), x.at(2), x.at(3), x.at(4), x.at(5));
+    //    printf("g:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", g.at(0), g.at(1), g.at(2), g.at(3), g.at(4), g.at(5));
+    //    DoubleVector w = g;
+    //    w.L2Normalize();
+    //    printf("g:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", w.at(0), w.at(1), w.at(2), w.at(3), w.at(4), w.at(5));
+    //#else
+    //    printf("x:  %14.10f, %14.10f %14.10f, %14.10f\n", x.at(0), x.at(1), x.at(2), x.at(3));
+    //    printf("g:  %14.10f, %14.10f %14.10f, %14.10f\n", g.at(0), g.at(1), g.at(2), g.at(3));
+    //#endif
 }
 
 void Example3::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
@@ -389,6 +422,111 @@ void Example3::calculateU(DoubleMatrix &u)
     dd.clear();
     rx.clear();
     de.clear();
+}
+
+void Example3::calculateU1(DoubleMatrix &u)
+{
+    DoubleVector x = *px;
+
+    DoubleVector k,z,e;
+    getComponents(k,z,e,x);
+
+    u.clear();
+    u.resize(M+1, N+1);
+
+    for (unsigned int m=0; m<=M; m++)
+    {
+        if (m==0)
+        {
+            for (unsigned int n=0; n<=N; n++) u.at(0,n) = initial(n);
+        }
+        else
+        {
+            DoubleMatrix betta(2, N+1, 0.0);
+            DoubleVector qamma(2);
+
+            betta.at(0,0) = 1.0 + (a*a*ht)/(hx*hx) + (lambda0*a*a*ht)/hx + alpha*ht;
+            betta.at(0,1) = -(a*a*ht)/(hx*hx);
+            for (unsigned int n=2; n<=N; n++)
+            {
+                if (n == (unsigned int)(e.at(0)*N)) { betta.at(0,n) = -k.at(0)*(lambda0*(a*a*ht)/hx); }
+                if (n == (unsigned int)(e.at(1)*N)) { betta.at(0,n) = -k.at(1)*(lambda0*(a*a*ht)/hx); }
+            }
+            qamma.at(0) = u.at(m-1,0) + alpha*ht*Te - ((lambda0*a*a*ht)/hx)*(k.at(0)*z.at(0) + k.at(1)*z.at(1));
+
+            betta.at(1,N-1) = -(a*a*ht)/(hx*hx);
+            betta.at(1,N-0) = 1.0 + (a*a*ht)/(hx*hx) + (lambdal*a*a*ht)/hx + alpha*ht;
+            qamma.at(1) = u.at(m-1,N) + (lambdal*a*a*ht*Te)/hx + alpha*ht*Te;
+
+            DoubleMatrix alfa(N-1,3);
+            for (unsigned int n=1; n<=N-1; n++)
+            {
+                double A = -(a*a*ht)/(hx*hx);
+                double B = 1.0 + (2.0*a*a*ht)/(hx*hx) + alpha*ht;
+                double C = -(a*a*ht)/(hx*hx);
+                double D = u.at(m-1,n) + alpha*ht*Te;
+
+                alfa.at(n-1,0) = +D/A;
+                alfa.at(n-1,1) = -B/A;
+                alfa.at(n-1,2) = -C/A;
+            }
+
+            for (unsigned int i=0; i<=N-2; i++)
+            {
+                //double A = -(a*a*ht)/(hx*hx);
+                //double B = 1.0 + (2.0*a*a*ht)/(hx*hx) + alpha*ht;
+                //double C = -(a*a*ht)/(hx*hx);
+                //double D = u.at(m-1,i+1) + alpha*ht*Te;
+
+                //betta.at(0,i+1) = betta.at(0,i+1) + betta.at(0,i)*(-B/A);//alfa.at(i,1);
+                //betta.at(0,i+2) = betta.at(0,i+2) + betta.at(0,i)*(-C/A);//alfa.at(i,2);
+                //qamma.at(0)     = qamma.at(0)     - betta.at(0,i)*(+D/A);//alfa.at(i,0);
+
+                betta.at(0,i+1) = betta.at(0,i+1) + betta.at(0,i)*alfa.at(i,1);
+                betta.at(0,i+2) = betta.at(0,i+2) + betta.at(0,i)*alfa.at(i,2);
+                qamma.at(0)     = qamma.at(0)     - betta.at(0,i)*alfa.at(i,0);
+            }
+
+            DoubleMatrix m1(2,2);
+            m1.at(0,0) = betta.at(0,N-1);
+            m1.at(0,1) = betta.at(0,N-0);
+            m1.at(1,0) = betta.at(1,N-1);
+            m1.at(1,1) = betta.at(1,N-0);
+
+            DoubleVector b1(2);
+            b1.at(0) = qamma.at(0);
+            b1.at(1) = qamma.at(1);
+            //puts("---");
+            //IPrinter::printMatrix(m1,m1.rows(),m1.cols());
+            //puts("---");
+
+            DoubleVector u1(2);
+            GaussianElimination(m1, b1, u1);
+
+            m1.clear();
+            b1.clear();
+
+            u.at(m, N-1) = u1.at(0);
+            u.at(m, N-0) = u1.at(1);
+            puts("---");
+            printf("%4d %12.8f %12.8f %12.8f\n", m, u.at(m,N-2), u.at(m,N-1), u.at(m,N));
+
+            for (unsigned int i=N-2; i != UINT_MAX; i--)
+            {
+                u.at(m,i) = alfa.at(i,1)*u.at(m,i+1) + alfa.at(i,2)*u.at(m,i+2) + alfa.at(i,0);
+            }
+            printf("%4d %12.8f %12.8f %12.8f\n", m, u.at(m,N-2), u.at(m,N-1), u.at(m,N));
+
+            if (m==M)
+            {
+            //    printf("%4d %12.8f %12.8f %12.8f\n", m, u.at(m,N-2), u.at(m,N-1), u.at(m,N));
+            }
+
+            u1.clear();
+            betta.clear();
+            alfa.clear();
+        }
+    }
 }
 
 void Example3::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
