@@ -28,6 +28,7 @@ public:
     virtual double fx(const DoubleVector &x);
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
     virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &gradient, double alpha, RnFunction *fn) const;
+    virtual void print(const DoubleVector &x, const DoubleVector &g, unsigned int iterationNumber) const;
     virtual void project(DoubleVector &x, int index);
 
     double initial(unsigned int i) const;
@@ -39,7 +40,6 @@ public:
 
     void getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &x);
     void printNAGradinets(const DoubleVector &x0);
-
 
     //    //GaussianElimination
     //    void calculateU1(DoubleMatrix &u, const DoubleVector &x);

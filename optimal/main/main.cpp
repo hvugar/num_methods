@@ -33,33 +33,77 @@ public:
     virtual double initial(unsigned int i) const
     {
         double x = i*hx;
-        return x*x;
+        return x*x*x;
     }
 
     virtual double boundary(Boundary type, unsigned int j UNUSED_PARAM) const
     {
         if (type == Left)  return 0.0;
-        if (type == Right) return 2.0;
+        if (type == Right) return 3.0;
         return 0.0;
     }
     virtual double f(unsigned int i, unsigned int j) const
     {
         double x = i*hx;
         double t = j*ht;
-        return 2.0*t-2.0*a*a;
+        return 2.0*t-6.0*x*a*a;
     }
 
     double U(unsigned int i,unsigned int j)
     {
         double x = i*hx;
         double t = j*ht;
-        return x*x + t*t;
+        return x*x*x + t*t;
     }
 
     void calculate(DoubleMatrix &u)
     {
         u.clear();
         u.resize(M+1, N+1);
+
+        ////////////////////////////////////////
+        {
+            for (unsigned int j=0; j<=M; j++)
+            {
+                for (unsigned int i=0; i<=N; i++)
+                {
+                    u.at(j,i) = U(i,j);
+                }
+            }
+
+            double alpha = -(a*a*ht)/(hx*hx);
+            double betta  = 1.0 + (2.0*a*a*ht)/(hx*hx);
+
+            DoubleMatrix alfa(N-1, 3);
+
+            for (unsigned int i=0; i<=N-2; i++)
+            {
+                double d = 1.0 - (a*a*ht)/(hx*hx);
+                alfa.at(i, 1) = ((-2.0*a*a*ht)/(hx*hx))/d;
+                alfa.at(i, 2) = ((a*a*ht)/(hx*hx))/d;
+                alfa.at(i, 0) = (u.at(M-1,i)+ht*f(i,M))/d;
+
+
+//                alfa.at(i,1) = -betta/alpha;
+//                alfa.at(i,2) = -alpha/alpha;
+//                alfa.at(i,0) = (u.at(M-1,i) + ht * f(i, M))/alpha;
+            }
+
+            u.at(M, N-1) = U(N-1, M);
+            u.at(M, N-0) = U(N-0, M);
+            for (unsigned int i=N-2; i != UINT_MAX; i--)
+            {
+                u.at(M,i) = alfa.at(i,1)*u.at(M,i+1) + alfa.at(i,2)*u.at(M,i+2) + alfa.at(i,0);
+                //u.at(M,i) = alfa.at(i,1)*U(i+1,M) + alfa.at(i,2)*U(i+2,M) + alfa.at(i,0);
+            }
+
+            puts("-------------------------");
+            IPrinter::printMatrix(u);
+            puts("-------------------------");
+
+            return;
+        }
+        //////////////////////////////////////////
 
         for (unsigned int j=0; j<=M; j++)
         {
@@ -72,7 +116,7 @@ public:
             }
             else
             {
-//                if (j==M)
+                //                if (j==M)
                 {
                     double alpha = -(a*a*ht)/(hx*hx);
                     double betta  = 1.0 + (2.0*a*a*ht)/(hx*hx);
@@ -138,13 +182,13 @@ public:
                         u.at(j,i) = alfa.at(i,1)*u.at(j,i+1) + alfa.at(i,2)*u.at(j,i+2) + alfa.at(i,0);
                     }
                 }
-//                else
-//                {
-//                    for (unsigned int i=0; i <= N; i++)
-//                    {
-//                        u.at(j,i) = U(j,i);
-//                    }
-//                }
+                //                else
+                //                {
+                //                    for (unsigned int i=0; i <= N; i++)
+                //                    {
+                //                        u.at(j,i) = U(j,i);
+                //                    }
+                //                }
             }
         }
     }
@@ -154,34 +198,34 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     srand(time(NULL));
 
-    A a;
+//    A a;
 
-    DoubleVector u0(a.N+1);
-    for (unsigned int i=0; i<=a.N; i++)
-        u0.at(i) = a.U(i,a.M);
-    IPrinter::printVector(u0);
+//    DoubleVector u0(a.N+1);
+//    for (unsigned int i=0; i<=a.N; i++)
+//        u0.at(i) = a.U(i,a.M);
+//    IPrinter::printVector(u0);
 
-    DoubleMatrix u1;
-    a.calculateN1(u1, a.hx, a.ht, a.N, a.M);
-    IPrinter::printVector(u1.row(a.M));
+//    DoubleMatrix u1;
+//    a.calculateN1(u1, a.hx, a.ht, a.N, a.M);
+//    IPrinter::printVector(u1.row(a.M));
 
-    //    DoubleMatrix u3;
-    //    a.calculateN(u3, a.hx, a.ht, a.N, a.M);
-    //    IPrinter::printVector(u3.row(a.M));
+//    //    DoubleMatrix u3;
+//    //    a.calculateN(u3, a.hx, a.ht, a.N, a.M);
+//    //    IPrinter::printVector(u3.row(a.M));
 
-    DoubleMatrix u2;
-    a.calculate(u2);
-    IPrinter::printVector(u2.row(a.M));
+//    DoubleMatrix u2;
+//    a.calculate(u2);
+//    IPrinter::printVector(u2.row(a.M));
 
-    FILE *file1 = fopen("temp1.txt", "w");
-    IPrinter::printVector(u0,NULL,u0.size(),0,0,file1);
-    IPrinter::printVector(u1.row(a.M),NULL,u1.cols(),0,0,file1);
-    IPrinter::printVector(u2.row(a.M),NULL,u2.cols(),0,0,file1);
-    fclose(file1);
+//    FILE *file1 = fopen("temp1.txt", "w");
+//    IPrinter::printVector(u0,NULL,u0.size(),0,0,file1);
+//    IPrinter::printVector(u1.row(a.M),NULL,u1.cols(),0,0,file1);
+//    IPrinter::printVector(u2.row(a.M),NULL,u2.cols(),0,0,file1);
+//    fclose(file1);
 
     //    Problem3::Main(argc, argv);
     //    Problem1KZX::Main(argc, argv);
-    //    Example3::Main(argc, argv);
+        Example3::Main(argc, argv);
     //    Example2::Main(argc, argv);
     //    Problem1K::Main(argc, argv);
 

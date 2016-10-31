@@ -16,6 +16,7 @@ public:
     virtual ~ConjugateGradient();
 
     virtual void calculate(DoubleVector &x);
+
 protected:
     virtual double minimize(const DoubleVector &x, const DoubleVector &g);
     virtual double fx(double alpha);

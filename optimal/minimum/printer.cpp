@@ -7,6 +7,13 @@ void IPrinter::print(GradientIterationInfo &info) const
     C_UNUSED(info);
 }
 
+void IPrinter::print(const DoubleVector &x, const DoubleVector &g, unsigned int iterationNumber) const
+{
+    C_UNUSED(x);
+    C_UNUSED(g);
+    C_UNUSED(iterationNumber);
+}
+
 void IPrinter::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n, const char* s, FILE* f)
 {
     C_UNUSED(s);
@@ -22,7 +29,7 @@ void IPrinter::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n
         {
             for (unsigned int i=0; i<cols; i++)
             {
-                if (i%N==0) fprintf(f, "%10.6f ", x.at(j,i));
+                if (i%N==0) fprintf(f, "%14.10f ", x.at(j,i));
             }
             fputs("\n", f);
         }

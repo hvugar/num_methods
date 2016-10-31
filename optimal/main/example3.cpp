@@ -3,6 +3,7 @@
 #include <float.h>
 #include <vector>
 
+
 void Example3::Main(int argc, char *argv[])
 {
     C_UNUSED(argc);
@@ -30,7 +31,7 @@ void Example3::initialize()
     z << 1.52 << 1.71;
 #endif
 #ifndef _OPTIMIZE_E_
-    e << 0.40 << 0.70;
+    e << 0.25 << 0.75;
 #endif
 
     /***************************************************************/
@@ -41,57 +42,14 @@ void Example3::initialize()
     xs << 1.52 << 1.71;
 #endif
 #ifdef _OPTIMIZE_E_
-    xs << 0.40 << 0.70;
+    xs << 0.25 << 0.75;
 #endif
     /***************************************************************/
 
     px = &xs;
-//    DoubleMatrix u;
-//    calculateU(u);
-//    V = u.row(M);
-
-    FILE *file1 = fopen("temp.txt", "w");
-    DoubleMatrix u0;
-    calculateU(u0);
-    IPrinter::printVector(u0.row(M),NULL,u0.cols(),0,0,file1);
-
-    DoubleMatrix u1;
-    calculateU1(u1);
-    IPrinter::printVector(u1.row(M),NULL,u1.cols(),0,0,file1);
-    fclose(file1);
-    return;
-
-    //xs.at(4) = 0.40;
-    //xs.at(5) = 0.70;
-    //printf("%.14f\n", fx(xs));
-    return;
-
-    DoubleMatrix m(N/10+1, N/10+1);
-    for (uint32_t i=0; i<=N/10; i++)
-    {
-        for (uint32_t j=0; j<=N/10; j++)
-        {
-            xs.at(4) = i*hx*10.0;
-            xs.at(5) = j*hx*10.0;
-            double a = fx(xs);
-            m.at(i,j) = a;
-            printf("%.3f %.3f %20.14f\n", xs.at(4), xs.at(5), a);
-        }
-    }
-    FILE *file = fopen("e_matrix.txt", "w");
-    IPrinter::printMatrix(20, 14, m, m.rows(), m.cols(), NULL, file);
-    fclose(file);
-    return;
-
-    //    FILE *file = fopen("e2_data.txt", "w");
-    //    for (unsigned int i=0; i<=N; i++)
-    //    {
-    //        xs.at(5) = i*hx;
-    //        double a = fx(xs);
-    //        printf("%.3f %.14f\n", i*hx, a);
-    //        fprintf(file, "%.3f %.14f\n", i*hx, a);
-    //    }
-    //    fclose(file);
+    DoubleMatrix u;
+    calculateU(u);
+    V = u.row(M);
 
     DoubleVector x0;
 #ifdef _OPTIMIZE_K_
@@ -115,7 +73,7 @@ void Example3::initialize()
     g.setEpsilon1(0.00000001);
     g.setEpsilon2(0.00000001);
     g.setEpsilon3(0.00000001);
-    g.setR1MinimizeEpsilon(0.1, 0.00000001);
+    g.setR1MinimizeEpsilon(1.0, 0.00000001);
     g.setNormalize(true);
     g.calculate(x0);
 }
@@ -239,9 +197,23 @@ double Example3::fx(const DoubleVector &x)
     }
     sum = 0.5*hx*sum;
 
-    double norm1 = sqrt((k[0]-xs[0])*(k[0]-xs[0])+(k[1]-xs[1])*(k[1]-xs[1]));
-    double norm2 = sqrt((z[0]-xs[2])*(z[0]-xs[2])+(z[1]-xs[3])*(z[1]-xs[3]));
-    double norm3 = sqrt((e[0]-xs[4])*(e[0]-xs[4])+(e[1]-xs[5])*(e[1]-xs[5]));
+    double norm1 = 0.0;
+    double norm2 = 0.0;
+    double norm3 = 0.0;
+
+    int i = 0;
+#ifdef _OPTIMIZE_K_
+    norm1 = sqrt((k.at(0)-xs.at(i))*(k.at(0)-xs.at(i))+(k.at(1)-xs.at(i+1))*(k.at(1)-xs.at(i+1)));
+    i+=2;
+#endif
+#ifdef _OPTIMIZE_Z_
+    norm2 = sqrt((z.at(0)-xs.at(i))*(z.at(0)-xs.at(i))+(z.at(1)-xs.at(i+1))*(z.at(1)-xs.at(i+1)));
+    i+=2;
+#endif
+#ifdef _OPTIMIZE_E_
+    norm3 = sqrt((e.at(0)-xs.at(i))*(e.at(0)-xs.at(i))+(e.at(1)-xs.at(i+1))*(e.at(1)-xs.at(i+1)));
+    i+=2;
+#endif
 
     return alpha0*sum + alpha1*norm1 + alpha2*norm2 + alpha3*norm3;
 }
@@ -319,8 +291,39 @@ void Example3::gradient(const DoubleVector &x, DoubleVector &g)
 
 void Example3::print(unsigned int i UNUSED_PARAM, const DoubleVector &x UNUSED_PARAM, const DoubleVector &g UNUSED_PARAM, double alpha UNUSED_PARAM, RnFunction *fn UNUSED_PARAM) const
 {
-    C_UNUSED(alpha);
-    printf("J[%d]: %18.14f %16.12f ", i, fn->fx(x), alpha);
+//    C_UNUSED(alpha);
+//    printf("J[%d]: %18.14f %16.12f ", i, fn->fx(x), alpha);
+
+//    int j = 0;
+//#ifdef _OPTIMIZE_K_
+//    printf("%14.10f %14.10f ", x.at(j), x.at(j+1));
+//    j+=2;
+//#endif
+//#ifdef _OPTIMIZE_Z_
+//    printf("%14.10f %14.10f ", x.at(j), x.at(j+1));
+//    j+=2;
+//#endif
+//#ifdef _OPTIMIZE_E_
+//    printf("%14.10f %14.10f ", x.at(j), x.at(j+1));
+//    j+=2;
+//#endif
+//    puts("");
+
+    //#ifdef OPTIMIZE_REPLACEMENT
+    //    printf("k:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", x.at(0), x.at(1), x.at(2), x.at(3), x.at(4), x.at(5));
+    //    printf("g:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", g.at(0), g.at(1), g.at(2), g.at(3), g.at(4), g.at(5));
+    //    DoubleVector w = g;
+    //    w.L2Normalize();
+    //    printf("g:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", w.at(0), w.at(1), w.at(2), w.at(3), w.at(4), w.at(5));
+    //#else
+    //    printf("x:  %14.10f, %14.10f %14.10f, %14.10f\n", x.at(0), x.at(1), x.at(2), x.at(3));
+    //    printf("g:  %14.10f, %14.10f %14.10f, %14.10f\n", g.at(0), g.at(1), g.at(2), g.at(3));
+    //#endif
+}
+
+void Example3::print(const DoubleVector &x, const DoubleVector &g, unsigned int i) const
+{
+    printf("J[%d]: %18.14f ", i, const_cast<Example3*>(this)->fx(x));
 
     int j = 0;
 #ifdef _OPTIMIZE_K_
@@ -336,27 +339,23 @@ void Example3::print(unsigned int i UNUSED_PARAM, const DoubleVector &x UNUSED_P
     j+=2;
 #endif
     puts("");
-
-    //#ifdef OPTIMIZE_REPLACEMENT
-    //    printf("k:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", x.at(0), x.at(1), x.at(2), x.at(3), x.at(4), x.at(5));
-    //    printf("g:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", g.at(0), g.at(1), g.at(2), g.at(3), g.at(4), g.at(5));
-    //    DoubleVector w = g;
-    //    w.L2Normalize();
-    //    printf("g:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", w.at(0), w.at(1), w.at(2), w.at(3), w.at(4), w.at(5));
-    //#else
-    //    printf("x:  %14.10f, %14.10f %14.10f, %14.10f\n", x.at(0), x.at(1), x.at(2), x.at(3));
-    //    printf("g:  %14.10f, %14.10f %14.10f, %14.10f\n", g.at(0), g.at(1), g.at(2), g.at(3));
-    //#endif
 }
 
 void Example3::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
 {
+    int j = 0;
+#ifdef _OPTIMIZE_K_
+    j+=2;
+#endif
+#ifdef _OPTIMIZE_Z_
+    j+=2;
+#endif
 #ifdef _OPTIMIZE_E_
-    if (x.at(4) < 0.10) x.at(4) = 0.10;
-    if (x.at(4) > 0.90) x.at(4) = 0.90;
+    if (x.at(j) < 0.10) x.at(j) = 0.10;
+    if (x.at(j) > 0.90) x.at(j) = 0.90;
 
-    if (x.at(5) < 0.10) x.at(5) = 0.10;
-    if (x.at(5) > 0.90) x.at(5) = 0.90;
+    if (x.at(j+1) < 0.10) x.at(j+1) = 0.10;
+    if (x.at(j+1) > 0.90) x.at(j+1) = 0.90;
 #endif
 }
 
@@ -406,8 +405,18 @@ void Example3::calculateU(DoubleMatrix &u)
             for (unsigned int n=0; n<=N; n++)
             {
                 de[n] = 0.0;
-                if (fabs(n*hx - e.at(0)) <= DBL_EPSILON) { de[n] = -k[0]*(lambda0*(a*a*ht)/hx); }
-                if (fabs(n*hx - e.at(1)) <= DBL_EPSILON) { de[n] = -k[1]*(lambda0*(a*a*ht)/hx); }
+
+                if (fabs(n*hx - e.at(0)) <= h)
+                {
+                    de[n] = -k[0]*(lambda0*(a*a*ht)/hx) * (1.0 - fabs(n*hx - e.at(0))/h);
+                }
+                if (fabs(n*hx - e.at(1)) <= h)
+                {
+                    de[n] = -k[1]*(lambda0*(a*a*ht)/hx) * (1.0 - fabs(n*hx - e.at(1))/h);
+                }
+
+                //if (fabs(n*hx - e.at(0)) <= DBL_EPSILON) { de[n] = -k[0]*(lambda0*(a*a*ht)/hx); }
+                //if (fabs(n*hx - e.at(1)) <= DBL_EPSILON) { de[n] = -k[1]*(lambda0*(a*a*ht)/hx); }
             }
 
             qovmaFirstRow(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size(), de.data());
@@ -576,8 +585,14 @@ void Example3::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
             for (unsigned int n=0; n<=N; n++)
             {
                 de[n] = 0.0;
-                if (fabs(n*hx - e.at(0)) <= DBL_EPSILON) de[n] = +k.at(0)*(lambda0*(a*a*ht)/hx);
-                if (fabs(n*hx - e.at(1)) <= DBL_EPSILON) de[n] = +k.at(1)*(lambda0*(a*a*ht)/hx);
+                if (fabs(n*hx - e.at(0)) <= h)
+                {
+                    de[n] = k.at(0)*(lambda0*(a*a*ht)/hx) * (1.0 - fabs(n*hx - e.at(0))/h);
+                }
+                if (fabs(n*hx - e.at(1)) <= h)
+                {
+                    de[n] = k.at(1)*(lambda0*(a*a*ht)/hx) * (1.0 - fabs(n*hx - e.at(1))/h);
+                }
             }
 
             qovmaFirstCol(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size(), de.data());

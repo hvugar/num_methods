@@ -38,6 +38,8 @@ void ConjugateGradient::calculate(DoubleVector& x)
         // Gradient of objectiv function in current point
         m_gr->gradient(x, g);
 
+        if (m_printer != NULL) m_printer->print(x, g, iterationCount);
+
         double gradient_norm = g.L2Norm();
         if (gradient_norm < epsilon1())
         {
@@ -100,6 +102,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
         /* calculating distance previous and new point */
         if (distance < epsilon2() && fabs(f2 - f1) < epsilon3())
         {
+            if (m_printer != NULL) m_printer->print(x, g, iterationCount);
             if (mshowEndMessage) puts("Optimisation ends, because distance between last and current point less than epsilon...");
             break;
         }
