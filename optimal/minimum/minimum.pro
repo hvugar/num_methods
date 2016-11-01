@@ -35,7 +35,6 @@ SOURCES += \
     exceptions.cpp \
     ode1storder.cpp \
 #    matrix.cpp \
-    cgradient.c \
     matrix2d.cpp \
     vector2d.cpp \
     matrix3d.cpp
@@ -61,7 +60,6 @@ HEADERS += global.h \
     exceptions.h \
     ode1storder.h \
 #    matrix.h \
-    cgradient.h \
     matrix2d.h \
     vector2d.h \
     matrix3d.h

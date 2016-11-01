@@ -249,8 +249,8 @@ double IConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s
     return alpha;
 }
 
-void IConjugateGradient::project(DoubleVector &x, int index)
+void IConjugateGradient::project(DoubleVector &x UNUSED_PARAM, int index UNUSED_PARAM)
 {}
 
-void IConjugateGradient::print(unsigned int iteration, const DoubleVector &x, const DoubleVector &gradient, double alpha) const
+void IConjugateGradient::print(unsigned int iteration UNUSED_PARAM, const DoubleVector &x UNUSED_PARAM, const DoubleVector &gradient UNUSED_PARAM, double alpha UNUSED_PARAM) const
 {}

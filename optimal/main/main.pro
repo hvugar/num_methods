@@ -22,31 +22,13 @@ DESTDIR += ../bin
 QT += core gui widgets
 
 SOURCES += main.cpp \
-    problem1.cpp \
-    problem3.cpp \
-    problem1k.cpp \
-    problem1z.cpp \
-    problem1x.cpp \
-    problem1x1.cpp \
-    problem1x2.cpp \
-    problem1kz.cpp \
     loadedsystems.cpp \
     example1.cpp \
-    problem1kzx.cpp \
     example2.cpp \
-    example3.cpp
+    problem1.cpp
 
 HEADERS += \
-    problem1.h \
-    problem3.h \
-    problem1k.h \
-    problem1x.h \
-    problem1x1.h \
-    problem1x2.h \
-    problem1kz.h \
-    problem1z.h \
     loadedsystems.h \
     example1.h \
-    problem1kzx.h \
     example2.h \
-    example3.h
+    problem1.h

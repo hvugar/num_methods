@@ -9,6 +9,9 @@
 #include <matrix2d.h>
 #include <printer.h>
 #include <projection.h>
+#include <cmethods.h>
+#include <float.h>
+#include <vector>
 
 #define _OPTIMIZE_K_
 #define _OPTIMIZE_Z_
@@ -17,11 +20,11 @@
 void qovmaFirstCol(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e);
 void qovmaFirstRow(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e);
 
-class Example3 : public RnFunction, public IGradient, public ConjugateGradient, public IPrinter, public IProjection
+class Problem1 : public RnFunction, public IGradient, public ConjugateGradient, public IPrinter, public IProjection
 {
 public:
-    Example3();
-    virtual ~Example3() {}
+    Problem1();
+    virtual ~Problem1() {}
 
     void initialize();
 
@@ -52,11 +55,11 @@ public:
 private:
     double a = 1.0;
     unsigned int L = 2;
-    unsigned int N = 1000;
-    unsigned int M = 1000;
-    double hx = 0.001;
-    double ht = 0.001;
-    double h  = 0.001;
+    unsigned int N = 100;
+    unsigned int M = 100;
+    double hx = 0.01;
+    double ht = 0.01;
+    double h  = 0.01;
 
     double Ti = 2.0;
     double Te = 3.0;

@@ -179,7 +179,7 @@ void Example2::calculateRight2LeftSample()
     fclose(file1);
 }
 
-void Example2::calculateRight2Left(unsigned int N, unsigned int K, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x, const DoubleVector &x0)
+void Example2::calculateRight2Left(unsigned int N, unsigned int K, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x, const DoubleVector &x0 UNUSED_PARAM)
 {
     for (unsigned int eq=0; eq<K; eq++)
     {
@@ -412,11 +412,6 @@ void Example2::sample2()
     IPrinter::printVector(18, 14, x, "x2:", x.size(), 0, 0, file1);
 
     fclose(file1);
-}
-
-void Example2::true_solution(FILE *file, unsigned int N, unsigned int K, double h, DoubleVector &x)
-{
-
 }
 
 void Example2::sample_n3()
