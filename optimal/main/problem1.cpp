@@ -193,6 +193,20 @@ double Problem1::fx(const DoubleVector &x)
     }
     sum = 0.5*hx*sum;
 
+#ifdef __V_NORM__
+    double norm = 0.0;
+
+    for (unsigned int m=0; m<M; m++)
+    {
+        unsigned int m1 = m + 0;
+        unsigned int m2 = m + 1;
+        double f1 = k.at(0)*(u.at(m1,(unsigned int)(e.at(0)*N)) - z.at(0));
+        double f2 = k.at(0)*(u.at(m2,(unsigned int)(e.at(0)*N)) - z.at(0));
+        norm += (f1*f1 + f2*f2);
+    }
+
+    return alpha0*sum + alpha4*norm;
+#else
     double norm1 = 0.0;
     double norm2 = 0.0;
     double norm3 = 0.0;
@@ -210,8 +224,8 @@ double Problem1::fx(const DoubleVector &x)
     norm3 = sqrt((e.at(0)-xs.at(i))*(e.at(0)-xs.at(i))+(e.at(1)-xs.at(i+1))*(e.at(1)-xs.at(i+1)));
     i+=2;
 #endif
-
     return alpha0*sum + alpha1*norm1 + alpha2*norm2 + alpha3*norm3;
+#endif
 }
 
 void Problem1::gradient(const DoubleVector &x, DoubleVector &g)
@@ -287,23 +301,23 @@ void Problem1::gradient(const DoubleVector &x, DoubleVector &g)
 
 void Problem1::print(unsigned int i UNUSED_PARAM, const DoubleVector &x UNUSED_PARAM, const DoubleVector &g UNUSED_PARAM, double alpha UNUSED_PARAM, RnFunction *fn UNUSED_PARAM) const
 {
-//    C_UNUSED(alpha);
-//    printf("J[%d]: %18.14f %16.12f ", i, fn->fx(x), alpha);
+    //    C_UNUSED(alpha);
+    //    printf("J[%d]: %18.14f %16.12f ", i, fn->fx(x), alpha);
 
-//    int j = 0;
-//#ifdef _OPTIMIZE_K_
-//    printf("%14.10f %14.10f ", x.at(j), x.at(j+1));
-//    j+=2;
-//#endif
-//#ifdef _OPTIMIZE_Z_
-//    printf("%14.10f %14.10f ", x.at(j), x.at(j+1));
-//    j+=2;
-//#endif
-//#ifdef _OPTIMIZE_E_
-//    printf("%14.10f %14.10f ", x.at(j), x.at(j+1));
-//    j+=2;
-//#endif
-//    puts("");
+    //    int j = 0;
+    //#ifdef _OPTIMIZE_K_
+    //    printf("%14.10f %14.10f ", x.at(j), x.at(j+1));
+    //    j+=2;
+    //#endif
+    //#ifdef _OPTIMIZE_Z_
+    //    printf("%14.10f %14.10f ", x.at(j), x.at(j+1));
+    //    j+=2;
+    //#endif
+    //#ifdef _OPTIMIZE_E_
+    //    printf("%14.10f %14.10f ", x.at(j), x.at(j+1));
+    //    j+=2;
+    //#endif
+    //    puts("");
 
     //#ifdef OPTIMIZE_REPLACEMENT
     //    printf("k:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", x.at(0), x.at(1), x.at(2), x.at(3), x.at(4), x.at(5));
@@ -319,9 +333,10 @@ void Problem1::print(unsigned int i UNUSED_PARAM, const DoubleVector &x UNUSED_P
 
 void Problem1::print(const DoubleVector &x, const DoubleVector &g UNUSED_PARAM, unsigned int i) const
 {
-    printf("J[%d]: %18.14f ", i, const_cast<Problem1*>(this)->fx(x));
+    printf("J[%d]: %18.14f \n", i, const_cast<Problem1*>(this)->fx(x));
 
     int j = 0;
+    printf("x: ");
 #ifdef _OPTIMIZE_K_
     printf("%14.10f %14.10f ", x.at(j), x.at(j+1));
     j+=2;
@@ -335,6 +350,40 @@ void Problem1::print(const DoubleVector &x, const DoubleVector &g UNUSED_PARAM, 
     j+=2;
 #endif
     puts("");
+
+    j = 0;
+    DoubleVector n = g;
+    n.L2Normalize();
+    printf("n: ");
+#ifdef _OPTIMIZE_K_
+    printf("%14.10f %14.10f ", n.at(j), n.at(j+1));
+    j+=2;
+#endif
+#ifdef _OPTIMIZE_Z_
+    printf("%14.10f %14.10f ", n.at(j), n.at(j+1));
+    j+=2;
+#endif
+#ifdef _OPTIMIZE_E_
+    printf("%14.10f %14.10f ", n.at(j), n.at(j+1));
+    j+=2;
+#endif
+    puts("");
+
+    j = 0;
+    printf("g: ");
+#ifdef _OPTIMIZE_K_
+    printf("%14.10f %14.10f ", g.at(j), g.at(j+1));
+    j+=2;
+#endif
+#ifdef _OPTIMIZE_Z_
+    printf("%14.10f %14.10f ", g.at(j), g.at(j+1));
+    j+=2;
+#endif
+#ifdef _OPTIMIZE_E_
+    printf("%14.10f %14.10f ", g.at(j), g.at(j+1));
+    j+=2;
+#endif
+    puts("\n-----------------------------------------");
 }
 
 void Problem1::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
@@ -524,7 +573,7 @@ void Problem1::calculateU1(DoubleMatrix &u)
 
             if (m==M)
             {
-            //    printf("%4d %12.8f %12.8f %12.8f\n", m, u.at(m,N-2), u.at(m,N-1), u.at(m,N));
+                //    printf("%4d %12.8f %12.8f %12.8f\n", m, u.at(m,N-2), u.at(m,N-1), u.at(m,N));
             }
 
             u1.clear();
@@ -774,6 +823,16 @@ void qovmaFirstRow(double *a, double *b, double *c, double *d, double *x, unsign
     free(E);
     free(q);
     free(p);
+}
+
+double Problem1::v(const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, unsigned int m, const DoubleMatrix &u) const
+{
+    double sum = 0.0;
+    sum += k.at(0)*(u.at(m, (unsigned int)round(e.at(0)*N)) - z.at(0));
+    sum += k.at(1)*(u.at(m, (unsigned int)round(e.at(1)*N)) - z.at(1));
+
+    //sum += xs.at(0)*(u.at(m, (unsigned int)round(e.at(0)*N)) - z.at(0));
+    //sum += xs.at(1)*(u.at(m, (unsigned int)round(e.at(1)*N)) - z.at(1));
 }
 
 /*

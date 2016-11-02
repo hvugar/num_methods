@@ -17,6 +17,8 @@
 #define _OPTIMIZE_Z_
 #define _OPTIMIZE_E_
 
+//#define __V_NORM__
+
 void qovmaFirstCol(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e);
 void qovmaFirstRow(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e);
 
@@ -44,6 +46,8 @@ public:
     void getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &x);
     void printNAGradinets(const DoubleVector &x0);
 
+    double v(const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, unsigned int m, const DoubleMatrix &u) const;
+
     //    //GaussianElimination
     //    void calculateU1(DoubleMatrix &u, const DoubleVector &x);
     //    // qovma E
@@ -69,6 +73,9 @@ private:
 
     double alpha0 = 1.0;
 
+#ifdef __V_NORM__
+    double alpha4 = 1.0;
+#else
 #ifdef _OPTIMIZE_K_
     double alpha1 = 1.0;
 #else
@@ -85,6 +92,7 @@ private:
     double alpha3 = 1.0;
 #else
     double alpha3 = 0.0;
+#endif
 #endif
 
     const DoubleVector *px;

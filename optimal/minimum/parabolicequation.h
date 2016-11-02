@@ -19,6 +19,8 @@ public:
 
     virtual void calculateL(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0) const;
     virtual void calculateN1(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0) const;
+
+    virtual void calculateU1(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0) const;
 };
 
 class MINIMUMSHARED_EXPORT IBackwardParabolicEquation
