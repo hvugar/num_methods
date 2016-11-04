@@ -26,11 +26,15 @@ SOURCES += main.cpp \
     example1.cpp \
     example2.cpp \
     problem1.cpp \
-    bordertest.cpp
+    bordertest.cpp \
+    bordertest2.cpp \
+    bordertest1.cpp
 
 HEADERS += \
     loadedsystems.h \
     example1.h \
     example2.h \
     problem1.h \
-    bordertest.h
+    bordertest.h \
+    bordertest2.h \
+    bordertest1.h

@@ -22,6 +22,8 @@ public:
     double U(unsigned int i, unsigned int j) const;
 
     virtual void calculateU2(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0) const;
+    virtual void calculateU3(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0) const;
+    virtual void calculateU4(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0) const;
 
     static void Main(int argc, char* argv[]);
 };
