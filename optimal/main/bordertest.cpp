@@ -44,8 +44,8 @@ void BorderTest::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     IPrinter::printVector(18,14,u3f.row(1));
     IPrinter::printVector(18,14,u3f.row(bt.M));
     puts("---");
-    IPrinter::printVector(18,14,u3b.row(1));
-    IPrinter::printVector(18,14,u3b.row(bt.M));
+    //IPrinter::printVector(18,14,u3b.row(1));
+    //IPrinter::printVector(18,14,u3b.row(bt.M));
 }
 
 BorderTest::BorderTest()
@@ -185,8 +185,13 @@ void BorderTest::calculateU3Forward(DoubleMatrix &u, double hx, double ht, unsig
     u.clear();
     u.resize(M+1, N+1);
 
-    double ka = -((a*a)*ht)/(hx*hx);
-    double kb = 1.0 - 2.0*ka;
+    //double ka = -((a*a)*ht)/(hx*hx);
+    //double kb = 1.0 - 2.0*ka;
+
+    double ka = -1000.000000;
+    double kb = +2001.000000;
+
+    printf("%18.14f %18.14f\n", ka, kb);
 
     for (unsigned int j=0; j<=M; j++)
     {
@@ -233,11 +238,14 @@ void BorderTest::calculateU3Forward(DoubleMatrix &u, double hx, double ht, unsig
                 DoubleVector x1(2);
                 GaussianElimination(m,b1,x1);
 
+                if (j==1)
+                printf("%18.14f %18.14f\n", x1.at(0), x1.at(1));
+
                 u.at(j, N-2) = x1.at(0);
                 u.at(j, N-1) = x1.at(1);
                 for (unsigned int i=N-2; i!=1; i--)
                 {
-                    u.at(j, i-1) = (-kb/ka)*u.at(j, i) + (-1.0)*u.at(j, i+1) + ((u.at(j-1,i) + ht * f(i, j))/(ka));
+                    u.at(j, i-1) = (-kb/ka)*u.at(j, i) - u.at(j, i+1) + ((u.at(j-1,i) + ht * f(i, j))/(ka));
                 }
             }
         }

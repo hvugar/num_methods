@@ -14,9 +14,9 @@ public:
     virtual double f(unsigned int i, unsigned int j) const;
 
     double hx = 0.001;
-    double ht = 0.01;
+    double ht = 0.001;
     unsigned int N = 1000;
-    unsigned int M = 100;
+    unsigned int M = 1000;
     double a = 1.0;
 
     double U(unsigned int i, unsigned int j) const;
