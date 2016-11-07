@@ -4,31 +4,48 @@ void BorderTest::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     BorderTest bt;
     DoubleMatrix u0(bt.M+1, bt.N+1);
-    for (unsigned int i=0; i<=bt.N; i++) u0.at(1,i) = bt.U(i,1);
-    //bt.calculateU(u0, bt.hx, bt.ht, bt.N, bt.M, bt.a);
-    //IPrinter::printMatrix(u);
+    for (unsigned int j=0; j<=bt.M; j++)
+    {
+        for (unsigned int i=0; i<=bt.N; i++)
+            u0.at(j,i) = bt.U(i,j);
+    }
+    IPrinter::printMatrix(u0);
     puts("-------------------------------------------------------------------");
     DoubleMatrix u;
     bt.calculateU(u, bt.hx, bt.ht, bt.N, bt.M, bt.a);
-    //IPrinter::printMatrix(u);
+    IPrinter::printMatrix(u);
     puts("-------------------------------------------------------------------");
-    DoubleMatrix u1;
-    bt.calculateU1(u1, bt.hx, bt.ht, bt.N, bt.M, bt.a);
+    //DoubleMatrix u1;
+    //bt.calculateU1(u1, bt.hx, bt.ht, bt.N, bt.M, bt.a);
     //IPrinter::printMatrix(u1);
-    puts("-------------------------------------------------------------------");
+    //puts("-------------------------------------------------------------------");
     //DoubleMatrix u2;
-    //bt.calculateU2(u2, bt.hx, bt.ht, bt.N, bt.M, bt.a);
+    //bt.calculateUError2(u2, bt.hx, bt.ht, bt.N, bt.M, bt.a);
     //IPrinter::printMatrix(u2);
     //puts("-------------------------------------------------------------------");
-    DoubleMatrix u3;
-    bt.calculateU3(u3, bt.hx, bt.ht, bt.N, bt.M, bt.a);
-    //IPrinter::printMatrix(u3);
+
+    DoubleMatrix u3f;
+    bt.calculateU3Forward(u3f, bt.hx, bt.ht, bt.N, bt.M, bt.a);
+    IPrinter::printMatrix(u3f);
     puts("-------------------------------------------------------------------");
-    IPrinter::printVector(14,12,u0.row(1));
-    IPrinter::printVector(14,12,u.row(1));
+
+    DoubleMatrix u3b;
+    bt.calculateU3Backward(u3b, bt.hx, bt.ht, bt.N, bt.M, bt.a);
+    IPrinter::printMatrix(u3b);
+    puts("-------------------------------------------------------------------");
+
+    IPrinter::printVector(18,14,u0.row(1));
+    for (unsigned int i=0; i<=bt.N; i++) u0.at(bt.M,i) = bt.U(i,bt.M);
+    IPrinter::printVector(18,14,u0.row(bt.M));
+    //IPrinter::printVector(14,12,u.row(1));
     //IPrinter::printVector(14,12,u1.row(1));
     //IPrinter::printVector(14,12,u2.row(bt.M));
-    IPrinter::printVector(14,12,u3.row(1));
+    puts("---");
+    IPrinter::printVector(18,14,u3f.row(1));
+    IPrinter::printVector(18,14,u3f.row(bt.M));
+    puts("---");
+    IPrinter::printVector(18,14,u3b.row(1));
+    IPrinter::printVector(18,14,u3b.row(bt.M));
 }
 
 BorderTest::BorderTest()
@@ -37,8 +54,8 @@ BorderTest::BorderTest()
 double BorderTest::initial(unsigned int i) const
 {
     double x = i*hx;
-    return x*x*x;
-    //    return x*x;
+    //return x*x*x;
+    return x*x;
 }
 
 double BorderTest::boundary(Boundary type, unsigned int j) const
@@ -53,19 +70,19 @@ double BorderTest::f(unsigned int i, unsigned int j) const
 {
     double x = i*hx;
     double t = j*ht;
-    return 2.0*t - 6.0*x*a*a;
-    //    return 2.0*t - 2.0*a*a;
+    //return 2.0*t - 6.0*x*a*a;
+    return 2.0*t - 2.0*a*a;
 }
 
 double BorderTest::U(unsigned int i, unsigned int j) const
 {
     double x = i*hx;
     double t = j*ht;
-    return x*x*x + t*t;
-    //    return x*x + t*t;
+    //return x*x*x + t*t;
+    return x*x + t*t;
 }
 
-void BorderTest::calculateU2(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a) const
+void BorderTest::calculateUError2(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a) const
 {
     u.clear();
     u.resize(M+1, N+1);
@@ -163,10 +180,13 @@ void BorderTest::calculateU2(DoubleMatrix &u, double hx, double ht, unsigned int
     }
 }
 
-void BorderTest::calculateU3(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a) const
+void BorderTest::calculateU3Forward(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a) const
 {
     u.clear();
     u.resize(M+1, N+1);
+
+    double ka = -((a*a)*ht)/(hx*hx);
+    double kb = 1.0 - 2.0*ka;
 
     for (unsigned int j=0; j<=M; j++)
     {
@@ -174,7 +194,7 @@ void BorderTest::calculateU3(DoubleMatrix &u, double hx, double ht, unsigned int
         {
             for (unsigned int i=0; i<=N; i++)
             {
-                u[j][i] = initial(i);
+                u.at(j,i) = initial(i);
             }
         }
         else
@@ -189,52 +209,48 @@ void BorderTest::calculateU3(DoubleMatrix &u, double hx, double ht, unsigned int
                 u.at(j, N) = boundary(Right, j);
 
                 DoubleVector betta(N-1, 0.0);
-                betta.at(0) = 1.0+(2.0*a*a*ht)/(hx*hx);
-                betta.at(1) = (-a*a*ht)/(hx*hx);
-                double qamma = u.at(j-1,1)   + ht * f(1,   j) + ((a*a*ht)/(hx*hx)) * u.at(j, 0);
+                betta.at(0) = kb;
+                betta.at(1) = ka;
+                double qamma = u.at(j-1,1) + ht * f(1, j) - ka * u.at(j, 0);
+
 
                 for (unsigned int i=0; i<N-3; i++)
                 {
-                    betta.at(i+1) = betta.at(i+1) + betta.at(i)*((1.0+(2.0*a*a*ht)/(hx*hx))/((a*a*ht)/(hx*hx)));
+                    betta.at(i+1) = betta.at(i+1) + betta.at(i)*(-kb/ka);
                     betta.at(i+2) = betta.at(i+2) + betta.at(i)*(-1.0);
-                    qamma = qamma - betta.at(i)*((u.at(j-1,i+2) + ht * f(i+2, j))/((-a*a*ht)/(hx*hx)));
+                    qamma = qamma - betta.at(i)*((u.at(j-1,i+2) + ht * f(i+2, j))/ka);
                 }
 
                 DoubleMatrix m(2,2);
                 m.at(0,0) = betta.at(N-3);
                 m.at(0,1) = betta.at(N-2);
-                m.at(1,0) = (-a*a*ht)/(hx*hx);
-                m.at(1,1) = 1.0+(2.0*a*a*ht)/(hx*hx);
+                m.at(1,0) = ka;
+                m.at(1,1) = kb;
                 DoubleVector b1(2);
                 b1.at(0) = qamma;
-                b1.at(1) = u.at(j-1,N-1) + ht * f(N-1, j) + ((a*a*ht)/(hx*hx)) * u.at(j, N);
+                b1.at(1) = u.at(j-1,N-1) + ht * f(N-1, j) - ka * u.at(j, N);
 
                 DoubleVector x1(2);
                 GaussianElimination(m,b1,x1);
-
-                if (j==M)
-                {
-                    //printf("%18.14f %18.14f %18.14f\n", betta.at(N-4), betta.at(N-3), qamma);
-                    //printf("%18.14f %18.14f\n", x1.at(0), x1.at(1));
-                }
 
                 u.at(j, N-2) = x1.at(0);
                 u.at(j, N-1) = x1.at(1);
                 for (unsigned int i=N-2; i!=1; i--)
                 {
-                    u.at(j, i-1) = ((1.0+(2.0*a*a*ht)/(hx*hx))/((a*a*ht)/(hx*hx)))*u.at(j, i)
-                            + (-1.0)*u.at(j, i+1)
-                            + ((u.at(j-1,i) + ht * f(i, j))/((-a*a*ht)/(hx*hx)));
+                    u.at(j, i-1) = (-kb/ka)*u.at(j, i) + (-1.0)*u.at(j, i+1) + ((u.at(j-1,i) + ht * f(i, j))/(ka));
                 }
             }
         }
     }
 }
 
-void BorderTest::calculateU4(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a) const
+void BorderTest::calculateU3Backward(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a) const
 {
     u.clear();
     u.resize(M+1, N+1);
+
+    double ka = -((a*a)*ht)/(hx*hx);
+    double kb = 1.0 - 2.0*ka;
 
     for (unsigned int j=0; j<=M; j++)
     {
@@ -242,60 +258,47 @@ void BorderTest::calculateU4(DoubleMatrix &u, double hx, double ht, unsigned int
         {
             for (unsigned int i=0; i<=N; i++)
             {
-                u[j][i] = initial(i);
+                u.at(j,i) = initial(i);
             }
         }
         else
         {
-            //if (j != M)
-            //{
-            //    for (unsigned int i=0; i<=N; i++) u.at(j,i) = U(i,j);
-            //}
-            //else
+            u.at(j, 0) = boundary(Left, j);
+            u.at(j, N) = boundary(Right, j);
+
+            DoubleVector betta(N-1, 0.0);
+            betta.at(N-2) = kb;//-->N-1
+            betta.at(N-3) = ka;//-->N-2
+            double qamma = u.at(j-1,N-1) + ht * f(N-1, j) - ka * u.at(j, N);
+
+            for (unsigned int i=N-2; i>=2; i--)
             {
-                u.at(j, 0) = boundary(Left, j);
-                u.at(j, N) = boundary(Right, j);
+                betta.at(i-1) = betta.at(i-1) + betta.at(i)*(-kb/ka);
+                betta.at(i-2) = betta.at(i-2) + betta.at(i)*(-1.0);
+                qamma = qamma - betta.at(i)*((u.at(j-1,i) + ht * f(i, j))/ka);
+            }
 
-                DoubleVector betta(N-1, 0.0);
-                betta.at(0) = 1.0+(2.0*a*a*ht)/(hx*hx);
-                betta.at(1) = (-a*a*ht)/(hx*hx);
-                double qamma = u.at(j-1,1)   + ht * f(1,   j) + ((a*a*ht)/(hx*hx)) * u.at(j, 0);
+            DoubleMatrix m(2,2);
+            m.at(0,0) = kb;
+            m.at(0,1) = ka;
+            m.at(1,0) = betta.at(0);
+            m.at(1,1) = betta.at(1);
+            DoubleVector b1(2);
+            b1.at(0) = u.at(j-1,1) + ht * f(1, j) - ka * u.at(j, 0);
+            b1.at(1) = qamma;
 
-                for (unsigned int i=0; i<N-3; i++)
-                {
-                    betta.at(i+1) = betta.at(i+1) + betta.at(i)*((1.0+(2.0*a*a*ht)/(hx*hx))/((a*a*ht)/(hx*hx)));
-                    betta.at(i+2) = betta.at(i+2) + betta.at(i)*(-1.0);
-                    qamma = qamma - betta.at(i)*((u.at(j-1,i+2) + ht * f(i+2, j))/((-a*a*ht)/(hx*hx)));
-                }
+            DoubleVector x1(2);
+            GaussianElimination(m,b1,x1);
 
-                DoubleMatrix m(2,2);
-                m.at(0,0) = betta.at(N-3);
-                m.at(0,1) = betta.at(N-2);
-                m.at(1,0) = (-a*a*ht)/(hx*hx);
-                m.at(1,1) = 1.0+(2.0*a*a*ht)/(hx*hx);
-                DoubleVector b1(2);
-                b1.at(0) = qamma;
-                b1.at(1) = u.at(j-1,N-1) + ht * f(N-1, j) + ((a*a*ht)/(hx*hx)) * u.at(j, N);
+            //if (j==1)
+            //    printf("%.8f %.8f\n", x1.at(0), x1.at(1));
 
-                DoubleVector x1(2);
-                GaussianElimination(m,b1,x1);
-
-                if (j==M)
-                {
-                    //printf("%18.14f %18.14f %18.14f\n", betta.at(N-4), betta.at(N-3), qamma);
-                    printf("%18.14f %18.14f\n", x1.at(0), x1.at(1));
-                }
-
-                u.at(j, N-2) = x1.at(0);
-                u.at(j, N-1) = x1.at(1);
-                for (unsigned int i=N-2; i!=1; i--)
-                {
-                    u.at(j, i-1) = ((1.0+(2.0*a*a*ht)/(hx*hx))/((a*a*ht)/(hx*hx)))*u.at(j, i)
-                            + (-1.0)*u.at(j, i+1)
-                            + ((u.at(j-1,i) + ht * f(i, j))/((-a*a*ht)/(hx*hx)));
-                }
+            u.at(j, 1) = x1.at(0);
+            u.at(j, 2) = x1.at(1);
+            for (unsigned int i=2; i<=N-2; i++)
+            {
+                u.at(j, i+1) = (-kb/ka)*u.at(j, i) + (-1.0)*u.at(j, i-1) + ((u.at(j-1,i) + ht * f(i, j))/(ka));
             }
         }
     }
 }
-
