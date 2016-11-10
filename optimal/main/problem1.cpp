@@ -825,16 +825,6 @@ void qovmaFirstRow(double *a, double *b, double *c, double *d, double *x, unsign
     free(p);
 }
 
-double Problem1::v(const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, unsigned int m, const DoubleMatrix &u) const
-{
-    double sum = 0.0;
-    sum += k.at(0)*(u.at(m, (unsigned int)round(e.at(0)*N)) - z.at(0));
-    sum += k.at(1)*(u.at(m, (unsigned int)round(e.at(1)*N)) - z.at(1));
-
-    //sum += xs.at(0)*(u.at(m, (unsigned int)round(e.at(0)*N)) - z.at(0));
-    //sum += xs.at(1)*(u.at(m, (unsigned int)round(e.at(1)*N)) - z.at(1));
-}
-
 /*
 void Example3::calculateU1(DoubleMatrix &u, const DoubleVector &x)
 {

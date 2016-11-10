@@ -46,8 +46,6 @@ public:
     void getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &x);
     void printNAGradinets(const DoubleVector &x0);
 
-    double v(const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, unsigned int m, const DoubleMatrix &u) const;
-
     //    //GaussianElimination
     //    void calculateU1(DoubleMatrix &u, const DoubleVector &x);
     //    // qovma E
