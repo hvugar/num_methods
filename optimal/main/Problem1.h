@@ -17,7 +17,7 @@
 #define _OPTIMIZE_Z_
 #define _OPTIMIZE_E_
 
-//#define __V_NORM__
+#define __V_NORM__
 
 void qovmaFirstCol(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e);
 void qovmaFirstRow(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e);
@@ -40,10 +40,10 @@ public:
     double mu(unsigned int i UNUSED_PARAM) const { return 1.0; }
     // qovma 1
     void calculateU(DoubleMatrix &u);
-    void calculateU1(DoubleMatrix &u);
+    //void calculateU1(DoubleMatrix &u);
     void calculateP(DoubleMatrix& p, const DoubleMatrix &u);
 
-    void getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &x);
+    void getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &x) const;
     void printNAGradinets(const DoubleVector &x0);
 
     //    //GaussianElimination
@@ -53,6 +53,8 @@ public:
     //    // teze qovma
     //    void calculateU3(DoubleMatrix &u, const DoubleVector &x);
     //    void calculate1(unsigned int N, unsigned int K, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x);
+
+    double v(unsigned int j, const DoubleMatrix &u) const;
 
 private:
     double a = 1.0;
