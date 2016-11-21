@@ -20,8 +20,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //BorderTest::Main(argc, argv);
     //BorderTest1::Main(argc, argv);
-    //Example2::Main(argc, argv);
-    Problem1::Main(argc, argv);
+    Example2::Main(argc, argv);
+    //Problem1::Main(argc, argv);
 
     return 0;
 }

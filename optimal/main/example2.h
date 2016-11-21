@@ -6,8 +6,8 @@
 #include <printer.h>
 #include <math.h>
 
-//#define SAMPLE_1
-#define SAMPLE_2
+#define SAMPLE_1
+//#define SAMPLE_2
 //#define SAMPLE_3
 
 class Example2
@@ -32,6 +32,8 @@ public:
     void sample_n3();
     void sample_n4();
     void sample_n6();
+
+    void sample_n4_test();
 
     static void Main(int argc, char* argv[]);
 };

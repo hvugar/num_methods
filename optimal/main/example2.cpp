@@ -681,3 +681,24 @@ void Example2::sample_n6()
     IPrinter::printVector(14, 10, x2, "x2:", 10);
     fclose(file1);
 }
+
+void Example2::sample_n4_test()
+{
+    unsigned int N = 1000;
+    double h = 0.001;
+    unsigned int K = 4;
+
+    DoubleVector x(N+1);
+    DoubleVector p3(N+1);
+    DoubleVector p2(N+1);
+    DoubleVector p1(N+1);
+    DoubleVector p0(N+1);
+
+
+
+    p0.clear();
+    p1.clear();
+    p2.clear();
+    p3.clear();
+    x.clear();
+}
