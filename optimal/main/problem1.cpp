@@ -47,6 +47,21 @@ void Problem1::initialize()
     calculateU(u);
     V = u.row(M);
 
+//    FILE* numfile = fopen("num_data.txt", "w");
+//    for (unsigned int n=0; n<=N; n++)
+//    {
+//        double x = n*hx;
+//        xs.at(4) = x;
+//        double f = fx(xs);
+//        printf("%d %f %18.14f\n", n, x, f);
+//        fprintf(numfile, "%f %18.14f\n", x, f);
+//        //int a1;
+//        //scanf("%d", &a1);
+//    }
+//    fclose(numfile);
+
+//    xs.at(4) = 0.25;
+
     DoubleVector x0;
 #ifdef _OPTIMIZE_K_
     x0 << 3.50 << 3.70;
@@ -181,6 +196,8 @@ double Problem1::fx(const DoubleVector &x)
 
     DoubleMatrix u;
     calculateU(u);
+
+    //printf("%u, %f %f %f %f %f\n", M, u.at(M,0), u.at(M,1), u.at(M,2), u.at(M,3), u.at(M,4));
 
     double sum = 0.0;
     for (unsigned int n=0; n<N; n++)
@@ -425,24 +442,24 @@ void Problem1::print(const DoubleVector &x, const DoubleVector &g UNUSED_PARAM, 
 #endif
     puts("");
 
-    DoubleVector gn(x.size());
-    IGradient::Gradient(const_cast<Problem1*>(this), h, x, gn);
-    gn.L2Normalize();
-    j = 0;
-    gn.L2Normalize();
-    printf("gn:");
-#ifdef _OPTIMIZE_K_
-    printf("%14.10f %14.10f ", gn.at(j), gn.at(j+1));
-    j+=2;
-#endif
-#ifdef _OPTIMIZE_Z_
-    printf("%14.10f %14.10f ", gn.at(j), gn.at(j+1));
-    j+=2;
-#endif
-#ifdef _OPTIMIZE_E_
-    printf("%14.10f %14.10f ", gn.at(j), gn.at(j+1));
-    j+=2;
-#endif
+//    DoubleVector gn(x.size());
+//    IGradient::Gradient(const_cast<Problem1*>(this), h, x, gn);
+//    gn.L2Normalize();
+//    j = 0;
+//    gn.L2Normalize();
+//    printf("gn:");
+//#ifdef _OPTIMIZE_K_
+//    printf("%14.10f %14.10f ", gn.at(j), gn.at(j+1));
+//    j+=2;
+//#endif
+//#ifdef _OPTIMIZE_Z_
+//    printf("%14.10f %14.10f ", gn.at(j), gn.at(j+1));
+//    j+=2;
+//#endif
+//#ifdef _OPTIMIZE_E_
+//    printf("%14.10f %14.10f ", gn.at(j), gn.at(j+1));
+//    j+=2;
+//#endif
 
     puts("\n-----------------------------------------");
 }
@@ -528,6 +545,7 @@ void Problem1::calculateU(DoubleMatrix &u)
             qovmaFirstRow(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size(), de.data());
 
             for (unsigned int i=0; i<=N; i++) u.at(m, i) = rx[i];
+            //printf("%u, %f %f %f %f %f\n", m, u.at(m,0), u.at(m,1), u.at(m,2), u.at(m,3), u.at(m,4));
         }
     }
 
@@ -818,14 +836,23 @@ void qovmaFirstRow(double *a, double *b, double *c, double *d, double *x, unsign
     double *p = (double*)malloc(sizeof(double)*n);
     double *q = (double*)malloc(sizeof(double)*n);
 
+    //printf("e: %f %f %f %f %f %f %f %f\n", e[0], e[1], e[2], e[3], e[4], e[5], e[6], e[7]);
     unsigned int L = 0;
-    for (unsigned int s=2; s<n; s++) if (e[s] != 0.0) L+=1;
+    for (unsigned int s=0; s<n; s++)
+    {
+        if (fabs(e[s]) > 0.000001)
+        {
+            //printf("s: %4d %.14f\n", s, e[s]);
+            L+=1;
+        }
+    }
+    //printf("L %d\n", L);
     unsigned int *E = (unsigned int *)malloc(sizeof(unsigned int)*L);
 
     unsigned int i = 0;
-    for (unsigned int s=2; s<n; s++)
+    for (unsigned int s=0; s<n; s++)
     {
-        if (e[s] != 0.0)
+        if (fabs(e[s]) > 0.000001)
         {
             E[i++] = s;
         }
@@ -855,18 +882,24 @@ void qovmaFirstRow(double *a, double *b, double *c, double *d, double *x, unsign
         }
         else
         {
-            p[i] = +(d[i]-a[i]*p[i-1])/(b[i]+a[i]*q[i-1]);
-            q[i] = -c[i]/(b[i]+a[i]*q[i-1]);
+            double m = b[i]+a[i]*q[i-1];
+            p[i] = +(d[i]-a[i]*p[i-1])/m;
+            q[i] = -c[i]/m;
 
             for (unsigned int s=0; s<L; s++)
             {
                 if (i<(E[s]-1))
-                    k[s][i] = -(a[i]*k[s][i-1])/(b[i]+a[i]*q[i-1]);
+                    k[s][i] = -(a[i]*k[s][i-1])/m;
                 else
                     k[s][i] = 0.0;
+
+                if (i==E[s]-1) q[i] += -(a[i]*k[s][i-1])/m;
             }
 
-            for (unsigned int s=0; s<L; s++) if (i==E[s]-1) q[i] += -(a[i]*k[s][i-1])/(b[i]+a[i]*q[i-1]);
+//            for (unsigned int s=0; s<L; s++)
+//            {
+//                if (i==E[s]-1) q[i] += -(a[i]*k[s][i-1])/m;
+//            }
         }
     }
 

@@ -17,7 +17,7 @@
 #define _OPTIMIZE_Z_
 #define _OPTIMIZE_E_
 
-#define __V_NORM__
+//#define __V_NORM__
 
 void qovmaFirstCol(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e);
 void qovmaFirstRow(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e);

@@ -6,6 +6,9 @@
 #include <printer.h>
 #include <cmethods.h>
 
+//#define SAMPLE_1
+#define SAMPLE_2
+
 class BorderTest1
 {
 public:

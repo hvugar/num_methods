@@ -6,7 +6,9 @@
 #include <printer.h>
 #include <math.h>
 
-#define SAMPLE3
+//#define SAMPLE_1
+#define SAMPLE_2
+//#define SAMPLE_3
 
 class Example2
 {

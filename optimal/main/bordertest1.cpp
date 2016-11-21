@@ -7,10 +7,10 @@ void BorderTest1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     bt.betta = bt.X(bt.N);
     DoubleVector x1;
     bt.calculate1(x1);
-    IPrinter::printVector(18,14,x1);
+    IPrinter::printVector(14,10,x1);
     DoubleVector x2;
     bt.calculate2(x2);
-    IPrinter::printVector(18,14,x2);
+    IPrinter::printVector(14,10,x2);
 }
 
 BorderTest1::BorderTest1()
@@ -20,22 +20,34 @@ BorderTest1::BorderTest1()
 double BorderTest1::a(unsigned int i) const
 {
     double t = i*h;
+#ifdef SAMPLE_1
     return 2.0*t;
-    //return -3.0;
+#endif
+#ifdef SAMPLE_2
+    return -3.0;
+#endif
 }
 
 double BorderTest1::b(unsigned int i) const
 {
     double t = i*h;
+#ifdef SAMPLE_1
     return 6.0*t - 2.0*t*t*t*t;
-    //return 4.0*exp(t)*cos(2.0*t);
+#endif
+#ifdef SAMPLE_2
+    return 4.0*exp(t)*cos(2.0*t);
+#endif
 }
 
 double BorderTest1::X(unsigned int i) const
 {
     double t = i*h;
+#ifdef SAMPLE_1
     return t*t*t;
-    //return exp(t)*sin(2.0*t);
+#endif
+#ifdef SAMPLE_2
+    return exp(t)*sin(2.0*t);
+#endif
 }
 
 void BorderTest1::calculate1(DoubleVector &u)
@@ -95,16 +107,16 @@ void BorderTest1::calculate2(DoubleVector &u)
     betta.at(1) = 1.0;
     double qamma = h*h*b(1) - u.at(0);
 
-//    DoubleVector alpha1(N-1);
-//    DoubleVector alpha2(N-1);
-//    DoubleVector alpha3(N-1);
+    //    DoubleVector alpha1(N-1);
+    //    DoubleVector alpha2(N-1);
+    //    DoubleVector alpha3(N-1);
 
-//    for (unsigned int i=0; i<=N-2; i++)
-//    {
-//        alpha1.at(i) = 2.0 + a(i)*h*h;
-//        alpha2.at(i) = -1.0;
-//        alpha3.at(i) = b(i)*h*h;
-//    }
+    //    for (unsigned int i=0; i<=N-2; i++)
+    //    {
+    //        alpha1.at(i) = 2.0 + a(i)*h*h;
+    //        alpha2.at(i) = -1.0;
+    //        alpha3.at(i) = b(i)*h*h;
+    //    }
 
     for (unsigned int i=0; i<N-3; i++)
     {

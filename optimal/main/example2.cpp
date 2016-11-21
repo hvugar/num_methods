@@ -5,20 +5,15 @@ double my_rand()
     return ((rand() % 100) + 1) / 100.0;
 }
 
-void Example2::Main(int argc, char *argv[])
+void Example2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    C_UNUSED(argc);
-    C_UNUSED(argv);
-
     Example2 e2;
     e2.sample_n3();
     e2.sample_n4();
     e2.sample_n6();
 }
 
-Example2::Example2()
-{
-}
+Example2::Example2() {}
 
 void Example2::calculateLeft2RightSample()
 {
@@ -214,41 +209,41 @@ void Example2::calculateRight2Left(unsigned int N, unsigned int K, const DoubleM
     }
 }
 
-double Example2::X(double t) const
+double Example2::X(double t UNUSED_PARAM) const
 {
-#ifdef SAMPLE1
+#ifdef SAMPLE_1
     return t*t;
 #endif
-#ifdef SAMPLE2
+#ifdef SAMPLE_2
     return 3.0*sin(t);
 #endif
-#ifdef SAMPLE3
+#ifdef SAMPLE_3
     return (t*t-t)*sin(50.0*t);
 #endif
 }
 
-double Example2::A(double t) const
+double Example2::A(double t UNUSED_PARAM) const
 {
-#ifdef SAMPLE1
+#ifdef SAMPLE_1
     return 3.0;
 #endif
-#ifdef SAMPLE2
+#ifdef SAMPLE_2
     return t;
 #endif
-#ifdef SAMPLE3
+#ifdef SAMPLE_3
     return t;
 #endif
 }
 
-double Example2::B(double t) const
+double Example2::B(double t UNUSED_PARAM) const
 {
-#ifdef SAMPLE1
+#ifdef SAMPLE_1
     return 2.0*t - 3.0*t*t;
 #endif
-#ifdef SAMPLE2
+#ifdef SAMPLE_2
     return 3.0*cos(t) - 3.0*t*sin(t);
 #endif
-#ifdef SAMPLE3
+#ifdef SAMPLE_3
     return 50.0*(t*t-t)*cos(50.0*t) + (2.0*t-1)*sin(50.0*t) - t*(t*t-t)*sin(50.0*t);
 #endif
 }
@@ -323,7 +318,7 @@ void Example2::sample2()
         double t = i*h;
         x0.at(i) = X(t);
     }
-    IPrinter::printVector(18, 14, x0, "x0:", x0.size(), 0, 0, file1);
+    IPrinter::printVector(14, 10, x0, "x0:", x0.size(), 0, 0, file1);
 
     DoubleMatrix a(N-K+1, K+1);
     DoubleVector x1(N+1);
@@ -416,7 +411,7 @@ void Example2::sample2()
 
 void Example2::sample_n3()
 {
-    FILE *file1 = fopen("sample2_n3_x.txt", "w");
+    FILE *file1 = fopen("sample_n3_x.txt", "w");
 
     unsigned int N = 1000;
     unsigned int K = 3;
@@ -428,7 +423,7 @@ void Example2::sample_n3()
         double t = i*h;
         x0.at(i) = X(t);
     }
-    IPrinter::printVector(18, 14, x0, "x0:", x0.size(), 0, 0, file1);
+    IPrinter::printVector(14, 10, x0, "x0:", x0.size(), 0, 0, file1);
 
     DoubleMatrix a(N-K+1, K+1);
 
@@ -448,7 +443,7 @@ void Example2::sample_n3()
 
         x1.at(i) = a.at(i,1)*x1.at(i+1) + a.at(i,2)*x1.at(i+2) + a.at(i,3)*x1.at(i+3) + a.at(i,0);
     }
-    IPrinter::printVector(18, 14, x1, "x1:", x1.size(), 0, 0, file1);
+    IPrinter::printVector(14, 10, x1, "x1:", x1.size(), 0, 0, file1);
 
     DoubleMatrix beta(K, N+1, 0.0);
 
@@ -475,15 +470,15 @@ void Example2::sample_n3()
 
     DoubleVector x2(N+1, 0.0);
     calculateLeft2Right(N, K, a, beta, qamma, x2);
-    IPrinter::printVector(18, 14, x2, "x2:", x2.size(), 0, 0, file1);
-    IPrinter::printVector(18, 14, x0, "x0:", 10);
-    IPrinter::printVector(18, 14, x2, "x2:", 10);
+    IPrinter::printVector(14, 10, x2, "x2:", x2.size(), 0, 0, file1);
+    IPrinter::printVector(14, 10, x0, "x0:", 10);
+    IPrinter::printVector(14, 10, x2, "x2:", 10);
     fclose(file1);
 }
 
 void Example2::sample_n4()
 {
-    FILE *file1 = fopen("sample2_x.txt", "w");
+    FILE *file1 = fopen("sample_n4_x.txt", "w");
 
     unsigned int N = 1000;
     unsigned int K = 4;
@@ -495,7 +490,7 @@ void Example2::sample_n4()
         double t = i*h;
         x0.at(i) = X(t);
     }
-    IPrinter::printVector(18, 14, x0, "x0:", x0.size(), 0, 0, file1);
+    IPrinter::printVector(14, 10, x0, "x0:", x0.size(), 0, 0, file1);
 
     DoubleMatrix a(N-K+1, K+1);
 
@@ -518,7 +513,7 @@ void Example2::sample_n4()
 
         x1.at(i) = a.at(i,1)*x1.at(i+1) + a.at(i,2)*x1.at(i+2) + a.at(i,3)*x1.at(i+3) + a.at(i,4)*x1.at(i+4) + a.at(i,0);
     }
-    IPrinter::printVector(18, 14, x1, "x1:", x1.size(), 0, 0, file1);
+    IPrinter::printVector(14, 10, x1, "x1:", x1.size(), 0, 0, file1);
 
     DoubleMatrix beta(K, N+1, 0.0);
 
@@ -558,15 +553,15 @@ void Example2::sample_n4()
 
     DoubleVector x2(N+1, 0.0);
     calculateLeft2Right(N, K, a, beta, qamma, x2);
-    IPrinter::printVector(18, 14, x2, "x2:", x2.size(), 0, 0, file1);
-    IPrinter::printVector(18, 14, x0, "x0:", 10);
-    IPrinter::printVector(18, 14, x2, "x2:", 10);
+    IPrinter::printVector(14, 10, x2, "x2:", x2.size(), 0, 0, file1);
+    IPrinter::printVector(14, 10, x0, "x0:", 10);
+    IPrinter::printVector(14, 10, x2, "x2:", 10);
     fclose(file1);
 }
 
 void Example2::sample_n6()
 {
-    FILE *file1 = fopen("sample3_x.txt", "w");
+    FILE *file1 = fopen("sample_n6_x.txt", "w");
 
     unsigned int N = 1000;
     unsigned int K = 6;
@@ -578,7 +573,7 @@ void Example2::sample_n6()
         double t = i*h;
         x0.at(i) = X(t);
     }
-    IPrinter::printVector(18, 14, x0, "x0:", x0.size(), 0, 0, file1);
+    IPrinter::printVector(14, 10, x0, "x0:", x0.size(), 0, 0, file1);
 
     DoubleMatrix a(N-K+1, K+1);
 
@@ -606,7 +601,7 @@ void Example2::sample_n6()
 
         x1.at(i) = a.at(i,1)*x1.at(i+1) + a.at(i,2)*x1.at(i+2) + a.at(i,3)*x1.at(i+3) + a.at(i,4)*x1.at(i+4) + a.at(i,5)*x1.at(i+5) + a.at(i,6)*x1.at(i+6) + a.at(i,0);
     }
-    IPrinter::printVector(18, 14, x1, "x1:", x1.size(), 0, 0, file1);
+    IPrinter::printVector(14, 10, x1, "x1:", x1.size(), 0, 0, file1);
 
     DoubleMatrix beta(K, N+1, 0.0);
 
@@ -681,8 +676,8 @@ void Example2::sample_n6()
 
     DoubleVector x2(N+1, 0.0);
     calculateLeft2Right(N, K, a, beta, qamma, x2);
-    IPrinter::printVector(18, 14, x2, "x2:", x2.size(), 0, 0, file1);
-    IPrinter::printVector(18, 14, x0, "x0:", 10);
-    IPrinter::printVector(18, 14, x2, "x2:", 10);
+    IPrinter::printVector(14, 10, x2, "x2:", x2.size(), 0, 0, file1);
+    IPrinter::printVector(14, 10, x0, "x0:", 10);
+    IPrinter::printVector(14, 10, x2, "x2:", 10);
     fclose(file1);
 }
