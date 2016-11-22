@@ -1,0 +1,52 @@
+#ifndef PARABOLICCONTROL1D332_H
+#define PARABOLICCONTROL1D332_H
+
+#include "parabolicequation.h"
+#include "printer.h"
+#include "gradient_cjt.h"
+#include <math.h>
+
+// u(x,t) = 0.5*x + t^2
+
+class Parabolic1DControl36 : public IParabolicEquation, public IBackwardParabolicEquation, public RnFunction, public IGradient, public IPrinter, public IProjection
+{
+public:
+    Parabolic1DControl36();
+    virtual ~Parabolic1DControl36() {}
+
+    virtual double fx(const DoubleVector &e);
+    virtual void gradient(const DoubleVector &x, DoubleVector &g);
+    virtual void print(unsigned int iteration, const DoubleVector &v, const DoubleVector &gradient, double alpha, RnFunction *fn) const;
+    virtual void project(DoubleVector &x, int index);
+
+    virtual double initial(unsigned int i) const;
+    virtual double boundary(Boundary type, unsigned int j) const;
+    virtual double f(unsigned int i, unsigned int j) const;
+
+    virtual double binitial(unsigned int i) const;
+    virtual double bboundary(Boundary type, unsigned int j) const;
+    virtual double bf(unsigned int i, unsigned int j) const;
+
+    static void main(int argc, char ** argv);
+
+private:
+    double x0;
+    double x1;
+    double t0;
+    double t1;
+    double hx;
+    double ht;
+    unsigned int N;
+    unsigned int M;
+    unsigned int L;
+    double a;
+
+    double v1(double t) const;
+    double v2(double t) const;
+
+    DoubleVector U;
+    const DoubleVector *pe;
+    const DoubleVector *pu;
+};
+
+#endif // PARABOLICCONTROL1D332_H
