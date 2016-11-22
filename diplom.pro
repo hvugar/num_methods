@@ -3,7 +3,7 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
-DESTDIR += ../bin
+DESTDIR += bin
 
 SOURCES += main.cpp \
     example311.cpp \
