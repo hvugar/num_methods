@@ -11,7 +11,8 @@ void Example2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //    e2.sample_n3();
     e2.sample_n4();
 //    e2.sample_n6();
-    e2.sample_n4_test();
+    e2.sample_n4_test1();
+    e2.sample_n4_test2();
 }
 
 Example2::Example2() {}
@@ -221,6 +222,9 @@ double Example2::X(double t UNUSED_PARAM) const
 #ifdef SAMPLE_3
     return (t*t-t)*sin(50.0*t);
 #endif
+#ifdef SAMPLE_4
+    return exp(4.0*t);
+#endif
 }
 
 double Example2::A(double t UNUSED_PARAM) const
@@ -234,6 +238,9 @@ double Example2::A(double t UNUSED_PARAM) const
 #ifdef SAMPLE_3
     return t;
 #endif
+#ifdef SAMPLE_4
+    return (4.0+t);
+#endif
 }
 
 double Example2::B(double t UNUSED_PARAM) const
@@ -246,6 +253,9 @@ double Example2::B(double t UNUSED_PARAM) const
 #endif
 #ifdef SAMPLE_3
     return 50.0*(t*t-t)*cos(50.0*t) + (2.0*t-1)*sin(50.0*t) - t*(t*t-t)*sin(50.0*t);
+#endif
+#ifdef SAMPLE_4
+    return -t*exp(4.0*t);
 #endif
 }
 
@@ -683,7 +693,7 @@ void Example2::sample_n6()
     fclose(file1);
 }
 
-void Example2::sample_n4_test()
+void Example2::sample_n4_test1()
 {
     unsigned int N = 1000;
     double h = 0.001;
@@ -767,3 +777,89 @@ void Example2::sample_n4_test()
     p3.clear();
     x.clear();
 }
+
+void Example2::sample_n4_test2()
+{
+    unsigned int N = 1000;
+    double h = 0.001;
+    unsigned int K = 4;
+
+    DoubleVector x(N+1);
+    DoubleVector p3(N+1);
+    DoubleVector p2(N+1);
+    DoubleVector p1(N+1);
+    DoubleVector p0(N+1);
+    DoubleVector q(N+1);
+
+    x.at(N-0) = X((N-0)*h);
+    x.at(N-1) = X((N-1)*h);
+    x.at(N-2) = X((N-2)*h);
+    x.at(N-3) = X((N-3)*h);
+
+    for (unsigned int i=N-K; i!=UINT32_MAX; i--)
+    {
+        double t = i*h;
+        double m = 12.0*h*A(t)+25.0;
+
+        if (i==N-K)
+        {
+            p3.at(i) = +48.0/m;
+            p2.at(i) = -36.0/m;
+            p1.at(i) = +16.0/m;
+            p0.at(i) = -3.0/m;
+            q.at(i)  = -12.0*h*B(t)/m;
+            x.at(i)  = p3.at(i)*x.at(N-3) + p2.at(i)*x.at(N-2) + p1.at(i)*x.at(N-1) + p0.at(i)*x.at(N-0) + q.at(i);
+            //printf("%4d %.10f %.10f\n", i, t, x.at(i));
+        }
+        if (i == N-K-1)
+        {
+            p3.at(i) = (48.0/m)*p3.at(i+1) + (-36.0/m);
+            p2.at(i) = (48.0/m)*p2.at(i+1) + (+16.0/m);
+            p1.at(i) = (48.0/m)*p1.at(i+1) + (-3.0/m);
+            p0.at(i) = (48.0/m)*p0.at(i+1);
+            q.at(i)  = (48.0/m)*q.at(i+1) - 12.0*h*B(t)/m;
+            x.at(i)  = p3.at(i)*x.at(N-3) + p2.at(i)*x.at(N-2) + p1.at(i)*x.at(N-1) + p0.at(i)*x.at(N-0) + q.at(i);
+            //printf("%4d %.10f %.10f\n", i, t, x.at(i));
+        }
+        if (i == N-K-2)
+        {
+            p3.at(i) = (48.0/m)*p3.at(i+1) + (-36.0/m)*p3.at(i+2) + (+16.0/m);
+            p2.at(i) = (48.0/m)*p2.at(i+1) + (-36.0/m)*p2.at(i+2) + (-3.0/m);
+            p1.at(i) = (48.0/m)*p1.at(i+1) + (-36.0/m)*p1.at(i+2);
+            p0.at(i) = (48.0/m)*p0.at(i+1) + (-36.0/m)*p0.at(i+2);
+            q.at(i)  = (48.0/m)*q.at(i+1)  + (-36.0/m)*q.at(i+2) - 12.0*h*B(t)/m;
+            x.at(i)  = p3.at(i)*x.at(N-3) + p2.at(i)*x.at(N-2) + p1.at(i)*x.at(N-1) + p0.at(i)*x.at(N-0) + q.at(i);
+            //printf("%4d %.10f %.10f\n", i, t, x.at(i));
+        }
+        if (i == N-K-3)
+        {
+            p3.at(i) = (+48.0/m)*p3.at(i+1) + (-36.0/m)*p3.at(i+2) + (+16.0/m)*p3.at(i+3) + (-3.0/m);
+            p2.at(i) = (+48.0/m)*p2.at(i+1) + (-36.0/m)*p2.at(i+2) + (+16.0/m)*p2.at(i+3);
+            p1.at(i) = (+48.0/m)*p1.at(i+1) + (-36.0/m)*p1.at(i+2) + (+16.0/m)*p1.at(i+3);
+            p0.at(i) = (+48.0/m)*p0.at(i+1) + (-36.0/m)*p0.at(i+2) + (+16.0/m)*p0.at(i+3);
+            q.at(i)  = (+48.0/m)*q.at(i+1)  + (-36.0/m)*q.at(i+2)  + (+16.0/m)*q.at(i+3) - 12.0*h*B(t)/m;
+            x.at(i)  = p3.at(i)*x.at(N-3) + p2.at(i)*x.at(N-2) + p1.at(i)*x.at(N-1) + p0.at(i)*x.at(N-0) + q.at(i);
+            //printf("%4d %.10f %.10f\n", i, t, x.at(i));
+        }
+        if (i <= N-2*K)
+        {
+            p3.at(i) = (+48.0/m)*p3.at(i+1) + (-36.0/m)*p3.at(i+2) + (+16.0/m)*p3.at(i+3) + (-3.0/m)*p3.at(i+4);
+            p2.at(i) = (+48.0/m)*p2.at(i+1) + (-36.0/m)*p2.at(i+2) + (+16.0/m)*p2.at(i+3) + (-3.0/m)*p2.at(i+4);
+            p1.at(i) = (+48.0/m)*p1.at(i+1) + (-36.0/m)*p1.at(i+2) + (+16.0/m)*p1.at(i+3) + (-3.0/m)*p1.at(i+4);
+            p0.at(i) = (+48.0/m)*p0.at(i+1) + (-36.0/m)*p0.at(i+2) + (+16.0/m)*p0.at(i+3) + (-3.0/m)*p0.at(i+4);
+            q.at(i)  = (+48.0/m)*q.at(i+1)  + (-36.0/m)*q.at(i+2)  + (+16.0/m)*q.at(i+3) +  (-3.0/m)*q.at(i+4) - 12.0*h*B(t)/m;
+            x.at(i)  = p3.at(i)*x.at(N-3) + p2.at(i)*x.at(N-2) + p1.at(i)*x.at(N-1) + p0.at(i)*x.at(N-0) + q.at(i);
+            //printf("%4d %.10f %.10f\n", i, t, x.at(i));
+        }
+    }
+
+    IPrinter::printVector(14,10,x,"x5:");
+
+    q.clear();
+    p0.clear();
+    p1.clear();
+    p2.clear();
+    p3.clear();
+    x.clear();
+}
+

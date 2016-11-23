@@ -8,7 +8,8 @@
 
 //#define SAMPLE_1
 //#define SAMPLE_2
-#define SAMPLE_3
+//#define SAMPLE_3
+#define SAMPLE_4
 
 class Example2
 {
@@ -33,7 +34,8 @@ public:
     void sample_n4();
     void sample_n6();
 
-    void sample_n4_test();
+    void sample_n4_test1();
+    void sample_n4_test2();
 
     static void Main(int argc, char* argv[]);
 };
