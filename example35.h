@@ -39,6 +39,7 @@ private:
     unsigned int M;
     unsigned int L;
     double a;
+    double h;
 
     DoubleVector e;
 

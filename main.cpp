@@ -9,26 +9,58 @@
 #include "example335.h"
 #include "example336.h"
 
+//#define SAMPLE_31
+//#define SAMPLE_32
+//#define SAMPLE_33
+//#define SAMPLE_34
+#define SAMPLE_35
+
 int main(int argc, char *argv[])
 {
-	puts("Sample 3.1");
-    //BorderParabolic1D31::main(argc, argv);
-	puts("Sample 3.2");
-    //BorderParabolic1D32::main(argc, argv);
-	puts("Sample 3.3");
-    //BorderParabolic2D33::main(argc, argv);
-	puts("Sample 3.4");
-    //BorderParabolic2D34::main(argc, argv);
-	puts("Sample 3.5");
-    //Parabolic1DControl35::main(argc, argv);
-	puts("Sample 3.6");
-    //Parabolic1DControl36::main(argc, argv);
-	puts("Sample 3.7");
+#ifdef SAMPLE_31
+    puts("Sample 3.1");
+    BorderParabolic1D31::main(argc, argv);
+    puts("----------------------------------------------------------------------------");
+#endif
+#ifdef SAMPLE_32
+    puts("Sample 3.2");
+    BorderParabolic1D32::main(argc, argv);
+    puts("----------------------------------------------------------------------------");
+#endif
+#ifdef SAMPLE_33
+    puts("Sample 3.3");
+    BorderParabolic2D33::main(argc, argv);
+    puts("----------------------------------------------------------------------------");
+#endif
+#ifdef SAMPLE_34
+    puts("Sample 3.4");
+    BorderParabolic2D34::main(argc, argv);
+    puts("----------------------------------------------------------------------------");
+#endif
+#ifdef SAMPLE_35
+    puts("Sample 3.5");
+    Parabolic1DControl35::main(argc, argv);
+    puts("----------------------------------------------------------------------------");
+#endif
+#ifdef SAMPLE_36
+    puts("Sample 3.6");
+    Parabolic1DControl36::main(argc, argv);
+    puts("----------------------------------------------------------------------------");
+#endif
+#ifdef SAMPLE_36
+    puts("Sample 3.7");
     //Parabolic2DControl37::main(argc, argv);
-	puts("Sample 3.71");
-    Parabolic1DControl38::main(argc, argv);
-	puts("Sample 335");
+#endif
+#ifdef SAMPLE_371
+    puts("Sample 3.71");
+    //Parabolic1DControl38::main(argc, argv);
+#endif
+#ifdef SAMPLE_335
+    puts("Sample 335");
     //Parabolic1DControl335::main(argc, argv);
-	puts("Sample 336");
+#endif
+#ifdef SAMPLE_336
+    puts("Sample 336");
     //Parabolic1DControl336::main(argc, argv);
+#endif
 }

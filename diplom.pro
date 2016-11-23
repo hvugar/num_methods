@@ -6,25 +6,43 @@ CONFIG -= qt
 DESTDIR += bin
 
 SOURCES += main.cpp \
-    example311.cpp \
-    example312.cpp \
-    example321.cpp \
-    example322.cpp \
-    example331.cpp \
-    example332.cpp \
-    example333.cpp \
-    example334.cpp \
+    example31.cpp \
+    example32.cpp \
+    example33.cpp \
+    example34.cpp \
+    example35.cpp \
+    example36.cpp \
+    example37.cpp \
+    example38.cpp \
     example335.cpp \
     example336.cpp
 
 HEADERS += \
-    example311.h \
-    example312.h \
-    example321.h \
-    example322.h \
-    example331.h \
-    example332.h \
-    example333.h \
-    example334.h \
+    example31.h \
+    example32.h \
+    example33.h \
+    example34.h \
+    example35.h \
+    example36.h \
+    example37.h \
+    example38.h \
     example335.h \
     example336.h
+
+SOURCES += \
+    doublevector.cpp \
+    parabolicequation.cpp \
+    printer.cpp \
+    gradient.cpp \
+    gradient_cjt.cpp \
+    function.cpp \
+    r1minimize.cpp
+
+HEADERS += \
+    doublevector.h \
+    parabolicequation.h \
+    printer.h \
+    gradient.h \
+    gradient_cjt.h \
+    function.h \
+    r1minimize.h

@@ -7,10 +7,7 @@ void BorderParabolic1D32::main(int argc, char* argv[])
     DoubleMatrix m;
     BorderParabolic1D32 bp;
     bp.calculateU(m, bp.hx, bp.ht, bp.N, bp.M, 2.0);
-    IPrinter::printMatrix(m);
-    //FILE *file = fopen("example312.txt", "w");
-    //IPrinter::printVector(m[m.size()-1], NULL, bp.N, 0, 0, file);
-    //fclose(file);
+    IPrinter::printMatrix(m,5,10);
 }
 
 BorderParabolic1D32::BorderParabolic1D32()
