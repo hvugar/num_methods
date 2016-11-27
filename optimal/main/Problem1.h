@@ -1,5 +1,5 @@
-#ifndef EXAMPLE3_H
-#define EXAMPLE3_H
+#ifndef PROBLEM1_H
+#define PROBLEM1_H
 
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
@@ -115,4 +115,4 @@ public:
     static void Main(int argc, char* argv[]);
 };
 
-#endif // EXAMPLE3_H
+#endif // PROBLEM1_H
