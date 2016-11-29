@@ -434,10 +434,10 @@ void Example4::calculate3()
 //    IPrinter::printVector(14,10,x3);
 //    puts("---");
 
-    DoubleMatrix gamma0(k,3);
-    DoubleMatrix gammaN(k,3);
-    DoubleMatrix eta(k,1);
+    DoubleMatrix eta(12,1);
+    DoubleVector gamma(12,12);
 
+    gamma[0,0] = 0.2; gamma[0,1] = 0.5; gamma[0,2] = 1.2; gamma[0,3] = 1.4; gamma[0,4] = 1.1; gamma[0,5] = 1.0; gamma[0,6] = 0.0; gamma[0,7] = 0.0; gamma[0,8] = 1.0; gamma[0,6] = 0.0; gamma[0,7] = 0.0; gamma[0,8] = 1.0;
 
 
 }
