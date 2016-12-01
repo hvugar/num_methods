@@ -309,6 +309,7 @@ DoubleMatrix DoubleMatrix::minor(unsigned int row, unsigned int col) const
 
 DoubleMatrix& DoubleMatrix::operator +(const DoubleMatrix &matrix)
 {
+    //puts("DoubleMatrix& DoubleMatrix::operator +(const DoubleMatrix &matrix)");
     if (!dimEquals(matrix))
     {
         throw MatrixException(0);
@@ -330,10 +331,27 @@ DoubleMatrix& DoubleMatrix::operator *(const DoubleMatrix &matrix)
 {
     if (mCols == 0 && mCols != matrix.mRows) return *this;
 
+    for (unsigned int i=0; i<mRows; i++)
+    {
+        for (unsigned int j=0; j<mCols; j++)
+        {
+            double sum = 0.0;
+            for (unsigned int i1=0; i1<mRows; i1++)
+            {
+                sum += mData[i][i1]*matrix.mData[i1][i];
+//                for (unsigned int j1=0; j1<mCols; j1++)
+//                {
+
+//                }
+            }
+            mData[i][j] = sum;
+        }
+    }
+
     return *this;
 }
 
-DoubleMatrix mult(const DoubleMatrix &m1, const DoubleMatrix &m2)
+DoubleMatrix multiplyMatrices(const DoubleMatrix &m1, const DoubleMatrix &m2)
 {
     DoubleMatrix m;
     m.resize(m1.rows(), m2.cols());
@@ -343,7 +361,8 @@ DoubleMatrix mult(const DoubleMatrix &m1, const DoubleMatrix &m2)
         for (unsigned int j=0; j<m.cols(); j++)
         {
             double sum = 0.0;
-            for (unsigned int p=0; p<m1.cols(); p++) sum += m1.at(i,p)*m2.at(p,j);
+            for (unsigned int k=0; k<m1.cols(); k++)
+                sum += m1.at(i,k)*m2.at(k,j);
             m.at(i,j) = sum;
         }
     }

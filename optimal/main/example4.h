@@ -6,6 +6,7 @@
 #include <matrix3d.h>
 #include <printer.h>
 #include <math.h>
+#include <vector>
 
 class Example4
 {
@@ -24,6 +25,7 @@ public:
     void calculate1();
     void calculate2();
     void calculate3();
+    void calculate3M();
 
     double a(unsigned int i, unsigned int j, unsigned int k) const;
     double b(unsigned int i, unsigned int k) const;
