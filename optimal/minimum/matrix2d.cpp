@@ -180,6 +180,13 @@ DoubleVector DoubleMatrix::row(unsigned int r) const
     return DoubleVector(mData[r], mCols);
 }
 
+DoubleVector DoubleMatrix::col(unsigned int c) const
+{
+    DoubleVector v(mRows);
+    for (unsigned int r=0; r<mRows; r++) v[r] = mData[r][c];
+    return v;
+}
+
 DoubleMatrix& DoubleMatrix::operator= (const DoubleMatrix &matrix)
 {
     if (this != &matrix)

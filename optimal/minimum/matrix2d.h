@@ -40,6 +40,7 @@ public:
     DoubleMatrix& operator*(const DoubleMatrix &matrix);
 
     friend MINIMUMSHARED_EXPORT DoubleMatrix multiplyMatrices(const DoubleMatrix &m1, const DoubleMatrix &m2);
+    //friend MINIMUMSHARED_EXPORT DoubleMatrix multiplyMatrices(const DoubleMatrix &m1, const DoubleMatrix &m2);
 
     void print();
     void randomData();

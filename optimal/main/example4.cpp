@@ -575,18 +575,13 @@ void Example4::calculate3M()
         B.at(1) = 0.48*h*b(2,k-1);
         B.at(2) = 0.48*h*b(3,k-1);
 
-//        A[1].at(0,0) = 0.48*h*a(1,1,k-1)+1.92; A[1].at(0,1) = 0.48*h*a(1,2,k-1);      A[1].at(0,2) = 0.48*h*a(1,3,k-1);
-//        A[1].at(1,0) = 0.48*h*a(2,1,k-1);      A[1].at(1,1) = 0.48*h*a(2,2,k-1)+1.92; A[1].at(1,2) = 0.48*h*a(2,3,k-1);
-//        A[1].at(2,0) = 0.48*h*a(3,1,k-1);      A[1].at(2,1) = 0.48*h*a(3,2,k-1);      A[1].at(2,2) = 0.48*h*a(3,3,k-1)+1.92;
-
         if (k==4)
         {
             P3[k] = A[1];
             P2[k] = A[2];
             P1[k] = A[3];
             P0[k] = A[4];
-            //Q[k] << 0.48*h*b(1,k-1) << 0.48*h*b(2,k-1) << 0.48*h*b(3,k-1);
-            Q[k] = B;
+            Q[k]  = B;
        }
 
         if (k==5)
@@ -595,7 +590,7 @@ void Example4::calculate3M()
             P2[k] = multiplyMatrices(A[1],P2[k-1]) + A[3];
             P1[k] = multiplyMatrices(A[1],P1[k-1]) + A[4];
             P0[k] = multiplyMatrices(A[1],P0[k-1]);
-            Q[k] = multiplyMatrices(A[1],Q[k-1]) + B;
+            Q[k]  = multiplyMatrices(A[1],Q[k-1]) + B;
         }
 
         if (k==6)
@@ -625,21 +620,39 @@ void Example4::calculate3M()
             Q[k]  = multiplyMatrices(A[1],Q[k-1]) + multiplyMatrices(A[2],Q[k-2]) + multiplyMatrices(A[3],Q[k-3]) + multiplyMatrices(A[4],Q[k-4]) + B;
         }
 
-        DoubleVector xk = multiplyMatrices(P3[k],x.col(0)) + multiplyMatrices(P2[k],x.col(1)) + multiplyMatrices(P1[k],x.col(2))
-                + multiplyMatrices(P0[k],x.col(4)) + Q[k];
+        DoubleVector xk = multiplyMatrices(P3[k], DoubleMatrix(x.col(3))) + multiplyMatrices(P2[k], DoubleMatrix(x.col(2)))
+                + multiplyMatrices(P1[k], DoubleMatrix(x.col(1))) + multiplyMatrices(P0[k], DoubleMatrix(x.col(0))) + Q[k];
 
-        x.at(0,k) = (P3[k].at(0,0)*x.at(0,3)+P3[k].at(0,1)*x.at(1,3)+P3[k].at(0,2)*x.at(2,3))
-                  + (P2[k].at(0,0)*x.at(0,2)+P2[k].at(0,1)*x.at(1,2)+P2[k].at(0,2)*x.at(2,2))
-                  + (P1[k].at(0,0)*x.at(0,1)+P1[k].at(0,1)*x.at(1,1)+P1[k].at(0,2)*x.at(2,1))
-                  + (P0[k].at(0,0)*x.at(0,0)+P0[k].at(0,1)*x.at(1,0)+P0[k].at(0,2)*x.at(2,0)) + Q[k].at(0);
-        x.at(1,k) = (P3[k].at(1,0)*x.at(0,3)+P3[k].at(1,1)*x.at(1,3)+P3[k].at(1,2)*x.at(2,3))
-                  + (P2[k].at(1,0)*x.at(0,2)+P2[k].at(1,1)*x.at(1,2)+P2[k].at(1,2)*x.at(2,2))
-                  + (P1[k].at(1,0)*x.at(0,1)+P1[k].at(1,1)*x.at(1,1)+P1[k].at(1,2)*x.at(2,1))
-                  + (P0[k].at(1,0)*x.at(0,0)+P0[k].at(1,1)*x.at(1,0)+P0[k].at(1,2)*x.at(2,0)) + Q[k].at(1);
-        x.at(2,k) = (P3[k].at(2,0)*x.at(0,3)+P3[k].at(2,1)*x.at(1,3)+P3[k].at(2,2)*x.at(2,3))
-                  + (P2[k].at(2,0)*x.at(0,2)+P2[k].at(2,1)*x.at(1,2)+P2[k].at(2,2)*x.at(2,2))
-                  + (P1[k].at(2,0)*x.at(0,1)+P1[k].at(2,1)*x.at(1,1)+P1[k].at(2,2)*x.at(2,1))
-                  + (P0[k].at(2,0)*x.at(0,0)+P0[k].at(2,1)*x.at(1,0)+P0[k].at(2,2)*x.at(2,0)) + Q[k].at(2);
+        x.at(0,k) = xk.at(0);
+        x.at(1,k) = xk.at(1);
+        x.at(2,k) = xk.at(2);
+        xk.clear();
+
+//        x.at(0,k) = (P3[k].at(0,0)*x.at(0,3)+P3[k].at(0,1)*x.at(1,3)+P3[k].at(0,2)*x.at(2,3))
+//                  + (P2[k].at(0,0)*x.at(0,2)+P2[k].at(0,1)*x.at(1,2)+P2[k].at(0,2)*x.at(2,2))
+//                  + (P1[k].at(0,0)*x.at(0,1)+P1[k].at(0,1)*x.at(1,1)+P1[k].at(0,2)*x.at(2,1))
+//                  + (P0[k].at(0,0)*x.at(0,0)+P0[k].at(0,1)*x.at(1,0)+P0[k].at(0,2)*x.at(2,0)) + Q[k].at(0);
+//        x.at(1,k) = (P3[k].at(1,0)*x.at(0,3)+P3[k].at(1,1)*x.at(1,3)+P3[k].at(1,2)*x.at(2,3))
+//                  + (P2[k].at(1,0)*x.at(0,2)+P2[k].at(1,1)*x.at(1,2)+P2[k].at(1,2)*x.at(2,2))
+//                  + (P1[k].at(1,0)*x.at(0,1)+P1[k].at(1,1)*x.at(1,1)+P1[k].at(1,2)*x.at(2,1))
+//                  + (P0[k].at(1,0)*x.at(0,0)+P0[k].at(1,1)*x.at(1,0)+P0[k].at(1,2)*x.at(2,0)) + Q[k].at(1);
+//        x.at(2,k) = (P3[k].at(2,0)*x.at(0,3)+P3[k].at(2,1)*x.at(1,3)+P3[k].at(2,2)*x.at(2,3))
+//                  + (P2[k].at(2,0)*x.at(0,2)+P2[k].at(2,1)*x.at(1,2)+P2[k].at(2,2)*x.at(2,2))
+//                  + (P1[k].at(2,0)*x.at(0,1)+P1[k].at(2,1)*x.at(1,1)+P1[k].at(2,2)*x.at(2,1))
+//                  + (P0[k].at(2,0)*x.at(0,0)+P0[k].at(2,1)*x.at(1,0)+P0[k].at(2,2)*x.at(2,0)) + Q[k].at(2);
+
+//        x.at(0,k) = (P3[k].at(0,0)*x.at(0,3)+P3[k].at(0,1)*x.at(1,3)+P3[k].at(0,2)*x.at(2,3))
+//                  + (P2[k].at(0,0)*x.at(0,2)+P2[k].at(0,1)*x.at(1,2)+P2[k].at(0,2)*x.at(2,2))
+//                  + (P1[k].at(0,0)*x.at(0,1)+P1[k].at(0,1)*x.at(1,1)+P1[k].at(0,2)*x.at(2,1))
+//                  + (P0[k].at(0,0)*x.at(0,0)+P0[k].at(0,1)*x.at(1,0)+P0[k].at(0,2)*x.at(2,0)) + Q[k].at(0);
+//        x.at(1,k) = (P3[k].at(1,0)*x.at(0,3)+P3[k].at(1,1)*x.at(1,3)+P3[k].at(1,2)*x.at(2,3))
+//                  + (P2[k].at(1,0)*x.at(0,2)+P2[k].at(1,1)*x.at(1,2)+P2[k].at(1,2)*x.at(2,2))
+//                  + (P1[k].at(1,0)*x.at(0,1)+P1[k].at(1,1)*x.at(1,1)+P1[k].at(1,2)*x.at(2,1))
+//                  + (P0[k].at(1,0)*x.at(0,0)+P0[k].at(1,1)*x.at(1,0)+P0[k].at(1,2)*x.at(2,0)) + Q[k].at(1);
+//        x.at(2,k) = (P3[k].at(2,0)*x.at(0,3)+P3[k].at(2,1)*x.at(1,3)+P3[k].at(2,2)*x.at(2,3))
+//                  + (P2[k].at(2,0)*x.at(0,2)+P2[k].at(2,1)*x.at(1,2)+P2[k].at(2,2)*x.at(2,2))
+//                  + (P1[k].at(2,0)*x.at(0,1)+P1[k].at(2,1)*x.at(1,1)+P1[k].at(2,2)*x.at(2,1))
+//                  + (P0[k].at(2,0)*x.at(0,0)+P0[k].at(2,1)*x.at(1,0)+P0[k].at(2,2)*x.at(2,0)) + Q[k].at(2);
     }
 
     A[4].clear();
