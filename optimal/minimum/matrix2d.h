@@ -9,6 +9,7 @@ class MINIMUMSHARED_EXPORT DoubleMatrix
 public:
     explicit DoubleMatrix(unsigned int rows=0, unsigned int cols=0, double value=0.0);
     DoubleMatrix(const DoubleMatrix &matrix);
+    DoubleMatrix(const DoubleVector &vector);
     virtual ~DoubleMatrix();
 
     unsigned int rows() const;

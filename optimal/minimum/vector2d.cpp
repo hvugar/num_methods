@@ -1,4 +1,5 @@
 #include "vector2d.h"
+#include "matrix2d.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -36,6 +37,16 @@ DoubleVector::DoubleVector(const DoubleVector &vector)
     mSize = vector.mSize;
     mData = (double*) (malloc(sizeof(double)*mSize));
     memcpy(mData, vector.mData, sizeof(double)*mSize);
+}
+
+DoubleVector::DoubleVector(const DoubleMatrix &matrix)
+{
+    if (matrix.cols()==1)
+    {
+        mSize = matrix.rows();
+        mData = (double*) (malloc(sizeof(double)*mSize));
+        for (unsigned int i=0; i<mSize; i++) mData[i] = matrix.at(i,0);
+    }
 }
 
 DoubleVector::~DoubleVector()
@@ -259,6 +270,22 @@ DoubleVector& DoubleVector::operator<<(double value)
         mSize++;
         mData = (double*)realloc(mData, sizeof(double)*mSize);
         mData[mSize-1] = value;
+    }
+    return *this;
+}
+
+DoubleVector& DoubleVector::operator +(const DoubleVector &other)
+{
+    if (mSize != other.mSize)
+    {
+        //throw std::exception("");
+    }
+    else
+    {
+        for (unsigned int i=0; i<mSize; i++)
+        {
+            mData[i] += other.mData[i];
+        }
     }
     return *this;
 }

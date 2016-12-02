@@ -46,6 +46,21 @@ DoubleMatrix::DoubleMatrix(const DoubleMatrix &matrix) : mRows(0), mCols(0), mDa
     }
 }
 
+DoubleMatrix::DoubleMatrix(const DoubleVector &vector) : mRows(0), mCols(0), mData(NULL)
+{
+    if (vector.size() > 0)
+    {
+        mRows = vector.size();
+        mCols = 1;
+        mData = (double**) (malloc(sizeof(double*)*mRows));
+        for (unsigned int i=0; i<mRows; i++)
+        {
+            mData[i] = (double*)malloc(sizeof(double)*mCols);
+            mData[i][0] = vector.at(i);
+        }
+    }
+}
+
 DoubleMatrix::~DoubleMatrix()
 {
     clear();
@@ -309,7 +324,6 @@ DoubleMatrix DoubleMatrix::minor(unsigned int row, unsigned int col) const
 
 DoubleMatrix& DoubleMatrix::operator +(const DoubleMatrix &matrix)
 {
-    //puts("DoubleMatrix& DoubleMatrix::operator +(const DoubleMatrix &matrix)");
     if (!dimEquals(matrix))
     {
         throw MatrixException(0);

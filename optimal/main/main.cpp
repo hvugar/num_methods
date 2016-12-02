@@ -27,5 +27,12 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Example3 e;
     Example4::Main(argc, argv);
 
+//    DoubleVector v;
+//    v << 1.1 << 2.2 << 3.3;
+//    DoubleMatrix m(v);
+//    printf("%f %f %f\n", v.at(0), v.at(1), v.at(2));
+//    printf("%d %d\n", m.rows(), m.cols());
+//    printf("%f %f %f\n", m.at(1,0), m.at(2,0), m.at(2,0));
+
     return 0;
 }

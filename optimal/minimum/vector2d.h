@@ -3,12 +3,15 @@
 
 #include <global.h>
 
+class DoubleMatrix;
+
 class MINIMUMSHARED_EXPORT DoubleVector
 {
 public:
     explicit DoubleVector(unsigned int size=0, double val = 0.0);
     DoubleVector(const double* data, unsigned int size);
     DoubleVector(const DoubleVector &vector);
+    DoubleVector(const DoubleMatrix &matrix);
     virtual ~DoubleVector();
 
     void clear();
@@ -56,7 +59,8 @@ public:
     DoubleVector& operator= (const DoubleVector& x);
     double& operator[] (unsigned int n);
     double operator[] (unsigned int n) const;
-    DoubleVector& operator<<(double value);
+    DoubleVector& operator <<(double value);
+    DoubleVector& operator +(const DoubleVector &other);
 
     void swap(DoubleVector& x);
 
