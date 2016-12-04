@@ -298,8 +298,8 @@ void DoubleMatrix::transpose()
     double **data = (double**)(malloc(sizeof(double*)*rows));
     for (unsigned int i=0; i<rows; i++)
     {
-       data[i] = (double*)malloc(sizeof(double)*cols);
-       for (unsigned int j=0; j<cols; j++) data[i][j] = mData[j][i];
+        data[i] = (double*)malloc(sizeof(double)*cols);
+        for (unsigned int j=0; j<cols; j++) data[i][j] = mData[j][i];
     }
     clear();
     mRows = rows;
@@ -331,6 +331,8 @@ DoubleMatrix DoubleMatrix::minor(unsigned int row, unsigned int col) const
 
 DoubleMatrix& DoubleMatrix::operator +(const DoubleMatrix &matrix)
 {
+    printf("DoubleMatrix& DoubleMatrix::operator +(const DoubleMatrix &matrix) %d %d %d %d\n",
+           rows(), cols(), matrix.rows(), matrix.cols());
     if (!dimEquals(matrix))
     {
         throw MatrixException(0);
@@ -351,31 +353,48 @@ DoubleMatrix& DoubleMatrix::operator +(const DoubleMatrix &matrix)
 DoubleMatrix& DoubleMatrix::operator *(const DoubleMatrix &matrix)
 {
     if (mCols == 0 && mCols != matrix.mRows) return *this;
+    printf("%d %d\n", matrix.rows(), matrix.cols());
 
     for (unsigned int i=0; i<mRows; i++)
     {
         for (unsigned int j=0; j<mCols; j++)
         {
             double sum = 0.0;
-            for (unsigned int i1=0; i1<mRows; i1++)
+            for (unsigned int k=0; k<mRows; k++)
             {
-                sum += mData[i][i1]*matrix.mData[i1][i];
-//                for (unsigned int j1=0; j1<mCols; j1++)
-//                {
-
-//                }
+                sum += mData[i][k]*matrix.mData[k][i];
             }
             mData[i][j] = sum;
         }
     }
-
     return *this;
 }
 
-DoubleMatrix multiplyMatrices(const DoubleMatrix &m1, const DoubleMatrix &m2)
+DoubleMatrix operator+(const DoubleMatrix& m1, const DoubleMatrix& m2)
+{
+    printf("%d %d %d %d\n", m1.rows(), m1.cols(), m2.rows(), m2.cols());
+    if (!m1.dimEquals(m2))
+    {
+        throw MatrixException(0);
+    }
+
+    DoubleMatrix m;
+    m.resize(m1.rows(), m2.cols());
+    for (unsigned int i=0; i<m1.mRows; i++)
+    {
+        for (unsigned int j=0; j<m1.mCols; j++)
+        {
+            m.mData[i][j] += m1.mData[i][j]+m2.mData[i][j];
+        }
+    }
+    return m;
+}
+
+DoubleMatrix operator*(const DoubleMatrix &m1, const DoubleMatrix &m2)
 {
     DoubleMatrix m;
     m.resize(m1.rows(), m2.cols());
+    printf("%d %d\n", m.rows(), m.cols());
 
     for (unsigned int i=0; i<m.rows(); i++)
     {

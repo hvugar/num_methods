@@ -66,6 +66,7 @@ void Example4::calculate1()
 
 void Example4::calculate3()
 {
+    /*
     h = 0.001;
     N = 1000;
 
@@ -196,9 +197,9 @@ void Example4::calculate3()
                 }
             }
 
-            DoubleMatrix P53 = multiplyMatrices(A51,P43) + A52;
-            DoubleMatrix P52 = multiplyMatrices(A51,P42) + A53;
-            DoubleMatrix P51 = multiplyMatrices(A51,P41) + A54;
+//            DoubleMatrix P53 = A51,P43 + A52;
+//            DoubleMatrix P52 = A51,P42 + A53;
+//            DoubleMatrix P51 = A51,P41 + A54;
 
             //p3
             p3.at(k,0,0) = A51.at(0,0)*p3.at(4,0,0) + A51.at(0,1)*p3.at(4,1,0) + A51.at(0,2)*p3.at(4,2,0) + (-1.44);
@@ -249,12 +250,12 @@ void Example4::calculate3()
             q0.at(k,1) = A51.at(1,0)*q0.at(4,0) + A51.at(1,1)*q0.at(4,1) + A51.at(1,2)*q0.at(4,2) + 0.48*h*b(2,k1);
             q0.at(k,2) = A51.at(2,0)*q0.at(4,0) + A51.at(2,1)*q0.at(4,1) + A51.at(2,2)*q0.at(4,2) + 0.48*h*b(3,k1);
 
-            printf("%14.10f %14.10f %14.10f\n", P53.at(0,0),P53.at(0,1),P53.at(0,2));
-            printf("%14.10f %14.10f %14.10f\n", p3.at(k,0,0),p3.at(k,0,1),p3.at(k,0,2));
-            printf("%14.10f %14.10f %14.10f\n", P52.at(0,0),P52.at(0,1),P52.at(0,2));
-            printf("%14.10f %14.10f %14.10f\n", p2.at(k,0,0),p2.at(k,0,1),p2.at(k,0,2));
-            printf("%14.10f %14.10f %14.10f\n", P51.at(0,0),P51.at(0,1),P51.at(0,2));
-            printf("%14.10f %14.10f %14.10f\n", p1.at(k,0,0),p1.at(k,0,1),p1.at(k,0,2));
+//            printf("%14.10f %14.10f %14.10f\n", P53.at(0,0),P53.at(0,1),P53.at(0,2));
+//            printf("%14.10f %14.10f %14.10f\n", p3.at(k,0,0),p3.at(k,0,1),p3.at(k,0,2));
+//            printf("%14.10f %14.10f %14.10f\n", P52.at(0,0),P52.at(0,1),P52.at(0,2));
+//            printf("%14.10f %14.10f %14.10f\n", p2.at(k,0,0),p2.at(k,0,1),p2.at(k,0,2));
+//            printf("%14.10f %14.10f %14.10f\n", P51.at(0,0),P51.at(0,1),P51.at(0,2));
+//            printf("%14.10f %14.10f %14.10f\n", p1.at(k,0,0),p1.at(k,0,1),p1.at(k,0,2));
         }
 
         if (k==6)
@@ -511,12 +512,15 @@ void Example4::calculate3()
     //DoubleMatrix eta(12,1);
     //DoubleVector gamma(12,12);
     //gamma[0,0] = 0.2; gamma[0,1] = 0.5; gamma[0,2] = 1.2; gamma[0,3] = 1.4; gamma[0,4] = 1.1; gamma[0,5] = 1.0; gamma[0,6] = 0.0; gamma[0,7] = 0.0; gamma[0,8] = 1.0; gamma[0,6] = 0.0; gamma[0,7] = 0.0; gamma[0,8] = 1.0;
+    */
 }
 
 void Example4::calculate3M()
 {
     h = 0.001;
     N = 1000;
+    unsigned int n = 3;
+    unsigned int K = 4;
 
     DoubleVector x01(N+1);
     DoubleVector x02(N+1);
@@ -532,7 +536,7 @@ void Example4::calculate3M()
     IPrinter::printVector(14,10,x03);
     puts("---");
 
-    DoubleMatrix x(3,N+1);
+    DoubleMatrix x(n,N+1);
 
     x.at(0,0) = X1(0); x.at(0,1) = X1(1); x.at(0,2) = X1(2); x.at(0,3) = X1(3);
     x.at(1,0) = X2(0); x.at(1,1) = X2(1); x.at(1,2) = X2(2); x.at(1,3) = X2(3);
@@ -545,15 +549,13 @@ void Example4::calculate3M()
     std::vector<DoubleVector> Q(N+1);
 
     std::vector<DoubleMatrix> A(5);
-    A[0].resize(3,1);
-    A[1].resize(3,3);
-    A[2].resize(3,3);
-    A[3].resize(3,3);
-    A[4].resize(3,3);
+    A[0].resize(n,1);
+    A[1].resize(n,n);
+    A[2].resize(n,n);
+    A[3].resize(n,n);
+    A[4].resize(n,n);
 
-    DoubleVector B(3);
-
-    for (unsigned int k=4; k<=N; k++)
+    for (unsigned int k=K; k<=N; k++)
     {
         A[1].at(0,0) = 0.48*h*a(1,1,k-1)+1.92; A[1].at(0,1) = 0.48*h*a(1,2,k-1);      A[1].at(0,2) = 0.48*h*a(1,3,k-1);
         A[1].at(1,0) = 0.48*h*a(2,1,k-1);      A[1].at(1,1) = 0.48*h*a(2,2,k-1)+1.92; A[1].at(1,2) = 0.48*h*a(2,3,k-1);
@@ -571,62 +573,62 @@ void Example4::calculate3M()
         A[4].at(1,0) = +0.00; A[4].at(1,1) = -0.12; A[4].at(1,2) = +0.00;
         A[4].at(2,0) = +0.00; A[4].at(2,1) = +0.00; A[4].at(2,2) = -0.12;
 
-        B.at(0) = 0.48*h*b(1,k-1);
-        B.at(1) = 0.48*h*b(2,k-1);
-        B.at(2) = 0.48*h*b(3,k-1);
+        A[0].at(0,0) = 0.48*h*b(1,k-1);
+        A[0].at(1,0) = 0.48*h*b(2,k-1);
+        A[0].at(2,0) = 0.48*h*b(3,k-1);
 
-        if (k==4)
+        if (k==K)
         {
             P3[k] = A[1];
             P2[k] = A[2];
             P1[k] = A[3];
             P0[k] = A[4];
-            Q[k]  = B;
+            Q[k]  = A[0];
        }
 
-        if (k==5)
+        if (k==K+1)
         {
-            P3[k] = multiplyMatrices(A[1],P3[k-1]) + A[2];
-            P2[k] = multiplyMatrices(A[1],P2[k-1]) + A[3];
-            P1[k] = multiplyMatrices(A[1],P1[k-1]) + A[4];
-            P0[k] = multiplyMatrices(A[1],P0[k-1]);
-            Q[k]  = multiplyMatrices(A[1],Q[k-1]) + B;
+            P3[k] = A[1]*P3[k-1] + A[2];
+            P2[k] = A[1]*P2[k-1] + A[3];
+            P1[k] = A[1]*P1[k-1] + A[4];
+            P0[k] = A[1]*P0[k-1];
+            Q[k]  = A[1]*DoubleMatrix(Q[k-1]) + A[0];
         }
 
-        if (k==6)
-        {
-            P3[k] = multiplyMatrices(A[1],P3[k-1]) + multiplyMatrices(A[2],P3[k-2]) + A[3];
-            P2[k] = multiplyMatrices(A[1],P2[k-1]) + multiplyMatrices(A[2],P2[k-2]) + A[4];
-            P1[k] = multiplyMatrices(A[1],P1[k-1]) + multiplyMatrices(A[2],P1[k-2]);
-            P0[k] = multiplyMatrices(A[1],P0[k-1]) + multiplyMatrices(A[2],P0[k-2]);
-            Q[k] = multiplyMatrices(A[1],Q[k-1]) + multiplyMatrices(A[2],Q[k-2]) + B;
-        }
+//        if (k==K+2)
+//        {
+//            P3[k] = A[1]*P3[k-1] + A[2]*P3[k-2] + A[3];
+//            P2[k] = A[1]*P2[k-1] + A[2]*P2[k-2] + A[4];
+//            P1[k] = A[1]*P1[k-1] + A[2]*P1[k-2];
+//            P0[k] = A[1]*P0[k-1] + A[2]*P0[k-2];
+//            //Q[k]  = A[1]*DoubleMatrix(Q[k-1]) + A[2]*DoubleMatrix(Q[k-2]) + A[0];
+//        }
 
-        if (k==7)
-        {
-            P3[k] = multiplyMatrices(A[1],P3[k-1]) + multiplyMatrices(A[2],P3[k-2]) + multiplyMatrices(A[3],P3[k-3]) + A[4];
-            P2[k] = multiplyMatrices(A[1],P2[k-1]) + multiplyMatrices(A[2],P2[k-2]) + multiplyMatrices(A[3],P2[k-3]);
-            P1[k] = multiplyMatrices(A[1],P1[k-1]) + multiplyMatrices(A[2],P1[k-2]) + multiplyMatrices(A[3],P1[k-3]);
-            P0[k] = multiplyMatrices(A[1],P0[k-1]) + multiplyMatrices(A[2],P0[k-2]) + multiplyMatrices(A[3],P0[k-3]);
-            Q[k] = multiplyMatrices(A[1],Q[k-1]) + multiplyMatrices(A[2],Q[k-2]) + multiplyMatrices(A[3],Q[k-3]) + B;
-        }
+//        if (k==K+3)
+//        {
+//            P3[k] = A[1]*P3[k-1] + A[2]*P3[k-2] + A[3]*P3[k-3] + A[4];
+//            P2[k] = A[1]*P2[k-1] + A[2]*P2[k-2] + A[3]*P2[k-3];
+//            P1[k] = A[1]*P1[k-1] + A[2]*P1[k-2] + A[3]*P1[k-3];
+//            P0[k] = A[1]*P0[k-1] + A[2]*P0[k-2] + A[3]*P0[k-3];
+//            //Q[k]  = A[1]*DoubleMatrix(Q[k-1]) + A[2]*DoubleMatrix(Q[k-2]) + A[3]*DoubleMatrix(Q[k-3]) + A[0];
+//        }
 
-        if (k>=8)
-        {
-            P3[k] = multiplyMatrices(A[1],P3[k-1]) + multiplyMatrices(A[2],P3[k-2]) + multiplyMatrices(A[3],P3[k-3]) + multiplyMatrices(A[4],P3[k-4]);
-            P2[k] = multiplyMatrices(A[1],P2[k-1]) + multiplyMatrices(A[2],P2[k-2]) + multiplyMatrices(A[3],P2[k-3]) + multiplyMatrices(A[4],P2[k-4]);
-            P1[k] = multiplyMatrices(A[1],P1[k-1]) + multiplyMatrices(A[2],P1[k-2]) + multiplyMatrices(A[3],P1[k-3]) + multiplyMatrices(A[4],P1[k-4]);
-            P0[k] = multiplyMatrices(A[1],P0[k-1]) + multiplyMatrices(A[2],P0[k-2]) + multiplyMatrices(A[3],P0[k-3]) + multiplyMatrices(A[4],P0[k-4]);
-            Q[k]  = multiplyMatrices(A[1],Q[k-1]) + multiplyMatrices(A[2],Q[k-2]) + multiplyMatrices(A[3],Q[k-3]) + multiplyMatrices(A[4],Q[k-4]) + B;
-        }
+//        if (k>=2*K)
+//        {
+//            P3[k] = A[1]*P3[k-1] + A[2]*P3[k-2] + A[3]*P3[k-3] + A[4]*P3[k-4];
+//            P2[k] = A[1]*P2[k-1] + A[2]*P2[k-2] + A[3]*P2[k-3] + A[4]*P2[k-4];
+//            P1[k] = A[1]*P1[k-1] + A[2]*P1[k-2] + A[3]*P1[k-3] + A[4]*P1[k-4];
+//            P0[k] = A[1]*P0[k-1] + A[2]*P0[k-2] + A[3]*P0[k-3] + A[4]*P0[k-4];
+//            //Q[k]  = A[1]*DoubleMatrix(Q[k-1]) + A[2]*DoubleMatrix(Q[k-2]) + A[3]*DoubleMatrix(Q[k-3]) + A[4]*DoubleMatrix(Q[k-4]) + A[0];
+//        }
 
-        DoubleVector xk = multiplyMatrices(P3[k], DoubleMatrix(x.col(3))) + multiplyMatrices(P2[k], DoubleMatrix(x.col(2)))
-                + multiplyMatrices(P1[k], DoubleMatrix(x.col(1))) + multiplyMatrices(P0[k], DoubleMatrix(x.col(0))) + Q[k];
+//        DoubleVector xk = P3[k]*DoubleMatrix(x.col(3)) + P2[k]*DoubleMatrix(x.col(2))
+//                + P1[k]*DoubleMatrix(x.col(1)) + P0[k]*DoubleMatrix(x.col(0)) + Q[k];
 
-        x.at(0,k) = xk.at(0);
-        x.at(1,k) = xk.at(1);
-        x.at(2,k) = xk.at(2);
-        xk.clear();
+//        x.at(0,k) = xk.at(0);
+//        x.at(1,k) = xk.at(1);
+//        x.at(2,k) = xk.at(2);
+//        xk.clear();
 
 //        x.at(0,k) = (P3[k].at(0,0)*x.at(0,3)+P3[k].at(0,1)*x.at(1,3)+P3[k].at(0,2)*x.at(2,3))
 //                  + (P2[k].at(0,0)*x.at(0,2)+P2[k].at(0,1)*x.at(1,2)+P2[k].at(0,2)*x.at(2,2))
@@ -659,6 +661,7 @@ void Example4::calculate3M()
     A[3].clear();
     A[2].clear();
     A[1].clear();
+    A[0].clear();
     A.clear();
 
     IPrinter::printVector(14,10,x.row(0));
@@ -669,6 +672,7 @@ void Example4::calculate3M()
 
 void Example4::calculate2()
 {
+    /*
     h = 0.00001;
     N = 100000;
 
@@ -774,6 +778,7 @@ void Example4::calculate2()
     IPrinter::printVector(14,10,x2);
     IPrinter::printVector(14,10,x3);
     puts("---");
+    */
 }
 
 double Example4::X1(unsigned int k) const
