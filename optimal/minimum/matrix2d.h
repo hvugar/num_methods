@@ -3,6 +3,21 @@
 
 #include <global.h>
 #include <vector2d.h>
+#include <exception>
+#include <string>
+
+class MINIMUMSHARED_EXPORT DoubleMatrixException : public std::exception
+{
+public:
+    DoubleMatrixException(unsigned int msgCode = 0) noexcept;
+    DoubleMatrixException(const DoubleMatrixException&) noexcept;
+    DoubleMatrixException& operator= (const DoubleMatrixException&) noexcept;
+    virtual ~DoubleMatrixException();
+    virtual const char* what() const noexcept;
+
+private:
+    unsigned int msgCode;
+};
 
 class MINIMUMSHARED_EXPORT DoubleMatrix
 {
@@ -32,15 +47,14 @@ public:
     DoubleVector col(unsigned int c) const;
 
     DoubleMatrix& operator=(const DoubleMatrix &matrix);
-    DoubleMatrix& operator+(const DoubleMatrix &matrix);
-    DoubleMatrix& operator-(const DoubleMatrix &matrix);
-    DoubleMatrix& operator/(const DoubleMatrix &matrix);
-    DoubleMatrix& operator*(const double scalar);
-    DoubleMatrix& operator*(const DoubleVector &vector);
-    DoubleMatrix& operator*(const DoubleMatrix &matrix);
-
-    friend MINIMUMSHARED_EXPORT DoubleMatrix operator*(const DoubleMatrix&, const DoubleMatrix&);
-    friend MINIMUMSHARED_EXPORT DoubleMatrix operator+(const DoubleMatrix&, const DoubleMatrix&);
+    DoubleMatrix& operator=(const DoubleVector &vector);
+    //DoubleMatrix& operator+(const DoubleMatrix &matrix);
+    //DoubleMatrix& operator+=(const DoubleMatrix &matrix);
+    //DoubleMatrix& operator-(const DoubleMatrix &matrix);
+    //DoubleMatrix& operator/(const DoubleMatrix &matrix);
+    //DoubleMatrix& operator*(const double scalar);
+    //DoubleMatrix& operator*(const DoubleVector &vector);
+    //DoubleMatrix& operator*(const DoubleMatrix &matrix);
 
     void print();
     void randomData();
@@ -65,6 +79,9 @@ public:
     bool isIdentityMatrix() const;
     bool isDiagonalMatrix() const;
     bool isSquareMatrix() const;
+
+    friend MINIMUMSHARED_EXPORT DoubleMatrix operator*(const DoubleMatrix&, const DoubleMatrix&);
+    friend MINIMUMSHARED_EXPORT DoubleMatrix operator+(const DoubleMatrix&, const DoubleMatrix&);
 
 private:
     unsigned int mRows;

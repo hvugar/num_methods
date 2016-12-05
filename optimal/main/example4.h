@@ -15,6 +15,8 @@ public:
 
     double h;
     unsigned int N;
+    unsigned int K;
+    unsigned int n;
 
     void static Main(int argc, char *argv[]);
 

@@ -25,14 +25,4 @@ public:
     virtual const char* what() const throw();
 };
 
-class MINIMUMSHARED_EXPORT MatrixException : public std::exception
-{
-public:
-    MatrixException(int messageType);
-    virtual const char* what() const noexcept;
-private:
-    int messageType;
-};
-
-
 #endif // EXCEPTIONS_H

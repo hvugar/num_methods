@@ -9,13 +9,14 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 Example4::Example4()
 {
+    h = 0.001;
+    N = 1000;
+    n = 3;
+    K = 4;
 }
 
 void Example4::calculate1()
 {
-    h = 0.001;
-    N = 1000;
-
     DoubleVector x01(N+1);
     DoubleVector x02(N+1);
     DoubleVector x03(N+1);
@@ -66,7 +67,6 @@ void Example4::calculate1()
 
 void Example4::calculate3()
 {
-    /*
     h = 0.001;
     N = 1000;
 
@@ -124,9 +124,9 @@ void Example4::calculate3()
             A44.at(1,0) = +0.00; A44.at(1,1) = -0.12; A44.at(1,2) = +0.00;
             A44.at(2,0) = +0.00; A44.at(2,1) = +0.00; A44.at(2,2) = -0.12;
 
-//            p3.at(k,0,0) = A41(0,0); p3.at(k,0,1) = A41(0,1);  p3.at(k,0,2) = A41(0,2);
-//            p3.at(k,1,0) = A41(1,0); p3.at(k,1,1) = A41(1,1);  p3.at(k,1,2) = A41(1,2);
-//            p3.at(k,2,0) = A41(2,0); p3.at(k,2,1) = A41(2,1);  p3.at(k,2,2) = A41(2,2);
+            //            p3.at(k,0,0) = A41(0,0); p3.at(k,0,1) = A41(0,1);  p3.at(k,0,2) = A41(0,2);
+            //            p3.at(k,1,0) = A41(1,0); p3.at(k,1,1) = A41(1,1);  p3.at(k,1,2) = A41(1,2);
+            //            p3.at(k,2,0) = A41(2,0); p3.at(k,2,1) = A41(2,1);  p3.at(k,2,2) = A41(2,2);
 
             for (unsigned int i=0; i<3; i++)
             {
@@ -139,26 +139,26 @@ void Example4::calculate3()
                 }
             }
 
-//            p3.at(k,0,0) = 0.48*h*a(1,1,k1)+1.92; p3.at(k,0,1) = 0.48*h*a(1,2,k1);       p3.at(k,0,2) = 0.48*h*a(1,3,k1);
-//            p3.at(k,1,0) = 0.48*h*a(2,1,k1);      p3.at(k,1,1) = 0.48*h*a(2,2,k1)+1.92;  p3.at(k,1,2) = 0.48*h*a(2,3,k1);
-//            p3.at(k,2,0) = 0.48*h*a(3,1,k1);      p3.at(k,2,1) = 0.48*h*a(3,2,k1);       p3.at(k,2,2) = 0.48*h*a(3,3,k1)+1.92;
+            //            p3.at(k,0,0) = 0.48*h*a(1,1,k1)+1.92; p3.at(k,0,1) = 0.48*h*a(1,2,k1);       p3.at(k,0,2) = 0.48*h*a(1,3,k1);
+            //            p3.at(k,1,0) = 0.48*h*a(2,1,k1);      p3.at(k,1,1) = 0.48*h*a(2,2,k1)+1.92;  p3.at(k,1,2) = 0.48*h*a(2,3,k1);
+            //            p3.at(k,2,0) = 0.48*h*a(3,1,k1);      p3.at(k,2,1) = 0.48*h*a(3,2,k1);       p3.at(k,2,2) = 0.48*h*a(3,3,k1)+1.92;
 
-//            p2.at(k,0,0) = -1.44; p2.at(k,0,1) = 0.0;   p2.at(k,0,2) = 0.0;
-//            p2.at(k,1,0) = 0.0;   p2.at(k,1,1) = -1.44; p2.at(k,1,2) = 0.0;
-//            p2.at(k,2,0) = 0.0;   p2.at(k,2,1) = 0.0;   p2.at(k,2,2) = -1.44;
+            //            p2.at(k,0,0) = -1.44; p2.at(k,0,1) = 0.0;   p2.at(k,0,2) = 0.0;
+            //            p2.at(k,1,0) = 0.0;   p2.at(k,1,1) = -1.44; p2.at(k,1,2) = 0.0;
+            //            p2.at(k,2,0) = 0.0;   p2.at(k,2,1) = 0.0;   p2.at(k,2,2) = -1.44;
 
-//            p1.at(k,0,0) = 0.64;  p1.at(k,0,1) = 0.0;   p1.at(k,0,2) = 0.0;
-//            p1.at(k,1,0) = 0.0;   p1.at(k,1,1) = 0.64;  p1.at(k,1,2) = 0.0;
-//            p1.at(k,2,0) = 0.0;   p1.at(k,2,1) = 0.0;   p1.at(k,2,2) = 0.64;
+            //            p1.at(k,0,0) = 0.64;  p1.at(k,0,1) = 0.0;   p1.at(k,0,2) = 0.0;
+            //            p1.at(k,1,0) = 0.0;   p1.at(k,1,1) = 0.64;  p1.at(k,1,2) = 0.0;
+            //            p1.at(k,2,0) = 0.0;   p1.at(k,2,1) = 0.0;   p1.at(k,2,2) = 0.64;
 
-//            p0.at(k,0,0) = -0.12; p0.at(k,0,1) = 0.0;   p0.at(k,0,2) = 0.0;
-//            p0.at(k,1,0) = 0.0;   p0.at(k,1,1) = -0.12; p0.at(k,1,2) = 0.0;
-//            p0.at(k,2,0) = 0.0;   p0.at(k,2,1) = 0.0;   p0.at(k,2,2) = -0.12;
+            //            p0.at(k,0,0) = -0.12; p0.at(k,0,1) = 0.0;   p0.at(k,0,2) = 0.0;
+            //            p0.at(k,1,0) = 0.0;   p0.at(k,1,1) = -0.12; p0.at(k,1,2) = 0.0;
+            //            p0.at(k,2,0) = 0.0;   p0.at(k,2,1) = 0.0;   p0.at(k,2,2) = -0.12;
 
             q0.at(k,0) = 0.48*h*b(1,k1);
             q0.at(k,1) = 0.48*h*b(2,k1);
             q0.at(k,2) = 0.48*h*b(3,k1);
-       }
+        }
 
         if (k==5)
         {
@@ -197,9 +197,9 @@ void Example4::calculate3()
                 }
             }
 
-//            DoubleMatrix P53 = A51,P43 + A52;
-//            DoubleMatrix P52 = A51,P42 + A53;
-//            DoubleMatrix P51 = A51,P41 + A54;
+            //            DoubleMatrix P53 = A51,P43 + A52;
+            //            DoubleMatrix P52 = A51,P42 + A53;
+            //            DoubleMatrix P51 = A51,P41 + A54;
 
             //p3
             p3.at(k,0,0) = A51.at(0,0)*p3.at(4,0,0) + A51.at(0,1)*p3.at(4,1,0) + A51.at(0,2)*p3.at(4,2,0) + (-1.44);
@@ -250,12 +250,12 @@ void Example4::calculate3()
             q0.at(k,1) = A51.at(1,0)*q0.at(4,0) + A51.at(1,1)*q0.at(4,1) + A51.at(1,2)*q0.at(4,2) + 0.48*h*b(2,k1);
             q0.at(k,2) = A51.at(2,0)*q0.at(4,0) + A51.at(2,1)*q0.at(4,1) + A51.at(2,2)*q0.at(4,2) + 0.48*h*b(3,k1);
 
-//            printf("%14.10f %14.10f %14.10f\n", P53.at(0,0),P53.at(0,1),P53.at(0,2));
-//            printf("%14.10f %14.10f %14.10f\n", p3.at(k,0,0),p3.at(k,0,1),p3.at(k,0,2));
-//            printf("%14.10f %14.10f %14.10f\n", P52.at(0,0),P52.at(0,1),P52.at(0,2));
-//            printf("%14.10f %14.10f %14.10f\n", p2.at(k,0,0),p2.at(k,0,1),p2.at(k,0,2));
-//            printf("%14.10f %14.10f %14.10f\n", P51.at(0,0),P51.at(0,1),P51.at(0,2));
-//            printf("%14.10f %14.10f %14.10f\n", p1.at(k,0,0),p1.at(k,0,1),p1.at(k,0,2));
+            //            printf("%14.10f %14.10f %14.10f\n", P53.at(0,0),P53.at(0,1),P53.at(0,2));
+            //            printf("%14.10f %14.10f %14.10f\n", p3.at(k,0,0),p3.at(k,0,1),p3.at(k,0,2));
+            //            printf("%14.10f %14.10f %14.10f\n", P52.at(0,0),P52.at(0,1),P52.at(0,2));
+            //            printf("%14.10f %14.10f %14.10f\n", p2.at(k,0,0),p2.at(k,0,1),p2.at(k,0,2));
+            //            printf("%14.10f %14.10f %14.10f\n", P51.at(0,0),P51.at(0,1),P51.at(0,2));
+            //            printf("%14.10f %14.10f %14.10f\n", p1.at(k,0,0),p1.at(k,0,1),p1.at(k,0,2));
         }
 
         if (k==6)
@@ -490,17 +490,17 @@ void Example4::calculate3()
         }
 
         x1.at(k) = (p3.at(k,0,0)*x1.at(3)+p3.at(k,0,1)*x2.at(3)+p3.at(k,0,2)*x3.at(3))
-                 + (p2.at(k,0,0)*x1.at(2)+p2.at(k,0,1)*x2.at(2)+p2.at(k,0,2)*x3.at(2))
-                 + (p1.at(k,0,0)*x1.at(1)+p1.at(k,0,1)*x2.at(1)+p1.at(k,0,2)*x3.at(1))
-                 + (p0.at(k,0,0)*x1.at(0)+p0.at(k,0,1)*x2.at(0)+p0.at(k,0,2)*x3.at(0)) + q0.at(k,0);
+                + (p2.at(k,0,0)*x1.at(2)+p2.at(k,0,1)*x2.at(2)+p2.at(k,0,2)*x3.at(2))
+                + (p1.at(k,0,0)*x1.at(1)+p1.at(k,0,1)*x2.at(1)+p1.at(k,0,2)*x3.at(1))
+                + (p0.at(k,0,0)*x1.at(0)+p0.at(k,0,1)*x2.at(0)+p0.at(k,0,2)*x3.at(0)) + q0.at(k,0);
         x2.at(k) = (p3.at(k,1,0)*x1.at(3)+p3.at(k,1,1)*x2.at(3)+p3.at(k,1,2)*x3.at(3))
-                 + (p2.at(k,1,0)*x1.at(2)+p2.at(k,1,1)*x2.at(2)+p2.at(k,1,2)*x3.at(2))
-                 + (p1.at(k,1,0)*x1.at(1)+p1.at(k,1,1)*x2.at(1)+p1.at(k,1,2)*x3.at(1))
-                 + (p0.at(k,1,0)*x1.at(0)+p0.at(k,1,1)*x2.at(0)+p0.at(k,1,2)*x3.at(0)) + q0.at(k,1);
+                + (p2.at(k,1,0)*x1.at(2)+p2.at(k,1,1)*x2.at(2)+p2.at(k,1,2)*x3.at(2))
+                + (p1.at(k,1,0)*x1.at(1)+p1.at(k,1,1)*x2.at(1)+p1.at(k,1,2)*x3.at(1))
+                + (p0.at(k,1,0)*x1.at(0)+p0.at(k,1,1)*x2.at(0)+p0.at(k,1,2)*x3.at(0)) + q0.at(k,1);
         x3.at(k) = (p3.at(k,2,0)*x1.at(3)+p3.at(k,2,1)*x2.at(3)+p3.at(k,2,2)*x3.at(3))
-                 + (p2.at(k,2,0)*x1.at(2)+p2.at(k,2,1)*x2.at(2)+p2.at(k,2,2)*x3.at(2))
-                 + (p1.at(k,2,0)*x1.at(1)+p1.at(k,2,1)*x2.at(1)+p1.at(k,2,2)*x3.at(1))
-                 + (p0.at(k,2,0)*x1.at(0)+p0.at(k,2,1)*x2.at(0)+p0.at(k,2,2)*x3.at(0)) + q0.at(k,2);
+                + (p2.at(k,2,0)*x1.at(2)+p2.at(k,2,1)*x2.at(2)+p2.at(k,2,2)*x3.at(2))
+                + (p1.at(k,2,0)*x1.at(1)+p1.at(k,2,1)*x2.at(1)+p1.at(k,2,2)*x3.at(1))
+                + (p0.at(k,2,0)*x1.at(0)+p0.at(k,2,1)*x2.at(0)+p0.at(k,2,2)*x3.at(0)) + q0.at(k,2);
 
     }
 
@@ -512,16 +512,10 @@ void Example4::calculate3()
     //DoubleMatrix eta(12,1);
     //DoubleVector gamma(12,12);
     //gamma[0,0] = 0.2; gamma[0,1] = 0.5; gamma[0,2] = 1.2; gamma[0,3] = 1.4; gamma[0,4] = 1.1; gamma[0,5] = 1.0; gamma[0,6] = 0.0; gamma[0,7] = 0.0; gamma[0,8] = 1.0; gamma[0,6] = 0.0; gamma[0,7] = 0.0; gamma[0,8] = 1.0;
-    */
 }
 
 void Example4::calculate3M()
 {
-    h = 0.001;
-    N = 1000;
-    unsigned int n = 3;
-    unsigned int K = 4;
-
     DoubleVector x01(N+1);
     DoubleVector x02(N+1);
     DoubleVector x03(N+1);
@@ -584,7 +578,7 @@ void Example4::calculate3M()
             P1[k] = A[3];
             P0[k] = A[4];
             Q[k]  = A[0];
-       }
+        }
 
         if (k==K+1)
         {
@@ -592,69 +586,68 @@ void Example4::calculate3M()
             P2[k] = A[1]*P2[k-1] + A[3];
             P1[k] = A[1]*P1[k-1] + A[4];
             P0[k] = A[1]*P0[k-1];
-            Q[k]  = A[1]*DoubleMatrix(Q[k-1]) + A[0];
+            Q[k]  = A[1]*Q[k-1] + A[0];
         }
 
-//        if (k==K+2)
-//        {
-//            P3[k] = A[1]*P3[k-1] + A[2]*P3[k-2] + A[3];
-//            P2[k] = A[1]*P2[k-1] + A[2]*P2[k-2] + A[4];
-//            P1[k] = A[1]*P1[k-1] + A[2]*P1[k-2];
-//            P0[k] = A[1]*P0[k-1] + A[2]*P0[k-2];
-//            //Q[k]  = A[1]*DoubleMatrix(Q[k-1]) + A[2]*DoubleMatrix(Q[k-2]) + A[0];
-//        }
+        if (k==K+2)
+        {
+            P3[k] = A[1]*P3[k-1] + A[2]*P3[k-2] + A[3];
+            P2[k] = A[1]*P2[k-1] + A[2]*P2[k-2] + A[4];
+            P1[k] = A[1]*P1[k-1] + A[2]*P1[k-2];
+            P0[k] = A[1]*P0[k-1] + A[2]*P0[k-2];
+            Q[k]  = A[1]*DoubleMatrix(Q[k-1]) + A[2]*DoubleMatrix(Q[k-2]) + A[0];
+        }
 
-//        if (k==K+3)
-//        {
-//            P3[k] = A[1]*P3[k-1] + A[2]*P3[k-2] + A[3]*P3[k-3] + A[4];
-//            P2[k] = A[1]*P2[k-1] + A[2]*P2[k-2] + A[3]*P2[k-3];
-//            P1[k] = A[1]*P1[k-1] + A[2]*P1[k-2] + A[3]*P1[k-3];
-//            P0[k] = A[1]*P0[k-1] + A[2]*P0[k-2] + A[3]*P0[k-3];
-//            //Q[k]  = A[1]*DoubleMatrix(Q[k-1]) + A[2]*DoubleMatrix(Q[k-2]) + A[3]*DoubleMatrix(Q[k-3]) + A[0];
-//        }
+        if (k==K+3)
+        {
+            P3[k] = A[1]*P3[k-1] + A[2]*P3[k-2] + A[3]*P3[k-3] + A[4];
+            P2[k] = A[1]*P2[k-1] + A[2]*P2[k-2] + A[3]*P2[k-3];
+            P1[k] = A[1]*P1[k-1] + A[2]*P1[k-2] + A[3]*P1[k-3];
+            P0[k] = A[1]*P0[k-1] + A[2]*P0[k-2] + A[3]*P0[k-3];
+            Q[k]  = A[1]*DoubleMatrix(Q[k-1]) + A[2]*DoubleMatrix(Q[k-2]) + A[3]*DoubleMatrix(Q[k-3]) + A[0];
+        }
 
-//        if (k>=2*K)
-//        {
-//            P3[k] = A[1]*P3[k-1] + A[2]*P3[k-2] + A[3]*P3[k-3] + A[4]*P3[k-4];
-//            P2[k] = A[1]*P2[k-1] + A[2]*P2[k-2] + A[3]*P2[k-3] + A[4]*P2[k-4];
-//            P1[k] = A[1]*P1[k-1] + A[2]*P1[k-2] + A[3]*P1[k-3] + A[4]*P1[k-4];
-//            P0[k] = A[1]*P0[k-1] + A[2]*P0[k-2] + A[3]*P0[k-3] + A[4]*P0[k-4];
-//            //Q[k]  = A[1]*DoubleMatrix(Q[k-1]) + A[2]*DoubleMatrix(Q[k-2]) + A[3]*DoubleMatrix(Q[k-3]) + A[4]*DoubleMatrix(Q[k-4]) + A[0];
-//        }
+        if (k>=2*K)
+        {
+            P3[k] = A[1]*P3[k-1] + A[2]*P3[k-2] + A[3]*P3[k-3] + A[4]*P3[k-4];
+            P2[k] = A[1]*P2[k-1] + A[2]*P2[k-2] + A[3]*P2[k-3] + A[4]*P2[k-4];
+            P1[k] = A[1]*P1[k-1] + A[2]*P1[k-2] + A[3]*P1[k-3] + A[4]*P1[k-4];
+            P0[k] = A[1]*P0[k-1] + A[2]*P0[k-2] + A[3]*P0[k-3] + A[4]*P0[k-4];
+            Q[k]  = A[1]*DoubleMatrix(Q[k-1]) + A[2]*DoubleMatrix(Q[k-2]) + A[3]*DoubleMatrix(Q[k-3]) + A[4]*DoubleMatrix(Q[k-4]) + A[0];
+        }
 
-//        DoubleVector xk = P3[k]*DoubleMatrix(x.col(3)) + P2[k]*DoubleMatrix(x.col(2))
-//                + P1[k]*DoubleMatrix(x.col(1)) + P0[k]*DoubleMatrix(x.col(0)) + Q[k];
+        DoubleVector xk = P3[k]*x.col(3) + P2[k]*x.col(2) + P1[k]*x.col(1) + P0[k]*x.col(0) + Q[k];
 
-//        x.at(0,k) = xk.at(0);
-//        x.at(1,k) = xk.at(1);
-//        x.at(2,k) = xk.at(2);
-//        xk.clear();
+        x.at(0,k) = xk.at(0);
+        x.at(1,k) = xk.at(1);
+        x.at(2,k) = xk.at(2);
+        xk.clear();
 
-//        x.at(0,k) = (P3[k].at(0,0)*x.at(0,3)+P3[k].at(0,1)*x.at(1,3)+P3[k].at(0,2)*x.at(2,3))
-//                  + (P2[k].at(0,0)*x.at(0,2)+P2[k].at(0,1)*x.at(1,2)+P2[k].at(0,2)*x.at(2,2))
-//                  + (P1[k].at(0,0)*x.at(0,1)+P1[k].at(0,1)*x.at(1,1)+P1[k].at(0,2)*x.at(2,1))
-//                  + (P0[k].at(0,0)*x.at(0,0)+P0[k].at(0,1)*x.at(1,0)+P0[k].at(0,2)*x.at(2,0)) + Q[k].at(0);
-//        x.at(1,k) = (P3[k].at(1,0)*x.at(0,3)+P3[k].at(1,1)*x.at(1,3)+P3[k].at(1,2)*x.at(2,3))
-//                  + (P2[k].at(1,0)*x.at(0,2)+P2[k].at(1,1)*x.at(1,2)+P2[k].at(1,2)*x.at(2,2))
-//                  + (P1[k].at(1,0)*x.at(0,1)+P1[k].at(1,1)*x.at(1,1)+P1[k].at(1,2)*x.at(2,1))
-//                  + (P0[k].at(1,0)*x.at(0,0)+P0[k].at(1,1)*x.at(1,0)+P0[k].at(1,2)*x.at(2,0)) + Q[k].at(1);
-//        x.at(2,k) = (P3[k].at(2,0)*x.at(0,3)+P3[k].at(2,1)*x.at(1,3)+P3[k].at(2,2)*x.at(2,3))
-//                  + (P2[k].at(2,0)*x.at(0,2)+P2[k].at(2,1)*x.at(1,2)+P2[k].at(2,2)*x.at(2,2))
-//                  + (P1[k].at(2,0)*x.at(0,1)+P1[k].at(2,1)*x.at(1,1)+P1[k].at(2,2)*x.at(2,1))
-//                  + (P0[k].at(2,0)*x.at(0,0)+P0[k].at(2,1)*x.at(1,0)+P0[k].at(2,2)*x.at(2,0)) + Q[k].at(2);
+        //        x.at(0,k) = (P3[k].at(0,0)*x.at(0,3)+P3[k].at(0,1)*x.at(1,3)+P3[k].at(0,2)*x.at(2,3))
+        //                  + (P2[k].at(0,0)*x.at(0,2)+P2[k].at(0,1)*x.at(1,2)+P2[k].at(0,2)*x.at(2,2))
+        //                  + (P1[k].at(0,0)*x.at(0,1)+P1[k].at(0,1)*x.at(1,1)+P1[k].at(0,2)*x.at(2,1))
+        //                  + (P0[k].at(0,0)*x.at(0,0)+P0[k].at(0,1)*x.at(1,0)+P0[k].at(0,2)*x.at(2,0)) + Q[k].at(0,0);
+        //        x.at(1,k) = (P3[k].at(1,0)*x.at(0,3)+P3[k].at(1,1)*x.at(1,3)+P3[k].at(1,2)*x.at(2,3))
+        //                  + (P2[k].at(1,0)*x.at(0,2)+P2[k].at(1,1)*x.at(1,2)+P2[k].at(1,2)*x.at(2,2))
+        //                  + (P1[k].at(1,0)*x.at(0,1)+P1[k].at(1,1)*x.at(1,1)+P1[k].at(1,2)*x.at(2,1))
+        //                  + (P0[k].at(1,0)*x.at(0,0)+P0[k].at(1,1)*x.at(1,0)+P0[k].at(1,2)*x.at(2,0)) + Q[k].at(1,0);
+        //        x.at(2,k) = (P3[k].at(2,0)*x.at(0,3)+P3[k].at(2,1)*x.at(1,3)+P3[k].at(2,2)*x.at(2,3))
+        //                  + (P2[k].at(2,0)*x.at(0,2)+P2[k].at(2,1)*x.at(1,2)+P2[k].at(2,2)*x.at(2,2))
+        //                  + (P1[k].at(2,0)*x.at(0,1)+P1[k].at(2,1)*x.at(1,1)+P1[k].at(2,2)*x.at(2,1))
+        //                  + (P0[k].at(2,0)*x.at(0,0)+P0[k].at(2,1)*x.at(1,0)+P0[k].at(2,2)*x.at(2,0)) + Q[k].at(2,0);
 
-//        x.at(0,k) = (P3[k].at(0,0)*x.at(0,3)+P3[k].at(0,1)*x.at(1,3)+P3[k].at(0,2)*x.at(2,3))
-//                  + (P2[k].at(0,0)*x.at(0,2)+P2[k].at(0,1)*x.at(1,2)+P2[k].at(0,2)*x.at(2,2))
-//                  + (P1[k].at(0,0)*x.at(0,1)+P1[k].at(0,1)*x.at(1,1)+P1[k].at(0,2)*x.at(2,1))
-//                  + (P0[k].at(0,0)*x.at(0,0)+P0[k].at(0,1)*x.at(1,0)+P0[k].at(0,2)*x.at(2,0)) + Q[k].at(0);
-//        x.at(1,k) = (P3[k].at(1,0)*x.at(0,3)+P3[k].at(1,1)*x.at(1,3)+P3[k].at(1,2)*x.at(2,3))
-//                  + (P2[k].at(1,0)*x.at(0,2)+P2[k].at(1,1)*x.at(1,2)+P2[k].at(1,2)*x.at(2,2))
-//                  + (P1[k].at(1,0)*x.at(0,1)+P1[k].at(1,1)*x.at(1,1)+P1[k].at(1,2)*x.at(2,1))
-//                  + (P0[k].at(1,0)*x.at(0,0)+P0[k].at(1,1)*x.at(1,0)+P0[k].at(1,2)*x.at(2,0)) + Q[k].at(1);
-//        x.at(2,k) = (P3[k].at(2,0)*x.at(0,3)+P3[k].at(2,1)*x.at(1,3)+P3[k].at(2,2)*x.at(2,3))
-//                  + (P2[k].at(2,0)*x.at(0,2)+P2[k].at(2,1)*x.at(1,2)+P2[k].at(2,2)*x.at(2,2))
-//                  + (P1[k].at(2,0)*x.at(0,1)+P1[k].at(2,1)*x.at(1,1)+P1[k].at(2,2)*x.at(2,1))
-//                  + (P0[k].at(2,0)*x.at(0,0)+P0[k].at(2,1)*x.at(1,0)+P0[k].at(2,2)*x.at(2,0)) + Q[k].at(2);
+        //        x.at(0,k) = (P3[k].at(0,0)*x.at(0,3)+P3[k].at(0,1)*x.at(1,3)+P3[k].at(0,2)*x.at(2,3))
+        //                  + (P2[k].at(0,0)*x.at(0,2)+P2[k].at(0,1)*x.at(1,2)+P2[k].at(0,2)*x.at(2,2))
+        //                  + (P1[k].at(0,0)*x.at(0,1)+P1[k].at(0,1)*x.at(1,1)+P1[k].at(0,2)*x.at(2,1))
+        //                  + (P0[k].at(0,0)*x.at(0,0)+P0[k].at(0,1)*x.at(1,0)+P0[k].at(0,2)*x.at(2,0)) + Q[k].at(0);
+        //        x.at(1,k) = (P3[k].at(1,0)*x.at(0,3)+P3[k].at(1,1)*x.at(1,3)+P3[k].at(1,2)*x.at(2,3))
+        //                  + (P2[k].at(1,0)*x.at(0,2)+P2[k].at(1,1)*x.at(1,2)+P2[k].at(1,2)*x.at(2,2))
+        //                  + (P1[k].at(1,0)*x.at(0,1)+P1[k].at(1,1)*x.at(1,1)+P1[k].at(1,2)*x.at(2,1))
+        //                  + (P0[k].at(1,0)*x.at(0,0)+P0[k].at(1,1)*x.at(1,0)+P0[k].at(1,2)*x.at(2,0)) + Q[k].at(1);
+        //        x.at(2,k) = (P3[k].at(2,0)*x.at(0,3)+P3[k].at(2,1)*x.at(1,3)+P3[k].at(2,2)*x.at(2,3))
+        //                  + (P2[k].at(2,0)*x.at(0,2)+P2[k].at(2,1)*x.at(1,2)+P2[k].at(2,2)*x.at(2,2))
+        //                  + (P1[k].at(2,0)*x.at(0,1)+P1[k].at(2,1)*x.at(1,1)+P1[k].at(2,2)*x.at(2,1))
+        //                  + (P0[k].at(2,0)*x.at(0,0)+P0[k].at(2,1)*x.at(1,0)+P0[k].at(2,2)*x.at(2,0)) + Q[k].at(2);
     }
 
     A[4].clear();
@@ -664,15 +657,165 @@ void Example4::calculate3M()
     A[0].clear();
     A.clear();
 
+    DoubleMatrix gamma1_0(n,n,1.0);
+    DoubleMatrix gamma1_1(n,n,1.0);
+
+    DoubleMatrix gamma2_10(n,n,1.0);
+    DoubleMatrix gamma2_20(n,n,1.0);
+
+    DoubleMatrix gamma3_30(n,n,1.0);
+    DoubleMatrix gamma3_40(n,n,1.0);
+    DoubleMatrix gamma3_50(n,n,1.0);
+
+    DoubleMatrix gamma4_N1(n,n,1.0);
+    DoubleMatrix gamma4_N0(n,n,1.0);
+
+    DoubleMatrix M(K*n, K*n);
+    DoubleVector b(K*n);
+
+    ///////////////////////////////////////////////////////////
+    {
+        for (unsigned int i=0; i<6; i++)
+        {
+            M[0][0] = 0.0;
+            M[1][0] = 0.0;
+            M[2][0] = 0.0;
+        }
+
+        for (unsigned int i=0; i<3; i++)
+        {
+            M[0][6+i] = gamma1_1[0][i]; M[0][9+i] = gamma1_0[0][i];
+            M[1][6+i] = gamma1_1[1][i]; M[1][9+i] = gamma1_0[1][i];
+            M[2][6+i] = gamma1_1[2][i]; M[2][9+i] = gamma1_0[2][i];
+        }
+        DoubleMatrix B = gamma1_0*x.col(0) + gamma1_1*x.col(1);
+        b[0] = B[0][0];
+        b[1] = B[1][0];
+        b[2] = B[2][0];
+    }
+
+    ///////////////////////////////////////////////////////////
+    {
+        DoubleMatrix Q23 = gamma2_10*P3[10] + gamma2_20*P3[20];
+        DoubleMatrix Q22 = gamma2_10*P2[10] + gamma2_20*P2[20];
+        DoubleMatrix Q21 = gamma2_10*P1[10] + gamma2_20*P1[20];
+        DoubleMatrix Q20 = gamma2_10*P0[10] + gamma2_20*P0[20];
+
+        M[3][0]=Q23[0][0]; M[3][1]=Q23[0][1]; M[3][2]=Q23[0][2]; M[3][3]=Q22[0][0]; M[3][4]=Q22[0][1]; M[3][5]=Q22[0][2]; M[3][6]=Q21[0][0]; M[3][7]=Q21[0][1]; M[3][8]=Q21[0][2]; M[3][9]=Q20[0][0]; M[3][10]=Q20[0][1]; M[3][11]=Q20[0][2];
+        M[4][0]=Q23[1][0]; M[4][1]=Q23[1][1]; M[4][2]=Q23[1][2]; M[4][3]=Q22[1][0]; M[4][4]=Q22[1][1]; M[4][5]=Q22[1][2]; M[4][6]=Q21[1][0]; M[4][7]=Q21[1][1]; M[4][8]=Q21[1][2]; M[4][9]=Q20[1][0]; M[4][10]=Q20[1][1]; M[4][11]=Q20[1][2];
+        M[5][0]=Q23[2][0]; M[5][1]=Q23[2][1]; M[5][2]=Q23[2][2]; M[5][3]=Q22[2][0]; M[5][4]=Q22[2][1]; M[5][5]=Q22[2][2]; M[5][6]=Q21[2][0]; M[5][7]=Q21[2][1]; M[5][8]=Q21[2][2]; M[5][9]=Q20[2][0]; M[5][10]=Q20[2][1]; M[5][11]=Q20[2][2];
+
+        //DoubleMatrix B = gamma2_10*x.col(10) + gamma2_20*x.col(20);
+
+        DoubleMatrix B = Q23*x.col(3) + Q22*x.col(2) + Q21*x.col(1) + Q20*x.col(0) + (gamma2_10*Q[10]+gamma2_20*Q[20]);
+
+        b[3] = B[0][0];
+        b[4] = B[1][0];
+        b[5] = B[2][0];
+
+        Q23.clear();
+        Q22.clear();
+        Q21.clear();
+        Q20.clear();
+    }
+
+    ///////////////////////////////////////////////////////////
+    {
+        DoubleMatrix Q33 = gamma3_30*P3[30] + gamma3_40*P3[40] + gamma3_50*P3[50];
+        DoubleMatrix Q32 = gamma3_30*P2[30] + gamma3_40*P2[40] + gamma3_50*P2[50];
+        DoubleMatrix Q31 = gamma3_30*P1[30] + gamma3_40*P1[40] + gamma3_50*P1[50];
+        DoubleMatrix Q30 = gamma3_30*P0[30] + gamma3_40*P0[40] + gamma3_50*P0[50];
+
+        M[6][0] = Q33[0][0]; M[6][1]=Q33[0][1]; M[6][2]=Q33[0][2]; M[6][3]=Q32[0][0]; M[6][4]=Q32[0][1]; M[6][5]=Q32[0][2]; M[6][6]=Q31[0][0]; M[6][7]=Q31[0][1]; M[6][8]=Q31[0][2]; M[6][9]=Q30[0][0]; M[6][10]=Q30[0][1]; M[6][11]=Q30[0][2];
+        M[7][0] = Q33[1][0]; M[7][1]=Q33[1][1]; M[7][2]=Q33[1][2]; M[7][3]=Q32[1][0]; M[7][4]=Q32[1][1]; M[7][5]=Q32[1][2]; M[7][6]=Q31[1][0]; M[7][7]=Q31[1][1]; M[7][8]=Q31[1][2]; M[7][9]=Q30[1][0]; M[7][10]=Q30[1][1]; M[7][11]=Q30[1][2];
+        M[8][0] = Q33[2][0]; M[8][1]=Q33[2][1]; M[8][2]=Q33[2][2]; M[8][3]=Q32[2][0]; M[8][4]=Q32[2][1]; M[8][5]=Q32[2][2]; M[8][6]=Q31[2][0]; M[8][7]=Q31[2][1]; M[8][8]=Q31[2][2]; M[8][9]=Q30[2][0]; M[8][10]=Q30[2][1]; M[8][11]=Q30[2][2];
+
+        //DoubleMatrix B = gamma3_30*x.col(30) + gamma3_40*x.col(40) + gamma3_50*x.col(50);
+        DoubleMatrix B = Q33*x.col(3) + Q32*x.col(2) + Q31*x.col(1) + Q30*x.col(0) + (gamma3_30*Q[30]+gamma3_40*Q[40]+gamma3_50*Q[50]);
+        b[6] = B[0][0];
+        b[7] = B[1][0];
+        b[8] = B[2][0];
+
+        Q33.clear();
+        Q32.clear();
+        Q31.clear();
+        Q30.clear();
+    }
+
+    ///////////////////////////////////////////////////////////
+    {
+        DoubleMatrix Q43 = gamma4_N1*P3[N-1] + gamma4_N0*P3[N];
+        DoubleMatrix Q42 = gamma4_N1*P2[N-1] + gamma4_N0*P2[N];
+        DoubleMatrix Q41 = gamma4_N1*P1[N-1] + gamma4_N0*P1[N];
+        DoubleMatrix Q40 = gamma4_N1*P0[N-1] + gamma4_N0*P0[N];
+
+        M[9][0] =Q43[0][0]; M[9][1] =Q43[0][1]; M[9][2] =Q43[0][2]; M[9][3] =Q42[0][0]; M[9][4] =Q42[0][1]; M[9][5] =Q42[0][2]; M[9][6] =Q41[0][0]; M[9][7] =Q41[0][1]; M[9][8] =Q41[0][2]; M[9][9] =Q40[0][0]; M[9][10] =Q40[0][1]; M[9][11] =Q40[0][2];
+        M[10][0]=Q43[1][0]; M[10][1]=Q43[1][1]; M[10][2]=Q43[1][2]; M[10][3]=Q42[1][0]; M[10][4]=Q42[1][1]; M[10][5]=Q42[1][2]; M[10][6]=Q41[1][0]; M[10][7]=Q41[1][1]; M[10][8]=Q41[1][2]; M[10][9]=Q40[1][0]; M[10][10]=Q40[1][1]; M[10][11]=Q40[1][2];
+        M[11][0]=Q43[2][0]; M[11][1]=Q43[2][1]; M[11][2]=Q43[2][2]; M[11][3]=Q42[2][0]; M[11][4]=Q42[2][1]; M[11][5]=Q42[2][2]; M[11][6]=Q41[2][0]; M[11][7]=Q41[2][1]; M[11][8]=Q41[2][2]; M[11][9]=Q40[2][0]; M[11][10]=Q40[2][1]; M[11][11]=Q40[2][2];
+
+        //DoubleMatrix B = gamma4_N1*x.col(N-1) + gamma4_N0*x.col(N);
+        DoubleMatrix B = Q43*x.col(3) + Q42*x.col(2) + Q41*x.col(1) + Q40*x.col(0) + (gamma4_N1*Q[N-1]+gamma4_N0*Q[N]);
+        b[9]  = B[0][0];
+        b[10] = B[1][0];
+        b[11] = B[2][0];
+
+        Q43.clear();
+        Q42.clear();
+        Q41.clear();
+        Q40.clear();
+    }
+
+    puts("+++");
+    for (unsigned int i=0; i<12; i++)
+    {
+        for (unsigned int j=0; j<12; j++)
+        {
+            printf("%14.10f ",M[i][j]);
+        }
+        printf("%14.10f\n", b[i]);
+    }
+    puts("+++");
+
+    ///////////////////////////////////////////////////////////
+
+    for (unsigned int i=0; i<=N; i++)
+    {
+        P3[i].clear();
+        P2[i].clear();
+        P1[i].clear();
+        P0[i].clear();
+        Q[i].clear();
+    }
+    P3.clear();
+    P2.clear();
+    P1.clear();
+    P0.clear();
+    Q.clear();
+
     IPrinter::printVector(14,10,x.row(0));
     IPrinter::printVector(14,10,x.row(1));
     IPrinter::printVector(14,10,x.row(2));
     puts("---");
+
+    DoubleVector xx(12);
+    GaussianElimination(M, b, xx);
+
+    printf("%14.10f %14.10f %14.10f\n", xx.at(0), xx[1], xx[2]);
+    printf("%14.10f %14.10f %14.10f\n", xx.at(3), xx[4], xx[5]);
+    printf("%14.10f %14.10f %14.10f\n", xx.at(6), xx[7], xx[8]);
+    printf("%14.10f %14.10f %14.10f\n", xx.at(9), xx[10], xx[11]);
+
+//    printf("%14.10f %14.10f %14.10f\n", x.at(0), x[1], x[2]);
+//    printf("%14.10f %14.10f %14.10f\n", x.at(3), x[4], x[5]);
+//    printf("%14.10f %14.10f %14.10f\n", x.at(6), x[7], x[8]);
+//    printf("%14.10f %14.10f %14.10f\n", x.at(9), x[10], x[11]);
+
+    x.clear();
+
 }
 
 void Example4::calculate2()
 {
-    /*
     h = 0.00001;
     N = 100000;
 
@@ -698,10 +841,10 @@ void Example4::calculate2()
     x1.at(N-2) = X1(N-2); x2.at(N-2) = X2(N-2); x3.at(N-2) = X3(N-2);
     x1.at(N-3) = X1(N-3); x2.at(N-3) = X2(N-3); x3.at(N-3) = X3(N-3);
 
-//    x1.at(0) = X1(0); x2.at(0) = X2(0); x3.at(0) = X3(0);
-//    x1.at(1) = X1(1); x2.at(1) = X2(1); x3.at(1) = X3(1);
-//    x1.at(2) = X1(2); x2.at(2) = X2(2); x3.at(2) = X3(2);
-//    x1.at(3) = X1(3); x2.at(3) = X2(3); x3.at(3) = X3(3);
+    //    x1.at(0) = X1(0); x2.at(0) = X2(0); x3.at(0) = X3(0);
+    //    x1.at(1) = X1(1); x2.at(1) = X2(1); x3.at(1) = X3(1);
+    //    x1.at(2) = X1(2); x2.at(2) = X2(2); x3.at(2) = X3(2);
+    //    x1.at(3) = X1(3); x2.at(3) = X2(3); x3.at(3) = X3(3);
 
     puts("---");
     for (unsigned int k=N-4; k!=UINT32_MAX; k--)
@@ -778,7 +921,6 @@ void Example4::calculate2()
     IPrinter::printVector(14,10,x2);
     IPrinter::printVector(14,10,x3);
     puts("---");
-    */
 }
 
 double Example4::X1(unsigned int k) const
