@@ -24,6 +24,9 @@ public:
     static void printAsMatrix(const DoubleVector &x, unsigned int M, unsigned int N, unsigned int m = 10, unsigned int n = 10, const char* s = NULL, FILE* f = stdout);
     static void printCube(const DoubleVector& x, unsigned int M, unsigned int N2, unsigned int N1, FILE *file = stdout);
     static void printDateTime(FILE *file = stdout);
+
+    static void print(const DoubleMatrix &m, unsigned int M=10, unsigned int N=10, unsigned int width=14, unsigned int presicion=10, FILE *file=stdout);
+    //static void print(const DoubleVector &x, unsigned int N=10, unsigned int width=14, unsigned int presicion=10, FILE *file=stdout) const;
 };
 
 #endif // PRINTER_H

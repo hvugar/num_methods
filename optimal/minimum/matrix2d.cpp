@@ -498,7 +498,7 @@ void DoubleMatrix::randomData()
     {
         for (unsigned int j=0; j<mCols; j++)
         {
-            mData[i][j] = (rand() % 100) * 0.01;
+            mData[i][j] = (rand() % 100000) * 0.00001;
         }
     }
 }
@@ -531,9 +531,13 @@ bool DoubleMatrix::isIdentityMatrix() const
     return false;
 }
 
+#include "printer.h"
 void GaussianElimination(DoubleMatrix A, DoubleVector b, DoubleVector &x)
 {
     const unsigned int ui = (unsigned)0-1;
+
+    puts("....");
+    IPrinter::print(A,12,12,18,14);
 
     unsigned int n = x.size();
     for (unsigned k=0; k < n-1; k++)
@@ -558,8 +562,16 @@ void GaussianElimination(DoubleMatrix A, DoubleVector b, DoubleVector &x)
                 A.at(j,i) = A.at(j,i) - A.at(k,i) * c;
             }
             b[j] = b[j] - b[k] *c;
+            puts("....");
+            IPrinter::print(A,12,12,18,14);
+            puts("....");
+            int aaa;
+            scanf("%d", &aaa);
         }
     }
+    //puts("....");
+    //IPrinter::print(A,12,12,18,14);
+    puts("....");
 
     for (unsigned int i=(n-1); i!=ui; i--)
     {
