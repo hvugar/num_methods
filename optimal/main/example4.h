@@ -27,7 +27,7 @@ public:
     void calculate1();
     void calculate2();
     void calculate3();
-    void calculate3M();
+    void calculate();
 
     double a(unsigned int i, unsigned int j, unsigned int k) const;
     double b(unsigned int i, unsigned int k) const;

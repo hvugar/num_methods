@@ -387,16 +387,35 @@ DoubleMatrix operator+(const DoubleMatrix& m1, const DoubleMatrix& m2)
 
     DoubleMatrix m;
     m.resize(m1.rows(), m2.cols());
-    for (unsigned int i=0; i<m1.mRows; i++)
+    for (unsigned int i=0; i<m.mRows; i++)
     {
-        for (unsigned int j=0; j<m1.mCols; j++)
+        for (unsigned int j=0; j<m.mCols; j++)
         {
-            m.mData[i][j] += m1.mData[i][j]+m2.mData[i][j];
+            m.mData[i][j] = m1.mData[i][j]+m2.mData[i][j];
         }
     }
     return m;
 }
 
+DoubleMatrix operator-(const DoubleMatrix& m1, const DoubleMatrix& m2)
+{
+    if (!m1.dimEquals(m2))
+    {
+        printf("DoubleMatrix operator+(const DoubleMatrix& m1, const DoubleMatrix& m2) %d %d %d %d\n", m1.rows(), m1.cols(), m2.rows(), m2.cols());
+        throw DoubleMatrixException(1);
+    }
+
+    DoubleMatrix m;
+    m.resize(m1.rows(), m2.cols());
+    for (unsigned int i=0; i<m.mRows; i++)
+    {
+        for (unsigned int j=0; j<m.mCols; j++)
+        {
+            m.mData[i][j] = m1.mData[i][j]-m2.mData[i][j];
+        }
+    }
+    return m;
+}
 
 //DoubleMatrix& DoubleMatrix::operator *(const DoubleMatrix &m)
 //{
@@ -454,8 +473,7 @@ DoubleMatrix operator*(const DoubleMatrix &m1, const DoubleMatrix &m2)
         for (unsigned int j=0; j<m.cols(); j++)
         {
             double sum = 0.0;
-            for (unsigned int k=0; k<m1.cols(); k++)
-                sum += m1.at(i,k)*m2.at(k,j);
+            for (unsigned int k=0; k<m1.cols(); k++) sum += m1.at(i,k)*m2.at(k,j);
             m.at(i,j) = sum;
         }
     }

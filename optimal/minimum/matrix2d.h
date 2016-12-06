@@ -80,8 +80,9 @@ public:
     bool isDiagonalMatrix() const;
     bool isSquareMatrix() const;
 
-    friend MINIMUMSHARED_EXPORT DoubleMatrix operator*(const DoubleMatrix&, const DoubleMatrix&);
     friend MINIMUMSHARED_EXPORT DoubleMatrix operator+(const DoubleMatrix&, const DoubleMatrix&);
+    friend MINIMUMSHARED_EXPORT DoubleMatrix operator-(const DoubleMatrix&, const DoubleMatrix&);
+    friend MINIMUMSHARED_EXPORT DoubleMatrix operator*(const DoubleMatrix&, const DoubleMatrix&);
 
 private:
     unsigned int mRows;
