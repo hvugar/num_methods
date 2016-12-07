@@ -34,11 +34,11 @@ void Example4::calculate()
     IPrinter::printVector(14,10,x0.row(2));
     puts("---------------------------------------------------------------------------------");
 
-    //    DoubleMatrix x(n,N+1);
+    DoubleMatrix x(n,N+1);
 
-    //    x.at(0,0) = X1(0); x.at(0,1) = X1(1); x.at(0,2) = X1(2); x.at(0,3) = X1(3);
-    //    x.at(1,0) = X2(0); x.at(1,1) = X2(1); x.at(1,2) = X2(2); x.at(1,3) = X2(3);
-    //    x.at(2,0) = X3(0); x.at(2,1) = X3(1); x.at(2,2) = X3(2); x.at(2,3) = X3(3);
+    x.at(0,0) = X1(0); x.at(0,1) = X1(1); x.at(0,2) = X1(2); x.at(0,3) = X1(3);
+    x.at(1,0) = X2(0); x.at(1,1) = X2(1); x.at(1,2) = X2(2); x.at(1,3) = X2(3);
+    x.at(2,0) = X3(0); x.at(2,1) = X3(1); x.at(2,2) = X3(2); x.at(2,3) = X3(3);
 
     std::vector<DoubleMatrix> P3(N+1);
     std::vector<DoubleMatrix> P2(N+1);
@@ -120,12 +120,12 @@ void Example4::calculate()
             Q[k]  = A[1]*DoubleMatrix(Q[k-1]) + A[2]*DoubleMatrix(Q[k-2]) + A[3]*DoubleMatrix(Q[k-3]) + A[4]*DoubleMatrix(Q[k-4]) + A[0];
         }
 
-        //        DoubleVector xk = P3[k]*x.col(3) + P2[k]*x.col(2) + P1[k]*x.col(1) + P0[k]*x.col(0) + Q[k];
+        DoubleVector xk = P3[k]*x.col(3) + P2[k]*x.col(2) + P1[k]*x.col(1) + P0[k]*x.col(0) + Q[k];
 
-        //        x.at(0,k) = xk.at(0);
-        //        x.at(1,k) = xk.at(1);
-        //        x.at(2,k) = xk.at(2);
-        //        xk.clear();
+        x.at(0,k) = xk.at(0);
+        x.at(1,k) = xk.at(1);
+        x.at(2,k) = xk.at(2);
+        xk.clear();
 
         //        x.at(0,k) = (P3[k].at(0,0)*x.at(0,3)+P3[k].at(0,1)*x.at(1,3)+P3[k].at(0,2)*x.at(2,3))
         //                  + (P2[k].at(0,0)*x.at(0,2)+P2[k].at(0,1)*x.at(1,2)+P2[k].at(0,2)*x.at(2,2))
@@ -154,10 +154,11 @@ void Example4::calculate()
         //                  + (P0[k].at(2,0)*x.at(0,0)+P0[k].at(2,1)*x.at(1,0)+P0[k].at(2,2)*x.at(2,0)) + Q[k].at(2);
     }
 
-    //    IPrinter::printVector(14,10,x.row(0));
-    //    IPrinter::printVector(14,10,x.row(1));
-    //    IPrinter::printVector(14,10,x.row(2));
-    //    puts("--------------------------------------------------------------------------------------");
+    IPrinter::printVector(14,10,x.row(0));
+    IPrinter::printVector(14,10,x.row(1));
+    IPrinter::printVector(14,10,x.row(2));
+    puts("--------------------------------------------------------------------------------------");
+
 
     A[4].clear();
     A[3].clear();
@@ -174,23 +175,43 @@ void Example4::calculate()
     DoubleVector x02(n); x02.at(0) = X1(2);  x02.at(1) = X2(2);  x02.at(2) = X3(2);
     DoubleVector x03(n); x03.at(0) = X1(3);  x03.at(1) = X2(3);  x03.at(2) = X3(3);
 
+//    DoubleMatrix G000(n,n,0.0); G000.randomData();
+//    DoubleMatrix G100(n,n,0.0); G100.randomData();
+//    DoubleMatrix G200(n,n,0.0); G200.randomData();
+//    DoubleMatrix G250(n,n,0.0); G250.randomData();
+//    DoubleMatrix G300(n,n,0.0); G300.randomData();
+//    DoubleMatrix G450(n,n,0.0); G450.randomData();
+//    DoubleMatrix G800(n,n,0.0); G800.randomData();
+//    DoubleMatrix G900(n,n,0.0); G900.randomData();
+//    DoubleMatrix G00N(n,n,0.0); G00N.randomData();
 
+
+    //M.randomData();
     {
-        DoubleMatrix G050(n,n); G050.randomData();
-        DoubleMatrix G950(n,n); G950.randomData();
-        DoubleVector x050(n); x050.at(0) = X1(50);  x050.at(1) = X2(50);  x050.at(2) = X3(50);
-        DoubleVector x950(n); x950.at(0) = X1(950); x950.at(1) = X2(950); x950.at(2) = X3(950);
+        DoubleMatrix G000(n,n,0.0); G000.randomData();
+        DoubleMatrix G100(n,n,0.0); G100.randomData();
+        DoubleMatrix G900(n,n,0.0); G900.randomData();
+        DoubleMatrix G00N(n,n,0.0); G00N.randomData();
 
-        DoubleMatrix U3 = G050*P3[50] + G950*P3[950];
-        DoubleMatrix U2 = G050*P2[50] + G950*P2[950];
-        DoubleMatrix U1 = G050*P1[50] + G950*P1[950];
-        DoubleMatrix U0 = G050*P0[50] + G950*P0[950];
-        DoubleMatrix V0 = G050*Q[50] + G950*Q[950];
+        //DoubleVector x100(n,0.0); x100.at(0) = X1(100); x100.at(1) = X2(100); x100.at(2) = X3(100);
+        //DoubleVector x900(n,0.0); x900.at(0) = X1(900); x900.at(1) = X2(900); x900.at(2) = X3(900);
 
-        DoubleVector B1 = G050*x050 + G950*x950;
-        printf("%14.10f %14.10f %14.10f\n", B1.at(0), B1.at(1), B1.at(2));
+        DoubleMatrix U3 = G100*P3[100] + G900*P3[900] + G00N*P3[N];
+        DoubleMatrix U2 = G100*P2[100] + G900*P2[900] + G00N*P2[N];
+        DoubleMatrix U1 = G100*P1[100] + G900*P1[900] + G00N*P1[N];
+        DoubleMatrix U0 = G100*P0[100] + G900*P0[900] + G00N*P0[N] + G000;
+        //DoubleMatrix V0 = G100*Q[100] + G900*Q[900];
+
+        //DoubleVector B1 = G100*x100 + G900*x900;
+        //printf("%14.10f %14.10f %14.10f\n", B1.at(0), B1.at(1), B1.at(2));
         DoubleVector B2 = U3*x03 + U2*x02 + U1*x01 + U0*x00;// + V0;
-        printf("%14.10f %14.10f %14.10f\n", B2.at(0), B2.at(1), B2.at(2));
+        //printf("%14.10f %14.10f %14.10f\n", B2.at(0), B2.at(1), B2.at(2));
+
+        //puts("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        //IPrinter::print(G100,n,n);
+        //puts("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        //IPrinter::print(U2,n,n);
+        //puts("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
         for (unsigned int i=0; i<n; i++)
         {
@@ -203,24 +224,29 @@ void Example4::calculate()
             }
             b[i] = B2[i];
         }
+        //IPrinter::print(M,12,12);
+        //puts("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     }
 
     {
-        DoubleMatrix G100(n,n); G100.randomData();
-        DoubleMatrix G200(n,n); G200.randomData();
-        DoubleVector x100(n); x100.at(0) = X1(100); x100.at(1) = X2(100); x100.at(2) = X3(100);
-        DoubleVector x200(n); x200.at(0) = X1(200); x200.at(1) = X2(200); x200.at(2) = X3(200);
+        DoubleMatrix G000(n,n,0.0); G000.randomData();
+        DoubleMatrix G200(n,n,0.0); G200.randomData();
+        DoubleMatrix G300(n,n,0.0); G300.randomData();
+        DoubleMatrix G00N(n,n,0.0); G00N.randomData();
 
-        DoubleMatrix U3 = G100*P3[100] + G200*P3[200];
-        DoubleMatrix U2 = G100*P2[100] + G200*P2[200];
-        DoubleMatrix U1 = G100*P1[100] + G200*P1[200];
-        DoubleMatrix U0 = G100*P0[100] + G200*P0[200];
-        DoubleMatrix V0 = G100*Q[100]  + G200*Q[200];
+        //DoubleVector x200(n); x200.at(0) = X1(200); x200.at(1) = X2(200); x200.at(2) = X3(200);
+        //DoubleVector x300(n); x300.at(0) = X1(300); x300.at(1) = X2(300); x300.at(2) = X3(300);
 
-        DoubleVector B1 = G100*x100 + G200*x200;
-        printf("%14.10f %14.10f %14.10f\n", B1.at(0), B1.at(1), B1.at(2));
+        DoubleMatrix U3 = G200*P3[200] + G300*P3[300] + G00N*P3[N];
+        DoubleMatrix U2 = G200*P2[200] + G300*P2[300] + G00N*P2[N];
+        DoubleMatrix U1 = G200*P1[200] + G300*P1[300] + G00N*P1[N];
+        DoubleMatrix U0 = G200*P0[200] + G300*P0[300] + G00N*P0[N] + G000;
+        //DoubleMatrix V0 = G200*Q[200]  + G300*Q[300];
+
+        //DoubleVector B1 = G200*x200 + G300*x300;
+        //printf("%14.10f %14.10f %14.10f\n", B1.at(0), B1.at(1), B1.at(2));
         DoubleVector B2 = U3*x03 + U2*x02 + U1*x01 + U0*x00;// + V0;
-        printf("%14.10f %14.10f %14.10f\n", B2.at(0), B2.at(1), B2.at(2));
+        //printf("%14.10f %14.10f %14.10f\n", B2.at(0), B2.at(1), B2.at(2));
 
         for (unsigned int i=0; i<n; i++)
         {
@@ -236,21 +262,24 @@ void Example4::calculate()
     }
 
     {
-        DoubleMatrix G800(n,n); G800.randomData();
-        DoubleMatrix G900(n,n); G900.randomData();
-        DoubleVector x800(n); x800.at(0) = X1(800); x800.at(1) = X2(800); x800.at(2) = X3(800);
-        DoubleVector x900(n); x900.at(0) = X1(900); x900.at(1) = X2(900); x900.at(2) = X3(900);
+        DoubleMatrix G000(n,n,0.0); G000.randomData();
+        DoubleMatrix G800(n,n,0.0); G800.randomData();
+        DoubleMatrix G900(n,n,0.0); G900.randomData();
+        DoubleMatrix G00N(n,n,0.0); G00N.randomData();
 
-        DoubleMatrix U3 = G800*P3[800] + G900*P3[900];
-        DoubleMatrix U2 = G800*P2[800] + G900*P2[900];
-        DoubleMatrix U1 = G800*P1[800] + G900*P1[900];
-        DoubleMatrix U0 = G800*P0[800] + G900*P0[900];
-        DoubleMatrix V0 = G800*Q[800]  + G900*Q[900];
+        //DoubleVector x800(n); x800.at(0) = X1(800); x800.at(1) = X2(800); x800.at(2) = X3(800);
+        //DoubleVector x900(n); x900.at(0) = X1(900); x900.at(1) = X2(900); x900.at(2) = X3(900);
 
-        DoubleVector B1 = G800*x800 + G900*x900;
-        printf("%14.10f %14.10f %14.10f\n", B1.at(0), B1.at(1), B1.at(2));
+        DoubleMatrix U3 = G800*P3[800] + G900*P3[900] + G00N*P3[N];
+        DoubleMatrix U2 = G800*P2[800] + G900*P2[900] + G00N*P2[N];
+        DoubleMatrix U1 = G800*P1[800] + G900*P1[900] + G00N*P1[N];
+        DoubleMatrix U0 = G800*P0[800] + G900*P0[900] + G00N*P0[N] + G000;
+        //DoubleMatrix V0 = G800*Q[800]  + G900*Q[900];
+
+        //DoubleVector B1 = G800*x800 + G900*x900;
+        //printf("%14.10f %14.10f %14.10f\n", B1.at(0), B1.at(1), B1.at(2));
         DoubleVector B2 = U3*x03 + U2*x02 + U1*x01 + U0*x00;// + V0;
-        printf("%14.10f %14.10f %14.10f\n", B2.at(0), B2.at(1), B2.at(2));
+        //printf("%14.10f %14.10f %14.10f\n", B2.at(0), B2.at(1), B2.at(2));
 
         for (unsigned int i=0; i<n; i++)
         {
@@ -266,21 +295,24 @@ void Example4::calculate()
     }
 
     {
-        DoubleMatrix GN1(n,n); GN1.randomData();
-        DoubleMatrix GN0(n,n); GN0.randomData();
-        DoubleVector xN1(n); xN1.at(0) = X1(N-1); xN1.at(1) = X2(N-1); xN1.at(2) = X3(N-1);
-        DoubleVector xN0(n); xN0.at(0) = X1(N-0); xN0.at(1) = X2(N-0); xN0.at(2) = X3(N-0);
+        DoubleMatrix G000(n,n,0.0); G000.randomData();
+        DoubleMatrix G250(n,n,0.0); G250.randomData();
+        DoubleMatrix G450(n,n,0.0); G450.randomData();
+        DoubleMatrix G00N(n,n,0.0); G00N.randomData();
 
-        DoubleMatrix U3 = GN1*P3[N-1] + GN0*P3[N-0];
-        DoubleMatrix U2 = GN1*P2[N-1] + GN0*P2[N-0];
-        DoubleMatrix U1 = GN1*P1[N-1] + GN0*P1[N-0];
-        DoubleMatrix U0 = GN1*P0[N-1] + GN0*P0[N-0];
-        DoubleMatrix V0 = GN1*Q[N-1]  + GN0*Q[N-0];
+        //DoubleVector xN1(n); xN1.at(0) = X1(N-1); xN1.at(1) = X2(N-1); xN1.at(2) = X3(N-1);
+        //DoubleVector xN0(n); xN0.at(0) = X1(N-0); xN0.at(1) = X2(N-0); xN0.at(2) = X3(N-0);
 
-        DoubleVector B1 = GN1*xN1 + GN0*xN0;
-        printf("%14.10f %14.10f %14.10f\n", B1.at(0), B1.at(1), B1.at(2));
+        DoubleMatrix U3 = G250*P3[250] + G450*P3[450] + G00N*P3[N];
+        DoubleMatrix U2 = G250*P2[250] + G450*P2[450] + G00N*P2[N];
+        DoubleMatrix U1 = G250*P1[250] + G450*P1[450] + G00N*P1[N];
+        DoubleMatrix U0 = G250*P0[250] + G450*P0[450] + G00N*P0[N] + G000;
+        //DoubleMatrix V0 = G0N1*Q[N-1]  + G0N0*Q[N-0];
+
+        //DoubleVector B1 = GN1*xN1 + GN0*xN0;
+        //printf("%14.10f %14.10f %14.10f\n", B1.at(0), B1.at(1), B1.at(2));
         DoubleVector B2 = U3*x03 + U2*x02 + U1*x01 + U0*x00;// + V0;
-        printf("%14.10f %14.10f %14.10f\n", B2.at(0), B2.at(1), B2.at(2));
+        //printf("%14.10f %14.10f %14.10f\n", B2.at(0), B2.at(1), B2.at(2));
 
         for (unsigned int i=0; i<n; i++)
         {
@@ -301,7 +333,7 @@ void Example4::calculate()
     {
         for (unsigned int j=0; j<M.cols(); j++)
         {
-            printf("%14.10f ",M[i][j]);
+            printf("%10.6f ",M[i][j]);
         }
         printf("%14.10f\n", b[i]);
     }
@@ -309,24 +341,75 @@ void Example4::calculate()
 
     DoubleVector xx(12);
     printf("%14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f\n", b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7], b[8], b[9], b[10], b[11]);
-    GaussianElimination(M, b, xx);
-    printf("%14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f\n", b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7], b[8], b[9], b[10], b[11]);
+//    GaussianElimination(M, b, xx);
 
-    puts("+++");
-    for (unsigned int i=0; i<M.rows(); i++)
+//    system("pause");
+//    printf("Determinat: %14.10f\n", M.determinant());
+//    system("pause");
+
+    //    puts("**********************************************************");
+    //    for (unsigned int i=0; i<12; i++)
+    //    {
+    //        for (unsigned int j=0; j<12; j++)
+    //        {
+    //            DoubleVector v(12);
+    //            for (unsigned int k=0; k<12; k++) v.at(k) = M.at(i,k)/M.at(j,k);
+    //            IPrinter::printVector(18,14,v);
+    //            printf("%d %d**********************************************************\n", i,j);
+    //            system("pause");
+    //        }
+    //    }
+
+    DoubleMatrix M1 = M;
+    DoubleVector b1 = b;
+    //M1.randomData();
+    puts("..............................................................");
+    IPrinter::print(M1,12,12,18,14);
+    for (unsigned int k=0; k<11; k++)
     {
-        for (unsigned int j=0; j<M.cols(); j++)
+        for (unsigned int j=k+1; j<12; j++)
         {
-            printf("%14.10f ",M[i][j]);
+            printf("%d %d\n", k,j);
+            double c = -M1.at(j,k)/M1.at(k,k);
+            for (unsigned int i=k; i<12; i++) M1.at(j, i) = M1.at(j, i) + M1.at(k,i)*c;
+            b1[j] = b1[j] + b1[k] *c;
+            puts("..............................................................");
+            system("pause");
+            IPrinter::print(M1,12,12,18,14);
         }
-        printf("%14.10f\n", b[i]);
     }
-    puts("+++");
+    puts("..............................................................");
+    printf("%18.14f %18.14f %18.14f %18.14f %18.14f %18.14f %18.14f %18.14f %18.14f %18.14f %18.14f %18.14f\n", b1[0], b1[1], b1[2], b1[3], b1[4], b1[5], b1[6], b1[7], b1[8], b1[9], b1[10], b1[11]);
+
+//    xx[11] = (b1[11]) / M1.at(11,11);
+//    xx[10] = (b1[10] - M1.at(10,11)*xx[11]) / M1.at(10,10);
+//    xx[9]  = (b1[9] - M1.at(9,11)*xx[11] - M1.at(9,10)*xx[10]) / M1.at(9,9);
+//    xx[8]  = (b1[8] - /*M1.at(8,11)*xx[11] - M1.at(8,10)*xx[10] -*/ M1.at(8,9)*xx[9]) / M1.at(8,8);
+//    xx[7]  = (b1[7] - M1.at(7,11)*xx[11] - M1.at(7,10)*xx[10] - M1.at(7,9)*xx[9] - M1.at(7,8)*xx[8]) / M1.at(7,7);
+
+
+    for (unsigned int i=11; i!=UINT32_MAX; i--)
+    {
+        for (unsigned int j=11; j>i; j--) b1[i] -= (M1.at(i,j) * xx[j]);
+        xx[i] = b1[i] / M1.at(i,i);
+        printf("%d %14.10f\n", i, xx[i]);
+    }
+
+//    puts("+++");
+//    for (unsigned int i=0; i<M.rows(); i++)
+//    {
+//        for (unsigned int j=0; j<M.cols(); j++)
+//        {
+//            printf("%14.10f ",M[i][j]);
+//        }
+//        printf("%14.10f\n", b[i]);
+//    }
+//    puts("+++");
 
     puts("---------------------------------------------------");
-    printf("%14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f\n",
+    printf("%18.14f %18.14f %18.14f %18.14f %18.14f %18.14f %18.14f %18.14f %18.14f %18.14f %18.14f %18.14f\n",
            xx[0], xx[1], xx[2], xx[3], xx[4], xx[5], xx[6], xx[7], xx[8], xx[9], xx[10], xx[11]);
-    printf("%14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f\n",
+    printf("%18.14f %18.14f %18.14f %18.14f %18.14f %18.14f %18.14f %18.14f %18.14f %18.14f %18.14f %18.14f\n",
            X1(3), X2(3), X3(3), X1(2), X2(2), X3(2), X1(1), X2(1), X3(1), X1(0), X2(0), X3(0));
 
     puts("---------------------------------------------------");

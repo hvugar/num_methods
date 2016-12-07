@@ -18,7 +18,7 @@
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    srand(time(NULL));
+   // srand(time(NULL));
 
     //BorderTest::Main(argc, argv);
     //BorderTest1::Main(argc, argv);
