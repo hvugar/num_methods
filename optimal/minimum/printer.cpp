@@ -1,6 +1,7 @@
 #include "printer.h"
 #include <stdio.h>
 #include <time.h>
+#include <windows.h>
 
 void IPrinter::print(GradientIterationInfo &info) const
 {
@@ -256,5 +257,40 @@ void IPrinter::print(const DoubleMatrix &m, unsigned int M, unsigned int N, unsi
 //    fflush(f);
 }
 
-//void IPrinter::print(const DoubleVector &x, unsigned int N=10, unsigned int width=14, unsigned int presicion=10, FILE *file=stdout) const
-//{}
+void IPrinter::print(const DoubleVector &v, unsigned int N, unsigned int width, unsigned int presicion, FILE *file)
+{
+    C_UNUSED(N);
+
+    char format[10] = {0};
+    int sz = sprintf(format, "%%%d.%df ", width, presicion);
+    format[sz] = '\0';
+
+    unsigned int size = v.size();
+
+    for (unsigned int i=0; i<size; i++)
+    {
+        fprintf(file, format, v.at(i));
+    }
+    fputs("\n", file);
+    fflush(file);
+}
+
+void IPrinter::printSeperatorLine(const char* msg, char c, FILE* file)
+{
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    int columns;
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    //rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+
+    int start = 0;
+    if (msg != NULL)
+    {
+        fprintf(file, "%s ", msg);
+        start = strlen(msg)+1;
+    }
+
+    for (int i=start; i<columns; i++) fprintf(file,"%c", c);
+    fputs("", file);
+    fflush(file);
+}

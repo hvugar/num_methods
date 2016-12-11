@@ -46,6 +46,9 @@ public:
     DoubleVector row(unsigned int r) const;
     DoubleVector col(unsigned int c) const;
 
+    void setColumn(unsigned int c, const DoubleVector& col);
+    void setRow(unsigned int r, const DoubleVector& row);
+
     DoubleMatrix& operator=(const DoubleMatrix &matrix);
     DoubleMatrix& operator=(const DoubleVector &vector);
     //DoubleMatrix& operator+(const DoubleMatrix &matrix);
@@ -66,6 +69,7 @@ public:
     double max() const;
 
     double determinant() const;
+    double determinant1() const;
     void transpose();
     void inverse();
     DoubleMatrix minor(unsigned int row, unsigned int col) const;

@@ -5,6 +5,7 @@
 #include <time.h>
 #include <math.h>
 #include <float.h>
+#include <printer.h>
 
 DoubleMatrixException::DoubleMatrixException(unsigned int msgCode) noexcept : msgCode(msgCode) {}
 
@@ -201,6 +202,30 @@ DoubleVector DoubleMatrix::col(unsigned int c) const
     return v;
 }
 
+void DoubleMatrix::setColumn(unsigned int c, const DoubleVector &col)
+{
+    if (mRows == col.size() && c < mCols)
+    {
+        for (unsigned int r=0; r<mRows; r++) mData[r][c] = col.at(r);
+    }
+    else
+    {
+        throw DoubleMatrixException(0);
+    }
+}
+
+void DoubleMatrix::setRow(unsigned int r, const DoubleVector &row)
+{
+    if (mCols == row.size() && r < mRows)
+    {
+        for (unsigned int c=0; c<mCols; c++) mData[r][c] = row.at(c);
+    }
+    else
+    {
+        throw DoubleMatrixException(0);
+    }
+}
+
 DoubleMatrix& DoubleMatrix::operator= (const DoubleMatrix &m)
 {
     if (this != &m)
@@ -316,6 +341,70 @@ double DoubleMatrix::determinant() const
             det += (i%2==0 ? +1 : -1) * mData[0][i] * mnr.determinant();
         }
     }
+
+    return det;
+}
+
+double DoubleMatrix::determinant1() const
+{
+    double det = 0.0;
+
+    if (mRows != mCols)
+    {
+        throw DoubleMatrixException(2);
+    }
+
+    DoubleMatrix T = *this;
+
+    for (unsigned k=0; k < mRows; k++)
+    {
+
+//        IPrinter::printSeperatorLine(NULL,'*');
+//        IPrinter::print(T,T.rows(),T.cols(),14,10);
+//        IPrinter::printSeperatorLine(NULL,'*');
+
+        if (fabs(T.at(k,k)) <= DBL_EPSILON)
+        {
+            bool swiched = false;
+            for (unsigned int p=k+1; p<mRows; p++)
+            {
+                if (fabs(T.at(p,k)) > DBL_EPSILON)
+                {
+                    IPrinter::printSeperatorLine(NULL,'*');
+                    IPrinter::print(T,T.rows(),T.cols(),14,10);
+                    IPrinter::printSeperatorLine(NULL,'+');
+
+                    printf("swiched: %d, %d\n", k, p);
+                    T.switchRows(k, p);
+
+                    IPrinter::printSeperatorLine(NULL,'*');
+                    IPrinter::print(T,T.rows(),T.cols(),14,10);
+                    IPrinter::printSeperatorLine(NULL,'*');
+
+                    swiched = true;
+                    break;
+                }
+            }
+            if (swiched == false)
+                printf("Error\n");
+        }
+
+        for (unsigned int j=k+1; j<mRows; j++)
+        {
+            double c = -(T.at(j,k)/T.at(k,k));
+            for (unsigned int i=k; i<mCols; i++)
+            {
+                T.at(j,i) = T.at(j,i) + T.at(k,i) * c;
+            }
+
+//            IPrinter::printSeperatorLine(NULL,'*');
+//            IPrinter::print(T,T.rows(),T.cols(),14,10);
+//            IPrinter::printSeperatorLine(NULL,'*');
+        }
+    }
+    det = 1.0;
+    for (unsigned int i=0; i<mRows; i++) det *= T.at(i,i);
+    T.clear();
 
     return det;
 }
@@ -498,7 +587,7 @@ void DoubleMatrix::randomData()
     {
         for (unsigned int j=0; j<mCols; j++)
         {
-            mData[i][j] = (rand() % 1000) * 0.001;
+            mData[i][j] = (rand() % 100000) * 0.00001;
         }
     }
 }
@@ -533,16 +622,21 @@ bool DoubleMatrix::isIdentityMatrix() const
 
 void GaussianElimination(DoubleMatrix A, DoubleVector b, DoubleVector &x)
 {
+    IPrinter::printSeperatorLine(NULL,'*');
+    IPrinter::print(A,A.rows(),A.cols(),14,2);
+    IPrinter::printSeperatorLine(NULL,'*');
+
     const unsigned int ui = (unsigned)0-1;
 
     unsigned int n = x.size();
-    for (unsigned k=0; k < n-1; k++)
+
+    for (unsigned k=0; k<n; k++)
     {
         if (fabs(A.at(k,k)) <= DBL_EPSILON)
         {
-            for (unsigned int p = k+1; p < n; p++)
+            for (unsigned int p=k+1; p<n; p++)
             {
-                if (fabs(A[k][p]) <= DBL_EPSILON)
+                if (fabs(A[p][k]) > DBL_EPSILON)
                 {
                     A.switchRows(k, p);
                     break;
@@ -561,9 +655,21 @@ void GaussianElimination(DoubleMatrix A, DoubleVector b, DoubleVector &x)
         }
     }
 
+    IPrinter::printSeperatorLine(NULL,'*');
+    for (unsigned int i=0; i<n; i++)
+    {
+        for (unsigned int j=6; j<n; j++)
+            printf("%24.10f ", A.at(i,j));
+        printf("| %24.10f\n",b[i]);
+    }
+
     for (unsigned int i=(n-1); i!=ui; i--)
     {
         for (unsigned int j=(n-1); j>i; j--) b[i] -= (A.at(i,j) * x[j]);
         x[i] = b[i] / A.at(i,i);
     }
+
+    IPrinter::printSeperatorLine(NULL,'*');
+    IPrinter::print(A,A.rows(),A.cols(),14,2);
+    IPrinter::printSeperatorLine(NULL,'*');
 }
