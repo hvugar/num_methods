@@ -390,57 +390,58 @@ void Problem1::print(unsigned int i UNUSED_PARAM, const DoubleVector &x UNUSED_P
 
 void Problem1::print(const DoubleVector &x, const DoubleVector &g UNUSED_PARAM, unsigned int i) const
 {
-    printf("J[%d]: %18.14f \n", i, const_cast<Problem1*>(this)->fx(x));
+
 
     int j = 0;
     printf("x: ");
 #ifdef _OPTIMIZE_K_
-    printf("%14.10f %14.10f ", x.at(j), x.at(j+1));
+    printf("%4d,%14.10f,%14.10f,", i,x.at(j), x.at(j+1));
     j+=2;
 #endif
 #ifdef _OPTIMIZE_Z_
-    printf("%14.10f %14.10f ", x.at(j), x.at(j+1));
+    printf("%14.10f,%14.10f,", x.at(j), x.at(j+1));
     j+=2;
 #endif
 #ifdef _OPTIMIZE_E_
-    printf("%14.10f %14.10f ", x.at(j), x.at(j+1));
+    printf("%14.10f,%14.10f,", x.at(j), x.at(j+1));
     j+=2;
 #endif
-    puts("");
+    printf("%14.10f\n", const_cast<Problem1*>(this)->fx(x));
+//    puts("");
 
-    j = 0;
-    DoubleVector n = g;
-    n.L2Normalize();
-    printf("n: ");
-#ifdef _OPTIMIZE_K_
-    printf("%14.10f %14.10f ", n.at(j), n.at(j+1));
-    j+=2;
-#endif
-#ifdef _OPTIMIZE_Z_
-    printf("%14.10f %14.10f ", n.at(j), n.at(j+1));
-    j+=2;
-#endif
-#ifdef _OPTIMIZE_E_
-    printf("%14.10f %14.10f ", n.at(j), n.at(j+1));
-    j+=2;
-#endif
-    puts("");
+//    j = 0;
+//    DoubleVector n = g;
+//    n.L2Normalize();
+//    printf("n: ");
+//#ifdef _OPTIMIZE_K_
+//    printf("%14.10f %14.10f ", n.at(j), n.at(j+1));
+//    j+=2;
+//#endif
+//#ifdef _OPTIMIZE_Z_
+//    printf("%14.10f %14.10f ", n.at(j), n.at(j+1));
+//    j+=2;
+//#endif
+//#ifdef _OPTIMIZE_E_
+//    printf("%14.10f %14.10f ", n.at(j), n.at(j+1));
+//    j+=2;
+//#endif
+//    puts("");
 
-    j = 0;
-    printf("g: ");
-#ifdef _OPTIMIZE_K_
-    printf("%14.10f %14.10f ", g.at(j), g.at(j+1));
-    j+=2;
-#endif
-#ifdef _OPTIMIZE_Z_
-    printf("%14.10f %14.10f ", g.at(j), g.at(j+1));
-    j+=2;
-#endif
-#ifdef _OPTIMIZE_E_
-    printf("%14.10f %14.10f ", g.at(j), g.at(j+1));
-    j+=2;
-#endif
-    puts("");
+//    j = 0;
+//    printf("g: ");
+//#ifdef _OPTIMIZE_K_
+//    printf("%14.10f %14.10f ", g.at(j), g.at(j+1));
+//    j+=2;
+//#endif
+//#ifdef _OPTIMIZE_Z_
+//    printf("%14.10f %14.10f ", g.at(j), g.at(j+1));
+//    j+=2;
+//#endif
+//#ifdef _OPTIMIZE_E_
+//    printf("%14.10f %14.10f ", g.at(j), g.at(j+1));
+//    j+=2;
+//#endif
+//    puts("");
 
 //    DoubleVector gn(x.size());
 //    IGradient::Gradient(const_cast<Problem1*>(this), h, x, gn);
@@ -461,7 +462,7 @@ void Problem1::print(const DoubleVector &x, const DoubleVector &g UNUSED_PARAM, 
 //    j+=2;
 //#endif
 
-    puts("\n-----------------------------------------");
+//    puts("\n-----------------------------------------");
 }
 
 void Problem1::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)

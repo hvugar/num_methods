@@ -587,7 +587,7 @@ void DoubleMatrix::randomData()
     {
         for (unsigned int j=0; j<mCols; j++)
         {
-            mData[i][j] = (rand() % 100000) * 0.00001;
+            mData[i][j] = (rand() % 10000) * 0.0001;
         }
     }
 }
@@ -622,10 +622,6 @@ bool DoubleMatrix::isIdentityMatrix() const
 
 void GaussianElimination(DoubleMatrix A, DoubleVector b, DoubleVector &x)
 {
-    IPrinter::printSeperatorLine(NULL,'*');
-    IPrinter::print(A,A.rows(),A.cols(),14,2);
-    IPrinter::printSeperatorLine(NULL,'*');
-
     const unsigned int ui = (unsigned)0-1;
 
     unsigned int n = x.size();
@@ -655,21 +651,9 @@ void GaussianElimination(DoubleMatrix A, DoubleVector b, DoubleVector &x)
         }
     }
 
-    IPrinter::printSeperatorLine(NULL,'*');
-    for (unsigned int i=0; i<n; i++)
-    {
-        for (unsigned int j=6; j<n; j++)
-            printf("%24.10f ", A.at(i,j));
-        printf("| %24.10f\n",b[i]);
-    }
-
     for (unsigned int i=(n-1); i!=ui; i--)
     {
         for (unsigned int j=(n-1); j>i; j--) b[i] -= (A.at(i,j) * x[j]);
         x[i] = b[i] / A.at(i,i);
     }
-
-    IPrinter::printSeperatorLine(NULL,'*');
-    IPrinter::print(A,A.rows(),A.cols(),14,2);
-    IPrinter::printSeperatorLine(NULL,'*');
 }

@@ -45,20 +45,18 @@ public:
     void calculateM1BE(unsigned int c, const unsigned int s[], unsigned int L, const DoubleMatrix &nx,
                        DoubleMatrix &M, DoubleVector &B);
 
-    void calculateM2(const unsigned int s[][4], const std::vector<DoubleVector> &rx);
-    void calculateM2BE(unsigned int c, const unsigned int s[], unsigned int L, const std::vector<DoubleVector> &rx, DoubleMatrix &M, DoubleVector &B,
+    void calculateM2(const unsigned int s[][4], const DoubleMatrix &rx UNUSED_PARAM, const DoubleMatrix &nx UNUSED_PARAM);
+    void calculateM2BE(unsigned int c, const unsigned int s[], unsigned int L, const DoubleMatrix &nx, DoubleMatrix &M, DoubleVector &B,
                        const std::vector<DoubleMatrix> &P3, const std::vector<DoubleMatrix> &P2, const std::vector<DoubleMatrix> &P1, const std::vector<DoubleMatrix> &P0,
                        const std::vector<DoubleVector> &Q);
-
-
-
 
     double a(unsigned int i, unsigned int j, unsigned int k) const;
     double b(unsigned int i, unsigned int k) const;
 
     void calculatePQ(std::vector<DoubleMatrix> &P3, std::vector<DoubleMatrix> &P2, std::vector<DoubleMatrix> &P1, std::vector<DoubleMatrix> &P0, std::vector<DoubleVector> &Q);
 
-    void calculateNS(std::vector<DoubleVector> &nx, const std::vector<DoubleMatrix> &P3, const std::vector<DoubleMatrix> &P2, const std::vector<DoubleMatrix> &P1,
+    void calculateNS(DoubleMatrix &nx, const DoubleMatrix &rx,
+                     const std::vector<DoubleMatrix> &P3, const std::vector<DoubleMatrix> &P2, const std::vector<DoubleMatrix> &P1,
                      const std::vector<DoubleMatrix> &P0, const std::vector<DoubleVector> &Q);
 
     unsigned int w = 12;
