@@ -12,8 +12,8 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     file = fopen("data.txt", "w");
 
     Example4 e;
-    e.h = 0.01;
-    e.N = 100;
+    e.h = 0.0001;
+    e.N = 10000;
     e.F = e.N/10;
     e.n = 3;
     e.K = 4;
@@ -404,16 +404,15 @@ void Example4::calculateM1BE(unsigned int c, const unsigned int s[], unsigned in
 //        eta = eta + DoubleVector(GAMMA[i]*nx.col(s[i]));
 //    }
 
-    betta[s[L-1]] = GAMMA[L-1];
-    betta[s[L-1]-1].resize(n,n,0.0);
-    betta[s[L-1]-2].resize(n,n,0.0);
-    betta[s[L-1]-3].resize(n,n,0.0);
+    betta[N] = GAMMA[L-1];
+    betta[N-1].resize(n,n,0.0);
+    betta[N-2].resize(n,n,0.0);
+    betta[N-3].resize(n,n,0.0);
 
     std::vector<DoubleMatrix> A;
     initAMatrices(A);
-    for (unsigned int k=s[L-1]; k>=K; k--)
+    for (unsigned int k=N; k>=K; k--)
     {
-        printf("%d %d\n", c, k);
         updateAMatrices(A,k);
         betta[k-1] = betta[k]*A[1] + betta[k-1];
         betta[k-2] = betta[k]*A[2] + betta[k-2];
