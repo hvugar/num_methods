@@ -41,7 +41,7 @@ public:
     void clearAMatrices(std::vector<DoubleMatrix> &A);
     void calculateNX(const std::vector<DoubleVector> &rx, DoubleVector &x1, DoubleVector &x2, DoubleVector &x3, std::vector<DoubleVector> &nx);
 
-    void calculateM1(const unsigned int s[][4], const DoubleMatrix &rx, const DoubleMatrix &nx);
+    void calculateM1(const unsigned int s[][5], const DoubleMatrix &rx, const DoubleMatrix &nx);
     void calculateM1BE(unsigned int c, const unsigned int s[], unsigned int L, const DoubleMatrix &nx,
                        DoubleMatrix &M, DoubleVector &B);
 
