@@ -18,7 +18,7 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     e.n = 3;
     e.K = 4;
     e.w = 14;
-    e.p = 8;
+    e.p = 10;
     e.L = 4;
 
     const unsigned int s[][5] =
@@ -29,13 +29,13 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         {0, 1,     2,     3,     4}
     };
 
-//    const unsigned int s[][5] =
-//    {
-//        {0, 2*e.F, 5*e.F, 8*e.F, 10*e.F},
-//        {1, 1*e.F, 2*e.F, 3*e.F, 10*e.F},
-//        {2, 3*e.F, 4*e.F, 8*e.F, 10*e.F},
-//        {3, 5*e.F, 7*e.F, 9*e.F, 10*e.F}
-//    };
+    //    const unsigned int s[][5] =
+    //    {
+    //        {0, 2*e.F, 5*e.F, 8*e.F, 10*e.F},
+    //        {1, 1*e.F, 2*e.F, 3*e.F, 10*e.F},
+    //        {2, 3*e.F, 4*e.F, 8*e.F, 10*e.F},
+    //        {3, 5*e.F, 7*e.F, 9*e.F, 10*e.F}
+    //    };
 
     IPrinter::printSeperatorLine(NULL,'-', stdout);
     printf("%f %d\n", e.h, e.N);
@@ -78,9 +78,9 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     e.calculateM1(s, rx, nx);
     IPrinter::printSeperatorLine(NULL,'-', file);
 
-//    puts("Method #2");
-//    IPrinter::printSeperatorLine();
-//    e.calculateM2(s, rx, nx);
+    //    puts("Method #2");
+    //    IPrinter::printSeperatorLine();
+    //    e.calculateM2(s, rx, nx);
 
     fclose(file);
 }
@@ -314,6 +314,7 @@ void Example4::calculateM2(const unsigned int s[][4], const DoubleMatrix &rx UNU
 void Example4::calculateM1BE(unsigned int c, const unsigned int s[], unsigned int L, const DoubleMatrix &nx, DoubleMatrix &M, DoubleVector &B)
 {
     std::vector<DoubleMatrix> betta(N+1);
+    for (unsigned int i=0; i<=N; i++) betta[i].resize(n,n,0.0);
     DoubleVector eta(n,0.0);
 
     std::vector<DoubleMatrix> GAMMA(L);
@@ -394,20 +395,35 @@ void Example4::calculateM1BE(unsigned int c, const unsigned int s[], unsigned in
         for (unsigned int i=0; i<L; i++)
         {
             GAMMA[i].resize(n,n,1.0);
-            GAMMA[i].randomData();
+            //GAMMA[i].randomData();
+            for (unsigned int i1=0; i1<n; i1++)
+            {
+                for (unsigned int i2=0; i2<n; i2++)
+                {
+                    GAMMA[i].at(i1,i2) = sin(i1+i)+cos(i2+i);//+sin(c);
+                }
+            }
             eta = eta + DoubleVector(GAMMA[i]*nx.col(s[i]));
         }
     }
 
-//    for (unsigned int i=0; i<L; i++)
+//    if (c!=0)
 //    {
-//        eta = eta + DoubleVector(GAMMA[i]*nx.col(s[i]));
+//        for (unsigned int i=0; i<L; i++)
+//        {
+//            eta = eta + DoubleVector(GAMMA[i]*nx.col(s[i]));
+//        }
 //    }
 
-    betta[N] = GAMMA[L-1];
-    betta[N-1].resize(n,n,0.0);
-    betta[N-2].resize(n,n,0.0);
-    betta[N-3].resize(n,n,0.0);
+    for (unsigned int i=0; i<L; i++)
+    {
+        betta[s[i]] = GAMMA[i];
+    }
+
+//        betta[s[L-1]-0] = GAMMA[L-1];
+//        betta[s[L-1]-1] = GAMMA[L-2];//.resize(n,n,0.0);
+//        betta[s[L-1]-2] = GAMMA[L-3];//.resize(n,n,0.0);
+//        betta[s[L-1]-3] = GAMMA[L-4];//.resize(n,n,0.0);
 
     std::vector<DoubleMatrix> A;
     initAMatrices(A);
@@ -417,14 +433,13 @@ void Example4::calculateM1BE(unsigned int c, const unsigned int s[], unsigned in
         betta[k-1] = betta[k]*A[1] + betta[k-1];
         betta[k-2] = betta[k]*A[2] + betta[k-2];
         betta[k-3] = betta[k]*A[3] + betta[k-3];
-        betta[k-4] = betta[k]*A[4];
+        betta[k-4] = betta[k]*A[4];// + betta[k-4];
         eta        = eta - betta[k]*A[0];
 
-        for (unsigned int i=0; i<L-1; i++)
+        for (unsigned int i=0; i<L; i++)
         {
             if (k==(s[i]+K))
             {
-                //printf("%10d %10d %10d %10d\n", c, i, k, s[i]+K);
                 betta[k-4] = betta[k-4] + GAMMA[i];
             }
         }
