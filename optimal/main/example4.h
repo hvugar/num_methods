@@ -17,11 +17,13 @@ public:
     Example4();
 
     double h;
-    unsigned int N;
-    unsigned int K;
-    unsigned int n;
-    unsigned int F;
-    unsigned int L;
+    unsigned int N = 1000;
+    unsigned int K = 4;
+    unsigned int n = 3;
+    unsigned int F = N/10;
+    unsigned int L = 5;
+    unsigned int w = 12;
+    unsigned int p = 8;
 
     void static Main(int argc, char *argv[]);
 
@@ -34,8 +36,6 @@ public:
 
     void calculateRS(std::vector<DoubleVector> &rx);
 
-    void init(std::vector<DoubleVector> &rx);
-
     void initAMatrices(std::vector<DoubleMatrix> &A);
     void updateAMatrices(std::vector<DoubleMatrix> &A, unsigned int k);
     void clearAMatrices(std::vector<DoubleMatrix> &A);
@@ -45,7 +45,7 @@ public:
     void calculateM1BE(unsigned int c, const unsigned int s[], unsigned int L, const DoubleMatrix &nx,
                        DoubleMatrix &M, DoubleVector &B);
 
-    void calculateM2(const unsigned int s[][4], const DoubleMatrix &rx UNUSED_PARAM, const DoubleMatrix &nx UNUSED_PARAM);
+    void calculateM2(const unsigned int s[][5], const DoubleMatrix &rx UNUSED_PARAM, const DoubleMatrix &nx UNUSED_PARAM);
     void calculateM2BE(unsigned int c, const unsigned int s[], unsigned int L, const DoubleMatrix &nx, DoubleMatrix &M, DoubleVector &B,
                        const std::vector<DoubleMatrix> &P3, const std::vector<DoubleMatrix> &P2, const std::vector<DoubleMatrix> &P1, const std::vector<DoubleMatrix> &P0,
                        const std::vector<DoubleVector> &Q);
@@ -59,8 +59,7 @@ public:
                      const std::vector<DoubleMatrix> &P3, const std::vector<DoubleMatrix> &P2, const std::vector<DoubleMatrix> &P1,
                      const std::vector<DoubleMatrix> &P0, const std::vector<DoubleVector> &Q);
 
-    unsigned int w = 12;
-    unsigned int p = 8;
+    void fillGamma(std::vector<DoubleMatrix> &GAMMA, DoubleVector &ETA, unsigned int s, unsigned int k);
 };
 
 #endif // EXAMPLE4_H

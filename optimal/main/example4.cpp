@@ -12,14 +12,14 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     file = fopen("data.txt", "w");
 
     Example4 e;
-    e.h = 0.001;
-    e.N = 1000;
+    e.h = 0.00001;
+    e.N = 100000;
     e.F = e.N/10;
     e.n = 3;
     e.K = 4;
-    e.w = 14;
-    e.p = 10;
-    e.L = 4;
+    e.w = 12;
+    e.p = 8;
+    e.L = 5;
 
     const unsigned int s[][5] =
     {
@@ -39,10 +39,10 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     IPrinter::printSeperatorLine(NULL,'-', stdout);
     printf("%f %d\n", e.h, e.N);
-    printf("s0 %8u %8u %8u %8u\n", s[0][0], s[0][1], s[0][2], s[0][3]);
-    printf("s1 %8u %8u %8u %8u\n", s[1][0], s[1][1], s[1][2], s[1][3]);
-    printf("s2 %8u %8u %8u %8u\n", s[2][0], s[2][1], s[2][2], s[2][3]);
-    printf("s3 %8u %8u %8u %8u\n", s[3][0], s[3][1], s[3][2], s[3][3]);
+    printf("s0 %8u %8u %8u %8u %8u\n", s[0][0], s[0][1], s[0][2], s[0][3], s[0][4]);
+    printf("s1 %8u %8u %8u %8u %8u\n", s[1][0], s[1][1], s[1][2], s[1][3], s[1][4]);
+    printf("s2 %8u %8u %8u %8u %8u\n", s[2][0], s[2][1], s[2][2], s[2][3], s[2][4]);
+    printf("s3 %8u %8u %8u %8u %8u\n", s[3][0], s[3][1], s[3][2], s[3][3], s[3][4]);
 
     IPrinter::printSeperatorLine(NULL,'-',stdout);
     DoubleVector x(12);
@@ -78,42 +78,15 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     e.calculateM1(s, rx, nx);
     IPrinter::printSeperatorLine(NULL,'-', file);
 
-//    puts("Method #2");
-//    IPrinter::printSeperatorLine();
-//    e.calculateM2(s, rx, nx);
+    puts("Method #2");
+    IPrinter::printSeperatorLine();
+    e.calculateM2(s, rx, nx);
 
     fclose(file);
 }
 
 Example4::Example4()
 {
-}
-
-void Example4::init(std::vector<DoubleVector> &rx)
-{
-    DoubleVector tx01;
-    DoubleVector tx02;
-    DoubleVector tx03;
-
-    rx.resize(N+1);
-
-    for (unsigned int i=0; i<=N; i++)
-    {
-        DoubleVector &px = rx.at(i);
-        px.resize(n);
-
-        px.at(0) = fx1(i);
-        px.at(1) = fx2(i);
-        px.at(2) = fx3(i);
-
-        tx01 << px.at(0);
-        tx02 << px.at(1);
-        tx03 << px.at(2);
-    }
-
-    IPrinter::printVector(w,p,tx01,NULL,tx01.size(),0,0,file); tx01.clear();
-    IPrinter::printVector(w,p,tx02,NULL,tx02.size(),0,0,file); tx02.clear();
-    IPrinter::printVector(w,p,tx03,NULL,tx03.size(),0,0,file); tx03.clear();
 }
 
 void Example4::initAMatrices(std::vector<DoubleMatrix> &A)
@@ -247,7 +220,7 @@ void Example4::calculateM1(const unsigned int s[][5], const DoubleMatrix &rx UNU
     IPrinter::printSeperatorLine(NULL,'-', stdout);
 }
 
-void Example4::calculateM2(const unsigned int s[][4], const DoubleMatrix &rx UNUSED_PARAM, const DoubleMatrix &nx UNUSED_PARAM)
+void Example4::calculateM2(const unsigned int s[][5], const DoubleMatrix &rx UNUSED_PARAM, const DoubleMatrix &nx UNUSED_PARAM)
 {
     /* real solution vectors */
     std::vector<DoubleMatrix> P3(N+1);
@@ -271,10 +244,10 @@ void Example4::calculateM2(const unsigned int s[][4], const DoubleMatrix &rx UNU
     DoubleMatrix M(K*n, K*n, 0.0);
     DoubleVector B(K*n,0.0);
 
-    calculateM2BE(0,s[0],L,nx,M,B,P3,P2,P1,P0,Q);
-    calculateM2BE(1,s[1],L,nx,M,B,P3,P2,P1,P0,Q);
-    calculateM2BE(2,s[2],L,nx,M,B,P3,P2,P1,P0,Q);
-    calculateM2BE(3,s[3],L,nx,M,B,P3,P2,P1,P0,Q);
+    calculateM2BE(0,s[0],5,nx,M,B,P3,P2,P1,P0,Q);
+    calculateM2BE(1,s[1],5,nx,M,B,P3,P2,P1,P0,Q);
+    calculateM2BE(2,s[2],5,nx,M,B,P3,P2,P1,P0,Q);
+    calculateM2BE(3,s[3],5,nx,M,B,P3,P2,P1,P0,Q);
 
     DoubleVector x(n*K);
     GaussianElimination(M, B, x);
@@ -313,112 +286,23 @@ void Example4::calculateM2(const unsigned int s[][4], const DoubleMatrix &rx UNU
 
 void Example4::calculateM1BE(unsigned int c, const unsigned int s[], unsigned int L, const DoubleMatrix &nx, DoubleMatrix &M, DoubleVector &B)
 {
-    std::vector<DoubleMatrix> betta(N+1);
-    //for (unsigned int i=0; i<=N; i++) betta[i].resize(n,n,0.0);
-    DoubleVector eta(n,0.0);
-
     std::vector<DoubleMatrix> GAMMA(L);
-    if (c == 1)
-    {
-        GAMMA[0].resize(n,n,0.0);
-        GAMMA[0].at(0,0) = GAMMA[0].at(1,1) = GAMMA[0].at(2,2) = -3.0;
+    DoubleVector ETA(n,0.0);
 
-        GAMMA[1].resize(n,n,0.0);
-        GAMMA[1].at(0,0) = -12.0*h*a(1,1,1)-10.0; GAMMA[1].at(0,1) = -12.0*h*a(1,2,1);      GAMMA[1].at(0,2) = -12.0*h*a(1,3,1);
-        GAMMA[1].at(1,0) = -12.0*h*a(2,1,1);      GAMMA[1].at(1,1) = -12.0*h*a(2,2,1)-10.0; GAMMA[1].at(1,2) = -12.0*h*a(2,3,1);
-        GAMMA[1].at(2,0) = -12.0*h*a(3,1,1);      GAMMA[1].at(2,1) = -12.0*h*a(3,2,1);      GAMMA[1].at(2,2) = -12.0*h*a(3,3,1)-10.0;
+    std::vector<DoubleMatrix> betta(N+1);
 
-        GAMMA[2].resize(n,n,0.0);
-        GAMMA[2].at(0,0) = GAMMA[2].at(1,1) = GAMMA[2].at(2,2) = +18.0;
+    //    for (unsigned int i=0; i<L; i++)
+    //    {
+    //        GAMMA[i].resize(n,n,0.0);
+    //        GAMMA[i].randomData();
+    //        ETA = GAMMA[i]*nx.col(s[i]) + ETA;
+    //    }
 
-        GAMMA[3].resize(n,n,0.0);
-        GAMMA[3].at(0,0) = GAMMA[3].at(1,1) = GAMMA[3].at(2,2) = -6.0;
-
-        GAMMA[4].resize(n,n,0.0);
-        GAMMA[4].at(0,0) = GAMMA[4].at(1,1) = GAMMA[4].at(2,2) = +1.0;
-
-        eta.resize(3,0.0);
-        eta.at(0) = 12.0*h*b(1,1);
-        eta.at(1) = 12.0*h*b(2,1);
-        eta.at(2) = 12.0*h*b(3,1);
-    }
-    if (c == 2)
-    {
-        GAMMA[0].resize(n,n,0.0);
-        GAMMA[0].at(0,0) = GAMMA[0].at(1,1) = GAMMA[0].at(2,2) = +1.0;
-
-        GAMMA[1].resize(n,n,0.0);
-        GAMMA[1].at(0,0) = GAMMA[1].at(1,1) = GAMMA[1].at(2,2) = -8.0;
-
-        GAMMA[2].resize(n,n,0.0);
-        GAMMA[2].at(0,0) = -12.0*h*a(1,1,2); GAMMA[2].at(0,1) = -12.0*h*a(1,2,2); GAMMA[2].at(0,2) = -12.0*h*a(1,3,2);
-        GAMMA[2].at(1,0) = -12.0*h*a(2,1,2); GAMMA[2].at(1,1) = -12.0*h*a(2,2,2); GAMMA[2].at(1,2) = -12.0*h*a(2,3,2);
-        GAMMA[2].at(2,0) = -12.0*h*a(3,1,2); GAMMA[2].at(2,1) = -12.0*h*a(3,2,2); GAMMA[2].at(2,2) = -12.0*h*a(3,3,2);
-
-        GAMMA[3].resize(n,n,0.0);
-        GAMMA[3].at(0,0) = GAMMA[3].at(1,1) = GAMMA[3].at(2,2) = +8.0;
-
-        GAMMA[4].resize(n,n,0.0);
-        GAMMA[4].at(0,0) = GAMMA[4].at(1,1) = GAMMA[4].at(2,2) = -1.0;
-
-        eta.resize(3,0.0);
-        eta.at(0) = 12.0*h*b(1,2);
-        eta.at(1) = 12.0*h*b(2,2);
-        eta.at(2) = 12.0*h*b(3,2);
-    }
-    if (c == 3)
-    {
-        GAMMA[0].resize(n,n,0.0);
-        GAMMA[0].at(0,0) = GAMMA[0].at(1,1) = GAMMA[0].at(2,2) = -1.0;
-
-        GAMMA[1].resize(n,n,0.0);
-        GAMMA[1].at(0,0) = GAMMA[1].at(1,1) = GAMMA[1].at(2,2) = +6.0;
-
-        GAMMA[2].resize(n,n,0.0);
-        GAMMA[2].at(0,0) = GAMMA[2].at(1,1) = GAMMA[2].at(2,2) = -18.0;
-
-        GAMMA[3].resize(n,n,0.0);
-        GAMMA[3].at(0,0) = -12.0*h*a(1,1,3)+10.0; GAMMA[3].at(0,1) = -12.0*h*a(1,2,3);      GAMMA[3].at(0,2) = -12.0*h*a(1,3,3);
-        GAMMA[3].at(1,0) = -12.0*h*a(2,1,3);      GAMMA[3].at(1,1) = -12.0*h*a(2,2,3)+10.0; GAMMA[3].at(1,2) = -12.0*h*a(2,3,3);
-        GAMMA[3].at(2,0) = -12.0*h*a(3,1,3);      GAMMA[3].at(2,1) = -12.0*h*a(3,2,3);      GAMMA[3].at(2,2) = -12.0*h*a(3,3,3)+10.0;
-
-        GAMMA[4].resize(n,n,0.0);
-        GAMMA[4].at(0,0) = GAMMA[4].at(1,1) = GAMMA[4].at(2,2) = +3.0;
-
-        eta.resize(3,0.0);
-        eta.at(0) = 12.0*h*b(1,3);
-        eta.at(1) = 12.0*h*b(2,3);
-        eta.at(2) = 12.0*h*b(3,3);
-    }
-    if (c == 0)
-    {
-        for (unsigned int i=0; i<L; i++)
-        {
-            GAMMA[i].resize(n,n,1.0);
-            //GAMMA[i].randomData();
-            for (unsigned int i1=0; i1<n; i1++)
-            {
-                for (unsigned int i2=0; i2<n; i2++)
-                {
-                    GAMMA[i].at(i1,i2) = sin(i1+i)+cos(i2+i);//+sin(c);
-                }
-            }
-            eta = eta + DoubleVector(GAMMA[i]*nx.col(s[i]));
-        }
-    }
-
-//    eta.at(0) = eta.at(0)*1.1;
-//    eta.at(1) = eta.at(1)*1.1;
-//    eta.at(2) = eta.at(2)*1.1;
-
+    fillGamma(GAMMA, ETA, c, K);
+    if (c == 0) { for (unsigned int i=0; i<L; i++) ETA = GAMMA[i]*nx.col(s[i]) + ETA; }
 
     if (c==0)
     {
-//        for (unsigned int i=0; i<L; i++)
-//        {
-//            betta[s[i]] = GAMMA[i];
-//        }
-
         betta[N-0] = GAMMA[L-1];
         betta[N-1].resize(n,n,0.0);
         betta[N-2].resize(n,n,0.0);
@@ -433,7 +317,7 @@ void Example4::calculateM1BE(unsigned int c, const unsigned int s[], unsigned in
             betta[k-2] = betta[k]*A[2] + betta[k-2];
             betta[k-3] = betta[k]*A[3] + betta[k-3];
             betta[k-4] = betta[k]*A[4];// + betta[k-4];
-            eta        = eta - betta[k]*A[0];
+            ETA        = ETA - betta[k]*A[0];
 
             for (unsigned int i=0; i<L; i++)
             {
@@ -462,7 +346,7 @@ void Example4::calculateM1BE(unsigned int c, const unsigned int s[], unsigned in
             betta[k-2] = betta[k]*A[2] + betta[k-2];
             betta[k-3] = betta[k]*A[3] + betta[k-3];
             betta[k-4] = betta[k]*A[4];// + betta[k-4];
-            eta        = eta - betta[k]*A[0];
+            ETA        = ETA - betta[k]*A[0];
 
             for (unsigned int i=0; i<L; i++)
             {
@@ -484,10 +368,10 @@ void Example4::calculateM1BE(unsigned int c, const unsigned int s[], unsigned in
             M[c*n+i][2*n+j] = betta[2][i][j];
             M[c*n+i][3*n+j] = betta[3][i][j];
         }
-        B.at(c*n+i) = eta.at(i);
+        B.at(c*n+i) = ETA.at(i);
     }
 
-    eta.clear();
+    ETA.clear();
     for (unsigned int i=0; i<L; i++) GAMMA[i].clear();
     GAMMA.clear();
     for (unsigned int i=0; i<=N; i++) betta[i].clear();
@@ -499,11 +383,17 @@ void Example4::calculateM2BE(unsigned int c, const unsigned int s[], unsigned in
                              const std::vector<DoubleVector> &Q)
 {
     std::vector<DoubleMatrix> GAMMA(L);
-    for (unsigned int i=0; i<L; i++)
-    {
-        GAMMA[i].resize(n,n,0.0);
-        GAMMA[i].randomData();
-    }
+    DoubleVector B1(n,0.0);
+
+    //    for (unsigned int i=0; i<L; i++)
+    //    {
+    //        GAMMA[i].resize(n,n,0.0);
+    //        GAMMA[i].randomData();
+    //        B1 = GAMMA[i]*nx.col(s[i]) + B1;
+    //    }
+
+    fillGamma(GAMMA, B1, c, K);
+    if (c == 0) { for (unsigned int i=0; i<L; i++) B1 = GAMMA[i]*nx.col(s[i]) + B1; }
 
     DoubleMatrix U3(n,n,0.0);
     DoubleMatrix U2(n,n,0.0);
@@ -513,14 +403,10 @@ void Example4::calculateM2BE(unsigned int c, const unsigned int s[], unsigned in
 
     for (unsigned int i=0; i<L; i++)
     {
-        if (s[i] == 3)
-            U3 = U3 + GAMMA[i];
-        else if (s[i] == 2)
-            U2 = U2 + GAMMA[i];
-        else if (s[i] == 1)
-            U1 = U1 + GAMMA[i];
-        else if (s[i] == 0)
-            U0 = U0 + GAMMA[i];
+        if (s[i] == 3) U3 = U3 + GAMMA[i];
+        else if (s[i] == 2) U2 = U2 + GAMMA[i];
+        else if (s[i] == 1) U1 = U1 + GAMMA[i];
+        else if (s[i] == 0) U0 = U0 + GAMMA[i];
         else
         {
             U3 = U3 + GAMMA[i]*P3[s[i]];
@@ -529,12 +415,6 @@ void Example4::calculateM2BE(unsigned int c, const unsigned int s[], unsigned in
             U0 = U0 + GAMMA[i]*P0[s[i]];
             V0 = V0 + GAMMA[i]*Q[s[i]];
         }
-    }
-
-    DoubleVector B1(n,0.0);
-    for (unsigned int i=0; i<L; i++)
-    {
-        B1 = B1 + DoubleVector(GAMMA[i]*nx.col(s[i]));
     }
     B1 = B1 - V0;
 
@@ -640,7 +520,7 @@ void Example4::calculatePQ(std::vector<DoubleMatrix> &P3, std::vector<DoubleMatr
             P2[k] = A[1]*P2[k-1] + A[2]*P2[k-2] + A[4];
             P1[k] = A[1]*P1[k-1] + A[2]*P1[k-2];
             P0[k] = A[1]*P0[k-1] + A[2]*P0[k-2];
-            Q[k]  = A[1]*DoubleMatrix(Q[k-1]) + A[2]*DoubleMatrix(Q[k-2]) + A[0];
+            Q[k]  = A[1]*Q[k-1] + A[2]*Q[k-2] + A[0];
         }
         else if (k==K+3)
         {
@@ -648,7 +528,7 @@ void Example4::calculatePQ(std::vector<DoubleMatrix> &P3, std::vector<DoubleMatr
             P2[k] = A[1]*P2[k-1] + A[2]*P2[k-2] + A[3]*P2[k-3];
             P1[k] = A[1]*P1[k-1] + A[2]*P1[k-2] + A[3]*P1[k-3];
             P0[k] = A[1]*P0[k-1] + A[2]*P0[k-2] + A[3]*P0[k-3];
-            Q[k]  = A[1]*DoubleMatrix(Q[k-1]) + A[2]*DoubleMatrix(Q[k-2]) + A[3]*DoubleMatrix(Q[k-3]) + A[0];
+            Q[k]  = A[1]*Q[k-1] + A[2]*Q[k-2] + A[3]*Q[k-3] + A[0];
         }
         if (k>=2*K)
         {
@@ -656,7 +536,7 @@ void Example4::calculatePQ(std::vector<DoubleMatrix> &P3, std::vector<DoubleMatr
             P2[k] = A[1]*P2[k-1] + A[2]*P2[k-2] + A[3]*P2[k-3] + A[4]*P2[k-4];
             P1[k] = A[1]*P1[k-1] + A[2]*P1[k-2] + A[3]*P1[k-3] + A[4]*P1[k-4];
             P0[k] = A[1]*P0[k-1] + A[2]*P0[k-2] + A[3]*P0[k-3] + A[4]*P0[k-4];
-            Q[k]  = A[1]*DoubleMatrix(Q[k-1]) + A[2]*DoubleMatrix(Q[k-2]) + A[3]*DoubleMatrix(Q[k-3]) + A[4]*DoubleMatrix(Q[k-4]) + A[0];
+            Q[k]  = A[1]*Q[k-1] + A[2]*Q[k-2] + A[3]*Q[k-3] + A[4]*Q[k-4] + A[0];
         }
     }
     A[4].clear();
@@ -666,6 +546,104 @@ void Example4::calculatePQ(std::vector<DoubleMatrix> &P3, std::vector<DoubleMatr
     A[0].clear();
     A.clear();
     /* calculating P,Q matrices */
+}
+
+void Example4::fillGamma(std::vector<DoubleMatrix> &GAMMA, DoubleVector &ETA, unsigned int s, unsigned int k)
+{
+    if (k == K)
+    {
+        if (s == 0)
+        {
+            for (unsigned int i=0; i<L; i++)
+            {
+                GAMMA[i].resize(n,n,1.0);
+                //GAMMA[i].randomData();
+                for (unsigned int i1=0; i1<n; i1++)
+                {
+                    for (unsigned int i2=0; i2<n; i2++)
+                    {
+                        GAMMA[i].at(i1,i2) = sin(i1+i)+cos(i2+i);
+                    }
+                }
+                //eta = eta + DoubleVector(GAMMA[i]*nx.col(s[i]));
+                //                ETA = ETA + DoubleVector(GAMMA[i]*nx.col(s[i]));
+            }
+
+            //            for (unsigned int i=0; i<L; i++)
+            //            {
+            //                ETA = ETA + DoubleVector(GAMMA[i]*nx.col(s[i]));
+            //            }
+        }
+        if (s == 1)
+        {
+            GAMMA[0].resize(n,n,0.0);
+            GAMMA[0].at(0,0) = GAMMA[0].at(1,1) = GAMMA[0].at(2,2) = -3.0;
+
+            GAMMA[1].resize(n,n,0.0);
+            GAMMA[1].at(0,0) = -12.0*h*a(1,1,1)-10.0; GAMMA[1].at(0,1) = -12.0*h*a(1,2,1);      GAMMA[1].at(0,2) = -12.0*h*a(1,3,1);
+            GAMMA[1].at(1,0) = -12.0*h*a(2,1,1);      GAMMA[1].at(1,1) = -12.0*h*a(2,2,1)-10.0; GAMMA[1].at(1,2) = -12.0*h*a(2,3,1);
+            GAMMA[1].at(2,0) = -12.0*h*a(3,1,1);      GAMMA[1].at(2,1) = -12.0*h*a(3,2,1);      GAMMA[1].at(2,2) = -12.0*h*a(3,3,1)-10.0;
+
+            GAMMA[2].resize(n,n,0.0);
+            GAMMA[2].at(0,0) = GAMMA[2].at(1,1) = GAMMA[2].at(2,2) = +18.0;
+
+            GAMMA[3].resize(n,n,0.0);
+            GAMMA[3].at(0,0) = GAMMA[3].at(1,1) = GAMMA[3].at(2,2) = -6.0;
+
+            GAMMA[4].resize(n,n,0.0);
+            GAMMA[4].at(0,0) = GAMMA[4].at(1,1) = GAMMA[4].at(2,2) = +1.0;
+
+            ETA.at(0) = 12.0*h*b(1,1);
+            ETA.at(1) = 12.0*h*b(2,1);
+            ETA.at(2) = 12.0*h*b(3,1);
+        }
+        if (s == 2)
+        {
+            GAMMA[0].resize(n,n,0.0);
+            GAMMA[0].at(0,0) = GAMMA[0].at(1,1) = GAMMA[0].at(2,2) = +1.0;
+
+            GAMMA[1].resize(n,n,0.0);
+            GAMMA[1].at(0,0) = GAMMA[1].at(1,1) = GAMMA[1].at(2,2) = -8.0;
+
+            GAMMA[2].resize(n,n,0.0);
+            GAMMA[2].at(0,0) = -12.0*h*a(1,1,2); GAMMA[2].at(0,1) = -12.0*h*a(1,2,2); GAMMA[2].at(0,2) = -12.0*h*a(1,3,2);
+            GAMMA[2].at(1,0) = -12.0*h*a(2,1,2); GAMMA[2].at(1,1) = -12.0*h*a(2,2,2); GAMMA[2].at(1,2) = -12.0*h*a(2,3,2);
+            GAMMA[2].at(2,0) = -12.0*h*a(3,1,2); GAMMA[2].at(2,1) = -12.0*h*a(3,2,2); GAMMA[2].at(2,2) = -12.0*h*a(3,3,2);
+
+            GAMMA[3].resize(n,n,0.0);
+            GAMMA[3].at(0,0) = GAMMA[3].at(1,1) = GAMMA[3].at(2,2) = +8.0;
+
+            GAMMA[4].resize(n,n,0.0);
+            GAMMA[4].at(0,0) = GAMMA[4].at(1,1) = GAMMA[4].at(2,2) = -1.0;
+
+            ETA.at(0) = 12.0*h*b(1,2);
+            ETA.at(1) = 12.0*h*b(2,2);
+            ETA.at(2) = 12.0*h*b(3,2);
+        }
+        if (s == 3)
+        {
+            GAMMA[0].resize(n,n,0.0);
+            GAMMA[0].at(0,0) = GAMMA[0].at(1,1) = GAMMA[0].at(2,2) = -1.0;
+
+            GAMMA[1].resize(n,n,0.0);
+            GAMMA[1].at(0,0) = GAMMA[1].at(1,1) = GAMMA[1].at(2,2) = +6.0;
+
+            GAMMA[2].resize(n,n,0.0);
+            GAMMA[2].at(0,0) = GAMMA[2].at(1,1) = GAMMA[2].at(2,2) = -18.0;
+
+            GAMMA[3].resize(n,n,0.0);
+            GAMMA[3].at(0,0) = -12.0*h*a(1,1,3)+10.0; GAMMA[3].at(0,1) = -12.0*h*a(1,2,3);      GAMMA[3].at(0,2) = -12.0*h*a(1,3,3);
+            GAMMA[3].at(1,0) = -12.0*h*a(2,1,3);      GAMMA[3].at(1,1) = -12.0*h*a(2,2,3)+10.0; GAMMA[3].at(1,2) = -12.0*h*a(2,3,3);
+            GAMMA[3].at(2,0) = -12.0*h*a(3,1,3);      GAMMA[3].at(2,1) = -12.0*h*a(3,2,3);      GAMMA[3].at(2,2) = -12.0*h*a(3,3,3)+10.0;
+
+            GAMMA[4].resize(n,n,0.0);
+            GAMMA[4].at(0,0) = GAMMA[4].at(1,1) = GAMMA[4].at(2,2) = +3.0;
+
+            ETA.at(0) = 12.0*h*b(1,3);
+            ETA.at(1) = 12.0*h*b(2,3);
+            ETA.at(2) = 12.0*h*b(3,3);
+        }
+    }
 }
 
 double Example4::fx1(unsigned int k) const
