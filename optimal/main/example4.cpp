@@ -12,8 +12,8 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     file = fopen("data.txt", "w");
 
     Example4 e;
-    e.h = 0.0001;
-    e.N = 10000;
+    e.h = 0.001;
+    e.N = 1000;
     e.F = e.N/10;
     e.n = 3;
     e.K = 4;
@@ -78,9 +78,9 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     e.calculateM1(s, rx, nx);
     IPrinter::printSeperatorLine(NULL,'-', file);
 
-    //    puts("Method #2");
-    //    IPrinter::printSeperatorLine();
-    //    e.calculateM2(s, rx, nx);
+//    puts("Method #2");
+//    IPrinter::printSeperatorLine();
+//    e.calculateM2(s, rx, nx);
 
     fclose(file);
 }
@@ -314,7 +314,7 @@ void Example4::calculateM2(const unsigned int s[][4], const DoubleMatrix &rx UNU
 void Example4::calculateM1BE(unsigned int c, const unsigned int s[], unsigned int L, const DoubleMatrix &nx, DoubleMatrix &M, DoubleVector &B)
 {
     std::vector<DoubleMatrix> betta(N+1);
-    for (unsigned int i=0; i<=N; i++) betta[i].resize(n,n,0.0);
+    //for (unsigned int i=0; i<=N; i++) betta[i].resize(n,n,0.0);
     DoubleVector eta(n,0.0);
 
     std::vector<DoubleMatrix> GAMMA(L);
@@ -407,44 +407,73 @@ void Example4::calculateM1BE(unsigned int c, const unsigned int s[], unsigned in
         }
     }
 
-//    if (c!=0)
-//    {
+//    eta.at(0) = eta.at(0)*1.1;
+//    eta.at(1) = eta.at(1)*1.1;
+//    eta.at(2) = eta.at(2)*1.1;
+
+
+    if (c==0)
+    {
 //        for (unsigned int i=0; i<L; i++)
 //        {
-//            eta = eta + DoubleVector(GAMMA[i]*nx.col(s[i]));
+//            betta[s[i]] = GAMMA[i];
 //        }
-//    }
 
-    for (unsigned int i=0; i<L; i++)
-    {
-        betta[s[i]] = GAMMA[i];
-    }
+        betta[N-0] = GAMMA[L-1];
+        betta[N-1].resize(n,n,0.0);
+        betta[N-2].resize(n,n,0.0);
+        betta[N-3].resize(n,n,0.0);
 
-//        betta[s[L-1]-0] = GAMMA[L-1];
-//        betta[s[L-1]-1] = GAMMA[L-2];//.resize(n,n,0.0);
-//        betta[s[L-1]-2] = GAMMA[L-3];//.resize(n,n,0.0);
-//        betta[s[L-1]-3] = GAMMA[L-4];//.resize(n,n,0.0);
-
-    std::vector<DoubleMatrix> A;
-    initAMatrices(A);
-    for (unsigned int k=N; k>=K; k--)
-    {
-        updateAMatrices(A,k);
-        betta[k-1] = betta[k]*A[1] + betta[k-1];
-        betta[k-2] = betta[k]*A[2] + betta[k-2];
-        betta[k-3] = betta[k]*A[3] + betta[k-3];
-        betta[k-4] = betta[k]*A[4];// + betta[k-4];
-        eta        = eta - betta[k]*A[0];
-
-        for (unsigned int i=0; i<L; i++)
+        std::vector<DoubleMatrix> A;
+        initAMatrices(A);
+        for (unsigned int k=N; k>=K; k--)
         {
-            if (k==(s[i]+K))
+            updateAMatrices(A,k);
+            betta[k-1] = betta[k]*A[1] + betta[k-1];
+            betta[k-2] = betta[k]*A[2] + betta[k-2];
+            betta[k-3] = betta[k]*A[3] + betta[k-3];
+            betta[k-4] = betta[k]*A[4];// + betta[k-4];
+            eta        = eta - betta[k]*A[0];
+
+            for (unsigned int i=0; i<L; i++)
             {
-                betta[k-4] = betta[k-4] + GAMMA[i];
+                if (k==(s[i]+K))
+                {
+                    betta[k-4] = betta[k-4] + GAMMA[i];
+                }
             }
         }
+        clearAMatrices(A);
     }
-    clearAMatrices(A);
+    else
+    {
+        betta[s[L-1]-0] = GAMMA[L-1];
+        betta[s[L-1]-1] = GAMMA[L-2];
+        betta[s[L-1]-2] = GAMMA[L-3];
+        betta[s[L-1]-3] = GAMMA[L-4];
+        //betta[s[L-1]-4] = GAMMA[L-5];
+
+        std::vector<DoubleMatrix> A;
+        initAMatrices(A);
+        for (unsigned int k=s[L-1]; k>=K; k--)
+        {
+            updateAMatrices(A,k);
+            betta[k-1] = betta[k]*A[1] + betta[k-1];
+            betta[k-2] = betta[k]*A[2] + betta[k-2];
+            betta[k-3] = betta[k]*A[3] + betta[k-3];
+            betta[k-4] = betta[k]*A[4];// + betta[k-4];
+            eta        = eta - betta[k]*A[0];
+
+            for (unsigned int i=0; i<L; i++)
+            {
+                if (k==(s[i]+K))
+                {
+                    betta[k-4] = betta[k-4] + GAMMA[i];
+                }
+            }
+        }
+        clearAMatrices(A);
+    }
 
     for (unsigned int i=0; i<n; i++)
     {
