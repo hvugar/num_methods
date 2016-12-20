@@ -31,7 +31,8 @@ SOURCES += main.cpp \
     bordertest.cpp \
     bordertest1.cpp \
     example3.cpp \
-    example4.cpp
+    example4.cpp \
+    example5.cpp
 
 HEADERS += \
     loadedsystems.h \
@@ -41,4 +42,5 @@ HEADERS += \
     bordertest.h \
     bordertest1.h \
     example3.h \
-    example4.h
+    example4.h \
+    example5.h

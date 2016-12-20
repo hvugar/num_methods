@@ -66,6 +66,13 @@ public:
 
     void print(unsigned int cols, char* label = NULL, unsigned int start=0, unsigned int end=0, FILE* file=stdout);
     void print();
+
+    friend class DoubleMatrix;
+    friend MINIMUMSHARED_EXPORT DoubleVector operator*(double scalar, const DoubleVector &);
+//    friend MINIMUMSHARED_EXPORT DoubleVector operator +(const DoubleVector&, const DoubleVector &);
+//    friend MINIMUMSHARED_EXPORT DoubleVector operator -(const DoubleVector&, const DoubleVector &);
+//    friend MINIMUMSHARED_EXPORT DoubleVector operator *(const DoubleVector&, const DoubleVector &);
+//    friend MINIMUMSHARED_EXPORT DoubleVector operator *(double, const DoubleVector &);
 private:
     unsigned int mSize;
     double *mData;

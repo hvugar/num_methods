@@ -26,14 +26,14 @@ SampleBorderHyperBolic::SampleBorderHyperBolic()
     M = 2000;
 }
 
-double SampleBorderHyperBolic::initial1(unsigned int i) const
+double SampleBorderHyperBolic::initial1(unsigned int i UNUSED_PARAM) const
 {
     double x = i*hx;
     //return -4.0*(x-0.5)*(x-0.5)+1.0;
     return sin(2.0*M_PI*x);
 }
 
-double SampleBorderHyperBolic::initial2(unsigned int i) const
+double SampleBorderHyperBolic::initial2(unsigned int i UNUSED_PARAM) const
 {
     //double x = i*hx;
     return -1.0;

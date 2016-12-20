@@ -290,6 +290,25 @@ DoubleVector& DoubleVector::operator +(const DoubleVector &other)
     return *this;
 }
 
+//DoubleVector operator+(const DoubleVector& v1, const DoubleVector &v2)
+//{
+//    if (v1.mSize != v2.mSize)
+//    {
+//        //throw
+//    }
+
+//    DoubleVector v(v1.mSize);
+//    for (unsigned int i=0; i<=v.mSize; i++) v.mData[i] = v1.mData[i] + v2.mData[i];
+//    return v;
+//}
+
+DoubleVector operator *(double scalar, const DoubleVector &v)
+{
+    DoubleVector rv(v.mSize);
+    for (unsigned int i=0; i<v.mSize; i++) rv.mData[i] = v.mData[i]*scalar;
+    return rv;
+}
+
 void DoubleVector::randomData()
 {
     for (unsigned int i=0; i<mSize; i++) mData[i] = rand() % 100;

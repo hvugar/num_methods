@@ -59,43 +59,43 @@ void gaussian_elimination(double** a, double* b, double* x, int n)
 }
 
 #define arguments1 \
-    double a111 = x[0]; \
-    double a112 = x[1]; \
-    double a113 = x[2]; \
-    double b111 = x[3]; \
-    double b112 = x[4]; \
-    double b113 = x[5]; \
-    double b211 = x[6]; \
-    double b212 = x[7]; \
-    double b213 = x[8]; \
-    double q1   = x[9]; \
-    double M    = x[10];
+    double a111 UNUSED_PARAM = x[0]; \
+    double a112 UNUSED_PARAM = x[1]; \
+    double a113 UNUSED_PARAM = x[2]; \
+    double b111 UNUSED_PARAM = x[3]; \
+    double b112 UNUSED_PARAM = x[4]; \
+    double b113 UNUSED_PARAM = x[5]; \
+    double b211 UNUSED_PARAM = x[6]; \
+    double b212 UNUSED_PARAM = x[7]; \
+    double b213 UNUSED_PARAM = x[8]; \
+    double q1   UNUSED_PARAM = x[9]; \
+    double M    UNUSED_PARAM = x[10];
 
 #define arguments2 \
-    double a121 = x[0]; \
-    double a122 = x[1]; \
-    double a123 = x[2]; \
-    double b121 = x[3]; \
-    double b122 = x[4]; \
-    double b123 = x[5]; \
-    double b221 = x[6]; \
-    double b222 = x[7]; \
-    double b223 = x[8]; \
-    double q2   = x[9]; \
-    double M    = x[10];
+    double a121 UNUSED_PARAM = x[0]; \
+    double a122 UNUSED_PARAM = x[1]; \
+    double a123 UNUSED_PARAM = x[2]; \
+    double b121 UNUSED_PARAM = x[3]; \
+    double b122 UNUSED_PARAM = x[4]; \
+    double b123 UNUSED_PARAM = x[5]; \
+    double b221 UNUSED_PARAM = x[6]; \
+    double b222 UNUSED_PARAM = x[7]; \
+    double b223 UNUSED_PARAM = x[8]; \
+    double q2   UNUSED_PARAM = x[9]; \
+    double M    UNUSED_PARAM = x[10];
 
 #define arguments3 \
-    double a131 = x[0]; \
-    double a132 = x[1]; \
-    double a133 = x[2]; \
-    double b131 = x[3]; \
-    double b132 = x[4]; \
-    double b133 = x[5]; \
-    double b231 = x[6]; \
-    double b232 = x[7]; \
-    double b233 = x[8]; \
-    double q3   = x[9]; \
-    double M    = x[10];
+    double a131 UNUSED_PARAM = x[0]; \
+    double a132 UNUSED_PARAM = x[1]; \
+    double a133 UNUSED_PARAM = x[2]; \
+    double b131 UNUSED_PARAM = x[3]; \
+    double b132 UNUSED_PARAM = x[4]; \
+    double b133 UNUSED_PARAM = x[5]; \
+    double b231 UNUSED_PARAM = x[6]; \
+    double b232 UNUSED_PARAM = x[7]; \
+    double b233 UNUSED_PARAM = x[8]; \
+    double q3   UNUSED_PARAM = x[9]; \
+    double M    UNUSED_PARAM = x[10];
 
 double _A11(double t) { C_UNUSED(t); return 0.0; }
 double _A12(double t) { C_UNUSED(t); return t; }
