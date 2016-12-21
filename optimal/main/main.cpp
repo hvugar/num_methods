@@ -26,8 +26,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Example2::Main(argc, argv);
 //    Problem1::Main(argc, argv);
     //Example3 e;
-//    Example4::Main(argc, argv);
-    Example5 e5;
+    Example4::Main(argc, argv);
+//    Example5 e5;
 
 //    DoubleMatrix m(5,5);
 //    m.at(0,0) = 0.0; m.at(0,1) = 0.0; m.at(0,2) = 0.0; m.at(0,3) = 1.0; m.at(0,4) = 4.0;

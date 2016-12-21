@@ -201,17 +201,11 @@ void Example4::calculateM2(const std::vector<unsigned int> *s, const DoubleMatri
     std::vector<stdDoubleMatrixVector> P(K);
     for (unsigned int i=0; i<K; i++) P[i].resize(N+1);
 
-//    stdDoubleMatrixVector P3(N+1);
-//    stdDoubleMatrixVector P2(N+1);
-//    stdDoubleMatrixVector P1(N+1);
-//    stdDoubleMatrixVector P0(N+1);
     stdDoubleMatrixVector Q(N+1);
-//    calculatePQ(P3,P2,P1,P0,Q);
     calculatePQ(P, Q);
 
     /* numerical solution vectors */
     DoubleMatrix nx1;
-//    calculateNS(nx1,rx,P3,P2,P1,P0,Q);
     calculateNS(nx1,rx,P,Q);
     IPrinter::printVector(w,p,nx1.row(0),"x1: ");
     IPrinter::printVector(w,p,nx1.row(1),"x2: ");
@@ -224,14 +218,12 @@ void Example4::calculateM2(const std::vector<unsigned int> *s, const DoubleMatri
     DoubleMatrix M(K*n, K*n, 0.0);
     DoubleVector B(K*n,0.0);
 
-//    calculateM2BE(0,s[0],nx,M,B,P3,P2,P1,P0,Q);
-//    calculateM2BE(1,s[1],nx,M,B,P3,P2,P1,P0,Q);
-//    calculateM2BE(2,s[2],nx,M,B,P3,P2,P1,P0,Q);
-//    calculateM2BE(3,s[3],nx,M,B,P3,P2,P1,P0,Q);
     calculateM2BE(0,s[0],nx,M,B,P,Q);
     calculateM2BE(1,s[1],nx,M,B,P,Q);
     calculateM2BE(2,s[2],nx,M,B,P,Q);
     calculateM2BE(3,s[3],nx,M,B,P,Q);
+
+    printf("det: %14.10f\n",M.determinant1());
 
     DoubleVector x(n*K);
     GaussianElimination(M, B, x);
@@ -246,7 +238,6 @@ void Example4::calculateM2(const std::vector<unsigned int> *s, const DoubleMatri
     rx1.at(2,0) = x[2]; rx1.at(2,1) = x[5]; rx1.at(2,2) = x[8]; rx1.at(2,3) = x[11];
 
     DoubleMatrix cx;
-//    calculateNS(cx,rx1,P3,P2,P1,P0,Q);
     calculateNS(cx,rx1,P,Q);
     IPrinter::printVector(w,p,cx.row(0),"x1: ");
     IPrinter::printVector(w,p,cx.row(1),"x2: ");
