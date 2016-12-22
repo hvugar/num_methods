@@ -13,18 +13,20 @@ DESTDIR  = ../bin
 INCLUDEPATH += ../minimum
 LIBS += -L../bin -lminimum
 
+DEFINES += MINIMUM_LIBRARY
+
 # Input
-HEADERS += borderhyperbolic.h \
+HEADERS += borderparabolic.h \
+           borderhyperbolic.h \
            borderhyperbolic2d.h \
-           borderparabolic.h \
            borderparabolic2d.h \
            sampleborderhyperbolic.h \
            sampleexample1.h \
            sampleexample2.h \
            sampleloaderborder.h
-SOURCES += borderhyperbolic.cpp \
+SOURCES += borderparabolic.cpp \
+           borderhyperbolic.cpp \
            borderhyperbolic2d.cpp \
-           borderparabolic.cpp \
            borderparabolic2d.cpp \
            sampleborderhyperbolic.cpp \
            sampleexample1.cpp \

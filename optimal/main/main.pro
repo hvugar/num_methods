@@ -16,6 +16,10 @@ QMAKE_CXXFLAGS += -Wno-unused-variable
 
 INCLUDEPATH += ../minimum
 LIBS += -L../bin -lminimum
+
+INCLUDEPATH += ../border
+LIBS += -L../bin -lborder
+
 #INCLUDEPATH += ../imaging
 #LIBS += -L../bin -limaging
 

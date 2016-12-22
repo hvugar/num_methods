@@ -49,6 +49,7 @@ public:
     void calculateM1(const std::vector<unsigned int> *s, const DoubleMatrix &rx, const DoubleMatrix &nx);
     void calculateM1BE(unsigned int c, const std::vector<unsigned int> s, const DoubleMatrix &nx,
                        DoubleMatrix &M, DoubleVector &B);
+    void qovmaM1R2L(const std::vector<DoubleMatrix> &GAMMA, DoubleVector &ETA, const std::vector<unsigned int> &s, std::vector<DoubleMatrix> &BETTA);
 
     void calculateM2(const std::vector<unsigned int> *s, const DoubleMatrix &rx UNUSED_PARAM, const DoubleMatrix &nx UNUSED_PARAM);
 //    void calculateM2BE(unsigned int c, const std::vector<unsigned int> s, const DoubleMatrix &nx, DoubleMatrix &M, DoubleVector &B,

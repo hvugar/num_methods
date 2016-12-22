@@ -13,55 +13,140 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //e.L = 5;
 
     std::vector<unsigned int> *s = new std::vector<unsigned int>[e.K];
-    s[0].push_back(0); s[0].push_back(2*e.F); s[0].push_back(5*e.F); s[0].push_back(8*e.F); s[0].push_back(10*e.F);
-    s[1].push_back(0); s[1].push_back(1);     s[1].push_back(2);     s[1].push_back(3);     s[1].push_back(4);
-    s[2].push_back(0); s[2].push_back(1);     s[2].push_back(2);     s[2].push_back(3);     s[2].push_back(4);
-    s[3].push_back(0); s[3].push_back(1);     s[3].push_back(2);     s[3].push_back(3);     s[3].push_back(4);
+    if (e.K==4)
+    {
+        s[0].push_back(0); s[0].push_back(2*e.F); s[0].push_back(5*e.F); s[0].push_back(8*e.F); s[0].push_back(999); s[0].push_back(10*e.F);
+        s[1].push_back(0); s[1].push_back(1);     s[1].push_back(2);     s[1].push_back(3);     s[1].push_back(4);
+        s[2].push_back(0); s[2].push_back(1);     s[2].push_back(2);     s[2].push_back(3);     s[2].push_back(4);
+        s[3].push_back(0); s[3].push_back(1);     s[3].push_back(2);     s[3].push_back(3);     s[3].push_back(4);
+    }
+    if (e.K==6)
+    {
+        s[0].push_back(0); s[0].push_back(2*e.F); s[0].push_back(5*e.F); s[0].push_back(6*e.F); s[0].push_back(7*e.F); s[0].push_back(8*e.F);s[0].push_back(999); s[0].push_back(10*e.F);
+        s[1].push_back(0); s[1].push_back(1);     s[1].push_back(2);     s[1].push_back(3);     s[1].push_back(4);     s[1].push_back(5);    s[1].push_back(6);
+        s[2].push_back(0); s[2].push_back(1);     s[2].push_back(2);     s[2].push_back(3);     s[2].push_back(4);     s[2].push_back(5);    s[2].push_back(6);
+        s[3].push_back(0); s[3].push_back(1);     s[3].push_back(2);     s[3].push_back(3);     s[3].push_back(4);     s[3].push_back(5);    s[3].push_back(6);
+    }
 
     //s[1].push_back(0); s[1].push_back(1*e.F); s[1].push_back(2*e.F); s[1].push_back(3*e.F); s[1].push_back(10*e.F);
     //s[2].push_back(0); s[2].push_back(3*e.F); s[2].push_back(4*e.F); s[2].push_back(8*e.F); s[2].push_back(10*e.F);
     //s[3].push_back(0); s[3].push_back(5*e.F); s[3].push_back(7*e.F); s[3].push_back(9*e.F); s[3].push_back(10*e.F);
-
-    IPrinter::printSeperatorLine(NULL,'-',stdout);
-    DoubleVector x(e.n*e.K);
-    for (unsigned int i=0; i<e.K; i++)
     {
-        for (unsigned int j=0; j<e.n; j++)
+        IPrinter::printSeperatorLine(NULL,'-',stdout);
+        DoubleVector x(e.n*e.K);
+        for (unsigned int i=0; i<e.K; i++)
         {
-            x.at(i*e.n+j) = e.fx(j+1,i);
+            for (unsigned int j=0; j<e.n; j++)
+            {
+                x.at(i*e.n+j) = e.fx(j+1,i);
+            }
+        }
+        IPrinter::print(x,x.size(),e.w,e.p,stdout);
+        IPrinter::printSeperatorLine(NULL,'-',stdout);
+
+        //--------------------------------------------------------------------------
+        fputs("Real process solution:\n",stdout);
+        IPrinter::printSeperatorLine(NULL,'-', stdout);
+        DoubleMatrix rx;
+        e.calculateRX(rx);
+        IPrinter::printVector(e.w,e.p,rx.row(0),"x1: ");
+        IPrinter::printVector(e.w,e.p,rx.row(1),"x2: ");
+        IPrinter::printVector(e.w,e.p,rx.row(2),"x3: ");
+        IPrinter::printSeperatorLine(NULL,'-', stdout);
+
+        //--------------------------------------------------------------------------
+        fputs("Initial first 3 points:\n",stdout);
+        DoubleMatrix nx;
+        e.calculateNX(rx,nx);
+        IPrinter::printVector(e.w,e.p,nx.row(0),"x1: ");
+        IPrinter::printVector(e.w,e.p,nx.row(1),"x2: ");
+        IPrinter::printVector(e.w,e.p,nx.row(2),"x3: ");
+        IPrinter::printSeperatorLine(NULL,'-', stdout);
+
+        //--------------------------------------------------------------------------
+
+        puts("Method #1");
+        IPrinter::printSeperatorLine(NULL,'-', stdout);
+        e.calculateM1(s, rx, nx);
+        //--------------------------------------------------------------------------
+        //        puts("Method #2");
+        //        IPrinter::printSeperatorLine(NULL,'-', stdout);
+        //        e.calculateM2(s, rx, nx);
+    }
+}
+
+void Example4::qovmaM1R2L(const std::vector<DoubleMatrix> &gamma, DoubleVector &eta, const std::vector<unsigned int> &s, std::vector<DoubleMatrix> &BETTA)
+{
+    unsigned int L = s.size();
+    std::vector<DoubleMatrix> betta(N+1);
+
+    unsigned int cur = L-1;
+    unsigned int start = s[cur];
+    for (unsigned int i=0; i<K; i++)
+    {
+        if (start-i == s[cur])
+            betta[start-i] = gamma[cur--];
+        else
+            betta[start-i].resize(n,n,0.0);
+    }
+
+    stdDoubleMatrixVector A;
+    initAMatrices(A);
+    for (unsigned int k=start; k>=K; k--)
+    {
+        updateAMatrices(A,k);
+        eta = eta - betta[k]*A[0];
+        for (unsigned int i=1; i<K; i++)
+        {
+            betta[k-i] = betta[k]*A[i] + betta[k-i];
+        }
+        betta[k-K] = betta[k]*A[K];
+        if ( k == (s[cur]+K) )
+        {
+            betta[k-K] = betta[k-K] + gamma[cur];
+            cur--;
         }
     }
-    IPrinter::print(x,x.size(),e.w,e.p,stdout);
-    IPrinter::printSeperatorLine(NULL,'-',stdout);
+    clearAMatrices(A);
 
-    //--------------------------------------------------------------------------
-    fputs("Real process solution:\n",stdout);
-    IPrinter::printSeperatorLine(NULL,'-', stdout);
-    DoubleMatrix rx;
-    e.calculateRX(rx);
-    IPrinter::printVector(e.w,e.p,rx.row(0),"x1: ");
-    IPrinter::printVector(e.w,e.p,rx.row(1),"x2: ");
-    IPrinter::printVector(e.w,e.p,rx.row(2),"x3: ");
-    IPrinter::printSeperatorLine(NULL,'-', stdout);
+    BETTA.clear();
+    BETTA.resize(K);
+    for (unsigned int i=0; i<K; i++) BETTA[i] = betta[i];
 
-    //--------------------------------------------------------------------------
-    fputs("Initial first 3 points:\n",stdout);
-    DoubleMatrix nx;
-    e.calculateNX(rx,nx);
-    IPrinter::printVector(e.w,e.p,nx.row(0),"x1: ");
-    IPrinter::printVector(e.w,e.p,nx.row(1),"x2: ");
-    IPrinter::printVector(e.w,e.p,nx.row(2),"x3: ");
-    IPrinter::printSeperatorLine(NULL,'-', stdout);
+    for (unsigned int i=0; i<=N; i++) betta.at(i).clear();
+    betta.clear();
+}
 
-    //--------------------------------------------------------------------------
+void Example4::calculateM1BE(unsigned int c, const std::vector<unsigned int> s, const DoubleMatrix &nx, DoubleMatrix &M, DoubleVector &B)
+{
+    unsigned int L = s.size();
+    std::vector<DoubleMatrix> GAMMA(L);
+    DoubleVector ETA(n,0.0);
 
-    puts("Method #1");
-    IPrinter::printSeperatorLine(NULL,'-', stdout);
-    e.calculateM1(s, rx, nx);
-    //--------------------------------------------------------------------------
-    puts("Method #2");
-    IPrinter::printSeperatorLine(NULL,'-', stdout);
-    e.calculateM2(s, rx, nx);
+    fillGamma(GAMMA, ETA, c, K);
+
+    if (c == 0) { for (unsigned int i=0; i<L; i++) ETA = GAMMA[i]*nx.col(s[i]) + ETA; }
+
+    std::vector<DoubleMatrix> betta;
+    qovmaM1R2L(GAMMA, ETA, s, betta);
+
+    for (unsigned int i=0; i<n; i++)
+    {
+        for (unsigned int j=0; j<n; j++)
+        {
+            M[c*n+i][0*n+j] = betta[0][i][j];
+            M[c*n+i][1*n+j] = betta[1][i][j];
+            M[c*n+i][2*n+j] = betta[2][i][j];
+            M[c*n+i][3*n+j] = betta[3][i][j];
+        }
+        B.at(c*n+i) = ETA.at(i);
+    }
+
+    ETA.clear();
+    for (unsigned int i=0; i<L; i++) GAMMA[i].clear();
+    GAMMA.clear();
+    //    for (unsigned int i=0; i<=N; i++) betta[i].clear();
+    //    betta.clear();
 }
 
 Example4::Example4()
@@ -260,100 +345,7 @@ void Example4::calculateM2(const std::vector<unsigned int> *s, const DoubleMatri
     Q.clear();
 }
 
-void Example4::calculateM1BE(unsigned int c, const std::vector<unsigned int> s, const DoubleMatrix &nx, DoubleMatrix &M, DoubleVector &B)
-{
-    unsigned int L = s.size();
-    std::vector<DoubleMatrix> GAMMA(L);
-    DoubleVector ETA(n,0.0);
 
-    std::vector<DoubleMatrix> betta(N+1);
-
-    //    for (unsigned int i=0; i<L; i++)
-    //    {
-    //        GAMMA[i].resize(n,n,0.0);
-    //        GAMMA[i].randomData();
-    //        ETA = GAMMA[i]*nx.col(s[i]) + ETA;
-    //    }
-
-    fillGamma(GAMMA, ETA, c, K);
-    if (c == 0) { for (unsigned int i=0; i<L; i++) ETA = GAMMA[i]*nx.col(s[i]) + ETA; }
-
-    if (c==0)
-    {
-        betta[N-0] = GAMMA[L-1];
-        betta[N-1].resize(n,n,0.0);
-        betta[N-2].resize(n,n,0.0);
-        betta[N-3].resize(n,n,0.0);
-
-        std::vector<DoubleMatrix> A;
-        initAMatrices(A);
-        for (unsigned int k=N; k>=K; k--)
-        {
-            updateAMatrices(A,k);
-            betta[k-1] = betta[k]*A[1] + betta[k-1];
-            betta[k-2] = betta[k]*A[2] + betta[k-2];
-            betta[k-3] = betta[k]*A[3] + betta[k-3];
-            betta[k-4] = betta[k]*A[4];// + betta[k-4];
-            ETA        = ETA - betta[k]*A[0];
-
-            for (unsigned int i=0; i<L; i++)
-            {
-                if (k==(s[i]+K))
-                {
-                    betta[k-4] = betta[k-4] + GAMMA[i];
-                }
-            }
-        }
-        clearAMatrices(A);
-    }
-    else
-    {
-        betta[s[L-1]-0] = GAMMA[L-1];
-        betta[s[L-1]-1] = GAMMA[L-2];
-        betta[s[L-1]-2] = GAMMA[L-3];
-        betta[s[L-1]-3] = GAMMA[L-4];
-        //betta[s[L-1]-4] = GAMMA[L-5];
-
-        std::vector<DoubleMatrix> A;
-        initAMatrices(A);
-        for (unsigned int k=s[L-1]; k>=K; k--)
-        {
-            updateAMatrices(A,k);
-            betta[k-1] = betta[k]*A[1] + betta[k-1];
-            betta[k-2] = betta[k]*A[2] + betta[k-2];
-            betta[k-3] = betta[k]*A[3] + betta[k-3];
-            betta[k-4] = betta[k]*A[4];// + betta[k-4];
-            ETA        = ETA - betta[k]*A[0];
-
-            for (unsigned int i=0; i<L; i++)
-            {
-                if (k==(s[i]+K))
-                {
-                    betta[k-4] = betta[k-4] + GAMMA[i];
-                }
-            }
-        }
-        clearAMatrices(A);
-    }
-
-    for (unsigned int i=0; i<n; i++)
-    {
-        for (unsigned int j=0; j<n; j++)
-        {
-            M[c*n+i][0*n+j] = betta[0][i][j];
-            M[c*n+i][1*n+j] = betta[1][i][j];
-            M[c*n+i][2*n+j] = betta[2][i][j];
-            M[c*n+i][3*n+j] = betta[3][i][j];
-        }
-        B.at(c*n+i) = ETA.at(i);
-    }
-
-    ETA.clear();
-    for (unsigned int i=0; i<L; i++) GAMMA[i].clear();
-    GAMMA.clear();
-    for (unsigned int i=0; i<=N; i++) betta[i].clear();
-    betta.clear();
-}
 
 void Example4::calculateM2BE(unsigned int c, const std::vector<unsigned int> s, const DoubleMatrix &nx, DoubleMatrix &M, DoubleVector &B,
                              const std::vector<stdDoubleMatrixVector> &P, const stdDoubleMatrixVector &Q)
@@ -657,7 +649,7 @@ void Example4::calculatePQ(std::vector<stdDoubleMatrixVector> &P, stdDoubleMatri
     /* calculating P,Q matrices */
 }
 
-void Example4::fillGamma(std::vector<DoubleMatrix> &GAMMA, DoubleVector &ETA, unsigned int s, unsigned int k)
+void Example4::fillGamma(stdDoubleMatrixVector &GAMMA, DoubleVector &ETA, unsigned int s, unsigned int k)
 {
     unsigned int L = GAMMA.size();
     if (k == K)
