@@ -28,7 +28,12 @@ double BorderParabolic::f(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PAR
     return 2.0*t - 2.0*a*a;
 }
 
-void BorderParabolic::calculate()
+void BorderParabolic::calculate(DoubleMatrix &u)
 {
+    u.resize(M+1, N+1);
+    for (unsigned int i=0; i<=N; i++) u.at(0,i) = initial(i);
+    for (unsigned int j=1; j<=M; j++) { u.at(j,0) = boundary(Left,j); u.at(j,N) = boundary(Right, j); }
 
+
+    double alpha = (ht*a*a)/(24.0*hx*hx);
 }
