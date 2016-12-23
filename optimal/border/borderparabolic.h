@@ -25,7 +25,9 @@ public:
 
     static void Main(int argc, char* argv[]);
 
-    void calculate(DoubleMatrix &u);
+    void calculateN41(DoubleMatrix &u);
+    void calculateN42(DoubleMatrix &u);
+    void calculateN6(DoubleMatrix &u);
 };
 
 #endif // BORDERPARABOLIC_H
