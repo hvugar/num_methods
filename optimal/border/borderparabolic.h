@@ -17,6 +17,8 @@ public:
     virtual double boundary(Boundary type, unsigned int j) const;
     virtual double f(unsigned int i, unsigned int j) const;
 
+    double u(unsigned int i, unsigned int j) const;
+
     double hx = 0.01;
     double ht = 0.01;
     unsigned int N = 100;
@@ -27,6 +29,8 @@ public:
 
     void calculateN41(DoubleMatrix &u);
     void calculateN42(DoubleMatrix &u);
+    void calculateN43(DoubleMatrix &u);
+    void calculateN44(DoubleMatrix &u);
     void calculateN6(DoubleMatrix &u);
 };
 
