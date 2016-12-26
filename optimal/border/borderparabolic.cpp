@@ -1,4 +1,5 @@
 #include "borderparabolic.h"
+#include <math.h>
 
 void BorderParabolic::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -13,30 +14,39 @@ void BorderParabolic::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     IPrinter::printMatrix(14, 10, u1, 10, 10, NULL);
     IPrinter::printSeperatorLine();
 
-    DoubleMatrix u2;
-    bp.calculateN44(u2);
-        IPrinter::printMatrix(14, 10, u2, 10, 10, NULL);
-    IPrinter::printSeperatorLine();
+//    DoubleMatrix u2;
+//    bp.calculateN44(u2);
+//    IPrinter::printMatrix(14, 10, u2, 10, 10, NULL);
+//    IPrinter::printSeperatorLine();
 }
 
 double BorderParabolic::initial(unsigned int i UNUSED_PARAM) const
 {
     double x = i*hx;
     return x*x;
+    //return sin(x);
+    //return x*x*x;
 }
 
 double BorderParabolic::boundary(Boundary type UNUSED_PARAM, unsigned int j UNUSED_PARAM) const
 {
     double t = j*ht;
-    if (type == Left) return t*t;
+    if (type == Left)  return t*t;
     if (type == Right) return t*t + 1.0;
+    //if (type == Left)  return exp(t)-1.0;
+    //if (type == Right) return sin(1.0)+exp(t)-cos(2.0*t);
+    //if (type == Left)  return t*t*t;
+    //if (type == Right) return 1.0 + 2.0*t + t*t*t;
     return 0.0;
 }
 
 double BorderParabolic::f(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PARAM) const
 {
-    double t = j*ht;
+    double t UNUSED_PARAM = j*ht;
+    double x UNUSED_PARAM = i*hx;
     return 2.0*t - 2.0*a*a;
+    //return exp(t) - a*a*sin(x) + 2.0*x*sin(2.0*t*x) - 4.0*a*a*t*t*cos(2.0*x*t);
+    //return 2.0*x + 3.0*t*t - 6.0*a*a*x;
 }
 
 double BorderParabolic::u(unsigned int i, unsigned int j) const
