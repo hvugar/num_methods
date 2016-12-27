@@ -19,16 +19,8 @@ DEFINES += MINIMUM_LIBRARY
 HEADERS += borderparabolic.h \
            borderhyperbolic.h \
            borderhyperbolic2d.h \
-           borderparabolic2d.h \
-           sampleborderhyperbolic.h \
-           sampleexample1.h \
-           sampleexample2.h \
-           sampleloaderborder.h
+           borderparabolic2d.h
 SOURCES += borderparabolic.cpp \
            borderhyperbolic.cpp \
            borderhyperbolic2d.cpp \
-           borderparabolic2d.cpp \
-           sampleborderhyperbolic.cpp \
-           sampleexample1.cpp \
-           sampleexample2.cpp \
-           sampleloaderborder.cpp
+           borderparabolic2d.cpp

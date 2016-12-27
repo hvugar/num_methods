@@ -322,7 +322,7 @@ void IBackwardParabolicEquation::calculateU(DoubleMatrix &psi, double hx, double
     rx.clear();
 }
 
-void IParabolicEquation2D::caluclateMVD(DoubleMatrix &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
+void IParabolicEquation2D::calculateMVD(DoubleMatrix &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
 {
     //cleaning matrix
     u.resize(N2+1, N1+1);
@@ -461,7 +461,7 @@ void IParabolicEquation2D::caluclateMVD(DoubleMatrix &u, double h1, double h2, d
     rx2.clear();
 }
 
-void IParabolicEquation2D::caluclateMVD1(DoubleMatrix &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
+void IParabolicEquation2D::calculateMVD1(DoubleMatrix &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
 {
     u.clear();
     u.resize(N2+1, N1+1);
@@ -588,7 +588,7 @@ void IParabolicEquation2D::caluclateMVD1(DoubleMatrix &u, double h1, double h2, 
     rx2.clear();
 }
 
-void IParabolicEquation2D::caluclateMFS(DoubleMatrix &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
+void IParabolicEquation2D::calculateMFS(DoubleMatrix &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
 {
     u.clear();
     u.resize(N2+1, N1+1);
@@ -713,7 +713,7 @@ void IParabolicEquation2D::caluclateMFS(DoubleMatrix &u, double h1, double h2, d
     rx2.clear();
 }
 
-void IParabolicEquation2D::caluclateMVD(DoubleCube &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
+void IParabolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
 {
     u.clear();
     u.resize(M+1, N2+1, N1+1);
@@ -844,7 +844,7 @@ void IParabolicEquation2D::caluclateMVD(DoubleCube &u, double h1, double h2, dou
     rx2.clear();
 }
 
-void IBackwardParabolicEquation2D::caluclateMVD(DoubleCube &psi, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
+void IBackwardParabolicEquation2D::calculateMVD(DoubleCube &psi, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
 {
     //cleaning cube
     psi.resize(M+1, N2+1, N1+1);

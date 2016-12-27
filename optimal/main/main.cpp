@@ -9,6 +9,8 @@
 #include <cmethods.h>
 
 #include <../border/borderparabolic.h>
+#include <../border/borderparabolic2d.h>
+#include <../border/borderhyperbolic2d.h>
 
 #include <bordertest1.h>
 
@@ -27,19 +29,12 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //BorderTest::Main(argc, argv);
     //BorderTest1::Main(argc, argv);
     //Example2::Main(argc, argv);
-    //    Problem1::Main(argc, argv);
+    //Problem1::Main(argc, argv);
     //Example3 e;
-    //    Example4::Main(argc, argv);
-    BorderParabolic::Main(argc, argv);
-    //    Example5 e5;
-
-    //    DoubleMatrix m(5,5);
-    //    m.at(0,0) = 0.0; m.at(0,1) = 0.0; m.at(0,2) = 0.0; m.at(0,3) = 1.0; m.at(0,4) = 4.0;
-    //    m.at(1,0) = 1.0; m.at(1,1) = 3.0; m.at(1,2) = 2.0; m.at(1,3) = 0.0; m.at(1,4) = 1.0;
-    //    m.at(2,0) = 5.0; m.at(2,1) = 0.0; m.at(2,2) = 1.0; m.at(2,3) = 2.0; m.at(2,4) = 0.0;
-    //    m.at(3,0) = 0.0; m.at(3,1) = 5.0; m.at(3,2) = 1.0; m.at(3,3) = 4.0; m.at(3,4) = 0.0;
-    //    m.at(4,0) = 2.0; m.at(4,1) = 0.0; m.at(4,2) = 0.0; m.at(4,3) = 1.0; m.at(4,4) = 2.0;
-    //    double d1 = m.determinant1();
-    //    printf("%14.10f\n", d1);
+    //Example4::Main(argc, argv);
+    //BorderParabolic::Main(argc, argv);
+    //BorderParabolic2D::Main(argc, argv);
+    //BorderHyperbolic2D::Main(argc, argv);
+    //Example5 e5;
     return 0;
 }
