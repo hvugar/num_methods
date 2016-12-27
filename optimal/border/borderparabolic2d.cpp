@@ -11,19 +11,6 @@ void BorderParabolic2D::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
     bp.calculate(m, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, bp.a1, bp.a2);
 }
 
-BorderParabolic2D::BorderParabolic2D()
-{
-    a1 = a2 = 1.0;
-
-    h1 = 0.01;
-    h2 = 0.01;
-    ht = 0.01;
-
-    N1 = 100;
-    N2 = 100;
-    M  = 100;
-}
-
 double BorderParabolic2D::u(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PARAM, unsigned int k UNUSED_PARAM) const
 {
     double x1 UNUSED_PARAM = i*h1;

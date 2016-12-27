@@ -1,13 +1,13 @@
-#ifndef BORDERHYPERBOLIC_H
-#define BORDERHYPERBOLIC_H
+#ifndef BORDERHYPERBOLIC21_H
+#define BORDERHYPERBOLIC21_H
 
 #include <hyperbolicequation.h>
 
-class BorderHyperbolic : public IHyperbolicEquation2D
+class BorderHyperbolic21 : public IHyperbolicEquation2D
 {
 public:
-    BorderHyperbolic();
-    virtual ~BorderHyperbolic();
+    BorderHyperbolic21();
+    virtual ~BorderHyperbolic21();
 
     virtual double initial1(unsigned int i, unsigned int j) const;
     virtual double initial2(unsigned int i, unsigned int j) const;
@@ -43,4 +43,4 @@ public:
     static void main();
 };
 
-#endif // BORDERHYPERBOLIC_H
+#endif // BORDERHYPERBOLIC21_H

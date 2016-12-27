@@ -1,13 +1,13 @@
-#include "borderhyperbolic.h"
+#include "borderhyperbolic2d1.h"
 
-void BorderHyperbolic::main()
+void BorderHyperbolic21::main()
 {
     DoubleMatrix m;
-    BorderHyperbolic bh;
+    BorderHyperbolic21 bh;
     bh.calculateU1(m, bh.h1, bh.h2, bh.ht, bh.N1, bh.N2, bh.M, bh.a1, bh.a2, bh.qamma);
 }
 
-BorderHyperbolic::BorderHyperbolic()
+BorderHyperbolic21::BorderHyperbolic21()
 {
     x10 = x20 = 0.0;
     x11 = x21 = 1.0;
@@ -35,25 +35,25 @@ BorderHyperbolic::BorderHyperbolic()
     e[1] = 0.2;
 }
 
-BorderHyperbolic::~BorderHyperbolic()
+BorderHyperbolic21::~BorderHyperbolic21()
 {
 }
 
-double BorderHyperbolic::initial1(unsigned int i, unsigned int j) const
-{
-    C_UNUSED(i);
-    C_UNUSED(j);
-    return 0.0;
-}
-
-double BorderHyperbolic::initial2(unsigned int i, unsigned int j) const
+double BorderHyperbolic21::initial1(unsigned int i, unsigned int j) const
 {
     C_UNUSED(i);
     C_UNUSED(j);
     return 0.0;
 }
 
-double BorderHyperbolic::boundary(unsigned int i, unsigned int j, unsigned int k) const
+double BorderHyperbolic21::initial2(unsigned int i, unsigned int j) const
+{
+    C_UNUSED(i);
+    C_UNUSED(j);
+    return 0.0;
+}
+
+double BorderHyperbolic21::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
     C_UNUSED(i);
     C_UNUSED(j);
@@ -61,12 +61,12 @@ double BorderHyperbolic::boundary(unsigned int i, unsigned int j, unsigned int k
     return 0.0;
 }
 
-double BorderHyperbolic::f(unsigned int i, unsigned int j, unsigned int k) const
+double BorderHyperbolic21::f(unsigned int i, unsigned int j, unsigned int k) const
 {
     return fxt(i, j, k);
 }
 
-double BorderHyperbolic::fxt(unsigned int i, unsigned int j, unsigned int k) const
+double BorderHyperbolic21::fxt(unsigned int i, unsigned int j, unsigned int k) const
 {
     double sum = 0.0;
     double x1 = i*h1;

@@ -17,10 +17,10 @@ DEFINES += MINIMUM_LIBRARY
 
 # Input
 HEADERS += borderparabolic.h \
-           borderhyperbolic.h \
            borderhyperbolic2d.h \
-           borderparabolic2d.h
+           borderparabolic2d.h \
+    borderhyperbolic2d1.h
 SOURCES += borderparabolic.cpp \
-           borderhyperbolic.cpp \
            borderhyperbolic2d.cpp \
-           borderparabolic2d.cpp
+           borderparabolic2d.cpp \
+    borderhyperbolic2d1.cpp
