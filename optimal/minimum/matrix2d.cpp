@@ -319,7 +319,7 @@ double DoubleMatrix::max() const
     return _max;
 }
 
-double DoubleMatrix::determinant() const
+double DoubleMatrix::determinant2() const
 {
     double det = 0.0;
 
@@ -338,14 +338,14 @@ double DoubleMatrix::determinant() const
         for (i=0; i<mCols; i++)
         {
             DoubleMatrix mnr = minor(0, i);
-            det += (i%2==0 ? +1 : -1) * mData[0][i] * mnr.determinant();
+            det += (i%2==0 ? +1 : -1) * mData[0][i] * mnr.determinant2();
         }
     }
 
     return det;
 }
 
-double DoubleMatrix::determinant1() const
+double DoubleMatrix::determinant() const
 {
     double det = 0.0;
 
@@ -358,11 +358,6 @@ double DoubleMatrix::determinant1() const
 
     for (unsigned k=0; k < mRows; k++)
     {
-
-//        IPrinter::printSeperatorLine(NULL,'*');
-//        IPrinter::print(T,T.rows(),T.cols(),14,10);
-//        IPrinter::printSeperatorLine(NULL,'*');
-
         if (fabs(T.at(k,k)) <= DBL_EPSILON)
         {
             bool swiched = false;
@@ -370,23 +365,11 @@ double DoubleMatrix::determinant1() const
             {
                 if (fabs(T.at(p,k)) > DBL_EPSILON)
                 {
-                    IPrinter::printSeperatorLine(NULL,'*');
-                    IPrinter::print(T,T.rows(),T.cols(),14,10);
-                    IPrinter::printSeperatorLine(NULL,'+');
-
-                    printf("swiched: %d, %d\n", k, p);
                     T.switchRows(k, p);
-
-                    IPrinter::printSeperatorLine(NULL,'*');
-                    IPrinter::print(T,T.rows(),T.cols(),14,10);
-                    IPrinter::printSeperatorLine(NULL,'*');
-
                     swiched = true;
                     break;
                 }
             }
-            if (swiched == false)
-                printf("Error\n");
         }
 
         for (unsigned int j=k+1; j<mRows; j++)
@@ -396,10 +379,6 @@ double DoubleMatrix::determinant1() const
             {
                 T.at(j,i) = T.at(j,i) + T.at(k,i) * c;
             }
-
-//            IPrinter::printSeperatorLine(NULL,'*');
-//            IPrinter::print(T,T.rows(),T.cols(),14,10);
-//            IPrinter::printSeperatorLine(NULL,'*');
         }
     }
     det = 1.0;

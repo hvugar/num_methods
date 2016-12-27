@@ -1,5 +1,10 @@
 #include "example5.h"
 
+void Example5::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
+{
+    Example5 e;
+}
+
 Example5::Example5()
 {
     DoubleVector rx(N+1); for (unsigned int i=0; i<=N; i++) rx.at(i) = x(i);

@@ -68,8 +68,8 @@ public:
     double min() const;
     double max() const;
 
+    double determinant2() const;
     double determinant() const;
-    double determinant1() const;
     void transpose();
     void inverse();
     DoubleMatrix minor(unsigned int row, unsigned int col) const;

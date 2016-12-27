@@ -23,6 +23,8 @@ public:
 
     double h = 0.01;
     unsigned int N = 100;
+
+    void static Main(int argc, char **argv);
 };
 
 #endif // EXAMPLE5_H
