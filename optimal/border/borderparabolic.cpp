@@ -1,6 +1,8 @@
 #include "borderparabolic.h"
 #include <math.h>
 
+#define NO_NORMALIZE
+
 void BorderParabolic::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     BorderParabolic bp;
@@ -20,8 +22,8 @@ void BorderParabolic::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     IPrinter::printSeperatorLine();
 
     DoubleMatrix u2;
-    bp.calculateN43(u2);
-    //IPrinter::printMatrix(14, 10, u2, 10, 10, NULL);
+    bp.calculateN45(u2);
+    IPrinter::printMatrix(14, 10, u2, 10, 10, NULL);
     IPrinter::printSeperatorLine();
 }
 
@@ -221,17 +223,18 @@ void BorderParabolic::calculateN43(DoubleMatrix &u1)
     }
 
     double alpha = (ht*a*a)/(24.0*hx*hx);
+    printf("alpha: %14.10f\n", alpha);
 
     for (unsigned int m=1; m<=M; m++)
     {
         DoubleMatrix A(N-1, N-1, 0.0);
         DoubleVector b(N-1, 0.0);
 
-//        A.at(0,0) = +40.0*alpha+1.0;
-//        A.at(0,1) = -12.0*alpha;
-//        A.at(0,2) = -8.0*alpha;
-//        A.at(0,3) = +2.0*alpha;
-//        b.at(0) = u1.at(m-1,1) + (22.0*alpha)*u1.at(m,0) + ht*f(1,m);
+        //        A.at(0,0) = +40.0*alpha+1.0;
+        //        A.at(0,1) = -12.0*alpha;
+        //        A.at(0,2) = -8.0*alpha;
+        //        A.at(0,3) = +2.0*alpha;
+        //        b.at(0) = u1.at(m-1,1) + (22.0*alpha)*u1.at(m,0) + ht*f(1,m);
 
         A.at(0,0) = 1.0;
         A.at(0,1) = -(12.0*alpha)/(+40.0*alpha+1.0);
@@ -241,13 +244,13 @@ void BorderParabolic::calculateN43(DoubleMatrix &u1)
 
         //printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f\n", 0, A.at(0,0), A.at(0,1), A.at(0,2), A.at(0,3), b.at(0));
 
-//        printf("%14.10f %14.10f\n", A.at(0,0)*u(1,m)+A.at(0,1)*u(2,m)+A.at(0,2)*u(3,m)+A.at(0,3)*u(4,m), b.at(0));
+        //        printf("%14.10f %14.10f\n", A.at(0,0)*u(1,m)+A.at(0,1)*u(2,m)+A.at(0,2)*u(3,m)+A.at(0,3)*u(4,m), b.at(0));
 
-//        A.at(1,0) = -32.0*alpha;
-//        A.at(1,1) = +60.0*alpha+1.0;
-//        A.at(1,2) = -32.0*alpha;
-//        A.at(1,3) = +2.0*alpha;
-//        b.at(1) = u1.at(m-1,2) - (2.0*alpha)*u1.at(m,0) + ht*f(2,m);
+        //        A.at(1,0) = -32.0*alpha;
+        //        A.at(1,1) = +60.0*alpha+1.0;
+        //        A.at(1,2) = -32.0*alpha;
+        //        A.at(1,3) = +2.0*alpha;
+        //        b.at(1) = u1.at(m-1,2) - (2.0*alpha)*u1.at(m,0) + ht*f(2,m);
 
         A.at(1,0) = 1.0;
         A.at(1,1) = +(60.0*alpha+1.0)/(-32.0*alpha);
@@ -256,16 +259,16 @@ void BorderParabolic::calculateN43(DoubleMatrix &u1)
         b.at(1) = (u1.at(m-1,2) - (2.0*alpha)*u1.at(m,0) + ht*f(2,m))/(-32.0*alpha);
 
         //printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f\n", 1, A.at(1,0), A.at(1,1), A.at(1,2), A.at(1,3), b.at(1));
-//        printf("%14.10f %14.10f\n", A.at(1,0)*u(1,m)+A.at(1,1)*u(2,m)+A.at(1,2)*u(3,m)+A.at(1,3)*u(4,m), b.at(1));
+        //        printf("%14.10f %14.10f\n", A.at(1,0)*u(1,m)+A.at(1,1)*u(2,m)+A.at(1,2)*u(3,m)+A.at(1,3)*u(4,m), b.at(1));
 
         for (unsigned int n=3; n<=N-3; n++)
         {
-//            A.at(n-1,n-3) = +2.0*alpha;
-//            A.at(n-1,n-2) = -32.0*alpha;
-//            A.at(n-1,n-1) = +60.0*alpha + 1.0;
-//            A.at(n-1,n-0) = -32.0*alpha;
-//            A.at(n-1,n+1) = +2.0*alpha;
-//            b.at(n-1) = u1.at(m-1,n) + ht*f(n,m);
+            //            A.at(n-1,n-3) = +2.0*alpha;
+            //            A.at(n-1,n-2) = -32.0*alpha;
+            //            A.at(n-1,n-1) = +60.0*alpha + 1.0;
+            //            A.at(n-1,n-0) = -32.0*alpha;
+            //            A.at(n-1,n+1) = +2.0*alpha;
+            //            b.at(n-1) = u1.at(m-1,n) + ht*f(n,m);
 
             A.at(n-1,n-3) = +1.0;
             A.at(n-1,n-2) = -16.0;
@@ -278,20 +281,20 @@ void BorderParabolic::calculateN43(DoubleMatrix &u1)
             //       A.at(n-1,n-0), A.at(n-1,n+1), b.at(n-1));
 
 
-//            printf("%14.10f %14.10f\n", A.at(n-1,n-3)*u(n-2,m)
-//                                       +A.at(n-1,n-2)*u(n-1,m)
-//                                       +A.at(n-1,n-1)*u(n+0,m)
-//                                       +A.at(n-1,n+0)*u(n+1,m)
-//                                       +A.at(n-1,n+1)*u(n+2,m), b.at(n-1));
+            //            printf("%14.10f %14.10f\n", A.at(n-1,n-3)*u(n-2,m)
+            //                                       +A.at(n-1,n-2)*u(n-1,m)
+            //                                       +A.at(n-1,n-1)*u(n+0,m)
+            //                                       +A.at(n-1,n+0)*u(n+1,m)
+            //                                       +A.at(n-1,n+1)*u(n+2,m), b.at(n-1));
         }
 
         //return;
 
-//        A.at(N-3,N-5) = +2.0*alpha;
-//        A.at(N-3,N-4) = -32.0*alpha;
-//        A.at(N-3,N-3) = +60.0*alpha+1.0;
-//        A.at(N-3,N-2) = -32.0*alpha;
-//        b.at(N-3) = u1.at(m-1,N-2) - (2.0*alpha)*u1.at(m,N) + ht*f(N-2,m);
+        //        A.at(N-3,N-5) = +2.0*alpha;
+        //        A.at(N-3,N-4) = -32.0*alpha;
+        //        A.at(N-3,N-3) = +60.0*alpha+1.0;
+        //        A.at(N-3,N-2) = -32.0*alpha;
+        //        b.at(N-3) = u1.at(m-1,N-2) - (2.0*alpha)*u1.at(m,N) + ht*f(N-2,m);
 
         A.at(N-3,N-5) = 1.0;
         A.at(N-3,N-4) = -16.0;
@@ -300,16 +303,16 @@ void BorderParabolic::calculateN43(DoubleMatrix &u1)
         b.at(N-3) = (u1.at(m-1,N-2) - (2.0*alpha)*u1.at(m,N) + ht*f(N-2,m))/(2.0*alpha);
 
 
-//        printf("%14.10f %14.10f\n", A.at(N-3,N-5)*u(N-4,m)
-//                                   +A.at(N-3,N-4)*u(N-3,m)
-//                                   +A.at(N-3,N-3)*u(N-2,m)
-//                                   +A.at(N-3,N-2)*u(N-1,m), b.at(N-3));
+        //        printf("%14.10f %14.10f\n", A.at(N-3,N-5)*u(N-4,m)
+        //                                   +A.at(N-3,N-4)*u(N-3,m)
+        //                                   +A.at(N-3,N-3)*u(N-2,m)
+        //                                   +A.at(N-3,N-2)*u(N-1,m), b.at(N-3));
 
-//        A.at(N-2,N-5) = +2.0*alpha;
-//        A.at(N-2,N-4) = -8.0*alpha;
-//        A.at(N-2,N-3) = -12.0*alpha;
-//        A.at(N-2,N-2) = +40.0*alpha+1.0;
-//        b.at(N-2) = u1.at(m-1,N-1) + (22.0*alpha)*u1.at(m,N) + ht*f(N-1,m);
+        //        A.at(N-2,N-5) = +2.0*alpha;
+        //        A.at(N-2,N-4) = -8.0*alpha;
+        //        A.at(N-2,N-3) = -12.0*alpha;
+        //        A.at(N-2,N-2) = +40.0*alpha+1.0;
+        //        b.at(N-2) = u1.at(m-1,N-1) + (22.0*alpha)*u1.at(m,N) + ht*f(N-1,m);
 
         A.at(N-2,N-5) = +1.0;
         A.at(N-2,N-4) = -4.0;
@@ -317,14 +320,14 @@ void BorderParabolic::calculateN43(DoubleMatrix &u1)
         A.at(N-2,N-2) = (+40.0*alpha+1.0)/(2.0*alpha);
         b.at(N-2) = (u1.at(m-1,N-1) + (22.0*alpha)*u1.at(m,N) + ht*f(N-1,m))/(2.0*alpha);
 
-//        printf("%14.10f %14.10f\n", A.at(N-2,N-5)*u(N-4,m)
-//                                   +A.at(N-2,N-4)*u(N-3,m)
-//                                   +A.at(N-2,N-3)*u(N-2,m)
-//                                   +A.at(N-2,N-2)*u(N-1,m), b.at(N-2));
+        //        printf("%14.10f %14.10f\n", A.at(N-2,N-5)*u(N-4,m)
+        //                                   +A.at(N-2,N-4)*u(N-3,m)
+        //                                   +A.at(N-2,N-3)*u(N-2,m)
+        //                                   +A.at(N-2,N-2)*u(N-1,m), b.at(N-2));
 
-        FILE *file = fopen("A_Matrix.txt", "w");
-        IPrinter::print(A,A.rows(),A.cols(),14,10,file);
-        fclose(file);
+        //        FILE *file = fopen("A_Matrix.txt", "w");
+        //        IPrinter::print(A,A.rows(),A.cols(),14,10,file);
+        //        fclose(file);
 
         double z1 = A.at(0,0);
         double p1 = A.at(0,1);
@@ -338,9 +341,9 @@ void BorderParabolic::calculateN43(DoubleMatrix &u1)
         double k2 = A.at(1,3);
         double r2 = b.at(1);
 
-        printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f\n", 0, z1, p1, q1, k1, r1);
-        printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f\n", 0, z2, p2, q2, k2, r2);
-        IPrinter::printSeperatorLine();
+        //printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f\n", 0, z1, p1, q1, k1, r1);
+        //printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f\n", 0, z2, p2, q2, k2, r2);
+        //IPrinter::printSeperatorLine();
 
         for (unsigned int i=2; i<=N-4; i++)
         {
@@ -355,37 +358,37 @@ void BorderParabolic::calculateN43(DoubleMatrix &u1)
             q1 = -A.at(i,i+1) + k1;
             k1 = -A.at(i,i+2);
             r1 = -b.at(i) + r1;
-            printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f\n", i, z1, p1, q1, k1, r1);
+            //printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f\n", i, z1, p1, q1, k1, r1);
 
             p1 /= z1;
             q1 /= z1;
             k1 /= z1;
             r1 /= z1;
             z1 /= z1;
-            printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f\n", i, z1, p1, q1, k1, r1);
+            //printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f\n", i, z1, p1, q1, k1, r1);
 
-//            p2 = -p2/z2;
-//            q2 = -q2/z2;
-//            k2 = -k2/z2;
-//            r2 = +r2/z2;
+            //            p2 = -p2/z2;
+            //            q2 = -q2/z2;
+            //            k2 = -k2/z2;
+            //            r2 = +r2/z2;
 
             z2 = -A.at(i,i-1) + p2;
             p2 = -A.at(i,i+0) + q2;
             q2 = -A.at(i,i+1) + k2;
             k2 = -A.at(i,i+2);
             r2 = -b.at(i) + r2;
-            printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f\n", i, z2, p2, q2, k2, r2);
+            //printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f\n", i, z2, p2, q2, k2, r2);
 
             p2 /= z2;
             q2 /= z2;
             k2 /= z2;
             r2 /= z2;
             z2 /= z2;
-            printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f\n", i, z2, p2, q2, k2, r2);
+            //printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f\n", i, z2, p2, q2, k2, r2);
 
-            IPrinter::printSeperatorLine();
-//if (i>15)
-//            break;
+            //IPrinter::printSeperatorLine();
+            //if (i>15)
+            //            break;
         }
 
         printf("%14.10f %14.10f\n", z1*u(N-4,m)+p1*u(N-3,m)+q1*u(N-2,m)+k1*u(N-1,m), r1);
@@ -470,6 +473,189 @@ void BorderParabolic::calculateN44(DoubleMatrix &u1)
         A.clear();
         b.clear();
         x.clear();
+    }
+}
+
+void BorderParabolic::calculateN45(DoubleMatrix &u1)
+{
+    u1.resize(M+1, N+1);
+    for (unsigned int i=0; i<=N; i++) u1.at(0,i) = initial(i);
+    for (unsigned int j=1; j<=M; j++)
+    {
+        u1.at(j,0) = boundary(Left,j);
+        u1.at(j,N) = boundary(Right, j);
+    }
+
+    double alpha = (ht*a*a)/(24.0*hx*hx);
+    //printf("alpha: %14.10f\n", alpha);
+    double norm = 0.0;
+
+    for (unsigned int m=1; m<=M; m++)
+    {
+        DoubleMatrix A(N-1, N-1, 0.0);
+        DoubleVector b(N-1, 0.0);
+
+        A.at(0,0) = +40.0*alpha+1.0;
+        A.at(0,1) = -12.0*alpha;
+        A.at(0,2) = -8.0*alpha;
+        A.at(0,3) = +2.0*alpha;
+        b.at(0) = u1.at(m-1,1) + (22.0*alpha)*u1.at(m,0) + ht*f(1,m);
+        //norm = 1.0;
+        //norm = sqrt(A.at(0,0)*A.at(0,0) + A.at(0,1)*A.at(0,1) + A.at(0,2)*A.at(0,2) + A.at(0,3)*A.at(0,3));
+        norm = +40.0*alpha+1.0;
+
+        A.at(0,0) /= norm;
+        A.at(0,1) /= norm;
+        A.at(0,2) /= norm;
+        A.at(0,3) /= norm;
+        b.at(0)   /= norm;
+        printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f\n", 0, A.at(0,0), A.at(0,1), A.at(0,2), A.at(0,3), b.at(0));
+
+        A.at(1,0) = -32.0*alpha;
+        A.at(1,1) = +60.0*alpha+1.0;
+        A.at(1,2) = -32.0*alpha;
+        A.at(1,3) = +2.0*alpha;
+        b.at(1) = u1.at(m-1,2) - (2.0*alpha)*u1.at(m,0) + ht*f(2,m);
+        //norm = 1.0;
+        //norm = sqrt(A.at(1,0)*A.at(1,0) + A.at(1,1)*A.at(1,1) + A.at(1,2)*A.at(1,2) + A.at(1,3)*A.at(1,3));
+        norm = -32.0*alpha;
+
+        A.at(1,0) /= norm;
+        A.at(1,1) /= norm;
+        A.at(1,2) /= norm;
+        A.at(1,3) /= norm;
+        b.at(1)   /= norm;
+        printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f\n", 1, A.at(1,0), A.at(1,1), A.at(1,2), A.at(1,3), b.at(1));
+        IPrinter::printSeperatorLine();
+
+        for (unsigned int n=3; n<=N-3; n++)
+        {
+            A.at(n-1,n-3) = +2.0*alpha;
+            A.at(n-1,n-2) = -32.0*alpha;
+            A.at(n-1,n-1) = +60.0*alpha + 1.0;
+            A.at(n-1,n-0) = -32.0*alpha;
+            A.at(n-1,n+1) = +2.0*alpha;
+            b.at(n-1) = u1.at(m-1,n) + ht*f(n,m);
+            //norm = 1.0;
+            //norm = sqrt(A.at(n-1,n-3)*A.at(n-1,n-3) + A.at(n-1,n-2)*A.at(n-1,n-2) + A.at(n-1,n-1)*A.at(n-1,n-1) + A.at(n-1,n-0)*A.at(n-1,n-0) + A.at(n-1,n+1)*A.at(n-1,n+1));
+            norm  = +2.0*alpha;
+
+            A.at(n-1,n-3) /= norm;
+            A.at(n-1,n-2) /= norm;
+            A.at(n-1,n-1) /= norm;
+            A.at(n-1,n-0) /= norm;
+            A.at(n-1,n+1) /= norm;
+            b.at(n-1)     /= norm;
+        }
+
+        A.at(N-3,N-5) = +2.0*alpha;
+        A.at(N-3,N-4) = -32.0*alpha;
+        A.at(N-3,N-3) = +60.0*alpha+1.0;
+        A.at(N-3,N-2) = -32.0*alpha;
+        b.at(N-3) = u1.at(m-1,N-2) - (2.0*alpha)*u1.at(m,N) + ht*f(N-2,m);
+        //norm = 1.0;
+        //norm = sqrt(A.at(N-3,N-5)*A.at(N-3,N-5) + A.at(N-3,N-4)*A.at(N-3,N-4) + A.at(N-3,N-3)*A.at(N-3,N-3) + A.at(N-3,N-2)*A.at(N-3,N-2));
+        norm  = +2.0*alpha;
+
+        A.at(N-3,N-5) /= norm;
+        A.at(N-3,N-4) /= norm;
+        A.at(N-3,N-3) /= norm;
+        A.at(N-3,N-2) /= norm;
+        b.at(N-3)     /= norm;
+
+        A.at(N-2,N-5) = +2.0*alpha;
+        A.at(N-2,N-4) = -8.0*alpha;
+        A.at(N-2,N-3) = -12.0*alpha;
+        A.at(N-2,N-2) = +40.0*alpha+1.0;
+        b.at(N-2) = u1.at(m-1,N-1) + (22.0*alpha)*u1.at(m,N) + ht*f(N-1,m);
+        //norm = 1.0;
+        //norm = sqrt(A.at(N-2,N-5)*A.at(N-2,N-5) + A.at(N-2,N-4)*A.at(N-2,N-4) + A.at(N-2,N-3)*A.at(N-2,N-3) + A.at(N-2,N-2)*A.at(N-2,N-2));
+        norm  = +2.0*alpha;
+
+        A.at(N-2,N-5) /= norm;
+        A.at(N-2,N-4) /= norm;
+        A.at(N-2,N-3) /= norm;
+        A.at(N-2,N-2) /= norm;
+        b.at(N-2)     /= norm;
+
+        //printf("%14.10f %14.10f %14.10f %14.10f %14.10f\n", A.at(N-3,N-5), A.at(N-3,N-4), A.at(N-3,N-3), A.at(N-3,N-2), b.at(N-3));
+        //printf("%14.10f %14.10f %14.10f %14.10f %14.10f\n", A.at(N-2,N-5), A.at(N-2,N-4), A.at(N-2,N-3), A.at(N-2,N-2), b.at(N-2));
+
+        FILE *file = fopen("A_Matrix.txt", "w");
+        IPrinter::print(A,A.rows(),A.cols(),14,10,file);
+        fclose(file);
+
+        double z1 = A.at(0,0);
+        double p1 = A.at(0,1);
+        double q1 = A.at(0,2);
+        double k1 = A.at(0,3);
+        double r1 = b.at(0);
+
+        double z2 = A.at(1,0);
+        double p2 = A.at(1,1);
+        double q2 = A.at(1,2);
+        double k2 = A.at(1,3);
+        double r2 = b.at(1);
+
+        //printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f\n", 0, z1, p1, q1, k1, r1);
+        //printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f\n", 0, z2, p2, q2, k2, r2);
+        //IPrinter::printSeperatorLine();
+
+        for (unsigned int i=2; i<=N-4; i++)
+        {
+            double g1 = z1/A.at(i,i-2);
+            z1 = -A.at(i,i-1) * g1 + p1;
+            p1 = -A.at(i,i+0) * g1 + q1;
+            q1 = -A.at(i,i+1) * g1 + k1;
+            k1 = -A.at(i,i+2) * g1;
+            r1 = -b.at(i) * g1 + r1;
+
+            double g2 = z2/A.at(i,i-2);
+            z2 = -A.at(i,i-1) * g2 + p2;
+            p2 = -A.at(i,i+0) * g2 + q2;
+            q2 = -A.at(i,i+1) * g2 + k2;
+            k2 = -A.at(i,i+2) * g2;
+            r2 = -b.at(i) * g2 + r2;
+
+            printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f G1:%18.10f\n", i, z1, p1, q1, k1, r1, g1);
+            printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f G2:%18.10f\n", i, z2, p2, q2, k2, r2, g2);
+
+            double norm1 = z1;//sqrt(z1*z1 + p1*p1 + q1*q1 + k1*k1);
+            z1 /= norm1;
+            p1 /= norm1;
+            q1 /= norm1;
+            k1 /= norm1;
+            r1 /= norm1;
+            double norm2 = z2;//sqrt(z2*z2 + p2*p2 + q2*q2 + k2*k2);
+            z2 /= norm2;
+            p2 /= norm2;
+            q2 /= norm2;
+            k2 /= norm2;
+            r2 /= norm2;
+
+            printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f N1: %14.10f\n", i, z1, p1, q1, k1, r1, norm1);
+            printf("%4d %18.10f %18.10f %18.10f %18.10f %18.10f N2: %14.10f\n", i, z2, p2, q2, k2, r2, norm2);
+            IPrinter::printSeperatorLine();
+            // if (i>5) break;
+        }
+
+        //printf("%14.10f %14.10f\n", z1*u(N-4,m)+p1*u(N-3,m)+q1*u(N-2,m)+k1*u(N-1,m), r1);
+
+        DoubleMatrix A1(4,4);
+        DoubleVector b1(4);
+        A1[0][0] = z1;            A1[0][1] = p1;            A1[0][2] = q1;            A1[0][3] = k1; b1[0] = r1;
+        A1[1][0] = z2;            A1[1][1] = p2;            A1[1][2] = q2;            A1[1][3] = k2; b1[1] = r2;
+        A1[2][0] = A.at(N-3,N-5); A1[2][1] = A.at(N-3,N-4); A1[2][2] = A.at(N-3,N-3); A1[2][3] = A.at(N-3,N-2); b1[2] = b.at(N-3);
+        A1[3][0] = A.at(N-2,N-5); A1[3][1] = A.at(N-2,N-4); A1[3][2] = A.at(N-2,N-3); A1[3][3] = A.at(N-2,N-2); b1[3] = b.at(N-2);
+        printf("det A %14.10f\n", A1.determinant());
+
+        DoubleVector x(4);
+        GaussianElimination(A1, b1, x);
+        printf("%18.10f %18.10f %18.10f %18.10f\n", x[0], x[1], x[2], x[3]);
+
+        A.clear();
+        b.clear();
+        break;
     }
 }
 

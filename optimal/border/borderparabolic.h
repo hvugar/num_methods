@@ -31,6 +31,7 @@ public:
     void calculateN42(DoubleMatrix &u);
     void calculateN43(DoubleMatrix &u);
     void calculateN44(DoubleMatrix &u);
+    void calculateN45(DoubleMatrix &u);
     void calculateN6(DoubleMatrix &u);
 };
 
