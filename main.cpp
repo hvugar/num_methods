@@ -9,11 +9,17 @@
 #include "example335.h"
 #include "example336.h"
 
-//#define SAMPLE_31
+#define SAMPLE_31
 //#define SAMPLE_32
 //#define SAMPLE_33
 //#define SAMPLE_34
-#define SAMPLE_35
+//#define SAMPLE_35
+//#define SAMPLE_36
+//#define SAMPLE_37
+//#define SAMPLE_371
+//#define SAMPLE_335
+//#define SAMPLE_336
+
 
 int main(int argc, char *argv[])
 {
@@ -47,20 +53,24 @@ int main(int argc, char *argv[])
     Parabolic1DControl36::main(argc, argv);
     puts("----------------------------------------------------------------------------");
 #endif
-#ifdef SAMPLE_36
+#ifdef SAMPLE_37
     puts("Sample 3.7");
-    //Parabolic2DControl37::main(argc, argv);
+    Parabolic2DControl37::main(argc, argv);
+    puts("----------------------------------------------------------------------------");
 #endif
 #ifdef SAMPLE_371
     puts("Sample 3.71");
-    //Parabolic1DControl38::main(argc, argv);
+    Parabolic1DControl38::main(argc, argv);
+    puts("----------------------------------------------------------------------------");
 #endif
 #ifdef SAMPLE_335
     puts("Sample 335");
-    //Parabolic1DControl335::main(argc, argv);
+    Parabolic1DControl335::main(argc, argv);
+    puts("----------------------------------------------------------------------------");
 #endif
 #ifdef SAMPLE_336
     puts("Sample 336");
-    //Parabolic1DControl336::main(argc, argv);
+    Parabolic1DControl336::main(argc, argv);
+    puts("----------------------------------------------------------------------------");
 #endif
 }
