@@ -40,7 +40,7 @@ void BorderParabolic::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         bp.M = 100;
 
         DoubleMatrix u2;
-        bp.calculateN4R2L(u2);
+        bp.calculateN4L2R(u2);
         IPrinter::printMatrix(14, 10, u2, 10, 10, NULL);
         IPrinter::printSeperatorLine();
     }
@@ -110,21 +110,21 @@ void BorderParabolic::calculateN4L2R(DoubleMatrix &u1)
 
         for (unsigned int n=2; n<=N-4; n++)
         {
-            double q1 = -22.0*alpha;
-            double q2 = -40.0*alpha - 1.0; q2 /= q1;
-            double q3 = +12.0*alpha;       q3 /= q1;
-            double q4 = +8.0*alpha;        q4 /= q1;
-            double q5 = -2.0*alpha;        q5 /= q1;
-            double e  = u1.at(m-1,n) + ht*f(n,m); e /= q1;
-            q1 = 1.0;
+            // * + * * *
+//            double q1 = +22.0*alpha;
+//            double q2 = -40.0*alpha - 1.0;
+//            double q3 = +12.0*alpha;
+//            double q4 = +8.0*alpha;
+//            double q5 = -2.0*alpha;
+//            double e  = u1.at(m-1,n) + ht*f(n,m);
 
-            //            double q1 = -70.0*alpha+1.0;
-            //            double q2 = -208.0*alpha; q2 /= q1;
-            //            double q3 = +228.0*alpha; q3 /= q1;
-            //            double q4 = -112.0*alpha; q4 /= q1;
-            //            double q5 = +22.0*alpha;  q5 /= q1;
-            //            double e  = u1.at(m-1,n) + ht*f(n,m); e /= q1;
-            //            q1 = 1.0;
+            // + * * * *
+            double q1 = +70.0*alpha-1.0;
+            double q2 = -208.0*alpha;
+            double q3 = +228.0*alpha;
+            double q4 = -112.0*alpha;
+            double q5 = +22.0*alpha;
+            double e  = u1.at(m-1,n) + ht*f(n,m);
 
             //            double q1 = -22.0*alpha;
             //            double q2 = -112.0*alpha; q2 /= q1;
@@ -133,6 +133,13 @@ void BorderParabolic::calculateN4L2R(DoubleMatrix &u1)
             //            double q5 = +70.0*alpha-1.0;  q5 /= q1;
             //            double e  = u1.at(m-1,n+4) + ht*f(n+4,m); e /= q1;
             //            q1 = 1.0;
+
+            q2 /= -q1;
+            q3 /= -q1;
+            q4 /= -q1;
+            q5 /= -q1;
+            e  /= -q1;
+            q1 = 1.0;
 
             c1 = c2 + q2;
             c2 = (c3 + q3)/c1;
@@ -238,17 +245,21 @@ void BorderParabolic::calculateN4L2R(DoubleMatrix &u1)
             }
         }*/
 
-        //printf("%d %18.10f %18.10f %18.10f %18.10f\n", m, u(N-4,m), u(N-3,m), u(N-2,m), u(N-1,m));
-        //printf("%d %18.10f %18.10f %18.10f %18.10f\n", m, x[0], x[1], x[2], x[3]);
-        x.clear();
-        //printf("%d %18.10f %18.10f %18.10f %18.10f\n", m, u1.at(m,N-4), u1.at(m,N-3), u1.at(m,N-2), u1.at(m,N-1));
-        //IPrinter::printVector(14,10, u1.row(m));
-        //DoubleVector v(N+1); for (unsigned int n=0; n<=N; n++) v.at(n) = u(n,m);
-        //IPrinter::printVector(14,10, v);
-        //v.clear();
-        //IPrinter::printSeperatorLine();
+        if (m==1)
+        {
+            printf("%d %18.10f %18.10f %18.10f %18.10f\n", m, u(N-4,m), u(N-3,m), u(N-2,m), u(N-1,m));
+            printf("%d %18.10f %18.10f %18.10f %18.10f\n", m, x[0], x[1], x[2], x[3]);
+            //printf("%d %18.10f %18.10f %18.10f %18.10f\n", m, u1.at(m,N-4), u1.at(m,N-3), u1.at(m,N-2), u1.at(m,N-1));
+            IPrinter::printVector(14,10, u1.row(m));
+            DoubleVector v(N+1); for (unsigned int n=0; n<=N; n++) v.at(n) = u(n,m);
+            IPrinter::printVector(14,10, v);
+            v.clear();
+            IPrinter::printSeperatorLine();
+        }
 
-        //if (m>0) break;
+        A1.clear();
+        b1.clear();
+        x.clear();
     }
 }
 
