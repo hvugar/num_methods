@@ -5,7 +5,7 @@
 #include <printer.h>
 #include <math.h>
 
-#define SAMPLE_3
+#define SAMPLE_1
 
 class SampleBoundaryProblem1 : public BoundaryProblem
 {
@@ -17,8 +17,8 @@ public:
     virtual double boundary(Boundary bound) const;
 
     double fx(unsigned int i) const;
-    double h = 0.001;
-    unsigned int N = 1000;
+    double h;
+    unsigned int N;
 
     void static Main(int argc, char** argv);
 };
