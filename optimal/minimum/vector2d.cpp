@@ -322,3 +322,15 @@ void DoubleVector::print()
     }
     puts("");
 }
+
+//DoubleVector operator-(const DoubleVector& v1, const DoubleVector &v2)
+//{
+//    if (v1.mSize != v2.mSize)
+//    {
+//        //throw
+//    }
+
+//    DoubleVector v(v1.mSize);
+//    for (unsigned int i=0; i<=v.mSize; i++) v.mData[i] = v1.mData[i] - v2.mData[i];
+//    return v;
+//}

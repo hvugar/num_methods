@@ -102,9 +102,11 @@ void DoubleMatrix::clear()
     {
         for (unsigned int i=0; i<mRows; i++)
         {
+            //if (mRows == 9999) printf("%u %u %x\n", mRows, i, mData[i]);
             free(mData[i]);
             mData[i] = NULL;
         }
+        //printf("%u %u\n", mRows, mCols);
 
         free(mData);
         mData = NULL;
@@ -367,8 +369,9 @@ double DoubleMatrix::determinant() const
                 {
                     T.switchRows(k, p);
                     swiched = true;
-                    break;
+                    //break;
                 }
+                if (swiched==true) break;
             }
         }
 

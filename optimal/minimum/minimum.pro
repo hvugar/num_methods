@@ -37,7 +37,8 @@ SOURCES += \
 #    matrix.cpp \
     matrix2d.cpp \
     vector2d.cpp \
-    matrix3d.cpp
+    matrix3d.cpp \
+    boundaryproblem.cpp
 
 HEADERS += global.h \
     cmethods.h \
@@ -62,4 +63,5 @@ HEADERS += global.h \
 #    matrix.h \
     matrix2d.h \
     vector2d.h \
-    matrix3d.h
+    matrix3d.h \
+    boundaryproblem.h
