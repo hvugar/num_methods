@@ -1,13 +1,13 @@
-#ifndef SAMPLEBOUNDARYPROBLEM1_H
-#define SAMPLEBOUNDARYPROBLEM1_H
+#ifndef BOUNDARYVALUEPROBLEM1_H
+#define BOUNDARYVALUEPROBLEM1_H
 
-#include <boundaryproblem.h>
+#include <bvp.h>
 #include <printer.h>
 #include <math.h>
 
 #define SAMPLE_1
 
-class SampleBoundaryProblem1 : public BoundaryProblem
+class BoundaryValueProblem1 : public BoundaryValueProblem
 {
 public:
     virtual double r(unsigned int i) const;
@@ -23,4 +23,4 @@ public:
     void static Main(int argc, char** argv);
 };
 
-#endif // SAMPLEBOUNDARYPROBLEM1_H
+#endif // BOUNDARYVALUEPROBLEM1_H

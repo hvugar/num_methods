@@ -35,9 +35,9 @@ void BorderParabolic::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     {
         bp.hx = 0.01;
-        bp.ht = 0.00001;
+        bp.ht = 0.0001;
         bp.N = 100;
-        bp.M = 100000;
+        bp.M = 10000;
 
         DoubleMatrix u2;
         bp.calculateN4L2R(u2);

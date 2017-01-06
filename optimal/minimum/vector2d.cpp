@@ -108,7 +108,6 @@ const double& DoubleVector::at(unsigned int n) const
     {
         throw std::out_of_range("out of range");
     }
-
     return mData[n];
 }
 

@@ -174,11 +174,27 @@ const double& DoubleMatrix::operator()(unsigned int row, unsigned int col) const
 
 double& DoubleMatrix::at(unsigned int row, unsigned int col)
 {
+    if (row>=mRows)
+    {
+        throw std::out_of_range("row index out of range");
+    }
+    if (col>=mCols)
+    {
+        throw std::out_of_range("column index out of range");
+    }
     return mData[row][col];
 }
 
 const double& DoubleMatrix::at(unsigned int row, unsigned int col) const
 {
+    if (row>=mRows)
+    {
+        throw std::out_of_range("row index out of range");
+    }
+    if (col>=mCols)
+    {
+        throw std::out_of_range("column index out of range");
+    }
     return mData[row][col];
 }
 

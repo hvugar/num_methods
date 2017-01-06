@@ -1,15 +1,15 @@
 #include "sampleboundaryproblem1.h"
 
-void SampleBoundaryProblem1::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
+void BoundaryValueProblem1::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
 {
-    SampleBoundaryProblem1 sbp;
+    BoundaryValueProblem1 sbp;
 
     {
         sbp.h = 0.1;
         sbp.N = 10;
         DoubleVector rx(sbp.N+1);
         for (unsigned int i=0; i<=sbp.N; i++) rx.at(i) = sbp.fx(i);
-        IPrinter::printVector(14,10,rx);
+        IPrinter::printVector(18,14,rx);
         rx.clear();
         IPrinter::printSeperatorLine();
     }
@@ -19,35 +19,34 @@ void SampleBoundaryProblem1::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARA
         sbp.N = 1000;
         DoubleVector x;
         sbp.calculate2N(x, sbp.h, sbp.N);
-        IPrinter::printVector(14,10,x);
+        IPrinter::printVector(18,14,x);
 
-        DoubleVector rx(sbp.N+1);
-        for (unsigned int i=0; i<=sbp.N; i++) rx.at(i) = sbp.fx(i);
-        DoubleVector x1(sbp.N+1);
-        for (unsigned int i=0; i<=sbp.N; i++) x1.at(i) = rx.at(i) - x.at(i);
-        IPrinter::printVector(14,10,x1);
-        printf("Norm: %14.10f\n", x1.EuclideanNorm());
+//        DoubleVector rx(sbp.N+1);
+//        for (unsigned int i=0; i<=sbp.N; i++) rx.at(i) = sbp.fx(i);
+//        DoubleVector x1(sbp.N+1);
+//        for (unsigned int i=0; i<=sbp.N; i++) x1.at(i) = rx.at(i) - x.at(i);
+//        IPrinter::printVector(18,14,x1);
+//        printf("Norm: %14.10f\n", x1.EuclideanNorm());
 
         x.clear();
-        IPrinter::printSeperatorLine();
+//        IPrinter::printSeperatorLine();
     }
     {
         sbp.h = 0.001;
         sbp.N = 1000;
         DoubleVector x;
         sbp.calculate4NL2R(x, sbp.h, sbp.N);
-        //printf("%14.10f %14.10f %14.10f %14.10f\n", sbp.fx(sbp.N-4), sbp.fx(sbp.N-3), sbp.fx(sbp.N-2), sbp.fx(sbp.N-1));
-        IPrinter::printVector(14,10,x);
+        IPrinter::printVector(18,14,x);
 
-        DoubleVector rx(sbp.N+1);
-        for (unsigned int i=0; i<=sbp.N; i++) rx.at(i) = sbp.fx(i);
-        DoubleVector x1(sbp.N+1);
-        for (unsigned int i=0; i<=sbp.N; i++) x1.at(i) = rx.at(i) - x.at(i);
-        IPrinter::printVector(14,10,x1);
-        printf("Norm: %14.10f\n", x1.EuclideanNorm());
+//        DoubleVector rx(sbp.N+1);
+//        for (unsigned int i=0; i<=sbp.N; i++) rx.at(i) = sbp.fx(i);
+//        DoubleVector x1(sbp.N+1);
+//        for (unsigned int i=0; i<=sbp.N; i++) x1.at(i) = rx.at(i) - x.at(i);
+//        IPrinter::printVector(18,14,x1);
+//        printf("Norm: %14.10f\n", x1.EuclideanNorm());
 
         x.clear();
-        IPrinter::printSeperatorLine();
+//        IPrinter::printSeperatorLine();
     }
     /*
     {
@@ -98,32 +97,50 @@ void SampleBoundaryProblem1::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARA
     }
     */
     {
-        sbp.h = 0.001;
-        sbp.N = 1000;
+        sbp.h = 0.01;
+        sbp.N = 100;
         DoubleVector x;
         sbp.calculate6NL2R(x, sbp.h, sbp.N);
         //printf("%14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f\n", sbp.fx(sbp.N-6), sbp.fx(sbp.N-5), sbp.fx(sbp.N-4), sbp.fx(sbp.N-3), sbp.fx(sbp.N-2), sbp.fx(sbp.N-1), sbp.fx(sbp.N));
-        IPrinter::printVector(14,10,x);
+        IPrinter::printVector(18,14,x);
 
-        DoubleVector rx(sbp.N+1);
-        for (unsigned int i=0; i<=sbp.N; i++) rx.at(i) = sbp.fx(i);
-        DoubleVector x1(sbp.N+1);
-        for (unsigned int i=0; i<=sbp.N; i++) x1.at(i) = rx.at(i) - x.at(i);
-        IPrinter::printVector(14,10,x1);
-        printf("Norm: %14.10f\n", x1.EuclideanNorm());
+//        DoubleVector rx(sbp.N+1);
+//        for (unsigned int i=0; i<=sbp.N; i++) rx.at(i) = sbp.fx(i);
+//        DoubleVector x1(sbp.N+1);
+//        for (unsigned int i=0; i<=sbp.N; i++) x1.at(i) = rx.at(i) - x.at(i);
+//        IPrinter::printVector(18,14,x1);
+//        printf("Norm: %18.14f\n", x1.EuclideanNorm());
 
         x.clear();
-        IPrinter::printSeperatorLine();
+//        IPrinter::printSeperatorLine();
+    }
+    {
+        sbp.h = 0.01;
+        sbp.N = 100;
+        DoubleVector x;
+        sbp.calculate6NR2L(x, sbp.h, sbp.N);
+        //printf("%14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f\n", sbp.fx(sbp.N-6), sbp.fx(sbp.N-5), sbp.fx(sbp.N-4), sbp.fx(sbp.N-3), sbp.fx(sbp.N-2), sbp.fx(sbp.N-1), sbp.fx(sbp.N));
+        IPrinter::printVector(18,14,x);
+
+//        DoubleVector rx(sbp.N+1);
+//        for (unsigned int i=0; i<=sbp.N; i++) rx.at(i) = sbp.fx(i);
+//        DoubleVector x1(sbp.N+1);
+//        for (unsigned int i=0; i<=sbp.N; i++) x1.at(i) = rx.at(i) - x.at(i);
+//        IPrinter::printVector(18,14,x1);
+//        printf("Norm: %18.14f\n", x1.EuclideanNorm());
+
+        x.clear();
+//        IPrinter::printSeperatorLine();
     }
 }
 
 
-double SampleBoundaryProblem1::r(unsigned int i UNUSED_PARAM) const
+double BoundaryValueProblem1::r(unsigned int i UNUSED_PARAM) const
 {
     return +1.0;
 }
 
-double SampleBoundaryProblem1::p(unsigned int i UNUSED_PARAM) const
+double BoundaryValueProblem1::p(unsigned int i UNUSED_PARAM) const
 {
 #ifdef SAMPLE_1
     return +2.0;
@@ -136,7 +153,7 @@ double SampleBoundaryProblem1::p(unsigned int i UNUSED_PARAM) const
 #endif
 }
 
-double SampleBoundaryProblem1::q(unsigned int i UNUSED_PARAM) const
+double BoundaryValueProblem1::q(unsigned int i UNUSED_PARAM) const
 {
 #ifdef SAMPLE_1
     return +100.0;
@@ -149,7 +166,7 @@ double SampleBoundaryProblem1::q(unsigned int i UNUSED_PARAM) const
 #endif
 }
 
-double SampleBoundaryProblem1::f(unsigned int i UNUSED_PARAM) const
+double BoundaryValueProblem1::f(unsigned int i UNUSED_PARAM) const
 {
     double x UNUSED_PARAM = i*h;
 #ifdef SAMPLE_1
@@ -163,14 +180,14 @@ double SampleBoundaryProblem1::f(unsigned int i UNUSED_PARAM) const
 #endif
 }
 
-double SampleBoundaryProblem1::boundary(Boundary bound) const
+double BoundaryValueProblem1::boundary(Boundary bound) const
 {
     if (bound==Left) return fx(0);
     if (bound==Right) return fx(N);
     return 0.0;
 }
 
-double SampleBoundaryProblem1::fx(unsigned int i) const
+double BoundaryValueProblem1::fx(unsigned int i) const
 {
     double x UNUSED_PARAM = i*h;
 #ifdef SAMPLE_1
