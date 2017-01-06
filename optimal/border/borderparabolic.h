@@ -10,7 +10,7 @@
  * u(x,t) = x^2 + t^2
  */
 
-#define SAMPLE_1
+#define SAMPLE_3
 
 class MINIMUMSHARED_EXPORT BorderParabolic : public IParabolicEquation
 {

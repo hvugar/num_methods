@@ -35,9 +35,9 @@ void BorderParabolic::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     {
         bp.hx = 0.01;
-        bp.ht = 0.01;
+        bp.ht = 0.00001;
         bp.N = 100;
-        bp.M = 100;
+        bp.M = 100000;
 
         DoubleMatrix u2;
         bp.calculateN4L2R(u2);
@@ -68,8 +68,9 @@ double BorderParabolic::f(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PAR
 #ifdef SAMPLE_2
     return x - a*a*(40.0*cos(20.0*x) - 400.0*x*sin(20.0*x));
 #endif
-    //return 25.0*a*a*M_PI*M_PI*sin(5.0*M_PI*x) - 6.0*M_PI*sin(6.0*M_PI*t);
-    //return 5.0*x*cos(t)+x*exp(x*t) - a*a*t*t*exp(x*t);
+#ifdef SAMPLE_3
+    return (sin(10.0*x) + 2.0*x*exp(2.0*x*t) - a*a*(4.0*t*t*exp(2.0*x*t) - 100.0*t*sin(10.0*x)));
+#endif
 }
 
 double BorderParabolic::u(unsigned int i, unsigned int j) const
@@ -82,8 +83,9 @@ double BorderParabolic::u(unsigned int i, unsigned int j) const
 #ifdef SAMPLE_2
     return x*sin(20.0*x) + t*x;
 #endif
-    //return sin(5.0*M_PI*x) + cos(6.0*M_PI*t);
-    //return x*sin(5.0*t) + exp(x*t);
+#ifdef SAMPLE_3
+    return t*sin(10.0*x) + exp(2.0*x*t);
+#endif
 }
 
 void BorderParabolic::calculateN4L2R(DoubleMatrix &u1)
@@ -108,31 +110,15 @@ void BorderParabolic::calculateN4L2R(DoubleMatrix &u1)
         double d  = (u1.at(m-1,1) + (22.0*alpha)*u1.at(m,0) + ht*f(1,m))/c1;
         c1 = 1.0;
 
-        for (unsigned int n=2; n<=N-4; n++)
+        // + * * * *
+        for (unsigned int n=1; n<=N-5; n++)
         {
-            // * + * * *
-//            double q1 = +22.0*alpha;
-//            double q2 = -40.0*alpha - 1.0;
-//            double q3 = +12.0*alpha;
-//            double q4 = +8.0*alpha;
-//            double q5 = -2.0*alpha;
-//            double e  = u1.at(m-1,n) + ht*f(n,m);
-
-            // + * * * *
             double q1 = +70.0*alpha-1.0;
             double q2 = -208.0*alpha;
             double q3 = +228.0*alpha;
             double q4 = -112.0*alpha;
             double q5 = +22.0*alpha;
             double e  = u1.at(m-1,n) + ht*f(n,m);
-
-            //            double q1 = -22.0*alpha;
-            //            double q2 = -112.0*alpha; q2 /= q1;
-            //            double q3 = +228.0*alpha; q3 /= q1;
-            //            double q4 = -208.0*alpha; q4 /= q1;
-            //            double q5 = +70.0*alpha-1.0;  q5 /= q1;
-            //            double e  = u1.at(m-1,n+4) + ht*f(n+4,m); e /= q1;
-            //            q1 = 1.0;
 
             q2 /= -q1;
             q3 /= -q1;
@@ -148,6 +134,33 @@ void BorderParabolic::calculateN4L2R(DoubleMatrix &u1)
             d  = (d - e)/c1;
             c1 = 1.0;
         }
+
+        /*
+        // * + * * *
+        for (unsigned int n=2; n<=N-4; n++)
+        {
+            double q1 = +22.0*alpha;
+            double q2 = -40.0*alpha - 1.0;
+            double q3 = +12.0*alpha;
+            double q4 = +8.0*alpha;
+            double q5 = -2.0*alpha;
+            double e  = u1.at(m-1,n) + ht*f(n,m);
+
+            q2 /= -q1;
+            q3 /= -q1;
+            q4 /= -q1;
+            q5 /= -q1;
+            e  /= -q1;
+            q1 = 1.0;
+
+            c1 = c2 + q2;
+            c2 = (c3 + q3)/c1;
+            c3 = (c4 + q4)/c1;
+            c4 = q5/c1;
+            d  = (d - e)/c1;
+            c1 = 1.0;
+        }
+        */
 
         DoubleMatrix A1(4,4);
         DoubleVector b1(4);
@@ -193,6 +206,8 @@ void BorderParabolic::calculateN4L2R(DoubleMatrix &u1)
             double d2 = +228.0*alpha;
             double d3 = -112.0*alpha;
             double d4 = +22.0*alpha;
+            printf("%14.10f %14.10f %14.10f %14.10f %14.10f %14.10f\n", d0, d1, d2, d3, d4, alpha);
+
             for (unsigned int i=N-5; i>=1; i--)
             {
                 u1.at(m,i) = d1*u1.at(m,i+1) + d2*u1.at(m,i+2) + d3*u1.at(m,i+3) + d4*u1.at(m,i+4) + u1.at(m-1,i) + ht*f(i,m);
@@ -255,6 +270,10 @@ void BorderParabolic::calculateN4L2R(DoubleMatrix &u1)
             IPrinter::printVector(14,10, v);
             v.clear();
             IPrinter::printSeperatorLine();
+        }
+        if(m==1)
+        {
+            break;
         }
 
         A1.clear();
