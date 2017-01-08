@@ -20,24 +20,17 @@ public:
     virtual double f(unsigned int i, unsigned int j) const;
 
     double u(unsigned int i, unsigned int j) const;
-    void calculateN4(DoubleMatrix &u);
 
-    void calculateN4L2R(DoubleMatrix &u);
-    void calculateN4R2L(DoubleMatrix &u);
+    void calculateN4L2RM(DoubleMatrix &u);
+    void calculateN4R2LM(DoubleMatrix &u);
 
-    double hx = 0.0001;
-    double ht = 0.01;
-    unsigned int N = 10000;
-    unsigned int M = 100;
+    double hx;
+    double ht;
+    unsigned int N;
+    unsigned int M;
     double a = 1.0;
 
     static void Main(int argc, char* argv[]);
-
-//    void calculateN41(DoubleMatrix &u);
-//    void calculateN42(DoubleMatrix &u);
-//    void calculateN43(DoubleMatrix &u);
-//    void calculateN44(DoubleMatrix &u);
-//    void calculateN45(DoubleMatrix &u);
 };
 
 #endif // BORDERPARABOLIC_H
