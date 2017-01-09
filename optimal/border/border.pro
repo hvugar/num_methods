@@ -16,11 +16,15 @@ LIBS += -L../bin -lminimum
 DEFINES += MINIMUM_LIBRARY
 
 # Input
-HEADERS += borderparabolic.h \
-           borderhyperbolic2d.h \
+HEADERS += \
+           borderparabolicd.h \
+           borderparabolicn.h \
            borderparabolic2d.h \
-    borderhyperbolic2d1.h
-SOURCES += borderparabolic.cpp \
-           borderhyperbolic2d.cpp \
+           borderhyperbolic2d.h \
+           borderhyperbolic2d1.h
+SOURCES += \
+           borderparabolicd.cpp \
+           borderparabolicn.cpp \
            borderparabolic2d.cpp \
-    borderhyperbolic2d1.cpp
+           borderhyperbolic2d.cpp \
+           borderhyperbolic2d1.cpp

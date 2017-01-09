@@ -254,6 +254,7 @@ void IParabolicEquation::calculateN(DoubleMatrix &u, double hx, double ht, unsig
             u[j][N] = u[j][N-1] + hx * boundary(Right, j);
         }
     }
+    IPrinter::printSeperatorLine();
 
     da.clear();
     db.clear();

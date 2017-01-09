@@ -8,7 +8,8 @@
 #include "problem1.h"
 #include <cmethods.h>
 
-#include <../border/borderparabolic.h>
+#include <../border/borderparabolicd.h>
+#include <../border/borderparabolicn.h>
 #include <../border/borderparabolic2d.h>
 #include <../border/borderhyperbolic2d.h>
 
@@ -32,7 +33,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Example2::Main(argc, argv);
     Problem1::Main(argc, argv);
     //Example4::Main(argc, argv);
-    //BorderParabolic::Main(argc, argv);
+    //BorderParabolicD::Main(argc, argv);
+    //BorderParabolicN::Main(argc, argv);
     //BorderParabolic2D::Main(argc, argv);
     //BorderHyperbolic2D::Main(argc, argv);
     //Example5 e5;

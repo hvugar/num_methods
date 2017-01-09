@@ -43,24 +43,36 @@ void Problem1::initialize()
     /***************************************************************/
 
     px = &xs;
-    DoubleMatrix u;
-    calculateU(u);
-    V = u.row(M);
+    //DoubleMatrix u;
+    //calculateU(u);
+    //V = u.row(M);
 
-//    FILE* numfile = fopen("num_data.txt", "w");
-//    for (unsigned int n=0; n<=N; n++)
-//    {
-//        double x = n*hx;
-//        xs.at(4) = x;
-//        double f = fx(xs);
-//        printf("%d %f %18.14f\n", n, x, f);
-//        fprintf(numfile, "%f %18.14f\n", x, f);
-//        //int a1;
-//        //scanf("%d", &a1);
-//    }
-//    fclose(numfile);
+    DoubleMatrix u1;
+    calculateU(u1);
+    IPrinter::printMatrix(14,10,u1);
+    IPrinter::printSeperatorLine();
 
-//    xs.at(4) = 0.25;
+    DoubleMatrix u2;
+    calculateUL2R(u2, N, M, hx, ht);
+    IPrinter::printMatrix(14,10,u2);
+    IPrinter::printSeperatorLine();
+
+    return;
+
+    //    FILE* numfile = fopen("num_data.txt", "w");
+    //    for (unsigned int n=0; n<=N; n++)
+    //    {
+    //        double x = n*hx;
+    //        xs.at(4) = x;
+    //        double f = fx(xs);
+    //        printf("%d %f %18.14f\n", n, x, f);
+    //        fprintf(numfile, "%f %18.14f\n", x, f);
+    //        //int a1;
+    //        //scanf("%d", &a1);
+    //    }
+    //    fclose(numfile);
+
+    //    xs.at(4) = 0.25;
 
     DoubleVector x0;
 #ifdef _OPTIMIZE_K_
@@ -405,62 +417,62 @@ void Problem1::print(const DoubleVector &x, const DoubleVector &g UNUSED_PARAM, 
     j+=2;
 #endif
     printf("%14.10f\n", const_cast<Problem1*>(this)->fx(x));
-//    puts("");
+    //    puts("");
 
-//    j = 0;
-//    DoubleVector n = g;
-//    n.L2Normalize();
-//    printf("n: ");
-//#ifdef _OPTIMIZE_K_
-//    printf("%14.10f %14.10f ", n.at(j), n.at(j+1));
-//    j+=2;
-//#endif
-//#ifdef _OPTIMIZE_Z_
-//    printf("%14.10f %14.10f ", n.at(j), n.at(j+1));
-//    j+=2;
-//#endif
-//#ifdef _OPTIMIZE_E_
-//    printf("%14.10f %14.10f ", n.at(j), n.at(j+1));
-//    j+=2;
-//#endif
-//    puts("");
+    //    j = 0;
+    //    DoubleVector n = g;
+    //    n.L2Normalize();
+    //    printf("n: ");
+    //#ifdef _OPTIMIZE_K_
+    //    printf("%14.10f %14.10f ", n.at(j), n.at(j+1));
+    //    j+=2;
+    //#endif
+    //#ifdef _OPTIMIZE_Z_
+    //    printf("%14.10f %14.10f ", n.at(j), n.at(j+1));
+    //    j+=2;
+    //#endif
+    //#ifdef _OPTIMIZE_E_
+    //    printf("%14.10f %14.10f ", n.at(j), n.at(j+1));
+    //    j+=2;
+    //#endif
+    //    puts("");
 
-//    j = 0;
-//    printf("g: ");
-//#ifdef _OPTIMIZE_K_
-//    printf("%14.10f %14.10f ", g.at(j), g.at(j+1));
-//    j+=2;
-//#endif
-//#ifdef _OPTIMIZE_Z_
-//    printf("%14.10f %14.10f ", g.at(j), g.at(j+1));
-//    j+=2;
-//#endif
-//#ifdef _OPTIMIZE_E_
-//    printf("%14.10f %14.10f ", g.at(j), g.at(j+1));
-//    j+=2;
-//#endif
-//    puts("");
+    //    j = 0;
+    //    printf("g: ");
+    //#ifdef _OPTIMIZE_K_
+    //    printf("%14.10f %14.10f ", g.at(j), g.at(j+1));
+    //    j+=2;
+    //#endif
+    //#ifdef _OPTIMIZE_Z_
+    //    printf("%14.10f %14.10f ", g.at(j), g.at(j+1));
+    //    j+=2;
+    //#endif
+    //#ifdef _OPTIMIZE_E_
+    //    printf("%14.10f %14.10f ", g.at(j), g.at(j+1));
+    //    j+=2;
+    //#endif
+    //    puts("");
 
-//    DoubleVector gn(x.size());
-//    IGradient::Gradient(const_cast<Problem1*>(this), h, x, gn);
-//    gn.L2Normalize();
-//    j = 0;
-//    gn.L2Normalize();
-//    printf("gn:");
-//#ifdef _OPTIMIZE_K_
-//    printf("%14.10f %14.10f ", gn.at(j), gn.at(j+1));
-//    j+=2;
-//#endif
-//#ifdef _OPTIMIZE_Z_
-//    printf("%14.10f %14.10f ", gn.at(j), gn.at(j+1));
-//    j+=2;
-//#endif
-//#ifdef _OPTIMIZE_E_
-//    printf("%14.10f %14.10f ", gn.at(j), gn.at(j+1));
-//    j+=2;
-//#endif
+    //    DoubleVector gn(x.size());
+    //    IGradient::Gradient(const_cast<Problem1*>(this), h, x, gn);
+    //    gn.L2Normalize();
+    //    j = 0;
+    //    gn.L2Normalize();
+    //    printf("gn:");
+    //#ifdef _OPTIMIZE_K_
+    //    printf("%14.10f %14.10f ", gn.at(j), gn.at(j+1));
+    //    j+=2;
+    //#endif
+    //#ifdef _OPTIMIZE_Z_
+    //    printf("%14.10f %14.10f ", gn.at(j), gn.at(j+1));
+    //    j+=2;
+    //#endif
+    //#ifdef _OPTIMIZE_E_
+    //    printf("%14.10f %14.10f ", gn.at(j), gn.at(j+1));
+    //    j+=2;
+    //#endif
 
-//    puts("\n-----------------------------------------");
+    //    puts("\n-----------------------------------------");
 }
 
 void Problem1::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
@@ -498,54 +510,54 @@ void Problem1::calculateU(DoubleMatrix &u)
     DoubleVector rx(N+1);
     DoubleVector de(N+1);
 
-    for (unsigned int m=0; m<=M; m++)
+    for (unsigned int n=0; n<=N; n++) u.at(0,n) = initial(n);
+    for (unsigned int m=1; m<=M; m++)
     {
-        if (m==0) for (unsigned int n=0; n<=N; n++) u.at(0,n) = initial(n);
-        else
+        // n = 0
+        da[0] = 0.0;
+        db[0] = 1.0 + (a*a*ht)/(hx*hx) + (lambda0*a*a*ht)/hx + alpha*ht;
+        dc[0] = -(a*a*ht)/(hx*hx);
+        dd[0] = u.at(m-1,0) + alpha*ht*Te - ((lambda0*a*a*ht)/hx)*(k[0]*z[0] + k[1]*z[1]);
+
+        // n = 1,...,N-1
+        for (unsigned int n=1; n<=N-1; n++)
         {
-            // n = 0
-            da[0] = 0.0;
-            db[0] = 1.0 + (a*a*ht)/(hx*hx) + (lambda0*a*a*ht)/hx + alpha*ht;
-            dc[0] = -(a*a*ht)/(hx*hx);
-            dd[0] = u.at(m-1,0) + alpha*ht*Te - ((lambda0*a*a*ht)/hx)*(k[0]*z[0] + k[1]*z[1]);
-
-            // n = 1,...,N-1
-            for (unsigned int n=1; n<=N-1; n++)
-            {
-                da[n] = -(a*a*ht)/(hx*hx);
-                db[n] = 1.0 + (2.0*a*a*ht)/(hx*hx) + alpha*ht;
-                dc[n] = -(a*a*ht)/(hx*hx);
-                dd[n] = u.at(m-1,n) + alpha*ht*Te;
-            }
-
-            // n = N
-            da[N] = -(a*a*ht)/(hx*hx);
-            db[N] = 1.0 + (a*a*ht)/(hx*hx) + (lambdal*a*a*ht)/hx + alpha*ht;
-            dc[N] = 0.0;
-            dd[N] = u.at(m-1,N) + (lambdal*a*a*ht*Te)/hx + alpha*ht*Te;
-
-            for (unsigned int n=0; n<=N; n++)
-            {
-                de[n] = 0.0;
-
-                if (fabs(n*hx - e.at(0)) <= hx)
-                {
-                    de[n] = -k[0]*(lambda0*(a*a*ht)/hx) * (1.0 - fabs(n*hx - e.at(0))/hx);
-                }
-                if (fabs(n*hx - e.at(1)) <= hx)
-                {
-                    de[n] = -k[1]*(lambda0*(a*a*ht)/hx) * (1.0 - fabs(n*hx - e.at(1))/hx);
-                }
-
-                //if (fabs(n*hx - e.at(0)) <= DBL_EPSILON) { de[n] = -k[0]*(lambda0*(a*a*ht)/hx); }
-                //if (fabs(n*hx - e.at(1)) <= DBL_EPSILON) { de[n] = -k[1]*(lambda0*(a*a*ht)/hx); }
-            }
-
-            qovmaFirstRow(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size(), de.data());
-
-            for (unsigned int i=0; i<=N; i++) u.at(m, i) = rx[i];
-            //printf("%u, %f %f %f %f %f\n", m, u.at(m,0), u.at(m,1), u.at(m,2), u.at(m,3), u.at(m,4));
+            da[n] = -(a*a*ht)/(hx*hx);
+            db[n] = 1.0 + (2.0*a*a*ht)/(hx*hx) + alpha*ht;
+            dc[n] = -(a*a*ht)/(hx*hx);
+            dd[n] = u.at(m-1,n) + alpha*ht*Te;
         }
+
+        // n = N
+        da[N] = -(a*a*ht)/(hx*hx);
+        db[N] = 1.0 + (a*a*ht)/(hx*hx) + (lambdal*a*a*ht)/hx + alpha*ht;
+        dc[N] = 0.0;
+        dd[N] = u.at(m-1,N) + (lambdal*a*a*ht*Te)/hx + alpha*ht*Te;
+
+        for (unsigned int n=0; n<=N; n++)
+        {
+            de[n] = 0.0;
+
+            if (fabs(n*hx - e.at(0)) <= hx)
+            {
+                de[n] = -k[0]*(lambda0*(a*a*ht)/hx) * (1.0 - fabs(n*hx - e.at(0))/hx);
+            }
+            if (fabs(n*hx - e.at(1)) <= hx)
+            {
+                de[n] = -k[1]*(lambda0*(a*a*ht)/hx) * (1.0 - fabs(n*hx - e.at(1))/hx);
+            }
+
+            //if (fabs(n*hx - e.at(0)) <= DBL_EPSILON) { de[n] = -k[0]*(lambda0*(a*a*ht)/hx); }
+            //if (fabs(n*hx - e.at(1)) <= DBL_EPSILON) { de[n] = -k[1]*(lambda0*(a*a*ht)/hx); }
+        }
+
+        qovmaFirstRow(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size(), de.data());
+
+        for (unsigned int i=0; i<=N; i++) u.at(m, i) = rx[i];
+
+        //IPrinter::printVector(u.row(m));
+        printf("%u, %14.10f %14.10f %14.10f %14.10f %14.10f\n", m, u.at(m,N-4), u.at(m,N-3), u.at(m,N-2), u.at(m,N-1), u.at(m,N));
+        if (m==2) break;
     }
 
     da.clear();
@@ -556,8 +568,10 @@ void Problem1::calculateU(DoubleMatrix &u)
     de.clear();
 }
 
-void Problem1::calculateU(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht)
+void Problem1::calculateUL2R(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht)
 {
+    u.resize(M+1, N+1);
+
     for (unsigned int i=0; i<=N; i++) u.at(0,i) = initial(i);
 
     DoubleVector x = *px;
@@ -568,61 +582,127 @@ void Problem1::calculateU(DoubleMatrix &u, unsigned int N, unsigned int M, doubl
     DoubleVector b(5,0.0);
     DoubleVector y(5,0.0);
 
-    double betta = (a*a*ht)/(24.0*hx*hx);
+    double beta1 = (a*a*ht)/(12.0*hx*hx);
+    double beta2 = (a*a*ht)/(24.0*hx*hx);
     double gamma = (a*a*ht)/hx;
 
-    DoubleVector E(N+1);
+    DoubleMatrix ems(N-3, 5);
     for (unsigned int m=1; m<=M; m++)
     {
         //0
-        A.at(0,0) = -3.0*betta - 1.0 - lambda0*gamma - ht*alpha;
-        A.at(0,1) = -10.0*betta;
-        A.at(0,2) = +18.0*betta;
-        A.at(0,3) = -6.0*betta;
-        A.at(0,4) = betta;
+        A.at(0,0) = -3.0*beta1 - 1.0 - ht*alpha - lambda0*gamma;
+        A.at(0,1) = -10.0*beta1;
+        A.at(0,2) = +18.0*beta1;
+        A.at(0,3) = -6.0*beta1;
+        A.at(0,4) = +beta1;
         b.at(0)   = -u.at(m-1,0) - ht*alpha*Te + lambda0*gamma*(k[0]*z[0] + k[1]*z[1]);
 
-        for (unsigned int i=0; i<=N-6; i++)
+        A.at(0,1) /= A.at(0,0);
+        A.at(0,2) /= A.at(0,0);
+        A.at(0,3) /= A.at(0,0);
+        A.at(0,4) /= A.at(0,0);
+        b.at(0)   /= A.at(0,0);
+        A.at(0,0)  = 1.0;
+
+        ems.at(0,0) = A.at(0,1);
+        ems.at(0,1) = A.at(0,2);
+        ems.at(0,2) = A.at(0,3);
+        ems.at(0,3) = A.at(0,4);
+        ems.at(0,4) = b.at(0);
+
+        for (unsigned int n=0; n<=N-5; n++)
         {
-            double g0 = +70.0*betta - 1.0 - ht*alpha;
-            double g1 = -208.0*betta;
-            double g2 = +228.0*betta;
-            double g3 = -112.0*betta;
-            double g4 = +22.0*betta;
-            double g5 = -u.at(m-1,i) - ht*alpha*Te;
+            double g0 = +70.0*beta2 - 1.0 - ht*alpha;
+            double g1 = -208.0*beta2;
+            double g2 = +228.0*beta2;
+            double g3 = -112.0*beta2;
+            double g4 = +22.0*beta2;
+            double fi = -u.at(m-1,n) - ht*alpha*Te;
+
+            g1 /= -g0;
+            g2 /= -g0;
+            g3 /= -g0;
+            g4 /= -g0;
+            fi /= +g0;
+            g0  = 1.0;
+
+            double a00 = A.at(0,0);
+            A.at(0,0) = A.at(0,1) + a00 * g1;
+            A.at(0,1) = A.at(0,2) + a00 * g2;
+            A.at(0,2) = A.at(0,3) + a00 * g3;
+            A.at(0,3) = A.at(0,4) + a00 * g4;
+            A.at(0,4) = 0.0;
+            b.at(0)  = b.at(0) - a00*fi;
+
+            if (n==25) A.at(0,4) = lambda0*gamma*k[0];
+            if (n==75) A.at(0,4) = lambda0*gamma*k[1];
+
+            A.at(0,1) /= A.at(0,0);
+            A.at(0,2) /= A.at(0,0);
+            A.at(0,3) /= A.at(0,0);
+            A.at(0,4) /= A.at(0,0);
+            b.at(0)   /= A.at(0,0);
+            A.at(0,0)  = 1.0;
+
+            ems.at(n+1,0) = A.at(0,1);
+            ems.at(n+1,1) = A.at(0,2);
+            ems.at(n+1,2) = A.at(0,3);
+            ems.at(n+1,3) = A.at(0,4);
+            ems.at(n+1,4) = b.at(0);
         }
 
         //N-3
-        A.at(1,0) = +22.0*betta;
-        A.at(1,1) = -40.0*betta - 1.0 - ht*alpha;
-        A.at(1,2) = +12.0*betta;
-        A.at(1,3) = +8.0*betta;
-        A.at(1,4) = -2.0*betta;
+        A.at(1,0) = +22.0*beta2;
+        A.at(1,1) = -40.0*beta2 - 1.0 - ht*alpha;
+        A.at(1,2) = +12.0*beta2;
+        A.at(1,3) = +8.0*beta2;
+        A.at(1,4) = -2.0*beta2;
         b.at(1)   = -u.at(m-1,N-3) - ht*alpha*Te;
 
         //N-2
-        A.at(2,0) = -2.0*betta;
-        A.at(2,1) = +32.0*betta;
-        A.at(2,2) = -60.0*betta - 1.0 - ht*alpha;
-        A.at(2,3) = +32.0*betta;
-        A.at(2,4) = -2.0*betta;
+        A.at(2,0) = -2.0*beta2;
+        A.at(2,1) = +32.0*beta2;
+        A.at(2,2) = -60.0*beta2 - 1.0 - ht*alpha;
+        A.at(2,3) = +32.0*beta2;
+        A.at(2,4) = -2.0*beta2;
         b.at(2)   = -u.at(m-1,N-2) - ht*alpha*Te;
 
         //N-1
-        A.at(3,0) = -2.0*betta;
-        A.at(3,1) = +8.0*betta;
-        A.at(3,2) = +12.0*betta;
-        A.at(3,3) = -40.0*betta - 1.0 - ht*alpha;
-        A.at(3,4) = +22.0*betta;
+        A.at(3,0) = -2.0*beta2;
+        A.at(3,1) = +8.0*beta2;
+        A.at(3,2) = +12.0*beta2;
+        A.at(3,3) = -40.0*beta2 - 1.0 - ht*alpha;
+        A.at(3,4) = +22.0*beta2;
         b.at(3)   = -u.at(m-1,N-1) - ht*alpha*Te;
 
         //N
-        A.at(4,0) = -betta;
-        A.at(4,1) = +6*betta;
-        A.at(4,2) = -18.0*betta;
-        A.at(4,3) = +10.0*betta;
-        A.at(4,4) = +3.0*betta + 1.0 + lambdal*gamma + ht*alpha;
+        A.at(4,0) = -beta1;
+        A.at(4,1) = +6.0*beta1;
+        A.at(4,2) = -18.0*beta1;
+        A.at(4,3) = +10.0*beta1;
+        A.at(4,4) = +3.0*beta1 + 1.0 + ht*alpha + lambdal*gamma;
         b.at(4)   = +u.at(m-1,N) + lambdal*gamma*Te + ht*alpha*Te;
+
+        //IPrinter::print(A,A.rows(),A.cols(),18,10);
+
+        GaussianElimination(A, b, y);
+        //        IPrinter::print(y, y.size());
+        u.at(m, N-4) = y.at(0);
+        u.at(m, N-3) = y.at(1);
+        u.at(m, N-2) = y.at(2);
+        u.at(m, N-1) = y.at(3);
+        u.at(m, N)   = y.at(4);
+        for (unsigned int n=N-5; n!=UINT32_MAX; n--)
+        {
+            u.at(m,n) = -ems.at(n,0)*u.at(m,n+1)
+                    -ems.at(n,1)*u.at(m,n+2)
+                    -ems.at(n,2)*u.at(m,n+3)
+                    -ems.at(n,3)*u.at(m,n+4)
+                    +ems.at(n,4);
+        }
+
+        printf("%u, %14.10f %14.10f %14.10f %14.10f %14.10f\n", m, u.at(m,N-4), u.at(m,N-3), u.at(m,N-2), u.at(m,N-1), u.at(m,N));
+        if (m==2) break;
     }
 
     A.clear();
@@ -864,10 +944,10 @@ void qovmaFirstRow(double *a, double *b, double *c, double *d, double *x, unsign
                 if (i==E[s]-1) q[i] += -(a[i]*k[s][i-1])/m;
             }
 
-//            for (unsigned int s=0; s<L; s++)
-//            {
-//                if (i==E[s]-1) q[i] += -(a[i]*k[s][i-1])/m;
-//            }
+            //            for (unsigned int s=0; s<L; s++)
+            //            {
+            //                if (i==E[s]-1) q[i] += -(a[i]*k[s][i-1])/m;
+            //            }
         }
     }
 

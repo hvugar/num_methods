@@ -1,18 +1,18 @@
-#ifndef BORDERPARABOLIC_H
-#define BORDERPARABOLIC_H
+#ifndef BORDERPARABOLICN_H
+#define BORDERPARABOLICN_H
 
 #include <global.h>
 #include <parabolicequation.h>
 
 /**
- * @brief The BorderParabolic class
+ * @brief The BorderParabolicN class
  * u_t = a^2 u_xx + f
  * u(x,t) = x^2 + t^2
  */
 
-#define SAMPLE_3
+#define SAMPLE_1
 
-class MINIMUMSHARED_EXPORT BorderParabolic : public IParabolicEquation
+class MINIMUMSHARED_EXPORT BorderParabolicN : public IParabolicEquation
 {
 public:
     virtual double initial(unsigned int i) const;
@@ -33,4 +33,4 @@ public:
     static void Main(int argc, char* argv[]);
 };
 
-#endif // BORDERPARABOLIC_H
+#endif // BORDERPARABOLICN_H

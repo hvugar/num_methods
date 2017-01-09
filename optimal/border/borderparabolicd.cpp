@@ -1,11 +1,9 @@
-#include "borderparabolic.h"
+#include "borderparabolicd.h"
 #include <math.h>
 
-#define NO_NORMALIZE
-
-void BorderParabolic::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
+void BorderParabolicD::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    BorderParabolic bp;
+    BorderParabolicD bp;
 
     // Real solution
     {
@@ -25,10 +23,10 @@ void BorderParabolic::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     }
 
     {
-        bp.hx = 0.001;
-        bp.ht = 0.001;
-        bp.N = 1000;
-        bp.M = 1000;
+        bp.hx = 0.01;
+        bp.ht = 0.01;
+        bp.N = 100;
+        bp.M = 100;
 
         DoubleMatrix u1;
         bp.calculateU(u1, bp.hx, bp.ht, bp.N, bp.M, bp.a);
@@ -39,40 +37,40 @@ void BorderParabolic::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     {
         bp.hx = 0.01;
-        bp.ht = 0.001;
+        bp.ht = 0.01;
         bp.N = 100;
-        bp.M = 1000;
+        bp.M = 100;
         DoubleMatrix u2;
         bp.calculateN4L2RM(u2);
         IPrinter::printMatrix(14, 10, u2, 10, 10, NULL);
         IPrinter::printSeperatorLine();
     }
 
-    {
-        bp.hx = 0.01;
-        bp.ht = 0.001;
-        bp.N = 100;
-        bp.M = 1000;
-        DoubleMatrix u2;
-        bp.calculateN4R2LM(u2);
-        IPrinter::printMatrix(14, 10, u2, 10, 10, NULL);
-        IPrinter::printSeperatorLine();
-    }
+//    {
+//        bp.hx = 0.01;
+//        bp.ht = 0.001;
+//        bp.N = 100;
+//        bp.M = 1000;
+//        DoubleMatrix u2;
+//        bp.calculateN4R2LM(u2);
+//        IPrinter::printMatrix(14, 10, u2, 10, 10, NULL);
+//        IPrinter::printSeperatorLine();
+//    }
 }
 
-double BorderParabolic::initial(unsigned int i UNUSED_PARAM) const
+double BorderParabolicD::initial(unsigned int i UNUSED_PARAM) const
 {
     return u(i,0);
 }
 
-double BorderParabolic::boundary(Boundary type UNUSED_PARAM, unsigned int j UNUSED_PARAM) const
+double BorderParabolicD::boundary(Boundary type UNUSED_PARAM, unsigned int j UNUSED_PARAM) const
 {
     if (type == Left)  return u(0,j);
     if (type == Right) return u(N,j);
     return 0.0;
 }
 
-double BorderParabolic::f(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PARAM) const
+double BorderParabolicD::f(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PARAM) const
 {
     double t UNUSED_PARAM = j*ht;
     double x UNUSED_PARAM = i*hx;
@@ -87,7 +85,7 @@ double BorderParabolic::f(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PAR
 #endif
 }
 
-double BorderParabolic::u(unsigned int i, unsigned int j) const
+double BorderParabolicD::u(unsigned int i, unsigned int j) const
 {
     double x = i*hx;
     double t = j*ht;
@@ -102,7 +100,7 @@ double BorderParabolic::u(unsigned int i, unsigned int j) const
 #endif
 }
 
-void BorderParabolic::calculateN4L2RM(DoubleMatrix &u1)
+void BorderParabolicD::calculateN4L2RM(DoubleMatrix &u1)
 {
     u1.resize(M+1, N+1);
     /* initial condition */
@@ -213,7 +211,7 @@ void BorderParabolic::calculateN4L2RM(DoubleMatrix &u1)
             u1.at(m,i) = -ems.at(i-1,0)*u1.at(m,i+1) - ems.at(i-1,1)*u1.at(m,i+2) - ems.at(i-1,2)*u1.at(m,i+3) + ems.at(i-1,3);
         }
 
-        if (m==0)
+        if (m==1)
         {
             printf("%d %18.10f %18.10f %18.10f %18.10f\n", m, u(N-4,m), u(N-3,m), u(N-2,m), u(N-1,m));
             printf("%d %18.10f %18.10f %18.10f %18.10f\n", m, x[0], x[1], x[2], x[3]);
@@ -232,7 +230,7 @@ void BorderParabolic::calculateN4L2RM(DoubleMatrix &u1)
     x.clear();
 }
 
-void BorderParabolic::calculateN4R2LM(DoubleMatrix &u1)
+void BorderParabolicD::calculateN4R2LM(DoubleMatrix &u1)
 {
     u1.resize(M+1, N+1);
     /* initial condition */

@@ -40,20 +40,11 @@ public:
     double mu(unsigned int i UNUSED_PARAM) const { return 1.0; }
     // qovma 1
     void calculateU(DoubleMatrix &u);
+    void calculateUL2R(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht);
     void calculateP(DoubleMatrix& p, const DoubleMatrix &u);
-
-    void calculateU(DoubleMatrix &u, unsigned int N, unsigned int M, double dx, double dt);
 
     void getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &x) const;
     void printNAGradinets(const DoubleVector &x0);
-
-    //    //GaussianElimination
-    //    void calculateU1(DoubleMatrix &u, const DoubleVector &x);
-    //    // qovma E
-    //    void calculateU2(DoubleMatrix &u, const DoubleVector &x);
-    //    // teze qovma
-    //    void calculateU3(DoubleMatrix &u, const DoubleVector &x);
-    //    void calculate1(unsigned int N, unsigned int K, const DoubleMatrix &a, DoubleMatrix &beta, DoubleVector &qamma, DoubleVector &x);
 
     double v(unsigned int j, const DoubleMatrix &u) const;
 
