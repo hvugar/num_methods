@@ -36,9 +36,9 @@ void BorderParabolicD::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     }
 
     {
-        bp.hx = 0.01;
+        bp.hx = 0.1;
         bp.ht = 0.01;
-        bp.N = 100;
+        bp.N = 10;
         bp.M = 100;
         DoubleMatrix u2;
         bp.calculateN4L2RM(u2);
@@ -48,9 +48,9 @@ void BorderParabolicD::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 //    {
 //        bp.hx = 0.01;
-//        bp.ht = 0.001;
+//        bp.ht = 0.01;
 //        bp.N = 100;
-//        bp.M = 1000;
+//        bp.M = 100;
 //        DoubleMatrix u2;
 //        bp.calculateN4R2LM(u2);
 //        IPrinter::printMatrix(14, 10, u2, 10, 10, NULL);
@@ -205,13 +205,19 @@ void BorderParabolicD::calculateN4L2RM(DoubleMatrix &u1)
         u1.at(m, N-2) = x.at(2);
         u1.at(m, N-3) = x.at(1);
         u1.at(m, N-4) = x.at(0);
-
         for (unsigned int i=N-5; i>=1; i--)
         {
             u1.at(m,i) = -ems.at(i-1,0)*u1.at(m,i+1) - ems.at(i-1,1)*u1.at(m,i+2) - ems.at(i-1,2)*u1.at(m,i+3) + ems.at(i-1,3);
+            //u1.at(m,i) = -208.0*alpha*u1.at(m,i+1) + 228.0*alpha*u1.at(m,i+2) - 112.0*alpha*u1.at(m,i+3) + 22.0*alpha*u1.at(m,i+4)
+            //        + (u1.at(m-1,i)+ht*f(i,m));
+            //u1.at(m,i) /= -(70.0*alpha-1.0);
+
+            //u1.at(m,i) = -112.0*alpha*u1.at(m,i+1) + 228.0*alpha*u1.at(m,i+2) - 208.0*alpha*u1.at(m,i+3) + 70.0*alpha*u1.at(m,i+4)
+            //        + (u1.at(m-1,i)+ht*f(i,m));
+            //u1.at(m,i) /= -(22.0*alpha-1.0);
         }
 
-        if (m==1)
+        if (m==0)
         {
             printf("%d %18.10f %18.10f %18.10f %18.10f\n", m, u(N-4,m), u(N-3,m), u(N-2,m), u(N-1,m));
             printf("%d %18.10f %18.10f %18.10f %18.10f\n", m, x[0], x[1], x[2], x[3]);
@@ -319,7 +325,7 @@ void BorderParabolicD::calculateN4R2LM(DoubleMatrix &u1)
             g0 /= +g5;
             g5 = 1.0;
 
-            A1.at(3,3) = A1.at(3,2) + g4;
+            A1.at(3,3) =  A1.at(3,2) + g4;
             A1.at(3,2) = (A1.at(3,1) + g3)/A1.at(3,3);
             A1.at(3,1) = (A1.at(3,0) + g2)/A1.at(3,3);
             A1.at(3,0) = g1/A1.at(3,3);
