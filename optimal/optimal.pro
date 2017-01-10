@@ -11,6 +11,5 @@ SUBDIRS += border
 #SUBDIRS += hyperbolic
 #SUBDIRS += discrete
 SUBDIRS += main
-#SUBDIRS += diplom
 
 CONFIG += ordered
