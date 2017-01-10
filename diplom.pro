@@ -13,9 +13,7 @@ SOURCES += main.cpp \
     example35.cpp \
     example36.cpp \
     example37.cpp \
-    example38.cpp \
-    example335.cpp \
-    example336.cpp
+    example371.cpp
 
 HEADERS += \
     example31.h \
@@ -25,9 +23,7 @@ HEADERS += \
     example35.h \
     example36.h \
     example37.h \
-    example38.h \
-    example335.h \
-    example336.h
+    example371.h
 
 SOURCES += \
     doublevector.cpp \
