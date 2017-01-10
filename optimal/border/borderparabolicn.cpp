@@ -125,7 +125,7 @@ void BorderParabolicN::calculateN4L2RM(DoubleMatrix &u1)
 
     double beta1 = (a*a*ht)/(12.0*hx*hx);
     double beta2 = (a*a*ht)/(24.0*hx*hx);
-    double gamma  = (a*a*ht)/hx;
+    double gamma = (a*a*ht)/hx;
 
     DoubleMatrix ems(N-3, 5);
     for (unsigned int m=1; m<=M; m++)
@@ -231,8 +231,8 @@ void BorderParabolicN::calculateN4L2RM(DoubleMatrix &u1)
         u1.at(m, N-2) = y.at(2);
         u1.at(m, N-1) = y.at(3);
         u1.at(m, N-0) = y.at(4);
-        //printf("%u, %14.10f %14.10f %14.10f %14.10f %14.10f\n", m, u(N-4,m), u(N-3,m), u(N-2,m), u(N-1,m), u(N,m));
-        //printf("%u, %14.10f %14.10f %14.10f %14.10f %14.10f\n", m, u1.at(m,N-4), u1.at(m,N-3), u1.at(m,N-2), u1.at(m,N-1), u1.at(m,N));
+        printf("%4u %14.10f %14.10f %14.10f %14.10f %14.10f\n", m, u(N-4,m), u(N-3,m), u(N-2,m), u(N-1,m), u(N,m));
+        printf("%4u %14.10f %14.10f %14.10f %14.10f %14.10f\n", m, u1.at(m,N-4), u1.at(m,N-3), u1.at(m,N-2), u1.at(m,N-1), u1.at(m,N));
         for (unsigned int n=N-5; n!=UINT32_MAX; n--)
         {
             u1.at(m,n) = -ems.at(n,0)*u1.at(m,n+1)
@@ -243,8 +243,8 @@ void BorderParabolicN::calculateN4L2RM(DoubleMatrix &u1)
             //printf("%14.10f\n", u1.at(m,n));
         }
 
-        //        IPrinter::printVector(u1.row(m));
-        //        if (m>10) break;
+        //IPrinter::printVector(u1.row(m));
+        if (m>10) break;
     }
     IPrinter::printSeperatorLine();
 
