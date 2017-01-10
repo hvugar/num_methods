@@ -15,34 +15,41 @@ void Parabolic1DControl35::main(int argc, char ** argv)
 
     IPrinter::printVector(v0, "v1:", 10 , 0*(pc.M+1), 0*(pc.M+1)+pc.M, stdout);
     IPrinter::printVector(v0, "v2:", 10 , 1*(pc.M+1), 1*(pc.M+1)+pc.M, stdout);
-    printf("J[%d]: %.16f\n", 0, pc.fx(v0));
+	puts("-------------------------------------------------------------------");
 
-    DoubleVector gn(v0.size());
-    IGradient::Gradient(&pc, pc.h, v0, gn);
-    //gn.L2Normalize();
-    IPrinter::printVector(gn, "gn1:", 10 , 0*(pc.M+1), 0*(pc.M+1)+pc.M, stdout);
-    IPrinter::printVector(gn, "gn2:", 10 , 1*(pc.M+1), 1*(pc.M+1)+pc.M, stdout);
-
-    DoubleVector ga(v0.size());
+	DoubleVector ga(v0.size());
     pc.gradient(v0, ga);
-    //ga.L2Normalize();
+    ga.L2Normalize();
     IPrinter::printVector(ga, "ga1:", 10 , 0*(pc.M+1), 0*(pc.M+1)+pc.M, stdout);
     IPrinter::printVector(ga, "ga2:", 10 , 1*(pc.M+1), 1*(pc.M+1)+pc.M, stdout);
-
+	puts("-------------------------------------------------------------------");
+	
+    DoubleVector gn(v0.size());
+    IGradient::Gradient(&pc, pc.h, v0, gn);
+    gn.L2Normalize();
+    IPrinter::printVector(gn, "gn1:", 10 , 0*(pc.M+1), 0*(pc.M+1)+pc.M, stdout);
+    IPrinter::printVector(gn, "gn2:", 10 , 1*(pc.M+1), 1*(pc.M+1)+pc.M, stdout);
+	puts("-------------------------------------------------------------------");
+	
+	IPrinter::printVector(v0, "v1:", 10 , 0*(pc.M+1), 0*(pc.M+1)+pc.M, stdout);
+    IPrinter::printVector(v0, "v2:", 10 , 1*(pc.M+1), 1*(pc.M+1)+pc.M, stdout);
+	printf("J[%d]: %.16f\n", 0, pc.fx(v0));
+	
     /* Minimization */
-//    ConjugateGradient g2;
-//    g2.setGradient(&pc);
-//    g2.setFunction(&pc);
-//    g2.setEpsilon1(0.00001);
-//    g2.setEpsilon2(0.00001);
-//    g2.setEpsilon3(0.00001);
-//    g2.setR1MinimizeEpsilon(0.1, 0.00001);
-//    g2.setPrinter(&pc);
-//    g2.setNormalize(true);
-//    g2.calculate(v0);
+    ConjugateGradient g2;
+    g2.setGradient(&pc);
+    g2.setFunction(&pc);
+    g2.setEpsilon1(0.00001);
+    g2.setEpsilon2(0.00001);
+    g2.setEpsilon3(0.00001);
+    g2.setR1MinimizeEpsilon(0.1, 0.00001);
+    g2.setPrinter(&pc);
+    g2.setNormalize(true);
+    g2.calculate(v0);
 
-//    IPrinter::printVector(v0, "v1:", 10 , 0*(pc.M+1), 0*(pc.M+1)+pc.M, stdout);
-//    IPrinter::printVector(v0, "v2:", 10 , 1*(pc.M+1), 1*(pc.M+1)+pc.M, stdout);
+	//puts("-------------------------------------------------------------------");
+    //IPrinter::printVector(v0, "v1:", 10 , 0*(pc.M+1), 0*(pc.M+1)+pc.M, stdout);
+    //IPrinter::printVector(v0, "v2:", 10 , 1*(pc.M+1), 1*(pc.M+1)+pc.M, stdout);
 }
 
 Parabolic1DControl35::Parabolic1DControl35()
@@ -52,12 +59,12 @@ Parabolic1DControl35::Parabolic1DControl35()
     t0 = 0.0;
     t1 = 1.0;
     hx = 0.01;
-    ht = 0.001;
-    N = 100;//(unsigned int)(ceil(x1-x0)/hx);
-    M = 1000;//(unsigned int)(ceil(t1-t0)/ht);
+    ht = 0.01;
+    N = 100;
+    M = 100;
     L = 2;
     a = 1.0;
-    h = 0.001;
+    h = 0.01;
 
     e.resize(L);
     e[0] = 0.25;
@@ -71,12 +78,10 @@ Parabolic1DControl35::Parabolic1DControl35()
         v[1*(M+1)+j] = v2(t);
     }
     pv = &v;
+	//hx=0.001 ht=0.001
     IParabolicEquation::calculateU(U, hx, ht, N, M, a);
     IPrinter::printVector(U, "U: ");
-    puts("-----------------------");
-    FILE *file = fopen("example331.txt", "w");
-    IPrinter::printVector(U, NULL, N, 0, 0, file);
-    fclose(file);
+    puts("-------------------------------------------------------------------");
 }
 
 double Parabolic1DControl35::fx(const DoubleVector &v)
@@ -130,6 +135,9 @@ void Parabolic1DControl35::gradient(const DoubleVector &v, DoubleVector &g)
 
 void Parabolic1DControl35::print(unsigned int i, const DoubleVector &v, const DoubleVector &gr, double alpha, RnFunction *fn) const
 {
+	puts("-------------------------------------------------------------------");
+	IPrinter::printVector(v, "v1:", 10 , 0*(M+1), 0*(M+1)+M, stdout);
+    IPrinter::printVector(v, "v2:", 10 , 1*(M+1), 1*(M+1)+M, stdout);
     printf("J[%d]: %.16f\n", i, fn->fx(v));
 }
 

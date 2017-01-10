@@ -2,7 +2,7 @@
 
 void Parabolic2DControl37::main(int argc, char *argv[])
 {
-    Parabolic2DControl37 hc(100, 100, 100);
+    Parabolic2DControl37 hc;
 
     DoubleVector v((hc.M+1)*hc.L);
     for (unsigned int k=0; k<=hc.M; k++)
@@ -36,14 +36,11 @@ void Parabolic2DControl37::main(int argc, char *argv[])
     printf("J[%d]: %.16f\n", 0, hc.fx(v));
 }
 
-Parabolic2DControl37::Parabolic2DControl37(unsigned int m, unsigned int n2, unsigned int n1)
+Parabolic2DControl37::Parabolic2DControl37()
 {
     alpha = 1.0;
 
-    this->M  = m;
-    this->N2 = n2;
-    this->N1 = n1;
-    this->L  = 3;
+    L  = 3;
 
     t0 = 0.0;
     t1 = 1.0;
@@ -56,9 +53,13 @@ Parabolic2DControl37::Parabolic2DControl37(unsigned int m, unsigned int n2, unsi
 
     a1 = a2 = 1.0;
 
-    ht = (t1-t0)/m;
-    h1 = (x11-x10)/n1;
-    h2 = (x21-x20)/n2;
+    M  = 100;
+    N2 = 100;
+    N1 = 100;
+
+    ht = 0.01;
+    h1 = 0.01;
+    h2 = 0.01;
 
     double sgm1 = 3.0*h1;
     double sgm2 = 3.0*h2;
@@ -77,9 +78,9 @@ Parabolic2DControl37::Parabolic2DControl37(unsigned int m, unsigned int n2, unsi
     DoubleVector v((M+1)*L);
     for (unsigned int k=0; k<=M; k++)
     {
-        v[0*(m+1)+k] = v1(k*ht);
-        v[1*(m+1)+k] = v2(k*ht);
-        v[2*(m+1)+k] = v3(k*ht);
+        v[0*(M+1)+k] = v1(k*ht);
+        v[1*(M+1)+k] = v2(k*ht);
+        v[2*(M+1)+k] = v3(k*ht);
     }
 
     pv = &v;

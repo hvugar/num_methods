@@ -9,7 +9,7 @@
 class Parabolic2DControl37 : public RnFunction, public IGradient, public IParabolicEquation2D, public IBackwardParabolicEquation2D, public IPrinter, public IProjection
 {
 public:
-    Parabolic2DControl37(unsigned int m, unsigned int n2, unsigned int n1);
+    Parabolic2DControl37();
     virtual ~Parabolic2DControl37() {}
 
     virtual double fx(const DoubleVector &v);

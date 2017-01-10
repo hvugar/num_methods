@@ -9,14 +9,14 @@ void Parabolic1DControl36::main(int argc, char ** argv)
     e0[0] = 0.15;
     e0[1] = 0.55;
 
-    printf("J[%d]: %.16f ", 0, pc.fx(e0));
+    printf("J[%d]: %.7f ", 0, pc.fx(e0));
     DoubleVector ga0(pc.L);
     pc.gradient(e0, ga0);
     ga0.L2Normalize();
     DoubleVector gn0(pc.L);
-    IGradient::Gradient(&pc, 0.0001, e0, gn0);
+    IGradient::Gradient(&pc, 0.001, e0, gn0);
     gn0.L2Normalize();
-    printf("e:  %10.6f %10.6f ga:  %10.6f %10.6f gn:  %10.6f %10.6f\n", e0[0], e0[1], ga0[0], ga0[1], gn0[0], gn0[1]);
+    printf("e: %10.5f %10.5f ga: %10.5f %10.5f gn: %10.5f %10.5f\n", e0[0], e0[1], ga0[0], ga0[1], gn0[0], gn0[1]);
 
     /* Minimization */
     ConjugateGradient g2;
@@ -36,14 +36,11 @@ void Parabolic1DControl36::main(int argc, char ** argv)
     e[0] = 0.25;
     e[1] = 0.65;
     DoubleVector f(pc.N+1);
-    //FILE *file = fopen("example332_2.txt", "w");
     for (unsigned int i=0; i<=pc.N; i++)
     {
         e[1] = i*pc.hx;
         f[i] = pc.fx(e);
     }
-    //IPrinter::printVector(f, NULL, pc.N+1, 0, 0, file);
-    //fclose(file);
 }
 
 Parabolic1DControl36::Parabolic1DControl36()
@@ -53,9 +50,9 @@ Parabolic1DControl36::Parabolic1DControl36()
     t0 = 0.0;
     t1 = 1.0;
     hx = 0.01;
-    ht = 0.001;
-    N = (unsigned int)(ceil(x1-x0)/hx);
-    M = (unsigned int)(ceil(t1-t0)/ht);
+    ht = 0.01;
+    N = 100;
+    M = 100;
     L = 2;
     a = 1.0;
 
@@ -67,9 +64,6 @@ Parabolic1DControl36::Parabolic1DControl36()
     IParabolicEquation::calculateU(U, hx, ht, N, M, a);
     IPrinter::printVector(U);
     puts("-----------------------");
-    //FILE *file = fopen("example332.txt", "w");
-    //IPrinter::printVector(U, NULL, N+1, 0, 0, file);
-    //fclose(file);
 }
 
 double Parabolic1DControl36::fx(const DoubleVector &e)
@@ -136,17 +130,17 @@ void Parabolic1DControl36::gradient(const DoubleVector &e, DoubleVector &g)
 void Parabolic1DControl36::print(unsigned int i, const DoubleVector &e, const DoubleVector &gr, double alpha, RnFunction *fn) const
 {
     Parabolic1DControl36 *hc = dynamic_cast<Parabolic1DControl36*>(fn);
-    printf("J[%d]: %.16f ", i, hc->fx(e));
+    printf("J[%d]: %.7f ", i, hc->fx(e));
 
     DoubleVector ga(L);
     const_cast<Parabolic1DControl36*>(this)->gradient(e, ga);
     ga.L2Normalize();
 
     DoubleVector gn(L);
-    IGradient::Gradient(fn, 0.0001, e, gn);
+    IGradient::Gradient(fn, 0.001, e, gn);
     gn.L2Normalize();
 
-    printf("e:  %10.6f %10.6f ga:  %10.6f %10.6f gn:  %10.6f %10.6f\n", e[0], e[1], ga[0], ga[1], gn[0], gn[1]);
+    printf("e: %10.5f %10.5f ga: %10.5f %10.5f gn: %10.5f %10.5f\n", e[0], e[1], ga[0], ga[1], gn[0], gn[1]);
 }
 
 void Parabolic1DControl36::project(DoubleVector &e, int i)
