@@ -5,7 +5,7 @@
 #include "example35.h"
 #include "example36.h"
 #include "example37.h"
-#include "example38.h"
+#include "example371.h"
 
 #define SAMPLE_31
 //#define SAMPLE_32
@@ -14,7 +14,7 @@
 //#define SAMPLE_35
 //#define SAMPLE_36
 //#define SAMPLE_37
-//#define SAMPLE_38
+//#define SAMPLE_371
 
 
 int main(int argc, char *argv[])
@@ -54,8 +54,8 @@ int main(int argc, char *argv[])
     Parabolic2DControl37::main(argc, argv);
     puts("----------------------------------------------------------------------------");
 #endif
-#ifdef SAMPLE_38
-    puts("Sample 3.8");
+#ifdef SAMPLE_371
+    puts("Sample 3.71");
     Parabolic1DControl38::main(argc, argv);
     puts("----------------------------------------------------------------------------");
 #endif

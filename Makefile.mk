@@ -7,8 +7,8 @@ INCLUDES    = -I.
 
 all: main 
 
-main: projection.o doublevector.o r1minimize.o parabolicequation.o function.o printer.o gradient.o gradient_cjt.o example31.o example32.o example33.o example34.o example35.o example36.o example37.o example38.o main.o
-	$(CXX) -g -o main.exe projection.o doublevector.o r1minimize.o parabolicequation.o function.o printer.o gradient.o gradient_cjt.o example31.o example32.o example33.o example34.o example35.o example36.o example37.o example38.o main.o $(LDFLAGS)
+main: projection.o doublevector.o r1minimize.o parabolicequation.o function.o printer.o gradient.o gradient_cjt.o example31.o example32.o example33.o example34.o example35.o example36.o example37.o example371.o main.o
+	$(CXX) -g -o main.exe projection.o doublevector.o r1minimize.o parabolicequation.o function.o printer.o gradient.o gradient_cjt.o example31.o example32.o example33.o example34.o example35.o example36.o example37.o example371.o main.o $(LDFLAGS)
 
 main.o: main.cpp
 	$(CXX) -c $(CXXFLAGS) -o main.o main.cpp
@@ -34,8 +34,8 @@ example36.o: example36.cpp
 example37.o: example37.cpp
 	$(CXX) -c $(CXXFLAGS) -o example37.o example37.cpp
 	
-example38.o: example38.cpp
-	$(CXX) -c $(CXXFLAGS) -o example38.o example38.cpp
+example371.o: example371.cpp
+	$(CXX) -c $(CXXFLAGS) -o example371.o example371.cpp
 	
 projection.o: projection.cpp
 	$(CXX) -c $(CXXFLAGS) -o projection.o projection.cpp

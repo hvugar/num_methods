@@ -1,4 +1,4 @@
-#include "example38.h"
+#include "example371.h"
 
 // Optimal points [0.50,0.80] [0.70,0.20] [0.20,0.30]
 // Working points [0.60,0.70] [0.65,0.25] [0.25,0.35] epsilon1 0.0001 epsilon2 0.0001 epsilon3: 0.0001. min:1.0 0.0001
