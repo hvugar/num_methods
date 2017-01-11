@@ -13,6 +13,7 @@ public:
     virtual double initial(unsigned int i) const = 0;
     virtual double boundary(Boundary type, unsigned int j) const = 0;
     virtual double f(unsigned int i, unsigned int j) const = 0;
+
     virtual void calculateU(DoubleVector &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0) const;
     virtual void calculateU(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0) const;
     virtual void calculateN(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0) const;
