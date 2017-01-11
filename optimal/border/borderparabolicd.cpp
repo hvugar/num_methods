@@ -37,9 +37,9 @@ void BorderParabolicD::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     {
         bp.hx = 0.01;
-        bp.ht = 0.0001;
+        bp.ht = 0.01;
         bp.N = 100;
-        bp.M = 10000;
+        bp.M = 100;
         DoubleMatrix u2;
         bp.calculateN4L2RM(u2);
         IPrinter::printMatrix(14, 10, u2, 10, 10, NULL);
@@ -48,9 +48,9 @@ void BorderParabolicD::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     {
         bp.hx = 0.01;
-        bp.ht = 0.0001;
+        bp.ht = 0.01;
         bp.N = 100;
-        bp.M = 10000;
+        bp.M = 100;
         DoubleMatrix u2;
         bp.calculateN4R2LM(u2);
         IPrinter::printMatrix(14, 10, u2, 10, 10, NULL);
@@ -207,9 +207,9 @@ void BorderParabolicD::calculateN4L2RM(DoubleMatrix &u)
         u.at(m, N-4) = x.at(0);
         for (unsigned int i=N-5; i>=1; i--)
         {
-            //u1.at(m,i) = -ems.at(i-1,0)*u1.at(m,i+1) - ems.at(i-1,1)*u1.at(m,i+2) - ems.at(i-1,2)*u1.at(m,i+3) + ems.at(i-1,3);
-            u.at(m,i) = -208.0*alpha*u.at(m,i+1) + 228.0*alpha*u.at(m,i+2) - 112.0*alpha*u.at(m,i+3) + 22.0*alpha*u.at(m,i+4) + (u.at(m-1,i)+ht*f(i,m));
-            u.at(m,i) /= -(70.0*alpha-1.0);
+            u.at(m,i) = -ems.at(i-1,0)*u.at(m,i+1) - ems.at(i-1,1)*u.at(m,i+2) - ems.at(i-1,2)*u.at(m,i+3) + ems.at(i-1,3);
+            //u.at(m,i) = -208.0*alpha*u.at(m,i+1) + 228.0*alpha*u.at(m,i+2) - 112.0*alpha*u.at(m,i+3) + 22.0*alpha*u.at(m,i+4) + (u.at(m-1,i)+ht*f(i,m));
+            //u.at(m,i) /= -(70.0*alpha-1.0);
         }
 
         if (m==0)
