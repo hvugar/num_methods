@@ -22,6 +22,12 @@ public:
     virtual void calculateN1(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0) const;
 
     virtual void calculateU1(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0) const;
+
+    virtual void calculateN4L2RD(DoubleMatrix &u, double hx, double ht, double N, double M, double a = 1.0);
+    virtual void calculateN4R2LD(DoubleMatrix &u, double hx, double ht, double N, double M, double a = 1.0);
+
+    virtual void calculateN6L2RD(DoubleMatrix &u, double hx, double ht, double N, double M, double a = 1.0);
+    virtual void calculateN6R2LD(DoubleMatrix &u, double hx, double ht, double N, double M, double a = 1.0);
 };
 
 class MINIMUMSHARED_EXPORT IBackwardParabolicEquation

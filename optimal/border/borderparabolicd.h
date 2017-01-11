@@ -21,12 +21,6 @@ public:
 
     double U(unsigned int i, unsigned int j) const;
 
-    void calculateN4L2RM(DoubleMatrix &u);
-    void calculateN4R2LM(DoubleMatrix &u);
-
-    void calculateN6L2RM(DoubleMatrix &u);
-    void calculateN6R2LM(DoubleMatrix &u);
-
     double hx;
     double ht;
     unsigned int N;
