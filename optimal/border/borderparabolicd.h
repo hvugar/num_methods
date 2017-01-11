@@ -19,10 +19,10 @@ public:
     virtual double boundary(Boundary type, unsigned int j) const;
     virtual double f(unsigned int i, unsigned int j) const;
 
-    double u(unsigned int i, unsigned int j) const;
+    double U(unsigned int i, unsigned int j) const;
 
-    void calculateN4L2RM(DoubleMatrix &u);
-    void calculateN4R2LM(DoubleMatrix &u);
+    void calculateN4L2RM(DoubleMatrix &U);
+    void calculateN4R2LM(DoubleMatrix &U);
 
     double hx;
     double ht;

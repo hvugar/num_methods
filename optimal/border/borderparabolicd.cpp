@@ -15,7 +15,7 @@ void BorderParabolicD::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         for (unsigned int i=0; i<=bp.M; i++)
         {
             for (unsigned int j=0; j<=bp.N; j++)
-                ru.at(i,j) = bp.u(j,i);
+                ru.at(i,j) = bp.U(j,i);
         }
         IPrinter::printMatrix(14, 10, ru, 10, 10, NULL);
         ru.clear();
@@ -36,37 +36,37 @@ void BorderParabolicD::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     }
 
     {
-        bp.hx = 0.1;
-        bp.ht = 0.01;
-        bp.N = 10;
-        bp.M = 100;
+        bp.hx = 0.01;
+        bp.ht = 0.0001;
+        bp.N = 100;
+        bp.M = 10000;
         DoubleMatrix u2;
         bp.calculateN4L2RM(u2);
         IPrinter::printMatrix(14, 10, u2, 10, 10, NULL);
         IPrinter::printSeperatorLine();
     }
 
-//    {
-//        bp.hx = 0.01;
-//        bp.ht = 0.01;
-//        bp.N = 100;
-//        bp.M = 100;
-//        DoubleMatrix u2;
-//        bp.calculateN4R2LM(u2);
-//        IPrinter::printMatrix(14, 10, u2, 10, 10, NULL);
-//        IPrinter::printSeperatorLine();
-//    }
+    {
+        bp.hx = 0.01;
+        bp.ht = 0.0001;
+        bp.N = 100;
+        bp.M = 10000;
+        DoubleMatrix u2;
+        bp.calculateN4R2LM(u2);
+        IPrinter::printMatrix(14, 10, u2, 10, 10, NULL);
+        IPrinter::printSeperatorLine();
+    }
 }
 
 double BorderParabolicD::initial(unsigned int i UNUSED_PARAM) const
 {
-    return u(i,0);
+    return U(i,0);
 }
 
 double BorderParabolicD::boundary(Boundary type UNUSED_PARAM, unsigned int j UNUSED_PARAM) const
 {
-    if (type == Left)  return u(0,j);
-    if (type == Right) return u(N,j);
+    if (type == Left)  return U(0,j);
+    if (type == Right) return U(N,j);
     return 0.0;
 }
 
@@ -85,7 +85,7 @@ double BorderParabolicD::f(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PA
 #endif
 }
 
-double BorderParabolicD::u(unsigned int i, unsigned int j) const
+double BorderParabolicD::U(unsigned int i, unsigned int j) const
 {
     double x = i*hx;
     double t = j*ht;
@@ -100,16 +100,16 @@ double BorderParabolicD::u(unsigned int i, unsigned int j) const
 #endif
 }
 
-void BorderParabolicD::calculateN4L2RM(DoubleMatrix &u1)
+void BorderParabolicD::calculateN4L2RM(DoubleMatrix &u)
 {
-    u1.resize(M+1, N+1);
+    u.resize(M+1, N+1);
     /* initial condition */
-    for (unsigned int i=0; i<=N; i++) u1.at(0,i) = initial(i);
+    for (unsigned int i=0; i<=N; i++) u.at(0,i) = initial(i);
     /* border conditions */
     for (unsigned int j=1; j<=M; j++)
     {
-        u1.at(j,0) = boundary(Left, j);
-        u1.at(j,N) = boundary(Right, j);
+        u.at(j,0) = boundary(Left, j);
+        u.at(j,N) = boundary(Right, j);
     }
 
     //    double D41[5][5] =
@@ -121,7 +121,7 @@ void BorderParabolicD::calculateN4L2RM(DoubleMatrix &u1)
     //        {+3.0,  -16.0, +36.0, -48.0, +25.0}
     //    };
 
-    double D42[5][5] =
+    double D[5][5] =
     {
         {+70.0, -208.0, +228.0, -112.0, +22.0},
         {+22.0, -40.0,  +12.0,  +8.0,   -2.0},
@@ -139,11 +139,11 @@ void BorderParabolicD::calculateN4L2RM(DoubleMatrix &u1)
     DoubleMatrix ems(N-4, 4);
     for (unsigned int m=1; m<=M; m++)
     {
-        A1.at(0,0) = (D42[1][1]*alpha - 1.0);
-        A1.at(0,1) = (D42[1][2]*alpha)/A1.at(0,0);
-        A1.at(0,2) = (D42[1][3]*alpha)/A1.at(0,0);
-        A1.at(0,3) = (D42[1][4]*alpha)/A1.at(0,0);
-        b1.at(0)   = (-u1.at(m-1,1) - (D42[1][0]*alpha)*u1.at(m,0) - ht*f(1,m))/A1.at(0,0);
+        A1.at(0,0) = (D[1][1]*alpha - 1.0);
+        A1.at(0,1) = (D[1][2]*alpha)/A1.at(0,0);
+        A1.at(0,2) = (D[1][3]*alpha)/A1.at(0,0);
+        A1.at(0,3) = (D[1][4]*alpha)/A1.at(0,0);
+        b1.at(0)   = (-u.at(m-1,1) - (D[1][0]*alpha)*u.at(m,0) - ht*f(1,m))/A1.at(0,0);
         A1.at(0,0) = 1.0;
 
         ems.at(0,0) = A1.at(0,1);
@@ -154,12 +154,12 @@ void BorderParabolicD::calculateN4L2RM(DoubleMatrix &u1)
         // + * * * *
         for (unsigned int n=1; n<=N-5; n++)
         {
-            double g1 = D42[0][0]*alpha-1.0;
-            double g2 = D42[0][1]*alpha;
-            double g3 = D42[0][2]*alpha;
-            double g4 = D42[0][3]*alpha;
-            double g5 = D42[0][4]*alpha;
-            double g0 = u1.at(m-1,n) + ht*f(n,m);
+            double g1 = D[0][0]*alpha-1.0;
+            double g2 = D[0][1]*alpha;
+            double g3 = D[0][2]*alpha;
+            double g4 = D[0][3]*alpha;
+            double g5 = D[0][4]*alpha;
+            double g0 = u.at(m-1,n) + ht*f(n,m);
 
             g2 /= -g1;
             g3 /= -g1;
@@ -181,53 +181,48 @@ void BorderParabolicD::calculateN4L2RM(DoubleMatrix &u1)
             ems.at(n,3) = b1.at(0);
         }
 
-        A1[1][0] = D42[1][0]*alpha;
-        A1[1][1] = D42[1][1]*alpha - 1.0;
-        A1[1][2] = D42[1][2]*alpha;
-        A1[1][3] = D42[1][3]*alpha;
-        b1[1]    = -u1.at(m-1,N-3) - (D42[1][4]*alpha)*u1.at(m,N) - ht*f(N-3,m);
+        A1[1][0] = D[1][0]*alpha;
+        A1[1][1] = D[1][1]*alpha - 1.0;
+        A1[1][2] = D[1][2]*alpha;
+        A1[1][3] = D[1][3]*alpha;
+        b1[1]    = -u.at(m-1,N-3) - (D[1][4]*alpha)*u.at(m,N) - ht*f(N-3,m);
 
-        A1[2][0] = D42[2][0]*alpha;
-        A1[2][1] = D42[2][1]*alpha;
-        A1[2][2] = D42[2][2]*alpha - 1.0;
-        A1[2][3] = D42[2][3]*alpha;
-        b1[2]    = -u1.at(m-1,N-2) - (D42[2][4]*alpha)*u1.at(m,N) - ht*f(N-2,m);
+        A1[2][0] = D[2][0]*alpha;
+        A1[2][1] = D[2][1]*alpha;
+        A1[2][2] = D[2][2]*alpha - 1.0;
+        A1[2][3] = D[2][3]*alpha;
+        b1[2]    = -u.at(m-1,N-2) - (D[2][4]*alpha)*u.at(m,N) - ht*f(N-2,m);
 
-        A1[3][0] = D42[3][0]*alpha;
-        A1[3][1] = D42[3][1]*alpha;
-        A1[3][2] = D42[3][2]*alpha;
-        A1[3][3] = D42[3][3]*alpha - 1.0;
-        b1[3]    = -u1.at(m-1,N-1) - (D42[3][4]*alpha)*u1.at(m,N) - ht*f(N-1,m);
+        A1[3][0] = D[3][0]*alpha;
+        A1[3][1] = D[3][1]*alpha;
+        A1[3][2] = D[3][2]*alpha;
+        A1[3][3] = D[3][3]*alpha - 1.0;
+        b1[3]    = -u.at(m-1,N-1) - (D[3][4]*alpha)*u.at(m,N) - ht*f(N-1,m);
 
         GaussianElimination(A1, b1, x);
 
-        u1.at(m, N-1) = x.at(3);
-        u1.at(m, N-2) = x.at(2);
-        u1.at(m, N-3) = x.at(1);
-        u1.at(m, N-4) = x.at(0);
+        u.at(m, N-1) = x.at(3);
+        u.at(m, N-2) = x.at(2);
+        u.at(m, N-3) = x.at(1);
+        u.at(m, N-4) = x.at(0);
         for (unsigned int i=N-5; i>=1; i--)
         {
-            u1.at(m,i) = -ems.at(i-1,0)*u1.at(m,i+1) - ems.at(i-1,1)*u1.at(m,i+2) - ems.at(i-1,2)*u1.at(m,i+3) + ems.at(i-1,3);
-            //u1.at(m,i) = -208.0*alpha*u1.at(m,i+1) + 228.0*alpha*u1.at(m,i+2) - 112.0*alpha*u1.at(m,i+3) + 22.0*alpha*u1.at(m,i+4)
-            //        + (u1.at(m-1,i)+ht*f(i,m));
-            //u1.at(m,i) /= -(70.0*alpha-1.0);
-
-            //u1.at(m,i) = -112.0*alpha*u1.at(m,i+1) + 228.0*alpha*u1.at(m,i+2) - 208.0*alpha*u1.at(m,i+3) + 70.0*alpha*u1.at(m,i+4)
-            //        + (u1.at(m-1,i)+ht*f(i,m));
-            //u1.at(m,i) /= -(22.0*alpha-1.0);
+            //u1.at(m,i) = -ems.at(i-1,0)*u1.at(m,i+1) - ems.at(i-1,1)*u1.at(m,i+2) - ems.at(i-1,2)*u1.at(m,i+3) + ems.at(i-1,3);
+            u.at(m,i) = -208.0*alpha*u.at(m,i+1) + 228.0*alpha*u.at(m,i+2) - 112.0*alpha*u.at(m,i+3) + 22.0*alpha*u.at(m,i+4) + (u.at(m-1,i)+ht*f(i,m));
+            u.at(m,i) /= -(70.0*alpha-1.0);
         }
 
         if (m==0)
         {
-            printf("%d %18.10f %18.10f %18.10f %18.10f\n", m, u(N-4,m), u(N-3,m), u(N-2,m), u(N-1,m));
+            printf("%d %18.10f %18.10f %18.10f %18.10f\n", m, U(N-4,m), U(N-3,m), U(N-2,m), U(N-1,m));
             printf("%d %18.10f %18.10f %18.10f %18.10f\n", m, x[0], x[1], x[2], x[3]);
             //printf("%d %18.10f %18.10f %18.10f %18.10f\n", m, u1.at(m,N-4), u1.at(m,N-3), u1.at(m,N-2), u1.at(m,N-1));
-            IPrinter::printVector(14,10, u1.row(m));
-            DoubleVector v(N+1); for (unsigned int n=0; n<=N; n++) v.at(n) = u(n,m);
+            IPrinter::printVector(14,10, u.row(m));
+            DoubleVector v(N+1); for (unsigned int n=0; n<=N; n++) v.at(n) = U(n,m);
             IPrinter::printVector(14,10, v);
             v.clear();
             IPrinter::printSeperatorLine();
-            break;
+            //break;
         }
     }
     ems.clear();
@@ -236,16 +231,16 @@ void BorderParabolicD::calculateN4L2RM(DoubleMatrix &u1)
     x.clear();
 }
 
-void BorderParabolicD::calculateN4R2LM(DoubleMatrix &u1)
+void BorderParabolicD::calculateN4R2LM(DoubleMatrix &u)
 {
-    u1.resize(M+1, N+1);
+    u.resize(M+1, N+1);
     /* initial condition */
-    for (unsigned int i=0; i<=N; i++) u1.at(0,i) = initial(i);
+    for (unsigned int i=0; i<=N; i++) u.at(0,i) = initial(i);
     /* border conditions */
     for (unsigned int j=1; j<=M; j++)
     {
-        u1.at(j,0) = boundary(Left,j);
-        u1.at(j,N) = boundary(Right, j);
+        u.at(j,0) = boundary(Left,j);
+        u.at(j,N) = boundary(Right, j);
     }
 
 //    double D41[5][5] =
@@ -278,25 +273,25 @@ void BorderParabolicD::calculateN4R2LM(DoubleMatrix &u1)
         A1.at(0,1) = +12.0*alpha;
         A1.at(0,2) = +8.0*alpha;
         A1.at(0,3) = -2.0*alpha;
-        b1.at(0)   = -u1.at(m-1,1) - (22.0*alpha)*u1.at(m,0) - ht*f(1,m);
+        b1.at(0)   = -u.at(m-1,1) - (22.0*alpha)*u.at(m,0) - ht*f(1,m);
 
         A1.at(1,0) = +32.0*alpha;
         A1.at(1,1) = -60.0*alpha - 1.0;
         A1.at(1,2) = +32.0*alpha;
         A1.at(1,3) = -2.0*alpha;
-        b1.at(1)   = -u1.at(m-1,2) - (-2.0*alpha)*u1.at(m,0) - ht*f(2,m);
+        b1.at(1)   = -u.at(m-1,2) - (-2.0*alpha)*u.at(m,0) - ht*f(2,m);
 
         A1[2][0] = +8.0*alpha;
         A1[2][1] = +12.0*alpha;
         A1[2][2] = -40.0*alpha - 1.0;
         A1[2][3] = +22.0*alpha;
-        b1[2]    = -u1.at(m-1,3) - (-2.0*alpha)*u1.at(m,0) - ht*f(3,m);
+        b1[2]    = -u.at(m-1,3) - (-2.0*alpha)*u.at(m,0) - ht*f(3,m);
 
         A1.at(3,0) = -2.0*alpha;
         A1.at(3,1) = +8.0*alpha;
         A1.at(3,2) = +12.0*alpha;
         A1.at(3,3) = -40.0*alpha - 1.0;
-        b1.at(3)   = -u1.at(m-1,N-1) - (22.0*alpha)*u1.at(m,N) - ht*f(N-1,m);
+        b1.at(3)   = -u.at(m-1,N-1) - (22.0*alpha)*u.at(m,N) - ht*f(N-1,m);
 
         A1.at(3,0) /= A1.at(3,3);
         A1.at(3,1) /= A1.at(3,3);
@@ -316,7 +311,7 @@ void BorderParabolicD::calculateN4R2LM(DoubleMatrix &u1)
             double g3 = +228.0*alpha;
             double g4 = -208.0*alpha;;
             double g5 = +70.0*alpha - 1.0;
-            double g0  = -u1.at(m-1,n) - ht*f(n,m);
+            double g0  = -u.at(m-1,n) - ht*f(n,m);
 
             g4 /= -g5;
             g3 /= -g5;
@@ -340,25 +335,28 @@ void BorderParabolicD::calculateN4R2LM(DoubleMatrix &u1)
 
         GaussianElimination(A1, b1, x);
 
-        u1.at(m, 1) = x.at(0);
-        u1.at(m, 2) = x.at(1);
-        u1.at(m, 3) = x.at(2);
-        u1.at(m, 4) = x.at(3);
+        u.at(m, 1) = x.at(0);
+        u.at(m, 2) = x.at(1);
+        u.at(m, 3) = x.at(2);
+        u.at(m, 4) = x.at(3);
         for (unsigned int i=5; i<=N-1; i++)
         {
-            u1.at(m,i) = -ems.at(i-4,2)*u1.at(m,i-1) - ems.at(i-4,1)*u1.at(m,i-2) - ems.at(i-4,0)*u1.at(m,i-3) + ems.at(i-4,3);
+            u.at(m,i) = -ems.at(i-4,2)*u.at(m,i-1) - ems.at(i-4,1)*u.at(m,i-2) - ems.at(i-4,0)*u.at(m,i-3) + ems.at(i-4,3);
+            //u1.at(m,i) = -208.0*alpha*u1.at(m,i-1) + 228.0*alpha*u1.at(m,i-2) - 112.0*alpha*u1.at(m,i-3) + 22.0*alpha*u1.at(m,i-4) + (u1.at(m-1,i)+ht*f(i,m));
+            //u1.at(m,i) /= -(70.0*alpha-1.0);
         }
 
         if (m==0)
         {
-            printf("%d %18.10f %18.10f %18.10f %18.10f\n", m, u(1,m), u(2,m), u(3,m), u(4,m));
+            printf("%d %18.10f %18.10f %18.10f %18.10f\n", m, U(1,m), U(2,m), U(3,m), U(4,m));
             printf("%d %18.10f %18.10f %18.10f %18.10f\n", m, x[0], x[1], x[2], x[3]);
             //printf("%d %18.10f %18.10f %18.10f %18.10f\n", m, u1.at(m,N-4), u1.at(m,N-3), u1.at(m,N-2), u1.at(m,N-1));
-            IPrinter::printVector(14,10, u1.row(m));
-            DoubleVector v(N+1); for (unsigned int n=0; n<=N; n++) v.at(n) = u(n,m);
+            IPrinter::printVector(14,10, u.row(m));
+            DoubleVector v(N+1); for (unsigned int n=0; n<=N; n++) v.at(n) = U(n,m);
             IPrinter::printVector(14,10, v);
             v.clear();
             IPrinter::printSeperatorLine();
+            //break;
         }
     }
     ems.clear();
