@@ -12,12 +12,12 @@ void BorderParabolicD::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         bp.N = 100;
         bp.M = 100;
         DoubleMatrix ru(bp.M+1,bp.N+1);
+        IPrinter::printSeperatorLine("Real solution");
         for (unsigned int i=0; i<=bp.M; i++)
         {
             for (unsigned int j=0; j<=bp.N; j++)
                 ru.at(i,j) = bp.U(j,i);
         }
-        IPrinter::printSeperatorLine("Real solution");
         IPrinter::printMatrix(14, 10, ru, 10, 10, NULL);
         ru.clear();
     }
@@ -176,22 +176,22 @@ void BorderParabolicD::calculateN4L2RM(DoubleMatrix &u)
 
     for (unsigned int m=1; m<=M; m++)
     {
-        A.at(0,0) = D[1][1]*alpha - 1.0;
-        A.at(0,1) = D[1][2]*alpha;
-        A.at(0,2) = D[1][3]*alpha;
-        A.at(0,3) = D[1][4]*alpha;
-        b.at(0)   = -u.at(m-1,1) - (D[1][0]*alpha)*u.at(m,0) - ht*f(1,m);
+        A[0][0] = D[1][1]*alpha - 1.0;
+        A[0][1] = D[1][2]*alpha;
+        A[0][2] = D[1][3]*alpha;
+        A[0][3] = D[1][4]*alpha;
+        b[0]    = -u.at(m-1,1) - (D[1][0]*alpha)*u.at(m,0) - ht*f(1,m);
 
-        A.at(0,1) /= A.at(0,0);
-        A.at(0,2) /= A.at(0,0);
-        A.at(0,3) /= A.at(0,0);
-        b.at(0)   /= A.at(0,0);
-        A.at(0,0) = 1.0;
+        A[0][1] /= A[0][0];
+        A[0][2] /= A[0][0];
+        A[0][3] /= A[0][0];
+        b[0]    /= A[0][0];
+        A[0][0] = 1.0;
 
-        ems.at(0,0) = A.at(0,1);
-        ems.at(0,1) = A.at(0,2);
-        ems.at(0,2) = A.at(0,3);
-        ems.at(0,3) = b.at(0);
+        ems.at(0,0) = A[0][1];
+        ems.at(0,1) = A[0][2];
+        ems.at(0,2) = A[0][3];
+        ems.at(0,3) = b[0];
 
         // + * * * *
         for (unsigned int n=1; n<=N-(k+1); n++)
@@ -210,41 +210,41 @@ void BorderParabolicD::calculateN4L2RM(DoubleMatrix &u)
             g0 /= -g1;
             g1 = 1.0;
 
-            A.at(0,0) = A.at(0,1) + g2;
-            A.at(0,1) = A.at(0,2) + g3;
-            A.at(0,2) = A.at(0,3) + g4;
-            A.at(0,3) = g5;
-            b.at(0)   = b.at(0) - g0;
+            A[0][0] = A[0][1] + g2;
+            A[0][1] = A[0][2] + g3;
+            A[0][2] = A[0][3] + g4;
+            A[0][3] = g5;
+            b[0]    = b[0] - g0;
             \
-            A.at(0,1) /= A.at(0,0);
-            A.at(0,2) /= A.at(0,0);
-            A.at(0,3) /= A.at(0,0);
-            b.at(0)   /= A.at(0,0);
-            A.at(0,0) = 1.0;
+            A[0][1] /= A[0][0];
+            A[0][2] /= A[0][0];
+            A[0][3] /= A[0][0];
+            b[0]    /= A[0][0];
+            A[0][0] = 1.0;
 
-            ems.at(n,0) = A.at(0,1);
-            ems.at(n,1) = A.at(0,2);
-            ems.at(n,2) = A.at(0,3);
-            ems.at(n,3) = b.at(0);
+            ems.at(n,0) = A[0][1];
+            ems.at(n,1) = A[0][2];
+            ems.at(n,2) = A[0][3];
+            ems.at(n,3) = b[0];
         }
 
-        A.at(1,0) = D[1][0]*alpha;
-        A.at(1,1) = D[1][1]*alpha - 1.0;
-        A.at(1,2) = D[1][2]*alpha;
-        A.at(1,3) = D[1][3]*alpha;
-        b.at(1)   = -u.at(m-1,N-3) - (D[1][4]*alpha)*u.at(m,N) - ht*f(N-3,m);
+        A[1][0] = D[1][0]*alpha;
+        A[1][1] = D[1][1]*alpha - 1.0;
+        A[1][2] = D[1][2]*alpha;
+        A[1][3] = D[1][3]*alpha;
+        b[1]    = -u.at(m-1,N-3) - (D[1][4]*alpha)*u.at(m,N) - ht*f(N-3,m);
 
-        A.at(2,0) = D[2][0]*alpha;
-        A.at(2,1) = D[2][1]*alpha;
-        A.at(2,2) = D[2][2]*alpha - 1.0;
-        A.at(2,3) = D[2][3]*alpha;
-        b.at(2)   = -u.at(m-1,N-2) - (D[2][4]*alpha)*u.at(m,N) - ht*f(N-2,m);
+        A[2][0] = D[2][0]*alpha;
+        A[2][1] = D[2][1]*alpha;
+        A[2][2] = D[2][2]*alpha - 1.0;
+        A[2][3] = D[2][3]*alpha;
+        b[2]    = -u.at(m-1,N-2) - (D[2][4]*alpha)*u.at(m,N) - ht*f(N-2,m);
 
-        A.at(3,0) = D[3][0]*alpha;
-        A.at(3,1) = D[3][1]*alpha;
-        A.at(3,2) = D[3][2]*alpha;
-        A.at(3,3) = D[3][3]*alpha - 1.0;
-        b.at(3)   = -u.at(m-1,N-1) - (D[3][4]*alpha)*u.at(m,N) - ht*f(N-1,m);
+        A[3][0] = D[3][0]*alpha;
+        A[3][1] = D[3][1]*alpha;
+        A[3][2] = D[3][2]*alpha;
+        A[3][3] = D[3][3]*alpha - 1.0;
+        b[3]    = -u.at(m-1,N-1) - (D[3][4]*alpha)*u.at(m,N) - ht*f(N-1,m);
 
         GaussianElimination(A, b, x);
 
@@ -311,49 +311,49 @@ void BorderParabolicD::calculateN4R2LM(DoubleMatrix &u)
 
     for (unsigned int m=1; m<=M; m++)
     {
-        A.at(0,0) = D[1][1]*alpha - 1.0;
-        A.at(0,1) = D[1][2]*alpha;
-        A.at(0,2) = D[1][3]*alpha;
-        A.at(0,3) = D[1][4]*alpha;
-        b.at(0)   = -u.at(m-1,1) - (D[1][0]*alpha)*u.at(m,0) - ht*f(1,m);
+        A[0][0] = D[1][1]*alpha - 1.0;
+        A[0][1] = D[1][2]*alpha;
+        A[0][2] = D[1][3]*alpha;
+        A[0][3] = D[1][4]*alpha;
+        b[0]    = -u.at(m-1,1) - (D[1][0]*alpha)*u.at(m,0) - ht*f(1,m);
 
-        A.at(1,0) = D[2][1]*alpha;
-        A.at(1,1) = D[2][2]*alpha - 1.0;
-        A.at(1,2) = D[2][3]*alpha;
-        A.at(1,3) = D[2][4]*alpha;
-        b.at(1)   = -u.at(m-1,2) - (D[2][0]*alpha)*u.at(m,0) - ht*f(2,m);
+        A[1][0] = D[2][1]*alpha;
+        A[1][1] = D[2][2]*alpha - 1.0;
+        A[1][2] = D[2][3]*alpha;
+        A[1][3] = D[2][4]*alpha;
+        b[1]    = -u.at(m-1,2) - (D[2][0]*alpha)*u.at(m,0) - ht*f(2,m);
 
-        A.at(2,0) = D[3][1]*alpha;
-        A.at(2,1) = D[3][2]*alpha;
-        A.at(2,2) = D[3][3]*alpha - 1.0;
-        A.at(2,3) = D[3][4]*alpha;
-        b.at(2)   = -u.at(m-1,3) - (D[3][0]*alpha)*u.at(m,0) - ht*f(3,m);
+        A[2][0] = D[3][1]*alpha;
+        A[2][1] = D[3][2]*alpha;
+        A[2][2] = D[3][3]*alpha - 1.0;
+        A[2][3] = D[3][4]*alpha;
+        b[2]    = -u.at(m-1,3) - (D[3][0]*alpha)*u.at(m,0) - ht*f(3,m);
 
-        A.at(3,0) = D[3][0]*alpha;
-        A.at(3,1) = D[3][1]*alpha;
-        A.at(3,2) = D[3][2]*alpha;
-        A.at(3,3) = D[3][3]*alpha - 1.0;
-        b.at(3)   = -u.at(m-1,N-1) - (D[3][4]*alpha)*u.at(m,N) - ht*f(N-1,m);
+        A[3][0] = D[3][0]*alpha;
+        A[3][1] = D[3][1]*alpha;
+        A[3][2] = D[3][2]*alpha;
+        A[3][3] = D[3][3]*alpha - 1.0;
+        b[3]    = -u.at(m-1,N-1) - (D[3][4]*alpha)*u.at(m,N) - ht*f(N-1,m);
 
-        A.at(3,0) /= A.at(3,3);
-        A.at(3,1) /= A.at(3,3);
-        A.at(3,2) /= A.at(3,3);
-        b.at(3)   /= A.at(3,3);
-        A.at(3,3) = 1.0;
+        A[3][0] /= A[3][3];
+        A[3][1] /= A[3][3];
+        A[3][2] /= A[3][3];
+        b[3]    /= A[3][3];
+        A[3][3] = 1.0;
 
-        ems.at(N-5,0) = A.at(3,0);
-        ems.at(N-5,1) = A.at(3,1);
-        ems.at(N-5,2) = A.at(3,2);
-        ems.at(N-5,3) = b.at(3);
+        ems.at(N-5,0) = A[3][0];
+        ems.at(N-5,1) = A[3][1];
+        ems.at(N-5,2) = A[3][2];
+        ems.at(N-5,3) = b[3];
 
         for (unsigned int n=N-1; n>=k+1; n--)
         {
             double g1 = D[4][0]*alpha;
             double g2 = D[4][1]*alpha;
             double g3 = D[4][2]*alpha;
-            double g4 = D[4][3]*alpha;;
+            double g4 = D[4][3]*alpha;
             double g5 = D[4][4]*alpha - 1.0;
-            double g0  = u.at(m-1,n) + ht*f(n,m);
+            double g0 = u.at(m-1,n) + ht*f(n,m);
 
             g4 /= -g5;
             g3 /= -g5;
@@ -362,22 +362,22 @@ void BorderParabolicD::calculateN4R2LM(DoubleMatrix &u)
             g0 /= -g5;
             g5 = 1.0;
 
-            A.at(3,3) = A.at(3,2) + g4;
-            A.at(3,2) = A.at(3,1) + g3;
-            A.at(3,1) = A.at(3,0) + g2;
-            A.at(3,0) = g1;
-            b.at(3)   = b.at(3) - g0;
+            A[3][3] = A[3][2] + g4;
+            A[3][2] = A[3][1] + g3;
+            A[3][1] = A[3][0] + g2;
+            A[3][0] = g1;
+            b[3]    = b[3] - g0;
 
-            A.at(3,2) /= A.at(3,3);
-            A.at(3,1) /= A.at(3,3);
-            A.at(3,0) /= A.at(3,3);
-            b.at(3)   /= A.at(3,3);
-            A.at(3,3) = 1.0;
+            A[3][2] /= A[3][3];
+            A[3][1] /= A[3][3];
+            A[3][0] /= A[3][3];
+            b[3]    /= A[3][3];
+            A[3][3] = 1.0;
 
-            ems.at(n-5,0) = A.at(3,0);
-            ems.at(n-5,1) = A.at(3,1);
-            ems.at(n-5,2) = A.at(3,2);
-            ems.at(n-5,3) = b.at(3);
+            ems.at(n-5,0) = A[3][0];
+            ems.at(n-5,1) = A[3][1];
+            ems.at(n-5,2) = A[3][2];
+            ems.at(n-5,3) = b[3];
         }
 
         GaussianElimination(A, b, x);
@@ -447,28 +447,28 @@ void BorderParabolicD::calculateN6L2RM(DoubleMatrix &u)
 
     for (unsigned int m=1; m<=M; m++)
     {
-        A.at(0,0) = D[1][1]*alpha - 1.0;
-        A.at(0,1) = D[1][2]*alpha;
-        A.at(0,2) = D[1][3]*alpha;
-        A.at(0,3) = D[1][4]*alpha;
-        A.at(0,4) = D[1][5]*alpha;
-        A.at(0,5) = D[1][6]*alpha;
-        b.at(0)   = -u.at(m-1,1) - (D[1][0]*alpha)*u.at(m,0) - ht*f(1,m);
+        A[0][0] = D[1][1]*alpha - 1.0;
+        A[0][1] = D[1][2]*alpha;
+        A[0][2] = D[1][3]*alpha;
+        A[0][3] = D[1][4]*alpha;
+        A[0][4] = D[1][5]*alpha;
+        A[0][5] = D[1][6]*alpha;
+        b[0]    = -u.at(m-1,1) - (D[1][0]*alpha)*u.at(m,0) - ht*f(1,m);
 
-        A.at(0,1) /= A.at(0,0);
-        A.at(0,2) /= A.at(0,0);
-        A.at(0,3) /= A.at(0,0);
-        A.at(0,4) /= A.at(0,0);
-        A.at(0,5) /= A.at(0,0);
-        b.at(0)   /= A.at(0,0);
-        A.at(0,0) = 1.0;
+        A[0][1] /= A[0][0];
+        A[0][2] /= A[0][0];
+        A[0][3] /= A[0][0];
+        A[0][4] /= A[0][0];
+        A[0][5] /= A[0][0];
+        b[0]    /= A[0][0];
+        A[0][0] = 1.0;
 
-        ems.at(0,0) = A.at(0,1);
-        ems.at(0,1) = A.at(0,2);
-        ems.at(0,2) = A.at(0,3);
-        ems.at(0,3) = A.at(0,4);
-        ems.at(0,4) = A.at(0,5);
-        ems.at(0,5) = b.at(0);
+        ems.at(0,0) = A[0][1];
+        ems.at(0,1) = A[0][2];
+        ems.at(0,2) = A[0][3];
+        ems.at(0,3) = A[0][4];
+        ems.at(0,4) = A[0][5];
+        ems.at(0,5) = b[0];
 
         // + * * * *
         for (unsigned int n=1; n<=N-(k+1); n++)
@@ -491,28 +491,28 @@ void BorderParabolicD::calculateN6L2RM(DoubleMatrix &u)
             g0 /= -g1;
             g1 = 1.0;
 
-            A.at(0,0) = A.at(0,1) + g2;
-            A.at(0,1) = A.at(0,2) + g3;
-            A.at(0,2) = A.at(0,3) + g4;
-            A.at(0,3) = A.at(0,4) + g5;
-            A.at(0,4) = A.at(0,5) + g6;
-            A.at(0,5) = g7;
-            b.at(0)   = b.at(0) - g0;
+            A[0][0] = A[0][1] + g2;
+            A[0][1] = A[0][2] + g3;
+            A[0][2] = A[0][3] + g4;
+            A[0][3] = A[0][4] + g5;
+            A[0][4] = A[0][5] + g6;
+            A[0][5] = g7;
+            b[0]   = b[0] - g0;
 
-            A.at(0,1) /= A.at(0,0);
-            A.at(0,2) /= A.at(0,0);
-            A.at(0,3) /= A.at(0,0);
-            A.at(0,4) /= A.at(0,0);
-            A.at(0,5) /= A.at(0,0);
-            b.at(0)   /= A.at(0,0);
-            A.at(0,0) = 1.0;
+            A[0][1] /= A[0][0];
+            A[0][2] /= A[0][0];
+            A[0][3] /= A[0][0];
+            A[0][4] /= A[0][0];
+            A[0][5] /= A[0][0];
+            b[0]    /= A[0][0];
+            A[0][0] = 1.0;
 
-            ems.at(n,0) = A.at(0,1);
-            ems.at(n,1) = A.at(0,2);
-            ems.at(n,2) = A.at(0,3);
-            ems.at(n,3) = A.at(0,4);
-            ems.at(n,4) = A.at(0,5);
-            ems.at(n,5) = b.at(0);
+            ems.at(n,0) = A[0][1];
+            ems.at(n,1) = A[0][2];
+            ems.at(n,2) = A[0][3];
+            ems.at(n,3) = A[0][4];
+            ems.at(n,4) = A[0][5];
+            ems.at(n,5) = b[0];
         }
 
         A[1][0] = D[1][0]*alpha;
@@ -624,68 +624,68 @@ void BorderParabolicD::calculateN6R2LM(DoubleMatrix &u)
 
     for (unsigned int m=1; m<=M; m++)
     {
-        A.at(0,0) = D[1][1]*alpha - 1.0;
-        A.at(0,1) = D[1][2]*alpha;
-        A.at(0,2) = D[1][3]*alpha;
-        A.at(0,3) = D[1][4]*alpha;
-        A.at(0,4) = D[1][5]*alpha;
-        A.at(0,5) = D[1][6]*alpha;
-        b.at(0)   = -u.at(m-1,1) - (D[1][0]*alpha)*u.at(m,0) - ht*f(1,m);
+        A[0][0] = D[1][1]*alpha - 1.0;
+        A[0][1] = D[1][2]*alpha;
+        A[0][2] = D[1][3]*alpha;
+        A[0][3] = D[1][4]*alpha;
+        A[0][4] = D[1][5]*alpha;
+        A[0][5] = D[1][6]*alpha;
+        b[0]    = -u.at(m-1,1) - (D[1][0]*alpha)*u.at(m,0) - ht*f(1,m);
 
-        A.at(1,0) = D[2][1]*alpha;
-        A.at(1,1) = D[2][2]*alpha - 1.0;
-        A.at(1,2) = D[2][3]*alpha;
-        A.at(1,3) = D[2][4]*alpha;
-        A.at(1,4) = D[2][5]*alpha;
-        A.at(1,5) = D[2][6]*alpha;
-        b.at(1)   = -u.at(m-1,2) - (D[2][0]*alpha)*u.at(m,0) - ht*f(2,m);
+        A[1][0] = D[2][1]*alpha;
+        A[1][1] = D[2][2]*alpha - 1.0;
+        A[1][2] = D[2][3]*alpha;
+        A[1][3] = D[2][4]*alpha;
+        A[1][4] = D[2][5]*alpha;
+        A[1][5] = D[2][6]*alpha;
+        b[1]    = -u.at(m-1,2) - (D[2][0]*alpha)*u.at(m,0) - ht*f(2,m);
 
-        A.at(2,0) = D[3][1]*alpha;
-        A.at(2,1) = D[3][2]*alpha;
-        A.at(2,2) = D[3][3]*alpha - 1.0;
-        A.at(2,3) = D[3][4]*alpha;
-        A.at(2,4) = D[3][5]*alpha;
-        A.at(2,5) = D[3][6]*alpha;
-        b.at(2)   = -u.at(m-1,3) - (D[3][0]*alpha)*u.at(m,0) - ht*f(3,m);
+        A[2][0] = D[3][1]*alpha;
+        A[2][1] = D[3][2]*alpha;
+        A[2][2] = D[3][3]*alpha - 1.0;
+        A[2][3] = D[3][4]*alpha;
+        A[2][4] = D[3][5]*alpha;
+        A[2][5] = D[3][6]*alpha;
+        b[2]    = -u.at(m-1,3) - (D[3][0]*alpha)*u.at(m,0) - ht*f(3,m);
 
-        A.at(3,0) = D[4][1]*alpha;
-        A.at(3,1) = D[4][2]*alpha;
-        A.at(3,2) = D[4][3]*alpha;
-        A.at(3,3) = D[4][4]*alpha - 1.0;
-        A.at(3,4) = D[4][5]*alpha;
-        A.at(3,5) = D[4][6]*alpha;
-        b.at(3)   = -u.at(m-1,4) - (D[4][0]*alpha)*u.at(m,0) - ht*f(4,m);
+        A[3][0] = D[4][1]*alpha;
+        A[3][1] = D[4][2]*alpha;
+        A[3][2] = D[4][3]*alpha;
+        A[3][3] = D[4][4]*alpha - 1.0;
+        A[3][4] = D[4][5]*alpha;
+        A[3][5] = D[4][6]*alpha;
+        b[3]    = -u.at(m-1,4) - (D[4][0]*alpha)*u.at(m,0) - ht*f(4,m);
 
-        A.at(4,0) = D[5][1]*alpha;
-        A.at(4,1) = D[5][2]*alpha;
-        A.at(4,2) = D[5][3]*alpha;
-        A.at(4,3) = D[5][4]*alpha;
-        A.at(4,4) = D[5][5]*alpha - 1.0;
-        A.at(4,5) = D[5][6]*alpha;
-        b.at(4)   = -u.at(m-1,5) - (D[5][0]*alpha)*u.at(m,0) - ht*f(5,m);
+        A[4][0] = D[5][1]*alpha;
+        A[4][1] = D[5][2]*alpha;
+        A[4][2] = D[5][3]*alpha;
+        A[4][3] = D[5][4]*alpha;
+        A[4][4] = D[5][5]*alpha - 1.0;
+        A[4][5] = D[5][6]*alpha;
+        b[4]    = -u.at(m-1,5) - (D[5][0]*alpha)*u.at(m,0) - ht*f(5,m);
 
-        A.at(5,0) = D[5][0]*alpha;
-        A.at(5,1) = D[5][1]*alpha;
-        A.at(5,2) = D[5][2]*alpha;
-        A.at(5,3) = D[5][3]*alpha;
-        A.at(5,4) = D[5][4]*alpha;
-        A.at(5,5) = D[5][5]*alpha - 1.0;
-        b.at(5)   = -u.at(m-1,N-1) - (D[5][6]*alpha)*u.at(m,N) - ht*f(N-1,m);
+        A[5][0] = D[5][0]*alpha;
+        A[5][1] = D[5][1]*alpha;
+        A[5][2] = D[5][2]*alpha;
+        A[5][3] = D[5][3]*alpha;
+        A[5][4] = D[5][4]*alpha;
+        A[5][5] = D[5][5]*alpha - 1.0;
+        b[5]    = -u.at(m-1,N-1) - (D[5][6]*alpha)*u.at(m,N) - ht*f(N-1,m);
 
-        A.at(5,0) /= A.at(5,5);
-        A.at(5,1) /= A.at(5,5);
-        A.at(5,2) /= A.at(5,5);
-        A.at(5,3) /= A.at(5,5);
-        A.at(5,4) /= A.at(5,5);
-        b.at(5)   /= A.at(5,5);
-        A.at(5,5) = 1.0;
+        A[5][0] /= A[5][5];
+        A[5][1] /= A[5][5];
+        A[5][2] /= A[5][5];
+        A[5][3] /= A[5][5];
+        A[5][4] /= A[5][5];
+        b[5]    /= A[5][5];
+        A[5][5] = 1.0;
 
-        ems.at(N-7,0) = A.at(5,0);
-        ems.at(N-7,1) = A.at(5,1);
-        ems.at(N-7,2) = A.at(5,2);
-        ems.at(N-7,3) = A.at(5,3);
-        ems.at(N-7,4) = A.at(5,4);
-        ems.at(N-7,5) = b.at(5);
+        ems.at(N-7,0) = A[5][0];
+        ems.at(N-7,1) = A[5][1];
+        ems.at(N-7,2) = A[5][2];
+        ems.at(N-7,3) = A[5][3];
+        ems.at(N-7,4) = A[5][4];
+        ems.at(N-7,5) = b[5];
 
         for (unsigned int n=N-1; n>=k+1; n--)
         {
@@ -707,28 +707,28 @@ void BorderParabolicD::calculateN6R2LM(DoubleMatrix &u)
             g0 /= -g7;
             g7 = 1.0;
 
-            A.at(5,5) = A.at(5,4) + g6;
-            A.at(5,4) = A.at(5,3) + g5;
-            A.at(5,3) = A.at(5,2) + g4;
-            A.at(5,2) = A.at(5,1) + g3;
-            A.at(5,1) = A.at(5,0) + g2;
-            A.at(5,0) = g1;
-            b.at(5)   = b.at(5) - g0;
+            A[5][5] = A[5][4] + g6;
+            A[5][4] = A[5][3] + g5;
+            A[5][3] = A[5][2] + g4;
+            A[5][2] = A[5][1] + g3;
+            A[5][1] = A[5][0] + g2;
+            A[5][0] = g1;
+            b[5]    = b[5] - g0;
 
-            A.at(5,4) /= A.at(5,5);
-            A.at(5,3) /= A.at(5,5);
-            A.at(5,2) /= A.at(5,5);
-            A.at(5,1) /= A.at(5,5);
-            A.at(5,0) /= A.at(5,5);
-            b.at(5)   /= A.at(5,5);
-            A.at(5,5) = 1.0;
+            A[5][4] /= A[5][5];
+            A[5][3] /= A[5][5];
+            A[5][2] /= A[5][5];
+            A[5][1] /= A[5][5];
+            A[5][0] /= A[5][5];
+            b[5]    /= A[5][5];
+            A[5][5] = 1.0;
 
-            ems.at(n-7,0) = A.at(5,0);
-            ems.at(n-7,1) = A.at(5,1);
-            ems.at(n-7,2) = A.at(5,2);
-            ems.at(n-7,3) = A.at(5,3);
-            ems.at(n-7,4) = A.at(5,4);
-            ems.at(n-7,5) = b.at(5);
+            ems.at(n-7,0) = A[5][0];
+            ems.at(n-7,1) = A[5][1];
+            ems.at(n-7,2) = A[5][2];
+            ems.at(n-7,3) = A[5][3];
+            ems.at(n-7,4) = A[5][4];
+            ems.at(n-7,5) = b[5];
         }
 
         GaussianElimination(A, b, x);
