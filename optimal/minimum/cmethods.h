@@ -1,7 +1,7 @@
 #ifndef METHODS
 #define METHODS
 
-#include <global.h>
+#include "global.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

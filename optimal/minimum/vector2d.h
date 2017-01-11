@@ -1,7 +1,7 @@
 #ifndef VECTOR2D_H
 #define VECTOR2D_H
 
-#include <global.h>
+#include "global.h"
 
 class DoubleMatrix;
 

@@ -15,7 +15,6 @@ DEFINES += MINIMUM_LIBRARY
 DESTDIR += ../bin
 
 SOURCES += \
-    cmethods.c \
     cmatrix.c \
     function.cpp \
     r1minimize.cpp \
@@ -38,7 +37,8 @@ SOURCES += \
     matrix2d.cpp \
     vector2d.cpp \
     matrix3d.cpp \
-    bvp.cpp
+    bvp.cpp \
+    cmethods.c
 
 HEADERS += global.h \
     cmethods.h \
