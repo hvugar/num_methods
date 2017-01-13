@@ -29,7 +29,7 @@ void BorderParabolicN::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         bp.M = 100;
 
         DoubleMatrix u;
-        bp.calculateN(u, bp.hx, bp.ht, bp.N, bp.M, bp.a);
+        bp.calculateN2(u, bp.hx, bp.ht, bp.N, bp.M, bp.a);
         IPrinter::printMatrix(14, 10, u, 10, 10, NULL);
         u.clear();
         IPrinter::printSeperatorLine();
@@ -73,16 +73,20 @@ double BorderParabolicN::boundary(Boundary type UNUSED_PARAM, unsigned int j UNU
     if (type == Right) return 2.0;
 #endif
 #ifdef SAMPLE_2
+    if (type == Left)  return 0.0;
+    if (type == Right) return 2.0;
+#endif
+#ifdef SAMPLE_3
+    if (type == Left)  return 1.0;
+    if (type == Right) return 1.0;
+#endif
+#ifdef SAMPLE_4
     if (type == Left)  return t;
     if (type == Right) return sin(20.0) + 20.0*cos(20.0) + t;
 #endif
-#ifdef SAMPLE_3
+#ifdef SAMPLE_5
     if (type == Left)  return 12.0*t;
     if (type == Right) return 10.0*t*cos(10.0) + 2.0*t*exp(2.0*t);
-#endif
-#ifdef SAMPLE_4
-    if (type == Left)  return 0.0;
-    if (type == Right) return 2.0;
 #endif
     return 0.0;
 }
@@ -95,13 +99,16 @@ double BorderParabolicN::f(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PA
     return 2.0*t - 2.0*a*a;
 #endif
 #ifdef SAMPLE_2
-    return x - a*a*(40.0*cos(20.0*x) - 400.0*x*sin(20.0*x));
+    return 1.0 - 2.0*a*a;
 #endif
 #ifdef SAMPLE_3
-    return (sin(10.0*x) + 2.0*x*exp(2.0*x*t) - a*a*(4.0*t*t*exp(2.0*x*t) - 100.0*t*sin(10.0*x)));
+    return 1.0;
 #endif
 #ifdef SAMPLE_4
-    return 1.0 - 2.0*a*a;
+    return x - a*a*(40.0*cos(20.0*x) - 400.0*x*sin(20.0*x));
+#endif
+#ifdef SAMPLE_5
+    return (sin(10.0*x) + 2.0*x*exp(2.0*x*t) - a*a*(4.0*t*t*exp(2.0*x*t) - 100.0*t*sin(10.0*x)));
 #endif
 }
 
@@ -113,14 +120,89 @@ double BorderParabolicN::U(unsigned int i, unsigned int j) const
     return x*x + t*t;
 #endif
 #ifdef SAMPLE_2
-    return x*sin(20.0*x) + t*x;
-#endif
-#ifdef SAMPLE_3
-    return t*sin(10.0*x) + exp(2.0*x*t);
-#endif
-#ifdef SAMPLE_4
     return x*x + t;
 #endif
+#ifdef SAMPLE_3
+    return x + t;
+#endif
+#ifdef SAMPLE_4
+    return x*sin(20.0*x) + t*x;
+#endif
+#ifdef SAMPLE_5
+    return t*sin(10.0*x) + exp(2.0*x*t);
+#endif
+}
+
+void BorderParabolicN::calculateN2(DoubleMatrix &u, double hx, double ht, double N, double M, double a)
+{
+    u.clear();
+    u.resize(M+1, N+1);
+
+    DoubleVector da(N+1);
+    DoubleVector db(N+1);
+    DoubleVector dc(N+1);
+    DoubleVector dd(N+1);
+    DoubleVector rx(N+1);
+
+    for (unsigned int i=0; i<=N; i++) u[0][i] = initial(i);
+
+    DoubleMatrix A(2,2,0.0);
+    DoubleVector b(2,0.0);
+    DoubleVector x(2,0.0);
+
+    for (unsigned int m=1; m<=M; m++)
+    {
+        A[0][0] = 1.0 + (a*a*ht)/(4.0*hx*hx);
+        A[0][1] = -(a*a*ht)/(4.0*hx*hx);
+        b[0]    = u[m-1][0] + ht * f(0, m) - (a*a*ht)/(2.0*hx) * boundary(Left, m);
+
+        printf("%14.10f %14.10f\n", A[0][0]*U(0,m) + A[0][1]*U(1,m), b[0]);
+
+        A[0][1] /= A[0][0];
+        b[0]    /= A[0][0];
+        A[0][0] = 1.0;
+
+        for (unsigned int n=1; n<=N-2; n++)
+        {
+            double g1 = (1.0 + (2.0*a*a*ht)/(hx*hx)) / ((a*a*ht)/(hx*hx));
+            double g2 = -1.0;
+            double g0 = (u[m-1][n] + ht * f(n, m)) / ((a*a*ht)/(hx*hx));
+
+            A[0][0] = A[0][1] + g1;
+            A[0][1] = g2;
+            b[0] = b[0] - g0;
+
+            A[0][1] /= A[0][0];
+            b[0]    /= A[0][0];
+            A[0][0] = 1.0;
+
+            //if (n<10)
+            //printf("%14.10f %14.10f %14.10f %14.10f\n", u[m-1][0], boundary(Left, m), A[0][0]*U(0,m) + A[0][1]*U(1,m), b[0]);
+
+        }
+
+        A[1][0] = -(a*a*ht)/(hx*hx);
+        A[1][1] = 1.0 + (a*a*ht)/(hx*hx);
+        b[1]    = u.at(m-1,N) + ht * f(N, m) + (a*a*ht)/(hx) * boundary(Right, m);
+        printf("%14.10f %14.10f\n", A[1][0]*U(N-1,m) + A[1][1]*U(N,m), b[1]);
+
+        GaussianElimination(A, b, x);
+
+        printf("%14.10f %14.10f\n", x[0], x[1]);
+
+        break;
+
+//        for (unsigned int i=0; i<=N; i++)
+//        {
+//            u[j][i] = rx[i];
+//        }
+    }
+
+    da.clear();
+    db.clear();
+    dc.clear();
+    dd.clear();
+    rx.clear();
 }
 
 void BorderParabolicN::calculateN4L2RN(DoubleMatrix &u, double hx, double ht, double N, double M, double a)
