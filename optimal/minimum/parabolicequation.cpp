@@ -263,7 +263,7 @@ void IParabolicEquation::calculateN(DoubleMatrix &u, double hx, double ht, unsig
     rx.clear();
 }
 
-void IParabolicEquation::calculateN4L2RD(DoubleMatrix &u, double hx, double ht, double N, double M, double a)
+void IParabolicEquation::calculateD4L2RD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
 {
     unsigned int k = 4;
     double alpha = (ht*a*a)/(24.0*hx*hx);
@@ -382,7 +382,7 @@ void IParabolicEquation::calculateN4L2RD(DoubleMatrix &u, double hx, double ht, 
     A.clear();
 }
 
-void IParabolicEquation::calculateN4R2LD(DoubleMatrix &u, double hx, double ht, double N, double M, double a)
+void IParabolicEquation::calculateD4R2LD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
 {
     unsigned int k = 4;
     double alpha = (a*a*ht)/(24.0*hx*hx);
@@ -501,7 +501,7 @@ void IParabolicEquation::calculateN4R2LD(DoubleMatrix &u, double hx, double ht, 
     A.clear();
 }
 
-void IParabolicEquation::calculateN6L2RD(DoubleMatrix &u, double hx, double ht, double N, double M, double a)
+void IParabolicEquation::calculateD6L2RD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
 {
     unsigned int k = 6;
     double alpha = (ht*a*a)/(180.0*hx*hx);
@@ -663,7 +663,7 @@ void IParabolicEquation::calculateN6L2RD(DoubleMatrix &u, double hx, double ht, 
     A.clear();
 }
 
-void IParabolicEquation::calculateN6R2LD(DoubleMatrix &u, double hx, double ht, double N, double M, double a)
+void IParabolicEquation::calculateD6R2LD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
 {
     unsigned int k = 6;
     double alpha = (ht*a*a)/(180.0*hx*hx);
@@ -822,6 +822,332 @@ void IParabolicEquation::calculateN6R2LD(DoubleMatrix &u, double hx, double ht, 
     x.clear();
     b.clear();
     A.clear();
+}
+
+void IParabolicEquation::calculateN4L2RN(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
+{
+    unsigned int k = 4;
+    double alpha0 = (a*a*ht)/hx;
+    double alpha1 = (a*a*ht)/(12.0*hx*hx);
+    double alpha2 = (a*a*ht)/(24.0*hx*hx);
+    u.resize(M+1, N+1);
+
+    /*
+    double D1[5][5] =
+    {
+        {-25.0, +48.0, -36.0, +16.0, -3.0},
+        {-3.0,  -10.0, +18.0, -6.0,  +1.0},
+        {+1.0,  -8.0,  +0.0,  +8.0,  -1.0},
+        {-1.0,  +6.0, -18.0,  +10.0, +3.0},
+        {+3.0,  -16.0, +36.0, -48.0, +25.0}
+    };
+
+    double D2[k+1][k+1] =
+    {
+        {+70.0, -208.0, +228.0, -112.0, +22.0},
+        {+22.0, -40.0,  +12.0,  +8.0,   -2.0},
+        {-2.0,  +32.0,  -60.0,  +32.0,  -2.0},
+        {-2.0,  +8.0,   +12.0,  -40.0,  +22.0},
+        {+22.0, -112.0, +228.0, -208.0, +70.0}
+    };
+    */
+
+    DoubleMatrix A(k+1, k+1, 0.0);
+    DoubleVector b(k+1, 0.0);
+    DoubleVector x(k+1, 0.0);
+    DoubleMatrix ems(N-(k-1), k+1);
+
+    /* initial condition */
+    for (unsigned int i=0; i<=N; i++) u.at(0,i) = initial(i);
+
+    for (unsigned int m=1; m<=M; m++)
+    {
+        //0
+        A[0][0] = -3.0*alpha1 - 1.0;
+        A[0][1] = -10.0*alpha1;
+        A[0][2] = +18.0*alpha1;
+        A[0][3] = -6.0*alpha1;
+        A[0][4] = +alpha1;
+        b[0]    = -u.at(m-1,0) - ht*f(0,m) + alpha0*boundary(Left,m);
+
+        A[0][1] /= A[0][0];
+        A[0][2] /= A[0][0];
+        A[0][3] /= A[0][0];
+        A[0][4] /= A[0][0];
+        b.at(0) /= A[0][0];
+        A[0][0] = 1.0;
+
+        ems.at(0,0) = A[0][1];
+        ems.at(0,1) = A[0][2];
+        ems.at(0,2) = A[0][3];
+        ems.at(0,3) = A[0][4];
+        ems.at(0,4) = b[0];
+
+        for (unsigned int n=0; n<=N-5; n++)
+        {
+            double g0 = +70.0*alpha2 - 1.0;
+            double g1 = -208.0*alpha2;
+            double g2 = +228.0*alpha2;
+            double g3 = -112.0*alpha2;
+            double g4 = +22.0*alpha2;
+            double fi = -u.at(m-1,n) - ht*f(n,m);
+
+            g1 /= -g0;
+            g2 /= -g0;
+            g3 /= -g0;
+            g4 /= -g0;
+            fi /= +g0;
+            g0  = 1.0;
+
+            double a00 = A[0][0];
+            A[0][0] = A[0][1] + a00 * g1;
+            A[0][1] = A[0][2] + a00 * g2;
+            A[0][2] = A[0][3] + a00 * g3;
+            A[0][3] = A[0][4] + a00 * g4;
+            A[0][4] = 0.0;
+            b[0]   = b[0] - a00*fi;
+
+            A[0][1] /= A[0][0];
+            A[0][2] /= A[0][0];
+            A[0][3] /= A[0][0];
+            A[0][4] /= A[0][0];
+            b[0]    /= A[0][0];
+            A[0][0] = 1.0;
+
+            ems.at(n+1,0) = A[0][1];
+            ems.at(n+1,1) = A[0][2];
+            ems.at(n+1,2) = A[0][3];
+            ems.at(n+1,3) = A[0][4];
+            ems.at(n+1,4) = b[0];
+        }
+
+        //N-3
+        A[1][0] = +22.0*alpha2;
+        A[1][1] = -40.0*alpha2 - 1.0;
+        A[1][2] = +12.0*alpha2;
+        A[1][3] = +8.0*alpha2;
+        A[1][4] = -2.0*alpha2;
+        b[1]    = -u.at(m-1,N-3) - ht*f(N-3,m);
+
+        //N-2
+        A[2][0] = -2.0*alpha2;
+        A[2][1] = +32.0*alpha2;
+        A[2][2] = -60.0*alpha2 - 1.0;
+        A[2][3] = +32.0*alpha2;
+        A[2][4] = -2.0*alpha2;
+        b[2]    = -u.at(m-1,N-2) - ht*f(N-2,m);
+
+        //N-1
+        A[3][0] = -2.0*alpha2;
+        A[3][1] = +8.0*alpha2;
+        A[3][2] = +12.0*alpha2;
+        A[3][3] = -40.0*alpha2 - 1.0;
+        A[3][4] = +22.0*alpha2;
+        b[3]    = -u.at(m-1,N-1) - ht*f(N-1,m);
+
+        //N
+        A[4][0] = -alpha1;
+        A[4][1] = +6.0*alpha1;
+        A[4][2] = -18.0*alpha1;
+        A[4][3] = +10.0*alpha1;
+        A[4][4] = +3.0*alpha1 + 1.0;
+        b[4]    = +u.at(m-1,N) + ht*f(N,m) + alpha0*boundary(Right,m);
+
+        GaussianElimination(A, b, x);
+
+        u.at(m, N-4) = x.at(0);
+        u.at(m, N-3) = x.at(1);
+        u.at(m, N-2) = x.at(2);
+        u.at(m, N-1) = x.at(3);
+        u.at(m, N-0) = x.at(4);
+        //printf("%4u %14.10f %14.10f %14.10f %14.10f %14.10f\n", m, U(N-4,m), U(N-3,m), U(N-2,m), U(N-1,m), U(N,m));
+        //printf("%4u %14.10f %14.10f %14.10f %14.10f %14.10f\n", m, u.at(m,N-4), u.at(m,N-3), u.at(m,N-2), u.at(m,N-1), u.at(m,N));
+        for (unsigned int n=N-5; n!=UINT32_MAX; n--)
+        {
+            u.at(m,n) = -ems.at(n,0)*u.at(m,n+1)
+                    -ems.at(n,1)*u.at(m,n+2)
+                    -ems.at(n,2)*u.at(m,n+3)
+                    -ems.at(n,3)*u.at(m,n+4)
+                    +ems.at(n,4);
+            //printf("%14.10f\n", u1.at(m,n));
+        }
+
+        printf("%u %14.10f %14.10f %14.10f %14.10f %14.10f\n", m, u.at(m,N-4), u.at(m,N-3), u.at(m,N-2), u.at(m,N-1), u.at(m,N));
+        if (m==1) break;
+    }
+
+    ems.clear();
+    x.clear();
+    b.clear();
+    A.clear();
+}
+
+void IParabolicEquation::calculateN4R2LN(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
+{
+    unsigned int k = 4;
+    double alpha0 = (a*a*ht)/hx;
+    double alpha1 = (a*a*ht)/(12.0*hx*hx);
+    double alpha2 = (a*a*ht)/(24.0*hx*hx);
+    u.resize(M+1, N+1);
+
+    /*
+    double D2[k+1][k+1] =
+    {
+        {+70.0, -208.0, +228.0, -112.0, +22.0},
+        {+22.0, -40.0,  +12.0,  +8.0,   -2.0},
+        {-2.0,  +32.0,  -60.0,  +32.0,  -2.0},
+        {-2.0,  +8.0,   +12.0,  -40.0,  +22.0},
+        {+22.0, -112.0, +228.0, -208.0, +70.0}
+    };
+
+    double D1[5][5] =
+    {
+        {-25.0, +48.0, -36.0, +16.0, -3.0},
+        {-3.0,  -10.0, +18.0, -6.0,  +1.0},
+        {+1.0,  -8.0,  +0.0,  +8.0,  -1.0},
+        {-1.0,  +6.0, -18.0,  +10.0, +3.0},
+        {+3.0,  -16.0, +36.0, -48.0, +25.0}
+    };
+    */
+
+    DoubleMatrix A(k+1, k+1, 0.0);
+    DoubleVector b(k+1, 0.0);
+    DoubleVector x(k+1, 0.0);
+    DoubleMatrix ems(N-(k-1), k+1);
+
+    /* initial condition */
+    for (unsigned int i=0; i<=N; i++) u.at(0,i) = initial(i);
+
+    for (unsigned int m=1; m<=M; m++)
+    {
+        //0
+        A[0][0] = -3.0*alpha1 - 1.0;
+        A[0][1] = -10.0*alpha1;
+        A[0][2] = +18.0*alpha1;
+        A[0][3] = -6.0*alpha1;
+        A[0][4] = +alpha1;
+        b[0]    = -u.at(m-1,0) - ht*f(0,m) + alpha0*boundary(Left,m);
+
+        //1
+        A[1][0] = +22.0*alpha2;
+        A[1][1] = -40.0*alpha2 - 1.0;
+        A[1][2] = +12.0*alpha2;
+        A[1][3] = +8.0*alpha2;
+        A[1][4] = -2.0*alpha2;
+        b[1]    = -u.at(m-1,1) - ht*f(1,m);
+
+        //2
+        A[2][0] = -2.0*alpha2;
+        A[2][1] = +32.0*alpha2;
+        A[2][2] = -60.0*alpha2 - 1.0;
+        A[2][3] = +32.0*alpha2;
+        A[2][4] = -2.0*alpha2;
+        b[2]    = -u.at(m-1,2) - ht*f(2,m);
+
+        //3
+        A[3][0] = -2.0*alpha2;
+        A[3][1] = +8.0*alpha2;
+        A[3][2] = +12.0*alpha2;
+        A[3][3] = -40.0*alpha2 - 1.0;
+        A[3][4] = +22.0*alpha2;
+        b[3]    = -u.at(m-1,3) - ht*f(3,m);
+
+        //N
+        A[4][0] = -alpha1;
+        A[4][1] = +6.0*alpha1;
+        A[4][2] = -18.0*alpha1;
+        A[4][3] = +10.0*alpha1;
+        A[4][4] = +3.0*alpha1 + 1.0;
+        b[4]    = +u.at(m-1,N) + ht*f(N,m) + alpha0*boundary(Right,m);
+
+        A[4][0] /= A[4][4];
+        A[4][1] /= A[4][4];
+        A[4][2] /= A[4][4];
+        A[4][3] /= A[4][4];
+        b[4]    /= A[4][4];
+        A[4][4] = 1.0;
+
+        ems.at(N-4,0) = A[4][0];
+        ems.at(N-4,1) = A[4][1];
+        ems.at(N-4,2) = A[4][2];
+        ems.at(N-4,3) = A[4][3];
+        ems.at(N-4,4) = b[4];
+
+        for (unsigned int n=N; n>=5; n--)
+        {
+            double g1 = +22.0*alpha2;
+            double g2 = -112.0*alpha2;
+            double g3 = +228.0*alpha2;
+            double g4 = -208.0*alpha2;
+            double g5 = +70.0*alpha2 - 1.0;
+            double fi = -u.at(m-1,n) - ht*f(n,m);
+
+            g4 /= -g5;
+            g3 /= -g5;
+            g2 /= -g5;
+            g1 /= -g5;
+            fi /= +g5;
+            g5  = 1.0;
+
+            double a00 = A[4][4];
+            A[4][4] = A[4][3] + a00 * g4;
+            A[4][3] = A[4][2] + a00 * g3;
+            A[4][2] = A[4][1] + a00 * g2;
+            A[4][1] = A[4][0] + a00 * g1;
+            b[4]    = b[4] - a00*fi;
+            A[4][0] = 0.0;
+
+            A[4][3] /= A[4][4];
+            A[4][2] /= A[4][4];
+            A[4][1] /= A[4][4];
+            A[4][0] /= A[4][4];
+            b[4]    /= A[4][4];
+            A[4][4] = 1.0;
+
+            ems.at(n-5,0) = A[4][0];
+            ems.at(n-5,1) = A[4][1];
+            ems.at(n-5,2) = A[4][2];
+            ems.at(n-5,3) = A[4][3];
+            ems.at(n-5,4) = b[4];
+        }
+
+        GaussianElimination(A, b, x);
+
+        u.at(m, 0) = x.at(0);
+        u.at(m, 1) = x.at(1);
+        u.at(m, 2) = x.at(2);
+        u.at(m, 3) = x.at(3);
+        u.at(m, 4) = x.at(4);
+        for (unsigned int n=5; n<=N; n++)
+        {
+            u.at(m,n) = -ems.at(n-4,3)*u.at(m,n-1) - ems.at(n-4,2)*u.at(m,n-2) - ems.at(n-4,1)*u.at(m,n-3) - ems.at(n-4,0)*u.at(m,n-4) + ems.at(n-4,4);
+        }
+    }
+
+    ems.clear();
+    x.clear();
+    b.clear();
+    A.clear();
+}
+
+void IParabolicEquation::calculateN6L2RN(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
+{
+    C_UNUSED(u);
+    C_UNUSED(hx);
+    C_UNUSED(ht);
+    C_UNUSED(N);
+    C_UNUSED(M);
+    C_UNUSED(a);
+}
+
+void IParabolicEquation::calculateN6R2LN(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
+{
+    C_UNUSED(u);
+    C_UNUSED(hx);
+    C_UNUSED(ht);
+    C_UNUSED(N);
+    C_UNUSED(M);
+    C_UNUSED(a);
 }
 
 void IBackwardParabolicEquation::calculateU(DoubleMatrix &psi, double hx, double ht, unsigned int N, unsigned int M, double a) const

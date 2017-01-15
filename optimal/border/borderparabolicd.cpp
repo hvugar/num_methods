@@ -42,7 +42,7 @@ void BorderParabolicD::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         bp.M = 100;
         DoubleMatrix u;
         IPrinter::printSeperatorLine("calculateN4L2RM");
-        bp.calculateN4L2RD(u, bp.hx, bp.ht, bp.N, bp.M, bp.a);
+        bp.calculateD4L2RD(u, bp.hx, bp.ht, bp.N, bp.M, bp.a);
         IPrinter::printMatrix(14, 10, u, 10, 10, NULL);
     }
 
@@ -53,7 +53,7 @@ void BorderParabolicD::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         bp.M = 100;
         DoubleMatrix u;
         IPrinter::printSeperatorLine("calculateN4R2LM");
-        bp.calculateN4R2LD(u, bp.hx, bp.ht, bp.N, bp.M, bp.a);
+        bp.calculateD4R2LD(u, bp.hx, bp.ht, bp.N, bp.M, bp.a);
         IPrinter::printMatrix(14, 10, u, 10, 10, NULL);
     }
 
@@ -64,7 +64,7 @@ void BorderParabolicD::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         bp.M = 100;
         DoubleMatrix u;
         IPrinter::printSeperatorLine("calculateN6L2RM");
-        bp.calculateN6L2RD(u, bp.hx, bp.ht, bp.N, bp.M, bp.a);
+        bp.calculateD6L2RD(u, bp.hx, bp.ht, bp.N, bp.M, bp.a);
         IPrinter::printMatrix(14, 10, u, 10, 10, NULL);
     }
 
@@ -75,20 +75,31 @@ void BorderParabolicD::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         bp.M = 100;
         DoubleMatrix u;
         IPrinter::printSeperatorLine("calculateN6R2LM");
-        bp.calculateN6R2LD(u, bp.hx, bp.ht, bp.N, bp.M, bp.a);
+        bp.calculateD6R2LD(u, bp.hx, bp.ht, bp.N, bp.M, bp.a);
         IPrinter::printMatrix(14, 10, u, 10, 10, NULL);
     }
 }
 
 double BorderParabolicD::initial(unsigned int i UNUSED_PARAM) const
 {
+#ifndef SAMPLE_8
     return U(i,0);
+#endif
+#ifdef SAMPLE_8
+    return 1.0;
+#endif
 }
 
 double BorderParabolicD::boundary(Boundary type UNUSED_PARAM, unsigned int j UNUSED_PARAM) const
 {
+#ifndef SAMPLE_8
     if (type == Left)  return U(0,j);
     if (type == Right) return U(N,j);
+#endif
+#ifdef SAMPLE_8
+    if (type == Left)  return 4.0;
+    if (type == Right) return 3.0;
+#endif
     return 0.0;
 }
 
@@ -116,6 +127,12 @@ double BorderParabolicD::f(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PA
     unsigned int n = 3;
     return pow(x,m) - a*a*(m*(m-1)*pow(x,m-2)*t + n*(n-1)*pow(x,n-2));
 #endif
+#ifdef SAMPLE_7
+    return x*x - 2.0*t;
+#endif
+#ifdef SAMPLE_8
+    return 0.0;
+#endif
 }
 
 double BorderParabolicD::U(unsigned int i, unsigned int j) const
@@ -141,5 +158,11 @@ double BorderParabolicD::U(unsigned int i, unsigned int j) const
     unsigned int m = 3;
     unsigned int n = 3;
     return pow(x,m)*t + pow(x,n);
+#endif
+#ifdef SAMPLE_7
+    return x*x*t;
+#endif
+#ifdef SAMPLE_8
+    return 0.0;
 #endif
 }

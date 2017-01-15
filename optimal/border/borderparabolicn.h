@@ -21,10 +21,8 @@ public:
 
     double U(unsigned int i, unsigned int j) const;
 
-    void calculateN2(DoubleMatrix &u, double hx, double ht, double N, double M, double a = 1.0);
-
-    void calculateN4L2RN(DoubleMatrix &u, double hx, double ht, double N, double M, double a = 1.0);
-    void calculateN4R2LN(DoubleMatrix &u, double hx, double ht, double N, double M, double a = 1.0);
+    void calculateN2(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a = 1.0);
+    void calculateN3(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a = 1.0);
 
     double hx;
     double ht;

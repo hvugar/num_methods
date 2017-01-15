@@ -38,7 +38,8 @@ SOURCES += main.cpp \
     example4.cpp \
     example5.cpp \
     sampleboundaryproblem1.cpp \
-    problem1m.cpp
+    problem1m.cpp \
+    parabolicequationd.cpp
 
 HEADERS += \
     loadedsystems.h \
@@ -51,4 +52,5 @@ HEADERS += \
     example4.h \
     example5.h \
     sampleboundaryproblem1.h \
-    problem1m.h
+    problem1m.h \
+    parabolicequationd.h

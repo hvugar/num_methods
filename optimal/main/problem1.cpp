@@ -48,13 +48,18 @@ void Problem1::initialize()
     //V = u.row(M);
 
     DoubleMatrix u1;
-    calculateU(u1);
-    IPrinter::printMatrix(14,10,u1);
+    calculateU1(u1, N, M, hx, ht);
+    //IPrinter::printMatrix(14,10,u1);
+    IPrinter::printSeperatorLine();
+
+    DoubleMatrix u3;
+    calculateU2(u3, N, M, hx, ht);
+    //IPrinter::printMatrix(14,10,u3);
     IPrinter::printSeperatorLine();
 
     DoubleMatrix u2;
-    calculateUL2R(u2, N, M, hx, ht);
-    IPrinter::printMatrix(14,10,u2);
+    calculateUN4L2R(u2, N, M, hx, ht);
+    //IPrinter::printMatrix(14,10,u2);
     IPrinter::printSeperatorLine();
 
     return;
@@ -207,7 +212,7 @@ double Problem1::fx(const DoubleVector &x)
     getComponents(k,z,e,x);
 
     DoubleMatrix u;
-    calculateU(u);
+    calculateU1(u, N, M, hx, ht);
 
     //printf("%u, %f %f %f %f %f\n", M, u.at(M,0), u.at(M,1), u.at(M,2), u.at(M,3), u.at(M,4));
 
@@ -263,7 +268,7 @@ void Problem1::gradient(const DoubleVector &x, DoubleVector &g)
     getComponents(k,z,e,x);
 
     DoubleMatrix u;
-    calculateU(u);
+    calculateU1(u, N, M, hx, ht);
 
     DoubleMatrix psi;
     calculateP(psi, u);
@@ -493,12 +498,12 @@ void Problem1::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
 #endif
 }
 
-void Problem1::calculateU(DoubleMatrix &u)
+void Problem1::calculateU1(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht)
 {
-    DoubleVector x = *px;
-
+    //DoubleVector x = *px;
     DoubleVector k,z,e;
-    getComponents(k,z,e,x);
+    getComponents(k,z,e,*px);
+    printf("k: %f %f z: %f %f e: %f %f\n", k[0], k[1], z[0], z[1], e[0], e[1]);
 
     u.clear();
     u.resize(M+1, N+1);
@@ -511,6 +516,7 @@ void Problem1::calculateU(DoubleMatrix &u)
     DoubleVector de(N+1);
 
     for (unsigned int n=0; n<=N; n++) u.at(0,n) = initial(n);
+
     for (unsigned int m=1; m<=M; m++)
     {
         // n = 0
@@ -538,6 +544,10 @@ void Problem1::calculateU(DoubleMatrix &u)
         {
             de[n] = 0.0;
 
+            if (n==25) de[n] = -k[0]*(lambda0*(a*a*ht)/hx);// * (1.0 - fabs(n*hx - e.at(0))/hx);
+            if (n==75) de[n] = -k[1]*(lambda0*(a*a*ht)/hx);// * (1.0 - fabs(n*hx - e.at(1))/hx);
+
+            /*
             if (fabs(n*hx - e.at(0)) <= hx)
             {
                 de[n] = -k[0]*(lambda0*(a*a*ht)/hx) * (1.0 - fabs(n*hx - e.at(0))/hx);
@@ -546,6 +556,7 @@ void Problem1::calculateU(DoubleMatrix &u)
             {
                 de[n] = -k[1]*(lambda0*(a*a*ht)/hx) * (1.0 - fabs(n*hx - e.at(1))/hx);
             }
+            */
 
             //if (fabs(n*hx - e.at(0)) <= DBL_EPSILON) { de[n] = -k[0]*(lambda0*(a*a*ht)/hx); }
             //if (fabs(n*hx - e.at(1)) <= DBL_EPSILON) { de[n] = -k[1]*(lambda0*(a*a*ht)/hx); }
@@ -556,8 +567,8 @@ void Problem1::calculateU(DoubleMatrix &u)
         for (unsigned int i=0; i<=N; i++) u.at(m, i) = rx[i];
 
         //IPrinter::printVector(u.row(m));
-        printf("%u, %14.10f %14.10f %14.10f %14.10f %14.10f\n", m, u.at(m,N-4), u.at(m,N-3), u.at(m,N-2), u.at(m,N-1), u.at(m,N));
-        if (m==2) break;
+        printf("%u %14.10f %14.10f %14.10f %14.10f %14.10f\n", m, u.at(m,N-4), u.at(m,N-3), u.at(m,N-2), u.at(m,N-1), u.at(m,N));
+        if (m==1) break;
     }
 
     da.clear();
@@ -568,15 +579,85 @@ void Problem1::calculateU(DoubleMatrix &u)
     de.clear();
 }
 
-void Problem1::calculateUL2R(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht)
+void Problem1::calculateU2(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht)
 {
+    //DoubleVector x = *px;
+    DoubleVector k,z,e;
+    getComponents(k,z,e,*px);
+    printf("k: %f %f z: %f %f e: %f %f\n", k[0], k[1], z[0], z[1], e[0], e[1]);
+
+    u.clear();
     u.resize(M+1, N+1);
 
-    for (unsigned int i=0; i<=N; i++) u.at(0,i) = initial(i);
+    DoubleMatrix A(2,2,0.0);
+    DoubleVector b(2,0.0);
+    DoubleVector x(2,0.0);
 
-    DoubleVector x = *px;
+    for (unsigned int n=0; n<=N; n++) u.at(0,n) = initial(n);
+
+    for (unsigned int m=1; m<=M; m++)
+    {
+        A[0][0] = 1.0 + (a*a*ht)/(hx*hx) + (lambda0*a*a*ht)/hx + alpha*ht;
+        A[0][1] = -(a*a*ht)/(hx*hx);
+        b[0]    = u.at(m-1,0) + alpha*ht*Te - ((lambda0*a*a*ht)/hx)*(k[0]*z[0] + k[1]*z[1]);
+
+//        A[0][1] /= A[0][0];
+//        b[0]    /= A[0][0];
+//        A[0][0] = 1.0;
+
+        for (unsigned int n=1; n<=N-1; n++)
+        {
+            double g1 = -(a*a*ht)/(hx*hx);
+            double g2 = 1.0 + (2.0*a*a*ht)/(hx*hx) + alpha*ht;
+            double g3 = -(a*a*ht)/(hx*hx);
+            double fi = u.at(m-1,n) + alpha*ht*Te;
+
+            g2 /= -g1;
+            g3 /= -g1;
+            fi /= +g1;
+            g1 = 1.0;
+
+            double A00 = A[0][0];
+            A[0][0] = A[0][1] + A00*g2;
+            A[0][1] = A00*g3;
+            b[0]    = b[0] - A00*fi;
+
+            if (n==24) A[0][1] += -k[0]*(lambda0*(a*a*ht)/hx);
+            if (n==74) A[0][1] += -k[1]*(lambda0*(a*a*ht)/hx);
+
+//            A[0][1] /= A00;
+//            b[0]    /= A00;
+//            A[0][0] = 1.0;
+        }
+
+        A[1][0] = -(a*a*ht)/(hx*hx);
+        A[1][1] = 1.0 + (a*a*ht)/(hx*hx) + (lambdal*a*a*ht)/hx + alpha*ht;
+        b[1]    = u.at(m-1,N) + (lambdal*a*a*ht*Te)/hx + alpha*ht*Te;
+
+        GaussianElimination(A, b, x);
+
+        printf("%u %14.10f %14.10f\n", m, x[0], x[1]);
+
+        //for (unsigned int i=0; i<=N; i++) u.at(m, i) = rx[i];
+
+        //IPrinter::printVector(u.row(m));
+        //printf("%u %14.10f %14.10f %14.10f %14.10f %14.10f\n", m, u.at(m,N-4), u.at(m,N-3), u.at(m,N-2), u.at(m,N-1), u.at(m,N));
+        if (m==1) break;
+    }
+}
+
+void Problem1::calculateUN4L2R(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht)
+{
+    //DoubleVector x = *px;
     DoubleVector k,z,e;
-    getComponents(k,z,e,x);
+    getComponents(k,z,e,*px);
+    printf("k: %f %f z: %f %f e: %f %f\n", k[0], k[1], z[0], z[1], e[0], e[1]);
+
+    u.clear();
+    u.resize(M+1, N+1);
+
+    /* initial condition */
+    for (unsigned int n=0; n<=N; n++) u.at(0,n) = initial(n);
 
     DoubleMatrix A(5,5,0.0);
     DoubleVector b(5,0.0);
@@ -590,25 +671,25 @@ void Problem1::calculateUL2R(DoubleMatrix &u, unsigned int N, unsigned int M, do
     for (unsigned int m=1; m<=M; m++)
     {
         //0
-        A.at(0,0) = -3.0*beta1 - 1.0 - ht*alpha - lambda0*gamma;
-        A.at(0,1) = -10.0*beta1;
-        A.at(0,2) = +18.0*beta1;
-        A.at(0,3) = -6.0*beta1;
-        A.at(0,4) = +beta1;
-        b.at(0)   = -u.at(m-1,0) - ht*alpha*Te + lambda0*gamma*(k[0]*z[0] + k[1]*z[1]);
+        A[0][0] = -3.0*beta1 - 1.0 - lambda0*gamma - ht*alpha;
+        A[0][1] = -10.0*beta1;
+        A[0][2] = +18.0*beta1;
+        A[0][3] = -6.0*beta1;
+        A[0][4] = +beta1;
+        b[0]    = -u.at(m-1,0) - ht*alpha*Te + lambda0*gamma*(k[0]*z[0] + k[1]*z[1]);
 
-        A.at(0,1) /= A.at(0,0);
-        A.at(0,2) /= A.at(0,0);
-        A.at(0,3) /= A.at(0,0);
-        A.at(0,4) /= A.at(0,0);
-        b.at(0)   /= A.at(0,0);
-        A.at(0,0)  = 1.0;
+//        A[0][1] /= A[0][0];
+//        A[0][2] /= A[0][0];
+//        A[0][3] /= A[0][0];
+//        A[0][4] /= A[0][0];
+//        b[0]    /= A[0][0];
+//        A[0][0]  = 1.0;
 
-        ems.at(0,0) = A.at(0,1);
-        ems.at(0,1) = A.at(0,2);
-        ems.at(0,2) = A.at(0,3);
-        ems.at(0,3) = A.at(0,4);
-        ems.at(0,4) = b.at(0);
+        ems.at(0,0) = A[0][1];
+        ems.at(0,1) = A[0][2];
+        ems.at(0,2) = A[0][3];
+        ems.at(0,3) = A[0][4];
+        ems.at(0,4) = b[0];
 
         for (unsigned int n=0; n<=N-5; n++)
         {
@@ -626,67 +707,65 @@ void Problem1::calculateUL2R(DoubleMatrix &u, unsigned int N, unsigned int M, do
             fi /= +g0;
             g0  = 1.0;
 
-            double a00 = A.at(0,0);
-            A.at(0,0) = A.at(0,1) + a00 * g1;
-            A.at(0,1) = A.at(0,2) + a00 * g2;
-            A.at(0,2) = A.at(0,3) + a00 * g3;
-            A.at(0,3) = A.at(0,4) + a00 * g4;
-            A.at(0,4) = 0.0;
-            b.at(0)  = b.at(0) - a00*fi;
+            double A00 = A[0][0];
+            A[0][0] = A[0][1] + A00 * g1;
+            A[0][1] = A[0][2] + A00 * g2;
+            A[0][2] = A[0][3] + A00 * g3;
+            A[0][3] = A[0][4] + A00 * g4;
+            A[0][4] = 0.0;
+            b[0]    = b[0] - A00*fi;
 
-            if (n==25) A.at(0,4) = lambda0*gamma*k[0];
-            if (n==75) A.at(0,4) = lambda0*gamma*k[1];
+            if (n==22) A[0][4] = +lambda0*gamma*k[0];
+            if (n==72) A[0][4] = +lambda0*gamma*k[1];
 
-            A.at(0,1) /= A.at(0,0);
-            A.at(0,2) /= A.at(0,0);
-            A.at(0,3) /= A.at(0,0);
-            A.at(0,4) /= A.at(0,0);
-            b.at(0)   /= A.at(0,0);
-            A.at(0,0)  = 1.0;
+//            A[0][1] /= A[0][0];
+//            A[0][2] /= A[0][0];
+//            A[0][3] /= A[0][0];
+//            A[0][4] /= A[0][0];
+//            b[0]    /= A[0][0];
+//            A[0][0] = 1.0;
 
-            ems.at(n+1,0) = A.at(0,1);
-            ems.at(n+1,1) = A.at(0,2);
-            ems.at(n+1,2) = A.at(0,3);
-            ems.at(n+1,3) = A.at(0,4);
-            ems.at(n+1,4) = b.at(0);
+            ems.at(n+1,0) = A[0][1];
+            ems.at(n+1,1) = A[0][2];
+            ems.at(n+1,2) = A[0][3];
+            ems.at(n+1,3) = A[0][4];
+            ems.at(n+1,4) = b[0];
         }
 
         //N-3
-        A.at(1,0) = +22.0*beta2;
-        A.at(1,1) = -40.0*beta2 - 1.0 - ht*alpha;
-        A.at(1,2) = +12.0*beta2;
-        A.at(1,3) = +8.0*beta2;
-        A.at(1,4) = -2.0*beta2;
-        b.at(1)   = -u.at(m-1,N-3) - ht*alpha*Te;
+        A[1][0] = +22.0*beta2;
+        A[1][1] = -40.0*beta2 - 1.0 - ht*alpha;
+        A[1][2] = +12.0*beta2;
+        A[1][3] = +8.0*beta2;
+        A[1][4] = -2.0*beta2;
+        b[1]    = -u.at(m-1,N-3) - ht*alpha*Te;
 
-        //N-2
-        A.at(2,0) = -2.0*beta2;
-        A.at(2,1) = +32.0*beta2;
-        A.at(2,2) = -60.0*beta2 - 1.0 - ht*alpha;
-        A.at(2,3) = +32.0*beta2;
-        A.at(2,4) = -2.0*beta2;
-        b.at(2)   = -u.at(m-1,N-2) - ht*alpha*Te;
+        //N-2      
+        A[2][0] = -2.0*beta2;
+        A[2][1] = +32.0*beta2;
+        A[2][2] = -60.0*beta2 - 1.0 - ht*alpha;
+        A[2][3] = +32.0*beta2;
+        A[2][4] = -2.0*beta2;
+        b[2]    = -u.at(m-1,N-2) - ht*alpha*Te;
 
-        //N-1
-        A.at(3,0) = -2.0*beta2;
-        A.at(3,1) = +8.0*beta2;
-        A.at(3,2) = +12.0*beta2;
-        A.at(3,3) = -40.0*beta2 - 1.0 - ht*alpha;
-        A.at(3,4) = +22.0*beta2;
-        b.at(3)   = -u.at(m-1,N-1) - ht*alpha*Te;
+        //N-1       
+        A[3][0] = -2.0*beta2;
+        A[3][1] = +8.0*beta2;
+        A[3][2] = +12.0*beta2;
+        A[3][3] = -40.0*beta2 - 1.0 - ht*alpha;
+        A[3][4] = +22.0*beta2;
+        b[3]    = -u.at(m-1,N-1) - ht*alpha*Te;
 
-        //N
-        A.at(4,0) = -beta1;
-        A.at(4,1) = +6.0*beta1;
-        A.at(4,2) = -18.0*beta1;
-        A.at(4,3) = +10.0*beta1;
-        A.at(4,4) = +3.0*beta1 + 1.0 + ht*alpha + lambdal*gamma;
-        b.at(4)   = +u.at(m-1,N) + lambdal*gamma*Te + ht*alpha*Te;
-
-        //IPrinter::print(A,A.rows(),A.cols(),18,10);
+        //N       
+        A[4][0] = -beta1;
+        A[4][1] = +6.0*beta1;
+        A[4][2] = -18.0*beta1;
+        A[4][3] = +10.0*beta1;
+        A[4][4] = +3.0*beta1 + 1.0 + ht*alpha + lambdal*gamma;
+        b[4]    = +u.at(m-1,N) + lambdal*gamma*Te + ht*alpha*Te;
 
         GaussianElimination(A, b, y);
-        //        IPrinter::print(y, y.size());
+
         u.at(m, N-4) = y.at(0);
         u.at(m, N-3) = y.at(1);
         u.at(m, N-2) = y.at(2);
@@ -701,13 +780,14 @@ void Problem1::calculateUL2R(DoubleMatrix &u, unsigned int N, unsigned int M, do
                     +ems.at(n,4);
         }
 
-        printf("%u, %14.10f %14.10f %14.10f %14.10f %14.10f\n", m, u.at(m,N-4), u.at(m,N-3), u.at(m,N-2), u.at(m,N-1), u.at(m,N));
-        if (m==2) break;
+        printf("%u %14.10f %14.10f %14.10f %14.10f %14.10f\n", m, u.at(m,N-4), u.at(m,N-3), u.at(m,N-2), u.at(m,N-1), u.at(m,N));
+        if (m==1) break;
     }
 
-    A.clear();
-    b.clear();
+    ems.clear();
     y.clear();
+    b.clear();
+    A.clear();
 }
 
 void Problem1::calculateP(DoubleMatrix &p, const DoubleMatrix &u)

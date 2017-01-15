@@ -23,11 +23,19 @@ public:
 
     virtual void calculateU1(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0) const;
 
-    virtual void calculateN4L2RD(DoubleMatrix &u, double hx, double ht, double N, double M, double a = 1.0);
-    virtual void calculateN4R2LD(DoubleMatrix &u, double hx, double ht, double N, double M, double a = 1.0);
+    /* dirichlet conditions */
+    virtual void calculateD4L2RD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a = 1.0);
+    virtual void calculateD4R2LD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a = 1.0);
 
-    virtual void calculateN6L2RD(DoubleMatrix &u, double hx, double ht, double N, double M, double a = 1.0);
-    virtual void calculateN6R2LD(DoubleMatrix &u, double hx, double ht, double N, double M, double a = 1.0);
+    virtual void calculateD6L2RD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a = 1.0);
+    virtual void calculateD6R2LD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a = 1.0);
+
+    /* neumann conditions */
+    virtual void calculateN4L2RN(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a = 1.0);
+    virtual void calculateN4R2LN(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a = 1.0);
+
+    virtual void calculateN6L2RN(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a = 1.0);
+    virtual void calculateN6R2LN(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a = 1.0);
 };
 
 class MINIMUMSHARED_EXPORT IBackwardParabolicEquation
