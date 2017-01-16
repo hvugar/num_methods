@@ -63,8 +63,8 @@ void IParabolicEquation::calculateU(DoubleVector &u, double hx, double ht, unsig
             da[0]   = 0.0;
             dc[N-2] = 0.0;
 
-            u[0] = boundary(Left, j);//m1(j);
-            u[N] = boundary(Right, j);//m2(j);
+            u[0] = boundary(Left, j);
+            u[N] = boundary(Right, j);
 
             dd[0]   -= alpha * u[0];
             dd[N-2] -= alpha * u[N];
@@ -263,7 +263,7 @@ void IParabolicEquation::calculateN(DoubleMatrix &u, double hx, double ht, unsig
     rx.clear();
 }
 
-void IParabolicEquation::calculateD4L2RD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
+void IParabolicEquation::calculateN4L2RD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
 {
     unsigned int k = 4;
     double alpha = (ht*a*a)/(24.0*hx*hx);
@@ -382,7 +382,7 @@ void IParabolicEquation::calculateD4L2RD(DoubleMatrix &u, double hx, double ht, 
     A.clear();
 }
 
-void IParabolicEquation::calculateD4R2LD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
+void IParabolicEquation::calculateN4R2LD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
 {
     unsigned int k = 4;
     double alpha = (a*a*ht)/(24.0*hx*hx);
@@ -501,7 +501,7 @@ void IParabolicEquation::calculateD4R2LD(DoubleMatrix &u, double hx, double ht, 
     A.clear();
 }
 
-void IParabolicEquation::calculateD6L2RD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
+void IParabolicEquation::calculateN6L2RD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
 {
     unsigned int k = 6;
     double alpha = (ht*a*a)/(180.0*hx*hx);
@@ -663,7 +663,7 @@ void IParabolicEquation::calculateD6L2RD(DoubleMatrix &u, double hx, double ht, 
     A.clear();
 }
 
-void IParabolicEquation::calculateD6R2LD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
+void IParabolicEquation::calculateN6R2LD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
 {
     unsigned int k = 6;
     double alpha = (ht*a*a)/(180.0*hx*hx);
