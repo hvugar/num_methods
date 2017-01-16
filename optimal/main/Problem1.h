@@ -39,8 +39,8 @@ public:
     double initial(unsigned int i) const;
     double mu(unsigned int i UNUSED_PARAM) const { return 1.0; }
     // qovma 1
-    void calculateU1(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht);
-    void calculateU2(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht);
+    void calculateU(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht);
+    void calculateUN2L2R(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht);
     void calculateUN4L2R(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht);
     void calculateP(DoubleMatrix& p, const DoubleMatrix &u);
 
