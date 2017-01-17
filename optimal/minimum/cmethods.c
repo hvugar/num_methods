@@ -149,16 +149,19 @@ void qovmaE(double *a, double *b, double *c, double *d, double *x, unsigned int 
     double *p = (double*)malloc(sizeof(double)*n);
     double *q = (double*)malloc(sizeof(double)*n);
     double **k = (double**) malloc(sizeof(double*)*L);
-    for (unsigned int s=0; s<L; s++) k[s] = (double*)malloc(sizeof(double)*n);
+    unsigned int s;
+    for (s=0; s<L; s++) k[s] = (double*)malloc(sizeof(double)*n);
 
-    for (unsigned int i=0; i<n; i++)
+    unsigned int i;
+    for (i=0; i<n; i++)
     {
         if (i == 0)
         {
             p[0] = +d[0]/b[0];
             q[0] = -c[0]/b[0];
 
-            for (unsigned int s=0; s<L; s++)
+            unsigned int s;
+            for (s=0; s<L; s++)
             {
                 k[s][0] = -e[s]/b[0];
             }
@@ -168,14 +171,16 @@ void qovmaE(double *a, double *b, double *c, double *d, double *x, unsigned int 
             p[i] = +(d[i]-a[i]*p[i-1])/(b[i]+a[i]*q[i-1]);
             q[i] = 0.0;
 
-            for (unsigned int s=0; s<L; s++) k[s][i] = 0.0;
+            unsigned int s;
+            for (s=0; s<L; s++) k[s][i] = 0.0;
         }
         else
         {
             p[i] = +(d[i]-a[i]*p[i-1])/(b[i]+a[i]*q[i-1]);
             q[i] = -c[i]/(b[i]+a[i]*q[i-1]);
 
-            for (unsigned int s=0; s<L; s++)
+            unsigned int s;
+            for (s=0; s<L; s++)
             {
                 if (i<(E[s]-1))
                     k[s][i] = -(a[i]*k[s][i-1])/(b[i]+a[i]*q[i-1]);
@@ -183,12 +188,11 @@ void qovmaE(double *a, double *b, double *c, double *d, double *x, unsigned int 
                     k[s][i] = 0.0;
             }
 
-            for (unsigned int s=0; s<L; s++) if (i==E[s]-1) q[i] += -(a[i]*k[s][i-1])/(b[i]+a[i]*q[i-1]);
+            for (s=0; s<L; s++) if (i==E[s]-1) q[i] += -(a[i]*k[s][i-1])/(b[i]+a[i]*q[i-1]);
         }
     }
 
-    const unsigned int j = (unsigned)0-1;
-    for (unsigned int i=n-1; i != j; i--)
+    for (i=n-1; i != UINT_MAX; i--)
     {
         if (i==(n-1))
         {
@@ -198,7 +202,8 @@ void qovmaE(double *a, double *b, double *c, double *d, double *x, unsigned int 
         {
             x[i] = p[i] + q[i]*x[i+1];
 
-            for (unsigned int s=0; s<L; s++)
+            unsigned int s;
+            for (s=0; s<L; s++)
             {
                 if (i<=E[s]-1)
                 {
@@ -210,7 +215,8 @@ void qovmaE(double *a, double *b, double *c, double *d, double *x, unsigned int 
 
     free(q);
     free(q);
-    for (unsigned int s=0; s<L; s++) free(k[s]);
+
+    for (s=0; s<L; s++) free(k[s]);
     free(k);
 }
 
@@ -220,7 +226,8 @@ void qovma2(double *a, double *b, double *c, double *d, double *x, unsigned int 
     double *q = (double*)malloc(sizeof(double)*n);
     double *k = (double*)malloc(sizeof(double)*n);
 
-    for (unsigned int i1=1; i1 <= n; i1++)
+    unsigned int i1;
+    for (i1=1; i1 <= n; i1++)
     {
         unsigned int i = n - i1;
 
@@ -253,7 +260,8 @@ void qovma2(double *a, double *b, double *c, double *d, double *x, unsigned int 
         }
     }
 
-    for (unsigned int i=0; i < n; i++)
+    unsigned int i;
+    for (i=0; i < n; i++)
     {
         if (i==0)
         {
@@ -276,9 +284,11 @@ void qovma2(double *a, double *b, double *c, double *d, double *x, unsigned int 
 
 void printMat(double **a, double *b, unsigned int n)
 {
-    for (unsigned int j=0; j<n; j++)
+    unsigned int j;
+    for (j=0; j<n; j++)
     {
-        for (unsigned int i=0; i<n; i++)
+        unsigned int i;
+        for (i=0; i<n; i++)
             printf("%10.4f ", a[j][i]);
         printf("| %10.4f\n", b[j]);
     }
@@ -307,12 +317,13 @@ void gaussianElimination(double **a, double *b, double *x, unsigned int n)
 
         if (fabs(a[k][k]) <= DBL_EPSILON)
         {
-            for (unsigned int k1 = k+1; k1 < n; k1++)
+            unsigned int k1;
+            for (k1 = k+1; k1 < n; k1++)
             {
                 if (a[k][k1] != 0.0)
                 {
-                    //                    printf("Changing row: %d to row %d\n", k, k1);
-                    for (unsigned int k2=k; k2 < n; k2++)
+                    unsigned int k2;
+                    for (k2=k; k2 < n; k2++)
                     {
                         double _a = a[k1][k2];
                         a[k1][k2] = a[k][k2];

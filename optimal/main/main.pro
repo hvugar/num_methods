@@ -1,7 +1,7 @@
 TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
-#CONFIG -= qt
+CONFIG -= qt
 TARGET = main
 QMAKE_CXXFLAGS += -O1
 #QMAKE_CXXFLAGS_RELEASE = -O3
@@ -24,8 +24,6 @@ LIBS += -L../bin -lborder
 #LIBS += -L../bin -limaging
 
 DESTDIR += ../bin
-
-QT += core gui widgets
 
 SOURCES += main.cpp \
     loadedsystems.cpp \

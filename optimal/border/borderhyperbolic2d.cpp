@@ -5,6 +5,14 @@
 void BorderHyperbolic2D::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
 {
     BorderHyperbolic2D bp;
+    bp.h1 = 0.01;
+    bp.h2 = 0.01;
+    bp.ht = 0.00125;
+    bp.N1 = 100;
+    bp.N2 = 100;
+    bp.M  = 800;
+    bp.a1 = 1.0;
+    bp.a2 = 1.0;
 
     DoubleMatrix m1;
     bp.calculate(m1, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, bp.a1, bp.a2);

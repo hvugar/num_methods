@@ -4,6 +4,7 @@
 void BorderParabolicN::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     BorderParabolicN bp;
+    bp.a = 1.0;
 
     // Real solution
     {
@@ -326,7 +327,7 @@ void BorderParabolicN::calculateN3(DoubleMatrix &u, double hx, double ht, unsign
         //printf("%14.10f %14.10f\n", x[0], x[1]);
         //printf("%14.10f %14.10f\n", U(N-1,m), U(N-0,m));
 
-        for (unsigned int n=N-2; n!=UINT32_MAX; n--)
+        for (unsigned int n=N-2; n!=UINT_MAX; n--)
         {
             u.at(m, n) = -ems.at(n,1)*u.at(m,n+1) + ems.at(n,2);
             u.at(m, n) /= ems.at(n, 0);

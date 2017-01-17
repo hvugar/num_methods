@@ -7,6 +7,14 @@
 void BorderParabolic2D::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
 {
     BorderParabolic2D bp;
+    bp.ht = 0.01;
+    bp.h1 = 0.01;
+    bp.h2 = 0.01;
+    bp.M = 100;
+    bp.N1 = 100;
+    bp.N2 = 100;
+    bp.a1 = bp.a2 = 1.0;
+
     DoubleMatrix m;
     bp.calculate(m, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, bp.a1, bp.a2);
 }

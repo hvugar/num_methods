@@ -14,14 +14,14 @@ public:
 
     double u(unsigned int i, unsigned int j, unsigned int k) const;
 
-    double h1 = 0.01;
-    double h2 = 0.01;
-    double ht = 0.00125;
-    unsigned int N1 = 100;
-    unsigned int N2 = 100;
-    unsigned int M  = 800;
-    double a1 = 1.0;
-    double a2 = 1.0;
+    double h1;
+    double h2;
+    double ht;
+    unsigned int N1;
+    unsigned int N2;
+    unsigned int M;
+    double a1;
+    double a2;
 
     void calculate(DoubleMatrix &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const;
 

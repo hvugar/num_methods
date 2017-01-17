@@ -20,7 +20,7 @@ public:
     double& at (unsigned int n);
     const double& at (unsigned int n) const;
     unsigned int size() const;
-    double* data() noexcept;
+    double* data() NOEXCEPT;
 
     void randomData();
 
@@ -43,9 +43,9 @@ public:
     double& begin();
     const double& begin() const;
     unsigned int capacity() const;
-    double& cbegin() const noexcept;
-    double& cend() const noexcept;
-    const double* data() const noexcept;
+    double& cbegin() const NOEXCEPT;
+    double& cend() const NOEXCEPT;
+    const double* data() const NOEXCEPT;
     double& end();
     const double& end() const;
     double& erase (unsigned int position);

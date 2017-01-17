@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <cmethods.h>
+#include "cmethods.h"
 #include "global.h"
 
 class MINIMUMSHARED_EXPORT LinearODE1stOrder

@@ -1,6 +1,6 @@
 #include "parabolicequation.h"
 #include "cmethods.h"
-#include <rungekutta.h>
+#include "rungekutta.h"
 
 double MIN1 = +10000.0;
 double MAX1 = -10000.0;
@@ -265,8 +265,10 @@ void IParabolicEquation::calculateN(DoubleMatrix &u, double hx, double ht, unsig
 
 void IParabolicEquation::calculateN4L2RD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
 {
-    unsigned int k = 4;
+    const unsigned int k = 4;
     double alpha = (ht*a*a)/(24.0*hx*hx);
+
+    u.clear();
     u.resize(M+1, N+1);
 
     double D[k+1][k+1] =
@@ -384,8 +386,10 @@ void IParabolicEquation::calculateN4L2RD(DoubleMatrix &u, double hx, double ht, 
 
 void IParabolicEquation::calculateN4R2LD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
 {
-    unsigned int k = 4;
+    const unsigned int k = 4;
     double alpha = (a*a*ht)/(24.0*hx*hx);
+
+    u.clear();
     u.resize(M+1, N+1);
 
     double D[k+1][k+1] =
@@ -503,8 +507,10 @@ void IParabolicEquation::calculateN4R2LD(DoubleMatrix &u, double hx, double ht, 
 
 void IParabolicEquation::calculateN6L2RD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
 {
-    unsigned int k = 6;
+    const unsigned int k = 6;
     double alpha = (ht*a*a)/(180.0*hx*hx);
+
+    u.clear();
     u.resize(M+1, N+1);
 
     double D[k+1][k+1] =
@@ -665,8 +671,10 @@ void IParabolicEquation::calculateN6L2RD(DoubleMatrix &u, double hx, double ht, 
 
 void IParabolicEquation::calculateN6R2LD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
 {
-    unsigned int k = 6;
+    const unsigned int k = 6;
     double alpha = (ht*a*a)/(180.0*hx*hx);
+
+    u.clear();
     u.resize(M+1, N+1);
 
     double D[k+1][k+1] =
@@ -962,7 +970,7 @@ void IParabolicEquation::calculateN4L2RN(DoubleMatrix &u, double hx, double ht, 
         u.at(m, N-0) = x.at(4);
         //printf("%4u %14.10f %14.10f %14.10f %14.10f %14.10f\n", m, U(N-4,m), U(N-3,m), U(N-2,m), U(N-1,m), U(N,m));
         //printf("%4u %14.10f %14.10f %14.10f %14.10f %14.10f\n", m, u.at(m,N-4), u.at(m,N-3), u.at(m,N-2), u.at(m,N-1), u.at(m,N));
-        for (unsigned int n=N-5; n!=UINT32_MAX; n--)
+        for (unsigned int n=N-5; n!=UINT_MAX; n--)
         {
             u.at(m,n) = -ems.at(n,0)*u.at(m,n+1)
                     -ems.at(n,1)*u.at(m,n+2)

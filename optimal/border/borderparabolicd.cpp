@@ -4,6 +4,7 @@
 void BorderParabolicD::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     BorderParabolicD bp;
+    bp.a = 1.0;
 
     // Real solution
     {

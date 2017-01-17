@@ -13,11 +13,8 @@
 #include <../border/borderparabolic2d.h>
 #include <../border/borderhyperbolic2d.h>
 
-#include <bordertest1.h>
-#include <sampleboundaryproblem1.h>
-
-#include <QtGui/QGuiApplication>
-//#include <imaging.h>
+#include "bordertest1.h"
+#include "sampleboundaryproblem1.h"
 
 #include <float.h>
 #include <time.h>

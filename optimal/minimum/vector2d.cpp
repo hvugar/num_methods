@@ -116,12 +116,12 @@ unsigned int DoubleVector::size() const
     return mSize;
 }
 
-double* DoubleVector::data() noexcept
+double* DoubleVector::data() NOEXCEPT
 {
     return mData;
 }
 
-const double* DoubleVector::data() const noexcept
+const double* DoubleVector::data() const NOEXCEPT
 {
     return mData;
 }

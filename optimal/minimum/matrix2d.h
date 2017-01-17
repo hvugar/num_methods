@@ -1,19 +1,19 @@
 #ifndef MATRIX2D_H
 #define MATRIX2D_H
 
-#include <global.h>
-#include <vector2d.h>
+#include "global.h"
+#include "vector2d.h"
 #include <exception>
 #include <string>
 
 class MINIMUMSHARED_EXPORT DoubleMatrixException : public std::exception
 {
 public:
-    DoubleMatrixException(unsigned int msgCode = 0) noexcept;
-    DoubleMatrixException(const DoubleMatrixException&) noexcept;
-    DoubleMatrixException& operator= (const DoubleMatrixException&) noexcept;
-    virtual ~DoubleMatrixException();
-    virtual const char* what() const noexcept;
+    DoubleMatrixException(unsigned int msgCode = 0) NOEXCEPT;
+    DoubleMatrixException(const DoubleMatrixException&) NOEXCEPT;
+    DoubleMatrixException& operator= (const DoubleMatrixException&) NOEXCEPT;
+    //virtual ~DoubleMatrixException()  {}
+    virtual const char* what() const NOEXCEPT;
 
 private:
     unsigned int msgCode;

@@ -1,9 +1,9 @@
 #ifndef BOUNDARYVALUEPROBLEM_H
 #define BOUNDARYVALUEPROBLEM_H
 
-#include <vector2d.h>
-#include <matrix2d.h>
-#include <printer.h>
+#include "vector2d.h"
+#include "matrix2d.h"
+#include "printer.h"
 
 /**
  * @brief The BoundaryProblem class

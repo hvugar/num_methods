@@ -21,6 +21,14 @@
 #define UNUSED_PARAM
 #endif
 
+#if (defined(__cplusplus))
+#if (__cplusplus == 201103)
+#define NOEXCEPT noexcept
+#else
+#define NOEXCEPT throw()
+#endif
+#endif
+
 enum Boundary
 {
     Left = 0,
@@ -36,4 +44,3 @@ enum BoundaryCondition
 };
 
 #endif // GLOBAL
-

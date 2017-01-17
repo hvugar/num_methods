@@ -2,7 +2,7 @@
 #define PROJECTION_H
 
 #include "global.h"
-#include <vector2d.h>
+#include "vector2d.h"
 
 class MINIMUMSHARED_EXPORT IProjection
 {

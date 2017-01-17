@@ -5,20 +5,19 @@
 #include <time.h>
 #include <math.h>
 #include <float.h>
-#include <printer.h>
+#include "printer.h"
 
-DoubleMatrixException::DoubleMatrixException(unsigned int msgCode) noexcept : msgCode(msgCode) {}
+DoubleMatrixException::DoubleMatrixException(unsigned int msgCode) NOEXCEPT : msgCode(msgCode) {}
 
-DoubleMatrixException::DoubleMatrixException(const DoubleMatrixException & e) noexcept : msgCode(e.msgCode) {}
+DoubleMatrixException::DoubleMatrixException(const DoubleMatrixException & e) NOEXCEPT : msgCode(e.msgCode) {}
 
-DoubleMatrixException& DoubleMatrixException::operator =(const DoubleMatrixException& e) noexcept
+DoubleMatrixException& DoubleMatrixException::operator =(const DoubleMatrixException& e) NOEXCEPT
 {
     msgCode = e.msgCode;
     return *this;
 }
-DoubleMatrixException::~DoubleMatrixException() {}
 
-const char* DoubleMatrixException::what() const noexcept
+const char* DoubleMatrixException::what() const NOEXCEPT
 {
     if (msgCode == 1) return "Dimension of matrixs do not matches!";
     if (msgCode == 2) return "Matrix is not square matrix!";
