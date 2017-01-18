@@ -38,7 +38,9 @@ SOURCES += \
     vector2d.cpp \
     matrix3d.cpp \
     bvp.cpp \
-    cmethods.c
+    cmethods.c \
+    grid/gridmethod.cpp \
+    grid/parabolicequationgird1d.cpp
 
 HEADERS += global.h \
     cmethods.h \
@@ -64,4 +66,6 @@ HEADERS += global.h \
     matrix2d.h \
     vector2d.h \
     matrix3d.h \
-    bvp.h
+    bvp.h \
+    grid/gridmethod.h \
+    grid/parabolicequationgird1d.h
