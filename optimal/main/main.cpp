@@ -65,7 +65,6 @@ double A::a(unsigned int n UNUSED_PARAM, unsigned int m UNUSED_PARAM) const
     return 1.0;
 }
 
-
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     srand(time(NULL));
