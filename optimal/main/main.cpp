@@ -70,22 +70,22 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     srand(time(NULL));
 
-    A a;
-    DoubleMatrix m;
-    a.gridMethod(m);
-    IPrinter::printMatrix(14, 10, m);
-    IPrinter::printSeperatorLine();
+//    A a;
+//    DoubleMatrix m;
+//    a.gridMethod(m);
+//    IPrinter::printMatrix(14, 10, m);
+//    IPrinter::printSeperatorLine();
 
-    DoubleMatrix u1;
-    a.calculateN4L2RD(u1);
-    IPrinter::printMatrix(14, 10, u1);
+//    DoubleMatrix u1;
+//    a.calculateN4L2RD(u1);
+//    IPrinter::printMatrix(14, 10, u1);
 
     //BorderTest::Main(argc, argv);
     //BorderTest1::Main(argc, argv);
     //Example2::Main(argc, argv);
     //Problem1::Main(argc, argv);
     //Example4::Main(argc, argv);
-    //BorderParabolicD::Main(argc, argv);
+    BorderParabolicD::Main(argc, argv);
     //BorderParabolicN::Main(argc, argv);
     //BorderParabolic2D::Main(argc, argv);
     //BorderHyperbolic2D::Main(argc, argv);

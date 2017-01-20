@@ -99,6 +99,7 @@ void IParabolicEquation::calculateU(DoubleMatrix &u, double hx, double ht, unsig
     double alpha = -(a*a*ht)/(hx*hx);
     double beta  = 1.0 + (2.0*a*a*ht)/(hx*hx);
 
+
     for (unsigned int j=0; j<=M; j++)
     {
         if (j == 0)
@@ -121,8 +122,8 @@ void IParabolicEquation::calculateU(DoubleMatrix &u, double hx, double ht, unsig
             da[0]   = 0.0;
             dc[N-2] = 0.0;
 
-            u[j][0] = boundary(Left, j);//m1(j);
-            u[j][N] = boundary(Right, j);//m2(j);
+            u[j][0] = boundary(Left, j);
+            u[j][N] = boundary(Right, j);
 
             dd[0]   -= alpha * u[j][0];
             dd[N-2] -= alpha * u[j][N];

@@ -144,6 +144,139 @@ void tomasAlgorithm(const double *a, const double *b, const double *c, const dou
     free(q);
 }
 
+/**
+ * @brief Метод прогонки с трехдиагональной матрицей
+ * @param a
+ * @param b
+ * @param c
+ * @param d
+ * @param x
+ * @param N
+ */
+void tomasAlgorithmL2R(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int N)
+{
+    // Корректность и устойчивость метода. ----------------------------------------------------------------------
+    int isCorrect1 = 0;
+    int isCorrect2 = 0;
+    if (fabs(c[0]) >= 0.0 && fabs(a[N-1]) >= 0.0 && fabs(b[0]) > 0.0 && fabs(b[N-1]) > 0.0)
+    {
+        isCorrect1 = 1;
+        isCorrect1 &= fabs(b[0]) >= fabs(c[0]);
+        isCorrect1 &= fabs(b[N-1]) >= fabs(a[N-1]);
+
+        for (unsigned int i=1; i<N-1; i++)
+        {
+            isCorrect1 &= (fabs(b[i]) >= fabs(a[i]) + fabs(c[i]));
+            isCorrect2 |= (fabs(b[i]) >  fabs(a[i]) + fabs(c[i]));
+        }
+    }
+    if (isCorrect1 == 0 || isCorrect2 == 0)
+    {
+        printf("Not correct %d %d!\n", isCorrect1, isCorrect2);
+        return;
+    }
+
+    double *alpha = (double*)malloc(sizeof(double)*N);
+    double *betta = (double*)malloc(sizeof(double)*N);
+
+    unsigned int i;
+    //unsigned int N0 = N-1;
+    unsigned int N1 = N-2;
+
+    // Прямой ход метода прогонки. Определение прогоночных коэффициентов.----------------------------------------
+    alpha[0] = -c[0]/b[0];
+    betta[0] = +d[0]/b[0];
+    for (i=1; i<=N1; i++)
+    {
+        double m = b[i] + a[i]*alpha[i-1];
+        alpha[i] = -c[i]/m;
+        betta[i] = +(d[i]-a[i]*betta[i-1])/m;
+    }
+    double m = b[N-1] + a[N-1]*alpha[N-2];
+    alpha[N-1] = 0.0;
+    betta[N-1] = (d[N-1]-a[N-1]*betta[N-2])/m;
+    //-----------------------------------------------------------------------------------------------------------
+
+    const unsigned int U_INT32_MAX = (unsigned int)0-1;
+    // Обратный ход метода прогонки.-----------------------------------------------------------------------------
+    // Обратный ход метода прогонки начинается с вычисления хn.--------------------------------------------------
+    x[N-1] = betta[N-1];
+    // Остальные значения неизвестных находятся рекуррентно.-----------------------------------------------------
+    for (i=N1; i != U_INT32_MAX; i--)
+    {
+        x[i] = alpha[i]*x[i+1] + betta[i];
+    }
+
+    free(betta); betta=NULL;
+    free(alpha); alpha=NULL;
+}
+
+/**
+ * @brief Метод прогонки с трехдиагональной матрицей
+ * @param a
+ * @param b
+ * @param c
+ * @param d
+ * @param x
+ * @param N
+ */
+void tomasAlgorithmR2L(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int N)
+{
+    // Корректность и устойчивость метода. ----------------------------------------------------------------------
+    int isCorrect1 = 0;
+    int isCorrect2 = 0;
+    if (fabs(c[0]) >= 0.0 && fabs(a[N-1]) >= 0.0 && fabs(b[0]) > 0.0 && fabs(b[N-1]) > 0.0)
+    {
+        isCorrect1 = 1;
+        isCorrect1 &= fabs(b[0]) >= fabs(c[0]);
+        isCorrect1 &= fabs(b[N-1]) >= fabs(a[N-1]);
+
+        for (unsigned int i=1; i<N-1; i++)
+        {
+            isCorrect1 &= (fabs(b[i]) >= fabs(a[i]) + fabs(c[i]));
+            isCorrect2 |= (fabs(b[i]) >  fabs(a[i]) + fabs(c[i]));
+        }
+    }
+    if (isCorrect1 == 0 || isCorrect2 == 0)
+    {
+        printf("Not correct %d %d!\n", isCorrect1, isCorrect2);
+        return;
+    }
+
+    double *alpha = (double*)malloc(sizeof(double)*N);
+    double *betta = (double*)malloc(sizeof(double)*N);
+
+    unsigned int i;
+    //unsigned int N0 = N-1;
+    //unsigned int N1 = N-2;
+
+    // Прямой ход метода прогонки.
+    // Определение прогоночных коэффициентов.
+    alpha[N-1] = -a[N-1]/b[N-1];
+    betta[N-1] = +d[N-1]/b[N-1];
+    for (i=N-1; i>=1; i--)
+    {
+        double m = b[i] + c[i]*alpha[i+1];
+        alpha[i] = -a[i]/m;
+        betta[i] = +(d[i]-c[i]*betta[i+1])/m;
+    }
+    double m = b[0] + c[0]*alpha[1];
+    alpha[0] = 0.0;
+    betta[0] = (d[0]-c[0]*betta[1])/m;
+
+    // Обратный ход метода прогонки.
+    // Обратный ход метода прогонки начинается с вычисления хn.
+    x[0] = betta[0];
+    // Остальные значения неизвестных находятся рекуррентно.
+    for (i=1; i<N; i++)
+    {
+        x[i] = alpha[i]*x[i-1] +  betta[i];
+    }
+
+    free(betta); betta=NULL;
+    free(alpha); alpha=NULL;
+}
+
 void qovmaE(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e, unsigned int *E, unsigned int L)
 {
     double *p = (double*)malloc(sizeof(double)*n);

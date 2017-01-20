@@ -30,6 +30,9 @@ double trapesium1(CR1Function fx, unsigned int n, double a, double b);
 double trapesium2(CR1Function fx, double h, double a, double b);
 
 void MINIMUMSHARED_EXPORT tomasAlgorithm(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int n);
+void MINIMUMSHARED_EXPORT tomasAlgorithmL2R(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int n);
+void MINIMUMSHARED_EXPORT tomasAlgorithmR2L(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int n);
+
 void MINIMUMSHARED_EXPORT qovmaE(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e, unsigned int *E, unsigned int L);
 void MINIMUMSHARED_EXPORT qovma2(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e);
 void MINIMUMSHARED_EXPORT gaussianElimination(double **a, double *b, double *x, unsigned int n);

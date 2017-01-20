@@ -19,7 +19,8 @@ void BorderParabolicD::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
             for (unsigned int j=0; j<=bp.N; j++)
                 ru.at(i,j) = bp.U(j,i);
         }
-        IPrinter::printMatrix(14, 10, ru, 10, 10, NULL);
+        //IPrinter::printMatrix(14, 10, ru, 10, 10, NULL);
+        IPrinter::printVector(14,10,ru.row(1));
         ru.clear();
     }
 
@@ -32,9 +33,12 @@ void BorderParabolicD::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         DoubleMatrix u;
         IPrinter::printSeperatorLine("calculateU");
         bp.calculateU(u, bp.hx, bp.ht, bp.N, bp.M, bp.a);
-        IPrinter::printMatrix(14, 10, u, 10, 10, NULL);
+        IPrinter::printVector(14,10,u.row(1));
+        //IPrinter::printMatrix(14, 10, u, 10, 10, NULL);
         u.clear();
     }
+
+    return;
 
     {
         bp.hx = 0.01;
@@ -46,8 +50,6 @@ void BorderParabolicD::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         bp.calculateN2L2RD(u, bp.hx, bp.ht, bp.N, bp.M, bp.a);
         IPrinter::printMatrix(14, 10, u, 10, 10, NULL);
     }
-
-    return;
 
     {
         bp.hx = 0.01;
@@ -150,6 +152,10 @@ double BorderParabolicD::f(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PA
 #ifdef SAMPLE_8
     return 0.0;
 #endif
+#ifdef SAMPLE_9
+    double k = 20.0;
+    return exp(k*x)*(1.0 - a*a*k*k*t);
+#endif
 }
 
 double BorderParabolicD::U(unsigned int i, unsigned int j) const
@@ -184,6 +190,10 @@ double BorderParabolicD::U(unsigned int i, unsigned int j) const
 #endif
 #ifdef SAMPLE_8
     return 0.0;
+#endif
+#ifdef SAMPLE_9
+    double k = 20.0;
+    return exp(k*x)*t;
 #endif
 }
 
