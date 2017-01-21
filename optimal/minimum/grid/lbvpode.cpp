@@ -1,7 +1,6 @@
-#include "bvp.h"
-#include "cmethods.h"
+#include "lbvpode.h"
 
-void BoundaryValueProblem::calculate2N(DoubleVector &x, double h, unsigned int N)
+void LinearBoundaryValueProblemODE::calculate2N(DoubleVector &x, double h, unsigned int N)
 {
     x.clear();
     x.resize(N+1);
@@ -47,7 +46,7 @@ void BoundaryValueProblem::calculate2N(DoubleVector &x, double h, unsigned int N
     rx.clear();
 }
 
-void BoundaryValueProblem::calculate4NL2R(DoubleVector &x, double h, unsigned int N)
+void LinearBoundaryValueProblemODE::calculate4NL2R(DoubleVector &x, double h, unsigned int N)
 {
     x.clear();
     x.resize(N+1, 0.0);
@@ -82,12 +81,13 @@ void BoundaryValueProblem::calculate4NL2R(DoubleVector &x, double h, unsigned in
             // + * * * *
             double alphai = r(i-1)/(24.0*h*h);
             double bettai = p(i-1)/(12.0*h);
-            double q1 = +70.0*alphai  - 25.0*bettai + q(i-1);
-            double q2 = -208.0*alphai + 48.0*bettai;
-            double q3 = +228.0*alphai - 36.0*bettai;
-            double q4 = -112.0*alphai + 16.0*bettai;
-            double q5 = +22.0*alphai  - 3.0*bettai;
-            double e  = f(i-1);
+
+            double g1 = +70.0*alphai  - 25.0*bettai + q(i-1);
+            double g2 = -208.0*alphai + 48.0*bettai;
+            double g3 = +228.0*alphai - 36.0*bettai;
+            double g4 = -112.0*alphai + 16.0*bettai;
+            double g5 = +22.0*alphai  - 3.0*bettai;
+            double fi = f(i-1);
             /*
             // * + * * *
             double alphai = r(i)/(24.0*h*h);
@@ -100,18 +100,18 @@ void BoundaryValueProblem::calculate4NL2R(DoubleVector &x, double h, unsigned in
             double e  = f(i);
             */
 
-            q2 /= -q1;
-            q3 /= -q1;
-            q4 /= -q1;
-            q5 /= -q1;
-            e  /= +q1;
-            q1 = 1.0;
+            g2 /= -g1;
+            g3 /= -g1;
+            g4 /= -g1;
+            g5 /= -g1;
+            fi /= +g1;
+            g1 = 1.0;
 
-            c1 = c2 + q2;
-            c2 = (c3 + q3)/c1;
-            c3 = (c4 + q4)/c1;
-            c4 = q5/c1;
-            c5 = (c5 - e)/c1;
+            c1 = c2 + g2;
+            c2 = (c3 + g3)/c1;
+            c3 = (c4 + g4)/c1;
+            c4 = g5/c1;
+            c5 = (c5 - fi)/c1;
             c1 = 1.0;
         }
 
@@ -169,13 +169,12 @@ void BoundaryValueProblem::calculate4NL2R(DoubleVector &x, double h, unsigned in
         x.at(i) /= d0;
     }
 
-    //printf("%14.10f %14.10f %14.10f %14.10f\n", z[0], z[1], z[2], z[3]);
     A.clear();
     b.clear();
     z.clear();
 }
 
-void BoundaryValueProblem::calculate4NR2L(DoubleVector &x, double h, unsigned int N)
+void LinearBoundaryValueProblemODE::calculate4NR2L(DoubleVector &x, double h, unsigned int N)
 {
     x.clear();
     x.resize(N+1, 0.0);
@@ -233,25 +232,25 @@ void BoundaryValueProblem::calculate4NR2L(DoubleVector &x, double h, unsigned in
             double alphai = r(i)/(24.0*h*h);
             double bettai = p(i)/(12.0*h);
 
-            double q1 = -2.0*alphai  - bettai;
-            double q2 = +8.0*alphai  + 6.0*bettai;
-            double q3 = +12.0*alphai - 18.0*bettai;
-            double q4 = -40.0*alphai + 10.0*bettai + q(i);
-            double q5 = +22.0*alphai + 3.0*bettai;
-            double q  = f(i);
+            double g1 = -2.0*alphai  - bettai;
+            double g2 = +8.0*alphai  + 6.0*bettai;
+            double g3 = +12.0*alphai - 18.0*bettai;
+            double g4 = -40.0*alphai + 10.0*bettai + q(i);
+            double g5 = +22.0*alphai + 3.0*bettai;
+            double fi = f(i);
 
-            q4 /= -q5;
-            q3 /= -q5;
-            q2 /= -q5;
-            q1 /= -q5;
-            q  /= +q5;
-            q5 = 1.0;
+            g4 /= -g5;
+            g3 /= -g5;
+            g2 /= -g5;
+            g1 /= -g5;
+            fi /= +g5;
+            g5 = 1.0;
 
-            c4 = c3 + q4;
-            c3 = (c2 + q3)/c4;
-            c2 = (c1 + q2)/c4;
-            c1 = q1/c4;
-            c  = (c - q)/c4;
+            c4 = c3 + g4;
+            c3 = (c2 + g3)/c4;
+            c2 = (c1 + g2)/c4;
+            c1 = g1/c4;
+            c  = (c - fi)/c4;
             c4 = 1.0;
         }
 
@@ -288,7 +287,7 @@ void BoundaryValueProblem::calculate4NR2L(DoubleVector &x, double h, unsigned in
     z.clear();
 }
 
-void BoundaryValueProblem::calculate6NL2R(DoubleVector &x, double h, unsigned int N)
+void LinearBoundaryValueProblemODE::calculate6NL2R(DoubleVector &x, double h, unsigned int N)
 {
     x.clear();
     x.resize(N+1, 0.0);
@@ -517,7 +516,7 @@ void BoundaryValueProblem::calculate6NL2R(DoubleVector &x, double h, unsigned in
     z.clear();
 }
 
-void BoundaryValueProblem::calculate6NR2L(DoubleVector &x, double h, unsigned int N)
+void LinearBoundaryValueProblemODE::calculate6NR2L(DoubleVector &x, double h, unsigned int N)
 {
     x.clear();
     x.resize(N+1, 0.0);
@@ -720,31 +719,31 @@ void BoundaryValueProblem::calculate6NR2L(DoubleVector &x, double h, unsigned in
             double alphai = r(i)*m1;
             double bettai = p(i)*m2;
 
-            double q1 = a1[6][0]*alphai + b1[6][0]*bettai;
-            double q2 = a1[6][1]*alphai + b1[6][1]*bettai;
-            double q3 = a1[6][2]*alphai + b1[6][2]*bettai;
-            double q4 = a1[6][3]*alphai + b1[6][3]*bettai;
-            double q5 = a1[6][4]*alphai + b1[6][4]*bettai;
-            double q6 = a1[6][5]*alphai + b1[6][5]*bettai;
-            double q7 = a1[6][6]*alphai + b1[6][6]*bettai + q(i);
-            double q  = f(i);
+            double g1 = a1[6][0]*alphai + b1[6][0]*bettai;
+            double g2 = a1[6][1]*alphai + b1[6][1]*bettai;
+            double g3 = a1[6][2]*alphai + b1[6][2]*bettai;
+            double g4 = a1[6][3]*alphai + b1[6][3]*bettai;
+            double g5 = a1[6][4]*alphai + b1[6][4]*bettai;
+            double g6 = a1[6][5]*alphai + b1[6][5]*bettai;
+            double g7 = a1[6][6]*alphai + b1[6][6]*bettai + q(i);
+            double fi = f(i);
 
-            q6 /= -q7;
-            q5 /= -q7;
-            q4 /= -q7;
-            q3 /= -q7;
-            q2 /= -q7;
-            q1 /= -q7;
-            q  /= +q7;
-            q7 = 1.0;
+            g6 /= -g7;
+            g5 /= -g7;
+            g4 /= -g7;
+            g3 /= -g7;
+            g2 /= -g7;
+            g1 /= -g7;
+            fi /= +g7;
+            g7 = 1.0;
 
-            A[5][5] =  A[5][4] + q6;
-            A[5][4] = (A[5][3] + q5)/A[5][5];
-            A[5][3] = (A[5][2] + q4)/A[5][5];
-            A[5][2] = (A[5][1] + q3)/A[5][5];
-            A[5][1] = (A[5][0] + q2)/A[5][5];
-            A[5][0] = q1/A[5][5];
-            b[5]    = (b[5] - q)/A[5][5];
+            A[5][5] =  A[5][4] + g6;
+            A[5][4] = (A[5][3] + g5)/A[5][5];
+            A[5][3] = (A[5][2] + g4)/A[5][5];
+            A[5][2] = (A[5][1] + g3)/A[5][5];
+            A[5][1] = (A[5][0] + g2)/A[5][5];
+            A[5][0] = g1/A[5][5];
+            b[5]    = (b[5] - fi)/A[5][5];
             A[5][5] = 1.0;
         }
     }

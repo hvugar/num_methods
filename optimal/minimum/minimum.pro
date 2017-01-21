@@ -37,10 +37,14 @@ SOURCES += \
     matrix2d.cpp \
     vector2d.cpp \
     matrix3d.cpp \
-    bvp.cpp \
     cmethods.c \
-    grid/gridmethod.cpp \
-    grid/parabolicequationgird1d.cpp
+    grid/bvp.cpp \
+    grid/ibvp.cpp \
+    iibvp.cpp \
+    grid/lbvpode.cpp \
+    grid/nlbvpode.cpp \
+    grid/pibvp.cpp \
+    grid/hibvp.cpp
 
 HEADERS += global.h \
     cmethods.h \
@@ -66,6 +70,10 @@ HEADERS += global.h \
     matrix2d.h \
     vector2d.h \
     matrix3d.h \
-    bvp.h \
-    grid/gridmethod.h \
-    grid/parabolicequationgird1d.h
+    grid/bvp.h \
+    grid/ibvp.h \
+    iibvp.h \
+    grid/lbvpode.h \
+    grid/nlbvpode.h \
+    grid/pibvp.h \
+    grid/hibvp.h

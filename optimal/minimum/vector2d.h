@@ -2,6 +2,7 @@
 #define VECTOR2D_H
 
 #include "global.h"
+#include <stdio.h>
 
 class DoubleMatrix;
 

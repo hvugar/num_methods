@@ -1,20 +1,18 @@
 #ifndef BOUNDARYVALUEPROBLEM1_H
 #define BOUNDARYVALUEPROBLEM1_H
 
-#include <bvp.h>
-#include <printer.h>
-#include <math.h>
+#include <grid/lbvpode.h>
 
-#define SAMPLE_1
+#define SAMPLE_3
 
-class BoundaryValueProblem1 : public BoundaryValueProblem
+class BoundaryValueProblem1 : public LinearBoundaryValueProblemODE
 {
 public:
     virtual double r(unsigned int i) const;
     virtual double p(unsigned int i) const;
     virtual double q(unsigned int i) const;
     virtual double f(unsigned int i) const;
-    virtual double boundary(Boundary bound) const;
+    virtual double boundary(BoundaryType bound) const;
 
     double fx(unsigned int i) const;
     double h;

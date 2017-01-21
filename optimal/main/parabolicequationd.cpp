@@ -20,8 +20,8 @@ void ParabolicEquationD::calculateU(DoubleMatrix &u, double hx, double ht, unsig
     for (unsigned int m=1; m<=M; m++)
     {
         /* boundary condition */
-        u[m][0] = boundary(Left, m, ht);
-        u[m][N] = boundary(Right, m, ht);
+        u[m][0] = boundary(BoundaryValueProblem::Left, m, ht);
+        u[m][N] = boundary(BoundaryValueProblem::Right, m, ht);
 
         for (unsigned int n=1; n<=N-1; n++)
         {

@@ -1,13 +1,9 @@
 #ifndef PARABOLICQUATION_H
 #define PARABOLICQUATION_H
 
-#include "global.h"
-#include "vector2d.h"
-#include "matrix2d.h"
-#include "matrix3d.h"
-#include "printer.h"
+#include "iibvp.h"
 
-class MINIMUMSHARED_EXPORT IParabolicEquation
+class MINIMUMSHARED_EXPORT IParabolicEquation : public IPDEInitialBoundaryValueProblem
 {
 public:
     virtual double initial(unsigned int i) const = 0;
@@ -38,7 +34,7 @@ public:
     virtual void calculateN6R2LN(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a = 1.0);
 };
 
-class MINIMUMSHARED_EXPORT IBackwardParabolicEquation
+class MINIMUMSHARED_EXPORT IBackwardParabolicEquation : public IPDEInitialBoundaryValueProblem
 {
 public:
     virtual double binitial(unsigned int i) const = 0;
@@ -47,7 +43,7 @@ public:
     virtual void calculateU(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0) const;
 };
 
-class MINIMUMSHARED_EXPORT IParabolicEquation2D
+class MINIMUMSHARED_EXPORT IParabolicEquation2D : public IPDEInitialBoundaryValueProblem
 {
 public:
     virtual double initial(unsigned int i, unsigned int j) const = 0;
@@ -65,7 +61,7 @@ public:
     void calculateMFS(DoubleCube &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1=1.0, double a2=1.0) const;
 };
 
-class MINIMUMSHARED_EXPORT IBackwardParabolicEquation2D
+class MINIMUMSHARED_EXPORT IBackwardParabolicEquation2D : public IPDEInitialBoundaryValueProblem
 {
 public:
     virtual double binitial(unsigned int i, unsigned int j) const = 0;

@@ -1,14 +1,9 @@
 #ifndef HYPERBOLICEQUATION_H
 #define HYPERBOLICEQUATION_H
 
-#include "global.h"
-#include "vector2d.h"
-#include "matrix2d.h"
-#include "matrix3d.h"
-#include "cmethods.h"
-#include "printer.h"
+#include "iibvp.h"
 
-class MINIMUMSHARED_EXPORT IHyperbolicEquation
+class MINIMUMSHARED_EXPORT IHyperbolicEquation : public IPDEInitialBoundaryValueProblem
 {
 public:
     virtual double f(unsigned int i, unsigned int j) const = 0;
@@ -16,11 +11,12 @@ public:
     virtual double initial1(unsigned int i) const = 0;
     virtual double initial2(unsigned int i) const = 0;
     virtual double boundary(Boundary type, unsigned int j) const = 0;
+
     virtual void calculateU(DoubleVector &u, double hx, double ht, unsigned int M, unsigned int N, double a=1.0, double lamda=0.25) const;
     virtual void calculateU(DoubleMatrix &u, double hx, double ht, unsigned int M, unsigned int N, double a=1.0, double lamda=0.25) const;
 };
 
-class MINIMUMSHARED_EXPORT IBackwardHyperbolicEquation
+class MINIMUMSHARED_EXPORT IBackwardHyperbolicEquation : public IPDEInitialBoundaryValueProblem
 {
 public:
     virtual double binitial1(unsigned int i) const = 0;
@@ -31,7 +27,7 @@ public:
     virtual void calculateU(DoubleMatrix &p, double hx, double ht, unsigned int M, unsigned int N, double a=1.0, double lamda=0.25) const;
 };
 
-class MINIMUMSHARED_EXPORT IHyperbolicEquation2D
+class MINIMUMSHARED_EXPORT IHyperbolicEquation2D  : public IPDEInitialBoundaryValueProblem
 {
 public:
     virtual double initial1(unsigned int i, unsigned int j) const = 0;
@@ -44,7 +40,7 @@ public:
     virtual void calculateU1(DoubleMatrix &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1=1.0, double a2=1.0, double qamma=1.0) const;
 };
 
-class MINIMUMSHARED_EXPORT IBackwardHyperbolicEquation2D
+class MINIMUMSHARED_EXPORT IBackwardHyperbolicEquation2D  : public IPDEInitialBoundaryValueProblem
 {
 public:
     virtual double binitial1(unsigned int i, unsigned int j) const = 0;

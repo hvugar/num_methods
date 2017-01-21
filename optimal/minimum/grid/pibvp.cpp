@@ -1,23 +1,23 @@
-#include "parabolicequationgird1d.h"
+#include "pibvp.h"
 
-ParabolicEquationGird1D::ParabolicEquationGird1D() : GridMethod()
-{}
-
-void ParabolicEquationGird1D::gridMethod(DoubleMatrix &u)
+void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction)
 {
-    unsigned int N = setting.N;
-    unsigned int M = setting.M;
-    double hx = setting.hx;
-    double ht = setting.ht;
+    Grid g = grid();
+    double ht = g.ht;
+    unsigned int M = g.M;
+    double hx = g.hx1;
+    unsigned int N = g.N1;
+
+    //double k = ht/(hx*hx);
 
     u.clear();
     u.resize(M+1, N+1);
 
-    DoubleVector da(N-1);
-    DoubleVector db(N-1);
-    DoubleVector dc(N-1);
-    DoubleVector dd(N-1);
-    DoubleVector rx(N-1);
+    double *da = (double*) malloc(sizeof(double)*(N-1));
+    double *db = (double*) malloc(sizeof(double)*(N-1));
+    double *dc = (double*) malloc(sizeof(double)*(N-1));
+    double *dd = (double*) malloc(sizeof(double)*(N-1));
+    double *rx = (double*) malloc(sizeof(double)*(N-1));
 
     for (unsigned int n=0; n<=N; n++) u[0][n] = initial(n);
 
@@ -46,27 +46,29 @@ void ParabolicEquationGird1D::gridMethod(DoubleMatrix &u)
         double alphaN = -a(N,m)*(ht/(hx*hx));
         dd[N-2] -= alphaN * u[m][N];
 
-        tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size());
+        //tomasAlgorithm(da, db, dc, dd, rx, N-1);
+        if (direction == ForwardSweep)
+            tomasAlgorithmL2R(da, db, dc, dd, rx, N-1);
+        else
+            tomasAlgorithmR2L(da, db, dc, dd, rx, N-1);
 
-        for (unsigned int n=1; n<=N-1; n++)
-        {
-            u[m][n] = rx[n-1];
-        }
+        for (unsigned int n=1; n<=N-1; n++) u[m][n] = rx[n-1];
     }
 
-    da.clear();
-    db.clear();
-    dc.clear();
-    dd.clear();
-    rx.clear();
+    free(da);
+    free(db);
+    free(dc);
+    free(dd);
+    free(rx);
 }
 
-void ParabolicEquationGird1D::calculateN4L2RD(DoubleMatrix &u)
+void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u)
 {
-    unsigned int N = setting.N;
-    unsigned int M = setting.M;
-    double hx = setting.hx;
-    double ht = setting.ht;
+    Grid g = grid();
+    double ht = g.ht;
+    unsigned int M = g.M;
+    double hx = g.hx1;
+    unsigned int N = g.N1;
 
     double a = 1.0;
     const unsigned int k = 4;

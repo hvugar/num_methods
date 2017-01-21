@@ -4,22 +4,24 @@ void BoundaryValueProblem1::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM
 {
     BoundaryValueProblem1 sbp;
 
+    unsigned int w = 14;
+    unsigned int p = 10;
     {
         sbp.h = 0.1;
         sbp.N = 10;
         DoubleVector rx(sbp.N+1);
         for (unsigned int i=0; i<=sbp.N; i++) rx.at(i) = sbp.fx(i);
-        IPrinter::printVector(18,14,rx);
+        IPrinter::printVector(w,p,rx);
         rx.clear();
         IPrinter::printSeperatorLine();
     }
 
     {
-        sbp.h = 0.001;
-        sbp.N = 1000;
+        sbp.h = 0.000001;
+        sbp.N = 1000000;
         DoubleVector x;
         sbp.calculate2N(x, sbp.h, sbp.N);
-        IPrinter::printVector(18,14,x);
+        IPrinter::printVector(w,p,x);
 
 //        DoubleVector rx(sbp.N+1);
 //        for (unsigned int i=0; i<=sbp.N; i++) rx.at(i) = sbp.fx(i);
@@ -32,11 +34,11 @@ void BoundaryValueProblem1::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM
 //        IPrinter::printSeperatorLine();
     }
     {
-        sbp.h = 0.001;
-        sbp.N = 1000;
+        sbp.h = 0.01;
+        sbp.N = 100;
         DoubleVector x;
         sbp.calculate4NL2R(x, sbp.h, sbp.N);
-        IPrinter::printVector(18,14,x);
+        IPrinter::printVector(w,p,x);
 
 //        DoubleVector rx(sbp.N+1);
 //        for (unsigned int i=0; i<=sbp.N; i++) rx.at(i) = sbp.fx(i);
@@ -102,7 +104,7 @@ void BoundaryValueProblem1::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM
         DoubleVector x;
         sbp.calculate6NL2R(x, sbp.h, sbp.N);
         //printf("%14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f\n", sbp.fx(sbp.N-6), sbp.fx(sbp.N-5), sbp.fx(sbp.N-4), sbp.fx(sbp.N-3), sbp.fx(sbp.N-2), sbp.fx(sbp.N-1), sbp.fx(sbp.N));
-        IPrinter::printVector(18,14,x);
+        IPrinter::printVector(w,p,x);
 
 //        DoubleVector rx(sbp.N+1);
 //        for (unsigned int i=0; i<=sbp.N; i++) rx.at(i) = sbp.fx(i);
@@ -120,7 +122,7 @@ void BoundaryValueProblem1::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM
         DoubleVector x;
         sbp.calculate6NR2L(x, sbp.h, sbp.N);
         //printf("%14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f\n", sbp.fx(sbp.N-6), sbp.fx(sbp.N-5), sbp.fx(sbp.N-4), sbp.fx(sbp.N-3), sbp.fx(sbp.N-2), sbp.fx(sbp.N-1), sbp.fx(sbp.N));
-        IPrinter::printVector(18,14,x);
+        IPrinter::printVector(w,p,x);
 
 //        DoubleVector rx(sbp.N+1);
 //        for (unsigned int i=0; i<=sbp.N; i++) rx.at(i) = sbp.fx(i);
@@ -180,7 +182,7 @@ double BoundaryValueProblem1::f(unsigned int i UNUSED_PARAM) const
 #endif
 }
 
-double BoundaryValueProblem1::boundary(Boundary bound) const
+double BoundaryValueProblem1::boundary(BoundaryType bound) const
 {
     if (bound==Left) return fx(0);
     if (bound==Right) return fx(N);
