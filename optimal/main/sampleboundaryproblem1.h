@@ -3,7 +3,7 @@
 
 #include <grid/lbvpode.h>
 
-#define SAMPLE_3
+#define SAMPLE_4
 
 class BoundaryValueProblem1 : public LinearBoundaryValueProblemODE
 {
