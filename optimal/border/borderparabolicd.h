@@ -20,7 +20,6 @@ public:
     virtual double f(unsigned int i, unsigned int j) const;
 
     double U(unsigned int i, unsigned int j) const;
-    void calculateN2L2RD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0);
 
     double hx;
     double ht;

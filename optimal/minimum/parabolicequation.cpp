@@ -264,6 +264,104 @@ void IParabolicEquation::calculateN(DoubleMatrix &u, double hx, double ht, unsig
     rx.clear();
 }
 
+/* dirichlet conditions */
+
+void IParabolicEquation::calculateN2L2RD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
+{
+    const unsigned int k = 2;
+    double alpha = (a*a*ht)/(hx*hx);
+
+    u.clear();
+    u.resize(M+1, N+1);
+
+    DoubleMatrix A(k, k, 0.0);
+    DoubleVector b(k, 0.0);
+    DoubleVector x(k, 0.0);
+    DoubleMatrix ems(N-k, k);
+
+    /* initial condition */
+    for (unsigned int n=0; n<=N; n++) u.at(0,n) = initial(n);
+
+    /* border conditions */
+    for (unsigned int m=1; m<=M; m++)
+    {
+        u.at(m,0) = boundary(Left, m);
+        u.at(m,N) = boundary(Right, m);
+    }
+
+    for (unsigned int m=1; m<=M; m++)
+    {
+        A[0][0] = -2.0*alpha - 1.0;
+        A[0][1] = +1.0*alpha;
+        b[0]    = -u.at(m-1,1) - ht*f(1,m) - alpha*u.at(m,0);
+
+        A[0][1] /= A[0][0];
+        b[0]    /= A[0][0];
+        A[0][0] = 1.0;
+
+        ems.at(0,0) = A[0][1];
+        ems.at(0,1) = b[0];
+
+        for (unsigned int n=2; n<=N-2; n++)
+        {
+            double g1 = +1.0*alpha;
+            double g2 = -2.0*alpha - 1.0;
+            double g3 = +1.0*alpha;
+            double fi = -u.at(m-1,n) - ht*f(n,m);
+
+            g2 /= -g1;
+            g3 /= -g1;
+            fi /= +g1;
+            g1 = 1.0;
+
+            A[0][0] = A[0][1] + g2;
+            A[0][1] = g3;
+            b[0]    = b[0] - fi;
+            \
+            A[0][1] /= A[0][0];
+            b[0]    /= A[0][0];
+            A[0][0] = 1.0;
+
+            ems.at(n-1,0) = A[0][1];
+            ems.at(n-1,1) = b[0];
+        }
+
+        A[1][0] = +alpha;
+        A[1][1] = -2.0*alpha - 1.0;
+        b[1]    = -u.at(m-1,N-1) - ht*f(N-1,m) - alpha*u.at(m,N);
+
+        GaussianElimination(A, b, x);
+
+        u.at(m, N-1) = x.at(1);
+        u.at(m, N-2) = x.at(0);
+        for (unsigned int i=N-3; i>=1; i--)
+        {
+            u.at(m,i) = -ems.at(i-1,0)*u.at(m,i+1) + ems.at(i-1,1);
+        }
+
+//        for (unsigned int n=N-2; n>=1; n--)
+//        {
+//            u.at(m,n-1) = -(-2.0*alpha - 1.0)*u.at(m,n) - alpha*u.at(m,n+1) - (u.at(m-1,n) + ht*f(n,m));
+//            u.at(m,n-1) /= alpha;
+//        }
+    }
+
+    ems.clear();
+    x.clear();
+    b.clear();
+    A.clear();
+}
+
+void IParabolicEquation::calculateN2R2LD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
+{
+    C_UNUSED(u);
+    C_UNUSED(hx);
+    C_UNUSED(ht);
+    C_UNUSED(N);
+    C_UNUSED(M);
+    C_UNUSED(a);
+}
+
 void IParabolicEquation::calculateN4L2RD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
 {
     const unsigned int k = 4;
@@ -287,13 +385,13 @@ void IParabolicEquation::calculateN4L2RD(DoubleMatrix &u, double hx, double ht, 
     DoubleMatrix ems(N-k, k);
 
     /* initial condition */
-    for (unsigned int i=0; i<=N; i++) u.at(0,i) = initial(i);
+    for (unsigned int n=0; n<=N; n++) u.at(0,n) = initial(n);
 
     /* border conditions */
-    for (unsigned int j=1; j<=M; j++)
+    for (unsigned int m=1; m<=M; m++)
     {
-        u.at(j,0) = boundary(Left, j);
-        u.at(j,N) = boundary(Right, j);
+        u.at(m,0) = boundary(Left, m);
+        u.at(m,N) = boundary(Right, m);
     }
 
     for (unsigned int m=1; m<=M; m++)
@@ -322,20 +420,20 @@ void IParabolicEquation::calculateN4L2RD(DoubleMatrix &u, double hx, double ht, 
             double g3 = D[0][2]*alpha;
             double g4 = D[0][3]*alpha;
             double g5 = D[0][4]*alpha;
-            double g0 = u.at(m-1,n) + ht*f(n,m);
+            double fi = u.at(m-1,n) + ht*f(n,m);
 
             g2 /= -g1;
             g3 /= -g1;
             g4 /= -g1;
             g5 /= -g1;
-            g0 /= -g1;
+            fi /= -g1;
             g1 = 1.0;
 
             A[0][0] = A[0][1] + g2;
             A[0][1] = A[0][2] + g3;
             A[0][2] = A[0][3] + g4;
             A[0][3] = g5;
-            b[0]    = b[0] - g0;
+            b[0]    = b[0] - fi;
             \
             A[0][1] /= A[0][0];
             A[0][2] /= A[0][0];
@@ -373,9 +471,21 @@ void IParabolicEquation::calculateN4L2RD(DoubleMatrix &u, double hx, double ht, 
         u.at(m, N-2) = x.at(2);
         u.at(m, N-3) = x.at(1);
         u.at(m, N-4) = x.at(0);
-        for (unsigned int i=N-(k+1); i>=1; i--)
+//        for (unsigned int n=N-(k+1); n>=1; n--)
+//        {
+//            u.at(m,n) = -ems.at(n-1,0)*u.at(m,n+1) - ems.at(n-1,1)*u.at(m,n+2) - ems.at(n-1,2)*u.at(m,n+3) + ems.at(n-1,3);
+//        }
+
+        for (unsigned int n=N-(k+1); n>=1; n--)
         {
-            u.at(m,i) = -ems.at(i-1,0)*u.at(m,i+1) - ems.at(i-1,1)*u.at(m,i+2) - ems.at(i-1,2)*u.at(m,i+3) + ems.at(i-1,3);
+            double d0 = +70.0*alpha - 1.0;
+            double d1 = -208.0*alpha;
+            double d2 = +228.0*alpha;
+            double d3 = -112.0*alpha;
+            double d4 = +22.0*alpha;
+            double fi = -u.at(m-1,n) - ht*f(n,m);
+            u.at(m,n) = -d1*u.at(m,n+1) - d2*u.at(m,n+2) - d3*u.at(m,n+3) - d4*u.at(m,n+4) + fi;
+            u.at(m,n) /= d0;
         }
     }
 
@@ -833,6 +943,28 @@ void IParabolicEquation::calculateN6R2LD(DoubleMatrix &u, double hx, double ht, 
     A.clear();
 }
 
+/* neumann conditions */
+
+void IParabolicEquation::calculateN2L2RN(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
+{
+    C_UNUSED(u);
+    C_UNUSED(hx);
+    C_UNUSED(ht);
+    C_UNUSED(N);
+    C_UNUSED(M);
+    C_UNUSED(a);
+}
+
+void IParabolicEquation::calculateN2R2LN(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
+{
+    C_UNUSED(u);
+    C_UNUSED(hx);
+    C_UNUSED(ht);
+    C_UNUSED(N);
+    C_UNUSED(M);
+    C_UNUSED(a);
+}
+
 void IParabolicEquation::calculateN4L2RN(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a)
 {
     unsigned int k = 4;
@@ -1158,6 +1290,8 @@ void IParabolicEquation::calculateN6R2LN(DoubleMatrix &u, double hx, double ht, 
     C_UNUSED(M);
     C_UNUSED(a);
 }
+
+/* neumann conditions */
 
 void IBackwardParabolicEquation::calculateU(DoubleMatrix &psi, double hx, double ht, unsigned int N, unsigned int M, double a) const
 {

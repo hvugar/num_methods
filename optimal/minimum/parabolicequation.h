@@ -20,6 +20,9 @@ public:
     virtual void calculateU1(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0) const;
 
     /* dirichlet conditions */
+    virtual void calculateN2L2RD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0);
+    virtual void calculateN2R2LD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0);
+
     virtual void calculateN4L2RD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a = 1.0);
     virtual void calculateN4R2LD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a = 1.0);
 
@@ -27,6 +30,9 @@ public:
     virtual void calculateN6R2LD(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a = 1.0);
 
     /* neumann conditions */
+    virtual void calculateN2L2RN(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0);
+    virtual void calculateN2R2LN(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a=1.0);
+
     virtual void calculateN4L2RN(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a = 1.0);
     virtual void calculateN4R2LN(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a = 1.0);
 

@@ -16,8 +16,8 @@ void BoundaryValueProblem1::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM
         IPrinter::printSeperatorLine();
     }
 
-    sbp.h = 0.1;
-    sbp.N = 10;
+    sbp.h = 0.01;
+    sbp.N = 100;
     {
         //sbp.h = 0.01;
         //sbp.N = 100;
@@ -31,7 +31,7 @@ void BoundaryValueProblem1::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM
         //sbp.h = 0.01;
         //sbp.N = 100;
         DoubleVector x;
-        sbp.calculate4NL2R(x, sbp.h, sbp.N);
+        sbp.calculateN4L2RD(x, sbp.h, sbp.N);
         IPrinter::printVector(w,p,x);
         x.clear();
         //IPrinter::printSeperatorLine();
@@ -40,7 +40,7 @@ void BoundaryValueProblem1::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM
         //sbp.h = 0.01;
         //sbp.N = 100;
         DoubleVector x;
-        sbp.calculate4NR2L(x, sbp.h, sbp.N);
+        sbp.calculateN4R2LD(x, sbp.h, sbp.N);
         IPrinter::printVector(w,p,x);
         x.clear();
         //IPrinter::printSeperatorLine();
@@ -49,7 +49,7 @@ void BoundaryValueProblem1::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM
         //sbp.h = 0.01;
         //sbp.N = 100;
         DoubleVector x;
-        sbp.calculate6NL2R(x, sbp.h, sbp.N);
+        sbp.calculateN6L2RD(x, sbp.h, sbp.N);
         IPrinter::printVector(w,p,x);
         x.clear();
         //IPrinter::printSeperatorLine();
@@ -58,7 +58,7 @@ void BoundaryValueProblem1::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM
         //sbp.h = 0.01;
         //sbp.N = 100;
         DoubleVector x;
-        sbp.calculate6NR2L(x, sbp.h, sbp.N);
+        sbp.calculateN6R2LD(x, sbp.h, sbp.N);
         IPrinter::printVector(w,p,x);
         x.clear();
         //IPrinter::printSeperatorLine();

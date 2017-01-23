@@ -20,11 +20,13 @@ protected:
     virtual double f(unsigned int n) const = 0;
 
 public:
+    void calculate(DoubleVector &x, unsigned int k, double h, unsigned int N, unsigned int direction = 1);
     void calculate2N(DoubleVector &x, double h, unsigned int N);
-    void calculate4NL2R(DoubleVector &x, double h, unsigned int N);
-    void calculate4NR2L(DoubleVector &x, double h, unsigned int N);
-    void calculate6NL2R(DoubleVector &x, double h, unsigned int N);
-    void calculate6NR2L(DoubleVector &x, double h, unsigned int N);
+
+    void calculateN4L2RD(DoubleVector &x, double h, unsigned int N);
+    void calculateN4R2LD(DoubleVector &x, double h, unsigned int N);
+    void calculateN6L2RD(DoubleVector &x, double h, unsigned int N);
+    void calculateN6R2LD(DoubleVector &x, double h, unsigned int N);
 };
 
 #endif // LINEARBOUNDARYVALUEPROBLEMODE_H
