@@ -123,7 +123,7 @@ void LinearBoundaryValueProblemODE::calculateN4L2RD(DoubleVector &x, double h, u
     A[0][0] = -40.0*alpha0 - 10.0*betta0 + q(1);
     A[0][1] = +12.0*alpha0 + 18.0*betta0;
     A[0][2] = +8.0*alpha0  - 6.0*betta0;
-    A[0][3] = -2.0*alpha0  + betta0;
+    A[0][3] = -2.0*alpha0  + 1.0*betta0;
     b[0] = f(1) - (22.0*alpha0 - 3.0*betta0)*x.at(0);
 
     A[0][1] /= A[0][0];
@@ -224,8 +224,6 @@ void LinearBoundaryValueProblemODE::calculateN4L2RD(DoubleVector &x, double h, u
     x.at(N-2) = z.at(2);
     x.at(N-3) = z.at(1);
     x.at(N-4) = z.at(0);
-
-    //printf("%14.10f %14.10f %14.10f %14.10f\n", x.at(N-4), x.at(N-3), x.at(N-2), x.at(N-1));
 
 //    for (unsigned int n=N-(k+1); n>=1; n--)
 //    {
@@ -364,6 +362,12 @@ void LinearBoundaryValueProblemODE::calculateN4R2LD(DoubleVector &x, double h, u
     z.clear();
 }
 
+double U(unsigned int i, double h)
+{
+    double x = i*h;
+    return x*x*x;
+}
+
 void LinearBoundaryValueProblemODE::calculateN6L2RD(DoubleVector &x, double h, unsigned int N)
 {
     const unsigned int k=6;
@@ -461,7 +465,6 @@ void LinearBoundaryValueProblemODE::calculateN6L2RD(DoubleVector &x, double h, u
         A[0][4] = A[0][5] + g6;
         A[0][5] = g7;
         b[0]    = b[0] - fi;
-        A[0][0] = 1.0;
 
         A[0][1] /= A[0][0];
         A[0][2] /= A[0][0];
@@ -537,33 +540,31 @@ void LinearBoundaryValueProblemODE::calculateN6L2RD(DoubleVector &x, double h, u
     x.at(N-4) = z.at(2);
     x.at(N-5) = z.at(1);
     x.at(N-6) = z.at(0);
-    //printf("%14.10f %14.10f %14.10f %14.10f\n", x.at(N-4), x.at(N-3), x.at(N-2), x.at(N-1));
-
-    for (unsigned int n=N-(k+1); n>=1; n--)
-    {
-        x.at(n) = -ems.at(n-1,0)*x.at(n+1)
-                 - ems.at(n-1,1)*x.at(n+2)
-                 - ems.at(n-1,2)*x.at(n+3)
-                 - ems.at(n-1,3)*x.at(n+4)
-                 - ems.at(n-1,4)*x.at(n+5)
-                 + ems.at(n-1,5);
-    }
 
 //    for (unsigned int n=N-(k+1); n>=1; n--)
 //    {
-//        double alphai = r(n)*m2;
-//        double bettai = p(n)*m1;
-//        double d0 = +812.0*alphai  - 147*bettai + q(n);
-//        double d1 = +3132.0*alphai - 360.0*bettai;
-//        double d2 = -5265.0*alphai + 450.0*bettai;
-//        double d3 = +5080.0*alphai - 400.0*bettai;
-//        double d4 = -2970.0*alphai + 225.0*bettai;
-//        double d5 = +972.0*alphai  - 72.0*bettai;
-//        double d6 = -137.0*alphai  + 10.0*bettai;
-
-//        x.at(n) = d1*x.at(n+1) + d2*x.at(n+2) + d3*x.at(n+3) + d4*x.at(n+4) + d5*x.at(n+5) + d6*x.at(n+6) + f(n);
-//        x.at(n) /= d0;
+//        x.at(n) = -ems.at(n-1,0)*x.at(n+1)
+//                 - ems.at(n-1,1)*x.at(n+2)
+//                 - ems.at(n-1,2)*x.at(n+3)
+//                 - ems.at(n-1,3)*x.at(n+4)
+//                 - ems.at(n-1,4)*x.at(n+5)
+//                 + ems.at(n-1,5);
 //    }
+
+    for (unsigned int n=N-(k+1); n>=1; n--)
+    {
+        double alphai = r(n)*m2;
+        double bettai = p(n)*m1;
+        double d0 = +812.0*alphai  - 147*bettai + q(n);
+        double d1 = -3132.0*alphai + 360.0*bettai;
+        double d2 = +5265.0*alphai - 450.0*bettai;
+        double d3 = -5080.0*alphai + 400.0*bettai;
+        double d4 = +2970.0*alphai - 225.0*bettai;
+        double d5 = -972.0*alphai  + 72.0*bettai;
+        double d6 = +137.0*alphai  - 10.0*bettai;
+        x.at(n) = -d1*x.at(n+1) - d2*x.at(n+2) - d3*x.at(n+3) - d4*x.at(n+4) - d5*x.at(n+5) - d6*x.at(n+6) + f(n);
+        x.at(n) /= d0;
+    }
 
     ems.clear();
     z.clear();
