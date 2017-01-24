@@ -122,8 +122,8 @@ void LinearBoundaryValueProblemODE::calculateN4L2RD(DoubleVector &x, double h, u
     double betta0 = p(1)*m1;
     A[0][0] = -40.0*alpha0 - 10.0*betta0 + q(1);
     A[0][1] = +12.0*alpha0 + 18.0*betta0;
-    A[0][2] = +8.0*alpha0  - 6.0*betta0;
-    A[0][3] = -2.0*alpha0  + 1.0*betta0;
+    A[0][2] =  +8.0*alpha0 -  6.0*betta0;
+    A[0][3] =  -2.0*alpha0 +  1.0*betta0;
     b[0] = f(1) - (22.0*alpha0 - 3.0*betta0)*x.at(0);
 
     A[0][1] /= A[0][0];
@@ -224,12 +224,10 @@ void LinearBoundaryValueProblemODE::calculateN4L2RD(DoubleVector &x, double h, u
     x.at(N-2) = z.at(2);
     x.at(N-3) = z.at(1);
     x.at(N-4) = z.at(0);
-
-//    for (unsigned int n=N-(k+1); n>=1; n--)
-//    {
-//        x.at(n) = -ems.at(n-1,0)*x.at(n+1) - ems.at(n-1,1)*x.at(n+2) - ems.at(n-1,2)*x.at(n+3) + ems.at(n-1,3);
-//    }
-
+    //for (unsigned int n=N-(k+1); n>=1; n--)
+    //{
+    //    x.at(n) = -ems.at(n-1,0)*x.at(n+1)-ems.at(n-1,1)*x.at(n+2)-ems.at(n-1,2)*x.at(n+3)+ems.at(n-1,3);
+    //}
     for (unsigned int n=N-(k+1); n>=1; n--)
     {
         double alphai = r(n)*m2;
@@ -252,114 +250,139 @@ void LinearBoundaryValueProblemODE::calculateN4L2RD(DoubleVector &x, double h, u
 
 void LinearBoundaryValueProblemODE::calculateN4R2LD(DoubleVector &x, double h, unsigned int N)
 {
+    const unsigned int k = 4;
+    double m1 = 1.0/(12.0*h);
+    double m2 = 1.0/(24.0*h*h);
+
     x.clear();
     x.resize(N+1, 0.0);
+
+    DoubleMatrix A(k, k, 0.0);
+    DoubleVector b(k, 0.0);
+    DoubleVector z(k, 0.0);
+    DoubleMatrix ems(N-k, k);
+
+    /* border conditions */
     x.at(0) = boundary(Left);
     x.at(N) = boundary(Right);
 
-    DoubleMatrix A(4,4);
-    DoubleVector b(4);
-    DoubleVector z(4);
+    double alpha0 = r(1)*m2;
+    double betta0 = p(1)*m1;
+    A[0][0] = -40.0*alpha0 - 10.0*betta0 + q(1);
+    A[0][1] = +12.0*alpha0 + 18.0*betta0;
+    A[0][2] = +8.0*alpha0  - 6.0*betta0;
+    A[0][3] = -2.0*alpha0  + betta0;
+    b[0]    = f(1) - (22.0*alpha0 - 3.0*betta0)*x.at(0);
 
+    double alpha1 = r(2)*m2;
+    double betta1 = p(2)*m1;
+    A[1][0] = +32.0*alpha1 - 8.0*betta1;
+    A[1][1] = -60.0*alpha1 + q(2);
+    A[1][2] = +32.0*alpha1 + 8.0*betta1;
+    A[1][3] = -2.0*alpha1  - betta1;
+    b[1]    = f(2) - (-2.0*alpha1 + betta1)*x.at(0);
+
+    double alpha2 = r(3)*m2;
+    double betta2 = p(3)*m1;
+    A[2][0] = +8.0*alpha2  + 6.0*betta2;
+    A[2][1] = +12.0*alpha2 - 18.0*betta2;
+    A[2][2] = -40.0*alpha2 + 10.0*betta2 + q(3);
+    A[2][3] = +22.0*alpha2 + 3.0*betta2;
+    b[2]    = f(3) - (-2.0*alpha2 - betta2)*x.at(0);
+
+    double alphaN1 = r(N-1)*m2;
+    double bettaN1 = p(N-1)*m1;
+    A[3][0] = -2.0*alphaN1  - bettaN1;
+    A[3][1] = +8.0*alphaN1  + 6.0*bettaN1;
+    A[3][2] = +12.0*alphaN1 - 18.0*bettaN1;
+    A[3][3] = -40.0*alphaN1 + 10.0*bettaN1 + q(N-1);
+    b[3] = f(N-1) - (22.0*alphaN1 + 3.0*bettaN1)*x.at(N);
+
+    A[3][2] /= A[3][3];
+    A[3][1] /= A[3][3];
+    A[3][0] /= A[3][3];
+    b[3]  /= A[3][3];
+    A[3][3] = 1.0;
+
+    ems.at(N-(k+1),0) = A[3][2];
+    ems.at(N-(k+1),1) = A[3][1];
+    ems.at(N-(k+1),2) = A[3][0];
+    ems.at(N-(k+1),3) = b[3];
+
+    for (unsigned int n=N-1; n>=(k+1); n--)
     {
-        double alpha0 = r(1)/(24.0*h*h);
-        double betta0 = p(1)/(12.0*h);
-        A[0][0] = -40.0*alpha0 - 10.0*betta0 + q(1);
-        A[0][1] = +12.0*alpha0 + 18.0*betta0;
-        A[0][2] = +8.0*alpha0  - 6.0*betta0;
-        A[0][3] = -2.0*alpha0  + betta0;
-        b[0]    = f(1) - (22.0*alpha0 - 3.0*betta0)*x.at(0);
+        // * * * * +
+        double alphai = r(n)*m2;
+        double bettai = p(n)*m1;
+        double g1 = +22.0*alphai  + 3.0*bettai;
+        double g2 = -112.0*alphai - 16.0*bettai;
+        double g3 = +228.0*alphai + 36.0*bettai;
+        double g4 = -208.0*alphai - 48.0*bettai;
+        double g5 = +70.0*alphai  + 25.0*bettai + q(n);
+        double fi = f(n);
+
+        // * * * + *
+        //double alphai = r(n-1)*m2;
+        //double bettai = p(n-1)*m1;
+        //double g1 = -2.0*alphai  - bettai;
+        //double g2 = +8.0*alphai  + 6.0*bettai;
+        //double g3 = +12.0*alphai - 18.0*bettai;
+        //double g4 = -40.0*alphai + 10.0*bettai + q(n-1);
+        //double g5 = +22.0*alphai + 3.0*bettai;
+        //double fi = f(n-1);
+
+        g4 /= -g5;
+        g3 /= -g5;
+        g2 /= -g5;
+        g1 /= -g5;
+        fi /= +g5;
+        g5 = 1.0;
+
+        A[3][3] = A[3][2] + g4;
+        A[3][2] = A[3][1] + g3;
+        A[3][1] = A[3][0] + g2;
+        A[3][0] = g1;
+        b[3]    = b[3] - fi;
+
+        A[3][2] /= A[3][3];
+        A[3][1] /= A[3][3];
+        A[3][0] /= A[3][3];
+        b[3]    /= A[3][3];
+        A[3][3] = 1.0;
+
+        ems.at(n-(k+1),0) = A[3][2];
+        ems.at(n-(k+1),1) = A[3][1];
+        ems.at(n-(k+1),2) = A[3][0];
+        ems.at(n-(k+1),3) = b[3];
     }
-    {
-        double alpha1 = r(2)/(24.0*h*h);
-        double betta1 = p(2)/(12.0*h);
-        A[1][0] = +32.0*alpha1 - 8.0*betta1;
-        A[1][1] = -60.0*alpha1 + q(2);
-        A[1][2] = +32.0*alpha1 + 8.0*betta1;
-        A[1][3] = -2.0*alpha1  - betta1;
-        b[1]    = f(2) - (-2.0*alpha1 + betta1)*x.at(0);
-    }
-    {
-        double alpha2 = r(3)/(24.0*h*h);
-        double betta2 = p(3)/(12.0*h);
-        A[2][0] = +8.0*alpha2  + 6.0*betta2;
-        A[2][1] = +12.0*alpha2 - 18.0*betta2;
-        A[2][2] = -40.0*alpha2 + 10.0*betta2 + q(3);
-        A[2][3] = +22.0*alpha2 + 3.0*betta2;
-        b[2]    = f(3) - (-2.0*alpha2 - betta2)*x.at(0);
-    }
-    {
-        double alphaN1 = r(N-1)/(24.0*h*h);
-        double bettaN1 = p(N-1)/(12.0*h);
-        double c1 = -2.0*alphaN1  - bettaN1;
-        double c2 = +8.0*alphaN1  + 6.0*bettaN1;
-        double c3 = +12.0*alphaN1 - 18.0*bettaN1;
-        double c4 = -40.0*alphaN1 + 10.0*bettaN1 + q(N-1);
-        double c = f(N-1) - (22.0*alphaN1 + 3.0*bettaN1)*x.at(N);
 
-        c3 /= c4;
-        c2 /= c4;
-        c1 /= c4;
-        c  /= c4;
-        c4 = 1.0;
-
-        for (unsigned int i=N-2; i>=4; i--)
-        {
-            double alphai = r(i)/(24.0*h*h);
-            double bettai = p(i)/(12.0*h);
-
-            double g1 = -2.0*alphai  - bettai;
-            double g2 = +8.0*alphai  + 6.0*bettai;
-            double g3 = +12.0*alphai - 18.0*bettai;
-            double g4 = -40.0*alphai + 10.0*bettai + q(i);
-            double g5 = +22.0*alphai + 3.0*bettai;
-            double fi = f(i);
-
-            g4 /= -g5;
-            g3 /= -g5;
-            g2 /= -g5;
-            g1 /= -g5;
-            fi /= +g5;
-            g5 = 1.0;
-
-            c4 = c3 + g4;
-            c3 = (c2 + g3)/c4;
-            c2 = (c1 + g2)/c4;
-            c1 = g1/c4;
-            c  = (c - fi)/c4;
-            c4 = 1.0;
-        }
-
-        A[3][0] = c1;
-        A[3][1] = c2;
-        A[3][2] = c3;
-        A[3][3] = c4;
-        b[3]    = c;
-    }
     GaussianElimination(A, b, z);
 
     x.at(1) = z.at(0);
     x.at(2) = z.at(1);
     x.at(3) = z.at(2);
     x.at(4) = z.at(3);
-    for (unsigned int i=5; i<=N-1; i++)
+    //for (unsigned int n=(k+1); n<=N-1; n++)
+    //{
+    //    x.at(n) = -ems.at(n-k,0)*x.at(n-1)-ems.at(n-k,1)*x.at(n-2)-ems.at(n-k,2)*x.at(n-3)+ems.at(n-k,3);
+    //}
+    for (unsigned int n=(k+1); n<=N-1; n++)
     {
-        double alpha = r(i)/(24.0*h*h);
-        double betta = p(i)/(12.0*h);
-
-        double d0 = +70.0*alpha  + 25.0*betta + q(i);
-        double d1 = +208.0*alpha + 48.0*betta;
-        double d2 = -228.0*alpha - 36.0*betta;
-        double d3 = +112.0*alpha + 16.0*betta;
-        double d4 = -22.0*alpha  - 3.0*betta;
-
-        x.at(i) = d1*x.at(i-1) + d2*x.at(i-2) + d3*x.at(i-3) + d4*x.at(i-4) + f(i);
-        x.at(i) /= d0;
+        double alpha = r(n)*m2;
+        double betta = p(n)*m1;
+        double d0 = +70.0*alpha  + 25.0*betta + q(n);
+        double d1 = -208.0*alpha - 48.0*betta;
+        double d2 = +228.0*alpha + 36.0*betta;
+        double d3 = -112.0*alpha - 16.0*betta;
+        double d4 = +22.0*alpha  + 3.0*betta;
+        x.at(n) = -d1*x.at(n-1) - d2*x.at(n-2) - d3*x.at(n-3) - d4*x.at(n-4) + f(n);
+        x.at(n) /= d0;
     }
 
-    A.clear();
-    b.clear();
+    ems.clear();
     z.clear();
+    b.clear();
+    A.clear();
 }
 
 double U(unsigned int i, double h)
@@ -370,7 +393,7 @@ double U(unsigned int i, double h)
 
 void LinearBoundaryValueProblemODE::calculateN6L2RD(DoubleVector &x, double h, unsigned int N)
 {
-    const unsigned int k=6;
+    const unsigned int k = 6;
     double m1 = 1.0/(60.0*h);
     double m2 = 1.0/(180.0*h*h);
 
@@ -394,7 +417,7 @@ void LinearBoundaryValueProblemODE::calculateN6L2RD(DoubleVector &x, double h, u
     A[0][3] = -285.0*alpha0 + 50.0*betta0;
     A[0][4] = +93.0*alpha0  - 15.0*betta0;
     A[0][5] = -13.0*alpha0  + 2.0*betta0;
-    b[0]    = f(1) - (+137.0*alpha0 - 10.0*betta0)*x.at(0);
+    b[0]    = f(1) - (137.0*alpha0 - 10.0*betta0)*x.at(0);
 
     A[0][1] /= A[0][0];
     A[0][2] /= A[0][0];
@@ -540,17 +563,11 @@ void LinearBoundaryValueProblemODE::calculateN6L2RD(DoubleVector &x, double h, u
     x.at(N-4) = z.at(2);
     x.at(N-5) = z.at(1);
     x.at(N-6) = z.at(0);
-
-//    for (unsigned int n=N-(k+1); n>=1; n--)
-//    {
-//        x.at(n) = -ems.at(n-1,0)*x.at(n+1)
-//                 - ems.at(n-1,1)*x.at(n+2)
-//                 - ems.at(n-1,2)*x.at(n+3)
-//                 - ems.at(n-1,3)*x.at(n+4)
-//                 - ems.at(n-1,4)*x.at(n+5)
-//                 + ems.at(n-1,5);
-//    }
-
+    for (unsigned int n=N-(k+1); n>=1; n--)
+    {
+        x.at(n) = -ems.at(n-1,0)*x.at(n+1)-ems.at(n-1,1)*x.at(n+2)-ems.at(n-1,2)*x.at(n+3)
+                  -ems.at(n-1,3)*x.at(n+4)-ems.at(n-1,4)*x.at(n+5)+ems.at(n-1,5);
+    }
     for (unsigned int n=N-(k+1); n>=1; n--)
     {
         double alphai = r(n)*m2;
@@ -562,7 +579,8 @@ void LinearBoundaryValueProblemODE::calculateN6L2RD(DoubleVector &x, double h, u
         double d4 = +2970.0*alphai - 225.0*bettai;
         double d5 = -972.0*alphai  + 72.0*bettai;
         double d6 = +137.0*alphai  - 10.0*bettai;
-        x.at(n) = -d1*x.at(n+1) - d2*x.at(n+2) - d3*x.at(n+3) - d4*x.at(n+4) - d5*x.at(n+5) - d6*x.at(n+6) + f(n);
+        double fi = f(n);
+        x.at(n) = -d1*x.at(n+1) - d2*x.at(n+2) - d3*x.at(n+3) - d4*x.at(n+4) - d5*x.at(n+5) - d6*x.at(n+6) + fi;
         x.at(n) /= d0;
     }
 
@@ -574,235 +592,160 @@ void LinearBoundaryValueProblemODE::calculateN6L2RD(DoubleVector &x, double h, u
 
 void LinearBoundaryValueProblemODE::calculateN6R2LD(DoubleVector &x, double h, unsigned int N)
 {
+    const unsigned int k = 6;
+    double m1 = 1.0/(60.0*h);
+    double m2 = 1.0/(180.0*h*h);
+
     x.clear();
     x.resize(N+1, 0.0);
+
+    DoubleMatrix A(k, k, 0.0);
+    DoubleVector b(k, 0.0);
+    DoubleVector z(k, 0.0);
+    DoubleMatrix ems(N-k, k);
+
+    /* border conditions */
     x.at(0) = boundary(Left);
     x.at(N) = boundary(Right);
 
-    unsigned int K=6;
-    DoubleMatrix A(K, K, 0.0);
-    DoubleVector b(K, 0.0);
-    DoubleVector z(K, 0.0);
+    double alpha1 = r(1)*m2;
+    double betta1 = p(1)*m1;
+    A[0][0] = -147.0*alpha1 - 77.0 *betta1 + q(1);
+    A[0][1] = -255.0*alpha1 + 150.0*betta1;
+    A[0][2] = +470.0*alpha1 - 100.0*betta1;
+    A[0][3] = -285.0*alpha1 + 50.0 *betta1;
+    A[0][4] = +93.0 *alpha1 - 15.0 *betta1;
+    A[0][5] = -13.0 *alpha1 + 2.0  *betta1;
+    b[0]    = f(1) - (+137.0*alpha1 - 10.0*betta1)*x.at(0);
 
-    double m1 = 1.0/(180.0*h*h);
-    double m2 = 1.0/(60.0*h);
+    double alpha2 = r(2)*m2;
+    double betta2 = p(2)*m1;
+    A[1][0] = +228.0*alpha2 - 24.0*betta2;
+    A[1][1] = -420.0*alpha2 + 35.0*betta2 + q(2);
+    A[1][2] = +200.0*alpha2 + 80.0*betta2;
+    A[1][3] = +15.0 *alpha2 - 30.0*betta2;
+    A[1][4] = -12.0 *alpha2 + 8.0 *betta2;
+    A[1][5] = +2.0  *alpha2 - 1.0 *betta2;
+    b[1]    = f(2) - (-13.0*alpha2 + 2.0*betta2)*x.at(0);
 
-    double N6D2[7][7] =
+    double alpha3 = r(3)*m2;
+    double betta3 = p(3)*m1;
+    A[2][0] = -27.0 *alpha3 + 9.0 *betta3;
+    A[2][1] = +270.0*alpha3 - 45.0*betta3;
+    A[2][2] = -490.0*alpha3 + 0.0 *betta3 + q(3);
+    A[2][3] = +270.0*alpha3 + 45.0*betta3;
+    A[2][4] = -27.0 *alpha3 - 9.0 *betta3;
+    A[2][5] = +2.0  *alpha3 + 1.0 *betta3;
+    b[2]    = f(3) - (2.0*alpha3 - 1.0*betta3)*x.at(0);
+
+    double alpha4 = r(4)*m2;
+    double betta4 = p(4)*m1;
+    A[3][0] = -12.0 *alpha4 - 8.0 *betta4;
+    A[3][1] = +15.0 *alpha4 + 30.0*betta4;
+    A[3][2] = +200.0*alpha4 - 80.0*betta4;
+    A[3][3] = -420.0*alpha4 + 35.0*betta4 + q(4);
+    A[3][4] = +228.0*alpha4 + 24.0*betta4;
+    A[3][5] = -13.0 *alpha4 - 2.0 *betta4;
+    b[3]    = f(4) - (2.0*alpha4 + 1.0*betta4)*x.at(0);
+
+    double alpha5 = r(5)*m2;
+    double betta5 = p(5)*m1;
+    A[4][0] = +93.0 *alpha5 + 15.0 *betta5;
+    A[4][1] = -285.0*alpha5 - 50.0 *betta5;
+    A[4][2] = +470.0*alpha5 + 100.0*betta5;
+    A[4][3] = -255.0*alpha5 - 150.0*betta5;
+    A[4][4] = -147.0*alpha5 + 77.0 *betta5 + q(5);
+    A[4][5] = +137.0*alpha5 + 10.0 *betta5;
+    b[4]    = f(5) - (-13.0*alpha5 - 2.0*betta5)*x.at(0);
+
+    double alphaN1 = r(N-1)*m2;
+    double bettaN1 = p(N-1)*m1;
+    A[5][0] = -13.0 *alphaN1 - 2.0  *bettaN1;
+    A[5][1] = +93.0 *alphaN1 + 15.0 *bettaN1;
+    A[5][2] = -285.0*alphaN1 - 50.0 *bettaN1;
+    A[5][3] = +470.0*alphaN1 + 100.0*bettaN1;
+    A[5][4] = -255.0*alphaN1 - 150.0*bettaN1;
+    A[5][5] = -147.0*alphaN1 + 77.0 *bettaN1 + q(N-1);
+    b[5]    = f(N-1) - (+137.0*alphaN1 + 10.0*bettaN1)*x.at(N);
+
+    A[5][4] /= A[5][5];
+    A[5][3] /= A[5][5];
+    A[5][2] /= A[5][5];
+    A[5][1] /= A[5][5];
+    A[5][0] /= A[5][5];
+    b[5]    /= A[5][5];
+    A[5][5] = 1.0;
+
+    ems.at(N-(k+1),0) = A[5][4];
+    ems.at(N-(k+1),1) = A[5][3];
+    ems.at(N-(k+1),2) = A[5][2];
+    ems.at(N-(k+1),3) = A[5][1];
+    ems.at(N-(k+1),4) = A[5][0];
+    ems.at(N-(k+1),5) = b[5];
+
+    for (unsigned int n=N-1; n>=(k+1); n--)
     {
-        {+812.0, -3132.0, +5265.0, -5080.0, +2970.0, -972.0,  +137.0},
-        {+137.0, -147.0,  -255.0,  +470.0,  -285.0,  +93.0,   -13.0},
-        {-13.0,  +228.0,  -420.0,  +200.0,  +15.0,   -12.0,   +2.0},
-        {+2.0,   -27.0,   +270.0,  -490.0,  +270.0,  -27.0,   +2.0},
-        {+2.0,   -12.0,   +15.0,   +200.0,  -420.0,  +228.0,  -13.0},
-        {-13.0,  +93.0,   -285.0,  +470.0,  -255.0,  -147.0,  +137.0},
-        {+137.0, -972.0,  +2970.0, -5080.0, +5265.0, -3132.0, +812.0}
-    };
+        // * * * * +
+        double alphai = r(n)*m2;
+        double bettai = p(n)*m1;
+        double g1 = +137.0 *alphai + 10.0*bettai;
+        double g2 = -972.0 *alphai - 72.0*bettai;
+        double g3 = +2970.0*alphai + 225.0*bettai;
+        double g4 = -5080.0*alphai - 400.0*bettai;
+        double g5 = +5265.0*alphai + 450.0*bettai;
+        double g6 = -3132.0*alphai - 360.0*bettai;
+        double g7 = +812.0 *alphai + 147.0*bettai + q(n);
+        double fi = f(n);
 
-    double N6D1[7][7] =
-    {
-        {-147.0, +360.0, -450.0,  +400.0, -225.0, +72.0, -10.0},
-        {-10.0,  -77.0,  +150.0,  -100.0, +50.0,  -15.0,  +2.0},
-        {+2.0,   -24.0,  -35.0,   +80.0,  -30.0,  +8.0,   -1.0},
-        {-1.0,   +9.0,   -45.0,   +0.0,   +45.0,  -9.0,   +1.0},
-        {+1.0,   -8.0,   +30.0,   -80.0,  +35.0,  +24.0,  -2.0},
-        {-2.0,   +15.0,  -50.0,   +100.0, -150.0, +77.0,  +10.0},
-        {+10.0,  -72.0,   +225.0, -400.0, +450.0, -360.0, +147.0}
-    };
+        // * * * + *
+        //double alphai = r(n-1)*m2;
+        //double bettai = p(n-1)*m1;
+        //double g1 = -2.0*alphai  - bettai;
+        //double g2 = +8.0*alphai  + 6.0*bettai;
+        //double g3 = +12.0*alphai - 18.0*bettai;
+        //double g4 = -40.0*alphai + 10.0*bettai + q(n-1);
+        //double g5 = +22.0*alphai + 3.0*bettai;
+        //double fi = f(n-1);
 
-    for (unsigned int i=1; i<=5; i++)
-    {
-        double alpha0 = r(i)*m1;
-        double betta0 = p(i)*m2;
-        for (unsigned int j=1; j<=6; j++)
-        {
-            A[i-1][j-1] = N6D2[i][j]*alpha0 + N6D1[i][j]*betta0;
-        }
-        b[i-1] = f(i) - (N6D2[i][0]*alpha0 + N6D1[i][0]*betta0)*x.at(0);
-        A[i-1][i-1] += q(i);
+        g6 /= -g7;
+        g5 /= -g7;
+        g4 /= -g7;
+        g3 /= -g7;
+        g2 /= -g7;
+        g1 /= -g7;
+        fi /= +g7;
+        g7 = 1.0;
+
+        A[5][5] = A[5][4] + g6;
+        A[5][4] = A[5][3] + g5;
+        A[5][3] = A[5][2] + g4;
+        A[5][2] = A[5][1] + g3;
+        A[5][1] = A[5][0] + g2;
+        A[5][0] = g1;
+        b[5]    = b[5] - fi;
+
+        A[5][4] /= A[5][5];
+        A[5][3] /= A[5][5];
+        A[5][2] /= A[5][5];
+        A[5][1] /= A[5][5];
+        A[5][0] /= A[5][5];
+        b[5]    /= A[5][5];
+        A[5][5] = 1.0;
+
+        ems.at(n-(k+1),0) = A[5][4];
+        ems.at(n-(k+1),1) = A[5][3];
+        ems.at(n-(k+1),2) = A[5][2];
+        ems.at(n-(k+1),3) = A[5][1];
+        ems.at(n-(k+1),4) = A[5][0];
+        ems.at(n-(k+1),5) = b[5];
     }
 
-    //        {
-    //            double alphaN1 = r(N-1)*m1;
-    //            double bettaN1 = p(N-1)*m2;
-    //            for (unsigned int j=1; j<=6; j++)
-    //            {
-    //                A[5][j-1] = N6D2[5][j-1]*alphaN1 + N6D1[5][j-1]*bettaN1;
-    //            }
-    //            A[5][5] += q(N-1);
-    //            b[5] = f(N-1) - (N6D2[5][6]*alphaN1 + N6D1[5][6]*bettaN1)*x.at(N);
-
-    //            A[5][0] = N6D2[5][0]*alphaN1 + N6D1[5][0]*bettaN1;
-    //            A[5][1] = N6D2[5][1]*alphaN1 + N6D1[5][1]*bettaN1;
-    //            A[5][2] = N6D2[5][2]*alphaN1 + N6D1[5][2]*bettaN1;
-    //            A[5][3] = N6D2[5][3]*alphaN1 + N6D1[5][3]*bettaN1;
-    //            A[5][4] = N6D2[5][4]*alphaN1 + N6D1[5][4]*bettaN1;
-    //            A[5][5] = N6D2[5][5]*alphaN1 + N6D1[5][5]*bettaN1 + q(N-1);
-    //            b[5]    = f(N-1) - (N6D2[5][6]*alphaN1 + N6D1[5][6]*bettaN1)*x.at(N);
-
-    //            A[5][4] /= A[5][5];
-    //            A[5][3] /= A[5][5];
-    //            A[5][2] /= A[5][5];
-    //            A[5][1] /= A[5][5];
-    //            A[5][0] /= A[5][5];
-    //            b[5]    /= A[5][5];
-    //            A[5][5] = 1.0;
-
-    //            for (unsigned int i=N-1; i>=7; i--)
-    //            {
-    //                double alphai = r(i)*m1;
-    //                double bettai = p(i)*m2;
-
-    //                double g[8] = {0.0};
-    //                for (unsigned int i=1; i<=7; i++)
-    //                {
-    //                    g[i] = N6D2[6][i-1]*alphai + N6D1[6][i-1]*bettai;
-    //                }
-    //                g[0]  = f(i);
-
-    //                g[1] = N6D2[6][0]*alphai + N6D1[6][0]*bettai;
-    //                g[2] = N6D2[6][1]*alphai + N6D1[6][1]*bettai;
-    //                g[3] = N6D2[6][2]*alphai + N6D1[6][2]*bettai;
-    //                g[4] = N6D2[6][3]*alphai + N6D1[6][3]*bettai;
-    //                g[5] = N6D2[6][4]*alphai + N6D1[6][4]*bettai;
-    //                g[6] = N6D2[6][5]*alphai + N6D1[6][5]*bettai;
-    //                g[7] = N6D2[6][6]*alphai + N6D1[6][6]*bettai + q(i);
-    //                g[0]  = f(i);
-
-    //                for (unsigned int i=6; i>=1; i--)
-    //                {
-    //                    g[i] /= -g[7];
-    //                }
-    //                g[0] /= +g[7];
-    //                g[7] = 1.0;
-
-    //    //            g[6] /= -g[7];
-    //    //            g[5] /= -g[7];
-    //    //            g[4] /= -g[7];
-    //    //            g[3] /= -g[7];
-    //    //            g[2] /= -g[7];
-    //    //            g[1] /= -g[7];
-    //    //            g[0] /= +g[7];
-    //    //            g[7] = 1.0;
-
-    //                A[5][5] =  A[5][4] + g[6];
-    //                A[5][4] = (A[5][3] + g[5])/A[5][5];
-    //                A[5][3] = (A[5][2] + g[4])/A[5][5];
-    //                A[5][2] = (A[5][1] + g[3])/A[5][5];
-    //                A[5][1] = (A[5][0] + g[2])/A[5][5];
-    //                A[5][0] = g[1]/A[5][5];
-    //                b[5]    = (b[5] - g[0])/A[5][5];
-    //                A[5][5] = 1.0;
-    //            }
-    //        }
-
-    //        {
-    //            double alpha0 = r(1)*m1;
-    //            double betta0 = p(1)*m2;
-    //            A[0][0] = N6D2[1][1]*alpha0 + N6D1[1][1]*betta0 + q(1);
-    //            A[0][1] = N6D2[1][2]*alpha0 + N6D1[1][2]*betta0;
-    //            A[0][2] = N6D2[1][3]*alpha0 + N6D1[1][3]*betta0;
-    //            A[0][3] = N6D2[1][4]*alpha0 + N6D1[1][4]*betta0;
-    //            A[0][4] = N6D2[1][5]*alpha0 + N6D1[1][5]*betta0;
-    //            A[0][5] = N6D2[1][6]*alpha0 + N6D1[1][6]*betta0;
-    //            b[0]    = f(1) - (N6D2[1][0]*alpha0 + N6D1[1][0]*betta0)*x.at(0);
-    //        }
-    //        {
-    //            double alpha0 = r(2)*m1;
-    //            double betta0 = p(2)*m2;
-    //            A[1][0] = N6D2[2][1]*alpha0 + N6D1[2][1]*betta0;
-    //            A[1][1] = N6D2[2][2]*alpha0 + N6D1[2][2]*betta0 + q(2);
-    //            A[1][2] = N6D2[2][3]*alpha0 + N6D1[2][3]*betta0;
-    //            A[1][3] = N6D2[2][4]*alpha0 + N6D1[2][4]*betta0;
-    //            A[1][4] = N6D2[2][5]*alpha0 + N6D1[2][5]*betta0;
-    //            A[1][5] = N6D2[2][6]*alpha0 + N6D1[2][6]*betta0;
-    //            b[1]    = f(2) - (N6D2[2][0]*alpha0 + N6D1[2][0]*betta0)*x.at(0);
-    //        }
-    //        {
-    //            double alpha0 = r(3)*m1;
-    //            double betta0 = p(3)*m2;
-    //            A[2][0] = N6D2[3][1]*alpha0 + N6D1[3][1]*betta0;
-    //            A[2][1] = N6D2[3][2]*alpha0 + N6D1[3][2]*betta0;
-    //            A[2][2] = N6D2[3][3]*alpha0 + N6D1[3][3]*betta0 + q(3);
-    //            A[2][3] = N6D2[3][4]*alpha0 + N6D1[3][4]*betta0;
-    //            A[2][4] = N6D2[3][5]*alpha0 + N6D1[3][5]*betta0;
-    //            A[2][5] = N6D2[3][6]*alpha0 + N6D1[3][6]*betta0;
-    //            b[2]    = f(3) - (N6D2[3][0]*alpha0 + N6D1[3][0]*betta0)*x.at(0);
-    //        }
-    //        {
-    //            double alpha0 = r(4)*m1;
-    //            double betta0 = p(4)*m2;
-    //            A[3][0] = N6D2[4][1]*alpha0 + N6D1[4][1]*betta0;
-    //            A[3][1] = N6D2[4][2]*alpha0 + N6D1[4][2]*betta0;
-    //            A[3][2] = N6D2[4][3]*alpha0 + N6D1[4][3]*betta0;
-    //            A[3][3] = N6D2[4][4]*alpha0 + N6D1[4][4]*betta0 + q(4);
-    //            A[3][4] = N6D2[4][5]*alpha0 + N6D1[4][5]*betta0;
-    //            A[3][5] = N6D2[4][6]*alpha0 + N6D1[4][6]*betta0;
-    //            b[3]    = f(4) - (N6D2[4][0]*alpha0 + N6D1[4][0]*betta0)*x.at(0);
-    //        }
-    //        {
-    //            double alpha0 = r(5)*m1;
-    //            double betta0 = p(5)*m2;
-    //            A[4][0] = N6D2[5][1]*alpha0 + N6D1[5][1]*betta0;
-    //            A[4][1] = N6D2[5][2]*alpha0 + N6D1[5][2]*betta0;
-    //            A[4][2] = N6D2[5][3]*alpha0 + N6D1[5][3]*betta0;
-    //            A[4][3] = N6D2[5][4]*alpha0 + N6D1[5][4]*betta0;
-    //            A[4][4] = N6D2[5][5]*alpha0 + N6D1[5][5]*betta0 + q(5);
-    //            A[4][5] = N6D2[5][6]*alpha0 + N6D1[5][6]*betta0;
-    //            b[4]    = f(5) - (N6D2[5][0]*alpha0 + N6D1[5][0]*betta0)*x.at(0);
-    //        }
-
-    //    {
-    //        double alphaN1 = r(N-1)*m1;
-    //        double bettaN1 = p(N-1)*m2;
-    //        A[5][0] = N6D2[5][0]*alphaN1 + N6D1[5][0]*bettaN1;
-    //        A[5][1] = N6D2[5][1]*alphaN1 + N6D1[5][1]*bettaN1;
-    //        A[5][2] = N6D2[5][2]*alphaN1 + N6D1[5][2]*bettaN1;
-    //        A[5][3] = N6D2[5][3]*alphaN1 + N6D1[5][3]*bettaN1;
-    //        A[5][4] = N6D2[5][4]*alphaN1 + N6D1[5][4]*bettaN1;
-    //        A[5][5] = N6D2[5][5]*alphaN1 + N6D1[5][5]*bettaN1 + q(N-1);
-    //        b[5]    = f(N-1) - (N6D2[5][6]*alphaN1 + N6D1[5][6]*bettaN1)*x.at(N);
-
-    //        A[5][4] /= A[5][5];
-    //        A[5][3] /= A[5][5];
-    //        A[5][2] /= A[5][5];
-    //        A[5][1] /= A[5][5];
-    //        A[5][0] /= A[5][5];
-    //        b[5]    /= A[5][5];
-    //        A[5][5] = 1.0;
-
-    //        for (unsigned int i=N-1; i>=7; i--)
-    //        {
-    //            double alphai = r(i)*m1;
-    //            double bettai = p(i)*m2;
-
-    //            double g1 = N6D2[6][0]*alphai + N6D1[6][0]*bettai;
-    //            double g2 = N6D2[6][1]*alphai + N6D1[6][1]*bettai;
-    //            double g3 = N6D2[6][2]*alphai + N6D1[6][2]*bettai;
-    //            double g4 = N6D2[6][3]*alphai + N6D1[6][3]*bettai;
-    //            double g5 = N6D2[6][4]*alphai + N6D1[6][4]*bettai;
-    //            double g6 = N6D2[6][5]*alphai + N6D1[6][5]*bettai;
-    //            double g7 = N6D2[6][6]*alphai + N6D1[6][6]*bettai + q(i);
-    //            double fi = f(i);
-
-    //            g6 /= -g7;
-    //            g5 /= -g7;
-    //            g4 /= -g7;
-    //            g3 /= -g7;
-    //            g2 /= -g7;
-    //            g1 /= -g7;
-    //            fi /= +g7;
-    //            g7 = 1.0;
-
-    //            A[5][5] =  A[5][4] + g6;
-    //            A[5][4] = (A[5][3] + g5)/A[5][5];
-    //            A[5][3] = (A[5][2] + g4)/A[5][5];
-    //            A[5][2] = (A[5][1] + g3)/A[5][5];
-    //            A[5][1] = (A[5][0] + g2)/A[5][5];
-    //            A[5][0] = g1/A[5][5];
-    //            b[5]    = (b[5] - fi)/A[5][5];
-    //            A[5][5] = 1.0;
-    //        }
-    //    }
+    printf("%14.10f %14.10f\n", b[5], A[5][0]*U(N-6,h)
+                                     +A[5][1]*U(N-5,h)
+                                     +A[5][2]*U(N-4,h)
+                                     +A[5][3]*U(N-3,h)
+                                     +A[5][4]*U(N-2,h)
+                                     +A[5][5]*U(N-1,h));
 
     GaussianElimination(A, b, z);
 

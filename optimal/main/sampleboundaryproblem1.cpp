@@ -16,8 +16,8 @@ void BoundaryValueProblem1::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM
         IPrinter::printSeperatorLine();
     }
 
-    sbp.h = 0.0000001;
-    sbp.N = 10000000;
+    sbp.h = 0.0001;
+    sbp.N = 10000;
     {
         //sbp.h = 0.01;
         //sbp.N = 100;
@@ -25,7 +25,7 @@ void BoundaryValueProblem1::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM
         sbp.calculate2N(x, sbp.h, sbp.N);
         IPrinter::printVector(w,p,x);
         x.clear();
-        //IPrinter::printSeperatorLine();
+        IPrinter::printSeperatorLine();
     }
     {
         //sbp.h = 0.01;
@@ -43,7 +43,7 @@ void BoundaryValueProblem1::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM
         sbp.calculateN4R2LD(x, sbp.h, sbp.N);
         IPrinter::printVector(w,p,x);
         x.clear();
-        //IPrinter::printSeperatorLine();
+        IPrinter::printSeperatorLine();
     }
     {
         //sbp.h = 0.01;
