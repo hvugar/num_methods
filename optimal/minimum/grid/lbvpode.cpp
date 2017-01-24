@@ -382,7 +382,6 @@ void LinearBoundaryValueProblemODE::calculateN6L2RD(DoubleVector &x, double h, u
     x.at(0) = boundary(Left);
     x.at(N) = boundary(Right);
 
-
     double alpha0 = r(1)*m2;
     double betta0 = p(1)*m1;
     A[0][0] = -147.0*alpha0 - 77.0*betta0 + q(1);
