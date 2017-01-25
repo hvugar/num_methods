@@ -20,9 +20,10 @@ protected:
     virtual double f(unsigned int n) const = 0;
 
 public:
-    void calculate(DoubleVector &x, unsigned int k, double h, unsigned int N, unsigned int direction = 1);
-    void calculate2N(DoubleVector &x, double h, unsigned int N);
+    void calculateX(DoubleVector &x, double h, unsigned int N);
 
+    void calculateN2L2RD(DoubleVector &x, double h, unsigned int N);
+    void calculateN2R2LD(DoubleVector &x, double h, unsigned int N);
     void calculateN4L2RD(DoubleVector &x, double h, unsigned int N);
     void calculateN4R2LD(DoubleVector &x, double h, unsigned int N);
     void calculateN6L2RD(DoubleVector &x, double h, unsigned int N);
