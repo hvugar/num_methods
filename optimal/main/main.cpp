@@ -33,11 +33,11 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Example2::Main(argc, argv);
     //Problem1::Main(argc, argv);
     //Example4::Main(argc, argv);
-    //BorderParabolicD::Main(argc, argv);
+    BorderParabolicD::Main(argc, argv);
     //BorderParabolicN::Main(argc, argv);
     //BorderParabolic2D::Main(argc, argv);
     //BorderHyperbolic2D::Main(argc, argv);
     //Example5 e5;
-    BoundaryValueProblem1::Main(argc, argv);
+    //BoundaryValueProblem1::Main(argc, argv);
     return 0;
 }

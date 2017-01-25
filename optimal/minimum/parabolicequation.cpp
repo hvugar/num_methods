@@ -338,7 +338,6 @@ void IParabolicEquation::calculateN2L2RD(DoubleMatrix &u, double hx, double ht, 
         {
             u.at(m,i) = -ems.at(i-1,0)*u.at(m,i+1) + ems.at(i-1,1);
         }
-
 //        for (unsigned int n=N-2; n>=1; n--)
 //        {
 //            u.at(m,n-1) = -(-2.0*alpha - 1.0)*u.at(m,n) - alpha*u.at(m,n+1) - (u.at(m-1,n) + ht*f(n,m));
