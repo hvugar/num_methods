@@ -13,6 +13,8 @@ DESTDIR  = ../bin
 INCLUDEPATH += ../minimum
 LIBS += -L../bin -lminimum
 
+DEFINES += MINIMUM_LIBRARY
+
 # Input
 HEADERS += 1d/hyperbolic1dx.h \
            1d/hyperboliccontrol1d.h \

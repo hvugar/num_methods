@@ -11,7 +11,7 @@
 #include <projection.h>
 #include <gradient_cjt.h>
 
-class HyperbolicControl2D1 : public R1Function, public RnFunction, public IGradient, public IHyperbolicEquation2D,
+class MINIMUMSHARED_EXPORT HyperbolicControl2D1 : public R1Function, public RnFunction, public IGradient, public IHyperbolicEquation2D,
         public IBackwardHyperbolicEquation2D, public IPrinter, public IProjection
 {
 public:
@@ -37,7 +37,7 @@ public:
 
 
 public:
-    static void main();
+    static void Main(int argc, char* argv[]);
 
     double u(double i, double j, double k) const;
     void psiDerivative(double &psiX1, double &psiX2, double x1, double x2, const DoubleMatrix &psi);

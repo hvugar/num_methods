@@ -5,10 +5,11 @@
 #include <hyperbolicequation.h>
 #include <printer.h>
 #include <gradient_cjt.h>
+#include <projection.h>
 
-class HyperbolicControl2D22 : public R1Function, public RnFunction,
+class MINIMUMSHARED_EXPORT HyperbolicControl2D22 : public R1Function, public RnFunction,
         public IHyperbolicEquation2D, public IBackwardHyperbolicEquation2D,
-        public IGradient, public IPrinter
+        public IGradient, public IPrinter//, public IProjection
 {
 public:
     HyperbolicControl2D22();
@@ -31,16 +32,10 @@ public:
     virtual double bf(unsigned int i, unsigned int j, unsigned int k) const;
 
 public:
-    static void main(int argc, char ** argv);
+    static void Main(int argc, char *argv[]);
 
     double fxt(unsigned int i, unsigned int j, unsigned int k) const;
 
-    double t0;
-    double t1;
-    double x10;
-    double x11;
-    double x20;
-    double x21;
     double h1;
     double h2;
     double ht;

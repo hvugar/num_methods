@@ -6,7 +6,7 @@
 #include <printer.h>
 #include <gradient_cjt.h>
 
-class HyperbolicControl2D23 : public R1Function, public RnFunction,
+class MINIMUMSHARED_EXPORT HyperbolicControl2D23 : public R1Function, public RnFunction,
         public IHyperbolicEquation2D, public IBackwardHyperbolicEquation2D,
         public IGradient, public IPrinter
 {

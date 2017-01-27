@@ -47,7 +47,7 @@ HyperbolicControl2D24::HyperbolicControl2D24()
     alpha1 = 10.0;
     alpha2 = 2.0;
     alpha3 = 1.0;
-    qamma = 0.2;
+    qamma  = 0.2;
 
     h1 = h2 = 0.01;
     ht = 0.0025;

@@ -7,7 +7,7 @@
 #include <projection.h>
 #include <gradient_cjt.h>
 
-class HyperbolicControl2DMX : public R1Function, public RnFunction,
+class MINIMUMSHARED_EXPORT HyperbolicControl2DMX : public R1Function, public RnFunction,
         public IGradient, public IHyperbolicEquation2D, public IBackwardHyperbolicEquation2D,
         public IPrinter, public IProjection
 {

@@ -6,7 +6,7 @@
 #include <printer.h>
 #include <gradient_cjt.h>
 
-class HyperbolicControl2D21 : public R1Function, public RnFunction, public IHyperbolicEquation2D
+class MINIMUMSHARED_EXPORT HyperbolicControl2D21 : public R1Function, public RnFunction, public IHyperbolicEquation2D
 {
 public:
     HyperbolicControl2D21();
@@ -21,7 +21,7 @@ public:
     virtual double f(unsigned int i, unsigned int j, unsigned int k) const;
 
 public:
-    static void main(int argc, char ** argv);
+    static void Main(int argc, char *argv[]);
 
     double fxt(unsigned int i, unsigned int j, unsigned int k) const;
 

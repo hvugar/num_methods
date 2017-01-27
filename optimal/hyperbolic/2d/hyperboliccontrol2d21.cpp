@@ -1,6 +1,6 @@
 #include "hyperboliccontrol2d21.h"
 
-void HyperbolicControl2D21::main(int argc, char ** argv)
+void HyperbolicControl2D21::Main(int argc, char* argv[])
 {
     C_UNUSED(argc);
     C_UNUSED(argv);
@@ -21,13 +21,6 @@ void HyperbolicControl2D21::main(int argc, char ** argv)
 
 HyperbolicControl2D21::HyperbolicControl2D21()
 {
-    x10 = 0.0;
-    x11 = 1.0;
-    x20 = 0.0;
-    x21 = 1.0;
-    t0 = 0.0;
-    t1 = 1.0;
-
     h1 = 0.005;
     h2 = 0.005;
     ht = 0.0025;

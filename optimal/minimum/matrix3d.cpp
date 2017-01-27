@@ -26,7 +26,7 @@ DoubleCube::~DoubleCube()
 
 void DoubleCube::clear()
 {
-    if (pData == NULL)
+    if (pData != NULL)
     {
         for (unsigned int k=0; k<mDepth; k++)
         {

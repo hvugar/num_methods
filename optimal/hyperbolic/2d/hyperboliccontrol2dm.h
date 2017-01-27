@@ -7,7 +7,7 @@
 #include <projection.h>
 #include <gradient_cjt.h>
 
-class HyperbolicControl2DM : public R1Function, public RnFunction,
+class MINIMUMSHARED_EXPORT HyperbolicControl2DM : public R1Function, public RnFunction,
         public IGradient, public IHyperbolicEquation2D, public IBackwardHyperbolicEquation2D,
         public IPrinter, public IProjection
 {
@@ -37,15 +37,16 @@ public:
     void calculateGX(const DoubleVector& x, const DoubleMatrix& psi, DoubleVector& g, unsigned int k);
     void psiDerivative(double &psiX1, double &psiX2, double x1, double x2, const DoubleMatrix &psi);
 
-    static void main();
+    static void Main(int argc, char *argv[]);
 
 private:
-    double t0;
-    double t1;
-    double x10;
-    double x11;
-    double x20;
-    double x21;
+//    double t0;
+//    double t1;
+//    double x10;
+//    double x11;
+//    double x20;
+//    double x21;
+
     double h1;
     double h2;
     double ht;

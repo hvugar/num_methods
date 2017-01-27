@@ -17,20 +17,13 @@ void HyperbolicControl2D23::main(int argc, char ** argv)
 
 HyperbolicControl2D23::HyperbolicControl2D23()
 {
-    x10 = 0.0;
-    x11 = 1.0;
-    x20 = 0.0;
-    x21 = 1.0;
-    t0  = 0.0;
-    t1  = 0.1;
-
     h1 = 0.01;
     h2 = 0.01;
     ht = 0.005;
 
-    N1 = (unsigned)round((x11 - x10)/h1);
-    N2 = (unsigned)round((x21 - x20)/h2);
-    M = (unsigned)round((t1 - t0)/ht);
+    N1 = 100;
+    N2 = 100;
+    M  = 2;
     D = 10;
     L = 2;
 

@@ -20,6 +20,9 @@ LIBS += -L../bin -lminimum
 INCLUDEPATH += ../border
 LIBS += -L../bin -lborder
 
+INCLUDEPATH += ../hyperbolic
+LIBS += -L../bin -lhyperbolic
+
 #INCLUDEPATH += ../imaging
 #LIBS += -L../bin -limaging
 

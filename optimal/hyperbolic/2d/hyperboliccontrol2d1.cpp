@@ -1,7 +1,7 @@
 #include "hyperboliccontrol2d1.h"
 
 FILE *file;
-void HyperbolicControl2D1::main()
+void HyperbolicControl2D1::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
 {
     file = fopen("result.txt", "a");
     HyperbolicControl2D1 hc;

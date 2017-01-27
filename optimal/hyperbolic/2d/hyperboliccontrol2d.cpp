@@ -1,7 +1,10 @@
 #include "hyperboliccontrol2d.h"
 
-void HyperbolicControl2D::main()
+void HyperbolicControl2D::Main(int argc, char* argv[])
 {
+    C_UNUSED(argc);
+    C_UNUSED(argv);
+
     HyperbolicControl2D hc;
     DoubleVector v(hc.L*(hc.M+1));
     for (unsigned int k=0; k<=hc.M; k++)
@@ -56,19 +59,13 @@ void HyperbolicControl2D::main()
 
 HyperbolicControl2D::HyperbolicControl2D()
 {
-    x10 = 0.0;
-    x11 = 1.0;
-    x20 = 0.0;
-    x21 = 1.0;
-    t0 = 0.0;
-    t1 = 1.0;
     a1 = a2 = 1.0;
     N1 = 100;
     N2 = 100;
-    M = 200;
-    h1 = (x11 - x10) / N1;
-    h2 = (x21 - x20) / N2;
-    ht = (t1 - t0) / M;
+    M =  200;
+    h1 = 1.0 / N1;
+    h2 = 1.0 / N2;
+    ht = 1.0 / M;
     alpha0 = 1.0;
     alpha1 = 1.0;
     qamma = 1.0;

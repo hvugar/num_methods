@@ -1,12 +1,12 @@
 #ifndef HYPERBOLICCONTROL2D_H
 #define HYPERBOLICCONTROL2D_H
 
-#include <function.h>
 #include <hyperbolicequation.h>
-#include <printer.h>
+#include <function.h>
 #include <gradient_cjt.h>
+#include <printer.h>
 
-class HyperbolicControl2D : public R1Function, public RnFunction, public IGradient, public IHyperbolicEquation2D, public IBackwardHyperbolicEquation2D, public IPrinter
+class MINIMUMSHARED_EXPORT HyperbolicControl2D : public R1Function, public RnFunction, public IGradient, public IHyperbolicEquation2D, public IBackwardHyperbolicEquation2D, public IPrinter
 {
 public:
     HyperbolicControl2D();
@@ -33,15 +33,9 @@ public:
     double v3(double t) const;
     double fxt(unsigned int i, unsigned int j, unsigned int k) const;
 
-    static void main();
+    static void Main(int argc, char* argv[]);
 
 private:
-    double t0;
-    double t1;
-    double x10;
-    double x11;
-    double x20;
-    double x21;
     double ht;
     double h1;
     double h2;

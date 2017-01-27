@@ -1,40 +1,37 @@
 #include "hyperboliccontrol2d22.h"
 
-void HyperbolicControl2D22::main(int argc, char ** argv)
+void HyperbolicControl2D22::Main(int argc, char* argv[])
 {
     C_UNUSED(argc);
     C_UNUSED(argv);
 
     HyperbolicControl2D22 hc;
-    hc.file = fopen("20160322.txt", "w");
-    //hc.file = stdout;
-
-    for (double t=0.1; t<=10.1; t+=0.1)
-    {
-        hc.fx(t);
-    }
-    fclose(hc.file);
+    hc.file = stdout;
+//    hc.file = fopen("20160322.txt", "w");
+//    for (double t=0.1; t<=10.1; t+=0.1)
+//    {
+//        hc.fx(t);
+//    }
+//    fclose(hc.file);
+    hc.fx(1.0);
 }
 
 HyperbolicControl2D22::HyperbolicControl2D22()
 {
-    x10 = x20 = t0 = 0.0;
-    x11 = x21 = t1 = 1.0;
-
-    h1 = h2 = 0.01;
+    h1 = 0.01;
+    h2 = 0.01;
     ht = 0.005;
 
-    N1 = (unsigned)round((x11 - x10)/h1);
-    N2 = (unsigned)round((x21 - x20)/h2);
-    M  = (unsigned)round((t1 - t0)/ht);
-    L = 2;
+    N1 = 100;
+    N2 = 100;
+    M  = 200;
+    L  = 2;
 
     e.resize(2);
     e[0] = 0.2;
     e[1] = 0.2;
 
     alpha0 = 1.0;
-
     alpha1 = 10.0;
     alpha2 = 2.0;
     alpha3 = 1.0;
@@ -64,24 +61,20 @@ HyperbolicControl2D22::HyperbolicControl2D22()
     pu = NULL;
 }
 
-double HyperbolicControl2D22::fx(double t)
+double HyperbolicControl2D22::fx(double T)
 {
-    DoubleVector vt = v0;
+    M  = (unsigned int)(T*200);
     unsigned int m = M;
 
-    t1 = t;
-    M  = (unsigned)ceil((t1 - t0)/ht);
-
-    printf("t: %f M: %d m %d\n", t1, M, m);
+    printf("t: %f M: %d m %d\n", T, M, m);
 
     v0.resize((M+1)*L);
 
     for (unsigned int k=0; k<=m; k++)
     {
-        v0[0*(M+1)+k] = vt[0*(m+1)+k];
-        v0[1*(M+1)+k] = vt[1*(m+1)+k];
+        v0[0*(M+1)+k] = 2.0;
+        v0[1*(M+1)+k] = 2.0;
     }
-    vt.clear();
 
     for (unsigned int k=m+1; k<=M; k++)
     {
@@ -105,7 +98,7 @@ double HyperbolicControl2D22::fx(double t)
     cg.calculate(v0);
 
     double rf = fx(v0);
-    fprintf(file, "%f %.16f\n", t, rf);
+    fprintf(file, "%f %.16f\n", T, rf);
     IPrinter::printVector(v0, "v21", v0.size()/2, 0, v0.size()/2-1, file);
     IPrinter::printVector(v0, "v22", v0.size()/2, v0.size()/2, v0.size()-1, file);
     fflush(file);
