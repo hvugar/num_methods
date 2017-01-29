@@ -21,11 +21,11 @@ void BoundaryValueProblem1::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM
     {
         //sbp.h = 0.01;
         //sbp.N = 100;
-        DoubleVector x;
-        sbp.calculateX(x, sbp.h, sbp.N);
-        IPrinter::printVector(w,p,x);
-        x.clear();
-        IPrinter::printSeperatorLine();
+//        DoubleVector x;
+//        sbp.calculateX(x, sbp.h, sbp.N);
+//        IPrinter::printVector(w,p,x);
+//        x.clear();
+//        IPrinter::printSeperatorLine();
     }
     {
         //sbp.h = 0.01;
@@ -106,6 +106,9 @@ double BoundaryValueProblem1::p(unsigned int i UNUSED_PARAM) const
 #ifdef SAMPLE_5
     return +3.0*x;
 #endif
+#ifdef SAMPLE_6
+    return x;
+#endif
 }
 
 double BoundaryValueProblem1::q(unsigned int i UNUSED_PARAM) const
@@ -124,6 +127,9 @@ double BoundaryValueProblem1::q(unsigned int i UNUSED_PARAM) const
 #endif
 #ifdef SAMPLE_5
     return -6.0;
+#endif
+#ifdef SAMPLE_6
+    return -1.0;
 #endif
 }
 
@@ -144,6 +150,9 @@ double BoundaryValueProblem1::f(unsigned int i UNUSED_PARAM) const
 #endif
 #ifdef SAMPLE_5
     return +2.0;
+#endif
+#ifdef SAMPLE_6
+    return +0.0;
 #endif
 }
 
@@ -171,6 +180,9 @@ double BoundaryValueProblem1::fx(unsigned int i) const
 #endif
 #ifdef SAMPLE_5
     return x*x;
+#endif
+#ifdef SAMPLE_6
+    return 2.0*x;
 #endif
 }
 

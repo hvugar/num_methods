@@ -175,10 +175,11 @@ void LinearBoundaryValueProblemODE::calculateN2L2RD(DoubleVector &x, double h, u
 
     x.at(N-1) = z.at(1);
     x.at(N-2) = z.at(0);
-//    for (unsigned int n=N-(k+1); n>=1; n--)
-//    {
-//        x.at(n) = -ems.at(n-1,0)*x.at(n+1)+ems.at(n-1,1);
-//    }
+    for (unsigned int n=N-(k+1); n>=1; n--)
+    {
+        x.at(n) = -ems.at(n-1,0)*x.at(n+1)+ems.at(n-1,1);
+    }
+    /*
     for (unsigned int n=N-(k+1); n>=1; n--)
     {
         double alpha = r(n+1)*m2;
@@ -190,6 +191,7 @@ void LinearBoundaryValueProblemODE::calculateN2L2RD(DoubleVector &x, double h, u
         x.at(n) = -d1*x.at(n+1) - d2*x.at(n+2) + fi;
         x.at(n) /= d0;
     }
+    */
 
     ems.clear();
     z.clear();
@@ -267,10 +269,11 @@ void LinearBoundaryValueProblemODE::calculateN2R2LD(DoubleVector &x, double h, u
 
     x.at(1) = z.at(0);
     x.at(2) = z.at(1);
-//    for (unsigned int n=(k+1); n<=N-1; n++)
-//    {
-//        x.at(n) = -ems.at(n-k,0)*x.at(n-1)+ems.at(n-k,1);
-//    }
+    for (unsigned int n=(k+1); n<=N-1; n++)
+    {
+        x.at(n) = -ems.at(n-k,0)*x.at(n-1)+ems.at(n-k,1);
+    }
+    /*
     for (unsigned int n=(k+1); n<=N-1; n++)
     {
         double alpha = r(n-1)*m2;
@@ -282,6 +285,7 @@ void LinearBoundaryValueProblemODE::calculateN2R2LD(DoubleVector &x, double h, u
         x.at(n) = -d1*x.at(n-1) - d2*x.at(n-2) + fi;
         x.at(n) /= d0;
     }
+    */
 
     ems.clear();
     z.clear();
@@ -413,10 +417,11 @@ void LinearBoundaryValueProblemODE::calculateN4L2RD(DoubleVector &x, double h, u
     x.at(N-2) = z.at(2);
     x.at(N-3) = z.at(1);
     x.at(N-4) = z.at(0);
-//    for (unsigned int n=N-(k+1); n>=1; n--)
-//    {
-//        x.at(n) = -ems.at(n-1,0)*x.at(n+1)-ems.at(n-1,1)*x.at(n+2)-ems.at(n-1,2)*x.at(n+3)+ems.at(n-1,3);
-//    }
+    for (unsigned int n=N-(k+1); n>=1; n--)
+    {
+        x.at(n) = -ems.at(n-1,0)*x.at(n+1)-ems.at(n-1,1)*x.at(n+2)-ems.at(n-1,2)*x.at(n+3)+ems.at(n-1,3);
+    }
+    /*
     for (unsigned int n=N-(k+1); n>=1; n--)
     {
         double alphai = r(n)*m2;
@@ -430,6 +435,7 @@ void LinearBoundaryValueProblemODE::calculateN4L2RD(DoubleVector &x, double h, u
         x.at(n) = -d1*x.at(n+1) - d2*x.at(n+2) - d3*x.at(n+3) - d4*x.at(n+4) + fi;
         x.at(n) /= d0;
     }
+    */
 
     ems.clear();
     z.clear();
@@ -551,10 +557,11 @@ void LinearBoundaryValueProblemODE::calculateN4R2LD(DoubleVector &x, double h, u
     x.at(2) = z.at(1);
     x.at(3) = z.at(2);
     x.at(4) = z.at(3);
-//    for (unsigned int n=(k+1); n<=N-1; n++)
-//    {
-//        x.at(n) = -ems.at(n-k,0)*x.at(n-1)-ems.at(n-k,1)*x.at(n-2)-ems.at(n-k,2)*x.at(n-3)+ems.at(n-k,3);
-//    }
+    for (unsigned int n=(k+1); n<=N-1; n++)
+    {
+        x.at(n) = -ems.at(n-k,0)*x.at(n-1)-ems.at(n-k,1)*x.at(n-2)-ems.at(n-k,2)*x.at(n-3)+ems.at(n-k,3);
+    }
+    /*
     for (unsigned int n=(k+1); n<=N-1; n++)
     {
         // * * * * +
@@ -569,6 +576,7 @@ void LinearBoundaryValueProblemODE::calculateN4R2LD(DoubleVector &x, double h, u
         x.at(n) = -d3*x.at(n-1) - d2*x.at(n-2) - d1*x.at(n-3) - d0*x.at(n-4) + fi;
         x.at(n) /= d4;
     }
+    */
 
     ems.clear();
     z.clear();
@@ -748,11 +756,12 @@ void LinearBoundaryValueProblemODE::calculateN6L2RD(DoubleVector &x, double h, u
     x.at(N-4) = z.at(2);
     x.at(N-5) = z.at(1);
     x.at(N-6) = z.at(0);
-//    for (unsigned int n=N-(k+1); n>=1; n--)
-//    {
-//        x.at(n) = -ems.at(n-1,0)*x.at(n+1)-ems.at(n-1,1)*x.at(n+2)-ems.at(n-1,2)*x.at(n+3)
-//                  -ems.at(n-1,3)*x.at(n+4)-ems.at(n-1,4)*x.at(n+5)+ems.at(n-1,5);
-//    }
+    for (unsigned int n=N-(k+1); n>=1; n--)
+    {
+        x.at(n) = -ems.at(n-1,0)*x.at(n+1)-ems.at(n-1,1)*x.at(n+2)-ems.at(n-1,2)*x.at(n+3)
+                  -ems.at(n-1,3)*x.at(n+4)-ems.at(n-1,4)*x.at(n+5)+ems.at(n-1,5);
+    }
+    /*
     for (unsigned int n=N-(k+1); n>=1; n--)
     {
         double alphai = r(n)*m2;
@@ -768,6 +777,7 @@ void LinearBoundaryValueProblemODE::calculateN6L2RD(DoubleVector &x, double h, u
         x.at(n) = -d1*x.at(n+1) - d2*x.at(n+2) - d3*x.at(n+3) - d4*x.at(n+4) - d5*x.at(n+5) - d6*x.at(n+6) + fi;
         x.at(n) /= d0;
     }
+    */
 
     ems.clear();
     z.clear();
@@ -935,11 +945,12 @@ void LinearBoundaryValueProblemODE::calculateN6R2LD(DoubleVector &x, double h, u
     x.at(4) = z.at(3);
     x.at(5) = z.at(4);
     x.at(6) = z.at(5);
-//    for (unsigned int n=(k+1); n<=N-1; n++)
-//    {
-//        x.at(n) = -ems.at(n-k,0)*x.at(n-1)-ems.at(n-k,1)*x.at(n-2)-ems.at(n-k,2)*x.at(n-3)
-//                  -ems.at(n-k,3)*x.at(n-4)-ems.at(n-k,4)*x.at(n-5)+ems.at(n-k,5);
-//    }
+    for (unsigned int n=(k+1); n<=N-1; n++)
+    {
+        x.at(n) = -ems.at(n-k,0)*x.at(n-1)-ems.at(n-k,1)*x.at(n-2)-ems.at(n-k,2)*x.at(n-3)
+                  -ems.at(n-k,3)*x.at(n-4)-ems.at(n-k,4)*x.at(n-5)+ems.at(n-k,5);
+    }
+    /*
     for (unsigned int n=(k+1); n<=N-1; n++)
     {
         // * * * * * * +
@@ -956,6 +967,7 @@ void LinearBoundaryValueProblemODE::calculateN6R2LD(DoubleVector &x, double h, u
         x.at(n) = -d5*x.at(n-1)-d4*x.at(n-2)-d3*x.at(n-3)-d2*x.at(n-4)-d1*x.at(n-5)-d0*x.at(n-6)+fi;
         x.at(n) /= d6;
     }
+    */
 
     ems.clear();
     z.clear();

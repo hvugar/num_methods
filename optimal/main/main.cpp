@@ -37,7 +37,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     srand(time(NULL));
 
-    HyperbolicControl2DM::Main(argc, argv);
+    //HyperbolicControl2DM::Main(argc, argv);
 
     //BorderTest::Main(argc, argv);
     //BorderTest1::Main(argc, argv);
@@ -49,6 +49,6 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //BorderParabolic2D::Main(argc, argv);
     //BorderHyperbolic2D::Main(argc, argv);
     //Example5 e5;
-    //BoundaryValueProblem1::Main(argc, argv);
+    BoundaryValueProblem1::Main(argc, argv);
     return 0;
 }
