@@ -89,7 +89,7 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u)
 
     double a = 1.0;
     const unsigned int k = 2;
-    double alpha = (ht*a*a)/(2.0*hx*hx);
+    double alpha = (ht*a*a)/(hx*hx);
 
     u.clear();
     u.resize(M+1, N+1);
@@ -112,10 +112,10 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u)
     for (unsigned int m=1; m<=M; m++)
     {
         A[0][0] = -2.0*alpha - 1.0;
-        A[0][1] = +1.0*alpha;
-        b[0]    = -u.at(m-1,1) - (+1.0*alpha)*u.at(m,0) - ht*f(1,m);
+        A[0][1] = alpha;
+        b[0]    = -u.at(m-1,1) - alpha*u.at(m,0) - ht*f(1,m);
 
-        printf("%14.10f %14.10f\n", A[0][0]*U(1,m,hx,ht)+A[0][1]*U(2,m,hx,ht), b[0]);
+        //printf("%14.10f %14.10f\n", A[0][0]*U(1,m,hx,ht)+A[0][1]*U(2,m,hx,ht), b[0]);
 
         A[0][1] /= A[0][0];
         b[0]    /= A[0][0];
@@ -124,7 +124,7 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u)
         ems.at(0,0) = A[0][1];
         ems.at(0,1) = b[0];
 
-        for (unsigned int n=1; n<=N-(k+1); n++)
+        for (unsigned int n=2; n<=N-k; n++)
         {
             double g1 = alpha;
             double g2 = -2.0*alpha-1.0;
@@ -144,26 +144,35 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u)
             b[0]    /= A[0][0];
             A[0][0] = 1.0;
 
-            ems.at(n,0) = A[0][1];
-            ems.at(n,1) = b[0];
+            ems.at(n-1,0) = A[0][1];
+            ems.at(n-1,1) = b[0];
 
-            printf("%14.10f %14.10f\n", A[0][0]*U(n+1,m,hx,ht)+A[0][1]*U(n+2,m,hx,ht), b[0]);
+            //printf("%14.10f %14.10f\n", U(n,m,hx,ht)+A[0][1]*U(n+1,m,hx,ht), b[0]);
         }
-        return;
+        //return;
 
-        A[1][0] = +1.0*alpha;
+        A[1][0] = alpha;
         A[1][1] = -2.0*alpha - 1.0;
-        b[1]    = -u.at(m-1,N-1) - (+1.0*alpha)*u.at(m,N) - ht*f(N-1,m);
+        b[1]    = -u.at(m-1,N-1) - alpha*u.at(m,N) - ht*f(N-1,m);
+        //printf("%14.10f %14.10f\n", A[1][0]*U(N-2,m,hx,ht)+A[1][1]*U(N-1,m,hx,ht), b[1]);
 
         GaussianElimination(A, b, x);
         //printf("%14.10f %14.10f\n", x.at(0), x.at(1));
 
         u.at(m, N-1) = x.at(1);
         u.at(m, N-2) = x.at(0);
-        for (unsigned int i=N-(k+1); i>=1; i--)
+//        for (unsigned int i=N-(k+1); i>=1; i--)
+//        {
+//            u.at(m,i) = -ems.at(i-1,0)*u.at(m,i+1)+ems.at(i-1,1);
+//        }
+        for (unsigned int n=N-k; n>=2; n--)
         {
-            u.at(m,i) = -ems.at(i-1,0)*u.at(m,i+1)
-                        +ems.at(i-1,1);
+            double d0 = alpha;
+            double d1 = -2.0*alpha-1.0;
+            double d2 = alpha;
+            double fi = -u.at(m-1,n) - ht*f(n,m);
+            u.at(m,n-1) = -d1*u.at(m,n) - d2*u.at(m,n+1) + fi;
+            u.at(m,n-1) /= d0;
         }
     }
 

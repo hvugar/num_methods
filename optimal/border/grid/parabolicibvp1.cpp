@@ -3,8 +3,8 @@
 void ParabolicIBVP1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     GridPDE grid;
-    grid.setTimeDimension(TimeDimension(0.01, 0.0, 1.0, 0, 100));
-    grid.addSpaceDimension(SpaceDimension(0.01, 0.0, 1.0, 0, 100));
+    grid.setTimeDimension(TimeDimension(0.001, 0.0, 1.0, 0, 1000));
+    grid.addSpaceDimension(SpaceDimension(0.001, 0.0, 1.0, 0, 1000));
 
     ParabolicIBVP1 p(grid);
     p.setGrid(grid);
@@ -34,7 +34,7 @@ double ParabolicIBVP1::initial(unsigned int n) const
 double ParabolicIBVP1::boundary(unsigned int m, BoundaryType boundary) const
 {
     SpaceDimension dim1 =  grid().spaceDimensions(SpaceDimension::Dim1);
-    if (boundary == Left)  return U(dim1.N1(),m);
+    if (boundary == Left)  return U(0,m);
     if (boundary == Right) return U(dim1.N2(),m);
     return 0.0;
 }
