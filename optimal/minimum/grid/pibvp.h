@@ -22,6 +22,9 @@ public:
     void gridMethod(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);
 
     /* dirichlet conditions */
+    void calculateN2L2RD(DoubleMatrix &u);
+    void calculateN2R2LD(DoubleMatrix &u);
+
     void calculateN4L2RD(DoubleMatrix &u);
     void calculateN4R2LD(DoubleMatrix &u);
 

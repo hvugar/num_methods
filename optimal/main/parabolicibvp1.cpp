@@ -2,8 +2,11 @@
 
 double ParabolicIBVP1::U(unsigned int n, unsigned int m) const
 {
-    double x = n*grid().hx1;
-    double t = m*grid().ht;
+    TimeDimension time = grid().timeDimension();
+    SpaceDimension space = grid().spaceDimensions(SpaceDimension::Dim1);
+
+    double x = n * space.hx();
+    double t = m * time.ht();
     return x*x + t;
 }
 
@@ -14,7 +17,9 @@ double ParabolicIBVP1::initial(unsigned int n) const
 
 double ParabolicIBVP1::boundary(unsigned int m, BoundaryType boundary) const
 {
-    unsigned int N = grid().N1;
+    SpaceDimension space = grid().spaceDimensions(SpaceDimension::Dim1);
+    unsigned int N = space.N2();
+
     if (boundary == Left) return U(0,m);
     if (boundary == Right) return U(N,m);
     return 0.0;

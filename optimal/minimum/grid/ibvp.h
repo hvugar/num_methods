@@ -2,6 +2,7 @@
 #define INITIALBOUNDARYVALUEPROBLEM_H
 
 #include "bvp.h"
+#include "grid.h"
 
 enum SweepMethodDirection
 {
@@ -13,11 +14,11 @@ enum SweepMethodDirection
 class MINIMUMSHARED_EXPORT InitialBoundaryValueProblemPDE : protected BoundaryValueProblemPDE
 {
 public:
-    void setGrid(const Grid &grid);
-    const Grid& grid() const;
+    void setGrid(const GridPDE &grid);
+    const GridPDE& grid() const;
 
-private:
-    Grid mgrid;
+protected:
+    GridPDE mgrid;
     BoundaryCondition condition;
 };
 

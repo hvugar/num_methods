@@ -44,7 +44,9 @@ SOURCES += \
     grid/lbvpode.cpp \
     grid/nlbvpode.cpp \
     grid/pibvp.cpp \
-    grid/hibvp.cpp
+    grid/hibvp.cpp \
+    grid/hpibvp.cpp \
+    grid/grid.cpp
 
 HEADERS += global.h \
     cmethods.h \
@@ -76,4 +78,6 @@ HEADERS += global.h \
     grid/lbvpode.h \
     grid/nlbvpode.h \
     grid/pibvp.h \
-    grid/hibvp.h
+    grid/hibvp.h \
+    grid/hpibvp.h \
+    grid/grid.h

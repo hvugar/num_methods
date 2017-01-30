@@ -18,6 +18,8 @@
 #include <../border/borderparabolic2d.h>
 #include <../border/borderhyperbolic2d.h>
 
+#include <../border/grid/parabolicibvp1.h>
+
 #include <../hyperbolic/2d/hyperboliccontrol2d.h>
 #include <../hyperbolic/2d/hyperboliccontrol2d1.h>
 #include <../hyperbolic/2d/hyperboliccontrol2d21.h>
@@ -49,6 +51,9 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //BorderParabolic2D::Main(argc, argv);
     //BorderHyperbolic2D::Main(argc, argv);
     //Example5 e5;
-    BoundaryValueProblem1::Main(argc, argv);
+    //BoundaryValueProblem1::Main(argc, argv);
+
+    ParabolicIBVP1::Main(argc, argv);
+
     return 0;
 }

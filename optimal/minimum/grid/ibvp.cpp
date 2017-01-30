@@ -1,11 +1,11 @@
 #include "ibvp.h"
 
-void InitialBoundaryValueProblemPDE::setGrid(const Grid &grid)
+void InitialBoundaryValueProblemPDE::setGrid(const GridPDE &grid)
 {
     mgrid = grid;
 }
 
-const Grid& InitialBoundaryValueProblemPDE::grid() const
+const GridPDE& InitialBoundaryValueProblemPDE::grid() const
 {
     return mgrid;
 }
