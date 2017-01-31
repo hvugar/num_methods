@@ -4,49 +4,59 @@
 #include <global.h>
 #include <vector>
 
-class MINIMUMSHARED_EXPORT SpaceDimension
+struct MINIMUMSHARED_EXPORT SpaceNode
+{
+    unsigned int i;
+    unsigned int j;
+    unsigned int k;
+
+    double x;
+    double y;
+    double z;
+};
+
+struct MINIMUMSHARED_EXPORT TimeNode
+{
+    unsigned int i;
+    double t;
+};
+
+class MINIMUMSHARED_EXPORT Dimension
 {
 public:
-    enum Dimension
+    Dimension(double step=0.01, double min=0.0, double max=1.0, unsigned int minN = 0, unsigned int maxN=100);
+
+    virtual double step() const;
+    virtual double min() const;
+    virtual double max() const;
+    virtual unsigned int minN() const;
+    virtual unsigned int maxN() const;
+
+protected:
+    double mstep;
+    double mmin;
+    double mmax;
+    unsigned int mminN;
+    unsigned int mmaxN;
+};
+
+class MINIMUMSHARED_EXPORT SpaceDimension : public Dimension
+{
+public:
+    enum DimensionSize
     {
         Dim1 = 1,
         Dim2 = 2,
         Dim3 = 3
     };
 
-    SpaceDimension(double hx=0.01, double x1=0.0, double x2=1.0, unsigned int N1 = 0, unsigned int N2=100);
-
-    double hx() const;
-    double x1() const;
-    double x2() const;
-    unsigned int N1() const;
-    unsigned int N2() const;
-
-private:
-    double _hx;
-    double _x1;
-    double _x2;
-    unsigned int _N1;
-    unsigned int _N2;
+    SpaceDimension(double step=0.01, double min=0.0, double max=1.0, unsigned int minN = 0, unsigned int maxN=100);
 };
 
-class MINIMUMSHARED_EXPORT TimeDimension
+class MINIMUMSHARED_EXPORT TimeDimension : public Dimension
 {
 public:
-    TimeDimension(double ht=0.01, double t1=0.0, double t2=1.0, unsigned int M1 = 0, unsigned int M2=100);
-
-    double ht() const;
-    double t1() const;
-    double t2() const;
-    unsigned int M1() const;
-    unsigned int M2() const;
-
-private:
-    double _ht;
-    double _t1;
-    double _t2;
-    unsigned int _M1;
-    unsigned int _M2;
+    TimeDimension(double step=0.01, double min=0.0, double max=1.0, unsigned int minN = 0, unsigned int maxN=100);
 };
 
 class MINIMUMSHARED_EXPORT GridPDE
@@ -57,7 +67,7 @@ public:
 
     void addSpaceDimension(const SpaceDimension &spaceDimSize);
     unsigned int spaceDimSize() const;
-    const SpaceDimension& spaceDimensions(SpaceDimension::Dimension dimension) const;
+    const SpaceDimension& spaceDimensions(SpaceDimension::DimensionSize dimension) const;
 
 private:
     std::vector<SpaceDimension> mSpaceDimensions;
@@ -66,7 +76,11 @@ private:
 
 class MINIMUMSHARED_EXPORT GridODE
 {
-
+public:
+    const Dimension& dimension() const;
+    void setDimension(const Dimension &dimension);
+private:
+    Dimension mdimension;
 };
 
 

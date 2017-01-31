@@ -7,6 +7,12 @@
 #include "../cmethods.h"
 #include "../printer.h"
 #include <math.h>
+#include "grid.h"
+
+struct MINIMUMSHARED_EXPORT InitialValueProblem
+{
+    Dimension timeDimension;
+};
 
 struct MINIMUMSHARED_EXPORT BoundaryValueProblem
 {
@@ -22,16 +28,20 @@ struct MINIMUMSHARED_EXPORT BoundaryValueProblem
         Left = 0,
         Right = 1
     };
+
+    BoundaryCondition condition;
 };
 
 struct MINIMUMSHARED_EXPORT BoundaryValueProblemODE : protected BoundaryValueProblem
 {
-   virtual double boundary(BoundaryType bound) const = 0;
+    virtual double boundary(BoundaryType bound) const = 0;
 };
 
 struct MINIMUMSHARED_EXPORT BoundaryValueProblemPDE : protected BoundaryValueProblem
 {
     virtual double boundary(unsigned int m, BoundaryType bound) const = 0;
+
+    SpaceDimension spaceDimension;
 };
 
 #endif // BOUNDARYVALUEPROBLEM_H

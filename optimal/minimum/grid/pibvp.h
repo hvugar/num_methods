@@ -18,6 +18,14 @@ protected:
     virtual double f(unsigned int n, unsigned int m) const = 0;
     virtual double a(unsigned int n, unsigned int m) const = 0;
 
+    virtual double initial(const SpaceNode &sn) const = 0;
+    virtual double boundary(const SpaceNode &sn, const TimeNode &tn) const = 0;
+    virtual double f(const SpaceNode &sn, const TimeNode &tn) const = 0;
+    virtual double a(const SpaceNode &sn, const TimeNode &tn) const = 0;
+
+    void setTimeDimension(const Dimension &dimension);
+    void addSpaceDimension(const Dimension &dimension);
+
 public:
     void gridMethod(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);
 
@@ -30,6 +38,14 @@ public:
 
     void calculateN6L2RD(DoubleMatrix &u);
     void calculateN6R2LD(DoubleMatrix &u);
+
+    void gridMethod1(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);
+    void calculateMVD1(DoubleMatrix &u) const;
+
+protected:
+    Dimension timeDimension;
+    Dimension spaceDimension;
+    unsigned int dimSize();
 };
 
 #endif // PARABOLICIBVP_H

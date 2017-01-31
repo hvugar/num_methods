@@ -11,7 +11,7 @@ enum SweepMethodDirection
     Centered = 3
 };
 
-class MINIMUMSHARED_EXPORT InitialBoundaryValueProblemPDE : protected BoundaryValueProblemPDE
+class MINIMUMSHARED_EXPORT InitialBoundaryValueProblemPDE : protected BoundaryValueProblemPDE, protected InitialValueProblem
 {
 public:
     void setGrid(const GridPDE &grid);
@@ -19,7 +19,6 @@ public:
 
 protected:
     GridPDE mgrid;
-    BoundaryCondition condition;
 };
 
 #endif // INITIALBOUNDARYVALUEPROBLEM_H

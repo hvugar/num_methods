@@ -1,17 +1,24 @@
 #include "pibvp.h"
 
+double U(unsigned int n, unsigned int m, double hx, double ht)
+{
+    double x = n*hx;
+    double t = m*ht;
+    return x*x + t;
+}
+
 void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction)
 {
     TimeDimension time = grid().timeDimension();
     SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
 
-    double ht = time.ht();
-    //unsigned int M1 = time.M1();
-    unsigned int M = time.M2();
+    double ht = time.step();
+    //unsigned int M1 = time.minN();
+    unsigned int M = time.maxN();
 
-    double hx = dim1.hx();
-    //unsigned int N1 = dim1.N1();
-    unsigned int N = dim1.N2();
+    double hx = dim1.step();
+    //unsigned int N1 = dim1.minN();
+    unsigned int N = dim1.maxN();
 
     //double k = ht/(hx*hx);
 
@@ -67,11 +74,100 @@ void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction)
     free(rx);
 }
 
-double U(unsigned int n, unsigned int m, double hx, double ht)
+void ParabolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction)
 {
-    double x = n*hx;
-    double t = m*ht;
-    return x*x + t;
+    TimeDimension time = grid().timeDimension();
+    SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
+
+    //    time = timeDimension;
+    //    dim1 = spaceDimension;
+
+    double ht = time.step();
+    //unsigned int M1 = time.minN();
+    unsigned int M = time.maxN();
+
+    double hx = dim1.step();
+    //unsigned int N1 = dim1.minN();
+    unsigned int N = dim1.maxN();
+
+    //double k = ht/(hx*hx);
+
+    u.clear();
+    u.resize(M+1, N+1);
+
+    double *da = (double*) malloc(sizeof(double)*(N-1));
+    double *db = (double*) malloc(sizeof(double)*(N-1));
+    double *dc = (double*) malloc(sizeof(double)*(N-1));
+    double *dd = (double*) malloc(sizeof(double)*(N-1));
+    double *rx = (double*) malloc(sizeof(double)*(N-1));
+
+    for (unsigned int n=0; n<=N; n++)
+    {
+        SpaceNode sn;
+        sn.i = n;
+        sn.x = n*hx;
+        u[0][n] = initial(sn);
+    }
+
+    for (unsigned int m=1; m<=M; m++)
+    {
+        TimeNode tn;
+        tn.i = m;
+        tn.t = m*ht;
+
+        SpaceNode left;
+        left.i = 0;
+        left.x = 0.0;
+        u[m][0] = boundary(left, tn);
+        SpaceNode right;
+        right.i = 0;
+        right.x = 0.0;
+        u[m][N] = boundary(right, tn);
+
+        for (unsigned int n=1; n<=N-1; n++)
+        {
+            SpaceNode sn;
+            sn.i = n;
+            sn.x = n*hx;
+
+            double alpha = -a(sn,tn)*(ht/(hx*hx));
+            double betta = 1.0 - 2.0*alpha;
+
+            da[n-1] = alpha;
+            db[n-1] = betta;
+            dc[n-1] = alpha;
+            dd[n-1] = u[m-1][n] + ht * f(sn, tn);
+        }
+
+        da[0]   = 0.0;
+        dc[N-2] = 0.0;
+
+        SpaceNode sn0;
+        sn0.i = 0;
+        sn0.x = 0.0;
+        double alpha0 = -a(sn0,tn)*(ht/(hx*hx));
+        dd[0] -= alpha0 * u[m][0];
+
+        SpaceNode snN;
+        snN.i = N;
+        snN.x = N*hx;
+        double alphaN = -a(snN,tn)*(ht/(hx*hx));
+        dd[N-2] -= alphaN * u[m][N];
+
+        //tomasAlgorithm(da, db, dc, dd, rx, N-1);
+        if (direction == ForwardSweep)
+            tomasAlgorithmL2R(da, db, dc, dd, rx, N-1);
+        else
+            tomasAlgorithmR2L(da, db, dc, dd, rx, N-1);
+
+        for (unsigned int n=1; n<=N-1; n++) u[m][n] = rx[n-1];
+    }
+
+    free(da);
+    free(db);
+    free(dc);
+    free(dd);
+    free(rx);
 }
 
 void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u)
@@ -79,13 +175,13 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u)
     TimeDimension time = grid().timeDimension();
     SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
 
-    double ht = time.ht();
-    //unsigned int M1 = time.M1();
-    unsigned int M = time.M2();
+    double ht = time.step();
+    //unsigned int M1 = time.minN();
+    unsigned int M = time.maxN();
 
-    double hx = dim1.hx();
-    //unsigned int N1 = dim1.N1();
-    unsigned int N = dim1.N2();
+    double hx = dim1.step();
+    //unsigned int N1 = dim1.minN();
+    unsigned int N = dim1.maxN();
 
     double a = 1.0;
     const unsigned int k = 2;
@@ -161,10 +257,10 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u)
 
         u.at(m, N-1) = x.at(1);
         u.at(m, N-2) = x.at(0);
-//        for (unsigned int i=N-(k+1); i>=1; i--)
-//        {
-//            u.at(m,i) = -ems.at(i-1,0)*u.at(m,i+1)+ems.at(i-1,1);
-//        }
+        //        for (unsigned int i=N-(k+1); i>=1; i--)
+        //        {
+        //            u.at(m,i) = -ems.at(i-1,0)*u.at(m,i+1)+ems.at(i-1,1);
+        //        }
         for (unsigned int n=N-k; n>=2; n--)
         {
             double d0 = alpha;
@@ -192,18 +288,13 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u)
     TimeDimension time = grid().timeDimension();
     SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
 
-    double ht = time.ht();
-    //unsigned int M1 = time.M1();
-    unsigned int M = time.M2();
+    double ht = time.step();
+    //unsigned int M1 = time.minN();
+    unsigned int M = time.maxN();
 
-    double hx = dim1.hx();
-    //unsigned int N1 = dim1.N1();
-    unsigned int N = dim1.N2();
-
-//    double ht = g.ht;
-//    unsigned int M = g.M;
-//    double hx = g.hx1;
-//    unsigned int N = g.N1;
+    double hx = dim1.step();
+    //unsigned int N1 = dim1.minN();
+    unsigned int N = dim1.maxN();
 
     double a = 1.0;
     const unsigned int k = 4;
@@ -318,5 +409,212 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u)
 
 void ParabolicIBVP::calculateN4R2LD(DoubleMatrix &u)
 {
+    C_UNUSED(u);
+}
 
+unsigned int ParabolicIBVP::dimSize()
+{
+    return 1;
+}
+
+void ParabolicIBVP::setTimeDimension(const Dimension &dimension)
+{
+    timeDimension = dimension;
+}
+
+void ParabolicIBVP::addSpaceDimension(const Dimension &dimension)
+{
+    spaceDimension = dimension;
+}
+
+void ParabolicIBVP::calculateMVD1(DoubleMatrix &u) const
+{
+    TimeDimension time = mgrid.timeDimension();
+    SpaceDimension dim1 = mgrid.spaceDimensions(SpaceDimension::Dim1);
+    SpaceDimension dim2 = mgrid.spaceDimensions(SpaceDimension::Dim2);
+
+    double ht = time.step();
+    double h1 = dim1.step();
+    double h2 = dim2.step();
+    unsigned int M = time.maxN();
+    unsigned int N1 = dim1.maxN();
+    unsigned int N2 = dim2.maxN();
+
+    double a1 = 1.0;
+    double a2 = 1.0;
+
+    //cleaning matrix
+    u.resize(N2+1, N1+1);
+
+    DoubleMatrix uh(N2+1, N1+1);
+
+    DoubleVector da1(N1-1);
+    DoubleVector db1(N1-1);
+    DoubleVector dc1(N1-1);
+    DoubleVector dd1(N1-1);
+    DoubleVector rx1(N1-1);
+
+    DoubleVector da2(N2-1);
+    DoubleVector db2(N2-1);
+    DoubleVector dc2(N2-1);
+    DoubleVector dd2(N2-1);
+    DoubleVector rx2(N2-1);
+
+    double x1_a = -(a1*ht)/(2.0*h1*h1);
+    double x1_b  = 1.0 + (a1*ht)/(h1*h1);
+    double x1_c = (a1*ht)/(2.0*h2*h2);
+
+    double x2_a = -(a2*ht)/(2.0*h2*h2);
+    double x2_b  = 1.0 + (a2*ht)/(h2*h2);
+    double x2_c = (a2*ht)/(2.0*h1*h1);
+
+    for (unsigned int j=0; j<=N2; j++)
+    {
+        SpaceNode sn;
+        sn.j = j;
+        sn.y = j*h2;
+        for (unsigned int i=0; i<=N1; i++)
+        {
+            sn.i = i;
+            sn.x = i*h1;
+            u[j][i] = initial(sn);
+        }
+    }
+
+    TimeNode tn;
+    SpaceNode sn;
+    for (unsigned int k=1; k<=M; k++)
+    {
+        tn.i = 2*k-1;
+        tn.t = (2*k-1)*ht;
+        // Approximation to x1 direction
+        for (unsigned int j=1; j<N2; j++)
+        {
+            sn.j = j;
+            sn.y = j*h2;
+            for (unsigned int i=1; i<N1; i++)
+            {
+                sn.i = i;
+                sn.x = i*h1;
+
+                da1[i-1] = x1_a;
+                db1[i-1] = x1_b;
+                dc1[i-1] = x1_a;
+                dd1[i-1] = x1_c*(u[j-1][i] - 2.0*u[j][i] + u[j+1][i]) + u[j][i] + (ht/2.0) * f(sn, tn);
+            }
+
+            da1[0]     = 0.0;
+            dc1[N1-2]  = 0.0;
+
+            SpaceNode sn0;
+            sn0.i = 0;
+            sn0.x = 0.0;
+            sn0.j = j;
+            sn0.y = j*h2;
+            uh[j][0]  = boundary(sn0, tn);
+            SpaceNode snN;
+            snN.i = N1;
+            snN.x = N1*h1;
+            snN.j = j;
+            snN.y = j*h2;
+            uh[j][N1] = boundary(snN, tn);
+
+            dd1[0]    -= x1_a * uh[j][0];
+            dd1[N1-2] -= x1_a * uh[j][N1];
+
+            tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.size());
+
+            for (unsigned int i=1; i<N1; i++)
+            {
+                uh[j][i] = rx1[i-1];
+            }
+        }
+
+        for (unsigned int i=0; i<=N1; i++)
+        {
+            SpaceNode sn0;
+            sn0.i = i;
+            sn0.x = i*h1;
+            sn0.j = 0;
+            sn0.y = 0*h2;
+            uh[0][i]  = boundary(sn0, tn);
+            SpaceNode snN;
+            snN.i = i;
+            snN.x = i*h1;
+            snN.j = N2;
+            snN.y = N2*h2;
+            uh[N2][i] = boundary(snN, tn);
+        }
+
+        tn.i = 2*k;
+        tn.t = 2*k*ht;
+        // Approximation to x2 direction
+        for (unsigned int i=1; i<N1; i++)
+        {
+            sn.i = i;
+            sn.x = i*h1;
+            for (unsigned int j=1; j<N2; j++)
+            {
+                sn.j = j;
+                sn.y = j*h2;
+                da2[j-1] = x2_a;
+                db2[j-1] = x2_b;
+                dc2[j-1] = x2_a;
+                dd2[j-1] = x2_c*(uh[j][i-1] - 2.0*uh[j][i] + uh[j][i+1]) + uh[j][i] + (ht/2.0) * f(sn, tn);
+            }
+            da2[0]     = 0.0;
+            dc2[N2-2]  = 0.0;
+
+            SpaceNode sn0;
+            sn0.i = i;
+            sn0.x = i*h1;
+            sn0.j = 0;
+            sn0.y = 0.0;
+            u[0][i]  = boundary(sn0, tn);
+            SpaceNode snN;
+            snN.i = i;
+            snN.x = i*h1;
+            snN.j = N2;
+            snN.y = N2*h2;
+            u[N2][i] = boundary(snN, tn);
+
+            dd2[0]    -= x2_a * u[0][i];
+            dd2[N2-2] -= x2_a * u[N2][i];
+
+            tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.size());
+
+            for (unsigned int j=1; j<N2; j++)
+            {
+                u[j][i] = rx2[j-1];
+            }
+        }
+
+        for (unsigned int j=0; j<=N2; j++)
+        {
+            SpaceNode sn0;
+            sn0.i = 0;
+            sn0.x = 0*h1;
+            sn0.j = j;
+            sn0.y = j*h2;
+            u[j][0]  = boundary(sn0, tn);
+            SpaceNode snN;
+            snN.i = N1;
+            snN.x = N1*h1;
+            snN.j = j;
+            snN.y = j*h2;
+            u[j][N1] = boundary(snN, tn);
+        }
+    }
+
+    da1.clear();
+    db1.clear();
+    dc1.clear();
+    dd1.clear();
+    rx1.clear();
+
+    da2.clear();
+    db2.clear();
+    dc2.clear();
+    dd2.clear();
+    rx2.clear();
 }

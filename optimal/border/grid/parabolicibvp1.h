@@ -3,7 +3,7 @@
 
 #include <grid/pibvp.h>
 
-#define SAMPLE_1
+#define SAMPLE_4
 
 class MINIMUMSHARED_EXPORT ParabolicIBVP1 : public ParabolicIBVP
 {
@@ -17,6 +17,11 @@ protected:
     virtual double boundary(unsigned int m, BoundaryType boundary) const;
     virtual double f(unsigned int n, unsigned int m) const;
     virtual double a(unsigned int n, unsigned int m) const;
+
+    virtual double initial(const SpaceNode &sn) const;
+    virtual double boundary(const SpaceNode &sn, const TimeNode& tn) const;
+    virtual double f(const SpaceNode &sn, const TimeNode &tn) const;
+    virtual double a(const SpaceNode &sn, const TimeNode &tn) const;
 
 public:
     void static Main(int agrc, char* argv[]);

@@ -1,62 +1,26 @@
 #include "grid.h"
 
-SpaceDimension::SpaceDimension(double h, double x1, double x2, unsigned int N1, unsigned int N2)
-    : _hx(h), _x1(x1), _x2(x2), _N1(N1), _N2(N2)
+Dimension::Dimension(double step, double min, double max, unsigned int minN, unsigned int maxN)
+    : mstep(step), mmin(min), mmax(max), mminN(minN), mmaxN(maxN)
 {}
 
-double SpaceDimension::hx() const
-{
-    return _hx;
-}
+double Dimension::step() const { return mstep; }
 
-double SpaceDimension::x1() const
-{
-    return _x1;
-}
+double Dimension::min() const { return mmin; }
 
-double SpaceDimension::x2() const
-{
-    return _x2;
-}
+double Dimension::max() const { return mmax; }
 
-unsigned int SpaceDimension::N1() const
-{
-    return _N1;
-}
+unsigned int Dimension::minN() const { return mminN; }
 
-unsigned int SpaceDimension::N2() const
-{
-    return _N2;
-}
+unsigned int Dimension::maxN() const { return mmaxN; }
 
-TimeDimension::TimeDimension(double ht, double t1, double t2, unsigned int M1, unsigned int M2)
-    : _ht(ht), _t1(t1), _t2(t2), _M1(M1), _M2(M2)
+SpaceDimension::SpaceDimension(double step, double min, double max, unsigned int minN, unsigned int maxN)
+    : Dimension(step, min, max, minN, maxN)
 {}
 
-double TimeDimension::ht() const
-{
-    return _ht;
-}
-
-double TimeDimension::t1() const
-{
-    return _t1;
-}
-
-double TimeDimension::t2() const
-{
-    return _t2;
-}
-
-unsigned int TimeDimension::M1() const
-{
-    return _M1;
-}
-
-unsigned int TimeDimension::M2() const
-{
-    return _M2;
-}
+TimeDimension::TimeDimension(double step, double min, double max, unsigned int minN, unsigned int maxN)
+    : Dimension(step, min, max, minN, maxN)
+{}
 
 const TimeDimension& GridPDE::timeDimension() const
 {
@@ -68,7 +32,7 @@ void GridPDE::setTimeDimension(const TimeDimension &timeDimension)
     mTimeDimension = timeDimension;
 }
 
-const SpaceDimension& GridPDE::spaceDimensions(SpaceDimension::Dimension dim) const
+const SpaceDimension& GridPDE::spaceDimensions(SpaceDimension::DimensionSize dim) const
 {
     return mSpaceDimensions.at(dim-1);
 }
@@ -81,4 +45,14 @@ void GridPDE::addSpaceDimension(const SpaceDimension &spaceDimension)
 unsigned int GridPDE::spaceDimSize() const
 {
     return mSpaceDimensions.size();
+}
+
+const Dimension& GridODE::dimension() const
+{
+    return mdimension;
+}
+
+void GridODE::setDimension(const Dimension &dimension)
+{
+    mdimension = dimension;
 }
