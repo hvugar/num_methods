@@ -45,9 +45,9 @@ class MINIMUMSHARED_EXPORT SpaceDimension : public Dimension
 public:
     enum DimensionSize
     {
-        Dim1 = 1,
-        Dim2 = 2,
-        Dim3 = 3
+        Dim1 = 0,
+        Dim2 = 1,
+        Dim3 = 2
     };
 
     SpaceDimension(double step=0.01, double min=0.0, double max=1.0, unsigned int minN = 0, unsigned int maxN=100);

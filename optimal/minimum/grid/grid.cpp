@@ -34,7 +34,7 @@ void GridPDE::setTimeDimension(const TimeDimension &timeDimension)
 
 const SpaceDimension& GridPDE::spaceDimensions(SpaceDimension::DimensionSize dim) const
 {
-    return mSpaceDimensions.at(dim-1);
+    return mSpaceDimensions.at(dim);
 }
 
 void GridPDE::addSpaceDimension(const SpaceDimension &spaceDimension)

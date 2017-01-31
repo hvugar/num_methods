@@ -9,11 +9,11 @@ double U(unsigned int n, unsigned int m, double hx, double ht)
 
 void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction)
 {
-    //TimeDimension time = grid().timeDimension();
-    //SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
+    TimeDimension time = grid().timeDimension();
+    SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
 
-    Dimension time = timeDimension;
-    Dimension dim1 = spaceDimension.at(0);
+//    Dimension time = timeDimension;
+//    Dimension dim1 = spaceDimension.at(0);
 
     double ht = time.step();
     //unsigned int M1 = time.minN();
@@ -79,11 +79,11 @@ void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction)
 
 void ParabolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction)
 {
-    //TimeDimension time = grid().timeDimension();
-    //SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
+    TimeDimension time = grid().timeDimension();
+    SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
 
-    Dimension time = timeDimension;
-    Dimension dim1 = spaceDimension.at(0);
+//    Dimension time = timeDimension;
+//    Dimension dim1 = spaceDimension.at(0);
 
     double ht = time.step();
     //unsigned int M1 = time.minN();
@@ -175,11 +175,11 @@ void ParabolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction)
 
 void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u)
 {
-    //TimeDimension time = grid().timeDimension();
-    //SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
+    TimeDimension time = grid().timeDimension();
+    SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
 
-    Dimension time = timeDimension;
-    Dimension dim1 = spaceDimension.at(0);
+//    Dimension time = timeDimension;
+//    Dimension dim1 = spaceDimension.at(SpaceDimension::Dim1-1);
 
     double ht = time.step();
     //unsigned int M1 = time.minN();
@@ -291,11 +291,11 @@ void ParabolicIBVP::calculateN2R2LD(DoubleMatrix &u)
 
 void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u)
 {
-    //TimeDimension time = grid().timeDimension();
-    //SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
+    TimeDimension time = grid().timeDimension();
+    SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
 
-    Dimension time = timeDimension;
-    Dimension dim1 = spaceDimension.at(0);
+//    Dimension time = timeDimension;
+//    Dimension dim1 = spaceDimension.at(0);
 
     double ht = time.step();
     //unsigned int M1 = time.minN();
@@ -438,13 +438,13 @@ void ParabolicIBVP::addSpaceDimension(const Dimension &dimension)
 
 void ParabolicIBVP::calculateMVD1(DoubleMatrix &u) const
 {
-    //TimeDimension time = mgrid.timeDimension();
-    //SpaceDimension dim1 = mgrid.spaceDimensions(SpaceDimension::Dim1);
-    //SpaceDimension dim2 = mgrid.spaceDimensions(SpaceDimension::Dim2);
+    TimeDimension time = mgrid.timeDimension();
+    SpaceDimension dim1 = mgrid.spaceDimensions(SpaceDimension::Dim1);
+    SpaceDimension dim2 = mgrid.spaceDimensions(SpaceDimension::Dim2);
 
-    Dimension time = timeDimension;
-    Dimension dim1 = spaceDimension.at(0);
-    Dimension dim2 = spaceDimension.at(1);
+//    Dimension time = timeDimension;
+//    Dimension dim1 = spaceDimension.at(0);
+//    Dimension dim2 = spaceDimension.at(1);
 
     double ht = time.step();
     double h1 = dim1.step();
@@ -634,11 +634,11 @@ void ParabolicIBVP::calculateMVD1(DoubleMatrix &u) const
 
 void ParabolicIBVP::calculateN2L2RD1(DoubleMatrix &u)
 {
-    //TimeDimension time = grid().timeDimension();
-    //SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
+    TimeDimension time = grid().timeDimension();
+    SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
 
-    Dimension time = timeDimension;
-    Dimension dim1 = spaceDimension.at(0);
+//    Dimension time = timeDimension;
+//    Dimension dim1 = spaceDimension.at(0);
 
     double ht = time.step();
     //unsigned int M1 = time.minN();
@@ -763,11 +763,11 @@ void ParabolicIBVP::calculateN2L2RD1(DoubleMatrix &u)
 
 void ParabolicIBVP::calculateN4L2RD1(DoubleMatrix &u)
 {
-    //TimeDimension time = grid().timeDimension();
-    //SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
+    TimeDimension time = grid().timeDimension();
+    SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
 
-    Dimension time = timeDimension;
-    Dimension dim1 = spaceDimension.at(SpaceDimension::Dim1);
+//    Dimension time = timeDimension;
+//    Dimension dim1 = spaceDimension.at(SpaceDimension::Dim1-1);
 
     double ht = time.step();
     //unsigned int M1 = time.minN();
