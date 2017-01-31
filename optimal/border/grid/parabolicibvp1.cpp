@@ -8,52 +8,87 @@ void ParabolicIBVP1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     grid.addSpaceDimension(SpaceDimension(0.0001, 0.0, 1.0, 0, 10000));
 
     ParabolicIBVP1 p(grid);
-    clock_t t;
-    DoubleMatrix u0;
-    t = clock();
-    p.gridMethod(u0);
-    t = clock() - t;
-    IPrinter::printMatrix(14,10,u0);
-    printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
-    IPrinter::printSeperatorLine();
+    p.timeDimension = Dimension(0.0001, 0.0, 1.0, 0, 10000);
+    p.spaceDimension.push_back(Dimension(0.0001, 0.0, 1.0, 0, 10000));
+    printf("%u\n", p.spaceDimension.size());
+    {
+        DoubleMatrix u0;
+        clock_t t = clock();
+        p.gridMethod(u0);
+        t = clock() - t;
+        IPrinter::printMatrix(14,10,u0);
+        printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
+        IPrinter::printSeperatorLine();
+    }
+    {
 
-//    DoubleMatrix u1;
-//    p.calculateN2L2RD(u1);
-//    IPrinter::printMatrix(14,10,u1);
-//    IPrinter::printSeperatorLine();
-
-//    DoubleMatrix u2;
-//    p.calculateN4L2RD(u2);
-//    IPrinter::printMatrix(14,10,u2);
-//    IPrinter::printSeperatorLine();
-
-    DoubleMatrix u01;
-    t = clock();
-    p.gridMethod1(u01);
-    t = clock() - t;
-    IPrinter::printMatrix(14,10,u01);
-    printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
-    IPrinter::printSeperatorLine();
+        DoubleMatrix u01;
+        clock_t t = clock();
+        p.gridMethod1(u01);
+        t = clock() - t;
+        IPrinter::printMatrix(14,10,u01);
+        printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
+        IPrinter::printSeperatorLine();
+    }
+    {
+        DoubleMatrix u1;
+        clock_t t = clock();
+        p.calculateN2L2RD(u1);
+        t = clock() - t;
+        IPrinter::printMatrix(14,10,u1);
+        printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
+        IPrinter::printSeperatorLine();
+    }
+    {
+        DoubleMatrix u11;
+        clock_t t = clock();
+        p.calculateN2L2RD1(u11);
+        t = clock() - t;
+        IPrinter::printMatrix(14,10,u11);
+        printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
+        IPrinter::printSeperatorLine();
+    }
+    {
+        DoubleMatrix u2;
+        clock_t t = clock();
+        p.calculateN4L2RD(u2);
+        t = clock() - t;
+        IPrinter::printMatrix(14,10,u2);
+        printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
+        IPrinter::printSeperatorLine();
+    }
+    {
+        DoubleMatrix u21;
+        clock_t t = clock();
+        p.calculateN4L2RD1(u21);
+        t = clock() - t;
+        IPrinter::printMatrix(14,10,u21);
+        printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
+        IPrinter::printSeperatorLine();
+    }
 }
 
 ParabolicIBVP1::ParabolicIBVP1(const GridPDE &grid) : ParabolicIBVP()
 {
-    setGrid(grid);
+    //setGrid(grid);
 }
 
 double ParabolicIBVP1::initial(unsigned int n) const
 {
-    return U(n,grid().timeDimension().minN());
+    //return U(n,grid().timeDimension().minN());
+    return U(n,timeDimension.minN());
 }
 
 double ParabolicIBVP1::initial(const SpaceNode& n) const
 {
-    return U(n.i,grid().timeDimension().minN());
+    //return U(n.i,grid().timeDimension().minN());
+    return U(n.i,timeDimension.minN());
 }
 
 double ParabolicIBVP1::boundary(unsigned int m, BoundaryType boundary) const
 {
-    SpaceDimension dim1 =  grid().spaceDimensions(SpaceDimension::Dim1);
+    //SpaceDimension dim1 =  grid().spaceDimensions(SpaceDimension::Dim1);
+    Dimension dim1 =  spaceDimension.at(SpaceDimension::Dim1);
     if (boundary == Left)  return U(dim1.minN(),m);
     if (boundary == Right) return U(dim1.maxN(),m);
     return 0.0;
@@ -86,8 +121,10 @@ double f1(double x, double t, double a)
 
 double ParabolicIBVP1::f(unsigned int n, unsigned int m) const
 {
-    double t = m*grid().timeDimension().step();
-    double x = n*grid().spaceDimensions(SpaceDimension::Dim1).step();
+    //double t = m*grid().timeDimension().step();
+    //double x = n*grid().spaceDimensions(SpaceDimension::Dim1).step();
+    double t = m*timeDimension.step();
+    double x = n*spaceDimension.at(SpaceDimension::Dim1).step();
     return f1(x,t,a(n,m));
 }
 
@@ -110,8 +147,10 @@ double ParabolicIBVP1::a(const SpaceNode &sn UNUSED_PARAM, const TimeNode &tn UN
 
 double ParabolicIBVP1::U(unsigned int n, unsigned int m) const
 {
-    double t = m*grid().timeDimension().step();
-    double x = n*grid().spaceDimensions(SpaceDimension::Dim1).step();
+    //double t = m*grid().timeDimension().step();
+    //double x = n*grid().spaceDimensions(SpaceDimension::Dim1).step();
+    double t = m*timeDimension.step();
+    double x = n*spaceDimension.at(SpaceDimension::Dim1).step();
 
 #ifdef SAMPLE_1
     return x*x + t;

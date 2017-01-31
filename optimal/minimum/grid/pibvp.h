@@ -41,10 +41,12 @@ public:
 
     void gridMethod1(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);
     void calculateMVD1(DoubleMatrix &u) const;
+    void calculateN2L2RD1(DoubleMatrix &u);
+    void calculateN4L2RD1(DoubleMatrix &u);
 
-protected:
+public:
     Dimension timeDimension;
-    Dimension spaceDimension;
+    std::vector<Dimension> spaceDimension;
     unsigned int dimSize();
 };
 

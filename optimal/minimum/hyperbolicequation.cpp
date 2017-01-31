@@ -15,6 +15,30 @@ void saveVectorFiles(const DoubleVector& v, int i, unsigned int N)
     fclose(file);
 }
 
+double MIN = +100.0;
+double MAX = -100.0;
+
+void saveData(const DoubleMatrix& m, int i, unsigned int N2, unsigned int N1)
+{
+    double min = m.min();
+    double max = m.max();
+    if (MIN > min) MIN = min;
+    if (MAX < max) MAX = max;
+
+    char buffer[20];
+    int n = 0;
+    if (i<10) n = sprintf(buffer, "data/0000000%d.txt", i);
+    if (i<100 && i>=10) n = sprintf(buffer, "data/000000%d.txt", i);
+    if (i<1000 && i>=100) n = sprintf(buffer, "data/00000%d.txt", i);
+    if (i<10000 && i>=1000) n = sprintf(buffer, "data/0000%d.txt", i);
+    buffer[n] = '\0';
+    FILE *file = fopen(buffer, "w");
+    IPrinter::printMatrix(m, N2, N1, NULL, file);
+    fclose(file);
+
+    printf("File: %s min: %.16f max: %.16f\n", buffer, MIN, MAX);
+}
+
 void IHyperbolicEquation::calculateU(DoubleVector &u, double hx, double ht, unsigned int M, unsigned int N, double a, double lamda) const
 {
     u.resize(N+1);
@@ -306,11 +330,11 @@ void IHyperbolicEquation2D::calculateMVD(DoubleMatrix &u, double h1, double h2, 
 
     double x1_a = -(a1*a1*ht*ht)/(h1*h1);
     double x1_b  = 1.0 + (2.0*a1*a1*ht*ht)/(h1*h1);
-    double x1_c = (a2*a2*ht*ht)/(h2*h2);
+    double x1_c = (a1*a1*ht*ht)/(h1*h1);
 
     double x2_a = -(a2*a2*ht*ht)/(h2*h2);
     double x2_b  = 1.0 + (2.0*a2*a2*ht*ht)/(h2*h2);
-    double x2_c = (a1*a1*ht*ht)/(h1*h1);
+    double x2_c = (a2*a2*ht*ht)/(h2*h2);
 
     for (unsigned int k=1; k<=M; k++)
     {
@@ -427,14 +451,6 @@ void IHyperbolicEquation2D::calculateMVD(DoubleMatrix &u, double h1, double h2, 
 void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
 {
     //cleaning cube
-//    for (unsigned int k=0; k<u.size(); k++)
-//    {
-//        unsigned int uk_size = u[k].size();
-//        for (unsigned int j=0; j<uk_size; j++) u[k][j].clear();
-//        u[k].clear();
-//    }
-//    u.clear();
-//    u.resize(M+1);
     u.clear();
     u.resize(M+1, N2+1, N1+1);
 
@@ -452,13 +468,11 @@ void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, do
 
     double x1_a = -(a1*a1*ht*ht)/(h1*h1);
     double x1_b  = 1.0 + (2.0*a1*a1*ht*ht)/(h1*h1);
-    double x1_c = (a2*a2*ht*ht)/(h2*h2);
-    //    double x1_d = 1.0 - (a2*a2*ht)/(h2*h2);
+    double x1_c = (a1*a1*ht*ht)/(h1*h1);
 
     double x2_a = -(a2*a2*ht*ht)/(h2*h2);
     double x2_b  = 1.0 + (2.0*a2*a2*ht*ht)/(h2*h2);
-    double x2_c = (a1*a1*ht*ht)/(h1*h1);
-    //double x2_d = 1.0 - (a1*a1*ht)/(h1*h1);
+    double x2_c = (a2*a2*ht*ht)/(h2*h2);
 
     for (unsigned int k=1; k<=M; k++)
     {
@@ -588,11 +602,11 @@ void IHyperbolicEquation2D::calculateU1(DoubleCube &u, double h1, double h2, dou
 
     double x1_a = -(a1*a1*ht*ht)/(h1*h1);
     double x1_b  = 1.0 + (2.0*a1*a1*ht*ht)/(h1*h1) + qamma*ht;
-    double x1_c = (a2*a2*ht*ht)/(h2*h2);
+    double x1_c = (a1*a1*ht*ht)/(h1*h1);
 
     double x2_a = -(a2*a2*ht*ht)/(h2*h2);
     double x2_b  = 1.0 + (2.0*a2*a2*ht*ht)/(h2*h2) + qamma*ht;
-    double x2_c = (a1*a1*ht*ht)/(h1*h1);
+    double x2_c = (a2*a2*ht*ht)/(h2*h2);
 
     for (unsigned int m=1; m<=M; m++)
     {
@@ -697,30 +711,6 @@ void IHyperbolicEquation2D::calculateU1(DoubleCube &u, double h1, double h2, dou
     rx2.clear();
 }
 
-double MIN = +100.0;
-double MAX = -100.0;
-
-void saveData(const DoubleMatrix& m, int i, unsigned int N2, unsigned int N1)
-{
-    double min = m.min();
-    double max = m.max();
-    if (MIN > min) MIN = min;
-    if (MAX < max) MAX = max;
-
-    char buffer[20];
-    int n = 0;
-    if (i<10) n = sprintf(buffer, "data/0000000%d.txt", i);
-    if (i<100 && i>=10) n = sprintf(buffer, "data/000000%d.txt", i);
-    if (i<1000 && i>=100) n = sprintf(buffer, "data/00000%d.txt", i);
-    if (i<10000 && i>=1000) n = sprintf(buffer, "data/0000%d.txt", i);
-    buffer[n] = '\0';
-    FILE *file = fopen(buffer, "w");
-    IPrinter::printMatrix(m, N2, N1, NULL, file);
-    fclose(file);
-
-    printf("File: %s min: %.16f max: %.16f\n", buffer, MIN, MAX);
-}
-
 void IHyperbolicEquation2D::calculateU1(DoubleMatrix &u, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2, double qamma) const
 {
     //cleaning matrix
@@ -743,11 +733,11 @@ void IHyperbolicEquation2D::calculateU1(DoubleMatrix &u, double h1, double h2, d
 
     double x1_a = -(a1*a1*ht*ht)/(h1*h1);
     double x1_b  = 1.0 + (2.0*a1*a1*ht*ht)/(h1*h1) + qamma*ht;
-    double x1_c = (a2*a2*ht*ht)/(h2*h2);
+    double x1_c = (a1*a1*ht*ht)/(h1*h1);
 
     double x2_a = -(a2*a2*ht*ht)/(h2*h2);
     double x2_b  = 1.0 + (2.0*a2*a2*ht*ht)/(h2*h2) + qamma*ht;
-    double x2_c = (a1*a1*ht*ht)/(h1*h1);
+    double x2_c = (a2*a2*ht*ht)/(h2*h2);
 
     for (unsigned int k=1; k<=M; k++)
     {
@@ -887,11 +877,11 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleMatrix &u, double h1, doubl
 
     double x1_a = -(a1*a1*ht*ht)/(h1*h1);
     double x1_b  = 1.0 + (2.0*a1*a1*ht*ht)/(h1*h1);
-    double x1_c = (a2*a2*ht*ht)/(h2*h2);
+    double x1_c = (a1*a1*ht*ht)/(h1*h1);
 
     double x2_a = -(a2*a2*ht*ht)/(h2*h2);
     double x2_b  = 1.0 + (2.0*a2*a2*ht*ht)/(h2*h2);
-    double x2_c = (a1*a1*ht*ht)/(h1*h1);
+    double x2_c = (a2*a2*ht*ht)/(h2*h2);
 
     for (unsigned int k=1; k<=M; k++)
     {
@@ -1008,14 +998,6 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleMatrix &u, double h1, doubl
 void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2) const
 {
     //cleaning cube
-//    for (unsigned int k=0; k<p.size(); k++)
-//    {
-//        unsigned int uk_size = p[k].size();
-//        for (unsigned int j=0; j<uk_size; j++) p[k][j].clear();
-//        p[k].clear();
-//    }
-//    p.clear();
-//    p.resize(M+1);
     p.resize(M+1, N2+1, N1+1);
 
     DoubleVector da1(N1-1);
@@ -1032,11 +1014,11 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
 
     double x1_a = -(a1*a1*ht*ht)/(h1*h1);
     double x1_b  = 1.0 + (2.0*a1*a1*ht*ht)/(h1*h1);
-    double x1_c = (a2*a2*ht*ht)/(h2*h2);
+    double x1_c = (a1*a1*ht*ht)/(h1*h1);
 
     double x2_a = -(a2*a2*ht*ht)/(h2*h2);
     double x2_b  = 1.0 + (2.0*a2*a2*ht*ht)/(h2*h2);
-    double x2_c = (a1*a1*ht*ht)/(h1*h1);
+    double x2_c = (a2*a2*ht*ht)/(h2*h2);
 
     for (unsigned int k1=1; k1<=M; k1++)
     {
@@ -1151,14 +1133,6 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
 void IBackwardHyperbolicEquation2D::calculateU1(DoubleCube &p, double h1, double h2, double ht, unsigned int N1, unsigned int N2, unsigned int M, double a1, double a2, double qamma) const
 {
     //cleaning cube
-//    for (unsigned int k=0; k<p.size(); k++)
-//    {
-//        unsigned int uk_size = p[k].size();
-//        for (unsigned int j=0; j<uk_size; j++) p[k][j].clear();
-//        p[k].clear();
-//    }
-//    p.clear();
-//    p.resize(M+1);
     p.resize(M+1, N2+1, N1+1);
 
     DoubleVector da1(N1-1);
@@ -1175,11 +1149,11 @@ void IBackwardHyperbolicEquation2D::calculateU1(DoubleCube &p, double h1, double
 
     double x1_a = -(a1*a1*ht*ht)/(h1*h1);
     double x1_b  = 1.0 + (2.0*a1*a1*ht*ht)/(h1*h1) - qamma*ht;
-    double x1_c = (a2*a2*ht*ht)/(h2*h2);
+    double x1_c = (a1*a1*ht*ht)/(h1*h1);
 
     double x2_a = -(a2*a2*ht*ht)/(h2*h2);
     double x2_b  = 1.0 + (2.0*a2*a2*ht*ht)/(h2*h2) + qamma*ht;
-    double x2_c = (a1*a1*ht*ht)/(h1*h1);
+    double x2_c = (a2*a2*ht*ht)/(h2*h2);
 
     for (unsigned int k1=1; k1<=M; k1++)
     {

@@ -1373,11 +1373,11 @@ void IParabolicEquation2D::calculateMVD(DoubleMatrix &u, double h1, double h2, d
 
     double x1_a = -(a1*a1*ht)/(2.0*h1*h1);
     double x1_b  = 1.0 + (a1*a1*ht)/(h1*h1);
-    double x1_c = (a2*a2*ht)/(2.0*h2*h2);
+    double x1_c = (a1*a1*ht)/(2.0*h1*h1);
 
     double x2_a = -(a2*a2*ht)/(2.0*h2*h2);
     double x2_b  = 1.0 + (a2*a2*ht)/(h2*h2);
-    double x2_c = (a1*a1*ht)/(2.0*h1*h1);
+    double x2_c = (a2*a2*ht)/(2.0*h2*h2);
 
     //    double lamda1 = ((a1*a1)*ht)/(h1*h1);
     //    double lamda2 = ((a2*a2)*ht)/(h2*h2);
@@ -1512,10 +1512,10 @@ void IParabolicEquation2D::calculateMVD1(DoubleMatrix &u, double h1, double h2, 
 
     double x1_a = -(a1*a1*ht)/(h1*h1);
     double x1_b  = 1.0 + 2.0*(a1*a1*ht)/(h1*h1);
-    double x1_c = (a2*a2*ht)/(h2*h2);
+    double x1_c = (a1*a1*ht)/(h1*h1);
     double x2_a = -(a2*a2*ht)/(h2*h2);
     double x2_b  = 1.0 + 2.0*(a2*a2*ht)/(h2*h2);
-    double x2_c = (a1*a1*ht)/(h1*h1);
+    double x2_c = (a2*a2*ht)/(h2*h2);
 
     for (unsigned int k=0; k<=M; k++)
     {
@@ -1765,12 +1765,12 @@ void IParabolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, dou
 
     double x1_a = -(a1*a1*ht)/(2.0*h1*h1);
     double x1_b  = 1.0 + (a1*a1*ht)/(h1*h1);
-    double x1_c = (a2*a2*ht)/(2.0*h2*h2);
+    double x1_c = (a1*a1*ht)/(2.0*h1*h1);
     //double x1_d = 1.0 - (a2*a2*ht)/(h2*h2);
 
     double x2_a = -(a2*a2*ht)/(2.0*h2*h2);
     double x2_b  = 1.0 + (a2*a2*ht)/(h2*h2);
-    double x2_c = (a1*a1*ht)/(2.0*h1*h1);
+    double x2_c = (a2*a2*ht)/(2.0*h2*h2);
     //double x2_d = 1.0 - (a1*a1*ht)/(h1*h1);
 
     for (unsigned int k=0; k<=M; k++)
@@ -1896,11 +1896,11 @@ void IBackwardParabolicEquation2D::calculateMVD(DoubleCube &psi, double h1, doub
 
     double x1_a = -(a1*a1*ht)/(2.0*h1*h1);
     double x1_b  = 1.0 + (a1*a1*ht)/(h1*h1);
-    double x1_c = (a2*a2*ht)/(2.0*h2*h2);
+    double x1_c = (a1*a1*ht)/(2.0*h1*h1);
 
     double x2_a = -(a2*a2*ht)/(2.0*h2*h2);
     double x2_b  = 1.0 + (a2*a2*ht)/(h2*h2);
-    double x2_c = (a1*a1*ht)/(2.0*h1*h1);
+    double x2_c = (a2*a2*ht)/(2.0*h2*h2);
 
     for (unsigned int k1=0; k1<=M; k1++)
     {

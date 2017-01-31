@@ -9,8 +9,11 @@ double U(unsigned int n, unsigned int m, double hx, double ht)
 
 void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction)
 {
-    TimeDimension time = grid().timeDimension();
-    SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
+    //TimeDimension time = grid().timeDimension();
+    //SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
+
+    Dimension time = timeDimension;
+    Dimension dim1 = spaceDimension.at(0);
 
     double ht = time.step();
     //unsigned int M1 = time.minN();
@@ -76,11 +79,11 @@ void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction)
 
 void ParabolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction)
 {
-    TimeDimension time = grid().timeDimension();
-    SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
+    //TimeDimension time = grid().timeDimension();
+    //SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
 
-    //    time = timeDimension;
-    //    dim1 = spaceDimension;
+    Dimension time = timeDimension;
+    Dimension dim1 = spaceDimension.at(0);
 
     double ht = time.step();
     //unsigned int M1 = time.minN();
@@ -120,8 +123,8 @@ void ParabolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction)
         left.x = 0.0;
         u[m][0] = boundary(left, tn);
         SpaceNode right;
-        right.i = 0;
-        right.x = 0.0;
+        right.i = N;
+        right.x = N*hx;
         u[m][N] = boundary(right, tn);
 
         for (unsigned int n=1; n<=N-1; n++)
@@ -172,8 +175,11 @@ void ParabolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction)
 
 void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u)
 {
-    TimeDimension time = grid().timeDimension();
-    SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
+    //TimeDimension time = grid().timeDimension();
+    //SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
+
+    Dimension time = timeDimension;
+    Dimension dim1 = spaceDimension.at(0);
 
     double ht = time.step();
     //unsigned int M1 = time.minN();
@@ -257,19 +263,19 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u)
 
         u.at(m, N-1) = x.at(1);
         u.at(m, N-2) = x.at(0);
-        //        for (unsigned int i=N-(k+1); i>=1; i--)
-        //        {
-        //            u.at(m,i) = -ems.at(i-1,0)*u.at(m,i+1)+ems.at(i-1,1);
-        //        }
-        for (unsigned int n=N-k; n>=2; n--)
+        for (unsigned int i=N-(k+1); i>=1; i--)
         {
-            double d0 = alpha;
-            double d1 = -2.0*alpha-1.0;
-            double d2 = alpha;
-            double fi = -u.at(m-1,n) - ht*f(n,m);
-            u.at(m,n-1) = -d1*u.at(m,n) - d2*u.at(m,n+1) + fi;
-            u.at(m,n-1) /= d0;
+            u.at(m,i) = -ems.at(i-1,0)*u.at(m,i+1)+ems.at(i-1,1);
         }
+//        for (unsigned int n=N-k; n>=2; n--)
+//        {
+//            double d0 = alpha;
+//            double d1 = -2.0*alpha-1.0;
+//            double d2 = alpha;
+//            double fi = -u.at(m-1,n) - ht*f(n,m);
+//            u.at(m,n-1) = -d1*u.at(m,n) - d2*u.at(m,n+1) + fi;
+//            u.at(m,n-1) /= d0;
+//        }
     }
 
     ems.clear();
@@ -285,8 +291,11 @@ void ParabolicIBVP::calculateN2R2LD(DoubleMatrix &u)
 
 void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u)
 {
-    TimeDimension time = grid().timeDimension();
-    SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
+    //TimeDimension time = grid().timeDimension();
+    //SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
+
+    Dimension time = timeDimension;
+    Dimension dim1 = spaceDimension.at(0);
 
     double ht = time.step();
     //unsigned int M1 = time.minN();
@@ -424,14 +433,18 @@ void ParabolicIBVP::setTimeDimension(const Dimension &dimension)
 
 void ParabolicIBVP::addSpaceDimension(const Dimension &dimension)
 {
-    spaceDimension = dimension;
+    spaceDimension.push_back(dimension);
 }
 
 void ParabolicIBVP::calculateMVD1(DoubleMatrix &u) const
 {
-    TimeDimension time = mgrid.timeDimension();
-    SpaceDimension dim1 = mgrid.spaceDimensions(SpaceDimension::Dim1);
-    SpaceDimension dim2 = mgrid.spaceDimensions(SpaceDimension::Dim2);
+    //TimeDimension time = mgrid.timeDimension();
+    //SpaceDimension dim1 = mgrid.spaceDimensions(SpaceDimension::Dim1);
+    //SpaceDimension dim2 = mgrid.spaceDimensions(SpaceDimension::Dim2);
+
+    Dimension time = timeDimension;
+    Dimension dim1 = spaceDimension.at(0);
+    Dimension dim2 = spaceDimension.at(1);
 
     double ht = time.step();
     double h1 = dim1.step();
@@ -617,4 +630,289 @@ void ParabolicIBVP::calculateMVD1(DoubleMatrix &u) const
     dc2.clear();
     dd2.clear();
     rx2.clear();
+}
+
+void ParabolicIBVP::calculateN2L2RD1(DoubleMatrix &u)
+{
+    //TimeDimension time = grid().timeDimension();
+    //SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
+
+    Dimension time = timeDimension;
+    Dimension dim1 = spaceDimension.at(0);
+
+    double ht = time.step();
+    //unsigned int M1 = time.minN();
+    unsigned int M = time.maxN();
+
+    double hx = dim1.step();
+    //unsigned int N1 = dim1.minN();
+    unsigned int N = dim1.maxN();
+
+    double a = 1.0;
+    const unsigned int k = 2;
+    double alpha = (ht*a*a)/(hx*hx);
+
+    u.clear();
+    u.resize(M+1, N+1);
+
+    DoubleMatrix A(k, k, 0.0);
+    DoubleVector b(k, 0.0);
+    DoubleVector x(k, 0.0);
+    DoubleMatrix ems(N-k, k);
+
+    /* initial condition */
+    SpaceNode sn;
+    for (unsigned int n=0; n<=N; n++)
+    {
+        sn.i = n;
+        sn.x = n*hx;
+        u.at(0,n) = initial(sn);
+    }
+
+    /* border conditions */
+    TimeNode tn;
+    for (unsigned int m=1; m<=M; m++)
+    {
+        tn.i = m;
+        tn.t = m*ht;
+
+        SpaceNode left;
+        left.i = 0; left.x = 0.0;
+        u.at(m,0) = boundary(left, tn);
+
+        SpaceNode right;
+        right.i = N; right.x = N*hx;
+        u.at(m,N) = boundary(right, tn);
+    }
+
+    for (unsigned int m=1; m<=M; m++)
+    {
+        tn.i = m;
+        tn.t = m*ht;
+
+        A[0][0] = -2.0*alpha - 1.0;
+        A[0][1] = alpha;
+        sn.i = 1;
+        sn.x = hx;
+        b[0]    = -u.at(m-1,1) - alpha*u.at(m,0) - ht*f(sn,tn);
+
+        A[0][1] /= A[0][0];
+        b[0]    /= A[0][0];
+        A[0][0] = 1.0;
+
+        ems.at(0,0) = A[0][1];
+        ems.at(0,1) = b[0];
+
+        for (unsigned int n=2; n<=N-k; n++)
+        {
+            sn.i = n;
+            sn.x = n*hx;
+
+            double g1 = alpha;
+            double g2 = -2.0*alpha-1.0;
+            double g3 = alpha;
+            double fi = -u.at(m-1,n) - ht*f(sn,tn);
+
+            g2 /= -g1;
+            g3 /= -g1;
+            fi /= +g1;
+            g1  = 1.0;
+
+            A[0][0] = A[0][1] + g2;
+            A[0][1] = g3;
+            b[0]    = b[0] - fi;
+            \
+            A[0][1] /= A[0][0];
+            b[0]    /= A[0][0];
+            A[0][0] = 1.0;
+
+            ems.at(n-1,0) = A[0][1];
+            ems.at(n-1,1) = b[0];
+        }
+
+        A[1][0] = alpha;
+        A[1][1] = -2.0*alpha - 1.0;
+        sn.i = N-1;
+        sn.x = (N-1)*hx;
+        b[1]    = -u.at(m-1,N-1) - alpha*u.at(m,N) - ht*f(sn,tn);
+
+        GaussianElimination(A, b, x);
+
+        u.at(m, N-1) = x.at(1);
+        u.at(m, N-2) = x.at(0);
+        for (unsigned int i=N-(k+1); i>=1; i--)
+        {
+            u.at(m,i) = -ems.at(i-1,0)*u.at(m,i+1)+ems.at(i-1,1);
+        }
+//        for (unsigned int n=N-k; n>=2; n--)
+//        {
+//            double d0 = alpha;
+//            double d1 = -2.0*alpha-1.0;
+//            double d2 = alpha;
+//            double fi = -u.at(m-1,n) - ht*f(n,m);
+//            u.at(m,n-1) = -d1*u.at(m,n) - d2*u.at(m,n+1) + fi;
+//            u.at(m,n-1) /= d0;
+//        }
+    }
+
+    ems.clear();
+    x.clear();
+    b.clear();
+    A.clear();
+}
+
+void ParabolicIBVP::calculateN4L2RD1(DoubleMatrix &u)
+{
+    //TimeDimension time = grid().timeDimension();
+    //SpaceDimension dim1 = grid().spaceDimensions(SpaceDimension::Dim1);
+
+    Dimension time = timeDimension;
+    Dimension dim1 = spaceDimension.at(SpaceDimension::Dim1);
+
+    double ht = time.step();
+    //unsigned int M1 = time.minN();
+    unsigned int M = time.maxN();
+
+    double hx = dim1.step();
+    //unsigned int N1 = dim1.minN();
+    unsigned int N = dim1.maxN();
+
+    double a = 1.0;
+    const unsigned int k = 4;
+    double alpha = (ht*a*a)/(24.0*hx*hx);
+
+    u.clear();
+    u.resize(M+1, N+1);
+
+    DoubleMatrix A(k, k, 0.0);
+    DoubleVector b(k, 0.0);
+    DoubleVector x(k, 0.0);
+    DoubleMatrix ems(N-k, k);
+
+    /* initial condition */
+    SpaceNode sn;
+    for (unsigned int n=0; n<=N; n++)
+    {
+        sn.i = n;
+        sn.x = n*hx;
+        u.at(0,n) = initial(sn);
+    }
+
+    /* border conditions */
+    TimeNode tn;
+    for (unsigned int m=1; m<=M; m++)
+    {
+        tn.i = m;
+        tn.t = m*ht;
+
+        SpaceNode left;
+        left.i = 0; left.x = 0.0;
+        u.at(m,0) = boundary(left, tn);
+
+        SpaceNode right;
+        right.i = N; right.x = N*hx;
+        u.at(m,N) = boundary(right, tn);
+    }
+
+    for (unsigned int m=1; m<=M; m++)
+    {
+        tn.i = m;
+        tn.t = m*ht;
+
+        A[0][0] = -40.0*alpha - 1.0;
+        A[0][1] = +12.0*alpha;
+        A[0][2] = +8.0*alpha;
+        A[0][3] = -2.0*alpha;
+        sn.i = 1;
+        sn.x = hx;
+        b[0]    = -u.at(m-1,1) - (+22.0*alpha)*u.at(m,0) - ht*f(sn,tn);
+
+        A[0][1] /= A[0][0];
+        A[0][2] /= A[0][0];
+        A[0][3] /= A[0][0];
+        b[0]    /= A[0][0];
+        A[0][0] = 1.0;
+
+        ems.at(0,0) = A[0][1];
+        ems.at(0,1) = A[0][2];
+        ems.at(0,2) = A[0][3];
+        ems.at(0,3) = b[0];
+
+        for (unsigned int n=1; n<=N-(k+1); n++)
+        {
+            sn.i = n;
+            sn.x = n*hx;
+
+            double g1 = +70.0*alpha-1.0;
+            double g2 = -208.0*alpha;
+            double g3 = +228.0*alpha;
+            double g4 = -112.0*alpha;
+            double g5 = +22.0*alpha;
+            double g0 = u.at(m-1,n) + ht*f(sn,tn);
+
+            g2 /= -g1;
+            g3 /= -g1;
+            g4 /= -g1;
+            g5 /= -g1;
+            g0 /= -g1;
+            g1 = 1.0;
+
+            A[0][0] = A[0][1] + g2;
+            A[0][1] = A[0][2] + g3;
+            A[0][2] = A[0][3] + g4;
+            A[0][3] = g5;
+            b[0]    = b[0] - g0;
+            \
+            A[0][1] /= A[0][0];
+            A[0][2] /= A[0][0];
+            A[0][3] /= A[0][0];
+            b[0]    /= A[0][0];
+            A[0][0] = 1.0;
+
+            ems.at(n,0) = A[0][1];
+            ems.at(n,1) = A[0][2];
+            ems.at(n,2) = A[0][3];
+            ems.at(n,3) = b[0];
+        }
+
+        A[1][0] = +22.0*alpha;
+        A[1][1] = -40.0*alpha - 1.0;
+        A[1][2] = +12.0*alpha;
+        A[1][3] = +8.0*alpha;
+        sn.i = N-3;
+        sn.x = (N-3)*hx;
+        b[1]    = -u.at(m-1,N-3) - (-2.0*alpha)*u.at(m,N) - ht*f(sn,tn);
+
+        A[2][0] = -2.0*alpha;
+        A[2][1] = +32.0*alpha;
+        A[2][2] = -60.0*alpha - 1.0;
+        A[2][3] = +32.0*alpha;
+        sn.i = N-2;
+        sn.x = (N-2)*hx;
+        b[2]    = -u.at(m-1,N-2) - (-2.0*alpha)*u.at(m,N) - ht*f(sn,tn);
+
+        A[3][0] = -2.0*alpha;
+        A[3][1] = +8.0*alpha;
+        A[3][2] = +12.0*alpha;
+        A[3][3] = -40.0*alpha - 1.0;
+        sn.i = N-1;
+        sn.x = (N-1)*hx;
+        b[3]    = -u.at(m-1,N-1) - (+22.0*alpha)*u.at(m,N) - ht*f(sn,tn);
+
+        GaussianElimination(A, b, x);
+
+        u.at(m, N-1) = x.at(3);
+        u.at(m, N-2) = x.at(2);
+        u.at(m, N-3) = x.at(1);
+        u.at(m, N-4) = x.at(0);
+        for (unsigned int i=N-(k+1); i>=1; i--)
+        {
+            u.at(m,i) = -ems.at(i-1,0)*u.at(m,i+1) - ems.at(i-1,1)*u.at(m,i+2) - ems.at(i-1,2)*u.at(m,i+3) + ems.at(i-1,3);
+        }
+    }
+
+    ems.clear();
+    x.clear();
+    b.clear();
+    A.clear();
 }

@@ -14,11 +14,11 @@ enum SweepMethodDirection
 class MINIMUMSHARED_EXPORT InitialBoundaryValueProblemPDE : protected BoundaryValueProblemPDE, protected InitialValueProblem
 {
 public:
-    void setGrid(const GridPDE &grid);
-    const GridPDE& grid() const;
+//    void setGrid(const GridPDE &grid);
+//    const GridPDE& grid() const;
 
 protected:
-    GridPDE mgrid;
+//    GridPDE mgrid;
 };
 
 #endif // INITIALBOUNDARYVALUEPROBLEM_H

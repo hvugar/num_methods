@@ -11,7 +11,6 @@
 
 struct MINIMUMSHARED_EXPORT InitialValueProblem
 {
-    Dimension timeDimension;
 };
 
 struct MINIMUMSHARED_EXPORT BoundaryValueProblem
@@ -40,8 +39,6 @@ struct MINIMUMSHARED_EXPORT BoundaryValueProblemODE : protected BoundaryValuePro
 struct MINIMUMSHARED_EXPORT BoundaryValueProblemPDE : protected BoundaryValueProblem
 {
     virtual double boundary(unsigned int m, BoundaryType bound) const = 0;
-
-    SpaceDimension spaceDimension;
 };
 
 #endif // BOUNDARYVALUEPROBLEM_H
