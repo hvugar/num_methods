@@ -972,26 +972,6 @@ void IParabolicEquation::calculateN4L2RN(DoubleMatrix &u, double hx, double ht, 
     double alpha2 = (a*a*ht)/(24.0*hx*hx);
     u.resize(M+1, N+1);
 
-    /*
-    double D1[5][5] =
-    {
-        {-25.0, +48.0, -36.0, +16.0, -3.0},
-        {-3.0,  -10.0, +18.0, -6.0,  +1.0},
-        {+1.0,  -8.0,  +0.0,  +8.0,  -1.0},
-        {-1.0,  +6.0, -18.0,  +10.0, +3.0},
-        {+3.0,  -16.0, +36.0, -48.0, +25.0}
-    };
-
-    double D2[k+1][k+1] =
-    {
-        {+70.0, -208.0, +228.0, -112.0, +22.0},
-        {+22.0, -40.0,  +12.0,  +8.0,   -2.0},
-        {-2.0,  +32.0,  -60.0,  +32.0,  -2.0},
-        {-2.0,  +8.0,   +12.0,  -40.0,  +22.0},
-        {+22.0, -112.0, +228.0, -208.0, +70.0}
-    };
-    */
-
     DoubleMatrix A(k+1, k+1, 0.0);
     DoubleVector b(k+1, 0.0);
     DoubleVector x(k+1, 0.0);
@@ -1129,26 +1109,6 @@ void IParabolicEquation::calculateN4R2LN(DoubleMatrix &u, double hx, double ht, 
     double alpha1 = (a*a*ht)/(12.0*hx*hx);
     double alpha2 = (a*a*ht)/(24.0*hx*hx);
     u.resize(M+1, N+1);
-
-    /*
-    double D2[k+1][k+1] =
-    {
-        {+70.0, -208.0, +228.0, -112.0, +22.0},
-        {+22.0, -40.0,  +12.0,  +8.0,   -2.0},
-        {-2.0,  +32.0,  -60.0,  +32.0,  -2.0},
-        {-2.0,  +8.0,   +12.0,  -40.0,  +22.0},
-        {+22.0, -112.0, +228.0, -208.0, +70.0}
-    };
-
-    double D1[5][5] =
-    {
-        {-25.0, +48.0, -36.0, +16.0, -3.0},
-        {-3.0,  -10.0, +18.0, -6.0,  +1.0},
-        {+1.0,  -8.0,  +0.0,  +8.0,  -1.0},
-        {-1.0,  +6.0, -18.0,  +10.0, +3.0},
-        {+3.0,  -16.0, +36.0, -48.0, +25.0}
-    };
-    */
 
     DoubleMatrix A(k+1, k+1, 0.0);
     DoubleVector b(k+1, 0.0);
@@ -1766,12 +1726,12 @@ void IParabolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, dou
     double x1_a = -(a1*a1*ht)/(2.0*h1*h1);
     double x1_b  = 1.0 + (a1*a1*ht)/(h1*h1);
     double x1_c = (a1*a1*ht)/(2.0*h1*h1);
-    //double x1_d = 1.0 - (a2*a2*ht)/(h2*h2);
+    //double x1_d = 1.0 - (a1*a1*ht)/(h1*h1);
 
     double x2_a = -(a2*a2*ht)/(2.0*h2*h2);
     double x2_b  = 1.0 + (a2*a2*ht)/(h2*h2);
     double x2_c = (a2*a2*ht)/(2.0*h2*h2);
-    //double x2_d = 1.0 - (a1*a1*ht)/(h1*h1);
+    //double x2_d = 1.0 - (a2*a2*ht)/(h2*h2);
 
     for (unsigned int k=0; k<=M; k++)
     {

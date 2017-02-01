@@ -1,12 +1,28 @@
 #include "ibvp.h"
 
-void InitialBoundaryValueProblemPDE::setGrid(const GridPDE &grid)
+unsigned int InitialBoundaryValueProblemPDE::dimSize()
 {
-    mgrid = grid;
+    return mspaceDimension.size();
 }
 
-const GridPDE& InitialBoundaryValueProblemPDE::grid() const
+void InitialBoundaryValueProblemPDE::setTimeDimension(const Dimension &dimension)
 {
-    return mgrid;
+    mtimeDimension = dimension;
 }
+
+const Dimension &InitialBoundaryValueProblemPDE::timeDimension() const
+{
+    return mtimeDimension;
+}
+
+void InitialBoundaryValueProblemPDE::addSpaceDimension(const Dimension &dimension)
+{
+    mspaceDimension.push_back(dimension);
+}
+
+const Dimension &InitialBoundaryValueProblemPDE::spaceDimension(SpaceDimension::DimensionSize dim) const
+{
+    return mspaceDimension.at(dim);
+}
+
 

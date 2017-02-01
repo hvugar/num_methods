@@ -1,16 +1,12 @@
 #include "parabolicibvp1.h"
-#include <time.h>
 
-void ParabolicIBVP1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
+void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    GridPDE grid;
-    grid.setTimeDimension(TimeDimension(0.001, 0.0, 1.0, 0, 1000));
-    grid.addSpaceDimension(SpaceDimension(0.001, 0.0, 1.0, 0, 1000));
-
-    ParabolicIBVP1 p(grid);
-    p.timeDimension = Dimension(0.001, 0.0, 1.0, 0, 1000);
-    p.spaceDimension.push_back(Dimension(0.001, 0.0, 1.0, 0, 1000));
-
+    ParabolicIBVP1 p;
+    p.setTimeDimension(Dimension(0.001, 0.0, 1.0, 0, 1000));
+    p.addSpaceDimension(Dimension(0.001, 0.0, 1.0, 0, 1000));
+    p.time = p.timeDimension();
+    p.dim1 = p.spaceDimension(SpaceDimension::Dim1);
     {
         DoubleMatrix u0;
         clock_t t = clock();
@@ -68,35 +64,100 @@ void ParabolicIBVP1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     }
 }
 
-ParabolicIBVP1::ParabolicIBVP1(const GridPDE &grid) : ParabolicIBVP()
+ParabolicIBVP1::ParabolicIBVP1()
 {
-    setGrid(grid);
 }
 
 double ParabolicIBVP1::initial(unsigned int n) const
 {
-//    return U(n,grid().timeDimension().minN());
-    return U(n,timeDimension.minN());
+    double x UNUSED_PARAM = n*dim1.step();
+#ifdef SAMPLE_1
+    return x*x;
+#endif
+#ifdef SAMPLE_2
+    return x*x;
+#endif
+#ifdef SAMPLE_3
+    return 0.0;
+#endif
+#ifdef SAMPLE_4
+    return 0.0;
+#endif
+#ifdef SAMPLE_5
+    return 0.0;
+#endif
+    //    return U(n,mtimeDimension.minN());
 }
 
-double ParabolicIBVP1::initial(const SpaceNode& n) const
+double ParabolicIBVP1::initial(const SpaceNode& sn) const
 {
-//    return U(n.i,grid().timeDimension().minN());
-    return U(n.i,timeDimension.minN());
+    double x UNUSED_PARAM = sn.x;
+#ifdef SAMPLE_1
+    return x*x;
+#endif
+#ifdef SAMPLE_2
+    return x*x;
+#endif
+#ifdef SAMPLE_3
+    return 0.0;
+#endif
+#ifdef SAMPLE_4
+    return 1.0;
+#endif
+#ifdef SAMPLE_5
+    return 0.0;
+#endif
+    //    return U(n.i,time.minN());
 }
 
 double ParabolicIBVP1::boundary(unsigned int m, BoundaryType boundary) const
 {
-//    SpaceDimension dim1 =  grid().spaceDimensions(SpaceDimension::Dim1);
-    Dimension dim1 =  spaceDimension.at(0);
-    if (boundary == Left)  return U(dim1.minN(),m);
-    if (boundary == Right) return U(dim1.maxN(),m);
+    double t UNUSED_PARAM = m*time.step();
+#ifdef SAMPLE_1
+    if (boundary == Left)  return t;
+    if (boundary == Right) return t+1.0;
+#endif
+#ifdef SAMPLE_2
+    if (boundary == Left)  return t*t;
+    if (boundary == Right) return t*t+1.0;
+#endif
+#ifdef SAMPLE_3
+    if (boundary == Left)  return 0.0;
+    if (boundary == Right) return t*sin(1.0);
+#endif
+#ifdef SAMPLE_4
+    if (boundary == Left)  return 1.0;
+    if (boundary == Right) return t*sin(10.0)+exp(2.0*t);
+#endif
+#ifdef SAMPLE_5
+    double k = 20.0;
+    if (boundary == Left)  return t;
+    if (boundary == Right) return exp(k*1.0)*t;
+#endif
     return 0.0;
 }
 
 double ParabolicIBVP1::boundary(const SpaceNode &sn, const TimeNode &tn) const
 {
-    return U(sn.i,tn.i);
+    double t UNUSED_PARAM = tn.t;
+    double x UNUSED_PARAM = sn.x;
+#ifdef SAMPLE_1
+    return x*x+t;
+#endif
+#ifdef SAMPLE_2
+    return x*x+t*t;
+#endif
+#ifdef SAMPLE_3
+    return t*sin(x);
+#endif
+#ifdef SAMPLE_4
+    return t*sin(10.0*x)+exp(2*x*t);
+#endif
+#ifdef SAMPLE_5
+    double k = 20.0;
+    return exp(k*x)*t;
+#endif
+    //return U(sn.i,tn.i);
 }
 
 double f1(double x, double t, double a)
@@ -121,10 +182,8 @@ double f1(double x, double t, double a)
 
 double ParabolicIBVP1::f(unsigned int n, unsigned int m) const
 {
-//    double t = m*grid().timeDimension().step();
-//    double x = n*grid().spaceDimensions(SpaceDimension::Dim1).step();
-    double t = m*timeDimension.step();
-    double x = n*spaceDimension.at(0).step();
+    double t = m*time.step();
+    double x = n*dim1.step();
     return f1(x,t,a(n,m));
 }
 
@@ -145,28 +204,25 @@ double ParabolicIBVP1::a(const SpaceNode &sn UNUSED_PARAM, const TimeNode &tn UN
     return 1.0;
 }
 
-double ParabolicIBVP1::U(unsigned int n, unsigned int m) const
-{
-//    double t = m*grid().timeDimension().step();
-//    double x = n*grid().spaceDimensions(SpaceDimension::Dim1).step();
-    double t = m*timeDimension.step();
-    double x = n*spaceDimension.at(0).step();
-
-#ifdef SAMPLE_1
-    return x*x + t;
-#endif
-#ifdef SAMPLE_2
-    return x*x + t*t;
-#endif
-#ifdef SAMPLE_3
-    return sin(x)*t;
-#endif
-#ifdef SAMPLE_4
-    return t*sin(10.0*x) + exp(2.0*x*t);
-#endif
-#ifdef SAMPLE_5
-    double k = 20.0;
-    return exp(k*x)*t;
-#endif
-    return 0.0;
-}
+//double ParabolicIBVP1::U(unsigned int n, unsigned int m) const
+//{
+//    double t = m*time.step();
+//    double x = n*dim1.step();
+//#ifdef SAMPLE_1
+//    return x*x + t;
+//#endif
+//#ifdef SAMPLE_2
+//    return x*x + t*t;
+//#endif
+//#ifdef SAMPLE_3
+//    return sin(x)*t;
+//#endif
+//#ifdef SAMPLE_4
+//    return t*sin(10.0*x) + exp(2.0*x*t);
+//#endif
+//#ifdef SAMPLE_5
+//    double k = 20.0;
+//    return exp(k*x)*t;
+//#endif
+//    return 0.0;
+//}

@@ -18,16 +18,19 @@ protected:
     virtual double f(unsigned int n, unsigned int m) const = 0;
     virtual double a(unsigned int n, unsigned int m) const = 0;
 
+    virtual double initial(unsigned int i, unsigned int j) const = 0;
+    virtual double boundary(unsigned int i, unsigned int j, unsigned int k) const = 0;
+    virtual double f(unsigned int i, unsigned int j, unsigned int k) const = 0;
+    virtual double a(unsigned int i, unsigned int j, unsigned int k) const = 0;
+
     virtual double initial(const SpaceNode &sn) const = 0;
     virtual double boundary(const SpaceNode &sn, const TimeNode &tn) const = 0;
     virtual double f(const SpaceNode &sn, const TimeNode &tn) const = 0;
     virtual double a(const SpaceNode &sn, const TimeNode &tn) const = 0;
 
-    void setTimeDimension(const Dimension &dimension);
-    void addSpaceDimension(const Dimension &dimension);
-
 public:
     void gridMethod(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);
+    void calculateMVD(DoubleMatrix &u) const;
 
     /* dirichlet conditions */
     void calculateN2L2RD(DoubleMatrix &u);
@@ -43,11 +46,6 @@ public:
     void calculateMVD1(DoubleMatrix &u) const;
     void calculateN2L2RD1(DoubleMatrix &u);
     void calculateN4L2RD1(DoubleMatrix &u);
-
-public:
-    Dimension timeDimension;
-    std::vector<Dimension> spaceDimension;
-    unsigned int dimSize();
 };
 
 #endif // PARABOLICIBVP_H

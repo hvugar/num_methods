@@ -11,14 +11,22 @@ enum SweepMethodDirection
     Centered = 3
 };
 
+/**
+ * @brief The InitialBoundaryValueProblemPDE class
+ * @see ParabolicIBVP
+ */
 class MINIMUMSHARED_EXPORT InitialBoundaryValueProblemPDE : protected BoundaryValueProblemPDE, protected InitialValueProblem
 {
 public:
-    void setGrid(const GridPDE &grid);
-    const GridPDE& grid() const;
+    void setTimeDimension(const Dimension &dimension);
+    const Dimension& timeDimension() const;
+    void addSpaceDimension(const Dimension &dimension);
+    const Dimension& spaceDimension(SpaceDimension::DimensionSize dim) const;
+    unsigned int dimSize();
 
 protected:
-    GridPDE mgrid;
+    Dimension mtimeDimension;
+    std::vector<Dimension> mspaceDimension;
 };
 
 #endif // INITIALBOUNDARYVALUEPROBLEM_H
