@@ -330,11 +330,11 @@ void IHyperbolicEquation2D::calculateMVD(DoubleMatrix &u, double h1, double h2, 
 
     double x1_a = -(a1*a1*ht*ht)/(h1*h1);
     double x1_b  = 1.0 + (2.0*a1*a1*ht*ht)/(h1*h1);
-    double x1_c = (a1*a1*ht*ht)/(h1*h1);
+    double x1_c = (a2*a2*ht*ht)/(h2*h2);
 
     double x2_a = -(a2*a2*ht*ht)/(h2*h2);
     double x2_b  = 1.0 + (2.0*a2*a2*ht*ht)/(h2*h2);
-    double x2_c = (a2*a2*ht*ht)/(h2*h2);
+    double x2_c = (a1*a1*ht*ht)/(h1*h1);
 
     for (unsigned int k=1; k<=M; k++)
     {
@@ -468,11 +468,11 @@ void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, do
 
     double x1_a = -(a1*a1*ht*ht)/(h1*h1);
     double x1_b  = 1.0 + (2.0*a1*a1*ht*ht)/(h1*h1);
-    double x1_c = (a1*a1*ht*ht)/(h1*h1);
+    double x1_c = (a2*a2*ht*ht)/(h2*h2);
 
     double x2_a = -(a2*a2*ht*ht)/(h2*h2);
     double x2_b  = 1.0 + (2.0*a2*a2*ht*ht)/(h2*h2);
-    double x2_c = (a2*a2*ht*ht)/(h2*h2);
+    double x2_c = (a1*a1*ht*ht)/(h1*h1);
 
     for (unsigned int k=1; k<=M; k++)
     {
@@ -602,11 +602,11 @@ void IHyperbolicEquation2D::calculateU1(DoubleCube &u, double h1, double h2, dou
 
     double x1_a = -(a1*a1*ht*ht)/(h1*h1);
     double x1_b  = 1.0 + (2.0*a1*a1*ht*ht)/(h1*h1) + qamma*ht;
-    double x1_c = (a1*a1*ht*ht)/(h1*h1);
+    double x1_c = (a2*a2*ht*ht)/(h2*h2);
 
     double x2_a = -(a2*a2*ht*ht)/(h2*h2);
     double x2_b  = 1.0 + (2.0*a2*a2*ht*ht)/(h2*h2) + qamma*ht;
-    double x2_c = (a2*a2*ht*ht)/(h2*h2);
+    double x2_c = (a1*a1*ht*ht)/(h1*h1);
 
     for (unsigned int m=1; m<=M; m++)
     {
@@ -1014,11 +1014,11 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
 
     double x1_a = -(a1*a1*ht*ht)/(h1*h1);
     double x1_b  = 1.0 + (2.0*a1*a1*ht*ht)/(h1*h1);
-    double x1_c = (a1*a1*ht*ht)/(h1*h1);
+    double x1_c = (a2*a2*ht*ht)/(h2*h2);
 
     double x2_a = -(a2*a2*ht*ht)/(h2*h2);
     double x2_b  = 1.0 + (2.0*a2*a2*ht*ht)/(h2*h2);
-    double x2_c = (a2*a2*ht*ht)/(h2*h2);
+    double x2_c = (a1*a1*ht*ht)/(h1*h1);
 
     for (unsigned int k1=1; k1<=M; k1++)
     {
@@ -1149,11 +1149,11 @@ void IBackwardHyperbolicEquation2D::calculateU1(DoubleCube &p, double h1, double
 
     double x1_a = -(a1*a1*ht*ht)/(h1*h1);
     double x1_b  = 1.0 + (2.0*a1*a1*ht*ht)/(h1*h1) - qamma*ht;
-    double x1_c = (a1*a1*ht*ht)/(h1*h1);
+    double x1_c = (a2*a2*ht*ht)/(h2*h2);
 
     double x2_a = -(a2*a2*ht*ht)/(h2*h2);
     double x2_b  = 1.0 + (2.0*a2*a2*ht*ht)/(h2*h2) + qamma*ht;
-    double x2_c = (a2*a2*ht*ht)/(h2*h2);
+    double x2_c = (a1*a1*ht*ht)/(h1*h1);
 
     for (unsigned int k1=1; k1<=M; k1++)
     {

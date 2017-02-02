@@ -31,6 +31,7 @@ protected:
 public:
     void gridMethod(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);
     void calculateMVD(DoubleMatrix &u) const;
+    void calculateMVD2(DoubleMatrix &u) const;
 
     /* dirichlet conditions */
     void calculateN2L2RD(DoubleMatrix &u);
