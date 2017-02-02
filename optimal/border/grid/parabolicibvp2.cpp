@@ -3,9 +3,9 @@
 void ParabolicIBVP2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     ParabolicIBVP2 p;
-    p.setTimeDimension(Dimension(0.001, 0.0, 1.0, 0, 1000));
-    p.addSpaceDimension(Dimension(0.01, 0.0, 1.0, 0, 100));
-    p.addSpaceDimension(Dimension(0.01, 0.0, 1.0, 0, 100));
+    p.setTimeDimension(Dimension(0.001, 1000, 0));
+    p.addSpaceDimension(Dimension(0.01, 100, 0));
+    p.addSpaceDimension(Dimension(0.01, 100, 0));
     p.time = p.mtimeDimension;
     p.dim1 = p.spaceDimension(SpaceDimension::Dim1);
     p.dim2 = p.spaceDimension(SpaceDimension::Dim2);

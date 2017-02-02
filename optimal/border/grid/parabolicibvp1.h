@@ -10,7 +10,7 @@ class MINIMUMSHARED_EXPORT ParabolicIBVP1 : public ParabolicIBVP
 {
 public:
     ParabolicIBVP1();
-    //double U(unsigned int i, unsigned int j) const;
+    double U(unsigned int i, unsigned int j) const;
 
 protected:
     virtual double initial(unsigned int n) const;

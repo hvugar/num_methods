@@ -156,25 +156,25 @@ void tomasAlgorithm(const double *a, const double *b, const double *c, const dou
 void tomasAlgorithmL2R(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int N)
 {
     // Корректность и устойчивость метода. ----------------------------------------------------------------------
-    int isCorrect1 = 0;
-    int isCorrect2 = 0;
-    if (fabs(c[0]) >= 0.0 && fabs(a[N-1]) >= 0.0 && fabs(b[0]) > 0.0 && fabs(b[N-1]) > 0.0)
-    {
-        isCorrect1 = 1;
-        isCorrect1 &= fabs(b[0]) >= fabs(c[0]);
-        isCorrect1 &= fabs(b[N-1]) >= fabs(a[N-1]);
+//    int isCorrect1 = 0;
+//    int isCorrect2 = 0;
+//    if (fabs(c[0]) >= 0.0 && fabs(a[N-1]) >= 0.0 && fabs(b[0]) > 0.0 && fabs(b[N-1]) > 0.0)
+//    {
+//        isCorrect1 = 1;
+//        isCorrect1 &= fabs(b[0]) >= fabs(c[0]);
+//        isCorrect1 &= fabs(b[N-1]) >= fabs(a[N-1]);
 
-        for (unsigned int i=1; i<N-1; i++)
-        {
-            isCorrect1 &= (fabs(b[i]) >= fabs(a[i]) + fabs(c[i]));
-            isCorrect2 |= (fabs(b[i]) >  fabs(a[i]) + fabs(c[i]));
-        }
-    }
-    if (isCorrect1 == 0 || isCorrect2 == 0)
-    {
-        printf("Not correct %d %d!\n", isCorrect1, isCorrect2);
-        return;
-    }
+//        for (unsigned int i=1; i<N-1; i++)
+//        {
+//            isCorrect1 &= (fabs(b[i]) >= fabs(a[i]) + fabs(c[i]));
+//            isCorrect2 |= (fabs(b[i]) >  fabs(a[i]) + fabs(c[i]));
+//        }
+//    }
+//    if (isCorrect1 == 0 || isCorrect2 == 0)
+//    {
+//        printf("Not correct %d %d!\n", isCorrect1, isCorrect2);
+//        return;
+//    }
 
     double *alpha = (double*)malloc(sizeof(double)*N);
     double *betta = (double*)malloc(sizeof(double)*N);
@@ -222,26 +222,26 @@ void tomasAlgorithmL2R(const double *a, const double *b, const double *c, const 
  */
 void tomasAlgorithmR2L(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int N)
 {
-    // Корректность и устойчивость метода. ----------------------------------------------------------------------
-    int isCorrect1 = 0;
-    int isCorrect2 = 0;
-    if (fabs(c[0]) >= 0.0 && fabs(a[N-1]) >= 0.0 && fabs(b[0]) > 0.0 && fabs(b[N-1]) > 0.0)
-    {
-        isCorrect1 = 1;
-        isCorrect1 &= fabs(b[0]) >= fabs(c[0]);
-        isCorrect1 &= fabs(b[N-1]) >= fabs(a[N-1]);
+//    // Корректность и устойчивость метода. ----------------------------------------------------------------------
+//    int isCorrect1 = 0;
+//    int isCorrect2 = 0;
+//    if (fabs(c[0]) >= 0.0 && fabs(a[N-1]) >= 0.0 && fabs(b[0]) > 0.0 && fabs(b[N-1]) > 0.0)
+//    {
+//        isCorrect1 = 1;
+//        isCorrect1 &= fabs(b[0]) >= fabs(c[0]);
+//        isCorrect1 &= fabs(b[N-1]) >= fabs(a[N-1]);
 
-        for (unsigned int i=1; i<N-1; i++)
-        {
-            isCorrect1 &= (fabs(b[i]) >= fabs(a[i]) + fabs(c[i]));
-            isCorrect2 |= (fabs(b[i]) >  fabs(a[i]) + fabs(c[i]));
-        }
-    }
-    if (isCorrect1 == 0 || isCorrect2 == 0)
-    {
-        printf("Not correct %d %d!\n", isCorrect1, isCorrect2);
-        return;
-    }
+//        for (unsigned int i=1; i<N-1; i++)
+//        {
+//            isCorrect1 &= (fabs(b[i]) >= fabs(a[i]) + fabs(c[i]));
+//            isCorrect2 |= (fabs(b[i]) >  fabs(a[i]) + fabs(c[i]));
+//        }
+//    }
+//    if (isCorrect1 == 0 || isCorrect2 == 0)
+//    {
+//        printf("Not correct %d %d!\n", isCorrect1, isCorrect2);
+//        return;
+//    }
 
     double *alpha = (double*)malloc(sizeof(double)*N);
     double *betta = (double*)malloc(sizeof(double)*N);

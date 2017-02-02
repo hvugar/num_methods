@@ -24,20 +24,21 @@ struct MINIMUMSHARED_EXPORT TimeNode
 class MINIMUMSHARED_EXPORT Dimension
 {
 public:
-    Dimension(double step=0.01, double min=0.0, double max=1.0, unsigned int minN = 0, unsigned int maxN=100);
+    Dimension(double step=0.01, unsigned int maxN=100, unsigned int minN = 0);
 
     virtual double step() const;
     virtual double min() const;
     virtual double max() const;
     virtual unsigned int minN() const;
     virtual unsigned int maxN() const;
+    virtual unsigned int sizeN() const;
 
 protected:
     double mstep;
+    unsigned int mmaxN;
+    unsigned int mminN;
     double mmin;
     double mmax;
-    unsigned int mminN;
-    unsigned int mmaxN;
 };
 
 class MINIMUMSHARED_EXPORT SpaceDimension : public Dimension
@@ -50,13 +51,13 @@ public:
         Dim3 = 2
     };
 
-    SpaceDimension(double step=0.01, double min=0.0, double max=1.0, unsigned int minN = 0, unsigned int maxN=100);
+    SpaceDimension(double step=0.01, unsigned int maxN=100, unsigned int minN = 0);
 };
 
 class MINIMUMSHARED_EXPORT TimeDimension : public Dimension
 {
 public:
-    TimeDimension(double step=0.01, double min=0.0, double max=1.0, unsigned int minN = 0, unsigned int maxN=100);
+    TimeDimension(double step=0.01, unsigned int maxN=100, unsigned int minN = 0);
 };
 
 class MINIMUMSHARED_EXPORT GridPDE

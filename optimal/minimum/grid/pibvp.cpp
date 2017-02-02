@@ -2,161 +2,184 @@
 
 void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction)
 {
+    typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
+    t_algorithm algorithm = &tomasAlgorithm;
+    if (direction == ForwardSweep) algorithm = &tomasAlgorithmL2R;
+    if (direction == BackwardSweep) algorithm = &tomasAlgorithmR2L;
+
     Dimension time = mtimeDimension;
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    //unsigned int M1 = time.minN();
-    unsigned int M = time.maxN();
+    unsigned int minM = time.minN();
+    unsigned int maxM = time.maxN();
+    unsigned int M = maxM-minM;
 
     double hx = dim1.step();
-    //unsigned int N1 = dim1.minN();
-    unsigned int N = dim1.maxN();
+    unsigned int minN = dim1.minN();
+    unsigned int maxN = dim1.maxN();
+    unsigned int N = maxN-minN;
 
-    //double k = ht/(hx*hx);
+    double h = ht/(hx*hx);
 
     u.clear();
     u.resize(M+1, N+1);
 
-    double *da = (double*) malloc(sizeof(double)*(N-1));
-    double *db = (double*) malloc(sizeof(double)*(N-1));
-    double *dc = (double*) malloc(sizeof(double)*(N-1));
-    double *dd = (double*) malloc(sizeof(double)*(N-1));
+    double *ka = (double*) malloc(sizeof(double)*(N-1));
+    double *kb = (double*) malloc(sizeof(double)*(N-1));
+    double *kc = (double*) malloc(sizeof(double)*(N-1));
+    double *kd = (double*) malloc(sizeof(double)*(N-1));
     double *rx = (double*) malloc(sizeof(double)*(N-1));
 
-    for (unsigned int n=0; n<=N; n++) u[0][n] = initial(n);
+    /* initial condition */
+    for (unsigned int n=0; n<=N; n++) u[0][n] = initial(n+minN);
 
     for (unsigned int m=1; m<=M; m++)
     {
-        u[m][0] = boundary(m, Left);
-        u[m][N] = boundary(m, Right);
-
+        unsigned int m1 = m+minM;
         for (unsigned int n=1; n<=N-1; n++)
         {
-            double alpha = -a(n,m)*(ht/(hx*hx));
+            double alpha = -a(n+minN,m1)*h;
             double betta = 1.0 - 2.0*alpha;
 
-            da[n-1] = alpha;
-            db[n-1] = betta;
-            dc[n-1] = alpha;
-            dd[n-1] = u[m-1][n] + ht * f(n, m);
+            ka[n-1] = alpha;
+            kb[n-1] = betta;
+            kc[n-1] = alpha;
+            kd[n-1] = u[m-1][n] + ht * f(n+minN, m1);
         }
 
-        da[0]   = 0.0;
-        dc[N-2] = 0.0;
+        ka[0]   = 0.0;
+        kc[N-2] = 0.0;
 
-        double alpha0 = -a(0,m)*(ht/(hx*hx));
-        dd[0] -= alpha0 * u[m][0];
+        u[m][0] = boundary(m1, Left);
+        u[m][N] = boundary(m1, Right);
+        //double alpha0 = -a(0,m)*h;
+        //kd[0] -= alpha0 * u[m][0];
 
-        double alphaN = -a(N,m)*(ht/(hx*hx));
-        dd[N-2] -= alphaN * u[m][N];
+        //double alphaN = -a(N,m)*h;
+        //kd[N-2] -= alphaN * u[m][N];
+
+        kd[0]   += a(0,m1)   *h*u[m][0];
+        kd[N-2] += a(maxN,m1)*h*u[m][N];
 
         //tomasAlgorithm(da, db, dc, dd, rx, N-1);
-        if (direction == ForwardSweep)
-            tomasAlgorithmL2R(da, db, dc, dd, rx, N-1);
-        else
-            tomasAlgorithmR2L(da, db, dc, dd, rx, N-1);
+        //if (direction == ForwardSweep)
+        //    tomasAlgorithmL2R(ka, kb, kc, kd, rx, N-1);
+        //else
+        //    tomasAlgorithmR2L(ka, kb, kc, kd, rx, N-1);
+        (*algorithm)(ka, kb, kc, kd, rx, N-1);
 
         for (unsigned int n=1; n<=N-1; n++) u[m][n] = rx[n-1];
     }
 
-    free(da);
-    free(db);
-    free(dc);
-    free(dd);
+    free(ka);
+    free(kb);
+    free(kc);
+    free(kd);
     free(rx);
 }
 
 void ParabolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction)
 {
+    typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
+    t_algorithm algorithm = &tomasAlgorithm;
+    if (direction == ForwardSweep) algorithm = &tomasAlgorithmL2R;
+    if (direction == BackwardSweep) algorithm = &tomasAlgorithmR2L;
+
     Dimension time = mtimeDimension;
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    //unsigned int M1 = time.minN();
-    unsigned int M = time.maxN();
+    unsigned int minM = time.minN();
+    unsigned int maxM = time.maxN();
+    unsigned int M = maxM-minM;
 
     double hx = dim1.step();
-    //unsigned int N1 = dim1.minN();
-    unsigned int N = dim1.maxN();
+    unsigned int minN = dim1.minN();
+    unsigned int maxN = dim1.maxN();
+    unsigned int N = maxN-minN;
 
-    //double k = ht/(hx*hx);
+    double h = ht/(hx*hx);
 
     u.clear();
     u.resize(M+1, N+1);
 
-    double *da = (double*) malloc(sizeof(double)*(N-1));
-    double *db = (double*) malloc(sizeof(double)*(N-1));
-    double *dc = (double*) malloc(sizeof(double)*(N-1));
-    double *dd = (double*) malloc(sizeof(double)*(N-1));
+    double *ka = (double*) malloc(sizeof(double)*(N-1));
+    double *kb = (double*) malloc(sizeof(double)*(N-1));
+    double *kc = (double*) malloc(sizeof(double)*(N-1));
+    double *kd = (double*) malloc(sizeof(double)*(N-1));
     double *rx = (double*) malloc(sizeof(double)*(N-1));
 
+    /* initial condition */
+    SpaceNode sn;
     for (unsigned int n=0; n<=N; n++)
     {
-        SpaceNode sn;
-        sn.i = n;
-        sn.x = n*hx;
+        sn.i = n+minN;
+        sn.x = sn.i*hx;
         u[0][n] = initial(sn);
     }
 
+    SpaceNode left;
+    left.i = minN;
+    left.x = minN*hx;
+
+    SpaceNode right;
+    right.i = maxN;
+    right.x = maxN*hx;
+
+    TimeNode tn;
     for (unsigned int m=1; m<=M; m++)
     {
-        TimeNode tn;
-        tn.i = m;
-        tn.t = m*ht;
-
-        SpaceNode left;
-        left.i = 0;
-        left.x = 0.0;
-        u[m][0] = boundary(left, tn);
-        SpaceNode right;
-        right.i = N;
-        right.x = N*hx;
-        u[m][N] = boundary(right, tn);
+        tn.i = m+minM;
+        tn.t = tn.i*ht;
 
         for (unsigned int n=1; n<=N-1; n++)
         {
-            SpaceNode sn;
-            sn.i = n;
-            sn.x = n*hx;
+            sn.i = n+minN;
+            sn.x = sn.i*hx;
 
-            double alpha = -a(sn,tn)*(ht/(hx*hx));
+            double alpha = -a(sn,tn)*h;
             double betta = 1.0 - 2.0*alpha;
 
-            da[n-1] = alpha;
-            db[n-1] = betta;
-            dc[n-1] = alpha;
-            dd[n-1] = u[m-1][n] + ht * f(sn, tn);
+            ka[n-1] = alpha;
+            kb[n-1] = betta;
+            kc[n-1] = alpha;
+            kd[n-1] = u[m-1][n] + ht * f(sn, tn);
         }
 
-        da[0]   = 0.0;
-        dc[N-2] = 0.0;
+        ka[0]   = 0.0;
+        kc[N-2] = 0.0;
 
-        SpaceNode sn0;
-        sn0.i = 0;
-        sn0.x = 0.0;
-        double alpha0 = -a(sn0,tn)*(ht/(hx*hx));
-        dd[0] -= alpha0 * u[m][0];
+        u[m][0] = boundary(left, tn);
+        u[m][N] = boundary(right, tn);
 
-        SpaceNode snN;
-        snN.i = N;
-        snN.x = N*hx;
-        double alphaN = -a(snN,tn)*(ht/(hx*hx));
-        dd[N-2] -= alphaN * u[m][N];
+        kd[0]   += a(left,tn)  * h * u[m][0];
+        kd[N-2] += a(right,tn) * h * u[m][N];
+
+        //sn0.i = 0;
+        //sn0.x = 0.0;
+        //double alpha0 = -a(sn0,tn)*h;
+        //kd[0] -= alpha0 * u[m][0];
+
+        //snN.i = N;
+        //snN.x = N*hx;
+        //double alphaN = -a(snN,tn)*h;
+        //kd[N-2] -= alphaN * u[m][N];
 
         //tomasAlgorithm(da, db, dc, dd, rx, N-1);
-        if (direction == ForwardSweep)
-            tomasAlgorithmL2R(da, db, dc, dd, rx, N-1);
-        else
-            tomasAlgorithmR2L(da, db, dc, dd, rx, N-1);
+        //if (direction == ForwardSweep)
+        //    tomasAlgorithmL2R(ka, kb, kc, kd, rx, N-1);
+        //else
+        //    tomasAlgorithmR2L(ka, kb, kc, kd, rx, N-1);
+        (*algorithm)(ka, kb, kc, kd, rx, N-1);
 
         for (unsigned int n=1; n<=N-1; n++) u[m][n] = rx[n-1];
     }
 
-    free(da);
-    free(db);
-    free(dc);
-    free(dd);
+    free(ka);
+    free(kb);
+    free(kc);
+    free(kd);
     free(rx);
 }
 

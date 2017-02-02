@@ -1,8 +1,11 @@
 #include "grid.h"
 
-Dimension::Dimension(double step, double min, double max, unsigned int minN, unsigned int maxN)
-    : mstep(step), mmin(min), mmax(max), mminN(minN), mmaxN(maxN)
-{}
+Dimension::Dimension(double step, unsigned int maxN, unsigned int minN)
+    : mstep(step), mmaxN(maxN), mminN(minN)
+{
+    mmin = mminN*mstep;
+    mmax = mmaxN*mstep;
+}
 
 double Dimension::step() const { return mstep; }
 
@@ -14,12 +17,12 @@ unsigned int Dimension::minN() const { return mminN; }
 
 unsigned int Dimension::maxN() const { return mmaxN; }
 
-SpaceDimension::SpaceDimension(double step, double min, double max, unsigned int minN, unsigned int maxN)
-    : Dimension(step, min, max, minN, maxN)
+unsigned int Dimension::sizeN() const { return mmaxN-mminN; }
+
+SpaceDimension::SpaceDimension(double step, unsigned int maxN, unsigned int minN) : Dimension(step, maxN, minN)
 {}
 
-TimeDimension::TimeDimension(double step, double min, double max, unsigned int minN, unsigned int maxN)
-    : Dimension(step, min, max, minN, maxN)
+TimeDimension::TimeDimension(double step, unsigned int maxN, unsigned int minN) : Dimension(step, maxN, minN)
 {}
 
 const TimeDimension& GridPDE::timeDimension() const
