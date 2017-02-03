@@ -3,15 +3,15 @@
 Dimension::Dimension(double step, unsigned int maxN, unsigned int minN)
     : mstep(step), mmaxN(maxN), mminN(minN)
 {
-    mmin = mminN*mstep;
-    mmax = mmaxN*mstep;
+//    mmin = mminN*mstep;
+//    mmax = mmaxN*mstep;
 }
 
 double Dimension::step() const { return mstep; }
 
-double Dimension::min() const { return mmin; }
+//double Dimension::min() const { return mmin; }
 
-double Dimension::max() const { return mmax; }
+//double Dimension::max() const { return mmax; }
 
 unsigned int Dimension::minN() const { return mminN; }
 

@@ -30,6 +30,7 @@ protected:
 
 public:
     void gridMethod(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);
+    void gridMethod2(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);
     void calculateMVD(DoubleMatrix &u) const;
     void calculateMVD2(DoubleMatrix &u) const;
 
@@ -43,8 +44,8 @@ public:
     void calculateN6L2RD(DoubleMatrix &u);
     void calculateN6R2LD(DoubleMatrix &u);
 
-    void gridMethod1(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);
     void calculateMVD1(DoubleMatrix &u) const;
+
     void calculateN2L2RD1(DoubleMatrix &u);
     void calculateN4L2RD1(DoubleMatrix &u);
 };

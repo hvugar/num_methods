@@ -27,18 +27,18 @@ public:
     Dimension(double step=0.01, unsigned int maxN=100, unsigned int minN = 0);
 
     virtual double step() const;
-    virtual double min() const;
-    virtual double max() const;
     virtual unsigned int minN() const;
     virtual unsigned int maxN() const;
     virtual unsigned int sizeN() const;
+    //virtual double min() const;
+    //virtual double max() const;
 
 protected:
     double mstep;
     unsigned int mmaxN;
     unsigned int mminN;
-    double mmin;
-    double mmax;
+//    double mmin;
+//    double mmax;
 };
 
 class MINIMUMSHARED_EXPORT SpaceDimension : public Dimension

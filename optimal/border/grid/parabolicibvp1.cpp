@@ -3,7 +3,7 @@
 void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     ParabolicIBVP1 p;
-    p.setTimeDimension(Dimension(0.001, 3000, 2000));
+    p.setTimeDimension(Dimension(0.01, 300, 200));
     p.addSpaceDimension(Dimension(0.001, 1100, 100));
     p.time = p.timeDimension();
     p.dim1 = p.spaceDimension(SpaceDimension::Dim1);
@@ -15,7 +15,6 @@ void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
         unsigned int minM = p.time.minN();
         unsigned int maxM = p.time.maxN();
-        unsigned int M = p.time.sizeN();
 
         DoubleMatrix u(p.time.sizeN()+1, N+1);
 
@@ -35,6 +34,15 @@ void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     {
         DoubleMatrix u;
         clock_t t = clock();
+        p.gridMethod2(u);
+        t = clock() - t;
+        IPrinter::printMatrix(14,10,u);
+        printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
+        IPrinter::printSeperatorLine();
+    }
+    {
+        DoubleMatrix u;
+        clock_t t = clock();
         p.gridMethod(u);
         t = clock() - t;
         IPrinter::printMatrix(14,10,u);
@@ -44,7 +52,7 @@ void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     {
         DoubleMatrix u;
         clock_t t = clock();
-        p.gridMethod1(u);
+        p.calculateN2L2RD(u);
         t = clock() - t;
         IPrinter::printMatrix(14,10,u);
         printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
@@ -54,36 +62,27 @@ void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     {
         DoubleMatrix u;
         clock_t t = clock();
-        p.calculateN2L2RD(u);
-        t = clock() - t;
-        //IPrinter::printMatrix(14,10,u1);
-        printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
-        //IPrinter::printSeperatorLine();
-    }
-    {
-        DoubleMatrix u;
-        clock_t t = clock();
         p.calculateN2L2RD1(u);
         t = clock() - t;
-        //IPrinter::printMatrix(14,10,u11);
+        IPrinter::printMatrix(14,10,u);
         printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
-        //IPrinter::printSeperatorLine();
+        IPrinter::printSeperatorLine();
     }
     {
         DoubleMatrix u;
         clock_t t = clock();
         p.calculateN4L2RD(u);
         t = clock() - t;
-        //IPrinter::printMatrix(14,10,u2);
+        IPrinter::printMatrix(14,10,u);
         printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
-        //IPrinter::printSeperatorLine();
+        IPrinter::printSeperatorLine();
     }
     {
         DoubleMatrix u;
         clock_t t = clock();
         p.calculateN4L2RD1(u);
         t = clock() - t;
-        //IPrinter::printMatrix(14,10,u21);
+        IPrinter::printMatrix(14,10,u);
         printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
         IPrinter::printSeperatorLine();
     }
@@ -95,7 +94,7 @@ ParabolicIBVP1::ParabolicIBVP1()
 double finitial(double x)
 {
 #ifdef SAMPLE_1
-    return x*x;
+    return x*x+2.0;
 #endif
 #ifdef SAMPLE_2
     return x*x;
@@ -127,7 +126,8 @@ double ParabolicIBVP1::initial(const SpaceNode& sn) const
 double fboundary(double t, BoundaryValueProblem::BoundaryType boundary)
 {
 #ifdef SAMPLE_1
-    return x*x + t;
+    if (boundary == BoundaryValueProblem::Left)  return 0.01+t;
+    if (boundary == BoundaryValueProblem::Right) return 1.21+t;
 #endif
 #ifdef SAMPLE_2
     return x*x + t*t;
@@ -136,8 +136,8 @@ double fboundary(double t, BoundaryValueProblem::BoundaryType boundary)
     return sin(x)*t;
 #endif
 #ifdef SAMPLE_4
-    if (boundary == BoundaryValueProblem::Left)  t*sin(1.0)+exp(2.0*t);
-    if (boundary == BoundaryValueProblem::Right) t*sin(20.0)+exp(4.0*t);
+    if (boundary == BoundaryValueProblem::Left)  return t*sin(1.0)+exp(0.2*t);
+    if (boundary == BoundaryValueProblem::Right) return t*sin(11.0)+exp(2.2*t);
 #endif
 #ifdef SAMPLE_5
     double k = 20.0;
@@ -154,7 +154,7 @@ double ParabolicIBVP1::boundary(unsigned int m, BoundaryType boundary) const
 
 double ParabolicIBVP1::boundary(const SpaceNode &sn, const TimeNode &tn) const
 {
-    if (sn.i==0)           return fboundary(tn.t, BoundaryValueProblem::Left);
+    if (sn.i==dim1.minN()) return fboundary(tn.t, BoundaryValueProblem::Left);
     if (sn.i==dim1.maxN()) return fboundary(tn.t, BoundaryValueProblem::Right);
     return 0.0;
 }

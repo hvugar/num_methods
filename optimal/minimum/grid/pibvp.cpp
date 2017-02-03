@@ -32,100 +32,21 @@ void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction)
     double *rx = (double*) malloc(sizeof(double)*(N-1));
 
     /* initial condition */
-    for (unsigned int n=0; n<=N; n++) u[0][n] = initial(n+minN);
-
-    for (unsigned int m=1; m<=M; m++)
-    {
-        unsigned int m1 = m+minM;
-        for (unsigned int n=1; n<=N-1; n++)
-        {
-            double alpha = -a(n+minN,m1)*h;
-            double betta = 1.0 - 2.0*alpha;
-
-            ka[n-1] = alpha;
-            kb[n-1] = betta;
-            kc[n-1] = alpha;
-            kd[n-1] = u[m-1][n] + ht * f(n+minN, m1);
-        }
-
-        ka[0]   = 0.0;
-        kc[N-2] = 0.0;
-
-        u[m][0] = boundary(m1, Left);
-        u[m][N] = boundary(m1, Right);
-        //double alpha0 = -a(0,m)*h;
-        //kd[0] -= alpha0 * u[m][0];
-
-        //double alphaN = -a(N,m)*h;
-        //kd[N-2] -= alphaN * u[m][N];
-
-        kd[0]   += a(0,m1)   *h*u[m][0];
-        kd[N-2] += a(maxN,m1)*h*u[m][N];
-
-        //tomasAlgorithm(da, db, dc, dd, rx, N-1);
-        //if (direction == ForwardSweep)
-        //    tomasAlgorithmL2R(ka, kb, kc, kd, rx, N-1);
-        //else
-        //    tomasAlgorithmR2L(ka, kb, kc, kd, rx, N-1);
-        (*algorithm)(ka, kb, kc, kd, rx, N-1);
-
-        for (unsigned int n=1; n<=N-1; n++) u[m][n] = rx[n-1];
-    }
-
-    free(ka);
-    free(kb);
-    free(kc);
-    free(kd);
-    free(rx);
-}
-
-void ParabolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction)
-{
-    typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
-    t_algorithm algorithm = &tomasAlgorithm;
-    if (direction == ForwardSweep) algorithm = &tomasAlgorithmL2R;
-    if (direction == BackwardSweep) algorithm = &tomasAlgorithmR2L;
-
-    Dimension time = mtimeDimension;
-    Dimension dim1 = mspaceDimension.at(0);
-
-    double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
-    unsigned int M = maxM-minM;
-
-    double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
-    unsigned int N = maxN-minN;
-
-    double h = ht/(hx*hx);
-
-    u.clear();
-    u.resize(M+1, N+1);
-
-    double *ka = (double*) malloc(sizeof(double)*(N-1));
-    double *kb = (double*) malloc(sizeof(double)*(N-1));
-    double *kc = (double*) malloc(sizeof(double)*(N-1));
-    double *kd = (double*) malloc(sizeof(double)*(N-1));
-    double *rx = (double*) malloc(sizeof(double)*(N-1));
-
-    /* initial condition */
-    SpaceNode sn;
+    SpaceNode isn;
     for (unsigned int n=0; n<=N; n++)
     {
-        sn.i = n+minN;
-        sn.x = sn.i*hx;
-        u[0][n] = initial(sn);
+        isn.i = n+minN;
+        isn.x = isn.i*hx;
+        u[0][n] = initial(isn);
     }
 
-    SpaceNode left;
-    left.i = minN;
-    left.x = minN*hx;
+    SpaceNode lsn;
+    lsn.i = minN;
+    lsn.x = minN*hx;
 
-    SpaceNode right;
-    right.i = maxN;
-    right.x = maxN*hx;
+    SpaceNode rsn;
+    rsn.i = maxN;
+    rsn.x = maxN*hx;
 
     TimeNode tn;
     for (unsigned int m=1; m<=M; m++)
@@ -135,42 +56,28 @@ void ParabolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction)
 
         for (unsigned int n=1; n<=N-1; n++)
         {
-            sn.i = n+minN;
-            sn.x = sn.i*hx;
+            isn.i = n+minN;
+            isn.x = isn.i*hx;
 
-            double alpha = -a(sn,tn)*h;
+            double alpha = -a(isn,tn)*h;
             double betta = 1.0 - 2.0*alpha;
 
             ka[n-1] = alpha;
             kb[n-1] = betta;
             kc[n-1] = alpha;
-            kd[n-1] = u[m-1][n] + ht * f(sn, tn);
+            kd[n-1] = u[m-1][n] + ht * f(isn, tn);
         }
 
         ka[0]   = 0.0;
         kc[N-2] = 0.0;
 
-        u[m][0] = boundary(left, tn);
-        u[m][N] = boundary(right, tn);
+        /* border conditions */
+        u[m][0] = boundary(lsn, tn);
+        u[m][N] = boundary(rsn, tn);
 
-        kd[0]   += a(left,tn)  * h * u[m][0];
-        kd[N-2] += a(right,tn) * h * u[m][N];
+        kd[0]   += a(lsn,tn) * h * u[m][0];
+        kd[N-2] += a(rsn,tn) * h * u[m][N];
 
-        //sn0.i = 0;
-        //sn0.x = 0.0;
-        //double alpha0 = -a(sn0,tn)*h;
-        //kd[0] -= alpha0 * u[m][0];
-
-        //snN.i = N;
-        //snN.x = N*hx;
-        //double alphaN = -a(snN,tn)*h;
-        //kd[N-2] -= alphaN * u[m][N];
-
-        //tomasAlgorithm(da, db, dc, dd, rx, N-1);
-        //if (direction == ForwardSweep)
-        //    tomasAlgorithmL2R(ka, kb, kc, kd, rx, N-1);
-        //else
-        //    tomasAlgorithmR2L(ka, kb, kc, kd, rx, N-1);
         (*algorithm)(ka, kb, kc, kd, rx, N-1);
 
         for (unsigned int n=1; n<=N-1; n++) u[m][n] = rx[n-1];
@@ -189,16 +96,17 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u)
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    //unsigned int M1 = time.minN();
-    unsigned int M = time.maxN();
+    unsigned int minM = time.minN();
+    unsigned int maxM = time.maxN();
+    unsigned int M = maxM - minM;
 
     double hx = dim1.step();
-    //unsigned int N1 = dim1.minN();
-    unsigned int N = dim1.maxN();
+    unsigned int minN = dim1.minN();
+    unsigned int maxN = dim1.maxN();
+    unsigned int N = maxN - minN;
 
-    double a = 1.0;
     const unsigned int k = 2;
-    double alpha = (ht*a*a)/(hx*hx);
+    double h = ht/(hx*hx);
 
     u.clear();
     u.resize(M+1, N+1);
@@ -209,20 +117,21 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u)
     DoubleMatrix ems(N-k, k);
 
     /* initial condition */
-    for (unsigned int n=0; n<=N; n++) u[0][n] = initial(n);
-
-    /* border conditions */
-    for (unsigned int m=1; m<=M; m++)
-    {
-        u[m][0] = boundary(m, Left);
-        u[m][N] = boundary(m, Right);
-    }
+    for (unsigned int n=0; n<=N; n++) u[0][n] = initial(n+minN);
 
     for (unsigned int m=1; m<=M; m++)
     {
+        unsigned int m1 = m+minM;
+
+        /* border conditions */
+        u[m][0] = boundary(m1, Left);
+        u[m][N] = boundary(m1, Right);
+
+        /* n=1 */
+        double alpha = a(minN+1,m1)*h;
         A[0][0] = -2.0*alpha - 1.0;
         A[0][1] = alpha;
-        b[0]    = -u[m-1][1] - alpha*u[m][0] - ht*f(1,m);
+        b[0]    = -u[m-1][1] - alpha*u[m][0] - ht*f(minN+1,m1);
 
         A[0][1] /= A[0][0];
         b[0]    /= A[0][0];
@@ -233,10 +142,12 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u)
 
         for (unsigned int n=2; n<=N-k; n++)
         {
+            alpha = a(n+minN,m1)*h;
+
             double g1 = alpha;
             double g2 = -2.0*alpha-1.0;
             double g3 = alpha;
-            double fi = -u.at(m-1,n) - ht*f(n,m);
+            double fi = -u.at(m-1,n) - ht*f(n+minN,m1);
 
             g2 /= -g1;
             g3 /= -g1;
@@ -255,17 +166,18 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u)
             ems[n-1][1] = b[0];
         }
 
+        alpha = a(maxN-1,m1)*h;
         A[1][0] = alpha;
         A[1][1] = -2.0*alpha - 1.0;
-        b[1]    = -u[m-1][N-1] - alpha*u[m][N] - ht*f(N-1,m);
+        b[1]    = -u[m-1][N-1] - alpha*u[m][N] - ht*f(maxN-1,m1);
 
         GaussianElimination(A, b, x);
 
         u[m][N-1] = x.at(1);
         u[m][N-2] = x.at(0);
-        for (unsigned int i=N-(k+1); i>=1; i--)
+        for (unsigned int n=N-(k+1); n>=1; n--)
         {
-            u[m][i] = -ems[i-1][0]*u[m][i+1]+ems[i-1][1];
+            u[m][n] = -ems[n-1][0]*u[m][n+1]+ems[n-1][1];
         }
         //        for (unsigned int n=N-k; n>=2; n--)
         //        {
@@ -878,16 +790,17 @@ void ParabolicIBVP::calculateN2L2RD1(DoubleMatrix &u)
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    //unsigned int M1 = time.minN();
-    unsigned int M = time.maxN();
+    unsigned int minM = time.minN();
+    unsigned int maxM = time.maxN();
+    unsigned int M = maxM - minM;
 
     double hx = dim1.step();
-    //unsigned int N1 = dim1.minN();
-    unsigned int N = dim1.maxN();
+    unsigned int minN = dim1.minN();
+    unsigned int maxN = dim1.maxN();
+    unsigned int N = maxN - minN;
 
-    double a = 1.0;
     const unsigned int k = 2;
-    double alpha = (ht*a*a)/(hx*hx);
+    double h = ht/(hx*hx);
 
     u.clear();
     u.resize(M+1, N+1);
@@ -898,40 +811,36 @@ void ParabolicIBVP::calculateN2L2RD1(DoubleMatrix &u)
     DoubleMatrix ems(N-k, k);
 
     /* initial condition */
-    SpaceNode sn;
+    SpaceNode isn;
     for (unsigned int n=0; n<=N; n++)
     {
-        sn.i = n;
-        sn.x = n*hx;
-        u[0][n] = initial(sn);
+        isn.i = n+minN;
+        isn.x = isn.i*hx;
+        u[0][n] = initial(isn);
     }
 
-    /* border conditions */
     TimeNode tn;
+    SpaceNode lsn;
+    SpaceNode rsn;
+    lsn.i = 0; lsn.x = 0.0;
+    rsn.i = N; rsn.x = N*hx;
     for (unsigned int m=1; m<=M; m++)
     {
-        tn.i = m;
-        tn.t = m*ht;
+        tn.i = m+minM;
+        tn.t = tn.i*ht;
 
-        SpaceNode left;
-        left.i = 0; left.x = 0.0;
-        u[m][0] = boundary(left, tn);
+        /* border conditions */
+        u[m][0] = boundary(lsn, tn);
+        u[m][N] = boundary(rsn, tn);
 
-        SpaceNode right;
-        right.i = N; right.x = N*hx;
-        u[m][N] = boundary(right, tn);
-    }
+        /* n=1 */
+        isn.i = minN+1;
+        isn.x = isn.i*hx;
 
-    for (unsigned int m=1; m<=M; m++)
-    {
-        tn.i = m;
-        tn.t = m*ht;
-
+        double alpha = a(minN+1,tn)*h;
         A[0][0] = -2.0*alpha - 1.0;
         A[0][1] = alpha;
-        sn.i = 1;
-        sn.x = hx;
-        b[0]    = -u[m-1][1] - alpha*u[m][0] - ht*f(sn,tn);
+        b[0]    = -u[m-1][1] - alpha*u[m][0] - ht*f(isn,tn);
 
         A[0][1] /= A[0][0];
         b[0]    /= A[0][0];
@@ -942,13 +851,13 @@ void ParabolicIBVP::calculateN2L2RD1(DoubleMatrix &u)
 
         for (unsigned int n=2; n<=N-k; n++)
         {
-            sn.i = n;
-            sn.x = n*hx;
+            isn.i = n+minN;
+            isn.x = isn.i*hx;
 
             double g1 = alpha;
             double g2 = -2.0*alpha-1.0;
             double g3 = alpha;
-            double fi = -u[m-1][n] - ht*f(sn,tn);
+            double fi = -u[m-1][n] - ht*f(isn,tn);
 
             g2 /= -g1;
             g3 /= -g1;
@@ -969,9 +878,9 @@ void ParabolicIBVP::calculateN2L2RD1(DoubleMatrix &u)
 
         A[1][0] = alpha;
         A[1][1] = -2.0*alpha - 1.0;
-        sn.i = N-1;
-        sn.x = (N-1)*hx;
-        b[1]    = -u[m-1][N-1] - alpha*u[m][N] - ht*f(sn,tn);
+        isn.i = N-1;
+        isn.x = (N-1)*hx;
+        b[1]    = -u[m-1][N-1] - alpha*u[m][N] - ht*f(isn,tn);
 
         GaussianElimination(A, b, x);
 
@@ -1149,4 +1058,83 @@ void ParabolicIBVP::calculateN4L2RD1(DoubleMatrix &u)
     x.clear();
     b.clear();
     A.clear();
+}
+
+void ParabolicIBVP::gridMethod2(DoubleMatrix &u, SweepMethodDirection direction)
+{
+    typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
+    t_algorithm algorithm = &tomasAlgorithm;
+    if (direction == ForwardSweep) algorithm = &tomasAlgorithmL2R;
+    if (direction == BackwardSweep) algorithm = &tomasAlgorithmR2L;
+
+    Dimension time = mtimeDimension;
+    Dimension dim1 = mspaceDimension.at(0);
+
+    double ht = time.step();
+    unsigned int minM = time.minN();
+    unsigned int maxM = time.maxN();
+    unsigned int M = maxM-minM;
+
+    double hx = dim1.step();
+    unsigned int minN = dim1.minN();
+    unsigned int maxN = dim1.maxN();
+    unsigned int N = maxN-minN;
+
+    double h = ht/(hx*hx);
+
+    u.clear();
+    u.resize(M+1, N+1);
+
+    double *ka = (double*) malloc(sizeof(double)*(N-1));
+    double *kb = (double*) malloc(sizeof(double)*(N-1));
+    double *kc = (double*) malloc(sizeof(double)*(N-1));
+    double *kd = (double*) malloc(sizeof(double)*(N-1));
+    double *rx = (double*) malloc(sizeof(double)*(N-1));
+
+    /* initial condition */
+    for (unsigned int n=0; n<=N; n++) u[0][n] = initial(n+minN);
+
+    for (unsigned int m=1; m<=M; m++)
+    {
+        unsigned int m1 = m+minM;
+        for (unsigned int n=1; n<=N-1; n++)
+        {
+            double alpha = -a(n+minN,m1)*h;
+            double betta = 1.0 - 2.0*alpha;
+
+            ka[n-1] = alpha;
+            kb[n-1] = betta;
+            kc[n-1] = alpha;
+            kd[n-1] = u[m-1][n] + ht * f(n+minN, m1);
+        }
+
+        ka[0]   = 0.0;
+        kc[N-2] = 0.0;
+
+        u[m][0] = boundary(m1, Left);
+        u[m][N] = boundary(m1, Right);
+        //double alpha0 = -a(0,m)*h;
+        //kd[0] -= alpha0 * u[m][0];
+
+        //double alphaN = -a(N,m)*h;
+        //kd[N-2] -= alphaN * u[m][N];
+
+        kd[0]   += a(0,m1)   *h*u[m][0];
+        kd[N-2] += a(maxN,m1)*h*u[m][N];
+
+        //tomasAlgorithm(da, db, dc, dd, rx, N-1);
+        //if (direction == ForwardSweep)
+        //    tomasAlgorithmL2R(ka, kb, kc, kd, rx, N-1);
+        //else
+        //    tomasAlgorithmR2L(ka, kb, kc, kd, rx, N-1);
+        (*algorithm)(ka, kb, kc, kd, rx, N-1);
+
+        for (unsigned int n=1; n<=N-1; n++) u[m][n] = rx[n-1];
+    }
+
+    free(ka);
+    free(kb);
+    free(kc);
+    free(kd);
+    free(rx);
 }
