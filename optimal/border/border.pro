@@ -22,13 +22,13 @@ HEADERS += \
            borderparabolic2d.h \
            borderhyperbolic2d.h \
            borderhyperbolic2d1.h \
-    grid/parabolicibvp1.h \
-    grid/parabolicibvp2.h
+           grid/parabolicibvp1.h \
+           grid/parabolicibvp2.h
 SOURCES += \
            borderparabolicd.cpp \
            borderparabolicn.cpp \
            borderparabolic2d.cpp \
            borderhyperbolic2d.cpp \
            borderhyperbolic2d1.cpp \
-    grid/parabolicibvp1.cpp \
-    grid/parabolicibvp2.cpp
+           grid/parabolicibvp1.cpp \
+           grid/parabolicibvp2.cpp

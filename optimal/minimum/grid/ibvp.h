@@ -21,7 +21,7 @@ public:
     void setTimeDimension(const Dimension &dimension);
     const Dimension& timeDimension() const;
     void addSpaceDimension(const Dimension &dimension);
-    const Dimension& spaceDimension(SpaceDimension::DimensionSize dim) const;
+    const Dimension& spaceDimension(Dimension::SpaceDimension dim) const;
     unsigned int dimSize();
 
 protected:

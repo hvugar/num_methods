@@ -25,7 +25,8 @@ struct MINIMUMSHARED_EXPORT BoundaryValueProblem
     enum BoundaryType
     {
         Left = 0,
-        Right = 1
+        Right = 1,
+        Unused = 2
     };
 
     BoundaryCondition condition;
@@ -36,9 +37,8 @@ struct MINIMUMSHARED_EXPORT BoundaryValueProblemODE : protected BoundaryValuePro
     virtual double boundary(BoundaryType bound) const = 0;
 };
 
-struct MINIMUMSHARED_EXPORT BoundaryValueProblemPDE : protected BoundaryValueProblem
+class MINIMUMSHARED_EXPORT BoundaryValueProblemPDE : protected BoundaryValueProblem
 {
-    virtual double boundary(unsigned int m, BoundaryType bound) const = 0;
 };
 
 #endif // BOUNDARYVALUEPROBLEM_H

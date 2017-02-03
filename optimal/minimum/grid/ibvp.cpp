@@ -20,7 +20,7 @@ void InitialBoundaryValueProblemPDE::addSpaceDimension(const Dimension &dimensio
     mspaceDimension.push_back(dimension);
 }
 
-const Dimension &InitialBoundaryValueProblemPDE::spaceDimension(SpaceDimension::DimensionSize dim) const
+const Dimension &InitialBoundaryValueProblemPDE::spaceDimension(Dimension::SpaceDimension dim) const
 {
     return mspaceDimension.at(dim);
 }
