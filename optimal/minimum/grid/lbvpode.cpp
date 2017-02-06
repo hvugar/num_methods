@@ -668,10 +668,10 @@ void LinearBoundaryValueProblemODE::calculateN4CNTR(DoubleVector &x, double h, u
         ems[n-2][2] = A[0][3];
         ems[n-2][3] = b[0];
 
-        //printf("%4d %14.10f %14.10f\n", n, b[0], A[0][0]*U(n-1,h)
-        //                                 +A[0][1]*U(n+0,h)
-        //                                 +A[0][2]*U(n+1,h)
-        //                                 +A[0][3]*U(n+2,h));
+        printf("%4d %14.10f %14.10f\n", n, b[0], A[0][0]*U(n-1,h)
+                                         +A[0][1]*U(n+0,h)
+                                         +A[0][2]*U(n+1,h)
+                                         +A[0][3]*U(n+2,h));
     }
 
     printf("%4d %18.14f %18.14f\n", 97, b[0], A[0][0]*U(96,h)
@@ -687,11 +687,11 @@ void LinearBoundaryValueProblemODE::calculateN4CNTR(DoubleVector &x, double h, u
     A[1][3] = +32.0*alpha + 8.0*betta;
     b[1]    = f(N-2) - (-2.0*alpha - betta)*x.at(N);
 
-    A[1][1] /= A[1][0];
-    A[1][2] /= A[1][0];
-    A[1][3] /= A[1][0];
-    b[1]    /= A[1][0];
-    A[1][0] = 1.0;
+//    A[1][1] /= A[1][0];
+//    A[1][2] /= A[1][0];
+//    A[1][3] /= A[1][0];
+//    b[1]    /= A[1][0];
+//    A[1][0] = 1.0;
 
     printf("%4d %18.14f %18.14f\n", 98, b[1], A[1][0]*U(96,h)
                                              +A[1][1]*U(97,h)
@@ -706,11 +706,11 @@ void LinearBoundaryValueProblemODE::calculateN4CNTR(DoubleVector &x, double h, u
     A[2][3] = -40.0*alpha + 10.0*betta + q(N-1);
     b[2]    = f(N-1) - (22.0*alpha + 3.0*betta)*x.at(N);
 
-    A[2][1] /= A[2][0];
-    A[2][2] /= A[2][0];
-    A[2][3] /= A[2][0];
-    b[2]    /= A[2][0];
-    A[2][0] = 1.0;
+//    A[2][1] /= A[2][0];
+//    A[2][2] /= A[2][0];
+//    A[2][3] /= A[2][0];
+//    b[2]    /= A[2][0];
+//    A[2][0] = 1.0;
 
 
     printf("%4d %18.14f %18.14f\n", 99, b[2], A[2][0]*U(96,h)
@@ -726,11 +726,11 @@ void LinearBoundaryValueProblemODE::calculateN4CNTR(DoubleVector &x, double h, u
     A[3][3] =  +8.0*alpha - 6.0*betta;
     b[3]    = f(N-3) - (-2.0*alpha + betta)*x.at(N);
 
-    A[3][1] /= A[3][0];
-    A[3][2] /= A[3][0];
-    A[3][3] /= A[3][0];
-    b[3]    /= A[3][0];
-    A[3][0] = 1.0;
+//    A[3][1] /= A[3][0];
+//    A[3][2] /= A[3][0];
+//    A[3][3] /= A[3][0];
+//    b[3]    /= A[3][0];
+//    A[3][0] = 1.0;
 
 
     printf("%4d %18.14f %18.14f\n", 100, b[3], A[3][0]*U(96,h)
