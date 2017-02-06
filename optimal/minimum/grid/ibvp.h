@@ -11,6 +11,8 @@ enum SweepMethodDirection
     Centered = 3
 };
 
+class MINIMUMSHARED_EXPORT InitialValueProblem {};
+
 /**
  * @brief The InitialBoundaryValueProblemPDE class
  * @see ParabolicIBVP

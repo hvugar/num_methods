@@ -412,6 +412,7 @@ void LinearBoundaryValueProblemODE::calculateN4L2RD(DoubleVector &x, double h, u
     b[3]    = f(N-1) - (22.0*alpha3 + 3.0*betta3)*x.at(N);
 
     GaussianElimination(A, b, z);
+    printf("%18.14f %18.14f %18.14f %18.14f\n", z[0], z[1], z[2], z[3]);
 
     x.at(N-1) = z.at(3);
     x.at(N-2) = z.at(2);
@@ -577,6 +578,196 @@ void LinearBoundaryValueProblemODE::calculateN4R2LD(DoubleVector &x, double h, u
         x.at(n) /= d4;
     }
     */
+
+    ems.clear();
+    z.clear();
+    b.clear();
+    A.clear();
+}
+
+void LinearBoundaryValueProblemODE::calculateN4CNTR(DoubleVector &x, double h, unsigned int N)
+{
+    const unsigned int k = 4;
+    double m1 = 1.0/(12.0*h);
+    double m2 = 1.0/(24.0*h*h);
+
+    x.clear();
+    x.resize(N+1, 0.0);
+
+    DoubleMatrix A(k, k, 0.0);
+    DoubleVector b(k, 0.0);
+    DoubleVector z(k, 0.0);
+    DoubleMatrix ems(N-k, k);
+
+    /* border conditions */
+    x.at(0) = boundary(Left);
+    x.at(N) = boundary(Right);
+
+    double alpha = r(2)*m2;
+    double betta = p(2)*m1;
+    A[0][0] = +32.0*alpha - 8.0*betta;
+    A[0][1] = -60.0*alpha + q(2);
+    A[0][2] = +32.0*alpha + 8.0*betta;
+    A[0][3] =  -2.0*alpha - betta;
+    b[0] = f(2) - (-2.0*alpha + betta)*x.at(0);
+
+    printf("%4d %18.14f %18.14f\n", 2, b[0], A[0][0]*U(1,h)
+                                     +A[0][1]*U(2,h)
+                                     +A[0][2]*U(3,h)
+                                     +A[0][3]*U(4,h));
+
+    A[0][1] /= A[0][0];
+    A[0][2] /= A[0][0];
+    A[0][3] /= A[0][0];
+    b[0]    /= A[0][0];
+    A[0][0] = 1.0;
+
+    ems[0][0] = A[0][1];
+    ems[0][1] = A[0][2];
+    ems[0][2] = A[0][3];
+    ems[0][3] = b[0];
+
+    printf("%4d %18.14f %18.14f\n", 2, b[0], A[0][0]*U(1,h)
+                                     +A[0][1]*U(2,h)
+                                     +A[0][2]*U(3,h)
+                                     +A[0][3]*U(4,h));
+
+
+    for (unsigned int n=3; n<=N-3; n++)
+    {
+        double alpha = r(n)*m2;
+        double betta = p(n)*m1;
+        double g1 =  -2.0*alpha + betta;
+        double g2 = +32.0*alpha - 8.0*betta;
+        double g3 = -60.0*alpha + q(n);
+        double g4 = +32.0*alpha + 8.0*betta;
+        double g5 =  -2.0*alpha - betta;
+        double fi = f(n);
+
+        g2 /= -g1;
+        g3 /= -g1;
+        g4 /= -g1;
+        g5 /= -g1;
+        fi /= +g1;
+        g1 = 1.0;
+
+        A[0][0] = A[0][1] + g2;
+        A[0][1] = A[0][2] + g3;
+        A[0][2] = A[0][3] + g4;
+        A[0][3] = g5;
+        b[0]    = b[0] - fi;
+
+        A[0][1] /= A[0][0];
+        A[0][2] /= A[0][0];
+        A[0][3] /= A[0][0];
+        b[0]    /= A[0][0];
+        A[0][0] = 1.0;
+
+        ems[n-2][0] = A[0][1];
+        ems[n-2][1] = A[0][2];
+        ems[n-2][2] = A[0][3];
+        ems[n-2][3] = b[0];
+
+        //printf("%4d %14.10f %14.10f\n", n, b[0], A[0][0]*U(n-1,h)
+        //                                 +A[0][1]*U(n+0,h)
+        //                                 +A[0][2]*U(n+1,h)
+        //                                 +A[0][3]*U(n+2,h));
+    }
+
+    printf("%4d %18.14f %18.14f\n", 97, b[0], A[0][0]*U(96,h)
+                                     +A[0][1]*U(97,h)
+                                     +A[0][2]*U(98,h)
+                                     +A[0][3]*U(99,h));
+
+    alpha = r(N-2)*m2;
+    betta = p(N-2)*m1;
+    A[1][0] =  -2.0*alpha + betta;
+    A[1][1] = +32.0*alpha - 8.0*betta;
+    A[1][2] = -60.0*alpha + q(N-2);
+    A[1][3] = +32.0*alpha + 8.0*betta;
+    b[1]    = f(N-2) - (-2.0*alpha - betta)*x.at(N);
+
+    A[1][1] /= A[1][0];
+    A[1][2] /= A[1][0];
+    A[1][3] /= A[1][0];
+    b[1]    /= A[1][0];
+    A[1][0] = 1.0;
+
+    printf("%4d %18.14f %18.14f\n", 98, b[1], A[1][0]*U(96,h)
+                                             +A[1][1]*U(97,h)
+                                             +A[1][2]*U(98,h)
+                                             +A[1][3]*U(99,h));
+
+    alpha = r(N-1)*m2;
+    betta = p(N-1)*m1;
+    A[2][0] = -2.0*alpha  - betta;
+    A[2][1] = +8.0*alpha  + 6.0*betta;
+    A[2][2] = +12.0*alpha - 18.0*betta;
+    A[2][3] = -40.0*alpha + 10.0*betta + q(N-1);
+    b[2]    = f(N-1) - (22.0*alpha + 3.0*betta)*x.at(N);
+
+    A[2][1] /= A[2][0];
+    A[2][2] /= A[2][0];
+    A[2][3] /= A[2][0];
+    b[2]    /= A[2][0];
+    A[2][0] = 1.0;
+
+
+    printf("%4d %18.14f %18.14f\n", 99, b[2], A[2][0]*U(96,h)
+                                             +A[2][1]*U(97,h)
+                                             +A[2][2]*U(98,h)
+                                             +A[2][3]*U(99,h));
+
+    alpha = r(N-3)*m2;
+    betta = p(N-3)*m1;
+    A[3][0] = +22.0*alpha - 3.0*betta;
+    A[3][1] = -40.0*alpha - 10.0*betta + q(N-3);
+    A[3][2] = +12.0*alpha + 18.0*betta;
+    A[3][3] =  +8.0*alpha - 6.0*betta;
+    b[3]    = f(N-3) - (-2.0*alpha + betta)*x.at(N);
+
+    A[3][1] /= A[3][0];
+    A[3][2] /= A[3][0];
+    A[3][3] /= A[3][0];
+    b[3]    /= A[3][0];
+    A[3][0] = 1.0;
+
+
+    printf("%4d %18.14f %18.14f\n", 100, b[3], A[3][0]*U(96,h)
+                                             +A[3][1]*U(97,h)
+                                             +A[3][2]*U(98,h)
+                                             +A[3][3]*U(99,h));
+
+    GaussianElimination(A, b, z);
+
+    printf("%18.14f %18.14f %18.14f %18.14f\n", z[0], z[1], z[2], z[3]);
+
+    x.at(N-1) = z.at(3);
+    x.at(N-2) = z.at(2);
+    x.at(N-3) = z.at(1);
+    x.at(N-4) = z.at(0);
+    for (unsigned int n=N-4; n>=1; n--)
+    {
+        x.at(n) = -ems.at(n-1,0)*x.at(n+1)
+                  -ems.at(n-1,1)*x.at(n+2)
+                  -ems.at(n-1,2)*x.at(n+3)
+                  +ems.at(n-1,3);
+    }
+    /*
+        for (unsigned int n=N-(k+1); n>=1; n--)
+        {
+            double alphai = r(n)*m2;
+            double bettai = p(n)*m1;
+            double d0 = +70.0*alphai  - 25.0*bettai + q(n);
+            double d1 = -208.0*alphai + 48.0*bettai;
+            double d2 = +228.0*alphai - 36.0*bettai;
+            double d3 = -112.0*alphai + 16.0*bettai;
+            double d4 = +22.0*alphai  - 3.0*bettai;
+            double fi = f(n);
+            x.at(n) = -d1*x.at(n+1) - d2*x.at(n+2) - d3*x.at(n+3) - d4*x.at(n+4) + fi;
+            x.at(n) /= d0;
+        }
+        */
 
     ems.clear();
     z.clear();
@@ -759,7 +950,7 @@ void LinearBoundaryValueProblemODE::calculateN6L2RD(DoubleVector &x, double h, u
     for (unsigned int n=N-(k+1); n>=1; n--)
     {
         x.at(n) = -ems.at(n-1,0)*x.at(n+1)-ems.at(n-1,1)*x.at(n+2)-ems.at(n-1,2)*x.at(n+3)
-                  -ems.at(n-1,3)*x.at(n+4)-ems.at(n-1,4)*x.at(n+5)+ems.at(n-1,5);
+                -ems.at(n-1,3)*x.at(n+4)-ems.at(n-1,4)*x.at(n+5)+ems.at(n-1,5);
     }
     /*
     for (unsigned int n=N-(k+1); n>=1; n--)
@@ -893,16 +1084,16 @@ void LinearBoundaryValueProblemODE::calculateN6R2LD(DoubleVector &x, double h, u
         double fi = f(n);
 
         // - - - - - + -
-//        double alpha = r(n-1)*m2;
-//        double betta = p(n-1)*m1;
-//        double g1 = -13.0 *alpha - 2.0  *betta;
-//        double g2 = +93.0 *alpha + 15.0 *betta;
-//        double g3 = -285.0*alpha - 50.0 *betta;
-//        double g4 = +470.0*alpha + 100.0*betta;
-//        double g5 = -255.0*alpha - 150.0*betta;
-//        double g6 = -147.0*alpha + 77.0 *betta + q(n-1);
-//        double g7 = +137.0*alpha + 10.0 *betta;
-//        double fi = f(n-1);
+        //        double alpha = r(n-1)*m2;
+        //        double betta = p(n-1)*m1;
+        //        double g1 = -13.0 *alpha - 2.0  *betta;
+        //        double g2 = +93.0 *alpha + 15.0 *betta;
+        //        double g3 = -285.0*alpha - 50.0 *betta;
+        //        double g4 = +470.0*alpha + 100.0*betta;
+        //        double g5 = -255.0*alpha - 150.0*betta;
+        //        double g6 = -147.0*alpha + 77.0 *betta + q(n-1);
+        //        double g7 = +137.0*alpha + 10.0 *betta;
+        //        double fi = f(n-1);
 
         g6 /= -g7;
         g5 /= -g7;
@@ -948,7 +1139,7 @@ void LinearBoundaryValueProblemODE::calculateN6R2LD(DoubleVector &x, double h, u
     for (unsigned int n=(k+1); n<=N-1; n++)
     {
         x.at(n) = -ems.at(n-k,0)*x.at(n-1)-ems.at(n-k,1)*x.at(n-2)-ems.at(n-k,2)*x.at(n-3)
-                  -ems.at(n-k,3)*x.at(n-4)-ems.at(n-k,4)*x.at(n-5)+ems.at(n-k,5);
+                -ems.at(n-k,3)*x.at(n-4)-ems.at(n-k,4)*x.at(n-5)+ems.at(n-k,5);
     }
     /*
     for (unsigned int n=(k+1); n<=N-1; n++)

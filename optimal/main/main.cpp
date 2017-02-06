@@ -52,9 +52,9 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //BorderParabolic2D::Main(argc, argv);
     //BorderHyperbolic2D::Main(argc, argv);
     //Example5 e5;
-    //BoundaryValueProblem1::Main(argc, argv);
+    BoundaryValueProblem1::Main(argc, argv);
 
-    ParabolicIBVP1::Main(argc, argv);
+    //ParabolicIBVP1::Main(argc, argv);
     //ParabolicIBVP2::Main(argc, argv);
 
     return 0;

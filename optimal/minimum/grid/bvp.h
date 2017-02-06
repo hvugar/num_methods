@@ -9,12 +9,9 @@
 #include <math.h>
 #include "grid.h"
 
-struct MINIMUMSHARED_EXPORT InitialValueProblem
+class MINIMUMSHARED_EXPORT BoundaryValueProblem
 {
-};
-
-struct MINIMUMSHARED_EXPORT BoundaryValueProblem
-{
+public:
     enum BoundaryCondition
     {
         Dirichlet = 1,
@@ -32,8 +29,9 @@ struct MINIMUMSHARED_EXPORT BoundaryValueProblem
     BoundaryCondition condition;
 };
 
-struct MINIMUMSHARED_EXPORT BoundaryValueProblemODE : protected BoundaryValueProblem
+class MINIMUMSHARED_EXPORT BoundaryValueProblemODE : protected BoundaryValueProblem
 {
+protected:
     virtual double boundary(BoundaryType bound) const = 0;
 };
 
