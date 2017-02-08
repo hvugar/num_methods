@@ -46,7 +46,8 @@ SOURCES += \
     grid/pibvp.cpp \
     grid/hibvp.cpp \
     grid/hpibvp.cpp \
-    grid/grid.cpp
+    grid/grid.cpp \
+    grid/bpibvp.cpp
 
 HEADERS += global.h \
     cmethods.h \
@@ -80,4 +81,5 @@ HEADERS += global.h \
     grid/pibvp.h \
     grid/hibvp.h \
     grid/hpibvp.h \
-    grid/grid.h
+    grid/grid.h \
+    grid/bpibvp.h

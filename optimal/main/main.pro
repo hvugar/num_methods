@@ -23,8 +23,8 @@ LIBS += -L../bin -lborder
 INCLUDEPATH += ../hyperbolic
 LIBS += -L../bin -lhyperbolic
 
-#INCLUDEPATH += ../imaging
-#LIBS += -L../bin -limaging
+INCLUDEPATH += ../imaging
+LIBS += -L../bin -limaging
 
 DESTDIR += ../bin
 

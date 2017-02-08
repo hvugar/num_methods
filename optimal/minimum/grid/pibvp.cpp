@@ -1,5 +1,10 @@
 #include "pibvp.h"
 
+void ParabolicIBVP::gridMethod(DoubleVector &u, SweepMethodDirection direction)
+{
+
+}
+
 void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction)
 {
     typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);

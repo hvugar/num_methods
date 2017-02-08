@@ -5,10 +5,11 @@
 
 /**
  * @brief The ParabolicIBVP class
- * u_t(x,t) = a(x,t)u_xx(x,t) + f(x,t)
- * u(x,0) = fi(x),
- * u(0,t) = m1(t),
- * u(1,t) = m2(t).
+ * u_t(x,t) = a(x,t)u_xx(x,t) + f(x,t),
+ *          t in (0,T], x in (0, l),
+ * u(x,0) = fi(x), x in [0,l],
+ * u(0,t) = m1(t), t in (0,T],
+ * u(l,t) = m2(t), t in (0,T].
  */
 class MINIMUMSHARED_EXPORT ParabolicIBVP : protected InitialBoundaryValueProblemPDE
 {
@@ -18,6 +19,7 @@ protected:
     virtual double f(const SpaceNode &sn, const TimeNode &tn) const = 0;
     virtual double a(const SpaceNode &sn, const TimeNode &tn) const = 0;
 public:
+    void gridMethod(DoubleVector &u, SweepMethodDirection direction = ForwardSweep);
     void gridMethod(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);
 
     /* dirichlet conditions */

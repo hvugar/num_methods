@@ -3,7 +3,7 @@
 
 #include "../vector2d.h"
 #include "../matrix2d.h"
-#include "../matrix2d.h"
+#include "../matrix3d.h"
 #include "../cmethods.h"
 #include "../printer.h"
 #include <math.h>

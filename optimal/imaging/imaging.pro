@@ -12,8 +12,6 @@ TEMPLATE = lib
 INCLUDEPATH += ../minimum
 LIBS += -L../bin -lminimum
 
-#include(../minimum/minimum.pri)
-
 DESTDIR += ../bin
 
 SOURCES += imaging.cpp
