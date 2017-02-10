@@ -32,6 +32,15 @@ void HyperbolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     {
         DoubleMatrix u;
         clock_t t = clock();
+        p.gridMethod0(u);
+        t = clock() - t;
+        IPrinter::printMatrix(14,10,u);
+        printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
+        IPrinter::printSeperatorLine();
+    }
+    {
+        DoubleMatrix u;
+        clock_t t = clock();
         p.gridMethod1(u);
         t = clock() - t;
         IPrinter::printMatrix(14,10,u);
@@ -59,26 +68,25 @@ HyperbolicIBVP1::HyperbolicIBVP1()
 
 double HyperbolicIBVP1::initial1(const SpaceNode &sn) const
 {
-    double x UNUSED_PARAM = sn.x;
-    return x*x;
+    return 0.0;
 }
 
 double HyperbolicIBVP1::initial2(const SpaceNode &sn) const
 {
-    return 0.0;
+    return sn.x*sn.x;
 }
 
 double HyperbolicIBVP1::boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType boundary) const
 {
     double t = tn.t;
-    if (boundary == BoundaryValueProblem::Left)  return t*t;
-    if (boundary == BoundaryValueProblem::Right) return t*t+1.0;
+    if (boundary == BoundaryValueProblem::Left)  return 0.0;
+    if (boundary == BoundaryValueProblem::Right) return t;
     return 0.0;
 }
 
 double HyperbolicIBVP1::f(const SpaceNode &sn, const TimeNode &tn) const
 {
-    return 2.0 -2.0 * a(sn,tn);
+    return /*2.0 */- 2.0 * a(sn,tn)*tn.t;
 }
 
 double HyperbolicIBVP1::a(const SpaceNode &sn, const TimeNode &tn) const
@@ -90,6 +98,6 @@ double HyperbolicIBVP1::U(unsigned int n, unsigned int m) const
 {
     double t = m*timeDimension().step();
     double x = n*spaceDimension(Dimension::Dim1).step();
-    return x*x + t*t;
+    return x*x*t;
 }
 
