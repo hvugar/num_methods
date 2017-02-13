@@ -122,8 +122,8 @@ double HyperbolicControl2D22::fx(const DoubleVector &v)
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a1, a2, qamma);
 
-    const DoubleMatrix &u0 = c[M];
-    const DoubleMatrix &u1 = c[M-2];
+    const DoubleMatrix &u0 = c.matrix(M);
+    const DoubleMatrix &u1 = c.matrix(M-2);
     double sum = 0.0;
 
     double sum1 = 0.0;
@@ -172,11 +172,11 @@ void HyperbolicControl2D22::gradient(const DoubleVector &v, DoubleVector &g)
     {
         i = (unsigned int)round(x[0]/h1);
         j = (unsigned int)round(x[1]/h2);
-        g[0*(M+1)+k] = -p[k][j][i];
+        g[0*(M+1)+k] = -p.at(k,j,i);
 
         i = (unsigned int)round(x[2]/h1);
         j = (unsigned int)round(x[3]/h2);
-        g[1*(M+1)+k] = -p[k][j][i];
+        g[1*(M+1)+k] = -p.at(k,j,i);
     }
 }
 
@@ -229,14 +229,14 @@ double HyperbolicControl2D22::f(unsigned int i, unsigned int j, unsigned int k) 
 
 double HyperbolicControl2D22::binitial1(unsigned int i, unsigned int j) const
 {
-    const DoubleMatrix &u0 = (*pu)[M];
-    const DoubleMatrix &u1 = (*pu)[M-2];
+    const DoubleMatrix &u0 = (*pu).matrix(M);
+    const DoubleMatrix &u1 = (*pu).matrix(M-2);
     return -2.0 * alpha1 * ((u0[j][i]-u1[j][i])/(2.0*ht) - U1);
 }
 
 double HyperbolicControl2D22::binitial2(unsigned int i, unsigned int j) const
 {
-    const DoubleMatrix &u0 = (*pu)[M];
+    const DoubleMatrix &u0 = (*pu).matrix(M);
     return +2.0 * (u0[j][i] - U0) + qamma*(binitial1(i,j));
 }
 

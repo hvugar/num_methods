@@ -1742,8 +1742,8 @@ void IParabolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, dou
                 for (unsigned int i=0; i<=N1; i++)
                 {
                     u0[j][i] = initial(i, j);
+                    u.at(k,j,i) = u0[j][i];
                 }
-                u[k] = u0;
             }
         }
         else
@@ -1817,7 +1817,14 @@ void IParabolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, dou
                 u0[j][N1] = boundary(N1, j, 2*k);//m2(j, 2*k);
             }
 
-            u[k] = u0;
+            //u[k] = u0;
+            for (unsigned int j=0; j<=N2; j++)
+            {
+                for (unsigned int i=0; i<=N1; i++)
+                {
+                    u.at(k,j,i) = u0[j][i];
+                }
+            }
         }
     }
 
@@ -1873,9 +1880,10 @@ void IBackwardParabolicEquation2D::calculateMVD(DoubleCube &psi, double h1, doub
                 for (unsigned int i=0; i<=N1; i++)
                 {
                     psi0[j][i] = binitial(i, j);
+                    psi.at(k,j,i) = psi0[j][i];
                 }
             }
-            psi[k] = psi0;
+            //psi[k] = psi0;
         }
         else
         {
@@ -1946,7 +1954,14 @@ void IBackwardParabolicEquation2D::calculateMVD(DoubleCube &psi, double h1, doub
                 psi0[j][N1] = bboundary(N1, j, 2*k);
             }
 
-            psi[k] = psi0;
+            //psi[k] = psi0;
+            for (unsigned int j=0; j<=N2; j++)
+            {
+                for (unsigned int i=0; i<=N1; i++)
+                {
+                    psi.at(k,j,i) = psi0[j][i];
+                }
+            }
         }
     }
 

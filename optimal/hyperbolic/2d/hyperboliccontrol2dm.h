@@ -40,13 +40,6 @@ public:
     static void Main(int argc, char *argv[]);
 
 private:
-//    double t0;
-//    double t1;
-//    double x10;
-//    double x11;
-//    double x20;
-//    double x21;
-
     double h1;
     double h2;
     double ht;

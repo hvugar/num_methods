@@ -160,7 +160,7 @@ double HyperbolicControl2D23::fx(const DoubleVector &v)
                 if (k==M || k==M+D) k1 *= 0.5;
                 if (i==0 || i==N1)  k1 *= 0.5;
                 if (j==0 || j==N2)  k1 *= 0.5;
-                sum1 = sum1 + k1 * (c[k][j][i]-U0) * (c[k][j][i]-U0);
+                sum1 = sum1 + k1 * (c.at(k,j,i)-U0) * (c.at(k,j,i)-U0);
             }
         }
     }
@@ -198,11 +198,11 @@ void HyperbolicControl2D23::gradient(const DoubleVector &v, DoubleVector &g)
     {
         i = (unsigned int)round(x[0]/h1);
         j = (unsigned int)round(x[1]/h2);
-        g[0*(M+1)+k] = -p[k][j][i];
+        g[0*(M+1)+k] = -p.at(k,j,i);
 
         i = (unsigned int)round(x[2]/h1);
         j = (unsigned int)round(x[3]/h2);
-        g[1*(M+1)+k] = -p[k][j][i];
+        g[1*(M+1)+k] = -p.at(k,j,i);
     }
 
 //    unsigned int size = g.size();
@@ -292,7 +292,7 @@ double HyperbolicControl2D23::bf(unsigned int i, unsigned int j, unsigned int k)
     if (k>=M)
     {
         //const DoubleMatrix &u0 = (*pu)[M+D];
-        return -2.0 * ((*pu)[k][j][i] - U0);
+        return -2.0 * ((*pu).at(k,j,i) - U0);
     }
     return 0.0;
 }

@@ -202,8 +202,8 @@ double HyperbolicControl2D24::fx(const DoubleVector &w)
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a1, a2, qamma);
 
-    const DoubleMatrix &u0 = c[M];
-    const DoubleMatrix &u1 = c[M-2];
+    const DoubleMatrix &u0 = c.matrix(M);
+    const DoubleMatrix &u1 = c.matrix(M-2);
     double sum = 0.0;
 
     double sum1 = 0.0;
@@ -254,11 +254,11 @@ void HyperbolicControl2D24::gradient(const DoubleVector &x, DoubleVector &g)
         double psiX2;
         double m = 1.0;
         if (k==0 || k==M) m *= 0.5;
-        psiDerivative(psiX1, psiX2, x[0], x[1], p[k]);
+        psiDerivative(psiX1, psiX2, x[0], x[1], p.matrix(k));
         double _v1 = x[2*L+0*(M+1)+k];
         g[0] = g[0] + m * _v1 * psiX1;
         g[1] = g[1] + m * _v1 * psiX2;
-        psiDerivative(psiX1, psiX2, x[2], x[3], p[k]);
+        psiDerivative(psiX1, psiX2, x[2], x[3], p.matrix(k));
         double _v2 = x[2*L+1*(M+1)+k];
         g[2] = g[2] + m * _v2 * psiX1;
         g[3] = g[3] + m * _v2 * psiX2;
@@ -274,11 +274,11 @@ void HyperbolicControl2D24::gradient(const DoubleVector &x, DoubleVector &g)
     {
         i = (unsigned int)round(x[0]/h1);
         j = (unsigned int)round(x[1]/h2);
-        g[2*L+0*(M+1)+k] = -p[k][j][i];
+        g[2*L+0*(M+1)+k] = -p.at(k,j,i);
 
         i = (unsigned int)round(x[2]/h1);
         j = (unsigned int)round(x[3]/h2);
-        g[2*L+1*(M+1)+k] = -p[k][j][i];
+        g[2*L+1*(M+1)+k] = -p.at(k,j,i);
     }
 }
 
@@ -341,14 +341,14 @@ double HyperbolicControl2D24::f(unsigned int i, unsigned int j, unsigned int k) 
 
 double HyperbolicControl2D24::binitial1(unsigned int i, unsigned int j) const
 {
-    const DoubleMatrix &u0 = (*pu)[M];
-    const DoubleMatrix &u1 = (*pu)[M-2];
+    const DoubleMatrix &u0 = (*pu).matrix(M);
+    const DoubleMatrix &u1 = (*pu).matrix(M-2);
     return -2.0 * alpha0 * ((u0[j][i]-u1[j][i])/(2.0*ht) - U1);
 }
 
 double HyperbolicControl2D24::binitial2(unsigned int i, unsigned int j) const
 {
-    const DoubleMatrix &u0 = (*pu)[M];
+    const DoubleMatrix &u0 = (*pu).matrix(M);
     return +2.0 * (u0[j][i] - U0) + qamma*(binitial1(i,j));
 }
 

@@ -32,7 +32,7 @@ void Problem1::initialize()
 
     /***************************************************************/
 #ifdef _OPTIMIZE_K_
-    xs << 2.50 << 2.70;
+    xs << 2.5 << 2.70;
 #endif
 #ifdef _OPTIMIZE_Z_
     xs << 1.52 << 1.71;
@@ -560,7 +560,14 @@ void Problem1::calculateU(DoubleMatrix &u, unsigned int N, unsigned int M, doubl
 
         qovmaFirstRow(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size(), de.data());
 
-        for (unsigned int i=0; i<=N; i++) u.at(m, i) = rx[i];
+        for (unsigned int i=0; i<=N; i++)
+        {
+            u.at(m, i) = rx[i];
+
+            if (fabs(i*hx - e.at(0)) <= hx) { /*printf("%d %d %14.10f\n", m, i, u[m][i]);*/ u[m][i] *= 1.001; }
+            //if (fabs(i*hx - e.at(1)) <= hx) u[m][i] *= 1.01;
+        }
+
 
         //IPrinter::printVector(u.row(m));
         //printf("%u %14.10f %14.10f %14.10f %14.10f %14.10f\n", m, u.at(m,N-4), u.at(m,N-3), u.at(m,N-2), u.at(m,N-1), u.at(m,N));

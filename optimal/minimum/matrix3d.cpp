@@ -105,13 +105,22 @@ void DoubleCube::resize(unsigned int depth, unsigned int rows, unsigned int cols
     }
 }
 
-DoubleMatrix DoubleCube::operator [](unsigned int depth) const
+//DoubleMatrix DoubleCube::operator [](unsigned int depth) const
+//{
+//    DoubleMatrix matrix(mRows, mCols);
+//    for (unsigned int j=0; j<mRows; j++)
+//        for (unsigned int i=0; i<mCols; i++)
+//            matrix.at(j, i) = pData[depth][j][i];
+//    return matrix;
+//}
+
+DoubleMatrix DoubleCube::matrix(unsigned int z) const
 {
-    DoubleMatrix matrix(mRows, mCols);
+    DoubleMatrix mx(mRows, mCols);
     for (unsigned int j=0; j<mRows; j++)
         for (unsigned int i=0; i<mCols; i++)
-            matrix.at(j, i) = pData[depth][j][i];
-    return matrix;
+            mx.at(j, i) = pData[z][j][i];
+    return mx;
 }
 
 unsigned int DoubleCube::depth() const

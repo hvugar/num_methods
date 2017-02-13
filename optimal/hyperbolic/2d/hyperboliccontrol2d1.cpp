@@ -93,8 +93,8 @@ HyperbolicControl2D1::HyperbolicControl2D1()
     {
         for (unsigned int i=0; i<=N1; i++)
         {
-            U0[j][i] = c[M][j][i];
-            U1[j][i] = (c[M][j][i]-c[M-2][j][i])/(2.0*ht);
+            U0[j][i] = c.at(M,j,i);
+            U1[j][i] = (c.at(M,j,i)-c.at(M-2,j,i))/(2.0*ht);
         }
     }
 
@@ -216,8 +216,8 @@ double HyperbolicControl2D1::fx(const DoubleVector &x)
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a1, a2, qamma);
 
-    const DoubleMatrix &u0 = c[M];
-    const DoubleMatrix &u1 = c[M-2];
+    const DoubleMatrix &u0 = c.matrix(M);
+    const DoubleMatrix &u1 = c.matrix(M-2);
     double sum = 0.0;
 
     double sum1 = 0.0;
@@ -330,11 +330,11 @@ void HyperbolicControl2D1::gradient(const DoubleVector &x, DoubleVector &g)
         double psiX2;
         double m = 1.0;
         if (k==0 || k==M) m *= 0.5;
-        psiDerivative(psiX1, psiX2, x[0], x[1], p[k]);
+        psiDerivative(psiX1, psiX2, x[0], x[1], p.matrix(k));
         double _v1 = x[2*L+0*(M+1)+k];
         g[0] = g[0] + m * _v1 * psiX1;
         g[1] = g[1] + m * _v1 * psiX2;
-        psiDerivative(psiX1, psiX2, x[2], x[3], p[k]);
+        psiDerivative(psiX1, psiX2, x[2], x[3], p.matrix(k));
         double _v2 = x[2*L+1*(M+1)+k];
         g[2] = g[2] + m * _v2 * psiX1;
         g[3] = g[3] + m * _v2 * psiX2;
@@ -349,11 +349,11 @@ void HyperbolicControl2D1::gradient(const DoubleVector &x, DoubleVector &g)
         unsigned int i,j;
         i = (unsigned int)round(x[0]/h1);
         j = (unsigned int)round(x[1]/h2);
-        g[2*L+0*(M+1)+k] = -p[k][j][i] + 2.0 * (x[2*L+0*(M+1)+k]-v1(k*ht));
+        g[2*L+0*(M+1)+k] = -p.at(k,j,i) + 2.0 * (x[2*L+0*(M+1)+k]-v1(k*ht));
 
         i = (unsigned int)round(x[2]/h1);
         j = (unsigned int)round(x[3]/h2);
-        g[2*L+1*(M+1)+k] = -p[k][j][i] + 2.0 * (x[2*L+1*(M+1)+k]-v2(k*ht));
+        g[2*L+1*(M+1)+k] = -p.at(k,j,i) + 2.0 * (x[2*L+1*(M+1)+k]-v2(k*ht));
     }
 #endif
 }
@@ -433,14 +433,14 @@ double HyperbolicControl2D1::f(unsigned int i, unsigned int j, unsigned int k) c
 
 double HyperbolicControl2D1::binitial1(unsigned int i, unsigned int j) const
 {
-    const DoubleMatrix &u0 = (*pu)[M];
-    const DoubleMatrix &u1 = (*pu)[M-2];
+    const DoubleMatrix &u0 = (*pu).matrix(M);
+    const DoubleMatrix &u1 = (*pu).matrix(M-2);
     return -2.0 * alpha1 * ( (u0[j][i]-u1[j][i])/(2.0*ht) - U1[j][i]);
 }
 
 double HyperbolicControl2D1::binitial2(unsigned int i, unsigned int j) const
 {
-    const DoubleMatrix &u0 = (*pu)[M];
+    const DoubleMatrix &u0 = (*pu).matrix(M);
     return +2.0 * (u0[j][i] - U0[j][i]) + qamma*(binitial1(i,j));
 }
 

@@ -43,7 +43,17 @@ void HyperbolicIBVP::gridMethod0(DoubleMatrix &u, SweepMethodDirection direction
 
         u[0][n] = initial1(isn);
         u[1][n] = u[0][n] + ht*initial2(isn);
+
+        //u[2][n] = u[0][n] + 2.0*ht*initial2(isn);
+
+        //TimeNode tn; tn.i = 0.0; tn.t = tn.i*ht;
+        //u[2][n] = u[0][n] + ht*initial2(isn) + (2.0*a(isn,tn)+f(isn,tn))*((ht*ht)/2.0);
     }
+    IPrinter::printSeperatorLine();
+    IPrinter::printVector(14,10,u.row(0));
+    IPrinter::printVector(14,10,u.row(1));
+    IPrinter::printVector(14,10,u.row(2));
+    IPrinter::printSeperatorLine();
 
     SpaceNode lsn;
     lsn.i = minN;

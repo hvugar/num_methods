@@ -485,8 +485,8 @@ void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, do
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    u[0][j][i] = initial1(i, j);
-                    u[1][j][i] = u[0][j][i] + ht*initial2(i, j);
+                    u.at(0,j,i) = initial1(i, j);
+                    u(1,j,i) = u.at(0,j,i) + ht*initial2(i, j);
                 }
             }
         }
@@ -498,8 +498,8 @@ void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, do
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    u[k][0][i]  = boundary(i, 0, k);
-                    u[k][N2][i] = boundary(i, N2, k);
+                    u.at(k,0,i)  = boundary(i, 0, k);
+                    u.at(k,N2,i) = boundary(i, N2, k);
                 }
 
                 // Approximation to x1 direction
@@ -510,23 +510,24 @@ void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, do
                         da1[i-1] = x1_a;
                         db1[i-1] = x1_b;
                         dc1[i-1] = x1_a;
-                        dd1[i-1] = x1_c*(u[k-1][j-1][i] - 2.0*u[k-1][j][i] + u[k-1][j+1][i]) + 2.0*u[k-1][j][i] - u[k-2][j][i] + (ht*ht) * f(i, j, k);
+                        dd1[i-1] = x1_c*(u.at(k-1,j-1,i) - 2.0*u.at(k-1,j,i) + u.at(k-1,j+1,i))
+                                + 2.0*u.at(k-1,j,i) - u.at(k-2,j,i) + (ht*ht) * f(i, j, k);
                     }
 
                     da1[0]     = 0.0;
                     dc1[N1-2]  = 0.0;
 
-                    u[k][j][0]  = boundary(0, j, k);
-                    u[k][j][N1] = boundary(N1, j, k);
+                    u.at(k,j,0)  = boundary(0, j, k);
+                    u.at(k,j,N1) = boundary(N1, j, k);
 
-                    dd1[0]    -= x1_a * u[k][j][0];
-                    dd1[N1-2] -= x1_a * u[k][j][N1];
+                    dd1[0]    -= x1_a * u.at(k,j,0);
+                    dd1[N1-2] -= x1_a * u.at(k,j,N1);
 
                     tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.size());
 
                     for (unsigned int i=1; i<N1; i++)
                     {
-                        u[k][j][i] = rx1[i-1];
+                        u.at(k,j,i) = rx1[i-1];
                     }
                 }
 
@@ -535,8 +536,8 @@ void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, do
             {
                 for (unsigned int j=0; j<=N2; j++)
                 {
-                    u[k][j][0]  = boundary(0, j, k);
-                    u[k][j][N1] = boundary(N1, j, k);
+                    u.at(k,j,0)  = boundary(0, j, k);
+                    u.at(k,j,N1) = boundary(N1, j, k);
                 }
 
                 // Approximation to x2 direction
@@ -547,22 +548,23 @@ void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, do
                         da2[j-1] = x2_a;
                         db2[j-1] = x2_b;
                         dc2[j-1] = x2_a;
-                        dd2[j-1] = x2_c*(u[k-1][j][i-1] - 2.0*u[k-1][j][i] + u[k-1][j][i+1]) + 2.0*u[k-1][j][i] - u[k-2][j][i] + (ht*ht) * f(i, j, k);
+                        dd2[j-1] = x2_c*(u.at(k-1,j,i-1) - 2.0*u.at(k-1,j,i) + u.at(k-1,j,i+1))
+                                + 2.0*u.at(k-1,j,i) - u.at(k-2,j,i) + (ht*ht) * f(i, j, k);
                     }
                     da2[0]     = 0.0;
                     dc2[N2-2]  = 0.0;
 
-                    u[k][0][i]  = boundary(i, 0, k);
-                    u[k][N2][i] = boundary(i, N2, k);
+                    u.at(k,0,i)  = boundary(i, 0, k);
+                    u.at(k,N2,i) = boundary(i, N2, k);
 
-                    dd2[0]    -= x2_a * u[k][0][i];
-                    dd2[N2-2] -= x2_a * u[k][N2][i];
+                    dd2[0]    -= x2_a * u.at(k,0,i);
+                    dd2[N2-2] -= x2_a * u.at(k,N2,i);
 
                     tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.size());
 
                     for (unsigned int j=1; j<N2; j++)
                     {
-                        u[k][j][i] = rx2[j-1];
+                        u.at(k,j,i) = rx2[j-1];
                     }
                 }
             }
@@ -617,7 +619,7 @@ void IHyperbolicEquation2D::calculateU1(DoubleCube &u, double h1, double h2, dou
                 for (unsigned int n1=0; n1<=N1; n1++)
                 {
                     u.at(0,n2,n1) = initial1(n1, n2);
-                    u.at(1,n2,n1) = u(0,n2,n1) + ht*initial2(n1, n2);
+                    u.at(1,n2,n1) = u.at(0,n2,n1) + ht*initial2(n1, n2);
                 }
             }
         }
@@ -1033,8 +1035,8 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    p[M][j][i] = binitial1(i, j);
-                    p[M-1][j][i] = p[M][j][i] - ht*binitial2(i, j);
+                    p.at(M,j,i) = binitial1(i, j);
+                    p.at(M-1,j,i) = p.at(M,j,i) - ht*binitial2(i, j);
                 }
             }
         }
@@ -1046,8 +1048,8 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
             {
                 for (unsigned int i=0; i<=N1; i++)
                 {
-                    p[k][0][i]  = bboundary(i, 0, k);
-                    p[k][N2][i] = bboundary(i, N2, k);
+                    p.at(k,0,i)  = bboundary(i, 0, k);
+                    p.at(k,N2,i) = bboundary(i, N2, k);
                 }
 
                 // Approximation to x1 direction
@@ -1058,23 +1060,24 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
                         da1[i-1] = x1_a;
                         db1[i-1] = x1_b;
                         dc1[i-1] = x1_a;
-                        dd1[i-1] = x1_c*(p[k+1][j-1][i] - 2.0*p[k+1][j][i] + p[k+1][j+1][i]) + 2.0*p[k+1][j][i] - p[k+2][j][i] + (ht*ht) * bf(i, j, k);
+                        dd1[i-1] = x1_c*(p.at(k+1,j-1,i) - 2.0*p.at(k+1,j,i) + p.at(k+1,j+1,i))
+                                + 2.0*p.at(k+1,j,i) - p.at(k+2,j,i) + (ht*ht) * bf(i, j, k);
                     }
 
                     da1[0]     = 0.0;
                     dc1[N1-2]  = 0.0;
 
-                    p[k][j][0]  = bboundary(0, j, k);
-                    p[k][j][N1] = bboundary(N1, j, k);
+                    p.at(k,j,0)  = bboundary(0, j, k);
+                    p.at(k,j,N1) = bboundary(N1, j, k);
 
-                    dd1[0]    -= x1_a * p[k][j][0];
-                    dd1[N1-2] -= x1_a * p[k][j][N1];
+                    dd1[0]    -= x1_a * p.at(k,j,0);
+                    dd1[N1-2] -= x1_a * p.at(k,j,N1);
 
                     tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.size());
 
                     for (unsigned int i=1; i<N1; i++)
                     {
-                        p[k][j][i] = rx1[i-1];
+                        p.at(k,j,i) = rx1[i-1];
                     }
                 }
 
@@ -1083,8 +1086,8 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
             {
                 for (unsigned int j=0; j<=N2; j++)
                 {
-                    p[k][j][0]  = bboundary(0, j, k);
-                    p[k][j][N1] = bboundary(N1, j, k);
+                    p.at(k,j,0)  = bboundary(0, j, k);
+                    p.at(k,j,N1) = bboundary(N1, j, k);
                 }
 
                 // Approximation to x2 direction
@@ -1095,22 +1098,23 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
                         da2[j-1] = x2_a;
                         db2[j-1] = x2_b;
                         dc2[j-1] = x2_a;
-                        dd2[j-1] = x2_c*(p[k+1][j][i-1] - 2.0*p[k+1][j][i] + p[k+1][j][i+1]) + 2.0*p[k+1][j][i] - p[k+2][j][i] + (ht*ht) * bf(i, j, k);
+                        dd2[j-1] = x2_c*(p.at(k+1,j,i-1) - 2.0*p.at(k+1,j,i) + p.at(k+1,j,i+1))
+                                + 2.0*p.at(k+1,j,i) - p.at(k+2,j,i) + (ht*ht) * bf(i, j, k);
                     }
                     da2[0]     = 0.0;
                     dc2[N2-2]  = 0.0;
 
-                    p[k][0][i]  = bboundary(i, 0, k);
-                    p[k][N2][i] = bboundary(i, N2, k);
+                    p.at(k,0,i)  = bboundary(i, 0, k);
+                    p.at(k,N2,i) = bboundary(i, N2, k);
 
-                    dd2[0]    -= x2_a * p[k][0][i];
-                    dd2[N2-2] -= x2_a * p[k][N2][i];
+                    dd2[0]    -= x2_a * p.at(k,0,i) ;
+                    dd2[N2-2] -= x2_a * p.at(k,N2,i);
 
                     tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.size());
 
                     for (unsigned int j=1; j<N2; j++)
                     {
-                        p[k][j][i] = rx2[j-1];
+                        p.at(k,j,i) = rx2[j-1];
                     }
                 }
             }

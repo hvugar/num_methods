@@ -23,7 +23,7 @@ public:
     void clear();
     void resize(unsigned int depth, unsigned int rows, unsigned int cols, double value=0.0);
 
-    DoubleMatrix operator[] (unsigned int z) const;
+    //DoubleMatrix operator[] (unsigned int z) const;
 
     unsigned int depth() const;
     unsigned int rows() const;
@@ -34,6 +34,8 @@ public:
 
     double& at(unsigned int k, unsigned int j, unsigned int i);
     const double& at(unsigned int k, unsigned int j, unsigned int i) const;
+
+    DoubleMatrix matrix(unsigned int z) const;
 
 private:
     unsigned int mDepth;
