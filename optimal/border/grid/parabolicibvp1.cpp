@@ -39,6 +39,16 @@ void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         IPrinter::printSeperatorLine();
     }
     {
+        DoubleVector u;
+        clock_t t = clock();
+        p.gridMethod(u);
+        t = clock() - t;
+        //IPrinter::printVector(14,10,u);
+        printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
+        IPrinter::printSeperatorLine();
+    }
+    return;
+    {
         DoubleMatrix u;
         clock_t t = clock();
         p.calculateN2L2RD(u);
@@ -154,4 +164,13 @@ double ParabolicIBVP1::U(unsigned int n, unsigned int m) const
     return exp(k*x)*t;
 #endif
     return 0.0;
+}
+
+void ParabolicIBVP1::layerInfo(const DoubleVector &u, unsigned int i)
+{
+    if (i%100==0)
+    {
+        printf("%4d| ", i);
+        IPrinter::printVector(14,10,u);
+    }
 }

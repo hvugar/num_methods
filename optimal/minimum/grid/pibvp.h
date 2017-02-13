@@ -13,12 +13,19 @@
  */
 class MINIMUMSHARED_EXPORT ParabolicIBVP : protected InitialBoundaryValueProblemPDE
 {
+public:
+    virtual ~ParabolicIBVP();
+
 protected:
     virtual double initial(const SpaceNode &sn) const = 0;
     virtual double boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType boundary = Unused) const = 0;
     virtual double f(const SpaceNode &sn, const TimeNode &tn) const = 0;
     virtual double a(const SpaceNode &sn, const TimeNode &tn) const = 0;
+
 public:
+    virtual void layerInfo(const DoubleVector &, unsigned int) {}
+    virtual void layerInfo(const DoubleMatrix &, unsigned int) {}
+
     void gridMethod(DoubleVector &u, SweepMethodDirection direction = ForwardSweep);
     void gridMethod(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);
 

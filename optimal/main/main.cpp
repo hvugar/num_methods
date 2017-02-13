@@ -42,6 +42,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     srand(time(NULL));
 
     HyperbolicControl2DM::Main(argc, argv);
+    //HyperbolicControl2DMX::Main(argc, argv);
+    //HyperbolicControl2DMV::Main(argc, argv);
 
     //BorderTest::Main(argc, argv);
     //BorderTest1::Main(argc, argv);

@@ -18,6 +18,7 @@ protected:
     virtual double f(const SpaceNode &sn, const TimeNode &tn) const;
     virtual double a(const SpaceNode &sn, const TimeNode &tn) const;
 public:
+    virtual void layerInfo(const DoubleVector &, unsigned int);
     void static Main(int argc, char* argv[]);
 };
 

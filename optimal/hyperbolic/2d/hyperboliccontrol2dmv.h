@@ -12,8 +12,8 @@ class MINIMUMSHARED_EXPORT HyperbolicControl2DMV : public R1Function, public RnF
         public IPrinter, public IProjection
 {
 public:
-    HyperbolicControl2DMV();
-    virtual ~HyperbolicControl2DMV();
+    HyperbolicControl2DMV() {}
+    virtual ~HyperbolicControl2DMV() {}
 
     virtual double fx(double x);
     virtual double fx(const DoubleVector &x);
@@ -34,15 +34,9 @@ public:
     double fxt(unsigned int i, unsigned int j, unsigned int k) const;
     double norm(const DoubleVector& v) const;
 
-    static void main();
+    static void Main(int argc, char *argv[]);
 
 private:
-    double t0;
-    double t1;
-    double x10;
-    double x11;
-    double x20;
-    double x21;
     double h1;
     double h2;
     double ht;

@@ -1,17 +1,9 @@
 #include "hyperboliccontrol2dmx.h"
 
-void HyperbolicControl2DMX::main()
+void HyperbolicControl2DMX::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     HyperbolicControl2DMX hc;
-    //    hc.fx(0.4);
-    //    hc.fx(0.6);
-    //    hc.fx(0.8);
     hc.fx(1.0);
-    //    hc.fx(1.2);
-    //    hc.fx(1.4);
-    //    hc.fx(1.6);
-    //    hc.fx(1.8);
-    //    hc.fx(2.0);
 }
 
 HyperbolicControl2DMX::HyperbolicControl2DMX()
@@ -22,33 +14,25 @@ HyperbolicControl2DMX::~HyperbolicControl2DMX()
 {
 }
 
-double HyperbolicControl2DMX::fx(double T)
+double HyperbolicControl2DMX::fx(double t)
 {
-    x10 = 0.0;
-    x11 = 1.0;
-    x20 = 0.0;
-    x21 = 1.0;
-    t0 = 0.0;
-    t1 = T;
-
     h1 = 0.01;
     h2 = 0.01;
     ht = 0.005;
 
-    N1 = (unsigned)ceil((x11 - x10)/h1);
-    N2 = (unsigned)ceil((x21 - x20)/h2);
-    M  = (unsigned)ceil((t1 - t0)/ht);
+    N1 = 100;
+    N2 = 100;
+    M  = 200;
     L = 2;
-    printf("T: %f %d %d %d\n", T, N1, N2, M);
 
     e.resize(2);
     e[0] = 0.2;
     e[1] = 0.2;
 
-    alpha0 = 4.0;
-    alpha1 = 5.0;
-    alpha2 = 6.0;
-    alpha3 = 4.0;
+    alpha0 = 1.0;//4.0;
+    alpha1 = 10.0;//5.0;
+    alpha2 = 2.0;//6.0;
+    alpha3 = 1.0;//4.0;
     qamma = 0.2;
 
     U0 = 0.0;
@@ -90,7 +74,7 @@ double HyperbolicControl2DMX::fx(double T)
     FILE *file = fopen("gradient_x.txt", "a");
     fprintf(file, "--------------------------------------------------------------------\n");
     IPrinter::printDateTime(file);
-    fprintf(file, "T: %f L: %d h:%f Functional: %.20f N1: %d N2: %d M: %d h1: %f h2: %f ht: %f\n", t1, L, h, rf, N1, N2, M, h1, h2, ht);
+    fprintf(file, "T: %f L: %d h:%f Functional: %.20f N1: %d N2: %d M: %d h1: %f h2: %f ht: %f\n", t, L, h, rf, N1, N2, M, h1, h2, ht);
     fprintf(file, "x: %.8f %.8f %.8f %.8f\n", x[0], x[1], x[2], x[3]);
     fprintf(file, "Agx: %.8f %.8f %.8f %.8f\n", g1[0], g1[1], g1[2], g1[3]);
     fprintf(file, "Ngx: %.8f %.8f %.8f %.8f\n", g2[0], g2[1], g2[2], g2[3]);
@@ -167,19 +151,14 @@ void HyperbolicControl2DMX::gradient(const DoubleVector &x, DoubleVector &g)
     DoubleCube u;
     IHyperbolicEquation2D::calculateU1(u, h1, h2, ht, N1, N2, M, a, a, qamma);
 
-    IPrinter::printMatrix(u.matrix(u.depth()-1));
-
     pu = &u;
     DoubleCube p;
     IBackwardHyperbolicEquation2D::calculateU1(p, h1, h2, ht, N1, N2, M, a, a, qamma);
 
-    puts("---");
-    IPrinter::printMatrix(p.matrix(p.depth()-1));
-
-    double psiX1;
-    double psiX2;
     for (unsigned int k=0; k<=M; k++)
     {
+        double psiX1;
+        double psiX2;
         double m = 1.0;
         if (k==0 || k==M) m *= 0.5;
 
@@ -213,17 +192,13 @@ void HyperbolicControl2DMX::psiDerivative(double &psiX1, double &psiX2, double x
     else psiX2 = (psi[j+1][i] - psi[j-1][i])/(2.0*h2);
 }
 
-double HyperbolicControl2DMX::initial1(unsigned int i, unsigned int j) const
+double HyperbolicControl2DMX::initial1(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PARAM) const
 {
-    C_UNUSED(i);
-    C_UNUSED(j);
     return 0.0;
 }
 
-double HyperbolicControl2DMX::initial2(unsigned int i, unsigned int j) const
+double HyperbolicControl2DMX::initial2(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PARAM) const
 {
-    C_UNUSED(i);
-    C_UNUSED(j);
     return 0.0;
 }
 
