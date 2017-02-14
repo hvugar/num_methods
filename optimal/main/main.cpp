@@ -12,7 +12,7 @@
 #include "example4.h"
 #include "example5.h"
 #include "problem1.h"
-#include "problem11.h"
+#include "problem1m.h"
 
 #include <../border/borderparabolicd.h>
 #include <../border/borderparabolicn.h>
@@ -42,7 +42,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     srand(time(NULL));
 
-    HyperbolicControl2DM::Main(argc, argv);
+    //HyperbolicControl2DM::Main(argc, argv);
     //HyperbolicControl2DMX::Main(argc, argv);
     //HyperbolicControl2DMV::Main(argc, argv);
 
@@ -50,6 +50,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //BorderTest1::Main(argc, argv);
     //Example2::Main(argc, argv);
     //Problem1::Main(argc, argv);
+    Problem1M::Main(argc, argv);
     //Example4::Main(argc, argv);
     //BorderParabolicD::Main(argc, argv);
     //BorderParabolicN::Main(argc, argv);
