@@ -1,8 +1,6 @@
 #include "pibvp.h"
 
-ParabolicIBVP::~ParabolicIBVP() {}
-
-void ParabolicIBVP::gridMethod(DoubleVector &u, SweepMethodDirection direction)
+void ParabolicIBVP::gridMethod(DoubleVector &u, SweepMethodDirection direction) const
 {
     typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
     t_algorithm algorithm = &tomasAlgorithm;
@@ -84,6 +82,7 @@ void ParabolicIBVP::gridMethod(DoubleVector &u, SweepMethodDirection direction)
         (*algorithm)(ka, kb, kc, kd, rx, N-1);
 
         for (unsigned int n=1; n<=N-1; n++) u[n] = rx[n-1];
+
         layerInfo(u, m);
     }
 
@@ -94,7 +93,7 @@ void ParabolicIBVP::gridMethod(DoubleVector &u, SweepMethodDirection direction)
     free(rx);
 }
 
-void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction)
+void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction) const
 {
     typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
     t_algorithm algorithm = &tomasAlgorithm;
@@ -184,7 +183,7 @@ void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction)
     free(rx);
 }
 
-void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u)
+void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u) const
 {
     Dimension time = mtimeDimension;
     Dimension dim1 = mspaceDimension.at(0);
@@ -301,7 +300,7 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u)
     A.clear();
 }
 
-void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u)
+void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
 {
     Dimension time = mtimeDimension;
     Dimension dim1 = mspaceDimension.at(0);

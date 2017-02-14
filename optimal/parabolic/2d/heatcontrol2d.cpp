@@ -63,7 +63,7 @@ double HeatControl2D::fx(const DoubleVector &f)
 {
     pf = &f;
     DoubleMatrix u;
-    IParabolicEquation2D::caluclateMVD(u, h1, h2, ht, N1, N2, M, a1, a2);
+    IParabolicEquation2D::calculateMVD(u, h1, h2, ht, N1, N2, M, a1, a2);
 
     double sum = 0.0;
     for (unsigned int j=0; j<=N2; j++)
@@ -116,11 +116,11 @@ void HeatControl2D::gradient(const DoubleVector &f, DoubleVector &g)
 {
     pf = &f;
     DoubleMatrix u;
-    IParabolicEquation2D::caluclateMVD(u, h1, h2, ht, N1, N2, M, a1, a2);
+    IParabolicEquation2D::calculateMVD(u, h1, h2, ht, N1, N2, M, a1, a2);
 
     pu = &u;
     DoubleCube psi;
-    IBackwardParabolicEquation2D::caluclateMVD(psi, h1, h2, ht, N1, N2, M, a1, a2);
+    IBackwardParabolicEquation2D::calculateMVD(psi, h1, h2, ht, N1, N2, M, a1, a2);
 
     for (unsigned int k=0; k<=M; k++)
     {

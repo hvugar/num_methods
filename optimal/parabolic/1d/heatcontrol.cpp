@@ -1,6 +1,6 @@
 #include "heatcontrol.h"
 
-void HeatControl::main(int argc, char ** argv)
+void HeatControl::Main(int argc, char *argv[])
 {
     C_UNUSED(argc);
     C_UNUSED(argv);
@@ -11,9 +11,7 @@ void HeatControl::main(int argc, char ** argv)
     DoubleVector f0((hc.M+1)*(hc.N+1));
     for (unsigned int i=0; i<f0.size(); i++)
     {
-        //int j = i/(hc.N+1);
-        //f0[i] = 2.0*j*hc.ht - 2.0;
-        f0[i] = 2.0;
+        f0[i] = sin(i*hc.hx);
     }
 
     /* Minimization */
@@ -33,10 +31,6 @@ void HeatControl::main(int argc, char ** argv)
 
 HeatControl::HeatControl()
 {
-    t0 = 0.0;
-    t1 = 1.0;
-    x0 = 0.0;
-    x1 = 1.0;
     a  = 1.0;
 
     N = 100;
@@ -46,7 +40,7 @@ HeatControl::HeatControl()
 
     // initialize U
     U.resize(N+1);
-    for (unsigned int i=0; i<=N; i++) U[i] = u(i*hx, t1);
+    for (unsigned int i=0; i<=N; i++) U[i] = u(i*hx, 1.0);
 }
 
 double HeatControl::fx(const DoubleVector &f)
@@ -107,14 +101,14 @@ void HeatControl::gradient(const DoubleVector &f, DoubleVector &g)
 double HeatControl::initial(unsigned int i) const
 {
     double x = i*hx;
-    return u(x, t0);
+    return x*x;
 }
 
 double HeatControl::boundary(Boundary type, unsigned int j) const
 {
     double t = j*ht;
-    if (type == Left) return u(x0, t);
-    if (type == Right) return u(x1, t);
+    if (type == Left)  return t*t;
+    if (type == Right) return t*t+1.0;
     return 0.0;
 }
 
@@ -125,7 +119,7 @@ double HeatControl::f(unsigned int i, unsigned int j) const
 
 double HeatControl::binitial(unsigned int i) const
 {
-    return -2.0 * ((*pu)[i] - U[i]);;
+    return -2.0 * ((*pu)[i] - U[i]);
 }
 
 double HeatControl::bboundary(Boundary type, unsigned int j) const
@@ -157,6 +151,5 @@ double HeatControl::u(double x, double t) const
 double HeatControl::fxt(double x, double t)
 {
     C_UNUSED(x);
-    return 2.0*t - 2.0*a;
+    return 2.0*t - 2.0;//*a;
 }
-

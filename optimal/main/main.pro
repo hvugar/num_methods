@@ -23,6 +23,9 @@ LIBS += -L../bin -lborder
 INCLUDEPATH += ../hyperbolic
 LIBS += -L../bin -lhyperbolic
 
+INCLUDEPATH += ../parabolic
+LIBS += -L../bin -lparabolic
+
 #INCLUDEPATH += ../imaging
 #LIBS += -L../bin -limaging
 

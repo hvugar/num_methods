@@ -86,7 +86,7 @@ HeatControl2DeltaF::HeatControl2DeltaF(unsigned int m, unsigned int n2, unsigned
     }
 
     pv = &v;
-    IParabolicEquation2D::caluclateMVD(U, h1, h2, ht, N1, N2, M, a1, a2);
+    IParabolicEquation2D::calculateMVD(U, h1, h2, ht, N1, N2, M, a1, a2);
 
     puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
     IPrinter::printMatrix(U, 10, 10);
@@ -101,7 +101,7 @@ double HeatControl2DeltaF::fx(const DoubleVector& v)
 {
     pv = &v;
     DoubleMatrix u;
-    IParabolicEquation2D::caluclateMVD(u, h1, h2, ht, N1, N2, M, a1, a2);
+    IParabolicEquation2D::calculateMVD(u, h1, h2, ht, N1, N2, M, a1, a2);
 
     double sum = 0.0;
     for (unsigned int j=0; j<=N2; j++)
@@ -143,11 +143,11 @@ void HeatControl2DeltaF::gradient(const DoubleVector& v, DoubleVector& g)
 {
     pv = &v;
     DoubleMatrix u;
-    IParabolicEquation2D::caluclateMVD(u, h1, h2, ht, N1, N2, M, a1, a2);
+    IParabolicEquation2D::calculateMVD(u, h1, h2, ht, N1, N2, M, a1, a2);
 
     pu = &u;
     DoubleCube psi;
-    IBackwardParabolicEquation2D::caluclateMVD(psi, h1, h2, ht, N1, N2, M, a1, a2);
+    IBackwardParabolicEquation2D::calculateMVD(psi, h1, h2, ht, N1, N2, M, a1, a2);
 
     //    for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;
     //    for (unsigned int k=M; k!=(unsigned int)0-1; k--)
@@ -159,15 +159,15 @@ void HeatControl2DeltaF::gradient(const DoubleVector& v, DoubleVector& g)
     {
         unsigned int i1 = (unsigned int)round(E[0]/h1);
         unsigned int j1 = (unsigned int)round(E[1]/h2);
-        g[0*(M+1)+k] = -psi[k][j1][i1] + 2.0*alpha*(v[0*(M+1)+k] - v1(k*ht));
+        g[0*(M+1)+k] = -psi.at(k,j1,i1) + 2.0*alpha*(v[0*(M+1)+k] - v1(k*ht));
 
         unsigned int i2 = (unsigned int)round(E[2]/h1);
         unsigned int j2 = (unsigned int)round(E[3]/h2);
-        g[1*(M+1)+k] = -psi[k][j2][i2] + 2.0*alpha*(v[1*(M+1)+k] - v2(k*ht));
+        g[1*(M+1)+k] = -psi.at(k,j2,i2) + 2.0*alpha*(v[1*(M+1)+k] - v2(k*ht));
 
         unsigned int i3 = (unsigned int)round(E[4]/h1);
         unsigned int j3 = (unsigned int)round(E[5]/h2);
-        g[2*(M+1)+k] = -psi[k][j3][i3] + 2.0*alpha*(v[2*(M+1)+k] - v3(k*ht));
+        g[2*(M+1)+k] = -psi.at(k,j3,i3) + 2.0*alpha*(v[2*(M+1)+k] - v3(k*ht));
     }
 
     psi.clear();

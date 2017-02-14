@@ -17,8 +17,10 @@ protected:
     virtual double boundary(const SpaceNode &sn, const TimeNode& tn, BoundaryType boundary = Unused) const;
     virtual double f(const SpaceNode &sn, const TimeNode &tn) const;
     virtual double a(const SpaceNode &sn, const TimeNode &tn) const;
+
+    virtual void layerInfo(const DoubleVector &, unsigned int) const;
+
 public:
-    virtual void layerInfo(const DoubleVector &, unsigned int);
     void static Main(int argc, char* argv[]);
 };
 

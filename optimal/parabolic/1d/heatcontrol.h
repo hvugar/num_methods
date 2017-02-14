@@ -9,6 +9,9 @@
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
 
+#include <grid/pibvp.h>
+#include <grid/bpibvp.h>
+
 /**
  * @brief The HeatControl struct
  * du/dt = a(d^2u/dx^2) + f(x,t);
@@ -16,8 +19,9 @@
  * u(0,t) = m1(t);
  * u(l,t) = m2(t);
  */
-
-struct HeatControl : public RnFunction, public IGradient, public IParabolicEquation, public IBackwardParabolicEquation, public IPrinter
+class MINIMUMSHARED_EXPORT HeatControl : public RnFunction, public IGradient,
+        public IParabolicEquation, public IBackwardParabolicEquation,
+        public IPrinter
 {
 public:
     HeatControl();
@@ -37,10 +41,6 @@ public:
     virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
 
 private:
-    double t0;
-    double t1;
-    double x0;
-    double x1;
     double ht;
     double hx;
     unsigned int N;
@@ -53,8 +53,9 @@ private:
     const DoubleVector* pu;
     DoubleVector U;
 
+
 public:
-    static void main(int argc, char ** argv);
+    static void Main(int argc, char *argv[]);
 };
 
 #endif // HEATCONTROL_H

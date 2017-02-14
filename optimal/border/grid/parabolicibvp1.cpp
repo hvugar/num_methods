@@ -166,7 +166,7 @@ double ParabolicIBVP1::U(unsigned int n, unsigned int m) const
     return 0.0;
 }
 
-void ParabolicIBVP1::layerInfo(const DoubleVector &u, unsigned int i)
+void ParabolicIBVP1::layerInfo(const DoubleVector &u, unsigned int i) const
 {
     if (i%100==0)
     {

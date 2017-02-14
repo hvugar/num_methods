@@ -1263,8 +1263,8 @@ void IBackwardParabolicEquation::calculateU(DoubleMatrix &psi, double hx, double
     DoubleVector dd(N-1);
     DoubleVector rx(N-1);
 
-    double alpha = -(a*ht)/(hx*hx);
-    double beta  = 1.0 + (2.0*a*ht)/(hx*hx);
+    double alpha = -(a*a*ht)/(hx*hx);
+    double beta  = 1.0 + (2.0*a*a*ht)/(hx*hx);
 
     for (unsigned int k=0; k<=M; k++)
     {

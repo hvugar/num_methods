@@ -13,8 +13,11 @@ DESTDIR  = ../bin
 INCLUDEPATH += ../minimum
 LIBS += -L../bin -lminimum
 
+DEFINES += MINIMUM_LIBRARY
+
 # Input
 HEADERS += 1d/heatcontrol.h \
+           1d/heatcontrol1.h \
            1d/heatcontroldeltaf.h \
            1d/heatcontroldeltax.h \
            2d/heatcontrol2d.h \
@@ -23,6 +26,7 @@ HEADERS += 1d/heatcontrol.h \
            2d/heatcontrol2deltax.h \
            1d/neuman/heatexample1.h
 SOURCES += 1d/heatcontrol.cpp \
+           1d/heatcontrol1.cpp \
            1d/heatcontroldeltaf.cpp \
            1d/heatcontroldeltax.cpp \
            2d/heatcontrol2d.cpp \
