@@ -14,7 +14,7 @@ double HyperbolicControl2DM::fx(double t UNUSED_PARAM)
 
     N1 = 100;
     N2 = 100;
-    M  = 100;
+    M  = 200;
     L = 2;
 
     e.resize(2);
@@ -65,48 +65,48 @@ double HyperbolicControl2DM::fx(double t UNUSED_PARAM)
 
     double rf = fx(x);
 
-    //    DoubleVector ag(x.size());
-    //    gradient(x, ag);
-    //    DoubleVector agx = ag.mid(0, 3);
-    //    //DoubleVector agv = ag.mid(4, ag.size()-1);
-    //    DoubleVector agv1 = ag.mid(4,M+4);
-    //    DoubleVector agv2 = ag.mid(M+5,2*M+5);
+//    DoubleVector ag(x.size());
+//    gradient(x, ag);
+//    DoubleVector agx = ag.mid(0, 3);
+//    //DoubleVector agv = ag.mid(4, ag.size()-1);
+//    DoubleVector agv1 = ag.mid(4,M+4);
+//    DoubleVector agv2 = ag.mid(M+5,2*M+5);
 
-    //    agx.L2Normalize();
-    //    //agv.L2Normalize();
-    //    agv1.L2Normalize();
-    //    agv2.L2Normalize();
+//    agx.L2Normalize();
+//    //agv.L2Normalize();
+//    agv1.L2Normalize();
+//    agv2.L2Normalize();
 
-    //    DoubleVector ng(x.size());
-    //    //    IGradient::Gradient(this, h, x, ng);
-    //    DoubleVector ngx = ng.mid(0, 3);
-    //    DoubleVector ngv = ng.mid(4, ng.size()-1);
-    //    ngx.L2Normalize();
-    //    ngv.L2Normalize();
+//    DoubleVector ng(x.size());
+//    //    IGradient::Gradient(this, h, x, ng);
+//    DoubleVector ngx = ng.mid(0, 3);
+//    DoubleVector ngv = ng.mid(4, ng.size()-1);
+//    ngx.L2Normalize();
+//    ngv.L2Normalize();
 
-    //    FILE *file = fopen("gradients_xv.txt", "a");
-    //    fprintf(file, "--------------------------------------------------------------------\n");
-    //    IPrinter::printDateTime(file);
-    //    fprintf(file, "T: %f L: %d h:%f Functional: %.20f N1: %d N2: %d M: %d h1: %f h2: %f ht: %f\n", t, L, h, rf, N1, N2, M, h1, h2, ht);
-    //    fprintf(file, "x:   %14.8f %14.8f %14.8f %14.8f\n", x[0], x[1], x[2], x[3]);
-    //    fprintf(file, "AGx: %14.8f %14.8f %14.8f %14.8f\n", agx[0], agx[1], agx[2], agx[3]);
-    //    fprintf(file, "NGx: %14.8f %14.8f %14.8f %14.8f\n", ngx[0], ngx[1], ngx[2], ngx[3]);
-    //    unsigned int part = 10;
-    //    IPrinter::printVector(x,   "v1: ", part, 0*(M+1)+2*L, 0*(M+1)+2*L+M, file);
-    //    //IPrinter::printVector(agv, "AG1:", part, 0*(M+1),     0*(M+1)+M,     file);
-    //    IPrinter::printVector(agv1, "AG1:", part, 0,     M,     file);
-    //    IPrinter::printVector(ngv, "NG1:", part, 0*(M+1),     0*(M+1)+M,     file);
-    //    IPrinter::printVector(x,   "v2: ", part, 1*(M+1)+2*L, 1*(M+1)+2*L+M, file);
-    //    //IPrinter::printVector(agv, "AG2:", part, 1*(M+1),     1*(M+1)+M,     file);
-    //    IPrinter::printVector(agv2, "AG2:", part, 0,     M,     file);
-    //    IPrinter::printVector(ngv, "NG2:", part, 1*(M+1),     1*(M+1)+M,     file);
-    //    IPrinter::printDateTime(file);
-    //    //fprintf(file, "U\n");
-    //    //DoubleCube c;
-    //    //IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
-    //    //IPrinter::printMatrix(c.matrix(c.depth()-1), N2, N1, NULL, file);
-    //    fclose(file);
-    //    x.clear();
+//    FILE *file = fopen("gradients_xv.txt", "a");
+//    fprintf(file, "--------------------------------------------------------------------\n");
+//    IPrinter::printDateTime(file);
+//    fprintf(file, "T: %f L: %d h:%f Functional: %.20f N1: %d N2: %d M: %d h1: %f h2: %f ht: %f\n", t, L, h, rf, N1, N2, M, h1, h2, ht);
+//    fprintf(file, "x:   %14.8f %14.8f %14.8f %14.8f\n", x[0], x[1], x[2], x[3]);
+//    fprintf(file, "AGx: %14.8f %14.8f %14.8f %14.8f\n", agx[0], agx[1], agx[2], agx[3]);
+//    fprintf(file, "NGx: %14.8f %14.8f %14.8f %14.8f\n", ngx[0], ngx[1], ngx[2], ngx[3]);
+//    unsigned int part = 10;
+//    IPrinter::printVector(x,   "v1: ", part, 0*(M+1)+2*L, 0*(M+1)+2*L+M, file);
+//    //IPrinter::printVector(agv, "AG1:", part, 0*(M+1),     0*(M+1)+M,     file);
+//    IPrinter::printVector(agv1, "AG1:", part, 0,     M,     file);
+//    IPrinter::printVector(ngv, "NG1:", part, 0*(M+1),     0*(M+1)+M,     file);
+//    IPrinter::printVector(x,   "v2: ", part, 1*(M+1)+2*L, 1*(M+1)+2*L+M, file);
+//    //IPrinter::printVector(agv, "AG2:", part, 1*(M+1),     1*(M+1)+M,     file);
+//    IPrinter::printVector(agv2, "AG2:", part, 0,     M,     file);
+//    IPrinter::printVector(ngv, "NG2:", part, 1*(M+1),     1*(M+1)+M,     file);
+//    IPrinter::printDateTime(file);
+//    //fprintf(file, "U\n");
+//    //DoubleCube c;
+//    //IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
+//    //IPrinter::printMatrix(c.matrix(c.depth()-1), N2, N1, NULL, file);
+//    fclose(file);
+//    x.clear();
 
     return rf;
 }
@@ -295,7 +295,7 @@ double HyperbolicControl2DM::binitial1(unsigned int i, unsigned int j) const
 {
     const DoubleMatrix &u0 = (*pu).matrix(M);
     const DoubleMatrix &u1 = (*pu).matrix(M-2);
-    return -2.0 * alpha1 * ( (u0[j][i]-u1[j][i])/(2.0*ht) - U1);
+    return -2.0 * alpha0 * ( (u0[j][i]-u1[j][i])/(2.0*ht) - U1);
 }
 
 double HyperbolicControl2DM::binitial2(unsigned int i, unsigned int j) const
