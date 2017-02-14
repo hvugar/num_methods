@@ -38,7 +38,8 @@ SOURCES += main.cpp \
     example3.cpp \
     example4.cpp \
     example5.cpp \
-    sampleboundaryproblem1.cpp
+    sampleboundaryproblem1.cpp \
+    problem1m.cpp
 
 HEADERS += \
     loadedsystems.h \
@@ -50,4 +51,5 @@ HEADERS += \
     example3.h \
     example4.h \
     example5.h \
-    sampleboundaryproblem1.h
+    sampleboundaryproblem1.h \
+    problem1m.h
