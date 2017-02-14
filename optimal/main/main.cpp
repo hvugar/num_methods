@@ -12,6 +12,7 @@
 #include "example4.h"
 #include "example5.h"
 #include "problem1.h"
+#include "problem11.h"
 
 #include <../border/borderparabolicd.h>
 #include <../border/borderparabolicn.h>
