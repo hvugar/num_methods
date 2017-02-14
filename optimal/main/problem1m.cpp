@@ -32,9 +32,16 @@ Problem1M::Problem1M()
     for (unsigned int n=0; n<=N; n++) V[n] = 4.0;
 
     DoubleVector x0;
-    x0 << 3.50 << 3.70; //k
-    x0 << 4.10 << 3.71; //z
-    x0 << 0.25 << 0.75; //e
+    x0 << +3.5000 << +3.7000; //k
+    //x0 << +4.1000 << +3.9000; //z
+    x0 << +4.0000 << +4.0000;
+    x0 << +0.2000 << +0.8000; //e
+    //k << 3.50 << 3.70;
+    //z << 4.10 << 3.90;
+    //e << 0.2 << 0.8;
+
+    //x0 << 3.4004970612 << 3.6671254827 << 4.0801398905 << 3.8790071382 << 0.9299999944 << 0.9500000000;
+
     px = &x0;
 
     DoubleVector ag(x0.size());
@@ -45,8 +52,18 @@ Problem1M::Problem1M()
     IGradient::Gradient(this, h, x0, ng);
     ng.L2Normalize();
 
-    printf("%14.10f %14.10f %14.10f %14.10f %14.10f %14.10f\n", ag[0], ag[1], ag[2], ag[3], ag[4], ag[5]);
-    printf("%14.10f %14.10f %14.10f %14.10f %14.10f %14.10f\n", ng[0], ng[1], ng[2], ng[3], ng[4], ng[5]);
+    DoubleMatrix u;
+    calculateU(u);
+
+    printf("x: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", x0[0], x0[1], x0[2], x0[3], x0[4], x0[5], integral(x0), norm(x0), fx(x0));
+    printf("a: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", ag[0], ag[1], ag[2], ag[3], ag[4], ag[5]);
+    printf("n: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", ng[0], ng[1], ng[2], ng[3], ng[4], ng[5]);
+    IPrinter::printVector(18, 10, u.row(u.rows()-1),"u: ");
+    //printf("%18.10f %18.10f %18.10f %18.10f\n", ag[0], ag[1], ag[2], ag[3]);
+    //printf("%18.10f %18.10f %18.10f %18.10f\n", ng[0], ng[1], ng[2], ng[3]);
+    //printf("%18.10f %18.10f %18.10f\n",x0[0], x0[1], fx(x0));
+    //printf("%18.10f %18.10f\n", ag[0], ag[1]);
+    //printf("%18.10f %18.10f\n", ng[0], ng[1]);
 
     ConjugateGradient g;
     g.setFunction(this);
@@ -56,12 +73,42 @@ Problem1M::Problem1M()
     g.setEpsilon1(0.00000001);
     g.setEpsilon2(0.00000001);
     g.setEpsilon3(0.00000001);
-    g.setR1MinimizeEpsilon(2.0, 0.00000001);
+    g.setR1MinimizeEpsilon(0.01, 0.00000001);
     g.setNormalize(true);
     g.calculate(x0);
 }
 
 double Problem1M::fx(const DoubleVector &x)
+{
+    return integral(x) + norm(x);
+//    px = &x;
+//    DoubleVector k = x.mid(0,1);
+//    DoubleVector z = x.mid(2,3);
+//    DoubleVector e = x.mid(4,5);
+
+//    DoubleMatrix u;
+//    calculateU(u);
+
+//    double sum = 0.0;
+//    sum += 0.5*mu(0)*(u.at(M, 0)-V.at(0))*(u.at(M, 0)-V.at(0));
+//    for (unsigned int n=1; n<=N-1; n++)
+//    {
+//        sum += mu(n)*(u.at(M, n)-V.at(n))*(u.at(M, n)-V.at(n));
+//    }
+//    sum += 0.5*mu(N)*(u.at(M, N)-V.at(N))*(u.at(M, N)-V.at(N));
+//    sum = hx*sum;
+
+//    double norm1 = 0.0;
+//    double norm2 = 0.0;
+//    double norm3 = 0.0;
+
+//    norm1 = sqrt(k.at(0)*k.at(0) + k.at(1)*k.at(1));
+//    norm2 = sqrt(z.at(0)*z.at(0) + z.at(1)*z.at(1));
+//    norm3 = sqrt(e.at(0)*e.at(0) + e.at(1)*e.at(1));
+//    return alpha0*sum + alpha1*norm1 + alpha2*norm2 + alpha3*norm3;
+}
+
+double Problem1M::integral(const DoubleVector &x)
 {
     px = &x;
     DoubleVector k = x.mid(0,1);
@@ -72,15 +119,23 @@ double Problem1M::fx(const DoubleVector &x)
     calculateU(u);
 
     double sum = 0.0;
-    for (unsigned int n=0; n<N; n++)
+    sum += 0.5*mu(0)*(u.at(M, 0)-V.at(0))*(u.at(M, 0)-V.at(0));
+    for (unsigned int n=1; n<=N-1; n++)
     {
-        unsigned int n1 = n+0;
-        unsigned int n2 = n+1;
-        double f1 = mu(n1)*(u.at(M, n1)-V.at(n1))*(u.at(M, n1)-V.at(n1));
-        double f2 = mu(n2)*(u.at(M, n2)-V.at(n2))*(u.at(M, n2)-V.at(n2));
-        sum = sum + (f1 + f2);
+        sum += mu(n)*(u.at(M, n)-V.at(n))*(u.at(M, n)-V.at(n));
     }
-    sum = 0.5*hx*sum;
+    sum += 0.5*mu(N)*(u.at(M, N)-V.at(N))*(u.at(M, N)-V.at(N));
+    sum = hx*sum;
+
+    return alpha0*sum;
+}
+
+double Problem1M::norm(const DoubleVector &x)
+{
+    px = &x;
+    DoubleVector k = x.mid(0,1);
+    DoubleVector z = x.mid(2,3);
+    DoubleVector e = x.mid(4,5);
 
     double norm1 = 0.0;
     double norm2 = 0.0;
@@ -89,8 +144,9 @@ double Problem1M::fx(const DoubleVector &x)
     norm1 = sqrt(k.at(0)*k.at(0) + k.at(1)*k.at(1));
     norm2 = sqrt(z.at(0)*z.at(0) + z.at(1)*z.at(1));
     norm3 = sqrt(e.at(0)*e.at(0) + e.at(1)*e.at(1));
-    return alpha0*sum + alpha1*norm1 + + alpha2*norm2 + alpha3*norm3;
+    return alpha1*norm1 + alpha2*norm2 + alpha3*norm3;
 }
+
 
 void Problem1M::gradient(const DoubleVector &x, DoubleVector &g)
 {
@@ -98,6 +154,9 @@ void Problem1M::gradient(const DoubleVector &x, DoubleVector &g)
     DoubleVector k = x.mid(0,1);
     DoubleVector z = x.mid(2,3);
     DoubleVector e = x.mid(4,5);
+
+//    IGradient::Gradient(this,h,x,g);
+//    return;
 
     DoubleMatrix u;
     calculateU(u);
@@ -111,16 +170,14 @@ void Problem1M::gradient(const DoubleVector &x, DoubleVector &g)
     {
         unsigned int xi = (unsigned int)round(e.at(s) * N);
         double sum = 0.0;
-        for (unsigned int m=0; m<=M-1; m++)
+        sum += 0.5*p.at(0, 0)*(u.at(0, xi) - z[s]);
+        for (unsigned int m=1; m<=M-1; m++)
         {
-            unsigned int m1 = m + 0;
-            unsigned int m2 = m + 1;
-            double g1 = p.at(m1, 0)*(u.at(m1, xi) - z[s]);
-            double g2 = p.at(m2, 0)*(u.at(m2, xi) - z[s]);
-            sum = sum + (g1 + g2);
+            sum += p.at(m, 0)*(u.at(m, xi) - z[s]);
         }
-        g.at(i) = 0.5*ht*(-lambda0*a*a)*sum;
-        g.at(i) += 2.0*alpha1*k.at(s);
+        sum += 0.5*p.at(M, 0)*(u.at(M, xi) - z[s]);
+
+        g.at(i) = -lambda0*a*a*ht*sum + 2.0*alpha1*k.at(s);
         i++;
     }
 
@@ -128,16 +185,13 @@ void Problem1M::gradient(const DoubleVector &x, DoubleVector &g)
     for (unsigned int s=0; s<L; s++)
     {
         double sum = 0.0;
-        for (unsigned int m=0; m<=M-1; m++)
+        sum += 0.5*p.at(0, 0);
+        for (unsigned int m=1; m<=M-1; m++)
         {
-            unsigned int m1 = m + 0;
-            unsigned int m2 = m + 1;
-            double g1 = p.at(m1, 0);
-            double g2 = p.at(m2, 0);
-            sum = sum + (g1 + g2);
+            sum += p.at(m, 0);
         }
-        g.at(i) = 0.5*ht*(lambda0*a*a)*k[s]*sum;
-        g.at(i) += 2.0*alpha2*z.at(s);
+        sum += 0.5*p.at(M, 0);
+        g.at(i) = lambda0*a*a*ht*k[s]*sum + 2.0*alpha2*z.at(s);
         i++;
     }
 
@@ -146,16 +200,13 @@ void Problem1M::gradient(const DoubleVector &x, DoubleVector &g)
     {
         unsigned int xi = (unsigned int)round(e.at(s) * N);
         double sum = 0.0;
-        for (unsigned int m=0; m<=M-1; m++)
+        sum += 0.5 * p.at(0, 0) * ((u.at(0, xi+1) - u.at(0, xi-1))/(2.0*hx));
+        for (unsigned int m=1; m<=M-1; m++)
         {
-            unsigned int m1 = m + 0;
-            unsigned int m2 = m + 1;
-            double g1 = p.at(m1, 0) * ((u.at(m1, xi+1) - u.at(m1, xi-1))/(2.0*hx));
-            double g2 = p.at(m2, 0) * ((u.at(m2, xi+1) - u.at(m2, xi-1))/(2.0*hx));
-            sum = sum + (g1 + g2);
+            sum += p.at(m, 0) * ((u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx));
         }
-        g.at(i) = 0.5*ht*(-lambda0*a*a)*k.at(s)*sum;
-        g.at(i) += 2.0*alpha3*e.at(s);
+        sum += 0.5 * p.at(M, 0) * ((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx));
+        g.at(i) = -lambda0*a*a*ht*k[s]*sum + 2.0*alpha3*e.at(s);
         i++;
     }
 }
@@ -221,6 +272,10 @@ void Problem1M::calculateU(DoubleMatrix &u)
         for (unsigned int i=0; i<=N; i++)
         {
             u.at(m, i) = rx[i];
+
+            //if (fabs(i*hx - e.at(0)) <= hx) { u[m][i] *= 1.05; }
+            //if (fabs(i*hx - e.at(1)) <= hx) { u[m][i] *= 1.05; }
+
         }
     }
 
@@ -313,38 +368,43 @@ double Problem1M::initial(unsigned int n UNUSED_PARAM) const
 void Problem1M::print(unsigned int i UNUSED_PARAM, const DoubleVector &x UNUSED_PARAM, const DoubleVector &g UNUSED_PARAM, double alpha UNUSED_PARAM, RnFunction *fn UNUSED_PARAM) const
 {
     IPrinter::printSeperatorLine();
-    double f = fn->fx(x);
-    printf("%14.10f\n", f);
-    printf("x: %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f\n", x[0], x[1], x[2], x[3], x[4], x[5]);
+    Problem1M *pm = const_cast<Problem1M*>(this);
+    printf("x: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", x[0], x[1], x[2], x[3], x[4], x[5], pm->integral(x), pm->norm(x), pm->fx(x));
+    //printf("x: %18.10f %18.10f %18.10f %18.10f\n", x[0], x[1], x[2], x[3]);
+    //printf("x: %18.10f %18.10f %18.10f\n", x[0], x[1], f);
 
     DoubleVector ag(x.size());
-    const_cast<Problem1M*>(this)->gradient(x, ag);
+    pm->gradient(x, ag);
     ag.L2Normalize();
 
     DoubleVector ng(x.size());
     IGradient::Gradient(const_cast<Problem1M*>(this), h, x, ng);
     ng.L2Normalize();
 
-    printf("a: %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f\n", ag[0], ag[1], ag[2], ag[3], ag[4], ag[5], ag.L2Norm());
-    printf("n: %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f\n", ng[0], ng[1], ng[2], ng[3], ng[4], ng[5], ng.L2Norm());
+    printf("a: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", ag[0], ag[1], ag[2], ag[3], ag[4], ag[5], ag.L2Norm());
+    printf("n: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", ng[0], ng[1], ng[2], ng[3], ng[4], ng[5], ng.L2Norm());
+    //printf("a: %18.10f %18.10f %18.10f %18.10f %18.10f\n", ag[0], ag[1], ag[2], ag[3], ag.L2Norm());
+    //printf("n: %18.10f %18.10f %18.10f %18.10f %18.10f\n", ng[0], ng[1], ng[2], ng[3], ng.L2Norm());
+    //printf("a: %18.10f %18.10f %18.10f\n", ag[0], ag[1], ag.L2Norm());
+    //printf("n: %18.10f %18.10f %18.10f\n", ng[0], ng[1], ng.L2Norm());
 
     //const_cast<DoubleVector*>(px) = &x;
     DoubleMatrix u;
     const_cast<Problem1M*>(this)->calculateU(u);
-    IPrinter::printVector(14,10,u.row(u.rows()-1));
+    IPrinter::printVector(18,10,u.row(u.rows()-1),"u: ");
 }
 
-void Problem1M::print(const DoubleVector &x, const DoubleVector &g UNUSED_PARAM, unsigned int i) const
+void Problem1M::print(const DoubleVector &x UNUSED_PARAM, const DoubleVector &g UNUSED_PARAM, unsigned int i UNUSED_PARAM) const
 {
 }
 
 void Problem1M::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
 {
-    if (x.at(4) < 0.10) x.at(4) = 0.10;
-    if (x.at(4) > 0.90) x.at(4) = 0.90;
+    if (x.at(4) < 0.05) x.at(4) = 0.05;
+    if (x.at(4) > 0.95) x.at(4) = 0.95;
 
-    if (x.at(5) < 0.10) x.at(5) = 0.10;
-    if (x.at(5) > 0.90) x.at(5) = 0.90;
+    if (x.at(5) < 0.05) x.at(5) = 0.05;
+    if (x.at(5) > 0.95) x.at(5) = 0.95;
 }
 
 void qovmaFirstColM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e)

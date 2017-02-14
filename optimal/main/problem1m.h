@@ -31,6 +31,9 @@ protected:
     double initial(unsigned int n) const;
     double mu(unsigned int i UNUSED_PARAM) const { return 1.0; }
 
+    double integral(const DoubleVector &x);
+    double norm(const DoubleVector &x);
+
 private:
     unsigned int L;
     unsigned int N;
@@ -53,6 +56,9 @@ private:
 
     DoubleVector V;
     const DoubleVector *px;
+    //DoubleVector e;
+    //DoubleVector z;
+    //DoubleVector k;
 
 public:
     static void Main(int argc, char* argv[]);
