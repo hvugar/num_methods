@@ -15,9 +15,9 @@ public:
     HeatControl2D(unsigned int M, unsigned int N2, unsigned int N1);
     virtual ~HeatControl2D();
 
-    virtual double fx(const DoubleVector &x);
+    virtual double fx(const DoubleVector &x) const;
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
-    virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &s, double a, RnFunction *f) const;
+    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx) const;
 
     virtual double initial(unsigned int i, unsigned int j) const;
     virtual double boundary(unsigned int i, unsigned int j, unsigned int k) const;
@@ -30,7 +30,7 @@ public:
     static void main(int argc, char *argv[]);
 private:
     double u(double x1, double x2, double t) const;
-    double fxt(double x1, double x2, double t);
+    double fxt(double x1, double x2, double t) const;
 
     unsigned int N1;
     unsigned int N2;

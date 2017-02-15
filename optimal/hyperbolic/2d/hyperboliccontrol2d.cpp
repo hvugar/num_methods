@@ -126,15 +126,15 @@ HyperbolicControl2D::HyperbolicControl2D()
 
 HyperbolicControl2D::~HyperbolicControl2D() {}
 
-double HyperbolicControl2D::fx(double x)
+double HyperbolicControl2D::fx(double x) const
 {
     C_UNUSED(x);
     return 0.0;
 }
 
-double HyperbolicControl2D::fx(const DoubleVector &v)
+double HyperbolicControl2D::fx(const DoubleVector &v) const
 {
-    pv = &v;
+    const_cast<HyperbolicControl2D*>(this)->pv = &v;
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M);
 
@@ -308,11 +308,10 @@ double HyperbolicControl2D::bf(unsigned int i, unsigned int j, unsigned int k) c
     return 0.0;
 }
 
-void HyperbolicControl2D::print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double alpha, RnFunction *fn) const
+void HyperbolicControl2D::print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double fx) const
 {
     C_UNUSED(g);
-    C_UNUSED(alpha);
-    printf("J[%d]: %.16f\n", i, fn->fx(v));
+    printf("J[%d]: %.16f\n", i, const_cast<HyperbolicControl2D*>(this)->fx(v));
 }
 
 double HyperbolicControl2D::v1(double t) const

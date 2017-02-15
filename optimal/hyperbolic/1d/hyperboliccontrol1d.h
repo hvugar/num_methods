@@ -14,9 +14,9 @@ public:
     HyperbolicControl1D();
     virtual ~HyperbolicControl1D() {}
 
-    virtual double fx(const DoubleVector &v);
+    virtual double fx(const DoubleVector &v) const;
     virtual void gradient(const DoubleVector &v, DoubleVector &g);
-    virtual void print(unsigned int iteration, const DoubleVector &v, const DoubleVector &g, double alpha, RnFunction *fn) const;
+    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx) const;
     virtual void project(DoubleVector &x, int index);
 
     virtual double initial1(unsigned int i) const;

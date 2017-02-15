@@ -281,11 +281,10 @@ double HyperbolicControl2DMV::fxt(unsigned int i, unsigned int j, unsigned int k
     return sum;
 }
 
-void HyperbolicControl2DMV::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double alpha, RnFunction *fn) const
+void HyperbolicControl2DMV::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx) const
 {
     C_UNUSED(g);
-    C_UNUSED(alpha);
-    printf("J[%d]: %.16f\n", i, fn->fx(x));
+    printf("J[%d]: %.16f\n", i, const_cast<HyperbolicControl2DMV*>(this)->fx(x));
 }
 
 void HyperbolicControl2DMV::project(DoubleVector &x, int i)

@@ -50,9 +50,9 @@ Hyperbolic1DX::Hyperbolic1DX(unsigned int m, unsigned int n)
     printf("eo: %12.8f %12.8f %12.8f\n", E[0], E[1], E[2]);
 }
 
-double Hyperbolic1DX::fx(const DoubleVector &e)
+double Hyperbolic1DX::fx(const DoubleVector &e) const
 {
-    pe = &e;
+    const_cast<Hyperbolic1DX*>(this)->pe = &e;
     DoubleVector u;
     IHyperbolicEquation::calculateU(u, hx, ht, M, N);
     double sum = 0.0;
@@ -93,11 +93,9 @@ void Hyperbolic1DX::project(DoubleVector &e, int i)
     if (e[i]<0.0) e[i]=0.0;
 }
 
-void Hyperbolic1DX::print(unsigned int i, const DoubleVector &e, const DoubleVector &g, double alpha, RnFunction *fn) const
+void Hyperbolic1DX::print(unsigned int i, const DoubleVector& e, const DoubleVector &g, double fx) const
 {
-    C_UNUSED(g);
-    C_UNUSED(alpha);
-    Hyperbolic1DX *hc = dynamic_cast<Hyperbolic1DX*>(fn);
+    Hyperbolic1DX *hc = const_cast<Hyperbolic1DX*>(this);
     printf("J[%d]: %.16f\n", i, hc->fx(e));
     printf("e1: %12.8f %12.8f %12.8f\n", e[0], e[1], e[2]);
     printf("g1: %12.8f %12.8f %12.8f\n", g[0], g[1], g[2]);

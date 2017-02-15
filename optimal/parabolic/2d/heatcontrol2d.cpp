@@ -59,9 +59,9 @@ HeatControl2D::HeatControl2D(unsigned int m, unsigned int n2, unsigned int n1)
 
 HeatControl2D::~HeatControl2D() {}
 
-double HeatControl2D::fx(const DoubleVector &f)
+double HeatControl2D::fx(const DoubleVector &f) const
 {
-    pf = &f;
+    const_cast<HeatControl2D*>(this)->pf = &f;
     DoubleMatrix u;
     IParabolicEquation2D::calculateMVD(u, h1, h2, ht, N1, N2, M, a1, a2);
 
@@ -185,20 +185,16 @@ double HeatControl2D::bf(unsigned int i, unsigned int j, unsigned int k) const
     return 0.0;
 }
 
-double HeatControl2D::fxt(double x1, double x2, double t)
+double HeatControl2D::fxt(double x1, double x2, double t) const
 {
     C_UNUSED(x1);
     C_UNUSED(x2);
     return 2.0*t - 2.0*a1 - 2.0*a2;
 }
 
-void HeatControl2D::print(unsigned int i, const DoubleVector &f0, const DoubleVector &s, double alpha, RnFunction *f) const
+void HeatControl2D::print(unsigned int i, const DoubleVector &f0, const DoubleVector &g, double fx) const
 {
-    C_UNUSED(i);
-    C_UNUSED(s);
-    C_UNUSED(alpha);
-
-    HeatControl2D *hc = dynamic_cast<HeatControl2D*>(f);
+    HeatControl2D *hc = const_cast<HeatControl2D*>(this);
     printf("J: %.16f\n", hc->fx(f0));
 }
 

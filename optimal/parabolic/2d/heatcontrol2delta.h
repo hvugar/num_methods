@@ -17,9 +17,9 @@ public:
     HeatControl2Delta(unsigned int M, unsigned int N2, unsigned int N1);
     virtual ~HeatControl2Delta() {}
 
-    virtual double fx(const DoubleVector &x);
+    virtual double fx(const DoubleVector &x) const;
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
-    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double alpha, RnFunction* fn) const;
+    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx) const;
     virtual void project(DoubleVector &x, int index);
 
     virtual double initial(unsigned int i, unsigned int j) const;

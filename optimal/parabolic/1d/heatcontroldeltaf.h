@@ -23,7 +23,7 @@ public:
     HeatControlDeltaF();
     virtual ~HeatControlDeltaF() {}
 
-    virtual double fx(const DoubleVector& f);
+    virtual double fx(const DoubleVector& f) const;
     virtual void gradient(const DoubleVector& f, DoubleVector &g);
 
     virtual double initial(unsigned int i) const;
@@ -34,7 +34,7 @@ public:
     virtual double bboundary(Boundary type, unsigned int j) const;
     virtual double bf(unsigned int i, unsigned int j) const;
 
-    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &s, double a, RnFunction* f) const;
+    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx) const;
 private:
     double t0;
     double t1;
@@ -49,7 +49,7 @@ private:
     double e;
     unsigned int E;
 
-    double f1(double t) { return 2.0*t+3.0; }
+    double f1(double t) const { return 2.0*t+3.0; }
     inline double u(double x, double t) const { return x*x+t*t; }
     const DoubleVector* pf;
     const DoubleVector* pu;

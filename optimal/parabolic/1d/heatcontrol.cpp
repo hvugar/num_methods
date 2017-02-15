@@ -43,9 +43,9 @@ HeatControl::HeatControl()
     for (unsigned int i=0; i<=N; i++) U[i] = u(i*hx, 1.0);
 }
 
-double HeatControl::fx(const DoubleVector &f)
+double HeatControl::fx(const DoubleVector &f) const
 {
-    pf = &f;
+    const_cast<HeatControl*>(this)->pf = &f;
     DoubleVector u;
     IParabolicEquation::calculateU(u, hx, ht, N, M, a);
 
@@ -136,11 +136,10 @@ double HeatControl::bf(unsigned int i, unsigned int j) const
     return 0.0;
 }
 
-void HeatControl::print(unsigned int i, const DoubleVector &f0, const DoubleVector &g, double a, RnFunction *f) const
+void HeatControl::print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx) const
 {
     C_UNUSED(g);
-    C_UNUSED(a);
-    printf("J[%d]: %.20f\n", i, f->fx(f0));
+    printf("J[%d]: %.20f\n", i, const_cast<HeatControl*>(this)->fx(f0));
 }
 
 double HeatControl::u(double x, double t) const
@@ -148,7 +147,7 @@ double HeatControl::u(double x, double t) const
     return x*x+t*t;
 }
 
-double HeatControl::fxt(double x, double t)
+double HeatControl::fxt(double x, double t) const
 {
     C_UNUSED(x);
     return 2.0*t - 2.0;//*a;

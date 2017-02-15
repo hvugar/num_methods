@@ -11,14 +11,16 @@
 /**
  * @brief The Booth's function. Range -10.0 <= x,y <= +10.0. Optimal f(1, 3)=0;
  */
-struct BoothFunction : public RnFunction, public IGradient, public IPrinter, public IProjection
+struct MINIMUMSHARED_EXPORT BoothFunction : public RnFunction, public IGradient, public IPrinter, public IProjection
 {
 public:
     virtual ~BoothFunction() {}
-    virtual double fx(const DoubleVector& x);
+    virtual double fx(const DoubleVector& x) const;
     virtual void gradient(const DoubleVector& x, DoubleVector& g);
-    void print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const;
+    //Printer
+    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f) const;
     virtual void project(DoubleVector &x, int index);
+
     static void main(int argc, char ** argv);
 
 private:

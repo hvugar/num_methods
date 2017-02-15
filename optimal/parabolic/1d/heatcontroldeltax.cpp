@@ -66,9 +66,9 @@ HeatControlDeltaX::HeatControlDeltaX()
     //fclose(file);
 }
 
-double HeatControlDeltaX::fx(const DoubleVector &e)
+double HeatControlDeltaX::fx(const DoubleVector &e) const
 {
-    pe = &e;
+    const_cast<HeatControlDeltaX*>(this)->pe = &e;
     DoubleVector u;
     IParabolicEquation::calculateU(u, hx, ht, N, M, a);
 
@@ -221,21 +221,18 @@ double HeatControlDeltaX::bf(unsigned int i, unsigned int j) const
     return 0.0;
 }
 
-void HeatControlDeltaX::print(unsigned int i, const DoubleVector &e, const DoubleVector &g, double alpha, RnFunction *f) const
+void HeatControlDeltaX::print(unsigned int i, const DoubleVector& e, const DoubleVector &g, double fx) const
 {
-    C_UNUSED(alpha);
-
-    HeatControlDeltaX *hc = dynamic_cast<HeatControlDeltaX*>(f);
-    printf("J[%d]: %.16f\n", i, hc->fx(e));
-
+    C_UNUSED(g);
+    printf("J[%d]: %.20f\n", i, const_cast<HeatControlDeltaX*>(this)->fx(e));
     DoubleVector g1 = g;
     g1.L2Normalize();
-
     printf("eo: %12.8f %12.8f %12.8f\n", 0.40, 0.80, 0.20);
     printf("e1: %12.8f %12.8f %12.8f\n", e[0], e[1], e[2]);
     printf("g1: %12.8f %12.8f %12.8f\n", g1[0], g1[1], g1[2]);
     puts("+------------------------------------------------------------------------------------------------------------------------------------------------------------------+");
 }
+
 
 void HeatControlDeltaX::project(DoubleVector &e, int index)
 {

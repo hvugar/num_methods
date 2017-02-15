@@ -48,10 +48,10 @@ HeatControl1::HeatControl1()
     bpibvp.pU = &U;
 }
 
-double HeatControl1::fx(const DoubleVector &f)
+double HeatControl1::fx(const DoubleVector &f) const
 {
     DoubleVector u;
-    pibvp.pf = &f;
+    const_cast<HeatControl1*>(this)->pibvp.pf = &f;
     pibvp.gridMethod(u);
 
     double sum = 0.0;
@@ -104,11 +104,10 @@ void HeatControl1::gradient(const DoubleVector &f, DoubleVector &g)
     }
 }
 
-void HeatControl1::print(unsigned int i, const DoubleVector &f0, const DoubleVector &g, double a, RnFunction *f) const
+void HeatControl1::print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx) const
 {
     C_UNUSED(g);
-    C_UNUSED(a);
-    printf("J[%d]: %.20f\n", i, f->fx(f0));
+    printf("J[%d]: %.20f\n", i, const_cast<HeatControl1*>(this)->fx(f0));
 }
 
 double HeatControl1::u(double x, double t) const
@@ -116,7 +115,7 @@ double HeatControl1::u(double x, double t) const
     return x*x+t*t;
 }
 
-double HeatControl1::fxt(double x, double t)
+double HeatControl1::fxt(double x, double t) const
 {
     C_UNUSED(x);
     return 2.0*t - 2.0;//*a;

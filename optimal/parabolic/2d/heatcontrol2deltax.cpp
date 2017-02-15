@@ -93,9 +93,9 @@ HeatControl2DeltaX::HeatControl2DeltaX(unsigned int M, unsigned int N2, unsigned
     fclose(f);
 }
 
-double HeatControl2DeltaX::fx(const DoubleVector& x)
+double HeatControl2DeltaX::fx(const DoubleVector& x) const
 {
-    px = &x;
+    const_cast<HeatControl2DeltaX*>(this)->px = &x;
     DoubleMatrix u;
     IParabolicEquation2D::calculateMVD(u, h1, h2, ht, N1, N2, M, a1, a2);
 
@@ -278,10 +278,9 @@ double HeatControl2DeltaX::bf(unsigned int i, unsigned int j, unsigned int k) co
     return 0.0;
 }
 
-void HeatControl2DeltaX::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double alpha, RnFunction* fn) const
+void HeatControl2DeltaX::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double fx) const
 {
-    C_UNUSED(alpha);
-    HeatControl2DeltaX *hc = dynamic_cast<HeatControl2DeltaX*>(fn);
+    HeatControl2DeltaX *hc = const_cast<HeatControl2DeltaX*>(this);
     printf("J[%d]: %.16f\n", i, hc->fx(x));
     DoubleVector g1 = g;
     g1.L2Normalize();

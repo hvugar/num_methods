@@ -57,9 +57,9 @@ HyperbolicControl1D::HyperbolicControl1D() : RnFunction(), IPrinter()
     puts("-------------------------");
 }
 
-double HyperbolicControl1D::fx(const DoubleVector& v)
+double HyperbolicControl1D::fx(const DoubleVector& v) const
 {
-    pv = &v;
+    const_cast<HyperbolicControl1D*>(this)->pv = &v;
     DoubleVector u;
     IHyperbolicEquation::calculateU(u, hx, ht, M, N);
 
@@ -169,11 +169,10 @@ double HyperbolicControl1D::bf(unsigned int i, unsigned int j) const
     return 0.0;
 }
 
-void HyperbolicControl1D::print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double alpha, RnFunction *fn) const
+void HyperbolicControl1D::print(unsigned int i, const DoubleVector& v, const DoubleVector &g, double fx) const
 {
     C_UNUSED(g);
-    C_UNUSED(alpha);
-    HyperbolicControl1D *hc = dynamic_cast<HyperbolicControl1D*>(fn);
+    HyperbolicControl1D *hc = const_cast<HyperbolicControl1D*>(this);
     printf("J[%d]: %.16f\n", i, hc->fx(v));
 }
 

@@ -29,7 +29,7 @@ public:
     virtual double bboundary(unsigned int i, unsigned int j, unsigned int k) const;
     virtual double bf(unsigned int i, unsigned int j, unsigned int k) const;
 
-    virtual void print(unsigned int i, const DoubleVector& x, const DoubleVector &e, double alpha, RnFunction* fn) const;
+    virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx) const;
     virtual void project(DoubleVector &x, int index);
     double fxt(unsigned int i, unsigned int j, unsigned int k) const;
     double norm(const DoubleVector& v) const;

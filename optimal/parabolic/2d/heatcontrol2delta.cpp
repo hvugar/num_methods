@@ -86,9 +86,9 @@ HeatControl2Delta::HeatControl2Delta(unsigned int M, unsigned int N2, unsigned i
     gause_b = 2.0*sgm1*sgm2;
 }
 
-double HeatControl2Delta::fx(const DoubleVector& x)
+double HeatControl2Delta::fx(const DoubleVector& x) const
 {
-    px = &x;
+    const_cast<HeatControl2Delta*>(this)->px = &x;
     DoubleMatrix u;
     IParabolicEquation2D::calculateMVD(u, h1, h2, ht, N1, N2, M, a1, a2);
 
@@ -378,11 +378,11 @@ void HeatControl2Delta::initialize()
     fclose(f);
 }
 
-void HeatControl2Delta::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double alpha, RnFunction* fn) const
+void HeatControl2Delta::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double fx) const
 {
     C_UNUSED(alpha);
 
-    HeatControl2Delta *hc = dynamic_cast<HeatControl2Delta*>(fn);
+    HeatControl2Delta *hc = const_cast<HeatControl2Delta*>(this);
     printf("J[%d]: %.16f\n", i, hc->fx(x));
     //printf("Norm: %.16f Alpha: %.16f %.16f\n", hc->norm(x), hc->alpha, alpha);
     printf("eo: [%12.8f, %12.8f] [%12.8f, %12.8f] [%12.8f, %12.8f]\n", O[0], O[1], O[2], O[3], O[4], O[5]);

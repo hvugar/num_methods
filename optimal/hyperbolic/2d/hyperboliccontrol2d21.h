@@ -12,8 +12,8 @@ public:
     HyperbolicControl2D21();
     virtual ~HyperbolicControl2D21() {}
 
-    virtual double fx(double x);
-    virtual double fx(const DoubleVector &x);
+    virtual double fx(double x) const;
+    virtual double fx(const DoubleVector &x) const;
 
     virtual double initial1(unsigned int i, unsigned int j) const;
     virtual double initial2(unsigned int i, unsigned int j) const;

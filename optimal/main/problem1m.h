@@ -19,20 +19,19 @@ public:
     Problem1M();
 
 protected:
-    virtual double fx(const DoubleVector &x);
+    virtual double fx(const DoubleVector &x) const;
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
-    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &gradient, double alpha, RnFunction *fn) const;
-    virtual void print(const DoubleVector &x, const DoubleVector &g, unsigned int iterationNumber) const;
+    virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx) const;
     virtual void project(DoubleVector &x, int index);
 
-    void calculateU(DoubleMatrix &u);
+    void calculateU(DoubleMatrix &u) const;
     void calculateP(DoubleMatrix &p, const DoubleMatrix &u);
 
     double initial(unsigned int n) const;
     double mu(unsigned int i UNUSED_PARAM) const { return 1.0; }
 
-    double integral(const DoubleVector &x);
-    double norm(const DoubleVector &x);
+    double integral(const DoubleVector &x) const;
+    double norm(const DoubleVector &x0) const;
 
 private:
     unsigned int L;

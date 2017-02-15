@@ -42,23 +42,23 @@ Problem1M::Problem1M()
 
     //x0 << 3.4004970612 << 3.6671254827 << 4.0801398905 << 3.8790071382 << 0.9299999944 << 0.9500000000;
 
-    px = &x0;
+//    px = &x0;
 
-    DoubleVector ag(x0.size());
-    gradient(x0, ag);
-    ag.L2Normalize();
+//    DoubleVector ag(x0.size());
+//    gradient(x0, ag);
+//    ag.L2Normalize();
 
-    DoubleVector ng(x0.size());
-    IGradient::Gradient(this, h, x0, ng);
-    ng.L2Normalize();
+//    DoubleVector ng(x0.size());
+//    IGradient::Gradient(this, h, x0, ng);
+//    ng.L2Normalize();
 
-    DoubleMatrix u;
-    calculateU(u);
+//    DoubleMatrix u;
+//    calculateU(u);
 
-    printf("x: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", x0[0], x0[1], x0[2], x0[3], x0[4], x0[5], integral(x0), norm(x0), fx(x0));
-    printf("a: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", ag[0], ag[1], ag[2], ag[3], ag[4], ag[5]);
-    printf("n: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", ng[0], ng[1], ng[2], ng[3], ng[4], ng[5]);
-    IPrinter::printVector(18, 10, u.row(u.rows()-1),"u: ");
+//    printf("x: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", x0[0], x0[1], x0[2], x0[3], x0[4], x0[5], integral(x0), norm(x0), fx(x0));
+//    printf("a: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", ag[0], ag[1], ag[2], ag[3], ag[4], ag[5]);
+//    printf("n: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", ng[0], ng[1], ng[2], ng[3], ng[4], ng[5]);
+//    IPrinter::printVector(18, 10, u.row(u.rows()-1),"u: ");
     //printf("%18.10f %18.10f %18.10f %18.10f\n", ag[0], ag[1], ag[2], ag[3]);
     //printf("%18.10f %18.10f %18.10f %18.10f\n", ng[0], ng[1], ng[2], ng[3]);
     //printf("%18.10f %18.10f %18.10f\n",x0[0], x0[1], fx(x0));
@@ -78,7 +78,7 @@ Problem1M::Problem1M()
     g.calculate(x0);
 }
 
-double Problem1M::fx(const DoubleVector &x)
+double Problem1M::fx(const DoubleVector &x) const
 {
     return integral(x) + norm(x);
 //    px = &x;
@@ -108,9 +108,9 @@ double Problem1M::fx(const DoubleVector &x)
 //    return alpha0*sum + alpha1*norm1 + alpha2*norm2 + alpha3*norm3;
 }
 
-double Problem1M::integral(const DoubleVector &x)
+double Problem1M::integral(const DoubleVector &x) const
 {
-    px = &x;
+    const_cast<Problem1M*>(this)->px = &x;
     DoubleVector k = x.mid(0,1);
     DoubleVector z = x.mid(2,3);
     DoubleVector e = x.mid(4,5);
@@ -130,9 +130,9 @@ double Problem1M::integral(const DoubleVector &x)
     return alpha0*sum;
 }
 
-double Problem1M::norm(const DoubleVector &x)
+double Problem1M::norm(const DoubleVector &x) const
 {
-    px = &x;
+    const_cast<Problem1M*>(this)->px = &x;
     DoubleVector k = x.mid(0,1);
     DoubleVector z = x.mid(2,3);
     DoubleVector e = x.mid(4,5);
@@ -146,7 +146,6 @@ double Problem1M::norm(const DoubleVector &x)
     norm3 = sqrt(e.at(0)*e.at(0) + e.at(1)*e.at(1));
     return alpha1*norm1 + alpha2*norm2 + alpha3*norm3;
 }
-
 
 void Problem1M::gradient(const DoubleVector &x, DoubleVector &g)
 {
@@ -211,7 +210,7 @@ void Problem1M::gradient(const DoubleVector &x, DoubleVector &g)
     }
 }
 
-void Problem1M::calculateU(DoubleMatrix &u)
+void Problem1M::calculateU(DoubleMatrix &u) const
 {
     const DoubleVector &x = *px;
     DoubleVector k = x.mid(0,1);
@@ -365,37 +364,32 @@ double Problem1M::initial(unsigned int n UNUSED_PARAM) const
     return Ti;
 }
 
-void Problem1M::print(unsigned int i UNUSED_PARAM, const DoubleVector &x UNUSED_PARAM, const DoubleVector &g UNUSED_PARAM, double alpha UNUSED_PARAM, RnFunction *fn UNUSED_PARAM) const
+void Problem1M::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx) const
 {
     IPrinter::printSeperatorLine();
     Problem1M *pm = const_cast<Problem1M*>(this);
-    printf("x: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", x[0], x[1], x[2], x[3], x[4], x[5], pm->integral(x), pm->norm(x), pm->fx(x));
-    //printf("x: %18.10f %18.10f %18.10f %18.10f\n", x[0], x[1], x[2], x[3]);
-    //printf("x: %18.10f %18.10f %18.10f\n", x[0], x[1], f);
+    printf("Iteration %d Integral: %18.10f Norm: %18.10f Funksional: %18.10f Funksional: %18.10f\n", i, pm->integral(x), pm->norm(x), pm->fx(x), fx);
 
     DoubleVector ag(x.size());
     pm->gradient(x, ag);
     ag.L2Normalize();
 
     DoubleVector ng(x.size());
-    IGradient::Gradient(const_cast<Problem1M*>(this), h, x, ng);
+    IGradient::Gradient(pm, h, x, ng);
     ng.L2Normalize();
 
+    DoubleMatrix u;
+    pm->px = &x;
+    pm->calculateU(u);
+
+    DoubleVector gg = g;
+    gg.L2Normalize();
+
+    printf("x: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", x[0], x[1], x[2], x[3], x[4], x[5]);
+    printf("g: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", gg[0], gg[1], gg[2], gg[3], gg[4], gg[5], gg.L2Norm());
     printf("a: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", ag[0], ag[1], ag[2], ag[3], ag[4], ag[5], ag.L2Norm());
     printf("n: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", ng[0], ng[1], ng[2], ng[3], ng[4], ng[5], ng.L2Norm());
-    //printf("a: %18.10f %18.10f %18.10f %18.10f %18.10f\n", ag[0], ag[1], ag[2], ag[3], ag.L2Norm());
-    //printf("n: %18.10f %18.10f %18.10f %18.10f %18.10f\n", ng[0], ng[1], ng[2], ng[3], ng.L2Norm());
-    //printf("a: %18.10f %18.10f %18.10f\n", ag[0], ag[1], ag.L2Norm());
-    //printf("n: %18.10f %18.10f %18.10f\n", ng[0], ng[1], ng.L2Norm());
-
-    //const_cast<DoubleVector*>(px) = &x;
-    DoubleMatrix u;
-    const_cast<Problem1M*>(this)->calculateU(u);
     IPrinter::printVector(18,10,u.row(u.rows()-1),"u: ");
-}
-
-void Problem1M::print(const DoubleVector &x UNUSED_PARAM, const DoubleVector &g UNUSED_PARAM, unsigned int i UNUSED_PARAM) const
-{
 }
 
 void Problem1M::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)

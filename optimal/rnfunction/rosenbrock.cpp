@@ -1,11 +1,8 @@
 #include "rosenbrock.h"
 #include <math.h>
 
-void Rosenbrock::main(int argc, char ** argv)
+void Rosenbrock::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    C_UNUSED(argc);
-    C_UNUSED(argv);
-
     /* Function */
     Rosenbrock r;
     r.grad_step = 0.000001;
@@ -30,7 +27,7 @@ void Rosenbrock::main(int argc, char ** argv)
     g2.setNormalize(true);
     g2.calculate(x0);
 
-//    printf("Function call count: %u\n", r.count);
+    printf("Function call count: %u\n", r.count);
 
 //    puts("-----------------------------------------------------------------");
 //    x0[0] = -1.2;
@@ -44,7 +41,7 @@ void Rosenbrock::main(int argc, char ** argv)
 //    g3.setEpsilon3(0.000001);
 //    g3.setR1MinimizeEpsilon(0.1, 0.000001);
 //    g3.setPrinter(&r);
-//    g3.setNormalize(false);
+//    g3.setNormalize(true);
 //    g3.calculate(x0);
 }
 
@@ -54,7 +51,7 @@ Rosenbrock::Rosenbrock()
     grad_step = 0.000001;
 }
 
-double Rosenbrock::fx(const DoubleVector& x)
+double Rosenbrock::fx(const DoubleVector& x) const
 {
     Rosenbrock* r = const_cast<Rosenbrock*>(this);
     r->count++;
@@ -69,26 +66,26 @@ void Rosenbrock::gradient(const DoubleVector& x, DoubleVector &g)
     IGradient::Gradient(this, grad_step, x, g);
 }
 
-void Rosenbrock::print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const
+void Rosenbrock::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f) const
 {
-    if (iterationCount == 1)
+    if (i == 0)
     {
         printf("No\t|x1      \t|x2      \t|f(x)      \t|s1      \t|s2      \t|grad_norm  \t|alpha  \t");
         printf("\n--------+---------------+---------------+---------------+---------------+---------------+---------------+-------------\n");
     }
 
-    double y = f->fx(m_x);
-    double nr = s.EuclideanNorm();
+    double y = const_cast<Rosenbrock*>(this)->fx(x);
+    double nr = g.EuclideanNorm();
 
-    printf("%d\t", iterationCount);
-    m_x[0]>=0.0 ? printf("|+%.10f\t", fabs(m_x[0])) : printf("|%.10f\t", m_x[0]);
-    m_x[1]>=0.0 ? printf("|+%.10f\t", fabs(m_x[1])) : printf("|%.10f\t", m_x[1]);
+    printf("%d\t", i);
+    x[0]>=0.0 ? printf("|+%.10f\t", fabs(x[0])) : printf("|%.10f\t", x[0]);
+    x[1]>=0.0 ? printf("|+%.10f\t", fabs(x[1])) : printf("|%.10f\t", x[1]);
     y>=0.0 ? printf("|%+.10f\t", y) : printf("|%.10f\t", y);
-    s[0]>=0.0 ? printf("|+%.6f\t", s[0]) : printf("|%.6f\t", s[0]);
-    s[1]>=0.0 ? printf("|+%.6f\t", s[1]) : printf("|%.6f\t", s[1]);
-    nr>=0.0 ? printf("|+%.6f\t", nr) : printf("|%.6f\t", nr);
-    m_alpha>=0.0 ? printf("|%+.10f\t", m_alpha) : printf("|%.10f\t", m_alpha);
+    g[0]>=0.0 ? printf("|+%.10f\t", g[0]) : printf("|%.10f\t", g[0]);
+    g[1]>=0.0 ? printf("|+%.10f\t", g[1]) : printf("|%.10f\t", g[1]);
+    nr>=0.0 ? printf("|+%.10f\t", nr) : printf("|%.10f\t", nr);
     printf("\n");
 }
+
 
 

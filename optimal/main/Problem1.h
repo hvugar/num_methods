@@ -30,16 +30,15 @@ public:
 
     void initialize();
 
-    virtual double fx(const DoubleVector &x);
+    virtual double fx(const DoubleVector &x) const;
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
-    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &gradient, double alpha, RnFunction *fn) const;
-    virtual void print(const DoubleVector &x, const DoubleVector &g, unsigned int iterationNumber) const;
+    virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx) const;
     virtual void project(DoubleVector &x, int index);
 
     double initial(unsigned int i) const;
     double mu(unsigned int i UNUSED_PARAM) const { return 1.0; }
     // qovma 1
-    void calculateU(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht);
+    void calculateU(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht) const;
     void calculateUN2L2R(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht);
     void calculateUN4L2R(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht);
     void calculateP(DoubleMatrix& p, const DoubleMatrix &u);

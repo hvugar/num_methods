@@ -14,30 +14,30 @@ HyperbolicControl2DMX::~HyperbolicControl2DMX()
 {
 }
 
-double HyperbolicControl2DMX::fx(double t)
+double HyperbolicControl2DMX::fx(double t) const
 {
-    h1 = 0.01;
-    h2 = 0.01;
-    ht = 0.005;
+    const_cast<HyperbolicControl2DMX*>(this)->h1 = 0.01;
+    const_cast<HyperbolicControl2DMX*>(this)->h2 = 0.01;
+    const_cast<HyperbolicControl2DMX*>(this)->ht = 0.005;
 
-    N1 = 100;
-    N2 = 100;
-    M  = 200;
-    L = 2;
+    const_cast<HyperbolicControl2DMX*>(this)->N1 = 100;
+    const_cast<HyperbolicControl2DMX*>(this)->N2 = 100;
+    const_cast<HyperbolicControl2DMX*>(this)->M  = 200;
+    const_cast<HyperbolicControl2DMX*>(this)->L = 2;
 
-    e.resize(2);
-    e[0] = 0.2;
-    e[1] = 0.2;
+    const_cast<HyperbolicControl2DMX*>(this)->e.resize(2);
+    const_cast<HyperbolicControl2DMX*>(this)->e[0] = 0.2;
+    const_cast<HyperbolicControl2DMX*>(this)->e[1] = 0.2;
 
-    alpha0 = 1.0;//4.0;
-    alpha1 = 10.0;//5.0;
-    alpha2 = 2.0;//6.0;
-    alpha3 = 1.0;//4.0;
-    qamma = 0.2;
+    const_cast<HyperbolicControl2DMX*>(this)->alpha0 = 1.0;//4.0;
+    const_cast<HyperbolicControl2DMX*>(this)->alpha1 = 10.0;//5.0;
+    const_cast<HyperbolicControl2DMX*>(this)->alpha2 = 2.0;//6.0;
+    const_cast<HyperbolicControl2DMX*>(this)->alpha3 = 1.0;//4.0;
+    const_cast<HyperbolicControl2DMX*>(this)->qamma = 0.2;
 
-    U0 = 0.0;
-    U1 = 0.0;
-    a = 1.0;
+    const_cast<HyperbolicControl2DMX*>(this)->U0 = 0.0;
+    const_cast<HyperbolicControl2DMX*>(this)->U1 = 0.0;
+    const_cast<HyperbolicControl2DMX*>(this)->a = 1.0;
 
     DoubleVector x(2*L);
     x[0] = 0.3;
@@ -65,10 +65,10 @@ double HyperbolicControl2DMX::fx(double t)
 
     double h = 0.001;
     DoubleVector g1(x.size());
-    gradient(x, g1);
+    const_cast<HyperbolicControl2DMX*>(this)->gradient(x, g1);
     g1.L2Normalize();
     DoubleVector g2(x.size());
-    IGradient::Gradient(this, h, x, g2);
+    IGradient::Gradient(const_cast<HyperbolicControl2DMX*>(this), h, x, g2);
     g2.L2Normalize();
 
     FILE *file = fopen("gradient_x.txt", "a");
@@ -89,9 +89,9 @@ double HyperbolicControl2DMX::fx(double t)
     return rf;
 }
 
-double HyperbolicControl2DMX::fx(const DoubleVector &x)
+double HyperbolicControl2DMX::fx(const DoubleVector &x) const
 {
-    px = &x;
+    const_cast<HyperbolicControl2DMX*>(this)->px = &x;
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
 
@@ -273,11 +273,10 @@ double HyperbolicControl2DMX::fxt(unsigned int i, unsigned int j, unsigned int k
     return sum;
 }
 
-void HyperbolicControl2DMX::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double alpha, RnFunction *fn) const
+void HyperbolicControl2DMX::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx) const
 {
     C_UNUSED(g);
-    C_UNUSED(alpha);
-    printf("J[%d]: %.16f\n", i, fn->fx(x));
+    printf("J[%d]: %.16f\n", i, const_cast<HyperbolicControl2DMX*>(this)->fx(x));
 }
 
 void HyperbolicControl2DMX::project(DoubleVector &x, int i)

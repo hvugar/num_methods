@@ -202,9 +202,9 @@ double Problem1::initial(unsigned int i UNUSED_PARAM) const
     return Ti;
 }
 
-double Problem1::fx(const DoubleVector &x)
+double Problem1::fx(const DoubleVector &x) const
 {
-    px = &x;
+    const_cast<Problem1*>(this)->px = &x;
 
     DoubleVector k,z,e;
     getComponents(k,z,e,x);
@@ -371,39 +371,7 @@ void Problem1::gradient(const DoubleVector &x, DoubleVector &g)
 #endif
 }
 
-void Problem1::print(unsigned int i UNUSED_PARAM, const DoubleVector &x UNUSED_PARAM, const DoubleVector &g UNUSED_PARAM, double alpha UNUSED_PARAM, RnFunction *fn UNUSED_PARAM) const
-{
-    //    C_UNUSED(alpha);
-    //    printf("J[%d]: %18.14f %16.12f ", i, fn->fx(x), alpha);
-
-    //    int j = 0;
-    //#ifdef _OPTIMIZE_K_
-    //    printf("%14.10f %14.10f ", x.at(j), x.at(j+1));
-    //    j+=2;
-    //#endif
-    //#ifdef _OPTIMIZE_Z_
-    //    printf("%14.10f %14.10f ", x.at(j), x.at(j+1));
-    //    j+=2;
-    //#endif
-    //#ifdef _OPTIMIZE_E_
-    //    printf("%14.10f %14.10f ", x.at(j), x.at(j+1));
-    //    j+=2;
-    //#endif
-    //    puts("");
-
-    //#ifdef OPTIMIZE_REPLACEMENT
-    //    printf("k:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", x.at(0), x.at(1), x.at(2), x.at(3), x.at(4), x.at(5));
-    //    printf("g:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", g.at(0), g.at(1), g.at(2), g.at(3), g.at(4), g.at(5));
-    //    DoubleVector w = g;
-    //    w.L2Normalize();
-    //    printf("g:  %14.10f, %14.10f %14.10f, %14.10f %14.10f, %14.10f\n", w.at(0), w.at(1), w.at(2), w.at(3), w.at(4), w.at(5));
-    //#else
-    //    printf("x:  %14.10f, %14.10f %14.10f, %14.10f\n", x.at(0), x.at(1), x.at(2), x.at(3));
-    //    printf("g:  %14.10f, %14.10f %14.10f, %14.10f\n", g.at(0), g.at(1), g.at(2), g.at(3));
-    //#endif
-}
-
-void Problem1::print(const DoubleVector &x, const DoubleVector &g UNUSED_PARAM, unsigned int i) const
+void Problem1::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx) const
 {
     int j = 0;
     printf("x: ");
@@ -496,7 +464,7 @@ void Problem1::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
 #endif
 }
 
-void Problem1::calculateU(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht)
+void Problem1::calculateU(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht) const
 {
     //DoubleVector x = *px;
     DoubleVector k,z,e;

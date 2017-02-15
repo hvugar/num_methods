@@ -13,6 +13,8 @@ DESTDIR  = ../bin
 INCLUDEPATH += ../minimum
 LIBS += -L../bin -lminimum
 
+DEFINES += MINIMUM_LIBRARY
+
 # Input
 HEADERS += bealesfunction.h boothfunction.h rosenbrock.h
 SOURCES += bealesfunction.cpp boothfunction.cpp rosenbrock.cpp

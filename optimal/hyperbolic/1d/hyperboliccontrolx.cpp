@@ -42,19 +42,19 @@ HyperbolicControlX::HyperbolicControlX()
 #endif
 }
 
-double HyperbolicControlX::fx(double t)
+double HyperbolicControlX::fx(double t) const
 {
-    t0 = 0.0;
-    t1 = t;
-    x0 = 0.0;
-    x1 = 1.0;
-    N = 1000;
-    hx = 0.001;
+    const_cast<HyperbolicControlX*>(this)->t0 = 0.0;
+    const_cast<HyperbolicControlX*>(this)->t1 = t;
+    const_cast<HyperbolicControlX*>(this)->x0 = 0.0;
+    const_cast<HyperbolicControlX*>(this)->x1 = 1.0;
+    const_cast<HyperbolicControlX*>(this)->N = 1000;
+    const_cast<HyperbolicControlX*>(this)->hx = 0.001;
 
-    t1 = t;
-    ht = 0.001;
-    M = (unsigned int) round((t1-t0)/ht);
-    D = 10;
+    const_cast<HyperbolicControlX*>(this)->t1 = t;
+    const_cast<HyperbolicControlX*>(this)->ht = 0.001;
+    const_cast<HyperbolicControlX*>(this)->M = (unsigned int) round((t1-t0)/ht);
+    const_cast<HyperbolicControlX*>(this)->D = 10;
 #ifdef USE_DELTA_FUNCTION
     xi = 0.4;
     Xi = 400;
@@ -76,13 +76,13 @@ double HyperbolicControlX::fx(double t)
     double gold_eps = 0.001;
 
     ConjugateGradient cg;
-    cg.setFunction(this);
-    cg.setGradient(this);
+    cg.setFunction(const_cast<HyperbolicControlX*>(this));
+    cg.setGradient(const_cast<HyperbolicControlX*>(this));
     cg.setEpsilon1(0.001);
     cg.setEpsilon2(0.001);
     cg.setEpsilon3(0.001);
     cg.setR1MinimizeEpsilon(min_step, gold_eps);
-    cg.setPrinter(this);
+    cg.setPrinter(const_cast<HyperbolicControlX*>(this));
     cg.setNormalize(true);
     cg.showEndMessage(false);
     //cg.calculate(v);
@@ -120,7 +120,7 @@ double HyperbolicControlX::fx(double t)
     //    IPrinter::printVector(gr2, "gr3:", (M+D+1), 2*(M+D+1), 2*(M+D+1)+(M+D), file);
     fputs("Amplitudes:\n", file);
     DoubleMatrix u;
-    pv = &v;
+    const_cast<HyperbolicControlX*>(this)->pv = &v;
     IHyperbolicEquation::calculateU(u, hx, ht, M+D, N);
     for (unsigned int j=M; j<=M+D; j++)
     {
@@ -137,9 +137,9 @@ double HyperbolicControlX::fx(double t)
     return rf;
 }
 
-double HyperbolicControlX::fx(const DoubleVector &v)
+double HyperbolicControlX::fx(const DoubleVector &v) const
 {
-    pv = &v;
+    const_cast<HyperbolicControlX*>(this)->pv = &v;
     DoubleMatrix u;
     IHyperbolicEquation::calculateU(u, hx, ht, M+D, N);
 
@@ -264,9 +264,8 @@ double HyperbolicControlX::bboundary(Boundary type, unsigned int j) const
     return 0.0;
 }
 
-void HyperbolicControlX::print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double alpha, RnFunction *fn) const
+void HyperbolicControlX::print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double fx) const
 {
     C_UNUSED(g);
-    C_UNUSED(alpha);
-    printf("J[%d]: %.16f\n", i, fn->fx(v));
+    printf("J[%d]: %.16f\n", i, const_cast<HyperbolicControlX*>(this)->fx(v));
 }

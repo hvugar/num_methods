@@ -43,10 +43,10 @@ HyperbolicControl2D21::HyperbolicControl2D21()
     a2 = 1.0;
 }
 
-double HyperbolicControl2D21::fx(double T)
+double HyperbolicControl2D21::fx(double T) const
 {
-    t1 = T;
-    M  = (unsigned)ceil((t1 - t0)/ht);
+    const_cast<HyperbolicControl2D21*>(this)->t1 = T;
+    const_cast<HyperbolicControl2D21*>(this)->M  = (unsigned)ceil((t1 - t0)/ht);
 
     DoubleMatrix m;
     IHyperbolicEquation2D::calculateU1(m, h1, h2, ht, N1, N2, M, a1, a2, qamma);
@@ -56,7 +56,7 @@ double HyperbolicControl2D21::fx(double T)
     return rf;
 }
 
-double HyperbolicControl2D21::fx(const DoubleVector &x)
+double HyperbolicControl2D21::fx(const DoubleVector &x) const
 {
     C_UNUSED(x);
 

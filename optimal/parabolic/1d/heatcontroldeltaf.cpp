@@ -59,9 +59,9 @@ HeatControlDeltaF::HeatControlDeltaF()
     //fclose(file);
 }
 
-double HeatControlDeltaF::fx(const DoubleVector &f)
+double HeatControlDeltaF::fx(const DoubleVector &f) const
 {
-    pf = &f;
+    const_cast<HeatControlDeltaF*>(this)->pf = &f;
     DoubleVector u;
     IParabolicEquation::calculateU(u, hx, ht, N, M, a);
 
@@ -164,15 +164,8 @@ double HeatControlDeltaF::bf(unsigned int i, unsigned int j) const
     return 0.0;
 }
 
-void HeatControlDeltaF::print(unsigned int i, const DoubleVector &f0, const DoubleVector &g, double alpha, RnFunction *f) const
+void HeatControlDeltaF::print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx) const
 {
     C_UNUSED(g);
-    C_UNUSED(alpha);
-
-    HeatControlDeltaF *hc = dynamic_cast<HeatControlDeltaF*>(f);
-    printf("J[%d]: %.20f\n", i, hc->fx(f0));
-    //    printf("Printing f-------------------------------\n");
-    //    IPrinter::printAsMatrix(f0, M, N);
-    //    printf("Printing g-------------------------------\n");
-    //    IPrinter::printAsMatrix(g, M, N);
+    printf("J[%d]: %.20f\n", i, const_cast<HeatControlDeltaF*>(this)->fx(f0));
 }

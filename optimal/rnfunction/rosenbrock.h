@@ -8,19 +8,18 @@
 #include <gradient_sd.h>
 #include <gradient_cs.h>
 
-struct Rosenbrock : public RnFunction, public IPrinter, public IGradient
+struct MINIMUMSHARED_EXPORT Rosenbrock : public RnFunction, public IGradient, public IPrinter
 {
 public:
     Rosenbrock();
     virtual ~Rosenbrock() {}
 
-    virtual double fx(const DoubleVector& x);
-    //virtual void gradient(const DoubleVector& x, DoubleVector& g, double gradient_step);
+    virtual double fx(const DoubleVector& x) const;
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
+    //Printer
+    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f) const;
 
-    void print(unsigned int iterationCount, const DoubleVector& m_x, const DoubleVector &s, double m_alpha, RnFunction* f) const;
-
-    static void main(int argc, char ** argv);
+    static void Main(int argc, char *argv[]);
 private:
     double grad_step;
     unsigned int count;

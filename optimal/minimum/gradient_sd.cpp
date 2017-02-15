@@ -14,32 +14,34 @@ SteepestDescentGradient::~SteepestDescentGradient()
 
 void SteepestDescentGradient::calculate(DoubleVector &x)
 {
-    unsigned int n = x.size();
+    double distance = 0.0;
+    double alpha = 0.0;
+    double f1 = 0.0;
+    double f2 = 0.0;
 
+    unsigned int n = x.size();
     DoubleVector g(n);
 
     mx = &x;
     mg = &g;
     iterationCount = 0;
 
-    double distance = 0.0;
-    double alpha = 0.0;
-//    double f1 = 0.0;
-//    double f2 = 0.0;
+    // Gradient of objectiv function in current point
+    m_gr->gradient(x, g);
+    f1 = m_fn->fx(x);
+    if (m_printer != NULL) m_printer->print(iterationCount, x, g, f1);
+
+    /* checking gradient norm */
+    /* if gradient norm at current point is less than epsilon then return. no minimize */
+    double gradient_norm = g.L2Norm();
+    if (gradient_norm < epsilon1())
+    {
+        if (mshowEndMessage) puts("Optimisation ends, because norm of gradient is less than epsilon...");
+        return;
+    }
 
     do
     {
-        /* calculating function gradient at current point */
-        m_gr->gradient(x, g);
-
-        /* if gradinet norm at current point is less than epsilon then break. no minimize */
-        double gradient_norm = g.L2Norm();
-        if (gradient_norm < epsilon1())
-        {
-            puts("Optimisation ends, because L2 norm of gradient is less than epsilon...");
-            break;
-        }
-
 
         iterationCount++;
 
@@ -49,11 +51,6 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
         /* R1 minimization in direct of antigradient */
         alpha = minimize(x, g);
 
-        if (m_printer != NULL)
-        {
-            m_printer->print(iterationCount, x, g, alpha, function());
-        }
-
         distance = 0.0;
         double f1 = m_fn->fx(x);
         for (unsigned int i=0; i < n; i++)
@@ -61,25 +58,57 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
             double cx = x[i];
             x[i] = x[i] - alpha * g[i];
 
+            if (m_projection != NULL) m_projection->project(x, i);
+
             // calculating distance
             distance += (x[i]-cx)*(x[i]-cx);
         }
         distance = sqrt(distance);
-        double f2 = m_fn->fx(x);
+        f2 = m_fn->fx(x);
+
+        // Gradient of objectiv function in current point
+        m_gr->gradient(x, g);
+        if (m_printer != NULL) m_printer->print(iterationCount, x, g, f2);
+
+        /* checking gradient norm */
+        /* if gradient norm at current point is less than epsilon then return. no minimize */
+        double gradient_norm = g.L2Norm();
+        if (gradient_norm < epsilon1())
+        {
+            if (mshowEndMessage) puts("Optimisation ends, because norm of gradient is less than epsilon...");
+            break;
+        }
 
         /* calculating distance previous and new point */
         if (distance < epsilon2() && fabs(f2 - f1) < epsilon3())
         {
-            puts("Optimisation ends, because distance between last and current point less than epsilon...");
+            if (mshowEndMessage) puts("Optimisation ends, because distance between last and current point less than epsilon...");
             break;
         }
+
+        f1 = f2;
 
     } while (true);
 
     g.clear();
 }
 
-double SteepestDescentGradient::fx(double alpha)
+double SteepestDescentGradient::minimize(const DoubleVector &x, const DoubleVector &g)
+{
+    C_UNUSED(x);
+    C_UNUSED(g);
+
+    double alpha0 = 0.0;
+    double a,b,alpha;
+
+    stranghLineSearch(alpha0, min_step, a, b, this);
+    goldenSectionSearch(a, b, alpha, this, min_epsilon);
+    if (fx(alpha) > fx(alpha0)) alpha = alpha0;
+
+    return alpha;
+}
+
+double SteepestDescentGradient::fx(double alpha) const
 {
     DoubleVector &x = *mx;
     DoubleVector &g = *mg;
@@ -93,19 +122,4 @@ double SteepestDescentGradient::fx(double alpha)
     }
 
     return m_fn->fx(cx);
-}
-
-double SteepestDescentGradient::minimize(const DoubleVector &x, const DoubleVector &g)
-{
-    C_UNUSED(x);
-    C_UNUSED(g);
-
-    double alpha0 = 0.0;
-    double a,b,alpha;
-
-    stranghLineSearch(alpha0, min_step, a, b, this);
-    goldenSectionSearch(a, b, alpha, this, min_epsilon);
-
-    if (this->fx(alpha) > this->fx(alpha0)) alpha = alpha0;
-    return alpha;
 }

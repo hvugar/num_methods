@@ -105,10 +105,10 @@ HyperbolicControl2D1::HyperbolicControl2D1()
     //..................................................................
 }
 
-double HyperbolicControl2D1::fx(double T)
+double HyperbolicControl2D1::fx(double T) const
 {
-    t1 = T;
-    M  = (unsigned)ceil((t1 - t0)/ht);
+    const_cast<HyperbolicControl2D1*>(this)->t1 = T;
+    const_cast<HyperbolicControl2D1*>(this)->M  = (unsigned)ceil((t1 - t0)/ht);
 
 #ifdef ONLY_POWER
     DoubleVector x((M+1)*L);
@@ -144,7 +144,7 @@ double HyperbolicControl2D1::fx(double T)
     x[3] = 0.70;
 #endif
 
-    print(0, x, x, 0.0, this);
+    //print(0, x, x, 0.0, this);
     // limits of v
     //vd = -2.0;
     //vu = +2.0;
@@ -153,14 +153,14 @@ double HyperbolicControl2D1::fx(double T)
     double gold_eps = 0.001;
 
     ConjugateGradient cg;
-    cg.setFunction(this);
-    cg.setGradient(this);
+    cg.setFunction(const_cast<HyperbolicControl2D1*>(this));
+    cg.setGradient(const_cast<HyperbolicControl2D1*>(this));
     cg.setEpsilon1(0.0001);
     cg.setEpsilon2(0.0001);
     cg.setEpsilon3(0.0001);
     cg.setR1MinimizeEpsilon(min_step, gold_eps);
-    cg.setPrinter(this);
-    cg.setProjection(this);
+    cg.setPrinter(const_cast<HyperbolicControl2D1*>(this));
+    cg.setProjection(const_cast<HyperbolicControl2D1*>(this));
 #ifdef POWER_COORDINATE
     // cg.setNormalize(false);
 #endif
@@ -168,7 +168,7 @@ double HyperbolicControl2D1::fx(double T)
     cg.calculate(x);
 
     double rf = fx(x);
-    count--;
+    const_cast<HyperbolicControl2D1*>(this)->count--;
 
     //    DoubleVector ag(x.size());
     //    gradient(x, ag);
@@ -209,10 +209,10 @@ double HyperbolicControl2D1::fx(double T)
     return rf;
 }
 
-double HyperbolicControl2D1::fx(const DoubleVector &x)
+double HyperbolicControl2D1::fx(const DoubleVector &x) const
 {
-    count++;
-    px = &x;
+    const_cast<HyperbolicControl2D1*>(this)->count++;
+    const_cast<HyperbolicControl2D1*>(this)->px = &x;
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a1, a2, qamma);
 
@@ -460,10 +460,9 @@ double HyperbolicControl2D1::bf(unsigned int i, unsigned int j, unsigned int k) 
     return 0.0;
 }
 
-void HyperbolicControl2D1::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double alpha, RnFunction* fn) const
+void HyperbolicControl2D1::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx) const
 {
     C_UNUSED(g);
-    C_UNUSED(alpha);
 
 #ifdef ONLY_POWER
     printf("J[%d]: %18.16f   ", i, fn->fx(x));
@@ -478,7 +477,7 @@ void HyperbolicControl2D1::print(unsigned int i, const DoubleVector& x, const Do
 #endif
 
 #ifdef POWER_COORDINATE
-    double res = fn->fx(x);
+    double res = const_cast<HyperbolicControl2D1*>(this)->fx(x);
     const_cast<HyperbolicControl2D1*>(this)->count--;
     printf("J[%d]: %20.16f T: %f Count: %d \n", i, res, t1, count);
     fprintf(file, "J[%d]: %20.16f T: %f Count: %d ", i, res, t1, count);

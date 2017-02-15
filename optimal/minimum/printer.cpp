@@ -3,18 +3,6 @@
 #include <time.h>
 #include <windows.h>
 
-void IPrinter::print(GradientIterationInfo &info) const
-{
-    C_UNUSED(info);
-}
-
-void IPrinter::print(const DoubleVector &x, const DoubleVector &g, unsigned int iterationNumber) const
-{
-    C_UNUSED(x);
-    C_UNUSED(g);
-    C_UNUSED(iterationNumber);
-}
-
 void IPrinter::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n, const char* s, FILE* f)
 {
     C_UNUSED(s);

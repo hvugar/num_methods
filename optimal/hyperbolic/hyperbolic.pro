@@ -23,11 +23,11 @@ HEADERS += 1d/hyperbolic1dx.h \
            2d/hyperboliccontrol2d.h \
            2d/hyperboliccontrol2d1.h \
            2d/hyperboliccontrol2d21.h \
-           2d/hyperboliccontrol2d22.h \
-           2d/hyperboliccontrol2d23.h \
-           2d/hyperboliccontrol2d24.h \
-           2d/hyperboliccontrol2dm.h \
-           2d/hyperboliccontrol2dmv.h \
+           #2d/hyperboliccontrol2d22.h \
+           #2d/hyperboliccontrol2d23.h \
+           #2d/hyperboliccontrol2d24.h \
+           #2d/hyperboliccontrol2dm.h \
+           #2d/hyperboliccontrol2dmv.h \
            2d/hyperboliccontrol2dmx.h
 SOURCES += 1d/hyperbolic1dx.cpp \
            1d/hyperboliccontrol1d.cpp \
@@ -36,9 +36,9 @@ SOURCES += 1d/hyperbolic1dx.cpp \
            2d/hyperboliccontrol2d.cpp \
            2d/hyperboliccontrol2d1.cpp \
            2d/hyperboliccontrol2d21.cpp \
-           2d/hyperboliccontrol2d22.cpp \
-           2d/hyperboliccontrol2d23.cpp \
-           2d/hyperboliccontrol2d24.cpp \
-           2d/hyperboliccontrol2dm.cpp \
-           2d/hyperboliccontrol2dmv.cpp \
+           #2d/hyperboliccontrol2d22.cpp \
+           #2d/hyperboliccontrol2d23.cpp \
+           #2d/hyperboliccontrol2d24.cpp \
+           #2d/hyperboliccontrol2dm.cpp \
+           #2d/hyperboliccontrol2dmv.cpp \
            2d/hyperboliccontrol2dmx.cpp

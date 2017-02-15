@@ -188,12 +188,10 @@ void HyperbolicControl2D24::printGradients(const DoubleVector &x, unsigned int i
     fflush(f);
 }
 
-void HyperbolicControl2D24::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double alpha, RnFunction* fn) const
+void HyperbolicControl2D24::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx) const
 {
     C_UNUSED(g);
-    C_UNUSED(alpha);
-    C_UNUSED(fn);
-    printGradients(x, i, alpha, file);
+    printGradients(x, i, 0.0, file);
 }
 
 double HyperbolicControl2D24::fx(const DoubleVector &w)

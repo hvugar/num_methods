@@ -330,11 +330,10 @@ double HyperbolicControl2DM::fxt(unsigned int i, unsigned int j, unsigned int k)
     return sum;
 }
 
-void HyperbolicControl2DM::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double alpha, RnFunction *fn) const
+void HyperbolicControl2DM::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx) const
 {
     C_UNUSED(g);
-    C_UNUSED(alpha);
-    printf("J[%d]: %.16f ALPHA: %.8f\n", i, fn->fx(x), alpha);
+    printf("J[%d]: %.16f ALPHA: %.8f\n", i, const_cast<HyperbolicControl2DM*>(this)->fx(x), 0.0);
 
     //    DoubleVector ng(x.size());
     //    //    IGradient::Gradient(fn, h, x, ng);

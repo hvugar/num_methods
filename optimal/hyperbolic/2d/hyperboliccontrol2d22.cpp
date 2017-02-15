@@ -105,15 +105,14 @@ double HyperbolicControl2D22::fx(double T)
     return rf;
 }
 
-void HyperbolicControl2D22::print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double alpha, RnFunction* fn) const
+void HyperbolicControl2D22::print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double fx) const
 {
     C_UNUSED(g);
-    C_UNUSED(alpha);
-    fprintf(file, "J[%d]: %.16f\n", i, fn->fx(v));
+    fprintf(file, "J[%d]: %.16f\n", i, const_cast<HyperbolicControl2D22*>(this)->fx(v));
     //IPrinter::printVector(v, "v1 ", v.size()/2, 0, v.size()/2-1, file);
     //IPrinter::printVector(v, "v2 ", v.size()/2, v.size()/2, v.size()-1, file);
     fflush(file);
-    printf("J[%d]: %.16f\n", i, fn->fx(v));
+    printf("J[%d]: %.16f\n", i, const_cast<HyperbolicControl2D22*>(this)->fx(v));
 }
 
 double HyperbolicControl2D22::fx(const DoubleVector &v)
