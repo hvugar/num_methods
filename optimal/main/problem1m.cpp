@@ -370,24 +370,26 @@ void Problem1M::print(unsigned int i, const DoubleVector &x, const DoubleVector 
     Problem1M *pm = const_cast<Problem1M*>(this);
     printf("Iteration %d Integral: %18.10f Norm: %18.10f Funksional: %18.10f Funksional: %18.10f\n", i, pm->integral(x), pm->norm(x), pm->fx(x), fx);
 
-    DoubleVector ag(x.size());
-    pm->gradient(x, ag);
-    ag.L2Normalize();
+//    DoubleVector ag(x.size());
+//    pm->gradient(x, ag);
+//    ag.L2Normalize();
 
     DoubleVector ng(x.size());
     IGradient::Gradient(pm, h, x, ng);
-    ng.L2Normalize();
 
     DoubleMatrix u;
     pm->px = &x;
     pm->calculateU(u);
 
     DoubleVector gg = g;
-    gg.L2Normalize();
 
     printf("x: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", x[0], x[1], x[2], x[3], x[4], x[5]);
     printf("g: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", gg[0], gg[1], gg[2], gg[3], gg[4], gg[5], gg.L2Norm());
-    printf("a: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", ag[0], ag[1], ag[2], ag[3], ag[4], ag[5], ag.L2Norm());
+    printf("n: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", ng[0], ng[1], ng[2], ng[3], ng[4], ng[5], ng.L2Norm());
+    //printf("a: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", ag[0], ag[1], ag[2], ag[3], ag[4], ag[5], ag.L2Norm());
+    gg.L2Normalize();
+    ng.L2Normalize();
+    printf("g: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", gg[0], gg[1], gg[2], gg[3], gg[4], gg[5], gg.L2Norm());
     printf("n: %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f %18.10f\n", ng[0], ng[1], ng[2], ng[3], ng[4], ng[5], ng.L2Norm());
     IPrinter::printVector(18,10,u.row(u.rows()-1),"u: ");
 }
