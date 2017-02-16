@@ -16,8 +16,8 @@ public:
     HyperbolicControl2DM() {}
     virtual ~HyperbolicControl2DM() {}
 
-    virtual double fx(double x);
-    virtual double fx(const DoubleVector &x);
+    virtual double fx(double x) const;
+    virtual double fx(const DoubleVector &x) const;
     virtual void gradient(const DoubleVector &v, DoubleVector &e);
 
     virtual double initial1(unsigned int i, unsigned int j) const;
@@ -30,7 +30,7 @@ public:
     virtual double bboundary(unsigned int i, unsigned int j, unsigned int k) const;
     virtual double bf(unsigned int i, unsigned int j, unsigned int k) const;
 
-    virtual void print(unsigned int i, const DoubleVector &f0, const DoubleVector &g, double fx) const;
+    virtual void print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double fx) const;
     virtual void project(DoubleVector &x, int index);
     double fxt(unsigned int i, unsigned int j, unsigned int k) const;
     double norm(const DoubleVector& v) const;

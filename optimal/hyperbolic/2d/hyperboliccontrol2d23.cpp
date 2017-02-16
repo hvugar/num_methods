@@ -60,21 +60,23 @@ HyperbolicControl2D23::HyperbolicControl2D23()
     pu = NULL;
 }
 
-double HyperbolicControl2D23::fx(double t)
+double HyperbolicControl2D23::fx(double t) const
 {
+    HyperbolicControl2D23 *p = const_cast<HyperbolicControl2D23*>(this);
+
     DoubleVector vt = v0;
     unsigned int m = M+D;
 
-    t1 = t;
-    M  = (unsigned)round((t1 - t0)/ht);
+    p->t1 = t;
+    p->M  = (unsigned)round((t1 - t0)/ht);
 
     //size = v0.size();
     //fprintf(file, "size2: %d\n", size);
     //IPrinter::printVector(v0, "v01", size/2, 0, size/2-1, file);
     //IPrinter::printVector(v0, "v02", size/2, size/2, size-1, file);
 
-    v0.clear();
-    v0.resize((M+D+1)*L, 0.0);
+    p->v0.clear();
+    p->v0.resize((M+D+1)*L, 0.0);
     unsigned size = v0.size();
     printf("t: %f M: %d M+D: %d m %d size: %u\n", t1, M, M+D, m, size);
 
@@ -99,17 +101,17 @@ double HyperbolicControl2D23::fx(double t)
     double min_step = 10.0;
     double gold_eps = 0.001;
     ConjugateGradient cg;
-    cg.setFunction(this);
-    cg.setGradient(this);
+    cg.setFunction(p);
+    cg.setGradient(p);
     cg.setEpsilon1(0.001);
     cg.setEpsilon2(0.001);
     cg.setEpsilon3(0.001);
     cg.setR1MinimizeEpsilon(min_step, gold_eps);
-    cg.setPrinter(this);
+    cg.setPrinter(p);
     //cg.setProjection(this);
     cg.setNormalize(true);
     //cg.showEndMessage(false);
-    cg.calculate(v0);
+    cg.calculate(p->v0);
 
     double rf = fx(v0);
     fprintf(file, "%f %.16f\n", t, rf);
@@ -132,9 +134,10 @@ void HyperbolicControl2D23::print(unsigned int i, const DoubleVector &v, const D
     printf("J[%d]: %.16f\n", i, const_cast<HyperbolicControl2D23*>(this)->fx(v));
 }
 
-double HyperbolicControl2D23::fx(const DoubleVector &v)
+double HyperbolicControl2D23::fx(const DoubleVector &v) const
 {
-    pv = &v;
+    HyperbolicControl2D23 *p = const_cast<HyperbolicControl2D23*>(this);
+    p->pv = &v;
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M+D, a1, a2, qamma);
 

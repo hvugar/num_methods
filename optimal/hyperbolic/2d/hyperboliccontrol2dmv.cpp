@@ -6,40 +6,41 @@ void HyperbolicControl2DMV::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARA
     hc.fx(1.0);
 }
 
-double HyperbolicControl2DMV::fx(double t UNUSED_PARAM)
+double HyperbolicControl2DMV::fx(double t UNUSED_PARAM) const
 {
-    h1 = 0.01;
-    h2 = 0.01;
-    ht = 0.005;
+    HyperbolicControl2DMV *p = const_cast<HyperbolicControl2DMV*>(this);
+    p->h1 = 0.01;
+    p->h2 = 0.01;
+    p->ht = 0.005;
 
-    N1 = 100;
-    N2 = 100;
-    M  = 200;
-    L = 2;
+    p->N1 = 100;
+    p->N2 = 100;
+    p->M  = 200;
+    p->L = 2;
 
-    e.resize(2);
-    e[0] = 0.2;
-    e[1] = 0.2;
+    p->e.resize(2);
+    p->e[0] = 0.2;
+    p->e[1] = 0.2;
 
-    alpha0 = 1.0;//4.0;
-    alpha1 = 10.0;//5.0;
-    alpha2 = 2.0;//6.0;
-    alpha3 = 1.0;//4.0;
-    qamma = 0.2;
+    p->alpha0 = 1.0;//4.0;
+    p->alpha1 = 10.0;//5.0;
+    p->alpha2 = 2.0;//6.0;
+    p->alpha3 = 1.0;//4.0;
+    p->qamma = 0.2;
 
-    U0 = 0.0;
-    U1 = 0.0;
-    a = 1.0;
+    p->U0 = 0.0;
+    p->U1 = 0.0;
+    p->a = 1.0;
 
-    d.resize(2*L);
-    d[0] = 0.3;
-    d[1] = 0.4;
-    d[2] = 0.7;
-    d[3] = 0.7;
+    p->d.resize(2*L);
+    p->d[0] = 0.3;
+    p->d[1] = 0.4;
+    p->d[2] = 0.7;
+    p->d[3] = 0.7;
 
     // limits of v
-    vd = -2.0;
-    vu = +2.0;
+    p->vd = -2.0;
+    p->vu = +2.0;
 
     DoubleVector v((M+1)*L);
     for (unsigned int k=0; k<=M; k++)
@@ -72,7 +73,7 @@ double HyperbolicControl2DMV::fx(double t UNUSED_PARAM)
     fprintf(file, "--------------------------------------------------------------------\n");
     IPrinter::printDateTime(file);
 
-    gradient(v, ag);
+    p->gradient(v, ag);
     //ag.L2Normalize();
     IPrinter::printVector(14,10, ag,NULL, ag.size(),0,0,file);
 
@@ -80,7 +81,7 @@ double HyperbolicControl2DMV::fx(double t UNUSED_PARAM)
     DoubleVector agv2 = ag.mid(M+1,2*M+1);
     agv1.L2Normalize();
     agv2.L2Normalize();
-//    ag.L2Normalize();
+    //    ag.L2Normalize();
     //IGradient::Gradient(this, h, v, ng);
     ng.L2Normalize();
 
@@ -105,9 +106,10 @@ double HyperbolicControl2DMV::fx(double t UNUSED_PARAM)
     return rf;
 }
 
-double HyperbolicControl2DMV::fx(const DoubleVector &v)
+double HyperbolicControl2DMV::fx(const DoubleVector &v) const
 {
-    pv = &v;
+    HyperbolicControl2DMV *p = const_cast<HyperbolicControl2DMV*>(this);
+    p->pv = &v;
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
 
@@ -164,11 +166,12 @@ double HyperbolicControl2DMV::norm(const DoubleVector& v) const
 void HyperbolicControl2DMV::gradient(const DoubleVector &v, DoubleVector &g)
 {
     printf("%f %f %f %d %d %d %f %f %f\n", h1, h2, ht, N1, N2, M, a, a, qamma);
-    pv = &v;
+    HyperbolicControl2DMV *pm = const_cast<HyperbolicControl2DMV*>(this);
+    pm->pv = &v;
     DoubleCube u;
     IHyperbolicEquation2D::calculateU1(u, h1, h2, ht, N1, N2, M, a, a, qamma);
 
-    pu = &u;
+    pm->pu = &u;
     DoubleCube p;
     IBackwardHyperbolicEquation2D::calculateU1(p, h1, h2, ht, N1, N2, M, a, a, qamma);
 
@@ -187,10 +190,10 @@ void HyperbolicControl2DMV::gradient(const DoubleVector &v, DoubleVector &g)
     FILE *file = fopen("xv.txt", "a");
     IPrinter::printVector(14,10,g,NULL,g.size(),0,0,file);
     fprintf(file, "--\n");
-//    IPrinter::printMatrix(15,10,u.matrix(M),10,10,NULL,file);
-//    fprintf(file, "--\n");
-//    IPrinter::printMatrix(15,10,u.matrix(M-2),10,10,NULL,file);
-//    fprintf(file, "--\n");
+    //    IPrinter::printMatrix(15,10,u.matrix(M),10,10,NULL,file);
+    //    fprintf(file, "--\n");
+    //    IPrinter::printMatrix(15,10,u.matrix(M-2),10,10,NULL,file);
+    //    fprintf(file, "--\n");
     IPrinter::printMatrix(15,10,p.matrix(0),10,10,NULL,file);
     fprintf(file, "--\n");
     IPrinter::printMatrix(15,10,p.matrix(M),10,10,NULL,file);

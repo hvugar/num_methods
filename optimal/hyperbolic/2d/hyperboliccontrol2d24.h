@@ -15,8 +15,8 @@ public:
     HyperbolicControl2D24();
     virtual ~HyperbolicControl2D24() {}
 
-    virtual double fx(double x);
-    virtual double fx(const DoubleVector &x);
+    virtual double fx(double x) const;
+    virtual double fx(const DoubleVector &x) const;
 
     virtual void gradient(const DoubleVector &v, DoubleVector &g);
     virtual void print(unsigned int i, const DoubleVector &f0, const DoubleVector &g, double fx) const;

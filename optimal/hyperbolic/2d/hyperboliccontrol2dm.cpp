@@ -6,30 +6,31 @@ void HyperbolicControl2DM::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM
     hc.fx(1.0);
 }
 
-double HyperbolicControl2DM::fx(double t UNUSED_PARAM)
+double HyperbolicControl2DM::fx(double t UNUSED_PARAM) const
 {
-    h1 = 0.01;
-    h2 = 0.01;
-    ht = 0.005;
+    HyperbolicControl2DM *p = const_cast<HyperbolicControl2DM*>(this);
+    p->h1 = 0.01;
+    p->h2 = 0.01;
+    p->ht = 0.005;
 
-    N1 = 100;
-    N2 = 100;
-    M  = 200;
-    L = 2;
+    p->N1 = 100;
+    p->N2 = 100;
+    p->M  = 200;
+    p->L = 2;
 
-    e.resize(2);
-    e[0] = 0.2;
-    e[1] = 0.2;
+    p->e.resize(2);
+    p->e[0] = 0.2;
+    p->e[1] = 0.2;
 
-    alpha0 = 1.0;
-    alpha1 = 10.0;
-    alpha2 = 2.0;
-    alpha3 = 1.0;
-    qamma = 0.2;
+    p->alpha0 = 1.0;
+    p->alpha1 = 10.0;
+    p->alpha2 = 2.0;
+    p->alpha3 = 1.0;
+    p->qamma = 0.2;
 
-    U0 = 0.0;
-    U1 = 0.0;
-    a = 1.0;
+    p->U0 = 0.0;
+    p->U1 = 0.0;
+    p->a = 1.0;
 
     DoubleVector x( 2*L + (M+1)*L);
     for (unsigned int k=0; k<=M; k++)
@@ -42,23 +43,23 @@ double HyperbolicControl2DM::fx(double t UNUSED_PARAM)
     x[2] = 0.7;
     x[3] = 0.7;
 
-    h = 0.001;
+    p->h = 0.001;
 
     // limits of v
-    vd = -2.0;
-    vu = +2.0;
+    p->vd = -2.0;
+    p->vu = +2.0;
 
     double min_step = 0.1;
     double gold_eps = 0.001;
     ConjugateGradient cg;
-    cg.setFunction(this);
-    cg.setGradient(this);
+    cg.setFunction(p);
+    cg.setGradient(p);
     cg.setEpsilon1(0.0001);
     cg.setEpsilon2(0.0001);
     cg.setEpsilon3(0.0001);
     cg.setR1MinimizeEpsilon(min_step, gold_eps);
-    cg.setPrinter(this);
-    cg.setProjection(this);
+    cg.setPrinter(p);
+    cg.setProjection(p);
     cg.setNormalize(true);
     cg.showEndMessage(true);
     cg.calculate(x);
@@ -111,9 +112,10 @@ double HyperbolicControl2DM::fx(double t UNUSED_PARAM)
     return rf;
 }
 
-double HyperbolicControl2DM::fx(const DoubleVector &x)
+double HyperbolicControl2DM::fx(const DoubleVector &x) const
 {
-    px = &x;
+    HyperbolicControl2DM *p = const_cast<HyperbolicControl2DM*>(this);
+    p->px = &x;
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
 

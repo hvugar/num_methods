@@ -15,11 +15,11 @@ public:
     HyperbolicControl2D22();
     virtual ~HyperbolicControl2D22() {}
 
-    virtual double fx(double x);
-    virtual double fx(const DoubleVector &x);
+    virtual double fx(double x) const;
+    virtual double fx(const DoubleVector &x) const;
 
     virtual void gradient(const DoubleVector &v, DoubleVector &g);
-    virtual void print(unsigned int i, const DoubleVector &f0, const DoubleVector &g, double fx) const;
+    virtual void print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double fx) const;
 
     virtual double initial1(unsigned int i, unsigned int j) const;
     virtual double initial2(unsigned int i, unsigned int j) const;

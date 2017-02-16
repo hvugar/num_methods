@@ -61,41 +61,42 @@ HyperbolicControl2D22::HyperbolicControl2D22()
     pu = NULL;
 }
 
-double HyperbolicControl2D22::fx(double T)
+double HyperbolicControl2D22::fx(double T) const
 {
-    M  = (unsigned int)(T*200);
+    HyperbolicControl2D22 *p = const_cast<HyperbolicControl2D22*>(this);
+    p->M  = (unsigned int)(T*200);
     unsigned int m = M;
 
     printf("t: %f M: %d m %d\n", T, M, m);
 
-    v0.resize((M+1)*L);
+    p->v0.resize((M+1)*L);
 
     for (unsigned int k=0; k<=m; k++)
     {
-        v0[0*(M+1)+k] = 2.0;
-        v0[1*(M+1)+k] = 2.0;
+        p->v0[0*(M+1)+k] = 2.0;
+        p->v0[1*(M+1)+k] = 2.0;
     }
 
     for (unsigned int k=m+1; k<=M; k++)
     {
-        v0[0*(M+1)+k] = v0[0*(M+1)+m];
-        v0[1*(M+1)+k] = v0[1*(M+1)+m];
+        p->v0[0*(M+1)+k] = v0[0*(M+1)+m];
+        p->v0[1*(M+1)+k] = v0[1*(M+1)+m];
     }
 
     double min_step = 10.0;
     double gold_eps = 0.001;
     ConjugateGradient cg;
-    cg.setFunction(this);
-    cg.setGradient(this);
+    cg.setFunction(p);
+    cg.setGradient(p);
     cg.setEpsilon1(0.001);
     cg.setEpsilon2(0.001);
     cg.setEpsilon3(0.001);
     cg.setR1MinimizeEpsilon(min_step, gold_eps);
-    cg.setPrinter(this);
-    //cg.setProjection(this);
-    cg.setNormalize(true);
+    cg.setPrinter(p);
+    //cg.setProjection(p);
+    cg.setNormalize(p);
     //cg.showEndMessage(false);
-    cg.calculate(v0);
+    cg.calculate(p->v0);
 
     double rf = fx(v0);
     fprintf(file, "%f %.16f\n", T, rf);
@@ -115,9 +116,10 @@ void HyperbolicControl2D22::print(unsigned int i, const DoubleVector &v, const D
     printf("J[%d]: %.16f\n", i, const_cast<HyperbolicControl2D22*>(this)->fx(v));
 }
 
-double HyperbolicControl2D22::fx(const DoubleVector &v)
+double HyperbolicControl2D22::fx(const DoubleVector &v) const
 {
-    pv = &v;
+    HyperbolicControl2D22 *p = const_cast<HyperbolicControl2D22*>(this);
+    p->pv = &v;
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a1, a2, qamma);
 

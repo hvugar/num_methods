@@ -15,8 +15,8 @@ public:
     HyperbolicControl2DMV() {}
     virtual ~HyperbolicControl2DMV() {}
 
-    virtual double fx(double x);
-    virtual double fx(const DoubleVector &x);
+    virtual double fx(double x) const;
+    virtual double fx(const DoubleVector &x) const;
     virtual void gradient(const DoubleVector &v, DoubleVector &e);
 
     virtual double initial1(unsigned int i, unsigned int j) const;

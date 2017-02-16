@@ -66,10 +66,11 @@ HyperbolicControl2D24::HyperbolicControl2D24()
     pu = NULL;
 }
 
-double HyperbolicControl2D24::fx(double t)
+double HyperbolicControl2D24::fx(double t) const
 {
-    t1 = t;
-    M  = (unsigned)ceil((t1 - t0)/ht);
+    HyperbolicControl2D24 *p = const_cast<HyperbolicControl2D24*>(this);
+    p->t1 = t;
+    p->M  = (unsigned)ceil((t1 - t0)/ht);
 
     printf("T: %f M: %d\n--------------------\n", t1, M);
 
@@ -125,15 +126,15 @@ double HyperbolicControl2D24::fx(double t)
     double min_step = 1.0;
     double gold_eps = 0.001;
     ConjugateGradient cg;
-    cg.setFunction(this);
-    cg.setGradient(this);
+    cg.setFunction(p);
+    cg.setGradient(p);
     cg.setEpsilon1(0.001);
     cg.setEpsilon2(0.001);
     cg.setEpsilon3(0.001);
     cg.setR1MinimizeEpsilon(min_step, gold_eps);
-    cg.setPrinter(this);
-    cg.setProjection(this);
-    cg.setNormalize(true);
+    cg.setPrinter(p);
+    cg.setProjection(p);
+    cg.setNormalize(p);
     //cg.showEndMessage(false);
     cg.calculate(w);
 
@@ -194,9 +195,10 @@ void HyperbolicControl2D24::print(unsigned int i, const DoubleVector &x, const D
     printGradients(x, i, 0.0, file);
 }
 
-double HyperbolicControl2D24::fx(const DoubleVector &w)
+double HyperbolicControl2D24::fx(const DoubleVector &w) const
 {
-    pw = &w;
+    HyperbolicControl2D24 *p = const_cast<HyperbolicControl2D24*>(this);
+    p->pw = &w;
     DoubleCube c;
     IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a1, a2, qamma);
 
