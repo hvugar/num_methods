@@ -1,10 +1,7 @@
 #include "heatcontrol1.h"
 
-void HeatControl1::Main(int argc, char *argv[])
+void HeatControl1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    C_UNUSED(argc);
-    C_UNUSED(argv);
-
     /* Function */
     HeatControl1 hc;
 
@@ -15,16 +12,16 @@ void HeatControl1::Main(int argc, char *argv[])
     }
 
     /* Minimization */
-    ConjugateGradient g2;
-    g2.setGradient(&hc);
-    g2.setFunction(&hc);
-    g2.setEpsilon1(0.0000001);
-    g2.setEpsilon2(0.0000001);
-    g2.setEpsilon3(0.0000001);
-    g2.setR1MinimizeEpsilon(0.1, 0.0000001);
-    g2.setPrinter(&hc);
-    g2.setNormalize(true);
-    g2.calculate(f0);
+    ConjugateGradient g;
+    g.setGradient(&hc);
+    g.setFunction(&hc);
+    g.setEpsilon1(0.0000001);
+    g.setEpsilon2(0.0000001);
+    g.setEpsilon3(0.0000001);
+    g.setR1MinimizeEpsilon(0.1, 0.0000001);
+    g.setPrinter(&hc);
+    g.setNormalize(true);
+    g.calculate(f0);
 
     IPrinter::printAsMatrix(f0, hc.M, hc.N);
 }
@@ -40,28 +37,27 @@ HeatControl1::HeatControl1()
     U.resize(N+1);
     for (unsigned int i=0; i<=N; i++) U[i] = u(i*hx, 1.0);
 
-    pibvp.setTimeDimension(Dimension(0.01,100,0));
-    pibvp.addSpaceDimension(Dimension(0.01,100,0));
+    forward.setTimeDimension(Dimension(ht,M,0));
+    forward.addSpaceDimension(Dimension(hx,N,0));
 
-    bpibvp.setTimeDimension(Dimension(0.01,100,0));
-    bpibvp.addSpaceDimension(Dimension(0.01,100,0));
-    bpibvp.pU = &U;
+    backward.setTimeDimension(Dimension(ht,M,0));
+    backward.addSpaceDimension(Dimension(hx,N,0));
+    backward.pU = &U;
 }
 
 double HeatControl1::fx(const DoubleVector &f) const
 {
+    const_cast<HeatControl1*>(this)->forward.pf = &f;
     DoubleVector u;
-    const_cast<HeatControl1*>(this)->pibvp.pf = &f;
-    pibvp.gridMethod(u);
+    forward.gridMethod(u);
 
     double sum = 0.0;
-    double alpha;
-    for (unsigned int i=0; i<=N; i++)
+    sum += 0.5*(u[0] - U[0])*(u[0] - U[0]);
+    for (unsigned int i=1; i<=N-1; i++)
     {
-        alpha = 1.0;
-        if (i==0 || i==N) alpha = 0.5;
-        sum += alpha*(u[i] - U[i])*(u[i] - U[i]);
+        sum += (u[i] - U[i])*(u[i] - U[i]);
     }
+    sum += 0.5*(u[N] - U[N])*(u[N] - U[N]);
     sum = hx*sum;
 
     double norm = 0.0;
@@ -86,13 +82,12 @@ double HeatControl1::fx(const DoubleVector &f) const
 void HeatControl1::gradient(const DoubleVector &f, DoubleVector &g)
 {
     DoubleVector u;
-    pibvp.pf = &f;
-    pibvp.gridMethod(u);
+    forward.pf = &f;
+    forward.gridMethod(u);
 
     DoubleMatrix psi;
-    bpibvp.pu = &u;
-    bpibvp.pU = &U;
-    bpibvp.gridMethod(psi);
+    backward.pu = &u;
+    backward.gridMethod(psi);
 
     for (unsigned int j=0; j<=M; j++)
     {
@@ -104,10 +99,9 @@ void HeatControl1::gradient(const DoubleVector &f, DoubleVector &g)
     }
 }
 
-void HeatControl1::print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx) const
+void HeatControl1::print(unsigned int i, const DoubleVector &, const DoubleVector &, double fx) const
 {
-    C_UNUSED(g);
-    printf("J[%d]: %.20f\n", i, const_cast<HeatControl1*>(this)->fx(f0));
+    printf("J[%d]: %.14f\n", i, fx);
 }
 
 double HeatControl1::u(double x, double t) const
@@ -117,7 +111,6 @@ double HeatControl1::u(double x, double t) const
 
 double HeatControl1::fxt(double x, double t) const
 {
-    C_UNUSED(x);
     return 2.0*t - 2.0;//*a;
 }
 
@@ -137,7 +130,8 @@ double HeatControl1::CParabolicIBVP::boundary(const SpaceNode &, const TimeNode 
 double HeatControl1::CParabolicIBVP::f(const SpaceNode &sn, const TimeNode &tn) const
 {
     Dimension dim1 = spaceDimension(Dimension::Dim1);
-    return (*pf)[tn.i*(dim1.sizeN()+1)+sn.i];
+    unsigned int N = dim1.sizeN();
+    return (*pf)[tn.i*(N+1)+sn.i];
 }
 
 double HeatControl1::CParabolicIBVP::a(const SpaceNode&, const TimeNode&) const
@@ -163,4 +157,9 @@ double HeatControl1::CBackwardParabolicIBVP::f(const SpaceNode&, const TimeNode&
 double HeatControl1::CBackwardParabolicIBVP::a(const SpaceNode&, const TimeNode&) const
 {
     return +1.0;
+}
+
+void HeatControl1::CBackwardParabolicIBVP::layerInfo(const DoubleVector &, unsigned int) const
+{
+
 }

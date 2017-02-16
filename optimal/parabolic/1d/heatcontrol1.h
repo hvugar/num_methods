@@ -20,10 +20,7 @@
  * u(l,t) = m2(t);
  */
 
-class MINIMUMSHARED_EXPORT HeatControl1 : public RnFunction, public IGradient,
-        //public ParabolicIBVP, public BackwardParabolicIBVP,
-        //public IParabolicEquation, public IBackwardParabolicEquation,
-        public IPrinter
+class MINIMUMSHARED_EXPORT HeatControl1 : public RnFunction, public IGradient, public IPrinter
 {
 public:
     HeatControl1();
@@ -31,24 +28,30 @@ public:
 
     class CParabolicIBVP : public ParabolicIBVP
     {
-    public:
+    protected:
         virtual double initial(const SpaceNode &sn) const;
         virtual double boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType boundary = Unused) const;
         virtual double f(const SpaceNode &sn, const TimeNode &tn) const;
         virtual double a(const SpaceNode &sn, const TimeNode &tn) const;
+
+    public:
         const DoubleVector *pf;
-    } pibvp;
+    } forward;
 
     class CBackwardParabolicIBVP : public BackwardParabolicIBVP
     {
-    public:
+    protected:
         virtual double initial(const SpaceNode &sn) const;
         virtual double boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType boundary = Unused) const;
         virtual double f(const SpaceNode &sn, const TimeNode &tn) const;
         virtual double a(const SpaceNode &sn, const TimeNode &tn) const;
+
+        virtual void layerInfo(const DoubleVector &, unsigned int) const;
+
+    public:
         const DoubleVector *pu;
         const DoubleVector *pU;
-    } bpibvp;
+    } backward;
 
     virtual double fx(const DoubleVector& f) const;
     virtual void gradient(const DoubleVector& f, DoubleVector &g);
@@ -69,4 +72,4 @@ public:
     static void Main(int argc, char *argv[]);
 };
 
-#endif // HEATCONTROL_H
+#endif // HEATCONTROL1_H

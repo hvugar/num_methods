@@ -55,7 +55,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //BorderTest1::Main(argc, argv);
     //Example2::Main(argc, argv);
     //Problem1::Main(argc, argv);
-    Problem1M::Main(argc, argv);
+    //Problem1M::Main(argc, argv);
     //Example4::Main(argc, argv);
     //BorderParabolicD::Main(argc, argv);
     //BorderParabolicN::Main(argc, argv);
@@ -68,8 +68,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //ParabolicIBVP2::Main(argc, argv);
     //HyperbolicIBVP1::Main(argc, argv);
 
-    //HeatControl::Main(argc, argv);
-    //HeatControl1::Main(argc, argv);
+    HeatControl::Main(argc, argv);
+    HeatControl1::Main(argc, argv);
 
     //Rosenbrock::Main(argc, argv);
 

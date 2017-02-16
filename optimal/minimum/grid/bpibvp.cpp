@@ -39,7 +39,7 @@ void BackwardParabolicIBVP::gridMethod(DoubleVector &p, SweepMethodDirection dir
         isn.x = isn.i*hx;
         p[n] = initial(isn);
     }
-    layerInfo(p, 0);
+    layerInfo(p, M);
 
     SpaceNode lsn;
     lsn.i = minN;
@@ -130,7 +130,7 @@ void BackwardParabolicIBVP::gridMethod(DoubleMatrix &p, SweepMethodDirection dir
     {
         isn.i = n+minN;
         isn.x = isn.i*hx;
-        p[0][n] = initial(isn);
+        p[M][n] = initial(isn);
     }
     layerInfo(p, M);
 

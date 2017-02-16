@@ -1,10 +1,7 @@
 #include "heatcontrol.h"
 
-void HeatControl::Main(int argc, char *argv[])
+void HeatControl::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    C_UNUSED(argc);
-    C_UNUSED(argv);
-
     /* Function */
     HeatControl hc;
 
@@ -15,28 +12,27 @@ void HeatControl::Main(int argc, char *argv[])
     }
 
     /* Minimization */
-    ConjugateGradient g2;
-    g2.setGradient(&hc);
-    g2.setFunction(&hc);
-    g2.setEpsilon1(0.0000001);
-    g2.setEpsilon2(0.0000001);
-    g2.setEpsilon3(0.0000001);
-    g2.setR1MinimizeEpsilon(0.1, 0.0000001);
-    g2.setPrinter(&hc);
-    g2.setNormalize(true);
-    g2.calculate(f0);
+    ConjugateGradient g;
+    g.setGradient(&hc);
+    g.setFunction(&hc);
+    g.setEpsilon1(0.0000001);
+    g.setEpsilon2(0.0000001);
+    g.setEpsilon3(0.0000001);
+    g.setR1MinimizeEpsilon(0.1, 0.0000001);
+    g.setPrinter(&hc);
+    g.setNormalize(true);
+    g.calculate(f0);
 
     IPrinter::printAsMatrix(f0, hc.M, hc.N);
 }
 
 HeatControl::HeatControl()
 {
-    a  = 1.0;
-
     N = 100;
     M = 100;
     hx = 0.01;
     ht = 0.01;
+    a  = 1.0;
 
     // initialize U
     U.resize(N+1);
@@ -50,13 +46,12 @@ double HeatControl::fx(const DoubleVector &f) const
     IParabolicEquation::calculateU(u, hx, ht, N, M, a);
 
     double sum = 0.0;
-    double alpha;
-    for (unsigned int i=0; i<=N; i++)
+    sum += 0.5*(u[0] - U[0])*(u[0] - U[0]);
+    for (unsigned int i=1; i<=N-1; i++)
     {
-        alpha = 1.0;
-        if (i==0 || i==N) alpha = 0.5;
-        sum += alpha*(u[i] - U[i])*(u[i] - U[i]);
+        sum += (u[i] - U[i])*(u[i] - U[i]);
     }
+    sum += 0.5*(u[N] - U[N])*(u[N] - U[N]);
     sum = hx*sum;
 
     double norm = 0.0;
@@ -136,10 +131,9 @@ double HeatControl::bf(unsigned int i, unsigned int j) const
     return 0.0;
 }
 
-void HeatControl::print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx) const
+void HeatControl::print(unsigned int i, const DoubleVector&, const DoubleVector &, double fx) const
 {
-    C_UNUSED(g);
-    printf("J[%d]: %.20f\n", i, const_cast<HeatControl*>(this)->fx(f0));
+    printf("J[%d]: %.14f\n", i, fx);
 }
 
 double HeatControl::u(double x, double t) const

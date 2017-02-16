@@ -26,6 +26,7 @@ public:
 
     void gridMethod(DoubleVector &u, SweepMethodDirection direction = ForwardSweep) const;
     void gridMethod(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep) const;
+
     void calculate(DoubleCube &u, SweepMethodDirection direction = ForwardSweep) const;
 };
 
