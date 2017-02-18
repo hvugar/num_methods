@@ -1,5 +1,5 @@
-#ifndef PROBLEM1M_H
-#define PROBLEM1M_H
+#ifndef PROBLEM1L2_H
+#define PROBLEM1L2_H
 
 #include <function.h>
 #include <gradient.h>
@@ -10,13 +10,10 @@
 #include <gradient_cjt.h>
 #include <cmethods.h>
 
-void qovmaFirstColM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e);
-void qovmaFirstRowM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e);
-
-class Problem1M : protected RnFunction, protected IGradient, public IPrinter, public IProjection
+class Problem1L2 : protected RnFunction, protected IGradient, public IPrinter, public IProjection
 {
 public:
-    Problem1M();
+    Problem1L2();
 
 protected:
     virtual double fx(const DoubleVector &x) const;
@@ -32,6 +29,10 @@ protected:
 
     double integral(const DoubleVector &x) const;
     double norm(const DoubleVector &x0) const;
+
+    void getComponents(DoubleVector &k1, DoubleVector &z1, DoubleVector &e1, const DoubleVector &x) const;
+    void qovmaFirstColM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const;
+    void qovmaFirstRowM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const;
 
 private:
     unsigned int L;
@@ -63,4 +64,4 @@ public:
     static void Main(int argc, char* argv[]);
 };
 
-#endif // PROBLEM1M_H
+#endif // PROBLEM1L2_H

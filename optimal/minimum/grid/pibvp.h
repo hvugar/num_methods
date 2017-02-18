@@ -36,6 +36,8 @@ public:
     //void calculateN6R2LD(DoubleMatrix &u) const;
 
     void calculateMVD(DoubleMatrix &u) const;
+    void calculateMVD1(DoubleMatrix &u) const;
+    void calculateMVD2(DoubleMatrix &u) const;
 };
 
 #endif // PARABOLICIBVP_H

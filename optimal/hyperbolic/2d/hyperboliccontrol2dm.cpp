@@ -35,8 +35,8 @@ double HyperbolicControl2DM::fx(double t UNUSED_PARAM) const
     DoubleVector x( 2*L + (M+1)*L);
     for (unsigned int k=0; k<=M; k++)
     {
-        x[2*L + 0*(M+1)+k] = 1.0;
-        x[2*L + 1*(M+1)+k] = 1.0;
+        x[2*L + 0*(M+1)+k] = 2.0;
+        x[2*L + 1*(M+1)+k] = 2.0;
     }
     x[0] = 0.3;
     x[1] = 0.4;
@@ -136,6 +136,26 @@ double HyperbolicControl2DM::fx(const DoubleVector &x) const
         }
     }
     sum1 = h1*h2*sum1;
+
+//    sum1 = 0.0;
+//    sum1 += 0.25 * (u0[0][0]-U0)   * (u0[0][0]-U0);
+//    sum1 += 0.25 * (u0[0][N1]-U0)  * (u0[0][N1]-U0);
+//    sum1 += 0.25 * (u0[N2][0]-U0)  * (u0[N2][0]-U0);
+//    sum1 += 0.25 * (u0[N2][N1]-U0) * (u0[N2][N1]-U0);
+//    for (unsigned int i=1; i<=N1-1; i++)
+//    {
+//        sum1 += 0.5*(u0[0][i]-U0)  * (u0[0][i]-U0);
+//        sum1 += 0.5*(u0[N2][i]-U0) * (u0[N2][i]-U0);
+//    }
+//    for (unsigned int j=1; j<=N2-1; j++)
+//    {
+//        sum1 += 0.5*(u0[j][0]-U0)  * (u0[j][0]-U0);
+//        for (unsigned int i=1; i<=N1-1; i++)
+//        {
+//            sum1 += (u0[j][i]-U0) * (u0[j][i]-U0);
+//        }
+//        sum1 += 0.5*(u0[j][N1]-U0) * (u0[j][N1]-U0);
+//    }
 
     double sum2 = 0.0;
     for (unsigned int j=0; j<=N2; j++)

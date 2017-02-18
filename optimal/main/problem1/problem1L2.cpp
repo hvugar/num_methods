@@ -1,11 +1,11 @@
-#include "problem1m.h"
+#include "problem1L2.h"
 
-void Problem1M::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
+void Problem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    Problem1M p;
+    Problem1L2 p;
 }
 
-Problem1M::Problem1M()
+Problem1L2::Problem1L2()
 {
     L = 2;
     N = 1000;
@@ -16,8 +16,8 @@ Problem1M::Problem1M()
 
     Ti = 2.0;
     Te = 3.0;
-    alpha = 1.0;
-    lambda0 = 1.0;
+    alpha = 0.01;
+    lambda0 = 10.0;
     lambdal = 1.0;
 
     alpha0 = 1.0;
@@ -31,8 +31,8 @@ Problem1M::Problem1M()
     /* init V */
     for (unsigned int n=0; n<=N; n++)
     {
-        double h1 = 0.4/N;
-        V[n] = 4.2 - n*h1;
+        //double h1 = 0.4/N;
+        V[n] = 4.0;//4.2 - n*h1;
     }
     IPrinter::printVector(14, 10, V,"V: ");
 
@@ -58,33 +58,33 @@ Problem1M::Problem1M()
     g.calculate(x0);
 }
 
-double Problem1M::fx(const DoubleVector &x) const
+double Problem1L2::fx(const DoubleVector &x) const
 {
     return integral(x) + norm(x);
 }
 
-double Problem1M::integral(const DoubleVector &x) const
+double Problem1L2::integral(const DoubleVector &x) const
 {
-    const_cast<Problem1M*>(this)->px = &x;
+    const_cast<Problem1L2*>(this)->px = &x;
 
     DoubleMatrix u;
     calculateU(u);
 
     double sum = 0.0;
-    sum += 0.5*mu(0)*(u.at(M, 0)-V.at(0))*(u.at(M, 0)-V.at(0));
+    sum += 0.5*mu(0)*(u[M][0]-V[0])*(u[M][0]-V[0]);
     for (unsigned int n=1; n<=N-1; n++)
     {
-        sum += mu(n)*(u.at(M, n)-V.at(n))*(u.at(M, n)-V.at(n));
+        sum += mu(n)*(u[M][n]-V[n])*(u[M][n]-V[n]);
     }
-    sum += 0.5*mu(N)*(u.at(M, N)-V.at(N))*(u.at(M, N)-V.at(N));
+    sum += 0.5*mu(N)*(u[M][N]-V[N])*(u[M][N]-V[N]);
     sum = hx*sum;
 
     return alpha0*sum;
 }
 
-double Problem1M::norm(const DoubleVector &x) const
+double Problem1L2::norm(const DoubleVector &x) const
 {
-    const_cast<Problem1M*>(this)->px = &x;
+    const_cast<Problem1L2*>(this)->px = &x;
     DoubleVector k = x.mid(0,1);
     DoubleVector z = x.mid(2,3);
     DoubleVector e = x.mid(4,5);
@@ -99,7 +99,7 @@ double Problem1M::norm(const DoubleVector &x) const
     return alpha1*norm1 + alpha2*norm2 + alpha3*norm3;
 }
 
-void Problem1M::gradient(const DoubleVector &x, DoubleVector &g)
+void Problem1L2::gradient(const DoubleVector &x, DoubleVector &g)
 {
     px = &x;
     DoubleVector k = x.mid(0,1);
@@ -159,7 +159,7 @@ void Problem1M::gradient(const DoubleVector &x, DoubleVector &g)
     }
 }
 
-void Problem1M::calculateU(DoubleMatrix &u) const
+void Problem1L2::calculateU(DoubleMatrix &u) const
 {
     const DoubleVector &x = *px;
     DoubleVector k = x.mid(0,1);
@@ -220,8 +220,8 @@ void Problem1M::calculateU(DoubleMatrix &u) const
         for (unsigned int i=0; i<=N; i++)
         {
             u.at(m, i) = rx[i];
-            //if (fabs(i*hx - e.at(0)) <= hx) { u[m][i] *= 1.1; }
-            //if (fabs(i*hx - e.at(1)) <= hx) { u[m][i] *= 1.1; }
+            //if (fabs(i*hx - e.at(0)) <= hx) { u[m][i] += u[m][i]*0.01; }
+            //if (fabs(i*hx - e.at(1)) <= hx) { u[m][i] -= u[m][i]*0.01; }
         }
     }
 
@@ -233,7 +233,7 @@ void Problem1M::calculateU(DoubleMatrix &u) const
     de.clear();
 }
 
-void Problem1M::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
+void Problem1L2::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
 {
     const DoubleVector &x = *px;
     DoubleVector k = x.mid(0,1);
@@ -301,19 +301,19 @@ void Problem1M::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
     de.clear();
 }
 
-double Problem1M::initial(unsigned int n UNUSED_PARAM) const
+double Problem1L2::initial(unsigned int n UNUSED_PARAM) const
 {
     return Ti;
 }
 
-void Problem1M::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double r) const
+void Problem1L2::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double r) const
 {
+    Problem1L2 *pm = const_cast<Problem1L2*>(this);
     DoubleVector k = x.mid(0,1);
     DoubleVector z = x.mid(2,3);
     DoubleVector e = x.mid(4,5);
 
     IPrinter::printSeperatorLine();
-    Problem1M *pm = const_cast<Problem1M*>(this);
 
     DoubleVector ng(x.size());
     IGradient::Gradient(pm, h, x, ng);
@@ -341,7 +341,7 @@ void Problem1M::print(unsigned int i, const DoubleVector &x, const DoubleVector 
     IPrinter::printVector(14,10,u.row(u.rows()-1),"u: ");
 }
 
-void Problem1M::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
+void Problem1L2::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
 {
     if (x.at(2) < 3.80) x.at(2) = 3.80;
     if (x.at(3) < 3.80) x.at(3) = 3.80;
@@ -357,7 +357,14 @@ void Problem1M::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
     if (x.at(5) < 0.60) x.at(5) = 0.60;
 }
 
-void qovmaFirstColM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e)
+void Problem1L2::getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &x) const
+{
+    k = x.mid(0,1);
+    z = x.mid(2,3);
+    e = x.mid(4,5);
+}
+
+void Problem1L2::qovmaFirstColM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const
 {
     double *p = (double*)malloc(sizeof(double)*n);
     double *q = (double*)malloc(sizeof(double)*n);
@@ -415,7 +422,7 @@ void qovmaFirstColM(double *a, double *b, double *c, double *d, double *x, unsig
     free(q);
 }
 
-void qovmaFirstRowM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e)
+void Problem1L2::qovmaFirstRowM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const
 {
     double *p = (double*)malloc(sizeof(double)*n);
     double *q = (double*)malloc(sizeof(double)*n);

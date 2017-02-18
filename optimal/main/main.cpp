@@ -4,15 +4,15 @@
 #include <grid/pibvp.h>
 #include <grid/hibvp.h>
 
-#include "problem1.h"
+#include "problem1/problem1.h"
+#include "problem1/problem1L2.h"
+#include "problem1/problem1L3.h"
 #include "loadedsystems.h"
 #include "example1.h"
 #include "example2.h"
 #include "example3.h"
 #include "example4.h"
 #include "example5.h"
-#include "problem1.h"
-#include "problem1m.h"
 
 #include <../border/borderparabolicd.h>
 #include <../border/borderparabolicn.h>
@@ -55,7 +55,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //BorderTest1::Main(argc, argv);
     //Example2::Main(argc, argv);
     //Problem1::Main(argc, argv);
-    //Problem1M::Main(argc, argv);
+    Problem1L2::Main(argc, argv);
+    //Problem1L3::Main(argc, argv);
     //Example4::Main(argc, argv);
     //BorderParabolicD::Main(argc, argv);
     //BorderParabolicN::Main(argc, argv);
@@ -68,8 +69,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //ParabolicIBVP2::Main(argc, argv);
     //HyperbolicIBVP1::Main(argc, argv);
 
-    HeatControl::Main(argc, argv);
-    HeatControl1::Main(argc, argv);
+    //HeatControl::Main(argc, argv);
+    //HeatControl1::Main(argc, argv);
 
     //Rosenbrock::Main(argc, argv);
 

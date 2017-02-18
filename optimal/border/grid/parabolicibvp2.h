@@ -4,7 +4,7 @@
 #include <grid/pibvp.h>
 #include <time.h>
 
-#define SAMPLE_1
+#define SAMPLE_3
 
 class MINIMUMSHARED_EXPORT ParabolicIBVP2 : public ParabolicIBVP
 {
@@ -19,6 +19,7 @@ protected:
 
 public:
     void static Main(int argc, char* argv[]);
+    double U(unsigned int i, unsigned int j, unsigned int k) const;
 };
 
 #endif // PARABOLICIBVP2_H

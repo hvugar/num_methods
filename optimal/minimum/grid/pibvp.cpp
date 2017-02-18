@@ -649,3 +649,432 @@ void ParabolicIBVP::calculateMVD(DoubleMatrix &u) const
     dd2.clear();
     rx2.clear();
 }
+
+void ParabolicIBVP::calculateMVD1(DoubleMatrix &u) const
+{
+    Dimension time = mtimeDimension;
+    Dimension dim1 = mspaceDimension.at(0);
+    Dimension dim2 = mspaceDimension.at(1);
+
+    double ht = time.step();
+    double h1 = dim1.step();
+    double h2 = dim2.step();
+    unsigned int M = time.maxN();
+    unsigned int N1 = dim1.maxN();
+    unsigned int N2 = dim2.maxN();
+
+    double a1 = 1.0;
+    double a2 = 1.0;
+
+    //cleaning matrix
+    u.resize(N2+1, N1+1);
+
+    DoubleMatrix uh(N2+1, N1+1);
+
+    double *ka1 = (double*) malloc(sizeof(double)*N1-1);
+    double *kb1 = (double*) malloc(sizeof(double)*N1-1);
+    double *kc1 = (double*) malloc(sizeof(double)*N1-1);
+    double *kd1 = (double*) malloc(sizeof(double)*N1-1);
+    double *rx1 = (double*) malloc(sizeof(double)*N1-1);
+
+    double *ka2 = (double*) malloc(sizeof(double)*N2-1);
+    double *kb2 = (double*) malloc(sizeof(double)*N2-1);
+    double *kc2 = (double*) malloc(sizeof(double)*N2-1);
+    double *kd2 = (double*) malloc(sizeof(double)*N2-1);
+    double *rx2 = (double*) malloc(sizeof(double)*N2-1);
+
+    double x1_a = -(a1*ht)/(2.0*h1*h1);
+    double x1_b  = 1.0 + (a1*ht)/(h1*h1);
+    double x1_c = (a2*ht)/(2.0*h2*h2);
+
+    double x2_a = -(a2*ht)/(2.0*h2*h2);
+    double x2_b  = 1.0 + (a2*ht)/(h2*h2);
+    double x2_c = (a1*ht)/(2.0*h1*h1);
+
+    for (unsigned int j=0; j<=N2; j++)
+    {
+        SpaceNode sn;
+        sn.j = j;
+        sn.y = j*h2;
+        for (unsigned int i=0; i<=N1; i++)
+        {
+            sn.i = i;
+            sn.x = i*h1;
+            u[j][i] = initial(sn);
+        }
+    }
+
+    TimeNode tn;
+    SpaceNode sn;
+    for (unsigned int k=1; k<=M; k++)
+    {
+        tn.i = 2*k-1;
+        tn.t = 0.5*(2*k-1)*ht;
+        // Approximation to x1 direction
+        for (unsigned int j=1; j<N2; j++)
+        {
+            sn.j = j;
+            sn.y = j*h2;
+            for (unsigned int i=1; i<N1; i++)
+            {
+                sn.i = i;
+                sn.x = i*h1;
+
+                ka1[i-1] = x1_a;
+                kb1[i-1] = x1_b;
+                kc1[i-1] = x1_a;
+                kd1[i-1] = x1_c*(u[j-1][i] - 2.0*u[j][i] + u[j+1][i]) + u[j][i] + (ht/2.0) * f(sn, tn);
+            }
+
+            ka1[0]     = 0.0;
+            kc1[N1-2]  = 0.0;
+
+            SpaceNode sn0;
+            sn0.i = 0;
+            sn0.x = 0.0;
+            sn0.j = j;
+            sn0.y = j*h2;
+            uh[j][0]  = boundary(sn0, tn);
+            SpaceNode snN;
+            snN.i = N1;
+            snN.x = N1*h1;
+            snN.j = j;
+            snN.y = j*h2;
+            uh[j][N1] = boundary(snN, tn);
+
+            kd1[0]    -= x1_a * uh[j][0];
+            kd1[N1-2] -= x1_a * uh[j][N1];
+
+            tomasAlgorithm(ka1, kb1, kc1, kd1, rx1, N1-1);
+
+            for (unsigned int i=1; i<N1; i++)
+            {
+                uh[j][i] = rx1[i-1];
+            }
+        }
+
+        for (unsigned int i=0; i<=N1; i++)
+        {
+            SpaceNode sn0;
+            sn0.i = i;
+            sn0.x = i*h1;
+            sn0.j = 0;
+            sn0.y = 0.0;
+            uh[0][i]  = boundary(sn0, tn);
+            SpaceNode snN;
+            snN.i = i;
+            snN.x = i*h1;
+            snN.j = N2;
+            snN.y = N2*h2;
+            uh[N2][i] = boundary(snN, tn);
+        }
+
+        tn.i = k;
+        tn.t = k*ht;
+        // Approximation to x2 direction
+        for (unsigned int i=1; i<N1; i++)
+        {
+            sn.i = i;
+            sn.x = i*h1;
+            for (unsigned int j=1; j<N2; j++)
+            {
+                sn.j = j;
+                sn.y = j*h2;
+                ka2[j-1] = x2_a;
+                kb2[j-1] = x2_b;
+                kc2[j-1] = x2_a;
+                kd2[j-1] = x2_c*(uh[j][i-1] - 2.0*uh[j][i] + uh[j][i+1]) + uh[j][i] + (ht/2.0) * f(sn, tn);
+            }
+            ka2[0]     = 0.0;
+            kc2[N2-2]  = 0.0;
+
+            SpaceNode sn0;
+            sn0.i = i;
+            sn0.x = i*h1;
+            sn0.j = 0;
+            sn0.y = 0.0;
+            u[0][i]  = boundary(sn0, tn);
+            SpaceNode snN;
+            snN.i = i;
+            snN.x = i*h1;
+            snN.j = N2;
+            snN.y = N2*h2;
+            u[N2][i] = boundary(snN, tn);
+
+            kd2[0]    -= x2_a * u[0][i];
+            kd2[N2-2] -= x2_a * u[N2][i];
+
+            tomasAlgorithm(ka2, kb2, kc2, kd2, rx2, N2-1);
+
+            for (unsigned int j=1; j<N2; j++)
+            {
+                u[j][i] = rx2[j-1];
+            }
+        }
+
+        for (unsigned int j=0; j<=N2; j++)
+        {
+            SpaceNode sn0;
+            sn0.i = 0;
+            sn0.x = 0*h1;
+            sn0.j = j;
+            sn0.y = j*h2;
+            u[j][0]  = boundary(sn0, tn);
+            SpaceNode snN;
+            snN.i = N1;
+            snN.x = N1*h1;
+            snN.j = j;
+            snN.y = j*h2;
+            u[j][N1] = boundary(snN, tn);
+        }
+    }
+
+    free(ka1);
+    free(kb1);
+    free(kc1);
+    free(kd1);
+    free(rx1);
+
+    free(ka2);
+    free(kb2);
+    free(kc2);
+    free(kd2);
+    free(rx2);
+
+//    ka1.clear();
+//    kb1.clear();
+//    kc1.clear();
+//    kd1.clear();
+//    rx1.clear();
+
+//    ka2.clear();
+//    kb2.clear();
+//    kc2.clear();
+//    kd2.clear();
+//    rx2.clear();
+}
+
+void ParabolicIBVP::calculateMVD2(DoubleMatrix &u) const
+{
+    Dimension time = mtimeDimension;
+    Dimension dim1 = mspaceDimension.at(0);
+    Dimension dim2 = mspaceDimension.at(1);
+
+    double ht = time.step();
+    double h1 = dim1.step();
+    double h2 = dim2.step();
+    unsigned int M = time.maxN();
+    unsigned int N1 = dim1.maxN();
+    unsigned int N2 = dim2.maxN();
+
+    double a1 = 1.0;
+    double a2 = 1.0;
+
+    double **v = (double**) malloc(sizeof(double*)*(N2+1));
+    for (unsigned int i=0; i<=N2; i++) v[i] = (double*) malloc(sizeof(double)*(N1+1));
+
+    double **w = (double**) malloc(sizeof(double*)*(N2+1));
+    for (unsigned int i=0; i<=N2; i++) w[i] = (double*) malloc(sizeof(double)*(N1+1));
+
+    double *ka1 = (double*) malloc(sizeof(double)*N1-1);
+    double *kb1 = (double*) malloc(sizeof(double)*N1-1);
+    double *kc1 = (double*) malloc(sizeof(double)*N1-1);
+    double *kd1 = (double*) malloc(sizeof(double)*N1-1);
+    double *rx1 = (double*) malloc(sizeof(double)*N1-1);
+
+    double *ka2 = (double*) malloc(sizeof(double)*N2-1);
+    double *kb2 = (double*) malloc(sizeof(double)*N2-1);
+    double *kc2 = (double*) malloc(sizeof(double)*N2-1);
+    double *kd2 = (double*) malloc(sizeof(double)*N2-1);
+    double *rx2 = (double*) malloc(sizeof(double)*N2-1);
+
+    double x1_a = -(a1*ht)/(2.0*h1*h1);
+    double x1_b  = 1.0 + (a1*ht)/(h1*h1);
+    double x1_c = (a2*ht)/(2.0*h2*h2);
+
+    double x2_a = -(a2*ht)/(2.0*h2*h2);
+    double x2_b  = 1.0 + (a2*ht)/(h2*h2);
+    double x2_c = (a1*ht)/(2.0*h1*h1);
+
+    for (unsigned int j=0; j<=N2; j++)
+    {
+        SpaceNode sn;
+        sn.j = j;
+        sn.y = j*h2;
+        for (unsigned int i=0; i<=N1; i++)
+        {
+            sn.i = i;
+            sn.x = i*h1;
+            v[j][i] = initial(sn);
+        }
+    }
+
+    TimeNode tn;
+    SpaceNode sn;
+    TimeNode tn1;
+    for (unsigned int k=1; k<=M; k++)
+    {
+        tn.i = 2*k-1;
+        tn.t = (k-0.5)*ht;
+
+        tn1.i = 2*k-1;
+        tn1.t = (k-1.0)*ht;
+        // Approximation to x1 direction
+        for (unsigned int j=1; j<N2; j++)
+        {
+            sn.j = j;
+            sn.y = j*h2;
+            for (unsigned int i=1; i<N1; i++)
+            {
+                sn.i = i;
+                sn.x = i*h1;
+
+                ka1[i-1] = x1_a;
+                kb1[i-1] = x1_b;
+                kc1[i-1] = x1_a;
+                kd1[i-1] = x1_c*(v[j-1][i] - 2.0*v[j][i] + v[j+1][i]) + v[j][i] + (ht/2.0) * /*f(sn, tn);*/(f(sn, tn)+f(sn, tn1))/2.0;
+            }
+
+            ka1[0]     = 0.0;
+            kc1[N1-2]  = 0.0;
+
+            SpaceNode sn0;
+            sn0.i = 0;
+            sn0.x = 0.0;
+            sn0.j = j;
+            sn0.y = j*h2;
+            w[j][0]  = boundary(sn0, tn);
+            SpaceNode snN;
+            snN.i = N1;
+            snN.x = N1*h1;
+            snN.j = j;
+            snN.y = j*h2;
+            w[j][N1] = boundary(snN, tn);
+
+            kd1[0]    -= x1_a * w[j][0];
+            kd1[N1-2] -= x1_a * w[j][N1];
+
+            tomasAlgorithm(ka1, kb1, kc1, kd1, rx1, N1-1);
+
+            for (unsigned int i=1; i<N1; i++)
+            {
+                w[j][i] = rx1[i-1];
+            }
+        }
+
+        for (unsigned int i=0; i<=N1; i++)
+        {
+            SpaceNode sn0;
+            sn0.i = i;
+            sn0.x = i*h1;
+            sn0.j = 0;
+            sn0.y = 0.0;
+            w[0][i]  = boundary(sn0, tn);
+            SpaceNode snN;
+            snN.i = i;
+            snN.x = i*h1;
+            snN.j = N2;
+            snN.y = N2*h2;
+            w[N2][i] = boundary(snN, tn);
+        }
+
+        tn.i = 2*k;
+        tn.t = k*ht;
+        // Approximation to x2 direction
+        for (unsigned int i=1; i<N1; i++)
+        {
+            sn.i = i;
+            sn.x = i*h1;
+            for (unsigned int j=1; j<N2; j++)
+            {
+                sn.j = j;
+                sn.y = j*h2;
+                ka2[j-1] = x2_a;
+                kb2[j-1] = x2_b;
+                kc2[j-1] = x2_a;
+                kd2[j-1] = x2_c*(w[j][i-1] - 2.0*w[j][i] + w[j][i+1]) + w[j][i] + (ht/2.0) * f(sn, tn);
+            }
+            ka2[0]     = 0.0;
+            kc2[N2-2]  = 0.0;
+
+            SpaceNode sn0;
+            sn0.i = i;
+            sn0.x = i*h1;
+            sn0.j = 0;
+            sn0.y = 0.0;
+            v[0][i]  = boundary(sn0, tn);
+            SpaceNode snN;
+            snN.i = i;
+            snN.x = i*h1;
+            snN.j = N2;
+            snN.y = N2*h2;
+            v[N2][i] = boundary(snN, tn);
+
+            kd2[0]    -= x2_a * v[0][i];
+            kd2[N2-2] -= x2_a * v[N2][i];
+
+            tomasAlgorithm(ka2, kb2, kc2, kd2, rx2, N2-1);
+
+            for (unsigned int j=1; j<N2; j++)
+            {
+                v[j][i] = rx2[j-1];
+            }
+        }
+
+        for (unsigned int j=0; j<=N2; j++)
+        {
+            SpaceNode sn0;
+            sn0.i = 0;
+            sn0.x = 0*h1;
+            sn0.j = j;
+            sn0.y = j*h2;
+            v[j][0]  = boundary(sn0, tn);
+            SpaceNode snN;
+            snN.i = N1;
+            snN.x = N1*h1;
+            snN.j = j;
+            snN.y = j*h2;
+            v[j][N1] = boundary(snN, tn);
+        }
+    }
+
+    for (unsigned int i=0; i<=N2; i++) free(w[i]);
+    free(w);
+
+    //cleaning matrix
+    u.resize(N2+1, N1+1);
+    for (unsigned int j=0; j<=N2; j++)
+    {
+        for (unsigned int i=0; i<=N1; i++)
+        {
+            u[j][i] = v[j][i];
+        }
+    }
+
+    for (unsigned int i=0; i<=N2; i++) free(v[i]);
+    free(v);
+
+    free(ka1);
+    free(kb1);
+    free(kc1);
+    free(kd1);
+    free(rx1);
+
+    free(ka2);
+    free(kb2);
+    free(kc2);
+    free(kd2);
+    free(rx2);
+
+//    ka1.clear();
+//    kb1.clear();
+//    kc1.clear();
+//    kd1.clear();
+//    rx1.clear();
+
+//    ka2.clear();
+//    kb2.clear();
+//    kc2.clear();
+//    kd2.clear();
+//    rx2.clear();
+}
