@@ -13,7 +13,7 @@ class MINIMUMSHARED_EXPORT HyperbolicControl2DM : public R1Function, public RnFu
         public IPrinter, public IProjection
 {
 public:
-    HyperbolicControl2DM() {}
+    HyperbolicControl2DM();
     virtual ~HyperbolicControl2DM() {}
 
     virtual double fx(double x) const;

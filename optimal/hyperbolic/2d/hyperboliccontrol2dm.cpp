@@ -6,48 +6,45 @@ void HyperbolicControl2DM::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM
     hc.fx(1.0);
 }
 
+HyperbolicControl2DM::HyperbolicControl2DM()
+{
+    h1 = 0.01;  N1 = 100;
+    h2 = 0.01;  N2 = 100;
+    ht = 0.005; M  = 200;
+    h = 0.001;
+    L = 2;
+
+    e << 0.2 << 0.2;
+
+    alpha0 = 1.0;
+    alpha1 = 10.0;
+    alpha2 = 2.0;
+    alpha3 = 1.0;
+    qamma = 0.2;
+
+    U0 = U1 = 0.0;
+    a = 1.0;
+
+    // limits of v
+    vd = -2.0;
+    vu = +2.0;
+}
+
 double HyperbolicControl2DM::fx(double t UNUSED_PARAM) const
 {
     HyperbolicControl2DM *p = const_cast<HyperbolicControl2DM*>(this);
-    p->h1 = 0.01;
-    p->h2 = 0.01;
-    p->ht = 0.005;
-
-    p->N1 = 100;
-    p->N2 = 100;
     p->M  = 200;
-    p->L = 2;
 
-    p->e.resize(2);
-    p->e[0] = 0.2;
-    p->e[1] = 0.2;
-
-    p->alpha0 = 1.0;
-    p->alpha1 = 10.0;
-    p->alpha2 = 2.0;
-    p->alpha3 = 1.0;
-    p->qamma = 0.2;
-
-    p->U0 = 0.0;
-    p->U1 = 0.0;
-    p->a = 1.0;
-
-    DoubleVector x( 2*L + (M+1)*L);
+    DoubleVector x0( 2*L + (M+1)*L);
     for (unsigned int k=0; k<=M; k++)
     {
-        x[2*L + 0*(M+1)+k] = 2.0;
-        x[2*L + 1*(M+1)+k] = 2.0;
+        x0[2*L + 0*(M+1)+k] = 2.0;
+        x0[2*L + 1*(M+1)+k] = 2.0;
     }
-    x[0] = 0.3;
-    x[1] = 0.4;
-    x[2] = 0.7;
-    x[3] = 0.7;
-
-    p->h = 0.001;
-
-    // limits of v
-    p->vd = -2.0;
-    p->vu = +2.0;
+    x0[0] = 0.3;
+    x0[1] = 0.4;
+    x0[2] = 0.7;
+    x0[3] = 0.7;
 
     double min_step = 0.1;
     double gold_eps = 0.001;
@@ -62,9 +59,9 @@ double HyperbolicControl2DM::fx(double t UNUSED_PARAM) const
     cg.setProjection(p);
     cg.setNormalize(true);
     cg.showEndMessage(true);
-    cg.calculate(x);
+    cg.calculate(x0);
 
-    double rf = fx(x);
+    double rf = fx(x0);
 
 //    DoubleVector ag(x.size());
 //    gradient(x, ag);
@@ -317,7 +314,7 @@ double HyperbolicControl2DM::binitial1(unsigned int i, unsigned int j) const
 {
     const DoubleMatrix &u0 = (*pu).matrix(M);
     const DoubleMatrix &u1 = (*pu).matrix(M-2);
-    return -2.0 * alpha0 * ( (u0[j][i]-u1[j][i])/(2.0*ht) - U1);
+    return -2.0 * alpha0 * ((u0[j][i]-u1[j][i])/(2.0*ht) - U1);
 }
 
 double HyperbolicControl2DM::binitial2(unsigned int i, unsigned int j) const
@@ -352,43 +349,33 @@ double HyperbolicControl2DM::fxt(unsigned int i, unsigned int j, unsigned int k)
     return sum;
 }
 
-void HyperbolicControl2DM::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx) const
+void HyperbolicControl2DM::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double r) const
 {
     C_UNUSED(g);
-    printf("J[%d]: %.16f ALPHA: %.8f\n", i, const_cast<HyperbolicControl2DM*>(this)->fx(x), 0.0);
 
-    //    DoubleVector ng(x.size());
-    //    //    IGradient::Gradient(fn, h, x, ng);
-    //    DoubleVector ngx = ng.mid(0, 3);
-    //    DoubleVector ngv = ng.mid(4, ng.size()-1);
-    //    ngx.L2Normalize();
-    //    ngv.L2Normalize();
+    printf("J[%d]: %.16f\n", i, r);
 
-    //    DoubleVector agx = g.mid(0, 3);
-    //    DoubleVector agv = g.mid(4, g.size()-1);
-    //    agx.L2Normalize();
-    //    agv.L2Normalize();
+    if (i==-1)
+    {
+        DoubleVector ag=g;
+        DoubleVector ge  = ag.mid(0,3);       ge.L2Normalize();
+        DoubleVector gv1 = ag.mid(4,M+4);     gv1.L2Normalize();
+        DoubleVector gv2 = ag.mid(M+5,2*M+5); gv2.L2Normalize();
+        printf("a:%14.10f %14.10f %14.10f %14.10f |%14.10f %14.10f %14.10f %14.10f |%14.10f %14.10f %14.10f %14.10f\n",
+               ge[0], ge[1], ge[2], ge[3],
+               gv1[40], gv1[80], gv1[120], gv1[160],
+               gv2[40], gv2[80], gv2[120], gv2[160]);
 
-    //    FILE *file = fopen("gradients_xv.txt", "a");
-    //    fprintf(file, "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-    //    IPrinter::printDateTime(file);
-    //    fprintf(file, "T: %f L: %d Functional: %.20f N1: %d N2: %d M: %d h1: %f h2: %f ht: %f\n", 1.0, L, fn->fx(x), N1, N2, M, h1, h2, ht);
-    //    fprintf(file, "x: %.8f %.8f %.8f %.8f\n", x[0], x[1], x[2], x[3]);
-    //    fprintf(file, "AGx: %.8f %.8f %.8f %.8f\n", agx[0], agx[1], agx[2], agx[3]);
-    //    fprintf(file, "NGx: %.8f %.8f %.8f %.8f\n", ngx[0], ngx[1], ngx[2], ngx[3]);
-    //    IPrinter::printVector(x,   "v1: ", (M+1), 0*(M+1)+2*L, 0*(M+1)+2*L+M, file);
-    //    IPrinter::printVector(agv, "AG1:", (M+1), 0*(M+1),     0*(M+1)+M,     file);
-    //    IPrinter::printVector(ngv, "NG1:", (M+1), 0*(M+1),     0*(M+1)+M,     file);
-    //    IPrinter::printVector(x,   "v2: ", (M+1), 1*(M+1)+2*L, 1*(M+1)+2*L+M, file);
-    //    IPrinter::printVector(agv, "AG2:", (M+1), 1*(M+1),     1*(M+1)+M,     file);
-    //    IPrinter::printVector(ngv, "NG2:", (M+1), 1*(M+1),     1*(M+1)+M,     file);
-    //    IPrinter::printDateTime(file);
-    //    //    fprintf(file, "U\n");
-    //    //    DoubleCube c;
-    //    //    IHyperbolicEquation2D::calculateU1(c, h1, h2, ht, N1, N2, M, a, a, qamma);
-    //    //    IPrinter::printMatrix(c[c.size()-1], N2, N1, NULL, file);
-    //    fprintf(file, "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-    //    fclose(file);
+        IGradient::Gradient(this, 0.01, x, ag);
+        ge  = ag.mid(0,3);       ge.L2Normalize();
+        gv1 = ag.mid(4,M+4);     gv1.L2Normalize();
+        gv2 = ag.mid(M+5,2*M+5); gv2.L2Normalize();
+        printf("n:%14.10f %14.10f %14.10f %14.10f |%14.10f %14.10f %14.10f %14.10f |%14.10f %14.10f %14.10f %14.10f\n",
+               ge[0], ge[1], ge[2], ge[3],
+               gv1[40], gv1[80], gv1[120], gv1[160],
+               gv2[40], gv2[80], gv2[120], gv2[160]);
+        IPrinter::printSeperatorLine();
+    }
 }
 
 void HyperbolicControl2DM::project(DoubleVector &x, int i)

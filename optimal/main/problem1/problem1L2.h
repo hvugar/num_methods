@@ -60,6 +60,9 @@ private:
     //DoubleVector z;
     //DoubleVector k;
 
+    double zmin;
+    double zmax;
+
 public:
     static void Main(int argc, char* argv[]);
 };

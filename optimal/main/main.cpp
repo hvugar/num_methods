@@ -47,7 +47,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     srand(time(NULL));
 
-    //HyperbolicControl2DM::Main(argc, argv);
+    HyperbolicControl2DM::Main(argc, argv);
     //HyperbolicControl2DMX::Main(argc, argv);
     //HyperbolicControl2DMV::Main(argc, argv);
 
@@ -55,7 +55,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //BorderTest1::Main(argc, argv);
     //Example2::Main(argc, argv);
     //Problem1::Main(argc, argv);
-    Problem1L2::Main(argc, argv);
+    //Problem1L2::Main(argc, argv);
     //Problem1L3::Main(argc, argv);
     //Example4::Main(argc, argv);
     //BorderParabolicD::Main(argc, argv);

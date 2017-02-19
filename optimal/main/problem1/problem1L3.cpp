@@ -353,9 +353,6 @@ void Problem1L3::print(unsigned int i, const DoubleVector &x, const DoubleVector
     printf("e: %14.10f %14.10f %14.10f\n", e[0], e[1], e[2]);
     printf("a: %14.10f %14.10f %14.10f | %14.10f %14.10f %14.10f\n", ag[6], ag[7], ag[8], nag[6], nag[7], nag[8]);
     printf("a: %14.10f %14.10f %14.10f | %14.10f %14.10f %14.10f\n", ng[6], ng[7], ng[8], nng[6], nng[7], nng[8]);
-
-    //printf("z: %14.10f %14.10f %14.10f AG: %14.10f %14.10f NG: %14.10f %14.10f NAG: %14.10f %14.10f NNG: %14.10f %14.10f\n", z[0], z[1], z[2], ag[2], ag[3], ng[2], ng[3], nag[2], nag[3], nng[2], nng[3]);
-    //printf("e: %14.10f %14.10f %14.10f AG: %14.10f %14.10f NG: %14.10f %14.10f NAG: %14.10f %14.10f NNG: %14.10f %14.10f\n", e[0], e[1], e[2], ag[4], ag[5], ng[4], ng[5], nag[4], nag[5], nng[4], nng[5]);
     IPrinter::printVector(14,10,u.row(u.rows()-1),"u: ");
 }
 

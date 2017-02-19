@@ -8,23 +8,39 @@ void Problem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 Problem1L2::Problem1L2()
 {
     L = 2;
-    N = 1000;
-    M = 1000;
-    hx = 0.001;
-    ht = 0.001;
+    N = 100;
+    M = 50000;
+    hx = 0.01;
+    ht = 0.1;
     h  = 0.001;
 
-    Ti = 2.0;
-    Te = 3.0;
-    alpha = 0.01;
-    lambda0 = 10.0;
-    lambdal = 1.0;
+    Ti = 9.0;
+    Te = 9.0;
+
+    double r0 = 19320.0;
+    double c0 = 130.0;
+    double k0 = 312.0;
+    double h0 = 1000.0;
+    double hl = 10.0;
+
+//    a = 1.0;
+//    alpha = 0.01;
+//    lambda0 = 10.0;
+//    lambdal = 1.0;
+    a = sqrt(k0/(c0*r0));
+    alpha = hl/(c0*r0);
+    lambda0 = h0/k0;
+    lambdal = hl/k0;
+
+    printf("a: %14.10f alpha: %14.10f l0: %14.10f l1: %14.10f\n", a, alpha, lambda0, lambdal);
 
     alpha0 = 1.0;
-    alpha1 = 0.01;
-    alpha2 = 0.01;
-    alpha3 = 0.01;
-    a = 1.0;
+    alpha1 = 0.0001;
+    alpha2 = 0.0001;
+    alpha3 = 0.0001;
+
+    zmin = 9.5;
+    zmax = 10.5;
 
     V.resize(N+1);
 
@@ -32,13 +48,13 @@ Problem1L2::Problem1L2()
     for (unsigned int n=0; n<=N; n++)
     {
         //double h1 = 0.4/N;
-        V[n] = 4.0;//4.2 - n*h1;
+        V[n] = 10.0;//4.2 - n*h1;
     }
     IPrinter::printVector(14, 10, V,"V: ");
 
     DoubleVector x0;
-    x0 << -3.5000 << -3.7000; //k
-    x0 << +4.1000 << +3.9000; //z
+    x0 << -8.5000 << -2.7000; //k
+    x0 << +2.1000 << +4.9000; //z
     x0 << +0.2000 << +0.8000; //e
 
     //k << 3.50 << 3.70;
@@ -335,26 +351,40 @@ void Problem1L2::print(unsigned int i, const DoubleVector &x, const DoubleVector
     nng.L2Normalize();
 
     printf("J[%d]: %.10f v: %.10f\n", i, r, v);
-    printf("k: %14.10f %14.10f AG: %14.10f %14.10f NG: %14.10f %14.10f NAG: %14.10f %14.10f NNG: %14.10f %14.10f\n", k[0], k[1], ag[0], ag[1], ng[0], ng[1], nag[0], nag[1], nng[0], nng[1]);
-    printf("z: %14.10f %14.10f AG: %14.10f %14.10f NG: %14.10f %14.10f NAG: %14.10f %14.10f NNG: %14.10f %14.10f\n", z[0], z[1], ag[2], ag[3], ng[2], ng[3], nag[2], nag[3], nng[2], nng[3]);
-    printf("e: %14.10f %14.10f AG: %14.10f %14.10f NG: %14.10f %14.10f NAG: %14.10f %14.10f NNG: %14.10f %14.10f\n", e[0], e[1], ag[4], ag[5], ng[4], ng[5], nag[4], nag[5], nng[4], nng[5]);
+    printf("k: %14.10f %14.10f\n", k[0], k[1]);
+    printf("a: %14.10f %14.10f | %14.10f %14.10f\n", ag[0], ag[1], nag[0], nag[1]);
+    printf("a: %14.10f %14.10f | %14.10f %14.10f\n", ng[0], ng[1], nng[0], nng[1]);
+    printf("z: %14.10f %14.10f\n", z[0], z[1]);
+    printf("a: %14.10f %14.10f | %14.10f %14.10f\n", ag[2], ag[3], nag[2], nag[3]);
+    printf("a: %14.10f %14.10f | %14.10f %14.10f\n", ng[2], ng[3], nng[2], nng[3]);
+    printf("e: %14.10f %14.10f\n", e[0], e[1]);
+    printf("a: %14.10f %14.10f | %14.10f %14.10f\n", ag[4], ag[5], nag[4], nag[5]);
+    printf("a: %14.10f %14.10f | %14.10f %14.10f\n", ng[4], ng[5], nng[4], nng[5]);
     IPrinter::printVector(14,10,u.row(u.rows()-1),"u: ");
 }
 
 void Problem1L2::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
 {
-    if (x.at(2) < 3.80) x.at(2) = 3.80;
-    if (x.at(3) < 3.80) x.at(3) = 3.80;
-    if (x.at(2) > 4.20) x.at(2) = 4.20;
-    if (x.at(3) > 4.20) x.at(3) = 4.20;
+    /* z lower/upper limits */
+//    if (x.at(2) < zmin) x.at(2) = zmin;
+//    if (x.at(3) < zmin) x.at(3) = zmin;
+//    if (x.at(2) > zmax) x.at(2) = zmax;
+//    if (x.at(3) > zmax) x.at(3) = zmax;
 
-    if (x.at(4) < 0.10) x.at(4) = 0.10;
-    //if (x.at(4) > 0.90) x.at(4) = 0.90;
-    if (x.at(4) > 0.40) x.at(4) = 0.40;
+//    if (x.at(4) < 0.10) x.at(4) = 0.10;
+//    //if (x.at(4) > 0.90) x.at(4) = 0.90;
+//    if (x.at(4) > 0.40) x.at(4) = 0.40;
 
-    //if (x.at(5) < 0.10) x.at(5) = 0.10;
-    if (x.at(5) > 0.90) x.at(5) = 0.90;
-    if (x.at(5) < 0.60) x.at(5) = 0.60;
+//    //if (x.at(5) < 0.10) x.at(5) = 0.10;
+//    if (x.at(5) > 0.90) x.at(5) = 0.90;
+//    if (x.at(5) < 0.60) x.at(5) = 0.60;
+
+    /* e lower/upper limits */
+    if (x.at(4) < 5*hx) x.at(4) = 5*hx;
+    if (x.at(4) > 0.45) x.at(4) = 0.45;
+
+    if (x.at(5) < 0.55)     x.at(5) = 0.55;
+    if (x.at(5) > (N-5)*hx) x.at(5) = (N-5)*hx;
 }
 
 void Problem1L2::getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &x) const

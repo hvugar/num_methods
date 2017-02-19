@@ -5,8 +5,6 @@
 #include "global.h"
 #include "vector2d.h"
 
-//using namespace std;
-
 struct MINIMUMSHARED_EXPORT R1Function
 {
     virtual double fx(double x) const = 0;
@@ -35,6 +33,7 @@ public:
 
 protected:
     static void Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g);
+    static void Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, unsigned int *inx, unsigned int size);
 };
 
 struct MINIMUMSHARED_EXPORT OrdDifEquation
