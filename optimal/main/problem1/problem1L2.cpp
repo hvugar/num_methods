@@ -14,14 +14,14 @@ Problem1L2::Problem1L2()
     ht = 0.1;
     h  = 0.001;
 
-    Ti = 9.0;
-    Te = 9.0;
+    Ti = 0.0;
+    Te = 0.0;
 
-    double r0 = 19320.0;
-    double c0 = 130.0;
-    double k0 = 312.0;
-    double h0 = 1000.0;
-    double hl = 10.0;
+    double r0 = 19320.0; // sixliq
+    double c0 = 130.0;   // teplopravodnost
+    double k0 = 312.0;   //
+    double h0 = 1000.0;  //
+    double hl = 10.0;    //
 
 //    a = 1.0;
 //    alpha = 0.01;
@@ -72,6 +72,22 @@ Problem1L2::Problem1L2()
     g.setR1MinimizeEpsilon(1.0, 0.00000001);
     g.setNormalize(true);
     g.calculate(x0);
+
+    DoubleVector v(M+1);
+    DoubleVector k = x0.mid(0,1);
+    DoubleVector z = x0.mid(2,3);
+    DoubleVector e = x0.mid(4,5);
+    px = &x0;
+    DoubleMatrix u;
+    calculateU(u);
+    unsigned int e0 = (unsigned int)(e[0]*N);
+    unsigned int e1 = (unsigned int)(e[1]*N);
+    FILE *file = fopen("data_v.txt", "w");
+    for (unsigned int i=0; i<=M; i++)
+    {
+        v[i] = k[0]*(u[i][e0]-z[0])+k[1]*(u[i][e1]-z[1]);
+        fprintf(file, "%18.14f\n", v[i]);
+    }
 }
 
 double Problem1L2::fx(const DoubleVector &x) const
@@ -353,13 +369,13 @@ void Problem1L2::print(unsigned int i, const DoubleVector &x, const DoubleVector
     printf("J[%d]: %.10f v: %.10f\n", i, r, v);
     printf("k: %14.10f %14.10f\n", k[0], k[1]);
     printf("a: %14.10f %14.10f | %14.10f %14.10f\n", ag[0], ag[1], nag[0], nag[1]);
-    printf("a: %14.10f %14.10f | %14.10f %14.10f\n", ng[0], ng[1], nng[0], nng[1]);
+    printf("n: %14.10f %14.10f | %14.10f %14.10f\n", ng[0], ng[1], nng[0], nng[1]);
     printf("z: %14.10f %14.10f\n", z[0], z[1]);
     printf("a: %14.10f %14.10f | %14.10f %14.10f\n", ag[2], ag[3], nag[2], nag[3]);
-    printf("a: %14.10f %14.10f | %14.10f %14.10f\n", ng[2], ng[3], nng[2], nng[3]);
+    printf("n: %14.10f %14.10f | %14.10f %14.10f\n", ng[2], ng[3], nng[2], nng[3]);
     printf("e: %14.10f %14.10f\n", e[0], e[1]);
     printf("a: %14.10f %14.10f | %14.10f %14.10f\n", ag[4], ag[5], nag[4], nag[5]);
-    printf("a: %14.10f %14.10f | %14.10f %14.10f\n", ng[4], ng[5], nng[4], nng[5]);
+    printf("n: %14.10f %14.10f | %14.10f %14.10f\n", ng[4], ng[5], nng[4], nng[5]);
     IPrinter::printVector(14,10,u.row(u.rows()-1),"u: ");
 }
 

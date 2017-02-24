@@ -51,6 +51,7 @@ public:
     public:
         const DoubleVector *pu;
         const DoubleVector *pU;
+        const DoubleMatrix *pp;
     } backward;
 
     virtual double fx(const DoubleVector& f) const;

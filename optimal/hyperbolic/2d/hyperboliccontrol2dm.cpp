@@ -355,7 +355,7 @@ void HyperbolicControl2DM::print(unsigned int i, const DoubleVector &x, const Do
 
     printf("J[%d]: %.16f\n", i, r);
 
-    if (i==-1)
+    if (i==0)
     {
         DoubleVector ag=g;
         DoubleVector ge  = ag.mid(0,3);       ge.L2Normalize();

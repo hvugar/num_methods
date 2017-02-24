@@ -85,16 +85,18 @@ void HeatControl1::gradient(const DoubleVector &f, DoubleVector &g)
     forward.pf = &f;
     forward.gridMethod(u);
 
-    DoubleMatrix psi;
+    DoubleVector p;
+    DoubleMatrix psi(M+1, N+1);
+    backward.pp = &psi;
     backward.pu = &u;
-    backward.gridMethod(psi);
+    backward.gridMethod(p);
 
-    for (unsigned int j=0; j<=M; j++)
+    for (unsigned int m=0; m<=M; m++)
     {
-        for (unsigned int i=0; i<=N; i++)
+        for (unsigned int n=0; n<=N; n++)
         {
-            int k = j*(N+1)+i;
-            g[k] = -psi[j][i] + 2.0*(f[k] - fxt(i*hx, j*ht));
+            int k = m*(N+1)+n;
+            g[k] = -psi[m][n] + 2.0*(f[k] - fxt(n*hx, m*ht));
         }
     }
 }
@@ -159,7 +161,12 @@ double HeatControl1::CBackwardParabolicIBVP::a(const SpaceNode&, const TimeNode&
     return +1.0;
 }
 
-void HeatControl1::CBackwardParabolicIBVP::layerInfo(const DoubleVector &, unsigned int) const
+void HeatControl1::CBackwardParabolicIBVP::layerInfo(const DoubleVector & p, unsigned int m) const
 {
-
+    Dimension dim1 = spaceDimension(Dimension::Dim1);
+    unsigned int N = dim1.sizeN();
+    for (unsigned int n=0; n<=N; n++)
+    {
+        (*pp)[m][n] = p[n];
+    }
 }

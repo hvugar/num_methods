@@ -141,5 +141,5 @@ double ParabolicIBVP2::a(const SpaceNode &sn UNUSED_PARAM, const TimeNode &tn UN
 
 double ParabolicIBVP2::U(unsigned int i, unsigned int j, unsigned int k) const
 {
-
+    return 0.0;
 }

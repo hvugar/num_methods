@@ -27,6 +27,8 @@ public:
     void gridMethod(DoubleVector &u, SweepMethodDirection direction = ForwardSweep) const;
     void gridMethod(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep) const;
 
+    void calculateMVD(DoubleMatrix &u) const;
+
     /* dirichlet conditions */
     void calculateN2L2RD(DoubleMatrix &u) const;
     //void calculateN2R2LD(DoubleMatrix &u) const;
@@ -35,7 +37,6 @@ public:
     //void calculateN6L2RD(DoubleMatrix &u) const;
     //void calculateN6R2LD(DoubleMatrix &u) const;
 
-    void calculateMVD(DoubleMatrix &u) const;
     void calculateMVD1(DoubleMatrix &u) const;
     void calculateMVD2(DoubleMatrix &u) const;
 };
