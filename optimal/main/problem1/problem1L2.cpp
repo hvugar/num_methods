@@ -9,28 +9,35 @@ Problem1L2::Problem1L2()
 {
     L = 2;
     N = 100;
-    M = 50000;
+    M = 500*100;
     hx = 0.01;
-    ht = 0.1;
+    ht = 0.01;
     h  = 0.001;
+
+//    N = 100;
+//    M = 50*100;
+//    hx = 0.01;
+//    ht = 0.01;
+//    h  = 0.001;
 
     Ti = 0.0;
     Te = 0.0;
 
-    double r0 = 19320.0; // sixliq
-    double c0 = 130.0;   // teplopravodnost
-    double k0 = 312.0;   //
-    double h0 = 1000.0;  //
-    double hl = 10.0;    //
+    const double r0 = 19320.0; // kq/m^3 // плотность
+    const double c0 = 130.0;   //        // удельная теплоемкость
+    const double k0 = 312.0;   //        // коэффициент теплопроводности
+    const double h0 = 1000.0;  //        // коэффициент теплообмена ->
+    const double hl = 10.0;    //        // коэффициент теплообмена ->
+
+    a = sqrt(k0/(c0*r0)*10);  // коэффициент температуропроворности
+    alpha = hl/(c0*r0);    // коэффициент теплообмена ->
+    lambda0 = h0/k0;       // коэффициент теплообмена ->
+    lambdal = hl/k0;       // коэффициент теплообмена ->
 
 //    a = 1.0;
 //    alpha = 0.01;
 //    lambda0 = 10.0;
 //    lambdal = 1.0;
-    a = sqrt(k0/(c0*r0));
-    alpha = hl/(c0*r0);
-    lambda0 = h0/k0;
-    lambdal = hl/k0;
 
     printf("a: %14.10f alpha: %14.10f l0: %14.10f l1: %14.10f\n", a, alpha, lambda0, lambdal);
 
@@ -66,10 +73,10 @@ Problem1L2::Problem1L2()
     g.setGradient(this);
     g.setPrinter(this);
     g.setProjection(this);
-    g.setEpsilon1(0.00000001);
-    g.setEpsilon2(0.00000001);
-    g.setEpsilon3(0.00000001);
-    g.setR1MinimizeEpsilon(1.0, 0.00000001);
+    g.setEpsilon1(0.001);//0.00000001
+    g.setEpsilon2(0.001);//0.00000001
+    g.setEpsilon3(0.001);//0.00000001
+    g.setR1MinimizeEpsilon(1.0, 0.0001); //0.00000001
     g.setNormalize(true);
     g.calculate(x0);
 
