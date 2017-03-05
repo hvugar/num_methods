@@ -44,9 +44,9 @@ private:
 
     double Ti;
     double Te;
-    double alpha;
     double lambda0;
-    double lambdal;
+    double lambda1;
+    double lambda2;
 
     double alpha0;
     double alpha1;

@@ -9,10 +9,10 @@ Problem1L2::Problem1L2()
 {
     L = 2;
     N = 100;
-    M = 500*100;
+    M = 50*100;
     hx = 0.01;
     ht = 0.01;
-    h  = 0.001;
+    h  = 0.0001;
 
 //    N = 100;
 //    M = 50*100;
@@ -23,23 +23,28 @@ Problem1L2::Problem1L2()
     Ti = 0.0;
     Te = 0.0;
 
-    const double r0 = 19320.0; // kq/m^3 // плотность
-    const double c0 = 130.0;   //        // удельная теплоемкость
-    const double k0 = 312.0;   //        // коэффициент теплопроводности
-    const double h0 = 1000.0;  //        // коэффициент теплообмена ->
-    const double hl = 10.0;    //        // коэффициент теплообмена ->
+//    const double r0 = 19320.0; // kg/m^3   // плотность
+//    const double c0 = 130.0;   // C/(kg*S) // удельная теплоемкость
+//    const double k0 = 312.0;   //          // коэффициент теплопроводности
 
-    a = sqrt(k0/(c0*r0)*10);  // коэффициент температуропроворности
-    alpha = hl/(c0*r0);    // коэффициент теплообмена ->
-    lambda0 = h0/k0;       // коэффициент теплообмена ->
-    lambdal = hl/k0;       // коэффициент теплообмена ->
+    const double r0 = 8900.0; // kg/m^3      // плотность
+    const double c0 = 400.0;   // C/(kg*S)   // удельная теплоемкость
+    const double k0 = 380.0;   //               коэффициент теплопроводности
+
+    const double h0 = 1000.0;      // коэффициент теплообмена ->
+    const double hl = 10.0;        // коэффициент теплообмена ->
+
+    a = sqrt((k0/(c0*r0))*100.0);  // коэффициент температуропроворности
+    lambda0 = hl/(c0*r0);          // коэффициент теплообмена ->
+    lambda1 = h0/k0;               // коэффициент теплообмена ->
+    lambda2 = hl/k0;               // коэффициент теплообмена ->
 
 //    a = 1.0;
 //    alpha = 0.01;
 //    lambda0 = 10.0;
 //    lambdal = 1.0;
 
-    printf("a: %14.10f alpha: %14.10f l0: %14.10f l1: %14.10f\n", a, alpha, lambda0, lambdal);
+    printf("a: %14.10f alpha: %14.10f l0: %14.10f l1: %14.10f\n", a, lambda0, lambda1, lambda2);
 
     alpha0 = 1.0;
     alpha1 = 0.0001;
@@ -164,7 +169,7 @@ void Problem1L2::gradient(const DoubleVector &x, DoubleVector &g)
         }
         sum += 0.5*p.at(M, 0)*(u.at(M, xi) - z[s]);
 
-        g.at(i) = -lambda0*a*a*ht*sum + 2.0*alpha1*k.at(s);
+        g.at(i) = -lambda1*a*a*ht*sum + 2.0*alpha1*k.at(s);
         i++;
     }
 
@@ -178,7 +183,7 @@ void Problem1L2::gradient(const DoubleVector &x, DoubleVector &g)
             sum += p.at(m, 0);
         }
         sum += 0.5*p.at(M, 0);
-        g.at(i) = lambda0*a*a*ht*k[s]*sum + 2.0*alpha2*z.at(s);
+        g.at(i) = lambda1*a*a*ht*k[s]*sum + 2.0*alpha2*z.at(s);
         i++;
     }
 
@@ -193,7 +198,7 @@ void Problem1L2::gradient(const DoubleVector &x, DoubleVector &g)
             sum += p.at(m, 0) * ((u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx));
         }
         sum += 0.5 * p.at(M, 0) * ((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx));
-        g.at(i) = -lambda0*a*a*ht*k[s]*sum + 2.0*alpha3*e.at(s);
+        g.at(i) = -lambda1*a*a*ht*k[s]*sum + 2.0*alpha3*e.at(s);
         i++;
     }
 }
@@ -221,24 +226,24 @@ void Problem1L2::calculateU(DoubleMatrix &u) const
     {
         // n = 0
         da[0] = 0.0;
-        db[0] = 1.0 + (a*a*ht)/(hx*hx) + (lambda0*a*a*ht)/hx + alpha*ht;
+        db[0] = 1.0 + (a*a*ht)/(hx*hx) + (lambda1*a*a*ht)/hx + lambda0*ht;
         dc[0] = -(a*a*ht)/(hx*hx);
-        dd[0] = u.at(m-1,0) + alpha*ht*Te - ((lambda0*a*a*ht)/hx)*(k[0]*z[0] + k[1]*z[1]);
+        dd[0] = u.at(m-1,0) + lambda0*ht*Te - ((lambda1*a*a*ht)/hx)*(k[0]*z[0] + k[1]*z[1]);
 
         // n = 1,...,N-1
         for (unsigned int n=1; n<=N-1; n++)
         {
             da[n] = -(a*a*ht)/(hx*hx);
-            db[n] = 1.0 + (2.0*a*a*ht)/(hx*hx) + alpha*ht;
+            db[n] = 1.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht;
             dc[n] = -(a*a*ht)/(hx*hx);
-            dd[n] = u.at(m-1,n) + alpha*ht*Te;
+            dd[n] = u.at(m-1,n) + lambda0*ht*Te;
         }
 
         // n = N
         da[N] = -(a*a*ht)/(hx*hx);
-        db[N] = 1.0 + (a*a*ht)/(hx*hx) + (lambdal*a*a*ht)/hx + alpha*ht;
+        db[N] = 1.0 + (a*a*ht)/(hx*hx) + (lambda2*a*a*ht)/hx + lambda0*ht;
         dc[N] = 0.0;
-        dd[N] = u.at(m-1,N) + (lambdal*a*a*ht*Te)/hx + alpha*ht*Te;
+        dd[N] = u.at(m-1,N) + (lambda2*a*a*ht*Te)/hx + lambda0*ht*Te;
 
         for (unsigned int n=2; n<=N-2; n++)
         {
@@ -246,11 +251,11 @@ void Problem1L2::calculateU(DoubleMatrix &u) const
 
             if (fabs(n*hx - e[0]) <= hx)
             {
-                de[n] = -((lambda0*(a*a*ht)/hx) * k[0]) * (1.0 - fabs(n*hx - e[0])/hx);
+                de[n] = -((lambda1*(a*a*ht)/hx) * k[0]) * (1.0 - fabs(n*hx - e[0])/hx);
             }
             if (fabs(n*hx - e[1]) <= hx)
             {
-                de[n] = -((lambda0*(a*a*ht)/hx) * k[1]) * (1.0 - fabs(n*hx - e[1])/hx);
+                de[n] = -((lambda1*(a*a*ht)/hx) * k[1]) * (1.0 - fabs(n*hx - e[1])/hx);
             }
         }
 
@@ -295,7 +300,7 @@ void Problem1L2::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
     {
         // n = 0
         da[0] = 0.0;
-        db[0] = -1.0 - (a*a*ht)/(hx*hx) - (lambda0*a*a*ht)/hx - alpha*ht;
+        db[0] = -1.0 - (a*a*ht)/(hx*hx) - (lambda1*a*a*ht)/hx - lambda0*ht;
         dc[0] = (a*a*ht)/(hx*hx);
         dd[0] = -p.at(m+1,0);
 
@@ -303,14 +308,14 @@ void Problem1L2::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
         for (unsigned int n=1; n<=N-1; n++)
         {
             da[n] = (a*a*ht)/(hx*hx);
-            db[n] = -1.0-(2.0*a*a*ht)/(hx*hx) - alpha*ht;
+            db[n] = -1.0-(2.0*a*a*ht)/(hx*hx) - lambda0*ht;
             dc[n] = (a*a*ht)/(hx*hx);
             dd[n] = -p.at(m+1,n);
         }
 
         // n = N
         da[N] = (a*a*ht)/(hx*hx);
-        db[N] = -1.0-(a*a*ht)/(hx*hx) - (lambdal*a*a*ht)/hx - alpha*ht;
+        db[N] = -1.0-(a*a*ht)/(hx*hx) - (lambda2*a*a*ht)/hx - lambda0*ht;
         dc[N] = 0.0;
         dd[N] = -p.at(m+1,N);
 
@@ -319,11 +324,11 @@ void Problem1L2::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
             de[n] = 0.0;
             if (fabs(n*hx - e[0]) <= hx)
             {
-                de[n] = k[0]*(lambda0*(a*a*ht)/hx) * (1.0 - fabs(n*hx - e[0])/hx);
+                de[n] = k[0]*(lambda1*(a*a*ht)/hx) * (1.0 - fabs(n*hx - e[0])/hx);
             }
             if (fabs(n*hx - e[1]) <= hx)
             {
-                de[n] = k[1]*(lambda0*(a*a*ht)/hx) * (1.0 - fabs(n*hx - e[1])/hx);
+                de[n] = k[1]*(lambda1*(a*a*ht)/hx) * (1.0 - fabs(n*hx - e[1])/hx);
             }
         }
 
