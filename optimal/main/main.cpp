@@ -30,7 +30,7 @@
 //#include <../hyperbolic/2d/hyperboliccontrol2d23.h>
 //#include <../hyperbolic/2d/hyperboliccontrol2d24.h>
 //#include <../hyperbolic/2d/hyperboliccontrol2d24.h>
-//#include <../hyperbolic/2d/hyperboliccontrol2dm.h>
+#include <../hyperbolic/2d/hyperboliccontrol2dm.h>
 //#include <../hyperbolic/2d/hyperboliccontrol2dmv.h>
 //#include <../hyperbolic/2d/hyperboliccontrol2dmx.h>
 

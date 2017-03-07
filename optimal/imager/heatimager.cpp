@@ -42,6 +42,8 @@ void createHeatImage1(int argc, char *argv[])
     double min = QString(argv[10]).toDouble();
     double max = QString(argv[12]).toDouble();
 
+    qDebug() << width << height << inFile << outFile << min << max;
+
     QFile file(inFile);
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream in(&file);
@@ -79,7 +81,12 @@ void createHeatImage1(int argc, char *argv[])
         minimum = min;
         maximum = max;
     }
+
+    minimum = -0.3892016224094016;
+    maximum = +0.3951541064046917;
+
     printf("File: %s Minimum: %.10f Maximum: %.10f width: %d height %d\n", inFile.toLatin1().data(), minimum, maximum, width, height);
+
 
     QPixmap pixmap;
     MatrixHeatImaging(m, minimum, maximum, pixmap, width, height);

@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv, true);
+    QApplication app(argc, argv);
 
     for (int i=0; i<argc; i++)
     {
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 //    QSample1 smp;
 //    smp.show();
 
-    return app.exec();
+    return 0;
 }
 
 
