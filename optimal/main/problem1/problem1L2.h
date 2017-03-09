@@ -63,7 +63,7 @@ private:
     DoubleVector V;
     const DoubleVector *px;
 
-    DoubleVector k;
+    DoubleVector K;
     DoubleVector z;
     DoubleVector e;
 

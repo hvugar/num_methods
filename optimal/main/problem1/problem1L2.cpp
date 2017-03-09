@@ -40,7 +40,7 @@ Problem1L2::Problem1L2()
     const double c0 = 400.0;   // C/(kg*S)   // удельная теплоемкость
     const double k0 = 380.0;   //               коэффициент теплопроводности
 
-    const double h0 = 100.0;      // коэффициент теплообмена ->
+    const double h0 = 1000.0;      // коэффициент теплообмена ->
     const double hl = 10.0;        // коэффициент теплообмена ->
 
     a = sqrt((k0/(c0*r0))*1.0);  // коэффициент температуропроворности
@@ -56,9 +56,9 @@ Problem1L2::Problem1L2()
     printf("a: %14.10f alpha: %14.10f l0: %14.10f l1: %14.10f\n", a, lambda0, lambda1, lambda2);
 
     alpha0 = 1.0;
-    alpha1 = 0.0001;
-    alpha2 = 0.0001;
-    alpha3 = 0.0001;
+    alpha1 = 0.0000;
+    alpha2 = 0.0000;
+    alpha3 = 0.0000;
 
     zmin = 9.5;
     zmax = 10.5;
@@ -83,11 +83,12 @@ double Problem1L2::fx(double t) const
     if (optimizeK)
     {
         x0 << -8.5000 << -2.7000; //k
+        //x0 << +5.8180745885 << +14.3675990882;
     }
     else
     {
-        p->k.clear();
-        p->k << -8.5000 << -2.7000; //k
+        p->K.clear();
+        p->K << -8.5000 << -2.7000; //k
     }
 
     if (optimizeZ)
@@ -232,7 +233,7 @@ void Problem1L2::gradient(const DoubleVector &x, DoubleVector &g)
                 sum += p.at(m, 0);
             }
             sum += 0.5*p.at(M, 0);
-            g.at(i) = lambda1*a*a*k[s]*sum + 2.0*alpha2*z.at(s);
+            g.at(i) = lambda1*a*a*k[s]*sum + 2.0*alpha2*z[s];
             sum *= ht;
             i++;
         }
@@ -435,20 +436,20 @@ void Problem1L2::print(unsigned int i, const DoubleVector &x, const DoubleVector
         DoubleVector cx = x;
         double f1,f2;
 
-        double hk = 0.001;
+        double hk = 0.01;
 
         double x0 = x[p];
         cx[p] = x0 - hk; f1 = fx(cx);
         cx[p] = x0 + hk; f2 = fx(cx);
         n[0] = (f2-f1)/(2.0*hk); cx[p] = x0;
-        printf("%f %f %f %f\n", f1, f2, f2-f1, hk);
+        //printf("%f %f %f %f\n", f1, f2, f2-f1, hk);
 
         cx = x;
         double x1 = x[p+1];
         cx[p+1] = x1 - hk; f1 = fx(cx);
         cx[p+1] = x1 + hk; f2 = fx(cx);
         n[1] = (f2-f1)/(2.0*hk); cx[p+1] = x1;
-        printf("%f %f %f %f\n", f1, f2, f2-f1, hk);
+        //printf("%f %f %f %f\n", f1, f2, f2-f1, hk);
 
         DoubleVector nn = n;
         nn.L2Normalize();
@@ -462,74 +463,74 @@ void Problem1L2::print(unsigned int i, const DoubleVector &x, const DoubleVector
     }
 
     puts("---");
-    printf("z: %14.10f %14.10f\n", z[0], z[1]);
-    if (optimizeZ)
-    {
-        DoubleVector a = g.mid(p,p+1);
-        DoubleVector na = a;
-        na.L2Normalize();
+//    printf("z: %14.10f %14.10f\n", z[0], z[1]);
+//    if (optimizeZ)
+//    {
+//        DoubleVector a = g.mid(p,p+1);
+//        DoubleVector na = a;
+//        na.L2Normalize();
 
-        DoubleVector n = a;
+//        DoubleVector n = a;
 
-        DoubleVector cx = x;
-        double f1,f2;
+//        DoubleVector cx = x;
+//        double f1,f2;
 
-        double hz = 0.001;
-        double x0 = x[p];
-        cx[p] = x0 - hz; f1 = fx(cx);
-        cx[p] = x0 + hz; f2 = fx(cx);
-        n[0] = (f2-f1)/(2.0*hz); cx[p] = x0;
+//        double hz = 0.001;
+//        double x0 = x[p];
+//        cx[p] = x0 - hz; f1 = fx(cx);
+//        cx[p] = x0 + hz; f2 = fx(cx);
+//        n[0] = (f2-f1)/(2.0*hz); cx[p] = x0;
 
-        double x1 = x[p+1];
-        cx[p+1] = x1 - hz; f1 = fx(cx);
-        cx[p+1] = x1 + hz; f2 = fx(cx);
-        n[1] = (f2-f1)/(2.0*hz); cx[p+1] = x1;
+//        double x1 = x[p+1];
+//        cx[p+1] = x1 - hz; f1 = fx(cx);
+//        cx[p+1] = x1 + hz; f2 = fx(cx);
+//        n[1] = (f2-f1)/(2.0*hz); cx[p+1] = x1;
 
-        DoubleVector nn = n;
-        nn.L2Normalize();
+//        DoubleVector nn = n;
+//        nn.L2Normalize();
 
-        printf("a: %14.10f %14.10f | %14.10f %14.10f\n", a[0], a[1], na[0], na[1]);
-        printf("n: %14.10f %14.10f | %14.10f %14.10f\n", n[0], n[1], nn[0], nn[1]);
+//        printf("a: %14.10f %14.10f | %14.10f %14.10f\n", a[0], a[1], na[0], na[1]);
+//        printf("n: %14.10f %14.10f | %14.10f %14.10f\n", n[0], n[1], nn[0], nn[1]);
 
-        //printf("a: %14.10f %14.10f | %14.10f %14.10f\n", ag[0], ag[1], nag[0], nag[1]);
-        //printf("n: %14.10f %14.10f | %14.10f %14.10f\n", ng[0], ng[1], nng[0], nng[1]);
-        p+=2;
-    }
+//        //printf("a: %14.10f %14.10f | %14.10f %14.10f\n", ag[0], ag[1], nag[0], nag[1]);
+//        //printf("n: %14.10f %14.10f | %14.10f %14.10f\n", ng[0], ng[1], nng[0], nng[1]);
+//        p+=2;
+//    }
 
-    puts("---");
-    printf("e: %14.10f %14.10f\n", e[0], e[1]);
-    if (optimizeE)
-    {
-        DoubleVector a = g.mid(p,p+1);
-        DoubleVector na = a;
-        na.L2Normalize();
+//    puts("---");
+//    printf("e: %14.10f %14.10f\n", e[0], e[1]);
+//    if (optimizeE)
+//    {
+//        DoubleVector a = g.mid(p,p+1);
+//        DoubleVector na = a;
+//        na.L2Normalize();
 
-        DoubleVector n = a;
+//        DoubleVector n = a;
 
-        DoubleVector cx = x;
-        double f1,f2;
+//        DoubleVector cx = x;
+//        double f1,f2;
 
-        double he = 0.001;
-        double x0 = x[p];
-        cx[p] = x0 - he; f1 = fx(cx);
-        cx[p] = x0 + he; f2 = fx(cx);
-        n[0] = (f2-f1)/(2.0*he); cx[p] = x0;
+//        double he = 0.001;
+//        double x0 = x[p];
+//        cx[p] = x0 - he; f1 = fx(cx);
+//        cx[p] = x0 + he; f2 = fx(cx);
+//        n[0] = (f2-f1)/(2.0*he); cx[p] = x0;
 
-        double x1 = x[p+1];
-        cx[p+1] = x1 - he; f1 = fx(cx);
-        cx[p+1] = x1 + he; f2 = fx(cx);
-        n[1] = (f2-f1)/(2.0*he); cx[p+1] = x1;
+//        double x1 = x[p+1];
+//        cx[p+1] = x1 - he; f1 = fx(cx);
+//        cx[p+1] = x1 + he; f2 = fx(cx);
+//        n[1] = (f2-f1)/(2.0*he); cx[p+1] = x1;
 
-        DoubleVector nn = n;
-        nn.L2Normalize();
+//        DoubleVector nn = n;
+//        nn.L2Normalize();
 
-        printf("a: %14.10f %14.10f | %14.10f %14.10f\n", a[0], a[1], na[0], na[1]);
-        printf("n: %14.10f %14.10f | %14.10f %14.10f\n", n[0], n[1], nn[0], nn[1]);
+//        printf("a: %14.10f %14.10f | %14.10f %14.10f\n", a[0], a[1], na[0], na[1]);
+//        printf("n: %14.10f %14.10f | %14.10f %14.10f\n", n[0], n[1], nn[0], nn[1]);
 
-        //printf("a: %14.10f %14.10f | %14.10f %14.10f\n", ag[0], ag[1], nag[0], nag[1]);
-        //printf("n: %14.10f %14.10f | %14.10f %14.10f\n", ng[0], ng[1], nng[0], nng[1]);
-        p+=2;
-    }
+//        //printf("a: %14.10f %14.10f | %14.10f %14.10f\n", ag[0], ag[1], nag[0], nag[1]);
+//        //printf("n: %14.10f %14.10f | %14.10f %14.10f\n", ng[0], ng[1], nng[0], nng[1]);
+//        p+=2;
+//    }
     IPrinter::printVector(14,10,u.row(u.rows()-1),"u: ");
 
     //    DoubleVector ng(x.size());
@@ -668,7 +669,7 @@ void Problem1L2::getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e
     }
     else
     {
-        k = this->k;
+        k = this->K;
     }
 
     if (optimizeZ)
