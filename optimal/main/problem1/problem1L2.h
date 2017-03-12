@@ -28,6 +28,9 @@ protected:
     virtual double fx(double x) const;
 
     void calculateU(DoubleMatrix &u) const;
+    void calculateU1(DoubleMatrix &u) const;
+    //void calculateU2(DoubleMatrix &u) const;
+
     void calculateP(DoubleMatrix &p, const DoubleMatrix &u);
 
     double initial(unsigned int n) const;
@@ -48,8 +51,8 @@ private:
     double ht;
     double h;
 
-    double Ti;
-    double Te;
+    double fi;
+    double tt;
     double lambda0;
     double lambda1;
     double lambda2;
