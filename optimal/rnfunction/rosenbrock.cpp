@@ -66,7 +66,7 @@ void Rosenbrock::gradient(const DoubleVector& x, DoubleVector &g)
     IGradient::Gradient(this, grad_step, x, g);
 }
 
-void Rosenbrock::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f) const
+void Rosenbrock::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double r, GradientMethod::MethodResult result) const
 {
     if (i == 0)
     {

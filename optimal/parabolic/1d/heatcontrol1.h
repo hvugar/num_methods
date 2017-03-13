@@ -57,7 +57,7 @@ public:
     virtual double fx(const DoubleVector& f) const;
     virtual void gradient(const DoubleVector& f, DoubleVector &g);
 
-    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx) const;
+    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const;
 
 private:
     double ht;

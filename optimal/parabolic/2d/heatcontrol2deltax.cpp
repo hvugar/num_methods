@@ -278,7 +278,7 @@ double HeatControl2DeltaX::bf(unsigned int i, unsigned int j, unsigned int k) co
     return 0.0;
 }
 
-void HeatControl2DeltaX::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double fx) const
+void HeatControl2DeltaX::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const
 {
     HeatControl2DeltaX *hc = const_cast<HeatControl2DeltaX*>(this);
     printf("J[%d]: %.16f\n", i, hc->fx(x));

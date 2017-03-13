@@ -34,7 +34,7 @@ public:
     virtual double bboundary(Boundary type, unsigned int j) const;
     virtual double bf(unsigned int i, unsigned int j) const;
 
-    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx) const;
+    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const;
 private:
     double t0;
     double t1;

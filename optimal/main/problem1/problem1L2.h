@@ -22,15 +22,12 @@ public:
 protected:
     virtual double fx(const DoubleVector &x) const;
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
-    virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx) const;
+    virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const;
     virtual void project(DoubleVector &x, int index);
 
     virtual double fx(double x) const;
 
     void calculateU(DoubleMatrix &u) const;
-    void calculateU1(DoubleMatrix &u) const;
-    //void calculateU2(DoubleMatrix &u) const;
-
     void calculateP(DoubleMatrix &p, const DoubleMatrix &u);
 
     double initial(unsigned int n) const;
@@ -49,7 +46,9 @@ private:
     unsigned int M;
     double hx;
     double ht;
-    double h;
+    double hk;
+    double hz;
+    double he;
 
     double fi;
     double tt;
@@ -76,6 +75,8 @@ private:
 
     double zmin;
     double zmax;
+
+    FILE* file;
 
 public:
     static void Main(int argc, char* argv[]);

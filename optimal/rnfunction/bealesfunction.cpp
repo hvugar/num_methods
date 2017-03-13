@@ -69,7 +69,7 @@ void BealesFunction::gradient(const DoubleVector& x, DoubleVector &g)
     IGradient::Gradient(this, grad_step, x, g);
 }
 
-void BealesFunction::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f) const
+void BealesFunction::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const
 {
     if (i == 0)
     {

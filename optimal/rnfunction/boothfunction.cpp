@@ -69,7 +69,7 @@ void BoothFunction::gradient(const DoubleVector& x, DoubleVector &g)
     IGradient::Gradient(this, grad_step, x, g);
 }
 
-void BoothFunction::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double) const
+void BoothFunction::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double, GradientMethod::MethodResult) const
 {
     if (i == 0)
     {

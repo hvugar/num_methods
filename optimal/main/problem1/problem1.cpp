@@ -371,7 +371,7 @@ void Problem1::gradient(const DoubleVector &x, DoubleVector &g)
 #endif
 }
 
-void Problem1::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx) const
+void Problem1::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const
 {
     int j = 0;
     printf("x: ");

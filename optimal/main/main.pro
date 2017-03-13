@@ -40,6 +40,7 @@ SOURCES += main.cpp \
     example2.cpp \
     problem1/problem1.cpp \
     problem1/problem1L2.cpp \
+    problem1/problem1L2P.cpp \
     problem1/problem1L3.cpp \
     bordertest.cpp \
     bordertest1.cpp \
@@ -54,6 +55,7 @@ HEADERS += \
     example2.h \
     problem1/problem1.h \
     problem1/problem1L2.h \
+    problem1/problem1L2P.h \
     problem1/problem1L3.h \
     bordertest.h \
     bordertest1.h \

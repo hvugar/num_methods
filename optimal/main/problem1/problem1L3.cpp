@@ -314,7 +314,7 @@ double Problem1L3::initial(unsigned int n UNUSED_PARAM) const
     return Ti;
 }
 
-void Problem1L3::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double r) const
+void Problem1L3::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double r, GradientMethod::MethodResult) const
 {
     Problem1L3 *pm = const_cast<Problem1L3*>(this);
     DoubleVector k = x.mid(0,2);

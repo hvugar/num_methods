@@ -169,7 +169,7 @@ double HyperbolicControl1D::bf(unsigned int i, unsigned int j) const
     return 0.0;
 }
 
-void HyperbolicControl1D::print(unsigned int i, const DoubleVector& v, const DoubleVector &g, double fx) const
+void HyperbolicControl1D::print(unsigned int i, const DoubleVector& v, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const
 {
     C_UNUSED(g);
     HyperbolicControl1D *hc = const_cast<HyperbolicControl1D*>(this);

@@ -11,25 +11,21 @@ class IGradient;
 class IPrinter;
 class IProjection;
 
-struct GradientIterationInfo
-{
-    unsigned int number;
-    DoubleVector x;
-    DoubleVector g;
-    DoubleVector s;
-    double alpha;
-    double fxResult;
-    RnFunction *fx;
-    double gradientNorm;
-    double distance;
-    double difference;
-};
-
 /**
  * @brief The Abstract Gradient Method class
  */
 class MINIMUMSHARED_EXPORT GradientMethod
 {
+public:
+    enum MethodResult
+    {
+        UNKNOWN = 0,
+        FIRST_ITERATION_GRADIENT = 1,
+        BREAK_FIRST_GRADIENT_NORM_LESS = 2,
+        BREAK_GRADIENT_NORM_LESS = 3,
+        BREAK_DISTANCE_LESS = 4
+    };
+
 public:
     GradientMethod();
     virtual ~GradientMethod();
@@ -108,7 +104,6 @@ protected:
     double m_epsilon1;
     double m_epsilon2;
     double m_epsilon3;
-    //double grad_step;
     double min_epsilon;
     double min_step;
     int iterationCount;

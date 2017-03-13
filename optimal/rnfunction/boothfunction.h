@@ -18,7 +18,7 @@ public:
     virtual double fx(const DoubleVector& x) const;
     virtual void gradient(const DoubleVector& x, DoubleVector& g);
     //Printer
-    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f) const;
+    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const;
     virtual void project(DoubleVector &x, int index);
 
     static void main(int argc, char ** argv);

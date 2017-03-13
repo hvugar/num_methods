@@ -43,7 +43,7 @@ void ConstStepGradient::calculate(DoubleVector &x)
         /* R1 minimization in direct of antigradient */
         alpha = minimize(x, g);
 
-        if (m_printer != NULL) m_printer->print(iterationCount, x, g, 0.0);
+        //if (m_printer != NULL) m_printer->print(iterationCount, x, g, 0.0);
 
         distance = 0.0;
         double f1 = m_fn->fx(x);

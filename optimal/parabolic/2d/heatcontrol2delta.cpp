@@ -378,7 +378,7 @@ void HeatControl2Delta::initialize()
     fclose(f);
 }
 
-void HeatControl2Delta::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double fx) const
+void HeatControl2Delta::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const
 {
     C_UNUSED(alpha);
 

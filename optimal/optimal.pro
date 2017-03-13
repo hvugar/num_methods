@@ -8,7 +8,7 @@ SUBDIRS += rnfunction
 #SUBDIRS += point
 SUBDIRS += border
 SUBDIRS += parabolic
-SUBDIRS += hyperbolic
+#SUBDIRS += hyperbolic
 #SUBDIRS += discrete
 SUBDIRS += main
 

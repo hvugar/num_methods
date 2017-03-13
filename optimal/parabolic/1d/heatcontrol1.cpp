@@ -101,7 +101,7 @@ void HeatControl1::gradient(const DoubleVector &f, DoubleVector &g)
     }
 }
 
-void HeatControl1::print(unsigned int i, const DoubleVector &, const DoubleVector &, double fx) const
+void HeatControl1::print(unsigned int i, const DoubleVector &, const DoubleVector &, double fx, GradientMethod::MethodResult result) const
 {
     printf("J[%d]: %.14f\n", i, fx);
 }

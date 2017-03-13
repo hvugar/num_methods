@@ -93,7 +93,7 @@ void Hyperbolic1DX::project(DoubleVector &e, int i)
     if (e[i]<0.0) e[i]=0.0;
 }
 
-void Hyperbolic1DX::print(unsigned int i, const DoubleVector& e, const DoubleVector &g, double fx) const
+void Hyperbolic1DX::print(unsigned int i, const DoubleVector& e, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const
 {
     Hyperbolic1DX *hc = const_cast<Hyperbolic1DX*>(this);
     printf("J[%d]: %.16f\n", i, hc->fx(e));

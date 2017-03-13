@@ -1,5 +1,5 @@
-#ifndef PROBLEM1L3_H
-#define PROBLEM1L3_H
+#ifndef PROBLEM1L2P_H
+#define PROBLEM1L2P_H
 
 #include <function.h>
 #include <gradient.h>
@@ -10,16 +10,22 @@
 #include <gradient_cjt.h>
 #include <cmethods.h>
 
-class Problem1L3 : protected RnFunction, protected IGradient, public IPrinter, public IProjection
+#define _OPTIMIZE_K_
+#define _OPTIMIZE_Z_
+#define _OPTIMIZE_E_
+
+class Problem1L2P : protected RnFunction, protected IGradient, public IPrinter, public IProjection, public R1Function
 {
 public:
-    Problem1L3();
+    Problem1L2P();
 
 protected:
     virtual double fx(const DoubleVector &x) const;
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
     virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const;
     virtual void project(DoubleVector &x, int index);
+
+    virtual double fx(double x) const;
 
     void calculateU(DoubleMatrix &u) const;
     void calculateP(DoubleMatrix &p, const DoubleMatrix &u);
@@ -30,7 +36,7 @@ protected:
     double integral(const DoubleVector &x) const;
     double norm(const DoubleVector &x0) const;
 
-    void getComponents(DoubleVector &k1, DoubleVector &z1, DoubleVector &e1, const DoubleVector &x) const;
+    void getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &x) const;
     void qovmaFirstColM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const;
     void qovmaFirstRowM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const;
 
@@ -40,13 +46,15 @@ private:
     unsigned int M;
     double hx;
     double ht;
-    double h;
+    double hk;
+    double hz;
+    double he;
 
-    double Ti;
-    double Te;
-    double alpha;
+    double fi;
+    double tt;
     double lambda0;
-    double lambdal;
+    double lambda1;
+    double lambda2;
 
     double alpha0;
     double alpha1;
@@ -55,13 +63,26 @@ private:
     double a;
 
     DoubleVector V;
+
     const DoubleVector *px;
-    //DoubleVector e;
-    //DoubleVector z;
-    //DoubleVector k;
+
+    DoubleVector K;
+    DoubleVector z;
+    DoubleVector e;
+
+    bool optimizeK;
+    bool optimizeZ;
+    bool optimizeE;
+
+    double zmin;
+    double zmax;
+
+    FILE* file;
+    DoubleVector vfi;
+    DoubleVector vtt;
 
 public:
     static void Main(int argc, char* argv[]);
 };
 
-#endif // PROBLEM1L3_H
+#endif // PROBLEM1L2P_H

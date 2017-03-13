@@ -1,6 +1,6 @@
-#include "problem1L2.h"
+#include "problem1L2p.h"
 
-void Problem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
+void Problem1L2P::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //    for (unsigned int i=500; i<=3000; i+=100)
     //    {
@@ -9,12 +9,11 @@ void Problem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //        printf("%d %18.10f\n", i, r);
     //    }
 
-
-    Problem1L2 p;
+    Problem1L2P p;
     p.fx(2000);
 }
 
-Problem1L2::Problem1L2()
+Problem1L2P::Problem1L2P()
 {
     optimizeK = true;
     optimizeZ = true;
@@ -34,9 +33,9 @@ Problem1L2::Problem1L2()
     //    h  = 0.001;
 
     // initial temperature
-    fi = 0.0;
+    vfi << -1.0 << 0.0 << +2.0;
     // environment temperature
-    tt = 0.0;
+    vtt << +0.5 << 1.5 << +2.5;
 
     //    const double r0 = 19320.0; // kg/m^3   // плотность
     //    const double c0 = 130.0;   // C/(kg*S) // удельная теплоемкость
@@ -62,7 +61,7 @@ Problem1L2::Problem1L2()
     alpha0 = 1.0;
     alpha1 = 0.001;
     alpha2 = 0.001;
-    alpha3 = 0.000;
+    alpha3 = 0.001;
 
     hk = 0.0001;
     hz = 0.0001;
@@ -83,11 +82,12 @@ Problem1L2::Problem1L2()
 
     fprintf(stdout, "alpha0: %f alpha1: %f alpha2: %f alpha3: %f\n", alpha0, alpha1, alpha2, alpha3);
     fprintf(stdout, "ro: %.10f, c: %.10f k %.10f h1 %.10f h2 %.10f a %.10f lambda0 %.10f lambda1 %.10f lambda2 %.10f\n", r0, c0, k0, h1, h2, a, lambda0, lambda1, lambda2);
+
 }
 
-double Problem1L2::fx(double t) const
+double Problem1L2P::fx(double t) const
 {
-    Problem1L2* p = const_cast<Problem1L2*>(this);
+    Problem1L2P* p = const_cast<Problem1L2P*>(this);
     p->file = fopen("problem1_test2.txt", "w");
     p->M = (unsigned int)(t);
 
@@ -97,7 +97,7 @@ double Problem1L2::fx(double t) const
     if (optimizeK)
     {
         fprintf(file, "Optimizing k parameters\n");
-        x0 << -58.5000 << -52.7000; //k
+        x0 << -8.5000 << -2.7000; //k
         //x0 << -4.8819170104 << 3.0421205175;
     }
     else
@@ -109,7 +109,7 @@ double Problem1L2::fx(double t) const
     if (optimizeZ)
     {
         fprintf(file, "Optimizing z parameters\n");
-        x0 << +10.1000 << +8.9000; //z
+        x0 << +2.1000 << +4.9000; //z
         //x0 << 8.2918856107 << -0.4531024453;
     }
     else
@@ -178,31 +178,48 @@ double Problem1L2::fx(double t) const
     return fx(x0);
 }
 
-double Problem1L2::fx(const DoubleVector &x) const
+double Problem1L2P::fx(const DoubleVector &x) const
 {
     return integral(x) + norm(x);
 }
 
-double Problem1L2::integral(const DoubleVector &x) const
+double Problem1L2P::integral(const DoubleVector &x) const
 {
-    const_cast<Problem1L2*>(this)->px = &x;
-    DoubleMatrix u;
-    calculateU(u);
+    Problem1L2P* pm = const_cast<Problem1L2P*>(this);
+    double SUM = 0.0;
 
-    double sum = 0.0;
-    sum += 0.5*mu(0)*(u[M][0]-V[0])*(u[M][0]-V[0]);
-    for (unsigned int n=1; n<=N-1; n++)
+    pm->px = &x;
+    for (unsigned int fn=0; fn<vfi.size(); fn++)
     {
-        sum += mu(n)*(u[M][n]-V[n])*(u[M][n]-V[n]);
+        for (unsigned int tn=0; tn<vtt.size(); tn++)
+        {
+            pm->fi = vfi[fn];
+            pm->tt = vtt[tn];
+
+            DoubleMatrix u;
+            calculateU(u);
+
+            double sum = 0.0;
+
+            sum += 0.5*mu(0)*(u[M][0]-V[0])*(u[M][0]-V[0]);
+            for (unsigned int n=1; n<=N-1; n++)
+            {
+                sum += mu(n)*(u[M][n]-V[n])*(u[M][n]-V[n]);
+            }
+            sum += 0.5*mu(N)*(u[M][N]-V[N])*(u[M][N]-V[N]);
+            sum *= hx;
+            sum *= alpha0;
+
+            SUM += sum;
+        }
     }
-    sum += 0.5*mu(N)*(u[M][N]-V[N])*(u[M][N]-V[N]);
-    sum *= hx;
-    return alpha0*sum;
+
+    return (1.0/vfi.size())*(1.0/vtt.size())*SUM;
 }
 
-double Problem1L2::norm(const DoubleVector &x) const
+double Problem1L2P::norm(const DoubleVector &x) const
 {
-    const_cast<Problem1L2*>(this)->px = &x;
+    const_cast<Problem1L2P*>(this)->px = &x;
     DoubleVector k,z,e;
     getComponents(k,z,e,x);
 
@@ -216,77 +233,118 @@ double Problem1L2::norm(const DoubleVector &x) const
     return alpha1*norm1 + alpha2*norm2 + alpha3*norm3;
 }
 
-void Problem1L2::gradient(const DoubleVector &x, DoubleVector &g)
+void Problem1L2P::gradient(const DoubleVector &x, DoubleVector &g)
 {
     px = &x;
     DoubleVector k,z,e;
     getComponents(k,z,e,x);
 
-    DoubleMatrix u;
-    calculateU(u);
 
-    DoubleMatrix p;
-    calculateP(p, u);
+    for (unsigned int i=0; i<g.size(); i++) g.at(i) = 0.0;
+
+    for (unsigned int fn=0; fn<vfi.size(); fn++)
+    {
+        for (unsigned int tn=0; tn<vtt.size(); tn++)
+        {
+            fi = vfi[fn];
+            tt = vtt[tn];
+
+            DoubleMatrix u;
+            calculateU(u);
+
+            DoubleMatrix p;
+            calculateP(p, u);
+
+            unsigned int i = 0;
+            if (optimizeK)
+            {
+                // k gradient
+                for (unsigned int s=0; s<L; s++)
+                {
+                    unsigned int xi = (unsigned int)round(e.at(s) * N*10);
+                    double sum = 0.0;
+                    sum += 0.5*p.at(0, 0)*(u.at(0, xi) - z[s]);
+                    for (unsigned int m=1; m<=M-1; m++)
+                    {
+                        sum += p.at(m, 0)*(u.at(m, xi) - z[s]);
+                    }
+                    sum += 0.5*p.at(M, 0)*(u.at(M, xi) - z[s]);
+                    sum *= ht;
+                    g.at(i) += -lambda1*a*a*sum;// + 2.0*alpha1*k.at(s);
+                    i++;
+                }
+            }
+
+            // z gradient
+            if (optimizeZ)
+            {
+                for (unsigned int s=0; s<L; s++)
+                {
+                    double sum = 0.0;
+                    sum += 0.5*p.at(0, 0);
+                    for (unsigned int m=1; m<=M-1; m++)
+                    {
+                        sum += p.at(m, 0);
+                    }
+                    sum += 0.5*p.at(M, 0);
+                    sum *= ht;
+                    g.at(i) += lambda1*a*a*k[s]*sum;// + 2.0*alpha2*z.at(s);
+                    i++;
+                }
+            }
+
+            if (optimizeE)
+            {
+                // e gradient
+                for (unsigned int s=0; s<L; s++)
+                {
+                    unsigned int xi = (unsigned int)round(e.at(s) * N*10);
+                    double sum = 0.0;
+                    sum += 0.5 * p.at(0, 0) * ((u.at(0, xi+1) - u.at(0, xi-1))/(2.0*hx));
+                    for (unsigned int m=1; m<=M-1; m++)
+                    {
+                        sum += p.at(m, 0) * ((u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx));
+                    }
+                    sum += 0.5 * p.at(M, 0) * ((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx));
+                    sum *= ht;
+                    g.at(i) += -lambda1*a*a*k[s]*sum;// + 2.0*alpha3*e.at(s);
+                    i++;
+                }
+            }
+        }
+    }
+
+    for (unsigned int i=0; i<g.size(); i++) g.at(i) *= (1.0/vfi.size())*(1.0/vtt.size());
+
 
     unsigned int i = 0;
     if (optimizeK)
     {
-        // k gradient
         for (unsigned int s=0; s<L; s++)
         {
-            unsigned int xi = (unsigned int)round(e.at(s) * N*10);
-            double sum = 0.0;
-            sum += 0.5*p.at(0, 0)*(u.at(0, xi) - z[s]);
-            for (unsigned int m=1; m<=M-1; m++)
-            {
-                sum += p.at(m, 0)*(u.at(m, xi) - z[s]);
-            }
-            sum += 0.5*p.at(M, 0)*(u.at(M, xi) - z[s]);
-            sum *= ht;
-            g.at(i) = -lambda1*a*a*sum + 2.0*alpha1*k.at(s);
+            g.at(i) += 2.0*alpha1*k.at(s);
             i++;
         }
     }
-
-    // z gradient
     if (optimizeZ)
     {
         for (unsigned int s=0; s<L; s++)
         {
-            double sum = 0.0;
-            sum += 0.5*p.at(0, 0);
-            for (unsigned int m=1; m<=M-1; m++)
-            {
-                sum += p.at(m, 0);
-            }
-            sum += 0.5*p.at(M, 0);
-            sum *= ht;
-            g.at(i) = lambda1*a*a*k[s]*sum + 2.0*alpha2*z.at(s);
+            g.at(i) += 2.0*alpha2*z.at(s);
             i++;
         }
     }
-
     if (optimizeE)
     {
-        // e gradient
         for (unsigned int s=0; s<L; s++)
         {
-            unsigned int xi = (unsigned int)round(e.at(s) * N*10);
-            double sum = 0.0;
-            sum += 0.5 * p.at(0, 0) * ((u.at(0, xi+1) - u.at(0, xi-1))/(2.0*hx));
-            for (unsigned int m=1; m<=M-1; m++)
-            {
-                sum += p.at(m, 0) * ((u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx));
-            }
-            sum += 0.5 * p.at(M, 0) * ((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx));
-            sum *= ht;
-            g.at(i) = -lambda1*a*a*k[s]*sum + 2.0*alpha3*e.at(s);
+            g.at(i) += 2.0*alpha3*e.at(s);
             i++;
         }
     }
 }
 
-void Problem1L2::calculateU(DoubleMatrix &u) const
+void Problem1L2P::calculateU(DoubleMatrix &u) const
 {
     const DoubleVector &x = *px;
 
@@ -352,8 +410,6 @@ void Problem1L2::calculateU(DoubleMatrix &u) const
         for (unsigned int i=0; i<=N; i++)
         {
             u[m][i] = rx[i];
-            //u[m][20] = u[m][20] + u[m][20]*0.05;
-            //u[m][80] = u[m][80] - u[m][80]*0.05;
         }
     }
 
@@ -365,7 +421,7 @@ void Problem1L2::calculateU(DoubleMatrix &u) const
     free(da);
 }
 
-void Problem1L2::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
+void Problem1L2P::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
 {
     const DoubleVector &x = *px;
     DoubleVector k,z,e;
@@ -436,16 +492,16 @@ void Problem1L2::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
     free(da);
 }
 
-double Problem1L2::initial(unsigned int n UNUSED_PARAM) const
+double Problem1L2P::initial(unsigned int n UNUSED_PARAM) const
 {
     return fi;
 }
 
-void Problem1L2::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double r, GradientMethod::MethodResult result) const
+void Problem1L2P::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double r, GradientMethod::MethodResult result) const
 {
     if (i % 10 != 0 && result < 3) return;
 
-    Problem1L2 *pm = const_cast<Problem1L2*>(this);
+    Problem1L2P *pm = const_cast<Problem1L2P*>(this);
     pm->px = &x;
 
     DoubleVector k,z,e;
@@ -466,7 +522,7 @@ void Problem1L2::print(unsigned int i, const DoubleVector &x, const DoubleVector
     //fprintf(file, "---\n");
     //fprintf(file, "k: %14.10f %14.10f\n", k[0], k[1]);
 
-    printf("%d,%10.6f,",i,r);
+    printf("%d,%f,",i,r);
 
     if (optimizeK)
     {
@@ -498,8 +554,8 @@ void Problem1L2::print(unsigned int i, const DoubleVector &x, const DoubleVector
 
         p+=2;
 
-        printf("|%10.6f,%10.6f,%10.6f,",k[0],a[0],n[0]);
-        printf("|%10.6f,%10.6f,%10.6f,",k[1],a[1],n[1]);
+        printf("%.6f,%.6f,%.6f,",k[0],a[0],n[0]);
+        printf("%.6f,%.6f,%.6f,",k[1],a[1],n[1]);
     }
 
     //fprintf(file, "---\n");
@@ -532,8 +588,8 @@ void Problem1L2::print(unsigned int i, const DoubleVector &x, const DoubleVector
         //fprintf(file, "n: %14.10f %14.10f | %14.10f %14.10f\n", n[0], n[1], nn[0], nn[1]);
         \
         p+=2;
-        printf("|%10.6f,%10.6f,%10.6f,",z[0],a[0],n[0]);
-        printf("|%10.6f,%10.6f,%10.6f\n",z[1],a[1],n[1]);
+        printf("%.6f,%.6f,%.6f,",z[0],a[0],n[0]);
+        printf("%.6f,%.6f,%.6f\n",z[1],a[1],n[1]);
     }
 
     //fprintf(file, "---\n");
@@ -572,7 +628,7 @@ void Problem1L2::print(unsigned int i, const DoubleVector &x, const DoubleVector
     fflush(file);
 }
 
-void Problem1L2::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
+void Problem1L2P::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
 {
     unsigned int p = 0;
     if (optimizeK) p+=2;
@@ -604,7 +660,7 @@ void Problem1L2::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
     }
 }
 
-void Problem1L2::getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &x) const
+void Problem1L2P::getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &x) const
 {
     unsigned int p = 0;
 
@@ -639,7 +695,7 @@ void Problem1L2::getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e
     }
 }
 
-void Problem1L2::qovmaFirstColM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const
+void Problem1L2P::qovmaFirstColM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const
 {
     double *p = (double*)malloc(sizeof(double)*n);
     double *q = (double*)malloc(sizeof(double)*n);
@@ -697,7 +753,7 @@ void Problem1L2::qovmaFirstColM(double *a, double *b, double *c, double *d, doub
     free(q);
 }
 
-void Problem1L2::qovmaFirstRowM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const
+void Problem1L2P::qovmaFirstRowM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const
 {
     double *p = (double*)malloc(sizeof(double)*n);
     double *q = (double*)malloc(sizeof(double)*n);

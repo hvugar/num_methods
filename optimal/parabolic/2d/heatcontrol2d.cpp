@@ -192,7 +192,7 @@ double HeatControl2D::fxt(double x1, double x2, double t) const
     return 2.0*t - 2.0*a1 - 2.0*a2;
 }
 
-void HeatControl2D::print(unsigned int i, const DoubleVector &f0, const DoubleVector &g, double fx) const
+void HeatControl2D::print(unsigned int i, const DoubleVector &f0, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const
 {
     HeatControl2D *hc = const_cast<HeatControl2D*>(this);
     printf("J: %.16f\n", hc->fx(f0));

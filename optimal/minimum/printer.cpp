@@ -95,8 +95,6 @@ void IPrinter::printVector(const DoubleVector &x, const char *s, unsigned int n,
     fflush(file);
 }
 
-
-
 void IPrinter::printVector(double *x, unsigned int size, const char *s, unsigned int n, unsigned int start, unsigned int end, FILE *file)
 {
     if (s!='\0') fprintf(file, "%s", s);

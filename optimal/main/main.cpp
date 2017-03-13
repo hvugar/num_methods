@@ -6,6 +6,7 @@
 
 #include "problem1/problem1.h"
 #include "problem1/problem1L2.h"
+#include "problem1/problem1L2P.h"
 #include "problem1/problem1L3.h"
 //#include "loadedsystems.h"
 //#include "example1.h"
@@ -30,7 +31,7 @@
 //#include <../hyperbolic/2d/hyperboliccontrol2d23.h>
 //#include <../hyperbolic/2d/hyperboliccontrol2d24.h>
 //#include <../hyperbolic/2d/hyperboliccontrol2d24.h>
-#include <../hyperbolic/2d/hyperboliccontrol2dm.h>
+//#include <../hyperbolic/2d/hyperboliccontrol2dm.h>
 //#include <../hyperbolic/2d/hyperboliccontrol2dmv.h>
 //#include <../hyperbolic/2d/hyperboliccontrol2dmx.h>
 
@@ -57,6 +58,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Problem1::Main(argc, argv);
     Problem1L2::Main(argc, argv);
     //Problem1L3::Main(argc, argv);
+    //Problem1L2P::Main(argc, argv);
+
     //Example4::Main(argc, argv);
     //BorderParabolicD::Main(argc, argv);
     //BorderParabolicN::Main(argc, argv);

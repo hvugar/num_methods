@@ -34,16 +34,17 @@ void ConjugateGradient::calculate(DoubleVector& x)
     // Gradient of objectiv function in current point
     m_gr->gradient(x, g);
     f1 = m_fn->fx(x);
-    if (m_printer != NULL) m_printer->print(iterationCount, x, g, f1);
 
     /* checking gradient norm */
     /* if gradient norm at current point is less than epsilon then return. no minimize */
     double gradient_norm = g.L2Norm();
     if (gradient_norm < epsilon1())
     {
+        if (m_printer != NULL) m_printer->print(iterationCount, x, g, f1, GradientMethod::BREAK_FIRST_GRADIENT_NORM_LESS);
         if (mshowEndMessage) puts("Optimisation ends, because norm of gradient is less than epsilon...");
         return;
     }
+    if (m_printer != NULL) m_printer->print(iterationCount, x, g, f1, GradientMethod::FIRST_ITERATION_GRADIENT);
 
     do
     {
@@ -92,13 +93,13 @@ void ConjugateGradient::calculate(DoubleVector& x)
 
         // Gradient of objectiv function in current point
         m_gr->gradient(x, g);
-        if (m_printer != NULL) m_printer->print(iterationCount, x, g, f2);
 
         /* checking gradient norm */
         /* if gradient norm at current point is less than epsilon then return. no minimize */
         double gradient_norm = g.L2Norm();
         if (gradient_norm < epsilon1())
         {
+            if (m_printer != NULL) m_printer->print(iterationCount, x, g, f2, GradientMethod::BREAK_GRADIENT_NORM_LESS);
             if (mshowEndMessage) puts("Optimisation ends, because norm of gradient is less than epsilon...");
             break;
         }
@@ -106,9 +107,12 @@ void ConjugateGradient::calculate(DoubleVector& x)
         /* calculating distance previous and new point */
         if (distance < epsilon2() && fabs(f2 - f1) < epsilon3())
         {
+            if (m_printer != NULL) m_printer->print(iterationCount, x, g, f2, GradientMethod::BREAK_DISTANCE_LESS);
             if (mshowEndMessage) puts("Optimisation ends, because distance between last and current point less than epsilon...");
             break;
         }
+
+        if (m_printer != NULL) m_printer->print(iterationCount, x, g, f2, GradientMethod::UNKNOWN);
 
         f1 = f2;
 

@@ -17,7 +17,7 @@ public:
 
     virtual double fx(const DoubleVector &x) const;
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
-    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx) const;
+    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const;
 
     virtual double initial(unsigned int i, unsigned int j) const;
     virtual double boundary(unsigned int i, unsigned int j, unsigned int k) const;

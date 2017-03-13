@@ -252,7 +252,7 @@ double HyperbolicControlH::bboundary(Boundary type, unsigned int j) const
     return 0.0;
 }
 
-void HyperbolicControlH::print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double fx) const
+void HyperbolicControlH::print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const
 {
     C_UNUSED(g);
     printf("J[%d]: %.16f\n", i, const_cast<HyperbolicControlH*>(this)->fx(v));

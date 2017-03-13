@@ -164,7 +164,7 @@ double HeatControlDeltaF::bf(unsigned int i, unsigned int j) const
     return 0.0;
 }
 
-void HeatControlDeltaF::print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx) const
+void HeatControlDeltaF::print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const
 {
     C_UNUSED(g);
     printf("J[%d]: %.20f\n", i, const_cast<HeatControlDeltaF*>(this)->fx(f0));

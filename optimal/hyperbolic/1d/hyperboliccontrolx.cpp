@@ -264,7 +264,7 @@ double HyperbolicControlX::bboundary(Boundary type, unsigned int j) const
     return 0.0;
 }
 
-void HyperbolicControlX::print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double fx) const
+void HyperbolicControlX::print(unsigned int i, const DoubleVector &v, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const
 {
     C_UNUSED(g);
     printf("J[%d]: %.16f\n", i, const_cast<HyperbolicControlX*>(this)->fx(v));

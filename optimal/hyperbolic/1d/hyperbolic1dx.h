@@ -20,7 +20,7 @@ public:
     virtual double fx(const DoubleVector &e) const;
     virtual void gradient(const DoubleVector &e, DoubleVector &g);
     virtual void project(DoubleVector &x, int index);
-    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx) const;
+    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const;
 
     virtual double initial1(unsigned int i) const;
     virtual double initial2(unsigned int i) const;
