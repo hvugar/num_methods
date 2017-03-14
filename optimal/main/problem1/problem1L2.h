@@ -27,7 +27,7 @@ protected:
     double norm(const DoubleVector &prm) const;
     double penalty(const DoubleVector &prm, const DoubleMatrix &u) const;
     double vd0(const DoubleVector &prm, unsigned int m, const DoubleMatrix &u) const;
-    double g(const DoubleVector &prm, unsigned int m, const DoubleMatrix &u) const;
+    double gf(const DoubleVector &prm, unsigned int m, const DoubleMatrix &u) const;
 
     virtual void gradient(const DoubleVector &prm, DoubleVector &g);
 
