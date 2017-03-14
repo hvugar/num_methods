@@ -20,21 +20,26 @@ public:
     Problem1L2();
 
 protected:
+    virtual double fx(double t) const;
+
     virtual double fx(const DoubleVector &x) const;
-    virtual void gradient(const DoubleVector &x, DoubleVector &g);
+    double integral(const DoubleVector &prm, const DoubleMatrix &u) const;
+    double norm(const DoubleVector &prm) const;
+    double penalty(const DoubleVector &prm, const DoubleMatrix &u) const;
+    double vd0(const DoubleVector &prm, unsigned int m, const DoubleMatrix &u) const;
+    double g(const DoubleVector &prm, unsigned int m, const DoubleMatrix &u) const;
+
+    virtual void gradient(const DoubleVector &prm, DoubleVector &g);
+
     virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const;
     virtual void project(DoubleVector &x, int index);
 
-    virtual double fx(double x) const;
 
     void calculateU(DoubleMatrix &u) const;
     void calculateP(DoubleMatrix &p, const DoubleMatrix &u);
 
     double initial(unsigned int n) const;
     double mu(unsigned int i UNUSED_PARAM) const { return 1.0; }
-
-    double integral(const DoubleVector &x) const;
-    double norm(const DoubleVector &x0) const;
 
     void getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &x) const;
     void qovmaFirstColM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const;
@@ -52,6 +57,7 @@ private:
 
     double fi;
     double tt;
+    double a;
     double lambda0;
     double lambda1;
     double lambda2;
@@ -60,7 +66,12 @@ private:
     double alpha1;
     double alpha2;
     double alpha3;
-    double a;
+    double R;
+
+    double vmin;
+    double vmax;
+    double d0;
+    double d1;
 
     DoubleVector V;
     const DoubleVector *px;

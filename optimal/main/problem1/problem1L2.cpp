@@ -11,7 +11,7 @@ void Problem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 
     Problem1L2 p;
-    p.fx(2000);
+    p.fx(500);
 }
 
 Problem1L2::Problem1L2()
@@ -63,6 +63,7 @@ Problem1L2::Problem1L2()
     alpha1 = 0.001;
     alpha2 = 0.001;
     alpha3 = 0.000;
+    R = 1.0;
 
     hk = 0.0001;
     hz = 0.0001;
@@ -70,6 +71,11 @@ Problem1L2::Problem1L2()
 
     zmin = 9.5;
     zmax = 10.5;
+
+    vmin = -10.0;
+    vmax = 1000.0;
+    d0 = (vmax-vmin)/2.0;
+    d1 = (vmax-vmin)/2.0;
 
     V.resize(N+1);
 
@@ -97,7 +103,7 @@ double Problem1L2::fx(double t) const
     if (optimizeK)
     {
         fprintf(file, "Optimizing k parameters\n");
-        x0 << -58.5000 << -52.7000; //k
+        x0 << -8.5000 << -2.7000; //k
         //x0 << -4.8819170104 << 3.0421205175;
     }
     else
@@ -109,7 +115,7 @@ double Problem1L2::fx(double t) const
     if (optimizeZ)
     {
         fprintf(file, "Optimizing z parameters\n");
-        x0 << +10.1000 << +8.9000; //z
+        x0 << +2.1000 << +4.9000; //z
         //x0 << 8.2918856107 << -0.4531024453;
     }
     else
@@ -178,17 +184,17 @@ double Problem1L2::fx(double t) const
     return fx(x0);
 }
 
-double Problem1L2::fx(const DoubleVector &x) const
+double Problem1L2::fx(const DoubleVector &prm) const
 {
-    return integral(x) + norm(x);
-}
-
-double Problem1L2::integral(const DoubleVector &x) const
-{
-    const_cast<Problem1L2*>(this)->px = &x;
+    const_cast<Problem1L2*>(this)->px = &prm;
     DoubleMatrix u;
     calculateU(u);
 
+    return integral(prm, u) + norm(prm) + R*penalty(prm, u);
+}
+
+double Problem1L2::integral(const DoubleVector &prm, const DoubleMatrix &u) const
+{
     double sum = 0.0;
     sum += 0.5*mu(0)*(u[M][0]-V[0])*(u[M][0]-V[0]);
     for (unsigned int n=1; n<=N-1; n++)
@@ -200,11 +206,11 @@ double Problem1L2::integral(const DoubleVector &x) const
     return alpha0*sum;
 }
 
-double Problem1L2::norm(const DoubleVector &x) const
+double Problem1L2::norm(const DoubleVector &prm) const
 {
-    const_cast<Problem1L2*>(this)->px = &x;
+    const_cast<Problem1L2*>(this)->px = &prm;
     DoubleVector k,z,e;
-    getComponents(k,z,e,x);
+    getComponents(k,z,e,prm);
 
     double norm1 = 0.0;
     double norm2 = 0.0;
@@ -213,14 +219,57 @@ double Problem1L2::norm(const DoubleVector &x) const
     norm1 = k.at(0)*k.at(0) + k.at(1)*k.at(1);
     norm2 = z.at(0)*z.at(0) + z.at(1)*z.at(1);
     norm3 = e.at(0)*e.at(0) + e.at(1)*e.at(1);
+
     return alpha1*norm1 + alpha2*norm2 + alpha3*norm3;
 }
 
-void Problem1L2::gradient(const DoubleVector &x, DoubleVector &g)
+double Problem1L2::penalty(const DoubleVector &prm, const DoubleMatrix &u) const
 {
-    px = &x;
+    double sum = 0.0;
+
+    double max = fmax(0.0, g(prm, 0, u));
+    sum += 0.5*max*max;
+    for (unsigned int m=1; m<=M-1; m++)
+    {
+        max = fmax(0.0, g(prm, m, u));
+        sum += max*max;
+    }
+    max = fmax(0.0, g(prm, M, u));
+    sum += 0.5*max*max;
+    sum *= ht;
+    return sum;
+
+    return 0.0;
+}
+
+double Problem1L2::g(const DoubleVector &prm, unsigned int m, const DoubleMatrix &u) const
+{
+    return vd0(prm, m, u) - d1;
+}
+
+double Problem1L2::vd0(const DoubleVector &prm, unsigned int m, const DoubleMatrix &u) const
+{
     DoubleVector k,z,e;
-    getComponents(k,z,e,x);
+    getComponents(k,z,e,prm);
+
+    unsigned int xi0 = (unsigned int)round(e[0] * N*10);
+    unsigned int xi1 = (unsigned int)round(e[1] * N*10);
+
+    return fabs(d0 - ((k[0]*u[m][xi0]-z[0])+(k[1]*u[m][xi1]-z[1])));
+}
+
+double sign(double x)
+{
+    if (x < 0.0) return -1.0;
+    if (x > 0.0) return +1.0;
+    return 0.0;
+}
+
+void Problem1L2::gradient(const DoubleVector &prm, DoubleVector &g)
+{
+    px = &prm;
+    DoubleVector k,z,e;
+    getComponents(k,z,e,prm);
 
     DoubleMatrix u;
     calculateU(u);
@@ -235,6 +284,7 @@ void Problem1L2::gradient(const DoubleVector &x, DoubleVector &g)
         for (unsigned int s=0; s<L; s++)
         {
             unsigned int xi = (unsigned int)round(e.at(s) * N*10);
+
             double sum = 0.0;
             sum += 0.5*p.at(0, 0)*(u.at(0, xi) - z[s]);
             for (unsigned int m=1; m<=M-1; m++)
@@ -243,7 +293,18 @@ void Problem1L2::gradient(const DoubleVector &x, DoubleVector &g)
             }
             sum += 0.5*p.at(M, 0)*(u.at(M, xi) - z[s]);
             sum *= ht;
-            g.at(i) = -lambda1*a*a*sum + 2.0*alpha1*k.at(s);
+
+            // Penalty
+            double pnlt = 0.0;
+            pnlt += 0.5*(u[0][xi]-z[s])*sign(vd0(prm,0,u))*fmax(0.0, g(prm, 0, u));
+            for (unsigned int m=1; m<=M-1; m++)
+            {
+                pnlt += (u[m][xi]-z[s])*sign(vd0(prm,m,u))*fmax(0.0, g(prm, m, u));
+            }
+            pnlt += 0.5*(u[M][xi]-z[s])*sign(vd0(prm,M,u))*fmax(0.0, g(prm, M, u));
+            pnlt *= ht;
+
+            g.at(i) = -lambda1*a*a*sum + 2.0*alpha1*k.at(s) + 2.0*R*pnlt;
             i++;
         }
     }
@@ -261,7 +322,18 @@ void Problem1L2::gradient(const DoubleVector &x, DoubleVector &g)
             }
             sum += 0.5*p.at(M, 0);
             sum *= ht;
-            g.at(i) = lambda1*a*a*k[s]*sum + 2.0*alpha2*z.at(s);
+
+            // Penalty
+            double pnlt = 0.0;
+            pnlt += 0.5*k[s]*sign(vd0(prm,0,u))*fmax(0.0, g(rpm, 0, u));
+            for (unsigned int m=1; m<=M-1; m++)
+            {
+                pnlt += k[s]*sign(vd0(prm,m,u))*fmax(0.0, g(rpm, m, u));
+            }
+            pnlt += 0.5*k[s]*sign(vd0(prm,M,u))*fmax(0.0, g(rpm, M, u));
+            pnlt *= ht;
+
+            g.at(i) = lambda1*a*a*k[s]*sum + 2.0*alpha2*z.at(s) - 2.0*R*pnlt;
             i++;
         }
     }
@@ -272,6 +344,7 @@ void Problem1L2::gradient(const DoubleVector &x, DoubleVector &g)
         for (unsigned int s=0; s<L; s++)
         {
             unsigned int xi = (unsigned int)round(e.at(s) * N*10);
+
             double sum = 0.0;
             sum += 0.5 * p.at(0, 0) * ((u.at(0, xi+1) - u.at(0, xi-1))/(2.0*hx));
             for (unsigned int m=1; m<=M-1; m++)
@@ -280,7 +353,18 @@ void Problem1L2::gradient(const DoubleVector &x, DoubleVector &g)
             }
             sum += 0.5 * p.at(M, 0) * ((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx));
             sum *= ht;
-            g.at(i) = -lambda1*a*a*k[s]*sum + 2.0*alpha3*e.at(s);
+
+            // Penalty
+            double pnlt = 0.0;
+            pnlt += 0.5*k[s]*((u.at(0, xi+1) - u.at(0, xi-1))/(2.0*hx))*sign(vd0(prm,0,u))*fmax(0.0, g(rpm, 0, u));
+            for (unsigned int m=1; m<=M-1; m++)
+            {
+                pnlt += k[s]*((u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx))*sign(vd0(prm,m,u))*fmax(0.0, g(rpm, m, u));
+            }
+            pnlt += 0.5*k[s]*((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx))*sign(vd0(prm,M,u))*fmax(0.0, g(rpm, M, u));
+            pnlt *= ht;
+
+            g.at(i) = -lambda1*a*a*k[s]*sum + 2.0*alpha3*e.at(s) + 2.0*R*pnlt;
             i++;
         }
     }
@@ -415,11 +499,13 @@ void Problem1L2::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
             if (dif0 <= hx)
             {
                 de[n] = k[0]*(lambda1*(a*a*ht)/hx) * (1.0 - dif0/hx);
+                de[n] += 2.0*R*sign(vd0(prm,m,u))*fmax(0.0, g(rpm, m, u))/hx * (1.0 - dif0/hx);
             }
             double dif1 = fabs(n*hx - e[1]);
             if (dif1 <= hx)
             {
                 de[n] = k[1]*(lambda1*(a*a*ht)/hx) * (1.0 - dif1/hx);
+                de[n] += 2.0*R*sign(vd0(prm,m,u))*fmax(0.0, g(rpm, m, u))/hx * (1.0 - dif0/hx);
             }
         }
 
@@ -568,7 +654,8 @@ void Problem1L2::print(unsigned int i, const DoubleVector &x, const DoubleVector
         printf("%.6f,%.6f,%.6f,",e[0],a[0],n[0]);
         printf("%.6f,%.6f,%.6f\n",e[1],a[1],n[1]);
     }
-    //IPrinter::printVector(14,10,u.row(u.rows()-1),"u: ", 10, 0, 0, file);
+
+    IPrinter::printVector(14,10,u.row(u.rows()-1),"u: ", 10, 0, 0, stdout);
     fflush(file);
 }
 
