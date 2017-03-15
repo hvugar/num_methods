@@ -316,7 +316,6 @@ void Problem1L2P::gradient(const DoubleVector &x, DoubleVector &g)
 
     for (unsigned int i=0; i<g.size(); i++) g.at(i) *= (1.0/vfi.size())*(1.0/vtt.size());
 
-
     unsigned int i = 0;
     if (optimizeK)
     {

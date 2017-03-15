@@ -52,6 +52,11 @@ private:
 
     double fi;
     double tt;
+
+    DoubleVector vfi;
+    DoubleVector vtt;
+
+    double a;
     double lambda0;
     double lambda1;
     double lambda2;
@@ -60,7 +65,6 @@ private:
     double alpha1;
     double alpha2;
     double alpha3;
-    double a;
 
     DoubleVector V;
 
@@ -78,8 +82,7 @@ private:
     double zmax;
 
     FILE* file;
-    DoubleVector vfi;
-    DoubleVector vtt;
+
 
 public:
     static void Main(int argc, char* argv[]);

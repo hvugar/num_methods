@@ -46,9 +46,14 @@ Problem1L2::Problem1L2()
     //    h  = 0.001;
 
     // initial temperature
-    fi = 0.0;
+    vfi << 0.0 << 1.0;
     // environment temperature
-    tt = 0.0;
+    vtt << 0.0 << 1.0;
+
+    // initial temperature
+    fi = 20.0;
+    // environment temperature
+    tt = 20.0;
 
     //    const double r0 = 19320.0; // kg/m^3   // плотность
     //    const double c0 = 130.0;   // C/(kg*S) // удельная теплоемкость
@@ -75,7 +80,7 @@ Problem1L2::Problem1L2()
     alpha1 = 0.001;
     alpha2 = 0.001;
     alpha3 = 0.001;
-    R = 10.0;
+    R = 0.0;
 
     hk = 0.001;
     hz = 0.001;
@@ -84,8 +89,8 @@ Problem1L2::Problem1L2()
     zmin = 9.5;
     zmax = 10.5;
 
-    vmin = -1000.0;
-    vmax = +1000.0;
+    vmin = -10.0;
+    vmax = +50.0;
     d0 = (vmax+vmin)/2.0;
     d1 = (vmax-vmin)/2.0;
 
@@ -198,13 +203,33 @@ double Problem1L2::fx(double t) const
 
 double Problem1L2::fx(const DoubleVector &prm) const
 {
-    const_cast<Problem1L2*>(this)->px = &prm;
+    Problem1L2* pm = const_cast<Problem1L2*>(this);
+    pm->px = &prm;
 
-    DoubleMatrix u;
-    calculateU(u);
-    //IPrinter::printVector(14,10,u.row(M), "fx      ");
+    DoubleVector k,z,e;
+    getComponents(k,z,e,prm);
 
-    return integral(prm, u) + norm(prm) + R*penalty(prm, u);
+    double SUM = 0.0;
+
+    for (unsigned int fn=0; fn<vfi.size(); fn++)
+    {
+        for (unsigned int tn=0; tn<vtt.size(); tn++)
+        {
+            pm->fi = vfi[fn];
+            pm->tt = vtt[tn];
+
+            DoubleMatrix u;
+            calculateU(u);
+
+            double pnlt = penalty(k,z,e,u);
+
+            double sum = integral(prm, u) + norm(prm) + R*pnlt;
+
+            SUM += sum;
+        }
+    }
+
+    return (1.0/vfi.size())*(1.0/vtt.size())*SUM;
 }
 
 double Problem1L2::integral(const DoubleVector &, const DoubleMatrix &u) const
@@ -238,151 +263,266 @@ double Problem1L2::norm(const DoubleVector &prm) const
     return alpha1*norm1 + alpha2*norm2 + alpha3*norm3;
 }
 
-double Problem1L2::penalty(const DoubleVector &prm, const DoubleMatrix &u) const
+double Problem1L2::penalty(const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
 {
     double pnlt = 0.0;
+    double max = 0.0;
 
-    double max = MAX(0.0, gf(prm, 0, u));
+    max = MAX(0.0, gf(0, k, z, e, u));
     pnlt += 0.5*max*max;
     for (unsigned int m=1; m<=M-1; m++)
     {
-        double maxm = MAX(0.0, gf(prm, m, u));
-        pnlt += maxm*maxm;
-        //if (maxm>0.0) printf("penalty %f\n", maxm);
+        max = MAX(0.0, gf(m, k, z, e, u));
+        pnlt += max*max;
     }
-    max = MAX(0.0, gf(prm, M, u));
+    max = MAX(0.0, gf(M, k, z, e, u));
     pnlt += 0.5*max*max;
+
+    //    max = gf(0, k, z, e, u);
+    //    if (max > 0.0)
+    //    {
+    //        //printf("d: vm: %d %.10f %.10f\n", 0, max, vf(0,k,z,e,u));
+    //        pnlt += 0.5*max*max;
+    //    }
+    //    for (unsigned int m=1; m<=M-1; m++)
+    //    {
+    //        //max = MAX(0.0, gf(m, k, z, e, u));
+    //        //pnlt += max*max;
+    //        max = gf(m, k, z, e, u);
+    //        if (max > 0.0)
+    //        {
+    //            //printf("d: vm: %d %.10f %.10f\n", m, max, vf(m,k,z,e,u));
+    //            pnlt += max*max;
+    //        }
+    //    }
+    //    //max = MAX(0.0, gf(M, k, z, e, u));
+    //    //pnlt += 0.5*max*max;
+    //    max = gf(M, k, z, e, u);
+    //    if (max > 0.0)
+    //    {
+    //        //printf("d: vm: %d %.10f %.10f\n", M, max, vf(M,k,z,e,u));
+    //        pnlt += max*max;
+    //    }
+
     pnlt *= ht;
-    //printf("penalty %.14f\n", pnlt);
     return pnlt;
 
     return 0.0;
 }
 
-double Problem1L2::gf(const DoubleVector &prm, unsigned int m, const DoubleMatrix &u) const
+double Problem1L2::gf(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
 {
-    return vd0(prm, m, u) - d1;
+    return vd0(m, k, z, e, u) - d1;
 }
 
-double Problem1L2::vd0(const DoubleVector &prm, unsigned int m, const DoubleMatrix &u) const
+double Problem1L2::vd0(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
 {
-    DoubleVector k,z,e;
-    getComponents(k,z,e,prm);
-
-    unsigned int xi0 = (unsigned int)round(e[0] * N*10);
-    unsigned int xi1 = (unsigned int)round(e[1] * N*10);
-
-    return fabs(d0 - ((k[0]*u[m][xi0]-z[0])+(k[1]*u[m][xi1]-z[1])));
+    return fabs(d0 - vf(m, k, z, e, u));
 }
 
 void Problem1L2::gradient(const DoubleVector &prm, DoubleVector &g)
 {
     px = &prm;
+
     DoubleVector k,z,e;
     getComponents(k,z,e,prm);
 
-    DoubleMatrix u;
-    calculateU(u);
-    //IPrinter::printVector(14,10,u.row(M),"gradient");
-
-    DoubleMatrix p;
-    calculateP(p, u);
-
-    unsigned int i = 0;
-    if (optimizeK)
+    for (unsigned int fn=0; fn<vfi.size(); fn++)
     {
-        // k gradient
-        for (unsigned int s=0; s<L; s++)
+        for (unsigned int tn=0; tn<vtt.size(); tn++)
         {
-            unsigned int xi = (unsigned int)round(e.at(s) * N*10);
+            fi = vfi[fn];
+            tt = vtt[tn];
 
-            double sum = 0.0;
-            sum += 0.5*p.at(0, 0)*(u.at(0, xi) - z[s]);
-            for (unsigned int m=1; m<=M-1; m++)
+            DoubleMatrix u;
+            calculateU(u);
+
+            DoubleMatrix p;
+            calculateP(p, u);
+
+            unsigned int i = 0;
+            double vm;
+            if (optimizeK)
             {
-                sum += p.at(m, 0)*(u.at(m, xi) - z[s]);
-            }
-            sum += 0.5*p.at(M, 0)*(u.at(M, xi) - z[s]);
-            sum *= ht;
+                // k gradient
+                for (unsigned int s=0; s<L; s++)
+                {
+                    unsigned int xi = (unsigned int)round(e.at(s) * N*10);
 
-            // Penalty
-            double pnlt = 0.0;
-            pnlt += 0.5 * (u[0][xi]-z[s]) * MAX(0.0, 2.0 * SIGN(vd0(prm, 0, u)) * gf(prm, 0, u));
-            for (unsigned int m=1; m<=M-1; m++)
+                    double sum = 0.0;
+                    sum += 0.5*p.at(0, 0)*(u.at(0, xi) - z[s]);
+                    for (unsigned int m=1; m<=M-1; m++)
+                    {
+                        sum += p.at(m, 0)*(u.at(m, xi) - z[s]);
+                    }
+                    sum += 0.5*p.at(M, 0)*(u.at(M, xi) - z[s]);
+                    sum *= ht;
+
+                    // Penalty
+                    double pnlt = 0.0;
+
+                    pnlt += 0.5 * (u[0][xi]-z[s]) * -2.0 * SIGN(vd0(0, k, z, e, u)) * MAX(0.0, gf(0, k, z, e, u));
+                    for (unsigned int m=1; m<=M-1; m++)
+                    {
+                        pnlt += (u[m][xi]-z[s]) * -2.0 * SIGN(vd0(m, k, z, e, u)) * MAX(0.0, gf(m, k, z, e, u));
+                    }
+                    pnlt += 0.5 * (u[M][xi]-z[s]) * -2.0 * SIGN(vd0(M, k, z, e, u)) * MAX(0.0, gf(M, k, z, e, u));
+
+                    //            vm = gf(0, k, z, e, u);
+                    //            if (vm>0.0)
+                    //            {
+                    //                //printf("k: vm: %d %.10f %.10f\n", 0, vm, vf(0,k,z,e,u));
+                    //                pnlt += 0.5 * (u[0][xi]-z[s]) * -2.0 * SIGN(vd0(0, k, z, e, u)) * vm;
+                    //            }
+                    //            for (unsigned int m=1; m<=M-1; m++)
+                    //            {
+                    //                vm = gf(m, k, z, e, u);
+                    //                if (vm>0.0)
+                    //                {
+                    //                    //printf("k: vm: %d %.10f %.10f\n", m, vm, vf(m,k,z,e,u));
+                    //                    pnlt += (u[m][xi]-z[s]) * -2.0 * SIGN(vd0(m, k, z, e, u)) * vm;
+                    //                }
+                    //            }
+                    //            vm = gf(M, k, z, e, u);
+                    //            if (vm>0.0)
+                    //            {
+                    //                //printf("k: vm: %d %.10f %.10f\n", M, vm, vf(M,k,z,e,u));
+                    //                pnlt += 0.5 * (u[M][xi]-z[s]) * -2.0 * SIGN(vd0(M, k, z, e, u)) * vm;
+                    //            }
+
+                    pnlt *= ht;
+                    g.at(i) = -lambda1*a*a*sum + 2.0*alpha1*k.at(s) + R*pnlt;
+                    i++;
+                }
+            }
+
+            // z gradient
+            if (optimizeZ)
             {
-                double maxm = MAX(0.0, 2.0 * SIGN(vd0(prm, m, u)) * gf(prm, m, u));
-                pnlt += (u[m][xi]-z[s]) * maxm;
-                //if (maxm>0.0) printf("gradient %f\n", maxm);
-            }
-            pnlt += 0.5 * (u[M][xi]-z[s]) * MAX(0.0, 2.0 * SIGN(vd0(prm, M, u)) * gf(prm, M, u));
-            pnlt *= ht;
-            //printf("gradient %.14f\n", pnlt);
+                for (unsigned int s=0; s<L; s++)
+                {
+                    double sum = 0.0;
+                    sum += 0.5*p.at(0, 0);
+                    for (unsigned int m=1; m<=M-1; m++)
+                    {
+                        sum += p.at(m, 0);
+                    }
+                    sum += 0.5*p.at(M, 0);
+                    sum *= ht;
 
-            g.at(i) = -lambda1*a*a*sum + 2.0*alpha1*k.at(s) + R*pnlt;
-            i++;
+                    // Penalty
+                    double pnlt = 0.0;
+
+                    pnlt += 0.5 * k[s] * -2.0 * SIGN(vd0(0, k, z, e, u)) * MAX(0.0, gf(0, k, z, e, u));
+                    for (unsigned int m=1; m<=M-1; m++)
+                    {
+                        pnlt += k[s] * -2.0 * SIGN(vd0(m, k, z, e, u)) * MAX(0.0, gf(m, k, z, e, u));
+                    }
+                    pnlt += 0.5 * k[s] * -2.0 * SIGN(vd0(M, k, z, e, u)) * MAX(0.0, gf(M, k, z, e, u));
+
+                    //            vm = gf(0, k, z, e, u);
+                    //            if (vm>0.0)
+                    //            {
+                    //                //printf("z: vm: %d %.10f %.10f\n", 0, vm, vf(0,k,z,e,u));
+                    //                pnlt += 0.5 * k[s] * -2.0 * SIGN(vd0(0, k, z, e, u)) * vm;
+                    //            }
+                    //            for (unsigned int m=1; m<=M-1; m++)
+                    //            {
+                    //                vm = gf(m, k, z, e, u);
+                    //                if (vm>0.0)
+                    //                {
+                    //                    //printf("z: vm: %d %.10f %.10f\n", m, vm, vf(m,k,z,e,u));
+                    //                    pnlt += k[s] * -2.0 * SIGN(vd0(m, k, z, e, u)) * vm;
+                    //                }
+                    //            }
+                    //            vm = gf(M, k, z, e, u);
+                    //            if (vm>0.0)
+                    //            {
+                    //                //printf("z: vm: %d %.10f %.10f\n", M, vm, vf(M,k,z,e,u));
+                    //                pnlt += 0.5 * k[s] * -2.0 * SIGN(vd0(M, k, z, e, u)) * vm;
+                    //            }
+
+                    pnlt *= ht;
+                    g.at(i) = lambda1*a*a*k[s]*sum + 2.0*alpha2*z.at(s) - R*pnlt;
+                    i++;
+                }
+            }
+
+            if (optimizeE)
+            {
+                // e gradient
+                for (unsigned int s=0; s<L; s++)
+                {
+                    unsigned int xi = (unsigned int)round(e.at(s) * N*10);
+
+                    double sum = 0.0;
+                    sum += 0.5 * p.at(0, 0) * ((u.at(0, xi+1) - u.at(0, xi-1))/(2.0*hx));
+                    for (unsigned int m=1; m<=M-1; m++)
+                    {
+                        sum += p.at(m, 0) * ((u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx));
+                    }
+                    sum += 0.5 * p.at(M, 0) * ((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx));
+                    sum *= ht;
+
+                    // Penalty
+                    double pnlt = 0.0;
+                    vm = gf(0, k, z, e, u);
+                    if (vm>0.0)
+                    {
+                        //printf("e: vm: %d %.10f %.10f\n", 0, vm, vf(0,k,z,e,u));
+                        pnlt += 0.5 * k[s]*((u.at(0, xi+1) - u.at(0, xi-1))/(2.0*hx)) * -2.0 * SIGN(vd0(0, k, z, e, u)) * vm;
+                    }
+                    for (unsigned int m=1; m<=M-1; m++)
+                    {
+                        vm = gf(m, k, z, e, u);
+                        if (vm>0.0)
+                        {
+                            //printf("e: vm: %d %.10f %.10f\n", m, vm, vf(m ,k,z,e,u));
+                            pnlt += k[s]*((u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx)) * -2.0 * SIGN(vd0(m, k, z, e, u)) * vm;
+                        }
+                    }
+                    vm = gf(M, k, z, e, u);
+                    if (vm>0.0)
+                    {
+                        //printf("e: vm: %d %.10f %.10f\n", M, vm, vf(M,k,z,e,u));
+                        pnlt += 0.5 * k[s]*((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx)) * -2.0 * SIGN(vd0(M, k, z, e, u)) * vm;
+                    }
+                    pnlt *= ht;
+
+                    g.at(i) = -lambda1*a*a*k[s]*sum + 2.0*alpha3*e.at(s) + R*pnlt;
+                    i++;
+                }
+            }
         }
     }
 
-    // z gradient
-    if (optimizeZ)
-    {
-        for (unsigned int s=0; s<L; s++)
-        {
-            double sum = 0.0;
-            sum += 0.5*p.at(0, 0);
-            for (unsigned int m=1; m<=M-1; m++)
-            {
-                sum += p.at(m, 0);
-            }
-            sum += 0.5*p.at(M, 0);
-            sum *= ht;
+    for (unsigned int i=0; i<g.size(); i++) g.at(i) *= (1.0/vfi.size())*(1.0/vtt.size());
 
-            // Penalty
-            double pnlt = 0.0;
-            pnlt += 0.5 * k[s] * MAX(0.0, 2.0 * SIGN(vd0(prm, 0, u))*gf(prm, 0, u));
-            for (unsigned int m=1; m<=M-1; m++)
-            {
-                double maxm = MAX(0.0, 2.0 * SIGN(vd0(prm, m, u))*gf(prm, m, u));
-                pnlt += k[s] * maxm;
-            }
-            pnlt += 0.5 * k[s] * MAX(0.0, 2.0 * SIGN(vd0(prm, M, u))*gf(prm, M, u));
-            pnlt *= ht;
-
-            g.at(i) = lambda1*a*a*k[s]*sum + 2.0*alpha2*z.at(s) + R*pnlt;
-            i++;
-        }
-    }
-
-    if (optimizeE)
-    {
-        // e gradient
-        for (unsigned int s=0; s<L; s++)
-        {
-            unsigned int xi = (unsigned int)round(e.at(s) * N*10);
-
-            double sum = 0.0;
-            sum += 0.5 * p.at(0, 0) * ((u.at(0, xi+1) - u.at(0, xi-1))/(2.0*hx));
-            for (unsigned int m=1; m<=M-1; m++)
-            {
-                sum += p.at(m, 0) * ((u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx));
-            }
-            sum += 0.5 * p.at(M, 0) * ((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx));
-            sum *= ht;
-
-            // Penalty
-            double pnlt = 0.0;
-            pnlt += 0.5*k[s]*((u.at(0, xi+1) - u.at(0, xi-1))/(2.0*hx)) * SIGN(vd0(prm, 0, u)) * MAX(0.0, gf(prm, 0, u));
-            for (unsigned int m=1; m<=M-1; m++)
-            {
-                pnlt += k[s]*((u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx)) * SIGN(vd0(prm, m, u)) * MAX(0.0, gf(prm, m, u));
-            }
-            pnlt += 0.5*k[s]*((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx)) * SIGN(vd0(prm, M, u)) * MAX(0.0, gf(prm, M, u));
-            pnlt *= ht;
-
-            g.at(i) = -lambda1*a*a*k[s]*sum + 2.0*alpha3*e.at(s) + 2.0*R*pnlt;
-            i++;
-        }
-    }
+    //    unsigned int i = 0;
+    //    if (optimizeK)
+    //    {
+    //        for (unsigned int s=0; s<L; s++)
+    //        {
+    //            g.at(i) += 2.0*alpha1*k.at(s);
+    //            i++;
+    //        }
+    //    }
+    //    if (optimizeZ)
+    //    {
+    //        for (unsigned int s=0; s<L; s++)
+    //        {
+    //            g.at(i) += 2.0*alpha2*z.at(s);
+    //            i++;
+    //        }
+    //    }
+    //    if (optimizeE)
+    //    {
+    //        for (unsigned int s=0; s<L; s++)
+    //        {
+    //            g.at(i) += 2.0*alpha3*e.at(s);
+    //            i++;
+    //        }
+    //    }
 }
 
 void Problem1L2::calculateU(DoubleMatrix &u) const
@@ -480,7 +620,10 @@ void Problem1L2::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
     double *rx = (double*) malloc(sizeof(double)*(N+1));
     double *de = (double*) malloc(sizeof(double)*(N+1));
 
-    for (unsigned int n=0; n<=N; n++) p.at(M,n) = -2.0*alpha0*mu(n)*(u.at(M, n) - V.at(n));
+    for (unsigned int n=0; n<=N; n++)
+    {
+        p.at(M,n) = -2.0*alpha0*mu(n)*(u.at(M, n) - V.at(n));
+    }
 
     for (unsigned int m=M-1; m != UINT32_MAX; m--)
     {
@@ -488,7 +631,7 @@ void Problem1L2::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
         da[0] = 0.0;
         db[0] = -1.0 - (a*a*ht)/(hx*hx) - (lambda1*a*a*ht)/hx - lambda0*ht;
         dc[0] = (a*a*ht)/(hx*hx);
-        dd[0] = -p.at(m+1,0);// + R*MAX(0.0, -2.0*sign(vd0(prm,m,u))*gf(prm, m, u))/hx;
+        dd[0] = -p.at(m+1,0);
 
         // n = 1,...,N-1
         for (unsigned int n=1; n<=N-1; n++)
@@ -501,12 +644,24 @@ void Problem1L2::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
             double dif0 = fabs(n*hx - e[0]);
             if (dif0 <= hx)
             {
-                dd[n] += R * MAX(0.0, 2.0*SIGN(vd0(prm,m,u))*gf(prm, m, u))*k[0] * (1.0/hx) * (1.0 - dif0/hx);
+                dd[n] += R * ht * (1.0/hx) * k[0] * -2.0 * SIGN(vd0(m, k, z, e, u)) * MAX(0.0, gf(m, k, z, e, u)) * (1.0 - dif0/hx);
+                //                double vm = gf(m, k, z, e, u);
+                //                if (vm>0.0)
+                //                {
+                //                    //printf("p: vm: %d %.10f %.10f\n", m, vm, vf(m,k,z,e,u));
+                //                    dd[n] += R * ht * (1.0/hx) * k[0] * -2.0 * SIGN(vd0(m, k, z, e, u)) * vm * (1.0 - dif0/hx);
+                //                }
             }
             double dif1 = fabs(n*hx - e[1]);
             if (dif1 <= hx)
             {
-                dd[n] += R*MAX(0.0, 2.0*SIGN(vd0(prm,m,u))*gf(prm, m, u))*k[1] * (1.0/hx) * (1.0 - dif1/hx);
+                dd[n] += R * ht * (1.0/hx) * k[1] * -2.0 * SIGN(vd0(m, k, z, e, u)) * MAX(0.0, gf(m, k, z, e, u)) * (1.0 - dif1/hx);
+                //                double vm = gf(m, k, z, e, u);
+                //                if (vm>0.0)
+                //                {
+                //                    //printf("p: vm: %d %.10f %.10f\n", m, vm, vf(m, k, z, e, u));
+                //                    dd[n] += R * ht * (1.0/hx) * k[1] * -2.0 * SIGN(vd0(m, k, z, e, u)) * vm * (1.0 - dif1/hx);
+                //                }
             }
         }
 
@@ -552,6 +707,14 @@ double Problem1L2::initial(unsigned int n UNUSED_PARAM) const
     return fi;
 }
 
+double Problem1L2::vf(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
+{
+    unsigned int E0 = (unsigned int)round(e[0] * N*10);
+    unsigned int E1 = (unsigned int)round(e[1] * N*10);
+
+    return k[0]*(u[m][E0]-z[0]) + k[1]*(u[m][E1]-z[1]);
+}
+
 void Problem1L2::print(unsigned int i, const DoubleVector &prm, const DoubleVector &g, double r, GradientMethod::MethodResult result) const
 {
     //if (i>0) return;
@@ -568,7 +731,7 @@ void Problem1L2::print(unsigned int i, const DoubleVector &prm, const DoubleVect
 
     unsigned int e1 = (unsigned int)round(e[0] * N*10);
     unsigned int e2 = (unsigned int)round(e[1] * N*10);
-    double v = k[0]*(u[M][e1]-z[0]) + k[1]*(u[M][e2]-z[1]);
+    double v = vf(M, k, z, e, u);
     //IPrinter::printSeperatorLine(NULL,'-',file);
     //IPrinter::printSeperatorLine(NULL,'-',stdout);
 
@@ -723,13 +886,13 @@ void Problem1L2::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
     }
 }
 
-void Problem1L2::getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &x) const
+void Problem1L2::getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &prm) const
 {
     unsigned int p = 0;
 
     if (optimizeK)
     {
-        k = x.mid(p,p+1);
+        k = prm.mid(p,p+1);
         p+=L;
     }
     else
@@ -739,7 +902,7 @@ void Problem1L2::getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e
 
     if (optimizeZ)
     {
-        z = x.mid(p,p+1);
+        z = prm.mid(p,p+1);
         p+=L;
     }
     else
@@ -749,7 +912,7 @@ void Problem1L2::getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e
 
     if (optimizeE)
     {
-        e = x.mid(p,p+1);
+        e = prm.mid(p,p+1);
         p+=L;
     }
     else

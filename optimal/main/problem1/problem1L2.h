@@ -25,9 +25,9 @@ protected:
     virtual double fx(const DoubleVector &x) const;
     double integral(const DoubleVector &prm, const DoubleMatrix &u) const;
     double norm(const DoubleVector &prm) const;
-    double penalty(const DoubleVector &prm, const DoubleMatrix &u) const;
-    double vd0(const DoubleVector &prm, unsigned int m, const DoubleMatrix &u) const;
-    double gf(const DoubleVector &prm, unsigned int m, const DoubleMatrix &u) const;
+    double penalty(const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const;
+    double vd0(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const;
+    double gf(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const;
 
     virtual void gradient(const DoubleVector &prm, DoubleVector &g);
 
@@ -45,18 +45,25 @@ protected:
     void qovmaFirstColM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const;
     void qovmaFirstRowM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const;
 
+    double vf(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const;
+
 private:
     unsigned int L;
     unsigned int N;
     unsigned int M;
     double hx;
     double ht;
+
     double hk;
     double hz;
     double he;
 
     double fi;
     double tt;
+
+    DoubleVector vfi;
+    DoubleVector vtt;
+
     double a;
     double lambda0;
     double lambda1;
@@ -73,6 +80,9 @@ private:
     double d0;
     double d1;
 
+    double zmin;
+    double zmax;
+
     DoubleVector V;
     const DoubleVector *px;
 
@@ -83,9 +93,6 @@ private:
     bool optimizeK;
     bool optimizeZ;
     bool optimizeE;
-
-    double zmin;
-    double zmax;
 
     FILE* file;
 
