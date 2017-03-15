@@ -20,8 +20,8 @@ public:
     enum MethodResult
     {
         UNKNOWN = 0,
-        FIRST_ITERATION_GRADIENT = 1,
-        BREAK_FIRST_GRADIENT_NORM_LESS = 2,
+        FIRST_ITERATION = 1,
+        BREAK_FIRST_ITERATION = 2,
         BREAK_GRADIENT_NORM_LESS = 3,
         BREAK_DISTANCE_LESS = 4
     };

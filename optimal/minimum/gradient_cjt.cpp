@@ -40,11 +40,11 @@ void ConjugateGradient::calculate(DoubleVector& x)
     double gradient_norm = g.L2Norm();
     if (gradient_norm < epsilon1())
     {
-        if (m_printer != NULL) m_printer->print(iterationCount, x, g, f1, GradientMethod::BREAK_FIRST_GRADIENT_NORM_LESS);
+        if (m_printer != NULL) m_printer->print(iterationCount, x, g, f1, GradientMethod::BREAK_FIRST_ITERATION);
         if (mshowEndMessage) puts("Optimisation ends, because norm of gradient is less than epsilon...");
         return;
     }
-    if (m_printer != NULL) m_printer->print(iterationCount, x, g, f1, GradientMethod::FIRST_ITERATION_GRADIENT);
+    if (m_printer != NULL) m_printer->print(iterationCount, x, g, f1, GradientMethod::FIRST_ITERATION);
 
     do
     {
