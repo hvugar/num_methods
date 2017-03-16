@@ -23,7 +23,7 @@ void Problem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 
     Problem1L2 p;
-    p.fx(2000);
+    p.fx(5000);
 }
 
 Problem1L2::Problem1L2()
@@ -89,8 +89,8 @@ Problem1L2::Problem1L2()
     zmin = 9.5;
     zmax = 10.5;
 
-    vmin = -25.0;
-    vmax = +25.0;
+    vmin = -100.0;
+    vmax = +100.0;
     d0 = (vmax+vmin)/2.0;
     d1 = (vmax-vmin)/2.0;
 
@@ -729,13 +729,14 @@ void Problem1L2::print(unsigned int i, const DoubleVector &prm, const DoubleVect
     DoubleMatrix u;
     calculateU(u);
 
-    if (result == GradientMethod::FIRST_ITERATION || result == GradientMethod::BREAK_FIRST_ITERATION)
+    if (result == GradientMethod::BREAK_DISTANCE_LESS || result == GradientMethod::BREAK_DISTANCE_LESS || result == GradientMethod::BREAK_GRADIENT_NORM_LESS)
     {
         DoubleVector v(M+1);
         for (unsigned int m=0; m<=M; m++) v[m] = vf(m,k,z,e,u);
         FILE *file1 = fopen("v_0.txt", "w");
         IPrinter::printVector(14,10,v,NULL,v.size(),0,0,file1);
         fclose(file);
+        IPrinter::printVector(14,10,u.row(u.rows()-1),"u: ", 10, 0, 0, stdout);
     }
 
     pm->R /= 2.0;
