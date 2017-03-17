@@ -88,7 +88,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
             break;
         }
 
-        if (m_printer != NULL) m_printer->print(iterationCount, x, g, f2, GradientMethod::UNKNOWN);
+        if (m_printer != NULL) m_printer->print(iterationCount, x, g, f2, GradientMethod::NEXT_ITERATION);
 
         f1 = f2;
 

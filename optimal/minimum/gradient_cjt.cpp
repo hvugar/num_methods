@@ -33,17 +33,18 @@ void ConjugateGradient::calculate(DoubleVector& x)
 
     // Gradient of objectiv function in current point
     m_gr->gradient(x, g);
-    f1 = m_fn->fx(x);
 
     /* checking gradient norm */
     /* if gradient norm at current point is less than epsilon then return. no minimize */
     double gradient_norm = g.L2Norm();
     if (gradient_norm < epsilon1())
     {
-        if (m_printer != NULL) m_printer->print(iterationCount, x, g, f1, GradientMethod::BREAK_FIRST_ITERATION);
+        if (m_printer != NULL) m_printer->print(iterationCount, x, g, m_fn->fx(x), GradientMethod::BREAK_FIRST_ITERATION);
         if (mshowEndMessage) puts("Optimisation ends, because norm of gradient is less than epsilon...");
         return;
     }
+
+    f1 = m_fn->fx(x);
     if (m_printer != NULL) m_printer->print(iterationCount, x, g, f1, GradientMethod::FIRST_ITERATION);
 
     do
@@ -112,7 +113,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
             break;
         }
 
-        if (m_printer != NULL) m_printer->print(iterationCount, x, g, f2, GradientMethod::UNKNOWN);
+        if (m_printer != NULL) m_printer->print(iterationCount, x, g, f2, GradientMethod::NEXT_ITERATION);
 
         f1 = f2;
 

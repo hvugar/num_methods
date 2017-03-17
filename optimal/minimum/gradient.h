@@ -19,7 +19,7 @@ class MINIMUMSHARED_EXPORT GradientMethod
 public:
     enum MethodResult
     {
-        UNKNOWN = 0,
+        NEXT_ITERATION = 0,
         FIRST_ITERATION = 1,
         BREAK_FIRST_ITERATION = 2,
         BREAK_GRADIENT_NORM_LESS = 3,

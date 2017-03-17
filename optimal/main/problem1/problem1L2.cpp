@@ -1,15 +1,32 @@
 #include "problem1L2.h"
 
-double MAX(double a, double b)
-{
-    return fmax(a,b);
-}
+#define RMAX 100.0
 
 double SIGN(double x)
 {
     if (x < 0.0) return -1.0;
     if (x > 0.0) return +1.0;
     return 0.0;
+}
+
+double MAX(double a, double b)
+{
+    return fmax(a,b);
+}
+
+double Problem1L2::gf(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
+{
+    return fabs(vd0(m, k, z, e, u)) - d1;
+}
+
+double Problem1L2::vd0(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
+{
+    return d0 - vf(m, k, z, e, u);
+}
+
+double Problem1L2::sgn_max(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
+{
+    return -2.0 * SIGN(vd0(m, k, z, e, u))*MAX(0.0, gf(m, k, z, e, u));
 }
 
 void Problem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
@@ -23,7 +40,7 @@ void Problem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 
     Problem1L2 p;
-    p.fx(5000);
+    p.fx(2000);
 }
 
 Problem1L2::Problem1L2()
@@ -80,7 +97,7 @@ Problem1L2::Problem1L2()
     alpha1 = 0.001;
     alpha2 = 0.001;
     alpha3 = 0.001;
-    R = 0.0;
+    R = RMAX;
 
     hk = 0.001;
     hz = 0.001;
@@ -89,8 +106,8 @@ Problem1L2::Problem1L2()
     zmin = 9.5;
     zmax = 10.5;
 
-    vmin = -100.0;
-    vmax = +100.0;
+    vmin = -20.0;
+    vmax = +20.0;
     d0 = (vmax+vmin)/2.0;
     d1 = (vmax-vmin)/2.0;
 
@@ -167,7 +184,7 @@ double Problem1L2::fx(double t) const
     g.setEpsilon3(0.0001);//0.00000001
     g.setR1MinimizeEpsilon(0.1, 0.0001); //0.00000001
     g.setNormalize(true);
-    g.showEndMessage(false);
+    g.showEndMessage(true);
     g.calculate(x0);
 
     //    FILE *file = fopen("data_z.txt", "w");
@@ -233,6 +250,8 @@ double Problem1L2::fx(const DoubleVector &prm) const
         }
     }
 
+    pm->R /= 2.0;
+
     return (1.0/vfi.size())*(1.0/vtt.size())*SUM;
 }
 
@@ -272,52 +291,42 @@ double Problem1L2::penalty(const DoubleVector &k, const DoubleVector &z, const D
     double pnlt = 0.0;
     double max = 0.0;
 
-    //    max = MAX(0.0, gf(0, k, z, e, u));
-    //    pnlt += 0.5*max*max;
-    //    for (unsigned int m=1; m<=M-1; m++)
-    //    {
-    //        max = MAX(0.0, gf(m, k, z, e, u));
-    //        pnlt += max*max;
-    //    }
-    //    max = MAX(0.0, gf(M, k, z, e, u));
-    //    pnlt += 0.5*max*max;
-
-    max = gf(0, k, z, e, u);
-    if (max > 0.0)
-    {
-        //printf("d: vm: %d %.10f %.10f\n", 0, max, vf(0,k,z,e,u));
-        pnlt += 0.5*max*max;
-    }
+    max = MAX(0.0, gf(0, k, z, e, u));
+    pnlt += 0.5*max*max;
     for (unsigned int m=1; m<=M-1; m++)
     {
-        max = gf(m, k, z, e, u);
-        if (max > 0.0)
-        {
-            //printf("d: vm: %d %.10f %.10f\n", m, max, vf(m,k,z,e,u));
-            pnlt += max*max;
-        }
-    }
-    max = gf(M, k, z, e, u);
-    if (max > 0.0)
-    {
-        //printf("d: vm: %d %.10f %.10f\n", M, max, vf(M,k,z,e,u));
+        max = MAX(0.0, gf(m, k, z, e, u));
         pnlt += max*max;
     }
+    max = MAX(0.0, gf(M, k, z, e, u));
+    pnlt += 0.5*max*max;
+
+    //    max = gf(0, k, z, e, u);
+    //    if (max > 0.0)
+    //    {
+    //        //printf("d: vm: %d %.10f %.10f\n", 0, max, vf(0,k,z,e,u));
+    //        pnlt += 0.5*max*max;
+    //    }
+    //    for (unsigned int m=1; m<=M-1; m++)
+    //    {
+    //        max = gf(m, k, z, e, u);
+    //        if (max > 0.0)
+    //        {
+    //            //printf("d: vm: %d %.10f %.10f\n", m, max, vf(m,k,z,e,u));
+    //            pnlt += max*max;
+    //        }
+    //    }
+    //    max = gf(M, k, z, e, u);
+    //    if (max > 0.0)
+    //    {
+    //        //printf("d: vm: %d %.10f %.10f\n", M, max, vf(M,k,z,e,u));
+    //        pnlt += max*max;
+    //    }
 
     pnlt *= ht;
     return pnlt;
 
     return 0.0;
-}
-
-double Problem1L2::gf(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
-{
-    return vd0(m, k, z, e, u) - d1;
-}
-
-double Problem1L2::vd0(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
-{
-    return fabs(d0 - vf(m, k, z, e, u));
 }
 
 void Problem1L2::gradient(const DoubleVector &prm, DoubleVector &g)
@@ -361,34 +370,34 @@ void Problem1L2::gradient(const DoubleVector &prm, DoubleVector &g)
                     // Penalty
                     double pnlt = 0.0;
 
-                    //                    pnlt += 0.5 * (u[0][xi]-z[s]) * -2.0 * SIGN(vd0(0, k, z, e, u)) * MAX(0.0, gf(0, k, z, e, u));
-                    //                    for (unsigned int m=1; m<=M-1; m++)
-                    //                    {
-                    //                        pnlt += (u[m][xi]-z[s]) * -2.0 * SIGN(vd0(m, k, z, e, u)) * MAX(0.0, gf(m, k, z, e, u));
-                    //                    }
-                    //                    pnlt += 0.5 * (u[M][xi]-z[s]) * -2.0 * SIGN(vd0(M, k, z, e, u)) * MAX(0.0, gf(M, k, z, e, u));
-
-                    vm = gf(0, k, z, e, u);
-                    if (vm>0.0)
-                    {
-                        //fprintf(stderr, "k: vm: %d %.10f %.10f\n", 0, vm, vf(0,k,z,e,u));
-                        pnlt += 0.5 * (u[0][xi]-z[s]) * -2.0 * SIGN(vd0(0, k, z, e, u)) * vm;
-                    }
+                    pnlt += 0.5 * (u[0][xi]-z[s]) * sgn_max(0, k, z, e, u);
                     for (unsigned int m=1; m<=M-1; m++)
                     {
-                        vm = gf(m, k, z, e, u);
-                        if (vm>0.0)
-                        {
-                            //fprintf(stderr, "k: vm: %d %.10f %.10f\n", m, vm, vf(m,k,z,e,u));
-                            pnlt += (u[m][xi]-z[s]) * -2.0 * SIGN(vd0(m, k, z, e, u)) * vm;
-                        }
+                        pnlt += (u[m][xi]-z[s]) * sgn_max(m, k, z, e, u);
                     }
-                    vm = gf(M, k, z, e, u);
-                    if (vm>0.0)
-                    {
-                        //fprintf(stderr, "k: vm: %d %.10f %.10f\n", M, vm, vf(M,k,z,e,u));
-                        pnlt += 0.5 * (u[M][xi]-z[s]) * -2.0 * SIGN(vd0(M, k, z, e, u)) * vm;
-                    }
+                    pnlt += 0.5 * (u[M][xi]-z[s]) * sgn_max(M, k, z, e, u);
+
+                    //                    vm = gf(0, k, z, e, u);
+                    //                    if (vm>0.0)
+                    //                    {
+                    //                        //fprintf(stderr, "k: vm: %d %.10f %.10f\n", 0, vm, vf(0,k,z,e,u));
+                    //                        pnlt += 0.5 * (u[0][xi]-z[s]) * -2.0 * SIGN(vd0(0, k, z, e, u)) * vm;
+                    //                    }
+                    //                    for (unsigned int m=1; m<=M-1; m++)
+                    //                    {
+                    //                        vm = gf(m, k, z, e, u);
+                    //                        if (vm>0.0)
+                    //                        {
+                    //                            //fprintf(stderr, "k: vm: %d %.10f %.10f\n", m, vm, vf(m,k,z,e,u));
+                    //                            pnlt += (u[m][xi]-z[s]) * -2.0 * SIGN(vd0(m, k, z, e, u)) * vm;
+                    //                        }
+                    //                    }
+                    //                    vm = gf(M, k, z, e, u);
+                    //                    if (vm>0.0)
+                    //                    {
+                    //                        //fprintf(stderr, "k: vm: %d %.10f %.10f\n", M, vm, vf(M,k,z,e,u));
+                    //                        pnlt += 0.5 * (u[M][xi]-z[s]) * -2.0 * SIGN(vd0(M, k, z, e, u)) * vm;
+                    //                    }
 
                     pnlt *= ht;
                     g.at(i) = -lambda1*a*a*sum + 2.0*alpha1*k.at(s) + R*pnlt;
@@ -413,34 +422,34 @@ void Problem1L2::gradient(const DoubleVector &prm, DoubleVector &g)
                     // Penalty
                     double pnlt = 0.0;
 
-                    //                    pnlt += 0.5 * k[s] * -2.0 * SIGN(vd0(0, k, z, e, u)) * MAX(0.0, gf(0, k, z, e, u));
-                    //                    for (unsigned int m=1; m<=M-1; m++)
-                    //                    {
-                    //                        pnlt += k[s] * -2.0 * SIGN(vd0(m, k, z, e, u)) * MAX(0.0, gf(m, k, z, e, u));
-                    //                    }
-                    //                    pnlt += 0.5 * k[s] * -2.0 * SIGN(vd0(M, k, z, e, u)) * MAX(0.0, gf(M, k, z, e, u));
-
-                    vm = gf(0, k, z, e, u);
-                    if (vm>0.0)
-                    {
-                        //fprintf(stderr, "z: vm: %d %.10f %.10f\n", 0, vm, vf(0,k,z,e,u));
-                        pnlt += 0.5 * k[s] * -2.0 * SIGN(vd0(0, k, z, e, u)) * vm;
-                    }
+                    pnlt += 0.5 * k[s] * sgn_max(0, k, z, e, u);
                     for (unsigned int m=1; m<=M-1; m++)
                     {
-                        vm = gf(m, k, z, e, u);
-                        if (vm>0.0)
-                        {
-                            //fprintf(stderr, "z: vm: %d %.10f %.10f\n", m, vm, vf(m,k,z,e,u));
-                            pnlt += k[s] * -2.0 * SIGN(vd0(m, k, z, e, u)) * vm;
-                        }
+                        pnlt += k[s] * sgn_max(m, k, z, e, u);
                     }
-                    vm = gf(M, k, z, e, u);
-                    if (vm>0.0)
-                    {
-                        //fprintf(stderr, "z: vm: %d %.10f %.10f\n", M, vm, vf(M,k,z,e,u));
-                        pnlt += 0.5 * k[s] * -2.0 * SIGN(vd0(M, k, z, e, u)) * vm;
-                    }
+                    pnlt += 0.5 * k[s] * sgn_max(M, k, z, e, u);
+
+                    //                    vm = gf(0, k, z, e, u);
+                    //                    if (vm>0.0)
+                    //                    {
+                    //                        //fprintf(stderr, "z: vm: %d %.10f %.10f\n", 0, vm, vf(0,k,z,e,u));
+                    //                        pnlt += 0.5 * k[s] * -2.0 * SIGN(vd0(0, k, z, e, u)) * vm;
+                    //                    }
+                    //                    for (unsigned int m=1; m<=M-1; m++)
+                    //                    {
+                    //                        vm = gf(m, k, z, e, u);
+                    //                        if (vm>0.0)
+                    //                        {
+                    //                            //fprintf(stderr, "z: vm: %d %.10f %.10f\n", m, vm, vf(m,k,z,e,u));
+                    //                            pnlt += k[s] * -2.0 * SIGN(vd0(m, k, z, e, u)) * vm;
+                    //                        }
+                    //                    }
+                    //                    vm = gf(M, k, z, e, u);
+                    //                    if (vm>0.0)
+                    //                    {
+                    //                        //fprintf(stderr, "z: vm: %d %.10f %.10f\n", M, vm, vf(M,k,z,e,u));
+                    //                        pnlt += 0.5 * k[s] * -2.0 * SIGN(vd0(M, k, z, e, u)) * vm;
+                    //                    }
 
                     pnlt *= ht;
                     g.at(i) = lambda1*a*a*k[s]*sum + 2.0*alpha2*z.at(s) - R*pnlt;
@@ -451,47 +460,48 @@ void Problem1L2::gradient(const DoubleVector &prm, DoubleVector &g)
             // e gradient
             if (optimizeE)
             {
-                for (unsigned int s=0; s<L; s++)
-                {
-                    unsigned int xi = (unsigned int)round(e.at(s) * N*10);
+//                for (unsigned int s=0; s<L; s++)
+//                {
+//                    unsigned int xi = (unsigned int)round(e.at(s) * N*10);
 
-                    double sum = 0.0;
-                    sum += 0.5 * p.at(0, 0) * ((u.at(0, xi+1) - u.at(0, xi-1))/(2.0*hx));
-                    for (unsigned int m=1; m<=M-1; m++)
-                    {
-                        sum += p.at(m, 0) * ((u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx));
-                    }
-                    sum += 0.5 * p.at(M, 0) * ((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx));
-                    sum *= ht;
+//                    double sum = 0.0;
+//                    sum += 0.5 * p.at(0, 0) * ((u.at(0, xi+1) - u.at(0, xi-1))/(2.0*hx));
+//                    for (unsigned int m=1; m<=M-1; m++)
+//                    {
+//                        sum += p.at(m, 0) * ((u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx));
+//                    }
+//                    sum += 0.5 * p.at(M, 0) * ((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx));
+//                    sum *= ht;
 
-                    // Penalty
-                    double pnlt = 0.0;
-                    vm = gf(0, k, z, e, u);
-                    if (vm>0.0)
-                    {
-                        //printf("e: vm: %d %.10f %.10f\n", 0, vm, vf(0,k,z,e,u));
-                        pnlt += 0.5 * k[s]*((u.at(0, xi+1) - u.at(0, xi-1))/(2.0*hx)) * -2.0 * SIGN(vd0(0, k, z, e, u)) * vm;
-                    }
-                    for (unsigned int m=1; m<=M-1; m++)
-                    {
-                        vm = gf(m, k, z, e, u);
-                        if (vm>0.0)
-                        {
-                            //printf("e: vm: %d %.10f %.10f\n", m, vm, vf(m ,k,z,e,u));
-                            pnlt += k[s]*((u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx)) * -2.0 * SIGN(vd0(m, k, z, e, u)) * vm;
-                        }
-                    }
-                    vm = gf(M, k, z, e, u);
-                    if (vm>0.0)
-                    {
-                        //printf("e: vm: %d %.10f %.10f\n", M, vm, vf(M,k,z,e,u));
-                        pnlt += 0.5 * k[s]*((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx)) * -2.0 * SIGN(vd0(M, k, z, e, u)) * vm;
-                    }
-                    pnlt *= ht;
+//                    // Penalty
+//                    double pnlt = 0.0;
+//                    vm = gf(0, k, z, e, u);
+//                    if (vm>0.0)
+//                    {
+//                        //printf("e: vm: %d %.10f %.10f\n", 0, vm, vf(0,k,z,e,u));
+//                        pnlt += 0.5 * k[s]*((u.at(0, xi+1) - u.at(0, xi-1))/(2.0*hx)) * -2.0 * SIGN(vd0(0, k, z, e, u)) * vm;
+//                    }
+//                    for (unsigned int m=1; m<=M-1; m++)
+//                    {
+//                        vm = gf(m, k, z, e, u);
+//                        if (vm>0.0)
+//                        {
+//                            //printf("e: vm: %d %.10f %.10f\n", m, vm, vf(m ,k,z,e,u));
+//                            pnlt += k[s]*((u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx)) * -2.0 * SIGN(vd0(m, k, z, e, u)) * vm;
+//                        }
+//                    }
+//                    vm = gf(M, k, z, e, u);
+//                    if (vm>0.0)
+//                    {
+//                        //printf("e: vm: %d %.10f %.10f\n", M, vm, vf(M,k,z,e,u));
+//                        pnlt += 0.5 * k[s]*((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx)) * -2.0 * SIGN(vd0(M, k, z, e, u)) * vm;
+//                    }
 
-                    g.at(i) = -lambda1*a*a*k[s]*sum + 2.0*alpha3*e.at(s) + R*pnlt;
-                    i++;
-                }
+//                    pnlt *= ht;
+
+//                    g.at(i) = -lambda1*a*a*k[s]*sum + 2.0*alpha3*e.at(s) + 2.0*R*pnlt;
+//                    i++;
+//                }
             }
         }
     }
@@ -644,7 +654,7 @@ void Problem1L2::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
             double dif0 = fabs(n*hx - e[0]);
             if (dif0 <= hx)
             {
-                dd[n] += R * ht * (1.0/hx) * k[0] * -2.0 * SIGN(vd0(m, k, z, e, u)) * MAX(0.0, gf(m, k, z, e, u)) * (1.0 - dif0/hx);
+                dd[n] +=  ht * R * sgn_max(m, k, z, e, u) * k[0] * (1.0/hx);// * (1.0 - dif0/hx);
                 //                double vm = gf(m, k, z, e, u);
                 //                if (vm>0.0)
                 //                {
@@ -655,7 +665,7 @@ void Problem1L2::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
             double dif1 = fabs(n*hx - e[1]);
             if (dif1 <= hx)
             {
-                dd[n] += R * ht * (1.0/hx) * k[1] * -2.0 * SIGN(vd0(m, k, z, e, u)) * MAX(0.0, gf(m, k, z, e, u)) * (1.0 - dif1/hx);
+                dd[n] += ht * R * sgn_max(m, k, z, e, u) * k[1] * (1.0/hx);// * (1.0 - dif1/hx);
                 //                double vm = gf(m, k, z, e, u);
                 //                if (vm>0.0)
                 //                {
@@ -726,22 +736,22 @@ void Problem1L2::print(unsigned int i, const DoubleVector &prm, const DoubleVect
     DoubleVector k,z,e;
     getComponents(k,z,e,prm);
 
-    DoubleMatrix u;
-    calculateU(u);
+    //    DoubleMatrix u;
+    //    calculateU(u);
 
-    if (result == GradientMethod::BREAK_DISTANCE_LESS || result == GradientMethod::BREAK_DISTANCE_LESS || result == GradientMethod::BREAK_GRADIENT_NORM_LESS)
-    {
-        DoubleVector v(M+1);
-        for (unsigned int m=0; m<=M; m++) v[m] = vf(m,k,z,e,u);
-        FILE *file1 = fopen("v_0.txt", "w");
-        IPrinter::printVector(14,10,v,NULL,v.size(),0,0,file1);
-        fclose(file);
-        IPrinter::printVector(14,10,u.row(u.rows()-1),"u: ", 10, 0, 0, stdout);
-    }
+//    if (result == GradientMethod::BREAK_DISTANCE_LESS || result == GradientMethod::BREAK_DISTANCE_LESS || result == GradientMethod::BREAK_GRADIENT_NORM_LESS)
+//    {
+//        DoubleVector v(M+1);
+//        for (unsigned int m=0; m<=M; m++) v[m] = vf(m,k,z,e,u);
+//        FILE *file1 = fopen("v_0.txt", "w");
+//        IPrinter::printVector(14,10,v,NULL,v.size(),0,0,file1);
+//        fclose(file);
+//        IPrinter::printVector(14,10,u.row(u.rows()-1),"u: ", 10, 0, 0, stdout);
+//    }
 
-    pm->R /= 2.0;
+    //
 
-    double v = vf(M, k, z, e, u);
+    double v = 0.0;//vf(M, k, z, e, u);
     //IPrinter::printSeperatorLine(NULL,'-',file);
     //IPrinter::printSeperatorLine(NULL,'-',stdout);
 
@@ -752,10 +762,16 @@ void Problem1L2::print(unsigned int i, const DoubleVector &prm, const DoubleVect
     //fprintf(stdout, "---\n");
     //fprintf(file, "k: %14.10f %14.10f\n", k[0], k[1]);
 
+    if ( result == GradientMethod::FIRST_ITERATION) pm->R = RMAX;
+
+    printf("R: %.14f\n", pm->R);
+
     printf("%d,%10.6f,",i,r);
 
     //DoubleVector a1(prm.size());
     //pm->gradient(prm, a1);
+
+    double R_SAVE = pm->R;
 
     if (optimizeK)
     {
@@ -769,14 +785,14 @@ void Problem1L2::print(unsigned int i, const DoubleVector &prm, const DoubleVect
         double f1,f2;
 
         double x0 = prm[p];
-        cx[p] = x0 - hk; f1 = fx(cx);
-        cx[p] = x0 + hk; f2 = fx(cx);
-        n[0] = (f2-f1)/(2.0*hk); cx[p] = x0;
+        cx[p] = x0 - hk; pm->R = R_SAVE; f1 = fx(cx);
+        cx[p] = x0 + hk; pm->R = R_SAVE; f2 = fx(cx);
+        n[0] = (f2-f1)/(2.0*hk);
+        cx[p] = x0;
 
-        cx = prm;
         double x1 = prm[p+1];
-        cx[p+1] = x1 - hk; f1 = fx(cx);
-        cx[p+1] = x1 + hk; f2 = fx(cx);
+        cx[p+1] = x1 - hk; pm->R = R_SAVE; f1 = fx(cx);
+        cx[p+1] = x1 + hk; pm->R = R_SAVE; f2 = fx(cx);
         n[1] = (f2-f1)/(2.0*hk); cx[p+1] = x1;
 
         DoubleVector nn = n;
@@ -787,8 +803,8 @@ void Problem1L2::print(unsigned int i, const DoubleVector &prm, const DoubleVect
 
         p+=2;
 
-        printf("|%10.6f,%10.6f,%10.6f,",k[0],a[0],n[0]);
-        printf("|%10.6f,%10.6f,%10.6f,",k[1],a[1],n[1]);
+        printf("|%14.10f,%14.10f,%14.10f,",k[0],a[0],n[0]);
+        printf("|%14.10f,%14.10f,%14.10f,",k[1],a[1],n[1]);
     }
 
     //fprintf(file, "---\n");
@@ -805,13 +821,13 @@ void Problem1L2::print(unsigned int i, const DoubleVector &prm, const DoubleVect
         double f1,f2;
 
         double x0 = prm[p];
-        cx[p] = x0 - hz; f1 = fx(cx);
-        cx[p] = x0 + hz; f2 = fx(cx);
+        cx[p] = x0 - hz; pm->R = R_SAVE; f1 = fx(cx);
+        cx[p] = x0 + hz; pm->R = R_SAVE; f2 = fx(cx);
         n[0] = (f2-f1)/(2.0*hz); cx[p] = x0;
 
         double x1 = prm[p+1];
-        cx[p+1] = x1 - hz; f1 = fx(cx);
-        cx[p+1] = x1 + hz; f2 = fx(cx);
+        cx[p+1] = x1 - hz; pm->R = R_SAVE; f1 = fx(cx);
+        cx[p+1] = x1 + hz; pm->R = R_SAVE; f2 = fx(cx);
         n[1] = (f2-f1)/(2.0*hz); cx[p+1] = x1;
 
         DoubleVector nn = n;
@@ -862,6 +878,8 @@ void Problem1L2::print(unsigned int i, const DoubleVector &prm, const DoubleVect
 
     //IPrinter::printVector(14,10,u.row(u.rows()-1),"u: ", 10, 0, 0, stdout);
     fflush(file);
+
+    pm->R = RMAX;
 }
 
 void Problem1L2::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
