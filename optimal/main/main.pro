@@ -40,14 +40,14 @@ SOURCES += main.cpp \
     example2.cpp \
     problem1/problem1.cpp \
     problem1/problem1L2.cpp \
-    problem1/problem1L2P.cpp \
     problem1/problem1L3.cpp \
     bordertest.cpp \
     bordertest1.cpp \
     example3.cpp \
     example4.cpp \
     example5.cpp \
-    sampleboundaryproblem1.cpp
+    sampleboundaryproblem1.cpp \
+    problem1/problem1newton.cpp
 
 HEADERS += \
     loadedsystems.h \
@@ -55,11 +55,11 @@ HEADERS += \
     example2.h \
     problem1/problem1.h \
     problem1/problem1L2.h \
-    problem1/problem1L2P.h \
     problem1/problem1L3.h \
     bordertest.h \
     bordertest1.h \
     example3.h \
     example4.h \
     example5.h \
-    sampleboundaryproblem1.h
+    sampleboundaryproblem1.h \
+    problem1/problem1newton.h

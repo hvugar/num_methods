@@ -6,7 +6,6 @@
 
 #include "problem1/problem1.h"
 #include "problem1/problem1L2.h"
-#include "problem1/problem1L2P.h"
 #include "problem1/problem1L3.h"
 //#include "loadedsystems.h"
 //#include "example1.h"
@@ -38,7 +37,8 @@
 //#include <../parabolic/1d/heatcontrol.h>
 //#include <../parabolic/1d/heatcontrol1.h>
 
-//#include <../rnfunction/rosenbrock.h>
+#include <../rnfunction/rosenbrock.h>
+#include <../rnfunction/quadraticfunction.h>
 
 //#include "bordertest.h"
 //#include "bordertest1.h"
@@ -46,7 +46,7 @@
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    //srand(time(NULL));
+    srand(time(NULL));
 
     //HyperbolicControl2DM::Main(argc, argv);
     //HyperbolicControl2DMX::Main(argc, argv);
@@ -76,6 +76,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //HeatControl1::Main(argc, argv);
 
     //Rosenbrock::Main(argc, argv);
+    //QuadraticFunction::Main(argc,argv);
 
     return 0;
 }

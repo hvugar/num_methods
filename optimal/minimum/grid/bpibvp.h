@@ -3,6 +3,14 @@
 
 #include "ibvp.h"
 
+class MINIMUMSHARED_EXPORT IBackwardParabolicIBVP : public InitialBoundaryValueProblemPDE
+{
+protected:
+    virtual double initial(const SpaceNode &sn) const = 0;
+    virtual double boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType boundary = Unused) const = 0;
+    virtual double f(const SpaceNode &sn, const TimeNode &tn) const = 0;
+};
+
 /**
  * @brief The BackwardParabolicIBVP class
  * u_t(x,t) = a(x,t)u_xx(x,t) + f(x,t),
@@ -11,7 +19,7 @@
  * u(0,t) = m1(t), t in [0,T),
  * u(l,t) = m2(t), t in [0,T).
  */
-class MINIMUMSHARED_EXPORT BackwardParabolicIBVP : public InitialBoundaryValueProblemPDE
+class MINIMUMSHARED_EXPORT BackwardParabolicIBVP : public IBackwardParabolicIBVP
 {
 protected:
     virtual double initial(const SpaceNode &sn) const = 0;

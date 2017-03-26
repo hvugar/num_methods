@@ -1,18 +1,17 @@
-#ifndef ROSENBROCK_H
-#define ROSENBROCK_H
+#ifndef QUADRATICFUNCTION_H
+#define QUADRATICFUNCTION_H
 
-#include <function.h>
-#include <printer.h>
-#include <projection.h>
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
 #include <gradient_cs.h>
+#include <printer.h>
+#include <cmath>
 
-class MINIMUMSHARED_EXPORT Rosenbrock : public RnFunction, public IGradient, public IPrinter
+class MINIMUMSHARED_EXPORT QuadraticFunction : public RnFunction, public IGradient, public IPrinter
 {
 public:
-    Rosenbrock();
-    virtual ~Rosenbrock() {}
+    QuadraticFunction();
+    virtual ~QuadraticFunction() {}
 
     virtual double fx(const DoubleVector& x) const;
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
@@ -25,4 +24,4 @@ private:
     unsigned int count;
 };
 
-#endif // ROSENBROCK_H
+#endif // QUADRATICFUNCTION_H

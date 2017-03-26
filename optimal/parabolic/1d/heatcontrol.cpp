@@ -133,6 +133,7 @@ double HeatControl::bf(unsigned int i, unsigned int j) const
 
 void HeatControl::print(unsigned int i, const DoubleVector&, const DoubleVector &, double fx, GradientMethod::MethodResult result) const
 {
+    C_UNUSED(result);
     printf("J[%d]: %.14f\n", i, fx);
 }
 

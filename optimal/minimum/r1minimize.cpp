@@ -11,6 +11,8 @@
  * @param a       Начальная точка отрезка
  * @param b       Конечнная точка отрезка
  * @param f       Целевая функция
+ * @param fa      Величина функции в точке a
+ * @param fb      Величина функции в точке b
  */
 void stranghLineSearch(double x, double step, double &a, double &b, R1Function *f)
 {
@@ -41,12 +43,25 @@ void stranghLineSearch(double x, double step, double &a, double &b, R1Function *
     }
 
     // if y1 and y2 are both lesser than y0 then there is not minimum. function is not unimodal
-//    if (y1 <= y0 && y0 >= y2)
-//    {
+    if (y1 <= y0 && y0 >= y2)
+    {
+        if (y1 <= y2)
+        {
+            a = x - fstep;
+            b = x;
+        }
+        if (y1 >= y2)
+        {
+            a = x;
+            b = x + fstep;
+        }
+        //a = x - fstep;
+        //b = x + fstep;
 //        a = b = NAN;
-//        fputs("Function is not unimodal\n", stderr);
-//        return;
-//    }
+        printf("%f %f %f %f %f %f\n", y1, y0, y2, x - fstep, x, x + fstep);
+        fputs("Function is not unimodal\n", stderr);
+        return;
+    }
 
     if ( y1 >= y0 && y0 >= y2 )
     {
@@ -59,6 +74,7 @@ void stranghLineSearch(double x, double step, double &a, double &b, R1Function *
         }
         a = x - fstep;
         b = x + fstep;
+        return;
     }
 
     if ( y1 <= y0 && y0 <= y2 )
@@ -72,10 +88,12 @@ void stranghLineSearch(double x, double step, double &a, double &b, R1Function *
         }
         a = x - fstep;
         b = x + fstep;
+        return;
     }
 
     a = x - fstep;
     b = x + fstep;
+    puts("Test. stranghLineSearch");
 }
 
 /**

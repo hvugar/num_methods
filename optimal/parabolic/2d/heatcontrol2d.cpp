@@ -151,10 +151,10 @@ double HeatControl2D::initial(unsigned int i, unsigned int j) const
 
 double HeatControl2D::boundary(unsigned int i, unsigned int j, unsigned int k) const
 {
-   double x1 = i*h1;
-   double x2 = j*h2;
-   double t  = 0.5*k*ht;
-   return u(x1, x2, t);
+    double x1 = i*h1;
+    double x2 = j*h2;
+    double t  = 0.5*k*ht;
+    return u(x1, x2, t);
 }
 
 double HeatControl2D::f(unsigned int i, unsigned int j, unsigned int k) const
@@ -194,6 +194,11 @@ double HeatControl2D::fxt(double x1, double x2, double t) const
 
 void HeatControl2D::print(unsigned int i, const DoubleVector &f0, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const
 {
+    C_UNUSED(result);
+    C_UNUSED(fx);
+    C_UNUSED(i);
+    C_UNUSED(g);
+    C_UNUSED(fx);
     HeatControl2D *hc = const_cast<HeatControl2D*>(this);
     printf("J: %.16f\n", hc->fx(f0));
 }

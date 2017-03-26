@@ -147,23 +147,23 @@ void HeatControl2Delta::gradient(const DoubleVector& x, DoubleVector& g)
         //calculateGF(x, psi[k], g, k);
     }
 
-//    for (unsigned int k=0; k<=M; k++)
-//    {
-//        unsigned int i1 = (unsigned int)round(E[0]/h1);
-//        unsigned int j1 = (unsigned int)round(E[1]/h2);
-//        g[0*(M+1)+k] = -psi[k][j1][i1] + 2.0*alpha*(v[0*(M+1)+k] - v1(k*ht));
+    //    for (unsigned int k=0; k<=M; k++)
+    //    {
+    //        unsigned int i1 = (unsigned int)round(E[0]/h1);
+    //        unsigned int j1 = (unsigned int)round(E[1]/h2);
+    //        g[0*(M+1)+k] = -psi[k][j1][i1] + 2.0*alpha*(v[0*(M+1)+k] - v1(k*ht));
 
-//        unsigned int i2 = (unsigned int)round(E[2]/h1);
-//        unsigned int j2 = (unsigned int)round(E[3]/h2);
-//        g[1*(M+1)+k] = -psi[k][j2][i2] + 2.0*alpha*(v[1*(M+1)+k] - v2(k*ht));
+    //        unsigned int i2 = (unsigned int)round(E[2]/h1);
+    //        unsigned int j2 = (unsigned int)round(E[3]/h2);
+    //        g[1*(M+1)+k] = -psi[k][j2][i2] + 2.0*alpha*(v[1*(M+1)+k] - v2(k*ht));
 
-//        unsigned int i3 = (unsigned int)round(E[4]/h1);
-//        unsigned int j3 = (unsigned int)round(E[5]/h2);
-//        g[2*(M+1)+k] = -psi[k][j3][i3] + 2.0*alpha*(v[2*(M+1)+k] - v3(k*ht));
-//    }
+    //        unsigned int i3 = (unsigned int)round(E[4]/h1);
+    //        unsigned int j3 = (unsigned int)round(E[5]/h2);
+    //        g[2*(M+1)+k] = -psi[k][j3][i3] + 2.0*alpha*(v[2*(M+1)+k] - v3(k*ht));
+    //    }
 
     psi.clear();
-//    IGradient::Gradient(this, 0.0001, x, g);
+    //    IGradient::Gradient(this, 0.0001, x, g);
 }
 
 void HeatControl2Delta::calculateGX(const DoubleVector& x, const DoubleMatrix& psi, DoubleVector& g, unsigned int k)
@@ -381,6 +381,8 @@ void HeatControl2Delta::initialize()
 void HeatControl2Delta::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const
 {
     C_UNUSED(alpha);
+    C_UNUSED(fx);
+    C_UNUSED(result);
 
     HeatControl2Delta *hc = const_cast<HeatControl2Delta*>(this);
     printf("J[%d]: %.16f\n", i, hc->fx(x));

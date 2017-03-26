@@ -16,5 +16,5 @@ LIBS += -L../bin -lminimum
 DEFINES += MINIMUM_LIBRARY
 
 # Input
-HEADERS += bealesfunction.h boothfunction.h rosenbrock.h
-SOURCES += bealesfunction.cpp boothfunction.cpp rosenbrock.cpp
+HEADERS += bealesfunction.h boothfunction.h rosenbrock.h quadraticfunction.h
+SOURCES += bealesfunction.cpp boothfunction.cpp rosenbrock.cpp quadraticfunction.cpp

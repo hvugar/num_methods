@@ -8,46 +8,47 @@
 #include <printer.h>
 #include <projection.h>
 #include <gradient_cjt.h>
+#include <gradient_sd.h>
 #include <cmethods.h>
+#include <gradient/igradient.h>
 
-#define _OPTIMIZE_K_
-#define _OPTIMIZE_Z_
-#define _OPTIMIZE_E_
+#include "problem1newton.h"
 
-class Problem1L2 : protected RnFunction, protected IGradient, public IPrinter, public IProjection, public R1Function
+class Problem1L2 : protected RnFunction, protected IGradient, public IPrinter, public IProjection
 {
 public:
     Problem1L2();
+    virtual ~Problem1L2() {}
 
-protected:
-    virtual double fx(double t) const;
+    void initialize();
+    void startOptimize();
+
+    void optimize(DoubleVector &x0) const;
 
     virtual double fx(const DoubleVector &x) const;
-    double integral(const DoubleVector &prm, const DoubleMatrix &u) const;
-    double norm(const DoubleVector &prm) const;
-    double penalty(const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const;
-
     virtual void gradient(const DoubleVector &prm, DoubleVector &g);
 
     virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const;
     virtual void project(DoubleVector &x, int index);
 
-
-    void calculateU(DoubleMatrix &u) const;
-    void calculateP(DoubleMatrix &p, const DoubleMatrix &u);
+    void calculateU(DoubleMatrix &u, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e) const;
+    void calculateP(DoubleMatrix &p, const DoubleMatrix &u, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e);
 
     double initial(unsigned int n) const;
     double mu(unsigned int i UNUSED_PARAM) const { return 1.0; }
 
-    void getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &x) const;
-    void qovmaFirstColM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const;
-    void qovmaFirstRowM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const;
+    void getParameters(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &x) const;
+    void qovmaFirstColM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *E) const;
+    void qovmaFirstRowM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *E) const;
 
     double vf(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const;
 
     double vd0(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const;
     double gf(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const;
-    double sgn_max(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const;
+    double sgn_min(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const;
+
+    //Problem1NewtonF forward;
+    void Penalty(DoubleVector &prm0, double R);
 
 private:
     unsigned int L;
@@ -89,14 +90,18 @@ private:
     const DoubleVector *px;
 
     DoubleVector K;
-    DoubleVector z;
-    DoubleVector e;
+    DoubleVector Z;
+    DoubleVector E;
+
+    DoubleVector k0;
+    DoubleVector z0;
+    DoubleVector e0;
 
     bool optimizeK;
     bool optimizeZ;
     bool optimizeE;
 
-    FILE* file;
+    bool error = false;
 
 public:
     static void Main(int argc, char* argv[]);

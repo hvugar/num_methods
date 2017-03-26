@@ -106,15 +106,15 @@ void HeatControlDeltaF::gradient(const DoubleVector &f, DoubleVector &g)
 
     for (unsigned int j=0; j<=M; j++)
     {
-//        g[j] = 0.0;
-//        for (unsigned int i=0; i<=N; i++)
-//        {
-//            if (fabs(E[0]-i*hx)<hx) g[j] += psi[j][i] * ((hx-fabs(E[0]-i*hx))/hx);
-//        }
-//        g[j] = -g[j] + 2.0*(f[j]-f1(j*ht));
+        //        g[j] = 0.0;
+        //        for (unsigned int i=0; i<=N; i++)
+        //        {
+        //            if (fabs(E[0]-i*hx)<hx) g[j] += psi[j][i] * ((hx-fabs(E[0]-i*hx))/hx);
+        //        }
+        //        g[j] = -g[j] + 2.0*(f[j]-f1(j*ht));
         g[j] = -psi[j][E]+2.0*(f[j]-f1(j*ht));
     }
-//    IGradient::Gradient(this, 0.00001, f, g);
+    //    IGradient::Gradient(this, 0.00001, f, g);
 }
 
 double HeatControlDeltaF::initial(unsigned int i) const
@@ -135,13 +135,13 @@ double HeatControlDeltaF::f(unsigned int i, unsigned int j) const
 {
     C_UNUSED(i);
 
-//    double x = i*hx;
+    //    double x = i*hx;
     double sum = 0.0;
     if (i==E) sum = (1.0/hx) * (*pf)[j];
-//    if (fabs(x-E[0])<hx)
-//    {
-//        sum += (1.0/hx) * (*pf)[j] * ((hx-fabs(x-E[0]))/hx);
-//    }
+    //    if (fabs(x-E[0])<hx)
+    //    {
+    //        sum += (1.0/hx) * (*pf)[j] * ((hx-fabs(x-E[0]))/hx);
+    //    }
     return sum;
 }
 
@@ -167,5 +167,7 @@ double HeatControlDeltaF::bf(unsigned int i, unsigned int j) const
 void HeatControlDeltaF::print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const
 {
     C_UNUSED(g);
+    C_UNUSED(fx);
+    C_UNUSED(result);
     printf("J[%d]: %.20f\n", i, const_cast<HeatControlDeltaF*>(this)->fx(f0));
 }

@@ -1,8 +1,17 @@
 #include "grid.h"
+#include <cstdio>
 
 Dimension::Dimension(double step, unsigned int maxN, unsigned int minN)
     : mstep(step), mmaxN(maxN), mminN(minN)
 {
+
+    union {
+       double d;
+       unsigned int i;
+    } a;
+
+    a.d = mstep;
+    printf("1***************** %u %f\n", a.i, a.d);
 //    mmin = mminN*mstep;
 //    mmax = mmaxN*mstep;
 }

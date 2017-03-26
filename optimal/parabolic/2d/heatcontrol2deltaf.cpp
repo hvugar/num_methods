@@ -322,6 +322,7 @@ void HeatControl2DeltaF::print(unsigned int i, const DoubleVector& x, const Doub
 {
     C_UNUSED(g);
     C_UNUSED(alpha);
+    C_UNUSED(result);
     HeatControl2DeltaF *hc = const_cast<HeatControl2DeltaF*>(this);
     printf("J[%d]: %.16f\n", i, hc->fx(x));
     IPrinter::printVector(x, "v1:", 10, 0*(M+1), 0*(M+1) + M);

@@ -3,6 +3,14 @@
 
 #include "ibvp.h"
 
+class MINIMUMSHARED_EXPORT IParabolicIBVP : public InitialBoundaryValueProblemPDE
+{
+protected:
+    virtual double initial(const SpaceNode &sn) const = 0;
+    virtual double boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType boundary = Unused) const = 0;
+    virtual double f(const SpaceNode &sn, const TimeNode &tn) const = 0;
+};
+
 /**
  * @brief The ParabolicIBVP class
  * u_t(x,t) = a(x,t)u_xx(x,t) + f(x,t),
@@ -11,12 +19,9 @@
  * u(0,t) = m1(t), t in (0,T],
  * u(l,t) = m2(t), t in (0,T].
  */
-class MINIMUMSHARED_EXPORT ParabolicIBVP : public InitialBoundaryValueProblemPDE
+class MINIMUMSHARED_EXPORT ParabolicIBVP : public IParabolicIBVP
 {
 protected:
-    virtual double initial(const SpaceNode &sn) const = 0;
-    virtual double boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType boundary = Unused) const = 0;
-    virtual double f(const SpaceNode &sn, const TimeNode &tn) const = 0;
     virtual double a(const SpaceNode &sn, const TimeNode &tn) const = 0;
 
     virtual void layerInfo(const DoubleVector &, unsigned int) const {}

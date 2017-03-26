@@ -11,7 +11,7 @@
 /**
  * @brief The Beales Function. Range -4.5 <= x,y <= 4.5. Optimal f(3, 0.5)=0;
  */
-struct MINIMUMSHARED_EXPORT BealesFunction : public RnFunction, public IPrinter, public IProjection, public IGradient
+class MINIMUMSHARED_EXPORT BealesFunction : public RnFunction, public IPrinter, public IProjection, public IGradient
 {
 public:
     virtual ~BealesFunction() {}

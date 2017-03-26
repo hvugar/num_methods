@@ -94,6 +94,8 @@ double ParabolicIBVP1::initial(const SpaceNode& sn) const
 
 double ParabolicIBVP1::boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType boundary) const
 {
+    C_UNUSED(sn);
+
 #ifdef SAMPLE_1
     if (boundary == BoundaryValueProblem::Left)  return 0.01+t;
     if (boundary == BoundaryValueProblem::Right) return 1.21+t;

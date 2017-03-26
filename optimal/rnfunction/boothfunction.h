@@ -11,7 +11,7 @@
 /**
  * @brief The Booth's function. Range -10.0 <= x,y <= +10.0. Optimal f(1, 3)=0;
  */
-struct MINIMUMSHARED_EXPORT BoothFunction : public RnFunction, public IGradient, public IPrinter, public IProjection
+class MINIMUMSHARED_EXPORT BoothFunction : public RnFunction, public IGradient, public IPrinter, public IProjection
 {
 public:
     virtual ~BoothFunction() {}

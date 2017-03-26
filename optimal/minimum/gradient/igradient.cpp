@@ -1,24 +1,23 @@
-#include "gradient_cjt.h"
-#include "printer.h"
-#include "projection.h"
-#include "function.h"
+#include "igradient.h"
+#include "../printer.h"
+#include "../projection.h"
+#include "../function.h"
 #include <math.h>
 
-ConjugateGradient::ConjugateGradient() : GradientMethod()
+IConjugateGradient::IConjugateGradient() : IGradientMethod()
 {
     setNormalize(true);
-    setAlgorithm(FLETCHER_REEVES);
-    setResetIteration(true);
 }
 
-ConjugateGradient::~ConjugateGradient()
+IConjugateGradient::~IConjugateGradient()
 {}
 
-void ConjugateGradient::calculate(DoubleVector& x)
+void IConjugateGradient::calculate(DoubleVector& x)
 {
     unsigned int k = 0;
-    double grad_mod_cur = 0.0;
-    double grad_mod_prv = 0.0;
+    double gr0_mod = 0.0;
+    double gr1_mod = 0.0;
+    double gr2_mod = 0.0;
     double distance = 0.0;
     double alpha = 0.0;
     double f1 = 0.0;
@@ -35,71 +34,46 @@ void ConjugateGradient::calculate(DoubleVector& x)
     /**************************************************************************************
      * Gradient of objective functionin initial point.
      **************************************************************************************/
-    m_gr->gradient(x, g);
+    gradient(x, g);
 
+    /* checking gradient norm */
+    /* if gradient norm at current point is less than epsilon then return. no minimize */
     /**************************************************************************************
-     * Checking for gradient vector norm that is less of epsilon.
-     * If gradient vector norm in current point is less than epsilon then break the iteration.
-     * Finish minimization.
+     * checking gradient norm.
+     * if gradient norm at current point is less than epsilon then return. no minimize
      **************************************************************************************/
     double gradient_norm = g.L2Norm();
     if (gradient_norm < epsilon1())
     {
-        if (m_printer != NULL) m_printer->print(iterationCount, x, g, m_fn->fx(x), GradientMethod::BREAK_FIRST_ITERATION);
+        print(iterationCount, x, g, fx(x), BREAK_FIRST_ITERATION);
         if (mshowEndMessage) puts("Optimisation ends, because norm of gradient is less than epsilon...");
         return;
     }
-    f1 = m_fn->fx(x);
-    if (m_printer != NULL) m_printer->print(iterationCount, x, g, f1, GradientMethod::FIRST_ITERATION);
+
+    f1 = fx(x);
+    print(iterationCount, x, g, f1, FIRST_ITERATION);
 
     do
     {
         iterationCount++;
 
-        if (malgoritm == FLETCHER_REEVES)
-        {
-            // Module of gradient
-            grad_mod_cur = 0.0;
-            for (unsigned int i=0; i<n; i++) grad_mod_cur += g[i]*g[i];
+        // Module of gradient
+        gr0_mod = 0.0;
+        for (unsigned int i=0; i<n; i++) gr0_mod = gr0_mod + (g[i]*g[i]);
 
-            if (k == 0)
-            {
-                // First direction is antigradient
-                grad_mod_prv = grad_mod_cur;
-                for (unsigned int i=0; i<n; i++) s[i] = -g[i];
-            }
-            else
-            {
-                // Direction in next iteration (k != 0)
-                double w = grad_mod_cur / grad_mod_prv;
-                grad_mod_prv = grad_mod_cur;
-                for (unsigned int i=0; i<n; i++) s[i] = -g[i] + s[i] * w;
-            }
-        }
-
-        if (malgoritm == POLAK_RIBIERE)
+        if (k == 0)
         {
-            if (k == 0)
-            {
-                for (unsigned int i=0; i<n; i++) s[i] = -g[i];
-            }
-            else
-            {
-                double w = 1.0;
-                for (unsigned int i=0; i<n; i++) s[i] = -g[i] + s[i] * w;
-            }
-        }
-
-        /**************************************************************************************
-         * Reset the direction.
-         **************************************************************************************/
-        if (mResetIteration)
-        {
-            if ( k == n ) { k = 0; } else { k++; }
+            gr1_mod = gr0_mod;
+            // First direction is antigradient
+            for (unsigned int i=0; i<n; i++) s[i] = -g[i];
         }
         else
         {
-            k++;
+            gr2_mod = gr0_mod;
+            double w = gr2_mod / gr1_mod;
+            gr1_mod = gr2_mod;
+            // Direction in next iteration (k != 0)
+            for (unsigned int i=0; i<n; i++) s[i] = -g[i] + s[i] * w;
         }
 
         /**************************************************************************************
@@ -121,58 +95,57 @@ void ConjugateGradient::calculate(DoubleVector& x)
             double cx = x[i];
             x[i] = x[i] + alpha * s[i];
 
-            if (m_projection != NULL) m_projection->project(x, i);
+            project(x, i);
 
             distance += (x[i]-cx)*(x[i]-cx);
         }
         distance = sqrt(distance);
-        f2 = m_fn->fx(x);
+        f2 = fx(x);
+
+        if ( k == x.size() ) { k = 0; } else { k++; }
 
         /**************************************************************************************
          * Gradient of objectiv function in current point
          **************************************************************************************/
-        m_gr->gradient(x, g);
+        gradient(x, g);
 
         /**************************************************************************************
-         * Checking for gradient vector norm that is less of epsilon.
-         * If gradient vector norm in current point is less than epsilon then break the iteration.
-         * Finish minimization.
+         * checking gradient norm.
+         * if gradient norm at current point is less than epsilon then return. no minimize
+         *
          **************************************************************************************/
         double gradient_norm = g.L2Norm();
         if (gradient_norm < epsilon1())
         {
-            if (m_printer != NULL) m_printer->print(iterationCount, x, g, f2, GradientMethod::BREAK_GRADIENT_NORM_LESS);
+            print(iterationCount, x, g, f2, BREAK_GRADIENT_NORM_LESS);
             if (mshowEndMessage) puts("Optimisation ends, because norm of gradient is less than epsilon...");
             break;
         }
 
         /**************************************************************************************
-         * Calculating distance between the previous and current points.
-         * Calculating difference values of functions in previous and current points.
-         * If distance and difference is less than epsilon then break the iteration.
-         * Finish minimization.
+         * Calculating Euclied distance between the previous and current points.
+         * Calculating difference values of functions on the previous and current points.
          **************************************************************************************/
         if (distance < epsilon2() && fabs(f2 - f1) < epsilon3())
         {
-            if (m_printer != NULL) m_printer->print(iterationCount, x, g, f2, GradientMethod::BREAK_DISTANCE_LESS);
+            print(iterationCount, x, g, f2, BREAK_DISTANCE_LESS);
             if (mshowEndMessage) puts("Optimisation ends, because distance between last and current point less than epsilon...");
             break;
         }
 
+        f1 = f2;
+
         /**************************************************************************************
          * Printing iteration information.
          **************************************************************************************/
-        if (m_printer != NULL) m_printer->print(iterationCount, x, g, f2, GradientMethod::NEXT_ITERATION);
-
-        f1 = f2;
-
+        print(iterationCount, x, g, f2, NEXT_ITERATION);
     } while (true);
 
     g.clear();
     s.clear();
 }
 
-double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
+double IConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
 {
     C_UNUSED(x);
     C_UNUSED(s);
@@ -187,28 +160,101 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
     return alpha;
 }
 
-double ConjugateGradient::fx(double alpha) const
+double IConjugateGradient::fx(double alpha) const
 {
-    const DoubleVector &x = *mx;
-    const DoubleVector &s = *ms;
+    DoubleVector &x = *mx;
+    DoubleVector &s = *ms;
     unsigned int n = x.size();
 
     DoubleVector cx(n);
     for (unsigned int i=0; i<n; i++)
     {
         cx[i] = x[i] + alpha * s[i];
-        if (m_projection != NULL) m_projection->project(cx, i);
+        project(cx, i);
     }
 
-    return m_fn->fx(cx);
+    return fx(cx);
 }
 
-void ConjugateGradient::setAlgorithm(Algorithm algorithm)
+void IConjugateGradient::project(DoubleVector &, int) const {}
+
+void IConjugateGradient::print(unsigned int, const DoubleVector &, const DoubleVector &, double, MethodResult) const {}
+
+IGradientMethod::IGradientMethod() {}
+
+IGradientMethod::~IGradientMethod() {}
+
+/**
+ * @brief Epsilon for gradient norm
+ * @return
+ */
+double IGradientMethod::epsilon1() const
 {
-    malgoritm = algorithm;
+    return m_epsilon1;
 }
 
-void ConjugateGradient::setResetIteration(bool reset)
+/**
+ * @brief Epsilon for gradient norm
+ * @param epsilon
+ */
+void IGradientMethod::setEpsilon1(double epsilon)
 {
-    mResetIteration = reset;
+    m_epsilon1 = epsilon;
+}
+
+/**
+ * @brief Epsilon for distance between points
+ * @return
+ */
+double IGradientMethod::epsilon2() const
+{
+    return m_epsilon2;
+}
+
+/**
+ * @brief Epsilon for distance between points
+ * @param epsilon
+ */
+void IGradientMethod::setEpsilon2(double epsilon)
+{
+    m_epsilon2 = epsilon;
+}
+
+/**
+ * @brief Epsilon for distance between points
+ * @param epsilon
+ */
+void IGradientMethod::setEpsilon3(double epsilon)
+{
+    m_epsilon3 = epsilon;
+}
+
+/**
+ * @brief Epsilon for distance between points
+ * @return
+ */
+double IGradientMethod::epsilon3() const
+{
+    return m_epsilon3;
+}
+
+void IGradientMethod::setR1MinimizeEpsilon(double step, double epsilon)
+{
+    min_step = step;
+    min_epsilon = epsilon;
+}
+
+int IGradientMethod::count() const
+{
+    return iterationCount;
+}
+
+void IGradientMethod::setNormalize(bool normalize)
+{
+    this->m_normalize = normalize;
+}
+
+void IGradientMethod::showEndMessage(bool showEndMessage)
+{
+    mshowEndMessage = showEndMessage;
 }

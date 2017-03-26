@@ -66,6 +66,7 @@ ParabolicIBVP2::ParabolicIBVP2()
 
 double ParabolicIBVP2::initial(const SpaceNode &sn) const
 {
+    C_UNUSED(sn);
 #ifdef SAMPLE_0
     return 0.0;
 #endif
@@ -141,5 +142,8 @@ double ParabolicIBVP2::a(const SpaceNode &sn UNUSED_PARAM, const TimeNode &tn UN
 
 double ParabolicIBVP2::U(unsigned int i, unsigned int j, unsigned int k) const
 {
+    C_UNUSED(i);
+    C_UNUSED(j);
+    C_UNUSED(k);
     return 0.0;
 }
