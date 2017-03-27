@@ -20,8 +20,8 @@ LIBS += -L../bin -lminimum
 INCLUDEPATH += ../border
 LIBS += -L../bin -lborder
 
-INCLUDEPATH += ../hyperbolic
-LIBS += -L../bin -lhyperbolic
+#INCLUDEPATH += ../hyperbolic
+#LIBS += -L../bin -lhyperbolic
 
 INCLUDEPATH += ../parabolic
 LIBS += -L../bin -lparabolic
@@ -32,9 +32,9 @@ LIBS += -L../bin -lrnfunction
 #INCLUDEPATH += ../imaging
 #LIBS += -L../bin -limaging
 
-INCLUDEPATH += ../../../../third-party/libxlsxwriter-master/include
-LIBS += -L../../../../third-party/libxlsxwriter-master/lib -lxlsxwriter
-LIBS += -lz
+#INCLUDEPATH += ../../../../third-party/libxlsxwriter-master/include
+#LIBS += -L../../../../third-party/libxlsxwriter-master/lib -lxlsxwriter
+#LIBS += -L. -lz
 
 DESTDIR += ../bin
 

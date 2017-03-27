@@ -44,7 +44,7 @@
 //#include "bordertest1.h"
 //#include "sampleboundaryproblem1.h"
 
-#include <xlsxwriter.h>
+//#include <xlsxwriter.h>
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -58,7 +58,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //BorderTest1::Main(argc, argv);
     //Example2::Main(argc, argv);
     //Problem1::Main(argc, argv);
-    //Problem1L2::Main(argc, argv);
+    Problem1L2::Main(argc, argv);
     //Problem1L3::Main(argc, argv);
     //Problem1L2P::Main(argc, argv);
 
@@ -80,11 +80,11 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Rosenbrock::Main(argc, argv);
     //QuadraticFunction::Main(argc,argv);
 
-    lxw_workbook  *workbook  = workbook_new("hello_world.xlsx");
-    lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
-    worksheet_write_string(worksheet, 0, 0, "Hello", NULL);
-    worksheet_write_number(worksheet, 1, 0, 123, NULL);
-    workbook_close(workbook);
+//    lxw_workbook  *workbook  = workbook_new("hello_world.xlsx");
+//    lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+//    worksheet_write_string(worksheet, 0, 0, "Hello", NULL);
+//    worksheet_write_number(worksheet, 1, 0, 123, NULL);
+//    workbook_close(workbook);
 
     return 0;
 }
