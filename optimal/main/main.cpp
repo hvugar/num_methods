@@ -7,6 +7,9 @@
 #include "problem1/problem1.h"
 #include "problem1/problem1L2.h"
 #include "problem1/problem1L3.h"
+
+#include "problem1/article/art_problem1L2.h"
+
 //#include "loadedsystems.h"
 //#include "example1.h"
 //#include "example2.h"
@@ -58,9 +61,11 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //BorderTest1::Main(argc, argv);
     //Example2::Main(argc, argv);
     //Problem1::Main(argc, argv);
-    Problem1L2::Main(argc, argv);
+    //Problem1L2::Main(argc, argv);
     //Problem1L3::Main(argc, argv);
     //Problem1L2P::Main(argc, argv);
+
+    ArtProblem1L2::Main(argc, argv);
 
     //Example4::Main(argc, argv);
     //BorderParabolicD::Main(argc, argv);

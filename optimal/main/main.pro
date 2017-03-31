@@ -51,7 +51,8 @@ SOURCES += main.cpp \
     example4.cpp \
     example5.cpp \
     sampleboundaryproblem1.cpp \
-    problem1/problem1newton.cpp
+    problem1/problem1newton.cpp \
+    problem1/article/art_problem1L2.cpp
 
 HEADERS += \
     loadedsystems.h \
@@ -66,4 +67,5 @@ HEADERS += \
     example4.h \
     example5.h \
     sampleboundaryproblem1.h \
-    problem1/problem1newton.h
+    problem1/problem1newton.h \
+    problem1/article/art_problem1L2.h

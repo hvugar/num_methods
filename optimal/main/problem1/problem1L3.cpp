@@ -379,7 +379,7 @@ void Problem1L3::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
     if (x.at(8) > (N-5)*hx) x.at(8) = (N-5)*hx;
 }
 
-void Problem1L3::getComponents(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &x) const
+void Problem1L3::getComponents(DoubleVector &, DoubleVector &, DoubleVector &, const DoubleVector &) const
 {
 }
 

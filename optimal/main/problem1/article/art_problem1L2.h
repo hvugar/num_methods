@@ -1,5 +1,5 @@
-#ifndef PROBLEM1L2_H
-#define PROBLEM1L2_H
+#ifndef ART_PROBLEM1L2_H
+#define ART_PROBLEM1L2_H
 
 #include <function.h>
 #include <gradient.h>
@@ -12,13 +12,11 @@
 #include <cmethods.h>
 #include <gradient/igradient.h>
 
-#include "problem1newton.h"
-
-class Problem1L2 : protected RnFunction, protected IGradient, public IPrinter, public IProjection
+class ArtProblem1L2 : protected RnFunction, protected IGradient, public IPrinter, public IProjection
 {
 public:
-    Problem1L2();
-    virtual ~Problem1L2() {}
+    ArtProblem1L2();
+    virtual ~ArtProblem1L2() {}
 
     void initialize();
     void startOptimize();
@@ -47,6 +45,7 @@ public:
     double gf(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const;
     double sgn_min(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const;
     double delta(unsigned int n, const DoubleVector &e, unsigned int i) const;
+    double sign(double x) const;
 
     //Problem1NewtonF forward;
     void Penalty(DoubleVector &prm0, double R);
@@ -108,4 +107,4 @@ public:
     static void Main(int argc, char* argv[]);
 };
 
-#endif // PROBLEM1L2_H
+#endif // ART_PROBLEM1L2_H
