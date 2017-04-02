@@ -1,6 +1,7 @@
 TEMPLATE = subdirs
 
-SUBDIRS += minimum
+SUBDIRS += minimum \
+    third-party
 #SUBDIRS += imaging
 #SUBDIRS += imager
 SUBDIRS += rnfunction

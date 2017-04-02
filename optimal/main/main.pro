@@ -32,10 +32,6 @@ LIBS += -L../bin -lrnfunction
 #INCLUDEPATH += ../imaging
 #LIBS += -L../bin -limaging
 
-#INCLUDEPATH += ../../../../third-party/libxlsxwriter-master/include
-#LIBS += -L../../../../third-party/libxlsxwriter-master/lib -lxlsxwriter
-#LIBS += -L. -lz
-
 DESTDIR += ../bin
 
 SOURCES += main.cpp \

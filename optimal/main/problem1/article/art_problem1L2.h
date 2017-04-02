@@ -23,10 +23,10 @@ public:
 
     void optimize(DoubleVector &x0) const;
 
-    virtual double fx(const DoubleVector &x) const;
-    virtual void gradient(const DoubleVector &prm, DoubleVector &g);
+    virtual double fx(const DoubleVector &y) const;
+    virtual void gradient(const DoubleVector &y, DoubleVector &g);
 
-    virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const;
+    virtual void print(unsigned int i, const DoubleVector &y, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const;
     virtual void project(DoubleVector &x, int index);
 
     void calculateU(DoubleMatrix &u, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e) const;
@@ -87,7 +87,7 @@ private:
     double zmax;
 
     DoubleVector V;
-    const DoubleVector *px;
+    const DoubleVector *py;
 
     DoubleVector K;
     DoubleVector Z;
@@ -102,6 +102,7 @@ private:
     bool optimizeE;
 
     bool withError = false;
+    bool hello = false;
 
 public:
     static void Main(int argc, char* argv[]);
