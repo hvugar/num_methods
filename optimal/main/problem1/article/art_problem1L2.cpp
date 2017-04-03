@@ -27,9 +27,9 @@ void ArtProblem1L2::initialize()
     ht = 0.1;
 
     // initial temperatures
-    vfi << +0.0;// << -5.0 << +5.0;
+    vfi << 0.0 << 1.0 << 2.0;
     // environment temperatures
-    vtt << +0.0;// << -4.0 << +4.0;
+    vtt << +19.0 << +20.0 << +21.0;
 
     // initial temperature
     fi = 0.0;
@@ -109,8 +109,8 @@ void ArtProblem1L2::startOptimize()
     DoubleVector x0;
     if (optimizeK)
     {
-        x0 << -8.5 << -2.7; //k
-        //x0 << +1.0000 << +1.0000; //k
+        x0 << -4.5400 << -7.4500; //k
+        //        x0 << -4.9700 << -1.4900; //
     }
     else
     {
@@ -120,8 +120,8 @@ void ArtProblem1L2::startOptimize()
 
     if (optimizeZ)
     {
-        x0 << +2.1 << +4.9; //z
-        //x0 << +1.0000 << +1.0000; //z
+        x0 << +12.1000 << +14.900; //z
+        //        x0 << +10.7400 << +7.0600; //
     }
     else
     {
@@ -131,7 +131,8 @@ void ArtProblem1L2::startOptimize()
 
     if (optimizeE)
     {
-        x0 << +0.02000 << +0.08000; //e
+        x0 << 0.02500 << 0.07500; //e
+        //        x0 << 0.0100 << 0.0600;
     }
     else
     {
@@ -143,12 +144,12 @@ void ArtProblem1L2::startOptimize()
     fclose(file);
     R = 100.0;
     optimize(x0);
-    while (R < 10000.0)
-    {
-        R *= 10.0;
-        IPrinter::printSeperatorLine();
-        optimize(x0);
-    }
+    //    while (R < 10000.0)
+    //    {
+    //        R *= 10.0;
+    //        IPrinter::printSeperatorLine();
+    //        optimize(x0);
+    //    }
 
     DoubleMatrix u;
     DoubleVector k,z,e;
@@ -160,42 +161,126 @@ void ArtProblem1L2::startOptimize()
     printf("Optimal e: %20.14f %20.14f\n", e[0], e[1]);
     IPrinter::printSeperatorLine();
 
-    //    calculateU(u, k, z, e);
-    //    double aa1 = fx(x0);
-    //    printf("J: %.10f: ", aa1);
-    //    IPrinter::printVector(14, 10, u.row(M));
-    //    IPrinter::printSeperatorLine();
+    /*
+     * Image 1 v1
+     */
 
-    //    p->error = true;
-    //    for (unsigned int test=0; test<10; test++)
+    // initial temperatures
+    //vfi << 0.0 << 1.0 << 2.0;
+    // environment temperatures
+    //vtt << +19.0 << +20.0 << +21.0;
+
+    M *= 3;
+
     //    {
-    //        calculateU(u, k, z, e);
-    //        double aa1 = fx(x0);
-    //        printf("J: %16.10f: ", aa1);
-    //        IPrinter::printVector(14, 10, u.row(M));
-    //        //IPrinter::printSeperatorLine();
-    //    }
-    //    for (unsigned int i=0; i<100; i++)
-    //    {
-    //    p->M = 10000;
-    //    calculateU(u,k,z,e);
-    //    double _MAX_ = 0.0;
-    //    for (unsigned int m=2000; m<=M; m++)
-    //    {
-    //        double sum = 0.0;
-    //        sum += 0.5*mu(0)*(u[m][0]-V[0])*(u[m][0]-V[0]);
-    //        for (unsigned int n=1; n<=N-1; n++)
+
+    //        FILE *file1 = fopen("image_1_v.txt", "w");
+
+    //        fi = +0.0;
+    //        tt = +19.0;
+    //        DoubleMatrix u1;
+    //        calculateU(u1,k,z,e);
+    //        for (int unsigned m=0; m<=M; m++)
     //        {
-    //            sum += mu(n)*(u[m][n]-V[n])*(u[m][n]-V[n]);
+    //            double v = vf(m,k,z,e,u1);
+    //            fprintf(file1, "%.10f ",v);
+    //            fflush(file1);
     //        }
-    //        sum += 0.5*mu(N)*(u[m][N]-V[N])*(u[m][N]-V[N]);
-    //        sum *= hx;
+    //        fprintf(file1, "\n");
 
-    //        if (sum > _MAX_) _MAX_ = sum;
-    //        //printf("M: %u %.20f %.20f\n",m,sum,_MAX_);
+    //        //    vfi.clear(); vfi << 5.0;
+    //        //    vtt.clear(); vtt << 25.0;
+
+    //        fi = -3.0;
+    //        tt = +25.0;
+    //        DoubleMatrix u2;
+    //        calculateU(u2,k,z,e);
+    //        for (int unsigned m=0; m<=M; m++)
+    //        {
+    //            double v = vf(m,k,z,e,u2);
+    //            fprintf(file1, "%.10f ",v);
+    //            fflush(file1);
+    //        }
+
+    //        fclose(file1);
     //    }
-    //    printf("%.20f\n",_MAX_);
-    //    }
+
+//    {
+//        FILE *file1 = fopen("image_2_du.txt", "w");
+//        double MM = M;
+
+//        fi = +0.0;
+//        tt = +19.0;
+//        for (int unsigned m=0; m<=MM; m++)
+//        {
+//            M = m;
+//            DoubleMatrix u1;
+//            calculateU(u1,k,z,e);
+
+//            DoubleVector uT = u1.row(u1.rows()-1);
+//            double max = -1000000.0;
+//            for (unsigned int n=0; n<=N; n++)
+//            {
+//                if (max < fabs(uT[n]-V[n])) max = fabs(uT[n]-V[n]);
+//            }
+
+//            fprintf(file1, "%.10f ",max);
+//            fflush(file1);
+//        }
+//        fprintf(file1, "\n");
+
+        //    vfi.clear(); vfi << 5.0;
+        //    vtt.clear(); vtt << 25.0;
+
+//        fi = -3.0;
+//        tt = +25.0;
+//        for (int unsigned m=0; m<=MM; m++)
+//        {
+//            M = m;
+//            DoubleMatrix u2;
+//            calculateU(u2,k,z,e);
+
+//            DoubleVector uT = u2.row(u2.rows()-1);
+//            double max = -1000000.0;
+//            for (unsigned int n=0; n<=N; n++)
+//            {
+//                if (max < fabs(uT[n]-V[n])) max = fabs(uT[n]-V[n]);
+//            }
+
+//            fprintf(file1, "%.10f ",max);
+//            fflush(file1);
+//        }
+
+//        fclose(file1);
+//    }
+
+    {
+        withError = true;
+        persent = 0.01;
+        FILE *file1 = fopen("image_3_du_1.txt", "w");
+        double MM = M;
+        fi = +0.0;
+        tt = +19.0;
+        for (int unsigned m=0; m<=MM; m++)
+        {
+            M = m;
+            DoubleMatrix u1;
+            calculateU(u1,k,z,e);
+
+            DoubleVector uT = u1.row(u1.rows()-1);
+            double max = -1000000.0;
+            for (unsigned int n=0; n<=N; n++)
+            {
+                if (max < fabs(uT[n]-V[n])) max = fabs(uT[n]-V[n]);
+            }
+
+            fprintf(file1, "%.10f ",max);
+            fflush(file1);
+        }
+        fprintf(file1, "\n");
+        fclose(file1);
+    }
+
 }
 
 void ArtProblem1L2::optimize(DoubleVector &x0) const
@@ -209,7 +294,7 @@ void ArtProblem1L2::optimize(DoubleVector &x0) const
     g.setEpsilon1(0.0000000001);//0.00000001
     g.setEpsilon2(0.0000000001);//0.00000001
     g.setEpsilon3(0.0000000001);//0.00000001
-    g.setR1MinimizeEpsilon(0.1, 0.00001); //0.00000001
+    g.setR1MinimizeEpsilon(10.0, 0.00001); //0.00000001
     g.setNormalize(true);
     g.showEndMessage(true);
     g.setResetIteration(false);
@@ -498,8 +583,8 @@ void ArtProblem1L2::calculateU(DoubleMatrix &u, const DoubleVector &k, const Dou
 
             if (withError)
             {
-                u[m][E0] += (((rand()%RAND_MAX) % 2 == 0) ? +0.1 : -0.1) * u[m][E0];
-                u[m][E1] += (((rand()%RAND_MAX) % 2 == 0) ? +0.1 : -0.1) * u[m][E1];
+                u[m][E0] += (((rand()%RAND_MAX) % 2 == 0) ? +persent : -persent) * u[m][E0];
+                u[m][E1] += (((rand()%RAND_MAX) % 2 == 0) ? +persent : -persent) * u[m][E1];
             }
         }
     }
@@ -611,17 +696,16 @@ void ArtProblem1L2::print(unsigned int i, const DoubleVector &prm, const DoubleV
     DoubleMatrix u;
     calculateU(u, k, z, e);
 
-
     //IPrinter::printSeperatorLine();
     printf("J[%d]: %.10f R: %.1f k: %.10f %.10f z: %.10f %.10f e: %.10f %.10f\n", i, r, R, k[0], k[1], z[0], z[1], e[0], e[1]);
-    FILE *file = fopen("sample2.txt", "a");
-    for (unsigned int m=0; m<=M; m++)
-    {
-        fprintf(file,"%.10f ", vf(m,k,z,e,u));
-    }
-    fprintf(file,"\n");
-    fflush(file);
-    fclose(file);
+    //    FILE *file = fopen("sample2.txt", "a");
+    //    for (unsigned int m=0; m<=M; m++)
+    //    {
+    //        fprintf(file,"%.10f ", vf(m,k,z,e,u));
+    //    }
+    //    fprintf(file,"\n");
+    //    fflush(file);
+    //    fclose(file);
     IPrinter::printVector(14,10,u.row(u.rows()-1));
 
     return;

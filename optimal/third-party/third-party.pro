@@ -7,6 +7,6 @@ DESTDIR  = ../bin
 
 SOURCES +=
 
-INCLUDEPATH += ../../../../../third-party/jmcnamara/libxlsxwriter/include
-LIBS +=      -L../../../../../third-party/jmcnamara/libxlsxwriter/lib -lxlsxwriter
-LIBS += -L. -lz
+#INCLUDEPATH += ../../../../../third-party/jmcnamara/libxlsxwriter/include
+#LIBS +=      -L../../../../../third-party/jmcnamara/libxlsxwriter/lib -lxlsxwriter
+#LIBS += -L. -lz

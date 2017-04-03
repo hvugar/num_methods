@@ -103,6 +103,7 @@ private:
 
     bool withError = false;
     bool hello = false;
+    double persent = 0.01;
 
 public:
     static void Main(int argc, char* argv[]);
