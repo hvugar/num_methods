@@ -50,6 +50,15 @@ public:
     //Problem1NewtonF forward;
     void Penalty(DoubleVector &prm0, double R);
 
+    void table1Generate();
+    void table2Generate();
+    void table3Generate();
+
+    void image1Generate();
+    void image2Generate();
+    void image3Generate();
+
+
 private:
     unsigned int L;
     unsigned int N;
