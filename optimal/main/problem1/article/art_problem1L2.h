@@ -58,6 +58,8 @@ public:
     void image2Generate();
     void image3Generate();
 
+    void imager();
+
 
 private:
     unsigned int L;
@@ -113,6 +115,11 @@ private:
     bool withError = false;
     bool hello = false;
     double persent = 0.01;
+
+    unsigned int DD;
+
+    double u_xi(unsigned int m, double xi, const DoubleMatrix &u) const;
+    double u_xi_d(unsigned int m, double xi, const DoubleMatrix &u) const;
 
 public:
     static void Main(int argc, char* argv[]);
