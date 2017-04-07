@@ -8,10 +8,10 @@ void ArtProblem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     p.initialize();
     //p.startOptimize();
 
-    p.table2Generate();
+    //p.table2Generate();
     //p.imager();
 
-    //p.image1Generate();
+    p.image1Generate();
     //p.image2Generate();
     //p.image3Generate();
 }
@@ -29,7 +29,7 @@ void ArtProblem1L2::initialize()
     L = 2;
 
     N = 100;
-    hx = 0.001;
+    hx = 0.01;
 
     M = 2000;
     ht = 0.1;
@@ -65,7 +65,7 @@ void ArtProblem1L2::initialize()
         const double c0 = 400.0;   // C/(kg*S)   // удельная теплоемкость
         const double k0 = 380.0;   // Vt/(m*S)   // коэффициент теплопроводности
 
-        const double h1 = 1000;      // коэффициент теплообмена ->
+        const double h1 = 1000.0;      // коэффициент теплообмена ->
         const double h2 = 10.0;        // коэффициент теплообмена ->
 
         a = sqrt((k0/(c0*r0)));        // коэффициент температуропроворности
@@ -166,6 +166,9 @@ void ArtProblem1L2::table2Generate()
     {
         y0 << +0.025 << +0.075;
     }
+
+    DD = 1;
+
     R = 1.0;
     optimize(y0);
     while (R < 10000.0)
@@ -197,19 +200,25 @@ void ArtProblem1L2::image1Generate()
 
     if (optimizeK)
     {
-        y0 << -1.70338950304666 << -3.14795310656662;
+        //y0 << -1.70338950304666 << -3.14795310656662;
         //y0 << -1.67351371107545 << -2.60464287363871;
+        y0 << -1.70282206906541  <<  -3.20379494807072;
     }
+
     if (optimizeZ)
     {
-        y0 << +11.20714602437165 << +12.99567893148132;
+        //y0 << +11.20714602437165 << +12.99567893148132;
         //y0 << +11.29506147253105 << +13.16809490237042;
+        y0 <<  10.88905759763186 <<   12.91411478073157;
     }
     if (optimizeE)
     {
-        y0 << 0.04500000000000 << 0.09500000000000;
+        //y0 << 0.04500000000000 << 0.09500000000000;
         //y0 << 0.04431860079769 << 0.08715972328684;
+        y0 << 0.05000010607047  <<   0.55000019931414;
     }
+
+    DD = 1;
 
     DoubleVector k,z,e;
     getParameters(k,z,e,y0);
@@ -620,16 +629,17 @@ void ArtProblem1L2::imager()
 
 
     DoubleMatrix u(101,101);
+    R = 100.0;
     double max = -100000000.0;
     double min = +100000000.0;
     for (unsigned int k0=0; k0<=100; k0++)
     {
-        y0[4] = 0.005 + 0.0009*k0;
+        y0[0] = -2.0 + 0.01*k0;
         for (unsigned int k1=0; k1<=100; k1++)
         {
-            y0[5] = 0.005 + 0.0009*k1;
+            y0[1] = -4.0 + 0.01*k1;
             double f = fx(y0);
-            u[k0][k1] = fx(y0);
+            u[k0][k1] = f;
 
             if (f > max) max = f;
             if (f < min) min = f;
@@ -864,8 +874,8 @@ void ArtProblem1L2::calculateU(DoubleMatrix &u, const DoubleVector &k, const Dou
     u.clear();
     u.resize(M+1, N+1);
 
-    unsigned int E0 = (unsigned int)round(e[0] * N*DD);
-    unsigned int E1 = (unsigned int)round(e[1] * N*DD);
+    //unsigned int E0 = (unsigned int)round(e[0] * N*DD);
+    //unsigned int E1 = (unsigned int)round(e[1] * N*DD);
 
     double *da = (double*) malloc(sizeof(double)*(N+1));
     double *db = (double*) malloc(sizeof(double)*(N+1));
@@ -924,15 +934,15 @@ void ArtProblem1L2::calculateU(DoubleMatrix &u, const DoubleVector &k, const Dou
         {
             u[m][i] = rx[i];
 
-            if (withError)
-            {
-                //u[m][E0] += (((rand()%RAND_MAX) % 2 == 0) ? +persent : -persent) * u[m][E0];
-                //u[m][E1] += (((rand()%RAND_MAX) % 2 == 0) ? +persent : -persent) * u[m][E1];
+//            if (withError)
+//            {
+//                //u[m][E0] += (((rand()%RAND_MAX) % 2 == 0) ? +persent : -persent) * u[m][E0];
+//                //u[m][E1] += (((rand()%RAND_MAX) % 2 == 0) ? +persent : -persent) * u[m][E1];
 
-                double w0 = (rand() % 2000)*0.001 - 1.0; u[m][E0] += w0*persent * u[m][E0];
-                double w1 = (rand() % 2000)*0.001 - 1.0; u[m][E1] += w1*persent * u[m][E1];
-                //printf("%f %f\n", w0, w1);
-            }
+//                double w0 = (rand() % 2000)*0.001 - 1.0; u[m][E0] += w0*persent * u[m][E0];
+//                double w1 = (rand() % 2000)*0.001 - 1.0; u[m][E1] += w1*persent * u[m][E1];
+//                //printf("%f %f\n", w0, w1);
+//            }
         }
     }
 
