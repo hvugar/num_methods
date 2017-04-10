@@ -58,8 +58,8 @@ public:
     void image2Generate();
     void image3Generate();
 
-    void imager();
-
+    void imager2L();
+    void imager3L();
 
 private:
     unsigned int L;

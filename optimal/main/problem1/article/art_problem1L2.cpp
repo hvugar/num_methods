@@ -8,10 +8,10 @@ void ArtProblem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     p.initialize();
     //p.startOptimize();
 
-    //p.table2Generate();
-    //p.imager();
+    p.table2Generate();
+    //p.imager3L();
 
-    p.image1Generate();
+    //p.image1Generate();
     //p.image2Generate();
     //p.image3Generate();
 }
@@ -26,10 +26,10 @@ void ArtProblem1L2::initialize()
     withError = false;
     DD = 10;
 
-    L = 2;
+    L = 3;
 
     N = 100;
-    hx = 0.01;
+    hx = 0.001;
 
     M = 2000;
     ht = 0.1;
@@ -84,9 +84,9 @@ void ArtProblem1L2::initialize()
     if (!optimizeZ) alpha2 = 0.0;
     if (!optimizeE) alpha3 = 0.0;
 
-    k0 << 0.0 << 0.0;//-20.57571017653454 << -30.63314593795166;
-    z0 << 0.0 << 0.0;//+10.33818417154749 << +10.47968970008047;
-    e0 << 0.0 << 0.0;// +0.04500000000000 <<  +0.09500000000000;
+    k0 << 0.0 << 0.0 << 0.0;//-20.57571017653454 << -30.63314593795166;
+    z0 << 0.0 << 0.0 << 0.0;//+10.33818417154749 << +10.47968970008047;
+    e0 << 0.0 << 0.0 << 0.0;// +0.04500000000000 <<  +0.09500000000000;
 
     /* шаги числовых производных */
     hk = 0.001;
@@ -141,9 +141,9 @@ void ArtProblem1L2::table1Generate()
     DoubleVector k,z,e;
     getParameters(k,z,e,y0);
     IPrinter::printSeperatorLine();
-    printf("Optimal k: %20.14f %20.14f\n", k[0], k[1]);
-    printf("Optimal z: %20.14f %20.14f\n", z[0], z[1]);
-    printf("Optimal e: %20.14f %20.14f\n", e[0], e[1]);
+    printf("Optimal k: %20.14f %20.14f %20.14f\n", k[0], k[1], k[2]);
+    printf("Optimal z: %20.14f %20.14f %20.14f\n", z[0], z[1], z[2]);
+    printf("Optimal e: %20.14f %20.14f %20.14f\n", e[0], e[1], e[2]);
     IPrinter::printSeperatorLine();
 }
 
@@ -156,18 +156,18 @@ void ArtProblem1L2::table2Generate()
 
     if (optimizeK)
     {
-        y0 << -4.54 << -7.45;
+        y0 << -4.54 << -7.45 << -3.500;;
     }
     if (optimizeZ)
     {
-        y0 << +12.10 << +14.90;
+        y0 << +12.10 << +14.90 << +10.13;
     }
     if (optimizeE)
     {
-        y0 << +0.025 << +0.075;
+        y0 << 0.02500 << 0.04500 << 0.07500;
     }
 
-    DD = 1;
+    DD = 10;
 
     R = 1.0;
     optimize(y0);
@@ -181,9 +181,9 @@ void ArtProblem1L2::table2Generate()
     DoubleVector k,z,e;
     getParameters(k,z,e,y0);
     IPrinter::printSeperatorLine();
-    printf("Optimal k: %20.14f %20.14f\n", k[0], k[1]);
-    printf("Optimal z: %20.14f %20.14f\n", z[0], z[1]);
-    printf("Optimal e: %20.14f %20.14f\n", e[0], e[1]);
+    printf("Optimal k: %20.14f %20.14f %20.14f\n", k[0], k[1], k[2]);
+    printf("Optimal z: %20.14f %20.14f %20.14f\n", z[0], z[1], z[2]);
+    printf("Optimal e: %20.14f %20.14f %20.14f\n", e[0], e[1], e[2]);
     IPrinter::printSeperatorLine();
 
     DoubleMatrix u;
@@ -386,12 +386,12 @@ void ArtProblem1L2::image3Generate()
     calculateU(u1,k,z,e);
     for (int unsigned m=0; m<=M; m++)
     {
-//        double max = -1000000.0;
+        //        double max = -1000000.0;
         DoubleVector ut = u1.row(m);
-//        for (unsigned int n=0; n<=N; n++)
-//        {
-//            if (max < fabs(ut[n]-V[n])) max = fabs(ut[n]-V[n]);
-//        }
+        //        for (unsigned int n=0; n<=N; n++)
+        //        {
+        //            if (max < fabs(ut[n]-V[n])) max = fabs(ut[n]-V[n]);
+        //        }
 
         double max = 0.5*(ut[0]-V[0])*(ut[0]-V[0]);
         for (unsigned int n=1; n<=N-1; n++)
@@ -412,7 +412,7 @@ void ArtProblem1L2::startOptimize()
     DoubleVector x0;
     if (optimizeK)
     {
-        x0 << -4.5400 << -7.4500; //k
+        x0 << -4.5400 << -7.4500 << -3.500; //k
         //        x0 << -4.9700 << -1.4900; //
     }
     else
@@ -423,7 +423,7 @@ void ArtProblem1L2::startOptimize()
 
     if (optimizeZ)
     {
-        x0 << +12.1000 << +14.900; //z
+        x0 << +12.1000 << +14.900 << +10.13; //z
         //        x0 << +10.7400 << +7.0600; //
     }
     else
@@ -434,7 +434,7 @@ void ArtProblem1L2::startOptimize()
 
     if (optimizeE)
     {
-        x0 << 0.02500 << 0.07500; //e
+        x0 << 0.02500 << 0.04500 << 0.07500; //e
         //        x0 << 0.0100 << 0.0600;
     }
     else
@@ -445,14 +445,14 @@ void ArtProblem1L2::startOptimize()
 
     FILE *file = fopen("sample2.txt", "w");
     fclose(file);
-    R = 100.0;
+    R = 1.0;
     optimize(x0);
-    //    while (R < 10000.0)
-    //    {
-    //        R *= 10.0;
-    //        IPrinter::printSeperatorLine();
-    //        optimize(x0);
-    //    }
+    while (R < 10000.0)
+    {
+        R *= 10.0;
+        IPrinter::printSeperatorLine();
+        optimize(x0);
+    }
 
     DoubleMatrix u;
     DoubleVector k,z,e;
@@ -557,32 +557,32 @@ void ArtProblem1L2::startOptimize()
     //        fclose(file1);
     //    }
 
-//    {
-//        //withError = true;
-//        persent = 0.01;
-//        FILE *file1 = fopen("image_3_du_1.txt", "w");
-//        double MM = M;
-//        fi = +0.0;
-//        tt = +19.0;
-//        for (int unsigned m=0; m<=MM; m++)
-//        {
-//            M = m;
-//            DoubleMatrix u1;
-//            calculateU(u1,k,z,e);
+    //    {
+    //        //withError = true;
+    //        persent = 0.01;
+    //        FILE *file1 = fopen("image_3_du_1.txt", "w");
+    //        double MM = M;
+    //        fi = +0.0;
+    //        tt = +19.0;
+    //        for (int unsigned m=0; m<=MM; m++)
+    //        {
+    //            M = m;
+    //            DoubleMatrix u1;
+    //            calculateU(u1,k,z,e);
 
-//            DoubleVector uT = u1.row(u1.rows()-1);
-//            double max = -1000000.0;
-//            for (unsigned int n=0; n<=N; n++)
-//            {
-//                if (max < fabs(uT[n]-V[n])) max = fabs(uT[n]-V[n]);
-//            }
+    //            DoubleVector uT = u1.row(u1.rows()-1);
+    //            double max = -1000000.0;
+    //            for (unsigned int n=0; n<=N; n++)
+    //            {
+    //                if (max < fabs(uT[n]-V[n])) max = fabs(uT[n]-V[n]);
+    //            }
 
-//            fprintf(file1, "%.10f ",max);
-//            fflush(file1);
-//        }
-//        fprintf(file1, "\n");
-//        fclose(file1);
-//    }
+    //            fprintf(file1, "%.10f ",max);
+    //            fflush(file1);
+    //        }
+    //        fprintf(file1, "\n");
+    //        fclose(file1);
+    //    }
 
 }
 
@@ -594,9 +594,9 @@ void ArtProblem1L2::optimize(DoubleVector &x0) const
     g.setGradient(p);
     g.setPrinter(p);
     g.setProjection(p);
-    g.setEpsilon1(0.00001);//0.00000001
-    g.setEpsilon2(0.00001);//0.00000001
-    g.setEpsilon3(0.00001);//0.00000001
+    g.setEpsilon1(0.000001);//0.00000001
+    g.setEpsilon2(0.000001);//0.00000001
+    g.setEpsilon3(0.000001);//0.00000001
     g.setR1MinimizeEpsilon(10.0, 0.00001); //0.00000001
     g.setNormalize(true);
     g.showEndMessage(true);
@@ -604,7 +604,7 @@ void ArtProblem1L2::optimize(DoubleVector &x0) const
     g.calculate(x0);
 }
 
-void ArtProblem1L2::imager()
+void ArtProblem1L2::imager2L()
 {
     DoubleVector y0;
     optimizeK = true;
@@ -632,14 +632,80 @@ void ArtProblem1L2::imager()
     R = 100.0;
     double max = -100000000.0;
     double min = +100000000.0;
-    for (unsigned int k0=0; k0<=100; k0++)
+    for (unsigned int k0=2; k0<=98; k0++)
     {
-        y0[0] = -2.0 + 0.01*k0;
-        for (unsigned int k1=0; k1<=100; k1++)
+        y0[4] = 0.001*k0;
+        for (unsigned int k1=2; k1<=98; k1++)
         {
-            y0[1] = -4.0 + 0.01*k1;
-            double f = fx(y0);
+            y0[5] = 0.001*k1;
+
+            double f = 0.0;
+            if (k0 == k1 || k0 == k1-1 || k0 == k1+1)
+            {
+                f = 0.0;
+            }
+            else
+            {
+                f = fx(y0);
+            }
             u[k0][k1] = f;
+
+
+            if (f > max) max = f;
+            if (f < min) min = f;
+
+            printf("%d %d %f\n", k0, k1, f);
+        }
+    }
+    printf("%f %f\n", min, max);
+
+    FILE *file = fopen("data1.txt", "w");
+    IPrinter::printMatrix(u,u.rows(),u.cols(),NULL,file);
+    fclose(file);
+}
+
+void ArtProblem1L2::imager3L()
+{
+    DoubleVector y0;
+    optimizeK = true;
+    optimizeZ = true;
+    optimizeE = true;
+
+    if (optimizeK)
+    {
+        y0 << -1.51758851605847 << -3.38265533950958 << 0.15272285434824;
+    }
+    if (optimizeZ)
+    {
+        y0 << +11.23656775924430 << +13.09747632971720 << +8.95446642160735;
+    }
+    if (optimizeE)
+    {
+        y0 << +0.03200000000000 << +0.06500000000000 << +0.06700000000000;
+    }
+
+    DoubleMatrix u(101,101);
+    R = 0.0;
+    double max = -100000000.0;
+    double min = +100000000.0;
+    for (unsigned int k0=2; k0<=98; k0++)
+    {
+        y0[7] = 0.001*k0;
+        for (unsigned int k1=2; k1<=98; k1++)
+        {
+            y0[8] = 0.001*k1;
+
+            double f = 0.0;
+            if (k0 == k1 || k0 == k1-1 || k0 == k1+1 || k0 == 32 || k1 == 32)
+            {
+                f = 0.0;
+            }
+            else
+            {
+                f = fx(y0);
+            }
+            u[k0][k1] = f;
+
 
             if (f > max) max = f;
             if (f < min) min = f;
@@ -811,7 +877,7 @@ void ArtProblem1L2::gradient(const DoubleVector &y, DoubleVector &g)
             {
                 for (unsigned int s=0; s<L; s++)
                 {
-                    unsigned int xi = (unsigned int)round(e[s] * N*DD);
+                    //unsigned int xi = (unsigned int)round(e[s] * N*DD);
 
                     // Integral part of gradient
                     double sum = 0.0;
@@ -874,9 +940,6 @@ void ArtProblem1L2::calculateU(DoubleMatrix &u, const DoubleVector &k, const Dou
     u.clear();
     u.resize(M+1, N+1);
 
-    //unsigned int E0 = (unsigned int)round(e[0] * N*DD);
-    //unsigned int E1 = (unsigned int)round(e[1] * N*DD);
-
     double *da = (double*) malloc(sizeof(double)*(N+1));
     double *db = (double*) malloc(sizeof(double)*(N+1));
     double *dc = (double*) malloc(sizeof(double)*(N+1));
@@ -886,28 +949,49 @@ void ArtProblem1L2::calculateU(DoubleMatrix &u, const DoubleVector &k, const Dou
 
     for (unsigned int n=0; n<=N; n++) u[0][n] = initial(n);
 
+    double a_a_ht_hx_hx = (a*a*ht)/(hx*hx);
+    double lambda1_a_a_ht_hx = (lambda1*a*a*ht)/hx;
+    double lambda2_a_a_ht_hx = (lambda2*a*a*ht)/hx;
+    double lambda0_ht = lambda0*ht;
+    double lambda0_ht_tt = lambda0*ht*tt;
+    double lambda2_a_a_ht_tt_hx = (lambda2*a*a*ht*tt)/hx;
+
     for (unsigned int m=1; m<=M; m++)
     {
         // n = 0
         da[0] = 0.0;
-        db[0] = 1.0 + (a*a*ht)/(hx*hx) + (lambda1*a*a*ht)/hx + lambda0*ht;
-        dc[0] = -(a*a*ht)/(hx*hx);
-        dd[0] = u.at(m-1,0) + lambda0*ht*tt - ((lambda1*a*a*ht)/hx)*(k[0]*z[0] + k[1]*z[1]);
+        db[0] = 1.0 + a_a_ht_hx_hx + lambda1_a_a_ht_hx + lambda0_ht;
+        //db[0] = 1.0 + (a*a*ht)/(hx*hx) + (lambda1*a*a*ht)/hx + lambda0*ht;
+        dc[0] = -a_a_ht_hx_hx;
+        //dc[0] = -(a*a*ht)/(hx*hx);
+        dd[0] = u.at(m-1,0) + lambda0*ht*tt;// - ((lambda1*a*a*ht)/hx)*(k[0]*z[0] + k[1]*z[1] + k[2]*z[2]);
+
+        double aa = 0.0;
+        for (unsigned int s=0; s<L; s++) aa += k[s]*z[s];
+        //dd[0] += -((lambda1*a*a*ht)/hx)*aa;
+        dd[0] += -lambda1_a_a_ht_hx*aa;
 
         // n = 1,...,N-1
         for (unsigned int n=1; n<=N-1; n++)
         {
-            da[n] = -(a*a*ht)/(hx*hx);
-            db[n] = 1.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht;
-            dc[n] = -(a*a*ht)/(hx*hx);
-            dd[n] = u.at(m-1,n) + lambda0*ht*tt;
+            da[n] = -a_a_ht_hx_hx;
+            //da[n] = -(a*a*ht)/(hx*hx);
+            db[n] = 1.0 + (2.0*a_a_ht_hx_hx) + lambda0_ht;
+            //db[n] = 1.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht;
+            dc[n] = -a_a_ht_hx_hx;
+            //dc[n] = -(a*a*ht)/(hx*hx);
+            dd[n] = u.at(m-1,n) + lambda0_ht_tt;
+            //dd[n] = u.at(m-1,n) + lambda0*ht*tt;
         }
 
         // n = N
-        da[N] = -(a*a*ht)/(hx*hx);
-        db[N] = 1.0 + (a*a*ht)/(hx*hx) + (lambda2*a*a*ht)/hx + lambda0*ht;
+        da[N] = -a_a_ht_hx_hx;
+        //da[N] = -(a*a*ht)/(hx*hx);
+        db[N] = 1.0 + a_a_ht_hx_hx + lambda2_a_a_ht_hx + lambda0_ht;
+        //db[N] = 1.0 + (a*a*ht)/(hx*hx) + (lambda2*a*a*ht)/hx + lambda0*ht;
         dc[N] = 0.0;
-        dd[N] = u.at(m-1,N)  + lambda0*ht*tt + (lambda2*a*a*ht*tt)/hx;
+        //dd[N] = u.at(m-1,N)  + lambda0*ht*tt + (lambda2*a*a*ht*tt)/hx;
+        dd[N] = u.at(m-1,N)  + lambda0_ht_tt + lambda2_a_a_ht_tt_hx;
 
         de[0]  =de[1] = 0.0;
         de[N-1]=de[N] = 0.0;
@@ -918,13 +1002,19 @@ void ArtProblem1L2::calculateU(DoubleMatrix &u, const DoubleVector &k, const Dou
             double dif0 = fabs(n*hx - e[0]);
             if (dif0 <= hx)
             {
-                de[n] = -((lambda1*(a*a*ht)/hx) * k[0]) * (1.0 - dif0/hx);
+                de[n] = -(lambda1_a_a_ht_hx * k[0]) * (1.0 - dif0/hx);
             }
 
             double dif1 = fabs(n*hx - e[1]);
             if (dif1 <= hx)
             {
-                de[n] = -((lambda1*(a*a*ht)/hx) * k[1]) * (1.0 - dif1/hx);
+                de[n] = -(lambda1_a_a_ht_hx * k[1]) * (1.0 - dif1/hx);
+            }
+
+            double dif2 = fabs(n*hx - e[2]);
+            if (dif2 <= hx)
+            {
+                de[n] = -(lambda1_a_a_ht_hx * k[2]) * (1.0 - dif2/hx);
             }
         }
 
@@ -934,15 +1024,15 @@ void ArtProblem1L2::calculateU(DoubleMatrix &u, const DoubleVector &k, const Dou
         {
             u[m][i] = rx[i];
 
-//            if (withError)
-//            {
-//                //u[m][E0] += (((rand()%RAND_MAX) % 2 == 0) ? +persent : -persent) * u[m][E0];
-//                //u[m][E1] += (((rand()%RAND_MAX) % 2 == 0) ? +persent : -persent) * u[m][E1];
+            //            if (withError)
+            //            {
+            //                //u[m][E0] += (((rand()%RAND_MAX) % 2 == 0) ? +persent : -persent) * u[m][E0];
+            //                //u[m][E1] += (((rand()%RAND_MAX) % 2 == 0) ? +persent : -persent) * u[m][E1];
 
-//                double w0 = (rand() % 2000)*0.001 - 1.0; u[m][E0] += w0*persent * u[m][E0];
-//                double w1 = (rand() % 2000)*0.001 - 1.0; u[m][E1] += w1*persent * u[m][E1];
-//                //printf("%f %f\n", w0, w1);
-//            }
+            //                double w0 = (rand() % 2000)*0.001 - 1.0; u[m][E0] += w0*persent * u[m][E0];
+            //                double w1 = (rand() % 2000)*0.001 - 1.0; u[m][E1] += w1*persent * u[m][E1];
+            //                //printf("%f %f\n", w0, w1);
+            //            }
         }
     }
 
@@ -1039,8 +1129,9 @@ double ArtProblem1L2::vf(unsigned int m, const DoubleVector &k, const DoubleVect
 {
     unsigned int E0 = (unsigned int)round(e[0] * N*DD);
     unsigned int E1 = (unsigned int)round(e[1] * N*DD);
-    double v = k[0]*(u[m][E0]-z[0]) + k[1]*(u[m][E1]-z[1]);
-//    double v = k[0]*(u_xi(m,e[0],u)-z[0]) + k[1]*(u_xi(m,e[1],u)-z[1]);
+    unsigned int E2 = (unsigned int)round(e[2] * N*DD);
+    double v = k[0]*(u[m][E0]-z[0]) + k[1]*(u[m][E1]-z[1]) + k[2]*(u[m][E2]-z[2]);
+    //    double v = k[0]*(u_xi(m,e[0],u)-z[0]) + k[1]*(u_xi(m,e[1],u)-z[1]);
     return v;
 }
 
@@ -1052,7 +1143,7 @@ void ArtProblem1L2::print(unsigned int i, const DoubleVector &prm, const DoubleV
     getParameters(k,z,e,prm);
 
     //IPrinter::printSeperatorLine();
-    printf("J[%d]: %.10f R: %.1f k: %.10f %.10f z: %.10f %.10f e: %.10f %.10f\n", i, r, R, k[0], k[1], z[0], z[1], e[0], e[1]);
+    printf("J[%d]: %.10f R: %.1f k: %.10f %.10f %.10f z: %.10f %.10f %.10f e: %.10f %.10f %.10f\n", i, r, R, k[0], k[1], k[2], z[0], z[1], z[2], e[0], e[1], e[2]);
     //    FILE *file = fopen("sample2.txt", "a");
     //    for (unsigned int m=0; m<=M; m++)
     //    {
@@ -1313,10 +1404,10 @@ void ArtProblem1L2::print(unsigned int i, const DoubleVector &prm, const DoubleV
 
 void ArtProblem1L2::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
 {
-    unsigned int p = 0;
-    if (optimizeK) p+=2;
+    int p = 0;
+    if (optimizeK) p+=L;
 
-    if (optimizeZ) p+=2;
+    if (optimizeZ) p+=L;
 
     /* z lower/upper limits */
     //    if (x.at(2) < zmin) x.at(2) = zmin;
@@ -1335,11 +1426,18 @@ void ArtProblem1L2::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
     /* e lower/upper limits */
     if (optimizeE)
     {
-        if (x.at(p) < 5*hx)  x.at(p) = 5*hx;
-        if (x.at(p) > (N/2-5)*hx) x.at(p) = (N/2-5)*hx;
+//        if (x.at(p) < 5*hx)  x.at(p) = 5*hx;                if (x.at(p) > (N/2-5)*hx) x.at(p) = (N/2-5)*hx;
+//        if (x.at(p+1) < (N/2+5)*hx) x.at(p+1) = (N/2+5)*hx; if (x.at(p+1) > (N-5)*hx)   x.at(p+1) = (N-5)*hx;
 
-        if (x.at(p+1) < (N/2+5)*hx) x.at(p+1) = (N/2+5)*hx;
-        if (x.at(p+1) > (N-5)*hx)   x.at(p+1) = (N-5)*hx;
+        if (i==6) { if (x.at(6) < 0.005) x.at(6) = 0.005; if (x.at(6) > 0.032) x.at(6) = 0.032; }
+        if (i==7) { if (x.at(7) < 0.034) x.at(7) = 0.034; if (x.at(7) > 0.065) x.at(7) = 0.065; }
+        if (i==8) { if (x.at(8) < 0.067) x.at(8) = 0.067; if (x.at(8) > 0.095) x.at(8) = 0.095; }
+
+//        if (i == 6) { if (x.at(6) < 0.005) x.at(6) = 0.005; if (x.at(6) > 0.095) x.at(6) = 0.095; }
+//        if (i == 7) { if (x.at(7) < 0.005) x.at(7) = 0.005; if (x.at(7) > 0.095) x.at(7) = 0.095; }
+//        if (i == 8) { if (x.at(8) < 0.005) x.at(8) = 0.005; if (x.at(8) > 0.095) x.at(8) = 0.095; }
+
+//         printf("%d %f\n", p+0, x.at(p+0));
     }
 }
 
@@ -1349,7 +1447,7 @@ void ArtProblem1L2::getParameters(DoubleVector &k, DoubleVector &z, DoubleVector
 
     if (optimizeK)
     {
-        k = prm.mid(p,p+1);
+        k = prm.mid(p,p+2);
         p+=L;
     }
     else
@@ -1359,7 +1457,7 @@ void ArtProblem1L2::getParameters(DoubleVector &k, DoubleVector &z, DoubleVector
 
     if (optimizeZ)
     {
-        z = prm.mid(p,p+1);
+        z = prm.mid(p,p+2);
         p+=L;
     }
     else
@@ -1369,7 +1467,7 @@ void ArtProblem1L2::getParameters(DoubleVector &k, DoubleVector &z, DoubleVector
 
     if (optimizeE)
     {
-        e = prm.mid(p,p+1);
+        e = prm.mid(p,p+2);
         p+=L;
     }
     else
@@ -1537,8 +1635,8 @@ double ArtProblem1L2::u_xi(unsigned int m, double e, const DoubleMatrix &u) cons
     unsigned int xi = (unsigned int)ceil(e * N * DD);
     return (u[m][xi]*((xi+1)*hx - e) + u[m][xi+1]*(e - (xi)*hx)) / hx;
 
-//    unsigned int xi = (unsigned int)round(e * N * DD);
-//    return u[m][xi];
+    //    unsigned int xi = (unsigned int)round(e * N * DD);
+    //    return u[m][xi];
 }
 
 double ArtProblem1L2::u_xi_d(unsigned int m, double e, const DoubleMatrix &u) const

@@ -111,6 +111,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
          * One-dimensional minimization along the direction of a anti-gradient
          **************************************************************************************/
         alpha = minimize(x, s);
+        //printf("alpha: %f\n", alpha);
 
         /**************************************************************************************
          * Calculation current point.
@@ -193,7 +194,7 @@ double ConjugateGradient::fx(double alpha) const
     const DoubleVector &s = *ms;
     unsigned int n = x.size();
 
-    DoubleVector cx(n);
+    DoubleVector cx = x;
     for (unsigned int i=0; i<n; i++)
     {
         cx[i] = x[i] + alpha * s[i];
