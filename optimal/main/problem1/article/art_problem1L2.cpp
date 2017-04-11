@@ -8,8 +8,9 @@ void ArtProblem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     p.initialize();
     //p.startOptimize();
 
-    p.table2Generate();
+    //p.table2Generate();
     //p.imager3L();
+    p.imager2L();
 
     //p.image1Generate();
     //p.image2Generate();
@@ -26,7 +27,7 @@ void ArtProblem1L2::initialize()
     withError = false;
     DD = 10;
 
-    L = 3;
+    L = 2;
 
     N = 100;
     hx = 0.001;
@@ -84,9 +85,19 @@ void ArtProblem1L2::initialize()
     if (!optimizeZ) alpha2 = 0.0;
     if (!optimizeE) alpha3 = 0.0;
 
-    k0 << 0.0 << 0.0 << 0.0;//-20.57571017653454 << -30.63314593795166;
-    z0 << 0.0 << 0.0 << 0.0;//+10.33818417154749 << +10.47968970008047;
-    e0 << 0.0 << 0.0 << 0.0;// +0.04500000000000 <<  +0.09500000000000;
+    if (L==2)
+    {
+        k0 << 0.0 << 0.0;//-20.57571017653454 << -30.63314593795166;
+        z0 << 0.0 << 0.0;//+10.33818417154749 << +10.47968970008047;
+        e0 << 0.0 << 0.0;// +0.04500000000000 <<  +0.09500000000000;
+    }
+
+    if (L==3)
+    {
+        k0 << 0.0 << 0.0 << 0.0;
+        z0 << 0.0 << 0.0 << 0.0;
+        e0 << 0.0 << 0.0 << 0.0;
+    }
 
     /* шаги числовых производных */
     hk = 0.001;
@@ -94,10 +105,6 @@ void ArtProblem1L2::initialize()
     he = 0.001;
 
     R = 0.0;
-
-    /* пределы z параметров */
-    zmin = 0.0;
-    zmax = 0.0;
 
     /* пределы z параметров */
     vmin = +10.0;
@@ -156,15 +163,15 @@ void ArtProblem1L2::table2Generate()
 
     if (optimizeK)
     {
-        y0 << -4.54 << -7.45 << -3.500;;
+        y0 << -4.54 << -7.45;// << -3.500;;
     }
     if (optimizeZ)
     {
-        y0 << +12.10 << +14.90 << +10.13;
+        y0 << +12.10 << +14.90;// << +10.13;
     }
     if (optimizeE)
     {
-        y0 << 0.02500 << 0.04500 << 0.07500;
+        y0 << 0.02500 << 0.04500;// << 0.07500;
     }
 
     DD = 10;
@@ -181,9 +188,21 @@ void ArtProblem1L2::table2Generate()
     DoubleVector k,z,e;
     getParameters(k,z,e,y0);
     IPrinter::printSeperatorLine();
-    printf("Optimal k: %20.14f %20.14f %20.14f\n", k[0], k[1], k[2]);
-    printf("Optimal z: %20.14f %20.14f %20.14f\n", z[0], z[1], z[2]);
-    printf("Optimal e: %20.14f %20.14f %20.14f\n", e[0], e[1], e[2]);
+
+    if (L==2)
+    {
+        printf("Optimal k: %20.14f %20.14f\n", k[0], k[1]);
+        printf("Optimal z: %20.14f %20.14f\n", z[0], z[1]);
+        printf("Optimal e: %20.14f %20.14f\n", e[0], e[1]);
+    }
+
+    if (L==3)
+    {
+        printf("Optimal k: %20.14f %20.14f %20.14f\n", k[0], k[1], k[2]);
+        printf("Optimal z: %20.14f %20.14f %20.14f\n", z[0], z[1], z[2]);
+        printf("Optimal e: %20.14f %20.14f %20.14f\n", e[0], e[1], e[2]);
+    }
+
     IPrinter::printSeperatorLine();
 
     DoubleMatrix u;
@@ -613,18 +632,21 @@ void ArtProblem1L2::imager2L()
 
     if (optimizeK)
     {
-        y0 << -1.70338950304666 << -3.14795310656662;
+        //y0 << -1.70338950304666 << -3.14795310656662;
         //y0 << -1.67351371107545 << -2.60464287363871;
+        y0 << -1.46038450118722  <<  -3.39347208053438;
     }
     if (optimizeZ)
     {
-        y0 << +11.20714602437165 << +12.99567893148132;
+        //y0 << +11.20714602437165 << +12.99567893148132;
         //y0 << +11.29506147253105 << +13.16809490237042;
+        y0 << 11.15104030097655  <<  12.88213971188811;
     }
     if (optimizeE)
     {
-        y0 << 0.04500000000000 << 0.09500000000000;
+        //y0 << 0.04500000000000 << 0.09500000000000;
         //y0 << 0.04431860079769 << 0.08715972328684;
+        y0 << 0.06000000000000  <<   0.09500000000000;
     }
 
 
@@ -640,14 +662,15 @@ void ArtProblem1L2::imager2L()
             y0[5] = 0.001*k1;
 
             double f = 0.0;
-            if (k0 == k1 || k0 == k1-1 || k0 == k1+1)
-            {
-                f = 0.0;
-            }
-            else
-            {
-                f = fx(y0);
-            }
+//            if (k0 == k1 || k0 == k1-1 || k0 == k1+1)
+//            {
+//                f = 0.0;
+//            }
+//            else
+//            {
+//                f = fx(y0);
+//            }
+            f = fx(y0);
             u[k0][k1] = f;
 
 
@@ -720,420 +743,406 @@ void ArtProblem1L2::imager3L()
     fclose(file);
 }
 
-double ArtProblem1L2::fx(const DoubleVector &y) const
-{
-    ArtProblem1L2* pm = const_cast<ArtProblem1L2*>(this);
-    pm->py = &y;
+//double ArtProblem1L2::fx(const DoubleVector &y) const
+//{
+//    ArtProblem1L2* pm = const_cast<ArtProblem1L2*>(this);
+//    pm->py = &y;
 
-    DoubleVector k,z,e;
-    getParameters(k,z,e,y);
+//    DoubleVector k,z,e;
+//    getParameters(k,z,e,y);
 
-    unsigned int N1 = vfi.size();
-    unsigned int N2 = vtt.size();
-    double SUM = 0.0;
-    for (unsigned int n1=0; n1<N1; n1++)
-    {
-        for (unsigned int n2=0; n2<N2; n2++)
-        {
-            pm->fi = vfi[n1];
-            pm->tt = vtt[n2];
+//    unsigned int N1 = vfi.size();
+//    unsigned int N2 = vtt.size();
+//    double SUM = 0.0;
+//    for (unsigned int n1=0; n1<N1; n1++)
+//    {
+//        for (unsigned int n2=0; n2<N2; n2++)
+//        {
+//            pm->fi = vfi[n1];
+//            pm->tt = vtt[n2];
 
-            DoubleMatrix u;
-            calculateU(u, k, z, e);
+//            DoubleMatrix u;
+//            calculateU(u, k, z, e);
 
-            double sum = 0.0;
-            sum += 0.5*mu(0)*(u[M][0]-V[0])*(u[M][0]-V[0]);
-            for (unsigned int n=1; n<=N-1; n++)
-            {
-                sum += mu(n)*(u[M][n]-V[n])*(u[M][n]-V[n]);
-            }
-            sum += 0.5*mu(N)*(u[M][N]-V[N])*(u[M][N]-V[N]);
-            sum *= hx;
+//            double sum = 0.0;
+//            sum += 0.5*mu(0)*(u[M][0]-V[0])*(u[M][0]-V[0]);
+//            for (unsigned int n=1; n<=N-1; n++)
+//            {
+//                sum += mu(n)*(u[M][n]-V[n])*(u[M][n]-V[n]);
+//            }
+//            sum += 0.5*mu(N)*(u[M][N]-V[N])*(u[M][N]-V[N]);
+//            sum *= hx;
 
-            double pnlt = 0.0;
-            double min = 0.0;
+//            double pnlt = 0.0;
+//            double min = 0.0;
 
-            min = fmin(0.0, gf(0, k, z, e, u));
-            pnlt += 0.5*min*min;
-            for (unsigned int m=1; m<=M-1; m++)
-            {
-                min = fmin(0.0, gf(m, k, z, e, u));
-                pnlt += min*min;
-            }
-            min = fmin(0.0, gf(M, k, z, e, u));
-            pnlt += 0.5*min*min;
+//            min = fmin(0.0, gf(0, k, z, e, u));
+//            pnlt += 0.5*min*min;
+//            for (unsigned int m=1; m<=M-1; m++)
+//            {
+//                min = fmin(0.0, gf(m, k, z, e, u));
+//                pnlt += min*min;
+//            }
+//            min = fmin(0.0, gf(M, k, z, e, u));
+//            pnlt += 0.5*min*min;
 
-            pnlt *= ht;
+//            pnlt *= ht;
 
-            SUM += alpha0*sum + R*pnlt;
-        }
-    }
-    SUM *= ((1.0/N1)*(1.0/N2));
+//            SUM += alpha0*sum + R*pnlt;
+//        }
+//    }
+//    SUM *= ((1.0/N1)*(1.0/N2));
 
-    double norm1 = 0.0;
-    double norm2 = 0.0;
-    double norm3 = 0.0;
+//    double norm1 = 0.0;
+//    double norm2 = 0.0;
+//    double norm3 = 0.0;
 
-    norm1 = (k[0] - k0[0])*(k[0] - k0[0]) + (k[1] - k0[1])*(k[1] - k0[1]);
-    norm2 = (z[0] - z0[0])*(z[0] - z0[0]) + (z[1] - z0[1])*(z[1] - z0[1]);
-    norm3 = (e[0] - e0[0])*(e[0] - e0[0]) + (e[1] - e0[1])*(e[1] - e0[1]);
+//    norm1 = (k[0] - k0[0])*(k[0] - k0[0]) + (k[1] - k0[1])*(k[1] - k0[1]);
+//    norm2 = (z[0] - z0[0])*(z[0] - z0[0]) + (z[1] - z0[1])*(z[1] - z0[1]);
+//    norm3 = (e[0] - e0[0])*(e[0] - e0[0]) + (e[1] - e0[1])*(e[1] - e0[1]);
 
-    SUM += alpha1*norm1 + alpha2*norm2 + alpha3*norm3;
+//    SUM += alpha1*norm1 + alpha2*norm2 + alpha3*norm3;
 
-    return SUM;
-}
+//    return SUM;
+//}
 
-void ArtProblem1L2::gradient(const DoubleVector &y, DoubleVector &g)
-{
-    py = &y;
+//void ArtProblem1L2::gradient(const DoubleVector &y, DoubleVector &g)
+//{
+//    py = &y;
 
-    DoubleVector k,z,e;
-    getParameters(k,z,e,y);
+//    DoubleVector k,z,e;
+//    getParameters(k,z,e,y);
 
-    for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;
+//    for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;
 
-    unsigned int N1 = vfi.size();
-    unsigned int N2 = vtt.size();
+//    unsigned int N1 = vfi.size();
+//    unsigned int N2 = vtt.size();
 
-    for (unsigned int n1=0; n1<N1; n1++)
-    {
-        for (unsigned int n1=0; n1<N2; n1++)
-        {
-            fi = vfi[n1];
-            tt = vtt[n1];
+//    for (unsigned int n1=0; n1<N1; n1++)
+//    {
+//        for (unsigned int n1=0; n1<N2; n1++)
+//        {
+//            fi = vfi[n1];
+//            tt = vtt[n1];
 
-            DoubleMatrix u;
-            calculateU(u, k, z, e);
+//            DoubleMatrix u;
+//            calculateU(u, k, z, e);
 
-            DoubleMatrix p;
-            calculateP(p, u, k, z, e);
+//            DoubleMatrix p;
+//            calculateP(p, u, k, z, e);
 
-            unsigned int i = 0;
+//            unsigned int i = 0;
 
-            // k gradient
-            if (optimizeK)
-            {
-                for (unsigned int s=0; s<L; s++)
-                {
-                    //unsigned int xi = (unsigned int)round(e[s] * N*DD);
+//            // k gradient
+//            if (optimizeK)
+//            {
+//                for (unsigned int s=0; s<L; s++)
+//                {
+//                    //unsigned int xi = (unsigned int)round(e[s] * N*DD);
 
-                    // Integral part of gradient
-                    double sum = 0.0;
-                    sum += 0.5*p.at(0, 0)*(/*u.at(0, xi)*/u_xi(0,e[s],u) - z[s]);
-                    for (unsigned int m=1; m<=M-1; m++)
-                    {
-                        sum += p[m][0]*(/*u[m][xi]*/u_xi(m,e[s],u) - z[s]);
-                    }
-                    sum += 0.5*p[M][0]*(/*u[M][xi]*/u_xi(M,e[s],u) - z[s]);
-                    sum *= ht;
+//                    // Integral part of gradient
+//                    double sum = 0.0;
+//                    sum += 0.5*p.at(0, 0)*(/*u.at(0, xi)*/u_xi(0,e[s],u) - z[s]);
+//                    for (unsigned int m=1; m<=M-1; m++)
+//                    {
+//                        sum += p[m][0]*(/*u[m][xi]*/u_xi(m,e[s],u) - z[s]);
+//                    }
+//                    sum += 0.5*p[M][0]*(/*u[M][xi]*/u_xi(M,e[s],u) - z[s]);
+//                    sum *= ht;
 
-                    // Penalty part of gradient
-                    double pnlt = 0.0;
-                    pnlt += 0.5 * (/*u[0][xi]*/u_xi(0,e[s],u)-z[s]) * sgn_min(0, k, z, e, u);
-                    for (unsigned int m=1; m<=M-1; m++)
-                    {
-                        pnlt += (/*u[m][xi]*/u_xi(m,e[s],u)-z[s]) * sgn_min(m, k, z, e, u);
-                    }
-                    pnlt += 0.5 * (/*u[M][xi]*/u_xi(M,e[s],u)-z[s]) * sgn_min(M, k, z, e, u);
-                    pnlt *= ht;
+//                    // Penalty part of gradient
+//                    double pnlt = 0.0;
+//                    pnlt += 0.5 * (/*u[0][xi]*/u_xi(0,e[s],u)-z[s]) * sgn_min(0, k, z, e, u);
+//                    for (unsigned int m=1; m<=M-1; m++)
+//                    {
+//                        pnlt += (/*u[m][xi]*/u_xi(m,e[s],u)-z[s]) * sgn_min(m, k, z, e, u);
+//                    }
+//                    pnlt += 0.5 * (/*u[M][xi]*/u_xi(M,e[s],u)-z[s]) * sgn_min(M, k, z, e, u);
+//                    pnlt *= ht;
 
-                    g[i] += -lambda1*a*a*sum + 2.0*R*pnlt;
-                    i++;
-                }
-            }
+//                    g[i] += -lambda1*a*a*sum + 2.0*R*pnlt;
+//                    i++;
+//                }
+//            }
 
-            // z gradient
-            if (optimizeZ)
-            {
-                for (unsigned int s=0; s<L; s++)
-                {
-                    // Integral part of gradient
-                    double sum = 0.0;
-                    sum += 0.5*p[0][0];
-                    for (unsigned int m=1; m<=M-1; m++)
-                    {
-                        sum += p[m][0];
-                    }
-                    sum += 0.5*p[M][0];
-                    sum *= ht;
+//            // z gradient
+//            if (optimizeZ)
+//            {
+//                for (unsigned int s=0; s<L; s++)
+//                {
+//                    // Integral part of gradient
+//                    double sum = 0.0;
+//                    sum += 0.5*p[0][0];
+//                    for (unsigned int m=1; m<=M-1; m++)
+//                    {
+//                        sum += p[m][0];
+//                    }
+//                    sum += 0.5*p[M][0];
+//                    sum *= ht;
 
-                    // Penalty part of gradient
-                    double pnlt = 0.0;
-                    pnlt += 0.5 * sgn_min(0, k, z, e, u);
-                    for (unsigned int m=1; m<=M-1; m++)
-                    {
-                        pnlt += sgn_min(m, k, z, e, u);
-                    }
-                    pnlt += 0.5 * sgn_min(M, k, z, e, u);
-                    pnlt *= ht;
+//                    // Penalty part of gradient
+//                    double pnlt = 0.0;
+//                    pnlt += 0.5 * sgn_min(0, k, z, e, u);
+//                    for (unsigned int m=1; m<=M-1; m++)
+//                    {
+//                        pnlt += sgn_min(m, k, z, e, u);
+//                    }
+//                    pnlt += 0.5 * sgn_min(M, k, z, e, u);
+//                    pnlt *= ht;
 
-                    g[i] += lambda1*a*a*k[s]*sum - 2.0*R*k[s]*pnlt;
-                    i++;
-                }
-            }
+//                    g[i] += lambda1*a*a*k[s]*sum - 2.0*R*k[s]*pnlt;
+//                    i++;
+//                }
+//            }
 
-            // e gradient
-            if (optimizeE)
-            {
-                for (unsigned int s=0; s<L; s++)
-                {
-                    //unsigned int xi = (unsigned int)round(e[s] * N*DD);
+//            // e gradient
+//            if (optimizeE)
+//            {
+//                for (unsigned int s=0; s<L; s++)
+//                {
+//                    //unsigned int xi = (unsigned int)round(e[s] * N*DD);
 
-                    // Integral part of gradient
-                    double sum = 0.0;
-                    sum += 0.5 * p[0][0] * u_xi_d(0,e[s],u)/*((u.at(0, xi+1) - u.at(0, xi-1))/(2.0*hx))*/;
-                    for (unsigned int m=1; m<=M-1; m++)
-                    {
-                        sum += p[m][0] * u_xi_d(m,e[s],u)/*((u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx))*/;
-                    }
-                    sum += 0.5 * p[M][0] * u_xi_d(M,e[s],u)/*((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx))*/;
-                    sum *= ht;
+//                    // Integral part of gradient
+//                    double sum = 0.0;
+//                    sum += 0.5 * p[0][0] * u_xi_d(0,e[s],u)/*((u.at(0, xi+1) - u.at(0, xi-1))/(2.0*hx))*/;
+//                    for (unsigned int m=1; m<=M-1; m++)
+//                    {
+//                        sum += p[m][0] * u_xi_d(m,e[s],u)/*((u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx))*/;
+//                    }
+//                    sum += 0.5 * p[M][0] * u_xi_d(M,e[s],u)/*((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx))*/;
+//                    sum *= ht;
 
-                    // Penalty part of gradient
-                    double pnlt = 0.0;
-                    pnlt += 0.5 * u_xi_d(0,e[s],u)/*((u.at(0, xi+1) - u.at(0, xi-1))/(2.0*hx))*/ * sgn_min(0, k, z, e, u);
-                    for (unsigned int m=1; m<=M-1; m++)
-                    {
-                        pnlt += u_xi_d(m,e[s],u)/*((u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx))*/ * sgn_min(m, k, z, e, u);
-                    }
-                    pnlt += 0.5 * u_xi_d(M,e[s],u)/*((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx))*/ * sgn_min(M, k, z, e, u);
-                    pnlt *= ht;
+//                    // Penalty part of gradient
+//                    double pnlt = 0.0;
+//                    pnlt += 0.5 * u_xi_d(0,e[s],u)/*((u.at(0, xi+1) - u.at(0, xi-1))/(2.0*hx))*/ * sgn_min(0, k, z, e, u);
+//                    for (unsigned int m=1; m<=M-1; m++)
+//                    {
+//                        pnlt += u_xi_d(m,e[s],u)/*((u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx))*/ * sgn_min(m, k, z, e, u);
+//                    }
+//                    pnlt += 0.5 * u_xi_d(M,e[s],u)/*((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx))*/ * sgn_min(M, k, z, e, u);
+//                    pnlt *= ht;
 
-                    g[i] += -lambda1*a*a*k[s]*sum + 2.0*R*k[s]*pnlt;
-                    i++;
-                }
-            }
-        }
-    }
+//                    g[i] += -lambda1*a*a*k[s]*sum + 2.0*R*k[s]*pnlt;
+//                    i++;
+//                }
+//            }
+//        }
+//    }
 
-    for (unsigned int i=0; i<g.size(); i++) g[i] *= (1.0/N1)*(1.0/N2);
+//    for (unsigned int i=0; i<g.size(); i++) g[i] *= (1.0/N1)*(1.0/N2);
 
-    unsigned int i = 0;
-    if (optimizeK)
-    {
-        for (unsigned int s=0; s<L; s++)
-        {
-            g[i] += 2.0*alpha1*(k[s]-k0[s]);
-            i++;
-        }
-    }
-    if (optimizeZ)
-    {
-        for (unsigned int s=0; s<L; s++)
-        {
-            g[i] += 2.0*alpha2*(z[s]-z0[s]);
-            i++;
-        }
-    }
-    if (optimizeE)
-    {
-        for (unsigned int s=0; s<L; s++)
-        {
-            g[i] += 2.0*alpha3*(e[s]-e0[s]);
-            i++;
-        }
-    }
-}
+//    unsigned int i = 0;
+//    if (optimizeK)
+//    {
+//        for (unsigned int s=0; s<L; s++)
+//        {
+//            g[i] += 2.0*alpha1*(k[s]-k0[s]);
+//            i++;
+//        }
+//    }
+//    if (optimizeZ)
+//    {
+//        for (unsigned int s=0; s<L; s++)
+//        {
+//            g[i] += 2.0*alpha2*(z[s]-z0[s]);
+//            i++;
+//        }
+//    }
+//    if (optimizeE)
+//    {
+//        for (unsigned int s=0; s<L; s++)
+//        {
+//            g[i] += 2.0*alpha3*(e[s]-e0[s]);
+//            i++;
+//        }
+//    }
+//}
 
-void ArtProblem1L2::calculateU(DoubleMatrix &u, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e) const
-{
-    u.clear();
-    u.resize(M+1, N+1);
+//void ArtProblem1L2::calculateU(DoubleMatrix &u, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e) const
+//{
+//    u.clear();
+//    u.resize(M+1, N+1);
 
-    double *da = (double*) malloc(sizeof(double)*(N+1));
-    double *db = (double*) malloc(sizeof(double)*(N+1));
-    double *dc = (double*) malloc(sizeof(double)*(N+1));
-    double *dd = (double*) malloc(sizeof(double)*(N+1));
-    double *rx = (double*) malloc(sizeof(double)*(N+1));
-    double *de = (double*) malloc(sizeof(double)*(N+1));
+//    double *da = (double*) malloc(sizeof(double)*(N+1));
+//    double *db = (double*) malloc(sizeof(double)*(N+1));
+//    double *dc = (double*) malloc(sizeof(double)*(N+1));
+//    double *dd = (double*) malloc(sizeof(double)*(N+1));
+//    double *rx = (double*) malloc(sizeof(double)*(N+1));
+//    double *de = (double*) malloc(sizeof(double)*(N+1));
 
-    for (unsigned int n=0; n<=N; n++) u[0][n] = initial(n);
+//    for (unsigned int n=0; n<=N; n++) u[0][n] = initial(n);
 
-    double a_a_ht_hx_hx = (a*a*ht)/(hx*hx);
-    double lambda1_a_a_ht_hx = (lambda1*a*a*ht)/hx;
-    double lambda2_a_a_ht_hx = (lambda2*a*a*ht)/hx;
-    double lambda0_ht = lambda0*ht;
-    double lambda0_ht_tt = lambda0*ht*tt;
-    double lambda2_a_a_ht_tt_hx = (lambda2*a*a*ht*tt)/hx;
+//    double a_a_ht_hx_hx = (a*a*ht)/(hx*hx);
+//    double lambda1_a_a_ht_hx = (lambda1*a*a*ht)/hx;
+//    double lambda2_a_a_ht_hx = (lambda2*a*a*ht)/hx;
+//    double lambda2_a_a_ht_tt_hx = (lambda2*a*a*ht*tt)/hx;
+//    double lambda0_ht = lambda0*ht;
+//    double lambda0_ht_tt = lambda0*ht*tt;
 
-    for (unsigned int m=1; m<=M; m++)
-    {
-        // n = 0
-        da[0] = 0.0;
-        db[0] = 1.0 + a_a_ht_hx_hx + lambda1_a_a_ht_hx + lambda0_ht;
-        //db[0] = 1.0 + (a*a*ht)/(hx*hx) + (lambda1*a*a*ht)/hx + lambda0*ht;
-        dc[0] = -a_a_ht_hx_hx;
-        //dc[0] = -(a*a*ht)/(hx*hx);
-        dd[0] = u.at(m-1,0) + lambda0*ht*tt;// - ((lambda1*a*a*ht)/hx)*(k[0]*z[0] + k[1]*z[1] + k[2]*z[2]);
+//    for (unsigned int m=1; m<=M; m++)
+//    {
+//        double kzs = 0.0;
+//        for (unsigned int s=0; s<L; s++) kzs += k[s]*z[s];
 
-        double aa = 0.0;
-        for (unsigned int s=0; s<L; s++) aa += k[s]*z[s];
-        //dd[0] += -((lambda1*a*a*ht)/hx)*aa;
-        dd[0] += -lambda1_a_a_ht_hx*aa;
+//        // n = 0
+//        da[0] = 0.0;
+//        db[0] = 1.0 + a_a_ht_hx_hx + lambda1_a_a_ht_hx + lambda0_ht;
+//        dc[0] = -a_a_ht_hx_hx;
+//        dd[0] = u.at(m-1,0) + lambda0_ht_tt - lambda1_a_a_ht_hx*kzs;
 
-        // n = 1,...,N-1
-        for (unsigned int n=1; n<=N-1; n++)
-        {
-            da[n] = -a_a_ht_hx_hx;
-            //da[n] = -(a*a*ht)/(hx*hx);
-            db[n] = 1.0 + (2.0*a_a_ht_hx_hx) + lambda0_ht;
-            //db[n] = 1.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht;
-            dc[n] = -a_a_ht_hx_hx;
-            //dc[n] = -(a*a*ht)/(hx*hx);
-            dd[n] = u.at(m-1,n) + lambda0_ht_tt;
-            //dd[n] = u.at(m-1,n) + lambda0*ht*tt;
-        }
+//        //da[0] = 0.0;
+//        //db[0] = 1.0 + (a*a*ht)/(hx*hx) + (lambda1*a*a*ht)/hx + lambda0*ht;
+//        //dc[0] = -(a*a*ht)/(hx*hx);
+//        //dd[0] = u.at(m-1,0) + lambda0_ht_tt - lambda1_a_a_ht_hx*kzs;// - ((lambda1*a*a*ht)/hx)*(k[0]*z[0] + k[1]*z[1] + k[2]*z[2]);
 
-        // n = N
-        da[N] = -a_a_ht_hx_hx;
-        //da[N] = -(a*a*ht)/(hx*hx);
-        db[N] = 1.0 + a_a_ht_hx_hx + lambda2_a_a_ht_hx + lambda0_ht;
-        //db[N] = 1.0 + (a*a*ht)/(hx*hx) + (lambda2*a*a*ht)/hx + lambda0*ht;
-        dc[N] = 0.0;
-        //dd[N] = u.at(m-1,N)  + lambda0*ht*tt + (lambda2*a*a*ht*tt)/hx;
-        dd[N] = u.at(m-1,N)  + lambda0_ht_tt + lambda2_a_a_ht_tt_hx;
+//        // n = 1,...,N-1
+//        for (unsigned int n=1; n<=N-1; n++)
+//        {
+//            da[n] = -a_a_ht_hx_hx;
+//            db[n] = 1.0 + (2.0*a_a_ht_hx_hx) + lambda0_ht;
+//            dc[n] = -a_a_ht_hx_hx;
+//            dd[n] = u.at(m-1,n) + lambda0_ht_tt;
 
-        de[0]  =de[1] = 0.0;
-        de[N-1]=de[N] = 0.0;
-        for (unsigned int n=2; n<=N-2; n++)
-        {
-            de[n] = 0.0;
+//            //da[n] = -(a*a*ht)/(hx*hx);
+//            //db[n] = 1.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht;
+//            //dc[n] = -(a*a*ht)/(hx*hx);
+//            //dd[n] = u.at(m-1,n) + lambda0*ht*tt;
+//        }
 
-            double dif0 = fabs(n*hx - e[0]);
-            if (dif0 <= hx)
-            {
-                de[n] = -(lambda1_a_a_ht_hx * k[0]) * (1.0 - dif0/hx);
-            }
+//        // n = N
+//        da[N] = -a_a_ht_hx_hx;
+//        db[N] = 1.0 + a_a_ht_hx_hx + lambda2_a_a_ht_hx + lambda0_ht;
+//        dc[N] = 0.0;
+//        dd[N] = u.at(m-1,N)  + lambda0_ht_tt + lambda2_a_a_ht_tt_hx;
 
-            double dif1 = fabs(n*hx - e[1]);
-            if (dif1 <= hx)
-            {
-                de[n] = -(lambda1_a_a_ht_hx * k[1]) * (1.0 - dif1/hx);
-            }
+//        //da[N] = -(a*a*ht)/(hx*hx);
+//        //db[N] = 1.0 + (a*a*ht)/(hx*hx) + (lambda2*a*a*ht)/hx + lambda0*ht;
+//        //dc[N] = 0.0;
+//        //dd[N] = u.at(m-1,N)  + lambda0*ht*tt + (lambda2*a*a*ht*tt)/hx;
 
-            double dif2 = fabs(n*hx - e[2]);
-            if (dif2 <= hx)
-            {
-                de[n] = -(lambda1_a_a_ht_hx * k[2]) * (1.0 - dif2/hx);
-            }
-        }
+//        de[0]  =de[1] = 0.0;
+//        de[N-1]=de[N] = 0.0;
+//        for (unsigned int n=2; n<=N-2; n++)
+//        {
+//            de[n] = 0.0;
 
-        qovmaFirstRowM(da, db, dc, dd, rx, N+1, de);
+//            for (unsigned int s=0; s<L; s++)
+//            {
+//                double diff = fabs(n*hx - e[s]);
+//                if (diff <= hx)
+//                {
+//                    de[n] += k[s] * (1.0 - diff/hx);
+//                }
+//            }
+//            de[n] *= -lambda1_a_a_ht_hx;
+//        }
 
-        for (unsigned int i=0; i<=N; i++)
-        {
-            u[m][i] = rx[i];
+//        qovmaFirstRowM(da, db, dc, dd, rx, N+1, de);
 
-            //            if (withError)
-            //            {
-            //                //u[m][E0] += (((rand()%RAND_MAX) % 2 == 0) ? +persent : -persent) * u[m][E0];
-            //                //u[m][E1] += (((rand()%RAND_MAX) % 2 == 0) ? +persent : -persent) * u[m][E1];
+//        for (unsigned int i=0; i<=N; i++)
+//        {
+//            u[m][i] = rx[i];
 
-            //                double w0 = (rand() % 2000)*0.001 - 1.0; u[m][E0] += w0*persent * u[m][E0];
-            //                double w1 = (rand() % 2000)*0.001 - 1.0; u[m][E1] += w1*persent * u[m][E1];
-            //                //printf("%f %f\n", w0, w1);
-            //            }
-        }
-    }
+//            //            if (withError)
+//            //            {
+//            //                //u[m][E0] += (((rand()%RAND_MAX) % 2 == 0) ? +persent : -persent) * u[m][E0];
+//            //                //u[m][E1] += (((rand()%RAND_MAX) % 2 == 0) ? +persent : -persent) * u[m][E1];
 
-    free(de);
-    free(rx);
-    free(dd);
-    free(dc);
-    free(db);
-    free(da);
-}
+//            //                double w0 = (rand() % 2000)*0.001 - 1.0; u[m][E0] += w0*persent * u[m][E0];
+//            //                double w1 = (rand() % 2000)*0.001 - 1.0; u[m][E1] += w1*persent * u[m][E1];
+//            //                //printf("%f %f\n", w0, w1);
+//            //            }
+//        }
+//    }
 
-void ArtProblem1L2::calculateP(DoubleMatrix &p, const DoubleMatrix &u, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e)
-{
-    p.clear();
-    p.resize(M+1, N+1);
+//    free(de);
+//    free(rx);
+//    free(dd);
+//    free(dc);
+//    free(db);
+//    free(da);
+//}
 
-    double *da = (double*) malloc(sizeof(double)*(N+1));
-    double *db = (double*) malloc(sizeof(double)*(N+1));
-    double *dc = (double*) malloc(sizeof(double)*(N+1));
-    double *dd = (double*) malloc(sizeof(double)*(N+1));
-    double *rx = (double*) malloc(sizeof(double)*(N+1));
-    double *de = (double*) malloc(sizeof(double)*(N+1));
+//void ArtProblem1L2::calculateP(DoubleMatrix &p, const DoubleMatrix &u, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e)
+//{
+//    p.clear();
+//    p.resize(M+1, N+1);
 
-    for (unsigned int n=0; n<=N; n++)
-    {
-        p[M][n] = -2.0*alpha0*mu(n)*(u[M][n] - V[n]);
-    }
+//    double *da = (double*) malloc(sizeof(double)*(N+1));
+//    double *db = (double*) malloc(sizeof(double)*(N+1));
+//    double *dc = (double*) malloc(sizeof(double)*(N+1));
+//    double *dd = (double*) malloc(sizeof(double)*(N+1));
+//    double *rx = (double*) malloc(sizeof(double)*(N+1));
+//    double *de = (double*) malloc(sizeof(double)*(N+1));
 
-    for (unsigned int m=M-1; m != UINT32_MAX; m--)
-    {
-        // n = 0
-        da[0] = 0.0;
-        db[0] = -1.0 - (a*a*ht)/(hx*hx) - (lambda1*a*a*ht)/hx - lambda0*ht;
-        dc[0] = (a*a*ht)/(hx*hx);
-        dd[0] = -p[m+1][0];
+//    for (unsigned int n=0; n<=N; n++)
+//    {
+//        p[M][n] = -2.0*alpha0*mu(n)*(u[M][n] - V[n]);
+//    }
 
-        // n = 1,...,N-1
-        for (unsigned int n=1; n<=N-1; n++)
-        {
-            da[n] = (a*a*ht)/(hx*hx);
-            db[n] = -1.0-(2.0*a*a*ht)/(hx*hx) - lambda0*ht;
-            dc[n] = (a*a*ht)/(hx*hx);
-            dd[n] = -p[m+1][n] + R * ht * sgn_min(m, k, z, e, u);
-            for (unsigned int i=0; i<L; i++)
-            {
-                double _delta_ = delta(n,e,i);
-                dd[n] +=  R * ht * 2.0*sgn_min(m, k, z, e, u) * k[i] * _delta_;
-            }
-        }
+//    for (unsigned int m=M-1; m != UINT32_MAX; m--)
+//    {
+//        // n = 0
+//        da[0] = 0.0;
+//        db[0] = -1.0 - (a*a*ht)/(hx*hx) - (lambda1*a*a*ht)/hx - lambda0*ht;
+//        dc[0] = (a*a*ht)/(hx*hx);
+//        dd[0] = -p[m+1][0];
 
-        // n = N
-        da[N] = (a*a*ht)/(hx*hx);
-        db[N] = -1.0-(a*a*ht)/(hx*hx) - (lambda2*a*a*ht)/hx - lambda0*ht;
-        dc[N] = 0.0;
-        dd[N] = -p[m+1][N];
+//        // n = 1,...,N-1
+//        for (unsigned int n=1; n<=N-1; n++)
+//        {
+//            da[n] = (a*a*ht)/(hx*hx);
+//            db[n] = -1.0-(2.0*a*a*ht)/(hx*hx) - lambda0*ht;
+//            dc[n] = (a*a*ht)/(hx*hx);
+//            dd[n] = -p[m+1][n] + R * ht * sgn_min(m, k, z, e, u);
+//            for (unsigned int s=0; s<L; s++)
+//            {
+//                double _delta_ = delta(n,e,s);
+//                dd[n] +=  R * ht * 2.0*sgn_min(m, k, z, e, u) * k[s] * _delta_;
+//            }
+//        }
 
-        de[0] = de[1] = 0.0;
-        de[N] = de[N-1] = 0.0;
-        for (unsigned int n=2; n<=N-2; n++)
-        {
-            for (unsigned int i=0; i<L; i++)
-            {
-                de[n] += k[i] * delta(n,e,i);
-            }
-            de[n] *= (lambda1*a*a*ht);
-        }
+//        // n = N
+//        da[N] = (a*a*ht)/(hx*hx);
+//        db[N] = -1.0-(a*a*ht)/(hx*hx) - (lambda2*a*a*ht)/hx - lambda0*ht;
+//        dc[N] = 0.0;
+//        dd[N] = -p[m+1][N];
 
-        qovmaFirstColM(da, db, dc, dd, rx, N+1, de);
+//        de[0] = de[1] = 0.0;
+//        de[N] = de[N-1] = 0.0;
+//        for (unsigned int n=2; n<=N-2; n++)
+//        {
+//            for (unsigned int i=0; i<L; i++)
+//            {
+//                de[n] += k[i] * delta(n,e,i);
+//            }
+//            de[n] *= (lambda1*a*a*ht);
+//        }
 
-        for (unsigned int i=0; i<=N; i++) p[m][i] = rx[i];
-    }
+//        qovmaFirstColM(da, db, dc, dd, rx, N+1, de);
 
-    free(de);
-    free(rx);
-    free(dd);
-    free(dc);
-    free(db);
-    free(da);
-}
+//        for (unsigned int i=0; i<=N; i++) p[m][i] = rx[i];
+//    }
 
-double ArtProblem1L2::delta(unsigned int n, const DoubleVector &e, unsigned int i) const
-{
-    double sigma = 3.0*hx;
-    double x = n*hx;
-    return 1.0/(sqrt(2.0*M_PI)*sigma) * exp(-((x-e[i])*(x-e[i]))/(2.0*sigma*sigma));
-}
+//    free(de);
+//    free(rx);
+//    free(dd);
+//    free(dc);
+//    free(db);
+//    free(da);
+//}
 
-double ArtProblem1L2::initial(unsigned int n UNUSED_PARAM) const
-{
-    return fi;
-}
+//double ArtProblem1L2::delta(unsigned int n, const DoubleVector &e, unsigned int i) const
+//{
+//    double sigma = 3.0*hx;
+//    double x = n*hx;
+//    return 1.0/(sqrt(2.0*M_PI)*sigma) * exp(-((x-e[i])*(x-e[i]))/(2.0*sigma*sigma));
+//}
 
-double ArtProblem1L2::vf(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
-{
-    unsigned int E0 = (unsigned int)round(e[0] * N*DD);
-    unsigned int E1 = (unsigned int)round(e[1] * N*DD);
-    unsigned int E2 = (unsigned int)round(e[2] * N*DD);
-    double v = k[0]*(u[m][E0]-z[0]) + k[1]*(u[m][E1]-z[1]) + k[2]*(u[m][E2]-z[2]);
-    //    double v = k[0]*(u_xi(m,e[0],u)-z[0]) + k[1]*(u_xi(m,e[1],u)-z[1]);
-    return v;
-}
+//double ArtProblem1L2::initial(unsigned int n UNUSED_PARAM) const
+//{
+//    return fi;
+//}
 
 void ArtProblem1L2::print(unsigned int i, const DoubleVector &prm, const DoubleVector &g, double r, GradientMethod::MethodResult ) const
 {
@@ -1225,183 +1234,182 @@ void ArtProblem1L2::print(unsigned int i, const DoubleVector &prm, const DoubleV
 }
 
 /*
-//void ArtProblem1L2::print(unsigned int i, const DoubleVector &prm, const DoubleVector &g, double r, GradientMethod::MethodResult result) const
-//{
-//    C_UNUSED(result);
-//    //if (i>0) return;
-//    //if (i % 20 != 0 && result < 3) return;
+void ArtProblem1L2::print(unsigned int i, const DoubleVector &prm, const DoubleVector &g, double r, GradientMethod::MethodResult result) const
+{
+    C_UNUSED(result);
+    //if (i>0) return;
+    //if (i % 20 != 0 && result < 3) return;
 
-//    ArtProblem1L2 *pm = const_cast<ArtProblem1L2*>(this);
-//    pm->py = &prm;
+    ArtProblem1L2 *pm = const_cast<ArtProblem1L2*>(this);
+    pm->py = &prm;
 
-//    DoubleVector k,z,e;
-//    getParameters(k,z,e,prm);
+    DoubleVector k,z,e;
+    getParameters(k,z,e,prm);
 
-//    DoubleMatrix u;
-//    calculateU(u,k,z,e);
+    DoubleMatrix u;
+    calculateU(u,k,z,e);
 
-//    //    if (result == GradientMethod::BREAK_DISTANCE_LESS || result == GradientMethod::BREAK_DISTANCE_LESS || result == GradientMethod::BREAK_GRADIENT_NORM_LESS)
-//    //    {
-//    //        DoubleVector v(M+1);
-//    //        for (unsigned int m=0; m<=M; m++) v[m] = vf(m,k,z,e,u);
-//    //        FILE *file1 = fopen("v_0.txt", "w");
-//    //        IPrinter::printVector(14,10,v,NULL,v.size(),0,0,file1);
-//    //        fclose(file);
-//    //        IPrinter::printVector(14,10,u.row(u.rows()-1),"u: ", 10, 0, 0, stdout);
-//    //    }
+    //    if (result == GradientMethod::BREAK_DISTANCE_LESS || result == GradientMethod::BREAK_DISTANCE_LESS || result == GradientMethod::BREAK_GRADIENT_NORM_LESS)
+    //    {
+    //        DoubleVector v(M+1);
+    //        for (unsigned int m=0; m<=M; m++) v[m] = vf(m,k,z,e,u);
+    //        FILE *file1 = fopen("v_0.txt", "w");
+    //        IPrinter::printVector(14,10,v,NULL,v.size(),0,0,file1);
+    //        fclose(file);
+    //        IPrinter::printVector(14,10,u.row(u.rows()-1),"u: ", 10, 0, 0, stdout);
+    //    }
 
-//    //
+    //
 
-//    if (result == GradientMethod::FIRST_ITERATION)
-//    {
-//        FILE *file = fopen("control_v.txt", "w");
-//        fprintf(file, "%u", i);
-//        for (unsigned int m=0; m<=M; m++)
-//        {
-//            fprintf(file, ",%.10f",vf(m,k,z,e,u));
-//        }
-//        fprintf(file, "\n");
-//        fclose(file);
-//    }
-//    else
-//    {
-//        FILE *file = fopen("control_v.txt", "a");
-//        fprintf(file, "%u", i);
-//        for (unsigned int m=0; m<=M; m++)
-//        {
-//            fprintf(file, ",%.10f",vf(m,k,z,e,u));
-//        }
-//        fprintf(file, "\n");
-//        fclose(file);
-//    }
+    if (result == GradientMethod::FIRST_ITERATION)
+    {
+        FILE *file = fopen("control_v.txt", "w");
+        fprintf(file, "%u", i);
+        for (unsigned int m=0; m<=M; m++)
+        {
+            fprintf(file, ",%.10f",vf(m,k,z,e,u));
+        }
+        fprintf(file, "\n");
+        fclose(file);
+    }
+    else
+    {
+        FILE *file = fopen("control_v.txt", "a");
+        fprintf(file, "%u", i);
+        for (unsigned int m=0; m<=M; m++)
+        {
+            fprintf(file, ",%.10f",vf(m,k,z,e,u));
+        }
+        fprintf(file, "\n");
+        fclose(file);
+    }
 
-//    double v = 0.0;//vf(M, k, z, e, u);
-//    //IPrinter::printSeperatorLine(NULL,'-',file);
-//    //IPrinter::printSeperatorLine(NULL,'-',stdout);
+    double v = 0.0;//vf(M, k, z, e, u);
+    //IPrinter::printSeperatorLine(NULL,'-',file);
+    //IPrinter::printSeperatorLine(NULL,'-',stdout);
 
-//    //fprintf(file,"\n");
-//    //fprintf(file, "J[%d]: %.10f v: %.10f\n", i, r, v);
+    //fprintf(file,"\n");
+    //fprintf(file, "J[%d]: %.10f v: %.10f\n", i, r, v);
 
-//    unsigned int p=0;
-//    //fprintf(stdout, "---\n");
-//    //fprintf(file, "k: %14.10f %14.10f\n", k[0], k[1]);
+    unsigned int p=0;
+    //fprintf(stdout, "---\n");
+    //fprintf(file, "k: %14.10f %14.10f\n", k[0], k[1]);
 
-//    //if ( result == GradientMethod::FIRST_ITERATION) pm->R = RMAX;
+    //if ( result == GradientMethod::FIRST_ITERATION) pm->R = RMAX;
 
-//    //printf("R: %.14f\n", pm->R);
+    //printf("R: %.14f\n", pm->R);
 
-//    printf("%d,%.6f",i,r);
+    printf("%d,%.6f",i,r);
 
-//    //DoubleVector a1(prm.size());
-//    //pm->gradient(prm, a1);
+    //DoubleVector a1(prm.size());
+    //pm->gradient(prm, a1);
 
-//    if (optimizeK)
-//    {
-//        DoubleVector a = g.mid(p,p+1);
-//        DoubleVector na = a;
-//        na.L2Normalize();
+    if (optimizeK)
+    {
+        DoubleVector a = g.mid(p,p+1);
+        DoubleVector na = a;
+        na.L2Normalize();
 
-//        DoubleVector n = a;
+        DoubleVector n = a;
 
-//        DoubleVector cx = prm;
-//        double f1,f2;
+        DoubleVector cx = prm;
+        double f1,f2;
 
-//        double x0 = prm[p];
-//        cx[p] = x0 - hk; f1 = fx(cx);
-//        cx[p] = x0 + hk; f2 = fx(cx);
-//        n[0] = (f2-f1)/(2.0*hk);
-//        cx[p] = x0;
+        double x0 = prm[p];
+        cx[p] = x0 - hk; f1 = fx(cx);
+        cx[p] = x0 + hk; f2 = fx(cx);
+        n[0] = (f2-f1)/(2.0*hk);
+        cx[p] = x0;
 
-//        double x1 = prm[p+1];
-//        cx[p+1] = x1 - hk; f1 = fx(cx);
-//        cx[p+1] = x1 + hk; f2 = fx(cx);
-//        n[1] = (f2-f1)/(2.0*hk); cx[p+1] = x1;
+        double x1 = prm[p+1];
+        cx[p+1] = x1 - hk; f1 = fx(cx);
+        cx[p+1] = x1 + hk; f2 = fx(cx);
+        n[1] = (f2-f1)/(2.0*hk); cx[p+1] = x1;
 
-//        DoubleVector nn = n;
-//        nn.L2Normalize();
+        DoubleVector nn = n;
+        nn.L2Normalize();
 
-//        //fprintf(file, "a: %14.10f %14.10f | %14.10f %14.10f\n", a[0], a[1], na[0], na[1]);
-//        //fprintf(file, "n: %14.10f %14.10f | %14.10f %14.10f\n", n[0], n[1], nn[0], nn[1]);
+        //fprintf(file, "a: %14.10f %14.10f | %14.10f %14.10f\n", a[0], a[1], na[0], na[1]);
+        //fprintf(file, "n: %14.10f %14.10f | %14.10f %14.10f\n", n[0], n[1], nn[0], nn[1]);
 
-//        p+=2;
+        p+=2;
 
-//        printf("|%.6f,%.6f,%.6f",k[0],a[0],n[0]);
-//        printf("|%.6f,%.6f,%.6f",k[1],a[1],n[1]);
-//    }
+        printf("|%.6f,%.6f,%.6f",k[0],a[0],n[0]);
+        printf("|%.6f,%.6f,%.6f",k[1],a[1],n[1]);
+    }
 
-//    //fprintf(file, "---\n");
-//    //fprintf(file, "z: %14.10f %14.10f\n", z[0], z[1]);
-//    if (optimizeZ)
-//    {
-//        DoubleVector a = g.mid(p,p+1);
-//        DoubleVector na = a;
-//        na.L2Normalize();
+    //fprintf(file, "---\n");
+    //fprintf(file, "z: %14.10f %14.10f\n", z[0], z[1]);
+    if (optimizeZ)
+    {
+        DoubleVector a = g.mid(p,p+1);
+        DoubleVector na = a;
+        na.L2Normalize();
 
-//        DoubleVector n = a;
+        DoubleVector n = a;
 
-//        DoubleVector cx = prm;
-//        double f1,f2;
+        DoubleVector cx = prm;
+        double f1,f2;
 
-//        double x0 = prm[p];
-//        cx[p] = x0 - hz; f1 = fx(cx);
-//        cx[p] = x0 + hz; f2 = fx(cx);
-//        n[0] = (f2-f1)/(2.0*hz); cx[p] = x0;
+        double x0 = prm[p];
+        cx[p] = x0 - hz; f1 = fx(cx);
+        cx[p] = x0 + hz; f2 = fx(cx);
+        n[0] = (f2-f1)/(2.0*hz); cx[p] = x0;
 
-//        double x1 = prm[p+1];
-//        cx[p+1] = x1 - hz; f1 = fx(cx);
-//        cx[p+1] = x1 + hz; f2 = fx(cx);
-//        n[1] = (f2-f1)/(2.0*hz); cx[p+1] = x1;
+        double x1 = prm[p+1];
+        cx[p+1] = x1 - hz; f1 = fx(cx);
+        cx[p+1] = x1 + hz; f2 = fx(cx);
+        n[1] = (f2-f1)/(2.0*hz); cx[p+1] = x1;
 
-//        DoubleVector nn = n;
-//        nn.L2Normalize();
+        DoubleVector nn = n;
+        nn.L2Normalize();
 
-//        //fprintf(file, "a: %14.10f %14.10f | %14.10f %14.10f\n", a[0], a[1], na[0], na[1]);
-//        //fprintf(file, "n: %14.10f %14.10f | %14.10f %14.10f\n", n[0], n[1], nn[0], nn[1]);
-//        \
-//        p+=2;
-//        printf("|%.6f,%.6f,%.6f",z[0],a[0],n[0]);
-//        printf("|%.6f,%.6f,%.6f",z[1],a[1],n[1]);
-//    }
+        //fprintf(file, "a: %14.10f %14.10f | %14.10f %14.10f\n", a[0], a[1], na[0], na[1]);
+        //fprintf(file, "n: %14.10f %14.10f | %14.10f %14.10f\n", n[0], n[1], nn[0], nn[1]);
+        \
+        p+=2;
+        printf("|%.6f,%.6f,%.6f",z[0],a[0],n[0]);
+        printf("|%.6f,%.6f,%.6f",z[1],a[1],n[1]);
+    }
 
-//    //fprintf(file, "---\n");
-//    //fprintf(file, "e: %14.10f %14.10f\n", e[0], e[1]);
-//    if (optimizeE)
-//    {
-//        DoubleVector a = g.mid(p,p+1);
-//        DoubleVector na = a;
-//        na.L2Normalize();
+    //fprintf(file, "---\n");
+    //fprintf(file, "e: %14.10f %14.10f\n", e[0], e[1]);
+    if (optimizeE)
+    {
+        DoubleVector a = g.mid(p,p+1);
+        DoubleVector na = a;
+        na.L2Normalize();
 
-//        DoubleVector n = a;
+        DoubleVector n = a;
 
-//        DoubleVector cx = prm;
-//        double f1,f2;
+        DoubleVector cx = prm;
+        double f1,f2;
 
-//        double x0 = prm[p];
-//        cx[p] = x0 - he; f1 = fx(cx);
-//        cx[p] = x0 + he; f2 = fx(cx);
-//        n[0] = (f2-f1)/(2.0*he); cx[p] = x0;
+        double x0 = prm[p];
+        cx[p] = x0 - he; f1 = fx(cx);
+        cx[p] = x0 + he; f2 = fx(cx);
+        n[0] = (f2-f1)/(2.0*he); cx[p] = x0;
 
-//        double x1 = prm[p+1];
-//        cx[p+1] = x1 - he; f1 = fx(cx);
-//        cx[p+1] = x1 + he; f2 = fx(cx);
-//        n[1] = (f2-f1)/(2.0*he); cx[p+1] = x1;
+        double x1 = prm[p+1];
+        cx[p+1] = x1 - he; f1 = fx(cx);
+        cx[p+1] = x1 + he; f2 = fx(cx);
+        n[1] = (f2-f1)/(2.0*he); cx[p+1] = x1;
 
-//        DoubleVector nn = n;
-//        nn.L2Normalize();
+        DoubleVector nn = n;
+        nn.L2Normalize();
 
-//        //fprintf(file, "a: %14.10f %14.10f | %14.10f %14.10f\n", a[0], a[1], na[0], na[1]);
-//        //fprintf(file, "n: %14.10f %14.10f | %14.10f %14.10f\n", n[0], n[1], nn[0], nn[1]);
-//        p+=2;
-//        printf("|%.6f,%.6f,%.6f",e[0],a[0],n[0]);
-//        printf("|%.6f,%.6f,%.6f",e[1],a[1],n[1]);
-//    }
+        //fprintf(file, "a: %14.10f %14.10f | %14.10f %14.10f\n", a[0], a[1], na[0], na[1]);
+        //fprintf(file, "n: %14.10f %14.10f | %14.10f %14.10f\n", n[0], n[1], nn[0], nn[1]);
+        p+=2;
+        printf("|%.6f,%.6f,%.6f",e[0],a[0],n[0]);
+        printf("|%.6f,%.6f,%.6f",e[1],a[1],n[1]);
+    }
 
-//    printf("\n");
+    printf("\n");
 
-//    //IPrinter::printVector(14,10,u.row(u.rows()-1),"u: ", 10, 0, 0, stdout);
-//}
+    //IPrinter::printVector(14,10,u.row(u.rows()-1),"u: ", 10, 0, 0, stdout);
+}
 */
-
 void ArtProblem1L2::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
 {
     int p = 0;
@@ -1426,244 +1434,275 @@ void ArtProblem1L2::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
     /* e lower/upper limits */
     if (optimizeE)
     {
-//        if (x.at(p) < 5*hx)  x.at(p) = 5*hx;                if (x.at(p) > (N/2-5)*hx) x.at(p) = (N/2-5)*hx;
-//        if (x.at(p+1) < (N/2+5)*hx) x.at(p+1) = (N/2+5)*hx; if (x.at(p+1) > (N-5)*hx)   x.at(p+1) = (N-5)*hx;
+        if (L==2)
+        {
+            if (i==4) { if (x.at(4) < 0.005) x.at(4) = 0.005; if (x.at(4) > 0.060) x.at(4) = 0.060; }
+            if (i==5) { if (x.at(5) < 0.040) x.at(5) = 0.040; if (x.at(5) > 0.095) x.at(5) = 0.095; }
+        }
 
-        if (i==6) { if (x.at(6) < 0.005) x.at(6) = 0.005; if (x.at(6) > 0.032) x.at(6) = 0.032; }
-        if (i==7) { if (x.at(7) < 0.034) x.at(7) = 0.034; if (x.at(7) > 0.065) x.at(7) = 0.065; }
-        if (i==8) { if (x.at(8) < 0.067) x.at(8) = 0.067; if (x.at(8) > 0.095) x.at(8) = 0.095; }
+//        if (L==2)
+//        {
+//            if (i==4) { if (x.at(4) < 0.005) x.at(4) = 0.005; if (x.at(4) > 0.095) x.at(4) = 0.095; }
+//            if (i==5) { if (x.at(5) < 0.005) x.at(5) = 0.005; if (x.at(5) > 0.095) x.at(5) = 0.095; }
+//        }
 
-//        if (i == 6) { if (x.at(6) < 0.005) x.at(6) = 0.005; if (x.at(6) > 0.095) x.at(6) = 0.095; }
-//        if (i == 7) { if (x.at(7) < 0.005) x.at(7) = 0.005; if (x.at(7) > 0.095) x.at(7) = 0.095; }
-//        if (i == 8) { if (x.at(8) < 0.005) x.at(8) = 0.005; if (x.at(8) > 0.095) x.at(8) = 0.095; }
-
-//         printf("%d %f\n", p+0, x.at(p+0));
+        //        if (L==3)
+        //        {
+        //            if (i==6) { if (x.at(6) < 0.005) x.at(6) = 0.005; if (x.at(6) > 0.032) x.at(6) = 0.032; }
+        //            if (i==7) { if (x.at(7) < 0.034) x.at(7) = 0.034; if (x.at(7) > 0.065) x.at(7) = 0.065; }
+        //            if (i==8) { if (x.at(8) < 0.067) x.at(8) = 0.067; if (x.at(8) > 0.095) x.at(8) = 0.095; }
+        //        }
+        if (L==3)
+        {
+            if (i == 6) { if (x.at(6) < 0.005) x.at(6) = 0.005; if (x.at(6) > 0.095) x.at(6) = 0.095; }
+            if (i == 7) { if (x.at(7) < 0.005) x.at(7) = 0.005; if (x.at(7) > 0.095) x.at(7) = 0.095; }
+            if (i == 8) { if (x.at(8) < 0.005) x.at(8) = 0.005; if (x.at(8) > 0.095) x.at(8) = 0.095; }
+        }
+        //         printf("%d %f\n", p+0, x.at(p+0));
     }
 }
 
-void ArtProblem1L2::getParameters(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &prm) const
-{
-    unsigned int p = 0;
+//void ArtProblem1L2::getParameters(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &prm) const
+//{
+//    unsigned int p = 0;
 
-    if (optimizeK)
-    {
-        k = prm.mid(p,p+2);
-        p+=L;
-    }
-    else
-    {
-        k = this->K;
-    }
+//    if (optimizeK)
+//    {
+//        k = prm.mid(p,p+(L-1));
+//        p+=L;
+//    }
+//    else
+//    {
+//        k = this->K;
+//    }
 
-    if (optimizeZ)
-    {
-        z = prm.mid(p,p+2);
-        p+=L;
-    }
-    else
-    {
-        z = this->Z;
-    }
+//    if (optimizeZ)
+//    {
+//        z = prm.mid(p,p+(L-1));
+//        p+=L;
+//    }
+//    else
+//    {
+//        z = this->Z;
+//    }
 
-    if (optimizeE)
-    {
-        e = prm.mid(p,p+2);
-        p+=L;
-    }
-    else
-    {
-        e = this->E;
-    }
-}
+//    if (optimizeE)
+//    {
+//        e = prm.mid(p,p+(L-1));
+//        p+=L;
+//    }
+//    else
+//    {
+//        e = this->E;
+//    }
+//}
 
-void ArtProblem1L2::qovmaFirstColM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const
-{
-    double *p = (double*)malloc(sizeof(double)*n);
-    double *q = (double*)malloc(sizeof(double)*n);
-    double *k = (double*)malloc(sizeof(double)*n);
+//void ArtProblem1L2::qovmaFirstColM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const
+//{
+//    double *p = (double*)malloc(sizeof(double)*n);
+//    double *q = (double*)malloc(sizeof(double)*n);
+//    double *k = (double*)malloc(sizeof(double)*n);
 
-    for (unsigned int i=n-1; i != UINT32_MAX; i--)
-    {
-        if (i == n-1)
-        {
-            p[i] = -a[i]/b[i];
-            q[i] = +d[i]/b[i];
-            k[i] = -e[i]/b[i];
-        }
-        else if (i == 1)
-        {
-            double m = b[i]+c[i]*p[i+1];
-            p[i] = -(a[i]+c[i]*k[i+1])/m;
-            q[i] = +(d[i]-c[i]*q[i+1])/m;
-            k[i] = 0.0;
-        }
-        else if (i == 0)
-        {
-            double m = b[i]+c[i]*p[i+1];
-            p[i] = 0.0;
-            q[i] = +(d[i]-c[i]*q[i+1])/m;
-            k[i] = 0.0;
-        }
-        else
-        {
-            double m = b[i]+c[i]*p[i+1];
-            p[i] = -a[i]/m;
-            q[i] = +(d[i]-c[i]*q[i+1])/m;
-            k[i] = -(e[i]+c[i]*k[i+1])/m;
-        }
-    }
+//    for (unsigned int i=n-1; i != UINT32_MAX; i--)
+//    {
+//        if (i == n-1)
+//        {
+//            p[i] = -a[i]/b[i];
+//            q[i] = +d[i]/b[i];
+//            k[i] = -e[i]/b[i];
+//        }
+//        else if (i == 1)
+//        {
+//            double m = b[i]+c[i]*p[i+1];
+//            p[i] = -(a[i]+c[i]*k[i+1])/m;
+//            q[i] = +(d[i]-c[i]*q[i+1])/m;
+//            k[i] = 0.0;
+//        }
+//        else if (i == 0)
+//        {
+//            double m = b[i]+c[i]*p[i+1];
+//            p[i] = 0.0;
+//            q[i] = +(d[i]-c[i]*q[i+1])/m;
+//            k[i] = 0.0;
+//        }
+//        else
+//        {
+//            double m = b[i]+c[i]*p[i+1];
+//            p[i] = -a[i]/m;
+//            q[i] = +(d[i]-c[i]*q[i+1])/m;
+//            k[i] = -(e[i]+c[i]*k[i+1])/m;
+//        }
+//    }
 
-    for (unsigned int i=0; i<n; i++)
-    {
-        if (i==0)
-        {
-            x[i] = q[i];
-        }
-        else if (i==1)
-        {
-            x[i] = p[i]*x[i-1] + q[i];
-        }
-        else
-        {
-            x[i] = p[i]*x[i-1] + q[i] + k[i]*x[0];
-        }
-    }
+//    for (unsigned int i=0; i<n; i++)
+//    {
+//        if (i==0)
+//        {
+//            x[i] = q[i];
+//        }
+//        else if (i==1)
+//        {
+//            x[i] = p[i]*x[i-1] + q[i];
+//        }
+//        else
+//        {
+//            x[i] = p[i]*x[i-1] + q[i] + k[i]*x[0];
+//        }
+//    }
 
-    free(k);
-    free(p);
-    free(q);
-}
+//    free(k);
+//    free(p);
+//    free(q);
+//}
 
-void ArtProblem1L2::qovmaFirstRowM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const
-{
-    double *p = (double*)malloc(sizeof(double)*n);
-    double *q = (double*)malloc(sizeof(double)*n);
+//void ArtProblem1L2::qovmaFirstRowM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const
+//{
+//    double *p = (double*)malloc(sizeof(double)*n);
+//    double *q = (double*)malloc(sizeof(double)*n);
 
-    unsigned int L = 0;
-    for (unsigned int s=0; s<n; s++)
-    {
-        if (fabs(e[s]) != 0.0)
-        {
-            L+=1;
-        }
-    }
-    unsigned int *E = (unsigned int *)malloc(sizeof(unsigned int)*L);
+//    unsigned int L = 0;
+//    for (unsigned int s=0; s<n; s++)
+//    {
+//        if (fabs(e[s]) != 0.0)
+//        {
+//            L+=1;
+//        }
+//    }
+//    unsigned int *E = (unsigned int *)malloc(sizeof(unsigned int)*L);
 
-    unsigned int i = 0;
-    for (unsigned int s=0; s<n; s++)
-    {
-        if (fabs(e[s]) != 0.0)
-        {
-            E[i++] = s;
-        }
-    }
+//    unsigned int i = 0;
+//    for (unsigned int s=0; s<n; s++)
+//    {
+//        if (fabs(e[s]) != 0.0)
+//        {
+//            E[i++] = s;
+//        }
+//    }
 
-    double **k = (double**) malloc(sizeof(double*)*L);
-    for (unsigned int s=0; s<L; s++) k[s] = (double*)malloc(sizeof(double)*n);
+//    double **k = (double**) malloc(sizeof(double*)*L);
+//    for (unsigned int s=0; s<L; s++) k[s] = (double*)malloc(sizeof(double)*n);
 
-    for (unsigned int i=0; i<n; i++)
-    {
-        if (i == 0)
-        {
-            p[0] = +d[0]/b[0];
-            q[0] = -c[0]/b[0];
+//    for (unsigned int i=0; i<n; i++)
+//    {
+//        if (i == 0)
+//        {
+//            p[0] = +d[0]/b[0];
+//            q[0] = -c[0]/b[0];
 
-            for (unsigned int s=0; s<L; s++)
-            {
-                k[s][0] = -e[E[s]]/b[0];
-            }
-        }
-        else if (i == (n-1))
-        {
-            p[i] = +(d[i]-a[i]*p[i-1])/(b[i]+a[i]*q[i-1]);
-            q[i] = 0.0;
+//            for (unsigned int s=0; s<L; s++)
+//            {
+//                k[s][0] = -e[E[s]]/b[0];
+//            }
+//        }
+//        else if (i == (n-1))
+//        {
+//            p[i] = +(d[i]-a[i]*p[i-1])/(b[i]+a[i]*q[i-1]);
+//            q[i] = 0.0;
 
-            for (unsigned int s=0; s<L; s++) k[s][i] = 0.0;
-        }
-        else
-        {
-            double m = b[i]+a[i]*q[i-1];
-            p[i] = +(d[i]-a[i]*p[i-1])/m;
-            q[i] = -c[i]/m;
+//            for (unsigned int s=0; s<L; s++) k[s][i] = 0.0;
+//        }
+//        else
+//        {
+//            double m = b[i]+a[i]*q[i-1];
+//            p[i] = +(d[i]-a[i]*p[i-1])/m;
+//            q[i] = -c[i]/m;
 
-            for (unsigned int s=0; s<L; s++)
-            {
-                if (i<(E[s]-1))
-                    k[s][i] = -(a[i]*k[s][i-1])/m;
-                else
-                    k[s][i] = 0.0;
+//            for (unsigned int s=0; s<L; s++)
+//            {
+//                if (i<(E[s]-1))
+//                    k[s][i] = -(a[i]*k[s][i-1])/m;
+//                else
+//                    k[s][i] = 0.0;
 
-                if (i==E[s]-1) q[i] += -(a[i]*k[s][i-1])/m;
-            }
+//                if (i==E[s]-1) q[i] += -(a[i]*k[s][i-1])/m;
+//            }
 
-            //            for (unsigned int s=0; s<L; s++)
-            //            {
-            //                if (i==E[s]-1) q[i] += -(a[i]*k[s][i-1])/m;
-            //            }
-        }
-    }
+//            //            for (unsigned int s=0; s<L; s++)
+//            //            {
+//            //                if (i==E[s]-1) q[i] += -(a[i]*k[s][i-1])/m;
+//            //            }
+//        }
+//    }
 
-    for (unsigned int i=n-1; i != UINT_MAX; i--)
-    {
-        if (i==(n-1))
-        {
-            x[i] = p[i];
-        }
-        else
-        {
-            x[i] = p[i] + q[i]*x[i+1];
+//    for (unsigned int i=n-1; i != UINT_MAX; i--)
+//    {
+//        if (i==(n-1))
+//        {
+//            x[i] = p[i];
+//        }
+//        else
+//        {
+//            x[i] = p[i] + q[i]*x[i+1];
 
-            for (unsigned int s=0; s<L; s++)
-            {
-                if (i<=E[s]-1)
-                {
-                    x[i] = x[i] + k[s][i]*x[E[s]];
-                }
-            }
-        }
-    }
+//            for (unsigned int s=0; s<L; s++)
+//            {
+//                if (i<=E[s]-1)
+//                {
+//                    x[i] = x[i] + k[s][i]*x[E[s]];
+//                }
+//            }
+//        }
+//    }
 
-    for (unsigned int s=0; s<L; s++) free(k[s]);
-    free(k);
-    free(E);
-    free(q);
-    free(p);
-}
+//    for (unsigned int s=0; s<L; s++) free(k[s]);
+//    free(k);
+//    free(E);
+//    free(q);
+//    free(p);
+//}
 
-double ArtProblem1L2::u_xi(unsigned int m, double e, const DoubleMatrix &u) const
-{
-    unsigned int xi = (unsigned int)ceil(e * N * DD);
-    return (u[m][xi]*((xi+1)*hx - e) + u[m][xi+1]*(e - (xi)*hx)) / hx;
+//double ArtProblem1L2::vf(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
+//{
+//    unsigned int E0 = (unsigned int)round(e[0] * N*DD);
+//    unsigned int E1 = (unsigned int)round(e[1] * N*DD);
+//    unsigned int E2 = (unsigned int)round(e[2] * N*DD);
+//    double v = 0.0;
+//    if (L==2)
+//    {
+//        v = k[0]*(u[m][E0]-z[0]) + k[1]*(u[m][E1]-z[1]);
+//    }
+//    if (L==3)
+//    {
+//        v = k[0]*(u[m][E0]-z[0]) + k[1]*(u[m][E1]-z[1]) + k[2]*(u[m][E2]-z[2]);
+//    }
+//    //    double v = k[0]*(u_xi(m,e[0],u)-z[0]) + k[1]*(u_xi(m,e[1],u)-z[1]);
+//    return v;
+//}
 
-    //    unsigned int xi = (unsigned int)round(e * N * DD);
-    //    return u[m][xi];
-}
+//double ArtProblem1L2::u_xi(unsigned int m, double e, const DoubleMatrix &u) const
+//{
+//    unsigned int xi = (unsigned int)ceil(e * N * DD);
+//    return (u[m][xi]*((xi+1)*hx - e) + u[m][xi+1]*(e - (xi)*hx)) / hx;
 
-double ArtProblem1L2::u_xi_d(unsigned int m, double e, const DoubleMatrix &u) const
-{
-    unsigned int xi = (unsigned int)round(e * N*DD);
-    return (u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx);
-}
+//    //    unsigned int xi = (unsigned int)round(e * N * DD);
+//    //    return u[m][xi];
+//}
 
-double ArtProblem1L2::gf(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
-{
-    return d1 - fabs(vd0(m, k, z, e, u));
-}
+//double ArtProblem1L2::u_xi_d(unsigned int m, double e, const DoubleMatrix &u) const
+//{
+//    unsigned int xi = (unsigned int)round(e * N*DD);
+//    return (u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx);
+//}
 
-double ArtProblem1L2::vd0(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
-{
-    return d0 - vf(m, k, z, e, u);
-}
+//double ArtProblem1L2::gf(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
+//{
+//    return d1 - fabs(vd0(m, k, z, e, u));
+//}
 
-double ArtProblem1L2::sgn_min(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
-{
+//double ArtProblem1L2::vd0(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
+//{
+//    return d0 - vf(m, k, z, e, u);
+//}
 
-    return sign(vd0(m, k, z, e, u)) * fmin(0.0, gf(m, k, z, e, u));
-}
+//double ArtProblem1L2::sgn_min(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
+//{
 
-double ArtProblem1L2::sign(double x) const
-{
-    if (x < 0.0) return -1.0;
-    if (x > 0.0) return +1.0;
-    return 0.0;
-}
+//    return sign(vd0(m, k, z, e, u)) * fmin(0.0, gf(m, k, z, e, u));
+//}
+
+//double ArtProblem1L2::sign(double x) const
+//{
+//    if (x < 0.0) return -1.0;
+//    if (x > 0.0) return +1.0;
+//    return 0.0;
+//}
