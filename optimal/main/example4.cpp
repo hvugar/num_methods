@@ -3,11 +3,11 @@
 void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     Example4 e;
-    e.h = 0.01;
-    e.N = 100;
+    e.h = 0.001;
+    e.N = 1000;
     e.F = e.N/10;
     e.n = 3;
-    e.K = 2;
+    e.K = 4;
     e.w = 14;
     e.p = 10;
 
@@ -15,7 +15,7 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     if (e.K==2)
     {
         s[0].push_back(0); s[0].push_back(2*e.F); s[0].push_back(5*e.F); s[0].push_back(8*e.F); s[0].push_back(9*e.F); s[0].push_back(10*e.F);
-        s[1].push_back(0); s[1].push_back(1);     s[1].push_back(2);     s[1].push_back(3);     s[1].push_back(4);
+        s[1].push_back(0); s[1].push_back(1);     s[1].push_back(2);
     }
     if (e.K==4)
     {
@@ -32,16 +32,16 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         s[3].push_back(0); s[3].push_back(1);     s[3].push_back(2);     s[3].push_back(3);     s[3].push_back(4);     s[3].push_back(5);    s[3].push_back(6);
     }
 
-    //    IPrinter::printSeperatorLine(NULL,'-',stdout);
-    //    DoubleVector x(e.n*e.K);
-    //    for (unsigned int i=0; i<e.K; i++)
-    //    {
-    //        for (unsigned int j=0; j<e.n; j++)
-    //        {
-    //            x.at(i*e.n+j) = e.fx(j+1,i);
-    //        }
-    //    }
-    //    IPrinter::print(x,x.size(),e.w,e.p,stdout);
+//        IPrinter::printSeperatorLine(NULL,'-',stdout);
+//        DoubleVector x(e.n*e.K);
+//        for (unsigned int i=0; i<e.K; i++)
+//        {
+//            for (unsigned int j=0; j<e.n; j++)
+//            {
+//                x.at(i*e.n+j) = e.fx(j+1,i);
+//            }
+//        }
+//        IPrinter::print(x,x.size(),e.w,e.p,stdout);
     IPrinter::printSeperatorLine(NULL,'-',stdout);
 
     //--------------------------------------------------------------------------
@@ -67,6 +67,9 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     puts("Method #1");
     IPrinter::printSeperatorLine(NULL,'-', stdout);
     e.calculateM1(s, rx, nx);
+    double norm1 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm1 += (rx.row(0).at(i)-nx.row(0).at(i))*(rx.row(0).at(i)-nx.row(0).at(i)); printf("norm1: %f\n", sqrt(norm1));
+    double norm2 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm2 += (rx.row(1).at(i)-nx.row(1).at(i))*(rx.row(1).at(i)-nx.row(1).at(i)); printf("norm2: %f\n", sqrt(norm2));
+    double norm3 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm3 += (rx.row(2).at(i)-nx.row(2).at(i))*(rx.row(2).at(i)-nx.row(2).at(i)); printf("norm3: %f\n", sqrt(norm3));
     //--------------------------------------------------------------------------
     //    puts("Method #2");
     //    IPrinter::printSeperatorLine(NULL,'-', stdout);
@@ -77,12 +80,6 @@ void Example4::qovmaM1R2L(const std::vector<DoubleMatrix> &gamma, DoubleVector &
 {
     unsigned int L = s.size();
     std::vector<DoubleMatrix> betta(N+1);
-    printf("--- %d\n", gamma.size());
-    printf("--- %d %d %d\n", 0, gamma[0].rows(), gamma[0].cols());
-    printf("--- %d %d %d\n", 1, gamma[1].rows(), gamma[1].cols());
-    printf("--- %d %d %d\n", 2, gamma[2].rows(), gamma[2].cols());
-    printf("--- %d %d %d\n", 3, gamma[3].rows(), gamma[3].cols());
-    printf("--- %d %d %d\n", 4, gamma[4].rows(), gamma[4].cols());
 
     unsigned int cur = L-1;
     unsigned int start = s[cur]; printf("11114 %d\n", start);
@@ -91,10 +88,11 @@ void Example4::qovmaM1R2L(const std::vector<DoubleMatrix> &gamma, DoubleVector &
         if (start-i == s[cur])
         {
             betta[start-i] = gamma[cur--];
-            printf("11119 %d %d %d\n", i, betta[start-i].rows(), betta[start-i].cols());
         }
         else
+        {
             betta[start-i].resize(n,n,0.0);
+        }
     }
     stdDoubleMatrixVector A;
     initAMatrices(A);
@@ -220,7 +218,14 @@ void Example4::calculateNX(const stdDoubleMatrixVector &rx, DoubleVector &x1, Do
     for (unsigned int k=K; k<=N; k++)
     {
         updateAMatrices(A,k);
-        nx.at(k) = A[1]*nx.at(k-1) + A[2]*nx.at(k-2) + A[3]*nx.at(k-3) + A[4]*nx.at(k-4) + A[0];
+        if (K==4)
+        {
+            nx.at(k) = A[1]*nx.at(k-1) + A[2]*nx.at(k-2) + A[3]*nx.at(k-3) + A[4]*nx.at(k-4) + A[0];
+        }
+        if (K==2)
+        {
+            nx.at(k) = A[1]*nx.at(k-1) + A[2]*nx.at(k-2) + A[0];
+        }
 
         x1 << nx.at(k).at(0);
         x2 << nx.at(k).at(1);
@@ -234,10 +239,18 @@ void Example4::calculateM1(const std::vector<unsigned int> *s, const DoubleMatri
     DoubleMatrix M(K*n, K*n, 0.0);
     DoubleVector B(K*n,0.0);
 
-    calculateM1BE(0,s[0],nx,M,B);
-    calculateM1BE(1,s[1],nx,M,B);
-    //calculateM1BE(2,s[2],nx,M,B);
-    //calculateM1BE(3,s[3],nx,M,B);
+    if (K==4)
+    {
+        calculateM1BE(0,s[0],nx,M,B);
+        calculateM1BE(1,s[1],nx,M,B);
+        calculateM1BE(2,s[2],nx,M,B);
+        calculateM1BE(3,s[3],nx,M,B);
+    }
+    if (K==2)
+    {
+        calculateM1BE(0,s[0],nx,M,B);
+        calculateM1BE(1,s[1],nx,M,B);
+    }
 
     printf("det: %14.10f\n",M.determinant());
 
@@ -249,9 +262,18 @@ void Example4::calculateM1(const std::vector<unsigned int> *s, const DoubleMatri
     IPrinter::printSeperatorLine(NULL,'-',stdout);
 
     DoubleMatrix cx(n,K);
-    cx.at(0,0) = x[0]; cx.at(0,1) = x[3]; cx.at(0,2) = x[6]; cx.at(0,3) = x[9];
-    cx.at(1,0) = x[1]; cx.at(1,1) = x[4]; cx.at(1,2) = x[7]; cx.at(1,3) = x[10];
-    cx.at(2,0) = x[2]; cx.at(2,1) = x[5]; cx.at(2,2) = x[8]; cx.at(2,3) = x[11];
+    if (K==4)
+    {
+        cx.at(0,0) = x[0]; cx.at(0,1) = x[3]; cx.at(0,2) = x[6]; cx.at(0,3) = x[9];
+        cx.at(1,0) = x[1]; cx.at(1,1) = x[4]; cx.at(1,2) = x[7]; cx.at(1,3) = x[10];
+        cx.at(2,0) = x[2]; cx.at(2,1) = x[5]; cx.at(2,2) = x[8]; cx.at(2,3) = x[11];
+    }
+    if (K==2)
+    {
+        cx.at(0,0) = x[0]; cx.at(0,1) = x[3];
+        cx.at(1,0) = x[1]; cx.at(1,1) = x[4];
+        cx.at(2,0) = x[2]; cx.at(2,1) = x[5];
+    }
 
     DoubleMatrix nx1;
     calculateNX(cx,nx1);
@@ -269,30 +291,30 @@ void Example4::calculateM1BE(unsigned int c, const std::vector<unsigned int> s, 
     fillGamma(GAMMA, ETA, c, K);
     if (c == 0) { for (unsigned int i=0; i<L; i++) ETA = GAMMA[i]*nx.col(s[i]) + ETA; }
 
-    //    if (c == 0)
-    //    {
-    //        IPrinter::printSeperatorLine(NULL, '+', stdout);
-    //        printf("%f %f %f | %f\n", GAMMA[0].at(0,0), GAMMA[0].at(0,1), GAMMA[0].at(0,2), ETA.at(0));
-    //        printf("%f %f %f | %f\n", GAMMA[0].at(1,0), GAMMA[0].at(1,1), GAMMA[0].at(1,2), ETA.at(1));
-    //        printf("%f %f %f | %f\n", GAMMA[0].at(2,0), GAMMA[0].at(2,1), GAMMA[0].at(2,2), ETA.at(2));
-    //        IPrinter::printSeperatorLine(NULL, '+', stdout);
-    //        printf("%f %f %f | %f\n", GAMMA[1].at(0,0), GAMMA[1].at(0,1), GAMMA[1].at(0,2), ETA.at(0));
-    //        printf("%f %f %f | %f\n", GAMMA[1].at(1,0), GAMMA[1].at(1,1), GAMMA[1].at(1,2), ETA.at(1));
-    //        printf("%f %f %f | %f\n", GAMMA[1].at(2,0), GAMMA[1].at(2,1), GAMMA[1].at(2,2), ETA.at(2));
-    //        IPrinter::printSeperatorLine(NULL, '+', stdout);
-    //        printf("%f %f %f | %f\n", GAMMA[2].at(0,0), GAMMA[2].at(0,1), GAMMA[2].at(0,2), ETA.at(0));
-    //        printf("%f %f %f | %f\n", GAMMA[2].at(1,0), GAMMA[2].at(1,1), GAMMA[2].at(1,2), ETA.at(1));
-    //        printf("%f %f %f | %f\n", GAMMA[2].at(2,0), GAMMA[2].at(2,1), GAMMA[2].at(2,2), ETA.at(2));
-    //        IPrinter::printSeperatorLine(NULL, '+', stdout);
-    //        printf("%f %f %f | %f\n", GAMMA[3].at(0,0), GAMMA[3].at(0,1), GAMMA[3].at(0,2), ETA.at(0));
-    //        printf("%f %f %f | %f\n", GAMMA[3].at(1,0), GAMMA[3].at(1,1), GAMMA[3].at(1,2), ETA.at(1));
-    //        printf("%f %f %f | %f\n", GAMMA[3].at(2,0), GAMMA[3].at(2,1), GAMMA[3].at(2,2), ETA.at(2));
-    //        IPrinter::printSeperatorLine(NULL, '+', stdout);
-    //        printf("%f %f %f | %f\n", GAMMA[4].at(0,0), GAMMA[4].at(0,1), GAMMA[4].at(0,2), ETA.at(0));
-    //        printf("%f %f %f | %f\n", GAMMA[4].at(1,0), GAMMA[4].at(1,1), GAMMA[4].at(1,2), ETA.at(1));
-    //        printf("%f %f %f | %f\n", GAMMA[4].at(2,0), GAMMA[4].at(2,1), GAMMA[4].at(2,2), ETA.at(2));
-    //        IPrinter::printSeperatorLine(NULL, '+', stdout);
-    //    }
+//        if (c == 0)
+//        {
+//            IPrinter::printSeperatorLine(NULL, '+', stdout);
+//            printf("%f %f %f | %f\n", GAMMA[0].at(0,0), GAMMA[0].at(0,1), GAMMA[0].at(0,2), ETA.at(0));
+//            printf("%f %f %f | %f\n", GAMMA[0].at(1,0), GAMMA[0].at(1,1), GAMMA[0].at(1,2), ETA.at(1));
+//            printf("%f %f %f | %f\n", GAMMA[0].at(2,0), GAMMA[0].at(2,1), GAMMA[0].at(2,2), ETA.at(2));
+//            IPrinter::printSeperatorLine(NULL, '+', stdout);
+//            printf("%f %f %f | %f\n", GAMMA[1].at(0,0), GAMMA[1].at(0,1), GAMMA[1].at(0,2), ETA.at(0));
+//            printf("%f %f %f | %f\n", GAMMA[1].at(1,0), GAMMA[1].at(1,1), GAMMA[1].at(1,2), ETA.at(1));
+//            printf("%f %f %f | %f\n", GAMMA[1].at(2,0), GAMMA[1].at(2,1), GAMMA[1].at(2,2), ETA.at(2));
+//            IPrinter::printSeperatorLine(NULL, '+', stdout);
+//            printf("%f %f %f | %f\n", GAMMA[2].at(0,0), GAMMA[2].at(0,1), GAMMA[2].at(0,2), ETA.at(0));
+//            printf("%f %f %f | %f\n", GAMMA[2].at(1,0), GAMMA[2].at(1,1), GAMMA[2].at(1,2), ETA.at(1));
+//            printf("%f %f %f | %f\n", GAMMA[2].at(2,0), GAMMA[2].at(2,1), GAMMA[2].at(2,2), ETA.at(2));
+//            IPrinter::printSeperatorLine(NULL, '+', stdout);
+//            printf("%f %f %f | %f\n", GAMMA[3].at(0,0), GAMMA[3].at(0,1), GAMMA[3].at(0,2), ETA.at(0));
+//            printf("%f %f %f | %f\n", GAMMA[3].at(1,0), GAMMA[3].at(1,1), GAMMA[3].at(1,2), ETA.at(1));
+//            printf("%f %f %f | %f\n", GAMMA[3].at(2,0), GAMMA[3].at(2,1), GAMMA[3].at(2,2), ETA.at(2));
+//            IPrinter::printSeperatorLine(NULL, '+', stdout);
+//            printf("%f %f %f | %f\n", GAMMA[4].at(0,0), GAMMA[4].at(0,1), GAMMA[4].at(0,2), ETA.at(0));
+//            printf("%f %f %f | %f\n", GAMMA[4].at(1,0), GAMMA[4].at(1,1), GAMMA[4].at(1,2), ETA.at(1));
+//            printf("%f %f %f | %f\n", GAMMA[4].at(2,0), GAMMA[4].at(2,1), GAMMA[4].at(2,2), ETA.at(2));
+//            IPrinter::printSeperatorLine(NULL, '+', stdout);
+//        }
 
     std::vector<DoubleMatrix> betta;
     qovmaM1R2L(GAMMA, ETA, s, betta);
@@ -301,10 +323,18 @@ void Example4::calculateM1BE(unsigned int c, const std::vector<unsigned int> s, 
     {
         for (unsigned int j=0; j<n; j++)
         {
-            M[c*n+i][0*n+j] = betta[0][i][j];
-            M[c*n+i][1*n+j] = betta[1][i][j];
-            //M[c*n+i][2*n+j] = betta[2][i][j];
-            //M[c*n+i][3*n+j] = betta[3][i][j];
+            if (K==4)
+            {
+                M[c*n+i][0*n+j] = betta[0][i][j];
+                M[c*n+i][1*n+j] = betta[1][i][j];
+                M[c*n+i][2*n+j] = betta[2][i][j];
+                M[c*n+i][3*n+j] = betta[3][i][j];
+            }
+            if (K==2)
+            {
+                M[c*n+i][0*n+j] = betta[0][i][j];
+                M[c*n+i][1*n+j] = betta[1][i][j];
+            }
         }
         B.at(c*n+i) = ETA.at(i);
     }
@@ -452,10 +482,18 @@ void Example4::calculateNX(const DoubleMatrix &rx, DoubleMatrix &nx)
     {
         nx.resize(n,N+1,0.0);
 
-        nx.setColumn(0, rx.col(0));
-        nx.setColumn(1, rx.col(1));
-        //nx.setColumn(2, rx.col(2));
-        //nx.setColumn(3, rx.col(3));
+        if (K==4)
+        {
+            nx.setColumn(0, rx.col(0));
+            nx.setColumn(1, rx.col(1));
+            nx.setColumn(2, rx.col(2));
+            nx.setColumn(3, rx.col(3));
+        }
+        if (K==2)
+        {
+            nx.setColumn(0, rx.col(0));
+            nx.setColumn(1, rx.col(1));
+        }
 
         std::vector<DoubleMatrix> A;
         initAMatrices(A);
