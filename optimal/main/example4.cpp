@@ -7,11 +7,16 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     e.N = 100;
     e.F = e.N/10;
     e.n = 3;
-    e.K = 4;
+    e.K = 2;
     e.w = 14;
     e.p = 10;
 
     std::vector<unsigned int> *s = new std::vector<unsigned int>[e.K];
+    if (e.K==2)
+    {
+        s[0].push_back(0); s[0].push_back(2*e.F); s[0].push_back(5*e.F); s[0].push_back(8*e.F); s[0].push_back(9*e.F); s[0].push_back(10*e.F);
+        s[1].push_back(0); s[1].push_back(1);     s[1].push_back(2);     s[1].push_back(3);     s[1].push_back(4);
+    }
     if (e.K==4)
     {
         s[0].push_back(0); s[0].push_back(2*e.F); s[0].push_back(5*e.F); s[0].push_back(8*e.F); s[0].push_back(9*e.F); s[0].push_back(10*e.F);
@@ -27,20 +32,16 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         s[3].push_back(0); s[3].push_back(1);     s[3].push_back(2);     s[3].push_back(3);     s[3].push_back(4);     s[3].push_back(5);    s[3].push_back(6);
     }
 
-    //s[1].push_back(0); s[1].push_back(1*e.F); s[1].push_back(2*e.F); s[1].push_back(3*e.F); s[1].push_back(10*e.F);
-    //s[2].push_back(0); s[2].push_back(3*e.F); s[2].push_back(4*e.F); s[2].push_back(8*e.F); s[2].push_back(10*e.F);
-    //s[3].push_back(0); s[3].push_back(5*e.F); s[3].push_back(7*e.F); s[3].push_back(9*e.F); s[3].push_back(10*e.F);
-
-    IPrinter::printSeperatorLine(NULL,'-',stdout);
-    DoubleVector x(e.n*e.K);
-    for (unsigned int i=0; i<e.K; i++)
-    {
-        for (unsigned int j=0; j<e.n; j++)
-        {
-            x.at(i*e.n+j) = e.fx(j+1,i);
-        }
-    }
-    IPrinter::print(x,x.size(),e.w,e.p,stdout);
+    //    IPrinter::printSeperatorLine(NULL,'-',stdout);
+    //    DoubleVector x(e.n*e.K);
+    //    for (unsigned int i=0; i<e.K; i++)
+    //    {
+    //        for (unsigned int j=0; j<e.n; j++)
+    //        {
+    //            x.at(i*e.n+j) = e.fx(j+1,i);
+    //        }
+    //    }
+    //    IPrinter::print(x,x.size(),e.w,e.p,stdout);
     IPrinter::printSeperatorLine(NULL,'-',stdout);
 
     //--------------------------------------------------------------------------
@@ -67,26 +68,34 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     IPrinter::printSeperatorLine(NULL,'-', stdout);
     e.calculateM1(s, rx, nx);
     //--------------------------------------------------------------------------
-    puts("Method #2");
-    IPrinter::printSeperatorLine(NULL,'-', stdout);
-    e.calculateM2(s, rx, nx);
+    //    puts("Method #2");
+    //    IPrinter::printSeperatorLine(NULL,'-', stdout);
+    //    e.calculateM2(s, rx, nx);
 }
 
 void Example4::qovmaM1R2L(const std::vector<DoubleMatrix> &gamma, DoubleVector &eta, const std::vector<unsigned int> &s, std::vector<DoubleMatrix> &BETTA)
 {
     unsigned int L = s.size();
     std::vector<DoubleMatrix> betta(N+1);
+    printf("--- %d\n", gamma.size());
+    printf("--- %d %d %d\n", 0, gamma[0].rows(), gamma[0].cols());
+    printf("--- %d %d %d\n", 1, gamma[1].rows(), gamma[1].cols());
+    printf("--- %d %d %d\n", 2, gamma[2].rows(), gamma[2].cols());
+    printf("--- %d %d %d\n", 3, gamma[3].rows(), gamma[3].cols());
+    printf("--- %d %d %d\n", 4, gamma[4].rows(), gamma[4].cols());
 
     unsigned int cur = L-1;
-    unsigned int start = s[cur];
+    unsigned int start = s[cur]; printf("11114 %d\n", start);
     for (unsigned int i=0; i<K; i++)
     {
         if (start-i == s[cur])
+        {
             betta[start-i] = gamma[cur--];
+            printf("11119 %d %d %d\n", i, betta[start-i].rows(), betta[start-i].cols());
+        }
         else
             betta[start-i].resize(n,n,0.0);
     }
-
     stdDoubleMatrixVector A;
     initAMatrices(A);
     for (unsigned int k=start; k>=K; k--)
@@ -105,7 +114,6 @@ void Example4::qovmaM1R2L(const std::vector<DoubleMatrix> &gamma, DoubleVector &
         }
     }
     clearAMatrices(A);
-
     BETTA.clear();
     BETTA.resize(K);
     for (unsigned int i=0; i<K; i++) BETTA[i] = betta[i];
@@ -114,70 +122,53 @@ void Example4::qovmaM1R2L(const std::vector<DoubleMatrix> &gamma, DoubleVector &
     betta.clear();
 }
 
-void Example4::calculateM1BE(unsigned int c, const std::vector<unsigned int> s, const DoubleMatrix &nx, DoubleMatrix &M, DoubleVector &B)
-{
-    unsigned int L = s.size();
-    std::vector<DoubleMatrix> GAMMA(L);
-    DoubleVector ETA(n,0.0);
-
-    fillGamma(GAMMA, ETA, c, K);
-
-    if (c == 0) { for (unsigned int i=0; i<L; i++) ETA = GAMMA[i]*nx.col(s[i]) + ETA; }
-
-    std::vector<DoubleMatrix> betta;
-    qovmaM1R2L(GAMMA, ETA, s, betta);
-
-    for (unsigned int i=0; i<n; i++)
-    {
-        for (unsigned int j=0; j<n; j++)
-        {
-            M[c*n+i][0*n+j] = betta[0][i][j];
-            M[c*n+i][1*n+j] = betta[1][i][j];
-            M[c*n+i][2*n+j] = betta[2][i][j];
-            M[c*n+i][3*n+j] = betta[3][i][j];
-        }
-        B.at(c*n+i) = ETA.at(i);
-    }
-
-    ETA.clear();
-    for (unsigned int i=0; i<L; i++) GAMMA[i].clear();
-    GAMMA.clear();
-    //    for (unsigned int i=0; i<=N; i++) betta[i].clear();
-    //    betta.clear();
-}
-
 void Example4::initAMatrices(std::vector<DoubleMatrix> &A)
 {
     A.clear();
-    A.resize(5);
+    A.resize(K+1);
     A[0].resize(n,1);
-    A[1].resize(n,n);
-    A[2].resize(n,n);
-    A[3].resize(n,n);
-    A[4].resize(n,n);
+    for (unsigned int i=1; i<=K; i++) A[i].resize(n,n);
 }
 
 void Example4::updateAMatrices(std::vector<DoubleMatrix> &A, unsigned int k)
 {
-    A[1].at(0,0) = 0.48*h*a(1,1,k-1)+1.92; A[1].at(0,1) = 0.48*h*a(1,2,k-1);      A[1].at(0,2) = 0.48*h*a(1,3,k-1);
-    A[1].at(1,0) = 0.48*h*a(2,1,k-1);      A[1].at(1,1) = 0.48*h*a(2,2,k-1)+1.92; A[1].at(1,2) = 0.48*h*a(2,3,k-1);
-    A[1].at(2,0) = 0.48*h*a(3,1,k-1);      A[1].at(2,1) = 0.48*h*a(3,2,k-1);      A[1].at(2,2) = 0.48*h*a(3,3,k-1)+1.92;
+    if (K==4)
+    {
+        A[1].at(0,0) = 0.48*h*a(1,1,k-1)+1.92; A[1].at(0,1) = 0.48*h*a(1,2,k-1);      A[1].at(0,2) = 0.48*h*a(1,3,k-1);
+        A[1].at(1,0) = 0.48*h*a(2,1,k-1);      A[1].at(1,1) = 0.48*h*a(2,2,k-1)+1.92; A[1].at(1,2) = 0.48*h*a(2,3,k-1);
+        A[1].at(2,0) = 0.48*h*a(3,1,k-1);      A[1].at(2,1) = 0.48*h*a(3,2,k-1);      A[1].at(2,2) = 0.48*h*a(3,3,k-1)+1.92;
 
-    A[2].at(0,0) = -1.44; A[2].at(0,1) = +0.00; A[2].at(0,2) = +0.00;
-    A[2].at(1,0) = +0.00; A[2].at(1,1) = -1.44; A[2].at(1,2) = +0.00;
-    A[2].at(2,0) = +0.00; A[2].at(2,1) = +0.00; A[2].at(2,2) = -1.44;
+        A[2].at(0,0) = -1.44; A[2].at(0,1) = +0.00; A[2].at(0,2) = +0.00;
+        A[2].at(1,0) = +0.00; A[2].at(1,1) = -1.44; A[2].at(1,2) = +0.00;
+        A[2].at(2,0) = +0.00; A[2].at(2,1) = +0.00; A[2].at(2,2) = -1.44;
 
-    A[3].at(0,0) = +0.64; A[3].at(0,1) = +0.00; A[3].at(0,2) = +0.00;
-    A[3].at(1,0) = +0.00; A[3].at(1,1) = +0.64; A[3].at(1,2) = +0.00;
-    A[3].at(2,0) = +0.00; A[3].at(2,1) = +0.00; A[3].at(2,2) = +0.64;
+        A[3].at(0,0) = +0.64; A[3].at(0,1) = +0.00; A[3].at(0,2) = +0.00;
+        A[3].at(1,0) = +0.00; A[3].at(1,1) = +0.64; A[3].at(1,2) = +0.00;
+        A[3].at(2,0) = +0.00; A[3].at(2,1) = +0.00; A[3].at(2,2) = +0.64;
 
-    A[4].at(0,0) = -0.12; A[4].at(0,1) = +0.00; A[4].at(0,2) = +0.00;
-    A[4].at(1,0) = +0.00; A[4].at(1,1) = -0.12; A[4].at(1,2) = +0.00;
-    A[4].at(2,0) = +0.00; A[4].at(2,1) = +0.00; A[4].at(2,2) = -0.12;
+        A[4].at(0,0) = -0.12; A[4].at(0,1) = +0.00; A[4].at(0,2) = +0.00;
+        A[4].at(1,0) = +0.00; A[4].at(1,1) = -0.12; A[4].at(1,2) = +0.00;
+        A[4].at(2,0) = +0.00; A[4].at(2,1) = +0.00; A[4].at(2,2) = -0.12;
 
-    A[0].at(0,0) = 0.48*h*b(1,k-1);
-    A[0].at(1,0) = 0.48*h*b(2,k-1);
-    A[0].at(2,0) = 0.48*h*b(3,k-1);
+        A[0].at(0,0) = 0.48*h*b(1,k-1);
+        A[0].at(1,0) = 0.48*h*b(2,k-1);
+        A[0].at(2,0) = 0.48*h*b(3,k-1);
+    }
+    if (K==2)
+    {
+        A[1].at(0,0) = (2.0*h*a(1,1,k-1)+4.0)/3.0; A[1].at(0,1) = (2.0*h*a(1,2,k-1))/3.0;      A[1].at(0,2) = (2.0*h*a(1,3,k-1))/3.0;
+        A[1].at(1,0) = (2.0*h*a(2,1,k-1))/3.0;     A[1].at(1,1) = (2.0*h*a(2,2,k-1)+4.0)/3.0;  A[1].at(1,2) = (2.0*h*a(2,3,k-1))/3.0;
+        A[1].at(2,0) = (2.0*h*a(3,1,k-1))/3.0;     A[1].at(2,1) = (2.0*h*a(3,2,k-1))/3.0;      A[1].at(2,2) = (2.0*h*a(3,3,k-1)+4.0)/3.0;
+
+        A[2].at(0,0) = -1.0/3.0; A[2].at(0,1) = +0.00;    A[2].at(0,2) = +0.00;
+        A[2].at(1,0) = +0.00;    A[2].at(1,1) = -1.0/3.0; A[2].at(1,2) = +0.00;
+        A[2].at(2,0) = +0.00;    A[2].at(2,1) = +0.00;    A[2].at(2,2) = -1.0/3.0;
+
+        A[0].at(0,0) = (2.0*h*b(1,k-1))/3.0;
+        A[0].at(1,0) = (2.0*h*b(2,k-1))/3.0;
+        A[0].at(2,0) = (2.0*h*b(3,k-1))/3.0;
+    }
+
 
     //    double m1 = 25.0 - 12.0*h*a(1,1,k);
     //    double m2 = 25.0 - 12.0*h*a(2,2,k);
@@ -206,10 +197,7 @@ void Example4::updateAMatrices(std::vector<DoubleMatrix> &A, unsigned int k)
 
 void Example4::clearAMatrices(std::vector<DoubleMatrix> &A)
 {
-    A[1].clear();
-    A[2].clear();
-    A[3].clear();
-    A[4].clear();
+    for (unsigned int i=1; i<=K; i++) A[i].clear();
     A[0].clear();
     A.clear();
 }
@@ -248,8 +236,8 @@ void Example4::calculateM1(const std::vector<unsigned int> *s, const DoubleMatri
 
     calculateM1BE(0,s[0],nx,M,B);
     calculateM1BE(1,s[1],nx,M,B);
-    calculateM1BE(2,s[2],nx,M,B);
-    calculateM1BE(3,s[3],nx,M,B);
+    //calculateM1BE(2,s[2],nx,M,B);
+    //calculateM1BE(3,s[3],nx,M,B);
 
     printf("det: %14.10f\n",M.determinant());
 
@@ -271,6 +259,60 @@ void Example4::calculateM1(const std::vector<unsigned int> *s, const DoubleMatri
     IPrinter::printVector(w,p,nx1.row(1),"x2: ");
     IPrinter::printVector(w,p,nx1.row(2),"x3: ");
     IPrinter::printSeperatorLine(NULL,'-', stdout);
+}
+
+void Example4::calculateM1BE(unsigned int c, const std::vector<unsigned int> s, const DoubleMatrix &nx, DoubleMatrix &M, DoubleVector &B)
+{
+    unsigned int L = s.size();
+    std::vector<DoubleMatrix> GAMMA(L);
+    DoubleVector ETA(n,0.0);
+    fillGamma(GAMMA, ETA, c, K);
+    if (c == 0) { for (unsigned int i=0; i<L; i++) ETA = GAMMA[i]*nx.col(s[i]) + ETA; }
+
+    //    if (c == 0)
+    //    {
+    //        IPrinter::printSeperatorLine(NULL, '+', stdout);
+    //        printf("%f %f %f | %f\n", GAMMA[0].at(0,0), GAMMA[0].at(0,1), GAMMA[0].at(0,2), ETA.at(0));
+    //        printf("%f %f %f | %f\n", GAMMA[0].at(1,0), GAMMA[0].at(1,1), GAMMA[0].at(1,2), ETA.at(1));
+    //        printf("%f %f %f | %f\n", GAMMA[0].at(2,0), GAMMA[0].at(2,1), GAMMA[0].at(2,2), ETA.at(2));
+    //        IPrinter::printSeperatorLine(NULL, '+', stdout);
+    //        printf("%f %f %f | %f\n", GAMMA[1].at(0,0), GAMMA[1].at(0,1), GAMMA[1].at(0,2), ETA.at(0));
+    //        printf("%f %f %f | %f\n", GAMMA[1].at(1,0), GAMMA[1].at(1,1), GAMMA[1].at(1,2), ETA.at(1));
+    //        printf("%f %f %f | %f\n", GAMMA[1].at(2,0), GAMMA[1].at(2,1), GAMMA[1].at(2,2), ETA.at(2));
+    //        IPrinter::printSeperatorLine(NULL, '+', stdout);
+    //        printf("%f %f %f | %f\n", GAMMA[2].at(0,0), GAMMA[2].at(0,1), GAMMA[2].at(0,2), ETA.at(0));
+    //        printf("%f %f %f | %f\n", GAMMA[2].at(1,0), GAMMA[2].at(1,1), GAMMA[2].at(1,2), ETA.at(1));
+    //        printf("%f %f %f | %f\n", GAMMA[2].at(2,0), GAMMA[2].at(2,1), GAMMA[2].at(2,2), ETA.at(2));
+    //        IPrinter::printSeperatorLine(NULL, '+', stdout);
+    //        printf("%f %f %f | %f\n", GAMMA[3].at(0,0), GAMMA[3].at(0,1), GAMMA[3].at(0,2), ETA.at(0));
+    //        printf("%f %f %f | %f\n", GAMMA[3].at(1,0), GAMMA[3].at(1,1), GAMMA[3].at(1,2), ETA.at(1));
+    //        printf("%f %f %f | %f\n", GAMMA[3].at(2,0), GAMMA[3].at(2,1), GAMMA[3].at(2,2), ETA.at(2));
+    //        IPrinter::printSeperatorLine(NULL, '+', stdout);
+    //        printf("%f %f %f | %f\n", GAMMA[4].at(0,0), GAMMA[4].at(0,1), GAMMA[4].at(0,2), ETA.at(0));
+    //        printf("%f %f %f | %f\n", GAMMA[4].at(1,0), GAMMA[4].at(1,1), GAMMA[4].at(1,2), ETA.at(1));
+    //        printf("%f %f %f | %f\n", GAMMA[4].at(2,0), GAMMA[4].at(2,1), GAMMA[4].at(2,2), ETA.at(2));
+    //        IPrinter::printSeperatorLine(NULL, '+', stdout);
+    //    }
+
+    std::vector<DoubleMatrix> betta;
+    qovmaM1R2L(GAMMA, ETA, s, betta);
+
+    for (unsigned int i=0; i<n; i++)
+    {
+        for (unsigned int j=0; j<n; j++)
+        {
+            M[c*n+i][0*n+j] = betta[0][i][j];
+            M[c*n+i][1*n+j] = betta[1][i][j];
+            //M[c*n+i][2*n+j] = betta[2][i][j];
+            //M[c*n+i][3*n+j] = betta[3][i][j];
+        }
+        B.at(c*n+i) = ETA.at(i);
+    }
+    ETA.clear();
+    for (unsigned int i=0; i<L; i++) GAMMA[i].clear();
+    GAMMA.clear();
+    //    for (unsigned int i=0; i<=N; i++) betta[i].clear();
+    //    betta.clear();
 }
 
 void Example4::calculateM2(const std::vector<unsigned int> *s, const DoubleMatrix &rx UNUSED_PARAM, const DoubleMatrix &nx UNUSED_PARAM)
@@ -412,16 +454,24 @@ void Example4::calculateNX(const DoubleMatrix &rx, DoubleMatrix &nx)
 
         nx.setColumn(0, rx.col(0));
         nx.setColumn(1, rx.col(1));
-        nx.setColumn(2, rx.col(2));
-        nx.setColumn(3, rx.col(3));
+        //nx.setColumn(2, rx.col(2));
+        //nx.setColumn(3, rx.col(3));
 
         std::vector<DoubleMatrix> A;
         initAMatrices(A);
         for (unsigned int k=K; k<=N; k++)
         {
             updateAMatrices(A,k);
-            DoubleVector ck = A[1]*nx.col(k-1) + A[2]*nx.col(k-2) + A[3]*nx.col(k-3) + A[4]*nx.col(k-4) + A[0];
-            nx.setColumn(k,ck);
+            if (K==4)
+            {
+                DoubleVector ck = A[1]*nx.col(k-1) + A[2]*nx.col(k-2) + A[3]*nx.col(k-3) + A[4]*nx.col(k-4) + A[0];
+                nx.setColumn(k,ck);
+            }
+            if (K==2)
+            {
+                DoubleVector ck = A[1]*nx.col(k-1) + A[2]*nx.col(k-2) + A[0];
+                nx.setColumn(k,ck);
+            }
         }
         clearAMatrices(A);
     }
@@ -508,7 +558,7 @@ void Example4::calculatePQ(std::vector<stdDoubleMatrixVector> &P, stdDoubleMatri
 void Example4::fillGamma(stdDoubleMatrixVector &GAMMA, DoubleVector &ETA, unsigned int s, unsigned int k)
 {
     unsigned int L = GAMMA.size();
-    if (k == 4)
+    if (K == 4)
     {
         if (s == 0)
         {
@@ -520,7 +570,7 @@ void Example4::fillGamma(stdDoubleMatrixVector &GAMMA, DoubleVector &ETA, unsign
                 {
                     for (unsigned int i2=0; i2<n; i2++)
                     {
-                        GAMMA[i].at(i1,i2) = sin(i1+i)+cos(i2+i);
+                        GAMMA[i].at(i1,i2) = (rand()%100)*0.1;//sin(i1+i)+cos(i2+i);
                     }
                 }
                 //eta = eta + DoubleVector(GAMMA[i]*nx.col(s[i]));
@@ -600,6 +650,41 @@ void Example4::fillGamma(stdDoubleMatrixVector &GAMMA, DoubleVector &ETA, unsign
             ETA.at(0) = 12.0*h*b(1,3);
             ETA.at(1) = 12.0*h*b(2,3);
             ETA.at(2) = 12.0*h*b(3,3);
+        }
+    }
+
+    if (K == 2)
+    {
+        if (s == 0)
+        {
+            for (unsigned int i=0; i<L; i++)
+            {
+                GAMMA[i].resize(n,n,1.0);
+                for (unsigned int i1=0; i1<n; i1++)
+                {
+                    for (unsigned int i2=0; i2<n; i2++)
+                    {
+                        GAMMA[i].at(i1,i2) = (rand()%100)*0.1;
+                    }
+                }
+            }
+        }
+        if (s == 1)
+        {
+            GAMMA[0].resize(n,n,0.0);
+            GAMMA[0].at(0,0) = GAMMA[0].at(1,1) = GAMMA[0].at(2,2) = -1.0;
+
+            GAMMA[1].resize(n,n,0.0);
+            GAMMA[1].at(0,0) = -2.0*h*a(1,1,2); GAMMA[1].at(0,1) = -2.0*h*a(1,2,2); GAMMA[1].at(0,2) = -2.0*h*a(1,3,2);
+            GAMMA[1].at(1,0) = -2.0*h*a(2,1,2); GAMMA[1].at(1,1) = -2.0*h*a(2,2,2); GAMMA[1].at(1,2) = -2.0*h*a(2,3,2);
+            GAMMA[1].at(2,0) = -2.0*h*a(3,1,2); GAMMA[1].at(2,1) = -2.0*h*a(3,2,2); GAMMA[1].at(2,2) = -2.0*h*a(3,3,2);
+
+            GAMMA[2].resize(n,n,0.0);
+            GAMMA[2].at(0,0) = GAMMA[2].at(1,1) = GAMMA[2].at(2,2) = +1.0;
+
+            ETA.at(0) = 2.0*h*b(1,2);
+            ETA.at(1) = 2.0*h*b(2,2);
+            ETA.at(2) = 2.0*h*b(3,2);
         }
     }
 }

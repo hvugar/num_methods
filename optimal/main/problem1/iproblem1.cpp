@@ -416,7 +416,6 @@ double IProblem1::vf(unsigned int m, const DoubleVector &k, const DoubleVector &
     return v;
 }
 
-
 double IProblem1::sgn_min(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
 {
 

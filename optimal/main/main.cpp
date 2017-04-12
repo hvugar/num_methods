@@ -11,10 +11,10 @@
 #include "problem1/article/art_problem1L2.h"
 
 //#include "loadedsystems.h"
-//#include "example1.h"
-//#include "example2.h"
-//#include "example3.h"
-//#include "example4.h"
+#include "example1.h"
+#include "example2.h"
+#include "example3.h"
+#include "example4.h"
 //#include "example5.h"
 
 //#include <../border/borderparabolicd.h>
@@ -43,15 +43,15 @@
 #include <../rnfunction/rosenbrock.h>
 #include <../rnfunction/quadraticfunction.h>
 
-//#include "bordertest.h"
-//#include "bordertest1.h"
-//#include "sampleboundaryproblem1.h"
+#include "bordertest.h"
+#include "bordertest1.h"
+#include "sampleboundaryproblem1.h"
 
 //#include <xlsxwriter.h>
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    srand(time(NULL));
+    //srand(time(NULL));
 
     //HyperbolicControl2DM::Main(argc, argv);
     //HyperbolicControl2DMX::Main(argc, argv);
@@ -60,12 +60,14 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //BorderTest::Main(argc, argv);
     //BorderTest1::Main(argc, argv);
     //Example2::Main(argc, argv);
+    Example4::Main(argc, argv);
+
     //Problem1::Main(argc, argv);
     //Problem1L2::Main(argc, argv);
     //Problem1L3::Main(argc, argv);
     //Problem1L2P::Main(argc, argv);
 
-    ArtProblem1L2::Main(argc, argv);
+    //ArtProblem1L2::Main(argc, argv);
 
     //Example4::Main(argc, argv);
     //BorderParabolicD::Main(argc, argv);
