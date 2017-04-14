@@ -8,8 +8,7 @@
 #include <math.h>
 #include <vector>
 
-#define SAMPLE_1
-//#define SAMPLE_2
+#define SAMPLE_4
 
 typedef std::vector<DoubleMatrix> stdDoubleMatrixVector;
 typedef std::vector<DoubleVector> stdDoubleVectorVector;
@@ -18,29 +17,35 @@ class Example4
 {
 public:
     double h;
-    unsigned int N = 1000;
-    unsigned int K = 4;
-    unsigned int n = 3;
-    unsigned int F = N/10;
-    unsigned int w = 12;
-    unsigned int p = 8;
+    unsigned int N;
+    unsigned int K;
+    unsigned int n;
+    unsigned int F;
+    unsigned int w;
+    unsigned int p;
 
     void static Main(int argc, char *argv[]);
 
-    double fx(unsigned int n, unsigned int i) const;
+    /**
+     * @brief fx
+     * @param i index of function
+     * @param k index of time
+     * @return
+     */
+    double fx(unsigned int i, unsigned int k) const;
 
     void calculateRX(DoubleMatrix &rx);
     void calculateNX(const DoubleMatrix &rx, DoubleMatrix &nx);
     void calculateRS(stdDoubleMatrixVector &rx);
 
     void initAMatrices(stdDoubleMatrixVector &A);
-    void updateAMatrices(stdDoubleMatrixVector &A, unsigned int k);
+    void updateAMatrices(std::vector<DoubleMatrix> &A, unsigned int k);
     void clearAMatrices(stdDoubleMatrixVector &A);
 
     void calculateNX(const stdDoubleMatrixVector &rx, DoubleVector &x1, DoubleVector &x2, DoubleVector &x3, stdDoubleVectorVector &nx);
 
     void calculateM1(const std::vector<unsigned int> *s, const DoubleMatrix &rx, const DoubleMatrix &nx);
-    void calculateM1BE(unsigned int c, const std::vector<unsigned int> s, const DoubleMatrix &nx, DoubleMatrix &M, DoubleVector &B);
+    void calculateM1BE(unsigned int c, const std::vector<unsigned int> s, const DoubleMatrix &rx, const DoubleMatrix &nx, DoubleMatrix &M, DoubleVector &B);
     void qovmaM1R2L(const std::vector<DoubleMatrix> &GAMMA, DoubleVector &ETA, const std::vector<unsigned int> &s, std::vector<DoubleMatrix> &BETTA);
 
     void calculateM2(const std::vector<unsigned int> *s, const DoubleMatrix &rx UNUSED_PARAM, const DoubleMatrix &nx UNUSED_PARAM);
