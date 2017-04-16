@@ -51,6 +51,9 @@
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
+    double phi = 1.6180339887498948482045868343656;
+    printf("%.24f %d\n", phi, sizeof(long double));
+
     //srand(time(NULL));
 
     //HyperbolicControl2DM::Main(argc, argv);

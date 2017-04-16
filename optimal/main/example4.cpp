@@ -4,34 +4,34 @@
 void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     Example4 e;
-    e.h = 0.001;
-    e.N = 1000;
+    e.h = 0.01;
+    e.N = 100;
     e.F = e.N/10;
     e.n = 3;
     e.K = 4;
     e.w = 12;
     e.p = 8;
 
-//    std::vector<unsigned int> *s = new std::vector<unsigned int>[e.K];
-//    if (e.K==2)
-//    {
-//        s[0].push_back(0); s[0].push_back(2*e.F); s[0].push_back(5*e.F); s[0].push_back(8*e.F); s[0].push_back(9*e.F); s[0].push_back(10*e.F);
-//        s[1].push_back(0); s[1].push_back(1);     s[1].push_back(2);
-//    }
-//    if (e.K==4)
-//    {
-//        s[0].push_back(0); s[0].push_back(2*e.F); s[0].push_back(5*e.F); s[0].push_back(8*e.F); s[0].push_back(9*e.F); s[0].push_back(10*e.F);
-//        s[1].push_back(0); s[1].push_back(1);     s[1].push_back(2);     s[1].push_back(3);     s[1].push_back(4);
-//        s[2].push_back(0); s[2].push_back(1);     s[2].push_back(2);     s[2].push_back(3);     s[2].push_back(4);
-//        s[3].push_back(0); s[3].push_back(1);     s[3].push_back(2);     s[3].push_back(3);     s[3].push_back(4);
-//    }
-//    if (e.K==6)
-//    {
-//        s[0].push_back(0); s[0].push_back(2*e.F); s[0].push_back(5*e.F); s[0].push_back(6*e.F); s[0].push_back(7*e.F); s[0].push_back(8*e.F);s[0].push_back(999); s[0].push_back(10*e.F);
-//        s[1].push_back(0); s[1].push_back(1);     s[1].push_back(2);     s[1].push_back(3);     s[1].push_back(4);     s[1].push_back(5);    s[1].push_back(6);
-//        s[2].push_back(0); s[2].push_back(1);     s[2].push_back(2);     s[2].push_back(3);     s[2].push_back(4);     s[2].push_back(5);    s[2].push_back(6);
-//        s[3].push_back(0); s[3].push_back(1);     s[3].push_back(2);     s[3].push_back(3);     s[3].push_back(4);     s[3].push_back(5);    s[3].push_back(6);
-//    }
+    //    std::vector<unsigned int> *s = new std::vector<unsigned int>[e.K];
+    //    if (e.K==2)
+    //    {
+    //        s[0].push_back(0); s[0].push_back(2*e.F); s[0].push_back(5*e.F); s[0].push_back(8*e.F); s[0].push_back(9*e.F); s[0].push_back(10*e.F);
+    //        s[1].push_back(0); s[1].push_back(1);     s[1].push_back(2);
+    //    }
+    //    if (e.K==4)
+    //    {
+    //        s[0].push_back(0); s[0].push_back(2*e.F); s[0].push_back(5*e.F); s[0].push_back(8*e.F); s[0].push_back(9*e.F); s[0].push_back(10*e.F);
+    //        s[1].push_back(0); s[1].push_back(1);     s[1].push_back(2);     s[1].push_back(3);     s[1].push_back(4);
+    //        s[2].push_back(0); s[2].push_back(1);     s[2].push_back(2);     s[2].push_back(3);     s[2].push_back(4);
+    //        s[3].push_back(0); s[3].push_back(1);     s[3].push_back(2);     s[3].push_back(3);     s[3].push_back(4);
+    //    }
+    //    if (e.K==6)
+    //    {
+    //        s[0].push_back(0); s[0].push_back(2*e.F); s[0].push_back(5*e.F); s[0].push_back(6*e.F); s[0].push_back(7*e.F); s[0].push_back(8*e.F);s[0].push_back(999); s[0].push_back(10*e.F);
+    //        s[1].push_back(0); s[1].push_back(1);     s[1].push_back(2);     s[1].push_back(3);     s[1].push_back(4);     s[1].push_back(5);    s[1].push_back(6);
+    //        s[2].push_back(0); s[2].push_back(1);     s[2].push_back(2);     s[2].push_back(3);     s[2].push_back(4);     s[2].push_back(5);    s[2].push_back(6);
+    //        s[3].push_back(0); s[3].push_back(1);     s[3].push_back(2);     s[3].push_back(3);     s[3].push_back(4);     s[3].push_back(5);    s[3].push_back(6);
+    //    }
 
     //        IPrinter::printSeperatorLine(NULL,'-',stdout);
     //        DoubleVector x(e.n*e.K);
@@ -64,7 +64,9 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
             virtual double f(double t, const DoubleVector &x) const
             {
-                return 2.0*x[0] + 3.0*x[1] - x[2] - (2.0*sin(20.0*t*t) + 3.0*(cos(10.0*t) - sin(20.0*t)) - (t*t*t-sin(8.0*t)*sin(8.0*t))) + 40.0*t*cos(20.0*t*t);
+                return 2.0*x[0] + 3.0*x[1] - x[2]
+                        - (2.0*sin(20.0*t*t) + 3.0*(cos(10.0*t) - sin(20.0*t)) - (t*t*t-sin(8.0*t)*sin(8.0*t)))
+                        + 40.0*t*cos(20.0*t*t);
             }
         };
 
@@ -75,7 +77,9 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
             virtual double f(double t, const DoubleVector &x) const
             {
-                return 4.0*x[0] + 6.0*x[1] - 2.0*x[2] - (4.0*sin(20.0*t*t) + 6.0*(cos(10.0*t) - sin(20.0*t)) - 2.0*(t*t*t-sin(8.0*t)*sin(8.0*t))) - 10.0*sin(10.0*t) - 20.0*cos(20.0*t);
+                return 4.0*x[0] + 6.0*x[1] - 2.0*x[2]
+                        - (4.0*sin(20.0*t*t) + 6.0*(cos(10.0*t) - sin(20.0*t)) - 2.0*(t*t*t-sin(8.0*t)*sin(8.0*t)))
+                        - 10.0*sin(10.0*t) - 20.0*cos(20.0*t);
             }
         };
 
@@ -86,7 +90,9 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
             virtual double f(double t, const DoubleVector &x) const
             {
-                return -1.0*x[0] + 1.0*x[1] - 1.0*x[2] - (-sin(20.0*t*t) + (cos(10.0*t) - sin(20.0*t)) -(t*t*t-sin(8.0*t)*sin(8.0*t))) + 3.0*t*t - 16.0*cos(8.0*t)*sin(8.0*t);
+                return -1.0*x[0] + 1.0*x[1] - 1.0*x[2]
+                        - (-sin(20.0*t*t) + (cos(10.0*t) - sin(20.0*t)) -(t*t*t-sin(8.0*t)*sin(8.0*t)))
+                        + 3.0*t*t - 16.0*cos(8.0*t)*sin(8.0*t);
             }
         };
 
@@ -108,83 +114,84 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         ps.push_back(cp3);
 
         DoubleMatrix mx;
-        CauchyProblem::euler1(ps, 0.0, 0.001, 1000, mx);
+        CauchyProblem::rungeKutta(ps, 0.0, e.h, e.N, mx);
         IPrinter::printVector(e.w,e.p,mx.row(0),"x1: ");
         IPrinter::printVector(e.w,e.p,mx.row(1),"x2: ");
         IPrinter::printVector(e.w,e.p,mx.row(2),"x3: ");
     }
 
 
-//    {
-//        //--------------------------------------------------------------------------
-//        e.K = 1;
-//        printf("Initial first 3 points: K: %d \n", e.K);
-//        DoubleMatrix nx1;
-//        e.calculateNX(rx,nx1);
-//        IPrinter::printVector(e.w,e.p,nx1.row(0),"x1: ");
-//        IPrinter::printVector(e.w,e.p,nx1.row(1),"x2: ");
-//        IPrinter::printVector(e.w,e.p,nx1.row(2),"x3: ");
-//        IPrinter::printSeperatorLine(NULL,'-', stdout);
-//    }
+    //        {
+    //            //--------------------------------------------------------------------------
+    //            e.K = 1;
+    //            printf("Initial first 3 points: K: %d \n", e.K);
+    //            DoubleMatrix nx1;
+    //            e.calculateNX(rx,nx1);
+    //            IPrinter::printVector(e.w,e.p,nx1.row(0),"x1: ");
+    //            IPrinter::printVector(e.w,e.p,nx1.row(1),"x2: ");
+    //            IPrinter::printVector(e.w,e.p,nx1.row(2),"x3: ");
+    //            IPrinter::printSeperatorLine(NULL,'-', stdout);
+    //        }
+
+    //    {
+    //        //--------------------------------------------------------------------------
+    //        e.K = 2;
+    //        printf("Initial first 3 points: K: %d \n", e.K);
+    //        DoubleMatrix nx1;
+    //        e.calculateNX(rx,nx1);
+    //        IPrinter::printVector(e.w,e.p,nx1.row(0),"x1: ");
+    //        IPrinter::printVector(e.w,e.p,nx1.row(1),"x2: ");
+    //        IPrinter::printVector(e.w,e.p,nx1.row(2),"x3: ");
+    //        IPrinter::printSeperatorLine(NULL,'-', stdout);
+
+    //        //        //--------------------------------------------------------------------------
+    //        //        puts("Method #1");
+    //        //        IPrinter::printSeperatorLine(NULL,'-', stdout);
+    //        //        e.calculateM1(s, rx, nx1);
+    //        //        double norm1 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm1 += (rx.row(0).at(i)-nx1.row(0).at(i))*(rx.row(0).at(i)-nx1.row(0).at(i)); printf("norm1: %f\n", sqrt(norm1));
+    //        //        double norm2 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm2 += (rx.row(1).at(i)-nx1.row(1).at(i))*(rx.row(1).at(i)-nx1.row(1).at(i)); printf("norm2: %f\n", sqrt(norm2));
+    //        //        double norm3 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm3 += (rx.row(2).at(i)-nx1.row(2).at(i))*(rx.row(2).at(i)-nx1.row(2).at(i)); printf("norm3: %f\n", sqrt(norm3));
+    //    }
 
     {
         //--------------------------------------------------------------------------
-        e.K = 2;
+        e.K = 4;
         printf("Initial first 3 points: K: %d \n", e.K);
-        DoubleMatrix nx1;
-        e.calculateNX(rx,nx1);
-        IPrinter::printVector(e.w,e.p,nx1.row(0),"x1: ");
-        IPrinter::printVector(e.w,e.p,nx1.row(1),"x2: ");
-        IPrinter::printVector(e.w,e.p,nx1.row(2),"x3: ");
+        DoubleMatrix nx2;
+        e.calculateNX(rx,nx2);
+        IPrinter::printVector(e.w,e.p,nx2.row(0),"x1: ");
+        IPrinter::printVector(e.w,e.p,nx2.row(1),"x2: ");
+        IPrinter::printVector(e.w,e.p,nx2.row(2),"x3: ");
         IPrinter::printSeperatorLine(NULL,'-', stdout);
+        printf("+++ %.8f %.10f %.10f %.10f\n", e.b(1,2), e.a(1,1,2), e.a(1,2,2), e.a(1,3,2));
 
-//        //--------------------------------------------------------------------------
-//        puts("Method #1");
-//        IPrinter::printSeperatorLine(NULL,'-', stdout);
-//        e.calculateM1(s, rx, nx1);
-//        double norm1 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm1 += (rx.row(0).at(i)-nx1.row(0).at(i))*(rx.row(0).at(i)-nx1.row(0).at(i)); printf("norm1: %f\n", sqrt(norm1));
-//        double norm2 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm2 += (rx.row(1).at(i)-nx1.row(1).at(i))*(rx.row(1).at(i)-nx1.row(1).at(i)); printf("norm2: %f\n", sqrt(norm2));
-//        double norm3 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm3 += (rx.row(2).at(i)-nx1.row(2).at(i))*(rx.row(2).at(i)-nx1.row(2).at(i)); printf("norm3: %f\n", sqrt(norm3));
+        //            //--------------------------------------------------------------------------
+        //            puts("Method #1");
+        //            IPrinter::printSeperatorLine(NULL,'-', stdout);
+        //            e.calculateM1(s, rx, nx2);
+        //            double norm1 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm1 += (rx.row(0).at(i)-nx2.row(0).at(i))*(rx.row(0).at(i)-nx2.row(0).at(i)); printf("norm1: %f\n", sqrt(norm1));
+        //            double norm2 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm2 += (rx.row(1).at(i)-nx2.row(1).at(i))*(rx.row(1).at(i)-nx2.row(1).at(i)); printf("norm2: %f\n", sqrt(norm2));
+        //            double norm3 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm3 += (rx.row(2).at(i)-nx2.row(2).at(i))*(rx.row(2).at(i)-nx2.row(2).at(i)); printf("norm3: %f\n", sqrt(norm3));
     }
 
-        {
-            //--------------------------------------------------------------------------
-            e.K = 4;
-            printf("Initial first 3 points: K: %d \n", e.K);
-            DoubleMatrix nx2;
-            e.calculateNX(rx,nx2);
-            IPrinter::printVector(e.w,e.p,nx2.row(0),"x1: ");
-            IPrinter::printVector(e.w,e.p,nx2.row(1),"x2: ");
-            IPrinter::printVector(e.w,e.p,nx2.row(2),"x3: ");
-            IPrinter::printSeperatorLine(NULL,'-', stdout);
+    //    {
+    //        //--------------------------------------------------------------------------
+    //        printf("Initial first 3 points: K: %d \n", e.K);
+    //        DoubleMatrix nx3;
+    //        e.calculateNX(rx,nx3);
+    //        IPrinter::printVector(e.w,e.p,nx3.row(0),"x1: ");
+    //        IPrinter::printVector(e.w,e.p,nx3.row(1),"x2: ");
+    //        IPrinter::printVector(e.w,e.p,nx3.row(2),"x3: ");
+    //        IPrinter::printSeperatorLine(NULL,'-', stdout);
 
-//            //--------------------------------------------------------------------------
-//            puts("Method #1");
-//            IPrinter::printSeperatorLine(NULL,'-', stdout);
-//            e.calculateM1(s, rx, nx2);
-//            double norm1 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm1 += (rx.row(0).at(i)-nx2.row(0).at(i))*(rx.row(0).at(i)-nx2.row(0).at(i)); printf("norm1: %f\n", sqrt(norm1));
-//            double norm2 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm2 += (rx.row(1).at(i)-nx2.row(1).at(i))*(rx.row(1).at(i)-nx2.row(1).at(i)); printf("norm2: %f\n", sqrt(norm2));
-//            double norm3 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm3 += (rx.row(2).at(i)-nx2.row(2).at(i))*(rx.row(2).at(i)-nx2.row(2).at(i)); printf("norm3: %f\n", sqrt(norm3));
-        }
-
-//    {
-//        //--------------------------------------------------------------------------
-//        printf("Initial first 3 points: K: %d \n", e.K);
-//        DoubleMatrix nx3;
-//        e.calculateNX(rx,nx3);
-//        IPrinter::printVector(e.w,e.p,nx3.row(0),"x1: ");
-//        IPrinter::printVector(e.w,e.p,nx3.row(1),"x2: ");
-//        IPrinter::printVector(e.w,e.p,nx3.row(2),"x3: ");
-//        IPrinter::printSeperatorLine(NULL,'-', stdout);
-
-////        //--------------------------------------------------------------------------
-////        puts("Method #1");
-////        IPrinter::printSeperatorLine(NULL,'-', stdout);
-////        e.calculateM1(s, rx, nx3);
-////        double norm1 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm1 += (rx.row(0).at(i)-nx3.row(0).at(i))*(rx.row(0).at(i)-nx3.row(0).at(i)); printf("norm1: %f\n", sqrt(norm1));
-////        double norm2 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm2 += (rx.row(1).at(i)-nx3.row(1).at(i))*(rx.row(1).at(i)-nx3.row(1).at(i)); printf("norm2: %f\n", sqrt(norm2));
-////        double norm3 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm3 += (rx.row(2).at(i)-nx3.row(2).at(i))*(rx.row(2).at(i)-nx3.row(2).at(i)); printf("norm3: %f\n", sqrt(norm3));
-//    }
+    ////        //--------------------------------------------------------------------------
+    ////        puts("Method #1");
+    ////        IPrinter::printSeperatorLine(NULL,'-', stdout);
+    ////        e.calculateM1(s, rx, nx3);
+    ////        double norm1 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm1 += (rx.row(0).at(i)-nx3.row(0).at(i))*(rx.row(0).at(i)-nx3.row(0).at(i)); printf("norm1: %f\n", sqrt(norm1));
+    ////        double norm2 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm2 += (rx.row(1).at(i)-nx3.row(1).at(i))*(rx.row(1).at(i)-nx3.row(1).at(i)); printf("norm2: %f\n", sqrt(norm2));
+    ////        double norm3 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm3 += (rx.row(2).at(i)-nx3.row(2).at(i))*(rx.row(2).at(i)-nx3.row(2).at(i)); printf("norm3: %f\n", sqrt(norm3));
+    //    }
     //--------------------------------------------------------------------------
     //    puts("Method #2");
     //    IPrinter::printSeperatorLine(NULL,'-', stdout);
@@ -271,28 +278,51 @@ void Example4::updateAMatrices(std::vector<DoubleMatrix> &A, unsigned int k)
         A[0].at(2,0) = (2.0*h*b(3,k-1));
     }
 
-//    if (K==4)
-//    {
-//        A[1].at(0,0) = 0.48*h*a(1,1,k-1)+1.92; A[1].at(0,1) = 0.48*h*a(1,2,k-1);      A[1].at(0,2) = 0.48*h*a(1,3,k-1);
-//        A[1].at(1,0) = 0.48*h*a(2,1,k-1);      A[1].at(1,1) = 0.48*h*a(2,2,k-1)+1.92; A[1].at(1,2) = 0.48*h*a(2,3,k-1);
-//        A[1].at(2,0) = 0.48*h*a(3,1,k-1);      A[1].at(2,1) = 0.48*h*a(3,2,k-1);      A[1].at(2,2) = 0.48*h*a(3,3,k-1)+1.92;
+    //    if (K==4)
+    //    {
+    //        A[1].at(0,0) = +16.0/3.0;              A[1].at(0,1) = +0.0;                  A[1].at(0,2) = +0.0;
+    //        A[1].at(1,0) = +0.0;                   A[1].at(1,1) = +16.0/3.0;             A[1].at(1,2) = +0.0;
+    //        A[1].at(2,0) = +0.0;                   A[1].at(2,1) = +0.0;                  A[1].at(2,2) = +16.0/3.0;
 
-//        A[2].at(0,0) = -1.44;                  A[2].at(0,1) = +0.00;                  A[2].at(0,2) = +0.00;
-//        A[2].at(1,0) = +0.00;                  A[2].at(1,1) = -1.44;                  A[2].at(1,2) = +0.00;
-//        A[2].at(2,0) = +0.00;                  A[2].at(2,1) = +0.00;                  A[2].at(2,2) = -1.44;
+    //        A[2].at(0,0) = -12.0;                  A[2].at(0,1) = +0.0;                  A[2].at(0,2) = +0.0;
+    //        A[2].at(1,0) = +0.0;                   A[2].at(1,1) = -12.0;                 A[2].at(1,2) = +0.0;
+    //        A[2].at(2,0) = +0.0;                   A[2].at(2,1) = +0.0;                  A[2].at(2,2) = -12.0;
 
-//        A[3].at(0,0) = +0.64;                  A[3].at(0,1) = +0.00;                  A[3].at(0,2) = +0.00;
-//        A[3].at(1,0) = +0.00;                  A[3].at(1,1) = +0.64;                  A[3].at(1,2) = +0.00;
-//        A[3].at(2,0) = +0.00;                  A[3].at(2,1) = +0.00;                  A[3].at(2,2) = +0.64;
+    //        A[3].at(0,0) = +16.0;                  A[3].at(0,1) = +0.0;                  A[3].at(0,2) = +0.0;
+    //        A[3].at(1,0) = +0.0;                   A[3].at(1,1) = +16.0;                 A[3].at(1,2) = +0.0;
+    //        A[3].at(2,0) = +0.0;                   A[3].at(2,1) = +0.0;                  A[3].at(2,2) = +16.0;
 
-//        A[4].at(0,0) = -0.12;                  A[4].at(0,1) = +0.00;                  A[4].at(0,2) = +0.00;
-//        A[4].at(1,0) = +0.00;                  A[4].at(1,1) = -0.12;                  A[4].at(1,2) = +0.00;
-//        A[4].at(2,0) = +0.00;                  A[4].at(2,1) = +0.00;                  A[4].at(2,2) = -0.12;
+    //        A[4].at(0,0) = -(12.0*h*a(1,1,k-4)+25.0)/3.0; A[4].at(0,1) = -4.0*h*a(1,2,k-4);             A[4].at(0,2) = -4.0*h*a(1,3,k-4);
+    //        A[4].at(1,0) = -4.0*h*a(2,1,k-4);             A[4].at(1,1) = -(12.0*h*a(2,2,k-4)+25.0)/3.0; A[4].at(1,2) = -4.0*h*a(2,3,k-4);
+    //        A[4].at(2,0) = -4.0*h*a(3,1,k-4);             A[4].at(2,1) = -4.0*h*a(3,2,k-4);             A[4].at(2,2) = -(12.0*h*a(3,3,k-4)+25.0)/3.0;
 
-//        A[0].at(0,0) = 0.48*h*b(1,k-1);
-//        A[0].at(1,0) = 0.48*h*b(2,k-1);
-//        A[0].at(2,0) = 0.48*h*b(3,k-1);
-//    }
+    //        A[0].at(0,0) = -4.0*h*b(1,k-4);
+    //        A[0].at(1,0) = -4.0*h*b(2,k-4);
+    //        A[0].at(2,0) = -4.0*h*b(3,k-4);
+    //    }
+
+    //    if (K==4)
+    //    {
+    //        A[1].at(0,0) = +6.0;                   A[1].at(0,1) = +0.0;                  A[1].at(0,2) = +0.0;
+    //        A[1].at(1,0) = +0.0;                   A[1].at(1,1) = +6.0;                  A[1].at(1,2) = +0.0;
+    //        A[1].at(2,0) = +0.0;                   A[1].at(2,1) = +0.0;                  A[1].at(2,2) = +6.0;
+
+    //        A[2].at(0,0) = -18.0;                  A[2].at(0,1) = +0.0;                  A[2].at(0,2) = +0.0;
+    //        A[2].at(1,0) = +0.0;                   A[2].at(1,1) = -18.0;                 A[2].at(1,2) = +0.0;
+    //        A[2].at(2,0) = +0.0;                   A[2].at(2,1) = +0.0;                  A[2].at(2,2) = -18.0;
+
+    //        A[3].at(0,0) = 12.0*h*a(1,1,k-3)+10.0; A[3].at(0,1) = 12.0*h*a(1,2,k-3);      A[3].at(0,2) = 12.0*h*a(1,3,k-3);
+    //        A[3].at(1,0) = 12.0*h*a(2,1,k-3);      A[3].at(1,1) = 12.0*h*a(2,2,k-3)+10.0; A[3].at(1,2) = 12.0*h*a(2,3,k-3);
+    //        A[3].at(2,0) = 12.0*h*a(3,1,k-3);      A[3].at(2,1) = 12.0*h*a(3,2,k-3);      A[3].at(2,2) = 12.0*h*a(3,3,k-3)+10.0;
+
+    //        A[4].at(0,0) = +3.0;                   A[4].at(0,1) = +0.0;                  A[4].at(0,2) = +0.0;
+    //        A[4].at(1,0) = +0.0;                   A[4].at(1,1) = +3.0;                  A[4].at(1,2) = +0.0;
+    //        A[4].at(2,0) = +0.0;                   A[4].at(2,1) = +0.0;                  A[4].at(2,2) = +3.0;
+
+    //        A[0].at(0,0) = 12.0*h*b(1,k-3);
+    //        A[0].at(1,0) = 12.0*h*b(2,k-3);
+    //        A[0].at(2,0) = 12.0*h*b(3,k-3);
+    //    }
 
     if (K==4)
     {
@@ -309,67 +339,90 @@ void Example4::updateAMatrices(std::vector<DoubleMatrix> &A, unsigned int k)
         A[3].at(2,0) = +0.0;                   A[3].at(2,1) = +0.0;                  A[3].at(2,2) = -8.0;
 
         A[4].at(0,0) = +1.0;                   A[4].at(0,1) = +0.0;                  A[4].at(0,2) = +0.0;
-        A[4].at(1,0) = +0.0;                   A[4].at(1,1) = +1.0;                  A[4].at(1,2) = +1.0;
-        A[4].at(2,0) = +0.0;                   A[4].at(2,1) = +0.0;                  A[4].at(2,2) = +0.0;
+        A[4].at(1,0) = +0.0;                   A[4].at(1,1) = +1.0;                  A[4].at(1,2) = +0.0;
+        A[4].at(2,0) = +0.0;                   A[4].at(2,1) = +0.0;                  A[4].at(2,2) = +1.0;
 
         A[0].at(0,0) = -12.0*h*b(1,k-2);
         A[0].at(1,0) = -12.0*h*b(2,k-2);
         A[0].at(2,0) = -12.0*h*b(3,k-2);
     }
 
-//    if (K==4)
-//    {
-//        A[1].at(0,0) = (12.0*h*a(1,1,k-1)-10.0)/3.0; A[1].at(0,1) = (12.0*h*a(1,2,k-1))/3.0;      A[1].at(0,2) = (12.0*h*a(1,3,k-1))/3.0;
-//        A[1].at(1,0) = (12.0*h*a(2,1,k-1))/3.0;      A[1].at(1,1) = (12.0*h*a(2,2,k-1)-10.0)/3.0; A[1].at(1,2) = (12.0*h*a(2,3,k-1))/3.0;
-//        A[1].at(2,0) = (12.0*h*a(3,1,k-1))/3.0;      A[1].at(2,1) = (12.0*h*a(3,2,k-1))/3.0;      A[1].at(2,2) = (12.0*h*a(3,3,k-1)-10.0)/3.0;
+    //    if (K==4)
+    //    {
+    //        A[1].at(0,0) = (12.0*h*a(1,1,k-1)-10.0)/3.0; A[1].at(0,1) = (12.0*h*a(1,2,k-1))/3.0;      A[1].at(0,2) = (12.0*h*a(1,3,k-1))/3.0;
+    //        A[1].at(1,0) = (12.0*h*a(2,1,k-1))/3.0;      A[1].at(1,1) = (12.0*h*a(2,2,k-1)-10.0)/3.0; A[1].at(1,2) = (12.0*h*a(2,3,k-1))/3.0;
+    //        A[1].at(2,0) = (12.0*h*a(3,1,k-1))/3.0;      A[1].at(2,1) = (12.0*h*a(3,2,k-1))/3.0;      A[1].at(2,2) = (12.0*h*a(3,3,k-1)-10.0)/3.0;
 
-//        A[2].at(0,0) = +6.00;                  A[2].at(0,1) = +0.00;                  A[2].at(0,2) = +0.00;
-//        A[2].at(1,0) = +0.00;                  A[2].at(1,1) = +6.00;                  A[2].at(1,2) = +0.00;
-//        A[2].at(2,0) = +0.00;                  A[2].at(2,1) = +0.00;                  A[2].at(2,2) = +6.00;
+    //        A[2].at(0,0) = +6.00;                  A[2].at(0,1) = +0.00;                  A[2].at(0,2) = +0.00;
+    //        A[2].at(1,0) = +0.00;                  A[2].at(1,1) = +6.00;                  A[2].at(1,2) = +0.00;
+    //        A[2].at(2,0) = +0.00;                  A[2].at(2,1) = +0.00;                  A[2].at(2,2) = +6.00;
 
-//        A[3].at(0,0) = -2.00;                  A[3].at(0,1) = +0.00;                  A[3].at(0,2) = +0.00;
-//        A[3].at(1,0) = +0.00;                  A[3].at(1,1) = -2.00;                  A[3].at(1,2) = +0.00;
-//        A[3].at(2,0) = +0.00;                  A[3].at(2,1) = +0.00;                  A[3].at(2,2) = -2.00;
+    //        A[3].at(0,0) = -2.00;                  A[3].at(0,1) = +0.00;                  A[3].at(0,2) = +0.00;
+    //        A[3].at(1,0) = +0.00;                  A[3].at(1,1) = -2.00;                  A[3].at(1,2) = +0.00;
+    //        A[3].at(2,0) = +0.00;                  A[3].at(2,1) = +0.00;                  A[3].at(2,2) = -2.00;
 
-//        A[4].at(0,0) = -1.0/3.0;               A[4].at(0,1) = +0.00;                  A[4].at(0,2) = +0.00;
-//        A[4].at(1,0) = +0.00;                  A[4].at(1,1) = -1.0/3.0;               A[4].at(1,2) = -1.0/3.0;
-//        A[4].at(2,0) = +0.00;                  A[4].at(2,1) = +0.00;                  A[4].at(2,2) = -0.12;
+    //        A[4].at(0,0) = +1.0/3.0;               A[4].at(0,1) = +0.00;                  A[4].at(0,2) = +0.00;
+    //        A[4].at(1,0) = +0.00;                  A[4].at(1,1) = +1.0/3.0;               A[4].at(1,2) = +0.00;
+    //        A[4].at(2,0) = +0.00;                  A[4].at(2,1) = +0.00;                  A[4].at(2,2) = +1.0/3.0;
 
-//        A[0].at(0,0) = +4.0*h*b(1,k-1);
-//        A[0].at(1,0) = +4.0*h*b(2,k-1);
-//        A[0].at(2,0) = +4.0*h*b(3,k-1);
-//    }
+    //        A[0].at(0,0) = +4.0*h*b(1,k-1);
+    //        A[0].at(1,0) = +4.0*h*b(2,k-1);
+    //        A[0].at(2,0) = +4.0*h*b(3,k-1);
+    //    }
 
-    if (K==6)
-    {
-        A[1].at(0,0) = (60.0*h*a(1,1,k-1)+360.0)/147.0; A[1].at(0,1) = (60.0*h*a(1,2,k-1))/147.0;      A[1].at(0,2) = (60.0*h*a(1,3,k-1))/147.0;
-        A[1].at(1,0) = (60.0*h*a(2,1,k-1))/147.0;       A[1].at(1,1) = (60.0*h*a(2,2,k-1)+360.0)/147.0; A[1].at(1,2) = (60.0*h*a(2,3,k-1))/147.0;
-        A[1].at(2,0) = (60.0*h*a(3,1,k-1))/147.0;       A[1].at(2,1) = (60.0*h*a(3,2,k-1))/147.0;      A[1].at(2,2) = (60.0*h*a(3,3,k-1)+360.0)/147.0;
+    //    if (K==4)
+    //    {
+    //        A[1].at(0,0) = 0.48*h*a(1,1,k-0)+1.92; A[1].at(0,1) = 0.48*h*a(1,2,k-0);      A[1].at(0,2) = 0.48*h*a(1,3,k-0);
+    //        A[1].at(1,0) = 0.48*h*a(2,1,k-0);      A[1].at(1,1) = 0.48*h*a(2,2,k-0)+1.92; A[1].at(1,2) = 0.48*h*a(2,3,k-0);
+    //        A[1].at(2,0) = 0.48*h*a(3,1,k-0);      A[1].at(2,1) = 0.48*h*a(3,2,k-0);      A[1].at(2,2) = 0.48*h*a(3,3,k-0)+1.92;
 
-        A[2].at(0,0) = -450.0/147.0;                    A[2].at(0,1) = +0.00;                          A[2].at(0,2) = +0.00;
-        A[2].at(1,0) = +0.00;                           A[2].at(1,1) = -450.0/147.0;                   A[2].at(1,2) = +0.00;
-        A[2].at(2,0) = +0.00;                           A[2].at(2,1) = +0.00;                          A[2].at(2,2) = -450.0/147.0;
+    //        A[2].at(0,0) = -1.44;                  A[2].at(0,1) = +0.00;                  A[2].at(0,2) = +0.00;
+    //        A[2].at(1,0) = +0.00;                  A[2].at(1,1) = -1.44;                  A[2].at(1,2) = +0.00;
+    //        A[2].at(2,0) = +0.00;                  A[2].at(2,1) = +0.00;                  A[2].at(2,2) = -1.44;
 
-        A[3].at(0,0) = +400.0/147.0;                    A[3].at(0,1) = +0.00;                          A[3].at(0,2) = +0.00;
-        A[3].at(1,0) = +0.00;                           A[3].at(1,1) = +400.0/147.0;                   A[3].at(1,2) = +0.00;
-        A[3].at(2,0) = +0.00;                           A[3].at(2,1) = +0.00;                          A[3].at(2,2) = +400.0/147.0;
+    //        A[3].at(0,0) = +0.64;                  A[3].at(0,1) = +0.00;                  A[3].at(0,2) = +0.00;
+    //        A[3].at(1,0) = +0.00;                  A[3].at(1,1) = +0.64;                  A[3].at(1,2) = +0.00;
+    //        A[3].at(2,0) = +0.00;                  A[3].at(2,1) = +0.00;                  A[3].at(2,2) = +0.64;
 
-        A[4].at(0,0) = -225.0/147.0;                    A[4].at(0,1) = +0.00;                          A[4].at(0,2) = +0.00;
-        A[4].at(1,0) = +0.00;                           A[4].at(1,1) = -225.0/147.0;                   A[4].at(1,2) = +0.00;
-        A[4].at(2,0) = +0.00;                           A[4].at(2,1) = +0.00;                          A[4].at(2,2) = -225.0/147.0;
+    //        A[4].at(0,0) = -0.12;                  A[4].at(0,1) = +0.00;                  A[4].at(0,2) = +0.00;
+    //        A[4].at(1,0) = +0.00;                  A[4].at(1,1) = -0.12;                  A[4].at(1,2) = +0.00;
+    //        A[4].at(2,0) = +0.00;                  A[4].at(2,1) = +0.00;                  A[4].at(2,2) = -0.12;
 
-        A[5].at(0,0) = +72.0/147.0;                     A[5].at(0,1) = +0.00;                          A[5].at(0,2) = +0.00;
-        A[5].at(1,0) = +0.00;                           A[5].at(1,1) = +72.0/147.0;                    A[5].at(1,2) = +0.00;
-        A[5].at(2,0) = +0.00;                           A[5].at(2,1) = +0.00;                          A[5].at(2,2) = +72.0/147.0;
+    //        A[0].at(0,0) = 0.48*h*b(1,k-0);
+    //        A[0].at(1,0) = 0.48*h*b(2,k-0);
+    //        A[0].at(2,0) = 0.48*h*b(3,k-0);
+    //    }
 
-        A[6].at(0,0) = -10.0/147.0;                     A[6].at(0,1) = +0.00;                          A[6].at(0,2) = +0.00;
-        A[6].at(1,0) = +0.00;                           A[6].at(1,1) = -10.0/147.0;                    A[6].at(1,2) = +0.00;
-        A[6].at(2,0) = +0.00;                           A[6].at(2,1) = +0.00;                          A[6].at(2,2) = -10.0/147.0;
+    //    if (K==6)
+    //    {
+    //        A[1].at(0,0) = (60.0*h*a(1,1,k-1)+360.0)/147.0; A[1].at(0,1) = (60.0*h*a(1,2,k-1))/147.0;      A[1].at(0,2) = (60.0*h*a(1,3,k-1))/147.0;
+    //        A[1].at(1,0) = (60.0*h*a(2,1,k-1))/147.0;       A[1].at(1,1) = (60.0*h*a(2,2,k-1)+360.0)/147.0; A[1].at(1,2) = (60.0*h*a(2,3,k-1))/147.0;
+    //        A[1].at(2,0) = (60.0*h*a(3,1,k-1))/147.0;       A[1].at(2,1) = (60.0*h*a(3,2,k-1))/147.0;      A[1].at(2,2) = (60.0*h*a(3,3,k-1)+360.0)/147.0;
 
-        A[0].at(0,0) = (60.0*h*b(1,k-1))/147.0;
-        A[0].at(1,0) = (60.0*h*b(2,k-1))/147.0;
-        A[0].at(2,0) = (60.0*h*b(3,k-1))/147.0;
-    }
+    //        A[2].at(0,0) = -450.0/147.0;                    A[2].at(0,1) = +0.00;                          A[2].at(0,2) = +0.00;
+    //        A[2].at(1,0) = +0.00;                           A[2].at(1,1) = -450.0/147.0;                   A[2].at(1,2) = +0.00;
+    //        A[2].at(2,0) = +0.00;                           A[2].at(2,1) = +0.00;                          A[2].at(2,2) = -450.0/147.0;
+
+    //        A[3].at(0,0) = +400.0/147.0;                    A[3].at(0,1) = +0.00;                          A[3].at(0,2) = +0.00;
+    //        A[3].at(1,0) = +0.00;                           A[3].at(1,1) = +400.0/147.0;                   A[3].at(1,2) = +0.00;
+    //        A[3].at(2,0) = +0.00;                           A[3].at(2,1) = +0.00;                          A[3].at(2,2) = +400.0/147.0;
+
+    //        A[4].at(0,0) = -225.0/147.0;                    A[4].at(0,1) = +0.00;                          A[4].at(0,2) = +0.00;
+    //        A[4].at(1,0) = +0.00;                           A[4].at(1,1) = -225.0/147.0;                   A[4].at(1,2) = +0.00;
+    //        A[4].at(2,0) = +0.00;                           A[4].at(2,1) = +0.00;                          A[4].at(2,2) = -225.0/147.0;
+
+    //        A[5].at(0,0) = +72.0/147.0;                     A[5].at(0,1) = +0.00;                          A[5].at(0,2) = +0.00;
+    //        A[5].at(1,0) = +0.00;                           A[5].at(1,1) = +72.0/147.0;                    A[5].at(1,2) = +0.00;
+    //        A[5].at(2,0) = +0.00;                           A[5].at(2,1) = +0.00;                          A[5].at(2,2) = +72.0/147.0;
+
+    //        A[6].at(0,0) = -10.0/147.0;                     A[6].at(0,1) = +0.00;                          A[6].at(0,2) = +0.00;
+    //        A[6].at(1,0) = +0.00;                           A[6].at(1,1) = -10.0/147.0;                    A[6].at(1,2) = +0.00;
+    //        A[6].at(2,0) = +0.00;                           A[6].at(2,1) = +0.00;                          A[6].at(2,2) = -10.0/147.0;
+
+    //        A[0].at(0,0) = (60.0*h*b(1,k-1))/147.0;
+    //        A[0].at(1,0) = (60.0*h*b(2,k-1))/147.0;
+    //        A[0].at(2,0) = (60.0*h*b(3,k-1))/147.0;
+    //    }
 }
 
 void Example4::clearAMatrices(std::vector<DoubleMatrix> &A)
@@ -419,6 +472,55 @@ void Example4::clearAMatrices(std::vector<DoubleMatrix> &A)
 
 void Example4::calculateNX(const DoubleMatrix &rx, DoubleMatrix &nx)
 {
+    h = 0.01;
+    N = 100;
+    double *x1 = new double[N+1]; for (unsigned int i=0; i<=N; i++) x1[i] = 0.0;
+    double *x2 = new double[N+1]; for (unsigned int i=0; i<=N; i++) x2[i] = 0.0;
+    double *x3 = new double[N+1]; for (unsigned int i=0; i<=N; i++) x3[i] = 0.0;
+
+    x1[0] = fx(1,0); x2[0] = fx(2,0); x3[0] = fx(3,0);
+    x1[1] = fx(1,1); x2[1] = fx(2,1); x3[1] = fx(3,1);
+    x1[2] = fx(1,2); x2[2] = fx(2,2); x3[2] = fx(3,2);
+    x1[3] = fx(1,3); x2[3] = fx(2,3); x3[3] = fx(3,3);
+    //x1[4] = fx(1,4); x2[4] = fx(2,4); x3[4] = fx(3,4);
+
+    printf("%16.12f %16.12f %16.12f %16.12f %16.12f %16.12f\n", x1[0], fx(1,0), x2[0], fx(2,0), x3[0], fx(3,0));
+    printf("%16.12f %16.12f %16.12f %16.12f %16.12f %16.12f\n", x1[1], fx(1,1), x2[1], fx(2,1), x3[1], fx(3,1));
+    printf("%16.12f %16.12f %16.12f %16.12f %16.12f %16.12f\n", x1[2], fx(1,2), x2[2], fx(2,2), x3[2], fx(3,2));
+    printf("%16.12f %16.12f %16.12f %16.12f %16.12f %16.12f\n", x1[3], fx(1,3), x2[3], fx(2,3), x3[3], fx(3,3));
+    //printf("%16.12f %16.12f %16.12f %16.12f %16.12f %16.12f\n", x1[4], fx(1,4), x2[4], fx(2,4), x3[4], fx(3,4));
+    puts("");
+
+//    for (unsigned int k=1; k<=N; k++)
+//    {
+//        x1[k] = x1[k-1] + h*(+2.0*x1[k-1]+3.0*x2[k-1]-1.0*x3[k-1] + b(1,k-1));
+//        x2[k] = x2[k-1] + h*(+4.0*x1[k-1]+6.0*x2[k-1]-2.0*x3[k-1] + b(2,k-1));
+//        x3[k] = x3[k-1] + h*(-1.0*x1[k-1]+1.0*x2[k-1]-1.0*x3[k-1] + b(3,k-1));
+//        if (k<10)
+//            printf("%16.12f %16.12f %16.12f %16.12f %16.12f %16.12f\n", x1[k], fx(1,k), x2[k], fx(2,k), x3[k], fx(3,k));
+//    }
+
+//    for (unsigned int k=2; k<=N; k++)
+//    {
+//        x1[k] = x1[k-2] + 2.0*h*(+2.0*x1[k-1]+3.0*x2[k-1]-1.0*x3[k-1] + b(1,k-1));
+//        x2[k] = x2[k-2] + 2.0*h*(+4.0*x1[k-1]+6.0*x2[k-1]-2.0*x3[k-1] + b(2,k-1));
+//        x3[k] = x3[k-2] + 2.0*h*(-1.0*x1[k-1]+1.0*x2[k-1]-1.0*x3[k-1] + b(3,k-1));
+//        if (k<12) printf("%16.12f %16.12f %16.12f %16.12f %16.12f %16.12f\n", x1[k], fx(1,k), x2[k], fx(2,k), x3[k], fx(3,k));
+//    }
+
+    for (unsigned int k=4; k<=N; k++)
+    {
+        x1[k] = 8.0*x1[k-1] - 12.0*h*(+2.0*x1[k-2]+3.0*x2[k-2]-1.0*x3[k-2] + b(1,k-2)) - 8.0*x1[k-3] + x1[k-4];
+        x2[k] = 8.0*x2[k-1] - 12.0*h*(+4.0*x1[k-2]+6.0*x2[k-2]-2.0*x3[k-2] + b(2,k-2)) - 8.0*x2[k-3] + x2[k-4];
+        x3[k] = 8.0*x3[k-1] - 12.0*h*(-1.0*x1[k-2]+1.0*x2[k-2]-1.0*x3[k-2] + b(3,k-2)) - 8.0*x3[k-3] + x3[k-4];
+        if (k<K+10) printf("%16.12f %16.12f %16.12f %16.12f %16.12f %16.12f\n", x1[k], fx(1,k), x2[k], fx(2,k), x3[k], fx(3,k));
+    }
+    puts("");
+    printf("%16.12f %16.12f %16.12f %16.12f %16.12f %16.12f\n", x1[N], fx(1,N), x2[N], fx(2,N), x3[N], fx(3,N));
+
+    exit(0);
+    return;
+
     nx.clear();
 
     nx.resize(n,N+1,0.0);
@@ -440,6 +542,15 @@ void Example4::calculateNX(const DoubleMatrix &rx, DoubleMatrix &nx)
         nx.setColumn(1, rx.col(1));
         nx.setColumn(2, rx.col(2));
         nx.setColumn(3, rx.col(3));
+
+        //        double aa = 8.0*nx.at(0,3) - 12.0*h*(a(1,1,2)*nx.at(0,2)+a(1,2,2)*nx.at(1,2)+a(1,3,2)*nx.at(2,2))
+        //                - 8.0*nx.at(0,1) + nx.at(0,0) - 12.0*h*b(1,2);
+        //        printf("--- %.10f %.10f\n", aa, fx(1,4));
+
+        printf("++++++++ %.12f %.12f %.12f %.12f %.12f %.12f\n", nx.at(0,0), fx(1,0), nx.at(1,0), fx(2,0), nx.at(2,0), fx(3,0));
+        printf("++++++++ %.12f %.12f %.12f %.12f %.12f %.12f\n", nx.at(0,1), fx(1,1), nx.at(1,1), fx(2,1), nx.at(2,1), fx(3,1));
+        printf("++++++++ %.12f %.12f %.12f %.12f %.12f %.12f\n", nx.at(0,2), fx(1,2), nx.at(1,2), fx(2,2), nx.at(2,2), fx(3,2));
+        printf("++++++++ %.12f %.12f %.12f %.12f %.12f %.12f\n", nx.at(0,3), fx(1,3), nx.at(1,3), fx(2,3), nx.at(2,3), fx(3,3));
     }
 
     if (K==6)
@@ -469,8 +580,21 @@ void Example4::calculateNX(const DoubleMatrix &rx, DoubleMatrix &nx)
         }
         if (K==4)
         {
-            DoubleVector ck = A[1]*nx.col(k-1) + A[2]*nx.col(k-2) + A[3]*nx.col(k-3) + A[4]*nx.col(k-4) + A[0];
-            nx.setColumn(k,ck);
+            double aa1 = 8.0*nx.at(0,k-1) - 12.0*h*(a(1,1,k-2)*nx.at(0,k-2)+a(1,2,k-2)*nx.at(1,k-2)+a(1,3,k-2)*nx.at(2,k-2)) - 8.0*nx.at(0,k-3) + nx.at(0,k-4) - 12.0*h*b(1,k-2);
+            double aa2 = 8.0*nx.at(1,k-1) - 12.0*h*(a(2,1,k-2)*nx.at(0,k-2)+a(2,2,k-2)*nx.at(1,k-2)+a(2,3,k-2)*nx.at(2,k-2)) - 8.0*nx.at(1,k-3) + nx.at(1,k-4) - 12.0*h*b(2,k-2);
+            double aa3 = 8.0*nx.at(2,k-1) - 12.0*h*(a(3,1,k-2)*nx.at(0,k-2)+a(3,2,k-2)*nx.at(1,k-2)+a(3,3,k-2)*nx.at(2,k-2)) - 8.0*nx.at(2,k-3) + nx.at(2,k-4) - 12.0*h*b(3,k-2);
+            nx.at(0,k) = aa1;
+            nx.at(1,k) = aa2;
+            nx.at(2,k) = aa3;
+
+            //            DoubleVector ck;
+            //            ck << aa1 << aa2 << aa3;
+
+            //            DoubleVector ck = A[1]*nx.col(k-1) + A[2]*nx.col(k-2) + A[3]*nx.col(k-3) + A[4]*nx.col(k-4) + A[0];
+            //            nx.setColumn(k,ck);
+            if (k<K+10)
+                printf("++++++++ %.12f %.12f %.12f %.12f %.12f %.12f\n",
+                       nx.at(0,k), fx(1,k), nx.at(1,k), fx(2,k), nx.at(2,k), fx(3,k));
         }
         if (K==6)
         {
@@ -493,7 +617,8 @@ void Example4::calculateM1(const std::vector<unsigned int> *s, const DoubleMatri
         calculateM1BE(2,s[2],rx,nx,M,B);
         calculateM1BE(3,s[3],rx,nx,M,B);
         calculateM1BE(4,s[4],rx,nx,M,B);
-        calculateM1BE(5,s[5],rx,nx,M,B);    }
+        calculateM1BE(5,s[5],rx,nx,M,B);
+    }
 
     if (K==4)
     {
@@ -985,9 +1110,9 @@ double Example4::fx(unsigned int i, unsigned int k) const
     if (i==3) return t*t*t - sin(8.0*t)*sin(8.0*t);
 #endif
 #ifdef SAMPLE_5
-    if (i==1) return sin(4.0*t*t);
-    if (i==2) return cos(3.0*t) - sin(5.0*t);
-    if (i==3) return t*t*t - sin(3.0*t)*sin(3.0*t);
+    if (i==1) return sin(t*t);
+    if (i==2) return cos(t) - sin(t);
+    if (i==3) return t*t*t - sin(t)*sin(t);
 #endif
 #ifdef SAMPLE_6
     if (i==1) return exp(t)*sin(4.0*t);
@@ -1104,13 +1229,13 @@ double Example4::a(unsigned int i, unsigned int j, unsigned int k) const
     if (i==3 && j==3) return -1.0;
 #endif
 
-    return 0.0;
+    return NAN;
 }
 
 double Example4::b(unsigned int i, unsigned int k) const
 {
     double t = k*h;
-//    C_UNUSED(t);
+    //    C_UNUSED(t);
 
 #ifdef SAMPLE_1
     if (i==1) return -(+3.0*(sin(2.0*t) + t*t) -   t*(3.0*t) + 2.0*(cos(2.0*t) - sin(t))) + (2.0*cos(2.0*t) + 2.0*t);
@@ -1134,14 +1259,21 @@ double Example4::b(unsigned int i, unsigned int k) const
     if (n==3) return 4.0*cos(t);
 #endif
 #ifdef SAMPLE_4
-    if (i==1) return -(+2.0*sin(20.0*t*t) + 3.0*(cos(10.0*t) - sin(20.0*t)) - 1.0*(t*t*t - sin(8.0*t)*sin(8.0*t))) + (+40.0*t*cos(20.0*t*t));
-    if (i==2) return -(+4.0*sin(20.0*t*t) + 6.0*(cos(10.0*t) - sin(20.0*t)) - 2.0*(t*t*t - sin(8.0*t)*sin(8.0*t))) + (-10.0*sin(10.0*t) - 20.0*cos(20.0*t));
-    if (i==3) return -(-1.0*sin(20.0*t*t) + 1.0*(cos(10.0*t) - sin(20.0*t)) - 1.0*(t*t*t - sin(8.0*t)*sin(8.0*t))) + (+3.0*t*t - 16.0*cos(8.0*t)*sin(8.0*t));
+    if (i==1) return - (2.0*sin(20.0*t*t) + 3.0*(cos(10.0*t) - sin(20.0*t)) - (t*t*t-sin(8.0*t)*sin(8.0*t)))
+            + 40.0*t*cos(20.0*t*t);
+    if (i==2) return - (4.0*sin(20.0*t*t) + 6.0*(cos(10.0*t) - sin(20.0*t)) - 2.0*(t*t*t-sin(8.0*t)*sin(8.0*t)))
+            - 10.0*sin(10.0*t) - 20.0*cos(20.0*t);
+    if (i==3) return - (-sin(20.0*t*t) + (cos(10.0*t) - sin(20.0*t)) -(t*t*t-sin(8.0*t)*sin(8.0*t)))
+            + 3.0*t*t - 16.0*cos(8.0*t)*sin(8.0*t);
+
+//    if (i==1) return -(+2.0*sin(20.0*t*t) + 3.0*(cos(10.0*t) - sin(20.0*t)) - 1.0*(t*t*t - sin(8.0*t)*sin(8.0*t))) + (+40.0*t*cos(20.0*t*t));
+//    if (i==2) return -(+4.0*sin(20.0*t*t) + 6.0*(cos(10.0*t) - sin(20.0*t)) - 2.0*(t*t*t - sin(8.0*t)*sin(8.0*t))) + (-10.0*sin(10.0*t) - 20.0*cos(20.0*t));
+//    if (i==3) return -(-1.0*sin(20.0*t*t) + 1.0*(cos(10.0*t) - sin(20.0*t)) - 1.0*(t*t*t - sin(8.0*t)*sin(8.0*t))) + (+3.0*t*t - 16.0*cos(8.0*t)*sin(8.0*t));
 #endif
 #ifdef SAMPLE_5
-    if (i==1) return -(+2.0*sin(4.0*t*t) + 3.0*(cos(3.0*t) - sin(5.0*t)) - 1.0*(t*t*t - sin(3.0*t)*sin(3.0*t))) + (+8.0*t*cos(4.0*t*t));
-    if (i==2) return -(+4.0*sin(4.0*t*t) + 6.0*(cos(3.0*t) - sin(5.0*t)) - 2.0*(t*t*t - sin(3.0*t)*sin(3.0*t))) + (-3.0*sin(3.0*t) - 5.0*cos(5.0*t));
-    if (i==3) return -(-1.0*sin(4.0*t*t) + 1.0*(cos(3.0*t) - sin(5.0*t)) - 1.0*(t*t*t - sin(3.0*t)*sin(3.0*t))) + (+3.0*t*t - 6.0*cos(3.0*t)*sin(3.0*t));
+    if (i==1) return -(+2.0*sin(t*t) + 3.0*(cos(t) - sin(t)) - 1.0*(t*t*t - sin(t)*sin(t))) + (+2.0*t*cos(t*t));
+    if (i==2) return -(+4.0*sin(t*t) + 6.0*(cos(t) - sin(t)) - 2.0*(t*t*t - sin(t)*sin(t))) + (-sin(t) - cos(t));
+    if (i==3) return -(-1.0*sin(t*t) + 1.0*(cos(t) - sin(t)) - 1.0*(t*t*t - sin(t)*sin(t))) + (+3.0*t*t - 2.0*cos(t)*sin(t));
 #endif
 #ifdef SAMPLE_6
     if (i==1) return -(a(1,1,k)*fx(1,k) + a(1,2,k)*fx(2,k) + a(1,3,k)*fx(3,k)) + (exp(t)*sin(4.0*t)+4.0*exp(t)*cos(4.0*t));
@@ -1153,5 +1285,5 @@ double Example4::b(unsigned int i, unsigned int k) const
     if (i==2) return -(a(2,1,k)*fx(1,k) + a(2,2,k)*fx(2,k) + a(2,3,k)*fx(3,k)) + (-6.0*sin(6.0*t));
     if (i==3) return -(a(3,1,k)*fx(1,k) + a(3,2,k)*fx(2,k) + a(3,3,k)*fx(3,k)) + (2.0*cos(2.0*t));
 #endif
-    return 0.0;
+    return NAN;
 }
