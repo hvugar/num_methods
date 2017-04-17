@@ -432,43 +432,160 @@ void Example4::clearAMatrices(std::vector<DoubleMatrix> &A)
     A.clear();
 }
 
-//void Example4::calculateNX(const stdDoubleMatrixVector &rx, DoubleVector &x1, DoubleVector &x2, DoubleVector &x3, stdDoubleVectorVector &nx)
-//{
-//    nx.clear();
-//    nx.resize(N+1);
+double Example4::fx(unsigned int i, unsigned int k) const
+{
+    double t = k*h;
+    C_UNUSED(t);
 
-//    for (unsigned int i=0; i<K; i++)
-//    {
-//        nx.at(i) = rx.at(i);
-//        x1 << nx.at(i).at(0);
-//        x2 << nx.at(i).at(1);
-//        x3 << nx.at(i).at(2);
-//    }
+#ifdef SAMPLE_1
+    if (i==1) return sin(2.0*t) + t*t;
+    if (i==2) return 3.0*t;
+    if (i==3) return cos(2.0*t) - sin(t);
+#endif
+#ifdef SAMPLE_2
+    if (i==1) return t*t+t;
+    if (i==2) return 2.0*t;
+    if (i==3) return 3.0*t*t;
+#endif
+#ifdef SAMPLE_3
+    if (i==1) return sin(t);
+    if (i==2) return cos(t);
+    if (i==3) return 2.0*sin(t)+3.0*cos(t);
+#endif
+#ifdef SAMPLE_4
+    if (i==1) return sin(20.0*t*t);
+    if (i==2) return cos(10.0*t) - sin(20.0*t);
+    if (i==3) return t*t*t - sin(8.0*t)*sin(8.0*t);
+#endif
+#ifdef SAMPLE_5
+    if (i==1) return sin(t);
+    if (i==2) return cos(t) - sin(t);
+    if (i==3) return t*t*t - sin(t);
+#endif
+    return 0.0;
+}
 
-//    std::vector<DoubleMatrix> A;
-//    initAMatrices(A);
-//    for (unsigned int k=K; k<=N; k++)
-//    {
-//        updateAMatrices(A,k);
-//        if (K==2)
-//        {
-//            nx.at(k) = A[1]*nx.at(k-1) + A[2]*nx.at(k-2) + A[0];
-//        }
-//        if (K==4)
-//        {
-//            nx.at(k) = A[1]*nx.at(k-1) + A[2]*nx.at(k-2) + A[3]*nx.at(k-3) + A[4]*nx.at(k-4) + A[0];
-//        }
-//        if (K==6)
-//        {
-//            nx.at(k) = A[1]*nx.at(k-1) + A[2]*nx.at(k-2) + A[3]*nx.at(k-3) + A[4]*nx.at(k-4) + A[5]*nx.at(k-5) + A[6]*nx.at(k-6) + A[0];
-//        }
+double Example4::a(unsigned int i, unsigned int j, unsigned int k) const
+{
+    double t = k*h;
+    C_UNUSED(t);
 
-//        x1 << nx.at(k).at(0);
-//        x2 << nx.at(k).at(1);
-//        x3 << nx.at(k).at(2);
-//    }
-//    clearAMatrices(A);
-//}
+#ifdef SAMPLE_1
+    if (i==1 && j==1) return +3.0;
+    if (i==1 && j==2) return -t;
+    if (i==1 && j==3) return +2.0;
+
+    if (i==2 && j==1) return +1.0;
+    if (i==2 && j==2) return +1.0;
+    if (i==2 && j==3) return +3.0;
+
+    if (i==3 && j==1) return -2.0;
+    if (i==3 && j==2) return +t;
+    if (i==3 && j==3) return +1.0;
+#endif
+
+#ifdef SAMPLE_2
+    if (i==1 && j==1) return -3.0;
+    if (i==1 && j==2) return +1.0;
+    if (i==1 && j==3) return +1.0;
+
+    if (i==2 && j==1) return +3.0;
+    if (i==2 && j==2) return -1.5;
+    if (i==2 && j==3) return -1.0;
+
+    if (i==3 && j==1) return +6.0;
+    if (i==3 && j==2) return +3.0;
+    if (i==3 && j==3) return -2.0;
+#endif
+
+#ifdef SAMPLE_3
+    if (i==1 && j==1) return +2.0;
+    if (i==1 && j==2) return +3.0;
+    if (i==1 && j==3) return -1.0;
+
+    if (i==2 && j==1) return +4.0;
+    if (i==2 && j==2) return +6.0;
+    if (i==2 && j==3) return -2.0;
+
+    if (i==3 && j==1) return -1.0;
+    if (i==3 && j==2) return +1.0;
+    if (i==3 && j==3) return -1.0;
+#endif
+
+#ifdef SAMPLE_4
+    if (i==1 && j==1) return +2.0;
+    if (i==1 && j==2) return +3.0;
+    if (i==1 && j==3) return -1.0;
+
+    if (i==2 && j==1) return +4.0;
+    if (i==2 && j==2) return +6.0;
+    if (i==2 && j==3) return -2.0;
+
+    if (i==3 && j==1) return -1.0;
+    if (i==3 && j==2) return +1.0;
+    if (i==3 && j==3) return -1.0;
+#endif
+
+#ifdef SAMPLE_5
+    if (i==1 && j==1) return +2.0;
+    if (i==1 && j==2) return +3.0;
+    if (i==1 && j==3) return -1.0;
+
+    if (i==2 && j==1) return +4.0;
+    if (i==2 && j==2) return +6.0;
+    if (i==2 && j==3) return -2.0;
+
+    if (i==3 && j==1) return -1.0;
+    if (i==3 && j==2) return +1.0;
+    if (i==3 && j==3) return -1.0;
+#endif
+    return NAN;
+}
+
+double Example4::b(unsigned int i, unsigned int k) const
+{
+    double t = k*h;
+    //    C_UNUSED(t);
+
+#ifdef SAMPLE_1
+    if (i==1) return -(+3.0*(sin(2.0*t) + t*t) -   t*(3.0*t) + 2.0*(cos(2.0*t) - sin(t))) + (2.0*cos(2.0*t) + 2.0*t);
+    if (i==2) return -(+1.0*(sin(2.0*t) + t*t) + 1.0*(3.0*t) + 3.0*(cos(2.0*t) - sin(t))) + (3.0);
+    if (i==3) return -(-2.0*(sin(2.0*t) + t*t) +   t*(3.0*t) + 1.0*(cos(2.0*t) - sin(t))) + (-2.0*sin(2.0*t) - cos(t));
+#endif
+    //#ifdef SAMPLE_1
+    //    if (i==1) return 2.0*t + 2.0*sin(t) - 3.0*sin(2.0*t);
+    //    if (i==2) return 3.0*sin(t) - sin(2.0*t) - 3.0*cos(2.0*t) - t*t - 3.0*t + 3.0;
+    //    if (i==3) return sin(t) - cos(t) - cos(2.0*t) - t*t;
+    //#endif
+#ifdef SAMPLE_2
+    if (i==1) return 3.0*t + 1.0;
+    if (i==2) return 2.0;
+    if (i==3) return -6.0*t;
+#endif
+#ifdef SAMPLE_3
+    if (n==1) return cos(t);
+    if (n==2) return -sin(t);
+    if (n==3) return 4.0*cos(t);
+#endif
+#ifdef SAMPLE_4
+    if (i==1) return - (2.0*sin(20.0*t*t) + 3.0*(cos(10.0*t) - sin(20.0*t)) - (t*t*t-sin(8.0*t)*sin(8.0*t)))
+            + 40.0*t*cos(20.0*t*t);
+    if (i==2) return - (4.0*sin(20.0*t*t) + 6.0*(cos(10.0*t) - sin(20.0*t)) - 2.0*(t*t*t-sin(8.0*t)*sin(8.0*t)))
+            - 10.0*sin(10.0*t) - 20.0*cos(20.0*t);
+    if (i==3) return - (-sin(20.0*t*t) + (cos(10.0*t) - sin(20.0*t)) -(t*t*t-sin(8.0*t)*sin(8.0*t)))
+            + 3.0*t*t - 16.0*cos(8.0*t)*sin(8.0*t);
+
+//    if (i==1) return -(+2.0*sin(20.0*t*t) + 3.0*(cos(10.0*t) - sin(20.0*t)) - 1.0*(t*t*t - sin(8.0*t)*sin(8.0*t))) + (+40.0*t*cos(20.0*t*t));
+//    if (i==2) return -(+4.0*sin(20.0*t*t) + 6.0*(cos(10.0*t) - sin(20.0*t)) - 2.0*(t*t*t - sin(8.0*t)*sin(8.0*t))) + (-10.0*sin(10.0*t) - 20.0*cos(20.0*t));
+//    if (i==3) return -(-1.0*sin(20.0*t*t) + 1.0*(cos(10.0*t) - sin(20.0*t)) - 1.0*(t*t*t - sin(8.0*t)*sin(8.0*t))) + (+3.0*t*t - 16.0*cos(8.0*t)*sin(8.0*t));
+#endif
+#ifdef SAMPLE_5
+    if (i==1) return -(+2.0*sin(t) + 3.0*(cos(t) - sin(t)) - 1.0*(t*t*t - sin(t))) + (+cos(t*t));
+    if (i==2) return -(+4.0*sin(t) + 6.0*(cos(t) - sin(t)) - 2.0*(t*t*t - sin(t))) + (-sin(t) - cos(t));
+    if (i==3) return -(-1.0*sin(t) + 1.0*(cos(t) - sin(t)) - 1.0*(t*t*t - sin(t))) + (+3.0*t*t - sin(t));
+#endif
+    return NAN;
+}
 
 void Example4::calculateNX(const DoubleMatrix &rx, DoubleMatrix &nx)
 {
@@ -1084,206 +1201,40 @@ void Example4::fillGamma(stdDoubleMatrixVector &GAMMA, DoubleVector &ETA, unsign
     }
 }
 
-double Example4::fx(unsigned int i, unsigned int k) const
-{
-    double t = k*h;
-    C_UNUSED(t);
+//void Example4::calculateNX(const stdDoubleMatrixVector &rx, DoubleVector &x1, DoubleVector &x2, DoubleVector &x3, stdDoubleVectorVector &nx)
+//{
+//    nx.clear();
+//    nx.resize(N+1);
 
-#ifdef SAMPLE_1
-    if (i==1) return sin(2.0*t) + t*t;
-    if (i==2) return 3.0*t;
-    if (i==3) return cos(2.0*t) - sin(t);
-#endif
-#ifdef SAMPLE_2
-    if (i==1) return t*t+t;
-    if (i==2) return 2.0*t;
-    if (i==3) return 3.0*t*t;
-#endif
-#ifdef SAMPLE_3
-    if (i==1) return sin(t);
-    if (i==2) return cos(t);
-    if (i==3) return 2.0*sin(t)+3.0*cos(t);
-#endif
-#ifdef SAMPLE_4
-    if (i==1) return sin(20.0*t*t);
-    if (i==2) return cos(10.0*t) - sin(20.0*t);
-    if (i==3) return t*t*t - sin(8.0*t)*sin(8.0*t);
-#endif
-#ifdef SAMPLE_5
-    if (i==1) return sin(t*t);
-    if (i==2) return cos(t) - sin(t);
-    if (i==3) return t*t*t - sin(t)*sin(t);
-#endif
-#ifdef SAMPLE_6
-    if (i==1) return exp(t)*sin(4.0*t);
-    if (i==2) return exp(-t)*cos(t) - exp(t)*sin(4.0*t);
-    if (i==3) return t*t - exp(-t)*sin(2.0*t);
-#endif
-#ifdef SAMPLE_7
-    if (i==1) return sin(4.0*t);
-    if (i==2) return cos(6.0*t);
-    if (i==3) return sin(2.0*t);
-#endif
-    return 0.0;
-}
+//    for (unsigned int i=0; i<K; i++)
+//    {
+//        nx.at(i) = rx.at(i);
+//        x1 << nx.at(i).at(0);
+//        x2 << nx.at(i).at(1);
+//        x3 << nx.at(i).at(2);
+//    }
 
-double Example4::a(unsigned int i, unsigned int j, unsigned int k) const
-{
-    double t = k*h;
-    C_UNUSED(t);
+//    std::vector<DoubleMatrix> A;
+//    initAMatrices(A);
+//    for (unsigned int k=K; k<=N; k++)
+//    {
+//        updateAMatrices(A,k);
+//        if (K==2)
+//        {
+//            nx.at(k) = A[1]*nx.at(k-1) + A[2]*nx.at(k-2) + A[0];
+//        }
+//        if (K==4)
+//        {
+//            nx.at(k) = A[1]*nx.at(k-1) + A[2]*nx.at(k-2) + A[3]*nx.at(k-3) + A[4]*nx.at(k-4) + A[0];
+//        }
+//        if (K==6)
+//        {
+//            nx.at(k) = A[1]*nx.at(k-1) + A[2]*nx.at(k-2) + A[3]*nx.at(k-3) + A[4]*nx.at(k-4) + A[5]*nx.at(k-5) + A[6]*nx.at(k-6) + A[0];
+//        }
 
-#ifdef SAMPLE_1
-    if (i==1 && j==1) return +3.0;
-    if (i==1 && j==2) return -t;
-    if (i==1 && j==3) return +2.0;
-
-    if (i==2 && j==1) return +1.0;
-    if (i==2 && j==2) return +1.0;
-    if (i==2 && j==3) return +3.0;
-
-    if (i==3 && j==1) return -2.0;
-    if (i==3 && j==2) return +t;
-    if (i==3 && j==3) return +1.0;
-#endif
-
-#ifdef SAMPLE_2
-    if (i==1 && j==1) return -3.0;
-    if (i==1 && j==2) return +1.0;
-    if (i==1 && j==3) return +1.0;
-
-    if (i==2 && j==1) return +3.0;
-    if (i==2 && j==2) return -1.5;
-    if (i==2 && j==3) return -1.0;
-
-    if (i==3 && j==1) return +6.0;
-    if (i==3 && j==2) return +3.0;
-    if (i==3 && j==3) return -2.0;
-#endif
-
-#ifdef SAMPLE_3
-    if (i==1 && j==1) return +2.0;
-    if (i==1 && j==2) return +3.0;
-    if (i==1 && j==3) return -1.0;
-
-    if (i==2 && j==1) return +4.0;
-    if (i==2 && j==2) return +6.0;
-    if (i==2 && j==3) return -2.0;
-
-    if (i==3 && j==1) return -1.0;
-    if (i==3 && j==2) return +1.0;
-    if (i==3 && j==3) return -1.0;
-#endif
-
-#ifdef SAMPLE_4
-    if (i==1 && j==1) return +2.0;
-    if (i==1 && j==2) return +3.0;
-    if (i==1 && j==3) return -1.0;
-
-    if (i==2 && j==1) return +4.0;
-    if (i==2 && j==2) return +6.0;
-    if (i==2 && j==3) return -2.0;
-
-    if (i==3 && j==1) return -1.0;
-    if (i==3 && j==2) return +1.0;
-    if (i==3 && j==3) return -1.0;
-#endif
-
-#ifdef SAMPLE_5
-    if (i==1 && j==1) return +2.0;
-    if (i==1 && j==2) return +3.0;
-    if (i==1 && j==3) return -1.0;
-
-    if (i==2 && j==1) return +4.0;
-    if (i==2 && j==2) return +6.0;
-    if (i==2 && j==3) return -2.0;
-
-    if (i==3 && j==1) return -1.0;
-    if (i==3 && j==2) return +1.0;
-    if (i==3 && j==3) return -1.0;
-#endif
-
-#ifdef SAMPLE_6
-    if (i==1 && j==1) return +2.0;
-    if (i==1 && j==2) return +3.0;
-    if (i==1 && j==3) return -1.0;
-
-    if (i==2 && j==1) return +4.0;
-    if (i==2 && j==2) return +6.0;
-    if (i==2 && j==3) return -2.0;
-
-    if (i==3 && j==1) return -1.0;
-    if (i==3 && j==2) return +1.0;
-    if (i==3 && j==3) return -1.0;
-#endif
-#ifdef SAMPLE_7
-    if (i==1 && j==1) return +2.0;
-    if (i==1 && j==2) return +3.0;
-    if (i==1 && j==3) return -1.0;
-
-    if (i==2 && j==1) return +4.0;
-    if (i==2 && j==2) return +6.0;
-    if (i==2 && j==3) return -2.0;
-
-    if (i==3 && j==1) return -1.0;
-    if (i==3 && j==2) return +1.0;
-    if (i==3 && j==3) return -1.0;
-#endif
-
-    return NAN;
-}
-
-double Example4::b(unsigned int i, unsigned int k) const
-{
-    double t = k*h;
-    //    C_UNUSED(t);
-
-#ifdef SAMPLE_1
-    if (i==1) return -(+3.0*(sin(2.0*t) + t*t) -   t*(3.0*t) + 2.0*(cos(2.0*t) - sin(t))) + (2.0*cos(2.0*t) + 2.0*t);
-    if (i==2) return -(+1.0*(sin(2.0*t) + t*t) + 1.0*(3.0*t) + 3.0*(cos(2.0*t) - sin(t))) + (3.0);
-    if (i==3) return -(-2.0*(sin(2.0*t) + t*t) +   t*(3.0*t) + 1.0*(cos(2.0*t) - sin(t))) + (-2.0*sin(2.0*t) - cos(t));
-#endif
-
-    //#ifdef SAMPLE_1
-    //    if (i==1) return 2.0*t + 2.0*sin(t) - 3.0*sin(2.0*t);
-    //    if (i==2) return 3.0*sin(t) - sin(2.0*t) - 3.0*cos(2.0*t) - t*t - 3.0*t + 3.0;
-    //    if (i==3) return sin(t) - cos(t) - cos(2.0*t) - t*t;
-    //#endif
-#ifdef SAMPLE_2
-    if (i==1) return 3.0*t + 1.0;
-    if (i==2) return 2.0;
-    if (i==3) return -6.0*t;
-#endif
-#ifdef SAMPLE_3
-    if (n==1) return cos(t);
-    if (n==2) return -sin(t);
-    if (n==3) return 4.0*cos(t);
-#endif
-#ifdef SAMPLE_4
-    if (i==1) return - (2.0*sin(20.0*t*t) + 3.0*(cos(10.0*t) - sin(20.0*t)) - (t*t*t-sin(8.0*t)*sin(8.0*t)))
-            + 40.0*t*cos(20.0*t*t);
-    if (i==2) return - (4.0*sin(20.0*t*t) + 6.0*(cos(10.0*t) - sin(20.0*t)) - 2.0*(t*t*t-sin(8.0*t)*sin(8.0*t)))
-            - 10.0*sin(10.0*t) - 20.0*cos(20.0*t);
-    if (i==3) return - (-sin(20.0*t*t) + (cos(10.0*t) - sin(20.0*t)) -(t*t*t-sin(8.0*t)*sin(8.0*t)))
-            + 3.0*t*t - 16.0*cos(8.0*t)*sin(8.0*t);
-
-//    if (i==1) return -(+2.0*sin(20.0*t*t) + 3.0*(cos(10.0*t) - sin(20.0*t)) - 1.0*(t*t*t - sin(8.0*t)*sin(8.0*t))) + (+40.0*t*cos(20.0*t*t));
-//    if (i==2) return -(+4.0*sin(20.0*t*t) + 6.0*(cos(10.0*t) - sin(20.0*t)) - 2.0*(t*t*t - sin(8.0*t)*sin(8.0*t))) + (-10.0*sin(10.0*t) - 20.0*cos(20.0*t));
-//    if (i==3) return -(-1.0*sin(20.0*t*t) + 1.0*(cos(10.0*t) - sin(20.0*t)) - 1.0*(t*t*t - sin(8.0*t)*sin(8.0*t))) + (+3.0*t*t - 16.0*cos(8.0*t)*sin(8.0*t));
-#endif
-#ifdef SAMPLE_5
-    if (i==1) return -(+2.0*sin(t*t) + 3.0*(cos(t) - sin(t)) - 1.0*(t*t*t - sin(t)*sin(t))) + (+2.0*t*cos(t*t));
-    if (i==2) return -(+4.0*sin(t*t) + 6.0*(cos(t) - sin(t)) - 2.0*(t*t*t - sin(t)*sin(t))) + (-sin(t) - cos(t));
-    if (i==3) return -(-1.0*sin(t*t) + 1.0*(cos(t) - sin(t)) - 1.0*(t*t*t - sin(t)*sin(t))) + (+3.0*t*t - 2.0*cos(t)*sin(t));
-#endif
-#ifdef SAMPLE_6
-    if (i==1) return -(a(1,1,k)*fx(1,k) + a(1,2,k)*fx(2,k) + a(1,3,k)*fx(3,k)) + (exp(t)*sin(4.0*t)+4.0*exp(t)*cos(4.0*t));
-    if (i==2) return -(a(2,1,k)*fx(1,k) + a(2,2,k)*fx(2,k) + a(2,3,k)*fx(3,k)) + (-exp(-t)*cos(t)-exp(-t)*sin(t)-exp(t)*sin(4.0*t)-4.0*exp(t)*cos(4.0*t));
-    if (i==3) return -(a(3,1,k)*fx(1,k) + a(3,2,k)*fx(2,k) + a(3,3,k)*fx(3,k)) + (2.0*t-(-exp(-t)*sin(2.0*t)+2.0*exp(-t)*cos(2.0*t)));
-#endif
-#ifdef SAMPLE_7
-    if (i==1) return -(a(1,1,k)*fx(1,k) + a(1,2,k)*fx(2,k) + a(1,3,k)*fx(3,k)) + (4.0*cos(4.0*t));
-    if (i==2) return -(a(2,1,k)*fx(1,k) + a(2,2,k)*fx(2,k) + a(2,3,k)*fx(3,k)) + (-6.0*sin(6.0*t));
-    if (i==3) return -(a(3,1,k)*fx(1,k) + a(3,2,k)*fx(2,k) + a(3,3,k)*fx(3,k)) + (2.0*cos(2.0*t));
-#endif
-    return NAN;
-}
+//        x1 << nx.at(k).at(0);
+//        x2 << nx.at(k).at(1);
+//        x3 << nx.at(k).at(2);
+//    }
+//    clearAMatrices(A);
+//}
