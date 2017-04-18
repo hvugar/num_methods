@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#define SAMPLE_2
+
 class Example6
 {
 public:
@@ -23,11 +25,14 @@ public:
     double b(unsigned int i, unsigned int k) const;
     double fx(unsigned int i, unsigned int k) const;
 
+    void method1K2();
+
 private:
-    double h = 0.01;
-    unsigned int N = 100;
+    double h = 0.001;
+    unsigned int N = 1000;
     unsigned int K = 4;
     unsigned int F = 10;
+    unsigned int n = 3;
 };
 
 #endif // EXAMPLE6_H

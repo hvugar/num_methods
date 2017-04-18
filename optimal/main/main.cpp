@@ -16,6 +16,7 @@
 #include "example3.h"
 #include "example4.h"
 //#include "example5.h"
+#include "example6.h"
 
 //#include <../border/borderparabolicd.h>
 //#include <../border/borderparabolicn.h>
@@ -51,9 +52,6 @@
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    double phi = 1.6180339887498948482045868343656;
-    printf("%.24f %d\n", phi, sizeof(long double));
-
     //srand(time(NULL));
 
     //HyperbolicControl2DM::Main(argc, argv);
@@ -63,7 +61,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //BorderTest::Main(argc, argv);
     //BorderTest1::Main(argc, argv);
     //Example2::Main(argc, argv);
-    Example4::Main(argc, argv);
+    //Example4::Main(argc, argv);
+    Example6::Main(argc, argv);
 
     //Problem1::Main(argc, argv);
     //Problem1L2::Main(argc, argv);
