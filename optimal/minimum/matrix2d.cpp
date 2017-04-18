@@ -632,6 +632,9 @@ void GaussianElimination(DoubleMatrix A, DoubleVector b, DoubleVector &x)
                 if (fabs(A[p][k]) > DBL_EPSILON)
                 {
                     A.switchRows(k, p);
+                    double bk = b[k];
+                    b[k] = b[p];
+                    b[p] = bk;
                     break;
                 }
             }
