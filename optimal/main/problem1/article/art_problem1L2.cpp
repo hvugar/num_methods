@@ -6,9 +6,9 @@ void ArtProblem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     ArtProblem1L2 p;
     p.initialize();
-    //p.startOptimize();
+    p.startOptimize();
 
-    p.table2Generate();
+    //p.table2Generate();
     //p.imager3L();
     //p.imager2L();
 
@@ -25,20 +25,20 @@ void ArtProblem1L2::initialize()
     optimizeZ = true;
     optimizeE = true;
     withError = false;
-    DD = 10;
+    DD = 1;
 
     L = 2;
 
-    N = 100;
+    N = 1000;
     hx = 0.001;
 
-    M = 2000;
-    ht = 0.1;
+    M = 1000;
+    ht = 0.01;
 
     // initial temperatures
     vfi << 0.0;// << 1.0 << 2.0;
     // environment temperatures
-    vtt << +19.0;;// << +20.0 << +21.0;
+    vtt << +19.0;// << +20.0 << +21.0;
 
     // initial temperature
     fi = 0.0;
@@ -69,10 +69,10 @@ void ArtProblem1L2::initialize()
         const double h1 = 1000.0;      // коэффициент теплообмена ->
         const double h2 = 10.0;        // коэффициент теплообмена ->
 
-        a = sqrt((k0/(c0*r0)));        // коэффициент температуропроворности
-        lambda0 = (h2/(c0*r0));          // коэффициент теплообмена ->
-        lambda1 = (h1/k0);               // коэффициент теплообмена ->
-        lambda2 = (h2/k0);               // коэффициент теплообмена ->
+        a = 1.0;//sqrt((k0/(c0*r0))*200);        // коэффициент температуропроворности
+        lambda0 = 0.01;//(h2/(c0*r0));          // коэффициент теплообмена ->
+        lambda1 = 0.5;//(h1/k0);               // коэффициент теплообмена ->
+        lambda2 = 0.0005;//(h2/k0);               // коэффициент теплообмена ->
     }
 
     /* коэффициенты регуляризации */
@@ -115,6 +115,7 @@ void ArtProblem1L2::initialize()
     /* температура стержня */
     V.resize(N+1);
     for (unsigned int n=0; n<=N; n++) V[n] = 10.0;
+    IPrinter::printVector(V);
 }
 
 void ArtProblem1L2::table1Generate()
@@ -136,7 +137,7 @@ void ArtProblem1L2::table1Generate()
     {
         y0 << +0.020 << +0.080;
     }
-    R = 100.0;
+    R = 1.0;
     optimize(y0);
     while (R < 10000.0)
     {
@@ -431,7 +432,7 @@ void ArtProblem1L2::startOptimize()
     DoubleVector x0;
     if (optimizeK)
     {
-        x0 << -4.5400 << -7.4500 << -3.500; //k
+        x0 << -4.5400 << -7.4500; //k
         //        x0 << -4.9700 << -1.4900; //
     }
     else
@@ -442,7 +443,7 @@ void ArtProblem1L2::startOptimize()
 
     if (optimizeZ)
     {
-        x0 << +12.1000 << +14.900 << +10.13; //z
+        x0 << +12.1000 << +14.900; //z
         //        x0 << +10.7400 << +7.0600; //
     }
     else
@@ -453,7 +454,7 @@ void ArtProblem1L2::startOptimize()
 
     if (optimizeE)
     {
-        x0 << 0.02500 << 0.04500 << 0.07500; //e
+        x0 << 0.2500 << 0.7500; //e
         //        x0 << 0.0100 << 0.0600;
     }
     else
@@ -464,6 +465,7 @@ void ArtProblem1L2::startOptimize()
 
     FILE *file = fopen("sample2.txt", "w");
     fclose(file);
+    DD = 1.0;
     R = 1.0;
     optimize(x0);
     while (R < 10000.0)
@@ -1436,8 +1438,8 @@ void ArtProblem1L2::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
     {
         if (L==2)
         {
-            if (i==4) { if (x.at(4) < 0.005) x.at(4) = 0.005; if (x.at(4) > 0.060) x.at(4) = 0.060; }
-            if (i==5) { if (x.at(5) < 0.040) x.at(5) = 0.040; if (x.at(5) > 0.095) x.at(5) = 0.095; }
+            if (i==4) { if (x.at(4) < 0.05) x.at(4) = 0.05; if (x.at(4) > 0.95) x.at(4) = 0.95; }
+            if (i==5) { if (x.at(5) < 0.05) x.at(5) = 0.05; if (x.at(5) > 0.95) x.at(5) = 0.95; }
         }
 
 //        if (L==2)

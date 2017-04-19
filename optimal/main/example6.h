@@ -27,10 +27,11 @@ public:
     double fx(unsigned int i, unsigned int k) const;
 
     void method1K2();
+    void method1K4();
 
 private:
-    double h = 0.001;
-    unsigned int N = 1000;
+    double h = 0.1;
+    unsigned int N = 10;
     unsigned int K = 4;
     unsigned int F = 10;
     unsigned int n = 3;
