@@ -15,7 +15,7 @@
 #include "problem1newton.h"
 #include "iproblem1.h"
 
-class Problem1L2 : public IProblem1, public IPrinter, public IProjection
+class Problem1L2 : public IProblem1, public IProjection
 {
 public:
     static void Main(int argc, char* argv[]);
@@ -26,7 +26,6 @@ public:
     void initialize();
     void startOptimize();
     void optimize(DoubleVector &x0) const;
-    virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const;
     virtual void project(DoubleVector &x, int index);
 };
 

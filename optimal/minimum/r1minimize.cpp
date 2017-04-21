@@ -93,7 +93,7 @@ void stranghLineSearch(double x, double step, double &a, double &b, R1Function *
 
     a = x - fstep;
     b = x + fstep;
-    puts("Test. stranghLineSearch");
+    printf("Test. stranghLineSearch %f %f %f %f %f %f\n", a, x, b, y1, y0, y2);
 }
 
 /**

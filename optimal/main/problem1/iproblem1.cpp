@@ -21,35 +21,30 @@ double IProblem1::fx(const DoubleVector &y) const
             DoubleMatrix u;
             calculateU(u, k, z, e);
 
-            double sum = 0.0;
-            sum += 0.5*mu(0)*(u[M][0]-V[0])*(u[M][0]-V[0]);
-            for (unsigned int n=1; n<=N-1; n++)
-            {
-                sum += mu(n)*(u[M][n]-V[n])*(u[M][n]-V[n]);
-            }
-            sum += 0.5*mu(N)*(u[M][N]-V[N])*(u[M][N]-V[N]);
-            sum *= hx;
-
-            double pnlt = 0.0;
-//            double min = 0.0;
-
-//            min = fmin(0.0, gf(0, k, z, e, u));
-//            pnlt += 0.5*min*min;
-//            for (unsigned int m=1; m<=M-1; m++)
-//            {
-//                min = fmin(0.0, gf(m, k, z, e, u));
-//                pnlt += min*min;
-//            }
-//            min = fmin(0.0, gf(M, k, z, e, u));
-//            pnlt += 0.5*min*min;
-
-//            pnlt *= ht;
-
-            SUM += alpha0*sum + R*pnlt;
+            SUM += alpha0*integral(u);
+            SUM += R*penalty(k, z, e, u);
         }
     }
     SUM *= ((1.0/N1)*(1.0/N2));
+    SUM += norm(k,z,e);
+    return SUM;
+}
 
+double IProblem1::integral(const DoubleMatrix &u) const
+{
+    double sum = 0.0;
+    sum += 0.5*mu(0)*(u[M][0]-V[0])*(u[M][0]-V[0]);
+    for (unsigned int n=1; n<=N-1; n++)
+    {
+        sum += mu(n)*(u[M][n]-V[n])*(u[M][n]-V[n]);
+    }
+    sum += 0.5*mu(N)*(u[M][N]-V[N])*(u[M][N]-V[N]);
+    sum *= hx;
+    return sum;
+}
+
+double IProblem1::norm(const DoubleVector &k, const DoubleVector &z, const DoubleVector &e) const
+{
     double norm1 = 0.0;
     double norm2 = 0.0;
     double norm3 = 0.0;
@@ -60,10 +55,27 @@ double IProblem1::fx(const DoubleVector &y) const
         norm2 += (z[s] - z0[s])*(z[s] - z0[s]);
         norm3 += (e[s] - e0[s])*(e[s] - e0[s]);
     }
+    return alpha1*norm1 + alpha2*norm2 + alpha3*norm3;
+}
 
-    SUM += alpha1*norm1 + alpha2*norm2 + alpha3*norm3;
+double IProblem1::penalty(const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
+{
+    double pnlt = 0.0;
+    double min = 0.0;
 
-    return SUM;
+    min = fmin(0.0, gf(0, k, z, e, u));
+    pnlt += 0.5*min*min;
+    for (unsigned int m=1; m<=M-1; m++)
+    {
+        min = fmin(0.0, gf(m, k, z, e, u));
+        pnlt += min*min;
+    }
+    min = fmin(0.0, gf(M, k, z, e, u));
+    pnlt += 0.5*min*min;
+
+    pnlt *= ht;
+
+    return pnlt;
 }
 
 void IProblem1::gradient(const DoubleVector &y, DoubleVector &g)
@@ -100,22 +112,22 @@ void IProblem1::gradient(const DoubleVector &y, DoubleVector &g)
                 {
                     // Integral part of gradient
                     double sum = 0.0;
-                    sum += 0.5*p.at(0, 0)*(/*u.at(0, xi)*/u_xi(0,e[s],u) - z[s]);
+                    sum += 0.5*p.at(0, 0)*(u_xi(0,e[s],u) - z[s]);
                     for (unsigned int m=1; m<=M-1; m++)
                     {
-                        sum += p[m][0]*(/*u[m][xi]*/u_xi(m,e[s],u) - z[s]);
+                        sum += p[m][0]*(u_xi(m,e[s],u) - z[s]);
                     }
-                    sum += 0.5*p[M][0]*(/*u[M][xi]*/u_xi(M,e[s],u) - z[s]);
+                    sum += 0.5*p[M][0]*(u_xi(M,e[s],u) - z[s]);
                     sum *= ht;
 
                     // Penalty part of gradient
                     double pnlt = 0.0;
-                    pnlt += 0.5 * (/*u[0][xi]*/u_xi(0,e[s],u)-z[s]) * sgn_min(0, k, z, e, u);
+                    pnlt += 0.5 * (u_xi(0,e[s],u)-z[s]) * sgn_min(0, k, z, e, u);
                     for (unsigned int m=1; m<=M-1; m++)
                     {
-                        pnlt += (/*u[m][xi]*/u_xi(m,e[s],u)-z[s]) * sgn_min(m, k, z, e, u);
+                        pnlt += (u_xi(m,e[s],u)-z[s]) * sgn_min(m, k, z, e, u);
                     }
-                    pnlt += 0.5 * (/*u[M][xi]*/u_xi(M,e[s],u)-z[s]) * sgn_min(M, k, z, e, u);
+                    pnlt += 0.5 * (u_xi(M,e[s],u)-z[s]) * sgn_min(M, k, z, e, u);
                     pnlt *= ht;
 
                     g[i] += -lambda1*a*a*sum + 2.0*R*pnlt;
@@ -160,22 +172,22 @@ void IProblem1::gradient(const DoubleVector &y, DoubleVector &g)
                 {
                     // Integral part of gradient
                     double sum = 0.0;
-                    sum += 0.5 * p[0][0] * u_xi_d(0,e[s],u)/*((u.at(0, xi+1) - u.at(0, xi-1))/(2.0*hx))*/;
+                    sum += 0.5 * p[0][0] * u_xi_d(0,e[s],u);
                     for (unsigned int m=1; m<=M-1; m++)
                     {
-                        sum += p[m][0] * u_xi_d(m,e[s],u)/*((u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx))*/;
+                        sum += p[m][0] * u_xi_d(m,e[s],u);
                     }
-                    sum += 0.5 * p[M][0] * u_xi_d(M,e[s],u)/*((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx))*/;
+                    sum += 0.5 * p[M][0] * u_xi_d(M,e[s],u);
                     sum *= ht;
 
                     // Penalty part of gradient
                     double pnlt = 0.0;
-                    pnlt += 0.5 * u_xi_d(0,e[s],u)/*((u.at(0, xi+1) - u.at(0, xi-1))/(2.0*hx))*/ * sgn_min(0, k, z, e, u);
+                    pnlt += 0.5 * u_xi_d(0,e[s],u) * sgn_min(0, k, z, e, u);
                     for (unsigned int m=1; m<=M-1; m++)
                     {
-                        pnlt += u_xi_d(m,e[s],u)/*((u.at(m, xi+1) - u.at(m, xi-1))/(2.0*hx))*/ * sgn_min(m, k, z, e, u);
+                        pnlt += u_xi_d(m,e[s],u) * sgn_min(m, k, z, e, u);
                     }
-                    pnlt += 0.5 * u_xi_d(M,e[s],u)/*((u.at(M, xi+1) - u.at(M, xi-1))/(2.0*hx))*/ * sgn_min(M, k, z, e, u);
+                    pnlt += 0.5 * u_xi_d(M,e[s],u) * sgn_min(M, k, z, e, u);
                     pnlt *= ht;
 
                     g[i] += -lambda1*a*a*k[s]*sum + 2.0*R*k[s]*pnlt;
@@ -246,10 +258,10 @@ void IProblem1::calculateU(DoubleMatrix &u, const DoubleVector &k, const DoubleV
         dc[0] = -a_a_ht_hx_hx;
         dd[0] = u.at(m-1,0) + lambda0_ht_tt - lambda1_a_a_ht_hx*kzs;
 
-        //da[0] = 0.0;
-        //db[0] = 1.0 + (a*a*ht)/(hx*hx) + (lambda1*a*a*ht)/hx + lambda0*ht;
-        //dc[0] = -(a*a*ht)/(hx*hx);
-        //dd[0] = u.at(m-1,0) + lambda0_ht_tt - lambda1_a_a_ht_hx*kzs;// - ((lambda1*a*a*ht)/hx)*(k[0]*z[0] + k[1]*z[1] + k[2]*z[2]);
+//        da[0] = 0.0;
+//        db[0] = 1.0 + (a*a*ht)/(hx*hx) + (lambda1*a*a*ht)/hx + lambda0*ht;
+//        dc[0] = -(a*a*ht)/(hx*hx);
+//        dd[0] = u.at(m-1,0) + lambda0_ht_tt - lambda1_a_a_ht_hx*kzs;
 
         // n = 1,...,N-1
         for (unsigned int n=1; n<=N-1; n++)
@@ -259,10 +271,10 @@ void IProblem1::calculateU(DoubleMatrix &u, const DoubleVector &k, const DoubleV
             dc[n] = -a_a_ht_hx_hx;
             dd[n] = u.at(m-1,n) + lambda0_ht_tt;
 
-            //da[n] = -(a*a*ht)/(hx*hx);
-            //db[n] = 1.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht;
-            //dc[n] = -(a*a*ht)/(hx*hx);
-            //dd[n] = u.at(m-1,n) + lambda0*ht*tt;
+//            da[n] = -(a*a*ht)/(hx*hx);
+//            db[n] = 1.0 + 2.0*(a*a*ht)/(hx*hx) + lambda0*ht;
+//            dc[n] = -(a*a*ht)/(hx*hx);
+//            dd[n] = u.at(m-1,n) + lambda0*ht*tt;
         }
 
         // n = N
@@ -271,17 +283,16 @@ void IProblem1::calculateU(DoubleMatrix &u, const DoubleVector &k, const DoubleV
         dc[N] = 0.0;
         dd[N] = u.at(m-1,N)  + lambda0_ht_tt + lambda2_a_a_ht_tt_hx;
 
-        //da[N] = -(a*a*ht)/(hx*hx);
-        //db[N] = 1.0 + (a*a*ht)/(hx*hx) + (lambda2*a*a*ht)/hx + lambda0*ht;
-        //dc[N] = 0.0;
-        //dd[N] = u.at(m-1,N)  + lambda0*ht*tt + (lambda2*a*a*ht*tt)/hx;
+//        da[N] = -(a*a*ht)/(hx*hx);
+//        db[N] = 1.0 + (a*a*ht)/(hx*hx) + (lambda2*a*a*ht)/hx + lambda0*ht;
+//        dc[N] = 0.0;
+//        dd[N] = u.at(m-1,N)  + lambda0*ht*tt + (lambda2*a*a*ht*tt)/hx;
 
         de[0]  =de[1] = 0.0;
         de[N-1]=de[N] = 0.0;
         for (unsigned int n=2; n<=N-2; n++)
         {
             de[n] = 0.0;
-
             for (unsigned int s=0; s<L; s++)
             {
                 double diff = fabs(n*hx - e[s]);
@@ -298,16 +309,16 @@ void IProblem1::calculateU(DoubleMatrix &u, const DoubleVector &k, const DoubleV
         for (unsigned int i=0; i<=N; i++)
         {
             u[m][i] = rx[i];
+        }
 
-            //            if (withError)
-            //            {
-            //                //u[m][E0] += (((rand()%RAND_MAX) % 2 == 0) ? +persent : -persent) * u[m][E0];
-            //                //u[m][E1] += (((rand()%RAND_MAX) % 2 == 0) ? +persent : -persent) * u[m][E1];
-
-            //                double w0 = (rand() % 2000)*0.001 - 1.0; u[m][E0] += w0*persent * u[m][E0];
-            //                double w1 = (rand() % 2000)*0.001 - 1.0; u[m][E1] += w1*persent * u[m][E1];
-            //                //printf("%f %f\n", w0, w1);
-            //            }
+        if (withError)
+        {
+            for (unsigned int s=0; s<L; s++)
+            {
+                unsigned int E = (unsigned int) round(e[s]);
+                double w = (rand() % 2000)*0.001 - 1.0;
+                u[m][E] += w*persent * u[m][E];
+            }
         }
     }
 
@@ -409,6 +420,51 @@ void IProblem1::calculateP(DoubleMatrix &p, const DoubleMatrix &u, const DoubleV
     free(dc);
     free(db);
     free(da);
+}
+
+void IProblem1::print(unsigned int i, const DoubleVector &y, const DoubleVector &g, double r, GradientMethod::MethodResult) const
+{
+    IProblem1 *pm = const_cast<IProblem1*>(this);
+    DoubleVector k,z,e;
+    getParameters(k,z,e,y);
+    DoubleMatrix u;
+    pm->calculateU(u, k, z, e);
+
+    IPrinter::printSeperatorLine();
+
+    DoubleVector n(y.size());
+    IGradient::Gradient(pm, 0.001, y, n);
+
+    DoubleVector ak = g.mid(0*L,1*L-1);
+    DoubleVector az = g.mid(1*L,2*L-1);
+    DoubleVector ae = g.mid(2*L,3*L-1);
+
+    DoubleVector nk = n.mid(0*L,1*L-1);
+    DoubleVector nz = n.mid(1*L,2*L-1);
+    DoubleVector ne = n.mid(2*L,3*L-1);
+
+    printf("J[%d]: %.10f R: %.2f\n", i, r, R);
+    printf("k: "); for (unsigned int s=0; s<L; s++) printf("%18.6f", k[s]); printf("\n");
+    //printf("a: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", ak[s]); printf(" | "); ak.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", ak[s]); printf("\n");
+    //printf("n: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", nk[s]); printf(" | "); nk.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", nk[s]); printf("\n");
+
+    printf("z: "); for (unsigned int s=0; s<L; s++) printf("%18.6f", z[s]); printf("\n");
+    //printf("a: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", az[s]); printf(" | "); az.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", az[s]); printf("\n");
+    //printf("n: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", nz[s]); printf(" | "); nz.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", nz[s]); printf("\n");
+
+    printf("e: "); for (unsigned int s=0; s<L; s++) printf("%18.6f", e[s]); printf("\n");
+    //printf("a: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", ae[s]); printf(" | "); ae.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", ae[s]); printf("\n");
+    //printf("n: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", ne[s]); printf(" | "); ne.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", ne[s]); printf("\n");
+
+    DoubleVector v(M+1); for (unsigned int m=0; m<=M; m++) v[m] = vf(m,k,z,e,u);
+
+    IPrinter::printVector(14,10,u.row(u.rows()-1),"u: ");
+    IPrinter::printVector(14,10,v,"v: ");
+
+    v.clear();
+    u.clear();
+
+    n.clear();
 }
 
 double IProblem1::initial(unsigned int n UNUSED_PARAM) const

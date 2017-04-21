@@ -8,8 +8,9 @@
 #include <matrix2d.h>
 #include <cmethods.h>
 #include <gradient/igradient.h>
+#include <printer.h>
 
-class IProblem1 : protected RnFunction, protected IGradient
+class IProblem1 : protected RnFunction, protected IGradient, public IPrinter
 {
 public:
     unsigned int L;
@@ -65,6 +66,12 @@ public:
 protected:
     virtual double fx(const DoubleVector &y) const;
     virtual void gradient(const DoubleVector &y, DoubleVector &g);
+
+    virtual double integral(const DoubleMatrix &u) const;
+    virtual double norm(const DoubleVector &k, const DoubleVector &z, const DoubleVector &e) const;
+    virtual double penalty(const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const;
+
+    virtual void print(unsigned int i, const DoubleVector &y, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const;
 
     virtual void calculateU(DoubleMatrix &u, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e) const;
     virtual void calculateP(DoubleMatrix &p, const DoubleMatrix &u, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e) const;

@@ -6,7 +6,7 @@
 #include <projection.h>
 #include <gradient_cjt.h>
 
-class ArticleProblem1L3 : protected IProblem1, public IPrinter, public IProjection
+class ArticleProblem1L3 : protected IProblem1, public IProjection
 {
 public:
     static void Main(int argc, char *argv[]);
@@ -17,7 +17,6 @@ public:
 
     void optimize(DoubleVector &y0) const;
 
-    virtual void print(unsigned int i, const DoubleVector &y, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const;
     virtual void project(DoubleVector &x, int index);
 };
 
