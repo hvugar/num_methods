@@ -57,7 +57,7 @@ void stranghLineSearch(double x, double step, double &a, double &b, R1Function *
         }
         //a = x - fstep;
         //b = x + fstep;
-//        a = b = NAN;
+        //        a = b = NAN;
         printf("%f %f %f %f %f %f\n", y1, y0, y2, x - fstep, x, x + fstep);
         fputs("Function is not unimodal\n", stderr);
         return;
@@ -165,15 +165,66 @@ double goldenSectionSearch(double &a, double &b, double &x, R1Function *f, doubl
     }
 
     double c = (a+b)/2.0;
-
     double fa = f->fx(a);
     double fb = f->fx(b);
-
-    //if (fa==fb) c = (a+b)/2.0;
-
     if (fa<fb)  c = a;
     if (fa>fb)  c = b;
+    x = c;
+    return c;
+}
 
+double goldenSectionSearch2(double &a, double &b, double &x, R1Function *f, double epsilon)
+{
+    double phi = 1.6180339887498948482045868343656;
+    double x1 = b - fabs(b-a)/phi;
+    double x2 = a + fabs(b-a)/phi;
+
+    double y1 = 0.0;//f->fx(x1);
+    double y2 = 0.0;//f->fx(x2);
+
+    bool check1 = true;
+    bool check2 = true;
+
+    while (fabs(b-a) > epsilon)
+    {
+        if (check1)
+        {
+            x1 = b - fabs(b-a)/phi;
+            y1 = f->fx(x1);
+            check1 = false;
+        }
+        if (check2)
+        {
+            x2 = a + fabs(b-a)/phi;
+            y2 = f->fx(x2);
+            check2 = false;
+        }
+
+        if (y1 >= y2)
+        {
+            a = x1;
+            x1 = x2;
+            y1 = y2;
+            //x2 = a + fabs(b-a)/phi;
+            //y2 = f->fx(x2);
+            check2 = true;
+        }
+        else
+        {
+            b = x2;
+            x2 = x1;
+            y2 = y1;
+            //x1 = b - fabs(b-a)/phi;
+            //y1 = f->fx(x1);
+            check1 = true;
+        }
+    }
+
+    double c = (a+b)/2.0;
+    double fa = f->fx(a);
+    double fb = f->fx(b);
+    if (fa<fb) c = a;
+    if (fa>fb) c = b;
     x = c;
     return c;
 }
@@ -210,10 +261,8 @@ double goldenSectionSearch1(double &a, double &b, double &x, R1Function *f, doub
     double c = (a+b)/2.0;
     double fa = f->fx(a);
     double fb = f->fx(b);
-
     if (fa<fb) c = a;
     if (fa>fb) c = b;
-
     x = c;
     return c;
 }

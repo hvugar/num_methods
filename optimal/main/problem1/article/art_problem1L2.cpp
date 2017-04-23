@@ -466,12 +466,12 @@ void ArtProblem1L2::startOptimize()
     DD = 1.0;
     R = 1.0;
     optimize(x0);
-    while (R < 10000.0)
-    {
-        R *= 10.0;
-        IPrinter::printSeperatorLine();
-        optimize(x0);
-    }
+//    while (R < 10000.0)
+//    {
+//        R *= 10.0;
+//        IPrinter::printSeperatorLine();
+//        optimize(x0);
+//    }
 
     DoubleMatrix u;
     DoubleVector k,z,e;
