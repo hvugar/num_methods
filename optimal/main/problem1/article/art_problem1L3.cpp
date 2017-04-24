@@ -87,8 +87,8 @@ void ArticleProblem1L3::optimize(DoubleVector &y0) const
 
 void ArticleProblem1L3::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
 {
-    if (i == 6) { if (x.at(6) < 0.05) x.at(6) = 0.05; if (x.at(6) > 0.95) x.at(6) = 0.95; }
-    if (i == 7) { if (x.at(7) < 0.05) x.at(7) = 0.05; if (x.at(7) > 0.95) x.at(7) = 0.95; }
-    if (i == 8) { if (x.at(8) < 0.05) x.at(8) = 0.05; if (x.at(8) > 0.95) x.at(8) = 0.95; }
+    if (i == 6) { if (x.at(6) < 0.005) x.at(6) = 0.005; if (x.at(6) > 0.095) x.at(6) = 0.095; }
+    if (i == 7) { if (x.at(7) < 0.005) x.at(7) = 0.005; if (x.at(7) > 0.095) x.at(7) = 0.095; }
+    if (i == 8) { if (x.at(8) < 0.005) x.at(8) = 0.005; if (x.at(8) > 0.095) x.at(8) = 0.095; }
 
 }

@@ -511,19 +511,19 @@ void IProblem1::qovmaFirstRowM(double *a, double *b, double *c, double *d, doubl
         if (i==(n-1))
         {
             x[i] = p[i];
-            if (isnan(x[i])) { printf("512 %d %f %f\n", i, x[i], p[i]); exit(-1);}
+            //if (isnan(x[i])) { printf("512 %d %f %f\n", i, x[i], p[i]); exit(-1);}
         }
         else
         {
             x[i] = p[i] + q[i]*x[i+1];
-            if (isnan(x[i])) { printf("517 %d %f %f %f\n", i, x[i], p[i], q[i]);  exit(-1);}
+            //if (isnan(x[i])) { printf("517 %d %f %f %f\n", i, x[i], p[i], q[i]);  exit(-1);}
 
             for (unsigned int s=0; s<L; s++)
             {
                 if (i<=E[s]-1)
                 {
                     x[i] = x[i] + k[s][i]*x[E[s]];
-                    if (isnan(x[i])) { printf("525 %d %f %.20f %f %d\n", i, x[i], k[s][i], x[E[s]], E[s]);  exit(-1);}
+                    //if (isnan(x[i])) { printf("525 %d %f %.20f %f %d\n", i, x[i], k[s][i], x[E[s]], E[s]);  exit(-1);}
                 }
             }
         }
@@ -535,11 +535,11 @@ void IProblem1::qovmaFirstRowM(double *a, double *b, double *c, double *d, doubl
     free(q);
     free(p);
 
-    for (unsigned int i=0; i<n; i++)
-    {
-        if (isnan(x[i]))
-            printf("%d %f %f\n", i, x[i], b[0]);
-    }
+//    for (unsigned int i=0; i<n; i++)
+//    {
+//        if (isnan(x[i]))
+//            printf("%d %f %f\n", i, x[i], b[0]);
+//    }
 }
 
 void IProblem1::calculateP(DoubleMatrix &p, const DoubleMatrix &u, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e) const
@@ -656,15 +656,15 @@ void IProblem1::print(unsigned int i, const DoubleVector &y, const DoubleVector 
     DoubleVector ne = n.mid(2*L,3*L-1);
 
     printf("J[%d]: %.10f R: %.2f\n", i, r, R);
-    printf("k: "); for (unsigned int s=0; s<L; s++) printf("%18.6f", k[s]); printf("\n");
+    printf("k: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", k[s]); printf("\n");
     //printf("a: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", ak[s]); printf(" | "); ak.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", ak[s]); printf("\n");
     //printf("n: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", nk[s]); printf(" | "); nk.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", nk[s]); printf("\n");
 
-    printf("z: "); for (unsigned int s=0; s<L; s++) printf("%18.6f", z[s]); printf("\n");
+    printf("z: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", z[s]); printf("\n");
     //printf("a: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", az[s]); printf(" | "); az.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", az[s]); printf("\n");
     //printf("n: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", nz[s]); printf(" | "); nz.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", nz[s]); printf("\n");
 
-    printf("e: "); for (unsigned int s=0; s<L; s++) printf("%18.6f", e[s]); printf("\n");
+    printf("e: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", e[s]); printf("\n");
     //printf("a: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", ae[s]); printf(" | "); ae.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", ae[s]); printf("\n");
     //printf("n: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", ne[s]); printf(" | "); ne.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", ne[s]); printf("\n");
 

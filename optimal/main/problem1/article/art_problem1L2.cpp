@@ -77,8 +77,8 @@ void ArtProblem1L2::initialize()
 
     a = 1.0;
     lambda0 = 0.001;
-    lambda1 = 1000.0;
-    lambda2 = 0.0010;
+    lambda1 = 100.0;
+    lambda2 = 0.010;
 
 
     /* коэффициенты регуляризации */
@@ -430,8 +430,10 @@ void ArtProblem1L2::startOptimize()
     DoubleVector x0;
     if (optimizeK)
     {
-        x0 << -4.5400 << -7.4500; //k
-        //        x0 << -4.9700 << -1.4900; //
+        //x0 << -5.5400 << -8.4500; //k
+        x0 << -8.1284 << -1.4928; //k
+        //x0 << -12.1200 << -10.4900; //k
+        //x0 << -2.8525 << -6.8774; //k
     }
     else
     {
@@ -441,8 +443,10 @@ void ArtProblem1L2::startOptimize()
 
     if (optimizeZ)
     {
-        x0 << +12.1000 << +14.900; //z
-        //        x0 << +10.7400 << +7.0600; //
+        //x0 << +10.1500 << +12.9600; //z
+        x0 << +15.7465 << +7.0645; //k
+        //x0 << +1.82400 << +1.7500; //k
+        //x0 << +2.4548 << +2.4518; //k
     }
     else
     {
@@ -452,8 +456,10 @@ void ArtProblem1L2::startOptimize()
 
     if (optimizeE)
     {
-        x0 << 0.2500 << 0.7500; //e
-        //        x0 << 0.0100 << 0.0600;
+        //x0 << 0.2500 << 0.7500; //e
+        x0 << 0.1055 << 0.8155; //e
+        //x0 << 0.9500 << 0.2000; //e
+        //x0 << 0.5587 << 0.7545; //e
     }
     else
     {
@@ -466,12 +472,12 @@ void ArtProblem1L2::startOptimize()
     DD = 1.0;
     R = 1.0;
     optimize(x0);
-//    while (R < 10000.0)
-//    {
-//        R *= 10.0;
-//        IPrinter::printSeperatorLine();
-//        optimize(x0);
-//    }
+    while (R < 100.0)
+    {
+        R *= 10.0;
+        IPrinter::printSeperatorLine();
+        optimize(x0);
+    }
 
     DoubleMatrix u;
     DoubleVector k,z,e;
@@ -745,18 +751,13 @@ void ArtProblem1L2::imager3L()
 
 void ArtProblem1L2::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
 {
-    int p = 0;
-    if (optimizeK) p+=L;
-
-    if (optimizeZ) p+=L;
-
     /* e lower/upper limits */
     if (optimizeE)
     {
         if (L==2)
         {
-            if (i==4) { if (x.at(4) < 0.05) x.at(4) = 0.05; if (x.at(4) > 0.95) x.at(4) = 0.95; }
-            if (i==5) { if (x.at(5) < 0.05) x.at(5) = 0.05; if (x.at(5) > 0.95) x.at(5) = 0.95; }
+            if (i==4) { if (x.at(4) < 0.005) x.at(4) = 0.005; if (x.at(4) > 0.995) x.at(4) = 0.995; }
+            if (i==5) { if (x.at(5) < 0.005) x.at(5) = 0.005; if (x.at(5) > 0.995) x.at(5) = 0.995; }
         }
 
         if (L==3)
