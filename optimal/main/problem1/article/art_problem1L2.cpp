@@ -6,11 +6,11 @@ void ArtProblem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     ArtProblem1L2 p;
     p.initialize();
-    p.startOptimize();
+//    p.startOptimize();
 
     //p.table2Generate();
     //p.imager3L();
-    //p.imager2L();
+    p.imager2L();
 
 //    p.image1Generate();
 //    p.image2Generate();
@@ -29,11 +29,11 @@ void ArtProblem1L2::initialize()
 
     L = 2;
 
-    N = 1000;
-    hx = 0.001;
+    N = 100;
+    hx = 0.01;
 
-    M = 1000;
-    ht = 0.001;
+    M = 100;
+    ht = 0.01;
 
     // initial temperatures
     vfi << 0.0 << 1.0 << 2.0;
@@ -226,16 +226,16 @@ void ArtProblem1L2::image1Generate()
 
     if (optimizeK)
     {
-        y0 << -0.103894  <<  -1.837793;
+        y0 << -6.0341111852 << 1.1251024127;
     }
 
     if (optimizeZ)
     {
-        y0 << 13.063753 << 15.239693;
+        y0 << 12.5876519120 << 14.9819901001;
     }
     if (optimizeE)
     {
-        y0 << 0.067496 << 0.793735;
+        y0 << 0.5889625969 << 0.7277517979;
     }
 
     DD = 1;
@@ -243,9 +243,12 @@ void ArtProblem1L2::image1Generate()
     DoubleVector k,z,e;
     getParameters(k,z,e,y0);
 
-    M *= 2;
+//    M *= 2;
 
     FILE *file1 = fopen("image_1_v.txt", "w");
+
+    vfi.clear();
+    vtt.clear();
 
     fi = +0.0;
     tt = +5.0;
@@ -259,8 +262,8 @@ void ArtProblem1L2::image1Generate()
     }
     fprintf(file1, "\n");
 
-    fi = -3.0;
-    tt = +5.0;
+    fi = -2.0;
+    tt = +9.0;
     DoubleMatrix u2;
     calculateU(u2,k,z,e);
     for (int unsigned m=0; m<=M; m++)
@@ -271,20 +274,9 @@ void ArtProblem1L2::image1Generate()
     }
     fprintf(file1, "\n");
 
-    fi = +2.0;
-    tt = +5.0;
-    DoubleMatrix u3;
-    calculateU(u3,k,z,e);
-    for (int unsigned m=0; m<=M; m++)
-    {
-        double v = vf(m,k,z,e,u3);
-        fprintf(file1, "%.10f ",v);
-        fflush(file1);
-    }
-
     fclose(file1);
 
-    M=1000;
+//    M=1000;
 }
 
 void ArtProblem1L2::image2Generate()
@@ -296,23 +288,26 @@ void ArtProblem1L2::image2Generate()
 
     if (optimizeK)
     {
-        y0 << -0.103894  <<  -1.837793;
+        y0 << -6.0341111852 << 1.1251024127;
     }
 
     if (optimizeZ)
     {
-        y0 << 13.063753 << 15.239693;
+        y0 << 12.5876519120 << 14.9819901001;
     }
     if (optimizeE)
     {
-        y0 << 0.067496 << 0.793735;
+        y0 << 0.5889625969 << 0.7277517979;
     }
 
     DoubleVector k,z,e;
     getParameters(k,z,e,y0);
 
     FILE *file1 = fopen("image_2_du.txt", "w");
-    M *= 2;
+//    M *= 2;
+
+    vfi.clear();
+    vtt.clear();
 
     fi = +0.0;
     tt = +5.0;
@@ -331,8 +326,8 @@ void ArtProblem1L2::image2Generate()
     }
     fprintf(file1, "\n");
 
-    fi = -3.0;
-    tt = +5.0;
+    fi = -2.0;
+    tt = +9.0;
     DoubleMatrix u2;
     calculateU(u2,k,z,e);
     for (int unsigned m=0; m<=M; m++)
@@ -348,24 +343,8 @@ void ArtProblem1L2::image2Generate()
     }
     fprintf(file1, "\n");
 
-    fi = +2.0;
-    tt = +5.0;
-    DoubleMatrix u3;
-    calculateU(u3,k,z,e);
-    for (int unsigned m=0; m<=M; m++)
-    {
-        double max = -1000000.0;
-        DoubleVector ut = u3.row(m);
-        for (unsigned int n=0; n<=N; n++)
-        {
-            if (max < fabs(ut[n]-V[n])) max = fabs(ut[n]-V[n]);
-        }
-        fprintf(file1, "%.10f ",max);
-        fflush(file1);
-    }
-
     fclose(file1);
-    M=1000;
+//    M=1000;
 }
 
 void ArtProblem1L2::image3Generate()
@@ -377,25 +356,27 @@ void ArtProblem1L2::image3Generate()
 
     if (optimizeK)
     {
-        y0 << -0.103894  <<  -1.837793;
+        y0 << -6.0341111852 << 1.1251024127;
     }
 
     if (optimizeZ)
     {
-        y0 << 13.063753 << 15.239693;
+        y0 << 12.5876519120 << 14.9819901001;
     }
     if (optimizeE)
     {
-        y0 << 0.067496 << 0.793735;
+        y0 << 0.5889625969 << 0.7277517979;
     }
 
     DoubleVector k,z,e;
     getParameters(k,z,e,y0);
 
+    vfi.clear();
+    vtt.clear();
+
     withError = true;
-    persent = 0.03;
-    FILE *file1 = fopen("image_3_du.txt", "w");
-    M *= 2;
+    persent = 0.05;
+    FILE *file1 = fopen("image_3_du_5.txt", "w");
 
     fi = +0.0;
     tt = +5.0;
@@ -403,8 +384,9 @@ void ArtProblem1L2::image3Generate()
     calculateU(u1,k,z,e);
     for (int unsigned m=0; m<=M; m++)
     {
-                double max = -1000000.0;
+        double max = -1000000.0;
         DoubleVector ut = u1.row(m);
+
         for (unsigned int n=0; n<=N; n++)
         {
             if (max < fabs(ut[n]-V[n])) max = fabs(ut[n]-V[n]);
@@ -422,7 +404,6 @@ void ArtProblem1L2::image3Generate()
     }
     fprintf(file1, "\n");
     fclose(file1);
-    M=1000;
 }
 
 void ArtProblem1L2::startOptimize()
@@ -432,8 +413,9 @@ void ArtProblem1L2::startOptimize()
     {
         //x0 << -5.5400 << -8.4500; //k
         //x0 << -8.1284 << -1.4928; //k
-        x0 << -22.1248 << -10.4918; //k
         //x0 << -2.8525 << -6.8774; //k
+        //x0 << -12.1248 << -4.4918; //k
+        x0 << -1.8142 << -2.9184; //k
     }
     else
     {
@@ -445,8 +427,9 @@ void ArtProblem1L2::startOptimize()
     {
         //x0 << +10.1500 << +12.9600; //z
         //x0 << +15.7465 << +7.0645; //k
-        x0 << +20.8248 << +17.7545; //k
         //x0 << +2.4548 << +2.4518; //k
+        //x0 << +20.8248 << +17.7545; //k
+        x0 << +10.4755 << +11.8428; //k
     }
     else
     {
@@ -458,8 +441,9 @@ void ArtProblem1L2::startOptimize()
     {
         //x0 << 0.2500 << 0.7500; //e
         //x0 << 0.1055 << 0.8155; //e
-        x0 << 0.9511 << 0.2095; //e
         //x0 << 0.5587 << 0.7545; //e
+        //x0 << 0.2095 << 0.9511; //e
+        x0 << 0.5551 << 0.4915; //e
     }
     else
     {
@@ -635,50 +619,38 @@ void ArtProblem1L2::imager2L()
     optimizeK = true;
     optimizeZ = true;
     optimizeE = true;
+    withError = false;
 
     if (optimizeK)
     {
-        //y0 << -1.70338950304666 << -3.14795310656662;
-        //y0 << -1.67351371107545 << -2.60464287363871;
-        y0 << -1.46038450118722  <<  -3.39347208053438;
+        y0 << -6.0341111852 << 1.1251024127;
     }
+
     if (optimizeZ)
     {
-        //y0 << +11.20714602437165 << +12.99567893148132;
-        //y0 << +11.29506147253105 << +13.16809490237042;
-        y0 << 11.15104030097655  <<  12.88213971188811;
+        y0 << 12.5876519120 << 14.9819901001;
     }
     if (optimizeE)
     {
-        //y0 << 0.04500000000000 << 0.09500000000000;
-        //y0 << 0.04431860079769 << 0.08715972328684;
-        y0 << 0.06000000000000  <<   0.09500000000000;
+        y0 << 0.5889625969 << 0.7277517979;
     }
 
-
     DoubleMatrix u(101,101);
-    R = 100.0;
+    R = 0.0;
     double max = -100000000.0;
     double min = +100000000.0;
-    for (unsigned int k0=2; k0<=98; k0++)
+    for (unsigned int k0=0; k0<=100; k0++)
     {
-        y0[4] = 0.001*k0;
-        for (unsigned int k1=2; k1<=98; k1++)
+        y0[0] = -6.5+0.01*k0;
+//        y0[4] = 0.01*k0;
+        for (unsigned int k1=0; k1<=100; k1++)
         {
-            y0[5] = 0.001*k1;
+            y0[1] = 0.5+0.01*k1;
+//            y0[5] = 0.01*k1;
 
             double f = 0.0;
-//            if (k0 == k1 || k0 == k1-1 || k0 == k1+1)
-//            {
-//                f = 0.0;
-//            }
-//            else
-//            {
-//                f = fx(y0);
-//            }
             f = fx(y0);
             u[k0][k1] = f;
-
 
             if (f > max) max = f;
             if (f < min) min = f;
@@ -686,6 +658,16 @@ void ArtProblem1L2::imager2L()
             printf("%d %d %f\n", k0, k1, f);
         }
     }
+
+//    for (unsigned int i=0; i<=100; i++) u[0][i] = u[2][i];
+//    for (unsigned int i=0; i<=100; i++) u[1][i] = u[2][i];
+//    for (unsigned int i=0; i<=100; i++) u[99][i] = u[98][i];
+//    for (unsigned int i=0; i<=100; i++) u[100][i] = u[98][i];
+//    for (unsigned int i=0; i<=100; i++) u[i][0] = u[i][2];
+//    for (unsigned int i=0; i<=100; i++) u[i][1] = u[i][2];
+//    for (unsigned int i=0; i<=100; i++) u[i][99] = u[i][98];
+//    for (unsigned int i=0; i<=100; i++) u[i][100] = u[i][98];
+
     printf("%f %f\n", min, max);
 
     FILE *file = fopen("data1.txt", "w");

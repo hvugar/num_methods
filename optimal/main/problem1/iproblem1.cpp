@@ -316,15 +316,15 @@ void IProblem1::calculateU1(DoubleMatrix &u, const DoubleVector &k, const Double
             u[m][i] = rx[i];
         }
 
-//        if (withError)
-//        {
-//            for (unsigned int s=0; s<L; s++)
-//            {
-//                unsigned int E = (unsigned int) round(e[s]);
-//                double w = (rand() % 2000)*0.001 - 1.0;
-//                u[m][E] += w*persent * u[m][E];
-//            }
-//        }
+        if (withError)
+        {
+            for (unsigned int s=0; s<L; s++)
+            {
+                unsigned int E = (unsigned int) round(e[s]);
+                double w = (rand() % 2000)*0.001 - 1.0;
+                u[m][E] += sign(w)*persent * u[m][E];
+            }
+        }
     }
 
     free(de);
@@ -644,16 +644,16 @@ void IProblem1::print(unsigned int i, const DoubleVector &y, const DoubleVector 
 
     IPrinter::printSeperatorLine();
 
-    DoubleVector n(y.size());
-    IGradient::Gradient(pm, 0.001, y, n);
+    //DoubleVector n(y.size());
+    //IGradient::Gradient(pm, 0.001, y, n);
 
-    DoubleVector ak = g.mid(0*L,1*L-1);
-    DoubleVector az = g.mid(1*L,2*L-1);
-    DoubleVector ae = g.mid(2*L,3*L-1);
+    //DoubleVector ak = g.mid(0*L,1*L-1);
+    //DoubleVector az = g.mid(1*L,2*L-1);
+    //DoubleVector ae = g.mid(2*L,3*L-1);
 
-    DoubleVector nk = n.mid(0*L,1*L-1);
-    DoubleVector nz = n.mid(1*L,2*L-1);
-    DoubleVector ne = n.mid(2*L,3*L-1);
+    //DoubleVector nk = n.mid(0*L,1*L-1);
+    //DoubleVector nz = n.mid(1*L,2*L-1);
+    //DoubleVector ne = n.mid(2*L,3*L-1);
 
     printf("J[%d]: %.10f R: %.2f\n", i, r, R);
     printf("k: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", k[s]); printf("\n");
@@ -676,7 +676,7 @@ void IProblem1::print(unsigned int i, const DoubleVector &y, const DoubleVector 
     v.clear();
     u.clear();
 
-    n.clear();
+    //n.clear();
 }
 
 double IProblem1::initial(unsigned int n UNUSED_PARAM) const
