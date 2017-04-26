@@ -8,7 +8,6 @@ void Problem1L3::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 Problem1L3::Problem1L3()
 {
     L = 3;
-    DD = 1;
 
     N = 1000;
     M = 1000;

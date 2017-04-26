@@ -263,10 +263,10 @@ void IProblem1::calculateU1(DoubleMatrix &u, const DoubleVector &k, const Double
         dc[0] = -a_a_ht_hx_hx;
         dd[0] = u.at(m-1,0) + lambda0_ht_tt - lambda1_a_a_ht_hx*kzs;
 
-//        da[0] = 0.0;
-//        db[0] = 1.0 + (a*a*ht)/(hx*hx) + (lambda1*a*a*ht)/hx + lambda0*ht;
-//        dc[0] = -(a*a*ht)/(hx*hx);
-//        dd[0] = u.at(m-1,0) + lambda0_ht_tt - lambda1_a_a_ht_hx*kzs;
+        //        da[0] = 0.0;
+        //        db[0] = 1.0 + (a*a*ht)/(hx*hx) + (lambda1*a*a*ht)/hx + lambda0*ht;
+        //        dc[0] = -(a*a*ht)/(hx*hx);
+        //        dd[0] = u.at(m-1,0) + lambda0_ht_tt - lambda1_a_a_ht_hx*kzs;
 
         // n = 1,...,N-1
         for (unsigned int n=1; n<=N-1; n++)
@@ -276,10 +276,10 @@ void IProblem1::calculateU1(DoubleMatrix &u, const DoubleVector &k, const Double
             dc[n] = -a_a_ht_hx_hx;
             dd[n] = u.at(m-1,n) + lambda0_ht_tt;
 
-//            da[n] = -(a*a*ht)/(hx*hx);
-//            db[n] = 1.0 + 2.0*(a*a*ht)/(hx*hx) + lambda0*ht;
-//            dc[n] = -(a*a*ht)/(hx*hx);
-//            dd[n] = u.at(m-1,n) + lambda0*ht*tt;
+            //            da[n] = -(a*a*ht)/(hx*hx);
+            //            db[n] = 1.0 + 2.0*(a*a*ht)/(hx*hx) + lambda0*ht;
+            //            dc[n] = -(a*a*ht)/(hx*hx);
+            //            dd[n] = u.at(m-1,n) + lambda0*ht*tt;
         }
 
         // n = N
@@ -288,10 +288,10 @@ void IProblem1::calculateU1(DoubleMatrix &u, const DoubleVector &k, const Double
         dc[N] = 0.0;
         dd[N] = u.at(m-1,N)  + lambda0_ht_tt + lambda2_a_a_ht_tt_hx;
 
-//        da[N] = -(a*a*ht)/(hx*hx);
-//        db[N] = 1.0 + (a*a*ht)/(hx*hx) + (lambda2*a*a*ht)/hx + lambda0*ht;
-//        dc[N] = 0.0;
-//        dd[N] = u.at(m-1,N)  + lambda0*ht*tt + (lambda2*a*a*ht*tt)/hx;
+        //        da[N] = -(a*a*ht)/(hx*hx);
+        //        db[N] = 1.0 + (a*a*ht)/(hx*hx) + (lambda2*a*a*ht)/hx + lambda0*ht;
+        //        dc[N] = 0.0;
+        //        dd[N] = u.at(m-1,N)  + lambda0*ht*tt + (lambda2*a*a*ht*tt)/hx;
 
         de[0]  =de[1] = 0.0;
         de[N-1]=de[N] = 0.0;
@@ -337,100 +337,100 @@ void IProblem1::calculateU1(DoubleMatrix &u, const DoubleVector &k, const Double
 
 void IProblem1::calculateU2(DoubleMatrix &u, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e) const
 {
-//    u.clear();
-//    u.resize(M+1, N+1);
+    //    u.clear();
+    //    u.resize(M+1, N+1);
 
-//    double a_a_ht_hx_hx = (a*a*ht)/(hx*hx);
-//    double lambda1_a_a_ht_hx = (lambda1*a*a*ht)/hx;
-//    double lambda2_a_a_ht_hx = (lambda2*a*a*ht)/hx;
-//    double lambda2_a_a_ht_tt_hx = (lambda2*a*a*ht*tt)/hx;
-//    double lambda0_ht = lambda0*ht;
-//    double lambda0_ht_tt = lambda0*ht*tt;
+    //    double a_a_ht_hx_hx = (a*a*ht)/(hx*hx);
+    //    double lambda1_a_a_ht_hx = (lambda1*a*a*ht)/hx;
+    //    double lambda2_a_a_ht_hx = (lambda2*a*a*ht)/hx;
+    //    double lambda2_a_a_ht_tt_hx = (lambda2*a*a*ht*tt)/hx;
+    //    double lambda0_ht = lambda0*ht;
+    //    double lambda0_ht_tt = lambda0*ht*tt;
 
-//    for (unsigned int n=0; n<=N; n++) u[0][n] = initial(n);
+    //    for (unsigned int n=0; n<=N; n++) u[0][n] = initial(n);
 
-//    double *gm = (double*) malloc(sizeof(double)*(N+1));
-//    double eta  = 0.0;
+    //    double *gm = (double*) malloc(sizeof(double)*(N+1));
+    //    double eta  = 0.0;
 
-//    for (unsigned int m=1; m<=M; m++)
-//    {
-//        double kzs = 0.0;
-//        for (unsigned int s=0; s<L; s++) kzs += k[s]*z[s];
+    //    for (unsigned int m=1; m<=M; m++)
+    //    {
+    //        double kzs = 0.0;
+    //        for (unsigned int s=0; s<L; s++) kzs += k[s]*z[s];
 
-//        // n = 0
-//        da[0] = 0.0;
-//        db[0] = 1.0 + a_a_ht_hx_hx + lambda1_a_a_ht_hx + lambda0_ht;
-//        dc[0] = -a_a_ht_hx_hx;
-//        dd[0] = u.at(m-1,0) + lambda0_ht_tt - lambda1_a_a_ht_hx*kzs;
+    //        // n = 0
+    //        da[0] = 0.0;
+    //        db[0] = 1.0 + a_a_ht_hx_hx + lambda1_a_a_ht_hx + lambda0_ht;
+    //        dc[0] = -a_a_ht_hx_hx;
+    //        dd[0] = u.at(m-1,0) + lambda0_ht_tt - lambda1_a_a_ht_hx*kzs;
 
-//        gm[0] = 1.0 + a_a_ht_hx_hx + lambda1_a_a_ht_hx + lambda0_ht;
-//        gm[1] = -a_a_ht_hx_hx;
-//        eta   = u.at(m-1,0) + lambda0_ht_tt - lambda1_a_a_ht_hx*kzs;
+    //        gm[0] = 1.0 + a_a_ht_hx_hx + lambda1_a_a_ht_hx + lambda0_ht;
+    //        gm[1] = -a_a_ht_hx_hx;
+    //        eta   = u.at(m-1,0) + lambda0_ht_tt - lambda1_a_a_ht_hx*kzs;
 
-//        for (unsigned int n=2; n<=N; n++)
-//        {
-//            gm[n] = 0.0;
-//            for (unsigned int s=0; s<L; s++)
-//            {
-//                double diff = fabs(n*hx - e[s]);
-//                if (diff <= hx)
-//                {
-//                    gm[n] += k[s] * (1.0 - diff/hx);
-//                }
-//            }
-//            gm[n] *= -lambda1_a_a_ht_hx;
-//        }
+    //        for (unsigned int n=2; n<=N; n++)
+    //        {
+    //            gm[n] = 0.0;
+    //            for (unsigned int s=0; s<L; s++)
+    //            {
+    //                double diff = fabs(n*hx - e[s]);
+    //                if (diff <= hx)
+    //                {
+    //                    gm[n] += k[s] * (1.0 - diff/hx);
+    //                }
+    //            }
+    //            gm[n] *= -lambda1_a_a_ht_hx;
+    //        }
 
-//        eta /= g[0];
-//        for (unsigned int n=1; n<=N; n++) gm[n] /= g[0]; g[0] = 1.0;
+    //        eta /= g[0];
+    //        for (unsigned int n=1; n<=N; n++) gm[n] /= g[0]; g[0] = 1.0;
 
-//        // n = 1,...,N-1
-//        double bb = (1.0 + (2.0*a_a_ht_hx_hx) + lambda0_ht)/a_a_ht_hx_hx;
-//        double cc = -1.0;
-//        for (unsigned int n=1; n<=N-1; n++)
-//        {
-//            double dd = -(u.at(m-1,n) + lambda0_ht_tt)/a_a_ht_hx_hx;
+    //        // n = 1,...,N-1
+    //        double bb = (1.0 + (2.0*a_a_ht_hx_hx) + lambda0_ht)/a_a_ht_hx_hx;
+    //        double cc = -1.0;
+    //        for (unsigned int n=1; n<=N-1; n++)
+    //        {
+    //            double dd = -(u.at(m-1,n) + lambda0_ht_tt)/a_a_ht_hx_hx;
 
-//            gm[n] = bb + gm[n];
-//            gm[n+1] = cc + gm[n+1];
-//            eta = eta - dd;
+    //            gm[n] = bb + gm[n];
+    //            gm[n+1] = cc + gm[n+1];
+    //            eta = eta - dd;
 
-//            for (unsigned int i=n+1; i<=N+1; i++)
-//            {
-//                gm[i] /= gn[n];
-//            }
-//            eta /= gm[n];
-//            gm[n] = 1.0;
-//        }
+    //            for (unsigned int i=n+1; i<=N+1; i++)
+    //            {
+    //                gm[i] /= gn[n];
+    //            }
+    //            eta /= gm[n];
+    //            gm[n] = 1.0;
+    //        }
 
-//        // n = N
-//        da[N] = -a_a_ht_hx_hx;
-//        db[N] = 1.0 + a_a_ht_hx_hx + lambda2_a_a_ht_hx + lambda0_ht;
-//        dd[N] = u.at(m-1,N)  + lambda0_ht_tt + lambda2_a_a_ht_tt_hx;
+    //        // n = N
+    //        da[N] = -a_a_ht_hx_hx;
+    //        db[N] = 1.0 + a_a_ht_hx_hx + lambda2_a_a_ht_hx + lambda0_ht;
+    //        dd[N] = u.at(m-1,N)  + lambda0_ht_tt + lambda2_a_a_ht_tt_hx;
 
-//        DoubleMatrix A(2,2,0.0);
-//        DoubleVector B(2,0.0);
-//        DoubleVector x(2,0.0);
+    //        DoubleMatrix A(2,2,0.0);
+    //        DoubleVector B(2,0.0);
+    //        DoubleVector x(2,0.0);
 
-//        A[0][0] = gm[N-1];
-//        A[0][1] = gm[N-0];
-//        A[1][0] = -a_a_ht_hx_hx;
-//        A[1][1] = u.at(m-1,N)  + lambda0_ht_tt + lambda2_a_a_ht_tt_hx;
-//        B[0] = eta;
-//        B[1] = u.at(m-1,N)  + lambda0_ht_tt + lambda2_a_a_ht_tt_hx;
+    //        A[0][0] = gm[N-1];
+    //        A[0][1] = gm[N-0];
+    //        A[1][0] = -a_a_ht_hx_hx;
+    //        A[1][1] = u.at(m-1,N)  + lambda0_ht_tt + lambda2_a_a_ht_tt_hx;
+    //        B[0] = eta;
+    //        B[1] = u.at(m-1,N)  + lambda0_ht_tt + lambda2_a_a_ht_tt_hx;
 
-//        for (unsigned int i=0; i<=N; i++)
-//        {
-//            u[m][i] = rx[i];
-//        }
-//    }
+    //        for (unsigned int i=0; i<=N; i++)
+    //        {
+    //            u[m][i] = rx[i];
+    //        }
+    //    }
 
-//    free(de);
-//    free(rx);
-//    free(dd);
-//    free(dc);
-//    free(db);
-//    free(da);
+    //    free(de);
+    //    free(rx);
+    //    free(dd);
+    //    free(dc);
+    //    free(db);
+    //    free(da);
 }
 
 void IProblem1::qovmaFirstRowM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const
@@ -461,8 +461,8 @@ void IProblem1::qovmaFirstRowM(double *a, double *b, double *c, double *d, doubl
     for (unsigned int s=0; s<L; s++) k[s] = (double*)malloc(sizeof(double)*n);
 
 
-//    if (!isnormal(rx[i])) printf("nrl %d %d %f\n", m, i, rx[i]);
-//    if (isnan(rx[i]))    printf("nan %d %d %f\n", m, i, rx[i]);
+    //    if (!isnormal(rx[i])) printf("nrl %d %d %f\n", m, i, rx[i]);
+    //    if (isnan(rx[i]))    printf("nan %d %d %f\n", m, i, rx[i]);
 
     for (unsigned int i=0; i<n; i++)
     {
@@ -535,11 +535,11 @@ void IProblem1::qovmaFirstRowM(double *a, double *b, double *c, double *d, doubl
     free(q);
     free(p);
 
-//    for (unsigned int i=0; i<n; i++)
-//    {
-//        if (isnan(x[i]))
-//            printf("%d %f %f\n", i, x[i], b[0]);
-//    }
+    //    for (unsigned int i=0; i<n; i++)
+    //    {
+    //        if (isnan(x[i]))
+    //            printf("%d %f %f\n", i, x[i], b[0]);
+    //    }
 }
 
 void IProblem1::calculateP(DoubleMatrix &p, const DoubleMatrix &u, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e) const
@@ -568,10 +568,10 @@ void IProblem1::calculateP(DoubleMatrix &p, const DoubleMatrix &u, const DoubleV
     for (unsigned int m=M-1; m != UINT32_MAX; m--)
     {
         // n = 0
-//        da[0] = 0.0;
-//        db[0] = -1.0 - (a*a*ht)/(hx*hx) - (lambda1*a*a*ht)/hx - lambda0*ht;
-//        dc[0] = (a*a*ht)/(hx*hx);
-//        dd[0] = -p[m+1][0];
+        //        da[0] = 0.0;
+        //        db[0] = -1.0 - (a*a*ht)/(hx*hx) - (lambda1*a*a*ht)/hx - lambda0*ht;
+        //        dc[0] = (a*a*ht)/(hx*hx);
+        //        dd[0] = -p[m+1][0];
 
         da[0] = 0.0;
         db[0] = -1.0 - a_a_ht__hx_hx - lambda1_a_a_ht__hx - lambda0_ht;
@@ -581,10 +581,10 @@ void IProblem1::calculateP(DoubleMatrix &p, const DoubleMatrix &u, const DoubleV
         // n = 1,...,N-1
         for (unsigned int n=1; n<=N-1; n++)
         {
-//            da[n] = (a*a*ht)/(hx*hx);
-//            db[n] = -1.0-(2.0*a*a*ht)/(hx*hx) - lambda0*ht;
-//            dc[n] = (a*a*ht)/(hx*hx);
-//            dd[n] = -p[m+1][n] + R * ht * sgn_min(m, k, z, e, u);
+            //            da[n] = (a*a*ht)/(hx*hx);
+            //            db[n] = -1.0-(2.0*a*a*ht)/(hx*hx) - lambda0*ht;
+            //            dc[n] = (a*a*ht)/(hx*hx);
+            //            dd[n] = -p[m+1][n] + R * ht * sgn_min(m, k, z, e, u);
 
             da[n] = a_a_ht__hx_hx;
             db[n] = -1.0-2.0*a_a_ht__hx_hx - lambda0_ht;
@@ -599,10 +599,10 @@ void IProblem1::calculateP(DoubleMatrix &p, const DoubleMatrix &u, const DoubleV
         }
 
         // n = N
-//        da[N] = (a*a*ht)/(hx*hx);
-//        db[N] = -1.0-(a*a*ht)/(hx*hx) - (lambda2*a*a*ht)/hx - lambda0*ht;
-//        dc[N] = 0.0;
-//        dd[N] = -p[m+1][N];
+        //        da[N] = (a*a*ht)/(hx*hx);
+        //        db[N] = -1.0-(a*a*ht)/(hx*hx) - (lambda2*a*a*ht)/hx - lambda0*ht;
+        //        dc[N] = 0.0;
+        //        dd[N] = -p[m+1][N];
 
         da[N] = a_a_ht__hx_hx;
         db[N] = -1.0-a_a_ht__hx_hx - lambda2_a_a_ht__hx - lambda0_ht;
@@ -614,9 +614,10 @@ void IProblem1::calculateP(DoubleMatrix &p, const DoubleMatrix &u, const DoubleV
         for (unsigned int n=2; n<=N-2; n++)
         {
             de[n] = 0.0;
-            for (unsigned int i=0; i<L; i++)
+            for (unsigned int s=0; s<L; s++)
             {
-                de[n] += k[i] * delta(n,e,i);
+                double _delta_ = delta(n,e,s);
+                de[n] += k[s] * _delta_;
             }
             de[n] *= lambda1_a_a_ht;
         }
@@ -644,29 +645,29 @@ void IProblem1::print(unsigned int i, const DoubleVector &y, const DoubleVector 
 
     IPrinter::printSeperatorLine();
 
-    //DoubleVector n(y.size());
-    //IGradient::Gradient(pm, 0.001, y, n);
+    DoubleVector n(y.size());
+    IGradient::Gradient(pm, 0.001, y, n);
 
-    //DoubleVector ak = g.mid(0*L,1*L-1);
-    //DoubleVector az = g.mid(1*L,2*L-1);
-    //DoubleVector ae = g.mid(2*L,3*L-1);
+    DoubleVector ak = g.mid(0*L,1*L-1);
+    DoubleVector az = g.mid(1*L,2*L-1);
+    DoubleVector ae = g.mid(2*L,3*L-1);
 
-    //DoubleVector nk = n.mid(0*L,1*L-1);
-    //DoubleVector nz = n.mid(1*L,2*L-1);
-    //DoubleVector ne = n.mid(2*L,3*L-1);
+    DoubleVector nk = n.mid(0*L,1*L-1);
+    DoubleVector nz = n.mid(1*L,2*L-1);
+    DoubleVector ne = n.mid(2*L,3*L-1);
 
     printf("J[%d]: %.10f R: %.2f\n", i, r, R);
     printf("k: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", k[s]); printf("\n");
-    //printf("a: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", ak[s]); printf(" | "); ak.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", ak[s]); printf("\n");
-    //printf("n: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", nk[s]); printf(" | "); nk.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", nk[s]); printf("\n");
+    printf("a: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", ak[s]); printf(" | "); ak.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", ak[s]); printf("\n");
+    printf("n: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", nk[s]); printf(" | "); nk.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", nk[s]); printf("\n");
 
     printf("z: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", z[s]); printf("\n");
-    //printf("a: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", az[s]); printf(" | "); az.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", az[s]); printf("\n");
-    //printf("n: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", nz[s]); printf(" | "); nz.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", nz[s]); printf("\n");
+    printf("a: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", az[s]); printf(" | "); az.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", az[s]); printf("\n");
+    printf("n: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", nz[s]); printf(" | "); nz.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", nz[s]); printf("\n");
 
     printf("e: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", e[s]); printf("\n");
-    //printf("a: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", ae[s]); printf(" | "); ae.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", ae[s]); printf("\n");
-    //printf("n: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", ne[s]); printf(" | "); ne.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", ne[s]); printf("\n");
+    printf("a: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", ae[s]); printf(" | "); ae.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", ae[s]); printf("\n");
+    printf("n: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", ne[s]); printf(" | "); ne.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", ne[s]); printf("\n");
 
     DoubleVector v(M+1); for (unsigned int m=0; m<=M; m++) v[m] = vf(m,k,z,e,u);
 
@@ -676,7 +677,7 @@ void IProblem1::print(unsigned int i, const DoubleVector &y, const DoubleVector 
     v.clear();
     u.clear();
 
-    //n.clear();
+    n.clear();
 }
 
 double IProblem1::initial(unsigned int n UNUSED_PARAM) const
@@ -694,6 +695,13 @@ double IProblem1::delta(unsigned int n, const DoubleVector &e, unsigned int s) c
     double sigma = 3.0*hx;
     double x = n*hx;
     return 1.0/(sqrt(2.0*M_PI)*sigma) * exp(-((x-e[s])*(x-e[s]))/(2.0*sigma*sigma));
+
+//    double diff = fabs(n*hx - e[s]);
+//    if (diff <= hx)
+//    {
+//        return (1.0 - diff/hx)/hx;
+//    }
+//    return 0.0;
 }
 
 double IProblem1::vf(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
