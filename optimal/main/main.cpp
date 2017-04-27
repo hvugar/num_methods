@@ -24,7 +24,7 @@
 //#include <../border/borderparabolic2d.h>
 //#include <../border/borderhyperbolic2d.h>
 
-//#include <../border/grid/parabolicibvp1.h>
+#include <../border/grid/parabolicibvp1.h>
 //#include <../border/grid/parabolicibvp2.h>
 //#include <../border/grid/hyperbolicibvp1.h>
 
@@ -70,7 +70,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //    Problem1L3::Main(argc, argv);
     //Problem1L2P::Main(argc, argv);
 
-    ArtProblem1L2::Main(argc, argv);
+//    ArtProblem1L2::Main(argc, argv);
 //    ArticleProblem1L3::Main(argc, argv);
 
     //Example4::Main(argc, argv);
@@ -81,7 +81,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Example5 e5;
     //BoundaryValueProblem1::Main(argc, argv);
 
-    //ParabolicIBVP1::Main(argc, argv);
+    ParabolicIBVP1::Main(argc, argv);
     //ParabolicIBVP2::Main(argc, argv);
     //HyperbolicIBVP1::Main(argc, argv);
 
