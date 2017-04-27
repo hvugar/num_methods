@@ -38,6 +38,7 @@ public:
     void calculateN2L2RD(DoubleMatrix &u) const;
     //void calculateN2R2LD(DoubleMatrix &u) const;
     void calculateN4L2RD(DoubleMatrix &u) const;
+    void calculateN4L2RD_1(DoubleMatrix &u) const;
     //void calculateN4R2LD(DoubleMatrix &u) const;
     //void calculateN6L2RD(DoubleMatrix &u) const;
     //void calculateN6R2LD(DoubleMatrix &u) const;
