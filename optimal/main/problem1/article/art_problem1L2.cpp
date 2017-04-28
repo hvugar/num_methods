@@ -26,7 +26,7 @@ void ArtProblem1L2::initialize()
     optimizeE = true;
     withError = false;
 
-    L = 3;
+    L = 1;
 
     N = 1000;
     hx = 0.001;
@@ -142,7 +142,7 @@ void ArtProblem1L2::startOptimize()
             //x0 << -12.8746;
             //x0 << -5.2547;
             //x0 << -10.2547;
-            x0 << -4.8745;
+            x0 << -8.8745;
         }
         if (optimizeZ)
         {
@@ -150,7 +150,7 @@ void ArtProblem1L2::startOptimize()
             //x0 << 15.8272;
             //x0 << 8.2545;
             //x0 << 19.2545;
-            x0 << +2.2481;
+            x0 << -5.2481;
         }
         if (optimizeE)
         {
@@ -158,7 +158,7 @@ void ArtProblem1L2::startOptimize()
             //x0 << 0.7358;
             //x0 << 0.1245;
             //x0 << 0.3245;
-            x0 << 0.4745;
+            x0 << 0.8745;
         }
     }
 
@@ -243,7 +243,7 @@ void ArtProblem1L2::startOptimize()
     DD = 1.0;
     R = 1.0;
     optimize(x0);
-    while (R < 10000.0)
+    while (R < 100.0)
     {
         R *= 10.0;
         IPrinter::printSeperatorLine();

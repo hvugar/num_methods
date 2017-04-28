@@ -692,16 +692,16 @@ double IProblem1::mu(unsigned int n UNUSED_PARAM) const
 
 double IProblem1::delta(unsigned int n, const DoubleVector &e, unsigned int s) const
 {
-//    double sigma = 3.0*hx;
-//    double x = n*hx;
-//    return 1.0/(sqrt(2.0*M_PI)*sigma) * exp(-((x-e[s])*(x-e[s]))/(2.0*sigma*sigma));
+    double sigma = 3.0*hx;
+    double x = n*hx;
+    return 1.0/(sqrt(2.0*M_PI)*sigma) * exp(-((x-e[s])*(x-e[s]))/(2.0*sigma*sigma));
 
-    double diff = fabs(n*hx - e[s]);
-    if (diff <= hx)
-    {
-        return (1.0 - diff/hx)/hx;
-    }
-    return 0.0;
+//    double diff = fabs(n*hx - e[s]);
+//    if (diff <= hx)
+//    {
+//        return (1.0 - diff/hx)/hx;
+//    }
+//    return 0.0;
 }
 
 double IProblem1::vf(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
