@@ -26,7 +26,7 @@ void ArtProblem1L2::initialize()
     optimizeE = true;
     withError = false;
 
-    L = 2;
+    L = 3;
 
     N = 1000;
     hx = 0.001;
@@ -210,13 +210,40 @@ void ArtProblem1L2::startOptimize()
         }
     }
 
-//    FILE *file = fopen("sample2.txt", "w");
-//    fclose(file);
+    if (L==3)
+    {
+        if (optimizeK)
+        {
+            //x0 << -10.7845 << -8.8674 << -1.2457; //k
+            //x0 << -1.1284 << -1.4928 << -2.5478; //k
+            //x0 << -4.8525 << -6.8774 << -4.1428; //k
+            x0 << -5.8417 << -20.4157 << -14.1541; //k
+            //x0 << -4.4157 << -5.7698 << -3.1589; //k
+        }
+
+        if (optimizeZ)
+        {
+            //x0 << +11.4751 << +12.8541 << +11.2541; //z
+            //x0 << +9.7465 << +8.0645 << +6.2471; //k
+            //x0 << +4.5448 << +5.1852 << +8.2451;  //k
+            x0 << +10.2568 << +8.4157 << 10.2144; //k
+            //x0 << +20.874 << 18.2578 << +11.8428; //k
+        }
+
+        if (optimizeE)
+        {
+            //x0 << 0.3541 << 0.6648 << 0.7574; //e
+            //x0 << 0.5517 << 0.8155 << 0.974; //e
+            //x0 << 0.5587 << 0.7545 << 0.2145; //e
+            x0 << 0.2095 << 0.5142 << 0.9474; //e
+            //x0 << 0.9541 << 0.1225 << 0.5841; //e
+        }
+    }
 
     DD = 1.0;
     R = 1.0;
     optimize(x0);
-    while (R < 100.0)
+    while (R < 10000.0)
     {
         R *= 10.0;
         IPrinter::printSeperatorLine();
@@ -244,7 +271,7 @@ void ArtProblem1L2::optimize(DoubleVector &x0) const
     g.setR1MinimizeEpsilon(10.0, 0.0001); //0.00000001
     g.setNormalize(true);
     g.showEndMessage(true);
-    g.setResetIteration(false);
+    g.setResetIteration(true);
     g.calculate(x0);
 }
 
@@ -266,9 +293,9 @@ void ArtProblem1L2::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
 
         if (L==3)
         {
-            if (i == 6) { if (x.at(6) < 0.005) x.at(6) = 0.005; if (x.at(6) > 0.095) x.at(6) = 0.095; }
-            if (i == 7) { if (x.at(7) < 0.005) x.at(7) = 0.005; if (x.at(7) > 0.095) x.at(7) = 0.095; }
-            if (i == 8) { if (x.at(8) < 0.005) x.at(8) = 0.005; if (x.at(8) > 0.095) x.at(8) = 0.095; }
+            if (i == 6) { if (x.at(6) < 0.005) x.at(6) = 0.005; if (x.at(6) > 0.995) x.at(6) = 0.995; }
+            if (i == 7) { if (x.at(7) < 0.005) x.at(7) = 0.005; if (x.at(7) > 0.995) x.at(7) = 0.995; }
+            if (i == 8) { if (x.at(8) < 0.005) x.at(8) = 0.005; if (x.at(8) > 0.995) x.at(8) = 0.995; }
         }
     }
 }
