@@ -81,8 +81,9 @@ protected:
     virtual double initial(unsigned int n) const;
     virtual double mu(unsigned int n) const;
 
-    virtual void qovmaFirstColM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *E) const;
     virtual void qovmaFirstRowM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *E) const;
+    virtual void qovmaFirstRowM2(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *E) const;
+    virtual void qovmaFirstColM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *E) const;
     virtual void getParameters(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &y) const;
 
     virtual double delta(unsigned int n, const DoubleVector &e, unsigned int s) const;

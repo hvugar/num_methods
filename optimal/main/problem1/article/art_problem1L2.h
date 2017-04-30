@@ -38,6 +38,8 @@ public:
     void imager2L();
     void imager3L();
 
+    void image1L();
+
     static void Main(int argc, char* argv[]);
 };
 

@@ -22,11 +22,11 @@ double IProblem1::fx(const DoubleVector &y) const
             calculateU(u, k, z, e);
 
             SUM += alpha0*integral(u);
-            SUM += R*penalty(k, z, e, u);
+            //            SUM += R*penalty(k, z, e, u);
         }
     }
     SUM *= ((1.0/N1)*(1.0/N2));
-    SUM += norm(k,z,e);
+    //    SUM += norm(k,z,e);
     return SUM;
 }
 
@@ -306,8 +306,13 @@ void IProblem1::calculateU1(DoubleMatrix &u, const DoubleVector &k, const Double
                     de[n] += k[s] * (1.0 - diff/hx);
                 }
             }
+
             de[n] *= -lambda1_a_a_ht_hx;
+
+            //if (de[n]!=0.0) printf("%.10f %d\n", de[n], n);
         }
+
+        for (unsigned int i=0; i<=N; i++) rx[i] = 0.0;
 
         qovmaFirstRowM(da, db, dc, dd, rx, N+1, de);
 
@@ -315,16 +320,17 @@ void IProblem1::calculateU1(DoubleMatrix &u, const DoubleVector &k, const Double
         {
             u[m][i] = rx[i];
         }
+//        IPrinter::printVector(u.row(m));
 
-        if (withError)
-        {
-            for (unsigned int s=0; s<L; s++)
-            {
-                unsigned int E = (unsigned int) round(e[s]);
-                double w = (rand() % 2000)*0.001 - 1.0;
-                u[m][E] += sign(w)*persent * u[m][E];
-            }
-        }
+        //        if (withError)
+        //        {
+        //            for (unsigned int s=0; s<L; s++)
+        //            {
+        //                unsigned int E = (unsigned int) round(e[s]);
+        //                double w = (rand() % 2000)*0.001 - 1.0;
+        //                u[m][E] += sign(w)*persent * u[m][E];
+        //            }
+        //        }
     }
 
     free(de);
@@ -337,100 +343,116 @@ void IProblem1::calculateU1(DoubleMatrix &u, const DoubleVector &k, const Double
 
 void IProblem1::calculateU2(DoubleMatrix &u, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e) const
 {
-    //    u.clear();
-    //    u.resize(M+1, N+1);
+    u.clear();
+    u.resize(M+1, N+1);
 
-    //    double a_a_ht_hx_hx = (a*a*ht)/(hx*hx);
-    //    double lambda1_a_a_ht_hx = (lambda1*a*a*ht)/hx;
-    //    double lambda2_a_a_ht_hx = (lambda2*a*a*ht)/hx;
-    //    double lambda2_a_a_ht_tt_hx = (lambda2*a*a*ht*tt)/hx;
-    //    double lambda0_ht = lambda0*ht;
-    //    double lambda0_ht_tt = lambda0*ht*tt;
+    double *da = (double*) malloc(sizeof(double)*(N+1));
+    double *db = (double*) malloc(sizeof(double)*(N+1));
+    double *dc = (double*) malloc(sizeof(double)*(N+1));
+    double *dd = (double*) malloc(sizeof(double)*(N+1));
+    double *rx = (double*) malloc(sizeof(double)*(N+1));
+    double *de = (double*) malloc(sizeof(double)*(N+1));
 
-    //    for (unsigned int n=0; n<=N; n++) u[0][n] = initial(n);
+    double a_a_ht_hx_hx = (a*a*ht)/(hx*hx);
+    double lambda1_a_a_ht_hx = (lambda1*a*a*ht)/hx;
+    double lambda2_a_a_ht_hx = (lambda2*a*a*ht)/hx;
+    double lambda2_a_a_ht_tt_hx = (lambda2*a*a*ht*tt)/hx;
+    double lambda0_ht = lambda0*ht;
+    double lambda0_ht_tt = lambda0*ht*tt;
 
-    //    double *gm = (double*) malloc(sizeof(double)*(N+1));
-    //    double eta  = 0.0;
+    for (unsigned int n=0; n<=N; n++) u[0][n] = initial(n);
 
-    //    for (unsigned int m=1; m<=M; m++)
-    //    {
-    //        double kzs = 0.0;
-    //        for (unsigned int s=0; s<L; s++) kzs += k[s]*z[s];
+    for (unsigned int m=1; m<=M; m++)
+    {
+        da[0] = 0.0;
+        db[0] = 0.0;
+        dc[0] = 0.0;
 
-    //        // n = 0
-    //        da[0] = 0.0;
-    //        db[0] = 1.0 + a_a_ht_hx_hx + lambda1_a_a_ht_hx + lambda0_ht;
-    //        dc[0] = -a_a_ht_hx_hx;
-    //        dd[0] = u.at(m-1,0) + lambda0_ht_tt - lambda1_a_a_ht_hx*kzs;
+        double kzs = 0.0;
+        for (unsigned int s=0; s<L; s++) kzs += k[s]*z[s];
 
-    //        gm[0] = 1.0 + a_a_ht_hx_hx + lambda1_a_a_ht_hx + lambda0_ht;
-    //        gm[1] = -a_a_ht_hx_hx;
-    //        eta   = u.at(m-1,0) + lambda0_ht_tt - lambda1_a_a_ht_hx*kzs;
+        // n = 0
+        de[0] = 1.0 + a_a_ht_hx_hx + lambda1_a_a_ht_hx + lambda0_ht;
+        de[1] = -a_a_ht_hx_hx;
+        for (unsigned int n=2; n<=N; n++)
+        {
+            de[n] = 0.0;
+            for (unsigned int s=0; s<L; s++)
+            {
+                double diff = fabs(n*hx - e[s]);
+                if (diff <= hx)
+                {
+                    de[n] += k[s] * (1.0 - diff/hx);
+                }
+            }
+            de[n] *= -lambda1_a_a_ht_hx;
+        }
 
-    //        for (unsigned int n=2; n<=N; n++)
-    //        {
-    //            gm[n] = 0.0;
-    //            for (unsigned int s=0; s<L; s++)
-    //            {
-    //                double diff = fabs(n*hx - e[s]);
-    //                if (diff <= hx)
-    //                {
-    //                    gm[n] += k[s] * (1.0 - diff/hx);
-    //                }
-    //            }
-    //            gm[n] *= -lambda1_a_a_ht_hx;
-    //        }
+        dd[0] = u.at(m-1,0) + lambda0_ht_tt - lambda1_a_a_ht_hx*kzs;
 
-    //        eta /= g[0];
-    //        for (unsigned int n=1; n<=N; n++) gm[n] /= g[0]; g[0] = 1.0;
+        // n = 1,...,N-1
+        for (unsigned int n=1; n<=N-1; n++)
+        {
+            da[n] = -a_a_ht_hx_hx;
+            db[n] = 1.0 + (2.0*a_a_ht_hx_hx) + lambda0_ht;
+            dc[n] = -a_a_ht_hx_hx;
+            dd[n] = u.at(m-1,n) + lambda0_ht_tt;
+        }
 
-    //        // n = 1,...,N-1
-    //        double bb = (1.0 + (2.0*a_a_ht_hx_hx) + lambda0_ht)/a_a_ht_hx_hx;
-    //        double cc = -1.0;
-    //        for (unsigned int n=1; n<=N-1; n++)
-    //        {
-    //            double dd = -(u.at(m-1,n) + lambda0_ht_tt)/a_a_ht_hx_hx;
+        // n = N
+        da[N] = -a_a_ht_hx_hx;
+        db[N] = 1.0 + a_a_ht_hx_hx + lambda2_a_a_ht_hx + lambda0_ht;
+        dc[N] = 0.0;
+        dd[N] = u.at(m-1,N)  + lambda0_ht_tt + lambda2_a_a_ht_tt_hx;
 
-    //            gm[n] = bb + gm[n];
-    //            gm[n+1] = cc + gm[n+1];
-    //            eta = eta - dd;
+        qovmaFirstRowM2(da, db, dc, dd, rx, N+1, de);
 
-    //            for (unsigned int i=n+1; i<=N+1; i++)
-    //            {
-    //                gm[i] /= gn[n];
-    //            }
-    //            eta /= gm[n];
-    //            gm[n] = 1.0;
-    //        }
+        for (unsigned int i=0; i<=N; i++)
+        {
+            u[m][i] = rx[i];
+        }
+//        IPrinter::printVector(u.row(m));
+    }
 
-    //        // n = N
-    //        da[N] = -a_a_ht_hx_hx;
-    //        db[N] = 1.0 + a_a_ht_hx_hx + lambda2_a_a_ht_hx + lambda0_ht;
-    //        dd[N] = u.at(m-1,N)  + lambda0_ht_tt + lambda2_a_a_ht_tt_hx;
+    free(de);
+    free(rx);
+    free(dd);
+    free(dc);
+    free(db);
+    free(da);
+}
 
-    //        DoubleMatrix A(2,2,0.0);
-    //        DoubleVector B(2,0.0);
-    //        DoubleVector x(2,0.0);
+void IProblem1::qovmaFirstRowM2(double *e, unsigned int *I, unsigned int L, double *a, double *b, double *c, double *d, double *x, unsigned int N) const
+{
+    double **k = (double**) malloc(sizeof(double*)*L);
+    for (unsigned int i=0; i<L; i++) k[i] = (double*)malloc(sizeof(double)*N);
 
-    //        A[0][0] = gm[N-1];
-    //        A[0][1] = gm[N-0];
-    //        A[1][0] = -a_a_ht_hx_hx;
-    //        A[1][1] = u.at(m-1,N)  + lambda0_ht_tt + lambda2_a_a_ht_tt_hx;
-    //        B[0] = eta;
-    //        B[1] = u.at(m-1,N)  + lambda0_ht_tt + lambda2_a_a_ht_tt_hx;
+    unsigned int r = 0;
+    for (unsigned int n=0; n<N; n++)
+    {
+        if (n==0)
+        {
+            k[0][0] = d[0]/e[I[0]];
+            for (unsigned int s=1; s<L; s++)
+            {
+                k[s][0] = -e[I[s]]/e[I[0]];
+            }
+        }
+        else if (n==(N-1))
+        {
 
-    //        for (unsigned int i=0; i<=N; i++)
-    //        {
-    //            u[m][i] = rx[i];
-    //        }
-    //    }
-
-    //    free(de);
-    //    free(rx);
-    //    free(dd);
-    //    free(dc);
-    //    free(db);
-    //    free(da);
+        }
+        else
+        {
+            double m = b[n] + a[n]*k[0][n-1];
+            k[0][n] = -c[n]/m;
+            for (unsigned int s=1; s<=L; s++)
+            {
+                k[s][n] = -(a[n]*k[s][n-1])/m;
+            }
+            k[L+1][0] = (d[n]-a[n]*k[L+1][n-1])/m;
+        }
+    }
 }
 
 void IProblem1::qovmaFirstRowM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const
@@ -456,6 +478,8 @@ void IProblem1::qovmaFirstRowM(double *a, double *b, double *c, double *d, doubl
             E[i++] = s;
         }
     }
+
+    //IPrinter::printVector(e,n,NULL,n);
 
     double **k = (double**) malloc(sizeof(double*)*L);
     for (unsigned int s=0; s<L; s++) k[s] = (double*)malloc(sizeof(double)*n);
@@ -696,12 +720,12 @@ double IProblem1::delta(unsigned int n, const DoubleVector &e, unsigned int s) c
     double x = n*hx;
     return 1.0/(sqrt(2.0*M_PI)*sigma) * exp(-((x-e[s])*(x-e[s]))/(2.0*sigma*sigma));
 
-//    double diff = fabs(n*hx - e[s]);
-//    if (diff <= hx)
-//    {
-//        return (1.0 - diff/hx)/hx;
-//    }
-//    return 0.0;
+    //    double diff = fabs(n*hx - e[s]);
+    //    if (diff <= hx)
+    //    {
+    //        return (1.0 - diff/hx)/hx;
+    //    }
+    //    return 0.0;
 }
 
 double IProblem1::vf(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const

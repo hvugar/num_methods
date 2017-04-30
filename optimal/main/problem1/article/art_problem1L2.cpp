@@ -6,11 +6,12 @@ void ArtProblem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     ArtProblem1L2 p;
     p.initialize();
-    p.startOptimize();
+    //p.startOptimize();
 
     //p.table2Generate();
     //p.imager3L();
     //    p.imager2L();
+    p.image1L();
 
     //    p.image1Generate();
     //    p.image2Generate();
@@ -271,7 +272,7 @@ void ArtProblem1L2::optimize(DoubleVector &x0) const
     g.setR1MinimizeEpsilon(10.0, 0.0001); //0.00000001
     g.setNormalize(true);
     g.showEndMessage(true);
-    g.setResetIteration(true);
+    g.setResetIteration(false);
     g.calculate(x0);
 }
 
@@ -580,6 +581,44 @@ void ArtProblem1L2::image3Generate()
     }
     fprintf(file1, "\n");
     fclose(file1);
+}
+
+void ArtProblem1L2::image1L()
+{
+    DoubleVector y0;
+    optimizeK = true;
+    optimizeZ = true;
+    optimizeE = true;
+    withError = false;
+
+    if (optimizeK)
+    {
+        y0 << 4.9688708458;
+    }
+
+    if (optimizeZ)
+    {
+        y0 << 8.2385291524;
+    }
+    if (optimizeE)
+    {
+        y0 << 0.0186136703;
+    }
+
+    R = 1.0;
+    y0[2] = 28*hx;
+    double y = fx(y0);
+    printf("%.10f %.10f\n", y, y0[2]);
+
+//    FILE *file = fopen("L1Data.txt", "w");
+//    for (unsigned int n=5; n<=995; n++)
+//    {
+//        y0[2] = n*hx;
+//        double f = fx(y0);
+//        printf("%d %.10f %f\n", n, f, y0[2]);
+//        fprintf(file, "%.10f ", f);
+//    }
+//    fclose(file);
 }
 
 void ArtProblem1L2::imager2L()
