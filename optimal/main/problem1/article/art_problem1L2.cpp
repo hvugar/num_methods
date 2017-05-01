@@ -6,7 +6,7 @@ void ArtProblem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     ArtProblem1L2 p;
     p.initialize();
-    //p.startOptimize();
+//    p.startOptimize();
 
     //p.table2Generate();
     //p.imager3L();
@@ -301,6 +301,162 @@ void ArtProblem1L2::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
     }
 }
 
+void ArtProblem1L2::image1L()
+{
+    DoubleVector y0;
+    optimizeK = true;
+    optimizeZ = true;
+    optimizeE = true;
+    withError = false;
+
+    if (optimizeK)
+    {
+        y0 << 4.9688708458;
+    }
+
+    if (optimizeZ)
+    {
+        y0 << 8.2385291524;
+    }
+    if (optimizeE)
+    {
+        y0 << 0.0186136703;
+    }
+
+    R = 1.0;
+    y0[2] = 30*hx;
+    double y = fx(y0);
+    printf("%.10f %.10f\n", y, y0[2]);
+
+//    FILE *file = fopen("L1Data.txt", "w");
+//    for (unsigned int n=5; n<=995; n++)
+//    {
+//        y0[2] = n*hx;
+//        double f = fx(y0);
+//        printf("%d %.10f %f\n", n, f, y0[2]);
+//        fprintf(file, "%.10f ", f);
+//    }
+//    fclose(file);
+}
+
+void ArtProblem1L2::imager2L()
+{
+    DoubleVector y0;
+    optimizeK = true;
+    optimizeZ = true;
+    optimizeE = true;
+    withError = false;
+
+    if (optimizeK)
+    {
+        y0 << -6.0341111852 << 1.1251024127;
+    }
+
+    if (optimizeZ)
+    {
+        y0 << 12.5876519120 << 14.9819901001;
+    }
+    if (optimizeE)
+    {
+        y0 << 0.5889625969 << 0.7277517979;
+    }
+
+    DoubleMatrix u(101,101);
+    R = 0.0;
+    double max = -100000000.0;
+    double min = +100000000.0;
+    for (unsigned int k0=0; k0<=100; k0++)
+    {
+        y0[0] = -6.5+0.01*k0;
+        //        y0[4] = 0.01*k0;
+        for (unsigned int k1=0; k1<=100; k1++)
+        {
+            y0[1] = 0.5+0.01*k1;
+            //            y0[5] = 0.01*k1;
+
+            double f = 0.0;
+            f = fx(y0);
+            u[k0][k1] = f;
+
+            if (f > max) max = f;
+            if (f < min) min = f;
+
+            printf("%d %d %f\n", k0, k1, f);
+        }
+    }
+
+    //    for (unsigned int i=0; i<=100; i++) u[0][i] = u[2][i];
+    //    for (unsigned int i=0; i<=100; i++) u[1][i] = u[2][i];
+    //    for (unsigned int i=0; i<=100; i++) u[99][i] = u[98][i];
+    //    for (unsigned int i=0; i<=100; i++) u[100][i] = u[98][i];
+    //    for (unsigned int i=0; i<=100; i++) u[i][0] = u[i][2];
+    //    for (unsigned int i=0; i<=100; i++) u[i][1] = u[i][2];
+    //    for (unsigned int i=0; i<=100; i++) u[i][99] = u[i][98];
+    //    for (unsigned int i=0; i<=100; i++) u[i][100] = u[i][98];
+
+    printf("%f %f\n", min, max);
+
+    FILE *file = fopen("data1.txt", "w");
+    IPrinter::printMatrix(u,u.rows(),u.cols(),NULL,file);
+    fclose(file);
+}
+
+void ArtProblem1L2::imager3L()
+{
+    DoubleVector y0;
+    optimizeK = true;
+    optimizeZ = true;
+    optimizeE = true;
+
+    if (optimizeK)
+    {
+        y0 << -1.51758851605847 << -3.38265533950958 << 0.15272285434824;
+    }
+    if (optimizeZ)
+    {
+        y0 << +11.23656775924430 << +13.09747632971720 << +8.95446642160735;
+    }
+    if (optimizeE)
+    {
+        y0 << +0.03200000000000 << +0.06500000000000 << +0.06700000000000;
+    }
+
+    DoubleMatrix u(101,101);
+    R = 0.0;
+    double max = -100000000.0;
+    double min = +100000000.0;
+    for (unsigned int k0=2; k0<=98; k0++)
+    {
+        y0[7] = 0.001*k0;
+        for (unsigned int k1=2; k1<=98; k1++)
+        {
+            y0[8] = 0.001*k1;
+
+            double f = 0.0;
+            if (k0 == k1 || k0 == k1-1 || k0 == k1+1 || k0 == 32 || k1 == 32)
+            {
+                f = 0.0;
+            }
+            else
+            {
+                f = fx(y0);
+            }
+            u[k0][k1] = f;
+
+
+            if (f > max) max = f;
+            if (f < min) min = f;
+
+            printf("%d %d %f\n", k0, k1, f);
+        }
+    }
+    printf("%f %f\n", min, max);
+
+    FILE *file = fopen("data1.txt", "w");
+    IPrinter::printMatrix(u,u.rows(),u.cols(),NULL,file);
+    fclose(file);
+}
+
 void ArtProblem1L2::table1Generate()
 {
     DoubleVector y0;
@@ -581,160 +737,4 @@ void ArtProblem1L2::image3Generate()
     }
     fprintf(file1, "\n");
     fclose(file1);
-}
-
-void ArtProblem1L2::image1L()
-{
-    DoubleVector y0;
-    optimizeK = true;
-    optimizeZ = true;
-    optimizeE = true;
-    withError = false;
-
-    if (optimizeK)
-    {
-        y0 << 4.9688708458;
-    }
-
-    if (optimizeZ)
-    {
-        y0 << 8.2385291524;
-    }
-    if (optimizeE)
-    {
-        y0 << 0.0186136703;
-    }
-
-    R = 1.0;
-    y0[2] = 28*hx;
-    double y = fx(y0);
-    printf("%.10f %.10f\n", y, y0[2]);
-
-//    FILE *file = fopen("L1Data.txt", "w");
-//    for (unsigned int n=5; n<=995; n++)
-//    {
-//        y0[2] = n*hx;
-//        double f = fx(y0);
-//        printf("%d %.10f %f\n", n, f, y0[2]);
-//        fprintf(file, "%.10f ", f);
-//    }
-//    fclose(file);
-}
-
-void ArtProblem1L2::imager2L()
-{
-    DoubleVector y0;
-    optimizeK = true;
-    optimizeZ = true;
-    optimizeE = true;
-    withError = false;
-
-    if (optimizeK)
-    {
-        y0 << -6.0341111852 << 1.1251024127;
-    }
-
-    if (optimizeZ)
-    {
-        y0 << 12.5876519120 << 14.9819901001;
-    }
-    if (optimizeE)
-    {
-        y0 << 0.5889625969 << 0.7277517979;
-    }
-
-    DoubleMatrix u(101,101);
-    R = 0.0;
-    double max = -100000000.0;
-    double min = +100000000.0;
-    for (unsigned int k0=0; k0<=100; k0++)
-    {
-        y0[0] = -6.5+0.01*k0;
-        //        y0[4] = 0.01*k0;
-        for (unsigned int k1=0; k1<=100; k1++)
-        {
-            y0[1] = 0.5+0.01*k1;
-            //            y0[5] = 0.01*k1;
-
-            double f = 0.0;
-            f = fx(y0);
-            u[k0][k1] = f;
-
-            if (f > max) max = f;
-            if (f < min) min = f;
-
-            printf("%d %d %f\n", k0, k1, f);
-        }
-    }
-
-    //    for (unsigned int i=0; i<=100; i++) u[0][i] = u[2][i];
-    //    for (unsigned int i=0; i<=100; i++) u[1][i] = u[2][i];
-    //    for (unsigned int i=0; i<=100; i++) u[99][i] = u[98][i];
-    //    for (unsigned int i=0; i<=100; i++) u[100][i] = u[98][i];
-    //    for (unsigned int i=0; i<=100; i++) u[i][0] = u[i][2];
-    //    for (unsigned int i=0; i<=100; i++) u[i][1] = u[i][2];
-    //    for (unsigned int i=0; i<=100; i++) u[i][99] = u[i][98];
-    //    for (unsigned int i=0; i<=100; i++) u[i][100] = u[i][98];
-
-    printf("%f %f\n", min, max);
-
-    FILE *file = fopen("data1.txt", "w");
-    IPrinter::printMatrix(u,u.rows(),u.cols(),NULL,file);
-    fclose(file);
-}
-
-void ArtProblem1L2::imager3L()
-{
-    DoubleVector y0;
-    optimizeK = true;
-    optimizeZ = true;
-    optimizeE = true;
-
-    if (optimizeK)
-    {
-        y0 << -1.51758851605847 << -3.38265533950958 << 0.15272285434824;
-    }
-    if (optimizeZ)
-    {
-        y0 << +11.23656775924430 << +13.09747632971720 << +8.95446642160735;
-    }
-    if (optimizeE)
-    {
-        y0 << +0.03200000000000 << +0.06500000000000 << +0.06700000000000;
-    }
-
-    DoubleMatrix u(101,101);
-    R = 0.0;
-    double max = -100000000.0;
-    double min = +100000000.0;
-    for (unsigned int k0=2; k0<=98; k0++)
-    {
-        y0[7] = 0.001*k0;
-        for (unsigned int k1=2; k1<=98; k1++)
-        {
-            y0[8] = 0.001*k1;
-
-            double f = 0.0;
-            if (k0 == k1 || k0 == k1-1 || k0 == k1+1 || k0 == 32 || k1 == 32)
-            {
-                f = 0.0;
-            }
-            else
-            {
-                f = fx(y0);
-            }
-            u[k0][k1] = f;
-
-
-            if (f > max) max = f;
-            if (f < min) min = f;
-
-            printf("%d %d %f\n", k0, k1, f);
-        }
-    }
-    printf("%f %f\n", min, max);
-
-    FILE *file = fopen("data1.txt", "w");
-    IPrinter::printMatrix(u,u.rows(),u.cols(),NULL,file);
-    fclose(file);
 }

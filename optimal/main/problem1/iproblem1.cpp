@@ -22,11 +22,11 @@ double IProblem1::fx(const DoubleVector &y) const
             calculateU(u, k, z, e);
 
             SUM += alpha0*integral(u);
-            //            SUM += R*penalty(k, z, e, u);
+            SUM += R*penalty(k, z, e, u);
         }
     }
     SUM *= ((1.0/N1)*(1.0/N2));
-    //    SUM += norm(k,z,e);
+    SUM += norm(k,z,e);
     return SUM;
 }
 
@@ -320,7 +320,7 @@ void IProblem1::calculateU1(DoubleMatrix &u, const DoubleVector &k, const Double
         {
             u[m][i] = rx[i];
         }
-//        IPrinter::printVector(u.row(m));
+        //        IPrinter::printVector(u.row(m));
 
         //        if (withError)
         //        {
@@ -405,13 +405,13 @@ void IProblem1::calculateU2(DoubleMatrix &u, const DoubleVector &k, const Double
         dc[N] = 0.0;
         dd[N] = u.at(m-1,N)  + lambda0_ht_tt + lambda2_a_a_ht_tt_hx;
 
-        qovmaFirstRowM2(da, db, dc, dd, rx, N+1, de);
+        //        qovmaFirstRowM2(da, db, dc, dd, rx, N+1, de);
 
         for (unsigned int i=0; i<=N; i++)
         {
             u[m][i] = rx[i];
         }
-//        IPrinter::printVector(u.row(m));
+        //        IPrinter::printVector(u.row(m));
     }
 
     free(de);
@@ -424,35 +424,35 @@ void IProblem1::calculateU2(DoubleMatrix &u, const DoubleVector &k, const Double
 
 void IProblem1::qovmaFirstRowM2(double *e, unsigned int *I, unsigned int L, double *a, double *b, double *c, double *d, double *x, unsigned int N) const
 {
-    double **k = (double**) malloc(sizeof(double*)*L);
-    for (unsigned int i=0; i<L; i++) k[i] = (double*)malloc(sizeof(double)*N);
+    //    double **k = (double**) malloc(sizeof(double*)*L);
+    //    for (unsigned int i=0; i<L; i++) k[i] = (double*)malloc(sizeof(double)*N);
 
-    unsigned int r = 0;
-    for (unsigned int n=0; n<N; n++)
-    {
-        if (n==0)
-        {
-            k[0][0] = d[0]/e[I[0]];
-            for (unsigned int s=1; s<L; s++)
-            {
-                k[s][0] = -e[I[s]]/e[I[0]];
-            }
-        }
-        else if (n==(N-1))
-        {
+    //    unsigned int r = 0;
+    //    for (unsigned int n=0; n<N; n++)
+    //    {
+    //        if (n==0)
+    //        {
+    //            k[0][0] = d[0]/e[I[0]];
+    //            for (unsigned int s=1; s<L; s++)
+    //            {
+    //                k[s][0] = -e[I[s]]/e[I[0]];
+    //            }
+    //        }
+    //        else if (n==(N-1))
+    //        {
 
-        }
-        else
-        {
-            double m = b[n] + a[n]*k[0][n-1];
-            k[0][n] = -c[n]/m;
-            for (unsigned int s=1; s<=L; s++)
-            {
-                k[s][n] = -(a[n]*k[s][n-1])/m;
-            }
-            k[L+1][0] = (d[n]-a[n]*k[L+1][n-1])/m;
-        }
-    }
+    //        }
+    //        else
+    //        {
+    //            double m = b[n] + a[n]*k[0][n-1];
+    //            k[0][n] = -c[n]/m;
+    //            for (unsigned int s=1; s<=L; s++)
+    //            {
+    //                k[s][n] = -(a[n]*k[s][n-1])/m;
+    //            }
+    //            k[L+1][0] = (d[n]-a[n]*k[L+1][n-1])/m;
+    //        }
+    //    }
 }
 
 void IProblem1::qovmaFirstRowM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const
@@ -479,14 +479,8 @@ void IProblem1::qovmaFirstRowM(double *a, double *b, double *c, double *d, doubl
         }
     }
 
-    //IPrinter::printVector(e,n,NULL,n);
-
     double **k = (double**) malloc(sizeof(double*)*L);
     for (unsigned int s=0; s<L; s++) k[s] = (double*)malloc(sizeof(double)*n);
-
-
-    //    if (!isnormal(rx[i])) printf("nrl %d %d %f\n", m, i, rx[i]);
-    //    if (isnan(rx[i]))    printf("nan %d %d %f\n", m, i, rx[i]);
 
     for (unsigned int i=0; i<n; i++)
     {
@@ -522,48 +516,37 @@ void IProblem1::qovmaFirstRowM(double *a, double *b, double *c, double *d, doubl
 
                 if (i==E[s]-1) q[i] += -(a[i]*k[s][i-1])/m;
             }
-
-            //            for (unsigned int s=0; s<L; s++)
-            //            {
-            //                if (i==E[s]-1) q[i] += -(a[i]*k[s][i-1])/m;
-            //            }
         }
     }
+
+    //    printf("%d %d %.14f\n", L, E[0], e[E[0]]);
 
     for (unsigned int i=n-1; i != UINT_MAX; i--)
     {
         if (i==(n-1))
         {
             x[i] = p[i];
-            //if (isnan(x[i])) { printf("512 %d %f %f\n", i, x[i], p[i]); exit(-1);}
         }
         else
         {
             x[i] = p[i] + q[i]*x[i+1];
-            //if (isnan(x[i])) { printf("517 %d %f %f %f\n", i, x[i], p[i], q[i]);  exit(-1);}
-
             for (unsigned int s=0; s<L; s++)
             {
                 if (i<=E[s]-1)
                 {
                     x[i] = x[i] + k[s][i]*x[E[s]];
-                    //if (isnan(x[i])) { printf("525 %d %f %.20f %f %d\n", i, x[i], k[s][i], x[E[s]], E[s]);  exit(-1);}
                 }
             }
         }
     }
+
+    //    IPrinter::printVector(x, n);
 
     for (unsigned int s=0; s<L; s++) free(k[s]);
     free(k);
     free(E);
     free(q);
     free(p);
-
-    //    for (unsigned int i=0; i<n; i++)
-    //    {
-    //        if (isnan(x[i]))
-    //            printf("%d %f %f\n", i, x[i], b[0]);
-    //    }
 }
 
 void IProblem1::calculateP(DoubleMatrix &p, const DoubleMatrix &u, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e) const

@@ -82,7 +82,7 @@ protected:
     virtual double mu(unsigned int n) const;
 
     virtual void qovmaFirstRowM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *E) const;
-    virtual void qovmaFirstRowM2(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *E) const;
+    virtual void qovmaFirstRowM2(double *e, unsigned int *I, unsigned int L, double *a, double *b, double *c, double *d, double *x, unsigned int N) const;
     virtual void qovmaFirstColM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *E) const;
     virtual void getParameters(DoubleVector &k, DoubleVector &z, DoubleVector &e, const DoubleVector &y) const;
 
