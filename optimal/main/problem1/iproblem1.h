@@ -9,6 +9,7 @@
 #include <cmethods.h>
 #include <gradient/igradient.h>
 #include <printer.h>
+#include <float.h>
 
 class IProblem1 : protected RnFunction, protected IGradient, public IPrinter
 {

@@ -6,7 +6,7 @@ void ArtProblem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     ArtProblem1L2 p;
     p.initialize();
-//    p.startOptimize();
+    //p.startOptimize();
 
     //p.table2Generate();
     //p.imager3L();
@@ -26,6 +26,7 @@ void ArtProblem1L2::initialize()
     optimizeZ = true;
     optimizeE = true;
     withError = false;
+    DD = 1.0;
 
     L = 1;
 
@@ -244,12 +245,16 @@ void ArtProblem1L2::startOptimize()
     DD = 1.0;
     R = 1.0;
     optimize(x0);
-    while (R < 100.0)
-    {
-        R *= 10.0;
-        IPrinter::printSeperatorLine();
-        optimize(x0);
-    }
+//    while (R < 100.0)
+//    {
+//        R *= 10.0;
+//        IPrinter::printSeperatorLine();
+//        optimize(x0);
+//    }
+
+    double y = fx(x0);
+    printf("%f\n", y);
+    printf("%d %d %d %f %f %f\n", vfi.size(), vtt.size(), x0.size(), x0[0], x0[1], x0[2]);
 
     IPrinter::printSeperatorLine();
     printf("Optimal k: "); for (unsigned int i=0*L; i<1*L; i++) { printf("%20.14f ", x0[i]); } printf("\n");
@@ -303,40 +308,48 @@ void ArtProblem1L2::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
 
 void ArtProblem1L2::image1L()
 {
+    DD = 1.0;
     DoubleVector y0;
-    optimizeK = true;
-    optimizeZ = true;
-    optimizeE = true;
-    withError = false;
+//    optimizeK = true;
+//    optimizeZ = true;
+//    optimizeE = true;
+//    withError = false;
 
     if (optimizeK)
     {
-        y0 << 4.9688708458;
+//        y0 << 4.9688708458;
+//        y0 << -4.8090586524;
+        y0 << -6.8182056823;
     }
 
     if (optimizeZ)
     {
-        y0 << 8.2385291524;
+//        y0 << 8.2385291524;
+//        y0 << 12.0785195749;
+        y0 << 11.9038403093;
     }
     if (optimizeE)
     {
-        y0 << 0.0186136703;
+//        y0 << 0.0186136703;
+//        y0 << 0.6253314029;
+        y0 << 0.0782326627;
     }
 
+    L = 1;
     R = 1.0;
-    y0[2] = 30*hx;
-    double y = fx(y0);
-    printf("%.10f %.10f\n", y, y0[2]);
+    //y0[2] = 19*hx;
+//    double y = fx(y0);
+//    printf("%.10f %.10f\n", y, y0[2]);
 
-//    FILE *file = fopen("L1Data.txt", "w");
-//    for (unsigned int n=5; n<=995; n++)
-//    {
-//        y0[2] = n*hx;
-//        double f = fx(y0);
-//        printf("%d %.10f %f\n", n, f, y0[2]);
-//        fprintf(file, "%.10f ", f);
-//    }
-//    fclose(file);
+    FILE *file = fopen("L1Data.txt", "w");
+    for (unsigned int n=5; n<=995; n++)
+    {
+        y0[2] = n*hx;
+        double f = fx(y0);
+        printf("%d %.10f %f\n", n, f, y0[2]);
+        fprintf(file, "%.10f ", f);
+    }
+    fclose(file);
 }
 
 void ArtProblem1L2::imager2L()

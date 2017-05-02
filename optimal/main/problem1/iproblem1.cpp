@@ -228,7 +228,7 @@ void IProblem1::gradient(const DoubleVector &y, DoubleVector &g)
 
 void IProblem1::calculateU(DoubleMatrix &u, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e) const
 {
-    calculateU1(u, k, z, e);
+    calculateU2(u, k, z, e);
 }
 
 void IProblem1::calculateU1(DoubleMatrix &u, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e) const
@@ -405,13 +405,13 @@ void IProblem1::calculateU2(DoubleMatrix &u, const DoubleVector &k, const Double
         dc[N] = 0.0;
         dd[N] = u.at(m-1,N)  + lambda0_ht_tt + lambda2_a_a_ht_tt_hx;
 
-        //        qovmaFirstRowM2(da, db, dc, dd, rx, N+1, de);
+        qovmaFirstRowM2(de, NULL, 0, da, db, dc, dd, rx, N+1);
 
         for (unsigned int i=0; i<=N; i++)
         {
             u[m][i] = rx[i];
         }
-        //        IPrinter::printVector(u.row(m));
+//        IPrinter::printVector(u.row(m));
     }
 
     free(de);
@@ -422,37 +422,105 @@ void IProblem1::calculateU2(DoubleMatrix &u, const DoubleVector &k, const Double
     free(da);
 }
 
-void IProblem1::qovmaFirstRowM2(double *e, unsigned int *I, unsigned int L, double *a, double *b, double *c, double *d, double *x, unsigned int N) const
+void IProblem1::qovmaFirstRowM2(double *e, unsigned int *I, unsigned int L1, double *a, double *b, double *c, double *d, double *x, unsigned int N) const
 {
-    //    double **k = (double**) malloc(sizeof(double*)*L);
-    //    for (unsigned int i=0; i<L; i++) k[i] = (double*)malloc(sizeof(double)*N);
+    //if (fabs(e[0]) <= DBL_EPSILON) throw std::exception("first item is zero.");
 
-    //    unsigned int r = 0;
-    //    for (unsigned int n=0; n<N; n++)
-    //    {
-    //        if (n==0)
-    //        {
-    //            k[0][0] = d[0]/e[I[0]];
-    //            for (unsigned int s=1; s<L; s++)
-    //            {
-    //                k[s][0] = -e[I[s]]/e[I[0]];
-    //            }
-    //        }
-    //        else if (n==(N-1))
-    //        {
+    unsigned int CNT=0;
+    for (unsigned int i=2; i<N; i++)
+    {
+        if (fabs(e[i]) > DBL_EPSILON) CNT++;
+    }
 
-    //        }
-    //        else
-    //        {
-    //            double m = b[n] + a[n]*k[0][n-1];
-    //            k[0][n] = -c[n]/m;
-    //            for (unsigned int s=1; s<=L; s++)
-    //            {
-    //                k[s][n] = -(a[n]*k[s][n-1])/m;
-    //            }
-    //            k[L+1][0] = (d[n]-a[n]*k[L+1][n-1])/m;
-    //        }
-    //    }
+    double *q = (double*) malloc(sizeof(double) * N);
+    double *p = (double*) malloc(sizeof(double) * N);
+    double **k = (double**) malloc(sizeof(double*) * CNT);
+    for (unsigned int i=0; i<CNT; i++)
+    {
+        k[i] = (double*) malloc(sizeof(double) * N);
+    }
+
+    unsigned int *E = (unsigned int *)malloc(sizeof(unsigned int)*CNT);
+    unsigned int s = 0;
+    for (unsigned int i=2; i<N; i++)
+    {
+        if (fabs(e[i]) > DBL_EPSILON)
+        {
+            E[s] = i;
+            s++;
+        }
+    }
+
+    //printf("%d %d %f\n", CNT, E[0], e[E[0]]);
+
+    for (unsigned int i=0; i<N; i++)
+    {
+        if (i == 0)
+        {
+            q[0] = -e[1]/e[0];
+            for (unsigned int s=0; s<CNT; s++)
+            {
+                k[s][0] = -e[E[s]]/e[0];
+            }
+            p[0] = d[0]/e[0];
+            e[0] = 1.0;
+        }
+        else if (i == N-1)
+        {
+            p[i] = +(d[i]-a[i]*p[i-1])/(b[i]+a[i]*q[i-1]);
+            q[i] = 0.0;
+            for (unsigned int s=0; s<CNT; s++)
+            {
+                k[s][i] = 0.0;
+            }
+        }
+        else
+        {
+            double m = b[i]+a[i]*q[i-1];
+            q[i] = -c[i]/m;
+            p[i] = (d[i] - a[i]*p[i-1])/m;
+            for (unsigned int s=0; s<CNT; s++)
+            {
+                if (i<(E[s]-1))
+                {
+                    k[s][i] = -(a[i]*k[s][i-1])/m;
+                }
+                else
+                {
+                    k[s][i] = 0.0;
+                }
+                if (i==E[s]-1)
+                {
+                    q[i] += -(a[i]*k[s][i-1])/m;
+                }
+            }
+        }
+    }
+
+    for (unsigned int i=N-1; i != UINT_MAX; i--)
+    {
+        if (i==(N-1))
+        {
+            x[i] = p[i];
+        }
+        else
+        {
+            x[i] = p[i] + q[i]*x[i+1];
+            for (unsigned int s=0; s<CNT; s++)
+            {
+                if (i<=E[s]-1)
+                {
+                    x[i] = x[i] + k[s][i]*x[E[s]];
+                }
+            }
+        }
+    }
+
+    for (unsigned int s=0; s<CNT; s++) free(k[s]);
+    free(k);
+    free(E);
+    free(q);
+    free(p);
 }
 
 void IProblem1::qovmaFirstRowM(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e) const
