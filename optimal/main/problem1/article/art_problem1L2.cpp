@@ -10,8 +10,8 @@ void ArtProblem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //p.table2Generate();
     //p.imager3L();
-    //    p.imager2L();
-    p.image1L();
+    p.imager2L();
+//    p.image1L();
 
     //    p.image1Generate();
     //    p.image2Generate();
@@ -173,7 +173,7 @@ void ArtProblem1L2::startOptimize()
             //x0 << -2.8525 << -6.8774; //k
             //x0 << -12.1248 << -4.4918; //k
             x0 << -1.8142 << -2.9184; //k
-//            x0 << -15.5744 << -8.4324;
+            //            x0 << -15.5744 << -8.4324;
         }
         else
         {
@@ -188,7 +188,7 @@ void ArtProblem1L2::startOptimize()
             //x0 << +2.4548 << +2.4518; //k
             //x0 << +20.8248 << +17.7545; //k
             x0 << +10.4755 << +11.8428; //k
-//            x0 << 15.4783 << 8.6603;
+            //            x0 << 15.4783 << 8.6603;
         }
         else
         {
@@ -203,7 +203,7 @@ void ArtProblem1L2::startOptimize()
             //x0 << 0.5587 << 0.7545; //e
             //x0 << 0.2095 << 0.9511; //e
             x0 << 0.5551 << 0.4915; //e
-//            x0 << 0.2645 << 0.7832;
+            //            x0 << 0.2645 << 0.7832;
         }
         else
         {
@@ -245,12 +245,12 @@ void ArtProblem1L2::startOptimize()
     DD = 1.0;
     R = 1.0;
     optimize(x0);
-//    while (R < 100.0)
-//    {
-//        R *= 10.0;
-//        IPrinter::printSeperatorLine();
-//        optimize(x0);
-//    }
+    //    while (R < 100.0)
+    //    {
+    //        R *= 10.0;
+    //        IPrinter::printSeperatorLine();
+    //        optimize(x0);
+    //    }
 
     double y = fx(x0);
     printf("%f\n", y);
@@ -308,38 +308,38 @@ void ArtProblem1L2::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
 
 void ArtProblem1L2::image1L()
 {
-    DD = 1.0;
+    DD = 1;
     DoubleVector y0;
-//    optimizeK = true;
-//    optimizeZ = true;
-//    optimizeE = true;
-//    withError = false;
+        optimizeK = true;
+        optimizeZ = true;
+        optimizeE = true;
+        withError = false;
 
     if (optimizeK)
     {
-//        y0 << 4.9688708458;
-//        y0 << -4.8090586524;
-        y0 << -6.8182056823;
+                y0 << 4.9688708458;
+        //        y0 << -4.8090586524;
+//        y0 << -6.8182056823;
     }
 
     if (optimizeZ)
     {
-//        y0 << 8.2385291524;
-//        y0 << 12.0785195749;
-        y0 << 11.9038403093;
+                y0 << 8.2385291524;
+        //        y0 << 12.0785195749;
+//        y0 << 11.9038403093;
     }
     if (optimizeE)
     {
-//        y0 << 0.0186136703;
-//        y0 << 0.6253314029;
-        y0 << 0.0782326627;
+                y0 << 0.0186136703;
+        //        y0 << 0.6253314029;
+//        y0 << 0.0782326627;
     }
 
     L = 1;
     R = 1.0;
     //y0[2] = 19*hx;
-//    double y = fx(y0);
-//    printf("%.10f %.10f\n", y, y0[2]);
+    //    double y = fx(y0);
+    //    printf("%.10f %.10f\n", y, y0[2]);
 
     FILE *file = fopen("L1Data.txt", "w");
     for (unsigned int n=5; n<=995; n++)
@@ -359,6 +359,8 @@ void ArtProblem1L2::imager2L()
     optimizeZ = true;
     optimizeE = true;
     withError = false;
+    DD = 1;
+    L=2;
 
     if (optimizeK)
     {
@@ -375,16 +377,16 @@ void ArtProblem1L2::imager2L()
     }
 
     DoubleMatrix u(101,101);
-    R = 0.0;
+    R = 1.0;
     double max = -100000000.0;
     double min = +100000000.0;
     for (unsigned int k0=0; k0<=100; k0++)
     {
-        y0[0] = -6.5+0.01*k0;
+        y0[4] = 0.01*k0;
         //        y0[4] = 0.01*k0;
         for (unsigned int k1=0; k1<=100; k1++)
         {
-            y0[1] = 0.5+0.01*k1;
+            y0[5] = 0.01*k1;
             //            y0[5] = 0.01*k1;
 
             double f = 0.0;
@@ -398,14 +400,14 @@ void ArtProblem1L2::imager2L()
         }
     }
 
-    //    for (unsigned int i=0; i<=100; i++) u[0][i] = u[2][i];
-    //    for (unsigned int i=0; i<=100; i++) u[1][i] = u[2][i];
-    //    for (unsigned int i=0; i<=100; i++) u[99][i] = u[98][i];
-    //    for (unsigned int i=0; i<=100; i++) u[100][i] = u[98][i];
-    //    for (unsigned int i=0; i<=100; i++) u[i][0] = u[i][2];
-    //    for (unsigned int i=0; i<=100; i++) u[i][1] = u[i][2];
-    //    for (unsigned int i=0; i<=100; i++) u[i][99] = u[i][98];
-    //    for (unsigned int i=0; i<=100; i++) u[i][100] = u[i][98];
+    for (unsigned int i=0; i<=100; i++) u[0][i] = u[2][i];
+    for (unsigned int i=0; i<=100; i++) u[1][i] = u[2][i];
+    for (unsigned int i=0; i<=100; i++) u[99][i] = u[98][i];
+    for (unsigned int i=0; i<=100; i++) u[100][i] = u[98][i];
+    for (unsigned int i=0; i<=100; i++) u[i][0] = u[i][2];
+    for (unsigned int i=0; i<=100; i++) u[i][1] = u[i][2];
+    for (unsigned int i=0; i<=100; i++) u[i][99] = u[i][98];
+    for (unsigned int i=0; i<=100; i++) u[i][100] = u[i][98];
 
     printf("%f %f\n", min, max);
 
