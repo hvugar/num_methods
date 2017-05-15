@@ -51,7 +51,8 @@ SOURCES += main.cpp \
     problem1/article/art_problem1L2.cpp \
     problem1/iproblem1.cpp \
     example6.cpp \
-    problem1/article/art_problem1L3.cpp
+    problem1/article/art_problem1L3.cpp \
+    example7.cpp
 
 HEADERS += \
     loadedsystems.h \
@@ -70,4 +71,5 @@ HEADERS += \
     problem1/article/art_problem1L2.h \
     problem1/iproblem1.h \
     example6.h \
-    problem1/article/art_problem1L3.h
+    problem1/article/art_problem1L3.h \
+    example7.h

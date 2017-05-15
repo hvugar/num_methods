@@ -8,7 +8,7 @@
 #include <math.h>
 #include <vector>
 
-#define SAMPLE_4
+#define SAMPLE_1
 
 typedef std::vector<DoubleMatrix> stdDoubleMatrixVector;
 typedef std::vector<DoubleVector> stdDoubleVectorVector;
