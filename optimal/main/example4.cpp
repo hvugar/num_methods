@@ -20,7 +20,7 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //    }
         if (e.K==4)
         {
-            s[0].push_back(0); s[0].push_back(2*e.F); s[0].push_back(5*e.F); s[0].push_back(8*e.F); s[0].push_back(9*e.F); s[0].push_back(10*e.F);
+            s[0].push_back(0); /*s[0].push_back(2*e.F);*/ s[0].push_back(5*e.F); /*s[0].push_back(8*e.F); s[0].push_back(9*e.F);*/ s[0].push_back(10*e.F);
             s[1].push_back(0); s[1].push_back(1);     s[1].push_back(2);     s[1].push_back(3);     s[1].push_back(4);
             s[2].push_back(0); s[2].push_back(1);     s[2].push_back(2);     s[2].push_back(3);     s[2].push_back(4);
             s[3].push_back(0); s[3].push_back(1);     s[3].push_back(2);     s[3].push_back(3);     s[3].push_back(4);
@@ -796,6 +796,7 @@ void Example4::calculateM1BE(unsigned int c, const std::vector<unsigned int> s, 
     DoubleVector ETA(n,0.0);
     fillGamma(GAMMA, ETA, c, K);
     if (c == 0) { for (unsigned int i=0; i<L; i++) ETA = GAMMA[i]*rx.col(s[i]) + ETA; }
+    printf("%.10f %.10f %.10f\n", ETA[0], ETA[1], ETA[2]);
 
     //        if (c == 0)
     //        {
@@ -1085,6 +1086,9 @@ void Example4::fillGamma(stdDoubleMatrixVector &GAMMA, DoubleVector &ETA, unsign
                         GAMMA[i].at(i1,i2) = (rand()%100)*0.1;//sin(i1+i)+cos(i2+i);
                     }
                 }
+
+                IPrinter::print(GAMMA[i], GAMMA[i].rows(), GAMMA[i].cols());
+                IPrinter::printSeperatorLine();
                 //eta = eta + DoubleVector(GAMMA[i]*nx.col(s[i]));
                 //                ETA = ETA + DoubleVector(GAMMA[i]*nx.col(s[i]));
             }
@@ -1093,6 +1097,8 @@ void Example4::fillGamma(stdDoubleMatrixVector &GAMMA, DoubleVector &ETA, unsign
             //            {
             //                ETA = ETA + DoubleVector(GAMMA[i]*nx.col(s[i]));
             //            }
+
+
         }
         if (s == 1)
         {

@@ -63,9 +63,9 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //BorderTest::Main(argc, argv);
     //BorderTest1::Main(argc, argv);
 //    Example2::Main(argc, argv);
-//    Example4::Main(argc, argv);
+    Example4::Main(argc, argv);
 //    Example6::Main(argc, argv);
-    Example7::Main(argc, argv);
+//    Example7::Main(argc, argv);
 
 //    Problem1::Main(argc, argv);
 //    Problem1L2::Main(argc, argv);
