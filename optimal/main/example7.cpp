@@ -28,7 +28,11 @@ void Example7::calculateK4()
 
     betta[0][0] = 1.0;
     betta[0][N/2] = 3.5;
-    betta[0][N] = -2.5;
+    betta[0][N-4] = +4.5;
+    betta[0][N-3] = +7.5;
+    betta[0][N-2] = +1.5;
+    betta[0][N-1] = +8.5;
+    betta[0][N-0] = -2.5;
     eta[0] = 0.0; for (unsigned int k=0; k<=N; k++) eta[0] += betta[0][k]*rx[k];
 
     for (unsigned int k=0; k<=N-K; k++)
