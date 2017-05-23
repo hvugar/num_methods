@@ -12,19 +12,31 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     e.w = 12;
     e.p = 8;
 
-        std::vector<unsigned int> *s = new std::vector<unsigned int>[e.K];
+    //--------------------------------------------------------------------------
+    fputs("Real process solution:\n",stdout);
+    IPrinter::printSeperatorLine(NULL,'-', stdout);
+    DoubleMatrix rx;
+    e.calculateRX(rx);
+    IPrinter::printVector(e.w,e.p,rx.row(0),"x1: ");
+    IPrinter::printVector(e.w,e.p,rx.row(1),"x2: ");
+    IPrinter::printVector(e.w,e.p,rx.row(2),"x3: ");
+    IPrinter::printSeperatorLine(NULL,'-', stdout);
+
+    //--------------------------------------------------------------------------
+
+    std::vector<unsigned int> *s = new std::vector<unsigned int>[e.K];
     //    if (e.K==2)
     //    {
     //        s[0].push_back(0); s[0].push_back(2*e.F); s[0].push_back(5*e.F); s[0].push_back(8*e.F); s[0].push_back(9*e.F); s[0].push_back(10*e.F);
     //        s[1].push_back(0); s[1].push_back(1);     s[1].push_back(2);
     //    }
-        if (e.K==4)
-        {
-            s[0].push_back(0); /*s[0].push_back(2*e.F);*/ s[0].push_back(5*e.F); /*s[0].push_back(8*e.F); s[0].push_back(9*e.F);*/ s[0].push_back(10*e.F);
-            s[1].push_back(0); s[1].push_back(1);     s[1].push_back(2);     s[1].push_back(3);     s[1].push_back(4);
-            s[2].push_back(0); s[2].push_back(1);     s[2].push_back(2);     s[2].push_back(3);     s[2].push_back(4);
-            s[3].push_back(0); s[3].push_back(1);     s[3].push_back(2);     s[3].push_back(3);     s[3].push_back(4);
-        }
+    if (e.K==4)
+    {
+        s[0].push_back(0); /*s[0].push_back(5*e.F);*/ s[0].push_back(10*e.F);
+        s[1].push_back(0); s[1].push_back(1);     s[1].push_back(2);     s[1].push_back(3);     s[1].push_back(4);
+        s[2].push_back(0); s[2].push_back(1);     s[2].push_back(2);     s[2].push_back(3);     s[2].push_back(4);
+        s[3].push_back(0); s[3].push_back(1);     s[3].push_back(2);     s[3].push_back(3);     s[3].push_back(4);
+    }
     //    if (e.K==6)
     //    {
     //        s[0].push_back(0); s[0].push_back(2*e.F); s[0].push_back(5*e.F); s[0].push_back(6*e.F); s[0].push_back(7*e.F); s[0].push_back(8*e.F);s[0].push_back(999); s[0].push_back(10*e.F);
@@ -45,93 +57,82 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //        IPrinter::print(x,x.size(),e.w,e.p,stdout);
     IPrinter::printSeperatorLine(NULL,'-',stdout);
 
-    //--------------------------------------------------------------------------
-    fputs("Real process solution:\n",stdout);
-    IPrinter::printSeperatorLine(NULL,'-', stdout);
-    DoubleMatrix rx;
-    e.calculateRX(rx);
-    IPrinter::printVector(e.w,e.p,rx.row(0),"x1: ");
-    IPrinter::printVector(e.w,e.p,rx.row(1),"x2: ");
-    IPrinter::printVector(e.w,e.p,rx.row(2),"x3: ");
-    IPrinter::printSeperatorLine(NULL,'-', stdout);
+    //    {
+    //        class CauchyProblem1 : public CauchyProblem
+    //        {
+    //        public:
+    //            CauchyProblem1() {}
+
+    //            virtual double f(double t, const DoubleVector &x) const
+    //            {
+    //                return 2.0*x[0] + 3.0*x[1] - x[2]
+    //                        - (2.0*sin(20.0*t*t) + 3.0*(cos(10.0*t) - sin(20.0*t)) - (t*t*t-sin(8.0*t)*sin(8.0*t)))
+    //                        + 40.0*t*cos(20.0*t*t);
+    //            }
+    //        };
+
+    //        class CauchyProblem2 : public CauchyProblem
+    //        {
+    //        public:
+    //            CauchyProblem2() {}
+
+    //            virtual double f(double t, const DoubleVector &x) const
+    //            {
+    //                return 4.0*x[0] + 6.0*x[1] - 2.0*x[2]
+    //                        - (4.0*sin(20.0*t*t) + 6.0*(cos(10.0*t) - sin(20.0*t)) - 2.0*(t*t*t-sin(8.0*t)*sin(8.0*t)))
+    //                        - 10.0*sin(10.0*t) - 20.0*cos(20.0*t);
+    //            }
+    //        };
+
+    //        class CauchyProblem3 : public CauchyProblem
+    //        {
+    //        public:
+    //            CauchyProblem3() {}
+
+    //            virtual double f(double t, const DoubleVector &x) const
+    //            {
+    //                return -1.0*x[0] + 1.0*x[1] - 1.0*x[2]
+    //                        - (-sin(20.0*t*t) + (cos(10.0*t) - sin(20.0*t)) -(t*t*t-sin(8.0*t)*sin(8.0*t)))
+    //                        + 3.0*t*t - 16.0*cos(8.0*t)*sin(8.0*t);
+    //            }
+    //        };
+
+    //        std::vector<CauchyProblem*> ps;
+
+    //        CauchyProblem1 *cp1 = new CauchyProblem1;
+    //        cp1->y0 = e.fx(1,0);
+    //        cp1->x0 = 0.0;
+    //        ps.push_back(cp1);
+
+    //        CauchyProblem2 *cp2 = new CauchyProblem2;
+    //        cp2->y0 = e.fx(2,0);
+    //        cp2->x0 = 0.0;
+    //        ps.push_back(cp2);
+
+    //        CauchyProblem3 *cp3 = new CauchyProblem3;
+    //        cp3->y0 = e.fx(3,0);
+    //        cp3->x0 = 0.0;
+    //        ps.push_back(cp3);
+
+    //        DoubleMatrix mx;
+    //        CauchyProblem::rungeKutta(ps, 0.0, e.h, e.N, mx);
+    //        IPrinter::printVector(e.w,e.p,mx.row(0),"x1: ");
+    //        IPrinter::printVector(e.w,e.p,mx.row(1),"x2: ");
+    //        IPrinter::printVector(e.w,e.p,mx.row(2),"x3: ");
+    //    }
 
 
-//    {
-//        class CauchyProblem1 : public CauchyProblem
-//        {
-//        public:
-//            CauchyProblem1() {}
-
-//            virtual double f(double t, const DoubleVector &x) const
-//            {
-//                return 2.0*x[0] + 3.0*x[1] - x[2]
-//                        - (2.0*sin(20.0*t*t) + 3.0*(cos(10.0*t) - sin(20.0*t)) - (t*t*t-sin(8.0*t)*sin(8.0*t)))
-//                        + 40.0*t*cos(20.0*t*t);
-//            }
-//        };
-
-//        class CauchyProblem2 : public CauchyProblem
-//        {
-//        public:
-//            CauchyProblem2() {}
-
-//            virtual double f(double t, const DoubleVector &x) const
-//            {
-//                return 4.0*x[0] + 6.0*x[1] - 2.0*x[2]
-//                        - (4.0*sin(20.0*t*t) + 6.0*(cos(10.0*t) - sin(20.0*t)) - 2.0*(t*t*t-sin(8.0*t)*sin(8.0*t)))
-//                        - 10.0*sin(10.0*t) - 20.0*cos(20.0*t);
-//            }
-//        };
-
-//        class CauchyProblem3 : public CauchyProblem
-//        {
-//        public:
-//            CauchyProblem3() {}
-
-//            virtual double f(double t, const DoubleVector &x) const
-//            {
-//                return -1.0*x[0] + 1.0*x[1] - 1.0*x[2]
-//                        - (-sin(20.0*t*t) + (cos(10.0*t) - sin(20.0*t)) -(t*t*t-sin(8.0*t)*sin(8.0*t)))
-//                        + 3.0*t*t - 16.0*cos(8.0*t)*sin(8.0*t);
-//            }
-//        };
-
-//        std::vector<CauchyProblem*> ps;
-
-//        CauchyProblem1 *cp1 = new CauchyProblem1;
-//        cp1->y0 = e.fx(1,0);
-//        cp1->x0 = 0.0;
-//        ps.push_back(cp1);
-
-//        CauchyProblem2 *cp2 = new CauchyProblem2;
-//        cp2->y0 = e.fx(2,0);
-//        cp2->x0 = 0.0;
-//        ps.push_back(cp2);
-
-//        CauchyProblem3 *cp3 = new CauchyProblem3;
-//        cp3->y0 = e.fx(3,0);
-//        cp3->x0 = 0.0;
-//        ps.push_back(cp3);
-
-//        DoubleMatrix mx;
-//        CauchyProblem::rungeKutta(ps, 0.0, e.h, e.N, mx);
-//        IPrinter::printVector(e.w,e.p,mx.row(0),"x1: ");
-//        IPrinter::printVector(e.w,e.p,mx.row(1),"x2: ");
-//        IPrinter::printVector(e.w,e.p,mx.row(2),"x3: ");
-//    }
-
-
-//    {
-//        //--------------------------------------------------------------------------
-//        e.K = 1;
-//        printf("Initial first 3 points: K: %d \n", e.K);
-//        DoubleMatrix nx1;
-//        e.calculateNX(rx,nx1);
-//        IPrinter::printVector(e.w,e.p,nx1.row(0),"x1: ");
-//        IPrinter::printVector(e.w,e.p,nx1.row(1),"x2: ");
-//        IPrinter::printVector(e.w,e.p,nx1.row(2),"x3: ");
-//        IPrinter::printSeperatorLine(NULL,'-', stdout);
-//    }
+    //    {
+    //        //--------------------------------------------------------------------------
+    //        e.K = 1;
+    //        printf("Initial first 3 points: K: %d \n", e.K);
+    //        DoubleMatrix nx1;
+    //        e.calculateNX(rx,nx1);
+    //        IPrinter::printVector(e.w,e.p,nx1.row(0),"x1: ");
+    //        IPrinter::printVector(e.w,e.p,nx1.row(1),"x2: ");
+    //        IPrinter::printVector(e.w,e.p,nx1.row(2),"x3: ");
+    //        IPrinter::printSeperatorLine(NULL,'-', stdout);
+    //    }
 
     //    {
     //        //--------------------------------------------------------------------------
@@ -153,26 +154,26 @@ void Example4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //        //        double norm3 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm3 += (rx.row(2).at(i)-nx1.row(2).at(i))*(rx.row(2).at(i)-nx1.row(2).at(i)); printf("norm3: %f\n", sqrt(norm3));
     //    }
 
-//    {
-        //--------------------------------------------------------------------------
-        e.K = 4;
-        printf("Initial first 3 points: K: %d \n", e.K);
-        DoubleMatrix nx2;
-        e.calculateNX(rx,nx2);
-//        IPrinter::printVector(e.w,e.p,nx2.row(0),"x1: ");
-//        IPrinter::printVector(e.w,e.p,nx2.row(1),"x2: ");
-//        IPrinter::printVector(e.w,e.p,nx2.row(2),"x3: ");
-//        IPrinter::printSeperatorLine(NULL,'-', stdout);
-//        printf("+++ %.8f %.10f %.10f %.10f\n", e.b(1,2), e.a(1,1,2), e.a(1,2,2), e.a(1,3,2));
+    //    {
+    //--------------------------------------------------------------------------
+    e.K = 4;
+    printf("Initial first 3 points: K: %d \n", e.K);
+    DoubleMatrix nx2;
+    e.calculateNX(rx,nx2);
+    //        IPrinter::printVector(e.w,e.p,nx2.row(0),"x1: ");
+    //        IPrinter::printVector(e.w,e.p,nx2.row(1),"x2: ");
+    //        IPrinter::printVector(e.w,e.p,nx2.row(2),"x3: ");
+    //        IPrinter::printSeperatorLine(NULL,'-', stdout);
+    //        printf("+++ %.8f %.10f %.10f %.10f\n", e.b(1,2), e.a(1,1,2), e.a(1,2,2), e.a(1,3,2));
 
-        //            //--------------------------------------------------------------------------
-                    puts("Method #1");
-                    IPrinter::printSeperatorLine(NULL,'-', stdout);
-                    e.calculateM1(s, rx, nx2);
-        //            double norm1 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm1 += (rx.row(0).at(i)-nx2.row(0).at(i))*(rx.row(0).at(i)-nx2.row(0).at(i)); printf("norm1: %f\n", sqrt(norm1));
-        //            double norm2 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm2 += (rx.row(1).at(i)-nx2.row(1).at(i))*(rx.row(1).at(i)-nx2.row(1).at(i)); printf("norm2: %f\n", sqrt(norm2));
-        //            double norm3 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm3 += (rx.row(2).at(i)-nx2.row(2).at(i))*(rx.row(2).at(i)-nx2.row(2).at(i)); printf("norm3: %f\n", sqrt(norm3));
-//    }
+    //            //--------------------------------------------------------------------------
+    puts("Method #1");
+    IPrinter::printSeperatorLine(NULL,'-', stdout);
+    e.calculateM1(s, rx, nx2);
+    //            double norm1 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm1 += (rx.row(0).at(i)-nx2.row(0).at(i))*(rx.row(0).at(i)-nx2.row(0).at(i)); printf("norm1: %f\n", sqrt(norm1));
+    //            double norm2 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm2 += (rx.row(1).at(i)-nx2.row(1).at(i))*(rx.row(1).at(i)-nx2.row(1).at(i)); printf("norm2: %f\n", sqrt(norm2));
+    //            double norm3 = 0.0; for (unsigned int i=0; i<=e.N; i++) norm3 += (rx.row(2).at(i)-nx2.row(2).at(i))*(rx.row(2).at(i)-nx2.row(2).at(i)); printf("norm3: %f\n", sqrt(norm3));
+    //    }
 
     //    {
     //        //--------------------------------------------------------------------------
@@ -575,9 +576,9 @@ double Example4::b(unsigned int i, unsigned int k) const
     if (i==3) return - (-sin(20.0*t*t) + (cos(10.0*t) - sin(20.0*t)) -(t*t*t-sin(8.0*t)*sin(8.0*t)))
             + 3.0*t*t - 16.0*cos(8.0*t)*sin(8.0*t);
 
-//    if (i==1) return -(+2.0*sin(20.0*t*t) + 3.0*(cos(10.0*t) - sin(20.0*t)) - 1.0*(t*t*t - sin(8.0*t)*sin(8.0*t))) + (+40.0*t*cos(20.0*t*t));
-//    if (i==2) return -(+4.0*sin(20.0*t*t) + 6.0*(cos(10.0*t) - sin(20.0*t)) - 2.0*(t*t*t - sin(8.0*t)*sin(8.0*t))) + (-10.0*sin(10.0*t) - 20.0*cos(20.0*t));
-//    if (i==3) return -(-1.0*sin(20.0*t*t) + 1.0*(cos(10.0*t) - sin(20.0*t)) - 1.0*(t*t*t - sin(8.0*t)*sin(8.0*t))) + (+3.0*t*t - 16.0*cos(8.0*t)*sin(8.0*t));
+    //    if (i==1) return -(+2.0*sin(20.0*t*t) + 3.0*(cos(10.0*t) - sin(20.0*t)) - 1.0*(t*t*t - sin(8.0*t)*sin(8.0*t))) + (+40.0*t*cos(20.0*t*t));
+    //    if (i==2) return -(+4.0*sin(20.0*t*t) + 6.0*(cos(10.0*t) - sin(20.0*t)) - 2.0*(t*t*t - sin(8.0*t)*sin(8.0*t))) + (-10.0*sin(10.0*t) - 20.0*cos(20.0*t));
+    //    if (i==3) return -(-1.0*sin(20.0*t*t) + 1.0*(cos(10.0*t) - sin(20.0*t)) - 1.0*(t*t*t - sin(8.0*t)*sin(8.0*t))) + (+3.0*t*t - 16.0*cos(8.0*t)*sin(8.0*t));
 #endif
 #ifdef SAMPLE_5
     if (i==1) return -(+2.0*sin(t) + 3.0*(cos(t) - sin(t)) - 1.0*(t*t*t - sin(t))) + (+cos(t*t));
@@ -608,22 +609,22 @@ void Example4::calculateNX(const DoubleMatrix &rx, DoubleMatrix &nx)
     //printf("%16.12f %16.12f %16.12f %16.12f %16.12f %16.12f\n", x1[4], fx(1,4), x2[4], fx(2,4), x3[4], fx(3,4));
     //puts("");
 
-//    for (unsigned int k=1; k<=N; k++)
-//    {
-//        x1[k] = x1[k-1] + h*(+2.0*x1[k-1]+3.0*x2[k-1]-1.0*x3[k-1] + b(1,k-1));
-//        x2[k] = x2[k-1] + h*(+4.0*x1[k-1]+6.0*x2[k-1]-2.0*x3[k-1] + b(2,k-1));
-//        x3[k] = x3[k-1] + h*(-1.0*x1[k-1]+1.0*x2[k-1]-1.0*x3[k-1] + b(3,k-1));
-//        if (k<10)
-//            printf("%16.12f %16.12f %16.12f %16.12f %16.12f %16.12f\n", x1[k], fx(1,k), x2[k], fx(2,k), x3[k], fx(3,k));
-//    }
+    //    for (unsigned int k=1; k<=N; k++)
+    //    {
+    //        x1[k] = x1[k-1] + h*(+2.0*x1[k-1]+3.0*x2[k-1]-1.0*x3[k-1] + b(1,k-1));
+    //        x2[k] = x2[k-1] + h*(+4.0*x1[k-1]+6.0*x2[k-1]-2.0*x3[k-1] + b(2,k-1));
+    //        x3[k] = x3[k-1] + h*(-1.0*x1[k-1]+1.0*x2[k-1]-1.0*x3[k-1] + b(3,k-1));
+    //        if (k<10)
+    //            printf("%16.12f %16.12f %16.12f %16.12f %16.12f %16.12f\n", x1[k], fx(1,k), x2[k], fx(2,k), x3[k], fx(3,k));
+    //    }
 
-//    for (unsigned int k=2; k<=N; k++)
-//    {
-//        x1[k] = x1[k-2] + 2.0*h*(+2.0*x1[k-1]+3.0*x2[k-1]-1.0*x3[k-1] + b(1,k-1));
-//        x2[k] = x2[k-2] + 2.0*h*(+4.0*x1[k-1]+6.0*x2[k-1]-2.0*x3[k-1] + b(2,k-1));
-//        x3[k] = x3[k-2] + 2.0*h*(-1.0*x1[k-1]+1.0*x2[k-1]-1.0*x3[k-1] + b(3,k-1));
-//        if (k<12) printf("%16.12f %16.12f %16.12f %16.12f %16.12f %16.12f\n", x1[k], fx(1,k), x2[k], fx(2,k), x3[k], fx(3,k));
-//    }
+    //    for (unsigned int k=2; k<=N; k++)
+    //    {
+    //        x1[k] = x1[k-2] + 2.0*h*(+2.0*x1[k-1]+3.0*x2[k-1]-1.0*x3[k-1] + b(1,k-1));
+    //        x2[k] = x2[k-2] + 2.0*h*(+4.0*x1[k-1]+6.0*x2[k-1]-2.0*x3[k-1] + b(2,k-1));
+    //        x3[k] = x3[k-2] + 2.0*h*(-1.0*x1[k-1]+1.0*x2[k-1]-1.0*x3[k-1] + b(3,k-1));
+    //        if (k<12) printf("%16.12f %16.12f %16.12f %16.12f %16.12f %16.12f\n", x1[k], fx(1,k), x2[k], fx(2,k), x3[k], fx(3,k));
+    //    }
 
     for (unsigned int k=4; k<=N; k++)
     {
@@ -797,31 +798,6 @@ void Example4::calculateM1BE(unsigned int c, const std::vector<unsigned int> s, 
     fillGamma(GAMMA, ETA, c, K);
     if (c == 0) { for (unsigned int i=0; i<L; i++) ETA = GAMMA[i]*rx.col(s[i]) + ETA; }
     printf("%.10f %.10f %.10f\n", ETA[0], ETA[1], ETA[2]);
-
-    //        if (c == 0)
-    //        {
-    //            IPrinter::printSeperatorLine(NULL, '+', stdout);
-    //            printf("%f %f %f | %f\n", GAMMA[0].at(0,0), GAMMA[0].at(0,1), GAMMA[0].at(0,2), ETA.at(0));
-    //            printf("%f %f %f | %f\n", GAMMA[0].at(1,0), GAMMA[0].at(1,1), GAMMA[0].at(1,2), ETA.at(1));
-    //            printf("%f %f %f | %f\n", GAMMA[0].at(2,0), GAMMA[0].at(2,1), GAMMA[0].at(2,2), ETA.at(2));
-    //            IPrinter::printSeperatorLine(NULL, '+', stdout);
-    //            printf("%f %f %f | %f\n", GAMMA[1].at(0,0), GAMMA[1].at(0,1), GAMMA[1].at(0,2), ETA.at(0));
-    //            printf("%f %f %f | %f\n", GAMMA[1].at(1,0), GAMMA[1].at(1,1), GAMMA[1].at(1,2), ETA.at(1));
-    //            printf("%f %f %f | %f\n", GAMMA[1].at(2,0), GAMMA[1].at(2,1), GAMMA[1].at(2,2), ETA.at(2));
-    //            IPrinter::printSeperatorLine(NULL, '+', stdout);
-    //            printf("%f %f %f | %f\n", GAMMA[2].at(0,0), GAMMA[2].at(0,1), GAMMA[2].at(0,2), ETA.at(0));
-    //            printf("%f %f %f | %f\n", GAMMA[2].at(1,0), GAMMA[2].at(1,1), GAMMA[2].at(1,2), ETA.at(1));
-    //            printf("%f %f %f | %f\n", GAMMA[2].at(2,0), GAMMA[2].at(2,1), GAMMA[2].at(2,2), ETA.at(2));
-    //            IPrinter::printSeperatorLine(NULL, '+', stdout);
-    //            printf("%f %f %f | %f\n", GAMMA[3].at(0,0), GAMMA[3].at(0,1), GAMMA[3].at(0,2), ETA.at(0));
-    //            printf("%f %f %f | %f\n", GAMMA[3].at(1,0), GAMMA[3].at(1,1), GAMMA[3].at(1,2), ETA.at(1));
-    //            printf("%f %f %f | %f\n", GAMMA[3].at(2,0), GAMMA[3].at(2,1), GAMMA[3].at(2,2), ETA.at(2));
-    //            IPrinter::printSeperatorLine(NULL, '+', stdout);
-    //            printf("%f %f %f | %f\n", GAMMA[4].at(0,0), GAMMA[4].at(0,1), GAMMA[4].at(0,2), ETA.at(0));
-    //            printf("%f %f %f | %f\n", GAMMA[4].at(1,0), GAMMA[4].at(1,1), GAMMA[4].at(1,2), ETA.at(1));
-    //            printf("%f %f %f | %f\n", GAMMA[4].at(2,0), GAMMA[4].at(2,1), GAMMA[4].at(2,2), ETA.at(2));
-    //            IPrinter::printSeperatorLine(NULL, '+', stdout);
-    //        }
 
     std::vector<DoubleMatrix> betta;
     qovmaM1R2L(GAMMA, ETA, s, betta);

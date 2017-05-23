@@ -5,6 +5,7 @@
 #include <matrix2d.h>
 #include <math.h>
 #include <printer.h>
+#include <cmethods.h>
 
 class Example7
 {
@@ -20,7 +21,8 @@ public:
     unsigned int w;
     unsigned int p;
 
-    void calculateK4();
+    void calculateK4_L_2_R();
+    void calculateK4_R_2_L();
 
     double a(unsigned int k) const;
     double b(unsigned int k) const;
