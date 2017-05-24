@@ -28,7 +28,7 @@ void ArtProblem1L2::initialize()
     withError = false;
     DD = 1.0;
 
-    L = 3;
+    L = 1;
 
     N = 1000;
     hx = 0.001;
@@ -128,7 +128,7 @@ void ArtProblem1L2::initialize()
 
     /* температура стержня */
     V.resize(N+1);
-    for (unsigned int n=0; n<=N; n++) V[n] = 10.0 - 1.0*sin(4.0*M_PI*(n*hx));
+    for (unsigned int n=0; n<=N; n++) V[n] = 10.0 - sin(2.0*M_PI*(n*hx))*sin(2.0*M_PI*(n*hx));
     IPrinter::printVector(V);
 }
 
@@ -140,25 +140,25 @@ void ArtProblem1L2::startOptimize()
     {
         if (optimizeK)
         {
-            //x0 << -4.5433;
+            x0 << -4.5433;
             //x0 << -5.2547;
-            x0 << -10.2547;
+            //x0 << -10.2547;
             //x0 << -12.8746;
             //x0 << -8.8745;
         }
         if (optimizeZ)
         {
-            //x0 << 9.4343;
+            x0 << 9.4343;
             //x0 << 8.2545;
-            x0 << 19.2545;
+            //x0 << 19.2545;
             //x0 << 15.8272;
             //x0 << -5.2481;
         }
         if (optimizeE)
         {
-            //x0 << 0.5435;
+            x0 << 0.5435;
             //x0 << 0.1245;
-            x0 << 0.3245;
+            //x0 << 0.3245;
             //x0 << 0.7358;
             //x0 << 0.8745;
         }
@@ -168,12 +168,12 @@ void ArtProblem1L2::startOptimize()
     {
         if (optimizeK)
         {
-            //x0 << -5.5400 << -8.4500; //k
+            x0 << -5.5400 << -8.4500; //k
             //x0 << -8.1284 << -1.4928; //k
             //x0 << -2.8525 << -6.8774; //k
             //x0 << -12.1248 << -4.4918; //k
             //x0 << -1.8142 << -2.9184; //k
-            x0 << -15.5744 << -8.4324;
+            //x0 << -15.5744 << -8.4324;
         }
         else
         {
@@ -183,12 +183,12 @@ void ArtProblem1L2::startOptimize()
 
         if (optimizeZ)
         {
-            //x0 << +10.1500 << +12.9600; //z
+            x0 << +10.1500 << +12.9600; //z
             //x0 << +15.7465 << +7.0645; //k
             //x0 << +2.4548 << +2.4518; //k
             //x0 << +20.8248 << +17.7545; //k
             //x0 << +10.4755 << +11.8428; //k
-            x0 << 15.4783 << 8.6603;
+            //x0 << 15.4783 << 8.6603;
         }
         else
         {
@@ -198,12 +198,12 @@ void ArtProblem1L2::startOptimize()
 
         if (optimizeE)
         {
-            //x0 << 0.2500 << 0.7500; //e
+            x0 << 0.2500 << 0.7500; //e
             //x0 << 0.1055 << 0.8155; //e
             //x0 << 0.5587 << 0.7545; //e
             //x0 << 0.2095 << 0.9511; //e
             //x0 << 0.5551 << 0.4915; //e
-            x0 << 0.2645 << 0.7832;
+            //x0 << 0.2645 << 0.7832;
         }
         else
         {
@@ -245,16 +245,14 @@ void ArtProblem1L2::startOptimize()
     DD = 1.0;
     R = 1.0;
     optimize(x0);
-    while (R < 100.0)
-    {
-        R *= 10.0;
-        IPrinter::printSeperatorLine();
-        optimize(x0);
-    }
+//    while (R < 100.0)
+//    {
+//        R *= 10.0;
+//        IPrinter::printSeperatorLine();
+//        optimize(x0);
+//    }
 
     double y = fx(x0);
-    printf("%f\n", y);
-    printf("%d %d %d %f %f %f\n", vfi.size(), vtt.size(), x0.size(), x0[0], x0[1], x0[2]);
 
     IPrinter::printSeperatorLine();
     printf("Optimal k: "); for (unsigned int i=0*L; i<1*L; i++) { printf("%20.14f ", x0[i]); } printf("\n");
