@@ -746,7 +746,8 @@ void IProblem1::print(unsigned int i, const DoubleVector &y, const DoubleVector 
 
     DoubleVector v(M+1); for (unsigned int m=0; m<=M; m++) v[m] = vf(m,k,z,e,u);
 
-    IPrinter::printVector(14,10,u.row(u.rows()-1),"u: ");
+    IPrinter::printVector(14,10,V,"V: ");
+    IPrinter::printVector(14,10,u.row(u.rows()-1),"U: ");
     IPrinter::printVector(14,10,v,"v: ");
 
     v.clear();
