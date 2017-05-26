@@ -20,7 +20,6 @@ double IProblem1::fx(const DoubleVector &y) const
 
             DoubleMatrix u;
             calculateU(u, k, z, e);
-
             SUM += alpha0*integral(u);
             SUM += R*penalty(k, z, e, u);
         }
@@ -715,7 +714,10 @@ void IProblem1::print(unsigned int i, const DoubleVector &y, const DoubleVector 
     IProblem1 *pm = const_cast<IProblem1*>(this);
     DoubleVector k,z,e;
     getParameters(k,z,e,y);
+
     DoubleMatrix u;
+    pm->fi = vfi.at(0);
+    pm->tt = vtt.at(0);
     pm->calculateU(u, k, z, e);
 
     IPrinter::printSeperatorLine();
@@ -731,18 +733,18 @@ void IProblem1::print(unsigned int i, const DoubleVector &y, const DoubleVector 
     DoubleVector nz = n.mid(1*L,2*L-1);
     DoubleVector ne = n.mid(2*L,3*L-1);
 
-    printf("J[%d]: %.10f R: %.2f\n", i, r, R);
+    printf("J[%d]: %.10f R: %.2f  I: %.10f P: %.10f\n", i, r, R, pm->integral(u), pm->penalty(k,z,e,u));
     printf("k: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", k[s]); printf("\n");
-    printf("a: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", ak[s]); printf(" | "); ak.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", ak[s]); printf("\n");
-    printf("n: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", nk[s]); printf(" | "); nk.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", nk[s]); printf("\n");
+    //printf("a: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", ak[s]); printf(" | "); ak.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", ak[s]); printf("\n");
+    //printf("n: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", nk[s]); printf(" | "); nk.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", nk[s]); printf("\n");
 
     printf("z: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", z[s]); printf("\n");
-    printf("a: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", az[s]); printf(" | "); az.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", az[s]); printf("\n");
-    printf("n: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", nz[s]); printf(" | "); nz.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", nz[s]); printf("\n");
+    //printf("a: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", az[s]); printf(" | "); az.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", az[s]); printf("\n");
+    //printf("n: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", nz[s]); printf(" | "); nz.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", nz[s]); printf("\n");
 
     printf("e: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", e[s]); printf("\n");
-    printf("a: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", ae[s]); printf(" | "); ae.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", ae[s]); printf("\n");
-    printf("n: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", ne[s]); printf(" | "); ne.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", ne[s]); printf("\n");
+    //printf("a: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", ae[s]); printf(" | "); ae.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", ae[s]); printf("\n");
+    //printf("n: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", ne[s]); printf(" | "); ne.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", ne[s]); printf("\n");
 
     DoubleVector v(M+1); for (unsigned int m=0; m<=M; m++) v[m] = vf(m,k,z,e,u);
 
@@ -816,8 +818,14 @@ double IProblem1::sign(double x) const
 
 double IProblem1::u_xi(unsigned int m, double e, const DoubleMatrix &u) const
 {
+//    unsigned int xi = (unsigned int)ceil(e * N * DD);
+//    return (u[m][xi]*((xi+1)*hx - e) + u[m][xi+1]*(e - (xi)*hx)) / hx;
+
+    //printf("*** 1 %f \n", e);
     unsigned int xi = (unsigned int)ceil(e * N * DD);
-    return (u[m][xi]*((xi+1)*hx - e) + u[m][xi+1]*(e - (xi)*hx)) / hx;
+    double aaa = (u[m][xi]*((xi+1)*hx - e) + u[m][xi+1]*(e - (xi)*hx)) / hx;
+    //puts("*** 2");
+    return aaa;
 }
 
 double IProblem1::u_xi_d(unsigned int m, double e, const DoubleMatrix &u) const
