@@ -410,6 +410,17 @@ void IProblem1::calculateU2(DoubleMatrix &u, const DoubleVector &k, const Double
         {
             u[m][i] = rx[i];
         }
+
+        if (withError)
+        {
+            for (unsigned int s=0; s<L; s++)
+            {
+                unsigned int E = (unsigned int) round(e[s]);
+                double w = (rand() % 2000)*0.001 - 1.0;
+                u[m][E] += sign(w)*persent * u[m][E];
+            }
+        }
+
 //        IPrinter::printVector(u.row(m));
     }
 

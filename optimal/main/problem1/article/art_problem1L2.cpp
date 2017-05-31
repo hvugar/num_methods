@@ -6,7 +6,7 @@ void ArtProblem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     ArtProblem1L2 p;
     p.initialize();
-    p.startOptimize();
+//    p.startOptimize();
 
     //p.table2Generate();
     //p.imager3L();
@@ -15,7 +15,7 @@ void ArtProblem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //    p.image1Generate();
     //    p.image2Generate();
-    //    p.image3Generate();
+        p.image3Generate();
 }
 
 ArtProblem1L2::ArtProblem1L2() {}
@@ -28,7 +28,7 @@ void ArtProblem1L2::initialize()
     withError = false;
     DD = 1.0;
 
-    L = 3;
+    L = 2;
 
     N = 1000;
     hx = 0.001;
@@ -135,14 +135,14 @@ void ArtProblem1L2::initialize()
     R = 1.0;
 
     /* пределы z параметров */
-    vmin = -60.0;
-    vmax = +80.0;
+    vmin = +10.0;
+    vmax = +60.0;
     d0 = (vmax+vmin)/2.0;
     d1 = (vmax-vmin)/2.0;
 
     /* температура стержня */
     V.resize(N+1);
-    for (unsigned int n=0; n<=N; n++) V[n] = 10.0 - sin(2.0*M_PI*(n*hx))*sin(2.0*M_PI*(n*hx));
+    for (unsigned int n=0; n<=N; n++) V[n] = 10.0;// - sin(2.0*M_PI*(n*hx))*sin(2.0*M_PI*(n*hx));
     IPrinter::printVector(V);
 }
 
@@ -821,7 +821,7 @@ void ArtProblem1L2::image3Generate()
         //        }
         //        max += 0.5*(ut[N]-V[N])*(ut[N]-V[N]);
 
-        fprintf(file1, "%.10f ",max*hx);
+        fprintf(file1, "%.10f ",max);
         fflush(file1);
     }
     fprintf(file1, "\n");
