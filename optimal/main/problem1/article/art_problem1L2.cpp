@@ -6,7 +6,7 @@ void ArtProblem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     ArtProblem1L2 p;
     p.initialize();
-//    p.startOptimize();
+    //    p.startOptimize();
 
     //p.table2Generate();
     //p.imager3L();
@@ -15,7 +15,7 @@ void ArtProblem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //    p.image1Generate();
     //    p.image2Generate();
-        p.image3Generate();
+    p.image3Generate();
 }
 
 ArtProblem1L2::ArtProblem1L2() {}
@@ -62,19 +62,19 @@ void ArtProblem1L2::initialize()
     //    }
 
     // мед
-//    {
-//        const double r0 = 8900.0;  // kg/m^3     // плотность
-//        const double c0 = 400.0;   // C/(kg*S)   // удельная теплоемкость
-//        const double k0 = 380.0;   // Vt/(m*S)   // коэффициент теплопроводности
+    //    {
+    //        const double r0 = 8900.0;  // kg/m^3     // плотность
+    //        const double c0 = 400.0;   // C/(kg*S)   // удельная теплоемкость
+    //        const double k0 = 380.0;   // Vt/(m*S)   // коэффициент теплопроводности
 
-//        const double h1 = 1000.0;      // коэффициент теплообмена ->
-//        const double h2 = 10.0;        // коэффициент теплообмена ->
+    //        const double h1 = 1000.0;      // коэффициент теплообмена ->
+    //        const double h2 = 10.0;        // коэффициент теплообмена ->
 
-//        a = sqrt((k0/(c0*r0)));        // коэффициент температуропроворности
-//        lambda0 = (h2/(c0*r0));          // коэффициент теплообмена ->
-//        lambda1 = (h1/k0);               // коэффициент теплообмена ->
-//        lambda2 = (h2/k0);               // коэффициент теплообмена ->
-//    }
+    //        a = sqrt((k0/(c0*r0)));        // коэффициент температуропроворности
+    //        lambda0 = (h2/(c0*r0));          // коэффициент теплообмена ->
+    //        lambda1 = (h1/k0);               // коэффициент теплообмена ->
+    //        lambda2 = (h2/k0);               // коэффициент теплообмена ->
+    //    }
 
     a = 1.0;
     lambda0 = 0.001;
@@ -88,9 +88,9 @@ void ArtProblem1L2::initialize()
     alpha2 = 0.0000;
     alpha3 = 0.0000;
 
-//    if (!optimizeK) alpha1 = 0.0;
-//    if (!optimizeZ) alpha2 = 0.0;
-//    if (!optimizeE) alpha3 = 0.0;
+    //    if (!optimizeK) alpha1 = 0.0;
+    //    if (!optimizeZ) alpha2 = 0.0;
+    //    if (!optimizeE) alpha3 = 0.0;
 
     if (L==1)
     {
@@ -802,24 +802,17 @@ void ArtProblem1L2::image3Generate()
 
     fi = +0.0;
     tt = +5.0;
+    M *= 2;
     DoubleMatrix u1;
     calculateU(u1,k,z,e);
     for (int unsigned m=0; m<=M; m++)
     {
-        double max = -1000000.0;
         DoubleVector ut = u1.row(m);
-
+        double max = -1000000.0;
         for (unsigned int n=0; n<=N; n++)
         {
             if (max < fabs(ut[n]-V[n])) max = fabs(ut[n]-V[n]);
         }
-
-        //        double max = 0.5*(ut[0]-V[0])*(ut[0]-V[0]);
-        //        for (unsigned int n=1; n<=N-1; n++)
-        //        {
-        //            max += (ut[n]-V[n])*(ut[n]-V[n]);
-        //        }
-        //        max += 0.5*(ut[N]-V[N])*(ut[N]-V[N]);
 
         fprintf(file1, "%.10f ",max);
         fflush(file1);

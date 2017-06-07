@@ -415,13 +415,12 @@ void IProblem1::calculateU2(DoubleMatrix &u, const DoubleVector &k, const Double
         {
             for (unsigned int s=0; s<L; s++)
             {
-                unsigned int E = (unsigned int) round(e[s]);
+                unsigned int E = (unsigned int) ceil(e[s] * N * DD);
                 double w = (rand() % 2000)*0.001 - 1.0;
                 u[m][E] += sign(w)*persent * u[m][E];
+                //printf("%d %d %f %f %d\n", m, s, w, e[s], E);
             }
         }
-
-//        IPrinter::printVector(u.row(m));
     }
 
     free(de);
