@@ -1,5 +1,5 @@
-#ifndef ART_PROBLEM1L2_H
-#define ART_PROBLEM1L2_H
+#ifndef ART_PROBLEM1_H
+#define ART_PROBLEM1_H
 
 #include <function.h>
 #include <gradient.h>
@@ -12,13 +12,13 @@
 #include <cmethods.h>
 #include <gradient/igradient.h>
 
-#include "../iproblem1.h"
+#include "iproblem1.h"
 
-class ArtProblem1L2 : public IProjection, public IProblem1
+class ArtProblem1 : public IProjection, public IProblem1
 {
 public:
-    ArtProblem1L2();
-    virtual ~ArtProblem1L2() {}
+    ArtProblem1();
+    virtual ~ArtProblem1() {}
 
     void initialize();
     void startOptimize();
@@ -43,4 +43,4 @@ public:
     static void Main(int argc, char* argv[]);
 };
 
-#endif // ART_PROBLEM1L2_H
+#endif // ART_PROBLEM1_H

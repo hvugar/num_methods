@@ -431,7 +431,7 @@ void IProblem1::calculateU2(DoubleMatrix &u, const DoubleVector &k, const Double
     free(da);
 }
 
-void IProblem1::qovmaFirstRowM2(double *e, unsigned int *I, unsigned int L1, double *a, double *b, double *c, double *d, double *x, unsigned int N) const
+void IProblem1::qovmaFirstRowM2(double *e, unsigned int *I UNUSED_PARAM, unsigned int L1 UNUSED_PARAM, double *a, double *b, double *c, double *d, double *x, unsigned int N) const
 {
     //if (fabs(e[0]) <= DBL_EPSILON) throw std::exception("first item is zero.");
 

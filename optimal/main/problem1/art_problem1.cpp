@@ -1,26 +1,26 @@
-#include "art_problem1L2.h"
+#include "art_problem1.h"
 
 #define RMAX 0.0
 
-void ArtProblem1L2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
+void ArtProblem1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    ArtProblem1L2 p;
+    ArtProblem1 p;
     p.initialize();
-    //    p.startOptimize();
+    p.startOptimize();
 
     //p.table2Generate();
+    //p.image1L();
+    //p.imager2L();
     //p.imager3L();
-    //    p.imager2L();
-    //    p.image1L();
 
-    //    p.image1Generate();
-    //    p.image2Generate();
-    p.image3Generate();
+    //p.image1Generate();
+    //p.image2Generate();
+    //p.image3Generate();
 }
 
-ArtProblem1L2::ArtProblem1L2() {}
+ArtProblem1::ArtProblem1() {}
 
-void ArtProblem1L2::initialize()
+void ArtProblem1::initialize()
 {
     optimizeK = true;
     optimizeZ = true;
@@ -146,7 +146,7 @@ void ArtProblem1L2::initialize()
     IPrinter::printVector(V);
 }
 
-void ArtProblem1L2::startOptimize()
+void ArtProblem1::startOptimize()
 {
     DoubleVector x0;
 
@@ -314,9 +314,9 @@ void ArtProblem1L2::startOptimize()
     IPrinter::printSeperatorLine();
 }
 
-void ArtProblem1L2::optimize(DoubleVector &x0) const
+void ArtProblem1::optimize(DoubleVector &x0) const
 {
-    ArtProblem1L2* p = const_cast<ArtProblem1L2*>(this);
+    ArtProblem1* p = const_cast<ArtProblem1*>(this);
     ConjugateGradient g;
     g.setFunction(p);
     g.setGradient(p);
@@ -332,7 +332,7 @@ void ArtProblem1L2::optimize(DoubleVector &x0) const
     g.calculate(x0);
 }
 
-void ArtProblem1L2::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
+void ArtProblem1::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
 {
     /* e lower/upper limits */
     if (optimizeE)
@@ -380,7 +380,7 @@ void ArtProblem1L2::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
     }
 }
 
-void ArtProblem1L2::image1L()
+void ArtProblem1::image1L()
 {
     DD = 1;
     DoubleVector y0;
@@ -426,7 +426,7 @@ void ArtProblem1L2::image1L()
     fclose(file);
 }
 
-void ArtProblem1L2::imager2L()
+void ArtProblem1::imager2L()
 {
     DoubleVector y0;
     optimizeK = true;
@@ -490,7 +490,7 @@ void ArtProblem1L2::imager2L()
     fclose(file);
 }
 
-void ArtProblem1L2::imager3L()
+void ArtProblem1::imager3L()
 {
     DoubleVector y0;
     optimizeK = true;
@@ -546,7 +546,7 @@ void ArtProblem1L2::imager3L()
     fclose(file);
 }
 
-void ArtProblem1L2::table1Generate()
+void ArtProblem1::table1Generate()
 {
     DoubleVector y0;
     optimizeK = true;
@@ -583,7 +583,7 @@ void ArtProblem1L2::table1Generate()
     IPrinter::printSeperatorLine();
 }
 
-void ArtProblem1L2::table2Generate()
+void ArtProblem1::table2Generate()
 {
     DoubleVector y0;
     optimizeK = true;
@@ -639,7 +639,7 @@ void ArtProblem1L2::table2Generate()
     IPrinter::printVector(14,10,u.row(u.rows()-1));
 }
 
-void ArtProblem1L2::image1Generate()
+void ArtProblem1::image1Generate()
 {
     DoubleVector y0;
     optimizeK = true;
@@ -701,7 +701,7 @@ void ArtProblem1L2::image1Generate()
     //    M=1000;
 }
 
-void ArtProblem1L2::image2Generate()
+void ArtProblem1::image2Generate()
 {
     DoubleVector y0;
     optimizeK = true;
@@ -769,7 +769,7 @@ void ArtProblem1L2::image2Generate()
     //    M=1000;
 }
 
-void ArtProblem1L2::image3Generate()
+void ArtProblem1::image3Generate()
 {
     DoubleVector y0;
     optimizeK = true;

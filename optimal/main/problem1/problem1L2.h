@@ -12,7 +12,6 @@
 #include <cmethods.h>
 #include <gradient/igradient.h>
 
-#include "problem1newton.h"
 #include "iproblem1.h"
 
 class Problem1L2 : public IProblem1, public IProjection

@@ -790,7 +790,7 @@ void Example4::calculateM1(const std::vector<unsigned int> *s, const DoubleMatri
     IPrinter::printSeperatorLine(NULL,'-', stdout);
 }
 
-void Example4::calculateM1BE(unsigned int c, const std::vector<unsigned int> s,  const DoubleMatrix &rx, const DoubleMatrix &nx, DoubleMatrix &M, DoubleVector &B)
+void Example4::calculateM1BE(unsigned int c, const std::vector<unsigned int> s,  const DoubleMatrix &rx, const DoubleMatrix &nx UNUSED_PARAM, DoubleMatrix &M, DoubleVector &B)
 {
     unsigned int L = s.size();
     std::vector<DoubleMatrix> GAMMA(L);
@@ -1044,7 +1044,7 @@ void Example4::calculatePQ(std::vector<stdDoubleMatrixVector> &P, stdDoubleMatri
     /* calculating P,Q matrices */
 }
 
-void Example4::fillGamma(stdDoubleMatrixVector &GAMMA, DoubleVector &ETA, unsigned int s, unsigned int k)
+void Example4::fillGamma(stdDoubleMatrixVector &GAMMA, DoubleVector &ETA, unsigned int s, unsigned int k UNUSED_PARAM)
 {
     unsigned int L = GAMMA.size();
     if (K == 4)

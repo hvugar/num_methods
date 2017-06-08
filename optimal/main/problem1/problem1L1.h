@@ -1,5 +1,5 @@
-#ifndef PROBLEM1_H
-#define PROBLEM1_H
+#ifndef PROBLEM1L1_H
+#define PROBLEM1L1_H
 
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
@@ -22,11 +22,11 @@
 void qovmaFirstCol(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e);
 void qovmaFirstRow(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e);
 
-class Problem1 : public RnFunction, public IGradient, public ConjugateGradient, public IPrinter, public IProjection
+class Problem1L1 : public RnFunction, public IGradient, public ConjugateGradient, public IPrinter, public IProjection
 {
 public:
-    Problem1();
-    virtual ~Problem1() {}
+    Problem1L1();
+    virtual ~Problem1L1() {}
 
     void initialize();
 
@@ -107,4 +107,4 @@ public:
     static void Main(int argc, char* argv[]);
 };
 
-#endif // PROBLEM1_H
+#endif // PROBLEM1L1_H

@@ -1,6 +1,6 @@
-#include "problem1.h"
+#include "problem1L1.h"
 
-void Problem1::Main(int argc, char *argv[])
+void Problem1L1::Main(int argc, char *argv[])
 {
     C_UNUSED(argc);
     C_UNUSED(argv);
@@ -10,15 +10,15 @@ void Problem1::Main(int argc, char *argv[])
     return;
 #endif
 
-    Problem1 e3;
+    Problem1L1 e3;
     e3.initialize();
 }
 
-Problem1::Problem1()
+Problem1L1::Problem1L1()
 {
 }
 
-void Problem1::initialize()
+void Problem1L1::initialize()
 {
 #ifndef _OPTIMIZE_K_
     k << 2.50 << 2.70;
@@ -104,7 +104,7 @@ void Problem1::initialize()
     g.calculate(x0);
 }
 
-void Problem1::printNAGradinets(const DoubleVector &x0)
+void Problem1L1::printNAGradinets(const DoubleVector &x0)
 {
     puts("------------------------------------------");
 
@@ -197,14 +197,14 @@ void Problem1::printNAGradinets(const DoubleVector &x0)
     puts("------------------------------------------");
 }
 
-double Problem1::initial(unsigned int i UNUSED_PARAM) const
+double Problem1L1::initial(unsigned int i UNUSED_PARAM) const
 {
     return Ti;
 }
 
-double Problem1::fx(const DoubleVector &x) const
+double Problem1L1::fx(const DoubleVector &x) const
 {
-    const_cast<Problem1*>(this)->px = &x;
+    const_cast<Problem1L1*>(this)->px = &x;
 
     DoubleVector k,z,e;
     getComponents(k,z,e,x);
@@ -258,7 +258,7 @@ double Problem1::fx(const DoubleVector &x) const
 #endif
 }
 
-void Problem1::gradient(const DoubleVector &x, DoubleVector &g)
+void Problem1L1::gradient(const DoubleVector &x, DoubleVector &g)
 {
     px = &x;
 
@@ -371,7 +371,7 @@ void Problem1::gradient(const DoubleVector &x, DoubleVector &g)
 #endif
 }
 
-void Problem1::print(unsigned int i, const DoubleVector &x, const DoubleVector &, double, GradientMethod::MethodResult) const
+void Problem1L1::print(unsigned int i, const DoubleVector &x, const DoubleVector &, double, GradientMethod::MethodResult) const
 {
     int j = 0;
     printf("x: ");
@@ -387,7 +387,7 @@ void Problem1::print(unsigned int i, const DoubleVector &x, const DoubleVector &
     printf("%7.4f,%7.4f,", x.at(j), x.at(j+1));
     j+=2;
 #endif
-    printf("%14.6f\n", const_cast<Problem1*>(this)->fx(x));
+    printf("%14.6f\n", const_cast<Problem1L1*>(this)->fx(x));
     //    puts("");
 
     //    j = 0;
@@ -446,7 +446,7 @@ void Problem1::print(unsigned int i, const DoubleVector &x, const DoubleVector &
     //    puts("\n-----------------------------------------");
 }
 
-void Problem1::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
+void Problem1L1::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
 {
     int j = 0;
 #ifdef _OPTIMIZE_K_
@@ -464,7 +464,7 @@ void Problem1::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
 #endif
 }
 
-void Problem1::calculateU(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht) const
+void Problem1L1::calculateU(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht) const
 {
     //DoubleVector x = *px;
     DoubleVector k,z,e;
@@ -550,7 +550,7 @@ void Problem1::calculateU(DoubleMatrix &u, unsigned int N, unsigned int M, doubl
     de.clear();
 }
 
-void Problem1::calculateUN2L2R(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht)
+void Problem1L1::calculateUN2L2R(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht)
 {
     //DoubleVector x = *px;
     DoubleVector k,z,e;
@@ -617,7 +617,7 @@ void Problem1::calculateUN2L2R(DoubleMatrix &u, unsigned int N, unsigned int M, 
     }
 }
 
-void Problem1::calculateUN4L2R(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht)
+void Problem1L1::calculateUN4L2R(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht)
 {
     DoubleVector k,z,e;
     getComponents(k,z,e,*px);
@@ -760,7 +760,7 @@ void Problem1::calculateUN4L2R(DoubleMatrix &u, unsigned int N, unsigned int M, 
     A.clear();
 }
 
-void Problem1::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
+void Problem1L1::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
 {
     DoubleVector k,z,e;
     getComponents(k,z,e,*px);
@@ -842,7 +842,7 @@ void Problem1::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
     de.clear();
 }
 
-void Problem1::getComponents(DoubleVector &k1, DoubleVector &z1, DoubleVector &e1, const DoubleVector &x) const
+void Problem1L1::getComponents(DoubleVector &k1, DoubleVector &z1, DoubleVector &e1, const DoubleVector &x) const
 {
     unsigned int is = 0;
     unsigned int ie = 1;
@@ -1028,7 +1028,7 @@ void qovmaFirstRow(double *a, double *b, double *c, double *d, double *x, unsign
     free(p);
 }
 
-double Problem1::v(unsigned int j, const DoubleMatrix &u) const
+double Problem1L1::v(unsigned int j, const DoubleMatrix &u) const
 {
     const DoubleVector &x = *px;
     DoubleVector k,z,e;

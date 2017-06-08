@@ -1,10 +1,10 @@
 #include "example7.h"
 
-void Example7::Main(int argc, char *argv[])
+void Example7::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     Example7 e;
-//    e.calculateK4_L_2_R();
-    e.calculateK4_R_2_L();
+    e.calculateK4_L_2_R();
+//    e.calculateK4_R_2_L();
 }
 
 Example7::Example7()
@@ -286,7 +286,7 @@ void Example7::calculateK4_R_2_L()
     IPrinter::printVector(w,p,nx);
 }
 
-double Example7::a(unsigned int k) const
+double Example7::a(unsigned int k UNUSED_PARAM) const
 {
     //double t = k*h;
     return 2.0;
