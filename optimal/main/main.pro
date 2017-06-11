@@ -50,7 +50,8 @@ SOURCES += main.cpp \
     problem1/problem1L2.cpp \
     problem1/problem1L3.cpp \
     problem1/art_problem1.cpp \
-    problem1/problem1L1.cpp
+    problem1/problem1L1.cpp \
+    example.cpp
 
 HEADERS += \
     loadedsystems.h \
@@ -68,4 +69,5 @@ HEADERS += \
     problem1/problem1L2.h \
     problem1/problem1L3.h \
     problem1/art_problem1.h \
-    problem1/problem1L1.h
+    problem1/problem1L1.h \
+    example.h
