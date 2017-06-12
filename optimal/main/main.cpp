@@ -69,8 +69,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Example6::Main(argc, argv);
     //Example7::Main(argc, argv);
 
-    Example::Main(argc, argv);
-    //ExampleM::Main(argc, argv);
+    //Example::Main(argc, argv);
+    ExampleM::Main(argc, argv);
 
 //    ArtProblem1::Main(argc, argv);
 //    ArticleProblem1L3::Main(argc, argv);

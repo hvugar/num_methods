@@ -6,8 +6,10 @@ void Example::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     DoubleVector rx;
     e.calculateRX(rx);
-//    e.calculate2R2LV1(rx);
+
+    //e.calculate2R2LV1(rx);
     e.calculate2R2LV3(rx);
+
 //    e.calculate4R2LV1(rx);
 //    e.calculate6R2LV1(rx);
 }
@@ -173,7 +175,7 @@ void Example::calculate2R2LV3(const DoubleVector &rx)
 
     M[2][0] = 0.0;
     M[2][1] = betta[N-1];
-    M[2][2] = betta[N-2];
+    M[2][2] = betta[N-0];
     A[2] = eta;
 
     printf("det: %.10f\n", M.determinant());
@@ -229,7 +231,6 @@ void Example::calculate2R2LV3(const DoubleVector &rx)
     IPrinter::printVector(14,10,nx,"nv2",nx.size(),0,0,file);
     fclose(file);
 }
-
 
 void Example::calculate4R2LV1(const DoubleVector &rx)
 {
