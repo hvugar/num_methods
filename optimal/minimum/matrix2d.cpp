@@ -43,6 +43,7 @@ DoubleMatrix::DoubleMatrix(unsigned int rows, unsigned int cols, double value) :
 
 DoubleMatrix::DoubleMatrix(const DoubleMatrix &matrix) : mRows(0), mCols(0), mData(NULL)
 {
+    //puts("DoubleMatrix::DoubleMatrix(const DoubleMatrix &matrix)");
     if (matrix.mRows > 0 && matrix.mCols > 0)
     {
         mRows = matrix.mRows;
