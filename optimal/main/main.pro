@@ -51,8 +51,8 @@ SOURCES += main.cpp \
     problem1/problem1L3.cpp \
     problem1/art_problem1.cpp \
     problem1/problem1L1.cpp \
-    example.cpp \
-    examplem.cpp
+    high_order/singledifequ.cpp \
+    high_order/systemdifequ.cpp
 
 HEADERS += \
     loadedsystems.h \
@@ -71,5 +71,5 @@ HEADERS += \
     problem1/problem1L3.h \
     problem1/art_problem1.h \
     problem1/problem1L1.h \
-    example.h \
-    examplem.h
+    high_order/singledifequ.h \
+    high_order/systemdifequ.h

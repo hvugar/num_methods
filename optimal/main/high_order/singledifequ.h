@@ -9,12 +9,12 @@
 
 #define SAMPLE_1
 
-class Example
+class SingleDifEquation
 {
 public:
     void static Main(int argc, char *argv[]);
 
-    Example();
+    SingleDifEquation();
 
     virtual double f(unsigned int k) const;
     virtual double a(unsigned int k) const;

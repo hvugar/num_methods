@@ -1,20 +1,20 @@
-#include "example.h"
+#include "singledifequ.h"
 
-void Example::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
+void SingleDifEquation::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    Example e;
+    SingleDifEquation e;
 
     DoubleVector rx;
     e.calculateRX(rx);
 
-    //e.calculate2R2LV1(rx);
-    e.calculate2R2LV3(rx);
+    e.calculate2R2LV1(rx);
+//    e.calculate2R2LV3(rx);
 
 //    e.calculate4R2LV1(rx);
 //    e.calculate6R2LV1(rx);
 }
 
-Example::Example()
+SingleDifEquation::SingleDifEquation()
 {
     h = 0.01;
     N = 100;
@@ -22,7 +22,7 @@ Example::Example()
     p = 10;
 }
 
-void Example::calculateRX(DoubleVector &rx)
+void SingleDifEquation::calculateRX(DoubleVector &rx)
 {
     rx.clear();
     rx.resize(N+1);
@@ -34,7 +34,7 @@ void Example::calculateRX(DoubleVector &rx)
     fclose(file1);
 }
 
-void Example::calculate2R2LV1(const DoubleVector &rx)
+void SingleDifEquation::calculate2R2LV1(const DoubleVector &rx)
 {
     DoubleVector betta(N+1);
     DoubleMatrix alpha(N+1, 3);
@@ -133,7 +133,7 @@ void Example::calculate2R2LV1(const DoubleVector &rx)
     fclose(file);
 }
 
-void Example::calculate2R2LV3(const DoubleVector &rx)
+void SingleDifEquation::calculate2R2LV3(const DoubleVector &rx)
 {
     DoubleVector betta(N+1);
     DoubleMatrix alpha(N+1, 3);
@@ -232,7 +232,7 @@ void Example::calculate2R2LV3(const DoubleVector &rx)
     fclose(file);
 }
 
-void Example::calculate4R2LV1(const DoubleVector &rx)
+void SingleDifEquation::calculate4R2LV1(const DoubleVector &rx)
 {
     DoubleVector betta(N+1, 0.0);
     DoubleMatrix alpha(N+1, 5);
@@ -367,7 +367,7 @@ void Example::calculate4R2LV1(const DoubleVector &rx)
     fclose(file);
 }
 
-void Example::calculate6R2LV1(const DoubleVector &rx)
+void SingleDifEquation::calculate6R2LV1(const DoubleVector &rx)
 {
     DoubleVector betta(N+1, 0.0);
     DoubleMatrix alpha(N+1, 7);
@@ -546,7 +546,7 @@ void Example::calculate6R2LV1(const DoubleVector &rx)
     fclose(file);
 }
 
-void Example::calculate2R2LV2()
+void SingleDifEquation::calculate2R2LV2()
 {
     DoubleVector rx(N+1);
     for (unsigned int k=0; k<=N; k++) rx[k] = f(k);
@@ -617,7 +617,7 @@ void Example::calculate2R2LV2()
     printf("%18.10f %18.10f\n", M[2][0]*x[0] + M[2][1]*x[1] + M[2][2]*x[2], A[2]);
 }
 
-void Example::calculate4R2LV2()
+void SingleDifEquation::calculate4R2LV2()
 {
     DoubleVector rx(N+1);
     for (unsigned int k=0; k<=N; k++) rx[k] = f(k);
@@ -736,7 +736,7 @@ void Example::calculate4R2LV2()
 //    IPrinter::printVector(w,p,nx);
 }
 
-double Example::a(unsigned int k UNUSED_PARAM ) const
+double SingleDifEquation::a(unsigned int k UNUSED_PARAM ) const
 {
     double t = k*h;
 
@@ -748,7 +748,7 @@ double Example::a(unsigned int k UNUSED_PARAM ) const
 #endif
 }
 
-double Example::b(unsigned int k) const
+double SingleDifEquation::b(unsigned int k) const
 {
     double t = k*h;
 #ifdef SAMPLE_1
@@ -759,7 +759,7 @@ double Example::b(unsigned int k) const
 #endif
 }
 
-double Example::f(unsigned int k) const
+double SingleDifEquation::f(unsigned int k) const
 {
     double t = k*h;
 #ifdef SAMPLE_1

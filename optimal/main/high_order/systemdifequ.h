@@ -9,7 +9,7 @@
 
 #define SAMPLE_1
 
-class ExampleM
+class SystemDifEquation
 {
 public:
     unsigned int N;
@@ -19,7 +19,7 @@ public:
 
     void static Main(int argc, char *argv[]);
 
-    ExampleM();
+    SystemDifEquation();
 
     virtual double a(unsigned int i, unsigned int j, unsigned int k) const;
     virtual double b(unsigned int i, unsigned int k) const;

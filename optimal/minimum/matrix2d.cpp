@@ -427,6 +427,31 @@ void DoubleMatrix::transpose()
 
 void DoubleMatrix::inverse()
 {
+    double idet = 1.0/determinant();
+
+    DoubleMatrix m = *this;
+
+    for (unsigned int r=0; r<rows(); r++)
+    {
+        for (unsigned int c=0; c<rows(); c++)
+        {
+            DoubleMatrix minor = m.minor(r,c);
+            mData[r][c] = minor.determinant();
+            if ((r+c)%2==1) mData[r][c] *= -1;
+        }
+    }
+
+    transpose();
+
+    for (unsigned int r=0; r<rows(); r++)
+    {
+        for (unsigned int c=0; c<rows(); c++)
+        {
+            mData[r][c] *= idet;
+        }
+    }
+
+    m.clear();
 }
 
 DoubleMatrix DoubleMatrix::minor(unsigned int row, unsigned int col) const
@@ -585,7 +610,7 @@ void DoubleMatrix::randomData()
     {
         for (unsigned int j=0; j<mCols; j++)
         {
-            mData[i][j] = (rand() % 10000) * 0.0001;
+            mData[i][j] = (rand() % 10000) * 0.001;
         }
     }
 }
