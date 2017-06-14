@@ -1,5 +1,13 @@
 #include "systemdifequ.h"
 
+double norm_1(const DoubleVector &v1, const DoubleVector &v2)
+{
+    double mod = 0.0;
+    for (unsigned int i=0; i<v1.size(); i++)
+        mod += (v1[i]-v2[i])*(v1[i]-v2[i]);
+    return sqrt(mod);
+}
+
 void SystemDifEquation::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     SystemDifEquation e;
@@ -15,10 +23,10 @@ void SystemDifEquation::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 SystemDifEquation::SystemDifEquation()
 {
-    h = 0.02;
-    N = 50;
-    w = 14;
-    p = 10;
+    h = 0.01;
+    N = 100;
+    w = 18;
+    p = 12;
 }
 
 void SystemDifEquation::calculate2R2LV1(const DoubleMatrix &rx)
@@ -98,7 +106,7 @@ void SystemDifEquation::calculate2R2LV1(const DoubleMatrix &rx)
     M[7][0] = +0.0; M[7][1] = +1.0; M[7][2] = +0.0; M[7][3] = +0.0; M[7][4] = -4.0; M[7][5] = +0.0; M[7][6] = +0.0-2.0*h*a(2,1,N); M[7][7] = +3.0-2.0*h*a(2,2,N); M[7][8] = +0.0-2.0*h*a(3,2,N); A[7] = +2.0*h*b(2,N);
     M[8][0] = +0.0; M[8][1] = +0.0; M[8][2] = +1.0; M[8][3] = +0.0; M[8][4] = +0.0; M[8][5] = -4.0; M[8][6] = +0.0-2.0*h*a(3,1,N); M[8][7] = +0.0-2.0*h*a(3,2,N); M[8][8] = +3.0-2.0*h*a(3,3,N); A[8] = +2.0*h*b(3,N);
 
-    //printf("det: %.10f\n", M.determinant());
+    printf("det: %.10f\n", M.determinant());
     //printf("%18.10f %18.10f\n", M[0][0]*rx[0][N-2]+M[0][1]*rx[1][N-2]+M[0][2]*rx[2][N-2]+M[0][3]*rx[0][N-1]+M[0][4]*rx[1][N-1]+M[0][5]*rx[2][N-1]+M[0][6]*rx[0][N-0]+M[0][7]*rx[1][N-0]+M[0][8]*rx[2][N-0], A[0]);
     //printf("%18.10f %18.10f\n", M[1][0]*rx[0][N-2]+M[1][1]*rx[1][N-2]+M[1][2]*rx[2][N-2]+M[1][3]*rx[0][N-1]+M[1][4]*rx[1][N-1]+M[1][5]*rx[2][N-1]+M[1][6]*rx[0][N-0]+M[1][7]*rx[1][N-0]+M[1][8]*rx[2][N-0], A[1]);
     //printf("%18.10f %18.10f\n", M[2][0]*rx[0][N-2]+M[2][1]*rx[1][N-2]+M[2][2]*rx[2][N-2]+M[2][3]*rx[0][N-1]+M[2][4]*rx[1][N-1]+M[2][5]*rx[2][N-1]+M[2][6]*rx[0][N-0]+M[2][7]*rx[1][N-0]+M[2][8]*rx[2][N-0], A[2]);
@@ -173,9 +181,15 @@ void SystemDifEquation::calculate2R2LV1(const DoubleMatrix &rx)
     IPrinter::printVector(w,p,nx.row(1));
     IPrinter::printVector(w,p,nx.row(2));
 
-//    FILE *file =fopen("data_rx.txt", "a");
-//    IPrinter::printVector(14,10,nx,"nv2",nx.size(),0,0,file);
-//    fclose(file);
+    printf("mod1: %.12f\n", norm_1(rx.row(0), nx.row(0)));
+    printf("mod2: %.12f\n", norm_1(rx.row(1), nx.row(1)));
+    printf("mod3: %.12f\n", norm_1(rx.row(2), nx.row(2)));
+
+    FILE *file =fopen("data_rx.txt", "a");
+    IPrinter::printVector(14,10,nx.row(0),"nv21",N+1,0,0,file);
+    IPrinter::printVector(14,10,nx.row(1),"nv22",N+1,0,0,file);
+    IPrinter::printVector(14,10,nx.row(2),"nv22",N+1,0,0,file);
+    fclose(file);
 }
 
 void SystemDifEquation::calculate4R2LV1(const DoubleMatrix &rx)
@@ -293,7 +307,7 @@ void SystemDifEquation::calculate4R2LV1(const DoubleMatrix &rx)
     M[13][0] = +0.0; M[13][1] = +3.0; M[13][2] = +0.0; M[13][3] = +0.0;  M[13][4] = -16.0; M[13][5] = +0.0;  M[13][6] = +0.0;  M[13][7] = +36.0; M[13][8] = +0.0;  M[13][9] = +0.0;  M[13][10] = -48.0; M[13][11] = +0.0;  M[13][12] = -12.0*h*a(2,1,N-0);      M[13][13] = -12.0*h*a(2,2,N-0)+25.0; M[13][14] = -12.0*h*a(2,3,N-0);      A[13] = +12.0*h*b(2,N-0);
     M[14][0] = +0.0; M[14][1] = +0.0; M[14][2] = +3.0; M[14][3] = +0.0;  M[14][4] = +0.0;  M[14][5] = -16.0; M[14][6] = +0.0;  M[14][7] = +0.0;  M[14][8] = +36.0; M[14][9] = +0.0;  M[14][10] = +0.0;  M[14][11] = -48.0; M[14][12] = -12.0*h*a(3,1,N-0);      M[14][13] = -12.0*h*a(3,2,N-0);      M[14][14] = -12.0*h*a(3,3,N-0)+25.0; A[14] = +12.0*h*b(3,N-0);
 
-//    printf("det: %.10f\n", M.determinant());
+    printf("det: %.10f\n", M.determinant());
 
 //    printf("%18.10f %18.10f\n", M[0][0]*rx[0][N-4]+ M[0][1]*rx[1][N-4]+ M[0][2]*rx[2][N-4]+
 //                                M[0][3]*rx[0][N-3]+ M[0][4]*rx[1][N-3]+ M[0][5]*rx[2][N-3]+
@@ -461,9 +475,16 @@ void SystemDifEquation::calculate4R2LV1(const DoubleMatrix &rx)
     IPrinter::printVector(w,p,nx.row(1));
     IPrinter::printVector(w,p,nx.row(2));
 
-//    FILE *file =fopen("data_rx.txt", "a");
-//    IPrinter::printVector(14,10,nx,"nv2",nx.size(),0,0,file);
-//    fclose(file);
+    printf("mod1: %.12f\n", norm_1(rx.row(0), nx.row(0)));
+    printf("mod2: %.12f\n", norm_1(rx.row(1), nx.row(1)));
+    printf("mod3: %.12f\n", norm_1(rx.row(2), nx.row(2)));
+
+    FILE *file =fopen("data_rx.txt", "a");
+    IPrinter::printVector(14,10,nx.row(0),"nv41",N+1,0,0,file);
+    IPrinter::printVector(14,10,nx.row(1),"nv42",N+1,0,0,file);
+    IPrinter::printVector(14,10,nx.row(2),"nv42",N+1,0,0,file);
+    fclose(file);
+
 }
 
 void SystemDifEquation::calculate6R2LV1(const DoubleMatrix &rx)
@@ -515,29 +536,29 @@ void SystemDifEquation::calculate6R2LV1(const DoubleMatrix &rx)
         AI[2][0] = -60.0*h*a(3,1,k) + 0.0;   AI[2][1] = -60.0*h*a(3,2,k) + 0.0;   AI[2][2] = -60.0*h*a(3,3,k) - 147.0;
         AI.inverse();
 
-        alpha1[k][0][0] = -360.0; alpha1[k][0][1] =  +0.0;  alpha1[k][0][2] =  +0.0;
-        alpha1[k][1][0] =  +0.0;  alpha1[k][1][1] = -360.0; alpha1[k][1][2] =  +0.0;
-        alpha1[k][2][0] =  +0.0;  alpha1[k][2][1] =  +0.0;  alpha1[k][2][2] = -360.0;
+        alpha1[k][0][0] = -360.0; alpha1[k][0][1] =   +0.0; alpha1[k][0][2] =  +0.0;
+        alpha1[k][1][0] =   +0.0; alpha1[k][1][1] = -360.0; alpha1[k][1][2] =  +0.0;
+        alpha1[k][2][0] =   +0.0; alpha1[k][2][1] =   +0.0; alpha1[k][2][2] = -360.0;
 
         alpha2[k][0][0] = +450.0; alpha2[k][0][1] = +0.0;   alpha2[k][0][2] = +0.0;
-        alpha2[k][1][0] =  +0.0;  alpha2[k][1][1] = +450.0; alpha2[k][1][2] = +0.0;
-        alpha2[k][2][0] =  +0.0;  alpha2[k][2][1] = +0.0;   alpha2[k][2][2] = +450.0;
+        alpha2[k][1][0] =   +0.0; alpha2[k][1][1] = +450.0; alpha2[k][1][2] = +0.0;
+        alpha2[k][2][0] =   +0.0; alpha2[k][2][1] =  +0.0;  alpha2[k][2][2] = +450.0;
 
-        alpha3[k][0][0] = -400.0; alpha3[k][0][1] = +0.0;   alpha3[k][0][2] = +0.0;
-        alpha3[k][1][0] =  +0.0;  alpha3[k][1][1] = -400.0; alpha3[k][1][2] = +0.0;
-        alpha3[k][2][0] =  +0.0;  alpha3[k][2][1] = +0.0;   alpha3[k][2][2] = -400.0;
+        alpha3[k][0][0] = -400.0; alpha3[k][0][1] =   +0.0; alpha3[k][0][2] = +0.0;
+        alpha3[k][1][0] =   +0.0; alpha3[k][1][1] = -400.0; alpha3[k][1][2] = +0.0;
+        alpha3[k][2][0] =   +0.0; alpha3[k][2][1] =   +0.0; alpha3[k][2][2] = -400.0;
 
-        alpha4[k][0][0] =  +225.0; alpha4[k][0][1] = +0.0;   alpha4[k][0][2] = +0.0;
-        alpha4[k][1][0] =  +0.0;   alpha4[k][1][1] = +225.0; alpha4[k][1][2] = +0.0;
-        alpha4[k][2][0] =  +0.0;   alpha4[k][2][1] = +0.0;   alpha4[k][2][2] = +225.0;
+        alpha4[k][0][0] = +225.0; alpha4[k][0][1] =   +0.0; alpha4[k][0][2] = +0.0;
+        alpha4[k][1][0] =   +0.0; alpha4[k][1][1] = +225.0; alpha4[k][1][2] = +0.0;
+        alpha4[k][2][0] =   +0.0; alpha4[k][2][1] =   +0.0; alpha4[k][2][2] = +225.0;
 
-        alpha5[k][0][0] =  -72.0; alpha5[k][0][1] = +0.0;  alpha5[k][0][2] = +0.0;
-        alpha5[k][1][0] =  +0.0;  alpha5[k][1][1] = -72.0; alpha5[k][1][2] = +0.0;
-        alpha5[k][2][0] =  +0.0;  alpha5[k][2][1] = +0.0;  alpha5[k][2][2] = -72.0;
+        alpha5[k][0][0] = -72.0;  alpha5[k][0][1] =  +0.0;  alpha5[k][0][2] =  +0.0;
+        alpha5[k][1][0] =  +0.0;  alpha5[k][1][1] = -72.0;  alpha5[k][1][2] =  +0.0;
+        alpha5[k][2][0] =  +0.0;  alpha5[k][2][1] =  +0.0;  alpha5[k][2][2] = -72.0;
 
-        alpha6[k][0][0] =  +10.0; alpha6[k][0][1] = +0.0;  alpha6[k][0][2] = +0.0;
-        alpha6[k][1][0] =  +0.0;  alpha6[k][1][1] = +10.0; alpha6[k][1][2] = +0.0;
-        alpha6[k][2][0] =  +0.0;  alpha6[k][2][1] = +0.0;  alpha6[k][2][2] = +10.0;
+        alpha6[k][0][0] =  +10.0; alpha6[k][0][1] =  +0.0;  alpha6[k][0][2] = +0.0;
+        alpha6[k][1][0] =   +0.0; alpha6[k][1][1] = +10.0;  alpha6[k][1][2] = +0.0;
+        alpha6[k][2][0] =   +0.0; alpha6[k][2][1] =  +0.0;  alpha6[k][2][2] = +10.0;
 
         alpha0[k][0][0] = +60.0*h*b(1,k);
         alpha0[k][1][0] = +60.0*h*b(2,k);
@@ -668,7 +689,6 @@ void SystemDifEquation::calculate6R2LV1(const DoubleMatrix &rx)
     M[11][15] = +0.0;                   M[11][16] = +0.0;                   M[11][17] = -9.0;
     M[11][18] = +0.0;                   M[11][19] = +0.0;                   M[11][20] = +1.0; A[11] = +60.0*h*b(3,N-3);
 
-
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     M[12][0]  = +1.0;                    M[12][1]  = +0.0;                    M[12][2]  = +0.0;
     M[12][3]  = -8.0;                    M[12][4]  = +0.0;                    M[12][5]  = +0.0;
@@ -720,13 +740,13 @@ void SystemDifEquation::calculate6R2LV1(const DoubleMatrix &rx)
     M[17][18] = +0.0;                    M[17][19] = +0.0;                    M[17][20] = +10.0; A[17] = +60.0*h*b(3,N-1);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    M[18][0]  = +10.0;                    M[18][1]  = +0.0;                    M[18][2]  = +0.0;
-    M[18][3]  = -72.0;                    M[18][4]  = +0.0;                    M[18][5]  = +0.0;
-    M[18][6]  = +225.0;                   M[18][7]  = +0.0;                    M[18][8]  = +0.0;
-    M[18][9]  = -400.0;                   M[18][10] = +0.0;                    M[18][11] = +0.0;
-    M[18][12] = +450.0;                   M[18][13] = +0.0;                    M[18][14] = +0.0;
-    M[18][15] = -360.0;                   M[18][16] = +0.0;                    M[18][17] = +0.0;
-    M[18][18] = -60.0*h*a(1,1,N-0)+147.0; M[18][19] = -60.0*h*a(1,2,N-0);      M[18][20] = -60.0*h*a(1,3,N-0); A[18] = +60.0*h*b(1,N-0);
+    M[18][0]  = +10.0;                    M[18][1]  = +0.0;                   M[18][2]  = +0.0;
+    M[18][3]  = -72.0;                    M[18][4]  = +0.0;                   M[18][5]  = +0.0;
+    M[18][6]  = +225.0;                   M[18][7]  = +0.0;                   M[18][8]  = +0.0;
+    M[18][9]  = -400.0;                   M[18][10] = +0.0;                   M[18][11] = +0.0;
+    M[18][12] = +450.0;                   M[18][13] = +0.0;                   M[18][14] = +0.0;
+    M[18][15] = -360.0;                   M[18][16] = +0.0;                   M[18][17] = +0.0;
+    M[18][18] = -60.0*h*a(1,1,N-0)+147.0; M[18][19] = -60.0*h*a(1,2,N-0);     M[18][20] = -60.0*h*a(1,3,N-0); A[18] = +60.0*h*b(1,N-0);
 
     M[19][0]  = +0.0;                    M[19][1]  = +10.0;                    M[19][2]  = +0.0;
     M[19][3]  = +0.0;                    M[19][4]  = -72.0;                    M[19][5]  = +0.0;
@@ -744,28 +764,32 @@ void SystemDifEquation::calculate6R2LV1(const DoubleMatrix &rx)
     M[20][15] = +0.0;                    M[20][16] = +0.0;                    M[20][17] = -360.0;
     M[20][18] = -60.0*h*a(3,1,N-0);      M[20][19] = -60.0*h*a(3,2,N-0);      M[20][20] = -60.0*h*a(3,3,N-0)+147; A[20] = +60.0*h*b(3,N-0);
 
-    printf("det: %.10f\n", M.determinant());
 
-    for (unsigned int i=0; i<21; i++)
-    {
-        printf("%18.10f %18.10f\n", M[i][0]*rx[0][N-6]+ M[i][1]*rx[1][N-6]+ M[i][2]*rx[2][N-6]+
-                                    M[i][3]*rx[0][N-5]+ M[i][4]*rx[1][N-5]+ M[i][5]*rx[2][N-5]+
-                                    M[i][6]*rx[0][N-4]+ M[i][7]*rx[1][N-4]+ M[i][8]*rx[2][N-4]+
-                                    M[i][9]*rx[0][N-3]+ M[i][10]*rx[1][N-3]+M[i][11]*rx[2][N-3]+
-                                    M[i][12]*rx[0][N-2]+M[i][13]*rx[1][N-2]+M[i][14]*rx[2][N-2]+
-                                    M[i][15]*rx[0][N-1]+M[i][16]*rx[1][N-1]+M[i][17]*rx[2][N-1]+
-                                    M[i][18]*rx[0][N-0]+M[i][19]*rx[1][N-0]+M[i][20]*rx[2][N-0], A[i]);
-    }
+    printf("det: %.10f\n", M.determinant());
+//    IPrinter::printSeperatorLine();
+//    IPrinter::print(M,21,21);
+//    IPrinter::printSeperatorLine();
+
+//    for (unsigned int i=0; i<21; i++)
+//    {
+//        printf("%18.10f %18.10f\n", M[i][0]*rx[0][N-6]+ M[i][1]*rx[1][N-6]+ M[i][2]*rx[2][N-6]+
+//                                    M[i][3]*rx[0][N-5]+ M[i][4]*rx[1][N-5]+ M[i][5]*rx[2][N-5]+
+//                                    M[i][6]*rx[0][N-4]+ M[i][7]*rx[1][N-4]+ M[i][8]*rx[2][N-4]+
+//                                    M[i][9]*rx[0][N-3]+ M[i][10]*rx[1][N-3]+M[i][11]*rx[2][N-3]+
+//                                    M[i][12]*rx[0][N-2]+M[i][13]*rx[1][N-2]+M[i][14]*rx[2][N-2]+
+//                                    M[i][15]*rx[0][N-1]+M[i][16]*rx[1][N-1]+M[i][17]*rx[2][N-1]+
+//                                    M[i][18]*rx[0][N-0]+M[i][19]*rx[1][N-0]+M[i][20]*rx[2][N-0], A[i]);
+//    }
 
     GaussianElimination(M, A, x);
 
-    printf("%.10f %.10f %.10f\n", x[0],  x[1],  x[2]);
-    printf("%.10f %.10f %.10f\n", x[3],  x[4],  x[5]);
-    printf("%.10f %.10f %.10f\n", x[6],  x[7],  x[8]);
-    printf("%.10f %.10f %.10f\n", x[9],  x[10], x[11]);
-    printf("%.10f %.10f %.10f\n", x[12], x[13], x[14]);
-    printf("%.10f %.10f %.10f\n", x[15], x[16], x[17]);
-    printf("%.10f %.10f %.10f\n", x[18], x[19], x[20]);
+//    printf("%.10f %.10f %.10f\n", x[0],  x[1],  x[2]);
+//    printf("%.10f %.10f %.10f\n", x[3],  x[4],  x[5]);
+//    printf("%.10f %.10f %.10f\n", x[6],  x[7],  x[8]);
+//    printf("%.10f %.10f %.10f\n", x[9],  x[10], x[11]);
+//    printf("%.10f %.10f %.10f\n", x[12], x[13], x[14]);
+//    printf("%.10f %.10f %.10f\n", x[15], x[16], x[17]);
+//    printf("%.10f %.10f %.10f\n", x[18], x[19], x[20]);
 
 //    IPrinter::printSeperatorLine();
 //    printf("%18.10f %18.10f\n", M[0][0]*x[0]+M[0][1]*x[1]+M[0][2]*x[2]+M[0][3]*x[3]+M[0][4]*x[4]+M[0][5]*x[5]+M[0][6]*x[6]+M[0][7]*x[7]+M[0][8]*x[8], A[0]);
@@ -789,17 +813,20 @@ void SystemDifEquation::calculate6R2LV1(const DoubleMatrix &rx)
     nx[1][N-6] = x[1]; nx[1][N-5] = x[4]; nx[0][N-4] = x[7]; nx[1][N-3] = x[10]; nx[1][N-2] = x[13]; nx[1][N-1] = x[16]; nx[1][N-0] = x[19];
     nx[2][N-6] = x[2]; nx[2][N-5] = x[5]; nx[2][N-4] = x[8]; nx[2][N-3] = x[11]; nx[2][N-2] = x[14]; nx[2][N-1] = x[17]; nx[2][N-0] = x[20];
 
-//    //IPrinter::printSeperatorLine();
-//    //printf("%d %.10f %.10f\n", N-0, rx[N-0], nx[N-0]);
-//    //printf("%d %.10f %.10f\n", N-1, rx[N-1], nx[N-1]);
-//    //printf("%d %.10f %.10f\n", N-2, rx[N-2], nx[N-2]);
+    IPrinter::printSeperatorLine();
+    printf("%18.12f %18.12f %18.12f %18.12f %18.12f %18.12f %18.12f\n", nx[0][N-6], nx[0][N-5], nx[0][N-4], nx[0][N-3], nx[0][N-2], nx[0][N-1], nx[0][N-0]);
+    printf("%18.12f %18.12f %18.12f %18.12f %18.12f %18.12f %18.12f\n", rx[0][N-6], rx[0][N-5], rx[0][N-4], rx[0][N-3], rx[0][N-2], rx[0][N-1], rx[0][N-0]);
+    printf("%18.12f %18.12f %18.12f %18.12f %18.12f %18.12f %18.12f\n", nx[1][N-6], nx[1][N-5], nx[1][N-4], nx[1][N-3], nx[1][N-2], nx[1][N-1], nx[1][N-0]);
+    printf("%18.12f %18.12f %18.12f %18.12f %18.12f %18.12f %18.12f\n", rx[1][N-6], rx[1][N-5], rx[1][N-4], rx[1][N-3], rx[1][N-2], rx[1][N-1], rx[1][N-0]);
+    printf("%18.12f %18.12f %18.12f %18.12f %18.12f %18.12f %18.12f\n", nx[2][N-6], nx[2][N-5], nx[2][N-4], nx[2][N-3], nx[2][N-2], nx[2][N-1], nx[2][N-0]);
+    printf("%18.12f %18.12f %18.12f %18.12f %18.12f %18.12f %18.12f\n", rx[2][N-6], rx[2][N-5], rx[2][N-4], rx[2][N-3], rx[2][N-2], rx[2][N-1], rx[2][N-0]);
 
     betta[N-5] = betta[N-5] - betta[N-6]*alpha1[N-6];
-    betta[N-4] = betta[N-4] - betta[N-6]*alpha1[N-6];
-    betta[N-3] = betta[N-3] - betta[N-6]*alpha1[N-6];
-    betta[N-2] = betta[N-2] - betta[N-6]*alpha2[N-6];
-    betta[N-1] = betta[N-1] - betta[N-6]*alpha3[N-6];
-    betta[N-0] = betta[N-0] - betta[N-6]*alpha4[N-6];
+    betta[N-4] = betta[N-4] - betta[N-6]*alpha2[N-6];
+    betta[N-3] = betta[N-3] - betta[N-6]*alpha3[N-6];
+    betta[N-2] = betta[N-2] - betta[N-6]*alpha4[N-6];
+    betta[N-1] = betta[N-1] - betta[N-6]*alpha5[N-6];
+    betta[N-0] = betta[N-0] - betta[N-6]*alpha6[N-6];
     eta        = eta + DoubleVector(betta[N-6]*alpha0[N-6]);
 
     for (unsigned int k=N-6; k>0; k--)
@@ -835,9 +862,15 @@ void SystemDifEquation::calculate6R2LV1(const DoubleMatrix &rx)
     IPrinter::printVector(w,p,nx.row(1));
     IPrinter::printVector(w,p,nx.row(2));
 
-//    FILE *file =fopen("data_rx.txt", "a");
-//    IPrinter::printVector(14,10,nx,"nv2",nx.size(),0,0,file);
-//    fclose(file);
+    printf("mod1: %.12f\n", norm_1(rx.row(0), nx.row(0)));
+    printf("mod2: %.12f\n", norm_1(rx.row(1), nx.row(1)));
+    printf("mod3: %.12f\n", norm_1(rx.row(2), nx.row(2)));
+
+    FILE *file =fopen("data_rx.txt", "a");
+    IPrinter::printVector(14,10,nx.row(0),"nv61",N+1,0,0,file);
+    IPrinter::printVector(14,10,nx.row(1),"nv62",N+1,0,0,file);
+    IPrinter::printVector(14,10,nx.row(2),"nv62",N+1,0,0,file);
+    fclose(file);
 }
 
 void SystemDifEquation::calculateRX(DoubleMatrix &rx)
@@ -855,9 +888,11 @@ void SystemDifEquation::calculateRX(DoubleMatrix &rx)
     IPrinter::printVector(w,p,rx.row(1));
     IPrinter::printVector(w,p,rx.row(2));
 
-//    //    FILE *file1 =fopen("data_rx.txt", "w");
-//    //    IPrinter::printVector(14,10,rx,"rx0",rx.size(),0,0,file1);
-//    //    fclose(file1);
+    FILE *file =fopen("data_rx.txt", "w");
+    IPrinter::printVector(14,10,rx.row(0),"rx01",N+1,0,0,file);
+    IPrinter::printVector(14,10,rx.row(1),"rx02",N+1,0,0,file);
+    IPrinter::printVector(14,10,rx.row(2),"rx02",N+1,0,0,file);
+    fclose(file);
 }
 
 double SystemDifEquation::a(unsigned int i, unsigned int j, unsigned int k) const
@@ -891,6 +926,11 @@ double SystemDifEquation::b(unsigned int i, unsigned int k) const
     if (i==2) return -(+4.0*sin(t*t) + 6.0*(cos(t) - sin(t)) - 2.0*(t*t*t - sin(t)*sin(t))) + (-sin(t) - cos(t));
     if (i==3) return -(-1.0*sin(t*t) + 1.0*(cos(t) - sin(t)) - 1.0*(t*t*t - sin(t)*sin(t))) + (+3.0*t*t - 2.0*cos(t)*sin(t));
 #endif
+#ifdef SAMPLE_3
+    if (i==1) return -(+2.0*t*t + 3.0*t - 1.0*t*t*t) + (+2.0*t);
+    if (i==2) return -(+4.0*t*t + 6.0*t - 2.0*t*t*t) + (+1.0);
+    if (i==3) return -(-1.0*t*t + 1.0*t - 1.0*t*t*t) + (+3.0*t*t);
+#endif
     return NAN;
 }
 
@@ -906,6 +946,11 @@ double SystemDifEquation::f(unsigned int i, unsigned int k) const
     if (i==1) return sin(t*t);
     if (i==2) return cos(t) - sin(t);
     if (i==3) return t*t*t - sin(t)*sin(t);
+#endif
+#ifdef SAMPLE_3
+    if (i==1) return t*t;
+    if (i==2) return t;
+    if (i==3) return t*t*t;
 #endif
     return NAN;
 }
