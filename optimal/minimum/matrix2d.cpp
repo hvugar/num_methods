@@ -433,7 +433,7 @@ void DoubleMatrix::inverse()
 
     for (unsigned int r=0; r<rows(); r++)
     {
-        for (unsigned int c=0; c<rows(); c++)
+        for (unsigned int c=0; c<cols(); c++)
         {
             DoubleMatrix minor = m.minor(r,c);
             mData[r][c] = minor.determinant();
@@ -445,7 +445,7 @@ void DoubleMatrix::inverse()
 
     for (unsigned int r=0; r<rows(); r++)
     {
-        for (unsigned int c=0; c<rows(); c++)
+        for (unsigned int c=0; c<cols(); c++)
         {
             mData[r][c] *= idet;
         }

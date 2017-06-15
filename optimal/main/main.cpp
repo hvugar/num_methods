@@ -56,50 +56,6 @@
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-//    unsigned int n = 15;
-//    DoubleMatrix m(n,n);
-//    m.randomData();
-
-////    m.at(0,0) = 1.0;     m.at(0,1) = 3.0;     m.at(0,2) = 3.0;
-////    m.at(1,0) = 1.0;     m.at(1,1) = 4.0;     m.at(1,2) = 3.0;
-////    m.at(2,0) = 1.0;     m.at(2,1) = 3.0;     m.at(2,2) = 4.0;
-
-//    IPrinter::printSeperatorLine();
-//    IPrinter::print(m,m.rows(),m.cols());
-
-//    DoubleMatrix cm = m;
-//    m.inverse();
-
-////    IPrinter::printSeperatorLine();
-////    m.inverse();
-////    IPrinter::print(m,m.rows(),m.cols());
-
-////    IPrinter::printSeperatorLine();
-////    m.transpose();
-////    IPrinter::print(m,m.rows(),m.cols());
-
-////    IPrinter::printSeperatorLine();
-////    double det = m.determinant();
-////    DoubleMatrix im(n,n);
-////    for (unsigned int r=0; r<m.rows(); r++)
-////    {
-////        for (unsigned int c=0; c<m.cols(); c++)
-////        {
-////            im[r][c] = (1.0/det)*m[r][c];
-////        }
-////    }
-////    IPrinter::print(im,im.rows(),im.cols());
-
-//    IPrinter::printSeperatorLine();
-//    IPrinter::print(m,m.rows(),m.cols());
-
-//    IPrinter::printSeperatorLine();
-//    DoubleMatrix I = cm * m;
-//    IPrinter::print(I,I.rows(),I.cols());
-
-//    return 0;
-
-
     //srand(time(NULL));
 
     //HyperbolicControl2DM::Main(argc, argv);
@@ -113,7 +69,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Example6::Main(argc, argv);
     //Example7::Main(argc, argv);
 
-//    SingleDifEquation::Main(argc, argv);
+    //SingleDifEquation::Main(argc, argv);
     SystemDifEquation::Main(argc, argv);
 
 //    ArtProblem1::Main(argc, argv);

@@ -8,16 +8,14 @@ void SingleDifEquation::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     e.calculateRX(rx);
 
     e.calculate2R2LV1(rx);
-//    e.calculate2R2LV3(rx);
-
-//    e.calculate4R2LV1(rx);
-//    e.calculate6R2LV1(rx);
+    e.calculate4R2LV1(rx);
+    e.calculate6R2LV1(rx);
 }
 
 SingleDifEquation::SingleDifEquation()
 {
-    h = 0.01;
-    N = 100;
+    h = 0.1;
+    N = 10;
     w = 14;
     p = 10;
 }
@@ -746,6 +744,15 @@ double SingleDifEquation::a(unsigned int k UNUSED_PARAM ) const
 #ifdef SAMPLE_2
     return t;
 #endif
+#ifdef SAMPLE_3
+    return 2.0;
+#endif
+#ifdef SAMPLE_4
+    return 2.0;
+#endif
+#ifdef SAMPLE_5
+    return 2.0;
+#endif
 }
 
 double SingleDifEquation::b(unsigned int k) const
@@ -757,6 +764,15 @@ double SingleDifEquation::b(unsigned int k) const
 #ifdef SAMPLE_2
     return (1.0-t*t)*sin(10.0*t*t) + 20.0*t*t*cos(10.0*t*t);
 #endif
+#ifdef SAMPLE_3
+    return 1.0 - 2.0*t;
+#endif
+#ifdef SAMPLE_4
+    return 2.0*t - 2.0*t*t;
+#endif
+#ifdef SAMPLE_5
+    return 3.0*t*t - 2.0*t*t*t;
+#endif
 }
 
 double SingleDifEquation::f(unsigned int k) const
@@ -767,5 +783,14 @@ double SingleDifEquation::f(unsigned int k) const
 #endif
 #ifdef SAMPLE_2
     return t*sin(10.0*t*t);
+#endif
+#ifdef SAMPLE_3
+    return t;
+#endif
+#ifdef SAMPLE_4
+    return t*t;
+#endif
+#ifdef SAMPLE_5
+    return t*t*t;
 #endif
 }

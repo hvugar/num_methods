@@ -36,16 +36,9 @@ DESTDIR += ../bin
 
 SOURCES += main.cpp \
     loadedsystems.cpp \
-    example1.cpp \
-    example2.cpp \
     bordertest.cpp \
     bordertest1.cpp \
-    example3.cpp \
-    example4.cpp \
-    example5.cpp \
     sampleboundaryproblem1.cpp \
-    example6.cpp \
-    example7.cpp \
     problem1/iproblem1.cpp \
     problem1/problem1L2.cpp \
     problem1/problem1L3.cpp \
@@ -56,16 +49,9 @@ SOURCES += main.cpp \
 
 HEADERS += \
     loadedsystems.h \
-    example1.h \
-    example2.h \
     bordertest.h \
     bordertest1.h \
-    example3.h \
-    example4.h \
-    example5.h \
     sampleboundaryproblem1.h \
-    example6.h \
-    example7.h \
     problem1/iproblem1.h \
     problem1/problem1L2.h \
     problem1/problem1L3.h \

@@ -7,7 +7,7 @@
 #include <printer.h>
 #include <cmethods.h>
 
-#define SAMPLE_1
+#define SAMPLE_5
 
 class SingleDifEquation
 {
