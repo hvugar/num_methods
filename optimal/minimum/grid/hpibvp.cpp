@@ -1,6 +1,6 @@
 #include "hpibvp.h"
 
-void HeatEqauationIBVP::gridMethod(DoubleVector &u, double a, SweepMethodDirection direction)
+void HeatEquationIBVP::gridMethod(DoubleVector &u, double a, SweepMethodDirection direction)
 {
     typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
     t_algorithm algorithm = &tomasAlgorithm;

@@ -7,7 +7,7 @@
 #include <printer.h>
 #include <cmethods.h>
 
-#define SAMPLE_5
+#define SAMPLE_1
 
 class SingleDifEquation
 {
@@ -26,13 +26,11 @@ public:
     unsigned int p;
 
     void calculate2R2LV1(const DoubleVector &rx);
-    void calculate2R2LV3(const DoubleVector &rx);
-
+    void calculate2R2LV11(const DoubleVector &rx);
     void calculate4R2LV1(const DoubleVector &rx);
+    void calculate4R2LV11(const DoubleVector &rx);
     void calculate6R2LV1(const DoubleVector &rx);
-
-    void calculate2R2LV2();
-    void calculate4R2LV2();
+    void calculate6R2LV11(const DoubleVector &rx);
 
     void calculateRX(DoubleVector &rx);
     double calculateEta();

@@ -1,12 +1,12 @@
-#ifndef HEATEQAUATIONIBVP_H
-#define HEATEQAUATIONIBVP_H
+#ifndef HEATEQUATIONIBVP_H
+#define HEATEQUATIONIBVP_H
 
 #include "pibvp.h"
 
-class HeatEqauationIBVP : protected InitialBoundaryValueProblemPDE
+class HeatEquationIBVP : protected InitialBoundaryValueProblemPDE
 {
 public:
-    virtual ~HeatEqauationIBVP();
+    virtual ~HeatEquationIBVP();
 protected:
     virtual double initial(const SpaceNode &sn) const = 0;
     virtual double boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType boundary = Unused) const = 0;
@@ -19,4 +19,4 @@ public:
     void gridMethod(DoubleVector &u, double a = 1.0, SweepMethodDirection direction = ForwardSweep);
 };
 
-#endif // HEATEQAUATIONIBVP_H
+#endif // HEATEQUATIONIBVP_H

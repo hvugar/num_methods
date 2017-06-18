@@ -37,7 +37,6 @@ SOURCES += \
     cmethods.c \
     grid/bvp.cpp \
     grid/ibvp.cpp \
-    iibvp.cpp \
     grid/lbvpode.cpp \
     grid/nlbvpode.cpp \
     grid/pibvp.cpp \
@@ -45,6 +44,8 @@ SOURCES += \
     grid/hpibvp.cpp \
     grid/grid.cpp \
     grid/bpibvp.cpp \
+    grid/nhpibvp.cpp \
+    iibvp.cpp \
     gradient/igradient.cpp
 
 HEADERS += global.h \
@@ -70,7 +71,6 @@ HEADERS += global.h \
     matrix3d.h \
     grid/bvp.h \
     grid/ibvp.h \
-    iibvp.h \
     grid/lbvpode.h \
     grid/nlbvpode.h \
     grid/pibvp.h \
@@ -78,4 +78,6 @@ HEADERS += global.h \
     grid/hpibvp.h \
     grid/grid.h \
     grid/bpibvp.h \
+    grid/nhpibvp.h \
+    iibvp.h \
     gradient/igradient.h

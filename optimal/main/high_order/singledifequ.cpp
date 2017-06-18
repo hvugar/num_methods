@@ -1,5 +1,73 @@
 #include "singledifequ.h"
 
+void qovma_k(unsigned int K, unsigned int N,
+             DoubleVector &betta, double eta,
+             const DoubleMatrix &alpha,
+             const DoubleMatrix &phi, const DoubleVector &psi,
+             DoubleVector &nx)
+{
+    for (unsigned int k=0; k<=N-K; k++)
+    {
+        for (unsigned int i=1; i<=K; i++)
+        {
+            betta[k+i] = betta[k+i] + alpha[k][i]*betta[k];
+        }
+        eta = eta - alpha[k][0]*betta[k];
+    }
+
+    DoubleMatrix M(K+1,K+1);
+    DoubleVector A(K+1);
+    DoubleVector x(K+1);
+
+    M[0][0] = 0.0;
+    for (unsigned int j=1; j<=K; j++)
+    {
+        M[0][j] = betta[N-(K-j)];
+    }
+    A[0] = eta;
+
+    for (unsigned int i=1; i<=K; i++)
+    {
+        for (unsigned int j=0; j<=K; j++)
+            M[i][j] = phi[i-1][j];
+        A[i] = psi[i-1];
+    }
+
+    GaussianElimination(M, A, x);
+
+    nx.resize(N+1);
+    for (unsigned int i=0; i<=K; i++)
+    {
+        nx[N-i] = x[K-i];
+    }
+
+    for (unsigned int i=1; i<=K; i++)
+    {
+        betta[N-(K-i)] -= alpha[N-K][i]*betta[N-K];
+    }
+    eta += alpha[N-K][0]*betta[N-K];
+
+    for (unsigned int k=N-K; k>0; k--)
+    {
+        for (unsigned int j=0; j<K; j++)
+        {
+            betta[k+j] -= alpha[k-1][j+1]*betta[k-1];
+        }
+        eta += alpha[k-1][0]*betta[k-1];
+
+        nx[k-1] = eta;
+        for (unsigned int i=k; i<=N; i++)
+        {
+            nx[k-1] -= betta[i]*nx[i];
+        }
+        nx[k-1] /= betta[k-1];
+    }
+
+    x.clear();
+    A.clear();
+    M.clear();
+}
+
 void SingleDifEquation::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     SingleDifEquation e;
@@ -8,14 +76,20 @@ void SingleDifEquation::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     e.calculateRX(rx);
 
     e.calculate2R2LV1(rx);
+    e.calculate2R2LV11(rx);
+
     e.calculate4R2LV1(rx);
+    e.calculate4R2LV11(rx);
+
     e.calculate6R2LV1(rx);
+    e.calculate6R2LV11(rx);
 }
+
 
 SingleDifEquation::SingleDifEquation()
 {
-    h = 0.1;
-    N = 10;
+    h = 0.01;
+    N = 100;
     w = 14;
     p = 10;
 }
@@ -131,108 +205,49 @@ void SingleDifEquation::calculate2R2LV1(const DoubleVector &rx)
     fclose(file);
 }
 
-void SingleDifEquation::calculate2R2LV3(const DoubleVector &rx)
+void SingleDifEquation::calculate2R2LV11(const DoubleVector &rx)
 {
     DoubleVector betta(N+1);
-    DoubleMatrix alpha(N+1, 3);
-
     betta[0] = +1.0;
     betta[N/2] = +2.5;
     betta[N] = +1.5;
     double eta = betta[0]*rx[0]+betta[N/2]*rx[N/2]+betta[N]*rx[N];
 
+    unsigned int K = 2;
+    DoubleMatrix alpha(N+1, K+1);
     for (unsigned int k=0; k<=N-2; k++)
     {
-        alpha[k][1] = +4.0;
-        alpha[k][2] = -3.0 + 2.0*h*a(k+2);
-        alpha[k][0] = +2.0*h*b(k+2);
+        double m = +3.0 + 2.0*h*a(k);
+        alpha[k][1] = +4.0/m;
+        alpha[k][2] = -1.0/m;
+        alpha[k][0] = -2.0*h*b(k)/m;
     }
 
-    IPrinter::printSeperatorLine();
+    DoubleMatrix phi(K,K+1);
+    DoubleVector psi(K+1);
 
-    for (unsigned int k=0; k<=N-2; k++)
-    {
-        betta[k+1] = betta[k+1] + alpha[k][1]*betta[k];
-        betta[k+2] = betta[k+2] + alpha[k][2]*betta[k];
-        eta        = eta        - alpha[k][0]*betta[k];
-    }
+    phi[0][0] = +1.0;
+    phi[0][1] = +2.0*h*a(N-1);
+    phi[0][2] = -1.0;
+    psi[0] = -2.0*h*b(N-1);
 
-    DoubleMatrix M(3,3);
-    DoubleVector A(3);
-    DoubleVector x(3);
+    phi[1][0] = +1.0;
+    phi[1][1] = -4.0;
+    phi[1][2] = +3.0-2.0*h*a(N);
+    psi[1] = +2.0*h*b(N);
 
-    M[0][0] = -3.0 - 2.0*h*a(N-2);
-    M[0][1] = +4.0;
-    M[0][2] = -1.0;
-    A[0] = 2.0*h*b(N-2);
-
-    M[1][0] = +1.0;
-    M[1][1] = +2.0*h*a(N-1);
-    M[1][2] = -1.0;
-    A[1] = -2.0*h*b(N-1);
-
-    M[2][0] = 0.0;
-    M[2][1] = betta[N-1];
-    M[2][2] = betta[N-0];
-    A[2] = eta;
-
-    printf("det: %.10f\n", M.determinant());
-    printf("%18.10f %18.10f\n", M[0][0]*rx[N-2] + M[0][1]*rx[N-1] + M[0][2]*rx[N-0], A[0]);
-    printf("%18.10f %18.10f\n", M[1][0]*rx[N-2] + M[1][1]*rx[N-1] + M[1][2]*rx[N-0], A[1]);
-    printf("%18.10f %18.10f\n", M[2][0]*rx[N-2] + M[2][1]*rx[N-1] + M[2][2]*rx[N-0], A[2]);
-
-    //IPrinter::printSeperatorLine();
-    //IPrinter::print(M,3,3);
-    //IPrinter::printSeperatorLine();
-
-    GaussianElimination(M, A, x);
-
-    printf("%.10f %.10f %.10f\n", x[0], x[1], x[2]);
-    return;
-
-    IPrinter::printSeperatorLine();
-    printf("%18.10f %18.10f\n", M[0][0]*x[0] + M[0][1]*x[1] + M[0][2]*x[2], A[0]);
-    printf("%18.10f %18.10f\n", M[1][0]*x[0] + M[1][1]*x[1] + M[1][2]*x[2], A[1]);
-    printf("%18.10f %18.10f\n", M[2][0]*x[0] + M[2][1]*x[1] + M[2][2]*x[2], A[2]);
-
-    DoubleVector nx(N+1);
-    nx[N-0] = x[2];
-    nx[N-1] = x[1];
-    nx[N-2] = x[0];
-
-    //IPrinter::printSeperatorLine();
-    //printf("%d %.10f %.10f\n", N-0, rx[N-0], nx[N-0]);
-    //printf("%d %.10f %.10f\n", N-1, rx[N-1], nx[N-1]);
-    //printf("%d %.10f %.10f\n", N-2, rx[N-2], nx[N-2]);
-
-    betta[N-1] -= alpha[N-2][1]*betta[N-2];
-    betta[N-0] -= alpha[N-2][2]*betta[N-2];
-    eta        += alpha[N-2][0]*betta[N-2];
-
-    for (unsigned int k=N-2; k>0; k--)
-    {
-        betta[k+0] -= alpha[k-1][1]*betta[k-1];
-        betta[k+1] -= alpha[k-1][2]*betta[k-1];
-        eta        += alpha[k-1][0]*betta[k-1];
-
-        nx[k-1] = eta;
-        for (unsigned int i=k; i<=N; i++)
-        {
-            nx[k-1] -= betta[i]*nx[i];
-        }
-        nx[k-1] /= betta[k-1];
-    }
-
+    DoubleVector nx;
+    qovma_k(K,N,betta,eta,alpha,phi,psi,nx);
     IPrinter::printVector(w,p,nx);
-
-    FILE *file =fopen("data_rx.txt", "a");
-    IPrinter::printVector(14,10,nx,"nv2",nx.size(),0,0,file);
-    fclose(file);
+    psi.clear();
+    phi.clear();
+    alpha.clear();
+    betta.clear();
 }
 
 void SingleDifEquation::calculate4R2LV1(const DoubleVector &rx)
 {
-    DoubleVector betta(N+1, 0.0);
+    DoubleVector betta(N+1);
     DoubleMatrix alpha(N+1, 5);
 
     betta[0] = +1.0;
@@ -363,6 +378,66 @@ void SingleDifEquation::calculate4R2LV1(const DoubleVector &rx)
     FILE *file =fopen("data_rx.txt", "a");
     IPrinter::printVector(14,10,nx,"nv4",nx.size(),0,0,file);
     fclose(file);
+}
+
+void SingleDifEquation::calculate4R2LV11(const DoubleVector &rx)
+{
+    DoubleVector betta(N+1, 0.0);
+    betta[0] = +1.0;
+    betta[N/2] = +2.5;
+    betta[N] = +1.5;
+    double eta = betta[0]*rx[0]+betta[N/2]*rx[N/2]+betta[N]*rx[N];
+
+    unsigned int K = 4;
+    DoubleMatrix alpha(N+1, K+1);
+    for (unsigned int k=0; k<=N-K; k++)
+    {
+        double m = -25.0 - 12.0*h*a(k);
+        alpha[k][1] = -48.0/m;
+        alpha[k][2] = +36.0/m;
+        alpha[k][3] = -16.0/m;
+        alpha[k][4] = +3.0/m;
+        alpha[k][0] = +12.0*h*b(k)/m;
+    }
+
+    DoubleMatrix phi(K,K+1);
+    DoubleVector psi(K+1);
+
+    phi[0][0] = -3.0;
+    phi[0][1] = -10.0 - 12.0*h*a(N-3);
+    phi[0][2] = +18.0;
+    phi[0][3] = -6.0;
+    phi[0][4] = +1.0;
+    psi[0] = 12.0*h*b(N-3);
+
+    phi[1][0] = +1.0;
+    phi[1][1] = -8.0;
+    phi[1][2] = +0.0 -12.0*h*a(N-2);
+    phi[1][3] = +8.0;
+    phi[1][4] = -1.0;
+    psi[1] = 12.0*h*b(N-2);
+
+    phi[2][0] = -1.0;
+    phi[2][1] = +6.0;
+    phi[2][2] = -18.0;
+    phi[2][3] = +10.0 - 12.0*h*a(N-1);
+    phi[2][4] = +3.0;
+    psi[2] = 12.0*h*b(N-1);
+
+    phi[3][0] = +3.0;
+    phi[3][1] = -16.0;
+    phi[3][2] = +36.0;
+    phi[3][3] = -48.0;
+    phi[3][4] = +25.0 - 12.0*h*a(N-0);
+    psi[3]    = 12.0*h*b(N-0);
+
+    DoubleVector nx;
+    qovma_k(K,N,betta,eta,alpha,phi,psi,nx);
+    IPrinter::printVector(w,p,nx);
+    psi.clear();
+    phi.clear();
+    alpha.clear();
+    betta.clear();
 }
 
 void SingleDifEquation::calculate6R2LV1(const DoubleVector &rx)
@@ -544,194 +619,92 @@ void SingleDifEquation::calculate6R2LV1(const DoubleVector &rx)
     fclose(file);
 }
 
-void SingleDifEquation::calculate2R2LV2()
+void SingleDifEquation::calculate6R2LV11(const DoubleVector &rx)
 {
-    DoubleVector rx(N+1);
-    for (unsigned int k=0; k<=N; k++) rx[k] = f(k);
-    IPrinter::printVector(w,p,rx);
-
-    DoubleVector betta(N+1);
-    betta[0] = 1.0;
-    betta[N] = 3.5;
-    double eta = 0.0;
-    for (unsigned int i=0; i<=N; i++) eta += betta[i]*rx[i];
-
-    DoubleMatrix alpha(N+1, 3);
-    for (unsigned int k=0; k<=N-2; k++)
-    {
-        alpha[k][1] = -2.0*h*a(k+1);
-        alpha[k][2] = +1.0;
-        alpha[k][0] = -2.0*h*b(k+1);
-    }
-
-    IPrinter::printSeperatorLine();
-
-    for (unsigned int k=0; k<=N-2; k++)
-    {
-        betta[k+1] = betta[k+1] + alpha[k][1]*betta[k];
-        betta[k+2] = betta[k+2] + alpha[k][2]*betta[k];
-        eta        = eta        - alpha[k][0]*betta[k];
-
-        //eta        /= betta[k+1];
-        //betta[k+2] /= betta[k+1];
-        //betta[k+1] = 1.0;
-    }
-    betta[N-2] = 0.0;
-
-    DoubleMatrix M(3,3);
-    DoubleVector A(3);
-    DoubleVector x(3);
-
-    M[0][0] = betta[N-2];
-    M[0][1] = betta[N-1];
-    M[0][2] = betta[N-0];
-    A[0] = eta;
-
-    M[1][0] = -3.0-2.0*h*a(N-2);
-    M[1][1] = +4.0;
-    M[1][2] = -1.0;
-    A[1] = +2.0*h*b(N-2);
-
-    M[2][0] = +1.0;
-    M[2][1] = -4.0;
-    M[2][2] = +3.0-2.0*h*a(N);
-    A[2] = +2.0*h*b(N);
-
-    GaussianElimination(M, A, x);
-
-    printf("%.10f %.10f %.10f\n", x[0], x[1], x[2]);
-
-    IPrinter::printSeperatorLine();
-    IPrinter::print(M,3,3);
-    IPrinter::printSeperatorLine();
-
-    printf("det: %.10f\n", M.determinant());
-    printf("%18.10f %18.10f\n", M[0][0]*rx[N-2] + M[0][1]*rx[N-1] + M[0][2]*rx[N-0], A[0]);
-    printf("%18.10f %18.10f\n", M[1][0]*rx[N-2] + M[1][1]*rx[N-1] + M[1][2]*rx[N-0], A[1]);
-    printf("%18.10f %18.10f\n", M[2][0]*rx[N-2] + M[2][1]*rx[N-1] + M[2][2]*rx[N-0], A[2]);
-    IPrinter::printSeperatorLine();
-    printf("%18.10f %18.10f\n", M[0][0]*x[0] + M[0][1]*x[1] + M[0][2]*x[2], A[0]);
-    printf("%18.10f %18.10f\n", M[1][0]*x[0] + M[1][1]*x[1] + M[1][2]*x[2], A[1]);
-    printf("%18.10f %18.10f\n", M[2][0]*x[0] + M[2][1]*x[1] + M[2][2]*x[2], A[2]);
-}
-
-void SingleDifEquation::calculate4R2LV2()
-{
-    DoubleVector rx(N+1);
-    for (unsigned int k=0; k<=N; k++) rx[k] = f(k);
-    IPrinter::printVector(w,p,rx);
-
-    DoubleVector betta(N+1);
-
-    DoubleMatrix alpha(N+1, 5);
-
+    DoubleVector betta(N+1, 0.0);
     betta[0] = +1.0;
+    betta[N/2] = +2.5;
     betta[N] = +1.5;
-    double eta = betta[0]*rx[0]+betta[N]*rx[N];
-    //double eta = 0.0;
-    //for (unsigned int k=0; k<=N; k++) eta += betta[0]*rx[k];
+    double eta = betta[0]*rx[0]+betta[N/2]*rx[N/2]+betta[N]*rx[N];
 
-    for (unsigned int k=0; k<=N-4; k++)
+    unsigned int K = 6;
+    DoubleMatrix alpha(N+1, K+1);
+    for (unsigned int k=0; k<=N-K; k++)
     {
-        alpha[k][1] = +8.0;
-        alpha[k][2] = +12.0*h*a(k+2);
-        alpha[k][3] = -8.0;
-        alpha[k][4] = +1.0;
-        alpha[k][0] = +12.0*h*b(k+2);
+        double m = -147.0 - 60.0*h*a(k);
+        alpha[k][1] = -360.0/m;
+        alpha[k][2] = +450.0/m;
+        alpha[k][3] = -400.0/m;
+        alpha[k][4] = +225.0/m;
+        alpha[k][5] = -72.0/m;
+        alpha[k][6] = +10.0/m;
+        alpha[k][0] = +60.0*h*b(k)/m;
     }
 
-    IPrinter::printSeperatorLine();
+    DoubleMatrix phi(K,K+1);
+    DoubleVector psi(K+1);
 
-    for (unsigned int k=0; k<=N-4; k++)
-    {
-        betta[k+1] = betta[k+1] + alpha[k][1]*betta[k];
-        betta[k+2] = betta[k+2] + alpha[k][2]*betta[k];
-        betta[k+3] = betta[k+3] + alpha[k][3]*betta[k];
-        betta[k+4] = betta[k+4] + alpha[k][4]*betta[k];
-        eta        = eta        - alpha[k][0]*betta[k];
-    }
-    betta[N-4] = 0.0;
+    phi[0][0] = -10.0;
+    phi[0][1] = -77.0 - 60.0*h*a(N-5);
+    phi[0][2] = +150.0;
+    phi[0][3] = -100.0;
+    phi[0][4] = +50.0;
+    phi[0][5] = -15.0;
+    phi[0][6] = +2.0;
+    psi[0] = 60.0*h*b(N-5);
 
-    IPrinter::printSeperatorLine();
-//    IPrinter::print(betta);
-    IPrinter::printSeperatorLine();
+    phi[1][0] = +2.0;
+    phi[1][1] = -24.0;
+    phi[1][2] = -35.0 - 60.0*h*a(N-4);
+    phi[1][3] = +80.0;
+    phi[1][4] = -30.0;
+    phi[1][5] = +8.0;
+    phi[1][6] = -1.0;
+    psi[1] = 60.0*h*b(N-4);
 
-    DoubleMatrix M(5,5);
-    DoubleVector A(5);
-    DoubleVector x(5);
+    phi[2][0] = -1.0;
+    phi[2][1] = +9.0;
+    phi[2][2] = -45.0;
+    phi[2][3] = -60.0*h*a(N-3);
+    phi[2][4] = +45.0;
+    phi[2][5] = -9.0;
+    phi[2][6] = +1.0;
+    psi[2] = 60.0*h*b(N-3);
 
-    M[0][0] = betta[N-4];
-    M[0][1] = betta[N-3];
-    M[0][2] = betta[N-2];
-    M[0][3] = betta[N-1];
-    M[0][4] = betta[N-0];
-    A[0]    = eta;
+    phi[3][0] = +1.0;
+    phi[3][1] = -8.0;
+    phi[3][2] = +30.0;
+    phi[3][3] = -80.0;
+    phi[3][4] = +35.0 - 60.0*h*a(N-2);
+    phi[3][5] = +24.0;
+    phi[3][6] = -2.0;
+    psi[3] = 60.0*h*b(N-2);
 
-    M[1][0] = -25.0 - 12.0*h*a(N-4);
-    M[1][1] = +48.0;
-    M[1][2] = -36.0;
-    M[1][3] = +16.0;
-    M[1][4] = -3.0;
-    A[1] = 12.0*h*b(N-4);
+    phi[4][0] = -2.0;
+    phi[4][1] = +15.0;
+    phi[4][2] = -50.0;
+    phi[4][3] = +100.0;
+    phi[4][4] = -150.0;
+    phi[4][5] = +77.0 - 60.0*h*a(N-1);
+    phi[4][6] = +10.0;
+    psi[4] = 60.0*h*b(N-1);
 
-    M[2][0] = -3.0;
-    M[2][1] = -10.0 - 12.0*h*a(N-3);
-    M[2][2] = +18.0;
-    M[2][3] = -6.0;
-    M[2][4] = +1.0;
-    A[2] = 12.0*h*b(N-3);
+    phi[5][0] = +10.0;
+    phi[5][1] = -72.0;
+    phi[5][2] = +225.0;
+    phi[5][3] = -400.0;
+    phi[5][4] = +450.0;
+    phi[5][5] = -360.0;
+    phi[5][6] = +147.0 - 60.0*h*a(N-0);
+    psi[5] = 60.0*h*b(N-0);
 
-    M[3][0] = -1.0;
-    M[3][1] = +6.0;
-    M[3][2] = -18.0;
-    M[3][3] = +10.0 - 12.0*h*a(N-1);
-    M[3][4] = +3.0;
-    A[3] = 12.0*h*b(N-1);
-
-    M[4][0] = +3.0;
-    M[4][1] = -16.0;
-    M[4][2] = +36.0;
-    M[4][3] = -48.0;
-    M[4][4] = +25.0 - 12.0*h*a(N-0);
-    A[4] = 12.0*h*b(N-0);
-
-    printf("det: %.10f\n", M.determinant());
-    printf("%18.10f %18.10f\n", M[0][0]*rx[N-4] + M[0][1]*rx[N-3] + M[0][2]*rx[N-2] + M[0][3]*rx[N-1] + M[0][4]*rx[N-0], A[0]);
-    printf("%18.10f %18.10f\n", M[1][0]*rx[N-4] + M[1][1]*rx[N-3] + M[1][2]*rx[N-2] + M[1][3]*rx[N-1] + M[1][4]*rx[N-0], A[1]);
-    printf("%18.10f %18.10f\n", M[2][0]*rx[N-4] + M[2][1]*rx[N-3] + M[2][2]*rx[N-2] + M[2][3]*rx[N-1] + M[2][4]*rx[N-0], A[2]);
-    printf("%18.10f %18.10f\n", M[3][0]*rx[N-4] + M[3][1]*rx[N-3] + M[3][2]*rx[N-2] + M[3][3]*rx[N-1] + M[3][4]*rx[N-0], A[3]);
-    printf("%18.10f %18.10f\n", M[4][0]*rx[N-4] + M[4][1]*rx[N-3] + M[4][2]*rx[N-2] + M[4][3]*rx[N-1] + M[4][4]*rx[N-0], A[4]);
-
-    IPrinter::printSeperatorLine();
-    IPrinter::print(M,5,5);
-    IPrinter::printSeperatorLine();
-
-    GaussianElimination(M, A, x);
-
-    printf("%.10f %.10f %.10f %.10f %.10f\n", x[0], x[1], x[2], x[3], x[4]);
-
-//    printf("%18.10f %18.10f\n", M[0][0]*x[0] + M[0][1]*x[1] + M[0][2]*x[2] + M[0][3]*x[3] + M[0][4]*x[4], A[0]);
-//    printf("%18.10f %18.10f\n", M[1][0]*x[0] + M[1][1]*x[1] + M[1][2]*x[2] + M[1][3]*x[3] + M[1][4]*x[4], A[1]);
-//    printf("%18.10f %18.10f\n", M[2][0]*x[0] + M[2][1]*x[1] + M[2][2]*x[2] + M[2][3]*x[3] + M[2][4]*x[4], A[2]);
-//    printf("%18.10f %18.10f\n", M[3][0]*x[0] + M[3][1]*x[1] + M[3][2]*x[2] + M[3][3]*x[3] + M[3][4]*x[4], A[3]);
-//    printf("%18.10f %18.10f\n", M[4][0]*x[0] + M[4][1]*x[1] + M[4][2]*x[2] + M[4][3]*x[3] + M[4][4]*x[4], A[4]);
-
-//    DoubleVector nx(N+1);
-//    nx[N-4] = rx[N-4];
-//    nx[N-3] = rx[N-3];
-//    nx[N-2] = rx[N-2];
-//    nx[N-1] = rx[N-1];
-//    nx[N-0] = rx[N-0];
-
-//    for (unsigned int k1=N-5; k1!=0; k1--)
-//    {
-//        for (unsigned int k2=N; k2!=0; k2--)
-//        {
-//            nx[k1] -= betta[k1][k2];
-//        }
-//        nx[k1] += eta[k1];
-//    }
-//    IPrinter::printVector(w,p,nx);
+    DoubleVector nx;
+    qovma_k(K,N,betta,eta,alpha,phi,psi,nx);
+    IPrinter::printVector(w,p,nx);
+    psi.clear();
+    phi.clear();
+    alpha.clear();
+    betta.clear();
 }
 
 double SingleDifEquation::a(unsigned int k UNUSED_PARAM ) const

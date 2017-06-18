@@ -10,15 +10,6 @@
 
 #include "problem1/art_problem1.h"
 
-//#include "loadedsystems.h"
-#include "example1.h"
-#include "example2.h"
-#include "example3.h"
-#include "example4.h"
-//#include "example5.h"
-#include "example6.h"
-#include "example7.h"
-
 #include "high_order/singledifequ.h"
 #include "high_order/systemdifequ.h"
 
@@ -30,6 +21,7 @@
 #include <../border/grid/parabolicibvp1.h>
 //#include <../border/grid/parabolicibvp2.h>
 //#include <../border/grid/hyperbolicibvp1.h>
+#include <../border/grid/newtonheatequationex1.h>
 
 //#include <../hyperbolic/2d/hyperboliccontrol2d.h>
 //#include <../hyperbolic/2d/hyperboliccontrol2d1.h>
@@ -52,8 +44,6 @@
 #include "bordertest1.h"
 #include "sampleboundaryproblem1.h"
 
-
-
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //srand(time(NULL));
@@ -70,7 +60,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Example7::Main(argc, argv);
 
     //SingleDifEquation::Main(argc, argv);
-    SystemDifEquation::Main(argc, argv);
+    //SystemDifEquation::Main(argc, argv);
 
 //    ArtProblem1::Main(argc, argv);
 //    ArticleProblem1L3::Main(argc, argv);
@@ -86,6 +76,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //ParabolicIBVP1::Main(argc, argv);
     //ParabolicIBVP2::Main(argc, argv);
     //HyperbolicIBVP1::Main(argc, argv);
+    NewtonHeatEquationEx1::Main(argc, argv);
 
     //HeatControl::Main(argc, argv);
     //HeatControl1::Main(argc, argv);

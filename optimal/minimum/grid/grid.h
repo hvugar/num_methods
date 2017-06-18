@@ -37,15 +37,11 @@ public:
     virtual unsigned int minN() const;
     virtual unsigned int maxN() const;
     virtual unsigned int sizeN() const;
-    //virtual double min() const;
-    //virtual double max() const;
 
 protected:
     double mstep;
     unsigned int mmaxN;
     unsigned int mminN;
-//    double mmin;
-//    double mmax;
 };
 
 #endif // GRID_H
