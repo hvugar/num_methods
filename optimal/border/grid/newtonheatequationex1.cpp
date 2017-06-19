@@ -9,7 +9,7 @@ void NewtonHeatEquationEx1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARA
 
     Dimension time(0.1, 10, 0);
     ex1.setTimeDimension(time);
-    Dimension dim1(0.001, 1000, 0);
+    Dimension dim1(0.01, 100, 0);
     ex1.addSpaceDimension(dim1);
 
     DoubleVector U(dim1.sizeN()+1);
@@ -24,10 +24,12 @@ void NewtonHeatEquationEx1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARA
         U[n] = ex1.U(sn, tn);
     }
 
+    IPrinter::printVector(14, 10, U);
+
     DoubleVector u(dim1.sizeN()+1);
     ex1.calculateGM1(u,ForwardSweep);
-
-    IPrinter::printVector(14, 10, U);
+    IPrinter::printVector(14, 10, u);
+    ex1.calculateGM2(u,ForwardSweep);
     IPrinter::printVector(14, 10, u);
 }
 
