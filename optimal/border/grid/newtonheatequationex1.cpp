@@ -31,7 +31,8 @@ void NewtonHeatEquationEx1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARA
     IPrinter::printVector(14, 10, u);
     ex1.calculateGM2(u,ForwardSweep);
     IPrinter::printVector(14, 10, u);
-}
+    ex1.calculateGM3(u,ForwardSweep);
+    IPrinter::printVector(14, 10, u);}
 
 double NewtonHeatEquationEx1::U(const SpaceNode &sn, const TimeNode &tn) const
 {

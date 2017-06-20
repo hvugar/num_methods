@@ -23,6 +23,7 @@ protected:
 public:
     void calculateGM1(DoubleVector &u, SweepMethodDirection direction = ForwardSweep);
     void calculateGM2(DoubleVector &u, SweepMethodDirection direction = ForwardSweep);
+    void calculateGM3(DoubleVector &u, SweepMethodDirection direction = ForwardSweep);
 
     virtual void layerInfo(const DoubleVector &, unsigned int) const {}
 };
