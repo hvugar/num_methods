@@ -52,9 +52,9 @@ void NewtonHeatEquation::calculateGM1(DoubleVector &u, SweepMethodDirection dire
         aa = a(isn,tn);
 
         ka[0] = 0.0;
-        kb[0] = 1.0+aa*(ht/(hx*hx))+lambda1*aa*(ht/hx) + lambda0*ht;
-        kc[0] = -aa*(ht/(hx*hx));
-        kd[0] = u[0] + lambda0*ht*theta0(tn) + lambda1*aa*(ht/hx)*theta1(tn) + ht*f(isn,tn);
+        kb[0] = 1.0+2.0*aa*(ht/(hx*hx))+2.0*lambda1*aa*(ht/hx) + lambda0*ht;
+        kc[0] = -2.0*aa*(ht/(hx*hx));
+        kd[0] = u[0] + lambda0*ht*theta0(tn) + 2.0*lambda1*aa*(ht/hx)*theta1(tn) + ht*f(isn,tn);
         for (unsigned int n=1; n<=N-1; n++)
         {
             isn.i = n+minN;
@@ -70,10 +70,10 @@ void NewtonHeatEquation::calculateGM1(DoubleVector &u, SweepMethodDirection dire
         isn.x = isn.i*hx;
         aa = a(isn,tn);
 
-        ka[N] = -aa*(ht/(hx*hx));
-        kb[N] = 1.0+aa*(ht/(hx*hx))+lambda2*aa*(ht/hx) + lambda0*ht;
+        ka[N] = -2.0*aa*(ht/(hx*hx));
+        kb[N] = 1.0+2.0*aa*(ht/(hx*hx))+2.0*lambda2*aa*(ht/hx) + lambda0*ht;
         kc[N] = 0.0;
-        kd[N] = u[N] + lambda0*ht*theta0(tn) + lambda2*aa*(ht/hx)*theta2(tn) + ht*f(isn,tn);
+        kd[N] = u[N] + lambda0*ht*theta0(tn) + 2.0*lambda2*aa*(ht/hx)*theta2(tn) + ht*f(isn,tn);
 
         (*algorithm)(ka, kb, kc, kd, rx, N+1);
 
@@ -157,16 +157,16 @@ void NewtonHeatEquation::calculateGM3(DoubleVector &u, SweepMethodDirection dire
         kc[0] = c1-c0*(a1/a0);
         kd[0] = d1-d0*(a1/a0);
 
-        for (unsigned int n=1; n<=N-3; n++)
+        for (unsigned int n=2; n<=N-2; n++)
         {
             isn.i = n+minN;
             isn.x = isn.i*hx;
             aa = a(isn,tn);
 
-            ka[n] = -aa*(ht/(hx*hx));
-            kb[n] = 1.0 + 2.0*aa*(ht/(hx*hx)) + lambda0*ht;
-            kc[n] = -aa*(ht/(hx*hx));
-            kd[n] = u[n] + lambda0*ht*theta0(tn) + ht*f(isn,tn);
+            ka[n-1] = -aa*(ht/(hx*hx));
+            kb[n-1] = 1.0 + 2.0*aa*(ht/(hx*hx)) + lambda0*ht;
+            kc[n-1] = -aa*(ht/(hx*hx));
+            kd[n-1] = u[n] + lambda0*ht*theta0(tn) + ht*f(isn,tn);
         }
 
         isn.i = (N-1)+minN;
@@ -192,8 +192,9 @@ void NewtonHeatEquation::calculateGM3(DoubleVector &u, SweepMethodDirection dire
 
         (*algorithm)(ka, kb, kc, kd, rx, N-1);
 
-        for (unsigned int n=1; n<=N-1; n++) u[n] = rx[n-1];
-        u[0] = -(b0/a0)*u[1]-(c0/a0)*u[2]+d0/a0;
+        for (unsigned int n=1; n<=N-1; n++)
+            u[n] = rx[n-1];
+        u[0] = -(b0/a0)*u[1]  -(c0/a0)*u[2]  +d0/a0;
         u[N] = -(bN/cN)*u[N-1]-(aN/cN)*u[N-2]+dN/cN;
 
         //layerInfo(u, m);
@@ -259,9 +260,9 @@ void NewtonHeatEquation::calculateGM2(DoubleVector &u, SweepMethodDirection dire
         aa = a(isn,tn);
 
         ka[0] = 0.0;
-        kb[0] = 1.0+aa*(ht/(hx*hx))+lambda1*aa*(ht/hx) + lambda0*ht;
-        kc[0] = -aa*(ht/(hx*hx));
-        kd[0] = u[0] + lambda0*ht*theta0(tn) + lambda1*aa*(ht/hx)*theta1(tn) + ht*f(isn,tn);
+        kb[0] = 1.0+2.0*aa*(ht/(hx*hx))+2.0*lambda1*aa*(ht/hx) + lambda0*ht;
+        kc[0] = -2.0*aa*(ht/(hx*hx));
+        kd[0] = u[0] + lambda0*ht*theta0(tn) + 2.0*lambda1*aa*(ht/hx)*theta1(tn) + ht*f(isn,tn);
         for (unsigned int n=1; n<=N-1; n++)
         {
             isn.i = n+minN;
@@ -277,10 +278,10 @@ void NewtonHeatEquation::calculateGM2(DoubleVector &u, SweepMethodDirection dire
         isn.x = isn.i*hx;
         aa = a(isn,tn);
 
-        ka[N] = -aa*(ht/(hx*hx));
-        kb[N] = 1.0+aa*(ht/(hx*hx))+lambda2*aa*(ht/hx) + lambda0*ht;
+        ka[N] = -2.0*aa*(ht/(hx*hx));
+        kb[N] = 1.0+2.0*aa*(ht/(hx*hx))+2.0*lambda2*aa*(ht/hx) + lambda0*ht;
         kc[N] = 0.0;
-        kd[N] = u[N] + lambda0*ht*theta0(tn) + lambda2*aa*(ht/hx)*theta2(tn) + ht*f(isn,tn);
+        kd[N] = u[N] + lambda0*ht*theta0(tn) + 2.0* lambda2*aa*(ht/hx)*theta2(tn) + ht*f(isn,tn);
 
         //(*algorithm)(ka, kb, kc, kd, rx, N+1);
 
