@@ -23,6 +23,8 @@ protected:
     virtual double a(const SpaceNode &sn, const TimeNode &tn) const = 0;
 
 public:
+    void gridMethod(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);
+
     void gridMethod0(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);
     void gridMethod1(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);
     void gridMethod2(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);

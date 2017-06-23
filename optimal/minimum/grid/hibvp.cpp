@@ -1,5 +1,9 @@
 #include "hibvp.h"
 
+void HyperbolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction)
+{
+}
+
 void HyperbolicIBVP::gridMethod0(DoubleMatrix &u, SweepMethodDirection direction)
 {
     typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
