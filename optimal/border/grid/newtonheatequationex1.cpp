@@ -23,16 +23,18 @@ void NewtonHeatEquationEx1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARA
         sn.x = n*dim1.step();
         U[n] = ex1.U(sn, tn);
     }
-
     IPrinter::printVector(14, 10, U);
 
-    DoubleVector u(dim1.sizeN()+1);
+    DoubleVector u;
     ex1.calculateGM1(u,ForwardSweep);
     IPrinter::printVector(14, 10, u);
+
     ex1.calculateGM2(u,ForwardSweep);
     IPrinter::printVector(14, 10, u);
+
     ex1.calculateGM3(u,ForwardSweep);
-    IPrinter::printVector(14, 10, u);}
+    IPrinter::printVector(14, 10, u);
+}
 
 double NewtonHeatEquationEx1::U(const SpaceNode &sn, const TimeNode &tn) const
 {

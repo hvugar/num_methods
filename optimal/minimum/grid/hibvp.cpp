@@ -2,6 +2,8 @@
 
 void HyperbolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction)
 {
+    C_UNUSED(u);
+    C_UNUSED(direction);
 }
 
 void HyperbolicIBVP::gridMethod0(DoubleMatrix &u, SweepMethodDirection direction)

@@ -97,7 +97,8 @@ double ParabolicIBVP1::initial(const SpaceNode& sn) const
 #endif
 #ifdef SAMPLE_8
     return 0.0;
-#endif    return 0.0;
+#endif
+    return 0.0;
 }
 
 double ParabolicIBVP1::boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType boundary) const
@@ -147,7 +148,7 @@ double ParabolicIBVP1::boundary(const SpaceNode &sn, const TimeNode &tn, Boundar
 double ParabolicIBVP1::f(const SpaceNode &sn, const TimeNode &tn) const
 {
     double x = sn.x;
-    double t = tn.t;
+    //double t = tn.t;
 #ifdef SAMPLE_1
     return 1.0 - 2.0*a(sn,tn);
 #endif

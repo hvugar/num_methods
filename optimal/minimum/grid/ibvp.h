@@ -4,6 +4,11 @@
 #include "bvp.h"
 #include "grid.h"
 
+void MINIMUMSHARED_EXPORT qovma_first_row(unsigned int K, unsigned int N,
+             DoubleVector &betta, double eta,
+             const DoubleMatrix &alpha,
+             const DoubleMatrix &phi, const DoubleVector &psi, DoubleVector &nx);
+
 enum SweepMethodDirection
 {
     ForwardSweep = 1,

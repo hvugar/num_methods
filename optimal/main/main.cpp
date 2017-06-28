@@ -9,6 +9,7 @@
 #include "problem1/problem1L3.h"
 
 #include "problem1/art_problem1.h"
+#include "problem1/loadedheatequation.h"
 
 #include "high_order/singledifequ.h"
 #include "high_order/systemdifequ.h"
@@ -65,7 +66,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //    ArtProblem1::Main(argc, argv);
 //    ArticleProblem1L3::Main(argc, argv);
 
-    //Example4::Main(argc, argv);
+
     //BorderParabolicD::Main(argc, argv);
     //BorderParabolicN::Main(argc, argv);
     //BorderParabolic2D::Main(argc, argv);
@@ -76,19 +77,15 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //ParabolicIBVP1::Main(argc, argv);
     //ParabolicIBVP2::Main(argc, argv);
     //HyperbolicIBVP1::Main(argc, argv);
-    NewtonHeatEquationEx1::Main(argc, argv);
+    //NewtonHeatEquationEx1::Main(argc, argv);
+    Problem1L3::Main(argc, argv);
+    LoadedHeatEquation::Main(argc, argv);
 
     //HeatControl::Main(argc, argv);
     //HeatControl1::Main(argc, argv);
 
     //Rosenbrock::Main(argc, argv);
     //QuadraticFunction::Main(argc,argv);
-
-//    lxw_workbook  *workbook  = workbook_new("hello_world.xlsx");
-//    lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
-//    worksheet_write_string(worksheet, 0, 0, "Hello", NULL);
-//    worksheet_write_number(worksheet, 1, 0, 123, NULL);
-//    workbook_close(workbook);
 
     return 0;
 }

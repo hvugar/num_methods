@@ -1,26 +1,46 @@
 #include "problem1L3.h"
+#include <time.h>
 
 void Problem1L3::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     Problem1L3 p;
+
+    DoubleMatrix u(p.M+1,p.N+1);
+
+    DoubleVector k; k << -1.1 << -2.5 << -0.1;
+    DoubleVector z; z << 10.2 << 12.5 << 20.5;
+    DoubleVector e; e << 0.25 << 0.50 << 0.75;
+
+    //clock_t t = clock();
+    p.calculateU2(u,k,z,e);
+    IPrinter::printVector(14,10,u.row(1));
+    p.calculateU3(u,k,z,e);
+    IPrinter::printVector(14,10,u.row(1));
+    //t = clock() - t;
+    //printf("It took me %d clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
+
+
+    IPrinter::printSeperatorLine();
 }
 
 Problem1L3::Problem1L3()
 {
     L = 3;
 
-    N = 1000;
-    M = 1000;
-    hx = 0.001;
-    ht = 0.001;
+    N = 100;
+    M = 10000;
+    hx = 0.01;
+    ht = 0.0001;
     //h  = 0.001;
 
     lambda0 = 0.001;
     lambda1 = 1000.0;
     lambda2 = 1.0;
+    a = 1.0;
 
     fi = 2.0;
     tt = 3.0;
+    return;
     vfi << fi;
     vtt << tt;
 
@@ -28,7 +48,6 @@ Problem1L3::Problem1L3()
     alpha1 = 0.00;
     alpha2 = 0.00;
     alpha3 = 0.00;
-    a = 1.0;
 
     k0 << 0.0 << 0.0 << 0.0;
     z0 << 0.0 << 0.0 << 0.0;

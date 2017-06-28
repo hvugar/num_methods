@@ -6,6 +6,7 @@
 #include <math.h>
 #include <printer.h>
 #include <cmethods.h>
+#include <grid/ibvp.h>
 
 #define SAMPLE_1
 
