@@ -77,9 +77,9 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //ParabolicIBVP1::Main(argc, argv);
     //ParabolicIBVP2::Main(argc, argv);
     //HyperbolicIBVP1::Main(argc, argv);
-    //NewtonHeatEquationEx1::Main(argc, argv);
-    Problem1L3::Main(argc, argv);
-    LoadedHeatEquation::Main(argc, argv);
+    NewtonHeatEquationEx1::Main(argc, argv);
+    //Problem1L3::Main(argc, argv);
+    //LoadedHeatEquation::Main(argc, argv);
 
     //HeatControl::Main(argc, argv);
     //HeatControl1::Main(argc, argv);

@@ -12,11 +12,11 @@ void LoadedHeatEquation::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
 
     ex1.L = 3;
     ex1.params = new Parameter[ex1.L];
-    ex1.params[0].k = -1.1; ex1.params[0].z = 10.2; ex1.params[0].xi = 25; ex1.params[0].e = 0.25;
-    ex1.params[1].k = -2.5; ex1.params[1].z = 12.5; ex1.params[1].xi = 50; ex1.params[1].e = 0.50;
-    ex1.params[2].k = -0.1; ex1.params[2].z = 20.5; ex1.params[2].xi = 75; ex1.params[2].e = 0.75;
+    ex1.params[0].k = -1.1*0.0; ex1.params[0].z = 10.2; ex1.params[0].xi = 20; ex1.params[0].e = 0.2;
+    ex1.params[1].k = -2.5*0.0; ex1.params[1].z = 12.5; ex1.params[1].xi = 50; ex1.params[1].e = 0.5;
+    ex1.params[2].k = -0.1*0.0; ex1.params[2].z = 20.5; ex1.params[2].xi = 70; ex1.params[2].e = 0.7;
 
-    Dimension time(0.0001, 10000, 0);
+    Dimension time(0.01, 100, 0);
     ex1.setTimeDimension(time);
     Dimension dim1(0.01, 100, 0);
     ex1.addSpaceDimension(dim1);
@@ -55,7 +55,8 @@ double LoadedHeatEquation::U(const SpaceNode &sn, const TimeNode &tn) const
 double LoadedHeatEquation::initial(const SpaceNode &sn) const
 {
     C_UNUSED(sn);
-    return 2.0;
+    return 0.0;
+    //return 2.0;
 }
 
 double LoadedHeatEquation::boundary(const SpaceNode &sn UNUSED_PARAM, const TimeNode &tn UNUSED_PARAM,
@@ -68,25 +69,25 @@ double LoadedHeatEquation::f(const SpaceNode &sn, const TimeNode &tn) const
 {
     double t = tn.t; C_UNUSED(t);
     double x = sn.x; C_UNUSED(x);
-    //return x*x - 2.0*a*a*t + lambda0*(x*x*t-theta);
-    return 0.0;
+    return x*x - 2.0*a*a*t + lambda0*(x*x*t-theta);
+    //return 0.0;
 }
 
 double LoadedHeatEquation::g(const TimeNode &tn) const
 {
     double t = tn.t; C_UNUSED(t);
-    //double v = 0.0;
-    //for (unsigned int s=0; s<L; s++)
-    //    v += params[s].k*(params[s].e*params[s].e*t - params[s].z);
-    //return 0.0 - lambda1 * (0.0 - v);
-    return 0.0;
+    double v = 0.0;
+    for (unsigned int s=0; s<L; s++)
+        v += params[s].k*(params[s].e*params[s].e*t - params[s].z);
+    return 0.0 - lambda1 * (0.0 - v);
+    //return 0.0;
 }
 
 double LoadedHeatEquation::h(const TimeNode &tn) const
 {
     double t = tn.t; C_UNUSED(t);
-    //return 2.0*t + lambda2*(t-theta);
-    return 0.0;
+    return 2.0*t + lambda2*(t-theta);
+    //return 0.0;
 }
 
 void LoadedHeatEquation::layerInfo(const DoubleVector &u, unsigned int m) const

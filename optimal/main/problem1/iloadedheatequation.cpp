@@ -80,6 +80,11 @@ void ILoadedHeatEquation::calculateM1(DoubleVector &u)
         kc[N] = 0.0;
         kd[N] = u[N] + lambda0_ht_tt + 2.0*lambda2_a_a_ht_tt_hx + ht*f(isn,tn) + 2.0*aa*(ht/hx)*h(tn);
 
+//        IPrinter::printVector(ka,N+1,"a");
+//        IPrinter::printVector(kb,N+1,"b");
+//        IPrinter::printVector(kc,N+1,"c");
+//        IPrinter::printVector(kd,N+1,"d");
+
         double *betta = (double *)malloc(sizeof(double)*(N+1));
         for (unsigned int n=0; n<=N; n++) betta[n] = 0.0;
         double eta = kd[0];
@@ -91,12 +96,39 @@ void ILoadedHeatEquation::calculateM1(DoubleVector &u)
             betta[params[s].xi] = -2.0*lambda1*aa*(ht/hx)*params[s].k;
         }
 
+//        DoubleMatrix MM(N+1, N+1);
+//        DoubleVector AA(N+1);
+//        DoubleVector XX(N+1);
+
+//        for (unsigned int n=0; n<=N; n++)
+//        {
+//            MM[0][n] = betta[n];
+//            AA[n] = kd[n];
+//        }
+//        for (unsigned int n=1; n<=N; n++)
+//        {
+//            MM[n][n-1] = ka[n];
+//            MM[n][n+0] = kb[n];
+//            MM[n][n+1] = kc[n];
+//        }
+
+//        GaussianElimination(MM, AA, XX);
+
+//        for (unsigned int n=0; n<=N; n++) u[n] = XX[n];
+
         for (unsigned int n=1; n<=N-1; n++)
         {
             betta[n+0] -= betta[n-1]*(kb[n]/ka[n]);
             betta[n+1] -= betta[n-1]*(kc[n]/ka[n]);
             eta        -= betta[n-1]*(kd[n]/ka[n]);
+
+//            if (n==1)
+//            {
+//                printf("%.18f %.18f\n", betta[n], betta[n+1]);
+//            }
         }
+
+//        IPrinter::printVector(betta, N+1, "betta");
 
         DoubleMatrix M(2,2);
         DoubleVector A(2);
@@ -107,8 +139,8 @@ void ILoadedHeatEquation::calculateM1(DoubleVector &u)
 
         GaussianElimination(M,A,x);
 
-        printf("Eta %18.10f\n", A[0]);
-        IPrinter::print(M,M.rows(),M.cols());
+        //printf("Eta %18.10f\n", A[0]);
+        //IPrinter::print(M,M.rows(),M.cols());
 
         u[N-0] = x[1];
         u[N-1] = x[0];

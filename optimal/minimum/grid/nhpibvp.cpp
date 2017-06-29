@@ -85,6 +85,7 @@ void NewtonHeatEquation::calculateGM1(DoubleVector &u, SweepMethodDirection dire
         for (unsigned int n=0; n<=N; n++) u[n] = rx[n];
 
         //layerInfo(u, m);
+        break;
     }
 
     free(ka);
@@ -178,15 +179,56 @@ void NewtonHeatEquation::calculateGM2(DoubleVector &u, SweepMethodDirection dire
         //(*algorithm)(ka, kb, kc, kd, rx, N+1);
 
         double *betta = (double *)malloc(sizeof(double)*(N+1));
+        for (unsigned int i=0; i<=N; i++) betta[i] = 0.0;
         double eta = kd[0];
         betta[0] = kb[0];
         betta[1] = kc[0];
+
+        //IPrinter::printVector(betta,N+1);
+
+        double betta_norm = 0.0;
+        for (unsigned int i=0; i<=N; i++)
+        {
+            betta_norm += betta[i]*betta[i];
+        }
+        betta_norm += eta*eta;
+        betta_norm = sqrt(betta_norm);
+        //printf("norm: %f\n", betta_norm);
+
+        for (unsigned int i=0; i<=N; i++)
+        {
+            betta[i] = betta[i]/betta_norm;
+        }
+        eta /= betta_norm;
+        //.0IPrinter::printVector(betta,N+1);
+
+        betta_norm = 0.0;
+        for (unsigned int i=0; i<=N; i++)
+        {
+            betta_norm += betta[i]*betta[i];
+        }
+        betta_norm = sqrt(betta_norm);
+        //printf("norm: %f\n", betta_norm);
 
         for (unsigned int n=1; n<=N-1; n++)
         {
             betta[n+0] = -betta[n-1]*(kb[n]/ka[n]) + betta[n];
             betta[n+1] = -betta[n-1]*(kc[n]/ka[n]);
             eta = eta - betta[n-1]*(kd[n]/ka[n]);
+
+            double betta_norm = 0.0;
+            for (unsigned int i=0; i<=N; i++)
+            {
+                betta_norm += betta[i]*betta[i];
+            }
+            betta_norm += eta*eta;
+            betta_norm = sqrt(betta_norm);
+            for (unsigned int i=0; i<=N; i++)
+            {
+                betta[i] = betta[i]/betta_norm;
+            }
+            eta /= betta_norm;
+
         }
 
         DoubleMatrix M(2,2);
@@ -212,7 +254,7 @@ void NewtonHeatEquation::calculateGM2(DoubleVector &u, SweepMethodDirection dire
         //IPrinter::printVector(18,10,u);
 
         //layerInfo(u, m);
-        //break;
+        break;
     }
 
     free(ka);

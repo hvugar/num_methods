@@ -7,7 +7,7 @@ void NewtonHeatEquationEx1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARA
     ex1.lambda1 = 1.0;
     ex1.lambda2 = 1.0;
 
-    Dimension time(0.1, 10, 0);
+    Dimension time(0.0001, 10000, 0);
     ex1.setTimeDimension(time);
     Dimension dim1(0.01, 100, 0);
     ex1.addSpaceDimension(dim1);
@@ -32,8 +32,8 @@ void NewtonHeatEquationEx1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARA
     ex1.calculateGM2(u,ForwardSweep);
     IPrinter::printVector(14, 10, u);
 
-    ex1.calculateGM3(u,ForwardSweep);
-    IPrinter::printVector(14, 10, u);
+//    ex1.calculateGM3(u,ForwardSweep);
+//    IPrinter::printVector(14, 10, u);
 }
 
 double NewtonHeatEquationEx1::U(const SpaceNode &sn, const TimeNode &tn) const
