@@ -115,6 +115,9 @@ void BorderParabolicD::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 double BorderParabolicD::initial(unsigned int i UNUSED_PARAM) const
 {
+#ifndef SAMPLE_0
+    return U(i,0);
+#endif
 #ifndef SAMPLE_8
     return U(i,0);
 #endif
@@ -125,6 +128,10 @@ double BorderParabolicD::initial(unsigned int i UNUSED_PARAM) const
 
 double BorderParabolicD::boundary(Boundary type UNUSED_PARAM, unsigned int j UNUSED_PARAM) const
 {
+#ifndef SAMPLE_0
+    if (type == Left)  return U(0,j);
+    if (type == Right) return U(N,j);
+#endif
 #ifndef SAMPLE_8
     if (type == Left)  return U(0,j);
     if (type == Right) return U(N,j);
@@ -140,6 +147,9 @@ double BorderParabolicD::f(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PA
 {
     double t UNUSED_PARAM = j*ht;
     double x UNUSED_PARAM = i*hx;
+#ifdef SAMPLE_0
+    return x*x - 2.0*a*a*t;
+#endif
 #ifdef SAMPLE_1
     return 2.0*t - 2.0*a*a;
 #endif
@@ -179,6 +189,9 @@ double BorderParabolicD::U(unsigned int i, unsigned int j) const
 {
     double x = i*hx;
     double t = j*ht;
+#ifdef SAMPLE_0
+    return x*x*t;
+#endif
 #ifdef SAMPLE_1
     return x*x + t*t;
 #endif

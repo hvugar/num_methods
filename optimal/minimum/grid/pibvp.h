@@ -31,6 +31,8 @@ public:
 
     void gridMethod(DoubleVector &u, SweepMethodDirection direction = ForwardSweep) const;
     void gridMethod(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep) const;
+    void gridMethod1(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep) const;
+    void gridMethod2(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep) const;
 
     void calculateMVD(DoubleMatrix &u) const;
 
