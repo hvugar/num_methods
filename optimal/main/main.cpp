@@ -48,6 +48,9 @@
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //srand(time(NULL));
+//    long double dip = 5.32e-5;
+//    printf("%d %Lf\n", sizeof(dip), dip);
+//    return 0;
 
     ParabolicIBVP1::Main(argc, argv);
 
