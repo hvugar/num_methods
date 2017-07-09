@@ -3,7 +3,13 @@
 void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     ParabolicIBVP1 p;
+<<<<<<< .mine
+    p.setTimeDimension(Dimension(0.01, 100, 0));
+||||||| .r1013
+    p.setTimeDimension(Dimension(0.0001, 10000, 0));
+=======
     p.setTimeDimension(Dimension(0.000001, 1000000, 0));
+>>>>>>> .r1014
     p.addSpaceDimension(Dimension(0.1, 10, 0));
     {
         unsigned int minN = p.spaceDimension(Dimension::Dim1).minN();
