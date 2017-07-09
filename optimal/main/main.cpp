@@ -52,7 +52,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //    printf("%d %Lf\n", sizeof(dip), dip);
 //    return 0;
 
-    ParabolicIBVP1::Main(argc, argv);
+    //ParabolicIBVP1::Main(argc, argv);
 
     //HyperbolicControl2DM::Main(argc, argv);
     //HyperbolicControl2DMX::Main(argc, argv);
@@ -71,7 +71,6 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //    ArtProblem1::Main(argc, argv);
 //    ArticleProblem1L3::Main(argc, argv);
 
-
     //BorderParabolicD::Main(argc, argv);
     //BorderParabolicN::Main(argc, argv);
     //BorderParabolic2D::Main(argc, argv);
@@ -83,7 +82,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //ParabolicIBVP2::Main(argc, argv);
     //HyperbolicIBVP1::Main(argc, argv);
     //NewtonHeatEquationEx1::Main(argc, argv);
-    //Problem1L3::Main(argc, argv);
+    Problem1L3::Main(argc, argv);
     //LoadedHeatEquation::Main(argc, argv);
 
     //HeatControl::Main(argc, argv);
