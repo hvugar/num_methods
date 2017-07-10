@@ -36,6 +36,8 @@ protected:
     //virtual double a(const SpaceNode &sn, const TimeNode &tn) const;
     virtual double g(const TimeNode &tn) const = 0;
     virtual double h(const TimeNode &tn) const = 0;
+
+    void qovmaFirstRowM(double *e, double *a, double *b, double *c, double *d, double *x, unsigned int N) const;
 };
 
 #endif // ILOADEDHEATEQUATION_H
