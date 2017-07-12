@@ -12,13 +12,13 @@ void LoadedHeatEquation::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
 
     ex1.L = 3;
     ex1.params = new Parameter[ex1.L];
-    ex1.params[0].k = -1.1*0.0; ex1.params[0].z = 10.2; ex1.params[0].xi = 20; ex1.params[0].e = 0.2;
-    ex1.params[1].k = -2.5*0.0; ex1.params[1].z = 12.5; ex1.params[1].xi = 50; ex1.params[1].e = 0.5;
-    ex1.params[2].k = -0.1*0.0; ex1.params[2].z = 20.5; ex1.params[2].xi = 70; ex1.params[2].e = 0.7;
+    ex1.params[0].k = -1.1; ex1.params[0].z = 10.2; ex1.params[0].xi = 30; ex1.params[0].e = 0.3;
+    ex1.params[1].k = -2.5; ex1.params[1].z = 12.5; ex1.params[1].xi = 50; ex1.params[1].e = 0.5;
+    ex1.params[2].k = -0.1; ex1.params[2].z = 20.5; ex1.params[2].xi = 70; ex1.params[2].e = 0.7;
 
     Dimension time(0.01, 100, 0);
     ex1.setTimeDimension(time);
-    Dimension dim1(0.01, 100, 0);
+    Dimension dim1(0.1, 10, 0);
     ex1.addSpaceDimension(dim1);
 
     DoubleVector U(dim1.sizeN()+1);
@@ -37,7 +37,7 @@ void LoadedHeatEquation::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
 
     DoubleVector u;
     //clock_t t = clock();
-    ex1.calculateM1(u);
+    ex1.calculateM2(u);
     //t = clock() - t;
     //printf("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
     IPrinter::printSeperatorLine();

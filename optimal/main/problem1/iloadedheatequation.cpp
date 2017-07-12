@@ -211,22 +211,18 @@ void ILoadedHeatEquation::calculateM2(DoubleVector &u)
         kc[0] = -2.0*a_a_ht_hx_hx;
         kd[0] = u[0] + lambda0_ht_tt + ht*f(isn,tn) - 2.0*lambda1_a_a_ht_hx*sum - 2.0*aa*(ht/hx)*g(tn);
 
-        ke[0] = kb[0];
-        ke[1] = kc[0];
         for (unsigned int n=0; n<=N; n++)
         {
-            double sm = 0.0;
+            ke[n] = 0.0;
             for (unsigned int s=0; s<L; s++)
             {
                 double diff = fabs(n*hx - params[s].e);
                 if (diff <= hx)
                 {
-                    sm += params[s].k * (1.0 - diff/hx);
+                    ke[n] += params[s].k * (1.0 - diff/hx);
                 }
              }
-             sm *= -lambda1_a_a_ht_hx;
-             ke[n] += sm;
-             if (ke!=0.0) ki[n] = 1; else ki[n] = 0;
+             ke[n] *= -lambda1_a_a_ht_hx;
         }
 
         /* preparing intermadiate rows */
@@ -253,33 +249,43 @@ void ILoadedHeatEquation::calculateM2(DoubleVector &u)
 
         /* calculating... */
 
-        unsigned int L1 = 0;
-        for (unsigned int n=0; n<=N; n++)
+        /* finding loaded points count which index >= 2 */
+        unsigned int LPC = 0;
+        for (unsigned int n=2; n<=N; n++) if ( ke[n] != 0.0 ) LPC++;
+
+        double* p = (double*) malloc(sizeof(double) * (N+1));
+        double* q = (double*) malloc(sizeof(double) * (N+1));
+
+        double** k = (double**) malloc(sizeof(double*) * (N+1));
+        for (unsigned int n=0; n<=N; n++) k[n] = (double*) malloc(sizeof(double)*LPC);
+
+        unsigned int *ki = (unsigned int*) malloc(sizeof(unsigned int) * LPC);
+        int kIndex = 0;
+        for (unsigned int n=2; n<=N; n++)
         {
-            if (ke[n]!=0.0) L1++;
+            if (ke[n]!=0.0)
+            {
+                ki[kIndex] = n;
+                kIndex++;
+            }
         }
 
-        unsigned int *ki = (unsigned int*) malloc(sizeof(unsigned int) * L1);
-        for (unsigned int n=0; n<=N; n++)
-        {
-            if (ke[n]!=0.0) ki[n] = n;
-        }
-
-        double** p = (double**) malloc(sizeof(double*) * (N+1));
-
-        for (unsigned int n=0; n<N; n++)
-            p[n] = (double*) malloc(sizeof(double)*L1);
+        IPrinter::printVector(ke,N+1);
 
         for (unsigned int n=0; n<N; n++)
         {
             if (n==0)
             {
-                p[0][0] = +kd[0]/ke[0];
-                for (unsigned int i=1; i<L1; i++) p[0][ki[i]] = -ke[ki[i]]/ke[0];
+                kb[0] += ke[0];
+                kc[0] += ke[1];
+
+                p[0] = -kc[0]/kb[0];
+                q[0] = +kd[0]/kb[0];
+                for (unsigned int s=0; s<LPC; s++) k[0][s] = -ke[ki[s]]/kb[0];
             }
             if (n==N)
             {
-                double m = kb[n] + ka[n]*p[n-1][n];
+                //double m = kb[n] + ka[n]*p[n-1][n];
             }
             else
             {
@@ -287,8 +293,11 @@ void ILoadedHeatEquation::calculateM2(DoubleVector &u)
             }
         }
 
+
+        //for (unsigned int i=0; i<L1; i++) printf("%d %.14f\n", i, p[1][i]); printf("\n");
+
         free(ki);
-        for (unsigned int n=0; n<N; n++) free(p[n]);
+        for (unsigned int n=0; n<=N; n++) free(k[n]);
         free(p);
 
 
