@@ -1,4 +1,5 @@
 #include "iloadedheatequation.h"
+#include <float.h>
 
 void ILoadedHeatEquation::calculateM1(DoubleVector &u)
 {
@@ -20,7 +21,7 @@ void ILoadedHeatEquation::calculateM1(DoubleVector &u)
 
     double *ka = (double*) malloc(sizeof(double)*(N+1));
     double *kb = (double*) malloc(sizeof(double)*(N+1));
-    double *kc = (double*) malloc(sizeof(double)*(N+1));
+    double *c1 = (double*) malloc(sizeof(double)*(N+1));
     double *kd = (double*) malloc(sizeof(double)*(N+1));
     double *rx = (double*) malloc(sizeof(double)*(N+1));
 
@@ -58,7 +59,7 @@ void ILoadedHeatEquation::calculateM1(DoubleVector &u)
 
         ka[0] = 0.0;
         kb[0] = 1.0 + 2.0*a_a_ht_hx_hx + lambda0_ht + 2.0*lambda1_a_a_ht_hx;
-        kc[0] = -2.0*a_a_ht_hx_hx;
+        c1[0] = -2.0*a_a_ht_hx_hx;
         kd[0] = u[0] + lambda0_ht_tt + ht*f(isn,tn) - 2.0*lambda1_a_a_ht_hx*sum - 2.0*aa*(ht/hx)*g(tn);
         for (unsigned int n=1; n<=N-1; n++)
         {
@@ -68,7 +69,7 @@ void ILoadedHeatEquation::calculateM1(DoubleVector &u)
 
             ka[n] = -a_a_ht_hx_hx;
             kb[n] = 1.0 + 2.0*aa*(ht/(hx*hx)) + lambda0_ht;
-            kc[n] = -a_a_ht_hx_hx;
+            c1[n] = -a_a_ht_hx_hx;
             kd[n] = u[n] + lambda0_ht_tt + ht*f(isn,tn);
         }
         isn.i = N+minN;
@@ -77,14 +78,14 @@ void ILoadedHeatEquation::calculateM1(DoubleVector &u)
 
         ka[N] = -2.0*a_a_ht_hx_hx;
         kb[N] = 1.0 + 2.0*a_a_ht_hx_hx + lambda0_ht + 2.0*lambda2_a_a_ht_hx;
-        kc[N] = 0.0;
+        c1[N] = 0.0;
         kd[N] = u[N] + lambda0_ht_tt + ht*f(isn,tn) + 2.0*lambda2_a_a_ht_tt_hx + 2.0*aa*(ht/hx)*h(tn);
 
         double *betta = (double *)malloc(sizeof(double)*(N+1));
         for (unsigned int n=0; n<=N; n++) betta[n] = 0.0;
         double eta = kd[0];
         betta[0] = kb[0];
-        betta[1] = kc[0];
+        betta[1] = c1[0];
 
         for (unsigned int s=0; s<L; s++)
         {
@@ -94,7 +95,7 @@ void ILoadedHeatEquation::calculateM1(DoubleVector &u)
         for (unsigned int n=1; n<=N-1; n++)
         {
             betta[n+0] -= betta[n-1]*(kb[n]/ka[n]);
-            betta[n+1] -= betta[n-1]*(kc[n]/ka[n]);
+            betta[n+1] -= betta[n-1]*(c1[n]/ka[n]);
             eta        -= betta[n-1]*(kd[n]/ka[n]);
         }
 
@@ -113,7 +114,7 @@ void ILoadedHeatEquation::calculateM1(DoubleVector &u)
         for (unsigned int n=N-1; n!=0; n--)
         {
             eta        += betta[n-1]*(kd[n]/ka[n]);
-            betta[n+1] += betta[n-1]*(kc[n]/ka[n]);
+            betta[n+1] += betta[n-1]*(c1[n]/ka[n]);
             betta[n+0] += betta[n-1]*(kb[n]/ka[n]);
 
             //u[n-1] = eta; for (unsigned int i=n; i<=N; i++) u[n-1] -= betta[i]*u[i];
@@ -136,7 +137,7 @@ void ILoadedHeatEquation::calculateM1(DoubleVector &u)
 
     free(ka);
     free(kb);
-    free(kc);
+    free(c1);
     free(kd);
     free(rx);
 }
@@ -163,14 +164,14 @@ void ILoadedHeatEquation::calculateM2(DoubleVector &u)
     u.clear();
     u.resize(N+1);
 
-    double *ka = (double*) malloc(sizeof(double)*(N+1));
-    double *kb = (double*) malloc(sizeof(double)*(N+1));
-    double *kc = (double*) malloc(sizeof(double)*(N+1));
-    double *kd = (double*) malloc(sizeof(double)*(N+1));
+    double *a1 = (double*) malloc(sizeof(double)*(N+1));
+    double *b1 = (double*) malloc(sizeof(double)*(N+1));
+    double *c1 = (double*) malloc(sizeof(double)*(N+1));
+    double *d1 = (double*) malloc(sizeof(double)*(N+1));
     double *rx = (double*) malloc(sizeof(double)*(N+1));
 
     /* first row */
-    double *ke = (double*) malloc(sizeof(double)*(N+1));
+    double *e1 = (double*) malloc(sizeof(double)*(N+1));
 
     double a_a_ht_hx_hx         = (a*a*ht)/(hx*hx);
     double lambda1_a_a_ht_hx    = (lambda1*a*a*ht)/hx;
@@ -205,25 +206,10 @@ void ILoadedHeatEquation::calculateM2(DoubleVector &u)
         for (unsigned int s=0; s<L; s++) sum += params[s].k * params[s].z;
 
         /* preparing first row */
-
-        ka[0] = 0.0;
-        kb[0] = 1.0 + 2.0*a_a_ht_hx_hx + lambda0_ht + 2.0*lambda1_a_a_ht_hx;
-        kc[0] = -2.0*a_a_ht_hx_hx;
-        kd[0] = u[0] + lambda0_ht_tt + ht*f(isn,tn) - 2.0*lambda1_a_a_ht_hx*sum - 2.0*aa*(ht/hx)*g(tn);
-
-        for (unsigned int n=0; n<=N; n++)
-        {
-            ke[n] = 0.0;
-            for (unsigned int s=0; s<L; s++)
-            {
-                double diff = fabs(n*hx - params[s].e);
-                if (diff <= hx)
-                {
-                    ke[n] += params[s].k * (1.0 - diff/hx);
-                }
-             }
-             ke[n] *= -lambda1_a_a_ht_hx;
-        }
+        a1[0] = 0.0;
+        b1[0] = 1.0 + 2.0*a_a_ht_hx_hx + lambda0_ht + 2.0*lambda1_a_a_ht_hx;
+        c1[0] = -2.0*a_a_ht_hx_hx;
+        d1[0] = u[0] + lambda0_ht_tt + ht*f(isn,tn) - 2.0*lambda1_a_a_ht_hx*sum - 2.0*aa*(ht/hx)*g(tn);
 
         /* preparing intermadiate rows */
 
@@ -232,26 +218,41 @@ void ILoadedHeatEquation::calculateM2(DoubleVector &u)
             isn.i = n+minN;
             isn.x = isn.i*hx;
             //aa = a*a;
-            ka[n] = -a_a_ht_hx_hx;
-            kb[n] = 1.0 + 2.0*aa*(ht/(hx*hx)) + lambda0_ht;
-            kc[n] = -a_a_ht_hx_hx;
-            kd[n] = u[n] + lambda0_ht_tt + ht*f(isn,tn);
+            a1[n] = -a_a_ht_hx_hx;
+            b1[n] = 1.0 + 2.0*aa*(ht/(hx*hx)) + lambda0_ht;
+            c1[n] = -a_a_ht_hx_hx;
+            d1[n] = u[n] + lambda0_ht_tt + ht*f(isn,tn);
         }
 
         /* preparing last row */
         isn.i = N+minN;
         isn.x = isn.i*hx;
         //aa = a(isn,tn);
-        ka[N] = -2.0*a_a_ht_hx_hx;
-        kb[N] = 1.0 + 2.0*a_a_ht_hx_hx + lambda0_ht + 2.0*lambda2_a_a_ht_hx;
-        kc[N] = 0.0;
-        kd[N] = u[N] + lambda0_ht_tt + ht*f(isn,tn) + 2.0*lambda2_a_a_ht_tt_hx + 2.0*aa*(ht/hx)*h(tn);
+        a1[N] = -2.0*a_a_ht_hx_hx;
+        b1[N] = 1.0 + 2.0*a_a_ht_hx_hx + lambda0_ht + 2.0*lambda2_a_a_ht_hx;
+        c1[N] = 0.0;
+        d1[N] = u[N] + lambda0_ht_tt + ht*f(isn,tn) + 2.0*lambda2_a_a_ht_tt_hx + 2.0*aa*(ht/hx)*h(tn);
+
+        for (unsigned int n=0; n<=N; n++)
+        {
+            e1[n] = 0.0;
+            for (unsigned int s=0; s<L; s++)
+            {
+                //double diff = fabs(n*hx - params[s].e);
+                //if (diff <= hx)
+                if (n == params[s].xi)
+                {
+                    e1[n] += params[s].k;// * (1.0 - diff/hx);
+                }
+             }
+             e1[n] *= -2.0*lambda1_a_a_ht_hx;
+        }
 
         /* calculating... */
 
         /* finding loaded points count which index >= 2 */
-        unsigned int LPC = 0;
-        for (unsigned int n=2; n<=N; n++) if ( ke[n] != 0.0 ) LPC++;
+        unsigned int LPC = L;
+        //for (unsigned int n=2; n<=N; n++) if ( fabs(e1[n]) > FLT_EPSILON ) LPC++;
 
         double* p = (double*) malloc(sizeof(double) * (N+1));
         double* q = (double*) malloc(sizeof(double) * (N+1));
@@ -259,44 +260,96 @@ void ILoadedHeatEquation::calculateM2(DoubleVector &u)
         double** k = (double**) malloc(sizeof(double*) * (N+1));
         for (unsigned int n=0; n<=N; n++) k[n] = (double*) malloc(sizeof(double)*LPC);
 
-        unsigned int *ki = (unsigned int*) malloc(sizeof(unsigned int) * LPC);
-        int kIndex = 0;
-        for (unsigned int n=2; n<=N; n++)
-        {
-            if (ke[n]!=0.0)
-            {
-                ki[kIndex] = n;
-                kIndex++;
-            }
-        }
+        //unsigned int *kI = (unsigned int*) malloc(sizeof(unsigned int) * LPC);
+        //int kIndex = 0;
+        //for (unsigned int n=2; n<=N; n++)
+        //{
+        //    if (fabs(e1[n]) > FLT_EPSILON)
+        //    {
+        //        kI[kIndex] = n;
+        //        kIndex++;
+        //    }
+        //}
 
-        IPrinter::printVector(ke,N+1);
+        IPrinter::printVector(a1,N+1);
+        IPrinter::printVector(b1,N+1);
+        IPrinter::printVector(c1,N+1);
+        IPrinter::printVector(d1,N+1);
+        IPrinter::printSeperatorLine();
 
-        for (unsigned int n=0; n<N; n++)
+        printf("%18.10f\n", b1[0]);
+
+        //printf("%4d c: %18.10f", 0, c1[0]); for (unsigned int s=0; s<LPC; s++) printf("k:%4d %18.10f", kI[s], e1[kI[s]]); printf("q:%18.10f\n", d1[0]);
+        printf("%4d c: %18.10f", 0, c1[0]); for (unsigned int s=0; s<LPC; s++) printf("k:%4d %18.10f", params[s].xi, e1[params[s].xi]); printf("q:%18.10f\n", d1[0]);
+        IPrinter::printSeperatorLine();
+
+        for (unsigned int n=0; n<=N; n++)
         {
             if (n==0)
             {
-                kb[0] += ke[0];
-                kc[0] += ke[1];
+                b1[0] += e1[0];
+                c1[0] += e1[1];
 
-                p[0] = -kc[0]/kb[0];
-                q[0] = +kd[0]/kb[0];
-                for (unsigned int s=0; s<LPC; s++) k[0][s] = -ke[ki[s]]/kb[0];
+                p[0] = -c1[0]/b1[0];
+                q[0] = +d1[0]/b1[0];
+
+                //for (unsigned int s=0; s<LPC; s++) k[0][s] = -e1[kI[s]]/b1[0];
+                for (unsigned int s=0; s<LPC; s++) k[0][s] = -e1[params[s].xi]/b1[0];
+
+                //printf("%4d p:%18.10f", 0, p[0]); for (unsigned int s=0; s<LPC; s++) printf("k:%4d %18.10f", kI[s], k[0][s]);  printf(" q:%18.10f\n", q[0]);
+                printf("%4d p:%18.10f", 0, p[0]); for (unsigned int s=0; s<LPC; s++) printf("k:%4d %18.10f", params[s].xi, k[0][s]);  printf(" q:%18.10f\n", q[0]);
             }
-            if (n==N)
+            else if (n==N)
             {
-                //double m = kb[n] + ka[n]*p[n-1][n];
+                double m = b1[n] + a1[n]*p[n-1];
+                q[n] = (d1[n] - a1[n]*q[n-1])/m;
+                p[n] = 0.0;
+                //printf("%4d p:%18.10f", n, p[n]); for (unsigned int s=0; s<LPC; s++) printf("k:%4d %18.10f", kI[s], k[n][s]); printf(" q:%18.10f\n", q[n]);
+                printf("%4d p:%18.10f", n, p[n]); for (unsigned int s=0; s<LPC; s++) printf("k:%4d %18.10f", params[s].xi, k[n][s]); printf(" q:%18.10f\n", q[n]);
             }
             else
             {
+                double m = b1[n] + a1[n]*p[n-1];
+                double c = +c1[n];
 
+                for (unsigned int s=0; s<LPC; s++)
+                {
+                    //if (kI[s] == n-1) c += a1[n]*k[n-1][s];
+                    if (params[s].xi == n-1) c += a1[n]*k[n-1][s];
+                }
+
+                p[n] = -c/m;
+                q[n] = (d1[n] - a1[n]*q[n-1])/m;
+
+                for (unsigned int s=0; s<LPC; s++)
+                {
+                    //if (kI[s] <= n+1)
+                    if (params[s].xi <= n+1)
+                    {
+                        k[n][s] = 0.0;
+                    }
+                    else
+                    {
+                        k[n][s] = -(a1[n]*k[n-1][s])/m;
+                    }
+                }
+                //printf("%4d p:%18.10f", n, p[n]); for (unsigned int s=0; s<LPC; s++) printf("k:%4d %18.10f", kI[s], k[n][s]); printf(" q:%18.10f\n", q[n]);
+                printf("%4d p:%18.10f", n, p[n]); for (unsigned int s=0; s<LPC; s++) printf("k:%4d %18.10f", params[s].xi, k[n][s]); printf(" q:%18.10f\n", q[n]);
             }
         }
 
+        u[N] = q[N];
 
-        //for (unsigned int i=0; i<L1; i++) printf("%d %.14f\n", i, p[1][i]); printf("\n");
+        for (unsigned int n=N; n!=0; n--)
+        {
+            u[n-1] = p[n-1]*u[n] + q[n-1];
+            for (unsigned int s=0; s<LPC; s++)
+            {
+                //u[n-1] += u[kI[s]] * k[n-1][s];
+            }
+        }
 
-        free(ki);
+        //free(kI);
         for (unsigned int n=0; n<=N; n++) free(k[n]);
         free(p);
 
@@ -305,10 +358,10 @@ void ILoadedHeatEquation::calculateM2(DoubleVector &u)
         break;
     }
 
-    free(ka);
-    free(kb);
-    free(kc);
-    free(kd);
+    free(a1);
+    free(b1);
+    free(c1);
+    free(d1);
     free(rx);
 }
 
