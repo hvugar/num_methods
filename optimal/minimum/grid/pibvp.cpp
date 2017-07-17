@@ -257,15 +257,23 @@ void ParabolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction 
         ka[0]   = 0.0;
         kc[N-2] = 0.0;
 
+        printf("%d\n",N);
+        printf("a: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",ka[i]); printf("\n");
+        printf("b: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kb[i]); printf("\n");
+        printf("c: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kc[i]); printf("\n");
+        printf("d: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kd[i]); printf("\n");
+
+
+//        IPrinter::printSeperatorLine();
+//        for (unsigned int i=0; i<=N-2; i++)
+//        {
+//            for (unsigned int j=0; j<=N-2; j++)
+//            {}
+//            if (i==0)
+//            printf("%14.10f %14.10f %14.10f %14.10f\n", ka[i], kb[i], kc[i], kd[i]);
+//        }
         IPrinter::printSeperatorLine();
-        for (unsigned int i=0; i<=N-2; i++)
-        {
-            for (unsigned int j=0; j<=N-2; j++)
-            {}
-            if (i==0)
-            printf("%14.10f %14.10f %14.10f %14.10f\n", ka[i], kb[i], kc[i], kd[i]);
-        }
-        IPrinter::printSeperatorLine();
+        return;
 
         /* border conditions */
         u[m][0] = boundary(lsn, tn, Left);
@@ -288,9 +296,9 @@ void ParabolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction 
 
         //printf("--- %d %d %16.12f %16.12f %16.12f\n", m, 0, betta[0], betta[1], eta);
 
-        printf("0 %2d|", 0);
-        for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
-        printf("|%.10f\n", eta);
+        //printf("0 %2d|", 0);
+        //for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
+        //printf("|%.10f\n", eta);
 
 #ifdef NORMALIZE_1
         norma[0] = eta*eta;
@@ -304,16 +312,16 @@ void ParabolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction 
 #endif
         //printf("+++ %d %d %16.12f %16.12f %16.12f\n", m, 0, betta[0], betta[1], eta);
 
-        printf("---------------------------------\n");
+        //printf("---------------------------------\n");
         for (unsigned int n=1; n<=N-3; n++)
         {
             betta[n+0] = betta[n+0] - betta[n-1]*(kb[n]/ka[n]);
             betta[n+1] = betta[n+1] - betta[n-1]*(kc[n]/ka[n]);
             eta        = eta        - betta[n-1]*(kd[n]/ka[n]);
 
-            printf("0 %2d|", n);
-            for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
-            printf("|%.10f\n", eta);
+            //printf("0 %2d|", n);
+            //for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
+            //printf("|%.10f\n", eta);
 #ifdef NORMALIZE_1
             norma[n] = eta*eta;
             for (unsigned int i=n; i<=N-2; i++) norma[n] += betta[i]*betta[i]; norma[n] = sqrt(norma[n]);
@@ -325,7 +333,7 @@ void ParabolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction 
             printf("|%.10f|%.10f\n", eta,norma[n]);
 #endif
         }
-        printf("---------------------------------\n");
+        //printf("---------------------------------\n");
 
         DoubleMatrix M(2,2);
         DoubleVector A(2);
@@ -345,9 +353,9 @@ void ParabolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction 
         u[m][N-2] = x[0];
         for (unsigned int n=N-3; n!=0; n--)
         {
-            printf("0 %2d|", n);
-            for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
-            printf("|%.10f|%.10f\n", eta,norma[n]);
+            //printf("0 %2d|", n);
+            //for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
+            //printf("|%.10f|%.10f\n", eta,norma[n]);
 #ifdef NORMALIZE_1
             for (unsigned int i=n; i<=n+1; i++) betta[i] *= norma[n];
             eta *= norma[n];
