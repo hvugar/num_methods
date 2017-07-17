@@ -186,7 +186,7 @@ void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction) 
     free(rx);
 }
 
-void ParabolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction UNUSED_PARAM) const
+void ParabolicIBVP::gridMethod1L(DoubleMatrix &u, SweepMethodDirection direction UNUSED_PARAM) const
 {
     //typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
     //t_algorithm algorithm = &tomasAlgorithm;
@@ -264,13 +264,13 @@ void ParabolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction 
         kd[0]   += a(lsn,tn) * h * u[m][0];
         kd[N-2] += a(rsn,tn) * h * u[m][N];
 
-        printf("%d\n",N);
-        printf("a: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",ka[i]); printf("\n");
-        printf("b: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kb[i]); printf("\n");
-        printf("c: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kc[i]); printf("\n");
-        printf("d: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kd[i]); printf("\n");
-        IPrinter::printSeperatorLine();
-        return;
+        //printf("%d\n",N);
+        //printf("a: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",ka[i]); printf("\n");
+        //printf("b: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kb[i]); printf("\n");
+        //printf("c: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kc[i]); printf("\n");
+        //printf("d: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kd[i]); printf("\n");
+        //IPrinter::printSeperatorLine();
+        //return;
 
         //(*algorithm)(ka, kb, kc, kd, rx, N-1);
 
@@ -372,7 +372,7 @@ void ParabolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction 
             //printf("------ %d %.10f\n", n, u[m][n]);
         }
 
-        IPrinter::printVector(16,12, u.row(m), "\n   m1");
+        IPrinter::printVector(16,12, u.row(m));
         //for (unsigned int n=0; n<=N-2; n++) u[m][n+1] = rx[n];
         break;
     }
@@ -457,12 +457,12 @@ void ParabolicIBVP::gridMethod1R(DoubleMatrix &u, SweepMethodDirection direction
         kd[0]   += a(lsn,tn) * h * u[m][0];
         kd[N-2] += a(rsn,tn) * h * u[m][N];
 
-        printf("%d\n",N);
-        printf("a: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",ka[i]); printf("\n");
-        printf("b: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kb[i]); printf("\n");
-        printf("c: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kc[i]); printf("\n");
-        printf("d: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kd[i]); printf("\n");
-        IPrinter::printSeperatorLine();
+        //printf("%d\n",N);
+        //printf("a: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",ka[i]); printf("\n");
+        //printf("b: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kb[i]); printf("\n");
+        //printf("c: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kc[i]); printf("\n");
+        //printf("d: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kd[i]); printf("\n");
+        //IPrinter::printSeperatorLine();
 
         unsigned int N1 = N-2;
         double *betta = (double *)malloc(sizeof(double)*(N1+1));
@@ -472,7 +472,7 @@ void ParabolicIBVP::gridMethod1R(DoubleMatrix &u, SweepMethodDirection direction
         betta[N1-1] = ka[N1];
         double eta  = kd[N1];
 
-        printf("%18.10f %18.10f %18.10f\n", betta[N1-1], betta[N1-0], eta);
+        //printf("%18.10f %18.10f %18.10f\n", betta[N1-1], betta[N1-0], eta);
 
         //printf("---------------------------------\n");
         for (unsigned int n=N1; n>=2; n--)
@@ -481,7 +481,7 @@ void ParabolicIBVP::gridMethod1R(DoubleMatrix &u, SweepMethodDirection direction
             betta[n-2] = betta[n-2] - betta[n]*(ka[n-1]/kc[n-1]);
             eta        = eta        - betta[n]*(kd[n-1]/kc[n-1]);
 
-            printf("%18.10f %18.10f %18.10f\n", betta[n-2], betta[n-1], eta);
+            //printf("%18.10f %18.10f %18.10f\n", betta[n-2], betta[n-1], eta);
         }
         //printf("---------------------------------\n");
 
@@ -492,50 +492,34 @@ void ParabolicIBVP::gridMethod1R(DoubleMatrix &u, SweepMethodDirection direction
         M[0][0] = betta[0];   M[0][1] = betta[1];   A[0] = eta;
         M[1][0] = kb[0];      M[1][1] = kc[0];      A[1] = kd[0];
 
-        puts("---");
-        IPrinter::print(M,2,2);
-        puts("---");
+        //puts("---");
+        //IPrinter::print(M,2,2);
+        //puts("---");
 
         GaussianElimination(M,A,x);
 
-//        printf("%d %18.10f %18.10f\n", m, x[0], x[1]);
-//        return;
+        printf("%d %18.10f %18.10f\n", m, x[0], x[1]);
+        //return;
 
-        //for (unsigned int n=0; n<=N; n++) u[n] = rx[n];
-        u[m][N-1] = x[1];
-        u[m][N-2] = x[0];
-        for (unsigned int n=N-3; n!=0; n--)
+        u[m][1] = x[0];
+        u[m][2] = x[1];
+        for (unsigned int n=2; n<=N1; n++)
         {
             //printf("0 %2d|", n);
             //for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
             //printf("|%.10f|%.10f\n", eta,norma[n]);
-#ifdef NORMALIZE_1
-            for (unsigned int i=n; i<=n+1; i++) betta[i] *= norma[n];
-            eta *= norma[n];
+            eta        = eta        + betta[n]*(kd[n-1]/kc[n-1]);
+            betta[n-2] = betta[n-2] + betta[n]*(ka[n-1]/kc[n-1]);
+            betta[n-1] = betta[n-1] + betta[n]*(kb[n-1]/kc[n-1]);
+            u[m][n+1]  = (eta - betta[n-1]*u[m][n])/betta[n];
 
-            printf("1 %2d|", n);
-            for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
-            printf("|%.10f\n", eta);
-#endif
-
-            eta        = eta        + betta[n-1]*(kd[n]/ka[n]);
-            betta[n+0] = betta[n+0] + betta[n-1]*(kb[n]/ka[n]);
-            betta[n+1] = betta[n+1] + betta[n-1]*(kc[n]/ka[n]);
-            //u[m][n]    = (eta - betta[n+1]*u[m][n+2] - betta[n+0]*u[m][n+1])/betta[n-1];
-            u[m][n]    = (eta - betta[n+0]*u[m][n+1])/betta[n-1];
-
-//            printf("2 %2d|", n);
-//            for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
-//            printf("|%.10f\n", eta);
-
-#ifdef NORMALIZE_1
-            //norma[n] = eta*eta;
-            //for (unsigned int i=n-1; i<=n; i++) norma[n] += betta[i]*betta[i]; norma[n] = sqrt(norma[n]);
-#endif
+            //printf("2 %2d|", n);
+            //for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
+            //printf("|%.10f\n", eta);
             //printf("------ %d %.10f\n", n, u[m][n]);
         }
 
-        IPrinter::printVector(16,12, u.row(m), "\n   m1");
+        IPrinter::printVector(16,12, u.row(m));
         //for (unsigned int n=0; n<=N-2; n++) u[m][n+1] = rx[n];
         break;
     }
