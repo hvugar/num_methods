@@ -1,4 +1,5 @@
 #include "pibvp.h"
+#include <limits>
 
 void ParabolicIBVP::gridMethod(DoubleVector &u, SweepMethodDirection direction) const
 {
@@ -186,13 +187,45 @@ void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction) 
     free(rx);
 }
 
+void funcL(const double* a, const double *b, const double *c, const double *d, double *x, unsigned int N)
+{
+    double *e = (double*) malloc(sizeof(double)*N);
+    for (unsigned int i=0; i<N; i++) e[i] = 0.0;
+
+    double *e0 = (double*)malloc(sizeof(double)*N);
+    double *e1 = (double*)malloc(sizeof(double)*N);
+    double *e2 = (double*)malloc(sizeof(double)*N);
+    for (unsigned int i=0; i<N; i++) e0[i] = e1[i] = e2[i] = 0.0;
+
+    e0[0] = b[0];
+    e1[0] = c[0];
+    e2[0] = d[0];
+    for (unsigned int n=1; n<=N-2; n++)
+    {
+        e0[n] = -e0[n-1]*(b[n]/a[n]) + e1[n-1];
+        e1[n] = -e0[n-1]*(c[n]/a[n]);
+        e2[n] = -e0[n-1]*(d[n]/a[n]) + e2[n-1];
+    }
+
+    DoubleMatrix M(2,2);
+    DoubleVector A(2);
+    DoubleVector y(2);
+
+    M[0][0] = e0[N-2];   M[0][1] = e1[N-2];   A[0] = e2[N-2];
+    M[1][0] = a[N-1];    M[1][1] = b[N-1];    A[1] = d[N-1];
+
+    GaussianElimination(M,A,y);
+
+    x[N-1] = y[1];
+    x[N-2] = y[0];
+    for (unsigned int n=N-3; n!=UINT_MAX; n--)
+    {
+        x[n] = (e2[n] - e1[n]*x[n+1])/e0[n];
+    }
+}
+
 void ParabolicIBVP::gridMethod1L(DoubleMatrix &u, SweepMethodDirection direction UNUSED_PARAM) const
 {
-    //typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
-    //t_algorithm algorithm = &tomasAlgorithm;
-    //if (direction == ForwardSweep) algorithm = &tomasAlgorithmL2R;
-    //if (direction == BackwardSweep) algorithm = &tomasAlgorithmR2L;
-
     Dimension time = mtimeDimension;
     Dimension dim1 = mspaceDimension.at(0);
 
@@ -264,12 +297,20 @@ void ParabolicIBVP::gridMethod1L(DoubleMatrix &u, SweepMethodDirection direction
         kd[0]   += a(lsn,tn) * h * u[m][0];
         kd[N-2] += a(rsn,tn) * h * u[m][N];
 
-        //printf("%d\n",N);
-        //printf("a: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",ka[i]); printf("\n");
-        //printf("b: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kb[i]); printf("\n");
-        //printf("c: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kc[i]); printf("\n");
-        //printf("d: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kd[i]); printf("\n");
-        //IPrinter::printSeperatorLine();
+        funcL(ka, kb, kc, kd, rx, N-1);
+        for (unsigned int n=1; n<=N-1; n++)
+        {
+            u[m][n] = rx[n-1];
+        }
+//        IPrinter::printVector(16,12, u.row(m));
+//        return;
+
+//        //printf("%d\n",N);
+//        //printf("a: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",ka[i]); printf("\n");
+//        //printf("b: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kb[i]); printf("\n");
+//        //printf("c: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kc[i]); printf("\n");
+//        //printf("d: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kd[i]); printf("\n");
+//        //IPrinter::printSeperatorLine();
 
 //        double *betta = (double *)malloc(sizeof(double)*(N-1));
 //        for (unsigned int i=0; i<=N-2; i++) betta[i] = 0.0;
@@ -279,68 +320,85 @@ void ParabolicIBVP::gridMethod1L(DoubleMatrix &u, SweepMethodDirection direction
 
 //        for (unsigned int n=1; n<=N-3; n++)
 //        {
-//            betta[n+0] = betta[n+0] - betta[n-1]*(kb[n]/ka[n]);
-//            betta[n+1] = betta[n+1] - betta[n-1]*(kc[n]/ka[n]);
-//            eta        = eta        - betta[n-1]*(kd[n]/ka[n]);
+//            printf("%4d %24.10f\t", n, betta[n+1]);
+
+//            double aaa = betta[n-1]/ka[n];
+//            betta[n+0] = betta[n+0] - aaa*kb[n];
+//            betta[n+1] = /*betta[n+1]*/ - aaa*kc[n];
+//            eta        = eta        - aaa*kd[n];
+
+//            printf("%4d %24.10f %24.10f\n", n, betta[n+1], aaa*kc[n]);
 //        }
 
 
-        double *b0 = (double *)malloc(sizeof(double)*(N-1));
-        double *b1 = (double *)malloc(sizeof(double)*(N-1));
-        double *ee = (double *)malloc(sizeof(double)*(N-1));
-        for (unsigned int i=0; i<=N-2; i++) b0[i] = b1[i] = ee[i] = 0.0;
+//        double *b0 = (double *)malloc(sizeof(double)*(N-1));
+//        double *b1 = (double *)malloc(sizeof(double)*(N-1));
+//        double *ee = (double *)malloc(sizeof(double)*(N-1));
+//        for (unsigned int i=0; i<=N-2; i++) b0[i] = b1[i] = ee[i] = 0.0;
 
-        b0[0] = kb[0];
-        b1[0] = kc[0];
-        ee[0] = kd[0];
+//        b0[0] = kb[0];
+//        b1[0] = kc[0];
+//        ee[0] = kd[0];
 
-        for (unsigned int n=1; n<=N-3; n++)
-        {
-            b0[n] = -b0[n-1]*(kb[n]/ka[n]) + b1[n-1];
-            b1[n] = -b0[n-1]*(kc[n]/ka[n]);
-            ee[n] = -b0[n-1]*(kd[n]/ka[n]) + ee[n-1];
-        }
+//        for (unsigned int n=1; n<=N-3; n++)
+//        {
+//            b0[n] = -b0[n-1]*(kb[n]/ka[n]) + b1[n-1];
+//            b1[n] = -b0[n-1]*(kc[n]/ka[n]);
+//            ee[n] = -b0[n-1]*(kd[n]/ka[n]) + ee[n-1];
+//        }
 
-        DoubleMatrix M(2,2);
-        DoubleVector A(2);
-        DoubleVector x(2);
+//        DoubleMatrix M(2,2);
+//        DoubleVector A(2);
+//        DoubleVector x(2);
 
-        M[0][0] = b0[N-3];    M[0][1] = b1[N-3];    A[0] = ee[N-3];
-        //M[0][0] = betta[N-3]; M[0][1] = betta[N-2]; A[0] = eta;
-        M[1][0] = ka[N-2];    M[1][1] = kb[N-2];    A[1] = kd[N-2];
+//        M[0][0] = b0[N-3];    M[0][1] = b1[N-3];    A[0] = ee[N-3];
+//        //M[0][0] = betta[N-3]; M[0][1] = betta[N-2]; A[0] = eta;
+//        M[1][0] = ka[N-2];    M[1][1] = kb[N-2];    A[1] = kd[N-2];
 
-        //IPrinter::print(M,2,2);
+//        //IPrinter::print(M,2,2);
 
-        GaussianElimination(M,A,x);
+//        GaussianElimination(M,A,x);
 
-        //printf("%d %f %f\n", m, x[0], x[1]);
-        //return;
+//        printf("%d %f %f\n", m, x[0], x[1]);
+//        return;
+//        puts("---");
 
-        u[m][N-1] = x[1];
-        u[m][N-2] = x[0];
-        for (unsigned int n=N-3; n!=0; n--)
-        {
-            //printf("0 %2d|", n);
-            //for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
-            //printf("|%.10f|%.10f\n", eta,norma[n]);
+//        u[m][N-1] = x[1];
+//        u[m][N-2] = x[0];
+//        for (unsigned int n=N-3; n!=0; n--)
+//        {
+//            //printf("0 %2d|", n);
+//            //for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
+//            //printf("|%.10f|%.10f\n", eta,norma[n]);
 
-            //eta        = eta        + betta[n-1]*(kd[n]/ka[n]);
-            //betta[n+0] = betta[n+0] + betta[n-1]*(kb[n]/ka[n]);
-            //betta[n+1] = betta[n+1] + betta[n-1]*(kc[n]/ka[n]);
-            //u[m][n]    = (eta - betta[n+0]*u[m][n+1])/betta[n-1];
+//            double aaa = betta[n-1]/ka[n];
+//            double ccc = aaa*kc[n];
 
-            u[m][n] = (ee[n-1] - b1[n-1]*u[m][n+1])/b0[n-1];
+//            printf("%4d %24.10f\t", n, betta[n+1]);
 
-//            printf("2 %2d|", n);
-//            for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
-//            printf("|%.10f\n", eta);
+//            betta[n+0] = betta[n+0] + aaa*kb[n];
+//            betta[n+1] = betta[n+1] + ccc;
+//            eta        = eta        + aaa*kd[n];
+//            u[m][n]    = (eta - betta[n+0]*u[m][n+1])/betta[n-1];
 
-            //printf("------ %d %.10f\n", n, u[m][n]);
-        }
+//            printf("%4d %24.10f %24.10f\n", n, betta[n+1], ccc);
 
-        IPrinter::printVector(16,12, u.row(m));
+
+
+// //           printf("%18.10f %18.10f %18.10f %18.10f %18.10f %18.10f | %18.10f %18.10f %18.10f\n", eta, ee[n-1], betta[n+0], b1[n-1], betta[n-1], b0[n-1], betta[n+1], aaa*kc[n], betta[n+1] + aaa*kc[n]);
+
+//            //u[m][n] = (ee[n-1] - b1[n-1]*u[m][n+1])/b0[n-1];
+
+////            printf("2 %2d|", n);
+////            for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
+////            printf("|%.10f\n", eta);
+
+//            //printf("------ %d %.10f\n", n, u[m][n]);
+//        }
+
+        //IPrinter::printVector(16,12, u.row(m));
         //for (unsigned int n=0; n<=N-2; n++) u[m][n+1] = rx[n];
-        break;
+        //break;
     }
 
     free(ka);
@@ -486,207 +544,6 @@ void ParabolicIBVP::gridMethod1R(DoubleMatrix &u, SweepMethodDirection direction
         }
 
         IPrinter::printVector(16,12, u.row(m));
-        //for (unsigned int n=0; n<=N-2; n++) u[m][n+1] = rx[n];
-        break;
-    }
-
-    free(ka);
-    free(kb);
-    free(kc);
-    free(kd);
-    free(rx);
-}
-
-#define real long double
-void ParabolicIBVP::gridMethod11(DoubleMatrix &u, SweepMethodDirection direction UNUSED_PARAM) const
-{
-    //typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
-    //t_algorithm algorithm = &tomasAlgorithm;
-    //if (direction == ForwardSweep) algorithm = &tomasAlgorithmL2R;
-    //if (direction == BackwardSweep) algorithm = &tomasAlgorithmR2L;
-
-    Dimension time = mtimeDimension;
-    Dimension dim1 = mspaceDimension.at(0);
-
-    real ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
-    unsigned int M = maxM-minM;
-
-    real hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
-    unsigned int N = maxN-minN;
-
-    real h = ht/(hx*hx);
-
-    u.clear();
-    u.resize(M+1, N+1);
-
-    real *ka = (real*) malloc(sizeof(real)*(N-1));
-    real *kb = (real*) malloc(sizeof(real)*(N-1));
-    real *kc = (real*) malloc(sizeof(real)*(N-1));
-    real *kd = (real*) malloc(sizeof(real)*(N-1));
-    real *rx = (real*) malloc(sizeof(real)*(N-1));
-
-    /* initial condition */
-    SpaceNode isn;
-    for (unsigned int n=0; n<=N; n++)
-    {
-        isn.i = n+minN;
-        isn.x = isn.i*hx;
-        u[0][n] = initial(isn);
-    }
-
-    SpaceNode lsn;
-    lsn.i = minN;
-    lsn.x = minN*hx;
-
-    SpaceNode rsn;
-    rsn.i = maxN;
-    rsn.x = maxN*hx;
-
-    TimeNode tn;
-    for (unsigned int m=1; m<=M; m++)
-    {
-        tn.i = m+minM;
-        tn.t = tn.i*ht;
-
-        for (unsigned int n=1; n<=N-1; n++)
-        {
-            isn.i = n+minN;
-            isn.x = isn.i*hx;
-
-            real alpha = -a(isn,tn)*h;
-            real betta = 1.0 - 2.0*alpha;
-
-            ka[n-1] = alpha;
-            kb[n-1] = betta;
-            kc[n-1] = alpha;
-            kd[n-1] = u[m-1][n] + ht * f(isn, tn);
-        }
-
-        ka[0]   = 0.0;
-        kc[N-2] = 0.0;
-
-        IPrinter::printSeperatorLine();
-        for (unsigned int i=0; i<=N-2; i++)
-        {
-            for (unsigned int j=0; j<=N-2; j++)
-            {}
-            if (i==0)
-            printf("%14.10Lf %14.10Lf %14.10Lf %14.10Lf\n", ka[i], kb[i], kc[i], kd[i]);
-        }
-        IPrinter::printSeperatorLine();
-
-        /* border conditions */
-        u[m][0] = (real) boundary(lsn, tn, Left);
-        u[m][N] = (real) boundary(rsn, tn, Right);
-
-        kd[0]   += a(lsn,tn) * h * u[m][0];
-        kd[N-2] += a(rsn,tn) * h * u[m][N];
-
-        //(*algorithm)(ka, kb, kc, kd, rx, N-1);
-
-#define NORMALIZE_11_1
-
-        real *betta = (real *)malloc(sizeof(real)*(N-1));
-        for (unsigned int i=0; i<=N-2; i++) betta[i] = 0.0;
-        real eta = kd[0];
-        betta[0] = kb[0];
-        betta[1] = kc[0];
-
-        real *norma = (real *)malloc(sizeof(real)*(N-1));
-
-        //printf("--- %d %d %16.12f %16.12f %16.12f\n", m, 0, betta[0], betta[1], eta);
-
-        printf("0 %2d|", 0);
-        for (unsigned int i=0; i<=N-2; i++) printf("%16.12Lf ", betta[i]);
-        printf("|%.10Lf\n", eta);
-
-#ifdef NORMALIZE_11
-        norma[0] = eta*eta;
-        for (unsigned int i=0; i<=N-2; i++) norma[0] += betta[i]*betta[i]; norma[0] = sqrt(norma[0]);
-        for (unsigned int i=0; i<=N-2; i++) betta[i] /= norma[0];
-        eta /= norma[0];
-
-        printf("1 %2d|", 0);
-        for (unsigned int i=0; i<=N-2; i++) printf("%16.12Lf ", betta[i]);
-        printf("|%.10Lf|%.10Lf\n", eta,norma[0]);
-#endif
-        //printf("+++ %d %d %16.12f %16.12f %16.12f\n", m, 0, betta[0], betta[1], eta);
-
-        printf("---------------------------------\n");
-        for (unsigned int n=1; n<=N-3; n++)
-        {
-            betta[n+0] = betta[n+0] - betta[n-1]*(kb[n]/ka[n]);
-            betta[n+1] = betta[n+1] - betta[n-1]*(kc[n]/ka[n]);
-            eta        = eta        - betta[n-1]*(kd[n]/ka[n]);
-
-            printf("0 %2d|", n);
-            for (unsigned int i=0; i<=N-2; i++) printf("%16.12Lf ", betta[i]);
-            printf("|%.10Lf\n", eta);
-#ifdef NORMALIZE_11
-            norma[n] = eta*eta;
-            for (unsigned int i=n; i<=N-2; i++) norma[n] += betta[i]*betta[i]; norma[n] = sqrt(norma[n]);
-            for (unsigned int i=n; i<=N-2; i++) betta[i] /= norma[n];
-            eta /= norma[n];
-
-            printf("1 %2d|", n);
-            for (unsigned int i=0; i<=N-2; i++) printf("%16.12Lf ", betta[i]);
-            printf("|%.10Lf|%.10Lf\n", eta,norma[n]);
-#endif
-        }
-        printf("---------------------------------\n");
-
-        DoubleMatrix M(2,2);
-        DoubleVector A(2);
-        DoubleVector x(2);
-
-        M[0][0] = betta[N-3]; M[0][1] = betta[N-2]; A[0] = eta;
-        M[1][0] = ka[N-2];    M[1][1] = kb[N-2];    A[1] = kd[N-2];
-
-        //IPrinter::print(M,2,2);
-
-        GaussianElimination(M,A,x);
-
-        //printf("%d %f %f\n", m, x[0], x[1]);
-
-        //for (unsigned int n=0; n<=N; n++) u[n] = rx[n];
-        u[m][N-1] = x[1];
-        u[m][N-2] = x[0];
-        for (unsigned int n=N-3; n!=0; n--)
-        {
-            printf("0 %2d|", n);
-            for (unsigned int i=0; i<=N-2; i++) printf("%16.12Lf ", betta[i]);
-            printf("|%.10Lf|%.10Lf\n", eta,norma[n]);
-#ifdef NORMALIZE_11
-            for (unsigned int i=n; i<=n+1; i++) betta[i] *= norma[n];
-            eta *= norma[n];
-
-            printf("1 %2d|", n);
-            for (unsigned int i=0; i<=N-2; i++) printf("%16.12Lf ", betta[i]);
-            printf("|%.10Lf\n", eta);
-#endif
-
-            eta        = eta        + betta[n-1]*(kd[n]/ka[n]);
-            betta[n+0] = betta[n+0] + betta[n-1]*(kb[n]/ka[n]);
-            betta[n+1] = betta[n+1] + betta[n-1]*(kc[n]/ka[n]);
-            //u[m][n]    = (eta - betta[n+1]*u[m][n+2] - betta[n+0]*u[m][n+1])/betta[n-1];
-            u[m][n]    = (eta - betta[n+0]*u[m][n+1])/betta[n-1];
-
-//            printf("2 %2d|", n);
-//            for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
-//            printf("|%.10f\n", eta);
-
-#ifdef NORMALIZE_11
-            //norma[n] = eta*eta;
-            //for (unsigned int i=n-1; i<=n; i++) norma[n] += betta[i]*betta[i]; norma[n] = sqrt(norma[n]);
-#endif
-            //printf("------ %d %.10f\n", n, u[m][n]);
-        }
-
-        IPrinter::printVector(16,12, u.row(m), "\n   m1");
         //for (unsigned int n=0; n<=N-2; n++) u[m][n+1] = rx[n];
         break;
     }
