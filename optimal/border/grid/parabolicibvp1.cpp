@@ -23,22 +23,22 @@ void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
                 u[j-minM][i-minN] = p.U(i,j);
             }
         }
-        //IPrinter::printMatrix(14,10,u);
-        //IPrinter::printSeperatorLine();
+        IPrinter::printMatrix(14,10,u);
+        IPrinter::printSeperatorLine();
     }
 
     {
-        //DoubleMatrix u;
-        //p.gridMethod(u);
-        //IPrinter::printMatrix(14,10,u);
-        //IPrinter::printSeperatorLine();
+        DoubleMatrix u;
+        p.gridMethod(u);
+        IPrinter::printMatrix(14,10,u);
+        IPrinter::printSeperatorLine();
     }
 
     {
         DoubleMatrix u;
         p.gridMethod1L(u);
         IPrinter::printMatrix(14,10,u);
-        //IPrinter::printSeperatorLine();
+        IPrinter::printSeperatorLine();
     }
     {
         //DoubleMatrix u;
@@ -137,6 +137,8 @@ double ParabolicIBVP1::boundary(const SpaceNode &sn, const TimeNode &tn, Boundar
     if (boundary == BoundaryValueProblem::Right) return 1.0+t;
 #endif
 #ifdef SAMPLE_2
+    double x = sn.x;
+    double t = tn.t;
     return x*x + t*t;
 #endif
 #ifdef SAMPLE_3
@@ -150,6 +152,8 @@ double ParabolicIBVP1::boundary(const SpaceNode &sn, const TimeNode &tn, Boundar
     if (boundary == BoundaryValueProblem::Right) return t*sin(11.0)+exp(2.2*t);
 #endif
 #ifdef SAMPLE_5
+    double x = sn.x;
+    double t = tn.t;
     double k = 20.0;
     return exp(k*x)*t;
 #endif
@@ -184,7 +188,7 @@ double ParabolicIBVP1::f(const SpaceNode &sn, const TimeNode &tn) const
     return 1.0 - 2.0*a(sn,tn);
 #endif
 #ifdef SAMPLE_2
-    return 2.0*t - 2.0*a;
+    return 2.0*t - 2.0*a(sn,tn);
 #endif
 #ifdef SAMPLE_3
     return sin(x)*(1.0+a(sn,tn)*t);
@@ -194,7 +198,7 @@ double ParabolicIBVP1::f(const SpaceNode &sn, const TimeNode &tn) const
 #endif
 #ifdef SAMPLE_5
     double k = 20.0;
-    return exp(k*x)*(1.0 - a*k*k*t);
+    return exp(k*x)*(1.0 - a(sn,tn)*k*k*t);
 #endif
 #ifdef SAMPLE_6
     return 1 + 200.0*a(sn,tn)*(5.0*sin(20.0*x)*cos(10.0*x)+4.0*cos(20.0*x)*sin(10.0*x));

@@ -1,6 +1,47 @@
 #include "pibvp.h"
 #include <limits>
 
+void funcL(const double* a, const double *b, const double *c, const double *d, double *x, unsigned int N)
+{
+    double *e = (double*) malloc(sizeof(double)*N);
+    for (unsigned int i=0; i<N; i++) e[i] = 0.0;
+
+    double *e0 = (double*)malloc(sizeof(double)*N);
+    double *e1 = (double*)malloc(sizeof(double)*N);
+    double *e2 = (double*)malloc(sizeof(double)*N);
+    for (unsigned int i=0; i<N; i++) e0[i] = e1[i] = e2[i] = 0.0;
+
+    e0[0] = b[0];
+    e1[0] = c[0];
+    e2[0] = d[0];
+    for (unsigned int n=1; n<=N-2; n++)
+    {
+        e0[n] = -e0[n-1]*(b[n]/a[n]) + e1[n-1];
+        e1[n] = -e0[n-1]*(c[n]/a[n]);
+        e2[n] = -e0[n-1]*(d[n]/a[n]) + e2[n-1];
+    }
+
+    DoubleMatrix M(2,2);
+    DoubleVector A(2);
+    DoubleVector y(2);
+
+    M[0][0] = e0[N-2];   M[0][1] = e1[N-2];   A[0] = e2[N-2];
+    M[1][0] = a[N-1];    M[1][1] = b[N-1];    A[1] = d[N-1];
+
+    GaussianElimination(M,A,y);
+
+    x[N-1] = y[1];
+    x[N-2] = y[0];
+    for (unsigned int n=N-3; n!=UINT_MAX; n--)
+    {
+        x[n] = (e2[n] - e1[n]*x[n+1])/e0[n];
+    }
+
+    free(e2);
+    free(e1);
+    free(e0);
+}
+
 void ParabolicIBVP::gridMethod(DoubleVector &u, SweepMethodDirection direction) const
 {
     typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
@@ -175,9 +216,6 @@ void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction) 
         (*algorithm)(ka, kb, kc, kd, rx, N-1);
 
         for (unsigned int n=1; n<=N-1; n++) u[m][n] = rx[n-1];
-
-        IPrinter::printVector(u.row(m),"m1");
-        break;
     }
 
     free(ka);
@@ -187,44 +225,93 @@ void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction) 
     free(rx);
 }
 
-void funcL(const double* a, const double *b, const double *c, const double *d, double *x, unsigned int N)
+void ParabolicIBVP::gridMethod1L(DoubleMatrix &u, SweepMethodDirection direction UNUSED_PARAM) const
 {
-    double *e = (double*) malloc(sizeof(double)*N);
-    for (unsigned int i=0; i<N; i++) e[i] = 0.0;
+    Dimension time = mtimeDimension;
+    Dimension dim1 = mspaceDimension.at(0);
 
-    double *e0 = (double*)malloc(sizeof(double)*N);
-    double *e1 = (double*)malloc(sizeof(double)*N);
-    double *e2 = (double*)malloc(sizeof(double)*N);
-    for (unsigned int i=0; i<N; i++) e0[i] = e1[i] = e2[i] = 0.0;
+    double ht = time.step();
+    unsigned int minM = time.minN();
+    unsigned int maxM = time.maxN();
+    unsigned int M = maxM-minM;
 
-    e0[0] = b[0];
-    e1[0] = c[0];
-    e2[0] = d[0];
-    for (unsigned int n=1; n<=N-2; n++)
+    double hx = dim1.step();
+    unsigned int minN = dim1.minN();
+    unsigned int maxN = dim1.maxN();
+    unsigned int N = maxN-minN;
+
+    double h = ht/(hx*hx);
+
+    u.clear();
+    u.resize(M+1, N+1);
+
+    double *ka = (double*) malloc(sizeof(double)*(N-1));
+    double *kb = (double*) malloc(sizeof(double)*(N-1));
+    double *kc = (double*) malloc(sizeof(double)*(N-1));
+    double *kd = (double*) malloc(sizeof(double)*(N-1));
+    double *rx = (double*) malloc(sizeof(double)*(N-1));
+
+    /* initial condition */
+    SpaceNode isn;
+    for (unsigned int n=0; n<=N; n++)
     {
-        e0[n] = -e0[n-1]*(b[n]/a[n]) + e1[n-1];
-        e1[n] = -e0[n-1]*(c[n]/a[n]);
-        e2[n] = -e0[n-1]*(d[n]/a[n]) + e2[n-1];
+        isn.i = n+minN;
+        isn.x = isn.i*hx;
+        u[0][n] = initial(isn);
     }
 
-    DoubleMatrix M(2,2);
-    DoubleVector A(2);
-    DoubleVector y(2);
+    SpaceNode lsn;
+    lsn.i = minN;
+    lsn.x = minN*hx;
 
-    M[0][0] = e0[N-2];   M[0][1] = e1[N-2];   A[0] = e2[N-2];
-    M[1][0] = a[N-1];    M[1][1] = b[N-1];    A[1] = d[N-1];
+    SpaceNode rsn;
+    rsn.i = maxN;
+    rsn.x = maxN*hx;
 
-    GaussianElimination(M,A,y);
-
-    x[N-1] = y[1];
-    x[N-2] = y[0];
-    for (unsigned int n=N-3; n!=UINT_MAX; n--)
+    TimeNode tn;
+    for (unsigned int m=1; m<=M; m++)
     {
-        x[n] = (e2[n] - e1[n]*x[n+1])/e0[n];
+        tn.i = m+minM;
+        tn.t = tn.i*ht;
+
+        for (unsigned int n=1; n<=N-1; n++)
+        {
+            isn.i = n+minN;
+            isn.x = isn.i*hx;
+
+            double alpha = -a(isn,tn)*h;
+            double betta = 1.0 - 2.0*alpha;
+
+            ka[n-1] = alpha;
+            kb[n-1] = betta;
+            kc[n-1] = alpha;
+            kd[n-1] = u[m-1][n] + ht * f(isn, tn);
+        }
+
+        ka[0]   = 0.0;
+        kc[N-2] = 0.0;
+
+        /* border conditions */
+        u[m][0] = boundary(lsn, tn, Left);
+        u[m][N] = boundary(rsn, tn, Right);
+
+        kd[0]   += a(lsn,tn) * h * u[m][0];
+        kd[N-2] += a(rsn,tn) * h * u[m][N];
+
+        funcL(ka, kb, kc, kd, rx, N-1);
+
+        for (unsigned int n=1; n<=N-1; n++) u[m][n] = rx[n-1];
     }
+
+    free(ka);
+    free(kb);
+    free(kc);
+    free(kd);
+    free(rx);
 }
 
-void ParabolicIBVP::gridMethod1L(DoubleMatrix &u, SweepMethodDirection direction UNUSED_PARAM) const
+
+void ParabolicIBVP::gridMethod1LT(DoubleMatrix &u, SweepMethodDirection direction UNUSED_PARAM) const
 {
     Dimension time = mtimeDimension;
     Dimension dim1 = mspaceDimension.at(0);
