@@ -75,7 +75,7 @@ void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     }
     {
         DoubleMatrix u;
-        p.calculateN4L2RD_1(u);
+        p.calculateN4L2RD_2(u);
         IPrinter::printMatrix(14,10,u);
         IPrinter::printSeperatorLine();
     }
