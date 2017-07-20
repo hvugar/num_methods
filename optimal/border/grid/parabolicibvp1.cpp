@@ -3,7 +3,7 @@
 void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     ParabolicIBVP1 p;
-    p.setTimeDimension(Dimension(0.00001, 100000, 0));
+    p.setTimeDimension(Dimension(0.01, 100, 0));
     p.addSpaceDimension(Dimension(0.1, 10, 0));
     {
         unsigned int minN = p.spaceDimension(Dimension::Dim1).minN();
@@ -46,43 +46,37 @@ void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         //IPrinter::printMatrix(14,10,u);
         //IPrinter::printSeperatorLine();
     }
-    return;
-    //    {
-    //        DoubleMatrix u;
-    //        clock_t t = clock();
-    //        p.gridMethod11(u);
-    //        t = clock() - t;
-    //        //IPrinter::printMatrix(14,10,u);
-    //        printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
-    //        IPrinter::printSeperatorLine();
-    //    }
-    return;
-    //    {
-    //        DoubleVector u;
-    //        clock_t t = clock();
-    //        p.gridMethod(u);
-    //        t = clock() - t;
-    //        //IPrinter::printVector(14,10,u);
-    //        printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
-    //        IPrinter::printSeperatorLine();
-    //    }
-    //return;
     {
-        DoubleMatrix u;
-        clock_t t = clock();
-        p.calculateN2L2RD(u);
-        t = clock() - t;
-        IPrinter::printMatrix(14,10,u);
-        printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
-        IPrinter::printSeperatorLine();
+        //DoubleMatrix u;
+        //clock_t t = clock();
+        //p.gridMethod11(u);
+        //t = clock() - t;
+        //IPrinter::printMatrix(14,10,u);
+        //printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
+        //IPrinter::printSeperatorLine();
+    }
+    {
+        //DoubleVector u;
+        //clock_t t = clock();
+        //p.gridMethod(u);
+        //t = clock() - t;
+        //IPrinter::printVector(14,10,u);
+        //printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
+        //IPrinter::printSeperatorLine();
+    }
+    {
+        //DoubleMatrix u;
+        //clock_t t = clock();
+        //p.calculateN2L2RD(u);
+        //t = clock() - t;
+        //IPrinter::printMatrix(14,10,u);
+        //printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
+        //IPrinter::printSeperatorLine();
     }
     {
         DoubleMatrix u;
-        clock_t t = clock();
-        p.calculateN4L2RD(u);
-        t = clock() - t;
+        p.calculateN4L2RD_1(u);
         IPrinter::printMatrix(14,10,u);
-        printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
         IPrinter::printSeperatorLine();
     }
 }

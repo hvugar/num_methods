@@ -310,7 +310,6 @@ void ParabolicIBVP::gridMethod1L(DoubleMatrix &u, SweepMethodDirection direction
     free(rx);
 }
 
-
 void ParabolicIBVP::gridMethod1LT(DoubleMatrix &u, SweepMethodDirection direction UNUSED_PARAM) const
 {
     Dimension time = mtimeDimension;
@@ -1101,6 +1100,8 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
 
         GaussianElimination(A, b, x);
 
+        printf("%f %f %f %f\n", x[0], x[1], x[2], x[3]);
+
         u[m][N-1] = x[3];
         u[m][N-2] = x[2];
         u[m][N-3] = x[1];
@@ -1112,6 +1113,7 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
                     -ems[n-1][2]*u[m][n+3]
                     +ems[n-1][3];
         }
+        break;
     }
 
     ems.clear();
