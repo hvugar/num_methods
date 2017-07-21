@@ -3,8 +3,8 @@
 void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     ParabolicIBVP1 p;
-    p.setTimeDimension(Dimension(0.0001, 10000, 0));
-    p.addSpaceDimension(Dimension(0.01, 100, 0));
+    p.setTimeDimension(Dimension(0.01, 100, 0));
+    p.addSpaceDimension(Dimension(0.1, 10, 0));
     {
         unsigned int minN = p.spaceDimension(Dimension::Dim1).minN();
         unsigned int maxN = p.spaceDimension(Dimension::Dim1).maxN();
@@ -75,7 +75,7 @@ void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     }
     {
         DoubleMatrix u;
-        p.calculateN4L2RD_2(u);
+        p.calculateN4L2RD(u);
         IPrinter::printMatrix(14,10,u);
         IPrinter::printSeperatorLine();
     }

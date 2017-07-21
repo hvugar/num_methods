@@ -388,99 +388,99 @@ void ParabolicIBVP::gridMethod1LT(DoubleMatrix &u, SweepMethodDirection directio
         {
             u[m][n] = rx[n-1];
         }
-//        IPrinter::printVector(16,12, u.row(m));
-//        return;
+        //        IPrinter::printVector(16,12, u.row(m));
+        //        return;
 
-//        //printf("%d\n",N);
-//        //printf("a: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",ka[i]); printf("\n");
-//        //printf("b: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kb[i]); printf("\n");
-//        //printf("c: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kc[i]); printf("\n");
-//        //printf("d: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kd[i]); printf("\n");
-//        //IPrinter::printSeperatorLine();
+        //        //printf("%d\n",N);
+        //        //printf("a: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",ka[i]); printf("\n");
+        //        //printf("b: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kb[i]); printf("\n");
+        //        //printf("c: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kc[i]); printf("\n");
+        //        //printf("d: "); for (unsigned int i=0;i<N-1;i++) printf("%14.10f",kd[i]); printf("\n");
+        //        //IPrinter::printSeperatorLine();
 
-//        double *betta = (double *)malloc(sizeof(double)*(N-1));
-//        for (unsigned int i=0; i<=N-2; i++) betta[i] = 0.0;
-//        double eta = kd[0];
-//        betta[0] = kb[0];
-//        betta[1] = kc[0];
+        //        double *betta = (double *)malloc(sizeof(double)*(N-1));
+        //        for (unsigned int i=0; i<=N-2; i++) betta[i] = 0.0;
+        //        double eta = kd[0];
+        //        betta[0] = kb[0];
+        //        betta[1] = kc[0];
 
-//        for (unsigned int n=1; n<=N-3; n++)
-//        {
-//            printf("%4d %24.10f\t", n, betta[n+1]);
+        //        for (unsigned int n=1; n<=N-3; n++)
+        //        {
+        //            printf("%4d %24.10f\t", n, betta[n+1]);
 
-//            double aaa = betta[n-1]/ka[n];
-//            betta[n+0] = betta[n+0] - aaa*kb[n];
-//            betta[n+1] = /*betta[n+1]*/ - aaa*kc[n];
-//            eta        = eta        - aaa*kd[n];
+        //            double aaa = betta[n-1]/ka[n];
+        //            betta[n+0] = betta[n+0] - aaa*kb[n];
+        //            betta[n+1] = /*betta[n+1]*/ - aaa*kc[n];
+        //            eta        = eta        - aaa*kd[n];
 
-//            printf("%4d %24.10f %24.10f\n", n, betta[n+1], aaa*kc[n]);
-//        }
-
-
-//        double *b0 = (double *)malloc(sizeof(double)*(N-1));
-//        double *b1 = (double *)malloc(sizeof(double)*(N-1));
-//        double *ee = (double *)malloc(sizeof(double)*(N-1));
-//        for (unsigned int i=0; i<=N-2; i++) b0[i] = b1[i] = ee[i] = 0.0;
-
-//        b0[0] = kb[0];
-//        b1[0] = kc[0];
-//        ee[0] = kd[0];
-
-//        for (unsigned int n=1; n<=N-3; n++)
-//        {
-//            b0[n] = -b0[n-1]*(kb[n]/ka[n]) + b1[n-1];
-//            b1[n] = -b0[n-1]*(kc[n]/ka[n]);
-//            ee[n] = -b0[n-1]*(kd[n]/ka[n]) + ee[n-1];
-//        }
-
-//        DoubleMatrix M(2,2);
-//        DoubleVector A(2);
-//        DoubleVector x(2);
-
-//        M[0][0] = b0[N-3];    M[0][1] = b1[N-3];    A[0] = ee[N-3];
-//        //M[0][0] = betta[N-3]; M[0][1] = betta[N-2]; A[0] = eta;
-//        M[1][0] = ka[N-2];    M[1][1] = kb[N-2];    A[1] = kd[N-2];
-
-//        //IPrinter::print(M,2,2);
-
-//        GaussianElimination(M,A,x);
-
-//        printf("%d %f %f\n", m, x[0], x[1]);
-//        return;
-//        puts("---");
-
-//        u[m][N-1] = x[1];
-//        u[m][N-2] = x[0];
-//        for (unsigned int n=N-3; n!=0; n--)
-//        {
-//            //printf("0 %2d|", n);
-//            //for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
-//            //printf("|%.10f|%.10f\n", eta,norma[n]);
-
-//            double aaa = betta[n-1]/ka[n];
-//            double ccc = aaa*kc[n];
-
-//            printf("%4d %24.10f\t", n, betta[n+1]);
-
-//            betta[n+0] = betta[n+0] + aaa*kb[n];
-//            betta[n+1] = betta[n+1] + ccc;
-//            eta        = eta        + aaa*kd[n];
-//            u[m][n]    = (eta - betta[n+0]*u[m][n+1])/betta[n-1];
-
-//            printf("%4d %24.10f %24.10f\n", n, betta[n+1], ccc);
+        //            printf("%4d %24.10f %24.10f\n", n, betta[n+1], aaa*kc[n]);
+        //        }
 
 
+        //        double *b0 = (double *)malloc(sizeof(double)*(N-1));
+        //        double *b1 = (double *)malloc(sizeof(double)*(N-1));
+        //        double *ee = (double *)malloc(sizeof(double)*(N-1));
+        //        for (unsigned int i=0; i<=N-2; i++) b0[i] = b1[i] = ee[i] = 0.0;
 
-// //           printf("%18.10f %18.10f %18.10f %18.10f %18.10f %18.10f | %18.10f %18.10f %18.10f\n", eta, ee[n-1], betta[n+0], b1[n-1], betta[n-1], b0[n-1], betta[n+1], aaa*kc[n], betta[n+1] + aaa*kc[n]);
+        //        b0[0] = kb[0];
+        //        b1[0] = kc[0];
+        //        ee[0] = kd[0];
 
-//            //u[m][n] = (ee[n-1] - b1[n-1]*u[m][n+1])/b0[n-1];
+        //        for (unsigned int n=1; n<=N-3; n++)
+        //        {
+        //            b0[n] = -b0[n-1]*(kb[n]/ka[n]) + b1[n-1];
+        //            b1[n] = -b0[n-1]*(kc[n]/ka[n]);
+        //            ee[n] = -b0[n-1]*(kd[n]/ka[n]) + ee[n-1];
+        //        }
 
-////            printf("2 %2d|", n);
-////            for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
-////            printf("|%.10f\n", eta);
+        //        DoubleMatrix M(2,2);
+        //        DoubleVector A(2);
+        //        DoubleVector x(2);
 
-//            //printf("------ %d %.10f\n", n, u[m][n]);
-//        }
+        //        M[0][0] = b0[N-3];    M[0][1] = b1[N-3];    A[0] = ee[N-3];
+        //        //M[0][0] = betta[N-3]; M[0][1] = betta[N-2]; A[0] = eta;
+        //        M[1][0] = ka[N-2];    M[1][1] = kb[N-2];    A[1] = kd[N-2];
+
+        //        //IPrinter::print(M,2,2);
+
+        //        GaussianElimination(M,A,x);
+
+        //        printf("%d %f %f\n", m, x[0], x[1]);
+        //        return;
+        //        puts("---");
+
+        //        u[m][N-1] = x[1];
+        //        u[m][N-2] = x[0];
+        //        for (unsigned int n=N-3; n!=0; n--)
+        //        {
+        //            //printf("0 %2d|", n);
+        //            //for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
+        //            //printf("|%.10f|%.10f\n", eta,norma[n]);
+
+        //            double aaa = betta[n-1]/ka[n];
+        //            double ccc = aaa*kc[n];
+
+        //            printf("%4d %24.10f\t", n, betta[n+1]);
+
+        //            betta[n+0] = betta[n+0] + aaa*kb[n];
+        //            betta[n+1] = betta[n+1] + ccc;
+        //            eta        = eta        + aaa*kd[n];
+        //            u[m][n]    = (eta - betta[n+0]*u[m][n+1])/betta[n-1];
+
+        //            printf("%4d %24.10f %24.10f\n", n, betta[n+1], ccc);
+
+
+
+        // //           printf("%18.10f %18.10f %18.10f %18.10f %18.10f %18.10f | %18.10f %18.10f %18.10f\n", eta, ee[n-1], betta[n+0], b1[n-1], betta[n-1], b0[n-1], betta[n+1], aaa*kc[n], betta[n+1] + aaa*kc[n]);
+
+        //            //u[m][n] = (ee[n-1] - b1[n-1]*u[m][n+1])/b0[n-1];
+
+        ////            printf("2 %2d|", n);
+        ////            for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
+        ////            printf("|%.10f\n", eta);
+
+        //            //printf("------ %d %.10f\n", n, u[m][n]);
+        //        }
 
         //IPrinter::printVector(16,12, u.row(m));
         //for (unsigned int n=0; n<=N-2; n++) u[m][n+1] = rx[n];
@@ -560,7 +560,7 @@ void ParabolicIBVP::gridMethod1R(DoubleMatrix &u, SweepMethodDirection direction
         ka[0]   = 0.0;
         kc[N-2] = 0.0;
 
-         /* border conditions */
+        /* border conditions */
         u[m][0] = boundary(lsn, tn, Left);
         u[m][N] = boundary(rsn, tn, Right);
 
@@ -727,8 +727,8 @@ void ParabolicIBVP::gridMethod2(DoubleMatrix &u, SweepMethodDirection direction 
         betta.resize(N-1,N-1,0.0);
         DoubleVector eta(N-1,0.0);
 
-//        double *betta = (double *)malloc(sizeof(double)*(N-1));
-//        for (unsigned int i=0; i<=N-2; i++) betta[i] = 0.0;
+        //        double *betta = (double *)malloc(sizeof(double)*(N-1));
+        //        for (unsigned int i=0; i<=N-2; i++) betta[i] = 0.0;
         eta.at(0)     = kd[0];
         betta.at(0,0) = kb[0];
         betta.at(0,1) = kc[0];
@@ -813,9 +813,9 @@ void ParabolicIBVP::gridMethod2(DoubleMatrix &u, SweepMethodDirection direction 
             //u[m][n]    = (eta - betta[n+1]*u[m][n+2] - betta[n+0]*u[m][n+1])/betta[n-1];
             u[m][n]    = (eta.at(n-1) - betta.at(n-1,n+0)*u[m][n+1])/betta.at(n-1,n-1);
 
-//            printf("2 %2d|", n);
-//            for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
-//            printf("|%.10f\n", eta);
+            //            printf("2 %2d|", n);
+            //            for (unsigned int i=0; i<=N-2; i++) printf("%16.12f ", betta[i]);
+            //            printf("|%.10f\n", eta);
 
 #ifdef _NORMALIZE
             //norma[n] = eta*eta;
@@ -955,6 +955,7 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u) const
 
 void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
 {
+    /* get parameters */
     Dimension time = mtimeDimension;
     Dimension dim1 = mspaceDimension.at(0);
 
@@ -970,6 +971,8 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
 
     const unsigned int k = 4;
     double h = ht/(24.0*hx*hx);
+
+    /*****************************************/
 
     u.clear();
     u.resize(M+1, N+1);
@@ -1002,7 +1005,7 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
         u[m][0] = boundary(lsn, tn, Left);
         u[m][N] = boundary(rsn, tn, Right);
 
-        /* n=1 */
+        /* using 2nd scheme, at point n=1 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         isn.i = minN+1;
         isn.x = isn.i*hx;
         double alpha = a(isn,tn)*h;
@@ -1012,7 +1015,7 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
         A[0][3] = -2.0*alpha;
         b[0]    = -u[m-1][1] - (+22.0*alpha)*u[m][0] - ht*f(isn,tn);
 
-        /* n=4 */
+        /* using 5th scheme, at point n=4 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         //isn.i = minN+4;
         //isn.x = isn.i*hx;
         //double alpha = a(isn,tn)*h;
@@ -1022,18 +1025,11 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
         //A[0][3] = +70.0*alpha - 1.0;
         //b[0]    = -u[m-1][4] - (+22.0*alpha)*u[m][0] - ht*f(isn,tn);
 
-        double t = ht*m;
-
-        double x1 = (1)*hx;
-        double x2 = (2)*hx;
-        double x3 = (3)*hx;
-        double x4 = (4)*hx;
-
-        printf("0 %14.10f %14.10f\n", b[0], A[0][0]*x1*x1*t
-                                           +A[0][1]*x2*x2*t
-                                           +A[0][2]*x3*x3*t
-                                           +A[0][3]*x4*x4*t);
-
+        //double x1 = (1)*hx;
+        //double x2 = (2)*hx;
+        //double x3 = (3)*hx;
+        //double x4 = (4)*hx;
+        //printf("0 %14.10f %14.10f\n", b[0], A[0][0]*x1*x1*tn.t+A[0][1]*x2*x2*tn.t+A[0][2]*x3*x3*tn.t+A[0][3]*x4*x4*tn.t);
 
         A[0][1] /= A[0][0];
         A[0][2] /= A[0][0];
@@ -1046,19 +1042,80 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
         ems[0][2] = A[0][3];
         ems[0][3] = b[0];
 
-        for (unsigned int n=1; n<=N-(k+1); n++)
+#define SCHEME_1
+
+#ifdef SCHEME_1
+        unsigned int start = 1;
+        unsigned int end   = N-k-1;
+#endif
+#ifdef SCHEME_2
+        unsigned int start = 2;
+        unsigned int end   = N-k+0;
+#endif
+#ifdef SCHEME_3
+        unsigned int start = 3;
+        unsigned int end   = N-k+1;
+#endif
+#ifdef SCHEME_4
+        unsigned int start = 4;
+        unsigned int end   = N-k+2;
+#endif
+#ifdef SCHEME_5
+        unsigned int start = 5;
+        unsigned int end   = N-k+3;
+#endif
+        for (unsigned int n=start; n<=end; n++)
         {
             isn.i = n+minN;
             isn.x = isn.i*hx;
 
             alpha = a(isn,tn)*h;
 
+#ifdef SCHEME_1
+            /* using 1nd scheme, at point n=1 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
             double g1 = +70.0*alpha-1.0;
             double g2 = -208.0*alpha;
             double g3 = +228.0*alpha;
             double g4 = -112.0*alpha;
             double g5 = +22.0*alpha;
             double fi = -u[m-1][n] - ht*f(isn,tn);
+#endif
+#ifdef SCHEME_2
+            /* using 2nd scheme, at point n=2 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
+            double g1 = +22.0*alpha;
+            double g2 = -40.0*alpha-1.0;
+            double g3 = +12.0*alpha;
+            double g4 = +8.0*alpha;
+            double g5 = -2.0*alpha;
+            double fi = -u[m-1][n] - ht*f(isn,tn);
+#endif
+#ifdef SCHEME_3
+            /* using 3nd scheme, at point n=3 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
+            double g1 = -2.0*alpha;
+            double g2 = +32.0*alpha;
+            double g3 = -60.0*alpha-1.0;
+            double g4 = +32.0*alpha;
+            double g5 = -2.0*alpha;
+            double fi = -u[m-1][n] - ht*f(isn,tn);
+#endif
+#ifdef SCHEME_4
+            /* using 4nd scheme, at point n=4 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
+            double g1 = -2.0*alpha;
+            double g2 = +8.0*alpha;
+            double g3 = +12.0*alpha;
+            double g4 = -40.0*alpha-1.0;
+            double g5 = +22.0*alpha;
+            double fi = -u[m-1][n] - ht*f(isn,tn);
+#endif
+#ifdef SCHEME_5
+            /* using 5nd scheme, at point n=5 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
+            double g1 = +22.0*alpha;
+            double g2 = -112.0*alpha;
+            double g3 = +228.0*alpha;
+            double g4 = -208.0*alpha;
+            double g5 = +70.0*alpha-1.0;
+            double fi = -u[m-1][n] - ht*f(isn,tn);
+#endif
 
             g2 /= -g1;
             g3 /= -g1;
@@ -1073,15 +1130,11 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
             A[0][3] = g5;
             b[0]    = b[0] - fi;
 
-            double x1 = (n+1)*hx;
-            double x2 = (n+2)*hx;
-            double x3 = (n+3)*hx;
-            double x4 = (n+4)*hx;
-
-//            printf("0 %14.10f %14.10f\n", b[0], A[0][0]*x1*x1*t
-//                                               +A[0][1]*x2*x2*t
-//                                               +A[0][2]*x3*x3*t
-//                                               +A[0][3]*x4*x4*t);
+            //double x1 = (n+1)*hx;
+            //double x2 = (n+2)*hx;
+            //double x3 = (n+3)*hx;
+            //double x4 = (n+4)*hx;
+            //printf("0 %14.10f %14.10f\n", b[0], A[0][0]*x1*x1*t+A[0][1]*x2*x2*t+A[0][2]*x3*x3*t+A[0][3]*x4*x4*t);
             \
             A[0][1] /= A[0][0];
             A[0][2] /= A[0][0];
@@ -1089,17 +1142,26 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
             b[0]    /= A[0][0];
             A[0][0] = 1.0;
 
-//            printf("0 %14.10f %14.10f\n", b[0], A[0][0]*x1*x1*t
-//                                               +A[0][1]*x2*x2*t
-//                                               +A[0][2]*x3*x3*t
-//                                               +A[0][3]*x4*x4*t);
+            // printf("0 %14.10f %14.10f\n", b[0], A[0][0]*x1*x1*t+A[0][1]*x2*x2*t+A[0][2]*x3*x3*t+A[0][3]*x4*x4*t);
 
-            ems[n][0] = A[0][1];
-            ems[n][1] = A[0][2];
-            ems[n][2] = A[0][3];
-            ems[n][3] = b[0];
+#ifdef SCHEME_1
+            ems[n+0][0] = A[0][1]; ems[n+0][1] = A[0][2]; ems[n+0][2] = A[0][3]; ems[n+0][3] = b[0];
+#endif
+#ifdef SCHEME_2
+            ems[n-1][0] = A[0][1]; ems[n-1][1] = A[0][2]; ems[n-1][2] = A[0][3]; ems[n-1][3] = b[0];
+#endif
+#ifdef SCHEME_3
+            ems[n-2][0] = A[0][1]; ems[n-2][1] = A[0][2]; ems[n-2][2] = A[0][3]; ems[n-2][3] = b[0];
+#endif
+#ifdef SCHEME_4
+            ems[n-3][0] = A[0][1]; ems[n-3][1] = A[0][2]; ems[n-3][2] = A[0][3]; ems[n-3][3] = b[0];
+#endif
+#ifdef SCHEME_5
+            ems[n-4][0] = A[0][1]; ems[n-4][1] = A[0][2]; ems[n-4][2] = A[0][3]; ems[n-4][3] = b[0];
+#endif
         }
 
+        /* using 2nd scheme, at point N-3 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         isn.i = maxN-3;
         isn.x = isn.i*hx;
         alpha = a(isn,tn)*h;
@@ -1109,6 +1171,7 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
         A[1][3] = +8.0*alpha;
         b[1]    = -u[m-1][N-3] - (-2.0*alpha)*u[m][N] - ht*f(isn,tn);
 
+        /* using 3rd scheme, at point N-2 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         isn.i = maxN-2;
         isn.x = isn.i*hx;
         alpha = a(isn,tn)*h;
@@ -1118,6 +1181,7 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
         A[2][3] = +32.0*alpha;
         b[2]    = -u[m-1][N-2] - (-2.0*alpha)*u[m][N] - ht*f(isn,tn);
 
+        /* using 4th scheme, at point N-1 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         isn.i = maxN-1;
         isn.x = isn.i*hx;
         A[3][0] = -2.0*alpha;
@@ -1126,35 +1190,44 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
         A[3][3] = -40.0*alpha - 1.0;
         b[3]    = -u[m-1][N-1] - (+22.0*alpha)*u[m][N] - ht*f(isn,tn);
 
-        double xN4 = (N-4)*hx;
-        double xN3 = (N-3)*hx;
-        double xN2 = (N-2)*hx;
-        double xN1 = (N-1)*hx;
+        //double xN4 = (N-4)*hx;
+        //double xN3 = (N-3)*hx;
+        //double xN2 = (N-2)*hx;
+        //double xN1 = (N-1)*hx;
 
-        puts("------------------------");
-        printf("0 %14.10f %14.10f\n", b[0], A[0][0]*xN4*xN4*t+A[0][1]*xN3*xN3*t+A[0][2]*xN2*xN2*t+A[0][3]*xN1*xN1*t);
-        printf("1 %14.10f %14.10f\n", b[1], A[1][0]*xN4*xN4*t+A[1][1]*xN3*xN3*t+A[1][2]*xN2*xN2*t+A[1][3]*xN1*xN1*t);
-        printf("2 %14.10f %14.10f\n", b[2], A[2][0]*xN4*xN4*t+A[2][1]*xN3*xN3*t+A[2][2]*xN2*xN2*t+A[2][3]*xN1*xN1*t);
-        printf("3 %14.10f %14.10f\n", b[3], A[3][0]*xN4*xN4*t+A[3][1]*xN3*xN3*t+A[3][2]*xN2*xN2*t+A[3][3]*xN1*xN1*t);
-        puts("------------------------");
+        //puts("------------------------");
+        //printf("0 %14.10f %14.10f\n", b[0], A[0][0]*xN4*xN4*tn.t+A[0][1]*xN3*xN3*tn.t+A[0][2]*xN2*xN2*tn.t+A[0][3]*xN1*xN1*tn.t);
+        //printf("1 %14.10f %14.10f\n", b[1], A[1][0]*xN4*xN4*tn.t+A[1][1]*xN3*xN3*tn.t+A[1][2]*xN2*xN2*tn.t+A[1][3]*xN1*xN1*tn.t);
+        //printf("2 %14.10f %14.10f\n", b[2], A[2][0]*xN4*xN4*tn.t+A[2][1]*xN3*xN3*tn.t+A[2][2]*xN2*xN2*tn.t+A[2][3]*xN1*xN1*tn.t);
+        //printf("3 %14.10f %14.10f\n", b[3], A[3][0]*xN4*xN4*tn.t+A[3][1]*xN3*xN3*tn.t+A[3][2]*xN2*xN2*tn.t+A[3][3]*xN1*xN1*tn.t);
+        //puts("------------------------");
 
         GaussianElimination(A, b, x);
 
-        printf("%14.10f %14.10f %14.10f %14.10f\n", x[0], x[1], x[2], x[3]);
+        //printf("x %14.10f %14.10f %14.10f %14.10f\n", x[0], x[1], x[2], x[3]);
 
         u[m][N-1] = x[3];
         u[m][N-2] = x[2];
         u[m][N-3] = x[1];
         u[m][N-4] = x[0];
-        for (unsigned int n=N-(k+1); n>=1; n--)
-        {
-            u[m][n] = -ems[n-1][0]*u[m][n+1]
-                    -ems[n-1][1]*u[m][n+2]
-                    -ems[n-1][2]*u[m][n+3]
-                    +ems[n-1][3];
-        }
-        IPrinter::printVector(18, 10, u.row(m));
-        break;
+
+#ifdef SCHEME_1
+        for (unsigned int n=N-k-1; n>=1; n--) u[m][n+0] = -ems[n-1][0]*u[m][n+1] - ems[n-1][1]*u[m][n+2] - ems[n-1][2]*u[m][n+3] + ems[n-1][3];
+#endif
+#ifdef SCHEME_2
+        for (unsigned int n=N-k+0; n>=2; n--) u[m][n-1] = -ems[n-2][0]*u[m][n+0] - ems[n-2][1]*u[m][n+1] - ems[n-2][2]*u[m][n+2] + ems[n-2][3];
+#endif
+#ifdef SCHEME_3
+        for (unsigned int n=N-k+1; n>=3; n--) u[m][n-2] = -ems[n-3][0]*u[m][n-1] - ems[n-3][1]*u[m][n+0] - ems[n-3][2]*u[m][n+1] + ems[n-3][3];
+#endif
+#ifdef SCHEME_4
+        for (unsigned int n=N-k+2; n>=4; n--) u[m][n-3] = -ems[n-4][0]*u[m][n-2] - ems[n-4][1]*u[m][n-1] - ems[n-4][2]*u[m][n+0] + ems[n-4][3];
+#endif
+#ifdef SCHEME_5
+        for (unsigned int n=N-k+3; n>=5; n--) u[m][n-4] = -ems[n-5][0]*u[m][n-3] - ems[n-5][1]*u[m][n-2] - ems[n-5][2]*u[m][n-1] + ems[n-5][3];
+#endif
+        //IPrinter::printVector(18, 10, u.row(m));
+        //break;
     }
 
     ems.clear();
@@ -1240,9 +1313,9 @@ void ParabolicIBVP::calculateN4L2RD_1(DoubleMatrix &u) const
         double x4 = (4)*hx;
 
         printf("0 %14.10f %14.10f\n", b[0], A[0][0]*x1*x1*t
-                                           +A[0][1]*x2*x2*t
-                                           +A[0][2]*x3*x3*t
-                                           +A[0][3]*x4*x4*t);
+                +A[0][1]*x2*x2*t
+                +A[0][2]*x3*x3*t
+                +A[0][3]*x4*x4*t);
 
 
         A[0][1] /= A[0][0];
@@ -1297,10 +1370,10 @@ void ParabolicIBVP::calculateN4L2RD_1(DoubleMatrix &u) const
             double x3 = (n+3)*hx;
             double x4 = (n+4)*hx;
 
-//            printf("0 %14.10f %14.10f\n", b[0], A[0][0]*x1*x1*t
-//                                               +A[0][1]*x2*x2*t
-//                                               +A[0][2]*x3*x3*t
-//                                               +A[0][3]*x4*x4*t);
+            //            printf("0 %14.10f %14.10f\n", b[0], A[0][0]*x1*x1*t
+            //                                               +A[0][1]*x2*x2*t
+            //                                               +A[0][2]*x3*x3*t
+            //                                               +A[0][3]*x4*x4*t);
             \
             A[0][1] /= A[0][0];
             A[0][2] /= A[0][0];
@@ -1308,10 +1381,10 @@ void ParabolicIBVP::calculateN4L2RD_1(DoubleMatrix &u) const
             b[0]    /= A[0][0];
             A[0][0] = 1.0;
 
-//            printf("0 %14.10f %14.10f\n", b[0], A[0][0]*x1*x1*t
-//                                               +A[0][1]*x2*x2*t
-//                                               +A[0][2]*x3*x3*t
-//                                               +A[0][3]*x4*x4*t);
+            //            printf("0 %14.10f %14.10f\n", b[0], A[0][0]*x1*x1*t
+            //                                               +A[0][1]*x2*x2*t
+            //                                               +A[0][2]*x3*x3*t
+            //                                               +A[0][3]*x4*x4*t);
 
             ems[n-1][0] = A[0][1];
             ems[n-1][1] = A[0][2];
@@ -1459,9 +1532,9 @@ void ParabolicIBVP::calculateN4L2RD_2(DoubleMatrix &u) const
         double x4 = (4)*hx;
 
         printf("0 %14.10f %14.10f\n", b[0], A[0][0]*x1*x1*t
-                                           +A[0][1]*x2*x2*t
-                                           +A[0][2]*x3*x3*t
-                                           +A[0][3]*x4*x4*t);
+                +A[0][1]*x2*x2*t
+                +A[0][2]*x3*x3*t
+                +A[0][3]*x4*x4*t);
 
 
         A[0][1] /= A[0][0];
@@ -1516,10 +1589,10 @@ void ParabolicIBVP::calculateN4L2RD_2(DoubleMatrix &u) const
             double x3 = (n+3)*hx;
             double x4 = (n+4)*hx;
 
-//            printf("0 %14.10f %14.10f\n", b[0], A[0][0]*x1*x1*t
-//                                               +A[0][1]*x2*x2*t
-//                                               +A[0][2]*x3*x3*t
-//                                               +A[0][3]*x4*x4*t);
+            //            printf("0 %14.10f %14.10f\n", b[0], A[0][0]*x1*x1*t
+            //                                               +A[0][1]*x2*x2*t
+            //                                               +A[0][2]*x3*x3*t
+            //                                               +A[0][3]*x4*x4*t);
             \
             A[0][1] /= A[0][0];
             A[0][2] /= A[0][0];
@@ -1527,10 +1600,10 @@ void ParabolicIBVP::calculateN4L2RD_2(DoubleMatrix &u) const
             b[0]    /= A[0][0];
             A[0][0] = 1.0;
 
-//            printf("0 %14.10f %14.10f\n", b[0], A[0][0]*x1*x1*t
-//                                               +A[0][1]*x2*x2*t
-//                                               +A[0][2]*x3*x3*t
-//                                               +A[0][3]*x4*x4*t);
+            //            printf("0 %14.10f %14.10f\n", b[0], A[0][0]*x1*x1*t
+            //                                               +A[0][1]*x2*x2*t
+            //                                               +A[0][2]*x3*x3*t
+            //                                               +A[0][3]*x4*x4*t);
 
             ems[n-2][0] = A[0][1];
             ems[n-2][1] = A[0][2];
