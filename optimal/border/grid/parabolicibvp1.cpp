@@ -3,8 +3,8 @@
 void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     ParabolicIBVP1 p;
-    p.setTimeDimension(Dimension(0.01, 100, 0));
-    p.addSpaceDimension(Dimension(0.1, 10, 0));
+    p.setTimeDimension(Dimension(0.001, 1000, 0));
+    p.addSpaceDimension(Dimension(0.001, 1000, 0));
     {
         unsigned int minN = p.spaceDimension(Dimension::Dim1).minN();
         unsigned int maxN = p.spaceDimension(Dimension::Dim1).maxN();
@@ -29,15 +29,15 @@ void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     {
         DoubleMatrix u;
-        p.gridMethod(u);
-        IPrinter::printMatrix(14,10,u);
+        //p.gridMethod(u);
+        //IPrinter::printMatrix(14,10,u);
         IPrinter::printSeperatorLine();
     }
 
     {
         DoubleMatrix u;
-        p.gridMethod1L(u);
-        IPrinter::printMatrix(14,10,u);
+        //p.gridMethod1L(u);
+        //IPrinter::printMatrix(14,10,u);
         IPrinter::printSeperatorLine();
     }
     {
@@ -88,6 +88,15 @@ double ParabolicIBVP1::initial(const SpaceNode& sn) const
 #ifdef SAMPLE_0
     return 0.0;
 #endif
+#ifdef SAMPLE_13
+    return 0.0;
+#endif
+#ifdef SAMPLE_14
+    return 0.0;
+#endif
+#ifdef SAMPLE_15
+    return 0.0;
+#endif
 
 #ifdef SAMPLE_1
     return x*x;
@@ -113,13 +122,30 @@ double ParabolicIBVP1::initial(const SpaceNode& sn) const
 #ifdef SAMPLE_8
     return 0.0;
 #endif
-    return 0.0;
+    return NAN;
 }
 
 double ParabolicIBVP1::boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType boundary) const
 {
     C_UNUSED(sn);
+
 #ifdef SAMPLE_0
+    double t = tn.t;
+    if (boundary == BoundaryValueProblem::Left)  return 0.0;
+    if (boundary == BoundaryValueProblem::Right) return t;
+#endif
+
+#if defined(SAMPLE_13)
+    double t = tn.t;
+    if (boundary == BoundaryValueProblem::Left)  return 0.0;
+    if (boundary == BoundaryValueProblem::Right) return t;
+#endif
+#ifdef SAMPLE_14
+    double t = tn.t;
+    if (boundary == BoundaryValueProblem::Left)  return 0.0;
+    if (boundary == BoundaryValueProblem::Right) return t;
+#endif
+#ifdef SAMPLE_15
     double t = tn.t;
     if (boundary == BoundaryValueProblem::Left)  return 0.0;
     if (boundary == BoundaryValueProblem::Right) return t;
@@ -166,7 +192,7 @@ double ParabolicIBVP1::boundary(const SpaceNode &sn, const TimeNode &tn, Boundar
     if (boundary == BoundaryValueProblem::Left)  return 0.0;
     if (boundary == BoundaryValueProblem::Right) return sin(4.0)*t;
 #endif
-    return 0.0;
+    return NAN;
 }
 
 double ParabolicIBVP1::f(const SpaceNode &sn, const TimeNode &tn) const
@@ -176,6 +202,15 @@ double ParabolicIBVP1::f(const SpaceNode &sn, const TimeNode &tn) const
 
 #ifdef SAMPLE_0
     return x*x - 2.0*a(sn,tn)*t;
+#endif
+#ifdef SAMPLE_13
+    return x*x*x - 6.0*a(sn,tn)*x*t;
+#endif
+#ifdef SAMPLE_14
+    return x*x*x*x - 12.0*a(sn,tn)*x*x*t;
+#endif
+#ifdef SAMPLE_15
+    return x*x*x*x*x - 20.0*a(sn,tn)*x*x*x*t;
 #endif
 
 #ifdef SAMPLE_1
@@ -203,6 +238,8 @@ double ParabolicIBVP1::f(const SpaceNode &sn, const TimeNode &tn) const
 #ifdef SAMPLE_8
     return sin(4.0*x)+16.0*a(sn,tn)*sin(4.0*x);
 #endif
+
+    return NAN;
 }
 
 double ParabolicIBVP1::a(const SpaceNode &sn UNUSED_PARAM, const TimeNode &tn UNUSED_PARAM) const
@@ -217,6 +254,15 @@ double ParabolicIBVP1::U(unsigned int n, unsigned int m) const
 
 #ifdef SAMPLE_0
     return x*x*t;
+#endif
+#ifdef SAMPLE_13
+    return x*x*x*t;
+#endif
+#ifdef SAMPLE_14
+    return x*x*x*x*t;
+#endif
+#ifdef SAMPLE_15
+    return x*x*x*x*x*t;
 #endif
 
 #ifdef SAMPLE_1

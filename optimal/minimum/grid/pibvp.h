@@ -34,6 +34,7 @@ public:
 
     void gridMethod1L(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep) const;
     void gridMethod1LT(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep) const;
+
     void gridMethod1R(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep) const;
     void gridMethod11(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep) const;
     void gridMethod2(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep) const;
@@ -45,11 +46,11 @@ public:
     //void calculateN2R2LD(DoubleMatrix &u) const;
 
     void calculateN4L2RD(DoubleMatrix &u) const;
-    void calculateN4L2RD_1(DoubleMatrix &u) const;
-    void calculateN4L2RD_2(DoubleMatrix &u) const;
+    void calculateN4L2RDX(DoubleMatrix &u) const;
 
     //void calculateN4R2LD(DoubleMatrix &u) const;
-    //void calculateN6L2RD(DoubleMatrix &u) const;
+
+    void calculateN6L2RD(DoubleMatrix &u) const;
     //void calculateN6R2LD(DoubleMatrix &u) const;
 
     void calculateMVD1(DoubleMatrix &u) const;
