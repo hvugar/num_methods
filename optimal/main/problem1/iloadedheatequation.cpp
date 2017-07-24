@@ -87,7 +87,7 @@ void ILoadedHeatEquation::calculateM1(DoubleVector &u)
             //aa = a*a;
 
             ka[n] = -a_a_ht_hx_hx;
-            kb[n] = 1.0 + 2.0*aa*(ht/(hx*hx)) + lambda0_ht;
+            kb[n] = 1.0 + 2.0*a_a_ht_hx_hx + lambda0_ht;
             kc[n] = -a_a_ht_hx_hx;
             kd[n] = u[n] + lambda0_ht_tt + ht*f(isn,tn);
         }
@@ -100,39 +100,46 @@ void ILoadedHeatEquation::calculateM1(DoubleVector &u)
         ka[N] = -2.0*a_a_ht_hx_hx;
         kb[N] = 1.0 + 2.0*a_a_ht_hx_hx + lambda0_ht + 2.0*lambda2_a_a_ht_hx;
         kc[N] = 0.0;
-        kd[N] = u[N] + lambda0_ht_tt + ht*f(isn,tn) + 2.0*lambda2_a_a_ht_tt_hx + 2.0*aa*(ht/hx)*h(tn);
+        kd[N] = u[N] + lambda0_ht_tt + ht*f(isn,tn) + 2.0*lambda2_a_a_ht_tt_hx + 2.0*(aa*ht*h(tn))/hx;
 
-//        for (unsigned int n=0; n<=N; n++)
-//        {
-//            ke[n] = 0.0;
-//            for (unsigned int s=0; s<L; s++)
-//            {
-//                double diff = fabs(n*hx - params[s].e);
-//                if (diff <= hx)
-//                //if (n == params[s].xi)
-//                {
-//                    ke[n] += params[s].k * (1.0 - diff/hx);
-//                }
-//             }
-//             ke[n] *= -2.0*lambda1_a_a_ht_hx;
-//        }
-
-        for (unsigned int n=0; n<=N; n++) betta[n] = 0.0;
-        double eta = kd[0];
-        betta[0] = kb[0];
-        betta[1] = kc[0];
-
-        for (unsigned int s=0; s<L; s++)
+        for (unsigned int n=0; n<=N; n++)
         {
-            betta[params[s].xi] = -2.0*lambda1*aa*(ht/hx)*params[s].k;
+            ke[n] = 0.0;
+            for (unsigned int s=0; s<L; s++)
+            {
+                double diff = fabs(n*hx - params[s].e);
+                if (diff <= hx /*n == params[s].xi*/) ke[n] += params[s].k * (1.0 - diff/hx);
+             }
+             ke[n] *= -2.0*lambda1_a_a_ht_hx;
         }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        for (unsigned int n=0; n<=N; n++)
+        {
+            betta[n] = 0.0;
+            betta[n] = ke[n];
+        }
+        betta[0] += kb[0];
+        betta[1] += kc[0];
+        double eta = kd[0];
+
+        IPrinter::printVector(betta,N+1, "betta ");
+
+        //for (unsigned int s=0; s<L; s++)
+        //{
+        //    betta[params[s].xi] = -2.0*lambda1*aa*(ht/hx)*params[s].k;
+        //}
 
         for (unsigned int n=1; n<=N-1; n++)
         {
-            betta[n+0] -= betta[n-1]*(kb[n]/ka[n]);
-            betta[n+1] -= betta[n-1]*(kc[n]/ka[n]);
-            eta        -= betta[n-1]*(kd[n]/ka[n]);
+            betta[n+0] = betta[n+0] - betta[n-1]*(kb[n]/ka[n]);
+            betta[n+1] = betta[n+1] - betta[n-1]*(kc[n]/ka[n]);
+            eta        = eta        - betta[n-1]*(kd[n]/ka[n]);
+            //printf("%d %14.10f %14.10f %14.10f %14.10f\n", n, ka[n], kb[n], kc[n], kd[n]);
+            //IPrinter::printVector(betta,N+1, "betta ");
         }
+        IPrinter::printVector(betta,N+1, "betta ");
 
         DoubleMatrix M(2,2);
         DoubleVector A(2);
@@ -141,7 +148,16 @@ void ILoadedHeatEquation::calculateM1(DoubleVector &u)
         M[0][0] = betta[N-1]; M[0][1] = betta[N]; A[0] = eta;
         M[1][0] = ka[N];      M[1][1] = kb[N];    A[1] = kd[N];
 
+        double xN1 = (N-1)*hx;
+        double xN0 = (N-0)*hx;
+        double t = ht*m;
+
+        printf("%14.10f %14.10f\n", eta,   betta[N-1]*xN1*xN1*t + betta[N]*xN0*xN0*t);
+        printf("%14.10f %14.10f\n", kd[N], ka[N]*     xN1*xN1*t + kb[N]*   xN0*xN0*t);
+
         GaussianElimination(M,A,x);
+
+        printf("%14.10f %14.10f\n", x[0], x[1]);
 
         u[N-0] = x[1];
         u[N-1] = x[0];
@@ -165,7 +181,7 @@ void ILoadedHeatEquation::calculateM1(DoubleVector &u)
         //printf("%d %18.6f %18.6f %18.6f %20.6f %20.6f\n", 0, sum1, betta[1], u[1], betta[0], NAN);
 
         layerInfo(u, m);
-        //break;
+        break;
     }
 
     free(betta);
@@ -373,9 +389,10 @@ void ILoadedHeatEquation::calculateM2(DoubleVector &u)
                 //u[n-1] += u[params[s].xi] * r[s][n-1];
             }
         }
+        puts("222");
 
         free(kI);
-        for (unsigned int s=0; s<=LPC; s++) free(r[s]);
+        //for (unsigned int s=0; s<=LPC; s++) free(r[s]);
         free(r);
         free(p);
         free(q);
@@ -384,8 +401,9 @@ void ILoadedHeatEquation::calculateM2(DoubleVector &u)
 
 
         layerInfo(u, m);
-        //break;
+        break;
     }
+    puts("111");
 
     free(a1);
     free(b1);

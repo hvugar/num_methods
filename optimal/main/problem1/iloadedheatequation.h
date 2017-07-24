@@ -6,12 +6,13 @@
 class ILoadedHeatEquation : public IParabolicIBVP
 {
 public:
-    struct Parameter {
+    struct Parameter
+    {
         double k;
         double z;
         double e;
         unsigned int xi;
-    } ;
+    };
 
     double a;
     double lambda0;
