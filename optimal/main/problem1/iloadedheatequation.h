@@ -19,7 +19,12 @@ public:
     double lambda2;
     double theta;
 
+    void LoadMatrixParameters(double *ka, double *b, double *c, double *d, double *e,
+                              unsigned int N, unsigned int m);
+
+    /* */
     void calculateM1(DoubleVector &u);
+    /* classic method */
     void calculateM2(DoubleVector &u);
 
     unsigned int L;
