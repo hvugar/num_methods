@@ -7,7 +7,7 @@ void LoadedHeatEquation::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
 
     Dimension time(0.1, 10, 0);
     ex1.setTimeDimension(time);
-    Dimension dim1(0.01, 100, 0);
+    Dimension dim1(0.1, 10, 0);
     ex1.addSpaceDimension(dim1);
 
     ex1.lambda0 = 0.001;
@@ -16,11 +16,11 @@ void LoadedHeatEquation::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
     ex1.a = 1.0;
     ex1.theta = 3.0;
 
-    ex1.L = 3;
+    ex1.L = 1;
     ex1.params = new Parameter[ex1.L];
-    ex1.params[0].k = -1.1; ex1.params[0].z = 10.2; ex1.params[0].e = 0.391; ex1.params[0].xi = (unsigned int)round(ex1.params[0].e*dim1.sizeN());
-    ex1.params[1].k = -2.5; ex1.params[1].z = 12.5; ex1.params[1].e = 0.5; ex1.params[1].xi = (unsigned int)round(ex1.params[1].e*dim1.sizeN());
-    ex1.params[2].k = -0.1; ex1.params[2].z = 20.5; ex1.params[2].e = 0.7; ex1.params[2].xi = (unsigned int)round(ex1.params[2].e*dim1.sizeN());
+    ex1.params[0].k = -1.1; ex1.params[0].z = 10.2; ex1.params[0].e = 0.34; //ex1.params[0].xi = (unsigned int)round(ex1.params[0].e*dim1.sizeN());
+    //ex1.params[1].k = -2.5; ex1.params[1].z = 12.5; ex1.params[1].e = 0.5; ex1.params[1].xi = (unsigned int)round(ex1.params[1].e*dim1.sizeN());
+    //ex1.params[2].k = -0.1; ex1.params[2].z = 20.5; ex1.params[2].e = 0.7; ex1.params[2].xi = (unsigned int)round(ex1.params[2].e*dim1.sizeN());
 
     DoubleVector U(dim1.sizeN()+1);
     TimeNode tn;

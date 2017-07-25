@@ -11,7 +11,7 @@ public:
         double k;
         double z;
         double e;
-        unsigned int xi;
+        //unsigned int xi;
     };
 
     double a;
