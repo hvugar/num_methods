@@ -159,6 +159,8 @@ void ILoadedHeatEquation::calculateM1(DoubleVector &u)
 
         printf("%14.10f %14.10f\n", x[0], x[1]);
 
+        return;
+
         u[N-0] = x[1];
         u[N-1] = x[0];
         double sum1 = 0.0;

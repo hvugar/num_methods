@@ -18,7 +18,7 @@ void LoadedHeatEquation::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
 
     ex1.L = 1;
     ex1.params = new Parameter[ex1.L];
-    ex1.params[0].k = -1.1; ex1.params[0].z = 10.2; ex1.params[0].e = 0.34; //ex1.params[0].xi = (unsigned int)round(ex1.params[0].e*dim1.sizeN());
+    ex1.params[0].k = -1.1; ex1.params[0].z = 10.2; ex1.params[0].e = 0.341; //ex1.params[0].xi = (unsigned int)round(ex1.params[0].e*dim1.sizeN());
     //ex1.params[1].k = -2.5; ex1.params[1].z = 12.5; ex1.params[1].e = 0.5; ex1.params[1].xi = (unsigned int)round(ex1.params[1].e*dim1.sizeN());
     //ex1.params[2].k = -0.1; ex1.params[2].z = 20.5; ex1.params[2].e = 0.7; ex1.params[2].xi = (unsigned int)round(ex1.params[2].e*dim1.sizeN());
 
@@ -41,10 +41,10 @@ void LoadedHeatEquation::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
     IPrinter::printVector(14, 10, u1);
     IPrinter::printSeperatorLine();
 
-    DoubleVector u2;
-    ex1.calculateM2(u2);
-    IPrinter::printVector(14, 10, u2);
-    IPrinter::printSeperatorLine();
+    //DoubleVector u2;
+    //ex1.calculateM2(u2);
+    //IPrinter::printVector(14, 10, u2);
+    //IPrinter::printSeperatorLine();
 }
 
 double LoadedHeatEquation::U(const SpaceNode &sn, const TimeNode &tn) const
@@ -79,8 +79,33 @@ double LoadedHeatEquation::g(const TimeNode &tn) const
 {
     double t = tn.t; C_UNUSED(t);
     double v = 0.0;
+
+    Dimension dim1 = mspaceDimension.at(0);
+    double hx = dim1.step();
+    unsigned int minN = dim1.minN();
+    unsigned int maxN = dim1.maxN();
+    unsigned int N = maxN-minN;
+
     for (unsigned int s=0; s<L; s++)
-        v += params[s].k*(params[s].e*params[s].e*t - params[s].z);
+    {
+        double e = params[s].e;
+        double u = e*e*t;
+        double u1 = 0.0;
+        double u2 = 0.0;
+        for (unsigned int n=0; n<=N-1; n++)
+        {
+            if (n*hx <= e && e < (n+1)*hx)
+            {
+                double diff = fabs(n*hx - e);
+                u1 = (1.0 - diff/hx)*u;
+                u2 = (diff/hx)*u;
+                printf("%.10f %.10f %.10f %.10f %.10f\n", u1,u2, u, e, n*hx);
+                break;
+            }
+        }
+
+        v += params[s].k*( (u1 + u2) - params[s].z);
+    }
     return 0.0 - lambda1 * (0.0 - v);
     //return 0.0;
 }
