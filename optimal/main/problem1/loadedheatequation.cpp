@@ -16,11 +16,13 @@ void LoadedHeatEquation::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
     ex1.a = 1.0;
     ex1.theta = 3.0;
 
-    ex1.L = 3 ;
+    ex1.L = 1 ;
     ex1.params = new Parameter[ex1.L];
-    ex1.params[0].k = -1.1; ex1.params[0].z = 10.2; ex1.params[0].e = 0.3415; //ex1.params[0].xi = (unsigned int)round(ex1.params[0].e*dim1.sizeN());
-    ex1.params[1].k = -2.5; ex1.params[1].z = 12.5; ex1.params[1].e = 0.5845; //ex1.params[1].xi = (unsigned int)round(ex1.params[1].e*dim1.sizeN());
-    ex1.params[2].k = -0.1; ex1.params[2].z = 20.5; ex1.params[2].e = 0.7145; //ex1.params[2].xi = (unsigned int)round(ex1.params[2].e*dim1.sizeN());
+    ex1.params[0].k = -1.1; ex1.params[0].z = 10.2; ex1.params[0].e = 0.7415;
+    //ex1.params[1].k = -2.5; ex1.params[1].z = 12.5; ex1.params[1].e = 0.5845;
+    //ex1.params[2].k = -0.1; ex1.params[2].z = 20.5; ex1.params[2].e = 0.7145;
+
+    IPrinter::printSeperatorLine("Real process:");
 
     DoubleVector U(dim1.sizeN()+1);
     TimeNode tn;
@@ -34,17 +36,17 @@ void LoadedHeatEquation::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
         U[n] = ex1.U(sn, tn);
     }
     IPrinter::printVector(14, 10, U);
-    IPrinter::printSeperatorLine();
 
+    IPrinter::printSeperatorLine();
     DoubleVector u1;
     ex1.calculateM1(u1);
     IPrinter::printVector(14, 10, u1);
     IPrinter::printSeperatorLine();
 
+    IPrinter::printSeperatorLine();
     DoubleVector u2;
     ex1.calculateM2(u2);
     IPrinter::printVector(14, 10, u2);
-    IPrinter::printSeperatorLine();
 }
 
 double LoadedHeatEquation::U(const SpaceNode &sn, const TimeNode &tn) const
@@ -105,7 +107,7 @@ double LoadedHeatEquation::g(const TimeNode &tn) const
 
                 u1 = (1.0 - diff/hx)*e1*e1*t;
                 u2 = (diff/hx)*e2*e2*t;
-                printf("%.10f %.10f %.10f %.10f %.10f %.10f\n", u1,u2, u, e1, e2, n*hx);
+                //printf("%.10f %.10f %.10f %.10f %.10f %.10f\n", u1,u2, u, e1, e2, n*hx);
                 break;
             }
         }

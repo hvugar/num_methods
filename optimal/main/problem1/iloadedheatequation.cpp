@@ -1,11 +1,10 @@
 #include "iloadedheatequation.h"
 #include <float.h>
 
-void ILoadedHeatEquation::LoadMatrixParameters(double *ka, double *b, double *c, double *d, double *e,
-                                               unsigned int N, unsigned int m)
-{
-
-}
+//void ILoadedHeatEquation::LoadMatrixParameters(double *ka, double *b, double *c, double *d, double *e,
+//                                               unsigned int N, unsigned int m)
+//{
+//}
 
 
 void ILoadedHeatEquation::calculateM1(DoubleVector &u)
@@ -115,72 +114,127 @@ void ILoadedHeatEquation::calculateM1(DoubleVector &u)
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        for (unsigned int n=0; n<=N; n++)
-        {
-            betta[n] = 0.0;
-            betta[n] = ke[n];
-        }
+        for (unsigned int n=0; n<=N; n++) betta[n] = ke[n];
         betta[0] += kb[0];
         betta[1] += kc[0];
         double eta = kd[0];
 
-        IPrinter::printVector(betta,N+1, "betta ");
+        //IPrinter::printVector(betta,N+1, "betta ");
 
-        //for (unsigned int s=0; s<L; s++)
-        //{
-        //    betta[params[s].xi] = -2.0*lambda1*aa*(ht/hx)*params[s].k;
-        //}
+        unsigned int nonZeroCount = 0;
+        unsigned int *nonZeroIndex0 = (unsigned int*) malloc(sizeof(unsigned int) * (N+1));
+        for (unsigned int n=0; n<=N; n++)
+        {
+            if ( betta[n] != 0.0 )
+            {
+                nonZeroIndex0[nonZeroCount] = n;
+                nonZeroCount++;
+            }
+        }
+        unsigned int *nonZeroIndex = (unsigned int*) malloc(nonZeroCount*sizeof(unsigned int));
+        for (unsigned int n=0; n<nonZeroCount; n++)
+        {
+            nonZeroIndex[n] = nonZeroIndex0[n];
+        }
+        free(nonZeroIndex0);
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        DoubleMatrix ems(N+1, nonZeroCount+1);
+        for (unsigned int n=0; n<nonZeroCount; n++)
+        {
+            ems[0][n] = betta[ nonZeroIndex[n] ];
+        }
+        ems[0][nonZeroCount] = eta;
+
+        //IPrinter::print(ems.row(0),nonZeroCount+1);
 
         for (unsigned int n=1; n<=N-1; n++)
         {
-            betta[n+0] = betta[n+0] - betta[n-1]*(kb[n]/ka[n]);
-            betta[n+1] = betta[n+1] - betta[n-1]*(kc[n]/ka[n]);
-            eta        = eta        - betta[n-1]*(kd[n]/ka[n]);
-            //printf("%d %14.10f %14.10f %14.10f %14.10f\n", n, ka[n], kb[n], kc[n], kd[n]);
-            //IPrinter::printVector(betta,N+1, "betta ");
+            ems[n][0] = -ems[n-1][0]*(kb[n]/ka[n]) + ems[n-1][1];
+            ems[n][1] = -ems[n-1][0]*(kc[n]/ka[n]);
+
+            for (unsigned int s=2; s<nonZeroCount; s++)
+            {
+                if ( n+1 == nonZeroIndex[s] )
+                {
+                    ems[n][1] += ems[n-1][s];
+                }
+
+                if ( n+1 < nonZeroIndex[s] )
+                {
+                    ems[n][s] = ems[n-1][s];
+                }
+                else
+                {
+                    ems[n][s] = 0.0;
+                }
+            }
+            ems[n][nonZeroCount] = -ems[n-1][0]*(kd[n]/ka[n]) + ems[n-1][nonZeroCount];
+
+            //IPrinter::print(ems.row(n),nonZeroCount+1);
+
+            //betta[n+0] = betta[n+0] - betta[n-1]*(kb[n]/ka[n]);
+            //betta[n+1] = betta[n+1] - betta[n-1]*(kc[n]/ka[n]);
+            //eta        = eta        - betta[n-1]*(kd[n]/ka[n]);
         }
-        IPrinter::printVector(betta,N+1, "betta ");
+        //IPrinter::printVector(betta,N+1, "betta ");
 
         DoubleMatrix M(2,2);
         DoubleVector A(2);
         DoubleVector x(2);
 
-        M[0][0] = betta[N-1]; M[0][1] = betta[N]; A[0] = eta;
-        M[1][0] = ka[N];      M[1][1] = kb[N];    A[1] = kd[N];
+        M[0][0] = ems[N-1][0]; M[0][1] = ems[N-1][1]; A[0] = ems[N-1][nonZeroCount] ;
+        M[1][0] = ka[N];       M[1][1] = kb[N];       A[1] = kd[N];
 
         double xN1 = (N-1)*hx;
         double xN0 = (N-0)*hx;
         double t = ht*m;
 
-        printf("%14.10f %14.10f\n", eta,   betta[N-1]*xN1*xN1*t + betta[N]*xN0*xN0*t);
+        printf("%14.10f %14.10f\n", ems[N-1][nonZeroCount],   ems[N-1][0]*xN1*xN1*t + ems[N-1][1]*xN0*xN0*t);
         printf("%14.10f %14.10f\n", kd[N], ka[N]*     xN1*xN1*t + kb[N]*   xN0*xN0*t);
 
         GaussianElimination(M,A,x);
 
         printf("%14.10f %14.10f\n", x[0], x[1]);
 
-        return;
-
+        for (unsigned int n=0; n<=N; n++) u[n] = 0.0;
         u[N-0] = x[1];
         u[N-1] = x[0];
-        double sum1 = 0.0;
-        for (unsigned int n=N-1; n!=0; n--)
+        //u[N-2] = -(ems[N-2][1]*u[N-1] - ems[N-2][nonZeroCount])/ems[N-2][0];
+        //printf("%14.10f %14.10f %14.10f\n", u[N-2], u[N-1], u[N-0]);
+
+        for (unsigned int n=N-2; n!=UINT32_MAX; n--)
         {
-            eta        += betta[n-1]*(kd[n]/ka[n]);
-            betta[n+1] += betta[n-1]*(kc[n]/ka[n]);
-            betta[n+0] += betta[n-1]*(kb[n]/ka[n]);
-
-            //u[n-1] = eta; for (unsigned int i=n; i<=N; i++) u[n-1] -= betta[i]*u[i];
-            u[n-1] = -betta[n+0]*u[n+0] - betta[n+1]*u[n+1] + eta - sum1;
-            u[n-1] /= betta[n-1];
-
-            if (n<=N-1)
+            double bb = 0.0;
+            for (unsigned int s=2; s<nonZeroCount; s++)
             {
-                sum1 += betta[n+1]*u[n+1];
-                //printf("%d %18.6f %18.6f %18.6f %20.6f %20.6f\n", n, sum1, betta[n+1], u[n+1], betta[n+0], betta[n-1]);
+                bb += ems[n][s]*u[nonZeroIndex[s]];
+                printf("m: %d %d %f\n", n, nonZeroIndex[s], bb);
             }
+            u[n] = -(ems[n][1]*u[n+1] - bb - ems[n][nonZeroCount])/ems[n][0];
         }
-        //printf("%d %18.6f %18.6f %18.6f %20.6f %20.6f\n", 0, sum1, betta[1], u[1], betta[0], NAN);
+
+//        return;
+
+//        double sum1 = 0.0;
+//        for (unsigned int n=N-1; n!=0; n--)
+//        {
+//            eta        += betta[n-1]*(kd[n]/ka[n]);
+//            betta[n+1] += betta[n-1]*(kc[n]/ka[n]);
+//            betta[n+0] += betta[n-1]*(kb[n]/ka[n]);
+
+//            //u[n-1] = eta; for (unsigned int i=n; i<=N; i++) u[n-1] -= betta[i]*u[i];
+//            u[n-1] = -betta[n+0]*u[n+0] - betta[n+1]*u[n+1] + eta - sum1;
+//            u[n-1] /= betta[n-1];
+
+//            if (n<=N-1)
+//            {
+//                sum1 += betta[n+1]*u[n+1];
+//                //printf("%d %18.6f %18.6f %18.6f %20.6f %20.6f\n", n, sum1, betta[n+1], u[n+1], betta[n+0], betta[n-1]);
+//            }
+//        }
+//        //printf("%d %18.6f %18.6f %18.6f %20.6f %20.6f\n", 0, sum1, betta[1], u[1], betta[0], NAN);
 
         layerInfo(u, m);
         break;

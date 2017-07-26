@@ -20,8 +20,7 @@ public:
     double lambda2;
     double theta;
 
-    void LoadMatrixParameters(double *ka, double *b, double *c, double *d, double *e,
-                              unsigned int N, unsigned int m);
+    //void LoadMatrixParameters(double *ka, double *b, double *c, double *d, double *e, unsigned int N, unsigned int m);
 
     /* */
     void calculateM1(DoubleVector &u);
