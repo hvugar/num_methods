@@ -22,13 +22,15 @@ public:
 
     //void LoadMatrixParameters(double *ka, double *b, double *c, double *d, double *e, unsigned int N, unsigned int m);
 
-    /* */
-    void calculateM1(DoubleVector &u);
-    /* classic method */
+    /* Transferring conditions */
+    void transferringConditions2(DoubleVector &u);
+    void transferringConditions4(DoubleVector &u);
+
+    /* Classic method */
     void calculateM2(DoubleVector &u);
 
     unsigned int L;
-    Parameter *params;
+    std::vector<Parameter> params;
 
     virtual void layerInfo(const DoubleVector &, unsigned int) const {}
     virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
@@ -41,6 +43,11 @@ protected:
     //virtual double a(const SpaceNode &sn, const TimeNode &tn) const;
     virtual double g(const TimeNode &tn) const = 0;
     virtual double h(const TimeNode &tn) const = 0;
+
+private:
+    void getGridParameters(double &hx, unsigned int &N, double &ht, unsigned int &M,
+                           unsigned int &minN, unsigned int &maxN,
+                           unsigned int &minM, unsigned int &maxM) const;
 
     //void qovmaFirstRowM(double *e, double *a, double *b, double *c, double *d, double *x, unsigned int N) const;
 };

@@ -3,7 +3,7 @@
 
 #include "iloadedheatequation.h"
 
-#define SAMPLE_2
+#define SAMPLE_1
 
 class LoadedHeatEquation : public ILoadedHeatEquation
 {
