@@ -21,7 +21,21 @@ public:
 class MINIMUMSHARED_EXPORT CauchyProblem
 {
 public:
+    enum SolutionMethods
+    {
+        RungeKutta4rdOrder,
+        Euler
+    };
+
+    /**
+     * @brief f Right side of ordinary differensial equation first order. dy/dx=f(x,y);
+     * @param x Independent variable;
+     * @param y
+     * @return
+     */
     virtual double f(double x, const DoubleVector &y) const = 0;
+
+    void calculate(SolutionMethods method);
 
     static void rungeKutta(CauchyProblem *cp, double x0, double y0, double h, unsigned int N, DoubleVector &y);
     static void rungeKutta(std::vector<CauchyProblem*> cps, double x0, double h, unsigned int N, DoubleMatrix &my);
@@ -31,6 +45,9 @@ public:
 
     double x0;
     double y0;
+
+private:
+    void calculateRungeKutta4rdOrder();
 };
 
 #endif // RUNGEKUTTA_H

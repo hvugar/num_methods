@@ -16,7 +16,23 @@ enum SweepMethodDirection
     Centered = 3
 };
 
-class MINIMUMSHARED_EXPORT InitialValueProblem {};
+class MINIMUMSHARED_EXPORT InitialValueProblem
+{
+public:
+    enum Method
+    {
+        RK2,
+        RK4,
+        EULER,
+        EULER_MOD
+    };
+
+    enum Direction
+    {
+        L2R, // Left to Right
+        R2L  // Right to Left
+    };
+};
 
 /**
  * @brief The InitialBoundaryValueProblemPDE class

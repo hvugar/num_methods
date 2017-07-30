@@ -47,7 +47,8 @@ SOURCES += \
     grid/bpibvp.cpp \
     grid/nhpibvp.cpp \
     iibvp.cpp \
-    gradient/igradient.cpp
+    gradient/igradient.cpp \
+    grid/cauchyp.cpp
 
 HEADERS += global.h \
     cmethods.h \
@@ -81,4 +82,5 @@ HEADERS += global.h \
     grid/bpibvp.h \
     grid/nhpibvp.h \
     iibvp.h \
-    gradient/igradient.h
+    gradient/igradient.h \
+    grid/cauchyp.h

@@ -50,7 +50,9 @@ SOURCES += main.cpp \
     problem1/iloadedheatequation.cpp \
     problem1/loadedheatequation.cpp \
     problem1/ibackwardloadedheateqauation.cpp \
-    problem4/problem4.cpp
+    problem4/problem4.cpp \
+    cpnlcs.cpp \
+    ivp/cauchyproblemmex.cpp
 
 HEADERS += \
     loadedsystems.h \
@@ -67,4 +69,6 @@ HEADERS += \
     problem1/iloadedheatequation.h \
     problem1/loadedheatequation.h \
     problem1/ibackwardloadedheateqauation.h \
-    problem4/problem4.h
+    problem4/problem4.h \
+    cpnlcs.h \
+    ivp/cauchyproblemmex.h

@@ -3,6 +3,7 @@
 #include <cmethods.h>
 #include <grid/pibvp.h>
 #include <grid/hibvp.h>
+#include <grid/cauchyp.h>
 
 #include "problem1/problem1L1.h"
 #include "problem1/problem1L2.h"
@@ -44,10 +45,14 @@
 #include "bordertest.h"
 #include "bordertest1.h"
 #include "sampleboundaryproblem1.h"
+#include "ivp/cauchyproblemmex.h"
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //srand(time(NULL));
+
+    CauchyProblemMEx::Main(argc, argv);
+
 
     //ParabolicIBVP1::Main(argc, argv);
 
@@ -80,7 +85,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //HyperbolicIBVP1::Main(argc, argv);
     //NewtonHeatEquationEx1::Main(argc, argv);
     //Problem1L3::Main(argc, argv);
-    LoadedHeatEquation::Main(argc, argv);
+    //LoadedHeatEquation::Main(argc, argv);
 
     //HeatControl::Main(argc, argv);
     //HeatControl1::Main(argc, argv);
