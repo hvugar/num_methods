@@ -58,7 +58,7 @@ void CauchyProblemNonLocalContions::calculate1()
     DoubleVector alpha0_11 = rx.row(0);
     DoubleVector alpha0_12 = rx.row(1);
     DoubleVector betta__1  = rx.row(2);
-    DoubleVector M = rx.row(3);
+    DoubleVector M         = rx.row(3);
 
     DoubleVector alpha1_11(N+1);
     DoubleVector alpha1_12(N+1);
@@ -76,8 +76,8 @@ void CauchyProblemNonLocalContions::calculate1()
     IPrinter::printVector(14, 10, alpha1_11);
     IPrinter::printVector(14, 10, alpha1_12);
 
-    double a_1_11 = alpha0_11[N] + alpha1_11[0];
-    double a_1_12 = alpha0_12[N] + alpha1_12[0];
+    double a_1_11 = alpha0_11[N] + alpha1_11[N];
+    double a_1_12 = alpha0_12[N] + alpha1_12[N];
 
     printf("%f %f\n", a_1_11*x1(N) + a_1_12*x2(N), betta__1[N]);
 }
@@ -106,11 +106,11 @@ double CauchyProblemNonLocalContions::B(unsigned int k, unsigned int i) const
     double h = grid().step();
 
     double t = k*h;
-    if (i==0)
+    if (i==1)
     {
         return -t;
     }
-    if (i==1)
+    if (i==2)
     {
         return -6.0*t-11.0;
     }
@@ -145,7 +145,7 @@ double CauchyProblemNonLocalContions::f(double t, const DoubleVector &x, unsigne
 
     if (i == 0) return _S0*alpha0_11 - ( A(k,1,1)*alpha0_11 + A(k,2,1)*alpha0_12 );
     if (i == 1) return _S0*alpha0_12 - ( A(k,1,2)*alpha0_11 + A(k,2,2)*alpha0_12 );
-    if (i == 2) return _S0*betta___1 - ( B(k,1)*alpha0_11   + B(k,2)*alpha0_12 );
+    if (i == 2) return _S0*betta___1 + ( B(k,1)*alpha0_11   + B(k,2)*alpha0_12 );
     if (i == 3) return _S0*M;
 
     return 0.0;
@@ -158,9 +158,19 @@ double CauchyProblemNonLocalContions::S0(unsigned int i, double t, const DoubleV
     double betta___1 = x[2];
     double M         = x[3];
 
-    double s1 = (alpha0_11*A(k,1,1) + alpha0_12*A(k,2,1))*alpha0_11 + (alpha0_11*A(k,1,2) + alpha0_12*A(k,2,2))*alpha0_12;
-    double s2 = (alpha0_11*B(k,1) + alpha0_12*B(k,2))*betta___1;
-    double m1 = alpha0_11*alpha0_11 + alpha0_12*alpha0_12 + betta___1*betta___1;
+    double s1,s2,m1;
+    if (i==1)
+    {
+        s1 = (alpha0_11*A(k,1,1) + alpha0_12*A(k,2,1))*alpha0_11 + (alpha0_11*A(k,1,2) + alpha0_12*A(k,2,2))*alpha0_12;
+        s2 = (alpha0_11*B(k,1) + alpha0_12*B(k,2))*betta___1;
+        m1 = alpha0_11*alpha0_11 + alpha0_12*alpha0_12 + betta___1*betta___1;
+    }
+    if (i==2)
+    {
+        s1 = (alpha0_11*A(k,1,1) + alpha0_12*A(k,2,1))*alpha0_11 + (alpha0_11*A(k,1,2) + alpha0_12*A(k,2,2))*alpha0_12;
+        s2 = (alpha0_11*B(k,1) + alpha0_12*B(k,2))*betta___1;
+        m1 = alpha0_11*alpha0_11 + alpha0_12*alpha0_12 + betta___1*betta___1;
+    }
 
     return (s1-s2)/m1;
 }
