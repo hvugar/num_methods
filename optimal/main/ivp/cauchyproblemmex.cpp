@@ -55,7 +55,7 @@ void CauchyProblemMEx::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 CauchyProblemMEx::CauchyProblemMEx(const Dimension &grid) : CauchyProblemM(grid)
 {}
 
-double CauchyProblemMEx::f(double x, const DoubleVector &y, unsigned int i) const
+double CauchyProblemMEx::f(double x, const DoubleVector &y, unsigned int k UNUSED_PARAM, unsigned int i) const
 {
     double y1 = y[0];
     double y2 = y[1];

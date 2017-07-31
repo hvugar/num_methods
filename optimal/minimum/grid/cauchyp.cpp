@@ -1,9 +1,9 @@
 #include "cauchyp.h"
 
-CauchyProblem1::CauchyProblem1(const Dimension &grid) : mgrid(grid)
+CauchyProblem::CauchyProblem(const Dimension &grid) : mgrid(grid)
 {}
 
-void CauchyProblem1::calculate(double x0, double y0, DoubleVector &y, CauchyProblem1::Method method, Direction direction)
+void CauchyProblem::calculate(double x0, double y0, DoubleVector &y, CauchyProblem::Method method, Direction direction)
 {
     switch (method)
     {
@@ -24,7 +24,7 @@ void CauchyProblem1::calculate(double x0, double y0, DoubleVector &y, CauchyProb
     }
 }
 
-void CauchyProblem1::calculateRK2(double x0, double y0, DoubleVector &y, Direction direction)
+void CauchyProblem::calculateRK2(double x0, double y0, DoubleVector &y, Direction direction)
 {
     unsigned int N = mgrid.sizeN();
     double h = mgrid.step();
@@ -44,11 +44,10 @@ void CauchyProblem1::calculateRK2(double x0, double y0, DoubleVector &y, Directi
         y[0] = yn;
         for (unsigned int n=1; n<=N; n++)
         {
-            k1 = f(xn,    yn);
-            k2 = f(xn+h2, yn+h2*k1);
+            k1 = f(xn,    yn,       n-1);
+            k2 = f(xn+h2, yn+h2*k1, n-1);
             yn += h*k2;
             xn += h;
-
             y[n] = yn;
         }
     }
@@ -62,17 +61,16 @@ void CauchyProblem1::calculateRK2(double x0, double y0, DoubleVector &y, Directi
         y[N] = yn;
         for (unsigned int n=N-1; n!=UINT32_MAX; n--)
         {
-            k1 = f(xn,    yn);
-            k2 = f(xn-h2, yn-h2*k1);
+            k1 = f(xn,    yn,       n+1);
+            k2 = f(xn-h2, yn-h2*k1, n+1);
             yn -= h*k2;
             xn -= h;
-
             y[n] = yn;
         }
     }
 }
 
-void CauchyProblem1::calculateRK4(double x0, double y0, DoubleVector &y, Direction direction)
+void CauchyProblem::calculateRK4(double x0, double y0, DoubleVector &y, Direction direction)
 {
     unsigned int N = mgrid.sizeN();
     double h = mgrid.step();
@@ -95,10 +93,10 @@ void CauchyProblem1::calculateRK4(double x0, double y0, DoubleVector &y, Directi
         y[0] = yn;
         for (unsigned int n=1; n<=N; n++)
         {
-            k1 = f(xn,    yn);
-            k2 = f(xn+h2, yn+h2*k1);
-            k3 = f(xn+h2, yn+h2*k2);
-            k4 = f(xn+h,  yn+h*k3);
+            k1 = f(xn,    yn,       n-1);
+            k2 = f(xn+h2, yn+h2*k1, n-1);
+            k3 = f(xn+h2, yn+h2*k2, n-1);
+            k4 = f(xn+h,  yn+h*k3,  n-1);
 
             yn += h6*(k1+2.0*k2+2.0*k3+k4);
             xn += h;
@@ -117,10 +115,10 @@ void CauchyProblem1::calculateRK4(double x0, double y0, DoubleVector &y, Directi
         y[N] = yn;
         for (unsigned int n=N-1; n!=UINT32_MAX; n--)
         {
-            k1 = f(xn,    yn);
-            k2 = f(xn-h2, yn-h2*k1);
-            k3 = f(xn-h2, yn-h2*k2);
-            k4 = f(xn-h,  yn-h*k3);
+            k1 = f(xn,    yn,      n+1);
+            k2 = f(xn-h2, yn-h2*k1,n+1);
+            k3 = f(xn-h2, yn-h2*k2,n+1);
+            k4 = f(xn-h,  yn-h*k3, n+1);
 
             yn -= h6*(k1+2.0*k2+2.0*k3+k4);
             xn -= h;
@@ -130,7 +128,7 @@ void CauchyProblem1::calculateRK4(double x0, double y0, DoubleVector &y, Directi
     }
 }
 
-void CauchyProblem1::calculateEuler(double x0, double y0, DoubleVector &y, Direction direction)
+void CauchyProblem::calculateEuler(double x0, double y0, DoubleVector &y, Direction direction)
 {
     unsigned int N = mgrid.sizeN();
     double h = mgrid.step();
@@ -146,7 +144,7 @@ void CauchyProblem1::calculateEuler(double x0, double y0, DoubleVector &y, Direc
         y[0] = yn;
         for (unsigned int n=1; n<=N; n++)
         {
-            yn = yn + h*f(xn, yn);
+            yn = yn + h*f(xn, yn, n-1);
             y[n] = yn;
             xn += h;
         }
@@ -160,14 +158,14 @@ void CauchyProblem1::calculateEuler(double x0, double y0, DoubleVector &y, Direc
         y[N] = yn;
         for (unsigned int n=N-1; n!=UINT32_MAX; n--)
         {
-            yn = yn - h*f(xn, yn);
+            yn = yn - h*f(xn, yn, n+1);
             y[n] = yn;
             xn -= h;
         }
     }
 }
 
-void CauchyProblem1::calculateEulerMod(double x0, double y0, DoubleVector &y, Direction direction)
+void CauchyProblem::calculateEulerMod(double x0, double y0, DoubleVector &y, Direction direction)
 {
     unsigned int N = mgrid.sizeN();
     double h = mgrid.step();
@@ -183,7 +181,7 @@ void CauchyProblem1::calculateEulerMod(double x0, double y0, DoubleVector &y, Di
         y[0] = yn;
         for (unsigned int n=1; n<=N; n++)
         {
-            yn = yn + h*f(xn, yn);
+            yn = yn + h*f(xn, yn, n-1);
             y[n] = yn;
             xn += h;
         }
@@ -197,7 +195,7 @@ void CauchyProblem1::calculateEulerMod(double x0, double y0, DoubleVector &y, Di
         y[N] = yn;
         for (unsigned int n=N-1; n!=UINT32_MAX; n--)
         {
-            yn = yn - h*f(xn, yn);
+            yn = yn - h*f(xn, yn, n+1);
             y[n] = yn;
             xn -= h;
         }
@@ -255,11 +253,11 @@ void CauchyProblemM::calculateRK2(double x0, const DoubleVector &y0, DoubleMatri
         {
             // k1
             for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-1];
-            for (unsigned int j=0; j<n; j++) k1[j] = f(xn, yn, j);
+            for (unsigned int j=0; j<n; j++) k1[j] = f(xn, yn, i-1, j);
 
             // k2
             for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-1]+h2*k1[j];
-            for (unsigned int j=0; j<n; j++) k2[j] = f(xn+h2, yn, j);
+            for (unsigned int j=0; j<n; j++) k2[j] = f(xn+h2, yn, i-1, j);
 
             for (unsigned int j=0; j<n; j++) ry[j][i] = ry[j][i-1] + h * k2[j];
 
@@ -282,11 +280,11 @@ void CauchyProblemM::calculateRK2(double x0, const DoubleVector &y0, DoubleMatri
         {
             // k1
             for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i+1];
-            for (unsigned int j=0; j<n; j++) k1[j] = f(xn, yn, j);
+            for (unsigned int j=0; j<n; j++) k1[j] = f(xn, yn, i+1, j);
 
             // k2
             for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i+1]-h2*k1[j];
-            for (unsigned int j=0; j<n; j++) k2[j] = f(xn-h2, yn, j);
+            for (unsigned int j=0; j<n; j++) k2[j] = f(xn-h2, yn, i+1, j);
 
             for (unsigned int j=0; j<n; j++) ry[j][i] = ry[j][i+1] - h * k2[j];
 
@@ -328,19 +326,19 @@ void CauchyProblemM::calculateRK4(double x0, const DoubleVector &y0, DoubleMatri
         {
             // k1
             for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-1];
-            for (unsigned int j=0; j<n; j++) k1[j] = f(xn, yn, j);
+            for (unsigned int j=0; j<n; j++) k1[j] = f(xn, yn, i-1, j);
 
             // k2
             for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-1]+h2*k1[j];
-            for (unsigned int j=0; j<n; j++) k2[j] = f(xn+h2, yn, j);
+            for (unsigned int j=0; j<n; j++) k2[j] = f(xn+h2, yn, i-1, j);
 
             // k3
             for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-1]+h2*k2[j];
-            for (unsigned int j=0; j<n; j++) k3[j] = f(xn+h2, yn, j);
+            for (unsigned int j=0; j<n; j++) k3[j] = f(xn+h2, yn, i-1, j);
 
             // k4
             for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-1]+h*k3[j];
-            for (unsigned int j=0; j<n; j++) k4[j] = f(xn+h, yn, j);
+            for (unsigned int j=0; j<n; j++) k4[j] = f(xn+h, yn, i-1, j);
 
             for (unsigned int j=0; j<n; j++) ry[j][i] = ry[j][i-1] + h6 * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
 
@@ -364,19 +362,19 @@ void CauchyProblemM::calculateRK4(double x0, const DoubleVector &y0, DoubleMatri
         {
             // k1
             for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i+1];
-            for (unsigned int j=0; j<n; j++) k1[j] = f(xn, yn, j);
+            for (unsigned int j=0; j<n; j++) k1[j] = f(xn, yn, i+1, j);
 
             // k2
             for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i+1]-h2*k1[j];
-            for (unsigned int j=0; j<n; j++) k2[j] = f(xn-h2, yn, j);
+            for (unsigned int j=0; j<n; j++) k2[j] = f(xn-h2, yn, i+1, j);
 
             // k3
             for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i+1]-h2*k2[j];
-            for (unsigned int j=0; j<n; j++) k3[j] = f(xn-h2, yn, j);
+            for (unsigned int j=0; j<n; j++) k3[j] = f(xn-h2, yn, i+1, j);
 
             // k4
             for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i+1]-h*k3[j];
-            for (unsigned int j=0; j<n; j++) k4[j] = f(xn-h, yn, j);
+            for (unsigned int j=0; j<n; j++) k4[j] = f(xn-h, yn, i+1, j);
 
             for (unsigned int j=0; j<n; j++) ry[j][i] = ry[j][i+1] - h6 * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
 
@@ -410,7 +408,7 @@ void CauchyProblemM::calculateEuler(double x0, const DoubleVector &y0, DoubleMat
         for (unsigned int i=1; i<=N; i++)
         {
             for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-1];
-            for (unsigned int j=0; j<n; j++) ry[j][i] = ry[j][i-1] + h * f(xn, yn, j);
+            for (unsigned int j=0; j<n; j++) ry[j][i] = ry[j][i-1] + h * f(xn, yn, i-1, j);
 
             xn += h;
         }
@@ -426,7 +424,7 @@ void CauchyProblemM::calculateEuler(double x0, const DoubleVector &y0, DoubleMat
         for (unsigned int i=N-1; i!=UINT32_MAX; i--)
         {
             for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i+1];
-            for (unsigned int j=0; j<n; j++) ry[j][i] = ry[j][i+1] - h * f(xn, yn, j);
+            for (unsigned int j=0; j<n; j++) ry[j][i] = ry[j][i+1] - h * f(xn, yn, i+1, j);
 
             xn -= h;
         }
@@ -452,7 +450,7 @@ void CauchyProblemM::calculateEulerMod(double x0, const DoubleVector &y0, Double
         for (unsigned int i=1; i<=N; i++)
         {
             for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-1];
-            for (unsigned int j=0; j<n; j++) ry[j][i] = ry[j][i-1] + h * f(xn, yn, j);
+            for (unsigned int j=0; j<n; j++) ry[j][i] = ry[j][i-1] + h * f(xn, yn, i-1, j);
 
             xn += h;
         }
@@ -468,9 +466,14 @@ void CauchyProblemM::calculateEulerMod(double x0, const DoubleVector &y0, Double
         for (unsigned int i=N-1; i!=UINT32_MAX; i--)
         {
             for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i+1];
-            for (unsigned int j=0; j<n; j++) ry[j][i] = ry[j][i+1] - h * f(xn, yn, j);
+            for (unsigned int j=0; j<n; j++) ry[j][i] = ry[j][i+1] - h * f(xn, yn, i+1, j);
 
             xn -= h;
         }
     }
+}
+
+const Dimension& CauchyProblemM::grid() const
+{
+    return mgrid;
 }

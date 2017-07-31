@@ -148,7 +148,7 @@ void RungeKutta::calculate(R2FunctionX f, double x0, double y0, DoubleVector &y,
     }
 }
 
-void CauchyProblem::rungeKutta(CauchyProblem *cp, double x0 UNUSED_PARAM, double y0 UNUSED_PARAM, double h, unsigned int N, DoubleVector &y)
+void CauchyProblem2::rungeKutta(CauchyProblem2 *cp, double x0 UNUSED_PARAM, double y0 UNUSED_PARAM, double h, unsigned int N, DoubleVector &y)
 {
     if (abs(h) < DBL_EPSILON) return;
     y.clear();
@@ -195,7 +195,7 @@ void CauchyProblem::rungeKutta(CauchyProblem *cp, double x0 UNUSED_PARAM, double
     //    }
 }
 
-void CauchyProblem::rungeKutta(std::vector<CauchyProblem*> cps, double x0, double h, unsigned int N, DoubleMatrix &my)
+void CauchyProblem2::rungeKutta(std::vector<CauchyProblem2*> cps, double x0, double h, unsigned int N, DoubleMatrix &my)
 {
     unsigned int M = cps.size();
     my.clear();
@@ -277,7 +277,7 @@ void CauchyProblem::rungeKutta(std::vector<CauchyProblem*> cps, double x0, doubl
     }
 }
 
-void CauchyProblem::euler1(std::vector<CauchyProblem *> cps, double x0, double h, unsigned int N, DoubleMatrix &m)
+void CauchyProblem2::euler1(std::vector<CauchyProblem2 *> cps, double x0, double h, unsigned int N, DoubleMatrix &m)
 {
     unsigned int C = cps.size();
     m.clear();
@@ -297,7 +297,7 @@ void CauchyProblem::euler1(std::vector<CauchyProblem *> cps, double x0, double h
     }
 }
 
-void CauchyProblem::euler2(std::vector<CauchyProblem *> cps UNUSED_PARAM, double x0 UNUSED_PARAM, double h UNUSED_PARAM, unsigned int N UNUSED_PARAM, DoubleMatrix &m UNUSED_PARAM)
+void CauchyProblem2::euler2(std::vector<CauchyProblem2 *> cps UNUSED_PARAM, double x0 UNUSED_PARAM, double h UNUSED_PARAM, unsigned int N UNUSED_PARAM, DoubleMatrix &m UNUSED_PARAM)
 {
     //    for (unsigned int i=0; i<m.size(); i++) m[i].clear();
     //    m.clear();

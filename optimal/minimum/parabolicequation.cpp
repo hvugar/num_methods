@@ -1994,7 +1994,7 @@ void IParabolicEquation::calculateL(DoubleMatrix &u, double hx, double ht, unsig
     double betta = (a*a)/(hx*hx);
     double alpha = -2.0*betta;
 
-    class A : public CauchyProblem
+    class A : public CauchyProblem2
     {
     public:
         virtual double f(double t, const DoubleVector &y) const
@@ -2014,7 +2014,7 @@ void IParabolicEquation::calculateL(DoubleMatrix &u, double hx, double ht, unsig
         const IParabolicEquation *p;
     };
 
-    std::vector<CauchyProblem*> cps;
+    std::vector<CauchyProblem2*> cps;
     cps.resize(N-1);
     for (unsigned int i=1; i<=N-1; i++)
     {
@@ -2034,7 +2034,7 @@ void IParabolicEquation::calculateL(DoubleMatrix &u, double hx, double ht, unsig
     }
 
     DoubleMatrix m;
-    CauchyProblem::rungeKutta(cps, 0.0, ht, M, m);
+    CauchyProblem2::rungeKutta(cps, 0.0, ht, M, m);
     for (unsigned int j=1; j<=M; j++)
     {
         for (unsigned int i=1; i<=N-1; i++)

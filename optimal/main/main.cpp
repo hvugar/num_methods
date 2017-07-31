@@ -47,11 +47,14 @@
 #include "sampleboundaryproblem1.h"
 #include "ivp/cauchyproblemmex.h"
 
+#include "cpnlcs.h"
+
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //srand(time(NULL));
 
-    CauchyProblemMEx::Main(argc, argv);
+    CauchyProblemNonLocalContions::Main(argc, argv);
+//    CauchyProblemMEx::Main(argc, argv);
 
 
     //ParabolicIBVP1::Main(argc, argv);

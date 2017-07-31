@@ -18,7 +18,7 @@ public:
     static void calculate(R2FunctionX f, double x0, double y0, DoubleVector& y, double dx);
 };
 
-class MINIMUMSHARED_EXPORT CauchyProblem
+class MINIMUMSHARED_EXPORT CauchyProblem2
 {
 public:
     enum SolutionMethods
@@ -37,11 +37,11 @@ public:
 
     void calculate(SolutionMethods method);
 
-    static void rungeKutta(CauchyProblem *cp, double x0, double y0, double h, unsigned int N, DoubleVector &y);
-    static void rungeKutta(std::vector<CauchyProblem*> cps, double x0, double h, unsigned int N, DoubleMatrix &my);
+    static void rungeKutta(CauchyProblem2 *cp, double x0, double y0, double h, unsigned int N, DoubleVector &y);
+    static void rungeKutta(std::vector<CauchyProblem2*> cps, double x0, double h, unsigned int N, DoubleMatrix &my);
 
-    static void euler1(std::vector<CauchyProblem*> cps, double x0, double h, unsigned int N, DoubleMatrix &my);
-    static void euler2(std::vector<CauchyProblem*> cps, double x0, double h, unsigned int N, DoubleMatrix &my);
+    static void euler1(std::vector<CauchyProblem2*> cps, double x0, double h, unsigned int N, DoubleMatrix &my);
+    static void euler2(std::vector<CauchyProblem2*> cps, double x0, double h, unsigned int N, DoubleMatrix &my);
 
     double x0;
     double y0;

@@ -11,7 +11,7 @@ public:
     CauchyProblemMEx(const Dimension &grid);
 
 protected:
-    virtual double f(double x, const DoubleVector &y, unsigned int i) const;
+    virtual double f(double x, const DoubleVector &y, unsigned int k, unsigned int i) const;
 
 
 };
