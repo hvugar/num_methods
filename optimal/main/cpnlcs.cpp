@@ -6,8 +6,13 @@ void CauchyProblemNonLocalContions::Main(int agrc UNUSED_PARAM, char *argv[] UNU
     CauchyProblemNonLocalContions cpnlcs(grid);
     //cpnlcs.calculate1();
     cpnlcs.initialize();
+
     cpnlcs.calculateInterval(0,1,0);
     cpnlcs.calculateInterval(1,2,0);
+
+    puts("---");
+    cpnlcs.calculateInterval(0,1,1);
+    cpnlcs.calculateInterval(1,2,1);
 }
 
 CauchyProblemNonLocalContions::CauchyProblemNonLocalContions(const Dimension &grid) : CauchyProblemM1stOrder(grid)
@@ -32,8 +37,8 @@ void CauchyProblemNonLocalContions::initialize()
     cond1.time = 0.5;
     cond1.rows = cond1.cols = n;
     cond1.alpha.resize(cond1.rows,cond1.cols);
-    cond1.alpha[0][0] = 5.0; cond1.alpha[0][1] = 2.0;
-    cond1.alpha[1][0] = 1.0; cond1.alpha[1][1] = 3.0;
+    cond1.alpha[0][0] = 0.0; cond1.alpha[0][1] = 0.0;
+    cond1.alpha[1][0] = 0.0; cond1.alpha[1][1] = 0.0;
     cond1.n = N/2;
 
     NonSeparatedCondition cond2;
@@ -52,8 +57,13 @@ void CauchyProblemNonLocalContions::initialize()
     L = nscs.size();
 
     betta.resize(n);
-    betta[0] = cond0.alpha[0][0]*x1(0) + cond0.alpha[0][1]*x2(0) + cond1.alpha[0][0]*x1(N/2) + cond1.alpha[0][1]*x2(N/2) + cond2.alpha[0][0]*x1(N) + cond2.alpha[0][1]*x2(N);
-    betta[1] = cond0.alpha[1][0]*x1(0) + cond0.alpha[1][1]*x2(0) + cond1.alpha[1][0]*x1(N/2) + cond1.alpha[1][1]*x2(N/2) + cond2.alpha[1][0]*x1(N) + cond2.alpha[1][1]*x2(N);
+    betta[0] = cond0.alpha[0][0]*x1(0)   + cond0.alpha[0][1]*x2(0) +
+               cond1.alpha[0][0]*x1(N/2) + cond1.alpha[0][1]*x2(N/2) +
+               cond2.alpha[0][0]*x1(N)   + cond2.alpha[0][1]*x2(N);
+
+    betta[1] = cond0.alpha[1][0]*x1(0)   + cond0.alpha[1][1]*x2(0) +
+               cond1.alpha[1][0]*x1(N/2) + cond1.alpha[1][1]*x2(N/2) +
+               cond2.alpha[1][0]*x1(N)   + cond2.alpha[1][1]*x2(N);
 
     M.resize(N+1);
     M[0] = 1.0;
@@ -61,6 +71,9 @@ void CauchyProblemNonLocalContions::initialize()
 
 void CauchyProblemNonLocalContions::calculateInterval(unsigned int start, unsigned int end, unsigned int r)
 {
+    //puts("--------------------");
+    unsigned int N = grid().sizeN();
+
     unsigned int L = nscs.size();
 
     NonSeparatedCondition &sc = nscs.at(start);
@@ -72,25 +85,37 @@ void CauchyProblemNonLocalContions::calculateInterval(unsigned int start, unsign
     DoubleMatrix a0 = sc.alpha;
 
     DoubleVector x;
-    x << a0[r][0] << a0[r][1] << betta[r] << M[sc.n];
-    //printf("%f %f %f %f %d\n", x[0], x[1], x[2], x[3], ec.n);
+    x << a0[r][0] << a0[r][1] << betta[r] << 1.0;//M[sc.n];
+    //printf("%f %f %f %f %d %d\n", x[0], x[1], x[2], x[3], sc.n, ec.n);
 
     DoubleVector rx(x.size());
     calculateCP(sc.time, x, rx, RK4);
 
     M[ec.n] = rx[3];
+    //printf("%f\n", M[ec.n]);
 
     for (unsigned int s=end; s<L; s++)
     {
         NonSeparatedCondition &cc = nscs.at(s);
+        //for (unsigned int i=0; i<n; i++) printf("%d %d %f %f\n", s, i, ec.alpha[r][i], cc.alpha[r][i]);
         for (unsigned int i=0; i<n; i++) cc.alpha[r][i] *= M[ec.n];
+        //for (unsigned int i=0; i<n; i++) printf("%d %d %f %f\n", s, i, ec.alpha[r][i], cc.alpha[r][i]);
     }
     //for (unsigned int i=0; i<n; i++) printf("%f\n", ec.alpha[r][i]);
     for (unsigned int i=0; i<n; i++) ec.alpha[r][i] += rx[i];
     //for (unsigned int i=0; i<n; i++) printf("%f\n", ec.alpha[r][i]);
     betta[r] = rx[2];
 
-    printf("%f %f %d\n", ec.alpha[r][0]*x1(ec.n) + ec.alpha[r][1]*x2(ec.n), betta[r], ec.n);
+    if (start==0)
+    {
+       printf("%f %f %d %d\n", (nscs[1].alpha[r][0]*x1(50)  + nscs[1].alpha[r][1]*x2(50)) +
+                               (nscs[2].alpha[r][0]*x1(100) + nscs[2].alpha[r][1]*x2(100)), betta[r], ec.n, N);
+    }
+    if (start==1)
+    {
+        printf("%f %f %d %d\n", nscs[2].alpha[r][0]*x1(100) + nscs[2].alpha[r][1]*x2(100), betta[r], ec.n, N);
+        //printf("%f %f %d %d\n", ec.alpha[r][0]*x1(N) + ec.alpha[r][1]*x2(N), betta[r], ec.n, N);
+    }
 }
 
 void CauchyProblemNonLocalContions::calculate1()
