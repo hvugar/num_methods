@@ -3,7 +3,7 @@
 
 #include <grid/cauchyp.h>
 
-class CauchyProblemMEx : public CauchyProblemM
+class CauchyProblemMEx : public CauchyProblemM1stOrder
 {
 public:
     static void Main(int agrc, char *argv[]);

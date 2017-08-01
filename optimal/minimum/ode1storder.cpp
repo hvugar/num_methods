@@ -7,7 +7,7 @@ double max_abs(double *x, unsigned int N)
     return m;
 }
 
-void LinearODE1stOrder::solveLinearBoundaryProblem(double t0, double x0, double tn, double xn, unsigned int N, double *x) const
+void LinearODE1stOrderIBVP::solveLinearBoundaryProblem(double t0, double x0, double tn, double xn, unsigned int N, double *x) const
 {
     double h = (tn - t0)/N;
 
@@ -49,9 +49,9 @@ void LinearODE1stOrder::solveLinearBoundaryProblem(double t0, double x0, double 
     free(da);
 }
 
-void NonLinearODE1stOrder::solveNonLinearBoundaryProblem(double t0, double a, double tn, double b, unsigned int N, double *x0) const
+void NonLinearODE1stOrderIBVP::solveNonLinearBoundaryProblem(double t0, double a, double tn, double b, unsigned int N, double *x0) const
 {
-    class LinearODE1stOrderExt : public LinearODE1stOrder
+    class LinearODE1stOrderExt : public LinearODE1stOrderIBVP
     {
     public:
 
@@ -90,7 +90,7 @@ void NonLinearODE1stOrder::solveNonLinearBoundaryProblem(double t0, double a, do
 
         double *x;
         double h;
-        const NonLinearODE1stOrder *nl;
+        const NonLinearODE1stOrderIBVP *nl;
         double _a;
         double _b;
         unsigned int N;

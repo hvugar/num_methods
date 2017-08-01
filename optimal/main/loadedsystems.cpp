@@ -1,10 +1,10 @@
 #include "loadedsystems.h"
 #include <math.h>
 
-struct CauchyProblem : public CauchyProblem2
+struct CauchyProblem1stOrder : public CauchyProblem2
 {
-    CauchyProblem(const LoadedSystems &ls) : ls(ls) {}
-    virtual ~CauchyProblem() {}
+    CauchyProblem1stOrder(const LoadedSystems &ls) : ls(ls) {}
+    virtual ~CauchyProblem1stOrder() {}
 
     virtual double f(double t UNUSED_PARAM, const DoubleVector &x) const
     {
@@ -471,7 +471,7 @@ void LoadedSystems::calculate(unsigned int j, DoubleMatrix &m, unsigned int N,
     std::vector<CauchyProblem2*> cs(n+k1*n+2);
     for (unsigned int i=0; i<n; i++)
     {
-        CauchyProblem* ca = new CauchyProblem(*this);
+        CauchyProblem1stOrder* ca = new CauchyProblem1stOrder(*this);
         ca->x0 = 0.0;
         ca->y0 = alpha[0].at(j, i);
         ca->i = i;
@@ -484,7 +484,7 @@ void LoadedSystems::calculate(unsigned int j, DoubleMatrix &m, unsigned int N,
     {
         for (unsigned int i=0; i<n; i++)
         {
-            CauchyProblem* cb = new CauchyProblem(*this);
+            CauchyProblem1stOrder* cb = new CauchyProblem1stOrder(*this);
             cb->x0 = 0.0;
             cb->y0 = betta[s].at(j, i);
             cb->i = i;
@@ -494,7 +494,7 @@ void LoadedSystems::calculate(unsigned int j, DoubleMatrix &m, unsigned int N,
         }
     }
 
-    CauchyProblem *cq = new CauchyProblem(*this);
+    CauchyProblem1stOrder *cq = new CauchyProblem1stOrder(*this);
     cq->x0 = 0.0;
     cq->y0 = qamma[j];
     cq->i = 0;
@@ -502,7 +502,7 @@ void LoadedSystems::calculate(unsigned int j, DoubleMatrix &m, unsigned int N,
     cq->type = 2;
     cs[n+k1*n] = cq;
 
-    CauchyProblem *cm = new CauchyProblem(*this);
+    CauchyProblem1stOrder *cm = new CauchyProblem1stOrder(*this);
     cm->x0 = 0.0;
     cm->y0 = 1.0;
     cm->i = 0;
@@ -527,7 +527,7 @@ void LoadedSystems::calculate(DoubleMatrix &m, unsigned int N,
     // alpha
     for (unsigned int i=0; i<n; i++)
     {
-        CauchyProblem* ca = new CauchyProblem(*this);
+        CauchyProblem1stOrder* ca = new CauchyProblem1stOrder(*this);
         ca->x0 = 0.0;
         ca->y0 = alpha.at(i);
         ca->i = i;
@@ -541,7 +541,7 @@ void LoadedSystems::calculate(DoubleMatrix &m, unsigned int N,
     {
         for (unsigned int i=0; i<n; i++)
         {
-            CauchyProblem* cb = new CauchyProblem(*this);
+            CauchyProblem1stOrder* cb = new CauchyProblem1stOrder(*this);
             cb->x0 = 0.0;
             cb->y0 = bettas[s].at(i);
             cb->i = i;
@@ -552,7 +552,7 @@ void LoadedSystems::calculate(DoubleMatrix &m, unsigned int N,
     }
 
     //
-    CauchyProblem *cq = new CauchyProblem(*this);
+    CauchyProblem1stOrder *cq = new CauchyProblem1stOrder(*this);
     cq->x0 = 0.0;
     cq->y0 = qamma;
     cq->i = 0;
@@ -560,7 +560,7 @@ void LoadedSystems::calculate(DoubleMatrix &m, unsigned int N,
     cq->type = 2;
     cps[n+k1*n] = cq;
 
-    CauchyProblem *cm = new CauchyProblem(*this);
+    CauchyProblem1stOrder *cm = new CauchyProblem1stOrder(*this);
     cm->x0 = 0.0;
     cm->y0 = 1.0;
     cm->i = 0;
@@ -572,7 +572,7 @@ void LoadedSystems::calculate(DoubleMatrix &m, unsigned int N,
 
     for (unsigned int i=0; i<cps.size(); i++)
     {
-        CauchyProblem *cp = dynamic_cast<CauchyProblem*>(cps.at(i));
+        CauchyProblem1stOrder *cp = dynamic_cast<CauchyProblem1stOrder*>(cps.at(i));
         delete cp;
     }
     cps.clear();

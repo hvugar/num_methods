@@ -2,16 +2,17 @@
 #define CAUCHYPROBLEM_H
 
 #include "ibvp.h"
+#include "diffequ.h"
 
 /**
  * @brief The CauchyProblem class
  * Ordinary differensial equation for of dy/dx=f(x,y).
  * Where x is independent variable. y(x) is searched function.
  */
-class MINIMUMSHARED_EXPORT CauchyProblem : public InitialValueProblem
+class MINIMUMSHARED_EXPORT CauchyProblem1stOrder : public InitialValueProblem
 {
 public:
-    CauchyProblem(const Dimension &grid);
+    CauchyProblem1stOrder(const Dimension &grid);
     /**
      * @brief calculate
      * @param x0 initial value for independent variable x.
@@ -41,24 +42,24 @@ private:
     Dimension mgrid;
 };
 
-class MINIMUMSHARED_EXPORT CauchyProblemM : public InitialValueProblem
+class MINIMUMSHARED_EXPORT CauchyProblemM1stOrder : public SystemNonLinearODE1stOrder, public InitialValueProblem
 {
 public:
-    CauchyProblemM(const Dimension &grid);
+    CauchyProblemM1stOrder(const Dimension &grid);
 
-    void calculate(double x0, const DoubleVector &y0, DoubleMatrix &ry, Method method = RK4, Direction direction = L2R);
+    void calculateCP(double x0, const DoubleVector &y0, DoubleMatrix &ry, Method method = RK4, Direction direction = L2R);
+    void calculateCP(double x0, const DoubleVector &y0, DoubleVector &ry, Method method = RK4, Direction direction = L2R);
     const Dimension &grid() const;
 
+private:
+    void calculateRK2(double x0, const DoubleVector &y0, DoubleMatrix &ry, Direction direction = L2R);
+    void calculateRK4(double x0, const DoubleVector &y0, DoubleMatrix &ry, Direction direction = L2R);
+    void calculateEuler(double x0, const DoubleVector &y0, DoubleMatrix &ry, Direction direction = L2R);
+    void calculateEulerMod(double x0, const DoubleVector &y0, DoubleMatrix &ry, Direction direction = L2R);
+
+    void calculateRK4(double x0, const DoubleVector &y0, DoubleVector &y, Direction direction = L2R);
+
 protected:
-    virtual double f(double x, const DoubleVector &y, unsigned int k, unsigned int i) const = 0;
-
-private:
-    void calculateRK2(double x0, const DoubleVector &y0, DoubleMatrix &y, Direction direction = L2R);
-    void calculateRK4(double x0, const DoubleVector &y0, DoubleMatrix &y, Direction direction = L2R);
-    void calculateEuler(double x0, const DoubleVector &y0, DoubleMatrix &y, Direction direction = L2R);
-    void calculateEulerMod(double x0, const DoubleVector &y0, DoubleMatrix &y, Direction direction = L2R);
-
-private:
     Dimension mgrid;
 };
 
