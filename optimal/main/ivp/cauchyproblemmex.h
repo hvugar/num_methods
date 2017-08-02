@@ -3,6 +3,8 @@
 
 #include <grid/cauchyp.h>
 
+#define SAMPLE_2
+
 class CauchyProblemMEx : public CauchyProblemM1stOrder
 {
 public:
@@ -12,6 +14,8 @@ public:
 
 protected:
     virtual double f(double x, const DoubleVector &y, unsigned int k, unsigned int i) const;
+
+    double y(double x, unsigned int k, unsigned int i) const;
 
 
 };

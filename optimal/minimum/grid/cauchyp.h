@@ -45,11 +45,10 @@ private:
 class MINIMUMSHARED_EXPORT CauchyProblemM1stOrder : public SystemNonLinearODE1stOrder, public InitialValueProblem
 {
 public:
-    CauchyProblemM1stOrder(const Dimension &grid);
+    CauchyProblemM1stOrder(const ODEGrid &grid);
 
     void calculateCP(double x0, const DoubleVector &y0, DoubleMatrix &ry, Method method = RK4, Direction direction = L2R);
     void calculateCP(double x0, const DoubleVector &y0, DoubleVector &ry, Method method = RK4, Direction direction = L2R);
-    const Dimension &grid() const;
 
 private:
     void calculateRK2(double x0, const DoubleVector &y0, DoubleMatrix &ry, Direction direction = L2R);
@@ -58,9 +57,6 @@ private:
     void calculateEulerMod(double x0, const DoubleVector &y0, DoubleMatrix &ry, Direction direction = L2R);
 
     void calculateRK4(double x0, const DoubleVector &y0, DoubleVector &y, Direction direction = L2R);
-
-protected:
-    Dimension mgrid;
 };
 
 #endif // CAUCHYPROBLEM_H

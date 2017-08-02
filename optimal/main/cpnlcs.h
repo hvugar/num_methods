@@ -6,9 +6,11 @@
 #include <vector>
 #include <grid/cauchyp.h>
 
+#define SAMPLE_1
+
 using namespace std;
 
-class CauchyProblemNonLocalContions : public CauchyProblemM1stOrder, public SystemLinearODE1stOrder
+class CauchyProblemNonLocalContions : public SystemLinearODE1stOrder
 {
 public:
     static void Main(int agrc, char *argv[]);
@@ -16,25 +18,22 @@ public:
     struct NonSeparatedCondition
     {
         double time;
+        unsigned int nmbr;
         DoubleMatrix alpha;
         unsigned int rows;
         unsigned int cols;
-        unsigned int n;
     };
 
     struct SeparatedCondition
     {
         double time;
+        unsigned int nmbr;
         DoubleMatrix alpha;
         unsigned int rows;
         unsigned int cols;
-        unsigned int n;
     };
 
-    DoubleVector M;
-
-
-    CauchyProblemNonLocalContions(const Dimension &grid);
+    CauchyProblemNonLocalContions(const ODEGrid &grid);
 
     virtual void initialize();
 
@@ -46,27 +45,44 @@ public:
      * @brief nlcs Разделенные условия.
      */
     std::vector<SeparatedCondition> scs;
+    DoubleVector betta;
 
     unsigned int n = 2;
     unsigned int L = 3;
-
-    //std::vector<DoubleMatrix> alpha;
-    DoubleVector betta;
 
     double x1(unsigned int k) const;
     double x2(unsigned int k) const;
 
     void calculate1();
-    void calculateInterval(unsigned int start, unsigned int end, unsigned int r);
 
-    virtual double S0(unsigned int i, double t, const DoubleVector &x, unsigned int k) const;
+    void calculateInterval(unsigned int s, unsigned int r);
+    void calculateCondition(unsigned int r);
     \
-protected:
+public:
     virtual double A(double t UNUSED_PARAM, unsigned int k, unsigned int row, unsigned int col) const;
     virtual double B(double t UNUSED_PARAM, unsigned int k, unsigned int row) const;
+};
+
+class CauchyProblemM1stOrderA : public CauchyProblemM1stOrder
+{
+public:
+    CauchyProblemM1stOrderA(CauchyProblemNonLocalContions &parent, const ODEGrid& grid) : CauchyProblemM1stOrder(grid), p(parent) {}
 
 protected:
-    virtual double f(double x, const DoubleVector &y, unsigned int k, unsigned int i) const;
+    virtual double f(double t, const DoubleVector &x, unsigned int k, unsigned int i) const;
+    double S0(double t, const DoubleVector &x, unsigned int k) const;
+private:
+    CauchyProblemNonLocalContions &p;
+};
+
+class CauchyProblemM1stOrderB : public CauchyProblemM1stOrder
+{
+public:
+    CauchyProblemM1stOrderB(CauchyProblemNonLocalContions &parent, const ODEGrid& grid) : CauchyProblemM1stOrder(grid), p(parent) {}
+protected:
+    virtual double f(double t, const DoubleVector &x, unsigned int k, unsigned int i) const;
+private:
+    CauchyProblemNonLocalContions &p;
 };
 
 #endif // CAUCHYPROBLEMNONLOCALCONTIONS_H

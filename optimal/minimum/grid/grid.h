@@ -44,4 +44,30 @@ protected:
     unsigned int mminN;
 };
 
+class MINIMUMSHARED_EXPORT ODEGrid
+{
+public:
+    ODEGrid(const Dimension &dimension);
+
+    const Dimension &dimension() const;
+    void setDimension(const Dimension &dimension);
+private:
+    Dimension mdimension;
+};
+
+class MINIMUMSHARED_EXPORT PDEGrid
+{
+public:
+    PDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaceDimension);
+
+    void setTimeDimension(const Dimension &timeDimension);
+    void addSpaceDimension(const Dimension &spaceDimension);
+
+    const Dimension &timeDimension() const;
+    const Dimension &spaceDimension() const;
+private:
+    Dimension mtimeDimension;
+    std::vector<Dimension> mspaceDimensions;
+};
+
 #endif // GRID_H

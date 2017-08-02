@@ -1,6 +1,30 @@
 #include "grid.h"
 #include <cstdio>
 
+ODEGrid::ODEGrid(const Dimension &dimension) : mdimension(dimension) {}
+
+const Dimension& ODEGrid::dimension() const
+{
+    return mdimension;
+}
+
+void ODEGrid::setDimension(const Dimension &dimension)
+{
+    mdimension = dimension;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+PDEGrid::PDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaces)
+{
+    mtimeDimension = timeDimension;
+}
+
+const Dimension &PDEGrid::timeDimension() const
+{
+    return mtimeDimension;
+}
+
 Dimension::Dimension(double step, unsigned int maxN, unsigned int minN)
     : mstep(step), mmaxN(maxN), mminN(minN)
 {}

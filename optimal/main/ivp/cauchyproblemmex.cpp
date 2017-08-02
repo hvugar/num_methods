@@ -5,26 +5,32 @@ void CauchyProblemMEx::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     Dimension grid(0.01, 50, 0);
     CauchyProblemMEx exp1(grid);
     DoubleVector y0(2);
+#ifdef SAMPLE_1
     y0[0] = 4.0;//250;
     y0[1] = 0.0;//625;
+#endif
+#ifdef SAMPLE_2
+    y0[0] = 0.0;
+    y0[1] = 0.0;
+#endif
     double x0 = 0.0;
 
-//    DoubleVector yN(2);
-//    yN[0] = 5.0;
-//    yN[1] = 2.0;
+    //    DoubleVector yN(2);
+    //    yN[0] = 5.0;
+    //    yN[1] = 2.0;
 
     {
-        DoubleMatrix ry;
-        exp1.calculateCP(x0, y0, ry, RK2);
-        IPrinter::printVector(14, 10, ry.row(0));
-        IPrinter::printVector(14, 10, ry.row(1));
+        //        DoubleMatrix ry;
+        //        exp1.calculateCP(x0, y0, ry, RK2);
+        //        IPrinter::printVector(14, 10, ry.row(0));
+        //        IPrinter::printVector(14, 10, ry.row(1));
     }
-//    {
-//        DoubleMatrix ry;
-//        exp1.calculate(1.0, yN, ry, RK2, R2L);
-//        IPrinter::printVector(14, 10, ry.row(0));
-//        IPrinter::printVector(14, 10, ry.row(1));
-//    }
+    //    {
+    //        DoubleMatrix ry;
+    //        exp1.calculate(1.0, yN, ry, RK2, R2L);
+    //        IPrinter::printVector(14, 10, ry.row(0));
+    //        IPrinter::printVector(14, 10, ry.row(1));
+    //    }
     IPrinter::printSeperatorLine();
     {
         DoubleMatrix ry;
@@ -36,25 +42,25 @@ void CauchyProblemMEx::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         exp1.calculateCP(x0, y0, py, RK4);
         printf("%14.10f %14.10f\n", py[0], py[1]);
     }
-//    {
-//        DoubleMatrix ry;
-//        exp1.calculate(1.5, yN, ry, RK4, R2L);
-//        IPrinter::printVector(14, 10, ry.row(0));
-//        IPrinter::printVector(14, 10, ry.row(1));
-//    }
-//    IPrinter::printSeperatorLine();
-//    {
-//        DoubleMatrix ry;
-//        exp1.calculate(0.0, y0, ry, EULER);
-//        IPrinter::printVector(14, 10, ry.row(0));
-//        IPrinter::printVector(14, 10, ry.row(1));
-//    }
-//    {
-//        DoubleMatrix ry;
-//        exp1.calculate(1.0, yN, ry, EULER, R2L);
-//        IPrinter::printVector(14, 10, ry.row(0));
-//        IPrinter::printVector(14, 10, ry.row(1));
-//    }
+    //    {
+    //        DoubleMatrix ry;
+    //        exp1.calculate(1.5, yN, ry, RK4, R2L);
+    //        IPrinter::printVector(14, 10, ry.row(0));
+    //        IPrinter::printVector(14, 10, ry.row(1));
+    //    }
+    //    IPrinter::printSeperatorLine();
+    //    {
+    //        DoubleMatrix ry;
+    //        exp1.calculate(0.0, y0, ry, EULER);
+    //        IPrinter::printVector(14, 10, ry.row(0));
+    //        IPrinter::printVector(14, 10, ry.row(1));
+    //    }
+    //    {
+    //        DoubleMatrix ry;
+    //        exp1.calculate(1.0, yN, ry, EULER, R2L);
+    //        IPrinter::printVector(14, 10, ry.row(0));
+    //        IPrinter::printVector(14, 10, ry.row(1));
+    //    }
 }
 
 CauchyProblemMEx::CauchyProblemMEx(const Dimension &grid) : CauchyProblemM1stOrder(grid)
@@ -64,7 +70,26 @@ double CauchyProblemMEx::f(double x, const DoubleVector &y, unsigned int k UNUSE
 {
     double y1 = y[0];
     double y2 = y[1];
+#ifdef SAMPLE_1
     if (i == 0) return x*y1 - y2 - x;
     if (i == 1) return (2.0*x+3.0)*y1 - 2.0*y2 - 6.0*x - 11.0;
+#endif
+#ifdef SAMPLE_2
+    if (i == 0) return 2.0*y1 + 3.0*y2 + 2.0 - 13.0*x;
+    if (i == 1) return 5.0*y1 + 4.0*y2 + 3.0 - 22.0*x;
+#endif
+    return 0.0;
+}
+
+double CauchyProblemMEx::y(double x, unsigned int k UNUSED_PARAM, unsigned int i) const
+{
+#ifdef SAMPLE_1
+    if (i==0) return 2.0*x;
+    if (i==1) return 3.0*x;
+#endif
+#ifdef SAMPLE_2
+    if (i==0) return 2.0*x;
+    if (i==1) return 3.0*x;
+#endif
     return 0.0;
 }

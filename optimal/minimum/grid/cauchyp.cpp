@@ -202,8 +202,7 @@ void CauchyProblem1stOrder::calculateEulerMod(double x0, double y0, DoubleVector
     }
 }
 
-CauchyProblemM1stOrder::CauchyProblemM1stOrder(const Dimension &grid) : mgrid(grid)
-{}
+CauchyProblemM1stOrder::CauchyProblemM1stOrder(const ODEGrid &grid) : SystemNonLinearODE1stOrder(grid) {}
 
 void CauchyProblemM1stOrder::calculateCP(double x0, const DoubleVector &y0, DoubleMatrix &y, Method method, Direction direction)
 {
@@ -250,10 +249,11 @@ void CauchyProblemM1stOrder::calculateCP(double x0, const DoubleVector &y0, Doub
 
 void CauchyProblemM1stOrder::calculateRK2(double x0, const DoubleVector &y0, DoubleMatrix &ry, Direction direction)
 {
-    unsigned int minN = mgrid.minN();
-    unsigned int maxN = mgrid.maxN();
-    unsigned int N = mgrid.sizeN();
-    double h = mgrid.step();
+    Dimension dim = grid().dimension();
+    unsigned int minN = dim.minN();
+    unsigned int maxN = dim.maxN();
+    unsigned int N = dim.sizeN();
+    double h = dim.step();
     unsigned int n = y0.size();
 
     ry.clear();
@@ -322,10 +322,11 @@ void CauchyProblemM1stOrder::calculateRK2(double x0, const DoubleVector &y0, Dou
 
 void CauchyProblemM1stOrder::calculateRK4(double x0, const DoubleVector &y0, DoubleMatrix &ry, Direction direction)
 {
-    unsigned int minN = mgrid.minN();
-    unsigned int maxN = mgrid.maxN();
-    unsigned int N = mgrid.sizeN();
-    double h = mgrid.step();
+    Dimension dim = grid().dimension();
+    unsigned int minN = dim.minN();
+    unsigned int maxN = dim.maxN();
+    unsigned int N = dim.sizeN();
+    double h = dim.step();
     unsigned int n = y0.size();
 
     ry.clear();
@@ -417,8 +418,11 @@ void CauchyProblemM1stOrder::calculateRK4(double x0, const DoubleVector &y0, Dou
 
 void CauchyProblemM1stOrder::calculateEuler(double x0, const DoubleVector &y0, DoubleMatrix &ry, Direction direction)
 {
-    unsigned int N = mgrid.sizeN();
-    double h = mgrid.step();
+    Dimension dim = grid().dimension();
+    unsigned int minN = dim.minN();
+    unsigned int maxN = dim.maxN();
+    unsigned int N = dim.sizeN();
+    double h = dim.step();
     unsigned int n = y0.size();
 
     ry.clear();
@@ -431,10 +435,10 @@ void CauchyProblemM1stOrder::calculateEuler(double x0, const DoubleVector &y0, D
         /* initializing */
         for (unsigned int j=0; j<n; j++) ry[j][0] = y0[j];
 
-        for (unsigned int i=1; i<=N; i++)
+        for (unsigned int i=minN+1; i<=maxN; i++)
         {
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-1];
-            for (unsigned int j=0; j<n; j++) ry[j][i] = ry[j][i-1] + h * f(xn, yn, i-1, j);
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-minN];
+            for (unsigned int j=0; j<n; j++) ry[j][i-minN] = ry[j][(i-1)-minN] + h * f(xn, yn, i-1, j);
 
             xn += h;
         }
@@ -459,8 +463,11 @@ void CauchyProblemM1stOrder::calculateEuler(double x0, const DoubleVector &y0, D
 
 void CauchyProblemM1stOrder::calculateEulerMod(double x0, const DoubleVector &y0, DoubleMatrix &ry, Direction direction)
 {
-    unsigned int N = mgrid.sizeN();
-    double h = mgrid.step();
+    Dimension dim = grid().dimension();
+    unsigned int minN = dim.minN();
+    unsigned int maxN = dim.maxN();
+    unsigned int N = dim.sizeN();
+    double h = dim.step();
     unsigned int n = y0.size();
 
     ry.clear();
@@ -473,10 +480,10 @@ void CauchyProblemM1stOrder::calculateEulerMod(double x0, const DoubleVector &y0
         /* initializing */
         for (unsigned int j=0; j<n; j++) ry[j][0] = y0[j];
 
-        for (unsigned int i=1; i<=N; i++)
+        for (unsigned int i=minN+1; i<=maxN; i++)
         {
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-1];
-            for (unsigned int j=0; j<n; j++) ry[j][i] = ry[j][i-1] + h * f(xn, yn, i-1, j);
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-minN];
+            for (unsigned int j=0; j<n; j++) ry[j][i-minN] = ry[j][(i-1)-minN] + h * f(xn, yn, i-1, j);
 
             xn += h;
         }
@@ -501,10 +508,11 @@ void CauchyProblemM1stOrder::calculateEulerMod(double x0, const DoubleVector &y0
 
 void CauchyProblemM1stOrder::calculateRK4(double x0, const DoubleVector &y0, DoubleVector &ry, Direction direction)
 {
-    unsigned int minN = mgrid.minN();
-    unsigned int maxN = mgrid.maxN();
-    unsigned int N = mgrid.sizeN();
-    double h = mgrid.step();
+    Dimension dim = grid().dimension();
+    unsigned int minN = dim.minN();
+    unsigned int maxN = dim.maxN();
+    unsigned int N = dim.sizeN();
+    double h = dim.step();
     unsigned int n = y0.size();
 
     ry.clear();
@@ -594,7 +602,3 @@ void CauchyProblemM1stOrder::calculateRK4(double x0, const DoubleVector &y0, Dou
     free(k1);
 }
 
-const Dimension& CauchyProblemM1stOrder::grid() const
-{
-    return mgrid;
-}

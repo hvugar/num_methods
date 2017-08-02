@@ -51,10 +51,10 @@
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    //srand(time(NULL));
+    srand(time(NULL));
 
     CauchyProblemNonLocalContions::Main(argc, argv);
-//    CauchyProblemMEx::Main(argc, argv);
+    //CauchyProblemMEx::Main(argc, argv);
 
 
     //ParabolicIBVP1::Main(argc, argv);
