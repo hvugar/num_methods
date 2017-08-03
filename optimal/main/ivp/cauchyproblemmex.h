@@ -10,7 +10,7 @@ class CauchyProblemMEx : public CauchyProblemM1stOrder
 public:
     static void Main(int agrc, char *argv[]);
 
-    CauchyProblemMEx(const Dimension &grid);
+    CauchyProblemMEx(const ODEGrid &grid);
 
 protected:
     virtual double f(double x, const DoubleVector &y, unsigned int k, unsigned int i) const;

@@ -2,7 +2,7 @@
 
 void CauchyProblemNonLocalContions::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    ODEGrid grid(Dimension(0.01, 100, 0));
+    ODEGrid grid(Dimension(0.001, 1000, 0));
     CauchyProblemNonLocalContions cpnlcs(grid);
 
     cpnlcs.initialize();
@@ -12,7 +12,6 @@ void CauchyProblemNonLocalContions::Main(int agrc UNUSED_PARAM, char *argv[] UNU
 
     CauchyProblemM1stOrderB cpb(cpnlcs, grid);
     DoubleMatrix m;
-    //x[0] = 7.0; x[1] = 4.0; x[2] = 2.0;
     cpb.calculateCP(1.0, x, m, CauchyProblemM1stOrder::RK4, CauchyProblemM1stOrder::R2L);
     for (unsigned int i=0; i<cpnlcs.n; i++) IPrinter::printVector(m.row(i));
 }
@@ -25,9 +24,9 @@ void CauchyProblemNonLocalContions::initialize()
     Dimension dim = grid().dimension();
     unsigned int N = dim.sizeN();
 
-    n0 = 1;
-    n1 = 1;
-    n2 = 1;
+    n0 = 0;
+    n1 = 3;
+    n2 = 0;
     n = n0 + n1 + n2;
 
     Condition nsc0;
@@ -122,7 +121,7 @@ void CauchyProblemNonLocalContions::calculateIntervalF(unsigned int start, unsig
     for (unsigned int i=0; i<n; i++) x[i] = sc.alpha[r][i]; x[n] = betta[r]; x[n+1] = 1.0;
 
     Dimension dim(h, ec.nmbr, sc.nmbr);
-    CauchyProblemM1stOrderA cpa(*this, dim);
+    CauchyProblemM1stOrderA cpa(*this, ODEGrid(dim));
     cpa.calculateCP(sc.time, x, rx, InitialValueProblem::RK4);
 
     for (unsigned int i=0; i<n; i++) sc.alpha[r][i] = rx[i];
@@ -163,7 +162,7 @@ void CauchyProblemNonLocalContions::calculateForward(DoubleVector &x)
         for (unsigned int i=0; i<n; i++) x[i] = lscs.alpha[row][i]; x[n] = betta[row+n0]; x[n+1] = 1.0;
 
         Dimension dim(h, maxN, minN);
-        CauchyProblemM1stOrderA cpa(*this, dim);
+        CauchyProblemM1stOrderA cpa(*this, ODEGrid(dim));
         cpa.calculateCP(lscs.time, x, rx, InitialValueProblem::RK4);
 
         for (unsigned int i=0; i<n; i++) lscs.alpha[row][i] = rx[i];

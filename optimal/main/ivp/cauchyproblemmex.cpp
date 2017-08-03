@@ -2,7 +2,8 @@
 
 void CauchyProblemMEx::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    Dimension grid(0.01, 100, 0);
+    Dimension dim(0.01, 100, 0);
+    ODEGrid grid(dim);
     CauchyProblemMEx exp1(grid);
     DoubleVector y0(3);
 #ifdef SAMPLE_1
@@ -69,7 +70,7 @@ void CauchyProblemMEx::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //    }
 }
 
-CauchyProblemMEx::CauchyProblemMEx(const Dimension &grid) : CauchyProblemM1stOrder(grid)
+CauchyProblemMEx::CauchyProblemMEx(const ODEGrid &grid) : CauchyProblemM1stOrder(grid)
 {}
 
 double CauchyProblemMEx::f(double x, const DoubleVector &y, unsigned int k UNUSED_PARAM, unsigned int i) const

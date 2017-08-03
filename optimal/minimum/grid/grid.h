@@ -47,7 +47,7 @@ protected:
 class MINIMUMSHARED_EXPORT ODEGrid
 {
 public:
-    ODEGrid(const Dimension &dimension);
+    explicit ODEGrid(const Dimension &dimension);
 
     const Dimension &dimension() const;
     void setDimension(const Dimension &dimension);
