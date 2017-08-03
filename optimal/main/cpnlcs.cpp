@@ -24,8 +24,8 @@ void CauchyProblemNonLocalContions::initialize()
     Dimension dim = grid().dimension();
     unsigned int N = dim.sizeN();
 
-    n0 = 0;
-    n1 = 3;
+    n0 = 3;
+    n1 = 0;
     n2 = 0;
     n = n0 + n1 + n2;
 
@@ -35,6 +35,7 @@ void CauchyProblemNonLocalContions::initialize()
     nsc0.nmbr = 0;
     nsc0.alpha.resize(n0, n);
     for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc0.alpha[row][col] = (rand() % 1000) / 1000.0;
+    nscs.push_back(nsc0);
 
     Condition nsc1;
     nsc1.type = NonSeparated;
@@ -42,6 +43,7 @@ void CauchyProblemNonLocalContions::initialize()
     nsc1.nmbr = N/4;
     nsc1.alpha.resize(n0, n);
     for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc1.alpha[row][col] = (rand() % 1000) / 1000.0;
+    nscs.push_back(nsc1);
 
     Condition nsc2;
     nsc2.type = NonSeparated;
@@ -49,6 +51,7 @@ void CauchyProblemNonLocalContions::initialize()
     nsc2.nmbr = N/2;
     nsc2.alpha.resize(n0, n);
     for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc2.alpha[row][col] = (rand() % 1000) / 1000.0;
+    nscs.push_back(nsc2);
 
     Condition nsc3;
     nsc3.type = NonSeparated;
@@ -56,6 +59,7 @@ void CauchyProblemNonLocalContions::initialize()
     nsc3.nmbr = 3*(N/4);
     nsc3.alpha.resize(n0, n);
     for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc3.alpha[row][col] = (rand() % 1000) / 1000.0;
+    nscs.push_back(nsc3);
 
     Condition nsc4;
     nsc4.type = NonSeparated;
@@ -63,13 +67,7 @@ void CauchyProblemNonLocalContions::initialize()
     nsc4.nmbr = N;
     nsc4.alpha.resize(n0, n);
     for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc4.alpha[row][col] = (rand() % 1000) / 1000.0;
-
-    nscs.resize(5);
-    nscs[0] = nsc0;
-    nscs[1] = nsc1;
-    nscs[2] = nsc2;
-    nscs[3] = nsc3;
-    nscs[4] = nsc4;
+    nscs.push_back(nsc4);
 
     L = nscs.size();
 
@@ -207,7 +205,7 @@ void CauchyProblemNonLocalContions::calculateForward(DoubleVector &x)
     GaussianElimination(A, b, x);
 }
 
-double CauchyProblemNonLocalContions::A(double t, unsigned int, unsigned int row, unsigned int col) const
+double CauchyProblemNonLocalContions::A(double t UNUSED_PARAM, unsigned int, unsigned int row, unsigned int col) const
 {
 #ifdef SAMPLE_1
     if (row==1)
