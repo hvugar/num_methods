@@ -3,7 +3,7 @@
 
 #include <grid/cauchyp.h>
 
-#define SAMPLE_2
+#define SAMPLE_3
 
 class CauchyProblemMEx : public CauchyProblemM1stOrder
 {

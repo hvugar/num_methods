@@ -349,25 +349,25 @@ void CauchyProblemM1stOrder::calculateRK4(double x0, const DoubleVector &y0, Dou
         /* initializing */
         for (unsigned int j=0; j<n; j++) ry[j][0] = y0[j];
 
-        for (unsigned int i=minN+1; i<=maxN; i++)
+        for (unsigned int i=minN; i<maxN; i++)
         {
             // k1
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-minN];
-            for (unsigned int j=0; j<n; j++) k1[j] = f(xn, yn, i-1, j);
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-minN];
+            for (unsigned int j=0; j<n; j++) k1[j] = f(xn, yn, i, j);
 
             // k2
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-minN]+h2*k1[j];
-            for (unsigned int j=0; j<n; j++) k2[j] = f(xn+h2, yn, i-1, j);
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-minN]+h2*k1[j];
+            for (unsigned int j=0; j<n; j++) k2[j] = f(xn+h2, yn, i, j);
 
             // k3
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-minN]+h2*k2[j];
-            for (unsigned int j=0; j<n; j++) k3[j] = f(xn+h2, yn, i-1, j);
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-minN]+h2*k2[j];
+            for (unsigned int j=0; j<n; j++) k3[j] = f(xn+h2, yn, i, j);
 
             // k4
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-minN]+h*k3[j];
-            for (unsigned int j=0; j<n; j++) k4[j] = f(xn+h, yn, i-1, j);
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-minN]+h*k3[j];
+            for (unsigned int j=0; j<n; j++) k4[j] = f(xn+h, yn, i, j);
 
-            for (unsigned int j=0; j<n; j++) ry[j][i-minN] = ry[j][(i-1)-minN] + h6 * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
+            for (unsigned int j=0; j<n; j++) ry[j][i-minN+1] = ry[j][i-minN] + h6 * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
 
             xn += h;
         }
@@ -385,25 +385,25 @@ void CauchyProblemM1stOrder::calculateRK4(double x0, const DoubleVector &y0, Dou
         /* initializing */
         for (unsigned int j=0; j<n; j++) ry[j][N] = y0[j];
 
-        for (unsigned int i=N-1; i!=UINT32_MAX; i--)
+        for (unsigned int k=maxN; k!=minN+0; k--)
         {
             // k1
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i+1];
-            for (unsigned int j=0; j<n; j++) k1[j] = f(xn, yn, i+1, j);
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][k-minN];
+            for (unsigned int j=0; j<n; j++) k1[j] = f(xn, yn, k, j);
 
             // k2
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i+1]-h2*k1[j];
-            for (unsigned int j=0; j<n; j++) k2[j] = f(xn-h2, yn, i+1, j);
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][k-minN]-h2*k1[j];
+            for (unsigned int j=0; j<n; j++) k2[j] = f(xn-h2, yn, k, j);
 
             // k3
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i+1]-h2*k2[j];
-            for (unsigned int j=0; j<n; j++) k3[j] = f(xn-h2, yn, i+1, j);
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][k-minN]-h2*k2[j];
+            for (unsigned int j=0; j<n; j++) k3[j] = f(xn-h2, yn, k, j);
 
             // k4
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i+1]-h*k3[j];
-            for (unsigned int j=0; j<n; j++) k4[j] = f(xn-h, yn, i+1, j);
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][k-minN]-h*k3[j];
+            for (unsigned int j=0; j<n; j++) k4[j] = f(xn-h, yn, k, j);
 
-            for (unsigned int j=0; j<n; j++) ry[j][i] = ry[j][i+1] - h6 * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
+            for (unsigned int j=0; j<n; j++) ry[j][k-minN-1] = ry[j][k-minN] - h6 * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
 
             xn -= h;
         }

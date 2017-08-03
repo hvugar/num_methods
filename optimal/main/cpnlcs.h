@@ -6,31 +6,34 @@
 #include <vector>
 #include <grid/cauchyp.h>
 
-#define SAMPLE_1
+#define SAMPLE_3
 
 using namespace std;
+
+/**
+ * @brief The CauchyProblemNonLocalContions class
+ * Численное решение систем дифференциальных уравнений с нелокальными условиями.
+ * Numerical solution of systems of linear ordinary differential equations with non-local conditions.
+ */
 
 class CauchyProblemNonLocalContions : public SystemLinearODE1stOrder
 {
 public:
     static void Main(int agrc, char *argv[]);
 
-    struct NonSeparatedCondition
+    enum ConditionType
     {
-        double time;
-        unsigned int nmbr;
-        DoubleMatrix alpha;
-        unsigned int rows;
-        unsigned int cols;
-    };
+        SeparatedLeft = 0,
+        SeparatedRight = 1,
+        NonSeparated = 2
+    } ;
 
-    struct SeparatedCondition
+    struct Condition
     {
+        ConditionType type;
         double time;
         unsigned int nmbr;
         DoubleMatrix alpha;
-        unsigned int rows;
-        unsigned int cols;
     };
 
     CauchyProblemNonLocalContions(const ODEGrid &grid);
@@ -38,26 +41,45 @@ public:
     virtual void initialize();
 
     /**
-     * @brief nlcs Неразделенные условия.
+     * @brief n0 Число неразделенных многоточечных условий заданных в интервале.
      */
-    std::vector<NonSeparatedCondition> nscs;
+    unsigned int n0;
     /**
-     * @brief nlcs Разделенные условия.
+     * @brief nlcs Неразделенные многоточечные условия заданные в интервале.
      */
-    std::vector<SeparatedCondition> scs;
+    std::vector<Condition> nscs;
+    /**
+     * @brief n1 Число разделенных условий заданных на левом конце интервала.
+     */
+    unsigned int n1;
+    /**
+     * @brief nlcs Разделенные условия заданные на левом конце интервала.
+     */
+    Condition lscs;
+    /**
+     * @brief n1 Число разделенных условий заданных на правом конце интервала.
+     */
+    unsigned int n2;
+    /**
+     * @brief nlcs Разделенные условия заданные на правом конце интервала.
+     */
+    Condition rscs;
+    /**
+     * @brief betta
+     */
     DoubleVector betta;
 
-    unsigned int n = 2;
-    unsigned int L = 3;
+    unsigned int n;
+    unsigned int L;
 
-    double x1(unsigned int k) const;
-    double x2(unsigned int k) const;
+    double x(unsigned int k, int i) const;
 
-    void calculate1();
+    void calculateForward(DoubleVector &x);
+    void calculateBackward(DoubleVector &x);
 
-    void calculateInterval(unsigned int s, unsigned int r);
-    void calculateCondition(unsigned int r);
-    \
+    void calculateIntervalF(unsigned int s, unsigned int r);
+    void calculateIntervalB(unsigned int s, unsigned int r);
+
 public:
     virtual double A(double t UNUSED_PARAM, unsigned int k, unsigned int row, unsigned int col) const;
     virtual double B(double t UNUSED_PARAM, unsigned int k, unsigned int row) const;
