@@ -12,7 +12,7 @@ public:
     static void Main(int agrc, char *argv[]);
 
     virtual void initialize();
-    double x(unsigned int k, int i) const;
+    double x(double t, int i) const;
 
 public:
     virtual double A(double t UNUSED_PARAM, unsigned int k, unsigned int row, unsigned int col) const;

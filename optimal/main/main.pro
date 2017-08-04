@@ -48,7 +48,8 @@ SOURCES += main.cpp \
     problem1/ibackwardloadedheateqauation.cpp \
     problem4/problem4.cpp \
     ivp/cauchyproblemmex.cpp \
-    slodenlcs.cpp
+    load_sys/slodenlcs.cpp \
+    problem5/problem5ex1.cpp
 
 HEADERS += \
     problem1/iproblem1.h \
@@ -63,4 +64,5 @@ HEADERS += \
     problem1/ibackwardloadedheateqauation.h \
     problem4/problem4.h \
     ivp/cauchyproblemmex.h \
-    slodenlcs.h
+    load_sys/slodenlcs.h \
+    problem5/problem5ex1.h

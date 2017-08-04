@@ -76,7 +76,7 @@ void SystemLinearODENonLocalContions::initialize()
         for (unsigned int s=0; s<L; s++)
         {
             const Condition &c = nonSeparatedConditions().at(s);
-            for (unsigned int i=0; i<n; i++) betta[row] += c.alpha[row][i] * x(c.nmbr, i);
+            for (unsigned int i=0; i<n; i++) betta[row] += c.alpha[row][i] * x(c.time, i);
         }
     }
 
@@ -89,7 +89,7 @@ void SystemLinearODENonLocalContions::initialize()
     {
         for(unsigned int col=0; col<n; col++) lscs.alpha[row][col] = (rand() % 1000) / 1000.0;
         betta[row+n0] = 0.0;
-        for (unsigned int i=0; i<n; i++) betta[row+n0] += lscs.alpha[row][i] * x(lscs.nmbr, i);
+        for (unsigned int i=0; i<n; i++) betta[row+n0] += lscs.alpha[row][i] * x(lscs.time, i);
     }
     setLeftSeparatedCondition(lscs);
 
@@ -102,7 +102,7 @@ void SystemLinearODENonLocalContions::initialize()
     {
         for(unsigned int col=0; col<n; col++) rscs.alpha[row][col] = (rand() % 1000) / 1000.0;
         betta[row+n0+n1] = 0.0;
-        for (unsigned int i=0; i<n; i++) betta[row+n0+n1] += rscs.alpha[row][i] * x(rscs.nmbr, i);
+        for (unsigned int i=0; i<n; i++) betta[row+n0+n1] += rscs.alpha[row][i] * x(rscs.time, i);
     }
     setRightSeparatedCondition(rscs);
 
@@ -123,6 +123,7 @@ double SystemLinearODENonLocalContions::A(double t UNUSED_PARAM, unsigned int, u
         if (col==2) { return -2.0; }
     }
 #endif
+
 #ifdef SAMPLE_2
     if (row==1)
     {
@@ -135,6 +136,7 @@ double SystemLinearODENonLocalContions::A(double t UNUSED_PARAM, unsigned int, u
         if (col==2) { return +4.0; }
     }
 #endif
+
 #ifdef SAMPLE_3
     if (row==1)
     {
@@ -165,31 +167,37 @@ double SystemLinearODENonLocalContions::B(double t, unsigned int, unsigned int r
     if (row==1) return -t;
     if (row==2) return -6.0*t-11.0;
 #endif
+
 #ifdef SAMPLE_2
     if (row==1) return +2.0 - 13.0*t;
     if (row==2) return +3.0 - 22.0*t;
 #endif
+
 #ifdef SAMPLE_3
     if (row==1) return 3.0     - (2.0*(3.0*t+4.0) - 3.0*(4.0*t*t) + 1.0*(t*t+t));
     if (row==2) return 8.0*t   - (3.0*(3.0*t+4.0) + 1.0*(4.0*t*t) - 2.0*(t*t+t));
     if (row==3) return 2.0*t+1 - (1.0*(3.0*t+4.0) - 5.0*(4.0*t*t) - 3.0*(t*t+t));
 #endif
+
     return NAN;
 }
 
-double SystemLinearODENonLocalContions::x(unsigned int k, int i) const
+double SystemLinearODENonLocalContions::x(double t, int i) const
 {
-    Dimension dim = grid().dimension();
-    double h = dim.step();
-    double t = k*h;
+    //Dimension dim = grid().dimension();
+    //double h = dim.step();
+    //double t = k*h;
+
 #ifdef SAMPLE_1
     if (i==0) return t*t + 4.0;
     if (i==1) return t*t*t + t;
 #endif
+
 #ifdef SAMPLE_2
     if (i==0) return 2.0*t;
     if (i==1) return 3.0*t;
 #endif
+
 #ifdef SAMPLE_3
     if (i==0) return 3.0*t+4.0;
     if (i==1) return 4.0*t*t;

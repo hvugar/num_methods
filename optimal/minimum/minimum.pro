@@ -49,7 +49,8 @@ SOURCES += \
     iibvp.cpp \
     gradient/igradient.cpp \
     grid/cauchyp.cpp \
-    diffequ.cpp
+    diffequ.cpp \
+    islodenlcs.cpp
 
 HEADERS += global.h \
     cmethods.h \
@@ -85,4 +86,5 @@ HEADERS += global.h \
     iibvp.h \
     gradient/igradient.h \
     grid/cauchyp.h \
-    diffequ.h
+    diffequ.h \
+    islodenlcs.h
