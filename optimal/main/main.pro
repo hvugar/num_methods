@@ -36,10 +36,6 @@ LIBS += -L../bin -lrnfunction
 DESTDIR += ../bin
 
 SOURCES += main.cpp \
-    loadedsystems.cpp \
-    bordertest.cpp \
-    bordertest1.cpp \
-    sampleboundaryproblem1.cpp \
     problem1/iproblem1.cpp \
     problem1/problem1L2.cpp \
     problem1/problem1L3.cpp \
@@ -51,14 +47,10 @@ SOURCES += main.cpp \
     problem1/loadedheatequation.cpp \
     problem1/ibackwardloadedheateqauation.cpp \
     problem4/problem4.cpp \
-    cpnlcs.cpp \
-    ivp/cauchyproblemmex.cpp
+    ivp/cauchyproblemmex.cpp \
+    slodenlcs.cpp
 
 HEADERS += \
-    loadedsystems.h \
-    bordertest.h \
-    bordertest1.h \
-    sampleboundaryproblem1.h \
     problem1/iproblem1.h \
     problem1/problem1L2.h \
     problem1/problem1L3.h \
@@ -70,5 +62,5 @@ HEADERS += \
     problem1/loadedheatequation.h \
     problem1/ibackwardloadedheateqauation.h \
     problem4/problem4.h \
-    cpnlcs.h \
-    ivp/cauchyproblemmex.h
+    ivp/cauchyproblemmex.h \
+    slodenlcs.h

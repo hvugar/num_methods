@@ -47,13 +47,13 @@
 #include "sampleboundaryproblem1.h"
 #include "ivp/cauchyproblemmex.h"
 
-#include "cpnlcs.h"
+#include "slodenlcs.h"
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     srand(time(NULL));
 
-    CauchyProblemNonLocalContions::Main(argc, argv);
+    SystemLinearODENonLocalContions::Main(argc, argv);
     //CauchyProblemMEx::Main(argc, argv);
 
 
