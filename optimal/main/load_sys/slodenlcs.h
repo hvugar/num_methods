@@ -3,7 +3,7 @@
 
 #define SAMPLE_3
 
-#include <islodenlcs.h>
+#include <load_sys/islodenlcs.h>
 
 class SystemLinearODENonLocalContions : public ISystemLinearODENonLocalContions
 {

@@ -49,7 +49,8 @@ SOURCES += main.cpp \
     problem4/problem4.cpp \
     ivp/cauchyproblemmex.cpp \
     load_sys/slodenlcs.cpp \
-    problem5/problem5ex1.cpp
+    problem5/problem5ex1.cpp \
+    load_sys/slodenlcsm.cpp
 
 HEADERS += \
     problem1/iproblem1.h \
@@ -65,4 +66,5 @@ HEADERS += \
     problem4/problem4.h \
     ivp/cauchyproblemmex.h \
     load_sys/slodenlcs.h \
-    problem5/problem5ex1.h
+    problem5/problem5ex1.h \
+    load_sys/slodenlcsm.h

@@ -50,7 +50,8 @@ SOURCES += \
     gradient/igradient.cpp \
     grid/cauchyp.cpp \
     diffequ.cpp \
-    islodenlcs.cpp
+    load_sys/islodenlcs.cpp \
+    load_sys/islodenlcsm.cpp
 
 HEADERS += global.h \
     cmethods.h \
@@ -87,4 +88,5 @@ HEADERS += global.h \
     gradient/igradient.h \
     grid/cauchyp.h \
     diffequ.h \
-    islodenlcs.h
+    load_sys/islodenlcs.h \
+    load_sys/islodenlcsm.h

@@ -42,18 +42,18 @@
 #include <../rnfunction/rosenbrock.h>
 #include <../rnfunction/quadraticfunction.h>
 
-#include "bordertest.h"
-#include "bordertest1.h"
-#include "sampleboundaryproblem1.h"
 #include "ivp/cauchyproblemmex.h"
 
-#include "slodenlcs.h"
+#include "load_sys/slodenlcs.h"
+#include "load_sys/slodenlcsm.h"
+
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     srand(time(NULL));
 
-    SystemLinearODENonLocalContions::Main(argc, argv);
+    //SystemLinearODENonLocalContions::Main(argc, argv);
+    SystemLinearODENonLocalContionsM::Main(argc, argv);
     //CauchyProblemMEx::Main(argc, argv);
 
 
