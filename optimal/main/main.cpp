@@ -50,7 +50,7 @@
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    srand(time(NULL));
+    //srand(time(NULL));
 
     //SystemLinearODENonLocalContions::Main(argc, argv);
     SystemLinearODENonLocalContionsM::Main(argc, argv);

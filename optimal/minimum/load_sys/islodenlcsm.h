@@ -4,6 +4,7 @@
 #include <vector2d.h>
 #include <matrix2d.h>
 #include <grid/grid.h>
+#include <grid/cauchyp.h>
 #include <vector>
 
 class MINIMUMSHARED_EXPORT ISystemLinearODENonLocalContionsM
@@ -26,17 +27,24 @@ public:
 
     ISystemLinearODENonLocalContionsM(const ODEGrid& grid);
 
-    void calculateForward(DoubleVector &x);
-    void calculateBackward(DoubleVector &x);
+    virtual void calculateForward(DoubleMatrix &x);
+    virtual void calculateBackward(DoubleMatrix &x);
 
+    void setLeftSeparatedCondition(const Condition &lscs);
+    void setRightSeparatedCondition(const Condition &lscs);
+    void addNonSeparatedCondition(const Condition &nsc);
+    const std::vector<Condition>& nonSeparatedConditions() const;
+    void setBetta(const DoubleMatrix &betta);
     void setSystemOrder(unsigned int n);
     unsigned int systemOrder() const;
+
+    const ODEGrid& grid() const;
 
 public:
     virtual double A(double t UNUSED_PARAM, unsigned int k, unsigned int row, unsigned int col) const = 0;
     virtual double B(double t UNUSED_PARAM, unsigned int k, unsigned int row, unsigned int col) const = 0;
 
-private:
+//private:
     std::vector<Condition> nscs;
     Condition lscs;
     Condition rscs;
@@ -47,10 +55,9 @@ private:
     unsigned int n;
 
 private:
-    void calculateIntervalF(unsigned int s, unsigned int row, unsigned int col);
-    void calculateIntervalB(unsigned int s, unsigned int r);
+    virtual void calculateIntervalF(unsigned int s, unsigned int row, unsigned int col);
+    //virtual void calculateIntervalB(unsigned int s, unsigned int r);
 
-    const ODEGrid& grid() const;
 protected:
     ODEGrid mgrid;
 };

@@ -11,7 +11,7 @@ public:
     SystemLinearODENonLocalContions(const ODEGrid &grid);
     static void Main(int agrc, char *argv[]);
 
-    virtual void initialize();
+    void initialize();
     double x(double t, int i) const;
 
 public:
