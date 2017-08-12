@@ -12,6 +12,8 @@
 #include "problem1/art_problem1.h"
 #include "problem1/loadedheatequation.h"
 
+#include "problem5/problem5ex1.h"
+
 #include "high_order/singledifequ.h"
 #include "high_order/systemdifequ.h"
 
@@ -54,6 +56,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //SystemLinearODENonLocalContions::Main(argc, argv);
     SystemLinearODENonLocalContionsM::Main(argc, argv);
+    //Problem5Ex1::Main(argc, argv);
+
     //CauchyProblemMEx::Main(argc, argv);
 
 

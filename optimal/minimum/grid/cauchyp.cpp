@@ -595,7 +595,6 @@ void CauchyProblemM1stOrder::calculateRK4(double x0, const DoubleVector &y0, Dou
         }
     }
 
-
     free(k4);
     free(k3);
     free(k2);

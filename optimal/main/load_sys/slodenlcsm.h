@@ -8,7 +8,6 @@
 #include <math.h>
 #include <printer.h>
 
-
 class SystemLinearODENonLocalContionsM : public ISystemLinearODENonLocalContionsM
 {
 public:
@@ -24,9 +23,6 @@ public:
 
     double X(double t, unsigned int k, unsigned int row, unsigned int col) const;
     double dX(double t, unsigned int k, unsigned int row, unsigned int col) const;
-
-    virtual void calculateForward(DoubleMatrix &x);
-    virtual void calculateIntervalF(unsigned int start, unsigned int row, unsigned int col);
 };
 
 #endif // SYSTEMLINEARODENONLOCALCONTIONSM_H

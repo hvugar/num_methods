@@ -50,7 +50,10 @@ SOURCES += main.cpp \
     ivp/cauchyproblemmex.cpp \
     load_sys/slodenlcs.cpp \
     problem5/problem5ex1.cpp \
-    load_sys/slodenlcsm.cpp
+    load_sys/slodenlcsm.cpp \
+    problem5/zetta0.cpp \
+    problem5/zetta1.cpp \
+    problem5/zetta2.cpp
 
 HEADERS += \
     problem1/iproblem1.h \
@@ -67,4 +70,7 @@ HEADERS += \
     ivp/cauchyproblemmex.h \
     load_sys/slodenlcs.h \
     problem5/problem5ex1.h \
-    load_sys/slodenlcsm.h
+    load_sys/slodenlcsm.h \
+    problem5/zetta0.h \
+    problem5/zetta1.h \
+    problem5/zetta2.h

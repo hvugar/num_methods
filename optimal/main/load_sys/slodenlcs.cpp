@@ -4,10 +4,10 @@ void SystemLinearODENonLocalContions::Main(int agrc UNUSED_PARAM, char *argv[] U
 {
     ODEGrid grid(Dimension(0.01, 100, 0));
     SystemLinearODENonLocalContions cpnlcs(grid);
-
     cpnlcs.initialize();
     DoubleVector x;
     cpnlcs.calculateForward(x);
+
     IPrinter::print(x,x.size());
     DoubleMatrix m;
     cpnlcs.calculateBackwardCP(x, m);
@@ -112,7 +112,7 @@ void SystemLinearODENonLocalContions::initialize()
 double SystemLinearODENonLocalContions::A(double t UNUSED_PARAM, unsigned int, unsigned int row, unsigned int col) const
 {
 #ifdef SAMPLE_1
-    if (row==1)
+    if (row==0)
     {
         if (col==1) { return t; }
         if (col==2) { return -1.0; }
@@ -138,23 +138,23 @@ double SystemLinearODENonLocalContions::A(double t UNUSED_PARAM, unsigned int, u
 #endif
 
 #ifdef SAMPLE_3
+    if (row==0)
+    {
+        if (col==0) { return +2.0; }
+        if (col==1) { return -3.0; }
+        if (col==2) { return +1.0; }
+    }
     if (row==1)
     {
-        if (col==1) { return +2.0; }
-        if (col==2) { return -3.0; }
-        if (col==3) { return +1.0; }
+        if (col==0) { return +3.0; }
+        if (col==1) { return +1.0; }
+        if (col==2) { return -2.0; }
     }
     if (row==2)
     {
-        if (col==1) { return +3.0; }
-        if (col==2) { return +1.0; }
-        if (col==3) { return -2.0; }
-    }
-    if (row==3)
-    {
-        if (col==1) { return +1.0; }
-        if (col==2) { return -5.0; }
-        if (col==3) { return -3.0; }
+        if (col==0) { return +1.0; }
+        if (col==1) { return -5.0; }
+        if (col==2) { return -3.0; }
     }
 #endif
 
@@ -174,9 +174,9 @@ double SystemLinearODENonLocalContions::B(double t, unsigned int, unsigned int r
 #endif
 
 #ifdef SAMPLE_3
-    if (row==1) return 3.0     - (2.0*(3.0*t+4.0) - 3.0*(4.0*t*t) + 1.0*(t*t+t));
-    if (row==2) return 8.0*t   - (3.0*(3.0*t+4.0) + 1.0*(4.0*t*t) - 2.0*(t*t+t));
-    if (row==3) return 2.0*t+1 - (1.0*(3.0*t+4.0) - 5.0*(4.0*t*t) - 3.0*(t*t+t));
+    if (row==0) return 3.0     - (2.0*(3.0*t+4.0) - 3.0*(4.0*t*t) + 1.0*(t*t+t));
+    if (row==1) return 8.0*t   - (3.0*(3.0*t+4.0) + 1.0*(4.0*t*t) - 2.0*(t*t+t));
+    if (row==2) return 2.0*t+1 - (1.0*(3.0*t+4.0) - 5.0*(4.0*t*t) - 3.0*(t*t+t));
 #endif
 
     return NAN;

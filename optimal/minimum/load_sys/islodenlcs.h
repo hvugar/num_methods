@@ -42,45 +42,21 @@ public:
     void setSystemOrder(unsigned int n);
     unsigned int systemOrder() const;
 
+    void calculateForward(DoubleVector &x);
     void calculateBackwardCP(const DoubleVector &x, DoubleMatrix &m);
+
+    void calculateBackward(DoubleVector &x);
     void calculateForwardCP(const DoubleVector &x, DoubleMatrix &m);
 
 private:
-    /**
-     * @brief nlcs Неразделенные многоточечные условия заданные в интервале.
-     */
+    /** @brief nlcs Неразделенные многоточечные условия заданные в интервале. */
     std::vector<Condition> nscs;
-    /**
-     * @brief nlcs Разделенные условия заданные на левом конце интервала.
-     */
+    /** @brief nlcs Разделенные условия заданные на левом конце интервала. */
     Condition lscs;
-    /**
-     * @brief nlcs Разделенные условия заданные на правом конце интервала.
-     */
+    /** @brief nlcs Разделенные условия заданные на правом конце интервала. */
     Condition rscs;
-    /**
-     * @brief betta
-     */
+    /** @brief betta */
     DoubleVector betta;
-    /**
-     * @brief n0 Число неразделенных многоточечных условий заданных в интервале.
-     */
-    unsigned int n0;
-    /**
-     * @brief n1 Число разделенных условий заданных на левом конце интервала.
-     */
-    unsigned int n1;
-    /**
-     * @brief n1 Число разделенных условий заданных на правом конце интервала.
-     */
-    unsigned int n2;
-
-    unsigned int n;
-    unsigned int L;
-
-public:
-    void calculateForward(DoubleVector &x);
-    void calculateBackward(DoubleVector &x);
 
 private:
     void calculateIntervalF(unsigned int s, unsigned int r);
