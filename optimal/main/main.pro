@@ -53,7 +53,8 @@ SOURCES += main.cpp \
     load_sys/slodenlcsm.cpp \
     problem5/zetta0.cpp \
     problem5/zetta1.cpp \
-    problem5/zetta2.cpp
+    problem5/zetta2.cpp \
+    numintegralexp1.cpp
 
 HEADERS += \
     problem1/iproblem1.h \
@@ -73,4 +74,5 @@ HEADERS += \
     load_sys/slodenlcsm.h \
     problem5/zetta0.h \
     problem5/zetta1.h \
-    problem5/zetta2.h
+    problem5/zetta2.h \
+    numintegralexp1.h

@@ -19,5 +19,4 @@ double trapesium(R1Function* f, unsigned int N, double a, double b);
 #endif
 
 
-
 #endif // INTEGRAL_H

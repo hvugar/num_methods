@@ -12,7 +12,7 @@ void SystemLinearODENonLocalContionsM::Main(int agrc UNUSED_PARAM, char *argv[] 
     IPrinter::print(x, x.rows(), x.cols());
 
     DoubleMatrix m;
-    cpnlcs.calculateBackwardCP(x, m);
+    //cpnlcs.calculateBackwardCP(x, m);
 }
 
 SystemLinearODENonLocalContionsM::SystemLinearODENonLocalContionsM(const ODEGrid &grid)

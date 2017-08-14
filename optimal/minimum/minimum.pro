@@ -51,7 +51,8 @@ SOURCES += \
     grid/cauchyp.cpp \
     diffequ.cpp \
     load_sys/islodenlcs.cpp \
-    load_sys/islodenlcsm.cpp
+    load_sys/islodenlcsm.cpp \
+    grid/integral1.cpp
 
 HEADERS += global.h \
     cmethods.h \
@@ -89,4 +90,5 @@ HEADERS += global.h \
     grid/cauchyp.h \
     diffequ.h \
     load_sys/islodenlcs.h \
-    load_sys/islodenlcsm.h
+    load_sys/islodenlcsm.h \
+    grid/integral1.h

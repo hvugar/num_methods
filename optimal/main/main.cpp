@@ -49,14 +49,49 @@
 #include "load_sys/slodenlcs.h"
 #include "load_sys/slodenlcsm.h"
 
+#include "numintegralexp1.h"
+
+class A
+{
+public:
+    double a;
+};
+
+class B : public A {};
+
+class C : public A {};
+
+class D : public B, public C {};
+
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
+    A a;
+    a.a = 1.0;
+
+    B b;
+    b.a = 2.0;
+
+    C c;
+    c.a = 3.0;
+
+    D d;
+    //d.a = 4.0;
+
+    printf("A %f %d\n", a.a, sizeof(A));
+    printf("B %f %d\n", b.a, sizeof(B));
+    printf("C %f %d\n", c.a, sizeof(C));
+    printf("D %f %d\n", d::A.a, sizeof(D));
+    return 0;
+
+
     //srand(time(NULL));
 
     //SystemLinearODENonLocalContions::Main(argc, argv);
-    SystemLinearODENonLocalContionsM::Main(argc, argv);
+    //SystemLinearODENonLocalContionsM::Main(argc, argv);
     //Problem5Ex1::Main(argc, argv);
+
+    NumIntegralExp1::Main(argc, argv);
 
     //CauchyProblemMEx::Main(argc, argv);
 
