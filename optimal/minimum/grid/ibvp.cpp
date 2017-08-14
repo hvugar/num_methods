@@ -1,5 +1,15 @@
 #include "ibvp.h"
 
+const UniformGrid& InitialValueProblem::timeGrid() const
+{
+    return timegrid;
+}
+
+void InitialValueProblem::setTimeGrid(const UniformGrid &grid)
+{
+    timegrid = grid;
+}
+
 unsigned int InitialBoundaryValueProblemPDE::dimSize()
 {
     return mspaceDimension.size();

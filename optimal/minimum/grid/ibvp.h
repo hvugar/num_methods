@@ -3,6 +3,7 @@
 
 #include "bvp.h"
 #include "grid.h"
+#include "uniformgrid.h"
 
 void MINIMUMSHARED_EXPORT qovma_first_row(unsigned int K, unsigned int N,
              DoubleVector &betta, double eta,
@@ -32,6 +33,12 @@ public:
         L2R, // Left to Right
         R2L  // Right to Left
     };
+
+    const UniformGrid& timeGrid() const;
+    void setTimeGrid(const UniformGrid &grid);
+
+private:
+    UniformGrid timegrid;
 };
 
 /**

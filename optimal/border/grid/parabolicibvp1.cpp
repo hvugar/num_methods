@@ -29,7 +29,7 @@ void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     {
         DoubleMatrix u;
-        //p.gridMethod(u);
+        p.gridMethod(u);
         //IPrinter::printMatrix(14,10,u);
         IPrinter::printSeperatorLine();
     }

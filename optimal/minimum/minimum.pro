@@ -52,7 +52,9 @@ SOURCES += \
     diffequ.cpp \
     load_sys/islodenlcs.cpp \
     load_sys/islodenlcsm.cpp \
-    grid/integral1.cpp
+    grid/integral1.cpp \
+    grid/uniformgrid.cpp \
+    nonuniformgrid.cpp
 
 HEADERS += global.h \
     cmethods.h \
@@ -91,4 +93,6 @@ HEADERS += global.h \
     diffequ.h \
     load_sys/islodenlcs.h \
     load_sys/islodenlcsm.h \
-    grid/integral1.h
+    grid/integral1.h \
+    grid/uniformgrid.h \
+    nonuniformgrid.h

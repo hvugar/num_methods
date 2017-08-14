@@ -44,6 +44,11 @@ void funcL(const double* a, const double *b, const double *c, const double *d, d
 
 void ParabolicIBVP::gridMethod(DoubleVector &u, SweepMethodDirection direction) const
 {
+    //    if (!timeGrid().isGridSet())
+    //    {
+    //        throw std::invalid_argument("The grid of time is not set!");
+    //    }
+
     typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
     t_algorithm algorithm = &tomasAlgorithm;
     if (direction == ForwardSweep) algorithm = &tomasAlgorithmL2R;
@@ -137,6 +142,11 @@ void ParabolicIBVP::gridMethod(DoubleVector &u, SweepMethodDirection direction) 
 
 void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction) const
 {
+//    if (!timeGrid().isGridSet())
+//    {
+//        throw std::invalid_argument("The grid of time is not set!");
+//    }
+
     typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
     t_algorithm algorithm = &tomasAlgorithm;
     if (direction == ForwardSweep) algorithm = &tomasAlgorithmL2R;

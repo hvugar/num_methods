@@ -8,6 +8,7 @@
 #include "../printer.h"
 #include <math.h>
 #include "grid.h"
+#include "uniformgrid.h"
 
 class MINIMUMSHARED_EXPORT BoundaryValueProblem
 {
@@ -27,6 +28,20 @@ public:
     };
 
     BoundaryCondition condition;
+
+public:
+    const UniformGrid& spaceGridX() const;
+    const UniformGrid& spaceGridY() const;
+    const UniformGrid& spaceGridZ() const;
+
+    void setSpaceGridX(const UniformGrid&);
+    void setSpaceGridY(const UniformGrid&);
+    void setSpaceGridZ(const UniformGrid&);
+
+private:
+    UniformGrid spacegridX;
+    UniformGrid spacegridY;
+    UniformGrid spacegridZ;
 };
 
 class MINIMUMSHARED_EXPORT BoundaryValueProblemODE : protected BoundaryValueProblem
