@@ -1,5 +1,5 @@
-#ifndef SYSTEM_LINEARODE_NONLOCALCONTIONS_H
-#define SYSTEM_LINEARODE_NONLOCALCONTIONS_H
+#ifndef ISYSTEM_LINEAR_ODE_NONLOCALCONTIONSV_H
+#define ISYSTEM_LINEAR_ODE_NONLOCALCONTIONSV_H
 
 #include <vector2d.h>
 #include <matrix2d.h>
@@ -14,7 +14,7 @@ using namespace std;
  * Numerical solution of systems of linear ordinary differential equations with non-local conditions.
  */
 
-class MINIMUMSHARED_EXPORT ISystemLinearODENonLocalContions : public SystemLinearODE1stOrder
+class MINIMUMSHARED_EXPORT ISystemLinearODENonLocalContionsV : public SystemLinearODE1stOrder
 {
 public:
     enum ConditionType
@@ -32,7 +32,7 @@ public:
         DoubleMatrix alpha;
     };
 
-    ISystemLinearODENonLocalContions(const ODEGrid &grid);
+    ISystemLinearODENonLocalContionsV(const ODEGrid &grid);
 
     void setLeftSeparatedCondition(const Condition &lscs);
     void setRightSeparatedCondition(const Condition &lscs);
@@ -43,10 +43,10 @@ public:
     unsigned int systemOrder() const;
 
     void calculateForward(DoubleVector &x);
-    void calculateBackwardCP(const DoubleVector &x, DoubleMatrix &m);
+    void calculateBackwardCP(const DoubleVector &x, std::vector<DoubleVector> &m);
 
     void calculateBackward(DoubleVector &x);
-    void calculateForwardCP(const DoubleVector &x, DoubleMatrix &m);
+    void calculateForwardCP(const DoubleVector &x, std::vector<DoubleVector> &m);
 
 private:
     /** @brief nlcs Неразделенные многоточечные условия заданные в интервале. */
@@ -67,4 +67,4 @@ public:
     virtual double B(double t UNUSED_PARAM, unsigned int k, unsigned int row) const = 0;
 };
 
-#endif // CAUCHYPROBLEMNONLOCALCONTIONS_H
+#endif // ISYSTEM_LINEAR_ODE_NONLOCALCONTIONSV_H

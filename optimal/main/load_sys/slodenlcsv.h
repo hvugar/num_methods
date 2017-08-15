@@ -1,14 +1,14 @@
-#ifndef SYSTEMLINEARODENONLOCALCONTIONS_H
-#define SYSTEMLINEARODENONLOCALCONTIONS_H
+#ifndef SYSTEM_LINEAR_ODE_NONLOCALCONTIONSV_H
+#define SYSTEM_LINEAR_ODE_NONLOCALCONTIONSV_H
 
 #define SAMPLE_3
 
-#include <load_sys/islodenlcs.h>
+#include <load_sys/islodenlcsv.h>
 
-class SystemLinearODENonLocalContions : public ISystemLinearODENonLocalContions
+class SystemLinearODENonLocalContionsV : public ISystemLinearODENonLocalContionsV
 {
 public:
-    SystemLinearODENonLocalContions(const ODEGrid &grid);
+    SystemLinearODENonLocalContionsV(const ODEGrid &grid);
     static void Main(int agrc, char *argv[]);
 
     void initialize();
@@ -19,4 +19,4 @@ public:
     virtual double B(double t UNUSED_PARAM, unsigned int k, unsigned int row) const;
 };
 
-#endif // SYSTEMLINEARODENONLOCALCONTIONS_H
+#endif // SYSTEM_LINEAR_ODE_NONLOCALCONTIONSV_H

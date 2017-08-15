@@ -1,5 +1,5 @@
-#ifndef SYSTEMLINEARODENONLOCALCONTIONSM_H
-#define SYSTEMLINEARODENONLOCALCONTIONSM_H
+#ifndef SYSTEM_LINEAR_ODE_NONLOCALCONTIONSM_H
+#define SYSTEM_LINEAR_ODE_NONLOCALCONTIONSM_H
 
 #include <load_sys/islodenlcsm.h>
 #include <vector>
@@ -25,4 +25,4 @@ public:
     double dX(double t, unsigned int k, unsigned int row, unsigned int col) const;
 };
 
-#endif // SYSTEMLINEARODENONLOCALCONTIONSM_H
+#endif // SYSTEM_LINEAR_ODE_NONLOCALCONTIONSM_H

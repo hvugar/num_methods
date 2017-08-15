@@ -1,23 +1,23 @@
-#include "slodenlcs.h"
+#include "slodenlcsv.h"
 
-void SystemLinearODENonLocalContions::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
+void SystemLinearODENonLocalContionsV::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     ODEGrid grid(Dimension(0.01, 100, 0));
-    SystemLinearODENonLocalContions cpnlcs(grid);
+    SystemLinearODENonLocalContionsV cpnlcs(grid);
     cpnlcs.initialize();
     DoubleVector x;
     cpnlcs.calculateForward(x);
 
     IPrinter::print(x,x.size());
-    DoubleMatrix m;
+    std::vector<DoubleVector> m;
     cpnlcs.calculateBackwardCP(x, m);
-    for (unsigned int row=0; row<cpnlcs.systemOrder(); row++) IPrinter::printVector(m.row(row));
+    for (unsigned int row=0; row<cpnlcs.systemOrder(); row++) IPrinter::printVector(m.at(row));
 }
 
-SystemLinearODENonLocalContions::SystemLinearODENonLocalContions(const ODEGrid &grid) : ISystemLinearODENonLocalContions(grid)
+SystemLinearODENonLocalContionsV::SystemLinearODENonLocalContionsV(const ODEGrid &grid) : ISystemLinearODENonLocalContionsV(grid)
 {}
 
-void SystemLinearODENonLocalContions::initialize()
+void SystemLinearODENonLocalContionsV::initialize()
 {
     Dimension dim = grid().dimension();
     unsigned int N = dim.sizeN();
@@ -109,7 +109,7 @@ void SystemLinearODENonLocalContions::initialize()
     setBetta(betta);
 }
 
-double SystemLinearODENonLocalContions::A(double t UNUSED_PARAM, unsigned int, unsigned int row, unsigned int col) const
+double SystemLinearODENonLocalContionsV::A(double t UNUSED_PARAM, unsigned int, unsigned int row, unsigned int col) const
 {
 #ifdef SAMPLE_1
     if (row==0)
@@ -161,7 +161,7 @@ double SystemLinearODENonLocalContions::A(double t UNUSED_PARAM, unsigned int, u
     return NAN;
 }
 
-double SystemLinearODENonLocalContions::B(double t, unsigned int, unsigned int row) const
+double SystemLinearODENonLocalContionsV::B(double t, unsigned int, unsigned int row) const
 {
 #ifdef SAMPLE_1
     if (row==1) return -t;
@@ -182,7 +182,7 @@ double SystemLinearODENonLocalContions::B(double t, unsigned int, unsigned int r
     return NAN;
 }
 
-double SystemLinearODENonLocalContions::x(double t, int i) const
+double SystemLinearODENonLocalContionsV::x(double t, int i) const
 {
     //Dimension dim = grid().dimension();
     //double h = dim.step();

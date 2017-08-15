@@ -2,7 +2,7 @@
 #include "problem5ex1.h"
 
 Zetta0::Zetta0(const ODEGrid &grid, const Problem5Ex1 *p5)
-    : ISystemLinearODENonLocalContions(grid), p5(p5) {}
+    : ISystemLinearODENonLocalContionsV(grid), p5(p5) {}
 
 double Zetta0::A(double t, unsigned int k, unsigned int row, unsigned int col) const
 {

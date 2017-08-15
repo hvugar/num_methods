@@ -1,11 +1,11 @@
 #ifndef ZETTA0_H
 #define ZETTA0_H
 
-#include <load_sys/islodenlcs.h>
+#include <load_sys/islodenlcsv.h>
 
 class Problem5Ex1;
 
-class Zetta0 : public ISystemLinearODENonLocalContions
+class Zetta0 : public ISystemLinearODENonLocalContionsV
 {
 public:
     Zetta0(const ODEGrid &grid, const Problem5Ex1 *p5);

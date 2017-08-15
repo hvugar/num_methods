@@ -50,11 +50,13 @@ SOURCES += \
     gradient/igradient.cpp \
     grid/cauchyp.cpp \
     diffequ.cpp \
-    load_sys/islodenlcs.cpp \
     load_sys/islodenlcsm.cpp \
     grid/integral1.cpp \
     grid/uniformgrid.cpp \
-    nonuniformgrid.cpp
+    nonuniformgrid.cpp \
+    load_sys/islodenlcsv.cpp \
+    utils/matrix.cpp \
+    utils/vector.cpp
 
 HEADERS += global.h \
     cmethods.h \
@@ -91,8 +93,10 @@ HEADERS += global.h \
     gradient/igradient.h \
     grid/cauchyp.h \
     diffequ.h \
-    load_sys/islodenlcs.h \
     load_sys/islodenlcsm.h \
     grid/integral1.h \
     grid/uniformgrid.h \
-    nonuniformgrid.h
+    nonuniformgrid.h \
+    load_sys/islodenlcsv.h \
+    utils/matrix.h \
+    utils/vector.h

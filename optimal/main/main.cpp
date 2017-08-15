@@ -46,62 +46,28 @@
 
 #include "ivp/cauchyproblemmex.h"
 
-#include "load_sys/slodenlcs.h"
+#include "load_sys/slodenlcsv.h"
 #include "load_sys/slodenlcsm.h"
 
 #include "numintegralexp1.h"
 
-class  A
-{
-public:
-    //float a;
-};
-
-class  B : virtual public A {};
-
-class  C : virtual public A {};
-
-class  D : virtual public B, virtual public C {};
-
+#include "utils/matrix.h"
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-//    A a;
-//    //a.a = 1.0;
 
-//    B b;
-//    //b.a = 2.0;
-
-//    C c;
-//    //c.a = 3.0;
-
-//    D d;
-//    //d.a = 4.0;
-
-//    printf("A %d\n", sizeof(A));
-//    printf("B %d\n", sizeof(B));
-//    printf("C %d\n", sizeof(C));
-//    printf("D %d\n", sizeof(D));
-
-////    printf("A %f %d\n", a.a, sizeof(A));
-////    printf("B %f %d\n", b.a, sizeof(B));
-////    printf("C %f %d\n", c.a, sizeof(C));
-////    printf("D %f %d\n", d.a, sizeof(D));
-//    return 0;
-
+    Matrix<DoubleVector> mv(3,3);
 
     //srand(time(NULL));
 
-    //SystemLinearODENonLocalContions::Main(argc, argv);
+    //SystemLinearODENonLocalContionsV::Main(argc, argv);
     //SystemLinearODENonLocalContionsM::Main(argc, argv);
     //Problem5Ex1::Main(argc, argv);
 
     //NumIntegralExp1::Main(argc, argv);
 
     //CauchyProblemMEx::Main(argc, argv);
-
-
-    ParabolicIBVP1::Main(argc, argv);
+    //ParabolicIBVP1::Main(argc, argv);
 
     //HyperbolicControl2DM::Main(argc, argv);
     //HyperbolicControl2DMX::Main(argc, argv);

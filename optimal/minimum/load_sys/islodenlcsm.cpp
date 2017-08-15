@@ -72,8 +72,8 @@ void ISystemLinearODENonLocalContionsM::calculateForward(DoubleMatrix &x)
 
             for (unsigned int start = 0; start<L-1; start++)
             {
-                ISystemLinearODENonLocalContions::Condition sc = nscs.at(start);
-                ISystemLinearODENonLocalContions::Condition ec = nscs.at(start+1);
+                ISystemLinearODENonLocalContionsV::Condition sc = nscs.at(start);
+                ISystemLinearODENonLocalContionsV::Condition ec = nscs.at(start+1);
 
                 for (unsigned int i=0; i<n; i++) ix[i] = alpha[start][i];
                 ix[n+0] = bt[row][col];
@@ -197,22 +197,22 @@ const ODEGrid& ISystemLinearODENonLocalContionsM::grid() const
     return mgrid;
 }
 
-void ISystemLinearODENonLocalContionsM::setLeftSeparatedCondition(const ISystemLinearODENonLocalContions::Condition &lscs)
+void ISystemLinearODENonLocalContionsM::setLeftSeparatedCondition(const ISystemLinearODENonLocalContionsV::Condition &lscs)
 {
     C_UNUSED(lscs);
 }
 
-void ISystemLinearODENonLocalContionsM::setRightSeparatedCondition(const ISystemLinearODENonLocalContions::Condition &rscs)
+void ISystemLinearODENonLocalContionsM::setRightSeparatedCondition(const ISystemLinearODENonLocalContionsV::Condition &rscs)
 {
     C_UNUSED(rscs);
 }
 
-void ISystemLinearODENonLocalContionsM::addNonSeparatedCondition(const ISystemLinearODENonLocalContions::Condition &nsc)
+void ISystemLinearODENonLocalContionsM::addNonSeparatedCondition(const ISystemLinearODENonLocalContionsV::Condition &nsc)
 {
     this->nscs.push_back(nsc);
 }
 
-const std::vector<ISystemLinearODENonLocalContions::Condition>& ISystemLinearODENonLocalContionsM::nonSeparatedConditions() const
+const std::vector<ISystemLinearODENonLocalContionsV::Condition>& ISystemLinearODENonLocalContionsM::nonSeparatedConditions() const
 {
     return nscs;
 }

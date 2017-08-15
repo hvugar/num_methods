@@ -1,5 +1,5 @@
 #include "slodenlcsm.h"
-#include <load_sys/islodenlcs.h>
+#include <load_sys/islodenlcsv.h>
 
 void SystemLinearODENonLocalContionsM::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -11,7 +11,7 @@ void SystemLinearODENonLocalContionsM::Main(int agrc UNUSED_PARAM, char *argv[] 
     cpnlcs.calculateForward(x);
     IPrinter::print(x, x.rows(), x.cols());
 
-    DoubleMatrix m;
+    //std::vector<DoubleMatrix> m;
     //cpnlcs.calculateBackwardCP(x, m);
 }
 
@@ -28,40 +28,40 @@ void SystemLinearODENonLocalContionsM::initialize()
     unsigned int n2 = 0;
     unsigned int n = n0 + n1 + n2;
 
-    ISystemLinearODENonLocalContions::Condition nsc0;
-    nsc0.type = ISystemLinearODENonLocalContions::NonSeparated;
+    ISystemLinearODENonLocalContionsV::Condition nsc0;
+    nsc0.type = ISystemLinearODENonLocalContionsV::NonSeparated;
     nsc0.time = 0.0;
     nsc0.nmbr = 0;
     nsc0.alpha.resize(n0, n);
     for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc0.alpha[row][col] = (rand() % 1000) / 1000.0;
     addNonSeparatedCondition(nsc0);
 
-    ISystemLinearODENonLocalContions::Condition nsc1;
-    nsc1.type = ISystemLinearODENonLocalContions::NonSeparated;
+    ISystemLinearODENonLocalContionsV::Condition nsc1;
+    nsc1.type = ISystemLinearODENonLocalContionsV::NonSeparated;
     nsc1.time = 0.25;
     nsc1.nmbr = N/4;
     nsc1.alpha.resize(n0, n);
     for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc1.alpha[row][col] = (rand() % 1000) / 1000.0;
     addNonSeparatedCondition(nsc1);
 
-    ISystemLinearODENonLocalContions::Condition nsc2;
-    nsc2.type = ISystemLinearODENonLocalContions::NonSeparated;
+    ISystemLinearODENonLocalContionsV::Condition nsc2;
+    nsc2.type = ISystemLinearODENonLocalContionsV::NonSeparated;
     nsc2.time = 0.5;
     nsc2.nmbr = N/2;
     nsc2.alpha.resize(n0, n);
     for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc2.alpha[row][col] = (rand() % 1000) / 1000.0;
     addNonSeparatedCondition(nsc2);
 
-    ISystemLinearODENonLocalContions::Condition nsc3;
-    nsc3.type = ISystemLinearODENonLocalContions::NonSeparated;
+    ISystemLinearODENonLocalContionsV::Condition nsc3;
+    nsc3.type = ISystemLinearODENonLocalContionsV::NonSeparated;
     nsc3.time = 0.75;
     nsc3.nmbr = 3*(N/4);
     nsc3.alpha.resize(n0, n);
     for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc3.alpha[row][col] = (rand() % 1000) / 1000.0;
     addNonSeparatedCondition(nsc3);
 
-    ISystemLinearODENonLocalContions::Condition nsc4;
-    nsc4.type = ISystemLinearODENonLocalContions::NonSeparated;
+    ISystemLinearODENonLocalContionsV::Condition nsc4;
+    nsc4.type = ISystemLinearODENonLocalContionsV::NonSeparated;
     nsc4.time = 1.0;
     nsc4.nmbr = N;
     nsc4.alpha.resize(n0, n);
@@ -78,37 +78,11 @@ void SystemLinearODENonLocalContionsM::initialize()
             betta[row][col] = 0.0;
             for (unsigned int s=0; s<L; s++)
             {
-                const ISystemLinearODENonLocalContions::Condition &c = nonSeparatedConditions().at(s);
+                const ISystemLinearODENonLocalContionsV::Condition &c = nonSeparatedConditions().at(s);
                 for (unsigned int i=0; i<n; i++) betta[row][col] += c.alpha[row][i] * X(c.time, 0, i, col);
             }
         }
     }
-
-    //    Condition lscs;
-    //    lscs.type = SeparatedLeft;
-    //    lscs.time = 0.0;
-    //    lscs.nmbr = 0;
-    //    lscs.alpha.resize(n1, n);
-    //    for (unsigned int row=0; row<n1; row++)
-    //    {
-    //        for(unsigned int col=0; col<n; col++) lscs.alpha[row][col] = (rand() % 1000) / 1000.0;
-    //        betta[row+n0] = 0.0;
-    //        for (unsigned int i=0; i<n; i++) betta[row+n0] += lscs.alpha[row][i] * x(lscs.time, i);
-    //    }
-    //    setLeftSeparatedCondition(lscs);
-
-    //    Condition rscs;
-    //    rscs.type = SeparatedRight;
-    //    rscs.time = 1.0;
-    //    rscs.nmbr = N;
-    //    rscs.alpha.resize(n2, n);
-    //    for (unsigned int row=0; row<n2; row++)
-    //    {
-    //        for(unsigned int col=0; col<n; col++) rscs.alpha[row][col] = (rand() % 1000) / 1000.0;
-    //        betta[row+n0+n1] = 0.0;
-    //        for (unsigned int i=0; i<n; i++) betta[row+n0+n1] += rscs.alpha[row][i] * x(rscs.time, i);
-    //    }
-    //    setRightSeparatedCondition(rscs);
 
     setBetta(betta);
 

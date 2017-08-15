@@ -1,55 +1,55 @@
-#include "islodenlcs.h"
+#include "islodenlcsv.h"
 
 class CauchyProblemM1stOrderA : public CauchyProblemM1stOrder
 {
 public:
-    CauchyProblemM1stOrderA(ISystemLinearODENonLocalContions &parent, const ODEGrid& grid) : CauchyProblemM1stOrder(grid), p(parent) {}
+    CauchyProblemM1stOrderA(ISystemLinearODENonLocalContionsV &parent, const ODEGrid& grid) : CauchyProblemM1stOrder(grid), p(parent) {}
 
 protected:
     virtual double f(double t, const DoubleVector &x, unsigned int k, unsigned int i) const;
     double S0(double t, const DoubleVector &x, unsigned int k) const;
 private:
-    ISystemLinearODENonLocalContions &p;
+    ISystemLinearODENonLocalContionsV &p;
 };
 
 class CauchyProblemM1stOrderB : public CauchyProblemM1stOrder
 {
 public:
-    CauchyProblemM1stOrderB(ISystemLinearODENonLocalContions &parent, const ODEGrid& grid) : CauchyProblemM1stOrder(grid), p(parent) {}
+    CauchyProblemM1stOrderB(ISystemLinearODENonLocalContionsV &parent, const ODEGrid& grid) : CauchyProblemM1stOrder(grid), p(parent) {}
 protected:
     virtual double f(double t, const DoubleVector &x, unsigned int k, unsigned int i) const;
 private:
-    ISystemLinearODENonLocalContions &p;
+    ISystemLinearODENonLocalContionsV &p;
 };
 
-ISystemLinearODENonLocalContions::ISystemLinearODENonLocalContions(const ODEGrid &grid) : SystemLinearODE1stOrder(grid) {}
+ISystemLinearODENonLocalContionsV::ISystemLinearODENonLocalContionsV(const ODEGrid &grid) : SystemLinearODE1stOrder(grid) {}
 
-void ISystemLinearODENonLocalContions::setLeftSeparatedCondition(const Condition &lscs)
+void ISystemLinearODENonLocalContionsV::setLeftSeparatedCondition(const Condition &lscs)
 {
     this->lscs = lscs;
 }
 
-void ISystemLinearODENonLocalContions::setRightSeparatedCondition(const Condition &rscs)
+void ISystemLinearODENonLocalContionsV::setRightSeparatedCondition(const Condition &rscs)
 {
     this->rscs = rscs;
 }
 
-void ISystemLinearODENonLocalContions::addNonSeparatedCondition(const Condition &nsc)
+void ISystemLinearODENonLocalContionsV::addNonSeparatedCondition(const Condition &nsc)
 {
     this->nscs.push_back(nsc);
 }
 
-const std::vector<ISystemLinearODENonLocalContions::Condition>& ISystemLinearODENonLocalContions::nonSeparatedConditions() const
+const std::vector<ISystemLinearODENonLocalContionsV::Condition>& ISystemLinearODENonLocalContionsV::nonSeparatedConditions() const
 {
     return nscs;
 }
 
-void ISystemLinearODENonLocalContions::setBetta(const DoubleVector &betta)
+void ISystemLinearODENonLocalContionsV::setBetta(const DoubleVector &betta)
 {
     this->betta = betta;
 }
 
-void ISystemLinearODENonLocalContions::calculateIntervalF(unsigned int start, unsigned int r)
+void ISystemLinearODENonLocalContionsV::calculateIntervalF(unsigned int start, unsigned int r)
 {
     unsigned int L = nscs.size();
     unsigned int n0 = 0;
@@ -87,7 +87,7 @@ void ISystemLinearODENonLocalContions::calculateIntervalF(unsigned int start, un
     rx.clear();
 }
 
-void ISystemLinearODENonLocalContions::calculateForward(DoubleVector &x)
+void ISystemLinearODENonLocalContionsV::calculateForward(DoubleVector &x)
 {
     unsigned int L = nscs.size();
 
@@ -165,16 +165,23 @@ void ISystemLinearODENonLocalContions::calculateForward(DoubleVector &x)
     GaussianElimination(A, b, x);
 }
 
-void ISystemLinearODENonLocalContions::calculateBackward(DoubleVector &x UNUSED_PARAM)
+void ISystemLinearODENonLocalContionsV::calculateBackward(DoubleVector &x UNUSED_PARAM)
 {}
 
-void ISystemLinearODENonLocalContions::calculateBackwardCP(const DoubleVector &x, DoubleMatrix &m)
+void ISystemLinearODENonLocalContionsV::calculateBackwardCP(const DoubleVector &x, std::vector<DoubleVector> &m)
 {
     CauchyProblemM1stOrderB cpb(*this, grid());
-    cpb.calculateCP(nscs.back().time, x, m, CauchyProblemM1stOrder::RK4, CauchyProblemM1stOrder::R2L);
+    DoubleMatrix mx;
+    cpb.calculateCP(nscs.back().time, x, mx, CauchyProblemM1stOrder::RK4, CauchyProblemM1stOrder::R2L);
+
+    m.resize(mx.rows());
+    for (unsigned int i=0; i<mx.rows(); i++)
+    {
+        for (unsigned int j=0; j<mx.cols(); j++) m[i] << mx[i][j];
+    }
 }
 
-unsigned int ISystemLinearODENonLocalContions::systemOrder() const
+unsigned int ISystemLinearODENonLocalContionsV::systemOrder() const
 {
     unsigned int L = nscs.size();
     unsigned int n0 = 0;
