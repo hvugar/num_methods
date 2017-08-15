@@ -50,8 +50,19 @@ protected:
     virtual double boundary(BoundaryType bound) const = 0;
 };
 
+/**
+ * @brief The BoundaryValueProblemPDE class
+ * @see
+ */
 class MINIMUMSHARED_EXPORT BoundaryValueProblemPDE : protected BoundaryValueProblem
 {
+public:
+    double alphaL;
+    double alphaR;
+    double bettaL;
+    double bettaR;
+
+    virtual double boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType boundary = Unused) const = 0;
 };
 
 #endif // BOUNDARYVALUEPROBLEM_H

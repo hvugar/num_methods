@@ -165,7 +165,7 @@ void ISystemLinearODENonLocalContions::calculateForward(DoubleVector &x)
     GaussianElimination(A, b, x);
 }
 
-void ISystemLinearODENonLocalContions::calculateBackward(DoubleVector &x)
+void ISystemLinearODENonLocalContions::calculateBackward(DoubleVector &x UNUSED_PARAM)
 {}
 
 void ISystemLinearODENonLocalContions::calculateBackwardCP(const DoubleVector &x, DoubleMatrix &m)

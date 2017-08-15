@@ -178,7 +178,7 @@ void ISystemLinearODENonLocalContionsM::calculateBackwardCP(DoubleMatrix &x, Dou
     }
 }
 
-void ISystemLinearODENonLocalContionsM::calculateBackward(DoubleMatrix &x)
+void ISystemLinearODENonLocalContionsM::calculateBackward(DoubleMatrix &x UNUSED_PARAM)
 {}
 
 unsigned int ISystemLinearODENonLocalContionsM::systemOrder() const
@@ -198,10 +198,14 @@ const ODEGrid& ISystemLinearODENonLocalContionsM::grid() const
 }
 
 void ISystemLinearODENonLocalContionsM::setLeftSeparatedCondition(const ISystemLinearODENonLocalContions::Condition &lscs)
-{}
+{
+    C_UNUSED(lscs);
+}
 
-void ISystemLinearODENonLocalContionsM::setRightSeparatedCondition(const ISystemLinearODENonLocalContions::Condition &lscs)
-{}
+void ISystemLinearODENonLocalContionsM::setRightSeparatedCondition(const ISystemLinearODENonLocalContions::Condition &rscs)
+{
+    C_UNUSED(rscs);
+}
 
 void ISystemLinearODENonLocalContionsM::addNonSeparatedCondition(const ISystemLinearODENonLocalContions::Condition &nsc)
 {

@@ -69,7 +69,7 @@ double LoadedHeatEquation::boundary(const SpaceNode &sn UNUSED_PARAM, const Time
     return NAN;
 }
 
-double LoadedHeatEquation::f(const SpaceNode &sn, const TimeNode &tn) const
+double LoadedHeatEquation::f(const SpaceNode &sn UNUSED_PARAM, const TimeNode &tn UNUSED_PARAM) const
 {
 //    double t = tn.t; C_UNUSED(t);
 //    double x = sn.x; C_UNUSED(x);
@@ -77,7 +77,7 @@ double LoadedHeatEquation::f(const SpaceNode &sn, const TimeNode &tn) const
     return 0.0;
 }
 
-double LoadedHeatEquation::g(const TimeNode &tn) const
+double LoadedHeatEquation::g(const TimeNode &tn UNUSED_PARAM) const
 {
 //    double t = tn.t; C_UNUSED(t);
 //    double v = 0.0;
@@ -118,7 +118,7 @@ double LoadedHeatEquation::g(const TimeNode &tn) const
     return 0.0;
 }
 
-double LoadedHeatEquation::h(const TimeNode &tn) const
+double LoadedHeatEquation::h(const TimeNode &tn UNUSED_PARAM) const
 {
 //    double t = tn.t; C_UNUSED(t);
 //    return 2.0*t + lambda2*(t-theta);
@@ -127,5 +127,7 @@ double LoadedHeatEquation::h(const TimeNode &tn) const
 
 void LoadedHeatEquation::layerInfo(const DoubleVector &u, unsigned int m) const
 {
+    C_UNUSED(u);
+    C_UNUSED(m);
     //IPrinter::printVector(14, 10, u);
 }

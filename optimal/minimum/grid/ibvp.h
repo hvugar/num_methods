@@ -55,6 +55,9 @@ public:
     unsigned int dimSize();
 
 protected:
+
+
+
     Dimension mtimeDimension;
     std::vector<Dimension> mspaceDimension;
 };

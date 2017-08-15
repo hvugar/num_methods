@@ -1037,10 +1037,10 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
         //A[0][3] = +70.0*alpha - 1.0;
         //b[0]    = -u[m-1][4] - (+22.0*alpha)*u[m][0] - ht*f(isn,tn);
 
-        double x1 = (1)*hx;
-        double x2 = (2)*hx;
-        double x3 = (3)*hx;
-        double x4 = (4)*hx;
+        //double x1 = (1)*hx;
+        //double x2 = (2)*hx;
+        //double x3 = (3)*hx;
+        //double x4 = (4)*hx;
         //printf("%4d %18.10f %18.10f\n", 0, b[0], A[0][0]*x1*x1*x1*tn.t+A[0][1]*x2*x2*x2*tn.t+A[0][2]*x3*x3*x3*tn.t+A[0][3]*x4*x4*x4*tn.t);
 
 #ifdef __NORMALIZE__
@@ -1149,14 +1149,11 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
             A[0][3] = g5*A00;
             b[0]    = b[0] - fi*A00;
 
-            double x1 = (n+0)*hx;
-            double x2 = (n+1)*hx;
-            double x3 = (n+2)*hx;
-            double x4 = (n+3)*hx;
-            //printf("%4d %18.10f %18.10f\n", n-s, b[0], A[0][0]*x1*x1*x1*tn.t
-            //                                       +A[0][1]*x2*x2*x2*tn.t
-            //                                       +A[0][2]*x3*x3*x3*tn.t
-            //                                       +A[0][3]*x4*x4*x4*tn.t);
+            //double x1 = (n+0)*hx;
+            //double x2 = (n+1)*hx;
+            //double x3 = (n+2)*hx;
+            //double x4 = (n+3)*hx;
+            //printf("%4d %18.10f %18.10f\n", n-s, b[0], A[0][0]*x1*x1*x1*tn.t+A[0][1]*x2*x2*x2*tn.t+A[0][2]*x3*x3*x3*tn.t+A[0][3]*x4*x4*x4*tn.t);
 
 #ifdef __NORMALIZE__
             A[0][1] /= A[0][0];
