@@ -204,50 +204,28 @@ void CauchyProblem1stOrder::calculateEulerMod(double x0, double y0, DoubleVector
 
 CauchyProblemM1stOrder::CauchyProblemM1stOrder(const ODEGrid &grid) : SystemNonLinearODE1stOrder(grid) {}
 
-void CauchyProblemM1stOrder::calculateCP(double x0, const DoubleVector &y0, DoubleMatrix &y, Method method, Direction direction)
+void CauchyProblemM1stOrder::calculateCP(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Method method, Direction direction)
 {
     switch (method)
     {
     case RK2:
-        calculateRK2(x0, y0, y, direction);
-        break;
-    case RK4:
-        calculateRK4(x0, y0, y, direction);
-        break;
-    case EULER:
-        calculateEuler(x0, y0, y, direction);
-        break;
-    case EULER_MOD:
-        calculateEulerMod(x0, y0, y, direction);
-        break;
-    default:
-        break;
-    }
-}
-
-void CauchyProblemM1stOrder::calculateCP(double x0, const DoubleVector &y0, DoubleVector &ry, Method method, Direction direction)
-{
-    switch (method)
-    {
-    case RK2:
-        //calculateRK2(x0, y0, y, direction);
+        calculateRK2(x0, y0, ry, direction);
         break;
     case RK4:
         calculateRK4(x0, y0, ry, direction);
         break;
     case EULER:
-        //calculateEuler(x0, y0, y, direction);
+        calculateEuler(x0, y0, ry, direction);
         break;
     case EULER_MOD:
-        //calculateEulerMod(x0, y0, y, direction);
+        calculateEulerMod(x0, y0, ry, direction);
         break;
     default:
         break;
     }
 }
 
-
-void CauchyProblemM1stOrder::calculateRK2(double x0, const DoubleVector &y0, DoubleMatrix &ry, Direction direction)
+void CauchyProblemM1stOrder::calculateRK2(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
 {
     Dimension dim = grid().dimension();
     unsigned int minN = dim.minN();
@@ -257,10 +235,11 @@ void CauchyProblemM1stOrder::calculateRK2(double x0, const DoubleVector &y0, Dou
     unsigned int n = y0.size();
 
     ry.clear();
-    ry.resize(n, N+1);
+    ry.resize(n);
+    for (unsigned int i=0; i<n; i++) ry[i].resize(N+1);
 
-    double *k1 = (double *)malloc(sizeof(double)*n);
-    double *k2 = (double *)malloc(sizeof(double)*n);
+    double *k1 = (double*) malloc( sizeof(double) * n );
+    double *k2 = (double*) malloc( sizeof(double) * n );
 
     if (direction == L2R)
     {
@@ -320,7 +299,7 @@ void CauchyProblemM1stOrder::calculateRK2(double x0, const DoubleVector &y0, Dou
     free(k1);
 }
 
-void CauchyProblemM1stOrder::calculateRK4(double x0, const DoubleVector &y0, DoubleMatrix &ry, Direction direction)
+void CauchyProblemM1stOrder::calculateRK4(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
 {
     Dimension dim = grid().dimension();
     unsigned int minN = dim.minN();
@@ -330,12 +309,13 @@ void CauchyProblemM1stOrder::calculateRK4(double x0, const DoubleVector &y0, Dou
     unsigned int n = y0.size();
 
     ry.clear();
-    ry.resize(n, N+1);
+    ry.resize(n);
+    for (unsigned int i=0; i<n; i++) ry[i].resize(N+1);
 
-    double *k1 = (double *)malloc(sizeof(double)*n);
-    double *k2 = (double *)malloc(sizeof(double)*n);
-    double *k3 = (double *)malloc(sizeof(double)*n);
-    double *k4 = (double *)malloc(sizeof(double)*n);
+    double *k1 = ( double* ) malloc( sizeof(double) * n );
+    double *k2 = ( double* ) malloc( sizeof(double) * n );
+    double *k3 = ( double* ) malloc( sizeof(double) * n );
+    double *k4 = ( double* ) malloc( sizeof(double) * n );
 
     if (direction == L2R)
     {
@@ -416,7 +396,7 @@ void CauchyProblemM1stOrder::calculateRK4(double x0, const DoubleVector &y0, Dou
     free(k1);
 }
 
-void CauchyProblemM1stOrder::calculateEuler(double x0, const DoubleVector &y0, DoubleMatrix &ry, Direction direction)
+void CauchyProblemM1stOrder::calculateEuler(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
 {
     Dimension dim = grid().dimension();
     unsigned int minN = dim.minN();
@@ -426,7 +406,8 @@ void CauchyProblemM1stOrder::calculateEuler(double x0, const DoubleVector &y0, D
     unsigned int n = y0.size();
 
     ry.clear();
-    ry.resize(n, N+1);
+    ry.resize(n);
+    for (unsigned int i=0; i<n; i++) ry[i].resize(N+1);
 
     if (direction == L2R)
     {
@@ -461,7 +442,7 @@ void CauchyProblemM1stOrder::calculateEuler(double x0, const DoubleVector &y0, D
     }
 }
 
-void CauchyProblemM1stOrder::calculateEulerMod(double x0, const DoubleVector &y0, DoubleMatrix &ry, Direction direction)
+void CauchyProblemM1stOrder::calculateEulerMod(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
 {
     Dimension dim = grid().dimension();
     unsigned int minN = dim.minN();
@@ -471,7 +452,8 @@ void CauchyProblemM1stOrder::calculateEulerMod(double x0, const DoubleVector &y0
     unsigned int n = y0.size();
 
     ry.clear();
-    ry.resize(n, N+1);
+    ry.resize(n);
+    for (unsigned int i=0; i<n; i++) ry[i].resize(N+1);
 
     if (direction == L2R)
     {
@@ -503,6 +485,27 @@ void CauchyProblemM1stOrder::calculateEulerMod(double x0, const DoubleVector &y0
 
             xn -= h;
         }
+    }
+}
+
+void CauchyProblemM1stOrder::calculateCP(double x0, const DoubleVector &y0, DoubleVector &ry, Method method, Direction direction)
+{
+    switch (method)
+    {
+    case RK2:
+        //calculateRK2(x0, y0, y, direction);
+        break;
+    case RK4:
+        calculateRK4(x0, y0, ry, direction);
+        break;
+    case EULER:
+        //calculateEuler(x0, y0, y, direction);
+        break;
+    case EULER_MOD:
+        //calculateEulerMod(x0, y0, y, direction);
+        break;
+    default:
+        break;
     }
 }
 

@@ -168,17 +168,10 @@ void ISystemLinearODENonLocalContionsV::calculateForward(DoubleVector &x)
 void ISystemLinearODENonLocalContionsV::calculateBackward(DoubleVector &x UNUSED_PARAM)
 {}
 
-void ISystemLinearODENonLocalContionsV::calculateBackwardCP(const DoubleVector &x, std::vector<DoubleVector> &m)
+void ISystemLinearODENonLocalContionsV::calculateBackwardCP(const DoubleVector &x, std::vector<DoubleVector>& m)
 {
     CauchyProblemM1stOrderB cpb(*this, grid());
-    DoubleMatrix mx;
-    cpb.calculateCP(nscs.back().time, x, mx, CauchyProblemM1stOrder::RK4, CauchyProblemM1stOrder::R2L);
-
-    m.resize(mx.rows());
-    for (unsigned int i=0; i<mx.rows(); i++)
-    {
-        for (unsigned int j=0; j<mx.cols(); j++) m[i] << mx[i][j];
-    }
+    cpb.calculateCP(nscs.back().time, x, m, CauchyProblemM1stOrder::RK4, CauchyProblemM1stOrder::R2L);
 }
 
 unsigned int ISystemLinearODENonLocalContionsV::systemOrder() const

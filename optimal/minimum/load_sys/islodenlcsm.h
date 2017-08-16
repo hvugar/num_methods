@@ -4,7 +4,7 @@
 #include <vector2d.h>
 #include <matrix2d.h>
 #include <grid/grid.h>
-#include <grid/cauchyp.h>
+#include <ode/cauchyp.h>
 #include <vector>
 #include "islodenlcsv.h"
 
@@ -16,7 +16,7 @@ public:
     virtual void calculateForward(DoubleMatrix &x);
     virtual void calculateBackward(DoubleMatrix &x);
 
-    virtual void calculateBackwardCP(DoubleMatrix &x, DoubleVector** m);
+    virtual void calculateBackwardCP(DoubleMatrix &x, std::vector<std::vector<DoubleVector>> &m);
 
     void setLeftSeparatedCondition(const ISystemLinearODENonLocalContionsV::Condition &lscs);
     void setRightSeparatedCondition(const ISystemLinearODENonLocalContionsV::Condition &lscs);

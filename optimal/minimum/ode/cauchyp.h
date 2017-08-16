@@ -1,7 +1,7 @@
 #ifndef CAUCHYPROBLEM_H
 #define CAUCHYPROBLEM_H
 
-#include "ibvp.h"
+#include "../grid/ibvp.h"
 #include "diffequ.h"
 
 /**
@@ -47,15 +47,17 @@ class MINIMUMSHARED_EXPORT CauchyProblemM1stOrder : public SystemNonLinearODE1st
 public:
     CauchyProblemM1stOrder(const ODEGrid &grid);
 
-    void calculateCP(double x0, const DoubleVector &y0, DoubleMatrix &ry, Method method = RK4, Direction direction = L2R);
-    void calculateCP(double x0, const DoubleVector &y0, DoubleVector &ry, Method method = RK4, Direction direction = L2R);
-
+public:
+    void calculateCP(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Method method = RK4, Direction direction = L2R);
 private:
-    void calculateRK2(double x0, const DoubleVector &y0, DoubleMatrix &ry, Direction direction = L2R);
-    void calculateRK4(double x0, const DoubleVector &y0, DoubleMatrix &ry, Direction direction = L2R);
-    void calculateEuler(double x0, const DoubleVector &y0, DoubleMatrix &ry, Direction direction = L2R);
-    void calculateEulerMod(double x0, const DoubleVector &y0, DoubleMatrix &ry, Direction direction = L2R);
+    void calculateRK2(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction = L2R);
+    void calculateRK4(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction = L2R);
+    void calculateEuler(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction = L2R);
+    void calculateEulerMod(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction = L2R);
 
+public:
+    void calculateCP(double x0, const DoubleVector &y0, DoubleVector &ry, Method method = RK4, Direction direction = L2R);
+private:
     void calculateRK4(double x0, const DoubleVector &y0, DoubleVector &y, Direction direction = L2R);
 };
 

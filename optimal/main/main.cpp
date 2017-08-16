@@ -3,7 +3,7 @@
 #include <cmethods.h>
 #include <grid/pibvp.h>
 #include <grid/hibvp.h>
-#include <grid/cauchyp.h>
+#include <ode/cauchyp.h>
 
 #include "problem1/problem1L1.h"
 #include "problem1/problem1L2.h"
@@ -55,14 +55,11 @@
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-
-    Matrix<DoubleVector> mv(3,3);
-
     //srand(time(NULL));
 
     //SystemLinearODENonLocalContionsV::Main(argc, argv);
     //SystemLinearODENonLocalContionsM::Main(argc, argv);
-    //Problem5Ex1::Main(argc, argv);
+    Problem5Ex1::Main(argc, argv);
 
     //NumIntegralExp1::Main(argc, argv);
 

@@ -39,11 +39,11 @@ void CauchyProblemMEx::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //    }
     IPrinter::printSeperatorLine();
     {
-        DoubleMatrix ry;
+        std::vector<DoubleVector> ry;
         exp1.calculateCP(x0, y0, ry, RK4, R2L);
-        IPrinter::printVector(14, 10, ry.row(0));
-        IPrinter::printVector(14, 10, ry.row(1));
-        IPrinter::printVector(14, 10, ry.row(2));
+        IPrinter::printVector(14, 10, ry[0]);
+        IPrinter::printVector(14, 10, ry[1]);
+        IPrinter::printVector(14, 10, ry[2]);
 
         DoubleVector py;
         exp1.calculateCP(x0, y0, py, RK4, R2L);

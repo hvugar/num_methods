@@ -153,7 +153,7 @@ void ISystemLinearODENonLocalContionsM::calculateForward(DoubleMatrix &x)
     ox.clear();
 }
 
-void ISystemLinearODENonLocalContionsM::calculateBackwardCP(DoubleMatrix &x, DoubleVector** m)
+void ISystemLinearODENonLocalContionsM::calculateBackwardCP(DoubleMatrix &x, std::vector<std::vector<DoubleVector>> &m)
 {
     unsigned int n = systemOrder();
     DoubleVector y;
@@ -166,15 +166,17 @@ void ISystemLinearODENonLocalContionsM::calculateBackwardCP(DoubleMatrix &x, Dou
     }
     CauchyProblemM1stOrderBM cpb(*this, grid());
     cpb.n = systemOrder();
-    DoubleMatrix m1;
-    cpb.calculateCP(1.0, y, m1, CauchyProblemM1stOrder::RK4, CauchyProblemM1stOrder::R2L);
+    std::vector<DoubleVector> rm;
+    cpb.calculateCP(1.0, y, rm, CauchyProblemM1stOrder::RK4, CauchyProblemM1stOrder::R2L);
 
-    m = new DoubleVector*[n];
-    for (unsigned int i=0; i<n; i++)
+    m.resize(n);
+    for (unsigned int r=0; r<n; r++)
     {
-        m[i] = new DoubleVector[n];
-        for (unsigned int j=0; j<n; j++)
-            m[i][j] = m1.row(i*n+j);
+        m[r].resize(n);
+        for (unsigned int c=0; c<n; c++)
+        {
+            m[r][c] = rm[r*n+c];
+        }
     }
 }
 

@@ -1,7 +1,7 @@
 #ifndef CAUCHYPROBLEMMEX_H
 #define CAUCHYPROBLEMMEX_H
 
-#include <grid/cauchyp.h>
+#include <ode/cauchyp.h>
 
 #define SAMPLE_3
 

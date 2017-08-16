@@ -11,8 +11,18 @@ void SystemLinearODENonLocalContionsM::Main(int agrc UNUSED_PARAM, char *argv[] 
     cpnlcs.calculateForward(x);
     IPrinter::print(x, x.rows(), x.cols());
 
-    //std::vector<DoubleMatrix> m;
-    //cpnlcs.calculateBackwardCP(x, m);
+    std::vector<std::vector<DoubleVector>> m;
+    cpnlcs.calculateBackwardCP(x, m);
+
+    IPrinter::printSeperatorLine();
+
+    for (unsigned int r=0; r<m.size(); r++)
+    {
+        for (unsigned int c=0; c<m[r].size(); c++)
+        {
+            IPrinter::printVector(14, 10, m[r][c]);
+        }
+    }
 }
 
 SystemLinearODENonLocalContionsM::SystemLinearODENonLocalContionsM(const ODEGrid &grid)

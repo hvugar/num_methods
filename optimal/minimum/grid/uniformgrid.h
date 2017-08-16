@@ -3,6 +3,19 @@
 
 #include <global.h>
 
+struct GridNode
+{
+    double x;
+    double y;
+    double z;
+    double t;
+
+    int xi;
+    int yi;
+    int zi;
+    int ti;
+};
+
 class MINIMUMSHARED_EXPORT UniformGrid
 {
 public:

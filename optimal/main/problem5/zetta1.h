@@ -11,7 +11,7 @@ public:
     Zetta1(const ODEGrid &grid, const Problem5Ex1 *p5);
 
     virtual double A(double t, unsigned int k, unsigned int row, unsigned int col) const;
-    virtual double B(double t, unsigned int k, unsigned int row) const;
+    virtual double B(double t, unsigned int k, unsigned int row, unsigned int col) const;
 private:
     const Problem5Ex1 *p5;
 };

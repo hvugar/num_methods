@@ -4,7 +4,7 @@
 #include <vector2d.h>
 #include <matrix2d.h>
 #include <vector>
-#include <grid/cauchyp.h>
+#include <ode/cauchyp.h>
 
 using namespace std;
 

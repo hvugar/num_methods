@@ -21,13 +21,14 @@ public:
     virtual double A(double t, unsigned int k, unsigned int row, unsigned int col) const;
     virtual double B(double t, unsigned int k, unsigned int row) const;
     virtual double C(double t, unsigned int k, unsigned int row, unsigned int col, unsigned int i) const;
-    virtual double g(double t, unsigned int k, unsigned int row, unsigned int i) const;
 
-    double X(double t, unsigned int k, unsigned int i) const;
-    double dX(double t, unsigned int k, unsigned int i) const;
+    virtual double g(unsigned int num, unsigned int row) const;
+
+    double X(double t, unsigned int num) const;
+    double dX(double t, unsigned int num) const;
 
     // Load points count
-    unsigned int L0 = 2;
+    //unsigned int L0 = 2;
     // Conditions count
     unsigned int L1 = 3;
 

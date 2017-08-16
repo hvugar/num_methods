@@ -31,7 +31,6 @@ SOURCES += \
     hyperbolicequation.cpp \
     parabolicequation.cpp \
     exceptions.cpp \
-    ode1storder.cpp \
     matrix2d.cpp \
     vector2d.cpp \
     matrix3d.cpp \
@@ -48,13 +47,14 @@ SOURCES += \
     grid/nhpibvp.cpp \
     iibvp.cpp \
     gradient/igradient.cpp \
-    grid/cauchyp.cpp \
     diffequ.cpp \
     load_sys/islodenlcsm.cpp \
     grid/integral1.cpp \
     grid/uniformgrid.cpp \
     nonuniformgrid.cpp \
     load_sys/islodenlcsv.cpp \
+    ode/cauchyp.cpp \
+    ode/ode1storder.cpp \
     utils/matrix.cpp \
     utils/vector.cpp
 
@@ -75,7 +75,6 @@ HEADERS += global.h \
     hyperbolicequation.h \
     parabolicequation.h \
     exceptions.h \
-    ode1storder.h \
     matrix2d.h \
     vector2d.h \
     matrix3d.h \
@@ -91,12 +90,13 @@ HEADERS += global.h \
     grid/nhpibvp.h \
     iibvp.h \
     gradient/igradient.h \
-    grid/cauchyp.h \
     diffequ.h \
     load_sys/islodenlcsm.h \
     grid/integral1.h \
     grid/uniformgrid.h \
     nonuniformgrid.h \
     load_sys/islodenlcsv.h \
+    ode/cauchyp.h \
+    ode/ode1storder.h \
     utils/matrix.h \
     utils/vector.h

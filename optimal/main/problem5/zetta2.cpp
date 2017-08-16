@@ -8,7 +8,7 @@ double Zetta2::A(double t, unsigned int k, unsigned int row, unsigned int col) c
     return p5->A(t,k,row,col);
 }
 
-double Zetta2::B(double t, unsigned int k, unsigned int row) const
+double Zetta2::B(double t, unsigned int k, unsigned int row, unsigned int col) const
 {
-    return p5->B(t, k, row);
+    return p5->C(t, k, 1, row, col);
 }
