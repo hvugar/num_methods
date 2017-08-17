@@ -53,9 +53,13 @@
 
 #include "utils/matrix.h"
 
+#include "nonlinearfunctionsystem.h"
+
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //srand(time(NULL));
+
+    //NonLinearFunctionSystem::Main(argc, argv);
 
     //SystemLinearODENonLocalContionsV::Main(argc, argv);
     //SystemLinearODENonLocalContionsM::Main(argc, argv);

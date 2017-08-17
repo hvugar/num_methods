@@ -3,14 +3,17 @@
 
 #include <load_sys/islodenlcsv.h>
 #include <load_sys/islodenlcsm.h>
+#include <function.h>
 
 #include "zetta0.h"
 #include "zetta1.h"
 #include "zetta2.h"
 
+#include "../nonlinearfunctionsystem.h"
+
 #define SAMPLE_1
 
-class Problem5Ex1
+class Problem5Ex1 : public NonLinearFunctionSystem
 {
 public:
     static void Main(int agrc, char *argv[]);
@@ -24,13 +27,20 @@ public:
 
     virtual double g(unsigned int num, unsigned int row) const;
 
+    virtual double g(const DoubleVector &x, unsigned int num, unsigned int row) const;
+
     double X(double t, unsigned int num) const;
     double dX(double t, unsigned int num) const;
 
-    // Load points count
-    //unsigned int L0 = 2;
-    // Conditions count
     unsigned int L1 = 3;
+
+    virtual double fx(const DoubleVector &x, unsigned int num) const;
+
+    void printResult();
+
+    std::vector<DoubleVector> zm0;
+    std::vector<std::vector<DoubleVector>> zm1;
+    std::vector<std::vector<DoubleVector>> zm2;
 
 private:
     ODEGrid mgrid;

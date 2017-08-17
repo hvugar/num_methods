@@ -54,7 +54,8 @@ SOURCES += main.cpp \
     problem5/zetta1.cpp \
     problem5/zetta2.cpp \
     numintegralexp1.cpp \
-    load_sys/slodenlcsv.cpp
+    load_sys/slodenlcsv.cpp \
+    nonlinearfunctionsystem.cpp
 
 HEADERS += \
     problem1/iproblem1.h \
@@ -75,4 +76,5 @@ HEADERS += \
     problem5/zetta1.h \
     problem5/zetta2.h \
     numintegralexp1.h \
-    load_sys/slodenlcsv.h
+    load_sys/slodenlcsv.h \
+    nonlinearfunctionsystem.h

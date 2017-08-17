@@ -2,20 +2,39 @@
 
 void Problem5Ex1::Main(int agrc, char *argv[])
 {
-    ODEGrid grid(Dimension(0.01, 100, 0));
+    ODEGrid grid(Dimension(0.1, 10, 0));
     Problem5Ex1 prob1(grid);
     prob1.initialize();
+
+    for (unsigned int i=0; i<=grid.dimension().sizeN(); i++)
+    {
+        printf("%10.6f", prob1.X(i*grid.dimension().step(),2));
+    }
+    puts("");
+
+//    DoubleVector x0;
+//    x0 << 2.3 << -2.4 << 0.3 << 2.9 << -1.8 << 0.8;
+//    DoubleVector x;
+//    prob1.calculate(x0, x, 0.001);
+
+//    printf("%14.10f %14.10f %14.10f\n", x[0], x[1], x[2]);
+//    printf("%14.10f %14.10f %14.10f\n", x[3], x[4], x[5]);
+
+//    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//      2.0140283546   2.1215738596   2.2492993715   2.3972401372   2.5654525414   2.7540097649   2.9629877484   3.1924470796   3.4424174121   3.7128890257   4.0038126419
+//     -3.0066739103  -2.8157708146  -2.6222968256  -2.4256427719  -2.2258060430  -2.0233146753  -1.8190334957  -1.6139268416  -1.4088512490  -1.2044257489  -1.0009921403
+//      0.0178093036   0.1160809591   0.2199508346   0.3356953265   0.4696003900   0.6279080030   0.8167815913   1.0422953680   1.3104447850   1.6271700977   1.9983835684
+
+    DoubleVector x;
+    x << 2.3972401372 << -2.4256427719 << 0.3356953265;
+    printf("%14.10f\n", prob1.fx(x,2));
+
+    IPrinter::printSeperatorLine();
+    prob1.printResult();
 }
 
 Problem5Ex1::Problem5Ex1(const ODEGrid &grid) : mgrid(grid)
 {
-//    printf("%14.10f\n", g(0,0));
-//    printf("%14.10f\n", g(0,1));
-//    printf("%14.10f\n", g(0,2));
-
-//    printf("%14.10f\n", g(1,0));
-//    printf("%14.10f\n", g(1,1));
-//    printf("%14.10f\n", g(1,2));
 }
 
 void Problem5Ex1::initialize()
@@ -37,8 +56,8 @@ void Problem5Ex1::initialize()
 
     ISystemLinearODENonLocalContionsV::Condition nsc1;
     nsc1.type = ISystemLinearODENonLocalContionsV::NonSeparated;
-    nsc1.time = 0.25;
-    nsc1.nmbr = N/4;
+    nsc1.time = 0.2;
+    nsc1.nmbr = N/5;
     nsc1.alpha.resize(n0, n);
     for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc1.alpha[row][col] = (rand() % 1000) / 1000.0;
 
@@ -51,8 +70,8 @@ void Problem5Ex1::initialize()
 
     ISystemLinearODENonLocalContionsV::Condition nsc3;
     nsc3.type = ISystemLinearODENonLocalContionsV::NonSeparated;
-    nsc3.time = 0.75;
-    nsc3.nmbr = 3*N/4;
+    nsc3.time = 0.8;
+    nsc3.nmbr = 4*(N/5);
     nsc3.alpha.resize(n0, n);
     for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc3.alpha[row][col] = (rand() % 1000) / 1000.0;
 
@@ -87,7 +106,6 @@ void Problem5Ex1::initialize()
     zett0.setBetta(betta);
 
     DoubleVector z0;
-    std::vector<DoubleVector> zm0;
     zett0.calculateForward(z0);
     zett0.calculateBackwardCP(z0,zm0);
 
@@ -103,7 +121,6 @@ void Problem5Ex1::initialize()
     zett1.setBetta(betta1);
 
     DoubleMatrix z1;
-    std::vector<std::vector<DoubleVector>> zm1;
     zett1.calculateForward(z1);
     zett1.calculateBackwardCP(z1,zm1);
 
@@ -119,53 +136,91 @@ void Problem5Ex1::initialize()
     zett2.setBetta(betta2);
 
     DoubleMatrix z2;
-    std::vector<std::vector<DoubleVector>> zm2;
     zett2.calculateForward(z2);
     zett2.calculateBackwardCP(z2,zm2);
+
+//    DoubleVector x1(N+1);
+//    DoubleVector x2(N+1);
+//    DoubleVector x3(N+1);
+//    for (unsigned int i=0; i<=N; i++)
+//    {
+//        x1[i] =  zm0[0][i] + (zm1[0][0][i]*g(0,0) + zm1[0][1][i]*g(0,1) + zm1[0][2][i]*g(0,2))
+//                           + (zm2[0][0][i]*g(1,0) + zm2[0][1][i]*g(1,1) + zm2[0][2][i]*g(1,2));
+//        x2[i] =  zm0[1][i] + (zm1[1][0][i]*g(0,0) + zm1[1][1][i]*g(0,1) + zm1[1][2][i]*g(0,2))
+//                           + (zm2[1][0][i]*g(1,0) + zm2[1][1][i]*g(1,1) + zm2[1][2][i]*g(1,2));
+//        x3[i] =  zm0[2][i] + (zm1[2][0][i]*g(0,0) + zm1[2][1][i]*g(0,1) + zm1[2][2][i]*g(0,2))
+//                           + (zm2[2][0][i]*g(1,0) + zm2[2][1][i]*g(1,1) + zm2[2][2][i]*g(1,2));
+//    }
+//    IPrinter::printVector(x1);
+//    IPrinter::printVector(x2);
+//    IPrinter::printVector(x3);
+}
+
+void Problem5Ex1::printResult()
+{
+    Dimension dim = mgrid.dimension();
+    unsigned int N = dim.sizeN();
 
     DoubleVector x1(N+1);
     DoubleVector x2(N+1);
     DoubleVector x3(N+1);
     for (unsigned int i=0; i<=N; i++)
     {
-        x1[i] =  zm0[0][i] + (zm1[0][0][i]*g(0,0) + zm1[0][1][i]*g(0,1) + zm1[0][2][i]*g(0,2)) + (zm2[0][0][i]*g(1,0) + zm2[0][1][i]*g(1,1) + zm2[0][2][i]*g(1,2));
-        x2[i] =  zm0[1][i] + (zm1[1][0][i]*g(0,0) + zm1[1][1][i]*g(0,1) + zm1[1][2][i]*g(0,2)) + (zm2[1][0][i]*g(1,0) + zm2[1][1][i]*g(1,1) + zm2[1][2][i]*g(1,2));
-        x3[i] =  zm0[2][i] + (zm1[2][0][i]*g(0,0) + zm1[2][1][i]*g(0,1) + zm1[2][2][i]*g(0,2)) + (zm2[2][0][i]*g(1,0) + zm2[2][1][i]*g(1,1) + zm2[2][2][i]*g(1,2));
+        x1[i] =  zm0[0][i] + (zm1[0][0][i]*g(0,0) + zm1[0][1][i]*g(0,1) + zm1[0][2][i]*g(0,2))
+                + (zm2[0][0][i]*g(1,0) + zm2[0][1][i]*g(1,1) + zm2[0][2][i]*g(1,2));
+        x2[i] =  zm0[1][i] + (zm1[1][0][i]*g(0,0) + zm1[1][1][i]*g(0,1) + zm1[1][2][i]*g(0,2))
+                + (zm2[1][0][i]*g(1,0) + zm2[1][1][i]*g(1,1) + zm2[1][2][i]*g(1,2));
+        x3[i] =  zm0[2][i] + (zm1[2][0][i]*g(0,0) + zm1[2][1][i]*g(0,1) + zm1[2][2][i]*g(0,2))
+                + (zm2[2][0][i]*g(1,0) + zm2[2][1][i]*g(1,1) + zm2[2][2][i]*g(1,2));
     }
-    IPrinter::printVector(x1);
-    IPrinter::printVector(x2);
-    IPrinter::printVector(x3);
+    IPrinter::printVector(10,6,x1);
+    IPrinter::printVector(10,6,x2);
+    IPrinter::printVector(10,6,x3);
+}
 
-//    FILE *file = fopen("temp.txt", "w");
-//    IPrinter::printVector(14, 10, zm0.at(0),NULL,N,0,0,file);
-//    IPrinter::printVector(14, 10, zm0.at(1),NULL,N,0,0,file);
-//    IPrinter::printVector(14, 10, zm0.at(2),NULL,N,0,0,file);
+double Problem5Ex1::fx(const DoubleVector &x, unsigned int num) const
+{
+    Dimension dim = mgrid.dimension();
+    unsigned int N = dim.sizeN();
 
-//    IPrinter::printVector(14, 10, zm1.at(0).at(0),NULL,N,0,0,file);
-//    IPrinter::printVector(14, 10, zm1.at(0).at(1),NULL,N,0,0,file);
-//    IPrinter::printVector(14, 10, zm1.at(0).at(2),NULL,N,0,0,file);
+    if (num == 0)
+    {
+        unsigned int n = 0.3*N;
+        return zm0[0][n] + (zm1[0][0][n]*g(x,0,0) + zm1[0][1][n]*g(x,0,1) + zm1[0][2][n]*g(x,0,2))
+                         + (zm2[0][0][n]*g(x,1,0) + zm2[0][1][n]*g(x,1,1) + zm2[0][2][n]*g(x,1,2));
+    }
+    if (num == 1)
+    {
+        unsigned int n = 0.3*N;
+        return zm0[1][n] + (zm1[1][0][n]*g(x,0,0) + zm1[1][1][n]*g(x,0,1) + zm1[1][2][n]*g(x,0,2))
+                         + (zm2[1][0][n]*g(x,1,0) + zm2[1][1][n]*g(x,1,1) + zm2[1][2][n]*g(x,1,2));
+    }
+    if (num == 2)
+    {
+        unsigned int n = 0.3*N;
+        return zm0[2][n] + (zm1[2][0][n]*g(x,0,0) + zm1[2][1][n]*g(x,0,1) + zm1[2][2][n]*g(x,0,2))
+                         + (zm2[2][0][n]*g(x,1,0) + zm2[2][1][n]*g(x,1,1) + zm2[2][2][n]*g(x,1,2));
+    }
 
-//    IPrinter::printVector(14, 10, zm1.at(1).at(0),NULL,N,0,0,file);
-//    IPrinter::printVector(14, 10, zm1.at(1).at(1),NULL,N,0,0,file);
-//    IPrinter::printVector(14, 10, zm1.at(1).at(2),NULL,N,0,0,file);
-
-//    IPrinter::printVector(14, 10, zm1.at(2).at(0),NULL,N,0,0,file);
-//    IPrinter::printVector(14, 10, zm1.at(2).at(1),NULL,N,0,0,file);
-//    IPrinter::printVector(14, 10, zm1.at(2).at(2),NULL,N,0,0,file);
-
-//    IPrinter::printVector(14, 10, zm2.at(0).at(0),NULL,N,0,0,file);
-//    IPrinter::printVector(14, 10, zm2.at(0).at(1),NULL,N,0,0,file);
-//    IPrinter::printVector(14, 10, zm2.at(0).at(2),NULL,N,0,0,file);
-
-//    IPrinter::printVector(14, 10, zm2.at(1).at(0),NULL,N,0,0,file);
-//    IPrinter::printVector(14, 10, zm2.at(1).at(1),NULL,N,0,0,file);
-//    IPrinter::printVector(14, 10, zm2.at(1).at(2),NULL,N,0,0,file);
-
-//    IPrinter::printVector(14, 10, zm2.at(2).at(0),NULL,N,0,0,file);
-//    IPrinter::printVector(14, 10, zm2.at(2).at(1),NULL,N,0,0,file);
-//    IPrinter::printVector(14, 10, zm2.at(2).at(2),NULL,N,0,0,file);
-
-//    fclose(file);
+    if (num == 3)
+    {
+        unsigned int n = 0.6*N;
+        return zm0[0][n] + (zm1[0][0][n]*g(x,0,0) + zm1[0][1][n]*g(x,0,1) + zm1[0][2][n]*g(x,0,2))
+                         + (zm2[0][0][n]*g(x,1,0) + zm2[0][1][n]*g(x,1,1) + zm2[0][2][n]*g(x,1,2));
+    }
+    if (num == 4)
+    {
+        unsigned int n = 0.6*N;
+        return zm0[1][n] + (zm1[1][0][n]*g(x,0,0) + zm1[1][1][n]*g(x,0,1) + zm1[1][2][n]*g(x,0,2))
+                         + (zm2[1][0][n]*g(x,1,0) + zm2[1][1][n]*g(x,1,1) + zm2[1][2][n]*g(x,1,2));
+    }
+    if (num == 5)
+    {
+        unsigned int n = 0.6*N;
+        return zm0[2][n] + (zm1[2][0][n]*g(x,0,0) + zm1[2][1][n]*g(x,0,1) + zm1[2][2][n]*g(x,0,2))
+                         + (zm2[2][0][n]*g(x,1,0) + zm2[2][1][n]*g(x,1,1) + zm2[2][2][n]*g(x,1,2));
+    }
+    return NAN;
 }
 
 double Problem5Ex1::A(double t, unsigned int, unsigned int row, unsigned int col) const
@@ -183,20 +238,21 @@ double Problem5Ex1::B(double t, unsigned int k, unsigned int row) const
 #ifdef SAMPLE_1
     if (row == 0)
     {
-        return dX(t,0)
-                - (A(t,k,0,0)*X(t,0) + A(t,k,0,1)*X(t,1) + A(t,k,0,2)*X(t,2))
-                - (C(t,k,0,0,0)*g(0,0) + C(t,k,0,0,1)*g(0,1) + C(t,k,0,0,2)*g(0,2)) - (C(t,k,1,0,0)*g(1,0) + C(t,k,1,0,1)*g(1,1) + C(t,k,1,0,2)*g(1,2));
+        return dX(t,0) - (A(t,k,0,0)*X(t,0) + A(t,k,0,1)*X(t,1) + A(t,k,0,2)*X(t,2))
+                - (C(t,k,0,0,0)*g(0,0) + C(t,k,0,0,1)*g(0,1) + C(t,k,0,0,2)*g(0,2))
+                - (C(t,k,1,0,0)*g(1,0) + C(t,k,1,0,1)*g(1,1) + C(t,k,1,0,2)*g(1,2));
     }
     if (row == 1)
     {
-        return dX(t,1)
-                - (A(t,k,1,0)*X(t,0) + A(t,k,1,1)*X(t,1) + A(t,k,1,2)*X(t,2))
-                - (C(t,k,0,1,0)*g(0,0) + C(t,k,0,1,1)*g(0,1) + C(t,k,0,1,2)*g(0,2)) - (C(t,k,1,1,0)*g(1,0) + C(t,k,1,1,1)*g(1,1) + C(t,k,1,1,2)*g(1,2));
+        return dX(t,1) - (A(t,k,1,0)*X(t,0) + A(t,k,1,1)*X(t,1) + A(t,k,1,2)*X(t,2))
+                - (C(t,k,0,1,0)*g(0,0) + C(t,k,0,1,1)*g(0,1) + C(t,k,0,1,2)*g(0,2))
+                - (C(t,k,1,1,0)*g(1,0) + C(t,k,1,1,1)*g(1,1) + C(t,k,1,1,2)*g(1,2));
     }
     if (row == 2)
-    { return dX(t,2)
-                - (A(t,k,2,0)*X(t,0) + A(t,k,2,1)*X(t,1) + A(t,k,2,2)*X(t,2))
-                - (C(t,k,0,2,0)*g(0,0) + C(t,k,0,2,1)*g(0,1) + C(t,k,0,2,2)*g(0,2)) - (C(t,k,1,2,0)*g(1,0) + C(t,k,1,2,1)*g(1,1) + C(t,k,1,2,2)*g(1,2));
+    {
+        return dX(t,2) - (A(t,k,2,0)*X(t,0) + A(t,k,2,1)*X(t,1) + A(t,k,2,2)*X(t,2))
+                - (C(t,k,0,2,0)*g(0,0) + C(t,k,0,2,1)*g(0,1) + C(t,k,0,2,2)*g(0,2))
+                - (C(t,k,1,2,0)*g(1,0) + C(t,k,1,2,1)*g(1,1) + C(t,k,1,2,2)*g(1,2));
     }
 #endif
     return NAN;
@@ -205,35 +261,39 @@ double Problem5Ex1::B(double t, unsigned int k, unsigned int row) const
 double Problem5Ex1::C(double, unsigned int, unsigned int num, unsigned int row, unsigned int col) const
 {
 #ifdef SAMPLE_1
+
     if ( num == 0 )
     {
         if (row == 0) { if (col == 0) { return +2.0; } if (col == 1) { return +5.0; } if (col == 2) { return +3.0; } }
         if (row == 1) { if (col == 0) { return +4.0; } if (col == 1) { return +8.0; } if (col == 2) { return +1.0; } }
         if (row == 2) { if (col == 0) { return +1.0; } if (col == 1) { return +3.0; } if (col == 2) { return +4.0; } }
     }
+
     if ( num == 1 )
     {
         if (row == 0) { if (col == 0) { return +1.0; } if (col == 1) { return +3.0; } if (col == 2) { return +4.0; } }
         if (row == 1) { if (col == 0) { return +2.0; } if (col == 1) { return +3.0; } if (col == 2) { return +1.0; } }
         if (row == 2) { if (col == 0) { return +5.0; } if (col == 1) { return +2.0; } if (col == 2) { return +8.0; } }
     }
+
 #endif
     return NAN;
 }
 
 double Problem5Ex1::g(unsigned int num, unsigned int row) const
 {
-   // return 0.0;
+//    return 0.0;
 #ifdef SAMPLE_1
+
 //    if (num == 0)
 //    {
-//        if (row == 0) { return X(0.3, 0)*X(0.3,0) + 2.0*X(0.3,0); }
-//        if (row == 1) { return X(0.3, 1)*X(0.3,1) - X(0.3,1); }
+//        if (row == 0) { return X(0.3, 0)*X(0.3,0); }
+//        if (row == 1) { return X(0.3, 1)*X(0.3,1); }
 //        if (row == 2) { return X(0.3, 2); }
 //    }
 //    if (num == 1)
 //    {
-//        if (row == 0) { return X(0.6,0)*X(0.6,0) + X(0.6,1); }
+//        if (row == 0) { return X(0.6,0)*X(0.6,0); }
 //        if (row == 1) { return X(0.6,1); }
 //        if (row == 2) { return X(0.6,2)*X(0.6,2); }
 //    }
@@ -246,26 +306,34 @@ double Problem5Ex1::g(unsigned int num, unsigned int row) const
         }
         if (num == 1)
         {
-            if (row == 0) { return sin(2.0*X(0.6,0)); }
-            if (row == 1) { return sin(9.0*X(0.6,0)); }
+            if (row == 0) { return cos(X(0.6,0)); }
+            if (row == 1) { return sin(X(0.6,1)); }
             if (row == 2) { return cos(X(0.6,2)); }
         }
 
-
-//    if (num == 0)
-//    {
-//        if (row == 0) { return 10.4921000000; }
-//        if (row == 1) { return  8.1600000000; }
-//        if (row == 2) { return  0.3270000000; }
-//    }
-//    if (num == 1)
-//    {
-//        if (row == 0) { return  6.9616000000; }
-//        if (row == 1) { return -1.8000000000; }
-//        if (row == 2) { return  0.6658560000; }
-//    }
-
 #endif
+    return NAN;
+}
+
+double Problem5Ex1::g(const DoubleVector &x, unsigned int num, unsigned int row) const
+{
+    double x1_03 = x[0]; double x1_06 = x[3];
+    double x2_03 = x[1]; double x2_06 = x[4];
+    double x3_03 = x[2]; double x3_06 = x[5];
+
+
+    if (num == 0)
+    {
+        if (row == 0) return sin(x1_03);
+        if (row == 1) return cos(x2_03);
+        if (row == 2) return tan(x3_03);
+    }
+    if (num == 1)
+    {
+        if (row == 0) return cos(x1_06);
+        if (row == 1) return sin(x2_06);
+        if (row == 2) return cos(x3_06);
+    }
     return NAN;
 }
 

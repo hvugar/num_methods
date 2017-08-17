@@ -5,7 +5,7 @@ Zetta2::Zetta2(const ODEGrid &grid, const Problem5Ex1 *p5) : ISystemLinearODENon
 
 double Zetta2::A(double t, unsigned int k, unsigned int row, unsigned int col) const
 {
-    return p5->A(t,k,row,col);
+    return p5->A(t, k, row, col);
 }
 
 double Zetta2::B(double t, unsigned int k, unsigned int row, unsigned int col) const
