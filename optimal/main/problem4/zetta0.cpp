@@ -1,7 +1,7 @@
 #include "zetta0.h"
-#include "problem5ex1.h"
+#include "problem4ex1.h"
 
-Zetta0::Zetta0(const ODEGrid &grid, const Problem5Ex1 *p5)
+Zetta0::Zetta0(const ODEGrid &grid, const Problem4Ex1 *p5)
     : ISystemLinearODENonLocalContionsV(grid), p5(p5) {}
 
 double Zetta0::A(double t, unsigned int k, unsigned int row, unsigned int col) const
@@ -11,6 +11,6 @@ double Zetta0::A(double t, unsigned int k, unsigned int row, unsigned int col) c
 
 double Zetta0::B(double t, unsigned int k, unsigned int row) const
 {
-    return p5->B(t, k, row);
+    return p5->C(t, k, row);
 }
 

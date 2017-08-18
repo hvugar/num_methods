@@ -1,9 +1,9 @@
-#include "problem5ex1.h"
+#include "problem4ex1.h"
 
-void Problem5Ex1::Main(int agrc, char *argv[])
+void Problem4Ex1::Main(int agrc, char *argv[])
 {
     ODEGrid grid(Dimension(0.1, 10, 0));
-    Problem5Ex1 prob1(grid);
+    Problem4Ex1 prob1(grid);
     prob1.initialize();
 
     for (unsigned int i=0; i<=grid.dimension().sizeN(); i++)
@@ -33,11 +33,11 @@ void Problem5Ex1::Main(int agrc, char *argv[])
     prob1.printResult();
 }
 
-Problem5Ex1::Problem5Ex1(const ODEGrid &grid) : mgrid(grid)
+Problem4Ex1::Problem4Ex1(const ODEGrid &grid) : mgrid(grid)
 {
 }
 
-void Problem5Ex1::initialize()
+void Problem4Ex1::initialize()
 {
     Dimension dim = mgrid.dimension();
     unsigned int N = dim.sizeN();
@@ -156,7 +156,7 @@ void Problem5Ex1::initialize()
 //    IPrinter::printVector(x3);
 }
 
-void Problem5Ex1::printResult()
+void Problem4Ex1::printResult()
 {
     Dimension dim = mgrid.dimension();
     unsigned int N = dim.sizeN();
@@ -178,7 +178,7 @@ void Problem5Ex1::printResult()
     IPrinter::printVector(10,6,x3);
 }
 
-double Problem5Ex1::fx(const DoubleVector &x, unsigned int num) const
+double Problem4Ex1::fx(const DoubleVector &x, unsigned int num) const
 {
     Dimension dim = mgrid.dimension();
     unsigned int N = dim.sizeN();
@@ -223,7 +223,7 @@ double Problem5Ex1::fx(const DoubleVector &x, unsigned int num) const
     return NAN;
 }
 
-double Problem5Ex1::A(double t, unsigned int, unsigned int row, unsigned int col) const
+double Problem4Ex1::A(double t, unsigned int, unsigned int row, unsigned int col) const
 {
 #ifdef SAMPLE_1
     if (row == 0) { if (col == 0) { return +2.0; } if (col == 1) { return t; }      if (col == 2) { return -3.0; } }
@@ -233,89 +233,89 @@ double Problem5Ex1::A(double t, unsigned int, unsigned int row, unsigned int col
     return NAN;
 }
 
-double Problem5Ex1::B(double t, unsigned int k, unsigned int row) const
-{
-#ifdef SAMPLE_1
-    if (row == 0)
-    {
-        return dX(t,0) - (A(t,k,0,0)*X(t,0) + A(t,k,0,1)*X(t,1) + A(t,k,0,2)*X(t,2))
-                - (C(t,k,0,0,0)*g(0,0) + C(t,k,0,0,1)*g(0,1) + C(t,k,0,0,2)*g(0,2))
-                - (C(t,k,1,0,0)*g(1,0) + C(t,k,1,0,1)*g(1,1) + C(t,k,1,0,2)*g(1,2));
-    }
-    if (row == 1)
-    {
-        return dX(t,1) - (A(t,k,1,0)*X(t,0) + A(t,k,1,1)*X(t,1) + A(t,k,1,2)*X(t,2))
-                - (C(t,k,0,1,0)*g(0,0) + C(t,k,0,1,1)*g(0,1) + C(t,k,0,1,2)*g(0,2))
-                - (C(t,k,1,1,0)*g(1,0) + C(t,k,1,1,1)*g(1,1) + C(t,k,1,1,2)*g(1,2));
-    }
-    if (row == 2)
-    {
-        return dX(t,2) - (A(t,k,2,0)*X(t,0) + A(t,k,2,1)*X(t,1) + A(t,k,2,2)*X(t,2))
-                - (C(t,k,0,2,0)*g(0,0) + C(t,k,0,2,1)*g(0,1) + C(t,k,0,2,2)*g(0,2))
-                - (C(t,k,1,2,0)*g(1,0) + C(t,k,1,2,1)*g(1,1) + C(t,k,1,2,2)*g(1,2));
-    }
-#endif
-    return NAN;
-}
-
-double Problem5Ex1::C(double, unsigned int, unsigned int num, unsigned int row, unsigned int col) const
+double Problem4Ex1::B(double, unsigned int, unsigned int num, unsigned int row, unsigned int col) const
 {
 #ifdef SAMPLE_1
 
     if ( num == 0 )
     {
-        if (row == 0) { if (col == 0) { return +2.0; } if (col == 1) { return +5.0; } if (col == 2) { return +3.0; } }
-        if (row == 1) { if (col == 0) { return +4.0; } if (col == 1) { return +8.0; } if (col == 2) { return +1.0; } }
-        if (row == 2) { if (col == 0) { return +1.0; } if (col == 1) { return +3.0; } if (col == 2) { return +4.0; } }
+        if (row == 0) { if (col == 0) { return +0.002; } if (col == 1) { return +0.005; } if (col == 2) { return +0.003; } }
+        if (row == 1) { if (col == 0) { return +0.004; } if (col == 1) { return +0.008; } if (col == 2) { return +0.001; } }
+        if (row == 2) { if (col == 0) { return +0.001; } if (col == 1) { return +0.003; } if (col == 2) { return +0.004; } }
     }
 
     if ( num == 1 )
     {
-        if (row == 0) { if (col == 0) { return +1.0; } if (col == 1) { return +3.0; } if (col == 2) { return +4.0; } }
-        if (row == 1) { if (col == 0) { return +2.0; } if (col == 1) { return +3.0; } if (col == 2) { return +1.0; } }
-        if (row == 2) { if (col == 0) { return +5.0; } if (col == 1) { return +2.0; } if (col == 2) { return +8.0; } }
+        if (row == 0) { if (col == 0) { return +0.001; } if (col == 1) { return +0.003; } if (col == 2) { return +0.004; } }
+        if (row == 1) { if (col == 0) { return +0.002; } if (col == 1) { return +0.005; } if (col == 2) { return +0.001; } }
+        if (row == 2) { if (col == 0) { return +0.005; } if (col == 1) { return +0.002; } if (col == 2) { return +0.008; } }
     }
 
 #endif
     return NAN;
 }
 
-double Problem5Ex1::g(unsigned int num, unsigned int row) const
+double Problem4Ex1::C(double t, unsigned int k, unsigned int row) const
+{
+#ifdef SAMPLE_1
+    if (row == 0)
+    {
+        return dX(t,0) - (A(t,k,0,0)*X(t,0) + A(t,k,0,1)*X(t,1) + A(t,k,0,2)*X(t,2))
+                - (B(t,k,0,0,0)*g(0,0) + B(t,k,0,0,1)*g(0,1) + B(t,k,0,0,2)*g(0,2))
+                - (B(t,k,1,0,0)*g(1,0) + B(t,k,1,0,1)*g(1,1) + B(t,k,1,0,2)*g(1,2));
+    }
+    if (row == 1)
+    {
+        return dX(t,1) - (A(t,k,1,0)*X(t,0) + A(t,k,1,1)*X(t,1) + A(t,k,1,2)*X(t,2))
+                - (B(t,k,0,1,0)*g(0,0) + B(t,k,0,1,1)*g(0,1) + B(t,k,0,1,2)*g(0,2))
+                - (B(t,k,1,1,0)*g(1,0) + B(t,k,1,1,1)*g(1,1) + B(t,k,1,1,2)*g(1,2));
+    }
+    if (row == 2)
+    {
+        return dX(t,2) - (A(t,k,2,0)*X(t,0) + A(t,k,2,1)*X(t,1) + A(t,k,2,2)*X(t,2))
+                - (B(t,k,0,2,0)*g(0,0) + B(t,k,0,2,1)*g(0,1) + B(t,k,0,2,2)*g(0,2))
+                - (B(t,k,1,2,0)*g(1,0) + B(t,k,1,2,1)*g(1,1) + B(t,k,1,2,2)*g(1,2));
+    }
+#endif
+    return NAN;
+}
+
+double Problem4Ex1::g(unsigned int num, unsigned int row) const
 {
 //    return 0.0;
 #ifdef SAMPLE_1
 
-//    if (num == 0)
-//    {
-//        if (row == 0) { return X(0.3, 0)*X(0.3,0); }
-//        if (row == 1) { return X(0.3, 1)*X(0.3,1); }
-//        if (row == 2) { return X(0.3, 2); }
-//    }
-//    if (num == 1)
-//    {
-//        if (row == 0) { return X(0.6,0)*X(0.6,0); }
-//        if (row == 1) { return X(0.6,1); }
-//        if (row == 2) { return X(0.6,2)*X(0.6,2); }
-//    }
+    if (num == 0)
+    {
+        if (row == 0) { return X(0.3, 0)*X(0.3,0) + X(0.3, 1)*X(0.3,1) - X(0.3,2); }
+        if (row == 1) { return X(0.3, 1)*X(0.3,1) - X(0.3, 0)*X(0.3,2); }
+        if (row == 2) { return X(0.3, 2); }
+    }
+    if (num == 1)
+    {
+        if (row == 0) { return X(0.6,0)*X(0.6,0); }
+        if (row == 1) { return X(0.6,1); }
+        if (row == 2) { return X(0.6,2)*X(0.6,2); }
+    }
 
-        if (num == 0)
-        {
-            if (row == 0) { return sin(X(0.3, 0)); }
-            if (row == 1) { return cos(X(0.3, 1)); }
-            if (row == 2) { return tan(X(0.3, 2)); }
-        }
-        if (num == 1)
-        {
-            if (row == 0) { return cos(X(0.6,0)); }
-            if (row == 1) { return sin(X(0.6,1)); }
-            if (row == 2) { return cos(X(0.6,2)); }
-        }
+//        if (num == 0)
+//        {
+//            if (row == 0) { return sin(X(0.3, 0)); }
+//            if (row == 1) { return cos(X(0.3, 1)); }
+//            if (row == 2) { return tan(X(0.3, 2)); }
+//        }
+//        if (num == 1)
+//        {
+//            if (row == 0) { return cos(X(0.6,0)); }
+//            if (row == 1) { return sin(X(0.6,1)); }
+//            if (row == 2) { return cos(X(0.6,2)); }
+//        }
 
 #endif
     return NAN;
 }
 
-double Problem5Ex1::g(const DoubleVector &x, unsigned int num, unsigned int row) const
+double Problem4Ex1::g(const DoubleVector &x, unsigned int num, unsigned int row) const
 {
     double x1_03 = x[0]; double x1_06 = x[3];
     double x2_03 = x[1]; double x2_06 = x[4];
@@ -337,7 +337,7 @@ double Problem5Ex1::g(const DoubleVector &x, unsigned int num, unsigned int row)
     return NAN;
 }
 
-double Problem5Ex1::X(double t, unsigned int i) const
+double Problem4Ex1::X(double t, unsigned int i) const
 {
 #ifdef SAMPLE_1
     if (i == 0) { return t*t+t+2.0; }
@@ -347,7 +347,7 @@ double Problem5Ex1::X(double t, unsigned int i) const
     return NAN;
 }
 
-double Problem5Ex1::dX(double t, unsigned int i) const
+double Problem4Ex1::dX(double t, unsigned int i) const
 {
 #ifdef SAMPLE_1
     if (i == 0) { return 2.0*t+1.0; }

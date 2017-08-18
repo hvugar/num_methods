@@ -13,17 +13,17 @@
 
 #define SAMPLE_1
 
-class Problem5Ex1 : public NonLinearFunctionSystem
+class Problem4Ex1 : public NonLinearFunctionSystem
 {
 public:
     static void Main(int agrc, char *argv[]);
 
-    Problem5Ex1(const ODEGrid &grid);
+    Problem4Ex1(const ODEGrid &grid);
     void initialize();
 
     virtual double A(double t, unsigned int k, unsigned int row, unsigned int col) const;
-    virtual double B(double t, unsigned int k, unsigned int row) const;
-    virtual double C(double t, unsigned int k, unsigned int row, unsigned int col, unsigned int i) const;
+    virtual double B(double t, unsigned int k, unsigned int row, unsigned int col, unsigned int i) const;
+    virtual double C(double t, unsigned int k, unsigned int row) const;
 
     virtual double g(unsigned int num, unsigned int row) const;
 
