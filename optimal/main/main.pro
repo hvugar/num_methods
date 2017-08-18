@@ -36,45 +36,43 @@ LIBS += -L../bin -lrnfunction
 DESTDIR += ../bin
 
 SOURCES += main.cpp \
+    high_order/singledifequ.cpp \
+    high_order/systemdifequ.cpp \
+    ivp/cauchyproblemmex.cpp \
+    load_sys/slodenlcsm.cpp \
+    load_sys/slodenlcsv.cpp \
     problem1/iproblem1.cpp \
     problem1/problem1L2.cpp \
     problem1/problem1L3.cpp \
     problem1/art_problem1.cpp \
     problem1/problem1L1.cpp \
-    high_order/singledifequ.cpp \
-    high_order/systemdifequ.cpp \
     problem1/iloadedheatequation.cpp \
     problem1/loadedheatequation.cpp \
     problem1/ibackwardloadedheateqauation.cpp \
-    problem4/problem4.cpp \
-    ivp/cauchyproblemmex.cpp \
-    problem5/problem5ex1.cpp \
-    load_sys/slodenlcsm.cpp \
-    problem5/zetta0.cpp \
-    problem5/zetta1.cpp \
-    problem5/zetta2.cpp \
+    problem4/problem4ex1.cpp \
+    problem4/zetta0.cpp \
+    problem4/zetta1.cpp \
+    problem4/zetta2.cpp \
     numintegralexp1.cpp \
-    load_sys/slodenlcsv.cpp \
     nonlinearfunctionsystem.cpp
 
 HEADERS += \
+    high_order/singledifequ.h \
+    high_order/systemdifequ.h \
+    ivp/cauchyproblemmex.h \
+    load_sys/slodenlcsm.h \
+    load_sys/slodenlcsv.h \
     problem1/iproblem1.h \
     problem1/problem1L2.h \
     problem1/problem1L3.h \
     problem1/art_problem1.h \
     problem1/problem1L1.h \
-    high_order/singledifequ.h \
-    high_order/systemdifequ.h \
     problem1/iloadedheatequation.h \
     problem1/loadedheatequation.h \
     problem1/ibackwardloadedheateqauation.h \
-    problem4/problem4.h \
-    ivp/cauchyproblemmex.h \
-    problem5/problem5ex1.h \
-    load_sys/slodenlcsm.h \
-    problem5/zetta0.h \
-    problem5/zetta1.h \
-    problem5/zetta2.h \
+    problem4/problem4ex1.h \
+    problem4/zetta0.h \
+    problem4/zetta1.h \
+    problem4/zetta2.h \
     numintegralexp1.h \
-    load_sys/slodenlcsv.h \
     nonlinearfunctionsystem.h
