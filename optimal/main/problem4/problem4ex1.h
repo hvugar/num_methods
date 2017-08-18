@@ -22,7 +22,7 @@ public:
     void initialize();
 
     virtual double A(double t, unsigned int k, unsigned int row, unsigned int col) const;
-    virtual double B(double t, unsigned int k, unsigned int row, unsigned int col, unsigned int i) const;
+    virtual double B(double t, unsigned int k, unsigned int num, unsigned int row, unsigned int col) const;
     virtual double C(double t, unsigned int k, unsigned int row) const;
 
     virtual double g(unsigned int num, unsigned int row) const;
@@ -37,6 +37,7 @@ public:
     virtual double fx(const DoubleVector &x, unsigned int num) const;
 
     void printResult();
+    void printResult1(const DoubleVector &x);
 
     std::vector<DoubleVector> zm0;
     std::vector<std::vector<DoubleVector>> zm1;

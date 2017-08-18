@@ -2,35 +2,33 @@
 
 void Problem4Ex1::Main(int agrc, char *argv[])
 {
-    ODEGrid grid(Dimension(0.1, 10, 0));
+    ODEGrid grid(Dimension(0.01, 100, 0));
     Problem4Ex1 prob1(grid);
     prob1.initialize();
 
-    for (unsigned int i=0; i<=grid.dimension().sizeN(); i++)
-    {
-        printf("%10.6f", prob1.X(i*grid.dimension().step(),2));
-    }
-    puts("");
+//    for (unsigned int i=0; i<=grid.dimension().sizeN(); i++)
+//    {
+//        printf("%14.10f", prob1.X(i*grid.dimension().step(),2));
+//    }
+//    puts("");
 
-//    DoubleVector x0;
-//    x0 << 2.3 << -2.4 << 0.3 << 2.9 << -1.8 << 0.8;
-//    DoubleVector x;
-//    prob1.calculate(x0, x, 0.001);
+    DoubleVector x0;
+    x0 << 0.0 << -0.0 << 0.0 << 2.0 << -1.0 << 0.0;
+    DoubleVector x;
+    prob1.calculate(x0, x, 0.01);
 
 //    printf("%14.10f %14.10f %14.10f\n", x[0], x[1], x[2]);
 //    printf("%14.10f %14.10f %14.10f\n", x[3], x[4], x[5]);
 
-//    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//      2.0140283546   2.1215738596   2.2492993715   2.3972401372   2.5654525414   2.7540097649   2.9629877484   3.1924470796   3.4424174121   3.7128890257   4.0038126419
-//     -3.0066739103  -2.8157708146  -2.6222968256  -2.4256427719  -2.2258060430  -2.0233146753  -1.8190334957  -1.6139268416  -1.4088512490  -1.2044257489  -1.0009921403
-//      0.0178093036   0.1160809591   0.2199508346   0.3356953265   0.4696003900   0.6279080030   0.8167815913   1.0422953680   1.3104447850   1.6271700977   1.9983835684
-
-    DoubleVector x;
-    x << 2.3972401372 << -2.4256427719 << 0.3356953265;
-    printf("%14.10f\n", prob1.fx(x,2));
+//    DoubleVector x1;
+//    x1 << 2.3907044618 << -2.4005548990 << 0.3279996938;
+//    x1 << 2.9601192501 << -1.8013824142 << 0.8164956935;
+//    printf("%14.10f\n", prob1.fx(x1,1));
 
     IPrinter::printSeperatorLine();
     prob1.printResult();
+    IPrinter::printSeperatorLine();
+    prob1.printResult1(x);
 }
 
 Problem4Ex1::Problem4Ex1(const ODEGrid &grid) : mgrid(grid)
@@ -52,35 +50,35 @@ void Problem4Ex1::initialize()
     nsc0.time = 0.0;
     nsc0.nmbr = 0;
     nsc0.alpha.resize(n0, n);
-    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc0.alpha[row][col] = (rand() % 1000) / 1000.0;
+    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc0.alpha[row][col] = (rand() % 10) / 1.0;
 
     ISystemLinearODENonLocalContionsV::Condition nsc1;
     nsc1.type = ISystemLinearODENonLocalContionsV::NonSeparated;
     nsc1.time = 0.2;
     nsc1.nmbr = N/5;
     nsc1.alpha.resize(n0, n);
-    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc1.alpha[row][col] = (rand() % 1000) / 1000.0;
+    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc1.alpha[row][col] = (rand() % 10) / 1.0;
 
     ISystemLinearODENonLocalContionsV::Condition nsc2;
     nsc2.type = ISystemLinearODENonLocalContionsV::NonSeparated;
     nsc2.time = 0.5;
     nsc2.nmbr = N/2;
     nsc2.alpha.resize(n0, n);
-    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc2.alpha[row][col] = (rand() % 1000) / 1000.0;
+    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc2.alpha[row][col] = (rand() % 10) / 1.0;
 
     ISystemLinearODENonLocalContionsV::Condition nsc3;
     nsc3.type = ISystemLinearODENonLocalContionsV::NonSeparated;
     nsc3.time = 0.8;
     nsc3.nmbr = 4*(N/5);
     nsc3.alpha.resize(n0, n);
-    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc3.alpha[row][col] = (rand() % 1000) / 1000.0;
+    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc3.alpha[row][col] = (rand() % 10) / 1.0;
 
     ISystemLinearODENonLocalContionsV::Condition nsc4;
     nsc4.type = ISystemLinearODENonLocalContionsV::NonSeparated;
     nsc4.time = 1.0;
     nsc4.nmbr = N;
     nsc4.alpha.resize(n0, n);
-    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc4.alpha[row][col] = (rand() % 1000) / 1000.0;
+    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc4.alpha[row][col] = (rand() % 10) / 1.0;
 
     //////////////////////////////////////////////////////////////////////////////
 
@@ -104,6 +102,13 @@ void Problem4Ex1::initialize()
         }
     }
     zett0.setBetta(betta);
+
+//    IPrinter::print(nsc0.alpha, nsc0.alpha.rows(), nsc0.alpha.cols());
+//    IPrinter::print(nsc1.alpha, nsc1.alpha.rows(), nsc1.alpha.cols());
+//    IPrinter::print(nsc2.alpha, nsc2.alpha.rows(), nsc2.alpha.cols());
+//    IPrinter::print(nsc3.alpha, nsc3.alpha.rows(), nsc3.alpha.cols());
+//    IPrinter::print(nsc4.alpha, nsc4.alpha.rows(), nsc4.alpha.cols());
+//    IPrinter::print(betta, betta.size());
 
     DoubleVector z0;
     zett0.calculateForward(z0);
@@ -154,6 +159,15 @@ void Problem4Ex1::initialize()
 //    IPrinter::printVector(x1);
 //    IPrinter::printVector(x2);
 //    IPrinter::printVector(x3);
+
+//    double aa = 0.0;
+//    unsigned int row = 2;
+//    for (unsigned int i=0; i<3; i++) aa += B(0.0,0,0,row,i)*g(0,i);
+//    for (unsigned int i=0; i<3; i++) aa += B(0.0,0,1,row,i)*g(1,i);
+//    printf("%14.10f\n", aa);
+
+    printf("%14.10f %14.10f %14.10f\n", g(0,0), g(0,1), g(0,2));
+    printf("%14.10f %14.10f %14.10f\n", g(1,0), g(1,1), g(1,2));
 }
 
 void Problem4Ex1::printResult()
@@ -173,10 +187,31 @@ void Problem4Ex1::printResult()
         x3[i] =  zm0[2][i] + (zm1[2][0][i]*g(0,0) + zm1[2][1][i]*g(0,1) + zm1[2][2][i]*g(0,2))
                 + (zm2[2][0][i]*g(1,0) + zm2[2][1][i]*g(1,1) + zm2[2][2][i]*g(1,2));
     }
-    IPrinter::printVector(10,6,x1);
-    IPrinter::printVector(10,6,x2);
-    IPrinter::printVector(10,6,x3);
+    IPrinter::printVector(14,10,x1);
+    IPrinter::printVector(14,10,x2);
+    IPrinter::printVector(14,10,x3);
 }
+
+void Problem4Ex1::printResult1(const DoubleVector &x)
+{
+    Dimension dim = mgrid.dimension();
+    unsigned int N = dim.sizeN();
+
+    DoubleVector x1(N+1);
+    DoubleVector x2(N+1);
+    DoubleVector x3(N+1);
+    for (unsigned int i=0; i<=N; i++)
+    {
+        x1[i] =  zm0[0][i] + (zm1[0][0][i]*g(x,0,0) + zm1[0][1][i]*g(x,0,1) + zm1[0][2][i]*g(x,0,2)) + (zm2[0][0][i]*g(x,1,0) + zm2[0][1][i]*g(x,1,1) + zm2[0][2][i]*g(x,1,2));
+        x2[i] =  zm0[1][i] + (zm1[1][0][i]*g(x,0,0) + zm1[1][1][i]*g(x,0,1) + zm1[1][2][i]*g(x,0,2)) + (zm2[1][0][i]*g(x,1,0) + zm2[1][1][i]*g(x,1,1) + zm2[1][2][i]*g(x,1,2));
+        x3[i] =  zm0[2][i] + (zm1[2][0][i]*g(x,0,0) + zm1[2][1][i]*g(x,0,1) + zm1[2][2][i]*g(x,0,2)) + (zm2[2][0][i]*g(x,1,0) + zm2[2][1][i]*g(x,1,1) + zm2[2][2][i]*g(x,1,2));
+    }
+    IPrinter::printVector(14,6,x1);
+    IPrinter::printVector(14,6,x2);
+    IPrinter::printVector(14,6,x3);
+}
+
+
 
 double Problem4Ex1::fx(const DoubleVector &x, unsigned int num) const
 {
@@ -260,21 +295,25 @@ double Problem4Ex1::C(double t, unsigned int k, unsigned int row) const
 #ifdef SAMPLE_1
     if (row == 0)
     {
-        return dX(t,0) - (A(t,k,0,0)*X(t,0) + A(t,k,0,1)*X(t,1) + A(t,k,0,2)*X(t,2))
-                - (B(t,k,0,0,0)*g(0,0) + B(t,k,0,0,1)*g(0,1) + B(t,k,0,0,2)*g(0,2))
-                - (B(t,k,1,0,0)*g(1,0) + B(t,k,1,0,1)*g(1,1) + B(t,k,1,0,2)*g(1,2));
+//        return dX(t,0)
+//                - (A(t,k,0,0)*X(t,0) + A(t,k,0,1)*X(t,1) + A(t,k,0,2)*X(t,2))
+//                - (B(t,k,0,0,0)*g(0,0) + B(t,k,0,0,1)*g(0,1) + B(t,k,0,0,2)*g(0,2))
+//                - (B(t,k,1,0,0)*g(1,0) + B(t,k,1,0,1)*g(1,1) + B(t,k,1,0,2)*g(1,2));
+        return 3.0*t*t*t - 4.0*t*t + 6.0*t - 3.0 - 0.0414023610;
     }
     if (row == 1)
     {
-        return dX(t,1) - (A(t,k,1,0)*X(t,0) + A(t,k,1,1)*X(t,1) + A(t,k,1,2)*X(t,2))
-                - (B(t,k,0,1,0)*g(0,0) + B(t,k,0,1,1)*g(0,1) + B(t,k,0,1,2)*g(0,2))
-                - (B(t,k,1,1,0)*g(1,0) + B(t,k,1,1,1)*g(1,1) + B(t,k,1,1,2)*g(1,2));
+//        return dX(t,1) - (A(t,k,1,0)*X(t,0) + A(t,k,1,1)*X(t,1) + A(t,k,1,2)*X(t,2))
+//                - (B(t,k,0,1,0)*g(0,0) + B(t,k,0,1,1)*g(0,1) + B(t,k,0,1,2)*g(0,2))
+//                - (B(t,k,1,1,0)*g(1,0) + B(t,k,1,1,1)*g(1,1) + B(t,k,1,1,2)*g(1,2));
+        return 8.0*t*t*t + 5.0*t*t - 7.0*t - 4.0 - 0.0735341450;
     }
     if (row == 2)
     {
-        return dX(t,2) - (A(t,k,2,0)*X(t,0) + A(t,k,2,1)*X(t,1) + A(t,k,2,2)*X(t,2))
-                - (B(t,k,0,2,0)*g(0,0) + B(t,k,0,2,1)*g(0,1) + B(t,k,0,2,2)*g(0,2))
-                - (B(t,k,1,2,0)*g(1,0) + B(t,k,1,2,1)*g(1,1) + B(t,k,1,2,2)*g(1,2));
+//        return dX(t,2) - (A(t,k,2,0)*X(t,0) + A(t,k,2,1)*X(t,1) + A(t,k,2,2)*X(t,2));
+//                - (B(t,k,0,2,0)*g(0,0) + B(t,k,0,2,1)*g(0,1) + B(t,k,0,2,2)*g(0,2))
+//                - (B(t,k,1,2,0)*g(1,0) + B(t,k,1,2,1)*g(1,1) + B(t,k,1,2,2)*g(1,2));
+        return 2.0*t*t - 3.0*t + 4.0 - 0.0639390740;
     }
 #endif
     return NAN;
@@ -284,32 +323,32 @@ double Problem4Ex1::g(unsigned int num, unsigned int row) const
 {
 //    return 0.0;
 #ifdef SAMPLE_1
-
     if (num == 0)
     {
         if (row == 0) { return X(0.3, 0)*X(0.3,0) + X(0.3, 1)*X(0.3,1) - X(0.3,2); }
         if (row == 1) { return X(0.3, 1)*X(0.3,1) - X(0.3, 0)*X(0.3,2); }
-        if (row == 2) { return X(0.3, 2); }
+        if (row == 2) { return X(0.3, 0) + X(0.3, 1) + X(0.3, 2)*X(0.3, 2); }
     }
     if (num == 1)
     {
         if (row == 0) { return X(0.6,0)*X(0.6,0); }
-        if (row == 1) { return X(0.6,1); }
+        if (row == 1) { return X(0.6,1)*X(0.6,1)*X(0.6,1); }
         if (row == 2) { return X(0.6,2)*X(0.6,2); }
     }
 
-//        if (num == 0)
-//        {
-//            if (row == 0) { return sin(X(0.3, 0)); }
-//            if (row == 1) { return cos(X(0.3, 1)); }
-//            if (row == 2) { return tan(X(0.3, 2)); }
-//        }
-//        if (num == 1)
-//        {
-//            if (row == 0) { return cos(X(0.6,0)); }
-//            if (row == 1) { return sin(X(0.6,1)); }
-//            if (row == 2) { return cos(X(0.6,2)); }
-//        }
+
+//    if (num == 0)
+//    {
+//        if (row == 0) { return 11.1451000000; }
+//        if (row == 1) { return 4.9784700000; }
+//        if (row == 2) { return 0.0969290000; }
+//    }
+//    if (num == 1)
+//    {
+//        if (row == 0) { return  8.7616000000; }
+//        if (row == 1) { return -5.8320000000; }
+//        if (row == 2) { return  0.6658560000; }
+//    }
 
 #endif
     return NAN;
@@ -321,18 +360,17 @@ double Problem4Ex1::g(const DoubleVector &x, unsigned int num, unsigned int row)
     double x2_03 = x[1]; double x2_06 = x[4];
     double x3_03 = x[2]; double x3_06 = x[5];
 
-
     if (num == 0)
     {
-        if (row == 0) return sin(x1_03);
-        if (row == 1) return cos(x2_03);
-        if (row == 2) return tan(x3_03);
+        if (row == 0) return x1_03*x1_03 + x2_03*x2_03 - x3_03;
+        if (row == 1) return x2_03*x2_03 - x1_03*x3_03;
+        if (row == 2) return x1_03 + x2_03 + x3_03*x3_03;
     }
     if (num == 1)
     {
-        if (row == 0) return cos(x1_06);
-        if (row == 1) return sin(x2_06);
-        if (row == 2) return cos(x3_06);
+        if (row == 0) return x1_06*x1_06;
+        if (row == 1) return x2_06*x2_06*x2_06;
+        if (row == 2) return x3_06*x3_06;
     }
     return NAN;
 }
