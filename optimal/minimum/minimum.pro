@@ -56,7 +56,8 @@ SOURCES += \
     ode/cauchyp.cpp \
     ode/ode1storder.cpp \
     utils/matrix.cpp \
-    utils/vector.cpp
+    utils/vector.cpp \
+    load_sys/islodenlcsv2.cpp
 
 HEADERS += global.h \
     cmethods.h \
@@ -99,4 +100,5 @@ HEADERS += global.h \
     ode/cauchyp.h \
     ode/ode1storder.h \
     utils/matrix.h \
-    utils/vector.h
+    utils/vector.h \
+    load_sys/islodenlcsv2.h
