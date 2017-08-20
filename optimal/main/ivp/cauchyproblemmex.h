@@ -9,15 +9,10 @@ class CauchyProblemMEx : public CauchyProblemM1stOrder
 {
 public:
     static void Main(int agrc, char *argv[]);
-
-    CauchyProblemMEx(const ODEGrid &grid);
-
 protected:
     virtual double f(double x, const DoubleVector &y, unsigned int k, unsigned int i) const;
 
     double y(double x, unsigned int k, unsigned int i) const;
-
-
 };
 
 #endif // CAUCHYPROBLEMMEX_H

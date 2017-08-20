@@ -8,11 +8,9 @@
 #include <vector>
 #include "islodenlcsv.h"
 
-class MINIMUMSHARED_EXPORT ISystemLinearODENonLocalContionsM
+class MINIMUMSHARED_EXPORT ISystemLinearODENonLocalContionsM : public SystemLinearODE
 {
 public:
-    ISystemLinearODENonLocalContionsM(const ODEGrid& grid);
-
     virtual void calculateForward(DoubleMatrix &x);
     virtual void calculateBackward(DoubleMatrix &x);
 
@@ -25,9 +23,6 @@ public:
     void setBetta(const DoubleMatrix &betta);
     void setSystemOrder(unsigned int n);
     unsigned int systemOrder() const;
-
-    const ODEGrid& grid() const;
-
 public:
     virtual double A(double t UNUSED_PARAM, unsigned int k, unsigned int row, unsigned int col) const = 0;
     virtual double B(double t UNUSED_PARAM, unsigned int k, unsigned int row, unsigned int col) const = 0;
@@ -36,9 +31,6 @@ public:
     ISystemLinearODENonLocalContionsV::Condition lscs;
     ISystemLinearODENonLocalContionsV::Condition rscs;
     DoubleMatrix betta;
-
-protected:
-    ODEGrid mgrid;
 };
 
 #endif // ISYSTEM_LINEAR_ODE_NONLOCALCONTIONSM_H

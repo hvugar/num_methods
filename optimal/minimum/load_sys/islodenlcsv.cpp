@@ -3,7 +3,7 @@
 class CauchyProblemM1stOrderA : public CauchyProblemM1stOrder
 {
 public:
-    CauchyProblemM1stOrderA(ISystemLinearODENonLocalContionsV &parent, const ODEGrid& grid) : CauchyProblemM1stOrder(grid), p(parent) {}
+    CauchyProblemM1stOrderA(ISystemLinearODENonLocalContionsV &parent) : p(parent) {}
 
 protected:
     virtual double f(double t, const DoubleVector &x, unsigned int k, unsigned int i) const;
@@ -15,14 +15,14 @@ private:
 class CauchyProblemM1stOrderB : public CauchyProblemM1stOrder
 {
 public:
-    CauchyProblemM1stOrderB(ISystemLinearODENonLocalContionsV &parent, const ODEGrid& grid) : CauchyProblemM1stOrder(grid), p(parent) {}
+    CauchyProblemM1stOrderB(ISystemLinearODENonLocalContionsV &parent) : p(parent) {}
 protected:
     virtual double f(double t, const DoubleVector &x, unsigned int k, unsigned int i) const;
 private:
     ISystemLinearODENonLocalContionsV &p;
 };
 
-ISystemLinearODENonLocalContionsV::ISystemLinearODENonLocalContionsV(const ODEGrid &grid) : SystemLinearODE1stOrder(grid) {}
+ISystemLinearODENonLocalContionsV::ISystemLinearODENonLocalContionsV(const ODEGrid &grid) : SystemLinearODE1stOrder() {}
 
 void ISystemLinearODENonLocalContionsV::setLeftSeparatedCondition(const Condition &lscs)
 {
@@ -68,7 +68,8 @@ void ISystemLinearODENonLocalContionsV::calculateIntervalF(unsigned int start, u
     for (unsigned int i=0; i<n; i++) x[i] = sc.alpha[r][i]; x[n] = betta[r]; x[n+1] = 1.0;
 
     Dimension dim(h, ec.nmbr, sc.nmbr);
-    CauchyProblemM1stOrderA cpa(*this, ODEGrid(dim));
+    CauchyProblemM1stOrderA cpa(*this);
+    cpa.setGrid(ODEGrid(dim));
     cpa.calculateCP(sc.time, x, rx, InitialValueProblem::RK4);
 
     for (unsigned int i=0; i<n; i++) sc.alpha[r][i] = rx[i];
@@ -120,7 +121,8 @@ void ISystemLinearODENonLocalContionsV::calculateForward(DoubleVector &x)
         for (unsigned int i=0; i<n; i++) x[i] = lscs.alpha[row][i]; x[n] = betta[row+n0]; x[n+1] = 1.0;
 
         Dimension dim(h, maxN, minN);
-        CauchyProblemM1stOrderA cpa(*this, ODEGrid(dim));
+        CauchyProblemM1stOrderA cpa(*this);
+        cpa.setGrid( ODEGrid(dim));
         cpa.calculateCP(lscs.time, x, rx, InitialValueProblem::RK4);
 
         for (unsigned int i=0; i<n; i++) lscs.alpha[row][i] = rx[i];
@@ -170,7 +172,8 @@ void ISystemLinearODENonLocalContionsV::calculateBackward(DoubleVector &x UNUSED
 
 void ISystemLinearODENonLocalContionsV::calculateBackwardCP(const DoubleVector &x, std::vector<DoubleVector>& m)
 {
-    CauchyProblemM1stOrderB cpb(*this, grid());
+    CauchyProblemM1stOrderB cpb(*this);
+    cpb.setGrid(grid());
     cpb.calculateCP(nscs.back().time, x, m, CauchyProblemM1stOrder::RK4, CauchyProblemM1stOrder::R2L);
 }
 

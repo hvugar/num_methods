@@ -51,10 +51,10 @@ SOURCES += main.cpp \
     problem1/ibackwardloadedheateqauation.cpp \
     problem4/problem4ex1.cpp \
     problem4/zetta0.cpp \
-    problem4/zetta1.cpp \
-    problem4/zetta2.cpp \
     numintegralexp1.cpp \
-    nonlinearfunctionsystem.cpp
+    nonlinearfunctionsystem.cpp \
+    load_sys/slodenlcsv2.cpp \
+    problem4/zettai.cpp
 
 HEADERS += \
     high_order/singledifequ.h \
@@ -72,7 +72,7 @@ HEADERS += \
     problem1/ibackwardloadedheateqauation.h \
     problem4/problem4ex1.h \
     problem4/zetta0.h \
-    problem4/zetta1.h \
-    problem4/zetta2.h \
     numintegralexp1.h \
-    nonlinearfunctionsystem.h
+    nonlinearfunctionsystem.h \
+    load_sys/slodenlcsv2.h \
+    problem4/zettai.h

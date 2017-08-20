@@ -45,9 +45,6 @@ private:
 class MINIMUMSHARED_EXPORT CauchyProblemM1stOrder : public SystemNonLinearODE1stOrder, public InitialValueProblem
 {
 public:
-    CauchyProblemM1stOrder(const ODEGrid &grid);
-
-public:
     void calculateCP(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Method method = RK4, Direction direction = L2R);
 private:
     void calculateRK2(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction = L2R);

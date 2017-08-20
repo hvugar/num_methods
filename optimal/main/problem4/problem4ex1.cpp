@@ -82,7 +82,8 @@ void Problem4Ex1::initialize()
 
     //////////////////////////////////////////////////////////////////////////////
 
-    Zetta0 zett0(mgrid, this);
+    Zetta0 zett0(*this);
+    zett0.setGrid(mgrid);
     zett0.addNonSeparatedCondition(nsc0);
     zett0.addNonSeparatedCondition(nsc1);
     zett0.addNonSeparatedCondition(nsc2);
@@ -103,20 +104,14 @@ void Problem4Ex1::initialize()
     }
     zett0.setBetta(betta);
 
-//    IPrinter::print(nsc0.alpha, nsc0.alpha.rows(), nsc0.alpha.cols());
-//    IPrinter::print(nsc1.alpha, nsc1.alpha.rows(), nsc1.alpha.cols());
-//    IPrinter::print(nsc2.alpha, nsc2.alpha.rows(), nsc2.alpha.cols());
-//    IPrinter::print(nsc3.alpha, nsc3.alpha.rows(), nsc3.alpha.cols());
-//    IPrinter::print(nsc4.alpha, nsc4.alpha.rows(), nsc4.alpha.cols());
-//    IPrinter::print(betta, betta.size());
-
     DoubleVector z0;
     zett0.calculateForward(z0);
     zett0.calculateBackwardCP(z0,zm0);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Zetta1 zett1(mgrid, this);
+    Zettai zett1(*this, 0);
+    zett1.setGrid(mgrid);
     zett1.addNonSeparatedCondition(nsc0);
     zett1.addNonSeparatedCondition(nsc1);
     zett1.addNonSeparatedCondition(nsc2);
@@ -131,7 +126,8 @@ void Problem4Ex1::initialize()
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Zetta2 zett2(mgrid, this);
+    Zettai zett2(*this, 1);
+    zett2.setGrid(mgrid);
     zett2.addNonSeparatedCondition(nsc0);
     zett2.addNonSeparatedCondition(nsc1);
     zett2.addNonSeparatedCondition(nsc2);
@@ -166,8 +162,8 @@ void Problem4Ex1::initialize()
 //    for (unsigned int i=0; i<3; i++) aa += B(0.0,0,1,row,i)*g(1,i);
 //    printf("%14.10f\n", aa);
 
-    printf("%14.10f %14.10f %14.10f\n", g(0,0), g(0,1), g(0,2));
-    printf("%14.10f %14.10f %14.10f\n", g(1,0), g(1,1), g(1,2));
+//    printf("%14.10f %14.10f %14.10f\n", g(0,0), g(0,1), g(0,2));
+//    printf("%14.10f %14.10f %14.10f\n", g(1,0), g(1,1), g(1,2));
 }
 
 void Problem4Ex1::printResult()
@@ -206,9 +202,9 @@ void Problem4Ex1::printResult1(const DoubleVector &x)
         x2[i] =  zm0[1][i] + (zm1[1][0][i]*g(x,0,0) + zm1[1][1][i]*g(x,0,1) + zm1[1][2][i]*g(x,0,2)) + (zm2[1][0][i]*g(x,1,0) + zm2[1][1][i]*g(x,1,1) + zm2[1][2][i]*g(x,1,2));
         x3[i] =  zm0[2][i] + (zm1[2][0][i]*g(x,0,0) + zm1[2][1][i]*g(x,0,1) + zm1[2][2][i]*g(x,0,2)) + (zm2[2][0][i]*g(x,1,0) + zm2[2][1][i]*g(x,1,1) + zm2[2][2][i]*g(x,1,2));
     }
-    IPrinter::printVector(14,6,x1);
-    IPrinter::printVector(14,6,x2);
-    IPrinter::printVector(14,6,x3);
+    IPrinter::printVector(14,10,x1);
+    IPrinter::printVector(14,10,x2);
+    IPrinter::printVector(14,10,x3);
 }
 
 

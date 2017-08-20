@@ -54,10 +54,10 @@ SOURCES += \
     nonuniformgrid.cpp \
     load_sys/islodenlcsv.cpp \
     ode/cauchyp.cpp \
-    ode/ode1storder.cpp \
     utils/matrix.cpp \
     utils/vector.cpp \
-    load_sys/islodenlcsv2.cpp
+    load_sys/islodenlcsv2.cpp \
+    load_sys/islodenlcs.cpp
 
 HEADERS += global.h \
     cmethods.h \
@@ -98,7 +98,7 @@ HEADERS += global.h \
     nonuniformgrid.h \
     load_sys/islodenlcsv.h \
     ode/cauchyp.h \
-    ode/ode1storder.h \
     utils/matrix.h \
     utils/vector.h \
-    load_sys/islodenlcsv2.h
+    load_sys/islodenlcsv2.h \
+    load_sys/islodenlcs.h

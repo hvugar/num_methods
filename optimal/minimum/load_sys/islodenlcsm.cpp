@@ -3,7 +3,7 @@
 class CauchyProblemM1stOrderAM : public CauchyProblemM1stOrder
 {
 public:
-    CauchyProblemM1stOrderAM(ISystemLinearODENonLocalContionsM &parent, const ODEGrid& grid) : CauchyProblemM1stOrder(grid), p(parent) {}
+    CauchyProblemM1stOrderAM(ISystemLinearODENonLocalContionsM &parent) : p(parent) {}
 
     unsigned int row;
     unsigned int col;
@@ -18,7 +18,7 @@ private:
 class CauchyProblemM1stOrderBM : public CauchyProblemM1stOrder
 {
 public:
-    CauchyProblemM1stOrderBM(ISystemLinearODENonLocalContionsM &parent, const ODEGrid& grid) : CauchyProblemM1stOrder(grid), p(parent) {}
+    CauchyProblemM1stOrderBM(ISystemLinearODENonLocalContionsM &parent) : p(parent) {}
 
     unsigned int row;
     unsigned int col;
@@ -29,10 +29,6 @@ protected:
 private:
     ISystemLinearODENonLocalContionsM &p;
 };
-
-ISystemLinearODENonLocalContionsM::ISystemLinearODENonLocalContionsM(const ODEGrid& grid) : mgrid(grid)
-{
-}
 
 void ISystemLinearODENonLocalContionsM::calculateForward(DoubleMatrix &x)
 {
@@ -80,7 +76,8 @@ void ISystemLinearODENonLocalContionsM::calculateForward(DoubleMatrix &x)
                 ix[n+1] = 1.0;
 
                 Dimension dim(h, ec.nmbr, sc.nmbr);
-                CauchyProblemM1stOrderAM cpa(*this, ODEGrid(dim));
+                CauchyProblemM1stOrderAM cpa(*this);
+                cpa.setGrid(ODEGrid(dim));
                 cpa.row = row;
                 cpa.col = col;
                 cpa.calculateCP(sc.time, ix, ox, InitialValueProblem::RK4);
@@ -164,7 +161,8 @@ void ISystemLinearODENonLocalContionsM::calculateBackwardCP(DoubleMatrix &x, std
             y << x[i][j];
         }
     }
-    CauchyProblemM1stOrderBM cpb(*this, grid());
+    CauchyProblemM1stOrderBM cpb(*this);
+    cpb.setGrid(grid());
     cpb.n = systemOrder();
     std::vector<DoubleVector> rm;
     cpb.calculateCP(1.0, y, rm, CauchyProblemM1stOrder::RK4, CauchyProblemM1stOrder::R2L);
@@ -194,10 +192,10 @@ unsigned int ISystemLinearODENonLocalContionsM::systemOrder() const
     return n;
 }
 
-const ODEGrid& ISystemLinearODENonLocalContionsM::grid() const
-{
-    return mgrid;
-}
+//const ODEGrid& ISystemLinearODENonLocalContionsM::grid() const
+//{
+//    return mgrid;
+//}
 
 void ISystemLinearODENonLocalContionsM::setLeftSeparatedCondition(const ISystemLinearODENonLocalContionsV::Condition &lscs)
 {

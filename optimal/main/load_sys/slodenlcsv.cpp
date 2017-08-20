@@ -2,8 +2,8 @@
 
 void SystemLinearODENonLocalContionsV::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    ODEGrid grid(Dimension(0.01, 100, 0));
-    SystemLinearODENonLocalContionsV cpnlcs(grid);
+    SystemLinearODENonLocalContionsV cpnlcs;
+    //cpnlcs.setGrid(ODEGrid(Dimension(0.01, 100, 0)));
     cpnlcs.initialize();
     DoubleVector x;
     cpnlcs.calculateForward(x);
@@ -13,9 +13,6 @@ void SystemLinearODENonLocalContionsV::Main(int agrc UNUSED_PARAM, char *argv[] 
     cpnlcs.calculateBackwardCP(x, m);
     for (unsigned int row=0; row<cpnlcs.systemOrder(); row++) IPrinter::printVector(m.at(row));
 }
-
-SystemLinearODENonLocalContionsV::SystemLinearODENonLocalContionsV(const ODEGrid &grid) : ISystemLinearODENonLocalContionsV(grid)
-{}
 
 void SystemLinearODENonLocalContionsV::initialize()
 {

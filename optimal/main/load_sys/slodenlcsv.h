@@ -8,7 +8,8 @@
 class SystemLinearODENonLocalContionsV : public ISystemLinearODENonLocalContionsV
 {
 public:
-    SystemLinearODENonLocalContionsV(const ODEGrid &grid);
+    SystemLinearODENonLocalContionsV() {}
+
     static void Main(int agrc, char *argv[]);
 
     void initialize();

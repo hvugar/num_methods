@@ -202,8 +202,6 @@ void CauchyProblem1stOrder::calculateEulerMod(double x0, double y0, DoubleVector
     }
 }
 
-CauchyProblemM1stOrder::CauchyProblemM1stOrder(const ODEGrid &grid) : SystemNonLinearODE1stOrder(grid) {}
-
 void CauchyProblemM1stOrder::calculateCP(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Method method, Direction direction)
 {
     switch (method)

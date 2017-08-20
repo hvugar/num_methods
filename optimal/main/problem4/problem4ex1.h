@@ -1,14 +1,9 @@
 #ifndef PROBLEM5EX1_H
 #define PROBLEM5EX1_H
 
-#include <load_sys/islodenlcsv.h>
-#include <load_sys/islodenlcsm.h>
 #include <function.h>
-
 #include "zetta0.h"
-#include "zetta1.h"
-#include "zetta2.h"
-
+#include "zettai.h"
 #include "../nonlinearfunctionsystem.h"
 
 #define SAMPLE_1

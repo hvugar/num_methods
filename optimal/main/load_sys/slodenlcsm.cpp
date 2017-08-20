@@ -3,8 +3,8 @@
 
 void SystemLinearODENonLocalContionsM::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    ODEGrid grid(Dimension(0.01, 100, 0));
-    SystemLinearODENonLocalContionsM cpnlcs(grid);
+    SystemLinearODENonLocalContionsM cpnlcs;
+    cpnlcs.setGrid(ODEGrid(Dimension(0.01, 100, 0)));
 
     cpnlcs.initialize();
     DoubleMatrix x;
@@ -24,9 +24,6 @@ void SystemLinearODENonLocalContionsM::Main(int agrc UNUSED_PARAM, char *argv[] 
         }
     }
 }
-
-SystemLinearODENonLocalContionsM::SystemLinearODENonLocalContionsM(const ODEGrid &grid)
-    : ISystemLinearODENonLocalContionsM(grid) {}
 
 void SystemLinearODENonLocalContionsM::initialize()
 {

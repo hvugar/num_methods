@@ -32,6 +32,7 @@ public:
         DoubleMatrix alpha;
     };
 
+    ISystemLinearODENonLocalContionsV() {}
     ISystemLinearODENonLocalContionsV(const ODEGrid &grid);
 
     void setLeftSeparatedCondition(const Condition &lscs);

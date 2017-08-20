@@ -5,15 +5,16 @@
 
 class Problem4Ex1;
 
-class Zetta1 : public ISystemLinearODENonLocalContionsM
+class Zettai : public ISystemLinearODENonLocalContionsM
 {
 public:
-    Zetta1(const ODEGrid &grid, const Problem4Ex1 *p4);
+    Zettai(const Problem4Ex1 &p4, unsigned int i);
 
     virtual double A(double t, unsigned int k, unsigned int row, unsigned int col) const;
     virtual double B(double t, unsigned int k, unsigned int row, unsigned int col) const;
 private:
-    const Problem4Ex1 *p4;
+    const Problem4Ex1 &p4;
+    unsigned int i;
 };
 
 #endif // ZETTA1_H

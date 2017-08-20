@@ -1,6 +1,8 @@
 #include "grid.h"
 #include <cstdio>
 
+ODEGrid::ODEGrid() {}
+
 ODEGrid::ODEGrid(const Dimension &dimension) : mdimension(dimension) {}
 
 const Dimension& ODEGrid::dimension() const

@@ -13,10 +13,7 @@ class SystemLinearODENonLocalContionsM : public ISystemLinearODENonLocalContions
 public:
     static void Main(int agrc, char *argv[]);
 
-    SystemLinearODENonLocalContionsM(const ODEGrid& grid);
-
     void initialize();
-
 public:
     virtual double A(double t, unsigned int k, unsigned int row, unsigned int col) const;
     virtual double B(double t, unsigned int k, unsigned int row, unsigned int col) const;
