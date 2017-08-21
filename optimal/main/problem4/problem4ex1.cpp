@@ -13,9 +13,10 @@ void Problem4Ex1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //    puts("");
 
     DoubleVector x0;
-    x0 << 0.0 << -0.0 << 0.0 << 2.0 << -1.0 << 0.0;
+    x0 << +5.1 << +1.2 << +7.5 << +2.1 << -1.3 << +1.1;
     DoubleVector x;
-    prob1.calculate(x0, x, 0.01);
+    prob1.calculateSimpleIdetartion(x0, x, 0.01);
+    //prob1.calculateNewtonMethod(x0, x, 1, 0.001);
 
 //    printf("%14.10f %14.10f %14.10f\n", x[0], x[1], x[2]);
 //    printf("%14.10f %14.10f %14.10f\n", x[3], x[4], x[5]);

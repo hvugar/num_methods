@@ -17,8 +17,6 @@ public:
     void addLoadPoint(const LoadPoint &lpnt);
     void setRightSize(const DoubleVector &gamma);
 
-    void setGrid(const ODEGrid &grid);
-
     std::vector<Condition> nlscs;
     std::vector<LoadPoint> lpnts;
     DoubleVector gamma;

@@ -16,6 +16,7 @@ public:
     virtual double C(TimeNode node, unsigned int row = 0) const;
 
     virtual void calculateForward();
+    virtual void calculateForward2();
 
     double X(double t, unsigned int row) const;
 private:

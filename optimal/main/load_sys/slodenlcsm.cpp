@@ -90,14 +90,7 @@ void SystemLinearODENonLocalContionsM::initialize()
             }
         }
     }
-
     setBetta(betta);
-
-    //    IPrinter::print(nsc0.mtrx, nsc0.mtrx.rows(), nsc0.mtrx.cols());
-    //    IPrinter::printSeperatorLine();
-    //    IPrinter::print(nsc4.mtrx, nsc4.mtrx.rows(), nsc4.mtrx.cols());
-    //    IPrinter::printSeperatorLine();
-    //    IPrinter::print(betta, betta.rows(), betta.cols());
 }
 
 double SystemLinearODENonLocalContionsM::A(double, unsigned int, unsigned int row, unsigned int col) const

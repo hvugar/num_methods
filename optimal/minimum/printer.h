@@ -25,6 +25,7 @@ public:
 
     static void print(const DoubleMatrix &m, unsigned int M=10, unsigned int N=10, unsigned int width=14, unsigned int presicion=10, FILE *file=stdout);
     static void print(const DoubleVector &v, unsigned int N=10, unsigned int width=14, unsigned int presicion=10, FILE *file=stdout);
+
     static void printSeperatorLine(const char* msg = NULL, char c='-', FILE* file=stdout);
 };
 
