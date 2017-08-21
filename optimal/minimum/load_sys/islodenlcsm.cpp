@@ -33,16 +33,11 @@ private:
 void ISystemLinearODENonLocalContionsM::calculateForward(DoubleMatrix &x)
 {
     unsigned int L = nscs.size();
-
     unsigned int n0 = 0;
-    if (L > 0) n0 = nscs.at(0).alpha.rows();
-
-    unsigned int n1 = lscs.alpha.rows();
-
-    unsigned int n2 = rscs.alpha.rows();
-
+    if (L > 0) n0 = nscs.at(0).mtrx.rows();
+    unsigned int n1 = lscs.mtrx.rows();
+    unsigned int n2 = rscs.mtrx.rows();
     unsigned int n = n0 + n1 + n2;
-
     double h = grid().dimension().step();
 
     DoubleVector ix(n+2);
@@ -61,15 +56,15 @@ void ISystemLinearODENonLocalContionsM::calculateForward(DoubleMatrix &x)
             {
                 for (unsigned int j = 0; j<n; j++)
                 {
-                    alpha[i][j] = nscs.at(i).alpha[row][j];
+                    alpha[i][j] = nscs.at(i).mtrx[row][j];
                 }
             }
             bt[row][col] = betta[row][col];
 
             for (unsigned int start = 0; start<L-1; start++)
             {
-                ISystemLinearODENonLocalContionsV::Condition sc = nscs.at(start);
-                ISystemLinearODENonLocalContionsV::Condition ec = nscs.at(start+1);
+                Condition sc = nscs.at(start);
+                Condition ec = nscs.at(start+1);
 
                 for (unsigned int i=0; i<n; i++) ix[i] = alpha[start][i];
                 ix[n+0] = bt[row][col];
@@ -185,9 +180,9 @@ unsigned int ISystemLinearODENonLocalContionsM::systemOrder() const
 {
     unsigned int L = nscs.size();
     unsigned int n0 = 0;
-    if (L > 0) n0 = nscs.at(0).alpha.rows();
-    unsigned int n1 = lscs.alpha.rows();
-    unsigned int n2 = rscs.alpha.rows();
+    if (L > 0) n0 = nscs.at(0).mtrx.rows();
+    unsigned int n1 = lscs.mtrx.rows();
+    unsigned int n2 = rscs.mtrx.rows();
     unsigned int n = n0 + n1 + n2;
     return n;
 }
@@ -197,17 +192,17 @@ unsigned int ISystemLinearODENonLocalContionsM::systemOrder() const
 //    return mgrid;
 //}
 
-void ISystemLinearODENonLocalContionsM::setLeftSeparatedCondition(const ISystemLinearODENonLocalContionsV::Condition &lscs)
+void ISystemLinearODENonLocalContionsM::setLeftSeparatedCondition(const Condition &lscs)
 {
     C_UNUSED(lscs);
 }
 
-void ISystemLinearODENonLocalContionsM::setRightSeparatedCondition(const ISystemLinearODENonLocalContionsV::Condition &rscs)
+void ISystemLinearODENonLocalContionsM::setRightSeparatedCondition(const Condition &rscs)
 {
     C_UNUSED(rscs);
 }
 
-void ISystemLinearODENonLocalContionsM::addNonSeparatedCondition(const ISystemLinearODENonLocalContionsV::Condition &nsc)
+void ISystemLinearODENonLocalContionsM::addNonSeparatedCondition(const Condition &nsc)
 {
     this->nscs.push_back(nsc);
 }

@@ -33,12 +33,6 @@ public:
         unsigned int nmbr;
         DoubleMatrix mtrx;
     };
-
-    void setGrid(const ODEGrid &grid);
-    const ODEGrid& grid() const;
-
-private:
-    ODEGrid mgrid;
 };
 
 #endif // ISYSTEMLINEARODENONLOCALCONTIONS_H

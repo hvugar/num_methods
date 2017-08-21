@@ -12,18 +12,6 @@ private:
     ISystemLinearODENonLocalContionsV &p;
 };
 
-class CauchyProblemM1stOrderB : public CauchyProblemM1stOrder
-{
-public:
-    CauchyProblemM1stOrderB(ISystemLinearODENonLocalContionsV &parent) : p(parent) {}
-protected:
-    virtual double f(double t, const DoubleVector &x, unsigned int k, unsigned int i) const;
-private:
-    ISystemLinearODENonLocalContionsV &p;
-};
-
-ISystemLinearODENonLocalContionsV::ISystemLinearODENonLocalContionsV(const ODEGrid &grid) : SystemLinearODE1stOrder() {}
-
 void ISystemLinearODENonLocalContionsV::setLeftSeparatedCondition(const Condition &lscs)
 {
     this->lscs = lscs;
@@ -53,36 +41,39 @@ void ISystemLinearODENonLocalContionsV::calculateIntervalF(unsigned int start, u
 {
     unsigned int L = nscs.size();
     unsigned int n0 = 0;
-    if (L > 0) n0 = nscs.at(0).alpha.rows();
-    unsigned int n1 = lscs.alpha.rows();
-    unsigned int n2 = rscs.alpha.rows();
+    if (L > 0) n0 = nscs.at(0).mtrx.rows();
+    unsigned int n1 = lscs.mtrx.rows();
+    unsigned int n2 = rscs.mtrx.rows();
     unsigned int n = n0 + n1 + n2;
-
     double h = grid().dimension().step();
+
     DoubleVector x(n+2);
     DoubleVector rx(n+2);
 
     Condition &sc = nscs.at(start);
     Condition &ec = nscs.at(start+1);
 
-    for (unsigned int i=0; i<n; i++) x[i] = sc.alpha[r][i]; x[n] = betta[r]; x[n+1] = 1.0;
+    for (unsigned int i=0; i<n; i++)
+        x[i] = sc.mtrx[r][i];
+    x[n] = betta[r];
+    x[n+1] = 1.0;
 
     Dimension dim(h, ec.nmbr, sc.nmbr);
     CauchyProblemM1stOrderA cpa(*this);
     cpa.setGrid(ODEGrid(dim));
     cpa.calculateCP(sc.time, x, rx, InitialValueProblem::RK4);
 
-    for (unsigned int i=0; i<n; i++) sc.alpha[r][i] = rx[i];
+    for (unsigned int i=0; i<n; i++) sc.mtrx[r][i] = rx[i];
     betta[r] = rx[n];
     double M = rx[n+1];
 
     for (unsigned int s=start+1; s<L; s++)
     {
         Condition &cc = nscs.at(s);
-        for (unsigned int i=0; i<n; i++) cc.alpha[r][i] *= M;
+        for (unsigned int i=0; i<n; i++) cc.mtrx[r][i] *= M;
     }
 
-    for (unsigned int i=0; i<n; i++) ec.alpha[r][i] += rx[i];
+    for (unsigned int i=0; i<n; i++) ec.mtrx[r][i] += rx[i];
 
     x.clear();
     rx.clear();
@@ -93,13 +84,15 @@ void ISystemLinearODENonLocalContionsV::calculateForward(DoubleVector &x)
     unsigned int L = nscs.size();
 
     unsigned int n0 = 0;
-    if (L > 0) n0 = nscs.at(0).alpha.rows();
+    if (L > 0) n0 = nscs.at(0).mtrx.rows();
 
-    unsigned int n1 = lscs.alpha.rows();
+    unsigned int n1 = lscs.mtrx.rows();
 
-    unsigned int n2 = rscs.alpha.rows();
+    unsigned int n2 = rscs.mtrx.rows();
 
     unsigned int n = n0 + n1 + n2;
+
+    // Nonseparated conditions
 
     for (unsigned int row=0; row<n0; row++)
     {
@@ -109,6 +102,7 @@ void ISystemLinearODENonLocalContionsV::calculateForward(DoubleVector &x)
         }
     }
 
+    // Separated conditions in left side
     for (unsigned int row=0; row<n1; row++)
     {
         double h = grid().dimension().step();
@@ -118,18 +112,20 @@ void ISystemLinearODENonLocalContionsV::calculateForward(DoubleVector &x)
         DoubleVector x(n+2);
         DoubleVector rx(n+2);
 
-        for (unsigned int i=0; i<n; i++) x[i] = lscs.alpha[row][i]; x[n] = betta[row+n0]; x[n+1] = 1.0;
+        for (unsigned int i=0; i<n; i++) x[i] = lscs.mtrx[row][i]; x[n] = betta[row+n0]; x[n+1] = 1.0;
 
         Dimension dim(h, maxN, minN);
         CauchyProblemM1stOrderA cpa(*this);
         cpa.setGrid( ODEGrid(dim));
         cpa.calculateCP(lscs.time, x, rx, InitialValueProblem::RK4);
 
-        for (unsigned int i=0; i<n; i++) lscs.alpha[row][i] = rx[i];
+        for (unsigned int i=0; i<n; i++) lscs.mtrx[row][i] = rx[i];
         betta[row+n0] = rx[n];
         x.clear();
         rx.clear();
     }
+
+    // Separated conditions in right side
 
     DoubleMatrix A(n, n);
     DoubleVector b(n);
@@ -141,7 +137,7 @@ void ISystemLinearODENonLocalContionsV::calculateForward(DoubleVector &x)
     {
         for (unsigned int col=0; col<n; col++)
         {
-            A[row][col] = c0.alpha[row][col];
+            A[row][col] = c0.mtrx[row][col];
         }
         b[row] = betta[row];
     }
@@ -150,7 +146,7 @@ void ISystemLinearODENonLocalContionsV::calculateForward(DoubleVector &x)
     {
         for (unsigned int col=0; col<n; col++)
         {
-            A[row+n0][col] = lscs.alpha[row][col];
+            A[row+n0][col] = lscs.mtrx[row][col];
         }
         b[row+n0] = betta[row+n0];
     }
@@ -159,7 +155,7 @@ void ISystemLinearODENonLocalContionsV::calculateForward(DoubleVector &x)
     {
         for (unsigned int col=0; col<n; col++)
         {
-            A[row+n0+n1][col] = rscs.alpha[row][col];
+            A[row+n0+n1][col] = rscs.mtrx[row][col];
         }
         b[row+n0+n1] = betta[row+n0+n1];
     }
@@ -172,7 +168,23 @@ void ISystemLinearODENonLocalContionsV::calculateBackward(DoubleVector &x UNUSED
 
 void ISystemLinearODENonLocalContionsV::calculateBackwardCP(const DoubleVector &x, std::vector<DoubleVector>& m)
 {
-    CauchyProblemM1stOrderB cpb(*this);
+    class CPB : public CauchyProblemM1stOrder
+    {
+    public:
+        CPB(ISystemLinearODENonLocalContionsV &parent) : p(parent) {}
+    protected:
+        virtual double f(double t, const DoubleVector &x, unsigned int k, unsigned int i) const
+        {
+            unsigned int n = p.systemOrder();
+            double res = p.B(t,k,i);
+            for (unsigned int j=0; j<n; j++) res += p.A(t,k,i,j)*x[j];
+            return res;
+        }
+    private:
+        ISystemLinearODENonLocalContionsV &p;
+    };
+
+    CPB cpb(*this);
     cpb.setGrid(grid());
     cpb.calculateCP(nscs.back().time, x, m, CauchyProblemM1stOrder::RK4, CauchyProblemM1stOrder::R2L);
 }
@@ -181,9 +193,9 @@ unsigned int ISystemLinearODENonLocalContionsV::systemOrder() const
 {
     unsigned int L = nscs.size();
     unsigned int n0 = 0;
-    if (L > 0) n0 = nscs.at(0).alpha.rows();
-    unsigned int n1 = lscs.alpha.rows();
-    unsigned int n2 = rscs.alpha.rows();
+    if (L > 0) n0 = nscs.at(0).mtrx.rows();
+    unsigned int n1 = lscs.mtrx.rows();
+    unsigned int n2 = rscs.mtrx.rows();
     unsigned int n = n0 + n1 + n2;
     return n;
 }
@@ -244,10 +256,10 @@ double CauchyProblemM1stOrderA::S0(double t, const DoubleVector &x, unsigned int
     return (s1-s2)/m1;
 }
 
-double CauchyProblemM1stOrderB::f(double t, const DoubleVector &x, unsigned int k, unsigned int i) const
-{
-    unsigned int n = p.systemOrder();
-    double res = p.B(t,k,i);
-    for (unsigned int j=0; j<n; j++) res += p.A(t,k,i,j)*x[j];
-    return res;
-}
+//double CauchyProblemM1stOrderB::f(double t, const DoubleVector &x, unsigned int k, unsigned int i) const
+//{
+//    unsigned int n = p.systemOrder();
+//    double res = p.B(t,k,i);
+//    for (unsigned int j=0; j<n; j++) res += p.A(t,k,i,j)*x[j];
+//    return res;
+//}

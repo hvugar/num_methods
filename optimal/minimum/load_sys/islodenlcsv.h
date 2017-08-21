@@ -5,6 +5,7 @@
 #include <matrix2d.h>
 #include <vector>
 #include <ode/cauchyp.h>
+#include "islodenlcs.h"
 
 using namespace std;
 
@@ -14,27 +15,9 @@ using namespace std;
  * Numerical solution of systems of linear ordinary differential equations with non-local conditions.
  */
 
-class MINIMUMSHARED_EXPORT ISystemLinearODENonLocalContionsV : public SystemLinearODE1stOrder
+class MINIMUMSHARED_EXPORT ISystemLinearODENonLocalContionsV : public SystemLinearODE1stOrder, public ISystemLinearODENonLocalContions
 {
 public:
-    enum ConditionType
-    {
-        SeparatedLeft = 0,
-        SeparatedRight = 1,
-        NonSeparated = 2
-    };
-
-    struct Condition
-    {
-        ConditionType type;
-        double time;
-        unsigned int nmbr;
-        DoubleMatrix alpha;
-    };
-
-    ISystemLinearODENonLocalContionsV() {}
-    ISystemLinearODENonLocalContionsV(const ODEGrid &grid);
-
     void setLeftSeparatedCondition(const Condition &lscs);
     void setRightSeparatedCondition(const Condition &lscs);
     void addNonSeparatedCondition(const Condition &nsc);
@@ -62,6 +45,8 @@ private:
 private:
     void calculateIntervalF(unsigned int s, unsigned int r);
     void calculateIntervalB(unsigned int s, unsigned int r);
+//    void calculateDiffEquation(const Condition &sc, const Condition &ec, double h, const DoubleVector &x, DoubleVector &rx,
+//                               unsigned int minN, unsigned int maxN);
 
 public:
     virtual double A(double t UNUSED_PARAM, unsigned int k, unsigned int row, unsigned int col) const = 0;

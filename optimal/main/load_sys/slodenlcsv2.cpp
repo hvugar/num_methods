@@ -82,7 +82,7 @@ void SystemLinearODENonLocalContionsV2::Main(int agrc UNUSED_PARAM, char *argv[]
 SystemLinearODENonLocalContionsV2::SystemLinearODENonLocalContionsV2() : ISystemLinearODENonLocalContionsV2()
 {}
 
-void SystemLinearODENonLocalContionsV2::fillMatrix(DoubleMatrix &M, DoubleVector &P, unsigned int st,
+void SystemLinearODENonLocalContionsV2::fillMatrix(DoubleMatrix &M, DoubleVector &P UNUSED_PARAM, unsigned int st,
                                                    unsigned int n, unsigned int k1, unsigned int k2,
                                                    unsigned int row)
 {

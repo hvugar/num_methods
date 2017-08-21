@@ -17,7 +17,7 @@ void ODEGrid::setDimension(const Dimension &dimension)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-PDEGrid::PDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaces)
+PDEGrid::PDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaces UNUSED_PARAM)
 {
     mtimeDimension = timeDimension;
 }

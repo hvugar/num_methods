@@ -18,6 +18,7 @@ public:
     virtual double A(double t, unsigned int k, unsigned int row, unsigned int col) const;
     virtual double B(double t, unsigned int k, unsigned int row, unsigned int col) const;
 
+
     double X(double t, unsigned int k, unsigned int row, unsigned int col) const;
     double dX(double t, unsigned int k, unsigned int row, unsigned int col) const;
 };

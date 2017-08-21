@@ -3,7 +3,7 @@
 
 #include "islodenlcs.h"
 
-class MINIMUMSHARED_EXPORT ISystemLinearODENonLocalContionsV2 : public ISystemLinearODENonLocalContions
+class MINIMUMSHARED_EXPORT ISystemLinearODENonLocalContionsV2 : public ISystemLinearODENonLocalContions, public SystemDifferentialEquation
 {
 public:
     virtual double A(TimeNode node, unsigned int row = 0, unsigned int col = 0) const = 0;

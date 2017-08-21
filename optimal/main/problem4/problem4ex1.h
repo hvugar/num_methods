@@ -8,7 +8,7 @@
 
 #define SAMPLE_1
 
-class Problem4Ex1 : public NonLinearFunctionSystem
+class Problem4Ex1 : public NonLinearFunctionSystem, public ISystemLinearODENonLocalContions
 {
 public:
     static void Main(int agrc, char *argv[]);

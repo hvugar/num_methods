@@ -318,7 +318,7 @@ double HeatControl2DeltaF::bf(unsigned int i, unsigned int j, unsigned int k) co
     return 0.0;
 }
 
-void HeatControl2DeltaF::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const
+void HeatControl2DeltaF::print(unsigned int i, const DoubleVector& x, const DoubleVector &g, double fx UNUSED_PARAM, GradientMethod::MethodResult result) const
 {
     C_UNUSED(g);
     C_UNUSED(alpha);

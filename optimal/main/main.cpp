@@ -64,8 +64,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //SystemLinearODENonLocalContionsV::Main(argc, argv);
     //SystemLinearODENonLocalContionsM::Main(argc, argv);
-    //Problem4Ex1::Main(argc, argv);
-    SystemLinearODENonLocalContionsV2::Main(argc, argv);
+    Problem4Ex1::Main(argc, argv);
+    //SystemLinearODENonLocalContionsV2::Main(argc, argv);
 
     //NumIntegralExp1::Main(argc, argv);
 

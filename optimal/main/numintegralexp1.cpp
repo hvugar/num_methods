@@ -1,6 +1,6 @@
 #include "numintegralexp1.h"
 
-void NumIntegralExp1::Main(int agrc, char *argv[])
+void NumIntegralExp1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     ODEGrid grid(Dimension(0.01, 100, 0));
     NumIntegralExp1 exp1(grid);

@@ -788,7 +788,7 @@ void SystemDifEquation::calculateRX(DoubleMatrix &rx)
     fclose(file);
 }
 
-double SystemDifEquation::a(unsigned int i, unsigned int j, unsigned int k) const
+double SystemDifEquation::a(unsigned int i, unsigned int j, unsigned int k UNUSED_PARAM) const
 {
     if (i==1 && j==1) return +2.0;
     if (i==1 && j==2) return +3.0;

@@ -8,7 +8,7 @@
 #include <vector>
 #include "islodenlcsv.h"
 
-class MINIMUMSHARED_EXPORT ISystemLinearODENonLocalContionsM : public SystemLinearODE
+class MINIMUMSHARED_EXPORT ISystemLinearODENonLocalContionsM : public SystemDifferentialEquation, public ISystemLinearODENonLocalContions
 {
 public:
     virtual void calculateForward(DoubleMatrix &x);
@@ -16,10 +16,10 @@ public:
 
     virtual void calculateBackwardCP(DoubleMatrix &x, std::vector<std::vector<DoubleVector>> &m);
 
-    void setLeftSeparatedCondition(const ISystemLinearODENonLocalContionsV::Condition &lscs);
-    void setRightSeparatedCondition(const ISystemLinearODENonLocalContionsV::Condition &lscs);
-    void addNonSeparatedCondition(const ISystemLinearODENonLocalContionsV::Condition &nsc);
-    const std::vector<ISystemLinearODENonLocalContionsV::Condition>& nonSeparatedConditions() const;
+    void setLeftSeparatedCondition(const Condition &lscs);
+    void setRightSeparatedCondition(const Condition &lscs);
+    void addNonSeparatedCondition(const Condition &nsc);
+    const std::vector<Condition>& nonSeparatedConditions() const;
     void setBetta(const DoubleMatrix &betta);
     void setSystemOrder(unsigned int n);
     unsigned int systemOrder() const;
@@ -27,9 +27,9 @@ public:
     virtual double A(double t UNUSED_PARAM, unsigned int k, unsigned int row, unsigned int col) const = 0;
     virtual double B(double t UNUSED_PARAM, unsigned int k, unsigned int row, unsigned int col) const = 0;
 
-    std::vector<ISystemLinearODENonLocalContionsV::Condition> nscs;
-    ISystemLinearODENonLocalContionsV::Condition lscs;
-    ISystemLinearODENonLocalContionsV::Condition rscs;
+    std::vector<Condition> nscs;
+    Condition lscs;
+    Condition rscs;
     DoubleMatrix betta;
 };
 

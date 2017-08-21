@@ -35,44 +35,44 @@ void SystemLinearODENonLocalContionsM::initialize()
     unsigned int n2 = 0;
     unsigned int n = n0 + n1 + n2;
 
-    ISystemLinearODENonLocalContionsV::Condition nsc0;
-    nsc0.type = ISystemLinearODENonLocalContionsV::NonSeparated;
+    Condition nsc0;
+    nsc0.type = NonSeparated;
     nsc0.time = 0.0;
     nsc0.nmbr = 0;
-    nsc0.alpha.resize(n0, n);
-    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc0.alpha[row][col] = (rand() % 1000) / 1000.0;
+    nsc0.mtrx.resize(n0, n);
+    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc0.mtrx[row][col] = (rand() % 1000) / 1000.0;
     addNonSeparatedCondition(nsc0);
 
-    ISystemLinearODENonLocalContionsV::Condition nsc1;
-    nsc1.type = ISystemLinearODENonLocalContionsV::NonSeparated;
+    Condition nsc1;
+    nsc1.type = NonSeparated;
     nsc1.time = 0.25;
     nsc1.nmbr = N/4;
-    nsc1.alpha.resize(n0, n);
-    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc1.alpha[row][col] = (rand() % 1000) / 1000.0;
+    nsc1.mtrx.resize(n0, n);
+    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc1.mtrx[row][col] = (rand() % 1000) / 1000.0;
     addNonSeparatedCondition(nsc1);
 
-    ISystemLinearODENonLocalContionsV::Condition nsc2;
-    nsc2.type = ISystemLinearODENonLocalContionsV::NonSeparated;
+    Condition nsc2;
+    nsc2.type = NonSeparated;
     nsc2.time = 0.5;
     nsc2.nmbr = N/2;
-    nsc2.alpha.resize(n0, n);
-    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc2.alpha[row][col] = (rand() % 1000) / 1000.0;
+    nsc2.mtrx.resize(n0, n);
+    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc2.mtrx[row][col] = (rand() % 1000) / 1000.0;
     addNonSeparatedCondition(nsc2);
 
-    ISystemLinearODENonLocalContionsV::Condition nsc3;
-    nsc3.type = ISystemLinearODENonLocalContionsV::NonSeparated;
+    Condition nsc3;
+    nsc3.type = NonSeparated;
     nsc3.time = 0.75;
     nsc3.nmbr = 3*(N/4);
-    nsc3.alpha.resize(n0, n);
-    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc3.alpha[row][col] = (rand() % 1000) / 1000.0;
+    nsc3.mtrx.resize(n0, n);
+    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc3.mtrx[row][col] = (rand() % 1000) / 1000.0;
     addNonSeparatedCondition(nsc3);
 
-    ISystemLinearODENonLocalContionsV::Condition nsc4;
-    nsc4.type = ISystemLinearODENonLocalContionsV::NonSeparated;
+    Condition nsc4;
+    nsc4.type = NonSeparated;
     nsc4.time = 1.0;
     nsc4.nmbr = N;
-    nsc4.alpha.resize(n0, n);
-    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc4.alpha[row][col] = (rand() % 1000) / 1000.0;
+    nsc4.mtrx.resize(n0, n);
+    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc4.mtrx[row][col] = (rand() % 1000) / 1000.0;
     addNonSeparatedCondition(nsc4);
 
     DoubleMatrix betta(n0, n);
@@ -85,17 +85,17 @@ void SystemLinearODENonLocalContionsM::initialize()
             betta[row][col] = 0.0;
             for (unsigned int s=0; s<L; s++)
             {
-                const ISystemLinearODENonLocalContionsV::Condition &c = nonSeparatedConditions().at(s);
-                for (unsigned int i=0; i<n; i++) betta[row][col] += c.alpha[row][i] * X(c.time, 0, i, col);
+                const Condition &c = nonSeparatedConditions().at(s);
+                for (unsigned int i=0; i<n; i++) betta[row][col] += c.mtrx[row][i] * X(c.time, 0, i, col);
             }
         }
     }
 
     setBetta(betta);
 
-    //    IPrinter::print(nsc0.alpha, nsc0.alpha.rows(), nsc0.alpha.cols());
+    //    IPrinter::print(nsc0.mtrx, nsc0.mtrx.rows(), nsc0.mtrx.cols());
     //    IPrinter::printSeperatorLine();
-    //    IPrinter::print(nsc4.alpha, nsc4.alpha.rows(), nsc4.alpha.cols());
+    //    IPrinter::print(nsc4.mtrx, nsc4.mtrx.rows(), nsc4.mtrx.cols());
     //    IPrinter::printSeperatorLine();
     //    IPrinter::print(betta, betta.rows(), betta.cols());
 }
