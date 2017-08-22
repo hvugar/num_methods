@@ -2,7 +2,7 @@
 #define BORDERHYPERBOLIC2D_H
 
 #include <global.h>
-#include <hyperbolicequation.h>
+#include <pde/hyperbolicequation.h>
 
 class MINIMUMSHARED_EXPORT BorderHyperbolic2D : public IHyperbolicEquation2D
 {

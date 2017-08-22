@@ -27,11 +27,14 @@ SOURCES += \
     projection.cpp \
     rungekutta.cpp \
     integral.cpp \
-    hyperbolicequation.cpp \
-    parabolicequation.cpp \
+    ode/cauchyp.cpp \
+    ode/diffequ.cpp \
+    pde/iibvp.cpp \
+    pde/hyperbolicequation.cpp \
+    pde/parabolicequation.cpp \
     exceptions.cpp \
-    matrix2d.cpp \
     vector2d.cpp \
+    matrix2d.cpp \
     matrix3d.cpp \
     cmethods.c \
     grid/bvp.cpp \
@@ -46,11 +49,8 @@ SOURCES += \
     grid/nhpibvp.cpp \
     grid/integral1.cpp \
     grid/uniformgrid.cpp \
-    pde/iibvp.cpp \
     gradient/igradient.cpp \
     nonuniformgrid.cpp \
-    ode/cauchyp.cpp \
-    ode/diffequ.cpp \
     utils/matrix.cpp \
     utils/vector.cpp \
     load_sys/islodenlcsm.cpp \
@@ -71,8 +71,9 @@ HEADERS += global.h \
     projection.h \
     rungekutta.h \
     integral.h \
-    hyperbolicequation.h \
-    parabolicequation.h \
+    pde/iibvp.h \
+    pde/hyperbolicequation.h \
+    pde/parabolicequation.h \
     exceptions.h \
     matrix2d.h \
     vector2d.h \
@@ -87,7 +88,6 @@ HEADERS += global.h \
     grid/grid.h \
     grid/bpibvp.h \
     grid/nhpibvp.h \
-    pde/iibvp.h \
     gradient/igradient.h \
     grid/integral1.h \
     grid/uniformgrid.h \

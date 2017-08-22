@@ -1,7 +1,7 @@
 #ifndef HEATEXAMPLE1_H
 #define HEATEXAMPLE1_H
 
-#include <parabolicequation.h>
+#include <pde/parabolicequation.h>
 #include <printer.h>
 
 class HeatExample1 : public IParabolicEquation

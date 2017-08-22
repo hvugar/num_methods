@@ -4,7 +4,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <function.h>
-#include <parabolicequation.h>
+#include <pde/parabolicequation.h>
 #include <printer.h>
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
