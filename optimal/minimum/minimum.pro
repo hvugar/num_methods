@@ -16,7 +16,6 @@ DEFINES += MINIMUM_LIBRARY
 DESTDIR += ../bin
 
 SOURCES += \
-    cmatrix.c \
     function.cpp \
     r1minimize.cpp \
     gradient.cpp \
@@ -45,13 +44,13 @@ SOURCES += \
     grid/grid.cpp \
     grid/bpibvp.cpp \
     grid/nhpibvp.cpp \
-    iibvp.cpp \
-    gradient/igradient.cpp \
-    diffequ.cpp \
     grid/integral1.cpp \
     grid/uniformgrid.cpp \
+    pde/iibvp.cpp \
+    gradient/igradient.cpp \
     nonuniformgrid.cpp \
     ode/cauchyp.cpp \
+    ode/diffequ.cpp \
     utils/matrix.cpp \
     utils/vector.cpp \
     load_sys/islodenlcsm.cpp \
@@ -60,7 +59,6 @@ SOURCES += \
     load_sys/islodenlcs.cpp
 
 HEADERS += global.h \
-    cmethods.h \
     cmatrix.h \
     function.h \
     r1minimize.h \
@@ -89,13 +87,13 @@ HEADERS += global.h \
     grid/grid.h \
     grid/bpibvp.h \
     grid/nhpibvp.h \
-    iibvp.h \
+    pde/iibvp.h \
     gradient/igradient.h \
-    diffequ.h \
     grid/integral1.h \
     grid/uniformgrid.h \
     nonuniformgrid.h \
     ode/cauchyp.h \
+    ode/diffequ.h \
     utils/matrix.h \
     utils/vector.h \
     load_sys/islodenlcsm.h \
