@@ -48,14 +48,14 @@ SOURCES += \
     iibvp.cpp \
     gradient/igradient.cpp \
     diffequ.cpp \
-    load_sys/islodenlcsm.cpp \
     grid/integral1.cpp \
     grid/uniformgrid.cpp \
     nonuniformgrid.cpp \
-    load_sys/islodenlcsv.cpp \
     ode/cauchyp.cpp \
     utils/matrix.cpp \
     utils/vector.cpp \
+    load_sys/islodenlcsm.cpp \
+    load_sys/islodenlcsv.cpp \
     load_sys/islodenlcsv2.cpp \
     load_sys/islodenlcs.cpp
 
@@ -92,13 +92,13 @@ HEADERS += global.h \
     iibvp.h \
     gradient/igradient.h \
     diffequ.h \
-    load_sys/islodenlcsm.h \
     grid/integral1.h \
     grid/uniformgrid.h \
     nonuniformgrid.h \
-    load_sys/islodenlcsv.h \
     ode/cauchyp.h \
     utils/matrix.h \
     utils/vector.h \
+    load_sys/islodenlcsm.h \
+    load_sys/islodenlcsv.h \
     load_sys/islodenlcsv2.h \
     load_sys/islodenlcs.h
