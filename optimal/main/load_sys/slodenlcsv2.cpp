@@ -77,7 +77,7 @@ void SystemLinearODENonLocalContionsV2::Main(int agrc UNUSED_PARAM, char *argv[]
         unsigned int k2 = slodenlcv.nlscs.size();
         for (unsigned int i=0; i<k2; i++)
         {
-            Condition &cc = slodenlcv.nlscs[0];
+            Condition &cc = slodenlcv.nlscs[i];
             for (unsigned int col=0; col<n; col++)
             {
                 DoubleMatrix &m = cc.mtrx;
@@ -88,7 +88,7 @@ void SystemLinearODENonLocalContionsV2::Main(int agrc UNUSED_PARAM, char *argv[]
         unsigned int k1 = slodenlcv.lpnts.size();
         for (unsigned int i=0; i<k1; i++)
         {
-            LoadPoint &lp = slodenlcv.lpnts[0];
+            LoadPoint &lp = slodenlcv.lpnts[i];
             for (unsigned int col=0; col<n; col++)
             {
                 DoubleMatrix &m = lp.mtrx;
@@ -245,89 +245,185 @@ void SystemLinearODENonLocalContionsV2::calculateForward2()
     unsigned int k1 = lpnts.size(); // number of loaded points
     unsigned int n = nlscs.at(0).mtrx.rows();
 
-    DoubleVector x0(n*(k1+k2)+2);
-    std::vector<DoubleVector> rx(n*(k1+k2)+2);
+    DoubleMatrix MX(n*(k1+k2),n*(k1+k2));
+    DoubleVector GM(n*(k1+k2));
 
-    std::vector<DoubleVector> mx(n*(k1+k2)+2);
+    std::vector<DoubleVector> mx((k1+k2)*n+2);
     for (unsigned int i=0; i<mx.size(); i++) mx[i].resize(N+1);
 
+    unsigned int ROW = 0;
+    //unsigned int row = 0;
     for (unsigned int row=0; row<n; row++)
     {
+        /* Initializing alpha-s first elements */
         for (unsigned int i=0; i<k2; i++)
         {
             const Condition &cond = nlscs.at(i);
             for (unsigned int j=0; j<n; j++) mx[i*n+j][0] = cond.mtrx[row][j];
         }
 
+        /* Initializing betta-s first elements */
         for (unsigned int s=0; s<k1; s++)
         {
-            LoadPoint &ldpnt = lpnts.at(s);
+            const LoadPoint &ldpnt = lpnts.at(s);
             for (unsigned int j=0; j<n; j++) mx[k2*n+s*n+j][0] = ldpnt.mtrx[row][j];
         }
 
         mx[(k1+k2)*n][0] = gamma[row];
         mx[(k1+k2)*n+1][0] = 1.0;
 
+//        for (unsigned int i=0; i<(k1+k2)*n; i++)
+//        {
+//            MX[ROW][i] = mx[i][0];
+//        }
+//        ROW++;
 
-        for (unsigned int i=0; i<mx.size(); i++)
+        // Forming initial vector for Cauchy problem
+        for (unsigned int cnd=0; cnd<k2-1; cnd++)
         {
-            printf("%10.6f", mx[i][0]);
+            const Condition &sc = nlscs.at(cnd);
+            const Condition &ec = nlscs.at(cnd+1);
+
+            DoubleVector x0(n+n*k1+2);
+            std::vector<DoubleVector> rx(n+n*k1+2);
+
+            /* Forming arguments of right side of ODE */
+            for (unsigned int i=0; i<n; i++) x0[i] = mx[cnd*n+i][sc.nmbr];
+
+            for (unsigned int s=0; s<k1; s++)  //////// betta
+            {
+                for (unsigned int i=0; i<n; i++)
+                {
+                    x0[n+s*n+i] = mx[k2*n+s*n+i][sc.nmbr];
+                }
+            }
+            x0[n+k1*n]   = mx[k2*n+k1*n][sc.nmbr]; // gamma
+            x0[n+k1*n+1] = 1.0;                    // M
+
+            /* Calculating differensial equation */
+            calculateCauchyProblem(sc, ec, x0, rx, h);
+
+            /* Current alpha */
+            for (unsigned int i=0; i<n; i++)
+            {
+                for (unsigned int j=sc.nmbr; j<=ec.nmbr; j++) mx[cnd*n+i][j] = rx[i][j-sc.nmbr];
+            }
+
+            /* Bettas */
+            for (unsigned int s=0; s<k1; s++)
+            {
+                for (unsigned int i=0; i<n; i++)
+                {
+                    for (unsigned int j=sc.nmbr; j<=ec.nmbr; j++) mx[k2*n+s*n+i][j] = rx[n+s*n+i][j-sc.nmbr];
+                }
+            }
+
+            /* gamma */
+            for (unsigned int j=sc.nmbr; j<=ec.nmbr; j++) mx[k2*n+k1*n][j] = rx[n+k1*n][j-sc.nmbr];
+            /* M */
+            for (unsigned int j=sc.nmbr; j<=ec.nmbr; j++) mx[k2*n+k1*n+1][j] = rx[n+k1*n+1][j-sc.nmbr];
+
+            for (unsigned int s=cnd+1; s<k2; s++)
+            {
+                for (unsigned int i=0; i<n; i++)
+                {
+                    for (unsigned int j=sc.nmbr; j<=ec.nmbr; j++) mx[s*n+i][j] = mx[s*n+i][sc.nmbr]*rx[n+k1*n+1][j-sc.nmbr];
+                }
+            }
+            for (unsigned int i=0; i<n; i++) mx[(cnd+1)*n+i][ec.nmbr] += mx[cnd*n+i][ec.nmbr];
+
+            x0.clear();
+            for (unsigned int i=0; i<rx.size(); i++) rx[i].clear();
+            rx.clear();
         }
-        puts("");
+
+        IPrinter::printVector(mx[0]);
+        IPrinter::printVector(mx[1]);
+        IPrinter::printVector(mx[2]);
+
+        for (unsigned int i=0; i<k2; i++)
+        {
+            const Condition &sc = nlscs.at(i);
+            for (unsigned int j=0; j<(k1+k2)*n; j++) MX[ROW][j] = mx[j][sc.nmbr];
+            GM[ROW] = mx[(k1+k2)*n+1][sc.nmbr];
+            ROW++;
+        }
+
+//        for (unsigned int s=0; s<k1; s++)
+//        {
+//            const LoadPoint &lp = lpnts.at(s);
+//            for (unsigned int j=0; j<(k1+k2)*n; j++) MX[ROW][j] = mx[j][lp.nmbr];
+//            GM[ROW] = mx[(k1+k2)*n+1][lp.nmbr];
+//            ROW++;
+//        }
 
 
-        //        for (unsigned int cnd=0; cnd<k2; cnd++)
-        //        {
-        //            const Condition &sc = nlscs.at(cnd);
-        //            const Condition &ec = nlscs.at(cnd+1);
 
-        //            /* Forming arguments of right side of ODE */
-        //            for (unsigned int i=0; i<n; i++) x0[i] = sc.mtrx[row][i];
+//        for (unsigned int i=0; i<mx.size(); i++)
+//        {
+//            IPrinter::printVector(mx[i],NULL);
+//        }
 
-        //            for (unsigned int s=1; s<=k1; s++)
-        //            {
-        //                LoadPoint &betta = lpnts.at(s-1);
-        //                for (unsigned int i=0; i<n; i++)
-        //                {
-        //                    x0[s*n+i] = betta.mtrx[row][i];
-        //                }
-        //            }
-        //            x0[n*(k1+k2)] = gamma[row];
-        //            x0[n*(k1+k2)+1] = 1.0;
+//        puts("---");
+//        {
+//            int kk = 0;
+//            double aa = mx[0][kk] *X(0.0, 0) + mx[1][kk] *X(0.0, 1) + mx[2][kk]*X(0.0, 2)
+//                    + mx[3][kk] *X(0.2, 0) + mx[4][kk] *X(0.2, 1) + mx[5][kk]*X(0.2, 2)
+//                    + mx[6][kk] *X(0.5, 0) + mx[7][kk] *X(0.5, 1) + mx[8][kk]*X(0.5, 2)
+//                    + mx[9][kk] *X(0.8, 0) + mx[10][kk]*X(0.8, 1) + mx[11][kk]*X(0.8, 2)
+//                    + mx[12][kk]*X(1.0, 0) + mx[13][kk]*X(1.0, 1) + mx[14][kk]*X(1.0, 2)
 
-        //            /* Calculating differensial equation */
-        //            calculateCauchyProblem(sc, ec, x0, rx, h);
+//                    + mx[15][kk]*X(0.3, 0) + mx[16][kk]*X(0.3, 1) + mx[17][kk]*X(0.3, 2)
+//                    + mx[18][kk]*X(0.6, 0) + mx[19][kk]*X(0.6, 1) + mx[20][kk]*X(0.6, 2);
+//            printf("0   %14.10f %14.10f\n", aa, mx[21][kk]);
+//        }
 
-        //            /* Copying results */
-        //            unsigned int NUM = ec.nmbr - sc.nmbr;
+//        {
+//            int kk = 20;
+//            double aa =
+//                      mx[0][kk] *X(0.0, 0) + mx[1][kk] *X(0.0, 1) + mx[2][kk]*X(0.0, 2)
+//                    + mx[3][kk] *X(0.3, 0) + mx[4][kk] *X(0.3, 1) + mx[5][kk]*X(0.3, 2)
+//                    + mx[6][kk] *X(0.5, 0) + mx[7][kk] *X(0.5, 1) + mx[8][kk]*X(0.5, 2)
+//                    + mx[9][kk] *X(0.8, 0) + mx[10][kk]*X(0.8, 1) + mx[11][kk]*X(0.8, 2)
+//                    + mx[12][kk]*X(1.0, 0) + mx[13][kk]*X(1.0, 1) + mx[14][kk]*X(1.0, 2)
 
-        //            for (unsigned int i=0; i<n; i++) sc.mtrx[row][i] = rx[i][NUM];
+//                    + mx[15][kk]*X(0.3, 0) + mx[16][kk]*X(0.3, 1) + mx[17][kk]*X(0.3, 2)
+//                    + mx[18][kk]*X(0.6, 0) + mx[19][kk]*X(0.6, 1) + mx[20][kk]*X(0.6, 2);
+//            printf("20  %14.10f %14.10f\n", aa, mx[21][kk]);
+//        }
 
-        //            for (unsigned int s=1; s<=k1; s++)
-        //            {
-        //                LoadPoint &betta = lpnts.at(s-1);
-        //                for (unsigned int i=0; i<n; i++)
-        //                {
-        //                    betta.mtrx[row][i] = rx[s*n+i][NUM];
-        //                }
-        //            }
-        //            gamma[row] = rx[n*(k1+k2)][NUM];
-        //            double M = rx[n*(k1+k2)+1][NUM];
+//        {
+//            int kk = 50;
+//            double aa = mx[6][kk] *X(0.5, 0) + mx[7][kk] *X(0.5, 1) + mx[8][kk]*X(0.5, 2)
+//                    + mx[9][kk] *X(0.8, 0) + mx[10][kk]*X(0.8, 1) + mx[11][kk]*X(0.8, 2)
+//                    + mx[12][kk]*X(1.0, 0) + mx[13][kk]*X(1.0, 1) + mx[14][kk]*X(1.0, 2)
 
-        //            /* Calculating new coifficients */
-        //            for (unsigned int k=i+1; k<k1; k++)
-        //            {
-        //                Condition &cc = nlscs.at(k);
-        //                for (unsigned int j=0; j<n; j++) cc.mtrx[row][j] *= M;
-        //            }
+//                    + mx[15][kk]*X(0.3, 0) + mx[16][kk]*X(0.3, 1) + mx[17][kk]*X(0.3, 2)
+//                    + mx[18][kk]*X(0.6, 0) + mx[19][kk]*X(0.6, 1) + mx[20][kk]*X(0.6, 2);
+//            printf("50  %14.10f %14.10f\n", aa, mx[21][kk]);
+//        }
 
-        //            for (unsigned int j=0; j<n; j++) ec.mtrx[row][j] += rx[j][NUM];
+//        {
+//            int kk = 80;
+//            double aa = mx[9][kk] *X(0.8, 0) + mx[10][kk]*X(0.8, 1) + mx[11][kk]*X(0.8, 2)
+//                    + mx[12][kk]*X(1.0, 0) + mx[13][kk]*X(1.0, 1) + mx[14][kk]*X(1.0, 2)
 
-        //            ////////////////////////////////////////////////////////////
+//                    + mx[15][kk]*X(0.3, 0) + mx[16][kk]*X(0.3, 1) + mx[17][kk]*X(0.3, 2)
+//                    + mx[18][kk]*X(0.6, 0) + mx[19][kk]*X(0.6, 1) + mx[20][kk]*X(0.6, 2);
+//            printf("80  %14.10f %14.10f\n", aa, mx[21][kk]);
+//        }
 
-
-        //        }
+//        {
+//            int kk = 100;
+//            double aa = mx[12][kk]*X(1.0, 0) + mx[13][kk]*X(1.0, 1) + mx[14][kk]*X(1.0, 2)
+//                    + mx[15][kk]*X(0.3, 0) + mx[16][kk]*X(0.3, 1) + mx[17][kk]*X(0.3, 2)
+//                    + mx[18][kk]*X(0.6, 0) + mx[19][kk]*X(0.6, 1) + mx[20][kk]*X(0.6, 2);
+//            printf("100 %14.10f %14.10f\n", aa, mx[21][kk]);
+//        }
     }
+
+
+    IPrinter::print(MX, MX.rows(), MX.cols(), 10, 6);
 }
 
 double SystemLinearODENonLocalContionsV2::A(TimeNode node UNUSED_PARAM, unsigned int row UNUSED_PARAM, unsigned int col UNUSED_PARAM) const

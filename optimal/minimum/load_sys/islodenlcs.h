@@ -23,7 +23,7 @@ public:
         double time;
         unsigned int nmbr;
         DoubleMatrix mtrx;
-        std::vector<std::vector<DoubleVector>> vectors;
+        unsigned int index;
     };
 
     struct LoadPoint
