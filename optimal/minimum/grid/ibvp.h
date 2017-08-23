@@ -34,11 +34,11 @@ public:
         R2L  // Right to Left
     };
 
-    const UniformGrid& timeGrid() const;
-    void setTimeGrid(const UniformGrid &grid);
+    const UniformODEGrid& timeGrid() const;
+    void setTimeGrid(const UniformODEGrid &grid);
 
 private:
-    UniformGrid timegrid;
+    UniformODEGrid timegrid;
 };
 
 /**

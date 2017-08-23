@@ -22,7 +22,7 @@ void ISystemLinearODENonLocalContionsV2::calculateCauchyProblem(const Condition 
                                                                 const DoubleVector &x0, std::vector<DoubleVector> &rx,
                                                                 double h)
 {
-    class CauchyProblemM1stOrderA1 : public CauchyProblemM1stOrder
+    class CauchyProblemM1stOrderA1 : public NonLinearODE1stOrder
     {
     public:
         CauchyProblemM1stOrderA1(ISystemLinearODENonLocalContionsV2 &parent) : p(parent) {}
@@ -68,7 +68,7 @@ void ISystemLinearODENonLocalContionsV2::calculateCauchyProblem(const Condition 
             {
                 return _SO*x[(k1+1)*n+1];
             }
-            return NAN;
+            return 0.0;//NAN;
         }
 
         double S0(double t, const DoubleVector &x, unsigned int k) const
@@ -133,5 +133,5 @@ void ISystemLinearODENonLocalContionsV2::calculateCauchyProblem(const Condition 
 
     CauchyProblemM1stOrderA1 cpa(*this);
     cpa.setGrid(ODEGrid(Dimension(h, ec.nmbr, sc.nmbr)));
-    cpa.calculateCP(sc.time, x0, rx, InitialValueProblem::RK4);
+    cpa.cauchyProblem(sc.time, x0, rx, CauchyProblemM1stOrderA1::RK4);
 }

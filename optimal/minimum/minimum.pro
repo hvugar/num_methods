@@ -27,7 +27,7 @@ SOURCES += \
     projection.cpp \
     rungekutta.cpp \
     integral.cpp \
-    ode/cauchyp.cpp \
+    #ode/cauchyp.cpp \
     ode/diffequ.cpp \
     pde/iibvp.cpp \
     pde/hyperbolicequation.cpp \
@@ -56,7 +56,8 @@ SOURCES += \
     load_sys/islodenlcsm.cpp \
     load_sys/islodenlcsv.cpp \
     load_sys/islodenlcsv2.cpp \
-    load_sys/islodenlcs.cpp
+    load_sys/islodenlcs.cpp \
+    ode/nlode1o.cpp
 
 HEADERS += global.h \
     cmatrix.h \
@@ -92,11 +93,12 @@ HEADERS += global.h \
     grid/integral1.h \
     grid/uniformgrid.h \
     nonuniformgrid.h \
-    ode/cauchyp.h \
+    #ode/cauchyp.h \
     ode/diffequ.h \
     utils/matrix.h \
     utils/vector.h \
     load_sys/islodenlcsm.h \
     load_sys/islodenlcsv.h \
     load_sys/islodenlcsv2.h \
-    load_sys/islodenlcs.h
+    load_sys/islodenlcs.h \
+    ode/nlode1o.h

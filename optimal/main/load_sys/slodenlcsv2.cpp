@@ -1,4 +1,6 @@
 #include "slodenlcsv2.h"
+#include <printer.h>
+#include <math.h>
 
 void SystemLinearODENonLocalContionsV2::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {

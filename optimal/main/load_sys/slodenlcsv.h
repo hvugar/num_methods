@@ -4,6 +4,7 @@
 #define SAMPLE_3
 
 #include <load_sys/islodenlcsv.h>
+#include <printer.h>
 
 class SystemLinearODENonLocalContionsV : public ISystemLinearODENonLocalContionsV
 {

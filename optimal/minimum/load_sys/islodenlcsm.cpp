@@ -1,6 +1,8 @@
 #include "islodenlcsm.h"
+#include <float.h>
+#include <limits.h>
 
-class CauchyProblemM1stOrderAM : public CauchyProblemM1stOrder
+class CauchyProblemM1stOrderAM : public NonLinearODE1stOrder
 {
 public:
     CauchyProblemM1stOrderAM(ISystemLinearODENonLocalContionsM &parent) : p(parent) {}
@@ -15,7 +17,7 @@ private:
     ISystemLinearODENonLocalContionsM &p;
 };
 
-class CauchyProblemM1stOrderBM : public CauchyProblemM1stOrder
+class CauchyProblemM1stOrderBM : public NonLinearODE1stOrder
 {
 public:
     CauchyProblemM1stOrderBM(ISystemLinearODENonLocalContionsM &parent) : p(parent) {}
@@ -70,12 +72,11 @@ void ISystemLinearODENonLocalContionsM::calculateForward(DoubleMatrix &x)
                 ix[n+0] = bt[row][col];
                 ix[n+1] = 1.0;
 
-                Dimension dim(h, ec.nmbr, sc.nmbr);
                 CauchyProblemM1stOrderAM cpa(*this);
-                cpa.setGrid(ODEGrid(dim));
+                cpa.setGrid(ODEGrid(Dimension(h, ec.nmbr, sc.nmbr)));
                 cpa.row = row;
                 cpa.col = col;
-                cpa.calculateCP(sc.time, ix, ox, InitialValueProblem::RK4);
+                cpa.cauchyProblem(sc.time, ix, ox, CauchyProblemM1stOrderAM::RK4, CauchyProblemM1stOrderAM::L2R);
 
                 // Assign alpha[0] at point t1
                 for (unsigned int i=0; i<n; i++) alpha[start][i] = ox[i];
@@ -160,7 +161,7 @@ void ISystemLinearODENonLocalContionsM::calculateBackwardCP(DoubleMatrix &x, std
     cpb.setGrid(grid());
     cpb.n = systemOrder();
     std::vector<DoubleVector> rm;
-    cpb.calculateCP(1.0, y, rm, CauchyProblemM1stOrder::RK4, CauchyProblemM1stOrder::R2L);
+    cpb.cauchyProblem(1.0, y, rm, CauchyProblemM1stOrderBM::RK4, CauchyProblemM1stOrderBM::R2L);
 
     m.resize(n);
     for (unsigned int r=0; r<n; r++)
@@ -240,7 +241,7 @@ double CauchyProblemM1stOrderAM::f(double t, const DoubleVector &x, unsigned int
         return _SO*x[n+1];
     }
 
-    return NAN;
+    return 0.0;//NAN;
 }
 
 double CauchyProblemM1stOrderAM::S0(double t, const DoubleVector &x, unsigned int k) const

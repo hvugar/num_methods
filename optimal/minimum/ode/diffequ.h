@@ -5,9 +5,33 @@
 #include <vector2d.h>
 #include "grid/grid.h"
 
-class MINIMUMSHARED_EXPORT DifferentialEquation {};
+class MINIMUMSHARED_EXPORT DifferentialEquation
+{
+protected:
+    ODEGrid mgrid;
 
-class MINIMUMSHARED_EXPORT OrdinaryDifferentialEquation : protected DifferentialEquation {};
+public:
+    const ODEGrid &grid() const;
+    void setGrid(const ODEGrid& grid);
+};
+
+class MINIMUMSHARED_EXPORT OrdinaryDifferentialEquation : public DifferentialEquation
+{
+public:
+    enum Method
+    {
+        RK2,
+        RK4,
+        EULER,
+        EULER_MOD
+    };
+
+    enum Direction
+    {
+        L2R, // Left to Right
+        R2L  // Right to Left
+    };
+};
 
 class MINIMUMSHARED_EXPORT ODE1stOrder {};
 
@@ -48,15 +72,6 @@ protected:
     virtual double q(double x, unsigned int i) const = 0;
     virtual double p(double x, unsigned int i) const = 0;
     virtual double r(double x, unsigned int i) const = 0;
-};
-
-/**
- * @brief The NonLinear ODE1 1st order in canonical (normal) form y'(x) = f(x, y(x));
- */
-class MINIMUMSHARED_EXPORT NonLinearODE1stOrder : public NonLinearODE, public ODE1stOrder
-{
-protected:
-    virtual double f(double x, double y, unsigned int i) const = 0;
 };
 
 /**

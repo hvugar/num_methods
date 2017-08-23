@@ -16,18 +16,18 @@ struct GridNode
     int ti;
 };
 
-class MINIMUMSHARED_EXPORT UniformGrid
+class MINIMUMSHARED_EXPORT UniformODEGrid
 {
 public:
-    UniformGrid(double step = 0.0, int min = 0, int max = 0);
+    UniformODEGrid(double step = 0.0, int min = 0, int max = 0);
 
     double step() const;
+
     int minN() const;
     int maxN() const;
     int sizeN() const;
 
     bool isGridSet() const;
-
 private:
     double mstep;
     int mminN;

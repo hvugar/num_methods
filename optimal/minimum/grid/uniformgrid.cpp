@@ -1,29 +1,28 @@
 #include "uniformgrid.h"
 
-UniformGrid::UniformGrid(double step, int min, int max) :
-    mstep(step), mminN(min), mmaxN(max) {}
+UniformODEGrid::UniformODEGrid(double step, int min, int max) : mstep(step), mminN(min), mmaxN(max) {}
 
-double UniformGrid::step() const
+double UniformODEGrid::step() const
 {
     return mstep;
 }
 
-int UniformGrid::minN() const
+int UniformODEGrid::minN() const
 {
     return mminN;
 }
 
-int UniformGrid::maxN() const
+int UniformODEGrid::maxN() const
 {
     return mmaxN;
 }
 
-int UniformGrid::sizeN() const
+int UniformODEGrid::sizeN() const
 {
     return mmaxN - mminN;
 }
 
-bool UniformGrid::isGridSet() const
+bool UniformODEGrid::isGridSet() const
 {
     return mminN != 0 || mmaxN != 0;
 }

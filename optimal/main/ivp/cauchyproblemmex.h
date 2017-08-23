@@ -1,11 +1,13 @@
 #ifndef CAUCHYPROBLEMMEX_H
 #define CAUCHYPROBLEMMEX_H
 
-#include <ode/cauchyp.h>
+//#include <ode/cauchyp.h>
+#include <ode/nlode1o.h>
+#include <printer.h>
 
 #define SAMPLE_3
 
-class CauchyProblemMEx : public CauchyProblemM1stOrder
+class CauchyProblemMEx : public NonLinearODE1stOrder
 {
 public:
     static void Main(int agrc, char *argv[]);

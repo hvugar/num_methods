@@ -1,4 +1,5 @@
 #include "problem4ex1.h"
+#include <math.h>
 
 void Problem4Ex1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -16,7 +17,7 @@ void Problem4Ex1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     x0 << +5.1 << +1.2 << +7.5 << +2.1 << -1.3 << +1.1;
     DoubleVector x;
     prob1.calculateSimpleIdetartion(x0, x, 0.01);
-    //prob1.calculateNewtonMethod(x0, x, 1, 0.001);
+//    prob1.calculateNewtonMethod(x0, x, 1, 0.001);
 
 //    printf("%14.10f %14.10f %14.10f\n", x[0], x[1], x[2]);
 //    printf("%14.10f %14.10f %14.10f\n", x[3], x[4], x[5]);
@@ -207,8 +208,6 @@ void Problem4Ex1::printResult1(const DoubleVector &x)
     IPrinter::printVector(14,10,x2);
     IPrinter::printVector(14,10,x3);
 }
-
-
 
 double Problem4Ex1::fx(const DoubleVector &x, unsigned int num) const
 {

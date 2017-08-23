@@ -4,7 +4,8 @@
 #include <vector2d.h>
 #include <matrix2d.h>
 #include <vector>
-#include <ode/cauchyp.h>
+//#include <ode/cauchyp.h>
+#include <ode/nlode1o.h>
 #include "islodenlcs.h"
 
 using namespace std;

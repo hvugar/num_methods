@@ -1,11 +1,11 @@
 #include "ibvp.h"
 
-const UniformGrid& InitialValueProblem::timeGrid() const
+const UniformODEGrid& InitialValueProblem::timeGrid() const
 {
     return timegrid;
 }
 
-void InitialValueProblem::setTimeGrid(const UniformGrid &grid)
+void InitialValueProblem::setTimeGrid(const UniformODEGrid &grid)
 {
     timegrid = grid;
 }

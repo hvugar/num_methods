@@ -1,4 +1,7 @@
 #include "cauchyproblemmex.h"
+#include <stdlib.h>
+#include <float.h>
+#include <math.h>
 
 void CauchyProblemMEx::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -39,13 +42,13 @@ void CauchyProblemMEx::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     IPrinter::printSeperatorLine();
     {
         std::vector<DoubleVector> ry;
-        exp1.calculateCP(x0, y0, ry, RK4, R2L);
+        exp1.cauchyProblem(x0, y0, ry, RK4, R2L);
         IPrinter::printVector(14, 10, ry[0]);
         IPrinter::printVector(14, 10, ry[1]);
         IPrinter::printVector(14, 10, ry[2]);
 
         DoubleVector py;
-        exp1.calculateCP(x0, y0, py, RK4, R2L);
+        exp1.cauchyProblem(x0, y0, py, RK4, R2L);
         //IPrinter::print(py,py.size());
     }
     //    {

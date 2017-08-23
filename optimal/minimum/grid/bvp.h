@@ -30,18 +30,18 @@ public:
     BoundaryCondition condition;
 
 public:
-    const UniformGrid& spaceGridX() const;
-    const UniformGrid& spaceGridY() const;
-    const UniformGrid& spaceGridZ() const;
+    const UniformODEGrid& spaceGridX() const;
+    const UniformODEGrid& spaceGridY() const;
+    const UniformODEGrid& spaceGridZ() const;
 
-    void setSpaceGridX(const UniformGrid&);
-    void setSpaceGridY(const UniformGrid&);
-    void setSpaceGridZ(const UniformGrid&);
+    void setSpaceGridX(const UniformODEGrid&);
+    void setSpaceGridY(const UniformODEGrid&);
+    void setSpaceGridZ(const UniformODEGrid&);
 
 private:
-    UniformGrid spacegridX;
-    UniformGrid spacegridY;
-    UniformGrid spacegridZ;
+    UniformODEGrid spacegridX;
+    UniformODEGrid spacegridY;
+    UniformODEGrid spacegridZ;
 };
 
 class MINIMUMSHARED_EXPORT BoundaryValueProblemODE : protected BoundaryValueProblem

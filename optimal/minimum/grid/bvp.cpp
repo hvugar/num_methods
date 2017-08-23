@@ -1,31 +1,31 @@
 #include "bvp.h"
 
-const UniformGrid& BoundaryValueProblem::spaceGridX() const
+const UniformODEGrid& BoundaryValueProblem::spaceGridX() const
 {
     return spacegridX;
 }
 
-const UniformGrid& BoundaryValueProblem::spaceGridY() const
+const UniformODEGrid& BoundaryValueProblem::spaceGridY() const
 {
     return spacegridY;
 }
 
-const UniformGrid& BoundaryValueProblem::spaceGridZ() const
+const UniformODEGrid& BoundaryValueProblem::spaceGridZ() const
 {
     return spacegridZ;
 }
 
-void BoundaryValueProblem::setSpaceGridX(const UniformGrid& spaceGridX)
+void BoundaryValueProblem::setSpaceGridX(const UniformODEGrid& spaceGridX)
 {
     spacegridX = spaceGridX;
 }
 
-void BoundaryValueProblem::setSpaceGridY(const UniformGrid& spaceGridY)
+void BoundaryValueProblem::setSpaceGridY(const UniformODEGrid& spaceGridY)
 {
     spacegridY = spaceGridY;
 }
 
-void BoundaryValueProblem::setSpaceGridZ(const UniformGrid& spaceGridZ)
+void BoundaryValueProblem::setSpaceGridZ(const UniformODEGrid& spaceGridZ)
 {
     spacegridZ = spaceGridZ;
 }
