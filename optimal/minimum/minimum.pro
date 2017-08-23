@@ -57,7 +57,8 @@ SOURCES += \
     load_sys/islodenlcsv.cpp \
     load_sys/islodenlcsv2.cpp \
     load_sys/islodenlcs.cpp \
-    ode/nlode1o.cpp
+    ode/nlode1o.cpp \
+    ode/lode1o.cpp
 
 HEADERS += global.h \
     cmatrix.h \
@@ -101,4 +102,5 @@ HEADERS += global.h \
     load_sys/islodenlcsv.h \
     load_sys/islodenlcsv2.h \
     load_sys/islodenlcs.h \
-    ode/nlode1o.h
+    ode/nlode1o.h \
+    ode/lode1o.h

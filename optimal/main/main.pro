@@ -38,7 +38,6 @@ DESTDIR += ../bin
 SOURCES += main.cpp \
     high_order/singledifequ.cpp \
     high_order/systemdifequ.cpp \
-    ivp/cauchyproblemmex.cpp \
     load_sys/slodenlcsm.cpp \
     load_sys/slodenlcsv.cpp \
     problem1/iproblem1.cpp \
@@ -54,12 +53,12 @@ SOURCES += main.cpp \
     numintegralexp1.cpp \
     nonlinearfunctionsystem.cpp \
     load_sys/slodenlcsv2.cpp \
-    problem4/zettai.cpp
+    problem4/zettai.cpp \
+    ivp/nlode1oex1.cpp
 
 HEADERS += \
     high_order/singledifequ.h \
     high_order/systemdifequ.h \
-    ivp/cauchyproblemmex.h \
     load_sys/slodenlcsm.h \
     load_sys/slodenlcsv.h \
     problem1/iproblem1.h \
@@ -75,4 +74,5 @@ HEADERS += \
     numintegralexp1.h \
     nonlinearfunctionsystem.h \
     load_sys/slodenlcsv2.h \
-    problem4/zettai.h
+    problem4/zettai.h \
+    ivp/nlode1oex1.h

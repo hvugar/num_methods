@@ -2,10 +2,11 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
-double NonLinearODE1stOrder::f(double, double, unsigned int) const { return 0.0; }
+double NonLinearODE1stOrder::f(double, double, unsigned int) const { return NAN; }
 
-double NonLinearODE1stOrder::f(double, DoubleVector, unsigned int, unsigned int) const { return 0.0; }
+double NonLinearODE1stOrder::f(double, const DoubleVector &, unsigned int, unsigned int) const { return NAN; }
 
 void NonLinearODE1stOrder::cauchyProblem(double x0, double y0, DoubleVector &y, Method method, Direction direction)
 {

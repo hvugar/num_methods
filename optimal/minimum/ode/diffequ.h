@@ -42,28 +42,6 @@ class MINIMUMSHARED_EXPORT LinearODE : public OrdinaryDifferentialEquation {};
 class MINIMUMSHARED_EXPORT NonLinearODE : public OrdinaryDifferentialEquation {};
 
 /**
- * @brief The Linear ODE 1st order in canonical (normal) form y'(x) = A(x)y(x) + B(x);
- */
-class MINIMUMSHARED_EXPORT LinearODE1stOrder : public LinearODE, public ODE1stOrder
-{
-protected:
-    /**
-     * @brief A one dimensional matrix-function
-     * @param x independent variable
-     * @param i index of independent variable of given grid
-     * @return
-     */
-    virtual double A(double x, unsigned int i, unsigned int row = 0, unsigned int col = 0) const = 0;
-    /**
-     * @brief B one dimensional vector-function
-     * @param x independent variable
-     * @param i index of independent variable of given grid
-     * @return
-     */
-    virtual double B(double x, unsigned int i, unsigned int row = 0) const = 0;
-};
-
-/**
  * @brief The Linear ODE 2nd order in canonical (normal) form y"(x) = q(x)y'(x) + p(x)*y(x) + r(x);
  */
 class MINIMUMSHARED_EXPORT LinearODE2ndOrder : public LinearODE, public ODE2ndOrder
