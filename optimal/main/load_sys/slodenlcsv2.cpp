@@ -3,7 +3,7 @@
 void SystemLinearODENonLocalContionsV2::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     SystemLinearODENonLocalContionsV2 slodenlcv;
-    slodenlcv.setGrid(ODEGrid(Dimension(0.01, 100, 0)));
+    slodenlcv.setGrid(ODEGrid(Dimension(0.1, 10, 0)));
 
     unsigned int n0 = 3;
     unsigned int n1 = 0;
@@ -20,25 +20,25 @@ void SystemLinearODENonLocalContionsV2::Main(int agrc UNUSED_PARAM, char *argv[]
 
     Condition nlc1;
     nlc1.time = 0.2;
-    nlc1.nmbr = 20;
+    nlc1.nmbr = 2;
     nlc1.mtrx.resize(n0, n);
     for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nlc1.mtrx[row][col] = (rand() % 1000) / 1000.0;
 
     Condition nlc2;
     nlc2.time = 0.5;
-    nlc2.nmbr = 50;
+    nlc2.nmbr = 5;
     nlc2.mtrx.resize(n0, n);
     for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nlc2.mtrx[row][col] = (rand() % 1000) / 1000.0;
 
     Condition nlc3;
     nlc3.time = 0.8;
-    nlc3.nmbr = 80;
+    nlc3.nmbr = 8;
     nlc3.mtrx.resize(n0, n);
     for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nlc3.mtrx[row][col] = (rand() % 1000) / 1000.0;
 
     Condition nlc4;
     nlc4.time = 1.0;
-    nlc4.nmbr = 100;
+    nlc4.nmbr = 10;
     nlc4.mtrx.resize(n0, n);
     for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nlc4.mtrx[row][col] = (rand() % 1000) / 1000.0;
 
@@ -52,13 +52,13 @@ void SystemLinearODENonLocalContionsV2::Main(int agrc UNUSED_PARAM, char *argv[]
 
     LoadPoint lpt0;
     lpt0.time = 0.3;
-    lpt0.nmbr = 30;
+    lpt0.nmbr = 3;
     lpt0.mtrx.resize(n,n);
     for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) lpt0.mtrx[row][col] = (rand() % 1000) / 1000.0;
 
     LoadPoint lpt1;
     lpt1.time = 0.6;
-    lpt1.nmbr = 60;
+    lpt1.nmbr = 6;
     lpt1.mtrx.resize(n,n);
     for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) lpt1.mtrx[row][col] = (rand() % 1000) / 1000.0;
 
@@ -252,8 +252,8 @@ void SystemLinearODENonLocalContionsV2::calculateForward2()
     for (unsigned int i=0; i<mx.size(); i++) mx[i].resize(N+1);
 
     unsigned int ROW = 0;
-    //unsigned int row = 0;
-    for (unsigned int row=0; row<n; row++)
+    unsigned int row = 0;
+//    for (unsigned int row=0; row<n; row++)
     {
         /* Initializing alpha-s first elements */
         for (unsigned int i=0; i<k2; i++)
@@ -337,14 +337,41 @@ void SystemLinearODENonLocalContionsV2::calculateForward2()
             rx.clear();
         }
 
-        IPrinter::printVector(mx[0]);
-        IPrinter::printVector(mx[1]);
-        IPrinter::printVector(mx[2]);
+        IPrinter::printSeperatorLine("alpha_0");
+        IPrinter::printVector(mx[0], "mx0 ");
+        IPrinter::printVector(mx[1], "mx1 ");
+        IPrinter::printVector(mx[2], "mx2 ");
+        IPrinter::printSeperatorLine("alpha_1");
+        IPrinter::printVector(mx[3], "mx3 ");
+        IPrinter::printVector(mx[4], "mx4 ");
+        IPrinter::printVector(mx[5], "mx5 ");
+        IPrinter::printSeperatorLine("alpha_2");
+        IPrinter::printVector(mx[6], "mx6 ");
+        IPrinter::printVector(mx[7], "mx7 ");
+        IPrinter::printVector(mx[8], "mx8 ");
+        IPrinter::printSeperatorLine("alpha_3");
+        IPrinter::printVector(mx[9], "mx9 ");
+        IPrinter::printVector(mx[10], "mx10");
+        IPrinter::printVector(mx[11], "mx11");
+        IPrinter::printSeperatorLine("alpha_4");
+        IPrinter::printVector(mx[12], "mx12");
+        IPrinter::printVector(mx[13], "mx13");
+        IPrinter::printVector(mx[14], "mx14");
+        IPrinter::printSeperatorLine("alpha_5");
+        IPrinter::printVector(mx[15], "mx15");
+        IPrinter::printVector(mx[16], "mx16");
+        IPrinter::printVector(mx[17], "mx17");
+        IPrinter::printSeperatorLine("alpha_6");
+        IPrinter::printVector(mx[18], "mx18");
+        IPrinter::printVector(mx[19], "mx19");
+        IPrinter::printVector(mx[20], "mx20");
+        IPrinter::printSeperatorLine();
+
 
         for (unsigned int i=0; i<k2; i++)
         {
             const Condition &sc = nlscs.at(i);
-            for (unsigned int j=0; j<(k1+k2)*n; j++) MX[ROW][j] = mx[j][sc.nmbr];
+            for (unsigned int j=i*n; j<(k1+k2)*n; j++) MX[ROW][j] = mx[j][sc.nmbr];
             GM[ROW] = mx[(k1+k2)*n+1][sc.nmbr];
             ROW++;
         }
@@ -364,60 +391,76 @@ void SystemLinearODENonLocalContionsV2::calculateForward2()
 //            IPrinter::printVector(mx[i],NULL);
 //        }
 
-//        puts("---");
+        puts("---");
 //        {
 //            int kk = 0;
-//            double aa = mx[0][kk] *X(0.0, 0) + mx[1][kk] *X(0.0, 1) + mx[2][kk]*X(0.0, 2)
-//                    + mx[3][kk] *X(0.2, 0) + mx[4][kk] *X(0.2, 1) + mx[5][kk]*X(0.2, 2)
-//                    + mx[6][kk] *X(0.5, 0) + mx[7][kk] *X(0.5, 1) + mx[8][kk]*X(0.5, 2)
-//                    + mx[9][kk] *X(0.8, 0) + mx[10][kk]*X(0.8, 1) + mx[11][kk]*X(0.8, 2)
-//                    + mx[12][kk]*X(1.0, 0) + mx[13][kk]*X(1.0, 1) + mx[14][kk]*X(1.0, 2)
-
-//                    + mx[15][kk]*X(0.3, 0) + mx[16][kk]*X(0.3, 1) + mx[17][kk]*X(0.3, 2)
-//                    + mx[18][kk]*X(0.6, 0) + mx[19][kk]*X(0.6, 1) + mx[20][kk]*X(0.6, 2);
+//            double aa = mx[0][kk] *X(0.0, 0) + mx[1][kk] *X(0.0, 1) + mx[2][kk]*X(0.0, 2) +
+//                    mx[3][kk] *X(0.2, 0) + mx[4][kk] *X(0.2, 1) + mx[5][kk]*X(0.2, 2) +
+//                    mx[6][kk] *X(0.5, 0) + mx[7][kk] *X(0.5, 1) + mx[8][kk]*X(0.5, 2) +
+//                    mx[9][kk] *X(0.8, 0) + mx[10][kk]*X(0.8, 1) + mx[11][kk]*X(0.8, 2) +
+//                    mx[12][kk]*X(1.0, 0) + mx[13][kk]*X(1.0, 1) + mx[14][kk]*X(1.0, 2) +
+//                    mx[15][kk]*X(0.3, 0) + mx[16][kk]*X(0.3, 1) + mx[17][kk]*X(0.3, 2) +
+//                    mx[18][kk]*X(0.6, 0) + mx[19][kk]*X(0.6, 1) + mx[20][kk]*X(0.6, 2);
 //            printf("0   %14.10f %14.10f\n", aa, mx[21][kk]);
 //        }
-
 //        {
-//            int kk = 20;
+//            int kk = 2;
 //            double aa =
-//                      mx[0][kk] *X(0.0, 0) + mx[1][kk] *X(0.0, 1) + mx[2][kk]*X(0.0, 2)
-//                    + mx[3][kk] *X(0.3, 0) + mx[4][kk] *X(0.3, 1) + mx[5][kk]*X(0.3, 2)
-//                    + mx[6][kk] *X(0.5, 0) + mx[7][kk] *X(0.5, 1) + mx[8][kk]*X(0.5, 2)
-//                    + mx[9][kk] *X(0.8, 0) + mx[10][kk]*X(0.8, 1) + mx[11][kk]*X(0.8, 2)
-//                    + mx[12][kk]*X(1.0, 0) + mx[13][kk]*X(1.0, 1) + mx[14][kk]*X(1.0, 2)
-
-//                    + mx[15][kk]*X(0.3, 0) + mx[16][kk]*X(0.3, 1) + mx[17][kk]*X(0.3, 2)
-//                    + mx[18][kk]*X(0.6, 0) + mx[19][kk]*X(0.6, 1) + mx[20][kk]*X(0.6, 2);
+//                    //mx[0][kk] *X(0.0, 0) + mx[1][kk] *X(0.0, 1) + mx[2][kk]*X(0.0, 2) +
+//                    mx[3][kk] *X(0.2, 0) + mx[4][kk] *X(0.2, 1) + mx[5][kk]*X(0.2, 2) +
+//                    mx[6][kk] *X(0.5, 0) + mx[7][kk] *X(0.5, 1) + mx[8][kk]*X(0.5, 2) +
+//                    mx[9][kk] *X(0.8, 0) + mx[10][kk]*X(0.8, 1) + mx[11][kk]*X(0.8, 2) +
+//                    mx[12][kk]*X(1.0, 0) + mx[13][kk]*X(1.0, 1) + mx[14][kk]*X(1.0, 2) +
+//                    mx[15][kk]*X(0.3, 0) + mx[16][kk]*X(0.3, 1) + mx[17][kk]*X(0.3, 2) +
+//                    mx[18][kk]*X(0.6, 0) + mx[19][kk]*X(0.6, 1) + mx[20][kk]*X(0.6, 2);
 //            printf("20  %14.10f %14.10f\n", aa, mx[21][kk]);
 //        }
-
 //        {
-//            int kk = 50;
-//            double aa = mx[6][kk] *X(0.5, 0) + mx[7][kk] *X(0.5, 1) + mx[8][kk]*X(0.5, 2)
-//                    + mx[9][kk] *X(0.8, 0) + mx[10][kk]*X(0.8, 1) + mx[11][kk]*X(0.8, 2)
-//                    + mx[12][kk]*X(1.0, 0) + mx[13][kk]*X(1.0, 1) + mx[14][kk]*X(1.0, 2)
-
-//                    + mx[15][kk]*X(0.3, 0) + mx[16][kk]*X(0.3, 1) + mx[17][kk]*X(0.3, 2)
-//                    + mx[18][kk]*X(0.6, 0) + mx[19][kk]*X(0.6, 1) + mx[20][kk]*X(0.6, 2);
+//            int kk = 3;
+//            double aa =
+//                    mx[3][kk] *X(0.3, 0) + mx[4][kk] *X(0.3, 1) + mx[5][kk]*X(0.3, 2) +
+//                    mx[6][kk] *X(0.5, 0) + mx[7][kk] *X(0.5, 1) + mx[8][kk]*X(0.5, 2) +
+//                    mx[9][kk] *X(0.8, 0) + mx[10][kk]*X(0.8, 1) + mx[11][kk]*X(0.8, 2) +
+//                    mx[12][kk]*X(1.0, 0) + mx[13][kk]*X(1.0, 1) + mx[14][kk]*X(1.0, 2) +
+//                    mx[15][kk]*X(0.3, 0) + mx[16][kk]*X(0.3, 1) + mx[17][kk]*X(0.3, 2) +
+//                    mx[18][kk]*X(0.6, 0) + mx[19][kk]*X(0.6, 1) + mx[20][kk]*X(0.6, 2);
+//            printf("30  %14.10f %14.10f\n", aa, mx[21][kk]);
+//        }
+//        {
+//            int kk = 5;
+//            double aa =
+//                    mx[6][kk] *X(0.5, 0) + mx[7][kk] *X(0.5, 1) + mx[8][kk]*X(0.5, 2) +
+//                    mx[9][kk] *X(0.8, 0) + mx[10][kk]*X(0.8, 1) + mx[11][kk]*X(0.8, 2) +
+//                    mx[12][kk]*X(1.0, 0) + mx[13][kk]*X(1.0, 1) + mx[14][kk]*X(1.0, 2) +
+//                    mx[15][kk]*X(0.3, 0) + mx[16][kk]*X(0.3, 1) + mx[17][kk]*X(0.3, 2) +
+//                    mx[18][kk]*X(0.6, 0) + mx[19][kk]*X(0.6, 1) + mx[20][kk]*X(0.6, 2);
 //            printf("50  %14.10f %14.10f\n", aa, mx[21][kk]);
 //        }
-
 //        {
-//            int kk = 80;
-//            double aa = mx[9][kk] *X(0.8, 0) + mx[10][kk]*X(0.8, 1) + mx[11][kk]*X(0.8, 2)
-//                    + mx[12][kk]*X(1.0, 0) + mx[13][kk]*X(1.0, 1) + mx[14][kk]*X(1.0, 2)
-
-//                    + mx[15][kk]*X(0.3, 0) + mx[16][kk]*X(0.3, 1) + mx[17][kk]*X(0.3, 2)
-//                    + mx[18][kk]*X(0.6, 0) + mx[19][kk]*X(0.6, 1) + mx[20][kk]*X(0.6, 2);
+//            int kk = 6;
+//            double aa =
+//                    mx[6][kk] *X(0.6, 0) + mx[7][kk] *X(0.6, 1) + mx[8][kk]*X(0.6, 2) +
+//                    mx[9][kk] *X(0.8, 0) + mx[10][kk]*X(0.8, 1) + mx[11][kk]*X(0.8, 2) +
+//                    mx[12][kk]*X(1.0, 0) + mx[13][kk]*X(1.0, 1) + mx[14][kk]*X(1.0, 2) +
+//                    mx[15][kk]*X(0.3, 0) + mx[16][kk]*X(0.3, 1) + mx[17][kk]*X(0.3, 2) +
+//                    mx[18][kk]*X(0.6, 0) + mx[19][kk]*X(0.6, 1) + mx[20][kk]*X(0.6, 2);
+//            printf("60  %14.10f %14.10f\n", aa, mx[21][kk]);
+//        }
+//        {
+//            int kk = 8;
+//            double aa =
+//                    mx[9][kk] *X(0.8, 0) + mx[10][kk]*X(0.8, 1) + mx[11][kk]*X(0.8, 2) +
+//                    mx[12][kk]*X(1.0, 0) + mx[13][kk]*X(1.0, 1) + mx[14][kk]*X(1.0, 2) +
+//                    mx[15][kk]*X(0.3, 0) + mx[16][kk]*X(0.3, 1) + mx[17][kk]*X(0.3, 2) +
+//                    mx[18][kk]*X(0.6, 0) + mx[19][kk]*X(0.6, 1) + mx[20][kk]*X(0.6, 2);
 //            printf("80  %14.10f %14.10f\n", aa, mx[21][kk]);
 //        }
-
 //        {
-//            int kk = 100;
-//            double aa = mx[12][kk]*X(1.0, 0) + mx[13][kk]*X(1.0, 1) + mx[14][kk]*X(1.0, 2)
-//                    + mx[15][kk]*X(0.3, 0) + mx[16][kk]*X(0.3, 1) + mx[17][kk]*X(0.3, 2)
-//                    + mx[18][kk]*X(0.6, 0) + mx[19][kk]*X(0.6, 1) + mx[20][kk]*X(0.6, 2);
+//            int kk = 10;
+//            double aa =
+//                    mx[12][kk]*X(1.0, 0) + mx[13][kk]*X(1.0, 1) + mx[14][kk]*X(1.0, 2) +
+//                    mx[15][kk]*X(0.3, 0) + mx[16][kk]*X(0.3, 1) + mx[17][kk]*X(0.3, 2) +
+//                    mx[18][kk]*X(0.6, 0) + mx[19][kk]*X(0.6, 1) + mx[20][kk]*X(0.6, 2);
 //            printf("100 %14.10f %14.10f\n", aa, mx[21][kk]);
 //        }
     }
