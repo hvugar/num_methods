@@ -7,12 +7,13 @@
 
 class MINIMUMSHARED_EXPORT DifferentialEquation
 {
-protected:
-    ODEGrid mgrid;
-
 public:
+    virtual unsigned int equationsNumber() const;
+
     const ODEGrid &grid() const;
     void setGrid(const ODEGrid& grid);
+protected:
+    ODEGrid mgrid;
 };
 
 class MINIMUMSHARED_EXPORT OrdinaryDifferentialEquation : public DifferentialEquation

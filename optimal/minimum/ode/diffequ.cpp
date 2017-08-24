@@ -1,5 +1,10 @@
 #include "diffequ.h"
 
+unsigned int DifferentialEquation::equationsNumber() const
+{
+    return 1;
+}
+
 const ODEGrid& DifferentialEquation::grid() const
 {
     return mgrid;

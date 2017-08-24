@@ -2,6 +2,7 @@
 #include "nlode1o.h"
 #include <math.h>
 #include <cmethods.h>
+#include <float.h>
 
 void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const DoubleVector &bt, std::vector<DoubleVector> &x)
 {
@@ -149,4 +150,80 @@ void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const Doub
     helper.n = n;
     helper.setGrid(grid());
     helper.cauchyProblem(nscs.back().time, x1, x, HelperB::RK4, HelperB::R2L);
+}
+
+void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cnds, const DoubleVector& rs)
+{
+    unsigned int n =  equationsNumber();
+
+    double h = grid().dimension().step();
+    unsigned int N = grid().dimension().sizeN();
+
+    if (n == 1)
+    {
+        DoubleVector betta(N+1);
+        for (unsigned int m=0; m<=N; m++) betta[m] = 0.0;
+
+        for (unsigned int i=0; i<cnds.size(); i++)
+        {
+            const Condition &c = cnds[i];
+            double alpha = c.mtrx.at(0,0);
+            double time  = c.time;
+
+            for (unsigned int m=0; m<=N; m++)
+            {
+                double dh = fabs(time - m*h);
+
+                //printf("%f %f %f\n", alpha, time, dh);
+                if (dh <= h)
+                {
+                    betta[m] += alpha*(1.0 - dh/h);
+                }
+            }
+        }
+        IPrinter::printVector(14, 10, betta);
+
+        std::vector<unsigned int> indexes;
+        for (unsigned int m=1; m<=N; m++) if (betta[m] != 0.0) indexes.push_back(m);
+
+        DoubleVector f(N+1);
+        std::vector<DoubleVector> ems(indexes.size()); for (unsigned int i=0; i<ems.size(); i++) ems[i].resize(N+1);
+    }
+    else
+    {
+//        DoubleMatrix* alhas = new DoubleMatrix[N+1];
+//        for (unsigned int i=0; i<=N; i++) alhas[0].resize(n,n);
+
+//        for (unsigned int s=0; s<cnds.size(); s++)
+//        {
+//            const Condition &cnd = cnds.at(s);
+//            alhas[i] = cnd.m;
+//        }
+
+//        unsigned int next = 1;
+//        DoubleMatrix betta1 = cnds.at(0).mtrx;
+//        DoubleMatrix betta2(n,n);
+//        DoubleVector gamma(n);
+
+//        DoubleVector alpha0;
+//        DoubleMatrix alpha1;
+//        DoubleMatrix alpha2;
+
+//        for (unsigned int i=1; i<N-2; i++)
+//        {
+//            gamma -= betta1*alpha0;
+//            betta2 = betta1*alpha2;
+//            betta1 = betta1*alpha1;
+//            if (cnds.at(next).n==i)
+//            {
+//                betta1 += cnds.at(next).m;
+//                next++;
+//            }
+//            if (cnds.at(next).n==i+1)
+//            {
+//                betta2 += cnds.at(next).m;
+//                next++;
+//            }
+//        }
+    }
 }

@@ -11,7 +11,6 @@ void LoadLinearODE1stOrderEx1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_P
     DoubleVector betta;
     std::vector<DoubleVector> x;
     cpnlcs.initialize(nscs, betta);
-
 }
 
 void LoadLinearODE1stOrderEx1::initialize(std::vector<Condition> &nscs, DoubleVector &betta)

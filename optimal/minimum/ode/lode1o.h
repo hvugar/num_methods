@@ -3,6 +3,7 @@
 
 #include "diffequ.h"
 #include "../matrix2d.h"
+#include <printer.h>
 
 /**
  * @brief The Linear ODE 1st order in canonical (normal) form y'(x) = A(x)y(x) + B(x);
@@ -19,6 +20,11 @@ public:
     };
 
     void calculate(const std::vector<Condition> &nscs, const DoubleVector &bt, std::vector<DoubleVector> &x);
+
+    void highOder2Accuracy(const std::vector<Condition> &cnd, const DoubleVector& rs);
+    void highOder4Accuracy();
+    void highOder6Accuracy();
+
 protected:
     /**
      * @brief A one dimensional matrix-function
