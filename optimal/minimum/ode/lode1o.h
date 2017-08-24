@@ -18,7 +18,7 @@ public:
         unsigned int index;
     };
 
-    void calculate(const std::vector<Condition> &cs, const DoubleVector &bt, std::vector<DoubleVector> &x);
+    void calculate(const std::vector<Condition> &nscs, const DoubleVector &bt, std::vector<DoubleVector> &x);
 protected:
     /**
      * @brief A one dimensional matrix-function

@@ -27,7 +27,7 @@ void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const Doub
             x0[n] = beta[row];
             x0[n+1] = 1.0;
 
-            struct Helper : public NonLinearODE1stOrder
+            struct HelperB : public NonLinearODE1stOrder
             {
                 LinearODE1stOrder *p;
                 unsigned int n;
@@ -91,7 +91,7 @@ void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const Doub
                 }
             };
 
-            Helper helper;
+            HelperB helper;
             helper.p = this;
             helper.n = n;
             helper.setGrid(ODEGrid(Dimension(h, ec.nmbr, sc.nmbr)));
@@ -131,23 +131,22 @@ void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const Doub
 
     GaussianElimination(A, b, x1);
 
-//    class CPB : public NonLinearODE1stOrder
-//    {
-//    public:
-//        CPB(ISystemLinearODENonLocalContionsV &parent) : p(parent) {}
-//    protected:
-//        virtual double f(double t, const DoubleVector &x, unsigned int k, unsigned int i) const
-//        {
-//            unsigned int n = p.systemOrder();
-//            double res = p.B(t,k,i);
-//            for (unsigned int j=0; j<n; j++) res += p.A(t,k,i,j)*x[j];
-//            return res;
-//        }
-//    private:
-//        ISystemLinearODENonLocalContionsV &p;
-//    };
+    struct HelperB : public NonLinearODE1stOrder
+    {
+        LinearODE1stOrder *p;
+        unsigned int n;
+    protected:
+        virtual double f(double t, const DoubleVector &x, unsigned int k, unsigned int i) const
+        {
+            double res = p->B(t,k,i);
+            for (unsigned int j=0; j<n; j++) res += p->A(t,k,i,j)*x[j];
+            return res;
+        }
+    };
 
-//    CPB cpb(*this);
-//    cpb.setGrid(grid());
-//    cpb.cauchyProblem(nscs.back().time, x, m, CPB::RK4, CPB::R2L);
+    HelperB helper;
+    helper.p = this;
+    helper.n = n;
+    helper.setGrid(grid());
+    helper.cauchyProblem(nscs.back().time, x1, x, HelperB::RK4, HelperB::R2L);
 }
