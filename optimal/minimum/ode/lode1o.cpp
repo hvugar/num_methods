@@ -154,14 +154,14 @@ void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const Doub
 
 void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cnds, const DoubleVector& rs)
 {
-    unsigned int n =  equationsNumber();
+    unsigned int n = equationsNumber();
 
     double h = grid().dimension().step();
     unsigned int N = grid().dimension().sizeN();
 
     if (n == 1)
     {
-        DoubleVector betta(N+1);
+        double* betta = (double *) malloc(sizeof(double)*(N+1));
         for (unsigned int m=0; m<=N; m++) betta[m] = 0.0;
 
         for (unsigned int i=0; i<cnds.size(); i++)
@@ -174,56 +174,102 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cnds, co
             {
                 double dh = fabs(time - m*h);
 
-                //printf("%f %f %f\n", alpha, time, dh);
                 if (dh <= h)
                 {
                     betta[m] += alpha*(1.0 - dh/h);
                 }
             }
         }
-        IPrinter::printVector(14, 10, betta);
+        IPrinter::printVector(betta,N+1);
 
-        std::vector<unsigned int> indexes;
-        for (unsigned int m=1; m<=N; m++) if (betta[m] != 0.0) indexes.push_back(m);
+        double *p = (double*) malloc(sizeof(double)*(N-1));
+        double *q = (double*) malloc(sizeof(double)*(N-1));
+        double *r = (double*) malloc(sizeof(double)*(N-1));
 
-        DoubleVector f(N+1);
-        std::vector<DoubleVector> ems(indexes.size()); for (unsigned int i=0; i<ems.size(); i++) ems[i].resize(N+1);
+        std::vector<unsigned int> ind;
+        std::vector<double*> ems;
+
+        p[0] = betta[0];
+        q[0] = betta[1];
+        r[0] = rs[0];
+
+        for (unsigned int m=2; m<=N; m++)
+        {
+            if (fabs(betta[m]) > DBL_EPSILON)
+            {
+                ind.push_back(m);
+                ems.push_back((double*) malloc(sizeof(double)*(N+1)));
+            }
+        }
+
+        for (unsigned int i=0; i<ind.size(); i++)
+        {
+            ems[i][0] = betta[ind[i]];
+        }
+
+        double aa = 0.0;
+        for (unsigned int i=0; i<=N; i++)
+        {
+            aa += betta[i]*(i*h);
+        }
+
+        free(betta);
+
+//        printf("%4d %14.10f %14.10f %14.10f %14.10f ", 0, p[0], q[0], r[0], aa);
+//        for (unsigned int i=0; i<ems.size(); i++)
+//        {
+//            printf("%14.10f ", ems[i][0]);
+//        }
+//        puts("");
+
+        //double bb = p[0]*(0*h)+q[0]*(1*h); for (unsigned int i=0; i<ems.size(); i++) bb += ems[i][0]*(ind.at(i)*h);
+        //printf("%f %f\n", bb, r[0]);
+
+        for (unsigned int i=0; i<=N-2; i++)
+        {
+            double bb = p[i]*(i*h) + q[i]*((i+1)*h); for (unsigned int j=0; j<ems.size(); j++) bb += ems[j][i]*(ind[j]*h);
+            printf("%f %f\n", bb, r[i]);
+
+            double t = i*h;
+            double m = 1.0/(2.0*h*A(t,i)+3.0);
+            double alpha2 = +4.0*m;
+            double alpha1 = -1.0*m;
+            double alpha0 = -2.0*h*B(t,i)*m;
+
+            r[i+1] = r[i] - p[i]*alpha0;
+            q[i+1] = p[i]*alpha2;
+            p[i+1] = p[i]*alpha1 + q[i];
+
+            for (unsigned int j=0; j<ind.size(); j++)
+            {
+                if (i+2 == ind.at(j))
+                {
+                    q[i+1] += ems[j][i];
+                }
+
+                if (i+2 >= ind.at(j))
+                {
+                    ems[j][i+1] = 0.0;
+                }
+                else
+                {
+                    ems[j][i+1] = ems[j][i];
+                }
+            }
+
+//            printf("%4d %14.10f %14.10f ", i, p[i+1], q[i+1]);
+//            for (unsigned int i1=0; i1<ems.size(); i1++)
+//            {
+//                printf("%14.10f ", ems[i1][i+1]);
+//            }
+//            puts("");
+        }
+
+        double t1 = (N-1)*h;
+        double t2 = (N-0)*h;
+        printf("--- %f %f\n", p[N-1]*t1 + q[N-1]*t2, r[N-1]);
     }
     else
     {
-//        DoubleMatrix* alhas = new DoubleMatrix[N+1];
-//        for (unsigned int i=0; i<=N; i++) alhas[0].resize(n,n);
-
-//        for (unsigned int s=0; s<cnds.size(); s++)
-//        {
-//            const Condition &cnd = cnds.at(s);
-//            alhas[i] = cnd.m;
-//        }
-
-//        unsigned int next = 1;
-//        DoubleMatrix betta1 = cnds.at(0).mtrx;
-//        DoubleMatrix betta2(n,n);
-//        DoubleVector gamma(n);
-
-//        DoubleVector alpha0;
-//        DoubleMatrix alpha1;
-//        DoubleMatrix alpha2;
-
-//        for (unsigned int i=1; i<N-2; i++)
-//        {
-//            gamma -= betta1*alpha0;
-//            betta2 = betta1*alpha2;
-//            betta1 = betta1*alpha1;
-//            if (cnds.at(next).n==i)
-//            {
-//                betta1 += cnds.at(next).m;
-//                next++;
-//            }
-//            if (cnds.at(next).n==i+1)
-//            {
-//                betta2 += cnds.at(next).m;
-//                next++;
-//            }
-//        }
     }
 }

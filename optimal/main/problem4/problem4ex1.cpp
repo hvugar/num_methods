@@ -54,12 +54,12 @@ void Problem4Ex1::initialize()
     nsc0.mtrx.resize(n0, n);
     for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc0.mtrx[row][col] = (rand() % 10) / 1.0;
 
-    Condition nsc1;
-    nsc1.type = ISystemLinearODENonLocalContionsV::NonSeparated;
-    nsc1.time = 0.2;
-    nsc1.nmbr = N/5;
-    nsc1.mtrx.resize(n0, n);
-    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc1.mtrx[row][col] = (rand() % 10) / 1.0;
+//    Condition nsc1;
+//    nsc1.type = ISystemLinearODENonLocalContionsV::NonSeparated;
+//    nsc1.time = 0.2;
+//    nsc1.nmbr = N/5;
+//    nsc1.mtrx.resize(n0, n);
+//    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc1.mtrx[row][col] = (rand() % 10) / 1.0;
 
     Condition nsc2;
     nsc2.type = ISystemLinearODENonLocalContionsV::NonSeparated;
@@ -68,12 +68,12 @@ void Problem4Ex1::initialize()
     nsc2.mtrx.resize(n0, n);
     for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc2.mtrx[row][col] = (rand() % 10) / 1.0;
 
-    Condition nsc3;
-    nsc3.type = ISystemLinearODENonLocalContionsV::NonSeparated;
-    nsc3.time = 0.8;
-    nsc3.nmbr = 4*(N/5);
-    nsc3.mtrx.resize(n0, n);
-    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc3.mtrx[row][col] = (rand() % 10) / 1.0;
+//    Condition nsc3;
+//    nsc3.type = ISystemLinearODENonLocalContionsV::NonSeparated;
+//    nsc3.time = 0.8;
+//    nsc3.nmbr = 4*(N/5);
+//    nsc3.mtrx.resize(n0, n);
+//    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc3.mtrx[row][col] = (rand() % 10) / 1.0;
 
     Condition nsc4;
     nsc4.type = ISystemLinearODENonLocalContionsV::NonSeparated;
@@ -87,9 +87,9 @@ void Problem4Ex1::initialize()
     Zetta0 zett0(*this);
     zett0.setGrid(mgrid);
     zett0.addNonSeparatedCondition(nsc0);
-    zett0.addNonSeparatedCondition(nsc1);
+//    zett0.addNonSeparatedCondition(nsc1);
     zett0.addNonSeparatedCondition(nsc2);
-    zett0.addNonSeparatedCondition(nsc3);
+//    zett0.addNonSeparatedCondition(nsc3);
     zett0.addNonSeparatedCondition(nsc4);
 
     DoubleVector betta(n);
@@ -115,9 +115,9 @@ void Problem4Ex1::initialize()
     Zettai zett1(*this, 0);
     zett1.setGrid(mgrid);
     zett1.addNonSeparatedCondition(nsc0);
-    zett1.addNonSeparatedCondition(nsc1);
+//    zett1.addNonSeparatedCondition(nsc1);
     zett1.addNonSeparatedCondition(nsc2);
-    zett1.addNonSeparatedCondition(nsc3);
+//    zett1.addNonSeparatedCondition(nsc3);
     zett1.addNonSeparatedCondition(nsc4);
     DoubleVector betta1(n, 0.0);
     zett1.setBetta(betta1);
@@ -131,9 +131,9 @@ void Problem4Ex1::initialize()
     Zettai zett2(*this, 1);
     zett2.setGrid(mgrid);
     zett2.addNonSeparatedCondition(nsc0);
-    zett2.addNonSeparatedCondition(nsc1);
+//    zett2.addNonSeparatedCondition(nsc1);
     zett2.addNonSeparatedCondition(nsc2);
-    zett2.addNonSeparatedCondition(nsc3);
+//    zett2.addNonSeparatedCondition(nsc3);
     zett2.addNonSeparatedCondition(nsc4);
     DoubleVector betta2(n, 0.0);
     zett2.setBetta(betta2);

@@ -1,24 +1,29 @@
-#include "llode1oex1.h"
+#include "lode1oex1.h"
 #include <math.h>
 #include <printer.h>
 
-void LoadLinearODE1stOrderEx1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
+void LinearODE1stOrderEx1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    LoadLinearODE1stOrderEx1 cpnlcs;
-    cpnlcs.setGrid(ODEGrid(Dimension(0.01, 100, 0)));
-
-    std::vector<Condition> nscs;
-    DoubleVector betta;
-    std::vector<DoubleVector> x;
-    cpnlcs.initialize(nscs, betta);
+    LinearODE1stOrderEx1 cpnlcs;
+    cpnlcs.setGrid(ODEGrid(Dimension(0.1, 10, 0)));
+#ifdef EXAMPLE_1
+    cpnlcs.example1();
+#endif
+#ifdef EXAMPLE_2
+    cpnlcs.example2();
+#endif
 }
 
-void LoadLinearODE1stOrderEx1::initialize(std::vector<Condition> &nscs, DoubleVector &betta)
+void LinearODE1stOrderEx1::example1()
 {
     Dimension dim = grid().dimension();
     unsigned int N = dim.sizeN();
 
-    unsigned int n = 3;
+    unsigned int n = equationsNumber();
+
+    std::vector<Condition> nscs;
+    DoubleVector betta;
+    std::vector<DoubleVector> x;
 
     Condition nsc0;
     nsc0.time = 0.0;
@@ -70,26 +75,86 @@ void LoadLinearODE1stOrderEx1::initialize(std::vector<Condition> &nscs, DoubleVe
     }
 }
 
-double LoadLinearODE1stOrderEx1::A(double t UNUSED_PARAM, unsigned int, unsigned int row, unsigned int col) const
+void LinearODE1stOrderEx1::example2()
 {
+    unsigned int n = equationsNumber();
+    std::vector<Condition> cs;
+
+    Condition c0;
+    c0.time = 0.0;
+    c0.mtrx.resize(n, n);
+    c0.mtrx.at(0,0) = 1.0;
+    c0.index = 0;
+    cs.push_back(c0);
+
+//    Condition c1;
+//    c1.time = 0.403;
+//    c1.mtrx.resize(n, n);
+//    c1.mtrx.at(0,0) = 4.2;
+//    c1.index = 0;
+//    cs.push_back(c1);
+
+    Condition c2;
+    c2.time = 1.0;
+    c2.mtrx.resize(n, n);
+    c2.mtrx.at(0,0) = 1.0;
+    c2.index = 0;
+    cs.push_back(c2);
+
+    DoubleVector bt(n);
+
+    bt[0] = c0.mtrx.at(0,0)*X(c0.time,0)
+            //+ c1.mtrx.at(0,0)*X(c1.time,0)
+            + c2.mtrx.at(0,0)*X(c2.time,0);
+
+    highOder2Accuracy(cs, bt);
+}
+
+double LinearODE1stOrderEx1::A(double t UNUSED_PARAM, unsigned int, unsigned int row UNUSED_PARAM, unsigned int col UNUSED_PARAM) const
+{
+#ifdef EXAMPLE_1
     if (row==0) { if (col==0) { return +2.0; } if (col==1) { return -3.0; } if (col==2) { return +1.0; } }
     if (row==1) { if (col==0) { return +3.0; } if (col==1) { return +1.0; } if (col==2) { return -2.0; } }
     if (row==2) { if (col==0) { return +1.0; } if (col==1) { return -5.0; } if (col==2) { return -3.0; } }
+#endif
+#ifdef EXAMPLE_2
+    return t;
+#endif
     return NAN;
 }
 
-double LoadLinearODE1stOrderEx1::B(double t, unsigned int, unsigned int row) const
+double LinearODE1stOrderEx1::B(double t, unsigned int, unsigned int row UNUSED_PARAM) const
 {
+#ifdef EXAMPLE_1
     if (row==0) return 3.0     - (2.0*(3.0*t+4.0) - 3.0*(4.0*t*t) + 1.0*(t*t+t));
     if (row==1) return 8.0*t   - (3.0*(3.0*t+4.0) + 1.0*(4.0*t*t) - 2.0*(t*t+t));
     if (row==2) return 2.0*t+1 - (1.0*(3.0*t+4.0) - 5.0*(4.0*t*t) - 3.0*(t*t+t));
+#endif
+#ifdef EXAMPLE_2
+    return 1.0 - t*t;
+#endif
     return NAN;
 }
 
-double LoadLinearODE1stOrderEx1::X(double t, int row) const
+unsigned int LinearODE1stOrderEx1::equationsNumber() const
 {
+#ifdef EXAMPLE_1
+    return 3;
+#endif
+#ifdef EXAMPLE_2
+    return 1;
+#endif
+}
+
+double LinearODE1stOrderEx1::X(double t, int row UNUSED_PARAM) const
+{
+#ifdef EXAMPLE_1
     if (row==0) return 3.0*t+4.0;
     if (row==1) return 4.0*t*t;
     if (row==2) return t*t+t;
+#endif
+#ifdef EXAMPLE_2
+    return t;
+#endif
     return NAN;
 }

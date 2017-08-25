@@ -74,7 +74,7 @@ void INonLinearFunctionSystem::calculateNewtonMethod(const DoubleVector &x0, Dou
         //IPrinter::printSeperatorLine();
         //IPrinter::print(W,W.rows(),W.cols());
         //IPrinter::printSeperatorLine();
-        //printf("det %.10f\n", W.determinant());
+        printf("det %.10f\n", W.determinant());
         W.inverse();
         //IPrinter::printSeperatorLine();
         //IPrinter::print(W,W.rows(),W.cols());
