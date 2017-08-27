@@ -10,6 +10,6 @@ double Zetta0::A(double t, unsigned int k, unsigned int row, unsigned int col) c
 
 double Zetta0::B(double t, unsigned int k, unsigned int row) const
 {
-    return p4.C(t, k, row);
+    return p4.B(t, k, row);
 }
 

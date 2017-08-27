@@ -12,5 +12,5 @@ double Zettai::A(double t, unsigned int k, unsigned int row, unsigned int col) c
 
 double Zettai::B(double t, unsigned int k, unsigned int row, unsigned int col) const
 {
-    return p4.B(t, k, i, row, col);
+    return p4.C(t, k, i, row, col);
 }

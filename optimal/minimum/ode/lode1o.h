@@ -14,16 +14,20 @@ public:
     struct Condition
     {
         double time;
-        unsigned int nmbr;
         DoubleMatrix mtrx;
+        unsigned int nmbr;
         unsigned int index;
     };
 
     void calculate(const std::vector<Condition> &nscs, const DoubleVector &bt, std::vector<DoubleVector> &x);
 
-    void highOder2Accuracy(const std::vector<Condition> &cnd, const DoubleVector& rs);
-    void highOder4Accuracy();
-    void highOder6Accuracy();
+    /* high order accuracy */
+
+//private:
+    void highOder2Accuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x);
+    void highOder4Accuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x);
+    void highOder6Accuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x);
+    void discretisation(const std::vector<Condition>& cs, double* b) const;
 
 protected:
     /**

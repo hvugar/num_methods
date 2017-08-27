@@ -52,7 +52,7 @@ public:
     DoubleMatrix& operator=(const DoubleMatrix &matrix);
     DoubleMatrix& operator=(const DoubleVector &vector);
     //DoubleMatrix& operator+(const DoubleMatrix &matrix);
-    //DoubleMatrix& operator+=(const DoubleMatrix &matrix);
+    DoubleMatrix& operator+=(const DoubleMatrix &m);
     //DoubleMatrix& operator-(const DoubleMatrix &matrix);
     //DoubleMatrix& operator/(const DoubleMatrix &matrix);
     //DoubleMatrix& operator*(const double scalar);
@@ -87,6 +87,8 @@ public:
     friend MINIMUMSHARED_EXPORT DoubleMatrix operator+(const DoubleMatrix&, const DoubleMatrix&);
     friend MINIMUMSHARED_EXPORT DoubleMatrix operator-(const DoubleMatrix&, const DoubleMatrix&);
     friend MINIMUMSHARED_EXPORT DoubleMatrix operator*(const DoubleMatrix&, const DoubleMatrix&);
+    friend MINIMUMSHARED_EXPORT DoubleMatrix operator*(double, const DoubleMatrix&);
+//    friend MINIMUMSHARED_EXPORT DoubleMatrix operator*(onst DoubleMatrix&, double);
 
 private:
     unsigned int mRows;

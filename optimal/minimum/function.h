@@ -34,7 +34,7 @@ public:
 class MINIMUMSHARED_EXPORT VectorRnFunction
 {
 public:
-    virtual double fx(const DoubleVector &x, unsigned int num) const = 0;
+    virtual double fx(const DoubleVector &x, unsigned int num = 0) const = 0;
 };
 
 class MINIMUMSHARED_EXPORT MatrixFunction

@@ -283,6 +283,23 @@ DoubleMatrix& DoubleMatrix::operator= (const DoubleVector &v)
     return *this;
 }
 
+DoubleMatrix& DoubleMatrix::operator +=(const DoubleMatrix &m)
+{
+    if (!dimEquals(m))
+    {
+        throw std::out_of_range("dimension dont match.");
+    }
+
+    for (unsigned int rw=0; rw < mRows; rw++)
+    {
+        for (unsigned int cl=0; cl < mCols; cl++)
+        {
+            mData[rw][cl] += m.mData[rw][cl];
+        }
+    }
+    return *this;
+}
+
 bool DoubleMatrix::dimEquals(const DoubleMatrix &matrix) const
 {
     return (mRows == matrix.mRows && mCols == matrix.mCols);
@@ -590,6 +607,23 @@ DoubleMatrix operator*(const DoubleMatrix &m1, const DoubleMatrix &m2)
         }
     }
     return m;
+}
+
+DoubleMatrix operator*(double k, const DoubleMatrix &m)
+{
+    DoubleMatrix c;
+    c.resize(m.rows(), m.cols());
+
+    unsigned int m_row = m.rows();
+    unsigned int m_col = m.cols();
+    for (unsigned int row=0; row<m_row; row++)
+    {
+        for (unsigned int col=0; col<m_col; col++)
+        {
+            c.mData[row][col] = k*m.mData[row][col];
+        }
+    }
+    return c;
 }
 
 void DoubleMatrix::print()

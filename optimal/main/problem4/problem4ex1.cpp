@@ -7,28 +7,15 @@ void Problem4Ex1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     Problem4Ex1 prob1(grid);
     prob1.initialize();
 
-//    for (unsigned int i=0; i<=grid.dimension().sizeN(); i++)
-//    {
-//        printf("%14.10f", prob1.X(i*grid.dimension().step(),2));
-//    }
-//    puts("");
-
     DoubleVector x0;
-    x0 << +5.1 << +1.2 << +7.5 << +2.1 << -1.3 << +1.1;
+    x0 << +1.5 << +1.5 << +1.5 << +1.5 << +1.5 << +1.5;
     DoubleVector x;
     prob1.calculateSimpleIdetartion(x0, x, 0.01);
-//    prob1.calculateNewtonMethod(x0, x, 1, 0.001);
+//    prob1.calculateNewtonMethod(x0, x, 0.01, 0.001);
 
-//    printf("%14.10f %14.10f %14.10f\n", x[0], x[1], x[2]);
-//    printf("%14.10f %14.10f %14.10f\n", x[3], x[4], x[5]);
-
-//    DoubleVector x1;
-//    x1 << 2.3907044618 << -2.4005548990 << 0.3279996938;
-//    x1 << 2.9601192501 << -1.8013824142 << 0.8164956935;
-//    printf("%14.10f\n", prob1.fx(x1,1));
-
-    IPrinter::printSeperatorLine();
-    prob1.printResult();
+//    IPrinter::printSeperatorLine();
+//    prob1.printResult();
+    IPrinter::print(x,x.size());
     IPrinter::printSeperatorLine();
     prob1.printResult1(x);
 }
@@ -61,12 +48,12 @@ void Problem4Ex1::initialize()
 //    nsc1.mtrx.resize(n0, n);
 //    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc1.mtrx[row][col] = (rand() % 10) / 1.0;
 
-    Condition nsc2;
-    nsc2.type = ISystemLinearODENonLocalContionsV::NonSeparated;
-    nsc2.time = 0.5;
-    nsc2.nmbr = N/2;
-    nsc2.mtrx.resize(n0, n);
-    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc2.mtrx[row][col] = (rand() % 10) / 1.0;
+//    Condition nsc2;
+//    nsc2.type = ISystemLinearODENonLocalContionsV::NonSeparated;
+//    nsc2.time = 0.5;
+//    nsc2.nmbr = N/2;
+//    nsc2.mtrx.resize(n0, n);
+//    for (unsigned int row=0; row<n0; row++) for(unsigned int col=0; col<n; col++) nsc2.mtrx[row][col] = (rand() % 10) / 1.0;
 
 //    Condition nsc3;
 //    nsc3.type = ISystemLinearODENonLocalContionsV::NonSeparated;
@@ -88,7 +75,7 @@ void Problem4Ex1::initialize()
     zett0.setGrid(mgrid);
     zett0.addNonSeparatedCondition(nsc0);
 //    zett0.addNonSeparatedCondition(nsc1);
-    zett0.addNonSeparatedCondition(nsc2);
+//    zett0.addNonSeparatedCondition(nsc2);
 //    zett0.addNonSeparatedCondition(nsc3);
     zett0.addNonSeparatedCondition(nsc4);
 
@@ -116,7 +103,7 @@ void Problem4Ex1::initialize()
     zett1.setGrid(mgrid);
     zett1.addNonSeparatedCondition(nsc0);
 //    zett1.addNonSeparatedCondition(nsc1);
-    zett1.addNonSeparatedCondition(nsc2);
+//    zett1.addNonSeparatedCondition(nsc2);
 //    zett1.addNonSeparatedCondition(nsc3);
     zett1.addNonSeparatedCondition(nsc4);
     DoubleVector betta1(n, 0.0);
@@ -128,19 +115,19 @@ void Problem4Ex1::initialize()
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Zettai zett2(*this, 1);
-    zett2.setGrid(mgrid);
-    zett2.addNonSeparatedCondition(nsc0);
-//    zett2.addNonSeparatedCondition(nsc1);
-    zett2.addNonSeparatedCondition(nsc2);
-//    zett2.addNonSeparatedCondition(nsc3);
-    zett2.addNonSeparatedCondition(nsc4);
-    DoubleVector betta2(n, 0.0);
-    zett2.setBetta(betta2);
+//    Zettai zett2(*this, 1);
+//    zett2.setGrid(mgrid);
+//    zett2.addNonSeparatedCondition(nsc0);
+////    zett2.addNonSeparatedCondition(nsc1);
+////    zett2.addNonSeparatedCondition(nsc2);
+////    zett2.addNonSeparatedCondition(nsc3);
+//    zett2.addNonSeparatedCondition(nsc4);
+//    DoubleVector betta2(n, 0.0);
+//    zett2.setBetta(betta2);
 
-    DoubleMatrix z2;
-    zett2.calculateForward(z2);
-    zett2.calculateBackwardCP(z2,zm2);
+//    DoubleMatrix z2;
+//    zett2.calculateForward(z2);
+//    zett2.calculateBackwardCP(z2,zm2);
 
 //    DoubleVector x1(N+1);
 //    DoubleVector x2(N+1);
@@ -159,13 +146,10 @@ void Problem4Ex1::initialize()
 //    IPrinter::printVector(x3);
 
 //    double aa = 0.0;
-//    unsigned int row = 2;
-//    for (unsigned int i=0; i<3; i++) aa += B(0.0,0,0,row,i)*g(0,i);
-//    for (unsigned int i=0; i<3; i++) aa += B(0.0,0,1,row,i)*g(1,i);
+//    unsigned int row = 1;
+//    for (unsigned int col=0; col<2; col++) aa += C(0.0, 0, 0, row, col) * g(0,col);
+//    //for (unsigned int col=0; col<2; col++) aa += C(0.0, 0, 0, row, col) * g(1,col);
 //    printf("%14.10f\n", aa);
-
-//    printf("%14.10f %14.10f %14.10f\n", g(0,0), g(0,1), g(0,2));
-//    printf("%14.10f %14.10f %14.10f\n", g(1,0), g(1,1), g(1,2));
 }
 
 void Problem4Ex1::printResult()
@@ -178,12 +162,12 @@ void Problem4Ex1::printResult()
     DoubleVector x3(N+1);
     for (unsigned int i=0; i<=N; i++)
     {
-        x1[i] =  zm0[0][i] + (zm1[0][0][i]*g(0,0) + zm1[0][1][i]*g(0,1) + zm1[0][2][i]*g(0,2))
-                + (zm2[0][0][i]*g(1,0) + zm2[0][1][i]*g(1,1) + zm2[0][2][i]*g(1,2));
-        x2[i] =  zm0[1][i] + (zm1[1][0][i]*g(0,0) + zm1[1][1][i]*g(0,1) + zm1[1][2][i]*g(0,2))
-                + (zm2[1][0][i]*g(1,0) + zm2[1][1][i]*g(1,1) + zm2[1][2][i]*g(1,2));
-        x3[i] =  zm0[2][i] + (zm1[2][0][i]*g(0,0) + zm1[2][1][i]*g(0,1) + zm1[2][2][i]*g(0,2))
-                + (zm2[2][0][i]*g(1,0) + zm2[2][1][i]*g(1,1) + zm2[2][2][i]*g(1,2));
+        x1[i] =  zm0[0][i] + (zm1[0][0][i]*g(0,0) + zm1[0][1][i]*g(0,1));// + zm1[0][2][i]*g(0,2))
+                ;//+ (zm2[0][0][i]*g(1,0) + zm2[0][1][i]*g(1,1) + zm2[0][2][i]*g(1,2));
+        x2[i] =  zm0[1][i] + (zm1[1][0][i]*g(0,0) + zm1[1][1][i]*g(0,1));// + zm1[1][2][i]*g(0,2))
+                ;//+ (zm2[1][0][i]*g(1,0) + zm2[1][1][i]*g(1,1) + zm2[1][2][i]*g(1,2));
+        x3[i] =  zm0[2][i] + (zm1[2][0][i]*g(0,0) + zm1[2][1][i]*g(0,1));// + zm1[2][2][i]*g(0,2))
+                ;//+ (zm2[2][0][i]*g(1,0) + zm2[2][1][i]*g(1,1) + zm2[2][2][i]*g(1,2));
     }
     IPrinter::printVector(14,10,x1);
     IPrinter::printVector(14,10,x2);
@@ -200,9 +184,9 @@ void Problem4Ex1::printResult1(const DoubleVector &x)
     DoubleVector x3(N+1);
     for (unsigned int i=0; i<=N; i++)
     {
-        x1[i] =  zm0[0][i] + (zm1[0][0][i]*g(x,0,0) + zm1[0][1][i]*g(x,0,1) + zm1[0][2][i]*g(x,0,2)) + (zm2[0][0][i]*g(x,1,0) + zm2[0][1][i]*g(x,1,1) + zm2[0][2][i]*g(x,1,2));
-        x2[i] =  zm0[1][i] + (zm1[1][0][i]*g(x,0,0) + zm1[1][1][i]*g(x,0,1) + zm1[1][2][i]*g(x,0,2)) + (zm2[1][0][i]*g(x,1,0) + zm2[1][1][i]*g(x,1,1) + zm2[1][2][i]*g(x,1,2));
-        x3[i] =  zm0[2][i] + (zm1[2][0][i]*g(x,0,0) + zm1[2][1][i]*g(x,0,1) + zm1[2][2][i]*g(x,0,2)) + (zm2[2][0][i]*g(x,1,0) + zm2[2][1][i]*g(x,1,1) + zm2[2][2][i]*g(x,1,2));
+        x1[i] =  zm0[0][i] + (zm1[0][0][i]*g(x,0,0) + zm1[0][1][i]*g(x,0,1));// + zm1[0][2][i]*g(x,0,2)) + (zm2[0][0][i]*g(x,1,0) + zm2[0][1][i]*g(x,1,1) + zm2[0][2][i]*g(x,1,2));
+        x2[i] =  zm0[1][i] + (zm1[1][0][i]*g(x,0,0) + zm1[1][1][i]*g(x,0,1));// 0.0115811592 + zm1[1][2][i]*g(x,0,2)) + (zm2[1][0][i]*g(x,1,0) + zm2[1][1][i]*g(x,1,1) + zm2[1][2][i]*g(x,1,2));
+        x3[i] =  zm0[2][i] + (zm1[2][0][i]*g(x,0,0) + zm1[2][1][i]*g(x,0,1));// + zm1[2][2][i]*g(x,0,2)) + (zm2[2][0][i]*g(x,1,0) + zm2[2][1][i]*g(x,1,1) + zm2[2][2][i]*g(x,1,2));
     }
     IPrinter::printVector(14,10,x1);
     IPrinter::printVector(14,10,x2);
@@ -217,39 +201,39 @@ double Problem4Ex1::fx(const DoubleVector &x, unsigned int num) const
     if (num == 0)
     {
         unsigned int n = 0.3*N;
-        return zm0[0][n] + (zm1[0][0][n]*g(x,0,0) + zm1[0][1][n]*g(x,0,1) + zm1[0][2][n]*g(x,0,2))
-                         + (zm2[0][0][n]*g(x,1,0) + zm2[0][1][n]*g(x,1,1) + zm2[0][2][n]*g(x,1,2));
+        return zm0[0][n] + (zm1[0][0][n]*g(x,0,0) + zm1[0][1][n]*g(x,0,1));// + zm1[0][2][n]*g(x,0,2))
+                        // + (zm2[0][0][n]*g(x,1,0) + zm2[0][1][n]*g(x,1,1) + zm2[0][2][n]*g(x,1,2));
     }
     if (num == 1)
     {
         unsigned int n = 0.3*N;
-        return zm0[1][n] + (zm1[1][0][n]*g(x,0,0) + zm1[1][1][n]*g(x,0,1) + zm1[1][2][n]*g(x,0,2))
-                         + (zm2[1][0][n]*g(x,1,0) + zm2[1][1][n]*g(x,1,1) + zm2[1][2][n]*g(x,1,2));
+        return zm0[1][n] + (zm1[1][0][n]*g(x,0,0) + zm1[1][1][n]*g(x,0,1));// + zm1[1][2][n]*g(x,0,2))
+                        // + (zm2[1][0][n]*g(x,1,0) + zm2[1][1][n]*g(x,1,1) + zm2[1][2][n]*g(x,1,2));
     }
     if (num == 2)
     {
         unsigned int n = 0.3*N;
-        return zm0[2][n] + (zm1[2][0][n]*g(x,0,0) + zm1[2][1][n]*g(x,0,1) + zm1[2][2][n]*g(x,0,2))
-                         + (zm2[2][0][n]*g(x,1,0) + zm2[2][1][n]*g(x,1,1) + zm2[2][2][n]*g(x,1,2));
+        return zm0[2][n] + (zm1[2][0][n]*g(x,0,0) + zm1[2][1][n]*g(x,0,1));// + zm1[2][2][n]*g(x,0,2))
+                         //+ (zm2[2][0][n]*g(x,1,0) + zm2[2][1][n]*g(x,1,1) + zm2[2][2][n]*g(x,1,2));
     }
 
     if (num == 3)
     {
         unsigned int n = 0.6*N;
         return zm0[0][n] + (zm1[0][0][n]*g(x,0,0) + zm1[0][1][n]*g(x,0,1) + zm1[0][2][n]*g(x,0,2))
-                         + (zm2[0][0][n]*g(x,1,0) + zm2[0][1][n]*g(x,1,1) + zm2[0][2][n]*g(x,1,2));
+                         ;//+ (zm2[0][0][n]*g(x,1,0) + zm2[0][1][n]*g(x,1,1) + zm2[0][2][n]*g(x,1,2));
     }
     if (num == 4)
     {
         unsigned int n = 0.6*N;
         return zm0[1][n] + (zm1[1][0][n]*g(x,0,0) + zm1[1][1][n]*g(x,0,1) + zm1[1][2][n]*g(x,0,2))
-                         + (zm2[1][0][n]*g(x,1,0) + zm2[1][1][n]*g(x,1,1) + zm2[1][2][n]*g(x,1,2));
+                         ;//+ (zm2[1][0][n]*g(x,1,0) + zm2[1][1][n]*g(x,1,1) + zm2[1][2][n]*g(x,1,2));
     }
     if (num == 5)
     {
         unsigned int n = 0.6*N;
         return zm0[2][n] + (zm1[2][0][n]*g(x,0,0) + zm1[2][1][n]*g(x,0,1) + zm1[2][2][n]*g(x,0,2))
-                         + (zm2[2][0][n]*g(x,1,0) + zm2[2][1][n]*g(x,1,1) + zm2[2][2][n]*g(x,1,2));
+                         ;//+ (zm2[2][0][n]*g(x,1,0) + zm2[2][1][n]*g(x,1,1) + zm2[2][2][n]*g(x,1,2));
     }
     return NAN;
 }
@@ -261,10 +245,14 @@ double Problem4Ex1::A(double t, unsigned int, unsigned int row, unsigned int col
     if (row == 1) { if (col == 0) { return +3.0; } if (col == 1) { return -4.0*t; } if (col == 2) { return -8.0; } }
     if (row == 2) { if (col == 0) { return +t; }   if (col == 1) { return +1.0; }   if (col == 2) { return -1.0; } }
 #endif
+#ifdef SAMPLE_2
+    if (row == 0) { if (col == 0) return +1.0; if (col == 0) return +3.0; }
+    if (row == 1) { if (col == 0) return +2.0; if (col == 0) return +4.0; }
+#endif
     return NAN;
 }
 
-double Problem4Ex1::B(double, unsigned int, unsigned int num, unsigned int row, unsigned int col) const
+double Problem4Ex1::C(double, unsigned int, unsigned int num, unsigned int row, unsigned int col) const
 {
 #ifdef SAMPLE_1
 
@@ -283,34 +271,26 @@ double Problem4Ex1::B(double, unsigned int, unsigned int num, unsigned int row, 
     }
 
 #endif
+#ifdef SAMPLE_2
+    if ( num == 0 )
+    {
+        if (row == 0) { if (col == 0) { return +0.002; } if (col == 1) { return +0.005; } }
+        if (row == 1) { if (col == 0) { return +0.004; } if (col == 1) { return +0.008; } }
+    }
+#endif
     return NAN;
 }
 
-double Problem4Ex1::C(double t, unsigned int k UNUSED_PARAM, unsigned int row) const
+double Problem4Ex1::B(double t, unsigned int k UNUSED_PARAM, unsigned int row) const
 {
 #ifdef SAMPLE_1
-    if (row == 0)
-    {
-//        return dX(t,0)
-//                - (A(t,k,0,0)*X(t,0) + A(t,k,0,1)*X(t,1) + A(t,k,0,2)*X(t,2))
-//                - (B(t,k,0,0,0)*g(0,0) + B(t,k,0,0,1)*g(0,1) + B(t,k,0,0,2)*g(0,2))
-//                - (B(t,k,1,0,0)*g(1,0) + B(t,k,1,0,1)*g(1,1) + B(t,k,1,0,2)*g(1,2));
-        return 3.0*t*t*t - 4.0*t*t + 6.0*t - 3.0 - 0.0414023610;
-    }
-    if (row == 1)
-    {
-//        return dX(t,1) - (A(t,k,1,0)*X(t,0) + A(t,k,1,1)*X(t,1) + A(t,k,1,2)*X(t,2))
-//                - (B(t,k,0,1,0)*g(0,0) + B(t,k,0,1,1)*g(0,1) + B(t,k,0,1,2)*g(0,2))
-//                - (B(t,k,1,1,0)*g(1,0) + B(t,k,1,1,1)*g(1,1) + B(t,k,1,1,2)*g(1,2));
-        return 8.0*t*t*t + 5.0*t*t - 7.0*t - 4.0 - 0.0735341450;
-    }
-    if (row == 2)
-    {
-//        return dX(t,2) - (A(t,k,2,0)*X(t,0) + A(t,k,2,1)*X(t,1) + A(t,k,2,2)*X(t,2));
-//                - (B(t,k,0,2,0)*g(0,0) + B(t,k,0,2,1)*g(0,1) + B(t,k,0,2,2)*g(0,2))
-//                - (B(t,k,1,2,0)*g(1,0) + B(t,k,1,2,1)*g(1,1) + B(t,k,1,2,2)*g(1,2));
-        return 2.0*t*t - 3.0*t + 4.0 - 0.0639390740;
-    }
+    if (row == 0) return 3.0*t*t*t - 4.0*t*t + 6.0*t - 3.0 - 0.0414023610;
+    if (row == 1) return 8.0*t*t*t + 5.0*t*t - 7.0*t - 4.0 - 0.0735341450;
+    if (row == 2) return 2.0*t*t - 3.0*t + 4.0 - 0.0639390740;
+#endif
+#ifdef SAMPLE_2
+    if (row == 0) return 4.0*cos(4.0*t) - sin(4.0*t) - 3.0*(t*t-t) - 0.0069072257;
+    if (row == 1) return (2.0*t-1)-2.0*sin(4.0*t) - 4.0*(t*t-t) - 0.0115811592;
 #endif
     return NAN;
 }
@@ -331,27 +311,23 @@ double Problem4Ex1::g(unsigned int num, unsigned int row) const
         if (row == 1) { return X(0.6,1)*X(0.6,1)*X(0.6,1); }
         if (row == 2) { return X(0.6,2)*X(0.6,2); }
     }
-
-
-//    if (num == 0)
-//    {
-//        if (row == 0) { return 11.1451000000; }
-//        if (row == 1) { return 4.9784700000; }
-//        if (row == 2) { return 0.0969290000; }
-//    }
-//    if (num == 1)
-//    {
-//        if (row == 0) { return  8.7616000000; }
-//        if (row == 1) { return -5.8320000000; }
-//        if (row == 2) { return  0.6658560000; }
-//    }
-
 #endif
+
+#ifdef SAMPLE_2
+    if (num == 0)
+    {
+        DoubleVector x;
+        x << X(0.5, 0) << X(0.5, 1);
+        return g(x, num, row);
+    }
+#endif
+
     return NAN;
 }
 
 double Problem4Ex1::g(const DoubleVector &x, unsigned int num, unsigned int row) const
 {
+#ifdef SAMPLE_1
     double x1_03 = x[0]; double x1_06 = x[3];
     double x2_03 = x[1]; double x2_06 = x[4];
     double x3_03 = x[2]; double x3_06 = x[5];
@@ -364,10 +340,21 @@ double Problem4Ex1::g(const DoubleVector &x, unsigned int num, unsigned int row)
     }
     if (num == 1)
     {
-        if (row == 0) return x1_06*x1_06;
+        if (row == 0) { return  x1_06*x1_06; }
         if (row == 1) return x2_06*x2_06*x2_06;
         if (row == 2) return x3_06*x3_06;
     }
+#endif
+#ifdef SAMPLE_2
+    double x1_05 = x[0];
+    double x2_05 = x[1];
+    if (num == 0)
+    {
+        if (row == 0) return x1_05*x1_05 + x2_05*x2_05 + x1_05*x2_05;
+        if (row == 1) return x1_05*x1_05 + x2_05*x2_05 - x1_05*x2_05;
+    }
+#endif
+
     return NAN;
 }
 
@@ -377,6 +364,10 @@ double Problem4Ex1::X(double t, unsigned int i) const
     if (i == 0) { return t*t+t+2.0; }
     if (i == 1) { return 2.0*t-3.0; }
     if (i == 2) { return t*t*t+t; }
+#endif
+#ifdef SAMPLE_2
+    if (i == 0) { return sin(4.0*t); }
+    if (i == 1) { return t*t-t; }
 #endif
     return NAN;
 }

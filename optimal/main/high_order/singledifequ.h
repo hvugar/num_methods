@@ -1,5 +1,5 @@
-#ifndef EXAMPLE_H
-#define EXAMPLE_H
+#ifndef SINGLE_DIF_EQUATION_H
+#define SINGLE_DIF_EQUATION_H
 
 #include <vector2d.h>
 #include <matrix2d.h>
@@ -37,4 +37,4 @@ public:
     double calculateEta();
 };
 
-#endif // EXAMPLE_H
+#endif // SINGLE_DIF_EQUATION_H

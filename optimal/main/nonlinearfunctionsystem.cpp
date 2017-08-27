@@ -1,9 +1,9 @@
 #include "nonlinearfunctionsystem.h"
 #include <math.h>
 
-void NonLinearFunctionSystem::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
+void NonLinearFunction::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    NonLinearFunctionSystem nlfs;
+    NonLinearFunction nlfs;
 
 //    DoubleVector x0;
 //    x0 << 3.5 << 2.2;
@@ -20,7 +20,7 @@ void NonLinearFunctionSystem::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PA
 
 }
 
-double NonLinearFunctionSystem::fx(const DoubleVector &x, unsigned int num) const
+double NonLinearFunction::fx(const DoubleVector &x, unsigned int num) const
 {
     double x1 = x[0];
     double x2 = x[1];
@@ -33,7 +33,7 @@ double NonLinearFunctionSystem::fx(const DoubleVector &x, unsigned int num) cons
     return NAN;
 }
 
-void INonLinearFunctionSystem::calculateSimpleIdetartion(const DoubleVector &x0, DoubleVector &x, double epsilon)
+void INonLinearFunction::calculateSimpleIdetartion(const DoubleVector &x0, DoubleVector &x, double epsilon)
 {
     unsigned int n = x0.size();
     x = x0;
@@ -51,7 +51,7 @@ void INonLinearFunctionSystem::calculateSimpleIdetartion(const DoubleVector &x0,
     }
 }
 
-void INonLinearFunctionSystem::calculateNewtonMethod(const DoubleVector &x0, DoubleVector &rx, double diffEspilon, double epsilon)
+void INonLinearFunction::calculateNewtonMethod(const DoubleVector &x0, DoubleVector &rx, double diffEspilon, double epsilon)
 {
     unsigned int n = x0.size();
     rx = x0;
@@ -67,18 +67,20 @@ void INonLinearFunctionSystem::calculateNewtonMethod(const DoubleVector &x0, Dou
                 DoubleVector x1 = rx;
                 x2[col] = x2[col] + diffEspilon;
                 x1[col] = x1[col] - diffEspilon;
+                //printf("%d %d %.16f %.16f\n", row, col, fx(x2, row), fx(x1, row));
                 W.at(row, col) = (fx(x2, row) - fx(x1, row))/(2.0*diffEspilon);
             }
         }
 
-        //IPrinter::printSeperatorLine();
-        //IPrinter::print(W,W.rows(),W.cols());
-        //IPrinter::printSeperatorLine();
-        printf("det %.10f\n", W.determinant());
+        IPrinter::printSeperatorLine();
+        IPrinter::print(W,W.rows(),W.cols());
+        IPrinter::printSeperatorLine();
+        printf("1 det %.10f\n", W.determinant());
         W.inverse();
-        //IPrinter::printSeperatorLine();
-        //IPrinter::print(W,W.rows(),W.cols());
-        //IPrinter::printSeperatorLine();
+        IPrinter::printSeperatorLine();
+        IPrinter::print(W,W.rows(),W.cols());
+        IPrinter::printSeperatorLine();
+        printf("2 det %.10f\n", W.determinant());
         for (unsigned int row=0; row<n; row++)
         {
             e[row] = 0.0;

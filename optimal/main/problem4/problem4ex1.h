@@ -6,9 +6,9 @@
 #include "zettai.h"
 #include "../nonlinearfunctionsystem.h"
 
-#define SAMPLE_1
+#define SAMPLE_2
 
-class Problem4Ex1 : public NonLinearFunctionSystem, public ISystemLinearODENonLocalContions
+class Problem4Ex1 : public NonLinearFunction, public ISystemLinearODENonLocalContions
 {
 public:
     static void Main(int agrc, char *argv[]);
@@ -17,8 +17,8 @@ public:
     void initialize();
 
     virtual double A(double t, unsigned int k, unsigned int row, unsigned int col) const;
-    virtual double B(double t, unsigned int k, unsigned int num, unsigned int row, unsigned int col) const;
-    virtual double C(double t, unsigned int k, unsigned int row) const;
+    virtual double B(double t, unsigned int k, unsigned int row) const;
+    virtual double C(double t, unsigned int k, unsigned int num, unsigned int row, unsigned int col) const;
 
     virtual double g(unsigned int num, unsigned int row) const;
 
@@ -36,7 +36,7 @@ public:
 
     std::vector<DoubleVector> zm0;
     std::vector<std::vector<DoubleVector>> zm1;
-    std::vector<std::vector<DoubleVector>> zm2;
+    //std::vector<std::vector<DoubleVector>> zm2;
 
 private:
     ODEGrid mgrid;
