@@ -340,12 +340,9 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cnds, co
     }
     else
     {
-        DoubleMatrix* p = new DoubleMatrix[N];
-        for (unsigned int i=0; i<N; i++) p[i].resize(en, en, 0.0);
-        DoubleMatrix* q = new DoubleMatrix[N];
-        for (unsigned int i=0; i<N; i++) q[i].resize(en, en, 0.0);
-        DoubleVector* r = new DoubleVector[N];
-        for (unsigned int i=0; i<N; i++) r[i].resize(en, 0.0);
+        DoubleMatrix* P = new DoubleMatrix[N]; for (unsigned int i=0; i<N; i++) P[i].resize(en, en, 0.0);
+        DoubleMatrix* Q = new DoubleMatrix[N]; for (unsigned int i=0; i<N; i++) Q[i].resize(en, en, 0.0);
+        DoubleMatrix* R = new DoubleMatrix[N]; for (unsigned int i=0; i<N; i++) R[i].resize(en, 1, 0.0);
 
         std::vector<unsigned int> ind;
         std::vector<DoubleMatrix*> ems;
@@ -353,8 +350,7 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cnds, co
         /**********************************************************************
          *                  Discretization using trapesium rule
          *********************************************************************/
-        DoubleMatrix* b = new DoubleMatrix[N+1];
-        for (unsigned int n=0; n<=N; n++) b[n].resize(en, en, 0.0);
+        DoubleMatrix* b = new DoubleMatrix[N+1]; for (unsigned int n=0; n<=N; n++) b[n].resize(en, en, 0.0);
 
         unsigned int cnd_size = cnds.size();
         for (unsigned int s=0; s<cnd_size; s++)
@@ -369,20 +365,21 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cnds, co
             }
         }
 
-        p[0] = b[0];
-        q[0] = b[1];
+        P[0] = b[0];
+        Q[0] = b[1];
         for (unsigned int n=2; n<=N; n++)
         {
             if (!isMatrixNull(b[n]))
             {
                 ind.push_back(n);
                 DoubleMatrix *dm = new DoubleMatrix[N];
+                for (unsigned int i=0; i<N; i++) dm[i].resize(en,en);
                 ems.push_back(dm);
                 ems[ems.size()-1][0] = b[n];
             }
         }
         free(b);
-        r[0] = rs;
+        R[0] = rs;
 
         unsigned int ind_size = ind.size();
         unsigned int ems_size = ems.size();
@@ -420,32 +417,115 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cnds, co
                 alpha0[row][0] = -2.0*h*B(t,n,row);
             }
 
+            m.inverse();
+
             alpha1 = m*alpha1;
             alpha2 = m*alpha2;
             alpha0 = m*alpha0;
-            m.inverse();
-            r[n+1] = r[n] - p[n]*alpha0;
-            q[n+1] = p[n]*alpha2;
-            p[n+1] = p[n]*alpha1 + q[n];
+
+            R[n+1] = R[n] - P[n]*alpha0;
+            Q[n+1] = P[n]*alpha2;
+            P[n+1] = P[n]*alpha1 + Q[n];
 
             for (unsigned int i=0; i<ind_size; i++)
             {
-                if (n+2 == ind.at(i)) q[n+1] += ems[i][n];
+                if (n+2 == ind.at(i)) Q[n+1] += ems[i][n];
                 if (n+2 >= ind.at(i)) setMatrixNull(ems[i][n]);
                 else ems[i][n+1] = ems[i][n];
             }
         }
 
+        m.clear();
+        alpha0.clear();
+        alpha1.clear();
+        alpha2.clear();
+
         DoubleMatrix M(3*en,3*en);
         DoubleVector C(3*en);
         DoubleVector xT(3*en);
 
-        printf("%f %f\n", p[N-1][0][0]*X(0.99,0)
-                         +p[N-1][0][1]*X(0.99,1)
-                         +p[N-1][0][2]*X(0.99,2)
-                         +q[N-1][0][0]*X(1.00,0)
-                         +q[N-1][0][1]*X(1.00,1)
-                         +q[N-1][0][2]*X(1.00,2), r[N-1][0]);
+        for (unsigned int row=0*en; row<1*en; row++)
+        {
+            for (unsigned int col=0*en; col<1*en; col++) M[row][col] = 0.0;
+            for (unsigned int col=1*en; col<2*en; col++) M[row][col] = P[N-1][row%en][col%en];
+            for (unsigned int col=2*en; col<3*en; col++) M[row][col] = Q[N-1][row%en][col%en];
+            C[row] = R[N-1][row%en][0];
+        }
+
+        for (unsigned int row=1*en; row<2*en; row++)
+        {
+            for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -1.0; }
+            for (unsigned int col=1*en; col<2*en; col++) { M[row][col] = -2.0*h*A((N-1)*h, N-1, row%en, col%en); }
+            for (unsigned int col=2*en; col<3*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +1.0; }
+            C[row] = 2.0*h*B((N-1)*h, N-1, row%en);
+        }
+
+        for (unsigned int row=2*en; row<3*en; row++)
+        {
+            for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +1.0; }
+            for (unsigned int col=1*en; col<2*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -4.0; }
+            for (unsigned int col=2*en; col<3*en; col++) { M[row][col] = -2.0*h*A(N*h, N, row%en, col%en); if (row%en == col%en) M[row][col] += +3.0; }
+            C[row] = 2.0*h*B(N*h, N, row%en);
+        }
+
+        GaussianElimination(M, C, xT);
+        IPrinter::print(xT, xT.size());
+
+        x.resize(en);
+        for (unsigned int i=0; i<en; i++) x[i].resize(N+1);
+
+        std::vector<DoubleMatrix> x0(N+1);
+        for (unsigned int i=0; i<=N; i++) x0[i].resize(en,1);
+
+        for (unsigned int row=0; row<en; row++)
+        {
+            x0[N-2][row][0] = xT[row+0*en];
+            x0[N-1][row][0] = xT[row+1*en];
+            x0[N-0][row][0] = xT[row+2*en];
+        }
+
+        for (unsigned int i=N-2; i!=0; i--)
+        {
+            x0[i-1] = R[i-1]-Q[i-1]*x0[i];
+            for (unsigned int s=0; s<ems_size; s++) x0[i-1] += -1.0*(ems[s][i-1]*x0[ind[s]]);
+            P[i-1].inverse();
+            x0[i-1] = P[i-1] * x0[i-1];
+        }
+
+        for (unsigned int i=0; i<=N; i++)
+        {
+            for (unsigned int row=0; row<en; row++)
+            {
+                x[row][i] = x0[i][row][0];
+            }
+        }
+
+        for (unsigned int i=0; i<N; i++)
+        {
+            R[i].clear();
+            Q[i].clear();
+            P[i].clear();
+        }
+        delete [] R;
+        delete [] Q;
+        delete [] P;
+        ind.clear();
+
+        for (unsigned int i=0; i<ems_size; i++)
+        {
+            delete [] ems[i];
+        }
+        ems.clear();
+
+        for (unsigned int i=0; i<=N; i++)
+        {
+            x0[i].clear();
+        }
+        x0.clear();
+
+        M.clear();
+        C.clear();
+        xT.clear();
     }
 }
 

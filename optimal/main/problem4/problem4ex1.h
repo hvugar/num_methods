@@ -6,7 +6,7 @@
 #include "zettai.h"
 #include "../nonlinearfunctionsystem.h"
 
-#define SAMPLE_2
+#define SAMPLE_1
 
 class Problem4Ex1 : public NonLinearFunction, public ISystemLinearODENonLocalContions
 {
@@ -27,8 +27,6 @@ public:
     double X(double t, unsigned int num) const;
     double dX(double t, unsigned int num) const;
 
-    unsigned int L1 = 3;
-
     virtual double fx(const DoubleVector &x, unsigned int num) const;
 
     void printResult();
@@ -36,7 +34,7 @@ public:
 
     std::vector<DoubleVector> zm0;
     std::vector<std::vector<DoubleVector>> zm1;
-    //std::vector<std::vector<DoubleVector>> zm2;
+    std::vector<std::vector<DoubleVector>> zm2;
 
 private:
     ODEGrid mgrid;

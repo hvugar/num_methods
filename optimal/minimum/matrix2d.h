@@ -88,7 +88,7 @@ public:
     friend MINIMUMSHARED_EXPORT DoubleMatrix operator-(const DoubleMatrix&, const DoubleMatrix&);
     friend MINIMUMSHARED_EXPORT DoubleMatrix operator*(const DoubleMatrix&, const DoubleMatrix&);
     friend MINIMUMSHARED_EXPORT DoubleMatrix operator*(double, const DoubleMatrix&);
-//    friend MINIMUMSHARED_EXPORT DoubleMatrix operator*(onst DoubleMatrix&, double);
+    friend MINIMUMSHARED_EXPORT DoubleMatrix operator*(const DoubleMatrix&, double);
 
 private:
     unsigned int mRows;

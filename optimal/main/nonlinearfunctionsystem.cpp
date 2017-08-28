@@ -67,20 +67,10 @@ void INonLinearFunction::calculateNewtonMethod(const DoubleVector &x0, DoubleVec
                 DoubleVector x1 = rx;
                 x2[col] = x2[col] + diffEspilon;
                 x1[col] = x1[col] - diffEspilon;
-                //printf("%d %d %.16f %.16f\n", row, col, fx(x2, row), fx(x1, row));
                 W.at(row, col) = (fx(x2, row) - fx(x1, row))/(2.0*diffEspilon);
             }
         }
-
-        IPrinter::printSeperatorLine();
-        IPrinter::print(W,W.rows(),W.cols());
-        IPrinter::printSeperatorLine();
-        printf("1 det %.10f\n", W.determinant());
         W.inverse();
-        IPrinter::printSeperatorLine();
-        IPrinter::print(W,W.rows(),W.cols());
-        IPrinter::printSeperatorLine();
-        printf("2 det %.10f\n", W.determinant());
         for (unsigned int row=0; row<n; row++)
         {
             e[row] = 0.0;
@@ -90,8 +80,5 @@ void INonLinearFunction::calculateNewtonMethod(const DoubleVector &x0, DoubleVec
             }
             rx[row] -= e[row];
         }
-
-        //IPrinter::print(rx, rx.size());
-
     } while (e.LInfNorm() > epsilon);
 }

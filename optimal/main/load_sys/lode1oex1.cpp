@@ -23,7 +23,6 @@ void LinearODE1stOrderEx1::example1()
 
     std::vector<Condition> nscs;
     DoubleVector betta;
-    std::vector<DoubleVector> x;
 
     Condition nsc0;
     nsc0.time = 0.0;
@@ -74,11 +73,16 @@ void LinearODE1stOrderEx1::example1()
         }
     }
 
-    std::vector<DoubleVector> x2;
-    highOder2Accuracy(nscs, betta, x2);
-//    IPrinter::printVector(x2[0]);
-//    IPrinter::printVector(x2[1]);
-//    IPrinter::printVector(x2[2]);
+    std::vector<DoubleVector> x;
+    highOder2Accuracy(nscs, betta, x);
+    IPrinter::printVector(x[0]);
+    IPrinter::printVector(x[1]);
+    IPrinter::printVector(x[2]);
+
+    highOder4Accuracy(nscs, betta, x);
+    IPrinter::printVector(x[0]);
+    IPrinter::printVector(x[1]);
+    IPrinter::printVector(x[2]);
 }
 
 void LinearODE1stOrderEx1::example2()

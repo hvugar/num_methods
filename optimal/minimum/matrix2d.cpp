@@ -267,7 +267,6 @@ DoubleMatrix& DoubleMatrix::operator= (const DoubleMatrix &m)
 
 DoubleMatrix& DoubleMatrix::operator= (const DoubleVector &v)
 {
-    puts("DoubleMatrix& DoubleMatrix::operator= (const DoubleVector &v)");
     if (v.size() > 0)
     {
         clear();
@@ -609,7 +608,7 @@ DoubleMatrix operator*(const DoubleMatrix &m1, const DoubleMatrix &m2)
     return m;
 }
 
-DoubleMatrix operator*(double k, const DoubleMatrix &m)
+DoubleMatrix operator*(double d, const DoubleMatrix &m)
 {
     DoubleMatrix c;
     c.resize(m.rows(), m.cols());
@@ -620,10 +619,15 @@ DoubleMatrix operator*(double k, const DoubleMatrix &m)
     {
         for (unsigned int col=0; col<m_col; col++)
         {
-            c.mData[row][col] = k*m.mData[row][col];
+            c.mData[row][col] = d*m.mData[row][col];
         }
     }
     return c;
+}
+
+DoubleMatrix operator*(const DoubleMatrix &m, double d)
+{
+    return d*m;
 }
 
 void DoubleMatrix::print()
