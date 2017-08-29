@@ -1,5 +1,6 @@
 #include "borderparabolicn.h"
 #include <math.h>
+#include <linearequation.h>
 
 void BorderParabolicN::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -242,7 +243,7 @@ void BorderParabolicN::calculateN2(DoubleMatrix &u, double hx, double ht, unsign
             }
         }
 
-        GaussianElimination(A, b, x);
+        LinearEquation::GaussianElimination(A, b, x);
 
         u.at(m, N-1) = x[1];
         u.at(m, N-2) = x[0];
@@ -319,7 +320,7 @@ void BorderParabolicN::calculateN3(DoubleMatrix &u, double hx, double ht, unsign
 
         //printf("%4u %14.10f %14.10f\n", N, A[1][0]*U(N-1,m)+A[1][1]*U(N,m), b[1]);
 
-        GaussianElimination(A, b, x);
+        LinearEquation::GaussianElimination(A, b, x);
 
         u.at(m, N-0) = x[1];
         u.at(m, N-1) = x[0];

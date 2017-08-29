@@ -4,6 +4,7 @@
 #include "global.h"
 #include <vector2d.h>
 #include "grid/grid.h"
+#include "../linearequation.h"
 
 class MINIMUMSHARED_EXPORT DifferentialEquation
 {

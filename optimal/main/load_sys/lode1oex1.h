@@ -1,7 +1,7 @@
 #ifndef LOADLINEARODE1STORDEREX1_H
 #define LOADLINEARODE1STORDEREX1_H
 
-#define EXAMPLE_1
+#define EXAMPLE_3
 
 #include <ode/lode1o.h>
 
@@ -12,6 +12,7 @@ public:
 
     void example1();
     void example2();
+    void example3();
 
     double X(double t, int i) const;
 public:

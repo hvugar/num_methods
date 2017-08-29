@@ -12,6 +12,9 @@ void LinearODE1stOrderEx1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM
 #ifdef EXAMPLE_2
     cpnlcs.example2();
 #endif
+#ifdef EXAMPLE_3
+    cpnlcs.example3();
+#endif
 }
 
 void LinearODE1stOrderEx1::example1()
@@ -135,6 +138,57 @@ void LinearODE1stOrderEx1::example2()
     IPrinter::printVector(x6[0]);
 }
 
+void LinearODE1stOrderEx1::example3()
+{
+    unsigned int n = equationsNumber();
+    std::vector<Condition> cs;
+
+    Condition c0;
+    c0.time = 0.0;
+    c0.mtrx.resize(n, n);
+    c0.mtrx.at(0,0) = 5.0;
+    c0.index = 0;
+    cs.push_back(c0);
+
+    Condition c1;
+    c1.time = 0.4;
+    c1.mtrx.resize(n, n);
+    c1.mtrx.at(0,0) = 4.2;
+    c1.index = 0;
+    cs.push_back(c1);
+
+    Condition c2;
+    c2.time = 1.0;
+    c2.mtrx.resize(n, n);
+    c2.mtrx.at(0,0) = 10.0;
+    c2.index = 0;
+    cs.push_back(c2);
+
+    DoubleVector bt(n);
+
+    bt[0] = c0.mtrx.at(0,0)*X(c0.time,0)
+            + c1.mtrx.at(0,0)*X(c1.time,0)
+            + c2.mtrx.at(0,0)*X(c2.time,0);
+
+    unsigned int N = grid().dimension().sizeN();
+    double h = grid().dimension().step();
+    DoubleVector x1(N+1);
+    for (unsigned int i=0; i<=N; i++) x1[i] = X(i*h, 0);
+    IPrinter::printVector(x1);
+
+    std::vector<DoubleVector> x2;
+    highOder2Accuracy(cs, bt, x2);
+    IPrinter::printVector(x2[0]);
+
+    std::vector<DoubleVector> x4;
+    highOder4Accuracy(cs, bt, x4);
+    IPrinter::printVector(x4[0]);
+
+    std::vector<DoubleVector> x6;
+    highOder6Accuracy(cs, bt, x6);
+    IPrinter::printVector(x6[0]);
+}
+
 double LinearODE1stOrderEx1::A(double t UNUSED_PARAM, unsigned int, unsigned int row UNUSED_PARAM, unsigned int col UNUSED_PARAM) const
 {
 #ifdef EXAMPLE_1
@@ -145,25 +199,24 @@ double LinearODE1stOrderEx1::A(double t UNUSED_PARAM, unsigned int, unsigned int
 #ifdef EXAMPLE_2
     return t;
 #endif
+#ifdef EXAMPLE_3
+    return t;
+#endif
     return NAN;
 }
 
 double LinearODE1stOrderEx1::B(double t, unsigned int, unsigned int row UNUSED_PARAM) const
 {
-//#ifdef EXAMPLE_1
-//    if (row==0) return 3.0     - (2.0*(3.0*t+4.0) - 3.0*(4.0*t*t) + 1.0*(t*t+t));
-//    if (row==1) return 8.0*t   - (3.0*(3.0*t+4.0) + 1.0*(4.0*t*t) - 2.0*(t*t+t));
-//    if (row==2) return 2.0*t+1 - (1.0*(3.0*t+4.0) - 5.0*(4.0*t*t) - 3.0*(t*t+t));
-//#endif
 #ifdef EXAMPLE_1
     if (row==0) return +11.0*t*t - 7.0*t - 5.0;
     if (row==1) return -2.0*t*t + t - 12.0;
     if (row==2) return +23.0*t*t + 2.0*t - 3.0;
 #endif
 #ifdef EXAMPLE_2
-    //return 1.0 - t*t - t;
     return -t*t*t;
-    //return 10.0*cos(10.0*t)-t*sin(10.0*t);
+#endif
+#ifdef EXAMPLE_3
+    return 4.0*cos(4.0*t) - t*sin(4.0*t);
 #endif
     return NAN;
 }
@@ -176,6 +229,9 @@ unsigned int LinearODE1stOrderEx1::equationsNumber() const
 #ifdef EXAMPLE_2
     return 1;
 #endif
+#ifdef EXAMPLE_3
+    return 1;
+#endif
 }
 
 double LinearODE1stOrderEx1::X(double t, int row UNUSED_PARAM) const
@@ -186,9 +242,10 @@ double LinearODE1stOrderEx1::X(double t, int row UNUSED_PARAM) const
     if (row==2) return t*t+t;
 #endif
 #ifdef EXAMPLE_2
-    //return t+1.0;
     return t*t+2.0;
-    //return sin(10.0*t);
+#endif
+#ifdef EXAMPLE_3
+    return sin(4.0*t);
 #endif
     return NAN;
 }

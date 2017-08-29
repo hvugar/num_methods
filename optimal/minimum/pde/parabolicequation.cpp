@@ -1,6 +1,7 @@
 #include "parabolicequation.h"
 #include "cmethods.h"
 #include "rungekutta.h"
+#include "linearequation.h"
 
 double MIN1 = +10000.0;
 double MAX1 = -10000.0;
@@ -330,7 +331,7 @@ void IParabolicEquation::calculateN2L2RD(DoubleMatrix &u, double hx, double ht, 
         A[1][1] = -2.0*alpha - 1.0;
         b[1]    = -u.at(m-1,N-1) - ht*f(N-1,m) - alpha*u.at(m,N);
 
-        GaussianElimination(A, b, x);
+        LinearEquation::GaussianElimination(A, b, x);
 
         u.at(m, N-1) = x.at(1);
         u.at(m, N-2) = x.at(0);
@@ -464,7 +465,7 @@ void IParabolicEquation::calculateN4L2RD(DoubleMatrix &u, double hx, double ht, 
         A[3][3] = D[3][3]*alpha - 1.0;
         b[3]    = -u.at(m-1,N-1) - (D[3][4]*alpha)*u.at(m,N) - ht*f(N-1,m);
 
-        GaussianElimination(A, b, x);
+        LinearEquation::GaussianElimination(A, b, x);
 
         u.at(m, N-1) = x.at(3);
         u.at(m, N-2) = x.at(2);
@@ -597,7 +598,7 @@ void IParabolicEquation::calculateN4R2LD(DoubleMatrix &u, double hx, double ht, 
             ems.at(n-5,3) = b[3];
         }
 
-        GaussianElimination(A, b, x);
+        LinearEquation::GaussianElimination(A, b, x);
 
         u.at(m, 1) = x.at(0);
         u.at(m, 2) = x.at(1);
@@ -759,7 +760,7 @@ void IParabolicEquation::calculateN6L2RD(DoubleMatrix &u, double hx, double ht, 
         A[5][5] = D[5][5]*alpha - 1.0;
         b[5]    = -u.at(m-1,N-1) - (D[5][6]*alpha)*u.at(m,N) - ht*f(N-1,m);
 
-        GaussianElimination(A, b, x);
+        LinearEquation::GaussianElimination(A, b, x);
 
         u.at(m, N-1) = x.at(5);
         u.at(m, N-2) = x.at(4);
@@ -922,7 +923,7 @@ void IParabolicEquation::calculateN6R2LD(DoubleMatrix &u, double hx, double ht, 
             ems.at(n-7,5) = b[5];
         }
 
-        GaussianElimination(A, b, x);
+        LinearEquation::GaussianElimination(A, b, x);
 
         u.at(m, 1) = x.at(0);
         u.at(m, 2) = x.at(1);
@@ -1073,7 +1074,7 @@ void IParabolicEquation::calculateN4L2RN(DoubleMatrix &u, double hx, double ht, 
         A[4][4] = +3.0*alpha1 + 1.0;
         b[4]    = +u.at(m-1,N) + ht*f(N,m) + alpha0*boundary(Right,m);
 
-        GaussianElimination(A, b, x);
+        LinearEquation::GaussianElimination(A, b, x);
 
         u.at(m, N-4) = x.at(0);
         u.at(m, N-3) = x.at(1);
@@ -1211,7 +1212,7 @@ void IParabolicEquation::calculateN4R2LN(DoubleMatrix &u, double hx, double ht, 
             ems.at(n-5,4) = b[4];
         }
 
-        GaussianElimination(A, b, x);
+        LinearEquation::GaussianElimination(A, b, x);
 
         u.at(m, 0) = x.at(0);
         u.at(m, 1) = x.at(1);

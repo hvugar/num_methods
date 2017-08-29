@@ -1,6 +1,7 @@
 #include "islodenlcsm.h"
 #include <float.h>
 #include <limits.h>
+#include "linearequation.h"
 
 class CauchyProblemM1stOrderAM : public NonLinearODE1stOrder
 {
@@ -131,7 +132,7 @@ void ISystemLinearODENonLocalContionsM::calculateForward(DoubleMatrix &x)
     {}
 
     DoubleVector m(n*n);
-    GaussianElimination(A, b, m);
+    LinearEquation::GaussianElimination(A, b, m);
 
     x.resize(n, n);
     for (unsigned int i=0; i<n; i++)

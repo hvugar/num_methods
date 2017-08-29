@@ -55,7 +55,8 @@ SOURCES += main.cpp \
     load_sys/slodenlcsv2.cpp \
     problem4/zettai.cpp \
     ivp/nlode1oex1.cpp \
-    load_sys/lode1oex1.cpp
+    load_sys/lode1oex1.cpp \
+    matrixtest.cpp
 
 HEADERS += \
     high_order/singledifequ.h \
@@ -77,4 +78,5 @@ HEADERS += \
     load_sys/slodenlcsv2.h \
     problem4/zettai.h \
     ivp/nlode1oex1.h \
-    load_sys/lode1oex1.h
+    load_sys/lode1oex1.h \
+    matrixtest.h

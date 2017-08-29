@@ -58,6 +58,7 @@
 #include "nonlinearfunctionsystem.h"
 #include "load_sys/lode1oex1.h"
 
+#include "matrixtest.h"
 
 class A
 {
@@ -70,6 +71,8 @@ public:
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
+    //MatrixTest::Main(argc, argv);
+
     //srand(time(NULL));
 
     //NonLinearFunctionSystem::Main(argc, argv);
@@ -77,9 +80,9 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Example1::Main(argc, argv);
     //SystemLinearODENonLocalContionsV::Main(argc, argv);
     //SystemLinearODENonLocalContionsM::Main(argc, argv);
-    //Problem4Ex1::Main(argc, argv);
+    Problem4Ex1::Main(argc, argv);
     //SystemLinearODENonLocalContionsV2::Main(argc, argv);
-    LinearODE1stOrderEx1::Main(argc, argv);
+    //LinearODE1stOrderEx1::Main(argc, argv);
 
     //NumIntegralExp1::Main(argc, argv);
 

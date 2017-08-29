@@ -171,7 +171,7 @@ void LinearBoundaryValueProblemODE::calculateN2L2RD(DoubleVector &x, double h, u
     A[1][1] = -2.0*alpha1 + q(N-1);
     b[1]    = f(N-1) - (1.0*alpha1 + 1.0*betta1)*x.at(N);
 
-    GaussianElimination(A, b, z);
+    LinearEquation::GaussianElimination(A, b, z);
 
     x.at(N-1) = z.at(1);
     x.at(N-2) = z.at(0);
@@ -265,7 +265,7 @@ void LinearBoundaryValueProblemODE::calculateN2R2LD(DoubleVector &x, double h, u
         ems.at(n-(k+1),1) = b[1];
     }
 
-    GaussianElimination(A, b, z);
+    LinearEquation::GaussianElimination(A, b, z);
 
     x.at(1) = z.at(0);
     x.at(2) = z.at(1);
@@ -411,7 +411,7 @@ void LinearBoundaryValueProblemODE::calculateN4L2RD(DoubleVector &x, double h, u
     A[3][3] = -40.0*alpha3 + 10.0*betta3 + q(N-1);
     b[3]    = f(N-1) - (22.0*alpha3 + 3.0*betta3)*x.at(N);
 
-    GaussianElimination(A, b, z);
+    LinearEquation::GaussianElimination(A, b, z);
     printf("%18.14f %18.14f %18.14f %18.14f\n", z[0], z[1], z[2], z[3]);
 
     x.at(N-1) = z.at(3);
@@ -552,7 +552,7 @@ void LinearBoundaryValueProblemODE::calculateN4R2LD(DoubleVector &x, double h, u
         ems.at(n-(k+1),3) = b[3];
     }
 
-    GaussianElimination(A, b, z);
+    LinearEquation::GaussianElimination(A, b, z);
 
     x.at(1) = z.at(0);
     x.at(2) = z.at(1);
@@ -738,7 +738,7 @@ void LinearBoundaryValueProblemODE::calculateN4CNTR(DoubleVector &x, double h, u
                                              +A[3][2]*U(98,h)
                                              +A[3][3]*U(99,h));
 
-    GaussianElimination(A, b, z);
+    LinearEquation::GaussianElimination(A, b, z);
 
     printf("%18.14f %18.14f %18.14f %18.14f\n", z[0], z[1], z[2], z[3]);
 
@@ -939,7 +939,7 @@ void LinearBoundaryValueProblemODE::calculateN6L2RD(DoubleVector &x, double h, u
     A[5][5] = -147.0*alpha5 + 77.0*betta5 + q(N-1);
     b[5]    = f(N-1) - (137.0*alpha5 + 10.0*betta5)*x.at(N);
 
-    GaussianElimination(A, b, z);
+    LinearEquation::GaussianElimination(A, b, z);
 
     x.at(N-1) = z.at(5);
     x.at(N-2) = z.at(4);
@@ -1128,7 +1128,7 @@ void LinearBoundaryValueProblemODE::calculateN6R2LD(DoubleVector &x, double h, u
         ems.at(n-(k+1),5) = b[5];
     }
 
-    GaussianElimination(A, b, z);
+    LinearEquation::GaussianElimination(A, b, z);
 
     x.at(1) = z.at(0);
     x.at(2) = z.at(1);

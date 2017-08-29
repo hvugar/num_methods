@@ -224,23 +224,6 @@ void IPrinter::print(const DoubleMatrix &m, unsigned int M, unsigned int N, unsi
         fputs("\n", file);
     }
     fflush(file);
-
-
-//    unsigned int M = rows / m;
-
-//    for (unsigned int j=0; j<rows; j++)
-//    {
-//        unsigned int N = cols / n;
-//        if (j%M==0)
-//        {
-//            for (unsigned int i=0; i<cols; i++)
-//            {
-//                if (i%N==0) fprintf(f, format, x.at(j,i));
-//            }
-//            fputs("\n", f);
-//        }
-//    }
-//    fflush(f);
 }
 
 void IPrinter::print(const DoubleVector &v, unsigned int N, unsigned int width, unsigned int presicion, FILE *file)

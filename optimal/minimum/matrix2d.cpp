@@ -244,6 +244,30 @@ void DoubleMatrix::setRow(unsigned int r, const DoubleVector &row)
     }
 }
 
+DoubleMatrix DoubleMatrix::IdentityMatrix(unsigned int n)
+{
+    DoubleMatrix m(n, n, 0.0);
+    for (unsigned int i=0; i<n; i++) m.mData[i][i] = 1.0;
+    return m;
+}
+
+DoubleMatrix DoubleMatrix::DiagonalMatrix(const DoubleVector& v)
+{
+    unsigned int n = v.size();
+    DoubleMatrix m(n, n, 0.0);
+    for (unsigned int i=0; i<n; i++) m.mData[i][i] = v[i];
+    return m;
+}
+
+DoubleMatrix DoubleMatrix::HilbertMatrix(unsigned int rows, unsigned int cols)
+{
+    DoubleMatrix matrix(rows, cols);
+    for (unsigned int row=0; row<rows; row++)
+        for (unsigned int col=0; col<cols; col++)
+            matrix.mData[row][col] = 1.0/(double)(row+col+1);
+    return matrix;
+}
+
 bool DoubleMatrix::dimEquals(const DoubleMatrix &matrix) const
 {
     return (mRows == matrix.mRows && mCols == matrix.mCols);
@@ -525,46 +549,6 @@ DoubleMatrix operator -(DoubleMatrix m1, const DoubleMatrix& m2)
     return m1;
 }
 
-//DoubleMatrix& DoubleMatrix::operator *(const DoubleMatrix &m)
-//{
-//    if (mCols != m.mRows)
-//    {
-//        printf("DoubleMatrix& DoubleMatrix::operator *(const DoubleMatrix &matrix) %d %d %d %d\n", rows(), cols(), m.rows(), m.cols());
-//        throw DoubleMatrixException(3);
-//    }
-
-
-//    unsigned int rows1 = mRows;
-//    unsigned int cols1 = m.mCols;
-//    double** mdata = (double**)(malloc(sizeof(double*)*rows1));
-
-//    for (unsigned int i=0; i<rows1; i++)
-//    {
-//        mdata[i] = (double*)malloc(sizeof(double)*cols1);
-//    }
-
-//    for (unsigned int i=0; i<mRows; i++)
-//    {
-//        for (unsigned int j=0; j<m.mCols; j++)
-//        {
-//            double sum = 0.0;
-//            for (unsigned int k=0; k<mRows; k++)
-//            {
-//                sum += mData[i][k] * m.mData[k][j];
-//            }
-//            mdata[i][j] = sum;
-//        }
-//    }
-
-//    clear();
-
-//    this->mData = mdata;
-//    this->mRows = rows1;
-//    this->mCols = cols1;
-
-//    return *this;
-//}
-
 DoubleMatrix operator*(const DoubleMatrix &m1, const DoubleMatrix &m2)
 {
     if (m1.cols() != m2.rows())
@@ -588,26 +572,25 @@ DoubleMatrix operator*(const DoubleMatrix &m1, const DoubleMatrix &m2)
     return m;
 }
 
-DoubleMatrix operator*(double d, DoubleMatrix m)
+DoubleMatrix operator*(double scalar, DoubleMatrix matrix)
 {
-//    DoubleMatrix c;
-//    c.resize(m.rows(), m.cols());
+    unsigned int m_row = matrix.rows();
+    unsigned int m_col = matrix.cols();
 
-    unsigned int m_row = m.rows();
-    unsigned int m_col = m.cols();
-    for (unsigned int row=0; row<m_row; row++)
+    for (unsigned int row=0; row < m_row; row++)
     {
-        for (unsigned int col=0; col<m_col; col++)
+        for (unsigned int col=0; col < m_col; col++)
         {
-            m.mData[row][col] = d*m.mData[row][col];
+            matrix.mData[row][col] *= scalar;
         }
     }
-    return m;
+
+    return matrix;
 }
 
-DoubleMatrix operator*(DoubleMatrix m, double d)
+DoubleMatrix operator*(DoubleMatrix matrix, double scalar)
 {
-    return d*m;
+    return scalar*matrix;
 }
 
 void DoubleMatrix::print()
@@ -620,6 +603,25 @@ void DoubleMatrix::print()
         }
         puts("");
     }
+}
+
+bool operator ==(const DoubleMatrix &matrix1, const DoubleMatrix& matrix2)
+{
+    if (!matrix1.dimEquals(matrix2)) return false;
+
+    for (unsigned int row = 0; row < matrix1.mRows; row++)
+    {
+        for (unsigned int col = 0; col < matrix1.mCols; col++)
+        {
+            if (matrix1.mData[row][col] != matrix2.mData[row][col]) return false;
+        }
+    }
+    return true;
+}
+
+bool operator !=(const DoubleMatrix &matrix1, const DoubleMatrix& matrix2)
+{
+    return !(matrix1==matrix2);
 }
 
 void DoubleMatrix::randomData()
@@ -659,45 +661,4 @@ void DoubleMatrix::switchCols(unsigned int col1 UNUSED_PARAM, unsigned int col2 
 bool DoubleMatrix::isIdentityMatrix() const
 {
     return false;
-}
-
-void GaussianElimination(DoubleMatrix A, DoubleVector b, DoubleVector &x)
-{
-    const unsigned int ui = (unsigned)0-1;
-
-    unsigned int n = x.size();
-
-    for (unsigned k=0; k<n; k++)
-    {
-        if (fabs(A.at(k,k)) <= DBL_EPSILON)
-        {
-            for (unsigned int p=k+1; p<n; p++)
-            {
-                if (fabs(A[p][k]) > DBL_EPSILON)
-                {
-                    A.switchRows(k, p);
-                    double bk = b[k];
-                    b[k] = b[p];
-                    b[p] = bk;
-                    break;
-                }
-            }
-        }
-
-        for (unsigned int j=(k+1); j<n; j++)
-        {
-            double c = A.at(j,k)/A.at(k,k);
-            for (unsigned int i=k; i<n; i++)
-            {
-                A.at(j,i) = A.at(j,i) - A.at(k,i) * c;
-            }
-            b[j] = b[j] - b[k] *c;
-        }
-    }
-
-    for (unsigned int i=(n-1); i!=ui; i--)
-    {
-        for (unsigned int j=(n-1); j>i; j--) b[i] -= (A.at(i,j) * x[j]);
-        x[i] = b[i] / A.at(i,i);
-    }
 }

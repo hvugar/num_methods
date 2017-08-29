@@ -22,6 +22,10 @@ private:
 class MINIMUMSHARED_EXPORT DoubleMatrix
 {
 public:
+    static DoubleMatrix IdentityMatrix(unsigned int n);
+    static DoubleMatrix DiagonalMatrix(const DoubleVector& vector);
+    static DoubleMatrix HilbertMatrix(unsigned int rows, unsigned int cols);
+
     explicit DoubleMatrix(unsigned int rows=0, unsigned int cols=0, double value=0.0);
     DoubleMatrix(const DoubleMatrix &matrix);
     DoubleMatrix(const DoubleVector &vector);
@@ -33,9 +37,6 @@ public:
     bool empty() const;
     void clear();
     void resize(unsigned int rows, unsigned int cols, double value=0.0);
-
-    double& operator()(unsigned int row, unsigned int col);
-    const double& operator()(unsigned int row, unsigned int col) const;
 
     double& at(unsigned int row, unsigned int col);
     const double& at(unsigned int row, unsigned int col) const;
@@ -49,16 +50,46 @@ public:
     void setColumn(unsigned int c, const DoubleVector& col);
     void setRow(unsigned int r, const DoubleVector& row);
 
-    DoubleMatrix& operator =(const DoubleMatrix &m);
-    DoubleMatrix& operator =(const DoubleVector &v);
-    //DoubleMatrix& operator +(const DoubleMatrix &m);
-    DoubleMatrix& operator +=(const DoubleMatrix &m);
-    DoubleMatrix& operator -=(const DoubleMatrix &m);
-    DoubleMatrix& operator *=(const DoubleMatrix &m);
+    /*************************************************************************************
+     *                        Basic matrix operations
+     * **********************************************************************************/
 
-    //DoubleMatrix& operator-(const DoubleMatrix &matrix);
-    //DoubleMatrix& operator/(const DoubleMatrix &matrix);
-    //DoubleMatrix& operator*(const double scalar);
+    void Transpose();
+    void ConjugateTranspose();
+    void Inverse();
+    void Det();
+    void Minors();
+    void Tr();
+    void MatrixRank();
+
+    /*************************************************************************************
+     *                        Matrix operations
+     * **********************************************************************************/
+
+    DoubleVector Diagonal();
+    void LowerTriangularize();
+    void UpperTriangularize();
+    void LUDecomposition();
+    void Band();
+
+    double trace() const;
+    double det() const;
+    DoubleVector eigenValues() const;
+
+    double& operator ()(unsigned int row, unsigned int col);
+    const double& operator ()(unsigned int row, unsigned int col) const;
+
+    DoubleMatrix& operator =(const DoubleMatrix& matrix);
+    DoubleMatrix& operator =(const DoubleVector& vector);
+    DoubleMatrix& operator +=(const DoubleMatrix& matrix);
+    DoubleMatrix& operator -=(const DoubleMatrix& matrix);
+    DoubleMatrix& operator *=(const DoubleMatrix& matrix);
+    DoubleMatrix& operator *=(double scalar);
+    DoubleMatrix& operator *=(const DoubleVector& vector);
+
+    //DoubleMatrix& operator +(const DoubleMatrix &m);
+    //DoubleMatrix& operator -(const DoubleMatrix &matrix);
+    //DoubleMatrix& operator *(const double scalar);
     //DoubleMatrix& operator*(const DoubleVector &vector);
     //DoubleMatrix& operator*(const DoubleMatrix &matrix);
 
@@ -89,18 +120,21 @@ public:
 
     friend MINIMUMSHARED_EXPORT DoubleMatrix operator +(DoubleMatrix m1, const DoubleMatrix& m2);
     friend MINIMUMSHARED_EXPORT DoubleMatrix operator -(DoubleMatrix m1, const DoubleMatrix& m2);
-    friend MINIMUMSHARED_EXPORT DoubleMatrix operator *(const DoubleMatrix&, const DoubleMatrix&);
-    friend MINIMUMSHARED_EXPORT DoubleMatrix operator *(double, DoubleMatrix);
-    friend MINIMUMSHARED_EXPORT DoubleMatrix operator *(DoubleMatrix, double);
+    friend MINIMUMSHARED_EXPORT DoubleMatrix operator *(const DoubleMatrix& matrix1, const DoubleMatrix& matrix2);
+    friend MINIMUMSHARED_EXPORT DoubleMatrix operator *(double scalar, DoubleMatrix matrix);
+    friend MINIMUMSHARED_EXPORT DoubleMatrix operator *(DoubleMatrix matrix, double scalar);
 //    friend MINIMUMSHARED_EXPORT DoubleMatrix operator *(const DoubleMatrix&, const DoubleVector&);
-//    friend MINIMUMSHARED_EXPORT DoubleMatrix operator ~(const DoubleMatrix&);
+
+    friend MINIMUMSHARED_EXPORT bool operator ==(const DoubleMatrix& matrix1, const DoubleMatrix& matrix2);
+    friend MINIMUMSHARED_EXPORT bool operator !=(const DoubleMatrix& matrix1, const DoubleMatrix& matrix2);
+
+    friend MINIMUMSHARED_EXPORT DoubleMatrix operator ~(const DoubleMatrix&); // transose matrix
+    friend MINIMUMSHARED_EXPORT DoubleMatrix operator !(const DoubleMatrix&); // inverse
 
 private:
     unsigned int mRows;
     unsigned int mCols;
     double **mData;
 };
-
-void MINIMUMSHARED_EXPORT GaussianElimination(DoubleMatrix m, DoubleVector b, DoubleVector &x);
 
 #endif // MATRIX2D_H

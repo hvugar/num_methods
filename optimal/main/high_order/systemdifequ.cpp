@@ -1,4 +1,5 @@
 #include "systemdifequ.h"
+#include "linearequation.h"
 
 double norm_1(const DoubleVector &v1, const DoubleVector &v2)
 {
@@ -157,7 +158,7 @@ void SystemDifEquation::calculate2R2LV1(const DoubleMatrix &rx)
     //           M[i][6]*rx[0][N-0]+ M[i][7]*rx[1][N-0]+ M[i][8]*rx[2][N-0], A[i]);
     //}
 
-    GaussianElimination(M, A, x);
+    LinearEquation::GaussianElimination(M, A, x);
 
     DoubleMatrix nx(3, N+1, 0.0);
     nx[0][N-2] = x[0]; nx[0][N-1] = x[3]; nx[0][N-0] = x[6];
@@ -343,7 +344,7 @@ void SystemDifEquation::calculate4R2LV1(const DoubleMatrix &rx)
     //           M[i][12]*rx[0][N-0]+M[i][13]*rx[1][N-0]+M[i][14]*rx[2][N-0], A[i]);
     //}
 
-    GaussianElimination(M, A, x);
+    LinearEquation::GaussianElimination(M, A, x);
 
     DoubleMatrix nx(3, N+1, 0.0);
     nx[0][N-4] = x[0]; nx[0][N-3] = x[3]; nx[0][N-2] = x[6]; nx[0][N-1] = x[9];  nx[0][N-0] = x[12];
@@ -700,7 +701,7 @@ void SystemDifEquation::calculate6R2LV1(const DoubleMatrix &rx)
     //           M[i][18]*rx[0][N-0]+M[i][19]*rx[1][N-0]+M[i][20]*rx[2][N-0], A[i]);
     //}
 
-    GaussianElimination(M, A, x);
+    LinearEquation::GaussianElimination(M, A, x);
 
     DoubleMatrix nx(3, N+1, 0.0);
     nx[0][N-6] = x[0]; nx[0][N-5] = x[3]; nx[0][N-4] = x[6]; nx[0][N-3] = x[9];  nx[0][N-2] = x[12]; nx[0][N-1] = x[15]; nx[0][N-0] = x[18];

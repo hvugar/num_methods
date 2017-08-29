@@ -238,7 +238,7 @@ void NewtonHeatEquation::calculateGM2(DoubleVector &u, SweepMethodDirection dire
         M[0][0] = betta[N-1]; M[0][1] = betta[N]; A[0] = eta;
         M[1][0] = ka[N];      M[1][1] = kb[N];    A[1] = kd[N];
 
-        GaussianElimination(M,A,x);
+        LinearEquation::GaussianElimination(M,A,x);
 
         //for (unsigned int n=0; n<=N; n++) u[n] = rx[n];
         u[N-0] = x[1];

@@ -157,7 +157,7 @@ void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const Doub
         b[row] = beta[row];
     }
 
-    GaussianElimination(A, b, x1);
+    LinearEquation::GaussianElimination(A, b, x1);
 
     struct HelperB : public NonLinearODE1stOrder
     {
@@ -306,7 +306,7 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cnds, co
         m[2][2] = 3.0-2.0*h*A(N*h,N);
         c[2] = 2.0*h*B(N*h,N);
 
-        GaussianElimination(m, c, xT);
+        LinearEquation::GaussianElimination(m, c, xT);
         m.clear();
         c.clear();
 
@@ -470,7 +470,7 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cnds, co
             C[row] = 2.0*h*B(N*h, N, row%en);
         }
 
-        GaussianElimination(M, C, xT);
+        LinearEquation::GaussianElimination(M, C, xT);
         IPrinter::print(xT, xT.size());
 
         x.resize(en);
@@ -647,7 +647,7 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cnds, co
         m[4][4] = +25.0 - 12.0*h*A((N-0)*h,N-0);
         c[4] = 12.0*h*B((N-0)*h,N-0);
 
-        GaussianElimination(m, c, xT);
+        LinearEquation::GaussianElimination(m, c, xT);
         m.clear();
         c.clear();
 
@@ -839,7 +839,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cnds, co
         m[6][6] = +147.0 - 60.0*h*A((N-0)*h,N-0);
         c[6] = 60.0*h*B((N-0)*h,N-0);
 
-        GaussianElimination(m, c, xT);
+        LinearEquation::GaussianElimination(m, c, xT);
         m.clear();
         c.clear();
 

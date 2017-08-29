@@ -196,7 +196,7 @@ void ILoadedHeatEquation::transferringConditions2(DoubleVector &u)
         M[0][0] = ems[N-1][0]; M[0][1] = ems[N-1][1]; A[0] = ems[N-1][nonZeroCount] ;
         M[1][0] = ka[N];       M[1][1] = kb[N];       A[1] = kd[N];
 
-        GaussianElimination(M,A,x);
+        LinearEquation::GaussianElimination(M,A,x);
 
         for (unsigned int n=0; n<=N; n++) u[n] = 0.0;
         u[N-0] = x[1];
@@ -400,7 +400,7 @@ void ILoadedHeatEquation::transferringConditions4(DoubleVector &u)
         M[0][0] = ems[N-1][0]; M[0][1] = ems[N-1][1]; A[0] = ems[N-1][nonZeroCount] ;
         M[1][0] = ka[N];       M[1][1] = kb[N];       A[1] = kd[N];
 
-        GaussianElimination(M,A,x);
+        LinearEquation::GaussianElimination(M,A,x);
 
         for (unsigned int n=0; n<=N; n++) u[n] = 0.0;
         u[N-0] = x[1];

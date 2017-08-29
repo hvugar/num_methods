@@ -1,4 +1,5 @@
 #include "islodenlcsv.h"
+#include "linearequation.h"
 
 class CauchyProblemM1stOrderA : public NonLinearODE1stOrder
 {
@@ -158,7 +159,7 @@ void ISystemLinearODENonLocalContionsV::calculateForward(DoubleVector &x)
         b[row+n0+n1] = betta[row+n0+n1];
     }
 
-    GaussianElimination(A, b, x);
+    LinearEquation::GaussianElimination(A, b, x);
 }
 
 void ISystemLinearODENonLocalContionsV::calculateBackward(DoubleVector &x UNUSED_PARAM)

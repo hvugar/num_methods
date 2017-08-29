@@ -1,4 +1,5 @@
 #include "ibvp.h"
+#include "linearequation.h"
 
 const UniformODEGrid& InitialValueProblem::timeGrid() const
 {
@@ -69,7 +70,7 @@ void qovma_first_row(unsigned int K, unsigned int N,
         A[i] = psi[i-1];
     }
 
-    GaussianElimination(M, A, x);
+    LinearEquation::GaussianElimination(M, A, x);
 
     nx.resize(N+1);
     for (unsigned int i=0; i<=K; i++)

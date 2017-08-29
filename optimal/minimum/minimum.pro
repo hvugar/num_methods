@@ -58,7 +58,8 @@ SOURCES += \
     load_sys/islodenlcsv2.cpp \
     load_sys/islodenlcs.cpp \
     ode/nlode1o.cpp \
-    ode/lode1o.cpp
+    ode/lode1o.cpp \
+    linearequation.cpp
 
 HEADERS += global.h \
     cmatrix.h \
@@ -103,4 +104,5 @@ HEADERS += global.h \
     load_sys/islodenlcsv2.h \
     load_sys/islodenlcs.h \
     ode/nlode1o.h \
-    ode/lode1o.h
+    ode/lode1o.h \
+    linearequation.h

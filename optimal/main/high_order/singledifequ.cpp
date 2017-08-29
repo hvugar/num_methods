@@ -93,7 +93,7 @@ void SingleDifEquation::calculate2R2LV1(const DoubleVector &rx)
     //IPrinter::print(M,3,3);
     //IPrinter::printSeperatorLine();
 
-    GaussianElimination(M, A, x);
+    LinearEquation::GaussianElimination(M, A, x);
 
     //printf("%.10f %.10f %.10f\n", x[0], x[1], x[2]);
 
@@ -258,7 +258,7 @@ void SingleDifEquation::calculate4R2LV1(const DoubleVector &rx)
     //IPrinter::print(M,5,5);
     //IPrinter::printSeperatorLine();
 
-    GaussianElimination(M, A, x);
+    LinearEquation::GaussianElimination(M, A, x);
 
     //printf("%.10f %.10f %.10f %.10f %.10f\n", x[0], x[1], x[2], x[3], x[4]);
 
@@ -487,7 +487,7 @@ void SingleDifEquation::calculate6R2LV1(const DoubleVector &rx)
     //IPrinter::print(M,7,7);
     //IPrinter::printSeperatorLine();
 
-    GaussianElimination(M, A, x);
+    LinearEquation::GaussianElimination(M, A, x);
 
     //printf("%.10f %.10f %.10f %.10f %.10f %.10f %.10f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6]);
 

@@ -6,6 +6,7 @@
 #include "../matrix3d.h"
 #include "../cmethods.h"
 #include "../printer.h"
+#include "../linearequation.h"
 #include <math.h>
 #include "grid.h"
 #include "uniformgrid.h"

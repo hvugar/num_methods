@@ -13,6 +13,9 @@ public:
     void calculateSimpleIdetartion(const DoubleVector &x0, DoubleVector &x, double epsilon);
 
     void calculateNewtonMethod(const DoubleVector &x0, DoubleVector &rx, double diffEspilon, double espilon);
+
+private:
+    void minimize(double &alpha, const DoubleMatrix &W, const DoubleMatrix &WI, const DoubleVector& xk, unsigned int n);
 };
 
 class NonLinearFunction : public INonLinearFunction

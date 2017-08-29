@@ -28,7 +28,7 @@ void funcL(const double* a, const double *b, const double *c, const double *d, d
     M[0][0] = e0[N-2];   M[0][1] = e1[N-2];   A[0] = e2[N-2];
     M[1][0] = a[N-1];    M[1][1] = b[N-1];    A[1] = d[N-1];
 
-    GaussianElimination(M,A,y);
+    LinearEquation::GaussianElimination(M,A,y);
 
     x[N-1] = y[1];
     x[N-2] = y[0];
@@ -616,7 +616,7 @@ void ParabolicIBVP::gridMethod1R(DoubleMatrix &u, SweepMethodDirection direction
         //IPrinter::print(M,2,2);
         //puts("---");
 
-        GaussianElimination(M,A,x);
+        LinearEquation::GaussianElimination(M,A,x);
 
         printf("%d %18.10f %18.10f\n", m, x[0], x[1]);
         //return;
@@ -795,7 +795,7 @@ void ParabolicIBVP::gridMethod2(DoubleMatrix &u, SweepMethodDirection direction 
 
         //IPrinter::print(M,2,2);
 
-        GaussianElimination(M,A,x);
+        LinearEquation::GaussianElimination(M,A,x);
 
         printf("%d %f %f\n", m, x[0], x[1]);
 
@@ -947,7 +947,7 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u) const
         A[1][1] = -2.0*alpha - 1.0;
         b[1]    = -u[m-1][N-1] - alpha*u[m][N] - ht*f(isn,tn);
 
-        GaussianElimination(A, b, x);
+        LinearEquation::GaussianElimination(A, b, x);
 
         u[m][N-1] = x[1];
         u[m][N-2] = x[0];
@@ -1213,7 +1213,7 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
         //printf("3 %18.10f %18.10f\n", b[3], A[3][0]*xN4*xN4*xN4*tn.t+A[3][1]*xN3*xN3*xN3*tn.t+A[3][2]*xN2*xN2*xN2*tn.t+A[3][3]*xN1*xN1*xN1*tn.t);
         //puts("------------------------");
 
-        GaussianElimination(A, b, x);
+        LinearEquation::GaussianElimination(A, b, x);
 
         //printf("x %14.10f %14.10f %14.10f %14.10f\n", x[0], x[1], x[2], x[3]);
 
@@ -1481,7 +1481,7 @@ void ParabolicIBVP::calculateN4L2RDX(DoubleMatrix &u) const
         //printf("3 %14.10f %14.10f\n", b[3], A[3][0]*xN4*xN4*tn.t+A[3][1]*xN3*xN3*tn.t+A[3][2]*xN2*xN2*tn.t+A[3][3]*xN1*xN1*tn.t);
         //puts("------------------------");
 
-        GaussianElimination(A, b, x);
+        LinearEquation::GaussianElimination(A, b, x);
 
         printf("x %14.10f %14.10f %14.10f %14.10f\n", x[0], x[1], x[2], x[3]);
 
@@ -1767,7 +1767,7 @@ void ParabolicIBVP::calculateN6L2RD(DoubleMatrix &u) const
         //printf("3 %14.10f %14.10f\n", b[3], A[3][0]*xN4*xN4*tn.t+A[3][1]*xN3*xN3*tn.t+A[3][2]*xN2*xN2*tn.t+A[3][3]*xN1*xN1*tn.t);
         //puts("------------------------");
 
-        GaussianElimination(A, b, x);
+        LinearEquation::GaussianElimination(A, b, x);
 
         //printf("x %14.10f %14.10f %14.10f %14.10f\n", x[0], x[1], x[2], x[3]);
 

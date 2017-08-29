@@ -1,4 +1,5 @@
 #include "problem1L1.h"
+#include <linearequation.h>
 
 void Problem1L1::Main(int argc, char *argv[])
 {
@@ -605,7 +606,7 @@ void Problem1L1::calculateUN2L2R(DoubleMatrix &u, unsigned int N, unsigned int M
         A[1][1] = 1.0 + (a*a*ht)/(hx*hx) + (lambdal*a*a*ht)/hx + alpha*ht;
         b[1]    = u.at(m-1,N) + (lambdal*a*a*ht*Te)/hx + alpha*ht*Te;
 
-        GaussianElimination(A, b, x);
+        LinearEquation::GaussianElimination(A, b, x);
 
         printf("%u %14.10f %14.10f\n", m, x[0], x[1]);
 
@@ -734,7 +735,7 @@ void Problem1L1::calculateUN4L2R(DoubleMatrix &u, unsigned int N, unsigned int M
         A[4][4] = +3.0*beta1 + 1.0 + ht*alpha + lambdal*gamma;
         b[4]    = +u.at(m-1,N) + lambdal*gamma*Te + ht*alpha*Te;
 
-        GaussianElimination(A, b, x);
+        LinearEquation::GaussianElimination(A, b, x);
 
         u.at(m, N-4) = x.at(0);
         u.at(m, N-3) = x.at(1);
