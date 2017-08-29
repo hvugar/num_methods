@@ -244,61 +244,6 @@ void DoubleMatrix::setRow(unsigned int r, const DoubleVector &row)
     }
 }
 
-DoubleMatrix& DoubleMatrix::operator= (const DoubleMatrix &m)
-{
-    if (this != &m)
-    {
-        clear();
-
-        if (m.mRows > 0 && m.mCols > 0)
-        {
-            mRows = m.mRows;
-            mCols = m.mCols;
-            mData = (double**) malloc(sizeof(double*)*mRows);
-            for (unsigned int i=0; i<mRows; i++)
-            {
-                mData[i] = (double *) malloc(sizeof(double)*mCols);
-                memcpy(mData[i], m.mData[i], sizeof(double)*mCols);
-            }
-        }
-    }
-    return *this;
-}
-
-DoubleMatrix& DoubleMatrix::operator= (const DoubleVector &v)
-{
-    if (v.size() > 0)
-    {
-        clear();
-        mRows = v.size();
-        mCols = 1;
-        mData = (double**) malloc(sizeof(double*)*mRows);
-        for (unsigned int i=0; i<mRows; i++)
-        {
-            mData[i] = (double*) malloc(sizeof(double)*mCols);
-            mData[i][0] = v.at(i);
-        }
-    }
-    return *this;
-}
-
-DoubleMatrix& DoubleMatrix::operator +=(const DoubleMatrix &m)
-{
-    if (!dimEquals(m))
-    {
-        throw std::out_of_range("dimension dont match.");
-    }
-
-    for (unsigned int rw=0; rw < mRows; rw++)
-    {
-        for (unsigned int cl=0; cl < mCols; cl++)
-        {
-            mData[rw][cl] += m.mData[rw][cl];
-        }
-    }
-    return *this;
-}
-
 bool DoubleMatrix::dimEquals(const DoubleMatrix &matrix) const
 {
     return (mRows == matrix.mRows && mCols == matrix.mCols);
@@ -487,45 +432,64 @@ DoubleMatrix DoubleMatrix::minor(unsigned int row, unsigned int col) const
     return m;
 }
 
-//DoubleMatrix& DoubleMatrix::operator +(const DoubleMatrix &m)
-//{
-//    if (!dimEquals(m))
-//    {
-//        printf("DoubleMatrix& DoubleMatrix::operator +(const DoubleMatrix &matrix) %d %d %d %d\n", rows(), cols(), m.rows(), m.cols());
-//        throw DoubleMatrixException(1);
-//    }
-
-//    for (unsigned int i=0; i<mRows; i++)
-//    {
-//        for (unsigned int j=0; j<mCols; j++)
-//        {
-//            mData[i][j] += m.mData[i][j];
-//        }
-//    }
-//    return *this;
-//}
-
-DoubleMatrix operator+(const DoubleMatrix& m1, const DoubleMatrix& m2)
+DoubleMatrix& DoubleMatrix::operator= (const DoubleMatrix &m)
 {
-    if (!m1.dimEquals(m2))
-    {
-        printf("DoubleMatrix operator+(const DoubleMatrix& m1, const DoubleMatrix& m2) %d %d %d %d\n", m1.rows(), m1.cols(), m2.rows(), m2.cols());
-        throw DoubleMatrixException(1);
-    }
+    // the matrix object holds reusable storage, such as a heap-allocated buffer mData
 
-    DoubleMatrix m;
-    m.resize(m1.rows(), m2.cols());
-    for (unsigned int i=0; i<m.mRows; i++)
+    if (this != &m) // self-assignment check expected
     {
-        for (unsigned int j=0; j<m.mCols; j++)
+        clear();
+
+        if (m.mRows > 0 && m.mCols > 0)
         {
-            m.mData[i][j] = m1.mData[i][j]+m2.mData[i][j];
+            mRows = m.mRows;
+            mCols = m.mCols;
+            mData = (double**) malloc(sizeof(double*)*mRows);
+            for (unsigned int i=0; i<mRows; i++)
+            {
+                mData[i] = (double *) malloc(sizeof(double)*mCols);
+                memcpy(mData[i], m.mData[i], sizeof(double)*mCols);
+            }
         }
     }
-    return m;
+    return *this;
 }
 
-DoubleMatrix operator-(const DoubleMatrix& m1, const DoubleMatrix& m2)
+DoubleMatrix& DoubleMatrix::operator= (const DoubleVector &v)
+{
+    if (v.size() > 0)
+    {
+        clear();
+        mRows = v.size();
+        mCols = 1;
+        mData = (double**) malloc(sizeof(double*)*mRows);
+        for (unsigned int i=0; i<mRows; i++)
+        {
+            mData[i] = (double*) malloc(sizeof(double)*mCols);
+            mData[i][0] = v.at(i);
+        }
+    }
+    return *this;
+}
+
+DoubleMatrix& DoubleMatrix::operator +=(const DoubleMatrix &m)
+{
+    if (!dimEquals(m))
+    {
+        throw std::out_of_range("dimension dont match.");
+    }
+
+    for (unsigned int rw=0; rw < mRows; rw++)
+    {
+        for (unsigned int cl=0; cl < mCols; cl++)
+        {
+            mData[rw][cl] += m.mData[rw][cl];
+        }
+    }
+    return *this;
+}
+
+DoubleMatrix operator +(DoubleMatrix m1, const DoubleMatrix& m2)
 {
     if (!m1.dimEquals(m2))
     {
@@ -533,16 +497,32 @@ DoubleMatrix operator-(const DoubleMatrix& m1, const DoubleMatrix& m2)
         throw DoubleMatrixException(1);
     }
 
-    DoubleMatrix m;
-    m.resize(m1.rows(), m2.cols());
-    for (unsigned int i=0; i<m.mRows; i++)
+    for (unsigned int row=0; row<m1.mRows; row++)
     {
-        for (unsigned int j=0; j<m.mCols; j++)
+        for (unsigned int col=0; col<m1.mCols; col++)
         {
-            m.mData[i][j] = m1.mData[i][j]-m2.mData[i][j];
+            m1.mData[row][col] += m2.mData[row][col];
         }
     }
-    return m;
+    return m1;
+}
+
+DoubleMatrix operator -(DoubleMatrix m1, const DoubleMatrix& m2)
+{
+    if (!m1.dimEquals(m2))
+    {
+        printf("DoubleMatrix operator+(const DoubleMatrix& m1, const DoubleMatrix& m2) %d %d %d %d\n", m1.rows(), m1.cols(), m2.rows(), m2.cols());
+        throw DoubleMatrixException(1);
+    }
+
+    for (unsigned int row=0; row<m1.mRows; row++)
+    {
+        for (unsigned int col=0; col<m1.mCols; col++)
+        {
+            m1.mData[row][col] -= m2.mData[row][col];
+        }
+    }
+    return m1;
 }
 
 //DoubleMatrix& DoubleMatrix::operator *(const DoubleMatrix &m)
@@ -608,10 +588,10 @@ DoubleMatrix operator*(const DoubleMatrix &m1, const DoubleMatrix &m2)
     return m;
 }
 
-DoubleMatrix operator*(double d, const DoubleMatrix &m)
+DoubleMatrix operator*(double d, DoubleMatrix m)
 {
-    DoubleMatrix c;
-    c.resize(m.rows(), m.cols());
+//    DoubleMatrix c;
+//    c.resize(m.rows(), m.cols());
 
     unsigned int m_row = m.rows();
     unsigned int m_col = m.cols();
@@ -619,13 +599,13 @@ DoubleMatrix operator*(double d, const DoubleMatrix &m)
     {
         for (unsigned int col=0; col<m_col; col++)
         {
-            c.mData[row][col] = d*m.mData[row][col];
+            m.mData[row][col] = d*m.mData[row][col];
         }
     }
-    return c;
+    return m;
 }
 
-DoubleMatrix operator*(const DoubleMatrix &m, double d)
+DoubleMatrix operator*(DoubleMatrix m, double d)
 {
     return d*m;
 }

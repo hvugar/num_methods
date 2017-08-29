@@ -49,10 +49,13 @@ public:
     void setColumn(unsigned int c, const DoubleVector& col);
     void setRow(unsigned int r, const DoubleVector& row);
 
-    DoubleMatrix& operator=(const DoubleMatrix &matrix);
-    DoubleMatrix& operator=(const DoubleVector &vector);
-    //DoubleMatrix& operator+(const DoubleMatrix &matrix);
-    DoubleMatrix& operator+=(const DoubleMatrix &m);
+    DoubleMatrix& operator =(const DoubleMatrix &m);
+    DoubleMatrix& operator =(const DoubleVector &v);
+    //DoubleMatrix& operator +(const DoubleMatrix &m);
+    DoubleMatrix& operator +=(const DoubleMatrix &m);
+    DoubleMatrix& operator -=(const DoubleMatrix &m);
+    DoubleMatrix& operator *=(const DoubleMatrix &m);
+
     //DoubleMatrix& operator-(const DoubleMatrix &matrix);
     //DoubleMatrix& operator/(const DoubleMatrix &matrix);
     //DoubleMatrix& operator*(const double scalar);
@@ -84,11 +87,13 @@ public:
     bool isDiagonalMatrix() const;
     bool isSquareMatrix() const;
 
-    friend MINIMUMSHARED_EXPORT DoubleMatrix operator+(const DoubleMatrix&, const DoubleMatrix&);
-    friend MINIMUMSHARED_EXPORT DoubleMatrix operator-(const DoubleMatrix&, const DoubleMatrix&);
-    friend MINIMUMSHARED_EXPORT DoubleMatrix operator*(const DoubleMatrix&, const DoubleMatrix&);
-    friend MINIMUMSHARED_EXPORT DoubleMatrix operator*(double, const DoubleMatrix&);
-    friend MINIMUMSHARED_EXPORT DoubleMatrix operator*(const DoubleMatrix&, double);
+    friend MINIMUMSHARED_EXPORT DoubleMatrix operator +(DoubleMatrix m1, const DoubleMatrix& m2);
+    friend MINIMUMSHARED_EXPORT DoubleMatrix operator -(DoubleMatrix m1, const DoubleMatrix& m2);
+    friend MINIMUMSHARED_EXPORT DoubleMatrix operator *(const DoubleMatrix&, const DoubleMatrix&);
+    friend MINIMUMSHARED_EXPORT DoubleMatrix operator *(double, DoubleMatrix);
+    friend MINIMUMSHARED_EXPORT DoubleMatrix operator *(DoubleMatrix, double);
+//    friend MINIMUMSHARED_EXPORT DoubleMatrix operator *(const DoubleMatrix&, const DoubleVector&);
+//    friend MINIMUMSHARED_EXPORT DoubleMatrix operator ~(const DoubleMatrix&);
 
 private:
     unsigned int mRows;

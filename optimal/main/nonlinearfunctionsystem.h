@@ -11,6 +11,7 @@ protected:
 
 public:
     void calculateSimpleIdetartion(const DoubleVector &x0, DoubleVector &x, double epsilon);
+
     void calculateNewtonMethod(const DoubleVector &x0, DoubleVector &rx, double diffEspilon, double espilon);
 };
 

@@ -31,26 +31,26 @@ void LinearODE1stOrderEx1::example1()
     for (unsigned int row=0; row<n; row++) for(unsigned int col=0; col<n; col++) nsc0.mtrx[row][col] = (rand() % 1000) / 1000.0;
 
     Condition nsc1;
-    nsc1.time = 0.25;
-    nsc1.nmbr = N/4;
+    nsc1.time = 0.3;
+    nsc1.nmbr = 30;
     nsc1.mtrx.resize(n, n);
     for (unsigned int row=0; row<n; row++) for(unsigned int col=0; col<n; col++) nsc1.mtrx[row][col] = (rand() % 1000) / 1000.0;
 
     Condition nsc2;
     nsc2.time = 0.5;
-    nsc2.nmbr = N/2;
+    nsc2.nmbr = 50;
     nsc2.mtrx.resize(n, n);
     for (unsigned int row=0; row<n; row++) for(unsigned int col=0; col<n; col++) nsc2.mtrx[row][col] = (rand() % 1000) / 1000.0;
 
     Condition nsc3;
-    nsc3.time = 0.75;
-    nsc3.nmbr = 3*(N/4);
+    nsc3.time = 0.8;
+    nsc3.nmbr = 80;
     nsc3.mtrx.resize(n, n);
     for (unsigned int row=0; row<n; row++) for(unsigned int col=0; col<n; col++) nsc3.mtrx[row][col] = (rand() % 1000) / 1000.0;
 
     Condition nsc4;
     nsc4.time = 1.0;
-    nsc4.nmbr = N;
+    nsc4.nmbr = 100;
     nsc4.mtrx.resize(n, n);
     for (unsigned int row=0; row<n; row++) for(unsigned int col=0; col<n; col++) nsc4.mtrx[row][col] = (rand() % 1000) / 1000.0;
 
@@ -78,11 +78,10 @@ void LinearODE1stOrderEx1::example1()
     IPrinter::printVector(x[0]);
     IPrinter::printVector(x[1]);
     IPrinter::printVector(x[2]);
-
-    highOder4Accuracy(nscs, betta, x);
-    IPrinter::printVector(x[0]);
-    IPrinter::printVector(x[1]);
-    IPrinter::printVector(x[2]);
+//    highOder4Accuracy(nscs, betta, x);
+//    IPrinter::printVector(x[0]);
+//    IPrinter::printVector(x[1]);
+//    IPrinter::printVector(x[2]);
 }
 
 void LinearODE1stOrderEx1::example2()
@@ -151,10 +150,15 @@ double LinearODE1stOrderEx1::A(double t UNUSED_PARAM, unsigned int, unsigned int
 
 double LinearODE1stOrderEx1::B(double t, unsigned int, unsigned int row UNUSED_PARAM) const
 {
+//#ifdef EXAMPLE_1
+//    if (row==0) return 3.0     - (2.0*(3.0*t+4.0) - 3.0*(4.0*t*t) + 1.0*(t*t+t));
+//    if (row==1) return 8.0*t   - (3.0*(3.0*t+4.0) + 1.0*(4.0*t*t) - 2.0*(t*t+t));
+//    if (row==2) return 2.0*t+1 - (1.0*(3.0*t+4.0) - 5.0*(4.0*t*t) - 3.0*(t*t+t));
+//#endif
 #ifdef EXAMPLE_1
-    if (row==0) return 3.0     - (2.0*(3.0*t+4.0) - 3.0*(4.0*t*t) + 1.0*(t*t+t));
-    if (row==1) return 8.0*t   - (3.0*(3.0*t+4.0) + 1.0*(4.0*t*t) - 2.0*(t*t+t));
-    if (row==2) return 2.0*t+1 - (1.0*(3.0*t+4.0) - 5.0*(4.0*t*t) - 3.0*(t*t+t));
+    if (row==0) return +11.0*t*t - 7.0*t - 5.0;
+    if (row==1) return -2.0*t*t + t - 12.0;
+    if (row==2) return +23.0*t*t + 2.0*t - 3.0;
 #endif
 #ifdef EXAMPLE_2
     //return 1.0 - t*t - t;

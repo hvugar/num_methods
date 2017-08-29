@@ -6,29 +6,29 @@
 
 inline bool isMatrixNull(const DoubleMatrix &m)
 {
-   unsigned int m_rows = m.rows();
-   unsigned int m_cols = m.cols();
-   for (unsigned int row = 0; row < m_rows; row++)
-   {
-       for (unsigned int col = 0; col < m_cols; col++)
-       {
-           if (fabs(m[row][col]) > DBL_EPSILON) return false;
-       }
-   }
-   return true;
+    unsigned int m_rows = m.rows();
+    unsigned int m_cols = m.cols();
+    for (unsigned int row = 0; row < m_rows; row++)
+    {
+        for (unsigned int col = 0; col < m_cols; col++)
+        {
+            if (fabs(m[row][col]) > DBL_EPSILON) return false;
+        }
+    }
+    return true;
 }
 
 inline void setMatrixNull(const DoubleMatrix &m)
 {
-   unsigned int m_rows = m.rows();
-   unsigned int m_cols = m.cols();
-   for (unsigned int row = 0; row < m_rows; row++)
-   {
-       for (unsigned int col = 0; col < m_cols; col++)
-       {
+    unsigned int m_rows = m.rows();
+    unsigned int m_cols = m.cols();
+    for (unsigned int row = 0; row < m_rows; row++)
+    {
+        for (unsigned int col = 0; col < m_cols; col++)
+        {
             m[row][col] = 0.0;
-       }
-   }
+        }
+    }
 }
 
 void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const DoubleVector &bt, std::vector<DoubleVector> &x)
@@ -384,13 +384,15 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cnds, co
         unsigned int ind_size = ind.size();
         unsigned int ems_size = ems.size();
 
-        /**********************************************************************
-             *                          End of discretization
-             *********************************************************************/
+        printf("%d %d %d %d %d %d %d %d\n", ind[0], ind[1], ind[2], ind[3], ind[4], ind[5], ind[6], ind[7]);
 
         /**********************************************************************
-             *                      Finding function at end of grid
-             *********************************************************************/
+         *                          End of discretization
+         *********************************************************************/
+
+        /**********************************************************************
+         *                      Finding function at end of grid
+         *********************************************************************/
 
         DoubleMatrix m(en, en);
         DoubleMatrix alpha1(en, en, 0.0);
