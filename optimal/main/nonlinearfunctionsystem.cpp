@@ -15,7 +15,7 @@ void NonLinearFunction::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     x1 << 3.4 << 2.2;
     IPrinter::print(x1, x1.size(), 10, 4);
     DoubleVector rx;
-    nlfs.calculateNewtonMethod(x1, rx, 0.0001, 0.0001);
+    nlfs.calculateNewtonMethodMod(x1, rx, 0.0001, 0.0001);
     IPrinter::print(rx, rx.size(), 10, 4);
 
 }
@@ -54,6 +54,7 @@ void INonLinearFunction::calculateSimpleIdetartion(const DoubleVector &x0, Doubl
 void INonLinearFunction::calculateNewtonMethod(const DoubleVector &x0, DoubleVector &rx, double diffEspilon, double epsilon)
 {
     unsigned int n = x0.size();
+
     rx = x0;
     DoubleMatrix W(n, n);
     DoubleMatrix WI(n,n);
@@ -74,23 +75,18 @@ void INonLinearFunction::calculateNewtonMethod(const DoubleVector &x0, DoubleVec
                 W.at(row, col) = (fx(x2, row) - fx(x1, row))/(2.0*diffEspilon);
             }
         }
-        // Inversion Jacobian matrix
+
         WI = W;
         WI.inverse();
 
         DoubleVector x3 = rx;
 
-        double alpha;
-        puts("1111");
-        minimize(alpha, W, WI, x3, n);
-        printf("%f\n", alpha);
-
-        for (unsigned int row=0; row<n; row++)
+         for (unsigned int row=0; row<n; row++)
         {
             e[row] = 0.0;
             for (unsigned int col=0; col<n; col++)
             {
-                e[row] += alpha*WI[row][col]*fx(x3,col);
+                e[row] += WI[row][col]*fx(x3,col);
             }
             rx[row] -= e[row];
         }
@@ -98,11 +94,59 @@ void INonLinearFunction::calculateNewtonMethod(const DoubleVector &x0, DoubleVec
     } while (e.LInfNorm() > epsilon);
 }
 
-void INonLinearFunction::minimize(double &alpha, const DoubleMatrix &W, const DoubleMatrix &WI, const DoubleVector& xk, unsigned int n)
+void INonLinearFunction::calculateNewtonMethodMod(const DoubleVector &x0, DoubleVector &rx, double diffEspilon, double epsilon)
+{
+    unsigned int n = x0.size();
+    rx = x0;
+
+    DoubleMatrix W(n, n);
+    DoubleVector e(n);
+    do {
+
+        // Forming Jacobian matrix
+        for (unsigned int row=0; row<n; row++)
+        {
+            for (unsigned int col=0; col<n; col++)
+            {
+                DoubleVector x2 = rx;
+                DoubleVector x1 = rx;
+                x2[col] += diffEspilon;
+                x1[col] -= diffEspilon;
+
+                W.at(row, col) = (fx(x2, row) - fx(x1, row))/(2.0*diffEspilon);
+            }
+        }
+        // Regulization
+        DoubleMatrix V = W + 0.0*DoubleMatrix::IdentityMatrix(n);
+
+        V.inverse();
+
+        double alpha = minimize(W, V, rx, n);
+
+        DoubleVector x = rx;
+
+        for (unsigned int row=0; row<n; row++)
+        {
+            e[row] = 0.0;
+            for (unsigned int col=0; col<n; col++)
+            {
+                e[row] += V[row][col]*fx(rx,col);
+            }
+            x[row] -= alpha*e[row];
+        }
+
+        rx = x;
+
+    } while (e.LInfNorm() > epsilon);
+}
+
+double INonLinearFunction::minimize(const DoubleMatrix &W, const DoubleMatrix &V, const DoubleVector& rx, unsigned int n)
 {
     class FindMinimum : public R1Function
     {
     public:
+        FindMinimum(const INonLinearFunction &p, const DoubleMatrix& W, const DoubleMatrix& V, const DoubleVector& rx) : p(p), W(W), V(V), rx(rx) {}
+
         virtual double fx(double alpha) const
         {
             double SUM = 0.0;
@@ -111,42 +155,37 @@ void INonLinearFunction::minimize(double &alpha, const DoubleMatrix &W, const Do
                 double norm = 0.0;
                 for (unsigned int col=0; col<n; col++)
                 {
-                    norm += (*W)[row][col]*(*W)[row][col];
+                    norm += W[row][col] * W[row][col];
                 }
 
-                DoubleVector x_k = (*xk);
-                double s = 0.0;
+                DoubleVector x = rx;
                 for (unsigned int col=0; col<n; col++)
                 {
-                    s += (*WI)[row][col] * p->fx(x_k, col);
+                    x[row] -= alpha*V[row][col] * p.fx(rx, col);
                 }
-                x_k[row] -= alpha*s;
 
-                SUM += p->fx(x_k, row) / norm;
+                SUM += p.fx(x, row) / norm;
             }
             return SUM;
         }
 
-        const DoubleMatrix *W;
-        const DoubleMatrix *WI;
-        const DoubleVector *xk;
+        const INonLinearFunction &p;
+        const DoubleMatrix &W;
+        const DoubleMatrix &V;
+        const DoubleVector &rx;
         unsigned int n;
-        INonLinearFunction *p;
     };
 
-    FindMinimum fm;
-    fm.W = &W;
-    fm.WI = &WI;
-    fm.xk = &xk;
+    FindMinimum fm(*this, W,V,rx);
     fm.n = n;
-    fm.p = this;
 
     double alpha0 = 0.0;
     double min_step = 0.01;
     double min_epsilon = 0.0001;
-    double a,b;
+    double a,b,alpha;
     stranghLineSearch(alpha0, min_step, a, b, &fm);
-    printf("%f %f\n", a, b);
     goldenSectionSearch(a, b, alpha, &fm, min_epsilon);
     if (fm.fx(alpha) > fm.fx(alpha0)) alpha = alpha0;
+
+    return alpha;
 }

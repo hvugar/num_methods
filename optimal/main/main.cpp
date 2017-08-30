@@ -15,9 +15,6 @@
 
 #include "problem4/problem4ex1.h"
 
-#include "high_order/singledifequ.h"
-#include "high_order/systemdifequ.h"
-
 //#include <../border/borderparabolicd.h>
 //#include <../border/borderparabolicn.h>
 //#include <../border/borderparabolic2d.h>
@@ -75,12 +72,12 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //srand(time(NULL));
 
-    //NonLinearFunctionSystem::Main(argc, argv);
+    NonLinearFunction::Main(argc, argv);
 
     //Example1::Main(argc, argv);
     //SystemLinearODENonLocalContionsV::Main(argc, argv);
     //SystemLinearODENonLocalContionsM::Main(argc, argv);
-    Problem4Ex1::Main(argc, argv);
+    //Problem4Ex1::Main(argc, argv);
     //SystemLinearODENonLocalContionsV2::Main(argc, argv);
     //LinearODE1stOrderEx1::Main(argc, argv);
 
