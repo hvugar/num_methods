@@ -25,6 +25,7 @@ public:
     static DoubleMatrix IdentityMatrix(unsigned int n);
     static DoubleMatrix DiagonalMatrix(const DoubleVector& vector);
     static DoubleMatrix HilbertMatrix(unsigned int rows, unsigned int cols);
+    static DoubleMatrix ZeroMatrix(unsigned int rows, unsigned int cols);
 
     explicit DoubleMatrix(unsigned int rows=0, unsigned int cols=0, double value=0.0);
     DoubleMatrix(const DoubleMatrix &matrix);
@@ -49,6 +50,8 @@ public:
 
     void setColumn(unsigned int c, const DoubleVector& col);
     void setRow(unsigned int r, const DoubleVector& row);
+
+    bool zeroMatrix() const;
 
     /*************************************************************************************
      *                        Basic matrix operations
@@ -75,6 +78,8 @@ public:
     double trace() const;
     double det() const;
     DoubleVector eigenValues() const;
+
+
 
     double& operator ()(unsigned int row, unsigned int col);
     const double& operator ()(unsigned int row, unsigned int col) const;

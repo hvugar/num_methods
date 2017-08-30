@@ -69,7 +69,7 @@ public:
 
     DoubleVector& operator =(const DoubleVector& x);
     DoubleVector& operator +(const DoubleVector &other);
-    DoubleVector& operator -(const DoubleVector &other);
+    //DoubleVector& operator -(const DoubleVector &other);
 
     friend MINIMUMSHARED_EXPORT DoubleVector operator *(double scalar, const DoubleVector &);
     friend MINIMUMSHARED_EXPORT DoubleVector operator *(const DoubleVector &, double scalar);
@@ -77,6 +77,10 @@ public:
 //    friend MINIMUMSHARED_EXPORT DoubleVector operator -(const DoubleVector&, const DoubleVector &);
 //    friend MINIMUMSHARED_EXPORT DoubleVector operator *(const DoubleVector&, const DoubleVector &);
 //    friend MINIMUMSHARED_EXPORT DoubleVector operator *(double, const DoubleVector &);
+
+    friend MINIMUMSHARED_EXPORT bool operator ==(const DoubleVector& vector1, const DoubleVector& vector2);
+    friend MINIMUMSHARED_EXPORT bool operator !=(const DoubleVector& vector1, const DoubleVector& vector2);
+
     friend class DoubleMatrix;
 private:
     unsigned int mSize;

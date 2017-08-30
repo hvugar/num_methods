@@ -244,6 +244,14 @@ void DoubleMatrix::setRow(unsigned int r, const DoubleVector &row)
     }
 }
 
+bool DoubleMatrix::zeroMatrix() const
+{
+    for (unsigned int row=0; row < mRows; row++)
+        for (unsigned int col=0; col < mCols; col++)
+            if (fabs(mData[row][col]) > DBL_EPSILON) return false;
+    return true;
+}
+
 DoubleMatrix DoubleMatrix::IdentityMatrix(unsigned int n)
 {
     DoubleMatrix m(n, n, 0.0);
@@ -265,6 +273,12 @@ DoubleMatrix DoubleMatrix::HilbertMatrix(unsigned int rows, unsigned int cols)
     for (unsigned int row=0; row<rows; row++)
         for (unsigned int col=0; col<cols; col++)
             matrix.mData[row][col] = 1.0/(double)(row+col+1);
+    return matrix;
+}
+
+DoubleMatrix DoubleMatrix::ZeroMatrix(unsigned int rows, unsigned int cols)
+{
+    DoubleMatrix matrix(rows, cols, 0.0);
     return matrix;
 }
 

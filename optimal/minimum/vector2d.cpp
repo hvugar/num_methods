@@ -282,21 +282,21 @@ DoubleVector& DoubleVector::operator +(const DoubleVector &other)
     return *this;
 }
 
-DoubleVector& DoubleVector::operator -(const DoubleVector &other)
-{
-    if (mSize != other.mSize)
-    {
-        //throw std::exception("");
-    }
-    else
-    {
-        for (unsigned int i=0; i<mSize; i++)
-        {
-            mData[i] -= other.mData[i];
-        }
-    }
-    return *this;
-}
+//DoubleVector& DoubleVector::operator -(const DoubleVector &other)
+//{
+//    if (mSize != other.mSize)
+//    {
+//        //throw std::exception("");
+//    }
+//    else
+//    {
+//        for (unsigned int i=0; i<mSize; i++)
+//        {
+//            mData[i] -= other.mData[i];
+//        }
+//    }
+//    return *this;
+//}
 
 DoubleVector operator *(double scalar, const DoubleVector &v)
 {
@@ -308,6 +308,21 @@ DoubleVector operator *(double scalar, const DoubleVector &v)
 DoubleVector operator *(const DoubleVector &v, double scalar)
 {
     return scalar*v;
+}
+
+bool operator ==(const DoubleVector& vector1, const DoubleVector& vector2)
+{
+    if (vector1.mSize != vector2.mSize) return false;
+
+    unsigned int length = vector1.mSize;
+    for (unsigned int i=0; i<length; i++) if (vector1.mData[i] != vector2.mData[i]) return false;
+
+    return true;
+}
+
+bool operator !=(const DoubleVector& vector1, const DoubleVector& vector2)
+{
+    return !(vector1 == vector2);
 }
 
 void DoubleVector::randomData()
@@ -323,15 +338,3 @@ void DoubleVector::print()
     }
     puts("");
 }
-
-//DoubleVector operator-(const DoubleVector& v1, const DoubleVector &v2)
-//{
-//    if (v1.mSize != v2.mSize)
-//    {
-//        //throw
-//    }
-
-//    DoubleVector v(v1.mSize);
-//    for (unsigned int i=0; i<=v.mSize; i++) v.mData[i] = v1.mData[i] - v2.mData[i];
-//    return v;
-//}
