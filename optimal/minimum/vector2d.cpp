@@ -9,28 +9,25 @@
 #include <exception>
 #include <stdexcept>
 
-DoubleVector::DoubleVector(unsigned int size, double val) : mSize(size), mData(NULL)
+DoubleVector::DoubleVector(unsigned int size, double val) : mSize(0), mData(NULL)
 {
-    if (size > 0)
-    {
-        mSize = size;
-        mData = (double*) malloc(sizeof(double) * size);
-        for (unsigned int i=0; i<size; i++) mData[i] = val;
-        //        memset(mData, val, size);
-    }
+    if (size <= 0) return;
+
+    mSize = size;
+    mData = (double*) malloc(sizeof(double) * size);
+    for (unsigned int i=0; i<size; i++) mData[i] = val;
 }
 
-DoubleVector::DoubleVector(const double *data, unsigned int size) : mSize(size), mData(NULL)
+DoubleVector::DoubleVector(const double *data, unsigned int size) : mSize(0), mData(NULL)
 {
-    if (size > 0)
-    {
-        mSize = size;
-        mData = (double*) malloc(sizeof(double) * size);
-        memcpy(mData, data, sizeof(double)*size);
-    }
+    if (size <= 0) return;
+
+    mSize = size;
+    mData = (double*) malloc(sizeof(double) * size);
+    memcpy(mData, data, sizeof(double)*size);
 }
 
-DoubleVector::DoubleVector(const DoubleVector &vector)
+DoubleVector::DoubleVector(const DoubleVector &vector) : mSize(0), mData(NULL)
 {
     if (vector.mSize == 0) return;
 
@@ -39,14 +36,13 @@ DoubleVector::DoubleVector(const DoubleVector &vector)
     memcpy(mData, vector.mData, sizeof(double)*mSize);
 }
 
-DoubleVector::DoubleVector(const DoubleMatrix &matrix)
+DoubleVector::DoubleVector(const DoubleMatrix &matrix) : mSize(0), mData(NULL)
 {
-    if (matrix.cols()==1)
-    {
-        mSize = matrix.rows();
-        mData = (double*) (malloc(sizeof(double)*mSize));
-        for (unsigned int i=0; i<mSize; i++) mData[i] = matrix.at(i,0);
-    }
+    if (matrix.cols() != 1) return;
+
+    mSize = matrix.rows();
+    mData = (double*) (malloc(sizeof(double)*mSize));
+    for (unsigned int i=0; i<mSize; i++) mData[i] = matrix.at(i,0);
 }
 
 DoubleVector::~DoubleVector()
@@ -56,7 +52,7 @@ DoubleVector::~DoubleVector()
 
 void DoubleVector::clear()
 {
-    if (mData!=NULL)
+    if (mData != NULL)
     {
         free(mData);
         mData = NULL;
@@ -95,7 +91,7 @@ bool DoubleVector::empty() const
 
 double& DoubleVector::at(unsigned int n)
 {
-    if (n>=mSize)
+    if (n >= mSize)
     {
         throw std::out_of_range("out of range");
     }
@@ -104,7 +100,7 @@ double& DoubleVector::at(unsigned int n)
 
 const double& DoubleVector::at(unsigned int n) const
 {
-    if (n>=mSize)
+    if (n >= mSize)
     {
         throw std::out_of_range("out of range");
     }
@@ -131,7 +127,7 @@ double DoubleVector::L2Norm() const
     double norm = 0.0;
     if (!empty())
     {
-        for (unsigned int i=0; i<mSize; i++)
+        for (unsigned int i=0; i < mSize; i++)
         {
             double item = mData[i];
             norm += item*item;
@@ -146,7 +142,7 @@ double DoubleVector::L1Norm() const
     double norm = 0.0;
     if (!empty())
     {
-        for (unsigned int i=0; i<mSize; i++)
+        for (unsigned int i=0; i < mSize; i++)
         {
             norm += fabs(mData[i]);
         }
@@ -159,12 +155,10 @@ double DoubleVector::LInfNorm() const
     double norm = 0.0;
     if (!empty())
     {
-        for (unsigned int i=0; i<mSize; i++)
+        norm = fabs(mData[0]);
+        for (unsigned int i=1; i < mSize; i++)
         {
-            if ( i == 0 )
-                norm = fabs(mData[i]);
-            else if (norm < fabs(mData[i]))
-                norm = fabs(mData[i]);
+            if (norm < fabs(mData[i])) norm = fabs(mData[i]);
         }
     }
     return norm;
@@ -182,7 +176,8 @@ double DoubleVector::EuclideanDistance(const DoubleVector &p) const
     double distance = 0.0;
     for (unsigned int i=0; i<mSize; i++)
     {
-        distance += (at(i)-p.at(i))*(at(i)-p.at(i));
+        double dx = mData[i]-p.mData[i];
+        distance += dx*dx;
     }
     return sqrt(distance);
 }
@@ -206,36 +201,34 @@ void DoubleVector::EuclideanNormalize()
 
 double DoubleVector::min() const
 {
-    double _min = NAN;
+    double minimum = NAN;
     if (!empty())
     {
-        _min = at(0);
-        for (unsigned int i=1; i<mSize; i++)
-            if (_min > mData[i]) _min = mData[i];
+        minimum = mData[0];
+        for (unsigned int i=1; i<mSize; i++) if (minimum > mData[i]) minimum = mData[i];
     }
-    return _min;
+    return minimum;
 }
 
 double DoubleVector::max() const
 {
-    double _max = 0.0;
+    double maximum = NAN;
     if (!empty())
     {
-        _max = mData[0];
-        for (unsigned int i=1; i<mSize; i++)
-            if (_max < mData[i]) _max = mData[i];
+        maximum = mData[0];
+        for (unsigned int i=1; i<mSize; i++) if (maximum < mData[i]) maximum = mData[i];
     }
-    return _max;
+    return maximum;
 }
 
 DoubleVector DoubleVector::mid(unsigned int s, unsigned int e) const
 {
     DoubleVector vector((e-s)+1);
-    for (unsigned int i=s; i<=e; i++) vector[i-s] = mData[i];
+    for (unsigned int i=s; i<=e; i++) vector.mData[i-s] = mData[i];
     return vector;
 }
 
-DoubleVector& DoubleVector::operator= (const DoubleVector& other)
+DoubleVector& DoubleVector::operator =(const DoubleVector& other)
 {
     if (this != &other)
     {
@@ -246,17 +239,17 @@ DoubleVector& DoubleVector::operator= (const DoubleVector& other)
     return *this;
 }
 
-double& DoubleVector::operator[] (unsigned int n)
+double& DoubleVector::operator [](unsigned int n)
 {
     return mData[n];
 }
 
-double DoubleVector::operator[] (unsigned int n) const
+double DoubleVector::operator [](unsigned int n) const
 {
     return mData[n];
 }
 
-DoubleVector& DoubleVector::operator<<(double value)
+DoubleVector& DoubleVector::operator <<(double value)
 {
     if (mData==NULL)
     {
@@ -289,23 +282,32 @@ DoubleVector& DoubleVector::operator +(const DoubleVector &other)
     return *this;
 }
 
-//DoubleVector operator+(const DoubleVector& v1, const DoubleVector &v2)
-//{
-//    if (v1.mSize != v2.mSize)
-//    {
-//        //throw
-//    }
-
-//    DoubleVector v(v1.mSize);
-//    for (unsigned int i=0; i<=v.mSize; i++) v.mData[i] = v1.mData[i] + v2.mData[i];
-//    return v;
-//}
+DoubleVector& DoubleVector::operator -(const DoubleVector &other)
+{
+    if (mSize != other.mSize)
+    {
+        //throw std::exception("");
+    }
+    else
+    {
+        for (unsigned int i=0; i<mSize; i++)
+        {
+            mData[i] -= other.mData[i];
+        }
+    }
+    return *this;
+}
 
 DoubleVector operator *(double scalar, const DoubleVector &v)
 {
     DoubleVector rv(v.mSize);
     for (unsigned int i=0; i<v.mSize; i++) rv.mData[i] = v.mData[i]*scalar;
     return rv;
+}
+
+DoubleVector operator *(const DoubleVector &v, double scalar)
+{
+    return scalar*v;
 }
 
 void DoubleVector::randomData()

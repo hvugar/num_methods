@@ -9,8 +9,8 @@ class DoubleMatrix;
 class MINIMUMSHARED_EXPORT DoubleVector
 {
 public:
-    explicit DoubleVector(unsigned int size=0, double val = 0.0);
-    DoubleVector(const double* data, unsigned int size);
+    explicit DoubleVector(unsigned int size = 0, double value = 0.0);
+    explicit DoubleVector(const double* data, unsigned int size);
     DoubleVector(const DoubleVector &vector);
     DoubleVector(const DoubleMatrix &matrix);
     virtual ~DoubleVector();
@@ -57,23 +57,27 @@ public:
     void insert (unsigned int position, unsigned int n, const double& val);
     void insert (unsigned int position, unsigned int first, unsigned int last);
     unsigned int max_size() const;
-    DoubleVector& operator= (const DoubleVector& x);
-    double& operator[] (unsigned int n);
-    double operator[] (unsigned int n) const;
-    DoubleVector& operator <<(double value);
-    DoubleVector& operator +(const DoubleVector &other);
 
     void swap(DoubleVector& x);
 
     void print(unsigned int cols, char* label = NULL, unsigned int start=0, unsigned int end=0, FILE* file=stdout);
     void print();
 
-    friend class DoubleMatrix;
-    friend MINIMUMSHARED_EXPORT DoubleVector operator*(double scalar, const DoubleVector &);
+    double& operator [](unsigned int n);
+    double operator [](unsigned int n) const;
+    DoubleVector& operator <<(double value);
+
+    DoubleVector& operator =(const DoubleVector& x);
+    DoubleVector& operator +(const DoubleVector &other);
+    DoubleVector& operator -(const DoubleVector &other);
+
+    friend MINIMUMSHARED_EXPORT DoubleVector operator *(double scalar, const DoubleVector &);
+    friend MINIMUMSHARED_EXPORT DoubleVector operator *(const DoubleVector &, double scalar);
 //    friend MINIMUMSHARED_EXPORT DoubleVector operator +(const DoubleVector&, const DoubleVector &);
 //    friend MINIMUMSHARED_EXPORT DoubleVector operator -(const DoubleVector&, const DoubleVector &);
 //    friend MINIMUMSHARED_EXPORT DoubleVector operator *(const DoubleVector&, const DoubleVector &);
 //    friend MINIMUMSHARED_EXPORT DoubleVector operator *(double, const DoubleVector &);
+    friend class DoubleMatrix;
 private:
     unsigned int mSize;
     double *mData;
