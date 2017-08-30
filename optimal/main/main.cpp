@@ -52,7 +52,7 @@
 
 #include "utils/matrix.h"
 
-#include "nonlinearfunctionsystem.h"
+#include "nonlinearequationex1.h"
 #include "load_sys/lode1oex1.h"
 
 #include "matrixtest.h"
@@ -72,7 +72,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //srand(time(NULL));
 
-    NonLinearFunction::Main(argc, argv);
+    NonLinearEquationEx1::Main(argc, argv);
 
     //Example1::Main(argc, argv);
     //SystemLinearODENonLocalContionsV::Main(argc, argv);

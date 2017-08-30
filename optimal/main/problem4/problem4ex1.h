@@ -4,11 +4,11 @@
 #include <function.h>
 #include "zetta0.h"
 #include "zettai.h"
-#include "../nonlinearfunctionsystem.h"
+#include "../nonlinearequationex1.h"
 
 #define SAMPLE_1
 
-class Problem4Ex1 : public NonLinearFunction, public ISystemLinearODENonLocalContions
+class Problem4Ex1 : public NonLinearEquationEx1, public ISystemLinearODENonLocalContions
 {
 public:
     static void Main(int agrc, char *argv[]);

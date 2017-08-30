@@ -49,12 +49,12 @@ SOURCES += main.cpp \
     problem4/problem4ex1.cpp \
     problem4/zetta0.cpp \
     numintegralexp1.cpp \
-    nonlinearfunctionsystem.cpp \
     load_sys/slodenlcsv2.cpp \
     problem4/zettai.cpp \
     ivp/nlode1oex1.cpp \
     load_sys/lode1oex1.cpp \
-    matrixtest.cpp
+    matrixtest.cpp \
+    nonlinearequationex1.cpp
 
 HEADERS += \
     load_sys/slodenlcsm.h \
@@ -70,9 +70,9 @@ HEADERS += \
     problem4/problem4ex1.h \
     problem4/zetta0.h \
     numintegralexp1.h \
-    nonlinearfunctionsystem.h \
     load_sys/slodenlcsv2.h \
     problem4/zettai.h \
     ivp/nlode1oex1.h \
     load_sys/lode1oex1.h \
-    matrixtest.h
+    matrixtest.h \
+    nonlinearequationex1.h

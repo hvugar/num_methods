@@ -1,39 +1,6 @@
-#include "nonlinearfunctionsystem.h"
-#include <math.h>
+#include "nonlinearequation.h"
 
-void NonLinearFunction::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
-{
-    NonLinearFunction nlfs;
-
-    //    DoubleVector x0;
-    //    x0 << 3.5 << 2.2;
-    //    DoubleVector xs;
-    //    nlfs.calculateSimpleIdetartion(x0, xs, 0.001);
-    //    IPrinter::print(xs, xs.size());
-
-    DoubleVector x1;
-    x1 << 3.4 << 2.2;
-    IPrinter::print(x1, x1.size(), 10, 4);
-    DoubleVector rx;
-    nlfs.calculateNewtonMethodMod(x1, rx, 0.0001, 0.0001);
-    IPrinter::print(rx, rx.size(), 10, 4);
-
-}
-
-double NonLinearFunction::fx(const DoubleVector &x, unsigned int num) const
-{
-    double x1 = x[0];
-    double x2 = x[1];
-    //    if (num == 0) return sqrt(x1 + 3.0*log10(x1));
-    //    if (num == 1) return sqrt((x1*(x2+5.0)-1)/2.0);
-
-    if (num == 0) return x1+3.0*log10(x1)-x2*x2;
-    if (num == 1) return 2.0*x1*x1 - x1*x2 - 5.0*x1 + 1.0;
-
-    return NAN;
-}
-
-void INonLinearFunction::calculateSimpleIdetartion(const DoubleVector &x0, DoubleVector &x, double epsilon)
+void NonLinearEquation::calculateSimpleIdetartion(const DoubleVector &x0, DoubleVector &x, double epsilon)
 {
     unsigned int n = x0.size();
     x = x0;
@@ -51,7 +18,7 @@ void INonLinearFunction::calculateSimpleIdetartion(const DoubleVector &x0, Doubl
     }
 }
 
-void INonLinearFunction::calculateNewtonMethod(const DoubleVector &x0, DoubleVector &rx, double diffEspilon, double epsilon)
+void NonLinearEquation::calculateNewtonMethod(const DoubleVector &x0, DoubleVector &rx, double diffEspilon, double epsilon)
 {
     unsigned int n = x0.size();
 
@@ -94,7 +61,7 @@ void INonLinearFunction::calculateNewtonMethod(const DoubleVector &x0, DoubleVec
     } while (e.LInfNorm() > epsilon);
 }
 
-void INonLinearFunction::calculateNewtonMethodMod(const DoubleVector &x0, DoubleVector &rx, double diffEspilon, double epsilon)
+void NonLinearEquation::calculateNewtonMethodMod(const DoubleVector &x0, DoubleVector &rx, double diffEspilon, double epsilon)
 {
     unsigned int n = x0.size();
     rx = x0;
@@ -140,12 +107,12 @@ void INonLinearFunction::calculateNewtonMethodMod(const DoubleVector &x0, Double
     } while (e.LInfNorm() > epsilon);
 }
 
-double INonLinearFunction::minimize(const DoubleMatrix &W, const DoubleMatrix &V, const DoubleVector& rx, unsigned int n)
+double NonLinearEquation::minimize(const DoubleMatrix &W, const DoubleMatrix &V, const DoubleVector& rx, unsigned int n)
 {
     class FindMinimum : public R1Function
     {
     public:
-        FindMinimum(const INonLinearFunction &p, const DoubleMatrix& W, const DoubleMatrix& V, const DoubleVector& rx) : p(p), W(W), V(V), rx(rx) {}
+        FindMinimum(const NonLinearEquation &p, const DoubleMatrix& W, const DoubleMatrix& V, const DoubleVector& rx) : p(p), W(W), V(V), rx(rx) {}
 
         virtual double fx(double alpha) const
         {
@@ -169,7 +136,7 @@ double INonLinearFunction::minimize(const DoubleMatrix &W, const DoubleMatrix &V
             return SUM;
         }
 
-        const INonLinearFunction &p;
+        const NonLinearEquation &p;
         const DoubleMatrix &W;
         const DoubleMatrix &V;
         const DoubleVector &rx;
