@@ -15,6 +15,7 @@ public:
     void calculateSimpleIdetartion(const DoubleVector &x0, DoubleVector &x, double epsilon);
     void calculateNewtonMethod(const DoubleVector &x0, DoubleVector &rx, double diffEspilon, double espilon);
     void calculateNewtonMethodMod(const DoubleVector &x0, DoubleVector &rx, double diffEspilon, double espilon);
+    void calculateNewtonMethodMod2(const DoubleVector &x0, DoubleVector &rx, double diffEspilon, double espilon);
 
 private:
     double minimize(const DoubleMatrix &W, const DoubleMatrix &WI, const DoubleVector& xk, unsigned int n);

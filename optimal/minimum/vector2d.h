@@ -65,6 +65,7 @@ public:
 
     double& operator [](unsigned int n);
     double operator [](unsigned int n) const;
+
     DoubleVector& operator <<(double value);
 
     DoubleVector& operator =(const DoubleVector& x);

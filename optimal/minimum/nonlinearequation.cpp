@@ -107,6 +107,54 @@ void NonLinearEquation::calculateNewtonMethodMod(const DoubleVector &x0, DoubleV
     } while (e.LInfNorm() > epsilon);
 }
 
+void NonLinearEquation::calculateNewtonMethodMod2(const DoubleVector &x0, DoubleVector &rx, double diffEspilon, double epsilon)
+{
+    unsigned int n = x0.size();
+    rx = x0;
+
+    DoubleMatrix W(2, 2);
+    DoubleVector e(2);
+    unsigned int iter = 0;
+    do {
+        printf("%4d %20.10f %20.10f\n", iter++, rx[0], rx[1]);
+
+        // Forming Jacobian matrix
+        DoubleVector x2;
+        DoubleVector x1;
+
+        x1 = x2 = rx; x2[0] += diffEspilon; x1[0] -= diffEspilon;
+        W[0][0] = (fx(x2, 0) - fx(x1, 0))/(2.0*diffEspilon);
+
+        x1 = x2 = rx; x2[1] += diffEspilon; x1[1] -= diffEspilon;
+        W[0][1] = (fx(x2, 0) - fx(x1, 0))/(2.0*diffEspilon);
+
+        x1 = x2 = rx; x2[0] += diffEspilon; x1[0] -= diffEspilon;
+        W[1][0] = (fx(x2, 1) - fx(x1, 1))/(2.0*diffEspilon);
+
+        x1 = x2 = rx; x2[1] += diffEspilon; x1[1] -= diffEspilon;
+        W[1][1] = (fx(x2, 1) - fx(x1, 1))/(2.0*diffEspilon);
+
+
+        // Regulization
+        DoubleMatrix V = W + 0.00001*DoubleMatrix::IdentityMatrix(n);
+
+        V.inverse();
+
+        double alpha = 1.0;//minimize(W, V, rx, n); printf("alpha %.10f\n", alpha);
+
+        //DoubleVector x = rx;
+
+        e[0] = V[0][0]*fx(rx,0)+V[0][1]*fx(rx,1);
+        e[1] = V[1][0]*fx(rx,0)+V[1][1]*fx(rx,1);
+
+        rx[0] -= alpha*e[0];
+        rx[1] -= alpha*e[1];
+
+    } while (e.LInfNorm() > epsilon);
+    printf("%4d %20.10f %20.10f\n", iter, rx[0], rx[1]);
+}
+
+
 double NonLinearEquation::minimize(const DoubleMatrix &W, const DoubleMatrix &V, const DoubleVector& rx, unsigned int n)
 {
     class FindMinimum : public R1Function
@@ -117,22 +165,33 @@ double NonLinearEquation::minimize(const DoubleMatrix &W, const DoubleMatrix &V,
         virtual double fx(double alpha) const
         {
             double SUM = 0.0;
-            for (unsigned int row=0; row<n; row++)
-            {
-                double norm = 0.0;
-                for (unsigned int col=0; col<n; col++)
-                {
-                    norm += W[row][col] * W[row][col];
-                }
 
-                DoubleVector x = rx;
-                for (unsigned int col=0; col<n; col++)
-                {
-                    x[row] -= alpha*V[row][col] * p.fx(rx, col);
-                }
+            DoubleVector x;
 
-                SUM += p.fx(x, row) / norm;
-            }
+            x = rx;
+            x[0] = rx[0] - alpha*(W[0][0]*p.fx(rx,0) + W[0][1]*p.fx(rx,1));
+            SUM += p.fx(x, 0) / (W[0][0]*W[0][0] + W[0][1]*W[0][1]);
+
+            x = rx;
+            x[1] = rx[1] - alpha*(W[1][0]*p.fx(rx,0) + W[1][1]*p.fx(rx,1));
+            SUM += p.fx(x, 1) / (W[1][0]*W[1][0] + W[1][1]*W[1][1]);
+
+//            for (unsigned int row=0; row<n; row++)
+//            {
+//                double norm = 0.0;
+//                for (unsigned int col=0; col<n; col++)
+//                {
+//                    norm += W[row][col] * W[row][col];
+//                }
+
+
+//                for (unsigned int col=0; col<n; col++)
+//                {
+//                    x[row] -= alpha*V[row][col] * p.fx(rx, col);
+//                }
+
+//                SUM += p.fx(x, row) / norm;
+//            }
             return SUM;
         }
 
@@ -146,8 +205,8 @@ double NonLinearEquation::minimize(const DoubleMatrix &W, const DoubleMatrix &V,
     FindMinimum fm(*this, W,V,rx);
     fm.n = n;
 
-    double alpha0 = 0.0;
-    double min_step = 0.01;
+    double alpha0 = 1.0;
+    double min_step = 0.1;
     double min_epsilon = 0.0001;
     double a,b,alpha;
     stranghLineSearch(alpha0, min_step, a, b, &fm);

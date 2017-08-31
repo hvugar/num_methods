@@ -12,10 +12,10 @@ void NonLinearEquationEx1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM
     //    IPrinter::print(xs, xs.size());
 
     DoubleVector x1;
-    x1 << 3.4 << 2.2;
+    x1 << 2.0 << 2.0;
     IPrinter::print(x1, x1.size(), 10, 4);
     DoubleVector rx;
-    nlfs.calculateNewtonMethod(x1, rx, 0.0001, 0.0001);
+    nlfs.calculateNewtonMethodMod2(x1, rx, 0.0001, 0.0001);
     IPrinter::print(rx, rx.size(), 10, 4);
 
 }
