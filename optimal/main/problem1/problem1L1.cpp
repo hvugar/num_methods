@@ -110,12 +110,12 @@ void Problem1L1::printNAGradinets(const DoubleVector &x0)
     puts("------------------------------------------");
 
     // Calculating numerical gradients
-    DoubleVector gn(x0.size());
+    DoubleVector gn(x0.length());
     IGradient::Gradient(this, h, x0, gn);
     gn.L2Normalize();
 
     // Calculating analitical gradients
-    DoubleVector ga(x0.size());
+    DoubleVector ga(x0.length());
     gradient(x0, ga);
     ga.L2Normalize();
 
@@ -527,7 +527,7 @@ void Problem1L1::calculateU(DoubleMatrix &u, unsigned int N, unsigned int M, dou
             //if (fabs(n*hx - e.at(1)) <= DBL_EPSILON) { de[n] = -k[1]*(lambda0*(a*a*ht)/hx); }
         }
 
-        qovmaFirstRow(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size(), de.data());
+        qovmaFirstRow(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.length(), de.data());
 
         for (unsigned int i=0; i<=N; i++)
         {
@@ -829,7 +829,7 @@ void Problem1L1::calculateP(DoubleMatrix &p, const DoubleMatrix &u)
                 }
             }
 
-            qovmaFirstCol(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size(), de.data());
+            qovmaFirstCol(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.length(), de.data());
 
             for (unsigned int i=0; i<=N; i++) p.at(m, i) = rx[i];
         }

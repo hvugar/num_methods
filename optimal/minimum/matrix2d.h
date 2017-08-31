@@ -103,13 +103,13 @@ public:
     double& operator ()(unsigned int row, unsigned int col);
     const double& operator ()(unsigned int row, unsigned int col) const;
 
-    DoubleMatrix& operator =(const DoubleMatrix& matrix);
-    DoubleMatrix& operator =(const DoubleVector& vector);
-    DoubleMatrix& operator +=(const DoubleMatrix& matrix);
-    DoubleMatrix& operator -=(const DoubleMatrix& matrix);
-    DoubleMatrix& operator *=(const DoubleMatrix& matrix);
+    DoubleMatrix& operator =(const DoubleMatrix& m);
+    DoubleMatrix& operator =(const DoubleVector& m);
+    DoubleMatrix& operator +=(const DoubleMatrix& m);
+    DoubleMatrix& operator -=(const DoubleMatrix& m);
+    DoubleMatrix& operator *=(const DoubleMatrix& m);
     DoubleMatrix& operator *=(double scalar);
-    DoubleMatrix& operator *=(const DoubleVector& vector);
+    DoubleMatrix& operator *=(const DoubleVector& v);
 
     friend MINIMUMSHARED_EXPORT DoubleMatrix operator +(DoubleMatrix m1, const DoubleMatrix& m2);
     friend MINIMUMSHARED_EXPORT DoubleMatrix operator -(DoubleMatrix m1, const DoubleMatrix& m2);

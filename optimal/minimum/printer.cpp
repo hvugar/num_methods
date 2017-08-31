@@ -85,8 +85,8 @@ void IPrinter::printVector(const DoubleVector &x, const char *s, unsigned int n,
     }
     else
     {
-        unsigned int N = x.size() / n;
-        for (unsigned int i=0; i<x.size(); i++)
+        unsigned int N = x.length() / n;
+        for (unsigned int i=0; i<x.length(); i++)
         {
             if (i%N==0) fprintf(file, "%14.10f ", x[i]);
         }
@@ -159,8 +159,8 @@ void IPrinter::printVector(unsigned int width, unsigned int presicion, const Dou
     }
     else
     {
-        unsigned int N = x.size() / n;
-        for (unsigned int i=0; i<x.size(); i++)
+        unsigned int N = x.length() / n;
+        for (unsigned int i=0; i<x.length(); i++)
         {
             if (i%N==0) fprintf(file, format, x[i]);
         }
@@ -234,7 +234,7 @@ void IPrinter::print(const DoubleVector &v, unsigned int N, unsigned int width, 
     int sz = sprintf(format, "%%%d.%df ", width, presicion);
     format[sz] = '\0';
 
-    unsigned int size = v.size();
+    unsigned int size = v.length();
 
     for (unsigned int i=0; i<size; i++)
     {

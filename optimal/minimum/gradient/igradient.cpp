@@ -23,7 +23,7 @@ void IConjugateGradient::calculate(DoubleVector& x)
     double f1 = 0.0;
     double f2 = 0.0;
 
-    unsigned int n = x.size();
+    unsigned int n = x.length();
     DoubleVector g(n);
     DoubleVector s(n);
 
@@ -102,7 +102,7 @@ void IConjugateGradient::calculate(DoubleVector& x)
         distance = sqrt(distance);
         f2 = fx(x);
 
-        if ( k == x.size() ) { k = 0; } else { k++; }
+        if ( k == x.length() ) { k = 0; } else { k++; }
 
         /**************************************************************************************
          * Gradient of objectiv function in current point
@@ -164,7 +164,7 @@ double IConjugateGradient::fx(double alpha) const
 {
     DoubleVector &x = *mx;
     DoubleVector &s = *ms;
-    unsigned int n = x.size();
+    unsigned int n = x.length();
 
     DoubleVector cx(n);
     for (unsigned int i=0; i<n; i++)

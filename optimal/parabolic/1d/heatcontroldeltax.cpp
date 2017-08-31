@@ -25,11 +25,11 @@ void HeatControlDeltaX::main(int argc, char ** argv)
     g2.setNormalize(true);
     g2.calculate(e);
 
-    DoubleVector gr1(e.size());
+    DoubleVector gr1(e.length());
     hc.gradient(e, gr1);
     gr1.L2Normalize();
 
-    DoubleVector gr2(e.size());
+    DoubleVector gr2(e.length());
     IGradient::Gradient(&hc, 0.00001, e, gr2);
     gr2.L2Normalize();
 

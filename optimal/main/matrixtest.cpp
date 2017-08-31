@@ -1,28 +1,17 @@
 #include "matrixtest.h"
+#include <iomanip>
 
 void MatrixTest::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    DoubleMatrix m1(4,3);
+    DoubleVector v1;
+    v1 << 1.0 << 3.0 << 5.0;
+    IPrinter::print(v1);
 
-    DoubleMatrix m2(4,3);
+    DoubleVector v2;
+    v2 << 4.0 << 8.0 << 2.0;
+    IPrinter::print(v2);
 
-    DoubleMatrix m3(4,3);
-
-    IPrinter::printSeperatorLine();
-    IPrinter::print(m1, 0, 0);
-    IPrinter::printSeperatorLine();
-
-    IPrinter::printSeperatorLine();
-    IPrinter::print(m2, 0, 0);
-    IPrinter::printSeperatorLine();
-
-    m2 += m1;
-
-    IPrinter::printSeperatorLine();
-    IPrinter::print(m1, 0, 0);
-    IPrinter::printSeperatorLine();
-
-    IPrinter::printSeperatorLine();
-    IPrinter::print(m2, 0, 0);
-    IPrinter::printSeperatorLine();
+    DoubleVector v3 = v1*v2;
+    IPrinter::print(v1);
+    IPrinter::print(v3);
 }

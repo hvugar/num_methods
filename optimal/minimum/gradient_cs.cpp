@@ -14,7 +14,7 @@ ConstStepGradient::~ConstStepGradient()
 
 void ConstStepGradient::calculate(DoubleVector &x)
 {
-    unsigned int n = x.size();
+    unsigned int n = x.length();
 
     iterationCount = 0;
     double distance = 0.0;
@@ -70,7 +70,7 @@ void ConstStepGradient::calculate(DoubleVector &x)
 
 double ConstStepGradient::minimize(const DoubleVector &x, const DoubleVector &g)
 {
-    unsigned int n = x.size();
+    unsigned int n = x.length();
 
     DoubleVector cx(n);
 

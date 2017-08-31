@@ -19,7 +19,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
     double f1 = 0.0;
     double f2 = 0.0;
 
-    unsigned int n = x.size();
+    unsigned int n = x.length();
     DoubleVector g(n);
 
     mx = &x;
@@ -116,7 +116,7 @@ double SteepestDescentGradient::fx(double alpha) const
 {
     DoubleVector &x = *mx;
     DoubleVector &g = *mg;
-    unsigned int n = x.size();
+    unsigned int n = x.length();
 
     DoubleVector cx(n);
     for (unsigned int i=0; i<n; i++)

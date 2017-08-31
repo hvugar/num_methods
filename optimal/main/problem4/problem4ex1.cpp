@@ -15,7 +15,7 @@ void Problem4Ex1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //    IPrinter::printSeperatorLine();
     //    prob1.printResult();
-    IPrinter::print(x,x.size());
+    IPrinter::print(x,x.length());
     IPrinter::printSeperatorLine();
     prob1.printResult1(x);
 }

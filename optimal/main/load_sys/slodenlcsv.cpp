@@ -9,7 +9,7 @@ void SystemLinearODENonLocalContionsV::Main(int agrc UNUSED_PARAM, char *argv[] 
     DoubleVector x;
     cpnlcs.calculateForward(x);
 
-    IPrinter::print(x,x.size());
+    IPrinter::print(x,x.length());
     std::vector<DoubleVector> m;
     cpnlcs.calculateBackwardCP(x, m);
     for (unsigned int row=0; row<cpnlcs.systemOrder(); row++) IPrinter::printVector(m.at(row));

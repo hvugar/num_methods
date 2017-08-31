@@ -2,7 +2,7 @@
 
 void NonLinearEquation::calculateSimpleIdetartion(const DoubleVector &x0, DoubleVector &x, double epsilon)
 {
-    unsigned int n = x0.size();
+    unsigned int n = x0.length();
     x = x0;
     DoubleVector x1 = x0;
     DoubleVector dx(n);
@@ -20,12 +20,12 @@ void NonLinearEquation::calculateSimpleIdetartion(const DoubleVector &x0, Double
 
 void NonLinearEquation::calculateNewtonMethod(const DoubleVector &x0, DoubleVector &rx, double diffEspilon, double epsilon)
 {
-    unsigned int n = x0.size();
+    unsigned int n = x0.length();
 
     rx = x0;
     DoubleMatrix W(n, n);
     DoubleMatrix WI(n,n);
-    DoubleVector e(x0.size());
+    DoubleVector e(x0.length());
 
     do {
 
@@ -63,7 +63,7 @@ void NonLinearEquation::calculateNewtonMethod(const DoubleVector &x0, DoubleVect
 
 void NonLinearEquation::calculateNewtonMethodMod(const DoubleVector &x0, DoubleVector &rx, double diffEspilon, double epsilon)
 {
-    unsigned int n = x0.size();
+    unsigned int n = x0.length();
     rx = x0;
 
     DoubleMatrix W(n, n);
@@ -109,7 +109,7 @@ void NonLinearEquation::calculateNewtonMethodMod(const DoubleVector &x0, DoubleV
 
 void NonLinearEquation::calculateNewtonMethodMod2(const DoubleVector &x0, DoubleVector &rx, double diffEspilon, double epsilon)
 {
-    unsigned int n = x0.size();
+    unsigned int n = x0.length();
     rx = x0;
 
     DoubleMatrix W(2, 2);
@@ -140,7 +140,7 @@ void NonLinearEquation::calculateNewtonMethodMod2(const DoubleVector &x0, Double
 
         V.inverse();
 
-        double alpha = 1.0;//minimize(W, V, rx, n); printf("alpha %.10f\n", alpha);
+        double alpha = minimize(W, V, rx, n);// printf("alpha %.10f\n", alpha);
 
         //DoubleVector x = rx;
 
@@ -167,14 +167,17 @@ double NonLinearEquation::minimize(const DoubleMatrix &W, const DoubleMatrix &V,
             double SUM = 0.0;
 
             DoubleVector x;
+            double s;
 
             x = rx;
-            x[0] = rx[0] - alpha*(W[0][0]*p.fx(rx,0) + W[0][1]*p.fx(rx,1));
-            SUM += p.fx(x, 0) / (W[0][0]*W[0][0] + W[0][1]*W[0][1]);
+            s = V(0,0)*p.fx(rx,0)+V(0,1)*p.fx(rx,1);
+            x[0] = rx[0] - alpha*s;
+            SUM += (p.fx(x, 0)*p.fx(x, 0)) / (W[0][0]*W[0][0] + W[0][1]*W[0][1]);
 
             x = rx;
-            x[1] = rx[1] - alpha*(W[1][0]*p.fx(rx,0) + W[1][1]*p.fx(rx,1));
-            SUM += p.fx(x, 1) / (W[1][0]*W[1][0] + W[1][1]*W[1][1]);
+            s = V(1,0)*p.fx(rx,0)+V(1,1)*p.fx(rx,1);
+            x[1] = rx[1] - alpha*(V[1][0]*p.fx(rx,0) + V[1][1]*p.fx(rx,1));
+            SUM += (p.fx(x, 1)*p.fx(x, 1)) / (W[1][0]*W[1][0] + W[1][1]*W[1][1]);
 
 //            for (unsigned int row=0; row<n; row++)
 //            {
@@ -207,7 +210,7 @@ double NonLinearEquation::minimize(const DoubleMatrix &W, const DoubleMatrix &V,
 
     double alpha0 = 1.0;
     double min_step = 0.1;
-    double min_epsilon = 0.0001;
+    double min_epsilon = 0.02;
     double a,b,alpha;
     stranghLineSearch(alpha0, min_step, a, b, &fm);
     goldenSectionSearch(a, b, alpha, &fm, min_epsilon);

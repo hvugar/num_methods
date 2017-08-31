@@ -9,7 +9,7 @@ void GaussianElimination1(const DoubleMatrix& m, const DoubleVector& b, DoubleVe
 
     const unsigned int ui = (unsigned)0-1;
 
-    unsigned int n = x.size();
+    unsigned int n = x.length();
 
     for (unsigned k=0; k<n; k++)
     {

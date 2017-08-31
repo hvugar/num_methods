@@ -8,8 +8,8 @@ double IProblem1::fx(const DoubleVector &y) const
     DoubleVector k,z,e;
     getParameters(k,z,e,y);
 
-    unsigned int N1 = vfi.size();
-    unsigned int N2 = vtt.size();
+    unsigned int N1 = vfi.length();
+    unsigned int N2 = vtt.length();
     double SUM = 0.0;
     for (unsigned int n1=0; n1<N1; n1++)
     {
@@ -84,10 +84,10 @@ void IProblem1::gradient(const DoubleVector &y, DoubleVector &g)
     DoubleVector k,z,e;
     getParameters(k,z,e,y);
 
-    for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;
+    for (unsigned int i=0; i<g.length(); i++) g[i] = 0.0;
 
-    unsigned int N1 = vfi.size();
-    unsigned int N2 = vtt.size();
+    unsigned int N1 = vfi.length();
+    unsigned int N2 = vtt.length();
 
     for (unsigned int n1=0; n1<N1; n1++)
     {
@@ -196,7 +196,7 @@ void IProblem1::gradient(const DoubleVector &y, DoubleVector &g)
         }
     }
 
-    for (unsigned int i=0; i<g.size(); i++) g[i] *= (1.0/N1)*(1.0/N2);
+    for (unsigned int i=0; i<g.length(); i++) g[i] *= (1.0/N1)*(1.0/N2);
 
     unsigned int i = 0;
     if (optimizeK)
@@ -824,7 +824,7 @@ void IProblem1::print(unsigned int i, const DoubleVector &y, const DoubleVector 
 
     IPrinter::printSeperatorLine();
 
-    DoubleVector n(y.size());
+    DoubleVector n(y.length());
     IGradient::Gradient(pm, 0.001, y, n);
 
     DoubleVector ak = g.mid(0*L,1*L-1);

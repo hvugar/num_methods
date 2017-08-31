@@ -8,7 +8,7 @@ void HeatControl2D::main(int argc, char *argv[])
     HeatControl2D hc(100, 10, 10);
 
     DoubleVector f((hc.M+1)*(hc.N2+1)*(hc.N1+1));
-    for (unsigned int i=0; i<f.size(); i++)
+    for (unsigned int i=0; i<f.length(); i++)
     {
         f[i] = 2.0;//2.0*t - 4.0;
     }

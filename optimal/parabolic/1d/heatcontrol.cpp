@@ -6,7 +6,7 @@ void HeatControl::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     HeatControl hc;
 
     DoubleVector f0((hc.M+1)*(hc.N+1));
-    for (unsigned int i=0; i<f0.size(); i++)
+    for (unsigned int i=0; i<f0.length(); i++)
     {
         f0[i] = sin(i*hc.hx);
     }

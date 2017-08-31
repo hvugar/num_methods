@@ -147,7 +147,7 @@ void BorderParabolic2D::calculate(DoubleMatrix &u, double h1, double h2, double 
                 dd1[0]    -= x1_a * uh[j][0];
                 dd1[N1-2] -= x1_a * uh[j][N1];
 
-                tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.size());
+                tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.length());
 
                 for (unsigned int i=1; i<N1; i++)
                 {
@@ -180,7 +180,7 @@ void BorderParabolic2D::calculate(DoubleMatrix &u, double h1, double h2, double 
                 dd2[0]    -= x2_a * u[0][i];
                 dd2[N2-2] -= x2_a * u[N2][i];
 
-                tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.size());
+                tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
 
                 for (unsigned int j=1; j<N2; j++)
                 {

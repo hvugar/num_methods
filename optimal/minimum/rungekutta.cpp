@@ -69,7 +69,7 @@ void RungeKutta::calculate(R2Function *f, double x0, double y0, DoubleVector &y,
     double k3 = 0.0;
     double k4 = 0.0;
 
-    unsigned int n = y.size();
+    unsigned int n = y.length();
     if (dx > 0.0) y[0]   = y0;
     if (dx < 0.0) y[n-1] = y0;
 
@@ -113,7 +113,7 @@ void RungeKutta::calculate(R2FunctionX f, double x0, double y0, DoubleVector &y,
     double k3 = 0.0;
     double k4 = 0.0;
 
-    unsigned int n = y.size();
+    unsigned int n = y.length();
     if (dx > 0.0) y[0]   = y0;
     if (dx < 0.0) y[n-1] = y0;
 

@@ -89,7 +89,7 @@ void LinearBoundaryValueProblemODE::calculateX(DoubleVector &x, double h, unsign
     da[0]   = 0.0;
     dc[N-2] = 0.0;
 
-    tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size());
+    tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.length());
 
     x[0] = boundary(Left);
     x[N] = boundary(Right);

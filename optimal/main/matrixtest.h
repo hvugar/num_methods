@@ -1,6 +1,7 @@
 #ifndef MATRIXTEST_H
 #define MATRIXTEST_H
 
+#include <vector2d.h>
 #include <matrix2d.h>
 #include <printer.h>
 

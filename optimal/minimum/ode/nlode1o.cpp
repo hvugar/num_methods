@@ -235,7 +235,7 @@ void NonLinearODE1stOrder::calculateRK2(double x0, const DoubleVector &y0, std::
     unsigned int maxN = dim.maxN();
     unsigned int N = dim.sizeN();
     double h = dim.step();
-    unsigned int n = y0.size();
+    unsigned int n = y0.length();
 
     ry.clear();
     ry.resize(n);
@@ -309,7 +309,7 @@ void NonLinearODE1stOrder::calculateRK4(double x0, const DoubleVector &y0, std::
     unsigned int maxN = dim.maxN();
     unsigned int N = dim.sizeN();
     double h = dim.step();
-    unsigned int n = y0.size();
+    unsigned int n = y0.length();
 
     ry.clear();
     ry.resize(n);
@@ -406,7 +406,7 @@ void NonLinearODE1stOrder::calculateEuler(double x0, const DoubleVector &y0, std
     unsigned int maxN = dim.maxN();
     unsigned int N = dim.sizeN();
     double h = dim.step();
-    unsigned int n = y0.size();
+    unsigned int n = y0.length();
 
     ry.clear();
     ry.resize(n);
@@ -452,7 +452,7 @@ void NonLinearODE1stOrder::calculateEulerMod(double x0, const DoubleVector &y0, 
     unsigned int maxN = dim.maxN();
     unsigned int N = dim.sizeN();
     double h = dim.step();
-    unsigned int n = y0.size();
+    unsigned int n = y0.length();
 
     ry.clear();
     ry.resize(n);
@@ -519,7 +519,7 @@ void NonLinearODE1stOrder::calculateRK4(double x0, const DoubleVector &y0, Doubl
     unsigned int maxN = dim.maxN();
     unsigned int N = dim.sizeN();
     double h = dim.step();
-    unsigned int n = y0.size();
+    unsigned int n = y0.length();
 
     ry.clear();
     ry.resize(n, N+1);

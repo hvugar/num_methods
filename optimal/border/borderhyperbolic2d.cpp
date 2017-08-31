@@ -183,7 +183,7 @@ void BorderHyperbolic2D::calculate(DoubleMatrix &u, double h1, double h2, double
                     dd[0]    -= x1_a * u[j][0];
                     dd[N1-2] -= x1_a * u[j][N1];
 
-                    tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size());
+                    tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.length());
 
                     for (unsigned int i=1; i<N1; i++)
                     {
@@ -219,7 +219,7 @@ void BorderHyperbolic2D::calculate(DoubleMatrix &u, double h1, double h2, double
                     dd[0]    -= x2_a * u[0][i];
                     dd[N2-2] -= x2_a * u[N2][i];
 
-                    tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size());
+                    tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.length());
 
                     for (unsigned int j=1; j<N2; j++)
                     {

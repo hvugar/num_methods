@@ -88,7 +88,7 @@ void IHyperbolicEquation::calculateU(DoubleVector &u, double hx, double ht, unsi
             rd[0]   -= alpha1 * u[0];
             rd[N-2] -= alpha1 * u[N];
 
-            tomasAlgorithm(da.data(), db.data(), dc.data(), rd.data(), rx.data(), rx.size());
+            tomasAlgorithm(da.data(), db.data(), dc.data(), rd.data(), rx.data(), rx.length());
 
             for (unsigned int i=1; i<=N-1; i++)
             {
@@ -155,7 +155,7 @@ void IHyperbolicEquation::calculateU(DoubleMatrix &u, double hx, double ht, unsi
             rd[0]   -= alpha1 * u[j+1][0];
             rd[N-2] -= alpha1 * u[j+1][N];
 
-            tomasAlgorithm(da.data(), db.data(), dc.data(), rd.data(), rx.data(), rx.size());
+            tomasAlgorithm(da.data(), db.data(), dc.data(), rd.data(), rx.data(), rx.length());
 
             for (unsigned int i=1; i<=N-1; i++)
             {
@@ -223,7 +223,7 @@ void IBackwardHyperbolicEquation::calculateU(DoubleVector &p, double hx, double 
             rd[0]   -= alpha1 * p[0];
             rd[N-2] -= alpha1 * p[N];
 
-            tomasAlgorithm(da.data(), db.data(), dc.data(), rd.data(), rx.data(), rx.size());
+            tomasAlgorithm(da.data(), db.data(), dc.data(), rd.data(), rx.data(), rx.length());
 
             for (unsigned int i=1; i<=N-1; i++)
             {
@@ -293,7 +293,7 @@ void IBackwardHyperbolicEquation::calculateU(DoubleMatrix &p, double hx, double 
             rd[0]   -= alpha1 * p[j-1][0];
             rd[N-2] -= alpha1 * p[j-1][N];
 
-            tomasAlgorithm(da.data(), db.data(), dc.data(), rd.data(), rx.data(), rx.size());
+            tomasAlgorithm(da.data(), db.data(), dc.data(), rd.data(), rx.data(), rx.length());
 
             for (unsigned int i=1; i<=N-1; i++)
             {
@@ -379,7 +379,7 @@ void IHyperbolicEquation2D::calculateMVD(DoubleMatrix &u, double h1, double h2, 
                     dd1[0]    -= x1_a * u[j][0];
                     dd1[N1-2] -= x1_a * u[j][N1];
 
-                    tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.size());
+                    tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.length());
 
                     for (unsigned int i=1; i<N1; i++)
                     {
@@ -415,7 +415,7 @@ void IHyperbolicEquation2D::calculateMVD(DoubleMatrix &u, double h1, double h2, 
                     dd2[0]    -= x2_a * u[0][i];
                     dd2[N2-2] -= x2_a * u[N2][i];
 
-                    tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.size());
+                    tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
 
                     for (unsigned int j=1; j<N2; j++)
                     {
@@ -523,7 +523,7 @@ void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, do
                     dd1[0]    -= x1_a * u.at(k,j,0);
                     dd1[N1-2] -= x1_a * u.at(k,j,N1);
 
-                    tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.size());
+                    tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.length());
 
                     for (unsigned int i=1; i<N1; i++)
                     {
@@ -560,7 +560,7 @@ void IHyperbolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, do
                     dd2[0]    -= x2_a * u.at(k,0,i);
                     dd2[N2-2] -= x2_a * u.at(k,N2,i);
 
-                    tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.size());
+                    tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
 
                     for (unsigned int j=1; j<N2; j++)
                     {
@@ -653,7 +653,7 @@ void IHyperbolicEquation2D::calculateU1(DoubleCube &u, double h1, double h2, dou
                     dd1[0]    -= x1_a * u.at(m,j,0);
                     dd1[N1-2] -= x1_a * u.at(m,j,N1);
 
-                    tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.size());
+                    tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.length());
 
                     for (unsigned int i=1; i<N1; i++)
                     {
@@ -689,7 +689,7 @@ void IHyperbolicEquation2D::calculateU1(DoubleCube &u, double h1, double h2, dou
                     dd2[0]    -= x2_a * u.at(m,0,i);
                     dd2[N2-2] -= x2_a * u.at(m,N2,i);
 
-                    tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.size());
+                    tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
 
                     for (unsigned int j=1; j<N2; j++)
                     {
@@ -787,7 +787,7 @@ void IHyperbolicEquation2D::calculateU1(DoubleMatrix &u, double h1, double h2, d
                     dd1[0]    -= x1_a * u[j][0];
                     dd1[N1-2] -= x1_a * u[j][N1];
 
-                    tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.size());
+                    tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.length());
 
                     for (unsigned int i=1; i<N1; i++)
                     {
@@ -823,7 +823,7 @@ void IHyperbolicEquation2D::calculateU1(DoubleMatrix &u, double h1, double h2, d
                     dd2[0]    -= x2_a * u[0][i];
                     dd2[N2-2] -= x2_a * u[N2][i];
 
-                    tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.size());
+                    tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
 
                     for (unsigned int j=1; j<N2; j++)
                     {
@@ -928,7 +928,7 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleMatrix &u, double h1, doubl
                     dd1[0]    -= x1_a * u[j][0];
                     dd1[N1-2] -= x1_a * u[j][N1];
 
-                    tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.size());
+                    tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.length());
 
                     for (unsigned int i=1; i<N1; i++)
                     {
@@ -964,7 +964,7 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleMatrix &u, double h1, doubl
                     dd2[0]    -= x2_a * u[0][i];
                     dd2[N2-2] -= x2_a * u[N2][i];
 
-                    tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.size());
+                    tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
 
                     for (unsigned int j=1; j<N2; j++)
                     {
@@ -1073,7 +1073,7 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
                     dd1[0]    -= x1_a * p.at(k,j,0);
                     dd1[N1-2] -= x1_a * p.at(k,j,N1);
 
-                    tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.size());
+                    tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.length());
 
                     for (unsigned int i=1; i<N1; i++)
                     {
@@ -1110,7 +1110,7 @@ void IBackwardHyperbolicEquation2D::calculateU(DoubleCube &p, double h1, double 
                     dd2[0]    -= x2_a * p.at(k,0,i) ;
                     dd2[N2-2] -= x2_a * p.at(k,N2,i);
 
-                    tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.size());
+                    tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
 
                     for (unsigned int j=1; j<N2; j++)
                     {
@@ -1204,7 +1204,7 @@ void IBackwardHyperbolicEquation2D::calculateU1(DoubleCube &p, double h1, double
                     dd1[0]    -= x1_a * p.at(k,j,0);
                     dd1[N1-2] -= x1_a * p.at(k,j,N1);
 
-                    tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.size());
+                    tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.length());
 
                     for (unsigned int i=1; i<N1; i++)
                     {
@@ -1240,7 +1240,7 @@ void IBackwardHyperbolicEquation2D::calculateU1(DoubleCube &p, double h1, double
                     dd2[0]    -= x2_a * p.at(k,0,i);
                     dd2[N2-2] -= x2_a * p.at(k,N2,i);
 
-                    tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.size());
+                    tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
 
                     for (unsigned int j=1; j<N2; j++)
                     {

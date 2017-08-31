@@ -41,11 +41,11 @@ void HeatControl2Delta::main()
     g2.setNormalize(true);
     g2.calculate(x);
 
-    DoubleVector gr1(x.size());
+    DoubleVector gr1(x.length());
     IGradient::Gradient(&hc, 0.00001, x, gr1);
     gr1.L2Normalize();
 
-    DoubleVector gr2(x.size());
+    DoubleVector gr2(x.length());
     hc.gradient(x, gr2);
     gr2.L2Normalize();
 
@@ -139,7 +139,7 @@ void HeatControl2Delta::gradient(const DoubleVector& x, DoubleVector& g)
     DoubleCube psi;
     IBackwardParabolicEquation2D::calculateMVD(psi, h1, h2, ht, N1, N2, M, a1, a2);
 
-    for (unsigned int i=0; i<g.size(); i++) g[i] = 0.0;
+    for (unsigned int i=0; i<g.length(); i++) g[i] = 0.0;
 
     for (unsigned int k=M; k!=(unsigned int)0-1; k--)
     {

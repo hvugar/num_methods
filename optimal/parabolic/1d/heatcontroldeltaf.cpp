@@ -9,7 +9,7 @@ void HeatControlDeltaF::main(int argc, char ** argv)
     HeatControlDeltaF hc;
 
     DoubleVector f0((hc.M+1)*hc.L);
-    for (unsigned int i=0; i<f0.size(); i++)
+    for (unsigned int i=0; i<f0.length(); i++)
     {
         //int j = i/(hc.N+1);
         //f0[i] = 2.0*j*hc.ht - 2.0;

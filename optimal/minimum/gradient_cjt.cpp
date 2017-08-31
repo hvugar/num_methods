@@ -24,7 +24,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
     double f1 = 0.0;
     double f2 = 0.0;
 
-    unsigned int n = x.size();
+    unsigned int n = x.length();
     DoubleVector g(n);
     DoubleVector s(n);
 
@@ -192,7 +192,7 @@ double ConjugateGradient::fx(double alpha) const
 {
     const DoubleVector &x = *mx;
     const DoubleVector &s = *ms;
-    unsigned int n = x.size();
+    unsigned int n = x.length();
 
     DoubleVector cx = x;
     for (unsigned int i=0; i<n; i++)

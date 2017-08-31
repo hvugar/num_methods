@@ -2,89 +2,83 @@
 #define VECTOR2D_H
 
 #include "global.h"
-#include <stdio.h>
+#include <iostream>
 
 class DoubleMatrix;
 
 class MINIMUMSHARED_EXPORT DoubleVector
 {
 public:
-    explicit DoubleVector(unsigned int size = 0, double value = 0.0);
-    explicit DoubleVector(const double* data, unsigned int size);
+    explicit DoubleVector(unsigned int length = 0, double value = 0.0);
+    explicit DoubleVector(const double* data, unsigned int length);
     DoubleVector(const DoubleVector &vector);
     DoubleVector(const DoubleMatrix &matrix);
     virtual ~DoubleVector();
 
     void clear();
-    void resize(unsigned int size, double value = 0.0);
+    void resize(unsigned int length, double value = 0.0);
     bool empty() const;
     double& at (unsigned int n);
     const double& at (unsigned int n) const;
-    unsigned int size() const;
-    double* data() NOEXCEPT;
+    unsigned int length() const;
 
-    void randomData();
+    /********************************************************************
+     *                      NORM
+     *******************************************************************/
 
-    double L2Norm() const;
     double L1Norm() const;
+    double L2Norm() const;
+    double LpNorm(unsigned int p) const;
     double LInfNorm() const;
     double EuclideanNorm() const;
-    double EuclideanDistance(const DoubleVector&) const;
-    void L2Normalize();
+
     void L1Normalize();
+    void L2Normalize();
     void EuclideanNormalize();
+
+    /********************************************************************
+     *                      NORM
+     *******************************************************************/
+
     double min() const;
     double max() const;
     DoubleVector mid(unsigned int s, unsigned int e) const;
 
-    ///////
-    void assign (unsigned int n, const double& value);
-    double& back();
-    const double& back() const;
-    double& begin();
-    const double& begin() const;
-    unsigned int capacity() const;
-    double& cbegin() const NOEXCEPT;
-    double& cend() const NOEXCEPT;
+    double EuclideanDistance(const DoubleVector&) const;
+
+    double* data() NOEXCEPT;
     const double* data() const NOEXCEPT;
-    double& end();
-    const double& end() const;
-    double& erase (unsigned int position);
-    double& erase (unsigned int first, unsigned int last);
-    double& front();
-    const double& front() const;
-    double& insert (unsigned int position, const double& val);
-    void insert (unsigned int position, unsigned int n, const double& val);
-    void insert (unsigned int position, unsigned int first, unsigned int last);
-    unsigned int max_size() const;
 
-    void swap(DoubleVector& x);
-
-    void print(unsigned int cols, char* label = NULL, unsigned int start=0, unsigned int end=0, FILE* file=stdout);
-    void print();
+    /********************************************************************
+     *                      OPERATORS
+     *******************************************************************/
 
     double& operator [](unsigned int n);
     double operator [](unsigned int n) const;
 
+    DoubleVector& operator =(const DoubleVector& vector);
+    DoubleVector& operator +=(const DoubleVector& vector);
+    DoubleVector& operator -=(const DoubleVector& vector);
+    DoubleVector& operator *=(const DoubleVector& vector);
+    DoubleVector& operator *=(double scalar);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    friend MINIMUMSHARED_EXPORT DoubleVector operator +(DoubleVector v1, const DoubleVector& v2);
+    friend MINIMUMSHARED_EXPORT DoubleVector operator -(DoubleVector v1, const DoubleVector& v2);
+    friend MINIMUMSHARED_EXPORT DoubleVector operator *(DoubleVector v1, const DoubleVector& v2);
+    friend MINIMUMSHARED_EXPORT DoubleVector operator *(double scalar, DoubleVector v);
+    friend MINIMUMSHARED_EXPORT DoubleVector operator *(DoubleVector v, double scalar);
+
+    friend MINIMUMSHARED_EXPORT bool operator ==(const DoubleVector& v1, const DoubleVector& v2);
+    friend MINIMUMSHARED_EXPORT bool operator !=(const DoubleVector& v1, const DoubleVector& v2);
+
     DoubleVector& operator <<(double value);
-
-    DoubleVector& operator =(const DoubleVector& x);
-    DoubleVector& operator +(const DoubleVector &other);
-    //DoubleVector& operator -(const DoubleVector &other);
-
-    friend MINIMUMSHARED_EXPORT DoubleVector operator *(double scalar, const DoubleVector &);
-    friend MINIMUMSHARED_EXPORT DoubleVector operator *(const DoubleVector &, double scalar);
-//    friend MINIMUMSHARED_EXPORT DoubleVector operator +(const DoubleVector&, const DoubleVector &);
-//    friend MINIMUMSHARED_EXPORT DoubleVector operator -(const DoubleVector&, const DoubleVector &);
-//    friend MINIMUMSHARED_EXPORT DoubleVector operator *(const DoubleVector&, const DoubleVector &);
-//    friend MINIMUMSHARED_EXPORT DoubleVector operator *(double, const DoubleVector &);
-
-    friend MINIMUMSHARED_EXPORT bool operator ==(const DoubleVector& vector1, const DoubleVector& vector2);
-    friend MINIMUMSHARED_EXPORT bool operator !=(const DoubleVector& vector1, const DoubleVector& vector2);
+    //friend MINIMUMSHARED_EXPORT std::ostream& operator <<(std::ostream& os, const DoubleVector& v);
 
     friend class DoubleMatrix;
 private:
-    unsigned int mSize;
+    unsigned int mLength;
     double *mData;
 };
 

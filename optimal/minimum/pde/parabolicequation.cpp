@@ -70,7 +70,7 @@ void IParabolicEquation::calculateU(DoubleVector &u, double hx, double ht, unsig
             dd[0]   -= alpha * u[0];
             dd[N-2] -= alpha * u[N];
 
-            tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size());
+            tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.length());
 
             for (unsigned int i=1; i<=N-1; i++)
             {
@@ -129,7 +129,7 @@ void IParabolicEquation::calculateU(DoubleMatrix &u, double hx, double ht, unsig
             dd[0]   -= alpha * u[j][0];
             dd[N-2] -= alpha * u[j][N];
 
-            tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size());
+            tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.length());
 
             for (unsigned int i=1; i<=N-1; i++)
             {
@@ -187,7 +187,7 @@ void IParabolicEquation::calculateU1(DoubleMatrix &u, double hx, double ht, unsi
             dd[0]   -= alpha * u.at(j,0);
             dd[N-2] -= alpha * u.at(j,N);
 
-            tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size());
+            tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.length());
 
             for (unsigned int i=1; i<=N-1; i++)
             {
@@ -245,7 +245,7 @@ void IParabolicEquation::calculateN(DoubleMatrix &u, double hx, double ht, unsig
             dd[0]   += alpha * hx * boundary(Left, j);
             dd[N-2] -= alpha * hx * boundary(Right, j);
 
-            tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size());
+            tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.length());
 
             for (unsigned int i=1; i<=N-1; i++)
             {
@@ -1297,7 +1297,7 @@ void IBackwardParabolicEquation::calculateU(DoubleMatrix &psi, double hx, double
             dd[0]   -= alpha * psi[j][0];
             dd[N-2] -= alpha * psi[j][N];
 
-            tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size());
+            tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.length());
 
             for (unsigned int i=1; i<=N-1; i++)
             {
@@ -1386,7 +1386,7 @@ void IParabolicEquation2D::calculateMVD(DoubleMatrix &u, double h1, double h2, d
                 dd1[0]    -= x1_a * uh[j][0];
                 dd1[N1-2] -= x1_a * uh[j][N1];
 
-                tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.size());
+                tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.length());
 
                 for (unsigned int i=1; i<N1; i++)
                 {
@@ -1420,7 +1420,7 @@ void IParabolicEquation2D::calculateMVD(DoubleMatrix &u, double h1, double h2, d
                 dd2[0]    -= x2_a * u[0][i];
                 dd2[N2-2] -= x2_a * u[N2][i];
 
-                tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.size());
+                tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
 
                 for (unsigned int j=1; j<N2; j++)
                 {
@@ -1514,7 +1514,7 @@ void IParabolicEquation2D::calculateMVD1(DoubleMatrix &u, double h1, double h2, 
                     dd1[0]    -= x1_a * uh[j][0];
                     dd1[N1-2] -= x1_a * uh[j][N1];
 
-                    tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.size());
+                    tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.length());
 
                     for (unsigned int i=1; i<N1; i++)
                     {
@@ -1549,7 +1549,7 @@ void IParabolicEquation2D::calculateMVD1(DoubleMatrix &u, double h1, double h2, 
                     dd2[0]    -= x2_a * u[0][i];
                     dd2[N2-2] -= x2_a * u[N2][i];
 
-                    tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.size());
+                    tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
 
                     for (unsigned int j=1; j<N2; j++)
                     {
@@ -1640,7 +1640,7 @@ void IParabolicEquation2D::calculateMFS(DoubleMatrix &u, double h1, double h2, d
                 dd1[0]    -= x1_a * uh[j][0];
                 dd1[N1-2] -= x1_a * uh[j][N1];
 
-                tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.size());
+                tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.length());
 
                 for (unsigned int i=1; i<N1; i++)
                 {
@@ -1673,7 +1673,7 @@ void IParabolicEquation2D::calculateMFS(DoubleMatrix &u, double h1, double h2, d
                 dd2[0]    -= x2_a * u[0][i];
                 dd2[N2-2] -= x2_a * u[N2][i];
 
-                tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.size());
+                tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
 
                 for (unsigned int j=1; j<N2; j++)
                 {
@@ -1770,7 +1770,7 @@ void IParabolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, dou
                 dd1[0]    -= x1_a * u1[j][0];
                 dd1[N1-2] -= x1_a * u1[j][N1];
 
-                tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.size());
+                tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.length());
 
                 for (unsigned int i=1; i<N1; i++)
                 {
@@ -1804,7 +1804,7 @@ void IParabolicEquation2D::calculateMVD(DoubleCube &u, double h1, double h2, dou
                 dd2[0]    -= x2_a * u0[0][i];
                 dd2[N2-2] -= x2_a * u0[N2][i];
 
-                tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.size());
+                tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
 
                 for (unsigned int j=1; j<N2; j++)
                 {
@@ -1908,7 +1908,7 @@ void IBackwardParabolicEquation2D::calculateMVD(DoubleCube &psi, double h1, doub
                 dd1[0]    -= x1_a * psi1[j][0];
                 dd1[N1-2] -= x1_a * psi1[j][N1];
 
-                tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.size());
+                tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.length());
 
                 for (unsigned int i=1; i<N1; i++)
                 {
@@ -1941,7 +1941,7 @@ void IBackwardParabolicEquation2D::calculateMVD(DoubleCube &psi, double h1, doub
                 dd2[0]    -= x2_a * psi0[0][i];
                 dd2[N2-2] -= x2_a *psi0[N2][i];
 
-                tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.size());
+                tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
 
                 for (unsigned int j=1; j<N2; j++)
                 {
@@ -2088,7 +2088,7 @@ void IParabolicEquation::calculateN1(DoubleMatrix &u, double hx, double ht, unsi
             dc[N] = 0.0;
             dd[N] = u[j-1][N] + ht * f(N, j) + (a*a*ht)/(hx) * boundary(Right, j);
 
-            tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.size());
+            tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.length());
 
             for (unsigned int i=0; i<=N; i++)
             {

@@ -60,9 +60,9 @@ DoubleMatrix::DoubleMatrix(const DoubleVector &vector) : mRows(0), mCols(0), mDa
 {
     //puts("DoubleMatrix::DoubleMatrix(const DoubleVector &vector) : mRows(0), mCols(0), mData(NULL)");
 
-    if (vector.size() > 0)
+    if (vector.length() > 0)
     {
-        mRows = vector.size();
+        mRows = vector.length();
         mCols = 1;
         mData = (double**) malloc(sizeof(double*)*mRows);
         for (unsigned int i=0; i<mRows; i++)
@@ -201,7 +201,7 @@ DoubleVector DoubleMatrix::col(unsigned int c) const
 
 void DoubleMatrix::setColumn(unsigned int c, const DoubleVector &col)
 {
-    if (mRows == col.size() && c < mCols)
+    if (mRows == col.length() && c < mCols)
     {
         for (unsigned int r=0; r<mRows; r++) mData[r][c] = col.at(r);
     }
@@ -213,7 +213,7 @@ void DoubleMatrix::setColumn(unsigned int c, const DoubleVector &col)
 
 void DoubleMatrix::setRow(unsigned int r, const DoubleVector &row)
 {
-    if (mCols == row.size() && r < mRows)
+    if (mCols == row.length() && r < mRows)
     {
         for (unsigned int c=0; c<mCols; c++) mData[r][c] = row.at(c);
     }
@@ -237,7 +237,7 @@ double** DoubleMatrix::data()
 
 DoubleMatrix DoubleMatrix::DiagonalMatrix(const DoubleVector& v)
 {
-    unsigned int n = v.size();
+    unsigned int n = v.length();
     DoubleMatrix m(n, n, 0.0);
     for (unsigned int i=0; i<n; i++) m.mData[i][i] = v[i];
     return m;
@@ -544,10 +544,10 @@ DoubleMatrix& DoubleMatrix::operator =(const DoubleMatrix &m)
 
 DoubleMatrix& DoubleMatrix::operator =(const DoubleVector &v)
 {
-    if (v.size() > 0)
+    if (v.length() > 0)
     {
         clear();
-        mRows = v.size();
+        mRows = v.length();
         mCols = 1;
         mData = (double**) malloc(sizeof(double*)*mRows);
         for (unsigned int i=0; i<mRows; i++)
@@ -576,6 +576,73 @@ DoubleMatrix& DoubleMatrix::operator +=(const DoubleMatrix &m)
     return *this;
 }
 
+DoubleMatrix& DoubleMatrix::operator -=(const DoubleMatrix &m)
+{
+    if (!dimEquals(m))
+    {
+        throw std::out_of_range("dimension dont match.");
+    }
+
+    for (unsigned int rw=0; rw < mRows; rw++)
+    {
+        for (unsigned int cl=0; cl < mCols; cl++)
+        {
+            mData[rw][cl] -= m.mData[rw][cl];
+        }
+    }
+    return *this;
+}
+
+DoubleMatrix& DoubleMatrix::operator *=(const DoubleMatrix &m)
+{
+    if (mCols != m.mRows)
+    {
+        printf("DoubleMatrix& DoubleMatrix::operator *=(const DoubleMatrix &m) this:%d %d m:%d %d\n",
+               mRows, mCols, m.rows(), m.cols());
+        throw DoubleMatrixException(3);
+    }
+
+//    DoubleMatrix m;
+//    m.resize(m1.rows(), m2.cols());
+
+//    for (unsigned int i=0; i<m.rows(); i++)
+//    {
+//        for (unsigned int j=0; j<m.cols(); j++)
+//        {
+//            double sum = 0.0;
+//            for (unsigned int k=0; k<m1.cols(); k++) sum += m1.at(i,k)*m2.at(k,j);
+//            m.at(i,j) = sum;
+//        }
+//    }
+//    return m;
+
+//    for (unsigned int rw=0; rw < mRows; rw++)
+//    {
+//        for (unsigned int cl=0; cl < mCols; cl++)
+//        {
+//            mData[rw][cl] -= m.mData[rw][cl];
+//        }
+//    }
+    return *this;
+}
+
+DoubleMatrix& DoubleMatrix::operator *=(double scalar)
+{
+    for (unsigned int row=0; row<mRows; row++)
+    {
+        for (unsigned int col=0; col<mCols; col++)
+        {
+            mData[row][col] *= scalar;
+        }
+    }
+    return *this;
+}
+
+DoubleMatrix& DoubleMatrix::operator *=(const DoubleVector& v)
+{
+    return *this;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 DoubleMatrix operator +(DoubleMatrix m1, const DoubleMatrix& m2)
@@ -601,7 +668,7 @@ DoubleMatrix operator -(DoubleMatrix m1, const DoubleMatrix& m2)
 {
     if (!m1.dimEquals(m2))
     {
-        printf("DoubleMatrix operato r-(DoubleMatrix m1, const DoubleMatrix& m2) %d %d %d %d\n",
+        printf("DoubleMatrix operator -(DoubleMatrix m1, const DoubleMatrix& m2) %d %d %d %d\n",
                m1.rows(), m1.cols(), m2.rows(), m2.cols());
         throw DoubleMatrixException(1);
     }
@@ -640,25 +707,25 @@ DoubleMatrix operator *(const DoubleMatrix &m1, const DoubleMatrix &m2)
     return m;
 }
 
-DoubleMatrix operator *(double scalar, DoubleMatrix matrix)
+DoubleMatrix operator *(double scalar, DoubleMatrix m)
 {
-    unsigned int m_row = matrix.rows();
-    unsigned int m_col = matrix.cols();
+    unsigned int m_row = m.rows();
+    unsigned int m_col = m.cols();
 
     for (unsigned int row=0; row < m_row; row++)
     {
         for (unsigned int col=0; col < m_col; col++)
         {
-            matrix.mData[row][col] *= scalar;
+            m.mData[row][col] *= scalar;
         }
     }
 
-    return matrix;
+    return m;
 }
 
-DoubleMatrix operator *(DoubleMatrix matrix, double scalar)
+DoubleMatrix operator *(DoubleMatrix m, double scalar)
 {
-    return scalar*matrix;
+    return scalar*m;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
