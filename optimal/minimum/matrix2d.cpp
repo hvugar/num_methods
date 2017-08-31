@@ -25,7 +25,6 @@ const char* DoubleMatrixException::what() const NOEXCEPT
     return "";
 }
 
-
 DoubleMatrix::DoubleMatrix(unsigned int rows, unsigned int cols, double value) : mRows(0), mCols(0), mData(NULL)
 {
     if (rows > 0 && cols > 0)
@@ -162,16 +161,6 @@ void DoubleMatrix::resize(unsigned int rows, unsigned int cols, double value)
     }
 }
 
-double& DoubleMatrix::operator()(unsigned int row, unsigned int col)
-{
-    return mData[row][col];
-}
-
-const double& DoubleMatrix::operator()(unsigned int row, unsigned int col) const
-{
-    return mData[row][col];
-}
-
 double& DoubleMatrix::at(unsigned int row, unsigned int col)
 {
     if (row>=mRows)
@@ -196,16 +185,6 @@ const double& DoubleMatrix::at(unsigned int row, unsigned int col) const
         throw std::out_of_range("column index out of range");
     }
     return mData[row][col];
-}
-
-double* DoubleMatrix::operator [](unsigned int row) const
-{
-    return mData[row];
-}
-
-double* DoubleMatrix::operator [](unsigned int row)
-{
-    return mData[row];
 }
 
 DoubleVector DoubleMatrix::row(unsigned int r) const
@@ -244,12 +223,24 @@ void DoubleMatrix::setRow(unsigned int r, const DoubleVector &row)
     }
 }
 
-bool DoubleMatrix::zeroMatrix() const
+double** DoubleMatrix::data() const
 {
-    for (unsigned int row=0; row < mRows; row++)
-        for (unsigned int col=0; col < mCols; col++)
-            if (fabs(mData[row][col]) > DBL_EPSILON) return false;
-    return true;
+    return mData;
+}
+
+double** DoubleMatrix::data()
+{
+    return mData;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+DoubleMatrix DoubleMatrix::DiagonalMatrix(const DoubleVector& v)
+{
+    unsigned int n = v.size();
+    DoubleMatrix m(n, n, 0.0);
+    for (unsigned int i=0; i<n; i++) m.mData[i][i] = v[i];
+    return m;
 }
 
 DoubleMatrix DoubleMatrix::IdentityMatrix(unsigned int n)
@@ -259,12 +250,10 @@ DoubleMatrix DoubleMatrix::IdentityMatrix(unsigned int n)
     return m;
 }
 
-DoubleMatrix DoubleMatrix::DiagonalMatrix(const DoubleVector& v)
+DoubleMatrix DoubleMatrix::ZeroMatrix(unsigned int rows, unsigned int cols)
 {
-    unsigned int n = v.size();
-    DoubleMatrix m(n, n, 0.0);
-    for (unsigned int i=0; i<n; i++) m.mData[i][i] = v[i];
-    return m;
+    DoubleMatrix matrix(rows, cols, 0.0);
+    return matrix;
 }
 
 DoubleMatrix DoubleMatrix::HilbertMatrix(unsigned int rows, unsigned int cols)
@@ -276,11 +265,47 @@ DoubleMatrix DoubleMatrix::HilbertMatrix(unsigned int rows, unsigned int cols)
     return matrix;
 }
 
-DoubleMatrix DoubleMatrix::ZeroMatrix(unsigned int rows, unsigned int cols)
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+bool DoubleMatrix::dioqonalMatrix() const
 {
-    DoubleMatrix matrix(rows, cols, 0.0);
-    return matrix;
+    for (unsigned int row=0; row < mRows; row++)
+    {
+        for (unsigned int col=0; col < mCols; col++)
+        {
+            if (row != col && fabs(mData[row][col]) > DBL_EPSILON) return false;
+        }
+    }
+    return true;
 }
+
+bool DoubleMatrix::identityMatrix() const
+{
+    for (unsigned int row=0; row < mRows; row++)
+    {
+        for (unsigned int col=0; col < mCols; col++)
+        {
+            if (row != col && fabs(mData[row][col]) > DBL_EPSILON) return false;
+            if (row == col && fabs(mData[row][col]) != 1.0) return false;
+        }
+    }
+    return true;
+}
+
+bool DoubleMatrix::zeroMatrix() const
+{
+    for (unsigned int row=0; row < mRows; row++)
+        for (unsigned int col=0; col < mCols; col++)
+            if (fabs(mData[row][col]) > DBL_EPSILON) return false;
+    return true;
+}
+
+bool DoubleMatrix::squareMatrix() const
+{
+    return mRows == mCols;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
 
 bool DoubleMatrix::dimEquals(const DoubleMatrix &matrix) const
 {
@@ -312,28 +337,28 @@ bool DoubleMatrix::equals(const DoubleMatrix &matrix) const
 
 double DoubleMatrix::min() const
 {
-    double _min = DBL_MAX;
-    for (unsigned int i=0; i<mRows; i++)
+    double minimum = DBL_MAX;
+    for (unsigned int row=0; row<mRows; row++)
     {
-        for (unsigned int j=0; j<mCols; j++)
+        for (unsigned int col=0; col<mCols; col++)
         {
-            if (mData[i][j] < _min) _min = mData[i][j];
+            if (mData[row][col] < minimum) minimum = mData[row][col];
         }
     }
-    return _min;
+    return minimum;
 }
 
 double DoubleMatrix::max() const
 {
-    double _max = DBL_MIN;
-    for (unsigned int i=0; i<mRows; i++)
+    double maximum = DBL_MIN;
+    for (unsigned int row=0; row<mRows; row++)
     {
-        for (unsigned int j=0; j<mCols; j++)
+        for (unsigned int col=0; col<mCols; col++)
         {
-            if (mData[i][j] > _max) _max = mData[i][j];
+            if (mData[row][col] > maximum) maximum = mData[row][col];
         }
     }
-    return _max;
+    return maximum;
 }
 
 double DoubleMatrix::determinant2() const
@@ -470,7 +495,31 @@ DoubleMatrix DoubleMatrix::minor(unsigned int row, unsigned int col) const
     return m;
 }
 
-DoubleMatrix& DoubleMatrix::operator= (const DoubleMatrix &m)
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+double* DoubleMatrix::operator [](unsigned int row) const
+{
+    return mData[row];
+}
+
+double* DoubleMatrix::operator [](unsigned int row)
+{
+    return mData[row];
+}
+
+double& DoubleMatrix::operator()(unsigned int row, unsigned int col)
+{
+    return mData[row][col];
+}
+
+const double& DoubleMatrix::operator()(unsigned int row, unsigned int col) const
+{
+    return mData[row][col];
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+DoubleMatrix& DoubleMatrix::operator =(const DoubleMatrix &m)
 {
     // the matrix object holds reusable storage, such as a heap-allocated buffer mData
 
@@ -493,7 +542,7 @@ DoubleMatrix& DoubleMatrix::operator= (const DoubleMatrix &m)
     return *this;
 }
 
-DoubleMatrix& DoubleMatrix::operator= (const DoubleVector &v)
+DoubleMatrix& DoubleMatrix::operator =(const DoubleVector &v)
 {
     if (v.size() > 0)
     {
@@ -527,11 +576,14 @@ DoubleMatrix& DoubleMatrix::operator +=(const DoubleMatrix &m)
     return *this;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////
+
 DoubleMatrix operator +(DoubleMatrix m1, const DoubleMatrix& m2)
 {
     if (!m1.dimEquals(m2))
     {
-        printf("DoubleMatrix operator+(const DoubleMatrix& m1, const DoubleMatrix& m2) %d %d %d %d\n", m1.rows(), m1.cols(), m2.rows(), m2.cols());
+        printf("DoubleMatrix operator +(const DoubleMatrix& m1, const DoubleMatrix& m2) %d %d %d %d\n",
+               m1.rows(), m1.cols(), m2.rows(), m2.cols());
         throw DoubleMatrixException(1);
     }
 
@@ -549,7 +601,8 @@ DoubleMatrix operator -(DoubleMatrix m1, const DoubleMatrix& m2)
 {
     if (!m1.dimEquals(m2))
     {
-        printf("DoubleMatrix operator+(const DoubleMatrix& m1, const DoubleMatrix& m2) %d %d %d %d\n", m1.rows(), m1.cols(), m2.rows(), m2.cols());
+        printf("DoubleMatrix operato r-(DoubleMatrix m1, const DoubleMatrix& m2) %d %d %d %d\n",
+               m1.rows(), m1.cols(), m2.rows(), m2.cols());
         throw DoubleMatrixException(1);
     }
 
@@ -563,11 +616,12 @@ DoubleMatrix operator -(DoubleMatrix m1, const DoubleMatrix& m2)
     return m1;
 }
 
-DoubleMatrix operator*(const DoubleMatrix &m1, const DoubleMatrix &m2)
+DoubleMatrix operator *(const DoubleMatrix &m1, const DoubleMatrix &m2)
 {
     if (m1.cols() != m2.rows())
     {
-        printf("DoubleMatrix& DoubleMatrix::operator *(const DoubleMatrix &matrix) %d %d %d %d\n", m1.rows(), m1.cols(), m2.rows(), m2.cols());
+        printf("DoubleMatrix& DoubleMatrix::operator *(const DoubleMatrix &matrix) %d %d %d %d\n",
+               m1.rows(), m1.cols(), m2.rows(), m2.cols());
         throw DoubleMatrixException(3);
     }
 
@@ -586,7 +640,7 @@ DoubleMatrix operator*(const DoubleMatrix &m1, const DoubleMatrix &m2)
     return m;
 }
 
-DoubleMatrix operator*(double scalar, DoubleMatrix matrix)
+DoubleMatrix operator *(double scalar, DoubleMatrix matrix)
 {
     unsigned int m_row = matrix.rows();
     unsigned int m_col = matrix.cols();
@@ -602,22 +656,12 @@ DoubleMatrix operator*(double scalar, DoubleMatrix matrix)
     return matrix;
 }
 
-DoubleMatrix operator*(DoubleMatrix matrix, double scalar)
+DoubleMatrix operator *(DoubleMatrix matrix, double scalar)
 {
     return scalar*matrix;
 }
 
-void DoubleMatrix::print()
-{
-    for (unsigned int i=0; i<mRows; i++)
-    {
-        for (unsigned int j=0; j<mCols; j++)
-        {
-            printf("%10.6f ", mData[i][j]);
-        }
-        puts("");
-    }
-}
+///////////////////////////////////////////////////////////////////////////////////////////////
 
 bool operator ==(const DoubleMatrix &matrix1, const DoubleMatrix& matrix2)
 {
@@ -638,26 +682,7 @@ bool operator !=(const DoubleMatrix &matrix1, const DoubleMatrix& matrix2)
     return !(matrix1==matrix2);
 }
 
-void DoubleMatrix::randomData()
-{
-    for (unsigned int i=0; i<mRows; i++)
-    {
-        for (unsigned int j=0; j<mCols; j++)
-        {
-            mData[i][j] = (rand() % 10000) * 0.001;
-        }
-    }
-}
-
-double** DoubleMatrix::data() const
-{
-    return mData;
-}
-
-double** DoubleMatrix::data()
-{
-    return mData;
-}
+///////////////////////////////////////////////////////////////////////////////////////////////
 
 void DoubleMatrix::switchRows(unsigned int row1, unsigned int row2)
 {
@@ -670,9 +695,4 @@ void DoubleMatrix::switchRows(unsigned int row1, unsigned int row2)
 
 void DoubleMatrix::switchCols(unsigned int col1 UNUSED_PARAM, unsigned int col2 UNUSED_PARAM)
 {
-}
-
-bool DoubleMatrix::isIdentityMatrix() const
-{
-    return false;
 }

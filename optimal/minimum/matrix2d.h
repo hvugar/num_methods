@@ -22,10 +22,10 @@ private:
 class MINIMUMSHARED_EXPORT DoubleMatrix
 {
 public:
-    static DoubleMatrix IdentityMatrix(unsigned int n);
     static DoubleMatrix DiagonalMatrix(const DoubleVector& vector);
-    static DoubleMatrix HilbertMatrix(unsigned int rows, unsigned int cols);
+    static DoubleMatrix IdentityMatrix(unsigned int n);
     static DoubleMatrix ZeroMatrix(unsigned int rows, unsigned int cols);
+    static DoubleMatrix HilbertMatrix(unsigned int rows, unsigned int cols);
 
     explicit DoubleMatrix(unsigned int rows=0, unsigned int cols=0, double value=0.0);
     DoubleMatrix(const DoubleMatrix &matrix);
@@ -42,16 +42,16 @@ public:
     double& at(unsigned int row, unsigned int col);
     const double& at(unsigned int row, unsigned int col) const;
 
-    double* operator [](unsigned int row) const;
-    double* operator [](unsigned int row);
-
     DoubleVector row(unsigned int r) const;
     DoubleVector col(unsigned int c) const;
 
     void setColumn(unsigned int c, const DoubleVector& col);
     void setRow(unsigned int r, const DoubleVector& row);
 
+    bool dioqonalMatrix() const;
+    bool identityMatrix() const;
     bool zeroMatrix() const;
+    bool squareMatrix() const;
 
     /*************************************************************************************
      *                        Basic matrix operations
@@ -79,28 +79,6 @@ public:
     double det() const;
     DoubleVector eigenValues() const;
 
-
-
-    double& operator ()(unsigned int row, unsigned int col);
-    const double& operator ()(unsigned int row, unsigned int col) const;
-
-    DoubleMatrix& operator =(const DoubleMatrix& matrix);
-    DoubleMatrix& operator =(const DoubleVector& vector);
-    DoubleMatrix& operator +=(const DoubleMatrix& matrix);
-    DoubleMatrix& operator -=(const DoubleMatrix& matrix);
-    DoubleMatrix& operator *=(const DoubleMatrix& matrix);
-    DoubleMatrix& operator *=(double scalar);
-    DoubleMatrix& operator *=(const DoubleVector& vector);
-
-    //DoubleMatrix& operator +(const DoubleMatrix &m);
-    //DoubleMatrix& operator -(const DoubleMatrix &matrix);
-    //DoubleMatrix& operator *(const double scalar);
-    //DoubleMatrix& operator*(const DoubleVector &vector);
-    //DoubleMatrix& operator*(const DoubleMatrix &matrix);
-
-    void print();
-    void randomData();
-
     bool equals(const DoubleMatrix& matrix) const;
     bool dimEquals(const DoubleMatrix& matrix) const;
 
@@ -119,9 +97,19 @@ public:
     void switchRows(unsigned int row1, unsigned int row2);
     void switchCols(unsigned int col1, unsigned int col2);
 
-    bool isIdentityMatrix() const;
-    bool isDiagonalMatrix() const;
-    bool isSquareMatrix() const;
+    double* operator [](unsigned int row) const;
+    double* operator [](unsigned int row);
+
+    double& operator ()(unsigned int row, unsigned int col);
+    const double& operator ()(unsigned int row, unsigned int col) const;
+
+    DoubleMatrix& operator =(const DoubleMatrix& matrix);
+    DoubleMatrix& operator =(const DoubleVector& vector);
+    DoubleMatrix& operator +=(const DoubleMatrix& matrix);
+    DoubleMatrix& operator -=(const DoubleMatrix& matrix);
+    DoubleMatrix& operator *=(const DoubleMatrix& matrix);
+    DoubleMatrix& operator *=(double scalar);
+    DoubleMatrix& operator *=(const DoubleVector& vector);
 
     friend MINIMUMSHARED_EXPORT DoubleMatrix operator +(DoubleMatrix m1, const DoubleMatrix& m2);
     friend MINIMUMSHARED_EXPORT DoubleMatrix operator -(DoubleMatrix m1, const DoubleMatrix& m2);
