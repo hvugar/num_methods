@@ -14,6 +14,7 @@
 #include "problem1/loadedheatequation.h"
 
 #include "problem4/problem4ex1.h"
+#include "problem4/problem4ex2.h"
 
 //#include <../border/borderparabolicd.h>
 //#include <../border/borderparabolicn.h>
@@ -56,30 +57,22 @@
 #include "load_sys/lode1oex1.h"
 
 #include "matrixtest.h"
-
-class A
-{
-public:
-    A()
-    {
-        printf("A\n");
-    }
-};
+#include <utils/random.h>
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //MatrixTest::Main(argc, argv);
 
-    //srand(time(NULL));
+    srand(time(NULL));
 
     //NonLinearEquationEx1::Main(argc, argv);
 
     //Example1::Main(argc, argv);
     //SystemLinearODENonLocalContionsV::Main(argc, argv);
     //SystemLinearODENonLocalContionsM::Main(argc, argv);
-    //Problem4Ex1::Main(argc, argv);
+    Problem4Ex2::Main(argc, argv);
     //SystemLinearODENonLocalContionsV2::Main(argc, argv);
-    LinearODE1stOrderEx1::Main(argc, argv);
+    //LinearODE1stOrderEx1::Main(argc, argv);
 
     //NumIntegralExp1::Main(argc, argv);
 

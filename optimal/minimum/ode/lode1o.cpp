@@ -1,5 +1,7 @@
 #include "lode1o.h"
 #include "nlode1o.h"
+#include "../matrix2d.h"
+#include "../printer.h"
 #include <math.h>
 #include <cmethods.h>
 #include <float.h>
@@ -152,6 +154,17 @@ void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const Doub
     helper.cauchyProblem(nscs.back().time, x1, x, HelperB::RK4, HelperB::R2L);
 }
 
+void LinearODE1stOrder::highOderAccuracy(const std::vector<Condition> &cs, const DoubleVector &rs, std::vector<DoubleVector> &x, unsigned int k, Direction direction UNUSED_PARAM)
+{
+    switch (k)
+    {
+    case 2: highOder2Accuracy(cs, rs, x, direction); break;
+    case 4: highOder4Accuracy(cs, rs, x, direction); break;
+    case 6: highOder6Accuracy(cs, rs, x, direction); break;
+    default: break;
+    }
+}
+
 void LinearODE1stOrder::discretisation(const std::vector<Condition>& cs, double* b) const
 {
     double h = grid().dimension().step();
@@ -176,15 +189,7 @@ void LinearODE1stOrder::discretisation(const std::vector<Condition>& cs, double*
     }
 }
 
-double X(double t, int row)
-{
-    if (row==0) return 3.0*t+4.0;
-    if (row==1) return 4.0*t*t;
-    if (row==2) return t*t+t;
-    return NAN;
-}
-
-void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cnds, const DoubleVector & rs, std::vector<DoubleVector> &x)
+void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cnds, const DoubleVector & rs, std::vector<DoubleVector> &x, Direction direction UNUSED_PARAM)
 {
     unsigned int en = equationsNumber();
 
@@ -504,7 +509,7 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cnds, co
     }
 }
 
-void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cnds, const DoubleVector& rs, std::vector<DoubleVector> &x)
+void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cnds, const DoubleVector& rs, std::vector<DoubleVector> &x, Direction direction UNUSED_PARAM)
 {
     unsigned int en = equationsNumber();
 
@@ -833,20 +838,20 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cnds, co
             C[row] = 12.0*h*B((N-0)*h, N-0, row%en);
         }
 
-//        unsigned int row = 12;
-//        double tN4 = h*(N-4);
-//        double tN3 = h*(N-3);
-//        double tN2 = h*(N-2);
-//        double tN1 = h*(N-1);
-//        double tN0 = h*(N-0);
-//        printf("%.10f\n%.10f\n", C[row], M[row][0]*X(tN4,0)+M[row][1]*X(tN4,1)+M[row][2]*X(tN4,2)
-//                                     +M[row][3]*X(tN3,0)+M[row][4]*X(tN3,1)+M[row][5]*X(tN3,2)
-//                                     +M[row][6]*X(tN2,0)+M[row][7]*X(tN2,1)+M[row][8]*X(tN2,2)
-//                                     +M[row][9]*X(tN1,0)+M[row][10]*X(tN1,1)+M[row][11]*X(tN1,2)
-//                                     +M[row][12]*X(tN0,0)+M[row][13]*X(tN0,1)+M[row][14]*X(tN0,2));
+        //        unsigned int row = 12;
+        //        double tN4 = h*(N-4);
+        //        double tN3 = h*(N-3);
+        //        double tN2 = h*(N-2);
+        //        double tN1 = h*(N-1);
+        //        double tN0 = h*(N-0);
+        //        printf("%.10f\n%.10f\n", C[row], M[row][0]*X(tN4,0)+M[row][1]*X(tN4,1)+M[row][2]*X(tN4,2)
+        //                                     +M[row][3]*X(tN3,0)+M[row][4]*X(tN3,1)+M[row][5]*X(tN3,2)
+        //                                     +M[row][6]*X(tN2,0)+M[row][7]*X(tN2,1)+M[row][8]*X(tN2,2)
+        //                                     +M[row][9]*X(tN1,0)+M[row][10]*X(tN1,1)+M[row][11]*X(tN1,2)
+        //                                     +M[row][12]*X(tN0,0)+M[row][13]*X(tN0,1)+M[row][14]*X(tN0,2));
 
         LinearEquation::GaussianElimination(M, C, xT);
-//        IPrinter::print(xT, xT.size());
+        //        IPrinter::print(xT, xT.size());
 
         x.resize(en);
         for (unsigned int i=0; i<en; i++) x[i].resize(N+1);
@@ -912,7 +917,7 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cnds, co
     }
 }
 
-void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cnds, const DoubleVector& rs, std::vector<DoubleVector> &x)
+void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cnds, const DoubleVector& rs, std::vector<DoubleVector> &x, Direction direction UNUSED_PARAM)
 {
     unsigned int en = equationsNumber();
 
@@ -1334,24 +1339,24 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cnds, co
 
         //unsigned int row = 3;
 
-//        for (unsigned int row = 0; row < 7*en; row++)
-//        {
-//        double tN6 = h*(N-6);
-//        double tN5 = h*(N-5);
-//        double tN4 = h*(N-4);
-//        double tN3 = h*(N-3);
-//        double tN2 = h*(N-2);
-//        double tN1 = h*(N-1);
-//        double tN0 = h*(N-0);
-//        printf("%4d %.10f %.10f\n", row, C[row],
-//                                     +M[row][0]*X(tN6,0) +M[row][1]*X(tN6,1) +M[row][2]*X(tN6,2)
-//                                     +M[row][3]*X(tN5,0) +M[row][4]*X(tN5,1) +M[row][5]*X(tN5,2)
-//                                     +M[row][6]*X(tN4,0) +M[row][7]*X(tN4,1) +M[row][8]*X(tN4,2)
-//                                     +M[row][9]*X(tN3,0) +M[row][10]*X(tN3,1)+M[row][11]*X(tN3,2)
-//                                     +M[row][12]*X(tN2,0)+M[row][13]*X(tN2,1)+M[row][14]*X(tN2,2)
-//                                     +M[row][15]*X(tN1,0)+M[row][16]*X(tN1,1)+M[row][17]*X(tN1,2)
-//                                     +M[row][18]*X(tN0,0)+M[row][19]*X(tN0,1)+M[row][20]*X(tN0,2));
-//        }
+        //        for (unsigned int row = 0; row < 7*en; row++)
+        //        {
+        //        double tN6 = h*(N-6);
+        //        double tN5 = h*(N-5);
+        //        double tN4 = h*(N-4);
+        //        double tN3 = h*(N-3);
+        //        double tN2 = h*(N-2);
+        //        double tN1 = h*(N-1);
+        //        double tN0 = h*(N-0);
+        //        printf("%4d %.10f %.10f\n", row, C[row],
+        //                                     +M[row][0]*X(tN6,0) +M[row][1]*X(tN6,1) +M[row][2]*X(tN6,2)
+        //                                     +M[row][3]*X(tN5,0) +M[row][4]*X(tN5,1) +M[row][5]*X(tN5,2)
+        //                                     +M[row][6]*X(tN4,0) +M[row][7]*X(tN4,1) +M[row][8]*X(tN4,2)
+        //                                     +M[row][9]*X(tN3,0) +M[row][10]*X(tN3,1)+M[row][11]*X(tN3,2)
+        //                                     +M[row][12]*X(tN2,0)+M[row][13]*X(tN2,1)+M[row][14]*X(tN2,2)
+        //                                     +M[row][15]*X(tN1,0)+M[row][16]*X(tN1,1)+M[row][17]*X(tN1,2)
+        //                                     +M[row][18]*X(tN0,0)+M[row][19]*X(tN0,1)+M[row][20]*X(tN0,2));
+        //        }
         LinearEquation::GaussianElimination(M, C, xT);
         //IPrinter::print(xT, xT.size());
 
@@ -1424,3 +1429,4 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cnds, co
         xT.clear();
     }
 }
+

@@ -35,10 +35,6 @@ public:
     };
 };
 
-class MINIMUMSHARED_EXPORT ODE1stOrder {};
-
-class MINIMUMSHARED_EXPORT ODE2ndOrder {};
-
 class MINIMUMSHARED_EXPORT LinearODE : public OrdinaryDifferentialEquation {};
 
 class MINIMUMSHARED_EXPORT NonLinearODE : public OrdinaryDifferentialEquation {};
@@ -46,7 +42,7 @@ class MINIMUMSHARED_EXPORT NonLinearODE : public OrdinaryDifferentialEquation {}
 /**
  * @brief The Linear ODE 2nd order in canonical (normal) form y"(x) = q(x)y'(x) + p(x)*y(x) + r(x);
  */
-class MINIMUMSHARED_EXPORT LinearODE2ndOrder : public LinearODE, public ODE2ndOrder
+class MINIMUMSHARED_EXPORT LinearODE2ndOrder : public LinearODE
 {
 protected:
     virtual double q(double x, unsigned int i) const = 0;
@@ -57,7 +53,7 @@ protected:
 /**
  * @brief The NonLinear ODE1 2nd order in canonical (normal) form y"(x)=f(x,y(x),y'(x));
  */
-class MINIMUMSHARED_EXPORT NonLinearODE2ndOrder : public NonLinearODE, public ODE2ndOrder
+class MINIMUMSHARED_EXPORT NonLinearODE2ndOrder : public NonLinearODE
 {
 protected:
     virtual double f(double x, double y, double dy, unsigned int i) const = 0;

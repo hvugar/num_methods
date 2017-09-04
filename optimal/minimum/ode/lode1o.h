@@ -2,13 +2,11 @@
 #define LINEAR_ODE1ST_ORDER_H
 
 #include "diffequ.h"
-#include "../matrix2d.h"
-#include <printer.h>
 
 /**
  * @brief The Linear ODE 1st order in canonical (normal) form y'(x) = A(x)y(x) + B(x);
  */
-class MINIMUMSHARED_EXPORT LinearODE1stOrder : virtual public LinearODE, virtual public ODE1stOrder
+class MINIMUMSHARED_EXPORT LinearODE1stOrder : virtual public LinearODE
 {
 public:
     struct Condition
@@ -20,13 +18,14 @@ public:
     };
 
     void calculate(const std::vector<Condition> &nscs, const DoubleVector &bt, std::vector<DoubleVector> &x);
+    void highOderAccuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x, unsigned int k, Direction direction = L2R);
 
     /* high order accuracy */
 
-//private:
-    void highOder2Accuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x);
-    void highOder4Accuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x);
-    void highOder6Accuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x);
+private:
+    void highOder2Accuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x, Direction direction = L2R);
+    void highOder4Accuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x, Direction direction = L2R);
+    void highOder6Accuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x, Direction direction = L2R);
     void discretisation(const std::vector<Condition>& cs, double* b) const;
 
 protected:

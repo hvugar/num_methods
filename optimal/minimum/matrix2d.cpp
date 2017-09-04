@@ -25,6 +25,8 @@ const char* DoubleMatrixException::what() const NOEXCEPT
     return "";
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 DoubleMatrix::DoubleMatrix(unsigned int rows, unsigned int cols, double value) : mRows(0), mCols(0), mData(NULL)
 {
     if (rows > 0 && cols > 0)
@@ -99,13 +101,11 @@ void DoubleMatrix::clear()
 {
     if (mData != NULL)
     {
-        for (unsigned int i=0; i<mRows; i++)
+        for (unsigned int row=0; row<mRows; row++)
         {
-            //if (mRows == 9999) printf("%u %u %x\n", mRows, i, mData[i]);
-            free(mData[i]);
-            mData[i] = NULL;
+            free(mData[row]);
+            mData[row] = NULL;
         }
-        //printf("%u %u\n", mRows, mCols);
 
         free(mData);
         mData = NULL;
@@ -118,45 +118,45 @@ void DoubleMatrix::resize(unsigned int rows, unsigned int cols, double value)
 {
     if (rows == 0 && cols == 0) clear();
 
+    if (rows == 0 || cols == 0) return;
+
     if (rows > 0 && cols > 0)
     {
         if (mData == NULL)
         {
             mData = (double**) malloc(sizeof(double*)*rows);
-            for (unsigned int i=0; i<rows; i++)
+            for (unsigned int row=0; row<rows; row++)
             {
-                mData[i] = (double*) malloc(sizeof(double)*cols);
-                for (unsigned int j=0; j<cols; j++) mData[i][j] = value;
+                mData[row] = (double*) malloc(sizeof(double)*cols);
+                for (unsigned int col=0; col<cols; col++) mData[row][col] = value;
             }
             mRows = rows;
             mCols = cols;
         }
         else
         {
-            if (rows != mRows)
+            double **ptr = (double **) malloc(sizeof(double*) * rows);
+            for (unsigned int row=0; row<rows; row++)
             {
-                double **ptr = (double **) realloc(mData, sizeof(double*) * rows);
-                if (cols != mCols)
+                ptr[row] = (double*) malloc(sizeof(double)*cols);
+
+                if (row < mRows)
                 {
-                    for (unsigned int i=0; i<mRows; i++)
-                    {
-                        double *pRow = (double *) realloc(ptr[i], sizeof(double) * cols);
-                        for (unsigned int j=mCols; j<cols; j++) pRow[j] = value;
-                        ptr[i] = pRow;
-                    }
-
-                    for (unsigned int i=mRows; i<rows; i++)
-                    {
-                        double *pRow = (double *) realloc(ptr[i], sizeof(double) * cols);
-                        for (unsigned int j=0; j<cols; j++) pRow[j] = value;
-                        ptr[i] = pRow;
-                    }
-
-                    mCols = cols;
+                    for (unsigned int col=0; col<cols; col++)
+                        if (col < mCols) ptr[row][col] = mData[row][col]; else ptr[row][col] = value;
                 }
-                mRows = rows;
-                mData = ptr;
+                else
+                {
+                   for (unsigned int col=0; col<cols; col++)
+                       ptr[row][col] = value;
+                }
             }
+
+            clear();
+
+            mData = ptr;
+            mRows = rows;
+            mCols = cols;
         }
     }
 }
@@ -602,27 +602,27 @@ DoubleMatrix& DoubleMatrix::operator *=(const DoubleMatrix &m)
         throw DoubleMatrixException(3);
     }
 
-//    DoubleMatrix m;
-//    m.resize(m1.rows(), m2.cols());
+    //    DoubleMatrix m;
+    //    m.resize(m1.rows(), m2.cols());
 
-//    for (unsigned int i=0; i<m.rows(); i++)
-//    {
-//        for (unsigned int j=0; j<m.cols(); j++)
-//        {
-//            double sum = 0.0;
-//            for (unsigned int k=0; k<m1.cols(); k++) sum += m1.at(i,k)*m2.at(k,j);
-//            m.at(i,j) = sum;
-//        }
-//    }
-//    return m;
+    //    for (unsigned int i=0; i<m.rows(); i++)
+    //    {
+    //        for (unsigned int j=0; j<m.cols(); j++)
+    //        {
+    //            double sum = 0.0;
+    //            for (unsigned int k=0; k<m1.cols(); k++) sum += m1.at(i,k)*m2.at(k,j);
+    //            m.at(i,j) = sum;
+    //        }
+    //    }
+    //    return m;
 
-//    for (unsigned int rw=0; rw < mRows; rw++)
-//    {
-//        for (unsigned int cl=0; cl < mCols; cl++)
-//        {
-//            mData[rw][cl] -= m.mData[rw][cl];
-//        }
-//    }
+    //    for (unsigned int rw=0; rw < mRows; rw++)
+    //    {
+    //        for (unsigned int cl=0; cl < mCols; cl++)
+    //        {
+    //            mData[rw][cl] -= m.mData[rw][cl];
+    //        }
+    //    }
     return *this;
 }
 
@@ -640,6 +640,22 @@ DoubleMatrix& DoubleMatrix::operator *=(double scalar)
 
 DoubleMatrix& DoubleMatrix::operator *=(const DoubleVector& v)
 {
+    if (mCols != v.mLength)
+    {
+        printf("DoubleMatrix& DoubleMatrix::operator *=(const DoubleVector& v) this:%d %d v:%d\n", mRows, mCols, v.mLength);
+        throw DoubleMatrixException(3);
+    }
+
+    DoubleMatrix m = *this;
+
+    resize(mRows, 1);
+    for (unsigned int row=0; row<mRows; row++)
+    {
+        mData[row][0] = 0.0;
+        for (unsigned int col=0; col<m.mCols; col++) mData[row][0] += m.mData[row][col]*v[col];
+    }
+    m.clear();
+
     return *this;
 }
 
@@ -726,6 +742,25 @@ DoubleMatrix operator *(double scalar, DoubleMatrix m)
 DoubleMatrix operator *(DoubleMatrix m, double scalar)
 {
     return scalar*m;
+}
+
+DoubleMatrix operator *(DoubleMatrix m, const DoubleVector& v)
+{
+    if (m.mCols != v.length())
+    {
+        printf("DoubleMatrix DoubleMatrix::operator *=(const DoubleVector& v) this:%d %d v:%d\n", m.mRows, m.mCols, v.length());
+        throw DoubleMatrixException(3);
+    }
+
+    DoubleMatrix m1(m.mRows, 1);
+
+    for (unsigned int row=0; row<m.mRows; row++)
+    {
+        m1.mData[row][0] = 0.0;
+        for (unsigned int col=0; col<m.mCols; col++) m1[row][0] += m.mData[row][col]*v[col];
+    }
+
+    return m1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////

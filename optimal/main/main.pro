@@ -54,7 +54,8 @@ SOURCES += main.cpp \
     ivp/nlode1oex1.cpp \
     load_sys/lode1oex1.cpp \
     matrixtest.cpp \
-    nonlinearequationex1.cpp
+    nonlinearequationex1.cpp \
+    problem4/problem4ex2.cpp
 
 HEADERS += \
     load_sys/slodenlcsm.h \
@@ -75,4 +76,5 @@ HEADERS += \
     ivp/nlode1oex1.h \
     load_sys/lode1oex1.h \
     matrixtest.h \
-    nonlinearequationex1.h
+    nonlinearequationex1.h \
+    problem4/problem4ex2.h

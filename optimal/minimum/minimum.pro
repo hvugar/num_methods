@@ -60,7 +60,8 @@ SOURCES += \
     ode/nlode1o.cpp \
     ode/lode1o.cpp \
     linearequation.cpp \
-    nonlinearequation.cpp
+    nonlinearequation.cpp \
+    utils/random.cpp
 
 HEADERS += global.h \
     cmatrix.h \
@@ -107,4 +108,5 @@ HEADERS += global.h \
     ode/nlode1o.h \
     ode/lode1o.h \
     linearequation.h \
-    nonlinearequation.h
+    nonlinearequation.h \
+    utils/random.h

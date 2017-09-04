@@ -6,7 +6,7 @@
 /**
  * @brief The NonLinear ODE1 1st order in canonical (normal) form y'(x) = f(x, y(x));
  */
-class MINIMUMSHARED_EXPORT NonLinearODE1stOrder : virtual public NonLinearODE, virtual public ODE1stOrder
+class MINIMUMSHARED_EXPORT NonLinearODE1stOrder : virtual public NonLinearODE
 {
 public:
     void cauchyProblem(double x0, double y0, DoubleVector &ry, Method method = RK4, Direction direction = L2R);

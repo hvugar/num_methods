@@ -254,11 +254,3 @@ double CauchyProblemM1stOrderA::S0(double t, const DoubleVector &x, unsigned int
 
     return (s1-s2)/m1;
 }
-
-//double CauchyProblemM1stOrderB::f(double t, const DoubleVector &x, unsigned int k, unsigned int i) const
-//{
-//    unsigned int n = p.systemOrder();
-//    double res = p.B(t,k,i);
-//    for (unsigned int j=0; j<n; j++) res += p.A(t,k,i,j)*x[j];
-//    return res;
-//}

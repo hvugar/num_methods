@@ -269,7 +269,7 @@ DoubleVector& DoubleVector::operator =(const DoubleVector& other)
     {
         clear();
         mLength = other.mLength;
-        resize(mLength, 0.0);
+        mData = (double*) malloc(sizeof(double)*mLength);
         memcpy(mData, other.mData, sizeof(double)*mLength);
     }
     return *this;
@@ -279,8 +279,7 @@ DoubleVector& DoubleVector::operator +=(const DoubleVector& v)
 {
     if (mLength != v.mLength)
     {
-        fprintf(stderr, "DoubleVector& DoubleVector::operator +=(const DoubleVector& v) this:%d v:%d\n",
-                mLength, v.mLength);
+        fprintf(stderr, "DoubleVector& DoubleVector::operator +=(const DoubleVector& v) this:%d v:%d\n", mLength, v.mLength);
         fflush(stderr);
 
         throw DoubleMatrixException(1);

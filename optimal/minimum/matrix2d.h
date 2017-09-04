@@ -114,9 +114,9 @@ public:
     friend MINIMUMSHARED_EXPORT DoubleMatrix operator +(DoubleMatrix m1, const DoubleMatrix& m2);
     friend MINIMUMSHARED_EXPORT DoubleMatrix operator -(DoubleMatrix m1, const DoubleMatrix& m2);
     friend MINIMUMSHARED_EXPORT DoubleMatrix operator *(const DoubleMatrix& matrix1, const DoubleMatrix& matrix2);
-    friend MINIMUMSHARED_EXPORT DoubleMatrix operator *(double scalar, DoubleMatrix matrix);
-    friend MINIMUMSHARED_EXPORT DoubleMatrix operator *(DoubleMatrix matrix, double scalar);
-//    friend MINIMUMSHARED_EXPORT DoubleMatrix operator *(const DoubleMatrix&, const DoubleVector&);
+    friend MINIMUMSHARED_EXPORT DoubleMatrix operator *(double scalar, DoubleMatrix m);
+    friend MINIMUMSHARED_EXPORT DoubleMatrix operator *(DoubleMatrix m, double scalar);
+    friend MINIMUMSHARED_EXPORT DoubleMatrix operator *(DoubleMatrix m, const DoubleVector& v);
 
     friend MINIMUMSHARED_EXPORT bool operator ==(const DoubleMatrix& matrix1, const DoubleMatrix& matrix2);
     friend MINIMUMSHARED_EXPORT bool operator !=(const DoubleMatrix& matrix1, const DoubleMatrix& matrix2);
@@ -124,6 +124,7 @@ public:
     friend MINIMUMSHARED_EXPORT DoubleMatrix operator ~(const DoubleMatrix&); // transose matrix
     friend MINIMUMSHARED_EXPORT DoubleMatrix operator !(const DoubleMatrix&); // inverse
 
+    friend class DoubleVector;
 private:
     unsigned int mRows;
     unsigned int mCols;

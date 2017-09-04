@@ -79,12 +79,16 @@ void NonLinearEquation::calculateNewtonMethodMod(const DoubleVector &x0, DoubleV
                 DoubleVector x1 = rx;
                 x2[col] += diffEspilon;
                 x1[col] -= diffEspilon;
-
-                W.at(row, col) = (fx(x2, row) - fx(x1, row))/(2.0*diffEspilon);
+                //printf("%f %f %f\n", fx(x2, row), fx(x1, row),(fx(x2, row) - fx(x1, row))/(2.0*diffEspilon));
+                W[row][col] = (fx(x2, row) - fx(x1, row))/(2.0*diffEspilon);
             }
         }
+//IPrinter::printSeperatorLine();
+//        IPrinter::print(W);
+//        IPrinter::printSeperatorLine();
+
         // Regulization
-        DoubleMatrix V = W + 0.0*DoubleMatrix::IdentityMatrix(n);
+        DoubleMatrix V = W + 0.01*DoubleMatrix::IdentityMatrix(n);
 
         V.inverse();
 
@@ -111,7 +115,6 @@ void NonLinearEquation::calculateNewtonMethodMod2(const DoubleVector &x0, Double
 {
     unsigned int n = x0.length();
     rx = x0;
-
     DoubleMatrix W(2, 2);
     DoubleVector e(2);
     unsigned int iter = 0;
@@ -134,9 +137,8 @@ void NonLinearEquation::calculateNewtonMethodMod2(const DoubleVector &x0, Double
         x1 = x2 = rx; x2[1] += diffEspilon; x1[1] -= diffEspilon;
         W[1][1] = (fx(x2, 1) - fx(x1, 1))/(2.0*diffEspilon);
 
-
         // Regulization
-        DoubleMatrix V = W + 0.00001*DoubleMatrix::IdentityMatrix(n);
+        DoubleMatrix V = W;// + 0.00001*DoubleMatrix::IdentityMatrix(n);
 
         V.inverse();
 
@@ -166,35 +168,38 @@ double NonLinearEquation::minimize(const DoubleMatrix &W, const DoubleMatrix &V,
         {
             double SUM = 0.0;
 
-            DoubleVector x;
-            double s;
+//            DoubleVector x;
+//            double s;
 
-            x = rx;
-            s = V(0,0)*p.fx(rx,0)+V(0,1)*p.fx(rx,1);
-            x[0] = rx[0] - alpha*s;
-            SUM += (p.fx(x, 0)*p.fx(x, 0)) / (W[0][0]*W[0][0] + W[0][1]*W[0][1]);
+//            x = rx;
+//            s = V(0,0)*p.fx(rx,0)+V(0,1)*p.fx(rx,1);
+//            x[0] = rx[0] - alpha*s;
+//            SUM += (p.fx(x, 0)*p.fx(x, 0)) / (W[0][0]*W[0][0] + W[0][1]*W[0][1]);
 
-            x = rx;
-            s = V(1,0)*p.fx(rx,0)+V(1,1)*p.fx(rx,1);
-            x[1] = rx[1] - alpha*(V[1][0]*p.fx(rx,0) + V[1][1]*p.fx(rx,1));
-            SUM += (p.fx(x, 1)*p.fx(x, 1)) / (W[1][0]*W[1][0] + W[1][1]*W[1][1]);
+//            x = rx;
+//            s = V(1,0)*p.fx(rx,0)+V(1,1)*p.fx(rx,1);
+//            x[1] = rx[1] - alpha*(V[1][0]*p.fx(rx,0) + V[1][1]*p.fx(rx,1));
+//            SUM += (p.fx(x, 1)*p.fx(x, 1)) / (W[1][0]*W[1][0] + W[1][1]*W[1][1]);
 
-//            for (unsigned int row=0; row<n; row++)
-//            {
-//                double norm = 0.0;
-//                for (unsigned int col=0; col<n; col++)
-//                {
-//                    norm += W[row][col] * W[row][col];
-//                }
+            for (unsigned int row=0; row<n; row++)
+            {
+                DoubleVector x;
+                x = rx;
+                double s = 0.0;
+                for (unsigned int col=0; col<n; col++)
+                {
+                    s += alpha*V[row][col] * p.fx(rx, col);
+                }
+                x[row] = rx[row] - alpha*s;
 
+                double norm = 0.0;
+                for (unsigned int col=0; col<n; col++)
+                {
+                    norm += W[row][col] * W[row][col];
+                }
 
-//                for (unsigned int col=0; col<n; col++)
-//                {
-//                    x[row] -= alpha*V[row][col] * p.fx(rx, col);
-//                }
-
-//                SUM += p.fx(x, row) / norm;
-//            }
+                SUM += (p.fx(x, row)*p.fx(x, row)) / norm;
+            }
             return SUM;
         }
 
