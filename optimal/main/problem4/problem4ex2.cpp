@@ -22,6 +22,13 @@ void Problem4Ex2::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     NonLinearEquationEx2 nle(p2);
     nle.calculateNewtonMethodMod(x0, x, 0.001, 0.00001);
 
+    printf("0 %14.10f\n",nle.fx(x,0));
+    printf("1 %14.10f\n",nle.fx(x,1));
+    printf("2 %14.10f\n",nle.fx(x,2));
+    printf("3 %14.10f\n",nle.fx(x,3));
+    printf("4 %14.10f\n",nle.fx(x,4));
+    printf("5 %14.10f\n",nle.fx(x,5));
+
     IPrinter::print(x,x.length());
     IPrinter::printSeperatorLine();
     p2.printResult1(x);
@@ -302,7 +309,6 @@ double NonLinearEquationEx2::fx(const DoubleVector &x, unsigned int num) const
     if (num == 0)
     {
         unsigned int n = 0.3*N;
-        //printf("+++++ %f %f %f %f %f %f %f %f\n", zm0[0][n], p.g(x,0,0), p.g(x,0,1), p.g(x,0,2), p.g(x,1,0), p.g(x,1,1), p.g(x,1,2), x[0]);
         return zm0[0][n]
                 + (zm1[0][0][n]*p.g(x,0,0) + zm1[0][1][n]*p.g(x,0,1) + zm1[0][2][n]*p.g(x,0,2))
                 + (zm2[0][0][n]*p.g(x,1,0) + zm2[0][1][n]*p.g(x,1,1) + zm2[0][2][n]*p.g(x,1,2)) - x[0];
@@ -310,7 +316,6 @@ double NonLinearEquationEx2::fx(const DoubleVector &x, unsigned int num) const
     if (num == 1)
     {
         unsigned int n = 0.3*N;
-        //printf("+++++ %f %f %f %f %f %f %f %f\n", zm0[0][n], p.g(x,0,0), p.g(x,0,1), p.g(x,0,2), p.g(x,1,0), p.g(x,1,1), p.g(x,1,2), x[1]);
         return zm0[1][n]
                 + (zm1[1][0][n]*p.g(x,0,0) + zm1[1][1][n]*p.g(x,0,1) + zm1[1][2][n]*p.g(x,0,2))
                 + (zm2[1][0][n]*p.g(x,1,0) + zm2[1][1][n]*p.g(x,1,1) + zm2[1][2][n]*p.g(x,1,2)) - x[1];
@@ -318,7 +323,6 @@ double NonLinearEquationEx2::fx(const DoubleVector &x, unsigned int num) const
     if (num == 2)
     {
         unsigned int n = 0.3*N;
-        //printf("+++++ %f %f %f %f %f %f %f %f\n", zm0[0][n], p.g(x,0,0), p.g(x,0,1), p.g(x,0,2), p.g(x,1,0), p.g(x,1,1), p.g(x,1,2), x[2]);
         return zm0[2][n]
                 + (zm1[2][0][n]*p.g(x,0,0) + zm1[2][1][n]*p.g(x,0,1) + zm1[2][2][n]*p.g(x,0,2))
                 + (zm2[2][0][n]*p.g(x,1,0) + zm2[2][1][n]*p.g(x,1,1) + zm2[2][2][n]*p.g(x,1,2)) - x[2];
@@ -327,7 +331,6 @@ double NonLinearEquationEx2::fx(const DoubleVector &x, unsigned int num) const
     if (num == 3)
     {
         unsigned int n = 0.6*N;
-        //printf("+++++ %f %f %f %f %f %f %f %f\n", zm0[0][n], p.g(x,0,0), p.g(x,0,1), p.g(x,0,2), p.g(x,1,0), p.g(x,1,1), p.g(x,1,2), x[3]);
         return zm0[0][n]
                 + (zm1[0][0][n]*p.g(x,0,0) + zm1[0][1][n]*p.g(x,0,1) + zm1[0][2][n]*p.g(x,0,2))
                 + (zm2[0][0][n]*p.g(x,1,0) + zm2[0][1][n]*p.g(x,1,1) + zm2[0][2][n]*p.g(x,1,2)) - x[3];

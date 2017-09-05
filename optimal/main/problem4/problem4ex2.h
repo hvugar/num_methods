@@ -47,7 +47,7 @@ class NonLinearEquationEx2 : public NonLinearEquation
 {
 public:
     NonLinearEquationEx2(const Problem4Ex2 &p);
-protected:
+//protected:
     virtual double fx(const DoubleVector &x, unsigned int num = 0) const;
 private:
     const Problem4Ex2 &p;
