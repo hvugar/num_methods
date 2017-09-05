@@ -31,9 +31,9 @@ void Problem4Ex2::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     double h = dim.step();
 
     IPrinter::printSeperatorLine();
-    DoubleVector x1(N+1); for (unsigned int i=0; i<=N; i++) x1[i] = p2.X(i*h, 0); IPrinter::printVector(x1);
-    DoubleVector x2(N+1); for (unsigned int i=0; i<=N; i++) x2[i] = p2.X(i*h, 1); IPrinter::printVector(x2);
-    DoubleVector x3(N+1); for (unsigned int i=0; i<=N; i++) x3[i] = p2.X(i*h, 2); IPrinter::printVector(x3);
+    DoubleVector x1(N+1); for (unsigned int i=0; i<=N; i++) x1[i] = p2.X(i*h, 0); IPrinter::printVector(10,6,x1);
+    DoubleVector x2(N+1); for (unsigned int i=0; i<=N; i++) x2[i] = p2.X(i*h, 1); IPrinter::printVector(10,6,x2);
+    DoubleVector x3(N+1); for (unsigned int i=0; i<=N; i++) x3[i] = p2.X(i*h, 2); IPrinter::printVector(10,6,x3);
 
 //    double aa=0.0;
 //    unsigned int row = 2;
@@ -61,6 +61,7 @@ void Problem4Ex2::initialize()
     c0.time = 0.0;
     c0.nmbr = 0;
     c0.mtrx.resize(n, n);
+//    Random::fillMatrix(c0.mtrx, -3, 3, 5);
     c0.mtrx[0][0] = 1.0000000000; c0.mtrx[0][1] = 7.0000000000; c0.mtrx[0][2] = 4.0000000000;
     c0.mtrx[1][0] = 0.0000000000; c0.mtrx[1][1] = 9.0000000000; c0.mtrx[1][2] = 4.0000000000;
     c0.mtrx[2][0] = 8.0000000000; c0.mtrx[2][1] = 8.0000000000; c0.mtrx[2][2] = 2.0000000000;
@@ -69,6 +70,7 @@ void Problem4Ex2::initialize()
     c1.time = 0.2;
     c1.nmbr = N/5;
     c1.mtrx.resize(n, n);
+//    Random::fillMatrix(c1.mtrx, -3, 3, 5);
     c1.mtrx[0][0] = 4.0000000000; c1.mtrx[0][1] = 5.0000000000; c1.mtrx[0][2] = 5.0000000000;
     c1.mtrx[1][0] = 1.0000000000; c1.mtrx[1][1] = 7.0000000000; c1.mtrx[1][2] = 2.0000000000;
     c1.mtrx[2][0] = 1.0000000000; c1.mtrx[2][1] = 5.0000000000; c1.mtrx[2][2] = 2.0000000000;
@@ -77,6 +79,7 @@ void Problem4Ex2::initialize()
     c2.time = 0.5;
     c2.nmbr = N/2;
     c2.mtrx.resize(n, n);
+//    Random::fillMatrix(c2.mtrx, -3, 3, 5);
     c2.mtrx[0][0] = 7.0000000000; c2.mtrx[0][1] = 6.0000000000; c2.mtrx[0][2] = 1.0000000000;
     c2.mtrx[1][0] = 4.0000000000; c2.mtrx[1][1] = 2.0000000000; c2.mtrx[1][2] = 3.0000000000;
     c2.mtrx[2][0] = 2.0000000000; c2.mtrx[2][1] = 2.0000000000; c2.mtrx[2][2] = 1.0000000000;
@@ -85,6 +88,7 @@ void Problem4Ex2::initialize()
     c3.time = 0.8;
     c3.nmbr = 4*(N/5);
     c3.mtrx.resize(n, n);
+//    Random::fillMatrix(c3.mtrx, -3, 3, 5);
     c3.mtrx[0][0] = 6.0000000000; c3.mtrx[0][1] = 8.0000000000; c3.mtrx[0][2] = 5.0000000000;
     c3.mtrx[1][0] = 7.0000000000; c3.mtrx[1][1] = 6.0000000000; c3.mtrx[1][2] = 1.0000000000;
     c3.mtrx[2][0] = 8.0000000000; c3.mtrx[2][1] = 9.0000000000; c3.mtrx[2][2] = 2.0000000000;
@@ -93,6 +97,7 @@ void Problem4Ex2::initialize()
     c4.time = 1.0;
     c4.nmbr = N;
     c4.mtrx.resize(n, n);
+//    Random::fillMatrix(c4.mtrx, -3, 3, 5);
     c4.mtrx[0][0] = 7.0000000000; c4.mtrx[0][1] = 9.0000000000; c4.mtrx[0][2] = 5.0000000000;
     c4.mtrx[1][0] = 4.0000000000; c4.mtrx[1][1] = 3.0000000000; c4.mtrx[1][2] = 1.0000000000;
     c4.mtrx[2][0] = 2.0000000000; c4.mtrx[2][1] = 3.0000000000; c4.mtrx[2][2] = 3.0000000000;
@@ -116,6 +121,8 @@ void Problem4Ex2::initialize()
             for (unsigned int i=0; i<n; i++) betta[row] += c.mtrx[row][i] * X(c.time, i);
         }
     }
+
+   // IPrinter::print(betta);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -273,9 +280,9 @@ void Problem4Ex2::printResult1(const DoubleVector &x)
         x2[i] =  zm0[1][i] + (zm1[1][0][i]*g(x,0,0) + zm1[1][1][i]*g(x,0,1) + zm1[1][2][i]*g(x,0,2)) + (zm2[1][0][i]*g(x,1,0) + zm2[1][1][i]*g(x,1,1) + zm2[1][2][i]*g(x,1,2));
         x3[i] =  zm0[2][i] + (zm1[2][0][i]*g(x,0,0) + zm1[2][1][i]*g(x,0,1) + zm1[2][2][i]*g(x,0,2)) + (zm2[2][0][i]*g(x,1,0) + zm2[2][1][i]*g(x,1,1) + zm2[2][2][i]*g(x,1,2));
     }
-    IPrinter::printVector(14,10,x1);
-    IPrinter::printVector(14,10,x2);
-    IPrinter::printVector(14,10,x3);
+    IPrinter::printVector(10,6,x1);
+    IPrinter::printVector(10,6,x2);
+    IPrinter::printVector(10,6,x3);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
