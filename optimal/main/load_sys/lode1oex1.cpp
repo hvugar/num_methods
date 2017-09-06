@@ -5,7 +5,7 @@
 void LinearODE1stOrderEx1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     LinearODE1stOrderEx1 cpnlcs;
-    cpnlcs.setGrid(ODEGrid(Dimension(0.1, 10, 0)));
+    cpnlcs.setGrid(ODEGrid(Dimension(0.01, 100, 0)));
 #ifdef EXAMPLE_1
     cpnlcs.example1();
 #endif
@@ -40,36 +40,36 @@ void LinearODE1stOrderEx1::example1()
     nsc0.time = 0.0;
     nsc0.nmbr = 0;
     nsc0.mtrx.resize(n, n);
-    for (unsigned int row=0; row<n; row++) for(unsigned int col=0; col<n; col++) nsc0.mtrx[row][col] = (rand() % 1000) / 1000.0;
+    Random::fillMatrix(nsc0.mtrx, -1, +1, 5);
 
-//    Condition nsc1;
-//    nsc1.time = 0.3;
-//    nsc1.nmbr = 30;
-//    nsc1.mtrx.resize(n, n);
-//    for (unsigned int row=0; row<n; row++) for(unsigned int col=0; col<n; col++) nsc1.mtrx[row][col] = (rand() % 1000) / 1000.0;
+    Condition nsc1;
+    nsc1.time = 0.3;
+    nsc1.nmbr = 30;
+    nsc1.mtrx.resize(n, n);
+    Random::fillMatrix(nsc1.mtrx, -3, +3, 5);
 
-//    Condition nsc2;
-//    nsc2.time = 0.5;
-//    nsc2.nmbr = 50;
-//    nsc2.mtrx.resize(n, n);
-//    for (unsigned int row=0; row<n; row++) for(unsigned int col=0; col<n; col++) nsc2.mtrx[row][col] = (rand() % 1000) / 1000.0;
+    Condition nsc2;
+    nsc2.time = 0.73;
+    nsc2.nmbr = 70;
+    nsc2.mtrx.resize(n, n);
+    Random::fillMatrix(nsc2.mtrx, -1, +1, 5);
 
-//    Condition nsc3;
-//    nsc3.time = 0.8;
-//    nsc3.nmbr = 80;
-//    nsc3.mtrx.resize(n, n);
-//    for (unsigned int row=0; row<n; row++) for(unsigned int col=0; col<n; col++) nsc3.mtrx[row][col] = (rand() % 1000) / 1000.0;
+    Condition nsc3;
+    nsc3.time = 0.8;
+    nsc3.nmbr = 80;
+    nsc3.mtrx.resize(n, n);
+    Random::fillMatrix(nsc3.mtrx, -3, +3, 5);
 
     Condition nsc4;
     nsc4.time = 1.0;
     nsc4.nmbr = 100;
     nsc4.mtrx.resize(n, n);
-    for (unsigned int row=0; row<n; row++) for(unsigned int col=0; col<n; col++) nsc4.mtrx[row][col] = (rand() % 1000) / 1000.0;
+    Random::fillMatrix(nsc4.mtrx, -1, +1, 5);
 
     nscs.push_back(nsc0);
-//    nscs.push_back(nsc1);
-//    nscs.push_back(nsc2);
-//    nscs.push_back(nsc3);
+    nscs.push_back(nsc1);
+    nscs.push_back(nsc2);
+    nscs.push_back(nsc3);
     nscs.push_back(nsc4);
 
     unsigned int L = nscs.size();

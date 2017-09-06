@@ -252,9 +252,18 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cnds, co
 
             for (unsigned int i=0; i<ind_size; i++)
             {
-                if (n+2 == ind.at(i)) q[n+1] += ems[i][n];
-                if (n+2 >= ind.at(i)) ems[i][n+1] = 0.0;
-                else ems[i][n+1] = ems[i][n];
+                if (n+2 == ind.at(i))
+                {
+                    q[n+1] += ems[i][n];
+                }
+                if (n+2 >= ind.at(i))
+                {
+                    ems[i][n+1] = 0.0;
+                }
+                else
+                {
+                    ems[i][n+1] = ems[i][n];
+                }
             }
         }
 
@@ -339,7 +348,10 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cnds, co
             for (unsigned int n=0; n<=N; n++)
             {
                 double dh = fabs(time - n*h);
-                if (dh <= h) b[n] += (1.0 - dh/h)*cnd.mtrx;
+                if (dh <= h)
+                {
+                    b[n] += (1.0 - dh/h)*cnd.mtrx;
+                }
             }
         }
 
@@ -351,7 +363,7 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cnds, co
             {
                 ind.push_back(n);
                 DoubleMatrix *dm = new DoubleMatrix[N];
-                for (unsigned int i=0; i<N; i++) dm[i].resize(en,en);
+                for (unsigned int i=0; i<N; i++) dm[i].resize(en,en,0.0);
                 ems.push_back(dm);
                 ems[ems.size()-1][0] = b[n];
             }
@@ -362,7 +374,7 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cnds, co
         unsigned int ind_size = ind.size();
         unsigned int ems_size = ems.size();
 
-        //printf("%d %d %d %d %d %d %d %d\n", ind[0], ind[1], ind[2], ind[3], ind[4], ind[5], ind[6], ind[7]);
+        //printf("%d %d %d %d\n", ind[0], ind[1], ind[2], ind[3]);
 
         /**********************************************************************
          *                          End of discretization
@@ -409,9 +421,20 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cnds, co
 
             for (unsigned int i=0; i<ind_size; i++)
             {
-                if (n+2 == ind.at(i)) q[n+1] += ems[i][n];
-                if (n+2 >= ind.at(i)) ems[i][n] = DoubleMatrix::ZeroMatrix(en,en);
-                else ems[i][n+1] = ems[i][n];
+                if (n+2 == ind.at(i))
+                {
+                    q[n+1] += ems[i][n];
+                    //ems[i][n] = DoubleMatrix::ZeroMatrix(en,en);
+                }
+
+                if (n+2 >= ind.at(i))
+                {
+                    ems[i][n+1] = DoubleMatrix::ZeroMatrix(en,en);
+                }
+                else
+                {
+                    ems[i][n+1] = ems[i][n];
+                }
             }
         }
 
@@ -467,7 +490,10 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cnds, co
         for (unsigned int i=N-2; i!=0; i--)
         {
             x0[i-1] = r[i-1]-q[i-1]*x0[i];
-            for (unsigned int s=0; s<ems_size; s++) x0[i-1] += -1.0*(ems[s][i-1]*x0[ind[s]]);
+            for (unsigned int s=0; s<ems_size; s++)
+            {
+                x0[i-1] -= (ems[s][i-1]*x0[ind[s]]);
+            }
             p[i-1].inverse();
             x0[i-1] = p[i-1] * x0[i-1];
         }
@@ -580,9 +606,18 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cnds, co
 
             for (unsigned int i=0; i<ind_size; i++)
             {
-                if (n+4 == ind.at(i)) u[n+1] += ems[i][n];
-                if (n+4 >= ind.at(i)) ems[i][n+1] = 0.0;
-                else ems[i][n+1] = ems[i][n];
+                if (n+4 == ind.at(i))
+                {
+                    u[n+1] += ems[i][n];
+                }
+                if (n+4 >= ind.at(i))
+                {
+                    ems[i][n+1] = 0.0;
+                }
+                else
+                {
+                    ems[i][n+1] = ems[i][n];
+                }
             }
         }
 
@@ -771,9 +806,19 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cnds, co
 
             for (unsigned int i=0; i<ind_size; i++)
             {
-                if (n+4 == ind.at(i)) u[n+1] += ems[i][n];
-                if (n+4 >= ind.at(i)) ems[i][n] = DoubleMatrix::ZeroMatrix(en, en);
-                else ems[i][n+1] = ems[i][n];
+                if (n+4 == ind.at(i))
+                {
+                    u[n+1] += ems[i][n];
+                    //ems[i][n] = DoubleMatrix::ZeroMatrix(en, en);
+                }
+                if (n+4 >= ind.at(i))
+                {
+                    ems[i][n+1] = DoubleMatrix::ZeroMatrix(en, en);
+                }
+                else
+                {
+                    ems[i][n+1] = ems[i][n];
+                }
             }
         }
 
@@ -996,9 +1041,18 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cnds, co
 
             for (unsigned int i=0; i<ind_size; i++)
             {
-                if (n+6 == ind.at(i)) z[n+1] += ems[i][n];
-                if (n+6 >= ind.at(i)) ems[i][n+1] = 0.0;
-                else ems[i][n+1] = ems[i][n];
+                if (n+6 == ind.at(i))
+                {
+                    z[n+1] += ems[i][n];
+                }
+                if (n+6 >= ind.at(i))
+                {
+                    ems[i][n+1] = 0.0;
+                }
+                else
+                {
+                    ems[i][n+1] = ems[i][n];
+                }
             }
         }
 
@@ -1234,9 +1288,19 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cnds, co
 
             for (unsigned int i=0; i<ind_size; i++)
             {
-                if (n+6 == ind.at(i)) z[n+1] += ems[i][n];
-                if (n+6 >= ind.at(i)) ems[i][n] = DoubleMatrix::ZeroMatrix(en, en);
-                else ems[i][n+1] = ems[i][n];
+                if (n+6 == ind.at(i))
+                {
+                    z[n+1] += ems[i][n];
+                    //ems[i][n] = DoubleMatrix::ZeroMatrix(en, en);
+                }
+                if (n+6 >= ind.at(i))
+                {
+                    ems[i][n+1] = DoubleMatrix::ZeroMatrix(en, en);
+                }
+                else
+                {
+                    ems[i][n+1] = ems[i][n];
+                }
             }
         }
 

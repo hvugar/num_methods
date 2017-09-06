@@ -1,9 +1,10 @@
 #ifndef LOADLINEARODE1STORDEREX1_H
 #define LOADLINEARODE1STORDEREX1_H
 
-#define EXAMPLE_2
+#define EXAMPLE_3
 
 #include <ode/lode1o.h>
+#include <utils/random.h>
 
 class LinearODE1stOrderEx1 : public LinearODE1stOrder
 {

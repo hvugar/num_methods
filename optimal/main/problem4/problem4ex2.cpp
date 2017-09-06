@@ -42,6 +42,10 @@ void Problem4Ex2::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     DoubleVector x2(N+1); for (unsigned int i=0; i<=N; i++) x2[i] = p2.X(i*h, 1); IPrinter::printVector(10,6,x2);
     DoubleVector x3(N+1); for (unsigned int i=0; i<=N; i++) x3[i] = p2.X(i*h, 2); IPrinter::printVector(10,6,x3);
 
+    IPrinter::printSeperatorLine();
+
+
+
 //    double aa=0.0;
 //    unsigned int row = 2;
 //    DoubleVector xx;
@@ -109,14 +113,13 @@ void Problem4Ex2::initialize()
     c4.mtrx[1][0] = 4.0000000000; c4.mtrx[1][1] = 3.0000000000; c4.mtrx[1][2] = 1.0000000000;
     c4.mtrx[2][0] = 2.0000000000; c4.mtrx[2][1] = 3.0000000000; c4.mtrx[2][2] = 3.0000000000;
 
-    std::vector<LinearODE1stOrder::Condition> cs;
     cs.push_back(c0);
     cs.push_back(c1);
     cs.push_back(c2);
     cs.push_back(c3);
     cs.push_back(c4);
 
-    DoubleVector betta(n);
+    betta.resize(n);
     unsigned int L0 = cs.size();
 
     for (unsigned int row=0; row<n; row++)
@@ -129,7 +132,7 @@ void Problem4Ex2::initialize()
         }
     }
 
-   // IPrinter::print(betta);
+    IPrinter::print(betta);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -290,6 +293,32 @@ void Problem4Ex2::printResult1(const DoubleVector &x)
     IPrinter::printVector(10,6,x1);
     IPrinter::printVector(10,6,x2);
     IPrinter::printVector(10,6,x3);
+
+
+    LinearODE1stOrder::Condition &cs0 = cs[0];
+    LinearODE1stOrder::Condition &cs1 = cs[1];
+    LinearODE1stOrder::Condition &cs2 = cs[2];
+    LinearODE1stOrder::Condition &cs3 = cs[3];
+    LinearODE1stOrder::Condition &cs4 = cs[4];
+
+    unsigned int row = 0;
+    printf("%14.10f %14.10f\n", cs0.mtrx(row,0)*x1[cs0.nmbr]+cs0.mtrx(row,1)*x2[cs0.nmbr]+cs0.mtrx(row,2)*x3[cs0.nmbr]+
+                                cs1.mtrx(row,0)*x1[cs1.nmbr]+cs1.mtrx(row,1)*x2[cs1.nmbr]+cs1.mtrx(row,2)*x3[cs1.nmbr]+
+                                cs2.mtrx(row,0)*x1[cs2.nmbr]+cs2.mtrx(row,1)*x2[cs2.nmbr]+cs2.mtrx(row,2)*x3[cs2.nmbr]+
+                                cs3.mtrx(row,0)*x1[cs3.nmbr]+cs3.mtrx(row,1)*x2[cs3.nmbr]+cs3.mtrx(row,2)*x3[cs3.nmbr]+
+                                cs4.mtrx(row,0)*x1[cs4.nmbr]+cs4.mtrx(row,1)*x2[cs4.nmbr]+cs4.mtrx(row,2)*x3[cs4.nmbr] , betta.at(row));
+    row = 1;
+    printf("%14.10f %14.10f\n", cs0.mtrx(row,0)*x1[cs0.nmbr]+cs0.mtrx(row,1)*x2[cs0.nmbr]+cs0.mtrx(row,2)*x3[cs0.nmbr]+
+                                cs1.mtrx(row,0)*x1[cs1.nmbr]+cs1.mtrx(row,1)*x2[cs1.nmbr]+cs1.mtrx(row,2)*x3[cs1.nmbr]+
+                                cs2.mtrx(row,0)*x1[cs2.nmbr]+cs2.mtrx(row,1)*x2[cs2.nmbr]+cs2.mtrx(row,2)*x3[cs2.nmbr]+
+                                cs3.mtrx(row,0)*x1[cs3.nmbr]+cs3.mtrx(row,1)*x2[cs3.nmbr]+cs3.mtrx(row,2)*x3[cs3.nmbr]+
+                                cs4.mtrx(row,0)*x1[cs4.nmbr]+cs4.mtrx(row,1)*x2[cs4.nmbr]+cs4.mtrx(row,2)*x3[cs4.nmbr] , betta.at(row));
+    row = 2;
+    printf("%14.10f %14.10f\n", cs0.mtrx(row,0)*x1[cs0.nmbr]+cs0.mtrx(row,1)*x2[cs0.nmbr]+cs0.mtrx(row,2)*x3[cs0.nmbr]+
+                                cs1.mtrx(row,0)*x1[cs1.nmbr]+cs1.mtrx(row,1)*x2[cs1.nmbr]+cs1.mtrx(row,2)*x3[cs1.nmbr]+
+                                cs2.mtrx(row,0)*x1[cs2.nmbr]+cs2.mtrx(row,1)*x2[cs2.nmbr]+cs2.mtrx(row,2)*x3[cs2.nmbr]+
+                                cs3.mtrx(row,0)*x1[cs3.nmbr]+cs3.mtrx(row,1)*x2[cs3.nmbr]+cs3.mtrx(row,2)*x3[cs3.nmbr]+
+                                cs4.mtrx(row,0)*x1[cs4.nmbr]+cs4.mtrx(row,1)*x2[cs4.nmbr]+cs4.mtrx(row,2)*x3[cs4.nmbr] , betta.at(row));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////

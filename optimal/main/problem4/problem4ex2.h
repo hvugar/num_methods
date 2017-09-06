@@ -28,6 +28,10 @@ public:
     void printResult1(const DoubleVector &x);
 
     ODEGrid grid;
+
+    std::vector<LinearODE1stOrder::Condition> cs;
+    DoubleVector betta;
+
 protected:
     virtual double A(double t, unsigned int k, unsigned int row, unsigned int col) const;
     virtual double B(double t, unsigned int k, unsigned int row) const;
