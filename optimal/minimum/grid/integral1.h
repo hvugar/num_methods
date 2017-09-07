@@ -13,10 +13,10 @@ public:
         Right
     };
 
-    NumericalIntegral(const ODEGrid &grid);
+    NumericalIntegral(const UniformODEGrid &grid);
 
-    const ODEGrid& grid() const;
-    void setGrid(const ODEGrid& grid);
+    const UniformODEGrid& grid() const;
+    void setGrid(const UniformODEGrid& grid);
 
     virtual double f(double x, int n) const = 0;
 
@@ -26,7 +26,7 @@ public:
 
 
 private:
-    ODEGrid mgrid;
+    UniformODEGrid mgrid;
 };
 
 #endif // INTEGRAL1_H

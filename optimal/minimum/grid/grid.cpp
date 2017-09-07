@@ -1,28 +1,38 @@
 #include "grid.h"
 #include <cstdio>
 
-ODEGrid::ODEGrid() {}
+UniformODEGrid::UniformODEGrid(double step, int min, int max)
+    : mstep(step), mminN(min), mmaxN(max)
+{}
 
-ODEGrid::ODEGrid(const Dimension &dimension) : mdimension(dimension) {}
-
-const Dimension& ODEGrid::dimension() const
+double UniformODEGrid::step() const
 {
-    return mdimension;
+    return mstep;
 }
 
-void ODEGrid::setDimension(const Dimension &dimension)
+int UniformODEGrid::minN() const
 {
-    mdimension = dimension;
+    return mminN;
+}
+
+int UniformODEGrid::maxN() const
+{
+    return mmaxN;
+}
+
+int UniformODEGrid::sizeN() const
+{
+    return mmaxN - mminN + 1;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-PDEGrid::PDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaces UNUSED_PARAM)
+UniformPDEGrid::UniformPDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaces UNUSED_PARAM)
 {
     mtimeDimension = timeDimension;
 }
 
-const Dimension &PDEGrid::timeDimension() const
+const Dimension &UniformPDEGrid::timeDimension() const
 {
     return mtimeDimension;
 }

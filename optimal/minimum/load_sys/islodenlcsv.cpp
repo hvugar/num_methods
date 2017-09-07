@@ -46,7 +46,7 @@ void ISystemLinearODENonLocalContionsV::calculateIntervalF(unsigned int start, u
     unsigned int n1 = lscs.mtrx.rows();
     unsigned int n2 = rscs.mtrx.rows();
     unsigned int n = n0 + n1 + n2;
-    double h = grid().dimension().step();
+    double h = grid().step();
 
     DoubleVector x(n+2);
     DoubleVector rx(n+2);
@@ -60,7 +60,7 @@ void ISystemLinearODENonLocalContionsV::calculateIntervalF(unsigned int start, u
     x[n+1] = 1.0;
 
     CauchyProblemM1stOrderA cpa(*this);
-    cpa.setGrid(ODEGrid(Dimension(h, ec.nmbr, sc.nmbr)));
+    cpa.setGrid(UniformODEGrid(h, ec.nmbr, sc.nmbr));
     cpa.cauchyProblem(sc.time, x, rx, CauchyProblemM1stOrderA::RK4);
 
     for (unsigned int i=0; i<n; i++) sc.mtrx[r][i] = rx[i];
@@ -105,9 +105,9 @@ void ISystemLinearODENonLocalContionsV::calculateForward(DoubleVector &x)
     // Separated conditions in left side
     for (unsigned int row=0; row<n1; row++)
     {
-        double h = grid().dimension().step();
-        unsigned int minN = grid().dimension().minN();
-        unsigned int maxN = grid().dimension().maxN();
+        double h = grid().step();
+        unsigned int minN = grid().minN();
+        unsigned int maxN = grid().maxN();
 
         DoubleVector x(n+2);
         DoubleVector rx(n+2);
@@ -115,7 +115,7 @@ void ISystemLinearODENonLocalContionsV::calculateForward(DoubleVector &x)
         for (unsigned int i=0; i<n; i++) x[i] = lscs.mtrx[row][i]; x[n] = betta[row+n0]; x[n+1] = 1.0;
 
         CauchyProblemM1stOrderA cpa(*this);
-        cpa.setGrid(ODEGrid(Dimension(h, maxN, minN)));
+        cpa.setGrid(UniformODEGrid(h, maxN, minN));
         cpa.cauchyProblem(lscs.time, x, rx, CauchyProblemM1stOrderA::RK4);
 
         for (unsigned int i=0; i<n; i++) lscs.mtrx[row][i] = rx[i];

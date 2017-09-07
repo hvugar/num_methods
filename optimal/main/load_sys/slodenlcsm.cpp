@@ -4,7 +4,7 @@
 void SystemLinearODENonLocalContionsM::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     SystemLinearODENonLocalContionsM cpnlcs;
-    cpnlcs.setGrid(ODEGrid(Dimension(0.01, 100, 0)));
+    cpnlcs.setGrid(UniformODEGrid(0.01, 100, 0));
 
     cpnlcs.initialize();
     DoubleMatrix x;
@@ -27,8 +27,7 @@ void SystemLinearODENonLocalContionsM::Main(int agrc UNUSED_PARAM, char *argv[] 
 
 void SystemLinearODENonLocalContionsM::initialize()
 {
-    Dimension dim = grid().dimension();
-    unsigned int N = dim.sizeN();
+    unsigned int N = grid().sizeN();
 
     unsigned int n0 = 3;
     unsigned int n1 = 0;

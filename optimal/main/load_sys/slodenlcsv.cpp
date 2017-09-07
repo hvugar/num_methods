@@ -17,8 +17,7 @@ void SystemLinearODENonLocalContionsV::Main(int agrc UNUSED_PARAM, char *argv[] 
 
 void SystemLinearODENonLocalContionsV::initialize()
 {
-    Dimension dim = grid().dimension();
-    unsigned int N = dim.sizeN();
+    unsigned int N = grid().sizeN();
 
     unsigned int n0 = 3;
     unsigned int n1 = 0;

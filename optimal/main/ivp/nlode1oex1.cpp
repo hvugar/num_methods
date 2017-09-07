@@ -6,7 +6,7 @@
 void NonLinearODE1stOrderEx1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     NonLinearODE1stOrderEx1 exp1;
-    exp1.setGrid(ODEGrid(Dimension(0.01, 100, 0)));
+    exp1.setGrid(UniformODEGrid(0.01, 100, 0));
     DoubleVector y0(3);
 #ifdef SAMPLE_1
     y0[0] = 4.0;//250;

@@ -27,7 +27,7 @@ public:
 
     void printResult1(const DoubleVector &x);
 
-    ODEGrid grid;
+    UniformODEGrid grid;
 
     std::vector<LinearODE1stOrder::Condition> cs;
     DoubleVector betta;

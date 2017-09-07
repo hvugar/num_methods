@@ -5,7 +5,7 @@
 void Problem4Ex2::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     Problem4Ex2 p2;
-    p2.grid = ODEGrid(Dimension(0.001, 1000, 0));
+    p2.grid = UniformODEGrid(0.001, 1000, 0);
     p2.initialize();
 
     DoubleVector x0;
@@ -33,9 +33,8 @@ void Problem4Ex2::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     IPrinter::printSeperatorLine();
     p2.printResult1(x);
 
-    Dimension dim = p2.grid.dimension();
-    unsigned int N = dim.sizeN();
-    double h = dim.step();
+    unsigned int N = p2.grid.sizeN();
+    double h = p2.grid.step();
 
     IPrinter::printSeperatorLine();
     DoubleVector x1(N+1); for (unsigned int i=0; i<=N; i++) x1[i] = p2.X(i*h, 0); IPrinter::printVector(10,6,x1);
@@ -65,8 +64,7 @@ Problem4Ex2::~Problem4Ex2()
 void Problem4Ex2::initialize()
 {
     unsigned int n = 3;
-    Dimension dim = grid.dimension();
-    unsigned int N = dim.sizeN();
+    unsigned int N = grid.sizeN();
 
     LinearODE1stOrder::Condition c0;
     c0.time = 0.0;
@@ -278,8 +276,7 @@ double Problem4Ex2::g(const DoubleVector &x, unsigned int num, unsigned int row)
 
 void Problem4Ex2::printResult1(const DoubleVector &x)
 {
-    Dimension dim = grid.dimension();
-    unsigned int N = dim.sizeN();
+    unsigned int N = grid.sizeN();
 
     DoubleVector x1(N+1);
     DoubleVector x2(N+1);
@@ -328,8 +325,7 @@ NonLinearEquationEx2::NonLinearEquationEx2(const Problem4Ex2 &p)
 
 double NonLinearEquationEx2::fx(const DoubleVector &x, unsigned int num) const
 {
-    Dimension dim = p.grid.dimension();
-    unsigned int N = dim.sizeN();
+    unsigned int N = p.grid.sizeN();
 
     const std::vector<DoubleVector> &zm0 = p.zm0;
     const std::vector<std::vector<DoubleVector>> &zm1 = p.zm1;

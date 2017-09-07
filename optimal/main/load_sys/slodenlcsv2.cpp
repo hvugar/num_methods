@@ -5,7 +5,7 @@
 void SystemLinearODENonLocalContionsV2::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     SystemLinearODENonLocalContionsV2 slodenlcv;
-    slodenlcv.setGrid(ODEGrid(Dimension(0.1, 10, 0)));
+    slodenlcv.setGrid(UniformODEGrid(0.1, 10, 0));
 
     unsigned int n0 = 3;
     unsigned int n1 = 0;
@@ -132,8 +132,8 @@ void SystemLinearODENonLocalContionsV2::fillMatrix(DoubleMatrix &M, DoubleVector
 
 void SystemLinearODENonLocalContionsV2::calculateForward()
 {
-    unsigned int N = grid().dimension().sizeN();
-    double h = grid().dimension().step();
+    unsigned int N = grid().sizeN();
+    double h = grid().step();
 
     unsigned int k2 = nlscs.size();
     unsigned int k1 = lpnts.size();
@@ -241,8 +241,8 @@ void SystemLinearODENonLocalContionsV2::calculateForward()
 
 void SystemLinearODENonLocalContionsV2::calculateForward2()
 {
-    unsigned int N = grid().dimension().sizeN();
-    double h = grid().dimension().step();
+    unsigned int N = grid().sizeN();
+    double h = grid().step();
     unsigned int k2 = nlscs.size(); // number of condition points
     unsigned int k1 = lpnts.size(); // number of loaded points
     unsigned int n = nlscs.at(0).mtrx.rows();

@@ -2,13 +2,13 @@
 
 void NumIntegralExp1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    ODEGrid grid(Dimension(0.01, 100, 0));
+    UniformODEGrid grid(0.01, 100, 0);
     NumIntegralExp1 exp1(grid);
     double rr = exp1.rectangleRule(Left);
     printf("%f\n", rr);
 }
 
-NumIntegralExp1::NumIntegralExp1(const ODEGrid &grid) : NumericalIntegral(grid)
+NumIntegralExp1::NumIntegralExp1(const UniformODEGrid &grid) : NumericalIntegral(grid)
 {
 
 }

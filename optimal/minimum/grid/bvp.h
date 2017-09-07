@@ -9,7 +9,6 @@
 #include "../linearequation.h"
 #include <math.h>
 #include "grid.h"
-#include "uniformgrid.h"
 
 class MINIMUMSHARED_EXPORT BoundaryValueProblem
 {

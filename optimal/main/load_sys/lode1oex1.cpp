@@ -5,7 +5,7 @@
 void LinearODE1stOrderEx1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     LinearODE1stOrderEx1 cpnlcs;
-    cpnlcs.setGrid(ODEGrid(Dimension(0.01, 100, 0)));
+    cpnlcs.setGrid(UniformODEGrid(0.01, 0, 100));
 #ifdef EXAMPLE_1
     cpnlcs.example1();
 #endif
@@ -28,8 +28,7 @@ void LinearODE1stOrderEx1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM
 
 void LinearODE1stOrderEx1::example1()
 {
-    Dimension dim = grid().dimension();
-    unsigned int N = dim.sizeN();
+    unsigned int N = grid().sizeN();
 
     unsigned int n = equationsNumber();
 
@@ -103,9 +102,8 @@ void LinearODE1stOrderEx1::example1()
 
 void LinearODE1stOrderEx1::example2()
 {
-    Dimension dim = grid().dimension();
-    unsigned int N = dim.sizeN();
-    double h = dim.step();
+    unsigned int N = grid().sizeN();
+    double h = grid().step();
 
     unsigned int n = equationsNumber();
 
@@ -155,9 +153,8 @@ void LinearODE1stOrderEx1::example2()
 
 void LinearODE1stOrderEx1::example3()
 {
-    Dimension dim = grid().dimension();
-    unsigned int N = dim.sizeN();
-    double h = dim.step();
+    unsigned int N = grid().sizeN();
+    double h = grid().step();
 
     unsigned int n = equationsNumber();
 
@@ -208,9 +205,8 @@ void LinearODE1stOrderEx1::example3()
 
 void LinearODE1stOrderEx1::example4()
 {
-    Dimension dim = grid().dimension();
-    unsigned int N = dim.sizeN();
-    double h = dim.step();
+    unsigned int N = grid().sizeN();
+    double h = grid().step();
 
     unsigned int n = equationsNumber();
 
@@ -295,9 +291,8 @@ void LinearODE1stOrderEx1::example4()
 
 void LinearODE1stOrderEx1::example5()
 {
-    Dimension dim = grid().dimension();
-    unsigned int N = dim.sizeN();
-    double h = dim.step();
+    unsigned int N = grid().sizeN();
+    double h = grid().step();
 
     unsigned int n = equationsNumber();
 
@@ -382,9 +377,8 @@ void LinearODE1stOrderEx1::example5()
 
 void LinearODE1stOrderEx1::example6()
 {
-    Dimension dim = grid().dimension();
-    unsigned int N = dim.sizeN();
-    double h = dim.step();
+    unsigned int N = grid().sizeN();
+    double h = grid().step();
 
     DoubleVector x(N+1); x[0] = 0.0;
     for (unsigned int i=0; i<N; i++) x[i+1] = (1.0+h*A(i*h, i))*x[i] + h*B(i*h, i);

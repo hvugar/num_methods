@@ -3,7 +3,7 @@
 
 void Problem4Ex1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    ODEGrid grid(Dimension(0.001, 1000, 0));
+    UniformODEGrid grid(0.001, 1000, 0);
     Problem4Ex1 prob1(grid);
     prob1.initialize();
 
@@ -20,14 +20,13 @@ void Problem4Ex1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     prob1.printResult1(x);
 }
 
-Problem4Ex1::Problem4Ex1(const ODEGrid &grid) : mgrid(grid)
+Problem4Ex1::Problem4Ex1(const UniformODEGrid &grid) : mgrid(grid)
 {
 }
 
 void Problem4Ex1::initialize()
 {
-    Dimension dim = mgrid.dimension();
-    unsigned int N = dim.sizeN();
+    unsigned int N = mgrid.sizeN();
 
     unsigned int n0 = 3;
     unsigned int n1 = 0;
@@ -222,8 +221,7 @@ void Problem4Ex1::initialize()
 
 void Problem4Ex1::printResult()
 {
-    Dimension dim = mgrid.dimension();
-    unsigned int N = dim.sizeN();
+    unsigned int N = mgrid.sizeN();
 
     DoubleVector x1(N+1);
     DoubleVector x2(N+1);
@@ -241,8 +239,7 @@ void Problem4Ex1::printResult()
 
 void Problem4Ex1::printResult1(const DoubleVector &x)
 {
-    Dimension dim = mgrid.dimension();
-    unsigned int N = dim.sizeN();
+    unsigned int N = mgrid.sizeN();
 
     DoubleVector x1(N+1);
     DoubleVector x2(N+1);
@@ -260,8 +257,7 @@ void Problem4Ex1::printResult1(const DoubleVector &x)
 
 double Problem4Ex1::fx(const DoubleVector &x, unsigned int num) const
 {
-    Dimension dim = mgrid.dimension();
-    unsigned int N = dim.sizeN();
+    unsigned int N = mgrid.sizeN();
 
     if (num == 0)
     {

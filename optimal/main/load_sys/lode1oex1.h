@@ -1,7 +1,7 @@
 #ifndef LOADLINEARODE1STORDEREX1_H
 #define LOADLINEARODE1STORDEREX1_H
 
-#define EXAMPLE_6
+#define EXAMPLE_3
 
 #include <ode/lode1o.h>
 #include <utils/random.h>

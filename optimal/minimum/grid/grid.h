@@ -26,9 +26,9 @@ class MINIMUMSHARED_EXPORT Dimension
 public:
     enum SpaceDimension
     {
-        Dim1 = 0,
-        Dim2 = 1,
-        Dim3 = 2
+        DimensionX = 0,
+        DimensionY = 1,
+        DimensionZ = 2
     };
 
     Dimension(double step=0.01, unsigned int maxN=100, unsigned int minN = 0);
@@ -44,22 +44,26 @@ protected:
     unsigned int mminN;
 };
 
-class MINIMUMSHARED_EXPORT ODEGrid
+class MINIMUMSHARED_EXPORT UniformODEGrid
 {
 public:
-    ODEGrid();
-    explicit ODEGrid(const Dimension &dimension);
+    UniformODEGrid(double step = 0.0, int min = 0, int max = 0);
 
-    const Dimension &dimension() const;
-    void setDimension(const Dimension &dimension);
+    double step() const;
+    int minN() const;
+    int maxN() const;
+    int sizeN() const;
 private:
-    Dimension mdimension;
+    double mstep;
+    int mminN;
+    int mmaxN;
+
 };
 
-class MINIMUMSHARED_EXPORT PDEGrid
+class MINIMUMSHARED_EXPORT UniformPDEGrid
 {
 public:
-    PDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaceDimension);
+    UniformPDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaceDimension);
 
     void setTimeDimension(const Dimension &timeDimension);
     void addSpaceDimension(const Dimension &spaceDimension);

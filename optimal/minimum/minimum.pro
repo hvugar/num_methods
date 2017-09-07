@@ -29,9 +29,9 @@ SOURCES += \
     integral.cpp \
     #ode/cauchyp.cpp \
     ode/diffequ.cpp \
-    pde/iibvp.cpp \
-    pde/hyperbolicequation.cpp \
-    pde/parabolicequation.cpp \
+    pde_old/iibvp.cpp \
+    pde_old/hyperbolicequation.cpp \
+    pde_old/parabolicequation.cpp \
     exceptions.cpp \
     vector2d.cpp \
     matrix2d.cpp \
@@ -48,7 +48,6 @@ SOURCES += \
     grid/bpibvp.cpp \
     grid/nhpibvp.cpp \
     grid/integral1.cpp \
-    grid/uniformgrid.cpp \
     gradient/igradient.cpp \
     nonuniformgrid.cpp \
     utils/matrix.cpp \
@@ -61,7 +60,9 @@ SOURCES += \
     ode/lode1o.cpp \
     linearequation.cpp \
     nonlinearequation.cpp \
-    utils/random.cpp
+    utils/random.cpp \
+    ode/lode2o.cpp \
+    ode/nlode2o.cpp
 
 HEADERS += global.h \
     cmatrix.h \
@@ -76,9 +77,9 @@ HEADERS += global.h \
     projection.h \
     rungekutta.h \
     integral.h \
-    pde/iibvp.h \
-    pde/hyperbolicequation.h \
-    pde/parabolicequation.h \
+    pde_old/iibvp.h \
+    pde_old/hyperbolicequation.h \
+    pde_old/parabolicequation.h \
     exceptions.h \
     matrix2d.h \
     vector2d.h \
@@ -95,7 +96,6 @@ HEADERS += global.h \
     grid/nhpibvp.h \
     gradient/igradient.h \
     grid/integral1.h \
-    grid/uniformgrid.h \
     nonuniformgrid.h \
     #ode/cauchyp.h \
     ode/diffequ.h \
@@ -109,4 +109,6 @@ HEADERS += global.h \
     ode/lode1o.h \
     linearequation.h \
     nonlinearequation.h \
-    utils/random.h
+    utils/random.h \
+    ode/lode2o.h \
+    ode/nlode2o.h

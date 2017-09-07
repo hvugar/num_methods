@@ -13,7 +13,7 @@ class Problem4Ex1 : public NonLinearEquationEx1, public ISystemLinearODENonLocal
 public:
     static void Main(int agrc, char *argv[]);
 
-    Problem4Ex1(const ODEGrid &grid);
+    Problem4Ex1(const UniformODEGrid &grid);
     void initialize();
 
     virtual double A(double t, unsigned int k, unsigned int row, unsigned int col) const;
@@ -37,7 +37,7 @@ public:
     std::vector<std::vector<DoubleVector>> zm2;
 
 private:
-    ODEGrid mgrid;
+    UniformODEGrid mgrid;
 };
 
 #endif // PROBLEM5EX1_H

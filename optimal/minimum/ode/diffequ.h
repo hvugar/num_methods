@@ -11,10 +11,10 @@ class MINIMUMSHARED_EXPORT DifferentialEquation
 public:
     virtual unsigned int equationsNumber() const;
 
-    const ODEGrid &grid() const;
-    void setGrid(const ODEGrid& grid);
+    const UniformODEGrid &grid() const;
+    void setGrid(const UniformODEGrid& grid);
 protected:
-    ODEGrid mgrid;
+    UniformODEGrid mgrid;
 };
 
 class MINIMUMSHARED_EXPORT OrdinaryDifferentialEquation : public DifferentialEquation
@@ -39,33 +39,13 @@ class MINIMUMSHARED_EXPORT LinearODE : public OrdinaryDifferentialEquation {};
 
 class MINIMUMSHARED_EXPORT NonLinearODE : public OrdinaryDifferentialEquation {};
 
-/**
- * @brief The Linear ODE 2nd order in canonical (normal) form y"(x) = q(x)y'(x) + p(x)*y(x) + r(x);
- */
-class MINIMUMSHARED_EXPORT LinearODE2ndOrder : public LinearODE
-{
-protected:
-    virtual double q(double x, unsigned int i) const = 0;
-    virtual double p(double x, unsigned int i) const = 0;
-    virtual double r(double x, unsigned int i) const = 0;
-};
-
-/**
- * @brief The NonLinear ODE1 2nd order in canonical (normal) form y"(x)=f(x,y(x),y'(x));
- */
-class MINIMUMSHARED_EXPORT NonLinearODE2ndOrder : public NonLinearODE
-{
-protected:
-    virtual double f(double x, double y, double dy, unsigned int i) const = 0;
-};
-
 class MINIMUMSHARED_EXPORT SystemDifferentialEquation
 {
 public:
-    const ODEGrid& grid() const;
-    void setGrid(const ODEGrid& grid);
+    const UniformODEGrid& grid() const;
+    void setGrid(const UniformODEGrid& grid);
 protected:
-    ODEGrid mgrid;
+    UniformODEGrid mgrid;
 };
 
 class MINIMUMSHARED_EXPORT SystemDifferentialEquationODE : public SystemDifferentialEquation
@@ -81,13 +61,13 @@ protected:
     virtual double B(double t, unsigned int k, unsigned int row = 0) const = 0;
 };
 
-class MINIMUMSHARED_EXPORT SystemNonLinearODE : public SystemDifferentialEquationODE
-{};
+//class MINIMUMSHARED_EXPORT SystemNonLinearODE : public SystemDifferentialEquationODE
+//{};
 
-class MINIMUMSHARED_EXPORT SystemNonLinearODE1stOrder : public SystemNonLinearODE
-{
-protected:
-    virtual double f(double x, const DoubleVector &y, unsigned int k, unsigned int i) const = 0;
-};
+//class MINIMUMSHARED_EXPORT SystemNonLinearODE1stOrder : public SystemNonLinearODE
+//{
+//protected:
+//    virtual double f(double x, const DoubleVector &y, unsigned int k, unsigned int i) const = 0;
+//};
 
 #endif // DIFFENSIALEQUATION_H

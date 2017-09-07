@@ -5,22 +5,22 @@ unsigned int DifferentialEquation::equationsNumber() const
     return 1;
 }
 
-const ODEGrid& DifferentialEquation::grid() const
+const UniformODEGrid& DifferentialEquation::grid() const
 {
     return mgrid;
 }
 
-void DifferentialEquation::setGrid(const ODEGrid& grid)
+void DifferentialEquation::setGrid(const UniformODEGrid& grid)
 {
     mgrid = grid;
 }
 
-const ODEGrid& SystemDifferentialEquation::grid() const
+const UniformODEGrid& SystemDifferentialEquation::grid() const
 {
     return mgrid;
 }
 
-void SystemDifferentialEquation::setGrid(const ODEGrid &grid)
+void SystemDifferentialEquation::setGrid(const UniformODEGrid &grid)
 {
     mgrid = grid;
 }

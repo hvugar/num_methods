@@ -9,7 +9,7 @@ class NumIntegralExp1 : public NumericalIntegral
 public:
     static void Main(int agrc, char *argv[]);
 
-    NumIntegralExp1(const ODEGrid &grid);
+    NumIntegralExp1(const UniformODEGrid &grid);
 
     virtual double f(double x, int n) const;
 };
