@@ -11,9 +11,9 @@ public:
 public:
     SystemLinearODENonLocalContionsV2();
 
-    virtual double A(TimeNode node, unsigned int row = 0, unsigned int col = 0) const;
-    virtual double B(TimeNode node, unsigned int s, unsigned int row = 0, unsigned int col = 0) const;
-    virtual double C(TimeNode node, unsigned int row = 0) const;
+    virtual double A(TimeNodePDE node, unsigned int row = 0, unsigned int col = 0) const;
+    virtual double B(TimeNodePDE node, unsigned int s, unsigned int row = 0, unsigned int col = 0) const;
+    virtual double C(TimeNodePDE node, unsigned int row = 0) const;
 
     virtual void calculateForward();
     virtual void calculateForward2();

@@ -32,33 +32,33 @@ void BackwardParabolicIBVP::gridMethod(DoubleVector &p, SweepMethodDirection dir
     double *rx = (double*) malloc(sizeof(double)*(N-1));
 
     /* initial condition */
-    SpaceNode isn;
+    SpaceNodePDE isn;
     for (unsigned int n=0; n<=N; n++)
     {
-        isn.i = n+minN;
-        isn.x = isn.i*hx;
+        isn.xIndex = n+minN;
+        isn.x = isn.xIndex*hx;
         p[n] = initial(isn);
     }
     layerInfo(p, M);
 
-    SpaceNode lsn;
-    lsn.i = minN;
+    SpaceNodePDE lsn;
+    lsn.xIndex = minN;
     lsn.x = minN*hx;
 
-    SpaceNode rsn;
-    rsn.i = maxN;
+    SpaceNodePDE rsn;
+    rsn.xIndex = maxN;
     rsn.x = maxN*hx;
 
-    TimeNode tn;
+    TimeNodePDE tn;
     for (unsigned int m=M-1; m!=UINT32_MAX; m--)
     {
-        tn.i = m+minM;
-        tn.t = tn.i*ht;
+        tn.index = m+minM;
+        tn.t = tn.index*ht;
 
         for (unsigned int n=1; n<=N-1; n++)
         {
-            isn.i = n+minN;
-            isn.x = isn.i*hx;
+            isn.xIndex = n+minN;
+            isn.x = isn.xIndex*hx;
 
             double alpha = -a(isn,tn)*h;
             double betta = 1.0 - 2.0*alpha;
@@ -125,33 +125,33 @@ void BackwardParabolicIBVP::gridMethod(DoubleMatrix &p, SweepMethodDirection dir
     double *rx = (double*) malloc(sizeof(double)*(N-1));
 
     /* initial condition */
-    SpaceNode isn;
+    SpaceNodePDE isn;
     for (unsigned int n=0; n<=N; n++)
     {
-        isn.i = n+minN;
-        isn.x = isn.i*hx;
+        isn.xIndex = n+minN;
+        isn.x = isn.xIndex*hx;
         p[M][n] = initial(isn);
     }
     layerInfo(p, M);
 
-    SpaceNode lsn;
-    lsn.i = minN;
+    SpaceNodePDE lsn;
+    lsn.xIndex = minN;
     lsn.x = minN*hx;
 
-    SpaceNode rsn;
-    rsn.i = maxN;
+    SpaceNodePDE rsn;
+    rsn.xIndex = maxN;
     rsn.x = maxN*hx;
 
-    TimeNode tn;
+    TimeNodePDE tn;
     for (unsigned int m=M-1; m!=UINT32_MAX; m--)
     {
-        tn.i = m+minM;
-        tn.t = tn.i*ht;
+        tn.index = m+minM;
+        tn.t = tn.index*ht;
 
         for (unsigned int n=1; n<=N-1; n++)
         {
-            isn.i = n+minN;
-            isn.x = isn.i*hx;
+            isn.xIndex = n+minN;
+            isn.x = isn.xIndex*hx;
 
             double alpha = -a(isn,tn)*h;
             double betta = 1.0 - 2.0*alpha;

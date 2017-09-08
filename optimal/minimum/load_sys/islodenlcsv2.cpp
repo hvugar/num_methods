@@ -37,9 +37,9 @@ void ISystemLinearODENonLocalContionsV2::calculateCauchyProblem(const Condition 
             if (i<n)
             {
                 double res = _SO*x[i];
-                TimeNode node;
+                TimeNodePDE node;
                 node.t = t;
-                node.i = k;
+                node.index = k;
                 for (unsigned int row=0; row<n; row++) res -= p.A(node,row,i)*x[row];
                 return res;
             }
@@ -49,18 +49,18 @@ void ISystemLinearODENonLocalContionsV2::calculateCauchyProblem(const Condition 
                 unsigned int s = (i-n)/n;
                 unsigned int col = i%n;
                 double res = _SO*x[i];
-                TimeNode node;
+                TimeNodePDE node;
                 node.t = t;
-                node.i = k;
+                node.index = k;
                 for (unsigned int row=0; row<n; row++) res -= p.B(node,s,row,col)*x[row];
                 return res;
             }
             else if (i==(k1+1)*n)
             {
                 double res = _SO*x[i];
-                TimeNode node;
+                TimeNodePDE node;
                 node.t = t;
-                node.i = k;
+                node.index = k;
                 for (unsigned int row=0; row<n; row++) res += p.C(node,row)*x[row];
                 return res;
             }
@@ -81,9 +81,9 @@ void ISystemLinearODENonLocalContionsV2::calculateCauchyProblem(const Condition 
             for (unsigned int col=0; col<n; col++)
             {
                 double aa = 0.0;
-                TimeNode node;
+                TimeNodePDE node;
                 node.t = t;
-                node.i = k;
+                node.index = k;
                 for (unsigned int row=0; row<n; row++) aa += x[row]*p.A(node,row,col);
                 s1 += aa*x[col];
             }
@@ -96,9 +96,9 @@ void ISystemLinearODENonLocalContionsV2::calculateCauchyProblem(const Condition 
                 for (unsigned int col=0; col<n; col++)
                 {
                     double aa = 0.0;
-                    TimeNode node;
+                    TimeNodePDE node;
                     node.t = t;
-                    node.i = k;
+                    node.index = k;
                     for (unsigned int row=0; row<n; row++) aa += x[row]*p.B(node,s-1,row,col);
                     ss += aa*x[s*n+col];
                 }
@@ -109,9 +109,9 @@ void ISystemLinearODENonLocalContionsV2::calculateCauchyProblem(const Condition 
             double s3 = 0.0;
             for (unsigned int col=0; col<n; col++)
             {
-                TimeNode node;
+                TimeNodePDE node;
                 node.t = t;
-                node.i = k;
+                node.index = k;
                 s3 += x[col]*p.C(node,col);
             }
             s3 *= x[(k1+1)*n];

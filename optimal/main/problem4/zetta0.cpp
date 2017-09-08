@@ -21,12 +21,12 @@ unsigned int Zetta01::equationsNumber() const
     return 3;
 }
 
-double Zetta01::A(double t, unsigned int k, unsigned int row, unsigned int col) const
+double Zetta01::A(const GridNodeODE &node, unsigned int row, unsigned int col) const
 {
-    return p.A(t,k,row,col);
+    return p.A(node,row,col);
 }
 
-double Zetta01::B(double t, unsigned int k, unsigned int row) const
+double Zetta01::B(const GridNodeODE &node, unsigned int row) const
 {
-    return p.B(t,k,row);
+    return p.B(node,row);
 }

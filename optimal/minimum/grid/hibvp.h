@@ -16,11 +16,11 @@
 class MINIMUMSHARED_EXPORT HyperbolicIBVP : protected InitialBoundaryValueProblemPDE
 {
 protected:
-    virtual double initial1(const SpaceNode &sn) const = 0;
-    virtual double initial2(const SpaceNode &sn) const = 0;
-    virtual double boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType boundary = Unused) const = 0;
-    virtual double f(const SpaceNode &sn, const TimeNode &tn) const = 0;
-    virtual double a(const SpaceNode &sn, const TimeNode &tn) const = 0;
+    virtual double initial1(const SpaceNodePDE &sn) const = 0;
+    virtual double initial2(const SpaceNodePDE &sn) const = 0;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const = 0;
+    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
+    virtual double a(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
 
 public:
     void gridMethod(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);

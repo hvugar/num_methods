@@ -8,9 +8,9 @@ class HeatEquationIBVP : protected InitialBoundaryValueProblemPDE
 public:
     virtual ~HeatEquationIBVP();
 protected:
-    virtual double initial(const SpaceNode &sn) const = 0;
-    virtual double boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType boundary = Unused) const = 0;
-    virtual double f(const SpaceNode &sn, const TimeNode &tn) const = 0;
+    virtual double initial(const SpaceNodePDE &sn) const = 0;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const = 0;
+    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
 
 public:
     virtual void layerInfo(const DoubleVector &, unsigned int) {}

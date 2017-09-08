@@ -4,21 +4,28 @@
 #include <global.h>
 #include <vector>
 
-struct MINIMUMSHARED_EXPORT SpaceNode
+struct MINIMUMSHARED_EXPORT GridNodeODE
 {
-    unsigned int i;
-    unsigned int j;
-    unsigned int k;
+    inline GridNodeODE(double x, int i) : x(x), i(i) {}
+    double x;
+    int i;
+};
 
+struct MINIMUMSHARED_EXPORT SpaceNodePDE
+{
     double x;
     double y;
     double z;
+
+    unsigned int xIndex;
+    unsigned int yIndex;
+    unsigned int zIndex;
 };
 
-struct MINIMUMSHARED_EXPORT TimeNode
+struct MINIMUMSHARED_EXPORT TimeNodePDE
 {
-    unsigned int i;
     double t;
+    unsigned int index;
 };
 
 class MINIMUMSHARED_EXPORT Dimension
@@ -63,7 +70,7 @@ private:
 class MINIMUMSHARED_EXPORT UniformPDEGrid
 {
 public:
-    UniformPDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaceDimension);
+    UniformPDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaceDimensions);
 
     void setTimeDimension(const Dimension &timeDimension);
     void addSpaceDimension(const Dimension &spaceDimension);

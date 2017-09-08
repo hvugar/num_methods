@@ -19,7 +19,7 @@ public:
 
     void calculate(const std::vector<Condition> &cs, const DoubleVector &bt, std::vector<DoubleVector> &x);
 
-    void highOderAccuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x, unsigned int k, Direction direction = L2R);
+    void solveHighOderAccuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x, unsigned int k, Direction direction = L2R);
 
     /* high order accuracy */
 
@@ -36,14 +36,14 @@ protected:
      * @param i index of independent variable of given grid
      * @return
      */
-    virtual double A(double x, unsigned int i, unsigned int row = 0, unsigned int col = 0) const = 0;
+    virtual double A(const GridNodeODE &node, unsigned int row = 0, unsigned int col = 0) const = 0;
     /**
      * @brief B one dimensional vector-function
      * @param x independent variable
      * @param i index of independent variable of given grid
      * @return
      */
-    virtual double B(double x, unsigned int i, unsigned int row = 0) const = 0;
+    virtual double B(const GridNodeODE &node, unsigned int row = 0) const = 0;
 };
 
 

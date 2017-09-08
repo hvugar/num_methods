@@ -9,14 +9,14 @@ class LoadedHeatEquation : public ILoadedHeatEquation
 {
 public:
     static void Main(int argc, char** argv);
-    double U(const SpaceNode &sn,const TimeNode &tn) const;
+    double U(const SpaceNodePDE &sn,const TimeNodePDE &tn) const;
 
-    virtual double initial(const SpaceNode &sn) const;
-    virtual double boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType boundary) const;
-    virtual double f(const SpaceNode &sn, const TimeNode &tn) const;
+    virtual double initial(const SpaceNodePDE &sn) const;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary) const;
+    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
-    virtual double g(const TimeNode &tn) const;
-    virtual double h(const TimeNode &tn) const;
+    virtual double g(const TimeNodePDE &tn) const;
+    virtual double h(const TimeNodePDE &tn) const;
 
     virtual void layerInfo(const DoubleVector &, unsigned int) const;
 };

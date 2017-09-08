@@ -12,10 +12,10 @@ public:
     double U(unsigned int i, unsigned int j) const;
 
 protected:
-    virtual double initial(const SpaceNode &sn) const;
-    virtual double boundary(const SpaceNode &sn, const TimeNode& tn, BoundaryType boundary = Unused) const;
-    virtual double f(const SpaceNode &sn, const TimeNode &tn) const;
-    virtual double a(const SpaceNode &sn, const TimeNode &tn) const;
+    virtual double initial(const SpaceNodePDE &sn) const;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE& tn, BoundaryType boundary = Unused) const;
+    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    virtual double a(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
     virtual void layerInfo(const DoubleVector &, unsigned int) const;
 

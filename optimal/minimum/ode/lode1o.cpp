@@ -42,16 +42,18 @@ void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const Doub
                     //unsigned int n = p->systemOrder();
                     double _SO = S0(t,x,k);
 
+                    GridNodeODE node(t,k);
+
                     if (i<n)
                     {
                         double res = _SO*x[i];
-                        for (unsigned int j=0; j<n; j++) res -= p->A(t,k,j,i)*x[j];
+                        for (unsigned int j=0; j<n; j++) res -= p->A(node,j,i)*x[j];
                         return res;
                     }
                     else if (i==n)
                     {
                         double res = _SO*x[n];
-                        for (unsigned int j=0; j<n; j++) res += p->B(t,k,j)*x[j];
+                        for (unsigned int j=0; j<n; j++) res += p->B(node,j)*x[j];
                         return res;
                     }
                     else
@@ -67,18 +69,20 @@ void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const Doub
                     //unsigned int n = p.systemOrder();
                     double btr = x[n];
 
+                    GridNodeODE node(t, k);
+
                     double s1 = 0.0;
                     for (unsigned int i=0; i<n; i++)
                     {
                         double aa = 0.0;
-                        for (unsigned int j=0; j<n; j++) aa += x[j]*p->A(t,k,j,i);
+                        for (unsigned int j=0; j<n; j++) aa += x[j]*p->A(node,j,i);
                         s1 += aa*x[i];
                     }
 
                     double s2 = 0.0;
                     for (unsigned int i=0; i<n; i++)
                     {
-                        s2 += x[i]*p->B(t,k,i);
+                        s2 += x[i]*p->B(node,i);
                     }
                     s2 *= btr;
 
@@ -141,8 +145,10 @@ void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const Doub
     protected:
         virtual double f(double t, const DoubleVector &x, unsigned int k, unsigned int i) const
         {
-            double res = p->B(t,k,i);
-            for (unsigned int j=0; j<n; j++) res += p->A(t,k,i,j)*x[j];
+            GridNodeODE node(t,k);
+
+            double res = p->B(node,i);
+            for (unsigned int j=0; j<n; j++) res += p->A(node,i,j)*x[j];
             return res;
         }
     };
@@ -154,7 +160,7 @@ void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const Doub
     helper.cauchyProblem(nscs.back().time, x1, x, HelperB::RK4, HelperB::R2L);
 }
 
-void LinearODE1stOrder::highOderAccuracy(const std::vector<Condition> &cs, const DoubleVector &rs, std::vector<DoubleVector> &x, unsigned int k, Direction direction UNUSED_PARAM)
+void LinearODE1stOrder::solveHighOderAccuracy(const std::vector<Condition> &cs, const DoubleVector &rs, std::vector<DoubleVector> &x, unsigned int k, Direction direction UNUSED_PARAM)
 {
     switch (k)
     {
@@ -215,11 +221,12 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
 
         for (unsigned int n=0; n<=N-2; n++)
         {
-            double t = n*h;
-            double m = 1.0/(2.0*h*A(t,n)+3.0);
+            GridNodeODE node(n*h, n);
+
+            double m = 1.0/(2.0*h*A(node)+3.0);
             double alpha1 = +4.0*m;
             double alpha2 = -1.0*m;
-            double alpha0 = -2.0*h*B(t,n)*m;
+            double alpha0 = -2.0*h*B(node)*m;
 
             r[n+1] = r[n] - p[n]*alpha0;
             q[n+1] = p[n]*alpha2;
@@ -259,15 +266,17 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
         m[0][2] = q[N-1];
         c[0] = r[N-1];
 
+        GridNodeODE nodeN1((N-1)*h, N-1);
         m[1][0] = -1.0;
-        m[1][1] = -2.0*h*A((N-1)*h,N-1);
+        m[1][1] = -2.0*h*A(nodeN1);
         m[1][2] = +1.0;
-        c[1] = 2.0*h*B((N-1)*h,N-1);
+        c[1] = 2.0*h*B(nodeN1);
 
+        GridNodeODE nodeN(N*h, N);
         m[2][0] = +1.0;
         m[2][1] = -4.0;
-        m[2][2] = 3.0-2.0*h*A(N*h,N);
-        c[2] = 2.0*h*B(N*h,N);
+        m[2][2] = 3.0-2.0*h*A(nodeN);
+        c[2] = 2.0*h*B(nodeN);
 
         LinearEquation::GaussianElimination(m, c, xT);
         m.clear();
@@ -367,13 +376,14 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
 
         for (unsigned int n=0; n<=N-2; n++)
         {
-            double t = n*h;
+            //double t = n*h;
 
+            GridNodeODE node(n*h, n);
             for (unsigned int row=0; row<en; row++)
             {
                 for (unsigned int col=0; col<en; col++)
                 {
-                    m[row][col] = 2.0*h*A(t,n,row,col);
+                    m[row][col] = 2.0*h*A(node,row,col);
                     if (row==col) m[row][col] += 3.0;
 
                     alpha1[row][col] = 0.0;
@@ -382,7 +392,7 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
                     alpha2[row][col] = 0.0;
                     if (row==col) alpha2[row][col] = -1.0;
                 }
-                alpha0[row][0] = -2.0*h*B(t,n,row);
+                alpha0[row][0] = -2.0*h*B(node,row);
             }
 
             m.inverse();
@@ -431,20 +441,22 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
             C[row] = r[N-1][row%en][0];
         }
 
+        GridNodeODE nodeN1((N-1)*h, N-1);
         for (unsigned int row=1*en; row<2*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -1.0; }
-            for (unsigned int col=1*en; col<2*en; col++) { M[row][col] = -2.0*h*A((N-1)*h, N-1, row%en, col%en); }
+            for (unsigned int col=1*en; col<2*en; col++) { M[row][col] = -2.0*h*A(nodeN1, row%en, col%en); }
             for (unsigned int col=2*en; col<3*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +1.0; }
-            C[row] = 2.0*h*B((N-1)*h, N-1, row%en);
+            C[row] = 2.0*h*B(nodeN1, row%en);
         }
 
+        GridNodeODE nodeN(N*h, N);
         for (unsigned int row=2*en; row<3*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +1.0; }
             for (unsigned int col=1*en; col<2*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -4.0; }
-            for (unsigned int col=2*en; col<3*en; col++) { M[row][col] = -2.0*h*A(N*h, N, row%en, col%en); if (row%en == col%en) M[row][col] += +3.0; }
-            C[row] = 2.0*h*B(N*h, N, row%en);
+            for (unsigned int col=2*en; col<3*en; col++) { M[row][col] = -2.0*h*A(nodeN, row%en, col%en); if (row%en == col%en) M[row][col] += +3.0; }
+            C[row] = 2.0*h*B(nodeN, row%en);
         }
 
         LinearEquation::GaussianElimination(M, C, xT);
@@ -566,13 +578,14 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
 
         for (unsigned int n=0; n<=N-4; n++)
         {
-            double t = n*h;
-            double m = +1.0/(-12.0*h*A(t,n)-25.0);
+            GridNodeODE node(n*h, n);
+
+            double m = +1.0/(-12.0*h*A(node)-25.0);
             double alpha1 = -48.0*m;
             double alpha2 = +36.0*m;
             double alpha3 = -16.0*m;
             double alpha4 = +3.0*m;
-            double alpha0 = +12.0*h*B(t,n)*m;
+            double alpha0 = +12.0*h*B(node)*m;
 
             r[n+1] = r[n] - p[n]*alpha0;
             u[n+1] = p[n]*alpha4;
@@ -608,33 +621,37 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
         m[0][4] = u[N-3];
         c[0] = r[N-3];
 
+        GridNodeODE nodeN3((N-3)*h, N-3);
         m[1][0] = -3.0;
-        m[1][1] = -10.0 - 12.0*h*A((N-3)*h,(N-3));
+        m[1][1] = -10.0 - 12.0*h*A(nodeN3);
         m[1][2] = +18.0;
         m[1][3] = -6.0;
         m[1][4] = +1.0;
-        c[1] = 12.0*h*B((N-3)*h,N-3);
+        c[1] = 12.0*h*B(nodeN3);
 
+        GridNodeODE nodeN2((N-2)*h, N-2);
         m[2][0] = +1.0;
         m[2][1] = -8.0;
-        m[2][2] = +0.0 -12.0*h*A((N-2)*h,N-2);
+        m[2][2] = +0.0 -12.0*h*A(nodeN2);
         m[2][3] = +8.0;
         m[2][4] = -1.0;
-        c[2] = 12.0*h*B((N-2)*h,N-2);
+        c[2] = 12.0*h*B(nodeN2);
 
+        GridNodeODE nodeN1((N-1)*h, N-1);
         m[3][0] = -1.0;
         m[3][1] = +6.0;
         m[3][2] = -18.0;
-        m[3][3] = +10.0 - 12.0*h*A((N-1)*h,N-1);
+        m[3][3] = +10.0 - 12.0*h*A(nodeN1);
         m[3][4] = +3.0;
-        c[3] = 12.0*h*B((N-1)*h,N-1);
+        c[3] = 12.0*h*B(nodeN1);
 
+        GridNodeODE nodeN0(N*h, N);
         m[4][0] = +3.0;
         m[4][1] = -16.0;
         m[4][2] = +36.0;
         m[4][3] = -48.0;
-        m[4][4] = +25.0 - 12.0*h*A((N-0)*h,N-0);
-        c[4] = 12.0*h*B((N-0)*h,N-0);
+        m[4][4] = +25.0 - 12.0*h*A(nodeN0);
+        c[4] = 12.0*h*B(nodeN0);
 
         LinearEquation::GaussianElimination(m, c, xT);
         m.clear();
@@ -741,13 +758,14 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
 
         for (unsigned int n=0; n<=N-4; n++)
         {
-            double t = n*h;
+            //double t = n*h;
+            GridNodeODE node(n*h, n);
 
             for (unsigned int row=0; row<en; row++)
             {
                 for (unsigned int col=0; col<en; col++)
                 {
-                    m[row][col] = -12.0*h*A(t,n,row,col);
+                    m[row][col] = -12.0*h*A(node,row,col);
                     if (row==col) m[row][col] -= 25.0;
 
                     alpha1[row][col] = 0.0;
@@ -763,7 +781,7 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
                     if (row==col) alpha4[row][col] = +3.0;
 
                 }
-                alpha0[row][0] = +12.0*h*B(t,n,row);
+                alpha0[row][0] = +12.0*h*B(node,row);
             }
 
             m.inverse();
@@ -819,44 +837,48 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
             C[row] = r[N-3][row%en][0];
         }
 
+        GridNodeODE nodeN3((N-3)*h, N-3);
         for (unsigned int row=1*en; row<2*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -3.0; }
-            for (unsigned int col=1*en; col<2*en; col++) { M[row][col] = -12.0*h*A((N-3)*h, N-3, row%en, col%en); if (row%en == col%en) M[row][col] += -10.0; }
+            for (unsigned int col=1*en; col<2*en; col++) { M[row][col] = -12.0*h*A(nodeN3, row%en, col%en); if (row%en == col%en) M[row][col] += -10.0; }
             for (unsigned int col=2*en; col<3*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +18.0; }
             for (unsigned int col=3*en; col<4*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -6.0; }
             for (unsigned int col=4*en; col<5*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +1.0; }
-            C[row] = 12.0*h*B((N-3)*h, N-3, row%en);
+            C[row] = 12.0*h*B(nodeN3, row%en);
         }
 
+        GridNodeODE nodeN2((N-2)*h, N-2);
         for (unsigned int row=2*en; row<3*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +1.0; }
             for (unsigned int col=1*en; col<2*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -8.0; }
-            for (unsigned int col=2*en; col<3*en; col++) { M[row][col] = -12.0*h*A((N-2)*h, N-2, row%en, col%en); }
+            for (unsigned int col=2*en; col<3*en; col++) { M[row][col] = -12.0*h*A(nodeN2, row%en, col%en); }
             for (unsigned int col=3*en; col<4*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +8.0; }
             for (unsigned int col=4*en; col<5*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -1.0; }
-            C[row] = 12.0*h*B((N-2)*h, N-2, row%en);
+            C[row] = 12.0*h*B(nodeN2, row%en);
         }
 
+        GridNodeODE nodeN1((N-1)*h, N-1);
         for (unsigned int row=3*en; row<4*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -1.0; }
             for (unsigned int col=1*en; col<2*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +6.0; }
             for (unsigned int col=2*en; col<3*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -18.0; }
-            for (unsigned int col=3*en; col<4*en; col++) { M[row][col] = -12.0*h*A((N-1)*h, N-1, row%en, col%en); if (row%en == col%en) M[row][col] += +10.0; }
+            for (unsigned int col=3*en; col<4*en; col++) { M[row][col] = -12.0*h*A(nodeN1, row%en, col%en); if (row%en == col%en) M[row][col] += +10.0; }
             for (unsigned int col=4*en; col<5*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +3.0; }
-            C[row] = 12.0*h*B((N-1)*h, N-1, row%en);
+            C[row] = 12.0*h*B(nodeN1, row%en);
         }
 
+        GridNodeODE nodeN0(N*h, N);
         for (unsigned int row=4*en; row<5*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +3.0; }
             for (unsigned int col=1*en; col<2*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -16.0; }
             for (unsigned int col=2*en; col<3*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +36.0; }
             for (unsigned int col=3*en; col<4*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -48.0; }
-            for (unsigned int col=4*en; col<5*en; col++) { M[row][col] = -12.0*h*A((N-0)*h, N-0, row%en, col%en); if (row%en == col%en) M[row][col] += +25.0;}
-            C[row] = 12.0*h*B((N-0)*h, N-0, row%en);
+            for (unsigned int col=4*en; col<5*en; col++) { M[row][col] = -12.0*h*A(nodeN0, row%en, col%en); if (row%en == col%en) M[row][col] += +25.0;}
+            C[row] = 12.0*h*B(nodeN0, row%en);
         }
 
         //        unsigned int row = 12;
@@ -997,15 +1019,18 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
 
         for (unsigned int n=0; n<=N-6; n++)
         {
-            double t = n*h;
-            double m = +1.0/(-60.0*h*A(t,n)-147.0);
+            //double t = n*h;
+
+            GridNodeODE node(n*h, n);
+
+            double m = +1.0/(-60.0*h*A(node)-147.0);
             double alpha1 = -360.0*m;
             double alpha2 = +450.0*m;
             double alpha3 = -400.0*m;
             double alpha4 = +225.0*m;
             double alpha5 = -72.0*m;
             double alpha6 = +10.0*m;
-            double alpha0 = +60.0*h*B(t,n)*m;
+            double alpha0 = +60.0*h*B(node)*m;
 
             r[n+1] = r[n] - p[n]*alpha0;
             z[n+1] = p[n]*alpha6;
@@ -1045,59 +1070,65 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
         m[0][6] = z[N-5];
         c[0] = r[N-5];
 
+        GridNodeODE nodeN5((N-5)*h, N-5);
         m[1][0] = -10.0;
-        m[1][1] = -77.0 - 60.0*h*A((N-5)*h,N-5);
+        m[1][1] = -77.0 - 60.0*h*A(nodeN5);
         m[1][2] = +150.0;
         m[1][3] = -100.0;
         m[1][4] = +50.0;
         m[1][5] = -15.0;
         m[1][6] = +2.0;
-        c[1] = 60.0*h*B((N-5)*h,N-5);
+        c[1] = 60.0*h*B(nodeN5);
 
+        GridNodeODE nodeN4((N-4)*h, N-4);
         m[2][0] = +2.0;
         m[2][1] = -24.0;
-        m[2][2] = -35.0 - 60.0*h*A((N-4)*h,N-4);
+        m[2][2] = -35.0 - 60.0*h*A(nodeN4);
         m[2][3] = +80.0;
         m[2][4] = -30.0;
         m[2][5] = +8.0;
         m[2][6] = -1.0;
-        c[2] = 60.0*h*B((N-4)*h,N-4);
+        c[2] = 60.0*h*B(nodeN4);
 
+        GridNodeODE nodeN3((N-3)*h, N-3);
         m[3][0] = -1.0;
         m[3][1] = +9.0;
         m[3][2] = -45.0;
-        m[3][3] = -60.0*h*A((N-3)*h,N-3);
+        m[3][3] = -60.0*h*A(nodeN3);
         m[3][4] = +45.0;
         m[3][5] = -9.0;
         m[3][6] = +1.0;
-        c[3] = 60.0*h*B((N-3)*h,N-3);
+        c[3] = 60.0*h*B(nodeN3);
 
+        GridNodeODE nodeN2((N-2)*h, N-2);
         m[4][0] = +1.0;
         m[4][1] = -8.0;
         m[4][2] = +30.0;
         m[4][3] = -80.0;
-        m[4][4] = +35.0 - 60.0*h*A((N-2)*h,N-2);
+        m[4][4] = +35.0 - 60.0*h*A(nodeN2);
         m[4][5] = +24.0;
         m[4][6] = -2.0;
-        c[4] = 60.0*h*B((N-2)*h,N-2);
+        c[4] = 60.0*h*B(nodeN2);
 
+        GridNodeODE nodeN1((N-1)*h, N-1);
         m[5][0] = -2.0;
         m[5][1] = +15.0;
         m[5][2] = -50.0;
         m[5][3] = +100.0;
         m[5][4] = -150.0;
-        m[5][5] = +77.0 - 60.0*h*A((N-1)*h,N-1);
+        m[5][5] = +77.0 - 60.0*h*A(nodeN1);
         m[5][6] = +10.0;
-        c[5] = 60.0*h*B((N-1)*h,N-1);
+        c[5] = 60.0*h*B(nodeN1);
 
+        GridNodeODE nodeN0(N*h, N);
         m[6][0] = +10.0;
         m[6][1] = -72.0;
         m[6][2] = +225.0;
         m[6][3] = -400.0;
         m[6][4] = +450.0;
         m[6][5] = -360.0;
-        m[6][6] = +147.0 - 60.0*h*A((N-0)*h,N-0);
-        c[6] = 60.0*h*B((N-0)*h,N-0);
+        m[6][6] = +147.0 - 60.0*h*A(nodeN0);
+        c[6] = 60.0*h*B(nodeN0);
 
         LinearEquation::GaussianElimination(m, c, xT);
         m.clear();
@@ -1214,13 +1245,14 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
 
         for (unsigned int n=0; n<=N-6; n++)
         {
-            double t = n*h;
+            //double t = n*h;
+            GridNodeODE node(n*h, n);
 
             for (unsigned int row=0; row<en; row++)
             {
                 for (unsigned int col=0; col<en; col++)
                 {
-                    m[row][col] = -60.0*h*A(t,n,row,col);
+                    m[row][col] = -60.0*h*A(node,row,col);
                     if (row==col) m[row][col] -= 147.0;
 
                     alpha1[row][col] = 0.0;
@@ -1241,7 +1273,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
                     alpha6[row][col] = 0.0;
                     if (row==col) alpha6[row][col] = +10.0;
                 }
-                alpha0[row][0] = +60.0*h*B(t,n,row);
+                alpha0[row][0] = +60.0*h*B(node,row);
             }
 
             m.inverse();
@@ -1305,54 +1337,59 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
             C[row] = r[N-5][row%en][0];
         }
 
+        GridNodeODE nodeN5((N-5)*h, N-5);
         for (unsigned int row=1*en; row<2*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -10.0; }
-            for (unsigned int col=1*en; col<2*en; col++) { M[row][col] = -60.0*h*A((N-5)*h, N-5, row%en, col%en); if (row%en == col%en) M[row][col] += -77.0; }
+            for (unsigned int col=1*en; col<2*en; col++) { M[row][col] = -60.0*h*A(nodeN5, row%en, col%en); if (row%en == col%en) M[row][col] += -77.0; }
             for (unsigned int col=2*en; col<3*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +150.0; }
             for (unsigned int col=3*en; col<4*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -100.0; }
             for (unsigned int col=4*en; col<5*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +50.0; }
             for (unsigned int col=5*en; col<6*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -15.0; }
             for (unsigned int col=6*en; col<7*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +2.0; }
-            C[row] = 60.0*h*B((N-5)*h, N-3, row%en);
+            C[row] = 60.0*h*B(nodeN5, row%en);
         }
 
+        GridNodeODE nodeN4((N-4)*h, N-4);
         for (unsigned int row=2*en; row<3*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +2.0; }
             for (unsigned int col=1*en; col<2*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -24.0; }
-            for (unsigned int col=2*en; col<3*en; col++) { M[row][col] = -60.0*h*A((N-4)*h, N-4, row%en, col%en); if (row%en == col%en) M[row][col] += -35.0; }
+            for (unsigned int col=2*en; col<3*en; col++) { M[row][col] = -60.0*h*A(nodeN4, row%en, col%en); if (row%en == col%en) M[row][col] += -35.0; }
             for (unsigned int col=3*en; col<4*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +80.0; }
             for (unsigned int col=4*en; col<5*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -30.0; }
             for (unsigned int col=5*en; col<6*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +8.0; }
             for (unsigned int col=6*en; col<7*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -1.0; }
-            C[row] = 60.0*h*B((N-4)*h, N-4, row%en);
+            C[row] = 60.0*h*B(nodeN4, row%en);
         }
 
+        GridNodeODE nodeN3((N-3)*h, N-3);
         for (unsigned int row=3*en; row<4*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -1.0; }
             for (unsigned int col=1*en; col<2*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +9.0; }
             for (unsigned int col=2*en; col<3*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -45.0; }
-            for (unsigned int col=3*en; col<4*en; col++) { M[row][col] = -60.0*h*A((N-3)*h, N-3, row%en, col%en);}
+            for (unsigned int col=3*en; col<4*en; col++) { M[row][col] = -60.0*h*A(nodeN3, row%en, col%en);}
             for (unsigned int col=4*en; col<5*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +45.0; }
             for (unsigned int col=5*en; col<6*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -9.0; }
             for (unsigned int col=6*en; col<7*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +1.0; }
-            C[row] = 60.0*h*B((N-3)*h, N-3, row%en);
+            C[row] = 60.0*h*B(nodeN3, row%en);
         }
 
+        GridNodeODE nodeN2((N-2)*h, N-2);
         for (unsigned int row=4*en; row<5*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +1.0; }
             for (unsigned int col=1*en; col<2*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -8.0; }
             for (unsigned int col=2*en; col<3*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +30.0; }
             for (unsigned int col=3*en; col<4*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -80.0; }
-            for (unsigned int col=4*en; col<5*en; col++) { M[row][col] = -60.0*h*A((N-2)*h, N-2, row%en, col%en); if (row%en == col%en) M[row][col] += +35.0; }
+            for (unsigned int col=4*en; col<5*en; col++) { M[row][col] = -60.0*h*A(nodeN2, row%en, col%en); if (row%en == col%en) M[row][col] += +35.0; }
             for (unsigned int col=5*en; col<6*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +24.0; }
             for (unsigned int col=6*en; col<7*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -2.0; }
-            C[row] = 60.0*h*B((N-2)*h, N-2, row%en);
+            C[row] = 60.0*h*B(nodeN2, row%en);
         }
 
+        GridNodeODE nodeN1((N-1)*h, N-1);
         for (unsigned int row=5*en; row<6*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -2.0; }
@@ -1360,11 +1397,12 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
             for (unsigned int col=2*en; col<3*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -50.0; }
             for (unsigned int col=3*en; col<4*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +100.0; }
             for (unsigned int col=4*en; col<5*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -150.0; }
-            for (unsigned int col=5*en; col<6*en; col++) { M[row][col] = -60.0*h*A((N-1)*h, N-1, row%en, col%en); if (row%en == col%en) M[row][col] += +77.0; }
+            for (unsigned int col=5*en; col<6*en; col++) { M[row][col] = -60.0*h*A(nodeN1, row%en, col%en); if (row%en == col%en) M[row][col] += +77.0; }
             for (unsigned int col=6*en; col<7*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +10.0; }
-            C[row] = 60.0*h*B((N-1)*h, N-1, row%en);
+            C[row] = 60.0*h*B(nodeN1, row%en);
         }
 
+        GridNodeODE nodeN0(N*h, N);
         for (unsigned int row=6*en; row<7*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +10.0; }
@@ -1373,8 +1411,8 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
             for (unsigned int col=3*en; col<4*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -400.0; }
             for (unsigned int col=4*en; col<5*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +450.0; }
             for (unsigned int col=5*en; col<6*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -360.0; }
-            for (unsigned int col=6*en; col<7*en; col++) { M[row][col] = -60.0*h*A((N-0)*h, N-5, row%en, col%en); if (row%en == col%en) M[row][col] += 147.0; }
-            C[row] = 60.0*h*B((N-0)*h, N-0, row%en);
+            for (unsigned int col=6*en; col<7*en; col++) { M[row][col] = -60.0*h*A(nodeN0, row%en, col%en); if (row%en == col%en) M[row][col] += 147.0; }
+            C[row] = 60.0*h*B(nodeN0, row%en);
         }
 
         //unsigned int row = 3;

@@ -5,14 +5,14 @@ Zettai::Zettai(const Problem4Ex1 &p4, unsigned int i)
     : ISystemLinearODENonLocalContionsM(), p4(p4), i(i)
 {}
 
-double Zettai::A(double t, unsigned int k, unsigned int row, unsigned int col) const
+double Zettai::A(const GridNodeODE &node, unsigned int row, unsigned int col) const
 {
-    return p4.A(t, k, row, col);
+    return p4.A(node, row, col);
 }
 
-double Zettai::B(double t, unsigned int k, unsigned int row, unsigned int col) const
+double Zettai::B(const GridNodeODE &node, unsigned int row, unsigned int col) const
 {
-    return p4.C(t, k, i, row, col);
+    return p4.C(node, i, row, col);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,19 +20,19 @@ double Zettai::B(double t, unsigned int k, unsigned int row, unsigned int col) c
 Zettai1::Zettai1(const Problem4Ex1 &p, unsigned int i) : p(p), i(i)
 {}
 
-double Zettai1::A(double t, unsigned int k, unsigned int row, unsigned int col) const
+double Zettai1::A(const GridNodeODE &node, unsigned int row, unsigned int col) const
 {
-    return p.A(t, k, row, col);
+    return p.A(node, row, col);
 }
 
-double Zettai1::B(double t, unsigned int k, unsigned int row) const
+double Zettai1::B(const GridNodeODE &node, unsigned int row) const
 {
-    return p.C(t, k, i, row, cur_col);
+    return p.C(node, i, row, cur_col);
 }
 
-double Zettai1::C(double t, unsigned int k, unsigned int row, unsigned int col) const
+double Zettai1::C(const GridNodeODE &node, unsigned int row, unsigned int col) const
 {
-    return p.C(t, k, i, row, col);
+    return p.C(node, i, row, col);
 }
 
 unsigned int Zettai1::equationsNumber() const

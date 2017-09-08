@@ -25,13 +25,13 @@ void LoadedHeatEquation::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
     IPrinter::printSeperatorLine("Real process:");
 
     DoubleVector U(dim1.sizeN()+1);
-    TimeNode tn;
-    tn.i = 1;//time.sizeN();
-    tn.t = tn.i*time.step();
+    TimeNodePDE tn;
+    tn.index = 1;//time.sizeN();
+    tn.t = tn.index*time.step();
     for (unsigned int n=dim1.minN(); n<=dim1.maxN(); n++)
     {
-        SpaceNode sn;
-        sn.i = n;
+        SpaceNodePDE sn;
+        sn.xIndex = n;
         sn.x = n*dim1.step();
         U[n] = ex1.U(sn, tn);
     }
@@ -49,27 +49,27 @@ void LoadedHeatEquation::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
     IPrinter::printVector(14, 10, u2);
 }
 
-double LoadedHeatEquation::U(const SpaceNode &sn, const TimeNode &tn) const
+double LoadedHeatEquation::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     double t = tn.t; C_UNUSED(t);
     double x = sn.x; C_UNUSED(x);
     return x*x*t;
 }
 
-double LoadedHeatEquation::initial(const SpaceNode &sn) const
+double LoadedHeatEquation::initial(const SpaceNodePDE &sn) const
 {
     C_UNUSED(sn);
     return 0.0;
     //return 2.0;
 }
 
-double LoadedHeatEquation::boundary(const SpaceNode &sn UNUSED_PARAM, const TimeNode &tn UNUSED_PARAM,
+double LoadedHeatEquation::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM,
                                     BoundaryType boundary UNUSED_PARAM) const
 {
     return NAN;
 }
 
-double LoadedHeatEquation::f(const SpaceNode &sn UNUSED_PARAM, const TimeNode &tn UNUSED_PARAM) const
+double LoadedHeatEquation::f(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
 //    double t = tn.t; C_UNUSED(t);
 //    double x = sn.x; C_UNUSED(x);
@@ -77,7 +77,7 @@ double LoadedHeatEquation::f(const SpaceNode &sn UNUSED_PARAM, const TimeNode &t
     return 0.0;
 }
 
-double LoadedHeatEquation::g(const TimeNode &tn UNUSED_PARAM) const
+double LoadedHeatEquation::g(const TimeNodePDE &tn UNUSED_PARAM) const
 {
 //    double t = tn.t; C_UNUSED(t);
 //    double v = 0.0;
@@ -118,7 +118,7 @@ double LoadedHeatEquation::g(const TimeNode &tn UNUSED_PARAM) const
     return 0.0;
 }
 
-double LoadedHeatEquation::h(const TimeNode &tn UNUSED_PARAM) const
+double LoadedHeatEquation::h(const TimeNodePDE &tn UNUSED_PARAM) const
 {
 //    double t = tn.t; C_UNUSED(t);
 //    return 2.0*t + lambda2*(t-theta);

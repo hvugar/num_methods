@@ -16,9 +16,9 @@ public:
     Problem4Ex1(const UniformODEGrid &grid);
     void initialize();
 
-    virtual double A(double t, unsigned int k, unsigned int row, unsigned int col) const;
-    virtual double B(double t, unsigned int k, unsigned int row) const;
-    virtual double C(double t, unsigned int k, unsigned int num, unsigned int row, unsigned int col) const;
+    virtual double A(const GridNodeODE &node, unsigned int row, unsigned int col) const;
+    virtual double B(const GridNodeODE &node, unsigned int row) const;
+    virtual double C(const GridNodeODE &node, unsigned int num, unsigned int row, unsigned int col) const;
 
     virtual double g(unsigned int num, unsigned int row) const;
 

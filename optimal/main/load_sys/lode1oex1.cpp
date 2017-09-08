@@ -80,21 +80,21 @@ void LinearODE1stOrderEx1::example1()
     }
 
     std::vector<DoubleVector> x2;
-    highOderAccuracy(nscs, betta, x2, 2);
+    solveHighOderAccuracy(nscs, betta, x2, 2);
     IPrinter::printVector(x2[0]);
     IPrinter::printVector(x2[1]);
     IPrinter::printVector(x2[2]);
     IPrinter::printSeperatorLine();
 
     std::vector<DoubleVector> x4;
-    highOderAccuracy(nscs, betta, x4, 4);
+    solveHighOderAccuracy(nscs, betta, x4, 4);
     IPrinter::printVector(x4[0]);
     IPrinter::printVector(x4[1]);
     IPrinter::printVector(x4[2]);
     IPrinter::printSeperatorLine();
 
     std::vector<DoubleVector> x6;
-    highOderAccuracy(nscs, betta, x6, 6);
+    solveHighOderAccuracy(nscs, betta, x6, 6);
     IPrinter::printVector(x6[0]);
     IPrinter::printVector(x6[1]);
     IPrinter::printVector(x6[2]);
@@ -139,15 +139,15 @@ void LinearODE1stOrderEx1::example2()
     IPrinter::printVector(x1);
 
     std::vector<DoubleVector> x2;
-    highOderAccuracy(nscs, betta, x2, 2);
+    solveHighOderAccuracy(nscs, betta, x2, 2);
     IPrinter::printVector(x2[0]);
 
     std::vector<DoubleVector> x4;
-    highOderAccuracy(nscs, betta, x4, 4);
+    solveHighOderAccuracy(nscs, betta, x4, 4);
     IPrinter::printVector(x4[0]);
 
     std::vector<DoubleVector> x6;
-    highOderAccuracy(nscs, betta, x6, 6);
+    solveHighOderAccuracy(nscs, betta, x6, 6);
     IPrinter::printVector(x6[0]);
 }
 
@@ -191,15 +191,15 @@ void LinearODE1stOrderEx1::example3()
     IPrinter::printVector(x1);
 
     std::vector<DoubleVector> x2;
-    highOderAccuracy(nscs, betta, x2, 2);
+    solveHighOderAccuracy(nscs, betta, x2, 2);
     IPrinter::printVector(x2[0]);
 
     std::vector<DoubleVector> x4;
-    highOderAccuracy(nscs, betta, x4, 4);
+    solveHighOderAccuracy(nscs, betta, x4, 4);
     IPrinter::printVector(x4[0]);
 
     std::vector<DoubleVector> x6;
-    highOderAccuracy(nscs, betta, x6, 6);
+    solveHighOderAccuracy(nscs, betta, x6, 6);
     IPrinter::printVector(x6[0]);
 }
 
@@ -269,21 +269,21 @@ void LinearODE1stOrderEx1::example4()
     IPrinter::printSeperatorLine();
 
     std::vector<DoubleVector> x2;
-    highOderAccuracy(nscs, betta, x2, 2);
+    solveHighOderAccuracy(nscs, betta, x2, 2);
     IPrinter::printVector(x2[0]);
     IPrinter::printVector(x2[1]);
     IPrinter::printVector(x2[2]);
     IPrinter::printSeperatorLine();
 
     std::vector<DoubleVector> x4;
-    highOderAccuracy(nscs, betta, x4, 4);
+    solveHighOderAccuracy(nscs, betta, x4, 4);
     IPrinter::printVector(x4[0]);
     IPrinter::printVector(x4[1]);
     IPrinter::printVector(x4[2]);
     IPrinter::printSeperatorLine();
 
     std::vector<DoubleVector> x6;
-    highOderAccuracy(nscs, betta, x6, 6);
+    solveHighOderAccuracy(nscs, betta, x6, 6);
     IPrinter::printVector(x6[0]);
     IPrinter::printVector(x6[1]);
     IPrinter::printVector(x6[2]);
@@ -355,21 +355,21 @@ void LinearODE1stOrderEx1::example5()
     IPrinter::printSeperatorLine();
 
     std::vector<DoubleVector> x2;
-    highOderAccuracy(nscs, betta, x2, 2);
+    solveHighOderAccuracy(nscs, betta, x2, 2);
     IPrinter::printVector(x2[0]);
     IPrinter::printVector(x2[1]);
     IPrinter::printVector(x2[2]);
     IPrinter::printSeperatorLine();
 
     std::vector<DoubleVector> x4;
-    highOderAccuracy(nscs, betta, x4, 4);
+    solveHighOderAccuracy(nscs, betta, x4, 4);
     IPrinter::printVector(x4[0]);
     IPrinter::printVector(x4[1]);
     IPrinter::printVector(x4[2]);
     IPrinter::printSeperatorLine();
 
     std::vector<DoubleVector> x6;
-    highOderAccuracy(nscs, betta, x6, 6);
+    solveHighOderAccuracy(nscs, betta, x6, 6);
     IPrinter::printVector(x6[0]);
     IPrinter::printVector(x6[1]);
     IPrinter::printVector(x6[2]);
@@ -381,22 +381,30 @@ void LinearODE1stOrderEx1::example6()
     double h = grid().step();
 
     DoubleVector x(N+1); x[0] = 0.0;
-    for (unsigned int i=0; i<N; i++) x[i+1] = (1.0+h*A(i*h, i))*x[i] + h*B(i*h, i);
+    for (unsigned int i=0; i<N; i++)
+    {
+        GridNodeODE node0(i*h, i);
+        x[i+1] = (1.0+h*A(node0))*x[i] + h*B(node0);
+    }
     IPrinter::printVector(x);
 
     DoubleVector x2(N+1); x2[0] = 0.0;
     for (unsigned int i=0; i<N; i++)
     {
-        double m = (4.0-2.0*h*A((i+1)*h, i+1));
-        double k1 = (4.0+2.0*h*A(i*h, i)) / m;
-        double k2 = (2.0*h*(B(i*h, i)+B((i+1)*h, i+1))) / m;
+        GridNodeODE node0(i*h, i);
+        GridNodeODE node1((i+1)*h, i+1);
+
+        double m = (4.0-2.0*h*A(node1));
+        double k1 = (4.0+2.0*h*A(node0)) / m;
+        double k2 = (2.0*h*(B(node0)+B(node1))) / m;
         x2[i+1] = k1*x2[i] + k2;
     }
     IPrinter::printVector(x2);
 }
 
-double LinearODE1stOrderEx1::A(double t UNUSED_PARAM, unsigned int, unsigned int row UNUSED_PARAM, unsigned int col UNUSED_PARAM) const
+double LinearODE1stOrderEx1::A(const GridNodeODE &node UNUSED_PARAM, unsigned int row UNUSED_PARAM, unsigned int col UNUSED_PARAM) const
 {
+    double t = node.x;
 #ifdef EXAMPLE_1
     if (row==0) { if (col==0) { return +2.0; } if (col==1) { return -3.0; } if (col==2) { return +1.0; } }
     if (row==1) { if (col==0) { return +3.0; } if (col==1) { return +1.0; } if (col==2) { return -2.0; } }
@@ -425,8 +433,9 @@ double LinearODE1stOrderEx1::A(double t UNUSED_PARAM, unsigned int, unsigned int
     return NAN;
 }
 
-double LinearODE1stOrderEx1::B(double t, unsigned int, unsigned int row UNUSED_PARAM) const
+double LinearODE1stOrderEx1::B(const GridNodeODE &node UNUSED_PARAM, unsigned int row UNUSED_PARAM) const
 {
+    double t = node.x;
 #ifdef EXAMPLE_1
     if (row==0) return +11.0*t*t - 7.0*t - 5.0;
     if (row==1) return -2.0*t*t + t - 12.0;

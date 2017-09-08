@@ -299,12 +299,13 @@ double Problem4Ex1::fx(const DoubleVector &x, unsigned int num) const
     return NAN;
 }
 
-double Problem4Ex1::A(double t, unsigned int, unsigned int row, unsigned int col) const
+double Problem4Ex1::A(const GridNodeODE &node, unsigned int row, unsigned int col) const
 {
 #ifdef SAMPLE_1
+    double t = node.x;
     if (row == 0) { if (col == 0) { return +2.0; } if (col == 1) { return t; }      if (col == 2) { return -3.0; } }
     if (row == 1) { if (col == 0) { return +3.0; } if (col == 1) { return -4.0*t; } if (col == 2) { return -8.0; } }
-    if (row == 2) { if (col == 0) { return +t; }   if (col == 1) { return +1.0; }   if (col == 2) { return -1.0; } }
+    if (row == 2) { if (col == 0) { return t; }    if (col == 1) { return +1.0; }   if (col == 2) { return -1.0; } }
 #endif
 #ifdef SAMPLE_2
     if (row == 0) { if (col == 0) return +1.0; if (col == 0) return +3.0; }
@@ -313,7 +314,7 @@ double Problem4Ex1::A(double t, unsigned int, unsigned int row, unsigned int col
     return NAN;
 }
 
-double Problem4Ex1::C(double, unsigned int, unsigned int num, unsigned int row, unsigned int col) const
+double Problem4Ex1::C(const GridNodeODE &node UNUSED_PARAM, unsigned int num, unsigned int row, unsigned int col) const
 {
     double K = 10.0;
 #ifdef SAMPLE_1
@@ -343,9 +344,10 @@ double Problem4Ex1::C(double, unsigned int, unsigned int num, unsigned int row, 
     return NAN;
 }
 
-double Problem4Ex1::B(double t, unsigned int k UNUSED_PARAM, unsigned int row) const
+double Problem4Ex1::B(const GridNodeODE &node UNUSED_PARAM, unsigned int row) const
 {
     double K = 10.0;
+    double t = node.x;
 #ifdef SAMPLE_1
     if (row == 0) return 3.0*t*t*t - 4.0*t*t + 6.0*t - 3.0 - 0.0414023610*K;
     if (row == 1) return 8.0*t*t*t + 5.0*t*t - 7.0*t - 4.0 - 0.0735341450*K;

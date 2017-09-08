@@ -2,31 +2,31 @@
 
 const UniformODEGrid& BoundaryValueProblem::spaceGridX() const
 {
-    return spacegridX;
+    return mSpacegridX;
 }
 
 const UniformODEGrid& BoundaryValueProblem::spaceGridY() const
 {
-    return spacegridY;
+    return mSpacegridY;
 }
 
 const UniformODEGrid& BoundaryValueProblem::spaceGridZ() const
 {
-    return spacegridZ;
+    return mSpacegridZ;
 }
 
 void BoundaryValueProblem::setSpaceGridX(const UniformODEGrid& spaceGridX)
 {
-    spacegridX = spaceGridX;
+    mSpacegridX = spaceGridX;
 }
 
 void BoundaryValueProblem::setSpaceGridY(const UniformODEGrid& spaceGridY)
 {
-    spacegridY = spaceGridY;
+    mSpacegridY = spaceGridY;
 }
 
 void BoundaryValueProblem::setSpaceGridZ(const UniformODEGrid& spaceGridZ)
 {
-    spacegridZ = spaceGridZ;
+    mSpacegridZ = spaceGridZ;
 }
 

@@ -33,9 +33,9 @@ public:
     DoubleVector betta;
 
 protected:
-    virtual double A(double t, unsigned int k, unsigned int row, unsigned int col) const;
-    virtual double B(double t, unsigned int k, unsigned int row) const;
-    virtual double C(double t, unsigned int k, unsigned int num, unsigned int row, unsigned int col) const;
+    virtual double A(const GridNodeODE &node, unsigned int row, unsigned int col) const;
+    virtual double B(const GridNodeODE &node, unsigned int row) const;
+    virtual double C(const GridNodeODE &node, unsigned int num, unsigned int row, unsigned int col) const;
 
 private:
     std::vector<DoubleVector> zm0;
@@ -63,8 +63,8 @@ public:
     Problem4Ex2Zetta0(const Problem4Ex2 &p);
     virtual unsigned int equationsNumber() const;
 protected:
-    virtual double A(double x, unsigned int i, unsigned int row = 0, unsigned int col = 0) const;
-    virtual double B(double x, unsigned int i, unsigned int row = 0) const;
+    virtual double A(const GridNodeODE &node, unsigned int row = 0, unsigned int col = 0) const;
+    virtual double B(const GridNodeODE &node, unsigned int row = 0) const;
 private:
     const Problem4Ex2 &p;
 };
@@ -78,9 +78,9 @@ public:
     void calculateM(const std::vector<LinearODE1stOrder::Condition> &cs, const DoubleMatrix &betta, std::vector<std::vector<DoubleVector>> &zmi);
 
 protected:
-    virtual double A(double t, unsigned int k, unsigned int row, unsigned int col) const;
-    virtual double B(double t, unsigned int k, unsigned int row) const;
-    virtual double C(double t, unsigned int k, unsigned int row, unsigned int col) const;
+    virtual double A(const GridNodeODE &node, unsigned int row, unsigned int col) const;
+    virtual double B(const GridNodeODE &node, unsigned int row) const;
+    virtual double C(const GridNodeODE &node, unsigned int row, unsigned int col) const;
 private:
     const Problem4Ex2 &p;
     unsigned int i;

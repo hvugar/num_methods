@@ -471,7 +471,7 @@ void SystemLinearODENonLocalContionsV2::calculateForward2()
     IPrinter::print(MX, MX.rows(), MX.cols(), 10, 6);
 }
 
-double SystemLinearODENonLocalContionsV2::A(TimeNode node UNUSED_PARAM, unsigned int row UNUSED_PARAM, unsigned int col UNUSED_PARAM) const
+double SystemLinearODENonLocalContionsV2::A(TimeNodePDE node UNUSED_PARAM, unsigned int row UNUSED_PARAM, unsigned int col UNUSED_PARAM) const
 {
     double t = node.t;
 
@@ -482,7 +482,7 @@ double SystemLinearODENonLocalContionsV2::A(TimeNode node UNUSED_PARAM, unsigned
     return NAN;
 }
 
-double SystemLinearODENonLocalContionsV2::B(TimeNode node UNUSED_PARAM, unsigned int s UNUSED_PARAM, unsigned int row UNUSED_PARAM, unsigned int col UNUSED_PARAM) const
+double SystemLinearODENonLocalContionsV2::B(TimeNodePDE node UNUSED_PARAM, unsigned int s UNUSED_PARAM, unsigned int row UNUSED_PARAM, unsigned int col UNUSED_PARAM) const
 {
     if (s == 0)
     {
@@ -499,7 +499,7 @@ double SystemLinearODENonLocalContionsV2::B(TimeNode node UNUSED_PARAM, unsigned
     return NAN;
 }
 
-double SystemLinearODENonLocalContionsV2::C(TimeNode node UNUSED_PARAM, unsigned int row) const
+double SystemLinearODENonLocalContionsV2::C(TimeNodePDE node UNUSED_PARAM, unsigned int row) const
 {
     double t = node.t;
 

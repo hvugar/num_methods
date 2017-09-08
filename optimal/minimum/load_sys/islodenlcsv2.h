@@ -6,9 +6,9 @@
 class MINIMUMSHARED_EXPORT ISystemLinearODENonLocalContionsV2 : public ISystemLinearODENonLocalContions, public SystemDifferentialEquation
 {
 public:
-    virtual double A(TimeNode node, unsigned int row = 0, unsigned int col = 0) const = 0;
-    virtual double B(TimeNode node, unsigned int s, unsigned int row = 0, unsigned int col = 0) const = 0;
-    virtual double C(TimeNode node, unsigned int row = 0) const = 0;
+    virtual double A(TimeNodePDE node, unsigned int row = 0, unsigned int col = 0) const = 0;
+    virtual double B(TimeNodePDE node, unsigned int s, unsigned int row = 0, unsigned int col = 0) const = 0;
+    virtual double C(TimeNodePDE node, unsigned int row = 0) const = 0;
 
     //virtual void calculateForward();
     void calculateBackward();

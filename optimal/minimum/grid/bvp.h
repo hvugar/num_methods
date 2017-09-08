@@ -39,9 +39,9 @@ public:
     void setSpaceGridZ(const UniformODEGrid&);
 
 private:
-    UniformODEGrid spacegridX;
-    UniformODEGrid spacegridY;
-    UniformODEGrid spacegridZ;
+    UniformODEGrid mSpacegridX;
+    UniformODEGrid mSpacegridY;
+    UniformODEGrid mSpacegridZ;
 };
 
 class MINIMUMSHARED_EXPORT BoundaryValueProblemODE : protected BoundaryValueProblem
@@ -62,7 +62,7 @@ public:
     double bettaL;
     double bettaR;
 
-    virtual double boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType boundary = Unused) const = 0;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const = 0;
 };
 
 #endif // BOUNDARYVALUEPROBLEM_H

@@ -149,7 +149,7 @@ void Problem4Ex2::initialize()
     zett2.calculateM(cs, betta0, zm2);
 }
 
-double Problem4Ex2::A(double t UNUSED_PARAM, unsigned int k UNUSED_PARAM, unsigned int row UNUSED_PARAM, unsigned int col UNUSED_PARAM) const
+double Problem4Ex2::A(const GridNodeODE &node UNUSED_PARAM, unsigned int row UNUSED_PARAM, unsigned int col UNUSED_PARAM) const
 {
 #ifdef SAMPLE_1
     if (row == 0) { if (col == 0) { return +2.0; } if (col == 1) { return t; }      if (col == 2) { return -3.0; } }
@@ -164,9 +164,10 @@ double Problem4Ex2::A(double t UNUSED_PARAM, unsigned int k UNUSED_PARAM, unsign
     return NAN;
 }
 
-double Problem4Ex2::B(double t UNUSED_PARAM, unsigned int k UNUSED_PARAM, unsigned int row UNUSED_PARAM) const
+double Problem4Ex2::B(const GridNodeODE &node UNUSED_PARAM, unsigned int row UNUSED_PARAM) const
 {
     double K = 1.0;
+    double t = node.x;
 #ifdef SAMPLE_1
     if (row == 0) return 3.0*t*t*t - 4.0*t*t + 6.0*t - 3.0 - 0.0414023610*K;
     if (row == 1) return 8.0*t*t*t + 5.0*t*t - 7.0*t - 4.0 - 0.0735341450*K;
@@ -180,7 +181,7 @@ double Problem4Ex2::B(double t UNUSED_PARAM, unsigned int k UNUSED_PARAM, unsign
     return NAN;
 }
 
-double Problem4Ex2::C(double t UNUSED_PARAM, unsigned int k UNUSED_PARAM, unsigned int num UNUSED_PARAM, unsigned int row UNUSED_PARAM, unsigned int col UNUSED_PARAM) const
+double Problem4Ex2::C(const GridNodeODE &node UNUSED_PARAM, unsigned int num UNUSED_PARAM, unsigned int row UNUSED_PARAM, unsigned int col UNUSED_PARAM) const
 {
     double K = 1.0;
 #ifdef SAMPLE_1
@@ -391,14 +392,14 @@ unsigned int Problem4Ex2Zetta0::equationsNumber() const
     return 3;
 }
 
-double Problem4Ex2Zetta0::A(double t, unsigned int k, unsigned int row, unsigned int col) const
+double Problem4Ex2Zetta0::A(const GridNodeODE &node, unsigned int row, unsigned int col) const
 {
-    return p.A(t,k,row,col);
+    return p.A(node,row,col);
 }
 
-double Problem4Ex2Zetta0::B(double t, unsigned int k, unsigned int row) const
+double Problem4Ex2Zetta0::B(const GridNodeODE &node, unsigned int row) const
 {
-    return p.B(t,k,row);
+    return p.B(node,row);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -407,19 +408,19 @@ Problem4Ex2Zettai::Problem4Ex2Zettai(const Problem4Ex2 &p, unsigned int i)
     : LinearODE1stOrder(), p(p), i(i)
 {}
 
-double Problem4Ex2Zettai::A(double t, unsigned int k, unsigned int row, unsigned int col) const
+double Problem4Ex2Zettai::A(const GridNodeODE &node, unsigned int row, unsigned int col) const
 {
-    return p.A(t, k, row, col);
+    return p.A(node, row, col);
 }
 
-double Problem4Ex2Zettai::B(double t, unsigned int k, unsigned int row) const
+double Problem4Ex2Zettai::B(const GridNodeODE &node, unsigned int row) const
 {
-    return p.C(t, k, i, row, cur_col);
+    return p.C(node, i, row, cur_col);
 }
 
-double Problem4Ex2Zettai::C(double t, unsigned int k, unsigned int row, unsigned int col) const
+double Problem4Ex2Zettai::C(const GridNodeODE &node, unsigned int row, unsigned int col) const
 {
-    return p.C(t, k, i, row, col);
+    return p.C(node, i, row, col);
 }
 
 unsigned int Problem4Ex2Zettai::equationsNumber() const

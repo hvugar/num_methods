@@ -22,14 +22,15 @@ int UniformODEGrid::maxN() const
 
 int UniformODEGrid::sizeN() const
 {
-    return mmaxN - mminN + 1;
+    return mmaxN - mminN;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UniformPDEGrid::UniformPDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaces UNUSED_PARAM)
+UniformPDEGrid::UniformPDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaceDimensions UNUSED_PARAM)
 {
     mtimeDimension = timeDimension;
+    mspaceDimensions = spaceDimensions;
 }
 
 const Dimension &UniformPDEGrid::timeDimension() const
