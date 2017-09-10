@@ -38,8 +38,8 @@ void NewtonHeatEquation::calculateGM1(DoubleVector &u, SweepMethodDirection dire
     SpaceNodePDE isn;
     for (unsigned int n=0; n<=N; n++)
     {
-        isn.xIndex = n+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = n+minN;
+        isn.x = isn.i*hx;
         u[n] = initial(isn);
     }
     //layerInfo(u, 0);
@@ -47,13 +47,13 @@ void NewtonHeatEquation::calculateGM1(DoubleVector &u, SweepMethodDirection dire
     TimeNodePDE tn;
     for (unsigned int m=1; m<=M; m++)
     {
-        tn.index = m+minM;
-        tn.t = tn.index*ht;
+        tn.i = m+minM;
+        tn.t = tn.i*ht;
 
         double aa = 0.0;
 
-        isn.xIndex = 0+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = 0+minN;
+        isn.x = isn.i*hx;
         aa = a(isn,tn);
 
         ka[0] = 0.0;
@@ -62,8 +62,8 @@ void NewtonHeatEquation::calculateGM1(DoubleVector &u, SweepMethodDirection dire
         kd[0] = u[0] + lambda0*ht*theta0(tn) + 2.0*lambda1*aa*(ht/hx)*theta1(tn) + ht*f(isn,tn);
         for (unsigned int n=1; n<=N-1; n++)
         {
-            isn.xIndex = n+minN;
-            isn.x = isn.xIndex*hx;
+            isn.i = n+minN;
+            isn.x = isn.i*hx;
             aa = a(isn,tn);
 
             ka[n] = -aa*(ht/(hx*hx));
@@ -71,8 +71,8 @@ void NewtonHeatEquation::calculateGM1(DoubleVector &u, SweepMethodDirection dire
             kc[n] = -aa*(ht/(hx*hx));
             kd[n] = u[n] + lambda0*ht*theta0(tn) + ht*f(isn,tn);
         }
-        isn.xIndex = N+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = N+minN;
+        isn.x = isn.i*hx;
         aa = a(isn,tn);
 
         ka[N] = -2.0*aa*(ht/(hx*hx));
@@ -134,8 +134,8 @@ void NewtonHeatEquation::calculateGM2(DoubleVector &u, SweepMethodDirection dire
     SpaceNodePDE isn;
     for (unsigned int n=0; n<=N; n++)
     {
-        isn.xIndex = n+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = n+minN;
+        isn.x = isn.i*hx;
         u[n] = initial(isn);
     }
     //layerInfo(u, 0);
@@ -143,13 +143,13 @@ void NewtonHeatEquation::calculateGM2(DoubleVector &u, SweepMethodDirection dire
     TimeNodePDE tn;
     for (unsigned int m=1; m<=M; m++)
     {
-        tn.index = m+minM;
-        tn.t = tn.index*ht;
+        tn.i = m+minM;
+        tn.t = tn.i*ht;
 
         double aa = 0.0;
 
-        isn.xIndex = 0+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = 0+minN;
+        isn.x = isn.i*hx;
         aa = a(isn,tn);
 
         ka[0] = 0.0;
@@ -158,8 +158,8 @@ void NewtonHeatEquation::calculateGM2(DoubleVector &u, SweepMethodDirection dire
         kd[0] = u[0] + lambda0*ht*theta0(tn) + 2.0*lambda1*aa*(ht/hx)*theta1(tn) + ht*f(isn,tn);
         for (unsigned int n=1; n<=N-1; n++)
         {
-            isn.xIndex = n+minN;
-            isn.x = isn.xIndex*hx;
+            isn.i = n+minN;
+            isn.x = isn.i*hx;
             aa = a(isn,tn);
 
             ka[n] = -aa*(ht/(hx*hx));
@@ -167,8 +167,8 @@ void NewtonHeatEquation::calculateGM2(DoubleVector &u, SweepMethodDirection dire
             kc[n] = -aa*(ht/(hx*hx));
             kd[n] = u[n] + lambda0*ht*theta0(tn) + ht*f(isn,tn);
         }
-        isn.xIndex = N+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = N+minN;
+        isn.x = isn.i*hx;
         aa = a(isn,tn);
 
         ka[N] = -2.0*aa*(ht/(hx*hx));
@@ -302,8 +302,8 @@ void NewtonHeatEquation::calculateGM3(DoubleVector &u, SweepMethodDirection dire
     SpaceNodePDE isn;
     for (unsigned int n=0; n<=N; n++)
     {
-        isn.xIndex = n+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = n+minN;
+        isn.x = isn.i*hx;
         u[n] = initial(isn);
     }
     //layerInfo(u, 0);
@@ -311,21 +311,21 @@ void NewtonHeatEquation::calculateGM3(DoubleVector &u, SweepMethodDirection dire
     TimeNodePDE tn;
     for (unsigned int m=1; m<=M; m++)
     {
-        tn.index = m+minM;
-        tn.t = tn.index*ht;
+        tn.i = m+minM;
+        tn.t = tn.i*ht;
 
         double aa = 0.0;
 
-        isn.xIndex = 0+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = 0+minN;
+        isn.x = isn.i*hx;
         aa = a(isn,tn);
         double a0 = +1.0+lambda1*aa*(ht/hx) + lambda0*ht;
         double b0 = +aa*(ht/(hx*hx));
         double c0 = -aa*(ht/(hx*hx));
         double d0 = u[0] + lambda0*ht*theta0(tn) + lambda1*aa*(ht/hx)*theta1(tn) + ht*f(isn,tn);
 
-        isn.xIndex = 1+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = 1+minN;
+        isn.x = isn.i*hx;
         aa = a(isn,tn);
         double a1 = -aa*(ht/(hx*hx));
         double b1 = 1.0 + 2.0*aa*(ht/(hx*hx)) + lambda0*ht;
@@ -339,8 +339,8 @@ void NewtonHeatEquation::calculateGM3(DoubleVector &u, SweepMethodDirection dire
 
         for (unsigned int n=2; n<=N-2; n++)
         {
-            isn.xIndex = n+minN;
-            isn.x = isn.xIndex*hx;
+            isn.i = n+minN;
+            isn.x = isn.i*hx;
             aa = a(isn,tn);
 
             ka[n-1] = -aa*(ht/(hx*hx));
@@ -349,16 +349,16 @@ void NewtonHeatEquation::calculateGM3(DoubleVector &u, SweepMethodDirection dire
             kd[n-1] = u[n] + lambda0*ht*theta0(tn) + ht*f(isn,tn);
         }
 
-        isn.xIndex = (N-1)+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = (N-1)+minN;
+        isn.x = isn.i*hx;
         aa = a(isn,tn);
         double aN1 = -aa*(ht/(hx*hx));
         double bN1 = 1.0 + 2.0*aa*(ht/(hx*hx)) + lambda0*ht;
         double cN1 = -aa*(ht/(hx*hx));
         double dN1 = u[N-1] + lambda0*ht*theta0(tn) + ht*f(isn,tn);
 
-        isn.xIndex = N+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = N+minN;
+        isn.x = isn.i*hx;
         aa = a(isn,tn);
         double aN = -aa*(ht/(hx*hx));
         double bN = +aa*(ht/(hx*hx));

@@ -27,7 +27,6 @@ private:
     void highOder2Accuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x, Direction direction = L2R);
     void highOder4Accuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x, Direction direction = L2R);
     void highOder6Accuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x, Direction direction = L2R);
-    void discretisation(const std::vector<Condition>& cs, double* b) const;
 
 protected:
     /**

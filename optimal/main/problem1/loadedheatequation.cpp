@@ -26,12 +26,12 @@ void LoadedHeatEquation::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
 
     DoubleVector U(dim1.sizeN()+1);
     TimeNodePDE tn;
-    tn.index = 1;//time.sizeN();
-    tn.t = tn.index*time.step();
+    tn.i = 1;//time.sizeN();
+    tn.t = tn.i*time.step();
     for (unsigned int n=dim1.minN(); n<=dim1.maxN(); n++)
     {
         SpaceNodePDE sn;
-        sn.xIndex = n;
+        sn.i = n;
         sn.x = n*dim1.step();
         U[n] = ex1.U(sn, tn);
     }

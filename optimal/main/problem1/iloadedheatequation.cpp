@@ -65,8 +65,8 @@ void ILoadedHeatEquation::transferringConditions2(DoubleVector &u)
     SpaceNodePDE isn;
     for (unsigned int n=0; n<=N; n++)
     {
-        isn.xIndex = n+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = n+minN;
+        isn.x = isn.i*hx;
         u[n] = initial(isn);
     }
     layerInfo(u, 0);
@@ -74,13 +74,13 @@ void ILoadedHeatEquation::transferringConditions2(DoubleVector &u)
     TimeNodePDE tn;
     for (unsigned int m=1; m<=M; m++)
     {
-        tn.index = m+minM;
-        tn.t = tn.index*ht;
+        tn.i = m+minM;
+        tn.t = tn.i*ht;
 
         double aa = 0.0;
 
-        isn.xIndex = 0+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = 0+minN;
+        isn.x = isn.i*hx;
         aa = a*a;
 
         double sum = 0.0;
@@ -96,8 +96,8 @@ void ILoadedHeatEquation::transferringConditions2(DoubleVector &u)
 
         for (unsigned int n=1; n<=N-1; n++)
         {
-            isn.xIndex = n+minN;
-            isn.x = isn.xIndex*hx;
+            isn.i = n+minN;
+            isn.x = isn.i*hx;
             //aa = a*a;
 
             ka[n] = -a_a_ht_hx_hx;
@@ -107,8 +107,8 @@ void ILoadedHeatEquation::transferringConditions2(DoubleVector &u)
         }
 
         /* preparing last row */
-        isn.xIndex = N+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = N+minN;
+        isn.x = isn.i*hx;
         //aa = a(isn,tn);
 
         ka[N] = -2.0*a_a_ht_hx_hx;
@@ -269,8 +269,8 @@ void ILoadedHeatEquation::transferringConditions4(DoubleVector &u)
     SpaceNodePDE isn;
     for (unsigned int n=0; n<=N; n++)
     {
-        isn.xIndex = n+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = n+minN;
+        isn.x = isn.i*hx;
         u[n] = initial(isn);
     }
     layerInfo(u, 0);
@@ -278,13 +278,13 @@ void ILoadedHeatEquation::transferringConditions4(DoubleVector &u)
     TimeNodePDE tn;
     for (unsigned int m=1; m<=M; m++)
     {
-        tn.index = m+minM;
-        tn.t = tn.index*ht;
+        tn.i = m+minM;
+        tn.t = tn.i*ht;
 
         double aa = 0.0;
 
-        isn.xIndex = 0+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = 0+minN;
+        isn.x = isn.i*hx;
         aa = a*a;
 
         double sum = 0.0;
@@ -300,8 +300,8 @@ void ILoadedHeatEquation::transferringConditions4(DoubleVector &u)
 
         for (unsigned int n=1; n<=N-1; n++)
         {
-            isn.xIndex = n+minN;
-            isn.x = isn.xIndex*hx;
+            isn.i = n+minN;
+            isn.x = isn.i*hx;
             //aa = a*a;
 
             ka[n] = -a_a_ht_hx_hx;
@@ -311,8 +311,8 @@ void ILoadedHeatEquation::transferringConditions4(DoubleVector &u)
         }
 
         /* preparing last row */
-        isn.xIndex = N+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = N+minN;
+        isn.x = isn.i*hx;
         //aa = a(isn,tn);
 
         ka[N] = -2.0*a_a_ht_hx_hx;
@@ -470,8 +470,8 @@ void ILoadedHeatEquation::calculateM2(DoubleVector &u)
     SpaceNodePDE isn;
     for (unsigned int n=0; n<=N; n++)
     {
-        isn.xIndex = n+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = n+minN;
+        isn.x = isn.i*hx;
         u[n] = initial(isn);
     }
     layerInfo(u, 0);
@@ -479,13 +479,13 @@ void ILoadedHeatEquation::calculateM2(DoubleVector &u)
     TimeNodePDE tn;
     for (unsigned int m=1; m<=M; m++)
     {
-        tn.index = m+minM;
-        tn.t = tn.index*ht;
+        tn.i = m+minM;
+        tn.t = tn.i*ht;
 
         double aa = 0.0;
 
-        isn.xIndex = 0+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = 0+minN;
+        isn.x = isn.i*hx;
         aa = a*a;
 
         double sum = 0.0;
@@ -501,8 +501,8 @@ void ILoadedHeatEquation::calculateM2(DoubleVector &u)
 
         for (unsigned int n=1; n<=N-1; n++)
         {
-            isn.xIndex = n+minN;
-            isn.x = isn.xIndex*hx;
+            isn.i = n+minN;
+            isn.x = isn.i*hx;
             //aa = a*a;
 
             a1[n] = -a_a_ht_hx_hx;
@@ -512,8 +512,8 @@ void ILoadedHeatEquation::calculateM2(DoubleVector &u)
         }
 
         /* preparing last row */
-        isn.xIndex = N+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = N+minN;
+        isn.x = isn.i*hx;
         //aa = a(isn,tn);
 
         a1[N] = -2.0*a_a_ht_hx_hx;

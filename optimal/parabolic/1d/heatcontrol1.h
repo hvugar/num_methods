@@ -4,7 +4,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <function.h>
-#include <pde/parabolicequation.h>
+#include <pde_old/parabolicequation.h>
 #include <printer.h>
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
@@ -29,10 +29,10 @@ public:
     class CParabolicIBVP : public ParabolicIBVP
     {
     protected:
-        virtual double initial(const SpaceNode &sn) const;
-        virtual double boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType boundary = Unused) const;
-        virtual double f(const SpaceNode &sn, const TimeNode &tn) const;
-        virtual double a(const SpaceNode &sn, const TimeNode &tn) const;
+        virtual double initial(const SpaceNodePDE &sn) const;
+        virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
+        virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+        virtual double a(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
     public:
         const DoubleVector *pf;
@@ -41,10 +41,10 @@ public:
     class CBackwardParabolicIBVP : public BackwardParabolicIBVP
     {
     protected:
-        virtual double initial(const SpaceNode &sn) const;
-        virtual double boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType boundary = Unused) const;
-        virtual double f(const SpaceNode &sn, const TimeNode &tn) const;
-        virtual double a(const SpaceNode &sn, const TimeNode &tn) const;
+        virtual double initial(const SpaceNodePDE &sn) const;
+        virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
+        virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+        virtual double a(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
         virtual void layerInfo(const DoubleVector &, unsigned int) const;
 

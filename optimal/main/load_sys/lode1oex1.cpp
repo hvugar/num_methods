@@ -121,18 +121,25 @@ void LinearODE1stOrderEx1::example2()
     nsc1.mtrx.at(0,0) = 4.2;
 
     Condition nsc2;
-    nsc2.time = 1.0;
+    nsc2.time = 0.7;
     nsc2.mtrx.resize(n, n);
-    nsc2.mtrx.at(0,0) = 10.0;
+    nsc2.mtrx.at(0,0) = 5.7;
+
+    Condition nsc3;
+    nsc3.time = 1.0;
+    nsc3.mtrx.resize(n, n);
+    nsc3.mtrx.at(0,0) = 10.0;
 
     nscs.push_back(nsc0);
     nscs.push_back(nsc1);
     nscs.push_back(nsc2);
+    nscs.push_back(nsc3);
 
     betta.resize(n);
     betta[0] = nsc0.mtrx.at(0,0)*X(nsc0.time,0)
              + nsc1.mtrx.at(0,0)*X(nsc1.time,0)
-             + nsc2.mtrx.at(0,0)*X(nsc2.time,0);
+             + nsc2.mtrx.at(0,0)*X(nsc2.time,0)
+             + nsc3.mtrx.at(0,0)*X(nsc3.time,0);
 
     DoubleVector x1(N+1);
     for (unsigned int i=0; i<=N; i++) x1[i] = X(i*h, 0);

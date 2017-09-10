@@ -2,7 +2,7 @@
 #define BORDERPARABOLIC2D_H
 
 #include <global.h>
-#include <pde/parabolicequation.h>
+#include <pde_old/parabolicequation.h>
 
 class MINIMUMSHARED_EXPORT BorderParabolic2D : public IParabolicEquation2D
 {

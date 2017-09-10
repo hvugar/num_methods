@@ -2,7 +2,7 @@
 #define BORDERPARABOLICD_H
 
 #include <global.h>
-#include <pde/parabolicequation.h>
+#include <pde_old/parabolicequation.h>
 
 /**
  * @brief The BorderParabolicD class

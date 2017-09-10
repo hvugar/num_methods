@@ -6,9 +6,9 @@ void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     p.setTimeDimension(Dimension(0.001, 1000, 0));
     p.addSpaceDimension(Dimension(0.001, 1000, 0));
     {
-        unsigned int minN = p.spaceDimension(Dimension::Dim1).minN();
-        unsigned int maxN = p.spaceDimension(Dimension::Dim1).maxN();
-        unsigned int N = p.spaceDimension(Dimension::Dim1).sizeN();
+        unsigned int minN = p.spaceDimension(Dimension::DimensionX).minN();
+        unsigned int maxN = p.spaceDimension(Dimension::DimensionX).maxN();
+        unsigned int N = p.spaceDimension(Dimension::DimensionX).sizeN();
 
         unsigned int minM = p.timeDimension().minN();
         unsigned int maxM = p.timeDimension().maxN();
@@ -81,7 +81,7 @@ void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     }
 }
 
-double ParabolicIBVP1::initial(const SpaceNode& sn) const
+double ParabolicIBVP1::initial(const SpaceNodePDE& sn) const
 {
     double x UNUSED_PARAM = sn.x;
 
@@ -125,7 +125,7 @@ double ParabolicIBVP1::initial(const SpaceNode& sn) const
     return NAN;
 }
 
-double ParabolicIBVP1::boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType boundary) const
+double ParabolicIBVP1::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary) const
 {
     C_UNUSED(sn);
 
@@ -195,7 +195,7 @@ double ParabolicIBVP1::boundary(const SpaceNode &sn, const TimeNode &tn, Boundar
     return NAN;
 }
 
-double ParabolicIBVP1::f(const SpaceNode &sn, const TimeNode &tn) const
+double ParabolicIBVP1::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     double x = sn.x;
     double t = tn.t;
@@ -242,7 +242,7 @@ double ParabolicIBVP1::f(const SpaceNode &sn, const TimeNode &tn) const
     return NAN;
 }
 
-double ParabolicIBVP1::a(const SpaceNode &sn UNUSED_PARAM, const TimeNode &tn UNUSED_PARAM) const
+double ParabolicIBVP1::a(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
     return 1.0;
 }
@@ -250,7 +250,7 @@ double ParabolicIBVP1::a(const SpaceNode &sn UNUSED_PARAM, const TimeNode &tn UN
 double ParabolicIBVP1::U(unsigned int n, unsigned int m) const
 {
     double t = m*timeDimension().step();
-    double x = n*spaceDimension(Dimension::Dim1).step();
+    double x = n*spaceDimension(Dimension::DimensionX).step();
 
 #ifdef SAMPLE_0
     return x*x*t;

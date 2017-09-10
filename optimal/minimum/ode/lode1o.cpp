@@ -185,14 +185,35 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
         double *r = (double*) malloc(sizeof(double)*N);
 
         std::vector<unsigned int> ind;
-        std::vector<double*> ems;
+        std::vector<double>       ems;
 
         /**********************************************************************
          *                  Discretization using trapesium rule
          *********************************************************************/
         double *b = (double*) malloc(sizeof(double)*(N+1));
         for (unsigned int m=0; m<=N; m++) b[m] = 0.0;
-        discretisation(cs, b);
+
+        /********************* discretisation ********************************/
+
+        unsigned int cnd_size = cs.size();
+        for (unsigned int s=0; s<cnd_size; s++)
+        {
+            const Condition &cnd = cs[s];
+            double alpha = cnd.mtrx.at(0,0);
+            double time  = cnd.time;
+
+            for (unsigned int n=0; n<=N; n++)
+            {
+                double dh = fabs(time - n*h);
+
+                if (dh <= h)
+                {
+                    b[n] += alpha*(1.0 - dh/h);
+                }
+            }
+        }
+
+         /********************* discretisation ********************************/
 
         p[0] = b[0];
         q[0] = b[1];
@@ -201,8 +222,7 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
             if (fabs(b[n]) > DBL_EPSILON)
             {
                 ind.push_back(n);
-                ems.push_back((double*) malloc(sizeof(double)*N));
-                ems[ems.size()-1][0] = b[n];
+                ems.push_back(b[n]);
             }
         }
         free(b);
@@ -235,18 +255,7 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
 
             for (unsigned int i=0; i<ind_size; i++)
             {
-                if (n+2 == ind.at(i))
-                {
-                    q[n+1] += ems[i][n];
-                }
-                if (n+2 >= ind.at(i))
-                {
-                    ems[i][n+1] = 0.0;
-                }
-                else
-                {
-                    ems[i][n+1] = ems[i][n];
-                }
+                if (n+2 == ind[i]) q[n+1] += ems[i];
             }
         }
 
@@ -254,13 +263,6 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
         DoubleVector c(3);
         DoubleVector xT(3);
 
-        for (unsigned int row=0; row<3*en; row++)
-        {
-            for (unsigned int col=0; col<3*en; col++)
-            {
-
-            }
-        }
         m[0][0] = 0.0;
         m[0][1] = p[N-1];
         m[0][2] = q[N-1];
@@ -296,7 +298,8 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
         for (unsigned int i=N-2; i!=0; i--)
         {
             x0[i-1] = -q[i-1]*x0[i]+r[i-1];
-            for (unsigned int s=0; s<ems_size; s++) x0[i-1] -= ems[s][i-1]*x0[ind[s]];
+            for (unsigned int s=0; s<ems_size; s++)
+                if (ind[s] > i) x0[i-1] -= ems[s]*x0[ind[s]];
             x0[i-1] /= p[i-1];
         }
 
@@ -306,7 +309,6 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
         free(p);
         free(q);
         free(r);
-        for (unsigned int i=0; i<ems_size; i++) free(ems[i]);
         ems.clear();
         ind.clear();
     }
@@ -317,12 +319,15 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
         DoubleMatrix* r = new DoubleMatrix[N]; for (unsigned int i=0; i<N; i++) r[i].resize(en, 1, 0.0);
 
         std::vector<unsigned int> ind;
-        std::vector<DoubleMatrix*> ems;
+        std::vector<DoubleMatrix> ems;
 
         /**********************************************************************
          *                  Discretization using trapesium rule
          *********************************************************************/
-        DoubleMatrix* b = new DoubleMatrix[N+1]; for (unsigned int n=0; n<=N; n++) b[n].resize(en, en, 0.0);
+        DoubleMatrix* b = new DoubleMatrix[N+1];
+        for (unsigned int n=0; n<=N; n++) b[n].resize(en, en, 0.0);
+
+        /********************* discretisation ********************************/
 
         unsigned int cnd_size = cs.size();
         for (unsigned int s=0; s<cnd_size; s++)
@@ -333,12 +338,11 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
             for (unsigned int n=0; n<=N; n++)
             {
                 double dh = fabs(time - n*h);
-                if (dh <= h)
-                {
-                    b[n] += (1.0 - dh/h)*cnd.mtrx;
-                }
+                if (dh <= h) b[n] += (1.0 - dh/h)*cnd.mtrx;
             }
         }
+
+        /********************* discretisation ********************************/
 
         p[0] = b[0];
         q[0] = b[1];
@@ -347,10 +351,7 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
             if (!b[n].zeroMatrix())
             {
                 ind.push_back(n);
-                DoubleMatrix *dm = new DoubleMatrix[N];
-                for (unsigned int i=0; i<N; i++) dm[i].resize(en,en,0.0);
-                ems.push_back(dm);
-                ems[ems.size()-1][0] = b[n];
+                ems.push_back(b[n]);
             }
         }
         free(b);
@@ -358,8 +359,6 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
 
         unsigned int ind_size = ind.size();
         unsigned int ems_size = ems.size();
-
-        //printf("%d %d %d %d\n", ind[0], ind[1], ind[2], ind[3]);
 
         /**********************************************************************
          *                          End of discretization
@@ -376,9 +375,8 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
 
         for (unsigned int n=0; n<=N-2; n++)
         {
-            //double t = n*h;
-
             GridNodeODE node(n*h, n);
+
             for (unsigned int row=0; row<en; row++)
             {
                 for (unsigned int col=0; col<en; col++)
@@ -407,20 +405,7 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
 
             for (unsigned int i=0; i<ind_size; i++)
             {
-                if (n+2 == ind.at(i))
-                {
-                    q[n+1] += ems[i][n];
-                    //ems[i][n] = DoubleMatrix::ZeroMatrix(en,en);
-                }
-
-                if (n+2 >= ind.at(i))
-                {
-                    ems[i][n+1] = DoubleMatrix::ZeroMatrix(en,en);
-                }
-                else
-                {
-                    ems[i][n+1] = ems[i][n];
-                }
+                if (n+2 == ind[i]) q[n+1] += ems[i];
             }
         }
 
@@ -460,7 +445,8 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
         }
 
         LinearEquation::GaussianElimination(M, C, xT);
-        //IPrinter::print(xT, xT.size());
+        M.clear();
+        C.clear();
 
         x.resize(en);
         for (unsigned int i=0; i<en; i++) x[i].resize(N+1);
@@ -474,14 +460,13 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
             x0[N-1][row][0] = xT[row+1*en];
             x0[N-0][row][0] = xT[row+2*en];
         }
+        xT.clear();
 
         for (unsigned int i=N-2; i!=0; i--)
         {
             x0[i-1] = r[i-1]-q[i-1]*x0[i];
             for (unsigned int s=0; s<ems_size; s++)
-            {
-                x0[i-1] -= (ems[s][i-1]*x0[ind[s]]);
-            }
+                if (ind[s] > i) x0[i-1] -= (ems[s]*x0[ind[s]]);
             p[i-1].inverse();
             x0[i-1] = p[i-1] * x0[i-1];
         }
@@ -503,12 +488,8 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
         delete [] r;
         delete [] q;
         delete [] p;
-        ind.clear();
 
-        for (unsigned int i=0; i<ems_size; i++)
-        {
-            delete [] ems[i];
-        }
+        ind.clear();
         ems.clear();
 
         for (unsigned int i=0; i<=N; i++)
@@ -516,10 +497,6 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
             x0[i].clear();
         }
         x0.clear();
-
-        M.clear();
-        C.clear();
-        xT.clear();
     }
 }
 
@@ -539,14 +516,35 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
         double *r = (double*) malloc(sizeof(double)*(N-2));
 
         std::vector<unsigned int> ind;
-        std::vector<double*> ems;
+        std::vector<double>       ems;
 
         /**********************************************************************
          *                  Discretization using trapesium rule
          *********************************************************************/
         double *b = (double*) malloc(sizeof(double)*(N+1));
         for (unsigned int m=0; m<=N; m++) b[m] = 0.0;
-        discretisation(cs, b);
+
+        /********************* discretisation ********************************/
+
+        unsigned int cnd_size = cs.size();
+        for (unsigned int s=0; s<cnd_size; s++)
+        {
+            const Condition &cnd = cs[s];
+            double alpha = cnd.mtrx.at(0,0);
+            double time  = cnd.time;
+
+            for (unsigned int n=0; n<=N; n++)
+            {
+                double dh = fabs(time - n*h);
+
+                if (dh <= h)
+                {
+                    b[n] += alpha*(1.0 - dh/h);
+                }
+            }
+        }
+
+         /********************* discretisation ********************************/
 
         p[0] = b[0];
         q[0] = b[1];
@@ -557,8 +555,7 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
             if (fabs(b[n]) > DBL_EPSILON)
             {
                 ind.push_back(n);
-                ems.push_back((double*) malloc(sizeof(double)*(N-2)));
-                ems[ems.size()-1][0] = b[n];
+                ems.push_back(b[n]);
             }
         }
         free(b);
@@ -574,7 +571,6 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
         /**********************************************************************
          *                      Finding function at end of grid
          *********************************************************************/
-
 
         for (unsigned int n=0; n<=N-4; n++)
         {
@@ -595,18 +591,7 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
 
             for (unsigned int i=0; i<ind_size; i++)
             {
-                if (n+4 == ind.at(i))
-                {
-                    u[n+1] += ems[i][n];
-                }
-                if (n+4 >= ind.at(i))
-                {
-                    ems[i][n+1] = 0.0;
-                }
-                else
-                {
-                    ems[i][n+1] = ems[i][n];
-                }
+                if (n+4 == ind[i]) u[n+1] += ems[i];
             }
         }
 
@@ -660,6 +645,7 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
         /**********************************************************************
          *                      Finding function at end of grid
          *********************************************************************/
+
         DoubleVector x0(N+1);
         x0[N-0] = xT[4];
         x0[N-1] = xT[3];
@@ -671,7 +657,8 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
         for (unsigned int i=N-4; i!=0; i--)
         {
             x0[i-1] = -q[i-1]*x0[i]-v[i-1]*x0[i+1]-u[i-1]*x0[i+2]+r[i-1];
-            for (unsigned int s=0; s<ems_size; s++) x0[i-1] -= ems[s][i-1]*x0[ind[s]];
+            for (unsigned int s=0; s<ems_size; s++)
+                if (ind[s]-2 > i) x0[i-1] -= ems[s]*x0[ind[s]];
             x0[i-1] /= p[i-1];
         }
 
@@ -683,7 +670,6 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
         free(v);
         free(u);
         free(r);
-        for (unsigned int i=0; i<ems_size; i++) free(ems[i]);
         ems.clear();
         ind.clear();
 
@@ -697,13 +683,15 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
         DoubleMatrix* r = new DoubleMatrix[N-2]; for (unsigned int i=0; i<N-2; i++) r[i].resize(en, 1, 0.0);
 
         std::vector<unsigned int> ind;
-        std::vector<DoubleMatrix*> ems;
+        std::vector<DoubleMatrix> ems;
 
         /**********************************************************************
          *                  Discretization using trapesium rule
          *********************************************************************/
         DoubleMatrix* b = new DoubleMatrix[N+1];
         for (unsigned int n=0; n<=N; n++) b[n].resize(en, en, 0.0);
+
+        /********************* discretisation ********************************/
 
         unsigned int cnd_size = cs.size();
         for (unsigned int s=0; s<cnd_size; s++)
@@ -718,6 +706,8 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
             }
         }
 
+        /********************* discretisation ********************************/
+
         p[0] = b[0];
         q[0] = b[1];
         v[0] = b[2];
@@ -727,10 +717,7 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
             if (!b[n].zeroMatrix())
             {
                 ind.push_back(n);
-                DoubleMatrix *dm = new DoubleMatrix[N];
-                for (unsigned int i=0; i<N; i++) dm[i].resize(en,en);
-                ems.push_back(dm);
-                ems[ems.size()-1][0] = b[n];
+                ems.push_back(b[n]);
             }
         }
         free(b);
@@ -738,8 +725,6 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
 
         unsigned int ind_size = ind.size();
         unsigned int ems_size = ems.size();
-
-        //printf("%d %d %d %d %d %d %d %d\n", ind[0], ind[1], ind[2], ind[3], ind[4], ind[5], ind[6], ind[7]);
 
         /**********************************************************************
          *                          End of discretization
@@ -758,7 +743,6 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
 
         for (unsigned int n=0; n<=N-4; n++)
         {
-            //double t = n*h;
             GridNodeODE node(n*h, n);
 
             for (unsigned int row=0; row<en; row++)
@@ -800,19 +784,7 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
 
             for (unsigned int i=0; i<ind_size; i++)
             {
-                if (n+4 == ind.at(i))
-                {
-                    u[n+1] += ems[i][n];
-                    //ems[i][n] = DoubleMatrix::ZeroMatrix(en, en);
-                }
-                if (n+4 >= ind.at(i))
-                {
-                    ems[i][n+1] = DoubleMatrix::ZeroMatrix(en, en);
-                }
-                else
-                {
-                    ems[i][n+1] = ems[i][n];
-                }
+                if (n+4 == ind[i]) u[n+1] += ems[i];
             }
         }
 
@@ -881,20 +853,9 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
             C[row] = 12.0*h*B(nodeN0, row%en);
         }
 
-        //        unsigned int row = 12;
-        //        double tN4 = h*(N-4);
-        //        double tN3 = h*(N-3);
-        //        double tN2 = h*(N-2);
-        //        double tN1 = h*(N-1);
-        //        double tN0 = h*(N-0);
-        //        printf("%.10f\n%.10f\n", C[row], M[row][0]*X(tN4,0)+M[row][1]*X(tN4,1)+M[row][2]*X(tN4,2)
-        //                                     +M[row][3]*X(tN3,0)+M[row][4]*X(tN3,1)+M[row][5]*X(tN3,2)
-        //                                     +M[row][6]*X(tN2,0)+M[row][7]*X(tN2,1)+M[row][8]*X(tN2,2)
-        //                                     +M[row][9]*X(tN1,0)+M[row][10]*X(tN1,1)+M[row][11]*X(tN1,2)
-        //                                     +M[row][12]*X(tN0,0)+M[row][13]*X(tN0,1)+M[row][14]*X(tN0,2));
-
         LinearEquation::GaussianElimination(M, C, xT);
-        //        IPrinter::print(xT, xT.size());
+        M.clear();
+        C.clear();
 
         x.resize(en);
         for (unsigned int i=0; i<en; i++) x[i].resize(N+1);
@@ -910,11 +871,13 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
             x0[N-1][row][0] = xT[row+3*en];
             x0[N-0][row][0] = xT[row+4*en];
         }
+        xT.clear();
 
         for (unsigned int i=N-4; i!=0; i--)
         {
             x0[i-1] = r[i-1] - q[i-1]*x0[i] - v[i-1]*x0[i+1] - u[i-1]*x0[i+2];
-            for (unsigned int s=0; s<ems_size; s++) x0[i-1] += -1.0*(ems[s][i-1]*x0[ind[s]]);
+            for (unsigned int s=0; s<ems_size; s++)
+                if (ind[s]-2 > i) x0[i-1] += -1.0*(ems[s]*x0[ind[s]]);
             p[i-1].inverse();
             x0[i-1] = p[i-1] * x0[i-1];
         }
@@ -940,12 +903,8 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
         delete [] r;
         delete [] q;
         delete [] p;
-        ind.clear();
 
-        for (unsigned int i=0; i<ems_size; i++)
-        {
-            delete [] ems[i];
-        }
+        ind.clear();
         ems.clear();
 
         for (unsigned int i=0; i<=N; i++)
@@ -953,10 +912,6 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
             x0[i].clear();
         }
         x0.clear();
-
-        M.clear();
-        C.clear();
-        xT.clear();
     }
 }
 
@@ -978,14 +933,35 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
         double *r = (double*) malloc(sizeof(double)*(N-4));
 
         std::vector<unsigned int> ind;
-        std::vector<double*> ems;
+        std::vector<double>       ems;
 
         /**********************************************************************
          *                  Discretization using trapesium rule
          *********************************************************************/
         double *b = (double*) malloc(sizeof(double)*(N+1));
         for (unsigned int m=0; m<=N; m++) b[m] = 0.0;
-        discretisation(cs, b);
+
+        /********************* discretisation ********************************/
+
+        unsigned int cnd_size = cs.size();
+        for (unsigned int s=0; s<cnd_size; s++)
+        {
+            const Condition &cnd = cs[s];
+            double alpha = cnd.mtrx.at(0,0);
+            double time  = cnd.time;
+
+            for (unsigned int n=0; n<=N; n++)
+            {
+                double dh = fabs(time - n*h);
+
+                if (dh <= h)
+                {
+                    b[n] += alpha*(1.0 - dh/h);
+                }
+            }
+        }
+
+         /********************* discretisation ********************************/
 
         p[0] = b[0];
         q[0] = b[1];
@@ -998,8 +974,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
             if (fabs(b[n]) > DBL_EPSILON)
             {
                 ind.push_back(n);
-                ems.push_back((double*) malloc(sizeof(double)*(N-4)));
-                ems[ems.size()-1][0] = b[n];
+                ems.push_back(b[n]);
             }
         }
         free(b);
@@ -1019,8 +994,6 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
 
         for (unsigned int n=0; n<=N-6; n++)
         {
-            //double t = n*h;
-
             GridNodeODE node(n*h, n);
 
             double m = +1.0/(-60.0*h*A(node)-147.0);
@@ -1042,18 +1015,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
 
             for (unsigned int i=0; i<ind_size; i++)
             {
-                if (n+6 == ind.at(i))
-                {
-                    z[n+1] += ems[i][n];
-                }
-                if (n+6 >= ind.at(i))
-                {
-                    ems[i][n+1] = 0.0;
-                }
-                else
-                {
-                    ems[i][n+1] = ems[i][n];
-                }
+                if (n+6 == ind[i]) z[n+1] += ems[i];
             }
         }
 
@@ -1150,7 +1112,8 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
         for (unsigned int i=N-6; i!=0; i--)
         {
             x0[i-1] = -q[i-1]*x0[i]-v[i-1]*x0[i+1]-u[i-1]*x0[i+2]-w[i-1]*x0[i+3]-z[i-1]*x0[i+4]+r[i-1];
-            for (unsigned int s=0; s<ems_size; s++) x0[i-1] -= ems[s][i-1]*x0[ind[s]];
+            for (unsigned int s=0; s<ems_size; s++)
+                if (ind[s]-4 > i) x0[i-1] -= ems[s]*x0[ind[s]];
             x0[i-1] /= p[i-1];
         }
 
@@ -1164,7 +1127,6 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
         free(r);
         free(w);
         free(z);
-        for (unsigned int i=0; i<ems_size; i++) free(ems[i]);
         ems.clear();
         ind.clear();
 
@@ -1180,13 +1142,15 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
         DoubleMatrix* r = new DoubleMatrix[N-4]; for (unsigned int i=0; i<N-4; i++) r[i].resize(en, 1, 0.0);
 
         std::vector<unsigned int> ind;
-        std::vector<DoubleMatrix*> ems;
+        std::vector<DoubleMatrix> ems;
 
         /**********************************************************************
          *                  Discretization using trapesium rule
          *********************************************************************/
         DoubleMatrix* b = new DoubleMatrix[N+1];
         for (unsigned int n=0; n<=N; n++) b[n].resize(en, en, 0.0);
+
+        /********************* discretisation ********************************/
 
         unsigned int cnd_size = cs.size();
         for (unsigned int s=0; s<cnd_size; s++)
@@ -1201,6 +1165,8 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
             }
         }
 
+        /********************* discretisation ********************************/
+
         p[0] = b[0];
         q[0] = b[1];
         v[0] = b[2];
@@ -1212,10 +1178,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
             if (!b[n].zeroMatrix())
             {
                 ind.push_back(n);
-                DoubleMatrix *dm = new DoubleMatrix[N];
-                for (unsigned int i=0; i<N; i++) dm[i].resize(en,en);
-                ems.push_back(dm);
-                ems[ems.size()-1][0] = b[n];
+                ems.push_back(b[n]);
             }
         }
         free(b);
@@ -1223,8 +1186,6 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
 
         unsigned int ind_size = ind.size();
         unsigned int ems_size = ems.size();
-
-        //printf("%d %d %d %d %d %d %d %d\n", ind[0], ind[1], ind[2], ind[3], ind[4], ind[5], ind[6], ind[7]);
 
         /**********************************************************************
          *                          End of discretization
@@ -1245,7 +1206,6 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
 
         for (unsigned int n=0; n<=N-6; n++)
         {
-            //double t = n*h;
             GridNodeODE node(n*h, n);
 
             for (unsigned int row=0; row<en; row++)
@@ -1296,19 +1256,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
 
             for (unsigned int i=0; i<ind_size; i++)
             {
-                if (n+6 == ind.at(i))
-                {
-                    z[n+1] += ems[i][n];
-                    //ems[i][n] = DoubleMatrix::ZeroMatrix(en, en);
-                }
-                if (n+6 >= ind.at(i))
-                {
-                    ems[i][n+1] = DoubleMatrix::ZeroMatrix(en, en);
-                }
-                else
-                {
-                    ems[i][n+1] = ems[i][n];
-                }
+                if (n+6 == ind[i]) z[n+1] += ems[i];
             }
         }
 
@@ -1415,28 +1363,9 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
             C[row] = 60.0*h*B(nodeN0, row%en);
         }
 
-        //unsigned int row = 3;
-
-        //        for (unsigned int row = 0; row < 7*en; row++)
-        //        {
-        //        double tN6 = h*(N-6);
-        //        double tN5 = h*(N-5);
-        //        double tN4 = h*(N-4);
-        //        double tN3 = h*(N-3);
-        //        double tN2 = h*(N-2);
-        //        double tN1 = h*(N-1);
-        //        double tN0 = h*(N-0);
-        //        printf("%4d %.10f %.10f\n", row, C[row],
-        //                                     +M[row][0]*X(tN6,0) +M[row][1]*X(tN6,1) +M[row][2]*X(tN6,2)
-        //                                     +M[row][3]*X(tN5,0) +M[row][4]*X(tN5,1) +M[row][5]*X(tN5,2)
-        //                                     +M[row][6]*X(tN4,0) +M[row][7]*X(tN4,1) +M[row][8]*X(tN4,2)
-        //                                     +M[row][9]*X(tN3,0) +M[row][10]*X(tN3,1)+M[row][11]*X(tN3,2)
-        //                                     +M[row][12]*X(tN2,0)+M[row][13]*X(tN2,1)+M[row][14]*X(tN2,2)
-        //                                     +M[row][15]*X(tN1,0)+M[row][16]*X(tN1,1)+M[row][17]*X(tN1,2)
-        //                                     +M[row][18]*X(tN0,0)+M[row][19]*X(tN0,1)+M[row][20]*X(tN0,2));
-        //        }
         LinearEquation::GaussianElimination(M, C, xT);
-        //IPrinter::print(xT, xT.size());
+        M.clear();
+        C.clear();
 
         x.resize(en);
         for (unsigned int i=0; i<en; i++) x[i].resize(N+1);
@@ -1454,11 +1383,13 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
             x0[N-1][row][0] = xT[row+5*en];
             x0[N-0][row][0] = xT[row+6*en];
         }
+        xT.clear();
 
         for (unsigned int i=N-6; i!=0; i--)
         {
             x0[i-1] = r[i-1] - q[i-1]*x0[i] - v[i-1]*x0[i+1] - u[i-1]*x0[i+2] - w[i-1]*x0[i+3] - z[i-1]*x0[i+4];
-            for (unsigned int s=0; s<ems_size; s++) x0[i-1] += -1.0*(ems[s][i-1]*x0[ind[s]]);
+            for (unsigned int s=0; s<ems_size; s++)
+                if (ind[s]-4 > i) x0[i-1] += -1.0*(ems[s]*x0[ind[s]]);
             p[i-1].inverse();
             x0[i-1] = p[i-1] * x0[i-1];
         }
@@ -1488,12 +1419,8 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
         delete [] r;
         delete [] q;
         delete [] p;
-        ind.clear();
 
-        for (unsigned int i=0; i<ems_size; i++)
-        {
-            delete [] ems[i];
-        }
+        ind.clear();
         ems.clear();
 
         for (unsigned int i=0; i<=N; i++)
@@ -1501,34 +1428,5 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
             x0[i].clear();
         }
         x0.clear();
-
-        M.clear();
-        C.clear();
-        xT.clear();
     }
 }
-
-void LinearODE1stOrder::discretisation(const std::vector<Condition>& cs, double* b) const
-{
-    double h = grid().step();
-    unsigned int N = grid().sizeN();
-
-    unsigned int cnd_size = cs.size();
-    for (unsigned int s=0; s<cnd_size; s++)
-    {
-        const Condition &cnd = cs[s];
-        double alpha = cnd.mtrx.at(0,0);
-        double time  = cnd.time;
-
-        for (unsigned int n=0; n<=N; n++)
-        {
-            double dh = fabs(time - n*h);
-
-            if (dh <= h)
-            {
-                b[n] += alpha*(1.0 - dh/h);
-            }
-        }
-    }
-}
-

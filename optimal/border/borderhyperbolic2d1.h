@@ -1,7 +1,7 @@
 #ifndef BORDERHYPERBOLIC21_H
 #define BORDERHYPERBOLIC21_H
 
-#include <pde/hyperbolicequation.h>
+#include <pde_old/hyperbolicequation.h>
 
 class BorderHyperbolic21 : public IHyperbolicEquation2D
 {

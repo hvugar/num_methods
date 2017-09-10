@@ -35,30 +35,30 @@ void BackwardParabolicIBVP::gridMethod(DoubleVector &p, SweepMethodDirection dir
     SpaceNodePDE isn;
     for (unsigned int n=0; n<=N; n++)
     {
-        isn.xIndex = n+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = n+minN;
+        isn.x = isn.i*hx;
         p[n] = initial(isn);
     }
     layerInfo(p, M);
 
     SpaceNodePDE lsn;
-    lsn.xIndex = minN;
+    lsn.i = minN;
     lsn.x = minN*hx;
 
     SpaceNodePDE rsn;
-    rsn.xIndex = maxN;
+    rsn.i = maxN;
     rsn.x = maxN*hx;
 
     TimeNodePDE tn;
     for (unsigned int m=M-1; m!=UINT32_MAX; m--)
     {
-        tn.index = m+minM;
-        tn.t = tn.index*ht;
+        tn.i = m+minM;
+        tn.t = tn.i*ht;
 
         for (unsigned int n=1; n<=N-1; n++)
         {
-            isn.xIndex = n+minN;
-            isn.x = isn.xIndex*hx;
+            isn.i = n+minN;
+            isn.x = isn.i*hx;
 
             double alpha = -a(isn,tn)*h;
             double betta = 1.0 - 2.0*alpha;
@@ -128,30 +128,30 @@ void BackwardParabolicIBVP::gridMethod(DoubleMatrix &p, SweepMethodDirection dir
     SpaceNodePDE isn;
     for (unsigned int n=0; n<=N; n++)
     {
-        isn.xIndex = n+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = n+minN;
+        isn.x = isn.i*hx;
         p[M][n] = initial(isn);
     }
     layerInfo(p, M);
 
     SpaceNodePDE lsn;
-    lsn.xIndex = minN;
+    lsn.i = minN;
     lsn.x = minN*hx;
 
     SpaceNodePDE rsn;
-    rsn.xIndex = maxN;
+    rsn.i = maxN;
     rsn.x = maxN*hx;
 
     TimeNodePDE tn;
     for (unsigned int m=M-1; m!=UINT32_MAX; m--)
     {
-        tn.index = m+minM;
-        tn.t = tn.index*ht;
+        tn.i = m+minM;
+        tn.t = tn.i*ht;
 
         for (unsigned int n=1; n<=N-1; n++)
         {
-            isn.xIndex = n+minN;
-            isn.x = isn.xIndex*hx;
+            isn.i = n+minN;
+            isn.x = isn.i*hx;
 
             double alpha = -a(isn,tn)*h;
             double betta = 1.0 - 2.0*alpha;

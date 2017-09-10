@@ -44,8 +44,8 @@ void HyperbolicIBVP::gridMethod0(DoubleMatrix &u, SweepMethodDirection direction
     SpaceNodePDE isn;
     for (unsigned int n=0; n<=N; n++)
     {
-        isn.xIndex = n+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = n+minN;
+        isn.x = isn.i*hx;
 
         u[0][n] = initial1(isn);
         u[1][n] = u[0][n] + ht*initial2(isn);
@@ -62,11 +62,11 @@ void HyperbolicIBVP::gridMethod0(DoubleMatrix &u, SweepMethodDirection direction
     IPrinter::printSeperatorLine();
 
     SpaceNodePDE lsn;
-    lsn.xIndex = minN;
+    lsn.i = minN;
     lsn.x = minN*hx;
 
     SpaceNodePDE rsn;
-    rsn.xIndex = maxN;
+    rsn.i = maxN;
     rsn.x = maxN*hx;
 
     TimeNodePDE tn;
@@ -74,19 +74,19 @@ void HyperbolicIBVP::gridMethod0(DoubleMatrix &u, SweepMethodDirection direction
     TimeNodePDE tn2;
     for (unsigned int m=1; m<=M-1; m++)
     {
-        tn.index = m+minM+1;
-        tn.t = tn.index*ht;
+        tn.i = m+minM+1;
+        tn.t = tn.i*ht;
 
-        tn1.index = m+minM;
-        tn1.t = tn1.index*ht;
+        tn1.i = m+minM;
+        tn1.t = tn1.i*ht;
 
-        tn2.index = m+minM-1;
-        tn2.t = tn2.index*ht;
+        tn2.i = m+minM-1;
+        tn2.t = tn2.i*ht;
 
         for (unsigned int n=1; n<=N-1; n++)
         {
-            isn.xIndex = n+minN;
-            isn.x = isn.xIndex*hx;
+            isn.i = n+minN;
+            isn.x = isn.i*hx;
 
             //double a0 = a(isn,tn);
             //double a1 = a(isn,tn1);
@@ -164,19 +164,19 @@ void HyperbolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction
     SpaceNodePDE isn;
     for (unsigned int n=0; n<=N; n++)
     {
-        isn.xIndex = n+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = n+minN;
+        isn.x = isn.i*hx;
 
         u[0][n] = initial1(isn);
         u[1][n] = u[0][n] + ht*initial2(isn);
     }
 
     SpaceNodePDE lsn;
-    lsn.xIndex = minN;
+    lsn.i = minN;
     lsn.x = minN*hx;
 
     SpaceNodePDE rsn;
-    rsn.xIndex = maxN;
+    rsn.i = maxN;
     rsn.x = maxN*hx;
 
     TimeNodePDE tn;
@@ -184,19 +184,19 @@ void HyperbolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction
     TimeNodePDE tn2;
     for (unsigned int m=2; m<=M; m++)
     {
-        tn.index = m+minM;
-        tn.t = tn.index*ht;
+        tn.i = m+minM;
+        tn.t = tn.i*ht;
 
-        tn1.index = m+minM-1;
-        tn1.t = tn1.index*ht;
+        tn1.i = m+minM-1;
+        tn1.t = tn1.i*ht;
 
-        tn2.index = m+minM-2;
-        tn2.t = tn2.index*ht;
+        tn2.i = m+minM-2;
+        tn2.t = tn2.i*ht;
 
         for (unsigned int n=1; n<=N-1; n++)
         {
-            isn.xIndex = n+minN;
-            isn.x = isn.xIndex*hx;
+            isn.i = n+minN;
+            isn.x = isn.i*hx;
 
             double a0 = a(isn,tn);
             double a1 = a(isn,tn1);
@@ -274,19 +274,19 @@ void HyperbolicIBVP::gridMethod2(DoubleMatrix &u, SweepMethodDirection direction
     SpaceNodePDE isn;
     for (unsigned int n=0; n<=N; n++)
     {
-        isn.xIndex = n+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = n+minN;
+        isn.x = isn.i*hx;
 
         u[0][n] = initial1(isn);
         u[1][n] = u[0][n] + ht*initial2(isn);
     }
 
     SpaceNodePDE lsn;
-    lsn.xIndex = minN;
+    lsn.i = minN;
     lsn.x = minN*hx;
 
     SpaceNodePDE rsn;
-    rsn.xIndex = maxN;
+    rsn.i = maxN;
     rsn.x = maxN*hx;
 
     TimeNodePDE tn;
@@ -294,19 +294,19 @@ void HyperbolicIBVP::gridMethod2(DoubleMatrix &u, SweepMethodDirection direction
     TimeNodePDE tn2;
     for (unsigned int m=2; m<=M; m++)
     {
-        tn.index = m+minM;
-        tn.t = tn.index*ht;
+        tn.i = m+minM;
+        tn.t = tn.i*ht;
 
-        tn1.index = m+minM-1;
-        tn1.t = tn1.index*ht;
+        tn1.i = m+minM-1;
+        tn1.t = tn1.i*ht;
 
-        tn2.index = m+minM-2;
-        tn2.t = tn2.index*ht;
+        tn2.i = m+minM-2;
+        tn2.t = tn2.i*ht;
 
         for (unsigned int n=1; n<=N-1; n++)
         {
-            isn.xIndex = n+minN;
-            isn.x = isn.xIndex*hx;
+            isn.i = n+minN;
+            isn.x = isn.i*hx;
 
             double a0 = a(isn,tn);
             double a1 = a(isn,tn1);

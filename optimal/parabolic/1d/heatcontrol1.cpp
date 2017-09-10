@@ -118,12 +118,12 @@ double HeatControl1::fxt(double x, double t) const
     return 2.0*t - 2.0;//*a;
 }
 
-double HeatControl1::CParabolicIBVP::initial(const SpaceNode &sn) const
+double HeatControl1::CParabolicIBVP::initial(const SpaceNodePDE &sn) const
 {
     return sn.x*sn.x;
 }
 
-double HeatControl1::CParabolicIBVP::boundary(const SpaceNode &, const TimeNode &tn, BoundaryType boundary) const
+double HeatControl1::CParabolicIBVP::boundary(const SpaceNodePDE &, const TimeNodePDE &tn, BoundaryType boundary) const
 {
     double t = tn.t;
     if (boundary==Left)  return t*t;
@@ -131,7 +131,7 @@ double HeatControl1::CParabolicIBVP::boundary(const SpaceNode &, const TimeNode 
     return 0.0;
 }
 
-double HeatControl1::CParabolicIBVP::f(const SpaceNode &sn, const TimeNode &tn) const
+double HeatControl1::CParabolicIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     Dimension dim1 = spaceDimension(Dimension::Dim1);
     unsigned int N = dim1.sizeN();

@@ -50,3 +50,34 @@ void LinearEquation::GaussianElimination(const DoubleMatrix& m, const DoubleVect
 {
     GaussianElimination1(m,b,x);
 }
+
+void LinearEquation::FirstRowLoaded(const double *e, double f, const double *a, const double *b, const double *c, const double *d, unsigned int N)
+{
+    double *p = (double*) malloc(sizeof(double)*N);
+    double *q = (double*) malloc(sizeof(double)*N);
+    double *r = (double*) malloc(sizeof(double)*N);
+    double *x = (double*) malloc(sizeof(double)*N);
+
+    p[0] = e[0];
+    q[0] = e[1];
+    p[0] = f;
+
+    for (unsigned int n=1; n<N-1; n++)
+    {
+        p[n] = -p[n-1]*(b[n]/a[n]) + q[n-1];
+        q[n] = -p[n-1]*(c[n]/a[n]) + e[n+1];
+        r[n] = -p[n-1]*(d[n]/a[n]) + r[n-1];
+    }
+
+    p[N-1] = -p[N-2]*(b[N-1]/a[N-1]) + q[N-2];
+    q[N-1] = 0.0;
+    r[N-1] = -p[N-2]*(d[N-1]/a[N-1]) + r[N-2];
+
+    x[N-1] = r[N-1]/p[N-1];
+
+    printf("%f\n", x[N-1]);
+
+    free(r);
+    free(q);
+    free(p);
+}

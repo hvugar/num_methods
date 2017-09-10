@@ -64,7 +64,7 @@ void ParabolicIBVP2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 ParabolicIBVP2::ParabolicIBVP2()
 {}
 
-double ParabolicIBVP2::initial(const SpaceNode &sn) const
+double ParabolicIBVP2::initial(const SpaceNodePDE &sn) const
 {
     C_UNUSED(sn);
 #ifdef SAMPLE_0
@@ -86,7 +86,7 @@ double ParabolicIBVP2::initial(const SpaceNode &sn) const
     return 0.0;
 }
 
-double ParabolicIBVP2::boundary(const SpaceNode &sn, const TimeNode &tn, BoundaryType) const
+double ParabolicIBVP2::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType) const
 {
 #ifdef SAMPLE_0
     return 0.0;
@@ -112,7 +112,7 @@ double ParabolicIBVP2::boundary(const SpaceNode &sn, const TimeNode &tn, Boundar
     return 0.0;
 }
 
-double ParabolicIBVP2::f(const SpaceNode &sn, const TimeNode &tn) const
+double ParabolicIBVP2::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
 #ifdef SAMPLE_0
     return 0.0;
@@ -135,7 +135,7 @@ double ParabolicIBVP2::f(const SpaceNode &sn, const TimeNode &tn) const
     return 0.0;
 }
 
-double ParabolicIBVP2::a(const SpaceNode &sn UNUSED_PARAM, const TimeNode &tn UNUSED_PARAM) const
+double ParabolicIBVP2::a(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
     return 1.0;
 }

@@ -17,15 +17,15 @@ struct MINIMUMSHARED_EXPORT SpaceNodePDE
     double y;
     double z;
 
-    unsigned int xIndex;
-    unsigned int yIndex;
-    unsigned int zIndex;
+    unsigned int i;
+    unsigned int j;
+    unsigned int k;
 };
 
 struct MINIMUMSHARED_EXPORT TimeNodePDE
 {
     double t;
-    unsigned int index;
+    unsigned int i;
 };
 
 class MINIMUMSHARED_EXPORT Dimension

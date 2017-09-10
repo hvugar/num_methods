@@ -35,30 +35,30 @@ void HeatEquationIBVP::gridMethod(DoubleVector &u, double a, SweepMethodDirectio
     SpaceNodePDE isn;
     for (unsigned int n=0; n<=N; n++)
     {
-        isn.xIndex = n+minN;
-        isn.x = isn.xIndex*hx;
+        isn.i = n+minN;
+        isn.x = isn.i*hx;
         u[n] = initial(isn);
     }
     layerInfo(u, 0);
 
     SpaceNodePDE lsn;
-    lsn.xIndex = minN;
+    lsn.i = minN;
     lsn.x = minN*hx;
 
     SpaceNodePDE rsn;
-    rsn.xIndex = maxN;
+    rsn.i = maxN;
     rsn.x = maxN*hx;
 
     TimeNodePDE tn;
     for (unsigned int m=1; m<=M; m++)
     {
-        tn.index = m+minM;
-        tn.t = tn.index*ht;
+        tn.i = m+minM;
+        tn.t = tn.i*ht;
 
         for (unsigned int n=1; n<=N-1; n++)
         {
-            isn.xIndex = n+minN;
-            isn.x = isn.xIndex*hx;
+            isn.i = n+minN;
+            isn.x = isn.i*hx;
 
             double alpha = -a*a*h;
             double betta = 1.0 - 2.0*alpha;
