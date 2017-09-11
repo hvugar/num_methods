@@ -160,17 +160,17 @@ void LinearODE1stOrderEx1::example2()
     Random::fillMatrix(nsc0.mtrx, -1, +1, 5);
 
     Condition nsc1;
-    nsc1.time = 0.3;
+    nsc1.time = 0.37541;
     nsc1.mtrx.resize(n, n);
     Random::fillMatrix(nsc1.mtrx, -3, +3, 5);
 
     Condition nsc2;
-    nsc2.time = 0.7;
+    nsc2.time = 0.751452;
     nsc2.mtrx.resize(n, n);
     Random::fillMatrix(nsc2.mtrx, -1, +1, 5);
 
     Condition nsc3;
-    nsc3.time = 0.8;
+    nsc3.time = 0.831452;
     nsc3.mtrx.resize(n, n);
     Random::fillMatrix(nsc3.mtrx, -3, +3, 5);
 
@@ -235,7 +235,7 @@ void LinearODE1stOrderEx1::example3()
     nsc0.mtrx.at(0,0) = 5.0;
 
     Condition nsc1;
-    nsc1.time = 0.4;
+    nsc1.time = 0.454125;
     nsc1.mtrx.resize(n, n);
     nsc1.mtrx.at(0,0) = 4.2;
 
@@ -287,18 +287,17 @@ void LinearODE1stOrderEx1::example4()
     Random::fillMatrix(nsc0.mtrx, -1, +1, 5);
 
     Condition nsc1;
-    nsc1.time = 0.3;
-    nsc1.nmbr = 30;
+    nsc1.time = 0.3541;
     nsc1.mtrx.resize(n, n);
     Random::fillMatrix(nsc1.mtrx, -3, +3, 5);
 
     Condition nsc2;
-    nsc2.time = 0.5;
+    nsc2.time = 0.5124;
     nsc2.mtrx.resize(n, n);
     Random::fillMatrix(nsc2.mtrx, -1, +1, 5);
 
     Condition nsc3;
-    nsc3.time = 0.8;
+    nsc3.time = 0.8149;
     nsc3.mtrx.resize(n, n);
     Random::fillMatrix(nsc3.mtrx, -3, +3, 5);
 
