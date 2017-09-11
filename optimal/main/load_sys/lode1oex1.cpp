@@ -6,6 +6,9 @@ void LinearODE1stOrderEx1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM
 {
     LinearODE1stOrderEx1 cpnlcs;
     cpnlcs.setGrid(UniformODEGrid(0.01, 0, 100));
+#ifdef EXAMPLE_0
+    cpnlcs.example0();
+#endif
 #ifdef EXAMPLE_1
     cpnlcs.example1();
 #endif
@@ -26,7 +29,123 @@ void LinearODE1stOrderEx1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM
 #endif
 }
 
+void LinearODE1stOrderEx1::example0()
+{
+    unsigned int N = grid().sizeN();
+    double h = grid().step();
+
+    unsigned int n = equationsNumber();
+
+    std::vector<Condition> nscs;
+    DoubleVector betta;
+
+    Condition nsc0;
+    nsc0.time = 0.0;
+    nsc0.mtrx.resize(n, n);
+    nsc0.mtrx.at(0,0) = 5.0;
+
+    Condition nsc1;
+    nsc1.time = 0.45414;
+    nsc1.mtrx.resize(n, n);
+    nsc1.mtrx.at(0,0) = 4.2;
+
+    Condition nsc2;
+    nsc2.time = 0.71214;
+    nsc2.mtrx.resize(n, n);
+    nsc2.mtrx.at(0,0) = 5.7;
+
+    Condition nsc3;
+    nsc3.time = 1.0;
+    nsc3.mtrx.resize(n, n);
+    nsc3.mtrx.at(0,0) = 10.0;
+
+    nscs.push_back(nsc0);
+    nscs.push_back(nsc1);
+    nscs.push_back(nsc2);
+    nscs.push_back(nsc3);
+
+    betta.resize(n);
+    betta[0] = nsc0.mtrx.at(0,0)*X(nsc0.time,0)
+             + nsc1.mtrx.at(0,0)*X(nsc1.time,0)
+             + nsc2.mtrx.at(0,0)*X(nsc2.time,0)
+             + nsc3.mtrx.at(0,0)*X(nsc3.time,0);
+
+    DoubleVector x1(N+1);
+    for (unsigned int i=0; i<=N; i++) x1[i] = X(i*h, 0);
+    IPrinter::printVector(x1);
+
+    std::vector<DoubleVector> x2;
+    solveHighOderAccuracy(nscs, betta, x2, 2);
+    IPrinter::printVector(x2[0]);
+
+    std::vector<DoubleVector> x4;
+    solveHighOderAccuracy(nscs, betta, x4, 4);
+    IPrinter::printVector(x4[0]);
+
+    std::vector<DoubleVector> x6;
+    solveHighOderAccuracy(nscs, betta, x6, 6);
+    IPrinter::printVector(x6[0]);
+}
+
 void LinearODE1stOrderEx1::example1()
+{
+    unsigned int N = grid().sizeN();
+    double h = grid().step();
+
+    unsigned int n = equationsNumber();
+
+    std::vector<Condition> nscs;
+    DoubleVector betta;
+
+    Condition nsc0;
+    nsc0.time = 0.0;
+    nsc0.mtrx.resize(n, n);
+    nsc0.mtrx.at(0,0) = 5.0;
+
+    Condition nsc1;
+    nsc1.time = 0.4545;
+    nsc1.mtrx.resize(n, n);
+    nsc1.mtrx.at(0,0) = 4.2;
+
+    Condition nsc2;
+    nsc2.time = 0.7458;
+    nsc2.mtrx.resize(n, n);
+    nsc2.mtrx.at(0,0) = 5.7;
+
+    Condition nsc3;
+    nsc3.time = 1.0;
+    nsc3.mtrx.resize(n, n);
+    nsc3.mtrx.at(0,0) = 10.0;
+
+    nscs.push_back(nsc0);
+    nscs.push_back(nsc1);
+    nscs.push_back(nsc2);
+    nscs.push_back(nsc3);
+
+    betta.resize(n);
+    betta[0] = nsc0.mtrx.at(0,0)*X(nsc0.time,0)
+             + nsc1.mtrx.at(0,0)*X(nsc1.time,0)
+             + nsc2.mtrx.at(0,0)*X(nsc2.time,0)
+             + nsc3.mtrx.at(0,0)*X(nsc3.time,0);
+
+    DoubleVector x1(N+1);
+    for (unsigned int i=0; i<=N; i++) x1[i] = X(i*h, 0);
+    IPrinter::printVector(x1);
+
+    std::vector<DoubleVector> x2;
+    solveHighOderAccuracy(nscs, betta, x2, 2);
+    IPrinter::printVector(x2[0]);
+
+    std::vector<DoubleVector> x4;
+    solveHighOderAccuracy(nscs, betta, x4, 4);
+    IPrinter::printVector(x4[0]);
+
+    std::vector<DoubleVector> x6;
+    solveHighOderAccuracy(nscs, betta, x6, 6);
+    IPrinter::printVector(x6[0]);
+}
+
+void LinearODE1stOrderEx1::example2()
 {
     unsigned int N = grid().sizeN();
 
@@ -46,7 +165,7 @@ void LinearODE1stOrderEx1::example1()
     Random::fillMatrix(nsc1.mtrx, -3, +3, 5);
 
     Condition nsc2;
-    nsc2.time = 0.73;
+    nsc2.time = 0.7;
     nsc2.mtrx.resize(n, n);
     Random::fillMatrix(nsc2.mtrx, -1, +1, 5);
 
@@ -98,64 +217,6 @@ void LinearODE1stOrderEx1::example1()
     IPrinter::printVector(x6[0]);
     IPrinter::printVector(x6[1]);
     IPrinter::printVector(x6[2]);
-}
-
-void LinearODE1stOrderEx1::example2()
-{
-    unsigned int N = grid().sizeN();
-    double h = grid().step();
-
-    unsigned int n = equationsNumber();
-
-    std::vector<Condition> nscs;
-    DoubleVector betta;
-
-    Condition nsc0;
-    nsc0.time = 0.0;
-    nsc0.mtrx.resize(n, n);
-    nsc0.mtrx.at(0,0) = 5.0;
-
-    Condition nsc1;
-    nsc1.time = 0.4;
-    nsc1.mtrx.resize(n, n);
-    nsc1.mtrx.at(0,0) = 4.2;
-
-    Condition nsc2;
-    nsc2.time = 0.7;
-    nsc2.mtrx.resize(n, n);
-    nsc2.mtrx.at(0,0) = 5.7;
-
-    Condition nsc3;
-    nsc3.time = 1.0;
-    nsc3.mtrx.resize(n, n);
-    nsc3.mtrx.at(0,0) = 10.0;
-
-    nscs.push_back(nsc0);
-    nscs.push_back(nsc1);
-    nscs.push_back(nsc2);
-    nscs.push_back(nsc3);
-
-    betta.resize(n);
-    betta[0] = nsc0.mtrx.at(0,0)*X(nsc0.time,0)
-             + nsc1.mtrx.at(0,0)*X(nsc1.time,0)
-             + nsc2.mtrx.at(0,0)*X(nsc2.time,0)
-             + nsc3.mtrx.at(0,0)*X(nsc3.time,0);
-
-    DoubleVector x1(N+1);
-    for (unsigned int i=0; i<=N; i++) x1[i] = X(i*h, 0);
-    IPrinter::printVector(x1);
-
-    std::vector<DoubleVector> x2;
-    solveHighOderAccuracy(nscs, betta, x2, 2);
-    IPrinter::printVector(x2[0]);
-
-    std::vector<DoubleVector> x4;
-    solveHighOderAccuracy(nscs, betta, x4, 4);
-    IPrinter::printVector(x4[0]);
-
-    std::vector<DoubleVector> x6;
-    solveHighOderAccuracy(nscs, betta, x6, 6);
-    IPrinter::printVector(x6[0]);
 }
 
 void LinearODE1stOrderEx1::example3()
@@ -412,13 +473,16 @@ void LinearODE1stOrderEx1::example6()
 double LinearODE1stOrderEx1::A(const GridNodeODE &node UNUSED_PARAM, unsigned int row UNUSED_PARAM, unsigned int col UNUSED_PARAM) const
 {
     double t = node.x;
+#ifdef EXAMPLE_0
+    return t;
+#endif
 #ifdef EXAMPLE_1
+    return t;
+#endif
+#ifdef EXAMPLE_2
     if (row==0) { if (col==0) { return +2.0; } if (col==1) { return -3.0; } if (col==2) { return +1.0; } }
     if (row==1) { if (col==0) { return +3.0; } if (col==1) { return +1.0; } if (col==2) { return -2.0; } }
     if (row==2) { if (col==0) { return +1.0; } if (col==1) { return -5.0; } if (col==2) { return -3.0; } }
-#endif
-#ifdef EXAMPLE_2
-    return t;
 #endif
 #ifdef EXAMPLE_3
     return t;
@@ -443,13 +507,16 @@ double LinearODE1stOrderEx1::A(const GridNodeODE &node UNUSED_PARAM, unsigned in
 double LinearODE1stOrderEx1::B(const GridNodeODE &node UNUSED_PARAM, unsigned int row UNUSED_PARAM) const
 {
     double t = node.x;
+#ifdef EXAMPLE_0
+    return 1.0 - t*t;
+#endif
 #ifdef EXAMPLE_1
+    return -t*t*t;
+#endif
+#ifdef EXAMPLE_2
     if (row==0) return +11.0*t*t - 7.0*t - 5.0;
     if (row==1) return -2.0*t*t + t - 12.0;
     if (row==2) return +23.0*t*t + 2.0*t - 3.0;
-#endif
-#ifdef EXAMPLE_2
-    return -t*t*t;
 #endif
 #ifdef EXAMPLE_3
     return 4.0*cos(4.0*t) - t*sin(4.0*t);
@@ -472,11 +539,14 @@ double LinearODE1stOrderEx1::B(const GridNodeODE &node UNUSED_PARAM, unsigned in
 
 unsigned int LinearODE1stOrderEx1::equationsNumber() const
 {
+#ifdef EXAMPLE_0
+    return 1;
+#endif
 #ifdef EXAMPLE_1
-    return 3;
+    return 1;
 #endif
 #ifdef EXAMPLE_2
-    return 1;
+    return 3;
 #endif
 #ifdef EXAMPLE_3
     return 1;
@@ -494,13 +564,16 @@ unsigned int LinearODE1stOrderEx1::equationsNumber() const
 
 double LinearODE1stOrderEx1::X(double t, int row UNUSED_PARAM) const
 {
+#ifdef EXAMPLE_0
+    return t;
+#endif
 #ifdef EXAMPLE_1
+    return t*t+2.0;
+#endif
+#ifdef EXAMPLE_2
     if (row==0) return 3.0*t+4.0;
     if (row==1) return 4.0*t*t;
     if (row==2) return t*t+t;
-#endif
-#ifdef EXAMPLE_2
-    return t*t+2.0;
 #endif
 #ifdef EXAMPLE_3
     return sin(4.0*t);
