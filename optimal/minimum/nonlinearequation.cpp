@@ -88,7 +88,7 @@ void NonLinearEquation::calculateNewtonMethodMod(const DoubleVector &x0, DoubleV
 //        IPrinter::printSeperatorLine();
 
         // Regulization
-        DoubleMatrix V = W + 0.01*DoubleMatrix::IdentityMatrix(n);
+        DoubleMatrix V = W + 0.00*DoubleMatrix::IdentityMatrix(n);
 
         V.inverse();
 
