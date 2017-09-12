@@ -6,7 +6,7 @@
 class LoadedLinearODE1Order : public LinearODE1stOrder
 {
 public:
-    static void Main(int agrc, char *argv[]);
+    static void Main(int argc, char *argv[]);
 
     void solveProblem(std::vector<Condition> &a, std::vector<Condition> &b);
 protected:

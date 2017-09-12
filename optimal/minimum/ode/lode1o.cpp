@@ -199,13 +199,33 @@ void discretization2(const std::vector<LinearODE1stOrder::Condition> &cs, double
         double alpha = cnd.mtrx.at(0,0);
         double time  = cnd.time;
 
+        double h3 = h*h*h;
+        double h32 = (1.0/(2.0*h3)) * alpha;
+        double h36 = (1.0/(6.0*h3)) * alpha;
         for (unsigned int n=0; n<=N; n++)
         {
             double curt = n*h;
             double dh = fabs(time - curt);
 
-            if (dh <= h)               b[n] += (( (h-dh)*(h+dh)*(2.0*h-dh) )     / (2.0*h*h*h)) * alpha;
-            if (dh > h && dh <= 2.0*h) b[n] += (( (h-dh)*(2.0*h-dh)*(3.0*h-dh) ) / (6.0*h*h*h)) * alpha;
+            if (0.0 < time && time < h && n < 4)
+            {
+                if (n==0) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+                if (n==1) b[n] += ((2.0*h+dh)*(h-dh)*(h+dh)) * h32;
+                if (n==2) b[n] += ((2.0*h-dh)*(h-dh)*(h+dh)) * h32;
+                if (n==3) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+            }
+            else if ((N-1)*h < time && time < N*h && n > N-4)
+            {
+                if (n==N-3) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+                if (n==N-2) b[n] += ((2.0*h-dh)*(h-dh)*(h+dh)) * h32;
+                if (n==N-1) b[n] += ((2.0*h+dh)*(h-dh)*(h+dh)) * h32;
+                if (n==N-0) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+            }
+            else
+            {
+                if (dh <= h)               b[n] += ((2.0*h-dh)*(h-dh)*(h+dh)) * h32;
+                if (dh > h && dh <= 2.0*h) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+            }
         }
     }
 }
@@ -241,13 +261,33 @@ void discretization2(const std::vector<LinearODE1stOrder::Condition> &cs, Double
         const DoubleMatrix &alpha = cnd.mtrx;
         double time  = cnd.time;
 
+        double h3 = h*h*h;
+        DoubleMatrix h32 = (1.0/(2.0*h3)) * alpha;
+        DoubleMatrix h36 = (1.0/(6.0*h3)) * alpha;
         for (unsigned int n=0; n<=N; n++)
         {
             double curt = n*h;
             double dh = fabs(time - curt);
 
-            if (dh <= h)               b[n] += (( (h-dh)*(h+dh)*(2.0*h-dh) )     / (2.0*h*h*h)) * alpha;
-            if (dh > h && dh <= 2.0*h) b[n] += (( (h-dh)*(2.0*h-dh)*(3.0*h-dh) ) / (6.0*h*h*h)) * alpha;
+            if (0.0 < time && time < h && n < 4)
+            {
+                if (n==0) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+                if (n==1) b[n] += ((2.0*h+dh)*(h-dh)*(h+dh)) * h32;
+                if (n==2) b[n] += ((2.0*h-dh)*(h-dh)*(h+dh)) * h32;
+                if (n==3) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+            }
+            else if ((N-1)*h < time && time < N*h && n > N-4)
+            {
+                if (n==N-3) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+                if (n==N-2) b[n] += ((2.0*h-dh)*(h-dh)*(h+dh)) * h32;
+                if (n==N-1) b[n] += ((2.0*h+dh)*(h-dh)*(h+dh)) * h32;
+                if (n==N-0) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+            }
+            else
+            {
+                if (dh <= h)               b[n] += ((2.0*h-dh)*(h-dh)*(h+dh)) * h32;
+                if (dh > h && dh <= 2.0*h) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+            }
         }
     }
 }

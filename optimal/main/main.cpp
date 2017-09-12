@@ -59,6 +59,8 @@
 #include "matrixtest.h"
 #include <utils/random.h>
 
+#include "loadedlinearode1order.h"
+
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //MatrixTest::Main(argc, argv);
@@ -67,12 +69,14 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //NonLinearEquationEx1::Main(argc, argv);
 
+    //LoadedLinearODE1Order::Main(argc, argv);
+
     //Example1::Main(argc, argv);
     //SystemLinearODENonLocalContionsV::Main(argc, argv);
     //SystemLinearODENonLocalContionsM::Main(argc, argv);
-    //Problem4Ex2::Main(argc, argv);
+    Problem4Ex2::Main(argc, argv);
     //SystemLinearODENonLocalContionsV2::Main(argc, argv);
-    LinearODE1stOrderEx1::Main(argc, argv);
+    //LinearODE1stOrderEx1::Main(argc, argv);
 
     //NumIntegralExp1::Main(argc, argv);
 

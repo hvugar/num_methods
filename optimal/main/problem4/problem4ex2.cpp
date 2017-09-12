@@ -5,7 +5,7 @@
 void Problem4Ex2::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     Problem4Ex2 p2;
-    p2.grid = UniformODEGrid(0.001, 1000, 0);
+    p2.grid = UniformODEGrid(0.01, 0, 100);
     p2.initialize();
 
     DoubleVector x0;

@@ -5,7 +5,7 @@
 void LinearODE1stOrderEx1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     LinearODE1stOrderEx1 cpnlcs;
-    cpnlcs.setGrid(UniformODEGrid(0.01, 0, 100));
+    cpnlcs.setGrid(UniformODEGrid(0.1, 0, 10));
 #ifdef EXAMPLE_0
     cpnlcs.example0();
 #endif
@@ -98,35 +98,42 @@ void LinearODE1stOrderEx1::example1()
     DoubleVector betta;
 
     Condition nsc0;
-    nsc0.time = 0.0;
+    nsc0.time = 0.00;
     nsc0.mtrx.resize(n, n);
     nsc0.mtrx.at(0,0) = 5.0;
 
     Condition nsc1;
-    nsc1.time = 0.4545;
+    nsc1.time = 0.341;
     nsc1.mtrx.resize(n, n);
     nsc1.mtrx.at(0,0) = 4.2;
 
     Condition nsc2;
-    nsc2.time = 0.7458;
+    nsc2.time = 0.545;
     nsc2.mtrx.resize(n, n);
     nsc2.mtrx.at(0,0) = 5.7;
 
     Condition nsc3;
-    nsc3.time = 1.0;
+    nsc3.time = 0.836;
     nsc3.mtrx.resize(n, n);
-    nsc3.mtrx.at(0,0) = 10.0;
+    nsc3.mtrx.at(0,0) = 8.5;
+
+    Condition nsc4;
+    nsc4.time = 1.0;
+    nsc4.mtrx.resize(n, n);
+    nsc4.mtrx.at(0,0) = 10.0;
 
     nscs.push_back(nsc0);
     nscs.push_back(nsc1);
     nscs.push_back(nsc2);
     nscs.push_back(nsc3);
+    nscs.push_back(nsc4);
 
     betta.resize(n);
     betta[0] = nsc0.mtrx.at(0,0)*X(nsc0.time,0)
              + nsc1.mtrx.at(0,0)*X(nsc1.time,0)
              + nsc2.mtrx.at(0,0)*X(nsc2.time,0)
-             + nsc3.mtrx.at(0,0)*X(nsc3.time,0);
+             + nsc3.mtrx.at(0,0)*X(nsc3.time,0)
+             + nsc4.mtrx.at(0,0)*X(nsc4.time,0);
 
     DoubleVector x1(N+1);
     for (unsigned int i=0; i<=N; i++) x1[i] = X(i*h, 0);
@@ -147,8 +154,6 @@ void LinearODE1stOrderEx1::example1()
 
 void LinearODE1stOrderEx1::example2()
 {
-    unsigned int N = grid().sizeN();
-
     unsigned int n = equationsNumber();
 
     std::vector<Condition> nscs;
@@ -160,17 +165,17 @@ void LinearODE1stOrderEx1::example2()
     Random::fillMatrix(nsc0.mtrx, -1, +1, 5);
 
     Condition nsc1;
-    nsc1.time = 0.37541;
+    nsc1.time = 0.341;
     nsc1.mtrx.resize(n, n);
     Random::fillMatrix(nsc1.mtrx, -3, +3, 5);
 
     Condition nsc2;
-    nsc2.time = 0.751452;
+    nsc2.time = 0.545;
     nsc2.mtrx.resize(n, n);
     Random::fillMatrix(nsc2.mtrx, -1, +1, 5);
 
     Condition nsc3;
-    nsc3.time = 0.831452;
+    nsc3.time = 0.836;
     nsc3.mtrx.resize(n, n);
     Random::fillMatrix(nsc3.mtrx, -3, +3, 5);
 
