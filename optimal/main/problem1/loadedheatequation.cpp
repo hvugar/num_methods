@@ -28,7 +28,7 @@ void LoadedHeatEquation::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
     TimeNodePDE tn;
     tn.i = 1;//time.sizeN();
     tn.t = tn.i*time.step();
-    for (unsigned int n=dim1.minN(); n<=dim1.maxN(); n++)
+    for (int n=dim1.minN(); n<=dim1.maxN(); n++)
     {
         SpaceNodePDE sn;
         sn.i = n;

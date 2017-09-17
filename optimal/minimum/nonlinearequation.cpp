@@ -59,6 +59,7 @@ void NonLinearEquation::calculateNewtonMethod(const DoubleVector &x0, DoubleVect
         }
 
     } while (e.LInfNorm() > epsilon);
+//      }   while (e.L2Norm() > epsilon);
 }
 
 void NonLinearEquation::calculateNewtonMethodMod(const DoubleVector &x0, DoubleVector &rx, double diffEspilon, double epsilon)
@@ -92,7 +93,7 @@ void NonLinearEquation::calculateNewtonMethodMod(const DoubleVector &x0, DoubleV
 
         V.inverse();
 
-        double alpha = minimize(W, V, rx, n);
+        double alpha = 1.0;minimize(W, V, rx, n);
 
         DoubleVector x = rx;
 

@@ -56,7 +56,8 @@ SOURCES += main.cpp \
     matrixtest.cpp \
     nonlinearequationex1.cpp \
     problem4/problem4ex2.cpp \
-    loadedlinearode1order.cpp
+    loadedlinearode1order.cpp \
+    problem5/nllparabolic.cpp
 
 HEADERS += \
     load_sys/slodenlcsm.h \
@@ -79,4 +80,5 @@ HEADERS += \
     matrixtest.h \
     nonlinearequationex1.h \
     problem4/problem4ex2.h \
-    loadedlinearode1order.h
+    loadedlinearode1order.h \
+    problem5/nllparabolic.h

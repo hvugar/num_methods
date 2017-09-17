@@ -16,21 +16,21 @@ void Problem4Ex2::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     x0 << Random::value(-3,3,5);
     x0 << Random::value(-3,3,5);
     x0 << Random::value(-3,3,5);
-    IPrinter::print(x0);
+//    IPrinter::print(x0);
 
     DoubleVector x;
 
     NonLinearEquationEx2 nle(p2);
     nle.calculateNewtonMethodMod(x0, x, 0.001, 0.00001);
 
-    printf("0 %14.10f\n",nle.fx(x,0));
-    printf("1 %14.10f\n",nle.fx(x,1));
-    printf("2 %14.10f\n",nle.fx(x,2));
-    printf("3 %14.10f\n",nle.fx(x,3));
-    printf("4 %14.10f\n",nle.fx(x,4));
-    printf("5 %14.10f\n",nle.fx(x,5));
+//    printf("0 %14.10f\n",nle.fx(x,0));
+//    printf("1 %14.10f\n",nle.fx(x,1));
+//    printf("2 %14.10f\n",nle.fx(x,2));
+//    printf("3 %14.10f\n",nle.fx(x,3));
+//    printf("4 %14.10f\n",nle.fx(x,4));
+//    printf("5 %14.10f\n",nle.fx(x,5));
 
-    IPrinter::print(x,x.length());
+//    IPrinter::print(x);
     IPrinter::printSeperatorLine();
     p2.printResult1(x);
 
@@ -41,17 +41,14 @@ void Problem4Ex2::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     DoubleVector x1(N+1); for (unsigned int i=0; i<=N; i++) x1[i] = p2.X(i*h, 0); IPrinter::printVector(10,6,x1);
     DoubleVector x2(N+1); for (unsigned int i=0; i<=N; i++) x2[i] = p2.X(i*h, 1); IPrinter::printVector(10,6,x2);
     DoubleVector x3(N+1); for (unsigned int i=0; i<=N; i++) x3[i] = p2.X(i*h, 2); IPrinter::printVector(10,6,x3);
-
     IPrinter::printSeperatorLine();
-
-
 
 //    double aa=0.0;
 //    unsigned int row = 2;
 //    DoubleVector xx;
-//    xx <<p2.X(0.3,0) << p2.X(0.3,1) << p2.X(0.3,2) << p2.X(0.6,0) << p2.X(0.6,1) << p2.X(0.6,2) ;
-//    for (unsigned int col=0; col<3; col++) aa += p2.C(0.0, 0, 0, row, col) * p2.g(xx,0,col);
-//    for (unsigned int col=0; col<3; col++) aa += p2.C(0.0, 0, 1, row, col) * p2.g(xx,1,col);
+//    xx << p2.X(0.3,0) << p2.X(0.3,1) << p2.X(0.3,2) << p2.X(0.6,0) << p2.X(0.6,1) << p2.X(0.6,2) ;
+//    for (unsigned int col=0; col<3; col++) aa += p2.C(GridNodeODE(0.0,0), 0, row, col) * p2.g(xx,0,col);
+//    for (unsigned int col=0; col<3; col++) aa += p2.C(GridNodeODE(0.0,0), 1, row, col) * p2.g(xx,1,col);
 //    printf("%.10f\n", aa);
 }
 
@@ -71,46 +68,46 @@ void Problem4Ex2::initialize()
     c0.time = 0.0;
     c0.nmbr = 0;
     c0.mtrx.resize(n, n);
-//    Random::fillMatrix(c0.mtrx, -3, 3, 5);
-    c0.mtrx[0][0] = 1.0000000000; c0.mtrx[0][1] = 7.0000000000; c0.mtrx[0][2] = 4.0000000000;
-    c0.mtrx[1][0] = 0.0000000000; c0.mtrx[1][1] = 9.0000000000; c0.mtrx[1][2] = 4.0000000000;
-    c0.mtrx[2][0] = 8.0000000000; c0.mtrx[2][1] = 8.0000000000; c0.mtrx[2][2] = 2.0000000000;
+    Random::fillMatrix(c0.mtrx, -3, 3, 5);
+//    c0.mtrx[0][0] = 1.0000000000; c0.mtrx[0][1] = 7.0000000000; c0.mtrx[0][2] = 4.0000000000;
+//    c0.mtrx[1][0] = 0.0000000000; c0.mtrx[1][1] = 9.0000000000; c0.mtrx[1][2] = 4.0000000000;
+//    c0.mtrx[2][0] = 8.0000000000; c0.mtrx[2][1] = 8.0000000000; c0.mtrx[2][2] = 2.0000000000;
 
     LinearODE1stOrder::Condition c1;
     c1.time = 0.2;
     c1.nmbr = N/5;
     c1.mtrx.resize(n, n);
-//    Random::fillMatrix(c1.mtrx, -3, 3, 5);
-    c1.mtrx[0][0] = 4.0000000000; c1.mtrx[0][1] = 5.0000000000; c1.mtrx[0][2] = 5.0000000000;
-    c1.mtrx[1][0] = 1.0000000000; c1.mtrx[1][1] = 7.0000000000; c1.mtrx[1][2] = 2.0000000000;
-    c1.mtrx[2][0] = 1.0000000000; c1.mtrx[2][1] = 5.0000000000; c1.mtrx[2][2] = 2.0000000000;
+    Random::fillMatrix(c1.mtrx, -3, 3, 5);
+//    c1.mtrx[0][0] = 4.0000000000; c1.mtrx[0][1] = 5.0000000000; c1.mtrx[0][2] = 5.0000000000;
+//    c1.mtrx[1][0] = 1.0000000000; c1.mtrx[1][1] = 7.0000000000; c1.mtrx[1][2] = 2.0000000000;
+//    c1.mtrx[2][0] = 1.0000000000; c1.mtrx[2][1] = 5.0000000000; c1.mtrx[2][2] = 2.0000000000;
 
     LinearODE1stOrder::Condition c2;
     c2.time = 0.5;
     c2.nmbr = N/2;
     c2.mtrx.resize(n, n);
-//    Random::fillMatrix(c2.mtrx, -3, 3, 5);
-    c2.mtrx[0][0] = 7.0000000000; c2.mtrx[0][1] = 6.0000000000; c2.mtrx[0][2] = 1.0000000000;
-    c2.mtrx[1][0] = 4.0000000000; c2.mtrx[1][1] = 2.0000000000; c2.mtrx[1][2] = 3.0000000000;
-    c2.mtrx[2][0] = 2.0000000000; c2.mtrx[2][1] = 2.0000000000; c2.mtrx[2][2] = 1.0000000000;
+    Random::fillMatrix(c2.mtrx, -3, 3, 5);
+//    c2.mtrx[0][0] = 7.0000000000; c2.mtrx[0][1] = 6.0000000000; c2.mtrx[0][2] = 1.0000000000;
+//    c2.mtrx[1][0] = 4.0000000000; c2.mtrx[1][1] = 2.0000000000; c2.mtrx[1][2] = 3.0000000000;
+//    c2.mtrx[2][0] = 2.0000000000; c2.mtrx[2][1] = 2.0000000000; c2.mtrx[2][2] = 1.0000000000;
 
     LinearODE1stOrder::Condition c3;
     c3.time = 0.8;
     c3.nmbr = 4*(N/5);
     c3.mtrx.resize(n, n);
-//    Random::fillMatrix(c3.mtrx, -3, 3, 5);
-    c3.mtrx[0][0] = 6.0000000000; c3.mtrx[0][1] = 8.0000000000; c3.mtrx[0][2] = 5.0000000000;
-    c3.mtrx[1][0] = 7.0000000000; c3.mtrx[1][1] = 6.0000000000; c3.mtrx[1][2] = 1.0000000000;
-    c3.mtrx[2][0] = 8.0000000000; c3.mtrx[2][1] = 9.0000000000; c3.mtrx[2][2] = 2.0000000000;
+    Random::fillMatrix(c3.mtrx, -3, 3, 5);
+//    c3.mtrx[0][0] = 6.0000000000; c3.mtrx[0][1] = 8.0000000000; c3.mtrx[0][2] = 5.0000000000;
+//    c3.mtrx[1][0] = 7.0000000000; c3.mtrx[1][1] = 6.0000000000; c3.mtrx[1][2] = 1.0000000000;
+//    c3.mtrx[2][0] = 8.0000000000; c3.mtrx[2][1] = 9.0000000000; c3.mtrx[2][2] = 2.0000000000;
 
     LinearODE1stOrder::Condition c4;
     c4.time = 1.0;
     c4.nmbr = N;
     c4.mtrx.resize(n, n);
-//    Random::fillMatrix(c4.mtrx, -3, 3, 5);
-    c4.mtrx[0][0] = 7.0000000000; c4.mtrx[0][1] = 9.0000000000; c4.mtrx[0][2] = 5.0000000000;
-    c4.mtrx[1][0] = 4.0000000000; c4.mtrx[1][1] = 3.0000000000; c4.mtrx[1][2] = 1.0000000000;
-    c4.mtrx[2][0] = 2.0000000000; c4.mtrx[2][1] = 3.0000000000; c4.mtrx[2][2] = 3.0000000000;
+    Random::fillMatrix(c4.mtrx, -3, 3, 5);
+//    c4.mtrx[0][0] = 7.0000000000; c4.mtrx[0][1] = 9.0000000000; c4.mtrx[0][2] = 5.0000000000;
+//    c4.mtrx[1][0] = 4.0000000000; c4.mtrx[1][1] = 3.0000000000; c4.mtrx[1][2] = 1.0000000000;
+//    c4.mtrx[2][0] = 2.0000000000; c4.mtrx[2][1] = 3.0000000000; c4.mtrx[2][2] = 3.0000000000;
 
     cs.push_back(c0);
     cs.push_back(c1);
@@ -131,7 +128,7 @@ void Problem4Ex2::initialize()
         }
     }
 
-    IPrinter::print(betta);
+    //IPrinter::print(betta);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -443,7 +440,7 @@ void Problem4Ex2Zettai::calculateM(const std::vector<LinearODE1stOrder::Conditio
 
         std::vector<DoubleVector> z;
         calculate(cs, betta.col(cur_col), z);
-        //highOderAccuracy(cs, betta.col(cur_col), z, 4);
+        //solveHighOderAccuracy(cs, betta.col(cur_col), z, 4);
 
         for (unsigned int row=0; row<n; row++)
         {

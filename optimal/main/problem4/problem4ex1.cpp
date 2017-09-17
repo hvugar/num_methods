@@ -3,7 +3,7 @@
 
 void Problem4Ex1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    UniformODEGrid grid(0.001, 1000, 0);
+    UniformODEGrid grid(0.001, 0, 1000);
     Problem4Ex1 prob1(grid);
     prob1.initialize();
 

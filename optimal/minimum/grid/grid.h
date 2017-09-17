@@ -38,17 +38,17 @@ public:
         DimensionZ = 2
     };
 
-    Dimension(double step=0.01, unsigned int maxN=100, unsigned int minN = 0);
+    Dimension(double step=0.01, int minN = 0, int maxN=100);
 
     virtual double step() const;
-    virtual unsigned int minN() const;
-    virtual unsigned int maxN() const;
-    virtual unsigned int sizeN() const;
+    virtual int minN() const;
+    virtual int maxN() const;
+    virtual int sizeN() const;
 
 protected:
     double mstep;
-    unsigned int mmaxN;
-    unsigned int mminN;
+    int mminN;
+    int mmaxN;
 };
 
 class MINIMUMSHARED_EXPORT UniformODEGrid
@@ -64,19 +64,19 @@ private:
     double mstep;
     int mminN;
     int mmaxN;
-
 };
 
 class MINIMUMSHARED_EXPORT UniformPDEGrid
 {
 public:
+    UniformPDEGrid();
     UniformPDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaceDimensions);
 
     void setTimeDimension(const Dimension &timeDimension);
     void addSpaceDimension(const Dimension &spaceDimension);
 
-    const Dimension &timeDimension() const;
-    const Dimension &spaceDimension() const;
+    const Dimension& timeDimension() const;
+    const Dimension& spaceDimension(Dimension::SpaceDimension dimension) const;
 private:
     Dimension mtimeDimension;
     std::vector<Dimension> mspaceDimensions;

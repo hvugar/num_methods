@@ -1,8 +1,7 @@
 #include "grid.h"
 #include <cstdio>
 
-UniformODEGrid::UniformODEGrid(double step, int min, int max)
-    : mstep(step), mminN(min), mmaxN(max)
+UniformODEGrid::UniformODEGrid(double step, int min, int max) : mstep(step), mminN(min), mmaxN(max)
 {}
 
 double UniformODEGrid::step() const
@@ -27,25 +26,44 @@ int UniformODEGrid::sizeN() const
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+UniformPDEGrid::UniformPDEGrid()
+{}
+
 UniformPDEGrid::UniformPDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaceDimensions UNUSED_PARAM)
 {
     mtimeDimension = timeDimension;
     mspaceDimensions = spaceDimensions;
 }
 
-const Dimension &UniformPDEGrid::timeDimension() const
+void UniformPDEGrid::setTimeDimension(const Dimension &timeDimension)
+{
+    mtimeDimension = timeDimension;
+}
+
+const Dimension& UniformPDEGrid::timeDimension() const
 {
     return mtimeDimension;
 }
 
-Dimension::Dimension(double step, unsigned int maxN, unsigned int minN)
-    : mstep(step), mmaxN(maxN), mminN(minN)
+void UniformPDEGrid::addSpaceDimension(const Dimension &spaceDimension)
+{
+    mspaceDimensions.push_back(spaceDimension);
+}
+
+const Dimension& UniformPDEGrid::spaceDimension(Dimension::SpaceDimension dimension) const
+{
+    return mspaceDimensions[dimension];
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Dimension::Dimension(double step, int minN, int maxN) : mstep(step), mminN(minN), mmaxN(maxN)
 {}
 
 double Dimension::step() const { return mstep; }
 
-unsigned int Dimension::minN() const { return mminN; }
+int Dimension::minN() const { return mminN; }
 
-unsigned int Dimension::maxN() const { return mmaxN; }
+int Dimension::maxN() const { return mmaxN; }
 
-unsigned int Dimension::sizeN() const { return mmaxN-mminN; }
+int Dimension::sizeN() const { return mmaxN-mminN; }

@@ -61,11 +61,15 @@
 
 #include "loadedlinearode1order.h"
 
+#include "problem5/nllparabolic.h"
+
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //MatrixTest::Main(argc, argv);
 
     //srand(time(NULL));
+
+    NLLIParabolicIBVP::Main(argc, argv);
 
     //NonLinearEquationEx1::Main(argc, argv);
 
@@ -74,7 +78,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Example1::Main(argc, argv);
     //SystemLinearODENonLocalContionsV::Main(argc, argv);
     //SystemLinearODENonLocalContionsM::Main(argc, argv);
-    Problem4Ex2::Main(argc, argv);
+    //Problem4Ex2::Main(argc, argv);
     //SystemLinearODENonLocalContionsV2::Main(argc, argv);
     //LinearODE1stOrderEx1::Main(argc, argv);
 

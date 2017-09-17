@@ -42,7 +42,7 @@ void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const Doub
                     //unsigned int n = p->systemOrder();
                     double _SO = S0(t,x,k);
 
-                    GridNodeODE node(t,k);
+                    GridNodeODE node(t, k);
 
                     if (i<n)
                     {
@@ -101,7 +101,7 @@ void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const Doub
             HelperB helper;
             helper.p = this;
             helper.n = n;
-            helper.setGrid(UniformODEGrid(h, ec.nmbr, sc.nmbr));
+            helper.setGrid(UniformODEGrid(h, sc.nmbr, ec.nmbr));
             helper.cauchyProblem(sc.time, x0, rx, NonLinearODE1stOrder::RK4);
 
             for (unsigned int i=0; i<n; i++) sc.mtrx[row][i] = rx[i];

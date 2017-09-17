@@ -16,7 +16,7 @@ void NewtonHeatEquationEx1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARA
     TimeNodePDE tn;
     tn.i = time.sizeN();
     tn.t = tn.i*time.step();
-    for (unsigned int n=dim1.minN(); n<=dim1.maxN(); n++)
+    for (int n=dim1.minN(); n<=dim1.maxN(); n++)
     {
         SpaceNodePDE sn;
         sn.i = n;
