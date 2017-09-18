@@ -21,7 +21,10 @@ protected:
     double g(const SpaceNodePDE &sn, const TimeNodePDE &tn, unsigned int s) const;
 
     void solveEquation(DoubleMatrix &u, double a);
-    void solveEquation2(DoubleMatrix &u, double a);
+
+    void solveEquationM1(DoubleMatrix &u, double a);
+    void solveEquationM2(DoubleMatrix &u, double a);
+    void solveEquationM4(DoubleMatrix &u, double a);
 
 protected:
     virtual double initial(const SpaceNodePDE &sn) const;

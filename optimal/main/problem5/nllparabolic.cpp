@@ -8,67 +8,109 @@ void NLLIParabolicIBVP::Main(int argc, char *argv[])
 NLLIParabolicIBVP::NLLIParabolicIBVP()
 {
     pu = NULL;
-    grid.setTimeDimension(Dimension(0.1, 0, 10));
+    grid.setTimeDimension(Dimension(0.001, 0, 1000));
     grid.addSpaceDimension(Dimension(0.1, 0, 10));
 
-    int N = grid.spaceDimension(Dimension::DimensionX).sizeN();
-    int M = grid.timeDimension().sizeN();
-
-    DoubleMatrix m(M+1, N+1);
-    solveEquation2(m, 1.0);
-    m.clear();
+    DoubleMatrix m;
+    solveEquationM2(m, 1.0);
     puts("end");
 }
 
 NLLIParabolicIBVP::~NLLIParabolicIBVP()
 {}
 
-void NLLIParabolicIBVP::solveEquation2(DoubleMatrix &u, double a)
+void NLLIParabolicIBVP::solveEquationM4(DoubleMatrix &u, double a)
 {
+    u.clear();
+
     double hx = grid.spaceDimension(Dimension::DimensionX).step();
     double ht = grid.timeDimension().step();
     int N = grid.spaceDimension(Dimension::DimensionX).sizeN();
     int M = grid.timeDimension().sizeN();
 
+    u.resize(M+1, N+1);
+
     DoubleVector V(N-1);
-    for (int n=1; n<=N-1; n++)
+    DoubleMatrix W(N-1, 2, 0.0);
+
+    // initial condition
+    for (int n=0; n<=N; n++)
     {
         SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
-        V[n-1] = initial(sn);
+        V[n-1] = u[0][n] = initial(sn);
     }
-    DoubleMatrix W(N-1, N-1, 0.0);
 
     for (int m=1; m<=1; m++)
     {
         TimeNodePDE tn; tn.t = m*ht; tn.i = m;
 
-        DoubleVector F(N-1);
-        for (int n=1; n<=N-1; n++)
-        {
-            SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
-            F.at(n-1) = f(sn,tn);
-        }
-
-        DoubleMatrix L2(N-1, N-1); for (int n=0; n<N-1; n++) L2.at(n,n) = 1.0/ht;
-        IPrinter::printSeperatorLine();
-        IPrinter::print(L2);
-        IPrinter::printSeperatorLine();
-        L2.inverse();
-        IPrinter::print(L2);
-        IPrinter::printSeperatorLine();
-        IPrinter::print(F);
-
+        /////////////////////////////////////////////////////////////
         DoubleVector a1(N-1); for (int n=0; n<N-1; n++) a1[n] = +(a*a)/(hx*hx); a1[0] = 0.0;
         DoubleVector b1(N-1); for (int n=0; n<N-1; n++) b1[n] = -(1.0/ht + 2.0*(a*a)/(hx*hx));
         DoubleVector c1(N-1); for (int n=0; n<N-1; n++) c1[n] = +(a*a)/(hx*hx); c1[N-2] = 0.0;
-        DoubleVector d1(N-1); d1 = F - (DoubleVector)(L2*V);
 
-        //double* rx = (double*) malloc(sizeof(double)*(N-1));
+        /////////////////////////////////////////////////////////
+        DoubleMatrix L2(N-1, N-1); for (int n=1; n<=N-1; n++) L2.at(n-1,n-1) = 1.0/ht;
+
+        ///////////////////////////////////////////////////////////
+        DoubleVector F(N-1);
+
+        for (int n=1; n<=N-1; n++)
+        {
+            SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
+            F.at(n-1) = -f(sn,tn);
+        }
+
+        DoubleVector d1 = F - (DoubleVector)(L2*V);
+
         DoubleVector rx(N-1);
         tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), rx.data(), N-1);
 
         IPrinter::print(rx);
+        for (int n=1; n<=N-1; n++) V[n-1] = rx[n-1];
 
+        ////////////////////////////////////////////////////////////////////////
+
+        DoubleMatrix B(N-1, 2);
+        for (int n=1; n<=N-1; n++)
+        {
+            SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
+            for (int s=1; s<=2; s++) B[n-1][s-1] = g(sn, tn, s);
+        }
+
+        IPrinter::printSeperatorLine();
+        IPrinter::print(B);
+        IPrinter::printSeperatorLine();
+
+        DoubleMatrix A = -1.0*B - L2*W;
+        IPrinter::printSeperatorLine();
+        IPrinter::print(A);
+        IPrinter::printSeperatorLine();
+
+        for (int s=1; s<=2; s++)
+        {
+            for (int n=1; n<=N-1; n++) d1[n-1] = A[n-1][s-1];
+
+            DoubleVector rx(N-1);
+            tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), rx.data(), N-1);
+
+            for (int n=1; n<=N-1; n++) W[n-1][s-1] = rx[n-1];
+        }
+        A.clear();
+
+        IPrinter::printSeperatorLine();
+        IPrinter::print(W);
+        IPrinter::printSeperatorLine();
+
+        for (int n=1; n<=N-1; n++)
+        {
+            SpaceNodePDE node1; node1.x = 2*hx; node1.i = 2;
+            SpaceNodePDE node2; node2.x = 5*hx; node2.i = 5;
+
+            u.at(m, n) = V[n-1] + W[n-1][0]*U(node1, tn)*U(node1, tn) + W[n-1][1]*U(node2, tn)*U(node2, tn);
+        }
+
+        IPrinter::print(u);
     }
 }
 
@@ -78,6 +120,9 @@ void NLLIParabolicIBVP::solveEquation(DoubleMatrix &u, double a)
     double ht = grid.timeDimension().step();
     int N = grid.spaceDimension(Dimension::DimensionX).sizeN();
     int M = grid.timeDimension().sizeN();
+
+    u.clear();
+    u.resize(M+1, N+1);
 
     pu = &u;
 
@@ -89,10 +134,8 @@ void NLLIParabolicIBVP::solveEquation(DoubleMatrix &u, double a)
 
     DoubleVector u0(N-1);
     DoubleVector ru(N-1, 0.0);
-    for (int m=1; m<=M; m++)
+    for (int m=1; m<=1; m++)
     {
-        printf("m: %d\n", m);
-
         TimeNodePDE tn; tn.t = m*ht; tn.i = m;
         cur_m = m;
 
@@ -112,9 +155,106 @@ void NLLIParabolicIBVP::solveEquation(DoubleMatrix &u, double a)
     ru.clear();
     u0.clear();
 
-    //IPrinter::printVector(u.row(0));
-    //IPrinter::printVector(u.row(1));
-    IPrinter::printMatrix(u);
+//    IPrinter::printMatrix(u);
+    IPrinter::printVector(u.row(0));
+    IPrinter::printVector(u.row(1));
+}
+
+void NLLIParabolicIBVP::solveEquationM1(DoubleMatrix &u, double a)
+{
+    double hx = grid.spaceDimension(Dimension::DimensionX).step();
+    double ht = grid.timeDimension().step();
+    int N = grid.spaceDimension(Dimension::DimensionX).sizeN();
+    int M = grid.timeDimension().sizeN();
+
+    u.clear();
+    u.resize(M+1, N+1);
+
+    for (int n=0; n<=N; n++)
+    {
+        SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
+        u(0,n) = initial(sn);
+    }
+
+    SpaceNodePDE node1; node1.x = 2*hx; node1.i = 2;
+    SpaceNodePDE node2; node2.x = 5*hx; node2.i = 5;
+
+    SpaceNodePDE sn0; sn0.x = 0*hx; sn0.i = 0;
+    SpaceNodePDE snN; snN.x = N*hx; snN.i = N;
+
+    for (int m=1; m<=M; m++)
+    {
+        TimeNodePDE tn0; tn0.t = (m+0)*ht; tn0.i = m+0;
+        TimeNodePDE tn1; tn1.t = (m-1)*ht; tn1.i = m-1;
+
+        double alpha = (a*a)/(hx*hx);
+        double betta = 1.0/ht - 2.0*alpha;
+        for (int n=0; n<=N; n++)
+        {
+            SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
+
+            if (n==0)
+                u(m,n) = boundary(sn0, tn0, Left);
+            else if (n==N)
+                u(m,n) = boundary(snN, tn0, Right);
+            else
+                u(m,n) = (alpha*u(m-1,n-1) + betta*u(m-1,n) + alpha*u(m-1,n+1) + f(sn, tn1)
+                       + g(sn,tn1,1)*U(node1, tn1)*U(node1, tn1)
+                       + g(sn,tn1,2)*U(node2, tn1)*U(node2, tn1))*ht;
+
+        }
+    }
+
+    IPrinter::print(u);
+}
+
+void NLLIParabolicIBVP::solveEquationM2(DoubleMatrix &u, double a)
+{
+    double hx = grid.spaceDimension(Dimension::DimensionX).step();
+    double ht = grid.timeDimension().step();
+    int N = grid.spaceDimension(Dimension::DimensionX).sizeN();
+    int M = grid.timeDimension().sizeN();
+
+    u.clear();
+    u.resize(M+1, N+1);
+
+    for (int n=0; n<=N; n++)
+    {
+        SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
+        u(0,n) = initial(sn);
+    }
+
+    SpaceNodePDE node1; node1.x = 2*hx; node1.i = 2;
+    SpaceNodePDE node2; node2.x = 5*hx; node2.i = 5;
+
+    SpaceNodePDE sn0; sn0.x = 0*hx; sn0.i = 0;
+    SpaceNodePDE snN; snN.x = N*hx; snN.i = N;
+
+    for (int m=0; m<=M-1; m++)
+    {
+        TimeNodePDE tn0; tn0.t = (m+0)*ht; tn0.i = m+0;
+        TimeNodePDE tn1; tn1.t = (m+1)*ht; tn1.i = m+1;
+
+        double alpha = (a*a)/(hx*hx);
+        double betta = 1.0/ht - 2.0*alpha;
+
+        for (int n=0; n<=N; n++)
+        {
+            SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
+
+            if (n==0)
+                u(m+1,n) = boundary(sn0, tn1, Left);
+            else if (n==N)
+                u(m+1,n) = boundary(snN, tn1, Right);
+            else
+                u(m+1,n) = (alpha*u(m,n-1) + betta*u(m,n) + alpha*u(m,n+1) + f(sn, tn0)
+                       + g(sn,tn0,1)*U(node1, tn0)*U(node1, tn0)
+                       + g(sn,tn0,2)*U(node2, tn0)*U(node2, tn0))*ht;
+
+        }
+    }
+
+    IPrinter::print(u);
 }
 
 double NLLIParabolicIBVP::initial(const SpaceNodePDE &sn UNUSED_PARAM) const
@@ -137,7 +277,7 @@ double NLLIParabolicIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     double x = sn.x; C_UNUSED(x);
     double t = tn.t; C_UNUSED(t);
 
-    return x*x - 2.0*t - 0.0625*t*t*g(sn,tn,1);// - 0.1296*t*t*g(sn,tn,2);
+    return x*x - 2.0*t - 0.0081*t*t*g(sn,tn,1) - 0.1296*t*t*g(sn,tn,2);
 }
 
 double NLLIParabolicIBVP::g(const SpaceNodePDE &sn, const TimeNodePDE &tn, unsigned int s) const
@@ -145,7 +285,7 @@ double NLLIParabolicIBVP::g(const SpaceNodePDE &sn, const TimeNodePDE &tn, unsig
     double x = sn.x; C_UNUSED(x);
     double t = tn.t; C_UNUSED(t);
     if (s==1) return x+t;
-    //if (s==2) return x*t;
+    if (s==2) return x*t;
 
     return NAN;
 }
@@ -172,7 +312,7 @@ double NLLIParabolicIBVP::fx(const DoubleVector &x, unsigned int num) const
 
     double alpha = a*a*ht/(hx*hx);
 
-    int ts[] = { 4, 59 };
+    int ts[] = { 2, 5 };
 
     TimeNodePDE tn;
     tn.t = cur_m*ht;
@@ -187,7 +327,7 @@ double NLLIParabolicIBVP::fx(const DoubleVector &x, unsigned int num) const
 
         return -(1.0+2.0*alpha)*x[0] + alpha*x[1]
                 + ht*g(sn1,tn,1)*x[ts[0]]*x[ts[0]]
-                //+ ht*g(sn1,tn,2)*x[ts[1]]*x[ts[1]]
+                + ht*g(sn1,tn,2)*x[ts[1]]*x[ts[1]]
                 + (ht*f(sn1,tn)+ (*pu)(cur_m-1,sn1.i)+alpha*boundary(sn0,tn,BoundaryType::Left));
     }
     else if ((int)num == N-2)
@@ -196,7 +336,7 @@ double NLLIParabolicIBVP::fx(const DoubleVector &x, unsigned int num) const
 
         return alpha*x[N-3] -(1.0+2.0*alpha)*x[N-2]
                 + ht*g(snN1,tn,1)*x[ts[0]]*x[ts[0]]
-                //+ ht*g(snN1,tn,2)*x[ts[1]]*x[ts[1]]
+                + ht*g(snN1,tn,2)*x[ts[1]]*x[ts[1]]
                 + (ht*f(snN1,tn)+ (*pu)(cur_m-1,snN1.i)+alpha*boundary(snN,tn,BoundaryType::Right));
     }
     else
@@ -205,7 +345,7 @@ double NLLIParabolicIBVP::fx(const DoubleVector &x, unsigned int num) const
 
         return  alpha*x[num-1] - (1.0+2.0*alpha)*x[num] + alpha*x[num+1]
                 + ht*g(sn,tn,1)*x[ts[0]]*x[ts[0]]
-                //+ ht*g(sn,tn,2)*x[ts[1]]*x[ts[1]]
+                + ht*g(sn,tn,2)*x[ts[1]]*x[ts[1]]
                 + (ht*f(sn,tn)+ (*pu)(cur_m-1,sn.i));
     }
 
