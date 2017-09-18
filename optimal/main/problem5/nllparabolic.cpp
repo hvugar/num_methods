@@ -8,111 +8,16 @@ void NLLIParabolicIBVP::Main(int argc, char *argv[])
 NLLIParabolicIBVP::NLLIParabolicIBVP()
 {
     pu = NULL;
-    grid.setTimeDimension(Dimension(0.001, 0, 1000));
+    grid.setTimeDimension(Dimension(0.1, 0, 10));
     grid.addSpaceDimension(Dimension(0.1, 0, 10));
 
     DoubleMatrix m;
-    solveEquationM2(m, 1.0);
+    solveEquationM4(m, 1.0);
     puts("end");
 }
 
 NLLIParabolicIBVP::~NLLIParabolicIBVP()
 {}
-
-void NLLIParabolicIBVP::solveEquationM4(DoubleMatrix &u, double a)
-{
-    u.clear();
-
-    double hx = grid.spaceDimension(Dimension::DimensionX).step();
-    double ht = grid.timeDimension().step();
-    int N = grid.spaceDimension(Dimension::DimensionX).sizeN();
-    int M = grid.timeDimension().sizeN();
-
-    u.resize(M+1, N+1);
-
-    DoubleVector V(N-1);
-    DoubleMatrix W(N-1, 2, 0.0);
-
-    // initial condition
-    for (int n=0; n<=N; n++)
-    {
-        SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
-        V[n-1] = u[0][n] = initial(sn);
-    }
-
-    for (int m=1; m<=1; m++)
-    {
-        TimeNodePDE tn; tn.t = m*ht; tn.i = m;
-
-        /////////////////////////////////////////////////////////////
-        DoubleVector a1(N-1); for (int n=0; n<N-1; n++) a1[n] = +(a*a)/(hx*hx); a1[0] = 0.0;
-        DoubleVector b1(N-1); for (int n=0; n<N-1; n++) b1[n] = -(1.0/ht + 2.0*(a*a)/(hx*hx));
-        DoubleVector c1(N-1); for (int n=0; n<N-1; n++) c1[n] = +(a*a)/(hx*hx); c1[N-2] = 0.0;
-
-        /////////////////////////////////////////////////////////
-        DoubleMatrix L2(N-1, N-1); for (int n=1; n<=N-1; n++) L2.at(n-1,n-1) = 1.0/ht;
-
-        ///////////////////////////////////////////////////////////
-        DoubleVector F(N-1);
-
-        for (int n=1; n<=N-1; n++)
-        {
-            SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
-            F.at(n-1) = -f(sn,tn);
-        }
-
-        DoubleVector d1 = F - (DoubleVector)(L2*V);
-
-        DoubleVector rx(N-1);
-        tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), rx.data(), N-1);
-
-        IPrinter::print(rx);
-        for (int n=1; n<=N-1; n++) V[n-1] = rx[n-1];
-
-        ////////////////////////////////////////////////////////////////////////
-
-        DoubleMatrix B(N-1, 2);
-        for (int n=1; n<=N-1; n++)
-        {
-            SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
-            for (int s=1; s<=2; s++) B[n-1][s-1] = g(sn, tn, s);
-        }
-
-        IPrinter::printSeperatorLine();
-        IPrinter::print(B);
-        IPrinter::printSeperatorLine();
-
-        DoubleMatrix A = -1.0*B - L2*W;
-        IPrinter::printSeperatorLine();
-        IPrinter::print(A);
-        IPrinter::printSeperatorLine();
-
-        for (int s=1; s<=2; s++)
-        {
-            for (int n=1; n<=N-1; n++) d1[n-1] = A[n-1][s-1];
-
-            DoubleVector rx(N-1);
-            tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), rx.data(), N-1);
-
-            for (int n=1; n<=N-1; n++) W[n-1][s-1] = rx[n-1];
-        }
-        A.clear();
-
-        IPrinter::printSeperatorLine();
-        IPrinter::print(W);
-        IPrinter::printSeperatorLine();
-
-        for (int n=1; n<=N-1; n++)
-        {
-            SpaceNodePDE node1; node1.x = 2*hx; node1.i = 2;
-            SpaceNodePDE node2; node2.x = 5*hx; node2.i = 5;
-
-            u.at(m, n) = V[n-1] + W[n-1][0]*U(node1, tn)*U(node1, tn) + W[n-1][1]*U(node2, tn)*U(node2, tn);
-        }
-
-        IPrinter::print(u);
-    }
-}
 
 void NLLIParabolicIBVP::solveEquation(DoubleMatrix &u, double a)
 {
@@ -155,7 +60,7 @@ void NLLIParabolicIBVP::solveEquation(DoubleMatrix &u, double a)
     ru.clear();
     u0.clear();
 
-//    IPrinter::printMatrix(u);
+    //    IPrinter::printMatrix(u);
     IPrinter::printVector(u.row(0));
     IPrinter::printVector(u.row(1));
 }
@@ -199,8 +104,8 @@ void NLLIParabolicIBVP::solveEquationM1(DoubleMatrix &u, double a)
                 u(m,n) = boundary(snN, tn0, Right);
             else
                 u(m,n) = (alpha*u(m-1,n-1) + betta*u(m-1,n) + alpha*u(m-1,n+1) + f(sn, tn1)
-                       + g(sn,tn1,1)*U(node1, tn1)*U(node1, tn1)
-                       + g(sn,tn1,2)*U(node2, tn1)*U(node2, tn1))*ht;
+                          + g(sn,tn1,1)*U(node1, tn1)*U(node1, tn1)
+                          + g(sn,tn1,2)*U(node2, tn1)*U(node2, tn1))*ht;
 
         }
     }
@@ -218,6 +123,11 @@ void NLLIParabolicIBVP::solveEquationM2(DoubleMatrix &u, double a)
     u.clear();
     u.resize(M+1, N+1);
 
+    DoubleVector a1(N-1); for (int n=0; n<N-1; n++) a1[n] = -(a*a)/(hx*hx); a1[0] = 0.0;
+    DoubleVector b1(N-1); for (int n=0; n<N-1; n++) b1[n] = +(1.0/ht + 2.0*(a*a)/(hx*hx));
+    DoubleVector c1(N-1); for (int n=0; n<N-1; n++) c1[n] = -(a*a)/(hx*hx); c1[N-2] = 0.0;
+    DoubleVector d1(N-1, 0.0);
+
     for (int n=0; n<=N; n++)
     {
         SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
@@ -230,31 +140,171 @@ void NLLIParabolicIBVP::solveEquationM2(DoubleMatrix &u, double a)
     SpaceNodePDE sn0; sn0.x = 0*hx; sn0.i = 0;
     SpaceNodePDE snN; snN.x = N*hx; snN.i = N;
 
-    for (int m=0; m<=M-1; m++)
+    for (int m=1; m<=M; m++)
     {
         TimeNodePDE tn0; tn0.t = (m+0)*ht; tn0.i = m+0;
-        TimeNodePDE tn1; tn1.t = (m+1)*ht; tn1.i = m+1;
+        TimeNodePDE tn1; tn1.t = (m-1)*ht; tn1.i = m-1;
 
-        double alpha = (a*a)/(hx*hx);
-        double betta = 1.0/ht - 2.0*alpha;
-
-        for (int n=0; n<=N; n++)
+        for (int n=1; n<=N-1; n++)
         {
             SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
+            d1[n-1] = (1.0/ht)*u.at(m-1,n) + f(sn,tn0)
+                    + g(sn,tn0,1)*U(node1, tn1)*U(node1, tn1)
+                    + g(sn,tn0,2)*U(node2, tn1)*U(node2, tn1);
 
-            if (n==0)
-                u(m+1,n) = boundary(sn0, tn1, Left);
-            else if (n==N)
-                u(m+1,n) = boundary(snN, tn1, Right);
-            else
-                u(m+1,n) = (alpha*u(m,n-1) + betta*u(m,n) + alpha*u(m,n+1) + f(sn, tn0)
-                       + g(sn,tn0,1)*U(node1, tn0)*U(node1, tn0)
-                       + g(sn,tn0,2)*U(node2, tn0)*U(node2, tn0))*ht;
+            if (n==1)
+            {
+                u.at(m,0) = boundary(sn0, tn0, Left);
+                d1[n-1] += ((a*a)/(hx*hx))*u.at(m,0);
+            }
+            if (n==N-1)
+            {
+                u(m,N) = boundary(snN, tn0, Right);
+                d1[n-1] += ((a*a)/(hx*hx))*u.at(m,N);
+            }
+        }
 
+        DoubleVector rx(N-1);
+        tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), rx.data(), N-1);
+        for (int n=1; n<=N-1; n++)
+        {
+            u.at(m,n) = rx[n-1];
         }
     }
 
     IPrinter::print(u);
+    //IPrinter::print(u.row(0));
+    //IPrinter::print(u.row(1));
+}
+
+void NLLIParabolicIBVP::solveEquationM4(DoubleMatrix &u, double a)
+{
+    double hx = grid.spaceDimension(Dimension::DimensionX).step();
+    double ht = grid.timeDimension().step();
+    int N = grid.spaceDimension(Dimension::DimensionX).sizeN();
+    int M = grid.timeDimension().sizeN();
+    int L = 2;
+
+    u.clear();
+    u.resize(M+1, N+1);
+
+    DoubleVector V(N-1);
+    DoubleMatrix W(N-1, L, 0.0);
+
+    // initial condition
+    for (int n=0; n<=N; n++)
+    {
+        SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
+        u[0][n] = initial(sn);
+    }
+    for (int n=1; n<=N-1; n++)
+    {
+        V[n-1] = u[0][n];
+
+        for (int s=1; s<=L; s++) W.at(n-1,s-1) = 0.0;
+    }
+
+    for (int m=1; m<=M; m++)
+    {
+        TimeNodePDE tn; tn.t = m*ht; tn.i = m;
+
+        /******** Boundary condition ************/
+        SpaceNodePDE sn0; sn0.x = 0*hx; sn0.i = 0;
+        SpaceNodePDE snN; snN.x = N*hx; snN.i = N;
+
+        u.at(m,0) = boundary(sn0, tn, BoundaryType::Left);
+        u.at(m,N) = boundary(snN, tn, BoundaryType::Right);
+
+        /****************************************/
+
+        /////////////////////////////////////////////////////////////
+        DoubleVector a1(N-1); for (int n=0; n<N-1; n++) a1[n] = +(a*a)/(hx*hx); a1[0] = 0.0;
+        DoubleVector b1(N-1); for (int n=0; n<N-1; n++) b1[n] = -(1.0/ht + 2.0*(a*a)/(hx*hx));
+        DoubleVector c1(N-1); for (int n=0; n<N-1; n++) c1[n] = +(a*a)/(hx*hx); c1[N-2] = 0.0;
+        DoubleVector d1(N-1); for (int n=0; n<N-1; n++) d1[n] = +0.0;
+
+        /////////////////////////////////////////////////////////
+        DoubleMatrix L2(N-1, N-1);
+        for (int i=0; i<N-1; i++) for (int j=0; j<N-1; j++) L2.at(i,j) = 0.0;
+        for (int n=0; n<N-1; n++)                           L2.at(n,n) = 1.0/ht;
+
+        ///////////////////////////////////////////////////////////
+//        DoubleVector F(N-1);
+
+//        for (int n=1; n<=N-1; n++)
+//        {
+//            SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
+//            F.at(n-1) = -f(sn,tn);
+//        }
+
+//        DoubleVector d1 = F - (DoubleVector)(L2*V);
+
+//        d1[0]   -= (a*a)/(hx*hx)*u.at(m,0);
+//        d1[N-2] -= (a*a)/(hx*hx)*u.at(m,N);
+
+        for (int n=1; n<=N-1; n++)
+        {
+            SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
+            d1[n-1] = -f(sn, tn) - (1.0/ht)*V[n-1];
+        }
+        d1[0]   -= (a*a)/(hx*hx)*u.at(m,0);
+        d1[N-2] -= (a*a)/(hx*hx)*u.at(m,N);
+
+        DoubleVector rx(N-1);
+        tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), rx.data(), N-1);
+
+        //IPrinter::print(rx);
+        for (int n=1; n<=N-1; n++) V[n-1] = rx[n-1];
+
+        ////////////////////////////////////////////////////////////////////////
+
+        DoubleMatrix B(N-1, L);
+        for (int n=1; n<=N-1; n++)
+        {
+            SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
+            for (int s=1; s<=L; s++) B.at(n-1,s-1) = g(sn, tn, s);
+        }
+
+        //IPrinter::printSeperatorLine();
+        //IPrinter::print(B);
+        //IPrinter::printSeperatorLine();
+
+        DoubleMatrix A = -1.0*B - L2*W;
+        //IPrinter::printSeperatorLine();
+        //IPrinter::print(A);
+        //IPrinter::printSeperatorLine();
+
+        for (int s=1; s<=L; s++)
+        {
+            for (int n=1; n<=N-1; n++)
+                d1.at(n-1) = A.at(n-1,s-1);
+            //d1[0]   -= (a*a)/(hx*hx)*u.at(m,0);
+            //d1[N-2] -= (a*a)/(hx*hx)*u.at(m,N);
+
+            DoubleVector rx(N-1);
+            tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), rx.data(), N-1);
+
+            for (int n=1; n<=N-1; n++) W.at(n-1,s-1) = rx[n-1];
+        }
+        A.clear();
+
+        //IPrinter::printSeperatorLine();
+        //IPrinter::print(W);
+        //IPrinter::printSeperatorLine();
+
+        for (int n=1; n<=N-1; n++)
+        {
+            SpaceNodePDE node1; node1.x = 2*hx; node1.i = 2;
+            SpaceNodePDE node2; node2.x = 5*hx; node2.i = 5;
+
+            u.at(m, n) = V[n-1]
+                    + W.at(n-1,0)*U(node1, tn)*U(node1, tn)
+                    + W.at(n-1,1)*U(node2, tn)*U(node2, tn);
+        }
+    }
+    IPrinter::print(u);
+    //IPrinter::print(u.row(0));
+    //IPrinter::print(u.row(1));
 }
 
 double NLLIParabolicIBVP::initial(const SpaceNodePDE &sn UNUSED_PARAM) const
