@@ -462,6 +462,7 @@ void DoubleMatrix::inverse()
             DoubleMatrix minor = m.minor(r,c);
             mData[r][c] = minor.determinant();
             if ((r+c)%2==1) mData[r][c] *= -1.0;
+            minor.clear();
         }
     }
 

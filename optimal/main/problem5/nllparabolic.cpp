@@ -39,7 +39,7 @@ void NLLIParabolicIBVP::solveEquation(DoubleMatrix &u, double a)
 
     DoubleVector u0(N-1);
     DoubleVector ru(N-1, 0.0);
-    for (int m=1; m<=1; m++)
+    for (int m=1; m<=M; m++)
     {
         TimeNodePDE tn; tn.t = m*ht; tn.i = m;
         cur_m = m;
@@ -60,9 +60,9 @@ void NLLIParabolicIBVP::solveEquation(DoubleMatrix &u, double a)
     ru.clear();
     u0.clear();
 
-    //    IPrinter::printMatrix(u);
-    IPrinter::printVector(u.row(0));
-    IPrinter::printVector(u.row(1));
+    IPrinter::printMatrix(u);
+//    IPrinter::printVector(u.row(0));
+//    IPrinter::printVector(u.row(1));
 }
 
 void NLLIParabolicIBVP::solveEquationM1(DoubleMatrix &u, double a)
@@ -258,26 +258,39 @@ void NLLIParabolicIBVP::solveEquationM4(DoubleMatrix &u, double a)
 
         ////////////////////////////////////////////////////////////////////////
 
+//        for (int s=1; s<=L; s++)
+//        {
+//            for (int n=1; n<=N-1; n++)
+//            {
+//                SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
+//                d1.at(n-1) = -g(sn, tn, s) - (1.0/ht)*W.at(n-1,s-1);
+
+//                DoubleVector rx(N-1);
+//                tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), rx.data(), N-1);
+
+//                for (int n=1; n<=N-1; n++) W.at(n-1,s-1) = rx[n-1];
+//            }
+//        }
+
         DoubleMatrix B(N-1, L);
         for (int n=1; n<=N-1; n++)
         {
             SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
-            for (int s=1; s<=L; s++) B.at(n-1,s-1) = g(sn, tn, s);
+            for (int s=1; s<=L; s++) B.at(n-1,s-1) = -g(sn, tn, s);
         }
 
         //IPrinter::printSeperatorLine();
         //IPrinter::print(B);
         //IPrinter::printSeperatorLine();
 
-        DoubleMatrix A = -1.0*B - L2*W;
+        DoubleMatrix A = B - L2*W;
         //IPrinter::printSeperatorLine();
         //IPrinter::print(A);
         //IPrinter::printSeperatorLine();
 
         for (int s=1; s<=L; s++)
         {
-            for (int n=1; n<=N-1; n++)
-                d1.at(n-1) = A.at(n-1,s-1);
+            for (int n=1; n<=N-1; n++) d1.at(n-1) = A.at(n-1,s-1);
             //d1[0]   -= (a*a)/(hx*hx)*u.at(m,0);
             //d1[N-2] -= (a*a)/(hx*hx)*u.at(m,N);
 
@@ -302,7 +315,7 @@ void NLLIParabolicIBVP::solveEquationM4(DoubleMatrix &u, double a)
                     + W.at(n-1,1)*U(node2, tn)*U(node2, tn);
         }
     }
-    IPrinter::print(u);
+    IPrinter::printMatrix(u);
     //IPrinter::print(u.row(0));
     //IPrinter::print(u.row(1));
 }

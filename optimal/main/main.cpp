@@ -65,9 +65,9 @@
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    //MatrixTest::Main(argc, argv);
+    srand(time(NULL));
 
-    //srand(time(NULL));
+    //MatrixTest::Main(argc, argv);
 
     NLLIParabolicIBVP::Main(argc, argv);
 
