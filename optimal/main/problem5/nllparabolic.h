@@ -5,6 +5,8 @@
 #include <nonlinearequation.h>
 #include <utils/random.h>
 
+#define SAMPLE_2
+
 /**
  * @brief The NLLIParabolicIBVP class
  * u_t = a^2 u_xx + f + \sum_{i=1}^L {g_s(x,t) u^2(x,t)}
@@ -30,6 +32,7 @@ protected:
     virtual double initial(const SpaceNodePDE &sn) const;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    virtual double a(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
 protected:
     virtual double fx(const DoubleVector &x, unsigned int num) const;

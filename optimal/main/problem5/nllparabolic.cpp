@@ -11,9 +11,31 @@ NLLIParabolicIBVP::NLLIParabolicIBVP()
     grid.setTimeDimension(Dimension(0.1, 0, 10));
     grid.addSpaceDimension(Dimension(0.1, 0, 10));
 
-    DoubleMatrix m;
-    solveEquationM4(m, 1.0);
-    puts("end");
+    double hx = grid.spaceDimension(Dimension::DimensionX).step();
+    double ht = grid.timeDimension().step();
+    int N = grid.spaceDimension(Dimension::DimensionX).sizeN();
+    int M = grid.timeDimension().sizeN();
+
+    DoubleMatrix u(M+1, N+1);
+    for (int m=0; m<=M; m++)
+    {
+        TimeNodePDE tn; tn.t = m*ht; tn.i = m;
+        for (int n=0; n<=N; n++)
+        {
+            SpaceNodePDE sn; sn.x = n*hx; sn.i = n;
+            u[m][n] = U(sn, tn);
+        }
+    }
+    IPrinter::printMatrix(u);
+    IPrinter::printSeperatorLine();
+
+    DoubleMatrix m1;
+    solveEquation(m1, 1.0);
+    IPrinter::printMatrix(m1);
+    IPrinter::printSeperatorLine();
+    DoubleMatrix m2;
+    solveEquationM4(m2, 1.0);
+    IPrinter::printMatrix(m2);
 }
 
 NLLIParabolicIBVP::~NLLIParabolicIBVP()
@@ -60,7 +82,7 @@ void NLLIParabolicIBVP::solveEquation(DoubleMatrix &u, double a)
     ru.clear();
     u0.clear();
 
-    IPrinter::printMatrix(u);
+//    IPrinter::printMatrix(u);
 //    IPrinter::printVector(u.row(0));
 //    IPrinter::printVector(u.row(1));
 }
@@ -110,7 +132,7 @@ void NLLIParabolicIBVP::solveEquationM1(DoubleMatrix &u, double a)
         }
     }
 
-    IPrinter::print(u);
+    //IPrinter::print(u);
 }
 
 void NLLIParabolicIBVP::solveEquationM2(DoubleMatrix &u, double a)
@@ -172,7 +194,7 @@ void NLLIParabolicIBVP::solveEquationM2(DoubleMatrix &u, double a)
         }
     }
 
-    IPrinter::print(u);
+    //IPrinter::print(u);
     //IPrinter::print(u.row(0));
     //IPrinter::print(u.row(1));
 }
@@ -315,23 +337,34 @@ void NLLIParabolicIBVP::solveEquationM4(DoubleMatrix &u, double a)
                     + W.at(n-1,1)*U(node2, tn)*U(node2, tn);
         }
     }
-    IPrinter::printMatrix(u);
+
+    //IPrinter::printMatrix(u);
     //IPrinter::print(u.row(0));
     //IPrinter::print(u.row(1));
 }
 
 double NLLIParabolicIBVP::initial(const SpaceNodePDE &sn UNUSED_PARAM) const
 {
+#ifdef SAMPLE_1
     return 0.0;
+#endif
+#ifdef SAMPLE_2
+    return 0.0;
+#endif
+    return NAN;
 }
 
 double NLLIParabolicIBVP::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM, BoundaryType boundary) const
 {
     double t = tn.t; C_UNUSED(t);
-
+#ifdef SAMPLE_1
     if (boundary == BoundaryType::Left)  return 0.0;
     if (boundary == BoundaryType::Right) return t;
-
+#endif
+#ifdef SAMPLE_2
+    if (boundary == BoundaryType::Left)  return exp(-1.0)*t*t;
+    if (boundary == BoundaryType::Right) return exp(+1.0)*t*t;
+#endif
     return NAN;
 }
 
@@ -340,15 +373,32 @@ double NLLIParabolicIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     double x = sn.x; C_UNUSED(x);
     double t = tn.t; C_UNUSED(t);
 
-    return x*x - 2.0*t - 0.0081*t*t*g(sn,tn,1) - 0.1296*t*t*g(sn,tn,2);
+    SpaceNodePDE xi1; xi1.x = 0.3;
+    SpaceNodePDE xi2; xi2.x = 0.6;
+
+#ifdef SAMPLE_1
+    return x*x - 2.0*a(sn,tn)*t
+            - g(sn,tn,1)*(U(xi1,tn)*U(xi1,tn))
+            - g(sn,tn,2)*(U(xi2,tn)*U(xi2,tn));
+#endif
+#ifdef SAMPLE_2
+    return 2.0*t*exp(2.0*x-1.0) - a(sn,tn)*4.0*t*t*exp(2.0*x-1.0) - g(sn,tn,1)*(U(xi1,tn)*U(xi1,tn)) - g(sn,tn,2)*(U(xi2,tn)*U(xi2,tn));
+#endif
+    return NAN;
+}
+
+double NLLIParabolicIBVP::a(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+    return 1.0;
 }
 
 double NLLIParabolicIBVP::g(const SpaceNodePDE &sn, const TimeNodePDE &tn, unsigned int s) const
 {
     double x = sn.x; C_UNUSED(x);
     double t = tn.t; C_UNUSED(t);
-    if (s==1) return x+t;
-    if (s==2) return x*t;
+
+    if (s==1) return 0.001*(x+t);
+    if (s==2) return 0.002*(x*t);
 
     return NAN;
 }
@@ -357,8 +407,12 @@ double NLLIParabolicIBVP::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     double x = sn.x; C_UNUSED(x);
     double t = tn.t; C_UNUSED(t);
-
+#ifdef SAMPLE_1
     return x*x*t;
+#endif
+#ifdef SAMPLE_2
+    return exp(2.0*x-1.0)*t*t;
+#endif
 }
 
 double NLLIParabolicIBVP::fx(const DoubleVector &x, unsigned int num) const
