@@ -333,8 +333,8 @@ void NLLIParabolicIBVP::solveEquationM4(DoubleMatrix &u, double a)
             SpaceNodePDE node2; node2.x = 5*hx; node2.i = 5;
 
             u.at(m, n) = V[n-1]
-                    + W.at(n-1,0)*U(node1, tn)*U(node1, tn)
-                    + W.at(n-1,1)*U(node2, tn)*U(node2, tn);
+                    + W.at(n-1,0)*U(node1, tn)//*U(node1, tn)
+                    + W.at(n-1,1)*U(node2, tn);//*U(node2, tn);
         }
     }
 
@@ -378,8 +378,8 @@ double NLLIParabolicIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 
 #ifdef SAMPLE_1
     return x*x - 2.0*a(sn,tn)*t
-            - g(sn,tn,1)*(U(xi1,tn)*U(xi1,tn))
-            - g(sn,tn,2)*(U(xi2,tn)*U(xi2,tn));
+            - g(sn,tn,1)*(U(xi1,tn))
+            - g(sn,tn,2)*(U(xi2,tn));
 #endif
 #ifdef SAMPLE_2
     return 2.0*t*exp(2.0*x-1.0) - a(sn,tn)*4.0*t*t*exp(2.0*x-1.0) - g(sn,tn,1)*(U(xi1,tn)*U(xi1,tn)) - g(sn,tn,2)*(U(xi2,tn)*U(xi2,tn));
@@ -397,8 +397,8 @@ double NLLIParabolicIBVP::g(const SpaceNodePDE &sn, const TimeNodePDE &tn, unsig
     double x = sn.x; C_UNUSED(x);
     double t = tn.t; C_UNUSED(t);
 
-    if (s==1) return 0.001*(x+t);
-    if (s==2) return 0.002*(x*t);
+    if (s==1) return 0.1*(x+t);
+    if (s==2) return 0.2*(x*t);
 
     return NAN;
 }
@@ -443,8 +443,8 @@ double NLLIParabolicIBVP::fx(const DoubleVector &x, unsigned int num) const
         SpaceNodePDE sn1; sn1.x = hx;  sn1.i = 1;
 
         return -(1.0+2.0*alpha)*x[0] + alpha*x[1]
-                + ht*g(sn1,tn,1)*x[ts[0]]*x[ts[0]]
-                + ht*g(sn1,tn,2)*x[ts[1]]*x[ts[1]]
+                + ht*g(sn1,tn,1)*x[ts[0]]//*x[ts[0]]
+                + ht*g(sn1,tn,2)*x[ts[1]]//*x[ts[1]]
                 + (ht*f(sn1,tn)+ (*pu)(cur_m-1,sn1.i)+alpha*boundary(sn0,tn,BoundaryType::Left));
     }
     else if ((int)num == N-2)
@@ -452,8 +452,8 @@ double NLLIParabolicIBVP::fx(const DoubleVector &x, unsigned int num) const
         SpaceNodePDE snN1; snN1.x = (N-1)*hx; snN1.i = N-1;
 
         return alpha*x[N-3] -(1.0+2.0*alpha)*x[N-2]
-                + ht*g(snN1,tn,1)*x[ts[0]]*x[ts[0]]
-                + ht*g(snN1,tn,2)*x[ts[1]]*x[ts[1]]
+                + ht*g(snN1,tn,1)*x[ts[0]]//*x[ts[0]]
+                + ht*g(snN1,tn,2)*x[ts[1]]//*x[ts[1]]
                 + (ht*f(snN1,tn)+ (*pu)(cur_m-1,snN1.i)+alpha*boundary(snN,tn,BoundaryType::Right));
     }
     else
@@ -461,8 +461,8 @@ double NLLIParabolicIBVP::fx(const DoubleVector &x, unsigned int num) const
         SpaceNodePDE sn; sn.x = (num+1)*hx; sn.i = num+1;
 
         return  alpha*x[num-1] - (1.0+2.0*alpha)*x[num] + alpha*x[num+1]
-                + ht*g(sn,tn,1)*x[ts[0]]*x[ts[0]]
-                + ht*g(sn,tn,2)*x[ts[1]]*x[ts[1]]
+                + ht*g(sn,tn,1)*x[ts[0]]//*x[ts[0]]
+                + ht*g(sn,tn,2)*x[ts[1]]//*x[ts[1]]
                 + (ht*f(sn,tn)+ (*pu)(cur_m-1,sn.i));
     }
 

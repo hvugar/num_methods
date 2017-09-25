@@ -5,7 +5,7 @@
 #include <nonlinearequation.h>
 #include <utils/random.h>
 
-#define SAMPLE_2
+#define SAMPLE_1
 
 /**
  * @brief The NLLIParabolicIBVP class
