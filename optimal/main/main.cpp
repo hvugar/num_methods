@@ -22,9 +22,10 @@
 //#include <../border/borderhyperbolic2d.h>
 
 #include <../border/grid/parabolicibvp1.h>
-//#include <../border/grid/parabolicibvp2.h>
+#include <../border/grid/parabolicibvp2.h>
+
 //#include <../border/grid/hyperbolicibvp1.h>
-#include <../border/grid/newtonheatequationex1.h>
+//#include <../border/grid/newtonheatequationex1.h>
 
 //#include <../hyperbolic/2d/hyperboliccontrol2d.h>
 //#include <../hyperbolic/2d/hyperboliccontrol2d1.h>
@@ -69,7 +70,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //MatrixTest::Main(argc, argv);
 
-    NLLIParabolicIBVP::Main(argc, argv);
+    //NLLIParabolicIBVP::Main(argc, argv);
 
     //NonLinearEquationEx1::Main(argc, argv);
 
@@ -112,7 +113,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //BoundaryValueProblem1::Main(argc, argv);
 
     //ParabolicIBVP1::Main(argc, argv);
-    //ParabolicIBVP2::Main(argc, argv);
+    ParabolicIBVP2::Main(argc, argv);
+
     //HyperbolicIBVP1::Main(argc, argv);
     //NewtonHeatEquationEx1::Main(argc, argv);
     //Problem1L3::Main(argc, argv);

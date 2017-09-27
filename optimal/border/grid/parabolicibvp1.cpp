@@ -3,16 +3,20 @@
 void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     ParabolicIBVP1 p;
-    p.setTimeDimension(Dimension(0.001, 1000, 0));
-    p.addSpaceDimension(Dimension(0.001, 1000, 0));
-    {
-        unsigned int minN = p.spaceDimension(Dimension::DimensionX).minN();
-        unsigned int maxN = p.spaceDimension(Dimension::DimensionX).maxN();
-        unsigned int N = p.spaceDimension(Dimension::DimensionX).sizeN();
+    p.setTimeDimension(Dimension(0.1, 0, 10));
+    p.addSpaceDimension(Dimension(0.1, 0, 10));
 
-        unsigned int minM = p.timeDimension().minN();
-        unsigned int maxM = p.timeDimension().maxN();
-        unsigned int M = p.timeDimension().sizeN();
+    {
+        Dimension spaceDimension = p.spaceDimension(Dimension::DimensionX);
+        Dimension timeDimension  = p.spaceDimension(Dimension::DimensionX);
+
+        unsigned int minN = spaceDimension.minN();
+        unsigned int maxN = spaceDimension.maxN();
+        unsigned int N    = spaceDimension.sizeN();
+
+        unsigned int minM = timeDimension.minN();
+        unsigned int maxM = timeDimension.maxN();
+        unsigned int M    = timeDimension.sizeN();
 
         DoubleMatrix u(M+1, N+1);
 
@@ -30,9 +34,10 @@ void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     {
         DoubleMatrix u;
         p.gridMethod(u);
-        //IPrinter::printMatrix(14,10,u);
+        IPrinter::printMatrix(14,10,u);
         IPrinter::printSeperatorLine();
     }
+    return;
 
     {
         DoubleMatrix u;
@@ -255,6 +260,11 @@ double ParabolicIBVP1::U(unsigned int n, unsigned int m) const
 #ifdef SAMPLE_0
     return x*x*t;
 #endif
+
+#ifdef SAMPLE_1
+    return x*x + t;
+#endif
+
 #ifdef SAMPLE_13
     return x*x*x*t;
 #endif
@@ -265,9 +275,6 @@ double ParabolicIBVP1::U(unsigned int n, unsigned int m) const
     return x*x*x*x*x*t;
 #endif
 
-#ifdef SAMPLE_1
-    return x*x + t;
-#endif
 #ifdef SAMPLE_2
     return x*x + t*t;
 #endif

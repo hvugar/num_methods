@@ -44,11 +44,6 @@ void funcL(const double* a, const double *b, const double *c, const double *d, d
 
 void ParabolicIBVP::gridMethod(DoubleVector &u, SweepMethodDirection direction) const
 {
-    //    if (!timeGrid().isGridSet())
-    //    {
-    //        throw std::invalid_argument("The grid of time is not set!");
-    //    }
-
     typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
     t_algorithm algorithm = &tomasAlgorithm;
     if (direction == ForwardSweep) algorithm = &tomasAlgorithmL2R;
@@ -142,11 +137,6 @@ void ParabolicIBVP::gridMethod(DoubleVector &u, SweepMethodDirection direction) 
 
 void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction) const
 {
-//    if (!timeGrid().isGridSet())
-//    {
-//        throw std::invalid_argument("The grid of time is not set!");
-//    }
-
     typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
     t_algorithm algorithm = &tomasAlgorithm;
     if (direction == ForwardSweep) algorithm = &tomasAlgorithmL2R;
@@ -1822,17 +1812,17 @@ void ParabolicIBVP::calculateMVD(DoubleMatrix &u) const
 
     DoubleMatrix uh(N2+1, N1+1);
 
-    DoubleVector da1(N1-1);
-    DoubleVector db1(N1-1);
-    DoubleVector dc1(N1-1);
-    DoubleVector dd1(N1-1);
-    DoubleVector rx1(N1-1);
+    double* da1 = (double*) malloc(sizeof(double)*(N1-1));
+    double* db1 = (double*) malloc(sizeof(double)*(N1-1));
+    double* dc1 = (double*) malloc(sizeof(double)*(N1-1));
+    double* dd1 = (double*) malloc(sizeof(double)*(N1-1));
+    double* rx1 = (double*) malloc(sizeof(double)*(N1-1));
 
-    DoubleVector da2(N2-1);
-    DoubleVector db2(N2-1);
-    DoubleVector dc2(N2-1);
-    DoubleVector dd2(N2-1);
-    DoubleVector rx2(N2-1);
+    double* da2 = (double*) malloc(sizeof(double)*(N2-1));
+    double* db2 = (double*) malloc(sizeof(double)*(N2-1));
+    double* dc2 = (double*) malloc(sizeof(double)*(N2-1));
+    double* dd2 = (double*) malloc(sizeof(double)*(N2-1));
+    double* rx2 = (double*) malloc(sizeof(double)*(N2-1));
 
     double x1_a = -(a1*ht)/(2.0*h1*h1);
     double x1_b  = 1.0 + (a1*ht)/(h1*h1);
@@ -1860,7 +1850,8 @@ void ParabolicIBVP::calculateMVD(DoubleMatrix &u) const
     for (unsigned int k=1; k<=M; k++)
     {
         tn.i = 2*k-1;
-        tn.t = 0.5*(2*k-1)*ht;
+        tn.t = k*ht - 0.5*ht;
+        //tn.t = 0.5*(2*k-1)*ht;
         // Approximation to x1 direction
         for (unsigned int j=1; j<N2; j++)
         {
@@ -1874,53 +1865,34 @@ void ParabolicIBVP::calculateMVD(DoubleMatrix &u) const
                 da1[i-1] = x1_a;
                 db1[i-1] = x1_b;
                 dc1[i-1] = x1_a;
-                dd1[i-1] = x1_c*(u[j-1][i] - 2.0*u[j][i] + u[j+1][i]) + u[j][i] + (ht/2.0) * f(sn, tn);
+                dd1[i-1] = x1_c*(u[j-1][i] - 2.0*u[j][i] + u[j+1][i]) + u[j][i] + 0.5*ht * f(sn, tn);
             }
 
             da1[0]     = 0.0;
             dc1[N1-2]  = 0.0;
 
-            SpaceNodePDE sn0;
-            sn0.i = 0;
-            sn0.x = 0.0;
-            sn0.j = j;
-            sn0.y = j*h2;
+            SpaceNodePDE sn0; sn0.i = 0;  sn0.x = 0.0;   sn0.j = j; sn0.y = j*h2;
+            SpaceNodePDE snN; snN.i = N1; snN.x = N1*h1; snN.j = j; snN.y = j*h2;
             uh[j][0]  = boundary(sn0, tn);
-            SpaceNodePDE snN;
-            snN.i = N1;
-            snN.x = N1*h1;
-            snN.j = j;
-            snN.y = j*h2;
             uh[j][N1] = boundary(snN, tn);
 
             dd1[0]    -= x1_a * uh[j][0];
             dd1[N1-2] -= x1_a * uh[j][N1];
 
-            tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.length());
+            tomasAlgorithm(da1, db1, dc1, dd1, rx1, N1-1);
 
-            for (unsigned int i=1; i<N1; i++)
-            {
-                uh[j][i] = rx1[i-1];
-            }
+            for (unsigned int i=1; i<N1; i++) uh[j][i] = rx1[i-1];
         }
 
         for (unsigned int i=0; i<=N1; i++)
         {
-            SpaceNodePDE sn0;
-            sn0.i = i;
-            sn0.x = i*h1;
-            sn0.j = 0;
-            sn0.y = 0.0;
+            SpaceNodePDE sn0; sn0.i = i; sn0.x = i*h1; sn0.j = 0;  sn0.y = 0.0;
+            SpaceNodePDE snN; snN.i = i; snN.x = i*h1; snN.j = N2; snN.y = N2*h2;
             uh[0][i]  = boundary(sn0, tn);
-            SpaceNodePDE snN;
-            snN.i = i;
-            snN.x = i*h1;
-            snN.j = N2;
-            snN.y = N2*h2;
             uh[N2][i] = boundary(snN, tn);
         }
 
-        tn.i = k;
+        tn.i = 2*k;
         tn.t = k*ht;
         // Approximation to x2 direction
         for (unsigned int i=1; i<N1; i++)
@@ -1931,66 +1903,48 @@ void ParabolicIBVP::calculateMVD(DoubleMatrix &u) const
             {
                 sn.j = j;
                 sn.y = j*h2;
+
                 da2[j-1] = x2_a;
                 db2[j-1] = x2_b;
                 dc2[j-1] = x2_a;
-                dd2[j-1] = x2_c*(uh[j][i-1] - 2.0*uh[j][i] + uh[j][i+1]) + uh[j][i] + (ht/2.0) * f(sn, tn);
+                dd2[j-1] = x2_c*(uh[j][i-1] - 2.0*uh[j][i] + uh[j][i+1]) + uh[j][i] + 0.5*ht * f(sn, tn);
             }
             da2[0]     = 0.0;
             dc2[N2-2]  = 0.0;
 
-            SpaceNodePDE sn0;
-            sn0.i = i;
-            sn0.x = i*h1;
-            sn0.j = 0;
-            sn0.y = 0.0;
+            SpaceNodePDE sn0; sn0.i = i; sn0.x = i*h1; sn0.j = 0;  sn0.y = 0.0;
+            SpaceNodePDE snN; snN.i = i; snN.x = i*h1; snN.j = N2; snN.y = N2*h2;
             u[0][i]  = boundary(sn0, tn);
-            SpaceNodePDE snN;
-            snN.i = i;
-            snN.x = i*h1;
-            snN.j = N2;
-            snN.y = N2*h2;
             u[N2][i] = boundary(snN, tn);
 
             dd2[0]    -= x2_a * u[0][i];
             dd2[N2-2] -= x2_a * u[N2][i];
 
-            tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
+            tomasAlgorithm(da2, db2, dc2, dd2, rx2, N2-1);
 
-            for (unsigned int j=1; j<N2; j++)
-            {
-                u[j][i] = rx2[j-1];
-            }
+            for (unsigned int j=1; j<N2; j++) u[j][i] = rx2[j-1];
         }
 
         for (unsigned int j=0; j<=N2; j++)
         {
-            SpaceNodePDE sn0;
-            sn0.i = 0;
-            sn0.x = 0*h1;
-            sn0.j = j;
-            sn0.y = j*h2;
+            SpaceNodePDE sn0; sn0.i = 0;  sn0.x = 0*h1;  sn0.j = j; sn0.y = j*h2;
+            SpaceNodePDE snN; snN.i = N1; snN.x = N1*h1; snN.j = j; snN.y = j*h2;
             u[j][0]  = boundary(sn0, tn);
-            SpaceNodePDE snN;
-            snN.i = N1;
-            snN.x = N1*h1;
-            snN.j = j;
-            snN.y = j*h2;
             u[j][N1] = boundary(snN, tn);
         }
     }
 
-    da1.clear();
-    db1.clear();
-    dc1.clear();
-    dd1.clear();
-    rx1.clear();
+    free(rx2);
+    free(dd2);
+    free(dc2);
+    free(db2);
+    free(da2);
 
-    da2.clear();
-    db2.clear();
-    dc2.clear();
-    dd2.clear();
-    rx2.clear();
+    free(rx1);
+    free(dd1);
+    free(dc1);
+    free(db1);
+    free(da1);
 }
 
 void ParabolicIBVP::calculateMVD1(DoubleMatrix &u) const

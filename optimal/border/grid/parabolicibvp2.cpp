@@ -3,35 +3,40 @@
 void ParabolicIBVP2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     ParabolicIBVP2 p;
-    p.setTimeDimension(Dimension(0.001, 1000, 0));
-    p.addSpaceDimension(Dimension(0.01, 100, 0));
-    p.addSpaceDimension(Dimension(0.01, 100, 0));
-//    {
-//        Dimension time = mtimeDimension;
-//        Dimension dim1 = mspaceDimension.at(0);
-//        Dimension dim2 = mspaceDimension.at(1);
+    p.setTimeDimension(Dimension(0.1, 0, 10));
+    p.addSpaceDimension(Dimension(0.1, 0, 10));
+    p.addSpaceDimension(Dimension(0.1, 0, 10));
 
-//        double ht = time.step();
-//        double h1 = dim1.step();
-//        double h2 = dim2.step();
-//        unsigned int M = time.maxN();
-//        unsigned int N1 = dim1.maxN();
-//        unsigned int N2 = dim2.maxN();
+    {
+        Dimension time = p.timeDimension();
+        Dimension dimx = p.spaceDimension(Dimension::DimensionX);
+        Dimension dimy = p.spaceDimension(Dimension::DimensionY);
 
-//        DoubleMatrix u(N2+1, N1+1);
-//        clock_t t = clock();
-//        for (unsigned int n2=0; n2<=N2; n2++)
-//        {
-//            for (unsigned int n1=0; n1<=N1; n1++)
-//            {
-//                u[n2][n1] = U(n1,n2,M);
-//            }
-//        }
-//        t = clock() - t;
-//        IPrinter::printMatrix(14,10,u);
-//        printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
-//        IPrinter::printSeperatorLine();
-//    }
+        double ht = time.step();
+        double hx = dimx.step();
+        double hy = dimy.step();
+
+        unsigned int M  = time.sizeN();
+        unsigned int Nx = dimx.sizeN();
+        unsigned int Ny = dimy.sizeN();
+
+        DoubleMatrix u(Ny+1, Nx+1);
+        clock_t t = clock();
+        TimeNodePDE tn; tn.i = 10; tn.t = 1.0;
+        for (unsigned int n2=0; n2<=Ny; n2++)
+        {
+            for (unsigned int n1=0; n1<=Nx; n1++)
+            {
+                SpaceNodePDE sn; sn.i = n1; sn.x = n1*hx; sn.j = n2; sn.y = n2*hy;
+                u[n2][n1] = p.U(sn,tn);
+            }
+        }
+        t = clock() - t;
+        IPrinter::printMatrix(14,10,u);
+        printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
+        IPrinter::printSeperatorLine();
+    }
+
     {
         DoubleMatrix u;
         clock_t t = clock();
@@ -41,6 +46,7 @@ void ParabolicIBVP2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         printf ("It took me %ld clicks (%f seconds).\n",t,((float)t)/CLOCKS_PER_SEC);
         IPrinter::printSeperatorLine();
     }
+    return;
     {
         DoubleMatrix u;
         clock_t t = clock();
@@ -61,78 +67,94 @@ void ParabolicIBVP2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     }
 }
 
-ParabolicIBVP2::ParabolicIBVP2()
-{}
-
 double ParabolicIBVP2::initial(const SpaceNodePDE &sn) const
 {
     C_UNUSED(sn);
+
 #ifdef SAMPLE_0
     return 0.0;
 #endif
+
 #ifdef SAMPLE_1
-    double x = sn.x;
-    double y = sn.y;
-    return x*x + y*y;
+    return sn.x*sn.x + sn.y*sn.y;
 #endif
+
 #ifdef SAMPLE_2
-    double x = sn.x;
-    double y = sn.y;
-    return x*x + y*y;
+    return 0.0;
 #endif
+
 #ifdef SAMPLE_3
-    return 0.0;
+    return sn.x*sn.x * sn.y*sn.y;
 #endif
-    return 0.0;
+
+#ifdef SAMPLE_4
+    return sn.x*sn.x * sn.y*sn.y;
+#endif
+
+#ifdef SAMPLE_5
+    return sn.x * sn.y;
+#endif
+
+    return NAN;
 }
 
 double ParabolicIBVP2::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType) const
 {
+
 #ifdef SAMPLE_0
-    return 0.0;
+    return (sn.x*sn.x + sn.y*sn.y)*tn.t;
 #endif
+
 #ifdef SAMPLE_1
-    double t = tn.t;
-    double x = sn.x;
-    double y = sn.y;
-    return x*x + y*y + t;
+    return sn.x*sn.x + sn.y*sn.y + tn.t;
 #endif
+
 #ifdef SAMPLE_2
-    double t = tn.t;
-    double x = sn.x;
-    double y = sn.y;
-    return x*x + y*y + t*t;
+    return sn.x*sn.x * sn.y*sn.y * tn.t;
 #endif
+
 #ifdef SAMPLE_3
-    double t = tn.t;
-    double x = sn.x;
-    double y = sn.y;
-    return (sin(2.0*x)+cos(3.0*y))*t;
+    return sn.x*sn.x * sn.y*sn.y;
 #endif
-    return 0.0;
+
+#ifdef SAMPLE_4
+    return sn.x*sn.x * sn.y*sn.y + tn.t;
+#endif
+
+#ifdef SAMPLE_5
+    return sn.x * sn.y + tn.t;
+#endif
+
+    return NAN;
 }
 
 double ParabolicIBVP2::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
 #ifdef SAMPLE_0
-    return 0.0;
+    return (sn.x*sn.x + sn.y*sn.y) - 4.0*a(sn, tn)*tn.t;
 #endif
+
 #ifdef SAMPLE_1
-    double a1 = a(sn,tn);
-    return 1.0 - 4.0*a1;
+    return 1.0 - 4.0*a(sn,tn);
 #endif
+
 #ifdef SAMPLE_2
-    double a1 = a(sn,tn);
-    return 2.0*t - 4.0*a1;
+    return sn.x*sn.x * sn.y*sn.y - 2.0*a(sn,tn)*tn.t*(sn.x*sn.x + sn.y*sn.y);
 #endif
+
 #ifdef SAMPLE_3
-    double t = tn.t;
-    double x = sn.x;
-    double y = sn.y;
-    double a1 = a(sn,tn);
-    return (sin(2.0*x)*(1.0+4.0*a1*t))+(cos(3.0*y)*(1.0+9.0*a1*t));
+    return -2.0*a(sn,tn)*(sn.x*sn.x + sn.y*sn.y);
 #endif
-    return 0.0;
+
+#ifdef SAMPLE_4
+    return sn.x*sn.x * sn.y*sn.y - 2.0*a(sn,tn)*(sn.x*sn.x + sn.y*sn.y);
+#endif
+
+#ifdef SAMPLE_5
+    return 1.0;
+#endif
+
+    return NAN;
 }
 
 double ParabolicIBVP2::a(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
@@ -140,10 +162,31 @@ double ParabolicIBVP2::a(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE 
     return 1.0;
 }
 
-double ParabolicIBVP2::U(unsigned int i, unsigned int j, unsigned int k) const
+double ParabolicIBVP2::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
-    C_UNUSED(i);
-    C_UNUSED(j);
-    C_UNUSED(k);
-    return 0.0;
+#ifdef SAMPLE_0
+    return (sn.x*sn.x + sn.y*sn.y) * tn.t;
+#endif
+
+#ifdef SAMPLE_1
+    return (sn.x*sn.x + sn.y*sn.y) + tn.t;
+#endif
+
+#ifdef SAMPLE_2
+    return sn.x*sn.x * sn.y*sn.y * tn.t;
+#endif
+
+#ifdef SAMPLE_3
+    return sn.x*sn.x * sn.y*sn.y;
+#endif
+
+#ifdef SAMPLE_4
+    return sn.x*sn.x * sn.y*sn.y + tn.t;
+#endif
+
+#ifdef SAMPLE_5
+    return sn.x * sn.y + tn.t;
+#endif
+
+    return NAN;
 }

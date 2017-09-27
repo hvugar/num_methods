@@ -4,13 +4,10 @@
 #include <grid/pibvp.h>
 #include <time.h>
 
-#define SAMPLE_3
+#define SAMPLE_1
 
 class MINIMUMSHARED_EXPORT ParabolicIBVP2 : public ParabolicIBVP
 {
-public:
-    ParabolicIBVP2();
-
 protected:
     virtual double initial(const SpaceNodePDE &sn) const;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE& tn, BoundaryType boundary = Unused) const;
@@ -19,7 +16,7 @@ protected:
 
 public:
     void static Main(int argc, char* argv[]);
-    double U(unsigned int i, unsigned int j, unsigned int k) const;
+    double U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 };
 
 #endif // PARABOLICIBVP2_H
