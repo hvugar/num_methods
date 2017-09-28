@@ -2,9 +2,8 @@
 #define PARABOLICIBVP2_H
 
 #include <grid/pibvp.h>
-#include <time.h>
 
-#define SAMPLE_1
+#define SAMPLE_7
 
 class MINIMUMSHARED_EXPORT ParabolicIBVP2 : public ParabolicIBVP
 {

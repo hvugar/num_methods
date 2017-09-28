@@ -1,4 +1,5 @@
 #include "parabolicibvp2.h"
+#include <time.h>
 
 void ParabolicIBVP2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -22,7 +23,7 @@ void ParabolicIBVP2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
         DoubleMatrix u(Ny+1, Nx+1);
         clock_t t = clock();
-        TimeNodePDE tn; tn.i = 10; tn.t = 1.0;
+        TimeNodePDE tn; tn.i = 1; tn.t = 0.1;
         for (unsigned int n2=0; n2<=Ny; n2++)
         {
             for (unsigned int n1=0; n1<=Nx; n1++)
@@ -71,20 +72,16 @@ double ParabolicIBVP2::initial(const SpaceNodePDE &sn) const
 {
     C_UNUSED(sn);
 
-#ifdef SAMPLE_0
-    return 0.0;
-#endif
-
 #ifdef SAMPLE_1
-    return sn.x*sn.x + sn.y*sn.y;
+    return 0.0;
 #endif
 
 #ifdef SAMPLE_2
-    return 0.0;
+    return sn.x*sn.x + sn.y*sn.y;
 #endif
 
 #ifdef SAMPLE_3
-    return sn.x*sn.x * sn.y*sn.y;
+    return 0.0;
 #endif
 
 #ifdef SAMPLE_4
@@ -92,7 +89,15 @@ double ParabolicIBVP2::initial(const SpaceNodePDE &sn) const
 #endif
 
 #ifdef SAMPLE_5
+    return sn.x*sn.x * sn.y*sn.y;
+#endif
+
+#ifdef SAMPLE_6
     return sn.x * sn.y;
+#endif
+
+#ifdef SAMPLE_7
+    return 0.0;
 #endif
 
     return NAN;
@@ -101,28 +106,32 @@ double ParabolicIBVP2::initial(const SpaceNodePDE &sn) const
 double ParabolicIBVP2::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType) const
 {
 
-#ifdef SAMPLE_0
+#ifdef SAMPLE_1
     return (sn.x*sn.x + sn.y*sn.y)*tn.t;
 #endif
 
-#ifdef SAMPLE_1
+#ifdef SAMPLE_2
     return sn.x*sn.x + sn.y*sn.y + tn.t;
 #endif
 
-#ifdef SAMPLE_2
+#ifdef SAMPLE_3
     return sn.x*sn.x * sn.y*sn.y * tn.t;
 #endif
 
-#ifdef SAMPLE_3
+#ifdef SAMPLE_4
     return sn.x*sn.x * sn.y*sn.y;
 #endif
 
-#ifdef SAMPLE_4
+#ifdef SAMPLE_5
     return sn.x*sn.x * sn.y*sn.y + tn.t;
 #endif
 
-#ifdef SAMPLE_5
+#ifdef SAMPLE_6
     return sn.x * sn.y + tn.t;
+#endif
+
+#ifdef SAMPLE_7
+    return (sn.x*sn.x + sn.y) * tn.t;
 #endif
 
     return NAN;
@@ -130,28 +139,32 @@ double ParabolicIBVP2::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, B
 
 double ParabolicIBVP2::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
-#ifdef SAMPLE_0
+#ifdef SAMPLE_1
     return (sn.x*sn.x + sn.y*sn.y) - 4.0*a(sn, tn)*tn.t;
 #endif
 
-#ifdef SAMPLE_1
+#ifdef SAMPLE_2
     return 1.0 - 4.0*a(sn,tn);
 #endif
 
-#ifdef SAMPLE_2
+#ifdef SAMPLE_3
     return sn.x*sn.x * sn.y*sn.y - 2.0*a(sn,tn)*tn.t*(sn.x*sn.x + sn.y*sn.y);
 #endif
 
-#ifdef SAMPLE_3
+#ifdef SAMPLE_4
     return -2.0*a(sn,tn)*(sn.x*sn.x + sn.y*sn.y);
 #endif
 
-#ifdef SAMPLE_4
+#ifdef SAMPLE_5
     return sn.x*sn.x * sn.y*sn.y - 2.0*a(sn,tn)*(sn.x*sn.x + sn.y*sn.y);
 #endif
 
-#ifdef SAMPLE_5
+#ifdef SAMPLE_6
     return 1.0;
+#endif
+
+#ifdef SAMPLE_7
+    return (sn.x*sn.x + sn.y) - 2.0*a(sn,tn)*tn.t;
 #endif
 
     return NAN;
@@ -164,28 +177,32 @@ double ParabolicIBVP2::a(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE 
 
 double ParabolicIBVP2::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
-#ifdef SAMPLE_0
+#ifdef SAMPLE_1
     return (sn.x*sn.x + sn.y*sn.y) * tn.t;
 #endif
 
-#ifdef SAMPLE_1
+#ifdef SAMPLE_2
     return (sn.x*sn.x + sn.y*sn.y) + tn.t;
 #endif
 
-#ifdef SAMPLE_2
+#ifdef SAMPLE_3
     return sn.x*sn.x * sn.y*sn.y * tn.t;
 #endif
 
-#ifdef SAMPLE_3
+#ifdef SAMPLE_4
     return sn.x*sn.x * sn.y*sn.y;
 #endif
 
-#ifdef SAMPLE_4
+#ifdef SAMPLE_5
     return sn.x*sn.x * sn.y*sn.y + tn.t;
 #endif
 
-#ifdef SAMPLE_5
+#ifdef SAMPLE_6
     return sn.x * sn.y + tn.t;
+#endif
+
+#ifdef SAMPLE_7
+    return (sn.x*sn.x + sn.y) * tn.t;
 #endif
 
     return NAN;

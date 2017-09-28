@@ -1847,7 +1847,7 @@ void ParabolicIBVP::calculateMVD(DoubleMatrix &u) const
 
     TimeNodePDE tn;
     SpaceNodePDE sn;
-    for (unsigned int k=1; k<=M; k++)
+    for (unsigned int k=1; k<=1; k++)
     {
         tn.i = 2*k-1;
         tn.t = k*ht - 0.5*ht;
