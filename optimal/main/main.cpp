@@ -81,7 +81,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //SystemLinearODENonLocalContionsM::Main(argc, argv);
     //Problem4Ex2::Main(argc, argv);
     //SystemLinearODENonLocalContionsV2::Main(argc, argv);
-    //LinearODE1stOrderEx1::Main(argc, argv);
+    LinearODE1stOrderEx1::Main(argc, argv);
 
     //NumIntegralExp1::Main(argc, argv);
 
@@ -113,7 +113,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //BoundaryValueProblem1::Main(argc, argv);
 
     //ParabolicIBVP1::Main(argc, argv);
-    ParabolicIBVP2::Main(argc, argv);
+    //ParabolicIBVP2::Main(argc, argv);
 
     //HyperbolicIBVP1::Main(argc, argv);
     //NewtonHeatEquationEx1::Main(argc, argv);

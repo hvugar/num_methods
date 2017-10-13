@@ -103,7 +103,7 @@ void LinearODE1stOrderEx1::example1()
     nsc0.mtrx.at(0,0) = 5.0;
 
     Condition nsc1;
-    nsc1.time = 0.341;
+    nsc1.time = 0.03;
     nsc1.mtrx.resize(n, n);
     nsc1.mtrx.at(0,0) = 4.2;
 
