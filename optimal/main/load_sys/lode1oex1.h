@@ -1,7 +1,7 @@
 #ifndef LOADLINEARODE1STORDEREX1_H
 #define LOADLINEARODE1STORDEREX1_H
 
-#define EXAMPLE_1
+#define EXAMPLE_3
 
 #include <ode/lode1o.h>
 #include <utils/random.h>
@@ -11,13 +11,14 @@ class LinearODE1stOrderEx1 : public LinearODE1stOrder
 public:
     static void Main(int agrc, char *argv[]);
 
-    void example0();
     void example1();
     void example2();
     void example3();
     void example4();
     void example5();
     void example6();
+    void example7();
+    void example8();
 
     double X(double t, int i=0) const;
 public:

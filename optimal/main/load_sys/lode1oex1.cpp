@@ -6,9 +6,7 @@ void LinearODE1stOrderEx1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM
 {
     LinearODE1stOrderEx1 cpnlcs;
     cpnlcs.setGrid(UniformODEGrid(0.1, 0, 10));
-#ifdef EXAMPLE_0
-    cpnlcs.example0();
-#endif
+
 #ifdef EXAMPLE_1
     cpnlcs.example1();
 #endif
@@ -27,9 +25,15 @@ void LinearODE1stOrderEx1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM
 #ifdef EXAMPLE_6
     cpnlcs.example6();
 #endif
+#ifdef EXAMPLE_7
+    cpnlcs.example7();
+#endif
+#ifdef EXAMPLE_8
+    cpnlcs.example8();
+#endif
 }
 
-void LinearODE1stOrderEx1::example0()
+void LinearODE1stOrderEx1::example1()
 {
     unsigned int N = grid().sizeN();
     double h = grid().step();
@@ -87,7 +91,7 @@ void LinearODE1stOrderEx1::example0()
     IPrinter::printVector(x6[0]);
 }
 
-void LinearODE1stOrderEx1::example1()
+void LinearODE1stOrderEx1::example2()
 {
     unsigned int N = grid().sizeN();
     double h = grid().step();
@@ -108,12 +112,12 @@ void LinearODE1stOrderEx1::example1()
     nsc1.mtrx.at(0,0) = 4.2;
 
     Condition nsc2;
-    nsc2.time = 0.545;
+    nsc2.time = 0.87;
     nsc2.mtrx.resize(n, n);
     nsc2.mtrx.at(0,0) = 5.7;
 
     Condition nsc3;
-    nsc3.time = 0.836;
+    nsc3.time = 0.97;
     nsc3.mtrx.resize(n, n);
     nsc3.mtrx.at(0,0) = 8.5;
 
@@ -152,7 +156,72 @@ void LinearODE1stOrderEx1::example1()
     IPrinter::printVector(x6[0]);
 }
 
-void LinearODE1stOrderEx1::example2()
+void LinearODE1stOrderEx1::example3()
+{
+    unsigned int N = grid().sizeN();
+    double h = grid().step();
+
+    unsigned int n = equationsNumber();
+
+    std::vector<Condition> nscs;
+    DoubleVector betta;
+
+    Condition nsc0;
+    nsc0.time = 0.00;
+    nsc0.mtrx.resize(n, n);
+    nsc0.mtrx.at(0,0) = 5.0;
+
+    Condition nsc1;
+    nsc1.time = 0.03;
+    nsc1.mtrx.resize(n, n);
+    nsc1.mtrx.at(0,0) = 4.2;
+
+    Condition nsc2;
+    nsc2.time = 0.87;
+    nsc2.mtrx.resize(n, n);
+    nsc2.mtrx.at(0,0) = 5.7;
+
+    Condition nsc3;
+    nsc3.time = 0.97;
+    nsc3.mtrx.resize(n, n);
+    nsc3.mtrx.at(0,0) = 8.5;
+
+    Condition nsc4;
+    nsc4.time = 1.0;
+    nsc4.mtrx.resize(n, n);
+    nsc4.mtrx.at(0,0) = 10.0;
+
+    nscs.push_back(nsc0);
+    nscs.push_back(nsc1);
+    nscs.push_back(nsc2);
+    nscs.push_back(nsc3);
+    nscs.push_back(nsc4);
+
+    betta.resize(n);
+    betta[0] = nsc0.mtrx.at(0,0)*X(nsc0.time,0)
+             + nsc1.mtrx.at(0,0)*X(nsc1.time,0)
+             + nsc2.mtrx.at(0,0)*X(nsc2.time,0)
+             + nsc3.mtrx.at(0,0)*X(nsc3.time,0)
+             + nsc4.mtrx.at(0,0)*X(nsc4.time,0);
+
+    DoubleVector x1(N+1);
+    for (unsigned int i=0; i<=N; i++) x1[i] = X(i*h, 0);
+    IPrinter::printVector(x1);
+
+    std::vector<DoubleVector> x2;
+    solveHighOderAccuracy(nscs, betta, x2, 2);
+    IPrinter::printVector(x2[0]);
+
+    std::vector<DoubleVector> x4;
+    solveHighOderAccuracy(nscs, betta, x4, 4);
+    IPrinter::printVector(x4[0]);
+
+    std::vector<DoubleVector> x6;
+    solveHighOderAccuracy(nscs, betta, x6, 6);
+    IPrinter::printVector(x6[0]);
+}
+
+void LinearODE1stOrderEx1::example4()
 {
     unsigned int n = equationsNumber();
 
@@ -224,7 +293,7 @@ void LinearODE1stOrderEx1::example2()
     IPrinter::printVector(x6[2]);
 }
 
-void LinearODE1stOrderEx1::example3()
+void LinearODE1stOrderEx1::example5()
 {
     unsigned int N = grid().sizeN();
     double h = grid().step();
@@ -276,7 +345,7 @@ void LinearODE1stOrderEx1::example3()
     IPrinter::printVector(x6[0]);
 }
 
-void LinearODE1stOrderEx1::example4()
+void LinearODE1stOrderEx1::example6()
 {
     unsigned int N = grid().sizeN();
     double h = grid().step();
@@ -361,7 +430,7 @@ void LinearODE1stOrderEx1::example4()
     IPrinter::printVector(x6[2]);
 }
 
-void LinearODE1stOrderEx1::example5()
+void LinearODE1stOrderEx1::example7()
 {
     unsigned int N = grid().sizeN();
     double h = grid().step();
@@ -447,7 +516,7 @@ void LinearODE1stOrderEx1::example5()
     IPrinter::printVector(x6[2]);
 }
 
-void LinearODE1stOrderEx1::example6()
+void LinearODE1stOrderEx1::example8()
 {
     unsigned int N = grid().sizeN();
     double h = grid().step();
@@ -477,16 +546,11 @@ void LinearODE1stOrderEx1::example6()
 double LinearODE1stOrderEx1::A(const GridNodeODE &node UNUSED_PARAM, unsigned int row UNUSED_PARAM, unsigned int col UNUSED_PARAM) const
 {
     double t = node.x;
-#ifdef EXAMPLE_0
-    return t;
-#endif
 #ifdef EXAMPLE_1
     return t;
 #endif
 #ifdef EXAMPLE_2
-    if (row==0) { if (col==0) { return +2.0; } if (col==1) { return -3.0; } if (col==2) { return +1.0; } }
-    if (row==1) { if (col==0) { return +3.0; } if (col==1) { return +1.0; } if (col==2) { return -2.0; } }
-    if (row==2) { if (col==0) { return +1.0; } if (col==1) { return -5.0; } if (col==2) { return -3.0; } }
+    return t;
 #endif
 #ifdef EXAMPLE_3
     return t;
@@ -497,11 +561,19 @@ double LinearODE1stOrderEx1::A(const GridNodeODE &node UNUSED_PARAM, unsigned in
     if (row==2) { if (col==0) { return +1.0; } if (col==1) { return -5.0; } if (col==2) { return -3.0; } }
 #endif
 #ifdef EXAMPLE_5
+    return t;
+#endif
+#ifdef EXAMPLE_6
     if (row==0) { if (col==0) { return +2.0; } if (col==1) { return -3.0; } if (col==2) { return +1.0; } }
     if (row==1) { if (col==0) { return +3.0; } if (col==1) { return +1.0; } if (col==2) { return -2.0; } }
     if (row==2) { if (col==0) { return +1.0; } if (col==1) { return -5.0; } if (col==2) { return -3.0; } }
 #endif
-#ifdef EXAMPLE_6
+#ifdef EXAMPLE_7
+    if (row==0) { if (col==0) { return +2.0; } if (col==1) { return -3.0; } if (col==2) { return +1.0; } }
+    if (row==1) { if (col==0) { return +3.0; } if (col==1) { return +1.0; } if (col==2) { return -2.0; } }
+    if (row==2) { if (col==0) { return +1.0; } if (col==1) { return -5.0; } if (col==2) { return -3.0; } }
+#endif
+#ifdef EXAMPLE_8
     return 3.0;
 #endif
 
@@ -511,31 +583,34 @@ double LinearODE1stOrderEx1::A(const GridNodeODE &node UNUSED_PARAM, unsigned in
 double LinearODE1stOrderEx1::B(const GridNodeODE &node UNUSED_PARAM, unsigned int row UNUSED_PARAM) const
 {
     double t = node.x;
-#ifdef EXAMPLE_0
+#ifdef EXAMPLE_1
     return 1.0 - t*t;
 #endif
-#ifdef EXAMPLE_1
+#ifdef EXAMPLE_2
     return -t*t*t;
 #endif
-#ifdef EXAMPLE_2
+#ifdef EXAMPLE_3
+    return 3.0*t*t-t*t*t*t;
+#endif
+#ifdef EXAMPLE_4
     if (row==0) return +11.0*t*t - 7.0*t - 5.0;
     if (row==1) return -2.0*t*t + t - 12.0;
     if (row==2) return +23.0*t*t + 2.0*t - 3.0;
 #endif
-#ifdef EXAMPLE_3
+#ifdef EXAMPLE_5
     return 4.0*cos(4.0*t) - t*sin(4.0*t);
 #endif
-#ifdef EXAMPLE_4
+#ifdef EXAMPLE_6
     if (row==0) return +4.0*cos(4.0*t) - 2.0*sin(4.0*t) + 3.0*cos(5.0*t) - 2.0 + exp(t);
     if (row==1) return -5.0*sin(5.0*t) - 3.0*sin(4.0*t) - cos(5.0*t)     + 4.0 - 2.0*exp(t);
     if (row==2) return -sin(4.0*t) + 5.0*cos(5.0*t) + 6.0 - 4.0*exp(t);
 #endif
-#ifdef EXAMPLE_5
+#ifdef EXAMPLE_7
     if (row==0) return +40.0*cos(40.0*t) - 2.0*sin(40.0*t) + 3.0*cos(50.0*t) - 2.0 +     exp(t);
     if (row==1) return -50.0*sin(50.0*t) - 3.0*sin(40.0*t) -     cos(50.0*t) + 4.0 - 2.0*exp(t);
     if (row==2) return                   -     sin(40.0*t) + 5.0*cos(50.0*t) + 6.0 - 4.0*exp(t);
 #endif
-#ifdef EXAMPLE_6
+#ifdef EXAMPLE_8
     return 2.0*t - 3.0*t*t;
 #endif
     return NAN;
@@ -543,14 +618,11 @@ double LinearODE1stOrderEx1::B(const GridNodeODE &node UNUSED_PARAM, unsigned in
 
 unsigned int LinearODE1stOrderEx1::equationsNumber() const
 {
-#ifdef EXAMPLE_0
-    return 1;
-#endif
 #ifdef EXAMPLE_1
     return 1;
 #endif
 #ifdef EXAMPLE_2
-    return 3;
+    return 1;
 #endif
 #ifdef EXAMPLE_3
     return 1;
@@ -559,40 +631,49 @@ unsigned int LinearODE1stOrderEx1::equationsNumber() const
     return 3;
 #endif
 #ifdef EXAMPLE_5
-    return 3;
+    return 1;
 #endif
 #ifdef EXAMPLE_6
+    return 3;
+#endif
+#ifdef EXAMPLE_7
+    return 3;
+#endif
+#ifdef EXAMPLE_8
     return 1;
 #endif
 }
 
 double LinearODE1stOrderEx1::X(double t, int row UNUSED_PARAM) const
 {
-#ifdef EXAMPLE_0
+#ifdef EXAMPLE_1
     return t;
 #endif
-#ifdef EXAMPLE_1
+#ifdef EXAMPLE_2
     return t*t+2.0;
 #endif
-#ifdef EXAMPLE_2
+#ifdef EXAMPLE_3
+    return t*t*t;
+#endif
+#ifdef EXAMPLE_4
     if (row==0) return 3.0*t+4.0;
     if (row==1) return 4.0*t*t;
     if (row==2) return t*t+t;
 #endif
-#ifdef EXAMPLE_3
+#ifdef EXAMPLE_5
     return sin(4.0*t);
 #endif
-#ifdef EXAMPLE_4
+#ifdef EXAMPLE_6
     if (row==0) return sin(4.0*t);
     if (row==1) return cos(5.0*t);
     if (row==2) return 2.0-exp(t);
 #endif
-#ifdef EXAMPLE_5
+#ifdef EXAMPLE_7
     if (row==0) return sin(40.0*t);
     if (row==1) return cos(50.0*t);
     if (row==2) return 2.0-exp(t);
 #endif
-#ifdef EXAMPLE_6
+#ifdef EXAMPLE_8
     return t*t;
 #endif
     return NAN;
