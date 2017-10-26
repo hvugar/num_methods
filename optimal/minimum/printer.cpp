@@ -246,7 +246,9 @@ void IPrinter::print(const DoubleVector &v, unsigned int N, unsigned int width, 
 
 void IPrinter::printSeperatorLine(const char* msg, char c, FILE* file)
 {
+#ifdef _INC_WINDOWS
     CONSOLE_SCREEN_BUFFER_INFO csbi;
+#endif
     int columns;
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
     columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
