@@ -64,11 +64,15 @@
 
 #include "problem5/nllparabolic.h"
 
+#include "problem2/problem2.h"
+
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     srand(time(NULL));
 
     //MatrixTest::Main(argc, argv);
+
+    IProblem2::Main(argc, argv);
 
     //NLLIParabolicIBVP::Main(argc, argv);
 
@@ -81,7 +85,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //SystemLinearODENonLocalContionsM::Main(argc, argv);
     //Problem4Ex2::Main(argc, argv);
     //SystemLinearODENonLocalContionsV2::Main(argc, argv);
-    LinearODE1stOrderEx1::Main(argc, argv);
+    //LinearODE1stOrderEx1::Main(argc, argv);
 
     //NumIntegralExp1::Main(argc, argv);
 
