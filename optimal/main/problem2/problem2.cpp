@@ -205,14 +205,15 @@ double IProblem2::g1(const TimeNodePDE &tn) const
     return 2.0*t + lambda2*(t - theta);
 }
 
+double pp = 0;
 double IProblem2::delta(const SpaceNodePDE &sn, unsigned int i) const
 {
     Dimension sd = spaceDimension(Dimension::DimensionX);
     double hx = sd.step();
     double sigma = 3.0*hx;
-    double aa = (1.0/(sqrt(2.0*M_PI)*sigma)) * exp( -((sn.x-eta[i])*(sn.x-eta[i])) / (2.0*sigma*sigma) );
-    if (i==0)
-    printf("%d %d %f\n", sn.i, i, aa);
+    double aa = hx*(1.0/(sqrt(2.0*M_PI)*sigma)) * exp( -((sn.x-eta[i])*(sn.x-eta[i])) / (2.0*sigma*sigma) );
+    if (i==0) pp+=aa;
+    if (i==0) printf("%d %d %f %f\n", sn.i, i, aa, pp);
     return aa;
 
     if ( sn.x == eta[i] ) return 1.0;
