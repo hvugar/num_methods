@@ -1,50 +1,38 @@
-#include "problem2.h"
+#include "iproblem2forward.h"
 
-void IProblem2::Main(int argc, char *argv[])
+IProblem2Forward::IProblem2Forward()
 {
-    IProblem2 ip2;
-    ip2.setTimeDimension(Dimension(0.1, 0, 10));
-    ip2.addSpaceDimension(Dimension(0.01, 0, 100));
+//    a = 1.0;
+//    lambda0 = 1.0;
+//    lambda1 = 2.0;
+//    lambda2 = 1.5;
+//    theta = 5.0;
 
-    DoubleMatrix u;
-    ip2.gridMethod(u);
+//    Lc = 2;
+//    Lo = 3;
+//    k.resize(Lc, Lo);
+//    z.resize(Lc, Lo);
 
-    //IPrinter::printMatrix(10, 6, u);
+//    eta.resize(Lc);
+//    eta[0] = 0.33451;
+//    eta[1] = 0.66854;
+
+//    xi.resize(Lo);
+//    xi[0] = 0.2514;
+//    xi[1] = 0.5045;
+//    xi[2] = 0.7515;
+
+//    for (unsigned int i=0; i<Lc; i++)
+//    {
+//        for (unsigned int j=0; j<Lo; j++)
+//        {
+//            k[i][j] = 5.0;
+//            z[i][j] = 8.0;
+//        }
+//    }
 }
 
-IProblem2::IProblem2()
-{
-    a = 1.0;
-    lambda0 = 1.0;
-    lambda1 = 2.0;
-    lambda2 = 1.5;
-    theta = 5.0;
-
-    Lc = 2;
-    Lo = 3;
-    k.resize(Lc, Lo);
-    z.resize(Lc, Lo);
-
-    eta.resize(Lc);
-    eta[0] = 0.33;
-    eta[1] = 0.66;
-
-    xi.resize(Lo);
-    xi[0] = 0.2514;
-    xi[1] = 0.5045;
-    xi[2] = 0.7515;
-
-    for (unsigned int i=0; i<Lc; i++)
-    {
-        for (unsigned int j=0; j<Lo; j++)
-        {
-            k[i][j] = 5.0;//(i+1)*(j+2);
-            z[i][j] = 8.0;
-        }
-    }
-}
-
-void IProblem2::gridMethod(DoubleMatrix &u) const
+void IProblem2Forward::gridMethod(DoubleMatrix &u) const
 {
     Dimension sd = spaceDimension(Dimension::DimensionX);
     Dimension td = timeDimension();
@@ -65,7 +53,7 @@ void IProblem2::gridMethod(DoubleMatrix &u) const
     }
 
     TimeNodePDE tn;
-    for (unsigned int m=1; m<=1; m++)
+    for (unsigned int m=1; m<=M; m++)
     {
         tn.i = m;
         tn.t = m*ht;
@@ -102,13 +90,13 @@ void IProblem2::gridMethod(DoubleMatrix &u) const
 
             for (unsigned int i=0; i<Lc; i++)
             {
-                double dt = delta(sn, i);
+                double _delta = delta(sn, i);
                 //if ( dt > 0.0 )
                 //if (n*hx == eta[i])
                 {
                     for (unsigned int j=0; j<Lo; j++)
                     {
-                        d[n] += -ht*k[i][j]*z[i][j] * dt;
+                        d[n] += -ht*k[i][j]*z[i][j] * _delta;
 
                         unsigned int jinx = (unsigned int)(xi[j]*N);
                         //w[n][jinx] += -ht*k[i][j];
@@ -124,12 +112,12 @@ void IProblem2::gridMethod(DoubleMatrix &u) const
 
                             if (dh <= hx)
                             {
-                                w[n][n1] += -ht*k[i][j] * ((2.0*hx-dh)*(hx-dh)*(hx+dh)) * h32 * dt;
+                                w[n][n1] += -ht*k[i][j] * ((2.0*hx-dh)*(hx-dh)*(hx+dh)) * h32 * _delta;
                             }
 
                             if (hx < dh && dh <= 2.0*hx)
                             {
-                                w[n][n1] += -ht*k[i][j] * ((2.0*hx-dh)*(hx-dh)*(3.0*hx-dh)) * h36 * dt;
+                                w[n][n1] += -ht*k[i][j] * ((2.0*hx-dh)*(hx-dh)*(3.0*hx-dh)) * h36 * _delta;
                             }
                         }
                     }
@@ -140,7 +128,7 @@ void IProblem2::gridMethod(DoubleMatrix &u) const
 
         DoubleVector x(N+1);
         LinearEquation::GaussianElimination(w,d,x);
-        IPrinter::printVector(x);
+        //IPrinter::printVector(x);
 
         w.clear();
         d.clear();
@@ -158,18 +146,19 @@ void IProblem2::gridMethod(DoubleMatrix &u) const
     }
 }
 
-double IProblem2::initial(const SpaceNodePDE &sn) const
+double IProblem2Forward::initial(const SpaceNodePDE &sn) const
 {
     return 0.0;
 }
 
-double IProblem2::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary) const
+double IProblem2Forward::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary) const
 {
     return NAN;
 }
 
-double IProblem2::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+double IProblem2Forward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
+    //return 0.0;
     double t = tn.t;
     double x = sn.x;
 
@@ -178,14 +167,14 @@ double IProblem2::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     double W = 0.0;
     for (unsigned int i=0; i<Lc; i++)
     {
-        if ( x == eta[i] )
+        //if ( x == eta[i] )
         {
             double vi = 0.0;
             for (unsigned int j=0; j<Lo; j++)
             {
                 vi += k.at(i,j) * (U(xi[j], t) - z.at(i,j));
             }
-            W += vi;
+            W += vi*delta(sn, i);;
         }
     }
     res -= W;
@@ -193,34 +182,43 @@ double IProblem2::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     return res;
 }
 
-double IProblem2::g0(const TimeNodePDE &tn) const
+double IProblem2Forward::g0(const TimeNodePDE &tn) const
 {
+    //return 0.0;
     return lambda1*theta;
 }
 
-double IProblem2::g1(const TimeNodePDE &tn) const
+double IProblem2Forward::g1(const TimeNodePDE &tn) const
 {
+    //return 0.0;
     double t = tn.t;
-
     return 2.0*t + lambda2*(t - theta);
 }
 
 double pp = 0;
-double IProblem2::delta(const SpaceNodePDE &sn, unsigned int i) const
+double IProblem2Forward::delta(const SpaceNodePDE &sn, unsigned int i) const
 {
     Dimension sd = spaceDimension(Dimension::DimensionX);
     double hx = sd.step();
-    double sigma = 3.0*hx;
-    double aa = hx*(1.0/(sqrt(2.0*M_PI)*sigma)) * exp( -((sn.x-eta[i])*(sn.x-eta[i])) / (2.0*sigma*sigma) );
-    if (i==0) pp+=aa;
-    if (i==0) printf("%d %d %f %f\n", sn.i, i, aa, pp);
-    return aa;
 
-    if ( sn.x == eta[i] ) return 1.0;
+    // Approximation delta function using normal distribution formula
+    //double sigma = 3.0*hx;
+    //return (1.0/(sqrt(2.0*M_PI)*sigma)) * exp( -((sn.x-eta[i])*(sn.x-eta[i])) / (2.0*sigma*sigma) );;
+
+    // Approximation delta function using L4 Lagrange interpolation
+    double h3 = hx*hx*hx;
+    double h32 = (1.0/(2.0*h3));
+    double h36 = (1.0/(6.0*h3));
+    double dh = fabs(sn.x - eta[i]);
+    if (dh <= hx)                return ((2.0*hx-dh)*(hx-dh)*(hx+dh)) * h32;
+    if (hx < dh && dh <= 2.0*hx) return ((2.0*hx-dh)*(hx-dh)*(3.0*hx-dh)) * h36;
     return 0.0;
+
+    //if ( sn.x == eta[i] ) return 1.0;
+    //return 0.0;
 }
 
-double IProblem2::U(double x, double t) const
+double IProblem2Forward::U(double x, double t) const
 {
     return x*x*t;
 }

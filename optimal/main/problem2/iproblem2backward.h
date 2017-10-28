@@ -1,30 +1,34 @@
-#ifndef IPROBLEM2_H
-#define IPROBLEM2_H
+#ifndef IPROBLEM2_BACKWARD_H
+#define IPROBLEM2_BACKWARD_H
 
 #include <grid/pibvp.h>
 #include <printer.h>
 
-
-class IProblem2 : public IParabolicIBVP
+class IProblem2Backward : public IParabolicIBVP
 {
 public:
-    static void Main(int argc, char* argv[]);
+    IProblem2Backward();
 
-    IProblem2();
+    void gridMethod(DoubleMatrix &p) const;
 
-    void gridMethod(DoubleMatrix &u) const;
-
+    DoubleVector uT;
+    DoubleVector U;
+    DoubleVector mu;
 
 protected:
     virtual double initial(const SpaceNodePDE &sn) const;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
+    virtual double h(const SpaceNodePDE &sn) const;
     virtual double g0(const TimeNodePDE &tn) const;
     virtual double g1(const TimeNodePDE &tn) const;
-    virtual double delta(const SpaceNodePDE &sn, unsigned int i) const;
 
-private:
+    virtual double delta(const SpaceNodePDE &sn, unsigned int j) const;
+
+    virtual double P(double x, double t) const;
+
+public:
     double a;
     double lambda0;
     double lambda1;
@@ -37,8 +41,6 @@ private:
     DoubleMatrix z;
     DoubleVector xi;
     DoubleVector eta;
-
-    double U(double x, double t) const;
 };
 
-#endif // IPROBLEM2_H
+#endif // IPROBLEM2_BACKWARD_H

@@ -58,7 +58,9 @@ SOURCES += main.cpp \
     problem4/problem4ex2.cpp \
     loadedlinearode1order.cpp \
     problem5/nllparabolic.cpp \
-    problem2/problem2.cpp
+    problem2/problem2.cpp \
+    problem2/iproblem2forward.cpp \
+    problem2/iproblem2backward.cpp
 
 HEADERS += \
     load_sys/slodenlcsm.h \
@@ -83,4 +85,6 @@ HEADERS += \
     problem4/problem4ex2.h \
     loadedlinearode1order.h \
     problem5/nllparabolic.h \
-    problem2/problem2.h
+    problem2/problem2.h \
+    problem2/iproblem2backward.h \
+    problem2/iproblem2forward.h
