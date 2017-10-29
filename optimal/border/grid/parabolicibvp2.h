@@ -3,7 +3,7 @@
 
 #include <grid/pibvp.h>
 
-#define SAMPLE_8
+#define SAMPLE_2
 
 class MINIMUMSHARED_EXPORT ParabolicIBVP2 : public ParabolicIBVP
 {
