@@ -76,68 +76,72 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u)
         DoubleMatrix w(N+1, N+1, 0.0);
         DoubleVector d(N+1, 0.0);
 
-        for (unsigned int m=0; m<=M; m++)
+        for (unsigned int n=0; n<=N; n++)
         {
-            sn.i = m; sn.x = m*hx;
+            sn.i = n; sn.x = n*hx;
 
-            d[m] = u[k-1][m] + lambda0*ht*theta + ht*f(sn, tn);
-
-            if (m == 0)
+            for (unsigned int m=0; m<=M; m++)
             {
-                w[0][0] = 1.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*ht*lambda1)/(hx);
-                w[0][1] = -(2.0*a*a*ht)/(hx*hx);
+                sn.j = m; sn.y = m*hy;
 
-                d[0] += (2.0*a*a*ht*lambda1*theta)/(hx) - ((2.0*a*a*ht)/(hx))*g0(tn);
-            }
-            else if (m == N)
-            {
-                w[N][N-1] = -(2.0*a*a*ht)/(hx*hx);
-                w[N][N-0] = 1.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*ht*lambda2)/(hx);
+                d[m] = u[m][n] + ((a*a*ht)/(hx*hx))*(u[m][n-1] - 2.0*u[m][n] + u[m][n+1]) + lambda0*ht*theta + (2.0*a*a*ht*lambda*theta)/hy +ht*f(sn, tn);
 
-                d[N] += (2.0*a*a*ht*lambda2*theta)/(hx) + ((2.0*a*a*ht)/(hx))*g1(tn);
-            }
-            else
-            {
-                w[m][m-1] = -(a*a*ht)/(hx*hx);
-                w[m][m+0] = 1.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht;
-                w[m][m+1] = -(a*a*ht)/(hx*hx);
-            }
-
-
-            for (unsigned int i=0; i<Lc; i++)
-            {
-                double _delta = delta(sn, i);
-                //if ( dt > 0.0 )
-                //if (n*hx == eta[i])
+                if (m == 0)
                 {
-                    for (unsigned int j=0; j<Lo; j++)
+                    w[0][0] = 1.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*ht*lambda1)/(hx);
+                    w[0][1] = -(2.0*a*a*ht)/(hx*hx);
+
+                    d[0] += (2.0*a*a*ht*lambda1*theta)/(hx) - ((2.0*a*a*ht)/(hx))*g0(tn);
+                }
+                else if (m == N)
+                {
+                    w[N][N-1] = -(2.0*a*a*ht)/(hx*hx);
+                    w[N][N-0] = 1.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*ht*lambda2)/(hx);
+
+                    d[N] += (2.0*a*a*ht*lambda2*theta)/(hx) + ((2.0*a*a*ht)/(hx))*g1(tn);
+                }
+                else
+                {
+                    w[m][m-1] = -(a*a*ht)/(hx*hx);
+                    w[m][m+0] = 1.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht;
+                    w[m][m+1] = -(a*a*ht)/(hx*hx);
+                }
+
+
+                for (unsigned int i=0; i<Lc; i++)
+                {
+                    double _delta = delta(sn, i);
+                    //if ( dt > 0.0 )
+                    //if (n*hx == eta[i])
                     {
-                        d[m] += -ht*k[i][j]*z[i][j] * _delta;
-
-                        unsigned int jinx = (unsigned int)(xi[j]*N);
-                        //w[n][jinx] += -ht*k[i][j];
-
-                        double h3 = hx*hx*hx;
-                        double h32 = (1.0/(2.0*h3));
-                        double h36 = (1.0/(6.0*h3));
-
-                        for (unsigned int n1=jinx-2; n1<=jinx+2; n1++)
+                        for (unsigned int j=0; j<Lo; j++)
                         {
+                            d[m] += -ht*k[i][j]*z[i][j] * _delta;
 
-                            double dh = fabs(n1*hx - xi[j]);
+                            unsigned int jinx = (unsigned int)(xi[j]*N);
+                            //w[n][jinx] += -ht*k[i][j];
 
-                            if (dh <= hx)
+                            double h3 = hx*hx*hx;
+                            double h32 = (1.0/(2.0*h3));
+                            double h36 = (1.0/(6.0*h3));
+
+                            for (unsigned int n1=jinx-2; n1<=jinx+2; n1++)
                             {
-                                w[m][n1] += -ht*k[i][j] * ((2.0*hx-dh)*(hx-dh)*(hx+dh)) * h32 * _delta;
-                            }
 
-                            if (hx < dh && dh <= 2.0*hx)
-                            {
-                                w[m][n1] += -ht*k[i][j] * ((2.0*hx-dh)*(hx-dh)*(3.0*hx-dh)) * h36 * _delta;
+                                double dh = fabs(n1*hx - xi[j]);
+
+                                if (dh <= hx)
+                                {
+                                    w[m][n1] += -ht*k[i][j] * ((2.0*hx-dh)*(hx-dh)*(hx+dh)) * h32 * _delta;
+                                }
+
+                                if (hx < dh && dh <= 2.0*hx)
+                                {
+                                    w[m][n1] += -ht*k[i][j] * ((2.0*hx-dh)*(hx-dh)*(3.0*hx-dh)) * h36 * _delta;
+                                }
                             }
                         }
                     }
-
                 }
             }
         }
@@ -207,28 +211,28 @@ double IProblem2Forward2D::g1(const SpaceNodePDE &sn, const TimeNodePDE &tn) con
 {
     double y = sn.y;
     double t = tn.t;
-    return -lambda*(y*y + t - theta);
+    return lambda*(y*y + t - theta);
 }
 
 double IProblem2Forward2D::g2(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     double y = sn.y;
     double t = tn.t;
-    return 2.0 - lambda*(1.0 + y*y + t - theta);
+    return 2.0 + lambda*(1.0 + y*y + t - theta);
 }
 
 double IProblem2Forward2D::g3(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     double x = sn.x;
     double t = tn.t;
-    return -lambda*(x*x + t - theta);
+    return lambda*(x*x + t - theta);
 }
 
 double IProblem2Forward2D::g4(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     double x = sn.x;
     double t = tn.t;
-    return 2.0 - lambda*(1.0 + x*x + t - theta);
+    return 2.0 + lambda*(1.0 + x*x + t - theta);
 }
 
 double IProblem2Forward2D::U(double x, double y, double t) const
