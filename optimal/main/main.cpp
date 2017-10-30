@@ -64,7 +64,7 @@
 
 #include "problem5/nllparabolic.h"
 
-#include "problem2/problem2.h"
+#include "problem2/1d/problem2.h"
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
