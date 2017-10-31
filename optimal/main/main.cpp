@@ -65,6 +65,7 @@
 #include "problem5/nllparabolic.h"
 
 #include "problem2/1d/problem2.h"
+#include "problem2/2d/problem22d.h"
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -73,6 +74,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //MatrixTest::Main(argc, argv);
 
     //Problem2::Main(argc, argv);
+    Problem22D::Main(argc, argv);
 
     //NLLIParabolicIBVP::Main(argc, argv);
 
@@ -117,7 +119,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //BoundaryValueProblem1::Main(argc, argv);
 
     //ParabolicIBVP1::Main(argc, argv);
-    ParabolicIBVP2::Main(argc, argv);
+    //ParabolicIBVP2::Main(argc, argv);
 
     //HyperbolicIBVP1::Main(argc, argv);
     //NewtonHeatEquationEx1::Main(argc, argv);

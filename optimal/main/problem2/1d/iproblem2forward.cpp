@@ -2,34 +2,34 @@
 
 IProblem2Forward::IProblem2Forward()
 {
-//    a = 1.0;
-//    lambda0 = 1.0;
-//    lambda1 = 2.0;
-//    lambda2 = 1.5;
-//    theta = 5.0;
+    a = 1.0;
+    lambda0 = 1.0;
+    lambda1 = 2.0;
+    lambda2 = 1.5;
+    theta = 5.0;
 
-//    Lc = 2;
-//    Lo = 3;
-//    k.resize(Lc, Lo);
-//    z.resize(Lc, Lo);
+    Lc = 2;
+    Lo = 3;
+    k.resize(Lc, Lo);
+    z.resize(Lc, Lo);
 
-//    eta.resize(Lc);
-//    eta[0] = 0.33451;
-//    eta[1] = 0.66854;
+    eta.resize(Lc);
+    eta[0] = 0.33451;
+    eta[1] = 0.66854;
 
-//    xi.resize(Lo);
-//    xi[0] = 0.2514;
-//    xi[1] = 0.5045;
-//    xi[2] = 0.7515;
+    xi.resize(Lo);
+    xi[0] = 0.2514;
+    xi[1] = 0.5045;
+    xi[2] = 0.7515;
 
-//    for (unsigned int i=0; i<Lc; i++)
-//    {
-//        for (unsigned int j=0; j<Lo; j++)
-//        {
-//            k[i][j] = 5.0;
-//            z[i][j] = 8.0;
-//        }
-//    }
+    for (unsigned int i=0; i<Lc; i++)
+    {
+        for (unsigned int j=0; j<Lo; j++)
+        {
+            k[i][j] = 5.0;
+            z[i][j] = 8.0;
+        }
+    }
 }
 
 void IProblem2Forward::gridMethod(DoubleMatrix &u) const
@@ -203,19 +203,20 @@ double IProblem2Forward::delta(const SpaceNodePDE &sn, unsigned int i) const
 
     // Approximation delta function using normal distribution formula
     //double sigma = 3.0*hx;
-    //return (1.0/(sqrt(2.0*M_PI)*sigma)) * exp( -((sn.x-eta[i])*(sn.x-eta[i])) / (2.0*sigma*sigma) );;
+    //double res = (1.0/(sqrt(2.0*M_PI)*sigma)) * exp( -((sn.x-eta[i])*(sn.x-eta[i])) / (2.0*sigma*sigma) );
+    //return res;
 
     // Approximation delta function using L4 Lagrange interpolation
-    double h3 = hx*hx*hx;
-    double h32 = (1.0/(2.0*h3));
-    double h36 = (1.0/(6.0*h3));
-    double dh = fabs(sn.x - eta[i]);
-    if (dh <= hx)                return ((2.0*hx-dh)*(hx-dh)*(hx+dh)) * h32;
-    if (hx < dh && dh <= 2.0*hx) return ((2.0*hx-dh)*(hx-dh)*(3.0*hx-dh)) * h36;
-    return 0.0;
+//    double h3 = hx*hx*hx;
+//    double h32 = (1.0/(2.0*h3));
+//    double h36 = (1.0/(6.0*h3));
+//    double dh = fabs(sn.x - eta[i]);
+//    if (dh <= hx)                return ((2.0*hx-dh)*(hx-dh)*(hx+dh)) * h32;
+//    if (hx < dh && dh <= 2.0*hx) return ((2.0*hx-dh)*(hx-dh)*(3.0*hx-dh)) * h36;
+//    return 0.0;
 
-    //if ( sn.x == eta[i] ) return 1.0;
-    //return 0.0;
+    if ( sn.x == eta[i] ) return 1.0/hx;
+    return 0.0;
 }
 
 double IProblem2Forward::U(double x, double t) const

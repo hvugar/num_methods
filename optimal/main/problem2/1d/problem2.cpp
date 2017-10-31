@@ -2,18 +2,18 @@
 
 void Problem2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    //    Dimension timeDimension(0.1, 0, 10);
-    //    Dimension spaceDimensionX(0.01, 0, 100);
+        Dimension timeDimension(0.1, 0, 10);
+        Dimension spaceDimensionX(0.01, 0, 100);
 
-    //    IProblem2Forward ipf;
-    //    ipf.setTimeDimension(timeDimension);
-    //    ipf.addSpaceDimension(spaceDimensionX);
+        IProblem2Forward ipf;
+        ipf.setTimeDimension(timeDimension);
+        ipf.addSpaceDimension(spaceDimensionX);
 
-    //    DoubleMatrix u;
-    //    ipf.gridMethod(u);
+        DoubleMatrix u;
+        ipf.gridMethod(u);
 
-    //    IPrinter::printMatrix(14, 10, u);
-    //    IPrinter::printSeperatorLine();
+        IPrinter::printMatrix(14, 10, u);
+        IPrinter::printSeperatorLine();
 
     //    IProblem2Backward ipb(u.row(10));
     //    ipb.setTimeDimension(timeDimension);
@@ -24,53 +24,53 @@ void Problem2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //    IPrinter::printMatrix(14, 10, p);
 
-    Problem2 p;
-    p.Lo = 3;
-    p.Lc = 2;
-    p.k.resize(p.Lc, p.Lo);
-    p.z.resize(p.Lc, p.Lo);
+//    Problem2 p;
+//    p.Lo = 3;
+//    p.Lc = 2;
+//    p.k.resize(p.Lc, p.Lo);
+//    p.z.resize(p.Lc, p.Lo);
 
-    p.xi.resize(p.Lo);
-    p.xi[0] = 0.25;
-    p.xi[1] = 0.50;
-    p.xi[2] = 0.75;
+//    p.xi.resize(p.Lo);
+//    p.xi[0] = 0.25;
+//    p.xi[1] = 0.50;
+//    p.xi[2] = 0.75;
 
-    p.eta.resize(p.Lc);
-    p.eta[0] = 0.33;
-    p.eta[1] = 0.66;
+//    p.eta.resize(p.Lc);
+//    p.eta[0] = 0.33;
+//    p.eta[1] = 0.66;
 
-    for (unsigned int i=0; i<p.Lc; i++)
-    {
-        for (unsigned int j=0; j<p.Lo; j++)
-        {
-            p.k[i][j] = 5.0;//*(i+1)*(j-1);
-            p.z[i][j] = 8.0;//*(i+2)*(j-21);
-        }
-    }
+//    for (unsigned int i=0; i<p.Lc; i++)
+//    {
+//        for (unsigned int j=0; j<p.Lo; j++)
+//        {
+//            p.k[i][j] = 5.0;//*(i+1)*(j-1);
+//            p.z[i][j] = 8.0;//*(i+2)*(j-21);
+//        }
+//    }
 
-    p.a = 1.0;
-    p.lambda0 = 1.0;
-    p.lambda1 = 2.0;
-    p.lambda2 = 1.5;
-    p.theta = 20.0;
+//    p.a = 1.0;
+//    p.lambda0 = 1.0;
+//    p.lambda1 = 2.0;
+//    p.lambda2 = 1.5;
+//    p.theta = 20.0;
 
-    DoubleVector prms;
-    p.paremeters2Array(p.k, p.z, p.xi, p.eta, prms);
+//    DoubleVector prms;
+//    p.paremeters2Array(p.k, p.z, p.xi, p.eta, prms);
 
-    DoubleVector g1;
-    p.gradient(prms, g1);
-    //for (unsigned int k=0; k<15; k++) g1[k] = 0.0;
-    for (unsigned int k=15; k<g1.length(); k++) g1[k] = 0.0;
-    g1.L2Normalize();
+//    DoubleVector g1;
+//    p.gradient(prms, g1);
+//    //for (unsigned int k=0; k<15; k++) g1[k] = 0.0;
+//    for (unsigned int k=15; k<g1.length(); k++) g1[k] = 0.0;
+//    g1.L2Normalize();
 
-    IPrinter::print(g1,g1.length(),10,6);
+//    IPrinter::print(g1,g1.length(),10,6);
 
-    DoubleVector g2(prms.length());
-    IGradient::Gradient(&p, 0.01, prms, g2);
-    //for (unsigned int k=0; k<15; k++) g2[k] = 0.0;
-    for (unsigned int k=15; k<g2.length(); k++) g2[k] = 0.0;
-    //g2.L2Normalize();
-    IPrinter::print(g2,g2.length(),10,6);
+//    DoubleVector g2(prms.length());
+//    IGradient::Gradient(&p, 0.01, prms, g2);
+//    //for (unsigned int k=0; k<15; k++) g2[k] = 0.0;
+//    for (unsigned int k=15; k<g2.length(); k++) g2[k] = 0.0;
+//    //g2.L2Normalize();
+//    IPrinter::print(g2,g2.length(),10,6);
 }
 
 Problem2::Problem2()
