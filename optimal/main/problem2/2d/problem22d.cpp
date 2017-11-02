@@ -3,7 +3,7 @@
 void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     Problem22D p22d;
-    p22d.mTimeDimension = Dimension(0.01, 0, 100);
+    p22d.mTimeDimension = Dimension(0.1, 0, 10);
     p22d.mSpaceDimensionX = Dimension(0.01, 0, 100);
     p22d.mSpaceDimensionY = Dimension(0.01, 0, 100);
 

@@ -13,13 +13,14 @@ public:
     IProblem2Forward2D(double a, double lambda0, double lambda, double theta, unsigned int Lc, unsigned int Lo);
 
     void calculateMVD(DoubleMatrix &u);
+    void calculateMVD1(DoubleMatrix &u);
 
 protected:
     virtual double initial(const SpaceNodePDE &sn) const;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
-    double delta(const SpaceNodePDE &sn, unsigned int i) const;
+    double delta(const SpaceNodePDE &sn, unsigned int i, unsigned int source) const;
 
     virtual double g1(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;
     virtual double g2(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;
