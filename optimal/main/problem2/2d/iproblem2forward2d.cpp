@@ -13,7 +13,7 @@ IProblem2Forward2D::IProblem2Forward2D(double a, double lambda0, double lambda, 
     //    this->Lo = 5;
     //    this->Lc = 4;
 
-    this->Lo = 3;
+    this->Lo = 1;
     this->Lc = 1;
 
     k.resize(Lc, Lo);
@@ -42,14 +42,14 @@ IProblem2Forward2D::IProblem2Forward2D(double a, double lambda0, double lambda, 
     //    eta[3].x = 0.66; eta[3].y = 0.33; //eta[3].i = 66; eta[3].j = 33;
 
     xi.resize(this->Lo);
-    xi[0].x = 0.10;  xi[0].y = 0.20; xi[0].i = 10; xi[0].j = 20;
-    xi[1].x = 0.80;  xi[1].y = 0.50; xi[1].i = 80; xi[1].j = 50;
-    xi[2].x = 0.40;  xi[2].y = 0.70; xi[2].i = 40; xi[2].j = 70;
+    xi[0].x = 0.10;  xi[0].y = 0.80; xi[0].i = 1; xi[0].j = 8;
+    //xi[1].x = 0.80;  xi[1].y = 0.50; xi[1].i = 80; xi[1].j = 50;
+    //xi[2].x = 0.40;  xi[2].y = 0.70; xi[2].i = 40; xi[2].j = 70;
 
     eta.resize(this->Lc);
     //    eta[0].x = 0.70; eta[0].y = 0.30; eta[0].i = 70; eta[0].j = 30;
     //    eta[1].x = 0.20; eta[1].y = 0.30; eta[1].i = 20; eta[1].j = 60;
-    eta[0].x = 0.30; eta[0].y = 0.20; eta[0].i = 30; eta[0].j = 20;
+    eta[0].x = 0.30; eta[0].y = 0.20; eta[0].i = 3; eta[0].j = 2;
 }
 
 void IProblem2Forward2D::calculateMVD(DoubleMatrix &u)
@@ -321,7 +321,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u)
                 double sum = 0.0;
                 for (unsigned int n=0; n<=N; n++)
                 {
-                    sum += w2.at(30, n) * U(n*hx, 0.2, 0.1);
+                    sum += w2.at(3, n) * U(n*hx, 0.2, 0.1);
                 }
 
                 printf("sum: %f\n", sum);
@@ -565,8 +565,8 @@ void IProblem2Forward2D::calculateMVD1(DoubleMatrix &u)
                         unsigned int jinx = xi[j].j;//(unsigned int)(xi[j].x*N);
                         //unsigned int jiny = (unsigned int)(xi[j].y*M);
 
-                        double kk = -k[i][j]*_delta;
-                        w2[n][jinx] += kk;
+                        if (m==2 && n==3) printf("%f %d %d %d\n", -k[i][j]*_delta, jinx, m, n);
+                        w2[n][jinx] += -k[i][j]*_delta;
 
                         //if (m==20 && n==30) printf("%d %f %f %f\n", n, d2[30], -k[i][j]*z[i][j] * _delta, kk);
 
@@ -606,22 +606,31 @@ void IProblem2Forward2D::calculateMVD1(DoubleMatrix &u)
                 //*****************************************************************************************************
             }
 
-            //if (m==20)         d2[30] = -5999.717;
+//            if (m==2)         d2[3] = -387.17;
             DoubleVector x2(N+1);
             LinearEquation::GaussianElimination(w2,d2,x2);
             //IPrinter::printVector(x);
 
-            if (m==20)
+            if (m==2)
             {
+
+                double sum = 0.0;
+                for (unsigned int n=0; n<=N; n++)
+                {
+                    sum += w2.at(3, n) * U(n*hx, 0.2, 0.1);
+                }
+
+                printf("sum: %f %f\n", sum, d2[3]);
+
                 //                printf("%f %f %f\n", sn2.x, sn2.y, tn.t);
 
-                //                FILE* file = fopen("D:\\data_m_1.txt", "w");
-                //                IPrinter::printMatrix(10, 4, w2, M, N, NULL, file);
-                //                fclose(file);
+                FILE* file = fopen("D:\\data_m_1.txt", "w");
+                IPrinter::printMatrix(10, 4, w2, M, N, NULL, file);
+                fclose(file);
 
-                //                FILE* file1 = fopen("D:\\data_d_1.txt", "w");
-                //                IPrinter::printVector(d2, NULL, N, 0,0, file1);
-                //                fclose(file1);
+                FILE* file1 = fopen("D:\\data_d_1.txt", "w");
+                IPrinter::printVector(d2, NULL, N, 0,0, file1);
+                fclose(file1);
             }
 
             w2.clear();
@@ -656,33 +665,55 @@ double IProblem2Forward2D::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) cons
 
     //printf("t: %f\n", t);
 
-    double res = 1.0 - 4.0*a*a + lambda0*(x*x + y*y + t - theta);
+    double res = 1.0 - 4.0*a*a + lambda0*(U(x,y,t) - theta);
 
-    double W = 0.0;
     for (unsigned int i=0; i<Lc; i++)
     {
-        if ( sn.i == eta[i].i && sn.j == eta[i].j )
+        double _delta = delta(sn, i, 2);
+
+        for (unsigned int j=0; j<Lo; j++)
         {
-
-            double _delta = delta(sn, i, 0);
-
-            double vi = 0.0;
-            for (unsigned int j=0; j<Lo; j++)
-            {
-                //SpaceNodePDE xij = xi[j];
-
-                if (_delta > 0.0) printf("------------------------------- %d %d %f %f %.14f\n", i, j, xi[j].x, xi[j].y, _delta);
-
-                double u = U(xi[j].x, xi[j].y, t);
-                vi += k[i][j] * ( u  - z[i][j]) * _delta;
-
-                printf("-------------- %f\n", k[i][j] * u * _delta);
-            }
-            //printf("---------- %d %f\n", i, vi);
-            W += vi;
+            //printf("---- %f %f %f %f\n", xi[j].x, xi[j].y, t, k[i][j]*U(xi[j].x, xi[j].y, t)*_delta);
+            res += -k[i][j]*U(xi[j].x, xi[j].y, t) * _delta;
         }
     }
-    res -= W;
+
+    for (unsigned int i=0; i<Lc; i++)
+    {
+        double _delta = delta(sn, i, 2);
+
+        for (unsigned int j=0; j<Lo; j++)
+        {
+            res += +k[i][j]*z[i][j] * _delta;
+        }
+    }
+
+
+//    double W = 0.0;
+//    for (unsigned int i=0; i<Lc; i++)
+//    {
+//        if ( sn.i == eta[i].i && sn.j == eta[i].j )
+//        {
+
+//            double _delta = delta(sn, i, 0);
+
+//            double vi = 0.0;
+//            for (unsigned int j=0; j<Lo; j++)
+//            {
+//                //SpaceNodePDE xij = xi[j];
+
+//                if (_delta > 0.0) printf("------------------------------- %d %d %f %f %.14f\n", i, j, xi[j].x, xi[j].y, _delta);
+
+//                double u = U(xi[j].x, xi[j].y, t);
+//                vi += k[i][j] * ( u  - z[i][j]) * _delta;
+
+//                printf("-------------- %f\n", k[i][j] * u * _delta);
+//            }
+//            //printf("---------- %d %f\n", i, vi);
+//            W += vi;
+//        }
+//    }
+//    res -= W;
 
     return res;
 }
@@ -713,8 +744,8 @@ double IProblem2Forward2D::delta(const SpaceNodePDE &sn UNUSED_PARAM, unsigned i
     //    return 0.0;
 
     double res = 0.0;
-    if ( sn.x == eta[i].x && sn.y == eta[i].y ) res = 1.0/(hx*hy);
-    //if ( sn.i == eta[i].i && sn.j == eta[i].j ) res = 1.0/(hx*hy);
+    //if ( sn.x == eta[i].x && sn.y == eta[i].y ) res = 1.0/(hx*hy);
+    if ( sn.i == eta[i].i && sn.j == eta[i].j ) res = 1.0/(hx*hy);
 
     return res;
 }
