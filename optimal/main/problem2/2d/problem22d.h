@@ -2,7 +2,7 @@
 #define PROBLEM22D_H
 
 #include "iproblem2forward2d.h"
-//#include "iproblem2backward2d.h"
+#include "iproblem2backward2d.h"
 
 #include <function.h>
 #include <gradient.h>

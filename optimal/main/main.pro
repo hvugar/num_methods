@@ -62,6 +62,7 @@ SOURCES += main.cpp \
     problem2/1d/iproblem2forward.cpp \
     problem2/1d/iproblem2backward.cpp \
     problem2/2d/iproblem2forward2d.cpp \
+    problem2/2d/iproblem2backward2d.cpp \
     problem2/2d/problem22d.cpp
 
 HEADERS += \
@@ -91,4 +92,5 @@ HEADERS += \
     problem2/1d/iproblem2backward.h \
     problem2/1d/iproblem2forward.h \
     problem2/2d/iproblem2forward2d.h \
+    problem2/2d/iproblem2backward2d.h \
     problem2/2d/problem22d.h
