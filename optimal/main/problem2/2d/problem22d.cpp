@@ -2,31 +2,110 @@
 
 void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    Problem22D p22d;
-    p22d.mTimeDimension = Dimension(0.1, 0, 10);
-    p22d.mSpaceDimensionX = Dimension(0.01, 0, 100);
-    p22d.mSpaceDimensionY = Dimension(0.01, 0, 100);
-
-    IProblem2Forward2D ipf2d(1.0, 1.0, 1.0, 10.0, 0, 0);
-    ipf2d.setTimeDimension(p22d.mTimeDimension);
-    ipf2d.addSpaceDimension(p22d.mSpaceDimensionX);
-    ipf2d.addSpaceDimension(p22d.mSpaceDimensionY);
+    Problem22D p22d(1.0, 0.1, 1.0, 10.0, 2, 3);
+    p22d.setGridParameters(Dimension(0.1, 0, 10),
+                           Dimension(0.01, 0, 100),
+                           Dimension(0.01, 0, 100));
 
     DoubleMatrix u;
-    ipf2d.calculateMVD(u);
+    p22d.forward.calculateMVD1(u);
     IPrinter::printMatrix(u);
     IPrinter::printSeperatorLine();
 
-    IProblem2Backward2D ipb2d(1.0, 1.0, 1.0, 10.0, 0, 0);
-    ipb2d.setTimeDimension(p22d.mTimeDimension);
-    ipb2d.addSpaceDimension(p22d.mSpaceDimensionX);
-    ipb2d.addSpaceDimension(p22d.mSpaceDimensionY);
-
-    ipb2d.U = u;
-    ipb2d.uT = u;
-
-    DoubleMatrix p;
-    ipb2d.calculateMVD(p);
-    IPrinter::printMatrix(p);
-    IPrinter::printSeperatorLine();
+//    DoubleMatrix p;
+//    p22d.backward.U = u;
+//    p22d.backward.uT = u;
+//    p22d.backward.calculateMVD(p);
+//    IPrinter::printMatrix(p);
+//    IPrinter::printSeperatorLine();
 }
+
+Problem22D::Problem22D(double a, double lambda0, double lambda, double theta, double Lc, double Lo)
+{
+    this->a = a;
+    this->lambda0 = lambda0;
+    this->lambda = lambda;
+    this->theta = theta;
+    this->Lc = Lc;
+    this->Lo = Lo;
+
+    forward.setSettings(a, lambda0, lambda, theta, Lc, Lo);
+    backward.setSettings(a, lambda0, lambda, theta, Lc, Lo);
+}
+
+void Problem22D::setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY)
+{
+    mTimeDimension = timeDimension;
+    mSpaceDimensionX = spaceDimensionX;
+    mSpaceDimensionY = spaceDimensionY;
+
+    forward.setTimeDimension(mTimeDimension);
+    forward.addSpaceDimension(mSpaceDimensionX);
+    forward.addSpaceDimension(mSpaceDimensionY);
+
+    backward.setTimeDimension(mTimeDimension);
+    backward.addSpaceDimension(mSpaceDimensionX);
+    backward.addSpaceDimension(mSpaceDimensionY);
+
+    unsigned int N1 = mSpaceDimensionX.sizeN();
+    unsigned int N2 = mSpaceDimensionY.sizeN();
+    U.resize(N2+1, N1+1, 10.0);
+}
+
+double Problem22D::fx(const DoubleVector &x) const
+{
+    DoubleMatrix u;
+    forward.calculateMVD(u);
+
+    double intgrl = integral(u);
+
+    return intgrl;
+}
+
+void Problem22D::gradient(const DoubleVector &x UNUSED_PARAM, DoubleVector &g UNUSED_PARAM)
+{}
+
+double Problem22D::integral(const DoubleMatrix &u) const
+{
+    double hx = mSpaceDimensionX.step();
+    double hy = mSpaceDimensionY.step();
+    unsigned int N1 = mSpaceDimensionX.sizeN();
+    unsigned int N2 = mSpaceDimensionY.sizeN();
+
+    double sum = 0.0;
+
+    sum += 0.25* (u[0][0] - U[0][0])*(u[0][0] - U[0][0]);
+    sum += 0.25*(u[0][N1] - U[0][N1])*(u[0][N1] - U[0][N1]);
+    sum += 0.25*(u[N2][0] - U[N2][0])*(u[N2][0] - U[N2][0]);
+    sum += 0.25*(u[N2][N1] - U[N2][N1])*(u[N2][N1] - U[N2][N1]);
+
+    for (unsigned int n1=1; n1<=N1-1; n1++)
+    {
+        sum += 0.5*(u[0][n1] - U[0][n1])*(u[0][n1] - U[0][n1]);
+        sum += 0.5*(u[N2][n1] - U[N2][n1])*(u[N2][n1] - U[N2][n1]);
+    }
+
+    for (unsigned int n2=1; n2<=N2-1; n2++)
+    {
+        sum += 0.5*(u[n2][0] - U[n2][0])*(u[n2][0] - U[n2][0]);
+        sum += 0.5*(u[n2][N1] - U[n2][N1])*(u[n2][N1] - U[n2][N1]);
+    }
+
+    for (unsigned int n2 = 1; n2 <= N2-1; n2++)
+    {
+        for (unsigned int n1 = 1; n1 <= N1-1; n1++)
+        {
+            sum += (u[n2][n1] - U[n2][n1])*(u[n2][n1] - U[n2][n1]);
+        }
+    }
+    sum *= (hx*hy);
+
+    return sum;
+}
+
+double Problem22D::mu(double x UNUSED_PARAM, double y UNUSED_PARAM) const
+{
+    return 1.0;
+}
+
+

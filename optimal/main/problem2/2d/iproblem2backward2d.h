@@ -10,8 +10,9 @@ using namespace std;
 class IProblem2Backward2D : public IParabolicIBVP
 {
 public:
-    IProblem2Backward2D(double a, double lambda0, double lambda, double theta, unsigned int Lc, unsigned int Lo);
-
+    IProblem2Backward2D();
+    virtual ~IProblem2Backward2D() {}
+    void setSettings(double a, double lambda0, double lambda, double theta, unsigned int Lc, unsigned int Lo);
     void calculateMVD(DoubleMatrix &p);
 
     DoubleMatrix U;
@@ -30,6 +31,8 @@ protected:
     virtual double g3(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;
     virtual double g4(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;
     virtual double h(const SpaceNodePDE &sn) const;
+
+    virtual double P(double x, double y, double t) const;
 
 private:
     double a;

@@ -1,6 +1,8 @@
 #include "iproblem2backward2d.h"
 
-IProblem2Backward2D::IProblem2Backward2D(double a, double lambda0, double lambda, double theta, unsigned int Lc, unsigned int Lo)
+IProblem2Backward2D::IProblem2Backward2D() {}
+
+void IProblem2Backward2D::setSettings(double a, double lambda0, double lambda, double theta, unsigned int Lc, unsigned int Lo)
 {
     this->a = a;
     this->lambda0 = lambda0;
@@ -8,9 +10,6 @@ IProblem2Backward2D::IProblem2Backward2D(double a, double lambda0, double lambda
     this->theta = theta;
     this->Lc = Lc;
     this->Lo = Lo;
-
-    this->Lo = 3;
-    this->Lc = 2;
 
     k.resize(this->Lc, this->Lo);
     z.resize(this->Lc, this->Lo);
@@ -24,14 +23,14 @@ IProblem2Backward2D::IProblem2Backward2D(double a, double lambda0, double lambda
         }
     }
 
+    eta.resize(this->Lc);
+    eta[0].x = 0.30; eta[0].y = 0.20; eta[0].i = 3; eta[0].j = 2;
+    eta[1].x = 0.20; eta[1].y = 0.80; eta[1].i = 2; eta[1].j = 8;
+
     xi.resize(this->Lo);
     xi[0].x = 0.10;  xi[0].y = 0.80; xi[0].i = 1; xi[0].j = 8;
     xi[1].x = 0.80;  xi[1].y = 0.50; xi[1].i = 8; xi[1].j = 5;
     xi[2].x = 0.40;  xi[2].y = 0.70; xi[2].i = 4; xi[2].j = 7;
-
-    eta.resize(this->Lc);
-    eta[0].x = 0.30; eta[0].y = 0.20; eta[0].i = 3; eta[0].j = 2;
-    eta[1].x = 0.20; eta[1].y = 0.80; eta[1].i = 2; eta[1].j = 8;
 }
 
 void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
@@ -268,8 +267,7 @@ double IProblem2Backward2D::f(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNod
         double vi = 0.0;
         for (unsigned int i=0; i<Lc; i++)
         {
-            double p = eta[i].x*eta[i].x + eta[i].y*eta[i].y + t;
-            vi += k[i][j] * p;
+            vi += k[i][j] * P(eta[i].x, eta[i].y, t);
         }
         W += vi * _delta;
     }
@@ -288,13 +286,13 @@ double IProblem2Backward2D::delta(const SpaceNodePDE &sn UNUSED_PARAM, unsigned 
     double hy = yd.step();
 
     // Approximation delta function using normal distribution formula
-    static double sigmaX = hx;
-    static double sigmaY = hy;
-    res = (1.0/(2.0*M_PI*sigmaX*sigmaY)) *
-            exp(-0.5*(((sn.x-xi[j].x)*(sn.x-xi[j].x))/(sigmaX*sigmaX)+((sn.y-xi[j].y)*(sn.y-xi[j].y))/(sigmaY*sigmaY)));
+    //static double sigmaX = hx;
+    //static double sigmaY = hy;
+    //res = (1.0/(2.0*M_PI*sigmaX*sigmaY)) *
+    //        exp(-0.5*(((sn.x-xi[j].x)*(sn.x-xi[j].x))/(sigmaX*sigmaX)+((sn.y-xi[j].y)*(sn.y-xi[j].y))/(sigmaY*sigmaY)));
 
     //if ( sn.x == eta[i].x && sn.y == eta[i].y ) res = 1.0/(hx*hy);
-    //if ( sn.i == xi[j].i && sn.j == xi[j].j ) res = 1.0/(hx*hy);
+    if ( sn.i == xi[j].i && sn.j == xi[j].j ) res = 1.0/(hx*hy);
 
     return res;
 }
@@ -325,4 +323,9 @@ double IProblem2Backward2D::h(const SpaceNodePDE &sn) const
     double y = sn.y; unsigned int j = sn.j;
 
     return (x*x + y*y + 1.0) + 2.0 * mu[j][i] * (uT[j][i] - U[j][i]);
+}
+
+double IProblem2Backward2D::P(double x, double y, double t) const
+{
+    return x*x + y*y + t;
 }
