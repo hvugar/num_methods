@@ -2,22 +2,22 @@
 
 void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    Problem22D p22d(1.0, 0.1, 1.0, 10.0, 2, 3);
-    p22d.setGridParameters(Dimension(0.1, 0, 10),
-                           Dimension(0.01, 0, 100),
-                           Dimension(0.01, 0, 100));
+    Problem22D p22d(1.0, 0.1, 1.0, 10.0, 1, 1);
+    p22d.setGridParameters(Dimension(0.01, 0, 100),
+                           Dimension(0.1, 0, 10),
+                           Dimension(0.1, 0, 10));
 
     DoubleMatrix u;
     p22d.forward.calculateMVD1(u);
-    IPrinter::printMatrix(u);
-    IPrinter::printSeperatorLine();
+    //IPrinter::printMatrix(u);
+    //IPrinter::printSeperatorLine();
 
-//    DoubleMatrix p;
-//    p22d.backward.U = u;
-//    p22d.backward.uT = u;
-//    p22d.backward.calculateMVD(p);
-//    IPrinter::printMatrix(p);
-//    IPrinter::printSeperatorLine();
+    //    DoubleMatrix p;
+    //    p22d.backward.U = u;
+    //    p22d.backward.uT = u;
+    //    p22d.backward.calculateMVD(p);
+    //    IPrinter::printMatrix(p);
+    //    IPrinter::printSeperatorLine();
 }
 
 Problem22D::Problem22D(double a, double lambda0, double lambda, double theta, double Lc, double Lo)
@@ -30,7 +30,7 @@ Problem22D::Problem22D(double a, double lambda0, double lambda, double theta, do
     this->Lo = Lo;
 
     forward.setSettings(a, lambda0, lambda, theta, Lc, Lo);
-    backward.setSettings(a, lambda0, lambda, theta, Lc, Lo);
+    //backward.setSettings(a, lambda0, lambda, theta, Lc, Lo);
 }
 
 void Problem22D::setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY)
@@ -50,6 +50,32 @@ void Problem22D::setGridParameters(Dimension timeDimension, Dimension spaceDimen
     unsigned int N1 = mSpaceDimensionX.sizeN();
     unsigned int N2 = mSpaceDimensionY.sizeN();
     U.resize(N2+1, N1+1, 10.0);
+
+
+//    double hx = mSpaceDimensionX.step();
+//    double hy = mSpaceDimensionY.step();
+//    double sum = 0.0;
+//    SpaceNodePDE eta;
+//    eta.x = 0.42; eta.i = 5;
+//    eta.y = 0.48; eta.j = 5;
+
+//    //int X = (int)(round(N1*eta.x));
+//    //int Y = (int)(round(N2*eta.y));
+//    //printf("%d %f %d %f\n", X, round(N1*mux), Y, round(N2*muy));
+//    SpaceNodePDE sn;
+//    for (unsigned int m=0; m<=N2; m++)
+//    {
+//        double y = m*hy;
+//        sn.j = m; sn.y = y;
+//        for (unsigned int n=0; n<=N1; n++)
+//        {
+//            double x = n*hx;
+//            sn.i = n; sn.x = x;
+//            sum += forward.delta2(sn, eta, 0);
+//        }
+//    }
+//    printf("%f\n", sum);
+//    exit(-1);
 }
 
 double Problem22D::fx(const DoubleVector &x) const

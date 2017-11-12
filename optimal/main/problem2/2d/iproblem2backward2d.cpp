@@ -29,8 +29,8 @@ void IProblem2Backward2D::setSettings(double a, double lambda0, double lambda, d
 
     xi.resize(this->Lo);
     xi[0].x = 0.10;  xi[0].y = 0.80; xi[0].i = 1; xi[0].j = 8;
-    xi[1].x = 0.80;  xi[1].y = 0.50; xi[1].i = 8; xi[1].j = 5;
-    xi[2].x = 0.40;  xi[2].y = 0.70; xi[2].i = 4; xi[2].j = 7;
+    //xi[1].x = 0.80;  xi[1].y = 0.50; xi[1].i = 8; xi[1].j = 5;
+    //xi[2].x = 0.40;  xi[2].y = 0.70; xi[2].i = 4; xi[2].j = 7;
 }
 
 void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
