@@ -24,13 +24,13 @@ void IProblem2Forward2D::setSettings(double a, double lambda0, double lambda, do
     }
 
     eta.resize(this->Lc);
-    eta[0].x = 0.3; eta[0].y = 0.2; eta[0].i = 3; eta[0].j = 2;
+    eta[0].x = 0.62; eta[0].y = 0.22; eta[0].i = 6; eta[0].j = 2;
 
     //eta[0].x = 0.30; eta[0].y = 0.20; eta[0].i = 3; eta[0].j = 2;
     //eta[1].x = 0.60; eta[1].y = 0.90; eta[1].i = 6; eta[1].j = 9;
 
     xi.resize(this->Lo);
-    xi[0].x = 0.30;  xi[0].y = 0.60; xi[0].i = 30; xi[0].j = 60;
+    xi[0].x = 0.30;  xi[0].y = 0.60; xi[0].i = 3; xi[0].j = 6;
 
     //xi[0].x = 0.10;  xi[0].y = 0.90; xi[0].i = 1; xi[0].j = 9;
     //xi[1].x = 0.80;  xi[1].y = 0.20; xi[1].i = 8; xi[1].j = 2;
@@ -279,6 +279,7 @@ void IProblem2Forward2D::calculateMVD1(DoubleMatrix &u) const
     for (unsigned int m=0; m<=M; m++)
     {
         sn.j = m; sn.y = m*hy;
+
         for (unsigned int n=0; n<=N; n++)
         {
             sn.i = n; sn.x = n*hx;
@@ -286,34 +287,38 @@ void IProblem2Forward2D::calculateMVD1(DoubleMatrix &u) const
             for (unsigned int i=0; i<Lc; i++)
             {
                 double _delta = delta(sn, eta[i], i);
-                //printf("%d %d %d %f\n", m, n, i, _delta);
 
-                if (_delta > 0.00001)
+//                if (_delta != 0.0)
+//                {
+//                    printf("%4d %4d %4d %10.6f\n", m, n, i, _delta);
+//                }
+
+                if (_delta != 0.0)
                 {
                     v2y[m] = 1;
                     v2x[n] = 1;
 
                     for (unsigned int j=0; j<Lo; j++)
                     {
-                        if ( eta[j].i == sn.i ) v3x[n] += 1;
-                        if ( eta[j].j == sn.j ) v3y[m] += 2;
+                        if ( xi[j].i == sn.i ) v3x[n] = 1;
+                        if ( xi[j].j == sn.j ) v3y[m] = 1;
                     }
                 }
                 else
                 {
-                   // v1y[m] = 1;
-                   // v1x[n] = 1;
+                   v1y[m] += 1;
+                   v1x[n] += 1;
                 }
             }
         }
     }
 
     FILE *fv1x = fopen("d:/dmx.txt", "w");
-    for (unsigned int n=0; n<=N; n++) fprintf(fv1x, "%d \n", v3x[n]);
+    for (unsigned int n=0; n<=N; n++) fprintf(fv1x, "%d \n", v1x[n]);
     fclose(fv1x);
 
     FILE *fv1y = fopen("d:/dmy.txt", "w");
-    for (unsigned int m=0; m<=M; m++) fprintf(fv1y, "%d \n", v3y[m]);
+    for (unsigned int m=0; m<=M; m++) fprintf(fv1y, "%d \n", v1y[m]);
     fclose(fv1y);
 
     return;
@@ -333,6 +338,7 @@ void IProblem2Forward2D::calculateMVD1(DoubleMatrix &u) const
             for (unsigned int i=0; i<Lc; i++)
             {
                 double _delta = delta(sn, eta[i], i, 0);
+
                 if (_delta > 0.01)
                 {
                     dm[m][n] += _delta;
@@ -769,7 +775,8 @@ double IProblem2Forward2D::delta2(const SpaceNodePDE &sn, const SpaceNodePDE &et
     unsigned int ry = (unsigned int)(round(eta.y*Ny));
 
     double res = 0.0;
-    if (rx-3 <= sn.i && sn.i <= rx+3 && ry-3 <= sn.j && sn.j <= ry+3)
+    if (rx-3 <= sn.i && sn.i <= rx+3 &&
+        ry-3 <= sn.j && sn.j <= ry+3)
     {
         res = (1.0/(2.0*M_PI*sigmaX*sigmaY)) *
                 exp(-0.5*(((sn.x-eta.x)*(sn.x-eta.x))/(sigmaX*sigmaX)+((sn.y-eta.y)*(sn.y-eta.y))/(sigmaY*sigmaY)));
@@ -824,7 +831,7 @@ double IProblem2Forward2D::delta3(const SpaceNodePDE &sn UNUSED_PARAM, const Spa
     //if (fabs(resX*resY) > 0.0)
     //    printf("%4d %4d %4d %4d %20.10f %20.10f\n", sn.i, sn.j, eta.i, eta.j, resX, resY);
 
-    return resX*resY*(1.0/hx)*(1.0/hy);
+    return (resX*resY)/(hx*hy);
 }
 
 double IProblem2Forward2D::delta4(const SpaceNodePDE &sn UNUSED_PARAM, const SpaceNodePDE &eta UNUSED_PARAM, unsigned int i) const
