@@ -2,7 +2,7 @@
 
 void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    Problem22D p22d(1.0, 0.1, 1.0, 10.0, 1, 1);
+    Problem22D p22d(1.0, 0.1, 1.0, 10.0, 2, 2);
     p22d.setGridParameters(Dimension(0.01, 0, 100),
                            Dimension(0.1, 0, 10),
                            Dimension(0.1, 0, 10));

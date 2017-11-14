@@ -8,8 +8,8 @@ void IProblem2Forward2D::setSettings(double a, double lambda0, double lambda, do
     this->lambda0 = lambda0;
     this->lambda = lambda;
     this->theta = theta;
-    this->Lc = Lc;
-    this->Lo = Lo;
+    this->Lc = 2;//Lc;
+    this->Lo = 2;//Lo;
 
     k.resize(this->Lc, this->Lo);
     z.resize(this->Lc, this->Lo);
@@ -18,19 +18,26 @@ void IProblem2Forward2D::setSettings(double a, double lambda0, double lambda, do
     {
         for (unsigned int j=0; j<this->Lo; j++)
         {
-            k[i][j] = 50.0;
+            k[i][j] = 5.0;
             z[i][j] = 8.0;
         }
     }
 
     eta.resize(this->Lc);
-    eta[0].x = 0.62; eta[0].y = 0.22; eta[0].i = 6; eta[0].j = 2;
+    eta[0].x = 0.50; eta[0].y = 0.50; eta[0].i = 5; eta[0].j = 5;
+    eta[1].x = 0.70; eta[1].y = 0.80; eta[1].i = 7; eta[1].j = 8;
+    //eta[1].x = 0.40; eta[1].y = 0.70; eta[1].i = 4; eta[1].j = 7;
 
     //eta[0].x = 0.30; eta[0].y = 0.20; eta[0].i = 3; eta[0].j = 2;
     //eta[1].x = 0.60; eta[1].y = 0.90; eta[1].i = 6; eta[1].j = 9;
 
     xi.resize(this->Lo);
-    xi[0].x = 0.30;  xi[0].y = 0.60; xi[0].i = 3; xi[0].j = 6;
+    xi[0].x = 0.20;  xi[0].y = 0.50; xi[0].i = 2; xi[0].j = 5;
+    xi[1].x = 0.30;  xi[1].y = 0.40; xi[1].i = 3; xi[1].j = 4;
+
+    //xi[0].x = 0.30;  xi[0].y = 0.20; xi[0].i = 3; xi[0].j = 2;
+    //xi[1].x = 0.80;  xi[1].y = 0.60; xi[1].i = 8; xi[1].j = 6;
+    //xi[1].x = 0.80;  xi[1].y = 0.70; xi[1].i = 8; xi[1].j = 7;
 
     //xi[0].x = 0.10;  xi[0].y = 0.90; xi[0].i = 1; xi[0].j = 9;
     //xi[1].x = 0.80;  xi[1].y = 0.20; xi[1].i = 8; xi[1].j = 2;
@@ -268,12 +275,6 @@ void IProblem2Forward2D::calculateMVD1(DoubleMatrix &u) const
     double ht = td.step();
 
     unsigned int *v1y = new unsigned int[M+1]; for (unsigned int m=0; m<=M; m++) v1y[m] = 0;
-    unsigned int *v2y = new unsigned int[M+1]; for (unsigned int m=0; m<=M; m++) v2y[m] = 0;
-    unsigned int *v3y = new unsigned int[M+1]; for (unsigned int m=0; m<=M; m++) v3y[m] = 0;
-
-    unsigned int *v1x = new unsigned int[N+1]; for (unsigned int n=0; n<=N; n++) v1x[n] = 0;
-    unsigned int *v2x = new unsigned int[N+1]; for (unsigned int n=0; n<=N; n++) v2x[n] = 0;
-    unsigned int *v3x = new unsigned int[N+1]; for (unsigned int n=0; n<=N; n++) v3x[n] = 0;
 
     SpaceNodePDE sn;
     for (unsigned int m=0; m<=M; m++)
@@ -288,78 +289,66 @@ void IProblem2Forward2D::calculateMVD1(DoubleMatrix &u) const
             {
                 double _delta = delta(sn, eta[i], i);
 
-//                if (_delta != 0.0)
-//                {
-//                    printf("%4d %4d %4d %10.6f\n", m, n, i, _delta);
-//                }
-
                 if (_delta != 0.0)
                 {
-                    v2y[m] = 1;
-                    v2x[n] = 1;
-
-                    for (unsigned int j=0; j<Lo; j++)
-                    {
-                        if ( xi[j].i == sn.i ) v3x[n] = 1;
-                        if ( xi[j].j == sn.j ) v3y[m] = 1;
-                    }
-                }
-                else
-                {
-                   v1y[m] += 1;
-                   v1x[n] += 1;
+                    if ( v1y[m] == 0 ) v1y[m] = 1;
                 }
             }
         }
+
+        //        for (unsigned int j=0; j<Lo; j++)
+        //        {
+        //            if ( v1y[m] == 1 && xi[j].j == sn.j ) v1y[m] = 2;
+        //        }
     }
 
-    FILE *fv1x = fopen("d:/dmx.txt", "w");
-    for (unsigned int n=0; n<=N; n++) fprintf(fv1x, "%d \n", v1x[n]);
-    fclose(fv1x);
+    ////    FILE *fv1x = fopen("d:/dmx.txt", "w");
+    ////    for (unsigned int n=0; n<=N; n++) fprintf(fv1x, "%d \n", v1x[n]);
+    ////    fclose(fv1x);
 
     FILE *fv1y = fopen("d:/dmy.txt", "w");
     for (unsigned int m=0; m<=M; m++) fprintf(fv1y, "%d \n", v1y[m]);
     fclose(fv1y);
 
-    return;
+    //    return;
 
-    DoubleMatrix dm(M+1, N+1, 0.0);
-    unsigned int *dmx = new unsigned int[N+1]; for (unsigned int n=0; n<=N; n++) dmx[n] = 0;
-    unsigned int *dmy = new unsigned int[M+1]; for (unsigned int m=0; m<=M; m++) dmy[m] = 0;
+    //    DoubleMatrix dm(M+1, N+1, 0.0);
+    //    unsigned int *dmx = new unsigned int[N+1]; for (unsigned int n=0; n<=N; n++) dmx[n] = 0;
+    //    unsigned int *dmy = new unsigned int[M+1]; for (unsigned int m=0; m<=M; m++) dmy[m] = 0;
 
-    for (unsigned int n=0; n<=N; n++)
-    {
-        SpaceNodePDE sn;
-        sn.i = n; sn.x = n*hx;
-        for (unsigned int m=0; m<=M; m++)
-        {
-            sn.j = m; sn.y = m*hy;
+    //    for (unsigned int n=0; n<=N; n++)
+    //    {
+    //        SpaceNodePDE sn;
+    //        sn.i = n; sn.x = n*hx;
+    //        for (unsigned int m=0; m<=M; m++)
+    //        {
+    //            sn.j = m; sn.y = m*hy;
 
-            for (unsigned int i=0; i<Lc; i++)
-            {
-                double _delta = delta(sn, eta[i], i, 0);
+    //            for (unsigned int i=0; i<Lc; i++)
+    //            {
+    //                double _delta = delta(sn, eta[i], i, 0);
 
-                if (_delta > 0.01)
-                {
-                    dm[m][n] += _delta;
-                    dmx[n] = 1;
-                    dmy[m] = 1;
-                }
-            }
-        }
-    }
+    //                if (_delta > 0.01)
+    //                {
+    //                    dm[m][n] += _delta;
+    //                    dmx[n] = 1;
+    //                    dmy[m] = 1;
+    //                }
+    //            }
+    //        }
+    //    }
 
-    FILE *fdmx = fopen("d:/dmx.txt", "w");
-    for (unsigned int n=0; n<=N; n++) fprintf(fdmx, "%d \n", dmx[n]);
-    fclose(fdmx);
+    //    FILE *fdmx = fopen("d:/dmx.txt", "w");
+    //    for (unsigned int n=0; n<=N; n++) fprintf(fdmx, "%d \n", dmx[n]);
+    //    fclose(fdmx);
 
-    FILE *fdmy = fopen("d:/dmy.txt", "w");
-    for (unsigned int m=0; m<=M; m++) fprintf(fdmy, "%d \n", dmy[m]);
-    fclose(fdmy);
+    //    FILE *fdmy = fopen("d:/dmy.txt", "w");
+    //    for (unsigned int m=0; m<=M; m++) fprintf(fdmy, "%d \n", dmy[m]);
+    //    fclose(fdmy);
 
-    FILE *file = fopen("d:/delta.txt", "w");
-    IPrinter::printMatrix(14,10,dm,dm.rows(),dm.cols(),NULL,file);
-    fclose(file);
+    //    FILE *file = fopen("d:/delta.txt", "w");
+    //    IPrinter::printMatrix(14,10,dm,dm.rows(),dm.cols(),NULL,file);
+    //    fclose(file);
 
     u.clear();
     u.resize(M+1, N+1);
@@ -388,7 +377,7 @@ void IProblem2Forward2D::calculateMVD1(DoubleMatrix &u) const
         //************************************* approximatin to y direction conditions *************************************//
         tn.i = l;
         tn.t = l*ht - 0.5*ht;
-        calculateMVD1Y(u, uh, N, hx, M, hy, tn, ht, dmx);
+        calculateMVD1Y(u, uh, N, hx, M, hy, tn, ht, v1y);
         IPrinter::printMatrix(10, 6, uh);
         IPrinter::printSeperatorLine();
         //************************************* approximatin to y direction conditions *************************************//
@@ -396,7 +385,7 @@ void IProblem2Forward2D::calculateMVD1(DoubleMatrix &u) const
         //************************************* approximatin to x direction conditions *************************************//
         tn.i = l;
         tn.t = l*ht;
-        calculateMVD1X(u, uh, N, hx, M, hy, tn, ht, dmy);
+        calculateMVD1X(u, uh, N, hx, M, hy, tn, ht, v1y);
         IPrinter::printMatrix(10, 6, u);
         IPrinter::printSeperatorLine();
         //************************************* approximatin to x direction conditions *************************************//
@@ -498,13 +487,6 @@ void IProblem2Forward2D::calculateMVD1Y(DoubleMatrix &u, DoubleMatrix &uh, unsig
 
 void IProblem2Forward2D::calculateMVD1X(DoubleMatrix &u, DoubleMatrix &uh, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn, double ht, unsigned int *dmy) const
 {
-    std::vector<unsigned int> cnt;
-    for (unsigned int m=0; m<=M; m++)
-    {
-        if (dmy[m] != 0) cnt.push_back(m);
-    }
-    //printf("CNT: %d %d %d\n", cnt.size(), cnt[0], cnt[1]);
-
     for (unsigned int m=0; m<=M; m++)
     {
         SpaceNodePDE sn2;
@@ -580,128 +562,257 @@ void IProblem2Forward2D::calculateMVD1X(DoubleMatrix &u, DoubleMatrix &uh, unsig
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    std::vector<unsigned int> cnt;
+    for (unsigned int m=0; m<=M; m++) if (dmy[m] != 0) cnt.push_back(m);
+
     DoubleMatrix w2(cnt.size()*(N+1), cnt.size()*(N+1), 0.0);
     DoubleVector d2(cnt.size()*(N+1), 0.0);
+    DoubleVector x2(cnt.size()*(N+1), 0.0);
 
-    for (unsigned int m1=0; m1<cnt.size(); m1++)
+    unsigned int offset = 0;
+    for (unsigned int m=0; m<=M; m++)
     {
-        unsigned int m = cnt[m1];
-
         SpaceNodePDE sn2;
         sn2.j = m; sn2.y = m*hy;
 
-        //printf("m: %d\n", m);
-        for (unsigned int n=0; n<=N; n++)
+        if (dmy[m] == 1)
         {
-            sn2.i = n; sn2.x = n*hx;
-
-            unsigned int offset = m1*(N+1);
-
-            d2[offset+n] = 2.0*uh[m][n] + lambda0*theta*ht + ht*f(sn2, tn);
-
-            if (m==0)       d2[n] += ((a*a*ht)/(hy*hy))*(uh[0][n]   - 2.0*uh[1][n]   + uh[2][n]);
-            if (m>0 && m<M) d2[n] += ((a*a*ht)/(hy*hy))*(uh[m-1][n] - 2.0*uh[m][n]   + uh[m+1][n]);
-            if (m==M)       d2[n] += ((a*a*ht)/(hy*hy))*(uh[M-2][n] - 2.0*uh[M-1][n] + uh[M][n]);
-
-            if (n == 0)
+            for (unsigned int n=0; n<=N; n++)
             {
-                w2[offset+0][offset+0] += 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*lambda*ht)/(hx);
-                w2[offset+0][offset+1] += -(2.0*a*a*ht)/(hx*hx);
+                sn2.i = n; sn2.x = n*hx;
 
-                d2[offset+0] += (2.0*a*a*lambda*theta*ht)/(hx) + ((2.0*a*a*ht)/hx)*g1(sn2, tn);
+                d2[offset+n] = 2.0*uh[m][n] + lambda0*theta*ht + ht*f(sn2, tn);
+
+                if (m==0)       d2[n] += ((a*a*ht)/(hy*hy))*(uh[0][n]   - 2.0*uh[1][n]   + uh[2][n]);
+                if (m>0 && m<M) d2[n] += ((a*a*ht)/(hy*hy))*(uh[m-1][n] - 2.0*uh[m][n]   + uh[m+1][n]);
+                if (m==M)       d2[n] += ((a*a*ht)/(hy*hy))*(uh[M-2][n] - 2.0*uh[M-1][n] + uh[M][n]);
+
+                if (n == 0)
+                {
+                    w2[offset+0][offset+0] = 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*lambda*ht)/(hx);
+                    w2[offset+0][offset+1] = -(2.0*a*a*ht)/(hx*hx);
+
+                    d2[offset+0] += (2.0*a*a*lambda*theta*ht)/(hx) + ((2.0*a*a*ht)/hx)*g1(sn2, tn);
+                }
+                else if (n == N)
+                {
+                    w2[offset+N][offset+N-1] = -(2.0*a*a*ht)/(hx*hx);
+                    w2[offset+N][offset+N-0] = 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*lambda*ht)/(hx);
+
+                    d2[offset+N] += (2.0*a*a*lambda*theta*ht)/(hx) + ((2.0*a*a*ht)/(hx))*g2(sn2, tn);
+                }
+                else
+                {
+                    w2[offset+n][offset+n-1] = -(a*a*ht)/(hx*hx);
+                    w2[offset+n][offset+n+0] = 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht;
+                    w2[offset+n][offset+n+1] = -(a*a*ht)/(hx*hx);
+                }
+
+                //************************************* Adding delta part *************************************//
+//                for (unsigned int i=0; i<Lc; i++)
+//                {
+//                    double _delta = delta(sn2, eta[i], i);
+//                    if (_delta != 0.0)
+//                    {
+//                        printf("%d %d %d %f\n", i, sn2.i, sn2.j, _delta);
+//                        for (unsigned int j=0; j<Lo; j++)
+//                        {
+//                            bool found = false;
+//                            for (unsigned int cs=0; cs<cnt.size(); cs++)
+//                            {
+//                                if (xi[j].j == cnt[cs]) found = true;
+//                            }
+
+//                            if (found)
+//                            {
+//                                d2[offset+n] += -ht*k[i][j]*z[i][j] * _delta;
+
+//                                unsigned int jinx = xi[j].i;
+//                                unsigned int jiny = xi[j].j;
+
+//                                w2[offset+n][jinx] += -ht*k[i][j]*_delta;
+//                                //printf("Found %d %d\n", jinx, jiny);
+//                            }
+//                            else
+//                            {
+//                                //printf("%d %d %d %f\n", offset+n, xi[j].j, xi[j].i, u[xi[j].j][xi[j].i]);
+//                                d2[offset+n] += ht*k[i][j]*(u[xi[j].j][xi[j].i]-z[i][j])*_delta;
+//                            }
+//                        }
+//                    }
+//                }
+
+                //                for (unsigned int i=0; i<Lc; i++)
+                //                {
+                //                    //double _delta = delta(sn2, i, 2);
+
+                //                    for (unsigned int j=0; j<Lo; j++)
+                //                    {
+                //                        //d2[n] += -ht*k[i][j]*z[i][j] * _delta;
+
+                //                        //unsigned int jinx = xi[j].i;
+                //                        //unsigned int jiny = xi[j].j;
+                //                        //w2[offset+n][jiny*(N+1)+jinx] += -ht*k[i][j]*_delta;
+                //                    }
+                //                }
+                //************************************* Adding delta part *************************************//
             }
-            else if (n == N)
-            {
-                w2[offset+N][offset+N-1] += -(2.0*a*a*ht)/(hx*hx);
-                w2[offset+N][offset+N+0] += 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*lambda*ht)/(hx);
-
-                d2[offset+N] += (2.0*a*a*lambda*theta*ht)/(hx) + ((2.0*a*a*ht)/(hx))*g2(sn2, tn);
-            }
-            else
-            {
-                w2[offset+n][offset+n-1] += -(a*a*ht)/(hx*hx);
-                w2[offset+n][offset+n+0] += 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht;
-                w2[offset+n][offset+n+1] += -(a*a*ht)/(hx*hx);
-            }
-
-            //************************************* Adding delta part *************************************//
-            //            for (unsigned int j=0; j<Lo; j++)
-            //            {
-            //                SpaceNodePDE XI = xi[j];
-
-            //                for (unsigned int i=0; i<Lc; i++)
-            //                {
-            //                    SpaceNodePDE ETA = eta[i];
-            //                    double _delta = delta(sn2, i);
-
-            //                    if (_delta)
-            //                    {
-            //                        if (XI.j == ETA.j)
-            //                        {
-            //                            //printf("%d\n", offset+n);
-            //                            unsigned int jinx = XI.i;
-            //                            unsigned int jiny = XI.j;
-            //                            w2.at(offset+n,i*(N+1)+XI.i) += -ht*k[i][j]*_delta;
-            //                        }
-            //                    }
-            //                }
-            //            }
-
-
-
-            //            for (unsigned int i=0; i<Lc; i++)
-            //            {
-            //                double _delta = delta(sn2, i, 2);
-
-            //                for (unsigned int j=0; j<Lo; j++)
-            //                {
-            //                    //if (m != xi[j].j)
-            //                    {
-            //                        d2[n] += ht*k[i][j]*(u[xi[j].j][xi[j].i] - z[i][j]) * _delta;
-            //                    }
-            //                    //else
-            //                    {
-            //                        d2[n] -= ht*k[i][j]*(z[i][j]) * _delta;
-
-            //                        unsigned int jinx = xi[j].i;
-            //                        unsigned int jiny = xi[j].j;
-            //                        //w2[n][jinx] += -ht*k[i][j]*_delta;
-            //                        if (_delta > 0.0)
-            //                        {
-            //                            printf("%d\n", offset+n);
-            //                            w2.at(offset+n,jiny*(N+1)+jinx) += -ht*k[i][j]*_delta;
-            //                        }
-            //                    }
-
-            //                    //unsigned int jinx = xi[j].i;
-            //                    //unsigned int jiny = xi[j].j;
-            //                    //w2[n][jiny*(N+1)+jinx] += -ht*k[i][j]*_delta;
-            //                }
-            //            }
-            //************************************* Adding delta part *************************************//
+            offset += N+1;
         }
     }
 
-    DoubleVector x2(cnt.size()*(N+1), 0.0);
+    for (unsigned int i=0; i<cnt.size(); i++)
+    {
+
+    }
+
+    FILE *file = fopen("d:/matrix.txt", "w");
+    IPrinter::print(w2,w2.rows(),w2.cols(),10,6,file);
+    fclose(file);
+
     LinearEquation::GaussianElimination(w2,d2,x2);
 
-    FILE *file1 = fopen("d:/145.txt", "w");
-    IPrinter::print(w2, w2.rows(), w2.cols(), 10, 2, file1);
-    fclose(file1);
+    offset = 0;
+    for (unsigned int m=0; m<=M; m++)
+    {
+        if (dmy[m] == 1)
+        {
+            for (unsigned int n=0; n<=N; n++)
+            {
+                u[m][n] = x2[offset+n];
+            }
+            offset += N+1;
+        }
+    }
 
     w2.clear();
     d2.clear();
-
-    for (unsigned int m1=0; m1<cnt.size(); m1++)
-    {
-        unsigned int m = cnt[m1];
-        for (unsigned int n=0; n<=N; n++)
-        {
-            u[m][n] = x2[m1*(N+1)+n];
-        }
-    }
-
     x2.clear();
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //    DoubleMatrix w2(cnt.size()*(N+1), cnt.size()*(N+1), 0.0);
+    //    DoubleVector d2(cnt.size()*(N+1), 0.0);
+
+    //    for (unsigned int m1=0; m1<cnt.size(); m1++)
+    //    {
+    //        unsigned int m = cnt[m1];
+
+    //        SpaceNodePDE sn2;
+    //        sn2.j = m; sn2.y = m*hy;
+
+    //        //printf("m: %d\n", m);
+    //        for (unsigned int n=0; n<=N; n++)
+    //        {
+    //            sn2.i = n; sn2.x = n*hx;
+
+    //            unsigned int offset = m1*(N+1);
+
+    //            d2[offset+n] = 2.0*uh[m][n] + lambda0*theta*ht + ht*f(sn2, tn);
+
+    //            if (m==0)       d2[n] += ((a*a*ht)/(hy*hy))*(uh[0][n]   - 2.0*uh[1][n]   + uh[2][n]);
+    //            if (m>0 && m<M) d2[n] += ((a*a*ht)/(hy*hy))*(uh[m-1][n] - 2.0*uh[m][n]   + uh[m+1][n]);
+    //            if (m==M)       d2[n] += ((a*a*ht)/(hy*hy))*(uh[M-2][n] - 2.0*uh[M-1][n] + uh[M][n]);
+
+    //            if (n == 0)
+    //            {
+    //                w2[offset+0][offset+0] += 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*lambda*ht)/(hx);
+    //                w2[offset+0][offset+1] += -(2.0*a*a*ht)/(hx*hx);
+
+    //                d2[offset+0] += (2.0*a*a*lambda*theta*ht)/(hx) + ((2.0*a*a*ht)/hx)*g1(sn2, tn);
+    //            }
+    //            else if (n == N)
+    //            {
+    //                w2[offset+N][offset+N-1] += -(2.0*a*a*ht)/(hx*hx);
+    //                w2[offset+N][offset+N+0] += 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*lambda*ht)/(hx);
+
+    //                d2[offset+N] += (2.0*a*a*lambda*theta*ht)/(hx) + ((2.0*a*a*ht)/(hx))*g2(sn2, tn);
+    //            }
+    //            else
+    //            {
+    //                w2[offset+n][offset+n-1] += -(a*a*ht)/(hx*hx);
+    //                w2[offset+n][offset+n+0] += 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht;
+    //                w2[offset+n][offset+n+1] += -(a*a*ht)/(hx*hx);
+    //            }
+
+    //            //************************************* Adding delta part *************************************//
+    //            //            for (unsigned int j=0; j<Lo; j++)
+    //            //            {
+    //            //                SpaceNodePDE XI = xi[j];
+
+    //            //                for (unsigned int i=0; i<Lc; i++)
+    //            //                {
+    //            //                    SpaceNodePDE ETA = eta[i];
+    //            //                    double _delta = delta(sn2, i);
+
+    //            //                    if (_delta)
+    //            //                    {
+    //            //                        if (XI.j == ETA.j)
+    //            //                        {
+    //            //                            //printf("%d\n", offset+n);
+    //            //                            unsigned int jinx = XI.i;
+    //            //                            unsigned int jiny = XI.j;
+    //            //                            w2.at(offset+n,i*(N+1)+XI.i) += -ht*k[i][j]*_delta;
+    //            //                        }
+    //            //                    }
+    //            //                }
+    //            //            }
+
+
+
+    //            //            for (unsigned int i=0; i<Lc; i++)
+    //            //            {
+    //            //                double _delta = delta(sn2, i, 2);
+
+    //            //                for (unsigned int j=0; j<Lo; j++)
+    //            //                {
+    //            //                    //if (m != xi[j].j)
+    //            //                    {
+    //            //                        d2[n] += ht*k[i][j]*(u[xi[j].j][xi[j].i] - z[i][j]) * _delta;
+    //            //                    }
+    //            //                    //else
+    //            //                    {
+    //            //                        d2[n] -= ht*k[i][j]*(z[i][j]) * _delta;
+
+    //            //                        unsigned int jinx = xi[j].i;
+    //            //                        unsigned int jiny = xi[j].j;
+    //            //                        //w2[n][jinx] += -ht*k[i][j]*_delta;
+    //            //                        if (_delta > 0.0)
+    //            //                        {
+    //            //                            printf("%d\n", offset+n);
+    //            //                            w2.at(offset+n,jiny*(N+1)+jinx) += -ht*k[i][j]*_delta;
+    //            //                        }
+    //            //                    }
+
+    //            //                    //unsigned int jinx = xi[j].i;
+    //            //                    //unsigned int jiny = xi[j].j;
+    //            //                    //w2[n][jiny*(N+1)+jinx] += -ht*k[i][j]*_delta;
+    //            //                }
+    //            //            }
+    //            //************************************* Adding delta part *************************************//
+    //        }
+    //    }
+
+    //    DoubleVector x2(cnt.size()*(N+1), 0.0);
+    //    LinearEquation::GaussianElimination(w2,d2,x2);
+
+    //    FILE *file1 = fopen("d:/145.txt", "w");
+    //    IPrinter::print(w2, w2.rows(), w2.cols(), 10, 2, file1);
+    //    fclose(file1);
+
+    //    w2.clear();
+    //    d2.clear();
+
+    //    for (unsigned int m1=0; m1<cnt.size(); m1++)
+    //    {
+    //        unsigned int m = cnt[m1];
+    //        for (unsigned int n=0; n<=N; n++)
+    //        {
+    //            u[m][n] = x2[m1*(N+1)+n];
+    //        }
+    //    }
+
+    //    x2.clear();
 }
 
 double IProblem2Forward2D::initial(const SpaceNodePDE &sn) const
@@ -744,7 +855,7 @@ double IProblem2Forward2D::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) cons
 
 double IProblem2Forward2D::delta(const SpaceNodePDE &sn, const SpaceNodePDE &eta, unsigned int i UNUSED_PARAM, unsigned int source UNUSED_PARAM) const
 {
-    return delta3(sn, eta, i);
+    return delta1(sn, eta, i);
 }
 
 double IProblem2Forward2D::delta1(const SpaceNodePDE &sn, const SpaceNodePDE &eta, unsigned int) const
@@ -776,7 +887,7 @@ double IProblem2Forward2D::delta2(const SpaceNodePDE &sn, const SpaceNodePDE &et
 
     double res = 0.0;
     if (rx-3 <= sn.i && sn.i <= rx+3 &&
-        ry-3 <= sn.j && sn.j <= ry+3)
+            ry-3 <= sn.j && sn.j <= ry+3)
     {
         res = (1.0/(2.0*M_PI*sigmaX*sigmaY)) *
                 exp(-0.5*(((sn.x-eta.x)*(sn.x-eta.x))/(sigmaX*sigmaX)+((sn.y-eta.y)*(sn.y-eta.y))/(sigmaY*sigmaY)));
@@ -859,8 +970,8 @@ double IProblem2Forward2D::delta4(const SpaceNodePDE &sn UNUSED_PARAM, const Spa
         }
     }
 
-//    if (fabs(resX*resY) > 0.0)
-//        printf("%4d %4d %4d %4d %20.10f %20.10f\n", sn.i, sn.j, eta.i, eta.j, resX, resY);
+    //    if (fabs(resX*resY) > 0.0)
+    //        printf("%4d %4d %4d %4d %20.10f %20.10f\n", sn.i, sn.j, eta.i, eta.j, resX, resY);
 
     return resX*resY*(1.0/hx)*(1.0/hy);
 }
