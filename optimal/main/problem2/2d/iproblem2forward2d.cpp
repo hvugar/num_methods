@@ -8,8 +8,8 @@ void IProblem2Forward2D::setSettings(double a, double lambda0, double lambda, do
     this->lambda0 = lambda0;
     this->lambda = lambda;
     this->theta = theta;
-    this->Lc = 2;//Lc;
-    this->Lo = 2;//Lo;
+    this->Lc = 1;//Lc;
+    this->Lo = 1;//Lo;
 
     k.resize(this->Lc, this->Lo);
     z.resize(this->Lc, this->Lo);
@@ -24,16 +24,20 @@ void IProblem2Forward2D::setSettings(double a, double lambda0, double lambda, do
     }
 
     eta.resize(this->Lc);
-    eta[0].x = 0.50; eta[0].y = 0.50; eta[0].i = 5; eta[0].j = 5;
-    eta[1].x = 0.70; eta[1].y = 0.80; eta[1].i = 7; eta[1].j = 8;
+    eta[0].x = 0.62; eta[0].y = 0.53; eta[0].i = 6; eta[0].j = 5;
+
+    //eta[0].x = 0.50; eta[0].y = 0.50; eta[0].i = 5; eta[0].j = 5;
+    //eta[1].x = 0.70; eta[1].y = 0.80; eta[1].i = 7; eta[1].j = 8;
     //eta[1].x = 0.40; eta[1].y = 0.70; eta[1].i = 4; eta[1].j = 7;
 
     //eta[0].x = 0.30; eta[0].y = 0.20; eta[0].i = 3; eta[0].j = 2;
     //eta[1].x = 0.60; eta[1].y = 0.90; eta[1].i = 6; eta[1].j = 9;
 
     xi.resize(this->Lo);
-    xi[0].x = 0.20;  xi[0].y = 0.50; xi[0].i = 2; xi[0].j = 5;
-    xi[1].x = 0.30;  xi[1].y = 0.40; xi[1].i = 3; xi[1].j = 4;
+    xi[0].x = 0.20;  xi[0].y = 0.30 ; xi[0].i = 2; xi[0].j = 3;
+
+    //xi[0].x = 0.20;  xi[0].y = 0.50; xi[0].i = 2; xi[0].j = 5;
+    //xi[1].x = 0.30;  xi[1].y = 0.40; xi[1].i = 3; xi[1].j = 4;
 
     //xi[0].x = 0.30;  xi[0].y = 0.20; xi[0].i = 3; xi[0].j = 2;
     //xi[1].x = 0.80;  xi[1].y = 0.60; xi[1].i = 8; xi[1].j = 6;
@@ -289,7 +293,7 @@ void IProblem2Forward2D::calculateMVD1(DoubleMatrix &u) const
             {
                 double _delta = delta(sn, eta[i], i);
 
-                if (_delta != 0.0)
+                if (fabs(_delta) > 0.000001)
                 {
                     if ( v1y[m] == 0 ) v1y[m] = 1;
                 }
@@ -394,87 +398,87 @@ void IProblem2Forward2D::calculateMVD1(DoubleMatrix &u) const
 
 void IProblem2Forward2D::calculateMVD1Y(DoubleMatrix &u, DoubleMatrix &uh, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn, double ht, unsigned int *dmy) const
 {
-    for (unsigned int n=0; n<=N; n++)
-    {
-        SpaceNodePDE sn1;
-        sn1.i = n; sn1.x = n*hx;
+    //    for (unsigned int n=0; n<=N; n++)
+    //    {
+    //        SpaceNodePDE sn1;
+    //        sn1.i = n; sn1.x = n*hx;
 
-        DoubleVector a1(M+1, 0.0);
-        DoubleVector b1(M+1, 0.0);
-        DoubleVector c1(M+1, 0.0);
-        DoubleVector d1(M+1, 0.0);
-        DoubleVector x1(M+1, 0.0);
+    //        DoubleVector a1(M+1, 0.0);
+    //        DoubleVector b1(M+1, 0.0);
+    //        DoubleVector c1(M+1, 0.0);
+    //        DoubleVector d1(M+1, 0.0);
+    //        DoubleVector x1(M+1, 0.0);
 
-        for (unsigned int m=0; m<=M; m++)
-        {
-            sn1.j = m; sn1.y = m*hy;
+    //        for (unsigned int m=0; m<=M; m++)
+    //        {
+    //            sn1.j = m; sn1.y = m*hy;
 
-            d1[m] = 2.0*u[m][n] + lambda0*theta*ht + ht*f(sn1, tn);
+    //            d1[m] = 2.0*u[m][n] + lambda0*theta*ht + ht*f(sn1, tn);
 
-            if (n==0)       d1[m] += ((a*a*ht)/(hx*hx))*(u[m][0]   - 2.0*u[m][1]   + u[m][2]);
-            if (n>0 && n<N) d1[m] += ((a*a*ht)/(hx*hx))*(u[m][n-1] - 2.0*u[m][n]   + u[m][n+1]);
-            if (n==N)       d1[m] += ((a*a*ht)/(hx*hx))*(u[m][N-2] - 2.0*u[m][N-1] + u[m][N]);
+    //            if (n==0)       d1[m] += ((a*a*ht)/(hx*hx))*(u[m][0]   - 2.0*u[m][1]   + u[m][2]);
+    //            if (n>0 && n<N) d1[m] += ((a*a*ht)/(hx*hx))*(u[m][n-1] - 2.0*u[m][n]   + u[m][n+1]);
+    //            if (n==N)       d1[m] += ((a*a*ht)/(hx*hx))*(u[m][N-2] - 2.0*u[m][N-1] + u[m][N]);
 
-            if (m == 0)
-            {
-                d1[0] += (2.0*a*a*lambda*theta*ht)/(hy) + ((2.0*a*a*ht)/(hy))*g3(sn1, tn);
+    //            if (m == 0)
+    //            {
+    //                d1[0] += (2.0*a*a*lambda*theta*ht)/(hy) + ((2.0*a*a*ht)/(hy))*g3(sn1, tn);
 
-                b1[0] = 2.0 + (2.0*a*a*ht)/(hy*hy) + lambda0*ht + (2.0*a*a*lambda*ht)/(hy);
-                c1[0] = -(2.0*a*a*ht)/(hy*hy);
+    //                b1[0] = 2.0 + (2.0*a*a*ht)/(hy*hy) + lambda0*ht + (2.0*a*a*lambda*ht)/(hy);
+    //                c1[0] = -(2.0*a*a*ht)/(hy*hy);
 
-                //w1[0][0] += 2.0 + (2.0*a*a*ht)/(hy*hy) + lambda0*ht + (2.0*a*a*lambda*ht)/(hy);
-                //w1[0][ 1] += -(2.0*a*a*ht)/(hy*hy);
+    //                //w1[0][0] += 2.0 + (2.0*a*a*ht)/(hy*hy) + lambda0*ht + (2.0*a*a*lambda*ht)/(hy);
+    //                //w1[0][ 1] += -(2.0*a*a*ht)/(hy*hy);
 
-            }
-            else if (m == M)
-            {
-                d1[M] += (2.0*a*a*lambda*theta*ht)/(hy) + ((2.0*a*a*ht)/(hy))*g4(sn1, tn);
+    //            }
+    //            else if (m == M)
+    //            {
+    //                d1[M] += (2.0*a*a*lambda*theta*ht)/(hy) + ((2.0*a*a*ht)/(hy))*g4(sn1, tn);
 
-                a1[M] = -(2.0*a*a*ht)/(hy*hy);
-                b1[M] = 2.0 + (2.0*a*a*ht)/(hy*hy) + lambda0*ht + (2.0*a*a*lambda*ht)/(hy);
+    //                a1[M] = -(2.0*a*a*ht)/(hy*hy);
+    //                b1[M] = 2.0 + (2.0*a*a*ht)/(hy*hy) + lambda0*ht + (2.0*a*a*lambda*ht)/(hy);
 
-                //w1[offset+M][offset+M-1] += -(2.0*a*a*ht)/(hy*hy);
-                //w1[offset+M][offset+M-0] += 2.0 + (2.0*a*a*ht)/(hy*hy) + lambda0*ht + (2.0*a*a*lambda*ht)/(hy);
+    //                //w1[offset+M][offset+M-1] += -(2.0*a*a*ht)/(hy*hy);
+    //                //w1[offset+M][offset+M-0] += 2.0 + (2.0*a*a*ht)/(hy*hy) + lambda0*ht + (2.0*a*a*lambda*ht)/(hy);
 
-            }
-            else
-            {
-                a1[m] = -(a*a*ht)/(hy*hy);
-                b1[m] = 2.0 + (2.0*a*a*ht)/(hy*hy) + lambda0*ht;
-                c1[m] = -(a*a*ht)/(hy*hy);
+    //            }
+    //            else
+    //            {
+    //                a1[m] = -(a*a*ht)/(hy*hy);
+    //                b1[m] = 2.0 + (2.0*a*a*ht)/(hy*hy) + lambda0*ht;
+    //                c1[m] = -(a*a*ht)/(hy*hy);
 
-                //w1[offset+m][offset+m-1] += -(a*a*ht)/(hy*hy);
-                //w1[offset+m][offset+m+0] += 2.0 + (2.0*a*a*ht)/(hy*hy) + lambda0*ht;
-                //w1[offset+m][offset+m+1] += -(a*a*ht)/(hy*hy);
-            }
+    //                //w1[offset+m][offset+m-1] += -(a*a*ht)/(hy*hy);
+    //                //w1[offset+m][offset+m+0] += 2.0 + (2.0*a*a*ht)/(hy*hy) + lambda0*ht;
+    //                //w1[offset+m][offset+m+1] += -(a*a*ht)/(hy*hy);
+    //            }
 
-            //************************************* Adding delta part *************************************//
-            //for (unsigned int i=0; i<Lc; i++)
-            //{
-            //    double _delta = delta(sn1, i, 2);
+    //            //************************************* Adding delta part *************************************//
+    //            //for (unsigned int i=0; i<Lc; i++)
+    //            //{
+    //            //    double _delta = delta(sn1, i, 2);
 
-            //    for (unsigned int j=0; j<Lo; j++)
-            //    {
-            //        d1[offset+m] += -ht*k[i][j]*z[i][j] * _delta;
+    //            //    for (unsigned int j=0; j<Lo; j++)
+    //            //    {
+    //            //        d1[offset+m] += -ht*k[i][j]*z[i][j] * _delta;
 
-            //        unsigned int jinx = xi[j].i;
-            //        unsigned int jiny = xi[j].j;
-            //        w1[offset+m][jinx*(M+1)+jiny] += -ht*k[i][j] * _delta;
-            //    }
-            //}
-            //************************************* Adding delta part *************************************//
-        }
+    //            //        unsigned int jinx = xi[j].i;
+    //            //        unsigned int jiny = xi[j].j;
+    //            //        w1[offset+m][jinx*(M+1)+jiny] += -ht*k[i][j] * _delta;
+    //            //    }
+    //            //}
+    //            //************************************* Adding delta part *************************************//
+    //        }
 
-        tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), x1.data(), M+1);
+    //        tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), x1.data(), M+1);
 
-        for (unsigned int m=0; m<=M; m++) uh[m][n] = x1[m];
+    //        for (unsigned int m=0; m<=M; m++) uh[m][n] = x1[m];
 
-        a1.clear();
-        b1.clear();
-        c1.clear();
-        d1.clear();
-        x1.clear();
-    }
+    //        a1.clear();
+    //        b1.clear();
+    //        c1.clear();
+    //        d1.clear();
+    //        x1.clear();
+    //    }
 
     for (unsigned int m=0; m<=M; m++)
     {
@@ -577,6 +581,7 @@ void IProblem2Forward2D::calculateMVD1X(DoubleMatrix &u, DoubleMatrix &uh, unsig
 
         if (dmy[m] == 1)
         {
+            //printf("%d %d\n", dmy[m], m);
             for (unsigned int n=0; n<=N; n++)
             {
                 sn2.i = n; sn2.x = n*hx;
@@ -596,51 +601,57 @@ void IProblem2Forward2D::calculateMVD1X(DoubleMatrix &u, DoubleMatrix &uh, unsig
                 }
                 else if (n == N)
                 {
-                    w2[offset+N][offset+N-1] = -(2.0*a*a*ht)/(hx*hx);
-                    w2[offset+N][offset+N-0] = 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*lambda*ht)/(hx);
+                    w2[offset+N][offset+(N-1)] = -(2.0*a*a*ht)/(hx*hx);
+                    w2[offset+N][offset+(N-0)] = 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*lambda*ht)/(hx);
 
                     d2[offset+N] += (2.0*a*a*lambda*theta*ht)/(hx) + ((2.0*a*a*ht)/(hx))*g2(sn2, tn);
                 }
                 else
                 {
-                    w2[offset+n][offset+n-1] = -(a*a*ht)/(hx*hx);
-                    w2[offset+n][offset+n+0] = 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht;
-                    w2[offset+n][offset+n+1] = -(a*a*ht)/(hx*hx);
+                    w2[offset+n][offset+(n-1)] = -(a*a*ht)/(hx*hx);
+                    w2[offset+n][offset+(n+0)] = 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht;
+                    w2[offset+n][offset+(n+1)] = -(a*a*ht)/(hx*hx);
                 }
 
                 //************************************* Adding delta part *************************************//
-//                for (unsigned int i=0; i<Lc; i++)
-//                {
-//                    double _delta = delta(sn2, eta[i], i);
-//                    if (_delta != 0.0)
-//                    {
-//                        printf("%d %d %d %f\n", i, sn2.i, sn2.j, _delta);
-//                        for (unsigned int j=0; j<Lo; j++)
-//                        {
-//                            bool found = false;
-//                            for (unsigned int cs=0; cs<cnt.size(); cs++)
-//                            {
-//                                if (xi[j].j == cnt[cs]) found = true;
-//                            }
+                for (unsigned int i=0; i<Lc; i++)
+                {
+                    double _delta = delta(sn2, eta[i], i);
 
-//                            if (found)
-//                            {
-//                                d2[offset+n] += -ht*k[i][j]*z[i][j] * _delta;
+                    if (fabs(_delta) > 0.000001)
+                    {
+                        //                        printf("%d %d %d %f\n", i, sn2.i, sn2.j, _delta);
+                        for (unsigned int j=0; j<Lo; j++)
+                        {
+                            printf("+++ %4d %4d %4d %.14f %.14f %f\n", offset+n, n, m, u[xi[j].j][xi[j].i], _delta,
+                                    ht*k[i][j]*(u[xi[j].j][xi[j].i]-z[i][j])*_delta);
+                            //d2.at(offset+n) -= ht*k[i][j] * z[i][j] *_delta;
+                            //d2.at(offset+n) += ht*k[i][j] * u[xi[j].j][xi[j].i] * _delta;
 
-//                                unsigned int jinx = xi[j].i;
-//                                unsigned int jiny = xi[j].j;
+                            //                            bool found = false;
+                            //                            for (unsigned int cs=0; cs<cnt.size(); cs++)
+                            //                            {
+                            //                                if (xi[j].j == cnt[cs]) found = true;
+                            //                            }
 
-//                                w2[offset+n][jinx] += -ht*k[i][j]*_delta;
-//                                //printf("Found %d %d\n", jinx, jiny);
-//                            }
-//                            else
-//                            {
-//                                //printf("%d %d %d %f\n", offset+n, xi[j].j, xi[j].i, u[xi[j].j][xi[j].i]);
-//                                d2[offset+n] += ht*k[i][j]*(u[xi[j].j][xi[j].i]-z[i][j])*_delta;
-//                            }
-//                        }
-//                    }
-//                }
+                            //                            if (found)
+                            //                            {
+                            //                                d2[offset+n] += -ht*k[i][j]*z[i][j] * _delta;
+
+                            //                                unsigned int jinx = xi[j].i;
+                            //                                unsigned int jiny = xi[j].j;
+
+                            //                                w2[offset+n][jinx] += -ht*k[i][j]*_delta;
+                            //                                //printf("Found %d %d\n", jinx, jiny);
+                            //                            }
+                            //                            else
+                            //                            {
+                            //                                //printf("%d %d %d %f\n", offset+n, xi[j].j, xi[j].i, u[xi[j].j][xi[j].i]);
+                            //                                d2[offset+n] += ht*k[i][j]*(u[xi[j].j][xi[j].i]-z[i][j])*_delta;
+                            //                            }
+                        }
+                    }
+                }
 
                 //                for (unsigned int i=0; i<Lc; i++)
                 //                {
@@ -661,29 +672,111 @@ void IProblem2Forward2D::calculateMVD1X(DoubleMatrix &u, DoubleMatrix &uh, unsig
         }
     }
 
-    for (unsigned int i=0; i<cnt.size(); i++)
     {
+        DoubleVector _a1(N+1);
+        DoubleVector _b1(N+1);
+        DoubleVector _c1(N+1);
+        DoubleVector _d1(N+1);
+        DoubleVector _x1(N+1);
 
-    }
-
-    FILE *file = fopen("d:/matrix.txt", "w");
-    IPrinter::print(w2,w2.rows(),w2.cols(),10,6,file);
-    fclose(file);
-
-    LinearEquation::GaussianElimination(w2,d2,x2);
-
-    offset = 0;
-    for (unsigned int m=0; m<=M; m++)
-    {
-        if (dmy[m] == 1)
+        _a1[0] = 0.0;
+        _b1[0] = w2[0][0];
+        _c1[0] = w2[0][1];
+        _d1[0] = d2[0];
+        for (unsigned int n=1; n<=N-1; n++)
         {
-            for (unsigned int n=0; n<=N; n++)
-            {
-                u[m][n] = x2[offset+n];
-            }
-            offset += N+1;
+            _a1[n] = w2[n][n-1];
+            _b1[n] = w2[n][n];
+            _c1[n] = w2[n][n+1];
+            _d1[n] = d2[n];
         }
+        _a1[N] = w2[N][N-1];
+        _b1[N] = w2[N][N];
+        _c1[N] = 0.0;
+        _d1[N] = d2[N];
+
+        tomasAlgorithm(_a1.data(), _b1.data(), _c1.data(), _d1.data(), _x1.data(), N+1);
+
+
+        for (unsigned int n=0; n<=N; n++) u[cnt[0]][n] = _x1[n];
+
+        _a1.clear();
+        _b1.clear();
+        _c1.clear();
+        _d1.clear();
+        _x1.clear();
+
+        IPrinter::printVector(u.row(cnt[0]));
     }
+
+    {
+        DoubleVector _a1(N+1);
+        DoubleVector _b1(N+1);
+        DoubleVector _c1(N+1);
+        DoubleVector _d1(N+1);
+        DoubleVector _x1(N+1);
+
+        _a1[0] = 0.0;
+        _b1[0] = w2[(N+1)+0][(N+1)+0];
+        _c1[0] = w2[(N+1)+0][(N+1)+1];
+        _d1[0] = d2[(N+1)+0];
+        for (unsigned int n=1; n<=N-1; n++)
+        {
+            _a1[n] = w2[(N+1)+n][(N+1)+n-1];
+            _b1[n] = w2[(N+1)+n][(N+1)+n];
+            _c1[n] = w2[(N+1)+n][(N+1)+n+1];
+            _d1[n] = d2[(N+1)+n];
+        }
+        _a1[N] = w2[(N+1)+N][(N+1)+N-1];
+        _b1[N] = w2[(N+1)+N][(N+1)+N];
+        _c1[N] = 0.0;
+        _d1[N] = d2[(N+1)+N];
+
+        tomasAlgorithm(_a1.data(), _b1.data(), _c1.data(), _d1.data(), _x1.data(), N+1);
+
+
+        for (unsigned int n=0; n<=N; n++) u[cnt[1]][n] = _x1[n];
+
+        _a1.clear();
+        _b1.clear();
+        _c1.clear();
+        _d1.clear();
+        _x1.clear();
+
+        IPrinter::printVector(u.row(cnt[1]));
+    }
+
+
+    //for (unsigned int n=0; n<=N; n++) u[cnt[1]][n] = 0.0;
+
+
+
+    //    for (unsigned int i=0; i<cnt.size(); i++)
+    //    {
+
+    //    }
+
+        FILE *file = fopen("d:/matrix.txt", "w");
+        IPrinter::print(w2,w2.rows(),w2.cols(),10,6,file);
+        fclose(file);
+
+        LinearEquation::GaussianElimination(w2,d2,x2);
+
+        offset = 0;
+        for (unsigned int m=0; m<=M; m++)
+        {
+            if (dmy[m] == 1)
+            {
+                for (unsigned int n=0; n<=N; n++)
+                {
+                    u[m][n] = x2[offset+n];
+                }
+                offset += N+1;
+            }
+        }
+
+        IPrinter::printVector(u.row(cnt[0]));
+        IPrinter::printVector(u.row(cnt[1]));
 
     w2.clear();
     d2.clear();
@@ -841,12 +934,17 @@ double IProblem2Forward2D::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) cons
     for (unsigned int i=0; i<Lc; i++)
     {
         double _delta = delta(sn, eta[i], i, 0);
-        double vi = 0.0;
-        for (unsigned int j=0; j<Lo; j++)
+        if ( fabs(_delta) > 0.000001 )
         {
-            vi += k[i][j] * ( U(xi[j].x, xi[j].y, t)  - z[i][j]);
+            double vi = 0.0;
+            for (unsigned int j=0; j<Lo; j++)
+            {
+                printf("*** %4d %4d %4d %.14f %.14f %f\n", sn.i, sn.j, sn.j, U(xi[j].x, xi[j].y, t), _delta,
+                       k[i][j]*(U(xi[j].x, xi[j].y, t)-z[i][j])*_delta*0.01);
+                //vi += k[i][j] * ( U(xi[j].x, xi[j].y, t)  - z[i][j]);
+            }
+            //W += vi * _delta;
         }
-        W += vi * _delta;
     }
     res -= W;
 
@@ -855,7 +953,7 @@ double IProblem2Forward2D::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) cons
 
 double IProblem2Forward2D::delta(const SpaceNodePDE &sn, const SpaceNodePDE &eta, unsigned int i UNUSED_PARAM, unsigned int source UNUSED_PARAM) const
 {
-    return delta1(sn, eta, i);
+    return delta4(sn, eta, i);
 }
 
 double IProblem2Forward2D::delta1(const SpaceNodePDE &sn, const SpaceNodePDE &eta, unsigned int) const
@@ -970,10 +1068,7 @@ double IProblem2Forward2D::delta4(const SpaceNodePDE &sn UNUSED_PARAM, const Spa
         }
     }
 
-    //    if (fabs(resX*resY) > 0.0)
-    //        printf("%4d %4d %4d %4d %20.10f %20.10f\n", sn.i, sn.j, eta.i, eta.j, resX, resY);
-
-    return resX*resY*(1.0/hx)*(1.0/hy);
+    return (resX*resY)/(hx*hy);
 }
 
 double IProblem2Forward2D::g1(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
