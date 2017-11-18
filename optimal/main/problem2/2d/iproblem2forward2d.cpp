@@ -581,7 +581,7 @@ void IProblem2Forward2D::calculateMVD1X(DoubleMatrix &u, DoubleMatrix &uh, unsig
 
         if (dmy[m] == 1)
         {
-            //printf("%d %d\n", dmy[m], m);
+            printf("%d %d\n", dmy[m], m);
             for (unsigned int n=0; n<=N; n++)
             {
                 sn2.i = n; sn2.x = n*hx;
@@ -594,23 +594,23 @@ void IProblem2Forward2D::calculateMVD1X(DoubleMatrix &u, DoubleMatrix &uh, unsig
 
                 if (n == 0)
                 {
-                    w2[offset+0][offset+0] = 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*lambda*ht)/(hx);
-                    w2[offset+0][offset+1] = -(2.0*a*a*ht)/(hx*hx);
+                    w2[offset+0][offset+0] += 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*lambda*ht)/(hx);
+                    w2[offset+0][offset+1] += -(2.0*a*a*ht)/(hx*hx);
 
                     d2[offset+0] += (2.0*a*a*lambda*theta*ht)/(hx) + ((2.0*a*a*ht)/hx)*g1(sn2, tn);
                 }
                 else if (n == N)
                 {
-                    w2[offset+N][offset+(N-1)] = -(2.0*a*a*ht)/(hx*hx);
-                    w2[offset+N][offset+(N-0)] = 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*lambda*ht)/(hx);
+                    w2[offset+N][offset+(N-1)] += -(2.0*a*a*ht)/(hx*hx);
+                    w2[offset+N][offset+(N-0)] += 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*lambda*ht)/(hx);
 
                     d2[offset+N] += (2.0*a*a*lambda*theta*ht)/(hx) + ((2.0*a*a*ht)/(hx))*g2(sn2, tn);
                 }
                 else
                 {
-                    w2[offset+n][offset+(n-1)] = -(a*a*ht)/(hx*hx);
-                    w2[offset+n][offset+(n+0)] = 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht;
-                    w2[offset+n][offset+(n+1)] = -(a*a*ht)/(hx*hx);
+                    w2[offset+n][offset+(n-1)] += -(a*a*ht)/(hx*hx);
+                    w2[offset+n][offset+(n+0)] += 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht;
+                    w2[offset+n][offset+(n+1)] += -(a*a*ht)/(hx*hx);
                 }
 
                 //************************************* Adding delta part *************************************//
@@ -623,8 +623,8 @@ void IProblem2Forward2D::calculateMVD1X(DoubleMatrix &u, DoubleMatrix &uh, unsig
                         //                        printf("%d %d %d %f\n", i, sn2.i, sn2.j, _delta);
                         for (unsigned int j=0; j<Lo; j++)
                         {
-                            printf("+++ %4d %4d %4d %.14f %.14f %f\n", offset+n, n, m, u[xi[j].j][xi[j].i], _delta,
-                                    ht*k[i][j]*(u[xi[j].j][xi[j].i]-z[i][j])*_delta);
+                            printf("+++ %4d %4d %4d %.14f %.14f %f %d\n", offset+n, n, m, u[xi[j].j][xi[j].i], _delta,
+                                    ht*k[i][j]*(u[xi[j].j][xi[j].i]-z[i][j])*_delta, offset);
                             //d2.at(offset+n) -= ht*k[i][j] * z[i][j] *_delta;
                             //d2.at(offset+n) += ht*k[i][j] * u[xi[j].j][xi[j].i] * _delta;
 
@@ -939,14 +939,14 @@ double IProblem2Forward2D::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) cons
             double vi = 0.0;
             for (unsigned int j=0; j<Lo; j++)
             {
-                printf("*** %4d %4d %4d %.14f %.14f %f\n", sn.i, sn.j, sn.j, U(xi[j].x, xi[j].y, t), _delta,
+                printf("*** %4d %4d %4d %.14f %.14f %f\n", sn.i, sn.i, sn.j, U(xi[j].x, xi[j].y, t), _delta,
                        k[i][j]*(U(xi[j].x, xi[j].y, t)-z[i][j])*_delta*0.01);
                 //vi += k[i][j] * ( U(xi[j].x, xi[j].y, t)  - z[i][j]);
             }
             //W += vi * _delta;
         }
     }
-    res -= W;
+    //res -= W;
 
     return res;
 }
@@ -1068,7 +1068,9 @@ double IProblem2Forward2D::delta4(const SpaceNodePDE &sn UNUSED_PARAM, const Spa
         }
     }
 
-    return (resX*resY)/(hx*hy);
+    double res = (resX*resY)/(hx*hy);
+
+    return res;
 }
 
 double IProblem2Forward2D::g1(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
