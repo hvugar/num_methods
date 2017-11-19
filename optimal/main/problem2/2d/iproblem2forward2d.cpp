@@ -34,10 +34,9 @@ void IProblem2Forward2D::setSettings(double a, double lambda0, double lambda, do
     //eta[1].x = 0.60; eta[1].y = 0.90; eta[1].i = 6; eta[1].j = 9;
 
     xi.resize(this->Lo);
-    xi[0].x = 0.20;  xi[0].y = 0.30 ; xi[0].i = 2; xi[0].j = 3;
-
-    //xi[0].x = 0.20;  xi[0].y = 0.50; xi[0].i = 2; xi[0].j = 5;
-    //xi[1].x = 0.30;  xi[1].y = 0.40; xi[1].i = 3; xi[1].j = 4;
+    xi[0].x = 0.21;  xi[0].y = 0.51;  xi[0].i = 2; xi[0].j = 5;
+    //xi[1].x = 0.22;  xi[1].y = 0.32;  xi[1].i = 3; xi[1].j = 3;
+    //xi[2].x = 0.33;  xi[2].y = 0.52;  xi[2].i = 8; xi[2].j = 1;
 
     //xi[0].x = 0.30;  xi[0].y = 0.20; xi[0].i = 3; xi[0].j = 2;
     //xi[1].x = 0.80;  xi[1].y = 0.60; xi[1].i = 8; xi[1].j = 6;
@@ -293,7 +292,7 @@ void IProblem2Forward2D::calculateMVD1(DoubleMatrix &u) const
             {
                 double _delta = delta(sn, eta[i], i);
 
-                if (fabs(_delta) > 0.000001)
+                if (checkDelta(_delta))
                 {
                     if ( v1y[m] == 0 ) v1y[m] = 1;
                 }
@@ -306,13 +305,13 @@ void IProblem2Forward2D::calculateMVD1(DoubleMatrix &u) const
         //        }
     }
 
-    ////    FILE *fv1x = fopen("d:/dmx.txt", "w");
-    ////    for (unsigned int n=0; n<=N; n++) fprintf(fv1x, "%d \n", v1x[n]);
-    ////    fclose(fv1x);
+    //    FILE *fv1x = fopen("d:/dmx.txt", "w");
+    //    for (unsigned int n=0; n<=N; n++) fprintf(fv1x, "%d \n", v1x[n]);
+    //    fclose(fv1x);
 
-    FILE *fv1y = fopen("d:/dmy.txt", "w");
-    for (unsigned int m=0; m<=M; m++) fprintf(fv1y, "%d \n", v1y[m]);
-    fclose(fv1y);
+    //FILE *fv1y = fopen("d:/dmy.txt", "w");
+    //for (unsigned int m=0; m<=M; m++) fprintf(fv1y, "%d \n", v1y[m]);
+    //fclose(fv1y);
 
     //    return;
 
@@ -372,7 +371,7 @@ void IProblem2Forward2D::calculateMVD1(DoubleMatrix &u) const
     }
     //************************************* initial conditions *************************************//
 
-    IPrinter::printMatrix(10, 6, u);
+    IPrinter::printMatrix(u);
     IPrinter::printSeperatorLine();
 
     TimeNodePDE tn;
@@ -382,7 +381,7 @@ void IProblem2Forward2D::calculateMVD1(DoubleMatrix &u) const
         tn.i = l;
         tn.t = l*ht - 0.5*ht;
         calculateMVD1Y(u, uh, N, hx, M, hy, tn, ht, v1y);
-        IPrinter::printMatrix(10, 6, uh);
+        IPrinter::printMatrix(uh);
         IPrinter::printSeperatorLine();
         //************************************* approximatin to y direction conditions *************************************//
 
@@ -390,7 +389,7 @@ void IProblem2Forward2D::calculateMVD1(DoubleMatrix &u) const
         tn.i = l;
         tn.t = l*ht;
         calculateMVD1X(u, uh, N, hx, M, hy, tn, ht, v1y);
-        IPrinter::printMatrix(10, 6, u);
+        IPrinter::printMatrix(u);
         IPrinter::printSeperatorLine();
         //************************************* approximatin to x direction conditions *************************************//
     }
@@ -490,7 +489,20 @@ void IProblem2Forward2D::calculateMVD1Y(DoubleMatrix &u, DoubleMatrix &uh, unsig
 }
 
 void IProblem2Forward2D::calculateMVD1X(DoubleMatrix &u, DoubleMatrix &uh, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn, double ht, unsigned int *dmy) const
-{
+{   
+    std::vector<IProblem2Forward2D::ObservationNode> ons;
+    for (unsigned int j=0; j<Lo; j++)
+    {
+        extendObservationPoint2(xi[j], ons, j);
+        //for (unsigned int s=0; s<ons.size(); s++)
+        //{
+        //    printf("%d %f %f %d %d %f %f %f\n", j, xi[j].x, xi[j].y,
+        //           ons[s].n, ons[s].m, ons[s].x, ons[s].y, ons[s].w);
+        //}
+        //IPrinter::printSeperatorLine();
+    }
+    //ons.clear();
+
     for (unsigned int m=0; m<=M; m++)
     {
         SpaceNodePDE sn2;
@@ -536,19 +548,19 @@ void IProblem2Forward2D::calculateMVD1X(DoubleMatrix &u, DoubleMatrix &uh, unsig
                 }
 
                 //************************************* Adding delta part *************************************//
-                for (unsigned int i=0; i<Lc; i++)
-                {
-                    //double _delta = delta(sn2, i, 2);
+//                for (unsigned int i=0; i<Lc; i++)
+//                {
+//                    //double _delta = delta(sn2, i, 2);
 
-                    for (unsigned int j=0; j<Lo; j++)
-                    {
-                        //d2[n] += -ht*k[i][j]*z[i][j] * _delta;
+//                    for (unsigned int j=0; j<Lo; j++)
+//                    {
+//                        //d2[n] += -ht*k[i][j]*z[i][j] * _delta;
 
-                        //unsigned int jinx = xi[j].i;
-                        //unsigned int jiny = xi[j].j;
-                        //w2[offset+n][jiny*(N+1)+jinx] += -ht*k[i][j]*_delta;
-                    }
-                }
+//                        //unsigned int jinx = xi[j].i;
+//                        //unsigned int jiny = xi[j].j;
+//                        //w2[offset+n][jiny*(N+1)+jinx] += -ht*k[i][j]*_delta;
+//                    }
+//                }
                 //************************************* Adding delta part *************************************//
             }
 
@@ -581,16 +593,15 @@ void IProblem2Forward2D::calculateMVD1X(DoubleMatrix &u, DoubleMatrix &uh, unsig
 
         if (dmy[m] == 1)
         {
-            printf("%d %d\n", dmy[m], m);
             for (unsigned int n=0; n<=N; n++)
             {
                 sn2.i = n; sn2.x = n*hx;
 
                 d2[offset+n] = 2.0*uh[m][n] + lambda0*theta*ht + ht*f(sn2, tn);
 
-                if (m==0)       d2[n] += ((a*a*ht)/(hy*hy))*(uh[0][n]   - 2.0*uh[1][n]   + uh[2][n]);
-                if (m>0 && m<M) d2[n] += ((a*a*ht)/(hy*hy))*(uh[m-1][n] - 2.0*uh[m][n]   + uh[m+1][n]);
-                if (m==M)       d2[n] += ((a*a*ht)/(hy*hy))*(uh[M-2][n] - 2.0*uh[M-1][n] + uh[M][n]);
+                if (m==0)       d2[offset+n] += ((a*a*ht)/(hy*hy))*(uh[0][n]   - 2.0*uh[1][n]   + uh[2][n]);
+                if (m>0 && m<M) d2[offset+n] += ((a*a*ht)/(hy*hy))*(uh[m-1][n] - 2.0*uh[m][n]   + uh[m+1][n]);
+                if (m==M)       d2[offset+n] += ((a*a*ht)/(hy*hy))*(uh[M-2][n] - 2.0*uh[M-1][n] + uh[M][n]);
 
                 if (n == 0)
                 {
@@ -617,38 +628,44 @@ void IProblem2Forward2D::calculateMVD1X(DoubleMatrix &u, DoubleMatrix &uh, unsig
                 for (unsigned int i=0; i<Lc; i++)
                 {
                     double _delta = delta(sn2, eta[i], i);
-
-                    if (fabs(_delta) > 0.000001)
+                    if (checkDelta(_delta))
                     {
-                        //                        printf("%d %d %d %f\n", i, sn2.i, sn2.j, _delta);
-                        for (unsigned int j=0; j<Lo; j++)
+                        for (unsigned int s=0; s<ons.size(); s++)
                         {
-                            printf("+++ %4d %4d %4d %.14f %.14f %f %d\n", offset+n, n, m, u[xi[j].j][xi[j].i], _delta,
-                                    ht*k[i][j]*(u[xi[j].j][xi[j].i]-z[i][j])*_delta, offset);
+                            ObservationNode &on = ons[s];
+                            //printf("%d %d %d %d %10.6f %d\n", i, s, on.n, on.m, on.w, on.j);
                             //d2.at(offset+n) -= ht*k[i][j] * z[i][j] *_delta;
                             //d2.at(offset+n) += ht*k[i][j] * u[xi[j].j][xi[j].i] * _delta;
 
-                            //                            bool found = false;
-                            //                            for (unsigned int cs=0; cs<cnt.size(); cs++)
-                            //                            {
-                            //                                if (xi[j].j == cnt[cs]) found = true;
-                            //                            }
+                            bool found = false;
+                            for (unsigned int cs=0; cs<cnt.size(); cs++)
+                            {
+                                if (on.m == cnt[cs]) found = true;
+                            }
 
-                            //                            if (found)
-                            //                            {
-                            //                                d2[offset+n] += -ht*k[i][j]*z[i][j] * _delta;
+                            if (found)
+                            {
+                                //printf("%d\n", on.m);
+                                //d2[offset+n] += -ht*k[i][j]*z[i][j] * _delta * ons[j].w;
 
-                            //                                unsigned int jinx = xi[j].i;
-                            //                                unsigned int jiny = xi[j].j;
+                                unsigned int jinx = ons[s].n;
+                                unsigned int jiny = ons[s].m;
 
-                            //                                w2[offset+n][jinx] += -ht*k[i][j]*_delta;
-                            //                                //printf("Found %d %d\n", jinx, jiny);
-                            //                            }
-                            //                            else
-                            //                            {
-                            //                                //printf("%d %d %d %f\n", offset+n, xi[j].j, xi[j].i, u[xi[j].j][xi[j].i]);
-                            //                                d2[offset+n] += ht*k[i][j]*(u[xi[j].j][xi[j].i]-z[i][j])*_delta;
-                            //                            }
+                                w2[offset+n][jinx] += -ht*k[i][on.j] * _delta * ons[s].w;
+                                //printf("+ %d %d %f\n", on.m, on.n, NAN);
+                            }
+                            else
+                            {
+                                //d2[offset+n] += ht*k[i][j]*(u[xi[j].j][xi[j].i]-z[i][j])*_delta;
+                                //d2.at(offset+n) -= ht*k[i][j] * z[i][j] *_delta * ons[j].w;
+                                d2.at(offset+n) += ht*k[i][on.j] * u[on.m][on.n] * _delta * ons[s].w;
+                                //printf("- %d %d %f\n", on.m, on.n, u[on.m][on.n]);
+                            }
+                        }
+
+                        for (unsigned int j=0; j<Lo; j++)
+                        {
+                            d2.at(offset+n) -= ht * k[i][j] * z[i][j] *_delta;
                         }
                     }
                 }
@@ -672,111 +689,26 @@ void IProblem2Forward2D::calculateMVD1X(DoubleMatrix &u, DoubleMatrix &uh, unsig
         }
     }
 
-    {
-        DoubleVector _a1(N+1);
-        DoubleVector _b1(N+1);
-        DoubleVector _c1(N+1);
-        DoubleVector _d1(N+1);
-        DoubleVector _x1(N+1);
-
-        _a1[0] = 0.0;
-        _b1[0] = w2[0][0];
-        _c1[0] = w2[0][1];
-        _d1[0] = d2[0];
-        for (unsigned int n=1; n<=N-1; n++)
-        {
-            _a1[n] = w2[n][n-1];
-            _b1[n] = w2[n][n];
-            _c1[n] = w2[n][n+1];
-            _d1[n] = d2[n];
-        }
-        _a1[N] = w2[N][N-1];
-        _b1[N] = w2[N][N];
-        _c1[N] = 0.0;
-        _d1[N] = d2[N];
-
-        tomasAlgorithm(_a1.data(), _b1.data(), _c1.data(), _d1.data(), _x1.data(), N+1);
-
-
-        for (unsigned int n=0; n<=N; n++) u[cnt[0]][n] = _x1[n];
-
-        _a1.clear();
-        _b1.clear();
-        _c1.clear();
-        _d1.clear();
-        _x1.clear();
-
-        IPrinter::printVector(u.row(cnt[0]));
-    }
-
-    {
-        DoubleVector _a1(N+1);
-        DoubleVector _b1(N+1);
-        DoubleVector _c1(N+1);
-        DoubleVector _d1(N+1);
-        DoubleVector _x1(N+1);
-
-        _a1[0] = 0.0;
-        _b1[0] = w2[(N+1)+0][(N+1)+0];
-        _c1[0] = w2[(N+1)+0][(N+1)+1];
-        _d1[0] = d2[(N+1)+0];
-        for (unsigned int n=1; n<=N-1; n++)
-        {
-            _a1[n] = w2[(N+1)+n][(N+1)+n-1];
-            _b1[n] = w2[(N+1)+n][(N+1)+n];
-            _c1[n] = w2[(N+1)+n][(N+1)+n+1];
-            _d1[n] = d2[(N+1)+n];
-        }
-        _a1[N] = w2[(N+1)+N][(N+1)+N-1];
-        _b1[N] = w2[(N+1)+N][(N+1)+N];
-        _c1[N] = 0.0;
-        _d1[N] = d2[(N+1)+N];
-
-        tomasAlgorithm(_a1.data(), _b1.data(), _c1.data(), _d1.data(), _x1.data(), N+1);
-
-
-        for (unsigned int n=0; n<=N; n++) u[cnt[1]][n] = _x1[n];
-
-        _a1.clear();
-        _b1.clear();
-        _c1.clear();
-        _d1.clear();
-        _x1.clear();
-
-        IPrinter::printVector(u.row(cnt[1]));
-    }
-
-
     //for (unsigned int n=0; n<=N; n++) u[cnt[1]][n] = 0.0;
 
+    FILE *file = fopen("d:/matrix.txt", "w");
+    IPrinter::print(w2,w2.rows(),w2.cols(),10,6,file);
+    fclose(file);
 
+    LinearEquation::GaussianElimination(w2,d2,x2);
 
-    //    for (unsigned int i=0; i<cnt.size(); i++)
-    //    {
-
-    //    }
-
-        FILE *file = fopen("d:/matrix.txt", "w");
-        IPrinter::print(w2,w2.rows(),w2.cols(),10,6,file);
-        fclose(file);
-
-        LinearEquation::GaussianElimination(w2,d2,x2);
-
-        offset = 0;
-        for (unsigned int m=0; m<=M; m++)
+    offset = 0;
+    for (unsigned int m=0; m<=M; m++)
+    {
+        if (dmy[m] == 1)
         {
-            if (dmy[m] == 1)
+            for (unsigned int n=0; n<=N; n++)
             {
-                for (unsigned int n=0; n<=N; n++)
-                {
-                    u[m][n] = x2[offset+n];
-                }
-                offset += N+1;
+                u[m][n] = x2[offset+n];
             }
+            offset += N+1;
         }
-
-        IPrinter::printVector(u.row(cnt[0]));
-        IPrinter::printVector(u.row(cnt[1]));
+    }
 
     w2.clear();
     d2.clear();
@@ -926,29 +858,30 @@ double IProblem2Forward2D::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) cons
     double y = sn.y;
     double t = tn.t;
 
-    //printf("t: %f\n", t);
-
     double res = 1.0 - 4.0*a*a + lambda0*(U(x,y,t) - theta);
 
     double W = 0.0;
     for (unsigned int i=0; i<Lc; i++)
     {
         double _delta = delta(sn, eta[i], i, 0);
-        if ( fabs(_delta) > 0.000001 )
+        if (checkDelta(_delta))
         {
             double vi = 0.0;
             for (unsigned int j=0; j<Lo; j++)
             {
-                printf("*** %4d %4d %4d %.14f %.14f %f\n", sn.i, sn.i, sn.j, U(xi[j].x, xi[j].y, t), _delta,
-                       k[i][j]*(U(xi[j].x, xi[j].y, t)-z[i][j])*_delta*0.01);
-                //vi += k[i][j] * ( U(xi[j].x, xi[j].y, t)  - z[i][j]);
+                vi += k[i][j] * ( U(xi[j].x, xi[j].y, t)  - z[i][j]);
             }
-            //W += vi * _delta;
+            W += vi * _delta;
         }
     }
-    //res -= W;
+    res -= W;
 
     return res;
+}
+
+bool IProblem2Forward2D::checkDelta(double _delta) const
+{
+    return _delta != 0.0;
 }
 
 double IProblem2Forward2D::delta(const SpaceNodePDE &sn, const SpaceNodePDE &eta, unsigned int i UNUSED_PARAM, unsigned int source UNUSED_PARAM) const
@@ -984,11 +917,12 @@ double IProblem2Forward2D::delta2(const SpaceNodePDE &sn, const SpaceNodePDE &et
     unsigned int ry = (unsigned int)(round(eta.y*Ny));
 
     double res = 0.0;
-    if (rx-3 <= sn.i && sn.i <= rx+3 &&
-            ry-3 <= sn.j && sn.j <= ry+3)
+    if (rx-2 <= sn.i && sn.i <= rx+2 &&
+            ry-2 <= sn.j && sn.j <= ry+2)
     {
-        res = (1.0/(2.0*M_PI*sigmaX*sigmaY)) *
-                exp(-0.5*(((sn.x-eta.x)*(sn.x-eta.x))/(sigmaX*sigmaX)+((sn.y-eta.y)*(sn.y-eta.y))/(sigmaY*sigmaY)));
+        res = (1.0/(2.0*M_PI*sigmaX*sigmaY))*
+                exp(-0.5*(((sn.x-eta.x)*(sn.x-eta.x))/(sigmaX*sigmaX)
+                         +((sn.y-eta.y)*(sn.y-eta.y))/(sigmaY*sigmaY)));
     }
 
     return res;
@@ -1000,8 +934,6 @@ double IProblem2Forward2D::delta3(const SpaceNodePDE &sn UNUSED_PARAM, const Spa
     Dimension yd = spaceDimension(Dimension::DimensionY);
     double hx = xd.step();
     double hy = yd.step();
-    //unsigned int Nx = xd.sizeN();
-    //unsigned int Ny = yd.sizeN();
 
     double resX = 0.0;
     {
@@ -1014,7 +946,7 @@ double IProblem2Forward2D::delta3(const SpaceNodePDE &sn UNUSED_PARAM, const Spa
         {
             resX = ((2.0*hx-dhx)*(hx-dhx)*(hx+dhx)) * hx32;
         }
-        if ( dhx > hx && dhx <= 2.0*hx )
+        if ( hx < dhx && dhx <= 2.0*hx )
         {
             resX = ((2.0*hx-dhx)*(hx-dhx)*(3.0*hx-dhx)) * hx36;
         }
@@ -1031,14 +963,11 @@ double IProblem2Forward2D::delta3(const SpaceNodePDE &sn UNUSED_PARAM, const Spa
         {
             resY = ((2.0*hy-dhy)*(hy-dhy)*(hy+dhy)) * hy32;
         }
-        if ( dhy > hy && dhy <= 2.0*hy )
+        if ( hy < dhy && dhy <= 2.0*hy )
         {
             resY = ((2.0*hy-dhy)*(hy-dhy)*(3.0*hy-dhy)) * hy36;
         }
     }
-
-    //if (fabs(resX*resY) > 0.0)
-    //    printf("%4d %4d %4d %4d %20.10f %20.10f\n", sn.i, sn.j, eta.i, eta.j, resX, resY);
 
     return (resX*resY)/(hx*hy);
 }
@@ -1071,6 +1000,328 @@ double IProblem2Forward2D::delta4(const SpaceNodePDE &sn UNUSED_PARAM, const Spa
     double res = (resX*resY)/(hx*hy);
 
     return res;
+}
+
+void IProblem2Forward2D::extendObservationPoint1(const SpaceNodePDE xi, std::vector<ObservationNode> &ons) const
+{
+    Dimension xd = spaceDimension(Dimension::DimensionX);
+    Dimension yd = spaceDimension(Dimension::DimensionY);
+
+    unsigned int Nx = xd.sizeN();
+    unsigned int Ny = yd.sizeN();
+
+    double hx = xd.step();
+    double hy = yd.step();
+
+    unsigned int rx = (unsigned int)(round(xi.x*Nx));
+    unsigned int ry = (unsigned int)(round(xi.y*Ny));
+
+    ObservationNode on;
+    if ( rx*hx <= xi.x && ry*hy <= xi.y ) // left bottom
+    {
+        on.n = rx+0; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi;
+        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
+
+        on.n = rx+1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi;
+        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
+
+        on.n = rx+0; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi;
+        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
+
+        on.n = rx+1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi;
+        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
+
+        return;
+    }
+
+    if ( rx*hx <= xi.x && ry*hy >= xi.y ) // left top
+    {
+        on.n = rx+0; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi;
+        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
+
+        on.n = rx+1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi;
+        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
+
+        on.n = rx+0; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi;
+        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
+
+        on.n = rx+1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi;
+        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
+
+        return;
+    }
+
+    if ( rx*hx >= xi.x && ry*hy <= xi.y ) // right bottom
+    {
+        on.n = rx+0; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi;
+        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
+
+        on.n = rx-1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi;
+        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
+
+        on.n = rx+0; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi;
+        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
+
+        on.n = rx-1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi;
+        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
+
+        return;
+    }
+
+    if ( rx*hx >= xi.x && ry*hy >= xi.y ) // right top
+    {
+        on.n = rx+0; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi;
+        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
+
+        on.n = rx-1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi;
+        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
+
+        on.n = rx+0; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi;
+        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
+
+        on.n = rx-1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi;
+        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
+
+        return;
+    }
+}
+
+void IProblem2Forward2D::extendObservationPoint2(const SpaceNodePDE xi, std::vector<ObservationNode> &ons, unsigned int j) const
+{
+    Dimension xd = spaceDimension(Dimension::DimensionX);
+    Dimension yd = spaceDimension(Dimension::DimensionY);
+
+    unsigned int Nx = xd.sizeN();
+    unsigned int Ny = yd.sizeN();
+
+    double hx = xd.step();
+    double hy = yd.step();
+
+    unsigned int rx = (unsigned int)(round(xi.x*Nx));
+    unsigned int ry = (unsigned int)(round(xi.y*Ny));
+
+    double hx3 = hx*hx*hx;
+    double hx32 = (1.0/(2.0*hx3));
+    double hx36 = (1.0/(6.0*hx3));
+
+    double hy3 = hy*hy*hy;
+    double hy32 = (1.0/(2.0*hy3));
+    double hy36 = (1.0/(6.0*hy3));
+
+    ObservationNode on;
+    double dx = 0.0;
+    double dy = 0.0;
+    if ( (rx*hx - xi.x) <= 0.0 && (ry*hy - xi.y) <= 0.0 ) // left bottom
+    //if ( rx <= xi.i && ry <= xi.j )
+    {
+        printf("left bottom %.14f %.14f %.14f\n", ry*hy, xi.y, hy);
+        on.n = rx-1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        on.n = rx-1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx-1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx-1; on.m = ry+2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        /////////////////////////
+        on.n = rx+0; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        on.n = rx+0; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+0; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+0; on.m = ry+2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);;
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        /////////////////////////
+        on.n = rx+1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        on.n = rx+1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+1; on.m = ry+2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+
+        ////////////////////////
+        on.n = rx+2; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        on.n = rx+2; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+2; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+2; on.m = ry+2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+        return;
+    }
+
+    if ( (rx*hx - xi.x) >= 0.0 && (ry*hy - xi.y) >= 0.0 ) // right top
+    //if ( rx <= xi.i && ry <= xi.j )
+    {
+        printf("right top %.14f %.14f %.14f\n", ry*hy, xi.y, hy);
+        on.n = rx-2; on.m = ry-2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        on.n = rx-2; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx-2; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx-2; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        /////////////////////////
+        on.n = rx-1; on.m = ry-2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        on.n = rx-1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx-1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx-1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);;
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        /////////////////////////
+        on.n = rx+0; on.m = ry-2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        on.n = rx+0; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+0; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+0; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+
+        ////////////////////////
+        on.n = rx+1; on.m = ry-2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        on.n = rx+1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+        return;
+    }
 }
 
 double IProblem2Forward2D::g1(const SpaceNodePDE &sn, const TimeNodePDE &tn) const

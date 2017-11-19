@@ -24,11 +24,11 @@ LIBS += -L../bin -lborder
 #INCLUDEPATH += ../hyperbolic
 #LIBS += -L../bin -lhyperbolic
 
-INCLUDEPATH += ../parabolic
-LIBS += -L../bin -lparabolic
+#INCLUDEPATH += ../parabolic
+#LIBS += -L../bin -lparabolic
 
-INCLUDEPATH += ../rnfunction
-LIBS += -L../bin -lrnfunction
+#INCLUDEPATH += ../rnfunction
+#LIBS += -L../bin -lrnfunction
 
 #INCLUDEPATH += ../imaging
 #LIBS += -L../bin -limaging
