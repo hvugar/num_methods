@@ -4,6 +4,7 @@
 #include <grid/pibvp.h>
 #include <vector>
 #include <printer.h>
+#include <utils/random.h>
 
 using namespace std;
 
@@ -25,11 +26,13 @@ public:
     IProblem2Forward2D();
     virtual ~IProblem2Forward2D() {}
     void setSettings(double a, double lambda0, double lambda, double theta, unsigned int Lc, unsigned int Lo);
-    void calculateMVD(DoubleMatrix &u) const;
+    void calculateMVD2(DoubleMatrix &u) const;
 
-    void calculateMVD1(DoubleMatrix &u) const;
-    void calculateMVD1X(DoubleMatrix &u, DoubleMatrix &uh, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn, double ht, unsigned int *dmx) const;
-    void calculateMVD1Y(DoubleMatrix &u, DoubleMatrix &uh, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn, double ht, unsigned int *dmy) const;
+    void calculateMVD(DoubleMatrix &u) const;
+    void calculateMVD1X(DoubleMatrix &uh, const DoubleMatrix &u, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn, double ht,
+                        unsigned int *dmx, const std::vector<ObservationNode> &observeNodes) const;
+    void calculateMVD1Y(DoubleMatrix &u, const DoubleMatrix &uh, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn, double ht,
+                        unsigned int *dmy, const std::vector<ObservationNode> &observeNodes) const;
 
 protected:
     virtual double initial(const SpaceNodePDE &sn) const;
@@ -44,7 +47,7 @@ public:
     double delta4(const SpaceNodePDE &sn, const SpaceNodePDE &eta, unsigned int i = 0) const;
     bool checkDelta(double delta) const;
 
-    void extendObservationPoint1(const SpaceNodePDE op, std::vector<ObservationNode> &ops) const;
+    void extendObservationPoint1(const SpaceNodePDE op, std::vector<ObservationNode> &ops, unsigned int j) const;
     void extendObservationPoint2(const SpaceNodePDE op, std::vector<ObservationNode> &ops, unsigned int j) const;
 
 protected:

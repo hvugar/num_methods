@@ -6,6 +6,7 @@
 
 #include <function.h>
 #include <gradient.h>
+#include <utils/random.h>
 
 class Problem2Forward2D : public IProblem2Forward2D
 {

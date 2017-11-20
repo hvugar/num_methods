@@ -8,7 +8,7 @@ void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
                            Dimension(0.1, 0, 10));
 
     DoubleMatrix u;
-    p22d.forward.calculateMVD1(u);
+    p22d.forward.calculateMVD(u);
     //IPrinter::printMatrix(u);
     //IPrinter::printSeperatorLine();
 
@@ -81,7 +81,7 @@ void Problem22D::setGridParameters(Dimension timeDimension, Dimension spaceDimen
 double Problem22D::fx(const DoubleVector &x) const
 {
     DoubleMatrix u;
-    forward.calculateMVD(u);
+    forward.calculateMVD2(u);
 
     double intgrl = integral(u);
 
