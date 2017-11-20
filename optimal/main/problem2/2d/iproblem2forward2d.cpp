@@ -8,7 +8,7 @@ void IProblem2Forward2D::setSettings(double a, double lambda0, double lambda, do
     this->lambda0 = lambda0;
     this->lambda = lambda;
     this->theta = theta;
-    this->Lc = 1;//Lc;
+    this->Lc = 2;//Lc;
     this->Lo = 1;//Lo;
 
     k.resize(this->Lc, this->Lo);
@@ -18,13 +18,16 @@ void IProblem2Forward2D::setSettings(double a, double lambda0, double lambda, do
     {
         for (unsigned int j=0; j<this->Lo; j++)
         {
-            k[i][j] = 5.0;
-            z[i][j] = 8.0;
+            k[i][j] = 10.0;
+            z[i][j] = 10.0;
         }
     }
 
     eta.resize(this->Lc);
-    eta[0].x = 0.62; eta[0].y = 0.53; eta[0].i = 6; eta[0].j = 5;
+    eta[0].x = 0.60; eta[0].y = 0.50; eta[0].i = 6; eta[0].j = 5;
+    eta[1].x = 0.70; eta[1].y = 0.50; eta[1].i = 7; eta[1].j = 5;
+    //eta[2].x = 0.60; eta[2].y = 0.60; eta[2].i = 6; eta[2].j = 6;
+    //eta[2].x = 0.80; eta[2].y = 0.50; eta[2].i = 8; eta[2].j = 5;
 
     //eta[0].x = 0.50; eta[0].y = 0.50; eta[0].i = 5; eta[0].j = 5;
     //eta[1].x = 0.70; eta[1].y = 0.80; eta[1].i = 7; eta[1].j = 8;
@@ -34,7 +37,7 @@ void IProblem2Forward2D::setSettings(double a, double lambda0, double lambda, do
     //eta[1].x = 0.60; eta[1].y = 0.90; eta[1].i = 6; eta[1].j = 9;
 
     xi.resize(this->Lo);
-    xi[0].x = 0.21;  xi[0].y = 0.51;  xi[0].i = 2; xi[0].j = 5;
+    xi[0].x = 0.25;  xi[0].y = 0.55;  xi[0].i = 2; xi[0].j = 5;
     //xi[1].x = 0.22;  xi[1].y = 0.32;  xi[1].i = 3; xi[1].j = 3;
     //xi[2].x = 0.33;  xi[2].y = 0.52;  xi[2].i = 8; xi[2].j = 1;
 
@@ -277,7 +280,8 @@ void IProblem2Forward2D::calculateMVD1(DoubleMatrix &u) const
     double hy = yd.step();
     double ht = td.step();
 
-    unsigned int *v1y = new unsigned int[M+1]; for (unsigned int m=0; m<=M; m++) v1y[m] = 0;
+    unsigned int *v1y = new unsigned int[M+1];
+    for (unsigned int m=0; m<=M; m++) v1y[m] = 0;
 
     SpaceNodePDE sn;
     for (unsigned int m=0; m<=M; m++)
@@ -494,11 +498,15 @@ void IProblem2Forward2D::calculateMVD1X(DoubleMatrix &u, DoubleMatrix &uh, unsig
     for (unsigned int j=0; j<Lo; j++)
     {
         extendObservationPoint2(xi[j], ons, j);
-        //for (unsigned int s=0; s<ons.size(); s++)
-        //{
-        //    printf("%d %f %f %d %d %f %f %f\n", j, xi[j].x, xi[j].y,
-        //           ons[s].n, ons[s].m, ons[s].x, ons[s].y, ons[s].w);
-        //}
+        double sum = 0.0;
+        for (unsigned int s=0; s<ons.size(); s++)
+        {
+            printf("%d %f %f %d %d %f %f %12.8f\n", j, xi[j].x, xi[j].y,
+                   ons[s].n, ons[s].m, ons[s].x, ons[s].y, ons[s].w);
+            sum += ons[s].w;
+        }
+        IPrinter::printSeperatorLine();
+        //printf("w: %f\n", sum);
         //IPrinter::printSeperatorLine();
     }
     //ons.clear();
@@ -652,14 +660,14 @@ void IProblem2Forward2D::calculateMVD1X(DoubleMatrix &u, DoubleMatrix &uh, unsig
                                 unsigned int jiny = ons[s].m;
 
                                 w2[offset+n][jinx] += -ht*k[i][on.j] * _delta * ons[s].w;
-                                //printf("+ %d %d %f\n", on.m, on.n, NAN);
+                                printf("+ %4d %4d %4d %4d %4d %4d %f\n", i, sn2.i, sn2.j, on.m, on.n, offset+n, NAN);
                             }
                             else
                             {
                                 //d2[offset+n] += ht*k[i][j]*(u[xi[j].j][xi[j].i]-z[i][j])*_delta;
                                 //d2.at(offset+n) -= ht*k[i][j] * z[i][j] *_delta * ons[j].w;
                                 d2.at(offset+n) += ht*k[i][on.j] * u[on.m][on.n] * _delta * ons[s].w;
-                                //printf("- %d %d %f\n", on.m, on.n, u[on.m][on.n]);
+                                printf("- %4d %4d %4d %4d %4d %4d %f\n", i, sn2.i, sn2.j, on.m, on.n, offset+n, u[on.m][on.n]);
                             }
                         }
 
@@ -667,6 +675,8 @@ void IProblem2Forward2D::calculateMVD1X(DoubleMatrix &u, DoubleMatrix &uh, unsig
                         {
                             d2.at(offset+n) -= ht * k[i][j] * z[i][j] *_delta;
                         }
+
+                        IPrinter::printSeperatorLine();
                     }
                 }
 
@@ -886,7 +896,7 @@ bool IProblem2Forward2D::checkDelta(double _delta) const
 
 double IProblem2Forward2D::delta(const SpaceNodePDE &sn, const SpaceNodePDE &eta, unsigned int i UNUSED_PARAM, unsigned int source UNUSED_PARAM) const
 {
-    return delta4(sn, eta, i);
+    return delta1(sn, eta, i);
 }
 
 double IProblem2Forward2D::delta1(const SpaceNodePDE &sn, const SpaceNodePDE &eta, unsigned int) const
@@ -1111,7 +1121,8 @@ void IProblem2Forward2D::extendObservationPoint2(const SpaceNodePDE xi, std::vec
     ObservationNode on;
     double dx = 0.0;
     double dy = 0.0;
-    if ( (rx*hx - xi.x) <= 0.0 && (ry*hy - xi.y) <= 0.0 ) // left bottom
+
+    if ( rx*hx <= xi.x && ry*hy <= xi.y ) // left bottom
     //if ( rx <= xi.i && ry <= xi.j )
     {
         printf("left bottom %.14f %.14f %.14f\n", ry*hy, xi.y, hy);
@@ -1189,7 +1200,6 @@ void IProblem2Forward2D::extendObservationPoint2(const SpaceNodePDE xi, std::vec
         on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
         ons.push_back(on);
 
-
         ////////////////////////
         on.n = rx+2; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
         dx = fabs(on.x-xi.x);
@@ -1217,7 +1227,112 @@ void IProblem2Forward2D::extendObservationPoint2(const SpaceNodePDE xi, std::vec
         return;
     }
 
-    if ( (rx*hx - xi.x) >= 0.0 && (ry*hy - xi.y) >= 0.0 ) // right top
+    if ( rx*hx <= xi.x && ry*hy >= xi.y ) // left top
+    //if ( rx <= xi.i && ry <= xi.j )
+    {
+        printf("left top %.14f %.14f %.14f\n", ry*hy, xi.y, hy);
+        on.n = rx-1; on.m = ry-2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        on.n = rx-1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx-1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx-1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        /////////////////////////
+        on.n = rx+0; on.m = ry-2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        on.n = rx+0; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+0; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+0; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);;
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        /////////////////////////
+        on.n = rx+1; on.m = ry-2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        on.n = rx+1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        ////////////////////////
+        on.n = rx+2; on.m = ry-2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        on.n = rx+2; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+2; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+2; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+        return;
+    }
+
+    if ( rx*hx >= xi.x && ry*hy >= xi.y ) // right top
     //if ( rx <= xi.i && ry <= xi.j )
     {
         printf("right top %.14f %.14f %.14f\n", ry*hy, xi.y, hy);
@@ -1315,7 +1430,113 @@ void IProblem2Forward2D::extendObservationPoint2(const SpaceNodePDE xi, std::vec
         on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
         ons.push_back(on);
 
+        on.n = rx+1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+        return;
+    }
+
+    if ( rx*hx >= xi.x && ry*hy <= xi.y ) // right bottom
+    //if ( rx <= xi.i && ry <= xi.j )
+    {
+        printf("right bottom %.14f %.14f %.14f\n", ry*hy, xi.y, hy);
+        on.n = rx-2; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        on.n = rx-2; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx-2; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx-2; on.m = ry+2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        /////////////////////////
+        on.n = rx-1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        on.n = rx-1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx-1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx-1; on.m = ry+2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);;
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        /////////////////////////
+        on.n = rx+0; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+        on.n = rx+0; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+0; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+0; on.m = ry+2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
+
+        ////////////////////////
+        on.n = rx+1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        ons.push_back(on);
+
         on.n = rx+1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
+        dx = fabs(on.x-xi.x);
+        dy = fabs(on.y-xi.y);
+        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        ons.push_back(on);
+
+        on.n = rx+1; on.m = ry+2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
         dx = fabs(on.x-xi.x);
         dy = fabs(on.y-xi.y);
         on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
