@@ -1,6 +1,7 @@
 #ifndef PROBLEM22D_H
 #define PROBLEM22D_H
 
+#include "problem2setting.h"
 #include "iproblem2forward2d.h"
 #include "iproblem2backward2d.h"
 
@@ -56,19 +57,10 @@ private:
 
     double alpha0;
 
-    double a;
-    double lambda0;
-    double lambda;
-    double theta;
+    P2Setting setting;
 
-    unsigned int Lc;
-    unsigned int Lo;
-
-    DoubleMatrix k;
-    DoubleMatrix z;
-
-    vector<SpaceNodePDE> xi;
-    vector<SpaceNodePDE> eta;
+    void array2Parameters(const DoubleVector &prms, DoubleMatrix &k, DoubleMatrix &z, std::vector<SpaceNodePDE> &xi, std::vector<SpaceNodePDE> &eta) const;
+    void paremeters2Array(const DoubleMatrix &k, const DoubleMatrix &z, const std::vector<SpaceNodePDE> &xi, const std::vector<SpaceNodePDE> &eta, DoubleVector &prms) const;
 };
 
 #endif // PROBLEM22D_H

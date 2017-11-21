@@ -5,34 +5,30 @@
 #include <vector>
 #include <printer.h>
 #include <utils/random.h>
+#include "problem2setting.h"
 
 using namespace std;
+
+struct ObservationNode
+{
+    SpaceNodePDE xi;
+    unsigned int j;
+    unsigned int n;
+    unsigned int m;
+    double x;
+    double y;
+    double w;
+};
 
 class IProblem2Forward2D : public IParabolicIBVP
 {
 public:
-    struct ObservationNode
-    {
-        SpaceNodePDE xi;
-        unsigned int j;
-        unsigned int n;
-        unsigned int m;
-        double x;
-        double y;
-        double w;
-    };
-
-public:
     IProblem2Forward2D();
     virtual ~IProblem2Forward2D() {}
-    void setSettings(double a, double lambda0, double lambda, double theta, unsigned int Lc, unsigned int Lo);
-    void calculateMVD2(DoubleMatrix &u) const;
 
-    void calculateMVD(DoubleMatrix &u) const;
-    void calculateMVD1X(DoubleMatrix &uh, const DoubleMatrix &u, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn, double ht,
-                        unsigned int *dmx, const std::vector<ObservationNode> &observeNodes) const;
-    void calculateMVD1Y(DoubleMatrix &u, const DoubleMatrix &uh, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn, double ht,
-                        unsigned int *dmy, const std::vector<ObservationNode> &observeNodes) const;
+    void setSettings(P2Setting s);
+
+    void calculateMVD(std::vector<DoubleMatrix> &u) const;
 
 protected:
     virtual double initial(const SpaceNodePDE &sn) const;
@@ -60,18 +56,20 @@ public:
     double U(double x, double y, double t) const;
 
 private:
-    double a;
-    double lambda0;
-    double lambda;
-    double theta;
+    //double a;
+    //double lambda0;
+    //double lambda;
+    //double theta;
 
-    unsigned int Lc;
-    unsigned int Lo;
+    //unsigned int Lc;
+    //unsigned int Lo;
 
-    DoubleMatrix k;
-    DoubleMatrix z;
-    vector<SpaceNodePDE> xi;
-    vector<SpaceNodePDE> eta;
+    //DoubleMatrix k;
+    //DoubleMatrix z;
+    //vector<SpaceNodePDE> xi;
+    //vector<SpaceNodePDE> eta;
+
+    P2Setting setting;
 };
 
 #endif // IPROBLEM2FORWARD2D_H
