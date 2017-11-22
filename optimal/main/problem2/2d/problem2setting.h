@@ -23,6 +23,9 @@ struct P2Setting
 
     vector<SpaceNodePDE> xi;
     vector<SpaceNodePDE> eta;
+
+    void toVector(DoubleVector &prms) const;
+    void fromVector(const DoubleVector &prms);
 };
 
 #endif // PROBLEM2SETTING_H

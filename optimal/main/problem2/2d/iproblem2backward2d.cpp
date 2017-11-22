@@ -7,7 +7,7 @@ void IProblem2Backward2D::setSettings(P2Setting s)
     setting = s;
 }
 
-void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
+void IProblem2Backward2D::calculateMVD(std::vector<DoubleMatrix> &p)
 {
     Dimension xd = spaceDimension(Dimension::DimensionX);
     Dimension yd = spaceDimension(Dimension::DimensionY);
@@ -26,6 +26,11 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
     double theta = setting.theta;
     unsigned int Lc = setting.Lc;
     unsigned int Lo =setting.Lo;
+
+    for (unsigned int l=0; l<p.size(); l++) p[l].clear();
+    p.clear();
+    p.resize(L+1);
+    DoubleMatrix ph(M+1, N+1);
 
     U.resize(M+1, N+1, 10.0);
     uT.resize(M+1, N+1, 10.0);
@@ -48,7 +53,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
         {
             sn.i = n; sn.x = n*hx;
 
-            for (unsigned int j=0; j<setting.Lo; j++)
+            for (unsigned int j=0; j<Lo; j++)
             {
                 double _delta = delta(sn, setting.xi[j], j);
 
@@ -60,14 +65,8 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
             }
         }
     }
-    //--------------------------------------------------------------------------------------------//
-
-    p.clear();
-    p.resize(M+1, N+1);
-
-    DoubleMatrix ph(M+1, N+1);
-
     //------------------------------------- initial conditions -------------------------------------//
+    p[L].resize(M+1,N+1);
     for (unsigned int m=0; m<=M; m++)
     {
         SpaceNodePDE sn;
@@ -75,7 +74,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
         for (unsigned int n=0; n<=N; n++)
         {
             sn.i = n; sn.x = n*hx;
-            p[m][n] = initial(sn);
+            p[L][m][n] = initial(sn);
         }
     }
     //IPrinter::printMatrix(p);
@@ -85,10 +84,14 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
     TimeNodePDE tn;
     for (unsigned int l=L-1; l!=UINT32_MAX; l--)
     {
+        p[l].resize(M+1, N+1);
+
         //------------------------------------- approximatin to y direction conditions -------------------------------------//
+
         {
             tn.i = l;
             tn.t = l*ht + 0.5*ht;
+
             {
                 DoubleVector a1(M+1, 0.0);
                 DoubleVector b1(M+1, 0.0);
@@ -107,26 +110,23 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
                         {
                             sn.j = m; sn.y = m*hy;
 
-                            d1[m] = 2.0*p[m][n] - ht*f(sn, tn);
+                            d1[m] = 2.0*p[l+1][m][n] - ht*f(sn, tn);
 
-                            if (n==0)       d1[m] += ((a*a*ht)/(hx*hx))*(p[m][0]   - 2.0*p[m][1]   + p[m][2]);
-                            if (n>0 && n<N) d1[m] += ((a*a*ht)/(hx*hx))*(p[m][n-1] - 2.0*p[m][n]   + p[m][n+1]);
-                            if (n==N)       d1[m] += ((a*a*ht)/(hx*hx))*(p[m][N-2] - 2.0*p[m][N-1] + p[m][N]);
+                            if (n==0)       d1[m] += ((a*a*ht)/(hx*hx))*(p[l+1][m][0]   - 2.0*p[l+1][m][1]   + p[l+1][m][2]);
+                            if (n>0 && n<N) d1[m] += ((a*a*ht)/(hx*hx))*(p[l+1][m][n-1] - 2.0*p[l+1][m][n]   + p[l+1][m][n+1]);
+                            if (n==N)       d1[m] += ((a*a*ht)/(hx*hx))*(p[l+1][m][N-2] - 2.0*p[l+1][m][N-1] + p[l+1][m][N]);
 
                             if (m == 0)
                             {
                                 b1[0] = 2.0 + (2.0*a*a*ht)/(hy*hy) + lambda0*ht - (2.0*a*a*lambda*ht)/(hy);
                                 c1[0] = -(2.0*a*a*ht)/(hy*hy);
-
                                 d1[0] += ((2.0*a*a*ht)/(hy))*g3(sn, tn);
                             }
                             else if (m == M)
                             {
                                 a1[M] = -(2.0*a*a*ht)/(hy*hy);
                                 b1[M] = 2.0 + (2.0*a*a*ht)/(hy*hy) + lambda0*ht - (2.0*a*a*lambda*ht)/(hy);
-
                                 d1[M] += ((2.0*a*a*ht)/(hy))*g4(sn, tn);
-
                             }
                             else
                             {
@@ -135,9 +135,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
                                 c1[m] = -(a*a*ht)/(hy*hy);
                             }
                         }
-
                         tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), x1.data(), M+1);
-
                         for (unsigned int m=0; m<=M; m++) ph[m][n] = x1[m];
                     }
                 }
@@ -147,7 +145,6 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
                 c1.clear();
                 d1.clear();
                 x1.clear();
-
             }
 
             {
@@ -170,24 +167,22 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
                         {
                             sn.j = m; sn.y = m*hy;
 
-                            d[offset+m] = 2.0*p[m][n] - ht*f(sn, tn);
+                            d[offset+m] = 2.0*p[l+1][m][n] - ht*f(sn, tn);
 
-                            if (n==0)       d[offset+m] += ((a*a*ht)/(hx*hx))*(p[m][0]   - 2.0*p[m][1]   + p[m][2]);
-                            if (n>0 && n<N) d[offset+m] += ((a*a*ht)/(hx*hx))*(p[m][n-1] - 2.0*p[m][n]   + p[m][n+1]);
-                            if (n==N)       d[offset+m] += ((a*a*ht)/(hx*hx))*(p[m][N-2] - 2.0*p[m][N-1] + p[m][N]);
+                            if (n==0)       d[offset+m] += ((a*a*ht)/(hx*hx))*(p[l+1][m][0]   - 2.0*p[l+1][m][1]   + p[l+1][m][2]);
+                            if (n>0 && n<N) d[offset+m] += ((a*a*ht)/(hx*hx))*(p[l+1][m][n-1] - 2.0*p[l+1][m][n]   + p[l+1][m][n+1]);
+                            if (n==N)       d[offset+m] += ((a*a*ht)/(hx*hx))*(p[l+1][m][N-2] - 2.0*p[l+1][m][N-1] + p[l+1][m][N]);
 
                             if (m == 0)
                             {
                                 w[offset+0][offset+0] += 2.0 + (2.0*a*a*ht)/(hy*hy) + lambda0*ht - (2.0*a*a*lambda*ht)/(hy);
                                 w[offset+0][offset+1] += -(2.0*a*a*ht)/(hy*hy);
-
                                 d[offset+0] += ((2.0*a*a*ht)/hy)*g3(sn, tn);
                             }
                             else if (m == M)
                             {
                                 w[offset+M][offset+(M-1)] += -(2.0*a*a*ht)/(hy*hy);
                                 w[offset+M][offset+(M-0)] += 2.0 + (2.0*a*a*ht)/(hy*hy) + lambda0*ht - (2.0*a*a*lambda*ht)/(hy);
-
                                 d[offset+M] += ((2.0*a*a*ht)/(hy))*g4(sn, tn);
                             }
                             else
@@ -208,17 +203,12 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
                                         const ControlNode &cn = controlNodes[s];
 
                                         bool found = false;
-                                        unsigned int offs = 0;
                                         for (unsigned int cs=0; cs<cnt.size(); cs++)
                                         {
                                             if (cn.n == cnt[cs])
                                             {
                                                 found = true;
-                                                offs = cs*(M+1);
-
-                                                //unsigned int jinx = ons[s].n;
-                                                unsigned int jiny = cn.m;
-                                                w[offset+m][offs+jiny] += -ht*setting.k[cn.i][j] * _delta * cn.w;
+                                                w[offset+m][cs*(M+1)+cn.m] += -ht*setting.k[cn.i][j] * _delta * cn.w;
                                             }
                                         }
 
@@ -303,14 +293,12 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
                             {
                                 b1[0] = 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht - (2.0*a*a*lambda*ht)/(hx);
                                 c1[0] = -(2.0*a*a*ht)/(hx*hx);
-
                                 d1[0] += ((2.0*a*a*ht)/hx)*g1(sn, tn);
                             }
                             else if (n == N)
                             {
                                 a1[N] = -(2.0*a*a*ht)/(hx*hx);
                                 b1[N] = 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht - (2.0*a*a*lambda*ht)/(hx);
-
                                 d1[N] += ((2.0*a*a*ht)/(hx))*g2(sn, tn);
                             }
                             else
@@ -320,10 +308,8 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
                                 c1[n] = -(a*a*ht)/(hx*hx);
                             }
                         }
-
                         tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), x1.data(), N+1);
-
-                        for (unsigned int n=0; n<=N; n++) p[m][n] = x1[n];
+                        for (unsigned int n=0; n<=N; n++) p[l][m][n] = x1[n];
                     }
                 }
 
@@ -345,16 +331,16 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
                 unsigned int offset = 0;
                 for (unsigned int m=0; m<=M; m++)
                 {
-                    SpaceNodePDE sn2;
-                    sn2.j = m; sn2.y = m*hy;
+                    SpaceNodePDE sn;
+                    sn.j = m; sn.y = m*hy;
 
                     if (v1y[m] == 1)
                     {
                         for (unsigned int n=0; n<=N; n++)
                         {
-                            sn2.i = n; sn2.x = n*hx;
+                            sn.i = n; sn.x = n*hx;
 
-                            d[offset+n] = 2.0*ph[m][n] - ht*f(sn2, tn);
+                            d[offset+n] = 2.0*ph[m][n] - ht*f(sn, tn);
 
                             if (m==0)       d[offset+n] += ((a*a*ht)/(hy*hy))*(ph[0][n]   - 2.0*ph[1][n]   + ph[2][n]);
                             if (m>0 && m<M) d[offset+n] += ((a*a*ht)/(hy*hy))*(ph[m-1][n] - 2.0*ph[m][n]   + ph[m+1][n]);
@@ -364,15 +350,13 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
                             {
                                 w[offset+0][offset+0] += 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht - (2.0*a*a*lambda*ht)/(hx);
                                 w[offset+0][offset+1] += -(2.0*a*a*ht)/(hx*hx);
-
-                                d[offset+0] += ((2.0*a*a*ht)/hx)*g1(sn2, tn);
+                                d[offset+0] += ((2.0*a*a*ht)/hx)*g1(sn, tn);
                             }
                             else if (n == N)
                             {
                                 w[offset+N][offset+(N-1)] += -(2.0*a*a*ht)/(hx*hx);
                                 w[offset+N][offset+(N-0)] += 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht - (2.0*a*a*lambda*ht)/(hx);
-
-                                d[offset+N] += ((2.0*a*a*ht)/(hx))*g2(sn2, tn);
+                                d[offset+N] += ((2.0*a*a*ht)/(hx))*g2(sn, tn);
                             }
                             else
                             {
@@ -384,7 +368,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
                             //------------------------------------ Adding delta part -------------------------------------//
                             for (unsigned int j=0; j<Lo; j++)
                             {
-                                double _delta = delta(sn2, setting.xi[j], j);
+                                double _delta = delta(sn, setting.xi[j], j);
                                 if (checkDelta(_delta))
                                 {
                                     for (unsigned int s=0; s<controlNodes.size(); s++)
@@ -392,17 +376,12 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
                                         const ControlNode &cn = controlNodes[s];
 
                                         bool found = false;
-                                        unsigned int offs = 0;
                                         for (unsigned int cs=0; cs<cnt.size(); cs++)
                                         {
                                             if (cn.m == cnt[cs])
                                             {
                                                 found = true;
-                                                offs = cs*(N+1);
-
-                                                unsigned int jinx = cn.n;
-                                                //unsigned int jiny = ons[s].m;
-                                                w[offset+n][offs+jinx] += -ht*setting.k[cn.i][j] * _delta * cn.w;
+                                                w[offset+n][cs*(N+1)+cn.n] += -ht*setting.k[cn.i][j] * _delta * cn.w;
                                             }
                                         }
 
@@ -420,7 +399,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
                                         //                            else
                                         if (!found)
                                         {
-                                            d.at(offset+n) += ht*setting.k[cn.i][j] * p[cn.m][cn.n] * _delta * cn.w;
+                                            d[offset+n] += ht*setting.k[cn.i][j] * p[l][cn.m][cn.n] * _delta * cn.w;
                                         }
                                     }
                                 }
@@ -439,7 +418,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
                     {
                         for (unsigned int n=0; n<=N; n++)
                         {
-                            p[m][n] = x[offset+n];
+                            p[l][m][n] = x[offset+n];
                         }
                         offset += N+1;
                     }
@@ -456,11 +435,10 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
         //------------------------------------- approximatin to x direction conditions -------------------------------------//
     }
 
-    //--------------------------------------------------------------------------------------------//
-
     delete [] v1x;
     delete [] v1y;
     controlNodes.clear();
+    ph.clear();
 }
 
 double IProblem2Backward2D::initial(const SpaceNodePDE &sn) const

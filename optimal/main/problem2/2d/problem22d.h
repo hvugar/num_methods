@@ -12,21 +12,21 @@
 class Problem2Forward2D : public IProblem2Forward2D
 {
 protected:
-//    virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-//    virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-//    virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-//    virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-//    virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
 };
 
 class Problem2Backward2D : public IProblem2Backward2D
 {
 protected:
-//    virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-//    virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-//    virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-//    virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-//    virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
 };
 
 class Problem22D : public RnFunction, public IGradient
@@ -34,7 +34,6 @@ class Problem22D : public RnFunction, public IGradient
 public:
     static void Main(int argc, char* argv[]);
 
-    Problem22D(double a, double lambda0, double lambda, double theta, double Lc, double Lo);
     void setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY);
     virtual ~Problem22D() {}
 
@@ -45,10 +44,11 @@ public:
     virtual double mu(double x, double y) const;
 
     DoubleMatrix U;
+    //P2Setting setting;
 
 public:
-    Problem2Forward2D forward;
-    Problem2Backward2D backward;
+    //Problem2Forward2D forward;
+    //Problem2Backward2D backward;
 
 private:
     Dimension mTimeDimension;
@@ -57,10 +57,8 @@ private:
 
     double alpha0;
 
-    P2Setting setting;
-
-    void array2Parameters(const DoubleVector &prms, DoubleMatrix &k, DoubleMatrix &z, std::vector<SpaceNodePDE> &xi, std::vector<SpaceNodePDE> &eta) const;
-    void paremeters2Array(const DoubleMatrix &k, const DoubleMatrix &z, const std::vector<SpaceNodePDE> &xi, const std::vector<SpaceNodePDE> &eta, DoubleVector &prms) const;
+    //void array2Parameters(const DoubleVector &prms, DoubleMatrix &k, DoubleMatrix &z, std::vector<SpaceNodePDE> &xi, std::vector<SpaceNodePDE> &eta) const;
+    //void paremeters2Array(const DoubleMatrix &k, const DoubleMatrix &z, const std::vector<SpaceNodePDE> &xi, const std::vector<SpaceNodePDE> &eta, DoubleVector &prms) const;
 };
 
 #endif // PROBLEM22D_H

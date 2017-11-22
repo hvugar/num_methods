@@ -27,13 +27,15 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
     unsigned int Lc = setting.Lc;
     unsigned int Lo =setting.Lo;
 
+    for (unsigned int l=0; l<u.size(); l++) u[l].clear();
     u.clear();
     u.resize(L+1);
+    DoubleMatrix uh(M+1, N+1);
 
     //--------------------------------------------------------------------------------------------//
 
     std::vector<ObservationNode> observeNodes;
-    for (unsigned int j=0; j<setting.Lo; j++) extendObservationPoint2(setting.xi[j], observeNodes, j);
+    for (unsigned int j=0; j<setting.Lo; j++) extendObservationPoint(setting.xi[j], observeNodes, j);
 
     unsigned int *v1y = new unsigned int[M+1]; for (unsigned int m=0; m<=M; m++) v1y[m] = 0;
     unsigned int *v1x = new unsigned int[N+1]; for (unsigned int n=0; n<=N; n++) v1x[n] = 0;
@@ -60,8 +62,6 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
         }
     }
 
-    //--------------------------------------------------------------------------------------------//
-    DoubleMatrix uh(M+1, N+1);
     //------------------------------------- initial conditions -------------------------------------//
     u[0].resize(M+1,N+1);
     for (unsigned int m=0; m<=M; m++)
@@ -189,7 +189,7 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
                                 w[offset+m][offset+(m+1)] += -(a*a*ht)/(hy*hy);
                             }
 
-                            //************************************* Adding delta part *************************************//
+                            //------------------------------------- Adding delta part -------------------------------------//
                             for (unsigned int i=0; i<Lc; i++)
                             {
                                 double _delta = delta(sn, setting.eta[i], i);
@@ -223,7 +223,7 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
                                         //                            else
                                         if (!found)
                                         {
-                                            d.at(offset+m) += ht*setting.k[i][on.j] * uh[on.m][on.n] * _delta * on.w;
+                                            d[offset+m] += ht*setting.k[i][on.j] * uh[on.m][on.n] * _delta * on.w;
                                         }
                                     }
 
@@ -296,14 +296,12 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
                             {
                                 b1[0] = 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*lambda*ht)/(hx);
                                 c1[0] = -(2.0*a*a*ht)/(hx*hx);
-
                                 d1[0] += (2.0*a*a*lambda*theta*ht)/(hx) + ((2.0*a*a*ht)/hx)*g1(sn, tn);
                             }
                             else if (n == N)
                             {
                                 a1[N] = -(2.0*a*a*ht)/(hx*hx);
                                 b1[N] = 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*lambda*ht)/(hx);
-
                                 d1[N] += (2.0*a*a*lambda*theta*ht)/(hx) + ((2.0*a*a*ht)/(hx))*g2(sn, tn);
                             }
                             else
@@ -313,9 +311,7 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
                                 c1[n] = -(a*a*ht)/(hx*hx);
                             }
                         }
-
                         tomasAlgorithm(a1.data(), b1.data(), c1.data(), d1.data(), x1.data(), N+1);
-
                         for (unsigned int n=0; n<=N; n++) u[l][m][n] = x1[n];
                     }
                 }
@@ -338,16 +334,16 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
                 unsigned int offset = 0;
                 for (unsigned int m=0; m<=M; m++)
                 {
-                    SpaceNodePDE sn2;
-                    sn2.j = m; sn2.y = m*hy;
+                    SpaceNodePDE sn;
+                    sn.j = m; sn.y = m*hy;
 
                     if (v1y[m] == 1)
                     {
                         for (unsigned int n=0; n<=N; n++)
                         {
-                            sn2.i = n; sn2.x = n*hx;
+                            sn.i = n; sn.x = n*hx;
 
-                            d[offset+n] = 2.0*uh[m][n] + lambda0*theta*ht + ht*f(sn2, tn);
+                            d[offset+n] = 2.0*uh[m][n] + lambda0*theta*ht + ht*f(sn, tn);
 
                             if (m==0)       d[offset+n] += ((a*a*ht)/(hy*hy))*(uh[0][n]   - 2.0*uh[1][n]   + uh[2][n]);
                             if (m>0 && m<M) d[offset+n] += ((a*a*ht)/(hy*hy))*(uh[m-1][n] - 2.0*uh[m][n]   + uh[m+1][n]);
@@ -357,15 +353,13 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
                             {
                                 w[offset+0][offset+0] += 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*lambda*ht)/(hx);
                                 w[offset+0][offset+1] += -(2.0*a*a*ht)/(hx*hx);
-
-                                d[offset+0] += (2.0*a*a*lambda*theta*ht)/(hx) + ((2.0*a*a*ht)/hx)*g1(sn2, tn);
+                                d[offset+0] += (2.0*a*a*lambda*theta*ht)/(hx) + ((2.0*a*a*ht)/hx)*g1(sn, tn);
                             }
                             else if (n == N)
                             {
                                 w[offset+N][offset+(N-1)] += -(2.0*a*a*ht)/(hx*hx);
                                 w[offset+N][offset+(N-0)] += 2.0 + (2.0*a*a*ht)/(hx*hx) + lambda0*ht + (2.0*a*a*lambda*ht)/(hx);
-
-                                d[offset+N] += (2.0*a*a*lambda*theta*ht)/(hx) + ((2.0*a*a*ht)/(hx))*g2(sn2, tn);
+                                d[offset+N] += (2.0*a*a*lambda*theta*ht)/(hx) + ((2.0*a*a*ht)/(hx))*g2(sn, tn);
                             }
                             else
                             {
@@ -374,10 +368,10 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
                                 w[offset+n][offset+(n+1)] += -(a*a*ht)/(hx*hx);
                             }
 
-                            //************************************* Adding delta part *************************************//
+                            //------------------------------------ Adding delta part -------------------------------------//
                             for (unsigned int i=0; i<Lc; i++)
                             {
-                                double _delta = delta(sn2, setting.eta[i], i);
+                                double _delta = delta(sn, setting.eta[i], i);
                                 if (checkDelta(_delta))
                                 {
                                     for (unsigned int s=0; s<observeNodes.size(); s++)
@@ -698,7 +692,7 @@ void IProblem2Forward2D::extendObservationPoint1(const SpaceNodePDE xi, std::vec
     }
 }
 
-void IProblem2Forward2D::extendObservationPoint2(const SpaceNodePDE xi, std::vector<ObservationNode> &ons, unsigned int j) const
+void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, std::vector<ObservationNode> &ons, unsigned int j) const
 {
     Dimension xd = spaceDimension(Dimension::DimensionX);
     Dimension yd = spaceDimension(Dimension::DimensionY);

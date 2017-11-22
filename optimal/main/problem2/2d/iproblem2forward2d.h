@@ -6,6 +6,7 @@
 #include <printer.h>
 #include <utils/random.h>
 #include "problem2setting.h"
+#include <time.h>
 
 using namespace std;
 
@@ -44,7 +45,7 @@ public:
     bool checkDelta(double delta) const;
 
     void extendObservationPoint1(const SpaceNodePDE op, std::vector<ObservationNode> &ops, unsigned int j) const;
-    void extendObservationPoint2(const SpaceNodePDE op, std::vector<ObservationNode> &ops, unsigned int j) const;
+    void extendObservationPoint(const SpaceNodePDE op, std::vector<ObservationNode> &ops, unsigned int j) const;
 
 protected:
     virtual double g1(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;

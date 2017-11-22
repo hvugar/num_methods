@@ -27,7 +27,7 @@ public:
     virtual ~IProblem2Backward2D() {}
     void setSettings(P2Setting s);
 
-    void calculateMVD(DoubleMatrix &p);
+    void calculateMVD(std::vector<DoubleMatrix> &p);
 
     DoubleMatrix U;
     DoubleMatrix mu;
