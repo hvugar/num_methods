@@ -4,7 +4,7 @@ void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     P2Setting setting;
     setting.a = 1.0;
-    setting.lambda = 0.01;
+    setting.lambda = 0.1;
     setting.lambda0 = 1.0;
     setting.theta = 10.0;
     setting.Lc = 2;
@@ -27,81 +27,81 @@ void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     setting.xi.resize(setting.Lo);
     setting.xi[0].x = 0.65;  setting.xi[0].y = 0.65;
-//    setting.xi[1].x = 0.50;  setting.xi[1].y = 0.50;
-//    setting.xi[2].x = 0.65;  setting.xi[2].y = 0.65;
+
+    //    setting.xi[1].x = 0.50;  setting.xi[1].y = 0.50;
+    //    setting.xi[2].x = 0.65;  setting.xi[2].y = 0.65;
 
 
-//    setting.eta.resize(setting.Lc);
-//    setting.eta[0].x = 0.33; setting.eta[0].y = 0.33;
-//    setting.eta[1].x = 0.33; setting.eta[1].y = 0.66;
-//    setting.eta[2].x = 0.66; setting.eta[2].y = 0.66;
-//    setting.eta[3].x = 0.66; setting.eta[3].y = 0.33;
+    //    setting.eta.resize(setting.Lc);
+    //    setting.eta[0].x = 0.33; setting.eta[0].y = 0.33;
+    //    setting.eta[1].x = 0.33; setting.eta[1].y = 0.66;
+    //    setting.eta[2].x = 0.66; setting.eta[2].y = 0.66;
+    //    setting.eta[3].x = 0.66; setting.eta[3].y = 0.33;
 
-//    setting.xi.resize(setting.Lo);
-//    setting.xi[0].x = 0.25;  setting.xi[0].y = 0.25;
-//    setting.xi[1].x = 0.25;  setting.xi[1].y = 0.75;
-//    setting.xi[2].x = 0.75;  setting.xi[2].y = 0.75;
-//    setting.xi[3].x = 0.75;  setting.xi[3].y = 0.25;
-//    setting.xi[4].x = 0.50;  setting.xi[4].y = 0.50;
+    //    setting.xi.resize(setting.Lo);
+    //    setting.xi[0].x = 0.25;  setting.xi[0].y = 0.25;
+    //    setting.xi[1].x = 0.25;  setting.xi[1].y = 0.75;
+    //    setting.xi[2].x = 0.75;  setting.xi[2].y = 0.75;
+    //    setting.xi[3].x = 0.75;  setting.xi[3].y = 0.25;
+    //    setting.xi[4].x = 0.50;  setting.xi[4].y = 0.50;
 
 
     Problem22D p22d;
     p22d.setGridParameters(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
-    unsigned int N1 = p22d.mSpaceDimensionX.sizeN();
-    unsigned int N2 = p22d.mSpaceDimensionY.sizeN();
-    p22d.U.resize(N2+1, N1+1, 10.0);
 
-//    std::vector<DoubleMatrix> u;
-//    p22d.forward.calculateMVD(u);
-//    IPrinter::printMatrix(u[u.size()-1]);
-//    IPrinter::printSeperatorLine();
+    p22d.testForwardEquation(setting);
+    return;
 
-//    p22d.backward.U = p22d.U;
-//    p22d.backward.uT = u[u.size()-1];
+//    unsigned int N1 = p22d.mSpaceDimensionX.sizeN();
+//    unsigned int N2 = p22d.mSpaceDimensionY.sizeN();
+//    p22d.U.resize(N2+1, N1+1, 10.0);
 
-//    std::vector<DoubleMatrix> p;
-//    p22d.backward.calculateMVD(p);
-//    IPrinter::printMatrix(p[0]);
-//    IPrinter::printSeperatorLine();
+//    //    p22d.backward.U = p22d.U;
+//    //    p22d.backward.uT = u[u.size()-1];
 
-    DoubleVector prm;
-    DoubleVector agrd;
-    DoubleVector ngrd;
+//    //    std::vector<DoubleMatrix> p;
+//    //    p22d.backward.calculateMVD(p);
+//    //    IPrinter::printMatrix(p[0]);
+//    //    IPrinter::printSeperatorLine();
 
-    setting.toVector(prm);
+//    DoubleVector prm;
+//    DoubleVector agrd;
+//    DoubleVector ngrd;
 
-    agrd.resize(prm.length(), 0.0);
-    ngrd.resize(prm.length(), 0.0);
+//    setting.toVector(prm);
 
-    p22d.gradient(prm, agrd);
+//    agrd.resize(prm.length(), 0.0);
+//    ngrd.resize(prm.length(), 0.0);
 
-    for (unsigned int i=0; i<setting.Lc; i++)
-    {
-        for (unsigned int j=0; j<setting.Lo; j++)
-        {
-            unsigned int index = i*setting.Lo + j;
-            DoubleVector x2 = prm; x2[index] += 0.01; double f2 = p22d.fx(x2);
-            DoubleVector x1 = prm; x1[index] -= 0.01; double f1 = p22d.fx(x1);
-            ngrd[index] = (f2 - f1)/0.02;
-        }
-    }
+//    p22d.gradient(prm, agrd);
 
-    for (unsigned int i=0; i<p22d.setting.Lc; i++)
-    {
-        for (unsigned int j=0; j<p22d.setting.Lo; j++)
-        {
-            unsigned int index = p22d.setting.Lc*p22d.setting.Lo + i*p22d.setting.Lo + j;
-            DoubleVector x2 = prm; x2[index] += 0.01; double f2 = p22d.fx(x2);
-            DoubleVector x1 = prm; x1[index] -= 0.01; double f1 = p22d.fx(x1);
-            ngrd[index] = (f2 - f1)/0.02;
-        }
-    }
+//    for (unsigned int i=0; i<setting.Lc; i++)
+//    {
+//        for (unsigned int j=0; j<setting.Lo; j++)
+//        {
+//            unsigned int index = i*setting.Lo + j;
+//            DoubleVector x2 = prm; x2[index] += 0.01; double f2 = p22d.fx(x2);
+//            DoubleVector x1 = prm; x1[index] -= 0.01; double f1 = p22d.fx(x1);
+//            ngrd[index] = (f2 - f1)/0.02;
+//        }
+//    }
 
-    IPrinter::print(prm);
-    agrd.L2Normalize();
-    IPrinter::print(agrd);
-    ngrd.L2Normalize();
-    IPrinter::print(ngrd);
+//    for (unsigned int i=0; i<p22d.setting.Lc; i++)
+//    {
+//        for (unsigned int j=0; j<p22d.setting.Lo; j++)
+//        {
+//            unsigned int index = p22d.setting.Lc*p22d.setting.Lo + i*p22d.setting.Lo + j;
+//            DoubleVector x2 = prm; x2[index] += 0.01; double f2 = p22d.fx(x2);
+//            DoubleVector x1 = prm; x1[index] -= 0.01; double f1 = p22d.fx(x1);
+//            ngrd[index] = (f2 - f1)/0.02;
+//        }
+//    }
+
+//    IPrinter::print(prm);
+//    agrd.L2Normalize();
+//    IPrinter::print(agrd);
+//    ngrd.L2Normalize();
+//    IPrinter::print(ngrd);
 }
 
 void Problem22D::setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY)
@@ -113,7 +113,7 @@ void Problem22D::setGridParameters(Dimension timeDimension, Dimension spaceDimen
 
 double Problem22D::fx(const DoubleVector &prms) const
 {
-    P2Setting setting1 = setting;
+    P2Setting setting1;// = setting;
     setting1.fromVector(prms);
 
     Problem2Forward2D forward;
@@ -139,7 +139,7 @@ void Problem22D::gradient(const DoubleVector &prms UNUSED_PARAM, DoubleVector &g
     double hy = mSpaceDimensionY.step();
     double ht = mTimeDimension.step();
 
-    P2Setting setting1 = setting;
+    P2Setting setting1;// = setting;
     setting1.fromVector(prms);
 
 
@@ -262,6 +262,23 @@ double Problem22D::integral(const DoubleMatrix &u) const
 double Problem22D::mu(double x UNUSED_PARAM, double y UNUSED_PARAM) const
 {
     return 1.0;
+}
+
+void Problem22D::testForwardEquation(const P2Setting &setting) const
+{
+    Problem2Forward2D forward;
+    forward.setTimeDimension(mTimeDimension);
+    forward.addSpaceDimension(mSpaceDimensionX);
+    forward.addSpaceDimension(mSpaceDimensionY);
+    forward.setSettings(setting);
+
+    std::vector<DoubleMatrix> u;
+    forward.calculateMVD(u);
+    IPrinter::printMatrix(u[u.size()-1]);
+    IPrinter::printSeperatorLine();
+
+    for (unsigned int i=0; i<u.size(); i++) u[i].clear();
+    u.clear();
 }
 
 

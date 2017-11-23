@@ -12,21 +12,21 @@
 class Problem2Forward2D : public IProblem2Forward2D
 {
 protected:
-    virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-    virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-    virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-    virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-    virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+//    virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+//    virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+//    virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+//    virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+//    virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
 };
 
 class Problem2Backward2D : public IProblem2Backward2D
 {
 protected:
-    virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-    virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-    virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-    virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-    virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+//    virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+//    virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+//    virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+//    virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+//    virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
 };
 
 class Problem22D : public RnFunction, public IGradient
@@ -56,6 +56,9 @@ private:
     Dimension mSpaceDimensionY;
 
     double alpha0;
+
+    void testForwardEquation(const P2Setting &setting) const;
+    void testBackwardEquation(const P2Setting &setting) const;
 
     //void array2Parameters(const DoubleVector &prms, DoubleMatrix &k, DoubleMatrix &z, std::vector<SpaceNodePDE> &xi, std::vector<SpaceNodePDE> &eta) const;
     //void paremeters2Array(const DoubleMatrix &k, const DoubleMatrix &z, const std::vector<SpaceNodePDE> &xi, const std::vector<SpaceNodePDE> &eta, DoubleVector &prms) const;
