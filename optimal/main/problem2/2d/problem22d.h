@@ -12,21 +12,22 @@
 class Problem2Forward2D : public IProblem2Forward2D
 {
 protected:
-//    virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-//    virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-//    virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-//    virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-//    virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
 };
 
 class Problem2Backward2D : public IProblem2Backward2D
 {
 protected:
-//    virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-//    virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-//    virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-//    virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-//    virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double h(const SpaceNodePDE &) const { return 0.0; }
+    virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
 };
 
 class Problem22D : public RnFunction, public IGradient
@@ -44,7 +45,7 @@ public:
     virtual double mu(double x, double y) const;
 
     DoubleMatrix U;
-    //P2Setting setting;
+    P2Setting setting;
 
 public:
     //Problem2Forward2D forward;
