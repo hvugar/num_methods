@@ -99,7 +99,7 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
     double *x1X = (double *) malloc(sizeof(double)*(N+1));
 
     TimeNodePDE tn;
-    for (unsigned int l=1; l<=L; l++)
+    for (unsigned int l=1; l<=1; l++)
     {
         u[l].resize(M+1, N+1);
 
@@ -108,7 +108,7 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
         {
             tn.i = l;
             tn.t = l*ht - 0.5*ht;
-            clock_t t1 = clock();
+            //clock_t t1 = clock();
             {
                 SpaceNodePDE sn;
                 for (unsigned int n=0; n<=N; n++)
@@ -151,8 +151,111 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
                     }
                 }
             }
-            clock_t t2 = clock();
-            clock_t t5, t6;
+            //clock_t t2 = clock();
+            //clock_t t5, t6;
+
+            ////////////////////////////////////
+
+            {
+                double* a2 = (double*) malloc(sizeof(double)*cntXSize*(M+1));
+                double* b2 = (double*) malloc(sizeof(double)*cntXSize*(M+1));
+                double* c2 = (double*) malloc(sizeof(double)*cntXSize*(M+1));
+                double* d2 = (double*) malloc(sizeof(double)*cntXSize*(M+1));
+                double* x2 = (double*) malloc(sizeof(double)*cntXSize*(M+1));
+                DoubleMatrix w2(cntXSize*(M+1), cntXSize*(M+1), 0.0);
+
+                unsigned int offset = 0;
+                for (unsigned int n=0; n<=N; n++)
+                {
+                    sn.i = n; sn.x = n*hx;
+
+                    if (v1x[n] == 1)
+                    {
+                        for (unsigned int m=0; m<=M; m++)
+                        {
+                            sn.j = m; sn.y = m*hy;
+
+                            d2[offset+m] = 2.0*u[l-1][m][n] + lambda0*theta*ht + ht*f(sn, tn);
+
+                            if (n==0)       d2[offset+m] += a2_ht__hx2*(u[l-1][m][0]   - 2.0*u[l-1][m][1]   + u[l-1][m][2]);
+                            if (n>0 && n<N) d2[offset+m] += a2_ht__hx2*(u[l-1][m][n-1] - 2.0*u[l-1][m][n]   + u[l-1][m][n+1]);
+                            if (n==N)       d2[offset+m] += a2_ht__hx2*(u[l-1][m][N-2] - 2.0*u[l-1][m][N-1] + u[l-1][m][N]);
+
+                            if (m == 0)
+                            {
+                                a2[offset+0] = 0.0;
+                                b2[offset+0] = 2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
+                                c2[offset+0] = -2.0*a2_ht__hy2;
+                                d2[offset+0] += (2.0*a*a*lambda*theta*ht)/(hy) + ((2.0*a*a*ht)/hy)*g3(sn, tn);
+                            }
+                            else if (m == M)
+                            {
+                                a2[offset+M] = -2.0*a2_ht__hy2;
+                                b2[offset+M] = 2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
+                                c2[offset+M] = 0.0;
+                                d2[offset+M] += (2.0*a*a*lambda*theta*ht)/(hy) + ((2.0*a*a*ht)/(hy))*g4(sn, tn);
+                            }
+                            else
+                            {
+                                a2[offset+(m-1)] = -a2_ht__hy2;
+                                b2[offset+(m+0)] = 2.0 + 2.0*a2_ht__hy2 + lambda0_ht;
+                                c2[offset+(m+1)] = -a2_ht__hy2;
+                            }
+
+                            //------------------------------------- Adding delta part -------------------------------------//
+                            for (unsigned int i=0; i<Lc; i++)
+                            {
+                                double _delta = delta(sn, setting.eta[i], i);
+                                if (checkDelta(_delta))
+                                {
+                                    for (unsigned int s=0; s<observeNodes.size(); s++)
+                                    {
+                                        const ObservationNode &on = observeNodes[s];
+
+                                        bool found = false;
+                                        for (unsigned int cs=0; cs<cntXSize; cs++)
+                                        {
+                                            if (on.n == cntX[cs])
+                                            {
+                                                found = true;
+                                                w2[offset+m][cs*(M+1)+on.m] += -ht*setting.k[i][on.j] * _delta * on.w;
+                                            }
+                                        }
+
+                                        if (!found)
+                                        {
+                                            d2[offset+m] += ht*setting.k[i][on.j] * uh[on.m][on.n] * _delta * on.w;
+                                        }
+                                    }
+
+                                    for (unsigned int j=0; j<Lo; j++)
+                                    {
+                                        d2[offset+m] -= ht * setting.k[i][j] * setting.z[i][j] *_delta;
+                                    }
+                                }
+                            }
+                        }
+                        offset += M+1;
+                    }
+                }
+
+                FILE* file1 = fopen("d:/mx_matrix.txt", "w");
+                IPrinter::print(w2, w2.rows(), w2.cols(), 10, 6, file1);
+                fclose(file1);
+
+                calculateQovma(a2, b2, c2, d2, w2, x2, cntXSize*(M+1));
+
+                w2.clear();
+                free(x2);
+                free(d2);
+                free(c2);
+                free(b2);
+                free(a2);
+            }
+
+
+            ////////////////////////////////////
+
             {
                 DoubleMatrix w(cntXSize*(M+1), cntXSize*(M+1), 0.0);
                 DoubleVector d(cntXSize*(M+1), 0.0);
@@ -243,9 +346,13 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
                     }
                 }
 
-                t5 = clock();
+                //t5 = clock();
                 LinearEquation::GaussianElimination(w,d,x);
-                t6 = clock();
+                //t6 = clock();
+
+                FILE* file1 = fopen("d:/mx_matrix2.txt", "w");
+                IPrinter::print(w, w.rows(), w.cols(), 10, 6, file1);
+                fclose(file1);
 
                 offset = 0;
                 for (unsigned int n=0; n<=N; n++)
@@ -264,11 +371,11 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
                 d.clear();
                 x.clear();
             }
-            clock_t t3 = clock();
-            printf("time: %8d %8d %f %8d %f %8d %f\n", l, t2-t1, ((float)(t2-t1))/CLOCKS_PER_SEC, t3-t2, (((float)(t3-t2))/CLOCKS_PER_SEC), t6-t5, (((float)(t6-t5))/CLOCKS_PER_SEC));
+            //clock_t t3 = clock();
+            //printf("time: %8d %8d %f %8d %f %8d %f\n", l, t2-t1, ((float)(t2-t1))/CLOCKS_PER_SEC, t3-t2, (((float)(t3-t2))/CLOCKS_PER_SEC), t6-t5, (((float)(t6-t5))/CLOCKS_PER_SEC));
         }
-        //IPrinter::printMatrix(uh);
-        //IPrinter::printSeperatorLine();
+        IPrinter::printMatrix(uh);
+        IPrinter::printSeperatorLine();
         //------------------------------------- approximatin to y direction conditions -------------------------------------//
 
         //------------------------------------- approximatin to x direction conditions -------------------------------------//
@@ -1173,5 +1280,75 @@ double IProblem2Forward2D::g4(const SpaceNodePDE &sn, const TimeNodePDE &tn) con
 double IProblem2Forward2D::U(double x, double y, double t) const
 {
     return x*x + y*y + t;
+}
+
+void IProblem2Forward2D::calculateQovma(double *a, double *b, double *c, double *d, DoubleMatrix &e, double *x, unsigned int size) const
+{
+//    printf("%d %d\n", size, e.rows());
+//    FILE* file1 = fopen("d:/mx_matrix_e.txt", "w");
+//    IPrinter::print(e, e.rows(), e.cols(), 10, 6, file1);
+//    fclose(file1);
+
+    std::vector<unsigned int> selectedCols;
+    for (unsigned int c=0; c<e.cols(); c++)
+    {
+        for (unsigned int r=0; r<e.rows(); r++)
+        {
+            if (e[r][c] != 0.0)
+            {
+                selectedCols.push_back(c);
+                break;
+            }
+        }
+    }
+
+    double *V = (double*) malloc(sizeof(double)*e.rows());
+    tomasAlgorithm(a, b, c, d, V, e.rows());
+
+    double **W = (double**) malloc(sizeof(double*)*selectedCols.size());
+    for (unsigned int i=0; i<selectedCols.size(); i++) W[i] = (double*) malloc(sizeof(double)*e.rows());
+
+    double *k =(double*) malloc(sizeof(double)*e.rows());
+    for (unsigned int col=0; col<selectedCols.size(); col++)
+    {
+        unsigned int colNumber = selectedCols[col];
+        for (unsigned int row=0; row<e.rows(); row++) k[row] = -e[row][colNumber];
+        tomasAlgorithm(a, b, c, k, W[col], size);
+    }
+
+    DoubleMatrix M(selectedCols.size(), selectedCols.size(), 0.0);
+    DoubleVector S(selectedCols.size(), 0.0);
+    for (unsigned int row=0; row<selectedCols.size(); row++)
+    {
+        for (unsigned int col=0; col<selectedCols.size(); col++)
+        {
+            M[row][col] = -W[col][selectedCols[row]];
+            if (col==row) M[row][col] += 1.0;
+        }
+        S[row] = V[selectedCols[row]];
+    }
+
+    DoubleVector X(selectedCols.size());
+    LinearEquation::GaussianElimination(M, S, X);
+    IPrinter::print(X);
+
+    IPrinter::printSeperatorLine();
+    IPrinter::printVector(V, size,NULL,size);
+    IPrinter::printSeperatorLine();
+    IPrinter::printVector(W[0], e.rows(), NULL, e.rows());
+    IPrinter::printVector(W[1], e.rows(), NULL, e.rows());
+    IPrinter::printVector(W[2], e.rows(), NULL, e.rows());
+    IPrinter::printVector(W[3], e.rows(), NULL, e.rows());
+    IPrinter::printVector(W[4], e.rows(), NULL, e.rows());
+    IPrinter::printVector(W[5], e.rows(), NULL, e.rows());
+    IPrinter::printVector(W[6], e.rows(), NULL, e.rows());
+    IPrinter::printVector(W[7], e.rows(), NULL, e.rows());
+
+    IPrinter::printSeperatorLine();
+
+    IPrinter::print(M);
+//    IPrinter::printSeperatorLine();
+//    IPrinter::print(S);
+    IPrinter::printSeperatorLine();
 }
 

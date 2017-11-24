@@ -46,6 +46,7 @@ public:
 
     void extendObservationPoint1(const SpaceNodePDE op, std::vector<ObservationNode> &ops, unsigned int j) const;
     void extendObservationPoint(const SpaceNodePDE op, std::vector<ObservationNode> &ops, unsigned int j) const;
+    void calculateQovma(double* a, double *b, double *c, double *d, DoubleMatrix &w, double *x, unsigned int size) const;
 
 protected:
     virtual double g1(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;

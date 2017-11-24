@@ -17,6 +17,7 @@ protected:
     virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
     virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
     virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double initial(const SpaceNodePDE &sn) const { return 0.0; }
 };
 
 class Problem2Backward2D : public IProblem2Backward2D

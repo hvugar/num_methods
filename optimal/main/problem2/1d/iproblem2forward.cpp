@@ -146,12 +146,12 @@ void IProblem2Forward::gridMethod(DoubleMatrix &u) const
     }
 }
 
-double IProblem2Forward::initial(const SpaceNodePDE &sn) const
+double IProblem2Forward::initial(const SpaceNodePDE &sn UNUSED_PARAM) const
 {
     return 0.0;
 }
 
-double IProblem2Forward::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary) const
+double IProblem2Forward::boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const
 {
     return NAN;
 }
@@ -182,7 +182,7 @@ double IProblem2Forward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     return res;
 }
 
-double IProblem2Forward::g0(const TimeNodePDE &tn) const
+double IProblem2Forward::g0(const TimeNodePDE &tn UNUSED_PARAM) const
 {
     //return 0.0;
     return lambda1*theta;
