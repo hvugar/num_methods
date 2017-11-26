@@ -21,6 +21,27 @@ struct ObservationNode
     double w;
 };
 
+struct DeltaNode
+{
+    double w;
+    unsigned int i;
+};
+
+struct ObservNode
+{
+    double w;
+    bool s;
+    unsigned int j;
+};
+
+struct SpaceNodeInfo
+{
+    std::vector<DeltaNode> deltaNodes;
+    std::vector<ObservNode> observNodes;
+};
+
+typedef SpaceNodeInfo* PSpaceNodeInfo;
+
 class IProblem2Forward2D : public IParabolicIBVP
 {
 public:
@@ -30,6 +51,8 @@ public:
     void setSettings(P2Setting s);
 
     void calculateMVD(std::vector<DoubleMatrix> &u) const;
+
+    void calculateMVD_M(std::vector<DoubleMatrix> &u);
 
 protected:
     virtual double initial(const SpaceNodePDE &sn) const;
@@ -58,6 +81,8 @@ public:
     double U(double x, double y, double t) const;
 
 private:
+    PSpaceNodeInfo** spaceNodeMatrix;
+
     //double a;
     //double lambda0;
     //double lambda;

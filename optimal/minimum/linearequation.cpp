@@ -1,6 +1,8 @@
 #include "linearequation.h"
 #include <math.h>
 #include <float.h>
+#include <cmethods.h>
+#include <vector>
 
 void GaussianElimination1(const DoubleMatrix& m, const DoubleVector& b, DoubleVector &x)
 {
@@ -80,4 +82,69 @@ void LinearEquation::FirstRowLoaded(const double *e, double f, const double *a, 
     free(r);
     free(q);
     free(p);
+}
+
+void LinearEquation::func1(const double *a, const double *b, const double *c, const double *d, double **e, double *x, unsigned int N)
+{
+    double *v = (double*) malloc(sizeof(double)*N);
+    tomasAlgorithm(a, b, c, d, v, N);
+
+    std::vector<unsigned int> selectedCols;
+
+    for (unsigned int col=0; col<N; col++)
+    {
+        for (unsigned int row=0; row<N; row++)
+        {
+            if (e[row][col] != 0.0)
+            {
+                selectedCols.push_back(col);
+                break;
+            }
+        }
+    }
+
+    double **w = (double**) malloc(sizeof(double*) * selectedCols.size());
+
+    for (unsigned int i=0; i<selectedCols.size(); i++)
+    {
+        w[i] = (double*) malloc(sizeof(double)*N);
+    }
+
+    for (unsigned int sc=0; sc<selectedCols.size(); sc++)
+    {
+        for (unsigned int row=0; row<N; row++)
+        {
+            w[sc][row] = -e[row][selectedCols[sc]];
+        }
+        tomasAlgorithm(a, b, c, w[sc], w[sc], N);
+    }
+
+    DoubleMatrix M(selectedCols.size(), selectedCols.size(), 0.0);
+    DoubleVector A(selectedCols.size());
+    DoubleVector u(selectedCols.size(), 0.0);
+    for (unsigned int scr=0; scr<selectedCols.size(); scr++)
+    {
+        A[scr] = v[selectedCols[scr]];
+        for (unsigned int scc=0; scc<selectedCols.size(); scc++)
+        {
+            M[scr][scc] = -w[scc][selectedCols[scr]];
+            if (scr==scc) M[scr][scc] += 1.0;
+        }
+    }
+
+    LinearEquation::GaussianElimination(M, A, u);
+
+    for (unsigned int i=0; i<N; i++)
+    {
+        x[i] = v[i];
+        for (unsigned int sc=0; sc<selectedCols.size(); sc++) x[i] += w[sc][i]*u[sc];
+    }
+
+    M.clear();
+    A.clear();
+    u.clear();
+    for (unsigned int sc=0; sc<selectedCols.size(); sc++) free(w[sc]);
+    free(w);
+    free(v);
+    selectedCols.clear();
 }
