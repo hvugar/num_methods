@@ -102,7 +102,6 @@ void LinearEquation::func1(const double *a, const double *b, const double *c, co
             }
         }
     }
-
     double **w = (double**) malloc(sizeof(double*) * selectedCols.size());
 
     for (unsigned int i=0; i<selectedCols.size(); i++)

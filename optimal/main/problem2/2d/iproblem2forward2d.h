@@ -52,8 +52,6 @@ public:
 
     void calculateMVD(std::vector<DoubleMatrix> &u) const;
 
-    void calculateMVD_M(std::vector<DoubleMatrix> &u);
-
 protected:
     virtual double initial(const SpaceNodePDE &sn) const;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;

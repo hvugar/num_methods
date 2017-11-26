@@ -7,8 +7,8 @@ void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     setting1.lambda = 0.01;
     setting1.lambda0 = 0.1;
     setting1.theta = 10.0;
-    setting1.Lc = 1;
-    setting1.Lo = 1;
+    setting1.Lc = 4;
+    setting1.Lo = 5;
 
     setting1.k.resize(setting1.Lc, setting1.Lo);
     setting1.z.resize(setting1.Lc, setting1.Lo);
@@ -21,31 +21,31 @@ void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         }
     }
 
-    setting1.eta.resize(setting1.Lc);
-    setting1.eta[0].x = 0.55; setting1.eta[0].y = 0.25;
+    //setting1.eta.resize(setting1.Lc);
+    //setting1.eta[0].x = 0.55; setting1.eta[0].y = 0.25;
     //setting1.eta[1].x = 0.30; setting1.eta[1].y = 0.80;
 
-    setting1.xi.resize(setting1.Lo);
-    setting1.xi[0].x = 0.55;  setting1.xi[0].y = 0.65;
+    //setting1.xi.resize(setting1.Lo);
+    //setting1.xi[0].x = 0.55;  setting1.xi[0].y = 0.65;
     //setting.xi[1].x = 0.50;  setting.xi[1].y = 0.50;
     //setting.xi[2].x = 0.65;  setting.xi[2].y = 0.65;
 
-//    setting1.eta.resize(setting1.Lc);
-//    setting1.eta[0].x = 0.33; setting1.eta[0].y = 0.33;
-//    setting1.eta[1].x = 0.33; setting1.eta[1].y = 0.66;
-//    setting1.eta[2].x = 0.66; setting1.eta[2].y = 0.66;
-//    setting1.eta[3].x = 0.66; setting1.eta[3].y = 0.33;
+    setting1.eta.resize(setting1.Lc);
+    setting1.eta[0].x = 0.33; setting1.eta[0].y = 0.33;
+    setting1.eta[1].x = 0.33; setting1.eta[1].y = 0.66;
+    setting1.eta[2].x = 0.66; setting1.eta[2].y = 0.66;
+    setting1.eta[3].x = 0.66; setting1.eta[3].y = 0.33;
 
-//    setting1.xi.resize(setting1.Lo);
-//    setting1.xi[0].x = 0.25;  setting1.xi[0].y = 0.25;
-//    setting1.xi[1].x = 0.25;  setting1.xi[1].y = 0.75;
-//    setting1.xi[2].x = 0.75;  setting1.xi[2].y = 0.75;
-//    setting1.xi[3].x = 0.75;  setting1.xi[3].y = 0.25;
-//    setting1.xi[4].x = 0.50;  setting1.xi[4].y = 0.50;
+    setting1.xi.resize(setting1.Lo);
+    setting1.xi[0].x = 0.25;  setting1.xi[0].y = 0.25;
+    setting1.xi[1].x = 0.25;  setting1.xi[1].y = 0.75;
+    setting1.xi[2].x = 0.75;  setting1.xi[2].y = 0.75;
+    setting1.xi[3].x = 0.75;  setting1.xi[3].y = 0.25;
+    setting1.xi[4].x = 0.50;  setting1.xi[4].y = 0.50;
 
     Problem22D p22d;
     p22d.setting = setting1;
-    p22d.setGridParameters(Dimension(0.01, 0, 100), Dimension(0.1, 0, 10), Dimension(0.1, 0, 10));
+    p22d.setGridParameters(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
 
     p22d.testForwardEquation(p22d.setting);
 //    p22d.testBackwardEquation(setting);
@@ -74,27 +74,27 @@ void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     p22d.gradient(prm, agrd);
 
-    for (unsigned int i=0; i<p22d.setting.Lc; i++)
-    {
-        for (unsigned int j=0; j<p22d.setting.Lo; j++)
-        {
-            unsigned int index = i*p22d.setting.Lo + j;
-            DoubleVector x2 = prm; x2[index] += 0.01; double f2 = p22d.fx(x2);
-            DoubleVector x1 = prm; x1[index] -= 0.01; double f1 = p22d.fx(x1);
-            ngrd[index] = (f2 - f1)/0.02;
-        }
-    }
+//    for (unsigned int i=0; i<p22d.setting.Lc; i++)
+//    {
+//        for (unsigned int j=0; j<p22d.setting.Lo; j++)
+//        {
+//            unsigned int index = i*p22d.setting.Lo + j;
+//            DoubleVector x2 = prm; x2[index] += 0.01; double f2 = p22d.fx(x2);
+//            DoubleVector x1 = prm; x1[index] -= 0.01; double f1 = p22d.fx(x1);
+//            ngrd[index] = (f2 - f1)/0.02;
+//        }
+//    }
 
-    for (unsigned int i=0; i<setting1.Lc; i++)
-    {
-        for (unsigned int j=0; j<setting1.Lo; j++)
-        {
-            unsigned int index = p22d.setting.Lc*p22d.setting.Lo + i*p22d.setting.Lo + j;
-            DoubleVector x2 = prm; x2[index] += 0.01; double f2 = p22d.fx(x2);
-            DoubleVector x1 = prm; x1[index] -= 0.01; double f1 = p22d.fx(x1);
-            ngrd[index] = (f2 - f1)/0.02;
-        }
-    }
+//    for (unsigned int i=0; i<setting1.Lc; i++)
+//    {
+//        for (unsigned int j=0; j<setting1.Lo; j++)
+//        {
+//            unsigned int index = p22d.setting.Lc*p22d.setting.Lo + i*p22d.setting.Lo + j;
+//            DoubleVector x2 = prm; x2[index] += 0.01; double f2 = p22d.fx(x2);
+//            DoubleVector x1 = prm; x1[index] -= 0.01; double f1 = p22d.fx(x1);
+//            ngrd[index] = (f2 - f1)/0.02;
+//        }
+//    }
 
     IPrinter::print(prm);
     agrd.L2Normalize();
@@ -275,8 +275,8 @@ void Problem22D::testForwardEquation(const P2Setting &setting) const
 
     std::vector<DoubleMatrix> u;
     forward.calculateMVD(u);
-    //IPrinter::printMatrix(u[u.size()-1]);
-    //IPrinter::printSeperatorLine();
+    IPrinter::printMatrix(u[u.size()-1]);
+    IPrinter::printSeperatorLine();
 
     for (unsigned int i=0; i<u.size(); i++) u[i].clear();
     u.clear();

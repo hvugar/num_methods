@@ -3,6 +3,7 @@
 
 #include "global.h"
 #include "matrix2d.h"
+#include "printer.h"
 
 //void MINIMUMSHARED_EXPORT GaussianElimination(const DoubleMatrix& m, const DoubleVector& b, DoubleVector &x);
 
