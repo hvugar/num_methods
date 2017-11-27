@@ -66,50 +66,16 @@
 
 #include "problem2/1d/problem2.h"
 #include "problem2/2d/problem22d.h"
+#include "problem2/2d/problem22dex1.h"
+
+#include <QtGui>
 
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
+    QGuiApplication app(argc, argv);
+
     srand(time(NULL));
-
-    unsigned int N = 11;
-    double *a = (double*) malloc(sizeof(double)*N);
-    double *b = (double*) malloc(sizeof(double)*N);
-    double *c = (double*) malloc(sizeof(double)*N);
-    double *d = (double*) malloc(sizeof(double)*N);
-    double *x = (double*) malloc(sizeof(double)*N);
-    double **e = (double**) malloc(sizeof(double*)*N);
-
-    for (unsigned int i=0; i<N; i++)
-    {
-        e[i] = (double*) malloc(sizeof(double)*N);
-        for (unsigned int j=0; j<N; j++) e[i][j] = 0.0;
-    }
-
-    for (unsigned int i=0; i<N; i++)
-    {
-        a[i] = -1.0;
-        b[i] = +4.1;
-        c[i] = -1.0;
-        x[i] = i;
-
-        e[i][0] = +1.0;
-        e[i][5] = -2.0;
-        e[i][7] = +3.0;
-        e[i][10] = -1.0;
-    }
-    a[0]   = 0.0;
-    c[N-1] = 0.0;
-    
-    d[0] = b[0]*x[0] + c[1]*x[1]
-            + e[0][0]*x[0] + e[0][5]*x[5] + e[0][7]*x[7] + e[0][10]*x[10];
-    for (unsigned int i=1; i<N-1; i++)
-    {
-        d[i] = a[i]*x[i-1] + b[i]*x[i] + c[i]*x[i+1]
-                + e[i][0]*x[0] + e[i][5]*x[5] + e[i][7]*x[7] + e[i][10]*x[10];
-    }
-    d[N-1] = a[N-1]*x[N-2] + b[N-1]*x[N-1]
-            + e[N-1][0]*x[0] + e[N-1][5]*x[5] + e[N-1][7]*x[7] + e[N-1][10]*x[10];
 
     //IPrinter::printVector(a,N,NULL,N);
     //IPrinter::printVector(b,N,NULL,N);
@@ -139,7 +105,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //MatrixTest::Main(argc, argv);
 
     //Problem2::Main(argc, argv);
-    Problem22D::Main(argc, argv);
+//    Problem22D::Main(argc, argv);
+    Problem22DEx1::Main(argc, argv);
 
     //NLLIParabolicIBVP::Main(argc, argv);
 

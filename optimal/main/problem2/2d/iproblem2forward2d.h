@@ -1,10 +1,11 @@
 #ifndef IPROBLEM2FORWARD2D_H
 #define IPROBLEM2FORWARD2D_H
 
+#define USE_OTHER_FUNCTIONS_F
+
 #include <grid/pibvp.h>
 #include <vector>
 #include <printer.h>
-#include <utils/random.h>
 #include "problem2setting.h"
 #include <time.h>
 
@@ -21,27 +22,6 @@ struct ObservationNode
     double w;
 };
 
-struct DeltaNode
-{
-    double w;
-    unsigned int i;
-};
-
-struct ObservNode
-{
-    double w;
-    bool s;
-    unsigned int j;
-};
-
-struct SpaceNodeInfo
-{
-    std::vector<DeltaNode> deltaNodes;
-    std::vector<ObservNode> observNodes;
-};
-
-typedef SpaceNodeInfo* PSpaceNodeInfo;
-
 class IProblem2Forward2D : public IParabolicIBVP
 {
 public:
@@ -49,8 +29,9 @@ public:
     virtual ~IProblem2Forward2D() {}
 
     void setSettings(P2Setting s);
-
     void calculateMVD(std::vector<DoubleMatrix> &u) const;
+
+    virtual void layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const {}
 
 protected:
     virtual double initial(const SpaceNodePDE &sn) const;
@@ -67,7 +48,6 @@ public:
 
     void extendObservationPoint1(const SpaceNodePDE op, std::vector<ObservationNode> &ops, unsigned int j) const;
     void extendObservationPoint(const SpaceNodePDE op, std::vector<ObservationNode> &ops, unsigned int j) const;
-    void calculateQovma(double* a, double *b, double *c, double *d, DoubleMatrix &w, double *x, unsigned int size) const;
 
 protected:
     virtual double g1(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;
@@ -79,21 +59,6 @@ public:
     double U(double x, double y, double t) const;
 
 private:
-    PSpaceNodeInfo** spaceNodeMatrix;
-
-    //double a;
-    //double lambda0;
-    //double lambda;
-    //double theta;
-
-    //unsigned int Lc;
-    //unsigned int Lo;
-
-    //DoubleMatrix k;
-    //DoubleMatrix z;
-    //vector<SpaceNodePDE> xi;
-    //vector<SpaceNodePDE> eta;
-
     P2Setting setting;
 };
 

@@ -15,7 +15,7 @@
 #include <QVector>
 #include <vector2d.h>
 #include <matrix2d.h>
-#include <hyperbolicequation.h>
+#include <pde_old/hyperbolicequation.h>
 
 class QSample1 : public QWidget, public IHyperbolicEquation
 {

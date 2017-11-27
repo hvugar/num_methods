@@ -21,11 +21,11 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
     double ht = td.step();
 
     double a = setting.a;
-    double lambda0 = setting.lambda0;
-    double lambda = setting.lambda;
-    double theta = setting.theta;
+    double lambda0  = setting.lambda0;
+    double lambda   = setting.lambda;
+    double theta    = setting.theta;
     unsigned int Lc = setting.Lc;
-    unsigned int Lo =setting.Lo;
+    unsigned int Lo = setting.Lo;
 
     for (unsigned int l=0; l<u.size(); l++) u[l].clear();
     u.clear();
@@ -44,7 +44,6 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
     for (unsigned int m=0; m<=M; m++)
     {
         sn.j = m; sn.y = m*hy;
-
         for (unsigned int n=0; n<=N; n++)
         {
             sn.i = n; sn.x = n*hx;
@@ -66,7 +65,6 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
     u[0].resize(M+1,N+1);
     for (unsigned int m=0; m<=M; m++)
     {
-        SpaceNodePDE sn;
         sn.j = m; sn.y = m*hy;
         for (unsigned int n=0; n<=N; n++)
         {
@@ -74,7 +72,8 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
             u[0][m][n] = initial(sn);
         }
     }
-    //IPrinter::printMatrix(u);
+    layerInfo(u[0], 0);
+    //IPrinter::printMatrix(u[0]);
     //IPrinter::printSeperatorLine();
     //------------------------------------- initial conditions -------------------------------------//
 
@@ -82,6 +81,7 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
     double a2_ht__hy2 = ((a*a*ht)/(hy*hy));
     double lambda0_ht = lambda0*ht;
     double a2_lambda_ht__hy = (a*a*lambda*ht)/(hy);
+    double a2_lambda_ht__hx = (a*a*lambda*ht)/(hx);
 
     std::vector<unsigned int> cntX; for (unsigned int n=0; n<=N; n++) if (v1x[n] != 0) cntX.push_back(n); unsigned int cntXSize = cntX.size();
     std::vector<unsigned int> cntY; for (unsigned int m=0; m<=M; m++) if (v1y[m] != 0) cntY.push_back(m); unsigned int cntYSize = cntY.size();
@@ -99,17 +99,15 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
     double *x1X = (double *) malloc(sizeof(double)*(N+1));
 
     TimeNodePDE tn;
-    for (unsigned int l=1; l<=M; l++)
+    for (unsigned int l=1; l<=L; l++)
     {
         u[l].resize(M+1, N+1);
 
         //------------------------------------- approximatin to y direction conditions -------------------------------------//
-
         {
             tn.i = l;
             tn.t = l*ht - 0.5*ht;
             {
-                SpaceNodePDE sn;
                 for (unsigned int n=0; n<=N; n++)
                 {
                     if (v1x[n] == 0)
@@ -127,15 +125,21 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
 
                             if (m == 0)
                             {
-                                b1Y[0] = 2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
+                                a1Y[0] = 0.0;
+                                b1Y[0] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
                                 c1Y[0] = -2.0*a2_ht__hy2;
-                                d1Y[0] += (2.0*a*a*lambda*theta*ht)/(hy) + ((2.0*a*a*ht)/(hy))*g3(sn, tn);
+                                d1Y[0] += 2.0*a2_lambda_ht__hy*theta;
+
+                                d1Y[0] += ((2.0*a*a*ht)/(hy))*g3(sn, tn);
                             }
                             else if (m == M)
                             {
                                 a1Y[M] = -2.0*a2_ht__hy2;
                                 b1Y[M] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
-                                d1Y[M] += (2.0*a*a*lambda*theta*ht)/(hy) + ((2.0*a*a*ht)/(hy))*g4(sn, tn);
+                                c1Y[M] = 0.0;
+                                d1Y[M] += 2.0*a2_lambda_ht__hy*theta;
+
+                                d1Y[M] += ((2.0*a*a*ht)/(hy))*g4(sn, tn);
                             }
                             else
                             {
@@ -149,8 +153,6 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
                     }
                 }
             }
-
-            ////////////////////////////////////
 
             {
                 double* a2 = (double*) malloc(sizeof(double)*cntXSize*(M+1));
@@ -180,21 +182,23 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
                             if (m == 0)
                             {
                                 a2[offset+0] = 0.0;
-                                b2[offset+0] = 2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
+                                b2[offset+0] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
                                 c2[offset+0] = -2.0*a2_ht__hy2;
-                                d2[offset+0] += (2.0*a*a*lambda*theta*ht)/(hy) + ((2.0*a*a*ht)/hy)*g3(sn, tn);
+                                d2[offset+0] += 2.0*a2_lambda_ht__hy*theta;
+                                d2[offset+0] += ((2.0*a*a*ht)/hy)*g3(sn, tn);
                             }
                             else if (m == M)
                             {
                                 a2[offset+M] = -2.0*a2_ht__hy2;
-                                b2[offset+M] = 2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
+                                b2[offset+M] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
                                 c2[offset+M] = 0.0;
-                                d2[offset+M] += (2.0*a*a*lambda*theta*ht)/(hy) + ((2.0*a*a*ht)/(hy))*g4(sn, tn);
+                                d2[offset+M] += 2.0*a2_lambda_ht__hy*theta;
+                                d2[offset+M] += ((2.0*a*a*ht)/(hy))*g4(sn, tn);
                             }
                             else
                             {
                                 a2[offset+m] = -a2_ht__hy2;
-                                b2[offset+m] = 2.0 + 2.0*a2_ht__hy2 + lambda0_ht;
+                                b2[offset+m] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht;
                                 c2[offset+m] = -a2_ht__hy2;
                             }
 
@@ -214,13 +218,13 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
                                             if (on.n == cntX[cs])
                                             {
                                                 found = true;
-                                                w2[offset+m][cs*(M+1)+on.m] += -ht*setting.k[i][on.j] * _delta * on.w;
+                                                w2[offset+m][cs*(M+1)+on.m] += -ht * setting.k[i][on.j] * _delta * on.w;
                                             }
                                         }
 
                                         if (!found)
                                         {
-                                            d2[offset+m] += ht*setting.k[i][on.j] * uh[on.m][on.n] * _delta * on.w;
+                                            d2[offset+m] += ht * setting.k[i][on.j] * uh[on.m][on.n] * _delta * on.w;
                                         }
                                     }
 
@@ -257,19 +261,16 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
                 free(b2);
                 free(a2);
             }
-         }
+        }
         //IPrinter::printMatrix(uh);
         //IPrinter::printSeperatorLine();
         //------------------------------------- approximatin to y direction conditions -------------------------------------//
 
         //------------------------------------- approximatin to x direction conditions -------------------------------------//
-
         {
             tn.i = l;
             tn.t = l*ht;
-
             {
-                SpaceNodePDE sn;
                 for (unsigned int m=0; m<=M; m++)
                 {
                     if (v1y[m] == 0)
@@ -287,15 +288,21 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
 
                             if (n == 0)
                             {
-                                b1X[0] = +2.0 + 2.0*a2_ht__hx2 + lambda0_ht + (2.0*a*a*lambda*ht)/(hx);
+                                a1X[0] = 0.0;
+                                b1X[0] = +2.0 + 2.0*a2_ht__hx2 + lambda0_ht + 2.0*a2_lambda_ht__hx;
                                 c1X[0] = -2.0*a2_ht__hx2;
-                                d1X[0] += (2.0*a*a*lambda*theta*ht)/(hx) + ((2.0*a*a*ht)/hx)*g1(sn, tn);
+                                d1X[0] += 2.0*a2_lambda_ht__hx*theta;
+
+                                d1X[0] += ((2.0*a*a*ht)/hx)*g1(sn, tn);
                             }
                             else if (n == N)
                             {
                                 a1X[N] = -2.0*a2_ht__hx2;
-                                b1X[N] = +2.0 + 2.0*a2_ht__hx2 + lambda0_ht + (2.0*a*a*lambda*ht)/(hx);
-                                d1X[N] += (2.0*a*a*lambda*theta*ht)/(hx) + ((2.0*a*a*ht)/(hx))*g2(sn, tn);
+                                b1X[N] = +2.0 + 2.0*a2_ht__hx2 + lambda0_ht + 2.0*a2_lambda_ht__hx;
+                                c1X[N] = 0.0;
+                                d1X[N] += 2.0*a2_lambda_ht__hx*theta;
+
+                                d1X[N] += ((2.0*a*a*ht)/(hx))*g2(sn, tn);
                             }
                             else
                             {
@@ -308,7 +315,6 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
                         for (unsigned int n=0; n<=N; n++) u[l][m][n] = x1X[n];
                     }
                 }
-
             }
 
             {
@@ -338,16 +344,20 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
                             if (n == 0)
                             {
                                 a2[offset+0] = 0.0;
-                                b2[offset+0] = 2.0 + 2.0*a2_ht__hx2 + lambda0_ht + (2.0*a*a*lambda*ht)/(hx);
+                                b2[offset+0] = +2.0 + 2.0*a2_ht__hx2 + lambda0_ht + 2.0*a2_lambda_ht__hx;
                                 c2[offset+0] = -2.0*a2_ht__hx2;
-                                d2[offset+0] += (2.0*a*a*lambda*theta*ht)/(hx) + ((2.0*a*a*ht)/hx)*g1(sn, tn);
+                                d2[offset+0] += 2.0*a2_lambda_ht__hx*theta;
+
+                                d2[offset+0] += ((2.0*a*a*ht)/hx)*g1(sn, tn);
                             }
                             else if (n == N)
                             {
                                 a2[offset+N] = -2.0*a2_ht__hx2;
-                                b2[offset+N] = 2.0 + 2.0*a2_ht__hx2 + lambda0_ht + (2.0*a*a*lambda*ht)/(hx);
+                                b2[offset+N] = +2.0 + 2.0*a2_ht__hx2 + lambda0_ht + 2.0*a2_lambda_ht__hx;
                                 c2[offset+N] = 0.0;
-                                d2[offset+N] += (2.0*a*a*lambda*theta*ht)/(hx) + ((2.0*a*a*ht)/(hx))*g2(sn, tn);
+                                d2[offset+N] += 2.0*a2_lambda_ht__hx*theta;
+
+                                d2[offset+N] += ((2.0*a*a*ht)/(hx))*g2(sn, tn);
                             }
                             else
                             {
@@ -367,18 +377,18 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
                                         const ObservationNode &on = observeNodes[s];
 
                                         bool found = false;
-                                        for (unsigned int cs=0; cs<cntXSize; cs++)
+                                        for (unsigned int cs=0; cs<cntYSize; cs++)
                                         {
                                             if (on.m == cntY[cs])
                                             {
                                                 found = true;
-                                                w2[offset+n][cs*(N+1)+on.n] += -ht*setting.k[i][on.j] * _delta * on.w;
+                                                w2[offset+n][cs*(N+1)+on.n] += -ht * setting.k[i][on.j] * _delta * on.w;
                                             }
                                         }
 
                                         if (!found)
                                         {
-                                            d2[offset+n] += ht*setting.k[i][on.j] * u[l][on.m][on.n] * _delta * on.w;
+                                            d2[offset+n] += ht * setting.k[i][on.j] * u[l][on.m][on.n] * _delta * on.w;
                                         }
                                     }
 
@@ -416,9 +426,12 @@ void IProblem2Forward2D::calculateMVD(std::vector<DoubleMatrix> &u) const
                 free(a2);
             }
         }
+
         //IPrinter::printMatrix(u[l]);
         //IPrinter::printSeperatorLine();
         //------------------------------------- approximatin to x direction conditions -------------------------------------//
+
+        layerInfo(u[l], l);
     }
 
     free(x1X);
@@ -1159,74 +1172,3 @@ double IProblem2Forward2D::U(double x, double y, double t) const
 {
     return x*x + y*y + t;
 }
-
-void IProblem2Forward2D::calculateQovma(double *a, double *b, double *c, double *d, DoubleMatrix &e, double *x, unsigned int size) const
-{
-    //    printf("%d %d\n", size, e.rows());
-    //    FILE* file1 = fopen("d:/mx_matrix_e.txt", "w");
-    //    IPrinter::print(e, e.rows(), e.cols(), 10, 6, file1);
-    //    fclose(file1);
-
-    std::vector<unsigned int> selectedCols;
-    for (unsigned int c=0; c<e.cols(); c++)
-    {
-        for (unsigned int r=0; r<e.rows(); r++)
-        {
-            if (e[r][c] != 0.0)
-            {
-                selectedCols.push_back(c);
-                break;
-            }
-        }
-    }
-
-    double *V = (double*) malloc(sizeof(double)*e.rows());
-    tomasAlgorithm(a, b, c, d, V, e.rows());
-
-    double **W = (double**) malloc(sizeof(double*)*selectedCols.size());
-    for (unsigned int i=0; i<selectedCols.size(); i++) W[i] = (double*) malloc(sizeof(double)*e.rows());
-
-    double *k =(double*) malloc(sizeof(double)*e.rows());
-    for (unsigned int col=0; col<selectedCols.size(); col++)
-    {
-        unsigned int colNumber = selectedCols[col];
-        for (unsigned int row=0; row<e.rows(); row++) k[row] = -e[row][colNumber];
-        tomasAlgorithm(a, b, c, k, W[col], size);
-    }
-
-    DoubleMatrix M(selectedCols.size(), selectedCols.size(), 0.0);
-    DoubleVector S(selectedCols.size(), 0.0);
-    for (unsigned int row=0; row<selectedCols.size(); row++)
-    {
-        for (unsigned int col=0; col<selectedCols.size(); col++)
-        {
-            M[row][col] = -W[col][selectedCols[row]];
-            if (col==row) M[row][col] += 1.0;
-        }
-        S[row] = V[selectedCols[row]];
-    }
-
-    DoubleVector X(selectedCols.size());
-    LinearEquation::GaussianElimination(M, S, X);
-    IPrinter::print(X);
-
-    IPrinter::printSeperatorLine();
-    IPrinter::printVector(V, size,NULL,size);
-    IPrinter::printSeperatorLine();
-    IPrinter::printVector(W[0], e.rows(), NULL, e.rows());
-    IPrinter::printVector(W[1], e.rows(), NULL, e.rows());
-    IPrinter::printVector(W[2], e.rows(), NULL, e.rows());
-    IPrinter::printVector(W[3], e.rows(), NULL, e.rows());
-    IPrinter::printVector(W[4], e.rows(), NULL, e.rows());
-    IPrinter::printVector(W[5], e.rows(), NULL, e.rows());
-    IPrinter::printVector(W[6], e.rows(), NULL, e.rows());
-    IPrinter::printVector(W[7], e.rows(), NULL, e.rows());
-
-    IPrinter::printSeperatorLine();
-
-    IPrinter::print(M);
-    //    IPrinter::printSeperatorLine();
-    //    IPrinter::print(S);
-    IPrinter::printSeperatorLine();
-}
-

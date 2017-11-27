@@ -1,7 +1,7 @@
 #include "loadedlinearode1order.h"
 #include <math.h>
 
-void LoadedLinearODE1Order::Main(int argc, char *argv[])
+void LoadedLinearODE1Order::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     LoadedLinearODE1Order llo;
 

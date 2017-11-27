@@ -6,11 +6,11 @@
 void visualizeVectorHeat(const DoubleVector &v, double min, double max, QPixmap &img, unsigned int w, unsigned int h)
 {
     C_UNUSED(w);
-    unsigned int size = v.size();
+    unsigned int size = v.length();
     img = QPixmap(size, h);
     img.fill(Qt::transparent);
     QPainter painter(&img);
-    for (unsigned int i=0; i<v.size(); i++)
+    for (unsigned int i=0; i<v.length(); i++)
     {
         double u = v[i];
         double ratio = 0.0;

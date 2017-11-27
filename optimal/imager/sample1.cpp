@@ -128,7 +128,7 @@ void QSample1::paintEvent(QPaintEvent *e)
     double maximum = m.max();
 
     const DoubleVector &v = m.row(j);
-    int v_size = v.size();
+    int v_size = v.length();
     QPixmap pixmap = QPixmap(QSize(1280, 720));
     pixmap.fill(Qt::white);
     QPainter painter(&pixmap);

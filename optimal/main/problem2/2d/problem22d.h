@@ -17,7 +17,7 @@ protected:
     virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
     virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
     virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-    virtual double initial(const SpaceNodePDE &sn) const { return 0.0; }
+    virtual double initial(const SpaceNodePDE &) const { return 0.0; }
 };
 
 class Problem2Backward2D : public IProblem2Backward2D
@@ -48,9 +48,7 @@ public:
     DoubleMatrix U;
     P2Setting setting;
 
-public:
-    //Problem2Forward2D forward;
-    //Problem2Backward2D backward;
+    static void testExample1();
 
 private:
     Dimension mTimeDimension;
@@ -61,9 +59,6 @@ private:
 
     void testForwardEquation(const P2Setting &setting) const;
     void testBackwardEquation(const P2Setting &setting) const;
-
-    //void array2Parameters(const DoubleVector &prms, DoubleMatrix &k, DoubleMatrix &z, std::vector<SpaceNodePDE> &xi, std::vector<SpaceNodePDE> &eta) const;
-    //void paremeters2Array(const DoubleMatrix &k, const DoubleMatrix &z, const std::vector<SpaceNodePDE> &xi, const std::vector<SpaceNodePDE> &eta, DoubleVector &prms) const;
 };
 
 #endif // PROBLEM22D_H

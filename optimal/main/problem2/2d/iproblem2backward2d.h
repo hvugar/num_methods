@@ -1,6 +1,8 @@
 #ifndef IPROBLEM2BACKWARD2D_H
 #define IPROBLEM2BACKWARD2D_H
 
+#define USE_OTHER_FUNCTIONS_B
+
 #include <grid/pibvp.h>
 #include <vector>
 #include <printer.h>
@@ -25,8 +27,8 @@ class IProblem2Backward2D : public IParabolicIBVP
 public:
     IProblem2Backward2D();
     virtual ~IProblem2Backward2D() {}
-    void setSettings(P2Setting s);
 
+    void setSettings(P2Setting s);
     void calculateMVD(std::vector<DoubleMatrix> &p);
 
     DoubleMatrix U;
@@ -44,13 +46,11 @@ public:
     double delta2(const SpaceNodePDE &sn, const SpaceNodePDE &eta, unsigned int i = 0) const;
     double delta3(const SpaceNodePDE &sn, const SpaceNodePDE &eta, unsigned int i = 0) const;
     double delta4(const SpaceNodePDE &sn, const SpaceNodePDE &eta, unsigned int i = 0) const;
-
     bool checkDelta(double delta) const;
 
     void extendControlPoint(const SpaceNodePDE cp, std::vector<ControlNode> &ops, unsigned int i) const;
 
-    //double delta(const SpaceNodePDE &sn, unsigned int j, unsigned int source) const;
-
+protected:
     virtual double g1(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;
     virtual double g2(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;
     virtual double g3(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;

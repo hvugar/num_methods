@@ -1,7 +1,8 @@
 TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
-CONFIG -= qt
+#CONFIG -= qt
+QT       += core gui widgets
 TARGET = main
 #QMAKE_CXXFLAGS += -O2
 #QMAKE_CXXFLAGS_RELEASE = -O3
@@ -30,8 +31,8 @@ LIBS += -L../bin -lborder
 #INCLUDEPATH += ../rnfunction
 #LIBS += -L../bin -lrnfunction
 
-#INCLUDEPATH += ../imaging
-#LIBS += -L../bin -limaging
+INCLUDEPATH += ../imaging
+LIBS += -L../bin -limaging
 
 DESTDIR += ../bin
 
@@ -64,7 +65,9 @@ SOURCES += main.cpp \
     problem2/2d/iproblem2forward2d.cpp \
     problem2/2d/iproblem2backward2d.cpp \
     problem2/2d/problem22d.cpp \
-    problem2/2d/problem2setting.cpp
+    problem2/2d/problem2setting.cpp \
+    problem2/2d/abstractproblem22d.cpp \
+    problem2/2d/problem22dex1.cpp
 
 HEADERS += \
     load_sys/slodenlcsm.h \
@@ -95,4 +98,6 @@ HEADERS += \
     problem2/2d/iproblem2forward2d.h \
     problem2/2d/iproblem2backward2d.h \
     problem2/2d/problem22d.h \
-    problem2/2d/problem2setting.h
+    problem2/2d/problem2setting.h \
+    problem2/2d/abstractproblem22d.h \
+    problem2/2d/problem22dex1.h
