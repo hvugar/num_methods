@@ -90,7 +90,6 @@ void AbstactProblem22D::gradient(const DoubleVector &prms, DoubleVector &g)
     forward->addSpaceDimension(mSpaceDimensionX);
     forward->addSpaceDimension(mSpaceDimensionY);
     forward->setSettings(msetting);
-    std::vector<DoubleMatrix> u;
     forward->calculateMVD(u);
 
     DoubleMatrix uT = u[u.size()-1];
@@ -100,11 +99,11 @@ void AbstactProblem22D::gradient(const DoubleVector &prms, DoubleVector &g)
     backward->addSpaceDimension(mSpaceDimensionY);
     backward->setSettings(msetting);
 
-    backward->U = this->U;
-    backward->uT = u[u.size()-1];
+    //backward->U = this->U;
+    //backward->uT = u[u.size()-1];
 
-    backward->mu.clear();
-    backward->mu.resize(M+1, N+1, 1.0);
+    //backward->mu.clear();
+    //backward->mu.resize(M+1, N+1, 1.0);
 
     std::vector<DoubleMatrix> p;
     backward->calculateMVD(p);

@@ -25,20 +25,17 @@ struct ControlNode
 class IProblem2Backward2D : public IParabolicIBVP
 {
 public:
-    IProblem2Backward2D();
-    virtual ~IProblem2Backward2D() {}
-
     void setSettings(P2Setting s);
-    void calculateMVD(std::vector<DoubleMatrix> &p);
 
-    DoubleMatrix U;
-    DoubleMatrix mu;
-    DoubleMatrix uT;
+    void calculateMVD(std::vector<DoubleMatrix> &p);
+    void calculateMVD(DoubleMatrix &p);
+
+    virtual void layerInfo(const DoubleMatrix &p, unsigned int layerNumber) const;
 
 protected:
-    virtual double initial(const SpaceNodePDE &sn) const;
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
-    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    virtual double initial(const SpaceNodePDE &sn) const = 0;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const = 0;
+    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
 
 public:
     double delta(const SpaceNodePDE &sn, const SpaceNodePDE &xi, unsigned int j, unsigned int source = 10) const;
@@ -51,15 +48,13 @@ public:
     void extendControlPoint(const SpaceNodePDE cp, std::vector<ControlNode> &ops, unsigned int i) const;
 
 protected:
-    virtual double g1(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;
-    virtual double g2(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;
-    virtual double g3(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;
-    virtual double g4(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;
-    virtual double h(const SpaceNodePDE &sn) const;
+    virtual double g1(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const = 0;
+    virtual double g2(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const = 0;
+    virtual double g3(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const = 0;
+    virtual double g4(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const = 0;
+    virtual double h(const SpaceNodePDE &sn) const = 0;
 
-    virtual double P(double x, double y, double t) const;
-
-private:
+protected:
     P2Setting setting;
 };
 

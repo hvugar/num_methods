@@ -2,8 +2,12 @@
 #define PROBLEM22D_H
 
 #include "problem2setting.h"
+
 #include "iproblem2forward2d.h"
+#include "cproblem2forward2d.h"
+
 #include "iproblem2backward2d.h"
+#include "cproblem2backward2d.h"
 
 #include <function.h>
 #include <gradient.h>
@@ -12,18 +16,27 @@
 class Problem2Forward2D : public IProblem2Forward2D
 {
 protected:
+    virtual double initial(const SpaceNodePDE &) const { return 0.0; }
+    virtual double boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const { return NAN; }
     virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+
     virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
     virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
     virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
     virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-    virtual double initial(const SpaceNodePDE &) const { return 0.0; }
 };
 
 class Problem2Backward2D : public IProblem2Backward2D
 {
+public:
+    DoubleMatrix U;
+    DoubleMatrix mu;
+    DoubleMatrix uT;
 protected:
+    virtual double initial(const SpaceNodePDE &) const { return 0.0; }
+    virtual double boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const { return NAN; }
     virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+
     virtual double h(const SpaceNodePDE &) const { return 0.0; }
     virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
     virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }

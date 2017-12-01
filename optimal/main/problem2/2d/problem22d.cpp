@@ -7,7 +7,7 @@ void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     setting1.lambda = 0.01;
     setting1.lambda0 = 0.1;
     setting1.theta = 10.0;
-    setting1.Lc = 2;
+    setting1.Lc = 1;
     setting1.Lo = 1;
 
     setting1.k.resize(setting1.Lc, setting1.Lo);
@@ -22,8 +22,8 @@ void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     }
 
     setting1.eta.resize(setting1.Lc);
-    setting1.eta[0].x = 0.55; setting1.eta[0].y = 0.25;
-    setting1.eta[1].x = 0.30; setting1.eta[1].y = 0.80;
+    setting1.eta[0].x = 0.50; setting1.eta[0].y = 0.50;
+    //setting1.eta[1].x = 0.30; setting1.eta[1].y = 0.80;
 
     setting1.xi.resize(setting1.Lo);
     setting1.xi[0].x = 0.55;  setting1.xi[0].y = 0.65;
@@ -45,14 +45,19 @@ void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     Problem22D p22d;
     p22d.setting = setting1;
-    //p22d.setGridParameters(Dimension(0.001, 0, 1000), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
-    p22d.setGridParameters(Dimension(0.01, 0, 100), Dimension(0.010, 0, 100), Dimension(0.010, 0, 100));
+    p22d.setGridParameters(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
+    //p22d.setGridParameters(Dimension(0.01, 0, 100), Dimension(0.010, 0, 100), Dimension(0.010, 0, 100));
     //p22d.setGridParameters(Dimension(0.01, 0, 100), Dimension(0.005, 0, 200), Dimension(0.010, 0, 100));
     //p22d.setGridParameters(Dimension(0.01, 0, 100), Dimension(0.010, 0, 100), Dimension(0.005, 0, 200));
 
-//    p22d.testForwardEquation(p22d.setting);
-//    p22d.testBackwardEquation(p22d.setting);
-//    return;
+    clock_t t1 = clock();
+    p22d.testForwardEquation(p22d.setting);
+    clock_t t2 = clock();
+    printf ("It took me %d clicks (%f seconds).\n",t2-t1,((float)(t2-t1))/CLOCKS_PER_SEC);
+    p22d.testBackwardEquation(p22d.setting);
+    clock_t t3 = clock();
+    printf ("It took me %d clicks (%f seconds).\n",t3-t2,((float)(t3-t2))/CLOCKS_PER_SEC);
+    return;
 
     unsigned int N1 = p22d.mSpaceDimensionX.sizeN();
     unsigned int N2 = p22d.mSpaceDimensionY.sizeN();
@@ -126,10 +131,10 @@ double Problem22D::fx(const DoubleVector &prms) const
     forward.addSpaceDimension(mSpaceDimensionX);
     forward.addSpaceDimension(mSpaceDimensionY);
     forward.setSettings(setting1);
-    std::vector<DoubleMatrix> u;
+    DoubleMatrix u;
     forward.calculateMVD(u);
 
-    double intgrl = integral(u[u.size()-1]);
+    double intgrl = integral(u);
 
     return intgrl;
 }
@@ -274,24 +279,22 @@ double Problem22D::mu(double x UNUSED_PARAM, double y UNUSED_PARAM) const
 
 void Problem22D::testForwardEquation(const P2Setting &setting) const
 {
-    IProblem2Forward2D forward;
+    CProblem2Forward2D forward;
     forward.setTimeDimension(mTimeDimension);
     forward.addSpaceDimension(mSpaceDimensionX);
     forward.addSpaceDimension(mSpaceDimensionY);
     forward.setSettings(setting);
 
-    std::vector<DoubleMatrix> u;
+    DoubleMatrix u;
     forward.calculateMVD(u);
-    IPrinter::printMatrix(u[u.size()-1]);
+    IPrinter::printMatrix(u);
     IPrinter::printSeperatorLine();
-
-    for (unsigned int i=0; i<u.size(); i++) u[i].clear();
     u.clear();
 }
 
 void Problem22D::testBackwardEquation(const P2Setting &setting) const
 {
-    IProblem2Backward2D backward;
+    CProblem2Backward2D backward;
     backward.setTimeDimension(mTimeDimension);
     backward.addSpaceDimension(mSpaceDimensionX);
     backward.addSpaceDimension(mSpaceDimensionY);
@@ -301,12 +304,10 @@ void Problem22D::testBackwardEquation(const P2Setting &setting) const
     backward.uT.resize(mSpaceDimensionY.sizeN()+1, mSpaceDimensionY.sizeN()+1, 9.0);
     backward.mu.resize(mSpaceDimensionY.sizeN()+1, mSpaceDimensionY.sizeN()+1, 1.0);
 
-    std::vector<DoubleMatrix> p;
+    DoubleMatrix p;
     backward.calculateMVD(p);
-    IPrinter::printMatrix(p[0]);
+    IPrinter::printMatrix(p);
     IPrinter::printSeperatorLine();
-
-    for (unsigned int i=0; i<p.size(); i++) p[i].clear();
     p.clear();
 }
 

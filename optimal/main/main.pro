@@ -67,7 +67,11 @@ SOURCES += main.cpp \
     problem2/2d/problem22d.cpp \
     problem2/2d/problem2setting.cpp \
     problem2/2d/abstractproblem22d.cpp \
-    problem2/2d/problem22dex1.cpp
+    problem2/2d/problem22dex1.cpp \
+    problem2/2d/problem22dex2.cpp \
+    problem2/2d/problem22dex3.cpp \
+    problem2/2d/cproblem2forward2d.cpp \
+    problem2/2d/cproblem2backward2d.cpp
 
 HEADERS += \
     load_sys/slodenlcsm.h \
@@ -100,4 +104,8 @@ HEADERS += \
     problem2/2d/problem22d.h \
     problem2/2d/problem2setting.h \
     problem2/2d/abstractproblem22d.h \
-    problem2/2d/problem22dex1.h
+    problem2/2d/problem22dex1.h \
+    problem2/2d/problem22dex2.h \
+    problem2/2d/problem22dex3.h \
+    problem2/2d/cproblem2forward2d.h \
+    problem2/2d/cproblem2backward2d.h

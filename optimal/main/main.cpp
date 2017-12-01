@@ -67,6 +67,8 @@
 #include "problem2/1d/problem2.h"
 #include "problem2/2d/problem22d.h"
 #include "problem2/2d/problem22dex1.h"
+#include "problem2/2d/problem22dex2.h"
+#include "problem2/2d/problem22dex3.h"
 
 #include <QtGui>
 
@@ -105,8 +107,11 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //MatrixTest::Main(argc, argv);
 
     //Problem2::Main(argc, argv);
-//    Problem22D::Main(argc, argv);
-    Problem22DEx1::Main(argc, argv);
+
+    Problem22D::Main(argc, argv);
+    //Problem22DEx1::Main(argc, argv);
+    //Problem22DEx2::Main(argc, argv);
+    //Problem22DEx3::Main(argc, argv);
 
     //NLLIParabolicIBVP::Main(argc, argv);
 

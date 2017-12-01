@@ -1,38 +1,24 @@
-#include "problem22dex1.h"
+#include "problem22dex2.h"
 #include <QPixmap>
 
-void Problem22DEx1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
+void Problem22DEx2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     P2Setting s;
     s.a = 0.1;
     s.lambda = 0.1;
     s.lambda0 = 0.1;
     s.theta = 10.0;
-    s.Lc = 4;
-    s.Lo = 5;
+    s.Lc = 1;
+    s.Lo = 4;
 
     s.eta.resize(s.Lc);
-    s.eta[0].x = 0.3345; s.eta[0].y = 0.3055;
-    s.eta[1].x = 0.3314; s.eta[1].y = 0.6041;
-    s.eta[2].x = 0.6625; s.eta[2].y = 0.6555;
-    s.eta[3].x = 0.6684; s.eta[3].y = 0.3514;
+    s.eta[0].x = 0.50; s.eta[0].y = 0.50;
 
     s.xi.resize(s.Lo);
     s.xi[0].x = 0.25;  s.xi[0].y = 0.25;
     s.xi[1].x = 0.25;  s.xi[1].y = 0.75;
     s.xi[2].x = 0.75;  s.xi[2].y = 0.75;
     s.xi[3].x = 0.75;  s.xi[3].y = 0.25;
-    s.xi[4].x = 0.50;  s.xi[4].y = 0.50;
-
-//    s.eta.resize(s.Lc);
-//    s.eta[0].x = 0.40; s.eta[0].y = 0.50; s.eta[0].i = 400; s.eta[0].j = 500;
-//    s.eta[1].x = 0.60; s.eta[1].y = 0.50; s.eta[1].i = 600; s.eta[1].j = 500;
-
-//    s.xi.resize(s.Lo);
-//    s.xi[0].x = 0.25;  s.xi[0].y = 0.25;
-//    s.xi[1].x = 0.25;  s.xi[1].y = 0.75;
-//    s.xi[2].x = 0.75;  s.xi[2].y = 0.75;
-//    s.xi[3].x = 0.75;  s.xi[3].y = 0.25;
 
     s.k.resize(s.Lc, s.Lo);
     s.z.resize(s.Lc, s.Lo);
@@ -40,7 +26,7 @@ void Problem22DEx1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     {
         for (unsigned int j=0; j<s.Lo; j++)
         {
-            s.k[i][j] = -5.1;//fabs(sin((i+1)*(j+2)));
+            s.k[i][j] = -0.1;
             s.z[i][j] = +10.0;
         }
     }
@@ -49,18 +35,17 @@ void Problem22DEx1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     Dimension spaceDimensionX = Dimension(0.001, 0, 1000);
     Dimension spaceDimensionY = Dimension(0.001, 0, 1000);
 
-    Problem22DEx1 p22dEx1;
-    p22dEx1.setForward(new Problem2Forward2DEx1);
-    p22dEx1.setBackward(new Problem2Backward2DEx1);
-    p22dEx1.setGridParameters(timeDimension, spaceDimensionX, spaceDimensionY);
-    p22dEx1.setP2Setting(s);
+    Problem22DEx2 p22dEx2;
+    p22dEx2.setForward(new Problem2Forward2DEx2);
+    p22dEx2.setBackward(new Problem2Backward2DEx2);
+    p22dEx2.setGridParameters(timeDimension, spaceDimensionX, spaceDimensionY);
+    p22dEx2.setP2Setting(s);
 
-    Problem2Forward2DEx1* forward = new Problem2Forward2DEx1;
+    Problem2Forward2DEx2* forward = new Problem2Forward2DEx2;
     forward->setSettings(s);
     forward->setTimeDimension(timeDimension);
     forward->addSpaceDimension(spaceDimensionX);
     forward->addSpaceDimension(spaceDimensionY);
-
     DoubleMatrix u;
     forward->calculateMVD(u);
 
@@ -69,7 +54,7 @@ void Problem22DEx1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     fclose(file1);
 }
 
-void Problem2Forward2DEx1::layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int layerNumber UNUSED_PARAM) const
+void Problem2Forward2DEx2::layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int layerNumber UNUSED_PARAM) const
 {
     if (layerNumber == 1000)
     {

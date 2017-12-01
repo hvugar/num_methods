@@ -9,6 +9,45 @@
 #include <gradient.h>
 #include <utils/random.h>
 
+class AProblem2Forward2D;
+class AProblem2Backward2D;
+class AbstactProblem22D;
+
+class AProblem2Forward2D : public IProblem2Forward2D
+{
+public:
+    AbstactProblem22D *p22d;
+
+protected:
+    virtual double initial(const SpaceNodePDE &) const { return 0.0; }
+    virtual double boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const { return NAN; }
+    virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+
+    virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+
+    virtual void layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const;
+};
+
+class AProblem2Backward2D : public IProblem2Backward2D
+{
+public:
+    AbstactProblem22D *p22d;
+
+protected:
+    virtual double initial(const SpaceNodePDE &) const { return 0.0; }
+    virtual double boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const { return NAN; }
+    virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+
+    virtual double h(const SpaceNodePDE &) const { return 0.0; }
+    virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+};
+
 class AbstactProblem22D : public RnFunction, public IGradient
 {
 public:
@@ -34,10 +73,20 @@ private:
 
     double alpha0;
 
-    IProblem2Forward2D *forward;
-    IProblem2Backward2D *backward;
+    AProblem2Forward2D *forward;
+    AProblem2Backward2D *backward;
 
+public:
     DoubleMatrix U;
+    DoubleVector *grad;
 };
+
+void AProblem2Forward2D::layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const
+{
+}
+
+void AProblem2Backward2D::layerInfo(const DoubleMatrix &p, unsigned int layerNumber) const
+{}
+
 
 #endif // ABSTRACTPROBLEM22D_H
