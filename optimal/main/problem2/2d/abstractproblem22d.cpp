@@ -86,18 +86,20 @@ void AbstactProblem22D::gradient(const DoubleVector &prms, DoubleVector &g)
 
     msetting.fromVector(prms);
 
+    DoubleMatrix u;
+    DoubleMatrix p;
+
     forward->setTimeDimension(mTimeDimension);
     forward->addSpaceDimension(mSpaceDimensionX);
     forward->addSpaceDimension(mSpaceDimensionY);
     forward->setSettings(msetting);
     forward->calculateMVD(u);
 
-    DoubleMatrix uT = u[u.size()-1];
-
     backward->setTimeDimension(mTimeDimension);
     backward->addSpaceDimension(mSpaceDimensionX);
     backward->addSpaceDimension(mSpaceDimensionY);
     backward->setSettings(msetting);
+    backward->calculateMVD(p);
 
     //backward->U = this->U;
     //backward->uT = u[u.size()-1];
@@ -105,69 +107,69 @@ void AbstactProblem22D::gradient(const DoubleVector &prms, DoubleVector &g)
     //backward->mu.clear();
     //backward->mu.resize(M+1, N+1, 1.0);
 
-    std::vector<DoubleMatrix> p;
-    backward->calculateMVD(p);
+//    std::vector<DoubleMatrix> p;
+//    backward->calculateMVD(p);
 
-    g.resize(prms.length(), 0.0);
-    unsigned int gi = 0;
+//    g.resize(prms.length(), 0.0);
+//    unsigned int gi = 0;
 
-    // k
-    for (unsigned int i=0; i<msetting.Lc; i++)
-    {
-        const SpaceNodePDE &eta = msetting.eta[i];
-        unsigned int etaX = (unsigned int)(round(eta.x*N));
-        unsigned int etaY = (unsigned int)(round(eta.y*M));
+//    // k
+//    for (unsigned int i=0; i<msetting.Lc; i++)
+//    {
+//        const SpaceNodePDE &eta = msetting.eta[i];
+//        unsigned int etaX = (unsigned int)(round(eta.x*N));
+//        unsigned int etaY = (unsigned int)(round(eta.y*M));
 
-        for (unsigned int j=0; j<msetting.Lo; j++)
-        {
-            const SpaceNodePDE &xi = msetting.xi[j];
-            unsigned int xiX = (unsigned int)(round(xi.x*N));
-            unsigned int xiY = (unsigned int)(round(xi.y*M));
+//        for (unsigned int j=0; j<msetting.Lo; j++)
+//        {
+//            const SpaceNodePDE &xi = msetting.xi[j];
+//            unsigned int xiX = (unsigned int)(round(xi.x*N));
+//            unsigned int xiY = (unsigned int)(round(xi.y*M));
 
-            double gradKij = 0.0;
-            gradKij += 0.5 * p[0][etaY][etaX] * (u[0][xiY][xiX] - msetting.z[i][j]);
-            for (unsigned int m=1; m<=L-1; m++)
-            {
-                gradKij += p[m][etaY][etaX] * (u[m][xiY][xiX] - msetting.z[i][j]);
-            }
-            gradKij += 0.5 * p[L][etaY][etaX] * (u[L][xiY][xiX] - msetting.z[i][j]);
-            gradKij *= -ht;
-            g[gi++] = gradKij;
-        }
-    }
+//            double gradKij = 0.0;
+//            gradKij += 0.5 * p[0][etaY][etaX] * (u[0][xiY][xiX] - msetting.z[i][j]);
+//            for (unsigned int m=1; m<=L-1; m++)
+//            {
+//                gradKij += p[m][etaY][etaX] * (u[m][xiY][xiX] - msetting.z[i][j]);
+//            }
+//            gradKij += 0.5 * p[L][etaY][etaX] * (u[L][xiY][xiX] - msetting.z[i][j]);
+//            gradKij *= -ht;
+//            g[gi++] = gradKij;
+//        }
+//    }
 
-    // z
-    for (unsigned int i=0; i<msetting.Lc; i++)
-    {
-        const SpaceNodePDE &eta = msetting.eta[i];
-        unsigned int etaX = (unsigned int)(round(eta.x*N));
-        unsigned int etaY = (unsigned int)(round(eta.y*M));
+//    // z
+//    for (unsigned int i=0; i<msetting.Lc; i++)
+//    {
+//        const SpaceNodePDE &eta = msetting.eta[i];
+//        unsigned int etaX = (unsigned int)(round(eta.x*N));
+//        unsigned int etaY = (unsigned int)(round(eta.y*M));
 
-        for (unsigned int j=0; j<msetting.Lo; j++)
-        {
-            double gradZij = 0.0;
-            gradZij += 0.5 * p[0][etaY][etaX] * msetting.k[i][j];
-            for (unsigned int m=1; m<=L-1; m++)
-            {
-                gradZij += p[m][etaY][etaX]  * msetting.k[i][j];
-            }
-            gradZij += 0.5 * p[L][etaY][etaX] * msetting.k[i][j];
-            gradZij *= ht;
-            g[gi++] = gradZij;
-        }
-    }
+//        for (unsigned int j=0; j<msetting.Lo; j++)
+//        {
+//            double gradZij = 0.0;
+//            gradZij += 0.5 * p[0][etaY][etaX] * msetting.k[i][j];
+//            for (unsigned int m=1; m<=L-1; m++)
+//            {
+//                gradZij += p[m][etaY][etaX]  * msetting.k[i][j];
+//            }
+//            gradZij += 0.5 * p[L][etaY][etaX] * msetting.k[i][j];
+//            gradZij *= ht;
+//            g[gi++] = gradZij;
+//        }
+//    }
 
-    // xi
-    for (unsigned int j=0; j<msetting.Lo; j++)
-    {
-        g[gi++] = 0.0;
-    }
+//    // xi
+//    for (unsigned int j=0; j<msetting.Lo; j++)
+//    {
+//        g[gi++] = 0.0;
+//    }
 
-    // eta
-    for (unsigned int j=0; j<msetting.Lc; j++)
-    {
-        g[gi++] = 0.0;
-    }
+//    // eta
+//    for (unsigned int j=0; j<msetting.Lc; j++)
+//    {
+//        g[gi++] = 0.0;
+//    }
 }
 
 void AbstactProblem22D::setForward(IProblem2Forward2D *f)
