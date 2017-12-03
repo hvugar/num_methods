@@ -71,7 +71,8 @@ SOURCES += main.cpp \
     problem2/2d/ex/problem22dex2.cpp \
     problem2/2d/ex/problem22dex3.cpp \
     problem2/2d/cproblem2forward2d.cpp \
-    problem2/2d/cproblem2backward2d.cpp
+    problem2/2d/cproblem2backward2d.cpp \
+    problem2/2d/problem22diparabolicibvp.cpp
 
 HEADERS += \
     load_sys/slodenlcsm.h \
@@ -108,4 +109,5 @@ HEADERS += \
     problem2/2d/ex/problem22dex2.h \
     problem2/2d/ex/problem22dex3.h \
     problem2/2d/cproblem2forward2d.h \
-    problem2/2d/cproblem2backward2d.h
+    problem2/2d/cproblem2backward2d.h \
+    problem2/2d/problem22diparabolicibvp.h

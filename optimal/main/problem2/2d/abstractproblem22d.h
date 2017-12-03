@@ -28,7 +28,7 @@ protected:
     virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
     virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
 
-    virtual void layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const;
+    //virtual void layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const;
 };
 
 class AProblem2Backward2D : public IProblem2Backward2D
@@ -47,7 +47,7 @@ protected:
     virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
     virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
 
-    virtual void layerInfo(const DoubleMatrix &p, unsigned int layerNumber) const;
+    //virtual void layerInfo(const DoubleMatrix &p, unsigned int layerNumber) const;
 };
 
 class AbstactProblem22D : public RnFunction, public IGradient
@@ -82,12 +82,6 @@ public:
     DoubleMatrix U;
     DoubleVector *grad;
 };
-
-void AProblem2Forward2D::layerInfo(const DoubleMatrix &, unsigned int) const
-{}
-
-void AProblem2Backward2D::layerInfo(const DoubleMatrix &, unsigned int) const
-{}
 
 
 #endif // ABSTRACTPROBLEM22D_H

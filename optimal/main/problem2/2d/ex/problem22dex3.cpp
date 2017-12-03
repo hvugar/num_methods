@@ -63,10 +63,6 @@ void Problem22DEx3::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     p22dEx3.gradient(prm,g);
 }
 
-void Problem2Forward2DEx3::layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int layerNumber UNUSED_PARAM) const
-{
-}
-
 double Problem2Forward2DEx3::initial(const SpaceNodePDE &) const
 {
     return 0.0;

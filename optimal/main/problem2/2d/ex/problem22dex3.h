@@ -1,7 +1,7 @@
 #ifndef PROBLEM22DEX3_H
 #define PROBLEM22DEX3_H
 
-#include "abstractproblem22d.h"
+#include "../abstractproblem22d.h"
 #include <imaging.h>
 
 class Problem2Forward2DEx3;
@@ -20,7 +20,7 @@ protected:
     virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
     virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
 
-    virtual void layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const;
+    virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
 };
 
 class Problem2Backward2DEx3 : public IProblem2Backward2D

@@ -15,6 +15,8 @@ protected:
     virtual double g2(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;
     virtual double g3(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;
     virtual double g4(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;
+
+    virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
 public:
     double U(double x, double y, double t) const;
 };

@@ -1,13 +1,8 @@
 #ifndef IPROBLEM2FORWARD2D_H
 #define IPROBLEM2FORWARD2D_H
 
-#define USE_OTHER_FUNCTIONS_F
-
-#include <grid/pibvp.h>
-#include <vector>
-#include <printer.h>
+#include "problem22diparabolicibvp.h"
 #include "problem2setting.h"
-#include <time.h>
 
 using namespace std;
 
@@ -38,10 +33,9 @@ class IProblem2Forward2D : public IParabolicIBVP
 public:
     void setSettings(P2Setting s);
 
-    void calculateMVD(std::vector<DoubleMatrix> &u) const;
-    void calculateMVD(DoubleMatrix &u) const;
+    void calculateMVD(DoubleMatrix &u, vector<ProcessInfo> info) const;
 
-    virtual void layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const;
+    virtual void layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const = 0;
 
 protected:
     virtual double initial(const SpaceNodePDE &sn) const = 0;

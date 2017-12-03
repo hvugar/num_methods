@@ -7,7 +7,7 @@ void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     setting1.lambda = 0.01;
     setting1.lambda0 = 0.1;
     setting1.theta = 10.0;
-    setting1.Lc = 1;
+    setting1.Lc = 2;
     setting1.Lo = 1;
 
     setting1.k.resize(setting1.Lc, setting1.Lo);
@@ -23,7 +23,7 @@ void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     setting1.eta.resize(setting1.Lc);
     setting1.eta[0].x = 0.50; setting1.eta[0].y = 0.50;
-    //setting1.eta[1].x = 0.30; setting1.eta[1].y = 0.80;
+    setting1.eta[1].x = 0.30; setting1.eta[1].y = 0.80;
 
     setting1.xi.resize(setting1.Lo);
     setting1.xi[0].x = 0.55;  setting1.xi[0].y = 0.65;
@@ -50,13 +50,13 @@ void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //p22d.setGridParameters(Dimension(0.01, 0, 100), Dimension(0.005, 0, 200), Dimension(0.010, 0, 100));
     //p22d.setGridParameters(Dimension(0.01, 0, 100), Dimension(0.010, 0, 100), Dimension(0.005, 0, 200));
 
-    clock_t t1 = clock();
+    //clock_t t1 = clock();
     p22d.testForwardEquation(p22d.setting);
-    clock_t t2 = clock();
-    printf ("It took me %d clicks (%f seconds).\n",t2-t1,((float)(t2-t1))/CLOCKS_PER_SEC);
+    //clock_t t2 = clock();
+    //printf ("It took me %d clicks (%f seconds).\n",t2-t1,((float)(t2-t1))/CLOCKS_PER_SEC);
     p22d.testBackwardEquation(p22d.setting);
-    clock_t t3 = clock();
-    printf ("It took me %d clicks (%f seconds).\n",t3-t2,((float)(t3-t2))/CLOCKS_PER_SEC);
+    //clock_t t3 = clock();
+    //printf ("It took me %d clicks (%f seconds).\n",t3-t2,((float)(t3-t2))/CLOCKS_PER_SEC);
     return;
 
     unsigned int N1 = p22d.mSpaceDimensionX.sizeN();
@@ -132,7 +132,8 @@ double Problem22D::fx(const DoubleVector &prms) const
     forward.addSpaceDimension(mSpaceDimensionY);
     forward.setSettings(setting1);
     DoubleMatrix u;
-    forward.calculateMVD(u);
+    vector<ProcessInfo> info;
+    forward.calculateMVD(u, info);
 
     double intgrl = integral(u);
 
@@ -151,87 +152,87 @@ void Problem22D::gradient(const DoubleVector &prms UNUSED_PARAM, DoubleVector &g
 
     setting.fromVector(prms);
 
-    Problem2Forward2D forward;
-    forward.setTimeDimension(mTimeDimension);
-    forward.addSpaceDimension(mSpaceDimensionX);
-    forward.addSpaceDimension(mSpaceDimensionY);
-    forward.setSettings(setting);
-    std::vector<DoubleMatrix> u;
-    forward.calculateMVD(u);
+//    Problem2Forward2D forward;
+//    forward.setTimeDimension(mTimeDimension);
+//    forward.addSpaceDimension(mSpaceDimensionX);
+//    forward.addSpaceDimension(mSpaceDimensionY);
+//    forward.setSettings(setting);
+//    std::vector<DoubleMatrix> u;
+//    forward.calculateMVD(u);
 
-    Problem2Backward2D backward;
-    backward.setTimeDimension(mTimeDimension);
-    backward.addSpaceDimension(mSpaceDimensionX);
-    backward.addSpaceDimension(mSpaceDimensionY);
-    backward.setSettings(setting);
+//    Problem2Backward2D backward;
+//    backward.setTimeDimension(mTimeDimension);
+//    backward.addSpaceDimension(mSpaceDimensionX);
+//    backward.addSpaceDimension(mSpaceDimensionY);
+//    backward.setSettings(setting);
 
-    backward.U = U;
-    backward.uT = u[u.size()-1];
-    backward.mu.resize(Ny+1, Nx+1, 1.0);
+//    backward.U = U;
+//    backward.uT = u[u.size()-1];
+//    backward.mu.resize(Ny+1, Nx+1, 1.0);
 
-    std::vector<DoubleMatrix> p;
-    backward.calculateMVD(p);
+//    std::vector<DoubleMatrix> p;
+//    backward.calculateMVD(p);
 
-    g.resize(prms.length(), 0.0);
-    unsigned int gi = 0;
+//    g.resize(prms.length(), 0.0);
+//    unsigned int gi = 0;
 
-    // k
-    for (unsigned int i=0; i<setting.Lc; i++)
-    {
-        const SpaceNodePDE &eta = setting.eta[i];
-        unsigned int etaX = (unsigned int)(round(eta.x*Nx));
-        unsigned int etaY = (unsigned int)(round(eta.y*Ny));
+//    // k
+//    for (unsigned int i=0; i<setting.Lc; i++)
+//    {
+//        const SpaceNodePDE &eta = setting.eta[i];
+//        unsigned int etaX = (unsigned int)(round(eta.x*Nx));
+//        unsigned int etaY = (unsigned int)(round(eta.y*Ny));
 
-        for (unsigned int j=0; j<setting.Lo; j++)
-        {
-            const SpaceNodePDE &xi = setting.xi[j];
-            unsigned int xiX = (unsigned int)(round(xi.x*Nx));
-            unsigned int xiY = (unsigned int)(round(xi.y*Ny));
+//        for (unsigned int j=0; j<setting.Lo; j++)
+//        {
+//            const SpaceNodePDE &xi = setting.xi[j];
+//            unsigned int xiX = (unsigned int)(round(xi.x*Nx));
+//            unsigned int xiY = (unsigned int)(round(xi.y*Ny));
 
-            double gradKij = 0.0;
-            gradKij += 0.5 * p[0][etaY][etaX] * (u[0][xiY][xiX] - setting.z[i][j]);
-            for (unsigned int m=1; m<=M-1; m++)
-            {
-                gradKij += p[m][etaY][etaX] * (u[m][xiY][xiX] - setting.z[i][j]);
-            }
-            gradKij += 0.5 * p[M][etaY][etaX] * (u[M][xiY][xiX] - setting.z[i][j]);
-            gradKij *= -ht;
-            g[gi++] = gradKij;
-        }
-    }
+//            double gradKij = 0.0;
+//            gradKij += 0.5 * p[0][etaY][etaX] * (u[0][xiY][xiX] - setting.z[i][j]);
+//            for (unsigned int m=1; m<=M-1; m++)
+//            {
+//                gradKij += p[m][etaY][etaX] * (u[m][xiY][xiX] - setting.z[i][j]);
+//            }
+//            gradKij += 0.5 * p[M][etaY][etaX] * (u[M][xiY][xiX] - setting.z[i][j]);
+//            gradKij *= -ht;
+//            g[gi++] = gradKij;
+//        }
+//    }
 
-    // z
-    for (unsigned int i=0; i<setting.Lc; i++)
-    {
-        const SpaceNodePDE &eta = setting.eta[i];
-        unsigned int etaX = (unsigned int)(round(eta.x*Nx));
-        unsigned int etaY = (unsigned int)(round(eta.y*Ny));
+//    // z
+//    for (unsigned int i=0; i<setting.Lc; i++)
+//    {
+//        const SpaceNodePDE &eta = setting.eta[i];
+//        unsigned int etaX = (unsigned int)(round(eta.x*Nx));
+//        unsigned int etaY = (unsigned int)(round(eta.y*Ny));
 
-        for (unsigned int j=0; j<setting.Lo; j++)
-        {
-            double gradZij = 0.0;
-            gradZij += 0.5 * p[0][etaY][etaX] * setting.k[i][j];
-            for (unsigned int m=1; m<=M-1; m++)
-            {
-                gradZij += p[m][etaY][etaX]  * setting.k[i][j];
-            }
-            gradZij += 0.5 * p[M][etaY][etaX] * setting.k[i][j];
-            gradZij *= ht;
-            g[gi++] = gradZij;
-        }
-    }
+//        for (unsigned int j=0; j<setting.Lo; j++)
+//        {
+//            double gradZij = 0.0;
+//            gradZij += 0.5 * p[0][etaY][etaX] * setting.k[i][j];
+//            for (unsigned int m=1; m<=M-1; m++)
+//            {
+//                gradZij += p[m][etaY][etaX]  * setting.k[i][j];
+//            }
+//            gradZij += 0.5 * p[M][etaY][etaX] * setting.k[i][j];
+//            gradZij *= ht;
+//            g[gi++] = gradZij;
+//        }
+//    }
 
-    // xi
-    for (unsigned int j=0; j<setting.Lo; j++)
-    {
-        g[gi++] = 0.0;
-    }
+//    // xi
+//    for (unsigned int j=0; j<setting.Lo; j++)
+//    {
+//        g[gi++] = 0.0;
+//    }
 
-    // eta
-    for (unsigned int j=0; j<setting.Lc; j++)
-    {
-        g[gi++] = 0.0;
-    }
+//    // eta
+//    for (unsigned int j=0; j<setting.Lc; j++)
+//    {
+//        g[gi++] = 0.0;
+//    }
 }
 
 double Problem22D::integral(const DoubleMatrix &u) const
@@ -286,7 +287,8 @@ void Problem22D::testForwardEquation(const P2Setting &setting) const
     forward.setSettings(setting);
 
     DoubleMatrix u;
-    forward.calculateMVD(u);
+    vector<ProcessInfo> info;
+    forward.calculateMVD(u, info);
     IPrinter::printMatrix(u);
     IPrinter::printSeperatorLine();
     u.clear();

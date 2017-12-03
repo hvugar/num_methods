@@ -1,0 +1,77 @@
+#ifndef PROBLEM22DIPARABOLICIBVP_H
+#define PROBLEM22DIPARABOLICIBVP_H
+
+#include <grid/pibvp.h>
+#include <vector>
+#include <printer.h>
+#include <time.h>
+
+using namespace std;
+
+struct ProcessInfo
+{
+    unsigned int index;
+    unsigned int rows;
+    unsigned int cols;
+    double **w;
+    vector<double**> u;
+};
+
+class Problem22DIParabolicIBVP : public IParabolicIBVP
+{
+public:
+    struct ExSpaceNodePDE : public SpaceNodePDE
+    {
+        double w;
+        unsigned int index;
+
+        double *timeValues;
+        unsigned int timeN;
+    };
+
+    struct ControlPoint : public SpaceNodePDE
+    {
+        vector<ExSpaceNodePDE> extNodes;
+    };
+
+    struct ObservationPoint : public SpaceNodePDE
+    {
+        vector<ExSpaceNodePDE> extNodes;
+    };
+
+    struct Parameters
+    {
+        unsigned int Lc;
+        unsigned int Lo;
+        DoubleMatrix k;
+        DoubleMatrix z;
+        vector<ControlPoint> eta;
+        vector<ObservationPoint> xi;
+
+        void toVector(DoubleVector &prms) const;
+        void fromVector(const DoubleVector &prms, unsigned int Lc, unsigned int Lo);
+    };
+
+public:
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
+    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+
+    void setParametr(const Parameters& p);
+    const Parameters& parametrs() const;
+
+    void extendDeltaControlPointsToGrid();
+    void extendDeltaControlPointToGrid1(ControlPoint &cp, unsigned int index);
+
+    void extendObservationPointToGrid();
+    void extendObservationPointToGrid1(ObservationPoint &op, unsigned int index);
+
+    double a;
+    double lambda0;
+    double lambda1;
+    double theta;
+
+protected:
+    Parameters mParameters;
+};
+
+#endif // PROBLEM22DIPARABOLICIBVP_H

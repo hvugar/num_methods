@@ -62,7 +62,8 @@ void Problem22DEx1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     forward->addSpaceDimension(spaceDimensionY);
 
     DoubleMatrix u;
-    forward->calculateMVD(u);
+    vector<ProcessInfo> info;
+    forward->calculateMVD(u, info);
 
     FILE *file1 = fopen("pic.txt", "w");
     IPrinter::printMatrix(u, u.rows(), u.cols(), NULL, file1);

@@ -66,9 +66,9 @@
 
 #include "problem2/1d/problem2.h"
 #include "problem2/2d/problem22d.h"
-#include "problem2/2d/problem22dex1.h"
-#include "problem2/2d/problem22dex2.h"
-#include "problem2/2d/problem22dex3.h"
+#include "problem2/2d/ex/problem22dex1.h"
+#include "problem2/2d/ex/problem22dex2.h"
+#include "problem2/2d/ex/problem22dex3.h"
 
 #include <QtGui>
 
