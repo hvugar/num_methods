@@ -32,7 +32,7 @@ class IProblem2Forward2D : public IProblem22DPIBVP
 public:
     void setSettings(P2Setting s);
 
-    void calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode> info) const;
+    void calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2D> &info) const;
 
     virtual void layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const = 0;
 
@@ -56,8 +56,8 @@ public:
     void extendObservationPoint1(const SpaceNodePDE op, std::vector<ObservationNode> &ops, unsigned int j) const;
 
     void extendObservationPoint(const SpaceNodePDE op, std::vector<ObservationNode> &ops, unsigned int j) const;
-    void extendObservationPoint(const SpaceNodePDE op, ExtendedSpaceNode &pi, unsigned int j) const;
-    void extendObservationPoint(const SpaceNodePDE op, ExtendedSpaceNode &pi) const;
+    void extendObservationPoint(const SpaceNodePDE op, ExtendedSpaceNode2D &pi, unsigned int j) const;
+    void extendObservationPoint(const SpaceNodePDE op, ExtendedSpaceNode2D &pi) const;
 
 protected:
     virtual double g1(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const = 0;

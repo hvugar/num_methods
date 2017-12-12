@@ -48,7 +48,7 @@ void Problem22DEx2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     forward->addSpaceDimension(spaceDimensionY);
     DoubleMatrix u;
 
-    vector<ExtendedSpaceNode> info;
+    vector<ExtendedSpaceNode2D> info;
     forward->calculateMVD(u, info);
 
     FILE *file1 = fopen("pic.txt", "w");

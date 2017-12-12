@@ -5,7 +5,7 @@ void IProblem2Forward2D::setSettings(P2Setting s)
     setting = s;
 }
 
-void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode> info) const
+void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2D> &info) const
 {
     Dimension xd = spaceDimension(Dimension::DimensionX);
     Dimension yd = spaceDimension(Dimension::DimensionY);
@@ -24,20 +24,20 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode>
     info.resize(Lo);
     for (unsigned int j=0; j<Lo; j++)
     {
-        ExtendedSpaceNode &pi = info[j];
-        pi.id = j;
-        pi.init(4, 4, L);
+        info[j].setSpaceNode(setting.xi[j]);
+        info[j].id = j;
+        info[j].extendWeights(xd, yd);
+        info[j].extendLayers(L);
 
-        extendObservationPoint(setting.xi[j], pi);
-
-//        for (unsigned int i1=0; i1<4; i1++)
-//        {
-//            unsigned int i=3-i1;
-//            printf("[%d %d %8.4f %8.4f %8.4f]", pi.wi[i][0].i, pi.wi[i][0].j, pi.wi[i][0].x, pi.wi[i][0].y, pi.wi[i][0].w);
-//            printf("[%d %d %8.4f %8.4f %8.4f]", pi.wi[i][1].i, pi.wi[i][1].j, pi.wi[i][1].x, pi.wi[i][1].y, pi.wi[i][1].w);
-//            printf("[%d %d %8.4f %8.4f %8.4f]", pi.wi[i][2].i, pi.wi[i][2].j, pi.wi[i][2].x, pi.wi[i][2].y, pi.wi[i][2].w);
-//            printf("[%d %d %8.4f %8.4f %8.4f]\n", pi.wi[i][3].i, pi.wi[i][3].j, pi.wi[i][3].x, pi.wi[i][3].y, pi.wi[i][3].w);
-//        }
+        for (unsigned int i1=0; i1<4; i1++)
+        {
+            unsigned int i=3-i1;
+            printf("[%d %d %8.4f %8.4f %8.4f]", info[j].wi[i][0].i, info[j].wi[i][0].j, info[j].wi[i][0].x, info[j].wi[i][0].y, info[j].wi[i][0].w);
+            printf("[%d %d %8.4f %8.4f %8.4f]", info[j].wi[i][1].i, info[j].wi[i][1].j, info[j].wi[i][1].x, info[j].wi[i][1].y, info[j].wi[i][1].w);
+            printf("[%d %d %8.4f %8.4f %8.4f]", info[j].wi[i][2].i, info[j].wi[i][2].j, info[j].wi[i][2].x, info[j].wi[i][2].y, info[j].wi[i][2].w);
+            printf("[%d %d %8.4f %8.4f %8.4f]", info[j].wi[i][3].i, info[j].wi[i][3].j, info[j].wi[i][3].x, info[j].wi[i][3].y, info[j].wi[i][3].w);
+            puts("");
+        }
     }
 
     u.clear();
@@ -94,6 +94,21 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode>
             u[m][n] = initial(sn);
         }
     }
+
+    for (unsigned int j=0; j<Lo; j++)
+    {
+        ExtendedSpaceNode2D &pi = info[j];
+        for (unsigned int j=0; j<4; j++)
+        {
+            for (unsigned int i=0; i<4; i++)
+            {
+                unsigned int x = pi.wi[j][i].i;
+                unsigned int y = pi.wi[j][i].j;
+                pi.wi[j][i].u[0] = u[y][x];
+            }
+        }
+    }
+
     layerInfo(u, 0);
     //IPrinter::printMatrix(u[0]);
     //IPrinter::printSeperatorLine();
@@ -541,12 +556,15 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode>
 
         for (unsigned int j=0; j<Lo; j++)
         {
-            ExtendedSpaceNode &pi = info[j];
+            ExtendedSpaceNode2D &pi = info[j];
             for (unsigned int j=0; j<4; j++)
             {
                 for (unsigned int i=0; i<4; i++)
                 {
-                    pi.wi[j][i].u[l] = u[pi.wi[j][i].j][pi.wi[j][i].i];
+                    unsigned int x = pi.wi[j][i].i;
+                    unsigned int y = pi.wi[j][i].j;
+                    printf("%d %d\n", x, y);
+                    pi.wi[j][i].u[l] = u[y][x];
                 }
             }
         }
@@ -1224,7 +1242,7 @@ void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, std::vect
     }
 }
 
-void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, ExtendedSpaceNode &pi, unsigned int j) const
+void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, ExtendedSpaceNode2D &pi, unsigned int j) const
 {
     Dimension xd = spaceDimension(Dimension::DimensionX);
     Dimension yd = spaceDimension(Dimension::DimensionY);
@@ -1743,7 +1761,7 @@ void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, ExtendedS
     }
 }
 
-void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, ExtendedSpaceNode &pi) const
+void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, ExtendedSpaceNode2D &pi) const
 {
     Dimension xd = spaceDimension(Dimension::DimensionX);
     Dimension yd = spaceDimension(Dimension::DimensionY);

@@ -29,15 +29,26 @@ struct WISpaceNodePDE : public SpaceNodePDE
     double *u;
 };
 
-struct ExtendedSpaceNode
+class ExtendedSpaceNode2D : public SpaceNodePDE
 {
+public:
+    explicit ExtendedSpaceNode2D();
+
+    void setSpaceNode(const SpaceNodePDE& sn);
+
+    void extendWeights(const Dimension &dimX, const Dimension &dimY, unsigned int rows = 4, unsigned int cols = 4);
+    void clearWeights();
+
+    void extendLayers(unsigned int layerNumber);
+    void clearLayers();
+
+    double value(double x, double y, unsigned int layer) const;
+
     unsigned int id;
-    SpaceNodePDE xi;
-    WISpaceNodePDE **wi;
     unsigned int rows;
     unsigned int cols;
-    void init(unsigned int rows, unsigned int cols, unsigned int M);
-    void clear();
+    WISpaceNodePDE **wi;
+    unsigned int layerNumber;
 };
 
 class IProblem22DPIBVP : public IParabolicIBVP

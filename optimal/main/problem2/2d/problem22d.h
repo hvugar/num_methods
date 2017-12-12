@@ -1,8 +1,6 @@
 #ifndef PROBLEM22D_H
 #define PROBLEM22D_H
 
-#include "problem2setting.h"
-
 #include "iproblem2forward2d.h"
 #include "cproblem2forward2d.h"
 
