@@ -1,8 +1,7 @@
 #ifndef IPROBLEM2FORWARD2D_H
 #define IPROBLEM2FORWARD2D_H
 
-#include "problem22diparabolicibvp.h"
-#include "problem2setting.h"
+#include "iproblem2pibvp2d.h"
 
 using namespace std;
 
@@ -28,12 +27,12 @@ struct ControlDeltaNode
     double w;
 };
 
-class IProblem2Forward2D : public IParabolicIBVP
+class IProblem2Forward2D : public IProblem22DPIBVP
 {
 public:
     void setSettings(P2Setting s);
 
-    void calculateMVD(DoubleMatrix &u, vector<ProcessInfo> info) const;
+    void calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode> info) const;
 
     virtual void layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const = 0;
 
@@ -57,6 +56,8 @@ public:
     void extendObservationPoint1(const SpaceNodePDE op, std::vector<ObservationNode> &ops, unsigned int j) const;
 
     void extendObservationPoint(const SpaceNodePDE op, std::vector<ObservationNode> &ops, unsigned int j) const;
+    void extendObservationPoint(const SpaceNodePDE op, ExtendedSpaceNode &pi, unsigned int j) const;
+    void extendObservationPoint(const SpaceNodePDE op, ExtendedSpaceNode &pi) const;
 
 protected:
     virtual double g1(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const = 0;

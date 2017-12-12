@@ -4,10 +4,6 @@
 void Problem22DEx1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     P2Setting s;
-    s.a = 0.1;
-    s.lambda = 0.1;
-    s.lambda0 = 0.1;
-    s.theta = 10.0;
     s.Lc = 4;
     s.Lo = 5;
 
@@ -56,13 +52,17 @@ void Problem22DEx1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     p22dEx1.setP2Setting(s);
 
     Problem2Forward2DEx1* forward = new Problem2Forward2DEx1;
+    forward->a =  0.1;
+    forward->lambda = 0.1;
+    forward->lambda0 = 0.1;
+    forward->theta = 10.0;
     forward->setSettings(s);
     forward->setTimeDimension(timeDimension);
     forward->addSpaceDimension(spaceDimensionX);
     forward->addSpaceDimension(spaceDimensionY);
 
     DoubleMatrix u;
-    vector<ProcessInfo> info;
+    vector<ExtendedSpaceNode> info;
     forward->calculateMVD(u, info);
 
     FILE *file1 = fopen("pic.txt", "w");

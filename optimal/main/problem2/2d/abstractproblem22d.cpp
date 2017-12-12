@@ -16,7 +16,7 @@ double AbstactProblem22D::fx(const DoubleVector &prms) const
     forward->addSpaceDimension(mSpaceDimensionY);
     forward->setSettings(msetting);
     DoubleMatrix u;
-    vector<ProcessInfo> info;
+    vector<ExtendedSpaceNode> info;
     forward->calculateMVD(u, info);
 
     double intgrl = integral(u);
@@ -87,7 +87,7 @@ void AbstactProblem22D::gradient(const DoubleVector &prms, DoubleVector &g)
     forward->addSpaceDimension(mSpaceDimensionX);
     forward->addSpaceDimension(mSpaceDimensionY);
     forward->setSettings(msetting);
-    vector<ProcessInfo> info;
+    vector<ExtendedSpaceNode> info;
     forward->calculateMVD(u, info);
 
     backward->setTimeDimension(mTimeDimension);

@@ -18,7 +18,7 @@ double CProblem2Forward2D::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) cons
     double y = sn.y;
     double t = tn.t;
 
-    double res = 1.0 - 4.0*setting.a*setting.a + setting.lambda0*(U(x,y,t) - setting.theta);
+    double res = 1.0 - 4.0*a*a + lambda0*(U(x,y,t) - theta);
 
 //    std::vector<ControlDeltaNode> cndeltaNodes;
 //    for (unsigned int i=0; i<setting.Lc; i++) extendContrlDeltaPoint(setting.eta[i], cndeltaNodes, i);
@@ -63,7 +63,7 @@ double CProblem2Forward2D::g1(const SpaceNodePDE &sn, const TimeNodePDE &tn) con
 {
     double y = sn.y;
     double t = tn.t;
-    return setting.lambda*(y*y+t - setting.theta);
+    return lambda*(y*y+t - theta);
 }
 
 double CProblem2Forward2D::g2(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
@@ -71,21 +71,21 @@ double CProblem2Forward2D::g2(const SpaceNodePDE &sn, const TimeNodePDE &tn) con
     double y = sn.y;
     double t = tn.t;
     //return 2.0 + lambda*(U(1.0, y, t) - theta);
-    return 2.0 + setting.lambda*(1.0 + y*y + t - setting.theta);
+    return 2.0 + lambda*(1.0 + y*y + t - theta);
 }
 
 double CProblem2Forward2D::g3(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     double x = sn.x;
     double t = tn.t;
-    return setting.lambda*(x*x + t - setting.theta);
+    return lambda*(x*x + t - theta);
 }
 
 double CProblem2Forward2D::g4(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     double x = sn.x;
     double t = tn.t;
-    return 2.0 + setting.lambda*(1.0 + x*x + t - setting.theta);
+    return 2.0 + lambda*(1.0 + x*x + t - theta);
 }
 
 double CProblem2Forward2D::U(double x, double y, double t) const

@@ -1,12 +1,7 @@
 #ifndef IPROBLEM2BACKWARD2D_H
 #define IPROBLEM2BACKWARD2D_H
 
-#define USE_OTHER_FUNCTIONS_B
-
-#include <grid/pibvp.h>
-#include <vector>
-#include <printer.h>
-#include "problem2setting.h"
+#include "iproblem2pibvp2d.h"
 
 using namespace std;
 
@@ -22,7 +17,7 @@ struct ControlNode
 };
 
 
-class IProblem2Backward2D : public IParabolicIBVP
+class IProblem2Backward2D : public IProblem22DPIBVP
 {
 public:
     void setSettings(P2Setting s);

@@ -3,10 +3,10 @@
 void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     P2Setting setting1;
-    setting1.a = 1.0;
-    setting1.lambda = 0.01;
-    setting1.lambda0 = 0.1;
-    setting1.theta = 10.0;
+    //setting1.a = 1.0;
+    //setting1.lambda = 0.01;
+    //setting1.lambda0 = 0.1;
+    //setting1.theta = 10.0;
     setting1.Lc = 2;
     setting1.Lo = 1;
 
@@ -26,7 +26,7 @@ void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     setting1.eta[1].x = 0.30; setting1.eta[1].y = 0.80;
 
     setting1.xi.resize(setting1.Lo);
-    setting1.xi[0].x = 0.55;  setting1.xi[0].y = 0.65;
+    setting1.xi[0].x = 0.550;  setting1.xi[0].y = 0.650;
     //setting.xi[1].x = 0.50;  setting.xi[1].y = 0.50;
     //setting.xi[2].x = 0.65;  setting.xi[2].y = 0.65;
 
@@ -132,7 +132,7 @@ double Problem22D::fx(const DoubleVector &prms) const
     forward.addSpaceDimension(mSpaceDimensionY);
     forward.setSettings(setting1);
     DoubleMatrix u;
-    vector<ProcessInfo> info;
+    vector<ExtendedSpaceNode> info;
     forward.calculateMVD(u, info);
 
     double intgrl = integral(u);
@@ -281,22 +281,37 @@ double Problem22D::mu(double x UNUSED_PARAM, double y UNUSED_PARAM) const
 void Problem22D::testForwardEquation(const P2Setting &setting) const
 {
     CProblem2Forward2D forward;
+    forward.a = 1.0;
+    forward.lambda = 0.01;
+    forward.lambda0 = 0.1;
+    forward.theta = 10.0;
+
     forward.setTimeDimension(mTimeDimension);
     forward.addSpaceDimension(mSpaceDimensionX);
     forward.addSpaceDimension(mSpaceDimensionY);
     forward.setSettings(setting);
 
     DoubleMatrix u;
-    vector<ProcessInfo> info;
+    vector<ExtendedSpaceNode> info;
     forward.calculateMVD(u, info);
     IPrinter::printMatrix(u);
     IPrinter::printSeperatorLine();
     u.clear();
+
+    for (unsigned int i=0; i<info.size(); i++)
+    {
+        printf("%d\n", i);
+    }
 }
 
 void Problem22D::testBackwardEquation(const P2Setting &setting) const
 {
     CProblem2Backward2D backward;
+    backward.a = 1.0;
+    backward.lambda = 0.01;
+    backward.lambda0 = 0.1;
+    backward.theta = 10.0;
+
     backward.setTimeDimension(mTimeDimension);
     backward.addSpaceDimension(mSpaceDimensionX);
     backward.addSpaceDimension(mSpaceDimensionY);

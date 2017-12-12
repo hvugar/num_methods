@@ -18,10 +18,6 @@ void IProblem2Backward2D::calculateMVD(std::vector<DoubleMatrix> &p)
     double hy = yd.step();
     double ht = td.step();
 
-    double a = setting.a;
-    double lambda0  = setting.lambda0;
-    double lambda   = setting.lambda;
-    //double theta    = setting.theta;
     unsigned int Lc = setting.Lc;
     unsigned int Lo = setting.Lo;
 
@@ -439,10 +435,6 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p)
     double hy = yd.step();
     double ht = td.step();
 
-    double a = setting.a;
-    double lambda0  = setting.lambda0;
-    double lambda   = setting.lambda;
-    //double theta    = setting.theta;
     unsigned int Lc = setting.Lc;
     unsigned int Lo = setting.Lo;
 

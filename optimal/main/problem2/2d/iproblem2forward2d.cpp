@@ -5,7 +5,7 @@ void IProblem2Forward2D::setSettings(P2Setting s)
     setting = s;
 }
 
-void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ProcessInfo> info) const
+void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode> info) const
 {
     Dimension xd = spaceDimension(Dimension::DimensionX);
     Dimension yd = spaceDimension(Dimension::DimensionY);
@@ -18,24 +18,26 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ProcessInfo> info)
     double hy = yd.step();
     double ht = td.step();
 
-    double a = setting.a;
-    double lambda0  = setting.lambda0;
-    double lambda   = setting.lambda;
-    double theta    = setting.theta;
     unsigned int Lc = setting.Lc;
     unsigned int Lo = setting.Lo;
 
-    info.resize(Lc);
-    for (unsigned int i=0; i<Lc; i++)
+    info.resize(Lo);
+    for (unsigned int j=0; j<Lo; j++)
     {
-        ProcessInfo &pi = info[i];
-        pi.index = i;
-        pi.rows = 4;
-        pi.cols = 4;
-        pi.w = (double**) malloc(sizeof(double*)*pi.rows);
-        for (unsigned int rw=0; rw<pi.rows; rw++)
-            pi.w[i] = (double*) malloc(sizeof(double)*pi.cols);
-        pi.u.resize(L+1);
+        ExtendedSpaceNode &pi = info[j];
+        pi.id = j;
+        pi.init(4, 4, L);
+
+        extendObservationPoint(setting.xi[j], pi);
+
+//        for (unsigned int i1=0; i1<4; i1++)
+//        {
+//            unsigned int i=3-i1;
+//            printf("[%d %d %8.4f %8.4f %8.4f]", pi.wi[i][0].i, pi.wi[i][0].j, pi.wi[i][0].x, pi.wi[i][0].y, pi.wi[i][0].w);
+//            printf("[%d %d %8.4f %8.4f %8.4f]", pi.wi[i][1].i, pi.wi[i][1].j, pi.wi[i][1].x, pi.wi[i][1].y, pi.wi[i][1].w);
+//            printf("[%d %d %8.4f %8.4f %8.4f]", pi.wi[i][2].i, pi.wi[i][2].j, pi.wi[i][2].x, pi.wi[i][2].y, pi.wi[i][2].w);
+//            printf("[%d %d %8.4f %8.4f %8.4f]\n", pi.wi[i][3].i, pi.wi[i][3].j, pi.wi[i][3].x, pi.wi[i][3].y, pi.wi[i][3].w);
+//        }
     }
 
     u.clear();
@@ -55,25 +57,25 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ProcessInfo> info)
     unsigned int *v1x = new unsigned int[N+1]; for (unsigned int n=0; n<=N; n++) v1x[n] = 0;
 
     SpaceNodePDE sn;
-//    for (unsigned int m=0; m<=M; m++)
-//    {
-//        sn.j = m; sn.y = m*hy;
-//        for (unsigned int n=0; n<=N; n++)
-//        {
-//            sn.i = n; sn.x = n*hx;
+    //    for (unsigned int m=0; m<=M; m++)
+    //    {
+    //        sn.j = m; sn.y = m*hy;
+    //        for (unsigned int n=0; n<=N; n++)
+    //        {
+    //            sn.i = n; sn.x = n*hx;
 
-//            for (unsigned int i=0; i<Lc; i++)
-//            {
-//                double _delta = delta(sn, setting.eta[i], i);
+    //            for (unsigned int i=0; i<Lc; i++)
+    //            {
+    //                double _delta = delta(sn, setting.eta[i], i);
 
-//                if (checkDelta(_delta))
-//                {
-//                    if ( v1y[m] == 0 ) v1y[m] = 1;
-//                    if ( v1x[n] == 0 ) v1x[n] = 1;
-//                }
-//            }
-//        }
-//    }
+    //                if (checkDelta(_delta))
+    //                {
+    //                    if ( v1y[m] == 0 ) v1y[m] = 1;
+    //                    if ( v1x[n] == 0 ) v1x[n] = 1;
+    //                }
+    //            }
+    //        }
+    //    }
 
     for (unsigned int i=0; i<cndeltaNodes.size(); i++)
     {
@@ -254,47 +256,47 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ProcessInfo> info)
                                 }
                             }
 
-//                            for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
-//                            {
-//                                const ControlDeltaNode &cn = cndeltaNodes.at(cni);
-//                                if (cn.n == sn.i && cn.m == sn.j)
-//                                {
-//                                    for (unsigned int s=0; s<observeNodes.size(); s++)
-//                                    {
-//                                        const ObservationNode &on = observeNodes[s];
+                            //                            for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
+                            //                            {
+                            //                                const ControlDeltaNode &cn = cndeltaNodes.at(cni);
+                            //                                if (cn.n == sn.i && cn.m == sn.j)
+                            //                                {
+                            //                                    for (unsigned int s=0; s<observeNodes.size(); s++)
+                            //                                    {
+                            //                                        const ObservationNode &on = observeNodes[s];
 
-////                                        if (on.n == cn.n)
-////                                        {
-////                                            w2[offset+m][cn.n*(M+1)+on.m] += -ht * setting.k[cn.i][on.j] * cn.w * on.w;
-////                                        }
-////                                        else
-////                                        {
-////                                            d2[offset+m] += ht * setting.k[cn.i][on.j] * uh[on.m][on.n] * cn.w * on.w;
-////                                        }
+                            ////                                        if (on.n == cn.n)
+                            ////                                        {
+                            ////                                            w2[offset+m][cn.n*(M+1)+on.m] += -ht * setting.k[cn.i][on.j] * cn.w * on.w;
+                            ////                                        }
+                            ////                                        else
+                            ////                                        {
+                            ////                                            d2[offset+m] += ht * setting.k[cn.i][on.j] * uh[on.m][on.n] * cn.w * on.w;
+                            ////                                        }
 
-//                                        bool found = false;
-//                                        for (unsigned int cs=0; cs<cntXSize; cs++)
-//                                        {
-//                                            if (on.n == cntX[cs])
-//                                            {
-//                                                found = true;
-//                                                w2[offset+m][cs*(M+1)+on.m] += -ht * setting.k[cn.i][on.j] * cn.w * on.w;
-//                                            }
-//                                        }
+                            //                                        bool found = false;
+                            //                                        for (unsigned int cs=0; cs<cntXSize; cs++)
+                            //                                        {
+                            //                                            if (on.n == cntX[cs])
+                            //                                            {
+                            //                                                found = true;
+                            //                                                w2[offset+m][cs*(M+1)+on.m] += -ht * setting.k[cn.i][on.j] * cn.w * on.w;
+                            //                                            }
+                            //                                        }
 
-//                                        if (!found)
-//                                        {
-//                                            d2[offset+m] += ht * setting.k[cn.i][on.j] * uh[on.m][on.n] * cn.w * on.w;
-//                                        }
-//                                    }
+                            //                                        if (!found)
+                            //                                        {
+                            //                                            d2[offset+m] += ht * setting.k[cn.i][on.j] * uh[on.m][on.n] * cn.w * on.w;
+                            //                                        }
+                            //                                    }
 
-//                                    for (unsigned int j=0; j<Lo; j++)
-//                                    {
-//                                        d2[offset+m] -= ht * setting.k[cn.i][j] * setting.z[cn.i][j] * cn.w;
-//                                    }
+                            //                                    for (unsigned int j=0; j<Lo; j++)
+                            //                                    {
+                            //                                        d2[offset+m] -= ht * setting.k[cn.i][j] * setting.z[cn.i][j] * cn.w;
+                            //                                    }
 
-//                                }
-//                            }
+                            //                                }
+                            //                            }
 
                             //------------------------------------- Adding delta part -------------------------------------//
                         }
@@ -463,47 +465,47 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ProcessInfo> info)
                             }
                             //------------------------------------- Adding delta part -------------------------------------//
 
-//                            for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
-//                            {
-//                                const ControlDeltaNode &cn = cndeltaNodes.at(cni);
-//                                if (cn.n == sn.i && cn.m == sn.j)
-//                                {
-//                                    for (unsigned int s=0; s<observeNodes.size(); s++)
-//                                    {
-//                                        const ObservationNode &on = observeNodes[s];
+                            //                            for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
+                            //                            {
+                            //                                const ControlDeltaNode &cn = cndeltaNodes.at(cni);
+                            //                                if (cn.n == sn.i && cn.m == sn.j)
+                            //                                {
+                            //                                    for (unsigned int s=0; s<observeNodes.size(); s++)
+                            //                                    {
+                            //                                        const ObservationNode &on = observeNodes[s];
 
-////                                        if (on.m == cn.m)
-////                                        {
-////                                            w2[offset+n][cn.m*(N+1)+on.n] += -ht * setting.k[cn.i][on.j] * cn.w * on.w;
-////                                        }
-////                                        else
-////                                        {
-////                                            d2[offset+n] += ht * setting.k[cn.i][on.j] * u[on.m][on.n] * cn.w * on.w;
-////                                        }
+                            ////                                        if (on.m == cn.m)
+                            ////                                        {
+                            ////                                            w2[offset+n][cn.m*(N+1)+on.n] += -ht * setting.k[cn.i][on.j] * cn.w * on.w;
+                            ////                                        }
+                            ////                                        else
+                            ////                                        {
+                            ////                                            d2[offset+n] += ht * setting.k[cn.i][on.j] * u[on.m][on.n] * cn.w * on.w;
+                            ////                                        }
 
-//                                        bool found = false;
-//                                        for (unsigned int cs=0; cs<cntYSize; cs++)
-//                                        {
-//                                            if (on.m == cntY[cs])
-//                                            {
-//                                                found = true;
-//                                                w2[offset+n][cs*(N+1)+on.n] += -ht * setting.k[cn.i][on.j] * cn.w * on.w;
-//                                            }
-//                                        }
+                            //                                        bool found = false;
+                            //                                        for (unsigned int cs=0; cs<cntYSize; cs++)
+                            //                                        {
+                            //                                            if (on.m == cntY[cs])
+                            //                                            {
+                            //                                                found = true;
+                            //                                                w2[offset+n][cs*(N+1)+on.n] += -ht * setting.k[cn.i][on.j] * cn.w * on.w;
+                            //                                            }
+                            //                                        }
 
-//                                        if (!found)
-//                                        {
-//                                            d2[offset+n] += ht * setting.k[cn.i][on.j] * u[on.m][on.n] * cn.w * on.w;
-//                                        }
-//                                    }
+                            //                                        if (!found)
+                            //                                        {
+                            //                                            d2[offset+n] += ht * setting.k[cn.i][on.j] * u[on.m][on.n] * cn.w * on.w;
+                            //                                        }
+                            //                                    }
 
-//                                    for (unsigned int j=0; j<Lo; j++)
-//                                    {
-//                                        d2[offset+n] -= ht * setting.k[cn.i][j] * setting.z[cn.i][j] * cn.w;
-//                                    }
+                            //                                    for (unsigned int j=0; j<Lo; j++)
+                            //                                    {
+                            //                                        d2[offset+n] -= ht * setting.k[cn.i][j] * setting.z[cn.i][j] * cn.w;
+                            //                                    }
 
-//                                }
-//                            }
+                            //                                }
+                            //                            }
                         }
                         offset += N+1;
                     }
@@ -536,6 +538,18 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ProcessInfo> info)
         //IPrinter::printMatrix(u[l]);
         //IPrinter::printSeperatorLine();
         //------------------------------------- approximatin to x direction conditions -------------------------------------//
+
+        for (unsigned int j=0; j<Lo; j++)
+        {
+            ExtendedSpaceNode &pi = info[j];
+            for (unsigned int j=0; j<4; j++)
+            {
+                for (unsigned int i=0; i<4; i++)
+                {
+                    pi.wi[j][i].u[l] = u[pi.wi[j][i].j][pi.wi[j][i].i];
+                }
+            }
+        }
 
         layerInfo(u, l);
     }
@@ -1208,6 +1222,647 @@ void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, std::vect
         ons.push_back(on);
         return;
     }
+}
+
+void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, ExtendedSpaceNode &pi, unsigned int j) const
+{
+    Dimension xd = spaceDimension(Dimension::DimensionX);
+    Dimension yd = spaceDimension(Dimension::DimensionY);
+
+    unsigned int Nx = xd.sizeN();
+    unsigned int Ny = yd.sizeN();
+
+    double hx = xd.step();
+    double hy = yd.step();
+
+    unsigned int rx = (unsigned int)(round(xi.x*Nx));
+    unsigned int ry = (unsigned int)(round(xi.y*Ny));
+
+    double hx3 = hx*hx*hx;
+    double hx32 = (1.0/(2.0*hx3));
+    double hx36 = (1.0/(6.0*hx3));
+
+    double hy3 = hy*hy*hy;
+    double hy32 = (1.0/(2.0*hy3));
+    double hy36 = (1.0/(6.0*hy3));
+
+    ObservationNode on;
+    double dx = 0.0;
+    double dy = 0.0;
+
+    if ( rx*hx <= xi.x && ry*hy <= xi.y ) // left bottom
+    {
+        pi.wi[1][1].i = rx + 0; pi.wi[1][1].x = pi.wi[1][1].i*hx;
+        pi.wi[1][1].j = ry + 0; pi.wi[1][1].y = pi.wi[1][1].j*hy;
+        dx = fabs(pi.wi[2][1].x-xi.x);
+        dy = fabs(pi.wi[2][1].y-xi.y);
+        pi.wi[1][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+        pi.wi[2][1].i = rx + 0; pi.wi[2][1].x = pi.wi[2][1].i*hx;
+        pi.wi[2][1].j = ry + 1; pi.wi[2][1].y = pi.wi[2][1].j*hy;
+        dx = fabs(pi.wi[2][1].x-xi.x);
+        dy = fabs(pi.wi[2][1].y-xi.y);
+        pi.wi[2][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+        pi.wi[2][2].i = rx + 1; pi.wi[2][2].x = pi.wi[2][2].i*hx;
+        pi.wi[2][2].j = ry + 1; pi.wi[2][2].y = pi.wi[2][2].j*hy;
+        dx = fabs(pi.wi[2][2].x-xi.x);
+        dy = fabs(pi.wi[2][2].y-pi.wi[2][2].y);
+        pi.wi[2][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+        pi.wi[1][2].i = rx + 1; pi.wi[1][2].x = pi.wi[1][2].i*hx;
+        pi.wi[1][2].j = ry + 0; pi.wi[1][2].y = pi.wi[1][2].j*hy;
+        dx = fabs(pi.wi[1][2].x-xi.x);
+        dy = fabs(pi.wi[1][2].y-xi.y);
+        pi.wi[1][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+        pi.wi[0][0].i = rx - 1; pi.wi[0][0].x = pi.wi[0][0].i*hx;
+        pi.wi[0][0].j = ry - 1; pi.wi[0][0].y = pi.wi[0][0].j*hy;
+        dx = fabs(pi.wi[0][0].x-xi.x);
+        dy = fabs(pi.wi[0][0].y-xi.y);
+        pi.wi[0][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36) * ((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+        pi.wi[1][0].i = rx - 1; pi.wi[1][0].x = pi.wi[1][0].i*hx;
+        pi.wi[1][0].j = ry + 0; pi.wi[1][0].y = pi.wi[1][0].j*hy;
+        dx = fabs(pi.wi[1][0].x-xi.x);
+        dy = fabs(pi.wi[1][0].y-xi.y);
+        pi.wi[1][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+        pi.wi[2][0].i = rx - 1; pi.wi[2][0].x = pi.wi[2][0].i*hx;
+        pi.wi[2][0].j = ry + 1; pi.wi[2][0].y = pi.wi[2][0].j*hy;
+        dx = fabs(pi.wi[2][0].x-xi.x);
+        dy = fabs(pi.wi[2][0].y-xi.y);
+        pi.wi[2][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+        pi.wi[3][0].i = rx - 1; pi.wi[3][0].x = pi.wi[3][0].i*hx;
+        pi.wi[3][0].j = ry + 2; pi.wi[3][0].y = pi.wi[3][0].j*hy;
+        dx = fabs(pi.wi[3][0].x-xi.x);
+        dy = fabs(pi.wi[3][0].y-xi.y);
+        pi.wi[3][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+        pi.wi[3][1].i = rx + 0; pi.wi[3][1].x = pi.wi[3][1].i*hx;
+        pi.wi[3][1].j = ry + 2; pi.wi[3][1].y = pi.wi[3][1].j*hy;
+        dx = fabs(pi.wi[3][1].x-xi.x);
+        dy = fabs(pi.wi[3][1].y-xi.y);
+        pi.wi[3][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+        pi.wi[3][2].i = rx + 1; pi.wi[3][2].x = pi.wi[3][2].i*hx;
+        pi.wi[3][2].j = ry + 2; pi.wi[3][2].y = pi.wi[3][2].j*hy;
+        dx = fabs(pi.wi[3][2].x-xi.x);
+        dy = fabs(pi.wi[3][2].y-xi.y);
+        pi.wi[3][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+        pi.wi[3][3].i = rx + 2; pi.wi[3][3].x = pi.wi[3][3].i*hx;
+        pi.wi[3][3].j = ry + 2; pi.wi[3][3].y = pi.wi[3][3].j*hy;
+        dx = fabs(pi.wi[3][3].x-xi.x);
+        dy = fabs(pi.wi[3][3].y-xi.y);
+        pi.wi[3][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+        pi.wi[2][3].i = rx + 2; pi.wi[2][3].x = pi.wi[2][3].i*hx;
+        pi.wi[2][3].j = ry + 1; pi.wi[2][3].y = pi.wi[2][3].j*hy;
+        dx = fabs(pi.wi[2][3].x-xi.x);
+        dy = fabs(pi.wi[2][3].y-xi.y);
+        pi.wi[2][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+        pi.wi[1][3].i = rx + 2; pi.wi[1][3].x = pi.wi[1][3].i*hx;
+        pi.wi[1][3].j = ry + 0; pi.wi[1][3].y = pi.wi[1][3].j*hy;
+        dx = fabs(pi.wi[1][3].x-xi.x);
+        dy = fabs(pi.wi[1][3].y-xi.y);
+        pi.wi[1][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+        pi.wi[0][3].i = rx + 2; pi.wi[0][3].x = pi.wi[0][3].i*hx;
+        pi.wi[0][3].j = ry - 1; pi.wi[0][3].y = pi.wi[0][3].j*hy;
+        dx = fabs(pi.wi[0][3].x-xi.x);
+        dy = fabs(pi.wi[0][3].y-xi.y);
+        pi.wi[0][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+        pi.wi[0][2].i = rx + 1; pi.wi[0][2].x = pi.wi[0][2].i*hx;
+        pi.wi[0][2].j = ry - 1; pi.wi[0][2].y = pi.wi[0][2].j*hy;
+        dx = fabs(pi.wi[0][2].x-xi.x);
+        dy = fabs(pi.wi[0][2].y-xi.y);
+        pi.wi[0][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+        pi.wi[0][1].i = rx + 0; pi.wi[0][1].x = pi.wi[0][1].i*hx;
+        pi.wi[0][1].j = ry - 1; pi.wi[0][1].y = pi.wi[0][1].j*hy;
+        dx = fabs(pi.wi[0][1].x-xi.x);
+        dy = fabs(pi.wi[0][1].y-xi.y);
+        pi.wi[0][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+    }
+
+    if ( rx*hx <= xi.x && ry*hy >= xi.y ) // left top
+    {
+        //        espn.index = index;
+        //        espn.i = rx+0; espn.x = espn.i*hx;
+        //        espn.j = ry-1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+0; espn.x = espn.i*hx;
+        //        espn.j = ry+0; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+1; espn.x = espn.i*hx;
+        //        espn.j = ry+0; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+1; espn.x = espn.i*hx;
+        //        espn.j = ry-1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx-1; espn.x = espn.i*hx;
+        //        espn.j = ry-2; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx-1; espn.x = espn.i*hx;
+        //        espn.j = ry-1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx-1; espn.x = espn.i*hx;
+        //        espn.j = ry+0; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx-1; espn.x = espn.i*hx;
+        //        espn.j = ry+1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+0; espn.x = espn.i*hx;
+        //        espn.j = ry+1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);;
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+1; espn.x = espn.i*hx;
+        //        espn.j = ry+1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+2; espn.x = espn.i*hx;
+        //        espn.j = ry+1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+2; espn.x = espn.i*hx;
+        //        espn.j = ry+0; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+2; espn.x = espn.i*hx;
+        //        espn.j = ry-1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+2; espn.x = espn.i*hx;
+        //        espn.j = ry-2; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+1; espn.x = espn.i*hx;
+        //        espn.j = ry-2; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+0; espn.x = espn.i*hx;
+        //        espn.j = ry-2; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+    }
+
+    if ( rx*hx >= xi.x && ry*hy >= xi.y ) // right top
+    {
+        //        espn.index = index;
+        //        espn.i = rx-1; espn.x = espn.i*hx;
+        //        espn.j = ry-1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx-1; espn.x = espn.i*hx;
+        //        espn.j = ry+0; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+0; espn.x = espn.i*hx;
+        //        espn.j = ry+0; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+0; espn.x = espn.i*hx;
+        //        espn.j = ry-1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx-2; espn.x = espn.i*hx;
+        //        espn.j = ry-2; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx-2; espn.x = espn.i*hx;
+        //        espn.j = ry-1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx-2; espn.x = espn.i*hx;
+        //        espn.j = ry+0; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx-2; espn.x = espn.i*hx;
+        //        espn.j = ry+1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx-1; espn.x = espn.i*hx;
+        //        espn.j = ry+1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);;
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+0; espn.x = espn.i*hx;
+        //        espn.j = ry+1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+1; espn.x = espn.i*hx;
+        //        espn.j = ry+1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+1; espn.x = espn.i*hx;
+        //        espn.j = ry+0; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+1; espn.x = espn.i*hx;
+        //        espn.j = ry-1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+1; espn.x = espn.i*hx;
+        //        espn.j = ry-2; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+0; espn.x = espn.i*hx;
+        //        espn.j = ry-2; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx-1; espn.x = espn.i*hx;
+        //        espn.j = ry-2; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+    }
+
+    if ( rx*hx >= xi.x && ry*hy <= xi.y ) // right bottom
+    {
+        //        espn.index = index;
+        //        espn.i = rx-1; espn.x = espn.i*hx;
+        //        espn.j = ry+0; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx-1; espn.x = espn.i*hx;
+        //        espn.j = ry+1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+0; espn.x = espn.i*hx;
+        //        espn.j = ry+1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+0; espn.x = espn.i*hx;
+        //        espn.j = ry+0; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx-2; espn.x = espn.i*hx;
+        //        espn.j = ry-1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx-2; espn.x = espn.i*hx;
+        //        espn.j = ry+0; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx-2; espn.x = espn.i*hx;
+        //        espn.j = ry+1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx-2; espn.x = espn.i*hx;
+        //        espn.j = ry+2; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx-1; espn.x = espn.i*hx;
+        //        espn.j = ry+2; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);;
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+0; espn.x = espn.i*hx;
+        //        espn.j = ry+2; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+1; espn.x = espn.i*hx;
+        //        espn.j = ry+2; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+1; espn.x = espn.i*hx;
+        //        espn.j = ry+1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+1; espn.x = espn.i*hx;
+        //        espn.j = ry+0; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+1; espn.x = espn.i*hx;
+        //        espn.j = ry-1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx+0; espn.x = espn.i*hx;
+        //        espn.j = ry-1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+
+        //        espn.index = index;
+        //        espn.i = rx-1; espn.x = espn.i*hx;
+        //        espn.j = ry-1; espn.y = espn.j*hy;
+        //        dx = fabs(espn.x-xi.x);
+        //        dy = fabs(espn.y-xi.y);
+        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        //        xi.extNodes.push_back(espn);
+    }
+}
+
+void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, ExtendedSpaceNode &pi) const
+{
+    Dimension xd = spaceDimension(Dimension::DimensionX);
+    Dimension yd = spaceDimension(Dimension::DimensionY);
+
+    unsigned int Nx = xd.sizeN();
+    unsigned int Ny = yd.sizeN();
+
+    double hx = xd.step();
+    double hy = yd.step();
+
+    unsigned int rx = (unsigned int)(floor(xi.x*Nx));
+    unsigned int ry = (unsigned int)(floor(xi.y*Ny));
+
+    double hx3 = hx*hx*hx;
+    double hx32 = (1.0/(2.0*hx3));
+    double hx36 = (1.0/(6.0*hx3));
+
+    double hy3 = hy*hy*hy;
+    double hy32 = (1.0/(2.0*hy3));
+    double hy36 = (1.0/(6.0*hy3));
+
+    double dx = 0.0;
+    double dy = 0.0;
+
+    pi.wi[1][1].i = rx + 0; pi.wi[1][1].x = pi.wi[1][1].i*hx;
+    pi.wi[1][1].j = ry + 0; pi.wi[1][1].y = pi.wi[1][1].j*hy;
+    dx = fabs(pi.wi[1][1].x-xi.x);
+    dy = fabs(pi.wi[1][1].y-xi.y);
+    pi.wi[1][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+    pi.wi[2][1].i = rx + 0; pi.wi[2][1].x = pi.wi[2][1].i*hx;
+    pi.wi[2][1].j = ry + 1; pi.wi[2][1].y = pi.wi[2][1].j*hy;
+    dx = fabs(pi.wi[2][1].x-xi.x);
+    dy = fabs(pi.wi[2][1].y-xi.y);
+    pi.wi[2][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+    pi.wi[2][2].i = rx + 1; pi.wi[2][2].x = pi.wi[2][2].i*hx;
+    pi.wi[2][2].j = ry + 1; pi.wi[2][2].y = pi.wi[2][2].j*hy;
+    dx = fabs(pi.wi[2][2].x-xi.x);
+    dy = fabs(pi.wi[2][2].y-pi.wi[2][2].y);
+    pi.wi[2][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+    pi.wi[1][2].i = rx + 1; pi.wi[1][2].x = pi.wi[1][2].i*hx;
+    pi.wi[1][2].j = ry + 0; pi.wi[1][2].y = pi.wi[1][2].j*hy;
+    dx = fabs(pi.wi[1][2].x-xi.x);
+    dy = fabs(pi.wi[1][2].y-xi.y);
+    pi.wi[1][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+    pi.wi[0][0].i = rx - 1; pi.wi[0][0].x = pi.wi[0][0].i*hx;
+    pi.wi[0][0].j = ry - 1; pi.wi[0][0].y = pi.wi[0][0].j*hy;
+    dx = fabs(pi.wi[0][0].x-xi.x);
+    dy = fabs(pi.wi[0][0].y-xi.y);
+    pi.wi[0][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36) * ((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+    pi.wi[1][0].i = rx - 1; pi.wi[1][0].x = pi.wi[1][0].i*hx;
+    pi.wi[1][0].j = ry + 0; pi.wi[1][0].y = pi.wi[1][0].j*hy;
+    dx = fabs(pi.wi[1][0].x-xi.x);
+    dy = fabs(pi.wi[1][0].y-xi.y);
+    pi.wi[1][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+    pi.wi[2][0].i = rx - 1; pi.wi[2][0].x = pi.wi[2][0].i*hx;
+    pi.wi[2][0].j = ry + 1; pi.wi[2][0].y = pi.wi[2][0].j*hy;
+    dx = fabs(pi.wi[2][0].x-xi.x);
+    dy = fabs(pi.wi[2][0].y-xi.y);
+    pi.wi[2][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+    pi.wi[3][0].i = rx - 1; pi.wi[3][0].x = pi.wi[3][0].i*hx;
+    pi.wi[3][0].j = ry + 2; pi.wi[3][0].y = pi.wi[3][0].j*hy;
+    dx = fabs(pi.wi[3][0].x-xi.x);
+    dy = fabs(pi.wi[3][0].y-xi.y);
+    pi.wi[3][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+    pi.wi[3][1].i = rx + 0; pi.wi[3][1].x = pi.wi[3][1].i*hx;
+    pi.wi[3][1].j = ry + 2; pi.wi[3][1].y = pi.wi[3][1].j*hy;
+    dx = fabs(pi.wi[3][1].x-xi.x);
+    dy = fabs(pi.wi[3][1].y-xi.y);
+    pi.wi[3][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+    pi.wi[3][2].i = rx + 1; pi.wi[3][2].x = pi.wi[3][2].i*hx;
+    pi.wi[3][2].j = ry + 2; pi.wi[3][2].y = pi.wi[3][2].j*hy;
+    dx = fabs(pi.wi[3][2].x-xi.x);
+    dy = fabs(pi.wi[3][2].y-xi.y);
+    pi.wi[3][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+    pi.wi[3][3].i = rx + 2; pi.wi[3][3].x = pi.wi[3][3].i*hx;
+    pi.wi[3][3].j = ry + 2; pi.wi[3][3].y = pi.wi[3][3].j*hy;
+    dx = fabs(pi.wi[3][3].x-xi.x);
+    dy = fabs(pi.wi[3][3].y-xi.y);
+    pi.wi[3][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+    pi.wi[2][3].i = rx + 2; pi.wi[2][3].x = pi.wi[2][3].i*hx;
+    pi.wi[2][3].j = ry + 1; pi.wi[2][3].y = pi.wi[2][3].j*hy;
+    dx = fabs(pi.wi[2][3].x-xi.x);
+    dy = fabs(pi.wi[2][3].y-xi.y);
+    pi.wi[2][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+    pi.wi[1][3].i = rx + 2; pi.wi[1][3].x = pi.wi[1][3].i*hx;
+    pi.wi[1][3].j = ry + 0; pi.wi[1][3].y = pi.wi[1][3].j*hy;
+    dx = fabs(pi.wi[1][3].x-xi.x);
+    dy = fabs(pi.wi[1][3].y-xi.y);
+    pi.wi[1][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+    pi.wi[0][3].i = rx + 2; pi.wi[0][3].x = pi.wi[0][3].i*hx;
+    pi.wi[0][3].j = ry - 1; pi.wi[0][3].y = pi.wi[0][3].j*hy;
+    dx = fabs(pi.wi[0][3].x-xi.x);
+    dy = fabs(pi.wi[0][3].y-xi.y);
+    pi.wi[0][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+    pi.wi[0][2].i = rx + 1; pi.wi[0][2].x = pi.wi[0][2].i*hx;
+    pi.wi[0][2].j = ry - 1; pi.wi[0][2].y = pi.wi[0][2].j*hy;
+    dx = fabs(pi.wi[0][2].x-xi.x);
+    dy = fabs(pi.wi[0][2].y-xi.y);
+    pi.wi[0][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+    pi.wi[0][1].i = rx + 0; pi.wi[0][1].x = pi.wi[0][1].i*hx;
+    pi.wi[0][1].j = ry - 1; pi.wi[0][1].y = pi.wi[0][1].j*hy;
+    dx = fabs(pi.wi[0][1].x-xi.x);
+    dy = fabs(pi.wi[0][1].y-xi.y);
+    pi.wi[0][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
 }
 
 void IProblem2Forward2D::extendContrlDeltaPoint(const SpaceNodePDE cp, std::vector<ControlDeltaNode> &cps, unsigned int i) const

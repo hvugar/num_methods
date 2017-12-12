@@ -4,10 +4,10 @@
 void Problem22DEx3::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     P2Setting s;
-    s.a = 0.1;
-    s.lambda = 0.1;
-    s.lambda0 = 0.1;
-    s.theta = 10.0;
+    //s.a = 0.1;
+    //s.lambda = 0.1;
+    //s.lambda0 = 0.1;
+    //s.theta = 10.0;
     s.Lc = 1;
     s.Lo = 4;
 

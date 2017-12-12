@@ -18,7 +18,7 @@ double CProblem2Backward2D::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) con
     double y = sn.y;
     double t = tn.t;
 
-    double res = 1.0 + 4.0*setting.a*setting.a - setting.lambda0*P(x,y,t);
+    double res = 1.0 + 4.0*a*a - lambda0*P(x,y,t);
 
     double W = 0.0;
     for (unsigned int j=0; j<setting.Lo; j++)
@@ -41,22 +41,22 @@ double CProblem2Backward2D::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) con
 
 double CProblem2Backward2D::g1(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
-    return -setting.lambda*(sn.y*sn.y+tn.t);
+    return -lambda*(sn.y*sn.y+tn.t);
 }
 
 double CProblem2Backward2D::g2(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
-    return 2.0 - setting.lambda*(1.0+sn.y*sn.y+tn.t);
+    return 2.0 - lambda*(1.0+sn.y*sn.y+tn.t);
 }
 
 double CProblem2Backward2D::g3(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
-    return -setting.lambda*(sn.x*sn.x+tn.t);
+    return -lambda*(sn.x*sn.x+tn.t);
 }
 
 double CProblem2Backward2D::g4(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
-    return 2.0 - setting.lambda*(sn.x*sn.x+1.0+tn.t);
+    return 2.0 - lambda*(sn.x*sn.x+1.0+tn.t);
 }
 
 double CProblem2Backward2D::h(const SpaceNodePDE &sn) const

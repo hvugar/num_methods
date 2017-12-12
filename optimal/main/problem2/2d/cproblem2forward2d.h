@@ -11,10 +11,10 @@ protected:
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
 protected:
-    virtual double g1(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;
-    virtual double g2(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;
-    virtual double g3(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;
-    virtual double g4(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const;
+    virtual double g1(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    virtual double g2(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    virtual double g3(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    virtual double g4(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
     virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
 public:
