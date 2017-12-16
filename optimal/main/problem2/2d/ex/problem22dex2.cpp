@@ -36,13 +36,13 @@ void Problem22DEx2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     Dimension spaceDimensionY = Dimension(0.001, 0, 1000);
 
     Problem22DEx2 p22dEx2;
-    p22dEx2.setForward(new Problem2Forward2DEx2);
-    p22dEx2.setBackward(new Problem2Backward2DEx2);
+    //p22dEx2.setForward(new Problem2Forward2DEx2);
+    //p22dEx2.setBackward(new Problem2Backward2DEx2);
     p22dEx2.setGridParameters(timeDimension, spaceDimensionX, spaceDimensionY);
     p22dEx2.setP2Setting(s);
 
     Problem2Forward2DEx2* forward = new Problem2Forward2DEx2;
-    forward->setSettings(s);
+    forward->setSetting(s);
     forward->setTimeDimension(timeDimension);
     forward->addSpaceDimension(spaceDimensionX);
     forward->addSpaceDimension(spaceDimensionY);

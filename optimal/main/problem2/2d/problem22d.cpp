@@ -26,7 +26,7 @@ void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     setting1.eta[1].x = 0.30; setting1.eta[1].y = 0.80;
 
     setting1.xi.resize(setting1.Lo);
-    setting1.xi[0].x = 0.504;  setting1.xi[0].y = 0.502;
+    setting1.xi[0].x = 0.515;  setting1.xi[0].y = 0.529;
     //setting.xi[1].x = 0.50;  setting.xi[1].y = 0.50;
     //setting.xi[2].x = 0.65;  setting.xi[2].y = 0.65;
 
@@ -50,12 +50,12 @@ void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //p22d.setGridParameters(Dimension(0.01, 0, 100), Dimension(0.005, 0, 200), Dimension(0.010, 0, 100));
     //p22d.setGridParameters(Dimension(0.01, 0, 100), Dimension(0.010, 0, 100), Dimension(0.005, 0, 200));
 
-    //clock_t t1 = clock();
+    clock_t t1 = clock();
     p22d.testForwardEquation(p22d.setting);
-    //clock_t t2 = clock();
+    clock_t t2 = clock();
     //printf ("It took me %d clicks (%f seconds).\n",t2-t1,((float)(t2-t1))/CLOCKS_PER_SEC);
-    //p22d.testBackwardEquation(p22d.setting);
-    //clock_t t3 = clock();
+    p22d.testBackwardEquation(p22d.setting);
+    clock_t t3 = clock();
     //printf ("It took me %d clicks (%f seconds).\n",t3-t2,((float)(t3-t2))/CLOCKS_PER_SEC);
     return;
 
@@ -130,7 +130,7 @@ double Problem22D::fx(const DoubleVector &prms) const
     forward.setTimeDimension(mTimeDimension);
     forward.addSpaceDimension(mSpaceDimensionX);
     forward.addSpaceDimension(mSpaceDimensionY);
-    forward.setSettings(setting1);
+    forward.setSetting(setting1);
     DoubleMatrix u;
     vector<ExtendedSpaceNode2D> info;
     forward.calculateMVD(u, info);
@@ -281,15 +281,11 @@ double Problem22D::mu(double x UNUSED_PARAM, double y UNUSED_PARAM) const
 void Problem22D::testForwardEquation(const P2Setting &setting) const
 {
     CProblem2Forward2D forward;
-    forward.a = 1.0;
-    forward.lambda = 0.01;
-    forward.lambda0 = 0.1;
-    forward.theta = 10.0;
-
+    forward.setEquationParameters(1.0, 0.01, 1.0, 10.0);
+    forward.setSetting(setting);
     forward.setTimeDimension(mTimeDimension);
     forward.addSpaceDimension(mSpaceDimensionX);
     forward.addSpaceDimension(mSpaceDimensionY);
-    forward.setSettings(setting);
 
     DoubleMatrix u;
     vector<ExtendedSpaceNode2D> info;
@@ -317,32 +313,51 @@ void Problem22D::testForwardEquation(const P2Setting &setting) const
                 esn.wi[1][0].w,esn.wi[1][1].w,esn.wi[1][2].w,esn.wi[1][3].w,
                 esn.wi[0][0].w,esn.wi[0][1].w,esn.wi[0][2].w,esn.wi[0][3].w);
 
-        printf("%f\n", esn.value(esn.x, esn.y, ln));
+        printf("%f\n", esn.value(ln));
     }
 }
 
 void Problem22D::testBackwardEquation(const P2Setting &setting) const
 {
     CProblem2Backward2D backward;
-    backward.a = 1.0;
-    backward.lambda = 0.01;
-    backward.lambda0 = 0.1;
-    backward.theta = 10.0;
-
+    backward.setEquationParameters(1.0, 0.01, 1.0, 10.0);
+    backward.setSetting(setting);
     backward.setTimeDimension(mTimeDimension);
     backward.addSpaceDimension(mSpaceDimensionX);
     backward.addSpaceDimension(mSpaceDimensionY);
-    backward.setSettings(setting);
 
-    backward.U.resize(mSpaceDimensionY.sizeN()+1, mSpaceDimensionY.sizeN()+1, 10.0);
-    backward.uT.resize(mSpaceDimensionY.sizeN()+1, mSpaceDimensionY.sizeN()+1, 9.0);
-    backward.mu.resize(mSpaceDimensionY.sizeN()+1, mSpaceDimensionY.sizeN()+1, 1.0);
+    //backward.U.resize(mSpaceDimensionY.sizeN()+1, mSpaceDimensionY.sizeN()+1, 10.0);
+    //backward.uT.resize(mSpaceDimensionY.sizeN()+1, mSpaceDimensionY.sizeN()+1, 9.0);
+    //backward.mu.resize(mSpaceDimensionY.sizeN()+1, mSpaceDimensionY.sizeN()+1, 1.0);
 
     DoubleMatrix p;
-    backward.calculateMVD(p);
+    vector<ExtendedSpaceNode2D> info;
+    backward.calculateMVD(p, info);
     IPrinter::printMatrix(p);
     IPrinter::printSeperatorLine();
     p.clear();
+
+    for (unsigned int i=0; i<info.size(); i++)
+    {
+        const ExtendedSpaceNode2D &esn = info[i];
+        //for (unsigned int ln=0; ln<esn.layerNumber; ln++)
+        unsigned int ln = 0;
+        {
+            printf("%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n---\n",
+                    esn.wi[3][0].u[ln],esn.wi[3][1].u[ln],esn.wi[3][2].u[ln],esn.wi[3][3].u[ln],
+                    esn.wi[2][0].u[ln],esn.wi[2][1].u[ln],esn.wi[2][2].u[ln],esn.wi[2][3].u[ln],
+                    esn.wi[1][0].u[ln],esn.wi[1][1].u[ln],esn.wi[1][2].u[ln],esn.wi[1][3].u[ln],
+                    esn.wi[0][0].u[ln],esn.wi[0][1].u[ln],esn.wi[0][2].u[ln],esn.wi[0][3].u[ln]);
+        }
+
+        printf("%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n---\n",
+                esn.wi[3][0].w,esn.wi[3][1].w,esn.wi[3][2].w,esn.wi[3][3].w,
+                esn.wi[2][0].w,esn.wi[2][1].w,esn.wi[2][2].w,esn.wi[2][3].w,
+                esn.wi[1][0].w,esn.wi[1][1].w,esn.wi[1][2].w,esn.wi[1][3].w,
+                esn.wi[0][0].w,esn.wi[0][1].w,esn.wi[0][2].w,esn.wi[0][3].w);
+
+        printf("%f\n", esn.value(ln));
+    }
 }
 
 void Problem22D::testExample1()

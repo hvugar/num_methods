@@ -3,8 +3,14 @@
 
 #include "iproblem2forward2d.h"
 
+/*
+ * u(x,y,t)=x*x+y*y+t;
+ */
 class CProblem2Forward2D : public IProblem2Forward2D
 {
+public:
+    static void Main(int argc, char* argv[]);
+
 protected:
     virtual double initial(const SpaceNodePDE &sn) const;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
@@ -17,6 +23,7 @@ protected:
     virtual double g4(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
     virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
+
 public:
     double U(double x, double y, double t) const;
 };

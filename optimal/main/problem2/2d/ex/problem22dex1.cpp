@@ -46,17 +46,14 @@ void Problem22DEx1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     Dimension spaceDimensionY = Dimension(0.001, 0, 1000);
 
     Problem22DEx1 p22dEx1;
-    p22dEx1.setForward(new Problem2Forward2DEx1);
-    p22dEx1.setBackward(new Problem2Backward2DEx1);
+    //p22dEx1.setForward(new Problem2Forward2DEx1);
+    //p22dEx1.setBackward(new Problem2Backward2DEx1);
     p22dEx1.setGridParameters(timeDimension, spaceDimensionX, spaceDimensionY);
     p22dEx1.setP2Setting(s);
 
     Problem2Forward2DEx1* forward = new Problem2Forward2DEx1;
-    forward->a =  0.1;
-    forward->lambda = 0.1;
-    forward->lambda0 = 0.1;
-    forward->theta = 10.0;
-    forward->setSettings(s);
+    forward->setEquationParameters(0.1, 0.1, 0.1, 10.0);
+    forward->setSetting(s);
     forward->setTimeDimension(timeDimension);
     forward->addSpaceDimension(spaceDimensionX);
     forward->addSpaceDimension(spaceDimensionY);

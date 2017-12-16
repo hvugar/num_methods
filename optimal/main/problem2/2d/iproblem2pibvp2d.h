@@ -8,6 +8,39 @@
 
 using namespace std;
 
+struct ObservationNode
+{
+    SpaceNodePDE xi;
+    unsigned int j;
+    unsigned int n;
+    unsigned int m;
+    double x;
+    double y;
+    double w;
+};
+
+struct ControlDeltaNode
+{
+    SpaceNodePDE eta;
+    unsigned int i;
+    unsigned int n;
+    unsigned int m;
+    double x;
+    double y;
+    double w;
+};
+
+struct ControlNode
+{
+    SpaceNodePDE eta;
+    unsigned int i;
+    unsigned int n;
+    unsigned int m;
+    double x;
+    double y;
+    double w;
+};
+
 struct P2Setting
 {
     unsigned int Lc;
@@ -42,70 +75,40 @@ public:
     void extendLayers(unsigned int layerNumber);
     void clearLayers();
 
-    double value(double x, double y, unsigned int layer) const;
+    double value(unsigned int layer) const;
+
+    double valueDx(double x, double y, unsigned int layer) const;
+    double valueDy(double x, double y, unsigned int layer) const;
+
+    double valueDxN(unsigned int layer, double h) const;
+    double valueDyN(unsigned int layer, double h) const;
 
     unsigned int id;
     unsigned int rows;
     unsigned int cols;
     WISpaceNodePDE **wi;
     unsigned int layerNumber;
+
+private:
+    double value(double x, double y, unsigned int layer) const;
+
 };
 
 class IProblem22DPIBVP : public IParabolicIBVP
 {
 public:
-    //    struct ExSpaceNodePDE : public SpaceNodePDE
-    //    {
-    //        double w;
-    //        unsigned int index;
-
-    //        double *timeValues;
-    //        unsigned int timeN;
-    //    };
-
-    //    struct ControlPoint : public SpaceNodePDE
-    //    {
-    //        vector<ExSpaceNodePDE> extNodes;
-    //    };
-
-    //    struct ObservationPoint : public SpaceNodePDE
-    //    {
-    //        vector<ExSpaceNodePDE> extNodes;
-    //    };
-
-    //    struct Parameters
-    //    {
-    //        unsigned int Lc;
-    //        unsigned int Lo;
-    //        DoubleMatrix k;
-    //        DoubleMatrix z;
-    //        vector<ControlPoint> eta;
-    //        vector<ObservationPoint> xi;
-
-    //        void toVector(DoubleVector &prms) const;
-    //        void fromVector(const DoubleVector &prms, unsigned int Lc, unsigned int Lo);
-    //    };
-
-public:
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
-    //    void setParametr(const Parameters& p);
-    //    const Parameters& parametrs() const;
+    void setEquationParameters(double a, double lambda0, double lambda, double theta);
+    void setSetting(P2Setting setting);
 
-    //    void extendDeltaControlPointsToGrid();
-    //    void extendDeltaControlPointToGrid1(ControlPoint &cp, unsigned int index);
-
-    //    void extendObservationPointToGrid();
-    //    void extendObservationPointToGrid1(ObservationPoint &op, unsigned int index);
-
+protected:
     double a;
     double lambda0;
     double lambda;
     double theta;
-
-protected:
-    //    Parameters mParameters;
+    P2Setting setting;
 };
 
 #endif // PROBLEM22DIPARABOLICIBVP_H

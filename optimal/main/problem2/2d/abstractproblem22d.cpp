@@ -1,20 +1,22 @@
 #include "abstractproblem22d.h"
 
-void AbstactProblem22D::setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY)
+AbstactProblem22D::AbstactProblem22D()
 {
-    mTimeDimension = timeDimension;
-    mSpaceDimensionX = spaceDimensionX;
-    mSpaceDimensionY = spaceDimensionY;
+    forward = new Problem2Forward2DEx4();
+    backward = new Problem2Backward2DEx4();
+
+    forward->setEquationParameters(0.4, 0.01, 1.0, 10.0);
+    forward->fi = 0.0;
+    backward->setEquationParameters(0.4, 0.01, 1.0, 10.0);
+    backward->ap22d = this;
 }
 
 double AbstactProblem22D::fx(const DoubleVector &prms) const
 {
-    const_cast<AbstactProblem22D*>(this)->msetting.fromVector(prms);
+    AbstactProblem22D* ap22d = const_cast<AbstactProblem22D*>(this);
+    ap22d->msetting.fromVector(prms);
+    ap22d->forward->setSetting(msetting);
 
-    forward->setTimeDimension(mTimeDimension);
-    forward->addSpaceDimension(mSpaceDimensionX);
-    forward->addSpaceDimension(mSpaceDimensionY);
-    forward->setSettings(msetting);
     DoubleMatrix u;
     vector<ExtendedSpaceNode2D> info;
     forward->calculateMVD(u, info);
@@ -70,111 +72,169 @@ double AbstactProblem22D::mu(double x UNUSED_PARAM, double y UNUSED_PARAM) const
 
 void AbstactProblem22D::gradient(const DoubleVector &prms, DoubleVector &g)
 {
-    unsigned int N = mSpaceDimensionX.sizeN();
-    unsigned int M = mSpaceDimensionY.sizeN();
     unsigned int L = mTimeDimension.sizeN();
-
-    double hx = mSpaceDimensionX.step();
-    double hy = mSpaceDimensionY.step();
     double ht = mTimeDimension.step();
 
     msetting.fromVector(prms);
+    forward->setSetting(msetting);
+    backward->setSetting(msetting);
 
     DoubleMatrix u;
     DoubleMatrix p;
 
+    vector<ExtendedSpaceNode2D> u_info;
+    forward->calculateMVD(u, u_info);
+
+    //    IPrinter::printSeperatorLine();
+    //    IPrinter::printMatrix(U,10,10);
+    //    IPrinter::printSeperatorLine();
+    //    IPrinter::printMatrix(u ,10,10);
+    //    IPrinter::printSeperatorLine();
+
+
+    backward->u = &u;
+    backward->U = &U;
+    vector<ExtendedSpaceNode2D> p_info;
+    backward->calculateMVD(p, p_info);
+
+    g.clear();
+    g.resize(prms.length(), 0.0);
+    unsigned int gi = 0;
+
+    // k
+    for (unsigned int i=0; i<msetting.Lc; i++)
+    {
+        const SpaceNodePDE &eta = msetting.eta[i];
+        ExtendedSpaceNode2D &pi = p_info[i];
+
+        for (unsigned int j=0; j<msetting.Lo; j++)
+        {
+            const SpaceNodePDE &xi = msetting.xi[j];
+            ExtendedSpaceNode2D &uj = u_info[j];
+
+            double gradKij = 0.0;
+
+            gradKij += 0.5 * pi.value(0) * (uj.value(0) - msetting.z[i][j]);
+            for (unsigned int m=1; m<=L-1; m++)
+            {
+                gradKij += pi.value(m) * (uj.value(m) - msetting.z[i][j]);
+            }
+            gradKij += 0.5 * pi.value(L) * (uj.value(L) - msetting.z[i][j]);
+            gradKij *= -ht;
+            g[gi++] = gradKij;
+        }
+    }
+
+    // z
+    for (unsigned int i=0; i<msetting.Lc; i++)
+    {
+        const SpaceNodePDE &eta = msetting.eta[i];
+        ExtendedSpaceNode2D &pi = p_info[i];
+
+        for (unsigned int j=0; j<msetting.Lo; j++)
+        {
+            double gradZij = 0.0;
+
+            gradZij += 0.5 * pi.value(0) * msetting.k[i][j];
+            for (unsigned int m=1; m<=L-1; m++)
+            {
+                gradZij += pi.value(m)  * msetting.k[i][j];
+            }
+            gradZij += 0.5 * pi.value(L) * msetting.k[i][j];
+            gradZij *= ht;
+            g[gi++] = gradZij;
+        }
+    }
+
+    // eta
+    for (unsigned int i=0; i<msetting.Lc; i++)
+    {
+        const SpaceNodePDE &eta = msetting.eta[i];
+        ExtendedSpaceNode2D &pi = p_info[i];
+
+        double gradEtaiX = 0.0;
+        double gradEtaiY = 0.0;
+        double vi = 0.0;
+        double h = 0.01;
+
+        vi = 0.0;
+        for (unsigned int j=0; j<msetting.Lo; j++) vi += msetting.k[i][j]*(u_info[j].value(0) - msetting.z[i][j]);
+        gradEtaiX += 0.5 * pi.valueDxN(0,h) * vi;
+        gradEtaiY += 0.5 * pi.valueDyN(0,h) * vi;
+
+        for (unsigned int m=1; m<=L-1; m++)
+        {
+            vi = 0.0;
+            for (unsigned int j=0; j<msetting.Lo; j++) vi += msetting.k[i][j]*(u_info[j].value(m) - msetting.z[i][j]);
+            gradEtaiX += pi.valueDxN(m,h) * vi;
+            gradEtaiY += pi.valueDyN(m,h) * vi;
+        }
+
+        vi = 0.0;
+        for (unsigned int j=0; j<msetting.Lo; j++) vi += msetting.k[i][j]*(u_info[j].value(L) - msetting.z[i][j]);
+        gradEtaiX += 0.5 * pi.valueDxN(L,h) * vi;
+        gradEtaiY += 0.5 * pi.valueDyN(L,h) * vi;
+
+        gradEtaiX *= -ht;
+        gradEtaiY *= -ht;
+
+        g[gi++] = gradEtaiX;
+        g[gi++] = gradEtaiY;
+    }
+
+    // xi
+    for (unsigned int j=0; j<msetting.Lo; j++)
+    {
+        const SpaceNodePDE &xi = msetting.xi[j];
+        ExtendedSpaceNode2D &uj = u_info[j];
+
+        double gradXijX = 0.0;
+        double gradXijY = 0.0;
+        double vi = 0.0;
+        double h = 0.01;
+
+        vi = 0.0;
+        for (unsigned int i=0; i<msetting.Lc; i++) vi += msetting.k[i][j] * p_info[i].value(0);
+        gradXijX += 0.5 * uj.valueDxN(0,h) * vi;
+        gradXijY += 0.5 * uj.valueDyN(0,h) * vi;
+
+        for (unsigned int m=1; m<=L-1; m++)
+        {
+            vi = 0.0;
+            for (unsigned int i=0; i<msetting.Lc; i++) vi += msetting.k[i][j]*p_info[i].value(m);
+            gradXijX += 0.5 * uj.valueDxN(m,h) * vi;
+            gradXijY += 0.5 * uj.valueDyN(m,h) * vi;
+        }
+
+        vi = 0.0;
+        for (unsigned int i=0; i<msetting.Lc; i++) vi += msetting.k[i][j]*p_info[i].value(L);
+        gradXijX += 0.5 * uj.valueDxN(L,h) * vi;
+        gradXijY += 0.5 * uj.valueDyN(L,h) * vi;
+
+        gradXijX *= -ht;
+        gradXijY *= -ht;
+
+        g[gi++] = gradXijX;
+        g[gi++] = gradXijY;
+    }
+
+    u_info.clear();
+    p_info.clear();
+}
+
+void AbstactProblem22D::setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY)
+{
+    mTimeDimension = timeDimension;
+    mSpaceDimensionX = spaceDimensionX;
+    mSpaceDimensionY = spaceDimensionY;
+
     forward->setTimeDimension(mTimeDimension);
     forward->addSpaceDimension(mSpaceDimensionX);
     forward->addSpaceDimension(mSpaceDimensionY);
-    forward->setSettings(msetting);
-    vector<ExtendedSpaceNode2D> info;
-    forward->calculateMVD(u, info);
 
     backward->setTimeDimension(mTimeDimension);
     backward->addSpaceDimension(mSpaceDimensionX);
     backward->addSpaceDimension(mSpaceDimensionY);
-    backward->setSettings(msetting);
-    backward->calculateMVD(p);
-
-    //backward->U = this->U;
-    //backward->uT = u[u.size()-1];
-
-    //backward->mu.clear();
-    //backward->mu.resize(M+1, N+1, 1.0);
-
-//    std::vector<DoubleMatrix> p;
-//    backward->calculateMVD(p);
-
-//    g.resize(prms.length(), 0.0);
-//    unsigned int gi = 0;
-
-//    // k
-//    for (unsigned int i=0; i<msetting.Lc; i++)
-//    {
-//        const SpaceNodePDE &eta = msetting.eta[i];
-//        unsigned int etaX = (unsigned int)(round(eta.x*N));
-//        unsigned int etaY = (unsigned int)(round(eta.y*M));
-
-//        for (unsigned int j=0; j<msetting.Lo; j++)
-//        {
-//            const SpaceNodePDE &xi = msetting.xi[j];
-//            unsigned int xiX = (unsigned int)(round(xi.x*N));
-//            unsigned int xiY = (unsigned int)(round(xi.y*M));
-
-//            double gradKij = 0.0;
-//            gradKij += 0.5 * p[0][etaY][etaX] * (u[0][xiY][xiX] - msetting.z[i][j]);
-//            for (unsigned int m=1; m<=L-1; m++)
-//            {
-//                gradKij += p[m][etaY][etaX] * (u[m][xiY][xiX] - msetting.z[i][j]);
-//            }
-//            gradKij += 0.5 * p[L][etaY][etaX] * (u[L][xiY][xiX] - msetting.z[i][j]);
-//            gradKij *= -ht;
-//            g[gi++] = gradKij;
-//        }
-//    }
-
-//    // z
-//    for (unsigned int i=0; i<msetting.Lc; i++)
-//    {
-//        const SpaceNodePDE &eta = msetting.eta[i];
-//        unsigned int etaX = (unsigned int)(round(eta.x*N));
-//        unsigned int etaY = (unsigned int)(round(eta.y*M));
-
-//        for (unsigned int j=0; j<msetting.Lo; j++)
-//        {
-//            double gradZij = 0.0;
-//            gradZij += 0.5 * p[0][etaY][etaX] * msetting.k[i][j];
-//            for (unsigned int m=1; m<=L-1; m++)
-//            {
-//                gradZij += p[m][etaY][etaX]  * msetting.k[i][j];
-//            }
-//            gradZij += 0.5 * p[L][etaY][etaX] * msetting.k[i][j];
-//            gradZij *= ht;
-//            g[gi++] = gradZij;
-//        }
-//    }
-
-//    // xi
-//    for (unsigned int j=0; j<msetting.Lo; j++)
-//    {
-//        g[gi++] = 0.0;
-//    }
-
-//    // eta
-//    for (unsigned int j=0; j<msetting.Lc; j++)
-//    {
-//        g[gi++] = 0.0;
-//    }
-}
-
-void AbstactProblem22D::setForward(IProblem2Forward2D *f)
-{
-    forward = f;
-}
-
-void AbstactProblem22D::setBackward(IProblem2Backward2D *b)
-{
-    backward = b;
 }
 
 const P2Setting &AbstactProblem22D::setting() const
@@ -185,4 +245,46 @@ const P2Setting &AbstactProblem22D::setting() const
 void AbstactProblem22D::setP2Setting(const P2Setting &setting)
 {
     msetting = setting;
+    forward->setSetting(setting);
+    backward->setSetting(setting);
 }
+
+//-------------------------------------------------------------------------------------------------------//
+
+double Problem2Forward2DEx4::initial(const SpaceNodePDE &) const
+{
+    return fi;
+}
+
+double Problem2Forward2DEx4::boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const { return NAN; }
+double Problem2Forward2DEx4::f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+double Problem2Forward2DEx4::g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+double Problem2Forward2DEx4::g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+double Problem2Forward2DEx4::g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+double Problem2Forward2DEx4::g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+
+void Problem2Forward2DEx4::layerInfo(const DoubleMatrix & u, unsigned int n) const
+{
+    //    QPixmap pixmap;
+    //    visualizeMatrixHeat(u, u.min(), u.max(), pixmap, u.cols(), u.rows());
+    //    pixmap.save(QString("image%1.png").arg(n), "PNG");
+}
+
+//-------------------------------------------------------------------------------------------------------//
+
+double Problem2Backward2DEx4::initial(const SpaceNodePDE & sn) const
+{
+    return -2.0 * ap22d->mu(sn.x, sn.y) * ((*u)[sn.j][sn.i] - (*U)[sn.j][sn.i]);
+}
+
+double Problem2Backward2DEx4::boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const { return NAN; }
+double Problem2Backward2DEx4::f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+double Problem2Backward2DEx4::h(const SpaceNodePDE &) const { return 0.0; }
+double Problem2Backward2DEx4::g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+double Problem2Backward2DEx4::g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+double Problem2Backward2DEx4::g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+double Problem2Backward2DEx4::g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+
+void Problem2Backward2DEx4::layerInfo(const DoubleMatrix &, unsigned int) const {}
+
+//-------------------------------------------------------------------------------------------------------//

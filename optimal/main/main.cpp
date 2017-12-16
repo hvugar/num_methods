@@ -66,10 +66,14 @@
 
 #include "problem2/1d/problem2.h"
 #include "problem2/2d/problem22d.h"
+
 #include "problem2/2d/ex/problem22dex1.h"
 #include "problem2/2d/ex/problem22dex2.h"
 #include "problem2/2d/ex/problem22dex3.h"
 #include "problem2/2d/ex/problem22dex4.h"
+
+#include "problem2/2d/cproblem2forward2d.h"
+#include "problem2/2d/cproblem2backward2d.h"
 
 #include <QtGui>
 
@@ -109,11 +113,15 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //Problem2::Main(argc, argv);
 
-    Problem22D::Main(argc, argv);
+    //CProblem2Forward2D::Main(argc, argv);
+    //CProblem2Backward2D::Main(argc, argv);
+
+    //Problem22D::Main(argc, argv);
     //Problem22DEx1::Main(argc, argv);
     //Problem22DEx2::Main(argc, argv);
     //Problem22DEx3::Main(argc, argv);
-    //Problem22DEx4::Main(argc, argv);
+
+    Problem22DEx4::Main(argc, argv);
 
     //NLLIParabolicIBVP::Main(argc, argv);
 

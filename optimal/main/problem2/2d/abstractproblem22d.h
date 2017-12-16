@@ -8,50 +8,62 @@
 #include <gradient.h>
 #include <utils/random.h>
 
-class AProblem2Forward2D;
-class AProblem2Backward2D;
+#include <imaging.h>
+
+class Problem2Forward2DEx4;
+class Problem2Backward2DEx4;
 class AbstactProblem22D;
 
-class AProblem2Forward2D : public IProblem2Forward2D
+//---------------------------------------------------------------------------------------------------------------//
+
+class Problem2Forward2DEx4 : public IProblem2Forward2D
 {
 public:
-    AbstactProblem22D *p22d;
+    double fi;
 
 protected:
-    virtual double initial(const SpaceNodePDE &) const { return 0.0; }
-    virtual double boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const { return NAN; }
-    virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double initial(const SpaceNodePDE &) const;
+    virtual double boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const;
+    virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const;
 
-    virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-    virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-    virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-    virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const;
+    virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const;
+    virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const;
+    virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const;
 
-    //virtual void layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const;
+    virtual void layerInfo(const DoubleMatrix &, unsigned int) const;
 };
 
-class AProblem2Backward2D : public IProblem2Backward2D
+//---------------------------------------------------------------------------------------------------------------//
+
+
+class Problem2Backward2DEx4 : public IProblem2Backward2D
 {
 public:
-    AbstactProblem22D *p22d;
+    AbstactProblem22D *ap22d;
+    DoubleMatrix *U;
+    DoubleMatrix *u;
 
 protected:
-    virtual double initial(const SpaceNodePDE &) const { return 0.0; }
-    virtual double boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const { return NAN; }
-    virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double initial(const SpaceNodePDE &) const;
+    virtual double boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const;
+    virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const;
 
-    virtual double h(const SpaceNodePDE &) const { return 0.0; }
-    virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-    virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-    virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-    virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double h(const SpaceNodePDE &) const;
+    virtual double g1(const SpaceNodePDE &, const TimeNodePDE &) const;
+    virtual double g2(const SpaceNodePDE &, const TimeNodePDE &) const;
+    virtual double g3(const SpaceNodePDE &, const TimeNodePDE &) const;
+    virtual double g4(const SpaceNodePDE &, const TimeNodePDE &) const;
 
-    //virtual void layerInfo(const DoubleMatrix &p, unsigned int layerNumber) const;
+    virtual void layerInfo(const DoubleMatrix &, unsigned int) const;
 };
+
+//---------------------------------------------------------------------------------------------------------------//
 
 class AbstactProblem22D : public RnFunction, public IGradient
 {
 public:
+    AbstactProblem22D();
     void setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY);
 
     virtual double fx(const DoubleVector &prms) const;
@@ -63,9 +75,7 @@ public:
     virtual double integral(const DoubleMatrix &u) const;
     virtual double mu(double x, double y) const;
 
-    void setForward(IProblem2Forward2D *);
-    void setBackward(IProblem2Backward2D *);
-private:
+protected:
     Dimension mTimeDimension;
     Dimension mSpaceDimensionX;
     Dimension mSpaceDimensionY;
@@ -74,8 +84,8 @@ private:
 
     double alpha0;
 
-    IProblem2Forward2D *forward;
-    IProblem2Backward2D *backward;
+    Problem2Forward2DEx4 *forward;
+    Problem2Backward2DEx4 *backward;
 
 public:
     DoubleMatrix U;
