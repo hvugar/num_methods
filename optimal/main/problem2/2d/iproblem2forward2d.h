@@ -8,6 +8,8 @@ using namespace std;
 class IProblem2Forward2D : public IProblem22DPIBVP
 {
 public:
+    virtual ~IProblem2Forward2D();
+
     void calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2D> &info, bool use = true) const;
     virtual void layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const = 0;
 
@@ -39,7 +41,6 @@ protected:
     void extendObservationPoint(const SpaceNodePDE op, std::vector<ObservationNode> &ops, unsigned int j) const;
     void extendObservationPoint(const SpaceNodePDE op, ExtendedSpaceNode2D &pi, unsigned int j) const;
     void extendObservationPoint(const SpaceNodePDE op, ExtendedSpaceNode2D &pi) const;
-
 };
 
 #endif // IPROBLEM2FORWARD2D_H

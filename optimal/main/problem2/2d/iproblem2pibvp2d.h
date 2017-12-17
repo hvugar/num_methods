@@ -41,8 +41,11 @@ struct ControlNode
     double w;
 };
 
-struct P2Setting
+struct Parameter
 {
+    Parameter(unsigned int Lc=0, unsigned int Lo=0);
+    Parameter(const DoubleVector& prmtrs, unsigned int Lc, unsigned int Lo);
+
     unsigned int Lc;
     unsigned int Lo;
 
@@ -76,12 +79,14 @@ public:
     void clearLayers();
 
     double value(unsigned int layer) const;
+    double valueDx(unsigned int layer) const;
+    double valueDy(unsigned int layer) const;
 
-    double valueDx(double x, double y, unsigned int layer) const;
-    double valueDy(double x, double y, unsigned int layer) const;
+    //double valueDx(double x, double y, unsigned int layer) const;
+    //double valueDy(double x, double y, unsigned int layer) const;
 
-    double valueDxN(unsigned int layer, double h) const;
-    double valueDyN(unsigned int layer, double h) const;
+    //double valueDxN(unsigned int layer, double h) const;
+    //double valueDyN(unsigned int layer, double h) const;
 
     unsigned int id;
     unsigned int rows;
@@ -101,14 +106,16 @@ public:
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
     void setEquationParameters(double a, double lambda0, double lambda, double theta);
-    void setSetting(P2Setting setting);
+
+    void setParamter(const Parameter &parameter);
+    const Parameter& parameter() const;
 
 protected:
     double a;
     double lambda0;
     double lambda;
     double theta;
-    P2Setting setting;
+    Parameter mParameter;
 };
 
 #endif // PROBLEM22DIPARABOLICIBVP_H

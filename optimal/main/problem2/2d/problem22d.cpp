@@ -2,7 +2,7 @@
 
 void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    P2Setting setting1;
+    Parameter setting1;
     //setting1.a = 1.0;
     //setting1.lambda = 0.01;
     //setting1.lambda0 = 0.1;
@@ -26,7 +26,7 @@ void Problem22D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     setting1.eta[1].x = 0.30; setting1.eta[1].y = 0.80;
 
     setting1.xi.resize(setting1.Lo);
-    setting1.xi[0].x = 0.515;  setting1.xi[0].y = 0.529;
+    setting1.xi[0].x = 0.40;  setting1.xi[0].y = 0.60;
     //setting.xi[1].x = 0.50;  setting.xi[1].y = 0.50;
     //setting.xi[2].x = 0.65;  setting.xi[2].y = 0.65;
 
@@ -123,14 +123,14 @@ void Problem22D::setGridParameters(Dimension timeDimension, Dimension spaceDimen
 
 double Problem22D::fx(const DoubleVector &prms) const
 {
-    P2Setting setting1 = setting;
+    Parameter setting1 = setting;
     setting1.fromVector(prms);
 
     Problem2Forward2D forward;
     forward.setTimeDimension(mTimeDimension);
     forward.addSpaceDimension(mSpaceDimensionX);
     forward.addSpaceDimension(mSpaceDimensionY);
-    forward.setSetting(setting1);
+    forward.setParamter(setting1);
     DoubleMatrix u;
     vector<ExtendedSpaceNode2D> info;
     forward.calculateMVD(u, info);
@@ -278,18 +278,18 @@ double Problem22D::mu(double x UNUSED_PARAM, double y UNUSED_PARAM) const
     return 1.0;
 }
 
-void Problem22D::testForwardEquation(const P2Setting &setting) const
+void Problem22D::testForwardEquation(const Parameter &setting) const
 {
     CProblem2Forward2D forward;
     forward.setEquationParameters(1.0, 0.01, 1.0, 10.0);
-    forward.setSetting(setting);
+    forward.setParamter(setting);
     forward.setTimeDimension(mTimeDimension);
     forward.addSpaceDimension(mSpaceDimensionX);
     forward.addSpaceDimension(mSpaceDimensionY);
 
     DoubleMatrix u;
     vector<ExtendedSpaceNode2D> info;
-    forward.calculateMVD(u, info);
+    forward.calculateMVD(u, info, true);
     IPrinter::printMatrix(u);
     IPrinter::printSeperatorLine();
     u.clear();
@@ -300,6 +300,7 @@ void Problem22D::testForwardEquation(const P2Setting &setting) const
         //for (unsigned int ln=0; ln<esn.layerNumber; ln++)
         unsigned int ln = esn.layerNumber;
         {
+            printf("%f %f %f\n", esn.value(ln), esn.valueDx(ln), esn.valueDy(ln));
             printf("%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n---\n",
                     esn.wi[3][0].u[ln],esn.wi[3][1].u[ln],esn.wi[3][2].u[ln],esn.wi[3][3].u[ln],
                     esn.wi[2][0].u[ln],esn.wi[2][1].u[ln],esn.wi[2][2].u[ln],esn.wi[2][3].u[ln],
@@ -307,21 +308,21 @@ void Problem22D::testForwardEquation(const P2Setting &setting) const
                     esn.wi[0][0].u[ln],esn.wi[0][1].u[ln],esn.wi[0][2].u[ln],esn.wi[0][3].u[ln]);
         }
 
-        printf("%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n---\n",
-                esn.wi[3][0].w,esn.wi[3][1].w,esn.wi[3][2].w,esn.wi[3][3].w,
-                esn.wi[2][0].w,esn.wi[2][1].w,esn.wi[2][2].w,esn.wi[2][3].w,
-                esn.wi[1][0].w,esn.wi[1][1].w,esn.wi[1][2].w,esn.wi[1][3].w,
-                esn.wi[0][0].w,esn.wi[0][1].w,esn.wi[0][2].w,esn.wi[0][3].w);
+//        printf("%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n---\n",
+//                esn.wi[3][0].w,esn.wi[3][1].w,esn.wi[3][2].w,esn.wi[3][3].w,
+//                esn.wi[2][0].w,esn.wi[2][1].w,esn.wi[2][2].w,esn.wi[2][3].w,
+//                esn.wi[1][0].w,esn.wi[1][1].w,esn.wi[1][2].w,esn.wi[1][3].w,
+//                esn.wi[0][0].w,esn.wi[0][1].w,esn.wi[0][2].w,esn.wi[0][3].w);
 
-        printf("%f\n", esn.value(ln));
+
     }
 }
 
-void Problem22D::testBackwardEquation(const P2Setting &setting) const
+void Problem22D::testBackwardEquation(const Parameter &setting) const
 {
     CProblem2Backward2D backward;
     backward.setEquationParameters(1.0, 0.01, 1.0, 10.0);
-    backward.setSetting(setting);
+    backward.setParamter(setting);
     backward.setTimeDimension(mTimeDimension);
     backward.addSpaceDimension(mSpaceDimensionX);
     backward.addSpaceDimension(mSpaceDimensionY);
@@ -343,6 +344,7 @@ void Problem22D::testBackwardEquation(const P2Setting &setting) const
         //for (unsigned int ln=0; ln<esn.layerNumber; ln++)
         unsigned int ln = 0;
         {
+            printf("%f %f %f\n", esn.value(ln), esn.valueDx(ln), esn.valueDy(ln));
             printf("%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n---\n",
                     esn.wi[3][0].u[ln],esn.wi[3][1].u[ln],esn.wi[3][2].u[ln],esn.wi[3][3].u[ln],
                     esn.wi[2][0].u[ln],esn.wi[2][1].u[ln],esn.wi[2][2].u[ln],esn.wi[2][3].u[ln],
@@ -350,13 +352,13 @@ void Problem22D::testBackwardEquation(const P2Setting &setting) const
                     esn.wi[0][0].u[ln],esn.wi[0][1].u[ln],esn.wi[0][2].u[ln],esn.wi[0][3].u[ln]);
         }
 
-        printf("%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n---\n",
-                esn.wi[3][0].w,esn.wi[3][1].w,esn.wi[3][2].w,esn.wi[3][3].w,
-                esn.wi[2][0].w,esn.wi[2][1].w,esn.wi[2][2].w,esn.wi[2][3].w,
-                esn.wi[1][0].w,esn.wi[1][1].w,esn.wi[1][2].w,esn.wi[1][3].w,
-                esn.wi[0][0].w,esn.wi[0][1].w,esn.wi[0][2].w,esn.wi[0][3].w);
+//        printf("%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n%12.8f %12.8f %12.8f %12.8f\n---\n",
+//                esn.wi[3][0].w,esn.wi[3][1].w,esn.wi[3][2].w,esn.wi[3][3].w,
+//                esn.wi[2][0].w,esn.wi[2][1].w,esn.wi[2][2].w,esn.wi[2][3].w,
+//                esn.wi[1][0].w,esn.wi[1][1].w,esn.wi[1][2].w,esn.wi[1][3].w,
+//                esn.wi[0][0].w,esn.wi[0][1].w,esn.wi[0][2].w,esn.wi[0][3].w);
 
-        printf("%f\n", esn.value(ln));
+
     }
 }
 

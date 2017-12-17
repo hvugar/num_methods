@@ -19,6 +19,7 @@ class AbstactProblem22D;
 class Problem2Forward2DEx4 : public IProblem2Forward2D
 {
 public:
+    virtual ~Problem2Forward2DEx4() {}
     double fi;
 
 protected:
@@ -40,6 +41,8 @@ protected:
 class Problem2Backward2DEx4 : public IProblem2Backward2D
 {
 public:
+    virtual ~Problem2Backward2DEx4() {}
+
     AbstactProblem22D *ap22d;
     DoubleMatrix *U;
     DoubleMatrix *u;
@@ -64,13 +67,15 @@ class AbstactProblem22D : public RnFunction, public IGradient
 {
 public:
     AbstactProblem22D();
+    virtual ~AbstactProblem22D();
+
     void setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY);
 
     virtual double fx(const DoubleVector &prms) const;
     virtual void gradient(const DoubleVector &prms, DoubleVector &g);
 
-    const P2Setting& setting() const;
-    void setP2Setting(const P2Setting& setting);
+    const Parameter& parameter() const;
+    void setParameter(const Parameter& parameter);
 
     virtual double integral(const DoubleMatrix &u) const;
     virtual double mu(double x, double y) const;
@@ -80,7 +85,7 @@ protected:
     Dimension mSpaceDimensionX;
     Dimension mSpaceDimensionY;
 
-    P2Setting msetting;
+    Parameter mParameter;
 
     double alpha0;
 
@@ -89,7 +94,6 @@ protected:
 
 public:
     DoubleMatrix U;
-    DoubleVector *grad;
 };
 
 

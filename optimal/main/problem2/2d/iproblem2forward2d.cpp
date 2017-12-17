@@ -1,5 +1,8 @@
 #include "iproblem2forward2d.h"
 
+IProblem2Forward2D::~IProblem2Forward2D()
+{}
+
 void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2D> &info, bool use) const
 {
     Dimension xd = spaceDimension(Dimension::DimensionX);
@@ -13,8 +16,8 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
     double hy = yd.step();
     double ht = td.step();
 
-    unsigned int Lc = setting.Lc;
-    unsigned int Lo = setting.Lo;
+    unsigned int Lc = mParameter.Lc;
+    unsigned int Lo = mParameter.Lo;
 
     if (use == true)
     {
@@ -22,7 +25,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
         for (unsigned int j=0; j<Lo; j++)
         {
             ExtendedSpaceNode2D &e = info[j];
-            e.setSpaceNode(setting.xi[j]);
+            e.setSpaceNode(mParameter.xi[j]);
             e.id = j;
             e.extendWeights(xd, yd);
             e.extendLayers(L);
@@ -37,10 +40,10 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
     //--------------------------------------------------------------------------------------------//
 
     std::vector<ObservationNode> observeNodes;
-    for (unsigned int j=0; j<setting.Lo; j++) extendObservationPoint(setting.xi[j], observeNodes, j);
+    for (unsigned int j=0; j<mParameter.Lo; j++) extendObservationPoint(mParameter.xi[j], observeNodes, j);
 
     std::vector<ControlDeltaNode> cndeltaNodes;
-    for (unsigned int i=0; i<setting.Lc; i++) extendContrlDeltaPoint(setting.eta[i], cndeltaNodes, i);
+    for (unsigned int i=0; i<mParameter.Lc; i++) extendContrlDeltaPoint(mParameter.eta[i], cndeltaNodes, i);
 
     unsigned int *v1y = new unsigned int[M+1]; for (unsigned int m=0; m<=M; m++) v1y[m] = 0;
     unsigned int *v1x = new unsigned int[N+1]; for (unsigned int n=0; n<=N; n++) v1x[n] = 0;
@@ -233,7 +236,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                             //------------------------------------- Adding delta part -------------------------------------//
                             for (unsigned int i=0; i<Lc; i++)
                             {
-                                double _delta = delta(sn, setting.eta[i], i);
+                                double _delta = delta(sn, mParameter.eta[i], i);
                                 if (checkDelta(_delta))
                                 {
                                     for (unsigned int s=0; s<observeNodes.size(); s++)
@@ -246,19 +249,19 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                                             if (on.n == cntX[cs])
                                             {
                                                 found = true;
-                                                w2[offset+m][cs*(M+1)+on.m] += -ht * setting.k[i][on.j] * _delta * on.w;
+                                                w2[offset+m][cs*(M+1)+on.m] += -ht * mParameter.k[i][on.j] * _delta * on.w;
                                             }
                                         }
 
                                         if (!found)
                                         {
-                                            d2[offset+m] += ht * setting.k[i][on.j] * uh[on.m][on.n] * _delta * on.w;
+                                            d2[offset+m] += ht * mParameter.k[i][on.j] * uh[on.m][on.n] * _delta * on.w;
                                         }
                                     }
 
                                     for (unsigned int j=0; j<Lo; j++)
                                     {
-                                        d2[offset+m] -= ht * setting.k[i][j] * setting.z[i][j] *_delta;
+                                        d2[offset+m] -= ht * mParameter.k[i][j] * mParameter.z[i][j] *_delta;
                                     }
                                 }
                             }
@@ -441,7 +444,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                             //------------------------------------- Adding delta part -------------------------------------//
                             for (unsigned int i=0; i<Lc; i++)
                             {
-                                double _delta = delta(sn, setting.eta[i], i);
+                                double _delta = delta(sn, mParameter.eta[i], i);
                                 if (checkDelta(_delta))
                                 {
                                     for (unsigned int s=0; s<observeNodes.size(); s++)
@@ -454,19 +457,19 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                                             if (on.m == cntY[cs])
                                             {
                                                 found = true;
-                                                w2[offset+n][cs*(N+1)+on.n] += -ht * setting.k[i][on.j] * _delta * on.w;
+                                                w2[offset+n][cs*(N+1)+on.n] += -ht * mParameter.k[i][on.j] * _delta * on.w;
                                             }
                                         }
 
                                         if (!found)
                                         {
-                                            d2[offset+n] += ht * setting.k[i][on.j] * u[on.m][on.n] * _delta * on.w;
+                                            d2[offset+n] += ht * mParameter.k[i][on.j] * u[on.m][on.n] * _delta * on.w;
                                         }
                                     }
 
                                     for (unsigned int j=0; j<Lo; j++)
                                     {
-                                        d2[offset+n] -= ht * setting.k[i][j] * setting.z[i][j] *_delta;
+                                        d2[offset+n] -= ht * mParameter.k[i][j] * mParameter.z[i][j] *_delta;
                                     }
                                 }
                             }
@@ -587,9 +590,6 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
     cndeltaNodes.clear();
     uh.clear();
 }
-
-void IProblem2Forward2D::layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int layerNumber UNUSED_PARAM) const
-{}
 
 bool IProblem2Forward2D::checkDelta(double _delta) const
 {
@@ -1300,7 +1300,7 @@ void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, std::vect
 */
 }
 
-void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, ExtendedSpaceNode2D &pi, unsigned int j) const
+void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, ExtendedSpaceNode2D &pi, unsigned int j UNUSED_PARAM) const
 {
     Dimension xd = spaceDimension(Dimension::DimensionX);
     Dimension yd = spaceDimension(Dimension::DimensionY);

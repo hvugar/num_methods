@@ -1,6 +1,20 @@
 #include "grid.h"
 #include <cstdio>
 
+SpaceNodePDE::SpaceNodePDE() : i(0), x(0.0), j(0), y(0.0), k(0), z(0.0) {}
+
+SpaceNodePDE::SpaceNodePDE(unsigned int i, double x) : i(i), x(x), j(0), y(0.0), k(0), z(0.0) {}
+
+SpaceNodePDE::SpaceNodePDE(unsigned int i, unsigned int j, double x, double y) : i(i), x(x), j(j), y(y), k(0), z(0.0) {}
+
+SpaceNodePDE::SpaceNodePDE(unsigned int i, unsigned int j, unsigned int k, double x, double y, double z) : i(i), x(x), j(j), y(y), k(k), z(z) {}
+
+void SpaceNodePDE::setPoint(double x, double y)
+{
+    this->x = x;
+    this->y = y;
+}
+
 UniformODEGrid::UniformODEGrid(double step, int min, int max) : mstep(step), mminN(min), mmaxN(max)
 {}
 

@@ -13,13 +13,19 @@ struct MINIMUMSHARED_EXPORT GridNodeODE
 
 struct MINIMUMSHARED_EXPORT SpaceNodePDE
 {
-    double x;
-    double y;
-    double z;
+    SpaceNodePDE();
+    SpaceNodePDE(unsigned int i, double x);
+    SpaceNodePDE(unsigned int i, unsigned int j, double x, double y);
+    SpaceNodePDE(unsigned int i, unsigned int j, unsigned int k, double x, double y, double z);
+
+    void setPoint(double x, double y);
 
     unsigned int i;
+    double x;
     unsigned int j;
+    double y;
     unsigned int k;
+    double z;
 };
 
 struct MINIMUMSHARED_EXPORT TimeNodePDE

@@ -71,6 +71,7 @@
 #include "problem2/2d/ex/problem22dex2.h"
 #include "problem2/2d/ex/problem22dex3.h"
 #include "problem2/2d/ex/problem22dex4.h"
+#include "problem2/2d/ex/problem22dex5.h"
 
 #include "problem2/2d/cproblem2forward2d.h"
 #include "problem2/2d/cproblem2backward2d.h"
@@ -120,8 +121,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Problem22DEx1::Main(argc, argv);
     //Problem22DEx2::Main(argc, argv);
     //Problem22DEx3::Main(argc, argv);
-
-    Problem22DEx4::Main(argc, argv);
+    //Problem22DEx4::Main(argc, argv);
+    Problem22DEx5::Main(argc, argv);
 
     //NLLIParabolicIBVP::Main(argc, argv);
 

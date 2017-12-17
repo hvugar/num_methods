@@ -11,7 +11,7 @@ void CProblem2Backward2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     cpbp2d.lambda = 0.1;
     cpbp2d.theta = 10.0;
 
-    P2Setting setting;
+    Parameter setting;
     setting.Lc = 4;
     setting.Lo = 4;
 
@@ -40,7 +40,7 @@ void CProblem2Backward2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
             setting.z[i][j] = +10.0;
         }
     }
-    cpbp2d.setSetting(setting);
+    cpbp2d.setParamter(setting);
 
     DoubleMatrix u;
     vector<ExtendedSpaceNode2D> info;
@@ -69,15 +69,15 @@ double CProblem2Backward2D::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) con
     double res = 1.0 + 4.0*a*a - lambda0*P(x,y,t);
 
     double W = 0.0;
-    for (unsigned int j=0; j<setting.Lo; j++)
+    for (unsigned int j=0; j<mParameter.Lo; j++)
     {
-        double _delta = delta(sn, setting.xi[j], 0);
+        double _delta = delta(sn, mParameter.xi[j], 0);
         if (checkDelta(_delta))
         {
             double vi = 0.0;
-            for (unsigned int i=0; i<setting.Lc; i++)
+            for (unsigned int i=0; i<mParameter.Lc; i++)
             {
-                vi += setting.k[i][j] * P(setting.eta[i].x, setting.eta[i].y, t);
+                vi += mParameter.k[i][j] * P(mParameter.eta[i].x, mParameter.eta[i].y, t);
             }
             W += vi * _delta;
         }

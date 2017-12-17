@@ -1,5 +1,8 @@
 #include "iproblem2backward2d.h"
 
+IProblem2Backward2D::~IProblem2Backward2D()
+{}
+
 void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode2D> &info, bool use)
 {
     Dimension xd = spaceDimension(Dimension::DimensionX);
@@ -13,15 +16,15 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
     double hy = yd.step();
     double ht = td.step();
 
-    unsigned int Lc = setting.Lc;
-    unsigned int Lo = setting.Lo;
+    unsigned int Lc = mParameter.Lc;
+    unsigned int Lo = mParameter.Lo;
 
-    if (use ==true)
+    if (use == true)
     {
         info.resize(Lc);
         for (unsigned int i=0; i<Lc; i++)
         {
-            info[i].setSpaceNode(setting.eta[i]);
+            info[i].setSpaceNode(mParameter.eta[i]);
             info[i].id = i;
             info[i].extendWeights(xd, yd);
             info[i].extendLayers(L);
@@ -36,7 +39,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
     //--------------------------------------------------------------------------------------------//
 
     std::vector<ControlNode> controlNodes;
-    for (unsigned int i=0; i<setting.Lc; i++) extendControlPoint(setting.eta[i], controlNodes, i);
+    for (unsigned int i=0; i<mParameter.Lc; i++) extendControlPoint(mParameter.eta[i], controlNodes, i);
 
     //std::vector<ControlDeltaNode> cndeltaNodes;
     //for (unsigned int i=0; i<setting.Lc; i++) extendContrlDeltaPoint(setting.eta[i], cndeltaNodes, i);
@@ -54,7 +57,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
 
             for (unsigned int j=0; j<Lo; j++)
             {
-                double _delta = delta(sn, setting.xi[j], j);
+                double _delta = delta(sn, mParameter.xi[j], j);
 
                 if (checkDelta(_delta))
                 {
@@ -75,6 +78,10 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
             p[m][n] = initial(sn);
         }
     }
+    layerInfo(p, L);
+    //IPrinter::printMatrix(p[L]);
+    //IPrinter::printSeperatorLine();
+    //------------------------------------- initial conditions -------------------------------------//
 
     if (use ==true)
     {
@@ -93,10 +100,6 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
         }
     }
 
-    layerInfo(p, 0);
-    //IPrinter::printMatrix(p[L]);
-    //IPrinter::printSeperatorLine();
-    //------------------------------------- initial conditions -------------------------------------//
 
     double a2_ht__hx2 = (a*a*ht)/(hx*hx);
     double a2_ht__hy2 = (a*a*ht)/(hy*hy);
@@ -225,7 +228,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                             //------------------------------------- Adding delta part -------------------------------------//
                             for (unsigned int j=0; j<Lo; j++)
                             {
-                                double _delta = delta(sn, setting.xi[j], j);
+                                double _delta = delta(sn, mParameter.xi[j], j);
                                 if (checkDelta(_delta))
                                 {
                                     for (unsigned int s=0; s<controlNodes.size(); s++)
@@ -238,13 +241,13 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                                             if (cn.n == cntX[cs])
                                             {
                                                 found = true;
-                                                w2[offset+m][cs*(M+1)+cn.m] += -ht * setting.k[cn.i][j] * _delta * cn.w;
+                                                w2[offset+m][cs*(M+1)+cn.m] += -ht * mParameter.k[cn.i][j] * _delta * cn.w;
                                             }
                                         }
 
                                         if (!found)
                                         {
-                                            d2[offset+m] += ht * setting.k[cn.i][j] * ph[cn.m][cn.n] * _delta * cn.w;
+                                            d2[offset+m] += ht * mParameter.k[cn.i][j] * ph[cn.m][cn.n] * _delta * cn.w;
                                         }
                                     }
                                 }
@@ -376,7 +379,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                             //------------------------------------ Adding delta part -------------------------------------//
                             for (unsigned int j=0; j<Lo; j++)
                             {
-                                double _delta = delta(sn, setting.xi[j], j);
+                                double _delta = delta(sn, mParameter.xi[j], j);
                                 if (checkDelta(_delta))
                                 {
                                     for (unsigned int s=0; s<controlNodes.size(); s++)
@@ -389,13 +392,13 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                                             if (cn.m == cntY[cs])
                                             {
                                                 found = true;
-                                                w2[offset+n][cs*(N+1)+cn.n] += -ht * setting.k[cn.i][j] * _delta * cn.w;
+                                                w2[offset+n][cs*(N+1)+cn.n] += -ht * mParameter.k[cn.i][j] * _delta * cn.w;
                                             }
                                         }
 
                                         if (!found)
                                         {
-                                            d2[offset+n] += ht * setting.k[cn.i][j] * p[cn.m][cn.n] * _delta * cn.w;
+                                            d2[offset+n] += ht * mParameter.k[cn.i][j] * p[cn.m][cn.n] * _delta * cn.w;
                                         }
                                     }
                                 }
@@ -449,7 +452,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
             }
         }
 
-        layerInfo(p, 0);
+        layerInfo(p, l);
     }
 
     free(x1X);
@@ -472,8 +475,6 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
     controlNodes.clear();
     ph.clear();
 }
-
-void IProblem2Backward2D::layerInfo(const DoubleMatrix &p UNUSED_PARAM, unsigned int layerNumber UNUSED_PARAM) const {}
 
 bool IProblem2Backward2D::checkDelta(double _delta) const
 {

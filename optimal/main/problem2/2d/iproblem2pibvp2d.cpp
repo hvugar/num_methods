@@ -18,9 +18,14 @@ void IProblem22DPIBVP::setEquationParameters(double a, double lambda0, double la
     this->theta = theta;
 }
 
-void IProblem22DPIBVP::setSetting(P2Setting setting)
+void IProblem22DPIBVP::setParamter(const Parameter &parameter)
 {
-    this->setting = setting;
+    mParameter = parameter;
+}
+
+const Parameter& IProblem22DPIBVP::parameter() const
+{
+    return mParameter;
 }
 
 //-------------------------------------------------------------------------------------------------------//
@@ -196,123 +201,256 @@ void ExtendedSpaceNode2D::clearLayers()
 
 double ExtendedSpaceNode2D::value(unsigned int layer) const
 {
-    double P = 0.0;
+//    double P = 0.0;
 
-    double Li = 0.0;
-    double Lj = 0.0;
+//    double Li = 0.0;
+//    double Lj = 0.0;
+//    for (unsigned int j=0; j<rows; j++)
+//    {
+//        for (unsigned int i=0; i<cols; i++)
+//        {
+//            if (j==0) Lj = (((y-wi[1][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[0][i].y-wi[1][i].y)*(wi[0][i].y-wi[2][i].y)*(wi[0][i].y-wi[3][i].y)));
+//            if (j==1) Lj = (((y-wi[0][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[1][i].y-wi[0][i].y)*(wi[1][i].y-wi[2][i].y)*(wi[1][i].y-wi[3][i].y)));
+//            if (j==2) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[3][i].y))/((wi[2][i].y-wi[0][i].y)*(wi[2][i].y-wi[1][i].y)*(wi[2][i].y-wi[3][i].y)));
+//            if (j==3) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[2][i].y))/((wi[3][i].y-wi[0][i].y)*(wi[3][i].y-wi[1][i].y)*(wi[3][i].y-wi[2][i].y)));
+
+
+//            if (i==0) Li = (((x-wi[j][1].x)*(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][0].x-wi[j][1].x)*(wi[j][0].x-wi[j][2].x)*(wi[j][0].x-wi[j][3].x)));
+//            if (i==1) Li = (((x-wi[j][0].x)*(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][1].x-wi[j][0].x)*(wi[j][1].x-wi[j][2].x)*(wi[j][1].x-wi[j][3].x)));
+//            if (i==2) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)*(x-wi[j][3].x))/((wi[j][2].x-wi[j][0].x)*(wi[j][2].x-wi[j][1].x)*(wi[j][2].x-wi[j][3].x)));
+//            if (i==3) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)*(x-wi[j][2].x))/((wi[j][3].x-wi[j][0].x)*(wi[j][3].x-wi[j][1].x)*(wi[j][3].x-wi[j][2].x)));
+
+//            P += Lj*Li*wi[j][i].u[layer];
+//        }
+//    }
+//    return P;
+
+    double Lx[] = {0.0, 0.0, 0.0, 0.0};
+    double Ly[] = {0.0, 0.0, 0.0, 0.0};
+
+    double y0 = wi[0][0].y;
+    double y1 = wi[1][0].y;
+    double y2 = wi[2][0].y;
+    double y3 = wi[3][0].y;
+    Ly[0] = ((y-y1)*(y-y2)*(y-y3))/((y0-y1)*(y0-y2)*(y0-y3));
+    Ly[1] = ((y-y0)*(y-y2)*(y-y3))/((y1-y0)*(y1-y2)*(y1-y3));
+    Ly[2] = ((y-y0)*(y-y1)*(y-y3))/((y2-y0)*(y2-y1)*(y2-y3));
+    Ly[3] = ((y-y0)*(y-y1)*(y-y2))/((y3-y0)*(y3-y1)*(y3-y2));
+
+    double x0 = wi[0][0].x;
+    double x1 = wi[0][1].x;
+    double x2 = wi[0][2].x;
+    double x3 = wi[0][3].x;
+    Lx[0] = ((x-x1)*(x-x2)*(x-x3))/((x0-x1)*(x0-x2)*(x0-x3));
+    Lx[1] = ((x-x0)*(x-x2)*(x-x3))/((x1-x0)*(x1-x2)*(x1-x3));
+    Lx[2] = ((x-x0)*(x-x1)*(x-x3))/((x2-x0)*(x2-x1)*(x2-x3));
+    Lx[3] = ((x-x0)*(x-x1)*(x-x2))/((x3-x0)*(x3-x1)*(x3-x2));
+
+    double P = 0.0;
     for (unsigned int j=0; j<rows; j++)
     {
         for (unsigned int i=0; i<cols; i++)
         {
-            if (j==0) Lj = (((y-wi[1][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[0][i].y-wi[1][i].y)*(wi[0][i].y-wi[2][i].y)*(wi[0][i].y-wi[3][i].y)));
-            if (j==1) Lj = (((y-wi[0][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[1][i].y-wi[0][i].y)*(wi[1][i].y-wi[2][i].y)*(wi[1][i].y-wi[3][i].y)));
-            if (j==2) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[3][i].y))/((wi[2][i].y-wi[0][i].y)*(wi[2][i].y-wi[1][i].y)*(wi[2][i].y-wi[3][i].y)));
-            if (j==3) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[2][i].y))/((wi[3][i].y-wi[0][i].y)*(wi[3][i].y-wi[1][i].y)*(wi[3][i].y-wi[2][i].y)));
-
-
-            if (i==0) Li = (((x-wi[j][1].x)*(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][0].x-wi[j][1].x)*(wi[j][0].x-wi[j][2].x)*(wi[j][0].x-wi[j][3].x)));
-            if (i==1) Li = (((x-wi[j][0].x)*(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][1].x-wi[j][0].x)*(wi[j][1].x-wi[j][2].x)*(wi[j][1].x-wi[j][3].x)));
-            if (i==2) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)*(x-wi[j][3].x))/((wi[j][2].x-wi[j][0].x)*(wi[j][2].x-wi[j][1].x)*(wi[j][2].x-wi[j][3].x)));
-            if (i==3) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)*(x-wi[j][2].x))/((wi[j][3].x-wi[j][0].x)*(wi[j][3].x-wi[j][1].x)*(wi[j][3].x-wi[j][2].x)));
-
-            P += Lj*Li*wi[j][i].u[layer];
+            double u = wi[j][i].u[layer];
+            P += Ly[j]*Lx[i]*u;
         }
     }
     return P;
 }
 
-double ExtendedSpaceNode2D::value(double x, double y, unsigned int layer) const
+double ExtendedSpaceNode2D::valueDx(unsigned int layer) const
 {
-    double P = 0.0;
+    double Lx[] = {0.0, 0.0, 0.0, 0.0};
+    double Ly[] = {0.0, 0.0, 0.0, 0.0};
 
-    double Li = 0.0;
-    double Lj = 0.0;
+    double y0 = wi[0][0].y;
+    double y1 = wi[1][0].y;
+    double y2 = wi[2][0].y;
+    double y3 = wi[3][0].y;
+    Ly[0] = ((y-y1)*(y-y2)*(y-y3))/((y0-y1)*(y0-y2)*(y0-y3));
+    Ly[1] = ((y-y0)*(y-y2)*(y-y3))/((y1-y0)*(y1-y2)*(y1-y3));
+    Ly[2] = ((y-y0)*(y-y1)*(y-y3))/((y2-y0)*(y2-y1)*(y2-y3));
+    Ly[3] = ((y-y0)*(y-y1)*(y-y2))/((y3-y0)*(y3-y1)*(y3-y2));
+
+    double x0 = wi[0][0].x;
+    double x1 = wi[0][1].x;
+    double x2 = wi[0][2].x;
+    double x3 = wi[0][3].x;
+    Lx[0] = ((x-x1)*(x-x2)+(x-x2)*(x-x3)+(x-x1)*(x-x3))/((x0-x1)*(x0-x2)*(x0-x3));
+    Lx[1] = ((x-x0)*(x-x2)+(x-x2)*(x-x3)+(x-x0)*(x-x3))/((x1-x0)*(x1-x2)*(x1-x3));
+    Lx[2] = ((x-x0)*(x-x1)+(x-x1)*(x-x3)+(x-x0)*(x-x3))/((x2-x0)*(x2-x1)*(x2-x3));
+    Lx[3] = ((x-x0)*(x-x1)+(x-x1)*(x-x2)+(x-x0)*(x-x2))/((x3-x0)*(x3-x1)*(x3-x2));
+
+    double Px = 0.0;
     for (unsigned int j=0; j<rows; j++)
     {
         for (unsigned int i=0; i<cols; i++)
         {
-            if (j==0) Lj = (((y-wi[1][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[0][i].y-wi[1][i].y)*(wi[0][i].y-wi[2][i].y)*(wi[0][i].y-wi[3][i].y)));
-            if (j==1) Lj = (((y-wi[0][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[1][i].y-wi[0][i].y)*(wi[1][i].y-wi[2][i].y)*(wi[1][i].y-wi[3][i].y)));
-            if (j==2) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[3][i].y))/((wi[2][i].y-wi[0][i].y)*(wi[2][i].y-wi[1][i].y)*(wi[2][i].y-wi[3][i].y)));
-            if (j==3) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[2][i].y))/((wi[3][i].y-wi[0][i].y)*(wi[3][i].y-wi[1][i].y)*(wi[3][i].y-wi[2][i].y)));
-
-
-            if (i==0) Li = (((x-wi[j][1].x)*(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][0].x-wi[j][1].x)*(wi[j][0].x-wi[j][2].x)*(wi[j][0].x-wi[j][3].x)));
-            if (i==1) Li = (((x-wi[j][0].x)*(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][1].x-wi[j][0].x)*(wi[j][1].x-wi[j][2].x)*(wi[j][1].x-wi[j][3].x)));
-            if (i==2) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)*(x-wi[j][3].x))/((wi[j][2].x-wi[j][0].x)*(wi[j][2].x-wi[j][1].x)*(wi[j][2].x-wi[j][3].x)));
-            if (i==3) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)*(x-wi[j][2].x))/((wi[j][3].x-wi[j][0].x)*(wi[j][3].x-wi[j][1].x)*(wi[j][3].x-wi[j][2].x)));
-
-            P += Lj*Li*wi[j][i].u[layer];
+            double u = wi[j][i].u[layer];
+            Px += Ly[j]*Lx[i]*u;
         }
     }
-    return P;
+    return Px;
 }
 
-double ExtendedSpaceNode2D::valueDx(double x, double y, unsigned int layer) const
+double ExtendedSpaceNode2D::valueDy(unsigned int layer) const
 {
-    double P = 0.0;
+    double Lx[] = {0.0, 0.0, 0.0, 0.0};
+    double Ly[] = {0.0, 0.0, 0.0, 0.0};
 
-    double Li = 0.0;
-    double Lj = 0.0;
+    double y0 = wi[0][0].y;
+    double y1 = wi[1][0].y;
+    double y2 = wi[2][0].y;
+    double y3 = wi[3][0].y;
+    Ly[0] = ((y-y1)*(y-y2)+(y-y2)*(y-y3)+(y-y1)*(y-y3))/((y0-y1)*(y0-y2)*(y0-y3));
+    Ly[1] = ((y-y0)*(y-y2)+(y-y2)*(y-y3)+(y-y0)*(y-y3))/((y1-y0)*(y1-y2)*(y1-y3));
+    Ly[2] = ((y-y0)*(y-y1)+(y-y1)*(y-y3)+(y-y0)*(y-y3))/((y2-y0)*(y2-y1)*(y2-y3));
+    Ly[3] = ((y-y0)*(y-y1)+(y-y1)*(y-y2)+(y-y0)*(y-y2))/((y3-y0)*(y3-y1)*(y3-y2));
+
+    double x0 = wi[0][0].x;
+    double x1 = wi[0][1].x;
+    double x2 = wi[0][2].x;
+    double x3 = wi[0][3].x;
+    Lx[0] = ((x-x1)*(x-x2)*(x-x3))/((x0-x1)*(x0-x2)*(x0-x3));
+    Lx[1] = ((x-x0)*(x-x2)*(x-x3))/((x1-x0)*(x1-x2)*(x1-x3));
+    Lx[2] = ((x-x0)*(x-x1)*(x-x3))/((x2-x0)*(x2-x1)*(x2-x3));
+    Lx[3] = ((x-x0)*(x-x1)*(x-x2))/((x3-x0)*(x3-x1)*(x3-x2));
+
+    double Py = 0.0;
     for (unsigned int j=0; j<rows; j++)
     {
         for (unsigned int i=0; i<cols; i++)
         {
-            if (j==0) Lj = (((y-wi[1][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[0][i].y-wi[1][i].y)*(wi[0][i].y-wi[2][i].y)*(wi[0][i].y-wi[3][i].y)));
-            if (j==1) Lj = (((y-wi[0][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[1][i].y-wi[0][i].y)*(wi[1][i].y-wi[2][i].y)*(wi[1][i].y-wi[3][i].y)));
-            if (j==2) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[3][i].y))/((wi[2][i].y-wi[0][i].y)*(wi[2][i].y-wi[1][i].y)*(wi[2][i].y-wi[3][i].y)));
-            if (j==3) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[2][i].y))/((wi[3][i].y-wi[0][i].y)*(wi[3][i].y-wi[1][i].y)*(wi[3][i].y-wi[2][i].y)));
-
-
-            if (i==0) Li = (((x-wi[j][1].x)*(x-wi[j][2].x)+(x-wi[j][1].x)*(x-wi[j][3].x)+(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][0].x-wi[j][1].x)*(wi[j][0].x-wi[j][2].x)*(wi[j][0].x-wi[j][3].x)));
-            if (i==1) Li = (((x-wi[j][0].x)*(x-wi[j][2].x)+(x-wi[j][0].x)*(x-wi[j][3].x)+(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][1].x-wi[j][0].x)*(wi[j][1].x-wi[j][2].x)*(wi[j][1].x-wi[j][3].x)));
-            if (i==2) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)+(x-wi[j][0].x)*(x-wi[j][3].x)+(x-wi[j][1].x)*(x-wi[j][3].x))/((wi[j][2].x-wi[j][0].x)*(wi[j][2].x-wi[j][1].x)*(wi[j][2].x-wi[j][3].x)));
-            if (i==3) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)+(x-wi[j][0].x)*(x-wi[j][2].x)+(x-wi[j][1].x)*(x-wi[j][2].x))/((wi[j][3].x-wi[j][0].x)*(wi[j][3].x-wi[j][1].x)*(wi[j][3].x-wi[j][2].x)));
-
-            P += Lj*Li*wi[j][i].u[layer];
+            double u = wi[j][i].u[layer];
+            Py += Ly[j]*Lx[i]*u;
         }
     }
-    return P;
+    return Py;
 }
 
-double ExtendedSpaceNode2D::valueDy(double x, double y, unsigned int layer) const
-{
-    double P = 0.0;
+//double ExtendedSpaceNode2D::value(double x, double y, unsigned int layer) const
+//{
+//    double P = 0.0;
 
-    double Li = 0.0;
-    double Lj = 0.0;
-    for (unsigned int j=0; j<rows; j++)
+//    double Li = 0.0;
+//    double Lj = 0.0;
+//    for (unsigned int j=0; j<rows; j++)
+//    {
+//        for (unsigned int i=0; i<cols; i++)
+//        {
+//            if (j==0) Lj = (((y-wi[1][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[0][i].y-wi[1][i].y)*(wi[0][i].y-wi[2][i].y)*(wi[0][i].y-wi[3][i].y)));
+//            if (j==1) Lj = (((y-wi[0][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[1][i].y-wi[0][i].y)*(wi[1][i].y-wi[2][i].y)*(wi[1][i].y-wi[3][i].y)));
+//            if (j==2) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[3][i].y))/((wi[2][i].y-wi[0][i].y)*(wi[2][i].y-wi[1][i].y)*(wi[2][i].y-wi[3][i].y)));
+//            if (j==3) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[2][i].y))/((wi[3][i].y-wi[0][i].y)*(wi[3][i].y-wi[1][i].y)*(wi[3][i].y-wi[2][i].y)));
+
+
+//            if (i==0) Li = (((x-wi[j][1].x)*(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][0].x-wi[j][1].x)*(wi[j][0].x-wi[j][2].x)*(wi[j][0].x-wi[j][3].x)));
+//            if (i==1) Li = (((x-wi[j][0].x)*(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][1].x-wi[j][0].x)*(wi[j][1].x-wi[j][2].x)*(wi[j][1].x-wi[j][3].x)));
+//            if (i==2) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)*(x-wi[j][3].x))/((wi[j][2].x-wi[j][0].x)*(wi[j][2].x-wi[j][1].x)*(wi[j][2].x-wi[j][3].x)));
+//            if (i==3) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)*(x-wi[j][2].x))/((wi[j][3].x-wi[j][0].x)*(wi[j][3].x-wi[j][1].x)*(wi[j][3].x-wi[j][2].x)));
+
+//            P += Lj*Li*wi[j][i].u[layer];
+//        }
+//    }
+//    return P;
+//}
+
+//double ExtendedSpaceNode2D::valueDx(double x, double y, unsigned int layer) const
+//{
+//    double P = 0.0;
+
+//    double Li = 0.0;
+//    double Lj = 0.0;
+//    for (unsigned int j=0; j<rows; j++)
+//    {
+//        for (unsigned int i=0; i<cols; i++)
+//        {
+//            if (j==0) Lj = (((y-wi[1][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[0][i].y-wi[1][i].y)*(wi[0][i].y-wi[2][i].y)*(wi[0][i].y-wi[3][i].y)));
+//            if (j==1) Lj = (((y-wi[0][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[1][i].y-wi[0][i].y)*(wi[1][i].y-wi[2][i].y)*(wi[1][i].y-wi[3][i].y)));
+//            if (j==2) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[3][i].y))/((wi[2][i].y-wi[0][i].y)*(wi[2][i].y-wi[1][i].y)*(wi[2][i].y-wi[3][i].y)));
+//            if (j==3) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[2][i].y))/((wi[3][i].y-wi[0][i].y)*(wi[3][i].y-wi[1][i].y)*(wi[3][i].y-wi[2][i].y)));
+
+
+//            if (i==0) Li = (((x-wi[j][1].x)*(x-wi[j][2].x)+(x-wi[j][1].x)*(x-wi[j][3].x)+(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][0].x-wi[j][1].x)*(wi[j][0].x-wi[j][2].x)*(wi[j][0].x-wi[j][3].x)));
+//            if (i==1) Li = (((x-wi[j][0].x)*(x-wi[j][2].x)+(x-wi[j][0].x)*(x-wi[j][3].x)+(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][1].x-wi[j][0].x)*(wi[j][1].x-wi[j][2].x)*(wi[j][1].x-wi[j][3].x)));
+//            if (i==2) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)+(x-wi[j][0].x)*(x-wi[j][3].x)+(x-wi[j][1].x)*(x-wi[j][3].x))/((wi[j][2].x-wi[j][0].x)*(wi[j][2].x-wi[j][1].x)*(wi[j][2].x-wi[j][3].x)));
+//            if (i==3) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)+(x-wi[j][0].x)*(x-wi[j][2].x)+(x-wi[j][1].x)*(x-wi[j][2].x))/((wi[j][3].x-wi[j][0].x)*(wi[j][3].x-wi[j][1].x)*(wi[j][3].x-wi[j][2].x)));
+
+//            P += Lj*Li*wi[j][i].u[layer];
+//        }
+//    }
+//    return P;
+//}
+
+//double ExtendedSpaceNode2D::valueDy(double x, double y, unsigned int layer) const
+//{
+//    double P = 0.0;
+
+//    double Li = 0.0;
+//    double Lj = 0.0;
+//    for (unsigned int j=0; j<rows; j++)
+//    {
+//        for (unsigned int i=0; i<cols; i++)
+//        {
+//            if (j==0) Lj = (((y-wi[1][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[0][i].y-wi[1][i].y)*(wi[0][i].y-wi[2][i].y)*(wi[0][i].y-wi[3][i].y)));
+//            if (j==1) Lj = (((y-wi[0][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[1][i].y-wi[0][i].y)*(wi[1][i].y-wi[2][i].y)*(wi[1][i].y-wi[3][i].y)));
+//            if (j==2) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[3][i].y))/((wi[2][i].y-wi[0][i].y)*(wi[2][i].y-wi[1][i].y)*(wi[2][i].y-wi[3][i].y)));
+//            if (j==3) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[2][i].y))/((wi[3][i].y-wi[0][i].y)*(wi[3][i].y-wi[1][i].y)*(wi[3][i].y-wi[2][i].y)));
+
+
+//            if (i==0) Li = (((x-wi[j][1].x)*(x-wi[j][2].x)+(x-wi[j][1].x)*(x-wi[j][3].x)+(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][0].x-wi[j][1].x)*(wi[j][0].x-wi[j][2].x)*(wi[j][0].x-wi[j][3].x)));
+//            if (i==1) Li = (((x-wi[j][0].x)*(x-wi[j][2].x)+(x-wi[j][0].x)*(x-wi[j][3].x)+(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][1].x-wi[j][0].x)*(wi[j][1].x-wi[j][2].x)*(wi[j][1].x-wi[j][3].x)));
+//            if (i==2) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)+(x-wi[j][0].x)*(x-wi[j][3].x)+(x-wi[j][1].x)*(x-wi[j][3].x))/((wi[j][2].x-wi[j][0].x)*(wi[j][2].x-wi[j][1].x)*(wi[j][2].x-wi[j][3].x)));
+//            if (i==3) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)+(x-wi[j][0].x)*(x-wi[j][2].x)+(x-wi[j][1].x)*(x-wi[j][2].x))/((wi[j][3].x-wi[j][0].x)*(wi[j][3].x-wi[j][1].x)*(wi[j][3].x-wi[j][2].x)));
+
+//            P += Lj*Li*wi[j][i].u[layer];
+//        }
+//    }
+//    return P;
+//}
+
+//double ExtendedSpaceNode2D::valueDxN(unsigned int layer, double h) const
+//{
+//    return (value(x+h,y,layer)-value(x-h,y,layer))/(2.0*h);
+//}
+
+//double ExtendedSpaceNode2D::valueDyN(unsigned int layer, double h) const
+//{
+//    return (value(x,y+h,layer)-value(x,y-h,layer))/(2.0*h);
+//}
+
+Parameter::Parameter(unsigned int Lc, unsigned int Lo) : Lc(Lc), Lo(Lo)
+{
+    k.resize(Lc, Lo);
+    z.resize(Lc, Lo);
+    eta.resize(Lc);
+    xi.resize(Lo);
+}
+
+Parameter::Parameter(const DoubleVector &prmtrs, unsigned int Lc, unsigned int Lo) : Lc(Lc), Lo(Lo)
+{
+    k.resize(Lc, Lo);
+    z.resize(Lc, Lo);
+    eta.resize(Lc);
+    xi.resize(Lo);
+
+    for (unsigned int i=0; i<Lc; i++)
     {
-        for (unsigned int i=0; i<cols; i++)
+        eta[i].x = prmtrs[2*Lc*Lo + 2*i+0];
+        eta[i].y = prmtrs[2*Lc*Lo + 2*i+1];
+
+        for (unsigned int j=0; j<Lo; j++)
         {
-            if (j==0) Lj = (((y-wi[1][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[0][i].y-wi[1][i].y)*(wi[0][i].y-wi[2][i].y)*(wi[0][i].y-wi[3][i].y)));
-            if (j==1) Lj = (((y-wi[0][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[1][i].y-wi[0][i].y)*(wi[1][i].y-wi[2][i].y)*(wi[1][i].y-wi[3][i].y)));
-            if (j==2) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[3][i].y))/((wi[2][i].y-wi[0][i].y)*(wi[2][i].y-wi[1][i].y)*(wi[2][i].y-wi[3][i].y)));
-            if (j==3) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[2][i].y))/((wi[3][i].y-wi[0][i].y)*(wi[3][i].y-wi[1][i].y)*(wi[3][i].y-wi[2][i].y)));
+            k[i][j] = prmtrs[i*Lo + j];
+            z[i][j] = prmtrs[i*Lo + j + Lc*Lo];
 
-
-            if (i==0) Li = (((x-wi[j][1].x)*(x-wi[j][2].x)+(x-wi[j][1].x)*(x-wi[j][3].x)+(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][0].x-wi[j][1].x)*(wi[j][0].x-wi[j][2].x)*(wi[j][0].x-wi[j][3].x)));
-            if (i==1) Li = (((x-wi[j][0].x)*(x-wi[j][2].x)+(x-wi[j][0].x)*(x-wi[j][3].x)+(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][1].x-wi[j][0].x)*(wi[j][1].x-wi[j][2].x)*(wi[j][1].x-wi[j][3].x)));
-            if (i==2) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)+(x-wi[j][0].x)*(x-wi[j][3].x)+(x-wi[j][1].x)*(x-wi[j][3].x))/((wi[j][2].x-wi[j][0].x)*(wi[j][2].x-wi[j][1].x)*(wi[j][2].x-wi[j][3].x)));
-            if (i==3) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)+(x-wi[j][0].x)*(x-wi[j][2].x)+(x-wi[j][1].x)*(x-wi[j][2].x))/((wi[j][3].x-wi[j][0].x)*(wi[j][3].x-wi[j][1].x)*(wi[j][3].x-wi[j][2].x)));
-
-            P += Lj*Li*wi[j][i].u[layer];
+            xi[j].x = prmtrs[2*Lc*Lo + 2*Lc + 2*j+0];
+            xi[j].y = prmtrs[2*Lc*Lo + 2*Lc + 2*j+1];
         }
     }
-    return P;
 }
 
-double ExtendedSpaceNode2D::valueDxN(unsigned int layer, double h) const
-{
-    return (value(x+h,y,layer)-value(x-h,y,layer))/(2.0*h);
-}
-
-double ExtendedSpaceNode2D::valueDyN(unsigned int layer, double h) const
-{
-    return (value(x,y+h,layer)-value(x,y-h,layer))/(2.0*h);
-}
-
-void P2Setting::toVector(DoubleVector &prms) const
+void Parameter::toVector(DoubleVector &prms) const
 {
     prms.clear();
     prms.resize(2*Lc*Lo + 2*Lo + 2*Lc);
@@ -333,7 +471,7 @@ void P2Setting::toVector(DoubleVector &prms) const
     }
 }
 
-void P2Setting::fromVector(const DoubleVector &prms)
+void Parameter::fromVector(const DoubleVector &prms)
 {
     k.clear();
     k.resize(Lc, Lo);

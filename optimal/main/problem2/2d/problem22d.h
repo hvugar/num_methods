@@ -59,7 +59,7 @@ public:
     virtual double mu(double x, double y) const;
 
     DoubleMatrix U;
-    P2Setting setting;
+    Parameter setting;
 
     static void testExample1();
 
@@ -70,8 +70,8 @@ private:
 
     double alpha0;
 
-    void testForwardEquation(const P2Setting &setting) const;
-    void testBackwardEquation(const P2Setting &setting) const;
+    void testForwardEquation(const Parameter &setting) const;
+    void testBackwardEquation(const Parameter &setting) const;
 };
 
 #endif // PROBLEM22D_H

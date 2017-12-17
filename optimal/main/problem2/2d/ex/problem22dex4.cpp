@@ -4,50 +4,44 @@ void Problem22DEx4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     Problem22DEx4 p22Dex4;
 
-    P2Setting setting;
-    setting.Lc = 2;
-    setting.Lo = 3;
+    Parameter p(2, 3);
 
-    setting.eta.resize(setting.Lc);
-    setting.eta[0].x = 0.20; setting.eta[0].y = 0.30;
-    setting.eta[1].x = 0.75; setting.eta[1].y = 0.85;
+    p.eta[0].setPoint(0.20, 0.30);
+    p.eta[1].setPoint(0.75, 0.85);
 
-    setting.xi.resize(setting.Lo);
-    setting.xi[0].x = 0.15; setting.xi[0].y = 0.83;
-    setting.xi[1].x = 0.74; setting.xi[1].y = 0.25;
-    setting.xi[2].x = 0.50; setting.xi[2].y = 0.50;
+    p.xi[0].setPoint(0.15, 0.83);
+    p.xi[1].setPoint(0.74, 0.25);
+    p.xi[2].setPoint(0.50, 0.50);
 
-    setting.k.resize(setting.Lc, setting.Lo);
-    setting.z.resize(setting.Lc, setting.Lo);
-    for (unsigned int i=0; i<setting.Lc; i++)
+    for (unsigned int i=0; i<p.Lc; i++)
     {
-        for (unsigned int j=0; j<setting.Lo; j++)
+        for (unsigned int j=0; j<p.Lo; j++)
         {
-            setting.k[i][j] = -fabs(sin(0.1*(i+1))+cos((j-1)*0.2));
-            setting.z[i][j] = +10.0;//+Random::value(-2,2,5);
+            p.k[i][j] = -fabs(sin(0.1*(i+1))+cos((j-1)*0.2));
+            p.z[i][j] = +10.0+cos(0.1*(i+1))+sin((j-1)*0.2);//+Random::value(-2,2,5);
         }
     }
 
-    p22Dex4.setP2Setting(setting);
+    p22Dex4.setParameter(p);
 
     DoubleMatrix U;
     vector<ExtendedSpaceNode2D> info;
     p22Dex4.forward->calculateMVD(U,info);
     p22Dex4.U = U;
 
-    setting.eta[0].x = 0.22; setting.eta[0].y = 0.39;
-    setting.eta[1].x = 0.73; setting.eta[1].y = 0.86;
+    p.eta[0].setPoint(0.22, 0.35);
+    p.eta[1].setPoint(0.73, 0.86);
 
-    setting.xi[0].x = 0.12; setting.xi[0].y = 0.80;
-    setting.xi[1].x = 0.78; setting.xi[1].y = 0.27;
-    setting.xi[2].x = 0.55; setting.xi[2].y = 0.45;
+    p.xi[0].setPoint(0.12, 0.80);
+    p.xi[1].setPoint(0.78, 0.27);
+    p.xi[2].setPoint(0.55, 0.45);
 
-    for (unsigned int i=0; i<setting.Lc; i++)
+    for (unsigned int i=0; i<p.Lc; i++)
     {
-        for (unsigned int j=0; j<setting.Lo; j++)
+        for (unsigned int j=0; j<p.Lo; j++)
         {
-            setting.k[i][j] = +fabs(cos(0.1*(i+1))+sin((j-1)*0.2));
-            setting.z[i][j] = +10.0+Random::value(-2,2,5);
+            p.k[i][j] = +Random::value(0,1,5);
+            p.z[i][j] = +10.0+Random::value(-2,2,5);
         }
     }
 
@@ -61,20 +55,20 @@ void Problem22DEx4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //    IPrinter::printSeperatorLine();
 
 
-    DoubleVector prm;
-    setting.toVector(prm);
-    DoubleVector g(prm.length());
-    IPrinter::print(prm, prm.length(), 10, 6);
+    DoubleVector pv;
+    p.toVector(pv);
+    DoubleVector ag(pv.length());
+    IPrinter::print(pv, pv.length(), 10, 6);
 
-    p22Dex4.gradient(prm,g);
+    p22Dex4.gradient(pv,ag);
 
-    g.L2Normalize();
-    IPrinter::print(g, g.length(), 10, 6);
+    //ag.L2Normalize();
+    //IPrinter::print(ag, ag.length(), 10, 6);
 
-    DoubleVector ng(prm.length());
-    ng.resize(prm.length(), 0.0);
+    DoubleVector ng(pv.length());
+    ng.resize(pv.length(), 0.0);
 
-    IGradient::Gradient(&p22Dex4, 0.001, prm, ng);
+    IGradient::Gradient(&p22Dex4, 0.01, pv, ng);
 
 //    for (unsigned int i=0; i<setting.Lc; i++)
 //    {
@@ -124,17 +118,57 @@ void Problem22DEx4::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //        ng[indexY] = (f4 - f3)/0.0002;
 //    }
 
-    ng.L2Normalize();
-    IPrinter::print(ng, ng.length(), 10, 6);
+    //ng.L2Normalize();
+    //IPrinter::print(ng, ng.length(), 10, 6);
+
+    //------------------------------------------------------//
+    DoubleVector pk = pv.mid(0, p.Lc*p.Lo-1);
+    DoubleVector ak = ag.mid(0, p.Lc*p.Lo-1); ak.L2Normalize();
+    DoubleVector nk = ng.mid(0, p.Lc*p.Lo-1); nk.L2Normalize();
+
+    IPrinter::print(pk);
+    IPrinter::print(ak);
+    IPrinter::print(nk);
+    IPrinter::printSeperatorLine();
+
+    //------------------------------------------------------//
+    DoubleVector pz = pv.mid(p.Lc*p.Lo, 2*p.Lc*p.Lo-1);
+    DoubleVector az = ag.mid(p.Lc*p.Lo, 2*p.Lc*p.Lo-1); az.L2Normalize();
+    DoubleVector nz = ng.mid(p.Lc*p.Lo, 2*p.Lc*p.Lo-1); nz.L2Normalize();
+
+    IPrinter::print(pz);
+    IPrinter::print(az);
+    IPrinter::print(nz);
+    IPrinter::printSeperatorLine();
+
+    //------------------------------------------------------//
+    DoubleVector pe = pv.mid(2*p.Lc*p.Lo, 2*p.Lc*p.Lo+2*p.Lc-1);
+    DoubleVector ae = ag.mid(2*p.Lc*p.Lo, 2*p.Lc*p.Lo+2*p.Lc-1); ae.L2Normalize();
+    DoubleVector ne = ng.mid(2*p.Lc*p.Lo, 2*p.Lc*p.Lo+2*p.Lc-1); ne.L2Normalize();
+
+    IPrinter::print(pe);
+    IPrinter::print(ae);
+    IPrinter::print(ne);
+    IPrinter::printSeperatorLine();
+
+    //------------------------------------------------------//
+    DoubleVector px = pv.mid(2*p.Lc*p.Lo+2*p.Lc, 2*p.Lc*p.Lo+2*p.Lc+2*p.Lo-1);
+    DoubleVector ax = ag.mid(2*p.Lc*p.Lo+2*p.Lc, 2*p.Lc*p.Lo+2*p.Lc+2*p.Lo-1); ax.L2Normalize();
+    DoubleVector nx = ng.mid(2*p.Lc*p.Lo+2*p.Lc, 2*p.Lc*p.Lo+2*p.Lc+2*p.Lo-1); nx.L2Normalize();
+
+    IPrinter::print(px);
+    IPrinter::print(ax);
+    IPrinter::print(nx);
+    IPrinter::printSeperatorLine();
 }
 
 //-------------------------------------------------------------------------------------------------------//
 
 Problem22DEx4::Problem22DEx4() : AbstactProblem22D ()
 {
-    Dimension timeDimension   = Dimension(0.005, 0, 200);
-    Dimension spaceDimensionX = Dimension(0.005, 0, 200);
-    Dimension spaceDimensionY = Dimension(0.005, 0, 200);
+    Dimension timeDimension   = Dimension(0.01, 0, 100);
+    Dimension spaceDimensionX = Dimension(0.01, 0, 100);
+    Dimension spaceDimensionY = Dimension(0.01, 0, 100);
 
     setGridParameters(timeDimension, spaceDimensionX, spaceDimensionY);
 

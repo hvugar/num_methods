@@ -3,7 +3,7 @@
 
 void Problem22DEx3::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    P2Setting s;
+    Parameter s;
     //s.a = 0.1;
     //s.lambda = 0.1;
     //s.lambda0 = 0.1;
@@ -36,13 +36,13 @@ void Problem22DEx3::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     Dimension spaceDimensionY = Dimension(0.001, 0, 1000);
 
     Problem2Forward2DEx3 *forward = new Problem2Forward2DEx3;
-    forward->setSetting(s);
+    forward->setParamter(s);
     forward->setTimeDimension(timeDimension);
     forward->addSpaceDimension(spaceDimensionX);
     forward->addSpaceDimension(spaceDimensionY);
 
     Problem2Backward2DEx3 *backward = NULL;// = new Problem2Backward2DEx3;
-    backward->setSetting(s);
+    backward->setParamter(s);
     backward->setTimeDimension(timeDimension);
     backward->addSpaceDimension(spaceDimensionX);
     backward->addSpaceDimension(spaceDimensionY);
@@ -51,7 +51,7 @@ void Problem22DEx3::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //p22dEx3.setForward(new Problem2Forward2DEx3);
     //p22dEx3.setBackward(new Problem2Backward2DEx3);
     p22dEx3.setGridParameters(timeDimension, spaceDimensionX, spaceDimensionY);
-    p22dEx3.setP2Setting(s);
+    p22dEx3.setParameter(s);
 
     backward->p22dEx3 = &p22dEx3;
 

@@ -11,7 +11,7 @@ void CProblem2Forward2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     cpfp2d.lambda = 0.1;
     cpfp2d.theta = 10.0;
 
-    P2Setting setting;
+    Parameter setting;
     setting.Lc = 4;
     setting.Lo = 4;
 
@@ -40,7 +40,7 @@ void CProblem2Forward2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
             setting.z[i][j] = +10.0;
         }
     }
-    cpfp2d.setSetting(setting);
+    cpfp2d.setParamter(setting);
 
     DoubleMatrix u;
     vector<ExtendedSpaceNode2D> info;
@@ -89,15 +89,15 @@ double CProblem2Forward2D::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) cons
 //    cndeltaNodes.clear();
 
     double W = 0.0;
-    for (unsigned int i=0; i<setting.Lc; i++)
+    for (unsigned int i=0; i<mParameter.Lc; i++)
     {
-        double _delta = delta(sn, setting.eta[i], i, 0);
+        double _delta = delta(sn, mParameter.eta[i], i, 0);
         if (checkDelta(_delta))
         {
             double vi = 0.0;
-            for (unsigned int j=0; j<setting.Lo; j++)
+            for (unsigned int j=0; j<mParameter.Lo; j++)
             {
-                vi += setting.k[i][j] * ( U(setting.xi[j].x, setting.xi[j].y, t) - setting.z[i][j]);
+                vi += mParameter.k[i][j] * ( U(mParameter.xi[j].x, mParameter.xi[j].y, t) - mParameter.z[i][j]);
             }
             W += vi * _delta;
         }

@@ -8,6 +8,8 @@ using namespace std;
 class IProblem2Backward2D : public IProblem22DPIBVP
 {
 public:
+    virtual ~IProblem2Backward2D();
+
     void calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode2D> &info, bool use = true);
     virtual void layerInfo(const DoubleMatrix &p, unsigned int layerNumber) const = 0;
 
