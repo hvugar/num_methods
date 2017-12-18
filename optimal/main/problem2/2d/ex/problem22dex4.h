@@ -1,7 +1,7 @@
 #ifndef PROBLEM22DEX4_H
 #define PROBLEM22DEX4_H
 
-#include "../abstractproblem22d.h"
+#include "../abs/abstractproblem22d.h"
 #include <imaging.h>
 
 //---------------------------------------------------------------------------------------------------------------//

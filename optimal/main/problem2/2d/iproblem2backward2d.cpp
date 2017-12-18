@@ -1,5 +1,7 @@
 #include "iproblem2backward2d.h"
 
+#define USE_F_VARIANT_2
+
 IProblem2Backward2D::~IProblem2Backward2D()
 {}
 
@@ -24,10 +26,11 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
         info.resize(Lc);
         for (unsigned int i=0; i<Lc; i++)
         {
-            info[i].setSpaceNode(mParameter.eta[i]);
-            info[i].id = i;
-            info[i].extendWeights(xd, yd);
-            info[i].extendLayers(L);
+            ExtendedSpaceNode2D &e = info[i];
+            e.setSpaceNode(mParameter.eta[i]);
+            e.id = i;
+            e.extendWeights(xd, yd);
+            e.extendLayers(L);
         }
     }
 
@@ -41,13 +44,17 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
     std::vector<ControlNode> controlNodes;
     for (unsigned int i=0; i<mParameter.Lc; i++) extendControlPoint(mParameter.eta[i], controlNodes, i);
 
-    //std::vector<ControlDeltaNode> cndeltaNodes;
-    //for (unsigned int i=0; i<setting.Lc; i++) extendContrlDeltaPoint(setting.eta[i], cndeltaNodes, i);
+#ifdef USE_F_VARIANT_2
+    std::vector<ObservationDeltaNode> obdeltaNodes;
+    for (unsigned int j=0; j<mParameter.Lo; j++) extendObservationDeltaPoint(mParameter.xi[j], obdeltaNodes, j);
+#endif
 
     unsigned int *v1y = new unsigned int[M+1]; for (unsigned int m=0; m<=M; m++) v1y[m] = 0;
     unsigned int *v1x = new unsigned int[N+1]; for (unsigned int n=0; n<=N; n++) v1x[n] = 0;
 
     SpaceNodePDE sn;
+
+#ifdef USE_F_VARIANT_1
     for (unsigned int m=0; m<=M; m++)
     {
         sn.j = m; sn.y = m*hy;
@@ -67,6 +74,16 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
             }
         }
     }
+#endif
+
+#ifdef USE_F_VARIANT_2
+    for (unsigned int j=0; j<obdeltaNodes.size(); j++)
+    {
+        const ObservationDeltaNode &on = obdeltaNodes.at(j);
+        v1x[on.n] = 1;
+        v1y[on.m] = 1;
+    }
+#endif
 
     //------------------------------------- initial conditions -------------------------------------//
     for (unsigned int m=0; m<=M; m++)
@@ -78,10 +95,6 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
             p[m][n] = initial(sn);
         }
     }
-    layerInfo(p, L);
-    //IPrinter::printMatrix(p[L]);
-    //IPrinter::printSeperatorLine();
-    //------------------------------------- initial conditions -------------------------------------//
 
     if (use ==true)
     {
@@ -100,6 +113,10 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
         }
     }
 
+    layerInfo(p, L);
+    //IPrinter::printMatrix(p[L]);
+    //IPrinter::printSeperatorLine();
+    //------------------------------------- initial conditions -------------------------------------//
 
     double a2_ht__hx2 = (a*a*ht)/(hx*hx);
     double a2_ht__hy2 = (a*a*ht)/(hy*hy);
@@ -1036,6 +1053,52 @@ void IProblem2Backward2D::extendControlPoint(const SpaceNodePDE eta, std::vector
         return;
     }
 }
+
+void IProblem2Backward2D::extendObservationDeltaPoint(const SpaceNodePDE &xi, std::vector<ObservationDeltaNode> &ops, unsigned int j) const
+{
+    extendObservationDeltaPoint1(xi, ops, j);
+}
+
+void IProblem2Backward2D::extendObservationDeltaPoint1(const SpaceNodePDE &xi, std::vector<ObservationDeltaNode> &cns, unsigned int j) const
+{
+    Dimension xd = spaceDimension(Dimension::DimensionX);
+    Dimension yd = spaceDimension(Dimension::DimensionY);
+
+    unsigned int Nx = xd.sizeN();
+    unsigned int Ny = yd.sizeN();
+
+    double hx = xd.step();
+    double hy = yd.step();
+
+    unsigned int rx = (unsigned int)(floor(xi.x*Nx));
+    unsigned int ry = (unsigned int)(floor(xi.y*Ny));
+
+    ObservationDeltaNode cn;
+    cn.n = rx+0; cn.x = cn.n*hx;
+    cn.m = ry+0; cn.y = cn.m*hy;
+    cn.xi = xi; cn.j = j;
+    cn.w = ((hx-fabs(cn.x-xi.x))/hx)*((hy-fabs(cn.y-xi.y))/hy) * (1.0/(hx*hy));
+    cns.push_back(cn);
+
+    cn.n = rx+1; cn.x = cn.n*hx;
+    cn.m = ry+0; cn.y = cn.m*hy;
+    cn.xi = xi; cn.j = j;
+    cn.w = ((hx-fabs(cn.x-xi.x))/hx)*((hy-fabs(cn.y-xi.y))/hy) * (1.0/(hx*hy));
+    cns.push_back(cn);
+
+    cn.n = rx+0; cn.x = cn.n*hx;
+    cn.m = ry+1; cn.y = cn.m*hy;
+    cn.xi = xi; cn.j = j;
+    cn.w = ((hx-fabs(cn.x-xi.x))/hx)*((hy-fabs(cn.y-xi.y))/hy) * (1.0/(hx*hy));
+    cns.push_back(cn);
+
+    cn.n = rx+1; cn.x = cn.n*hx;
+    cn.m = ry+1; cn.y = cn.m*hy;
+    cn.xi = xi; cn.j = j;
+    cn.w = ((hx-fabs(cn.x-xi.x))/hx)*((hy-fabs(cn.y-xi.y))/hy) * (1.0/(hx*hy));
+    cns.push_back(cn);
+}
+
 
 //void IProblem2Backward2D::calculateMVD(std::vector<DoubleMatrix> &p)
 //{

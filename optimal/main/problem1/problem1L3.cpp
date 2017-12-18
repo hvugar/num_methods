@@ -94,7 +94,7 @@ Problem1L3::Problem1L3()
     g.calculate(x0);
 }
 
-void Problem1L3::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
+void Problem1L3::project(DoubleVector &x UNUSED_PARAM, unsigned int i UNUSED_PARAM)
 {
     /* z lower/upper limits */
     if (x.at(3) < 3.80) x.at(3) = 3.80;

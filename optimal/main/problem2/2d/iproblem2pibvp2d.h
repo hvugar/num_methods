@@ -19,6 +19,17 @@ struct ObservationNode
     double w;
 };
 
+struct ControlNode
+{
+    SpaceNodePDE eta;
+    unsigned int i;
+    unsigned int n;
+    unsigned int m;
+    double x;
+    double y;
+    double w;
+};
+
 struct ControlDeltaNode
 {
     SpaceNodePDE eta;
@@ -30,16 +41,17 @@ struct ControlDeltaNode
     double w;
 };
 
-struct ControlNode
+struct ObservationDeltaNode
 {
-    SpaceNodePDE eta;
-    unsigned int i;
+    SpaceNodePDE xi;
+    unsigned int j;
     unsigned int n;
     unsigned int m;
     double x;
     double y;
     double w;
 };
+
 
 struct Parameter
 {

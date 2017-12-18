@@ -3,48 +3,39 @@
 void CProblem2Forward2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     CProblem2Forward2D cpfp2d;
-    cpfp2d.setTimeDimension(Dimension(0.01, 0,  100));
-    cpfp2d.addSpaceDimension(Dimension(0.01, 0, 100));
-    cpfp2d.addSpaceDimension(Dimension(0.01, 0, 100));
-    cpfp2d.a = 1.0;
-    cpfp2d.lambda0 = 0.01;
-    cpfp2d.lambda = 0.1;
-    cpfp2d.theta = 10.0;
+    cpfp2d.setTimeDimension(Dimension(0.005, 0,  200));
+    cpfp2d.addSpaceDimension(Dimension(0.005, 0, 200));
+    cpfp2d.addSpaceDimension(Dimension(0.005, 0, 200));
+    cpfp2d.setEquationParameters(1.0, 0.01, 0.1, 10.0);
 
-    Parameter setting;
-    setting.Lc = 4;
-    setting.Lo = 4;
+    Parameter prm(4,4);
 
-    setting.eta.resize(setting.Lc);
-    //setting.eta[0].x = 0.50; setting.eta[0].y = 0.50;
+    prm.eta[0].setPoint(0.3345, 0.3055);
+    prm.eta[1].setPoint(0.3314, 0.6041);
+    prm.eta[2].setPoint(0.6625, 0.6555);
+    prm.eta[3].setPoint(0.6684, 0.3514);
 
-    setting.eta.resize(setting.Lc);
-    setting.eta[0].x = 0.3345; setting.eta[0].y = 0.3055;
-    setting.eta[1].x = 0.3314; setting.eta[1].y = 0.6041;
-    setting.eta[2].x = 0.6625; setting.eta[2].y = 0.6555;
-    setting.eta[3].x = 0.6684; setting.eta[3].y = 0.3514;
+    prm.xi[0].setPoint(0.2534, 0.2534);
+    prm.xi[1].setPoint(0.2578, 0.7544);
+    prm.xi[2].setPoint(0.7545, 0.7556);
+    prm.xi[3].setPoint(0.7543, 0.2589);
 
-    setting.xi.resize(setting.Lo);
-    setting.xi[0].x = 0.25;  setting.xi[0].y = 0.25;
-    setting.xi[1].x = 0.25;  setting.xi[1].y = 0.75;
-    setting.xi[2].x = 0.75;  setting.xi[2].y = 0.75;
-    setting.xi[3].x = 0.75;  setting.xi[3].y = 0.25;
-
-    setting.k.resize(setting.Lc, setting.Lo);
-    setting.z.resize(setting.Lc, setting.Lo);
-    for (unsigned int i=0; i<setting.Lc; i++)
+    for (unsigned int i=0; i<prm.Lc; i++)
     {
-        for (unsigned int j=0; j<setting.Lo; j++)
+        for (unsigned int j=0; j<prm.Lo; j++)
         {
-            setting.k[i][j] = -0.1;
-            setting.z[i][j] = +10.0;
+            prm.k[i][j] = -0.1;
+            prm.z[i][j] = +10.0;
         }
     }
-    cpfp2d.setParamter(setting);
+    cpfp2d.setParamter(prm);
 
     DoubleMatrix u;
     vector<ExtendedSpaceNode2D> info;
+    clock_t t1 = clock();
     cpfp2d.calculateMVD(u,info,false);
+    clock_t t2 = clock();
+    printf("%f\n", (double)(t2-t1)/CLOCKS_PER_SEC);
     IPrinter::printSeperatorLine();
     IPrinter::printMatrix(u);
     IPrinter::printSeperatorLine();

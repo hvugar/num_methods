@@ -1,7 +1,8 @@
 #ifndef PROBLEM22DEX5_H
 #define PROBLEM22DEX5_H
 
-#include "../abstractproblem22d.h"
+#include "../abs/abstractproblem22d.h"
+#include <imaging.h>
 
 class Problem22DEx5 : public AbstactProblem22D
 {

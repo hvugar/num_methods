@@ -1,5 +1,7 @@
 #include "iproblem2forward2d.h"
 
+#define USE_F_VARIANT_2
+
 IProblem2Forward2D::~IProblem2Forward2D()
 {}
 
@@ -42,39 +44,46 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
     std::vector<ObservationNode> observeNodes;
     for (unsigned int j=0; j<mParameter.Lo; j++) extendObservationPoint(mParameter.xi[j], observeNodes, j);
 
+#ifdef USE_F_VARIANT_2
     std::vector<ControlDeltaNode> cndeltaNodes;
     for (unsigned int i=0; i<mParameter.Lc; i++) extendContrlDeltaPoint(mParameter.eta[i], cndeltaNodes, i);
+#endif
 
     unsigned int *v1y = new unsigned int[M+1]; for (unsigned int m=0; m<=M; m++) v1y[m] = 0;
     unsigned int *v1x = new unsigned int[N+1]; for (unsigned int n=0; n<=N; n++) v1x[n] = 0;
 
     SpaceNodePDE sn;
-    //    for (unsigned int m=0; m<=M; m++)
-    //    {
-    //        sn.j = m; sn.y = m*hy;
-    //        for (unsigned int n=0; n<=N; n++)
-    //        {
-    //            sn.i = n; sn.x = n*hx;
 
-    //            for (unsigned int i=0; i<Lc; i++)
-    //            {
-    //                double _delta = delta(sn, setting.eta[i], i);
+#ifdef USE_F_VARIANT_1
+    for (unsigned int m=0; m<=M; m++)
+    {
+        sn.j = m; sn.y = m*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn.i = n; sn.x = n*hx;
 
-    //                if (checkDelta(_delta))
-    //                {
-    //                    if ( v1y[m] == 0 ) v1y[m] = 1;
-    //                    if ( v1x[n] == 0 ) v1x[n] = 1;
-    //                }
-    //            }
-    //        }
-    //    }
+            for (unsigned int i=0; i<Lc; i++)
+            {
+                double _delta = delta(sn, mParameter.eta[i], i);
 
+                if (checkDelta(_delta))
+                {
+                    if ( v1y[m] == 0 ) v1y[m] = 1;
+                    if ( v1x[n] == 0 ) v1x[n] = 1;
+                }
+            }
+        }
+    }
+#endif
+
+#ifdef USE_F_VARIANT_2
     for (unsigned int i=0; i<cndeltaNodes.size(); i++)
     {
         const ControlDeltaNode &cn = cndeltaNodes.at(i);
         v1x[cn.n] = 1;
         v1y[cn.m] = 1;
     }
+#endif
 
     //------------------------------------- initial conditions -------------------------------------//
     for (unsigned int m=0; m<=M; m++)
@@ -234,6 +243,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                             }
 
                             //------------------------------------- Adding delta part -------------------------------------//
+#ifdef USE_F_VARIANT_1
                             for (unsigned int i=0; i<Lc; i++)
                             {
                                 double _delta = delta(sn, mParameter.eta[i], i);
@@ -265,49 +275,51 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                                     }
                                 }
                             }
+#endif
+                            //------------------------------------- Adding delta part -------------------------------------//
+#ifdef USE_F_VARIANT_2
+                            for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
+                            {
+                                const ControlDeltaNode &cn = cndeltaNodes.at(cni);
+                                if (cn.n == sn.i && cn.m == sn.j)
+                                {
+                                    for (unsigned int s=0; s<observeNodes.size(); s++)
+                                    {
+                                        const ObservationNode &on = observeNodes[s];
 
-                            //                            for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
-                            //                            {
-                            //                                const ControlDeltaNode &cn = cndeltaNodes.at(cni);
-                            //                                if (cn.n == sn.i && cn.m == sn.j)
-                            //                                {
-                            //                                    for (unsigned int s=0; s<observeNodes.size(); s++)
-                            //                                    {
-                            //                                        const ObservationNode &on = observeNodes[s];
+                                        if (on.n == cn.n)
+                                        {
+                                            w2[offset+m][cn.n*(M+1)+on.m] += -ht * mParameter.k[cn.i][on.j] * cn.w * on.w;
+                                        }
+                                        else
+                                        {
+                                            d2[offset+m] += ht * mParameter.k[cn.i][on.j] * uh[on.m][on.n] * cn.w * on.w;
+                                        }
 
-                            ////                                        if (on.n == cn.n)
-                            ////                                        {
-                            ////                                            w2[offset+m][cn.n*(M+1)+on.m] += -ht * setting.k[cn.i][on.j] * cn.w * on.w;
-                            ////                                        }
-                            ////                                        else
-                            ////                                        {
-                            ////                                            d2[offset+m] += ht * setting.k[cn.i][on.j] * uh[on.m][on.n] * cn.w * on.w;
-                            ////                                        }
+                                        //bool found = false;
+                                        //for (unsigned int cs=0; cs<cntXSize; cs++)
+                                        //{
+                                        //    if (on.n == cntX[cs])
+                                        //    {
+                                        //        found = true;
+                                        //        w2[offset+m][cs*(M+1)+on.m] += -ht * mParameter.k[cn.i][on.j] * cn.w * on.w;
+                                        //    }
+                                        //}
 
-                            //                                        bool found = false;
-                            //                                        for (unsigned int cs=0; cs<cntXSize; cs++)
-                            //                                        {
-                            //                                            if (on.n == cntX[cs])
-                            //                                            {
-                            //                                                found = true;
-                            //                                                w2[offset+m][cs*(M+1)+on.m] += -ht * setting.k[cn.i][on.j] * cn.w * on.w;
-                            //                                            }
-                            //                                        }
+                                        //if (!found)
+                                        //{
+                                        //    d2[offset+m] += ht * mParameter.k[cn.i][on.j] * uh[on.m][on.n] * cn.w * on.w;
+                                        //}
+                                    }
 
-                            //                                        if (!found)
-                            //                                        {
-                            //                                            d2[offset+m] += ht * setting.k[cn.i][on.j] * uh[on.m][on.n] * cn.w * on.w;
-                            //                                        }
-                            //                                    }
+                                    for (unsigned int j=0; j<Lo; j++)
+                                    {
+                                        d2[offset+m] -= ht * mParameter.k[cn.i][j] * mParameter.z[cn.i][j] * cn.w;
+                                    }
 
-                            //                                    for (unsigned int j=0; j<Lo; j++)
-                            //                                    {
-                            //                                        d2[offset+m] -= ht * setting.k[cn.i][j] * setting.z[cn.i][j] * cn.w;
-                            //                                    }
-
-                            //                                }
-                            //                            }
-
+                                }
+                            }
+#endif
                             //------------------------------------- Adding delta part -------------------------------------//
                         }
                         offset += M+1;
@@ -442,6 +454,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                             }
 
                             //------------------------------------- Adding delta part -------------------------------------//
+#ifdef USE_F_VARIANT_1
                             for (unsigned int i=0; i<Lc; i++)
                             {
                                 double _delta = delta(sn, mParameter.eta[i], i);
@@ -473,49 +486,51 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                                     }
                                 }
                             }
+#endif
                             //------------------------------------- Adding delta part -------------------------------------//
+#ifdef USE_F_VARIANT_2
+                            for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
+                            {
+                                const ControlDeltaNode &cn = cndeltaNodes.at(cni);
+                                if (cn.n == sn.i && cn.m == sn.j)
+                                {
+                                    for (unsigned int s=0; s<observeNodes.size(); s++)
+                                    {
+                                        const ObservationNode &on = observeNodes[s];
 
-                            //                            for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
-                            //                            {
-                            //                                const ControlDeltaNode &cn = cndeltaNodes.at(cni);
-                            //                                if (cn.n == sn.i && cn.m == sn.j)
-                            //                                {
-                            //                                    for (unsigned int s=0; s<observeNodes.size(); s++)
-                            //                                    {
-                            //                                        const ObservationNode &on = observeNodes[s];
+                                        if (on.m == cn.m)
+                                        {
+                                            w2[offset+n][cn.m*(N+1)+on.n] += -ht * mParameter.k[cn.i][on.j] * cn.w * on.w;
+                                        }
+                                        else
+                                        {
+                                            d2[offset+n] += ht * mParameter.k[cn.i][on.j] * u[on.m][on.n] * cn.w * on.w;
+                                        }
 
-                            ////                                        if (on.m == cn.m)
-                            ////                                        {
-                            ////                                            w2[offset+n][cn.m*(N+1)+on.n] += -ht * setting.k[cn.i][on.j] * cn.w * on.w;
-                            ////                                        }
-                            ////                                        else
-                            ////                                        {
-                            ////                                            d2[offset+n] += ht * setting.k[cn.i][on.j] * u[on.m][on.n] * cn.w * on.w;
-                            ////                                        }
+                                        //bool found = false;
+                                        //for (unsigned int cs=0; cs<cntYSize; cs++)
+                                        //{
+                                        //    if (on.m == cntY[cs])
+                                        //    {
+                                        //        found = true;
+                                        //        w2[offset+n][cs*(N+1)+on.n] += -ht * mParameter.k[cn.i][on.j] * cn.w * on.w;
+                                        //    }
+                                        //}
 
-                            //                                        bool found = false;
-                            //                                        for (unsigned int cs=0; cs<cntYSize; cs++)
-                            //                                        {
-                            //                                            if (on.m == cntY[cs])
-                            //                                            {
-                            //                                                found = true;
-                            //                                                w2[offset+n][cs*(N+1)+on.n] += -ht * setting.k[cn.i][on.j] * cn.w * on.w;
-                            //                                            }
-                            //                                        }
+                                        //if (!found)
+                                        //{
+                                        //    d2[offset+n] += ht * mParameter.k[cn.i][on.j] * u[on.m][on.n] * cn.w * on.w;
+                                        //}
+                                    }
 
-                            //                                        if (!found)
-                            //                                        {
-                            //                                            d2[offset+n] += ht * setting.k[cn.i][on.j] * u[on.m][on.n] * cn.w * on.w;
-                            //                                        }
-                            //                                    }
+                                    for (unsigned int j=0; j<Lo; j++)
+                                    {
+                                        d2[offset+n] -= ht * mParameter.k[cn.i][j] * mParameter.z[cn.i][j] * cn.w;
+                                    }
 
-                            //                                    for (unsigned int j=0; j<Lo; j++)
-                            //                                    {
-                            //                                        d2[offset+n] -= ht * setting.k[cn.i][j] * setting.z[cn.i][j] * cn.w;
-                            //                                    }
-
-                            //                                }
-                            //                            }
+                                }
+                            }
+#endif
                         }
                         offset += N+1;
                     }
@@ -587,7 +602,9 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
     delete [] v1x;
     delete [] v1y;
     observeNodes.clear();
+#ifdef USE_F_VARIANT_2
     cndeltaNodes.clear();
+#endif
     uh.clear();
 }
 
@@ -883,7 +900,7 @@ void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, std::vect
     dx = fabs(on.x-xi.x); dy = fabs(on.y-xi.y); on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
     ons.push_back(on);
 
-/*
+    /*
     if ( rx*hx <= xi.x && ry*hy <= xi.y ) // left bottom
     {
         on.n = rx-1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
@@ -1941,12 +1958,12 @@ void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, ExtendedS
     pi.wi[0][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
 }
 
-void IProblem2Forward2D::extendContrlDeltaPoint(const SpaceNodePDE cp, std::vector<ControlDeltaNode> &cps, unsigned int i) const
+void IProblem2Forward2D::extendContrlDeltaPoint(const SpaceNodePDE &eta, std::vector<ControlDeltaNode> &cps, unsigned int i) const
 {
-    extendContrlDeltaPoint1(cp, cps, i);
+    extendContrlDeltaPoint1(eta, cps, i);
 }
 
-void IProblem2Forward2D::extendContrlDeltaPoint1(const SpaceNodePDE eta, std::vector<ControlDeltaNode> &cns, unsigned int i) const
+void IProblem2Forward2D::extendContrlDeltaPoint1(const SpaceNodePDE &eta, std::vector<ControlDeltaNode> &cps, unsigned int i) const
 {
     Dimension xd = spaceDimension(Dimension::DimensionX);
     Dimension yd = spaceDimension(Dimension::DimensionY);
@@ -1957,80 +1974,105 @@ void IProblem2Forward2D::extendContrlDeltaPoint1(const SpaceNodePDE eta, std::ve
     double hx = xd.step();
     double hy = yd.step();
 
-    unsigned int rx = (unsigned int)(round(eta.x*Nx));
-    unsigned int ry = (unsigned int)(round(eta.y*Ny));
+    unsigned int rx = (unsigned int)(floor(eta.x*Nx));
+    unsigned int ry = (unsigned int)(floor(eta.y*Ny));
 
     ControlDeltaNode cn;
-    if ( rx*hx <= eta.x && ry*hy <= eta.y ) // left bottom
-    {
-        cn.n = rx+0; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+    cn.n = rx+0; cn.x = cn.n*hx;
+    cn.m = ry+0; cn.y = cn.m*hy;
+    cn.eta = eta; cn.i = i;
+    cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy));
+    cps.push_back(cn);
 
-        cn.n = rx+1; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+    cn.n = rx+1; cn.x = cn.n*hx;
+    cn.m = ry+0; cn.y = cn.m*hy;
+    cn.eta = eta; cn.i = i;
+    cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy));
+    cps.push_back(cn);
 
-        cn.n = rx+0; cn.m = ry+1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+    cn.n = rx+0; cn.x = cn.n*hx;
+    cn.m = ry+1; cn.y = cn.m*hy;
+    cn.eta = eta; cn.i = i;
+    cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy));
+    cps.push_back(cn);
 
-        cn.n = rx+1; cn.m = ry+1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+    cn.n = rx+1; cn.x = cn.n*hx;
+    cn.m = ry+1; cn.y = cn.m*hy;
+    cn.eta = eta; cn.i = i;
+    cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy));
+    cps.push_back(cn);
 
-        return;
-    }
+    //    ControlDeltaNode cn;
+    //    if ( rx*hx <= eta.x && ry*hy <= eta.y ) // left bottom
+    //    {
+    //        cn.n = rx+0; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
 
-    if ( rx*hx <= eta.x && ry*hy >= eta.y ) // left top
-    {
-        cn.n = rx+0; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+    //        cn.n = rx+1; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
 
-        cn.n = rx+1; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+    //        cn.n = rx+0; cn.m = ry+1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
 
-        cn.n = rx+0; cn.m = ry-1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+    //        cn.n = rx+1; cn.m = ry+1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
 
-        cn.n = rx+1; cn.m = ry-1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+    //        return;
+    //    }
 
-        return;
-    }
+    //    if ( rx*hx <= eta.x && ry*hy >= eta.y ) // left top
+    //    {
+    //        cn.n = rx+0; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
 
-    if ( rx*hx >= eta.x && ry*hy <= eta.y ) // right bottom
-    {
-        cn.n = rx+0; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+    //        cn.n = rx+1; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
 
-        cn.n = rx-1; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+    //        cn.n = rx+0; cn.m = ry-1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
 
-        cn.n = rx+0; cn.m = ry+1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+    //        cn.n = rx+1; cn.m = ry-1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
 
-        cn.n = rx-1; cn.m = ry+1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+    //        return;
+    //    }
 
-        return;
-    }
+    //    if ( rx*hx >= eta.x && ry*hy <= eta.y ) // right bottom
+    //    {
+    //        cn.n = rx+0; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
 
-    if ( rx*hx >= eta.x && ry*hy >= eta.y ) // right top
-    {
-        cn.n = rx+0; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+    //        cn.n = rx-1; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
 
-        cn.n = rx-1; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+    //        cn.n = rx+0; cn.m = ry+1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
 
-        cn.n = rx+0; cn.m = ry-1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+    //        cn.n = rx-1; cn.m = ry+1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
 
-        cn.n = rx-1; cn.m = ry-1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+    //        return;
+    //    }
 
-        return;
-    }
+    //    if ( rx*hx >= eta.x && ry*hy >= eta.y ) // right top
+    //    {
+    //        cn.n = rx+0; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+
+    //        cn.n = rx-1; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+
+    //        cn.n = rx+0; cn.m = ry-1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+
+    //        cn.n = rx-1; cn.m = ry-1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
+
+    //        return;
+    //    }
 }
 
-void IProblem2Forward2D::extendContrlDeltaPoint2(const SpaceNodePDE eta, std::vector<ControlDeltaNode> &cps, unsigned int i) const
+void IProblem2Forward2D::extendContrlDeltaPoint2(const SpaceNodePDE &eta, std::vector<ControlDeltaNode> &cps, unsigned int i) const
 {
     Dimension xd = spaceDimension(Dimension::DimensionX);
     Dimension yd = spaceDimension(Dimension::DimensionY);

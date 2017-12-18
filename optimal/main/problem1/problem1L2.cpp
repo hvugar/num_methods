@@ -173,7 +173,7 @@ void Problem1L2::optimize(DoubleVector &x0) const
     IPrinter::printSeperatorLine();
 }
 
-void Problem1L2::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
+void Problem1L2::project(DoubleVector &x UNUSED_PARAM, unsigned int i UNUSED_PARAM)
 {
     unsigned int p = 0;
     if (optimizeK) p+=2;

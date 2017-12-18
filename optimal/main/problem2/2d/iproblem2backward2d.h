@@ -34,6 +34,8 @@ protected:
 
     void extendControlPoint(const SpaceNodePDE cp, std::vector<ControlNode> &ops, unsigned int i) const;
 
+    void extendObservationDeltaPoint(const SpaceNodePDE &op, std::vector<ObservationDeltaNode> &ops, unsigned int j) const;
+    void extendObservationDeltaPoint1(const SpaceNodePDE &op, std::vector<ObservationDeltaNode> &ons, unsigned int j) const;
 };
 
 #endif // IPROBLEM2BACKWARD2D_H

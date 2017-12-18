@@ -1,7 +1,7 @@
 #ifndef PROBLEM22DEX2_H
 #define PROBLEM22DEX2_H
 
-#include "../abstractproblem22d.h"
+#include "../abs/abstractproblem22d.h"
 #include <imaging.h>
 
 class Problem2Forward2DEx2 : public IProblem2Forward2D

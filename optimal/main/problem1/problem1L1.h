@@ -33,7 +33,7 @@ public:
     virtual double fx(const DoubleVector &x) const;
     virtual void gradient(const DoubleVector &x, DoubleVector &g);
     virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const;
-    virtual void project(DoubleVector &x, int index);
+    virtual void project(DoubleVector &x, unsigned int index);
 
     double initial(unsigned int i) const;
     double mu(unsigned int i UNUSED_PARAM) const { return 1.0; }

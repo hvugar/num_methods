@@ -447,7 +447,7 @@ void Problem1L1::print(unsigned int i, const DoubleVector &x, const DoubleVector
     //    puts("\n-----------------------------------------");
 }
 
-void Problem1L1::project(DoubleVector &x UNUSED_PARAM, int i UNUSED_PARAM)
+void Problem1L1::project(DoubleVector &x UNUSED_PARAM, unsigned int i UNUSED_PARAM)
 {
     int j = 0;
 #ifdef _OPTIMIZE_K_
