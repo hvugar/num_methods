@@ -3,48 +3,39 @@
 void CProblem2Backward2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     CProblem2Backward2D cpbp2d;
-    cpbp2d.setTimeDimension(Dimension(0.01, 0,  100));
+    cpbp2d.setTimeDimension(Dimension(0.005, 0, 200));
     cpbp2d.addSpaceDimension(Dimension(0.01, 0, 100));
     cpbp2d.addSpaceDimension(Dimension(0.01, 0, 100));
-    cpbp2d.a = 1.0;
-    cpbp2d.lambda0 = 0.01;
-    cpbp2d.lambda = 0.1;
-    cpbp2d.theta = 10.0;
+    cpbp2d.setEquationParameters(1.0, 0.01, 0.1, 10.0);
 
-    Parameter setting;
-    setting.Lc = 4;
-    setting.Lo = 4;
+    Parameter prm(4, 4);
 
-    setting.eta.resize(setting.Lc);
-    //setting.eta[0].x = 0.50; setting.eta[0].y = 0.50;
+    prm.eta[0].setPoint(0.3345, 0.3055);
+    prm.eta[1].setPoint(0.3314, 0.6041);
+    prm.eta[2].setPoint(0.6625, 0.6555);
+    prm.eta[3].setPoint(0.6684, 0.3514);
 
-    setting.eta.resize(setting.Lc);
-    setting.eta[0].x = 0.3345; setting.eta[0].y = 0.3055;
-    setting.eta[1].x = 0.3314; setting.eta[1].y = 0.6041;
-    setting.eta[2].x = 0.6625; setting.eta[2].y = 0.6555;
-    setting.eta[3].x = 0.6684; setting.eta[3].y = 0.3514;
+    prm.xi[0].setPoint(0.2534, 0.2534);
+    prm.xi[1].setPoint(0.2578, 0.7544);
+    prm.xi[2].setPoint(0.7545, 0.7556);
+    prm.xi[3].setPoint(0.7543, 0.2589);
 
-    setting.xi.resize(setting.Lo);
-    setting.xi[0].x = 0.25;  setting.xi[0].y = 0.25;
-    setting.xi[1].x = 0.25;  setting.xi[1].y = 0.75;
-    setting.xi[2].x = 0.75;  setting.xi[2].y = 0.75;
-    setting.xi[3].x = 0.75;  setting.xi[3].y = 0.25;
-
-    setting.k.resize(setting.Lc, setting.Lo);
-    setting.z.resize(setting.Lc, setting.Lo);
-    for (unsigned int i=0; i<setting.Lc; i++)
+    for (unsigned int i=0; i<prm.Lc; i++)
     {
-        for (unsigned int j=0; j<setting.Lo; j++)
+        for (unsigned int j=0; j<prm.Lo; j++)
         {
-            setting.k[i][j] = -0.1;
-            setting.z[i][j] = +10.0;
+            prm.k[i][j] = -0.1;
+            prm.z[i][j] = +10.0;
         }
     }
-    cpbp2d.setParamter(setting);
+    cpbp2d.setParamter(prm);
 
     DoubleMatrix u;
     vector<ExtendedSpaceNode2D> info;
+    clock_t t1 = clock();
     cpbp2d.calculateMVD(u,info,false);
+    clock_t t2 = clock();
+    printf("%f\n", (double)(t2-t1)/CLOCKS_PER_SEC);
     IPrinter::printSeperatorLine();
     IPrinter::printMatrix(u);
     IPrinter::printSeperatorLine();
@@ -68,6 +59,7 @@ double CProblem2Backward2D::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) con
 
     double res = 1.0 + 4.0*a*a - lambda0*P(x,y,t);
 
+#ifdef USE_B_VARIANT_1
     double W = 0.0;
     for (unsigned int j=0; j<mParameter.Lo; j++)
     {
@@ -83,6 +75,29 @@ double CProblem2Backward2D::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) con
         }
     }
     res += W;
+#endif
+
+#ifdef USE_B_VARIANT_2
+    std::vector<ObservationDeltaNode> obdeltaNodes;
+    for (unsigned int j=0; j<mParameter.Lo; j++) extendObservationDeltaPoint0(mParameter.xi[j], obdeltaNodes, j);
+
+    double W = 0.0;
+    for (unsigned int onj=0; onj<obdeltaNodes.size(); onj++)
+    {
+        const ObservationDeltaNode &on = obdeltaNodes.at(onj);
+        if (sn.i == on.n && sn.j == on.m)
+        {
+            double vi = 0.0;
+            for (unsigned int i=0; i<mParameter.Lc; i++)
+            {
+                vi += mParameter.k[i][on.j] * P(mParameter.eta[i].x, mParameter.eta[i].y, t);
+            }
+            W += vi * on.w;
+        }
+    }
+    res += W;
+    obdeltaNodes.clear();
+#endif
 
     return res;
 }

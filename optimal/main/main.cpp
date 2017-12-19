@@ -114,7 +114,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //Problem2::Main(argc, argv);
 
-    CProblem2Forward2D::Main(argc, argv);
+    //CProblem2Forward2D::Main(argc, argv);
     //CProblem2Backward2D::Main(argc, argv);
 
     //Problem22D::Main(argc, argv);
@@ -122,7 +122,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Problem22DEx2::Main(argc, argv);
     //Problem22DEx3::Main(argc, argv);
     //Problem22DEx4::Main(argc, argv);
-    //Problem22DEx5::Main(argc, argv);
+    Problem22DEx5::Main(argc, argv);
 
     //NLLIParabolicIBVP::Main(argc, argv);
 

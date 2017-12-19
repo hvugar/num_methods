@@ -7,8 +7,27 @@
 #include <time.h>
 
 using namespace std;
+#define USE_F_VARIANT_2
+#define USE_B_VARIANT_2
+
+#define APPROX_F1_2
+#define APPROX_FD_2
+
+#define APPROX_B1_2
+#define APPROX_BD_2
 
 struct ObservationNode
+{
+    SpaceNodePDE xi;
+    unsigned int j;
+    unsigned int n;
+    unsigned int m;
+    double x;
+    double y;
+    double w;
+};
+
+struct ObservationDeltaNode
 {
     SpaceNodePDE xi;
     unsigned int j;
@@ -41,18 +60,6 @@ struct ControlDeltaNode
     double w;
 };
 
-struct ObservationDeltaNode
-{
-    SpaceNodePDE xi;
-    unsigned int j;
-    unsigned int n;
-    unsigned int m;
-    double x;
-    double y;
-    double w;
-};
-
-
 struct Parameter
 {
     Parameter(unsigned int Lc=0, unsigned int Lo=0);
@@ -81,6 +88,7 @@ class ExtendedSpaceNode2D : public SpaceNodePDE
 {
 public:
     explicit ExtendedSpaceNode2D();
+    virtual ~ExtendedSpaceNode2D();
 
     void setSpaceNode(const SpaceNodePDE& sn);
 

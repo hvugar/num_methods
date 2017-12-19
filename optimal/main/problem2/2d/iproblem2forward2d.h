@@ -32,15 +32,17 @@ protected:
     double delta4(const SpaceNodePDE &sn, const SpaceNodePDE &eta, unsigned int i = 0) const;
     bool checkDelta(double delta) const;
 
-    void extendContrlDeltaPoint(const SpaceNodePDE &cp, std::vector<ControlDeltaNode> &cps, unsigned int i) const;
+    void extendObservationPoint0(const SpaceNodePDE &op, std::vector<ObservationNode> &ops, unsigned int j) const;
+    void extendObservationPoint1(const SpaceNodePDE &op, std::vector<ObservationNode> &ops, unsigned int j) const;
+    void extendObservationPoint2(const SpaceNodePDE &op, std::vector<ObservationNode> &ops, unsigned int j) const;
+    void extendObservationPoint3(const SpaceNodePDE &op, std::vector<ObservationNode> &ops, unsigned int j) const;
+
+    void extendContrlDeltaPoint0(const SpaceNodePDE &cp, std::vector<ControlDeltaNode> &cps, unsigned int i) const;
     void extendContrlDeltaPoint1(const SpaceNodePDE &cp, std::vector<ControlDeltaNode> &cps, unsigned int i) const;
     void extendContrlDeltaPoint2(const SpaceNodePDE &cp, std::vector<ControlDeltaNode> &cps, unsigned int i) const;
+    void extendContrlDeltaPoint3(const SpaceNodePDE &cp, std::vector<ControlDeltaNode> &cps, unsigned int i) const;
 
-    void extendObservationPoint1(const SpaceNodePDE op, std::vector<ObservationNode> &ops, unsigned int j) const;
 
-    void extendObservationPoint(const SpaceNodePDE op, std::vector<ObservationNode> &ops, unsigned int j) const;
-    void extendObservationPoint(const SpaceNodePDE op, ExtendedSpaceNode2D &pi, unsigned int j) const;
-    void extendObservationPoint(const SpaceNodePDE op, ExtendedSpaceNode2D &pi) const;
 };
 
 #endif // IPROBLEM2FORWARD2D_H

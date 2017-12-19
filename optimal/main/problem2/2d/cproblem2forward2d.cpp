@@ -3,9 +3,9 @@
 void CProblem2Forward2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     CProblem2Forward2D cpfp2d;
-    cpfp2d.setTimeDimension(Dimension(0.005, 0,  200));
-    cpfp2d.addSpaceDimension(Dimension(0.005, 0, 200));
-    cpfp2d.addSpaceDimension(Dimension(0.005, 0, 200));
+    cpfp2d.setTimeDimension(Dimension(0.005, 0, 200));
+    cpfp2d.addSpaceDimension(Dimension(0.01, 0, 100));
+    cpfp2d.addSpaceDimension(Dimension(0.01, 0, 100));
     cpfp2d.setEquationParameters(1.0, 0.01, 0.1, 10.0);
 
     Parameter prm(4,4);
@@ -59,26 +59,7 @@ double CProblem2Forward2D::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) cons
 
     double res = 1.0 - 4.0*a*a + lambda0*(U(x,y,t) - theta);
 
-//    std::vector<ControlDeltaNode> cndeltaNodes;
-//    for (unsigned int i=0; i<setting.Lc; i++) extendContrlDeltaPoint(setting.eta[i], cndeltaNodes, i);
-
-//    double W = 0.0;
-//    for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
-//    {
-//        const ControlDeltaNode &cn = cndeltaNodes.at(cni);
-//        if (sn.i == cn.n && sn.j == cn.m)
-//        {
-//            double vi = 0.0;
-//            for (unsigned int j=0; j<setting.Lo; j++)
-//            {
-//                vi += setting.k[cn.i][j] * (U(setting.xi[j].x, setting.xi[j].y, t) - setting.z[cn.i][j]);
-//            }
-//            W += vi * cn.w;
-//        }
-//    }
-//    res -= W;
-//    cndeltaNodes.clear();
-
+#ifdef USE_F_VARIANT_1
     double W = 0.0;
     for (unsigned int i=0; i<mParameter.Lc; i++)
     {
@@ -94,6 +75,30 @@ double CProblem2Forward2D::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) cons
         }
     }
     res -= W;
+#endif
+
+#ifdef USE_F_VARIANT_2
+    std::vector<ControlDeltaNode> cndeltaNodes;
+    for (unsigned int i=0; i<mParameter.Lc; i++) extendContrlDeltaPoint0(mParameter.eta[i], cndeltaNodes, i);
+
+    double W = 0.0;
+    for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
+    {
+        const ControlDeltaNode &cn = cndeltaNodes.at(cni);
+        if (sn.i == cn.n && sn.j == cn.m)
+        {
+            double vi = 0.0;
+            for (unsigned int j=0; j<mParameter.Lo; j++)
+            {
+                vi += mParameter.k[cn.i][j] * (U(mParameter.xi[j].x, mParameter.xi[j].y, t) - mParameter.z[cn.i][j]);
+            }
+            W += vi * cn.w;
+        }
+    }
+    res -= W;
+    cndeltaNodes.clear();
+#endif
+
 
     return res;
 }

@@ -18,7 +18,7 @@ void Problem22DEx5::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         rpm0.k[1][0] = -2.8; rpm0.k[1][1] = +3.2;
 
         rpm0.z[0][0] = 10.5; rpm0.z[0][1] = 11.4;
-        //rpm0.z[1][0] = 9.7;  rpm0.z[1][1] = 8.5;
+        rpm0.z[1][0] = 9.7;  rpm0.z[1][1] = 8.5;
 
         p22d5.calculateU(rpm0);
 
@@ -27,8 +27,7 @@ void Problem22DEx5::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
         QPixmap px;
         visualizeMatrixHeat(p22d5.U,0.0, p22d5.U.max(), px);
-        px.save("U.png", "PNG");
-
+        //px.save("U.png", "PNG");
 
         //-----------------------------------------------//
         IPrinter::printSeperatorLine();
@@ -40,17 +39,17 @@ void Problem22DEx5::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     }
 
     Parameter rpm(2, 2);
-    rpm.eta[0].setPoint(0.22, 0.85);
-    rpm.eta[1].setPoint(0.73, 0.45);
+    rpm.eta[0].setPoint(0.20, 0.80);
+    rpm.eta[1].setPoint(0.70, 0.40);
 
-    rpm.xi[0].setPoint(0.28, 0.25);
-    rpm.xi[1].setPoint(0.78, 0.77);
+    rpm.xi[0].setPoint(0.30, 0.20);
+    rpm.xi[1].setPoint(0.80, 0.70);
 
-    rpm.k[0][0] = -1.0; rpm.k[0][1] = -2.6;
-    rpm.k[1][0] = -1.8; rpm.k[1][1] = -6.7;
+    rpm.k[0][0] = -3.0; rpm.k[0][1] = -5.0;
+    rpm.k[1][0] = -3.8; rpm.k[1][1] = +4.2;
 
-    rpm.z[0][0] = 11.1; rpm.z[0][1] = 14.4;
-    rpm.z[1][0] = 10.7; rpm.z[1][1] = 12.5;
+    rpm.z[0][0] = 10.5;  rpm.z[0][1] = 11.4;
+    rpm.z[1][0] = 9.7; rpm.z[1][1] = 8.5;
 
     p22d5.setParameter(rpm);
 
@@ -59,15 +58,16 @@ void Problem22DEx5::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     rpm.toVector(pv);
     DoubleVector ag(pv.length());
     IPrinter::print(pv, pv.length(), 10, 6);
-    IPrinter::printSeperatorLine();puts("OK");
+    IPrinter::printSeperatorLine();
 
     p22d5.gradient(pv,ag);
+
     printf("Functional: %f\n", p22d5.fx(pv));
 
     DoubleVector ng(pv.length());
     ng.resize(pv.length(), 0.0);
 
-    IGradient::Gradient(&p22d5, 0.001, pv, ng);
+    IGradient::Gradient(&p22d5, 0.01, pv, ng);
 
     //------------------------------------------------------//
     DoubleVector pk = pv.mid(0, rpm.Lc*rpm.Lo-1);
@@ -120,11 +120,11 @@ void Problem22DEx5::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 Problem22DEx5::Problem22DEx5() : AbstactProblem22D()
 {
-    forward->setEquationParameters(1.0, 0.001, 0.1, 6.3);
-    backward->setEquationParameters(1.0, 0.001, 0.1, 6.3);
+    forward->setEquationParameters(1.0, 0.001, 1.0, 6.3);
+    backward->setEquationParameters(1.0, 0.001, 1.0, 6.3);
     forward->fi = 0.1;
 
-    Dimension time = Dimension(0.01, 0, 100);
+    Dimension time = Dimension(0.005, 0, 200);
     Dimension dimX = Dimension(0.01, 0, 100);
     Dimension dimY = Dimension(0.01, 0, 100);
 

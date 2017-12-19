@@ -38,9 +38,11 @@ double Problem2Backward2DEx4::g4(const SpaceNodePDE &, const TimeNodePDE &) cons
 
 void Problem2Backward2DEx4::layerInfo(const DoubleMatrix &p, unsigned int ln) const
 {
-    //if (ln==timeDimension().sizeN())
+    C_UNUSED(p);
+    C_UNUSED(ln);
+    if (ln==timeDimension().sizeN())
     {
-        IPrinter::printSeperatorLine();
+        IPrinter::printSeperatorLine("P");
         IPrinter::printMatrix(p);
         IPrinter::printSeperatorLine();
     }

@@ -35,10 +35,10 @@ double Problem2Forward2DEx4::g4(const SpaceNodePDE &, const TimeNodePDE &) const
     return 0.0;
 }
 
-void Problem2Forward2DEx4::layerInfo(const DoubleMatrix &u, unsigned int n) const
+void Problem2Forward2DEx4::layerInfo(const DoubleMatrix &u, unsigned int ln) const
 {
     C_UNUSED(u);
-    C_UNUSED(n);
+    C_UNUSED(ln);
     //    QPixmap pixmap;
     //    visualizeMatrixHeat(u, u.min(), u.max(), pixmap, u.cols(), u.rows());
     //    pixmap.save(QString("image%1.png").arg(n), "PNG");

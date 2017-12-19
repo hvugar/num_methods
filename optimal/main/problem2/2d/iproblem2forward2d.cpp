@@ -1,7 +1,5 @@
 #include "iproblem2forward2d.h"
 
-#define USE_F_VARIANT_2
-
 IProblem2Forward2D::~IProblem2Forward2D()
 {}
 
@@ -42,11 +40,11 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
     //--------------------------------------------------------------------------------------------//
 
     std::vector<ObservationNode> observeNodes;
-    for (unsigned int j=0; j<mParameter.Lo; j++) extendObservationPoint(mParameter.xi[j], observeNodes, j);
+    for (unsigned int j=0; j<mParameter.Lo; j++) extendObservationPoint0(mParameter.xi[j], observeNodes, j);
 
 #ifdef USE_F_VARIANT_2
     std::vector<ControlDeltaNode> cndeltaNodes;
-    for (unsigned int i=0; i<mParameter.Lc; i++) extendContrlDeltaPoint(mParameter.eta[i], cndeltaNodes, i);
+    for (unsigned int i=0; i<mParameter.Lc; i++) extendContrlDeltaPoint0(mParameter.eta[i], cndeltaNodes, i);
 #endif
 
     unsigned int *v1y = new unsigned int[M+1]; for (unsigned int m=0; m<=M; m++) v1y[m] = 0;
@@ -79,9 +77,9 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
 #ifdef USE_F_VARIANT_2
     for (unsigned int i=0; i<cndeltaNodes.size(); i++)
     {
-        const ControlDeltaNode &cn = cndeltaNodes.at(i);
-        v1x[cn.n] = 1;
-        v1y[cn.m] = 1;
+        const ControlDeltaNode &cdn = cndeltaNodes.at(i);
+        v1x[cdn.n] = 1;
+        v1y[cdn.m] = 1;
     }
 #endif
 
@@ -105,9 +103,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
             {
                 for (unsigned int c=0; c<4; c++)
                 {
-                    unsigned int x = pi.wi[r][c].i;
-                    unsigned int y = pi.wi[r][c].j;
-                    pi.wi[r][c].u[0] = u[y][x];
+                    pi.wi[r][c].u[0] = u[pi.wi[r][c].j][pi.wi[r][c].i];
                 }
             }
         }
@@ -280,20 +276,20 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
 #ifdef USE_F_VARIANT_2
                             for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
                             {
-                                const ControlDeltaNode &cn = cndeltaNodes.at(cni);
-                                if (cn.n == sn.i && cn.m == sn.j)
+                                const ControlDeltaNode &cdn = cndeltaNodes.at(cni);
+                                if (cdn.n == sn.i && cdn.m == sn.j)
                                 {
                                     for (unsigned int s=0; s<observeNodes.size(); s++)
                                     {
                                         const ObservationNode &on = observeNodes[s];
 
-                                        if (on.n == cn.n)
+                                        if (on.n == cdn.n)
                                         {
-                                            w2[offset+m][cn.n*(M+1)+on.m] += -ht * mParameter.k[cn.i][on.j] * cn.w * on.w;
+                                            w2[offset+m][cdn.n*(M+1)+on.m] += -ht * mParameter.k[cdn.i][on.j] * cdn.w * on.w;
                                         }
                                         else
                                         {
-                                            d2[offset+m] += ht * mParameter.k[cn.i][on.j] * uh[on.m][on.n] * cn.w * on.w;
+                                            d2[offset+m] += ht * mParameter.k[cdn.i][on.j] * uh[on.m][on.n] * cdn.w * on.w;
                                         }
 
                                         //bool found = false;
@@ -302,19 +298,19 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                                         //    if (on.n == cntX[cs])
                                         //    {
                                         //        found = true;
-                                        //        w2[offset+m][cs*(M+1)+on.m] += -ht * mParameter.k[cn.i][on.j] * cn.w * on.w;
+                                        //        w2[offset+m][cs*(M+1)+on.m] += -ht * mParameter.k[cdn.i][on.j] * cdn.w * on.w;
                                         //    }
                                         //}
 
                                         //if (!found)
                                         //{
-                                        //    d2[offset+m] += ht * mParameter.k[cn.i][on.j] * uh[on.m][on.n] * cn.w * on.w;
+                                        //    d2[offset+m] += ht * mParameter.k[cdn.i][on.j] * uh[on.m][on.n] * cdn.w * on.w;
                                         //}
                                     }
 
                                     for (unsigned int j=0; j<Lo; j++)
                                     {
-                                        d2[offset+m] -= ht * mParameter.k[cn.i][j] * mParameter.z[cn.i][j] * cn.w;
+                                        d2[offset+m] -= ht * mParameter.k[cdn.i][j] * mParameter.z[cdn.i][j] * cdn.w;
                                     }
 
                                 }
@@ -491,20 +487,20 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
 #ifdef USE_F_VARIANT_2
                             for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
                             {
-                                const ControlDeltaNode &cn = cndeltaNodes.at(cni);
-                                if (cn.n == sn.i && cn.m == sn.j)
+                                const ControlDeltaNode &cdn = cndeltaNodes.at(cni);
+                                if (cdn.n == sn.i && cdn.m == sn.j)
                                 {
                                     for (unsigned int s=0; s<observeNodes.size(); s++)
                                     {
                                         const ObservationNode &on = observeNodes[s];
 
-                                        if (on.m == cn.m)
+                                        if (on.m == cdn.m)
                                         {
-                                            w2[offset+n][cn.m*(N+1)+on.n] += -ht * mParameter.k[cn.i][on.j] * cn.w * on.w;
+                                            w2[offset+n][cdn.m*(N+1)+on.n] += -ht * mParameter.k[cdn.i][on.j] * cdn.w * on.w;
                                         }
                                         else
                                         {
-                                            d2[offset+n] += ht * mParameter.k[cn.i][on.j] * u[on.m][on.n] * cn.w * on.w;
+                                            d2[offset+n] += ht * mParameter.k[cdn.i][on.j] * u[on.m][on.n] * cdn.w * on.w;
                                         }
 
                                         //bool found = false;
@@ -513,19 +509,19 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                                         //    if (on.m == cntY[cs])
                                         //    {
                                         //        found = true;
-                                        //        w2[offset+n][cs*(N+1)+on.n] += -ht * mParameter.k[cn.i][on.j] * cn.w * on.w;
+                                        //        w2[offset+n][cs*(N+1)+on.n] += -ht * mParameter.k[cdn.i][on.j] * cdn.w * on.w;
                                         //    }
                                         //}
 
                                         //if (!found)
                                         //{
-                                        //    d2[offset+n] += ht * mParameter.k[cn.i][on.j] * u[on.m][on.n] * cn.w * on.w;
+                                        //    d2[offset+n] += ht * mParameter.k[cdn.i][on.j] * u[on.m][on.n] * cdn.w * on.w;
                                         //}
                                     }
 
                                     for (unsigned int j=0; j<Lo; j++)
                                     {
-                                        d2[offset+n] -= ht * mParameter.k[cn.i][j] * mParameter.z[cn.i][j] * cn.w;
+                                        d2[offset+n] -= ht * mParameter.k[cdn.i][j] * mParameter.z[cdn.i][j] * cdn.w;
                                     }
 
                                 }
@@ -724,7 +720,21 @@ double IProblem2Forward2D::delta4(const SpaceNodePDE &sn UNUSED_PARAM, const Spa
     return res;
 }
 
-void IProblem2Forward2D::extendObservationPoint1(const SpaceNodePDE xi, std::vector<ObservationNode> &ons, unsigned int j) const
+void IProblem2Forward2D::extendObservationPoint0(const SpaceNodePDE &xi, std::vector<ObservationNode> &ons, unsigned int j) const
+{
+#ifdef APPROX_F1_1
+    extendObservationPoint1(xi, ons, j);
+#endif
+#ifdef APPROX_F1_2
+    extendObservationPoint2(xi, ons, j);
+#endif
+#ifdef APPROX_F1_3
+    extendObservationPoint3(xi, ons, j);
+#endif
+
+}
+
+void IProblem2Forward2D::extendObservationPoint1(const SpaceNodePDE &xi, std::vector<ObservationNode> &ons, unsigned int j) const
 {
     Dimension xd = spaceDimension(Dimension::DimensionX);
     Dimension yd = spaceDimension(Dimension::DimensionY);
@@ -735,80 +745,29 @@ void IProblem2Forward2D::extendObservationPoint1(const SpaceNodePDE xi, std::vec
     double hx = xd.step();
     double hy = yd.step();
 
-    unsigned int rx = (unsigned int)(round(xi.x*Nx));
-    unsigned int ry = (unsigned int)(round(xi.y*Ny));
+    unsigned int rx = (unsigned int)(floor(xi.x*Nx));
+    unsigned int ry = (unsigned int)(floor(xi.y*Ny));
 
     ObservationNode on;
-    if ( rx*hx <= xi.x && ry*hy <= xi.y ) // left bottom
-    {
-        on.n = rx+0; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
 
-        on.n = rx+1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
+    on.n = rx+0; on.x = on.n*hx; on.m = ry+0; on.y = on.m*hy; on.xi = xi; on.j = j;
+    on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy);
+    ons.push_back(on);
 
-        on.n = rx+0; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
+    on.n = rx+1; on.x = on.n*hx; on.m = ry+0; on.y = on.m*hy; on.xi = xi; on.j = j;
+    on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy);
+    ons.push_back(on);
 
-        on.n = rx+1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
+    on.n = rx+0; on.x = on.n*hx; on.m = ry+1; on.y = on.m*hy; on.xi = xi; on.j = j;
+    on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy);
+    ons.push_back(on);
 
-        return;
-    }
-
-    if ( rx*hx <= xi.x && ry*hy >= xi.y ) // left top
-    {
-        on.n = rx+0; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
-
-        on.n = rx+1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
-
-        on.n = rx+0; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
-
-        on.n = rx+1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
-
-        return;
-    }
-
-    if ( rx*hx >= xi.x && ry*hy <= xi.y ) // right bottom
-    {
-        on.n = rx+0; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
-
-        on.n = rx-1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
-
-        on.n = rx+0; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
-
-        on.n = rx-1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
-
-        return;
-    }
-
-    if ( rx*hx >= xi.x && ry*hy >= xi.y ) // right top
-    {
-        on.n = rx+0; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
-
-        on.n = rx-1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
-
-        on.n = rx+0; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
-
-        on.n = rx-1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy); ons.push_back(on);
-
-        return;
-    }
+    on.n = rx+1; on.x = on.n*hx; on.m = ry+1; on.y = on.m*hy; on.xi = xi; on.j = j;
+    on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy);
+    ons.push_back(on);
 }
 
-void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, std::vector<ObservationNode> &ons, unsigned int j) const
+void IProblem2Forward2D::extendObservationPoint2(const SpaceNodePDE &xi, std::vector<ObservationNode> &ons, unsigned int j) const
 {
     Dimension xd = spaceDimension(Dimension::DimensionX);
     Dimension yd = spaceDimension(Dimension::DimensionY);
@@ -887,9 +846,7 @@ void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, std::vect
     ons.push_back(on);
 
     on.n = rx+2; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-    dx = fabs(on.x-xi.x);
-    dy = fabs(on.y-xi.y);
-    on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+    dx = fabs(on.x-xi.x); dy = fabs(on.y-xi.y); on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
     ons.push_back(on);
 
     on.n = rx+2; on.x = on.n*hx; on.m = ry+1; on.y = on.m*hy; on.xi = xi; on.j = j;
@@ -899,1068 +856,49 @@ void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, std::vect
     on.n = rx+2; on.x = on.n*hx; on.m = ry+2; on.y = on.m*hy; on.xi = xi; on.j = j;
     dx = fabs(on.x-xi.x); dy = fabs(on.y-xi.y); on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
     ons.push_back(on);
-
-    /*
-    if ( rx*hx <= xi.x && ry*hy <= xi.y ) // left bottom
-    {
-        on.n = rx-1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        on.n = rx-1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx-1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx-1; on.m = ry+2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        /////////////////////////
-        on.n = rx+0; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        on.n = rx+0; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+0; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+0; on.m = ry+2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);;
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        /////////////////////////
-        on.n = rx+1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        on.n = rx+1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+1; on.m = ry+2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        ////////////////////////
-        on.n = rx+2; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        on.n = rx+2; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+2; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+2; on.m = ry+2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-        return;
-    }
-
-    if ( rx*hx <= xi.x && ry*hy >= xi.y ) // left top
-    {
-        on.n = rx-1; on.m = ry-2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        on.n = rx-1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx-1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx-1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        /////////////////////////
-        on.n = rx+0; on.m = ry-2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        on.n = rx+0; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+0; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+0; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);;
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        /////////////////////////
-        on.n = rx+1; on.m = ry-2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        on.n = rx+1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        ////////////////////////
-        on.n = rx+2; on.m = ry-2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        on.n = rx+2; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+2; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+2; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-        return;
-    }
-
-    if ( rx*hx >= xi.x && ry*hy >= xi.y ) // right top
-    {
-        on.n = rx-2; on.m = ry-2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        on.n = rx-2; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx-2; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx-2; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        /////////////////////////
-        on.n = rx-1; on.m = ry-2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        on.n = rx-1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx-1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx-1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);;
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        /////////////////////////
-        on.n = rx+0; on.m = ry-2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        on.n = rx+0; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+0; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+0; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-
-        ////////////////////////
-        on.n = rx+1; on.m = ry-2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        on.n = rx+1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-        return;
-    }
-
-    if ( rx*hx >= xi.x && ry*hy <= xi.y ) // right bottom
-    {
-        on.n = rx-2; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        on.n = rx-2; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx-2; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx-2; on.m = ry+2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        /////////////////////////
-        on.n = rx-1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        on.n = rx-1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx-1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx-1; on.m = ry+2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);;
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        /////////////////////////
-        on.n = rx+0; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        on.n = rx+0; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+0; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+0; on.m = ry+2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-
-        ////////////////////////
-        on.n = rx+1; on.m = ry-1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-
-        on.n = rx+1; on.m = ry+0; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+1; on.m = ry+1; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        ons.push_back(on);
-
-        on.n = rx+1; on.m = ry+2; on.x = on.n*hx; on.y = on.m*hy; on.xi = xi; on.j = j;
-        dx = fabs(on.x-xi.x);
-        dy = fabs(on.y-xi.y);
-        on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        ons.push_back(on);
-        return;
-    }
-*/
 }
 
-void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, ExtendedSpaceNode2D &pi, unsigned int j UNUSED_PARAM) const
+void IProblem2Forward2D::extendObservationPoint3(const SpaceNodePDE &xi, std::vector<ObservationNode> &ons, unsigned int j) const
 {
     Dimension xd = spaceDimension(Dimension::DimensionX);
     Dimension yd = spaceDimension(Dimension::DimensionY);
-
+    double hx = xd.step();
+    double hy = yd.step();
     unsigned int Nx = xd.sizeN();
     unsigned int Ny = yd.sizeN();
 
-    double hx = xd.step();
-    double hy = yd.step();
+    double sigmaX = hx;
+    double sigmaY = hy;
 
     unsigned int rx = (unsigned int)(round(xi.x*Nx));
     unsigned int ry = (unsigned int)(round(xi.y*Ny));
 
-    double hx3 = hx*hx*hx;
-    double hx32 = (1.0/(2.0*hx3));
-    double hx36 = (1.0/(6.0*hx3));
+    double factor = (1.0/(2.0*M_PI*sigmaX*sigmaY));
 
-    double hy3 = hy*hy*hy;
-    double hy32 = (1.0/(2.0*hy3));
-    double hy36 = (1.0/(6.0*hy3));
-
-    ObservationNode on;
-    double dx = 0.0;
-    double dy = 0.0;
-
-    if ( rx*hx <= xi.x && ry*hy <= xi.y ) // left bottom
+    unsigned int k=3;
+    for (unsigned int n=rx-k; n<=rx+k; n++)
     {
-        pi.wi[1][1].i = rx + 0; pi.wi[1][1].x = pi.wi[1][1].i*hx;
-        pi.wi[1][1].j = ry + 0; pi.wi[1][1].y = pi.wi[1][1].j*hy;
-        dx = fabs(pi.wi[2][1].x-xi.x);
-        dy = fabs(pi.wi[2][1].y-xi.y);
-        pi.wi[1][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-        pi.wi[2][1].i = rx + 0; pi.wi[2][1].x = pi.wi[2][1].i*hx;
-        pi.wi[2][1].j = ry + 1; pi.wi[2][1].y = pi.wi[2][1].j*hy;
-        dx = fabs(pi.wi[2][1].x-xi.x);
-        dy = fabs(pi.wi[2][1].y-xi.y);
-        pi.wi[2][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-        pi.wi[2][2].i = rx + 1; pi.wi[2][2].x = pi.wi[2][2].i*hx;
-        pi.wi[2][2].j = ry + 1; pi.wi[2][2].y = pi.wi[2][2].j*hy;
-        dx = fabs(pi.wi[2][2].x-xi.x);
-        dy = fabs(pi.wi[2][2].y-pi.wi[2][2].y);
-        pi.wi[2][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-        pi.wi[1][2].i = rx + 1; pi.wi[1][2].x = pi.wi[1][2].i*hx;
-        pi.wi[1][2].j = ry + 0; pi.wi[1][2].y = pi.wi[1][2].j*hy;
-        dx = fabs(pi.wi[1][2].x-xi.x);
-        dy = fabs(pi.wi[1][2].y-xi.y);
-        pi.wi[1][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-        pi.wi[0][0].i = rx - 1; pi.wi[0][0].x = pi.wi[0][0].i*hx;
-        pi.wi[0][0].j = ry - 1; pi.wi[0][0].y = pi.wi[0][0].j*hy;
-        dx = fabs(pi.wi[0][0].x-xi.x);
-        dy = fabs(pi.wi[0][0].y-xi.y);
-        pi.wi[0][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36) * ((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-        pi.wi[1][0].i = rx - 1; pi.wi[1][0].x = pi.wi[1][0].i*hx;
-        pi.wi[1][0].j = ry + 0; pi.wi[1][0].y = pi.wi[1][0].j*hy;
-        dx = fabs(pi.wi[1][0].x-xi.x);
-        dy = fabs(pi.wi[1][0].y-xi.y);
-        pi.wi[1][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-        pi.wi[2][0].i = rx - 1; pi.wi[2][0].x = pi.wi[2][0].i*hx;
-        pi.wi[2][0].j = ry + 1; pi.wi[2][0].y = pi.wi[2][0].j*hy;
-        dx = fabs(pi.wi[2][0].x-xi.x);
-        dy = fabs(pi.wi[2][0].y-xi.y);
-        pi.wi[2][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-        pi.wi[3][0].i = rx - 1; pi.wi[3][0].x = pi.wi[3][0].i*hx;
-        pi.wi[3][0].j = ry + 2; pi.wi[3][0].y = pi.wi[3][0].j*hy;
-        dx = fabs(pi.wi[3][0].x-xi.x);
-        dy = fabs(pi.wi[3][0].y-xi.y);
-        pi.wi[3][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-        pi.wi[3][1].i = rx + 0; pi.wi[3][1].x = pi.wi[3][1].i*hx;
-        pi.wi[3][1].j = ry + 2; pi.wi[3][1].y = pi.wi[3][1].j*hy;
-        dx = fabs(pi.wi[3][1].x-xi.x);
-        dy = fabs(pi.wi[3][1].y-xi.y);
-        pi.wi[3][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-        pi.wi[3][2].i = rx + 1; pi.wi[3][2].x = pi.wi[3][2].i*hx;
-        pi.wi[3][2].j = ry + 2; pi.wi[3][2].y = pi.wi[3][2].j*hy;
-        dx = fabs(pi.wi[3][2].x-xi.x);
-        dy = fabs(pi.wi[3][2].y-xi.y);
-        pi.wi[3][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-        pi.wi[3][3].i = rx + 2; pi.wi[3][3].x = pi.wi[3][3].i*hx;
-        pi.wi[3][3].j = ry + 2; pi.wi[3][3].y = pi.wi[3][3].j*hy;
-        dx = fabs(pi.wi[3][3].x-xi.x);
-        dy = fabs(pi.wi[3][3].y-xi.y);
-        pi.wi[3][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-        pi.wi[2][3].i = rx + 2; pi.wi[2][3].x = pi.wi[2][3].i*hx;
-        pi.wi[2][3].j = ry + 1; pi.wi[2][3].y = pi.wi[2][3].j*hy;
-        dx = fabs(pi.wi[2][3].x-xi.x);
-        dy = fabs(pi.wi[2][3].y-xi.y);
-        pi.wi[2][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-        pi.wi[1][3].i = rx + 2; pi.wi[1][3].x = pi.wi[1][3].i*hx;
-        pi.wi[1][3].j = ry + 0; pi.wi[1][3].y = pi.wi[1][3].j*hy;
-        dx = fabs(pi.wi[1][3].x-xi.x);
-        dy = fabs(pi.wi[1][3].y-xi.y);
-        pi.wi[1][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-        pi.wi[0][3].i = rx + 2; pi.wi[0][3].x = pi.wi[0][3].i*hx;
-        pi.wi[0][3].j = ry - 1; pi.wi[0][3].y = pi.wi[0][3].j*hy;
-        dx = fabs(pi.wi[0][3].x-xi.x);
-        dy = fabs(pi.wi[0][3].y-xi.y);
-        pi.wi[0][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-        pi.wi[0][2].i = rx + 1; pi.wi[0][2].x = pi.wi[0][2].i*hx;
-        pi.wi[0][2].j = ry - 1; pi.wi[0][2].y = pi.wi[0][2].j*hy;
-        dx = fabs(pi.wi[0][2].x-xi.x);
-        dy = fabs(pi.wi[0][2].y-xi.y);
-        pi.wi[0][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-        pi.wi[0][1].i = rx + 0; pi.wi[0][1].x = pi.wi[0][1].i*hx;
-        pi.wi[0][1].j = ry - 1; pi.wi[0][1].y = pi.wi[0][1].j*hy;
-        dx = fabs(pi.wi[0][1].x-xi.x);
-        dy = fabs(pi.wi[0][1].y-xi.y);
-        pi.wi[0][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-    }
-
-    if ( rx*hx <= xi.x && ry*hy >= xi.y ) // left top
-    {
-        //        espn.index = index;
-        //        espn.i = rx+0; espn.x = espn.i*hx;
-        //        espn.j = ry-1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+0; espn.x = espn.i*hx;
-        //        espn.j = ry+0; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+1; espn.x = espn.i*hx;
-        //        espn.j = ry+0; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+1; espn.x = espn.i*hx;
-        //        espn.j = ry-1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx-1; espn.x = espn.i*hx;
-        //        espn.j = ry-2; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx-1; espn.x = espn.i*hx;
-        //        espn.j = ry-1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx-1; espn.x = espn.i*hx;
-        //        espn.j = ry+0; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx-1; espn.x = espn.i*hx;
-        //        espn.j = ry+1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+0; espn.x = espn.i*hx;
-        //        espn.j = ry+1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);;
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+1; espn.x = espn.i*hx;
-        //        espn.j = ry+1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+2; espn.x = espn.i*hx;
-        //        espn.j = ry+1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+2; espn.x = espn.i*hx;
-        //        espn.j = ry+0; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+2; espn.x = espn.i*hx;
-        //        espn.j = ry-1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+2; espn.x = espn.i*hx;
-        //        espn.j = ry-2; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+1; espn.x = espn.i*hx;
-        //        espn.j = ry-2; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+0; espn.x = espn.i*hx;
-        //        espn.j = ry-2; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-    }
-
-    if ( rx*hx >= xi.x && ry*hy >= xi.y ) // right top
-    {
-        //        espn.index = index;
-        //        espn.i = rx-1; espn.x = espn.i*hx;
-        //        espn.j = ry-1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx-1; espn.x = espn.i*hx;
-        //        espn.j = ry+0; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+0; espn.x = espn.i*hx;
-        //        espn.j = ry+0; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+0; espn.x = espn.i*hx;
-        //        espn.j = ry-1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx-2; espn.x = espn.i*hx;
-        //        espn.j = ry-2; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx-2; espn.x = espn.i*hx;
-        //        espn.j = ry-1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx-2; espn.x = espn.i*hx;
-        //        espn.j = ry+0; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx-2; espn.x = espn.i*hx;
-        //        espn.j = ry+1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx-1; espn.x = espn.i*hx;
-        //        espn.j = ry+1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);;
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+0; espn.x = espn.i*hx;
-        //        espn.j = ry+1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+1; espn.x = espn.i*hx;
-        //        espn.j = ry+1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+1; espn.x = espn.i*hx;
-        //        espn.j = ry+0; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+1; espn.x = espn.i*hx;
-        //        espn.j = ry-1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+1; espn.x = espn.i*hx;
-        //        espn.j = ry-2; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+0; espn.x = espn.i*hx;
-        //        espn.j = ry-2; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx-1; espn.x = espn.i*hx;
-        //        espn.j = ry-2; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-    }
-
-    if ( rx*hx >= xi.x && ry*hy <= xi.y ) // right bottom
-    {
-        //        espn.index = index;
-        //        espn.i = rx-1; espn.x = espn.i*hx;
-        //        espn.j = ry+0; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx-1; espn.x = espn.i*hx;
-        //        espn.j = ry+1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+0; espn.x = espn.i*hx;
-        //        espn.j = ry+1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+0; espn.x = espn.i*hx;
-        //        espn.j = ry+0; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx-2; espn.x = espn.i*hx;
-        //        espn.j = ry-1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx-2; espn.x = espn.i*hx;
-        //        espn.j = ry+0; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx-2; espn.x = espn.i*hx;
-        //        espn.j = ry+1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx-2; espn.x = espn.i*hx;
-        //        espn.j = ry+2; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx-1; espn.x = espn.i*hx;
-        //        espn.j = ry+2; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);;
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+0; espn.x = espn.i*hx;
-        //        espn.j = ry+2; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+1; espn.x = espn.i*hx;
-        //        espn.j = ry+2; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+1; espn.x = espn.i*hx;
-        //        espn.j = ry+1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+1; espn.x = espn.i*hx;
-        //        espn.j = ry+0; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+1; espn.x = espn.i*hx;
-        //        espn.j = ry-1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx+0; espn.x = espn.i*hx;
-        //        espn.j = ry-1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
-
-        //        espn.index = index;
-        //        espn.i = rx-1; espn.x = espn.i*hx;
-        //        espn.j = ry-1; espn.y = espn.j*hy;
-        //        dx = fabs(espn.x-xi.x);
-        //        dy = fabs(espn.y-xi.y);
-        //        espn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-        //        xi.extNodes.push_back(espn);
+        for (unsigned int m=ry-k; m<=ry+k; m++)
+        {
+            ObservationNode on;
+            on.n = n; on.x = n*hx; on.m = m; on.y = m*hy; on.xi = xi; on.j = j;
+            on.w = factor*exp(-0.5*(((on.x-xi.x)*(on.x-xi.x))/(sigmaX*sigmaX)+((on.y-xi.y)*(on.y-xi.y))/(sigmaY*sigmaY)));
+            ons.push_back(on);
+        }
     }
 }
 
-void IProblem2Forward2D::extendObservationPoint(const SpaceNodePDE xi, ExtendedSpaceNode2D &pi) const
+void IProblem2Forward2D::extendContrlDeltaPoint0(const SpaceNodePDE &eta, std::vector<ControlDeltaNode> &cps, unsigned int i) const
 {
-    Dimension xd = spaceDimension(Dimension::DimensionX);
-    Dimension yd = spaceDimension(Dimension::DimensionY);
-
-    unsigned int Nx = xd.sizeN();
-    unsigned int Ny = yd.sizeN();
-
-    double hx = xd.step();
-    double hy = yd.step();
-
-    unsigned int rx = (unsigned int)(floor(xi.x*Nx));
-    unsigned int ry = (unsigned int)(floor(xi.y*Ny));
-
-    double hx3 = hx*hx*hx;
-    double hx32 = (1.0/(2.0*hx3));
-    double hx36 = (1.0/(6.0*hx3));
-
-    double hy3 = hy*hy*hy;
-    double hy32 = (1.0/(2.0*hy3));
-    double hy36 = (1.0/(6.0*hy3));
-
-    double dx = 0.0;
-    double dy = 0.0;
-
-    pi.wi[1][1].i = rx + 0; pi.wi[1][1].x = pi.wi[1][1].i*hx;
-    pi.wi[1][1].j = ry + 0; pi.wi[1][1].y = pi.wi[1][1].j*hy;
-    dx = fabs(pi.wi[1][1].x-xi.x);
-    dy = fabs(pi.wi[1][1].y-xi.y);
-    pi.wi[1][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-    pi.wi[2][1].i = rx + 0; pi.wi[2][1].x = pi.wi[2][1].i*hx;
-    pi.wi[2][1].j = ry + 1; pi.wi[2][1].y = pi.wi[2][1].j*hy;
-    dx = fabs(pi.wi[2][1].x-xi.x);
-    dy = fabs(pi.wi[2][1].y-xi.y);
-    pi.wi[2][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-    pi.wi[2][2].i = rx + 1; pi.wi[2][2].x = pi.wi[2][2].i*hx;
-    pi.wi[2][2].j = ry + 1; pi.wi[2][2].y = pi.wi[2][2].j*hy;
-    dx = fabs(pi.wi[2][2].x-xi.x);
-    dy = fabs(pi.wi[2][2].y-pi.wi[2][2].y);
-    pi.wi[2][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-    pi.wi[1][2].i = rx + 1; pi.wi[1][2].x = pi.wi[1][2].i*hx;
-    pi.wi[1][2].j = ry + 0; pi.wi[1][2].y = pi.wi[1][2].j*hy;
-    dx = fabs(pi.wi[1][2].x-xi.x);
-    dy = fabs(pi.wi[1][2].y-xi.y);
-    pi.wi[1][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-    pi.wi[0][0].i = rx - 1; pi.wi[0][0].x = pi.wi[0][0].i*hx;
-    pi.wi[0][0].j = ry - 1; pi.wi[0][0].y = pi.wi[0][0].j*hy;
-    dx = fabs(pi.wi[0][0].x-xi.x);
-    dy = fabs(pi.wi[0][0].y-xi.y);
-    pi.wi[0][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36) * ((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-    pi.wi[1][0].i = rx - 1; pi.wi[1][0].x = pi.wi[1][0].i*hx;
-    pi.wi[1][0].j = ry + 0; pi.wi[1][0].y = pi.wi[1][0].j*hy;
-    dx = fabs(pi.wi[1][0].x-xi.x);
-    dy = fabs(pi.wi[1][0].y-xi.y);
-    pi.wi[1][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-    pi.wi[2][0].i = rx - 1; pi.wi[2][0].x = pi.wi[2][0].i*hx;
-    pi.wi[2][0].j = ry + 1; pi.wi[2][0].y = pi.wi[2][0].j*hy;
-    dx = fabs(pi.wi[2][0].x-xi.x);
-    dy = fabs(pi.wi[2][0].y-xi.y);
-    pi.wi[2][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-    pi.wi[3][0].i = rx - 1; pi.wi[3][0].x = pi.wi[3][0].i*hx;
-    pi.wi[3][0].j = ry + 2; pi.wi[3][0].y = pi.wi[3][0].j*hy;
-    dx = fabs(pi.wi[3][0].x-xi.x);
-    dy = fabs(pi.wi[3][0].y-xi.y);
-    pi.wi[3][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-    pi.wi[3][1].i = rx + 0; pi.wi[3][1].x = pi.wi[3][1].i*hx;
-    pi.wi[3][1].j = ry + 2; pi.wi[3][1].y = pi.wi[3][1].j*hy;
-    dx = fabs(pi.wi[3][1].x-xi.x);
-    dy = fabs(pi.wi[3][1].y-xi.y);
-    pi.wi[3][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-    pi.wi[3][2].i = rx + 1; pi.wi[3][2].x = pi.wi[3][2].i*hx;
-    pi.wi[3][2].j = ry + 2; pi.wi[3][2].y = pi.wi[3][2].j*hy;
-    dx = fabs(pi.wi[3][2].x-xi.x);
-    dy = fabs(pi.wi[3][2].y-xi.y);
-    pi.wi[3][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-    pi.wi[3][3].i = rx + 2; pi.wi[3][3].x = pi.wi[3][3].i*hx;
-    pi.wi[3][3].j = ry + 2; pi.wi[3][3].y = pi.wi[3][3].j*hy;
-    dx = fabs(pi.wi[3][3].x-xi.x);
-    dy = fabs(pi.wi[3][3].y-xi.y);
-    pi.wi[3][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-    pi.wi[2][3].i = rx + 2; pi.wi[2][3].x = pi.wi[2][3].i*hx;
-    pi.wi[2][3].j = ry + 1; pi.wi[2][3].y = pi.wi[2][3].j*hy;
-    dx = fabs(pi.wi[2][3].x-xi.x);
-    dy = fabs(pi.wi[2][3].y-xi.y);
-    pi.wi[2][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-    pi.wi[1][3].i = rx + 2; pi.wi[1][3].x = pi.wi[1][3].i*hx;
-    pi.wi[1][3].j = ry + 0; pi.wi[1][3].y = pi.wi[1][3].j*hy;
-    dx = fabs(pi.wi[1][3].x-xi.x);
-    dy = fabs(pi.wi[1][3].y-xi.y);
-    pi.wi[1][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-    pi.wi[0][3].i = rx + 2; pi.wi[0][3].x = pi.wi[0][3].i*hx;
-    pi.wi[0][3].j = ry - 1; pi.wi[0][3].y = pi.wi[0][3].j*hy;
-    dx = fabs(pi.wi[0][3].x-xi.x);
-    dy = fabs(pi.wi[0][3].y-xi.y);
-    pi.wi[0][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-    pi.wi[0][2].i = rx + 1; pi.wi[0][2].x = pi.wi[0][2].i*hx;
-    pi.wi[0][2].j = ry - 1; pi.wi[0][2].y = pi.wi[0][2].j*hy;
-    dx = fabs(pi.wi[0][2].x-xi.x);
-    dy = fabs(pi.wi[0][2].y-xi.y);
-    pi.wi[0][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-    pi.wi[0][1].i = rx + 0; pi.wi[0][1].x = pi.wi[0][1].i*hx;
-    pi.wi[0][1].j = ry - 1; pi.wi[0][1].y = pi.wi[0][1].j*hy;
-    dx = fabs(pi.wi[0][1].x-xi.x);
-    dy = fabs(pi.wi[0][1].y-xi.y);
-    pi.wi[0][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-}
-
-void IProblem2Forward2D::extendContrlDeltaPoint(const SpaceNodePDE &eta, std::vector<ControlDeltaNode> &cps, unsigned int i) const
-{
+#ifdef APPROX_FD_1
     extendContrlDeltaPoint1(eta, cps, i);
+#endif
+#ifdef APPROX_FD_2
+    extendContrlDeltaPoint2(eta, cps, i);
+#endif
+#ifdef APPROX_FD_3
+    extendContrlDeltaPoint3(eta, cps, i);
+#endif
 }
 
 void IProblem2Forward2D::extendContrlDeltaPoint1(const SpaceNodePDE &eta, std::vector<ControlDeltaNode> &cps, unsigned int i) const
@@ -1977,102 +915,119 @@ void IProblem2Forward2D::extendContrlDeltaPoint1(const SpaceNodePDE &eta, std::v
     unsigned int rx = (unsigned int)(floor(eta.x*Nx));
     unsigned int ry = (unsigned int)(floor(eta.y*Ny));
 
+    double factor = 1.0/(hx*hy);
     ControlDeltaNode cn;
-    cn.n = rx+0; cn.x = cn.n*hx;
-    cn.m = ry+0; cn.y = cn.m*hy;
-    cn.eta = eta; cn.i = i;
-    cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy));
+
+    cn.n = rx+0; cn.x = cn.n*hx; cn.m = ry+0; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * factor;
     cps.push_back(cn);
 
-    cn.n = rx+1; cn.x = cn.n*hx;
-    cn.m = ry+0; cn.y = cn.m*hy;
-    cn.eta = eta; cn.i = i;
-    cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy));
+    cn.n = rx+1; cn.x = cn.n*hx; cn.m = ry+0; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * factor;
     cps.push_back(cn);
 
-    cn.n = rx+0; cn.x = cn.n*hx;
-    cn.m = ry+1; cn.y = cn.m*hy;
-    cn.eta = eta; cn.i = i;
-    cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy));
+    cn.n = rx+0; cn.x = cn.n*hx; cn.m = ry+1; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * factor;
     cps.push_back(cn);
 
-    cn.n = rx+1; cn.x = cn.n*hx;
-    cn.m = ry+1; cn.y = cn.m*hy;
-    cn.eta = eta; cn.i = i;
-    cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy));
+    cn.n = rx+1; cn.x = cn.n*hx; cn.m = ry+1; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * factor;
     cps.push_back(cn);
-
-    //    ControlDeltaNode cn;
-    //    if ( rx*hx <= eta.x && ry*hy <= eta.y ) // left bottom
-    //    {
-    //        cn.n = rx+0; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
-
-    //        cn.n = rx+1; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
-
-    //        cn.n = rx+0; cn.m = ry+1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
-
-    //        cn.n = rx+1; cn.m = ry+1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
-
-    //        return;
-    //    }
-
-    //    if ( rx*hx <= eta.x && ry*hy >= eta.y ) // left top
-    //    {
-    //        cn.n = rx+0; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
-
-    //        cn.n = rx+1; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
-
-    //        cn.n = rx+0; cn.m = ry-1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
-
-    //        cn.n = rx+1; cn.m = ry-1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
-
-    //        return;
-    //    }
-
-    //    if ( rx*hx >= eta.x && ry*hy <= eta.y ) // right bottom
-    //    {
-    //        cn.n = rx+0; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
-
-    //        cn.n = rx-1; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
-
-    //        cn.n = rx+0; cn.m = ry+1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
-
-    //        cn.n = rx-1; cn.m = ry+1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
-
-    //        return;
-    //    }
-
-    //    if ( rx*hx >= eta.x && ry*hy >= eta.y ) // right top
-    //    {
-    //        cn.n = rx+0; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
-
-    //        cn.n = rx-1; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
-
-    //        cn.n = rx+0; cn.m = ry-1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
-
-    //        cn.n = rx-1; cn.m = ry-1; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
-    //        cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * (1.0/(hx*hy)); cns.push_back(cn);
-
-    //        return;
-    //    }
 }
 
 void IProblem2Forward2D::extendContrlDeltaPoint2(const SpaceNodePDE &eta, std::vector<ControlDeltaNode> &cps, unsigned int i) const
+{
+    Dimension xd = spaceDimension(Dimension::DimensionX);
+    Dimension yd = spaceDimension(Dimension::DimensionY);
+
+    unsigned int Nx = xd.sizeN();
+    unsigned int Ny = yd.sizeN();
+
+    double hx = xd.step();
+    double hy = yd.step();
+
+    unsigned int rx = (unsigned int)(floor(eta.x*Nx));
+    unsigned int ry = (unsigned int)(floor(eta.y*Ny));
+
+    double hx3 = hx*hx*hx;
+    double hx32 = (1.0/(2.0*hx3));
+    double hx36 = (1.0/(6.0*hx3));
+
+    double hy3 = hy*hy*hy;
+    double hy32 = (1.0/(2.0*hy3));
+    double hy36 = (1.0/(6.0*hy3));
+
+    double factor = 1.0/(hx*hy);
+    ControlDeltaNode cn;
+    double dx = 0.0;
+    double dy = 0.0;
+
+    cn.n = rx-1; cn.x = cn.n*hx; cn.m = ry-1; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36)*factor;
+    cps.push_back(cn);
+
+    cn.n = rx-1; cn.x = cn.n*hx; cn.m = ry+0; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32)*factor;
+    cps.push_back(cn);
+
+    cn.n = rx-1; cn.x = cn.n*hx; cn.m = ry+1; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32)*factor;
+    cps.push_back(cn);
+
+    cn.n = rx-1; cn.x = cn.n*hx; cn.m = ry+2; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36)*factor;
+    cps.push_back(cn);
+
+    cn.n = rx+0; cn.x = cn.n*hx; cn.m = ry-1; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36)*factor;
+    cps.push_back(cn);
+
+    cn.n = rx+0; cn.x = cn.n*hx; cn.m = ry+0; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32)*factor;
+    cps.push_back(cn);
+
+    cn.n = rx+0; cn.x = cn.n*hx; cn.m = ry+1; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32)*factor;
+    cps.push_back(cn);
+
+    cn.n = rx+0; cn.x = cn.n*hx; cn.m = ry+2; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36)*factor;
+    cps.push_back(cn);
+
+    cn.n = rx+1; cn.x = cn.n*hx; cn.m = ry-1; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36)*factor;
+    cps.push_back(cn);
+
+    cn.n = rx+1; cn.x = cn.n*hx; cn.m = ry+0; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32)*factor;
+    cps.push_back(cn);
+
+    cn.n = rx+1; cn.x = cn.n*hx; cn.m = ry+1; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32)*factor;
+    cps.push_back(cn);
+
+    cn.n = rx+1; cn.x = cn.n*hx; cn.m = ry+2; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36)*factor;
+    cps.push_back(cn);
+
+    cn.n = rx+2; cn.x = cn.n*hx; cn.m = ry-1; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36)*factor;
+    cps.push_back(cn);
+
+    cn.n = rx+2; cn.m = ry+0; cn.x = cn.n*hx; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32)*factor;
+    cps.push_back(cn);
+
+    cn.n = rx+2; cn.x = cn.n*hx; cn.m = ry+1; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32)*factor;
+    cps.push_back(cn);
+
+    cn.n = rx+2; cn.x = cn.n*hx; cn.m = ry+2; cn.y = cn.m*hy; cn.eta = eta; cn.i = i;
+    dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36)*factor;
+    cps.push_back(cn);
+}
+
+void IProblem2Forward2D::extendContrlDeltaPoint3(const SpaceNodePDE &eta, std::vector<ControlDeltaNode> &cps, unsigned int i) const
 {
     Dimension xd = spaceDimension(Dimension::DimensionX);
     Dimension yd = spaceDimension(Dimension::DimensionY);
@@ -2089,17 +1044,14 @@ void IProblem2Forward2D::extendContrlDeltaPoint2(const SpaceNodePDE &eta, std::v
 
     double factor = (1.0/(2.0*M_PI*sigmaX*sigmaY));
 
-    unsigned int k=4;
+    unsigned int k=3;
     for (unsigned int n=rx-k; n<=rx+k; n++)
     {
         for (unsigned int m=ry-k; m<=ry+k; m++)
         {
             ControlDeltaNode cn;
-            cn.n = n; cn.x = n*hx;
-            cn.m = m; cn.y = m*hy;
-            cn.i = i;
+            cn.n = n; cn.x = n*hx; cn.m = m; cn.y = m*hy; cn.eta = eta; cn.i = i;
             cn.w = factor*exp(-0.5*(((cn.x-eta.x)*(cn.x-eta.x))/(sigmaX*sigmaX)+((cn.y-eta.y)*(cn.y-eta.y))/(sigmaY*sigmaY)));
-            cn.eta = eta;
             cps.push_back(cn);
         }
     }

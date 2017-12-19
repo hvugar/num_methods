@@ -38,6 +38,9 @@ ExtendedSpaceNode2D::ExtendedSpaceNode2D()
     layerNumber = 0;
 }
 
+ExtendedSpaceNode2D::~ExtendedSpaceNode2D()
+{}
+
 void ExtendedSpaceNode2D::setSpaceNode(const SpaceNodePDE &sn)
 {
     this->i = sn.i;

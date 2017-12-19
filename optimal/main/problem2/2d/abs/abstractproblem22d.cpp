@@ -135,12 +135,13 @@ void AbstactProblem22D::gradient(const DoubleVector &prms, DoubleVector &g)
     DoubleMatrix p;
 
     vector<ExtendedSpaceNode2D> u_info;
-    forward->calculateMVD(u, u_info);
+    forward->calculateMVD(u, u_info, true);
 
     backward->u = &u;
     backward->U = &U;
     vector<ExtendedSpaceNode2D> p_info;
-    backward->calculateMVD(p, p_info);
+    backward->calculateMVD(p, p_info, true);
+    puts("+++");
 
     g.clear();
     g.resize(prms.length(), 0.0);
@@ -260,9 +261,10 @@ void AbstactProblem22D::gradient(const DoubleVector &prms, DoubleVector &g)
         g[gi++] = gradXijX + 2.0*espilon*(mParameter.xi[j].x - mParameter0.xi[j].x);;
         g[gi++] = gradXijY + 2.0*espilon*(mParameter.xi[j].x - mParameter0.xi[j].x);;
     }
+    puts("---");
 
-    u_info.clear();
-    p_info.clear();
+//    u_info.clear();
+//    p_info.clear();
 }
 
 void AbstactProblem22D::setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY)
