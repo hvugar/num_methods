@@ -5,6 +5,7 @@ IProblem2Backward2D::~IProblem2Backward2D()
 
 void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode2D> &info, bool use)
 {
+    //puts("IProblem2Backward2D::calculateMVD...");
     Dimension xd = spaceDimension(Dimension::DimensionX);
     Dimension yd = spaceDimension(Dimension::DimensionY);
     Dimension td = timeDimension();
@@ -138,7 +139,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
     TimeNodePDE tn;
     for (unsigned int l=L-1; l!=UINT32_MAX; l--)
     {
-
+        //puts("IProblem2Backward2D::calculateMVD.y-->...");
         //------------------------------------- approximatin to y direction conditions -------------------------------------//
         {
             tn.i = l;
@@ -283,29 +284,29 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                                     {
                                         const ControlNode &cn = controlNodes[s];
 
-                                        if (cn.n == odn.n)
-                                        {
-                                            w2[offset+m][odn.n*(M+1)+cn.m] += -ht * mParameter.k[cn.i][odn.j] * odn.w * cn.w;
-                                        }
-                                        else
-                                        {
-                                            d2[offset+m] += ht * mParameter.k[cn.i][odn.j] * ph[cn.m][cn.n] * odn.w * cn.w;
-                                        }
-
-                                        //bool found = false;
-                                        //for (unsigned int cs=0; cs<cntXSize; cs++)
+                                        //if (cn.n == odn.n)
                                         //{
-                                        //    if (cn.n == cntX[cs])
-                                        //    {
-                                        //        found = true;
-                                        //        w2[offset+m][cs*(M+1)+cn.m] += -ht * mParameter.k[cn.i][odn.j] * odn.w * cn.w;
-                                        //    }
+                                        //    w2[offset+m][odn.n*(M+1)+cn.m] += -ht * mParameter.k[cn.i][odn.j] * odn.w * cn.w;
                                         //}
-
-                                        //if (!found)
+                                        //else
                                         //{
                                         //    d2[offset+m] += ht * mParameter.k[cn.i][odn.j] * ph[cn.m][cn.n] * odn.w * cn.w;
                                         //}
+
+                                        bool found = false;
+                                        for (unsigned int cs=0; cs<cntXSize; cs++)
+                                        {
+                                            if (cn.n == cntX[cs])
+                                            {
+                                                found = true;
+                                                w2[offset+m][cs*(M+1)+cn.m] += -ht * mParameter.k[cn.i][odn.j] * odn.w * cn.w;
+                                            }
+                                        }
+
+                                        if (!found)
+                                        {
+                                            d2[offset+m] += ht * mParameter.k[cn.i][odn.j] * ph[cn.m][cn.n] * odn.w * cn.w;
+                                        }
                                     }
 
                                     //
@@ -344,11 +345,13 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                 free(a2);
             }
         }
+        //puts("IProblem2Backward2D::calculateMVD.y-->.");
         //IPrinter::printMatrix(ph);
         //IPrinter::printSeperatorLine();
         //------------------------------------- approximatin to y direction conditions -------------------------------------//
 
         //------------------------------------- approximatin to x direction conditions -------------------------------------//
+        //puts("IProblem2Backward2D::calculateMVD.x-->...");
         {
             tn.i = l;
             tn.t = l*ht;
@@ -485,29 +488,29 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                                     {
                                         const ControlNode &cn = controlNodes[s];
 
-                                        if (cn.m == odn.m)
-                                        {
-                                            w2[offset+n][odn.m*(N+1)+cn.n] += -ht * mParameter.k[cn.i][odn.j] * odn.w * cn.w;
-                                        }
-                                        else
-                                        {
-                                            d2[offset+n] += ht * mParameter.k[cn.i][odn.j] * p[cn.m][cn.n] * odn.w * cn.w;
-                                        }
-
-                                        //bool found = false;
-                                        //for (unsigned int cs=0; cs<cntYSize; cs++)
+                                        //if (cn.m == odn.m)
                                         //{
-                                        //    if (cn.m == cntY[cs])
-                                        //    {
-                                        //        found = true;
-                                        //        w2[offset+n][cs*(N+1)+cn.n] += -ht * mParameter.k[cn.i][odn.j] * cn.w * odn.w;
-                                        //    }
+                                        //    w2[offset+n][odn.m*(N+1)+cn.n] += -ht * mParameter.k[cn.i][odn.j] * odn.w * cn.w;
+                                        //}
+                                        //else
+                                        //{
+                                        //    d2[offset+n] += ht * mParameter.k[cn.i][odn.j] * p[cn.m][cn.n] * odn.w * cn.w;
                                         //}
 
-                                        //if (!found)
-                                        //{
-                                        //    d2[offset+n] += ht * mParameter.k[cn.i][odn.j] * p[cn.m][cn.n] * cn.w * odn.w;
-                                        //}
+                                        bool found = false;
+                                        for (unsigned int cs=0; cs<cntYSize; cs++)
+                                        {
+                                            if (cn.m == cntY[cs])
+                                            {
+                                                found = true;
+                                                w2[offset+n][cs*(N+1)+cn.n] += -ht * mParameter.k[cn.i][odn.j] * cn.w * odn.w;
+                                            }
+                                        }
+
+                                        if (!found)
+                                        {
+                                            d2[offset+n] += ht * mParameter.k[cn.i][odn.j] * p[cn.m][cn.n] * cn.w * odn.w;
+                                        }
                                     }
 
                                     //
@@ -546,6 +549,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                 free(a2);
             }
         }
+        //puts("IProblem2Backward2D::calculateMVD.x-->.");
         //IPrinter::printMatrix(p);
         //IPrinter::printSeperatorLine();
         //------------------------------------- approximatin to x direction conditions -------------------------------------//
@@ -592,6 +596,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
     obdeltaNodes.clear();
 #endif
     ph.clear();
+    //puts("IProblem2Backward2D::calculateMVD.");
 }
 
 bool IProblem2Backward2D::checkDelta(double _delta) const

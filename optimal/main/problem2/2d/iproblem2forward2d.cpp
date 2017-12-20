@@ -5,6 +5,7 @@ IProblem2Forward2D::~IProblem2Forward2D()
 
 void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2D> &info, bool use) const
 {
+    //puts("IProblem2Forward2D::calculateMVD...");
     Dimension xd = spaceDimension(Dimension::DimensionX);
     Dimension yd = spaceDimension(Dimension::DimensionY);
     Dimension td = timeDimension();
@@ -138,7 +139,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
     TimeNodePDE tn;
     for (unsigned int l=1; l<=L; l++)
     {
-
+        //puts("IProblem2Forward2D::calculateMVD.y-->...");
         //------------------------------------- approximatin to y direction conditions -------------------------------------//
         {
             tn.i = l;
@@ -155,9 +156,9 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
 
                             d1Y[m] = 2.0*u[m][n] + lambda0*theta*ht + ht*f(sn, tn);
 
-                            if (n==0)       d1Y[m] += a2_ht__hx2*(u[m][0]   - 2.0*u[m][1]   + u[m][2]);
-                            if (n>0 && n<N) d1Y[m] += a2_ht__hx2*(u[m][n-1] - 2.0*u[m][n]   + u[m][n+1]);
-                            if (n==N)       d1Y[m] += a2_ht__hx2*(u[m][N-2] - 2.0*u[m][N-1] + u[m][N]);
+                            if (n==0)       d1Y[m] += a2_ht__hx2*(u.at(m,0)   - 2.0*u.at(m,1)   + u.at(m,2));
+                            if (n>0 && n<N) d1Y[m] += a2_ht__hx2*(u.at(m,n-1) - 2.0*u.at(m,n)   + u.at(m,n+1));
+                            if (n==N)       d1Y[m] += a2_ht__hx2*(u.at(m,N-2) - 2.0*u.at(m,N-1) + u.at(m,N));
 
                             if (m == 0)
                             {
@@ -211,9 +212,9 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
 
                             d2[offset+m] = 2.0*u[m][n] + lambda0*theta*ht + ht*f(sn, tn);
 
-                            if (n==0)       d2[offset+m] += a2_ht__hx2*(u[m][0]   - 2.0*u[m][1]   + u[m][2]);
-                            if (n>0 && n<N) d2[offset+m] += a2_ht__hx2*(u[m][n-1] - 2.0*u[m][n]   + u[m][n+1]);
-                            if (n==N)       d2[offset+m] += a2_ht__hx2*(u[m][N-2] - 2.0*u[m][N-1] + u[m][N]);
+                            if (n==0)       d2[offset+m] += a2_ht__hx2*(u.at(m,0)   - 2.0*u.at(m,1)   + u.at(m,2));
+                            if (n>0 && n<N) d2[offset+m] += a2_ht__hx2*(u.at(m,n-1) - 2.0*u.at(m,n)   + u.at(m,n+1));
+                            if (n==N)       d2[offset+m] += a2_ht__hx2*(u.at(m,N-2) - 2.0*u.at(m,N-1) + u.at(m,N));
 
                             if (m == 0)
                             {
@@ -281,38 +282,38 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                                 {
                                     for (unsigned int s=0; s<observeNodes.size(); s++)
                                     {
-                                        const ObservationNode &on = observeNodes[s];
+                                        const ObservationNode &on = observeNodes.at(s);
 
-                                        if (on.n == cdn.n)
-                                        {
-                                            w2[offset+m][cdn.n*(M+1)+on.m] += -ht * mParameter.k[cdn.i][on.j] * cdn.w * on.w;
-                                        }
-                                        else
-                                        {
-                                            d2[offset+m] += ht * mParameter.k[cdn.i][on.j] * uh[on.m][on.n] * cdn.w * on.w;
-                                        }
-
-                                        //bool found = false;
-                                        //for (unsigned int cs=0; cs<cntXSize; cs++)
+                                        //if (on.n == cdn.n)
                                         //{
-                                        //    if (on.n == cntX[cs])
-                                        //    {
-                                        //        found = true;
-                                        //        w2[offset+m][cs*(M+1)+on.m] += -ht * mParameter.k[cdn.i][on.j] * cdn.w * on.w;
-                                        //    }
+                                        //    printf("8887 %d %d %d %d %d %d %d\n", on.n, cdn.n, on.j, cdn.i, offset+m, cdn.n*(M+1)+on.m, cntXSize*(M+1));
+                                        //    w2[offset+m][cdn.n*(M+1)+on.m] += -ht * mParameter.k[cdn.i][on.j] * cdn.w * on.w;
                                         //}
-
-                                        //if (!found)
+                                        //else
                                         //{
                                         //    d2[offset+m] += ht * mParameter.k[cdn.i][on.j] * uh[on.m][on.n] * cdn.w * on.w;
                                         //}
+
+                                        bool found = false;
+                                        for (unsigned int cs=0; cs<cntXSize; cs++)
+                                        {
+                                            if (on.n == cntX[cs])
+                                            {
+                                                found = true;
+                                                w2[offset+m][cs*(M+1)+on.m] += -ht * mParameter.k[cdn.i][on.j] * cdn.w * on.w;
+                                            }
+                                        }
+
+                                        if (!found)
+                                        {
+                                            d2[offset+m] += ht * mParameter.k[cdn.i][on.j] * uh[on.m][on.n] * cdn.w * on.w;
+                                        }
                                     }
 
                                     for (unsigned int j=0; j<Lo; j++)
                                     {
                                         d2[offset+m] -= ht * mParameter.k[cdn.i][j] * mParameter.z[cdn.i][j] * cdn.w;
                                     }
-
                                 }
                             }
 #endif
@@ -345,11 +346,13 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                 free(a2);
             }
         }
+        //puts("IProblem2Forward2D::calculateMVD.y-->.");
         //IPrinter::printMatrix(uh);
         //IPrinter::printSeperatorLine();
         //------------------------------------- approximatin to y direction conditions -------------------------------------//
 
         //------------------------------------- approximatin to x direction conditions -------------------------------------//
+        //puts("IProblem2Forward2D::calculateMVD.x-->...");
         {
             tn.i = l;
             tn.t = l*ht;
@@ -494,29 +497,29 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                                     {
                                         const ObservationNode &on = observeNodes[s];
 
-                                        if (on.m == cdn.m)
-                                        {
-                                            w2[offset+n][cdn.m*(N+1)+on.n] += -ht * mParameter.k[cdn.i][on.j] * cdn.w * on.w;
-                                        }
-                                        else
-                                        {
-                                            d2[offset+n] += ht * mParameter.k[cdn.i][on.j] * u[on.m][on.n] * cdn.w * on.w;
-                                        }
-
-                                        //bool found = false;
-                                        //for (unsigned int cs=0; cs<cntYSize; cs++)
+                                        //if (on.m == cdn.m)
                                         //{
-                                        //    if (on.m == cntY[cs])
-                                        //    {
-                                        //        found = true;
-                                        //        w2[offset+n][cs*(N+1)+on.n] += -ht * mParameter.k[cdn.i][on.j] * cdn.w * on.w;
-                                        //    }
+                                        //    w2[offset+n][cdn.m*(N+1)+on.n] += -ht * mParameter.k[cdn.i][on.j] * cdn.w * on.w;
                                         //}
-
-                                        //if (!found)
+                                        //else
                                         //{
                                         //    d2[offset+n] += ht * mParameter.k[cdn.i][on.j] * u[on.m][on.n] * cdn.w * on.w;
                                         //}
+
+                                        bool found = false;
+                                        for (unsigned int cs=0; cs<cntYSize; cs++)
+                                        {
+                                            if (on.m == cntY[cs])
+                                            {
+                                                found = true;
+                                                w2[offset+n][cs*(N+1)+on.n] += -ht * mParameter.k[cdn.i][on.j] * cdn.w * on.w;
+                                            }
+                                        }
+
+                                        if (!found)
+                                        {
+                                            d2[offset+n] += ht * mParameter.k[cdn.i][on.j] * u[on.m][on.n] * cdn.w * on.w;
+                                        }
                                     }
 
                                     for (unsigned int j=0; j<Lo; j++)
@@ -555,11 +558,13 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                 free(a2);
             }
         }
+        //puts("IProblem2Forward2D::calculateMVD.x-->.");
 
         //IPrinter::printMatrix(u[l]);
         //IPrinter::printSeperatorLine();
         //------------------------------------- approximatin to x direction conditions -------------------------------------//
 
+        //puts("IProblem2Forward2D::calculateMVD.use...");
         if (use == true)
         {
             for (unsigned int j=0; j<Lo; j++)
@@ -576,9 +581,11 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                 }
             }
         }
+        //puts("IProblem2Forward2D::calculateMVD.use.");
 
         layerInfo(u, l);
     }
+    //puts("IProblem2Forward2D::calculateMVD.end.");
 
     free(x1X);
     free(d1X);
@@ -602,6 +609,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
     cndeltaNodes.clear();
 #endif
     uh.clear();
+    //puts("IProblem2Forward2D::calculateMVD.");
 }
 
 bool IProblem2Forward2D::checkDelta(double _delta) const

@@ -457,7 +457,7 @@ Parameter::Parameter(const DoubleVector &prmtrs, unsigned int Lc, unsigned int L
 void Parameter::toVector(DoubleVector &prms) const
 {
     prms.clear();
-    prms.resize(2*Lc*Lo + 2*Lo + 2*Lc);
+    prms.resize(2*Lc*Lo + 2*Lc + 2*Lo);
 
     for (unsigned int i=0; i<Lc; i++)
     {
@@ -483,11 +483,11 @@ void Parameter::fromVector(const DoubleVector &prms)
     z.clear();
     z.resize(Lc, Lo);
 
-    xi.clear();
-    xi.resize(Lo);
-
     eta.clear();
     eta.resize(Lc);
+
+    xi.clear();
+    xi.resize(Lo);
 
     for (unsigned int i=0; i<Lc; i++)
     {
