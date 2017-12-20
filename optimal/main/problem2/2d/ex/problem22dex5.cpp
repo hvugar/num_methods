@@ -6,28 +6,28 @@ void Problem22DEx5::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     p22d5.espilon = 0.0;
 
     {
-        Parameter rpm0(2, 2);
+        Parameter rpm0(2, 1);
 
-        rpm0.eta[0].setPoint(0.20, 0.80);
+        rpm0.eta[0].setPoint(0.40, 0.60);
         rpm0.eta[1].setPoint(0.70, 0.40);
 
-        rpm0.xi[0].setPoint(0.30, 0.20);
-        rpm0.xi[1].setPoint(0.80, 0.70);
+        rpm0.xi[0].setPoint(0.50, 0.30);
+        //rpm0.xi[1].setPoint(0.80, 0.70);
 
-        rpm0.k[0][0] = -2.0; rpm0.k[0][1] = -4.0;
-        rpm0.k[1][0] = -2.8; rpm0.k[1][1] = +3.2;
+        rpm0.k[0][0] = -2.0; //rpm0.k[0][1] = -4.0;
+        rpm0.k[1][0] = -2.8; //rpm0.k[1][1] = +3.2;
 
-        rpm0.z[0][0] = 10.5; rpm0.z[0][1] = 11.4;
-        rpm0.z[1][0] = 9.7;  rpm0.z[1][1] = 8.5;
+        rpm0.z[0][0] = 10.5; //rpm0.z[0][1] = 11.4;
+        rpm0.z[1][0] = 11.7; //rpm0.z[1][1] = 12.5;
 
-        p22d5.calculateU(rpm0);
+        //p22d5.calculateU(rpm0);
 
         IPrinter::printSeperatorLine("U");
         IPrinter::printMatrix(p22d5.U);
 
         QPixmap px;
-        visualizeMatrixHeat(p22d5.U,0.0, p22d5.U.max(), px);
-        //px.save("U.png", "PNG");
+        visualizeMatrixHeat(p22d5.U, 0.1, p22d5.U.max(), px);
+        px.save("U.png", "PNG");
 
         //-----------------------------------------------//
         IPrinter::printSeperatorLine();
@@ -38,18 +38,18 @@ void Problem22DEx5::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         //-----------------------------------------------//
     }
 
-    Parameter rpm(2, 2);
-    rpm.eta[0].setPoint(0.20, 0.80);
+    Parameter rpm(2, 1);
+    rpm.eta[0].setPoint(0.40, 0.60);
     rpm.eta[1].setPoint(0.70, 0.40);
 
-    rpm.xi[0].setPoint(0.30, 0.20);
-    rpm.xi[1].setPoint(0.80, 0.70);
+    rpm.xi[0].setPoint(0.50, 0.30);
+    //rpm.xi[1].setPoint(0.80, 0.70);
 
-    rpm.k[0][0] = -3.0; rpm.k[0][1] = -5.0;
-    rpm.k[1][0] = -3.8; rpm.k[1][1] = +4.2;
+    rpm.k[0][0] = -3.0; //rpm.k[0][1] = -5.0;
+    rpm.k[1][0] = -2.8; //rpm.k[1][1] = +3.2;
 
-    rpm.z[0][0] = 10.5;  rpm.z[0][1] = 11.4;
-    rpm.z[1][0] = 9.7; rpm.z[1][1] = 8.5;
+    rpm.z[0][0] = 10.5; //rpm.z[0][1] = 11.4;
+    rpm.z[1][0] = 11.7; //rpm.z[1][1] = 12.5;
 
     p22d5.setParameter(rpm);
 
@@ -62,7 +62,8 @@ void Problem22DEx5::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     p22d5.gradient(pv,ag);
 
-    printf("Functional: %f\n", p22d5.fx(pv));
+    double functional = p22d5.fx(pv);
+    printf("Functional: %f\n", functional);
 
     DoubleVector ng(pv.length());
     ng.resize(pv.length(), 0.0);

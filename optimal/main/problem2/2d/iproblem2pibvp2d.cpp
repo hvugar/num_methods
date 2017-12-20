@@ -54,7 +54,8 @@ void ExtendedSpaceNode2D::extendWeights(const Dimension &dimX, const Dimension &
     this->rows = rows;
     this->cols = cols;
     wi = new WISpaceNodePDE*[rows];
-    for (unsigned int j=0; j<rows; j++) wi[j] = new WISpaceNodePDE[cols];
+    for (unsigned int rw=0; rw<rows; rw++)
+        wi[rw] = new WISpaceNodePDE[cols];
 
     unsigned int Nx = dimX.sizeN();
     unsigned int Ny = dimY.sizeN();

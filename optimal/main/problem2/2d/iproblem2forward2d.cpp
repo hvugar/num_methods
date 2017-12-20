@@ -28,7 +28,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
             e.setSpaceNode(mParameter.xi[j]);
             e.id = j;
             e.extendWeights(xd, yd);
-            e.extendLayers(L);
+            e.extendLayers(L+1);
         }
     }
 
