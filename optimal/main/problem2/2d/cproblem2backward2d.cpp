@@ -85,12 +85,12 @@ double CProblem2Backward2D::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) con
     for (unsigned int onj=0; onj<obdeltaNodes.size(); onj++)
     {
         const ObservationDeltaNode &on = obdeltaNodes.at(onj);
-        if (sn.i == on.n && sn.j == on.m)
+        if (sn.i == on.i && sn.j == on.j)
         {
             double vi = 0.0;
             for (unsigned int i=0; i<mParameter.Lc; i++)
             {
-                vi += mParameter.k[i][on.j] * P(mParameter.eta[i].x, mParameter.eta[i].y, t);
+                vi += mParameter.k[i][on.id] * P(mParameter.eta[i].x, mParameter.eta[i].y, t);
             }
             W += vi * on.w;
         }

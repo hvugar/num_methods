@@ -5,38 +5,34 @@ void Problem22DEx5::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     Problem22DEx5 p22d5;
     p22d5.espilon = 0.0;
 
-    //    {
-    //        Parameter rpm0(1, 2);
+    {
+        Parameter rpm0(1, 3);
 
-    //        rpm0.k[0][0] = -2.0; //rpm0.k[1][0] = -2.8;
-    //        rpm0.k[0][1] = -4.0; //rpm0.k[1][1] = +3.2;
+        rpm0.k[0][0] = -10.0; //rpm0.k[1][0] = -2.8;
+        rpm0.k[0][1] = -11.0; //rpm0.k[1][1] = +3.2;
+        rpm0.k[0][2] = -12.0; //rpm.k[1][2] = -10.7;
 
-    //        rpm0.z[0][0] = 10.5; //rpm0.z[1][0] = 11.7;
-    //        rpm0.z[0][1] = 11.4; //rpm0.z[1][1] = 12.5;
+        rpm0.z[0][0] = 10.5; //rpm0.z[1][0] = 11.7;
+        rpm0.z[0][1] = 12.4; //rpm0.z[1][1] = 12.5;
+        rpm0.z[0][2] = 13.4; //rpm0.z[1][1] = 12.5;
 
-    //        rpm0.eta[0].setPoint(0.40, 0.60);
-    //        //rpm0.eta[1].setPoint(0.70, 0.40);
+        rpm0.eta[0].setPoint(0.40, 0.60);
+        //rpm0.eta[1].setPoint(0.70, 0.40);
 
-    //        rpm0.xi[0].setPoint(0.50, 0.30);
-    //        rpm0.xi[1].setPoint(0.80, 0.70);
+        rpm0.xi[0].setPoint(0.50, 0.80);
+        rpm0.xi[1].setPoint(0.80, 0.70);
+        rpm0.xi[2].setPoint(0.50, 0.50);
 
-    //        //p22d5.calculateU(rpm0);
+        p22d5.mParameter0 = rpm0;
+        //p22d5.calculateU(rpm0);
 
-    //        IPrinter::printSeperatorLine("U");
-    //        IPrinter::printMatrix(p22d5.U);
+        //IPrinter::printSeperatorLine("U");
+        //IPrinter::printMatrix(p22d5.U);
 
-    //        QPixmap px;
-    //        visualizeMatrixHeat(p22d5.U, 0.1, p22d5.U.max(), px);
-    //        px.save("U.png", "PNG");
-
-    //        //-----------------------------------------------//
-    //        IPrinter::printSeperatorLine();
-    //        DoubleVector pv1;
-    //        rpm0.toVector(pv1);
-    //        IPrinter::print(pv1, pv1.length(), 10, 6);
-    //        IPrinter::printSeperatorLine();
-    //        //-----------------------------------------------//
-    //    }
+        //QPixmap px;
+        //visualizeMatrixHeat(p22d5.U, 0.1, p22d5.U.max(), px);
+        //px.save("U.png", "PNG");
+    }
 
     Parameter rpm(1, 3);
 
@@ -48,33 +44,35 @@ void Problem22DEx5::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     rpm.z[0][1] = +11.4; //rpm.z[1][1] = +12.5;
     rpm.z[0][2] = +10.5; //rpm.z[1][2] = +12.5;
 
-    rpm.eta[0].setPoint(0.4124, 0.6054);
+    //rpm.eta[0].setPoint(0.4000, 0.6000);
+    rpm.eta[0].setPoint(0.4264, 0.6354);
     //rpm.eta[1].setPoint(0.7547, 0.4124);
 
-    rpm.xi[0].setPoint(0.50, 0.30);
-    rpm.xi[1].setPoint(0.80, 0.70);
-    rpm.xi[2].setPoint(0.20, 0.50);
+    //rpm.xi[0].setPoint(0.5000, 0.3000);
+    rpm.xi[0].setPoint(0.5341, 0.8248);
+    rpm.xi[1].setPoint(0.8516, 0.7329);
+    rpm.xi[2].setPoint(0.5157, 0.5359);
 
     p22d5.setParameter(rpm);
 
-    FILE *file = fopen("file2.txt", "w");
-    for (unsigned int n=0; n<100; n++)
-    {
-        rpm.eta[0].setPoint(0.4124, n*0.01);
-        DoubleVector pv1;
-        rpm.toVector(pv1);
-        double f = p22d5.fx(pv1);
-        pv1.clear();
-        fprintf(file, "%d %.10f\n", n, f);
-        printf("%d %f\n", n, f);
-    }
-    fclose(file);
+    //    FILE *file = fopen("file2.txt", "w");
+    //    for (unsigned int n=0; n<100; n++)
+    //    {
+    //        rpm.eta[0].setPoint(0.4124, n*0.01);
+    //        DoubleVector pv1;
+    //        rpm.toVector(pv1);
+    //        double f = p22d5.fx(pv1);
+    //        pv1.clear();
+    //        fprintf(file, "%d %.10f\n", n, f);
+    //        printf("%d %f\n", n, f);
+    //    }
+    //    fclose(file);
 
-    //    DoubleVector x;
-    //    rpm.toVector(x);
-    //    p22d5.optimization(x);
+//    DoubleVector x;
+//    rpm.toVector(x);
+//    p22d5.optimization(x);
 
-        return;
+//    return;
     IPrinter::printSeperatorLine();
     DoubleVector pv;
     rpm.toVector(pv);
@@ -147,8 +145,8 @@ void Problem22DEx5::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 Problem22DEx5::Problem22DEx5() : AbstactProblem22D()
 {
-    forward->setEquationParameters(1.0, 0.001, 0.001, 6.3);
-    backward->setEquationParameters(1.0, 0.001, 0.001, 6.3);
+    forward->setEquationParameters(1.0, 0.01, 0.01, 6.3);
+    backward->setEquationParameters(1.0, 0.01, 0.01, 6.3);
     forward->fi = 0.1;
 
     Dimension time = Dimension(0.005, 0, 200);

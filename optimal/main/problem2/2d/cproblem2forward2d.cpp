@@ -85,12 +85,12 @@ double CProblem2Forward2D::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) cons
     for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
     {
         const ControlDeltaNode &cn = cndeltaNodes.at(cni);
-        if (sn.i == cn.n && sn.j == cn.m)
+        if (sn.i == cn.i && sn.j == cn.j)
         {
             double vi = 0.0;
             for (unsigned int j=0; j<mParameter.Lo; j++)
             {
-                vi += mParameter.k[cn.i][j] * (U(mParameter.xi[j].x, mParameter.xi[j].y, t) - mParameter.z[cn.i][j]);
+                vi += mParameter.k[cn.id][j] * (U(mParameter.xi[j].x, mParameter.xi[j].y, t) - mParameter.z[cn.id][j]);
             }
             W += vi * cn.w;
         }

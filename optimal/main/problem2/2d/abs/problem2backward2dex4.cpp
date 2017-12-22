@@ -41,24 +41,24 @@ void Problem2Backward2DEx4::layerInfo(const DoubleMatrix &p, unsigned int ln) co
     C_UNUSED(p);
     C_UNUSED(ln);
 
-    if (ln==timeDimension().sizeN())
-    {
-        IPrinter::printSeperatorLine("P100");
-        IPrinter::printMatrix(p);
-        IPrinter::printSeperatorLine();
+//    if (ln==timeDimension().sizeN())
+//    {
+//        IPrinter::printSeperatorLine("P100");
+//        IPrinter::printMatrix(p);
+//        IPrinter::printSeperatorLine();
 
-        QPixmap px;
-        visualizeMatrixHeat(p,  p.min(), p.max(), px);
-        px.save("p100.png", "PNG");
-    }
-    if (ln==0)
-    {
-        IPrinter::printSeperatorLine("P0");
-        IPrinter::printMatrix(p);
-        IPrinter::printSeperatorLine();
+//        QPixmap px;
+//        visualizeMatrixHeat(p,  p.min(), p.max(), px);
+//        px.save("p100.png", "PNG");
+//    }
+//    if (ln==0)
+//    {
+//        IPrinter::printSeperatorLine("P0");
+//        IPrinter::printMatrix(p);
+//        IPrinter::printSeperatorLine();
 
-        QPixmap px;
-        visualizeMatrixHeat(p,  p.min(), p.max(), px);
-        px.save("p0.png", "PNG");
-    }
+//        QPixmap px;
+//        visualizeMatrixHeat(p,  p.min(), p.max(), px);
+//        px.save("p0.png", "PNG");
+//    }
 }

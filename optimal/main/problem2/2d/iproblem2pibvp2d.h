@@ -16,12 +16,25 @@ using namespace std;
 #define APPROX_B1_2
 #define APPROX_BD_2
 
+struct ExtendedGridNode
+{
+    SpaceNodePDE point;
+    unsigned int id;
+    unsigned int i;
+    unsigned int j;
+    double x;
+    double y;
+    double w;
+};
+
+void extendPointToGridNodes(const SpaceNodePDE& point, int id, vector<ExtendedGridNode> nodes, const Dimension &dimensionX, const Dimension &dimensionY);
+
 struct ObservationNode
 {
     SpaceNodePDE xi;
+    unsigned int id;
+    unsigned int i;
     unsigned int j;
-    unsigned int n;
-    unsigned int m;
     double x;
     double y;
     double w;
@@ -30,9 +43,9 @@ struct ObservationNode
 struct ObservationDeltaNode
 {
     SpaceNodePDE xi;
+    unsigned int id;
+    unsigned int i;
     unsigned int j;
-    unsigned int n;
-    unsigned int m;
     double x;
     double y;
     double w;
@@ -41,9 +54,9 @@ struct ObservationDeltaNode
 struct ControlNode
 {
     SpaceNodePDE eta;
+    unsigned int id;
     unsigned int i;
-    unsigned int n;
-    unsigned int m;
+    unsigned int j;
     double x;
     double y;
     double w;
@@ -52,9 +65,9 @@ struct ControlNode
 struct ControlDeltaNode
 {
     SpaceNodePDE eta;
+    unsigned int id;
     unsigned int i;
-    unsigned int n;
-    unsigned int m;
+    unsigned int j;
     double x;
     double y;
     double w;

@@ -1,5 +1,145 @@
 #include "iproblem2pibvp2d.h"
 
+void extendPointToGridNodes(const SpaceNodePDE &point, int id, vector<ExtendedGridNode> nodes, const Dimension &dimensionX, const Dimension &dimensionY)
+{
+    unsigned int Nx = dimensionX.sizeN();
+    unsigned int Ny = dimensionY.sizeN();
+
+    double hx = dimensionX.step();
+    double hy = dimensionY.step();
+
+    unsigned int rx = (unsigned int)(floor(point.x*Nx));
+    unsigned int ry = (unsigned int)(floor(point.y*Ny));
+
+    double hx3 = hx*hx*hx;
+    double hx32 = (1.0/(2.0*hx3));
+    double hx36 = (1.0/(6.0*hx3));
+
+    double hy3 = hy*hy*hy;
+    double hy32 = 1.0/(2.0*hy3);
+    double hy36 = 1.0/(6.0*hy3);
+
+    ExtendedGridNode node;
+    double dx = 0.0;
+    double dy = 0.0;
+
+    if (rx == 0 && ry == 0)
+    {}
+    else if (rx == 0 && ry == Ny)
+    {}
+    else if (rx == Nx && ry == Ny)
+    {}
+    else if (rx == Nx && ry == 0)
+    {}
+    else if (rx==0 && ry == 1)
+    {}
+    else if (rx==1 && ry == 0)
+    {}
+    else if (rx == 0 && ry == Ny-1)
+    {}
+    else if (rx == 1 && ry == Ny)
+    {}
+    else
+    {
+        node.i = rx-1; node.x = node.i*hx;
+        node.j = ry-1; node.y = node.j*hy;
+        node.point = point; node.id = id;
+        dx = fabs(node.x-point.x); dy = fabs(node.y-point.y); node.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+        node.i = rx-1; node.x = node.i*hx;
+        node.j = ry+0; node.y = node.j*hy;
+        node.point = point; node.id = id;
+        dx = fabs(node.x-point.x); dy = fabs(node.y-point.y); node.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        nodes.push_back(node);
+
+        node.i = rx-1; node.x = node.i*hx;
+        node.j = ry+1; node.y = node.j*hy;
+        node.point = point; node.id = id;
+        dx = fabs(node.x-point.x); dy = fabs(node.y-point.y); node.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        nodes.push_back(node);
+
+        node.i = rx-1; node.x = node.i*hx;
+        node.j = ry+2; node.y = node.j*hy;
+        node.point = point; node.id = id;
+        dx = fabs(node.x-point.x); dy = fabs(node.y-point.y); node.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        nodes.push_back(node);
+
+        node.i = rx+0; node.x = node.i*hx;
+        node.j = ry-1; node.y = node.j*hy;
+        node.point = point; node.id = id;
+        dx = fabs(node.x-point.x); dy = fabs(node.y-point.y); node.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        nodes.push_back(node);
+
+        node.i = rx+0; node.x = node.i*hx;
+        node.j = ry+0; node.y = node.j*hy;
+        node.point = point; node.id = id;
+        dx = fabs(node.x-point.x); dy = fabs(node.y-point.y); node.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        nodes.push_back(node);
+
+        node.i = rx+0; node.x = node.i*hx;
+        node.j = ry+1; node.y = node.j*hy;
+        node.point = point; node.id = id;
+        dx = fabs(node.x-point.x); dy = fabs(node.y-point.y); node.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        nodes.push_back(node);
+
+        node.i = rx+0; node.x = node.i*hx;
+        node.j = ry+2; node.y = node.j*hy;
+        node.point = point; node.id = id;
+        dx = fabs(node.x-point.x); dy = fabs(node.y-point.y); node.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        nodes.push_back(node);
+
+        node.i = rx+1; node.x = node.i*hx;
+        node.j = ry-1; node.y = node.j*hy;
+        node.point = point; node.id = id;
+        dx = fabs(node.x-point.x); dy = fabs(node.y-point.y); node.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        nodes.push_back(node);
+
+        node.i = rx+1; node.x = node.i*hx;
+        node.j = ry+0; node.y = node.j*hy;
+        node.point = point; node.id = id;
+        dx = fabs(node.x-point.x); dy = fabs(node.y-point.y); node.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        nodes.push_back(node);
+
+        node.i = rx+1; node.x = node.i*hx;
+        node.j = ry+1; node.y = node.j*hy;
+        node.point = point; node.id = id;
+        dx = fabs(node.x-point.x); dy = fabs(node.y-point.y); node.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        nodes.push_back(node);
+
+        node.i = rx+1; node.x = node.i*hx;
+        node.j = ry+2; node.y = node.j*hy;
+        node.point = point; node.id = id;
+        dx = fabs(node.x-point.x); dy = fabs(node.y-point.y); node.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        nodes.push_back(node);
+
+        node.i = rx+2; node.x = node.i*hx;
+        node.j = ry-1; node.y = node.j*hy;
+        node.point = point; node.id = id;
+        dx = fabs(node.x-point.x); dy = fabs(node.y-point.y); node.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        nodes.push_back(node);
+
+        node.i = rx+2; node.x = node.i*hx;
+        node.j = ry+0; node.y = node.j*hy;
+        node.point = point; node.id = id;
+        dx = fabs(node.x-point.x); dy = fabs(node.y-point.y); node.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        nodes.push_back(node);
+
+        node.i = rx+2; node.x = node.i*hx;
+        node.j = ry+1; node.y = node.j*hy;
+        node.point = point; node.id = id;
+        dx = fabs(node.x-point.x); dy = fabs(node.y-point.y); node.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+        nodes.push_back(node);
+
+        node.i = rx+2; node.x = node.i*hx;
+        node.j = ry+2; node.y = node.j*hy;
+        node.point = point; node.id = id;
+        dx = fabs(node.x-point.x); dy = fabs(node.y-point.y); node.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+        nodes.push_back(node);
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------//
+
 double IProblem22DPIBVP::boundary(const SpaceNodePDE&, const TimeNodePDE&, BoundaryType) const
 {
     return NAN;
@@ -205,29 +345,29 @@ void ExtendedSpaceNode2D::clearLayers()
 
 double ExtendedSpaceNode2D::value(unsigned int layer) const
 {
-//    double P = 0.0;
+    //    double P = 0.0;
 
-//    double Li = 0.0;
-//    double Lj = 0.0;
-//    for (unsigned int j=0; j<rows; j++)
-//    {
-//        for (unsigned int i=0; i<cols; i++)
-//        {
-//            if (j==0) Lj = (((y-wi[1][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[0][i].y-wi[1][i].y)*(wi[0][i].y-wi[2][i].y)*(wi[0][i].y-wi[3][i].y)));
-//            if (j==1) Lj = (((y-wi[0][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[1][i].y-wi[0][i].y)*(wi[1][i].y-wi[2][i].y)*(wi[1][i].y-wi[3][i].y)));
-//            if (j==2) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[3][i].y))/((wi[2][i].y-wi[0][i].y)*(wi[2][i].y-wi[1][i].y)*(wi[2][i].y-wi[3][i].y)));
-//            if (j==3) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[2][i].y))/((wi[3][i].y-wi[0][i].y)*(wi[3][i].y-wi[1][i].y)*(wi[3][i].y-wi[2][i].y)));
+    //    double Li = 0.0;
+    //    double Lj = 0.0;
+    //    for (unsigned int j=0; j<rows; j++)
+    //    {
+    //        for (unsigned int i=0; i<cols; i++)
+    //        {
+    //            if (j==0) Lj = (((y-wi[1][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[0][i].y-wi[1][i].y)*(wi[0][i].y-wi[2][i].y)*(wi[0][i].y-wi[3][i].y)));
+    //            if (j==1) Lj = (((y-wi[0][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[1][i].y-wi[0][i].y)*(wi[1][i].y-wi[2][i].y)*(wi[1][i].y-wi[3][i].y)));
+    //            if (j==2) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[3][i].y))/((wi[2][i].y-wi[0][i].y)*(wi[2][i].y-wi[1][i].y)*(wi[2][i].y-wi[3][i].y)));
+    //            if (j==3) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[2][i].y))/((wi[3][i].y-wi[0][i].y)*(wi[3][i].y-wi[1][i].y)*(wi[3][i].y-wi[2][i].y)));
 
 
-//            if (i==0) Li = (((x-wi[j][1].x)*(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][0].x-wi[j][1].x)*(wi[j][0].x-wi[j][2].x)*(wi[j][0].x-wi[j][3].x)));
-//            if (i==1) Li = (((x-wi[j][0].x)*(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][1].x-wi[j][0].x)*(wi[j][1].x-wi[j][2].x)*(wi[j][1].x-wi[j][3].x)));
-//            if (i==2) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)*(x-wi[j][3].x))/((wi[j][2].x-wi[j][0].x)*(wi[j][2].x-wi[j][1].x)*(wi[j][2].x-wi[j][3].x)));
-//            if (i==3) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)*(x-wi[j][2].x))/((wi[j][3].x-wi[j][0].x)*(wi[j][3].x-wi[j][1].x)*(wi[j][3].x-wi[j][2].x)));
+    //            if (i==0) Li = (((x-wi[j][1].x)*(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][0].x-wi[j][1].x)*(wi[j][0].x-wi[j][2].x)*(wi[j][0].x-wi[j][3].x)));
+    //            if (i==1) Li = (((x-wi[j][0].x)*(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][1].x-wi[j][0].x)*(wi[j][1].x-wi[j][2].x)*(wi[j][1].x-wi[j][3].x)));
+    //            if (i==2) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)*(x-wi[j][3].x))/((wi[j][2].x-wi[j][0].x)*(wi[j][2].x-wi[j][1].x)*(wi[j][2].x-wi[j][3].x)));
+    //            if (i==3) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)*(x-wi[j][2].x))/((wi[j][3].x-wi[j][0].x)*(wi[j][3].x-wi[j][1].x)*(wi[j][3].x-wi[j][2].x)));
 
-//            P += Lj*Li*wi[j][i].u[layer];
-//        }
-//    }
-//    return P;
+    //            P += Lj*Li*wi[j][i].u[layer];
+    //        }
+    //    }
+    //    return P;
 
     double Lx[] = {0.0, 0.0, 0.0, 0.0};
     double Ly[] = {0.0, 0.0, 0.0, 0.0};

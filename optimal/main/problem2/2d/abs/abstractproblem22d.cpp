@@ -31,7 +31,7 @@ void AbstactProblem22D::optimization(DoubleVector &prm0)
     g.setEpsilon1(0.000);
     g.setEpsilon2(0.000);
     g.setEpsilon3(0.000);
-    g.setR1MinimizeEpsilon(0.1, 0.0001);
+    g.setR1MinimizeEpsilon(10.0, 0.0001);
     g.setNormalize(true);
     g.showEndMessage(true);
     g.setResetIteration(false);
@@ -46,15 +46,18 @@ double AbstactProblem22D::fx(const DoubleVector &prms) const
     ap22d->mParameter.fromVector(prms);
     ap22d->forward->setParamter(mParameter);
 
+    //puts("AbstactProblem22D::fx.calculateMVD...");
+    //IPrinter::print(prms);
     DoubleMatrix u;
     vector<ExtendedSpaceNode2D> info;
     forward->calculateMVD(u, info, false);
+    //puts("AbstactProblem22D::fx.calculateMVD.");
 
     double intgrl = integral(u);
     u.clear();
     //puts("AbstactProblem22D::fx.");
 
-    return intgrl;// + espilon*norm();
+    return intgrl + espilon*norm();
 }
 
 double AbstactProblem22D::integral(const DoubleMatrix &u) const
@@ -169,7 +172,7 @@ void AbstactProblem22D::gradient(const DoubleVector &prms, DoubleVector &g)
             }
             grad_Kij += 0.5 * pi.value(L) * (uj.value(L) - mParameter.z.at(i,j));
             grad_Kij *= -ht;
-            g[gi++] = grad_Kij;// + 2.0*espilon*(mParameter.k.at(i,j) - mParameter0.k.at(i,j));
+            g[gi++] = grad_Kij + 2.0*espilon*(mParameter.k.at(i,j) - mParameter0.k.at(i,j));
         }
     }
 
@@ -190,7 +193,7 @@ void AbstactProblem22D::gradient(const DoubleVector &prms, DoubleVector &g)
             }
             grad_Zij += 0.5 * pi.value(L) * mParameter.k.at(i,j);
             grad_Zij *= ht;
-            g[gi++] = grad_Zij;// + 2.0*espilon*(mParameter.z[i][j] - mParameter0.z[i][j]);
+            g[gi++] = grad_Zij + 2.0*espilon*(mParameter.z[i][j] - mParameter0.z[i][j]);
         }
     }
 
@@ -225,8 +228,8 @@ void AbstactProblem22D::gradient(const DoubleVector &prms, DoubleVector &g)
         grad_EtaiX *= -ht;
         grad_EtaiY *= -ht;
 
-        g[gi++] = grad_EtaiX;// + 2.0*espilon*(mParameter.eta[i].x - mParameter0.eta[i].x);
-        g[gi++] = grad_EtaiY;// + 2.0*espilon*(mParameter.eta[i].y - mParameter0.eta[i].y);
+        g[gi++] = grad_EtaiX + 2.0*espilon*(mParameter.eta[i].x - mParameter0.eta[i].x);
+        g[gi++] = grad_EtaiY + 2.0*espilon*(mParameter.eta[i].y - mParameter0.eta[i].y);
     }
 
     // xi
@@ -260,8 +263,8 @@ void AbstactProblem22D::gradient(const DoubleVector &prms, DoubleVector &g)
         gradXijX *= -ht;
         gradXijY *= -ht;
 
-        g[gi++] = gradXijX;// + 2.0*espilon*(mParameter.xi[j].x - mParameter0.xi[j].x);;
-        g[gi++] = gradXijY;// + 2.0*espilon*(mParameter.xi[j].x - mParameter0.xi[j].x);;
+        g[gi++] = gradXijX + 2.0*espilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
+        g[gi++] = gradXijY + 2.0*espilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
     }
 
 
@@ -300,17 +303,17 @@ void AbstactProblem22D::setParameter(const Parameter &parameter)
 void AbstactProblem22D::print(unsigned int i, const DoubleVector & x, const DoubleVector & g, double, GradientMethod::MethodResult) const
 {
     printf("I[%d]: %10.6f\n", i, fx(x));
-    IPrinter::print(x);
-    IPrinter::print(g);
+    IPrinter::print(x,x.length(),12,6);
+    IPrinter::print(g,g.length(),12,6);
     IPrinter::printSeperatorLine();
 }
 
 void AbstactProblem22D::project(DoubleVector &prm, unsigned int index)
 {
-    if ( 2*mParameter.Lc*mParameter.Lo < index && index < 2*mParameter.Lc*mParameter.Lo + 2*mParameter.Lc + 2*mParameter.Lo - 1 )
+    if ( 2*mParameter.Lc*mParameter.Lo <= index && index <= 2*mParameter.Lc*mParameter.Lo + 2*mParameter.Lc + 2*mParameter.Lo - 1 )
     {
-        if (prm[index] < 0.0) prm[index] = 0.0;
-        if (prm[index] > 1.0) prm[index] = 1.0;
+        if (prm[index] < 0.05) prm[index] = 0.05;
+        if (prm[index] > 0.95) prm[index] = 0.95;
     }
 }
 
