@@ -3,18 +3,26 @@
 void Problem22DEx5::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     Problem22DEx5 p22d5;
-    p22d5.espilon = 0.0;
+    unsigned int Lc = 1;
+    unsigned int Lo = 3;
+
+    p22d5.setEquationParameters(1.0, 0.01, 0.01);
+    p22d5.setIntTemperature(0.1);
+    p22d5.setEnvTemperature(6.3);
+    p22d5.setEpsilon(0.0);
+    p22d5.setPenaltyCoefficient(0.1);
+    p22d5.setPenaltyLimits(DoubleVector(Lc, -10.0), DoubleVector(Lc, +10.0));
 
     {
-        Parameter rpm0(1, 3);
+        Parameter rpm0(Lc, Lo);
 
-        rpm0.k[0][0] = -10.0; //rpm0.k[1][0] = -2.8;
-        rpm0.k[0][1] = -11.0; //rpm0.k[1][1] = +3.2;
-        rpm0.k[0][2] = -12.0; //rpm.k[1][2] = -10.7;
+        rpm0.k[0][0] = -10.0; //rpm0.k[1][0] = -12.8;
+        rpm0.k[0][1] = -11.0; //rpm0.k[1][1] = -10.4;
+        rpm0.k[0][2] = -12.0; //rpm0.k[1][2] = -10.7;
 
-        rpm0.z[0][0] = 10.5; //rpm0.z[1][0] = 11.7;
-        rpm0.z[0][1] = 12.4; //rpm0.z[1][1] = 12.5;
-        rpm0.z[0][2] = 13.4; //rpm0.z[1][1] = 12.5;
+        rpm0.z[0][0] = +10.5; //rpm0.z[1][0] = +10.7;
+        rpm0.z[0][1] = +12.4; //rpm0.z[1][1] = +10.5;
+        rpm0.z[0][2] = +13.4; //rpm0.z[1][1] = +12.5;
 
         rpm0.eta[0].setPoint(0.40, 0.60);
         //rpm0.eta[1].setPoint(0.70, 0.40);
@@ -23,20 +31,13 @@ void Problem22DEx5::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         rpm0.xi[1].setPoint(0.80, 0.70);
         rpm0.xi[2].setPoint(0.50, 0.50);
 
-        p22d5.mParameter0 = rpm0;
-        //p22d5.calculateU(rpm0);
-
-        //IPrinter::printSeperatorLine("U");
-        //IPrinter::printMatrix(p22d5.U);
-
-        //QPixmap px;
-        //visualizeMatrixHeat(p22d5.U, 0.1, p22d5.U.max(), px);
-        //px.save("U.png", "PNG");
+        p22d5.setParameter0(rpm0);
+        //p22d5.calculateU();
     }
 
-    Parameter rpm(1, 3);
+    Parameter rpm(Lc, Lo);
 
-    rpm.k[0][0] = -12.6; //rpm.k[1][0] = -12.8;
+    rpm.k[0][0] = -12.6; //rpm.k[1][0] = -10.8;
     rpm.k[0][1] = -15.3; //rpm.k[1][1] = -13.2;
     rpm.k[0][2] = -11.2; //rpm.k[1][2] = -10.7;
 
@@ -46,12 +47,12 @@ void Problem22DEx5::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //rpm.eta[0].setPoint(0.4000, 0.6000);
     rpm.eta[0].setPoint(0.4264, 0.6354);
-    //rpm.eta[1].setPoint(0.7547, 0.4124);
+    //rpm.eta[1].setPoint(0.6447, 0.4124);
 
     //rpm.xi[0].setPoint(0.5000, 0.3000);
     rpm.xi[0].setPoint(0.5341, 0.8248);
     rpm.xi[1].setPoint(0.8516, 0.7329);
-    rpm.xi[2].setPoint(0.5157, 0.5359);
+    rpm.xi[2].setPoint(0.6157, 0.5359);
 
     p22d5.setParameter(rpm);
 
@@ -77,7 +78,7 @@ void Problem22DEx5::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     DoubleVector pv;
     rpm.toVector(pv);
     DoubleVector ag(pv.length());
-    IPrinter::print(pv, pv.length(), 10, 6);
+    IPrinter::print(pv, pv.length(), 6, 4);
     IPrinter::printSeperatorLine();
 
     puts("Calculating gradients....");
@@ -144,15 +145,10 @@ void Problem22DEx5::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 }
 
 Problem22DEx5::Problem22DEx5() : AbstactProblem22D()
-{
-    forward->setEquationParameters(1.0, 0.01, 0.01, 6.3);
-    backward->setEquationParameters(1.0, 0.01, 0.01, 6.3);
-    forward->fi = 0.1;
-
+{   
     Dimension time = Dimension(0.005, 0, 200);
     Dimension dimX = Dimension(0.01, 0, 100);
     Dimension dimY = Dimension(0.01, 0, 100);
-
     setGridParameters(time, dimX, dimY);
 
     U.resize(dimY.sizeN()+1, dimX.sizeN()+1, 10.0);

@@ -52,8 +52,9 @@ void Problem22DEx1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     p22dEx1.setParameter(s);
 
     Problem2Forward2DEx1* forward = new Problem2Forward2DEx1;
-    forward->setEquationParameters(0.1, 0.1, 0.1, 10.0);
-    forward->setParamter(s);
+    forward->setEquationParameters(0.1, 0.1, 0.1);
+    forward->setEnvTemperature(10.0);
+    forward->setParameter(s);
     forward->setTimeDimension(timeDimension);
     forward->addSpaceDimension(spaceDimensionX);
     forward->addSpaceDimension(spaceDimensionY);

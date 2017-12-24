@@ -1,13 +1,12 @@
-#ifndef PROBLEM2FORWARD2DEX4_H
-#define PROBLEM2FORWARD2DEX4_H
+#ifndef PROBLEM2FORWARD2D_H
+#define PROBLEM2FORWARD2D_H
 
 #include "../iproblem2forward2d.h"
 
-class Problem2Forward2DEx4 : public IProblem2Forward2D
+class Problem2Forward2D : public IProblem2Forward2D
 {
 public:
-    virtual ~Problem2Forward2DEx4() {}
-    double fi;
+    virtual ~Problem2Forward2D() {}
 
 protected:
     virtual double initial(const SpaceNodePDE &) const;
@@ -22,4 +21,4 @@ protected:
     virtual void layerInfo(const DoubleMatrix &, unsigned int) const;
 };
 
-#endif // PROBLEM2FORWARD2DEX4_H
+#endif // PROBLEM2FORWARD2D_H

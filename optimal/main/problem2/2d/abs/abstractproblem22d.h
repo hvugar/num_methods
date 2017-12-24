@@ -7,8 +7,8 @@
 #include <projection.h>
 #include <printer.h>
 #include <utils/random.h>
-#include "problem2forward2dex4.h"
-#include "problem2backward2dex4.h"
+#include "problem2forward2d.h"
+#include "problem2backward2d.h"
 
 #include <imaging.h>
 
@@ -19,27 +19,42 @@ public:
     virtual ~AbstactProblem22D();
 
     void setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY);
+    void setEquationParameters(double a, double lambda0, double lambda);
+    void setIntTemperature(double fi);
+    void setEnvTemperature(double theta);
+    void setEpsilon(double epsilon);
+    void setPenaltyCoefficient(double r);
+    void setPenaltyLimits(const DoubleVector &vmin, const DoubleVector &vmax);
+    void setParameter(const Parameter &parameter);
+    void setParameter0(const Parameter &parameter0);
 
     virtual double fx(const DoubleVector &prms) const;
+    virtual double integral(const DoubleMatrix &u) const;
+    virtual double norm() const;
+    virtual double penalty(const vector<ExtendedSpaceNode2D> &info) const;
+    virtual double g0i(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2D> &info) const;
+    virtual double gpi(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2D> &info) const;
+
     virtual void gradient(const DoubleVector &prms, DoubleVector &g);
 
     virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const;
     virtual void project(DoubleVector &x, unsigned int index);
 
-    const Parameter& parameter() const;
-    void setParameter(const Parameter& parameter);
-
-    virtual double integral(const DoubleMatrix &u) const;
-    virtual double norm() const;
     virtual double mu(double x, double y) const;
 
     void optimization(DoubleVector &prm0);
-    void calculateU(const Parameter &prm0);
 
-public:
-    double espilon;
+    void calculateU();
+
+    double sgn(double x) const;
 
 protected:
+    double epsilon;
+    double r;
+
+    DoubleVector vmin;
+    DoubleVector vmax;
+
     Dimension mTimeDimension;
     Dimension mSpaceDimensionX;
     Dimension mSpaceDimensionY;
@@ -47,10 +62,8 @@ protected:
     Parameter mParameter;
     Parameter mParameter0;
 
-    double alpha0;
-
-    Problem2Forward2DEx4 *forward;
-    Problem2Backward2DEx4 *backward;
+    Problem2Forward2D *forward;
+    Problem2Backward2D *backward;
 
 public:
     DoubleMatrix U;

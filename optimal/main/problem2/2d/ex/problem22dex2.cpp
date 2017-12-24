@@ -42,7 +42,7 @@ void Problem22DEx2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     p22dEx2.setParameter(s);
 
     Problem2Forward2DEx2* forward = new Problem2Forward2DEx2;
-    forward->setParamter(s);
+    forward->setParameter(s);
     forward->setTimeDimension(timeDimension);
     forward->addSpaceDimension(spaceDimensionX);
     forward->addSpaceDimension(spaceDimensionY);

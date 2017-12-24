@@ -41,8 +41,6 @@ protected:
     void extendContrlDeltaPoint1(const SpaceNodePDE &cp, std::vector<ControlDeltaNode> &cps, unsigned int i) const;
     void extendContrlDeltaPoint2(const SpaceNodePDE &cp, std::vector<ControlDeltaNode> &cps, unsigned int i) const;
     void extendContrlDeltaPoint3(const SpaceNodePDE &cp, std::vector<ControlDeltaNode> &cps, unsigned int i) const;
-
-
 };
 
 #endif // IPROBLEM2FORWARD2D_H

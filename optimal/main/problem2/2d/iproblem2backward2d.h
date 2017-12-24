@@ -13,6 +13,11 @@ public:
     void calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode2D> &info, bool use = true);
     virtual void layerInfo(const DoubleMatrix &p, unsigned int layerNumber) const = 0;
 
+    virtual double penalty(unsigned int i, const TimeNodePDE &tn) const = 0;
+
+    void setPenaltyCoefficient(double r);
+    double penaltyCoefficient() const;
+
 protected:
     virtual double initial(const SpaceNodePDE &sn) const = 0;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const = 0;
@@ -41,6 +46,9 @@ protected:
     void extendObservationDeltaPoint1(const SpaceNodePDE &op, std::vector<ObservationDeltaNode> &ons, unsigned int j) const;
     void extendObservationDeltaPoint2(const SpaceNodePDE &op, std::vector<ObservationDeltaNode> &ons, unsigned int j) const;
     void extendObservationDeltaPoint3(const SpaceNodePDE &op, std::vector<ObservationDeltaNode> &ons, unsigned int j) const;
+
+protected:
+    double r;
 };
 
 #endif // IPROBLEM2BACKWARD2D_H

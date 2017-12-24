@@ -2,15 +2,9 @@
 
 AbstactProblem22D::AbstactProblem22D()
 {
-    forward = new Problem2Forward2DEx4();
-    backward = new Problem2Backward2DEx4();
-
-    forward->setEquationParameters(0.4, 0.01, 1.0, 10.0);
-    forward->fi = 0.0;
-    backward->setEquationParameters(0.4, 0.01, 1.0, 10.0);
+    forward = new Problem2Forward2D();
+    backward = new Problem2Backward2D();
     backward->ap22d = this;
-
-    espilon = 0.001;
 }
 
 AbstactProblem22D::~AbstactProblem22D()
@@ -31,7 +25,7 @@ void AbstactProblem22D::optimization(DoubleVector &prm0)
     g.setEpsilon1(0.000);
     g.setEpsilon2(0.000);
     g.setEpsilon3(0.000);
-    g.setR1MinimizeEpsilon(10.0, 0.0001);
+    g.setR1MinimizeEpsilon(10.0, 0.001);
     g.setNormalize(true);
     g.showEndMessage(true);
     g.setResetIteration(false);
@@ -41,23 +35,22 @@ void AbstactProblem22D::optimization(DoubleVector &prm0)
 
 double AbstactProblem22D::fx(const DoubleVector &prms) const
 {
-    //puts("AbstactProblem22D::fx...");
     AbstactProblem22D* ap22d = const_cast<AbstactProblem22D*>(this);
-    ap22d->mParameter.fromVector(prms);
-    ap22d->forward->setParamter(mParameter);
 
-    //puts("AbstactProblem22D::fx.calculateMVD...");
-    //IPrinter::print(prms);
+    ap22d->mParameter.fromVector(prms);
+    ap22d->forward->setParameter(mParameter);
+
     DoubleMatrix u;
     vector<ExtendedSpaceNode2D> info;
-    forward->calculateMVD(u, info, false);
-    //puts("AbstactProblem22D::fx.calculateMVD.");
+    ap22d->forward->calculateMVD(u, info, true);
+
+    ap22d->backward->setPenaltyCoefficient(r);
+    ap22d->backward->info = &info;
 
     double intgrl = integral(u);
     u.clear();
-    //puts("AbstactProblem22D::fx.");
 
-    return intgrl + espilon*norm();
+    return intgrl + epsilon*norm() + r*penalty(info);
 }
 
 double AbstactProblem22D::integral(const DoubleMatrix &u) const
@@ -125,17 +118,47 @@ double AbstactProblem22D::mu(double x UNUSED_PARAM, double y UNUSED_PARAM) const
     return 1.0;
 }
 
+double AbstactProblem22D::penalty(const vector<ExtendedSpaceNode2D> &info) const
+{
+    double ht = mTimeDimension.step();
+    unsigned int L = mTimeDimension.sizeN();
+
+    double p_sum = 0.0;
+
+    for (unsigned int i=0; i<mParameter.Lc; i++) p_sum += 0.5*gpi(i, 0, info)*gpi(i, 0, info);
+    for (unsigned int l=1; l<=L-1; l++)
+    {
+        for (unsigned int i=0; i<mParameter.Lc; i++) p_sum += gpi(i, l, info)*gpi(i, l, info);
+    }
+    for (unsigned int i=0; i<mParameter.Lc; i++) p_sum += 0.5*gpi(i, L, info)*gpi(i, L, info);
+    return p_sum*ht;
+}
+
+double AbstactProblem22D::gpi(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2D> &info) const
+{
+    double p = fabs(g0i(i, layer, info)) - (vmax.at(i) - vmin.at(i))/2.0;
+    return p > 0.0 ? p : 0.0;
+}
+
+double AbstactProblem22D::g0i(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2D> &info) const
+{
+    double vi = 0.0;
+    for (unsigned int j=0; j<mParameter.Lo; j++)
+    {
+        const ExtendedSpaceNode2D node = info.at(j);
+        vi += mParameter.k[i][j] * (node.value(layer)-mParameter.z[i][j]);
+    }
+    return (vmax.at(i) + vmin.at(i))/2.0 - vi;
+}
+
 void AbstactProblem22D::gradient(const DoubleVector &prms, DoubleVector &g)
 {
-    //puts("AbstactProblem22D::gradient...");
     unsigned int L = mTimeDimension.sizeN();
     double ht = mTimeDimension.step();
-    //double hx = mSpaceDimensionX.step();
-    //double hy = mSpaceDimensionY.step();
 
     mParameter.fromVector(prms);
-    forward->setParamter(mParameter);
-    backward->setParamter(mParameter);
+    forward->setParameter(mParameter);
+    backward->setParameter(mParameter);
 
     DoubleMatrix u;
     DoubleMatrix p;
@@ -145,6 +168,7 @@ void AbstactProblem22D::gradient(const DoubleVector &prms, DoubleVector &g)
 
     backward->u = &u;
     backward->U = &U;
+    backward->info = &u_info;
     vector<ExtendedSpaceNode2D> p_info;
     backward->calculateMVD(p, p_info, true);
 
@@ -155,52 +179,48 @@ void AbstactProblem22D::gradient(const DoubleVector &prms, DoubleVector &g)
     // k
     for (unsigned int i=0; i<mParameter.Lc; i++)
     {
-        //const SpaceNodePDE &eta = mParameter.eta[i];
         ExtendedSpaceNode2D &pi = p_info[i];
 
         for (unsigned int j=0; j<mParameter.Lo; j++)
         {
-            const SpaceNodePDE &xi = mParameter.xi[j];
             ExtendedSpaceNode2D &uj = u_info[j];
 
             double grad_Kij = 0.0;
 
-            grad_Kij += 0.5 * pi.value(0) * (uj.value(0) - mParameter.z.at(i,j));
+            grad_Kij += 0.5 * (pi.value(0)+2.0*r*gpi(i,0,u_info)*sgn(g0i(i,0,u_info))) * (uj.value(0) - mParameter.z.at(i,j));
             for (unsigned int m=1; m<=L-1; m++)
             {
-                grad_Kij += pi.value(m) * (uj.value(m) - mParameter.z.at(i,j));
+                grad_Kij += (pi.value(m)+2.0*r*gpi(i,m,u_info)*sgn(g0i(i,m,u_info))) * (uj.value(m) - mParameter.z.at(i,j));
             }
-            grad_Kij += 0.5 * pi.value(L) * (uj.value(L) - mParameter.z.at(i,j));
+            grad_Kij += 0.5 * (pi.value(L)+2.0*r*gpi(i,L,u_info)*sgn(g0i(i,L,u_info))) * (uj.value(L) - mParameter.z.at(i,j));
             grad_Kij *= -ht;
-            g[gi++] = grad_Kij + 2.0*espilon*(mParameter.k.at(i,j) - mParameter0.k.at(i,j));
+            g[gi++] = grad_Kij + 2.0*epsilon*(mParameter.k.at(i,j) - mParameter0.k.at(i,j));
         }
     }
 
     // z
     for (unsigned int i=0; i<mParameter.Lc; i++)
     {
-        //const SpaceNodePDE &eta = mParameter.eta[i];
         ExtendedSpaceNode2D &pi = p_info[i];
 
         for (unsigned int j=0; j<mParameter.Lo; j++)
         {
             double grad_Zij = 0.0;
 
-            grad_Zij += 0.5 * pi.value(0) * mParameter.k.at(i,j);
+            grad_Zij += 0.5 * (pi.value(0)+2.0*r*gpi(i,0,u_info)*sgn(g0i(i,0,u_info))) * mParameter.k.at(i,j);
             for (unsigned int m=1; m<=L-1; m++)
             {
-                grad_Zij += pi.value(m)  * mParameter.k.at(i,j);
+                grad_Zij += (pi.value(m)+2.0*r*gpi(i,m,u_info)*sgn(g0i(i,m,u_info)))  * mParameter.k.at(i,j);
             }
-            grad_Zij += 0.5 * pi.value(L) * mParameter.k.at(i,j);
+            grad_Zij += 0.5 * (pi.value(L)+2.0*r*gpi(i,L,u_info)*sgn(g0i(i,L,u_info))) * mParameter.k.at(i,j);
             grad_Zij *= ht;
-            g[gi++] = grad_Zij + 2.0*espilon*(mParameter.z[i][j] - mParameter0.z[i][j]);
+            g[gi++] = grad_Zij + 2.0*epsilon*(mParameter.z[i][j] - mParameter0.z[i][j]);
         }
     }
 
     // eta
     for (unsigned int i=0; i<mParameter.Lc; i++)
     {
-        //const SpaceNodePDE &eta = mParameter.eta[i];
         ExtendedSpaceNode2D &pi = p_info[i];
 
         double grad_EtaiX = 0.0;
@@ -228,14 +248,13 @@ void AbstactProblem22D::gradient(const DoubleVector &prms, DoubleVector &g)
         grad_EtaiX *= -ht;
         grad_EtaiY *= -ht;
 
-        g[gi++] = grad_EtaiX + 2.0*espilon*(mParameter.eta[i].x - mParameter0.eta[i].x);
-        g[gi++] = grad_EtaiY + 2.0*espilon*(mParameter.eta[i].y - mParameter0.eta[i].y);
+        g[gi++] = grad_EtaiX + 2.0*epsilon*(mParameter.eta[i].x - mParameter0.eta[i].x);
+        g[gi++] = grad_EtaiY + 2.0*epsilon*(mParameter.eta[i].y - mParameter0.eta[i].y);
     }
 
     // xi
     for (unsigned int j=0; j<mParameter.Lo; j++)
     {
-        //const SpaceNodePDE &xi = mParameter.xi[j];
         ExtendedSpaceNode2D &uj = u_info[j];
 
         double gradXijX = 0.0;
@@ -243,34 +262,33 @@ void AbstactProblem22D::gradient(const DoubleVector &prms, DoubleVector &g)
         double vi = 0.0;
 
         vi = 0.0;
-        for (unsigned int i=0; i<mParameter.Lc; i++) vi += mParameter.k.at(i,j) * p_info[i].value(0);
+        for (unsigned int i=0; i<mParameter.Lc; i++) vi += mParameter.k.at(i,j) * (p_info[i].value(0)+2.0*r*gpi(i,0,u_info)*sgn(g0i(i,0,u_info)));
         gradXijX += 0.5 * uj.valueDx(0) * vi;
         gradXijY += 0.5 * uj.valueDy(0) * vi;
 
         for (unsigned int m=1; m<=L-1; m++)
         {
             vi = 0.0;
-            for (unsigned int i=0; i<mParameter.Lc; i++) vi += mParameter.k.at(i,j)*p_info[i].value(m);
+            for (unsigned int i=0; i<mParameter.Lc; i++) vi += mParameter.k.at(i,j)*(p_info[i].value(m)+2.0*r*gpi(i,m,u_info)*sgn(g0i(i,m,u_info)));
             gradXijX += uj.valueDx(m) * vi;
             gradXijY += uj.valueDy(m) * vi;
         }
 
         vi = 0.0;
-        for (unsigned int i=0; i<mParameter.Lc; i++) vi += mParameter.k.at(i,j)*p_info[i].value(L);
+        for (unsigned int i=0; i<mParameter.Lc; i++) vi += mParameter.k.at(i,j)*(p_info[i].value(L)+2.0*r*gpi(i,L,u_info)*sgn(g0i(i,L,u_info)));
         gradXijX += 0.5 * uj.valueDx(L) * vi;
         gradXijY += 0.5 * uj.valueDy(L) * vi;
 
         gradXijX *= -ht;
         gradXijY *= -ht;
 
-        g[gi++] = gradXijX + 2.0*espilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
-        g[gi++] = gradXijY + 2.0*espilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
+        g[gi++] = gradXijX + 2.0*epsilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
+        g[gi++] = gradXijY + 2.0*epsilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
     }
 
 
     u_info.clear();
     p_info.clear();
-    //puts("AbstactProblem22D::gradient.");
 }
 
 void AbstactProblem22D::setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY)
@@ -288,23 +306,58 @@ void AbstactProblem22D::setGridParameters(Dimension timeDimension, Dimension spa
     backward->addSpaceDimension(mSpaceDimensionY);
 }
 
-const Parameter &AbstactProblem22D::parameter() const
+void AbstactProblem22D::setEquationParameters(double a, double lambda0, double lambda)
 {
-    return mParameter;
+    forward->setEquationParameters(a, lambda0, lambda);
+    backward->setEquationParameters(a, lambda0, lambda);
+}
+
+void AbstactProblem22D::setIntTemperature(double fi)
+{
+    forward->setIntTemperature(fi);
+    backward->setIntTemperature(fi);
+}
+
+void AbstactProblem22D::setEnvTemperature(double theta)
+{
+    forward->setEnvTemperature(theta);
+    backward->setEnvTemperature(theta);
+}
+
+void AbstactProblem22D::setEpsilon(double epsilon)
+{
+    this->epsilon = epsilon;
+}
+
+void AbstactProblem22D::setPenaltyCoefficient(double r)
+{
+    this->r = r;
+    backward->setPenaltyCoefficient(r);
 }
 
 void AbstactProblem22D::setParameter(const Parameter &parameter)
 {
-    mParameter = parameter;
-    forward->setParamter(parameter);
-    backward->setParamter(parameter);
+    this->mParameter = parameter;
+    forward->setParameter(parameter);
+    backward->setParameter(parameter);
+}
+
+void AbstactProblem22D::setParameter0(const Parameter &parameter0)
+{
+    this->mParameter0 = parameter0;
+}
+
+void AbstactProblem22D::setPenaltyLimits(const DoubleVector &vmin, const DoubleVector &vmax)
+{
+    this->vmin = vmin;
+    this->vmax = vmax;
 }
 
 void AbstactProblem22D::print(unsigned int i, const DoubleVector & x, const DoubleVector & g, double, GradientMethod::MethodResult) const
 {
     printf("I[%d]: %10.6f\n", i, fx(x));
-    IPrinter::print(x,x.length(),12,6);
-    IPrinter::print(g,g.length(),12,6);
+    IPrinter::print(x,x.length(),8,4);
+    IPrinter::print(g,g.length(),8,4);
     IPrinter::printSeperatorLine();
 }
 
@@ -317,10 +370,16 @@ void AbstactProblem22D::project(DoubleVector &prm, unsigned int index)
     }
 }
 
-void AbstactProblem22D::calculateU(const Parameter &prm0)
+void AbstactProblem22D::calculateU()
 {
-    mParameter0 = prm0;
-    forward->setParamter(mParameter0);
+    forward->setParameter(mParameter0);
     vector<ExtendedSpaceNode2D> info;
     forward->calculateMVD(U, info, false);
+}
+
+double AbstactProblem22D::sgn(double x) const
+{
+    if (x<0.0) return -1.0;
+    else if (x>0.0) return +1.0;
+    return 0.0;
 }

@@ -138,9 +138,11 @@ public:
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
-    void setEquationParameters(double a, double lambda0, double lambda, double theta);
+    void setEquationParameters(double a, double lambda0, double lambda);
+    void setIntTemperature(double fi);
+    void setEnvTemperature(double theta);
 
-    void setParamter(const Parameter &parameter);
+    void setParameter(const Parameter &parameter);
     const Parameter& parameter() const;
 
 protected:
@@ -148,6 +150,7 @@ protected:
     double lambda0;
     double lambda;
     double theta;
+    double fi;
     Parameter mParameter;
 };
 

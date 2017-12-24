@@ -6,7 +6,9 @@ void CProblem2Backward2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     cpbp2d.setTimeDimension(Dimension(0.005, 0, 200));
     cpbp2d.addSpaceDimension(Dimension(0.01, 0, 100));
     cpbp2d.addSpaceDimension(Dimension(0.01, 0, 100));
-    cpbp2d.setEquationParameters(1.0, 0.01, 0.1, 10.0);
+    cpbp2d.setEquationParameters(1.0, 0.01, 0.1);
+    cpbp2d.setEnvTemperature(10.0);
+    cpbp2d.setPenaltyCoefficient(100.0);
 
     Parameter prm(4, 4);
 
@@ -28,7 +30,7 @@ void CProblem2Backward2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
             prm.z[i][j] = +10.0;
         }
     }
-    cpbp2d.setParamter(prm);
+    cpbp2d.setParameter(prm);
 
     DoubleMatrix u;
     vector<ExtendedSpaceNode2D> info;
@@ -90,7 +92,7 @@ double CProblem2Backward2D::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) con
             double vi = 0.0;
             for (unsigned int i=0; i<mParameter.Lc; i++)
             {
-                vi += mParameter.k[i][on.id] * P(mParameter.eta[i].x, mParameter.eta[i].y, t);
+                vi += mParameter.k[i][on.id] * (P(mParameter.eta[i].x, mParameter.eta[i].y, t)-2.0*r*penalty(i, tn));
             }
             W += vi * on.w;
         }

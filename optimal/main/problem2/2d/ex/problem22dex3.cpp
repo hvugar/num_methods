@@ -36,13 +36,13 @@ void Problem22DEx3::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     Dimension spaceDimensionY = Dimension(0.001, 0, 1000);
 
     Problem2Forward2DEx3 *forward = new Problem2Forward2DEx3;
-    forward->setParamter(s);
+    forward->setParameter(s);
     forward->setTimeDimension(timeDimension);
     forward->addSpaceDimension(spaceDimensionX);
     forward->addSpaceDimension(spaceDimensionY);
 
     Problem2Backward2DEx3 *backward = NULL;// = new Problem2Backward2DEx3;
-    backward->setParamter(s);
+    backward->setParameter(s);
     backward->setTimeDimension(timeDimension);
     backward->addSpaceDimension(spaceDimensionX);
     backward->addSpaceDimension(spaceDimensionY);

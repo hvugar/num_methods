@@ -6,7 +6,8 @@ void CProblem2Forward2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     cpfp2d.setTimeDimension(Dimension(0.005, 0, 200));
     cpfp2d.addSpaceDimension(Dimension(0.01, 0, 100));
     cpfp2d.addSpaceDimension(Dimension(0.01, 0, 100));
-    cpfp2d.setEquationParameters(1.0, 0.01, 0.1, 10.0);
+    cpfp2d.setEquationParameters(1.0, 0.01, 0.1);
+    cpfp2d.setEnvTemperature(10.0);
 
     Parameter prm(4,4);
 
@@ -28,7 +29,7 @@ void CProblem2Forward2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
             prm.z[i][j] = +10.0;
         }
     }
-    cpfp2d.setParamter(prm);
+    cpfp2d.setParameter(prm);
 
     DoubleMatrix u;
     vector<ExtendedSpaceNode2D> info;

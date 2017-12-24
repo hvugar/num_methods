@@ -150,15 +150,24 @@ double IProblem22DPIBVP::f(const SpaceNodePDE&, const TimeNodePDE&) const
     return 0.0;
 }
 
-void IProblem22DPIBVP::setEquationParameters(double a, double lambda0, double lambda, double theta)
+void IProblem22DPIBVP::setEquationParameters(double a, double lambda0, double lambda)
 {
     this->a = a;
     this->lambda0 = lambda0;
     this->lambda = lambda;
+}
+
+void IProblem22DPIBVP::setIntTemperature(double fi)
+{
+    this->fi = fi;
+}
+
+void IProblem22DPIBVP::setEnvTemperature(double theta)
+{
     this->theta = theta;
 }
 
-void IProblem22DPIBVP::setParamter(const Parameter &parameter)
+void IProblem22DPIBVP::setParameter(const Parameter &parameter)
 {
     mParameter = parameter;
 }
@@ -345,30 +354,6 @@ void ExtendedSpaceNode2D::clearLayers()
 
 double ExtendedSpaceNode2D::value(unsigned int layer) const
 {
-    //    double P = 0.0;
-
-    //    double Li = 0.0;
-    //    double Lj = 0.0;
-    //    for (unsigned int j=0; j<rows; j++)
-    //    {
-    //        for (unsigned int i=0; i<cols; i++)
-    //        {
-    //            if (j==0) Lj = (((y-wi[1][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[0][i].y-wi[1][i].y)*(wi[0][i].y-wi[2][i].y)*(wi[0][i].y-wi[3][i].y)));
-    //            if (j==1) Lj = (((y-wi[0][i].y)*(y-wi[2][i].y)*(y-wi[3][i].y))/((wi[1][i].y-wi[0][i].y)*(wi[1][i].y-wi[2][i].y)*(wi[1][i].y-wi[3][i].y)));
-    //            if (j==2) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[3][i].y))/((wi[2][i].y-wi[0][i].y)*(wi[2][i].y-wi[1][i].y)*(wi[2][i].y-wi[3][i].y)));
-    //            if (j==3) Lj = (((y-wi[0][i].y)*(y-wi[1][i].y)*(y-wi[2][i].y))/((wi[3][i].y-wi[0][i].y)*(wi[3][i].y-wi[1][i].y)*(wi[3][i].y-wi[2][i].y)));
-
-
-    //            if (i==0) Li = (((x-wi[j][1].x)*(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][0].x-wi[j][1].x)*(wi[j][0].x-wi[j][2].x)*(wi[j][0].x-wi[j][3].x)));
-    //            if (i==1) Li = (((x-wi[j][0].x)*(x-wi[j][2].x)*(x-wi[j][3].x))/((wi[j][1].x-wi[j][0].x)*(wi[j][1].x-wi[j][2].x)*(wi[j][1].x-wi[j][3].x)));
-    //            if (i==2) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)*(x-wi[j][3].x))/((wi[j][2].x-wi[j][0].x)*(wi[j][2].x-wi[j][1].x)*(wi[j][2].x-wi[j][3].x)));
-    //            if (i==3) Li = (((x-wi[j][0].x)*(x-wi[j][1].x)*(x-wi[j][2].x))/((wi[j][3].x-wi[j][0].x)*(wi[j][3].x-wi[j][1].x)*(wi[j][3].x-wi[j][2].x)));
-
-    //            P += Lj*Li*wi[j][i].u[layer];
-    //        }
-    //    }
-    //    return P;
-
     double Lx[] = {0.0, 0.0, 0.0, 0.0};
     double Ly[] = {0.0, 0.0, 0.0, 0.0};
 

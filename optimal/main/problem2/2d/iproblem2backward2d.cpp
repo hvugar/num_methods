@@ -144,6 +144,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
         {
             tn.i = l;
             tn.t = l*ht + 0.5*ht;
+            //--------------------------------------------------------------------------//
             {
                 for (unsigned int n=0; n<=N; n++)
                 {
@@ -190,7 +191,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                     }
                 }
             }
-
+            //--------------------------------------------------------------------------//
             {
                 double* a2 = (double*) malloc(sizeof(double)*cntXSize*(M+1));
                 double* b2 = (double*) malloc(sizeof(double)*cntXSize*(M+1));
@@ -309,10 +310,10 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                                         }
                                     }
 
-                                    //
-                                    //
-                                    //
-                                    //
+                                    for (unsigned int i=0; i<Lc; i++)
+                                    {
+                                        d2[offset+m] -= 2.0 * r * ht *  mParameter.k[i][odn.id] * penalty(i, tn) * odn.w;
+                                    }
                                 }
                             }
 #endif
@@ -344,6 +345,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                 free(b2);
                 free(a2);
             }
+            //--------------------------------------------------------------------------//
         }
         //puts("IProblem2Backward2D::calculateMVD.y-->.");
         //IPrinter::printMatrix(ph);
@@ -355,6 +357,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
         {
             tn.i = l;
             tn.t = l*ht;
+            //--------------------------------------------------------------------------//
             {
                 for (unsigned int m=0; m<=M; m++)
                 {
@@ -397,7 +400,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                     }
                 }
             }
-
+            //--------------------------------------------------------------------------//
             {
                 double* a2 = (double*) malloc(sizeof(double)*cntYSize*(N+1));
                 double* b2 = (double*) malloc(sizeof(double)*cntYSize*(N+1));
@@ -513,10 +516,10 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                                         }
                                     }
 
-                                    //
-                                    //
-                                    //
-                                    //
+                                    for (unsigned int i=0; i<Lc; i++)
+                                    {
+                                        d2[offset+n] -= 2.0 * r * ht *  mParameter.k[i][odn.id] * penalty(i, tn) * odn.w;
+                                    }
 
                                 }
                             }
@@ -548,6 +551,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                 free(b2);
                 free(a2);
             }
+            //--------------------------------------------------------------------------//
         }
         //puts("IProblem2Backward2D::calculateMVD.x-->.");
         //IPrinter::printMatrix(p);
@@ -597,6 +601,16 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
 #endif
     ph.clear();
     //puts("IProblem2Backward2D::calculateMVD.");
+}
+
+void IProblem2Backward2D::setPenaltyCoefficient(double r)
+{
+    this->r = r;
+}
+
+double IProblem2Backward2D::penaltyCoefficient() const
+{
+    return r;
 }
 
 bool IProblem2Backward2D::checkDelta(double _delta) const

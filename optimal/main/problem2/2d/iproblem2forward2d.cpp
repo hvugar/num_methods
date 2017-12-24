@@ -307,9 +307,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
 
                                         if (!found)
                                         {
-                                            //printf("%d %d %d %d %d %d %d %f %f\n", cdn.id, on.id, on.i, on.j, offset, m, cntXSize*(M+1), on.x, on.y);
                                             d2[offset+m] += ht * mParameter.k[cdn.id][on.id] * uh[on.j][on.i] * cdn.w * on.w;
-                                            //puts("---");
                                         }
                                     }
 

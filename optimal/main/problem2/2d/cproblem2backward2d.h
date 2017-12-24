@@ -16,6 +16,8 @@ protected:
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
+    virtual double penalty(unsigned int i UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const { return 10.0; }
+
 protected:
     virtual double g1(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     virtual double g2(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
