@@ -56,6 +56,7 @@ public:
 
 protected:
     static void Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g);
+    static void Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, unsigned int start, unsigned int end);
     static void Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, unsigned int *inx, unsigned int size);
 };
 

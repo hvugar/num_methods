@@ -254,16 +254,16 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                                         bool found = false;
                                         for (unsigned int cs=0; cs<cntXSize; cs++)
                                         {
-                                            if (on.n == cntX[cs])
+                                            if (on.i == cntX[cs])
                                             {
                                                 found = true;
-                                                w2[offset+m][cs*(M+1)+on.m] += -ht * mParameter.k[i][on.j] * _delta * on.w;
+                                                w2[offset+m][cs*(M+1)+on.j] += -ht * mParameter.k[i][on.id] * _delta * on.w;
                                             }
                                         }
 
                                         if (!found)
                                         {
-                                            d2[offset+m] += ht * mParameter.k[i][on.j] * uh[on.m][on.n] * _delta * on.w;
+                                            d2[offset+m] += ht * mParameter.k[i][on.id] * uh[on.j][on.i] * _delta * on.w;
                                         }
                                     }
 
@@ -467,16 +467,16 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                                         bool found = false;
                                         for (unsigned int cs=0; cs<cntYSize; cs++)
                                         {
-                                            if (on.m == cntY[cs])
+                                            if (on.j == cntY[cs])
                                             {
                                                 found = true;
-                                                w2[offset+n][cs*(N+1)+on.n] += -ht * mParameter.k[i][on.j] * _delta * on.w;
+                                                w2[offset+n][cs*(N+1)+on.i] += -ht * mParameter.k[i][on.id] * _delta * on.w;
                                             }
                                         }
 
                                         if (!found)
                                         {
-                                            d2[offset+n] += ht * mParameter.k[i][on.j] * u[on.m][on.n] * _delta * on.w;
+                                            d2[offset+n] += ht * mParameter.k[i][on.id] * u[on.j][on.i] * _delta * on.w;
                                         }
                                     }
 
@@ -494,9 +494,11 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                                 const ControlDeltaNode &cdn = cndeltaNodes.at(cni);
                                 if (cdn.i == sn.i && cdn.j == sn.j)
                                 {
+                                    //printf("%d %d\n", cdn.i, cdn.j);
                                     for (unsigned int s=0; s<observeNodes.size(); s++)
                                     {
                                         const ObservationNode &on = observeNodes[s];
+                                        //printf("%d %d\n", on.i, on.j);
 
                                         //if (on.m == cdn.m)
                                         //{
@@ -511,7 +513,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                                         for (unsigned int cs=0; cs<cntYSize; cs++)
                                         {
                                             if (on.j == cntY[cs])
-                                            {
+                                            {                                                
                                                 found = true;
                                                 w2[offset+n][cs*(N+1)+on.i] += -ht * mParameter.k[cdn.id][on.id] * cdn.w * on.w;
                                             }
@@ -537,6 +539,13 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                 }
 
                 LinearEquation::func1(a2, b2, c2, d2, w2.data(), x2, cntYSize*(N+1));
+
+                if (l==L)
+                {
+                FILE *file = fopen("data.txt", "w");
+                IPrinter::print(w2,w2.rows(),w2.cols(),14,10,file);
+                fclose(file);
+                }
 
                 offset = 0;
                 for (unsigned int m=0; m<=M; m++)
@@ -620,7 +629,7 @@ bool IProblem2Forward2D::checkDelta(double _delta) const
 
 double IProblem2Forward2D::delta(const SpaceNodePDE &sn, const SpaceNodePDE &eta, unsigned int i UNUSED_PARAM, unsigned int source UNUSED_PARAM) const
 {
-    return delta4(sn, eta, i);
+    return delta3(sn, eta, i);
 }
 
 double IProblem2Forward2D::delta1(const SpaceNodePDE &sn, const SpaceNodePDE &eta, unsigned int) const

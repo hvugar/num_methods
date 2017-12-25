@@ -50,7 +50,7 @@ double AbstactProblem22D::fx(const DoubleVector &prms) const
     double intgrl = integral(u);
     u.clear();
 
-    return intgrl + epsilon*norm() + r*penalty(info);
+    return intgrl;// + epsilon*norm() + r*penalty(info);
 }
 
 double AbstactProblem22D::integral(const DoubleMatrix &u) const

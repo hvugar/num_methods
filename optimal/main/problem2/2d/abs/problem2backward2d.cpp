@@ -41,29 +41,41 @@ double Problem2Backward2D::g4(const SpaceNodePDE &, const TimeNodePDE &) const
     return 0.0;
 }
 
+
+double MinB = +10000000.0;
+double MaxB = -10000000.0;
 void Problem2Backward2D::layerInfo(const DoubleMatrix &p, unsigned int ln) const
 {
     C_UNUSED(p);
     C_UNUSED(ln);
 
-    //    if (ln==timeDimension().sizeN())
-    //    {
-    //        IPrinter::printSeperatorLine("P100");
-    //        IPrinter::printMatrix(p);
-    //        IPrinter::printSeperatorLine();
+//    if (p.min()<MinB) MinB = p.min();
+//    if (p.max()>MaxB) MaxB = p.max();
+//    printf("%f %f\n", MinB, MaxB);
 
-    //        QPixmap px;
-    //        visualizeMatrixHeat(p,  p.min(), p.max(), px);
-    //        px.save("p100.png", "PNG");
-    //    }
-    //    if (ln==0)
-    //    {
-    //        IPrinter::printSeperatorLine("P0");
-    //        IPrinter::printMatrix(p);
-    //        IPrinter::printSeperatorLine();
+    QPixmap px;
+    visualizeMatrixHeat(p, p.min(), p.max(), px);
+    px.save(QString("pics/p/p%1.png").arg(ln), "PNG");
 
-    //        QPixmap px;
-    //        visualizeMatrixHeat(p,  p.min(), p.max(), px);
-    //        px.save("p0.png", "PNG");
-    //    }
+
+//        if (ln==timeDimension().sizeN())
+//        {
+////            IPrinter::printSeperatorLine("P100");
+////            IPrinter::printMatrix(p);
+////            IPrinter::printSeperatorLine();
+
+//            QPixmap px;
+//            visualizeMatrixHeat(p,  p.min(), p.max(), px);
+//            px.save(QString("p%1").arg(ln), "PNG");
+//        }
+//        if (ln==0)
+//        {
+////            IPrinter::printSeperatorLine("P0");
+////            IPrinter::printMatrix(p);
+////            IPrinter::printSeperatorLine();
+
+//            QPixmap px;
+//            visualizeMatrixHeat(p,  p.min(), p.max(), px);
+//            px.save("p0.png", "PNG");
+//        }
 }

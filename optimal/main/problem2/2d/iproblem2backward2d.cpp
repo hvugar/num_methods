@@ -254,23 +254,23 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                                         bool found = false;
                                         for (unsigned int cs=0; cs<cntXSize; cs++)
                                         {
-                                            if (cn.n == cntX[cs])
+                                            if (cn.i == cntX[cs])
                                             {
                                                 found = true;
-                                                w2[offset+m][cs*(M+1)+cn.m] += -ht * mParameter.k[cn.i][j] * _delta * cn.w;
+                                                w2[offset+m][cs*(M+1)+cn.j] += -ht * mParameter.k[cn.id][j] * _delta * cn.w;
                                             }
                                         }
 
                                         if (!found)
                                         {
-                                            d2[offset+m] += ht * mParameter.k[cn.i][j] * ph[cn.m][cn.n] * _delta * cn.w;
+                                            d2[offset+m] += ht * mParameter.k[cn.id][j] * ph[cn.j][cn.i] * _delta * cn.w;
                                         }
                                     }
 
-                                    //
-                                    //
-                                    //
-                                    //
+//                                    for (unsigned int i=0; i<mParameter.Lc; i++)
+//                                    {
+//                                        d2[offset+m] -= 2.0 * r * ht *  mParameter.k[i][odn.id] * penalty(i, tn) * odn.w;
+//                                    }
                                 }
                             }
 #endif
@@ -460,16 +460,16 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                                         bool found = false;
                                         for (unsigned int cs=0; cs<cntYSize; cs++)
                                         {
-                                            if (cn.m == cntY[cs])
+                                            if (cn.j == cntY[cs])
                                             {
                                                 found = true;
-                                                w2[offset+n][cs*(N+1)+cn.n] += -ht * mParameter.k[cn.i][j] * _delta * cn.w;
+                                                w2[offset+n][cs*(N+1)+cn.i] += -ht * mParameter.k[cn.id][j] * _delta * cn.w;
                                             }
                                         }
 
                                         if (!found)
                                         {
-                                            d2[offset+n] += ht * mParameter.k[cn.i][j] * p[cn.m][cn.n] * _delta * cn.w;
+                                            d2[offset+n] += ht * mParameter.k[cn.id][j] * p[cn.j][cn.i] * _delta * cn.w;
                                         }
                                     }
 
