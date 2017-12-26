@@ -53,9 +53,9 @@ void Problem2Backward2D::layerInfo(const DoubleMatrix &p, unsigned int ln) const
 //    if (p.max()>MaxB) MaxB = p.max();
 //    printf("%f %f\n", MinB, MaxB);
 
-    QPixmap px;
-    visualizeMatrixHeat(p, p.min(), p.max(), px);
-    px.save(QString("pics/p/p%1.png").arg(ln), "PNG");
+//    QPixmap px;
+//    visualizeMatrixHeat(p, p.min(), p.max(), px);
+//    px.save(QString("pics/p/p%1.png").arg(ln), "PNG");
 
 
 //        if (ln==timeDimension().sizeN())

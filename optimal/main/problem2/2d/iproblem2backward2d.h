@@ -41,11 +41,13 @@ protected:
     void extendControlPoint1(const SpaceNodePDE &cp, std::vector<ControlNode> &ops, unsigned int i) const;
     void extendControlPoint2(const SpaceNodePDE &cp, std::vector<ControlNode> &ops, unsigned int i) const;
     void extendControlPoint3(const SpaceNodePDE &cp, std::vector<ControlNode> &ops, unsigned int i) const;
+    void extendControlPoint4(const SpaceNodePDE &cp, std::vector<ControlNode> &ops, unsigned int i) const;
 
     void extendObservationDeltaPoint0(const SpaceNodePDE &op, std::vector<ObservationDeltaNode> &ops, unsigned int j) const;
     void extendObservationDeltaPoint1(const SpaceNodePDE &op, std::vector<ObservationDeltaNode> &ons, unsigned int j) const;
     void extendObservationDeltaPoint2(const SpaceNodePDE &op, std::vector<ObservationDeltaNode> &ons, unsigned int j) const;
     void extendObservationDeltaPoint3(const SpaceNodePDE &op, std::vector<ObservationDeltaNode> &ons, unsigned int j) const;
+    void extendObservationDeltaPoint4(const SpaceNodePDE &op, std::vector<ObservationDeltaNode> &ons, unsigned int j) const;
 
 protected:
     double r;

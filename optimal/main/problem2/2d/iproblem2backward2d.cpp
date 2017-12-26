@@ -744,6 +744,9 @@ void IProblem2Backward2D::extendControlPoint0(const SpaceNodePDE &eta, std::vect
 #ifdef APPROX_B1_3
     extendControlPoint3(eta, cns, i);
 #endif
+#ifdef APPROX_B1_4
+    extendControlPoint4(eta, cns, i);
+#endif
 }
 
 void IProblem2Backward2D::extendControlPoint1(const SpaceNodePDE &eta, std::vector<ControlNode> &cns, unsigned int i) const
@@ -887,14 +890,14 @@ void IProblem2Backward2D::extendControlPoint3(const SpaceNodePDE &eta, std::vect
 
     double factor = (1.0/(2.0*M_PI*sigmaX*sigmaY));
 
-    unsigned int k=3;
+    unsigned int k=5;
     for (unsigned int n=rx-k; n<=rx+k; n++)
     {
         for (unsigned int m=ry-k; m<=ry+k; m++)
         {
             ControlNode cn;
             cn.i = n; cn.x = n*hx; cn.j = m; cn.y = m*hy; cn.eta = eta; cn.id = i;
-            cn.w = factor*exp(-0.5*(((cn.x-eta.x)*(cn.x-eta.x))/(sigmaX*sigmaX)+((cn.y-eta.y)*(cn.y-eta.y))/(sigmaY*sigmaY)));
+            cn.w = factor*exp(-0.5*(((cn.x-eta.x)*(cn.x-eta.x))/(sigmaX*sigmaX)+((cn.y-eta.y)*(cn.y-eta.y))/(sigmaY*sigmaY))) * (hx*hy);
             ons.push_back(cn);
         }
     }
@@ -910,6 +913,9 @@ void IProblem2Backward2D::extendObservationDeltaPoint0(const SpaceNodePDE &xi, s
 #endif
 #ifdef APPROX_BD_3
     extendObservationDeltaPoint3(xi, ops, j);
+#endif
+#ifdef APPROX_BD_4
+    extendObservationDeltaPoint4(xi, ops, j);
 #endif
 }
 
@@ -1056,7 +1062,7 @@ void IProblem2Backward2D::extendObservationDeltaPoint3(const SpaceNodePDE &xi, s
 
     double factor = (1.0/(2.0*M_PI*sigmaX*sigmaY));
 
-    unsigned int k=3;
+    unsigned int k=5;
     for (unsigned int n=rx-k; n<=rx+k; n++)
     {
         for (unsigned int m=ry-k; m<=ry+k; m++)
@@ -1065,6 +1071,96 @@ void IProblem2Backward2D::extendObservationDeltaPoint3(const SpaceNodePDE &xi, s
             on.i = n; on.x = n*hx; on.j = m; on.y = m*hy; on.xi = xi; on.id = j;
             on.w = factor*exp(-0.5*(((on.x-xi.x)*(on.x-xi.x))/(sigmaX*sigmaX)+((on.y-xi.y)*(on.y-xi.y))/(sigmaY*sigmaY)));
             ops.push_back(on);
+        }
+    }
+}
+
+//--------------------------//
+
+void IProblem2Backward2D::extendObservationDeltaPoint4(const SpaceNodePDE &xi, std::vector<ObservationDeltaNode> &cps, unsigned int i) const
+{
+    Dimension xd = spaceDimension(Dimension::DimensionX);
+    Dimension yd = spaceDimension(Dimension::DimensionY);
+    double hx = xd.step();
+    double hy = yd.step();
+    unsigned int Nx = xd.sizeN();
+    unsigned int Ny = yd.sizeN();
+
+    double sigmaX = 3.0*hx;
+    double sigmaY = 3.0*hy;
+
+    unsigned int x0 = (unsigned int)(round(xi.x*Nx));
+    unsigned int y0 = (unsigned int)(round(xi.y*Ny));
+
+    double sumX = 0.0;
+    for (unsigned int n=x0-3; n<=x0+3; n++)
+    {
+        sumX += exp(-((n*hx-xi.x)*(n*hx-xi.x))/(2.0*sigmaX*sigmaX));
+    }
+    sumX *= hx;
+
+    double sumY = 0.0;
+    for (unsigned int m=y0-3; m<=y0+3; m++)
+    {
+        sumY += exp(-((m*hy-xi.y)*(m*hy-xi.y))/(2.0*sigmaY*sigmaY));
+    }
+    sumY *= hy;
+
+    double sigma = (sumX*sumY);// / (2.0*M_PI);
+    double factor = 1.0/(/*(2.0*M_PI)*/sigma);
+
+    for (unsigned int n=x0-3; n<=x0+3; n++)
+    {
+        for (unsigned int m=y0-3; m<=y0+3; m++)
+        {
+            ObservationDeltaNode on;
+            on.i = n; on.x = n*hx; on.j = m; on.y = m*hy; on.xi = xi; on.id = i;
+            on.w = factor*exp(-((on.x-xi.x)*(on.x-xi.x))/(2.0*sigmaX*sigmaX)-((on.y-xi.y)*(on.y-xi.y))/(2.0*sigmaY*sigmaY));
+            cps.push_back(on);
+        }
+    }
+}
+
+void IProblem2Backward2D::extendControlPoint4(const SpaceNodePDE &eta, std::vector<ControlNode> &ons, unsigned int i) const
+{
+    Dimension xd = spaceDimension(Dimension::DimensionX);
+    Dimension yd = spaceDimension(Dimension::DimensionY);
+    double hx = xd.step();
+    double hy = yd.step();
+    unsigned int Nx = xd.sizeN();
+    unsigned int Ny = yd.sizeN();
+
+    double sigmaX = 3.0*hx;
+    double sigmaY = 3.0*hy;
+
+    unsigned int x0 = (unsigned int)(round(eta.x*Nx));
+    unsigned int y0 = (unsigned int)(round(eta.y*Ny));
+
+    double sumX = 0.0;
+    for (unsigned int n=x0-3; n<=x0+3; n++)
+    {
+        sumX += exp(-((n*hx-eta.x)*(n*hx-eta.x))/(2.0*sigmaX*sigmaX));
+    }
+    sumX *= hx;
+
+    double sumY = 0.0;
+    for (unsigned int m=y0-3; m<=y0+3; m++)
+    {
+        sumY += exp(-((m*hy-eta.y)*(m*hy-eta.y))/(2.0*sigmaY*sigmaY));
+    }
+    sumY *= hy;
+
+    double sigma = (sumX*sumY);// / (2.0*M_PI);
+    double factor = 1.0/(/*(2.0*M_PI)*/sigma);
+
+    for (unsigned int n=x0-3; n<=x0+3; n++)
+    {
+        for (unsigned int m=y0-3; m<=y0+3; m++)
+        {
+            ControlNode cn;
+            cn.i = n; cn.x = n*hx; cn.j = m; cn.y = m*hy; cn.eta = eta; cn.id = i;
+            cn.w = factor*exp(-((cn.x-eta.x)*(cn.x-eta.x))/(2.0*sigmaX*sigmaX)-((cn.y-eta.y)*(cn.y-eta.y))/(2.0*sigmaY*sigmaY)) * (hx*hy);
+            ons.push_back(cn);
         }
     }
 }

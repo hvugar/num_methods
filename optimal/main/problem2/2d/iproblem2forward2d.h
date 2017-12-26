@@ -36,11 +36,13 @@ protected:
     void extendObservationPoint1(const SpaceNodePDE &op, std::vector<ObservationNode> &ops, unsigned int j) const;
     void extendObservationPoint2(const SpaceNodePDE &op, std::vector<ObservationNode> &ops, unsigned int j) const;
     void extendObservationPoint3(const SpaceNodePDE &op, std::vector<ObservationNode> &ops, unsigned int j) const;
+    void extendObservationPoint4(const SpaceNodePDE &op, std::vector<ObservationNode> &ops, unsigned int j) const;
 
     void extendContrlDeltaPoint0(const SpaceNodePDE &cp, std::vector<ControlDeltaNode> &cps, unsigned int i) const;
     void extendContrlDeltaPoint1(const SpaceNodePDE &cp, std::vector<ControlDeltaNode> &cps, unsigned int i) const;
     void extendContrlDeltaPoint2(const SpaceNodePDE &cp, std::vector<ControlDeltaNode> &cps, unsigned int i) const;
     void extendContrlDeltaPoint3(const SpaceNodePDE &cp, std::vector<ControlDeltaNode> &cps, unsigned int i) const;
+    void extendContrlDeltaPoint4(const SpaceNodePDE &cp, std::vector<ControlDeltaNode> &cps, unsigned int i) const;
 };
 
 #endif // IPROBLEM2FORWARD2D_H

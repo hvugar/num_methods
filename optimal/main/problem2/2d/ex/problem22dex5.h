@@ -11,6 +11,7 @@ public:
 
     Problem22DEx5();
 
+    static void Table1Y1();
     static void experiment1();
     static void experiment2();
 
