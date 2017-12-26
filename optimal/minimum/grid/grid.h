@@ -11,6 +11,20 @@ struct MINIMUMSHARED_EXPORT GridNodeODE
     int i;
 };
 
+struct MINIMUMSHARED_EXPORT SpacePoint
+{
+    double x;
+    double y;
+    double z;
+};
+
+struct MINIMUMSHARED_EXPORT SpaceGridNode
+{
+    unsigned int i;
+    unsigned int j;
+    unsigned int k;
+};
+
 struct MINIMUMSHARED_EXPORT SpaceNodePDE
 {
     SpaceNodePDE();

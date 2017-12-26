@@ -25,7 +25,7 @@ void AbstactProblem22D::optimization(DoubleVector &prm0)
     g.setEpsilon1(0.000);
     g.setEpsilon2(0.000);
     g.setEpsilon3(0.000);
-    g.setR1MinimizeEpsilon(10.0, 0.001);
+    g.setR1MinimizeEpsilon(1.0, 0.001);
     g.setNormalize(true);
     g.showEndMessage(true);
     g.setResetIteration(false);

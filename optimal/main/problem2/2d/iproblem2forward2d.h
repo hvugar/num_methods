@@ -11,6 +11,7 @@ public:
     virtual ~IProblem2Forward2D();
 
     void calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2D> &info, bool use = true) const;
+    void calculateMVD1(DoubleMatrix &u, vector<ExtendedSpaceNode2D> &info, bool use = true) const;
     virtual void layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const = 0;
 
 protected:

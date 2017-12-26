@@ -11,6 +11,7 @@ public:
     virtual ~IProblem2Backward2D();
 
     void calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode2D> &info, bool use = true);
+    void calculateMVD1(DoubleMatrix &p, vector<ExtendedSpaceNode2D> &info, bool use = true);
     virtual void layerInfo(const DoubleMatrix &p, unsigned int layerNumber) const = 0;
 
     virtual double penalty(unsigned int i, const TimeNodePDE &tn) const = 0;

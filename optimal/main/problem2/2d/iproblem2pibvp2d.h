@@ -10,11 +10,11 @@ using namespace std;
 #define USE_F_VARIANT_2
 #define USE_B_VARIANT_2
 
-#define APPROX_F1_4
-#define APPROX_FD_4
+#define APPROX_F1_3
+#define APPROX_FD_3
 
-#define APPROX_B1_4
-#define APPROX_BD_4
+#define APPROX_B1_3
+#define APPROX_BD_3
 
 struct ExtendedGridNode
 {
