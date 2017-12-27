@@ -1,9 +1,9 @@
 #include "problem2backward2d.h"
-#include "abstractproblem22d.h"
+#include "ifunctional.h"
 
 double Problem2Backward2D::initial(const SpaceNodePDE & sn) const
 {
-    return -2.0 * ap22d->mu(sn.x, sn.y) * ((*u)[sn.j][sn.i] - (*U)[sn.j][sn.i]);
+    return -2.0 * func->mu(sn.x, sn.y) * ((*u)[sn.j][sn.i] - (*U)[sn.j][sn.i]);
 }
 
 double Problem2Backward2D::boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const
@@ -18,7 +18,7 @@ double Problem2Backward2D::f(const SpaceNodePDE &, const TimeNodePDE &) const
 
 double Problem2Backward2D::penalty(unsigned int i, const TimeNodePDE &tn) const
 {
-    return ap22d->gpi(i, tn.i, *info);
+    return func->gpi(i, tn.i, *info);
 }
 
 double Problem2Backward2D::g1(const SpaceNodePDE &, const TimeNodePDE &) const
@@ -41,9 +41,6 @@ double Problem2Backward2D::g4(const SpaceNodePDE &, const TimeNodePDE &) const
     return 0.0;
 }
 
-
-double MinB = +10000000.0;
-double MaxB = -10000000.0;
 void Problem2Backward2D::layerInfo(const DoubleMatrix &p, unsigned int ln) const
 {
     C_UNUSED(p);

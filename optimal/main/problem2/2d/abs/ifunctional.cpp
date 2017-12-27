@@ -1,51 +1,28 @@
-#include "abstractproblem22d.h"
+#include "ifunctional.h"
+#include "problem2forward2d.h"
+#include "problem2backward2d.h"
+#include <math.h>
 
-AbstactProblem22D::AbstactProblem22D()
+IFunctional::IFunctional()
 {
     forward = new Problem2Forward2D();
     backward = new Problem2Backward2D();
-    //backward->func = this;
+    backward->func = this;
 }
 
-AbstactProblem22D::~AbstactProblem22D()
+double IFunctional::fx(const DoubleVector &prms) const
 {
-    delete forward;
-    delete backward;
-}
+    IFunctional* functional = const_cast<IFunctional*>(this);
 
-void AbstactProblem22D::optimization(DoubleVector &prm0)
-{
-    AbstactProblem22D* p = const_cast<AbstactProblem22D*>(this);
-
-    ConjugateGradient g;
-    g.setFunction(this);
-    g.setGradient(this);
-    g.setPrinter(this);
-    g.setProjection(p);
-    g.setEpsilon1(0.000);
-    g.setEpsilon2(0.000);
-    g.setEpsilon3(0.000);
-    g.setR1MinimizeEpsilon(1.0, 0.001);
-    g.setNormalize(true);
-    g.showEndMessage(true);
-    g.setResetIteration(false);
-
-    g.calculate(prm0);
-}
-
-double AbstactProblem22D::fx(const DoubleVector &prms) const
-{
-    AbstactProblem22D* ap22d = const_cast<AbstactProblem22D*>(this);
-
-    ap22d->mParameter.fromVector(prms);
-    ap22d->forward->setParameter(mParameter);
+    functional->mParameter.fromVector(prms);
+    functional->forward->setParameter(mParameter);
 
     DoubleMatrix u;
     vector<ExtendedSpaceNode2D> info;
-    ap22d->forward->calculateMVD(u, info, true);
+    functional->forward->calculateMVD(u, info, true);
 
-    ap22d->backward->setPenaltyCoefficient(r);
-    ap22d->backward->info = &info;
+    functional->backward->setPenaltyCoefficient(r);
+    functional->backward->info = &info;
 
     double intgrl = integral(u);
     u.clear();
@@ -53,7 +30,7 @@ double AbstactProblem22D::fx(const DoubleVector &prms) const
     return intgrl + epsilon*norm() + r*penalty(info);
 }
 
-double AbstactProblem22D::integral(const DoubleMatrix &u) const
+double IFunctional::integral(const DoubleMatrix &u) const
 {
     double hx = mSpaceDimensionX.step();
     double hy = mSpaceDimensionY.step();
@@ -91,7 +68,7 @@ double AbstactProblem22D::integral(const DoubleMatrix &u) const
     return sum;
 }
 
-double AbstactProblem22D::norm() const
+double IFunctional::norm() const
 {
     double norm = 0.0;
 
@@ -113,12 +90,7 @@ double AbstactProblem22D::norm() const
     return norm;
 }
 
-double AbstactProblem22D::mu(double x UNUSED_PARAM, double y UNUSED_PARAM) const
-{
-    return 1.0;
-}
-
-double AbstactProblem22D::penalty(const vector<ExtendedSpaceNode2D> &info) const
+double IFunctional::penalty(const vector<ExtendedSpaceNode2D> &info) const
 {
     double ht = mTimeDimension.step();
     unsigned int L = mTimeDimension.sizeN();
@@ -134,13 +106,13 @@ double AbstactProblem22D::penalty(const vector<ExtendedSpaceNode2D> &info) const
     return p_sum*ht;
 }
 
-double AbstactProblem22D::gpi(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2D> &info) const
+double IFunctional::gpi(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2D> &info) const
 {
     double p = fabs(g0i(i, layer, info)) - (vmax.at(i) - vmin.at(i))/2.0;
     return p > 0.0 ? p : 0.0;
 }
 
-double AbstactProblem22D::g0i(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2D> &info) const
+double IFunctional::g0i(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2D> &info) const
 {
     double vi = 0.0;
     for (unsigned int j=0; j<mParameter.Lo; j++)
@@ -151,7 +123,12 @@ double AbstactProblem22D::g0i(unsigned int i, unsigned int layer, const vector<E
     return (vmax.at(i) + vmin.at(i))/2.0 - vi;
 }
 
-void AbstactProblem22D::gradient(const DoubleVector &prms, DoubleVector &g)
+double IFunctional::mu(double x UNUSED_PARAM, double y UNUSED_PARAM) const
+{
+    return 1.0;
+}
+
+void IFunctional::gradient(const DoubleVector &prms, DoubleVector &g)
 {
     unsigned int L = mTimeDimension.sizeN();
     double ht = mTimeDimension.step();
@@ -291,15 +268,7 @@ void AbstactProblem22D::gradient(const DoubleVector &prms, DoubleVector &g)
     p_info.clear();
 }
 
-void AbstactProblem22D::print(unsigned int i, const DoubleVector & x, const DoubleVector & g, double, GradientMethod::MethodResult) const
-{
-    printf("I[%d]: %10.6f\n", i, fx(x));
-    IPrinter::print(x,x.length(),8,4);
-    IPrinter::print(g,g.length(),8,4);
-    IPrinter::printSeperatorLine();
-}
-
-void AbstactProblem22D::project(DoubleVector &prm, unsigned int index)
+void IFunctional::project(DoubleVector &prm, unsigned int index)
 {
     if ( 2*mParameter.Lc*mParameter.Lo <= index && index <= 2*mParameter.Lc*mParameter.Lo + 2*mParameter.Lc + 2*mParameter.Lo - 1 )
     {
@@ -308,8 +277,15 @@ void AbstactProblem22D::project(DoubleVector &prm, unsigned int index)
     }
 }
 
+void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double, GradientMethod::MethodResult) const
+{
+    printf("I[%d]: %10.6f\n", i, fx(x));
+    IPrinter::print(x,x.length(),8,4);
+    IPrinter::print(g,g.length(),8,4);
+    IPrinter::printSeperatorLine();
+}
 
-void AbstactProblem22D::setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY)
+void IFunctional::setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY)
 {
     mTimeDimension = timeDimension;
     mSpaceDimensionX = spaceDimensionX;
@@ -324,61 +300,54 @@ void AbstactProblem22D::setGridParameters(Dimension timeDimension, Dimension spa
     backward->addSpaceDimension(mSpaceDimensionY);
 }
 
-void AbstactProblem22D::setEquationParameters(double a, double lambda0, double lambda)
+void IFunctional::setEquationParameters(double a, double lambda0, double lambda)
 {
     forward->setEquationParameters(a, lambda0, lambda);
     backward->setEquationParameters(a, lambda0, lambda);
 }
 
-void AbstactProblem22D::setIntTemperature(double fi)
+void IFunctional::setIntTemperature(double fi)
 {
     forward->setIntTemperature(fi);
     backward->setIntTemperature(fi);
 }
 
-void AbstactProblem22D::setEnvTemperature(double theta)
+void IFunctional::setEnvTemperature(double theta)
 {
     forward->setEnvTemperature(theta);
     backward->setEnvTemperature(theta);
 }
 
-void AbstactProblem22D::setEpsilon(double epsilon)
+void IFunctional::setEpsilon(double epsilon)
 {
     this->epsilon = epsilon;
 }
 
-void AbstactProblem22D::setPenaltyCoefficient(double r)
+void IFunctional::setPenaltyCoefficient(double r)
 {
     this->r = r;
     backward->setPenaltyCoefficient(r);
 }
 
-void AbstactProblem22D::setParameter(const Parameter &parameter)
+void IFunctional::setPenaltyLimits(const DoubleVector &vmin, const DoubleVector &vmax)
+{
+    this->vmin = vmin;
+    this->vmax = vmax;
+}
+
+void IFunctional::setParameter(const Parameter &parameter)
 {
     this->mParameter = parameter;
     forward->setParameter(parameter);
     backward->setParameter(parameter);
 }
 
-void AbstactProblem22D::setParameter0(const Parameter &parameter0)
+void IFunctional::setParameter0(const Parameter &parameter0)
 {
     this->mParameter0 = parameter0;
 }
 
-void AbstactProblem22D::setPenaltyLimits(const DoubleVector &vmin, const DoubleVector &vmax)
-{
-    this->vmin = vmin;
-    this->vmax = vmax;
-}
-
-void AbstactProblem22D::calculateU()
-{
-    forward->setParameter(mParameter0);
-    vector<ExtendedSpaceNode2D> info;
-    forward->calculateMVD(U, info, false);
-}
-
-double AbstactProblem22D::sgn(double x) const
+double IFunctional::sgn(double x) const
 {
     if (x<0.0) return -1.0;
     else if (x>0.0) return +1.0;

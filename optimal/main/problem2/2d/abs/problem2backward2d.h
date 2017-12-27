@@ -3,14 +3,14 @@
 
 #include "../iproblem2backward2d.h"
 
-class AbstactProblem22D;
+class IFunctional;
 
 class Problem2Backward2D : public IProblem2Backward2D
 {
 public:
     virtual ~Problem2Backward2D() {}
 
-    AbstactProblem22D *ap22d;
+    IFunctional *func;
     DoubleMatrix *U;
     DoubleMatrix *u;
     vector<ExtendedSpaceNode2D> *info;

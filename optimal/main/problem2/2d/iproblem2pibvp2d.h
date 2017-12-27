@@ -16,6 +16,8 @@ using namespace std;
 #define APPROX_B1_3
 #define APPROX_BD_3
 
+//#define USE_ADDITIONAL_FUNCTIONS
+
 struct ExtendedGridNode
 {
     SpaceNodePDE point;

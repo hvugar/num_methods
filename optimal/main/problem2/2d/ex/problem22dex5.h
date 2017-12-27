@@ -17,7 +17,12 @@ public:
     static void experiment1();
     static void experiment2();
 
+    virtual double fx(const DoubleVector &prms) const;
+    virtual void gradient(const DoubleVector &prms, DoubleVector &g);
+
 private:
+    vector<double> fis;
+    vector<double> thetas;
 };
 
 #endif // PROBLEM22DEX5_H

@@ -76,7 +76,9 @@ SOURCES += main.cpp \
     problem2/2d/abs/problem2forward2d.cpp \
     problem2/2d/abs/problem2backward2d.cpp \
     problem2/2d/dirakdelta.cpp \
-    problem2/2d/ex/expol.cpp
+    problem2/2d/ex/expol.cpp \
+    problem2/2d/abs/ifunctional.cpp \
+    problem2/2d/abs/jfunctional.cpp
 
 HEADERS += \
     load_sys/slodenlcsm.h \
@@ -118,4 +120,6 @@ HEADERS += \
     problem2/2d/abs/problem2forward2d.h \
     problem2/2d/abs/problem2backward2d.h \
     problem2/2d/dirakdelta.h \
-    problem2/2d/ex/expol.h
+    problem2/2d/ex/expol.h \
+    problem2/2d/abs/ifunctional.h \
+    problem2/2d/abs/jfunctional.h

@@ -20,12 +20,6 @@ protected:
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
 
 protected:
-    virtual double g1(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const = 0;
-    virtual double g2(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const = 0;
-    virtual double g3(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const = 0;
-    virtual double g4(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const = 0;
-
-protected:
     double delta(const SpaceNodePDE &sn, const SpaceNodePDE &eta, unsigned int i, unsigned int source = 10) const;
     double delta1(const SpaceNodePDE &sn, const SpaceNodePDE &eta, unsigned int i = 0) const;
     double delta2(const SpaceNodePDE &sn, const SpaceNodePDE &eta, unsigned int i = 0) const;
@@ -44,6 +38,14 @@ protected:
     void extendContrlDeltaPoint2(const SpaceNodePDE &cp, std::vector<ControlDeltaNode> &cps, unsigned int i) const;
     void extendContrlDeltaPoint3(const SpaceNodePDE &cp, std::vector<ControlDeltaNode> &cps, unsigned int i) const;
     void extendContrlDeltaPoint4(const SpaceNodePDE &cp, std::vector<ControlDeltaNode> &cps, unsigned int i) const;
+
+#ifdef USE_ADDITIONAL_FUNCTIONS
+protected:
+    virtual double g1(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const = 0;
+    virtual double g2(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const = 0;
+    virtual double g3(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const = 0;
+    virtual double g4(const SpaceNodePDE &sn, const TimeNodePDE &tn UNUSED_PARAM) const = 0;
+#endif
 };
 
 #endif // IPROBLEM2FORWARD2D_H

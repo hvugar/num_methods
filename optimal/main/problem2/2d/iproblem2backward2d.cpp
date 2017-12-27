@@ -5,7 +5,6 @@ IProblem2Backward2D::~IProblem2Backward2D()
 
 void IProblem2Backward2D::calculateMVD1(DoubleMatrix &p, vector<ExtendedSpaceNode2D> &info, bool use)
 {
-    //puts("IProblem2Backward2D::calculateMVD...");
     Dimension xd = spaceDimension(Dimension::DimensionX);
     Dimension yd = spaceDimension(Dimension::DimensionY);
     Dimension td = timeDimension();
@@ -155,7 +154,10 @@ void IProblem2Backward2D::calculateMVD1(DoubleMatrix &p, vector<ExtendedSpaceNod
                         {
                             sn.j = m; sn.y = m*hy;
 
-                            d1Y[m] = 2.0*p[m][n] - ht*f(sn, tn);
+                            d1Y[m] = 2.0*p[m][n];
+#ifdef USE_ADDITIONAL_FUNCTIONS
+                            d1Y[m] -= ht*f(sn, tn);
+#endif
 
                             if (n==0)       d1Y[m] += a2_ht__hx2*(p[m][0]   - 2.0*p[m][1]   + p[m][2]);
                             if (n>0 && n<N) d1Y[m] += a2_ht__hx2*(p[m][n-1] - 2.0*p[m][n]   + p[m][n+1]);
@@ -166,18 +168,18 @@ void IProblem2Backward2D::calculateMVD1(DoubleMatrix &p, vector<ExtendedSpaceNod
                                 a1Y[0] = 0.0;
                                 b1Y[0] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht - 2.0*a2_lambda_ht__hy;
                                 c1Y[0] = -2.0*a2_ht__hy2;
-
-
+#ifdef USE_ADDITIONAL_FUNCTIONS
                                 d1Y[0] += ((2.0*a*a*ht)/(hy))*g3(sn, tn);
+#endif
                             }
                             else if (m == M)
                             {
                                 a1Y[M] = -2.0*a2_ht__hy2;
                                 b1Y[M] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht - 2.0*a2_lambda_ht__hy;
                                 c1Y[M] = 0.0;
-
-
+#ifdef USE_ADDITIONAL_FUNCTIONS
                                 d1Y[M] += ((2.0*a*a*ht)/(hy))*g4(sn, tn);
+#endif
                             }
                             else
                             {
@@ -211,7 +213,10 @@ void IProblem2Backward2D::calculateMVD1(DoubleMatrix &p, vector<ExtendedSpaceNod
                         {
                             sn.j = m; sn.y = m*hy;
 
-                            d2[offset+m] = 2.0*p[m][n] - ht*f(sn, tn);
+                            d2[offset+m] = 2.0*p[m][n];
+#ifdef USE_ADDITIONAL_FUNCTIONS
+                            d2[offset+m] -= ht*f(sn, tn);
+#endif
 
                             if (n==0)       d2[offset+m] += a2_ht__hx2*(p[m][0]   - 2.0*p[m][1]   + p[m][2]);
                             if (n>0 && n<N) d2[offset+m] += a2_ht__hx2*(p[m][n-1] - 2.0*p[m][n]   + p[m][n+1]);
@@ -222,16 +227,18 @@ void IProblem2Backward2D::calculateMVD1(DoubleMatrix &p, vector<ExtendedSpaceNod
                                 a2[offset+0] = 0.0;
                                 b2[offset+0] = +2.0 + 2.0*a2_ht__hy2 + lambda0*ht - 2.0*a2_lambda_ht__hy;
                                 c2[offset+0] = -2.0*a2_ht__hy2;
-
+#ifdef USE_ADDITIONAL_FUNCTIONS
                                 d2[offset+0] += ((2.0*a*a*ht)/hy)*g3(sn, tn);
+#endif
                             }
                             else if (m == M)
                             {
                                 a2[offset+M] = -2.0*a2_ht__hy2;
                                 b2[offset+M] = 2.0 + 2.0*a2_ht__hy2 + lambda0*ht - 2.0*a2_lambda_ht__hy;
                                 c2[offset+M] = 0.0;
-
+#ifdef USE_ADDITIONAL_FUNCTIONS
                                 d2[offset+M] += ((2.0*a*a*ht)/(hy))*g4(sn, tn);
+#endif
                             }
                             else
                             {
@@ -368,8 +375,10 @@ void IProblem2Backward2D::calculateMVD1(DoubleMatrix &p, vector<ExtendedSpaceNod
                         {
                             sn.i = n; sn.x = n*hx;
 
-                            d1X[n] = 2.0*ph[m][n] - ht*f(sn, tn);
-
+                            d1X[n] = 2.0*ph[m][n];
+#ifdef USE_ADDITIONAL_FUNCTIONS
+                            d1X[n] -= ht*f(sn, tn);
+#endif
                             if (m==0)       d1X[n] += a2_ht__hy2*(ph[0][n]   - 2.0*ph[1][n]   + ph[2][n]);
                             if (m>0 && m<M) d1X[n] += a2_ht__hy2*(ph[m-1][n] - 2.0*ph[m][n]   + ph[m+1][n]);
                             if (m==M)       d1X[n] += a2_ht__hy2*(ph[M-2][n] - 2.0*ph[M-1][n] + ph[M][n]);
@@ -379,14 +388,18 @@ void IProblem2Backward2D::calculateMVD1(DoubleMatrix &p, vector<ExtendedSpaceNod
                                 a1X[0] = 0.0;
                                 b1X[0] = 2.0 + 2.0*a2_ht__hx2 + lambda0_ht - 2.0*a2_lambda_ht__hx;
                                 c1X[0] = -2.0*a2_ht__hx2;
+#ifdef USE_ADDITIONAL_FUNCTIONS
                                 d1X[0] += ((2.0*a*a*ht)/hx)*g1(sn, tn);
+#endif
                             }
                             else if (n == N)
                             {
                                 a1X[N] = -2.0*a2_ht__hx2;
                                 b1X[N] = 2.0 + 2.0*a2_ht__hx2 + lambda0_ht - 2.0*a2_lambda_ht__hx;
                                 c1X[N] = 0.0;
+#ifdef USE_ADDITIONAL_FUNCTIONS
                                 d1X[N] += ((2.0*a*a*ht)/(hx))*g2(sn, tn);
+#endif
                             }
                             else
                             {
@@ -419,7 +432,10 @@ void IProblem2Backward2D::calculateMVD1(DoubleMatrix &p, vector<ExtendedSpaceNod
                         {
                             sn.i = n; sn.x = n*hx;
 
-                            d2[offset+n] = 2.0*ph[m][n] - ht*f(sn, tn);
+                            d2[offset+n] = 2.0*ph[m][n];
+#ifdef USE_ADDITIONAL_FUNCTIONS
+                            d2[offset+n] -= ht*f(sn, tn);
+#endif
 
                             if (m==0)       d2[offset+n] += a2_ht__hy2*(ph[0][n]   - 2.0*ph[1][n]   + ph[2][n]);
                             if (m>0 && m<M) d2[offset+n] += a2_ht__hy2*(ph[m-1][n] - 2.0*ph[m][n]   + ph[m+1][n]);
@@ -430,14 +446,18 @@ void IProblem2Backward2D::calculateMVD1(DoubleMatrix &p, vector<ExtendedSpaceNod
                                 a2[offset+0] = 0.0;
                                 b2[offset+0] = +2.0 + 2.0*a2_ht__hx2 + lambda0_ht - 2.0*a2_lambda_ht__hx;
                                 c2[offset+0] = -2.0*a2_ht__hx2;
+#ifdef USE_ADDITIONAL_FUNCTIONS
                                 d2[offset+0] += ((2.0*a*a*ht)/hx)*g1(sn, tn);
+#endif
                             }
                             else if (n == N)
                             {
                                 a2[offset+N] = -2.0*a2_ht__hx2;
                                 b2[offset+N] = +2.0 + 2.0*a2_ht__hx2 + lambda0_ht - 2.0*a2_lambda_ht__hx;
                                 c2[offset+N] = 0.0;
+#ifdef USE_ADDITIONAL_FUNCTIONS
                                 d2[offset+N] += ((2.0*a*a*ht)/(hx))*g2(sn, tn);
+#endif
                             }
                             else
                             {
@@ -777,7 +797,10 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                     {
                         sn.j = m; sn.y = m*hy;
 
-                        d1Y[m] = 2.0*p[m][n] - ht*f(sn, tn);
+                        d1Y[m] = 2.0*p[m][n];
+#ifdef USE_ADDITIONAL_FUNCTIONS
+                        d1Y[m] -= ht*f(sn, tn);
+#endif
 
                         if (n==0)       d1Y[m] += a2_ht__hx2*(p[m][0]   - 2.0*p[m][1]   + p[m][2]);
                         if (n>0 && n<N) d1Y[m] += a2_ht__hx2*(p[m][n-1] - 2.0*p[m][n]   + p[m][n+1]);
@@ -788,18 +811,18 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                             a1Y[0] = 0.0;
                             b1Y[0] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht - 2.0*a2_lambda_ht__hy;
                             c1Y[0] = -2.0*a2_ht__hy2;
-
-
+#ifdef USE_ADDITIONAL_FUNCTIONS
                             d1Y[0] += ((2.0*a*a*ht)/(hy))*g3(sn, tn);
+#endif
                         }
                         else if (m == M)
                         {
                             a1Y[M] = -2.0*a2_ht__hy2;
                             b1Y[M] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht - 2.0*a2_lambda_ht__hy;
                             c1Y[M] = 0.0;
-
-
+#ifdef USE_ADDITIONAL_FUNCTIONS
                             d1Y[M] += ((2.0*a*a*ht)/(hy))*g4(sn, tn);
+#endif
                         }
                         else
                         {
@@ -824,7 +847,10 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                     {
                         sn.j = m; sn.y = m*hy;
 
-                        d1Y[m] = 2.0*p[m][n] - ht*f(sn, tn);
+                        d1Y[m] = 2.0*p[m][n];
+#ifdef USE_ADDITIONAL_FUNCTIONS
+                        d1Y[m] -= ht*f(sn, tn);
+#endif
 
                         if (n==0)       d1Y[m] += a2_ht__hx2*(p[m][0]   - 2.0*p[m][1]   + p[m][2]);
                         if (n>0 && n<N) d1Y[m] += a2_ht__hx2*(p[m][n-1] - 2.0*p[m][n]   + p[m][n+1]);
@@ -835,18 +861,18 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                             a1Y[0] = 0.0;
                             b1Y[0] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht - 2.0*a2_lambda_ht__hy;
                             c1Y[0] = -2.0*a2_ht__hy2;
-
-
+#ifdef USE_ADDITIONAL_FUNCTIONS
                             d1Y[0] += ((2.0*a*a*ht)/(hy))*g3(sn, tn);
+#endif
                         }
                         else if (m == M)
                         {
                             a1Y[M] = -2.0*a2_ht__hy2;
                             b1Y[M] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht - 2.0*a2_lambda_ht__hy;
                             c1Y[M] = 0.0;
-
-
+#ifdef USE_ADDITIONAL_FUNCTIONS
                             d1Y[M] += ((2.0*a*a*ht)/(hy))*g4(sn, tn);
+#endif
                         }
                         else
                         {
@@ -896,7 +922,10 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                     {
                         sn.j = m; sn.y = m*hy;
 
-                        d2[offset+m] = 2.0*p[m][n] - ht*f(sn, tn);
+                        d2[offset+m] = 2.0*p[m][n];
+#ifdef USE_ADDITIONAL_FUNCTIONS
+                        d2[offset+m] -= ht*f(sn, tn);
+#endif
 
                         if (n==0)       d2[offset+m] += a2_ht__hx2*(p[m][0]   - 2.0*p[m][1]   + p[m][2]);
                         if (n>0 && n<N) d2[offset+m] += a2_ht__hx2*(p[m][n-1] - 2.0*p[m][n]   + p[m][n+1]);
@@ -907,16 +936,18 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                             a2[offset+0] = 0.0;
                             b2[offset+0] = +2.0 + 2.0*a2_ht__hy2 + lambda0*ht - 2.0*a2_lambda_ht__hy;
                             c2[offset+0] = -2.0*a2_ht__hy2;
-
+#ifdef USE_ADDITIONAL_FUNCTIONS
                             d2[offset+0] += ((2.0*a*a*ht)/hy)*g3(sn, tn);
+#endif
                         }
                         else if (m == M)
                         {
                             a2[offset+M] = -2.0*a2_ht__hy2;
                             b2[offset+M] = 2.0 + 2.0*a2_ht__hy2 + lambda0*ht - 2.0*a2_lambda_ht__hy;
                             c2[offset+M] = 0.0;
-
+#ifdef USE_ADDITIONAL_FUNCTIONS
                             d2[offset+M] += ((2.0*a*a*ht)/(hy))*g4(sn, tn);
+#endif
                         }
                         else
                         {
@@ -1011,7 +1042,10 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                     {
                         sn.i = n; sn.x = n*hx;
 
-                        d1X[n] = 2.0*ph[m][n] - ht*f(sn, tn);
+                        d1X[n] = 2.0*ph[m][n];
+#ifdef USE_ADDITIONAL_FUNCTIONS
+                        d1X[n] -= ht*f(sn, tn);
+#endif
 
                         if (m==0)       d1X[n] += a2_ht__hy2*(ph[0][n]   - 2.0*ph[1][n]   + ph[2][n]);
                         if (m>0 && m<M) d1X[n] += a2_ht__hy2*(ph[m-1][n] - 2.0*ph[m][n]   + ph[m+1][n]);
@@ -1022,14 +1056,18 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                             a1X[0] = 0.0;
                             b1X[0] = 2.0 + 2.0*a2_ht__hx2 + lambda0_ht - 2.0*a2_lambda_ht__hx;
                             c1X[0] = -2.0*a2_ht__hx2;
+#ifdef USE_ADDITIONAL_FUNCTIONS
                             d1X[0] += ((2.0*a*a*ht)/hx)*g1(sn, tn);
+#endif
                         }
                         else if (n == N)
                         {
                             a1X[N] = -2.0*a2_ht__hx2;
                             b1X[N] = 2.0 + 2.0*a2_ht__hx2 + lambda0_ht - 2.0*a2_lambda_ht__hx;
                             c1X[N] = 0.0;
+#ifdef USE_ADDITIONAL_FUNCTIONS
                             d1X[N] += ((2.0*a*a*ht)/(hx))*g2(sn, tn);
+#endif
                         }
                         else
                         {
@@ -1053,7 +1091,10 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                     {
                         sn.i = n; sn.x = n*hx;
 
-                        d1X[n] = 2.0*ph[m][n] - ht*f(sn, tn);
+                        d1X[n] = 2.0*ph[m][n];
+#ifdef USE_ADDITIONAL_FUNCTIONS
+                        d1X[n] -= ht*f(sn, tn);
+#endif
 
                         if (m==0)       d1X[n] += a2_ht__hy2*(ph[0][n]   - 2.0*ph[1][n]   + ph[2][n]);
                         if (m>0 && m<M) d1X[n] += a2_ht__hy2*(ph[m-1][n] - 2.0*ph[m][n]   + ph[m+1][n]);
@@ -1064,14 +1105,18 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                             a1X[0] = 0.0;
                             b1X[0] = 2.0 + 2.0*a2_ht__hx2 + lambda0_ht - 2.0*a2_lambda_ht__hx;
                             c1X[0] = -2.0*a2_ht__hx2;
+#ifdef USE_ADDITIONAL_FUNCTIONS
                             d1X[0] += ((2.0*a*a*ht)/hx)*g1(sn, tn);
+#endif
                         }
                         else if (n == N)
                         {
                             a1X[N] = -2.0*a2_ht__hx2;
                             b1X[N] = 2.0 + 2.0*a2_ht__hx2 + lambda0_ht - 2.0*a2_lambda_ht__hx;
                             c1X[N] = 0.0;
+#ifdef USE_ADDITIONAL_FUNCTIONS
                             d1X[N] += ((2.0*a*a*ht)/(hx))*g2(sn, tn);
+#endif
                         }
                         else
                         {
@@ -1120,7 +1165,10 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                     {
                         sn.i = n; sn.x = n*hx;
 
-                        d2[offset+n] = 2.0*ph[m][n] - ht*f(sn, tn);
+                        d2[offset+n] = 2.0*ph[m][n];
+#ifdef USE_ADDITIONAL_FUNCTIONS
+                        d2[offset+n] -= ht*f(sn, tn);
+#endif
 
                         if (m==0)       d2[offset+n] += a2_ht__hy2*(ph[0][n]   - 2.0*ph[1][n]   + ph[2][n]);
                         if (m>0 && m<M) d2[offset+n] += a2_ht__hy2*(ph[m-1][n] - 2.0*ph[m][n]   + ph[m+1][n]);
@@ -1131,14 +1179,18 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
                             a2[offset+0] = 0.0;
                             b2[offset+0] = +2.0 + 2.0*a2_ht__hx2 + lambda0_ht - 2.0*a2_lambda_ht__hx;
                             c2[offset+0] = -2.0*a2_ht__hx2;
+#ifdef USE_ADDITIONAL_FUNCTIONS
                             d2[offset+0] += ((2.0*a*a*ht)/hx)*g1(sn, tn);
+#endif
                         }
                         else if (n == N)
                         {
                             a2[offset+N] = -2.0*a2_ht__hx2;
                             b2[offset+N] = +2.0 + 2.0*a2_ht__hx2 + lambda0_ht - 2.0*a2_lambda_ht__hx;
                             c2[offset+N] = 0.0;
+#ifdef USE_ADDITIONAL_FUNCTIONS
                             d2[offset+N] += ((2.0*a*a*ht)/(hx))*g2(sn, tn);
+#endif
                         }
                         else
                         {

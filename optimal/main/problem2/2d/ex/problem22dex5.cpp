@@ -2,16 +2,16 @@
 
 void Problem22DEx5::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    //Table1Y1();
-    Table1Y2();
+    Table1Y1();
+    //Table1Y2();
     //experiment2();
 }
 
 Problem22DEx5::Problem22DEx5() : AbstactProblem22D()
 {   
     Dimension time = Dimension(0.005, 0, 200);
-    Dimension dimX = Dimension(0.01, 0, 100);
-    Dimension dimY = Dimension(0.01, 0, 100);
+    Dimension dimX = Dimension(0.010, 0, 100);
+    Dimension dimY = Dimension(0.010, 0, 100);
     setGridParameters(time, dimX, dimY);
 
     U.resize(dimY.sizeN()+1, dimX.sizeN()+1, 10.0);
@@ -23,16 +23,19 @@ void Problem22DEx5::Table1Y1()
     unsigned int Lc = 2;
     unsigned int Lo = 2;
 
-    Dimension time = Dimension(0.005, 0, 200);
-    Dimension dimX = Dimension(0.01, 0, 100);
-    Dimension dimY = Dimension(0.01, 0, 100);
-    p22d5.setGridParameters(time, dimX, dimY);
+    p22d5.fis.resize(3);
+    p22d5.fis[0] = 0.2;
+    p22d5.fis[1] = 0.3;
+    p22d5.fis[2] = 0.5;
 
-    p22d5.U.resize(dimY.sizeN()+1, dimX.sizeN()+1, 10.0);
+    p22d5.thetas.resize(3);
+    p22d5.thetas[0] = 6.3;
+    p22d5.thetas[1] = 6.4;
+    p22d5.thetas[2] = 6.5;
 
     p22d5.setEquationParameters(1.0, 0.01, 0.01);
-    p22d5.setIntTemperature(0.1);
-    p22d5.setEnvTemperature(6.3);
+    //p22d5.setIntTemperature(0.1);
+    //p22d5.setEnvTemperature(6.3);
     p22d5.setEpsilon(0.0);
     p22d5.setPenaltyCoefficient(1.0);
     p22d5.setPenaltyLimits(DoubleVector(Lc, -5.0), DoubleVector(Lc, +20.0));
@@ -40,11 +43,11 @@ void Problem22DEx5::Table1Y1()
     {
         Parameter rpm0(Lc, Lo);
 
-        rpm0.k[0][0] = -0.100; rpm0.k[1][0] = -0.128;
-        rpm0.k[0][1] = -0.110; rpm0.k[1][1] = -0.104;
+        rpm0.k[0][0] = -1.100; rpm0.k[1][0] = -1.128;
+        rpm0.k[0][1] = -1.110; rpm0.k[1][1] = -1.104;
 
-        rpm0.z[0][0] = +10.5; rpm0.z[1][0] = +10.7;
-        rpm0.z[0][1] = +12.4; rpm0.z[1][1] = +10.5;
+        rpm0.z[0][0] = +10.50; rpm0.z[1][0] = +10.70;
+        rpm0.z[0][1] = +12.40; rpm0.z[1][1] = +10.50;
 
         rpm0.eta[0].setPoint(0.3000, 0.6000);
         rpm0.eta[1].setPoint(0.6000, 0.2000);
@@ -57,8 +60,8 @@ void Problem22DEx5::Table1Y1()
 
     Parameter rpm(Lc, Lo);
 
-    rpm.k[0][0] = -0.86; rpm.k[1][0] = -0.98;
-    rpm.k[0][1] = -0.93; rpm.k[1][1] = -0.82;
+    rpm.k[0][0] = -1.86; rpm.k[1][0] = -1.98;
+    rpm.k[0][1] = -1.93; rpm.k[1][1] = -1.82;
 
     rpm.z[0][0] = +10.5; rpm.z[1][0] = +11.7;
     rpm.z[0][1] = +11.4; rpm.z[1][1] = +10.5;
@@ -80,7 +83,7 @@ void Problem22DEx5::Table1Y1()
     DoubleVector v;
     rpm.toVector(v);
     printf("%f %f %f\n", u.min(), u.max(), p22d5.fx(v));
-    //    return;
+    //return;
 
     IPrinter::printSeperatorLine();
     DoubleVector pv;
@@ -161,12 +164,19 @@ void Problem22DEx5::Table1Y2()
     unsigned int Lc = 2;
     unsigned int Lo = 2;
 
+    //    Dimension time = Dimension(0.005, 0, 200);
+    //    Dimension dimX = Dimension(0.01, 0, 100);
+    //    Dimension dimY = Dimension(0.01, 0, 100);
+    //    p22d5.setGridParameters(time, dimX, dimY);
+
+    //    p22d5.U.resize(dimY.sizeN()+1, dimX.sizeN()+1, 10.0);
+
     p22d5.setEquationParameters(1.0, 0.01, 0.01);
     p22d5.setIntTemperature(0.1);
     p22d5.setEnvTemperature(6.3);
     p22d5.setEpsilon(0.0);
     p22d5.setPenaltyCoefficient(0.0);
-    p22d5.setPenaltyLimits(DoubleVector(Lc, -10.0), DoubleVector(Lc, +10.0));
+    p22d5.setPenaltyLimits(DoubleVector(Lc, -5.0), DoubleVector(Lc, +10.0));
 
     {
         Parameter rpm0(Lc, Lo);
@@ -174,8 +184,8 @@ void Problem22DEx5::Table1Y2()
         rpm0.k[0][0] = -0.100; rpm0.k[1][0] = -0.128;
         rpm0.k[0][1] = -0.110; rpm0.k[1][1] = -0.104;
 
-        rpm0.z[0][0] = +10.5; rpm0.z[1][0] = +10.7;
-        rpm0.z[0][1] = +12.4; rpm0.z[1][1] = +10.5;
+        rpm0.z[0][0] = +10.50; rpm0.z[1][0] = +10.70;
+        rpm0.z[0][1] = +12.40; rpm0.z[1][1] = +10.50;
 
         rpm0.eta[0].setPoint(0.3000, 0.6000);
         rpm0.eta[1].setPoint(0.6000, 0.2000);
@@ -188,11 +198,11 @@ void Problem22DEx5::Table1Y2()
 
     Parameter rpm(Lc, Lo);
 
-    rpm.k[0][0] = -1.13; rpm.k[1][0] = -1.15;
-    rpm.k[0][1] = -1.65; rpm.k[1][1] = -1.34;
+    rpm.k[0][0] = -1.130; rpm.k[1][0] = -1.150;
+    rpm.k[0][1] = -1.650; rpm.k[1][1] = -1.340;
 
-    rpm.z[0][0] = +9.54; rpm.z[1][0] = +9.58;
-    rpm.z[0][1] = +8.44; rpm.z[1][1] = +9.48;
+    rpm.z[0][0] = +12.54; rpm.z[1][0] = +12.58;
+    rpm.z[0][1] = +14.44; rpm.z[1][1] = +13.48;
 
     rpm.eta[0].setPoint(0.7341,0.8248);
     rpm.eta[1].setPoint(0.2116,0.2329);
@@ -211,7 +221,7 @@ void Problem22DEx5::Table1Y2()
     DoubleVector v;
     rpm.toVector(v);
     printf("%f %f %f\n", u.min(), u.max(), p22d5.fx(v));
-//    return;
+    //return;
 
     IPrinter::printSeperatorLine();
     DoubleVector pv;
@@ -496,4 +506,52 @@ void Problem22DEx5::experiment2()
     DoubleVector x;
     rpm.toVector(x);
     p22d5.optimization(x);
+}
+
+double Problem22DEx5::fx(const DoubleVector &prms) const
+{
+    Problem22DEx5* ap22d = const_cast<Problem22DEx5*>(this);
+
+    double p_fi = 1.0/3.0;
+    double p_th = 1.0/3.0;
+
+    double sum = 0.0;
+    for (unsigned int i=0; i<fis.size(); i++)
+    {
+        ap22d->setIntTemperature(fis.at(i));
+        for (unsigned j=0; j<thetas.size(); j++)
+        {
+            ap22d->setEnvTemperature(thetas.at(j));
+            //printf("Init temp: %f Env temp: %f\n", fis.at(i), thetas.at(j));
+            sum += AbstactProblem22D::fx(prms)*p_fi*p_th;
+        }
+    }
+    return sum;
+}
+
+void Problem22DEx5::gradient(const DoubleVector &prms, DoubleVector &g)
+{
+    double p_fi = 1.0/3.0;
+    double p_th = 1.0/3.0;
+
+    g.resize(prms.length(), 0.0);
+
+    for (unsigned int i=0; i<fis.size(); i++)
+    {
+        setIntTemperature(fis[i]);
+        for (unsigned j=0; j<thetas.size(); j++)
+        {
+            setEnvTemperature(thetas[j]);
+
+            printf("Init temp: %f Env temp: %f\n", fis.at(i), thetas.at(j));
+
+            DoubleVector g0(prms.length(), 0.0);
+            AbstactProblem22D::gradient(prms, g0);
+            for (unsigned int k=0; k<prms.length(); k++)
+            {
+                g[k] += g0[k]*p_fi*p_th;
+            }
+            g0.clear();
+        }
+    }
 }
