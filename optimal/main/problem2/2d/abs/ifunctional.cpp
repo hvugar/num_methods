@@ -280,8 +280,8 @@ void IFunctional::project(DoubleVector &prm, unsigned int index)
 void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double, GradientMethod::MethodResult) const
 {
     printf("I[%d]: %10.6f\n", i, fx(x));
-    IPrinter::print(x,x.length(),8,4);
-    IPrinter::print(g,g.length(),8,4);
+    IPrinter::print(x,x.length(),10,4);
+    IPrinter::print(g,g.length(),10,4);
     IPrinter::printSeperatorLine();
 }
 

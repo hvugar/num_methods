@@ -14,7 +14,10 @@ public:
     static void Table1Y1();
     static void Table1Y2();
 
-    void optimization(DoubleVector &prm0);
+    static void Table2Y1();
+    static void Table3Y2();
+
+    static void test();
 };
 
 #endif // EXPOPTIMALLETTERS_H

@@ -51,3 +51,24 @@ void JFunctional::setEnvrTemperatures(const DoubleVector &thetas, const DoubleVe
     this->thetas = thetas;
     this->p_thetas = p_thetas;
 }
+
+void JFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const
+{
+    IFunctional::print(i,x,g,f,result);
+
+    DoubleMatrix u;
+    std::vector<ExtendedSpaceNode2D> info;
+    forward->calculateMVD(u, info, true);
+
+    std::string f_name= "data_v" + std::to_string(i)+".txt";
+    Parameter prm(x, 2, 2);
+    FILE *file = fopen(f_name.data(), "w");
+    for (int j=0; j<mTimeDimension.sizeN(); j++)
+    {
+        double v1 = prm.k[0][0]*(info[0].value(j)-prm.z[0][0]) + prm.k[0][1]*(info[1].value(j)-prm.z[0][1]);
+        double v2 = prm.k[1][0]*(info[0].value(j)-prm.z[1][0]) + prm.k[1][1]*(info[1].value(j)-prm.z[1][1]);
+        fprintf(file, "%f %f\n", v1, v2);
+    }
+    fclose(file);
+    puts("---");
+}
