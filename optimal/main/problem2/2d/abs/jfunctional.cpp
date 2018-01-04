@@ -21,6 +21,7 @@ double JFunctional::fx(const DoubleVector &prms) const
 
 void JFunctional::gradient(const DoubleVector &prms, DoubleVector &g)
 {
+    g.clear();
     g.resize(prms.length(), 0.0);
 
     for (unsigned int i=0; i<fis.length(); i++)

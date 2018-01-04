@@ -4,7 +4,8 @@ void ExpOptimalLetters::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //Table1Y2();
     //Table2Y1();
-    test();
+    Table3Y2();
+    //test();
 }
 
 void ExpOptimalLetters::Table1Y1()
@@ -375,6 +376,7 @@ void ExpOptimalLetters::Table3Y2()
     prm.eta[1].setPoint(0.3685,0.1275);
     prm.xi[0].setPoint(0.2514, 0.5254);
     prm.xi[1].setPoint(0.6147, 0.2487);
+    jfunc.setParameter(prm);
 
     ConjugateGradient g;
     g.setFunction(&jfunc);
@@ -417,26 +419,36 @@ void ExpOptimalLetters::test()
     jfunc.setPenaltyLimits(DoubleVector(Lc, -5.0), DoubleVector(Lc, +20.0));
 
     Parameter prm0(Lc, Lo);
-    prm0.k[0][0] = -1.100; prm0.k[1][0] = -1.128;
-    prm0.k[0][1] = -1.110; prm0.k[1][1] = -1.104;
-    prm0.z[0][0] = +10.50; prm0.z[1][0] = +10.70;
-    prm0.z[0][1] = +12.40; prm0.z[1][1] = +10.50;
-    prm0.eta[0].setPoint(0.3000, 0.6000);
-    prm0.eta[1].setPoint(0.6000, 0.2000);
-    prm0.xi[0].setPoint(0.5000, 0.8000);
-    prm0.xi[1].setPoint(0.2500, 0.3000);
+//    prm0.k[0][0] = -1.100; prm0.k[1][0] = -1.128;
+//    prm0.k[0][1] = -1.110; prm0.k[1][1] = -1.104;
+//    prm0.z[0][0] = +10.50; prm0.z[1][0] = +10.70;
+//    prm0.z[0][1] = +12.40; prm0.z[1][1] = +10.50;
+//    prm0.eta[0].setPoint(0.3000, 0.6000);
+//    prm0.eta[1].setPoint(0.6000, 0.2000);
+//    prm0.xi[0].setPoint(0.5000, 0.8000);
+//    prm0.xi[1].setPoint(0.2500, 0.3000);
     jfunc.setParameter0(prm0);
 
+//    Parameter prm(Lc, Lo);
+//    prm.k[0][0] = -1.8600;  prm.k[1][0] = -1.9800;
+//    prm.k[0][1] = -1.9300;  prm.k[1][1] = -1.8200;
+//    prm.z[0][0] = +10.5000; prm.z[1][0] = +11.7000;
+//    prm.z[0][1] = +11.4000; prm.z[1][1] = +10.5000;
+//    prm.eta[0].setPoint(0.3164,0.6854);
+//    prm.eta[1].setPoint(0.5847,0.3524);
+//    prm.xi[0].setPoint(0.7341, 0.8248);
+//    prm.xi[1].setPoint(0.2116, 0.2329);
+//    jfunc.setParameter(prm);
+
     Parameter prm(Lc, Lo);
-    prm.k[0][0] = -0.8000; prm.k[1][0] = -0.7751;
-    prm.k[0][1] = -0.7661; prm.k[1][1] = -0.7906;
+    prm.k[0][0] = -0.8000;  prm.k[1][0] = -0.7751;
+    prm.k[0][1] = -0.7661;  prm.k[1][1] = -0.7906;
     prm.z[0][0] = +10.2793; prm.z[1][0] = +11.4658;
     prm.z[0][1] = +11.1711; prm.z[1][1] = +10.2847;
     prm.eta[0].setPoint(0.6829,0.1908);
     prm.eta[1].setPoint(0.3947,0.6322);
     prm.xi[0].setPoint(0.6471, 0.3204);
     prm.xi[1].setPoint(0.5307, 0.5904);
-
     jfunc.setParameter(prm);
 
 //    DoubleMatrix u;
@@ -470,10 +482,10 @@ void ExpOptimalLetters::test()
     ng.resize(pv.length(), 0.0);
 
     puts("Calculating numerical gradients....");
-    IGradient::Gradient(&jfunc, 0.010, pv, ng, 0*prm.Lc*prm.Lo,          1*prm.Lc*prm.Lo-1);
-    IGradient::Gradient(&jfunc, 0.010, pv, ng, 1*prm.Lc*prm.Lo,          2*prm.Lc*prm.Lo-1);
-    IGradient::Gradient(&jfunc, 0.010, pv, ng, 2*prm.Lc*prm.Lo+0*Lc,     2*prm.Lc*prm.Lo+2*prm.Lc-1);
-    IGradient::Gradient(&jfunc, 0.010, pv, ng, 2*prm.Lc*prm.Lo+2*prm.Lc, 2*prm.Lc*prm.Lo+2*prm.Lc+2*prm.Lo-1);
+    //IGradient::Gradient(&jfunc, 0.010, pv, ng, 0*prm.Lc*prm.Lo,          1*prm.Lc*prm.Lo-1);
+    //IGradient::Gradient(&jfunc, 0.010, pv, ng, 1*prm.Lc*prm.Lo,          2*prm.Lc*prm.Lo-1);
+    //IGradient::Gradient(&jfunc, 0.010, pv, ng, 2*prm.Lc*prm.Lo+0*Lc,     2*prm.Lc*prm.Lo+2*prm.Lc-1);
+    //IGradient::Gradient(&jfunc, 0.010, pv, ng, 2*prm.Lc*prm.Lo+2*prm.Lc, 2*prm.Lc*prm.Lo+2*prm.Lc+2*prm.Lo-1);
     puts("Numerical gradients are calculated.");
 
     //k------------------------------------------------------//

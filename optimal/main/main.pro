@@ -3,7 +3,7 @@ CONFIG += console
 CONFIG -= app_bundle
 #CONFIG -= qt
 QT       += core gui widgets
-TARGET = main
+TARGET = main1
 #QMAKE_CXXFLAGS += -O2
 #QMAKE_CXXFLAGS_RELEASE = -O3
 #QMAKE_CFLAGS += -O3
@@ -78,7 +78,8 @@ SOURCES += main.cpp \
     problem2/2d/dirakdelta.cpp \
     problem2/2d/ex/expol.cpp \
     problem2/2d/abs/ifunctional.cpp \
-    problem2/2d/abs/jfunctional.cpp
+    problem2/2d/abs/jfunctional.cpp \
+    problem2/2d/abs/pfunctional.cpp
 
 HEADERS += \
     load_sys/slodenlcsm.h \
@@ -122,4 +123,5 @@ HEADERS += \
     problem2/2d/dirakdelta.h \
     problem2/2d/ex/expol.h \
     problem2/2d/abs/ifunctional.h \
-    problem2/2d/abs/jfunctional.h
+    problem2/2d/abs/jfunctional.h \
+    problem2/2d/abs/pfunctional.h
