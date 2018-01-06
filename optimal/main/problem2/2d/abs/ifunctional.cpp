@@ -279,7 +279,7 @@ void IFunctional::project(DoubleVector &prm, unsigned int index)
 
 void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const
 {
-    printf("I[%d]: %10.6f %10.6f\n", i, fx(x), f);
+    printf("I[%d]: %10.6f %10.6f R: %10.6f\n", i, fx(x), f, r);
     IPrinter::print(x,x.length(),10,4);
     IPrinter::print(g,g.length(),10,4);
 }

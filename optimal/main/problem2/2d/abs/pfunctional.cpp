@@ -16,9 +16,9 @@ void PFunctional::calculate(DoubleVector &x, double r)
         g.setGradient(jfunc);
         g.setPrinter(jfunc);
         g.setProjection(jfunc);
-        g.setEpsilon1(0.000);
-        g.setEpsilon2(0.000);
-        g.setEpsilon3(0.000);
+        g.setEpsilon1(0.0001);
+        g.setEpsilon2(0.0001);
+        g.setEpsilon3(0.0001);
         g.setR1MinimizeEpsilon(1.0, 0.001);
         g.setNormalize(true);
         g.showEndMessage(true);

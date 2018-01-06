@@ -3,6 +3,7 @@
 
 #include "../abs/abstractproblem22d.h"
 #include "../abs/jfunctional.h"
+#include "../abs/pfunctional.h"
 
 class ExpOptimalLetters
 {
@@ -16,6 +17,8 @@ public:
 
     static void Table2Y1();
     static void Table3Y2();
+
+    static void Table4();
 
     static void test();
 };
