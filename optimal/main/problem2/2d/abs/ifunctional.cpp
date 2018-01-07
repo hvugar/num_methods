@@ -16,18 +16,22 @@ double IFunctional::fx(const DoubleVector &prms) const
 
     functional->mParameter.fromVector(prms);
     functional->forward->setParameter(mParameter);
+    functional->backward->setParameter(mParameter);
 
     DoubleMatrix u;
     vector<ExtendedSpaceNode2D> info;
     functional->forward->calculateMVD(u, info, true);
 
-    functional->backward->setPenaltyCoefficient(r);
-    functional->backward->info = &info;
-
     double intgrl = integral(u);
     u.clear();
 
-    return intgrl + epsilon*norm() + r*penalty(info);
+    double v1 = mParameter.k[0][0]*(info[0].value(mTimeDimension.sizeN())-mParameter.z[0][0])
+            + mParameter.k[0][1]*(info[1].value(mTimeDimension.sizeN())-mParameter.z[0][1]);
+    double v2 = mParameter.k[1][0]*(info[0].value(mTimeDimension.sizeN())-mParameter.z[1][0])
+            + mParameter.k[1][1]*(info[1].value(mTimeDimension.sizeN())-mParameter.z[1][1]);
+    printf("%f %f\t", v1, v2);
+
+    return intgrl/* + epsilon*norm()*/ + r*penalty(info);
 }
 
 double IFunctional::integral(const DoubleMatrix &u) const
@@ -90,10 +94,15 @@ double IFunctional::norm() const
     return norm;
 }
 
-double IFunctional::penalty(const vector<ExtendedSpaceNode2D> &info) const
+double IFunctional::penalty(vector<ExtendedSpaceNode2D> &info) const
 {
+    IFunctional* functional = const_cast<IFunctional*>(this);
+
     double ht = mTimeDimension.step();
     unsigned int L = mTimeDimension.sizeN();
+
+    functional->backward->setPenaltyCoefficient(r);
+    functional->backward->info = &info;
 
     double p_sum = 0.0;
 
@@ -297,6 +306,13 @@ void IFunctional::setGridParameters(Dimension timeDimension, Dimension spaceDime
     backward->setTimeDimension(mTimeDimension);
     backward->addSpaceDimension(mSpaceDimensionX);
     backward->addSpaceDimension(mSpaceDimensionY);
+}
+
+void IFunctional::setGridTimeDimension(Dimension timeDimension)
+{
+    mTimeDimension = timeDimension;
+    forward->setTimeDimension(timeDimension);
+    backward->setTimeDimension(timeDimension);
 }
 
 void IFunctional::setEquationParameters(double a, double lambda0, double lambda)

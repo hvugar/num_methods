@@ -16,7 +16,7 @@ public:
     virtual double fx(const DoubleVector &prms) const;
     virtual double integral(const DoubleMatrix &u) const;
     virtual double norm() const;
-    virtual double penalty(const vector<ExtendedSpaceNode2D> &info) const;
+    virtual double penalty(vector<ExtendedSpaceNode2D> &info) const;
     virtual double gpi(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2D> &info) const;
     virtual double g0i(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2D> &info) const;
     virtual double mu(double x, double y) const;
@@ -27,6 +27,7 @@ public:
     virtual void project(DoubleVector &x, unsigned int index);
 
     void setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY);
+    void setGridTimeDimension(Dimension timeDimension);
     void setEquationParameters(double a, double lambda0, double lambda);
     void setIntTemperature(double fi);
     void setEnvTemperature(double theta);

@@ -3,6 +3,7 @@
 
 #include "jfunctional.h"
 #include <gradient_cjt.h>
+#include <gradient_sd.h>
 
 class PFunctional
 {

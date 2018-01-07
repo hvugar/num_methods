@@ -20,7 +20,7 @@ void PFunctional::calculate(DoubleVector &x, double r)
         g.setEpsilon2(0.0001);
         g.setEpsilon3(0.0001);
         g.setR1MinimizeEpsilon(1.0, 0.001);
-        g.setNormalize(true);
+        //g.setNormalize(true);
         g.showEndMessage(true);
         //g.setResetIteration(false);
 

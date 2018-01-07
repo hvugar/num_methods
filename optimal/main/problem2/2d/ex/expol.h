@@ -21,6 +21,8 @@ public:
     static void Table4();
 
     static void test();
+
+    static void figure1();
 };
 
 #endif // EXPOPTIMALLETTERS_H

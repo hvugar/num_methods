@@ -6,7 +6,8 @@ void ExpOptimalLetters::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Table2Y1();
     //Table3Y2();
     //test();
-    Table4();
+    //Table4();
+    figure1();
 }
 
 void ExpOptimalLetters::Table1Y1()
@@ -615,4 +616,68 @@ void ExpOptimalLetters::test()
     IPrinter::print(ax,ax.length(),14,4);
     IPrinter::print(nx,nx.length(),14,4);
     IPrinter::printSeperatorLine();
+}
+
+void ExpOptimalLetters::figure1()
+{
+    JFunctional jfunc;
+    unsigned int Lc = 2;
+    unsigned int Lo = 2;
+
+    jfunc.setGridParameters(Dimension(0.005, 0, 200), Dimension(0.010, 0, 100), Dimension(0.010, 0, 100));
+    jfunc.U.resize(101, 101, 10.0);
+
+    DoubleVector fis; fis << +0.2;// << +0.3 << +0.5;
+    DoubleVector p_fis(fis.length(), 1.0/fis.length());
+
+    DoubleVector thetas; thetas << +6.3;// << +6.4 << +6.5;
+    DoubleVector p_thetas(thetas.length(), 1.0/thetas.length());
+
+    jfunc.setInitTemperatures(fis, p_fis);
+    jfunc.setEnvrTemperatures(thetas, p_thetas);
+
+    jfunc.setEquationParameters(1.0, 0.01, 0.01);
+    jfunc.setEpsilon(0.0);
+    jfunc.setPenaltyCoefficient(20.0);
+    jfunc.setPenaltyLimits(DoubleVector(Lc, -5.0), DoubleVector(Lc, +20.0));
+
+    Parameter prm0(Lc, Lo);
+    prm0.k[0][0] = -1.100; prm0.k[1][0] = -1.128;
+    prm0.k[0][1] = -1.110; prm0.k[1][1] = -1.104;
+    prm0.z[0][0] = +10.50; prm0.z[1][0] = +10.70;
+    prm0.z[0][1] = +12.40; prm0.z[1][1] = +10.50;
+    prm0.eta[0].setPoint(0.3000, 0.6000);
+    prm0.eta[1].setPoint(0.6000, 0.2000);
+    prm0.xi[0].setPoint(0.5000, 0.8000);
+    prm0.xi[1].setPoint(0.2500, 0.3000);
+    jfunc.setParameter0(prm0);
+
+    Parameter prm(Lc, Lo);
+    prm.k[0][0] = -0.80; prm.k[1][0] = -0.78;
+    prm.k[0][1] = -0.77; prm.k[1][1] = -0.79;
+    prm.z[0][0] = +10.28; prm.z[1][0] = +11.47;
+    prm.z[0][1] = +11.17; prm.z[1][1] = +10.29;
+    prm.eta[0].setPoint(0.7229,0.1908);
+    prm.eta[1].setPoint(0.3947,0.6722);
+    prm.xi[0].setPoint(0.6071,0.3204);
+    prm.xi[1].setPoint(0.5307,0.5504);
+    jfunc.setParameter(prm);
+
+//    Parameter prm(Lc, Lo);
+//    prm.k[0][0] = -1.86; prm.k[1][0] = -1.98;
+//    prm.k[0][1] = -1.93; prm.k[1][1] = -1.82;
+//    prm.z[0][0] = +10.5; prm.z[1][0] = +11.7;
+//    prm.z[0][1] = +11.4; prm.z[1][1] = +10.5;
+//    prm.eta[0].setPoint(0.3164,0.6854);
+//    prm.eta[1].setPoint(0.5847,0.3524);
+//    prm.xi[0].setPoint(0.7341,0.8248);
+//    prm.xi[1].setPoint(0.2116,0.2329);
+//    jfunc.setParameter(prm);
+
+    DoubleVector x; prm.toVector(x);
+    for (unsigned int i=801; i<=1000; i++)
+    {
+        jfunc.setGridTimeDimension(Dimension(0.005, 0, i));
+        printf("%4d %f\n", i, jfunc.fx(x));
+    }
 }
