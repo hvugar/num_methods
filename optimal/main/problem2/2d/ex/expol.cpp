@@ -652,15 +652,26 @@ void ExpOptimalLetters::figure1()
     prm0.xi[1].setPoint(0.2500, 0.3000);
     jfunc.setParameter0(prm0);
 
+//    Parameter prm(Lc, Lo);
+//    prm.k[0][0] = -0.80; prm.k[1][0] = -0.78;
+//    prm.k[0][1] = -0.77; prm.k[1][1] = -0.79;
+//    prm.z[0][0] = +10.28; prm.z[1][0] = +11.47;
+//    prm.z[0][1] = +11.17; prm.z[1][1] = +10.29;
+//    prm.eta[0].setPoint(0.7229,0.1908);
+//    prm.eta[1].setPoint(0.3947,0.6722);
+//    prm.xi[0].setPoint(0.6071,0.3204);
+//    prm.xi[1].setPoint(0.5307,0.5504);
+//    jfunc.setParameter(prm);
+
     Parameter prm(Lc, Lo);
     prm.k[0][0] = -0.80; prm.k[1][0] = -0.78;
     prm.k[0][1] = -0.77; prm.k[1][1] = -0.79;
     prm.z[0][0] = +10.28; prm.z[1][0] = +11.47;
     prm.z[0][1] = +11.17; prm.z[1][1] = +10.29;
-    prm.eta[0].setPoint(0.7229,0.1908);
-    prm.eta[1].setPoint(0.3947,0.6722);
-    prm.xi[0].setPoint(0.6071,0.3204);
-    prm.xi[1].setPoint(0.5307,0.5504);
+    prm.eta[0].setPoint(0.6829,0.1908);
+    prm.eta[1].setPoint(0.3947,0.6322);
+    prm.xi[0].setPoint(0.6471,0.3204);
+    prm.xi[1].setPoint(0.5307,0.5904);
     jfunc.setParameter(prm);
 
 //    Parameter prm(Lc, Lo);
@@ -675,9 +686,9 @@ void ExpOptimalLetters::figure1()
 //    jfunc.setParameter(prm);
 
     DoubleVector x; prm.toVector(x);
-    for (unsigned int i=801; i<=1000; i++)
+    for (unsigned int i=2; i<=300; i+=2)
     {
         jfunc.setGridTimeDimension(Dimension(0.005, 0, i));
-        printf("%4d %f\n", i, jfunc.fx(x));
+        printf("%f %f\n", i*0.005, jfunc.fx(x));
     }
 }
