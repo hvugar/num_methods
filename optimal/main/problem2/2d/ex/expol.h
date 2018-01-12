@@ -17,6 +17,7 @@ public:
 
     static void Table2Y1();
     static void Table3Y2();
+    static void Table2Y2();
 
     static void Table4();
 

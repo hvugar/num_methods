@@ -29,9 +29,9 @@ double IFunctional::fx(const DoubleVector &prms) const
             + mParameter.k[0][1]*(info[1].value(mTimeDimension.sizeN())-mParameter.z[0][1]);
     double v2 = mParameter.k[1][0]*(info[0].value(mTimeDimension.sizeN())-mParameter.z[1][0])
             + mParameter.k[1][1]*(info[1].value(mTimeDimension.sizeN())-mParameter.z[1][1]);
-    printf("%f %f\t", v1, v2);
+    //printf("%f %f\t", v1, v2);
 
-    return intgrl/* + epsilon*norm()*/ + r*penalty(info);
+    return intgrl + epsilon*norm() + r*penalty(info);
 }
 
 double IFunctional::integral(const DoubleMatrix &u) const

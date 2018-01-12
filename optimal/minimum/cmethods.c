@@ -122,8 +122,12 @@ void tomasAlgorithm(const double *a, const double *b, const double *c, const dou
             }
             else
             {
-                p[i] = +(d[i]-a[i]*p[i-1])/(b[i]+a[i]*q[i-1]);
-                q[i] = -c[i]/(b[i]+a[i]*q[i-1]);
+                //p[i] = +(d[i]-a[i]*p[i-1])/(b[i]+a[i]*q[i-1]);
+                //q[i] = -c[i]/(b[i]+a[i]*q[i-1]);
+
+                double m = (b[i]+a[i]*q[i-1]);
+                p[i] = +(d[i]-a[i]*p[i-1])/m;
+                q[i] = -c[i]/m;
             }
         }
     }
