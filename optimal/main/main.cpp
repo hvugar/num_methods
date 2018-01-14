@@ -78,12 +78,32 @@
 
 #include <QtGui>
 
+#include "problem2/2d/dirakdelta.h"
+#include "problem2/2d/ex/p2_article.h"
+
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     QGuiApplication app(argc, argv);
 
     srand(time(NULL));
+
+    Problem2Article::Main(argc, argv);
+
+//    DirakDelta dd;
+//    dd.dimension = Dimension(0.01, 0, 100);
+//    dd.point.x = 0.506;
+//    std::vector<SpaceNodePDE> nodes;
+//    dd.payla(dd.point, dd.dimension, nodes);
+//    printf("%d\n", nodes.size());
+//    double sum = 0.0;
+//    for (unsigned int i=0; i<nodes.size(); i++)
+//    {
+//        SpaceNodePDE &node = nodes[i];
+//        printf("%d %f %f\n", node.i, node.x, node.y);
+//        sum += node.y;
+//    }
+//    printf("%f\n", sum);
 
     //IPrinter::printVector(a,N,NULL,N);
     //IPrinter::printVector(b,N,NULL,N);
@@ -123,7 +143,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Problem22DEx3::Main(argc, argv);
     //Problem22DEx4::Main(argc, argv);
     //Problem22DEx5::Main(argc, argv);
-    ExpOptimalLetters::Main(argc, argv);
+    //ExpOptimalLetters::Main(argc, argv);
 
     //NLLIParabolicIBVP::Main(argc, argv);
 

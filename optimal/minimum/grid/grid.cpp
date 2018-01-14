@@ -9,6 +9,8 @@ SpaceNodePDE::SpaceNodePDE(unsigned int i, unsigned int j, double x, double y) :
 
 SpaceNodePDE::SpaceNodePDE(unsigned int i, unsigned int j, unsigned int k, double x, double y, double z) : i(i), x(x), j(j), y(y), k(k), z(z) {}
 
+SpaceNodePDE::SpaceNodePDE(const SpaceNodePDE &node) : i(node.i), x(node.x), j(node.j), y(node.y), k(node.k), z(node.z) {}
+
 void SpaceNodePDE::setPoint(double x, double y)
 {
     this->x = x;

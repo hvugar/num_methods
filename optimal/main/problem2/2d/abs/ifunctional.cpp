@@ -25,10 +25,10 @@ double IFunctional::fx(const DoubleVector &prms) const
     double intgrl = integral(u);
     u.clear();
 
-    double v1 = mParameter.k[0][0]*(info[0].value(mTimeDimension.sizeN())-mParameter.z[0][0])
-            + mParameter.k[0][1]*(info[1].value(mTimeDimension.sizeN())-mParameter.z[0][1]);
-    double v2 = mParameter.k[1][0]*(info[0].value(mTimeDimension.sizeN())-mParameter.z[1][0])
-            + mParameter.k[1][1]*(info[1].value(mTimeDimension.sizeN())-mParameter.z[1][1]);
+    //double v1 = mParameter.k[0][0]*(info[0].value(mTimeDimension.sizeN())-mParameter.z[0][0])
+    //        + mParameter.k[0][1]*(info[1].value(mTimeDimension.sizeN())-mParameter.z[0][1]);
+    //double v2 = mParameter.k[1][0]*(info[0].value(mTimeDimension.sizeN())-mParameter.z[1][0])
+    //        + mParameter.k[1][1]*(info[1].value(mTimeDimension.sizeN())-mParameter.z[1][1]);
     //printf("%f %f\t", v1, v2);
 
     return intgrl + epsilon*norm() + r*penalty(info);
@@ -288,9 +288,10 @@ void IFunctional::project(DoubleVector &prm, unsigned int index)
 
 void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const
 {
-    printf("I[%d]: %10.6f %10.6f R: %10.6f\n", i, fx(x), f, r);
+    printf("I[%d]: %10.6f R: %10.6f epsilon: %f\n", i, f, r, epsilon);
     IPrinter::print(x,x.length(),10,4);
     IPrinter::print(g,g.length(),10,4);
+    if (f<1.0) const_cast<IFunctional*>(this)->epsilon = 0.0;
 }
 
 void IFunctional::setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY)

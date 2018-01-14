@@ -31,6 +31,7 @@ struct MINIMUMSHARED_EXPORT SpaceNodePDE
     SpaceNodePDE(unsigned int i, double x);
     SpaceNodePDE(unsigned int i, unsigned int j, double x, double y);
     SpaceNodePDE(unsigned int i, unsigned int j, unsigned int k, double x, double y, double z);
+    SpaceNodePDE(const SpaceNodePDE& node);
 
     void setPoint(double x, double y);
 

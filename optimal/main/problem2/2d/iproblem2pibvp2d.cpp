@@ -177,6 +177,53 @@ const Parameter& IProblem22DPIBVP::parameter() const
     return mParameter;
 }
 
+void IProblem22DPIBVP::distributeDelta(const SpaceNodePDE &pt, std::vector<ExtendedDeltaPoint> &nodes, unsigned int id) const
+{
+    Dimension xd = spaceDimension(Dimension::DimensionX);
+    Dimension yd = spaceDimension(Dimension::DimensionY);
+    double hx = xd.step();
+    double hy = yd.step();
+    unsigned int Nx = xd.sizeN();
+    unsigned int Ny = yd.sizeN();
+
+    double sigmaX = hx;
+    double sigmaY = hy;
+
+    unsigned int rx = (unsigned int)(round(pt.x*Nx));
+    unsigned int ry = (unsigned int)(round(pt.y*Ny));
+
+    unsigned int k=3;
+
+    double sumX = 0.0;
+    for (unsigned int n=rx-k; n<=rx+k; n++)
+    {
+        sumX += exp(-((n*hx-pt.x)*(n*hx-pt.x))/(2.0*sigmaX*sigmaX));
+    }
+    sumX *= hx;
+
+    double sumY = 0.0;
+    for (unsigned int m=ry-k; m<=ry+k; m++)
+    {
+        sumY += exp(-((m*hy-pt.y)*(m*hy-pt.y))/(2.0*sigmaY*sigmaY));
+    }
+    sumY *= hy;
+
+    double sigma = (sumX*sumY) / (2.0*M_PI);
+    double factor = 1.0/((2.0*M_PI)*sigma);
+    //double factor = (1.0/(2.0*M_PI*sigmaX*sigmaY));
+
+    for (unsigned int n=rx-k; n<=rx+k; n++)
+    {
+        for (unsigned int m=ry-k; m<=ry+k; m++)
+        {
+            ExtendedDeltaPoint node;
+            node.i = n; node.x = n*hx; node.j = m; node.y = m*hy; node.pt = pt; node.id = id;
+            node.w = factor*exp(-0.5*(((node.x-pt.x)*(node.x-pt.x))/(sigmaX*sigmaX)+((node.y-pt.y)*(node.y-pt.y))/(sigmaY*sigmaY)));
+            nodes.push_back(node);
+        }
+    }
+}
+
 //-------------------------------------------------------------------------------------------------------//
 
 ExtendedSpaceNode2D::ExtendedSpaceNode2D()

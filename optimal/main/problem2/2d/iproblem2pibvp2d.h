@@ -31,9 +31,9 @@ struct ExtendedGridNode
 
 void extendPointToGridNodes(const SpaceNodePDE& point, int id, vector<ExtendedGridNode> nodes, const Dimension &dimensionX, const Dimension &dimensionY);
 
-struct ObservationNode
+struct ExtendedDeltaPoint
 {
-    SpaceNodePDE xi;
+    SpaceNodePDE pt;
     unsigned int id;
     unsigned int i;
     unsigned int j;
@@ -42,38 +42,13 @@ struct ObservationNode
     double w;
 };
 
-struct ObservationDeltaNode
-{
-    SpaceNodePDE xi;
-    unsigned int id;
-    unsigned int i;
-    unsigned int j;
-    double x;
-    double y;
-    double w;
-};
+struct ObservationNode : public ExtendedDeltaPoint {};
 
-struct ControlNode
-{
-    SpaceNodePDE eta;
-    unsigned int id;
-    unsigned int i;
-    unsigned int j;
-    double x;
-    double y;
-    double w;
-};
+struct ObservationDeltaNode : public ExtendedDeltaPoint {};
 
-struct ControlDeltaNode
-{
-    SpaceNodePDE eta;
-    unsigned int id;
-    unsigned int i;
-    unsigned int j;
-    double x;
-    double y;
-    double w;
-};
+struct ControlNode : public ExtendedDeltaPoint {};
+
+struct ControlDeltaNode : public ExtendedDeltaPoint {};
 
 struct Parameter
 {
@@ -131,7 +106,6 @@ public:
 
 private:
     double value(double x, double y, unsigned int layer) const;
-
 };
 
 class IProblem22DPIBVP : public IParabolicIBVP
@@ -154,6 +128,8 @@ protected:
     double theta;
     double fi;
     Parameter mParameter;
+
+    void distributeDelta(const SpaceNodePDE &pt, std::vector<ExtendedDeltaPoint> &nodes, unsigned int id) const;
 };
 
 #endif // PROBLEM22DIPARABOLICIBVP_H

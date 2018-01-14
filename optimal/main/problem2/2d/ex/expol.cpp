@@ -2,13 +2,14 @@
 
 void ExpOptimalLetters::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
+    Table1Y1();
     //Table1Y2();
     //Table2Y1();
     //Table3Y2();
     //test();
     //Table4();
-//    figure1();
-    Table2Y2();
+    //figure1();
+    //Table2Y2();
 }
 
 void ExpOptimalLetters::Table1Y1()

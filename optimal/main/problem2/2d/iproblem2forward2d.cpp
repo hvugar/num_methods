@@ -1482,19 +1482,19 @@ void IProblem2Forward2D::extendObservationPoint1(const SpaceNodePDE &xi, std::ve
 
     ObservationNode on;
 
-    on.i = rx+0; on.x = on.i*hx; on.j = ry+0; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx+0; on.x = on.i*hx; on.j = ry+0; on.y = on.j*hy; on.pt = xi; on.id = j;
     on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy);
     ons.push_back(on);
 
-    on.i = rx+1; on.x = on.i*hx; on.j = ry+0; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx+1; on.x = on.i*hx; on.j = ry+0; on.y = on.j*hy; on.pt = xi; on.id = j;
     on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy);
     ons.push_back(on);
 
-    on.i = rx+0; on.x = on.i*hx; on.j = ry+1; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx+0; on.x = on.i*hx; on.j = ry+1; on.y = on.j*hy; on.pt = xi; on.id = j;
     on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy);
     ons.push_back(on);
 
-    on.i = rx+1; on.x = on.i*hx; on.j = ry+1; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx+1; on.x = on.i*hx; on.j = ry+1; on.y = on.j*hy; on.pt = xi; on.id = j;
     on.w = ((hx-fabs(on.x-xi.x))/hx)*((hy-fabs(on.y-xi.y))/hy);
     ons.push_back(on);
 }
@@ -1525,99 +1525,116 @@ void IProblem2Forward2D::extendObservationPoint2(const SpaceNodePDE &xi, std::ve
     double dx = 0.0;
     double dy = 0.0;
 
-    on.i = rx-1; on.x = on.i*hx; on.j = ry-1; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx-1; on.x = on.i*hx; on.j = ry-1; on.y = on.j*hy; on.pt = xi; on.id = j;
     dx = fabs(on.x-xi.x); dy = fabs(on.y-xi.y); on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
     ons.push_back(on);
 
-    on.i = rx-1; on.x = on.i*hx; on.j = ry+0; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx-1; on.x = on.i*hx; on.j = ry+0; on.y = on.j*hy; on.pt = xi; on.id = j;
     dx = fabs(on.x-xi.x); dy = fabs(on.y-xi.y); on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
     ons.push_back(on);
 
-    on.i = rx-1; on.x = on.i*hx; on.j = ry+1; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx-1; on.x = on.i*hx; on.j = ry+1; on.y = on.j*hy; on.pt = xi; on.id = j;
     dx = fabs(on.x-xi.x); dy = fabs(on.y-xi.y); on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
     ons.push_back(on);
 
-    on.i = rx-1; on.x = on.i*hx; on.j = ry+2; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx-1; on.x = on.i*hx; on.j = ry+2; on.y = on.j*hy; on.pt = xi; on.id = j;
     dx = fabs(on.x-xi.x); dy = fabs(on.y-xi.y); on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
     ons.push_back(on);
 
-    on.i = rx+0; on.x = on.i*hx; on.j = ry-1; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx+0; on.x = on.i*hx; on.j = ry-1; on.y = on.j*hy; on.pt = xi; on.id = j;
     dx = fabs(on.x-xi.x); dy = fabs(on.y-xi.y); on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
     ons.push_back(on);
 
-    on.i = rx+0; on.x = on.i*hx; on.j = ry+0; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx+0; on.x = on.i*hx; on.j = ry+0; on.y = on.j*hy; on.pt = xi; on.id = j;
     dx = fabs(on.x-xi.x); dy = fabs(on.y-xi.y); on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
     ons.push_back(on);
 
-    on.i = rx+0; on.x = on.i*hx; on.j = ry+1; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx+0; on.x = on.i*hx; on.j = ry+1; on.y = on.j*hy; on.pt = xi; on.id = j;
     dx = fabs(on.x-xi.x); dy = fabs(on.y-xi.y); on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
     ons.push_back(on);
 
-    on.i = rx+0; on.x = on.i*hx; on.j = ry+2; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx+0; on.x = on.i*hx; on.j = ry+2; on.y = on.j*hy; on.pt = xi; on.id = j;
     dx = fabs(on.x-xi.x); dy = fabs(on.y-xi.y); on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
     ons.push_back(on);
 
-    on.i = rx+1; on.x = on.i*hx; on.j = ry-1; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx+1; on.x = on.i*hx; on.j = ry-1; on.y = on.j*hy; on.pt = xi; on.id = j;
     dx = fabs(on.x-xi.x); dy = fabs(on.y-xi.y); on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
     ons.push_back(on);
 
-    on.i = rx+1; on.x = on.i*hx; on.j = ry+0; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx+1; on.x = on.i*hx; on.j = ry+0; on.y = on.j*hy; on.pt = xi; on.id = j;
     dx = fabs(on.x-xi.x); dy = fabs(on.y-xi.y); on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
     ons.push_back(on);
 
-    on.i = rx+1; on.x = on.i*hx; on.j = ry+1; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx+1; on.x = on.i*hx; on.j = ry+1; on.y = on.j*hy; on.pt = xi; on.id = j;
     dx = fabs(on.x-xi.x); dy = fabs(on.y-xi.y); on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
     ons.push_back(on);
 
-    on.i = rx+1; on.x = on.i*hx; on.j = ry+2; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx+1; on.x = on.i*hx; on.j = ry+2; on.y = on.j*hy; on.pt = xi; on.id = j;
     dx = fabs(on.x-xi.x); dy = fabs(on.y-xi.y); on.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
     ons.push_back(on);
 
-    on.i = rx+2; on.x = on.i*hx; on.j = ry-1; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx+2; on.x = on.i*hx; on.j = ry-1; on.y = on.j*hy; on.pt = xi; on.id = j;
     dx = fabs(on.x-xi.x); dy = fabs(on.y-xi.y); on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
     ons.push_back(on);
 
-    on.i = rx+2; on.j = ry+0; on.x = on.i*hx; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx+2; on.j = ry+0; on.x = on.i*hx; on.y = on.j*hy; on.pt = xi; on.id = j;
     dx = fabs(on.x-xi.x); dy = fabs(on.y-xi.y); on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
     ons.push_back(on);
 
-    on.i = rx+2; on.x = on.i*hx; on.j = ry+1; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx+2; on.x = on.i*hx; on.j = ry+1; on.y = on.j*hy; on.pt = xi; on.id = j;
     dx = fabs(on.x-xi.x); dy = fabs(on.y-xi.y); on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
     ons.push_back(on);
 
-    on.i = rx+2; on.x = on.i*hx; on.j = ry+2; on.y = on.j*hy; on.xi = xi; on.id = j;
+    on.i = rx+2; on.x = on.i*hx; on.j = ry+2; on.y = on.j*hy; on.pt = xi; on.id = j;
     dx = fabs(on.x-xi.x); dy = fabs(on.y-xi.y); on.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
     ons.push_back(on);
 }
 
 void IProblem2Forward2D::extendObservationPoint3(const SpaceNodePDE &xi, std::vector<ObservationNode> &ons, unsigned int j) const
 {
-    Dimension xd = spaceDimension(Dimension::DimensionX);
-    Dimension yd = spaceDimension(Dimension::DimensionY);
-    double hx = xd.step();
-    double hy = yd.step();
-    unsigned int Nx = xd.sizeN();
-    unsigned int Ny = yd.sizeN();
+    double hx = spaceDimension(Dimension::DimensionX).step();
+    double hy = spaceDimension(Dimension::DimensionY).step();
 
-    double sigmaX = hx;
-    double sigmaY = hy;
+    std::vector<ExtendedDeltaPoint> extpoint;
+    distributeDelta(xi, extpoint, j);
 
-    unsigned int rx = (unsigned int)(round(xi.x*Nx));
-    unsigned int ry = (unsigned int)(round(xi.y*Ny));
-
-    double factor = (1.0/(2.0*M_PI*sigmaX*sigmaY));
-
-    unsigned int k=5;
-    for (unsigned int n=rx-k; n<=rx+k; n++)
+    for (unsigned int i=0; i<extpoint.size(); i++)
     {
-        for (unsigned int m=ry-k; m<=ry+k; m++)
-        {
-            ObservationNode on;
-            on.i = n; on.x = n*hx; on.j = m; on.y = m*hy; on.xi = xi; on.id = j;
-            on.w = factor*exp(-0.5*(((on.x-xi.x)*(on.x-xi.x))/(sigmaX*sigmaX)+((on.y-xi.y)*(on.y-xi.y))/(sigmaY*sigmaY))) * (hx*hy);
-            ons.push_back(on);
-        }
+        ExtendedDeltaPoint ep = extpoint.at(i);
+        ObservationNode node;
+        node.id = ep.id; node.w = ep.w * (hx*hy); node.pt = ep.pt;
+        node.i = ep.i; node.x = ep.x;
+        node.j = ep.j; node.y = ep.y;
+        ons.push_back(node);
     }
+    extpoint.clear();
+
+//    Dimension xd = spaceDimension(Dimension::DimensionX);
+//    Dimension yd = spaceDimension(Dimension::DimensionY);
+//    double hx = xd.step();
+//    double hy = yd.step();
+//    unsigned int Nx = xd.sizeN();
+//    unsigned int Ny = yd.sizeN();
+
+//    double sigmaX = hx;
+//    double sigmaY = hy;
+
+//    unsigned int rx = (unsigned int)(round(xi.x*Nx));
+//    unsigned int ry = (unsigned int)(round(xi.y*Ny));
+
+//    double factor = (1.0/(2.0*M_PI*sigmaX*sigmaY));
+
+//    unsigned int k=5;
+//    for (unsigned int n=rx-k; n<=rx+k; n++)
+//    {
+//        for (unsigned int m=ry-k; m<=ry+k; m++)
+//        {
+//            ObservationNode on;
+//            on.i = n; on.x = n*hx; on.j = m; on.y = m*hy; on.pt = xi; on.id = j;
+//            on.w = factor*exp(-0.5*(((on.x-xi.x)*(on.x-xi.x))/(sigmaX*sigmaX)+((on.y-xi.y)*(on.y-xi.y))/(sigmaY*sigmaY))) * (hx*hy);
+//            ons.push_back(on);
+//        }
+//    }
 }
 
 void IProblem2Forward2D::extendContrlDeltaPoint0(const SpaceNodePDE &eta, std::vector<ControlDeltaNode> &cps, unsigned int i) const
@@ -1653,19 +1670,19 @@ void IProblem2Forward2D::extendContrlDeltaPoint1(const SpaceNodePDE &eta, std::v
     double factor = 1.0/(hx*hy);
     ControlDeltaNode cn;
 
-    cn.i = rx+0; cn.x = cn.i*hx; cn.j = ry+0; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx+0; cn.x = cn.i*hx; cn.j = ry+0; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * factor;
     cps.push_back(cn);
 
-    cn.i = rx+1; cn.x = cn.i*hx; cn.j = ry+0; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx+1; cn.x = cn.i*hx; cn.j = ry+0; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * factor;
     cps.push_back(cn);
 
-    cn.i = rx+0; cn.x = cn.i*hx; cn.j = ry+1; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx+0; cn.x = cn.i*hx; cn.j = ry+1; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * factor;
     cps.push_back(cn);
 
-    cn.i = rx+1; cn.x = cn.i*hx; cn.j = ry+1; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx+1; cn.x = cn.i*hx; cn.j = ry+1; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     cn.w = ((hx-fabs(cn.x-eta.x))/hx)*((hy-fabs(cn.y-eta.y))/hy) * factor;
     cps.push_back(cn);
 }
@@ -1697,99 +1714,113 @@ void IProblem2Forward2D::extendContrlDeltaPoint2(const SpaceNodePDE &eta, std::v
     double dx = 0.0;
     double dy = 0.0;
 
-    cn.i = rx-1; cn.x = cn.i*hx; cn.j = ry-1; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx-1; cn.x = cn.i*hx; cn.j = ry-1; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36)*factor;
     cps.push_back(cn);
 
-    cn.i = rx-1; cn.x = cn.i*hx; cn.j = ry+0; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx-1; cn.x = cn.i*hx; cn.j = ry+0; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32)*factor;
     cps.push_back(cn);
 
-    cn.i = rx-1; cn.x = cn.i*hx; cn.j = ry+1; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx-1; cn.x = cn.i*hx; cn.j = ry+1; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32)*factor;
     cps.push_back(cn);
 
-    cn.i = rx-1; cn.x = cn.i*hx; cn.j = ry+2; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx-1; cn.x = cn.i*hx; cn.j = ry+2; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36)*factor;
     cps.push_back(cn);
 
-    cn.i = rx+0; cn.x = cn.i*hx; cn.j = ry-1; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx+0; cn.x = cn.i*hx; cn.j = ry-1; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36)*factor;
     cps.push_back(cn);
 
-    cn.i = rx+0; cn.x = cn.i*hx; cn.j = ry+0; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx+0; cn.x = cn.i*hx; cn.j = ry+0; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32)*factor;
     cps.push_back(cn);
 
-    cn.i = rx+0; cn.x = cn.i*hx; cn.j = ry+1; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx+0; cn.x = cn.i*hx; cn.j = ry+1; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32)*factor;
     cps.push_back(cn);
 
-    cn.i = rx+0; cn.x = cn.i*hx; cn.j = ry+2; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx+0; cn.x = cn.i*hx; cn.j = ry+2; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36)*factor;
     cps.push_back(cn);
 
-    cn.i = rx+1; cn.x = cn.i*hx; cn.j = ry-1; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx+1; cn.x = cn.i*hx; cn.j = ry-1; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36)*factor;
     cps.push_back(cn);
 
-    cn.i = rx+1; cn.x = cn.i*hx; cn.j = ry+0; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx+1; cn.x = cn.i*hx; cn.j = ry+0; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32)*factor;
     cps.push_back(cn);
 
-    cn.i = rx+1; cn.x = cn.i*hx; cn.j = ry+1; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx+1; cn.x = cn.i*hx; cn.j = ry+1; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32)*factor;
     cps.push_back(cn);
 
-    cn.i = rx+1; cn.x = cn.i*hx; cn.j = ry+2; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx+1; cn.x = cn.i*hx; cn.j = ry+2; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36)*factor;
     cps.push_back(cn);
 
-    cn.i = rx+2; cn.x = cn.i*hx; cn.j = ry-1; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx+2; cn.x = cn.i*hx; cn.j = ry-1; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36)*factor;
     cps.push_back(cn);
 
-    cn.i = rx+2; cn.j = ry+0; cn.x = cn.i*hx; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx+2; cn.j = ry+0; cn.x = cn.i*hx; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32)*factor;
     cps.push_back(cn);
 
-    cn.i = rx+2; cn.x = cn.i*hx; cn.j = ry+1; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx+2; cn.x = cn.i*hx; cn.j = ry+1; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32)*factor;
     cps.push_back(cn);
 
-    cn.i = rx+2; cn.x = cn.i*hx; cn.j = ry+2; cn.y = cn.j*hy; cn.eta = eta; cn.id = i;
+    cn.i = rx+2; cn.x = cn.i*hx; cn.j = ry+2; cn.y = cn.j*hy; cn.pt = eta; cn.id = i;
     dx = fabs(cn.x-eta.x); dy = fabs(cn.y-eta.y); cn.w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36)*factor;
     cps.push_back(cn);
 }
 
-void IProblem2Forward2D::extendContrlDeltaPoint3(const SpaceNodePDE &eta, std::vector<ControlDeltaNode> &cps, unsigned int i) const
+void IProblem2Forward2D::extendContrlDeltaPoint3(const SpaceNodePDE &eta, std::vector<ControlDeltaNode> &cps, unsigned int id) const
 {
-    Dimension xd = spaceDimension(Dimension::DimensionX);
-    Dimension yd = spaceDimension(Dimension::DimensionY);
-    double hx = xd.step();
-    double hy = yd.step();
-    unsigned int Nx = xd.sizeN();
-    unsigned int Ny = yd.sizeN();
+    std::vector<ExtendedDeltaPoint> extpoint;
+    distributeDelta(eta, extpoint, id);
 
-    double sigmaX = hx;
-    double sigmaY = hy;
-
-    unsigned int rx = (unsigned int)(round(eta.x*Nx));
-    unsigned int ry = (unsigned int)(round(eta.y*Ny));
-
-    double factor = (1.0/(2.0*M_PI*sigmaX*sigmaY));
-
-    unsigned int k=5;
-    for (unsigned int n=rx-k; n<=rx+k; n++)
+    for (unsigned int i=0; i<extpoint.size(); i++)
     {
-        for (unsigned int m=ry-k; m<=ry+k; m++)
-        {
-            ControlDeltaNode cn;
-            cn.i = n; cn.x = n*hx; cn.j = m; cn.y = m*hy; cn.eta = eta; cn.id = i;
-            cn.w = factor*exp(-0.5*(((cn.x-eta.x)*(cn.x-eta.x))/(sigmaX*sigmaX)+((cn.y-eta.y)*(cn.y-eta.y))/(sigmaY*sigmaY)));
-            cps.push_back(cn);
-        }
+        ExtendedDeltaPoint ep = extpoint.at(i);
+        ControlDeltaNode node;
+        node.id = ep.id; node.w = ep.w; node.pt = ep.pt;
+        node.i = ep.i; node.x = ep.x;
+        node.j = ep.j; node.y = ep.y;
+        cps.push_back(node);
     }
+    extpoint.clear();
+
+//    Dimension xd = spaceDimension(Dimension::DimensionX);
+//    Dimension yd = spaceDimension(Dimension::DimensionY);
+//    double hx = xd.step();
+//    double hy = yd.step();
+//    unsigned int Nx = xd.sizeN();
+//    unsigned int Ny = yd.sizeN();
+
+//    double sigmaX = hx;
+//    double sigmaY = hy;
+
+//    unsigned int rx = (unsigned int)(round(eta.x*Nx));
+//    unsigned int ry = (unsigned int)(round(eta.y*Ny));
+
+//    double factor = (1.0/(2.0*M_PI*sigmaX*sigmaY));
+
+//    unsigned int k=5;
+//    for (unsigned int n=rx-k; n<=rx+k; n++)
+//    {
+//        for (unsigned int m=ry-k; m<=ry+k; m++)
+//        {
+//            ControlDeltaNode cn;
+//            cn.i = n; cn.x = n*hx; cn.j = m; cn.y = m*hy; cn.pt = eta; cn.id = i;
+//            cn.w = factor*exp(-0.5*(((cn.x-eta.x)*(cn.x-eta.x))/(sigmaX*sigmaX)+((cn.y-eta.y)*(cn.y-eta.y))/(sigmaY*sigmaY)));
+//            cps.push_back(cn);
+//        }
+//    }
 }
 
 //--------------------------//
@@ -1831,7 +1862,7 @@ void IProblem2Forward2D::extendContrlDeltaPoint4(const SpaceNodePDE &eta, std::v
         for (unsigned int m=y0-3; m<=y0+3; m++)
         {
             ControlDeltaNode cn;
-            cn.i = n; cn.x = n*hx; cn.j = m; cn.y = m*hy; cn.eta = eta; cn.id = i;
+            cn.i = n; cn.x = n*hx; cn.j = m; cn.y = m*hy; cn.pt = eta; cn.id = i;
             cn.w = factor*exp(-((cn.x-eta.x)*(cn.x-eta.x))/(2.0*sigmaX*sigmaX)-((cn.y-eta.y)*(cn.y-eta.y))/(2.0*sigmaY*sigmaY));
             cps.push_back(cn);
         }
@@ -1875,7 +1906,7 @@ void IProblem2Forward2D::extendObservationPoint4(const SpaceNodePDE &xi, std::ve
         for (unsigned int m=y0-3; m<=y0+3; m++)
         {
             ObservationNode on;
-            on.i = n; on.x = n*hx; on.j = m; on.y = m*hy; on.xi = xi; on.id = j;
+            on.i = n; on.x = n*hx; on.j = m; on.y = m*hy; on.pt = xi; on.id = j;
             on.w = factor*exp(-((on.x-xi.x)*(on.x-xi.x))/(2.0*sigmaX*sigmaX)-((on.y-xi.y)*(on.y-xi.y))/(2.0*sigmaY*sigmaY)) * (hx*hy);
             ons.push_back(on);
         }
