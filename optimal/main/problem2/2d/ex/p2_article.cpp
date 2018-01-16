@@ -375,38 +375,19 @@ void Problem2Article::Table2Y2()
     jfunc.setPenaltyCoefficient(500.0);
     jfunc.setPenaltyLimits(DoubleVector(Lc, -5.0), DoubleVector(Lc, +20.0));
 
-//    Parameter prm0(Lc, Lo);
-//    prm0.k[0][0] = -1.100; prm0.k[1][0] = -1.128;
-//    prm0.k[0][1] = -1.110; prm0.k[1][1] = -1.104;
-//    prm0.z[0][0] = +10.50; prm0.z[1][0] = +10.70;
-//    prm0.z[0][1] = +12.40; prm0.z[1][1] = +10.50;
-//    prm0.eta[0].setPoint(0.3000, 0.6000);
-//    prm0.eta[1].setPoint(0.6000, 0.2000);
-//    prm0.xi[0].setPoint(0.5000, 0.8000);
-//    prm0.xi[1].setPoint(0.2500, 0.3000);
-//    jfunc.setParameter0(prm0);
-
     Parameter prm0(Lc, Lo);
-    prm0.k[0][0] = -2.0041; prm0.k[1][0] = +0.7136;
-    prm0.k[0][1] = +0.7037; prm0.k[1][1] = -2.3840;
-    prm0.z[0][0] = +7.9638; prm0.z[1][0] = +7.6765;
-    prm0.z[0][1] = +5.8332; prm0.z[1][1] = +9.7165;
+    prm0.k[0][0] = -2.004; prm0.k[1][0] = +0.714;
+    prm0.k[0][1] = +0.704; prm0.k[1][1] = -2.384;
+    prm0.z[0][0] = +7.964; prm0.z[1][0] = +7.677;
+    prm0.z[0][1] = +5.833; prm0.z[1][1] = +9.717;
     prm0.eta[0].setPoint(0.4149,0.7549);
     prm0.eta[1].setPoint(0.4052,0.7077);
     prm0.xi[0].setPoint(0.0501,0.0501);
     prm0.xi[1].setPoint(0.9500,0.0751);
     jfunc.setParameter0(prm0);
 
-//    Parameter prm(Lc, Lo);
-//    prm.k[0][0] = -0.86; prm.k[1][0] = -0.64;
-//    prm.k[0][1] = -0.93; prm.k[1][1] = -0.75;
-//    prm.z[0][0] = +0.5; prm.z[1][0] = +0.7;
-//    prm.z[0][1] = +0.4; prm.z[1][1] = +0.5;
-//    prm.eta[0].setPoint(0.3164,0.6854);
-//    prm.eta[1].setPoint(0.5847,0.3524);
-//    prm.xi[0].setPoint(0.7341,0.8248);
-//    prm.xi[1].setPoint(0.2116,0.2329);
-//    jfunc.setParameter(prm);
+    DoubleVector hx; prm0.toVector(hx);
+    IPrinter::print(hx);
 
     Parameter prm(Lc, Lo);
     prm.k[0][0] = -1.12; prm.k[1][0] = -1.38;
