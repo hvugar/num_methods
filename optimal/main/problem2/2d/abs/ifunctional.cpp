@@ -291,7 +291,7 @@ void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVecto
     printf("I[%d]: %10.6f R: %10.6f epsilon: %f\n", i, f, r, epsilon);
     IPrinter::print(x,x.length(),10,4);
     IPrinter::print(g,g.length(),10,4);
-    if (f<1.0) const_cast<IFunctional*>(this)->epsilon = 0.0;
+    //if (f<1.0) const_cast<IFunctional*>(this)->epsilon = 0.0;
 }
 
 void IFunctional::setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY)
