@@ -279,11 +279,26 @@ void IFunctional::gradient(const DoubleVector &prms, DoubleVector &g)
 
 void IFunctional::project(DoubleVector &prm, unsigned int index)
 {
-    if ( 2*mParameter.Lc*mParameter.Lo <= index && index <= 2*mParameter.Lc*mParameter.Lo + 2*mParameter.Lc + 2*mParameter.Lo - 1 )
+    unsigned int offset = 2*mParameter.Lc*mParameter.Lo;
+    // eta
+    if ( offset <= index && index <= offset + 2*mParameter.Lc - 1)
     {
         if (prm[index] < 0.05) prm[index] = 0.05;
         if (prm[index] > 0.95) prm[index] = 0.95;
     }
+
+    // xi
+    if ( offset + 2*mParameter.Lc <= index && index <= offset + 2*mParameter.Lc + 2*mParameter.Lo - 1)
+    {
+        if (prm[index] < 0.05) prm[index] = 0.05;
+        if (prm[index] > 0.95) prm[index] = 0.95;
+    }
+
+    //if ( 2*mParameter.Lc*mParameter.Lo <= index && index <= 2*mParameter.Lc*mParameter.Lo + 2*mParameter.Lc + 2*mParameter.Lo - 1 )
+    //{
+    //    if (prm[index] < 0.05) prm[index] = 0.05;
+    //    if (prm[index] > 0.95) prm[index] = 0.95;
+    //}
 }
 
 void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const

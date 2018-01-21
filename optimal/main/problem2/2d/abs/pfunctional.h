@@ -11,6 +11,7 @@ public:
     PFunctional();
 
     void calculate(DoubleVector &x, double R);
+    void calculate(DoubleVector &x);
 
     double rfactor;
     JFunctional* jfunc;

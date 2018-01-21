@@ -24,6 +24,8 @@ public:
 
     static void Table2Y1();
     static void Table2Y2();
+
+    static void Table23_Y1();
 };
 
 #endif // P2_ARTICLE_H
