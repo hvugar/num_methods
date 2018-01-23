@@ -34,7 +34,7 @@ void PFunctional::calculate(DoubleVector &x)
 {
     double r[] = {10.0, 20.0, 100.0, 200.0, 500.0};
     double e[] = {1.00, 0.10, 0.100, 0.010, 0.010};
-    for (unsigned int i=0; i<6; i++)
+    for (unsigned int i=0; i<5; i++)
     {
         jfunc->setPenaltyCoefficient(r[i]);
         jfunc->setEpsilon(e[i]);
