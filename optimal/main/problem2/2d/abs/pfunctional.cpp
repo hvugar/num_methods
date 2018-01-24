@@ -32,9 +32,10 @@ void PFunctional::calculate(DoubleVector &x, double r)
 
 void PFunctional::calculate(DoubleVector &x)
 {
-    double r[] = {10.0, 20.0, 100.0, 200.0, 500.0};
-    double e[] = {1.00, 0.10, 0.100, 0.010, 0.010};
-    for (unsigned int i=0; i<5; i++)
+    double r[] = {0.01, 0.10, 1.0, 10.0, 20.0, 100.0, 200.0, 500.0};
+    //double e[] = {1.00, 1.00, 1.0, 1.00, 0.10, 0.100, 0.010, 0.010};
+    double e[] = {0.00, 0.00, 0.0, 0.00, 0.00, 0.000, 0.000, 0.000};
+    for (unsigned int i=0; i<6; i++)
     {
         jfunc->setPenaltyCoefficient(r[i]);
         jfunc->setEpsilon(e[i]);

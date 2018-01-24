@@ -303,7 +303,18 @@ void IFunctional::project(DoubleVector &prm, unsigned int index)
 
 void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const
 {
-    printf("I[%d]: %10.6f R: %10.6f epsilon: %f\n", i, f, r, epsilon);
+    IFunctional* ifunc = const_cast<IFunctional*>(this);
+    Parameter prm; prm.Lc = mParameter.Lc; prm.Lo = mParameter.Lo;
+    prm.fromVector(x);
+
+    ifunc->mParameter.fromVector(x);
+    ifunc->forward->setParameter(ifunc->mParameter);
+
+    DoubleMatrix u;
+    vector<ExtendedSpaceNode2D> info;
+    ifunc->forward->calculateMVD(u, info, false);
+
+    printf("I[%d]: %10.6f %10.6f R: %10.6f epsilon: %f\n", i, integral(u), f, r, epsilon);
     IPrinter::print(x,x.length(),10,4);
     IPrinter::print(g,g.length(),10,4);
     //if (f<1.0) const_cast<IFunctional*>(this)->epsilon = 0.0;
