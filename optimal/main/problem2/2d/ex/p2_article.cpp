@@ -298,57 +298,9 @@ void Problem2Article::Table23_Y1()
     jfunc.setEnvrTemperatures(thetas, p_thetas);
 
     jfunc.setEquationParameters(1.0, 0.01, 0.01);
-    jfunc.setEpsilon(1.00);
+    jfunc.setEpsilon(0.00);
     jfunc.setPenaltyCoefficient(0.0);
-    jfunc.setPenaltyLimits(DoubleVector(Lc, -5.0), DoubleVector(Lc, +20.0));
-
-//    Parameter prm0(Lc, Lo);
-//    prm0.k[0][0] = -2.336; prm0.k[0][1] = -2.191;
-//    prm0.k[1][0] = -2.108; prm0.k[1][1] = -2.655;
-//    prm0.z[0][0] = +10.00; prm0.z[0][1] = +10.00;
-//    prm0.z[1][0] = +10.00; prm0.z[1][1] = +10.00;
-//    prm0.eta[0].setPoint(0.4077,0.8433);
-//    prm0.eta[1].setPoint(0.6046,0.0859);
-//    prm0.xi[0].setPoint(0.2525,0.7500);
-//    prm0.xi[1].setPoint(0.8882,0.5500);
-//    jfunc.setParameter0(prm0);
-
-//    Parameter prm0(Lc, Lo);
-//    prm0.k[0][0] = -2.004; prm0.k[0][1] = +0.704;
-//    prm0.k[1][0] = +0.714; prm0.k[1][1] = -2.384;
-//    prm0.z[0][0] = +7.964; prm0.z[0][1] = +5.833;
-//    prm0.z[1][0] = +7.677; prm0.z[1][1] = +9.717;
-//    prm0.eta[0].setPoint(0.4149,0.7549);
-//    prm0.eta[1].setPoint(0.4052,0.7077);
-//    prm0.xi[0].setPoint(0.0501,0.0501);
-//    prm0.xi[1].setPoint(0.9500,0.0751);
-//    jfunc.setParameter0(prm0);
-
-//    DoubleVector hx; prm0.toVector(hx);
-//    IPrinter::print(hx, hx.length(), 6, 4);
-
-//    Parameter prm(Lc, Lo);
-//    prm.k[0][0] = -1.12; prm.k[0][1] = -1.64;
-//    prm.k[1][0] = -1.38; prm.k[1][1] = -1.75;
-//    prm.z[0][0] = +8.50; prm.z[0][1] = +9.40;
-//    prm.z[1][0] = +9.70; prm.z[1][1] = +8.50;
-//    prm.eta[0].setPoint(0.4574,0.8614);
-//    prm.eta[1].setPoint(0.6375,0.0347);
-//    prm.xi[0].setPoint(0.2911,0.7511);
-//    prm.xi[1].setPoint(0.8544,0.5700);
-//    jfunc.setParameter(prm);
-
-//    Parameter prm(Lc, Lo);
-//    prm.k[0][0] = -1.12; prm.k[0][1] = -1.24;
-//    prm.k[1][0] = -1.38; prm.k[1][1] = -1.58;
-//    prm.z[0][0] = +4.50; prm.z[0][1] = +3.40;
-//    prm.z[1][0] = +2.70; prm.z[1][1] = +3.50;
-//    prm.eta[0].setPoint(0.4574,0.8614);
-//    prm.eta[1].setPoint(0.2375,0.2347);
-//    prm.xi[0].setPoint(0.6911,0.5511);
-//    prm.xi[1].setPoint(0.8244,0.6700);
-//    jfunc.setParameter(prm);
-
+    jfunc.setPenaltyLimits(DoubleVector(Lc, +0.0), DoubleVector(Lc, +30.0));
 
     Parameter prm0(Lc, Lo);
     prm0.k[0][0] = -2.004; prm0.k[0][1] = +0.704;
@@ -361,25 +313,24 @@ void Problem2Article::Table23_Y1()
     prm0.xi[1].setPoint(0.9500,0.0751);
     jfunc.setParameter0(prm0);
 
-    DoubleVector hx; prm0.toVector(hx);
-    IPrinter::print(hx, hx.length(), 6, 4);
-
     Parameter prm(Lc, Lo);
-    prm.k[0][0] = -5.12; prm.k[0][1] = -2.24;
-    prm.k[1][0] = -4.38; prm.k[1][1] = -7.58;
-    prm.z[0][0] = +10.50; prm.z[0][1] = +11.40;
-    prm.z[1][0] = +12.70; prm.z[1][1] = +14.50;
+    prm.k[0][0] = -10.12; prm.k[0][1] = -10.24;
+    prm.k[1][0] = -10.38; prm.k[1][1] = -10.58;
+    prm.z[0][0] = +15.50; prm.z[0][1] = +15.40;
+    prm.z[1][0] = +15.70; prm.z[1][1] = +15.50;
     prm.eta[0].setPoint(0.4574,0.8614);
     prm.eta[1].setPoint(0.2375,0.2347);
     prm.xi[0].setPoint(0.6911,0.5511);
     prm.xi[1].setPoint(0.8244,0.6700);
     jfunc.setParameter(prm);
 
+    DoubleVector hx; prm0.toVector(hx);
+    IPrinter::print(hx, hx.length(), 6, 4);
+
     PFunctional pf;
     pf.jfunc = &jfunc;
     DoubleVector x; prm.toVector(x);
     pf.calculate(x);
-    //printf("%f\n", jfunc.fx(x));
 }
 
 //////////////////////////////////////////////////////////////////////////////
