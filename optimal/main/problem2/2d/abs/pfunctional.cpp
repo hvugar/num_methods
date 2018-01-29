@@ -30,17 +30,15 @@ void PFunctional::calculate(DoubleVector &x, double r)
     }
 }
 
-void PFunctional::calculate(DoubleVector &x)
+void PFunctional::calculate(DoubleVector &x, const DoubleVector &r, const DoubleVector &e)
 {
-    double r[] = {1.00, 10.0, 100, 10.0, 20.0, 100.0, 200.0, 500.0};
-    //double e[] = {1.00, 1.00, 1.0, 1.00, 0.10, 0.100, 0.010, 0.010};
-    double e[] = {0.00, 0.00, 0.00, 0.00, 0.00, 0.000, 0.000, 0.000};
-    for (unsigned int i=0; i<6; i++)
+    for (unsigned int i=0; i<r.length(); i++)
     {
         jfunc->setPenaltyCoefficient(r[i]);
         jfunc->setEpsilon(e[i]);
 
-        ConjugateGradient g;
+        //ConjugateGradient g;
+        SteepestDescentGradient g;
         g.setFunction(jfunc);
         g.setGradient(jfunc);
         g.setPrinter(jfunc);
@@ -48,11 +46,10 @@ void PFunctional::calculate(DoubleVector &x)
         g.setEpsilon1(0.0000001);
         g.setEpsilon2(0.0000001);
         g.setEpsilon3(0.0000001);
-        g.setR1MinimizeEpsilon(1.0, 0.001);
+        g.setR1MinimizeEpsilon(10.0, 0.01);
         g.setNormalize(true);
         g.showEndMessage(true);
         //g.setResetIteration(false);
-
         g.calculate(x);
     }
 }

@@ -64,8 +64,8 @@ struct Parameter
     vector<SpaceNodePDE> xi;
     vector<SpaceNodePDE> eta;
 
-    void toVector(DoubleVector &prms) const;
-    void fromVector(const DoubleVector &prms);
+    //void toVector(DoubleVector &prms) const;
+    //void fromVector(const DoubleVector &prms);
 };
 
 struct WISpaceNodePDE : public SpaceNodePDE

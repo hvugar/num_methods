@@ -58,7 +58,7 @@ void Problem22DEx3::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     p22dEx3.U.resize(spaceDimensionY.sizeN()+1, spaceDimensionX.sizeN()+1, 10.0);
 
     DoubleVector prm;
-    s.toVector(prm);
+    p22dEx3.toVector;
     DoubleVector g(prm.length());
     p22dEx3.gradient(prm,g);
 }

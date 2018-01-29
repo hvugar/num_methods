@@ -49,7 +49,7 @@ void Problem2Article::Table1_Y1()
     prm0.xi[1].setPoint(0.9500,0.0751);
     jfunc.setParameter0(prm0);
 
-    DoubleVector hx; prm0.toVector(hx);
+    DoubleVector hx; jfunc.toVector(prm0, hx);
     IPrinter::print(hx, hx.length(), 6, 4);
 
     Parameter prm(Lc, Lo);
@@ -78,7 +78,7 @@ void Problem2Article::Table1_Y1()
 
     IPrinter::printSeperatorLine();
     DoubleVector pv;
-    prm.toVector(pv);
+    jfunc.toVector(prm, pv);
     DoubleVector ag(pv.length());
     IPrinter::print(pv, pv.length(), 6, 4);
     IPrinter::printSeperatorLine();
@@ -183,7 +183,7 @@ void Problem2Article::Table2_Y1()
     prm0.xi[1].setPoint(0.9500,0.0751);
     jfunc.setParameter0(prm0);
 
-    DoubleVector hx; prm0.toVector(hx);
+    DoubleVector hx; jfunc.toVector(prm0, hx);
     IPrinter::print(hx, hx.length(), 6, 4);
 
     Parameter prm(Lc, Lo);
@@ -210,7 +210,7 @@ void Problem2Article::Table2_Y1()
     g.showEndMessage(true);
     //g.setResetIteration(false);
 
-    DoubleVector x; prm.toVector(x);
+    DoubleVector x; jfunc.toVector(prm, x);
     g.calculate(x);
 }
 
@@ -248,7 +248,7 @@ void Problem2Article::Table3_Y1()
     prm0.xi[1].setPoint(0.9500,0.0751);
     jfunc.setParameter0(prm0);
 
-    DoubleVector hx; prm0.toVector(hx);
+    DoubleVector hx; jfunc.toVector(prm0, hx);
     IPrinter::print(hx, hx.length(), 6, 4);
 
     Parameter prm(Lc, Lo);
@@ -275,7 +275,7 @@ void Problem2Article::Table3_Y1()
     g.showEndMessage(true);
     //g.setResetIteration(false);
 
-    DoubleVector x; prm.toVector(x);
+    DoubleVector x; jfunc.toVector(prm, x);
     g.calculate(x);
 }
 
@@ -288,7 +288,7 @@ void Problem2Article::Table23_Y1()
     jfunc.setGridParameters(Dimension(0.005, 0, 200), Dimension(0.010, 0, 100), Dimension(0.010, 0, 100));
     jfunc.U.resize(101, 101, 10.0);
 
-    DoubleVector fis; fis << +0.2;// << +0.3 << +0.5;
+    DoubleVector fis; fis << +0.0;// << +0.3 << +0.5;
     DoubleVector p_fis(fis.length(), 1.0/fis.length());
 
     DoubleVector thetas; thetas << +6.3;// << +6.4 << +6.5;
@@ -300,7 +300,7 @@ void Problem2Article::Table23_Y1()
     jfunc.setEquationParameters(1.0, 0.01, 0.01);
     jfunc.setEpsilon(0.00);
     jfunc.setPenaltyCoefficient(0.0);
-    jfunc.setPenaltyLimits(DoubleVector(Lc, +0.0), DoubleVector(Lc, +30.0));
+    jfunc.setPenaltyLimits(DoubleVector(Lc, -10.0), DoubleVector(Lc, +40.0));
 
     Parameter prm0(Lc, Lo);
     prm0.k[0][0] = -2.004; prm0.k[0][1] = +0.704;
@@ -314,8 +314,8 @@ void Problem2Article::Table23_Y1()
     jfunc.setParameter0(prm0);
 
     Parameter prm(Lc, Lo);
-    prm.k[0][0] = -10.12; prm.k[0][1] = -10.24;
-    prm.k[1][0] = -10.38; prm.k[1][1] = -10.58;
+    prm.k[0][0] = -5.12; prm.k[0][1] = -3.24;
+    prm.k[1][0] = -4.38; prm.k[1][1] = -4.58;
     prm.z[0][0] = +15.50; prm.z[0][1] = +15.40;
     prm.z[1][0] = +15.70; prm.z[1][1] = +15.50;
     prm.eta[0].setPoint(0.4574,0.8614);
@@ -324,13 +324,28 @@ void Problem2Article::Table23_Y1()
     prm.xi[1].setPoint(0.8244,0.6700);
     jfunc.setParameter(prm);
 
-    DoubleVector hx; prm0.toVector(hx);
-    IPrinter::print(hx, hx.length(), 6, 4);
+//    Parameter prm(Lc, Lo);
+//    prm.k[0][0] = -5.12; prm.k[0][1] = -5.24;
+//    prm.k[1][0] = -5.38; prm.k[1][1] = -5.58;
+//    prm.z[0][0] = +10.50; prm.z[0][1] = +10.40;
+//    prm.z[1][0] = +10.70; prm.z[1][1] = +10.50;
+//    prm.eta[0].setPoint(0.8574,0.8614);
+//    prm.eta[1].setPoint(0.2375,0.2347);
+//    prm.xi[0].setPoint(0.6911,0.6511);
+//    prm.xi[1].setPoint(0.4244,0.4700);
+//    jfunc.setParameter(prm);
+
+    DoubleVector x0; jfunc.toVector(prm0, x0);
+    IPrinter::print(x0, x0.length(),10,4);
 
     PFunctional pf;
     pf.jfunc = &jfunc;
-    DoubleVector x; prm.toVector(x);
-    pf.calculate(x);
+    DoubleVector x; jfunc.toVector(prm, x);
+
+    DoubleVector r; r << 1.00 << 0.10 << 1.0 << 10.0 << 20.0 << 100.0 << 200.0 << 500.0;
+    DoubleVector e; e << 0.00 << 0.00 << 0.0 << 0.00 << 0.00 << 0.000 << 0.000 << 0.000;
+
+    pf.calculate(x, r, e);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -369,7 +384,7 @@ void Problem2Article::Table1_Y2()
     prm0.xi[1].setPoint(0.9500,0.0751);
     jfunc.setParameter0(prm0);
 
-    DoubleVector hx; prm0.toVector(hx);
+    DoubleVector hx; jfunc.toVector(prm0, hx);
     IPrinter::print(hx, hx.length(), 6, 4);
 
     Parameter prm(Lc, Lo);
@@ -423,7 +438,7 @@ void Problem2Article::Table1_Y2()
 
     IPrinter::printSeperatorLine();
     DoubleVector pv;
-    prm.toVector(pv);
+    jfunc.toVector(prm, pv);
     DoubleVector ag(pv.length());
     IPrinter::print(pv, pv.length(), 6, 4);
     IPrinter::printSeperatorLine();
@@ -528,7 +543,7 @@ void Problem2Article::Table2_Y2()
     prm0.xi[1].setPoint(0.5307,0.5904);
     jfunc.setParameter0(prm0);
 
-    DoubleVector hx; prm0.toVector(hx);
+    DoubleVector hx; jfunc.toVector(prm0, hx);
     IPrinter::print(hx, hx.length(), 6, 4);
 
     Parameter prm(Lc, Lo);
@@ -555,7 +570,7 @@ void Problem2Article::Table2_Y2()
     g.showEndMessage(true);
     //g.setResetIteration(false);
 
-    DoubleVector x; prm.toVector(x);
+    DoubleVector x; jfunc.toVector(prm, x);
     g.calculate(x);
 }
 
@@ -593,7 +608,7 @@ void Problem2Article::Table3_Y2()
     prm0.xi[1].setPoint(0.5307,0.5904);
     jfunc.setParameter0(prm0);
 
-    DoubleVector hx; prm0.toVector(hx);
+    DoubleVector hx; jfunc.toVector(prm0, hx);
     IPrinter::print(hx, hx.length(), 6, 4);
 
     Parameter prm(Lc, Lo);
@@ -620,7 +635,7 @@ void Problem2Article::Table3_Y2()
     g.showEndMessage(true);
     //g.setResetIteration(false);
 
-    DoubleVector x; prm.toVector(x);
+    DoubleVector x; jfunc.toVector(prm, x);
     g.calculate(x);
 }
 
@@ -680,13 +695,13 @@ void Problem2Article::Table1Y1()
     visualizeMatrixHeat(u, u.min(), u.max(), pxm, 101, 101);
     pxm.save("imageU.png", "PNG");
     DoubleVector v;
-    prm.toVector(v);
+    jfunc.toVector(prm, v);
     printf("%f %f %f\n", u.min(), u.max(), jfunc.fx(v));
     //return;
 
     IPrinter::printSeperatorLine();
     DoubleVector pv;
-    prm.toVector(pv);
+    jfunc.toVector(prm, pv);
     DoubleVector ag(pv.length());
     IPrinter::print(pv, pv.length(), 6, 4);
     IPrinter::printSeperatorLine();
@@ -812,13 +827,13 @@ void Problem2Article::Table1Y2()
     visualizeMatrixHeat(u, u.min(), u.max(), pxm, 101, 101);
     pxm.save("imageU.png", "PNG");
     DoubleVector v;
-    prm.toVector(v);
+    jfunc.toVector(prm, v);
     printf("%f %f %f\n", u.min(), u.max(), jfunc.fx(v));
     //return;
 
     IPrinter::printSeperatorLine();
     DoubleVector pv;
-    prm.toVector(pv);
+    jfunc.toVector(prm, pv);
     DoubleVector ag(pv.length());
     IPrinter::print(pv, pv.length(), 6, 4);
     IPrinter::printSeperatorLine();
@@ -934,7 +949,7 @@ void Problem2Article::Table2Y1()
     prm0.xi[1].setPoint(0.5307,0.5904);
     jfunc.setParameter0(prm0);
 
-    DoubleVector hx; prm0.toVector(hx);
+    DoubleVector hx; jfunc.toVector(prm0, hx);
     IPrinter::print(hx, hx.length(), 6, 4);
 
     Parameter prm(Lc, Lo);
@@ -972,7 +987,7 @@ void Problem2Article::Table2Y1()
     g.showEndMessage(true);
     //g.setResetIteration(false);
 
-    DoubleVector x; prm.toVector(x);
+    DoubleVector x; jfunc.toVector(prm, x);
     g.calculate(x);
 }
 

@@ -66,13 +66,13 @@ void ExpOptimalLetters::Table1Y1()
     visualizeMatrixHeat(u, u.min(), u.max(), pxm, 101, 101);
     pxm.save("imageU.png", "PNG");
     DoubleVector v;
-    prm.toVector(v);
+    jfunc.toVector(prm, v);
     printf("%f %f %f\n", u.min(), u.max(), jfunc.fx(v));
     //return;
 
     IPrinter::printSeperatorLine();
     DoubleVector pv;
-    prm.toVector(pv);
+    jfunc.toVector(prm, pv);
     DoubleVector ag(pv.length());
     IPrinter::print(pv, pv.length(), 6, 4);
     IPrinter::printSeperatorLine();
@@ -198,13 +198,13 @@ void ExpOptimalLetters::Table1Y2()
     visualizeMatrixHeat(u, u.min(), u.max(), pxm, 101, 101);
     pxm.save("imageU.png", "PNG");
     DoubleVector v;
-    prm.toVector(v);
+    jfunc.toVector(prm, v);
     printf("%f %f %f\n", u.min(), u.max(), jfunc.fx(v));
     //return;
 
     IPrinter::printSeperatorLine();
     DoubleVector pv;
-    prm.toVector(pv);
+    jfunc.toVector(prm, pv);
     DoubleVector ag(pv.length());
     IPrinter::print(pv, pv.length(), 6, 4);
     IPrinter::printSeperatorLine();
@@ -333,7 +333,7 @@ void ExpOptimalLetters::Table2Y1()
     g.showEndMessage(true);
     //g.setResetIteration(false);
 
-    DoubleVector x; prm.toVector(x);
+    DoubleVector x; jfunc.toVector(prm, x);
     g.calculate(x);
 }
 
@@ -395,7 +395,7 @@ void ExpOptimalLetters::Table2Y2()
     g.showEndMessage(true);
     //g.setResetIteration(false);
 
-    DoubleVector x; prm.toVector(x);
+    DoubleVector x; jfunc.toVector(prm, x);
     g.calculate(x);
 }
 
@@ -457,7 +457,7 @@ void ExpOptimalLetters::Table3Y2()
     g.showEndMessage(true);
     //g.setResetIteration(false);
 
-    DoubleVector x; prm.toVector(x);
+    DoubleVector x; jfunc.toVector(prm, x);
     g.calculate(x);
 }
 
@@ -517,7 +517,7 @@ void ExpOptimalLetters::Table4()
     prm.xi[1].setPoint(0.2116,0.2329);
     jfunc.setParameter(prm);
 
-    DoubleVector x; prm.toVector(x);
+    DoubleVector x; jfunc.toVector(prm, x);
 
     //    ConjugateGradient g;
     //    g.setFunction(&jfunc);
@@ -611,7 +611,7 @@ void ExpOptimalLetters::test()
 
     IPrinter::printSeperatorLine();
     DoubleVector pv;
-    prm.toVector(pv);
+    jfunc.toVector(prm, pv);
     DoubleVector ag(pv.length());
     IPrinter::print(pv, pv.length(), 6, 4);
     IPrinter::printSeperatorLine();
@@ -749,7 +749,7 @@ void ExpOptimalLetters::figure1()
 //    prm.xi[1].setPoint(0.2116,0.2329);
 //    jfunc.setParameter(prm);
 
-    DoubleVector x; prm.toVector(x);
+    DoubleVector x; jfunc.toVector(prm, x);
     for (unsigned int i=2; i<=300; i+=2)
     {
         jfunc.setGridTimeDimension(Dimension(0.005, 0, i));

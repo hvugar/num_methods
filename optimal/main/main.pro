@@ -64,15 +64,15 @@ SOURCES += main.cpp \
     problem2/1d/iproblem2backward.cpp \
     problem2/2d/iproblem2forward2d.cpp \
     problem2/2d/iproblem2backward2d.cpp \
-    problem2/2d/abs/abstractproblem22d.cpp \
-    problem2/2d/ex/problem22dex1.cpp \
-    problem2/2d/ex/problem22dex2.cpp \
-    problem2/2d/ex/problem22dex3.cpp \
+    #problem2/2d/abs/abstractproblem22d.cpp \
+    #problem2/2d/ex/problem22dex1.cpp \
+    #problem2/2d/ex/problem22dex2.cpp \
+    #problem2/2d/ex/problem22dex3.cpp \
+    #problem2/2d/ex/problem22dex4.cpp \
+    #problem2/2d/ex/problem22dex5.cpp \
     problem2/2d/cproblem2forward2d.cpp \
     problem2/2d/cproblem2backward2d.cpp \
-    problem2/2d/ex/problem22dex4.cpp \
     problem2/2d/iproblem2pibvp2d.cpp \
-    problem2/2d/ex/problem22dex5.cpp \
     problem2/2d/abs/problem2forward2d.cpp \
     problem2/2d/abs/problem2backward2d.cpp \
     problem2/2d/dirakdelta.cpp \
@@ -106,19 +106,19 @@ HEADERS += \
     loadedlinearode1order.h \
     problem5/nllparabolic.h \
     problem2/1d/problem2.h \
-    problem2/1d/iproblem2backward.h \
     problem2/1d/iproblem2forward.h \
+    problem2/1d/iproblem2backward.h \
     problem2/2d/iproblem2forward2d.h \
     problem2/2d/iproblem2backward2d.h \
-    problem2/2d/abs/abstractproblem22d.h \
-    problem2/2d/ex/problem22dex1.h \
-    problem2/2d/ex/problem22dex2.h \
-    problem2/2d/ex/problem22dex3.h \
+    #problem2/2d/abs/abstractproblem22d.h \
+    #problem2/2d/ex/problem22dex1.h \
+    #problem2/2d/ex/problem22dex2.h \
+    #problem2/2d/ex/problem22dex3.h \
+    #problem2/2d/ex/problem22dex4.h \
+    #problem2/2d/ex/problem22dex5.h \
     problem2/2d/cproblem2forward2d.h \
     problem2/2d/cproblem2backward2d.h \
-    problem2/2d/ex/problem22dex4.h \
     problem2/2d/iproblem2pibvp2d.h \
-    problem2/2d/ex/problem22dex5.h \
     problem2/2d/abs/problem2forward2d.h \
     problem2/2d/abs/problem2backward2d.h \
     problem2/2d/dirakdelta.h \

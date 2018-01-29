@@ -37,6 +37,9 @@ public:
     void setParameter(const Parameter &parameter);
     void setParameter0(const Parameter &parameter0);
 
+    void toVector(const Parameter &prm, DoubleVector &x) const;
+    void fromVector(const DoubleVector &x, Parameter &prm);
+
 private:
     double sgn(double x) const;
 
@@ -57,6 +60,11 @@ public:
     Problem2Forward2D *forward;
     Problem2Backward2D *backward;
     DoubleMatrix U;
+
+    bool optimizeK;
+    bool optimizeZ;
+    bool optimizeC;
+    bool optimizeO;
 };
 
 #endif // IFUNCTIONAL_H

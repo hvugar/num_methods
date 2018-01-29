@@ -626,54 +626,53 @@ Parameter::Parameter(const DoubleVector &prmtrs, unsigned int Lc, unsigned int L
     }
 }
 
-void Parameter::toVector(DoubleVector &prms) const
-{
-    prms.clear();
-    prms.resize(2*Lc*Lo + 2*Lc + 2*Lo);
+//void Parameter::toVector(DoubleVector &prms) const
+//{
+//    prms.clear();
+//    prms.resize(2*Lc*Lo + 2*Lc + 2*Lo);
 
-    for (unsigned int i=0; i<Lc; i++)
-    {
-        prms[2*i + 0 + 2*Lc*Lo] = eta[i].x;
-        prms[2*i + 1 + 2*Lc*Lo] = eta[i].y;
+//    for (unsigned int i=0; i<Lc; i++)
+//    {
+//        prms[2*i + 0 + 2*Lc*Lo] = eta[i].x;
+//        prms[2*i + 1 + 2*Lc*Lo] = eta[i].y;
 
-        for (unsigned int j=0; j<Lo; j++)
-        {
-            prms[i*Lo + j] = k[i][j];
-            prms[i*Lo + j + Lc*Lo] = z[i][j];
+//        for (unsigned int j=0; j<Lo; j++)
+//        {
+//            prms[i*Lo + j] = k[i][j];
+//            prms[i*Lo + j + Lc*Lo] = z[i][j];
 
-            prms[2*j + 0 + 2*Lc + 2*Lc*Lo] = xi[j].x;
-            prms[2*j + 1 + 2*Lc + 2*Lc*Lo] = xi[j].y;
-        }
-    }
-}
+//            prms[2*j + 0 + 2*Lc + 2*Lc*Lo] = xi[j].x;
+//            prms[2*j + 1 + 2*Lc + 2*Lc*Lo] = xi[j].y;
+//        }
+//    }
+//}
 
-void Parameter::fromVector(const DoubleVector &prms)
-{
-    k.clear();
-    k.resize(Lc, Lo);
+//void Parameter::fromVector(const DoubleVector &prms)
+//{
+//    k.clear();
+//    k.resize(Lc, Lo);
 
-    z.clear();
-    z.resize(Lc, Lo);
+//    z.clear();
+//    z.resize(Lc, Lo);
 
-    eta.clear();
-    eta.resize(Lc);
+//    eta.clear();
+//    eta.resize(Lc);
 
-    xi.clear();
-    xi.resize(Lo);
+//    xi.clear();
+//    xi.resize(Lo);
 
-    for (unsigned int i=0; i<Lc; i++)
-    {
-        eta[i].x = prms[2*Lc*Lo + 2*i+0];
-        eta[i].y = prms[2*Lc*Lo + 2*i+1];
+//    for (unsigned int i=0; i<Lc; i++)
+//    {
+//        eta[i].x = prms[2*Lc*Lo + 2*i+0];
+//        eta[i].y = prms[2*Lc*Lo + 2*i+1];
 
-        for (unsigned int j=0; j<Lo; j++)
-        {
-            k[i][j] = prms[i*Lo + j];
-            z[i][j] = prms[i*Lo + j + Lc*Lo];
+//        for (unsigned int j=0; j<Lo; j++)
+//        {
+//            k[i][j] = prms[i*Lo + j];
+//            z[i][j] = prms[i*Lo + j + Lc*Lo];
 
-            xi[j].x = prms[2*Lc*Lo + 2*Lc + 2*j+0];
-            xi[j].y = prms[2*Lc*Lo + 2*Lc + 2*j+1];
-        }
-    }
-}
-
+//            xi[j].x = prms[2*Lc*Lo + 2*Lc + 2*j+0];
+//            xi[j].y = prms[2*Lc*Lo + 2*Lc + 2*j+1];
+//        }
+//    }
+//}

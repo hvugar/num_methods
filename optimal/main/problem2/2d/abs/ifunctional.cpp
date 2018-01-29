@@ -8,13 +8,15 @@ IFunctional::IFunctional()
     forward = new Problem2Forward2D();
     backward = new Problem2Backward2D();
     backward->func = this;
+    optimizeK = optimizeZ = optimizeC = optimizeO = true;
 }
 
 double IFunctional::fx(const DoubleVector &prms) const
 {
     IFunctional* functional = const_cast<IFunctional*>(this);
 
-    functional->mParameter.fromVector(prms);
+    functional->fromVector(prms, functional->mParameter);
+    //functional->mParameter.fromVector(prms);
     functional->forward->setParameter(mParameter);
     functional->backward->setParameter(mParameter);
 
@@ -24,12 +26,6 @@ double IFunctional::fx(const DoubleVector &prms) const
 
     double intgrl = integral(u);
     u.clear();
-
-    //double v1 = mParameter.k[0][0]*(info[0].value(mTimeDimension.sizeN())-mParameter.z[0][0])
-    //        + mParameter.k[0][1]*(info[1].value(mTimeDimension.sizeN())-mParameter.z[0][1]);
-    //double v2 = mParameter.k[1][0]*(info[0].value(mTimeDimension.sizeN())-mParameter.z[1][0])
-    //        + mParameter.k[1][1]*(info[1].value(mTimeDimension.sizeN())-mParameter.z[1][1]);
-    //printf("%f %f\t", v1, v2);
 
     return intgrl + epsilon*norm() + r*penalty(info);
 }
@@ -142,7 +138,7 @@ void IFunctional::gradient(const DoubleVector &prms, DoubleVector &g)
     unsigned int L = mTimeDimension.sizeN();
     double ht = mTimeDimension.step();
 
-    mParameter.fromVector(prms);
+    fromVector(prms, mParameter);
     forward->setParameter(mParameter);
     backward->setParameter(mParameter);
 
@@ -159,119 +155,134 @@ void IFunctional::gradient(const DoubleVector &prms, DoubleVector &g)
     backward->calculateMVD(p, p_info, true);
 
     g.clear();
-    g.resize(prms.length(), 0.0);
-    unsigned int gi = 0;
+    //g.resize(prms.length(), 0.0);
+    //unsigned int gi = 0;
 
     // k
-    for (unsigned int i=0; i<mParameter.Lc; i++)
+    if (optimizeK)
     {
-        ExtendedSpaceNode2D &pi = p_info[i];
-
-        for (unsigned int j=0; j<mParameter.Lo; j++)
+        for (unsigned int i=0; i<mParameter.Lc; i++)
         {
-            ExtendedSpaceNode2D &uj = u_info[j];
+            ExtendedSpaceNode2D &pi = p_info[i];
 
-            double grad_Kij = 0.0;
-
-            grad_Kij += 0.5 * (pi.value(0)+2.0*r*gpi(i,0,u_info)*sgn(g0i(i,0,u_info))) * (uj.value(0) - mParameter.z.at(i,j));
-            for (unsigned int m=1; m<=L-1; m++)
+            for (unsigned int j=0; j<mParameter.Lo; j++)
             {
-                grad_Kij += (pi.value(m)+2.0*r*gpi(i,m,u_info)*sgn(g0i(i,m,u_info))) * (uj.value(m) - mParameter.z.at(i,j));
+                ExtendedSpaceNode2D &uj = u_info[j];
+
+                double grad_Kij = 0.0;
+
+                grad_Kij += 0.5 * (pi.value(0)+2.0*r*gpi(i,0,u_info)*sgn(g0i(i,0,u_info))) * (uj.value(0) - mParameter.z.at(i,j));
+                for (unsigned int m=1; m<=L-1; m++)
+                {
+                    grad_Kij += (pi.value(m)+2.0*r*gpi(i,m,u_info)*sgn(g0i(i,m,u_info))) * (uj.value(m) - mParameter.z.at(i,j));
+                }
+                grad_Kij += 0.5 * (pi.value(L)+2.0*r*gpi(i,L,u_info)*sgn(g0i(i,L,u_info))) * (uj.value(L) - mParameter.z.at(i,j));
+                grad_Kij *= -ht;
+
+                g << grad_Kij + 2.0*epsilon*(mParameter.k.at(i,j) - mParameter0.k.at(i,j));
             }
-            grad_Kij += 0.5 * (pi.value(L)+2.0*r*gpi(i,L,u_info)*sgn(g0i(i,L,u_info))) * (uj.value(L) - mParameter.z.at(i,j));
-            grad_Kij *= -ht;
-            g[gi++] = grad_Kij + 2.0*epsilon*(mParameter.k.at(i,j) - mParameter0.k.at(i,j));
         }
     }
 
     // z
-    for (unsigned int i=0; i<mParameter.Lc; i++)
+    if (optimizeK)
     {
-        ExtendedSpaceNode2D &pi = p_info[i];
-
-        for (unsigned int j=0; j<mParameter.Lo; j++)
+        for (unsigned int i=0; i<mParameter.Lc; i++)
         {
-            double grad_Zij = 0.0;
+            ExtendedSpaceNode2D &pi = p_info[i];
 
-            grad_Zij += 0.5 * (pi.value(0)+2.0*r*gpi(i,0,u_info)*sgn(g0i(i,0,u_info))) * mParameter.k.at(i,j);
-            for (unsigned int m=1; m<=L-1; m++)
+            for (unsigned int j=0; j<mParameter.Lo; j++)
             {
-                grad_Zij += (pi.value(m)+2.0*r*gpi(i,m,u_info)*sgn(g0i(i,m,u_info)))  * mParameter.k.at(i,j);
+                double grad_Zij = 0.0;
+
+                grad_Zij += 0.5 * (pi.value(0)+2.0*r*gpi(i,0,u_info)*sgn(g0i(i,0,u_info))) * mParameter.k.at(i,j);
+                for (unsigned int m=1; m<=L-1; m++)
+                {
+                    grad_Zij += (pi.value(m)+2.0*r*gpi(i,m,u_info)*sgn(g0i(i,m,u_info)))  * mParameter.k.at(i,j);
+                }
+                grad_Zij += 0.5 * (pi.value(L)+2.0*r*gpi(i,L,u_info)*sgn(g0i(i,L,u_info))) * mParameter.k.at(i,j);
+                grad_Zij *= ht;
+
+                g << grad_Zij + 2.0*epsilon*(mParameter.z[i][j] - mParameter0.z[i][j]);
             }
-            grad_Zij += 0.5 * (pi.value(L)+2.0*r*gpi(i,L,u_info)*sgn(g0i(i,L,u_info))) * mParameter.k.at(i,j);
-            grad_Zij *= ht;
-            g[gi++] = grad_Zij + 2.0*epsilon*(mParameter.z[i][j] - mParameter0.z[i][j]);
         }
     }
 
     // eta
-    for (unsigned int i=0; i<mParameter.Lc; i++)
+    if (optimizeC)
     {
-        ExtendedSpaceNode2D &pi = p_info[i];
-
-        double grad_EtaiX = 0.0;
-        double grad_EtaiY = 0.0;
-        double vi = 0.0;
-
-        vi = 0.0;
-        for (unsigned int j=0; j<mParameter.Lo; j++) vi += mParameter.k.at(i,j) * (u_info[j].value(0) - mParameter.z.at(i,j));
-        grad_EtaiX += 0.5 * pi.valueDx(0) * vi;
-        grad_EtaiY += 0.5 * pi.valueDy(0) * vi;
-
-        for (unsigned int m=1; m<=L-1; m++)
+        for (unsigned int i=0; i<mParameter.Lc; i++)
         {
+            ExtendedSpaceNode2D &pi = p_info[i];
+
+            double grad_EtaiX = 0.0;
+            double grad_EtaiY = 0.0;
+            double vi = 0.0;
+
             vi = 0.0;
-            for (unsigned int j=0; j<mParameter.Lo; j++) vi += mParameter.k.at(i,j) * (u_info[j].value(m) - mParameter.z.at(i,j));
-            grad_EtaiX += pi.valueDx(m) * vi;
-            grad_EtaiY += pi.valueDy(m) * vi;
+            for (unsigned int j=0; j<mParameter.Lo; j++) vi += mParameter.k.at(i,j) * (u_info[j].value(0) - mParameter.z.at(i,j));
+            grad_EtaiX += 0.5 * pi.valueDx(0) * vi;
+            grad_EtaiY += 0.5 * pi.valueDy(0) * vi;
+
+            for (unsigned int m=1; m<=L-1; m++)
+            {
+                vi = 0.0;
+                for (unsigned int j=0; j<mParameter.Lo; j++) vi += mParameter.k.at(i,j) * (u_info[j].value(m) - mParameter.z.at(i,j));
+                grad_EtaiX += pi.valueDx(m) * vi;
+                grad_EtaiY += pi.valueDy(m) * vi;
+            }
+
+            vi = 0.0;
+            for (unsigned int j=0; j<mParameter.Lo; j++) vi += mParameter.k.at(i,j) * (u_info[j].value(L) - mParameter.z.at(i,j));
+            grad_EtaiX += 0.5 * pi.valueDx(L) * vi;
+            grad_EtaiY += 0.5 * pi.valueDy(L) * vi;
+
+            grad_EtaiX *= -ht;
+            grad_EtaiY *= -ht;
+
+            g << grad_EtaiX + 2.0*epsilon*(mParameter.eta[i].x - mParameter0.eta[i].x);
+            g << grad_EtaiY + 2.0*epsilon*(mParameter.eta[i].y - mParameter0.eta[i].y);
         }
-
-        vi = 0.0;
-        for (unsigned int j=0; j<mParameter.Lo; j++) vi += mParameter.k.at(i,j) * (u_info[j].value(L) - mParameter.z.at(i,j));
-        grad_EtaiX += 0.5 * pi.valueDx(L) * vi;
-        grad_EtaiY += 0.5 * pi.valueDy(L) * vi;
-
-        grad_EtaiX *= -ht;
-        grad_EtaiY *= -ht;
-
-        g[gi++] = grad_EtaiX + 2.0*epsilon*(mParameter.eta[i].x - mParameter0.eta[i].x);
-        g[gi++] = grad_EtaiY + 2.0*epsilon*(mParameter.eta[i].y - mParameter0.eta[i].y);
     }
 
     // xi
-    for (unsigned int j=0; j<mParameter.Lo; j++)
+    if (optimizeO)
     {
-        ExtendedSpaceNode2D &uj = u_info[j];
-
-        double gradXijX = 0.0;
-        double gradXijY = 0.0;
-        double vi = 0.0;
-
-        vi = 0.0;
-        for (unsigned int i=0; i<mParameter.Lc; i++) vi += mParameter.k.at(i,j) * (p_info[i].value(0)+2.0*r*gpi(i,0,u_info)*sgn(g0i(i,0,u_info)));
-        gradXijX += 0.5 * uj.valueDx(0) * vi;
-        gradXijY += 0.5 * uj.valueDy(0) * vi;
-
-        for (unsigned int m=1; m<=L-1; m++)
+        for (unsigned int j=0; j<mParameter.Lo; j++)
         {
+            ExtendedSpaceNode2D &uj = u_info[j];
+
+            double gradXijX = 0.0;
+            double gradXijY = 0.0;
+            double vi = 0.0;
+
             vi = 0.0;
-            for (unsigned int i=0; i<mParameter.Lc; i++) vi += mParameter.k.at(i,j)*(p_info[i].value(m)+2.0*r*gpi(i,m,u_info)*sgn(g0i(i,m,u_info)));
-            gradXijX += uj.valueDx(m) * vi;
-            gradXijY += uj.valueDy(m) * vi;
+            for (unsigned int i=0; i<mParameter.Lc; i++) vi += mParameter.k.at(i,j) * (p_info[i].value(0)+2.0*r*gpi(i,0,u_info)*sgn(g0i(i,0,u_info)));
+            gradXijX += 0.5 * uj.valueDx(0) * vi;
+            gradXijY += 0.5 * uj.valueDy(0) * vi;
+
+            for (unsigned int m=1; m<=L-1; m++)
+            {
+                vi = 0.0;
+                for (unsigned int i=0; i<mParameter.Lc; i++) vi += mParameter.k.at(i,j)*(p_info[i].value(m)+2.0*r*gpi(i,m,u_info)*sgn(g0i(i,m,u_info)));
+                gradXijX += uj.valueDx(m) * vi;
+                gradXijY += uj.valueDy(m) * vi;
+            }
+
+            vi = 0.0;
+            for (unsigned int i=0; i<mParameter.Lc; i++) vi += mParameter.k.at(i,j)*(p_info[i].value(L)+2.0*r*gpi(i,L,u_info)*sgn(g0i(i,L,u_info)));
+            gradXijX += 0.5 * uj.valueDx(L) * vi;
+            gradXijY += 0.5 * uj.valueDy(L) * vi;
+
+            gradXijX *= -ht;
+            gradXijY *= -ht;
+
+            g << gradXijX + 2.0*epsilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
+            g << gradXijY + 2.0*epsilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
         }
-
-        vi = 0.0;
-        for (unsigned int i=0; i<mParameter.Lc; i++) vi += mParameter.k.at(i,j)*(p_info[i].value(L)+2.0*r*gpi(i,L,u_info)*sgn(g0i(i,L,u_info)));
-        gradXijX += 0.5 * uj.valueDx(L) * vi;
-        gradXijY += 0.5 * uj.valueDy(L) * vi;
-
-        gradXijX *= -ht;
-        gradXijY *= -ht;
-
-        g[gi++] = gradXijX + 2.0*epsilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
-        g[gi++] = gradXijY + 2.0*epsilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
     }
 
+    IGradient::Gradient(this, 0.01, prms, g);
 
     u_info.clear();
     p_info.clear();
@@ -305,19 +316,39 @@ void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVecto
 {
     IFunctional* ifunc = const_cast<IFunctional*>(this);
     Parameter prm; prm.Lc = mParameter.Lc; prm.Lo = mParameter.Lo;
-    prm.fromVector(x);
+    ifunc->fromVector(x, prm);
 
-    ifunc->mParameter.fromVector(x);
+    ifunc->fromVector(x, ifunc->mParameter);
     ifunc->forward->setParameter(ifunc->mParameter);
 
     DoubleMatrix u;
     vector<ExtendedSpaceNode2D> info;
-    ifunc->forward->calculateMVD(u, info, false);
+    ifunc->forward->calculateMVD(u, info, true);
 
-    printf("I[%d]: %10.6f %10.6f R: %10.6f epsilon: %f\n", i, integral(u), f, r, epsilon);
+    printf("I[%d]: %10.6f %10.6f R: %10.6f epsilon: %f Nt: %d Nx: %d Ny: %d\n", i, integral(u), f, r, epsilon,
+           mTimeDimension.sizeN(), mSpaceDimensionX.sizeN(), mSpaceDimensionY.sizeN());
     IPrinter::print(x,x.length(),10,4);
     IPrinter::print(g,g.length(),10,4);
-    //if (f<1.0) const_cast<IFunctional*>(this)->epsilon = 0.0;
+    //DoubleVector px(x.length());
+    //IGradient::Gradient(ifunc, 0.01, x, px);
+    //IPrinter::print(px,px.length(),10,4);
+
+    DoubleVector v1;
+    DoubleVector v2;
+
+    for (int i=0; i<=mTimeDimension.sizeN(); i++)
+    {
+        v1 << mParameter.k[0][0]*(info[0].value(i) - mParameter.z[0][0]) + mParameter.k[0][1]*(info[1].value(i) - mParameter.z[0][1]);
+        v2 << mParameter.k[1][0]*(info[0].value(i) - mParameter.z[1][0]) + mParameter.k[1][1]*(info[1].value(i) - mParameter.z[1][1]);
+    }
+
+    IPrinter::printVector(v1,"v1: "); v1.clear();
+    IPrinter::printVector(v2,"v2: "); v2.clear();
+
+    if (result == GradientMethod::BREAK_DISTANCE_LESS || result == GradientMethod::BREAK_GRADIENT_NORM_LESS)
+    {
+        IPrinter::printSeperatorLine();
+    }
 }
 
 void IFunctional::setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY)
@@ -394,4 +425,61 @@ double IFunctional::sgn(double x) const
     if (x<0.0) return -1.0;
     else if (x>0.0) return +1.0;
     return 0.0;
+}
+
+void IFunctional::toVector(const Parameter &prm, DoubleVector &x) const
+{
+    unsigned int Lc = prm.Lc;
+    unsigned int Lo = prm.Lo;
+
+    x.clear();
+    x.resize(2*Lc*Lo + 2*Lc + 2*Lo);
+
+    for (unsigned int i=0; i<Lc; i++)
+    {
+        x[2*i + 0 + 2*Lc*Lo] = prm.eta[i].x;
+        x[2*i + 1 + 2*Lc*Lo] = prm.eta[i].y;
+
+        for (unsigned int j=0; j<Lo; j++)
+        {
+            x[i*Lo + j] = prm.k[i][j];
+            x[i*Lo + j + Lc*Lo] = prm.z[i][j];
+
+            x[2*j + 0 + 2*Lc + 2*Lc*Lo] = prm.xi[j].x;
+            x[2*j + 1 + 2*Lc + 2*Lc*Lo] = prm.xi[j].y;
+        }
+    }
+}
+
+void IFunctional::fromVector(const DoubleVector &x, Parameter &prm)
+{
+    unsigned int Lc = prm.Lc;
+    unsigned int Lo = prm.Lo;
+
+    prm.k.clear();
+    prm.k.resize(Lc, Lo);
+
+    prm.z.clear();
+    prm.z.resize(Lc, Lo);
+
+    prm.eta.clear();
+    prm.eta.resize(Lc);
+
+    prm.xi.clear();
+    prm.xi.resize(Lo);
+
+    for (unsigned int i=0; i<Lc; i++)
+    {
+        prm.eta[i].x = x[2*Lc*Lo + 2*i+0];
+        prm.eta[i].y = x[2*Lc*Lo + 2*i+1];
+
+        for (unsigned int j=0; j<Lo; j++)
+        {
+            prm.k[i][j] = x[i*Lo + j];
+            prm.z[i][j] = x[i*Lo + j + Lc*Lo];
+
+            prm.xi[j].x = x[2*Lc*Lo + 2*Lc + 2*j+0];
+            prm.xi[j].y = x[2*Lc*Lo + 2*Lc + 2*j+1];
+        }
+    }
 }
