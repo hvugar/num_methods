@@ -8,26 +8,29 @@ IFunctional::IFunctional()
     forward = new Problem2Forward2D();
     backward = new Problem2Backward2D();
     backward->func = this;
-    optimizeK = optimizeZ = optimizeC = optimizeO = true;
+    optimizeK = true;
+    optimizeZ = false;
+    optimizeC = false;
+    optimizeO = false;
 }
 
-double IFunctional::fx(const DoubleVector &prms) const
+double IFunctional::fx(const DoubleVector &pv) const
 {
-    IFunctional* functional = const_cast<IFunctional*>(this);
+    IFunctional* ifunc = const_cast<IFunctional*>(this);
 
-    functional->fromVector(prms, functional->mParameter);
+    ifunc->fromVector(pv, ifunc->mParameter);
     //functional->mParameter.fromVector(prms);
-    functional->forward->setParameter(mParameter);
-    functional->backward->setParameter(mParameter);
+    ifunc->forward->setParameter(mParameter);
+    ifunc->backward->setParameter(mParameter);
 
     DoubleMatrix u;
     vector<ExtendedSpaceNode2D> info;
-    functional->forward->calculateMVD(u, info, true);
+    ifunc->forward->calculateMVD(u, info, true);
 
     double intgrl = integral(u);
     u.clear();
 
-    return intgrl + epsilon*norm() + r*penalty(info);
+    return intgrl /*+ epsilon*norm()*/ + r*penalty(info);
 }
 
 double IFunctional::integral(const DoubleMatrix &u) const
@@ -133,12 +136,12 @@ double IFunctional::mu(double x UNUSED_PARAM, double y UNUSED_PARAM) const
     return 1.0;
 }
 
-void IFunctional::gradient(const DoubleVector &prms, DoubleVector &g)
+void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g)
 {
     unsigned int L = mTimeDimension.sizeN();
     double ht = mTimeDimension.step();
 
-    fromVector(prms, mParameter);
+    fromVector(pv, mParameter);
     forward->setParameter(mParameter);
     backward->setParameter(mParameter);
 
@@ -155,8 +158,8 @@ void IFunctional::gradient(const DoubleVector &prms, DoubleVector &g)
     backward->calculateMVD(p, p_info, true);
 
     g.clear();
-    //g.resize(prms.length(), 0.0);
-    //unsigned int gi = 0;
+    g.resize(pv.length(), 0.0);
+    unsigned int gi = 0;
 
     // k
     if (optimizeK)
@@ -179,13 +182,23 @@ void IFunctional::gradient(const DoubleVector &prms, DoubleVector &g)
                 grad_Kij += 0.5 * (pi.value(L)+2.0*r*gpi(i,L,u_info)*sgn(g0i(i,L,u_info))) * (uj.value(L) - mParameter.z.at(i,j));
                 grad_Kij *= -ht;
 
-                g << grad_Kij + 2.0*epsilon*(mParameter.k.at(i,j) - mParameter0.k.at(i,j));
+                g[gi] = grad_Kij + 2.0*epsilon*(mParameter.k.at(i,j) - mParameter0.k.at(i,j)); gi++;
+            }
+        }
+    }
+    else
+    {
+        for (unsigned int i=0; i<mParameter.Lc; i++)
+        {
+            for (unsigned int j=0; j<mParameter.Lo; j++)
+            {
+                g[gi] = 0.0; gi++;
             }
         }
     }
 
     // z
-    if (optimizeK)
+    if (optimizeZ)
     {
         for (unsigned int i=0; i<mParameter.Lc; i++)
         {
@@ -203,7 +216,17 @@ void IFunctional::gradient(const DoubleVector &prms, DoubleVector &g)
                 grad_Zij += 0.5 * (pi.value(L)+2.0*r*gpi(i,L,u_info)*sgn(g0i(i,L,u_info))) * mParameter.k.at(i,j);
                 grad_Zij *= ht;
 
-                g << grad_Zij + 2.0*epsilon*(mParameter.z[i][j] - mParameter0.z[i][j]);
+                g[gi] = grad_Zij + 2.0*epsilon*(mParameter.z[i][j] - mParameter0.z[i][j]); gi++;
+            }
+        }
+    }
+    else
+    {
+        for (unsigned int i=0; i<mParameter.Lc; i++)
+        {
+            for (unsigned int j=0; j<mParameter.Lo; j++)
+            {
+                g[gi] = 0.0; gi++;
             }
         }
     }
@@ -240,8 +263,16 @@ void IFunctional::gradient(const DoubleVector &prms, DoubleVector &g)
             grad_EtaiX *= -ht;
             grad_EtaiY *= -ht;
 
-            g << grad_EtaiX + 2.0*epsilon*(mParameter.eta[i].x - mParameter0.eta[i].x);
-            g << grad_EtaiY + 2.0*epsilon*(mParameter.eta[i].y - mParameter0.eta[i].y);
+            g[gi] = grad_EtaiX + 2.0*epsilon*(mParameter.eta[i].x - mParameter0.eta[i].x); gi++;
+            g[gi] = grad_EtaiY + 2.0*epsilon*(mParameter.eta[i].y - mParameter0.eta[i].y); gi++;
+        }
+    }
+    else
+    {
+        for (unsigned int i=0; i<mParameter.Lc; i++)
+        {
+            g[gi] = 0.0; gi++;
+            g[gi] = 0.0; gi++;
         }
     }
 
@@ -277,32 +308,87 @@ void IFunctional::gradient(const DoubleVector &prms, DoubleVector &g)
             gradXijX *= -ht;
             gradXijY *= -ht;
 
-            g << gradXijX + 2.0*epsilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
-            g << gradXijY + 2.0*epsilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
+            g[gi] = gradXijX + 2.0*epsilon*(mParameter.xi[j].x - mParameter0.xi[j].x); gi++;
+            g[gi] = gradXijY + 2.0*epsilon*(mParameter.xi[j].x - mParameter0.xi[j].x); gi++;
+        }
+    }
+    else
+    {
+        for (unsigned int j=0; j<mParameter.Lo; j++)
+        {
+            g[gi] = 0.0; gi++;
+            g[gi] = 0.0; gi++;
         }
     }
 
-    IGradient::Gradient(this, 0.01, prms, g);
+    //IGradient::Gradient(this, 0.01, prms, g);
 
     u_info.clear();
     p_info.clear();
 }
 
-void IFunctional::project(DoubleVector &prm, unsigned int index)
+void IFunctional::project(DoubleVector &pv, unsigned int index)
 {
     unsigned int offset = 2*mParameter.Lc*mParameter.Lo;
+
     // eta
     if ( offset <= index && index <= offset + 2*mParameter.Lc - 1)
     {
-        if (prm[index] < 0.05) prm[index] = 0.05;
-        if (prm[index] > 0.95) prm[index] = 0.95;
+        if (pv[index] < 0.05) pv[index] = 0.05;
+        if (pv[index] > 0.95) pv[index] = 0.95;
     }
 
     // xi
     if ( offset + 2*mParameter.Lc <= index && index <= offset + 2*mParameter.Lc + 2*mParameter.Lo - 1)
     {
-        if (prm[index] < 0.05) prm[index] = 0.05;
-        if (prm[index] > 0.95) prm[index] = 0.95;
+        if (pv[index] < 0.05) pv[index] = 0.05;
+        if (pv[index] > 0.95) pv[index] = 0.95;
+    }
+
+    double dx = 0.08;
+
+    if (fabs(pv[8] - pv[12])<dx)
+    {
+        pv[12] = pv[8] + dx;
+        if (pv[12] > 0.95) pv[12] = pv[8] - dx;
+    }
+    if (fabs(pv[10] - pv[12])<dx)
+    {
+        pv[12] = pv[10] + dx;
+        if (pv[12] > 0.95) pv[12] = pv[10] - dx;
+    }
+
+    if (fabs(pv[8] - pv[14])<dx)
+    {
+        pv[14] = pv[8] + 0.08;
+        if (pv[14] > 0.95) pv[14] = pv[8] - dx;
+    }
+    if (fabs(pv[10] - pv[14])<dx)
+    {
+        pv[14] = pv[10] + 0.08;
+        if (pv[14] > 0.95) pv[14] = pv[10] - dx;
+    }
+
+    if (fabs(pv[9] - pv[13])<dx)
+    {
+        pv[13] = pv[9] + dx;
+        if (pv[13] > 0.95) pv[13] = pv[9] - dx;
+    }
+    if (fabs(pv[11] - pv[13])<dx)
+    {
+        pv[13] = pv[11] + dx;
+        if (pv[13] > 0.95) pv[13] = pv[11] - dx;
+    }
+
+    if (fabs(pv[9] - pv[15])<dx)
+    {
+        pv[15] = pv[9] + dx;
+        if (pv[15] > 0.95) pv[15] = pv[9] - dx;
+    }
+    if (fabs(pv[11] - pv[15])<dx)
+    {
+        pv[15] = pv[11] + dx;
+        if (pv[15] > 0.95) pv[15] = pv[11] - dx;
     }
 
     //if ( 2*mParameter.Lc*mParameter.Lo <= index && index <= 2*mParameter.Lc*mParameter.Lo + 2*mParameter.Lc + 2*mParameter.Lo - 1 )
@@ -325,8 +411,7 @@ void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVecto
     vector<ExtendedSpaceNode2D> info;
     ifunc->forward->calculateMVD(u, info, true);
 
-    printf("I[%d]: %10.6f %10.6f R: %10.6f epsilon: %f Nt: %d Nx: %d Ny: %d\n", i, integral(u), f, r, epsilon,
-           mTimeDimension.sizeN(), mSpaceDimensionX.sizeN(), mSpaceDimensionY.sizeN());
+    printf("I[%d]: %10.6f %10.6f R: %10.6f epsilon: %f Nt: %d Nx: %d Ny: %d\n", i, integral(u), f, r, epsilon, mTimeDimension.sizeN(), mSpaceDimensionX.sizeN(), mSpaceDimensionY.sizeN());
     IPrinter::print(x,x.length(),10,4);
     IPrinter::print(g,g.length(),10,4);
     //DoubleVector px(x.length());
@@ -349,6 +434,27 @@ void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVecto
     {
         IPrinter::printSeperatorLine();
     }
+
+    ifunc->optimizeK = i%4==3;
+    ifunc->optimizeZ = i%4==0;
+    ifunc->optimizeC = i%4==1;
+    ifunc->optimizeO = i%4==2;
+
+
+//    if (i%2==0)
+//    {
+//        ifunc->optimizeK = true;
+//        ifunc->optimizeZ = true;
+//        ifunc->optimizeC = false;
+//        ifunc->optimizeO = false;
+//    }
+//    else
+//    {
+//        ifunc->optimizeK = false;
+//        ifunc->optimizeZ = false;
+//        ifunc->optimizeC = true;
+//        ifunc->optimizeO = true;
+//    }
 }
 
 void IFunctional::setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY)
@@ -427,59 +533,159 @@ double IFunctional::sgn(double x) const
     return 0.0;
 }
 
-void IFunctional::toVector(const Parameter &prm, DoubleVector &x) const
+void IFunctional::toVector(const Parameter &prm, DoubleVector &pv) const
 {
     unsigned int Lc = prm.Lc;
     unsigned int Lo = prm.Lo;
 
-    x.clear();
-    x.resize(2*Lc*Lo + 2*Lc + 2*Lo);
+    //unsigned int length = 0;
+    //if (optimizeK) length += Lc*Lo;
+    //if (optimizeZ) length += Lc*Lo;
+    //if (optimizeC) length += 2*Lc;
+    //if (optimizeO) length += 2*Lo;
 
-    for (unsigned int i=0; i<Lc; i++)
+    pv.clear();
+    pv.resize(2*Lc*Lo+2*Lc+2*Lo);
+
+    //if (optimizeK)
     {
-        x[2*i + 0 + 2*Lc*Lo] = prm.eta[i].x;
-        x[2*i + 1 + 2*Lc*Lo] = prm.eta[i].y;
-
-        for (unsigned int j=0; j<Lo; j++)
+        for (unsigned int i=0; i<Lc; i++)
         {
-            x[i*Lo + j] = prm.k[i][j];
-            x[i*Lo + j + Lc*Lo] = prm.z[i][j];
-
-            x[2*j + 0 + 2*Lc + 2*Lc*Lo] = prm.xi[j].x;
-            x[2*j + 1 + 2*Lc + 2*Lc*Lo] = prm.xi[j].y;
+            for (unsigned int j=0; j<Lo; j++)
+            {
+                pv[i*Lo + j] = prm.k[i][j];
+            }
         }
     }
+
+    //if (optimizeZ)
+    {
+        for (unsigned int i=0; i<Lc; i++)
+        {
+            for (unsigned int j=0; j<Lo; j++)
+            {
+                pv[i*Lo + j + Lc*Lo] = prm.z[i][j];
+            }
+        }
+    }
+
+    //if (optimizeC)
+    {
+        for (unsigned int i=0; i<Lc; i++)
+        {
+            pv[2*i + 0 + 2*Lc*Lo] = prm.eta[i].x;
+            pv[2*i + 1 + 2*Lc*Lo] = prm.eta[i].y;
+        }
+    }
+
+    //if (optimizeO)
+    {
+        for (unsigned int j=0; j<Lo; j++)
+        {
+            pv[2*j + 0 + 2*Lc + 2*Lc*Lo] = prm.xi[j].x;
+            pv[2*j + 1 + 2*Lc + 2*Lc*Lo] = prm.xi[j].y;
+        }
+    }
+
+    //    for (unsigned int i=0; i<Lc; i++)
+    //    {
+    //        x[2*i + 0 + 2*Lc*Lo] = prm.eta[i].x;
+    //        x[2*i + 1 + 2*Lc*Lo] = prm.eta[i].y;
+
+    //        for (unsigned int j=0; j<Lo; j++)
+    //        {
+    //            x[i*Lo + j] = prm.k[i][j];
+    //            x[i*Lo + j + Lc*Lo] = prm.z[i][j];
+
+    //            x[2*j + 0 + 2*Lc + 2*Lc*Lo] = prm.xi[j].x;
+    //            x[2*j + 1 + 2*Lc + 2*Lc*Lo] = prm.xi[j].y;
+    //        }
+    //    }
 }
 
-void IFunctional::fromVector(const DoubleVector &x, Parameter &prm)
+void IFunctional::fromVector(const DoubleVector &pv, Parameter &prm)
 {
     unsigned int Lc = prm.Lc;
     unsigned int Lo = prm.Lo;
 
-    prm.k.clear();
-    prm.k.resize(Lc, Lo);
+    unsigned int index = 0;
 
-    prm.z.clear();
-    prm.z.resize(Lc, Lo);
-
-    prm.eta.clear();
-    prm.eta.resize(Lc);
-
-    prm.xi.clear();
-    prm.xi.resize(Lo);
-
-    for (unsigned int i=0; i<Lc; i++)
+    //if (optimizeK)
     {
-        prm.eta[i].x = x[2*Lc*Lo + 2*i+0];
-        prm.eta[i].y = x[2*Lc*Lo + 2*i+1];
+        prm.k.clear();
+        prm.k.resize(Lc, Lo);
+
+        for (unsigned int i=0; i<Lc; i++)
+        {
+            for (unsigned int j=0; j<Lo; j++)
+            {
+                prm.k[i][j] = pv[index]; index++;
+            }
+        }
+    }
+
+    //if (optimizeZ)
+    {
+        prm.z.clear();
+        prm.z.resize(Lc, Lo);
+
+        for (unsigned int i=0; i<Lc; i++)
+        {
+            for (unsigned int j=0; j<Lo; j++)
+            {
+                prm.z[i][j] = pv[index]; index++;
+            }
+        }
+    }
+
+    //if (optimizeC)
+    {
+        prm.eta.clear();
+        prm.eta.resize(Lc);
+
+        for (unsigned int i=0; i<Lc; i++)
+        {
+            prm.eta[i].x = pv[index]; index++;
+            prm.eta[i].y = pv[index]; index++;
+        }
+    }
+
+    //if (optimizeO)
+    {
+        prm.xi.clear();
+        prm.xi.resize(Lo);
 
         for (unsigned int j=0; j<Lo; j++)
         {
-            prm.k[i][j] = x[i*Lo + j];
-            prm.z[i][j] = x[i*Lo + j + Lc*Lo];
-
-            prm.xi[j].x = x[2*Lc*Lo + 2*Lc + 2*j+0];
-            prm.xi[j].y = x[2*Lc*Lo + 2*Lc + 2*j+1];
+            prm.xi[j].x = pv[index]; index++;
+            prm.xi[j].y = pv[index]; index++;
         }
     }
+
+    //    prm.k.clear();
+    //    prm.k.resize(Lc, Lo);
+
+    //    prm.z.clear();
+    //    prm.z.resize(Lc, Lo);
+
+    //    prm.eta.clear();
+    //    prm.eta.resize(Lc);
+
+    //    prm.xi.clear();
+    //    prm.xi.resize(Lo);
+
+    //    for (unsigned int i=0; i<Lc; i++)
+    //    {
+    //        prm.eta[i].x = pv[2*Lc*Lo + 2*i+0];
+    //        prm.eta[i].y = pv[2*Lc*Lo + 2*i+1];
+
+    //        for (unsigned int j=0; j<Lo; j++)
+    //        {
+    //            prm.k[i][j] = pv[i*Lo + j];
+    //            prm.z[i][j] = pv[i*Lo + j + Lc*Lo];
+
+    //            prm.xi[j].x = pv[2*Lc*Lo + 2*Lc + 2*j+0];
+    //            prm.xi[j].y = pv[2*Lc*Lo + 2*Lc + 2*j+1];
+    //        }
+    //    }
 }

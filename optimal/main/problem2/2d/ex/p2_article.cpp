@@ -300,7 +300,7 @@ void Problem2Article::Table23_Y1()
     jfunc.setEquationParameters(1.0, 0.01, 0.01);
     jfunc.setEpsilon(0.00);
     jfunc.setPenaltyCoefficient(0.0);
-    jfunc.setPenaltyLimits(DoubleVector(Lc, -10.0), DoubleVector(Lc, +40.0));
+    jfunc.setPenaltyLimits(DoubleVector(Lc, -5.0), DoubleVector(Lc, +20.0));
 
     Parameter prm0(Lc, Lo);
     prm0.k[0][0] = -2.004; prm0.k[0][1] = +0.704;
@@ -342,8 +342,8 @@ void Problem2Article::Table23_Y1()
     pf.jfunc = &jfunc;
     DoubleVector x; jfunc.toVector(prm, x);
 
-    DoubleVector r; r << 1.00 << 0.10 << 1.0 << 10.0 << 20.0 << 100.0 << 200.0 << 500.0;
-    DoubleVector e; e << 0.00 << 0.00 << 0.0 << 0.00 << 0.00 << 0.000 << 0.000 << 0.000;
+    DoubleVector r; r << 20.0 << 50.0 << 100.0 << 200.0 << 500.0 << 200.0 << 500.0 << 500.0;
+    DoubleVector e; e << 1.00 << 1.00 << 1.000 << 1.000 << 1.000 << 1.000 << 0.000 << 0.000;
 
     pf.calculate(x, r, e);
 }
