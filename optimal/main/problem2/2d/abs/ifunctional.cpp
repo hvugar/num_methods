@@ -9,7 +9,7 @@ IFunctional::IFunctional()
     backward = new Problem2Backward2D();
     backward->func = this;
     optimizeK = true;
-    optimizeZ = false;
+    optimizeZ = true;
     optimizeC = false;
     optimizeO = false;
 }
@@ -30,7 +30,7 @@ double IFunctional::fx(const DoubleVector &pv) const
     double intgrl = integral(u);
     u.clear();
 
-    return intgrl /*+ epsilon*norm()*/ + r*penalty(info);
+    return intgrl + epsilon*norm() + r*penalty(info);
 }
 
 double IFunctional::integral(const DoubleMatrix &u) const
@@ -411,29 +411,34 @@ void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVecto
     vector<ExtendedSpaceNode2D> info;
     ifunc->forward->calculateMVD(u, info, true);
 
-    printf("I[%d]: %10.6f %10.6f R: %10.6f epsilon: %f Nt: %d Nx: %d Ny: %d\n", i, integral(u), f, r, epsilon, mTimeDimension.sizeN(), mSpaceDimensionX.sizeN(), mSpaceDimensionY.sizeN());
-    IPrinter::print(x,x.length(),10,4);
-    IPrinter::print(g,g.length(),10,4);
+    printf("I[%3d]: %10.6f %10.6f %14.6f R:%.1f epsilon:%.3f Nt:%d Nx:%d Ny:%d  ", i, integral(u), integral(u)+epsilon*norm(),  f, r, epsilon, mTimeDimension.sizeN(), mSpaceDimensionX.sizeN(), mSpaceDimensionY.sizeN());
+    IPrinter::print(x,x.length(),8,4);
+    //IPrinter::print(g,g.length(),10,4);
     //DoubleVector px(x.length());
     //IGradient::Gradient(ifunc, 0.01, x, px);
     //IPrinter::print(px,px.length(),10,4);
 
-    DoubleVector v1;
-    DoubleVector v2;
+//    DoubleVector v1;
+//    DoubleVector v2;
 
-    for (int i=0; i<=mTimeDimension.sizeN(); i++)
-    {
-        v1 << mParameter.k[0][0]*(info[0].value(i) - mParameter.z[0][0]) + mParameter.k[0][1]*(info[1].value(i) - mParameter.z[0][1]);
-        v2 << mParameter.k[1][0]*(info[0].value(i) - mParameter.z[1][0]) + mParameter.k[1][1]*(info[1].value(i) - mParameter.z[1][1]);
-    }
+//    for (int i=0; i<=mTimeDimension.sizeN(); i++)
+//    {
+//        v1 << mParameter.k[0][0]*(info[0].value(i) - mParameter.z[0][0]) + mParameter.k[0][1]*(info[1].value(i) - mParameter.z[0][1]);
+//        v2 << mParameter.k[1][0]*(info[0].value(i) - mParameter.z[1][0]) + mParameter.k[1][1]*(info[1].value(i) - mParameter.z[1][1]);
+//    }
 
-    IPrinter::printVector(v1,"v1: "); v1.clear();
-    IPrinter::printVector(v2,"v2: "); v2.clear();
+//    IPrinter::printVector(v1,"v1: "); v1.clear();
+//    IPrinter::printVector(v2,"v2: "); v2.clear();
 
-    if (result == GradientMethod::BREAK_DISTANCE_LESS || result == GradientMethod::BREAK_GRADIENT_NORM_LESS)
-    {
-        IPrinter::printSeperatorLine();
-    }
+//    if (result == GradientMethod::BREAK_DISTANCE_LESS || result == GradientMethod::BREAK_GRADIENT_NORM_LESS)
+//    {
+//        IPrinter::printSeperatorLine();
+//    }
+
+//    ifunc->optimizeK = i%2==1;
+//    ifunc->optimizeZ = i%2==1;
+//    ifunc->optimizeC = i%2==0;
+//    ifunc->optimizeO = i%2==0;
 
     ifunc->optimizeK = i%4==3;
     ifunc->optimizeZ = i%4==0;
@@ -455,6 +460,8 @@ void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVecto
 //        ifunc->optimizeC = true;
 //        ifunc->optimizeO = true;
 //    }
+
+//    IPrinter::printSeperatorLine();
 }
 
 void IFunctional::setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY)

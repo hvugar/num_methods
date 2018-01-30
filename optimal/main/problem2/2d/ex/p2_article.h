@@ -18,13 +18,6 @@ public:
     static void Table2_Y2();
     static void Table3_Y2();
 
-
-    static void Table1Y1();
-    static void Table1Y2();
-
-    static void Table2Y1();
-    static void Table2Y2();
-
     static void Table23_Y1();
 };
 
