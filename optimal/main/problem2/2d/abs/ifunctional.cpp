@@ -182,7 +182,7 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g)
                 grad_Kij += 0.5 * (pi.value(L)+2.0*r*gpi(i,L,u_info)*sgn(g0i(i,L,u_info))) * (uj.value(L) - mParameter.z.at(i,j));
                 grad_Kij *= -ht;
 
-                g[gi] = grad_Kij + 2.0*epsilon*(mParameter.k.at(i,j) - mParameter0.k.at(i,j)); gi++;
+                g[gi++] = grad_Kij + 2.0*epsilon*(mParameter.k.at(i,j) - mParameter0.k.at(i,j));
             }
         }
     }
@@ -192,7 +192,7 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g)
         {
             for (unsigned int j=0; j<mParameter.Lo; j++)
             {
-                g[gi] = 0.0; gi++;
+                g[gi++] = 0.0;
             }
         }
     }
@@ -216,7 +216,7 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g)
                 grad_Zij += 0.5 * (pi.value(L)+2.0*r*gpi(i,L,u_info)*sgn(g0i(i,L,u_info))) * mParameter.k.at(i,j);
                 grad_Zij *= ht;
 
-                g[gi] = grad_Zij + 2.0*epsilon*(mParameter.z[i][j] - mParameter0.z[i][j]); gi++;
+                g[gi++] = grad_Zij + 2.0*epsilon*(mParameter.z[i][j] - mParameter0.z[i][j]);
             }
         }
     }
@@ -226,7 +226,7 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g)
         {
             for (unsigned int j=0; j<mParameter.Lo; j++)
             {
-                g[gi] = 0.0; gi++;
+                g[gi++] = 0.0;
             }
         }
     }
@@ -263,16 +263,16 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g)
             grad_EtaiX *= -ht;
             grad_EtaiY *= -ht;
 
-            g[gi] = grad_EtaiX + 2.0*epsilon*(mParameter.eta[i].x - mParameter0.eta[i].x); gi++;
-            g[gi] = grad_EtaiY + 2.0*epsilon*(mParameter.eta[i].y - mParameter0.eta[i].y); gi++;
+            g[gi++] = grad_EtaiX + 2.0*epsilon*(mParameter.eta[i].x - mParameter0.eta[i].x);
+            g[gi++] = grad_EtaiY + 2.0*epsilon*(mParameter.eta[i].y - mParameter0.eta[i].y);
         }
     }
     else
     {
         for (unsigned int i=0; i<mParameter.Lc; i++)
         {
-            g[gi] = 0.0; gi++;
-            g[gi] = 0.0; gi++;
+            g[gi++] = 0.0;
+            g[gi++] = 0.0;
         }
     }
 
@@ -308,20 +308,18 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g)
             gradXijX *= -ht;
             gradXijY *= -ht;
 
-            g[gi] = gradXijX + 2.0*epsilon*(mParameter.xi[j].x - mParameter0.xi[j].x); gi++;
-            g[gi] = gradXijY + 2.0*epsilon*(mParameter.xi[j].x - mParameter0.xi[j].x); gi++;
+            g[gi++] = gradXijX + 2.0*epsilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
+            g[gi++] = gradXijY + 2.0*epsilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
         }
     }
     else
     {
         for (unsigned int j=0; j<mParameter.Lo; j++)
         {
-            g[gi] = 0.0; gi++;
-            g[gi] = 0.0; gi++;
+            g[gi++] = 0.0;
+            g[gi++] = 0.0;
         }
     }
-
-    //IGradient::Gradient(this, 0.01, prms, g);
 
     u_info.clear();
     p_info.clear();
@@ -439,6 +437,11 @@ void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVecto
 //    ifunc->optimizeZ = i%2==1;
 //    ifunc->optimizeC = i%2==0;
 //    ifunc->optimizeO = i%2==0;
+
+//    ifunc->optimizeK = i%4==0;
+//    ifunc->optimizeZ = i%4==1;
+//    ifunc->optimizeC = i%4==2;
+//    ifunc->optimizeO = i%4==3;
 
     ifunc->optimizeK = i%4==3;
     ifunc->optimizeZ = i%4==0;

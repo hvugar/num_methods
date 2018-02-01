@@ -2,10 +2,10 @@
 
 void Problem2Article::Main(int argc, char *argv[])
 {
-    Table1_Y1();
+    //Table1_Y1();
     //Table2_Y1();
     //Table3_Y1();
-    //Table23_Y1();
+    Table23_Y1();
 
     //Table1_Y2();
     //Table2_Y2();
@@ -330,33 +330,44 @@ void Problem2Article::Table23_Y1()
     prm0.k[1][0] = +0.71; prm0.k[1][1] = -2.38;
     prm0.z[0][0] = +7.96; prm0.z[0][1] = +5.83;
     prm0.z[1][0] = +7.68; prm0.z[1][1] = +9.72;
-    prm0.eta[0].setPoint(0.4149,0.7549);
-    prm0.eta[1].setPoint(0.4052,0.7077);
-    prm0.xi[0].setPoint(0.0501,0.0501);
-    prm0.xi[1].setPoint(0.9500,0.0751);
+    prm0.eta[0].setPoint(0.42,0.76);
+    prm0.eta[1].setPoint(0.41,0.71);
+    prm0.xi[0].setPoint(0.25,0.35);
+    prm0.xi[1].setPoint(0.95,0.88);
     jfunc.setParameter0(prm0);
 
+    Parameter prm(Lc, Lo);
+    prm.k[0][0] = -10.12; prm.k[0][1] = -7.24;
+    prm.k[1][0] = -8.38; prm.k[1][1] = -9.58;
+    prm.z[0][0] = +7.50; prm.z[0][1] = +4.40;
+    prm.z[1][0] = +8.70; prm.z[1][1] = +3.50;
+    prm.eta[0].setPoint(0.45,0.86);
+    prm.eta[1].setPoint(0.75,0.24);
+    prm.xi[0].setPoint(0.25,0.55);
+    prm.xi[1].setPoint(0.65,0.15);
+    jfunc.setParameter(prm);
+
 //    Parameter prm(Lc, Lo);
-//    prm.k[0][0] = -10.12; prm.k[0][1] = -7.24;
-//    prm.k[1][0] = -8.38; prm.k[1][1] = -9.58;
-//    prm.z[0][0] = +7.50; prm.z[0][1] = +4.40;
-//    prm.z[1][0] = +8.70; prm.z[1][1] = +3.50;
-//    prm.eta[0].setPoint(0.45,0.86);
-//    prm.eta[1].setPoint(0.75,0.24);
-//    prm.xi[0].setPoint(0.25,0.55);
-//    prm.xi[1].setPoint(0.65,0.15);
+//    prm.k[0][0] = -5.85; prm.k[0][1] = -3.48;
+//    prm.k[1][0] = -4.74; prm.k[1][1] = -9.15;
+//    prm.z[0][0] = +14.91; prm.z[0][1] = +11.45;
+//    prm.z[1][0] = +16.84; prm.z[1][1] = +12.38;
+//    prm.eta[0].setPoint(0.85,0.86);
+//    prm.eta[1].setPoint(0.23,0.23);
+//    prm.xi[0].setPoint(0.69,0.65);
+//    prm.xi[1].setPoint(0.42,0.47);
 //    jfunc.setParameter(prm);
 
-    Parameter prm(Lc, Lo);
-    prm.k[0][0] = -5.85; prm.k[0][1] = -3.48;
-    prm.k[1][0] = -4.74; prm.k[1][1] = -9.15;
-    prm.z[0][0] = +14.91; prm.z[0][1] = +11.45;
-    prm.z[1][0] = +16.84; prm.z[1][1] = +12.38;
-    prm.eta[0].setPoint(0.85,0.86);
-    prm.eta[1].setPoint(0.23,0.23);
-    prm.xi[0].setPoint(0.69,0.65);
-    prm.xi[1].setPoint(0.42,0.47);
-    jfunc.setParameter(prm);
+//    Parameter prm(Lc, Lo);
+//    prm.k[0][0] = -2.85; prm.k[0][1] = -3.48;
+//    prm.k[1][0] = -1.74; prm.k[1][1] = -2.15;
+//    prm.z[0][0] = +11.91; prm.z[0][1] = +8.45;
+//    prm.z[1][0] = +12.84; prm.z[1][1] = +9.38;
+//    prm.eta[0].setPoint(0.85,0.86);
+//    prm.eta[1].setPoint(0.23,0.23);
+//    prm.xi[0].setPoint(0.69,0.65);
+//    prm.xi[1].setPoint(0.42,0.47);
+//    jfunc.setParameter(prm);
 
     DoubleVector x0; jfunc.toVector(prm0, x0);
     IPrinter::print(x0, x0.length(),10,4);

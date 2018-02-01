@@ -46,7 +46,7 @@ void PFunctional::calculate(DoubleVector &x, const DoubleVector &r, const Double
         g.setEpsilon1(0.0000001);
         g.setEpsilon2(0.0000001);
         g.setEpsilon3(0.0000001);
-        g.setR1MinimizeEpsilon(1.0, 0.00001);
+        g.setR1MinimizeEpsilon(2.0, 0.00001);
         g.setNormalize(true);
         g.showEndMessage(true);
         //g.setResetIteration(false);
