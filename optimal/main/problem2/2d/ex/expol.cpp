@@ -535,8 +535,7 @@ void ExpOptimalLetters::Table4()
     //    g.calculate(x);
 
     PFunctional pfunc;
-    pfunc.jfunc = &jfunc;
-    pfunc.rfactor = 10.0;
+    pfunc.func = &jfunc;
     pfunc.calculate(x, 1.0);
 }
 

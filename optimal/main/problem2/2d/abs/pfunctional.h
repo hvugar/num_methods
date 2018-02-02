@@ -1,7 +1,7 @@
 #ifndef PFUNCTIONAL_H
 #define PFUNCTIONAL_H
 
-#include "jfunctional.h"
+#include "ifunctional.h"
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
 #include <gradient_cs.h>
@@ -15,7 +15,9 @@ public:
     void calculate(DoubleVector &x, const DoubleVector &r, const DoubleVector &e);
 
     double rfactor;
-    JFunctional* jfunc;
+
+    IFunctional* func;
+    GradientMethod *grad;
 };
 
 #endif // PFUNCTIONAL_H

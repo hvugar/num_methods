@@ -336,27 +336,27 @@ void Problem2Article::Table23_Y1()
     prm0.xi[1].setPoint(0.95,0.88);
     jfunc.setParameter0(prm0);
 
-    Parameter prm(Lc, Lo);
-    prm.k[0][0] = -10.12; prm.k[0][1] = -7.24;
-    prm.k[1][0] = -8.38; prm.k[1][1] = -9.58;
-    prm.z[0][0] = +7.50; prm.z[0][1] = +4.40;
-    prm.z[1][0] = +8.70; prm.z[1][1] = +3.50;
-    prm.eta[0].setPoint(0.45,0.86);
-    prm.eta[1].setPoint(0.75,0.24);
-    prm.xi[0].setPoint(0.25,0.55);
-    prm.xi[1].setPoint(0.65,0.15);
-    jfunc.setParameter(prm);
-
 //    Parameter prm(Lc, Lo);
-//    prm.k[0][0] = -5.85; prm.k[0][1] = -3.48;
-//    prm.k[1][0] = -4.74; prm.k[1][1] = -9.15;
-//    prm.z[0][0] = +14.91; prm.z[0][1] = +11.45;
-//    prm.z[1][0] = +16.84; prm.z[1][1] = +12.38;
-//    prm.eta[0].setPoint(0.85,0.86);
-//    prm.eta[1].setPoint(0.23,0.23);
-//    prm.xi[0].setPoint(0.69,0.65);
-//    prm.xi[1].setPoint(0.42,0.47);
+//    prm.k[0][0] = -10.12; prm.k[0][1] = -7.24;
+//    prm.k[1][0] = -8.38; prm.k[1][1] = -9.58;
+//    prm.z[0][0] = +7.50; prm.z[0][1] = +4.40;
+//    prm.z[1][0] = +8.70; prm.z[1][1] = +3.50;
+//    prm.eta[0].setPoint(0.45,0.86);
+//    prm.eta[1].setPoint(0.75,0.24);
+//    prm.xi[0].setPoint(0.25,0.55);
+//    prm.xi[1].setPoint(0.65,0.15);
 //    jfunc.setParameter(prm);
+
+    Parameter prm(Lc, Lo);
+    prm.k[0][0] = -5.85; prm.k[0][1] = -3.48;
+    prm.k[1][0] = -4.74; prm.k[1][1] = -9.15;
+    prm.z[0][0] = +14.91; prm.z[0][1] = +11.45;
+    prm.z[1][0] = +16.84; prm.z[1][1] = +12.38;
+    prm.eta[0].setPoint(0.85,0.86);
+    prm.eta[1].setPoint(0.23,0.23);
+    prm.xi[0].setPoint(0.69,0.65);
+    prm.xi[1].setPoint(0.42,0.47);
+    jfunc.setParameter(prm);
 
 //    Parameter prm(Lc, Lo);
 //    prm.k[0][0] = -2.85; prm.k[0][1] = -3.48;
@@ -372,12 +372,24 @@ void Problem2Article::Table23_Y1()
     DoubleVector x0; jfunc.toVector(prm0, x0);
     IPrinter::print(x0, x0.length(),10,4);
 
+    ConjugateGradient grad;
+    //SteepestDescentGradient grad;
+    grad.setEpsilon1(0.0000001);
+    grad.setEpsilon2(0.0000001);
+    grad.setEpsilon3(0.0000001);
+    grad.setR1MinimizeEpsilon(10.0, 0.00001);
+    grad.setNormalize(true);
+    grad.showEndMessage(true);
+    //gradm.setResetIteration(false);
+
     PFunctional pf;
-    pf.jfunc = &jfunc;
+    pf.func = &jfunc;
+    pf.grad = &grad;
     DoubleVector x; jfunc.toVector(prm, x);
 
-    DoubleVector r; r << 0.100 << 1.000 << 10.00 << 20.00 << 50.00 << 100.0;
-    DoubleVector e; e << 1.000 << 0.100 << 0.010 << 0.010 << 0.010 << 0.000;
+    DoubleVector r; r << 0.100 << 0.200 << 0.500 << 1.000 << 2.000 << 5.000 << 10.00;
+    //DoubleVector e; e << 1.000 << 1.000 << 1.000 << 1.000 << 1.000 << 0.000;
+    DoubleVector e; e << 0.000 << 0.000 << 0.000 << 0.000 << 0.000 << 0.000 << 0.000;
 
     pf.calculate(x, r, e);
 }

@@ -409,7 +409,13 @@ void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVecto
     vector<ExtendedSpaceNode2D> info;
     ifunc->forward->calculateMVD(u, info, true);
 
-    printf("I[%3d]: %10.6f %10.6f %14.6f R:%.3f epsilon:%.3f Nt:%d Nx:%d Ny:%d  ", i, integral(u), norm(),  f, r, epsilon, mTimeDimension.sizeN(), mSpaceDimensionX.sizeN(), mSpaceDimensionY.sizeN());
+    if (result == GradientMethod::FIRST_ITERATION)
+    {
+        printf("Nt:%d Nx:%d Ny:%d optimizeK:%d optimizeZ:%d optimizeC:%d optimizeO:%d\n", mTimeDimension.sizeN(), mSpaceDimensionX.sizeN(), mSpaceDimensionY.sizeN(), optimizeK, optimizeZ, optimizeC, optimizeO);
+        IPrinter::printSeperatorLine();
+    }
+
+    printf("I[%3d]: %10.6f %10.6f %14.6f R:%.3f epsilon:%.3f  ", i, integral(u), norm(),  f, r, epsilon);
     IPrinter::print(x,x.length(),8,4);
     //IPrinter::print(g,g.length(),10,4);
     //DoubleVector px(x.length());
