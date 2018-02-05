@@ -349,7 +349,7 @@ void Problem2Article::Table23_Y1()
 
     Parameter prm(Lc, Lo);
     prm.k[0][0] = -5.85; prm.k[0][1] = -3.48;
-    prm.k[1][0] = -4.74; prm.k[1][1] = -9.15;
+    prm.k[1][0] = -4.74; prm.k[1][1] = -6.15;
     prm.z[0][0] = +14.91; prm.z[0][1] = +11.45;
     prm.z[1][0] = +16.84; prm.z[1][1] = +12.38;
     prm.eta[0].setPoint(0.85,0.86);
@@ -357,6 +357,52 @@ void Problem2Article::Table23_Y1()
     prm.xi[0].setPoint(0.69,0.65);
     prm.xi[1].setPoint(0.42,0.47);
     jfunc.setParameter(prm);
+
+//    double fc1 = 1.05;
+//    double fc2 = 0.95;
+//    Parameter prm(Lc, Lo);
+//    prm.k[0][0] = -5.85*fc1; prm.k[0][1] = -3.48*fc1;
+//    prm.k[1][0] = -4.74*fc2; prm.k[1][1] = -6.15*fc2;
+//    prm.z[0][0] = +14.91*fc1; prm.z[0][1] = +11.45*fc2;
+//    prm.z[1][0] = +16.84*fc1; prm.z[1][1] = +12.38*fc2;
+//    prm.eta[0].setPoint(0.85*fc1,0.86*fc1);
+//    prm.eta[1].setPoint(0.23*fc2,0.23*fc2);
+//    prm.xi[0].setPoint(0.69*fc1,0.65*fc2);
+//    prm.xi[1].setPoint(0.42*fc1,0.47*fc2);
+//    jfunc.setParameter(prm);
+
+//    Parameter prm(Lc, Lo);
+//    prm.k[0][0] = -6.1425; prm.k[0][1] = -3.6540;
+//    prm.k[1][0] = -4.5030; prm.k[1][1] = -5.8425;
+//    prm.z[0][0] = +15.6555; prm.z[0][1] = +10.8775;
+//    prm.z[1][0] = +17.6820; prm.z[1][1] = +11.7610;
+//    prm.eta[0].setPoint(0.8925,0.9030);
+//    prm.eta[1].setPoint(0.2185,0.2185);
+//    prm.xi[0].setPoint(0.7245,0.6175);
+//    prm.xi[1].setPoint(0.4410,0.4465);
+//    jfunc.setParameter(prm);
+
+//    Parameter prm(Lc, Lo);
+//    prm.k[0][0] = +2.04; prm.k[0][1] = +4.09;
+//    prm.k[1][0] = -3.74; prm.k[1][1] = -1.74;
+//    prm.z[0][0] = +8.59; prm.z[0][1] = +6.47;
+//    prm.z[1][0] = +7.20; prm.z[1][1] = +7.59;
+//    prm.eta[0].setPoint(0.25,0.94);
+//    prm.eta[1].setPoint(0.35,0.62);
+//    prm.xi[0].setPoint(0.58,0.31);
+//    prm.xi[1].setPoint(0.82,0.22);
+//    jfunc.setParameter(prm);
+
+//    Parameter prm(Lc, Lo);
+//    prm.k[0][0] = -5.15; prm.k[0][1] = -3.98;
+//    prm.k[1][0] = -4.04; prm.k[1][1] = -6.75;
+//    prm.z[0][0] = +15.91; prm.z[0][1] = +10.45;
+//    prm.z[1][0] = +14.84; prm.z[1][1] = +11.38;
+//    prm.eta[0].setPoint(0.82,0.83);
+//    prm.eta[1].setPoint(0.25,0.29);
+//    prm.xi[0].setPoint(0.65,0.60);
+//    prm.xi[1].setPoint(0.40,0.42);
+//    jfunc.setParameter(prm);
 
 //    Parameter prm(Lc, Lo);
 //    prm.k[0][0] = -2.85; prm.k[0][1] = -3.48;
@@ -369,8 +415,8 @@ void Problem2Article::Table23_Y1()
 //    prm.xi[1].setPoint(0.42,0.47);
 //    jfunc.setParameter(prm);
 
-    DoubleVector x0; jfunc.toVector(prm0, x0);
-    IPrinter::print(x0, x0.length(),10,4);
+    DoubleVector x0; jfunc.toVector(prm, x0);
+    IPrinter::print(x0, x0.length(),10,8);
 
     ConjugateGradient grad;
     //SteepestDescentGradient grad;
@@ -379,19 +425,20 @@ void Problem2Article::Table23_Y1()
     grad.setEpsilon3(0.0000001);
     grad.setR1MinimizeEpsilon(10.0, 0.00001);
     grad.setNormalize(true);
-    grad.showEndMessage(true);
-    //gradm.setResetIteration(false);
+    //grad.showEndMessage(true);
+    grad.setResetIteration(false);
 
     PFunctional pf;
     pf.func = &jfunc;
     pf.grad = &grad;
     DoubleVector x; jfunc.toVector(prm, x);
 
-    DoubleVector r; r << 0.100 << 0.200 << 0.500 << 1.000 << 2.000 << 5.000 << 10.00;
+    DoubleVector r; r << 0.100 << 0.200 << 0.400 << 0.800 << 1.000 << 2.000 << 5.000 << 10.00 << 20.00 << 50.00 << 100.0;
     //DoubleVector e; e << 1.000 << 1.000 << 1.000 << 1.000 << 1.000 << 0.000;
-    DoubleVector e; e << 0.000 << 0.000 << 0.000 << 0.000 << 0.000 << 0.000 << 0.000;
+    DoubleVector e; e << 0.000 << 0.000 << 0.000 << 0.000 << 0.000 << 0.000 << 0.000 << 0.000 << 0.000 << 0.000 << 0.000;
+    DoubleVector s; s << 10.00 << 1.000 << 1.000 << 1.000 << 0.100 << 0.100 << 0.100 << 0.100 << 0.100 << 0.100 << 0.100;
 
-    pf.calculate(x, r, e);
+    pf.calculate(x, r, e, s);
 }
 
 //////////////////////////////////////////////////////////////////////////////

@@ -413,10 +413,13 @@ void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVecto
     {
         printf("Nt:%d Nx:%d Ny:%d optimizeK:%d optimizeZ:%d optimizeC:%d optimizeO:%d\n", mTimeDimension.sizeN(), mSpaceDimensionX.sizeN(), mSpaceDimensionY.sizeN(), optimizeK, optimizeZ, optimizeC, optimizeO);
         IPrinter::printSeperatorLine();
+        puts("");
     }
 
-    printf("I[%3d]: %10.6f %10.6f %14.6f R:%.3f epsilon:%.3f  ", i, integral(u), norm(),  f, r, epsilon);
-    IPrinter::print(x,x.length(),8,4);
+    printf("I[%3d]: %10.6f %10.6f R:%.2f e:%.3f  ", i, integral(u), f, r, epsilon);
+    //IPrinter::print(x,x.length(),8,4);
+    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f c:%.4f %.4f %.4f %.4f o:%.4f %.4f %.4f %.4f\n",
+           x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
     //IPrinter::print(g,g.length(),10,4);
     //DoubleVector px(x.length());
     //IGradient::Gradient(ifunc, 0.01, x, px);

@@ -30,7 +30,7 @@ void PFunctional::calculate(DoubleVector &x, double r)
     }
 }
 
-void PFunctional::calculate(DoubleVector &x, const DoubleVector &r, const DoubleVector &e)
+void PFunctional::calculate(DoubleVector &x, const DoubleVector &r, const DoubleVector &e, const DoubleVector &s)
 {
     grad->setFunction(func);
     grad->setGradient(func);
@@ -41,6 +41,7 @@ void PFunctional::calculate(DoubleVector &x, const DoubleVector &r, const Double
     {
         func->setPenaltyCoefficient(r[i]);
         func->setEpsilon(e[i]);
+        grad->setR1MinimizeEpsilon(s[i], 0.00001);
         grad->calculate(x);
         IPrinter::printSeperatorLine();
     }

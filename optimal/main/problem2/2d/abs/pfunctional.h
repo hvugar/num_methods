@@ -12,7 +12,7 @@ public:
     PFunctional();
 
     void calculate(DoubleVector &x, double R);
-    void calculate(DoubleVector &x, const DoubleVector &r, const DoubleVector &e);
+    void calculate(DoubleVector &x, const DoubleVector &r, const DoubleVector &e, const DoubleVector &s);
 
     double rfactor;
 
