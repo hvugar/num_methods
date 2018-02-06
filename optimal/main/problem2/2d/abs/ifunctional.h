@@ -31,7 +31,7 @@ public:
     void setEquationParameters(double a, double lambda0, double lambda);
     void setIntTemperature(double fi);
     void setEnvTemperature(double theta);
-    void setEpsilon(double epsilon);
+    void setRegEpsilon(double regEpsilon);
     void setPenaltyCoefficient(double r);
     void setPenaltyLimits(const DoubleVector &vmin, const DoubleVector &vmax);
     void setParameter(const Parameter &parameter);
@@ -54,7 +54,7 @@ protected:
     DoubleVector vmin;
     DoubleVector vmax;
 
-    double epsilon;
+    double regEpsilon;
     double r;
 public:
     Problem2Forward2D *forward;

@@ -19,6 +19,8 @@ public:
     static void Table3_Y2();
 
     static void Table23_Y1();
+
+    static void image1();
 };
 
 #endif // P2_ARTICLE_H

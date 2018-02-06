@@ -40,7 +40,7 @@ void PFunctional::calculate(DoubleVector &x, const DoubleVector &r, const Double
     for (unsigned int i=0; i<r.length(); i++)
     {
         func->setPenaltyCoefficient(r[i]);
-        func->setEpsilon(e[i]);
+        func->setRegEpsilon(e[i]);
         grad->setR1MinimizeEpsilon(s[i], 0.00001);
         grad->calculate(x);
         IPrinter::printSeperatorLine();

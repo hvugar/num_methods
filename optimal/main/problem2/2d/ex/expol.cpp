@@ -31,7 +31,7 @@ void ExpOptimalLetters::Table1Y1()
     jfunc.setEnvrTemperatures(thetas, p_thetas);
 
     jfunc.setEquationParameters(1.0, 0.01, 0.01);
-    jfunc.setEpsilon(0.0);
+    jfunc.setRegEpsilon(0.0);
     jfunc.setPenaltyCoefficient(1.0);
     jfunc.setPenaltyLimits(DoubleVector(Lc, -5.0), DoubleVector(Lc, +20.0));
 
@@ -162,7 +162,7 @@ void ExpOptimalLetters::Table1Y2()
     jfunc.setEnvrTemperatures(thetas, p_thetas);
 
     jfunc.setEquationParameters(1.0, 0.01, 0.01);
-    jfunc.setEpsilon(0.0);
+    jfunc.setRegEpsilon(0.0);
     jfunc.setPenaltyCoefficient(1.0);
     jfunc.setPenaltyLimits(DoubleVector(Lc, -5.0), DoubleVector(Lc, +20.0));
 
@@ -294,7 +294,7 @@ void ExpOptimalLetters::Table2Y1()
     jfunc.setEnvrTemperatures(thetas, p_thetas);
 
     jfunc.setEquationParameters(1.0, 0.01, 0.01);
-    jfunc.setEpsilon(0.0);
+    jfunc.setRegEpsilon(0.0);
     jfunc.setPenaltyCoefficient(20.0);
     jfunc.setPenaltyLimits(DoubleVector(Lc, -5.0), DoubleVector(Lc, +20.0));
 
@@ -356,7 +356,7 @@ void ExpOptimalLetters::Table2Y2()
     jfunc.setEnvrTemperatures(thetas, p_thetas);
 
     jfunc.setEquationParameters(1.0, 0.01, 0.01);
-    jfunc.setEpsilon(0.1);
+    jfunc.setRegEpsilon(0.1);
     jfunc.setPenaltyCoefficient(1.0);
     jfunc.setPenaltyLimits(DoubleVector(Lc, -5.0), DoubleVector(Lc, +20.0));
 
@@ -418,7 +418,7 @@ void ExpOptimalLetters::Table3Y2()
     jfunc.setEnvrTemperatures(thetas, p_thetas);
 
     jfunc.setEquationParameters(1.0, 0.01, 0.01);
-    jfunc.setEpsilon(0.0);
+    jfunc.setRegEpsilon(0.0);
     jfunc.setPenaltyCoefficient(20.0);
     jfunc.setPenaltyLimits(DoubleVector(Lc, -5.0), DoubleVector(Lc, +20.0));
 
@@ -480,7 +480,7 @@ void ExpOptimalLetters::Table4()
     jfunc.setEnvrTemperatures(thetas, p_thetas);
 
     jfunc.setEquationParameters(1.0, 0.01, 0.01);
-    jfunc.setEpsilon(0.0);
+    jfunc.setRegEpsilon(0.0);
     jfunc.setPenaltyCoefficient(20.0);
     jfunc.setPenaltyLimits(DoubleVector(Lc, -5.0), DoubleVector(Lc, +20.0));
 
@@ -558,7 +558,7 @@ void ExpOptimalLetters::test()
     jfunc.setEnvrTemperatures(thetas, p_thetas);
 
     jfunc.setEquationParameters(1.0, 0.01, 0.01);
-    jfunc.setEpsilon(0.0);
+    jfunc.setRegEpsilon(0.0);
     jfunc.setPenaltyCoefficient(20.0);
     jfunc.setPenaltyLimits(DoubleVector(Lc, -5.0), DoubleVector(Lc, +20.0));
 
@@ -700,7 +700,7 @@ void ExpOptimalLetters::figure1()
     jfunc.setEnvrTemperatures(thetas, p_thetas);
 
     jfunc.setEquationParameters(1.0, 0.01, 0.01);
-    jfunc.setEpsilon(0.0);
+    jfunc.setRegEpsilon(0.0);
     jfunc.setPenaltyCoefficient(20.0);
     jfunc.setPenaltyLimits(DoubleVector(Lc, -5.0), DoubleVector(Lc, +20.0));
 

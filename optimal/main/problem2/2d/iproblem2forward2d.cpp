@@ -635,6 +635,11 @@ void IProblem2Forward2D::calculateMVD1(DoubleMatrix &u, vector<ExtendedSpaceNode
     uh.clear();
 }
 
+inline double rand_error()
+{
+    return 1.0;
+}
+
 void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2D> &info, bool use) const
 {
     Dimension xd = spaceDimension(Dimension::DimensionX);
@@ -898,7 +903,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                                 for (unsigned int s=0; s<observeNodes.size(); s++)
                                 {
                                     const ObservationNode &on = observeNodes.at(s);
-                                    d1Y[m] += ht * mParameter.k[cdn.id][on.id] * uh[on.j][on.i] * cdn.w * on.w;
+                                    d1Y[m] += ht * mParameter.k[cdn.id][on.id] * uh[on.j][on.i] * cdn.w * on.w*rand_error();
                                 }
 
                                 for (unsigned int j=0; j<Lo; j++)
@@ -991,13 +996,13 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                                         if (on.i == cols1[cs])
                                         {
                                             found = true;
-                                            w2[offset+m][cs*(M+1)+on.j] += -ht * mParameter.k[cdn.id][on.id] * cdn.w * on.w;
+                                            w2[offset+m][cs*(M+1)+on.j] += -ht * mParameter.k[cdn.id][on.id] * cdn.w * on.w*rand_error();
                                         }
                                     }
 
                                     if (!found)
                                     {
-                                        d2[offset+m] += ht * mParameter.k[cdn.id][on.id] * uh[on.j][on.i] * cdn.w * on.w;
+                                        d2[offset+m] += ht * mParameter.k[cdn.id][on.id] * uh[on.j][on.i] * cdn.w * on.w*rand_error();
                                     }
                                 }
 
@@ -1145,7 +1150,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                                 for (unsigned int s=0; s<observeNodes.size(); s++)
                                 {
                                     const ObservationNode &on = observeNodes[s];
-                                    d1X[n] += ht * mParameter.k[cdn.id][on.id] * u[on.j][on.i] * cdn.w * on.w;
+                                    d1X[n] += ht * mParameter.k[cdn.id][on.id] * u[on.j][on.i] * cdn.w * on.w*rand_error();
                                 }
 
                                 for (unsigned int j=0; j<Lo; j++)
@@ -1240,13 +1245,13 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                                         if (on.j == rows1[cs])
                                         {
                                             found = true;
-                                            w2[offset+n][cs*(N+1)+on.i] += -ht * mParameter.k[cdn.id][on.id] * cdn.w * on.w;
+                                            w2[offset+n][cs*(N+1)+on.i] += -ht * mParameter.k[cdn.id][on.id] * cdn.w * on.w*rand_error();
                                         }
                                     }
 
                                     if (!found)
                                     {
-                                        d2[offset+n] += ht * mParameter.k[cdn.id][on.id] * u[on.j][on.i] * cdn.w * on.w;
+                                        d2[offset+n] += ht * mParameter.k[cdn.id][on.id] * u[on.j][on.i] * cdn.w * on.w*rand_error();
                                     }
                                 }
 
