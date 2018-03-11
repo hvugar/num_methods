@@ -84,11 +84,11 @@
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    QGuiApplication app(argc, argv);
+   // QGuiApplication app(argc, argv);
 
-    srand(time(NULL));
+   // srand(time(NULL));
 
-    Problem2Article::Main(argc, argv);
+    //Problem2Article::Main(argc, argv);
 
 //    DirakDelta dd;
 //    dd.dimension = Dimension(0.01, 0, 100);
@@ -188,7 +188,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //BoundaryValueProblem1::Main(argc, argv);
 
     //ParabolicIBVP1::Main(argc, argv);
-    //ParabolicIBVP2::Main(argc, argv);
+    ParabolicIBVP2::Main(argc, argv);
 
     //HyperbolicIBVP1::Main(argc, argv);
     //NewtonHeatEquationEx1::Main(argc, argv);
