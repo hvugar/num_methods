@@ -66,7 +66,7 @@ public:
 
 protected:
     virtual double fx(const DoubleVector &y) const;
-    virtual void gradient(const DoubleVector &y, DoubleVector &g);
+    virtual void gradient(const DoubleVector &y, DoubleVector &g) const;
 
     virtual double integral(const DoubleMatrix &u) const;
     virtual double norm(const DoubleVector &k, const DoubleVector &z, const DoubleVector &e) const;

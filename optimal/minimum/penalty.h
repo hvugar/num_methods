@@ -19,11 +19,11 @@ public:
     virtual double P(double x);
 
 private:
-    RnFunction* m_f;
+    //RnFunction* m_f;
     std::vector<RnFunction*> m_h;
     std::vector<RnFunction*> m_g;
-    double m_R;
-    double m_r;
+    //double m_R;
+    //double m_r;
 };
 
 #endif // PENALTYMETHOD_H

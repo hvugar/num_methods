@@ -31,7 +31,7 @@ public:
     void initialize();
 
     virtual double fx(const DoubleVector &x) const;
-    virtual void gradient(const DoubleVector &x, DoubleVector &g);
+    virtual void gradient(const DoubleVector &x, DoubleVector &g) const;
     virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const;
     virtual void project(DoubleVector &x, unsigned int index);
 

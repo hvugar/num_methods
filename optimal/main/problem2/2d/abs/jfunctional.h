@@ -9,7 +9,7 @@ public:
     JFunctional();
 
     virtual double fx(const DoubleVector &prms) const;
-    virtual void gradient(const DoubleVector &prms, DoubleVector &g);
+    virtual void gradient(const DoubleVector &prms, DoubleVector &g) const;
 
     void setInitTemperatures(const DoubleVector &fis, const DoubleVector &p_fis);
     void setEnvrTemperatures(const DoubleVector &thetas, const DoubleVector &p_thetas);

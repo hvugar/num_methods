@@ -329,7 +329,9 @@ void qovmaE(double *a, double *b, double *c, double *d, double *x, unsigned int 
         }
     }
 
-    for (i=n-1; i != UINT_MAX; i--)
+    const unsigned int ui = (unsigned)0-1;
+    for (i=n-1; i != ui; i--)
+    //for (i=n-1; i != UINT_MAX; i--)
     {
         if (i==(n-1))
         {

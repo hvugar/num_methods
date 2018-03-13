@@ -1,7 +1,10 @@
 #include "printer.h"
 #include <stdio.h>
 #include <time.h>
+
+#ifdef _WIN32
 #include <windows.h>
+#endif
 
 void IPrinter::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n, const char* s, FILE* f)
 {
@@ -74,7 +77,7 @@ void IPrinter::printAsMatrix(const DoubleVector &x, unsigned int M, unsigned int
 
 void IPrinter::printVector(const DoubleVector &x, const char *s, unsigned int n, unsigned int start, unsigned int end, FILE *file)
 {
-    if (s!='\0') fprintf(file, "%s", s);
+    if (s!=NULL) fprintf(file, "%s", s);
     if (start != 0 || end != 0)
     {
         unsigned int N = (end-start+1) / n;
@@ -97,7 +100,7 @@ void IPrinter::printVector(const DoubleVector &x, const char *s, unsigned int n,
 
 void IPrinter::printVector(double *x, unsigned int size, const char *s, unsigned int n, unsigned int start, unsigned int end, FILE *file)
 {
-    if (s!='\0') fprintf(file, "%s", s);
+    if (s!=NULL) fprintf(file, "%s", s);
     if (start != 0 || end != 0)
     {
         unsigned int N = (end-start+1) / n;
@@ -121,7 +124,7 @@ void IPrinter::printVector(double *x, unsigned int size, const char *s, unsigned
 void IPrinter::printVector(double *x, unsigned int size, const char *s, unsigned int n, unsigned int start, unsigned int end, const char *filename)
 {
     FILE *file = fopen(filename, "w");
-    if (s!='\0') fprintf(file, "%s", s);
+    if (s!=NULL) fprintf(file, "%s", s);
     if (start != 0 || end != 0)
     {
         unsigned int N = (end-start+1) / n;
@@ -148,7 +151,7 @@ void IPrinter::printVector(unsigned int width, unsigned int presicion, const Dou
     int sz = sprintf(format, "%%%d.%df ", width, presicion);
     format[sz] = '\0';
 
-    if (s!='\0') fprintf(file, "%s", s);
+    if (s!=NULL) fprintf(file, "%s", s);
     if (start != 0 || end != 0)
     {
         unsigned int N = (end-start+1) / n;
@@ -246,13 +249,12 @@ void IPrinter::print(const DoubleVector &v, unsigned int N, unsigned int width, 
 
 void IPrinter::printSeperatorLine(const char* msg, char c, FILE* file)
 {
+    int columns=10;
 #ifdef _INC_WINDOWS
     CONSOLE_SCREEN_BUFFER_INFO csbi;
-#endif
-    int columns;
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
     columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-    //rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+#endif
 
     int start = 0;
     if (msg != NULL)

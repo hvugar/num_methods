@@ -19,17 +19,18 @@ double JFunctional::fx(const DoubleVector &prms) const
     return sum;
 }
 
-void JFunctional::gradient(const DoubleVector &prms, DoubleVector &g)
+void JFunctional::gradient(const DoubleVector &prms, DoubleVector &g) const
 {
+    JFunctional *jfunc = const_cast<JFunctional*>(this);
     g.clear();
     g.resize(prms.length(), 0.0);
 
     for (unsigned int i=0; i<fis.length(); i++)
     {
-        setIntTemperature(fis[i]);
+        jfunc->setIntTemperature(fis[i]);
         for (unsigned j=0; j<thetas.length(); j++)
         {
-            setEnvTemperature(thetas[j]);
+            jfunc->setEnvTemperature(thetas[j]);
             DoubleVector g0(prms.length(), 0.0);
             IFunctional::gradient(prms, g0);
             for (unsigned int k=0; k<prms.length(); k++)

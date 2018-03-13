@@ -26,6 +26,9 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
     DoubleMatrix u2;
     u2.resize(M+1, N+1);
 
+    DoubleMatrix u3;
+    u3.resize(M+1, N+1);
+
     u.clear();
     u.resize(M+1, N+1);
 
@@ -127,7 +130,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
 
     TimeNodePDE tn;
 
-    for (unsigned int nt=2; nt<=L; nt+2)
+    for (unsigned int nt=2; nt<=L; nt+=2)
     {
         //------------------------------------- approximatin to y direction conditions -------------------------------------//
         tn.i = nt; tn.t = tn.i*ht;
@@ -140,11 +143,11 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
             {
                 sn.i = n; sn.x = n*hx;
 
-                d1X[n] = (2.0+2.0*lambda*ht)*u1[m][n] - (1.0+(lambda*ht)/2.0)*u2[m][n];
+                d1X[n] = (2.0+2.0*lambda*ht)*u1[m][n] - (1.0+(lambda*ht)/2.0)*u0[m][n];
 
-                if (m == 0)     d1X[n] = ((a*a*ht*ht)/(hy*hy))*(u1[0][n]  -2.0*u1[1][n]  +u1[2][n]);
-                if (m>0 && m<M) d1X[n] = ((a*a*ht*ht)/(hy*hy))*(u1[m-1][n]-2.0*u1[m][n]  +u1[m+1][n]);
-                if (m == M)     d1X[n] = ((a*a*ht*ht)/(hy*hy))*(u1[M-2][n]-2.0*u1[M-1][n]+u1[M][n]);
+                if (m == 0)     d1X[n] += ((a*a*ht*ht)/(hy*hy))*(u1[0][n]   - 2.0*u1[1][n]   + u1[2][n]);
+                if (m>0 && m<M) d1X[n] += ((a*a*ht*ht)/(hy*hy))*(u1[m-1][n] - 2.0*u1[m][n]   + u1[m+1][n]);
+                if (m == M)     d1X[n] += ((a*a*ht*ht)/(hy*hy))*(u1[M-2][n] - 2.0*u1[M-1][n] + u1[M][n]);
 
                 if (n==0)
                 {
@@ -153,7 +156,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
                     c1X[0] = -2.0*(a*a*ht*ht)/(hx*hx);
                     d1X[0] += 0.0;
                 }
-                else if(n==N)
+                else if(n == N)
                 {
                     a1X[N] = -2.0*(a*a*ht*ht)/(hx*hx);
                     b1X[N] = +1.0 + 2.0*((a*a*ht*ht)/(hx*hx)) + 3.0*(lambda*ht)/2.0;
@@ -182,7 +185,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
                 {
                     sn.i = n; sn.x = n*hx;
 
-                    d1X[n] = (2.0+2.0*lambda*ht)*u1[m][n] - (1.0+(lambda*ht)/2.0)*u2[m][n];
+                    d1X[n] = (2.0+2.0*lambda*ht)*u1[m][n] - (1.0+(lambda*ht)/2.0)*u0[m][n];
 
                     if (m == 0)     d1X[n] = ((a*a*ht*ht)/(hy*hy))*(u1[0][n]  -2.0*u1[1][n]  +u1[2][n]);
                     if (m>0 && m<M) d1X[n] = ((a*a*ht*ht)/(hy*hy))*(u1[m-1][n]-2.0*u1[m][n]  +u1[m+1][n]);
@@ -217,7 +220,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
                             for (unsigned int s=0; s<observeNodes.size(); s++)
                             {
                                 const ObservationPointNode &on = observeNodes[s];
-                                d1X[n] += ht*ht * mParameter.k[cdn.id][on.id] * u[on.j][on.i] * cdn.w * on.w;
+                                d1X[n] += ht*ht * mParameter.k[cdn.id][on.id] * u2[on.j][on.i] * cdn.w * on.w;
                             }
 
                             for (unsigned int j=0; j<mParameter.No; j++)
@@ -250,43 +253,99 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
             {
                 sn.j = m; sn.y = m*hy;
 
-                d1Y[m] = 2.0*u[m][n] + lambda0*theta*ht;
-#ifdef USE_ADDITIONAL_FUNCTIONS
-                d1Y[m] += ht*f(sn, tn);
-#endif
-                if (n==0)       d1Y[m] += a2_ht__hx2*(u.at(m,0)   - 2.0*u.at(m,1)   + u.at(m,2));
-                if (n>0 && n<N) d1Y[m] += a2_ht__hx2*(u.at(m,n-1) - 2.0*u.at(m,n)   + u.at(m,n+1));
-                if (n==N)       d1Y[m] += a2_ht__hx2*(u.at(m,N-2) - 2.0*u.at(m,N-1) + u.at(m,N));
+                d1Y[m] = (2.0+2.0*lambda*ht)*u2[m][n] - (1.0+(lambda*ht)/2.0)*u1[m][n];
+
+                if (n==0)       d1Y[m] += ((a*a*ht*ht)/(hx*hx))*(u2[m][0]   - 2.0*u2[m][1]   + u2[m][2]);
+                if (n>0 && n<N) d1Y[m] += ((a*a*ht*ht)/(hx*hx))*(u2[m][n-1] - 2.0*u2[m][n]   + u2[m][n+1]);
+                if (n==N)       d1Y[m] += ((a*a*ht*ht)/(hx*hx))*(u2[m][N-2] - 2.0*u2[m][N-1] + u2[m][N]);
 
                 if (m == 0)
                 {
                     a1Y[0] = 0.0;
-                    b1Y[0] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
-                    c1Y[0] = -2.0*a2_ht__hy2;
-                    d1Y[0] += 2.0*a2_lambda_ht__hy*theta;
-#ifdef USE_ADDITIONAL_FUNCTIONS
-                    d1Y[0] += ((2.0*a*a*ht)/(hy))*g3(sn, tn);
-#endif
+                    b1Y[0] = +1.0 + 2.0*((a*a*ht*ht)/(hy*hy)) + 3.0*(lambda*ht)/2.0;
+                    c1Y[0] = -2.0*(a*a*ht*ht)/(hy*hy);
+                    d1Y[0] += 0.0;
                 }
                 else if (m == M)
                 {
-                    a1Y[M] = -2.0*a2_ht__hy2;
-                    b1Y[M] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
+                    a1Y[M] = -2.0*(a*a*ht*ht)/(hy*hy);
+                    b1Y[M] = +1.0 + 2.0*((a*a*ht*ht)/(hy*hy)) + 3.0*(lambda*ht)/2.0;
                     c1Y[M] = 0.0;
-                    d1Y[M] += 2.0*a2_lambda_ht__hy*theta;
-#ifdef USE_ADDITIONAL_FUNCTIONS
-                    d1Y[M] += ((2.0*a*a*ht)/(hy))*g4(sn, tn);
-#endif
+                    d1Y[M] += 0.0;
                 }
                 else
                 {
-                    a1Y[m] = -a2_ht__hy2;
-                    b1Y[m] = 2.0 + 2.0*a2_ht__hy2 + lambda0_ht;
-                    c1Y[m] = -a2_ht__hy2;
+                    a1Y[m] = -(a*a*ht*ht)/(hy*hy);
+                    b1Y[m] = +1.0 + 2.0*(a*a*ht*ht)/(hy*hy) + 3.0*(lambda*ht)/2.0;
+                    c1Y[m] = -(a*a*ht*ht)/(hy*hy);
                 }
             }
             tomasAlgorithm(a1Y, b1Y, c1Y, d1Y, x1Y, M+1);
-            for (unsigned int m=0; m<=M; m++) uh[m][n] = x1Y[m];
+            for (unsigned int m=0; m<=M; m++) u3[m][n] = x1Y[m];
+        }
+
+        if (cols2.size() == 0)
+        {
+            for (unsigned int col=0; col<cols1.size(); col++)
+            {
+                unsigned int n = cols1[col];
+                sn.i = n; sn.x = n*hx;
+                for (unsigned int m=0; m<=M; m++)
+                {
+                    sn.j = m; sn.y = m*hy;
+
+                    d1Y[m] = (2.0+2.0*lambda*ht)*u2[m][n] - (1.0+(lambda*ht)/2.0)*u1[m][n];
+
+                    if (n==0)       d1Y[m] += ((a*a*ht*ht)/(hx*hx))*(u2[m][0]   - 2.0*u2[m][1]   + u2[m][2]);
+                    if (n>0 && n<N) d1Y[m] += ((a*a*ht*ht)/(hx*hx))*(u2[m][n-1] - 2.0*u2[m][n]   + u2[m][n+1]);
+                    if (n==N)       d1Y[m] += ((a*a*ht*ht)/(hx*hx))*(u2[m][N-2] - 2.0*u2[m][N-1] + u2[m][N]);
+
+                    if (m == 0)
+                    {
+                        a1Y[0] = 0.0;
+                        b1Y[0] = +1.0 + 2.0*((a*a*ht*ht)/(hy*hy)) + 3.0*(lambda*ht)/2.0;
+                        c1Y[0] = -2.0*(a*a*ht*ht)/(hy*hy);
+                        d1Y[0] += 0.0;
+                    }
+                    else if (m == M)
+                    {
+                        a1Y[M] = -2.0*(a*a*ht*ht)/(hy*hy);
+                        b1Y[M] = +1.0 + 2.0*((a*a*ht*ht)/(hy*hy)) + 3.0*(lambda*ht)/2.0;
+                        c1Y[M] = 0.0;
+                        d1Y[M] += 0.0;
+                    }
+                    else
+                    {
+                        a1Y[m] = -(a*a*ht*ht)/(hy*hy);
+                        b1Y[m] = +1.0 + 2.0*(a*a*ht*ht)/(hy*hy) + 3.0*(lambda*ht)/2.0;
+                        c1Y[m] = -(a*a*ht*ht)/(hy*hy);
+                    }
+
+                    for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
+                    {
+                        const ControlDeltaNode &cdn = cndeltaNodes.at(cni);
+                        if (cdn.i == sn.i && cdn.j == sn.j)
+                        {
+                            for (unsigned int s=0; s<observeNodes.size(); s++)
+                            {
+                                const ObservationPointNode &on = observeNodes.at(s);
+                                d1Y[m] += ht * mParameter.k[cdn.id][on.id] * u3[on.j][on.i] * cdn.w * on.w;
+                            }
+
+                            for (unsigned int j=0; j<mParameter.No; j++)
+                            {
+                                d1Y[m] -= ht * mParameter.k[cdn.id][j] * mParameter.z[cdn.id][j] * cdn.w;
+                            }
+                        }
+                    }
+                }
+                tomasAlgorithm(a1Y, b1Y, c1Y, d1Y, x1Y, M+1);
+                for (unsigned int m=0; m<=M; m++) u3[m][n] = x1Y[m];
+            }
+        }
+        else
+        {
+
         }
         //--------------------------------------------------------------------------//
     }

@@ -136,12 +136,13 @@ double IFunctional::mu(double x UNUSED_PARAM, double y UNUSED_PARAM) const
     return 1.0;
 }
 
-void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g)
+void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
 {
+    IFunctional *ifunc = const_cast<IFunctional*>(this);
     unsigned int L = mTimeDimension.sizeN();
     double ht = mTimeDimension.step();
 
-    fromVector(pv, mParameter);
+    ifunc->fromVector(pv, ifunc->mParameter);
     forward->setParameter(mParameter);
     backward->setParameter(mParameter);
 
@@ -152,7 +153,7 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g)
     forward->calculateMVD(u, u_info, true);
 
     backward->u = &u;
-    backward->U = &U;
+    backward->U = &ifunc->U;
     backward->info = &u_info;
     vector<ExtendedSpaceNode2D> p_info;
     backward->calculateMVD(p, p_info, true);

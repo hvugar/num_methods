@@ -52,7 +52,7 @@ public:
 class MINIMUMSHARED_EXPORT IGradient
 {
 public:
-    virtual void gradient(const DoubleVector &x, DoubleVector &g) = 0;
+    virtual void gradient(const DoubleVector &x, DoubleVector &g) const = 0;
 
     static void Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g);
     static void Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, unsigned int start, unsigned int end);

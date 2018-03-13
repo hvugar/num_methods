@@ -77,9 +77,10 @@ double IProblem1::penalty(const DoubleVector &k, const DoubleVector &z, const Do
     return pnlt;
 }
 
-void IProblem1::gradient(const DoubleVector &y, DoubleVector &g)
+void IProblem1::gradient(const DoubleVector &y, DoubleVector &g) const
 {
-    py = &y;
+    IProblem1 *p1 = const_cast<IProblem1*>(this);
+    p1->py = &y;
 
     DoubleVector k,z,e;
     getParameters(k,z,e,y);
@@ -93,8 +94,8 @@ void IProblem1::gradient(const DoubleVector &y, DoubleVector &g)
     {
         for (unsigned int n2=0; n2<N2; n2++)
         {
-            fi = vfi[n1];
-            tt = vtt[n2];
+            p1->fi = vfi[n1];
+            p1->tt = vtt[n2];
 
             DoubleMatrix u;
             calculateU(u, k, z, e);

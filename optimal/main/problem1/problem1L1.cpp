@@ -259,9 +259,10 @@ double Problem1L1::fx(const DoubleVector &x) const
 #endif
 }
 
-void Problem1L1::gradient(const DoubleVector &x, DoubleVector &g)
+void Problem1L1::gradient(const DoubleVector &x, DoubleVector &g) const
 {
-    px = &x;
+    Problem1L1 *p = const_cast<Problem1L1*>(this);
+    p->px = &x;
 
     DoubleVector k,z,e;
     getComponents(k,z,e,x);
@@ -270,7 +271,7 @@ void Problem1L1::gradient(const DoubleVector &x, DoubleVector &g)
     calculateU(u, N, M, hx, ht);
 
     DoubleMatrix psi;
-    calculateP(psi, u);
+    p->calculateP(psi, u);
 
     unsigned int i = 0;
     // k gradient

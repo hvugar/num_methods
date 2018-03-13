@@ -7,7 +7,7 @@
 #include "../function.h"
 
 class RnFunction;
-class R1Function;
+struct R1Function;
 class IGradient;
 class IPrinter;
 class IProjection;
