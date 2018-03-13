@@ -36,6 +36,8 @@ LIBS += -L../bin -limaging
 
 DESTDIR += ../bin
 
+include(problem2H/problem2H.pri)
+
 SOURCES += main.cpp \
     load_sys/slodenlcsm.cpp \
     load_sys/slodenlcsv.cpp \
