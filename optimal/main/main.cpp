@@ -81,6 +81,8 @@
 #include "problem2/2d/dirakdelta.h"
 #include "problem2/2d/ex/p2_article.h"
 
+#include <problem2H/iproblem2hforward2d.h>
+
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -89,6 +91,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
    // srand(time(NULL));
 
     //Problem2Article::Main(argc, argv);
+    IProblem2HForward2D::Main(argc, argv);
 
 //    DirakDelta dd;
 //    dd.dimension = Dimension(0.01, 0, 100);
@@ -188,7 +191,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //BoundaryValueProblem1::Main(argc, argv);
 
     //ParabolicIBVP1::Main(argc, argv);
-    ParabolicIBVP2::Main(argc, argv);
+    //ParabolicIBVP2::Main(argc, argv);
 
     //HyperbolicIBVP1::Main(argc, argv);
     //NewtonHeatEquationEx1::Main(argc, argv);

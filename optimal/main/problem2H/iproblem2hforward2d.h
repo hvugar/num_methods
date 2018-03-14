@@ -6,6 +6,8 @@
 
 using namespace std;
 
+namespace IProblem2H {
+
 struct Parameter
 {
     unsigned int No;
@@ -37,19 +39,24 @@ struct ObservationDeltaNode : public ExtendedSpacePointNode {};
 struct ControlPointNode : public ExtendedSpacePointNode {};
 
 struct ControlDeltaNode : public ExtendedSpacePointNode {};
+}
+
+
 
 class IProblem2HForward2D : public HyperbolicIBVP
 {
 public:
+    static void Main(int arg, char** argv);
+
     void calculateMVD(DoubleMatrix &u) const;
     virtual void layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const;
 
-    Parameter mParameter;
+    IProblem2H::Parameter mParameter;
 
 protected:
-    void extendObservationPoint(const SpacePoint &xi, std::vector<ObservationPointNode> &ons, unsigned int j) const;
-    void extendContrlDeltaPoint(const SpacePoint &eta, std::vector<ControlDeltaNode> &cps, unsigned int id) const;
-    void distributeDelta(const SpacePoint &pt, std::vector<ExtendedSpacePointNode> &nodes, unsigned int id) const;
+    void extendObservationPoint(const SpacePoint &xi, std::vector<IProblem2H::ObservationPointNode> &ons, unsigned int j) const;
+    void extendContrlDeltaPoint(const SpacePoint &eta, std::vector<IProblem2H::ControlDeltaNode> &cps, unsigned int id) const;
+    void distributeDelta(const SpacePoint &pt, std::vector<IProblem2H::ExtendedSpacePointNode> &nodes, unsigned int id) const;
 
 protected:
     virtual double initial1(const SpaceNodePDE &sn) const;
