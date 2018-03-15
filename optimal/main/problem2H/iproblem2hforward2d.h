@@ -19,6 +19,9 @@ struct Parameter
     std::vector<SpacePoint> eta;
     std::vector<SpacePoint> theta;
     DoubleVector q;
+
+    double a;
+    double lambda;
 };
 
 struct ExtendedSpacePointNode

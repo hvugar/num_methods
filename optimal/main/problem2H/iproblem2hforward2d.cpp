@@ -5,7 +5,7 @@ void IProblem2HForward2D::Main(int arg UNUSED_PARAM, char **argv UNUSED_PARAM)
     IProblem2HForward2D p;
     p.addSpaceDimension(Dimension(0.01, 0, 100));
     p.addSpaceDimension(Dimension(0.01, 0, 100));
-    p.setTimeDimension(Dimension(0.02, 0, 500));
+    p.setTimeDimension(Dimension(0.001, 0, 1000));
 
     IProblem2H::Parameter prm;
     prm.Ns = 2;
@@ -24,6 +24,9 @@ void IProblem2HForward2D::Main(int arg UNUSED_PARAM, char **argv UNUSED_PARAM)
 
     prm.k.resize(prm.Nc, prm.No, 0.1);
     prm.z.resize(prm.Nc, prm.No, 0.0);
+
+    prm.a = 1.0;
+    mParameter.lambda = 0.01;
 
     p.mParameter = prm;
 
@@ -45,8 +48,8 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
     double hy = dimY.step();
     double ht = time.step();
 
-    double lambda = 0.1;
-    double a = 1.0;
+    double lambda = mParameter.lambda;
+    double a = mParameter.a;
 
     DoubleMatrix u0;
     u0.resize(M+1, N+1);
