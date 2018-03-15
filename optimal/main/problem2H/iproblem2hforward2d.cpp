@@ -5,12 +5,12 @@ void IProblem2HForward2D::Main(int arg UNUSED_PARAM, char **argv UNUSED_PARAM)
     IProblem2HForward2D p;
     p.addSpaceDimension(Dimension(0.01, 0, 100));
     p.addSpaceDimension(Dimension(0.01, 0, 100));
-    p.setTimeDimension(Dimension(0.001, 0, 1000));
+    p.setTimeDimension(Dimension(0.02, 0, 500));
 
     IProblem2H::Parameter prm;
     prm.Ns = 2;
     prm.q.resize(prm.Ns);
-    prm.q[0] = 1000000.1; prm.q[1] = 2000000.2;
+    prm.q[0] = 1000.1; prm.q[1] = 2000.2;
     prm.theta.resize(prm.Ns);
     prm.Nc = 2;
     prm.No = 2;
@@ -23,7 +23,7 @@ void IProblem2HForward2D::Main(int arg UNUSED_PARAM, char **argv UNUSED_PARAM)
     prm.xi[1].x = 0.6; prm.xi[1].y = 0.6;
 
     prm.k.resize(prm.Nc, prm.No, 0.1);
-    prm.z.resize(prm.Nc, prm.No, 5.0);
+    prm.z.resize(prm.Nc, prm.No, 0.0);
 
     p.mParameter = prm;
 
@@ -45,7 +45,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
     double hy = dimY.step();
     double ht = time.step();
 
-    double lambda = 0.001;
+    double lambda = 0.1;
     double a = 1.0;
 
     DoubleMatrix u0;
@@ -149,7 +149,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
             if (m==80 && n==80) u1[m][n] += -(mParameter.q[1]*(1.0/ht))*((ht*ht)/2.0);
         }
     }
-    IPrinter::printSeperatorLine();
+    IPrinter::printSeperatorLine("\n");
     IPrinter::printMatrix(12, 6, u1);
     //------------------------------------- initial conditions -------------------------------------//
 
