@@ -14,19 +14,20 @@ void IProblem2HForward2D::Main(int arg UNUSED_PARAM, char **argv UNUSED_PARAM)
     prm.theta.resize(prm.Ns);
     prm.Nc = 2;
     prm.No = 2;
-    prm.eta.resize(prm.Nc);
-    prm.eta[0].x = 0.3; prm.eta[0].y = 0.7;
-    prm.eta[1].x = 0.7; prm.eta[1].y = 0.3;
 
     prm.xi.resize(prm.No);
-    prm.xi[0].x = 0.4; prm.xi[0].y = 0.4;
-    prm.xi[1].x = 0.6; prm.xi[1].y = 0.6;
+    prm.xi[0].x = 0.442; prm.xi[0].y = 0.443;
+    prm.xi[1].x = 0.603; prm.xi[1].y = 0.608;
+
+    prm.eta.resize(prm.Nc);
+    prm.eta[0].x = 0.312; prm.eta[0].y = 0.723;
+    prm.eta[1].x = 0.756; prm.eta[1].y = 0.344;
 
     prm.k.resize(prm.Nc, prm.No, 0.1);
     prm.z.resize(prm.Nc, prm.No, 0.0);
 
     prm.a = 1.0;
-    mParameter.lambda = 0.01;
+    prm.lambda = 0.01;
 
     p.mParameter = prm;
 
@@ -72,6 +73,10 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
 
     std::vector<IProblem2H::ControlDeltaNode> cndeltaNodes;
     for (unsigned int i=0; i<mParameter.Nc; i++) extendContrlDeltaPoint(mParameter.eta[i], cndeltaNodes, i);
+
+    //for (unsigned int i=0; i<cndeltaNodes.size(); i++) printf("%d %d\n", cndeltaNodes.at(i).i, cndeltaNodes.at(i).j);
+    //for (unsigned int i=0; i<observeNodes.size(); i++) printf("%d %d\n", observeNodes.at(i).i, observeNodes.at(i).j);
+    //return;
 
     SpaceNodePDE sn;
 
@@ -152,7 +157,8 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
             if (m==80 && n==80) u1[m][n] += -(mParameter.q[1]*(1.0/ht))*((ht*ht)/2.0);
         }
     }
-    IPrinter::printSeperatorLine("\n");
+    IPrinter::printSeperatorLine();
+    printf(("%d\n"), 1);
     IPrinter::printMatrix(12, 6, u1);
     //------------------------------------- initial conditions -------------------------------------//
 
