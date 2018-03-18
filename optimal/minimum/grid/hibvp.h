@@ -3,6 +3,15 @@
 
 #include "ibvp.h"
 
+class MINIMUMSHARED_EXPORT IHyperbolicIBVP : public InitialBoundaryValueProblemPDE
+{
+protected:
+    virtual double initial1(const SpaceNodePDE &sn) const = 0;
+    virtual double initial2(const SpaceNodePDE &sn) const = 0;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const = 0;
+    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
+};
+
 /**
  * @brief The HyperbolicIBVP class
  * u_t(x,t) = a(x,t)u_xx(x,t) + f(x,t)
@@ -13,14 +22,13 @@
  * u(1,t) = m2(t), t in (0,T].
  */
 
-class MINIMUMSHARED_EXPORT HyperbolicIBVP : protected InitialBoundaryValueProblemPDE
+class MINIMUMSHARED_EXPORT HyperbolicIBVP : protected IHyperbolicIBVP
 {
 protected:
-    virtual double initial1(const SpaceNodePDE &sn) const = 0;
-    virtual double initial2(const SpaceNodePDE &sn) const = 0;
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const = 0;
-    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
     virtual double a(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
+
+    virtual void layerInfo(const DoubleVector &, unsigned int) const {}
+    virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
 
 public:
     void gridMethod(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);

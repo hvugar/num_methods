@@ -1,6 +1,6 @@
-#include "iproblem2hforward2d.h"
+#include "iproblem2hbackward2d.h"
 
-void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
+void IProblem2HBackward2D::calculateMVD(DoubleMatrix &p UNUSED_PARAM) const
 {
     Dimension dimX = spaceDimension(Dimension::DimensionX);
     Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -17,31 +17,27 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
     double lambda = mParameter.lambda;
     double a = mParameter.a;
 
-    DoubleMatrix u0;
-    u0.resize(M+1, N+1);
+    DoubleMatrix p0;
+    p0.resize(M+1, N+1);
 
-    DoubleMatrix u1;
-    u1.resize(M+1, N+1);
+    DoubleMatrix p1;
+    p1.resize(M+1, N+1);
 
-    DoubleMatrix u2;
-    u2.resize(M+1, N+1);
+    DoubleMatrix p2;
+    p2.resize(M+1, N+1);
 
-    DoubleMatrix u3;
-    u3.resize(M+1, N+1);
+    DoubleMatrix p3;
+    p3.resize(M+1, N+1);
 
-    u.clear();
-    u.resize(M+1, N+1);
+    p.clear();
+    p.resize(M+1, N+1);
 
     //--------------------------------------------------------------------------------------------//
-    std::vector<IProblem2H2D::ObservationPointNode> observeNodes;
-    for (unsigned int j=0; j<mParameter.No; j++) extendObservationPoint(mParameter.xi[j], observeNodes, j);
+    std::vector<IProblem2H2D::ExtendedSpacePointNode> obsDeltaNodes;
+    for (unsigned int j=0; j<mParameter.No; j++) IProblem2H2D::distributeDelta(mParameter.xi[j], obsDeltaNodes, j, dimX, dimY);
 
-    std::vector<IProblem2H2D::ControlDeltaNode> cndeltaNodes;
-    for (unsigned int i=0; i<mParameter.Nc; i++) extendContrlDeltaPoint(mParameter.eta[i], cndeltaNodes, i);
-
-    //for (unsigned int i=0; i<cndeltaNodes.size(); i++) printf("%d %d\n", cndeltaNodes.at(i).i, cndeltaNodes.at(i).j);
-    //for (unsigned int i=0; i<observeNodes.size(); i++) printf("%d %d\n", observeNodes.at(i).i, observeNodes.at(i).j);
-    //return;
+    std::vector<IProblem2H2D::ExtendedSpacePointNode> cntPointNodes;
+    for (unsigned int i=0; i<mParameter.Nc; i++) IProblem2H2D::distributeDelta(mParameter.eta[i], cntPointNodes, i, dimX, dimY);
 
     SpaceNodePDE sn;
 
@@ -53,15 +49,15 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
     {
         bool found1 = false;
         bool found2 = false;
-        for (unsigned int i=0; i<cndeltaNodes.size(); i++)
+        for (unsigned int i=0; i<obsDeltaNodes.size(); i++)
         {
-            const IProblem2H2D::ControlDeltaNode &cdn = cndeltaNodes.at(i);
+            const IProblem2H2D::ExtendedSpacePointNode &cdn = obsDeltaNodes.at(i);
             if (cdn.j == ny)
             {
                 found1 = true;
-                for (unsigned int j=0; j<observeNodes.size(); j++)
+                for (unsigned int j=0; j<cntPointNodes.size(); j++)
                 {
-                    const IProblem2H2D::ObservationPointNode &on = observeNodes.at(j);
+                    const IProblem2H2D::ExtendedSpacePointNode &on = cntPointNodes.at(j);
                     if (on.j == ny)
                     {
                         found2 = true;
@@ -84,15 +80,15 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
     {
         bool found1 = false;
         bool found2 = false;
-        for (unsigned int i=0; i<cndeltaNodes.size(); i++)
+        for (unsigned int i=0; i<obsDeltaNodes.size(); i++)
         {
-            const IProblem2H2D::ControlDeltaNode &cdn = cndeltaNodes.at(i);
+            const IProblem2H2D::ExtendedSpacePointNode &cdn = obsDeltaNodes.at(i);
             if (cdn.i == nx)
             {
                 found1 = true;
-                for (unsigned int j=0; j<observeNodes.size(); j++)
+                for (unsigned int j=0; j<cntPointNodes.size(); j++)
                 {
-                    const IProblem2H2D::ObservationPointNode &on = observeNodes.at(j);
+                    const IProblem2H2D::ExtendedSpacePointNode &on = cntPointNodes.at(j);
                     if (on.i == nx)
                     {
                         found2 = true;
@@ -115,16 +111,13 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
         for (unsigned int n=0; n<=N; n++)
         {
             sn.i = n; sn.x = n*hx;
-            u0[m][n] = initial1(sn);
-            u1[m][n] = u0[m][n] + initial2(sn)*ht;
-
-            if (m==20 && n==20) u1[m][n] += -(mParameter.q[0]*(1.0/ht))*((ht*ht)/2.0);
-            if (m==80 && n==80) u1[m][n] += -(mParameter.q[1]*(1.0/ht))*((ht*ht)/2.0);
+            p0[m][n] = initial1(sn);
+            p1[m][n] = p0[m][n] + initial2(sn)*ht;
         }
     }
     IPrinter::printSeperatorLine();
     printf(("%d\n"), 1);
-    IPrinter::printMatrix(12, 6, u1);
+    IPrinter::printMatrix(12, 6, p1);
     //------------------------------------- initial conditions -------------------------------------//
 
     double *a1X = (double *) malloc(sizeof(double)*(N+1));
@@ -141,8 +134,10 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
 
     TimeNodePDE tn;
 
-    for (unsigned int l=2; l<=(L/2); l+=2)
+    for (unsigned int l1=2; l1<=(L/2); l1+=2)
     {
+        unsigned int l = (L/2)-l1;
+
         //------------------------------------- approximatin to x direction conditions -------------------------------------//
         tn.i = l; tn.t = tn.i*ht;
         //--------------------------------------------------------------------------//
@@ -154,11 +149,11 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
             {
                 sn.i = n; sn.x = n*hx;
 
-                d1X[n] = (2.0+2.0*lambda*ht)*u1[m][n] - (1.0+(lambda*ht)/2.0)*u0[m][n];
+                d1X[n] = (2.0+2.0*lambda*ht)*p1[m][n] - (1.0+(lambda*ht)/2.0)*p0[m][n];
 
-                if (m == 0)     d1X[n] += ((a*a*ht*ht)/(hy*hy))*(u1[0][n]   - 2.0*u1[1][n]   + u1[2][n]);
-                if (m>0 && m<M) d1X[n] += ((a*a*ht*ht)/(hy*hy))*(u1[m-1][n] - 2.0*u1[m][n]   + u1[m+1][n]);
-                if (m == M)     d1X[n] += ((a*a*ht*ht)/(hy*hy))*(u1[M-2][n] - 2.0*u1[M-1][n] + u1[M][n]);
+                if (m == 0)     d1X[n] += ((a*a*ht*ht)/(hy*hy))*(p1[0][n]   - 2.0*p1[1][n]   + p1[2][n]);
+                if (m>0 && m<M) d1X[n] += ((a*a*ht*ht)/(hy*hy))*(p1[m-1][n] - 2.0*p1[m][n]   + p1[m+1][n]);
+                if (m == M)     d1X[n] += ((a*a*ht*ht)/(hy*hy))*(p1[M-2][n] - 2.0*p1[M-1][n] + p1[M][n]);
 
                 if (n==0)
                 {
@@ -182,7 +177,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
                 }
             }
             tomasAlgorithm(a1X, b1X, c1X, d1X, x1X, N+1);
-            for (unsigned int n=0; n<=N; n++) u2[m][n] = x1X[n];
+            for (unsigned int n=0; n<=N; n++) p2[m][n] = x1X[n];
         }
 
         if (rows2.size() == 0)
@@ -195,11 +190,11 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
                 {
                     sn.i = n; sn.x = n*hx;
 
-                    d1X[n] = (2.0+2.0*lambda*ht)*u1[m][n] - (1.0+(lambda*ht)/2.0)*u0[m][n];
+                    d1X[n] = (2.0+2.0*lambda*ht)*p1[m][n] - (1.0+(lambda*ht)/2.0)*p0[m][n];
 
-                    if (m == 0)     d1X[n] = ((a*a*ht*ht)/(hy*hy))*(u1[0][n]  -2.0*u1[1][n]  +u1[2][n]);
-                    if (m>0 && m<M) d1X[n] = ((a*a*ht*ht)/(hy*hy))*(u1[m-1][n]-2.0*u1[m][n]  +u1[m+1][n]);
-                    if (m == M)     d1X[n] = ((a*a*ht*ht)/(hy*hy))*(u1[M-2][n]-2.0*u1[M-1][n]+u1[M][n]);
+                    if (m == 0)     d1X[n] = ((a*a*ht*ht)/(hy*hy))*(p1[0][n]  -2.0*p1[1][n]  +p1[2][n]);
+                    if (m>0 && m<M) d1X[n] = ((a*a*ht*ht)/(hy*hy))*(p1[m-1][n]-2.0*p1[m][n]  +p1[m+1][n]);
+                    if (m == M)     d1X[n] = ((a*a*ht*ht)/(hy*hy))*(p1[M-2][n]-2.0*p1[M-1][n]+p1[M][n]);
 
                     if (n==0)
                     {
@@ -222,15 +217,15 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
                         c1X[n] = -(a*a*ht*ht)/(hx*hx);
                     }
 
-                    for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
+                    for (unsigned int cni=0; cni<obsDeltaNodes.size(); cni++)
                     {
-                        const IProblem2H2D::ControlDeltaNode &cdn = cndeltaNodes.at(cni);
+                        const IProblem2H2D::ExtendedSpacePointNode &cdn = obsDeltaNodes.at(cni);
                         if (cdn.i == sn.i && cdn.j == sn.j)
                         {
-                            for (unsigned int s=0; s<observeNodes.size(); s++)
+                            for (unsigned int s=0; s<cntPointNodes.size(); s++)
                             {
-                                const IProblem2H2D::ObservationPointNode &on = observeNodes[s];
-                                d1X[n] += ht*ht * mParameter.k[cdn.id][on.id] * u2[on.j][on.i] * cdn.w * on.w;
+                                const IProblem2H2D::ExtendedSpacePointNode &on = cntPointNodes[s];
+                                d1X[n] += ht*ht * mParameter.k[cdn.id][on.id] * p2[on.j][on.i] * cdn.w * on.w;
                             }
 
                             for (unsigned int j=0; j<mParameter.No; j++)
@@ -241,7 +236,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
                     }
                 }
                 tomasAlgorithm(a1X, b1X, c1X, d1X, x1X, N+1);
-                for (unsigned int n=0; n<=N; n++) u2[m][n] = x1X[n];
+                for (unsigned int n=0; n<=N; n++) p2[m][n] = x1X[n];
             }
         }
         else
@@ -263,11 +258,11 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
             {
                 sn.j = m; sn.y = m*hy;
 
-                d1Y[m] = (2.0+2.0*lambda*ht)*u2[m][n] - (1.0+(lambda*ht)/2.0)*u1[m][n];
+                d1Y[m] = (2.0+2.0*lambda*ht)*p2[m][n] - (1.0+(lambda*ht)/2.0)*p1[m][n];
 
-                if (n==0)       d1Y[m] += ((a*a*ht*ht)/(hx*hx))*(u2[m][0]   - 2.0*u2[m][1]   + u2[m][2]);
-                if (n>0 && n<N) d1Y[m] += ((a*a*ht*ht)/(hx*hx))*(u2[m][n-1] - 2.0*u2[m][n]   + u2[m][n+1]);
-                if (n==N)       d1Y[m] += ((a*a*ht*ht)/(hx*hx))*(u2[m][N-2] - 2.0*u2[m][N-1] + u2[m][N]);
+                if (n==0)       d1Y[m] += ((a*a*ht*ht)/(hx*hx))*(p2[m][0]   - 2.0*p2[m][1]   + p2[m][2]);
+                if (n>0 && n<N) d1Y[m] += ((a*a*ht*ht)/(hx*hx))*(p2[m][n-1] - 2.0*p2[m][n]   + p2[m][n+1]);
+                if (n==N)       d1Y[m] += ((a*a*ht*ht)/(hx*hx))*(p2[m][N-2] - 2.0*p2[m][N-1] + p2[m][N]);
 
                 if (m == 0)
                 {
@@ -291,7 +286,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
                 }
             }
             tomasAlgorithm(a1Y, b1Y, c1Y, d1Y, x1Y, M+1);
-            for (unsigned int m=0; m<=M; m++) u3[m][n] = x1Y[m];
+            for (unsigned int m=0; m<=M; m++) p3[m][n] = x1Y[m];
         }
 
         if (cols2.size() == 0)
@@ -304,11 +299,11 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
                 {
                     sn.j = m; sn.y = m*hy;
 
-                    d1Y[m] = (2.0+2.0*lambda*ht)*u2[m][n] - (1.0+(lambda*ht)/2.0)*u1[m][n];
+                    d1Y[m] = (2.0+2.0*lambda*ht)*p2[m][n] - (1.0+(lambda*ht)/2.0)*p1[m][n];
 
-                    if (n==0)       d1Y[m] += ((a*a*ht*ht)/(hx*hx))*(u2[m][0]   - 2.0*u2[m][1]   + u2[m][2]);
-                    if (n>0 && n<N) d1Y[m] += ((a*a*ht*ht)/(hx*hx))*(u2[m][n-1] - 2.0*u2[m][n]   + u2[m][n+1]);
-                    if (n==N)       d1Y[m] += ((a*a*ht*ht)/(hx*hx))*(u2[m][N-2] - 2.0*u2[m][N-1] + u2[m][N]);
+                    if (n==0)       d1Y[m] += ((a*a*ht*ht)/(hx*hx))*(p2[m][0]   - 2.0*p2[m][1]   + p2[m][2]);
+                    if (n>0 && n<N) d1Y[m] += ((a*a*ht*ht)/(hx*hx))*(p2[m][n-1] - 2.0*p2[m][n]   + p2[m][n+1]);
+                    if (n==N)       d1Y[m] += ((a*a*ht*ht)/(hx*hx))*(p2[m][N-2] - 2.0*p2[m][N-1] + p2[m][N]);
 
                     if (m == 0)
                     {
@@ -331,15 +326,15 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
                         c1Y[m] = -(a*a*ht*ht)/(hy*hy);
                     }
 
-                    for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
+                    for (unsigned int cni=0; cni<obsDeltaNodes.size(); cni++)
                     {
-                        const IProblem2H2D::ControlDeltaNode &cdn = cndeltaNodes.at(cni);
+                        const IProblem2H2D::ExtendedSpacePointNode &cdn = obsDeltaNodes.at(cni);
                         if (cdn.i == sn.i && cdn.j == sn.j)
                         {
-                            for (unsigned int s=0; s<observeNodes.size(); s++)
+                            for (unsigned int s=0; s<cntPointNodes.size(); s++)
                             {
-                                const IProblem2H2D::ObservationPointNode &on = observeNodes.at(s);
-                                d1Y[m] += ht * mParameter.k[cdn.id][on.id] * u3[on.j][on.i] * cdn.w * on.w;
+                                const IProblem2H2D::ExtendedSpacePointNode &on = cntPointNodes.at(s);
+                                d1Y[m] += ht * mParameter.k[cdn.id][on.id] * p3[on.j][on.i] * cdn.w * on.w;
                             }
 
                             for (unsigned int j=0; j<mParameter.No; j++)
@@ -350,7 +345,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
                     }
                 }
                 tomasAlgorithm(a1Y, b1Y, c1Y, d1Y, x1Y, M+1);
-                for (unsigned int m=0; m<=M; m++) u3[m][n] = x1Y[m];
+                for (unsigned int m=0; m<=M; m++) p3[m][n] = x1Y[m];
             }
         }
         else
@@ -363,21 +358,21 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
         {
             for (unsigned int n=0; n<=N; n++)
             {
-                u0[m][n] = u2[m][n];
-                u1[m][n] = u3[m][n];
+                p0[m][n] = p2[m][n];
+                p1[m][n] = p3[m][n];
             }
         }
 
         IPrinter::printSeperatorLine();
         printf(("%d\n"), l);
-        IPrinter::printMatrix(12, 6, u1);
+        IPrinter::printMatrix(12, 6, p1);
     }
 
     for (unsigned int m=0; m<=M; m++)
     {
         for (unsigned int n=0; n<=N; n++)
         {
-            u[m][n] = u1[m][n];
+            p[m][n] = p1[m][n];
         }
     }
 
@@ -401,120 +396,36 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u) const
     cols1.clear();
     cols2.clear();
 
-    observeNodes.clear();
-    cndeltaNodes.clear();
+    obsDeltaNodes.clear();
+    cntPointNodes.clear();
 
-    u3.clear();
-    u2.clear();
-    u1.clear();
-    u0.clear();
+    p3.clear();
+    p2.clear();
+    p1.clear();
+    p0.clear();
 }
 
-void IProblem2HForward2D::layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const
+void IProblem2HBackward2D::layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int layerNumber UNUSED_PARAM) const
+{}
+
+double IProblem2HBackward2D::initial1(const SpaceNodePDE &sn UNUSED_PARAM) const
 {
-    C_UNUSED(u);
-    C_UNUSED(layerNumber);
+    Dimension time = timeDimension();
+    double ht = time.step();
+    return -2.0*(UT0[sn.j][sn.i]-UT1[sn.j][sn.i])/ht;
 }
 
-double IProblem2HForward2D::initial1(const SpaceNodePDE &) const
+double IProblem2HBackward2D::initial2(const SpaceNodePDE &sn UNUSED_PARAM) const
 {
-    return 0.0;
+    return 2.0*UT0[sn.j][sn.i]+mParameter.lambda*initial1(sn);
 }
 
-double IProblem2HForward2D::initial2(const SpaceNodePDE &) const
-{
-    return 0.0;
-}
-
-double IProblem2HForward2D::boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const
-{
-    return 0.0;
-}
-
-double IProblem2HForward2D::f(const SpaceNodePDE &, const TimeNodePDE &) const
+double IProblem2HBackward2D::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM, BoundaryType) const
 {
     return 0.0;
 }
 
-void IProblem2HForward2D::extendObservationPoint(const SpacePoint &xi, std::vector<IProblem2H2D::ObservationPointNode> &ons, unsigned int j) const
+double IProblem2HBackward2D::f(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
-    double hx = spaceDimension(Dimension::DimensionX).step();
-    double hy = spaceDimension(Dimension::DimensionY).step();
-
-    std::vector<IProblem2H2D::ExtendedSpacePointNode> extpoint;
-    distributeDelta(xi, extpoint, j);
-
-    for (unsigned int i=0; i<extpoint.size(); i++)
-    {
-        IProblem2H2D::ExtendedSpacePointNode ep = extpoint.at(i);
-        IProblem2H2D::ObservationPointNode node;
-        node.id = ep.id; node.w = ep.w * (hx*hy); node.pt = ep.pt;
-        node.i = ep.i; node.x = ep.x;
-        node.j = ep.j; node.y = ep.y;
-        ons.push_back(node);
-    }
-    extpoint.clear();
-}
-
-void IProblem2HForward2D::extendContrlDeltaPoint(const SpacePoint &eta, std::vector<IProblem2H2D::ControlDeltaNode> &cps, unsigned int id) const
-{
-    std::vector<IProblem2H2D::ExtendedSpacePointNode> extpoint;
-    distributeDelta(eta, extpoint, id);
-
-    for (unsigned int i=0; i<extpoint.size(); i++)
-    {
-        IProblem2H2D::ExtendedSpacePointNode ep = extpoint.at(i);
-        IProblem2H2D::ControlDeltaNode node;
-        node.id = ep.id; node.w = ep.w; node.pt = ep.pt;
-        node.i = ep.i; node.x = ep.x;
-        node.j = ep.j; node.y = ep.y;
-        cps.push_back(node);
-    }
-    extpoint.clear();
-}
-
-void IProblem2HForward2D::distributeDelta(const SpacePoint &pt, std::vector<IProblem2H2D::ExtendedSpacePointNode> &nodes, unsigned int id) const
-{
-    Dimension xd = spaceDimension(Dimension::DimensionX);
-    Dimension yd = spaceDimension(Dimension::DimensionY);
-    double hx = xd.step();
-    double hy = yd.step();
-    unsigned int Nx = xd.sizeN();
-    unsigned int Ny = yd.sizeN();
-
-    double sigmaX = hx;
-    double sigmaY = hy;
-
-    unsigned int rx = (unsigned int)(round(pt.x*Nx));
-    unsigned int ry = (unsigned int)(round(pt.y*Ny));
-
-    unsigned int k=3;
-
-    double sumX = 0.0;
-    for (unsigned int n=rx-k; n<=rx+k; n++)
-    {
-        sumX += exp(-((n*hx-pt.x)*(n*hx-pt.x))/(2.0*sigmaX*sigmaX));
-    }
-    sumX *= hx;
-
-    double sumY = 0.0;
-    for (unsigned int m=ry-k; m<=ry+k; m++)
-    {
-        sumY += exp(-((m*hy-pt.y)*(m*hy-pt.y))/(2.0*sigmaY*sigmaY));
-    }
-    sumY *= hy;
-
-    double sigma = (sumX*sumY) / (2.0*M_PI);
-    double factor = 1.0/((2.0*M_PI)*sigma);
-
-    for (unsigned int n=rx-k; n<=rx+k; n++)
-    {
-        for (unsigned int m=ry-k; m<=ry+k; m++)
-        {
-            IProblem2H2D::ExtendedSpacePointNode node;
-            node.i = n; node.x = n*hx; node.j = m; node.y = m*hy; node.pt = pt; node.id = id;
-            node.w = factor*exp(-0.5*(((node.x-pt.x)*(node.x-pt.x))/(sigmaX*sigmaX)+((node.y-pt.y)*(node.y-pt.y))/(sigmaY*sigmaY)));
-            nodes.push_back(node);
-        }
-    }
+    return 0.0;
 }
