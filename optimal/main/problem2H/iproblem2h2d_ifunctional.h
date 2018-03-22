@@ -8,7 +8,8 @@
 #include "iproblem2hforward2d.h"
 #include "iproblem2hbackward2d.h"
 
-namespace IProblem2H2D1 {
+namespace IProblem2H2D_NS
+{
 
 class IFunctional : public RnFunction, public IGradient, public IProjection, public IPrinter
 {
@@ -16,8 +17,8 @@ public:
     IFunctional();
 
     virtual double fx(const DoubleVector &prms) const;
-    virtual double integral(const DoubleMatrix &u) const;
-    //virtual double norm() const;
+    virtual double integral(const DoubleMatrix &u, const DoubleMatrix ut) const;
+    virtual double norm() const;
     //virtual double penalty(vector<ExtendedSpaceNode2D> &info) const;
     //virtual double gpi(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2D> &info) const;
     //virtual double g0i(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2D> &info) const;
@@ -46,8 +47,8 @@ private:
     //double sgn(double x) const;
 
 protected:
-    //Parameter mParameter;
-    //Parameter mParameter0;
+    IProblem2H2D::Parameter mParameter;
+    IProblem2H2D::Parameter mParameter0;
 
     Dimension mTimeDimension;
     Dimension mSpaceDimensionX;
@@ -56,12 +57,16 @@ protected:
     //DoubleVector vmin;
     //DoubleVector vmax;
 
-    //double regEpsilon;
+    double regEpsilon;
     //double r;
 public:
     IProblem2HForward2D *forward;
     IProblem2HBackward2D *backward;
-    //DoubleMatrix U;
+
+    DoubleMatrix U0;
+    double alpha0;
+    DoubleMatrix U1;
+    double alpha1;
 
     bool optimizeK;
     bool optimizeZ;

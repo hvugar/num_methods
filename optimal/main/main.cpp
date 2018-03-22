@@ -19,7 +19,7 @@
 //#include <../border/borderparabolicd.h>
 //#include <../border/borderparabolicn.h>
 //#include <../border/borderparabolic2d.h>
-//#include <../border/borderhyperbolic2d.h>
+#include <../border/borderhyperbolic2d.h>
 
 #include <../border/grid/parabolicibvp1.h>
 #include <../border/grid/parabolicibvp2.h>
@@ -87,43 +87,13 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
    // QGuiApplication app(argc, argv);
 
+    BorderHyperbolic2D::Main(argc, argv);
+
    // srand(time(NULL));
 
     //Problem2Article::Main(argc, argv);
-    IProblem2H2D::Main(argc, argv);
+    //IProblem2H2D::Main(argc, argv);
 
-//    DirakDelta dd;
-//    dd.dimension = Dimension(0.01, 0, 100);
-//    dd.point.x = 0.506;
-//    std::vector<SpaceNodePDE> nodes;
-//    dd.payla(dd.point, dd.dimension, nodes);
-//    printf("%d\n", nodes.size());
-//    double sum = 0.0;
-//    for (unsigned int i=0; i<nodes.size(); i++)
-//    {
-//        SpaceNodePDE &node = nodes[i];
-//        printf("%d %f %f\n", node.i, node.x, node.y);
-//        sum += node.y;
-//    }
-//    printf("%f\n", sum);
-
-    //IPrinter::printVector(a,N,NULL,N);
-    //IPrinter::printVector(b,N,NULL,N);
-    //IPrinter::printVector(c,N,NULL,N);
-    //IPrinter::printVector(d,N,NULL,N);
-    //IPrinter::printVector(x,N,NULL,N);
-    //IPrinter::printSeperatorLine();
-    //for (unsigned int i=0; i<N; i++)
-    //{
-    //    for (unsigned int j=0; j<N; j++)
-    //    {
-    //        printf("%14.10f ", e[i][j]);
-    //    }
-    //    puts("");
-    //}
-    //IPrinter::printSeperatorLine();
-    //for (unsigned int i=0; i<N; i++) x[i] = 0.0;
-    
     //LinearEquation::func1(a, b, c, d, e, x, N);
 
     //IPrinter::printVector(x,N,NULL,N);

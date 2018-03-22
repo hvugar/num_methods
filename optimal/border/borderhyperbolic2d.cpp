@@ -23,6 +23,13 @@ void BorderHyperbolic2D::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
     bp.calculateMVD(m2, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, bp.a1, bp.a2);
     IPrinter::printMatrix(14,10,m2);
     IPrinter::printSeperatorLine();
+
+    DoubleMatrix m3;
+    bp.ht = 0.0025;
+    bp.M  = 400;
+    bp.calculateMVD2(m3, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, bp.a1, bp.a2);
+    IPrinter::printMatrix(14,10,m3);
+    IPrinter::printSeperatorLine();
 }
 
 double BorderHyperbolic2D::u(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PARAM, unsigned int k UNUSED_PARAM) const

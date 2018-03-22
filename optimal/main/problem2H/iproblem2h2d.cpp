@@ -13,7 +13,10 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     IProblem2H2D::Parameter prm;
     prm.Ns = 2;
     prm.q.resize(prm.Ns);
-    prm.q[0] = 1000.1; prm.q[1] = 2000.2;
+
+    prm.q[0] = 1000.0;
+    prm.q[1] = 2000.0;
+
     prm.theta.resize(prm.Ns);
     prm.Nc = 2;
     prm.No = 2;
@@ -35,7 +38,8 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     p.mParameter = prm;
 
     DoubleMatrix u;
-    p.calculateMVD(u);
+    DoubleMatrix ut;
+    p.calculateMVD(u, ut);
 }
 
 void IProblem2H2D::distributeDelta(const SpacePoint &pt, std::vector<IProblem2H2D::ExtendedSpacePointNode> &nodes, unsigned int id,
@@ -76,7 +80,9 @@ void IProblem2H2D::distributeDelta(const SpacePoint &pt, std::vector<IProblem2H2
         for (unsigned int m=ry-k; m<=ry+k; m++)
         {
             IProblem2H2D::ExtendedSpacePointNode node;
-            node.i = n; node.x = n*hx; node.j = m; node.y = m*hy; node.pt = pt; node.id = id;
+            node.i = n; node.x = n*hx;
+            node.j = m; node.y = m*hy;
+            node.pt = pt; node.id = id;
             node.w = factor*exp(-0.5*(((node.x-pt.x)*(node.x-pt.x))/(sigmaX*sigmaX)+((node.y-pt.y)*(node.y-pt.y))/(sigmaY*sigmaY)));
             nodes.push_back(node);
         }

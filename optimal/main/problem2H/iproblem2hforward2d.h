@@ -6,14 +6,14 @@
 class IProblem2HForward2D : public IHyperbolicIBVP
 {
 public:
-    void calculateMVD(DoubleMatrix &u) const;
+    void calculateMVD(DoubleMatrix &u, DoubleMatrix &ut) const;
     virtual void layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const;
 
     IProblem2H2D::Parameter mParameter;
 
 protected:
-    void extendObservationPoint(const SpacePoint &xi, std::vector<IProblem2H2D::ObservationPointNode> &ons, unsigned int j) const;
-    void extendContrlDeltaPoint(const SpacePoint &eta, std::vector<IProblem2H2D::ControlDeltaNode> &cps, unsigned int id) const;
+    //void extendObservationPoint(const SpacePoint &xi, std::vector<IProblem2H2D::ObservationPointNode> &ons, unsigned int j) const;
+    //void extendContrlDeltaPoint(const SpacePoint &eta, std::vector<IProblem2H2D::ControlDeltaNode> &cps, unsigned int id) const;
     void distributeDelta(const SpacePoint &pt, std::vector<IProblem2H2D::ExtendedSpacePointNode> &nodes, unsigned int id) const;
 
 protected:
