@@ -92,12 +92,6 @@ public:
     double valueDx(unsigned int layer) const;
     double valueDy(unsigned int layer) const;
 
-    //double valueDx(double x, double y, unsigned int layer) const;
-    //double valueDy(double x, double y, unsigned int layer) const;
-
-    //double valueDxN(unsigned int layer, double h) const;
-    //double valueDyN(unsigned int layer, double h) const;
-
     unsigned int id;
     unsigned int rows;
     unsigned int cols;

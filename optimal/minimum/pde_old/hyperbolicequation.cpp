@@ -1298,15 +1298,42 @@ void IHyperbolicEquation2D::calculateMVD2(DoubleMatrix &u, double hx, double hy,
         for (unsigned int i=0; i<=Nx; i++)
         {
             u0[j][i] = initial1(i, j);
-            u1[j][i] = u0[j][i] + ht*initial2(i, j) - ht*ht*0.5*f(i,j,0);
+        }
+    }
 
-            if (i==0 ) u1[j][i] += ht*ht*0.5*(a1*a1*(u0[j][i]-2.0*u0[j][i+1]+u0[j][i+2])); else
-            if (i==Nx) u1[j][i] += ht*ht*0.5*(a1*a1*(u0[j][i-2]-2.0*u0[j][i-1]+u0[j][i])); else
-                       u1[j][i] += ht*ht*0.5*(a1*a1*(u0[j][i-1]-2.0*u0[j][i]+u0[j][i+1]));
+    for (unsigned int j=0; j<=Ny; j++)
+    {
+        for (unsigned int i=0; i<=Nx; i++)
+        {
+            u1[j][i] = u0[j][i] + ht*initial2(i, j);
 
-            if (j==0 ) u1[j][i] += ht*ht*0.5*(a2*a2*(u0[j][i]-2.0*u0[j+1][i]+u0[j+2][i])); else
-            if (j==Ny) u1[j][i] += ht*ht*0.5*(a2*a2*(u0[j-2][i]-2.0*u0[j-1][i]+u0[j][i])); else
-                       u1[j][i] += ht*ht*0.5*(a2*a2*(u0[j-1][i]-2.0*u0[j][i]+u0[j+1][i]));
+            double sum = f(i,j,0);
+            if (i==0 )
+            {
+                sum += a1*a1*(u0[j][i]-2.0*u0[j][i+1]+u0[j][i+2])/(hx*hx);
+            }
+            else if (i==Nx)
+            {
+                sum += a1*a1*(u0[j][i-2]-2.0*u0[j][i-1]+u0[j][i])/(hx*hx);
+            }
+            else
+            {
+                sum += a1*a1*(u0[j][i-1]-2.0*u0[j][i]+u0[j][i+1])/(hx*hx);
+            }
+
+            if (j==0 )
+            {
+                sum += a2*a2*(u0[j][i]-2.0*u0[j+1][i]+u0[j+2][i])/(hy*hy);
+            }
+            else if (j==Ny)
+            {
+                sum += a2*a2*(u0[j-2][i]-2.0*u0[j-1][i]+u0[j][i])/(hy*hy);
+            }
+            else
+            {
+                sum += a2*a2*(u0[j-1][i]-2.0*u0[j][i]+u0[j+1][i])/(hy*hy);
+            }
+            u1[j][i] += ht*ht*0.5*sum;
         }
     }
 
@@ -1314,7 +1341,7 @@ void IHyperbolicEquation2D::calculateMVD2(DoubleMatrix &u, double hx, double hy,
     IPrinter::printSeperatorLine();
     IPrinter::printMatrix(14,10,u1);
     IPrinter::printSeperatorLine();
-    return;
+//    return;
 
     for (unsigned int k=2; k<=M; k++)
     {
@@ -1339,8 +1366,7 @@ void IHyperbolicEquation2D::calculateMVD2(DoubleMatrix &u, double hx, double hy,
                 da1[i-1] = x1_a;
                 db1[i-1] = x1_b;
                 dc1[i-1] = x1_a;
-                dd1[i-1] = x1_c*(u1[j-1][i] - 2.0*u1[j][i] + u1[j+1][i]) + 0.5*(u1[j][i] - u0[j][i]) + u1[j][i]
-                        + 0.5*ht*ht*f(i, j, k);
+                dd1[i-1] = x1_c*(u1[j-1][i] - 2.0*u1[j][i] + u1[j+1][i]) + 0.5*(u1[j][i] - u0[j][i]) + u1[j][i] + 0.5*ht*ht*f(i, j, k);
             }
 
             da1[0]     = 0.0;
@@ -1353,11 +1379,15 @@ void IHyperbolicEquation2D::calculateMVD2(DoubleMatrix &u, double hx, double hy,
 
             for (unsigned int i=1; i<Nx; i++)
             {
+                //uh[j][i] = hx*i*hx*i+hy*j*hy*j+t2;
                 uh[j][i] = rx1[i-1];
             }
         }
 
+//        IPrinter::printSeperatorLine();
 //        IPrinter::printMatrix(14,10,uh);
+//        IPrinter::printSeperatorLine();
+//        return;
 
         // Approximation to y direction
 
@@ -1377,8 +1407,7 @@ void IHyperbolicEquation2D::calculateMVD2(DoubleMatrix &u, double hx, double hy,
                 da2[j-1] = x2_a;
                 db2[j-1] = x2_b;
                 dc2[j-1] = x2_a;
-                dd2[j-1] = x2_c*(uh[j][i-1] - 2.0*uh[j][i] + uh[j][i+1]) + 0.5*(u1[j][i] - u0[j][i]) + uh[j][j]
-                        + 0.5*ht*ht*f(i, j, k);
+                dd2[j-1] = x2_c*(uh[j][i-1] - 2.0*uh[j][i] + uh[j][i+1]) + 0.5*(u1[j][i] - u0[j][i]) + uh[j][i] + 0.5*ht*ht*f(i, j, k);
             }
 
             da2[0]     = 0.0;
@@ -1389,9 +1418,12 @@ void IHyperbolicEquation2D::calculateMVD2(DoubleMatrix &u, double hx, double hy,
 
             tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
 
+            //IPrinter::printVector(rx3);
+
             for (unsigned int j=1; j<Ny; j++)
             {
                 u[j][i] = rx2[j-1];
+                //u[j][i] = hx*i*hx*i+hy*j*hy*j+k*ht*k*ht;
             }
         }
 
@@ -1404,10 +1436,205 @@ void IHyperbolicEquation2D::calculateMVD2(DoubleMatrix &u, double hx, double hy,
             }
         }
 
-        IPrinter::printSeperatorLine();
-        IPrinter::printMatrix(14,10,u);
-        IPrinter::printSeperatorLine();
-        break;
+        if (k%10==0)
+        {
+//        IPrinter::printSeperatorLine();
+//        IPrinter::printMatrix(14,10,u);
+//        IPrinter::printSeperatorLine();
+//        break;
+        }
+    }
+
+    da1.clear();
+    db1.clear();
+    dc1.clear();
+    dd1.clear();
+    rx1.clear();
+
+    da2.clear();
+    db2.clear();
+    dc2.clear();
+    dd2.clear();
+    rx2.clear();
+}
+
+void IHyperbolicEquation2D::calculateMVD3(DoubleMatrix &u, double hx, double hy, double ht, unsigned int Nx, unsigned Ny, unsigned int M, double a1, double a2, double lambda) const
+{
+    u.resize(Ny+1, Nx+1);
+
+    DoubleMatrix u0(Ny+1, Nx+1);
+    DoubleMatrix u1(Ny+1, Nx+1);
+    DoubleMatrix u05(Ny+1, Nx+1);
+    DoubleMatrix u15(Ny+1, Nx+1);
+
+    DoubleVector da1(Nx-1);
+    DoubleVector db1(Nx-1);
+    DoubleVector dc1(Nx-1);
+    DoubleVector dd1(Nx-1);
+    DoubleVector rx1(Nx-1);
+
+    DoubleVector da2(Ny-1);
+    DoubleVector db2(Ny-1);
+    DoubleVector dc2(Ny-1);
+    DoubleVector dd2(Ny-1);
+    DoubleVector rx2(Ny-1);
+
+    double x1_a = -0.5*(a1*a1*ht*ht)/(hx*hx);
+    double x1_b = +1.0 + (a1*a1*ht*ht)/(hx*hx);
+    double x1_c = +0.5*(a2*a2*ht*ht)/(hy*hy);
+
+    double x2_a = -0.5*(a2*a2*ht*ht)/(hy*hy);
+    double x2_b = +1.0 + (a2*a2*ht*ht)/(hy*hy);
+    double x2_c = +0.5*(a1*a1*ht*ht)/(hx*hx);
+
+    double hh = 0.5*ht;
+
+    // initial conditions
+    for (unsigned int j=0; j<=Ny; j++)
+    {
+        for (unsigned int i=0; i<=Nx; i++)
+        {
+            u0[j][i] = initial1(i, j);
+        }
+    }
+
+    for (unsigned int j=0; j<=Ny; j++)
+    {
+        for (unsigned int i=0; i<=Nx; i++)
+        {
+            u1[j][i] = u0[j][i] + ht*initial2(i, j);
+            u15[j][i] = u0[j][i] + hh*initial2(i, j);
+
+            double sum = f(i,j,0);
+
+            if (i==0)       sum += a1*a1*(u0[j][i]-2.0*u0[j][i+1]+u0[j][i+2])/(hx*hx);
+            else if (i==Nx) sum += a1*a1*(u0[j][i-2]-2.0*u0[j][i-1]+u0[j][i])/(hx*hx);
+            else            sum += a1*a1*(u0[j][i-1]-2.0*u0[j][i]+u0[j][i+1])/(hx*hx);
+
+            if (j==0)       sum += a2*a2*(u0[j][i]-2.0*u0[j+1][i]+u0[j+2][i])/(hy*hy);
+            else if (j==Ny) sum += a2*a2*(u0[j-2][i]-2.0*u0[j-1][i]+u0[j][i])/(hy*hy);
+            else            sum += a2*a2*(u0[j-1][i]-2.0*u0[j][i]+u0[j+1][i])/(hy*hy);
+
+            sum -= lambda*initial2(i, j);
+
+            u1[j][i] += 0.5*ht*ht*sum;
+            u15[j][i] += 0.5*hh*hh*sum;
+        }
+    }
+
+    IPrinter::printMatrix(14,10,u0);
+    IPrinter::printSeperatorLine();
+    IPrinter::printMatrix(14,10,u1);
+    IPrinter::printSeperatorLine();
+    IPrinter::printMatrix(14,10,u15);
+    IPrinter::printSeperatorLine();
+
+    for (unsigned int k=2; k<=M; k++)
+    {
+        // Approximation to x direction
+
+        double t = k*ht-0.5*ht;
+        double t2 = t*t;
+
+        for (unsigned int i=0; i<=Nx; i++)
+        {
+            u05[0][i]  = boundary(i, 0, 0)+t2; //boundary(i, 0, k);
+            u05[Ny][i] = boundary(i, Ny, 0)+t2;//boundary(i, Ny, k);
+        }
+
+        for (unsigned int j=1; j<Ny; j++)
+        {
+            u05[j][0]  = boundary(0, j, 0)+t2;//boundary(0, j, k);
+            u05[j][Nx] = boundary(Nx, j, 0)+t2;//boundary(Nx, j, k);
+
+            for (unsigned int i=1; i<Nx; i++)
+            {
+                da1[i-1] = x1_a;
+                db1[i-1] = x1_b+1.5*lambda*ht;
+                dc1[i-1] = x1_a;
+                dd1[i-1] = x1_c*(u1[j-1][i] - 2.0*u1[j][i] + u1[j+1][i]) + 0.5*(u1[j][i] - u0[j][i]) + u1[j][i]
+                        + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda) + 0.5*lambda*ht*(4.0*u1[j][i]-u15[j][i]);
+            }
+
+            da1[0]     = 0.0;
+            dc1[Nx-2]  = 0.0;
+
+            dd1[0]    -= x1_a * u05[j][0];
+            dd1[Nx-2] -= x1_a * u05[j][Nx];
+
+            tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.length());
+
+            for (unsigned int i=1; i<Nx; i++)
+            {
+                //u05[j][i] = hx*i*hx*i+hy*j*hy*j+t2;
+                u05[j][i] = rx1[i-1];
+            }
+        }
+
+//        IPrinter::printSeperatorLine();
+//        IPrinter::printMatrix(14,10,u05);
+//        IPrinter::printSeperatorLine();
+//        return;
+
+        // Approximation to y direction
+
+        t = k*ht;
+        t2 = t*t;
+
+        for (unsigned int j=0; j<=Ny; j++)
+        {
+            u[j][0]  = boundary(0, j, 0)+t2;
+            u[j][Nx] = boundary(Nx, j, 0)+t2;
+        }
+
+        for (unsigned int i=1; i<Nx; i++)
+        {
+            u[0][i]  = boundary(i, 0, 0)+t2;
+            u[Ny][i] = boundary(i, Ny, 0)+t2;
+
+            for (unsigned int j=1; j<Ny; j++)
+            {
+                da2[j-1] = x2_a;
+                db2[j-1] = x2_b+1.5*lambda*ht;
+                dc2[j-1] = x2_a;
+                dd2[j-1] = x2_c*(u05[j][i-1] - 2.0*u05[j][i] + u05[j][i+1]) + 0.5*(u1[j][i] - u0[j][i]) + u05[j][i]
+                        + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda) + 0.5*lambda*ht*(4.0*u05[j][i]-u1[j][i]);
+            }
+
+            da2[0]     = 0.0;
+            dc2[Ny-2]  = 0.0;
+
+            dd2[0]    -= x2_a * u[0][i];
+            dd2[Ny-2] -= x2_a * u[Ny][i];
+
+            tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
+
+            //IPrinter::printVector(rx3);
+
+            for (unsigned int j=1; j<Ny; j++)
+            {
+                u[j][i] = rx2[j-1];
+                //u[j][i] = hx*i*hx*i+hy*j*hy*j+t2;
+            }
+        }
+
+        for (unsigned int j=0; j<=Ny; j++)
+        {
+            for (unsigned int i=0; i<=Nx; i++)
+            {
+                u0[j][i] = u1[j][i];
+                u1[j][i] = u[j][i];
+                u15[j][i] = u05[j][i];
+            }
+        }
+
+        //if (k%10==0)
+//        {
+//        IPrinter::printSeperatorLine();
+//        IPrinter::printMatrix(14,10,u);
+//        IPrinter::printSeperatorLine();
+//        break;
+//        }
     }
 
     da1.clear();

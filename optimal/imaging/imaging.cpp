@@ -36,6 +36,7 @@ void visualizeMatrixHeat(const DoubleMatrix& m, double min, double max, QPixmap 
     img = QPixmap(cols, rows);
     img.fill(Qt::transparent);
     QPainter painter(&img);
+    painter.setRenderHint(QPainter::Antialiasing, true);
     for (unsigned int j=0; j<rows; j++)
     {
         for (unsigned int i=0; i<cols; i++)

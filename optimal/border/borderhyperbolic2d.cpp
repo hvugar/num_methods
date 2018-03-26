@@ -7,27 +7,29 @@ void BorderHyperbolic2D::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
     BorderHyperbolic2D bp;
     bp.h1 = 0.01;
     bp.h2 = 0.01;
-    bp.ht = 0.00125;
+    bp.ht = 0.005;
     bp.N1 = 100;
     bp.N2 = 100;
-    bp.M  = 800;
+    bp.M  = 200;
     bp.a1 = 1.0;
     bp.a2 = 1.0;
+    bp.lambda = 1.0;
 
-    DoubleMatrix m1;
-    bp.calculate(m1, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, bp.a1, bp.a2);
-    IPrinter::printMatrix(14,10,m1);
-    IPrinter::printSeperatorLine();
+    //    DoubleMatrix m1;
+    //    bp.calculate(m1, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, bp.a1, bp.a2);
+    //    IPrinter::printMatrix(14,10,m1);
+    //    IPrinter::printSeperatorLine();
 
-    DoubleMatrix m2;
-    bp.calculateMVD(m2, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, bp.a1, bp.a2);
-    IPrinter::printMatrix(14,10,m2);
-    IPrinter::printSeperatorLine();
+    //    DoubleMatrix m2;
+    //    bp.calculateMVD(m2, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, bp.a1, bp.a2);
+    //    IPrinter::printMatrix(14,10,m2);
+    //    IPrinter::printSeperatorLine();
 
     DoubleMatrix m3;
-    bp.ht = 0.0025;
-    bp.M  = 400;
-    bp.calculateMVD2(m3, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, bp.a1, bp.a2);
+    bp.ht = 0.01;
+    bp.M  = 100;
+    //bp.calculateMVD2(m3, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, bp.a1, bp.a2);
+    bp.calculateMVD3(m3, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, bp.a1, bp.a2, bp.lambda);
     IPrinter::printMatrix(14,10,m3);
     IPrinter::printSeperatorLine();
 }
@@ -99,7 +101,7 @@ double BorderHyperbolic2D::f(unsigned int i, unsigned int j, unsigned int k) con
     double t  UNUSED_PARAM = k*ht;
 
 #ifdef SAMPLE1
-    return 2.0 - 2.0*(a1*a1) - 2.0*(a2*a2);
+    return 2.0 - 2.0*(a1*a1) - 2.0*(a2*a2);// + 2.0*t*lambda;
 #endif
 #ifdef SAMPLE2
     return exp(t) + (a1*a1)*(sin(x1) - 2.0) + (a2*a2)*cos(x2);// + qamma*exp(t);
@@ -155,10 +157,10 @@ void BorderHyperbolic2D::calculate(DoubleMatrix &u, double h1, double h2, double
                 }
             }
 
-//            IPrinter::printMatrix(14,10,u0);
-//            IPrinter::printSeperatorLine();
-//            IPrinter::printMatrix(14,10,u1);
-//            IPrinter::printSeperatorLine();
+            //            IPrinter::printMatrix(14,10,u0);
+            //            IPrinter::printSeperatorLine();
+            //            IPrinter::printMatrix(14,10,u1);
+            //            IPrinter::printSeperatorLine();
         }
         else
         {
@@ -244,8 +246,8 @@ void BorderHyperbolic2D::calculate(DoubleMatrix &u, double h1, double h2, double
                 }
             }
 
-//            IPrinter::printMatrix(14,10,u1);
-//            IPrinter::printSeperatorLine();
+            //            IPrinter::printMatrix(14,10,u1);
+            //            IPrinter::printSeperatorLine();
         }
     }
 
@@ -255,9 +257,302 @@ void BorderHyperbolic2D::calculate(DoubleMatrix &u, double h1, double h2, double
     dd.clear();
     rx.clear();
 
-//    da2.clear();
-//    db2.clear();
-//    dc2.clear();
-//    dd2.clear();
-//    rx2.clear();
+    //    da2.clear();
+    //    db2.clear();
+    //    dc2.clear();
+    //    dd2.clear();
+    //    rx2.clear();
 }
+
+
+void BorderHyperbolic2DN::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
+{
+    BorderHyperbolic2DN bpn;
+    bpn.hx = 0.01;
+    bpn.hy = 0.01;
+    bpn.ht = 0.005;
+    bpn.Nx = 100;
+    bpn.Ny = 100;
+    bpn.M  = 200;
+    bpn.a1 = 1.0;
+    bpn.a2 = 1.0;
+    bpn.lambda0 = 0.00;
+    bpn.lambda1 = 0.01;
+
+    DoubleMatrix m3;
+    bpn.ht = 0.001;
+    bpn.M  = 1000;
+    //bp.calculateMVD2(m3, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, bp.a1, bp.a2);
+    bpn.calculateMVD3(m3, bpn.hx, bpn.hy, bpn.ht, bpn.Nx, bpn.Ny, bpn.M, bpn.a1, bpn.a2);
+    IPrinter::printMatrix(14,10,m3);
+    IPrinter::printSeperatorLine();
+}
+
+void BorderHyperbolic2DN::calculateMVD3(DoubleMatrix &u, double hx, double hy, double ht, unsigned int Nx, unsigned Ny, unsigned int M, double a1, double a2) const
+{
+    u.resize(Ny+1, Nx+1);
+
+    DoubleMatrix u0(Ny+1, Nx+1);
+    DoubleMatrix u1(Ny+1, Nx+1);
+    DoubleMatrix u05(Ny+1, Nx+1);
+    DoubleMatrix u15(Ny+1, Nx+1);
+
+    DoubleVector da1(Nx+1);
+    DoubleVector db1(Nx+1);
+    DoubleVector dc1(Nx+1);
+    DoubleVector dd1(Nx+1);
+    DoubleVector rx1(Nx+1);
+
+    DoubleVector da2(Ny+1);
+    DoubleVector db2(Ny+1);
+    DoubleVector dc2(Ny+1);
+    DoubleVector dd2(Ny+1);
+    DoubleVector rx2(Ny+1);
+
+    double x1_a = -0.5*(a1*a1*ht*ht)/(hx*hx);
+    double x1_b = +1.0 + (a1*a1*ht*ht)/(hx*hx) + 1.5*lambda0*ht;
+    double x1_c = +0.5*(a2*a2*ht*ht)/(hy*hy);
+    double x1_d = +(a1*a1*ht*ht*lambda1)/(hx);
+
+    double x2_a = -0.5*(a2*a2*ht*ht)/(hy*hy);
+    double x2_b = +1.0 + (a2*a2*ht*ht)/(hy*hy) + 1.5*lambda0*ht;
+    double x2_c = +0.5*(a1*a1*ht*ht)/(hx*hx);
+    double x2_d = +(a2*a2*ht*ht*lambda1)/(hy);
+
+    double hh = 0.5*ht;
+
+    // initial conditions
+    for (unsigned int j=0; j<=Ny; j++)
+    {
+        for (unsigned int i=0; i<=Nx; i++)
+        {
+            u0[j][i] = initial1(i, j);
+        }
+    }
+
+    for (unsigned int j=0; j<=Ny; j++)
+    {
+        for (unsigned int i=0; i<=Nx; i++)
+        {
+            u1[j][i] = u0[j][i] + ht*initial2(i, j);
+            u15[j][i] = u0[j][i] + hh*initial2(i, j);
+
+            double sum = f(i,j,0);
+
+            if (i==0)       sum += a1*a1*(u0[j][i]-2.0*u0[j][i+1]+u0[j][i+2])/(hx*hx);
+            else if (i==Nx) sum += a1*a1*(u0[j][i-2]-2.0*u0[j][i-1]+u0[j][i])/(hx*hx);
+            else            sum += a1*a1*(u0[j][i-1]-2.0*u0[j][i]+u0[j][i+1])/(hx*hx);
+
+            if (j==0)       sum += a2*a2*(u0[j][i]-2.0*u0[j+1][i]+u0[j+2][i])/(hy*hy);
+            else if (j==Ny) sum += a2*a2*(u0[j-2][i]-2.0*u0[j-1][i]+u0[j][i])/(hy*hy);
+            else            sum += a2*a2*(u0[j-1][i]-2.0*u0[j][i]+u0[j+1][i])/(hy*hy);
+
+            sum -= lambda0*initial2(i, j);
+
+            u1[j][i] += 0.5*ht*ht*sum;
+
+            u15[j][i] += 0.5*hh*hh*sum;
+        }
+    }
+
+//    IPrinter::printMatrix(14,10,u0);
+//    IPrinter::printSeperatorLine();
+//    IPrinter::printMatrix(14,10,u1);
+//    IPrinter::printSeperatorLine();
+//    IPrinter::printMatrix(14,10,u15);
+//    IPrinter::printSeperatorLine();
+//    return;
+
+    for (unsigned int k=2; k<=M; k++)
+    {
+        // Approximation to x direction
+
+        double t = k*ht-0.5*ht;
+        //double t2 = t*t;
+
+        for (unsigned int j=0; j<=Ny; j++)
+        {
+            for (unsigned int i=0; i<=Nx; i++)
+            {
+                if (j==0)        dd1[i] = x1_c*(u1[0][i]    - 2.0*u1[1][i]    + u1[2][i]);
+                if (j>0 && j<Ny) dd1[i] = x1_c*(u1[j-1][i]  - 2.0*u1[j][i]    + u1[j+1][i]);
+                if (j==Ny)       dd1[i] = x1_c*(u1[Ny-2][i] - 2.0*u1[Ny-1][i] + u1[Ny][i]);
+
+                if (i==0)
+                {
+                    da1[0] = 0.0;
+                    db1[0] = x1_b - x1_d;
+                    dc1[0] = 2.0*x1_a;
+                    dd1[0] += 0.5*(u1[j][i] - u0[j][i]) + u1[j][i]
+                            + 0.5*lambda0*ht*(4.0*u1[j][i]-u15[j][i])
+                            + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda0)
+                            - x1_d*mu(k, t)
+                            + (a1*a1*ht*ht*h(0, j, k, t, 1))/hx;
+                }
+                else if (i==Nx)
+                {
+                    da1[Nx] = 2.0*x1_a;
+                    db1[Nx] = x1_b - x1_d;
+                    dc1[Nx] = 0.0;
+                    dd1[Nx] += 0.5*(u1[j][i] - u0[j][i]) + u1[j][i]
+                            + 0.5*lambda0*ht*(4.0*u1[j][i]-u15[j][i])
+                            + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda0)
+                            - x1_d*mu(k, t)
+                            + (a1*a1*ht*ht*h(Nx, j, k, t, 2))/hx;
+                }
+                else
+                {
+                    da1[i] = x1_a;
+                    db1[i] = x1_b;
+                    dc1[i] = x1_a;
+                    dd1[i] += 0.5*(u1[j][i] - u0[j][i]) + u1[j][i]
+                            + 0.5*lambda0*ht*(4.0*u1[j][i]-u15[j][i])
+                            + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda0);
+                }
+            }
+
+            tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.length());
+
+            for (unsigned int i=0; i<=Nx; i++)
+            {
+                u05[j][i] = rx1[i];
+            }
+        }
+
+        //IPrinter::printSeperatorLine();
+        //IPrinter::printMatrix(14,10,u05);
+        //IPrinter::printSeperatorLine();
+        //return;
+
+        // Approximation to y direction
+
+        t = k*ht;
+        //t2 = t*t;
+
+        for (unsigned int i=0; i<=Nx; i++)
+        {
+            for (unsigned int j=0; j<=Ny; j++)
+            {
+                if (i==0)        dd2[j] = x2_c*(u05[j][0]    - 2.0*u05[j][1]    + u05[j][2]);
+                if (i>0 && i<Nx) dd2[j] = x2_c*(u05[j][i-1]  - 2.0*u05[j][i]    + u05[j][i+1]);
+                if (i==Nx)       dd2[j] = x2_c*(u05[j][Nx-2] - 2.0*u05[j][Nx-1] + u05[j][Nx]);
+
+                if (j==0)
+                {
+                    da2[0] = 0.0;
+                    db2[0] = x2_b - x2_d;
+                    dc2[0] = 2.0*x2_a;
+                    dd2[0] += 0.5*(u1[j][i] - u0[j][i]) + u05[j][i]
+                            + 0.5*lambda0*ht*(4.0*u05[j][i]-u1[j][i])
+                            + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda0)
+                            - x2_d*mu(k, t)
+                            + (a2*a2*ht*ht*h(i, 0, k, t, 3))/hy;
+                }
+                else if (j==Ny)
+                {
+                    da2[Ny] = 2.0*x2_a;
+                    db2[Ny] = x2_b - x2_d;
+                    dc2[Ny] = 0.0;
+                    dd2[Ny] += 0.5*(u1[j][i] - u0[j][i]) + u05[j][i]
+                            + 0.5*lambda0*ht*(4.0*u05[j][i]-u1[j][i])
+                            + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda0)
+                            - x2_d*mu(k, t)
+                            + (a2*a2*ht*ht*h(i, Ny, k, t, 4))/hy;
+                }
+                else
+                {
+                    da2[j] = x2_a;
+                    db2[j] = x2_b;
+                    dc2[j] = x2_a;
+                    dd2[j] += 0.5*(u1[j][i] - u0[j][i]) + u05[j][i]
+                            + 0.5*lambda0*ht*(4.0*u05[j][i]-u1[j][i])
+                            + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda0);
+                }
+            }
+
+            tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
+
+            for (unsigned int j=0; j<=Ny; j++)
+            {
+                u[j][i] = rx2[j];
+            }
+        }
+
+        //IPrinter::printSeperatorLine();
+        //IPrinter::printMatrix(14,10,u);
+        //IPrinter::printSeperatorLine();
+        //break;
+
+        for (unsigned int j=0; j<=Ny; j++)
+        {
+            for (unsigned int i=0; i<=Nx; i++)
+            {
+                u0[j][i] = u1[j][i];
+                u1[j][i] = u[j][i];
+                u15[j][i] = u05[j][i];
+            }
+        }
+    }
+
+    da1.clear();
+    db1.clear();
+    dc1.clear();
+    dd1.clear();
+    rx1.clear();
+
+    da2.clear();
+    db2.clear();
+    dc2.clear();
+    dd2.clear();
+    rx2.clear();
+}
+
+double BorderHyperbolic2DN::u(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PARAM, unsigned int k UNUSED_PARAM) const
+{
+    double x UNUSED_PARAM = i*hx;
+    double y UNUSED_PARAM = j*hy;
+    double t  UNUSED_PARAM = k*ht;
+    return x*x + y*y + t*t;
+}
+
+double BorderHyperbolic2DN::initial1(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PARAM) const
+{
+    return u(i, j, 0);
+}
+
+double BorderHyperbolic2DN::initial2(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PARAM) const
+{
+    return 0.0;
+}
+
+double BorderHyperbolic2DN::boundary(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PARAM, unsigned int k UNUSED_PARAM) const
+{
+    return NAN;
+}
+
+double BorderHyperbolic2DN::f(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PARAM, unsigned int k UNUSED_PARAM) const
+{
+    //double x1 UNUSED_PARAM = i*h1;
+    //double x2 UNUSED_PARAM = j*h2;
+    //double t  UNUSED_PARAM = k*ht;
+    return 2.0 - 2.0*(a1*a1) - 2.0*(a2*a2);// + 2.0*t*lambda;
+}
+
+double BorderHyperbolic2DN::mu(unsigned int k, double t) const
+{
+    return 5.0;
+}
+
+double BorderHyperbolic2DN::h(unsigned int i, unsigned int j, unsigned int k, double t, unsigned int n) const
+{
+    double x = i*hx;
+    double y = j*hy;
+
+    if (n==1) return 0.0 - lambda1*(x*x+y*y+t*t-mu(k,t));
+    if (n==2) return 2.0 - lambda1*(x*x+y*y+t*t-mu(k,t));
+    if (n==3) return 0.0 - lambda1*(x*x+y*y+t*t-mu(k,t));;
+    if (n==4) return 2.0 - lambda1*(x*x+y*y+t*t-mu(k,t));;
+    return NAN;
+}
+
+

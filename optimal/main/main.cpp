@@ -85,14 +85,13 @@
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-   // QGuiApplication app(argc, argv);
-
-    BorderHyperbolic2D::Main(argc, argv);
-
-   // srand(time(NULL));
+    QGuiApplication app(argc, argv);
+    //BorderHyperbolic2D::Main(argc, argv);
+    //BorderHyperbolic2DN::Main(argc, argv);
+    //srand(time(NULL));
 
     //Problem2Article::Main(argc, argv);
-    //IProblem2H2D::Main(argc, argv);
+    IProblem2H2D::Main(argc, argv);
 
     //LinearEquation::func1(a, b, c, d, e, x, N);
 
@@ -100,7 +99,6 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //IPrinter::printSeperatorLine();
 
     //func2(a, b, c, d, e, x, N);
-
 
     //MatrixTest::Main(argc, argv);
 

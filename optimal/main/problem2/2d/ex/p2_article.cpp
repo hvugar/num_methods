@@ -111,14 +111,14 @@ void Problem2Article::Table1_Y1()
         puts("Calculating numerical gradients.... hx=0.01");
         IGradient::Gradient(&jfunc, 0.01, pv, ng1, 0*prm.Lc*prm.Lo,          1*prm.Lc*prm.Lo-1);
         IGradient::Gradient(&jfunc, 0.01, pv, ng1, 1*prm.Lc*prm.Lo,          2*prm.Lc*prm.Lo-1);
-        IGradient::Gradient(&jfunc, 0.01, pv, ng1, 2*prm.Lc*prm.Lo+0*Lc,     2*prm.Lc*prm.Lo+2*prm.Lc-1);
+        IGradient::Gradient(&jfunc, 0.01, pv, ng1, 2*prm.Lc*prm.Lo+0*prm.Lc, 2*prm.Lc*prm.Lo+2*prm.Lc-1);
         IGradient::Gradient(&jfunc, 0.01, pv, ng1, 2*prm.Lc*prm.Lo+2*prm.Lc, 2*prm.Lc*prm.Lo+2*prm.Lc+2*prm.Lo-1);
         puts("Numerical gradients are calculated.");
 
         puts("Calculating numerical gradients.... hx=0.001");
         IGradient::Gradient(&jfunc, 0.001, pv, ng2, 0*prm.Lc*prm.Lo,          1*prm.Lc*prm.Lo-1);
         IGradient::Gradient(&jfunc, 0.001, pv, ng2, 1*prm.Lc*prm.Lo,          2*prm.Lc*prm.Lo-1);
-        IGradient::Gradient(&jfunc, 0.001, pv, ng2, 2*prm.Lc*prm.Lo+0*Lc,     2*prm.Lc*prm.Lo+2*prm.Lc-1);
+        IGradient::Gradient(&jfunc, 0.001, pv, ng2, 2*prm.Lc*prm.Lo+0*prm.Lc, 2*prm.Lc*prm.Lo+2*prm.Lc-1);
         IGradient::Gradient(&jfunc, 0.001, pv, ng2, 2*prm.Lc*prm.Lo+2*prm.Lc, 2*prm.Lc*prm.Lo+2*prm.Lc+2*prm.Lo-1);
         puts("Numerical gradients are calculated.");
 

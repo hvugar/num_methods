@@ -11,7 +11,7 @@
 namespace IProblem2H2D_NS
 {
 
-class IFunctional : public RnFunction, public IGradient, public IProjection, public IPrinter
+class IFunctional : public RnFunction, public IGradient//, public IProjection, public IPrinter
 {
 public:
     IFunctional();
@@ -24,7 +24,7 @@ public:
     //virtual double g0i(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2D> &info) const;
     //virtual double mu(double x, double y) const;
 
-    //virtual void gradient(const DoubleVector &prms, DoubleVector &g) const;
+    virtual void gradient(const DoubleVector &prms, DoubleVector &g) const;
 
     //virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const;
     //virtual void project(DoubleVector &x, unsigned int index);
@@ -40,13 +40,13 @@ public:
     //void setParameter(const Parameter &parameter);
     //void setParameter0(const Parameter &parameter0);
 
-    //void toVector(const Parameter &prm, DoubleVector &x) const;
-    //void fromVector(const DoubleVector &x, Parameter &prm);
+    void toVector(const IProblem2H2D::Parameter &prm, DoubleVector &x) const;
+    void fromVector(const DoubleVector &x, IProblem2H2D::Parameter &prm) const;
 
 private:
     //double sgn(double x) const;
 
-protected:
+public:
     IProblem2H2D::Parameter mParameter;
     IProblem2H2D::Parameter mParameter0;
 
@@ -60,12 +60,9 @@ protected:
     double regEpsilon;
     //double r;
 public:
-    IProblem2HForward2D *forward;
-    IProblem2HBackward2D *backward;
-
-    DoubleMatrix U0;
+    DoubleMatrix V0;
     double alpha0;
-    DoubleMatrix U1;
+    DoubleMatrix V1;
     double alpha1;
 
     bool optimizeK;
