@@ -126,8 +126,6 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
             u0[m][n] = initial1(sn);
         }
     }
-    //    IPrinter::printSeperatorLine();
-    //    IPrinter::printMatrix(u0);
     if (use == true) add2Info(u0, info, 0);
     layerInfo(u0, 0);
 
@@ -165,7 +163,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
     qPointNodes.clear();
 
     if (use == true) add2Info(u1, info, 1);
-    layerInfo(u1, 2);
+    layerInfo(u1, 1);
     //------------------------------------- initial conditions -------------------------------------//
 
     double *a1X = (double *) malloc(sizeof(double)*(N+1));
@@ -182,7 +180,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
 
     //TimeNodePDE tn;
 
-    for (unsigned int l=2; l<=L; l+=2)
+    for (unsigned int l=4; l<=L; l+=2)
     {
         //------------------------------------- approximatin to x direction conditions -------------------------------------//
         //tn.i = l; tn.t = tn.i*ht;
@@ -425,7 +423,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
         //        printf("%f %f\n", min, max);
 
         if (use == true) add2Info(u, info, l/2);
-        layerInfo(u, l);
+        layerInfo(u, l/2);
     }
 
     free(x1X);
@@ -569,12 +567,8 @@ void IProblem2HForward2D::calculateMVD1(DoubleMatrix &u, DoubleMatrix &ut) const
             u0[m][n] = initial1(sn);
         }
     }
-    //    QPixmap px0;
-    //    visualizeMatrixHeat(u, u.min(), u.max(), px0);
-    //    char buffer0[12] = {0};
-    //    int c0 = sprintf(buffer0, "d:/images/%6d.png", 0);
-    //    buffer0[c0] = 0;
-    //    px0.save(buffer0, "png", 0);
+    //if (use == true) add2Info(u0, info, 0);
+    layerInfo(u0, 0);
 
     std::vector<IProblem2H2D::ExtendedSpacePointNode> qPointNodes;
     for (unsigned int s=0; s<mParameter.Ns; s++) IProblem2H2D::distributeDelta(mParameter.theta[s], qPointNodes, s, dimX, dimY);
@@ -614,13 +608,8 @@ void IProblem2HForward2D::calculateMVD1(DoubleMatrix &u, DoubleMatrix &ut) const
     }
     qPointNodes.clear();
 
-    //    QPixmap px1;
-    //    visualizeMatrixHeat(u, u.min(), u.max(), px1);
-    //    char buffer1[12] = {0};
-    //    int c1 = sprintf(buffer1, "d:/images/%6d.png", 1);
-    //    buffer1[c1] = 0;
-    //    px1.save(buffer1, "png");
-
+    //if (use == true) add2Info(u1, info, 1);
+    layerInfo(u1, 1);
     //------------------------------------- initial conditions -------------------------------------//
 
     double *a1X = (double *) malloc(sizeof(double)*(N+1));
@@ -878,16 +867,12 @@ void IProblem2HForward2D::calculateMVD1(DoubleMatrix &u, DoubleMatrix &ut) const
         //        printf("%d %f\n", l, l*ht);
         //        IPrinter::printMatrix(12, 6, u1);
 
-        if (min > u.min()) min = u.min();
-        if (max < u.max()) max = u.max();
-        printf("%f %f\n", min, max);
+//        if (min > u.min()) min = u.min();
+//        if (max < u.max()) max = u.max();
+//        printf("%f %f\n", min, max);
 
-        //        QPixmap px;
-        //        visualizeMatrixHeat(u, -10.581419, 2.059072, px);
-        //        char buffer[12] = {0};
-        //        int c = sprintf(buffer, "d:/images/%6d.png", l);
-        //        buffer[c] = 0;
-        //        px.save(buffer, "png");
+        //if (use == true) add2Info(u1, info, l);
+        layerInfo(u, l);
     }
 
     free(x1X);
@@ -927,12 +912,12 @@ void IProblem2HForward2D::layerInfo(const DoubleMatrix &u, unsigned int layerNum
     //    IPrinter::printMatrix(12, 6, u);
 
     {
-//        QPixmap px;
-//        visualizeMatrixHeat(u, u.min(), u.max(), px);
-//        char buffer[12] = {0};
-//        int c = sprintf(buffer, "d:/images/%6d.png", layerNumber/2);
-//        buffer[c] = 0;
-//        px.save(buffer, "png", 0);
+        QPixmap px;
+        visualizeMatrixHeat(u, u.min(), u.max(), px);
+        char buffer[12] = {0};
+        int c = sprintf(buffer, "d:/images1/%6d.png", layerNumber);
+        buffer[c] = 0;
+        px.save(buffer, "png", 0);
     }
 }
 

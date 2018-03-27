@@ -6,8 +6,8 @@
 
 void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    //Forward();
-    //return;
+    Forward();
+    return;
 
     IProblem2H2D_NS::IFunctional ifunc;
     ifunc.optimizeK = true;
@@ -155,7 +155,7 @@ void IProblem2H2D::Forward()
     IProblem2HForward2D p;
     p.addSpaceDimension(Dimension(0.01, 0, 100));
     p.addSpaceDimension(Dimension(0.01, 0, 100));
-    p.setTimeDimension(Dimension(0.001, 0, 2000));
+    p.setTimeDimension(Dimension(0.001, 0, 1000));
 
     IProblem2H2D::Parameter prm;
     prm.Ns = 2;
@@ -188,7 +188,8 @@ void IProblem2H2D::Forward()
     DoubleMatrix u;
     DoubleMatrix ut;
     std::vector<ExtendedSpaceNode2DH> info;
-    p.calculateMVD(u, ut, info, false);
+    //p.calculateMVD(u, ut, info, false);
+    p.calculateMVD1(u, ut);
 }
 
 void IProblem2H2D::distributeDelta(const SpacePoint &pt, std::vector<IProblem2H2D::ExtendedSpacePointNode> &nodes, unsigned int id,
