@@ -16,6 +16,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
     double ht = time.step();
 
     double lambda = mParameter.lambda;
+    //double lambda1 = mParameter.lambda1;
     double a = mParameter.a;
 
     DoubleMatrix u0(M+1, N+1);
@@ -204,14 +205,14 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
                     a1X[0] = 0.0;
                     b1X[0] = +1.0 + 2.0*((a*a*ht*ht)/(hx*hx)) + 3.0*(lambda*ht)/2.0;
                     c1X[0] = -2.0*(a*a*ht*ht)/(hx*hx);
-                    d1X[0] += 0.0;
+                    //d1X[0] += 0.0;
                 }
                 else if(n == N)
                 {
                     a1X[N] = -2.0*(a*a*ht*ht)/(hx*hx);
                     b1X[N] = +1.0 + 2.0*((a*a*ht*ht)/(hx*hx)) + 3.0*(lambda*ht)/2.0;
                     c1X[N] = 0.0;
-                    d1X[N] += 0.0;
+                    //d1X[N] += 0.0;
                 }
                 else
                 {
@@ -418,10 +419,6 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
             }
         }
 
-        //        if (min > u.min()) min = u.min();
-        //        if (max < u.max()) max = u.max();
-        //        printf("%f %f\n", min, max);
-
         if (use == true) add2Info(u, info, l/2);
         layerInfo(u, l/2);
     }
@@ -482,8 +479,8 @@ void IProblem2HForward2D::calculateMVD1(DoubleMatrix &u, DoubleMatrix &ut) const
     u.clear();
     u.resize(M+1, N+1);
 
-    double min = +1000.0;
-    double max = -1000.0;
+//    double min = +1000.0;
+//    double max = -1000.0;
 
     //--------------------------------------------------------------------------------------------//
     std::vector<IProblem2H2D::ExtendedSpacePointNode> obsPointNodes;
@@ -556,6 +553,21 @@ void IProblem2HForward2D::calculateMVD1(DoubleMatrix &u, DoubleMatrix &ut) const
         if (found1 == false && found2 == false) cols0.push_back(nx);
     }
     //--------------------------------------------------------------------------------------------//
+
+    //-------------------------------------------- info --------------------------------------------//
+    if (use == true)
+    {
+        info.resize(mParameter.No);
+        for (unsigned int j=0; j<mParameter.No; j++)
+        {
+            ExtendedSpaceNode2DH &e = info[j];
+            e.setSpaceNode(mParameter.xi[j]);
+            e.id = j;
+            e.extendWeights(dimX, dimY);
+            e.extendLayers(L/2+1);
+        }
+    }
+    //-------------------------------------------- info --------------------------------------------//
 
     //------------------------------------- initial conditions -------------------------------------//
     for (unsigned int m=0; m<=M; m++)
@@ -852,6 +864,7 @@ void IProblem2HForward2D::calculateMVD1(DoubleMatrix &u, DoubleMatrix &ut) const
             ////////////////////////////////////
         }
         //--------------------------------------------------------------------------//
+        //------------------------------------- approximatin to y direction conditions -------------------------------------//
 
         for (unsigned int m=0; m<=M; m++)
         {
@@ -862,14 +875,6 @@ void IProblem2HForward2D::calculateMVD1(DoubleMatrix &u, DoubleMatrix &ut) const
                 u15[m][n] = u05[m][n];
             }
         }
-
-        //        IPrinter::printSeperatorLine();
-        //        printf("%d %f\n", l, l*ht);
-        //        IPrinter::printMatrix(12, 6, u1);
-
-//        if (min > u.min()) min = u.min();
-//        if (max < u.max()) max = u.max();
-//        printf("%f %f\n", min, max);
 
         //if (use == true) add2Info(u1, info, l);
         layerInfo(u, l);
