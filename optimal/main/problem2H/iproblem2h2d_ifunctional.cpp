@@ -1,4 +1,6 @@
 #include "iproblem2h2d_ifunctional.h"
+#include "iproblem2hforward2d.h"
+#include "iproblem2hbackward2d.h"
 
 using namespace IProblem2H2D_NS;
 
@@ -29,7 +31,7 @@ double IFunctional::fx(const DoubleVector &pv) const
     DoubleMatrix u;
     DoubleMatrix ut;
     vector<ExtendedSpaceNode2DH> info;
-    forward.calculateMVD(u, ut, info, false);
+    forward.calculateMVD1(u, ut, info, false);
 
     double intgrl = integral(u, ut);
     //u.clear();
@@ -152,18 +154,19 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
     backward.addSpaceDimension(mSpaceDimensionX);
     backward.addSpaceDimension(mSpaceDimensionY);
     backward.mParameter = parameter;
+    backward.ifunc = const_cast<IProblem2H2D_NS::IFunctional*>(this);
 
     DoubleMatrix u;
     DoubleMatrix ut;
     DoubleMatrix p;
 
     vector<ExtendedSpaceNode2DH> u_info;
-    forward.calculateMVD(u, ut, u_info, true);
+    forward.calculateMVD1(u, ut, u_info, true);
 
-    backward.UT0 = u;
-    backward.UT1 = ut;
+    backward.UT = u;
+    backward.UTt = ut;
     vector<ExtendedSpaceNode2DH> p_info;
-    backward.calculateMVD(p, p_info, true);
+    backward.calculateMVD1(p, p_info, true);
 
     g.clear();
     g.resize(pv.length(), 0.0);

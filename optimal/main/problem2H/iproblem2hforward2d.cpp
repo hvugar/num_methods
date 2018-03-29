@@ -452,7 +452,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
     u0.clear();
 }
 
-void IProblem2HForward2D::calculateMVD1(DoubleMatrix &u, DoubleMatrix &ut) const
+void IProblem2HForward2D::calculateMVD1(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const
 {
     Dimension dimX = spaceDimension(Dimension::DimensionX);
     Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -478,6 +478,8 @@ void IProblem2HForward2D::calculateMVD1(DoubleMatrix &u, DoubleMatrix &ut) const
 
     u.clear();
     u.resize(M+1, N+1);
+    ut.clear();
+    ut.resize(M+1, N+1);
 
 //    double min = +1000.0;
 //    double max = -1000.0;
@@ -564,7 +566,7 @@ void IProblem2HForward2D::calculateMVD1(DoubleMatrix &u, DoubleMatrix &ut) const
             e.setSpaceNode(mParameter.xi[j]);
             e.id = j;
             e.extendWeights(dimX, dimY);
-            e.extendLayers(L/2+1);
+            e.extendLayers(L+1);
         }
     }
     //-------------------------------------------- info --------------------------------------------//
@@ -579,7 +581,7 @@ void IProblem2HForward2D::calculateMVD1(DoubleMatrix &u, DoubleMatrix &ut) const
             u0[m][n] = initial1(sn);
         }
     }
-    //if (use == true) add2Info(u0, info, 0);
+    if (use == true) add2Info(u0, info, 0);
     layerInfo(u0, 0);
 
     std::vector<IProblem2H2D::ExtendedSpacePointNode> qPointNodes;
@@ -620,7 +622,7 @@ void IProblem2HForward2D::calculateMVD1(DoubleMatrix &u, DoubleMatrix &ut) const
     }
     qPointNodes.clear();
 
-    //if (use == true) add2Info(u1, info, 1);
+    if (use == true) add2Info(u1, info, 1);
     layerInfo(u1, 1);
     //------------------------------------- initial conditions -------------------------------------//
 
@@ -876,8 +878,19 @@ void IProblem2HForward2D::calculateMVD1(DoubleMatrix &u, DoubleMatrix &ut) const
             }
         }
 
-        //if (use == true) add2Info(u1, info, l);
+        if (use == true) add2Info(u, info, l);
         layerInfo(u, l);
+
+        if (l==L)
+        {
+            for (unsigned int m=0; m<=M; m++)
+            {
+                for (unsigned int n=0; n<=N; n++)
+                {
+                    ut[m][n] = (u[m][n]-u0[m][n])/(2.0*ht);
+                }
+            }
+        }
     }
 
     free(x1X);
@@ -916,14 +929,14 @@ void IProblem2HForward2D::layerInfo(const DoubleMatrix &u, unsigned int layerNum
     //    printf("%d %f\n", l, l*ht);
     //    IPrinter::printMatrix(12, 6, u);
 
-    {
-        QPixmap px;
-        visualizeMatrixHeat(u, u.min(), u.max(), px);
-        char buffer[12] = {0};
-        int c = sprintf(buffer, "d:/images1/%6d.png", layerNumber);
-        buffer[c] = 0;
-        px.save(buffer, "png", 0);
-    }
+//    {
+//        QPixmap px;
+//        visualizeMatrixHeat(u, u.min(), u.max(), px);
+//        char buffer[12] = {0};
+//        int c = sprintf(buffer, "d:/images1/%6d.png", layerNumber);
+//        buffer[c] = 0;
+//        px.save(buffer, "png", 0);
+//    }
 }
 
 double IProblem2HForward2D::initial1(const SpaceNodePDE &) const

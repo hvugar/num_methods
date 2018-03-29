@@ -6,8 +6,8 @@
 
 void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    Forward();
-    return;
+//    Forward();
+//    return;
 
     IProblem2H2D_NS::IFunctional ifunc;
     ifunc.optimizeK = true;
@@ -81,12 +81,12 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 2*prm.Nc*prm.No+2*prm.Nc, 2*prm.Nc*prm.No+2*prm.Nc+2*prm.No-1);
     puts("Numerical gradients are calculated.");
 
-//    puts("Calculating numerical gradients.... hx=0.001");
-//    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 0*prm.Nc*prm.No,          1*prm.Nc*prm.No-1);
-//    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 1*prm.Nc*prm.No,          2*prm.Nc*prm.No-1);
-//    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*prm.Nc*prm.No+0*prm.Nc, 2*prm.Nc*prm.No+2*prm.Nc-1);
-//    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*prm.Nc*prm.No+2*prm.Nc, 2*prm.Nc*prm.No+2*prm.Nc+2*prm.No-1);
-//    puts("Numerical gradients are calculated.");
+    //puts("Calculating numerical gradients.... hx=0.001");
+    //IGradient::Gradient(&ifunc, 0.001, pv, ng2, 0*prm.Nc*prm.No,          1*prm.Nc*prm.No-1);
+    //IGradient::Gradient(&ifunc, 0.001, pv, ng2, 1*prm.Nc*prm.No,          2*prm.Nc*prm.No-1);
+    //IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*prm.Nc*prm.No+0*prm.Nc, 2*prm.Nc*prm.No+2*prm.Nc-1);
+    //IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*prm.Nc*prm.No+2*prm.Nc, 2*prm.Nc*prm.No+2*prm.Nc+2*prm.No-1);
+    //puts("Numerical gradients are calculated.");
 
     //k------------------------------------------------------//
     DoubleVector pk0 = pv.mid(0, prm.Nc*prm.No-1);
@@ -189,7 +189,7 @@ void IProblem2H2D::Forward()
     DoubleMatrix ut;
     std::vector<ExtendedSpaceNode2DH> info;
     //p.calculateMVD(u, ut, info, false);
-    p.calculateMVD1(u, ut);
+    p.calculateMVD1(u, ut, info, false);
 }
 
 void IProblem2H2D::distributeDelta(const SpacePoint &pt, std::vector<IProblem2H2D::ExtendedSpacePointNode> &nodes, unsigned int id,

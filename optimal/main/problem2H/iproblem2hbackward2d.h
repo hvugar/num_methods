@@ -2,18 +2,21 @@
 #define IPROBLEM2HBACKWARD2D_H
 
 #include "iproblem2h2d.h"
+#include "iproblem2h2d_ifunctional.h"
 
 class IProblem2HBackward2D : public IHyperbolicIBVP
 {
 public:
     void calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode2DH> &info, bool use) const;
+    void calculateMVD1(DoubleMatrix &p, vector<ExtendedSpaceNode2DH> &info, bool use) const;
     virtual void layerInfo(const DoubleMatrix &p, unsigned int layerNumber) const;
 
     void add2Info(const DoubleMatrix &p, vector<ExtendedSpaceNode2DH> &info, unsigned int ln) const;
 
     IProblem2H2D::Parameter mParameter;
-    DoubleMatrix UT0;
-    DoubleMatrix UT1;
+    IProblem2H2D_NS::IFunctional *ifunc;
+    DoubleMatrix UT;
+    DoubleMatrix UTt;
 protected:
     virtual double initial1(const SpaceNodePDE &sn) const;
     virtual double initial2(const SpaceNodePDE &sn) const;

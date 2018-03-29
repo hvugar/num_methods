@@ -5,8 +5,7 @@
 #include <gradient.h>
 #include <projection.h>
 #include <printer.h>
-#include "iproblem2hforward2d.h"
-#include "iproblem2hbackward2d.h"
+#include "iproblem2h2d.h"
 
 namespace IProblem2H2D_NS
 {
