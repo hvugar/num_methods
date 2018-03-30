@@ -17,7 +17,8 @@ public:
 
     virtual double fx(const DoubleVector &prms) const;
     virtual double integral(const DoubleMatrix &u, const DoubleMatrix ut) const;
-    virtual double norm() const;
+    virtual double norm(const IProblem2H2D::EquationParameter& eprm,
+                        const IProblem2H2D::OptimizeParameter &oprm, const IProblem2H2D::OptimizeParameter &oprm0) const;
     //virtual double penalty(vector<ExtendedSpaceNode2D> &info) const;
     //virtual double gpi(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2D> &info) const;
     //virtual double g0i(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2D> &info) const;
@@ -46,7 +47,7 @@ private:
     //double sgn(double x) const;
 
 public:
-    IProblem2H2D::OptimizeParameter mOptParameter;
+    //IProblem2H2D::OptimizeParameter mOptParameter;
     IProblem2H2D::OptimizeParameter mOptParameter0;
     IProblem2H2D::EquationParameter mEquParameter;
 

@@ -294,7 +294,7 @@ void IProblem2HBackward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNod
         }
         else
         {
-            /////////////////////////////////////
+            throw exception();
         }
         //--------------------------------------------------------------------------//
 
@@ -402,7 +402,7 @@ void IProblem2HBackward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNod
         }
         else
         {
-            ////////////////////////////////////
+            throw exception();
         }
         //--------------------------------------------------------------------------//
         //------------------------------------- approximatin to y direction conditions -------------------------------------//

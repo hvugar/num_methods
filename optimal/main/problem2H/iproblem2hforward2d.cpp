@@ -306,7 +306,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
         }
         else
         {
-            /////////////////////////////////////
+            throw exception();
         }
         //--------------------------------------------------------------------------//
 
@@ -419,7 +419,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
         }
         else
         {
-            ////////////////////////////////////
+            throw exception();
         }
         //--------------------------------------------------------------------------//
         //------------------------------------- approximatin to y direction conditions -------------------------------------//

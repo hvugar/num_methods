@@ -11,19 +11,10 @@ class IProblem2H2D
 public:
     struct OptimizeParameter
     {
-//        unsigned int No;
-//        unsigned int Nc;
-//        unsigned int Ns;
         DoubleMatrix k;
         DoubleMatrix z;
         std::vector<SpacePoint> xi;
         std::vector<SpacePoint> eta;
-//        std::vector<SpacePoint> theta;
-//        DoubleVector q;
-
-//        double a;
-//        double lambda;
-//        double lambda1;
     };
 
     struct EquationParameter

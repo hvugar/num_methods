@@ -11,22 +11,15 @@ IFunctional::IFunctional()
 
 double IFunctional::fx(const DoubleVector &pv) const
 {
-    IProblem2H2D::Parameter parameter;
-    parameter.a = mParameter.a;
-    parameter.lambda = mParameter.lambda;
-    parameter.lambda1 = mParameter.lambda1;
-    parameter.Nc = mParameter.Nc;
-    parameter.No = mParameter.No;
-    parameter.Ns = mParameter.Ns;
-    parameter.q = mParameter.q;
-    parameter.theta = mParameter.theta;
-    fromVector(pv, parameter);
+    IProblem2H2D::OptimizeParameter o_prm;
+    fromVector(pv, o_prm);
 
     IProblem2HForward2D forward;
     forward.setTimeDimension(mTimeDimension);
     forward.addSpaceDimension(mSpaceDimensionX);
     forward.addSpaceDimension(mSpaceDimensionY);
-    forward.mParameter = parameter;
+    forward.mEquParameter = mEquParameter;
+    forward.mOptParameter = o_prm;
 
     DoubleMatrix u;
     DoubleMatrix ut;
@@ -34,9 +27,9 @@ double IFunctional::fx(const DoubleVector &pv) const
     forward.calculateMVD(u, ut, info, false);
 
     double intgrl = integral(u, ut);
-    //u.clear();
+    u.clear();
 
-    return intgrl;// + regEpsilon*norm();// + r*penalty(info);
+    return intgrl + regEpsilon*norm(mEquParameter, o_prm, mOptParameter0);// + r*penalty(info);
 }
 
 double IFunctional::integral(const DoubleMatrix &u, const DoubleMatrix ut) const
@@ -105,22 +98,23 @@ double IFunctional::integral(const DoubleMatrix &u, const DoubleMatrix ut) const
     return alpha0*sum0 + alpha1*sum1;
 }
 
-double IFunctional::norm() const
+double IFunctional::norm(const IProblem2H2D::EquationParameter& e_prm,
+                         const IProblem2H2D::OptimizeParameter &o_prm, const IProblem2H2D::OptimizeParameter &o_prm0) const
 {
     double norm = 0.0;
 
-    for (unsigned int i=0; i<mParameter.Nc; i++)
+    for (unsigned int i=0; i<e_prm.Nc; i++)
     {
-        norm += (mParameter.eta[i].x - mParameter0.eta[i].x)*(mParameter.eta[i].x - mParameter0.eta[i].x);
-        norm += (mParameter.eta[i].y - mParameter0.eta[i].y)*(mParameter.eta[i].y - mParameter0.eta[i].y);
+        norm += (o_prm.eta[i].x - o_prm0.eta[i].x)*(o_prm.eta[i].x - o_prm0.eta[i].x);
+        norm += (o_prm.eta[i].y - o_prm0.eta[i].y)*(o_prm.eta[i].y - o_prm0.eta[i].y);
 
-        for (unsigned int j=0; j<mParameter.No; j++)
+        for (unsigned int j=0; j<e_prm.No; j++)
         {
-            norm += (mParameter.k[i][j] - mParameter0.k[i][j])*(mParameter.k[i][j] - mParameter0.k[i][j]);
-            norm += (mParameter.z[i][j] - mParameter0.z[i][j])*(mParameter.z[i][j] - mParameter0.z[i][j]);
+            norm += (o_prm.k[i][j] - o_prm0.k[i][j])*(o_prm.k[i][j] - o_prm0.k[i][j]);
+            norm += (o_prm.z[i][j] - o_prm0.z[i][j])*(o_prm.z[i][j] - o_prm0.z[i][j]);
 
-            norm += (mParameter.xi[j].x - mParameter0.xi[j].x)*(mParameter.xi[j].x - mParameter0.xi[j].x);
-            norm += (mParameter.xi[j].y - mParameter0.xi[j].y)*(mParameter.xi[j].y - mParameter0.xi[j].y);
+            norm += (o_prm.xi[j].x - o_prm0.xi[j].x)*(o_prm.xi[j].x - o_prm0.xi[j].x);
+            norm += (o_prm.xi[j].y - o_prm0.xi[j].y)*(o_prm.xi[j].y - o_prm0.xi[j].y);
         }
     }
 
@@ -132,28 +126,22 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
     unsigned int L = mTimeDimension.sizeN();
     double ht = mTimeDimension.step();
 
-    IProblem2H2D::Parameter parameter;
-    parameter.a = mParameter.a;
-    parameter.lambda = mParameter.lambda;
-    parameter.lambda1 = mParameter.lambda1;
-    parameter.Nc = mParameter.Nc;
-    parameter.No = mParameter.No;
-    parameter.Ns = mParameter.Ns;
-    parameter.q = mParameter.q;
-    parameter.theta = mParameter.theta;
-    fromVector(pv, parameter);
+    IProblem2H2D::OptimizeParameter o_prm;
+    fromVector(pv, o_prm);
 
     IProblem2HForward2D forward;
     forward.setTimeDimension(mTimeDimension);
     forward.addSpaceDimension(mSpaceDimensionX);
     forward.addSpaceDimension(mSpaceDimensionY);
-    forward.mParameter = parameter;
+    forward.mEquParameter = mEquParameter;
+    forward.mOptParameter = o_prm;
 
     IProblem2HBackward2D backward;
     backward.setTimeDimension(mTimeDimension);
     backward.addSpaceDimension(mSpaceDimensionX);
     backward.addSpaceDimension(mSpaceDimensionY);
-    backward.mParameter = parameter;
+    backward.mEquParameter = mEquParameter;
+    backward.mOptParameter = o_prm;
     backward.ifunc = const_cast<IProblem2H2D_NS::IFunctional*>(this);
 
     DoubleMatrix u;
@@ -175,33 +163,33 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
     // k
     if (optimizeK)
     {
-        for (unsigned int i=0; i<mParameter.Nc; i++)
+        for (unsigned int i=0; i<mEquParameter.Nc; i++)
         {
             ExtendedSpaceNode2DH &pi = p_info[i];
 
-            for (unsigned int j=0; j<mParameter.No; j++)
+            for (unsigned int j=0; j<mEquParameter.No; j++)
             {
                 ExtendedSpaceNode2DH &uj = u_info[j];
 
                 double grad_Kij = 0.0;
 
-                grad_Kij += 0.5 * (pi.value(0)/*+2.0*r*gpi(i,0,u_info)*sgn(g0i(i,0,u_info))*/) * (uj.value(0) - mParameter.z.at(i,j));
+                grad_Kij += 0.5 * (pi.value(0)/*+2.0*r*gpi(i,0,u_info)*sgn(g0i(i,0,u_info))*/) * (uj.value(0) - o_prm.z[i][j]);
                 for (unsigned int m=1; m<=L-1; m++)
                 {
-                    grad_Kij += (pi.value(m)/*+2.0*r*gpi(i,m,u_info)*sgn(g0i(i,m,u_info))*/) * (uj.value(m) - mParameter.z.at(i,j));
+                    grad_Kij += (pi.value(m)/*+2.0*r*gpi(i,m,u_info)*sgn(g0i(i,m,u_info))*/) * (uj.value(m) - o_prm.z[i][j]);
                 }
-                grad_Kij += 0.5 * (pi.value(L)/*+2.0*r*gpi(i,L,u_info)*sgn(g0i(i,L,u_info))*/) * (uj.value(L) - mParameter.z.at(i,j));
+                grad_Kij += 0.5 * (pi.value(L)/*+2.0*r*gpi(i,L,u_info)*sgn(g0i(i,L,u_info))*/) * (uj.value(L) - o_prm.z[i][j]);
                 grad_Kij *= -ht;
 
-                g[gi++] = grad_Kij;// + 2.0*regEpsilon*(mParameter.k.at(i,j) - mParameter0.k.at(i,j));
+                g[gi++] = grad_Kij + 2.0*regEpsilon*(o_prm.k[i][j] - mOptParameter0.k[i][j]);
             }
         }
     }
     else
     {
-        for (unsigned int i=0; i<mParameter.Nc; i++)
+        for (unsigned int i=0; i<mEquParameter.Nc; i++)
         {
-            for (unsigned int j=0; j<mParameter.No; j++)
+            for (unsigned int j=0; j<mEquParameter.No; j++)
             {
                 g[gi++] = 0.0;
             }
@@ -211,31 +199,31 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
     // z
     if (optimizeZ)
     {
-        for (unsigned int i=0; i<mParameter.Nc; i++)
+        for (unsigned int i=0; i<mEquParameter.Nc; i++)
         {
             ExtendedSpaceNode2DH &pi = p_info[i];
 
-            for (unsigned int j=0; j<mParameter.No; j++)
+            for (unsigned int j=0; j<mEquParameter.No; j++)
             {
                 double grad_Zij = 0.0;
 
-                grad_Zij += 0.5 * (pi.value(0)/*+2.0*r*gpi(i,0,u_info)*sgn(g0i(i,0,u_info))*/) * mParameter.k.at(i,j);
+                grad_Zij += 0.5 * (pi.value(0)/*+2.0*r*gpi(i,0,u_info)*sgn(g0i(i,0,u_info))*/) * o_prm.k[i][j];
                 for (unsigned int m=1; m<=L-1; m++)
                 {
-                    grad_Zij += (pi.value(m)/*+2.0*r*gpi(i,m,u_info)*sgn(g0i(i,m,u_info))*/)  * mParameter.k.at(i,j);
+                    grad_Zij += (pi.value(m)/*+2.0*r*gpi(i,m,u_info)*sgn(g0i(i,m,u_info))*/)  * o_prm.k[i][j];
                 }
-                grad_Zij += 0.5 * (pi.value(L)/*+2.0*r*gpi(i,L,u_info)*sgn(g0i(i,L,u_info))*/) * mParameter.k.at(i,j);
+                grad_Zij += 0.5 * (pi.value(L)/*+2.0*r*gpi(i,L,u_info)*sgn(g0i(i,L,u_info))*/) * o_prm.k[i][j];
                 grad_Zij *= ht;
 
-                g[gi++] = grad_Zij;// + 2.0*regEpsilon*(mParameter.z[i][j] - mParameter0.z[i][j]);
+                g[gi++] = grad_Zij + 2.0*regEpsilon*(o_prm.z[i][j] - mOptParameter0.z[i][j]);
             }
         }
     }
     else
     {
-        for (unsigned int i=0; i<mParameter.Nc; i++)
+        for (unsigned int i=0; i<mEquParameter.Nc; i++)
         {
-            for (unsigned int j=0; j<mParameter.No; j++)
+            for (unsigned int j=0; j<mEquParameter.No; j++)
             {
                 g[gi++] = 0.0;
             }
@@ -245,7 +233,7 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
     // eta
     if (optimizeC)
     {
-        for (unsigned int i=0; i<mParameter.Nc; i++)
+        for (unsigned int i=0; i<mEquParameter.Nc; i++)
         {
             ExtendedSpaceNode2DH &pi = p_info[i];
 
@@ -254,33 +242,33 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
             double vi = 0.0;
 
             vi = 0.0;
-            for (unsigned int j=0; j<mParameter.No; j++) vi += mParameter.k.at(i,j) * (u_info[j].value(0) - mParameter.z.at(i,j));
+            for (unsigned int j=0; j<mEquParameter.No; j++) vi += o_prm.k.at(i,j) * (u_info[j].value(0) - o_prm.z[i][j]);
             grad_EtaiX += 0.5 * pi.valueDx(0) * vi;
             grad_EtaiY += 0.5 * pi.valueDy(0) * vi;
 
             for (unsigned int m=1; m<=L-1; m++)
             {
                 vi = 0.0;
-                for (unsigned int j=0; j<mParameter.No; j++) vi += mParameter.k.at(i,j) * (u_info[j].value(m) - mParameter.z.at(i,j));
+                for (unsigned int j=0; j<mEquParameter.No; j++) vi += o_prm.k.at(i,j) * (u_info[j].value(m) - o_prm.z[i][j]);
                 grad_EtaiX += pi.valueDx(m) * vi;
                 grad_EtaiY += pi.valueDy(m) * vi;
             }
 
             vi = 0.0;
-            for (unsigned int j=0; j<mParameter.No; j++) vi += mParameter.k.at(i,j) * (u_info[j].value(L) - mParameter.z.at(i,j));
+            for (unsigned int j=0; j<mEquParameter.No; j++) vi += o_prm.k.at(i,j) * (u_info[j].value(L) - o_prm.z[i][j]);
             grad_EtaiX += 0.5 * pi.valueDx(L) * vi;
             grad_EtaiY += 0.5 * pi.valueDy(L) * vi;
 
             grad_EtaiX *= -ht;
             grad_EtaiY *= -ht;
 
-            g[gi++] = grad_EtaiX;// + 2.0*regEpsilon*(mParameter.eta[i].x - mParameter0.eta[i].x);
-            g[gi++] = grad_EtaiY;// + 2.0*regEpsilon*(mParameter.eta[i].y - mParameter0.eta[i].y);
+            g[gi++] = grad_EtaiX + 2.0*regEpsilon*(o_prm.eta[i].x - mOptParameter0.eta[i].x);
+            g[gi++] = grad_EtaiY + 2.0*regEpsilon*(o_prm.eta[i].y - mOptParameter0.eta[i].y);
         }
     }
     else
     {
-        for (unsigned int i=0; i<mParameter.Nc; i++)
+        for (unsigned int i=0; i<mEquParameter.Nc; i++)
         {
             g[gi++] = 0.0;
             g[gi++] = 0.0;
@@ -290,7 +278,7 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
     // xi
     if (optimizeO)
     {
-        for (unsigned int j=0; j<mParameter.Nc; j++)
+        for (unsigned int j=0; j<mEquParameter.Nc; j++)
         {
             ExtendedSpaceNode2DH &uj = u_info[j];
 
@@ -299,36 +287,36 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
             double vi = 0.0;
 
             vi = 0.0;
-            for (unsigned int i=0; i<mParameter.Nc; i++)
-                vi += mParameter.k.at(i,j) * (p_info[i].value(0)/*+2.0*r*gpi(i,0,u_info)*sgn(g0i(i,0,u_info))*/);
+            for (unsigned int i=0; i<mEquParameter.Nc; i++)
+                vi += o_prm.k.at(i,j) * (p_info[i].value(0)/*+2.0*r*gpi(i,0,u_info)*sgn(g0i(i,0,u_info))*/);
             gradXijX += 0.5 * uj.valueDx(0) * vi;
             gradXijY += 0.5 * uj.valueDy(0) * vi;
 
             for (unsigned int m=1; m<=L-1; m++)
             {
                 vi = 0.0;
-                for (unsigned int i=0; i<mParameter.Nc; i++)
-                    vi += mParameter.k.at(i,j)*(p_info[i].value(m)/*+2.0*r*gpi(i,m,u_info)*sgn(g0i(i,m,u_info))*/);
+                for (unsigned int i=0; i<mEquParameter.Nc; i++)
+                    vi += o_prm.k.at(i,j)*(p_info[i].value(m)/*+2.0*r*gpi(i,m,u_info)*sgn(g0i(i,m,u_info))*/);
                 gradXijX += uj.valueDx(m) * vi;
                 gradXijY += uj.valueDy(m) * vi;
             }
 
             vi = 0.0;
-            for (unsigned int i=0; i<mParameter.Nc; i++)
-                vi += mParameter.k.at(i,j)*(p_info[i].value(L)/*+2.0*r*gpi(i,L,u_info)*sgn(g0i(i,L,u_info))*/);
+            for (unsigned int i=0; i<mEquParameter.Nc; i++)
+                vi += o_prm.k.at(i,j)*(p_info[i].value(L)/*+2.0*r*gpi(i,L,u_info)*sgn(g0i(i,L,u_info))*/);
             gradXijX += 0.5 * uj.valueDx(L) * vi;
             gradXijY += 0.5 * uj.valueDy(L) * vi;
 
             gradXijX *= -ht;
             gradXijY *= -ht;
 
-            g[gi++] = gradXijX;// + 2.0*regEpsilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
-            g[gi++] = gradXijY;// + 2.0*regEpsilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
+            g[gi++] = gradXijX+ 2.0*regEpsilon*(o_prm.xi[j].x - mOptParameter0.xi[j].x);
+            g[gi++] = gradXijY + 2.0*regEpsilon*(o_prm.xi[j].x - mOptParameter0.xi[j].x);
         }
     }
     else
     {
-        for (unsigned int j=0; j<mParameter.No; j++)
+        for (unsigned int j=0; j<mEquParameter.No; j++)
         {
             g[gi++] = 0.0;
             g[gi++] = 0.0;
@@ -339,16 +327,10 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
     p_info.clear();
 }
 
-void IFunctional::toVector(const IProblem2H2D::Parameter &prm, DoubleVector &pv) const
+void IFunctional::toVector(const IProblem2H2D::OptimizeParameter &prm, DoubleVector &pv) const
 {
-    unsigned int Nc = prm.Nc;
-    unsigned int No = prm.No;
-
-    //unsigned int length = 0;
-    //if (optimizeK) length += Lc*Lo;
-    //if (optimizeZ) length += Lc*Lo;
-    //if (optimizeC) length += 2*Lc;
-    //if (optimizeO) length += 2*Lo;
+    unsigned int Nc = mEquParameter.Nc;
+    unsigned int No = mEquParameter.No;
 
     pv.clear();
     pv.resize(2*Nc*No+2*Nc+2*No);
@@ -409,10 +391,10 @@ void IFunctional::toVector(const IProblem2H2D::Parameter &prm, DoubleVector &pv)
     //    }
 }
 
-void IFunctional::fromVector(const DoubleVector &pv, IProblem2H2D::Parameter &prm) const
+void IFunctional::fromVector(const DoubleVector &pv, IProblem2H2D::OptimizeParameter &prm) const
 {
-    unsigned int Nc = prm.Nc;
-    unsigned int No = prm.No;
+    unsigned int Nc = mEquParameter.Nc;
+    unsigned int No = mEquParameter.No;
 
     unsigned int index = 0;
 
