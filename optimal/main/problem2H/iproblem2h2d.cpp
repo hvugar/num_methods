@@ -12,12 +12,12 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     IProblem2H2D_NS::IFunctional ifunc;
     ifunc.optimizeK = true;
     ifunc.optimizeZ = true;
-    ifunc.optimizeC = false;
+    ifunc.optimizeC = true;
     ifunc.optimizeO = false;
 
     ifunc.mSpaceDimensionX = Dimension(0.01, 0, 100);
     ifunc.mSpaceDimensionY = (Dimension(0.01, 0, 100));
-    ifunc.mTimeDimension = Dimension(0.001, 0, 2000);
+    ifunc.mTimeDimension = Dimension(0.005, 0, 2000);
 
     ifunc.alpha0 = 1.0; ifunc.V0.resize(101, 101, 0.0);
     ifunc.alpha1 = 1.0; ifunc.V1.resize(101, 101, 0.0);
@@ -44,8 +44,8 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     prm.k.resize(prm.Nc, prm.No, 0.0);
     prm.z.resize(prm.Nc, prm.No, 0.0);
 
-    prm.k[0][0] = -0.12; prm.k[0][1] = -0.24;
-    prm.k[1][0] = -0.38; prm.k[1][1] = -0.58;
+    prm.k[0][0] = -1.12; prm.k[0][1] = -1.24;
+    prm.k[1][0] = -1.08; prm.k[1][1] = -2.18;
     prm.z[0][0] = +0.50; prm.z[0][1] = +0.40;
     prm.z[1][0] = +0.70; prm.z[1][1] = +0.50;
 
@@ -74,11 +74,11 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     DoubleVector ng1(pv.length(), 0.0);
     DoubleVector ng2(pv.length(), 0.0);
 
-    puts("Calculating numerical gradients.... hx=0.01");
-    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 0*prm.Nc*prm.No,          1*prm.Nc*prm.No-1);
-    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 1*prm.Nc*prm.No,          2*prm.Nc*prm.No-1);
-//    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 2*prm.Nc*prm.No+0*prm.Nc, 2*prm.Nc*prm.No+2*prm.Nc-1);
-//    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 2*prm.Nc*prm.No+2*prm.Nc, 2*prm.Nc*prm.No+2*prm.Nc+2*prm.No-1);
+    puts("Calculating numerical gradients.... hx=1");
+    IGradient::Gradient(&ifunc, 1.0, pv, ng1, 0*prm.Nc*prm.No,          1*prm.Nc*prm.No-1);
+    IGradient::Gradient(&ifunc, 1.0, pv, ng1, 1*prm.Nc*prm.No,          2*prm.Nc*prm.No-1);
+    //IGradient::Gradient(&ifunc, 0.01, pv, ng1, 2*prm.Nc*prm.No+0*prm.Nc, 2*prm.Nc*prm.No+2*prm.Nc-1);
+    //IGradient::Gradient(&ifunc, 0.01, pv, ng1, 2*prm.Nc*prm.No+2*prm.Nc, 2*prm.Nc*prm.No+2*prm.Nc+2*prm.No-1);
     puts("Numerical gradients are calculated.");
 
     //puts("Calculating numerical gradients.... hx=0.001");
@@ -123,30 +123,30 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     DoubleVector pe0 = pv.mid(2*prm.Nc*prm.No, 2*prm.Nc*prm.No+2*prm.Nc-1);
     DoubleVector ae0 = ag.mid(2*prm.Nc*prm.No, 2*prm.Nc*prm.No+2*prm.Nc-1);
     DoubleVector ne1 = ng1.mid(2*prm.Nc*prm.No, 2*prm.Nc*prm.No+2*prm.Nc-1);
-    DoubleVector ne2 = ng2.mid(2*prm.Nc*prm.No, 2*prm.Nc*prm.No+2*prm.Nc-1);
+    //DoubleVector ne2 = ng2.mid(2*prm.Nc*prm.No, 2*prm.Nc*prm.No+2*prm.Nc-1);
 
     IPrinter::print(pe0,pe0.length(),14,4);
     IPrinter::print(ae0,ae0.length(),14,4); ae0.L2Normalize();
     IPrinter::print(ne1,ne1.length(),14,4); ne1.L2Normalize();
-    IPrinter::print(ne2,ne2.length(),14,4); ne2.L2Normalize();
+    //IPrinter::print(ne2,ne2.length(),14,4); ne2.L2Normalize();
     IPrinter::print(ae0,ae0.length(),14,4);
     IPrinter::print(ne1,ne1.length(),14,4);
-    IPrinter::print(ne2,ne2.length(),14,4);
+    //IPrinter::print(ne2,ne2.length(),14,4);
     IPrinter::printSeperatorLine();
 
     //xi------------------------------------------------------//
     DoubleVector px0 = pv.mid(2*prm.Nc*prm.No+2*prm.Nc, 2*prm.Nc*prm.No+2*prm.Nc+2*prm.No-1);
     DoubleVector ax0 = ag.mid(2*prm.Nc*prm.No+2*prm.Nc, 2*prm.Nc*prm.No+2*prm.Nc+2*prm.No-1);
     DoubleVector nx1 = ng1.mid(2*prm.Nc*prm.No+2*prm.Nc, 2*prm.Nc*prm.No+2*prm.Nc+2*prm.No-1);
-    DoubleVector nx2 = ng2.mid(2*prm.Nc*prm.No+2*prm.Nc, 2*prm.Nc*prm.No+2*prm.Nc+2*prm.No-1);
+    //DoubleVector nx2 = ng2.mid(2*prm.Nc*prm.No+2*prm.Nc, 2*prm.Nc*prm.No+2*prm.Nc+2*prm.No-1);
 
     IPrinter::print(px0,px0.length(),14,4);
     IPrinter::print(ax0,ax0.length(),14,4); ax0.L2Normalize();
     IPrinter::print(nx1,nx1.length(),14,4); nx1.L2Normalize();
-    IPrinter::print(nx2,nx2.length(),14,4); nx2.L2Normalize();
+    //IPrinter::print(nx2,nx2.length(),14,4); nx2.L2Normalize();
     IPrinter::print(ax0,ax0.length(),14,4);
     IPrinter::print(nx1,nx1.length(),14,4);
-    IPrinter::print(nx2,nx2.length(),14,4);
+    //IPrinter::print(nx2,nx2.length(),14,4);
     IPrinter::printSeperatorLine();
 }
 

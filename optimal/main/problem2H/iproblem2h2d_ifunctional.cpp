@@ -163,6 +163,9 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
     vector<ExtendedSpaceNode2DH> u_info;
     forward.calculateMVD1(u, ut, u_info, true);
 
+    for (unsigned int i=0; i<L; i++)
+        printf("u[%d]: %f u[%d]: %f\n", 0, u_info[0].value(i), 1, u_info[1].value(i));
+
     backward.UT = u;
     backward.UTt = ut;
     vector<ExtendedSpaceNode2DH> p_info;
@@ -274,8 +277,8 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
             grad_EtaiX *= -ht;
             grad_EtaiY *= -ht;
 
-            g[gi++] = grad_EtaiX + 2.0*regEpsilon*(mParameter.eta[i].x - mParameter0.eta[i].x);
-            g[gi++] = grad_EtaiY + 2.0*regEpsilon*(mParameter.eta[i].y - mParameter0.eta[i].y);
+            g[gi++] = grad_EtaiX;// + 2.0*regEpsilon*(mParameter.eta[i].x - mParameter0.eta[i].x);
+            g[gi++] = grad_EtaiY;// + 2.0*regEpsilon*(mParameter.eta[i].y - mParameter0.eta[i].y);
         }
     }
     else
@@ -322,8 +325,8 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
             gradXijX *= -ht;
             gradXijY *= -ht;
 
-            g[gi++] = gradXijX + 2.0*regEpsilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
-            g[gi++] = gradXijY + 2.0*regEpsilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
+            g[gi++] = gradXijX;// + 2.0*regEpsilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
+            g[gi++] = gradXijY;// + 2.0*regEpsilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
         }
     }
     else

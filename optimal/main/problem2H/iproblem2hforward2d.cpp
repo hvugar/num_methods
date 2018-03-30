@@ -465,7 +465,6 @@ void IProblem2HForward2D::calculateMVD1(DoubleMatrix &u, DoubleMatrix &ut, vecto
     double hx = dimX.step();
     double hy = dimY.step();
     double ht = time.step();
-    double hh = 0.5*ht;
 
     double lambda = mParameter.lambda;
     //double lambda1 = mParameter.lambda1;
@@ -594,7 +593,7 @@ void IProblem2HForward2D::calculateMVD1(DoubleMatrix &u, DoubleMatrix &ut, vecto
         {
             sn.i = n; sn.x = n*hx;
             u1[m][n]  = u0[m][n] + initial2(sn)*ht;
-            u15[m][n] = u0[m][n] + initial2(sn)*hh;
+            u15[m][n] = u0[m][n] + initial2(sn)*ht*0.5;
 
             double diff = 0.0;
             if (n==0 )     diff += a*a*(u0[m][n]-2.0*u0[m][n+1]+u0[m][n+2])/(hx*hx);
@@ -605,8 +604,8 @@ void IProblem2HForward2D::calculateMVD1(DoubleMatrix &u, DoubleMatrix &ut, vecto
             else if (m==M) diff += a*a*(u0[m-2][n]-2.0*u0[m-1][n]+u0[m][n])/(hy*hy);
             else           diff += a*a*(u0[m-1][n]-2.0*u0[m][n]+u0[m+1][n])/(hy*hy);
 
-            u1[m][n]  += 0.5*ht*ht*diff;
-            u15[m][n] += 0.5*hh*hh*diff;
+            u1[m][n]  += 0.500*ht*ht*diff;
+            u15[m][n] += 0.125*ht*ht*diff;
 
             u1[m][n] -= mParameter.lambda*initial2(sn);
 
