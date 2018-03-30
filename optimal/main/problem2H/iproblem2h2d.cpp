@@ -13,45 +13,47 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     ifunc.optimizeK = true;
     ifunc.optimizeZ = true;
     ifunc.optimizeC = true;
-    ifunc.optimizeO = false;
+    ifunc.optimizeO = true;
 
     ifunc.mSpaceDimensionX = Dimension(0.01, 0, 100);
     ifunc.mSpaceDimensionY = (Dimension(0.01, 0, 100));
-    ifunc.mTimeDimension = Dimension(0.005, 0, 2000);
+    ifunc.mTimeDimension = Dimension(0.005, 0, 200);
 
     ifunc.alpha0 = 1.0; ifunc.V0.resize(101, 101, 0.0);
     ifunc.alpha1 = 1.0; ifunc.V1.resize(101, 101, 0.0);
 
-    IProblem2H2D::Parameter prm;
-    prm.Ns = 2;
-    prm.q.resize(prm.Ns);
-    prm.theta.resize(prm.Ns);
+    IProblem2H2D::EquationParameter e_prm;
+    e_prm.a = 1.0;
+    e_prm.lambda = 0.001;
+    e_prm.lambda1 = 0.0;
 
-    prm.q[0] = -2.0; prm.theta[0].x = 0.200; prm.theta[0].y = 0.200;
-    prm.q[1] = -2.0; prm.theta[1].x = 0.800; prm.theta[1].y = 0.800;
+    e_prm.Ns = 2;
+    e_prm.q.resize(e_prm.Ns);
+    e_prm.theta.resize(e_prm.Ns);
 
-    prm.Nc = 2;
-    prm.No = 2;
+    e_prm.q[0] = -2.0; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
+    e_prm.q[1] = -2.0; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
 
-    prm.xi.resize(prm.No);
-    prm.xi[0].x = 0.400; prm.xi[0].y = 0.400;
-    prm.xi[1].x = 0.600; prm.xi[1].y = 0.600;
+    e_prm.Nc = 2;
+    e_prm.No = 2;
 
-    prm.eta.resize(prm.Nc);
-    prm.eta[0].x = 0.300; prm.eta[0].y = 0.700;
-    prm.eta[1].x = 0.700; prm.eta[1].y = 0.300;
+    IProblem2H2D::OptimizeParameter o_prm;
 
-    prm.k.resize(prm.Nc, prm.No, 0.0);
-    prm.z.resize(prm.Nc, prm.No, 0.0);
+    o_prm.xi.resize(e_prm.No);
+    o_prm.xi[0].x = 0.400; o_prm.xi[0].y = 0.400;
+    o_prm.xi[1].x = 0.600; o_prm.xi[1].y = 0.600;
 
-    prm.k[0][0] = -1.12; prm.k[0][1] = -1.24;
-    prm.k[1][0] = -1.08; prm.k[1][1] = -2.18;
-    prm.z[0][0] = +0.50; prm.z[0][1] = +0.40;
-    prm.z[1][0] = +0.70; prm.z[1][1] = +0.50;
+    o_prm.eta.resize(e_prm.Nc);
+    o_prm.eta[0].x = 0.300; o_prm.eta[0].y = 0.700;
+    o_prm.eta[1].x = 0.700; o_prm.eta[1].y = 0.300;
 
-    prm.a = 1.0;
-    prm.lambda = 0.001;
-    prm.lambda1 = 0.0;
+    o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+
+    o_prm.k[0][0] = -2.12; o_prm.k[0][1] = -2.24;
+    o_prm.k[1][0] = -2.45; o_prm.k[1][1] = -2.18;
+    o_prm.z[0][0] = +0.50; o_prm.z[0][1] = +0.40;
+    o_prm.z[1][0] = +0.70; o_prm.z[1][1] = +0.50;
 
     ifunc.mParameter = prm;
     ifunc.mParameter0 = prm;
@@ -72,13 +74,13 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     printf("Functional: %f\n", functional);
 
     DoubleVector ng1(pv.length(), 0.0);
-    DoubleVector ng2(pv.length(), 0.0);
+    //DoubleVector ng2(pv.length(), 0.0);
 
-    puts("Calculating numerical gradients.... hx=1");
-    IGradient::Gradient(&ifunc, 1.0, pv, ng1, 0*prm.Nc*prm.No,          1*prm.Nc*prm.No-1);
-    IGradient::Gradient(&ifunc, 1.0, pv, ng1, 1*prm.Nc*prm.No,          2*prm.Nc*prm.No-1);
-    //IGradient::Gradient(&ifunc, 0.01, pv, ng1, 2*prm.Nc*prm.No+0*prm.Nc, 2*prm.Nc*prm.No+2*prm.Nc-1);
-    //IGradient::Gradient(&ifunc, 0.01, pv, ng1, 2*prm.Nc*prm.No+2*prm.Nc, 2*prm.Nc*prm.No+2*prm.Nc+2*prm.No-1);
+    puts("Calculating numerical gradients.... dh=0.01");
+    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 0*prm.Nc*prm.No,          1*prm.Nc*prm.No-1);
+    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 1*prm.Nc*prm.No,          2*prm.Nc*prm.No-1);
+    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 2*prm.Nc*prm.No+0*prm.Nc, 2*prm.Nc*prm.No+2*prm.Nc-1);
+    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 2*prm.Nc*prm.No+2*prm.Nc, 2*prm.Nc*prm.No+2*prm.Nc+2*prm.No-1);
     puts("Numerical gradients are calculated.");
 
     //puts("Calculating numerical gradients.... hx=0.001");
@@ -117,7 +119,6 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     IPrinter::print(nz1,nz1.length(),14,4);
     //IPrinter::print(nz2,nz2.length(),14,4);
     IPrinter::printSeperatorLine();
-    return;
 
     //eta------------------------------------------------------//
     DoubleVector pe0 = pv.mid(2*prm.Nc*prm.No, 2*prm.Nc*prm.No+2*prm.Nc-1);
@@ -152,10 +153,10 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 void IProblem2H2D::Forward()
 {
-    IProblem2HForward2D p;
-    p.addSpaceDimension(Dimension(0.01, 0, 100));
-    p.addSpaceDimension(Dimension(0.01, 0, 100));
-    p.setTimeDimension(Dimension(0.001, 0, 1000));
+    IProblem2HForward2D frw;
+    frw.addSpaceDimension(Dimension(0.01, 0, 100));
+    frw.addSpaceDimension(Dimension(0.01, 0, 100));
+    frw.setTimeDimension(Dimension(0.005, 0, 200));
 
     IProblem2H2D::Parameter prm;
     prm.Ns = 2;
@@ -176,20 +177,42 @@ void IProblem2H2D::Forward()
     prm.eta[0].x = 0.300; prm.eta[0].y = 0.700;
     prm.eta[1].x = 0.700; prm.eta[1].y = 0.300;
 
-    prm.k.resize(prm.Nc, prm.No, -10.0);
+    prm.k.resize(prm.Nc, prm.No, 0.0);
     prm.z.resize(prm.Nc, prm.No, 0.0);
+
+    prm.k[0][0] = -1.12; prm.k[0][1] = -1.24;
+    prm.k[1][0] = -1.08; prm.k[1][1] = -2.18;
+    prm.z[0][0] = +0.50; prm.z[0][1] = +0.40;
+    prm.z[1][0] = +0.70; prm.z[1][1] = +0.50;
 
     prm.a = 1.0;
     prm.lambda = 0.001;
     prm.lambda1 = 0.0;
 
-    p.mParameter = prm;
+    frw.mParameter = prm;
 
     DoubleMatrix u;
     DoubleMatrix ut;
-    std::vector<ExtendedSpaceNode2DH> info;
-    //p.calculateMVD(u, ut, info, false);
-    p.calculateMVD1(u, ut, info, false);
+    std::vector<ExtendedSpaceNode2DH> u_info;
+    frw.calculateMVD(u, ut, u_info, false);
+
+    IProblem2HBackward2D bkw;
+    bkw.addSpaceDimension(Dimension(0.01, 0, 100));
+    bkw.addSpaceDimension(Dimension(0.01, 0, 100));
+    bkw.setTimeDimension(Dimension(0.005, 0, 200));
+    bkw.mParameter = prm;
+
+    IProblem2H2D_NS::IFunctional ifunc;
+    ifunc.alpha0 = 1.0; ifunc.V0.resize(101, 101, 0.0);
+    ifunc.alpha1 = 1.0; ifunc.V1.resize(101, 101, 0.0);
+
+    bkw.UT = u;
+    bkw.UTt = ut;
+    bkw.ifunc = &ifunc;
+
+    DoubleMatrix p;
+    std::vector<ExtendedSpaceNode2DH> p_info;
+    bkw.calculateMVD(p, p_info, false);
 }
 
 void IProblem2H2D::distributeDelta(const SpacePoint &pt, std::vector<IProblem2H2D::ExtendedSpacePointNode> &nodes, unsigned int id,

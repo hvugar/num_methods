@@ -39,15 +39,16 @@ public:
     //void setParameter(const Parameter &parameter);
     //void setParameter0(const Parameter &parameter0);
 
-    void toVector(const IProblem2H2D::Parameter &prm, DoubleVector &x) const;
-    void fromVector(const DoubleVector &x, IProblem2H2D::Parameter &prm) const;
+    void toVector(const IProblem2H2D::OptimizeParameter &prm, DoubleVector &x) const;
+    void fromVector(const DoubleVector &x, IProblem2H2D::OptimizeParameter &prm) const;
 
 private:
     //double sgn(double x) const;
 
 public:
-    IProblem2H2D::Parameter mParameter;
-    IProblem2H2D::Parameter mParameter0;
+    IProblem2H2D::OptimizeParameter mOptParameter;
+    IProblem2H2D::OptimizeParameter mOptParameter0;
+    IProblem2H2D::EquationParameter mEquParameter;
 
     Dimension mTimeDimension;
     Dimension mSpaceDimensionX;

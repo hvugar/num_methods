@@ -31,7 +31,7 @@ double IFunctional::fx(const DoubleVector &pv) const
     DoubleMatrix u;
     DoubleMatrix ut;
     vector<ExtendedSpaceNode2DH> info;
-    forward.calculateMVD1(u, ut, info, false);
+    forward.calculateMVD(u, ut, info, false);
 
     double intgrl = integral(u, ut);
     //u.clear();
@@ -161,15 +161,12 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
     DoubleMatrix p;
 
     vector<ExtendedSpaceNode2DH> u_info;
-    forward.calculateMVD1(u, ut, u_info, true);
-
-    for (unsigned int i=0; i<L; i++)
-        printf("u[%d]: %f u[%d]: %f\n", 0, u_info[0].value(i), 1, u_info[1].value(i));
+    forward.calculateMVD(u, ut, u_info, true);
 
     backward.UT = u;
     backward.UTt = ut;
     vector<ExtendedSpaceNode2DH> p_info;
-    backward.calculateMVD1(p, p_info, true);
+    backward.calculateMVD(p, p_info, true);
 
     g.clear();
     g.resize(pv.length(), 0.0);

@@ -7,10 +7,10 @@ class IProblem2HForward2D : public IHyperbolicIBVP
 {
 public:
     void calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
-    void calculateMVD1(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
     virtual void layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const;
 
-    IProblem2H2D::Parameter mParameter;
+    IProblem2H2D::EquationParameter mEquParameter;
+    IProblem2H2D::OptimizeParameter mOptParameter;
 
 protected:
     virtual double initial1(const SpaceNodePDE &sn) const;
