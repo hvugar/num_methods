@@ -36,96 +36,19 @@ LIBS += -L../bin -limaging
 
 DESTDIR += ../bin
 
+include(problem1/problem1.pri)
 include(problem2H/problem2H.pri)
+include(problem2P/problem2P.pri)
+include(problem4/problem4.pri)
+include(problem5/problem5.pri)
+include(load_sys/load_sys.pri)
 
 SOURCES += main.cpp \
-    load_sys/slodenlcsm.cpp \
-    load_sys/slodenlcsv.cpp \
-    problem1/iproblem1.cpp \
-    problem1/problem1L2.cpp \
-    problem1/problem1L3.cpp \
-    problem1/art_problem1.cpp \
-    problem1/problem1L1.cpp \
-    problem1/iloadedheatequation.cpp \
-    problem1/loadedheatequation.cpp \
-    problem1/ibackwardloadedheateqauation.cpp \
-    problem4/problem4ex1.cpp \
-    problem4/zetta0.cpp \
-    numintegralexp1.cpp \
-    load_sys/slodenlcsv2.cpp \
-    problem4/zettai.cpp \
     ivp/nlode1oex1.cpp \
-    load_sys/lode1oex1.cpp \
-    matrixtest.cpp \
     nonlinearequationex1.cpp \
-    problem4/problem4ex2.cpp \
     loadedlinearode1order.cpp \
-    problem5/nllparabolic.cpp \
-    problem2/1d/problem2.cpp \
-    problem2/1d/iproblem2forward.cpp \
-    problem2/1d/iproblem2backward.cpp \
-    problem2/2d/iproblem2forward2d.cpp \
-    problem2/2d/iproblem2backward2d.cpp \
-    #problem2/2d/abs/abstractproblem22d.cpp \
-    #problem2/2d/ex/problem22dex1.cpp \
-    #problem2/2d/ex/problem22dex2.cpp \
-    #problem2/2d/ex/problem22dex3.cpp \
-    #problem2/2d/ex/problem22dex4.cpp \
-    #problem2/2d/ex/problem22dex5.cpp \
-    problem2/2d/cproblem2forward2d.cpp \
-    problem2/2d/cproblem2backward2d.cpp \
-    problem2/2d/iproblem2pibvp2d.cpp \
-    problem2/2d/abs/problem2forward2d.cpp \
-    problem2/2d/abs/problem2backward2d.cpp \
-    problem2/2d/dirakdelta.cpp \
-    problem2/2d/ex/expol.cpp \
-    problem2/2d/abs/ifunctional.cpp \
-    problem2/2d/abs/jfunctional.cpp \
-    problem2/2d/abs/pfunctional.cpp \
-    problem2/2d/ex/p2_article.cpp
 
 HEADERS += \
-    load_sys/slodenlcsm.h \
-    load_sys/slodenlcsv.h \
-    problem1/iproblem1.h \
-    problem1/problem1L2.h \
-    problem1/problem1L3.h \
-    problem1/art_problem1.h \
-    problem1/problem1L1.h \
-    problem1/iloadedheatequation.h \
-    problem1/loadedheatequation.h \
-    problem1/ibackwardloadedheateqauation.h \
-    problem4/problem4ex1.h \
-    problem4/zetta0.h \
-    numintegralexp1.h \
-    load_sys/slodenlcsv2.h \
-    problem4/zettai.h \
     ivp/nlode1oex1.h \
-    load_sys/lode1oex1.h \
-    matrixtest.h \
     nonlinearequationex1.h \
-    problem4/problem4ex2.h \
     loadedlinearode1order.h \
-    problem5/nllparabolic.h \
-    problem2/1d/problem2.h \
-    problem2/1d/iproblem2forward.h \
-    problem2/1d/iproblem2backward.h \
-    problem2/2d/iproblem2forward2d.h \
-    problem2/2d/iproblem2backward2d.h \
-    #problem2/2d/abs/abstractproblem22d.h \
-    #problem2/2d/ex/problem22dex1.h \
-    #problem2/2d/ex/problem22dex2.h \
-    #problem2/2d/ex/problem22dex3.h \
-    #problem2/2d/ex/problem22dex4.h \
-    #problem2/2d/ex/problem22dex5.h \
-    problem2/2d/cproblem2forward2d.h \
-    problem2/2d/cproblem2backward2d.h \
-    problem2/2d/iproblem2pibvp2d.h \
-    problem2/2d/abs/problem2forward2d.h \
-    problem2/2d/abs/problem2backward2d.h \
-    problem2/2d/dirakdelta.h \
-    problem2/2d/ex/expol.h \
-    problem2/2d/abs/ifunctional.h \
-    problem2/2d/abs/jfunctional.h \
-    problem2/2d/abs/pfunctional.h \
-    problem2/2d/ex/p2_article.h
