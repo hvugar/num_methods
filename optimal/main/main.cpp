@@ -34,7 +34,7 @@
 //#include <../border/borderparabolicd.h>
 //#include <../border/borderparabolicn.h>
 //#include <../border/borderparabolic2d.h>
-//#include <../border/borderhyperbolic2d.h>
+#include <../border/borderhyperbolic2d.h>
 
 #include <../border/grid/parabolicibvp1.h>
 #include <../border/grid/parabolicibvp2.h>

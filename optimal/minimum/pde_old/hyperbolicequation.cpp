@@ -1462,9 +1462,9 @@ void IHyperbolicEquation2D::calculateMVD3(DoubleMatrix &u, double hx, double hy,
 {
     u.resize(Ny+1, Nx+1);
 
-    DoubleMatrix u0(Ny+1, Nx+1);
-    DoubleMatrix u1(Ny+1, Nx+1);
+    DoubleMatrix u00(Ny+1, Nx+1);
     DoubleMatrix u05(Ny+1, Nx+1);
+    DoubleMatrix u10(Ny+1, Nx+1);
     DoubleMatrix u15(Ny+1, Nx+1);
 
     DoubleVector da1(Nx-1);
@@ -1479,22 +1479,22 @@ void IHyperbolicEquation2D::calculateMVD3(DoubleMatrix &u, double hx, double hy,
     DoubleVector dd2(Ny-1);
     DoubleVector rx2(Ny-1);
 
-    double x1_a = -0.5*(a1*a1*ht*ht)/(hx*hx);
-    double x1_b = +1.0 + (a1*a1*ht*ht)/(hx*hx);
-    double x1_c = +0.5*(a2*a2*ht*ht)/(hy*hy);
+    double m_a1a1_htht__hxhx_h = -0.5*(a1*a1*ht*ht)/(hx*hx);
+    double p_a1a1_htht__hxhx___lambda_ht = +1.0 + (a1*a1*ht*ht)/(hx*hx)+1.5*lambda*ht;
+    double p_a2a2_htht__hyhy_h = +0.5*(a2*a2*ht*ht)/(hy*hy);
 
-    double x2_a = -0.5*(a2*a2*ht*ht)/(hy*hy);
-    double x2_b = +1.0 + (a2*a2*ht*ht)/(hy*hy);
-    double x2_c = +0.5*(a1*a1*ht*ht)/(hx*hx);
+    double m_aa_htht__hyhy_h = -0.5*(a2*a2*ht*ht)/(hy*hy);
+    double p_aa_htht__hyhy___lambda_ht = +1.0 + (a2*a2*ht*ht)/(hy*hy)+1.5*lambda*ht;
+    double p_a2a2_htht__hxhx_h = +0.5*(a1*a1*ht*ht)/(hx*hx);
 
     double hh = 0.5*ht;
 
-    // initial conditions
+    //------------------------------------- initial conditions -------------------------------------//
     for (unsigned int j=0; j<=Ny; j++)
     {
         for (unsigned int i=0; i<=Nx; i++)
         {
-            u0[j][i] = initial1(i, j);
+            u00[j][i] = initial1(i, j);
         }
     }
 
@@ -1502,32 +1502,32 @@ void IHyperbolicEquation2D::calculateMVD3(DoubleMatrix &u, double hx, double hy,
     {
         for (unsigned int i=0; i<=Nx; i++)
         {
-            u1[j][i] = u0[j][i] + ht*initial2(i, j);
-            u15[j][i] = u0[j][i] + hh*initial2(i, j);
-
             double sum = f(i,j,0);
 
-            if (i==0)       sum += a1*a1*(u0[j][i]-2.0*u0[j][i+1]+u0[j][i+2])/(hx*hx);
-            else if (i==Nx) sum += a1*a1*(u0[j][i-2]-2.0*u0[j][i-1]+u0[j][i])/(hx*hx);
-            else            sum += a1*a1*(u0[j][i-1]-2.0*u0[j][i]+u0[j][i+1])/(hx*hx);
+            if (i==0)       sum += ((a1*a1)/(hx*hx))*(u00[j][i]-2.0*u00[j][i+1]+u00[j][i+2]);
+            else if (i==Nx) sum += ((a1*a1)/(hx*hx))*(u00[j][i-2]-2.0*u00[j][i-1]+u00[j][i]);
+            else            sum += ((a1*a1)/(hx*hx))*(u00[j][i-1]-2.0*u00[j][i]+u00[j][i+1]);
 
-            if (j==0)       sum += a2*a2*(u0[j][i]-2.0*u0[j+1][i]+u0[j+2][i])/(hy*hy);
-            else if (j==Ny) sum += a2*a2*(u0[j-2][i]-2.0*u0[j-1][i]+u0[j][i])/(hy*hy);
-            else            sum += a2*a2*(u0[j-1][i]-2.0*u0[j][i]+u0[j+1][i])/(hy*hy);
+            if (j==0)       sum += ((a2*a2)/(hy*hy))*(u00[j][i]-2.0*u00[j+1][i]+u00[j+2][i]);
+            else if (j==Ny) sum += ((a2*a2)/(hy*hy))*(u00[j-2][i]-2.0*u00[j-1][i]+u00[j][i]);
+            else            sum += ((a2*a2)/(hy*hy))*(u00[j-1][i]-2.0*u00[j][i]+u00[j+1][i]);
 
             sum -= lambda*initial2(i, j);
 
-            u1[j][i] += 0.5*ht*ht*sum;
-            u15[j][i] += 0.5*hh*hh*sum;
+            u10[j][i] += 0.5*ht*ht*sum;
+            u05[j][i] += 0.5*hh*hh*sum;
+
+            u05[j][i] = u00[j][i] + ht*initial2(i, j)*0.5 + sum*ht*ht*0.125;
+            u10[j][i] = u00[j][i] + ht*initial2(i, j)     + sum*ht*ht*0.500;
         }
     }
 
-    IPrinter::printMatrix(14,10,u0);
-    IPrinter::printSeperatorLine();
-    IPrinter::printMatrix(14,10,u1);
-    IPrinter::printSeperatorLine();
-    IPrinter::printMatrix(14,10,u15);
-    IPrinter::printSeperatorLine();
+//    IPrinter::printMatrix(14,10,u00);
+//    IPrinter::printSeperatorLine();
+//    IPrinter::printMatrix(14,10,u05);
+//    IPrinter::printSeperatorLine();
+//    IPrinter::printMatrix(14,10,u10);
+//    IPrinter::printSeperatorLine();
 
     for (unsigned int k=2; k<=M; k++)
     {
@@ -1538,36 +1538,38 @@ void IHyperbolicEquation2D::calculateMVD3(DoubleMatrix &u, double hx, double hy,
 
         for (unsigned int i=0; i<=Nx; i++)
         {
-            u05[0][i]  = boundary(i, 0, 0)+t2; //boundary(i, 0, k);
-            u05[Ny][i] = boundary(i, Ny, 0)+t2;//boundary(i, Ny, k);
+            u15[0][i]  = boundary(i, 0, 0)+t2; //boundary(i, 0, k);
+            u15[Ny][i] = boundary(i, Ny, 0)+t2;//boundary(i, Ny, k);
         }
 
         for (unsigned int j=1; j<Ny; j++)
         {
-            u05[j][0]  = boundary(0, j, 0)+t2;//boundary(0, j, k);
-            u05[j][Nx] = boundary(Nx, j, 0)+t2;//boundary(Nx, j, k);
+            u15[j][0]  = boundary(0, j, 0)+t2;//boundary(0, j, k);
+            u15[j][Nx] = boundary(Nx, j, 0)+t2;//boundary(Nx, j, k);
 
             for (unsigned int i=1; i<Nx; i++)
             {
-                da1[i-1] = x1_a;
-                db1[i-1] = x1_b+1.5*lambda*ht;
-                dc1[i-1] = x1_a;
-                dd1[i-1] = x1_c*(u1[j-1][i] - 2.0*u1[j][i] + u1[j+1][i]) + 0.5*(u1[j][i] - u0[j][i]) + u1[j][i]
-                        + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda) + 0.5*lambda*ht*(4.0*u1[j][i]-u15[j][i]);
+                da1[i-1] = m_a1a1_htht__hxhx_h;
+                db1[i-1] = p_a1a1_htht__hxhx___lambda_ht;
+                dc1[i-1] = m_a1a1_htht__hxhx_h;
+                dd1[i-1] = p_a2a2_htht__hyhy_h*(u10[j-1][i] - 2.0*u10[j][i] + u10[j+1][i]) +
+                        0.5*(u10[j][i] - u00[j][i]) + u10[j][i] +
+                        0.5*lambda*ht*(4.0*u10[j][i]-u05[j][i]) +
+                        0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda);
             }
 
             da1[0]     = 0.0;
             dc1[Nx-2]  = 0.0;
 
-            dd1[0]    -= x1_a * u05[j][0];
-            dd1[Nx-2] -= x1_a * u05[j][Nx];
+            dd1[0]    -= m_a1a1_htht__hxhx_h * u15[j][0];
+            dd1[Nx-2] -= m_a1a1_htht__hxhx_h * u15[j][Nx];
 
             tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.length());
 
             for (unsigned int i=1; i<Nx; i++)
             {
                 //u05[j][i] = hx*i*hx*i+hy*j*hy*j+t2;
-                u05[j][i] = rx1[i-1];
+                u15[j][i] = rx1[i-1];
             }
         }
 
@@ -1594,18 +1596,18 @@ void IHyperbolicEquation2D::calculateMVD3(DoubleMatrix &u, double hx, double hy,
 
             for (unsigned int j=1; j<Ny; j++)
             {
-                da2[j-1] = x2_a;
-                db2[j-1] = x2_b+1.5*lambda*ht;
-                dc2[j-1] = x2_a;
-                dd2[j-1] = x2_c*(u05[j][i-1] - 2.0*u05[j][i] + u05[j][i+1]) + 0.5*(u1[j][i] - u0[j][i]) + u05[j][i]
-                        + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda) + 0.5*lambda*ht*(4.0*u05[j][i]-u1[j][i]);
+                da2[j-1] = m_aa_htht__hyhy_h;
+                db2[j-1] = p_aa_htht__hyhy___lambda_ht+1.5*lambda*ht;
+                dc2[j-1] = m_aa_htht__hyhy_h;
+                dd2[j-1] = p_a2a2_htht__hxhx_h*(u15[j][i-1] - 2.0*u15[j][i] + u15[j][i+1]) + 0.5*(u10[j][i] - u00[j][i]) + u15[j][i]
+                        + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda) + 0.5*lambda*ht*(4.0*u15[j][i]-u10[j][i]);
             }
 
             da2[0]     = 0.0;
             dc2[Ny-2]  = 0.0;
 
-            dd2[0]    -= x2_a * u[0][i];
-            dd2[Ny-2] -= x2_a * u[Ny][i];
+            dd2[0]    -= m_aa_htht__hyhy_h * u[0][i];
+            dd2[Ny-2] -= m_aa_htht__hyhy_h * u[Ny][i];
 
             tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
 
@@ -1622,9 +1624,9 @@ void IHyperbolicEquation2D::calculateMVD3(DoubleMatrix &u, double hx, double hy,
         {
             for (unsigned int i=0; i<=Nx; i++)
             {
-                u0[j][i] = u1[j][i];
-                u1[j][i] = u[j][i];
-                u15[j][i] = u05[j][i];
+                u00[j][i] = u10[j][i];
+                u10[j][i] = u[j][i];
+                u05[j][i] = u15[j][i];
             }
         }
 

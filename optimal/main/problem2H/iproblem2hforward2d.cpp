@@ -22,10 +22,10 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
     unsigned int Ns = mEquParameter.Ns;
 
     double m_aa_htht__hxhx = -(a*a*ht*ht)/(hx*hx);
-    double p_aa_htht__hxhx = +(a*a*ht*ht)/(hx*hx);
+    double p_aa_htht__hxhx_h = +0.5*(a*a*ht*ht)/(hx*hx);
     double m_aa_htht__hxhx_h = -0.5*(a*a*ht*ht)/(hx*hx);
     double m_aa_htht__hyhy = -(a*a*ht*ht)/(hy*hy);
-    double p_aa_htht__hyhy = +(a*a*ht*ht)/(hy*hy);
+    double p_aa_htht__hyhy_h = +0.5*(a*a*ht*ht)/(hy*hy);
     double m_aa_htht__hyhy_h = -0.5*(a*a*ht*ht)/(hy*hy);
     double p_aa_htht__hxhx___lambda_ht = +1.0 + (a*a*ht*ht)/(hx*hx) + 1.5*(lambda*ht);
     double p_aa_htht__hyhy___lambda_ht = +1.0 + (a*a*ht*ht)/(hy*hy) + 1.5*(lambda*ht);
@@ -224,9 +224,9 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
             {
                 sn.i = n; sn.x = n*hx;
 
-                if (m == 0)     d1X[n] = p_aa_htht__hyhy*(u10[0][n]   - 2.0*u10[1][n]   + u10[2][n]);
-                if (m>0 && m<M) d1X[n] = p_aa_htht__hyhy*(u10[m-1][n] - 2.0*u10[m][n]   + u10[m+1][n]);
-                if (m == M)     d1X[n] = p_aa_htht__hyhy*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
+                if (m == 0)     d1X[n] = p_aa_htht__hyhy_h*(u10[0][n]   - 2.0*u10[1][n]   + u10[2][n]);
+                if (m>0 && m<M) d1X[n] = p_aa_htht__hyhy_h*(u10[m-1][n] - 2.0*u10[m][n]   + u10[m+1][n]);
+                if (m == M)     d1X[n] = p_aa_htht__hyhy_h*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
 
                 d1X[n] += 0.5*(u10[m][n]-u00[m][n]) + u10[m][n];
                 d1X[n] += 0.5*lambda*ht*(4.0*u10[m][n]-u05[m][n]);
@@ -264,9 +264,9 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
                 {
                     sn.i = n; sn.x = n*hx;
 
-                    if (m == 0)     d1X[n] = p_aa_htht__hyhy*(u10[0][n]   - 2.0*u10[1][n]   + u10[2][n]);
-                    if (m>0 && m<M) d1X[n] = p_aa_htht__hyhy*(u10[m-1][n] - 2.0*u10[m][n]   + u10[m+1][n]);
-                    if (m == M)     d1X[n] = p_aa_htht__hyhy*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
+                    if (m == 0)     d1X[n] = p_aa_htht__hyhy_h*(u10[0][n]   - 2.0*u10[1][n]   + u10[2][n]);
+                    if (m>0 && m<M) d1X[n] = p_aa_htht__hyhy_h*(u10[m-1][n] - 2.0*u10[m][n]   + u10[m+1][n]);
+                    if (m == M)     d1X[n] = p_aa_htht__hyhy_h*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
 
                     d1X[n] += 0.5*(u10[m][n]-u00[m][n]) + u10[m][n];
                     d1X[n] += 0.5*lambda*ht*(4.0*u10[m][n]-u05[m][n]);
@@ -331,9 +331,9 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
                 {
                     sn.i = n; sn.x = n*hx;
 
-                    if (m==0)       d1[offset+n] = p_aa_htht__hyhy*(u10[0][n]   - 2.0*u10[1][n]   + u10[2][n]);
-                    if (m>0 && m<M) d1[offset+n] = p_aa_htht__hyhy*(u10[m-1][n] - 2.0*u10[m][n]   + u10[m+1][n]);
-                    if (m==M)       d1[offset+n] = p_aa_htht__hyhy*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
+                    if (m==0)       d1[offset+n] = p_aa_htht__hyhy_h*(u10[0][n]   - 2.0*u10[1][n]   + u10[2][n]);
+                    if (m>0 && m<M) d1[offset+n] = p_aa_htht__hyhy_h*(u10[m-1][n] - 2.0*u10[m][n]   + u10[m+1][n]);
+                    if (m==M)       d1[offset+n] = p_aa_htht__hyhy_h*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
 
                     d1[offset+n] += 0.5*(u10[m][n]-u00[m][n]) + u10[m][n];
                     d1[offset+n] += 0.5*lambda*ht*(4.0*u10[m][n]-u05[m][n]);
@@ -429,9 +429,9 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
             {
                 sn.j = m; sn.y = m*hy;
 
-                if (n==0)       d1Y[m] = p_aa_htht__hxhx*(u15[m][0]   - 2.0*u15[m][1]   + u15[m][2]);
-                if (n>0 && n<N) d1Y[m] = p_aa_htht__hxhx*(u15[m][n-1] - 2.0*u15[m][n]   + u15[m][n+1]);
-                if (n==N)       d1Y[m] = p_aa_htht__hxhx*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
+                if (n==0)       d1Y[m] = p_aa_htht__hxhx_h*(u15[m][0]   - 2.0*u15[m][1]   + u15[m][2]);
+                if (n>0 && n<N) d1Y[m] = p_aa_htht__hxhx_h*(u15[m][n-1] - 2.0*u15[m][n]   + u15[m][n+1]);
+                if (n==N)       d1Y[m] = p_aa_htht__hxhx_h*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
 
                 d1Y[m] += 0.5*(u10[m][n]-u00[m][n]) + u15[m][n];
                 d1Y[m] += 0.5*lambda*ht*(4.0*u15[m][n]-u10[m][n]);
@@ -469,9 +469,9 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
                 {
                     sn.j = m; sn.y = m*hy;
 
-                    if (n==0)       d1Y[m] = p_aa_htht__hxhx*(u15[m][0]   - 2.0*u15[m][1]   + u15[m][2]);
-                    if (n>0 && n<N) d1Y[m] = p_aa_htht__hxhx*(u15[m][n-1] - 2.0*u15[m][n]   + u15[m][n+1]);
-                    if (n==N)       d1Y[m] = p_aa_htht__hxhx*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
+                    if (n==0)       d1Y[m] = p_aa_htht__hxhx_h*(u15[m][0]   - 2.0*u15[m][1]   + u15[m][2]);
+                    if (n>0 && n<N) d1Y[m] = p_aa_htht__hxhx_h*(u15[m][n-1] - 2.0*u15[m][n]   + u15[m][n+1]);
+                    if (n==N)       d1Y[m] = p_aa_htht__hxhx_h*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
 
                     d1Y[m] += 0.5*(u10[m][n]-u00[m][n]) + u15[m][n];
                     d1Y[m] += 0.5*lambda*ht*(4.0*u15[m][n]-u10[m][n]);
@@ -536,9 +536,9 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
                 {
                     sn.j = m; sn.y = m*hy;
 
-                    if (n==0)       d2[offset+m] = p_aa_htht__hxhx*(u15[m][0]   - 2.0*u15[m][1]   + u15[m][2]);
-                    if (n>0 && n<N) d2[offset+m] = p_aa_htht__hxhx*(u15[m][n-1] - 2.0*u15[m][n]   + u15[m][n+1]);
-                    if (n==N)       d2[offset+m] = p_aa_htht__hxhx*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
+                    if (n==0)       d2[offset+m] = p_aa_htht__hxhx_h*(u15[m][0]   - 2.0*u15[m][1]   + u15[m][2]);
+                    if (n>0 && n<N) d2[offset+m] = p_aa_htht__hxhx_h*(u15[m][n-1] - 2.0*u15[m][n]   + u15[m][n+1]);
+                    if (n==N)       d2[offset+m] = p_aa_htht__hxhx_h*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
 
                     d2[offset+m] += 0.5*(u10[m][n]-u00[m][n]) + u15[m][n];
                     d2[offset+m] += 0.5*lambda*ht*(4.0*u15[m][n]-u10[m][n]);
