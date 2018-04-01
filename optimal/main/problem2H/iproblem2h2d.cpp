@@ -333,7 +333,7 @@ void IProblem2H2D::optimization()
     g.setEpsilon1(0.0000001);
     g.setEpsilon2(0.0000001);
     g.setEpsilon3(0.0000001);
-    g.setR1MinimizeEpsilon(0.01, 0.001);
+    g.setR1MinimizeEpsilon(1.0, 0.01);
     g.setNormalize(true);
     g.showEndMessage(true);
     g.setResetIteration(false);
