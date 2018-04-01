@@ -250,6 +250,7 @@ void IPrinter::print(const DoubleVector &v, unsigned int N, unsigned int width, 
 void IPrinter::printSeperatorLine(const char* msg, char c, FILE* file)
 {
     int columns=10;
+
 #ifdef _INC_WINDOWS
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
@@ -264,6 +265,6 @@ void IPrinter::printSeperatorLine(const char* msg, char c, FILE* file)
     }
 
     for (int i=start; i<columns; i++) fprintf(file,"%c", c);
-    fputs("", file);
+    printf("\n", file);
     fflush(file);
 }
