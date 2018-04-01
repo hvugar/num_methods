@@ -633,7 +633,8 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
             {
                 for (unsigned int n=0; n<=N; n++)
                 {
-                    ut[m][n] = (u[m][n]-u00[m][n])/(2.0*ht);
+                    //ut[m][n] = (u[m][n]-u00[m][n])/(2.0*ht);
+                    ut[m][n] = (3.0*u[m][n]-4.0*u10[m][n]+u00[m][n])/(2.0*ht);
                 }
             }
         }

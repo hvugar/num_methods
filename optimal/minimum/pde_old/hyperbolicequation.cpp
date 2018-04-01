@@ -1341,7 +1341,7 @@ void IHyperbolicEquation2D::calculateMVD2(DoubleMatrix &u, double hx, double hy,
     IPrinter::printSeperatorLine();
     IPrinter::printMatrix(14,10,u1);
     IPrinter::printSeperatorLine();
-//    return;
+    //    return;
 
     for (unsigned int k=2; k<=M; k++)
     {
@@ -1384,10 +1384,10 @@ void IHyperbolicEquation2D::calculateMVD2(DoubleMatrix &u, double hx, double hy,
             }
         }
 
-//        IPrinter::printSeperatorLine();
-//        IPrinter::printMatrix(14,10,uh);
-//        IPrinter::printSeperatorLine();
-//        return;
+        //        IPrinter::printSeperatorLine();
+        //        IPrinter::printMatrix(14,10,uh);
+        //        IPrinter::printSeperatorLine();
+        //        return;
 
         // Approximation to y direction
 
@@ -1438,10 +1438,10 @@ void IHyperbolicEquation2D::calculateMVD2(DoubleMatrix &u, double hx, double hy,
 
         if (k%10==0)
         {
-//        IPrinter::printSeperatorLine();
-//        IPrinter::printMatrix(14,10,u);
-//        IPrinter::printSeperatorLine();
-//        break;
+            //        IPrinter::printSeperatorLine();
+            //        IPrinter::printMatrix(14,10,u);
+            //        IPrinter::printSeperatorLine();
+            //        break;
         }
     }
 
@@ -1482,12 +1482,11 @@ void IHyperbolicEquation2D::calculateMVD3(DoubleMatrix &u, double hx, double hy,
     double m_a1a1_htht__hxhx_h = -0.5*(a1*a1*ht*ht)/(hx*hx);
     double p_a1a1_htht__hxhx___lambda_ht = +1.0 + (a1*a1*ht*ht)/(hx*hx)+1.5*lambda*ht;
     double p_a2a2_htht__hyhy_h = +0.5*(a2*a2*ht*ht)/(hy*hy);
-
     double m_aa_htht__hyhy_h = -0.5*(a2*a2*ht*ht)/(hy*hy);
     double p_aa_htht__hyhy___lambda_ht = +1.0 + (a2*a2*ht*ht)/(hy*hy)+1.5*lambda*ht;
     double p_a2a2_htht__hxhx_h = +0.5*(a1*a1*ht*ht)/(hx*hx);
-
-    double hh = 0.5*ht;
+    double a1a1__hxhx = ((a1*a1)/(hx*hx));
+    double a2a2__hyhy = ((a2*a2)/(hy*hy));
 
     //------------------------------------- initial conditions -------------------------------------//
     for (unsigned int j=0; j<=Ny; j++)
@@ -1504,30 +1503,27 @@ void IHyperbolicEquation2D::calculateMVD3(DoubleMatrix &u, double hx, double hy,
         {
             double sum = f(i,j,0);
 
-            if (i==0)       sum += ((a1*a1)/(hx*hx))*(u00[j][i]-2.0*u00[j][i+1]+u00[j][i+2]);
-            else if (i==Nx) sum += ((a1*a1)/(hx*hx))*(u00[j][i-2]-2.0*u00[j][i-1]+u00[j][i]);
-            else            sum += ((a1*a1)/(hx*hx))*(u00[j][i-1]-2.0*u00[j][i]+u00[j][i+1]);
+            if (i==0)       sum += a1a1__hxhx*(u00[j][i]-2.0*u00[j][i+1]+u00[j][i+2]);
+            else if (i==Nx) sum += a1a1__hxhx*(u00[j][i-2]-2.0*u00[j][i-1]+u00[j][i]);
+            else            sum += a1a1__hxhx*(u00[j][i-1]-2.0*u00[j][i]+u00[j][i+1]);
 
-            if (j==0)       sum += ((a2*a2)/(hy*hy))*(u00[j][i]-2.0*u00[j+1][i]+u00[j+2][i]);
-            else if (j==Ny) sum += ((a2*a2)/(hy*hy))*(u00[j-2][i]-2.0*u00[j-1][i]+u00[j][i]);
-            else            sum += ((a2*a2)/(hy*hy))*(u00[j-1][i]-2.0*u00[j][i]+u00[j+1][i]);
+            if (j==0)       sum += a2a2__hyhy*(u00[j][i]-2.0*u00[j+1][i]+u00[j+2][i]);
+            else if (j==Ny) sum += a2a2__hyhy*(u00[j-2][i]-2.0*u00[j-1][i]+u00[j][i]);
+            else            sum += a2a2__hyhy*(u00[j-1][i]-2.0*u00[j][i]+u00[j+1][i]);
 
             sum -= lambda*initial2(i, j);
-
-            u10[j][i] += 0.5*ht*ht*sum;
-            u05[j][i] += 0.5*hh*hh*sum;
 
             u05[j][i] = u00[j][i] + ht*initial2(i, j)*0.5 + sum*ht*ht*0.125;
             u10[j][i] = u00[j][i] + ht*initial2(i, j)     + sum*ht*ht*0.500;
         }
     }
 
-//    IPrinter::printMatrix(14,10,u00);
-//    IPrinter::printSeperatorLine();
-//    IPrinter::printMatrix(14,10,u05);
-//    IPrinter::printSeperatorLine();
-//    IPrinter::printMatrix(14,10,u10);
-//    IPrinter::printSeperatorLine();
+    //    IPrinter::printMatrix(14,10,u00);
+    //    IPrinter::printSeperatorLine();
+    //    IPrinter::printMatrix(14,10,u05);
+    //    IPrinter::printSeperatorLine();
+    //    IPrinter::printMatrix(14,10,u10);
+    //    IPrinter::printSeperatorLine();
 
     for (unsigned int k=2; k<=M; k++)
     {
@@ -1568,15 +1564,9 @@ void IHyperbolicEquation2D::calculateMVD3(DoubleMatrix &u, double hx, double hy,
 
             for (unsigned int i=1; i<Nx; i++)
             {
-                //u05[j][i] = hx*i*hx*i+hy*j*hy*j+t2;
                 u15[j][i] = rx1[i-1];
             }
         }
-
-//        IPrinter::printSeperatorLine();
-//        IPrinter::printMatrix(14,10,u05);
-//        IPrinter::printSeperatorLine();
-//        return;
 
         // Approximation to y direction
 
@@ -1597,10 +1587,12 @@ void IHyperbolicEquation2D::calculateMVD3(DoubleMatrix &u, double hx, double hy,
             for (unsigned int j=1; j<Ny; j++)
             {
                 da2[j-1] = m_aa_htht__hyhy_h;
-                db2[j-1] = p_aa_htht__hyhy___lambda_ht+1.5*lambda*ht;
+                db2[j-1] = p_aa_htht__hyhy___lambda_ht;
                 dc2[j-1] = m_aa_htht__hyhy_h;
-                dd2[j-1] = p_a2a2_htht__hxhx_h*(u15[j][i-1] - 2.0*u15[j][i] + u15[j][i+1]) + 0.5*(u10[j][i] - u00[j][i]) + u15[j][i]
-                        + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda) + 0.5*lambda*ht*(4.0*u15[j][i]-u10[j][i]);
+                dd2[j-1] = p_a2a2_htht__hxhx_h*(u15[j][i-1] - 2.0*u15[j][i] + u15[j][i+1]) +
+                        0.5*(u10[j][i] - u00[j][i]) + u15[j][i] +
+                        0.5*lambda*ht*(4.0*u15[j][i]-u10[j][i]) +
+                        0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda);
             }
 
             da2[0]     = 0.0;
@@ -1611,13 +1603,27 @@ void IHyperbolicEquation2D::calculateMVD3(DoubleMatrix &u, double hx, double hy,
 
             tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
 
-            //IPrinter::printVector(rx3);
-
             for (unsigned int j=1; j<Ny; j++)
             {
                 u[j][i] = rx2[j-1];
-                //u[j][i] = hx*i*hx*i+hy*j*hy*j+t2;
             }
+        }
+
+        if (k==M)
+        {
+            DoubleMatrix ut;
+            ut.resize(Ny+1, Nx+1);
+            for (unsigned int j=0; j<=Ny; j++)
+            {
+                for (unsigned int i=0; i<=Nx; i++)
+                {
+                    ut[j][i] = (3.0*u[j][i]-4.0*u10[j][i]+u00[j][i])/(2.0*ht);
+                }
+            }
+            IPrinter::printSeperatorLine();
+            IPrinter::printMatrix(14,10,ut);
+            IPrinter::printSeperatorLine();
+            ut.clear();
         }
 
         for (unsigned int j=0; j<=Ny; j++)
@@ -1629,14 +1635,6 @@ void IHyperbolicEquation2D::calculateMVD3(DoubleMatrix &u, double hx, double hy,
                 u05[j][i] = u15[j][i];
             }
         }
-
-        //if (k%10==0)
-//        {
-//        IPrinter::printSeperatorLine();
-//        IPrinter::printMatrix(14,10,u);
-//        IPrinter::printSeperatorLine();
-//        break;
-//        }
     }
 
     da1.clear();

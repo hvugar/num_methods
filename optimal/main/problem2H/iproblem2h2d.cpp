@@ -260,7 +260,7 @@ void IProblem2H2D::optimization()
     ifunc.mTimeDimension = Dimension(0.01, 0, 100);
 
     ifunc.alpha0 = 1.0; ifunc.V0.resize(101, 101, 0.0);
-    ifunc.alpha1 = 0.0; ifunc.V1.resize(101, 101, 0.0);
+    ifunc.alpha1 = 1.0; ifunc.V1.resize(101, 101, 0.0);
 
     IProblem2H2D::EquationParameter e_prm;
     e_prm.a = 1.0;
