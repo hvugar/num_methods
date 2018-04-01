@@ -3,6 +3,7 @@
 
 #include <grid/hibvp.h>
 #include <vector>
+#include <gradient_cjt.h>
 
 using namespace std;
 
@@ -26,7 +27,6 @@ public:
         DoubleVector q;
         double a;
         double lambda;
-        double lambda1;
     };
 
     struct ExtendedSpacePointNode
@@ -42,7 +42,9 @@ public:
 
     static void Main(int argc, char* argv[]);
 
-    static void Forward();
+    static void forward();
+    static void checkGradient();
+    static void optimization();
 
     static void distributeDelta(const SpacePoint &pt, std::vector<ExtendedSpacePointNode> &nodes, unsigned int id,
                                 const Dimension &xd, const Dimension &yd);

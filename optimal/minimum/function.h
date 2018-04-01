@@ -4,6 +4,16 @@
 #include "global.h"
 #include "vector2d.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+double MINIMUMSHARED_EXPORT sgn(double x);
+
+#ifdef __cplusplus
+}
+#endif
+
 struct MINIMUMSHARED_EXPORT R1Function
 {
     virtual double fx(double x) const = 0;

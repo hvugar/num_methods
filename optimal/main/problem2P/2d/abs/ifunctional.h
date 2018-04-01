@@ -40,9 +40,6 @@ public:
     void toVector(const Parameter &prm, DoubleVector &x) const;
     void fromVector(const DoubleVector &x, Parameter &prm);
 
-private:
-    double sgn(double x) const;
-
 protected:
     Parameter mParameter;
     Parameter mParameter0;

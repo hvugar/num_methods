@@ -6,172 +6,12 @@
 
 void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-//    Forward();
-//    return;
-
-    IProblem2H2D_NS::IFunctional ifunc;
-    ifunc.optimizeK = true;
-    ifunc.optimizeZ = true;
-    ifunc.optimizeC = true;
-    ifunc.optimizeO = true;
-
-    ifunc.mSpaceDimensionX = Dimension(0.01, 0, 100);
-    ifunc.mSpaceDimensionY = (Dimension(0.01, 0, 100));
-    ifunc.mTimeDimension = Dimension(0.005, 0, 200);
-
-    ifunc.alpha0 = 1.0; ifunc.V0.resize(101, 101, 0.0);
-    ifunc.alpha1 = 1.0; ifunc.V1.resize(101, 101, 0.0);
-
-    IProblem2H2D::EquationParameter e_prm;
-    e_prm.a = 1.0;
-    e_prm.lambda = 0.001;
-    e_prm.lambda1 = 0.0;
-
-    e_prm.Ns = 2;
-    e_prm.q.resize(e_prm.Ns);
-    e_prm.theta.resize(e_prm.Ns);
-
-    e_prm.q[0] = -2.0; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
-    e_prm.q[1] = -2.0; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
-
-    e_prm.Nc = 2;
-    e_prm.No = 2;
-
-    IProblem2H2D::OptimizeParameter o_prm;
-    o_prm.xi.resize(e_prm.No);
-    o_prm.xi[0].x = 0.400; o_prm.xi[0].y = 0.400;
-    o_prm.xi[1].x = 0.600; o_prm.xi[1].y = 0.600;
-
-    o_prm.eta.resize(e_prm.Nc);
-    o_prm.eta[0].x = 0.300; o_prm.eta[0].y = 0.700;
-    o_prm.eta[1].x = 0.700; o_prm.eta[1].y = 0.300;
-
-    o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
-    o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
-
-    o_prm.k[0][0] = -2.12; o_prm.k[0][1] = -2.24;
-    o_prm.k[1][0] = -2.45; o_prm.k[1][1] = -2.18;
-    o_prm.z[0][0] = +0.50; o_prm.z[0][1] = +0.40;
-    o_prm.z[1][0] = +0.70; o_prm.z[1][1] = +0.50;
-
-    IProblem2H2D::OptimizeParameter o_prm0;
-    o_prm0.xi.resize(e_prm.No);
-    o_prm0.xi[0].x = 0.400; o_prm0.xi[0].y = 0.400;
-    o_prm0.xi[1].x = 0.600; o_prm0.xi[1].y = 0.600;
-
-    o_prm0.eta.resize(e_prm.Nc);
-    o_prm0.eta[0].x = 0.300; o_prm0.eta[0].y = 0.700;
-    o_prm0.eta[1].x = 0.700; o_prm0.eta[1].y = 0.300;
-
-    o_prm0.k.resize(e_prm.Nc, e_prm.No, 0.0);
-    o_prm0.z.resize(e_prm.Nc, e_prm.No, 0.0);
-
-    o_prm0.k[0][0] = -0.12; o_prm0.k[0][1] = -2.24;
-    o_prm0.k[1][0] = -0.45; o_prm0.k[1][1] = -2.18;
-    o_prm0.z[0][0] = +5.50; o_prm0.z[0][1] = +4.40;
-    o_prm0.z[1][0] = +4.70; o_prm0.z[1][1] = +5.50;
-
-    ifunc.mEquParameter = e_prm;
-    ifunc.mOptParameter0 = o_prm0;
-    ifunc.regEpsilon = 0.1;
-
-    IPrinter::printSeperatorLine();
-    DoubleVector pv;
-    ifunc.toVector(o_prm, pv);
-    IPrinter::print(pv, pv.length(), 6, 4);
-    IPrinter::printSeperatorLine();
-    DoubleVector pv0;
-    ifunc.toVector(o_prm0, pv0);
-    IPrinter::print(pv0, pv0.length(), 6, 4);
-    IPrinter::printSeperatorLine();
-    DoubleVector ag(pv.length());
-
-    puts("Calculating gradients....");
-    ifunc.gradient(pv,ag);
-    puts("Gradients are calculated.");
-
-    double functional = ifunc.fx(pv);
-    printf("Functional: %f\n", functional);
-
-    DoubleVector ng1(pv.length(), 0.0);
-    DoubleVector ng2(pv.length(), 0.0);
-
-    puts("Calculating numerical gradients.... dh=0.01");
-    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 0*e_prm.Nc*e_prm.No,            1*e_prm.Nc*e_prm.No-1);
-    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 1*e_prm.Nc*e_prm.No,            2*e_prm.Nc*e_prm.No-1);
-    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No+0*e_prm.Nc, 2*e_prm.Nc*e_prm.No+2*e_prm.Nc-1);
-    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No+2*e_prm.Nc, 2*e_prm.Nc*e_prm.No+2*e_prm.Nc+2*e_prm.No-1);
-    puts("Numerical gradients are calculated.");
-
-//    puts("Calculating numerical gradients.... hx=0.001");
-//    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 0*e_prm.Nc*e_prm.No,            1*e_prm.Nc*e_prm.No-1);
-//    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 1*e_prm.Nc*e_prm.No,            2*e_prm.Nc*e_prm.No-1);
-//    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+0*e_prm.Nc, 2*e_prm.Nc*e_prm.No+2*e_prm.Nc-1);
-//    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+2*e_prm.Nc, 2*e_prm.Nc*e_prm.No+2*e_prm.Nc+2*e_prm.No-1);
-//    puts("Numerical gradients are calculated.");
-
-    //k------------------------------------------------------//
-    DoubleVector pk0 = pv.mid(0, e_prm.Nc*e_prm.No-1);
-    DoubleVector ak0 = ag.mid(0, e_prm.Nc*e_prm.No-1);
-    DoubleVector nk1 = ng1.mid(0, e_prm.Nc*e_prm.No-1);
-    DoubleVector nk2 = ng2.mid(0, e_prm.Nc*e_prm.No-1);
-
-    IPrinter::print(pk0,pk0.length(),14,4);
-    IPrinter::print(ak0,ak0.length(),14,4); ak0.L2Normalize();
-    IPrinter::print(nk1,nk1.length(),14,4); nk1.L2Normalize();
-    IPrinter::print(nk2,nk2.length(),14,4); nk2.L2Normalize();
-    IPrinter::print(ak0,ak0.length(),14,4);
-    IPrinter::print(nk1,nk1.length(),14,4);
-    IPrinter::print(nk2,nk2.length(),14,4);
-    IPrinter::printSeperatorLine();
-
-    //z------------------------------------------------------//
-    DoubleVector pz0 = pv.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
-    DoubleVector az0 = ag.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
-    DoubleVector nz1 = ng1.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
-    DoubleVector nz2 = ng2.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
-
-    IPrinter::print(pz0,pz0.length(),14,4);
-    IPrinter::print(az0,az0.length(),14,4); az0.L2Normalize();
-    IPrinter::print(nz1,nz1.length(),14,4); nz1.L2Normalize();
-    IPrinter::print(nz2,nz2.length(),14,4); nz2.L2Normalize();
-    IPrinter::print(az0,az0.length(),14,4);
-    IPrinter::print(nz1,nz1.length(),14,4);
-    IPrinter::print(nz2,nz2.length(),14,4);
-    IPrinter::printSeperatorLine();
-
-    //eta------------------------------------------------------//
-    DoubleVector pe0 = pv.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.Nc-1);
-    DoubleVector ae0 = ag.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.Nc-1);
-    DoubleVector ne1 = ng1.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.Nc-1);
-    DoubleVector ne2 = ng2.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.Nc-1);
-
-    IPrinter::print(pe0,pe0.length(),14,4);
-    IPrinter::print(ae0,ae0.length(),14,4); ae0.L2Normalize();
-    IPrinter::print(ne1,ne1.length(),14,4); ne1.L2Normalize();
-    IPrinter::print(ne2,ne2.length(),14,4); ne2.L2Normalize();
-    IPrinter::print(ae0,ae0.length(),14,4);
-    IPrinter::print(ne1,ne1.length(),14,4);
-    IPrinter::print(ne2,ne2.length(),14,4);
-    IPrinter::printSeperatorLine();
-
-    //xi------------------------------------------------------//
-    DoubleVector px0 = pv.mid(2*e_prm.Nc*e_prm.No+2*e_prm.Nc, 2*e_prm.Nc*e_prm.No+2*e_prm.Nc+2*e_prm.No-1);
-    DoubleVector ax0 = ag.mid(2*e_prm.Nc*e_prm.No+2*e_prm.Nc, 2*e_prm.Nc*e_prm.No+2*e_prm.Nc+2*e_prm.No-1);
-    DoubleVector nx1 = ng1.mid(2*e_prm.Nc*e_prm.No+2*e_prm.Nc, 2*e_prm.Nc*e_prm.No+2*e_prm.Nc+2*e_prm.No-1);
-    DoubleVector nx2 = ng2.mid(2*e_prm.Nc*e_prm.No+2*e_prm.Nc, 2*e_prm.Nc*e_prm.No+2*e_prm.Nc+2*e_prm.No-1);
-
-    IPrinter::print(px0,px0.length(),14,4);
-    IPrinter::print(ax0,ax0.length(),14,4); ax0.L2Normalize();
-    IPrinter::print(nx1,nx1.length(),14,4); nx1.L2Normalize();
-    IPrinter::print(nx2,nx2.length(),14,4); nx2.L2Normalize();
-    IPrinter::print(ax0,ax0.length(),14,4);
-    IPrinter::print(nx1,nx1.length(),14,4);
-    IPrinter::print(nx2,nx2.length(),14,4);
-    IPrinter::printSeperatorLine();
+//    forward();
+//    checkGradient();
+    optimization();
 }
 
-void IProblem2H2D::Forward()
+void IProblem2H2D::forward()
 {
     IProblem2HForward2D frw;
     frw.addSpaceDimension(Dimension(0.01, 0, 100));
@@ -181,7 +21,6 @@ void IProblem2H2D::Forward()
     IProblem2H2D::EquationParameter e_prm;
     e_prm.a = 1.0;
     e_prm.lambda = 0.001;
-    e_prm.lambda1 = 0.0;
 
     e_prm.Ns = 2;
     e_prm.q.resize(e_prm.Ns);
@@ -216,7 +55,7 @@ void IProblem2H2D::Forward()
     DoubleMatrix u;
     DoubleMatrix ut;
     std::vector<ExtendedSpaceNode2DH> u_info;
-    frw.calculateMVD(u, ut, u_info, false);
+    frw.calculateMVD(u, ut, u_info, true);
 
     IProblem2HBackward2D bkw;
     bkw.addSpaceDimension(Dimension(0.01, 0, 100));
@@ -235,7 +74,284 @@ void IProblem2H2D::Forward()
 
     DoubleMatrix p;
     std::vector<ExtendedSpaceNode2DH> p_info;
-    bkw.calculateMVD(p, p_info, false);
+    bkw.calculateMVD(p, p_info, false, u_info);
+}
+
+void IProblem2H2D::checkGradient()
+{
+    IProblem2H2D_NS::IFunctional ifunc;
+    ifunc.optimizeK = true;
+    ifunc.optimizeZ = true;
+    ifunc.optimizeC = true;
+    ifunc.optimizeO = true;
+
+    ifunc.mSpaceDimensionX = Dimension(0.01, 0, 100);
+    ifunc.mSpaceDimensionY = (Dimension(0.01, 0, 100));
+    ifunc.mTimeDimension = Dimension(0.005, 0, 200);
+
+    ifunc.alpha0 = 1.0; ifunc.V0.resize(101, 101, 0.0);
+    ifunc.alpha1 = 1.0; ifunc.V1.resize(101, 101, 0.0);
+
+    IProblem2H2D::EquationParameter e_prm;
+    e_prm.a = 1.0;
+    e_prm.lambda = 0.001;
+
+    e_prm.Ns = 2;
+    e_prm.q.resize(e_prm.Ns);
+    e_prm.theta.resize(e_prm.Ns);
+
+    e_prm.q[0] = -2.0; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
+    e_prm.q[1] = -2.0; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
+
+    e_prm.Nc = 2;
+    e_prm.No = 3;
+
+    IProblem2H2D::OptimizeParameter o_prm;
+    o_prm.xi.resize(e_prm.No);
+    o_prm.xi[0].x = 0.400; o_prm.xi[0].y = 0.400;
+    o_prm.xi[1].x = 0.600; o_prm.xi[1].y = 0.600;
+    o_prm.xi[2].x = 0.500; o_prm.xi[2].y = 0.500;
+
+    o_prm.eta.resize(e_prm.Nc);
+    o_prm.eta[0].x = 0.300; o_prm.eta[0].y = 0.700;
+    o_prm.eta[1].x = 0.700; o_prm.eta[1].y = 0.300;
+
+    o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+
+    o_prm.k[0][0] = -2.12; o_prm.k[0][1] = -2.24; o_prm.k[0][2] = -2.24;
+    o_prm.k[1][0] = -2.45; o_prm.k[1][1] = -2.18; o_prm.k[1][2] = -2.18;
+    o_prm.z[0][0] = +0.50; o_prm.z[0][1] = +0.40; o_prm.z[0][2] = +0.40;
+    o_prm.z[1][0] = +0.70; o_prm.z[1][1] = +0.50; o_prm.z[1][2] = +0.50;
+
+    IProblem2H2D::OptimizeParameter o_prm0;
+    o_prm0.xi.resize(e_prm.No);
+    o_prm0.xi[0].x = 0.400; o_prm0.xi[0].y = 0.400;
+    o_prm0.xi[1].x = 0.600; o_prm0.xi[1].y = 0.600;
+    o_prm0.xi[2].x = 0.500; o_prm0.xi[2].y = 0.500;
+
+    o_prm0.eta.resize(e_prm.Nc);
+    o_prm0.eta[0].x = 0.300; o_prm0.eta[0].y = 0.700;
+    o_prm0.eta[1].x = 0.700; o_prm0.eta[1].y = 0.300;
+
+    o_prm0.k.resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm0.z.resize(e_prm.Nc, e_prm.No, 0.0);
+
+    o_prm0.k[0][0] = -0.12; o_prm0.k[0][1] = -0.24; o_prm0.k[0][2] = -0.24;
+    o_prm0.k[1][0] = -0.45; o_prm0.k[1][1] = -0.18; o_prm0.k[1][2] = -0.18;
+    o_prm0.z[0][0] = +5.50; o_prm0.z[0][1] = +4.40; o_prm0.z[0][2] = +4.40;
+    o_prm0.z[1][0] = +4.70; o_prm0.z[1][1] = +5.50; o_prm0.z[1][2] = +5.50;
+
+    ifunc.mEquParameter = e_prm;
+    ifunc.mOptParameter0 = o_prm0;
+    ifunc.regEpsilon = 0.0;
+
+    ifunc.r = 0.0;
+    ifunc.vmin.resize(e_prm.Nc, -5.0);
+    ifunc.vmax.resize(e_prm.Nc, +5.0);
+
+    IPrinter::printSeperatorLine();
+    DoubleVector pv;
+    ifunc.toVector(o_prm, pv);
+    IPrinter::print(pv, pv.length(), 6, 4);
+    IPrinter::printSeperatorLine();
+    DoubleVector pv0;
+    ifunc.toVector(o_prm0, pv0);
+    IPrinter::print(pv0, pv0.length(), 6, 4);
+    IPrinter::printSeperatorLine();
+    DoubleVector ag(pv.length());
+
+    puts("Calculating gradients....");
+    ifunc.gradient(pv, ag);
+    puts("Gradients are calculated.");
+
+    double functional = ifunc.fx(pv);
+    printf("Functional: %f\n", functional);
+
+    DoubleVector ng1(pv.length(), 0.0);
+    DoubleVector ng2(pv.length(), 0.0);
+
+    puts("Calculating numerical gradients.... dh=0.01");
+    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 0*e_prm.Nc*e_prm.No,            1*e_prm.Nc*e_prm.No-1);
+    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 1*e_prm.Nc*e_prm.No,            2*e_prm.Nc*e_prm.No-1);
+    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No+0*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
+    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
+    puts("Numerical gradients are calculated.");
+
+//    puts("Calculating numerical gradients.... hx=0.001");
+//    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 0*e_prm.Nc*e_prm.No,            1*e_prm.Nc*e_prm.No-1);
+//    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 1*e_prm.Nc*e_prm.No,            2*e_prm.Nc*e_prm.No-1);
+//    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+0*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
+//    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
+//    puts("Numerical gradients are calculated.");
+
+    //k------------------------------------------------------//
+    IPrinter::printSeperatorLine("k");
+    DoubleVector pk0 = pv.mid(0, e_prm.Nc*e_prm.No-1);
+    DoubleVector ak0 = ag.mid(0, e_prm.Nc*e_prm.No-1);
+    DoubleVector nk1 = ng1.mid(0, e_prm.Nc*e_prm.No-1);
+    DoubleVector nk2 = ng2.mid(0, e_prm.Nc*e_prm.No-1);
+
+    IPrinter::print(pk0,pk0.length(),14,4);
+    IPrinter::print(ak0,ak0.length(),14,4); ak0.L2Normalize();
+    IPrinter::print(nk1,nk1.length(),14,4); nk1.L2Normalize();
+    IPrinter::print(nk2,nk2.length(),14,4); nk2.L2Normalize();
+    IPrinter::print(ak0,ak0.length(),14,4);
+    IPrinter::print(nk1,nk1.length(),14,4);
+    IPrinter::print(nk2,nk2.length(),14,4);
+
+    //z------------------------------------------------------//
+    IPrinter::printSeperatorLine("z");
+    DoubleVector pz0 = pv.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
+    DoubleVector az0 = ag.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
+    DoubleVector nz1 = ng1.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
+    DoubleVector nz2 = ng2.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
+
+    IPrinter::print(pz0,pz0.length(),14,4);
+    IPrinter::print(az0,az0.length(),14,4); az0.L2Normalize();
+    IPrinter::print(nz1,nz1.length(),14,4); nz1.L2Normalize();
+    IPrinter::print(nz2,nz2.length(),14,4); nz2.L2Normalize();
+    IPrinter::print(az0,az0.length(),14,4);
+    IPrinter::print(nz1,nz1.length(),14,4);
+    IPrinter::print(nz2,nz2.length(),14,4);
+
+    //xi------------------------------------------------------//
+    IPrinter::printSeperatorLine("xi");
+    DoubleVector pe0 = pv.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
+    DoubleVector ae0 = ag.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
+    DoubleVector ne1 = ng1.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
+    DoubleVector ne2 = ng2.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
+
+    IPrinter::print(pe0,pe0.length(),14,4);
+    IPrinter::print(ae0,ae0.length(),14,4); ae0.L2Normalize();
+    IPrinter::print(ne1,ne1.length(),14,4); ne1.L2Normalize();
+    IPrinter::print(ne2,ne2.length(),14,4); ne2.L2Normalize();
+    IPrinter::print(ae0,ae0.length(),14,4);
+    IPrinter::print(ne1,ne1.length(),14,4);
+    IPrinter::print(ne2,ne2.length(),14,4);
+
+    //eta------------------------------------------------------//
+    IPrinter::printSeperatorLine("eta");
+    DoubleVector px0 = pv.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
+    DoubleVector ax0 = ag.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
+    DoubleVector nx1 = ng1.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
+    DoubleVector nx2 = ng2.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
+
+    IPrinter::print(px0,px0.length(),14,4);
+    IPrinter::print(ax0,ax0.length(),14,4); ax0.L2Normalize();
+    IPrinter::print(nx1,nx1.length(),14,4); nx1.L2Normalize();
+    IPrinter::print(nx2,nx2.length(),14,4); nx2.L2Normalize();
+    IPrinter::print(ax0,ax0.length(),14,4);
+    IPrinter::print(nx1,nx1.length(),14,4);
+    IPrinter::print(nx2,nx2.length(),14,4);
+    IPrinter::printSeperatorLine();
+}
+
+void IProblem2H2D::optimization()
+{
+    IProblem2H2D_NS::IFunctional ifunc;
+    ifunc.optimizeK = true;
+    ifunc.optimizeZ = true;
+    ifunc.optimizeC = true;
+    ifunc.optimizeO = true;
+
+    ifunc.mSpaceDimensionX = Dimension(0.01, 0, 100);
+    ifunc.mSpaceDimensionY = (Dimension(0.01, 0, 100));
+    ifunc.mTimeDimension = Dimension(0.01, 0, 100);
+
+    ifunc.alpha0 = 1.0; ifunc.V0.resize(101, 101, 0.0);
+    ifunc.alpha1 = 0.0; ifunc.V1.resize(101, 101, 0.0);
+
+    IProblem2H2D::EquationParameter e_prm;
+    e_prm.a = 1.0;
+    e_prm.lambda = 0.01;
+
+    e_prm.Ns = 2;
+    e_prm.q.resize(e_prm.Ns);
+    e_prm.theta.resize(e_prm.Ns);
+
+    e_prm.q[0] = -2.0; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
+    e_prm.q[1] = -2.0; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
+
+    e_prm.Nc = 4;
+    e_prm.No = 2;
+
+    IProblem2H2D::OptimizeParameter o_prm;
+    o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+
+    o_prm.k[0][0] = -0.12; o_prm.k[0][1] = -0.24;
+    o_prm.k[1][0] = -0.45; o_prm.k[1][1] = -0.18;
+    o_prm.k[2][0] = -0.12; o_prm.k[2][1] = -0.24;
+    o_prm.k[3][0] = -0.45; o_prm.k[3][1] = -0.18;
+
+    o_prm.z[0][0] = +5.50; o_prm.z[0][1] = +5.40;
+    o_prm.z[1][0] = +5.70; o_prm.z[1][1] = +5.50;
+    o_prm.z[2][0] = +5.50; o_prm.z[2][1] = +5.40;
+    o_prm.z[3][0] = +5.70; o_prm.z[3][1] = +5.50;
+
+    o_prm.xi.resize(e_prm.No);
+    o_prm.xi[0].x = 0.400; o_prm.xi[0].y = 0.400;
+    o_prm.xi[1].x = 0.600; o_prm.xi[1].y = 0.600;
+
+    o_prm.eta.resize(e_prm.Nc);
+    o_prm.eta[0].x = 0.300; o_prm.eta[0].y = 0.700;
+    o_prm.eta[1].x = 0.700; o_prm.eta[1].y = 0.300;
+    o_prm.eta[2].x = 0.100; o_prm.eta[2].y = 0.900;
+    o_prm.eta[3].x = 0.900; o_prm.eta[3].y = 0.100;
+
+    IProblem2H2D::OptimizeParameter o_prm0;
+    o_prm0.xi.resize(e_prm.No);
+    o_prm0.xi[0].x = 0.400; o_prm0.xi[0].y = 0.400;
+    o_prm0.xi[1].x = 0.600; o_prm0.xi[1].y = 0.600;
+
+    o_prm0.eta.resize(e_prm.Nc);
+    o_prm0.eta[0].x = 0.300; o_prm0.eta[0].y = 0.700;
+    o_prm0.eta[1].x = 0.700; o_prm0.eta[1].y = 0.300;
+
+    o_prm0.k.resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm0.z.resize(e_prm.Nc, e_prm.No, 0.0);
+
+    o_prm0.k[0][0] = -0.12; o_prm0.k[0][1] = -0.24;
+    o_prm0.k[1][0] = -0.45; o_prm0.k[1][1] = -0.18;
+    o_prm0.z[0][0] = +5.50; o_prm0.z[0][1] = +4.40;
+    o_prm0.z[1][0] = +4.70; o_prm0.z[1][1] = +5.50;
+
+    ifunc.mEquParameter = e_prm;
+    ifunc.mOptParameter0 = o_prm0;
+    ifunc.regEpsilon = 0.0;
+
+    ifunc.r = 0.0;
+    ifunc.vmin.resize(e_prm.Nc, -5.0);
+    ifunc.vmax.resize(e_prm.Nc, +5.0);
+
+    ConjugateGradient g;
+    g.setFunction(&ifunc);
+    g.setGradient(&ifunc);
+    g.setPrinter(&ifunc);
+    g.setProjection(&ifunc);
+    g.setEpsilon1(0.0000001);
+    g.setEpsilon2(0.0000001);
+    g.setEpsilon3(0.0000001);
+    g.setR1MinimizeEpsilon(0.01, 0.001);
+    g.setNormalize(true);
+    g.showEndMessage(true);
+    g.setResetIteration(false);
+
+    DoubleVector x; ifunc.toVector(o_prm, x);
+    g.calculate(x);
+
+    IPrinter::printSeperatorLine();
+    DoubleVector pv;
+    ifunc.toVector(o_prm, pv);
+    IPrinter::print(pv, pv.length(), 6, 4);
+    IPrinter::printSeperatorLine();
+    DoubleVector pv0;
+    ifunc.toVector(o_prm0, pv0);
+    IPrinter::print(pv0, pv0.length(), 6, 4);
+    IPrinter::printSeperatorLine();
+    DoubleVector ag(pv.length());
+
 }
 
 void IProblem2H2D::distributeDelta(const SpacePoint &pt, std::vector<IProblem2H2D::ExtendedSpacePointNode> &nodes, unsigned int id,

@@ -1,5 +1,12 @@
 #include "function.h"
 
+double sgn(double x)
+{
+    if (x < 0.0) return -1.0;
+    else if (x > 0.0) return +1.0;
+    return 0.0;
+}
+
 void IGradient::Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g)
 {
     double h = step;

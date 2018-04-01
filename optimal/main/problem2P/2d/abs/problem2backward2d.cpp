@@ -18,7 +18,7 @@ double Problem2Backward2D::f(const SpaceNodePDE &, const TimeNodePDE &) const
 
 double Problem2Backward2D::penalty(unsigned int i, const TimeNodePDE &tn) const
 {
-    return func->gpi(i, tn.i, *info);
+    return func->gpi(i, tn.i, *info)*sgn(func->g0i(i, tn.i, *info));
 }
 
 double Problem2Backward2D::g1(const SpaceNodePDE &, const TimeNodePDE &) const

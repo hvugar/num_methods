@@ -10,24 +10,26 @@
 namespace IProblem2H2D_NS
 {
 
-class IFunctional : public RnFunction, public IGradient//, public IProjection, public IPrinter
+class IFunctional : public RnFunction, public IGradient, public IProjection, public IPrinter
 {
 public:
     IFunctional();
 
     virtual double fx(const DoubleVector &prms) const;
-    virtual double integral(const DoubleMatrix &u, const DoubleMatrix ut) const;
+    virtual double integral(const DoubleMatrix &u, const DoubleMatrix &ut) const;
     virtual double norm(const IProblem2H2D::EquationParameter& eprm,
                         const IProblem2H2D::OptimizeParameter &oprm, const IProblem2H2D::OptimizeParameter &oprm0) const;
-    //virtual double penalty(vector<ExtendedSpaceNode2D> &info) const;
-    //virtual double gpi(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2D> &info) const;
-    //virtual double g0i(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2D> &info) const;
+    virtual double penalty(const vector<ExtendedSpaceNode2DH> &info, const IProblem2H2D::OptimizeParameter &o_prm) const;
+    virtual double gpi(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2DH> &info,
+                       const IProblem2H2D::OptimizeParameter &o_prm) const;
+    virtual double g0i(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2DH> &info,
+                       const IProblem2H2D::OptimizeParameter &o_prm) const;
     //virtual double mu(double x, double y) const;
 
     virtual void gradient(const DoubleVector &prms, DoubleVector &g) const;
 
-    //virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const;
-    //virtual void project(DoubleVector &x, unsigned int index);
+    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const;
+    virtual void project(DoubleVector &x, unsigned int index);
 
     //void setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY);
     //void setGridTimeDimension(Dimension timeDimension);
@@ -43,11 +45,7 @@ public:
     void toVector(const IProblem2H2D::OptimizeParameter &prm, DoubleVector &x) const;
     void fromVector(const DoubleVector &x, IProblem2H2D::OptimizeParameter &prm) const;
 
-private:
-    //double sgn(double x) const;
-
 public:
-    //IProblem2H2D::OptimizeParameter mOptParameter;
     IProblem2H2D::OptimizeParameter mOptParameter0;
     IProblem2H2D::EquationParameter mEquParameter;
 
@@ -55,8 +53,8 @@ public:
     Dimension mSpaceDimensionX;
     Dimension mSpaceDimensionY;
 
-    //DoubleVector vmin;
-    //DoubleVector vmax;
+    DoubleVector vmin;
+    DoubleVector vmax;
 
     double regEpsilon;
     //double r;
@@ -70,6 +68,8 @@ public:
     bool optimizeZ;
     bool optimizeC;
     bool optimizeO;
+
+    double r;
 };
 
 }

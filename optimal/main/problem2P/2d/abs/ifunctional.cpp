@@ -540,13 +540,6 @@ void IFunctional::setParameter0(const Parameter &parameter0)
     this->mParameter0 = parameter0;
 }
 
-double IFunctional::sgn(double x) const
-{
-    if (x<0.0) return -1.0;
-    else if (x>0.0) return +1.0;
-    return 0.0;
-}
-
 void IFunctional::toVector(const Parameter &prm, DoubleVector &pv) const
 {
     unsigned int Lc = prm.Lc;

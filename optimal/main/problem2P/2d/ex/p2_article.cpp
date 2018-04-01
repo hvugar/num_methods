@@ -37,7 +37,7 @@ void Problem2Article::Table1_Y1()
     jfunc.setEnvrTemperatures(thetas, p_thetas);
 
     jfunc.setEquationParameters(1.0, 0.01, 0.01);
-    jfunc.setRegEpsilon(0.000);
+    jfunc.setRegEpsilon(0.0);
     jfunc.setPenaltyCoefficient(0.1);
     jfunc.setPenaltyLimits(DoubleVector(Lc, -5.0), DoubleVector(Lc, +20.0));
 
