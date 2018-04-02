@@ -257,7 +257,7 @@ void IProblem2H2D::optimization()
 
     ifunc.mSpaceDimensionX = Dimension(0.01, 0, 100);
     ifunc.mSpaceDimensionY = (Dimension(0.01, 0, 100));
-    ifunc.mTimeDimension = Dimension(0.01, 0, 100);
+    ifunc.mTimeDimension = Dimension(0.01, 0, 200);
 
     ifunc.alpha0 = 1.0; ifunc.V0.resize(101, 101, 0.0);
     ifunc.alpha1 = 1.0; ifunc.V1.resize(101, 101, 0.0);

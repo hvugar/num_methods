@@ -484,10 +484,10 @@ void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVecto
 //    ifunc->optimizeC = i%2==0;
 //    ifunc->optimizeO = i%2==0;
 
-//    ifunc->optimizeK = i%4==0;
-//    ifunc->optimizeZ = i%4==1;
-//    ifunc->optimizeC = i%4==2;
-//    ifunc->optimizeO = i%4==3;
+    ifunc->optimizeK = i%4==0;
+    ifunc->optimizeZ = i%4==1;
+    ifunc->optimizeC = i%4==2;
+    ifunc->optimizeO = i%4==3;
 
 //    ifunc->optimizeK = i%4==3;
 //    ifunc->optimizeZ = i%4==0;

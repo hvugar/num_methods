@@ -1487,6 +1487,7 @@ void IHyperbolicEquation2D::calculateMVD3(DoubleMatrix &u, double hx, double hy,
     double p_a2a2_htht__hxhx_h = +0.5*(a1*a1*ht*ht)/(hx*hx);
     double a1a1__hxhx = ((a1*a1)/(hx*hx));
     double a2a2__hyhy = ((a2*a2)/(hy*hy));
+    double lambda_ht = lambda*ht;
 
     //------------------------------------- initial conditions -------------------------------------//
     for (unsigned int j=0; j<=Ny; j++)
@@ -1550,7 +1551,7 @@ void IHyperbolicEquation2D::calculateMVD3(DoubleMatrix &u, double hx, double hy,
                 dc1[i-1] = m_a1a1_htht__hxhx_h;
                 dd1[i-1] = p_a2a2_htht__hyhy_h*(u10[j-1][i] - 2.0*u10[j][i] + u10[j+1][i]) +
                         0.5*(u10[j][i] - u00[j][i]) + u10[j][i] +
-                        0.5*lambda*ht*(4.0*u10[j][i]-u05[j][i]) +
+                        0.5*lambda_ht*(4.0*u10[j][i]-u05[j][i]) +
                         0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda);
             }
 
@@ -1591,7 +1592,7 @@ void IHyperbolicEquation2D::calculateMVD3(DoubleMatrix &u, double hx, double hy,
                 dc2[j-1] = m_aa_htht__hyhy_h;
                 dd2[j-1] = p_a2a2_htht__hxhx_h*(u15[j][i-1] - 2.0*u15[j][i] + u15[j][i+1]) +
                         0.5*(u10[j][i] - u00[j][i]) + u15[j][i] +
-                        0.5*lambda*ht*(4.0*u15[j][i]-u10[j][i]) +
+                        0.5*lambda_ht*(4.0*u15[j][i]-u10[j][i]) +
                         0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda);
             }
 
