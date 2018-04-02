@@ -111,7 +111,6 @@ void ConjugateGradient::calculate(DoubleVector& x)
          * One-dimensional minimization along the direction of a anti-gradient
          **************************************************************************************/
         alpha = minimize(x, s);
-        //printf("alpha: %f\n", alpha);
 
         /**************************************************************************************
          * Calculation current point.

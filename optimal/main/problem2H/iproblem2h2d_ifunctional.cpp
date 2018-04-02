@@ -81,7 +81,7 @@ double IFunctional::integral(const DoubleMatrix &u, const DoubleMatrix &ut) cons
     return alpha0*sum0 + alpha1*sum1;
 }
 
-double IFunctional::integral1(const DoubleMatrix &u, const DoubleMatrix &ut) const
+double IFunctional::integral1(const DoubleMatrix &u, const DoubleMatrix &) const
 {
     double hx = mSpaceDimensionX.step();
     double hy = mSpaceDimensionY.step();
@@ -120,7 +120,7 @@ double IFunctional::integral1(const DoubleMatrix &u, const DoubleMatrix &ut) con
     return sum0;
 }
 
-double IFunctional::integral2(const DoubleMatrix &u, const DoubleMatrix &ut) const
+double IFunctional::integral2(const DoubleMatrix &, const DoubleMatrix &ut) const
 {
     double hx = mSpaceDimensionX.step();
     double hy = mSpaceDimensionY.step();
@@ -501,7 +501,7 @@ void IFunctional::project(DoubleVector &pv, unsigned int index)
 
 void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const
 {
-    IFunctional* ifunc = const_cast<IFunctional*>(this);
+    //IFunctional* ifunc = const_cast<IFunctional*>(this);
     IProblem2H2D::OptimizeParameter o_prm;
     fromVector(x, o_prm);
 
@@ -523,19 +523,37 @@ void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVecto
     {
         //printf("Nt:%d Nx:%d Ny:%d optimizeK:%d optimizeZ:%d optimizeC:%d optimizeO:%d\n", mTimeDimension.sizeN(), mSpaceDimensionX.sizeN(), mSpaceDimensionY.sizeN(), optimizeK, optimizeZ, optimizeC, optimizeO);
         IPrinter::printSeperatorLine();
+        printf("first\n");
+        printf("I[%3d]: %8.6f %8.6f %8.6f R:%.2f e:%.3f  \n", i, integral1(u, ut), integral2(u, ut), f, r, regEpsilon);
+        printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f   o:%.4f %.4f %.4f %.4f   c:%.4f %.4f %.4f %.4f\n",
+               x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
+        printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f   o:%.4f %.4f %.4f %.4f   c:%.4f %.4f %.4f %.4f\n",
+               g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
     }
 
-    printf("I[%3d]: %8.6f %8.6f %8.6f R:%.2f e:%.3f  \n", i, integral1(u, ut), integral2(u, ut), f, r, regEpsilon);
+    if (result == GradientMethod::NEXT_ITERATION)
+    {
+        IPrinter::printSeperatorLine();
+        printf("next\n");
+        printf("I[%3d]: %8.6f %8.6f %8.6f R:%.2f e:%.3f  \n", i, integral1(u, ut), integral2(u, ut), f, r, regEpsilon);
+        printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f   o:%.4f %.4f %.4f %.4f   c:%.4f %.4f %.4f %.4f\n",
+               x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
+        printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f   o:%.4f %.4f %.4f %.4f   c:%.4f %.4f %.4f %.4f\n",
+               g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
+    }
+
+
+//    printf("I[%3d]: %8.6f %8.6f %8.6f R:%.2f e:%.3f  \n", i, integral1(u, ut), integral2(u, ut), f, r, regEpsilon);
 //    printf("k: %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", x[ 0], x[ 1], x[ 2], x[ 3], x[ 4], x[ 5], x[ 6], x[ 7]);
 //    printf("z: %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", x[ 8], x[ 9], x[10], x[11], x[12], x[13], x[14], x[15]);
 //    printf("o: %8.4f %8.4f %8.4f %8.4f\n",                         x[16], x[17], x[18], x[19]);
 //    printf("c: %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", x[20], x[21], x[22], x[23], x[24], x[25], x[26], x[27]);
 
     //IPrinter::print(x,x.length(),8,4);
-    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f   o:%.4f %.4f %.4f %.4f   c:%.4f %.4f %.4f %.4f\n",
-           x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
-    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f   o:%.4f %.4f %.4f %.4f   c:%.4f %.4f %.4f %.4f\n",
-           g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
+    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f   o:%.4f %.4f %.4f %.4f   c:%.4f %.4f %.4f %.4f\n",
+    //       x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
+    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f   o:%.4f %.4f %.4f %.4f   c:%.4f %.4f %.4f %.4f\n",
+    //       g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
     //IPrinter::print(g,g.length(),10,4);
     //DoubleVector px(x.length());
     //IGradient::Gradient(ifunc, 0.01, x, px);
