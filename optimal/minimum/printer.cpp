@@ -265,6 +265,10 @@ void IPrinter::printSeperatorLine(const char* msg, char c, FILE* file)
     }
 
     for (int i=start; i<columns; i++) fprintf(file,"%c", c);
-    printf("\n", file);
+#ifdef _INC_WINDOWS
+    fputs("", file);
+#else
+    fprintf(file, "\n");
+#endif
     fflush(file);
 }

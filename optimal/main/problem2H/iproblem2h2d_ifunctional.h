@@ -17,6 +17,8 @@ public:
 
     virtual double fx(const DoubleVector &prms) const;
     virtual double integral(const DoubleMatrix &u, const DoubleMatrix &ut) const;
+    virtual double integral1(const DoubleMatrix &u, const DoubleMatrix &ut) const;
+    virtual double integral2(const DoubleMatrix &u, const DoubleMatrix &ut) const;
     virtual double norm(const IProblem2H2D::EquationParameter& eprm,
                         const IProblem2H2D::OptimizeParameter &oprm, const IProblem2H2D::OptimizeParameter &oprm0) const;
     virtual double penalty(const vector<ExtendedSpaceNode2DH> &info, const IProblem2H2D::OptimizeParameter &o_prm) const;

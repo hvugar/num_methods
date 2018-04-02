@@ -81,6 +81,84 @@ double IFunctional::integral(const DoubleMatrix &u, const DoubleMatrix &ut) cons
     return alpha0*sum0 + alpha1*sum1;
 }
 
+double IFunctional::integral1(const DoubleMatrix &u, const DoubleMatrix &ut) const
+{
+    double hx = mSpaceDimensionX.step();
+    double hy = mSpaceDimensionY.step();
+    unsigned int N1 = mSpaceDimensionX.sizeN();
+    unsigned int N2 = mSpaceDimensionY.sizeN();
+
+    double sum0 = 0.0;
+
+    sum0 += 0.25*(u[0][0]   - V0[0][0])   * (u[0][0]   - V0[0][0]);
+    sum0 += 0.25*(u[0][N1]  - V0[0][N1])  * (u[0][N1]  - V0[0][N1]);
+    sum0 += 0.25*(u[N2][0]  - V0[N2][0])  * (u[N2][0]  - V0[N2][0]);
+    sum0 += 0.25*(u[N2][N1] - V0[N2][N1]) * (u[N2][N1] - V0[N2][N1]);
+
+    for (unsigned int n1=1; n1<=N1-1; n1++)
+    {
+        sum0 += 0.5*(u[0][n1]  - V0[0][n1]) *(u[0][n1]  - V0[0][n1]);
+        sum0 += 0.5*(u[N2][n1] - V0[N2][n1])*(u[N2][n1] - V0[N2][n1]);
+    }
+
+    for (unsigned int n2=1; n2<=N2-1; n2++)
+    {
+        sum0 += 0.5*(u[n2][0]  - V0[n2][0]) *(u[n2][0]  - V0[n2][0]);
+        sum0 += 0.5*(u[n2][N1] - V0[n2][N1])*(u[n2][N1] - V0[n2][N1]);
+    }
+
+    for (unsigned int n2 = 1; n2 <= N2-1; n2++)
+    {
+        for (unsigned int n1 = 1; n1 <= N1-1; n1++)
+        {
+            sum0 += (u[n2][n1] - V0[n2][n1])*(u[n2][n1] - V0[n2][n1]);
+        }
+    }
+
+    sum0 *= (hx*hy);
+
+    return sum0;
+}
+
+double IFunctional::integral2(const DoubleMatrix &u, const DoubleMatrix &ut) const
+{
+    double hx = mSpaceDimensionX.step();
+    double hy = mSpaceDimensionY.step();
+    unsigned int N1 = mSpaceDimensionX.sizeN();
+    unsigned int N2 = mSpaceDimensionY.sizeN();
+
+    double sum1 = 0.0;
+
+    sum1 += 0.25*(ut[0][0]   - V1[0][0])   * (ut[0][0]   - V1[0][0]);
+    sum1 += 0.25*(ut[0][N1]  - V1[0][N1])  * (ut[0][N1]  - V1[0][N1]);
+    sum1 += 0.25*(ut[N2][0]  - V1[N2][0])  * (ut[N2][0]  - V1[N2][0]);
+    sum1 += 0.25*(ut[N2][N1] - V1[N2][N1]) * (ut[N2][N1] - V1[N2][N1]);
+
+    for (unsigned int n1=1; n1<=N1-1; n1++)
+    {
+        sum1 += 0.5*(ut[0][n1]  - V1[0][n1]) *(ut[0][n1]  - V1[0][n1]);
+        sum1 += 0.5*(ut[N2][n1] - V1[N2][n1])*(ut[N2][n1] - V1[N2][n1]);
+    }
+
+    for (unsigned int n2=1; n2<=N2-1; n2++)
+    {
+        sum1 += 0.5*(ut[n2][0]  - V1[n2][0]) *(ut[n2][0]  - V1[n2][0]);
+        sum1 += 0.5*(ut[n2][N1] - V1[n2][N1])*(ut[n2][N1] - V1[n2][N1]);
+    }
+
+    for (unsigned int n2 = 1; n2 <= N2-1; n2++)
+    {
+        for (unsigned int n1 = 1; n1 <= N1-1; n1++)
+        {
+            sum1 += (ut[n2][n1] - V1[n2][n1])*(ut[n2][n1] - V1[n2][n1]);
+        }
+    }
+
+    sum1 *= (hx*hy);
+
+    return sum1;
+}
+
 double IFunctional::norm(const IProblem2H2D::EquationParameter& e_prm,
                          const IProblem2H2D::OptimizeParameter &o_prm, const IProblem2H2D::OptimizeParameter &o_prm0) const
 {
@@ -446,15 +524,15 @@ void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVecto
         IPrinter::printSeperatorLine();
     }
 
-    printf("I[%3d]: %10.6f %10.6f R:%.2f e:%.3f  \n", i, integral(u, ut), f, r, regEpsilon);
-    printf("k: %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", x[ 0], x[ 1], x[ 2], x[ 3], x[ 4], x[ 5], x[ 6], x[ 7]);
-    printf("z: %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", x[ 8], x[ 9], x[10], x[11], x[12], x[13], x[14], x[15]);
-    printf("o: %8.4f %8.4f %8.4f %8.4f\n",                         x[16], x[17], x[18], x[19]);
-    printf("c: %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", x[20], x[21], x[22], x[23], x[24], x[25], x[26], x[27]);
+    printf("I[%3d]: %10.6f %10.6f %10.6f R:%.2f e:%.3f  ", i, integral1(u, ut), integral2(u, ut), f, r, regEpsilon);
+//    printf("k: %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", x[ 0], x[ 1], x[ 2], x[ 3], x[ 4], x[ 5], x[ 6], x[ 7]);
+//    printf("z: %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", x[ 8], x[ 9], x[10], x[11], x[12], x[13], x[14], x[15]);
+//    printf("o: %8.4f %8.4f %8.4f %8.4f\n",                         x[16], x[17], x[18], x[19]);
+//    printf("c: %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", x[20], x[21], x[22], x[23], x[24], x[25], x[26], x[27]);
 
     //IPrinter::print(x,x.length(),8,4);
-    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f   o:%.4f %.4f %.4f %.4f   c:%.4f %.4f %.4f %.4f\n",
-    //       x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
+    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f   o:%.4f %.4f %.4f %.4f   c:%.4f %.4f %.4f %.4f\n",
+           x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
     //IPrinter::print(g,g.length(),10,4);
     //DoubleVector px(x.length());
     //IGradient::Gradient(ifunc, 0.01, x, px);

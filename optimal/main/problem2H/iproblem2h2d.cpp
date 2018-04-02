@@ -273,32 +273,40 @@ void IProblem2H2D::optimization()
     e_prm.q[0] = -2.0; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
     e_prm.q[1] = -2.0; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
 
-    e_prm.Nc = 4;
+    e_prm.Nc = 2;
     e_prm.No = 2;
 
     IProblem2H2D::OptimizeParameter o_prm;
     o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
 
-    o_prm.k[0][0] = -0.12; o_prm.k[0][1] = -0.24;
-    o_prm.k[1][0] = -0.45; o_prm.k[1][1] = -0.18;
-    o_prm.k[2][0] = -0.12; o_prm.k[2][1] = -0.24;
-    o_prm.k[3][0] = -0.45; o_prm.k[3][1] = -0.18;
+    //o_prm.k[0][0] = +0.0000; o_prm.k[0][1] = +0.0000;
+    //o_prm.k[1][0] = +0.0000; o_prm.k[1][1] = +0.0000;
+    o_prm.k[0][0] = -0.6078; o_prm.k[0][1] = -0.5166;
+    o_prm.k[1][0] = -0.9158; o_prm.k[1][1] = -0.8175;
+    //o_prm.k[2][0] = -0.12; o_prm.k[2][1] = -0.24;
+    //o_prm.k[3][0] = -0.45; o_prm.k[3][1] = -0.18;
 
-    o_prm.z[0][0] = +5.50; o_prm.z[0][1] = +5.40;
-    o_prm.z[1][0] = +5.70; o_prm.z[1][1] = +5.50;
-    o_prm.z[2][0] = +5.50; o_prm.z[2][1] = +5.40;
-    o_prm.z[3][0] = +5.70; o_prm.z[3][1] = +5.50;
+    o_prm.z[0][0] = +0.00; o_prm.z[0][1] = +0.00;
+    o_prm.z[1][0] = +0.00; o_prm.z[1][1] = +0.00;
+    o_prm.z[0][0] = +0.0538; o_prm.z[0][1] = +0.0228;
+    o_prm.z[1][0] = -0.1942; o_prm.z[1][1] = -0.2898;
+    //o_prm.z[2][0] = +5.50; o_prm.z[2][1] = +5.40;
+    //o_prm.z[3][0] = +5.70; o_prm.z[3][1] = +5.50;
 
     o_prm.xi.resize(e_prm.No);
-    o_prm.xi[0].x = 0.400; o_prm.xi[0].y = 0.400;
-    o_prm.xi[1].x = 0.600; o_prm.xi[1].y = 0.600;
+    //o_prm.xi[0].x = 0.400; o_prm.xi[0].y = 0.400;
+    //o_prm.xi[1].x = 0.600; o_prm.xi[1].y = 0.600;
+    o_prm.xi[0].x = 0.0500; o_prm.xi[0].y = 0.0500;
+    o_prm.xi[1].x = 0.9500; o_prm.xi[1].y = 0.9500;
 
     o_prm.eta.resize(e_prm.Nc);
-    o_prm.eta[0].x = 0.300; o_prm.eta[0].y = 0.700;
-    o_prm.eta[1].x = 0.700; o_prm.eta[1].y = 0.300;
-    o_prm.eta[2].x = 0.100; o_prm.eta[2].y = 0.900;
-    o_prm.eta[3].x = 0.900; o_prm.eta[3].y = 0.100;
+    //o_prm.eta[0].x = 0.300; o_prm.eta[0].y = 0.700;
+    //o_prm.eta[1].x = 0.700; o_prm.eta[1].y = 0.300;
+    o_prm.eta[0].x = 0.7588; o_prm.eta[0].y = 0.3018;
+    o_prm.eta[1].x = 0.2971; o_prm.eta[1].y = 0.7413;
+    //o_prm.eta[2].x = 0.100; o_prm.eta[2].y = 0.900;
+    //o_prm.eta[3].x = 0.900; o_prm.eta[3].y = 0.100;
 
     IProblem2H2D::OptimizeParameter o_prm0;
     o_prm0.xi.resize(e_prm.No);
