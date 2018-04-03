@@ -4,6 +4,9 @@
 #include "iproblem2h2d.h"
 #include "iproblem2h2d_ifunctional.h"
 
+namespace IProblem2H
+{
+
 class IProblem2HBackward2D : public IHyperbolicIBVP
 {
 public:
@@ -13,10 +16,10 @@ public:
 
     void add2Info(const DoubleMatrix &p, vector<ExtendedSpaceNode2DH> &info, unsigned int ln) const;
 
-    IProblem2H2D::EquationParameter mEquParameter;
-    IProblem2H2D::OptimizeParameter mOptParameter;
+    EquationParameter mEquParameter;
+    OptimizeParameter mOptParameter;
 
-    IProblem2H2D_NS::IFunctional *ifunc;
+    IFunctional *ifunc;
     DoubleMatrix UT;
     DoubleMatrix UTt;
 protected:
@@ -25,5 +28,7 @@ protected:
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 };
+
+}
 
 #endif // IPROBLEM2HBACKWARD2D_H

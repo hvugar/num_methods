@@ -7,7 +7,9 @@
 #include <printer.h>
 #include "iproblem2h2d.h"
 
-namespace IProblem2H2D_NS
+using namespace IProblem2H;
+
+namespace IProblem2H
 {
 
 class IFunctional : public RnFunction, public IGradient, public IProjection, public IPrinter
@@ -19,13 +21,10 @@ public:
     virtual double integral(const DoubleMatrix &u, const DoubleMatrix &ut) const;
     virtual double integral1(const DoubleMatrix &u, const DoubleMatrix &ut) const;
     virtual double integral2(const DoubleMatrix &u, const DoubleMatrix &ut) const;
-    virtual double norm(const IProblem2H2D::EquationParameter& eprm,
-                        const IProblem2H2D::OptimizeParameter &oprm, const IProblem2H2D::OptimizeParameter &oprm0) const;
-    virtual double penalty(const vector<ExtendedSpaceNode2DH> &info, const IProblem2H2D::OptimizeParameter &o_prm) const;
-    virtual double gpi(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2DH> &info,
-                       const IProblem2H2D::OptimizeParameter &o_prm) const;
-    virtual double g0i(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2DH> &info,
-                       const IProblem2H2D::OptimizeParameter &o_prm) const;
+    virtual double norm(const EquationParameter& eprm, const OptimizeParameter &oprm, const OptimizeParameter &oprm0) const;
+    virtual double penalty(const vector<ExtendedSpaceNode2DH> &info, const OptimizeParameter &o_prm) const;
+    virtual double gpi(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2DH> &info, const OptimizeParameter &o_prm) const;
+    virtual double g0i(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2DH> &info, const OptimizeParameter &o_prm) const;
     //virtual double mu(double x, double y) const;
 
     virtual void gradient(const DoubleVector &prms, DoubleVector &g) const;
@@ -44,12 +43,12 @@ public:
     //void setParameter(const Parameter &parameter);
     //void setParameter0(const Parameter &parameter0);
 
-    void toVector(const IProblem2H2D::OptimizeParameter &prm, DoubleVector &x) const;
-    void fromVector(const DoubleVector &x, IProblem2H2D::OptimizeParameter &prm) const;
+    void toVector(const OptimizeParameter &prm, DoubleVector &x) const;
+    void fromVector(const DoubleVector &x, OptimizeParameter &prm) const;
 
 public:
-    IProblem2H2D::OptimizeParameter mOptParameter0;
-    IProblem2H2D::EquationParameter mEquParameter;
+    OptimizeParameter mOptParameter0;
+    EquationParameter mEquParameter;
 
     Dimension mTimeDimension;
     Dimension mSpaceDimensionX;

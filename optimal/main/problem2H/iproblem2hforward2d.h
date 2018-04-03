@@ -3,14 +3,17 @@
 
 #include "iproblem2h2d.h"
 
+namespace IProblem2H
+{
+
 class IProblem2HForward2D : public IHyperbolicIBVP
 {
 public:
     void calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
     virtual void layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const;
 
-    IProblem2H2D::EquationParameter mEquParameter;
-    IProblem2H2D::OptimizeParameter mOptParameter;
+    EquationParameter mEquParameter;
+    OptimizeParameter mOptParameter;
 
 protected:
     virtual double initial1(const SpaceNodePDE &sn) const;
@@ -21,5 +24,7 @@ protected:
 private:
     void add2Info(const DoubleMatrix &u, vector<ExtendedSpaceNode2DH> &info, unsigned int ln) const;
 };
+
+}
 
 #endif // IPROBLEM2HFORWARD2D_H

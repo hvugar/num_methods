@@ -2,13 +2,13 @@
 #include "iproblem2hforward2d.h"
 #include "iproblem2hbackward2d.h"
 
-using namespace IProblem2H2D_NS;
+using namespace IProblem2H;
 
 IFunctional::IFunctional() {}
 
 double IFunctional::fx(const DoubleVector &pv) const
 {
-    IProblem2H2D::OptimizeParameter o_prm;
+    OptimizeParameter o_prm;
     fromVector(pv, o_prm);
 
     IProblem2HForward2D forward;
@@ -159,8 +159,7 @@ double IFunctional::integral2(const DoubleMatrix &, const DoubleMatrix &ut) cons
     return sum1;
 }
 
-double IFunctional::norm(const IProblem2H2D::EquationParameter& e_prm,
-                         const IProblem2H2D::OptimizeParameter &o_prm, const IProblem2H2D::OptimizeParameter &o_prm0) const
+double IFunctional::norm(const EquationParameter& e_prm, const OptimizeParameter &o_prm, const OptimizeParameter &o_prm0) const
 {
     double norm = 0.0;
 
@@ -182,7 +181,7 @@ double IFunctional::norm(const IProblem2H2D::EquationParameter& e_prm,
     return norm;
 }
 
-double IFunctional::penalty(const vector<ExtendedSpaceNode2DH> &info, const IProblem2H2D::OptimizeParameter &o_prm) const
+double IFunctional::penalty(const vector<ExtendedSpaceNode2DH> &info, const OptimizeParameter &o_prm) const
 {
     double ht = mTimeDimension.step();
     unsigned int L = mTimeDimension.sizeN();
@@ -205,15 +204,13 @@ double IFunctional::penalty(const vector<ExtendedSpaceNode2DH> &info, const IPro
     return p_sum*ht;
 }
 
-double IFunctional::gpi(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2DH> &info,
-                        const IProblem2H2D::OptimizeParameter &o_prm) const
+double IFunctional::gpi(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2DH> &info, const OptimizeParameter &o_prm) const
 {
     double p = fabs(g0i(i, layer, info, o_prm)) - (vmax.at(i) - vmin.at(i))/2.0;
     return p > 0.0 ? p : 0.0;
 }
 
-double IFunctional::g0i(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2DH> &info,
-                        const IProblem2H2D::OptimizeParameter &o_prm) const
+double IFunctional::g0i(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2DH> &info, const OptimizeParameter &o_prm) const
 {
     double vi = 0.0;
     for (unsigned int j=0; j<mEquParameter.No; j++)
@@ -229,7 +226,7 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
     unsigned int L = mTimeDimension.sizeN();
     double ht = mTimeDimension.step();
 
-    IProblem2H2D::OptimizeParameter o_prm;
+    OptimizeParameter o_prm;
     fromVector(pv, o_prm);
 
     IProblem2HForward2D forward;
@@ -245,7 +242,7 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
     backward.addSpaceDimension(mSpaceDimensionY);
     backward.mEquParameter = mEquParameter;
     backward.mOptParameter = o_prm;
-    backward.ifunc = const_cast<IProblem2H2D_NS::IFunctional*>(this);
+    backward.ifunc = const_cast<IFunctional*>(this);
 
     DoubleMatrix u;
     DoubleMatrix ut;
@@ -502,7 +499,7 @@ void IFunctional::project(DoubleVector &pv, unsigned int index)
 void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const
 {
     //IFunctional* ifunc = const_cast<IFunctional*>(this);
-    IProblem2H2D::OptimizeParameter o_prm;
+    OptimizeParameter o_prm;
     fromVector(x, o_prm);
 
     IProblem2HForward2D forward;
@@ -594,7 +591,7 @@ void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVecto
 //    ifunc->optimizeO = i%4==2;
 }
 
-void IFunctional::toVector(const IProblem2H2D::OptimizeParameter &prm, DoubleVector &pv) const
+void IFunctional::toVector(const OptimizeParameter &prm, DoubleVector &pv) const
 {
     unsigned int Nc = mEquParameter.Nc;
     unsigned int No = mEquParameter.No;
@@ -634,7 +631,7 @@ void IFunctional::toVector(const IProblem2H2D::OptimizeParameter &prm, DoubleVec
     }
 }
 
-void IFunctional::fromVector(const DoubleVector &pv, IProblem2H2D::OptimizeParameter &prm) const
+void IFunctional::fromVector(const DoubleVector &pv, OptimizeParameter &prm) const
 {
     unsigned int Nc = mEquParameter.Nc;
     unsigned int No = mEquParameter.No;

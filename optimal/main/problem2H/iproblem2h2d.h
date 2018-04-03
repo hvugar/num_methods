@@ -7,47 +7,37 @@
 
 using namespace std;
 
-class IProblem2H2D
+namespace IProblem2H
 {
-public:
-    struct OptimizeParameter
-    {
-        DoubleMatrix k;
-        DoubleMatrix z;
-        std::vector<SpacePoint> xi;
-        std::vector<SpacePoint> eta;
-    };
 
-    struct EquationParameter
-    {
-        unsigned int No;
-        unsigned int Nc;
-        unsigned int Ns;
-        std::vector<SpacePoint> theta;
-        DoubleVector q;
-        double a;
-        double lambda;
-    };
+struct OptimizeParameter
+{
+    DoubleMatrix k;
+    DoubleMatrix z;
+    std::vector<SpacePoint> xi;
+    std::vector<SpacePoint> eta;
+};
 
-    struct ExtendedSpacePointNode
-    {
-        SpacePoint pt;
-        unsigned int id;
-        unsigned int i;
-        unsigned int j;
-        double x;
-        double y;
-        double w;
-    };
+struct EquationParameter
+{
+    unsigned int No;
+    unsigned int Nc;
+    unsigned int Ns;
+    std::vector<SpacePoint> theta;
+    DoubleVector q;
+    double a;
+    double lambda;
+};
 
-    static void Main(int argc, char* argv[]);
-
-    static void forward();
-    static void checkGradient();
-    static void optimization();
-
-    static void distributeDelta(const SpacePoint &pt, std::vector<ExtendedSpacePointNode> &nodes, unsigned int id,
-                                const Dimension &xd, const Dimension &yd);
+struct ExtendedSpacePointNode
+{
+    SpacePoint pt;
+    unsigned int id;
+    unsigned int i;
+    unsigned int j;
+    double x;
+    double y;
+    double w;
 };
 
 class ExtendedSpaceNode2DH : public SpaceNodePDE
@@ -83,5 +73,19 @@ public:
 private:
     double value(double x, double y, unsigned int layer) const;
 };
+
+class IProblem2H2D
+{
+public:
+    static void Main(int argc, char* argv[]);
+
+    static void forward();
+    static void checkGradient();
+    static void optimization();
+
+    static void distributeDelta(const SpacePoint &pt, std::vector<ExtendedSpacePointNode> &nodes, unsigned int id, const Dimension &xd, const Dimension &yd);
+};
+
+}
 
 #endif // IPROBLEM2H2D_H

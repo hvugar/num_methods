@@ -71,7 +71,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //srand(time(NULL));
 
     //Problem2Article::Main(argc, argv);
-    IProblem2H2D::Main(argc, argv);
+    IProblem2H::IProblem2H2D::Main(argc, argv);
 
     //LinearEquation::func1(a, b, c, d, e, x, N);
 

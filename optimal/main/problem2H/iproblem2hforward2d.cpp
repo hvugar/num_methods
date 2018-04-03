@@ -1,6 +1,8 @@
 #include "iproblem2hforward2d.h"
 #include <imaging.h>
 
+using namespace IProblem2H;
+
 void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const
 {
     Dimension dimX = spaceDimension(Dimension::DimensionX);
@@ -40,10 +42,10 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
     u.clear(); u.resize(M+1, N+1);
 
     //--------------------------------------------------------------------------------------------//
-    std::vector<IProblem2H2D::ExtendedSpacePointNode> obsPointNodes;
+    std::vector<ExtendedSpacePointNode> obsPointNodes;
     for (unsigned int j=0; j<No; j++) IProblem2H2D::distributeDelta(mOptParameter.xi[j], obsPointNodes, j, dimX, dimY);
 
-    std::vector<IProblem2H2D::ExtendedSpacePointNode> cntDeltaNodes;
+    std::vector<ExtendedSpacePointNode> cntDeltaNodes;
     for (unsigned int i=0; i<Nc; i++) IProblem2H2D::distributeDelta(mOptParameter.eta[i], cntDeltaNodes, i, dimX, dimY);
 
     SpaceNodePDE sn;
@@ -58,13 +60,13 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
         bool found2 = false;
         for (unsigned int i=0; i<cntDeltaNodes.size(); i++)
         {
-            const IProblem2H2D::ExtendedSpacePointNode &cdn = cntDeltaNodes.at(i);
+            const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(i);
             if (cdn.j == ny)
             {
                 found1 = true;
                 for (unsigned int j=0; j<obsPointNodes.size(); j++)
                 {
-                    const IProblem2H2D::ExtendedSpacePointNode &opn = obsPointNodes.at(j);
+                    const ExtendedSpacePointNode &opn = obsPointNodes.at(j);
                     if (opn.j == ny)
                     {
                         found2 = true;
@@ -89,13 +91,13 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
         bool found2 = false;
         for (unsigned int i=0; i<cntDeltaNodes.size(); i++)
         {
-            const IProblem2H2D::ExtendedSpacePointNode &cdn = cntDeltaNodes.at(i);
+            const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(i);
             if (cdn.i == nx)
             {
                 found1 = true;
                 for (unsigned int j=0; j<obsPointNodes.size(); j++)
                 {
-                    const IProblem2H2D::ExtendedSpacePointNode &opn = obsPointNodes.at(j);
+                    const ExtendedSpacePointNode &opn = obsPointNodes.at(j);
                     if (opn.i == nx)
                     {
                         found2 = true;
@@ -139,7 +141,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
     if (use == true) add2Info(u00, info, 0);
     layerInfo(u00, 0);
 
-    std::vector<IProblem2H2D::ExtendedSpacePointNode> qPointNodes;
+    std::vector<ExtendedSpacePointNode> qPointNodes;
     for (unsigned int s=0; s<Ns; s++) IProblem2H2D::distributeDelta(mEquParameter.theta[s], qPointNodes, s, dimX, dimY);
 
     for (unsigned int m=0; m<=M; m++)
@@ -163,12 +165,12 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
 
             for (unsigned int cdn=0; cdn<cntDeltaNodes.size(); cdn++)
             {
-                IProblem2H2D::ExtendedSpacePointNode cntNode = cntDeltaNodes.at(cdn);
+                const ExtendedSpacePointNode &cntNode = cntDeltaNodes.at(cdn);
                 if (cntNode.i == n && cntNode.j == m)
                 {
                     for (unsigned int opn=0; opn<obsPointNodes.size(); opn++)
                     {
-                        IProblem2H2D::ExtendedSpacePointNode obsNode = obsPointNodes.at(opn);
+                        const ExtendedSpacePointNode &obsNode = obsPointNodes.at(opn);
                         if (obsNode.i == n && obsNode.j == m)
                         {
                             sum += mOptParameter.k[obsNode.id][obsNode.id] * ((u00[m][n]*obsNode.w*(hx*hy)) - mOptParameter.z[obsNode.id][obsNode.id]) * cntNode.w;
@@ -179,7 +181,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
 
             for (unsigned int si=0; si<qPointNodes.size(); si++)
             {
-                IProblem2H2D::ExtendedSpacePointNode qNode = qPointNodes.at(si);
+                const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
                 if (qNode.i == n && qNode.j == m)
                 {
                     sum += mEquParameter.q[qNode.id] * qNode.w * (1.0/ht);
@@ -292,12 +294,12 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
 
                     for (unsigned int cni=0; cni<cntDeltaNodes.size(); cni++)
                     {
-                        const IProblem2H2D::ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
+                        const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
                         if (cdn.i == sn.i && cdn.j == sn.j)
                         {
                             for (unsigned int odj=0; odj<obsPointNodes.size(); odj++)
                             {
-                                const IProblem2H2D::ExtendedSpacePointNode &opn = obsPointNodes[odj];
+                                const ExtendedSpacePointNode &opn = obsPointNodes[odj];
                                 d1X[n] += htht_h * mOptParameter.k[cdn.id][opn.id] * u15[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
                             }
 
@@ -360,12 +362,12 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int cni=0; cni<cntDeltaNodes.size(); cni++)
                     {
-                        const IProblem2H2D::ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
+                        const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
                         if (cdn.i == sn.i && cdn.j == sn.j)
                         {
                             for (unsigned int odj=0; odj<obsPointNodes.size(); odj++)
                             {
-                                const IProblem2H2D::ExtendedSpacePointNode &opn = obsPointNodes.at(odj);
+                                const ExtendedSpacePointNode &opn = obsPointNodes.at(odj);
 
                                 bool found = false;
                                 for (unsigned int cs=0; cs<rows1.size(); cs++)
@@ -497,12 +499,12 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
 
                     for (unsigned int cni=0; cni<cntDeltaNodes.size(); cni++)
                     {
-                        const IProblem2H2D::ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
+                        const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
                         if (cdn.i == sn.i && cdn.j == sn.j)
                         {
                             for (unsigned int onj=0; onj<obsPointNodes.size(); onj++)
                             {
-                                const IProblem2H2D::ExtendedSpacePointNode &opn = obsPointNodes.at(onj);
+                                const ExtendedSpacePointNode &opn = obsPointNodes.at(onj);
                                 d1Y[m] += htht_h * mOptParameter.k[cdn.id][opn.id] * u[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
                             }
 
@@ -567,12 +569,12 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int cni=0; cni<cntDeltaNodes.size(); cni++)
                     {
-                        const IProblem2H2D::ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
+                        const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
                         if (cdn.i == sn.i && cdn.j == sn.j)
                         {
                             for (unsigned int onj=0; onj<obsPointNodes.size(); onj++)
                             {
-                                const IProblem2H2D::ExtendedSpacePointNode &opn = obsPointNodes.at(onj);
+                                const ExtendedSpacePointNode &opn = obsPointNodes.at(onj);
 
                                 bool found = false;
                                 for (unsigned int cs=0; cs<cols1.size(); cs++)
