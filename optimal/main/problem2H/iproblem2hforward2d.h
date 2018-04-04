@@ -11,6 +11,7 @@ class IProblem2HForward2D : public IHyperbolicIBVP
 public:
     void calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
     virtual void layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const;
+    virtual void layerInfo(const DoubleMatrix &u, const DoubleMatrix &ut, unsigned int layerNumber) const;
 
     EquationParameter mEquParameter;
     OptimizeParameter mOptParameter;

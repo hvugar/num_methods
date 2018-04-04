@@ -8,9 +8,9 @@ using namespace IProblem2H;
 
 void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-//    forward();
+    forward();
 //    checkGradient();
-    optimization();
+//    optimization();
 }
 
 void IProblem2H2D::forward()
@@ -18,18 +18,19 @@ void IProblem2H2D::forward()
     IProblem2HForward2D frw;
     frw.addSpaceDimension(Dimension(0.01, 0, 100));
     frw.addSpaceDimension(Dimension(0.01, 0, 100));
-    frw.setTimeDimension(Dimension(0.005, 0, 200));
+    frw.setTimeDimension(Dimension(0.005, 0, 2000));
 
     EquationParameter e_prm;
     e_prm.a = 1.0;
     e_prm.lambda = 0.001;
 
-    e_prm.Ns = 2;
+    e_prm.Ns = 1;
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = -2.0; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
-    e_prm.q[1] = -2.0; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
+    e_prm.q[0] = -2.0; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
+    //e_prm.q[0] = -2.0; e_prm.theta[0].x = 0.2000; e_prm.theta[0].y = 0.2000;
+    //e_prm.q[1] = -2.0; e_prm.theta[1].x = 0.8000; e_prm.theta[1].y = 0.8000;
 
     e_prm.Nc = 2;
     e_prm.No = 2;
@@ -46,10 +47,13 @@ void IProblem2H2D::forward()
     o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
 
-    o_prm.k[0][0] = -1.12; o_prm.k[0][1] = -1.24;
-    o_prm.k[1][0] = -1.08; o_prm.k[1][1] = -2.18;
+//    o_prm.k[0][0] = -1.12; o_prm.k[0][1] = -1.24;
+//    o_prm.k[1][0] = -1.08; o_prm.k[1][1] = -2.18;
     o_prm.z[0][0] = +0.50; o_prm.z[0][1] = +0.40;
     o_prm.z[1][0] = +0.70; o_prm.z[1][1] = +0.50;
+
+    o_prm.k[0][0] = +0.00; o_prm.k[0][1] = +0.00;
+    o_prm.k[1][0] = +0.00; o_prm.k[1][1] = +0.00;
 
     frw.mEquParameter = e_prm;
     frw.mOptParameter = o_prm;
@@ -59,24 +63,24 @@ void IProblem2H2D::forward()
     std::vector<ExtendedSpaceNode2DH> u_info;
     frw.calculateMVD(u, ut, u_info, true);
 
-    IProblem2HBackward2D bkw;
-    bkw.addSpaceDimension(Dimension(0.01, 0, 100));
-    bkw.addSpaceDimension(Dimension(0.01, 0, 100));
-    bkw.setTimeDimension(Dimension(0.005, 0, 200));
-    bkw.mEquParameter = e_prm;
-    bkw.mOptParameter = o_prm;
+//    IProblem2HBackward2D bkw;
+//    bkw.addSpaceDimension(Dimension(0.01, 0, 100));
+//    bkw.addSpaceDimension(Dimension(0.01, 0, 100));
+//    bkw.setTimeDimension(Dimension(0.005, 0, 200));
+//    bkw.mEquParameter = e_prm;
+//    bkw.mOptParameter = o_prm;
 
-    IFunctional ifunc;
-    ifunc.alpha0 = 1.0; ifunc.V0.resize(101, 101, 0.0);
-    ifunc.alpha1 = 1.0; ifunc.V1.resize(101, 101, 0.0);
+//    IFunctional ifunc;
+//    ifunc.alpha0 = 1.0; ifunc.V0.resize(101, 101, 0.0);
+//    ifunc.alpha1 = 1.0; ifunc.V1.resize(101, 101, 0.0);
 
-    bkw.UT = u;
-    bkw.UTt = ut;
-    bkw.ifunc = &ifunc;
+//    bkw.UT = u;
+//    bkw.UTt = ut;
+//    bkw.ifunc = &ifunc;
 
-    DoubleMatrix p;
-    std::vector<ExtendedSpaceNode2DH> p_info;
-    bkw.calculateMVD(p, p_info, false, u_info);
+//    DoubleMatrix p;
+//    std::vector<ExtendedSpaceNode2DH> p_info;
+//    bkw.calculateMVD(p, p_info, false, u_info);
 }
 
 void IProblem2H2D::checkGradient()

@@ -663,6 +663,7 @@ void IProblem2HBackward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNod
 
 void IProblem2HBackward2D::layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int layerNumber UNUSED_PARAM) const
 {
+
 //    QPixmap px;
 //    visualizeMatrixHeat(u, u.min(), u.max(), px);
 //    char buffer[30] = {0};
