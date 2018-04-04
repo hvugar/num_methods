@@ -689,9 +689,9 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
 void IProblem2HForward2D::layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
 //    QPixmap px;
-//    visualizeMatrixHeat(u, u.min(), u.max(), px);
+//    visualizeMatrixHeat(u, -8.0, +8.0, px);
 //    char buffer[30] = {0};
-//    int c = sprintf(buffer, "images/f/%4d.png", ln);
+//    int c = sprintf(buffer, "images/s/%4d.png", ln);
 //    buffer[c] = 0;
 //    px.save(buffer, "png", 0);
 }
