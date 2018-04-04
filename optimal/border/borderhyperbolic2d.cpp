@@ -277,7 +277,7 @@ void BorderHyperbolic2DN::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
     bpn.a1 = 1.0;
     bpn.a2 = 1.0;
     bpn.lambda0 = 0.00;
-    bpn.lambda1 = 0.01;
+    bpn.lambda1 = 0.00;
 
     DoubleMatrix m3;
     bpn.ht = 0.001;
@@ -292,9 +292,9 @@ void BorderHyperbolic2DN::calculateMVD3(DoubleMatrix &u, double hx, double hy, d
 {
     u.resize(Ny+1, Nx+1);
 
-    DoubleMatrix u0(Ny+1, Nx+1);
-    DoubleMatrix u1(Ny+1, Nx+1);
+    DoubleMatrix u00(Ny+1, Nx+1);
     DoubleMatrix u05(Ny+1, Nx+1);
+    DoubleMatrix u10(Ny+1, Nx+1);
     DoubleMatrix u15(Ny+1, Nx+1);
 
     DoubleVector da1(Nx+1);
@@ -326,7 +326,7 @@ void BorderHyperbolic2DN::calculateMVD3(DoubleMatrix &u, double hx, double hy, d
     {
         for (unsigned int i=0; i<=Nx; i++)
         {
-            u0[j][i] = initial1(i, j);
+            u00[j][i] = initial1(i, j);
         }
     }
 
@@ -334,24 +334,23 @@ void BorderHyperbolic2DN::calculateMVD3(DoubleMatrix &u, double hx, double hy, d
     {
         for (unsigned int i=0; i<=Nx; i++)
         {
-            u1[j][i] = u0[j][i] + ht*initial2(i, j);
-            u15[j][i] = u0[j][i] + hh*initial2(i, j);
+            u05[j][i] = u00[j][i] + hh*initial2(i, j);
+            u10[j][i] = u00[j][i] + ht*initial2(i, j);
 
             double sum = f(i,j,0);
 
-            if (i==0)       sum += a1*a1*(u0[j][i]-2.0*u0[j][i+1]+u0[j][i+2])/(hx*hx);
-            else if (i==Nx) sum += a1*a1*(u0[j][i-2]-2.0*u0[j][i-1]+u0[j][i])/(hx*hx);
-            else            sum += a1*a1*(u0[j][i-1]-2.0*u0[j][i]+u0[j][i+1])/(hx*hx);
+            if (i==0)       sum += a1*a1*(u00[j][i]-2.0*u00[j][i+1]+u00[j][i+2])/(hx*hx);
+            else if (i==Nx) sum += a1*a1*(u00[j][i-2]-2.0*u00[j][i-1]+u00[j][i])/(hx*hx);
+            else            sum += a1*a1*(u00[j][i-1]-2.0*u00[j][i]+u00[j][i+1])/(hx*hx);
 
-            if (j==0)       sum += a2*a2*(u0[j][i]-2.0*u0[j+1][i]+u0[j+2][i])/(hy*hy);
-            else if (j==Ny) sum += a2*a2*(u0[j-2][i]-2.0*u0[j-1][i]+u0[j][i])/(hy*hy);
-            else            sum += a2*a2*(u0[j-1][i]-2.0*u0[j][i]+u0[j+1][i])/(hy*hy);
+            if (j==0)       sum += a2*a2*(u00[j][i]-2.0*u00[j+1][i]+u00[j+2][i])/(hy*hy);
+            else if (j==Ny) sum += a2*a2*(u00[j-2][i]-2.0*u00[j-1][i]+u00[j][i])/(hy*hy);
+            else            sum += a2*a2*(u00[j-1][i]-2.0*u00[j][i]+u00[j+1][i])/(hy*hy);
 
             sum -= lambda0*initial2(i, j);
 
-            u1[j][i] += 0.5*ht*ht*sum;
-
-            u15[j][i] += 0.5*hh*hh*sum;
+            u05[j][i] += 0.5*hh*hh*sum;
+            u10[j][i] += 0.5*ht*ht*sum;
         }
     }
 
@@ -374,40 +373,40 @@ void BorderHyperbolic2DN::calculateMVD3(DoubleMatrix &u, double hx, double hy, d
         {
             for (unsigned int i=0; i<=Nx; i++)
             {
-                if (j==0)        dd1[i] = x1_c*(u1[0][i]    - 2.0*u1[1][i]    + u1[2][i]);
-                if (j>0 && j<Ny) dd1[i] = x1_c*(u1[j-1][i]  - 2.0*u1[j][i]    + u1[j+1][i]);
-                if (j==Ny)       dd1[i] = x1_c*(u1[Ny-2][i] - 2.0*u1[Ny-1][i] + u1[Ny][i]);
+                if (j==0)        dd1[i] = x1_c*(u10[0][i]    - 2.0*u10[1][i]    + u10[2][i]);
+                if (j>0 && j<Ny) dd1[i] = x1_c*(u10[j-1][i]  - 2.0*u10[j][i]    + u10[j+1][i]);
+                if (j==Ny)       dd1[i] = x1_c*(u10[Ny-2][i] - 2.0*u10[Ny-1][i] + u10[Ny][i]);
 
                 if (i==0)
                 {
                     da1[0] = 0.0;
                     db1[0] = x1_b - x1_d;
                     dc1[0] = 2.0*x1_a;
-                    dd1[0] += 0.5*(u1[j][i] - u0[j][i]) + u1[j][i]
-                            + 0.5*lambda0*ht*(4.0*u1[j][i]-u15[j][i])
-                            + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda0)
-                            - x1_d*mu(k, t)
-                            + (a1*a1*ht*ht*h(0, j, k, t, 1))/hx;
+                    dd1[0] += 0.5*(u10[j][i] - u00[j][i]) + u10[j][i]
+                            + 0.5*lambda0*ht*(4.0*u10[j][i]-u05[j][i]);
+//                            + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda0)
+//                            - x1_d*mu(k, t)
+//                            + (a1*a1*ht*ht*h(0, j, k, t, 1))/hx;
                 }
                 else if (i==Nx)
                 {
                     da1[Nx] = 2.0*x1_a;
                     db1[Nx] = x1_b - x1_d;
                     dc1[Nx] = 0.0;
-                    dd1[Nx] += 0.5*(u1[j][i] - u0[j][i]) + u1[j][i]
-                            + 0.5*lambda0*ht*(4.0*u1[j][i]-u15[j][i])
-                            + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda0)
-                            - x1_d*mu(k, t)
-                            + (a1*a1*ht*ht*h(Nx, j, k, t, 2))/hx;
+                    dd1[Nx] += 0.5*(u10[j][i] - u00[j][i]) + u10[j][i]
+                            + 0.5*lambda0*ht*(4.0*u10[j][i]-u05[j][i]);
+//                            + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda0)
+//                            - x1_d*mu(k, t)
+//                            + (a1*a1*ht*ht*h(Nx, j, k, t, 2))/hx;
                 }
                 else
                 {
                     da1[i] = x1_a;
                     db1[i] = x1_b;
                     dc1[i] = x1_a;
-                    dd1[i] += 0.5*(u1[j][i] - u0[j][i]) + u1[j][i]
-                            + 0.5*lambda0*ht*(4.0*u1[j][i]-u15[j][i])
-                            + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda0);
+                    dd1[i] += 0.5*(u10[j][i] - u00[j][i]) + u10[j][i]
+                            + 0.5*lambda0*ht*(4.0*u10[j][i]-u05[j][i]);
+//                            + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda0);
                 }
             }
 
@@ -415,7 +414,7 @@ void BorderHyperbolic2DN::calculateMVD3(DoubleMatrix &u, double hx, double hy, d
 
             for (unsigned int i=0; i<=Nx; i++)
             {
-                u05[j][i] = rx1[i];
+                u15[j][i] = rx1[i];
             }
         }
 
@@ -433,40 +432,40 @@ void BorderHyperbolic2DN::calculateMVD3(DoubleMatrix &u, double hx, double hy, d
         {
             for (unsigned int j=0; j<=Ny; j++)
             {
-                if (i==0)        dd2[j] = x2_c*(u05[j][0]    - 2.0*u05[j][1]    + u05[j][2]);
-                if (i>0 && i<Nx) dd2[j] = x2_c*(u05[j][i-1]  - 2.0*u05[j][i]    + u05[j][i+1]);
-                if (i==Nx)       dd2[j] = x2_c*(u05[j][Nx-2] - 2.0*u05[j][Nx-1] + u05[j][Nx]);
+                if (i==0)        dd2[j] = x2_c*(u15[j][0]    - 2.0*u15[j][1]    + u15[j][2]);
+                if (i>0 && i<Nx) dd2[j] = x2_c*(u15[j][i-1]  - 2.0*u15[j][i]    + u15[j][i+1]);
+                if (i==Nx)       dd2[j] = x2_c*(u15[j][Nx-2] - 2.0*u15[j][Nx-1] + u15[j][Nx]);
 
                 if (j==0)
                 {
                     da2[0] = 0.0;
                     db2[0] = x2_b - x2_d;
                     dc2[0] = 2.0*x2_a;
-                    dd2[0] += 0.5*(u1[j][i] - u0[j][i]) + u05[j][i]
-                            + 0.5*lambda0*ht*(4.0*u05[j][i]-u1[j][i])
-                            + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda0)
-                            - x2_d*mu(k, t)
-                            + (a2*a2*ht*ht*h(i, 0, k, t, 3))/hy;
+                    dd2[0] += 0.5*(u10[j][i] - u00[j][i]) + u15[j][i]
+                            + 0.5*lambda0*ht*(4.0*u15[j][i]-u10[j][i])
+                            + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda0);
+//                            - x2_d*mu(k, t)
+//                            + (a2*a2*ht*ht*h(i, 0, k, t, 3))/hy;
                 }
                 else if (j==Ny)
                 {
                     da2[Ny] = 2.0*x2_a;
                     db2[Ny] = x2_b - x2_d;
                     dc2[Ny] = 0.0;
-                    dd2[Ny] += 0.5*(u1[j][i] - u0[j][i]) + u05[j][i]
-                            + 0.5*lambda0*ht*(4.0*u05[j][i]-u1[j][i])
-                            + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda0)
-                            - x2_d*mu(k, t)
-                            + (a2*a2*ht*ht*h(i, Ny, k, t, 4))/hy;
+                    dd2[Ny] += 0.5*(u10[j][i] - u00[j][i]) + u15[j][i]
+                            + 0.5*lambda0*ht*(4.0*u15[j][i]-u10[j][i])
+                            + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda0);
+//                            - x2_d*mu(k, t)
+//                            + (a2*a2*ht*ht*h(i, Ny, k, t, 4))/hy;
                 }
                 else
                 {
                     da2[j] = x2_a;
                     db2[j] = x2_b;
                     dc2[j] = x2_a;
-                    dd2[j] += 0.5*(u1[j][i] - u0[j][i]) + u05[j][i]
-                            + 0.5*lambda0*ht*(4.0*u05[j][i]-u1[j][i])
-                            + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda0);
+                    dd2[j] += 0.5*(u10[j][i] - u00[j][i]) + u15[j][i]
+                            + 0.5*lambda0*ht*(4.0*u15[j][i]-u10[j][i]);
+//                            + 0.5*ht*ht*(f(i, j, 0) + 2.0*t*lambda0);
                 }
             }
 
@@ -487,9 +486,9 @@ void BorderHyperbolic2DN::calculateMVD3(DoubleMatrix &u, double hx, double hy, d
         {
             for (unsigned int i=0; i<=Nx; i++)
             {
-                u0[j][i] = u1[j][i];
-                u1[j][i] = u[j][i];
-                u15[j][i] = u05[j][i];
+                u00[j][i] = u10[j][i];
+                u10[j][i] = u[j][i];
+                u05[j][i] = u15[j][i];
             }
         }
     }
@@ -517,7 +516,7 @@ double BorderHyperbolic2DN::u(unsigned int i UNUSED_PARAM, unsigned int j UNUSED
 
 double BorderHyperbolic2DN::initial1(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PARAM) const
 {
-    return u(i, j, 0);
+    return 1.0;//u(i, j, 0);
 }
 
 double BorderHyperbolic2DN::initial2(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PARAM) const
@@ -527,7 +526,7 @@ double BorderHyperbolic2DN::initial2(unsigned int i UNUSED_PARAM, unsigned int j
 
 double BorderHyperbolic2DN::boundary(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PARAM, unsigned int k UNUSED_PARAM) const
 {
-    return NAN;
+    return 0.0;//NAN;
 }
 
 double BorderHyperbolic2DN::f(unsigned int i UNUSED_PARAM, unsigned int j UNUSED_PARAM, unsigned int k UNUSED_PARAM) const
@@ -535,12 +534,12 @@ double BorderHyperbolic2DN::f(unsigned int i UNUSED_PARAM, unsigned int j UNUSED
     //double x1 UNUSED_PARAM = i*h1;
     //double x2 UNUSED_PARAM = j*h2;
     //double t  UNUSED_PARAM = k*ht;
-    return 2.0 - 2.0*(a1*a1) - 2.0*(a2*a2);// + 2.0*t*lambda;
+    return 0.0;//2.0 - 2.0*(a1*a1) - 2.0*(a2*a2);// + 2.0*t*lambda;
 }
 
 double BorderHyperbolic2DN::mu(unsigned int k, double t) const
 {
-    return 5.0;
+    return 0.0;
 }
 
 double BorderHyperbolic2DN::h(unsigned int i, unsigned int j, unsigned int k, double t, unsigned int n) const
@@ -548,11 +547,11 @@ double BorderHyperbolic2DN::h(unsigned int i, unsigned int j, unsigned int k, do
     double x = i*hx;
     double y = j*hy;
 
-    if (n==1) return 0.0 - lambda1*(x*x+y*y+t*t-mu(k,t));
-    if (n==2) return 2.0 - lambda1*(x*x+y*y+t*t-mu(k,t));
-    if (n==3) return 0.0 - lambda1*(x*x+y*y+t*t-mu(k,t));;
-    if (n==4) return 2.0 - lambda1*(x*x+y*y+t*t-mu(k,t));;
-    return NAN;
+//    if (n==1) return 0.0 - lambda1*(x*x+y*y+t*t-mu(k,t));
+//    if (n==2) return 2.0 - lambda1*(x*x+y*y+t*t-mu(k,t));
+//    if (n==3) return 0.0 - lambda1*(x*x+y*y+t*t-mu(k,t));;
+//    if (n==4) return 2.0 - lambda1*(x*x+y*y+t*t-mu(k,t));;
+    return 0.0;
 }
 
 

@@ -22,7 +22,7 @@ void IProblem2H2D::forward()
 
     EquationParameter e_prm;
     e_prm.a = 1.0;
-    e_prm.lambda = +0.1;
+    e_prm.lambda = +0.00;
 
     e_prm.Ns = 1;
     e_prm.q.resize(e_prm.Ns);
