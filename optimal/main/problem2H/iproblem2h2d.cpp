@@ -259,7 +259,7 @@ void IProblem2H2D::optimization()
 
     ifunc.mSpaceDimensionX = Dimension(0.01, 0, 100);
     ifunc.mSpaceDimensionY = (Dimension(0.01, 0, 100));
-    ifunc.mTimeDimension = Dimension(0.01, 0, 200);
+    ifunc.mTimeDimension = Dimension(0.01, 0, 400);
 
     ifunc.alpha0 = 1.0; ifunc.V0.resize(101, 101, 0.0);
     ifunc.alpha1 = 1.0; ifunc.V1.resize(101, 101, 0.0);
@@ -282,22 +282,16 @@ void IProblem2H2D::optimization()
     o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
 
-<<<<<<< .mine
     o_prm.k[0][0] = -1.0000; o_prm.k[0][1] = -2.0000;
     o_prm.k[1][0] = -2.0000; o_prm.k[1][1] = -3.0000;
-||||||| .r1208
-    o_prm.k[0][0] = +0.0000; o_prm.k[0][1] = +0.0000;
-    o_prm.k[1][0] = +0.0000; o_prm.k[1][1] = +0.0000;
-=======
-    o_prm.k[0][0] = +1.0000; o_prm.k[0][1] = +1.0000;
-    o_prm.k[1][0] = +1.0000; o_prm.k[1][1] = +1.0000;
->>>>>>> .r1209
+    //o_prm.k[0][0] = +1.0000; o_prm.k[0][1] = +1.0000;
+    //o_prm.k[1][0] = +1.0000; o_prm.k[1][1] = +1.0000;
     //o_prm.k[0][0] = -0.6078; o_prm.k[0][1] = -0.5166;
     //o_prm.k[1][0] = -0.9158; o_prm.k[1][1] = -0.8175;
     //o_prm.k[0][0] = -0.7238; o_prm.k[0][1] = -0.6203;
     //o_prm.k[1][0] = -0.9008; o_prm.k[1][1] = -0.7805;
-    //o_prm.k[2][0] = -0.12; o_prm.k[2][1] = -0.24;
-    //o_prm.k[3][0] = -0.45; o_prm.k[3][1] = -0.18;
+    //o_prm.k[2][0] = -0.1200; o_prm.k[2][1] = -0.2400;
+    //o_prm.k[3][0] = -0.4500; o_prm.k[3][1] = -0.1800;
 
     o_prm.z[0][0] = +1.0000; o_prm.z[0][1] = +1.0000;
     o_prm.z[1][0] = +1.0000; o_prm.z[1][1] = +1.0000;
@@ -305,8 +299,8 @@ void IProblem2H2D::optimization()
     //o_prm.z[1][0] = -0.1942; o_prm.z[1][1] = -0.2898;
     //o_prm.z[0][0] = -0.0641; o_prm.z[0][1] = -0.0779;
     //o_prm.z[1][0] = -0.3489; o_prm.z[1][1] = -0.4258;
-    //o_prm.z[2][0] = +5.50; o_prm.z[2][1] = +5.40;
-    //o_prm.z[3][0] = +5.70; o_prm.z[3][1] = +5.50;
+    //o_prm.z[2][0] = +5.5000; o_prm.z[2][1] = +5.4000;
+    //o_prm.z[3][0] = +5.7000; o_prm.z[3][1] = +5.5000;
 
     o_prm.xi.resize(e_prm.No);
     o_prm.xi[0].x = 0.400; o_prm.xi[0].y = 0.400;
@@ -358,9 +352,9 @@ void IProblem2H2D::optimization()
     g.setGradient(&ifunc);
     g.setPrinter(&ifunc);
     g.setProjection(&ifunc);
-    g.setEpsilon1(0.0);
-    g.setEpsilon2(0.0);
-    g.setEpsilon3(0.0);
+    g.setEpsilon1(0.000000001);
+    g.setEpsilon2(0.000000001);
+    g.setEpsilon3(0.000000001);
     g.setR1MinimizeEpsilon(10.0, 0.1);
     g.setNormalize(true);
     g.showEndMessage(true);
