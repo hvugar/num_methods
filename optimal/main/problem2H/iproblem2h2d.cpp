@@ -8,9 +8,9 @@ using namespace IProblem2H;
 
 void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    forward();
+//    forward();
 //    checkGradient();
-//    optimization();
+    optimization();
 }
 
 void IProblem2H2D::forward()
@@ -18,7 +18,7 @@ void IProblem2H2D::forward()
     IProblem2HForward2D frw;
     frw.addSpaceDimension(Dimension(0.01, 0, 100));
     frw.addSpaceDimension(Dimension(0.01, 0, 100));
-    frw.setTimeDimension(Dimension(0.005, 0, 20000));
+    frw.setTimeDimension(Dimension(0.005, 0, 2000));
 
     EquationParameter e_prm;
     e_prm.a = 1.0;
@@ -28,7 +28,7 @@ void IProblem2H2D::forward()
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = -2.0; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
+    e_prm.q[0] = -0.02; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
     //e_prm.q[0] = -2.0; e_prm.theta[0].x = 0.2000; e_prm.theta[0].y = 0.2000;
     //e_prm.q[1] = -2.0; e_prm.theta[1].x = 0.8000; e_prm.theta[1].y = 0.8000;
 
@@ -276,8 +276,8 @@ void IProblem2H2D::optimization()
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = -2.0; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
-    e_prm.q[1] = -2.0; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
+    e_prm.q[0] = -0.02; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
+    e_prm.q[1] = -0.02; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
 
     e_prm.Nc = 2;
     e_prm.No = 2;

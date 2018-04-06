@@ -48,6 +48,9 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
     std::vector<ExtendedSpacePointNode> cntDeltaNodes;
     for (unsigned int i=0; i<Nc; i++) IProblem2H2D::distributeDelta(mOptParameter.eta[i], cntDeltaNodes, i, dimX, dimY);
 
+    std::vector<ExtendedSpacePointNode> qPointNodes;
+    for (unsigned int s=0; s<Ns; s++) IProblem2H2D::distributeDelta(mEquParameter.theta[s], qPointNodes, s, dimX, dimY);
+
     SpaceNodePDE sn;
 
     //--------------------------------------------------------------------------------------------//
@@ -136,13 +139,19 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
         {
             sn.i = n; sn.x = n*hx;
             u00[m][n] = initial1(sn);
+
+            for (unsigned int si=0; si<qPointNodes.size(); si++)
+            {
+                const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
+                if (qNode.i == n && qNode.j == m)
+                {
+                    u00[m][n] += mEquParameter.q[qNode.id] * qNode.w * (1.0/ht);
+                }
+            }
         }
     }
     if (use == true) add2Info(u00, info, 0);
     layerInfo(u00, 0);
-
-    std::vector<ExtendedSpacePointNode> qPointNodes;
-    for (unsigned int s=0; s<Ns; s++) IProblem2H2D::distributeDelta(mEquParameter.theta[s], qPointNodes, s, dimX, dimY);
 
     for (unsigned int m=0; m<=M; m++)
     {
@@ -179,14 +188,14 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
                 }
             }
 
-            for (unsigned int si=0; si<qPointNodes.size(); si++)
-            {
-                const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
-                if (qNode.i == n && qNode.j == m)
-                {
-                    sum += mEquParameter.q[qNode.id] * qNode.w * (1.0/ht);
-                }
-            }
+//            for (unsigned int si=0; si<qPointNodes.size(); si++)
+//            {
+//                const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
+//                if (qNode.i == n && qNode.j == m)
+//                {
+//                    sum += mEquParameter.q[qNode.id] * qNode.w * (1.0/ht);
+//                }
+//            }
 
             u05[m][n] = u00[m][n] + initial2(sn)*ht*0.5 + sum*ht*ht*0.125;
             u10[m][n] = u00[m][n] + initial2(sn)*ht     + sum*ht*ht*0.500;
@@ -690,7 +699,7 @@ void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector
 void IProblem2HForward2D::layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
 //    QPixmap px;
-//    visualizeMatrixHeat(u, -8.0, +8.0, px);
+//    visualizeMatrixHeat(u, -5200.0, 1500.0, px);
 //    char buffer[30] = {0};
 //    int c = sprintf(buffer, "images/s/%4d.png", ln);
 //    buffer[c] = 0;
@@ -752,7 +761,7 @@ void IProblem2HForward2D::layerInfo(const DoubleMatrix &u, const DoubleMatrix &u
 //    V1.clear();
 
 //    printf("%d %12.8f %12.8f\n", ln, sum0, sum1);
-      printf("%d %12.8f %12.8f\n", ln, u.min(), u.max());
+//      printf("%d %12.8f %12.8f\n", ln, u.min(), u.max());
 }
 
 double IProblem2HForward2D::initial1(const SpaceNodePDE &) const
