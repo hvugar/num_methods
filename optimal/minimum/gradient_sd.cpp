@@ -51,6 +51,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
 
         /* R1 minimization in direct of antigradient */
         alpha = minimize(x, g);
+        printf("%f %d\n", alpha, n);
 
         distance = 0.0;
         double f1 = m_fn->fx(x);

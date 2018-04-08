@@ -8,9 +8,9 @@ using namespace IProblem2H;
 
 void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-//    forward();
+    forward();
 //    checkGradient();
-    optimization();
+//    optimization();
 }
 
 void IProblem2H2D::forward()
@@ -18,42 +18,42 @@ void IProblem2H2D::forward()
     IProblem2HForward2D frw;
     frw.addSpaceDimension(Dimension(0.01, 0, 100));
     frw.addSpaceDimension(Dimension(0.01, 0, 100));
-    frw.setTimeDimension(Dimension(0.005, 0, 2000));
+    frw.setTimeDimension(Dimension(0.001, 0, 1000));
 
     EquationParameter e_prm;
     e_prm.a = 1.0;
-    e_prm.lambda = +0.00;
+    e_prm.lambda = +0.0;
 
-    e_prm.Ns = 1;
+    e_prm.Ns = 0;
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = -0.02; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
-    //e_prm.q[0] = -2.0; e_prm.theta[0].x = 0.2000; e_prm.theta[0].y = 0.2000;
-    //e_prm.q[1] = -2.0; e_prm.theta[1].x = 0.8000; e_prm.theta[1].y = 0.8000;
+    //e_prm.q[0] = +1.0; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
+    //e_prm.q[0] = +1.0; e_prm.theta[0].x = 0.2000; e_prm.theta[0].y = 0.2000;
+    //e_prm.q[1] = +5.0; e_prm.theta[1].x = 0.8000; e_prm.theta[1].y = 0.8000;
 
-    e_prm.Nc = 2;
-    e_prm.No = 2;
+    e_prm.Nc = 0;
+    e_prm.No = 0;
 
     OptimizeParameter o_prm;
     o_prm.xi.resize(e_prm.No);
-    o_prm.xi[0].x = 0.400; o_prm.xi[0].y = 0.400;
-    o_prm.xi[1].x = 0.600; o_prm.xi[1].y = 0.600;
+    //o_prm.xi[0].x = 0.400; o_prm.xi[0].y = 0.400;
+    //o_prm.xi[1].x = 0.600; o_prm.xi[1].y = 0.600;
 
     o_prm.eta.resize(e_prm.Nc);
-    o_prm.eta[0].x = 0.300; o_prm.eta[0].y = 0.700;
-    o_prm.eta[1].x = 0.700; o_prm.eta[1].y = 0.300;
+    //o_prm.eta[0].x = 0.300; o_prm.eta[0].y = 0.700;
+    //o_prm.eta[1].x = 0.700; o_prm.eta[1].y = 0.300;
 
     o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
 
 //    o_prm.k[0][0] = -1.12; o_prm.k[0][1] = -1.24;
 //    o_prm.k[1][0] = -1.08; o_prm.k[1][1] = -2.18;
-    o_prm.z[0][0] = +0.50; o_prm.z[0][1] = +0.40;
-    o_prm.z[1][0] = +0.70; o_prm.z[1][1] = +0.50;
+    //o_prm.z[0][0] = +0.00; o_prm.z[0][1] = +0.00;
+    //o_prm.z[1][0] = +0.00; o_prm.z[1][1] = +0.00;
 
-    o_prm.k[0][0] = +0.00; o_prm.k[0][1] = +0.00;
-    o_prm.k[1][0] = +0.00; o_prm.k[1][1] = +0.00;
+    //o_prm.k[0][0] = +0.00; o_prm.k[0][1] = +0.00;
+    //o_prm.k[1][0] = +0.00; o_prm.k[1][1] = +0.00;
 
     frw.mEquParameter = e_prm;
     frw.mOptParameter = o_prm;
@@ -61,7 +61,9 @@ void IProblem2H2D::forward()
     DoubleMatrix u;
     DoubleMatrix ut;
     std::vector<ExtendedSpaceNode2DH> u_info;
-    frw.calculateMVD(u, ut, u_info, true);
+    frw.calculateMVD(u, ut, u_info, false);
+
+    IPrinter::printMatrix(u);
 
 //    IProblem2HBackward2D bkw;
 //    bkw.addSpaceDimension(Dimension(0.01, 0, 100));
@@ -106,8 +108,8 @@ void IProblem2H2D::checkGradient()
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = -2.0; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
-    e_prm.q[1] = -2.0; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
+    e_prm.q[0] = -0.02; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
+    e_prm.q[1] = -0.02; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
 
     e_prm.Nc = 2;
     e_prm.No = 3;
@@ -257,20 +259,20 @@ void IProblem2H2D::optimization()
 {
     IFunctional ifunc;
     ifunc.optimizeK = true;
-    ifunc.optimizeZ = true;
-    ifunc.optimizeC = true;
-    ifunc.optimizeO = true;
+    ifunc.optimizeZ = false;
+    ifunc.optimizeO = false;
+    ifunc.optimizeC = false;
 
     ifunc.mSpaceDimensionX = Dimension(0.01, 0, 100);
     ifunc.mSpaceDimensionY = (Dimension(0.01, 0, 100));
-    ifunc.mTimeDimension = Dimension(0.01, 0, 400);
+    ifunc.mTimeDimension = Dimension(0.01, 0, 200);
 
     ifunc.alpha0 = 1.0; ifunc.V0.resize(101, 101, 0.0);
     ifunc.alpha1 = 1.0; ifunc.V1.resize(101, 101, 0.0);
 
     EquationParameter e_prm;
-    e_prm.a = 1.0;
-    e_prm.lambda = 0.01;
+    e_prm.a = +1.0;
+    e_prm.lambda = +0.01;
 
     e_prm.Ns = 2;
     e_prm.q.resize(e_prm.Ns);
@@ -290,8 +292,8 @@ void IProblem2H2D::optimization()
     o_prm.k[1][0] = -2.0000; o_prm.k[1][1] = -3.0000;
     //o_prm.k[0][0] = +1.0000; o_prm.k[0][1] = +1.0000;
     //o_prm.k[1][0] = +1.0000; o_prm.k[1][1] = +1.0000;
-    //o_prm.k[0][0] = -0.6078; o_prm.k[0][1] = -0.5166;
-    //o_prm.k[1][0] = -0.9158; o_prm.k[1][1] = -0.8175;
+    o_prm.k[0][0] = -0.6078; o_prm.k[0][1] = -0.5166;
+    o_prm.k[1][0] = -0.9158; o_prm.k[1][1] = -0.8175;
     //o_prm.k[0][0] = -0.7238; o_prm.k[0][1] = -0.6203;
     //o_prm.k[1][0] = -0.9008; o_prm.k[1][1] = -0.7805;
     //o_prm.k[2][0] = -0.1200; o_prm.k[2][1] = -0.2400;
@@ -351,18 +353,19 @@ void IProblem2H2D::optimization()
     ifunc.vmin.resize(e_prm.Nc, -5.0);
     ifunc.vmax.resize(e_prm.Nc, +5.0);
 
-    ConjugateGradient g;
+//    ConjugateGradient g;
+    SteepestDescentGradient g;
     g.setFunction(&ifunc);
     g.setGradient(&ifunc);
     g.setPrinter(&ifunc);
     g.setProjection(&ifunc);
-    g.setEpsilon1(0.000000001);
-    g.setEpsilon2(0.000000001);
-    g.setEpsilon3(0.000000001);
-    g.setR1MinimizeEpsilon(10.0, 0.1);
+    g.setEpsilon1(0.000000000);
+    g.setEpsilon2(0.000000000);
+    g.setEpsilon3(0.000000000);
+    g.setR1MinimizeEpsilon(10.0, 0.01);
     g.setNormalize(true);
     g.showEndMessage(true);
-    g.setResetIteration(false);
+//    g.setResetIteration(false);
 
     DoubleVector x; ifunc.toVector(o_prm, x);
     g.calculate(x);

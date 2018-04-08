@@ -4,6 +4,7 @@
 #include <grid/hibvp.h>
 #include <vector>
 #include <gradient_cjt.h>
+#include <gradient_sd.h>
 
 using namespace std;
 
