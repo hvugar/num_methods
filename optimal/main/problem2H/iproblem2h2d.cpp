@@ -9,6 +9,7 @@ using namespace IProblem2H;
 void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     forward();
+//    forwardS();
 //    checkGradient();
 //    optimization();
 }
@@ -18,17 +19,17 @@ void IProblem2H2D::forward()
     IProblem2HForward2D frw;
     frw.addSpaceDimension(Dimension(0.01, 0, 100));
     frw.addSpaceDimension(Dimension(0.01, 0, 100));
-    frw.setTimeDimension(Dimension(0.001, 0, 1000));
+    frw.setTimeDimension(Dimension(0.01, 0, 100000));
 
     EquationParameter e_prm;
     e_prm.a = 1.0;
     e_prm.lambda = +0.0;
 
-    e_prm.Ns = 0;
+    e_prm.Ns = 1;
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    //e_prm.q[0] = +1.0; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
+    e_prm.q[0] = +1.0; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
     //e_prm.q[0] = +1.0; e_prm.theta[0].x = 0.2000; e_prm.theta[0].y = 0.2000;
     //e_prm.q[1] = +5.0; e_prm.theta[1].x = 0.8000; e_prm.theta[1].y = 0.8000;
 
@@ -61,7 +62,7 @@ void IProblem2H2D::forward()
     DoubleMatrix u;
     DoubleMatrix ut;
     std::vector<ExtendedSpaceNode2DH> u_info;
-    frw.calculateMVD(u, ut, u_info, false);
+    frw.calculateMVD_D(u, ut, u_info, false);
 
     IPrinter::printMatrix(u);
 
@@ -381,6 +382,25 @@ void IProblem2H2D::optimization()
     IPrinter::printSeperatorLine();
     DoubleVector ag(pv.length());
 
+}
+
+void IProblem2H2D::forwardS()
+{
+    IProblem2HForward2D frw;
+    frw.addSpaceDimension(Dimension(0.01, 0, 100));
+    frw.addSpaceDimension(Dimension(0.01, 0, 100));
+    frw.setTimeDimension(Dimension(0.01, 0, 100000));
+
+    EquationParameter e_prm;
+    e_prm.a = 1.0;
+    e_prm.lambda = +2.0;
+    frw.mEquParameter = e_prm;
+
+    DoubleMatrix u;
+    DoubleMatrix ut;
+    frw.calculateMVD(u, ut);
+
+    IPrinter::printMatrix(u);
 }
 
 void IProblem2H2D::distributeDelta(const SpacePoint &pt, std::vector<ExtendedSpacePointNode> &nodes, unsigned int id, const Dimension &xd, const Dimension &yd)
