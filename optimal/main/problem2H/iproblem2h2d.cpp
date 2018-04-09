@@ -19,11 +19,11 @@ void IProblem2H2D::forward()
     IProblem2HForward2D frw;
     frw.addSpaceDimension(Dimension(0.01, 0, 100));
     frw.addSpaceDimension(Dimension(0.01, 0, 100));
-    frw.setTimeDimension(Dimension(0.01, 0, 100000));
+    frw.setTimeDimension(Dimension(0.01, 0, 10000));
 
     EquationParameter e_prm;
     e_prm.a = 1.0;
-    e_prm.lambda = +0.0;
+    e_prm.lambda = +0.1;
 
     e_prm.Ns = 1;
     e_prm.q.resize(e_prm.Ns);
@@ -64,7 +64,7 @@ void IProblem2H2D::forward()
     std::vector<ExtendedSpaceNode2DH> u_info;
     frw.calculateMVD_D(u, ut, u_info, false);
 
-    IPrinter::printMatrix(u);
+//    IPrinter::printMatrix(u);
 
 //    IProblem2HBackward2D bkw;
 //    bkw.addSpaceDimension(Dimension(0.01, 0, 100));
@@ -398,7 +398,7 @@ void IProblem2H2D::forwardS()
 
     DoubleMatrix u;
     DoubleMatrix ut;
-    frw.calculateMVD(u, ut);
+    frw.calculateMVD_N(u, ut);
 
     IPrinter::printMatrix(u);
 }

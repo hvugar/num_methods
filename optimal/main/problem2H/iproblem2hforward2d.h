@@ -9,10 +9,10 @@ namespace IProblem2H
 class IProblem2HForward2D : public IHyperbolicIBVP
 {
 public:
-    void calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
-    void calculateMVD(DoubleMatrix &u, DoubleMatrix &ut) const;
-
+    void calculateMVD_N(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
     void calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
+
+    void calculateMVD_N(DoubleMatrix &u, DoubleMatrix &ut) const;
 
     virtual void layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const;
     virtual void layerInfo(const DoubleMatrix &u, const DoubleMatrix &ut, unsigned int layerNumber) const;
