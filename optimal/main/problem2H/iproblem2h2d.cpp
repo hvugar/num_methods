@@ -8,9 +8,9 @@ using namespace IProblem2H;
 
 void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    forward();
+//    forward();
 //    forwardS();
-//    checkGradient();
+    checkGradient();
 //    optimization();
 }
 
@@ -62,7 +62,7 @@ void IProblem2H2D::forward()
     DoubleMatrix u;
     DoubleMatrix ut;
     std::vector<ExtendedSpaceNode2DH> u_info;
-    frw.calculateMVD_D(u, ut, u_info, false);
+    frw.calculateMVD(u, ut, u_info, false);
 
 //    IPrinter::printMatrix(u);
 

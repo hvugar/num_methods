@@ -21,7 +21,7 @@ double IFunctional::fx(const DoubleVector &pv) const
     DoubleMatrix u;
     DoubleMatrix ut;
     vector<ExtendedSpaceNode2DH> info;
-    forward.calculateMVD_N(u, ut, info, true);
+    forward.calculateMVD(u, ut, info, true);
 
     double intgrl = integral(u, ut);
     u.clear();
@@ -249,12 +249,12 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
     DoubleMatrix p;
 
     vector<ExtendedSpaceNode2DH> u_info;
-    forward.calculateMVD_N(u, ut, u_info, true);
+    forward.calculateMVD(u, ut, u_info, true);
 
     backward.UT = u;
     backward.UTt = ut;
-    vector<ExtendedSpaceNode2DH> p_info;
-    backward.calculateMVD(p, p_info, true, u_info);
+    vector<ExtendedSpaceNode2DH> p_info;puts("1");
+    backward.calculateMVD(p, p_info, true, u_info);puts("2");
 
     g.clear();
     g.resize(pv.length(), 0.0);
@@ -513,7 +513,7 @@ void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVecto
     DoubleMatrix ut;
 
     vector<ExtendedSpaceNode2DH> info;
-    forward.calculateMVD_N(u, ut, info, false);
+    forward.calculateMVD(u, ut, info, false);
 
     //printf("optimizeK:%d optimizeZ:%d optimizeC:%d optimizeO:%d\n", optimizeK, optimizeZ, optimizeC, optimizeO);
     if (result == GradientMethod::FIRST_ITERATION)
