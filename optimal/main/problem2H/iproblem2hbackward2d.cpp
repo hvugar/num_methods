@@ -990,6 +990,7 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
             {
                 unsigned int m = rows1.at(row);
                 sn.j = m; sn.y = m*hy;
+
                 for (unsigned int n=1; n<=N-1; n++)
                 {
                     sn.i = n; sn.x = n*hx;
@@ -1135,7 +1136,7 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
                             for (unsigned int cni=0; cni<cntPointNodes.size(); cni++)
                             {
                                 const ExtendedSpacePointNode &cpn = cntPointNodes.at(cni);
-                                d1Y[m-1] += htht_h * mOptParameter.k[cpn.id][odn.id] * p[cpn.j][cpn.i]* (cpn.w * (hx*hy)) * odn.w;
+                                d1Y[m-1] += htht_h * mOptParameter.k[cpn.id][odn.id] * p[cpn.j][cpn.i] * (cpn.w * (hx*hy)) * odn.w;
                             }
 
                             for (unsigned int i=0; i<Nc; i++)
@@ -1251,6 +1252,7 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
             free(a2);
         }
         //--------------------------------------------------------------------------//
+
         //------------------------------------- approximatin to y direction conditions -------------------------------------//
 
         for (unsigned int m=0; m<=M; m++)

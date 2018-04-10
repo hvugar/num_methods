@@ -10,7 +10,7 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
 //    forward();
 //    forwardS();
-    checkGradient();
+//    checkGradient();
     IPrinter::printSeperatorLine();
     optimization();
 }
@@ -260,28 +260,28 @@ void IProblem2H2D::checkGradient()
 void IProblem2H2D::optimization()
 {
     IFunctional ifunc;
-    ifunc.optimizeK = true;
-    ifunc.optimizeZ = true;
-    ifunc.optimizeO = true;
+    ifunc.optimizeK = false;
+    ifunc.optimizeZ = false;
+    ifunc.optimizeO = false;
     ifunc.optimizeC = true;
 
     ifunc.mSpaceDimensionX = Dimension(0.01, 0, 100);
     ifunc.mSpaceDimensionY = (Dimension(0.01, 0, 100));
-    ifunc.mTimeDimension = Dimension(0.01, 0, 200);
+    ifunc.mTimeDimension = Dimension(0.01, 0, 500);
 
-    ifunc.alpha0 = 0.01; ifunc.V0.resize(101, 101, 0.0);
+    ifunc.alpha0 = 1.00; ifunc.V0.resize(101, 101, 0.0);
     ifunc.alpha1 = 1.00; ifunc.V1.resize(101, 101, 0.0);
 
     EquationParameter e_prm;
     e_prm.a = +1.0;
-    e_prm.lambda = +0.01;
+    e_prm.lambda = +0.1;
 
     e_prm.Ns = 2;
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
     e_prm.q[0] = -0.02; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
-    e_prm.q[1] = -0.02; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
+    e_prm.q[1] = -0.05; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
 
     e_prm.Nc = 2;
     e_prm.No = 2;
@@ -290,10 +290,10 @@ void IProblem2H2D::optimization()
     o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
 
-    o_prm.k[0][0] = +0.0000; o_prm.k[0][1] = +0.0000;
-    o_prm.k[1][0] = +0.0000; o_prm.k[1][1] = +0.0000;
-    //o_prm.k[0][0] = +1.0000; o_prm.k[0][1] = +1.0000;
-    //o_prm.k[1][0] = +1.0000; o_prm.k[1][1] = +1.0000;
+    //o_prm.k[0][0] = +0.0000; o_prm.k[0][1] = +0.0000;
+    //o_prm.k[1][0] = +0.0000; o_prm.k[1][1] = +0.0000;
+    o_prm.k[0][0] = +1.0000; o_prm.k[0][1] = +1.0000;
+    o_prm.k[1][0] = +1.0000; o_prm.k[1][1] = +1.0000;
     //o_prm.k[0][0] = -0.6078; o_prm.k[0][1] = -0.5166;
     //o_prm.k[1][0] = -0.9158; o_prm.k[1][1] = -0.8175;
     //o_prm.k[0][0] = -0.7238; o_prm.k[0][1] = -0.6203;
@@ -356,7 +356,7 @@ void IProblem2H2D::optimization()
     ifunc.vmax.resize(e_prm.Nc, +5.0);
 
     ConjugateGradient g;
-//    SteepestDescentGradient g;
+    //SteepestDescentGradient g;
     g.setFunction(&ifunc);
     g.setGradient(&ifunc);
     g.setPrinter(&ifunc);
@@ -364,7 +364,7 @@ void IProblem2H2D::optimization()
     g.setEpsilon1(0.000000000);
     g.setEpsilon2(0.000000000);
     g.setEpsilon3(0.000000000);
-    g.setR1MinimizeEpsilon(1.0, 0.01);
+    g.setR1MinimizeEpsilon(0.1, 0.001);
     g.setNormalize(true);
     g.showEndMessage(true);
 //    g.setResetIteration(false);
