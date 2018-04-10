@@ -114,8 +114,8 @@ void IProblem2H2D::checkGradient()
     e_prm.q[0] = -0.02; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
     e_prm.q[1] = -0.02; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
 
-    e_prm.Nc = 2;
     e_prm.No = 3;
+    e_prm.Nc = 2;
 
     OptimizeParameter o_prm;
     o_prm.xi.resize(e_prm.No);
