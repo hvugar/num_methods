@@ -915,7 +915,6 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
 
             u[m][0] = boundary(sn0, tn);
             u[m][N] = boundary(sn1, tn);
-
         }
 
         sn0.j = 0; sn0.y = 0.0;

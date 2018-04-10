@@ -879,7 +879,6 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
 
             p[m][0] = boundary(sn0, tn);
             p[m][N] = boundary(sn1, tn);
-
         }
 
         sn0.j = 0; sn0.y = 0.0;
@@ -961,8 +960,7 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
 
                             for (unsigned int i=0; i<Nc; i++)
                             {
-                                d1X[n-1] += 2.0*ifunc->r * htht_h * mOptParameter.k[i][odn.id] *
-                                        ifunc->gpi(i, l, u_info, mOptParameter)*sgn(ifunc->g0i(i, l, u_info, mOptParameter)) * odn.w;
+                                d1X[n-1] += 2.0*ifunc->r * htht_h * mOptParameter.k[i][odn.id] * ifunc->gpi(i, l, u_info, mOptParameter)*sgn(ifunc->g0i(i, l, u_info, mOptParameter)) * odn.w;
                             }
                         }
                     }
