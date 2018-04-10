@@ -298,11 +298,10 @@ void IProblem2HBackward2D::calculateMVD_N(DoubleMatrix &p, vector<ExtendedSpaceN
                                 d1X[n] += htht_h * mOptParameter.k[cpn.id][odn.id] * p15[cpn.j][cpn.i] * (cpn.w * (hx*hy)) * odn.w;
                             }
 
-                            for (unsigned int i=0; i<Nc; i++)
-                            {
-                                d1X[n] += 2.0*ifunc->r * htht_h * mOptParameter.k[i][odn.id] *
-                                        ifunc->gpi(i, l, u_info, mOptParameter)*sgn(ifunc->g0i(i, l, u_info, mOptParameter)) * odn.w;
-                            }
+//                            for (unsigned int i=0; i<Nc; i++)
+//                            {
+//                                d1X[n] += 2.0*ifunc->r * htht_h * mOptParameter.k[i][odn.id] * ifunc->gpi(i, l, u_info, mOptParameter)*sgn(ifunc->g0i(i, l, u_info, mOptParameter)) * odn.w;
+//                            }
                         }
                     }
                 }
@@ -380,12 +379,10 @@ void IProblem2HBackward2D::calculateMVD_N(DoubleMatrix &p, vector<ExtendedSpaceN
                                 }
                             }
 
-                            for (unsigned int i=0; i<Nc; i++)
-                            {
-                                d1[offset+n] += 2.0*ifunc->r * ht *  mOptParameter.k[i][odn.id] *
-                                        ifunc->gpi(i, l, u_info, mOptParameter)*sgn(ifunc->g0i(i, l, u_info, mOptParameter)) * odn.w;
-                            }
-
+//                            for (unsigned int i=0; i<Nc; i++)
+//                            {
+//                                d1[offset+n] += 2.0*ifunc->r * ht *  mOptParameter.k[i][odn.id] * ifunc->gpi(i, l, u_info, mOptParameter)*sgn(ifunc->g0i(i, l, u_info, mOptParameter)) * odn.w;
+//                            }
                         }
                     }
                 }
@@ -504,11 +501,10 @@ void IProblem2HBackward2D::calculateMVD_N(DoubleMatrix &p, vector<ExtendedSpaceN
                                 d1Y[m] += htht_h * mOptParameter.k[cpn.id][odn.id] * p[cpn.j][cpn.i]* (cpn.w * (hx*hy)) * odn.w;
                             }
 
-                            for (unsigned int i=0; i<Nc; i++)
-                            {
-                                d1Y[m] += 2.0*ifunc->r * htht_h * mOptParameter.k[i][odn.id] *
-                                        ifunc->gpi(i, l, u_info, mOptParameter)*sgn(ifunc->g0i(i, l, u_info, mOptParameter)) * odn.w;
-                            }
+//                            for (unsigned int i=0; i<Nc; i++)
+//                            {
+//                                d1Y[m] += 2.0*ifunc->r * htht_h * mOptParameter.k[i][odn.id] * ifunc->gpi(i, l, u_info, mOptParameter)*sgn(ifunc->g0i(i, l, u_info, mOptParameter)) * odn.w;
+//                            }
                         }
                     }
                 }
@@ -587,11 +583,10 @@ void IProblem2HBackward2D::calculateMVD_N(DoubleMatrix &p, vector<ExtendedSpaceN
                                 }
                             }
 
-                            for (unsigned int i=0; i<Nc; i++)
-                            {
-                                d2[offset+m] += 2.0*ifunc->r * htht_h *  mOptParameter.k[i][odn.id] *
-                                        ifunc->gpi(i, l, u_info, mOptParameter)*sgn(ifunc->g0i(i, l, u_info, mOptParameter)) * odn.w;
-                            }
+//                            for (unsigned int i=0; i<Nc; i++)
+//                            {
+//                                d2[offset+m] += 2.0*ifunc->r * htht_h *  mOptParameter.k[i][odn.id] * ifunc->gpi(i, l, u_info, mOptParameter)*sgn(ifunc->g0i(i, l, u_info, mOptParameter)) * odn.w;
+//                            }
                         }
                     }
                     //------------------------------------- Adding delta part -------------------------------------//

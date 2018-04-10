@@ -273,15 +273,15 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
 
                 double grad_Kij = 0.0;
 
-                grad_Kij += 0.5 * (pi.value(0)+2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))) * (uj.value(0) - o_prm.z[i][j]);
+                grad_Kij += 0.5 * (pi.value(0)/*+2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))*/) * (uj.value(0) - o_prm.z[i][j]);
                 for (unsigned int m=1; m<=L-1; m++)
                 {
-                    grad_Kij += (pi.value(m)+2.0*r*gpi(i,m,u_info,o_prm)*sgn(g0i(i,m,u_info,o_prm))) * (uj.value(m) - o_prm.z[i][j]);
+                    grad_Kij += (pi.value(m)/*+2.0*r*gpi(i,m,u_info,o_prm)*sgn(g0i(i,m,u_info,o_prm))*/) * (uj.value(m) - o_prm.z[i][j]);
                 }
-                grad_Kij += 0.5 * (pi.value(L)+2.0*r*gpi(i,L,u_info,o_prm)*sgn(g0i(i,L,u_info,o_prm))) * (uj.value(L) - o_prm.z[i][j]);
+                grad_Kij += 0.5 * (pi.value(L)/*+2.0*r*gpi(i,L,u_info,o_prm)*sgn(g0i(i,L,u_info,o_prm))*/) * (uj.value(L) - o_prm.z[i][j]);
                 grad_Kij *= -ht;
 
-                g[gi++] = grad_Kij + 2.0*regEpsilon*(o_prm.k[i][j] - mOptParameter0.k[i][j]);
+                g[gi++] = grad_Kij /*+ 2.0*regEpsilon*(o_prm.k[i][j] - mOptParameter0.k[i][j])*/;
             }
         }
     }
@@ -307,15 +307,15 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
             {
                 double grad_Zij = 0.0;
 
-                grad_Zij += 0.5 * (pi.value(0)+2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))) * o_prm.k[i][j];
+                grad_Zij += 0.5 * (pi.value(0)/*+2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))*/) * o_prm.k[i][j];
                 for (unsigned int m=1; m<=L-1; m++)
                 {
-                    grad_Zij += (pi.value(m)+2.0*r*gpi(i,m,u_info,o_prm)*sgn(g0i(i,m,u_info,o_prm)))  * o_prm.k[i][j];
+                    grad_Zij += (pi.value(m)/*+2.0*r*gpi(i,m,u_info,o_prm)*sgn(g0i(i,m,u_info,o_prm))*/)  * o_prm.k[i][j];
                 }
-                grad_Zij += 0.5 * (pi.value(L)+2.0*r*gpi(i,L,u_info,o_prm)*sgn(g0i(i,L,u_info,o_prm))) * o_prm.k[i][j];
+                grad_Zij += 0.5 * (pi.value(L)/*+2.0*r*gpi(i,L,u_info,o_prm)*sgn(g0i(i,L,u_info,o_prm))*/) * o_prm.k[i][j];
                 grad_Zij *= ht;
 
-                g[gi++] = grad_Zij + 2.0*regEpsilon*(o_prm.z[i][j] - mOptParameter0.z[i][j]);
+                g[gi++] = grad_Zij /*+ 2.0*regEpsilon*(o_prm.z[i][j] - mOptParameter0.z[i][j])*/;
             }
         }
     }
@@ -343,7 +343,7 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
 
             vi = 0.0;
             for (unsigned int i=0; i<mEquParameter.Nc; i++)
-                vi += o_prm.k[i][j] * (p_info[i].value(0)+2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm)));
+                vi += o_prm.k[i][j] * (p_info[i].value(0)/*+2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))*/);
             gradXijX += 0.5 * uj.valueDx(0) * vi;
             gradXijY += 0.5 * uj.valueDy(0) * vi;
 
@@ -351,22 +351,22 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
             {
                 vi = 0.0;
                 for (unsigned int i=0; i<mEquParameter.Nc; i++)
-                    vi += o_prm.k[i][j]*(p_info[i].value(m)+2.0*r*gpi(i,m,u_info,o_prm)*sgn(g0i(i,m,u_info,o_prm)));
+                    vi += o_prm.k[i][j]*(p_info[i].value(m)/*+2.0*r*gpi(i,m,u_info,o_prm)*sgn(g0i(i,m,u_info,o_prm))*/);
                 gradXijX += uj.valueDx(m) * vi;
                 gradXijY += uj.valueDy(m) * vi;
             }
 
             vi = 0.0;
             for (unsigned int i=0; i<mEquParameter.Nc; i++)
-                vi += o_prm.k[i][j]*(p_info[i].value(L)+2.0*r*gpi(i,L,u_info,o_prm)*sgn(g0i(i,L,u_info,o_prm)));
+                vi += o_prm.k[i][j]*(p_info[i].value(L)/*+2.0*r*gpi(i,L,u_info,o_prm)*sgn(g0i(i,L,u_info,o_prm))*/);
             gradXijX += 0.5 * uj.valueDx(L) * vi;
             gradXijY += 0.5 * uj.valueDy(L) * vi;
 
             gradXijX *= -ht;
             gradXijY *= -ht;
 
-            g[gi++] = gradXijX+ 2.0*regEpsilon*(o_prm.xi[j].x - mOptParameter0.xi[j].x);
-            g[gi++] = gradXijY + 2.0*regEpsilon*(o_prm.xi[j].x - mOptParameter0.xi[j].x);
+            g[gi++] = gradXijX /*+ 2.0*regEpsilon*(o_prm.xi[j].x - mOptParameter0.xi[j].x)*/;
+            g[gi++] = gradXijY /*+ 2.0*regEpsilon*(o_prm.xi[j].x - mOptParameter0.xi[j].x)*/;
         }
     }
     else
@@ -410,8 +410,8 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
             grad_EtaiX *= -ht;
             grad_EtaiY *= -ht;
 
-            g[gi++] = grad_EtaiX + 2.0*regEpsilon*(o_prm.eta[i].x - mOptParameter0.eta[i].x);
-            g[gi++] = grad_EtaiY + 2.0*regEpsilon*(o_prm.eta[i].y - mOptParameter0.eta[i].y);
+            g[gi++] = grad_EtaiX /*+ 2.0*regEpsilon*(o_prm.eta[i].x - mOptParameter0.eta[i].x)*/;
+            g[gi++] = grad_EtaiY /*+ 2.0*regEpsilon*(o_prm.eta[i].y - mOptParameter0.eta[i].y)*/;
         }
     }
     else
@@ -434,66 +434,66 @@ void IFunctional::project(DoubleVector &pv, unsigned int index)
 
     unsigned int offset = 2*Nc*No;
 
-    // eta
-    if ( offset <= index && index <= offset + 2*Nc - 1 )
-    {
-        if (pv[index] < 0.05) pv[index] = 0.05;
-        if (pv[index] > 0.95) pv[index] = 0.95;
-    }
-
     // xi
-    if ( offset + 2*Nc <= index && index <= offset + 2*Nc + 2*No - 1 )
+    if ( offset <= index && index <= offset + 2*No - 1 )
     {
         if (pv[index] < 0.05) pv[index] = 0.05;
         if (pv[index] > 0.95) pv[index] = 0.95;
     }
 
-    double dx = 0.08;
-
-    if (index == 12 && fabs(pv[8] - pv[12])<dx)
+    // eta
+    if ( offset + 2*No <= index && index <= offset + 2*No + 2*Nc - 1 )
     {
-        pv[12] = pv[8] + dx;
-        if (pv[12] > 0.95) pv[12] = pv[8] - dx;
+        if (pv[index] < 0.05) pv[index] = 0.05;
+        if (pv[index] > 0.95) pv[index] = 0.95;
     }
 
-    if (index == 12 && fabs(pv[10] - pv[12])<dx)
-    {
-        pv[12] = pv[10] + dx;
-        if (pv[12] > 0.95) pv[12] = pv[10] - dx;
-    }
+//    double dx = 0.08;
 
-    if (index == 14 && fabs(pv[8] - pv[14])<dx)
-    {
-        pv[14] = pv[8] + dx;
-        if (pv[14] > 0.95) pv[14] = pv[8] - dx;
-    }
-    if (index == 14 && fabs(pv[10] - pv[14])<dx)
-    {
-        pv[14] = pv[10] + dx;
-        if (pv[14] > 0.95) pv[14] = pv[10] - dx;
-    }
+//    if (index == 12 && fabs(pv[8] - pv[12])<dx)
+//    {
+//        pv[12] = pv[8] + dx;
+//        if (pv[12] > 0.95) pv[12] = pv[8] - dx;
+//    }
 
-    if (index == 13 && fabs(pv[9] - pv[13])<dx)
-    {
-        pv[13] = pv[9] + dx;
-        if (pv[13] > 0.95) pv[13] = pv[9] - dx;
-    }
-    if (index == 13 && fabs(pv[11] - pv[13])<dx)
-    {
-        pv[13] = pv[11] + dx;
-        if (pv[13] > 0.95) pv[13] = pv[11] - dx;
-    }
+//    if (index == 12 && fabs(pv[10] - pv[12])<dx)
+//    {
+//        pv[12] = pv[10] + dx;
+//        if (pv[12] > 0.95) pv[12] = pv[10] - dx;
+//    }
 
-    if (index == 15 && fabs(pv[9] - pv[15])<dx)
-    {
-        pv[15] = pv[9] + dx;
-        if (pv[15] > 0.95) pv[15] = pv[9] - dx;
-    }
-    if (index == 15 && fabs(pv[11] - pv[15])<dx)
-    {
-        pv[15] = pv[11] + dx;
-        if (pv[15] > 0.95) pv[15] = pv[11] - dx;
-    }
+//    if (index == 14 && fabs(pv[8] - pv[14])<dx)
+//    {
+//        pv[14] = pv[8] + dx;
+//        if (pv[14] > 0.95) pv[14] = pv[8] - dx;
+//    }
+//    if (index == 14 && fabs(pv[10] - pv[14])<dx)
+//    {
+//        pv[14] = pv[10] + dx;
+//        if (pv[14] > 0.95) pv[14] = pv[10] - dx;
+//    }
+
+//    if (index == 13 && fabs(pv[9] - pv[13])<dx)
+//    {
+//        pv[13] = pv[9] + dx;
+//        if (pv[13] > 0.95) pv[13] = pv[9] - dx;
+//    }
+//    if (index == 13 && fabs(pv[11] - pv[13])<dx)
+//    {
+//        pv[13] = pv[11] + dx;
+//        if (pv[13] > 0.95) pv[13] = pv[11] - dx;
+//    }
+
+//    if (index == 15 && fabs(pv[9] - pv[15])<dx)
+//    {
+//        pv[15] = pv[9] + dx;
+//        if (pv[15] > 0.95) pv[15] = pv[9] - dx;
+//    }
+//    if (index == 15 && fabs(pv[11] - pv[15])<dx)
+//    {
+//        pv[15] = pv[11] + dx;
+//        if (pv[15] > 0.95) pv[15] = pv[11] - dx;
+//    }
 }
 
 void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const
@@ -535,10 +535,10 @@ void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVecto
 
     }
 
-    ifunc->optimizeK = (i%4==1);
-    ifunc->optimizeZ = (i%4==2);
-    ifunc->optimizeO = (i%4==3);
-    ifunc->optimizeC = (i%4==0);
+    ifunc->optimizeK = (i%4==2);
+    ifunc->optimizeZ = (i%4==1);
+    ifunc->optimizeO = (i%4==0);
+    ifunc->optimizeC = (i%4==3);
 
 
 //    printf("I[%3d]: %8.6f %8.6f %8.6f R:%.2f e:%.3f  \n", i, integral1(u, ut), integral2(u, ut), f, r, regEpsilon);

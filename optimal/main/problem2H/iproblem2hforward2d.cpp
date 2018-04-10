@@ -844,13 +844,21 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
 
             double sum = 0.0;
 
-            if (n==0)      sum += aa__hxhx*(u00[m][n]-2.0*u00[m][n+1]+u00[m][n+2]);
-            else if (n==N) sum += aa__hxhx*(u00[m][n-2]-2.0*u00[m][n-1]+u00[m][n]);
-            else           sum += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]);
+//            if (n==0)      sum += aa__hxhx*(u00[m][n]-2.0*u00[m][n+1]+u00[m][n+2]);
+//            else if (n==N) sum += aa__hxhx*(u00[m][n-2]-2.0*u00[m][n-1]+u00[m][n]);
+//            else           sum += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]);
 
-            if (m==0)      sum += aa__hyhy*(u00[m][n]-2.0*u00[m+1][n]+u00[m+2][n]);
-            else if (m==M) sum += aa__hyhy*(u00[m-2][n]-2.0*u00[m-1][n]+u00[m][n]);
-            else           sum += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]);
+            if (n==0)      sum += aa__hxhx*(u00.at(m,n)-2.0*u00.at(m,n+1)+u00.at(m,n+2));
+            else if (n==N) sum += aa__hxhx*(u00.at(m,n-2)-2.0*u00.at(m,n-1)+u00.at(m,n));
+            else           sum += aa__hxhx*(u00.at(m,n-1)-2.0*u00.at(m,n)+u00.at(m,n+1));
+
+//            if (m==0)      sum += aa__hyhy*(u00[m][n]-2.0*u00[m+1][n]+u00[m+2][n]);
+//            else if (m==M) sum += aa__hyhy*(u00[m-2][n]-2.0*u00[m-1][n]+u00[m][n]);
+//            else           sum += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]);
+
+            if (m==0)      sum += aa__hyhy*(u00.at(m,n)-2.0*u00.at(m+1,n)+u00[m+2][n]);
+            else if (m==M) sum += aa__hyhy*(u00.at(m-2,n)-2.0*u00.at(m-1,n)+u00[m][n]);
+            else           sum += aa__hyhy*(u00.at(m-1,n)-2.0*u00.at(m,n)+u00.at(m+1,n));
 
             sum -= lambda*initial2(sn);
 

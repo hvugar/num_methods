@@ -82,7 +82,8 @@ public:
 
     static void forward();
     static void checkGradient();
-    static void optimization();
+    static void optimization1();
+    static void optimization2();
     static void forwardS();
 
     static void distributeDelta(const SpacePoint &pt, std::vector<ExtendedSpacePointNode> &nodes, unsigned int id, const Dimension &xd, const Dimension &yd);
