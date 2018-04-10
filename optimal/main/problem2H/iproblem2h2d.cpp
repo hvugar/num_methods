@@ -10,10 +10,10 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
 //    forward();
 //    forwardS();
-//    checkGradient();
+    checkGradient();
 //    IPrinter::printSeperatorLine();
 //    optimization();
-    optimization2();
+//    optimization2();
 }
 
 void IProblem2H2D::forward()
@@ -118,6 +118,7 @@ void IProblem2H2D::checkGradient()
     e_prm.Nc = 2;
 
     OptimizeParameter o_prm;
+
     o_prm.xi.resize(e_prm.No);
     o_prm.xi[0].x = 0.400; o_prm.xi[0].y = 0.700;
     o_prm.xi[1].x = 0.600; o_prm.xi[1].y = 0.600;
