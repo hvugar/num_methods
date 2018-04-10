@@ -716,8 +716,8 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
     double m_aa_htht__hyhy_h = -0.5*(a*a*ht*ht)/(hy*hy);
     double p_aa_htht__hxhx___lambda_ht = +1.0 + (a*a*ht*ht)/(hx*hx) + 1.5*(lambda*ht);
     double p_aa_htht__hyhy___lambda_ht = +1.0 + (a*a*ht*ht)/(hy*hy) + 1.5*(lambda*ht);
-    double aa__hxhx = ((a*a)/(hx*hx));
-    double aa__hyhy = ((a*a)/(hy*hy));
+    double aa__hxhx = (a*a)/(hx*hx);
+    double aa__hyhy = (a*a)/(hy*hy);
     double htht_h = 0.5*ht*ht;
 
     DoubleMatrix u00(M+1, N+1);
@@ -870,8 +870,8 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
                 }
             }
 
-            u05[m][n] = u00[m][n] + initial2(sn)*ht*0.5 + sum*ht*ht*0.125;
-            u10[m][n] = u00[m][n] + initial2(sn)*ht     + sum*ht*ht*0.500;
+            u05[m][n] = u00[m][n] + initial2(sn)*ht*0.5 + 0.125*ht*ht*sum;
+            u10[m][n] = u00[m][n] + initial2(sn)*ht     + 0.500*ht*ht*sum;
         }
     }
     qPointNodes.clear();
@@ -904,11 +904,12 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
         SpaceNodePDE sn1;
 
         sn0.i = 0; sn0.x = 0.0;
-        sn1.i = N; sn1.x = 1.0;
+        sn1.i = N; sn1.x = hx*N;
         for (unsigned int m=0; m<=M; m++)
         {
             sn0.j = m; sn0.y = m*hy;
             sn1.j = m; sn1.y = m*hy;
+
             u15[m][0] = boundary(sn0, tn);
             u15[m][N] = boundary(sn1, tn);
 
@@ -918,7 +919,7 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
         }
 
         sn0.j = 0; sn0.y = 0.0;
-        sn1.j = M; sn1.y = 1.0;
+        sn1.j = M; sn1.y = hy*M;
         for (unsigned int n=0; n<=N; n++)
         {
             sn0.i = n; sn0.x = n*hx;
@@ -951,6 +952,7 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
                 b1X[n-1] = p_aa_htht__hxhx___lambda_ht;
                 c1X[n-1] = m_aa_htht__hxhx_h;
             }
+
             a1X[0]   = 0.0;
             c1X[N-2] = 0.0;
 
@@ -1013,105 +1015,96 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
         }
         else
         {
-//            double* a1 = (double*) malloc(sizeof(double)*rows1.size()*(N+1));
-//            double* b1 = (double*) malloc(sizeof(double)*rows1.size()*(N+1));
-//            double* c1 = (double*) malloc(sizeof(double)*rows1.size()*(N+1));
-//            double* d1 = (double*) malloc(sizeof(double)*rows1.size()*(N+1));
-//            double* x1 = (double*) malloc(sizeof(double)*rows1.size()*(N+1));
-//            DoubleMatrix w2(rows1.size()*(N+1), rows1.size()*(N+1), 0.0);
+            double* a1 = (double*) malloc(sizeof(double)*rows1.size()*(N-1));
+            double* b1 = (double*) malloc(sizeof(double)*rows1.size()*(N-1));
+            double* c1 = (double*) malloc(sizeof(double)*rows1.size()*(N-1));
+            double* d1 = (double*) malloc(sizeof(double)*rows1.size()*(N-1));
+            double* x1 = (double*) malloc(sizeof(double)*rows1.size()*(N-1));
+            DoubleMatrix w2(rows1.size()*(N-1), rows1.size()*(N-1), 0.0);
 
-//            unsigned int offset = 0;
-//            for (unsigned int row=0; row<rows1.size(); row++)
-//            {
-//                unsigned int m = rows1.at(row);
-//                sn.j = m; sn.y = m*hy;
+            unsigned int offset = 0;
+            for (unsigned int row=0; row<rows1.size(); row++)
+            {
+                unsigned int m = rows1.at(row);
+                sn.j = m; sn.y = m*hy;
 
-//                for (unsigned int n=0; n<=N; n++)
-//                {
-//                    sn.i = n; sn.x = n*hx;
+                for (unsigned int n=1; n<=N-1; n++)
+                {
+                    sn.i = n; sn.x = n*hx;
 
-//                    if (m==0)       d1[offset+n] = p_aa_htht__hyhy_h*(u10[0][n]   - 2.0*u10[1][n]   + u10[2][n]);
-//                    if (m>0 && m<M) d1[offset+n] = p_aa_htht__hyhy_h*(u10[m-1][n] - 2.0*u10[m][n]   + u10[m+1][n]);
-//                    if (m==M)       d1[offset+n] = p_aa_htht__hyhy_h*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
+                    if (m==0)       d1[offset+(n-1)] = p_aa_htht__hyhy_h*(u10[0][n]   - 2.0*u10[1][n]   + u10[2][n]);
+                    if (m>0 && m<M) d1[offset+(n-1)] = p_aa_htht__hyhy_h*(u10[m-1][n] - 2.0*u10[m][n]   + u10[m+1][n]);
+                    if (m==M)       d1[offset+(n-1)] = p_aa_htht__hyhy_h*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
 
-//                    d1[offset+n] += 0.5*(u10[m][n]-u00[m][n]) + u10[m][n];
-//                    d1[offset+n] += 0.5*lambda*ht*(4.0*u10[m][n]-u05[m][n]);
+                    d1[offset+(n-1)] += 0.5*(u10[m][n]-u00[m][n]) + u10[m][n];
+                    d1[offset+(n-1)] += 0.5*lambda*ht*(4.0*u10[m][n]-u05[m][n]);
 
-//                    if (n == 0)
-//                    {
-//                        a1[offset+0] = 0.0;
-//                        b1[offset+0] = p_aa_htht__hxhx___lambda_ht;
-//                        c1[offset+0] = m_aa_htht__hxhx;
-//                    }
-//                    else if (n == N)
-//                    {
-//                        a1[offset+N] = m_aa_htht__hxhx;
-//                        b1[offset+N] = p_aa_htht__hxhx___lambda_ht;
-//                        c1[offset+N] = 0.0;
-//                    }
-//                    else
-//                    {
-//                        a1[offset+n] = m_aa_htht__hxhx_h;
-//                        b1[offset+n] = p_aa_htht__hxhx___lambda_ht;
-//                        c1[offset+n] = m_aa_htht__hxhx_h;
-//                    }
+                    a1[offset+(n-1)] = m_aa_htht__hxhx_h;
+                    b1[offset+(n-1)] = p_aa_htht__hxhx___lambda_ht;
+                    c1[offset+(n-1)] = m_aa_htht__hxhx_h;
 
-//                    //------------------------------------- Adding delta part -------------------------------------//
-//                    for (unsigned int cni=0; cni<cntDeltaNodes.size(); cni++)
-//                    {
-//                        const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
-//                        if (cdn.i == sn.i && cdn.j == sn.j)
-//                        {
-//                            for (unsigned int odj=0; odj<obsPointNodes.size(); odj++)
-//                            {
-//                                const ExtendedSpacePointNode &opn = obsPointNodes.at(odj);
+                    //------------------------------------- Adding delta part -------------------------------------//
+                    for (unsigned int cni=0; cni<cntDeltaNodes.size(); cni++)
+                    {
+                        const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
+                        if (cdn.i == sn.i && cdn.j == sn.j)
+                        {
+                            for (unsigned int odj=0; odj<obsPointNodes.size(); odj++)
+                            {
+                                const ExtendedSpacePointNode &opn = obsPointNodes.at(odj);
 
-//                                bool found = false;
-//                                for (unsigned int cs=0; cs<rows1.size(); cs++)
-//                                {
-//                                    if (opn.j == rows1[cs])
-//                                    {
-//                                        found = true;
-//                                        w2[offset+n][cs*(N+1)+opn.i] -= htht_h * mOptParameter.k[cdn.id][opn.id] * (opn.w * (hx*hy)) * cdn.w;
-//                                    }
-//                                }
+                                bool found = false;
+                                for (unsigned int cs=0; cs<rows1.size(); cs++)
+                                {
+                                    if (opn.j == rows1[cs])
+                                    {
+                                        found = true;
+                                        w2[offset+(n-1)][cs*(N-1)+opn.i] -= htht_h * mOptParameter.k[cdn.id][opn.id] * (opn.w * (hx*hy)) * cdn.w;
+                                    }
+                                }
 
-//                                if (!found)
-//                                {
-//                                    d1[offset+n] += htht_h * mOptParameter.k[cdn.id][opn.id] * u15[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
-//                                }
-//                            }
+                                if (!found)
+                                {
+                                    d1[offset+(n-1)] += htht_h * mOptParameter.k[cdn.id][opn.id] * u15[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
+                                }
+                            }
 
-//                            for (unsigned int j=0; j<No; j++)
-//                            {
-//                                d1[offset+n] -= htht_h * mOptParameter.k[cdn.id][j] * mOptParameter.z[cdn.id][j] * cdn.w;
-//                            }
+                            for (unsigned int j=0; j<No; j++)
+                            {
+                                d1[offset+(n-1)] -= htht_h * mOptParameter.k[cdn.id][j] * mOptParameter.z[cdn.id][j] * cdn.w;
+                            }
+                        }
+                    }
+                }
 
-//                        }
-//                    }
-//                }
-//                offset += N+1;
-//            }
+                a1[offset+0]   = 0.0;
+                c1[offset+N-2] = 0.0;
 
-//            LinearEquation::func1(a1, b1, c1, d1, w2.data(), x1, rows1.size()*(N+1));
+                d1[offset+0]   -= m_aa_htht__hxhx_h * u15[m][0];
+                d1[offset+N-2] -= m_aa_htht__hxhx_h * u15[m][N];
 
-//            offset = 0;
-//            for (unsigned int row=0; row<rows1.size(); row++)
-//            {
-//                unsigned int m=rows1.at(row);
-//                for (unsigned int n=0; n<=N; n++)
-//                {
-//                    u15[m][n] = x1[offset+n];
-//                }
-//                offset += N+1;
-//            }
+                offset += N-1;
+            }
 
-//            w2.clear();
-//            free(x1);
-//            free(d1);
-//            free(c1);
-//            free(b1);
-//            free(a1);
+            LinearEquation::func1(a1, b1, c1, d1, w2.data(), x1, rows1.size()*(N-1));
+
+            offset = 0;
+            for (unsigned int row=0; row<rows1.size(); row++)
+            {
+                unsigned int m=rows1.at(row);
+                for (unsigned int n=1; n<=N-1; n++)
+                {
+                    u15[m][n] = x1[offset+(n-1)];
+                }
+                offset += N-1;
+            }
+
+            w2.clear();
+            free(x1);
+            free(d1);
+            free(c1);
+            free(b1);
+            free(a1);
         }
         //--------------------------------------------------------------------------//
 
@@ -1203,107 +1196,97 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
         }
         else
         {
-            //            double* a2 = (double*) malloc(sizeof(double)*cols1.size()*(M+1));
-            //            double* b2 = (double*) malloc(sizeof(double)*cols1.size()*(M+1));
-            //            double* c2 = (double*) malloc(sizeof(double)*cols1.size()*(M+1));
-            //            double* d2 = (double*) malloc(sizeof(double)*cols1.size()*(M+1));
-            //            double* x2 = (double*) malloc(sizeof(double)*cols1.size()*(M+1));
-            //            DoubleMatrix w2(cols1.size()*(M+1), cols1.size()*(M+1), 0.0);
+            double* a2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
+            double* b2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
+            double* c2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
+            double* d2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
+            double* x2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
+            DoubleMatrix w2(cols1.size()*(M-1), cols1.size()*(M-1), 0.0);
 
-            //            unsigned int offset = 0;
-            //            for (unsigned int col=0; col<cols1.size(); col++)
-            //            {
-            //                unsigned int n = cols1.at(col);
-            //                sn.i = n; sn.x = n*hx;
+            unsigned int offset = 0;
+            for (unsigned int col=0; col<cols1.size(); col++)
+            {
+                unsigned int n = cols1.at(col);
+                sn.i = n; sn.x = n*hx;
 
-            //                for (unsigned int m=0; m<=M; m++)
-            //                {
-            //                    sn.j = m; sn.y = m*hy;
+                for (unsigned int m=1; m<=M-1; m++)
+                {
+                    sn.j = m; sn.y = m*hy;
 
-            //                    if (n==0)       d2[offset+m] = p_aa_htht__hxhx_h*(u15[m][0]   - 2.0*u15[m][1]   + u15[m][2]);
-            //                    if (n>0 && n<N) d2[offset+m] = p_aa_htht__hxhx_h*(u15[m][n-1] - 2.0*u15[m][n]   + u15[m][n+1]);
-            //                    if (n==N)       d2[offset+m] = p_aa_htht__hxhx_h*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
+                    if (n==0)       d2[offset+(m-1)] = p_aa_htht__hxhx_h*(u15[m][0]   - 2.0*u15[m][1]   + u15[m][2]);
+                    if (n>0 && n<N) d2[offset+(m-1)] = p_aa_htht__hxhx_h*(u15[m][n-1] - 2.0*u15[m][n]   + u15[m][n+1]);
+                    if (n==N)       d2[offset+(m-1)] = p_aa_htht__hxhx_h*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
 
-            //                    d2[offset+m] += 0.5*(u10[m][n]-u00[m][n]) + u15[m][n];
-            //                    d2[offset+m] += 0.5*lambda*ht*(4.0*u15[m][n]-u10[m][n]);
+                    d2[offset+(m-1)] += 0.5*(u10[m][n]-u00[m][n]) + u15[m][n];
+                    d2[offset+(m-1)] += 0.5*lambda*ht*(4.0*u15[m][n]-u10[m][n]);
 
-            //                    if (m == 0)
-            //                    {
-            //                        a2[offset+0] = 0.0;
-            //                        b2[offset+0] = p_aa_htht__hyhy___lambda_ht;
-            //                        c2[offset+0] = m_aa_htht__hyhy;
-            //                        //d2[offset+0] += 0.0;
-            //                    }
-            //                    else if (m == M)
-            //                    {
-            //                        a2[offset+M] = m_aa_htht__hyhy;
-            //                        b2[offset+M] = p_aa_htht__hyhy___lambda_ht;
-            //                        c2[offset+M] = 0.0;
-            //                        //d2[offset+M] += 0.0;
-            //                    }
-            //                    else
-            //                    {
-            //                        a2[offset+m] = m_aa_htht__hyhy_h;
-            //                        b2[offset+m] = p_aa_htht__hyhy___lambda_ht;
-            //                        c2[offset+m] = m_aa_htht__hyhy_h;
-            //                    }
+                    a2[offset+(m-1)] = m_aa_htht__hyhy_h;
+                    b2[offset+(m-1)] = p_aa_htht__hyhy___lambda_ht;
+                    c2[offset+(m-1)] = m_aa_htht__hyhy_h;
 
-            //                    //------------------------------------- Adding delta part -------------------------------------//
-            //                    for (unsigned int cni=0; cni<cntDeltaNodes.size(); cni++)
-            //                    {
-            //                        const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
-            //                        if (cdn.i == sn.i && cdn.j == sn.j)
-            //                        {
-            //                            for (unsigned int onj=0; onj<obsPointNodes.size(); onj++)
-            //                            {
-            //                                const ExtendedSpacePointNode &opn = obsPointNodes.at(onj);
+                    //------------------------------------- Adding delta part -------------------------------------//
+                    for (unsigned int cni=0; cni<cntDeltaNodes.size(); cni++)
+                    {
+                        const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
+                        if (cdn.i == sn.i && cdn.j == sn.j)
+                        {
+                            for (unsigned int onj=0; onj<obsPointNodes.size(); onj++)
+                            {
+                                const ExtendedSpacePointNode &opn = obsPointNodes.at(onj);
 
-            //                                bool found = false;
-            //                                for (unsigned int cs=0; cs<cols1.size(); cs++)
-            //                                {
-            //                                    if (opn.i == cols1[cs])
-            //                                    {
-            //                                        found = true;
-            //                                        w2[offset+m][cs*(M+1)+opn.j] -= htht_h * mOptParameter.k[cdn.id][opn.id] * (opn.w * (hx*hy)) * cdn.w;
-            //                                    }
-            //                                }
+                                bool found = false;
+                                for (unsigned int cs=0; cs<cols1.size(); cs++)
+                                {
+                                    if (opn.i == cols1[cs])
+                                    {
+                                        found = true;
+                                        w2[offset+(m-1)][cs*(M-1)+opn.j] -= htht_h * mOptParameter.k[cdn.id][opn.id] * (opn.w * (hx*hy)) * cdn.w;
+                                    }
+                                }
 
-            //                                if (!found)
-            //                                {
-            //                                    d2[offset+m] += htht_h * mOptParameter.k[cdn.id][opn.id] * u[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
-            //                                }
-            //                            }
+                                if (!found)
+                                {
+                                    d2[offset+(m-1)] += htht_h * mOptParameter.k[cdn.id][opn.id] * u[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
+                                }
+                            }
 
-            //                            for (unsigned int j=0; j<No; j++)
-            //                            {
-            //                                d2[offset+m] -= htht_h * mOptParameter.k[cdn.id][j] * mOptParameter.z[cdn.id][j] * cdn.w;
-            //                            }
-            //                        }
-            //                    }
-            //                    //------------------------------------- Adding delta part -------------------------------------//
-            //                }
-            //                offset += M+1;
-            //            }
+                            for (unsigned int j=0; j<No; j++)
+                            {
+                                d2[offset+(m-1)] -= htht_h * mOptParameter.k[cdn.id][j] * mOptParameter.z[cdn.id][j] * cdn.w;
+                            }
+                        }
+                    }
+                    //------------------------------------- Adding delta part -------------------------------------//
+                }
 
-            //            LinearEquation::func1(a2, b2, c2, d2, w2.data(), x2, cols1.size()*(M+1));
+                a2[offset+0]   = 0.0;
+                c2[offset+M-2] = 0.0;
 
-            //            offset = 0;
-            //            for (unsigned int col=0; col<cols1.size(); col++)
-            //            {
-            //                unsigned int n=cols1.at(col);
-            //                for (unsigned int m=0; m<=M; m++)
-            //                {
-            //                    u[m][n] = x2[offset+m];
-            //                }
-            //                offset += M+1;
-            //            }
+                d2[offset+0]   -= m_aa_htht__hyhy_h * u[0][n];
+                d2[offset+M-2] -= m_aa_htht__hyhy_h * u[M][n];
 
-            //            w2.clear();
-            //            free(x2);
-            //            free(d2);
-            //            free(c2);
-            //            free(b2);
-            //            free(a2);
+                offset += M-1;
+            }
+
+            LinearEquation::func1(a2, b2, c2, d2, w2.data(), x2, cols1.size()*(M-1));
+
+            offset = 0;
+            for (unsigned int col=0; col<cols1.size(); col++)
+            {
+                unsigned int n=cols1.at(col);
+                for (unsigned int m=1; m<=M-1; m++)
+                {
+                    u[m][n] = x2[offset+(m-1)];
+                }
+                offset += M-1;
+            }
+
+            w2.clear();
+            free(x2);
+            free(d2);
+            free(c2);
+            free(b2);
+            free(a2);
         }
         //--------------------------------------------------------------------------//
 
@@ -1625,59 +1608,59 @@ void IProblem2HForward2D::layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned
 
 void IProblem2HForward2D::layerInfo(const DoubleMatrix &u, const DoubleMatrix &ut, unsigned int ln) const
 {
-//    double hx = mspaceDimension[0].step();
-//    double hy = mspaceDimension[1].step();
-//    unsigned int N1 = mspaceDimension[0].sizeN();
-//    unsigned int N2 = mspaceDimension[1].sizeN();
+    //    double hx = mspaceDimension[0].step();
+    //    double hy = mspaceDimension[1].step();
+    //    unsigned int N1 = mspaceDimension[0].sizeN();
+    //    unsigned int N2 = mspaceDimension[1].sizeN();
 
-//    DoubleMatrix V0(101, 101, 0.0);
-//    DoubleMatrix V1(101, 101, 0.0);
+    //    DoubleMatrix V0(101, 101, 0.0);
+    //    DoubleMatrix V1(101, 101, 0.0);
 
-//    double sum0 = 0.0;
-//    double sum1 = 0.0;
+    //    double sum0 = 0.0;
+    //    double sum1 = 0.0;
 
-//    sum0 += 0.25*(u[0][0]   - V0[0][0])   * (u[0][0]   - V0[0][0]);
-//    sum0 += 0.25*(u[0][N1]  - V0[0][N1])  * (u[0][N1]  - V0[0][N1]);
-//    sum0 += 0.25*(u[N2][0]  - V0[N2][0])  * (u[N2][0]  - V0[N2][0]);
-//    sum0 += 0.25*(u[N2][N1] - V0[N2][N1]) * (u[N2][N1] - V0[N2][N1]);
+    //    sum0 += 0.25*(u[0][0]   - V0[0][0])   * (u[0][0]   - V0[0][0]);
+    //    sum0 += 0.25*(u[0][N1]  - V0[0][N1])  * (u[0][N1]  - V0[0][N1]);
+    //    sum0 += 0.25*(u[N2][0]  - V0[N2][0])  * (u[N2][0]  - V0[N2][0]);
+    //    sum0 += 0.25*(u[N2][N1] - V0[N2][N1]) * (u[N2][N1] - V0[N2][N1]);
 
-//    sum1 += 0.25*(ut[0][0]   - V1[0][0])   * (ut[0][0]   - V1[0][0]);
-//    sum1 += 0.25*(ut[0][N1]  - V1[0][N1])  * (ut[0][N1]  - V1[0][N1]);
-//    sum1 += 0.25*(ut[N2][0]  - V1[N2][0])  * (ut[N2][0]  - V1[N2][0]);
-//    sum1 += 0.25*(ut[N2][N1] - V1[N2][N1]) * (ut[N2][N1] - V1[N2][N1]);
+    //    sum1 += 0.25*(ut[0][0]   - V1[0][0])   * (ut[0][0]   - V1[0][0]);
+    //    sum1 += 0.25*(ut[0][N1]  - V1[0][N1])  * (ut[0][N1]  - V1[0][N1]);
+    //    sum1 += 0.25*(ut[N2][0]  - V1[N2][0])  * (ut[N2][0]  - V1[N2][0]);
+    //    sum1 += 0.25*(ut[N2][N1] - V1[N2][N1]) * (ut[N2][N1] - V1[N2][N1]);
 
-//    for (unsigned int n1=1; n1<=N1-1; n1++)
-//    {
-//        sum0 += 0.5*(u[0][n1]  - V0[0][n1]) *(u[0][n1]  - V0[0][n1]);
-//        sum0 += 0.5*(u[N2][n1] - V0[N2][n1])*(u[N2][n1] - V0[N2][n1]);
-//        sum1 += 0.5*(ut[0][n1]  - V1[0][n1]) *(ut[0][n1]  - V1[0][n1]);
-//        sum1 += 0.5*(ut[N2][n1] - V1[N2][n1])*(ut[N2][n1] - V1[N2][n1]);
-//    }
+    //    for (unsigned int n1=1; n1<=N1-1; n1++)
+    //    {
+    //        sum0 += 0.5*(u[0][n1]  - V0[0][n1]) *(u[0][n1]  - V0[0][n1]);
+    //        sum0 += 0.5*(u[N2][n1] - V0[N2][n1])*(u[N2][n1] - V0[N2][n1]);
+    //        sum1 += 0.5*(ut[0][n1]  - V1[0][n1]) *(ut[0][n1]  - V1[0][n1]);
+    //        sum1 += 0.5*(ut[N2][n1] - V1[N2][n1])*(ut[N2][n1] - V1[N2][n1]);
+    //    }
 
-//    for (unsigned int n2=1; n2<=N2-1; n2++)
-//    {
-//        sum0 += 0.5*(u[n2][0]  - V0[n2][0]) *(u[n2][0]  - V0[n2][0]);
-//        sum0 += 0.5*(u[n2][N1] - V0[n2][N1])*(u[n2][N1] - V0[n2][N1]);
-//        sum1 += 0.5*(ut[n2][0]  - V1[n2][0]) *(ut[n2][0]  - V1[n2][0]);
-//        sum1 += 0.5*(ut[n2][N1] - V1[n2][N1])*(ut[n2][N1] - V1[n2][N1]);
-//    }
+    //    for (unsigned int n2=1; n2<=N2-1; n2++)
+    //    {
+    //        sum0 += 0.5*(u[n2][0]  - V0[n2][0]) *(u[n2][0]  - V0[n2][0]);
+    //        sum0 += 0.5*(u[n2][N1] - V0[n2][N1])*(u[n2][N1] - V0[n2][N1]);
+    //        sum1 += 0.5*(ut[n2][0]  - V1[n2][0]) *(ut[n2][0]  - V1[n2][0]);
+    //        sum1 += 0.5*(ut[n2][N1] - V1[n2][N1])*(ut[n2][N1] - V1[n2][N1]);
+    //    }
 
-//    for (unsigned int n2 = 1; n2 <= N2-1; n2++)
-//    {
-//        for (unsigned int n1 = 1; n1 <= N1-1; n1++)
-//        {
-//            sum0 += (u[n2][n1] - V0[n2][n1])*(u[n2][n1] - V0[n2][n1]);
-//            sum1 += (ut[n2][n1] - V1[n2][n1])*(ut[n2][n1] - V1[n2][n1]);
-//        }
-//    }
+    //    for (unsigned int n2 = 1; n2 <= N2-1; n2++)
+    //    {
+    //        for (unsigned int n1 = 1; n1 <= N1-1; n1++)
+    //        {
+    //            sum0 += (u[n2][n1] - V0[n2][n1])*(u[n2][n1] - V0[n2][n1]);
+    //            sum1 += (ut[n2][n1] - V1[n2][n1])*(ut[n2][n1] - V1[n2][n1]);
+    //        }
+    //    }
 
-//    sum0 *= (hx*hy);
-//    sum1 *= (hx*hy);
+    //    sum0 *= (hx*hy);
+    //    sum1 *= (hx*hy);
 
-//    V0.clear();
-//    V1.clear();
+    //    V0.clear();
+    //    V1.clear();
 
-//    printf("%6d %20.8f %20.8f u:%20.8f %20.8f ut:%20.8f %20.8f\n", ln, sum0, sum1, u.min(), u.max(), ut.min(), ut.max());
+    //    printf("%6d %20.8f %20.8f u:%20.8f %20.8f ut:%20.8f %20.8f\n", ln, sum0, sum1, u.min(), u.max(), ut.min(), ut.max());
 }
 
 double IProblem2HForward2D::initial1(const SpaceNodePDE &) const
