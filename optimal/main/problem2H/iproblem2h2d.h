@@ -3,6 +3,7 @@
 
 #include <grid/hibvp.h>
 #include <vector>
+#include <algorithm>
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
 
