@@ -256,7 +256,10 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
     vector<ExtendedSpaceNode2DH> p_info;
     backward.calculateMVD(p, p_info, true, u_info);
 
-//    for (unsigned int i=0; i<L;)
+    for (unsigned int l=0; l<=L; l+=10)
+    {
+        printf("%3d %26f %26f %26f %26f %26f %26f %26f %26f %26f\n", l, u_info[0].value(l), u_info[0].valueDx(l), u_info[0].valueDy(l), u_info[1].value(l), u_info[1].valueDx(l), u_info[1].valueDy(l), p_info[0].value(l), p_info[0].valueDx(l), p_info[0].valueDy(l));
+    }
 
     g.clear();
     g.resize(pv.length(), 0.0);
