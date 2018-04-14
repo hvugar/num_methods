@@ -330,7 +330,7 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
 
         if (rows2.size() != 0)
         {
-#ifdef METHOD_11
+#ifdef METHOD_1
             double* a1 = (double*) malloc(sizeof(double)*rows1.size()*(N-1));
             double* b1 = (double*) malloc(sizeof(double)*rows1.size()*(N-1));
             double* c1 = (double*) malloc(sizeof(double)*rows1.size()*(N-1));
@@ -429,7 +429,7 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
 
         if (rows2.size() != 0)
         {
-#ifdef METHOD_3
+#ifdef METHOD_2
             unsigned int _size = rows1.size()*(N-1);
             DoubleMatrix w1(_size, _size, 0.0);
             DoubleVector d1(_size, 0.0);
@@ -622,7 +622,7 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
 
         if (cols2.size() != 0)
         {
-#ifdef METHOD_11
+#ifdef METHOD_1
             double* a2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
             double* b2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
             double* c2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
@@ -721,7 +721,7 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
 
         if (cols2.size() != 0)
         {
-#ifdef METHOD_3
+#ifdef METHOD_2
             unsigned int _size = cols1.size()*(M-1);
             DoubleMatrix w2(_size, _size, 0.0);
             DoubleVector d2(_size);
