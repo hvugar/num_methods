@@ -114,26 +114,26 @@ void IProblem2H2D::checkGradient()
     e_prm.q[0] = -0.02; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
     e_prm.q[1] = -0.02; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
 
-    e_prm.No = 2;
+    e_prm.No = 1;
     e_prm.Nc = 1;
 
     OptimizeParameter o_prm;
 
     o_prm.xi.resize(e_prm.No);
     o_prm.xi[0].x = 0.3000; o_prm.xi[0].y = 0.6000;
-    o_prm.xi[1].x = 0.8000; o_prm.xi[1].y = 0.2000;
+    //o_prm.xi[1].x = 0.7000; o_prm.xi[1].y = 0.2000;
     //o_prm.xi[2].x = 0.5000; o_prm.xi[2].y = 0.5000;
 
     o_prm.eta.resize(e_prm.Nc);
-    o_prm.eta[0].x = 0.4000; o_prm.eta[0].y = 0.6000;
-    //o_prm.eta[1].x = 0.7000; o_prm.eta[1].y = 0.3000;
+    o_prm.eta[0].x = 0.2000; o_prm.eta[0].y = 0.6000;
+    //o_prm.eta[1].x = 0.8000; o_prm.eta[1].y = 0.2000;
 
     o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
 
-    o_prm.k[0][0] = -2.12; o_prm.k[0][1] = -2.24; //o_prm.k[0][2] = -2.24;
+    o_prm.k[0][0] = -2.12;// o_prm.k[0][1] = -2.24; //o_prm.k[0][2] = -2.24;
     //o_prm.k[1][0] = -2.45; o_prm.k[1][1] = -2.18; //o_prm.k[1][2] = -2.18;
-    o_prm.z[0][0] = +0.50; o_prm.z[0][1] = +0.40; //o_prm.z[0][2] = +0.40;
+    o_prm.z[0][0] = +0.50;// o_prm.z[0][1] = +0.40; //o_prm.z[0][2] = +0.40;
     //o_prm.z[1][0] = +0.70; o_prm.z[1][1] = +0.50; //o_prm.z[1][2] = +0.50;
 
     OptimizeParameter o_prm0 = o_prm;

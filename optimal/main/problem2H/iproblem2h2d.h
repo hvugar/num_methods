@@ -7,6 +7,9 @@
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
 
+#define METHOD_1
+#define METHOD_3
+
 using namespace std;
 
 namespace IProblem2H
