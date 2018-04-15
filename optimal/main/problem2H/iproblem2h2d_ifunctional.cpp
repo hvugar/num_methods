@@ -256,14 +256,6 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
     vector<ExtendedSpaceNode2DH> p_info;
     backward.calculateMVD(p, p_info, true, u_info);
 
-    for (unsigned int l=0; l<=L; l+=10)
-    {
-//        printf("%3d %26f %26f %26f %26f %26f %26f %26f %26f %26f\n", l, u_info[0].value(l), u_info[0].valueDx(l), u_info[0].valueDy(l), u_info[1].value(l), u_info[1].valueDx(l), u_info[1].valueDy(l), p_info[0].value(l), p_info[0].valueDx(l), p_info[0].valueDy(l));
-        printf("%3d u: %26f %26f %26f p: %26f %26f %26f %26f %26f %26f\n", l, u_info[0].value(l), u_info[0].valueDx(l), u_info[0].valueDy(l),
-                                                                              p_info[0].value(l), p_info[0].valueDx(l), p_info[0].valueDy(l),
-                                                                              p_info[1].value(l), p_info[1].valueDx(l), p_info[1].valueDy(l));
-    }
-
     g.clear();
     g.resize(pv.length(), 0.0);
     unsigned int gi = 0;
@@ -543,10 +535,10 @@ void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVecto
 
     }
 
-    ifunc->optimizeK = (i%4==2);
-    ifunc->optimizeZ = (i%4==1);
-    ifunc->optimizeO = (i%4==0);
-    ifunc->optimizeC = (i%4==3);
+    ifunc->optimizeK = (i%4==3);
+    ifunc->optimizeZ = (i%4==0);
+    ifunc->optimizeO = (i%4==1);
+    ifunc->optimizeC = (i%4==2);
 
 
 //    printf("I[%3d]: %8.6f %8.6f %8.6f R:%.2f e:%.3f  \n", i, integral1(u, ut), integral2(u, ut), f, r, regEpsilon);
