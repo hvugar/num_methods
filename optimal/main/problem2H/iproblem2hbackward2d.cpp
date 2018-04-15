@@ -622,6 +622,7 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
 
         if (cols2.size() != 0)
         {
+            puts("++++-----");
 #ifdef METHOD_1
             double* a2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
             double* b2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));

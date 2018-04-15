@@ -389,7 +389,7 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
                                     }
                                 }
 
-                                if (!found)
+                                if (found == false)
                                 {
                                     d1[offset+(n-1)] += htht_h * mOptParameter.k[cdn.id][opn.id] * u15[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
                                 }
