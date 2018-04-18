@@ -10,7 +10,7 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
 //    forward();
 //    forwardS();
-//    checkGradient();
+    checkGradient();
 //    IPrinter::printSeperatorLine();
     optimization1();
 //    optimization2();
@@ -133,8 +133,8 @@ void IProblem2H2D::checkGradient()
     o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
 
-    o_prm.k[0][0] = -2.12; o_prm.k[0][1] = -2.24; o_prm.k[0][2] = -2.24;
-    o_prm.k[1][0] = -2.45; o_prm.k[1][1] = -2.18; o_prm.k[1][2] = -2.18;
+    o_prm.k[0][0] = -0.12; o_prm.k[0][1] = -0.24; o_prm.k[0][2] = -2.24;
+    o_prm.k[1][0] = -0.45; o_prm.k[1][1] = -0.18; o_prm.k[1][2] = -2.18;
     o_prm.z[0][0] = +0.50; o_prm.z[0][1] = +0.40; o_prm.z[0][2] = +0.40;
     o_prm.z[1][0] = +0.70; o_prm.z[1][1] = +0.50; o_prm.z[1][2] = +0.50;
 
@@ -298,14 +298,14 @@ void IProblem2H2D::optimization1()
 
     EquationParameter e_prm;
     e_prm.a = +1.0;
-    e_prm.lambda = +0.1;
+    e_prm.lambda = +0.01;
 
     e_prm.Ns = 2;
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = -0.02; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
-    e_prm.q[1] = -0.05; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
+    e_prm.q[0] = -0.2; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
+    e_prm.q[1] = -0.5; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
 
     e_prm.Nc = 2;
     e_prm.No = 2;
@@ -321,8 +321,8 @@ void IProblem2H2D::optimization1()
     //o_prm.k[2][0] = -0.1200; o_prm.k[2][1] = -0.2400;
     //o_prm.k[3][0] = -0.4500; o_prm.k[3][1] = -0.1800;
 
-    o_prm.z[0][0] = -10.0538; o_prm.z[0][1] = -10.0228;
-    o_prm.z[1][0] = -10.1942; o_prm.z[1][1] = -20.2898;
+    o_prm.z[0][0] = -0.0538; o_prm.z[0][1] = -0.0228;
+    o_prm.z[1][0] = -0.1942; o_prm.z[1][1] = .2898;
     //o_prm.z[0][0] = -0.0641; o_prm.z[0][1] = -0.0779;
     //o_prm.z[1][0] = -0.3489; o_prm.z[1][1] = -0.4258;
     //o_prm.z[2][0] = +5.5000; o_prm.z[2][1] = +5.4000;
