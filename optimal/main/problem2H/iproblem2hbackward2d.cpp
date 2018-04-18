@@ -177,8 +177,8 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
                 }
             }
 
-            p05[m][n] = p00[m][n] - initial2(sn)*ht*0.5 + 0.125*ht*ht*sum;
-            p10[m][n] = p00[m][n] - initial2(sn)*ht     + 0.500*ht*ht*sum;
+            p05[m][n] = p00[m][n] - initial2(sn)*ht*0.5;// + 0.125*ht*ht*sum;
+            p10[m][n] = p00[m][n] - initial2(sn)*ht    ;// + 0.500*ht*ht*sum;
         }
     }
 
@@ -410,7 +410,7 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
             }
 
             w1.clear();
-            //free(x1);
+            free(x1);
             free(d1);
             free(c1);
             free(b1);

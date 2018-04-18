@@ -191,8 +191,8 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
                 }
             }
 
-            u05[m][n] = u00[m][n] + initial2(sn)*ht*0.5 + 0.125*ht*ht*sum;
-            u10[m][n] = u00[m][n] + initial2(sn)*ht     + 0.500*ht*ht*sum;
+            u05[m][n] = u00[m][n] + initial2(sn)*ht*0.5;// + 0.125*ht*ht*sum;
+            u10[m][n] = u00[m][n] + initial2(sn)*ht    ;// + 0.500*ht*ht*sum;
         }
     }
     qPointNodes.clear();

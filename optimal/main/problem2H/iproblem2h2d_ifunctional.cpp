@@ -4,7 +4,10 @@
 
 using namespace IProblem2H;
 
-IFunctional::IFunctional() {}
+IFunctional::IFunctional()
+{
+    optimizeK = optimizeZ = optimizeO = optimizeC = true;
+}
 
 double IFunctional::fx(const DoubleVector &pv) const
 {
@@ -27,7 +30,15 @@ double IFunctional::fx(const DoubleVector &pv) const
     u.clear();
     ut.clear();
 
-    return intgrl/* + regEpsilon*norm(mEquParameter, o_prm, mOptParameter0) + r*penalty(info, o_prm)*/;
+    double sum = intgrl/* + regEpsilon*norm(mEquParameter, o_prm, mOptParameter0) + r*penalty(info, o_prm)*/;
+
+    for (unsigned int i=0; i<info.size(); i++)
+    {
+        info[i].clearLayers();
+        info[i].clearWeights();
+    }
+
+    return sum;
 }
 
 double IFunctional::integral(const DoubleMatrix &u, const DoubleMatrix &ut) const
@@ -423,6 +434,18 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
         }
     }
 
+    for (unsigned int i=0; i<u_info.size(); i++)
+    {
+        u_info[i].clearLayers();
+        u_info[i].clearWeights();
+    }
+
+    for (unsigned int i=0; i<p_info.size(); i++)
+    {
+        p_info[i].clearLayers();
+        p_info[i].clearWeights();
+    }
+
     u_info.clear();
     p_info.clear();
 }
@@ -535,10 +558,10 @@ void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVecto
 
     }
 
-    ifunc->optimizeK = (i%4==3);
-    ifunc->optimizeZ = (i%4==0);
-    ifunc->optimizeO = (i%4==1);
-    ifunc->optimizeC = (i%4==2);
+//    ifunc->optimizeK = (i%4==3);
+//    ifunc->optimizeZ = (i%4==0);
+//    ifunc->optimizeO = (i%4==1);
+//    ifunc->optimizeC = (i%4==2);
 
 
 //    printf("I[%3d]: %8.6f %8.6f %8.6f R:%.2f e:%.3f  \n", i, integral1(u, ut), integral2(u, ut), f, r, regEpsilon);

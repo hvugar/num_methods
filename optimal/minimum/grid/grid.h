@@ -18,12 +18,12 @@ struct MINIMUMSHARED_EXPORT SpacePoint
     double z;
 };
 
-struct MINIMUMSHARED_EXPORT SpaceGridNode
-{
-    unsigned int i;
-    unsigned int j;
-    unsigned int k;
-};
+//struct MINIMUMSHARED_EXPORT SpaceGridNode
+//{
+//    unsigned int i;
+//    unsigned int j;
+//    unsigned int k;
+//};
 
 struct MINIMUMSHARED_EXPORT SpaceNodePDE
 {
