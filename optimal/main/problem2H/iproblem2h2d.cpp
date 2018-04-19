@@ -284,10 +284,10 @@ void IProblem2H2D::checkGradient()
 void IProblem2H2D::optimization1()
 {
     IFunctional ifunc;
-//    ifunc.optimizeK = true;
-//    ifunc.optimizeZ = false;
-//    ifunc.optimizeO = false;
-//    ifunc.optimizeC = false;
+    ifunc.optimizeK = true;
+    ifunc.optimizeZ = false;
+    ifunc.optimizeO = false;
+    ifunc.optimizeC = false;
 
     ifunc.mSpaceDimensionX = Dimension(0.01, 0, 100);
     ifunc.mSpaceDimensionY = (Dimension(0.01, 0, 100));
