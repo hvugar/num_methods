@@ -195,6 +195,18 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
 //            u10[m][n] = u00[m][n] + initial2(sn)*ht    ;// + 0.500*ht*ht*sum;
 
             sum = 0.0;
+
+            for (unsigned int cdn=0; cdn<cntDeltaNodes.size(); cdn++)
+            {
+                const ExtendedSpacePointNode &cntNode = cntDeltaNodes.at(cdn);
+                if (cntNode.i == n && cntNode.j == m)
+                {
+                    double sum1 = 0.0;
+                    for (unsigned int j=0; j<No; j++) sum1 += mOptParameter.k[cntNode.id][j]*mOptParameter.z[cntNode.id][j];
+                    sum -= sum1 * cntNode.w;
+                }
+            }
+
             for (unsigned int si=0; si<qPointNodes.size(); si++)
             {
                 const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
@@ -203,22 +215,6 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
                     sum += mEquParameter.q[qNode.id] * qNode.w * (1.0/ht);
                 }
             }
-
-//            for (unsigned int cdn=0; cdn<cntDeltaNodes.size(); cdn++)
-//            {
-//                const ExtendedSpacePointNode &cntNode = cntDeltaNodes.at(cdn);
-//                if (cntNode.i == n && cntNode.j == m)
-//                {
-//                    for (unsigned int opn=0; opn<obsPointNodes.size(); opn++)
-//                    {
-//                        const ExtendedSpacePointNode &obsNode = obsPointNodes.at(opn);
-//                        if (obsNode.i == n && obsNode.j == m)
-//                        {
-//                            sum += mOptParameter.k[obsNode.id][obsNode.id] * ((u00[m][n]*obsNode.w*(hx*hy)) - mOptParameter.z[obsNode.id][obsNode.id]) * cntNode.w;
-//                        }
-//                    }
-//                }
-//            }
 
             u05[m][n] = 0.25*ht*ht*sum;
             u10[m][n] = 1.00*ht*ht*sum;
@@ -649,7 +645,7 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
 
         //------------------------------------- approximatin to y direction conditions -------------------------------------//
 
-        if (l==L)
+       // if (l==L)
         {
             ut.clear();
             ut.resize(M+1, N+1);
@@ -732,59 +728,59 @@ void IProblem2HForward2D::layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned
 
 void IProblem2HForward2D::layerInfo(const DoubleMatrix &u UNUSED_PARAM, const DoubleMatrix &ut UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
-    //    double hx = mspaceDimension[0].step();
-    //    double hy = mspaceDimension[1].step();
-    //    unsigned int N1 = mspaceDimension[0].sizeN();
-    //    unsigned int N2 = mspaceDimension[1].sizeN();
+        double hx = mspaceDimension[0].step();
+        double hy = mspaceDimension[1].step();
+        unsigned int N1 = mspaceDimension[0].sizeN();
+        unsigned int N2 = mspaceDimension[1].sizeN();
 
-    //    DoubleMatrix V0(101, 101, 0.0);
-    //    DoubleMatrix V1(101, 101, 0.0);
+        DoubleMatrix V0(101, 101, 0.0);
+        DoubleMatrix V1(101, 101, 0.0);
 
-    //    double sum0 = 0.0;
-    //    double sum1 = 0.0;
+        double sum0 = 0.0;
+        double sum1 = 0.0;
 
-    //    sum0 += 0.25*(u[0][0]   - V0[0][0])   * (u[0][0]   - V0[0][0]);
-    //    sum0 += 0.25*(u[0][N1]  - V0[0][N1])  * (u[0][N1]  - V0[0][N1]);
-    //    sum0 += 0.25*(u[N2][0]  - V0[N2][0])  * (u[N2][0]  - V0[N2][0]);
-    //    sum0 += 0.25*(u[N2][N1] - V0[N2][N1]) * (u[N2][N1] - V0[N2][N1]);
+        sum0 += 0.25*(u[0][0]   - V0[0][0])   * (u[0][0]   - V0[0][0]);
+        sum0 += 0.25*(u[0][N1]  - V0[0][N1])  * (u[0][N1]  - V0[0][N1]);
+        sum0 += 0.25*(u[N2][0]  - V0[N2][0])  * (u[N2][0]  - V0[N2][0]);
+        sum0 += 0.25*(u[N2][N1] - V0[N2][N1]) * (u[N2][N1] - V0[N2][N1]);
 
-    //    sum1 += 0.25*(ut[0][0]   - V1[0][0])   * (ut[0][0]   - V1[0][0]);
-    //    sum1 += 0.25*(ut[0][N1]  - V1[0][N1])  * (ut[0][N1]  - V1[0][N1]);
-    //    sum1 += 0.25*(ut[N2][0]  - V1[N2][0])  * (ut[N2][0]  - V1[N2][0]);
-    //    sum1 += 0.25*(ut[N2][N1] - V1[N2][N1]) * (ut[N2][N1] - V1[N2][N1]);
+        sum1 += 0.25*(ut[0][0]   - V1[0][0])   * (ut[0][0]   - V1[0][0]);
+        sum1 += 0.25*(ut[0][N1]  - V1[0][N1])  * (ut[0][N1]  - V1[0][N1]);
+        sum1 += 0.25*(ut[N2][0]  - V1[N2][0])  * (ut[N2][0]  - V1[N2][0]);
+        sum1 += 0.25*(ut[N2][N1] - V1[N2][N1]) * (ut[N2][N1] - V1[N2][N1]);
 
-    //    for (unsigned int n1=1; n1<=N1-1; n1++)
-    //    {
-    //        sum0 += 0.5*(u[0][n1]  - V0[0][n1]) *(u[0][n1]  - V0[0][n1]);
-    //        sum0 += 0.5*(u[N2][n1] - V0[N2][n1])*(u[N2][n1] - V0[N2][n1]);
-    //        sum1 += 0.5*(ut[0][n1]  - V1[0][n1]) *(ut[0][n1]  - V1[0][n1]);
-    //        sum1 += 0.5*(ut[N2][n1] - V1[N2][n1])*(ut[N2][n1] - V1[N2][n1]);
-    //    }
+        for (unsigned int n1=1; n1<=N1-1; n1++)
+        {
+            sum0 += 0.5*(u[0][n1]  - V0[0][n1]) *(u[0][n1]  - V0[0][n1]);
+            sum0 += 0.5*(u[N2][n1] - V0[N2][n1])*(u[N2][n1] - V0[N2][n1]);
+            sum1 += 0.5*(ut[0][n1]  - V1[0][n1]) *(ut[0][n1]  - V1[0][n1]);
+            sum1 += 0.5*(ut[N2][n1] - V1[N2][n1])*(ut[N2][n1] - V1[N2][n1]);
+        }
 
-    //    for (unsigned int n2=1; n2<=N2-1; n2++)
-    //    {
-    //        sum0 += 0.5*(u[n2][0]  - V0[n2][0]) *(u[n2][0]  - V0[n2][0]);
-    //        sum0 += 0.5*(u[n2][N1] - V0[n2][N1])*(u[n2][N1] - V0[n2][N1]);
-    //        sum1 += 0.5*(ut[n2][0]  - V1[n2][0]) *(ut[n2][0]  - V1[n2][0]);
-    //        sum1 += 0.5*(ut[n2][N1] - V1[n2][N1])*(ut[n2][N1] - V1[n2][N1]);
-    //    }
+        for (unsigned int n2=1; n2<=N2-1; n2++)
+        {
+            sum0 += 0.5*(u[n2][0]  - V0[n2][0]) *(u[n2][0]  - V0[n2][0]);
+            sum0 += 0.5*(u[n2][N1] - V0[n2][N1])*(u[n2][N1] - V0[n2][N1]);
+            sum1 += 0.5*(ut[n2][0]  - V1[n2][0]) *(ut[n2][0]  - V1[n2][0]);
+            sum1 += 0.5*(ut[n2][N1] - V1[n2][N1])*(ut[n2][N1] - V1[n2][N1]);
+        }
 
-    //    for (unsigned int n2 = 1; n2 <= N2-1; n2++)
-    //    {
-    //        for (unsigned int n1 = 1; n1 <= N1-1; n1++)
-    //        {
-    //            sum0 += (u[n2][n1] - V0[n2][n1])*(u[n2][n1] - V0[n2][n1]);
-    //            sum1 += (ut[n2][n1] - V1[n2][n1])*(ut[n2][n1] - V1[n2][n1]);
-    //        }
-    //    }
+        for (unsigned int n2 = 1; n2 <= N2-1; n2++)
+        {
+            for (unsigned int n1 = 1; n1 <= N1-1; n1++)
+            {
+                sum0 += (u[n2][n1] - V0[n2][n1])*(u[n2][n1] - V0[n2][n1]);
+                sum1 += (ut[n2][n1] - V1[n2][n1])*(ut[n2][n1] - V1[n2][n1]);
+            }
+        }
 
-    //    sum0 *= (hx*hy);
-    //    sum1 *= (hx*hy);
+        sum0 *= (hx*hy);
+        sum1 *= (hx*hy);
 
-    //    V0.clear();
-    //    V1.clear();
+        V0.clear();
+        V1.clear();
 
-    //    printf("%6d %20.8f %20.8f u:%20.8f %20.8f ut:%20.8f %20.8f\n", ln, sum0, sum1, u.min(), u.max(), ut.min(), ut.max());
+        printf("%6d %20.8f %20.8f u:%20.8f %20.8f ut:%20.8f %20.8f\n", ln, sum0, sum1, u.min(), u.max(), ut.min(), ut.max());
 }
 
 double IProblem2HForward2D::initial1(const SpaceNodePDE &) const

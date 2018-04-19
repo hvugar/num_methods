@@ -8,11 +8,11 @@ using namespace IProblem2H;
 
 void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-//    forward();
+    forward();
 //    forwardS();
-    checkGradient();
+//    checkGradient();
 //    IPrinter::printSeperatorLine();
-    optimization1();
+//    optimization1();
 //    optimization2();
 }
 
@@ -21,17 +21,17 @@ void IProblem2H2D::forward()
     IProblem2HForward2D frw;
     frw.addSpaceDimension(Dimension(0.01, 0, 100));
     frw.addSpaceDimension(Dimension(0.01, 0, 100));
-    frw.setTimeDimension(Dimension(0.01, 0, 10000));
+    frw.setTimeDimension(Dimension(0.01, 0, 5000));
 
     EquationParameter e_prm;
     e_prm.a = 1.0;
-    e_prm.lambda = +0.1;
+    e_prm.lambda = 0.0;
 
     e_prm.Ns = 1;
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = +1.0; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
+    e_prm.q[0] = -1.0; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
     //e_prm.q[0] = +1.0; e_prm.theta[0].x = 0.2000; e_prm.theta[0].y = 0.2000;
     //e_prm.q[1] = +5.0; e_prm.theta[1].x = 0.8000; e_prm.theta[1].y = 0.8000;
 
