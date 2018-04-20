@@ -8,11 +8,11 @@ using namespace IProblem2H;
 
 void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    forward();
+//    forward();
 //    forwardS();
 //    checkGradient();
 //    IPrinter::printSeperatorLine();
-//    optimization1();
+    optimization1();
 //    optimization2();
 }
 
@@ -285,9 +285,9 @@ void IProblem2H2D::optimization1()
 {
     IFunctional ifunc;
     ifunc.optimizeK = true;
-    ifunc.optimizeZ = false;
-    ifunc.optimizeO = false;
-    ifunc.optimizeC = false;
+    ifunc.optimizeZ = true;
+    ifunc.optimizeO = true;
+    ifunc.optimizeC = true;
 
     ifunc.mSpaceDimensionX = Dimension(0.01, 0, 100);
     ifunc.mSpaceDimensionY = (Dimension(0.01, 0, 100));
@@ -314,33 +314,33 @@ void IProblem2H2D::optimization1()
     o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
 
-    o_prm.k[0][0] = -2.6078; o_prm.k[0][1] = -2.5166;
-    o_prm.k[1][0] = -2.9158; o_prm.k[1][1] = -2.8175;
-    //o_prm.k[0][0] = -0.7238; o_prm.k[0][1] = -0.6203;
-    //o_prm.k[1][0] = -0.9008; o_prm.k[1][1] = -0.7805;
+//    o_prm.k[0][0] = -2.6078; o_prm.k[0][1] = -2.5166;
+//    o_prm.k[1][0] = -2.9158; o_prm.k[1][1] = -2.8175;
+    o_prm.k[0][0] = -0.7238; o_prm.k[0][1] = -0.6203;
+    o_prm.k[1][0] = -0.9008; o_prm.k[1][1] = -0.7805;
     //o_prm.k[2][0] = -0.1200; o_prm.k[2][1] = -0.2400;
     //o_prm.k[3][0] = -0.4500; o_prm.k[3][1] = -0.1800;
 
-    o_prm.z[0][0] = -0.0538; o_prm.z[0][1] = -0.0228;
-    o_prm.z[1][0] = -0.1942; o_prm.z[1][1] = .2898;
-    //o_prm.z[0][0] = -0.0641; o_prm.z[0][1] = -0.0779;
-    //o_prm.z[1][0] = -0.3489; o_prm.z[1][1] = -0.4258;
+//    o_prm.z[0][0] = -0.0538; o_prm.z[0][1] = -0.0228;
+//    o_prm.z[1][0] = -0.1942; o_prm.z[1][1] = .2898;
+    o_prm.z[0][0] = -0.0641; o_prm.z[0][1] = -0.0779;
+    o_prm.z[1][0] = -0.3489; o_prm.z[1][1] = -0.4258;
     //o_prm.z[2][0] = +5.5000; o_prm.z[2][1] = +5.4000;
     //o_prm.z[3][0] = +5.7000; o_prm.z[3][1] = +5.5000;
 
     o_prm.xi.resize(e_prm.No);
-    o_prm.xi[0].x = 0.4000; o_prm.xi[0].y = 0.4000;
-    o_prm.xi[1].x = 0.6000; o_prm.xi[1].y = 0.6000;
-    //o_prm.xi[0].x = 0.0500; o_prm.xi[0].y = 0.0500;
-    //o_prm.xi[1].x = 0.9500; o_prm.xi[1].y = 0.9500;
+//    o_prm.xi[0].x = 0.4000; o_prm.xi[0].y = 0.4000;
+//    o_prm.xi[1].x = 0.6000; o_prm.xi[1].y = 0.6000;
+    o_prm.xi[0].x = 0.0500; o_prm.xi[0].y = 0.0500;
+    o_prm.xi[1].x = 0.9500; o_prm.xi[1].y = 0.9500;
     //o_prm.xi[0].x = 0.0500; o_prm.xi[0].y = 0.0500;
     //o_prm.xi[1].x = 0.9500; o_prm.xi[1].y = 0.9500;
 
     o_prm.eta.resize(e_prm.Nc);
-    o_prm.eta[0].x = 0.3000; o_prm.eta[0].y = 0.7000;
-    o_prm.eta[1].x = 0.7000; o_prm.eta[1].y = 0.3000;
-    //o_prm.eta[0].x = 0.7588; o_prm.eta[0].y = 0.3018;
-    //o_prm.eta[1].x = 0.2971; o_prm.eta[1].y = 0.7413;
+//    o_prm.eta[0].x = 0.3000; o_prm.eta[0].y = 0.7000;
+//    o_prm.eta[1].x = 0.7000; o_prm.eta[1].y = 0.3000;
+    o_prm.eta[0].x = 0.7588; o_prm.eta[0].y = 0.3018;
+    o_prm.eta[1].x = 0.2971; o_prm.eta[1].y = 0.7413;
     //o_prm.eta[0].x = 0.7332; o_prm.eta[0].y = 0.2864;
     //o_prm.eta[1].x = 0.2773; o_prm.eta[1].y = 0.7206;
     //o_prm.eta[2].x = 0.100; o_prm.eta[2].y = 0.900;
@@ -348,20 +348,20 @@ void IProblem2H2D::optimization1()
 
     OptimizeParameter o_prm0;
     o_prm0.xi.resize(e_prm.No);
-    o_prm0.xi[0].x = 0.400; o_prm0.xi[0].y = 0.400;
-    o_prm0.xi[1].x = 0.600; o_prm0.xi[1].y = 0.600;
+    o_prm0.xi[0].x = 0.2402; o_prm0.xi[0].y = 0.1762;
+    o_prm0.xi[1].x = 0.5736; o_prm0.xi[1].y = 0.3214;
 
     o_prm0.eta.resize(e_prm.Nc);
-    o_prm0.eta[0].x = 0.300; o_prm0.eta[0].y = 0.700;
-    o_prm0.eta[1].x = 0.700; o_prm0.eta[1].y = 0.300;
+    o_prm0.eta[0].x = 0.2743; o_prm0.eta[0].y = 0.7485;
+    o_prm0.eta[1].x = 0.7657; o_prm0.eta[1].y = 0.2613;
 
     o_prm0.k.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm0.z.resize(e_prm.Nc, e_prm.No, 0.0);
 
-    o_prm0.k[0][0] = -0.12; o_prm0.k[0][1] = -0.24;
-    o_prm0.k[1][0] = -0.45; o_prm0.k[1][1] = -0.18;
-    o_prm0.z[0][0] = +5.50; o_prm0.z[0][1] = +4.40;
-    o_prm0.z[1][0] = +4.70; o_prm0.z[1][1] = +5.50;
+    o_prm0.k[0][0] = -2.6388; o_prm0.k[0][1] = -2.4754;
+    o_prm0.k[1][0] = -2.8992; o_prm0.k[1][1] = -2.7987;
+    o_prm0.z[0][0] = +0.0991; o_prm0.z[0][1] = +0.1211;
+    o_prm0.z[1][0] = -0.0860; o_prm0.z[1][1] = +0.3928;
 
     ifunc.mEquParameter = e_prm;
     ifunc.mOptParameter0 = o_prm0;
