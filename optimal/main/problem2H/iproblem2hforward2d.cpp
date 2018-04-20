@@ -141,21 +141,13 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
         {
             sn.i = n; sn.x = n*hx;
             u00[m][n] = initial1(sn);
-
-//            for (unsigned int si=0; si<qPointNodes.size(); si++)
-//            {
-//                const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
-//                if (qNode.i == n && qNode.j == m)
-//                {
-//                    u00[m][n] += mEquParameter.q[qNode.id] * qNode.w * (1.0/ht);
-//                }
-//            }
         }
     }
     if (use == true) add2Info(u00, info, 0);
     layerInfo(u00, 0);
     layerInfo(u00, u00, 0);
 
+    double hh = 0.5*ht;
     for (unsigned int m=0; m<=M; m++)
     {
         sn.j = m; sn.y = m*hy;
@@ -165,36 +157,53 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
 
             double sum = 0.0;
 
-//            if (n==0)      sum += aa__hxhx*(u00[m][n]-2.0*u00[m][n+1]+u00[m][n+2]);
-//            else if (n==N) sum += aa__hxhx*(u00[m][n-2]-2.0*u00[m][n-1]+u00[m][n]);
-//            else           sum += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]);
+            if (n==0)      sum += aa__hxhx*(u00[m][n]-2.0*u00[m][n+1]+u00[m][n+2]);
+            else if (n==N) sum += aa__hxhx*(u00[m][n-2]-2.0*u00[m][n-1]+u00[m][n]);
+            else           sum += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]);
 
-//            if (m==0)      sum += aa__hyhy*(u00[m][n]-2.0*u00[m+1][n]+u00[m+2][n]);
-//            else if (m==M) sum += aa__hyhy*(u00[m-2][n]-2.0*u00[m-1][n]+u00[m][n]);
-//            else           sum += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]);
+            if (m==0)      sum += aa__hyhy*(u00[m][n]-2.0*u00[m+1][n]+u00[m+2][n]);
+            else if (m==M) sum += aa__hyhy*(u00[m-2][n]-2.0*u00[m-1][n]+u00[m][n]);
+            else           sum += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]);
 
-//            sum -= lambda*initial2(sn);
+            sum -= lambda*initial2(sn);
 
-//            for (unsigned int cdn=0; cdn<cntDeltaNodes.size(); cdn++)
-//            {
-//                const ExtendedSpacePointNode &cntNode = cntDeltaNodes.at(cdn);
-//                if (cntNode.i == n && cntNode.j == m)
-//                {
-//                    for (unsigned int opn=0; opn<obsPointNodes.size(); opn++)
-//                    {
-//                        const ExtendedSpacePointNode &obsNode = obsPointNodes.at(opn);
-//                        if (obsNode.i == n && obsNode.j == m)
-//                        {
-//                            sum += mOptParameter.k[obsNode.id][obsNode.id] * ((u00[m][n]*obsNode.w*(hx*hy)) - mOptParameter.z[obsNode.id][obsNode.id]) * cntNode.w;
-//                        }
-//                    }
-//                }
-//            }
 
-//            u05[m][n] = u00[m][n] + initial2(sn)*ht*0.5;// + 0.125*ht*ht*sum;
-//            u10[m][n] = u00[m][n] + initial2(sn)*ht    ;// + 0.500*ht*ht*sum;
 
-            sum = 0.0;
+            for (unsigned int cdn=0; cdn<cntDeltaNodes.size(); cdn++)
+            {
+                double sm = 0.0;
+                const ExtendedSpacePointNode &cntNode = cntDeltaNodes.at(cdn);
+                if (cntNode.i == n && cntNode.j == m)
+                {
+                    for (unsigned int i=0; i<Nc; i++)
+                    {
+                        for (unsigned int j=0; j<No; j++)
+                        {
+                            sm += mOptParameter.k[i][j]*mOptParameter.z[i][j];
+                        }
+                    }
+                    sum -= sm*cntNode.w;
+                }
+            }
+
+            for (unsigned int cdn=0; cdn<cntDeltaNodes.size(); cdn++)
+            {
+                double sm2 = 0.0;
+                const ExtendedSpacePointNode &cntNode = cntDeltaNodes.at(cdn);
+                if (cntNode.i == n && cntNode.j == m)
+                {
+                    for (unsigned int opn=0; opn<obsPointNodes.size(); opn++)
+                    {
+                        const ExtendedSpacePointNode &obsNode = obsPointNodes.at(opn);
+                        if (obsNode.i == n && obsNode.j == m)
+                        {
+                            sm2 += mOptParameter.k[cntNode.id][obsNode.id] * (u00[m][n]*(obsNode.w*hx*hy)) * cntNode.w;
+                        }
+                    }
+                    sum += sm2*cntNode.w;
+                }
+            }
+
 
             for (unsigned int cdn=0; cdn<cntDeltaNodes.size(); cdn++)
             {
@@ -216,8 +225,8 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
                 }
             }
 
-            u05[m][n] = 0.25*ht*ht*sum;
-            u10[m][n] = 1.00*ht*ht*sum;
+            u05[m][n] = u00[m][n] + hh*initial2(sn);// + hh*hh*sum;
+            u10[m][n] = u00[m][n] + ht*initial2(sn) + 0.5*ht*ht*sum;
 
         }
     }
