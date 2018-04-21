@@ -10,9 +10,9 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
 //    forward();
 //    forwardS();
-//    checkGradient();
+    checkGradient();
 //    IPrinter::printSeperatorLine();
-    optimization1();
+//    optimization1();
 //    optimization2();
 }
 
@@ -107,12 +107,13 @@ void IProblem2H2D::checkGradient()
 
     EquationParameter e_prm;
     e_prm.a = 1.0;
-    e_prm.lambda = 0.001;
+    e_prm.lambda = 0.000;
 
     e_prm.Ns = 2;
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
+//    e_prm.q[0] = -0.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
     e_prm.q[0] = -0.02; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
     e_prm.q[1] = -0.02; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
 
@@ -195,12 +196,12 @@ void IProblem2H2D::checkGradient()
     IPrinter::printSeperatorLine();
     DoubleVector ag(pv.length());
 
+    double functional = ifunc.fx(pv);
+    printf("Functional: %f\n", functional);
+return;
     puts("Calculating gradients....");
     ifunc.gradient(pv, ag);
     puts("Gradients are calculated.");
-
-    double functional = ifunc.fx(pv);
-    printf("Functional: %f\n", functional);
 
     DoubleVector ng1(pv.length(), 0.0);
     DoubleVector ng2(pv.length(), 0.0);
@@ -329,10 +330,10 @@ void IProblem2H2D::optimization1()
     //o_prm.z[3][0] = +5.7000; o_prm.z[3][1] = +5.5000;
 
     o_prm.xi.resize(e_prm.No);
-//    o_prm.xi[0].x = 0.4000; o_prm.xi[0].y = 0.4000;
-//    o_prm.xi[1].x = 0.6000; o_prm.xi[1].y = 0.6000;
-    o_prm.xi[0].x = 0.0500; o_prm.xi[0].y = 0.0500;
-    o_prm.xi[1].x = 0.9500; o_prm.xi[1].y = 0.9500;
+    o_prm.xi[0].x = 0.4000; o_prm.xi[0].y = 0.4000;
+    o_prm.xi[1].x = 0.6000; o_prm.xi[1].y = 0.6000;
+//    o_prm.xi[0].x = 0.0500; o_prm.xi[0].y = 0.0500;
+//    o_prm.xi[1].x = 0.9500; o_prm.xi[1].y = 0.9500;
     //o_prm.xi[0].x = 0.0500; o_prm.xi[0].y = 0.0500;
     //o_prm.xi[1].x = 0.9500; o_prm.xi[1].y = 0.9500;
 
@@ -590,8 +591,8 @@ void ExtendedSpaceNode2DH::extendWeights(const Dimension &dimX, const Dimension 
     double hx = dimX.step();
     double hy = dimY.step();
 
-    unsigned int rx = (unsigned int)(round(x*Nx));
-    unsigned int ry = (unsigned int)(round(y*Ny));
+    unsigned int rx = (unsigned int)(floor(x*Nx));
+    unsigned int ry = (unsigned int)(floor(y*Ny));
 
     double hx3 = hx*hx*hx;
     double hx32 = (1.0/(2.0*hx3));
@@ -767,6 +768,16 @@ double ExtendedSpaceNode2DH::value(unsigned int layer) const
 
 double ExtendedSpaceNode2DH::valueDx(unsigned int layer) const
 {
+    return valueDx1(layer);
+}
+
+double ExtendedSpaceNode2DH::valueDy(unsigned int layer) const
+{
+    return valueDy1(layer);
+}
+
+double ExtendedSpaceNode2DH::valueDx1(unsigned int layer) const
+{
     double Lx[] = {0.0, 0.0, 0.0, 0.0};
     double Ly[] = {0.0, 0.0, 0.0, 0.0};
 
@@ -802,7 +813,7 @@ double ExtendedSpaceNode2DH::valueDx(unsigned int layer) const
 
 }
 
-double ExtendedSpaceNode2DH::valueDy(unsigned int layer) const
+double ExtendedSpaceNode2DH::valueDy1(unsigned int layer) const
 {
     double Lx[] = {0.0, 0.0, 0.0, 0.0};
     double Ly[] = {0.0, 0.0, 0.0, 0.0};
@@ -835,4 +846,14 @@ double ExtendedSpaceNode2DH::valueDy(unsigned int layer) const
         }
     }
     return Py;
+}
+
+double ExtendedSpaceNode2DH::valueDx2(unsigned int layer) const
+{
+    return (wi[1][2].u[layer]-wi[1][0].u[layer])/(2.0*0.01);
+}
+
+double ExtendedSpaceNode2DH::valueDy2(unsigned int layer) const
+{
+    return (wi[2][1].u[layer]-wi[0][1].u[layer])/(2.0*0.01);
 }

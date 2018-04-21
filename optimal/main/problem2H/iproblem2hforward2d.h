@@ -10,9 +10,29 @@ class IProblem2HForward2D : public IHyperbolicIBVP
 {
 public:
     void calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
+    void extendPoints(std::vector<ExtendedSpacePointNode> &obsPointNodes, std::vector<ExtendedSpacePointNode> &cntDeltaNodes,
+                      std::vector<ExtendedSpacePointNode> &qPointNodes, const Dimension &dimX, const Dimension &dimY) const;
+    void findRowsCols(std::vector<unsigned int> &rows0, std::vector<unsigned int> &rows1, std::vector<unsigned int> &rows2,
+                      std::vector<unsigned int> &cols0, std::vector<unsigned int> &cols1, std::vector<unsigned int> &cols2,
+                      std::vector<ExtendedSpacePointNode> &obsPointNodes, std::vector<ExtendedSpacePointNode> &cntDeltaNodes,
+                      unsigned int N, unsigned int M) const;
+    void initialLayers(DoubleMatrix &u00, DoubleMatrix &u05, DoubleMatrix &u10, vector<ExtendedSpaceNode2DH> &info, bool use,
+                       std::vector<ExtendedSpacePointNode> &obsPointNodes, std::vector<ExtendedSpacePointNode> &cntDeltaNodes,
+                       std::vector<ExtendedSpacePointNode> &qPointNodes,unsigned int N, unsigned int M,
+                       double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const;
+    void mallocVectors(double *&a1X, double *&b1X, double *&c1X, double *&d1X, double *&x1X, unsigned int sizeX,
+                       double *&a1Y, double *&b1Y, double *&c1Y, double *&d1Y, double *&x1Y, unsigned int sizeY) const;
+    void initBorders(unsigned int N, unsigned int M, double hx, double hy, double ht, unsigned int l,
+                     DoubleMatrix &u15, DoubleMatrix &u) const;
+    void freeVectors(double *a1X, double *b1X, double *c1X, double *d1X, double *x1X,
+                     double *a1Y, double *b1Y, double *c1Y, double *d1Y, double *x1Y) const;
+
 private:
     void calculateMVD_N(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
+
     void calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
+    void calculateMVD_D1(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
+    void calculateMVD_D2(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
 public:
     void calculateMVD_N(DoubleMatrix &u, DoubleMatrix &ut) const;
 

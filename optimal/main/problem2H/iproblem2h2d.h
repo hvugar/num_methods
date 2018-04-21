@@ -10,6 +10,8 @@
 #define METHOD_1
 #define METHOD_3
 
+#define __METHOD__1
+
 using namespace std;
 
 namespace IProblem2H
@@ -66,8 +68,15 @@ public:
     void clearLayers();
 
     double value(unsigned int layer) const;
+
     double valueDx(unsigned int layer) const;
     double valueDy(unsigned int layer) const;
+
+    double valueDx1(unsigned int layer) const;
+    double valueDy1(unsigned int layer) const;
+
+    double valueDx2(unsigned int layer) const;
+    double valueDy2(unsigned int layer) const;
 
     unsigned int id;
     unsigned int rows;
