@@ -48,10 +48,10 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
 
     //--------------------------------------------------------------------------------------------//
     std::vector<ExtendedSpacePointNode> obsDeltaNodes;
-    for (unsigned int j=0; j<No; j++) IProblem2H2D::distributeDelta(mOptParameter.xi[j], obsDeltaNodes, j, dimX, dimY);
+    for (unsigned int j=0; j<No; j++) IProblem2H2D::distributeDelta(mOptParameter.xi[j], obsDeltaNodes, j, dimX, dimY, 4);
 
     std::vector<ExtendedSpacePointNode> cntPointNodes;
-    for (unsigned int i=0; i<Nc; i++) IProblem2H2D::distributeDelta(mOptParameter.eta[i], cntPointNodes, i, dimX, dimY);
+    for (unsigned int i=0; i<Nc; i++) IProblem2H2D::distributeDelta(mOptParameter.eta[i], cntPointNodes, i, dimX, dimY, 4);
 
     SpaceNodePDE sn;
 
@@ -121,10 +121,9 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
         for (unsigned int i=0; i<Nc; i++)
         {
             ExtendedSpaceNode2DH &e = info[i];
-            e.setSpaceNode(mOptParameter.eta[i]);
             e.id = i;
-            e.extendWeights(dimX, dimY);
-            e.extendLayers(L+1);
+            e.setSpaceNode(mOptParameter.eta[i]);
+            e.extendWeights(dimX, dimY, L+1, _INFO_ROWS_, _INFO_COLS_);
         }
     }
     //-------------------------------------------- info --------------------------------------------//
@@ -139,7 +138,7 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
             p00[m][n] = initial1(sn);
         }
     }
-    if (use == true) add2Info(p00, info, L);
+    if (use == true) add2Info(p00, info, L, _INFO_ROWS_, _INFO_COLS_);
     layerInfo(p00, L);
 
     for (unsigned int m=0; m<=M; m++)
@@ -182,7 +181,7 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
         }
     }
 
-    if (use == true) add2Info(p10, info, L-1);
+    if (use == true) add2Info(p10, info, L-1, _INFO_ROWS_, _INFO_COLS_);
     layerInfo(p10, L-1);
     //------------------------------------- initial conditions -------------------------------------//
 
@@ -615,7 +614,7 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
             }
         }
 
-        if (use == true) add2Info(p, info, l);
+        if (use == true) add2Info(p, info, l, _INFO_ROWS_, _INFO_COLS_);
         layerInfo(p, l);
     }
 
@@ -678,14 +677,14 @@ double IProblem2HBackward2D::f(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNo
     return 0.0;
 }
 
-void IProblem2HBackward2D::add2Info(const DoubleMatrix &p, vector<ExtendedSpaceNode2DH> &info, unsigned int ln) const
+void IProblem2HBackward2D::add2Info(const DoubleMatrix &p, vector<ExtendedSpaceNode2DH> &info, unsigned int ln, unsigned int rows, unsigned int cols) const
 {
     for (unsigned int i=0; i<mEquParameter.Nc; i++)
     {
         ExtendedSpaceNode2DH &pi = info[i];
-        for (unsigned int r=0; r<4; r++)
+        for (unsigned int r=0; r<rows; r++)
         {
-            for (unsigned int c=0; c<4; c++)
+            for (unsigned int c=0; c<cols; c++)
             {
                 unsigned int x = pi.wi[r][c].i;
                 unsigned int y = pi.wi[r][c].j;
@@ -735,10 +734,10 @@ void IProblem2HBackward2D::calculateMVD_N(DoubleMatrix &p, vector<ExtendedSpaceN
 
     //--------------------------------------------------------------------------------------------//
     std::vector<ExtendedSpacePointNode> obsDeltaNodes;
-    for (unsigned int j=0; j<No; j++) IProblem2H2D::distributeDelta(mOptParameter.xi[j], obsDeltaNodes, j, dimX, dimY);
+    for (unsigned int j=0; j<No; j++) IProblem2H2D::distributeDelta(mOptParameter.xi[j], obsDeltaNodes, j, dimX, dimY, 4);
 
     std::vector<ExtendedSpacePointNode> cntPointNodes;
-    for (unsigned int i=0; i<Nc; i++) IProblem2H2D::distributeDelta(mOptParameter.eta[i], cntPointNodes, i, dimX, dimY);
+    for (unsigned int i=0; i<Nc; i++) IProblem2H2D::distributeDelta(mOptParameter.eta[i], cntPointNodes, i, dimX, dimY, 4);
 
     SpaceNodePDE sn;
 
@@ -812,10 +811,9 @@ void IProblem2HBackward2D::calculateMVD_N(DoubleMatrix &p, vector<ExtendedSpaceN
         for (unsigned int i=0; i<Nc; i++)
         {
             ExtendedSpaceNode2DH &e = info[i];
-            e.setSpaceNode(mOptParameter.eta[i]);
             e.id = i;
-            e.extendWeights(dimX, dimY);
-            e.extendLayers(L+1);
+            e.setSpaceNode(mOptParameter.eta[i]);
+            e.extendWeights(dimX, dimY, L+1, _INFO_ROWS_, _INFO_COLS_);
         }
     }
     //-------------------------------------------- info --------------------------------------------//
@@ -830,7 +828,7 @@ void IProblem2HBackward2D::calculateMVD_N(DoubleMatrix &p, vector<ExtendedSpaceN
             p00[m][n] = initial1(sn);
         }
     }
-    if (use == true) add2Info(p00, info, L);
+    if (use == true) add2Info(p00, info, L, _INFO_ROWS_, _INFO_COLS_);
     layerInfo(p00, L);
 
     for (unsigned int m=0; m<=M; m++)
@@ -873,7 +871,7 @@ void IProblem2HBackward2D::calculateMVD_N(DoubleMatrix &p, vector<ExtendedSpaceN
         }
     }
 
-    if (use == true) add2Info(p10, info, L-1);
+    if (use == true) add2Info(p10, info, L-1, _INFO_ROWS_, _INFO_COLS_);
     layerInfo(p10, L-1);
     //------------------------------------- initial conditions -------------------------------------//
 
@@ -1313,7 +1311,7 @@ void IProblem2HBackward2D::calculateMVD_N(DoubleMatrix &p, vector<ExtendedSpaceN
             }
         }
 
-        if (use == true) add2Info(p, info, l);
+        if (use == true) add2Info(p, info, l, _INFO_ROWS_, _INFO_COLS_);
         layerInfo(p, l);
     }
 

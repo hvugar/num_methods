@@ -34,7 +34,6 @@ double IFunctional::fx(const DoubleVector &pv) const
 
     for (unsigned int i=0; i<info.size(); i++)
     {
-        info[i].clearLayers();
         info[i].clearWeights();
     }
 
@@ -436,13 +435,11 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
 
     for (unsigned int i=0; i<u_info.size(); i++)
     {
-        u_info[i].clearLayers();
         u_info[i].clearWeights();
     }
 
     for (unsigned int i=0; i<p_info.size(); i++)
     {
-        p_info[i].clearLayers();
         p_info[i].clearWeights();
     }
 

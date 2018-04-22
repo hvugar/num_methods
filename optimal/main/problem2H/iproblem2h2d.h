@@ -10,7 +10,8 @@
 #define METHOD_1
 #define METHOD_3
 
-#define __METHOD__1
+#define _INFO_ROWS_ 4
+#define _INFO_COLS_ 4
 
 using namespace std;
 
@@ -61,13 +62,12 @@ public:
 
     void setSpaceNode(const SpacePoint& sn);
 
-    void extendWeights(const Dimension &dimX, const Dimension &dimY, unsigned int rows = 4, unsigned int cols = 4);
+    void extendWeights(const Dimension &dimX, const Dimension &dimY, unsigned int layerNumber, unsigned int rows, unsigned int cols);
     void clearWeights();
 
-    void extendLayers(unsigned int layerNumber);
-    void clearLayers();
-
     double value(unsigned int layer) const;
+    double value1(unsigned int layer) const;
+    double value2(unsigned int layer) const;
 
     double valueDx(unsigned int layer) const;
     double valueDy(unsigned int layer) const;
@@ -99,7 +99,8 @@ public:
     static void optimization2();
     static void forwardS();
 
-    static void distributeDelta(const SpacePoint &pt, std::vector<ExtendedSpacePointNode> &nodes, unsigned int id, const Dimension &xd, const Dimension &yd);
+    static void distributeDelta(const SpacePoint &pt, std::vector<ExtendedSpacePointNode> &nodes, unsigned int id,
+                                const Dimension &xd, const Dimension &yd, unsigned int k);
 };
 
 }

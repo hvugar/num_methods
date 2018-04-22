@@ -26,6 +26,8 @@ public:
                      DoubleMatrix &u15, DoubleMatrix &u) const;
     void freeVectors(double *a1X, double *b1X, double *c1X, double *d1X, double *x1X,
                      double *a1Y, double *b1Y, double *c1Y, double *d1Y, double *x1Y) const;
+    void prepareInfo(unsigned int N, std::vector<SpacePoint> points, std::vector<ExtendedSpaceNode2DH> &info,
+                     unsigned int L, const Dimension &dimX, const Dimension &dimY) const;
 
 private:
     void calculateMVD_N(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
@@ -49,7 +51,7 @@ protected:
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
 private:
-    void add2Info(const DoubleMatrix &u, vector<ExtendedSpaceNode2DH> &info, unsigned int ln) const;
+    void add2Info(const DoubleMatrix &u, vector<ExtendedSpaceNode2DH> &info, unsigned int ln, unsigned int rows, unsigned int cols) const;
 };
 
 }
