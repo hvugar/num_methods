@@ -10,9 +10,9 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
 //    forward();
 //    forwardS();
-    checkGradient();
+//    checkGradient();
 //    IPrinter::printSeperatorLine();
-//    optimization1();
+    optimization1();
 //    optimization2();
 }
 

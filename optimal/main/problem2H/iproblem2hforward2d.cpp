@@ -5,7 +5,7 @@ using namespace IProblem2H;
 
 void IProblem2HForward2D::calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const
 {
-    calculateMVD_D2(u, ut, info, use);
+    calculateMVD_D(u, ut, info, use);
 }
 
 void IProblem2HForward2D::extendPoints(std::vector<ExtendedSpacePointNode> &obsPointNodes, std::vector<ExtendedSpacePointNode> &cntDeltaNodes,
