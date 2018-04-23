@@ -310,7 +310,7 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
             gradXijY *= -ht;
 
             g[gi++] = gradXijX + 2.0*regEpsilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
-            g[gi++] = gradXijY + 2.0*regEpsilon*(mParameter.xi[j].x - mParameter0.xi[j].x);
+            g[gi++] = gradXijY + 2.0*regEpsilon*(mParameter.xi[j].y - mParameter0.xi[j].y);
         }
     }
     else

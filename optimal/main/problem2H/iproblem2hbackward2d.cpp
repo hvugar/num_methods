@@ -141,6 +141,8 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
     if (use == true) add2Info(p00, info, L, _INFO_ROWS_, _INFO_COLS_);
     layerInfo(p00, L);
 
+
+    double hh = 0.5*ht;
     for (unsigned int m=0; m<=M; m++)
     {
         sn.j = m; sn.y = m*hy;
@@ -176,8 +178,8 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
                 }
             }
 
-            p05[m][n] = p00[m][n] - initial2(sn)*ht*0.5;// + 0.125*ht*ht*sum;
-            p10[m][n] = p00[m][n] - initial2(sn)*ht    ;// + 0.500*ht*ht*sum;
+            p05[m][n] = p00[m][n] - initial2(sn)*hh + 0.5*hh*hh*sum;
+            p10[m][n] = p00[m][n] - initial2(sn)*ht + 0.5*ht*ht*sum;
         }
     }
 
@@ -486,10 +488,10 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
                                 d1Y[m-1] += htht_h * mOptParameter.k[cpn.id][odn.id] * p[cpn.j][cpn.i] * (cpn.w * (hx*hy)) * odn.w;
                             }
 
-                            //                            for (unsigned int i=0; i<Nc; i++)
-                            //                            {
-                            //                                d1Y[m-1] += 2.0*ifunc->r * htht_h * mOptParameter.k[i][odn.id] * ifunc->gpi(i, l, u_info, mOptParameter)*sgn(ifunc->g0i(i, l, u_info, mOptParameter)) * odn.w;
-                            //                            }
+                            for (unsigned int i=0; i<Nc; i++)
+                            {
+                                d1Y[m-1] += 2.0*ifunc->r * htht_h * mOptParameter.k[i][odn.id] * ifunc->gpi(i, l, u_info, mOptParameter)*sgn(ifunc->g0i(i, l, u_info, mOptParameter)) * odn.w;
+                            }
                         }
                     }
                     //------------------------------------- Adding delta part -------------------------------------//
