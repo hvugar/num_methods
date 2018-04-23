@@ -6,13 +6,125 @@
 
 using namespace IProblem2H;
 
+void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, OptimizeParameter &o_prm0)
+{
+    e_prm.a = 1.0;
+    e_prm.lambda = +0.01;
+
+    e_prm.Ns = 2;
+    e_prm.q.resize(e_prm.Ns);
+    e_prm.theta.resize(e_prm.Ns);
+
+    //    e_prm.q[0] = -0.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
+    e_prm.q[0] = -0.2; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
+    e_prm.q[1] = -0.5; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
+
+    {
+        e_prm.Nc = 2;
+        e_prm.No = 2;
+
+//        o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+//        o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+//        o_prm.k[0][0] = -0.9186; o_prm.k[0][1] = -0.9051; o_prm.k[1][0] = -1.0169; o_prm.k[1][1] = -1.0221;
+//        o_prm.z[0][0] = +0.3232; o_prm.z[0][1] = +0.2617; o_prm.z[1][0] = +0.2469; o_prm.z[1][1] = +0.0996;
+//        o_prm.xi.resize(e_prm.No);
+//        o_prm.xi[0].x = 0.2078; o_prm.xi[0].y = 0.2080; o_prm.xi[1].x = 0.8455; o_prm.xi[1].y = 0.8491;
+//        o_prm.eta.resize(e_prm.Nc);
+//        o_prm.eta[0].x = 0.7623; o_prm.eta[0].y = 0.2708; o_prm.eta[1].x = 0.2636; o_prm.eta[1].y = 0.7636;
+
+//        o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+//        o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+//        o_prm.xi.resize(e_prm.No);
+//        o_prm.eta.resize(e_prm.Nc);
+//        o_prm.k[0][0] = -1.7000; o_prm.k[0][1] = -1.3000; o_prm.k[1][0] = -1.6000; o_prm.k[1][1] = -1.5000;
+//        o_prm.z[0][0] = +0.0000; o_prm.z[0][1] = +0.0000; o_prm.z[1][0] = +0.0000; o_prm.z[1][1] = +0.0000;
+//        o_prm.xi[0].x = +0.4000; o_prm.xi[0].y = +0.6000; o_prm.xi[1].x = 0.9000; o_prm.xi[1].y = 0.2000;
+//        o_prm.eta[0].x = +0.2000; o_prm.eta[0].y = +0.4500; o_prm.eta[1].x = 0.6500; o_prm.eta[1].y = 0.7500;
+
+    }
+
+    {
+                e_prm.No = 3;
+                e_prm.Nc = 2;
+
+                o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+                o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+                o_prm.xi.resize(e_prm.No);
+                o_prm.eta.resize(e_prm.Nc);
+                o_prm.k[0][0] = -0.1200; o_prm.k[0][1] = -0.2400; o_prm.k[0][2] = -2.2400; o_prm.k[1][0] = -0.4500; o_prm.k[1][1] = -0.1800; o_prm.k[1][2] = -2.1800;
+                o_prm.z[0][0] = +0.5000; o_prm.z[0][1] = +0.4000; o_prm.z[0][2] = +0.4000; o_prm.z[1][0] = +0.7000; o_prm.z[1][1] = +0.5000; o_prm.z[1][2] = +0.5000;
+                o_prm.xi[0].x = 0.5000; o_prm.xi[0].y = 0.6000; o_prm.xi[1].x = 0.7000; o_prm.xi[1].y = 0.2000; o_prm.xi[2].x = 0.5000; o_prm.xi[2].y = 0.5000;
+                o_prm.eta[0].x = 0.2000; o_prm.eta[0].y = 0.7000; o_prm.eta[1].x = 0.8000; o_prm.eta[1].y = 0.3000;
+    }
+
+    {
+        //    e_prm.No = 1;
+        //    e_prm.Nc = 2;
+
+        //    OptimizeParameter o_prm;
+
+        //    o_prm.xi.resize(e_prm.No);
+        //    o_prm.xi[0].x = 0.3000; o_prm.xi[0].y = 0.6000;
+
+        //    o_prm.eta.resize(e_prm.Nc);
+        //    o_prm.eta[0].x = 0.5000; o_prm.eta[0].y = 0.6000;
+        //    o_prm.eta[1].x = 0.7000; o_prm.eta[1].y = 0.3000;
+
+        //    o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+        //    o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+
+        //    o_prm.k[0][0] = -2.12; //o_prm.k[0][1] = -2.24; //o_prm.k[0][2] = -2.24;
+        //    o_prm.k[1][0] = -2.45; //o_prm.k[1][1] = -2.18; //o_prm.k[1][2] = -2.18;
+        //    o_prm.z[0][0] = +0.50; //o_prm.z[0][1] = +0.40; //o_prm.z[0][2] = +0.40;
+        //    o_prm.z[1][0] = +0.70; //o_prm.z[1][1] = +0.50; //o_prm.z[1][2] = +0.50;
+    }
+
+    {
+        //    o_prm0.xi.resize(e_prm.No);
+        //    o_prm0.xi[0].x = 0.400; o_prm0.xi[0].y = 0.400;
+        //    o_prm0.xi[1].x = 0.600; o_prm0.xi[1].y = 0.600;
+        //    o_prm0.xi[2].x = 0.500; o_prm0.xi[2].y = 0.500;
+
+        //    o_prm0.eta.resize(e_prm.Nc);
+        //    o_prm0.eta[0].x = 0.300; o_prm0.eta[0].y = 0.400;
+        //    o_prm0.eta[1].x = 0.700; o_prm0.eta[1].y = 0.300;
+
+        //    o_prm0.k.resize(e_prm.Nc, e_prm.No, 0.0);
+        //    o_prm0.z.resize(e_prm.Nc, e_prm.No, 0.0);
+
+        //    o_prm0.k[0][0] = -0.12; o_prm0.k[0][1] = -0.24; o_prm0.k[0][2] = -0.24;
+        //    o_prm0.k[1][0] = -0.45; o_prm0.k[1][1] = -0.18; o_prm0.k[1][2] = -0.18;
+        //    o_prm0.z[0][0] = +5.50; o_prm0.z[0][1] = +4.40; o_prm0.z[0][2] = +4.40;
+        //    o_prm0.z[1][0] = +4.70; o_prm0.z[1][1] = +5.50; o_prm0.z[1][2] = +5.50;
+    }
+    o_prm0 = o_prm;
+
+    //    I[ 40]: 0.024768 0.300001 0.324769 R:0.00 e:0.000
+    //    k: -0.9095  -0.8781  -0.9951  -1.0015 z:  0.3378   0.2736   0.2531   0.1034   o:0.1995 0.2099 0.8449 0.8503   c:0.7553 0.2647 0.2676 0.7584
+    //    k:  0.0332   0.0427   0.0295   0.0409 z:  0.0167   0.0161   0.0137   0.0138   o:-0.1201 0.1606 -0.0308 0.0131   c:-0.1623 -0.1512 0.1166 -0.0317
+    //    0.004568 1
+
+//    OptimizeParameter o_prm0;
+//    o_prm0.k.resize(e_prm.Nc, e_prm.No, 0.0);
+//    o_prm0.z.resize(e_prm.Nc, e_prm.No, 0.0);
+
+//    o_prm0.k[0][0] = -2.6388; o_prm0.k[0][1] = -2.4754; o_prm0.k[1][0] = -2.8992; o_prm0.k[1][1] = -2.7987;
+//    o_prm0.z[0][0] = +0.0991; o_prm0.z[0][1] = +0.1211; o_prm0.z[1][0] = -0.0860; o_prm0.z[1][1] = +0.3928;
+
+//    o_prm0.xi.resize(e_prm.No);
+//    o_prm0.xi[0].x = 0.2402; o_prm0.xi[0].y = 0.1762; o_prm0.xi[1].x = 0.5736; o_prm0.xi[1].y = 0.3214;
+
+//    o_prm0.eta.resize(e_prm.Nc);
+//    o_prm0.eta[0].x = 0.2743; o_prm0.eta[0].y = 0.7485; o_prm0.eta[1].x = 0.7657; o_prm0.eta[1].y = 0.2613;
+}
+
 void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //    forward();
     //    forwardS();
-    //checkGradient();
-    //    IPrinter::printSeperatorLine();
-        optimization1();
+    checkGradient();
+    IPrinter::printSeperatorLine();
+    optimization1();
     //    optimization2();
 }
 
@@ -106,76 +218,9 @@ void IProblem2H2D::checkGradient()
     ifunc.alpha1 = 1.0; ifunc.V1.resize(Ny+1, Nx+1, 0.0);
 
     EquationParameter e_prm;
-    e_prm.a = 1.0;
-    e_prm.lambda = 0.000;
-
-    e_prm.Ns = 2;
-    e_prm.q.resize(e_prm.Ns);
-    e_prm.theta.resize(e_prm.Ns);
-
-    //    e_prm.q[0] = -0.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
-    e_prm.q[0] = -0.02; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
-    e_prm.q[1] = -0.02; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
-
-    e_prm.No = 3;
-    e_prm.Nc = 2;
-
     OptimizeParameter o_prm;
-
-    o_prm.xi.resize(e_prm.No);
-    o_prm.xi[0].x = 0.5000; o_prm.xi[0].y = 0.6000;
-    o_prm.xi[1].x = 0.7000; o_prm.xi[1].y = 0.2000;
-    o_prm.xi[2].x = 0.5000; o_prm.xi[2].y = 0.5000;
-
-    o_prm.eta.resize(e_prm.Nc);
-    o_prm.eta[0].x = 0.2000; o_prm.eta[0].y = 0.7000;
-    o_prm.eta[1].x = 0.8000; o_prm.eta[1].y = 0.3000;
-
-    o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
-    o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
-
-    o_prm.k[0][0] = -0.12; o_prm.k[0][1] = -0.24; o_prm.k[0][2] = -2.24;
-    o_prm.k[1][0] = -0.45; o_prm.k[1][1] = -0.18; o_prm.k[1][2] = -2.18;
-    o_prm.z[0][0] = +0.50; o_prm.z[0][1] = +0.40; o_prm.z[0][2] = +0.40;
-    o_prm.z[1][0] = +0.70; o_prm.z[1][1] = +0.50; o_prm.z[1][2] = +0.50;
-
-    //    e_prm.No = 1;
-    //    e_prm.Nc = 2;
-
-    //    OptimizeParameter o_prm;
-
-    //    o_prm.xi.resize(e_prm.No);
-    //    o_prm.xi[0].x = 0.3000; o_prm.xi[0].y = 0.6000;
-
-    //    o_prm.eta.resize(e_prm.Nc);
-    //    o_prm.eta[0].x = 0.5000; o_prm.eta[0].y = 0.6000;
-    //    o_prm.eta[1].x = 0.7000; o_prm.eta[1].y = 0.3000;
-
-    //    o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
-    //    o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
-
-    //    o_prm.k[0][0] = -2.12; //o_prm.k[0][1] = -2.24; //o_prm.k[0][2] = -2.24;
-    //    o_prm.k[1][0] = -2.45; //o_prm.k[1][1] = -2.18; //o_prm.k[1][2] = -2.18;
-    //    o_prm.z[0][0] = +0.50; //o_prm.z[0][1] = +0.40; //o_prm.z[0][2] = +0.40;
-    //    o_prm.z[1][0] = +0.70; //o_prm.z[1][1] = +0.50; //o_prm.z[1][2] = +0.50;
-
-    OptimizeParameter o_prm0 = o_prm;
-    //    o_prm0.xi.resize(e_prm.No);
-    //    o_prm0.xi[0].x = 0.400; o_prm0.xi[0].y = 0.400;
-    //    o_prm0.xi[1].x = 0.600; o_prm0.xi[1].y = 0.600;
-    //    o_prm0.xi[2].x = 0.500; o_prm0.xi[2].y = 0.500;
-
-    //    o_prm0.eta.resize(e_prm.Nc);
-    //    o_prm0.eta[0].x = 0.300; o_prm0.eta[0].y = 0.400;
-    //    o_prm0.eta[1].x = 0.700; o_prm0.eta[1].y = 0.300;
-
-    //    o_prm0.k.resize(e_prm.Nc, e_prm.No, 0.0);
-    //    o_prm0.z.resize(e_prm.Nc, e_prm.No, 0.0);
-
-    //    o_prm0.k[0][0] = -0.12; o_prm0.k[0][1] = -0.24; o_prm0.k[0][2] = -0.24;
-    //    o_prm0.k[1][0] = -0.45; o_prm0.k[1][1] = -0.18; o_prm0.k[1][2] = -0.18;
-    //    o_prm0.z[0][0] = +5.50; o_prm0.z[0][1] = +4.40; o_prm0.z[0][2] = +4.40;
-    //    o_prm0.z[1][0] = +4.70; o_prm0.z[1][1] = +5.50; o_prm0.z[1][2] = +5.50;
+    OptimizeParameter o_prm0;
+    initParameters(e_prm, o_prm, o_prm0);
 
     ifunc.mEquParameter = e_prm;
     ifunc.mOptParameter0 = o_prm0;
@@ -185,101 +230,103 @@ void IProblem2H2D::checkGradient()
     ifunc.vmin.resize(e_prm.Nc, -5.0);
     ifunc.vmax.resize(e_prm.Nc, +5.0);
 
-    IPrinter::printSeperatorLine();
-    DoubleVector pv;
-    ifunc.toVector(o_prm, pv);
-    IPrinter::print(pv, pv.length(), 6, 4);
-    IPrinter::printSeperatorLine();
-    DoubleVector pv0;
-    ifunc.toVector(o_prm0, pv0);
-    IPrinter::print(pv0, pv0.length(), 6, 4);
-    IPrinter::printSeperatorLine();
-    DoubleVector ag(pv.length());
+    {
+        IPrinter::printSeperatorLine();
+        DoubleVector pv;
+        ifunc.toVector(o_prm, pv);
+        IPrinter::print(pv, pv.length(), 6, 4);
+        IPrinter::printSeperatorLine();
+        DoubleVector pv0;
+        ifunc.toVector(o_prm0, pv0);
+        IPrinter::print(pv0, pv0.length(), 6, 4);
+        IPrinter::printSeperatorLine();
+        DoubleVector ag(pv.length());
 
-    double functional = ifunc.fx(pv);
-    printf("Functional: %f\n", functional);
-//    return;
-    puts("Calculating gradients....");
-    ifunc.gradient(pv, ag);
-    puts("Gradients are calculated.");
+        double functional = ifunc.fx(pv);
+        printf("Functional: %f\n", functional);
+        //    return;
+        puts("Calculating gradients....");
+        ifunc.gradient(pv, ag);
+        puts("Gradients are calculated.");
 
-    DoubleVector ng1(pv.length(), 0.0);
-    DoubleVector ng2(pv.length(), 0.0);
+        DoubleVector ng1(pv.length(), 0.0);
+        DoubleVector ng2(pv.length(), 0.0);
 
-    puts("Calculating numerical gradients.... dh=0.01");
-    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 0*e_prm.Nc*e_prm.No,            1*e_prm.Nc*e_prm.No-1);
-    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 1*e_prm.Nc*e_prm.No,            2*e_prm.Nc*e_prm.No-1);
-    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No+0*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    IGradient::Gradient(&ifunc, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    puts("Numerical gradients are calculated.");
+        puts("Calculating numerical gradients.... dh=0.01");
+        IGradient::Gradient(&ifunc, 0.01, pv, ng1, 0*e_prm.Nc*e_prm.No,            1*e_prm.Nc*e_prm.No-1);
+        IGradient::Gradient(&ifunc, 0.01, pv, ng1, 1*e_prm.Nc*e_prm.No,            2*e_prm.Nc*e_prm.No-1);
+        IGradient::Gradient(&ifunc, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No+0*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
+        IGradient::Gradient(&ifunc, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
+        puts("Numerical gradients are calculated.");
 
-    //    puts("Calculating numerical gradients.... hx=0.001");
-    //    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 0*e_prm.Nc*e_prm.No,            1*e_prm.Nc*e_prm.No-1);
-    //    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 1*e_prm.Nc*e_prm.No,            2*e_prm.Nc*e_prm.No-1);
-    //    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+0*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    //    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    //    puts("Numerical gradients are calculated.");
+        //    puts("Calculating numerical gradients.... hx=0.001");
+        //    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 0*e_prm.Nc*e_prm.No,            1*e_prm.Nc*e_prm.No-1);
+        //    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 1*e_prm.Nc*e_prm.No,            2*e_prm.Nc*e_prm.No-1);
+        //    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+0*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
+        //    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
+        //    puts("Numerical gradients are calculated.");
 
-    //k------------------------------------------------------//
-    IPrinter::printSeperatorLine("k");
-    DoubleVector pk0 = pv.mid(0, e_prm.Nc*e_prm.No-1);
-    DoubleVector ak0 = ag.mid(0, e_prm.Nc*e_prm.No-1);
-    DoubleVector nk1 = ng1.mid(0, e_prm.Nc*e_prm.No-1);
-    DoubleVector nk2 = ng2.mid(0, e_prm.Nc*e_prm.No-1);
+        //k------------------------------------------------------//
+        IPrinter::printSeperatorLine("k");
+        DoubleVector pk0 = pv.mid(0, e_prm.Nc*e_prm.No-1);
+        DoubleVector ak0 = ag.mid(0, e_prm.Nc*e_prm.No-1);
+        DoubleVector nk1 = ng1.mid(0, e_prm.Nc*e_prm.No-1);
+        DoubleVector nk2 = ng2.mid(0, e_prm.Nc*e_prm.No-1);
 
-    IPrinter::print(pk0,pk0.length(),14,4);
-    IPrinter::print(ak0,ak0.length(),14,4); ak0.L2Normalize();
-    IPrinter::print(nk1,nk1.length(),14,4); nk1.L2Normalize();
-    IPrinter::print(nk2,nk2.length(),14,4); nk2.L2Normalize();
-    IPrinter::print(ak0,ak0.length(),14,4);
-    IPrinter::print(nk1,nk1.length(),14,4);
-    IPrinter::print(nk2,nk2.length(),14,4);
+        IPrinter::print(pk0,pk0.length(),14,4);
+        IPrinter::print(ak0,ak0.length(),14,4); ak0.L2Normalize();
+        IPrinter::print(nk1,nk1.length(),14,4); nk1.L2Normalize();
+        IPrinter::print(nk2,nk2.length(),14,4); nk2.L2Normalize();
+        IPrinter::print(ak0,ak0.length(),14,4);
+        IPrinter::print(nk1,nk1.length(),14,4);
+        IPrinter::print(nk2,nk2.length(),14,4);
 
-    //z------------------------------------------------------//
-    IPrinter::printSeperatorLine("z");
-    DoubleVector pz0 = pv.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
-    DoubleVector az0 = ag.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
-    DoubleVector nz1 = ng1.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
-    DoubleVector nz2 = ng2.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
+        //z------------------------------------------------------//
+        IPrinter::printSeperatorLine("z");
+        DoubleVector pz0 = pv.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
+        DoubleVector az0 = ag.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
+        DoubleVector nz1 = ng1.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
+        DoubleVector nz2 = ng2.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
 
-    IPrinter::print(pz0,pz0.length(),14,4);
-    IPrinter::print(az0,az0.length(),14,4); az0.L2Normalize();
-    IPrinter::print(nz1,nz1.length(),14,4); nz1.L2Normalize();
-    IPrinter::print(nz2,nz2.length(),14,4); nz2.L2Normalize();
-    IPrinter::print(az0,az0.length(),14,4);
-    IPrinter::print(nz1,nz1.length(),14,4);
-    IPrinter::print(nz2,nz2.length(),14,4);
+        IPrinter::print(pz0,pz0.length(),14,4);
+        IPrinter::print(az0,az0.length(),14,4); az0.L2Normalize();
+        IPrinter::print(nz1,nz1.length(),14,4); nz1.L2Normalize();
+        IPrinter::print(nz2,nz2.length(),14,4); nz2.L2Normalize();
+        IPrinter::print(az0,az0.length(),14,4);
+        IPrinter::print(nz1,nz1.length(),14,4);
+        IPrinter::print(nz2,nz2.length(),14,4);
 
-    //xi------------------------------------------------------//
-    IPrinter::printSeperatorLine("xi");
-    DoubleVector pe0 = pv.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    DoubleVector ae0 = ag.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    DoubleVector ne1 = ng1.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    DoubleVector ne2 = ng2.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
+        //xi------------------------------------------------------//
+        IPrinter::printSeperatorLine("xi");
+        DoubleVector pe0 = pv.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
+        DoubleVector ae0 = ag.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
+        DoubleVector ne1 = ng1.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
+        DoubleVector ne2 = ng2.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
 
-    IPrinter::print(pe0,pe0.length(),14,4);
-    IPrinter::print(ae0,ae0.length(),14,4); ae0.L2Normalize();
-    IPrinter::print(ne1,ne1.length(),14,4); ne1.L2Normalize();
-    IPrinter::print(ne2,ne2.length(),14,4); ne2.L2Normalize();
-    IPrinter::print(ae0,ae0.length(),14,4);
-    IPrinter::print(ne1,ne1.length(),14,4);
-    IPrinter::print(ne2,ne2.length(),14,4);
+        IPrinter::print(pe0,pe0.length(),14,4);
+        IPrinter::print(ae0,ae0.length(),14,4); ae0.L2Normalize();
+        IPrinter::print(ne1,ne1.length(),14,4); ne1.L2Normalize();
+        IPrinter::print(ne2,ne2.length(),14,4); ne2.L2Normalize();
+        IPrinter::print(ae0,ae0.length(),14,4);
+        IPrinter::print(ne1,ne1.length(),14,4);
+        IPrinter::print(ne2,ne2.length(),14,4);
 
-    //eta------------------------------------------------------//
-    IPrinter::printSeperatorLine("eta");
-    DoubleVector px0 = pv.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    DoubleVector ax0 = ag.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    DoubleVector nx1 = ng1.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    DoubleVector nx2 = ng2.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
+        //eta------------------------------------------------------//
+        IPrinter::printSeperatorLine("eta");
+        DoubleVector px0 = pv.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
+        DoubleVector ax0 = ag.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
+        DoubleVector nx1 = ng1.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
+        DoubleVector nx2 = ng2.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
 
-    IPrinter::print(px0,px0.length(),14,4);
-    IPrinter::print(ax0,ax0.length(),14,4); ax0.L2Normalize();
-    IPrinter::print(nx1,nx1.length(),14,4); nx1.L2Normalize();
-    IPrinter::print(nx2,nx2.length(),14,4); nx2.L2Normalize();
-    IPrinter::print(ax0,ax0.length(),14,4);
-    IPrinter::print(nx1,nx1.length(),14,4);
-    IPrinter::print(nx2,nx2.length(),14,4);
-    IPrinter::printSeperatorLine();
+        IPrinter::print(px0,px0.length(),14,4);
+        IPrinter::print(ax0,ax0.length(),14,4); ax0.L2Normalize();
+        IPrinter::print(nx1,nx1.length(),14,4); nx1.L2Normalize();
+        IPrinter::print(nx2,nx2.length(),14,4); nx2.L2Normalize();
+        IPrinter::print(ax0,ax0.length(),14,4);
+        IPrinter::print(nx1,nx1.length(),14,4);
+        IPrinter::print(nx2,nx2.length(),14,4);
+        IPrinter::printSeperatorLine();
+    }
 }
 
 void IProblem2H2D::optimization1()
@@ -290,87 +337,22 @@ void IProblem2H2D::optimization1()
     ifunc.optimizeO = true;
     ifunc.optimizeC = true;
 
-    ifunc.mSpaceDimensionX = Dimension(0.01, 0, 100);
-    ifunc.mSpaceDimensionY = (Dimension(0.01, 0, 100));
+    double hx, hy; hx = hy = 0.01;
+    unsigned Nx, Ny; Nx = Ny = 100;
+    ifunc.mSpaceDimensionX = Dimension(hx, 0, Nx);
+    ifunc.mSpaceDimensionY = (Dimension(hy, 0, Ny));
     ifunc.mTimeDimension = Dimension(0.01, 0, 100);
 
-    ifunc.alpha0 = 1.00; ifunc.V0.resize(101, 101, 0.0);
-    ifunc.alpha1 = 1.00; ifunc.V1.resize(101, 101, 0.0);
+    ifunc.alpha0 = 1.00; ifunc.V0.resize(Ny+1, Nx+1, 0.0);
+    ifunc.alpha1 = 1.00; ifunc.V1.resize(Ny+1, Nx+1, 0.0);
 
     EquationParameter e_prm;
-    e_prm.a = +1.0;
-    e_prm.lambda = +0.01;
-
-    e_prm.Ns = 2;
-    e_prm.q.resize(e_prm.Ns);
-    e_prm.theta.resize(e_prm.Ns);
-
-    e_prm.q[0] = -0.2; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
-    e_prm.q[1] = -0.5; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
-
-    e_prm.Nc = 2;
-    e_prm.No = 2;
-
     OptimizeParameter o_prm;
-    o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
-    o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
-
-    //    o_prm.k[0][0] = -2.6078; o_prm.k[0][1] = -2.5166;
-    //    o_prm.k[1][0] = -2.9158; o_prm.k[1][1] = -2.8175;
-    o_prm.k[0][0] = -0.7238; o_prm.k[0][1] = -0.6203;
-    o_prm.k[1][0] = -0.9008; o_prm.k[1][1] = -0.7805;
-    //o_prm.k[2][0] = -0.1200; o_prm.k[2][1] = -0.2400;
-    //o_prm.k[3][0] = -0.4500; o_prm.k[3][1] = -0.1800;
-
-    //    o_prm.z[0][0] = -0.0538; o_prm.z[0][1] = -0.0228;
-    //    o_prm.z[1][0] = -0.1942; o_prm.z[1][1] = .2898;
-    o_prm.z[0][0] = -0.0641; o_prm.z[0][1] = -0.0779;
-    o_prm.z[1][0] = -0.3489; o_prm.z[1][1] = -0.4258;
-    //o_prm.z[2][0] = +5.5000; o_prm.z[2][1] = +5.4000;
-    //o_prm.z[3][0] = +5.7000; o_prm.z[3][1] = +5.5000;
-
-    o_prm.xi.resize(e_prm.No);
-    o_prm.xi[0].x = 0.4000; o_prm.xi[0].y = 0.4000;
-    o_prm.xi[1].x = 0.6000; o_prm.xi[1].y = 0.6000;
-    //    o_prm.xi[0].x = 0.0500; o_prm.xi[0].y = 0.0500;
-    //    o_prm.xi[1].x = 0.9500; o_prm.xi[1].y = 0.9500;
-    //o_prm.xi[0].x = 0.0500; o_prm.xi[0].y = 0.0500;
-    //o_prm.xi[1].x = 0.9500; o_prm.xi[1].y = 0.9500;
-
-    o_prm.eta.resize(e_prm.Nc);
-    //    o_prm.eta[0].x = 0.3000; o_prm.eta[0].y = 0.7000;
-    //    o_prm.eta[1].x = 0.7000; o_prm.eta[1].y = 0.3000;
-    o_prm.eta[0].x = 0.7588; o_prm.eta[0].y = 0.3018;
-    o_prm.eta[1].x = 0.2971; o_prm.eta[1].y = 0.7413;
-    //o_prm.eta[0].x = 0.7332; o_prm.eta[0].y = 0.2864;
-    //o_prm.eta[1].x = 0.2773; o_prm.eta[1].y = 0.7206;
-    //o_prm.eta[2].x = 0.100; o_prm.eta[2].y = 0.900;
-    //o_prm.eta[3].x = 0.900; o_prm.eta[3].y = 0.100;
-
-//    I[ 40]: 0.024768 0.300001 0.324769 R:0.00 e:0.000
-//    k: -0.9095  -0.8781  -0.9951  -1.0015 z:  0.3378   0.2736   0.2531   0.1034   o:0.1995 0.2099 0.8449 0.8503   c:0.7553 0.2647 0.2676 0.7584
-//    k:  0.0332   0.0427   0.0295   0.0409 z:  0.0167   0.0161   0.0137   0.0138   o:-0.1201 0.1606 -0.0308 0.0131   c:-0.1623 -0.1512 0.1166 -0.0317
-//    0.004568 16
-
     OptimizeParameter o_prm0;
-    o_prm0.xi.resize(e_prm.No);
-    o_prm0.xi[0].x = 0.2402; o_prm0.xi[0].y = 0.1762;
-    o_prm0.xi[1].x = 0.5736; o_prm0.xi[1].y = 0.3214;
-
-    o_prm0.eta.resize(e_prm.Nc);
-    o_prm0.eta[0].x = 0.2743; o_prm0.eta[0].y = 0.7485;
-    o_prm0.eta[1].x = 0.7657; o_prm0.eta[1].y = 0.2613;
-
-    o_prm0.k.resize(e_prm.Nc, e_prm.No, 0.0);
-    o_prm0.z.resize(e_prm.Nc, e_prm.No, 0.0);
-
-    o_prm0.k[0][0] = -2.6388; o_prm0.k[0][1] = -2.4754;
-    o_prm0.k[1][0] = -2.8992; o_prm0.k[1][1] = -2.7987;
-    o_prm0.z[0][0] = +0.0991; o_prm0.z[0][1] = +0.1211;
-    o_prm0.z[1][0] = -0.0860; o_prm0.z[1][1] = +0.3928;
+    initParameters(e_prm, o_prm, o_prm0);
 
     ifunc.mEquParameter = e_prm;
-    ifunc.mOptParameter0 = o_prm0;
+    ifunc.mOptParameter0 = o_prm0 = o_prm;
     ifunc.regEpsilon = 0.0;
 
     ifunc.r = 0.0;
@@ -429,19 +411,15 @@ void IProblem2H2D::optimization2()
     o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
 
-    o_prm.k[0][0] = -1.7000; o_prm.k[0][1] = -1.3000;
-    o_prm.k[1][0] = -1.6000; o_prm.k[1][1] = -1.5000;
+    o_prm.k[0][0] = -1.7000; o_prm.k[0][1] = -1.3000; o_prm.k[1][0] = -1.6000; o_prm.k[1][1] = -1.5000;
 
-    o_prm.z[0][0] = +0.0000; o_prm.z[0][1] = +0.0000;
-    o_prm.z[1][0] = +0.0000; o_prm.z[1][1] = +0.0000;
+    o_prm.z[0][0] = +0.0000; o_prm.z[0][1] = +0.0000; o_prm.z[1][0] = +0.0000; o_prm.z[1][1] = +0.0000;
 
     o_prm.xi.resize(e_prm.No);
-    o_prm.xi[0].x = 0.4000; o_prm.xi[0].y = 0.6000;
-    o_prm.xi[1].x = 0.9000; o_prm.xi[1].y = 0.2000;
+    o_prm.xi[0].x = 0.4000; o_prm.xi[0].y = 0.6000; o_prm.xi[1].x = 0.9000; o_prm.xi[1].y = 0.2000;
 
     o_prm.eta.resize(e_prm.Nc);
-    o_prm.eta[0].x = 0.2000; o_prm.eta[0].y = 0.4500;
-    o_prm.eta[1].x = 0.6500; o_prm.eta[1].y = 0.7500;
+    o_prm.eta[0].x = 0.2000; o_prm.eta[0].y = 0.4500; o_prm.eta[1].x = 0.6500; o_prm.eta[1].y = 0.7500;
 
     //    OptimizeParameter o_prm0;
     //    o_prm0.xi.resize(e_prm.No);
