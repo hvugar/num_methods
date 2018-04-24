@@ -76,9 +76,9 @@ double IFunctional::integral(const DoubleMatrix &u, const DoubleMatrix &ut) cons
         sum1 += 0.5*(ut[n2][N1] - V1[n2][N1])*(ut[n2][N1] - V1[n2][N1]);
     }
 
-    for (unsigned int n2 = 1; n2 <= N2-1; n2++)
+    for (unsigned int n2=1; n2<=N2-1; n2++)
     {
-        for (unsigned int n1 = 1; n1 <= N1-1; n1++)
+        for (unsigned int n1=1; n1<=N1-1; n1++)
         {
             sum0 += (u[n2][n1] - V0[n2][n1])*(u[n2][n1] - V0[n2][n1]);
             sum1 += (ut[n2][n1] - V1[n2][n1])*(ut[n2][n1] - V1[n2][n1]);
@@ -352,23 +352,20 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
             double vi = 0.0;
 
             vi = 0.0;
-            for (unsigned int i=0; i<mEquParameter.Nc; i++)
-                vi += o_prm.k[i][j] * (p_info[i].value(0) + 2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm)));
+            for (unsigned int i=0; i<mEquParameter.Nc; i++) vi += o_prm.k[i][j] * (p_info[i].value(0) + 2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm)));
             gradXijX += 0.5 * uj.valueDx(0) * vi;
             gradXijY += 0.5 * uj.valueDy(0) * vi;
 
             for (unsigned int m=1; m<=L-1; m++)
             {
                 vi = 0.0;
-                for (unsigned int i=0; i<mEquParameter.Nc; i++)
-                    vi += o_prm.k[i][j]*(p_info[i].value(m) + 2.0*r*gpi(i,m,u_info,o_prm)*sgn(g0i(i,m,u_info,o_prm)));
+                for (unsigned int i=0; i<mEquParameter.Nc; i++) vi += o_prm.k[i][j]*(p_info[i].value(m) + 2.0*r*gpi(i,m,u_info,o_prm)*sgn(g0i(i,m,u_info,o_prm)));
                 gradXijX += uj.valueDx(m) * vi;
                 gradXijY += uj.valueDy(m) * vi;
             }
 
             vi = 0.0;
-            for (unsigned int i=0; i<mEquParameter.Nc; i++)
-                vi += o_prm.k[i][j]*(p_info[i].value(L) + 2.0*r*gpi(i,L,u_info,o_prm)*sgn(g0i(i,L,u_info,o_prm)));
+            for (unsigned int i=0; i<mEquParameter.Nc; i++) vi += o_prm.k[i][j]*(p_info[i].value(L) + 2.0*r*gpi(i,L,u_info,o_prm)*sgn(g0i(i,L,u_info,o_prm)));
             gradXijX += 0.5 * uj.valueDx(L) * vi;
             gradXijY += 0.5 * uj.valueDy(L) * vi;
 
@@ -395,33 +392,33 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
         {
             ExtendedSpaceNode2DH &pi = p_info[i];
 
-            double grad_EtaiX = 0.0;
-            double grad_EtaiY = 0.0;
+            double gradEtaiX = 0.0;
+            double gradEtaiY = 0.0;
             double vi = 0.0;
 
             vi = 0.0;
             for (unsigned int j=0; j<mEquParameter.No; j++) vi += o_prm.k[i][j] * (u_info[j].value(0) - o_prm.z[i][j]);
-            grad_EtaiX += 0.5 * pi.valueDx(0) * vi;
-            grad_EtaiY += 0.5 * pi.valueDy(0) * vi;
+            gradEtaiX += 0.5 * pi.valueDx(0) * vi;
+            gradEtaiY += 0.5 * pi.valueDy(0) * vi;
 
             for (unsigned int m=1; m<=L-1; m++)
             {
                 vi = 0.0;
                 for (unsigned int j=0; j<mEquParameter.No; j++) vi += o_prm.k[i][j] * (u_info[j].value(m) - o_prm.z[i][j]);
-                grad_EtaiX += pi.valueDx(m) * vi;
-                grad_EtaiY += pi.valueDy(m) * vi;
+                gradEtaiX += pi.valueDx(m) * vi;
+                gradEtaiY += pi.valueDy(m) * vi;
             }
 
             vi = 0.0;
             for (unsigned int j=0; j<mEquParameter.No; j++) vi += o_prm.k[i][j] * (u_info[j].value(L) - o_prm.z[i][j]);
-            grad_EtaiX += 0.5 * pi.valueDx(L) * vi;
-            grad_EtaiY += 0.5 * pi.valueDy(L) * vi;
+            gradEtaiX += 0.5 * pi.valueDx(L) * vi;
+            gradEtaiY += 0.5 * pi.valueDy(L) * vi;
 
-            grad_EtaiX *= -ht;
-            grad_EtaiY *= -ht;
+            gradEtaiX *= -ht;
+            gradEtaiY *= -ht;
 
-            g[gi++] = grad_EtaiX + 2.0*regEpsilon*(o_prm.eta[i].x - mOptParameter0.eta[i].x);
-            g[gi++] = grad_EtaiY + 2.0*regEpsilon*(o_prm.eta[i].y - mOptParameter0.eta[i].y);
+            g[gi++] = gradEtaiX + 2.0*regEpsilon*(o_prm.eta[i].x - mOptParameter0.eta[i].x);
+            g[gi++] = gradEtaiY + 2.0*regEpsilon*(o_prm.eta[i].y - mOptParameter0.eta[i].y);
         }
     }
     else
