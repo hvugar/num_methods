@@ -372,6 +372,7 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
                                     {
                                         found = true;
                                         w1[offset+(n-1)][rs*(N-1)+(cpn.i-1)] -= htht_h * mOptParameter.k[cpn.id][odn.id] * (cpn.w * (hx*hy)) * odn.w;
+                                        break;
                                     }
                                 }
 
@@ -512,7 +513,7 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
 
         if (cols2.size() != 0)
         {
-            //throw std::exception();
+            throw std::exception();
 
             double* a2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
             double* b2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));

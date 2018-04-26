@@ -69,7 +69,7 @@ void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, Optimize
         o_prm.xi[0].x = 0.3000; o_prm.xi[0].y = 0.6000;
         o_prm.xi[1].x = 0.6000; o_prm.xi[1].y = 0.4000;
         
-        o_prm.eta[0].x = 0.5000; o_prm.eta[0].y = 0.8000;
+        o_prm.eta[0].x = 0.5000; o_prm.eta[0].y = 0.6000;
         o_prm.eta[1].x = 0.7000; o_prm.eta[1].y = 0.3000;
         
         o_prm.k[0][0] = -2.1200; o_prm.k[0][1] = -2.2400; //o_prm.k[0][2] = -2.24;
@@ -123,16 +123,13 @@ void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, Optimize
     }
 }
 
-
-
 void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //    forward();
     //    forwardS();
     checkGradient();
     IPrinter::printSeperatorLine();
-    optimization1();
-    //    optimization2();
+    //optimization1();
 }
 
 void IProblem2H2D::forward()
