@@ -84,6 +84,10 @@ public:
     WISpaceNodePDE **wi;
     unsigned int layerNumber;
 
+    double *u;
+    double *ux;
+    double *uy;
+
 private:
     double value(double x, double y, unsigned int layer) const;
 };

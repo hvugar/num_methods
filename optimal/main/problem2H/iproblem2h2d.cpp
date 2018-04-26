@@ -69,7 +69,7 @@ void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, Optimize
         o_prm.xi[0].x = 0.3000; o_prm.xi[0].y = 0.6000;
         o_prm.xi[1].x = 0.6000; o_prm.xi[1].y = 0.4000;
         
-        o_prm.eta[0].x = 0.5000; o_prm.eta[0].y = 0.6000;
+        o_prm.eta[0].x = 0.5000; o_prm.eta[0].y = 0.8000;
         o_prm.eta[1].x = 0.7000; o_prm.eta[1].y = 0.3000;
         
         o_prm.k[0][0] = -2.1200; o_prm.k[0][1] = -2.2400; //o_prm.k[0][2] = -2.24;
@@ -80,24 +80,25 @@ void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, Optimize
     }
 
     {
-        //        o_prm0.xi.resize(e_prm.No);
-        //        o_prm0.xi[0].x = 0.400; o_prm0.xi[0].y = 0.400;
-        //        o_prm0.xi[1].x = 0.600; o_prm0.xi[1].y = 0.600;
-        //        o_prm0.xi[2].x = 0.500; o_prm0.xi[2].y = 0.500;
+        o_prm0.k.resize(e_prm.Nc, e_prm.No, 0.0);
+        o_prm0.z.resize(e_prm.Nc, e_prm.No, 0.0);
 
-        //        o_prm0.eta.resize(e_prm.Nc);
-        //        o_prm0.eta[0].x = 0.300; o_prm0.eta[0].y = 0.400;
-        //        o_prm0.eta[1].x = 0.700; o_prm0.eta[1].y = 0.300;
+        o_prm0.xi.resize(e_prm.No);
+        o_prm0.xi[0].x = 0.400; o_prm0.xi[0].y = 0.400;
+        o_prm0.xi[1].x = 0.600; o_prm0.xi[1].y = 0.600;
+        //o_prm0.xi[2].x = 0.500; o_prm0.xi[2].y = 0.500;
 
-        //        o_prm0.k.resize(e_prm.Nc, e_prm.No, 0.0);
-        //        o_prm0.z.resize(e_prm.Nc, e_prm.No, 0.0);
+        o_prm0.eta.resize(e_prm.Nc);
+        o_prm0.eta[0].x = 0.300; o_prm0.eta[0].y = 0.400;
+        o_prm0.eta[1].x = 0.700; o_prm0.eta[1].y = 0.300;
 
-        //        o_prm0.k[0][0] = -0.12; o_prm0.k[0][1] = -0.24; o_prm0.k[0][2] = -0.24;
-        //        o_prm0.k[1][0] = -0.45; o_prm0.k[1][1] = -0.18; o_prm0.k[1][2] = -0.18;
-        //        o_prm0.z[0][0] = +5.50; o_prm0.z[0][1] = +4.40; o_prm0.z[0][2] = +4.40;
-        //        o_prm0.z[1][0] = +4.70; o_prm0.z[1][1] = +5.50; o_prm0.z[1][2] = +5.50;
+        o_prm0.k[0][0] = -0.12; o_prm0.k[0][1] = -0.24; //o_prm0.k[0][2] = -0.24;
+        o_prm0.k[1][0] = -0.45; o_prm0.k[1][1] = -0.18; //o_prm0.k[1][2] = -0.18;
+
+        o_prm0.z[0][0] = +5.50; o_prm0.z[0][1] = +4.40; //o_prm0.z[0][2] = +4.40;
+        o_prm0.z[1][0] = +4.70; o_prm0.z[1][1] = +5.50; //o_prm0.z[1][2] = +5.50;
     }
-    o_prm0 = o_prm;
+    //o_prm0 = o_prm;
 
     {
         //    I[ 40]: 0.024768 0.300001 0.324769 R:0.00 e:0.000
@@ -129,8 +130,8 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //    forward();
     //    forwardS();
     checkGradient();
-    //IPrinter::printSeperatorLine();
-    //optimization1();
+    IPrinter::printSeperatorLine();
+    optimization1();
     //    optimization2();
 }
 
@@ -466,6 +467,13 @@ void ExtendedSpaceNode2DH::setSpaceNode(const SpacePoint &sn)
 
 void ExtendedSpaceNode2DH::extendWeights(const Dimension &dimX, const Dimension &dimY, unsigned int layerNumber, unsigned int rows, unsigned int cols)
 {
+    u = new double[layerNumber];
+    ux = new double[layerNumber];
+    uy = new double[layerNumber];
+
+    this->i = (unsigned int)(round(this->x*dimX.sizeN()));
+    this->j = (unsigned int)(round(this->y*dimY.sizeN()));
+
     //    if (rows==3 && cols==3)
     //    {
     //        this->rows = rows;
@@ -504,109 +512,113 @@ void ExtendedSpaceNode2DH::extendWeights(const Dimension &dimX, const Dimension 
     //        wi[2][2].i = rx + 1; wi[2][2].x = wi[2][2].i*hx; wi[2][2].j = ry + 1; wi[2][2].y = wi[2][2].j*hy; dx = fabs(wi[2][2].x-x); dy = fabs(wi[2][2].y-y); wi[2][2].w = 0.0;
     //    }
     
-    if (rows==4 && cols==4)
-    {
-        this->rows = rows;
-        this->cols = cols;
-        this->layerNumber = layerNumber;
-        this->wi = new WISpaceNodePDE*[rows];
-        for (unsigned int rw=0; rw<rows; rw++)
-        {
-            wi[rw] = new WISpaceNodePDE[cols];
-            for (unsigned int cl=0; cl<cols; cl++)
-            {
-                wi[rw][cl].u = new double[layerNumber];
-            }
-        }
+//    if (rows==4 && cols==4)
+//    {
+//        this->rows = rows;
+//        this->cols = cols;
+//        this->layerNumber = layerNumber;
+//        this->wi = new WISpaceNodePDE*[rows];
+//        for (unsigned int rw=0; rw<rows; rw++)
+//        {
+//            wi[rw] = new WISpaceNodePDE[cols];
+//            for (unsigned int cl=0; cl<cols; cl++)
+//            {
+//                wi[rw][cl].u = new double[layerNumber];
+//            }
+//        }
         
-        unsigned int Nx = dimX.sizeN();
-        unsigned int Ny = dimY.sizeN();
+//        unsigned int Nx = dimX.sizeN();
+//        unsigned int Ny = dimY.sizeN();
         
-        double hx = dimX.step();
-        double hy = dimY.step();
+//        double hx = dimX.step();
+//        double hy = dimY.step();
         
-        unsigned int rx = (unsigned int)(floor(x*Nx));
-        unsigned int ry = (unsigned int)(floor(y*Ny));
+//        unsigned int rx = (unsigned int)(floor(x*Nx));
+//        unsigned int ry = (unsigned int)(floor(y*Ny));
         
-        double hx3 = hx*hx*hx;
-        double hx32 = (1.0/(2.0*hx3));
-        double hx36 = (1.0/(6.0*hx3));
+//        double hx3 = hx*hx*hx;
+//        double hx32 = (1.0/(2.0*hx3));
+//        double hx36 = (1.0/(6.0*hx3));
         
-        double hy3 = hy*hy*hy;
-        double hy32 = (1.0/(2.0*hy3));
-        double hy36 = (1.0/(6.0*hy3));
+//        double hy3 = hy*hy*hy;
+//        double hy32 = (1.0/(2.0*hy3));
+//        double hy36 = (1.0/(6.0*hy3));
         
-        double dx = 0.0;
-        double dy = 0.0;
+//        double dx = 0.0;
+//        double dy = 0.0;
         
-        wi[1][1].i = rx + 0; wi[1][1].x = wi[1][1].i*hx; wi[1][1].j = ry + 0; wi[1][1].y = wi[1][1].j*hy; dx = fabs(wi[1][1].x-x); dy = fabs(wi[1][1].y-y);
-        wi[1][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+//        wi[1][1].i = rx + 0; wi[1][1].x = wi[1][1].i*hx; wi[1][1].j = ry + 0; wi[1][1].y = wi[1][1].j*hy; dx = fabs(wi[1][1].x-x); dy = fabs(wi[1][1].y-y);
+//        wi[1][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
         
-        wi[2][1].i = rx + 0; wi[2][1].x = wi[2][1].i*hx; wi[2][1].j = ry + 1; wi[2][1].y = wi[2][1].j*hy; dx = fabs(wi[2][1].x-x); dy = fabs(wi[2][1].y-y);
-        wi[2][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+//        wi[2][1].i = rx + 0; wi[2][1].x = wi[2][1].i*hx; wi[2][1].j = ry + 1; wi[2][1].y = wi[2][1].j*hy; dx = fabs(wi[2][1].x-x); dy = fabs(wi[2][1].y-y);
+//        wi[2][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
         
-        wi[2][2].i = rx + 1; wi[2][2].x = wi[2][2].i*hx; wi[2][2].j = ry + 1; wi[2][2].y = wi[2][2].j*hy; dx = fabs(wi[2][2].x-x); dy = fabs(wi[2][2].y-y);
-        wi[2][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+//        wi[2][2].i = rx + 1; wi[2][2].x = wi[2][2].i*hx; wi[2][2].j = ry + 1; wi[2][2].y = wi[2][2].j*hy; dx = fabs(wi[2][2].x-x); dy = fabs(wi[2][2].y-y);
+//        wi[2][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
         
-        wi[1][2].i = rx + 1; wi[1][2].x = wi[1][2].i*hx; wi[1][2].j = ry + 0; wi[1][2].y = wi[1][2].j*hy; dx = fabs(wi[1][2].x-x); dy = fabs(wi[1][2].y-y);
-        wi[1][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+//        wi[1][2].i = rx + 1; wi[1][2].x = wi[1][2].i*hx; wi[1][2].j = ry + 0; wi[1][2].y = wi[1][2].j*hy; dx = fabs(wi[1][2].x-x); dy = fabs(wi[1][2].y-y);
+//        wi[1][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
         
-        wi[0][0].i = rx - 1; wi[0][0].x = wi[0][0].i*hx; wi[0][0].j = ry - 1; wi[0][0].y = wi[0][0].j*hy; dx = fabs(wi[0][0].x-x); dy = fabs(wi[0][0].y-y);
-        wi[0][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36) * ((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+//        wi[0][0].i = rx - 1; wi[0][0].x = wi[0][0].i*hx; wi[0][0].j = ry - 1; wi[0][0].y = wi[0][0].j*hy; dx = fabs(wi[0][0].x-x); dy = fabs(wi[0][0].y-y);
+//        wi[0][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36) * ((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
         
-        wi[1][0].i = rx - 1; wi[1][0].x = wi[1][0].i*hx; wi[1][0].j = ry + 0; wi[1][0].y = wi[1][0].j*hy; dx = fabs(wi[1][0].x-x); dy = fabs(wi[1][0].y-y);
-        wi[1][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+//        wi[1][0].i = rx - 1; wi[1][0].x = wi[1][0].i*hx; wi[1][0].j = ry + 0; wi[1][0].y = wi[1][0].j*hy; dx = fabs(wi[1][0].x-x); dy = fabs(wi[1][0].y-y);
+//        wi[1][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
         
-        wi[2][0].i = rx - 1; wi[2][0].x = wi[2][0].i*hx; wi[2][0].j = ry + 1; wi[2][0].y = wi[2][0].j*hy; dx = fabs(wi[2][0].x-x); dy = fabs(wi[2][0].y-y);
-        wi[2][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+//        wi[2][0].i = rx - 1; wi[2][0].x = wi[2][0].i*hx; wi[2][0].j = ry + 1; wi[2][0].y = wi[2][0].j*hy; dx = fabs(wi[2][0].x-x); dy = fabs(wi[2][0].y-y);
+//        wi[2][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
         
-        wi[3][0].i = rx - 1; wi[3][0].x = wi[3][0].i*hx; wi[3][0].j = ry + 2; wi[3][0].y = wi[3][0].j*hy; dx = fabs(wi[3][0].x-x); dy = fabs(wi[3][0].y-y);
-        wi[3][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+//        wi[3][0].i = rx - 1; wi[3][0].x = wi[3][0].i*hx; wi[3][0].j = ry + 2; wi[3][0].y = wi[3][0].j*hy; dx = fabs(wi[3][0].x-x); dy = fabs(wi[3][0].y-y);
+//        wi[3][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
         
-        wi[3][1].i = rx + 0; wi[3][1].x = wi[3][1].i*hx; wi[3][1].j = ry + 2; wi[3][1].y = wi[3][1].j*hy; dx = fabs(wi[3][1].x-x); dy = fabs(wi[3][1].y-y);
-        wi[3][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+//        wi[3][1].i = rx + 0; wi[3][1].x = wi[3][1].i*hx; wi[3][1].j = ry + 2; wi[3][1].y = wi[3][1].j*hy; dx = fabs(wi[3][1].x-x); dy = fabs(wi[3][1].y-y);
+//        wi[3][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
         
-        wi[3][2].i = rx + 1; wi[3][2].x = wi[3][2].i*hx; wi[3][2].j = ry + 2; wi[3][2].y = wi[3][2].j*hy; dx = fabs(wi[3][2].x-x); dy = fabs(wi[3][2].y-y);
-        wi[3][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+//        wi[3][2].i = rx + 1; wi[3][2].x = wi[3][2].i*hx; wi[3][2].j = ry + 2; wi[3][2].y = wi[3][2].j*hy; dx = fabs(wi[3][2].x-x); dy = fabs(wi[3][2].y-y);
+//        wi[3][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
         
-        wi[3][3].i = rx + 2; wi[3][3].x = wi[3][3].i*hx; wi[3][3].j = ry + 2; wi[3][3].y = wi[3][3].j*hy; dx = fabs(wi[3][3].x-x); dy = fabs(wi[3][3].y-y);
-        wi[3][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+//        wi[3][3].i = rx + 2; wi[3][3].x = wi[3][3].i*hx; wi[3][3].j = ry + 2; wi[3][3].y = wi[3][3].j*hy; dx = fabs(wi[3][3].x-x); dy = fabs(wi[3][3].y-y);
+//        wi[3][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
         
-        wi[2][3].i = rx + 2; wi[2][3].x = wi[2][3].i*hx; wi[2][3].j = ry + 1; wi[2][3].y = wi[2][3].j*hy; dx = fabs(wi[2][3].x-x); dy = fabs(wi[2][3].y-y);
-        wi[2][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+//        wi[2][3].i = rx + 2; wi[2][3].x = wi[2][3].i*hx; wi[2][3].j = ry + 1; wi[2][3].y = wi[2][3].j*hy; dx = fabs(wi[2][3].x-x); dy = fabs(wi[2][3].y-y);
+//        wi[2][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
         
-        wi[1][3].i = rx + 2; wi[1][3].x = wi[1][3].i*hx; wi[1][3].j = ry + 0; wi[1][3].y = wi[1][3].j*hy; dx = fabs(wi[1][3].x-x); dy = fabs(wi[1][3].y-y);
-        wi[1][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+//        wi[1][3].i = rx + 2; wi[1][3].x = wi[1][3].i*hx; wi[1][3].j = ry + 0; wi[1][3].y = wi[1][3].j*hy; dx = fabs(wi[1][3].x-x); dy = fabs(wi[1][3].y-y);
+//        wi[1][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
         
-        wi[0][3].i = rx + 2; wi[0][3].x = wi[0][3].i*hx; wi[0][3].j = ry - 1; wi[0][3].y = wi[0][3].j*hy; dx = fabs(wi[0][3].x-x); dy = fabs(wi[0][3].y-y);
-        wi[0][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+//        wi[0][3].i = rx + 2; wi[0][3].x = wi[0][3].i*hx; wi[0][3].j = ry - 1; wi[0][3].y = wi[0][3].j*hy; dx = fabs(wi[0][3].x-x); dy = fabs(wi[0][3].y-y);
+//        wi[0][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
         
-        wi[0][2].i = rx + 1; wi[0][2].x = wi[0][2].i*hx; wi[0][2].j = ry - 1; wi[0][2].y = wi[0][2].j*hy; dx = fabs(wi[0][2].x-x); dy = fabs(wi[0][2].y-y);
-        wi[0][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+//        wi[0][2].i = rx + 1; wi[0][2].x = wi[0][2].i*hx; wi[0][2].j = ry - 1; wi[0][2].y = wi[0][2].j*hy; dx = fabs(wi[0][2].x-x); dy = fabs(wi[0][2].y-y);
+//        wi[0][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
         
-        wi[0][1].i = rx + 0; wi[0][1].x = wi[0][1].i*hx; wi[0][1].j = ry - 1; wi[0][1].y = wi[0][1].j*hy; dx = fabs(wi[0][1].x-x); dy = fabs(wi[0][1].y-y);
-        wi[0][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-    }
+//        wi[0][1].i = rx + 0; wi[0][1].x = wi[0][1].i*hx; wi[0][1].j = ry - 1; wi[0][1].y = wi[0][1].j*hy; dx = fabs(wi[0][1].x-x); dy = fabs(wi[0][1].y-y);
+//        wi[0][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+//    }
 }
 
 void ExtendedSpaceNode2DH::clearWeights()
 {
-    for (unsigned int rw=0; rw<rows; rw++)
-    {
-        for (unsigned int cl=0; cl<cols; cl++)
-        {
-            delete [] (wi[rw][cl].u);
-        }
-        delete [] wi[rw];
-    }
-    delete [] wi;
+    delete [] u;
+    delete [] ux;
+    delete [] uy;
+//    for (unsigned int rw=0; rw<rows; rw++)
+//    {
+//        for (unsigned int cl=0; cl<cols; cl++)
+//        {
+//            delete [] (wi[rw][cl].u);
+//        }
+//        delete [] wi[rw];
+//    }
+//    delete [] wi;
 }
 
 double ExtendedSpaceNode2DH::value(unsigned int layer) const
 {
     //if (_INFO_ROWS_ == 4 && _INFO_COLS_ == 4) return value1(layer);
     //if (_INFO_ROWS_ == 3 && _INFO_COLS_ == 3) return value2(layer);
-    return value1(layer);
+    //return value1(layer);
+    return u[layer];
 }
 
 double ExtendedSpaceNode2DH::value1(unsigned int layer) const
@@ -653,14 +665,16 @@ double ExtendedSpaceNode2DH::valueDx(unsigned int layer) const
 {
     //if (_INFO_ROWS_ == 4 && _INFO_COLS_ == 4) return valueDx1(layer);
     //if (_INFO_ROWS_ == 3 && _INFO_COLS_ == 3) return valueDx2(layer);
-    return valueDx1(layer);
+    //return valueDx1(layer);
+    return ux[layer];
 }
 
 double ExtendedSpaceNode2DH::valueDy(unsigned int layer) const
 {
     //if (_INFO_ROWS_ == 4 && _INFO_COLS_ == 4) return valueDy1(layer);
     //if (_INFO_ROWS_ == 3 && _INFO_COLS_ == 3) return valueDy2(layer);
-    return valueDy1(layer);
+    //return valueDy1(layer);
+    return uy[layer];
 }
 
 double ExtendedSpaceNode2DH::valueDx1(unsigned int layer) const

@@ -177,7 +177,7 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
                     {
                         kz += mOptParameter.k[cntNode.id][j]*mOptParameter.z[cntNode.id][j];
                     }
-                    //sum1 -= kz*cntNode.w;
+                    //sum1 -= kz * cntNode.w;
                 }
             }
 
@@ -192,7 +192,7 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
 //            }
 
             u05[m][n] = u00[m][n] + hh*initial2(sn) + 0.5*hh*hh*sum2;
-            u10[m][n] = u00[m][n] + ht*initial2(sn) + 0.5*ht*ht*sum2;
+            u10[m][n] = u00[m][n] + ht*initial2(sn) + 0.5*ht*ht*sum1;
         }
     }
     qPointNodes.clear();
@@ -348,6 +348,8 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
 
         if (rows2.size() != 0)
         {
+            //throw std::exception();
+
             double* a1 = (double*) malloc(sizeof(double)*rows1.size()*(N-1));
             double* b1 = (double*) malloc(sizeof(double)*rows1.size()*(N-1));
             double* c1 = (double*) malloc(sizeof(double)*rows1.size()*(N-1));
@@ -542,6 +544,8 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
 
         if (cols2.size() != 0)
         {
+            //throw std::exception();
+
             double* a2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
             double* b2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
             double* c2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
@@ -1811,16 +1815,23 @@ void IProblem2HForward2D::add2Info(const DoubleMatrix &u, vector<ExtendedSpaceNo
     for (unsigned int j=0; j<mEquParameter.No; j++)
     {
         ExtendedSpaceNode2DH &ui = info[j];
-        for (unsigned int r=0; r<rows; r++)
-        {
-            for (unsigned int c=0; c<cols; c++)
-            {
-                unsigned int x = ui.wi[r][c].i;
-                unsigned int y = ui.wi[r][c].j;
-                ui.wi[r][c].u[ln] = u[y][x];
-            }
-        }
+        ui.u[ln] = u[ui.j][ui.i];
+        ui.ux[ln] = (u[ui.j][ui.i+1] - u[ui.j][ui.i-1])/0.02;
+        ui.uy[ln] = (u[ui.j+1][ui.i] - u[ui.j-1][ui.i])/0.02;
     }
+//    for (unsigned int j=0; j<mEquParameter.No; j++)
+//    {
+//        ExtendedSpaceNode2DH &ui = info[j];
+//        for (unsigned int r=0; r<rows; r++)
+//        {
+//            for (unsigned int c=0; c<cols; c++)
+//            {
+//                unsigned int x = ui.wi[r][c].i;
+//                unsigned int y = ui.wi[r][c].j;
+//                ui.wi[r][c].u[ln] = u[y][x];
+//            }
+//        }
+//    }
 }
 
 void IProblem2HForward2D::calculateMVD_N(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const

@@ -325,6 +325,8 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
 
         if (rows2.size() != 0)
         {
+            //throw std::exception();
+
             double* a1 = (double*) malloc(sizeof(double)*rows1.size()*(N-1));
             double* b1 = (double*) malloc(sizeof(double)*rows1.size()*(N-1));
             double* c1 = (double*) malloc(sizeof(double)*rows1.size()*(N-1));
@@ -510,6 +512,8 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
 
         if (cols2.size() != 0)
         {
+            //throw std::exception();
+
             double* a2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
             double* b2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
             double* c2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
@@ -684,16 +688,24 @@ void IProblem2HBackward2D::add2Info(const DoubleMatrix &p, vector<ExtendedSpaceN
     for (unsigned int i=0; i<mEquParameter.Nc; i++)
     {
         ExtendedSpaceNode2DH &pi = info[i];
-        for (unsigned int r=0; r<rows; r++)
-        {
-            for (unsigned int c=0; c<cols; c++)
-            {
-                unsigned int x = pi.wi[r][c].i;
-                unsigned int y = pi.wi[r][c].j;
-                pi.wi[r][c].u[ln] = p[y][x];
-            }
-        }
+        pi.u[ln] = p[pi.j][pi.i];
+        pi.ux[ln] = (p[pi.j][pi.i+1] - p[pi.j][pi.i-1])/0.02;
+        pi.uy[ln] = (p[pi.j+1][pi.i] - p[pi.j-1][pi.i])/0.02;
     }
+
+//    for (unsigned int i=0; i<mEquParameter.Nc; i++)
+//    {
+//        ExtendedSpaceNode2DH &pi = info[i];
+//        for (unsigned int r=0; r<rows; r++)
+//        {
+//            for (unsigned int c=0; c<cols; c++)
+//            {
+//                unsigned int x = pi.wi[r][c].i;
+//                unsigned int y = pi.wi[r][c].j;
+//                pi.wi[r][c].u[ln] = p[y][x];
+//            }
+//        }
+//    }
 }
 
 void IProblem2HBackward2D::calculateMVD_N(DoubleMatrix &p, vector<ExtendedSpaceNode2DH> &info, bool use, const vector<ExtendedSpaceNode2DH> &u_info) const
