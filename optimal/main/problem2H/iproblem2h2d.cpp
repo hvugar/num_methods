@@ -129,7 +129,7 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //    forwardS();
     checkGradient();
     IPrinter::printSeperatorLine();
-    //optimization1();
+    optimization1();
 }
 
 void IProblem2H2D::forward()

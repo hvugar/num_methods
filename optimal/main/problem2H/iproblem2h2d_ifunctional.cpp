@@ -465,7 +465,7 @@ void IFunctional::project(DoubleVector &pv, unsigned int index)
         if (pv[index] > 0.95) pv[index] = 0.95;
     }
 
-//    double dx = 0.08;
+//    double dx = 0.09;
 
 //    if (index == 12 && fabs(pv[8] - pv[12])<dx)
 //    {
