@@ -69,7 +69,7 @@ void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, Optimize
         o_prm.xi[0].x = 0.3000; o_prm.xi[0].y = 0.6000;
         o_prm.xi[1].x = 0.6000; o_prm.xi[1].y = 0.4000;
         
-        o_prm.eta[0].x = 0.5000; o_prm.eta[0].y = 0.6000;
+        o_prm.eta[0].x = 0.5000; o_prm.eta[0].y = 0.8000;
         o_prm.eta[1].x = 0.7000; o_prm.eta[1].y = 0.3000;
         
         o_prm.k[0][0] = -2.1200; o_prm.k[0][1] = -2.2400; //o_prm.k[0][2] = -2.24;
@@ -129,7 +129,7 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //    forwardS();
     checkGradient();
     IPrinter::printSeperatorLine();
-    optimization1();
+    //optimization1();
 }
 
 void IProblem2H2D::forward()
@@ -212,11 +212,11 @@ void IProblem2H2D::checkGradient()
     ifunc.optimizeC = true;
     ifunc.optimizeO = true;
     
-    double hx, hy; hx = hy = 0.01;
-    unsigned Nx, Ny; Nx = Ny = 100;
+    double hx, hy; hx = hy = 0.001;
+    unsigned Nx, Ny; Nx = Ny = 1000;
     ifunc.mSpaceDimensionX = Dimension(hx, 0, Nx);
     ifunc.mSpaceDimensionY = Dimension(hy, 0, Ny);
-    ifunc.mTimeDimension = Dimension(0.01, 0, 100);
+    ifunc.mTimeDimension = Dimension(0.001, 0, 1000);
     
     ifunc.alpha0 = 1.0; ifunc.V0.resize(Ny+1, Nx+1, 0.0);
     ifunc.alpha1 = 1.0; ifunc.V1.resize(Ny+1, Nx+1, 0.0);
