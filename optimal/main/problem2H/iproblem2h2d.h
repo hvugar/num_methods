@@ -10,8 +10,8 @@
 #define METHOD_1
 #define METHOD_3
 
-#define _INFO_ROWS_ 4
-#define _INFO_COLS_ 4
+#define _INFO_ROWS_ 1
+#define _INFO_COLS_ 1
 
 using namespace std;
 

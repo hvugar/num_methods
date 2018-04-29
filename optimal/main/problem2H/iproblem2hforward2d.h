@@ -35,6 +35,7 @@ private:
     void calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
     void calculateMVD_D1(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
     void calculateMVD_D2(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
+    void calculateMVD_D3(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
 public:
     void calculateMVD_N(DoubleMatrix &u, DoubleMatrix &ut) const;
 
