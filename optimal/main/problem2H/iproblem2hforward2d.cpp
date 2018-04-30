@@ -661,9 +661,9 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
 
         if (l==2)
         {
-            for (unsigned int n=0; n<=N; n++)
+            for (unsigned int m=0; m<=M; m++)
             {
-                for (unsigned int m=0; m<=M; m++)
+                for (unsigned int n=0; n<=N; n++)
                 {
                     for (unsigned int si=0; si<qPointNodes.size(); si++)
                     {
@@ -2338,6 +2338,7 @@ void IProblem2HForward2D::calculateMVD_D3(DoubleMatrix &u, DoubleMatrix &ut, vec
 
         if (l==2)
         {
+            puts("------------------------------------------");
             for (unsigned int n=0; n<=N; n++)
             {
                 for (unsigned int m=0; m<=M; m++)
@@ -2420,6 +2421,7 @@ void IProblem2HForward2D::layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned
 
     //    if (ln%1000==0)
     //    {
+    printf("%4d %18.6f %18.6f\n", ln, u.min(), u.max());
     QPixmap px;
     visualizeMatrixHeat(u, u.min(), u.max(), px);
     char buffer[30] = {0};
