@@ -1907,8 +1907,8 @@ void IProblem2HForward2D::calculateMVD_D3(DoubleMatrix &u, DoubleMatrix &ut, vec
                 }
             }
 
-            u05[m][n] = u00[m][n] + hh*initial2(sn);// + 0.5*hh*hh*sum1;
-            u10[m][n] = u00[m][n] + ht*initial2(sn);// + 0.5*ht*ht*sum1;
+            u05[m][n] = u00[m][n] + hh*initial2(sn) + 0.5*hh*hh*sum1;
+            u10[m][n] = u00[m][n] + ht*initial2(sn) + 0.5*ht*ht*sum1;
         }
     }
 
@@ -2347,7 +2347,7 @@ void IProblem2HForward2D::calculateMVD_D3(DoubleMatrix &u, DoubleMatrix &ut, vec
                         const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
                         if (qNode.i == n && qNode.j == m)
                         {
-                           // u[m][n] += (mEquParameter.q[qNode.id] * qNode.w * (1.0/ht))*ht*ht;
+                            u[m][n] += (mEquParameter.q[qNode.id] * qNode.w * (1.0/ht))*ht*ht;
                         }
                     }
                 }

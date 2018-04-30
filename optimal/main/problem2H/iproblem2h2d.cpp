@@ -9,7 +9,7 @@ using namespace IProblem2H;
 void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, OptimizeParameter &o_prm0)
 {
     e_prm.a = 1.0;
-    e_prm.lambda = +0.01;
+    e_prm.lambda = +0.00;
 
     {
         e_prm.Ns = 2;
@@ -73,11 +73,11 @@ void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, Optimize
         o_prm.eta[0].x = 0.5000; o_prm.eta[0].y = 0.7000;
         o_prm.eta[1].x = 0.7000; o_prm.eta[1].y = 0.3000;
         
-        o_prm.k[0][0] = -2.1200; o_prm.k[0][1] = -2.2400;
-        o_prm.k[1][0] = -2.4500; o_prm.k[1][1] = -2.1800;
+        //o_prm.k[0][0] = -2.1200; o_prm.k[0][1] = -2.2400;
+        //o_prm.k[1][0] = -2.4500; o_prm.k[1][1] = -2.1800;
 
-        o_prm.z[0][0] = +0.5000; o_prm.z[0][1] = +0.4000;
-        o_prm.z[1][0] = +0.7000; o_prm.z[1][1] = +0.5000;
+        //o_prm.z[0][0] = +0.5000; o_prm.z[0][1] = +0.4000;
+        //o_prm.z[1][0] = +0.7000; o_prm.z[1][1] = +0.5000;
 
         o_prm0.k.resize(e_prm.Nc, e_prm.No, 0.0);
         o_prm0.z.resize(e_prm.Nc, e_prm.No, 0.0);
