@@ -79,22 +79,23 @@ void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, Optimize
         //o_prm.z[0][0] = +0.5000; o_prm.z[0][1] = +0.4000;
         //o_prm.z[1][0] = +0.7000; o_prm.z[1][1] = +0.5000;
 
-        o_prm0.k.resize(e_prm.Nc, e_prm.No, 0.0);
-        o_prm0.z.resize(e_prm.Nc, e_prm.No, 0.0);
+        o_prm0 = o_prm;
+//        o_prm0.k.resize(e_prm.Nc, e_prm.No, 0.0);
+//        o_prm0.z.resize(e_prm.Nc, e_prm.No, 0.0);
 
-        o_prm0.xi.resize(e_prm.No);
-        o_prm0.xi[0].x = 0.4000; o_prm0.xi[0].y = 0.4000;
-        o_prm0.xi[1].x = 0.6000; o_prm0.xi[1].y = 0.6000;
+//        o_prm0.xi.resize(e_prm.No);
+//        o_prm0.xi[0].x = 0.4000; o_prm0.xi[0].y = 0.4000;
+//        o_prm0.xi[1].x = 0.6000; o_prm0.xi[1].y = 0.6000;
 
-        o_prm0.eta.resize(e_prm.Nc);
-        o_prm0.eta[0].x = 0.3000; o_prm0.eta[0].y = 0.4000;
-        o_prm0.eta[1].x = 0.7000; o_prm0.eta[1].y = 0.3000;
+//        o_prm0.eta.resize(e_prm.Nc);
+//        o_prm0.eta[0].x = 0.3000; o_prm0.eta[0].y = 0.4000;
+//        o_prm0.eta[1].x = 0.7000; o_prm0.eta[1].y = 0.3000;
 
-        o_prm0.k[0][0] = -0.1200; o_prm0.k[0][1] = -0.2400;
-        o_prm0.k[1][0] = -0.4500; o_prm0.k[1][1] = -0.1800;
+//        o_prm0.k[0][0] = -0.1200; o_prm0.k[0][1] = -0.2400;
+//        o_prm0.k[1][0] = -0.4500; o_prm0.k[1][1] = -0.1800;
 
-        o_prm0.z[0][0] = +5.5000; o_prm0.z[0][1] = +4.4000;
-        o_prm0.z[1][0] = +4.7000; o_prm0.z[1][1] = +5.5000;
+//        o_prm0.z[0][0] = +5.5000; o_prm0.z[0][1] = +4.4000;
+//        o_prm0.z[1][0] = +4.7000; o_prm0.z[1][1] = +5.5000;
         /**/
     }
 
@@ -195,10 +196,10 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //IPrinter::printSeperatorLine();
     //optimization1();
 
-//    I[ 16]: 0.008742 0.193237 0.201978 R:0.00 e:0.000
-//    k: -2.1051  -2.2452  -2.4268  -2.1597 z:  0.4206   0.3160   0.6499   0.4554   o:0.2213 0.5460 0.6932 0.2622   c:0.3835 0.7027 0.6920 0.2659
-//    k: -0.0685   0.0835  -0.0275  -0.0163 z:  0.3326   0.3547   0.0990   0.0881   o:-0.0022 0.2011 -0.5434 -2.2939   c:0.0985 0.3902 -0.9991 2.6014
-//    0.000000 16
+    //    I[ 16]: 0.008742 0.193237 0.201978 R:0.00 e:0.000
+    //    k: -2.1051  -2.2452  -2.4268  -2.1597 z:  0.4206   0.3160   0.6499   0.4554   o:0.2213 0.5460 0.6932 0.2622   c:0.3835 0.7027 0.6920 0.2659
+    //    k: -0.0685   0.0835  -0.0275  -0.0163 z:  0.3326   0.3547   0.0990   0.0881   o:-0.0022 0.2011 -0.5434 -2.2939   c:0.0985 0.3902 -0.9991 2.6014
+    //    0.000000 16
 }
 
 void IProblem2H2D::forward()

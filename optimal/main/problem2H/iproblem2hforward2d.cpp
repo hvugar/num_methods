@@ -1907,8 +1907,8 @@ void IProblem2HForward2D::calculateMVD_D3(DoubleMatrix &u, DoubleMatrix &ut, vec
                 }
             }
 
-            u05[m][n] = u00[m][n] + hh*initial2(sn) + 0.5*hh*hh*sum1;
-            u10[m][n] = u00[m][n] + ht*initial2(sn) + 0.5*ht*ht*sum1;
+            u05[m][n] = u00[m][n] + hh*initial2(sn);// + 0.5*hh*hh*sum1;
+            u10[m][n] = u00[m][n] + ht*initial2(sn);// + 0.5*ht*ht*sum1;
         }
     }
 
@@ -2413,6 +2413,45 @@ void IProblem2HForward2D::calculateMVD_D3(DoubleMatrix &u, DoubleMatrix &ut, vec
     u15.clear();
 }
 
+double integral1(const DoubleMatrix &u)
+{
+    double hx = 0.01;
+    double hy = 0.01;
+    unsigned int N1 = 100;
+    unsigned int N2 = 100;
+
+    double sum0 = 0.0;
+
+    sum0 += 0.25*(u[0][0])   * (u[0][0]);
+    sum0 += 0.25*(u[0][N1])  * (u[0][N1]);
+    sum0 += 0.25*(u[N2][0])  * (u[N2][0]);
+    sum0 += 0.25*(u[N2][N1]) * (u[N2][N1]);
+
+    for (unsigned int n1=1; n1<=N1-1; n1++)
+    {
+        sum0 += 0.5*(u[0][n1]) *(u[0][n1]);
+        sum0 += 0.5*(u[N2][n1])*(u[N2][n1]);
+    }
+
+    for (unsigned int n2=1; n2<=N2-1; n2++)
+    {
+        sum0 += 0.5*(u[n2][0]) *(u[n2][0]);
+        sum0 += 0.5*(u[n2][N1])*(u[n2][N1]);
+    }
+
+    for (unsigned int n2 = 1; n2 <= N2-1; n2++)
+    {
+        for (unsigned int n1 = 1; n1 <= N1-1; n1++)
+        {
+            sum0 += (u[n2][n1])*(u[n2][n1]);
+        }
+    }
+
+    sum0 *= (hx*hy);
+
+    return sum0;
+}
+
 void IProblem2HForward2D::layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
     //    IPrinter::printSeperatorLine();
@@ -2421,7 +2460,7 @@ void IProblem2HForward2D::layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned
 
     //    if (ln%1000==0)
     //    {
-    printf("%4d %18.6f %18.6f\n", ln, u.min(), u.max());
+    printf("%4d %18.6f %18.6f %18.6f\n", ln, u.min(), u.max(), integral1(u));
     QPixmap px;
     visualizeMatrixHeat(u, u.min(), u.max(), px);
     char buffer[30] = {0};
