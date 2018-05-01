@@ -29,7 +29,8 @@ void BorderHyperbolic2D::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
     bp.ht = 0.005;
     bp.M  = 200;
     //bp.calculateMVD2(m3, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, bp.a1, bp.a2);
-    bp.calculateMVD3(m3, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, bp.a1, bp.a2, bp.lambda);
+    //bp.calculateMVD3(m3, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, bp.a1, bp.a2, bp.lambda);
+    bp.calculateMVD4(m3, bp.h1, bp.h2, bp.ht, bp.N1, bp.N2, bp.M, bp.a1, bp.a2, bp.lambda);
     IPrinter::printMatrix(14,10,m3);
     IPrinter::printSeperatorLine();
 }

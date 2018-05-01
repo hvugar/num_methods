@@ -67,7 +67,6 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     QGuiApplication app(argc, argv);
 
-
 //    DoubleVector a(11, -0.5); a[0] = 0.0;
 //    DoubleVector b(11, +2.000015);
 //    DoubleVector c(11, -0.5); c[10] = 0.0;
@@ -98,18 +97,12 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //    IPrinter::print(x);
 //    return 0.0;
 
-
-
-
-
-
-
-    //BorderHyperbolic2D::Main(argc, argv);
+    BorderHyperbolic2D::Main(argc, argv);
     //BorderHyperbolic2DN::Main(argc, argv);
     //srand(time(NULL));
 
     //Problem2Article::Main(argc, argv);
-    IProblem2H::IProblem2H2D::Main(argc, argv);
+    //IProblem2H::IProblem2H2D::Main(argc, argv);
 
     //LinearEquation::func1(a, b, c, d, e, x, N);
 

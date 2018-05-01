@@ -1758,7 +1758,7 @@ void IProblem2HForward2D::calculateMVD_D3(DoubleMatrix &u, DoubleMatrix &ut, vec
     double p_aa_htht__hyhy___lambda_ht = +2.0 + 2.0*(a*a*hh*hh)/(hy*hy) + (11.0/6.0)*(lambda*hh);
     double p_aa_htht__hxhx_h = +(a*a*hh*hh)/(hx*hx);
 
-    double lambda_hh__2 = 0.5*lambda*hh;
+    double lambda_hh__6 = (lambda*hh)/6.0;
     double htht_h = hh*hh;
 
     double aa__hxhx = (a*a)/(hx*hx);
@@ -1987,7 +1987,7 @@ void IProblem2HForward2D::calculateMVD_D3(DoubleMatrix &u, DoubleMatrix &ut, vec
                 if (m == M)     dx[n-1] = p_aa_htht__hyhy_h*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
 
                 dx[n-1] += (5.0*u10[m][n] - 4.0*u05[m][n] + u00[m][n]);
-                dx[n-1] += lambda_hh__2*(6.0*u10[m][n] - 3.0*u05[m][n] + 8.0*u00[m][n]);
+                dx[n-1] += lambda_hh__6*(18.0*u10[m][n] - 9.0*u05[m][n] + 2.0*u00[m][n]);
             }
 
             dx[0]   -= m_aa_htht__hxhx_h * u15[m][0];
@@ -2019,7 +2019,7 @@ void IProblem2HForward2D::calculateMVD_D3(DoubleMatrix &u, DoubleMatrix &ut, vec
                     if (m == M)     dx[n-1] = p_aa_htht__hyhy_h*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
 
                     dx[n-1] += (5.0*u10[m][n] - 4.0*u05[m][n] + u00[m][n]);
-                    dx[n-1] += lambda_hh__2*(6.0*u10[m][n] - 3.0*u05[m][n] + 8.0*u00[m][n]);
+                    dx[n-1] += lambda_hh__6*(18.0*u10[m][n] - 9.0*u05[m][n] + 2.0*u00[m][n]);
 
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int cni=0; cni<cntDeltaNodes.size(); cni++)
@@ -2080,7 +2080,7 @@ void IProblem2HForward2D::calculateMVD_D3(DoubleMatrix &u, DoubleMatrix &ut, vec
                     if (m==M)       d1[offset+(n-1)] = p_aa_htht__hyhy_h*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
 
                     d1[offset+(n-1)] += (5.0*u10[m][n] - 4.0*u05[m][n] + u00[m][n]);
-                    d1[offset+(n-1)] += lambda_hh__2*(6.0*u10[m][n] - 3.0*u05[m][n] + 8.0*u00[m][n]);
+                    d1[offset+(n-1)] += lambda_hh__6*(18.0*u10[m][n] - 9.0*u05[m][n] + 2.0*u00[m][n]);
 
                     a1[offset+(n-1)] = m_aa_htht__hxhx_h;
                     b1[offset+(n-1)] = p_aa_htht__hxhx___lambda_ht;
@@ -2171,7 +2171,7 @@ void IProblem2HForward2D::calculateMVD_D3(DoubleMatrix &u, DoubleMatrix &ut, vec
                 if (n==N)       dy[m-1] = p_aa_htht__hxhx_h*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
 
                 dy[m-1] += (5.0*u15[m][n] - 4.0*u10[m][n] + u05[m][n]);
-                dy[m-1] += lambda_hh__2*(6.0*u15[m][n] - 3.0*u10[m][n] + 8.0*u05[m][n]);
+                dy[m-1] += lambda_hh__6*(18.0*u10[m][n] - 9.0*u05[m][n] + 2.0*u00[m][n]);
             }
 
             dy[0]   -= m_aa_htht__hyhy_h * u[0][n];
@@ -2203,7 +2203,7 @@ void IProblem2HForward2D::calculateMVD_D3(DoubleMatrix &u, DoubleMatrix &ut, vec
                     if (n==N)       dy[m-1] = p_aa_htht__hxhx_h*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
 
                     dy[m-1] += (5.0*u15[m][n] - 4.0*u10[m][n] + u05[m][n]);
-                    dy[m-1] += lambda_hh__2*(6.0*u15[m][n] - 3.0*u10[m][n] + 8.0*u05[m][n]);
+                    dy[m-1] += lambda_hh__6*(18.0*u10[m][n] - 9.0*u05[m][n] + 2.0*u00[m][n]);
 
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int cni=0; cni<cntDeltaNodes.size(); cni++)
@@ -2263,7 +2263,7 @@ void IProblem2HForward2D::calculateMVD_D3(DoubleMatrix &u, DoubleMatrix &ut, vec
                     if (n==N)       d2[offset+(m-1)] = p_aa_htht__hxhx_h*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
 
                     d2[offset+(m-1)] += (5.0*u15[m][n] - 4.0*u10[m][n] + u05[m][n]);
-                    d2[offset+(m-1)] += lambda_hh__2*(6.0*u15[m][n] - 3.0*u10[m][n] + 8.0*u05[m][n]);
+                    d2[offset+(m-1)] += lambda_hh__6*(18.0*u10[m][n] - 9.0*u05[m][n] + 2.0*u00[m][n]);
 
                     a2[offset+(m-1)] = m_aa_htht__hyhy_h;
                     b2[offset+(m-1)] = p_aa_htht__hyhy___lambda_ht;

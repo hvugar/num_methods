@@ -1650,3 +1650,201 @@ void IHyperbolicEquation2D::calculateMVD3(DoubleMatrix &u, double hx, double hy,
     dd2.clear();
     rx2.clear();
 }
+
+void IHyperbolicEquation2D::calculateMVD4(DoubleMatrix &u, double hx, double hy, double ht, unsigned int Nx, unsigned Ny, unsigned int M, double a1, double a2, double lambda) const
+{
+    u.resize(Ny+1, Nx+1);
+
+    DoubleMatrix u00(Ny+1, Nx+1);
+    DoubleMatrix u05(Ny+1, Nx+1);
+    DoubleMatrix u10(Ny+1, Nx+1);
+    DoubleMatrix u15(Ny+1, Nx+1);
+
+    DoubleVector da1(Nx-1);
+    DoubleVector db1(Nx-1);
+    DoubleVector dc1(Nx-1);
+    DoubleVector dd1(Nx-1);
+    DoubleVector rx1(Nx-1);
+
+    DoubleVector da2(Ny-1);
+    DoubleVector db2(Ny-1);
+    DoubleVector dc2(Ny-1);
+    DoubleVector dd2(Ny-1);
+    DoubleVector rx2(Ny-1);
+
+    double m_a1a1_htht__hxhx_h = -(a1*a1*ht*ht)/(hx*hx);
+    double p_a1a1_htht__hxhx___lambda_ht = +8.0 + 2.0*(a1*a1*ht*ht)/(hx*hx) + (11.0/3.0)*lambda*ht;
+    double p_a2a2_htht__hyhy_h = +(a2*a2*ht*ht)/(hy*hy);
+
+    double m_aa_htht__hyhy_h = -(a2*a2*ht*ht)/(hy*hy);
+    double p_aa_htht__hyhy___lambda_ht = +8.0 + 2.0*(a2*a2*ht*ht)/(hy*hy) + (11.0/3.0)*lambda*ht;
+    double p_a2a2_htht__hxhx_h = +(a1*a1*ht*ht)/(hx*hx);
+
+    double lambda_ht = (11.0/3.0)*lambda*ht;
+
+    double a1a1__hxhx = ((a1*a1)/(hx*hx));
+    double a2a2__hyhy = ((a2*a2)/(hy*hy));
+
+    //------------------------------------- initial conditions -------------------------------------//
+    for (unsigned int j=0; j<=Ny; j++)
+    {
+        for (unsigned int i=0; i<=Nx; i++)
+        {
+            u00[j][i] = initial1(i, j);
+        }
+    }
+
+    for (unsigned int j=0; j<=Ny; j++)
+    {
+        for (unsigned int i=0; i<=Nx; i++)
+        {
+            double sum = f(i,j,0);
+
+            if (i==0)       sum += a1a1__hxhx*(u00[j][i]-2.0*u00[j][i+1]+u00[j][i+2]);
+            else if (i==Nx) sum += a1a1__hxhx*(u00[j][i-2]-2.0*u00[j][i-1]+u00[j][i]);
+            else            sum += a1a1__hxhx*(u00[j][i-1]-2.0*u00[j][i]+u00[j][i+1]);
+
+            if (j==0)       sum += a2a2__hyhy*(u00[j][i]-2.0*u00[j+1][i]+u00[j+2][i]);
+            else if (j==Ny) sum += a2a2__hyhy*(u00[j-2][i]-2.0*u00[j-1][i]+u00[j][i]);
+            else            sum += a2a2__hyhy*(u00[j-1][i]-2.0*u00[j][i]+u00[j+1][i]);
+
+            sum -= lambda*initial2(i, j);
+
+            u05[j][i] = u00[j][i] + ht*initial2(i, j)*0.5 + sum*ht*ht*0.125;
+            u10[j][i] = u00[j][i] + ht*initial2(i, j)     + sum*ht*ht*0.500;
+        }
+    }
+
+    //    IPrinter::printMatrix(14,10,u00);
+    //    IPrinter::printSeperatorLine();
+    //    IPrinter::printMatrix(14,10,u05);
+    //    IPrinter::printSeperatorLine();
+    //    IPrinter::printMatrix(14,10,u10);
+    //    IPrinter::printSeperatorLine();
+
+    for (unsigned int k=2; k<=M; k++)
+    {
+        // Approximation to x direction
+
+        double t = k*ht-0.5*ht;
+        double t2 = t*t;
+
+        for (unsigned int i=0; i<=Nx; i++)
+        {
+            u15[0][i]  = boundary(i, 0, 0)+t2; //boundary(i, 0, k);
+            u15[Ny][i] = boundary(i, Ny, 0)+t2;//boundary(i, Ny, k);
+        }
+
+        for (unsigned int j=1; j<Ny; j++)
+        {
+            u15[j][0]  = boundary(0, j, 0)+t2;//boundary(0, j, k);
+            u15[j][Nx] = boundary(Nx, j, 0)+t2;//boundary(Nx, j, k);
+
+            for (unsigned int i=1; i<Nx; i++)
+            {
+                da1[i-1] = m_a1a1_htht__hxhx_h;
+                db1[i-1] = p_a1a1_htht__hxhx___lambda_ht;
+                dc1[i-1] = m_a1a1_htht__hxhx_h;
+
+                dd1[i-1] = p_a2a2_htht__hyhy_h*(u10[j-1][i] - 2.0*u10[j][i] + u10[j+1][i]);
+                dd1[i-1] += 4.0*(5.0*u10[j][i] - 4.0*u05[j][i] + u00[j][i]);
+                dd1[i-1] += lambda_ht*(18.0*u10[j][i] - 9.0*u05[j][i] + 2.0*u00[j][i]);
+                dd1[i-1] += ht*ht*(f(i, j, 0) + 2.0*t*lambda);
+            }
+
+            da1[0]     = 0.0;
+            dc1[Nx-2]  = 0.0;
+
+            dd1[0]    -= m_a1a1_htht__hxhx_h * u15[j][0];
+            dd1[Nx-2] -= m_a1a1_htht__hxhx_h * u15[j][Nx];
+
+            tomasAlgorithm(da1.data(), db1.data(), dc1.data(), dd1.data(), rx1.data(), rx1.length());
+
+            for (unsigned int i=1; i<Nx; i++)
+            {
+                u15[j][i] = rx1[i-1];
+            }
+        }
+
+        // Approximation to y direction
+
+        t = k*ht;
+        t2 = t*t;
+
+        for (unsigned int j=0; j<=Ny; j++)
+        {
+            u[j][0]  = boundary(0, j, 0)+t2;
+            u[j][Nx] = boundary(Nx, j, 0)+t2;
+        }
+
+        for (unsigned int i=1; i<Nx; i++)
+        {
+            u[0][i]  = boundary(i, 0, 0)+t2;
+            u[Ny][i] = boundary(i, Ny, 0)+t2;
+
+            for (unsigned int j=1; j<Ny; j++)
+            {
+                da2[j-1] = m_aa_htht__hyhy_h;
+                db2[j-1] = p_aa_htht__hyhy___lambda_ht;
+                dc2[j-1] = m_aa_htht__hyhy_h;
+
+                dd2[i-1] = p_a2a2_htht__hxhx_h*(u15[j-1][i] - 2.0*u15[j][i] + u15[j+1][i]);
+                dd2[i-1] += 4.0*(5.0*u15[j][i] - 4.0*u10[j][i] + u05[j][i]);
+                dd2[i-1] += lambda_ht*(18.0*u15[j][i] - 9.0*u10[j][i] + 2.0*u05[j][i]);
+                dd2[i-1] += ht*ht*(f(i, j, 0) + 2.0*t*lambda);
+            }
+
+            da2[0]     = 0.0;
+            dc2[Ny-2]  = 0.0;
+
+            dd2[0]    -= m_aa_htht__hyhy_h * u[0][i];
+            dd2[Ny-2] -= m_aa_htht__hyhy_h * u[Ny][i];
+
+            tomasAlgorithm(da2.data(), db2.data(), dc2.data(), dd2.data(), rx2.data(), rx2.length());
+
+            for (unsigned int j=1; j<Ny; j++)
+            {
+                u[j][i] = rx2[j-1];
+            }
+        }
+
+//        if (k==M)
+//        {
+//            DoubleMatrix ut;
+//            ut.resize(Ny+1, Nx+1);
+//            for (unsigned int j=0; j<=Ny; j++)
+//            {
+//                for (unsigned int i=0; i<=Nx; i++)
+//                {
+//                    ut[j][i] = (3.0*u[j][i]-4.0*u10[j][i]+u00[j][i])/(2.0*ht);
+//                }
+//            }
+//            IPrinter::printSeperatorLine();
+//            IPrinter::printMatrix(14,10,ut);
+//            IPrinter::printSeperatorLine();
+//            ut.clear();
+//        }
+
+        for (unsigned int j=0; j<=Ny; j++)
+        {
+            for (unsigned int i=0; i<=Nx; i++)
+            {
+                u00[j][i] = u10[j][i];
+                u10[j][i] = u[j][i];
+                u05[j][i] = u15[j][i];
+            }
+        }
+    }
+
+    da1.clear();
+    db1.clear();
+    dc1.clear();
+    dd1.clear();
+    rx1.clear();
+
+    da2.clear();
+    db2.clear();
+    dc2.clear();
+    dd2.clear();
+    rx2.clear();
+}

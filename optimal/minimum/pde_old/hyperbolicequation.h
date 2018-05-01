@@ -42,6 +42,7 @@ public:
 
     virtual void calculateMVD2(DoubleMatrix &u, double hx, double hy, double ht, unsigned int Nx, unsigned Ny, unsigned int M, double a1=1.0, double a2=1.0) const;
     virtual void calculateMVD3(DoubleMatrix &u, double hx, double hy, double ht, unsigned int Nx, unsigned Ny, unsigned int M, double a1=1.0, double a2=1.0, double lambda=0.01) const;
+    virtual void calculateMVD4(DoubleMatrix &u, double hx, double hy, double ht, unsigned int Nx, unsigned Ny, unsigned int M, double a1=1.0, double a2=1.0, double lambda=0.01) const;
 };
 
 class MINIMUMSHARED_EXPORT IBackwardHyperbolicEquation2D  : public IPDEInitialBoundaryValueProblem
