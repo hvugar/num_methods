@@ -73,11 +73,11 @@ void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, Optimize
         o_prm.eta[0].x = 0.5000; o_prm.eta[0].y = 0.7000;
         o_prm.eta[1].x = 0.7000; o_prm.eta[1].y = 0.3000;
         
-        //o_prm.k[0][0] = -2.1200; o_prm.k[0][1] = -2.2400;
-        //o_prm.k[1][0] = -2.4500; o_prm.k[1][1] = -2.1800;
+        o_prm.k[0][0] = -0.1200; o_prm.k[0][1] = -0.2400;
+        o_prm.k[1][0] = -0.4500; o_prm.k[1][1] = -0.1800;
 
-        //o_prm.z[0][0] = +0.5000; o_prm.z[0][1] = +0.4000;
-        //o_prm.z[1][0] = +0.7000; o_prm.z[1][1] = +0.5000;
+        o_prm.z[0][0] = +0.5000; o_prm.z[0][1] = +0.4000;
+        o_prm.z[1][0] = +0.7000; o_prm.z[1][1] = +0.5000;
 
         o_prm0 = o_prm;
 //        o_prm0.k.resize(e_prm.Nc, e_prm.No, 0.0);
@@ -286,6 +286,7 @@ void IProblem2H2D::checkGradient()
     unsigned Nx, Ny; Nx = Ny = 100;
     ifunc.mSpaceDimensionX = Dimension(hx, 0, Nx);
     ifunc.mSpaceDimensionY = Dimension(hy, 0, Ny);
+    //ifunc.mTimeDimension = Dimension(0.01, 0, 100);
     ifunc.mTimeDimension = Dimension(0.01, 0, 100);
     
     ifunc.alpha0 = 1.0; ifunc.V0.resize(Ny+1, Nx+1, 0.0);
@@ -317,8 +318,7 @@ void IProblem2H2D::checkGradient()
         DoubleVector ag(pv.length());
         
         double functional = ifunc.fx(pv);
-        printf("Functional: %f\n", functional);
-        return;
+        printf("Functional: %f\n", functional);return;
         puts("Calculating gradients....");
         ifunc.gradient(pv, ag);
         puts("Gradients are calculated.");
