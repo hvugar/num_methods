@@ -692,28 +692,44 @@ void IProblem2HBackward2D::add2Info(const DoubleMatrix &p, vector<ExtendedSpaceN
         for (unsigned int i=0; i<mEquParameter.Nc; i++)
         {
             ExtendedSpaceNode2DH &pi = info[i];
-            pi.u[ln] = p[pi.j][pi.i];
+
+            unsigned int rx = (unsigned int) ceil(pi.x*spaceDimension(Dimension::DimensionX).sizeN());
+            unsigned int ry = (unsigned int) ceil(pi.y*spaceDimension(Dimension::DimensionY).sizeN());
+
+            double hx1 = fabs(pi.x-rx*hx);
+            double hx2 = fabs(hx-hx1);
+            double hy1 = fabs(pi.y-ry*hy);
+            double hy2 = fabs(hy-hy1);
+
+            pi.u[ln] = p[ry+0][rx+0]*(1.0-hx1/hx)*(1.0-hy1/hy)+
+                       p[ry+1][rx+0]*(1.0-hx1/hx)*(1.0-hy2/hy)+
+                       p[ry+1][rx+1]*(1.0-hx2/hx)*(1.0-hy2/hy)+
+                       p[ry+0][rx+1]*(1.0-hx2/hx)*(1.0-hy1/hy);
+
+            //pi.u[ln] = p[pi.j][pi.i];
+
             pi.ux[ln] = (p[pi.j][pi.i+1] - p[pi.j][pi.i-1])/(2.0*hx);
             pi.uy[ln] = (p[pi.j+1][pi.i] - p[pi.j-1][pi.i])/(2.0*hy);
+
             //pi.ux[ln] = (p[pi.j][pi.i-2]-8.0*p[pi.j][pi.i-1]+8.0*p[pi.j][pi.i+1]-p[pi.j][pi.i+2])/(12.0*hx);
             //pi.uy[ln] = (p[pi.j-2][pi.i]-8.0*p[pi.j-1][pi.i]+8.0*p[pi.j+1][pi.i]-p[pi.j+2][pi.i])/(12.0*hy);
         }
     }
     else
     {
-        for (unsigned int i=0; i<mEquParameter.Nc; i++)
-        {
-            ExtendedSpaceNode2DH &pi = info[i];
-            for (unsigned int r=0; r<rows; r++)
-            {
-                for (unsigned int c=0; c<cols; c++)
-                {
-                    unsigned int x = pi.wi[r][c].i;
-                    unsigned int y = pi.wi[r][c].j;
-                    pi.wi[r][c].u[ln] = p[y][x];
-                }
-            }
-        }
+//        for (unsigned int i=0; i<mEquParameter.Nc; i++)
+//        {
+//            ExtendedSpaceNode2DH &pi = info[i];
+//            for (unsigned int r=0; r<rows; r++)
+//            {
+//                for (unsigned int c=0; c<cols; c++)
+//                {
+//                    unsigned int x = pi.wi[r][c].i;
+//                    unsigned int y = pi.wi[r][c].j;
+//                    pi.wi[r][c].u[ln] = p[y][x];
+//                }
+//            }
+//        }
     }
 }
 

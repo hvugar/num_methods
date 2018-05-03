@@ -2598,28 +2598,44 @@ void IProblem2HForward2D::add2Info(const DoubleMatrix &u, vector<ExtendedSpaceNo
         for (unsigned int j=0; j<mEquParameter.No; j++)
         {
             ExtendedSpaceNode2DH &ui = info[j];
-            ui.u[ln] = u[ui.j][ui.i];
+
+            unsigned int rx = (unsigned int) ceil(ui.x*spaceDimension(Dimension::DimensionX).sizeN());
+            unsigned int ry = (unsigned int) ceil(ui.y*spaceDimension(Dimension::DimensionY).sizeN());
+
+            double hx1 = fabs(ui.x-rx*hx);
+            double hx2 = fabs(hx-hx1);
+            double hy1 = fabs(ui.y-ry*hy);
+            double hy2 = fabs(hy-hy1);
+
+            ui.u[ln] = u[ry+0][rx+0]*(1.0-hx1/hx)*(1.0-hy1/hy)+
+                       u[ry+1][rx+0]*(1.0-hx1/hx)*(1.0-hy2/hy)+
+                       u[ry+1][rx+1]*(1.0-hx2/hx)*(1.0-hy2/hy)+
+                       u[ry+0][rx+1]*(1.0-hx2/hx)*(1.0-hy1/hy);
+
+            //ui.u[ln] = u[ui.j][ui.i];
+
             ui.ux[ln] = (u[ui.j][ui.i+1] - u[ui.j][ui.i-1])/(2.0*hx);
             ui.uy[ln] = (u[ui.j+1][ui.i] - u[ui.j-1][ui.i])/(2.0*hy);
+
             //ui.ux[ln] = (u[ui.j][ui.i-2]-8.0*u[ui.j][ui.i-1]+8.0*u[ui.j][ui.i+1]-u[ui.j][ui.i+2])/(12.0*hx);
             //ui.uy[ln] = (u[ui.j-2][ui.i]-8.0*u[ui.j-1][ui.i]+8.0*u[ui.j+1][ui.i]-u[ui.j+2][ui.i])/(12.0*hy);
         }
     }
     else
     {
-        for (unsigned int j=0; j<mEquParameter.No; j++)
-        {
-            ExtendedSpaceNode2DH &ui = info[j];
-            for (unsigned int r=0; r<rows; r++)
-            {
-                for (unsigned int c=0; c<cols; c++)
-                {
-                    unsigned int x = ui.wi[r][c].i;
-                    unsigned int y = ui.wi[r][c].j;
-                    ui.wi[r][c].u[ln] = u[y][x];
-                }
-            }
-        }
+//        for (unsigned int j=0; j<mEquParameter.No; j++)
+//        {
+//            ExtendedSpaceNode2DH &ui = info[j];
+//            for (unsigned int r=0; r<rows; r++)
+//            {
+//                for (unsigned int c=0; c<cols; c++)
+//                {
+//                    unsigned int x = ui.wi[r][c].i;
+//                    unsigned int y = ui.wi[r][c].j;
+//                    ui.wi[r][c].u[ln] = u[y][x];
+//                }
+//            }
+//        }
     }
 }
 

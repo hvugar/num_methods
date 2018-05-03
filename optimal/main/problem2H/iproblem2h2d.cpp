@@ -22,25 +22,25 @@ void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, Optimize
     }
     
     {
-        e_prm.Nc = 2;
-        e_prm.No = 2;
+//        e_prm.Nc = 2;
+//        e_prm.No = 2;
 
-        o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
-        o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
-        o_prm.xi.resize(e_prm.No);
-        o_prm.eta.resize(e_prm.Nc);
+//        o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+//        o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+//        o_prm.xi.resize(e_prm.No);
+//        o_prm.eta.resize(e_prm.Nc);
         
-        o_prm.k[0][0] = -0.9186; o_prm.k[0][1] = -0.9051; o_prm.k[1][0] = -1.0169; o_prm.k[1][1] = -1.0221;
-        o_prm.z[0][0] = +0.3232; o_prm.z[0][1] = +0.2617; o_prm.z[1][0] = +0.2469; o_prm.z[1][1] = +0.0996;
-        o_prm.xi[0].x = 0.2078; o_prm.xi[0].y = 0.2080; o_prm.xi[1].x = 0.8455; o_prm.xi[1].y = 0.8491;
-        o_prm.eta[0].x = 0.7623; o_prm.eta[0].y = 0.2708; o_prm.eta[1].x = 0.2636; o_prm.eta[1].y = 0.7636;
+//        o_prm.k[0][0] = -0.9186; o_prm.k[0][1] = -0.9051; o_prm.k[1][0] = -1.0169; o_prm.k[1][1] = -1.0221;
+//        o_prm.z[0][0] = +0.3232; o_prm.z[0][1] = +0.2617; o_prm.z[1][0] = +0.2469; o_prm.z[1][1] = +0.0996;
+//        o_prm.xi[0].x = 0.2078; o_prm.xi[0].y = 0.2080; o_prm.xi[1].x = 0.8455; o_prm.xi[1].y = 0.8491;
+//        o_prm.eta[0].x = 0.7623; o_prm.eta[0].y = 0.2708; o_prm.eta[1].x = 0.2636; o_prm.eta[1].y = 0.7636;
         
-        o_prm.k[0][0] = -1.7000; o_prm.k[0][1] = -1.3000; o_prm.k[1][0] = -1.6000; o_prm.k[1][1] = -1.5000;
-        o_prm.z[0][0] = +0.0000; o_prm.z[0][1] = +0.0000; o_prm.z[1][0] = +0.0000; o_prm.z[1][1] = +0.0000;
-        o_prm.xi[0].x = +0.4000; o_prm.xi[0].y = +0.6000; o_prm.xi[1].x = 0.9000; o_prm.xi[1].y = 0.2000;
-        o_prm.eta[0].x = +0.2000; o_prm.eta[0].y = +0.4500; o_prm.eta[1].x = 0.6500; o_prm.eta[1].y = 0.7500;
+//        o_prm.k[0][0] = -1.7000; o_prm.k[0][1] = -1.3000; o_prm.k[1][0] = -1.6000; o_prm.k[1][1] = -1.5000;
+//        o_prm.z[0][0] = +0.0000; o_prm.z[0][1] = +0.0000; o_prm.z[1][0] = +0.0000; o_prm.z[1][1] = +0.0000;
+//        o_prm.xi[0].x = +0.4000; o_prm.xi[0].y = +0.6000; o_prm.xi[1].x = 0.9000; o_prm.xi[1].y = 0.2000;
+//        o_prm.eta[0].x = +0.2000; o_prm.eta[0].y = +0.4500; o_prm.eta[1].x = 0.6500; o_prm.eta[1].y = 0.7500;
         
-        o_prm0 = o_prm;
+//        o_prm0 = o_prm;
     }
     
     {
@@ -60,27 +60,27 @@ void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, Optimize
     
     {
         /**/
-//        e_prm.No = 2;
-//        e_prm.Nc = 2;
+        e_prm.No = 2;
+        e_prm.Nc = 2;
         
-//        o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
-//        o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
-//        o_prm.xi.resize(e_prm.No);
-//        o_prm.eta.resize(e_prm.Nc);
+        o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+        o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+        o_prm.xi.resize(e_prm.No);
+        o_prm.eta.resize(e_prm.Nc);
 
-//        o_prm.xi[0].x = 0.3000; o_prm.xi[0].y = 0.8000;
-//        o_prm.xi[1].x = 0.6000; o_prm.xi[1].y = 0.4000;
+        o_prm.xi[0].x = 0.3000; o_prm.xi[0].y = 0.8000;
+        o_prm.xi[1].x = 0.6000; o_prm.xi[1].y = 0.4000;
         
-//        o_prm.eta[0].x = 0.5000; o_prm.eta[0].y = 0.7000;
-//        o_prm.eta[1].x = 0.7000; o_prm.eta[1].y = 0.3000;
+        o_prm.eta[0].x = 0.5000; o_prm.eta[0].y = 0.7000;
+        o_prm.eta[1].x = 0.7000; o_prm.eta[1].y = 0.3000;
         
-//        o_prm.k[0][0] = -0.1200; o_prm.k[0][1] = -0.2400;
-//        o_prm.k[1][0] = -0.4500; o_prm.k[1][1] = -0.1800;
+        o_prm.k[0][0] = -0.1200; o_prm.k[0][1] = -0.2400;
+        o_prm.k[1][0] = -0.4500; o_prm.k[1][1] = -0.1800;
 
-//        o_prm.z[0][0] = +0.5000; o_prm.z[0][1] = +0.4000;
-//        o_prm.z[1][0] = +0.7000; o_prm.z[1][1] = +0.5000;
+        o_prm.z[0][0] = +0.5000; o_prm.z[0][1] = +0.4000;
+        o_prm.z[1][0] = +0.7000; o_prm.z[1][1] = +0.5000;
 
-//        o_prm0 = o_prm;
+        o_prm0 = o_prm;
         //        o_prm0.k.resize(e_prm.Nc, e_prm.No, 0.0);
         //        o_prm0.z.resize(e_prm.Nc, e_prm.No, 0.0);
 
@@ -289,7 +289,7 @@ void IProblem2H2D::checkGradient()
     ifunc.mSpaceDimensionY = Dimension(hy, 0, Ny);
     //ifunc.mTimeDimension = Dimension(0.01, 0, 100);
     //ifunc.mTimeDimension = Dimension(0.005, 0, 200);
-    ifunc.mTimeDimension = Dimension(0.001, 0, 1000);
+    ifunc.mTimeDimension = Dimension(0.01, 0, 100);
     
     ifunc.alpha0 = 1.0; ifunc.V0.resize(Ny+1, Nx+1, 0.0);
     ifunc.alpha1 = 1.0; ifunc.V1.resize(Ny+1, Nx+1, 0.0);
@@ -339,12 +339,16 @@ void IProblem2H2D::checkGradient()
         IGradient::Gradient(&ifunc, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
         puts("Numerical gradients are calculated.");
         
-        //    puts("Calculating numerical gradients.... hx=0.001");
-        //    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 0*e_prm.Nc*e_prm.No,            1*e_prm.Nc*e_prm.No-1);
-        //    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 1*e_prm.Nc*e_prm.No,            2*e_prm.Nc*e_prm.No-1);
-        //    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+0*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-        //    IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-        //    puts("Numerical gradients are calculated.");
+        puts("Calculating numerical gradients.... hx=0.001");
+        puts("*** Calculating numerical gradients for k...... dh=0.001");
+        IGradient::Gradient(&ifunc, 0.001, pv, ng2, 0*e_prm.Nc*e_prm.No,            1*e_prm.Nc*e_prm.No-1);
+        puts("*** Calculating numerical gradients for z...... dh=0.001");
+        IGradient::Gradient(&ifunc, 0.001, pv, ng2, 1*e_prm.Nc*e_prm.No,            2*e_prm.Nc*e_prm.No-1);
+        puts("*** Calculating numerical gradients for xi..... dh=0.001");
+        IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+0*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
+        puts("*** Calculating numerical gradients for eta.... dh=0.001");
+        IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
+        puts("Numerical gradients are calculated.");
         
         //k------------------------------------------------------//
         IPrinter::printSeperatorLine("k");
