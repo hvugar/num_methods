@@ -56,165 +56,166 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
     u.clear(); u.resize(M+1, N+1);
 
     //----------------------------------------------------------------------------------------------//
-    std::vector<ExtendedSpacePointNode> obsPointNodes;
-    for (unsigned int j=0; j<No; j++) IProblem2H2D::distributeDelta(mOptParameter.xi[j], obsPointNodes, j, dimX, dimY, 4);
+    //std::vector<ExtendedSpacePointNode> obsPointNodes, cntDeltaNodes, qPointNodes;
+    //for (unsigned int j=0; j<No; j++) IProblem2H2D::distributeDelta(mOptParameter.xi[j], obsPointNodes, j, dimX, dimY, 4);
+    //for (unsigned int i=0; i<Nc; i++) IProblem2H2D::distributeDelta(mOptParameter.eta[i], cntDeltaNodes, i, dimX, dimY, 4);
+    //for (unsigned int s=0; s<Ns; s++) IProblem2H2D::distributeDelta(mEquParameter.theta[s], qPointNodes, s, dimX, dimY, 4);
 
-    std::vector<ExtendedSpacePointNode> cntDeltaNodes;
-    for (unsigned int i=0; i<Nc; i++) IProblem2H2D::distributeDelta(mOptParameter.eta[i], cntDeltaNodes, i, dimX, dimY, 4);
-
-    std::vector<ExtendedSpacePointNode> qPointNodes;
-    for (unsigned int s=0; s<Ns; s++) IProblem2H2D::distributeDelta(mEquParameter.theta[s], qPointNodes, s, dimX, dimY, 4);
+    std::vector<ExtendedSpacePointNode> obsPointNodes, cntDeltaNodes, qPointNodes;
+    extendPoints(obsPointNodes, cntDeltaNodes, qPointNodes, dimX, dimY);
 
     SpaceNodePDE sn;
 
     //----------------------------------------------------------------------------------------------//
-    std::vector<unsigned int> rows0, rows1, rows2;
-    for (unsigned int m=1; m<=M-1; m++)
-    {
-        bool found1 = false;
-        bool found2 = false;
-        for (unsigned int i=0; i<cntDeltaNodes.size(); i++)
-        {
-            const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(i);
+//    std::vector<unsigned int> rows0, rows1, rows2;
+//    for (unsigned int m=1; m<=M-1; m++)
+//    {
+//        bool found1 = false;
+//        bool found2 = false;
+//        for (unsigned int i=0; i<cntDeltaNodes.size(); i++)
+//        {
+//            const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(i);
 
-            if (cdn.j == m)
-            {
-                found1 = true;
-                for (unsigned int j=0; j<obsPointNodes.size(); j++)
-                {
-                    const ExtendedSpacePointNode &opn = obsPointNodes.at(j);
-                    if (opn.j == m)
-                    {
-                        found2 = true;
-                        break;
-                    }
-                }
-                break;
-            }
-        }
-        if (found1 == false && found2 == false) if(std::find(rows0.begin(), rows0.end(), m) == rows0.end()) rows0.push_back(m);
-        if (found1 == true  && found2 == true)  if(std::find(rows2.begin(), rows2.end(), m) == rows2.end()) rows2.push_back(m);
-        if (found1 == true)                     if(std::find(rows1.begin(), rows1.end(), m) == rows1.end()) rows1.push_back(m);
-    }
-    //printf("%d %d %d\n", rows0.size(), rows1.size(), rows2.size());
+//            if (cdn.j == m)
+//            {
+//                found1 = true;
+//                for (unsigned int j=0; j<obsPointNodes.size(); j++)
+//                {
+//                    const ExtendedSpacePointNode &opn = obsPointNodes.at(j);
+//                    if (opn.j == m)
+//                    {
+//                        found2 = true;
+//                        break;
+//                    }
+//                }
+//                break;
+//            }
+//        }
+//        if (found1 == false && found2 == false) if(std::find(rows0.begin(), rows0.end(), m) == rows0.end()) rows0.push_back(m);
+//        if (found1 == true  && found2 == true)  if(std::find(rows2.begin(), rows2.end(), m) == rows2.end()) rows2.push_back(m);
+//        if (found1 == true)                     if(std::find(rows1.begin(), rows1.end(), m) == rows1.end()) rows1.push_back(m);
+//    }
 
     //----------------------------------------------------------------------------------------------//
-    vector<unsigned int> cols0, cols1, cols2;
-    for (unsigned int n=1; n<=N-1; n++)
-    {
-        bool found1 = false;
-        bool found2 = false;
-        for (unsigned int i=0; i<cntDeltaNodes.size(); i++)
-        {
-            const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(i);
-            if (cdn.i == n)
-            {
-                found1 = true;
-                for (unsigned int j=0; j<obsPointNodes.size(); j++)
-                {
-                    const ExtendedSpacePointNode &opn = obsPointNodes.at(j);
-                    if (opn.i == n)
-                    {
-                        found2 = true;
-                        break;
-                    }
-                }
-                break;
-            }
-        }
-        if (found1 == false && found2 == false) if(std::find(cols0.begin(), cols0.end(), n) == cols0.end()) cols0.push_back(n);
-        if (found1 == true  && found2 == true)  if(std::find(cols2.begin(), cols2.end(), n) == cols2.end()) cols2.push_back(n);
-        if (found1 == true)                     if(std::find(cols1.begin(), cols1.end(), n) == cols1.end()) cols1.push_back(n);
-    }
-    //printf("%d %d %d\n", cols0.size(), cols1.size(), cols2.size());
+//    vector<unsigned int> cols0, cols1, cols2;
+//    for (unsigned int n=1; n<=N-1; n++)
+//    {
+//        bool found1 = false;
+//        bool found2 = false;
+//        for (unsigned int i=0; i<cntDeltaNodes.size(); i++)
+//        {
+//            const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(i);
+//            if (cdn.i == n)
+//            {
+//                found1 = true;
+//                for (unsigned int j=0; j<obsPointNodes.size(); j++)
+//                {
+//                    const ExtendedSpacePointNode &opn = obsPointNodes.at(j);
+//                    if (opn.i == n)
+//                    {
+//                        found2 = true;
+//                        break;
+//                    }
+//                }
+//                break;
+//            }
+//        }
+//        if (found1 == false && found2 == false) if(std::find(cols0.begin(), cols0.end(), n) == cols0.end()) cols0.push_back(n);
+//        if (found1 == true  && found2 == true)  if(std::find(cols2.begin(), cols2.end(), n) == cols2.end()) cols2.push_back(n);
+//        if (found1 == true)                     if(std::find(cols1.begin(), cols1.end(), n) == cols1.end()) cols1.push_back(n);
+//    }
+
+    std::vector<unsigned int> rows0, rows1, rows2, cols0, cols1, cols2;
+    findRowsCols(rows0, rows1, rows2, cols0, cols1, cols2, obsPointNodes, cntDeltaNodes, N, M);
 
     //----------------------------------------------------------------------------------------------//
     //-------------------------------------------- info --------------------------------------------//
-    if (use == true)
-    {
-        info.resize(No);
-        for (unsigned int j=0; j<No; j++)
-        {
-            ExtendedSpaceNode2DH &e = info[j];
-            e.id = j;
-            e.setSpaceNode(mOptParameter.xi[j]);
-            e.extendWeights(dimX, dimY, L+1, _INFO_ROWS_, _INFO_COLS_);
-        }
-    }
+//    if (use == true)
+//    {
+//        info.resize(No);
+//        for (unsigned int j=0; j<No; j++)
+//        {
+//            ExtendedSpaceNode2DH &e = info[j];
+//            e.id = j;
+//            e.setSpaceNode(mOptParameter.xi[j]);
+//            e.extendWeights(dimX, dimY, L+1, _INFO_ROWS_, _INFO_COLS_);
+//        }
+//    }
+    if (use == true) prepareInfo(No, mOptParameter.xi, info, L, dimX, dimY);
     //-------------------------------------------- info --------------------------------------------//
 
     //------------------------------------- initial conditions -------------------------------------//
-    for (unsigned int m=0; m<=M; m++)
-    {
-        sn.j = m; sn.y = m*hy;
-        for (unsigned int n=0; n<=N; n++)
-        {
-            sn.i = n; sn.x = n*hx;
-            u00[m][n] = initial1(sn);
-        }
-    }
-    if (use == true) add2Info(u00, info, 0, _INFO_ROWS_, _INFO_COLS_);
-    layerInfo(u00, 0);
-    layerInfo(u00, u00, 0);
+//    for (unsigned int m=0; m<=M; m++)
+//    {
+//        sn.j = m; sn.y = m*hy;
+//        for (unsigned int n=0; n<=N; n++)
+//        {
+//            sn.i = n; sn.x = n*hx;
+//            u00[m][n] = initial1(sn);
+//        }
+//    }
+//    if (use == true) add2Info(u00, info, 0, hx, hy, _INFO_ROWS_, _INFO_COLS_);
+//    layerInfo(u00, 0);
+//    layerInfo(u00, u00, 0);
+//    //------------------------------------- initial conditions -------------------------------------//
+//    double hh = 0.5*ht;
+//    for (unsigned int m=0; m<=M; m++)
+//    {
+//        sn.j = m; sn.y = m*hy;
+//        for (unsigned int n=0; n<=N; n++)
+//        {
+//            sn.i = n; sn.x = n*hx;
+
+//            double sum = 0.0;
+
+//            if (n==0)      sum += aa__hxhx*(u00[m][n]-2.0*u00[m][n+1]+u00[m][n+2]);
+//            else if (n==N) sum += aa__hxhx*(u00[m][n-2]-2.0*u00[m][n-1]+u00[m][n]);
+//            else           sum += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]);
+
+//            if (m==0)      sum += aa__hyhy*(u00[m][n]-2.0*u00[m+1][n]+u00[m+2][n]);
+//            else if (m==M) sum += aa__hyhy*(u00[m-2][n]-2.0*u00[m-1][n]+u00[m][n]);
+//            else           sum += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]);
+
+//            sum -= lambda*initial2(sn);
+
+//            for (unsigned int cdn=0; cdn<cntDeltaNodes.size(); cdn++)
+//            {
+//                const ExtendedSpacePointNode &cntNode = cntDeltaNodes.at(cdn);
+//                if (cntNode.i == n && cntNode.j == m)
+//                {
+//                    double kz = 0.0;
+//                    for (unsigned int j=0; j<No; j++)
+//                    {
+//                        kz += mOptParameter.k[cntNode.id][j]*mOptParameter.z[cntNode.id][j];
+//                    }
+//                    sum -= kz * cntNode.w;
+//                }
+//            }
+
+//            u05[m][n] = u00[m][n] + hh*initial2(sn) + 0.5*hh*hh*sum;
+//            u10[m][n] = u00[m][n] + ht*initial2(sn) + 0.5*ht*ht*sum;
+//        }
+//    }
+
+//    if (use == true) add2Info(u10, info, 1, hx, hy, _INFO_ROWS_, _INFO_COLS_);
+//    layerInfo(u10, u10, 1);
+//    layerInfo(u10, 1);
+    initialLayers(u00, u05, u10, info, use, obsPointNodes, cntDeltaNodes, qPointNodes, N, M, hx, hy, ht, aa__hxhx, aa__hyhy, lambda);
     //------------------------------------- initial conditions -------------------------------------//
-    double hh = 0.5*ht;
-    for (unsigned int m=0; m<=M; m++)
-    {
-        sn.j = m; sn.y = m*hy;
-        for (unsigned int n=0; n<=N; n++)
-        {
-            sn.i = n; sn.x = n*hx;
 
-            double sum = 0.0;
+    double *ax = (double *) malloc(sizeof(double)*(N-1)); for (unsigned int n=1; n<=N-1; n++) ax[n-1] = m_aa_htht__hxhx_h;
+    double *bx = (double *) malloc(sizeof(double)*(N-1)); for (unsigned int n=1; n<=N-1; n++) bx[n-1] = p_aa_htht__hxhx___lambda_ht;
+    double *cx = (double *) malloc(sizeof(double)*(N-1)); for (unsigned int n=1; n<=N-1; n++) cx[n-1] = m_aa_htht__hxhx_h;
+    double *dx = (double *) malloc(sizeof(double)*(N-1));
+    double *rx = (double *) malloc(sizeof(double)*(N-1));
+    ax[0] = cx[N-2] = 0.0;
 
-            if (n==0)      sum += aa__hxhx*(u00[m][n]-2.0*u00[m][n+1]+u00[m][n+2]);
-            else if (n==N) sum += aa__hxhx*(u00[m][n-2]-2.0*u00[m][n-1]+u00[m][n]);
-            else           sum += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]);
-
-            if (m==0)      sum += aa__hyhy*(u00[m][n]-2.0*u00[m+1][n]+u00[m+2][n]);
-            else if (m==M) sum += aa__hyhy*(u00[m-2][n]-2.0*u00[m-1][n]+u00[m][n]);
-            else           sum += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]);
-
-            sum -= lambda*initial2(sn);
-
-            for (unsigned int cdn=0; cdn<cntDeltaNodes.size(); cdn++)
-            {
-                const ExtendedSpacePointNode &cntNode = cntDeltaNodes.at(cdn);
-                if (cntNode.i == n && cntNode.j == m)
-                {
-                    double kz = 0.0;
-                    for (unsigned int j=0; j<No; j++)
-                    {
-                        kz += mOptParameter.k[cntNode.id][j]*mOptParameter.z[cntNode.id][j];
-                    }
-                    sum -= kz * cntNode.w;
-                }
-            }
-
-            u05[m][n] = u00[m][n] + hh*initial2(sn) + 0.5*hh*hh*sum;
-            u10[m][n] = u00[m][n] + ht*initial2(sn) + 0.5*ht*ht*sum;
-        }
-    }
-
-    if (use == true) add2Info(u10, info, 1, _INFO_ROWS_, _INFO_COLS_);
-    layerInfo(u10, u10, 1);
-    layerInfo(u10, 1);
-    //------------------------------------- initial conditions -------------------------------------//
-
-    unsigned int sizeN = sizeof(double)*(N-1);
-    unsigned int sizeM = sizeof(double)*(M-1);
-
-    double *ax = (double *) malloc(sizeN); for (unsigned int n=1; n<=N-1; n++) ax[n-1] = m_aa_htht__hxhx_h;           ax[0] = 0.0;
-    double *bx = (double *) malloc(sizeN); for (unsigned int n=1; n<=N-1; n++) bx[n-1] = p_aa_htht__hxhx___lambda_ht;
-    double *cx = (double *) malloc(sizeN); for (unsigned int n=1; n<=N-1; n++) cx[n-1] = m_aa_htht__hxhx_h;           cx[N-2] = 0.0;
-    double *dx = (double *) malloc(sizeN);
-    double *rx = (double *) malloc(sizeN);
-
-    double *ay = (double *) malloc(sizeM); for (unsigned int m=1; m<=M-1; m++) ay[m-1] = m_aa_htht__hyhy_h;           ay[0] = 0.0;
-    double *by = (double *) malloc(sizeM); for (unsigned int m=1; m<=M-1; m++) by[m-1] = p_aa_htht__hyhy___lambda_ht;
-    double *cy = (double *) malloc(sizeM); for (unsigned int m=1; m<=M-1; m++) cy[m-1] = m_aa_htht__hxhx_h;           cy[M-2] = 0.0;
-    double *dy = (double *) malloc(sizeM);
-    double *ry = (double *) malloc(sizeM);
+    double *ay = (double *) malloc(sizeof(double)*(M-1)); for (unsigned int m=1; m<=M-1; m++) ay[m-1] = m_aa_htht__hyhy_h;
+    double *by = (double *) malloc(sizeof(double)*(M-1)); for (unsigned int m=1; m<=M-1; m++) by[m-1] = p_aa_htht__hyhy___lambda_ht;
+    double *cy = (double *) malloc(sizeof(double)*(M-1)); for (unsigned int m=1; m<=M-1; m++) cy[m-1] = m_aa_htht__hyhy_h;
+    double *dy = (double *) malloc(sizeof(double)*(M-1));
+    double *ry = (double *) malloc(sizeof(double)*(M-1));
+    ay[0] = cy[M-2] = 0.0;
 
     TimeNodePDE tn;
 
@@ -295,7 +296,8 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
 
         if (rows2.size() == 0)
         {
-            double U15[No]; for (unsigned int j=0; j<No; j++) U15[j] = 0.0;
+            double U15[No];
+            for (unsigned int j=0; j<No; j++) U15[j] = 0.0;
             for (unsigned int odj=0; odj<obsPointNodes.size(); odj++)
             {
                 const ExtendedSpacePointNode &opn = obsPointNodes[odj];
@@ -323,19 +325,19 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
                         const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
                         if (cdn.i == sn.i && cdn.j == sn.j)
                         {
+                            //for (unsigned int j=0; j<No; j++)
+                            //{
+                            //    dx[n-1] += htht_h * mOptParameter.k[cdn.id][j] * (U15[j]-mOptParameter.z[cdn.id][j]) * cdn.w;
+                            //}
+                            for (unsigned int odj=0; odj<obsPointNodes.size(); odj++)
+                            {
+                                const ExtendedSpacePointNode &opn = obsPointNodes[odj];
+                                dx[n-1] += htht_h * mOptParameter.k[cdn.id][opn.id] * u15[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
+                            }
                             for (unsigned int j=0; j<No; j++)
                             {
-                                dx[n-1] += htht_h * mOptParameter.k[cdn.id][j] * (U15[j]-mOptParameter.z[cdn.id][j]) * cdn.w;
+                                dx[n-1] -= htht_h * mOptParameter.k[cdn.id][j] * mOptParameter.z[cdn.id][j] * cdn.w;
                             }
-                            //                            for (unsigned int odj=0; odj<obsPointNodes.size(); odj++)
-                            //                            {
-                            //                                const ExtendedSpacePointNode &opn = obsPointNodes[odj];
-                            //                                d1X[n-1] += htht_h * mOptParameter.k[cdn.id][opn.id] * u15[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
-                            //                            }
-                            //                            for (unsigned int j=0; j<No; j++)
-                            //                            {
-                            //                                d1X[n-1] -= htht_h * mOptParameter.k[cdn.id][j] * mOptParameter.z[cdn.id][j] * cdn.w;
-                            //                            }
                         }
                     }
                     //------------------------------------- Adding delta part -------------------------------------//
@@ -363,7 +365,7 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
 
         if (rows2.size() != 0)
         {
-            //throw std::exception();
+            throw std::exception();
 
             unsigned int row1_size = rows1.size()*(N-1);
             double* a1 = (double*) malloc(sizeof(double)*row1_size);
@@ -481,17 +483,17 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
                 dy[m-1] += 0.5*(u10[m][n]-u00[m][n]) + u15[m][n];
                 dy[m-1] += 0.5*lambda*ht*(4.0*u15[m][n]-u10[m][n]);
 
-                if (l==2)
-                {
-                    for (unsigned int si=0; si<qPointNodes.size(); si++)
-                    {
-                        const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
-                        if (qNode.i == sn.i && qNode.j == sn.j)
-                        {
-                            dy[m-1] += (mEquParameter.q[qNode.id] * qNode.w * (2.0/ht))*((ht*ht)*0.5);
-                        }
-                    }
-                }
+//                if (l==2)
+//                {
+//                    for (unsigned int si=0; si<qPointNodes.size(); si++)
+//                    {
+//                        const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
+//                        if (qNode.i == sn.i && qNode.j == sn.j)
+//                        {
+//                            dy[m-1] += (mEquParameter.q[qNode.id] * qNode.w * (1.0/ht)) * htht_h;
+//                        }
+//                    }
+//                }
             }
 
             dy[0]   -= m_aa_htht__hyhy_h * u[0][n];
@@ -531,19 +533,19 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
                         const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
                         if (cdn.i == sn.i && cdn.j == sn.j)
                         {
+                            //for (unsigned int j=0; j<No; j++)
+                            //{
+                            //    dy[m-1] += htht_h * mOptParameter.k[cdn.id][j] * (U[j]-mOptParameter.z[cdn.id][j]) * cdn.w;
+                            //}
+                            for (unsigned int onj=0; onj<obsPointNodes.size(); onj++)
+                            {
+                                const ExtendedSpacePointNode &opn = obsPointNodes.at(onj);
+                                dy[m-1] += htht_h * mOptParameter.k[cdn.id][opn.id] * u[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
+                            }
                             for (unsigned int j=0; j<No; j++)
                             {
-                                dy[m-1] += htht_h * mOptParameter.k[cdn.id][j] * (U[j]-mOptParameter.z[cdn.id][j]) * cdn.w;
+                                dy[m-1] -= htht_h * mOptParameter.k[cdn.id][j] * mOptParameter.z[cdn.id][j] * cdn.w;
                             }
-                            //                            for (unsigned int onj=0; onj<obsPointNodes.size(); onj++)
-                            //                            {
-                            //                                const ExtendedSpacePointNode &opn = obsPointNodes.at(onj);
-                            //                                d1Y[m-1] += htht_h * mOptParameter.k[cdn.id][opn.id] * u[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
-                            //                            }
-                            //                            for (unsigned int j=0; j<No; j++)
-                            //                            {
-                            //                                d1Y[m-1] -= htht_h * mOptParameter.k[cdn.id][j] * mOptParameter.z[cdn.id][j] * cdn.w;
-                            //                            }
                         }
                     }
                     //------------------------------------- Adding delta part -------------------------------------//
@@ -555,7 +557,7 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
                             const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
                             if (qNode.i == sn.i && qNode.j == sn.j)
                             {
-                                dy[m-1] += (mEquParameter.q[qNode.id] * qNode.w * (2.0/ht))*((ht*ht)*0.5);
+                                dy[m-1] += (mEquParameter.q[qNode.id] * qNode.w * (1.0/ht)) * htht_h;
                             }
                         }
                     }
@@ -569,9 +571,9 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
             }
         }
 
-        if (cols2.size() != 0)
+        if ( cols2.size() != 0)
         {
-            //throw std::exception();
+            throw std::exception();
 
             double* a2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
             double* b2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
@@ -669,24 +671,6 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
 
         //------------------------------------- approximatin to y direction conditions -------------------------------------//
 
-//        if (l==2)
-//        {
-//            for (unsigned int m=0; m<=M; m++)
-//            {
-//                for (unsigned int n=0; n<=N; n++)
-//                {
-//                    for (unsigned int si=0; si<qPointNodes.size(); si++)
-//                    {
-//                        const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
-//                        if (qNode.i == n && qNode.j == m)
-//                        {
-//                            u[m][n] += (mEquParameter.q[qNode.id] * qNode.w * (1.0/ht))*ht*ht;
-//                        }
-//                    }
-//                }
-//            }
-//        }
-
         if (l==L)
         {
             ut.clear();
@@ -711,7 +695,8 @@ void IProblem2HForward2D::calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vect
             }
         }
 
-        if (use == true) add2Info(u, info, l, _INFO_ROWS_, _INFO_COLS_);
+        if (use == true) add2Info(u, info, l, hx, hy, _INFO_ROWS_, _INFO_COLS_);
+
         layerInfo(u, l);
     }
 
@@ -801,8 +786,12 @@ void IProblem2HForward2D::calculateMVD_D1(DoubleMatrix &u, DoubleMatrix &ut, vec
     initialLayers(u00, u05, u10, info, use, obsPointNodes, cntDeltaNodes, qPointNodes, N, M, hx, hy, ht, aa__hxhx, aa__hyhy, lambda);
     //------------------------------------- initial conditions -------------------------------------//
 
-    double *a1X, *b1X, *c1X, *d1X, *x1X, *a1Y, *b1Y, *c1Y, *d1Y, *x1Y;
-    mallocVectors(a1X, b1X, c1X, d1X, x1X, N-1, a1Y, b1Y, c1Y, d1Y, x1Y, M-1);
+    double *a1X, *b1X, *c1X, *d1X, *x1X;
+    double *a1Y, *b1Y, *c1Y, *d1Y, *x1Y;
+    //mallocVectors(a1X, b1X, c1X, d1X, x1X, N-1, a1Y, b1Y, c1Y, d1Y, x1Y, M-1);
+
+    mallocVectorsX(a1X, b1X, c1X, d1X, x1X, N-1, 0.0, 0.0);
+    mallocVectorsX(a1Y, b1Y, c1Y, d1Y, x1Y, M-1, 0.0, 0.0);
 
     SpaceNodePDE sn;
     TimeNodePDE tn;
@@ -883,15 +872,15 @@ void IProblem2HForward2D::calculateMVD_D1(DoubleMatrix &u, DoubleMatrix &ut, vec
                             {
                                 d1X[n-1] += htht_h * mOptParameter.k[cdn.id][j] * (U15[j]-mOptParameter.z[cdn.id][j]) * cdn.w;
                             }
-//                            for (unsigned int odj=0; odj<obsPointNodes.size(); odj++)
-//                            {
-//                                const ExtendedSpacePointNode &opn = obsPointNodes[odj];
-//                                d1X[n-1] += htht_h * mOptParameter.k[cdn.id][opn.id] * u15[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
-//                            }
-//                            for (unsigned int j=0; j<No; j++)
-//                            {
-//                                d1X[n-1] -= htht_h * mOptParameter.k[cdn.id][j] * mOptParameter.z[cdn.id][j] * cdn.w;
-//                            }
+                            //                            for (unsigned int odj=0; odj<obsPointNodes.size(); odj++)
+                            //                            {
+                            //                                const ExtendedSpacePointNode &opn = obsPointNodes[odj];
+                            //                                d1X[n-1] += htht_h * mOptParameter.k[cdn.id][opn.id] * u15[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
+                            //                            }
+                            //                            for (unsigned int j=0; j<No; j++)
+                            //                            {
+                            //                                d1X[n-1] -= htht_h * mOptParameter.k[cdn.id][j] * mOptParameter.z[cdn.id][j] * cdn.w;
+                            //                            }
                         }
                     }
                     //------------------------------------- Adding delta part -------------------------------------//
@@ -1250,7 +1239,7 @@ void IProblem2HForward2D::calculateMVD_D1(DoubleMatrix &u, DoubleMatrix &ut, vec
             }
         }
 
-        if (use == true) add2Info(u, info, l, _INFO_ROWS_, _INFO_COLS_);
+        if (use == true) add2Info(u, info, l, hx, hy, _INFO_ROWS_, _INFO_COLS_);
         layerInfo(u, l);
     }
 
@@ -1752,7 +1741,7 @@ void IProblem2HForward2D::calculateMVD_D2(DoubleMatrix &u, DoubleMatrix &ut, vec
             }
         }
 
-        if (use == true) add2Info(u, info, l, _INFO_ROWS_, _INFO_COLS_);
+        if (use == true) add2Info(u, info, l, hx, hy, _INFO_ROWS_, _INFO_COLS_);
         layerInfo(u, l);
     }
 
@@ -1917,7 +1906,7 @@ void IProblem2HForward2D::calculateMVD_D3(DoubleMatrix &u, DoubleMatrix &ut, vec
             u00[m][n] = initial1(sn);
         }
     }
-    if (use == true) add2Info(u00, info, 0, _INFO_ROWS_, _INFO_COLS_);
+    if (use == true) add2Info(u00, info, 0, hx, hy, _INFO_ROWS_, _INFO_COLS_);
     layerInfo(u00, 0);
     layerInfo(u00, u00, 0);
     //------------------------------------- initial conditions -------------------------------------//
@@ -1960,7 +1949,7 @@ void IProblem2HForward2D::calculateMVD_D3(DoubleMatrix &u, DoubleMatrix &ut, vec
         }
     }
 
-    if (use == true) add2Info(u10, info, 1, _INFO_ROWS_, _INFO_COLS_);
+    if (use == true) add2Info(u10, info, 1, hx, hy, _INFO_ROWS_, _INFO_COLS_);
     layerInfo(u10, u10, 1);
     layerInfo(u10, 1);
     //------------------------------------- initial conditions -------------------------------------//
@@ -2427,7 +2416,7 @@ void IProblem2HForward2D::calculateMVD_D3(DoubleMatrix &u, DoubleMatrix &ut, vec
             }
         }
 
-        if (use == true) add2Info(u, info, l, _INFO_ROWS_, _INFO_COLS_);
+        if (use == true) add2Info(u, info, l, hx, hy, _INFO_ROWS_, _INFO_COLS_);
         layerInfo(u, l);
     }
 
@@ -2508,13 +2497,13 @@ void IProblem2HForward2D::layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned
 
     //    if (ln%1000==0)
     //    {
-    printf("%4d %18.6f %18.6f %18.6f\n", ln, u.min(), u.max(), integral1(u));
-    QPixmap px;
-    visualizeMatrixHeat(u, -10.53, 1.40, px);
-    char buffer[30] = {0};
-    int c = sprintf(buffer, "images/s/%6d.png", ln);
-    buffer[c] = 0;
-    px.save(buffer, "png", 0);
+    //    printf("%4d %18.6f %18.6f %18.6f\n", ln, u.min(), u.max(), integral1(u));
+    //    QPixmap px;
+    //    visualizeMatrixHeat(u, -10.53, 1.40, px);
+    //    char buffer[30] = {0};
+    //    int c = sprintf(buffer, "images/s/%6d.png", ln);
+    //    buffer[c] = 0;
+    //    px.save(buffer, "png", 0);
     //    }
 
     //    if (ln==0)
@@ -2602,32 +2591,36 @@ double IProblem2HForward2D::f(const SpaceNodePDE &, const TimeNodePDE &) const
     return 0.0;
 }
 
-void IProblem2HForward2D::add2Info(const DoubleMatrix &u, vector<ExtendedSpaceNode2DH> &info, unsigned int ln, unsigned int rows, unsigned int cols) const
+void IProblem2HForward2D::add2Info(const DoubleMatrix &u, vector<ExtendedSpaceNode2DH> &info, unsigned int ln, double hx, double hy, unsigned int rows, unsigned int cols) const
 {
-    double hx = 0.01;
-    double hy = 0.01;
-    for (unsigned int j=0; j<mEquParameter.No; j++)
+    if (rows == 1 && cols == 1)
     {
-        ExtendedSpaceNode2DH &ui = info[j];
-        ui.u[ln] = u[ui.j][ui.i];
-        //ui.ux[ln] = (u[ui.j][ui.i+1] - u[ui.j][ui.i-1])/(2.0*hx);
-        //ui.uy[ln] = (u[ui.j+1][ui.i] - u[ui.j-1][ui.i])/(2.0*hy);
-        ui.ux[ln] = (u[ui.j][ui.i-2]-8.0*u[ui.j][ui.i-1]+8.0*u[ui.j][ui.i+1]-u[ui.j][ui.i+2])/(12.0*hx);
-        ui.uy[ln] = (u[ui.j-2][ui.i]-8.0*u[ui.j-1][ui.i]+8.0*u[ui.j+1][ui.i]-u[ui.j+2][ui.i])/(12.0*hy);
+        for (unsigned int j=0; j<mEquParameter.No; j++)
+        {
+            ExtendedSpaceNode2DH &ui = info[j];
+            ui.u[ln] = u[ui.j][ui.i];
+            ui.ux[ln] = (u[ui.j][ui.i+1] - u[ui.j][ui.i-1])/(2.0*hx);
+            ui.uy[ln] = (u[ui.j+1][ui.i] - u[ui.j-1][ui.i])/(2.0*hy);
+            //ui.ux[ln] = (u[ui.j][ui.i-2]-8.0*u[ui.j][ui.i-1]+8.0*u[ui.j][ui.i+1]-u[ui.j][ui.i+2])/(12.0*hx);
+            //ui.uy[ln] = (u[ui.j-2][ui.i]-8.0*u[ui.j-1][ui.i]+8.0*u[ui.j+1][ui.i]-u[ui.j+2][ui.i])/(12.0*hy);
+        }
     }
-    //    for (unsigned int j=0; j<mEquParameter.No; j++)
-    //    {
-    //        ExtendedSpaceNode2DH &ui = info[j];
-    //        for (unsigned int r=0; r<rows; r++)
-    //        {
-    //            for (unsigned int c=0; c<cols; c++)
-    //            {
-    //                unsigned int x = ui.wi[r][c].i;
-    //                unsigned int y = ui.wi[r][c].j;
-    //                ui.wi[r][c].u[ln] = u[y][x];
-    //            }
-    //        }
-    //    }
+    else
+    {
+        for (unsigned int j=0; j<mEquParameter.No; j++)
+        {
+            ExtendedSpaceNode2DH &ui = info[j];
+            for (unsigned int r=0; r<rows; r++)
+            {
+                for (unsigned int c=0; c<cols; c++)
+                {
+                    unsigned int x = ui.wi[r][c].i;
+                    unsigned int y = ui.wi[r][c].j;
+                    ui.wi[r][c].u[ln] = u[y][x];
+                }
+            }
+        }
+    }
 }
 
 void IProblem2HForward2D::calculateMVD_N(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const
@@ -2776,7 +2769,7 @@ void IProblem2HForward2D::calculateMVD_N(DoubleMatrix &u, DoubleMatrix &ut, vect
             //            }
         }
     }
-    if (use == true) add2Info(u00, info, 0, _INFO_ROWS_, _INFO_COLS_);
+    if (use == true) add2Info(u00, info, 0, hx, hy, _INFO_ROWS_, _INFO_COLS_);
     layerInfo(u00, 0);
     layerInfo(u00, u00, 0);
 
@@ -2821,7 +2814,7 @@ void IProblem2HForward2D::calculateMVD_N(DoubleMatrix &u, DoubleMatrix &ut, vect
     }
     qPointNodes.clear();
 
-    if (use == true) add2Info(u10, info, 1, _INFO_ROWS_, _INFO_COLS_);
+    if (use == true) add2Info(u10, info, 1, hx, hy, _INFO_ROWS_, _INFO_COLS_);
     layerInfo(u10, u10, 1);
     layerInfo(u10, 1);
     //------------------------------------- initial conditions -------------------------------------//
@@ -3296,7 +3289,7 @@ void IProblem2HForward2D::calculateMVD_N(DoubleMatrix &u, DoubleMatrix &ut, vect
             }
         }
 
-        if (use == true) add2Info(u, info, l, _INFO_ROWS_, _INFO_COLS_);
+        if (use == true) add2Info(u, info, l, hx, hy, _INFO_ROWS_, _INFO_COLS_);
         layerInfo(u, l);
     }
 
@@ -3652,7 +3645,7 @@ void IProblem2HForward2D::initialLayers(DoubleMatrix &u00, DoubleMatrix &u05, Do
             u00[m][n] = initial1(sn);
         }
     }
-    if (use == true) add2Info(u00, info, 0, _INFO_ROWS_, _INFO_COLS_);
+    if (use == true) add2Info(u00, info, 0, hx, hy, _INFO_ROWS_, _INFO_COLS_);
     layerInfo(u00, 0);
     layerInfo(u00, u00, 0);
 
@@ -3708,12 +3701,12 @@ void IProblem2HForward2D::initialLayers(DoubleMatrix &u00, DoubleMatrix &u05, Do
             //                }
             //            }
 
-            u05[m][n] = u00[m][n] + hh*initial2(sn);// + hh*hh*sum;
+            u05[m][n] = u00[m][n] + hh*initial2(sn) + 0.5*hh*hh*sum;
             u10[m][n] = u00[m][n] + ht*initial2(sn) + 0.5*ht*ht*sum;
         }
     }
 
-    if (use == true) add2Info(u10, info, 1, _INFO_ROWS_, _INFO_COLS_);
+    if (use == true) add2Info(u10, info, 1, hx, hy, _INFO_ROWS_, _INFO_COLS_);
     layerInfo(u10, u10, 1);
     layerInfo(u10, 1);
 }
@@ -3733,6 +3726,37 @@ void IProblem2HForward2D::mallocVectors(double *&a1X, double *&b1X, double *&c1X
     d1Y = (double *) malloc(sizeof(double)*sizeY);
     x1Y = (double *) malloc(sizeof(double)*sizeY);
 }
+
+void IProblem2HForward2D::mallocVectorsX(double *&ax, double *&bx, double *&cx, double *&dx, double *&rx, unsigned int N, double k0, double k1) const
+{
+    ax = (double *) malloc(sizeof(double)*N);
+    bx = (double *) malloc(sizeof(double)*N);
+    cx = (double *) malloc(sizeof(double)*N);
+    dx = (double *) malloc(sizeof(double)*N);
+    rx = (double *) malloc(sizeof(double)*N);
+
+    for (unsigned int n=0; n<N; n++) ax[n] = k0;
+    for (unsigned int n=0; n<N; n++) bx[n] = k1;
+    for (unsigned int n=0; n<N; n++) cx[n] = k0;
+
+    ax[0] = cx[N-1] = 0.0;
+}
+
+void IProblem2HForward2D::mallocVectorsY(double *&ay, double *&by, double *&cy, double *&dy, double *&ry, unsigned int M, double k0, double k1) const
+{
+    ay = (double *) malloc(sizeof(double)*M);
+    by = (double *) malloc(sizeof(double)*M);
+    cy = (double *) malloc(sizeof(double)*M);
+    dy = (double *) malloc(sizeof(double)*M);
+    ry = (double *) malloc(sizeof(double)*M);
+
+    for (unsigned int m=0; m<=M-1; m++) ay[m-1] = k0;
+    for (unsigned int m=0; m<=M-1; m++) by[m-1] = k1;
+    for (unsigned int m=0; m<=M-1; m++) cy[m-1] = k0;
+
+    ay[0] = cy[M-2] = 0.0;
+}
+
 
 void IProblem2HForward2D::initBorders(unsigned int N, unsigned int M, double hx, double hy, double ht, unsigned int l,
                                       DoubleMatrix &u15, DoubleMatrix &u) const

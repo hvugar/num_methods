@@ -22,6 +22,8 @@ public:
                        double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const;
     void mallocVectors(double *&a1X, double *&b1X, double *&c1X, double *&d1X, double *&x1X, unsigned int sizeX,
                        double *&a1Y, double *&b1Y, double *&c1Y, double *&d1Y, double *&x1Y, unsigned int sizeY) const;
+    void mallocVectorsX(double *&a1X, double *&b1X, double *&c1X, double *&d1X, double *&x1X, unsigned int sizeX, double k0, double k1) const;
+    void mallocVectorsY(double *&a1Y, double *&b1Y, double *&c1Y, double *&d1Y, double *&x1Y, unsigned int sizeY, double k0, double k1) const;
     void initBorders(unsigned int N, unsigned int M, double hx, double hy, double ht, unsigned int l,
                      DoubleMatrix &u15, DoubleMatrix &u) const;
     void freeVectors(double *a1X, double *b1X, double *c1X, double *d1X, double *x1X,
@@ -52,7 +54,7 @@ protected:
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
 private:
-    void add2Info(const DoubleMatrix &u, vector<ExtendedSpaceNode2DH> &info, unsigned int ln, unsigned int rows, unsigned int cols) const;
+    void add2Info(const DoubleMatrix &u, vector<ExtendedSpaceNode2DH> &info, unsigned int ln, double hx, double hy, unsigned int rows, unsigned int cols) const;
 };
 
 }
