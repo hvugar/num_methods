@@ -54,7 +54,8 @@ protected:
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
 private:
-    void add2Info(const DoubleMatrix &u, vector<ExtendedSpaceNode2DH> &info, unsigned int ln, double hx, double hy, unsigned int rows, unsigned int cols) const;
+    void add2Info(const DoubleMatrix &u, vector<ExtendedSpaceNode2DH> &info, const std::vector<ExtendedSpacePointNode> &obsPointNodes,
+                  unsigned int ln, double hx, double hy, unsigned int rows, unsigned int cols) const;
 };
 
 }

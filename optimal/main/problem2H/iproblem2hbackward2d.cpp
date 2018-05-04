@@ -34,8 +34,8 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
     //double m_aa_htht__hyhy = -(a*a*ht*ht)/(hy*hy);
     double p_aa_htht__hyhy_h = +0.5*(a*a*ht*ht)/(hy*hy);
     double m_aa_htht__hyhy_h = -0.5*(a*a*ht*ht)/(hy*hy);
-    double p_aa_htht__hxhx___lambda_ht = +1.0 + (a*a*ht*ht)/(hx*hx) + 1.5*(lambda*ht);
-    double p_aa_htht__hyhy___lambda_ht = +1.0 + (a*a*ht*ht)/(hy*hy) + 1.5*(lambda*ht);
+    double p_aa_htht__hxhx___lambda_ht = +1.0 + (a*a*ht*ht)/(hx*hx) + 1.5*lambda*ht;
+    double p_aa_htht__hyhy___lambda_ht = +1.0 + (a*a*ht*ht)/(hy*hy) + 1.5*lambda*ht;
     double aa__hxhx = (a*a)/(hx*hx);
     double aa__hyhy = (a*a)/(hy*hy);
     double htht_h = 0.5*ht*ht;
@@ -138,7 +138,7 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
             p00[m][n] = initial1(sn);
         }
     }
-    if (use == true) add2Info(p00, info, L, hx, hy, _INFO_ROWS_, _INFO_COLS_);
+    if (use == true) add2Info(p00, info, cntPointNodes, L, hx, hy, _INFO_ROWS_, _INFO_COLS_);
     layerInfo(p00, L);
 
 
@@ -183,7 +183,7 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
         }
     }
 
-    if (use == true) add2Info(p10, info, L-1, hx, hy, _INFO_ROWS_, _INFO_COLS_);
+    if (use == true) add2Info(p10, info, cntPointNodes, L-1, hx, hy, _INFO_ROWS_, _INFO_COLS_);
     layerInfo(p10, L-1);
     //------------------------------------- initial conditions -------------------------------------//
 
@@ -622,7 +622,7 @@ void IProblem2HBackward2D::calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceN
             }
         }
 
-        if (use == true) add2Info(p, info, l, hx, hy, _INFO_ROWS_, _INFO_COLS_);
+        if (use == true) add2Info(p, info, cntPointNodes, l, hx, hy, _INFO_ROWS_, _INFO_COLS_);
         layerInfo(p, l);
     }
 
@@ -685,8 +685,41 @@ double IProblem2HBackward2D::f(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNo
     return 0.0;
 }
 
-void IProblem2HBackward2D::add2Info(const DoubleMatrix &p, vector<ExtendedSpaceNode2DH> &info, unsigned int ln, double hx, double hy, unsigned int rows, unsigned int cols) const
+void IProblem2HBackward2D::add2Info(const DoubleMatrix &p, vector<ExtendedSpaceNode2DH> &info,
+                                    const std::vector<ExtendedSpacePointNode> &cntPointNodes,
+                                    unsigned int ln, double hx, double hy, unsigned int rows, unsigned int cols) const
 {
+    if (_DISTRIBUTION_METHOD_ == 1)
+    {
+
+    }
+
+    if (_DISTRIBUTION_METHOD_ == 2)
+    {
+        for (unsigned int j=0; j<info.size(); j++)
+        {
+            info[j].u[ln] = 0.0;
+            info[j].ux[ln] = 0.0;
+            info[j].uy[ln] = 0.0;
+        }
+
+        for (unsigned int cpi=0; cpi<cntPointNodes.size(); cpi++)
+        {
+            const ExtendedSpacePointNode &cpn = cntPointNodes[cpi];
+            const ExtendedSpaceNode2DH &pi = info[cpn.id];
+
+            pi.u[ln] += p[cpn.j][cpn.i] * (cpn.w * (hx*hy));
+
+            pi.ux[ln] = (p[pi.j][pi.i+1] - p[pi.j][pi.i-1])/(2.0*hx);
+            pi.uy[ln] = (p[pi.j+1][pi.i] - p[pi.j-1][pi.i])/(2.0*hy);
+
+            //ui.ux[ln] = (u[ui.j][ui.i-2]-8.0*u[ui.j][ui.i-1]+8.0*u[ui.j][ui.i+1]-u[ui.j][ui.i+2])/(12.0*hx);
+            //ui.uy[ln] = (u[ui.j-2][ui.i]-8.0*u[ui.j-1][ui.i]+8.0*u[ui.j+1][ui.i]-u[ui.j+2][ui.i])/(12.0*hy);
+        }
+    }
+    return;
+
+
     if (rows == 1 && cols == 1)
     {
         for (unsigned int i=0; i<mEquParameter.Nc; i++)
@@ -867,7 +900,7 @@ void IProblem2HBackward2D::calculateMVD_N(DoubleMatrix &p, vector<ExtendedSpaceN
             p00[m][n] = initial1(sn);
         }
     }
-    if (use == true) add2Info(p00, info, L, hx, hy, _INFO_ROWS_, _INFO_COLS_);
+    if (use == true) add2Info(p00, info, cntPointNodes, L, hx, hy, _INFO_ROWS_, _INFO_COLS_);
     layerInfo(p00, L);
 
     for (unsigned int m=0; m<=M; m++)
@@ -910,7 +943,7 @@ void IProblem2HBackward2D::calculateMVD_N(DoubleMatrix &p, vector<ExtendedSpaceN
         }
     }
 
-    if (use == true) add2Info(p10, info, L-1, hx, hy, _INFO_ROWS_, _INFO_COLS_);
+    if (use == true) add2Info(p10, info, cntPointNodes, L-1, hx, hy, _INFO_ROWS_, _INFO_COLS_);
     layerInfo(p10, L-1);
     //------------------------------------- initial conditions -------------------------------------//
 
@@ -1350,7 +1383,7 @@ void IProblem2HBackward2D::calculateMVD_N(DoubleMatrix &p, vector<ExtendedSpaceN
             }
         }
 
-        if (use == true) add2Info(p, info, l, hx, hy, _INFO_ROWS_, _INFO_COLS_);
+        if (use == true) add2Info(p, info, cntPointNodes, l, hx, hy, _INFO_ROWS_, _INFO_COLS_);
         layerInfo(p, l);
     }
 

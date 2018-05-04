@@ -13,6 +13,8 @@
 #define _INFO_ROWS_ 1
 #define _INFO_COLS_ 1
 
+#define _DISTRIBUTION_METHOD_ 2
+
 using namespace std;
 
 namespace IProblem2H
@@ -66,6 +68,7 @@ public:
     void clearWeights();
 
     double value(unsigned int layer) const;
+    double value3(unsigned int ln) const;
     double value1(unsigned int layer) const;
     double value2(unsigned int layer) const;
 
@@ -102,8 +105,12 @@ public:
     static void optimization1();
     static void forwardS();
 
-    static void distributeDelta(const SpacePoint &pt, std::vector<ExtendedSpacePointNode> &nodes, unsigned int id,
-                                const Dimension &xd, const Dimension &yd, unsigned int k);
+    static void distributeDelta(const SpacePoint &pt, std::vector<ExtendedSpacePointNode> &nodes, unsigned int id, const Dimension &xd, const Dimension &yd, unsigned int k);
+    static void distributeDelta1(const SpacePoint &pt, unsigned int id, std::vector<ExtendedSpacePointNode> &nodes, const Dimension &dimX, const Dimension &dimY);
+    static void distributeDeltaR(const SpacePoint &pt, unsigned int id, std::vector<ExtendedSpacePointNode> &nodes, const Dimension &dimX, const Dimension &dimY);
+    static void distributeDelta3(const SpacePoint &pt, unsigned int id, std::vector<ExtendedSpacePointNode> &nodes, const Dimension &dimX, const Dimension &dimY);
+
+    static void distributeDeltaG(const SpacePoint &pt, unsigned int id, std::vector<ExtendedSpacePointNode> &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int k);
 };
 
 }

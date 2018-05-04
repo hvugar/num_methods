@@ -480,37 +480,85 @@ void IProblem2H2D::forwardS()
     IPrinter::printMatrix(u);
 }
 
-void IProblem2H2D::distributeDelta(const SpacePoint &pt, std::vector<ExtendedSpacePointNode> &nodes, unsigned int id,
-                                   const Dimension &dimX, const Dimension &dimY, unsigned int k)
+void IProblem2H2D::distributeDelta(const SpacePoint &pt, std::vector<ExtendedSpacePointNode> &nodes, unsigned int id, const Dimension &dimX, const Dimension &dimY, unsigned int k)
+{
+    if (_DISTRIBUTION_METHOD_ == 1)
+    {
+        distributeDelta1(pt, id, nodes, dimX, dimY);
+    }
+
+    if (_DISTRIBUTION_METHOD_ == 2)
+    {
+        distributeDeltaR(pt, id, nodes, dimX, dimY);
+    }
+
+    if (_DISTRIBUTION_METHOD_ == 4)
+    {
+        distributeDeltaG(pt, id, nodes, dimX, dimY, k);
+    }
+}
+
+void IProblem2H2D::distributeDelta1(const SpacePoint &pt, unsigned int id, std::vector<ExtendedSpacePointNode> &nodes, const Dimension &dimX, const Dimension &dimY)
 {
     double hx = dimX.step();
     double hy = dimY.step();
+
     unsigned int Nx = dimX.sizeN();
     unsigned int Ny = dimY.sizeN();
-    
-    unsigned int rx = (unsigned int)(round(pt.x*Nx));
-    unsigned int ry = (unsigned int)(round(pt.y*Ny));
-    
+
+    unsigned int rx = (unsigned int) (round( pt.x * Nx ));
+    unsigned int ry = (unsigned int) (round( pt.y * Ny ));
+
+    ExtendedSpacePointNode node; node.id = id; node.pt = pt; node.i = rx; node.j = ry; node.w = 1.0/(hx*hy); nodes.push_back(node);
+}
+
+void IProblem2H2D::distributeDeltaR(const SpacePoint &pt, unsigned int id, std::vector<ExtendedSpacePointNode> &nodes, const Dimension &dimX, const Dimension &dimY)
+{
+    double hx = dimX.step();
+    double hy = dimY.step();
+
+    unsigned int Nx = dimX.sizeN();
+    unsigned int Ny = dimY.sizeN();
+
+    unsigned int rx = (unsigned int) (ceil( pt.x * Nx ));
+    unsigned int ry = (unsigned int) (ceil( pt.y * Ny ));
+
+    double h1x = fabs(pt.x - rx*hx);
+    double h1y = fabs(pt.y - ry*hy);
+    double h2x = hx-fabs(pt.x - rx*hx);
+    double h2y = hx-fabs(pt.y - ry*hy);
+
+    ExtendedSpacePointNode node00; node00.id = id; node00.pt = pt; node00.i = rx+0; node00.j = ry+0; node00.w = ((h2x/hx)*(h2y/hy))/(hx*hy); nodes.push_back(node00);
+    ExtendedSpacePointNode node01; node01.id = id; node01.pt = pt; node01.i = rx+0; node01.j = ry+1; node01.w = ((h2x/hx)*(h1y/hy))/(hx*hy); nodes.push_back(node01);
+    ExtendedSpacePointNode node11; node11.id = id; node11.pt = pt; node11.i = rx+1; node11.j = ry+1; node11.w = ((h1x/hx)*(h1y/hy))/(hx*hy); nodes.push_back(node11);
+    ExtendedSpacePointNode node10; node10.id = id; node10.pt = pt; node10.i = rx+0; node10.j = ry+0; node10.w = ((h1x/hx)*(h2y/hy))/(hx*hy); nodes.push_back(node10);
+}
+
+void IProblem2H2D::distributeDeltaG(const SpacePoint &pt, unsigned int id, std::vector<ExtendedSpacePointNode> &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int k)
+{
+    double hx = dimX.step();
+    double hy = dimY.step();
+
+    unsigned int Nx = dimX.sizeN();
+    unsigned int Ny = dimY.sizeN();
+
+    unsigned int rx = (unsigned int) (round(pt.x*Nx));
+    unsigned int ry = (unsigned int) (round(pt.y*Ny));
+
     double sigmaX = hx;
     double sigmaY = hy;
 
     double sumX = 0.0;
-    for (unsigned int n=rx-k; n<=rx+k; n++)
-    {
-        sumX += exp(-((n*hx-pt.x)*(n*hx-pt.x))/(2.0*sigmaX*sigmaX));
-    }
+    for (unsigned int n=rx-k; n<=rx+k; n++) sumX += exp(-((n*hx-pt.x)*(n*hx-pt.x))/(2.0*sigmaX*sigmaX));
     sumX *= hx;
-    
+
     double sumY = 0.0;
-    for (unsigned int m=ry-k; m<=ry+k; m++)
-    {
-        sumY += exp(-((m*hy-pt.y)*(m*hy-pt.y))/(2.0*sigmaY*sigmaY));
-    }
+    for (unsigned int m=ry-k; m<=ry+k; m++) sumY += exp(-((m*hy-pt.y)*(m*hy-pt.y))/(2.0*sigmaY*sigmaY));
     sumY *= hy;
-    
+
     double sigma = (sumX*sumY) / (2.0*M_PI);
     double factor = 1.0/((2.0*M_PI)*sigma);
-    
+
     for (unsigned int m=ry-k; m<=ry+k; m++)
     {
         for (unsigned int n=rx-k; n<=rx+k; n++)
@@ -523,8 +571,6 @@ void IProblem2H2D::distributeDelta(const SpacePoint &pt, std::vector<ExtendedSpa
             nodes.push_back(node);
         }
     }
-
-//    ExtendedSpacePointNode node; node.i = rx; node.j = ry; node.x = pt.x; node.y = pt.y; node.id = id; node.w = 1/(hx*hy); nodes.push_back(node);
 }
 
 ExtendedSpaceNode2DH::ExtendedSpaceNode2DH()
@@ -705,6 +751,28 @@ void ExtendedSpaceNode2DH::clearWeights()
 
 double ExtendedSpaceNode2DH::value(unsigned int layer) const
 {
+//    double hx = dimX.step();
+//    double hy = dimY.step();
+
+//    unsigned int Nx = dimX.sizeN();
+//    unsigned int Ny = dimY.sizeN();
+
+//    if (_DISTRIBUTION_METHOD_  == 2)
+//    {
+//        unsigned int rx = (unsigned int) (ceil( pt.x * Nx ));
+//        unsigned int ry = (unsigned int) (ceil( pt.y * Ny ));
+
+//        double h1x = fabs(pt.x - rx*hx);
+//        double h1y = fabs(pt.y - ry*hy);
+//        double h2x = hx-fabs(pt.x - rx*hx);
+//        double h2y = hx-fabs(pt.y - ry*hy);
+
+//        ExtendedSpacePointNode node00; node00.id = id; node00.pt = pt; node00.i = rx+0; node00.j = ry+0; node00.w = ((h2x/hx)*(h2y/hy))/(hx*hy); nodes.push_back(node00);
+//        ExtendedSpacePointNode node01; node01.id = id; node01.pt = pt; node01.i = rx+0; node01.j = ry+1; node01.w = ((h2x/hx)*(h1y/hy))/(hx*hy); nodes.push_back(node01);
+//        ExtendedSpacePointNode node11; node11.id = id; node11.pt = pt; node11.i = rx+1; node11.j = ry+1; node11.w = ((h1x/hx)*(h1y/hy))/(hx*hy); nodes.push_back(node11);
+//        ExtendedSpacePointNode node10; node10.id = id; node10.pt = pt; node10.i = rx+0; node10.j = ry+0; node10.w = ((h1x/hx)*(h2y/hy))/(hx*hy); nodes.push_back(node10);
+//    }
+
     if (_INFO_ROWS_ == 1 && _INFO_COLS_ == 1)
     {
         //puts("value...");
@@ -713,6 +781,11 @@ double ExtendedSpaceNode2DH::value(unsigned int layer) const
     if (_INFO_ROWS_ == 3 && _INFO_COLS_ == 3) return value2(layer);
     if (_INFO_ROWS_ == 4 && _INFO_COLS_ == 4) return value1(layer);
     return NAN;
+}
+
+double ExtendedSpaceNode2DH::value3(unsigned int ln) const
+{
+    //double cx =
 }
 
 double ExtendedSpaceNode2DH::value1(unsigned int layer) const

@@ -17,7 +17,7 @@ private:
 public:
     virtual void layerInfo(const DoubleMatrix &p, unsigned int layerNumber) const;
 
-    void add2Info(const DoubleMatrix &p, vector<ExtendedSpaceNode2DH> &info, unsigned int ln, double hx, double hy, unsigned int rows, unsigned int cols) const;
+    void add2Info(const DoubleMatrix &p, vector<ExtendedSpaceNode2DH> &info, const std::vector<ExtendedSpacePointNode> &cntPointNodes, unsigned int ln, double hx, double hy, unsigned int rows, unsigned int cols) const;
 
     EquationParameter mEquParameter;
     OptimizeParameter mOptParameter;
