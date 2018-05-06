@@ -22,9 +22,9 @@ public:
     virtual double integral1(const DoubleMatrix &u, const DoubleMatrix &ut) const;
     virtual double integral2(const DoubleMatrix &u, const DoubleMatrix &ut) const;
     virtual double norm(const EquationParameter& eprm, const OptimizeParameter &oprm, const OptimizeParameter &oprm0) const;
-    virtual double penalty(const vector<ExtendedSpaceNode2DH> &info, const OptimizeParameter &o_prm) const;
-    virtual double gpi(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2DH> &info, const OptimizeParameter &o_prm) const;
-    virtual double g0i(unsigned int i, unsigned int layer, const vector<ExtendedSpaceNode2DH> &info, const OptimizeParameter &o_prm) const;
+    virtual double penalty(const vector<SpacePointInfo> &info, const OptimizeParameter &o_prm) const;
+    virtual double gpi(unsigned int i, unsigned int layer, const vector<SpacePointInfo> &info, const OptimizeParameter &o_prm) const;
+    virtual double g0i(unsigned int i, unsigned int layer, const vector<SpacePointInfo> &info, const OptimizeParameter &o_prm) const;
     //virtual double mu(double x, double y) const;
 
     virtual void gradient(const DoubleVector &prms, DoubleVector &g) const;

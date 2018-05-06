@@ -9,16 +9,22 @@ using namespace IProblem2H;
 void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, OptimizeParameter &o_prm0)
 {
     e_prm.a = 1.0;
-    e_prm.lambda = +0.00;
+    e_prm.lambda = +0.01;
 
     {
-        e_prm.Ns = 2;
+        e_prm.Ns = 5;
         e_prm.q.resize(e_prm.Ns);
         e_prm.theta.resize(e_prm.Ns);
         
-        //    e_prm.q[0] = -0.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
-        e_prm.q[0] = -0.2; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
-        e_prm.q[1] = -0.5; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
+        //e_prm.q[0] = -0.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
+        //e_prm.q[0] = -0.2; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
+        //e_prm.q[1] = -0.5; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
+
+        e_prm.q[0] = -0.75; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
+        e_prm.q[1] = -0.31; e_prm.theta[1].x = 0.2500; e_prm.theta[1].y = 0.2500;
+        e_prm.q[2] = -0.25; e_prm.theta[2].x = 0.2500; e_prm.theta[2].y = 0.7500;
+        e_prm.q[3] = -0.56; e_prm.theta[3].x = 0.7500; e_prm.theta[3].y = 0.7500;
+        e_prm.q[4] = -0.15; e_prm.theta[4].x = 0.7500; e_prm.theta[4].y = 0.2500;
     }
     
     {
@@ -74,8 +80,8 @@ void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, Optimize
         o_prm.eta[0].x = 0.5000; o_prm.eta[0].y = 0.7000;
         o_prm.eta[1].x = 0.7000; o_prm.eta[1].y = 0.3000;
         
-        o_prm.k[0][0] = -0.1200; o_prm.k[0][1] = -0.2400;
-        o_prm.k[1][0] = -0.4500; o_prm.k[1][1] = -0.1800;
+        o_prm.k[0][0] = +1.1200; o_prm.k[0][1] = +1.2400;
+        o_prm.k[1][0] = +2.4500; o_prm.k[1][1] = +2.1800;
 
         o_prm.z[0][0] = +0.5000; o_prm.z[0][1] = +0.4000;
         o_prm.z[1][0] = +0.7000; o_prm.z[1][1] = +0.5000;
@@ -191,11 +197,11 @@ void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, Optimize
 
 void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    //    forward();
+    //forward();
     //    forwardS();
-    checkGradient();
+    //checkGradient();
     //IPrinter::printSeperatorLine();
-    //optimization1();
+    optimization1();
 
     //    I[ 16]: 0.008742 0.193237 0.201978 R:0.00 e:0.000
     //    k: -2.1051  -2.2452  -2.4268  -2.1597 z:  0.4206   0.3160   0.6499   0.4554   o:0.2213 0.5460 0.6932 0.2622   c:0.3835 0.7027 0.6920 0.2659
@@ -205,52 +211,22 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 void IProblem2H2D::forward()
 {
+    EquationParameter e_prm;
+    OptimizeParameter o_prm;
+    OptimizeParameter o_prm0;
+    initParameters(e_prm, o_prm, o_prm0);
+
     IProblem2HForward2D frw;
     frw.addSpaceDimension(Dimension(0.01, 0, 100));
     frw.addSpaceDimension(Dimension(0.01, 0, 100));
-    frw.setTimeDimension(Dimension(0.01, 0, 5000));
-    
-    EquationParameter e_prm;
-    e_prm.a = 1.0;
-    e_prm.lambda = 0.0;
-    
-    e_prm.Ns = 1;
-    e_prm.q.resize(e_prm.Ns);
-    e_prm.theta.resize(e_prm.Ns);
-    
-    e_prm.q[0] = -1.0; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
-    //e_prm.q[0] = +1.0; e_prm.theta[0].x = 0.2000; e_prm.theta[0].y = 0.2000;
-    //e_prm.q[1] = +5.0; e_prm.theta[1].x = 0.8000; e_prm.theta[1].y = 0.8000;
-    
-    e_prm.Nc = 0;
-    e_prm.No = 0;
-    
-    OptimizeParameter o_prm;
-    o_prm.xi.resize(e_prm.No);
-    //o_prm.xi[0].x = 0.400; o_prm.xi[0].y = 0.400;
-    //o_prm.xi[1].x = 0.600; o_prm.xi[1].y = 0.600;
-    
-    o_prm.eta.resize(e_prm.Nc);
-    //o_prm.eta[0].x = 0.300; o_prm.eta[0].y = 0.700;
-    //o_prm.eta[1].x = 0.700; o_prm.eta[1].y = 0.300;
-    
-    o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
-    o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
-    
-    //    o_prm.k[0][0] = -1.12; o_prm.k[0][1] = -1.24;
-    //    o_prm.k[1][0] = -1.08; o_prm.k[1][1] = -2.18;
-    //o_prm.z[0][0] = +0.00; o_prm.z[0][1] = +0.00;
-    //o_prm.z[1][0] = +0.00; o_prm.z[1][1] = +0.00;
-    
-    //o_prm.k[0][0] = +0.00; o_prm.k[0][1] = +0.00;
-    //o_prm.k[1][0] = +0.00; o_prm.k[1][1] = +0.00;
+    frw.setTimeDimension(Dimension(0.001, 0, 5000));
     
     frw.mEquParameter = e_prm;
     frw.mOptParameter = o_prm;
     
     DoubleMatrix u;
     DoubleMatrix ut;
-    std::vector<ExtendedSpaceNode2DH> u_info;
+    std::vector<SpacePointInfo> u_info;
     frw.calculateMVD(u, ut, u_info, false);
     
     //    IPrinter::printMatrix(u);
@@ -289,7 +265,7 @@ void IProblem2H2D::checkGradient()
     ifunc.mSpaceDimensionY = Dimension(hy, 0, Ny);
     //ifunc.mTimeDimension = Dimension(0.01, 0, 100);
     //ifunc.mTimeDimension = Dimension(0.005, 0, 200);
-    ifunc.mTimeDimension = Dimension(0.01, 0, 100);
+    ifunc.mTimeDimension = Dimension(0.01, 0, 500);
     
     ifunc.alpha0 = 1.0; ifunc.V0.resize(Ny+1, Nx+1, 0.0);
     ifunc.alpha1 = 1.0; ifunc.V1.resize(Ny+1, Nx+1, 0.0);
@@ -320,7 +296,8 @@ void IProblem2H2D::checkGradient()
         DoubleVector ag(pv.length());
         
         double functional = ifunc.fx(pv);
-        printf("Functional: %f\n", functional);;
+        printf("Functional: %f\n", functional);
+        //return;
         puts("Calculating gradients....");
         ifunc.gradient(pv, ag);
         puts("Gradients are calculated.");
@@ -339,16 +316,16 @@ void IProblem2H2D::checkGradient()
         IGradient::Gradient(&ifunc, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
         puts("Numerical gradients are calculated.");
         
-        puts("Calculating numerical gradients.... hx=0.001");
-        puts("*** Calculating numerical gradients for k...... dh=0.001");
-        IGradient::Gradient(&ifunc, 0.001, pv, ng2, 0*e_prm.Nc*e_prm.No,            1*e_prm.Nc*e_prm.No-1);
-        puts("*** Calculating numerical gradients for z...... dh=0.001");
-        IGradient::Gradient(&ifunc, 0.001, pv, ng2, 1*e_prm.Nc*e_prm.No,            2*e_prm.Nc*e_prm.No-1);
-        puts("*** Calculating numerical gradients for xi..... dh=0.001");
-        IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+0*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-        puts("*** Calculating numerical gradients for eta.... dh=0.001");
-        IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-        puts("Numerical gradients are calculated.");
+        //puts("Calculating numerical gradients.... hx=0.001");
+        //puts("*** Calculating numerical gradients for k...... dh=0.001");
+        //IGradient::Gradient(&ifunc, 0.001, pv, ng2, 0*e_prm.Nc*e_prm.No,            1*e_prm.Nc*e_prm.No-1);
+        //puts("*** Calculating numerical gradients for z...... dh=0.001");
+        //IGradient::Gradient(&ifunc, 0.001, pv, ng2, 1*e_prm.Nc*e_prm.No,            2*e_prm.Nc*e_prm.No-1);
+        //puts("*** Calculating numerical gradients for xi..... dh=0.001");
+        //IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+0*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
+        //puts("*** Calculating numerical gradients for eta.... dh=0.001");
+        //IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
+        //puts("Numerical gradients are calculated.");
         
         //k------------------------------------------------------//
         IPrinter::printSeperatorLine("k");
@@ -425,7 +402,7 @@ void IProblem2H2D::optimization1()
     unsigned Nx, Ny; Nx = Ny = 100;
     ifunc.mSpaceDimensionX = Dimension(hx, 0, Nx);
     ifunc.mSpaceDimensionY = (Dimension(hy, 0, Ny));
-    ifunc.mTimeDimension = Dimension(0.01, 0, 100);
+    ifunc.mTimeDimension = Dimension(0.01, 0, 500);
     
     ifunc.alpha0 = 1.00; ifunc.V0.resize(Ny+1, Nx+1, 0.0);
     ifunc.alpha1 = 1.00; ifunc.V1.resize(Ny+1, Nx+1, 0.0);
@@ -455,36 +432,17 @@ void IProblem2H2D::optimization1()
     g.setR1MinimizeEpsilon(0.1, 0.001);
     g.setNormalize(true);
     g.showEndMessage(true);
-    //    g.setResetIteration(false);
+    g.setResetIteration(true);
     
     DoubleVector x; ifunc.toVector(o_prm, x);
     g.calculate(x);
-}
-
-void IProblem2H2D::forwardS()
-{
-    IProblem2HForward2D frw;
-    frw.addSpaceDimension(Dimension(0.01, 0, 100));
-    frw.addSpaceDimension(Dimension(0.01, 0, 100));
-    frw.setTimeDimension(Dimension(0.01, 0, 100000));
-    
-    EquationParameter e_prm;
-    e_prm.a = 1.0;
-    e_prm.lambda = +2.0;
-    frw.mEquParameter = e_prm;
-    
-    DoubleMatrix u;
-    DoubleMatrix ut;
-    frw.calculateMVD_N(u, ut);
-    
-    IPrinter::printMatrix(u);
 }
 
 void IProblem2H2D::distributeDelta(const SpacePoint &pt, std::vector<ExtendedSpacePointNode> &nodes, unsigned int id, const Dimension &dimX, const Dimension &dimY, unsigned int k)
 {
     if (_DISTRIBUTION_METHOD_ == 1)
     {
-        distributeDelta1(pt, id, nodes, dimX, dimY);
+        distributeDeltaP(pt, id, nodes, dimX, dimY);
     }
 
     if (_DISTRIBUTION_METHOD_ == 2)
@@ -498,7 +456,7 @@ void IProblem2H2D::distributeDelta(const SpacePoint &pt, std::vector<ExtendedSpa
     }
 }
 
-void IProblem2H2D::distributeDelta1(const SpacePoint &pt, unsigned int id, std::vector<ExtendedSpacePointNode> &nodes, const Dimension &dimX, const Dimension &dimY)
+void IProblem2H2D::distributeDeltaP(const SpacePoint &pt, unsigned int id, std::vector<ExtendedSpacePointNode> &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int)
 {
     double hx = dimX.step();
     double hy = dimY.step();
@@ -512,7 +470,7 @@ void IProblem2H2D::distributeDelta1(const SpacePoint &pt, unsigned int id, std::
     ExtendedSpacePointNode node; node.id = id; node.pt = pt; node.i = rx; node.j = ry; node.w = 1.0/(hx*hy); nodes.push_back(node);
 }
 
-void IProblem2H2D::distributeDeltaR(const SpacePoint &pt, unsigned int id, std::vector<ExtendedSpacePointNode> &nodes, const Dimension &dimX, const Dimension &dimY)
+void IProblem2H2D::distributeDeltaR(const SpacePoint &pt, unsigned int id, std::vector<ExtendedSpacePointNode> &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int)
 {
     double hx = dimX.step();
     double hy = dimY.step();
@@ -531,7 +489,7 @@ void IProblem2H2D::distributeDeltaR(const SpacePoint &pt, unsigned int id, std::
     ExtendedSpacePointNode node00; node00.id = id; node00.pt = pt; node00.i = rx+0; node00.j = ry+0; node00.w = ((h2x/hx)*(h2y/hy))/(hx*hy); nodes.push_back(node00);
     ExtendedSpacePointNode node01; node01.id = id; node01.pt = pt; node01.i = rx+0; node01.j = ry+1; node01.w = ((h2x/hx)*(h1y/hy))/(hx*hy); nodes.push_back(node01);
     ExtendedSpacePointNode node11; node11.id = id; node11.pt = pt; node11.i = rx+1; node11.j = ry+1; node11.w = ((h1x/hx)*(h1y/hy))/(hx*hy); nodes.push_back(node11);
-    ExtendedSpacePointNode node10; node10.id = id; node10.pt = pt; node10.i = rx+0; node10.j = ry+0; node10.w = ((h1x/hx)*(h2y/hy))/(hx*hy); nodes.push_back(node10);
+    ExtendedSpacePointNode node10; node10.id = id; node10.pt = pt; node10.i = rx+1; node10.j = ry+0; node10.w = ((h1x/hx)*(h2y/hy))/(hx*hy); nodes.push_back(node10);
 }
 
 void IProblem2H2D::distributeDeltaG(const SpacePoint &pt, unsigned int id, std::vector<ExtendedSpacePointNode> &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int k)
@@ -573,226 +531,304 @@ void IProblem2H2D::distributeDeltaG(const SpacePoint &pt, unsigned int id, std::
     }
 }
 
-ExtendedSpaceNode2DH::ExtendedSpaceNode2DH()
+void ExtendedSpacePoint::spreadPoint(const Dimension &dimX, const Dimension &dimY, unsigned int type)
 {
-    x = y = 0.0;
-    i = j = 0;
-    wi = NULL;
-    layerNumber = 0;
+    double hx = dimX.step();
+    double hy = dimY.step();
+
+    unsigned int Nx = dimX.sizeN();
+    unsigned int Ny = dimY.sizeN();
+
+    if (type == 1) {}
+
+    if (type == 2)
+    {
+        rows = 2;
+        cols = 2;
+        w.resize(rows, cols);
+
+        uv.resize(layerCount);
+        ux.resize(layerCount);
+        uy.resize(layerCount);
+
+        ri.resize(rows);
+        ci.resize(cols);
+
+        unsigned int rx = (unsigned int) (ceil( x * Nx ));
+        unsigned int ry = (unsigned int) (ceil( y * Ny ));
+
+        double h1x = fabs(x - rx*hx);
+        double h1y = fabs(y - ry*hy);
+        double h2x = hx-fabs(x - rx*hx);
+        double h2y = hx-fabs(y - ry*hy);
+
+        ri[0] = rx; ri[1] = rx+1;
+        ci[0] = ry; ci[1] = ry+1;
+        w[0][0] = ((h2x/hx)*(h2y/hy))/(hx*hy);
+        w[1][0] = ((h2x/hx)*(h1y/hy))/(hx*hy);
+        w[1][1] = ((h1x/hx)*(h1y/hy))/(hx*hy);
+        w[0][1] = ((h1x/hx)*(h2y/hy))/(hx*hy);
+    }
+
+    if (type == 4) {}
 }
 
-ExtendedSpaceNode2DH::~ExtendedSpaceNode2DH()
-{}
+//ExtendedSpaceNode2DH::ExtendedSpaceNode2DH()
+//{
+//    x = y = 0.0;
+//    i = j = 0;
+//    //wi = NULL;
+//    layerNumber = 0;
+//}
 
-void ExtendedSpaceNode2DH::setSpaceNode(const SpacePoint &sn)
-{
-    this->x = sn.x;
-    this->y = sn.y;
-}
+//ExtendedSpaceNode2DH::~ExtendedSpaceNode2DH()
+//{}
 
-void ExtendedSpaceNode2DH::extendWeights(const Dimension &dimX, const Dimension &dimY, unsigned int layerNumber, unsigned int rows, unsigned int cols)
-{
-    this->i = (unsigned int)(round(this->x*dimX.sizeN()));
-    this->j = (unsigned int)(round(this->y*dimY.sizeN()));
+//void ExtendedSpaceNode2DH::setSpaceNode(const SpacePoint &sn)
+//{
+//    this->x = sn.x;
+//    this->y = sn.y;
+//}
 
-    if (rows==1 && cols==1)
-    {
-        //puts("extendWeights...");
-        u = new double[layerNumber];
-        ux = new double[layerNumber];
-        uy = new double[layerNumber];
-    }
+//void ExtendedSpaceNode2DH::extendWeights(const Dimension &dimX, const Dimension &dimY, unsigned int layerNumber, unsigned int rows, unsigned int cols)
+//{
+//    //this->rows = rows;
+//    //this->cols = cols;
+//    this->layerNumber = layerNumber;
 
-    if (rows==3 && cols==3)
-    {
-        this->rows = rows;
-        this->cols = cols;
-        this->layerNumber = layerNumber;
-        this->wi = new WISpaceNodePDE*[rows];
-        for (unsigned int rw=0; rw<rows; rw++)
-        {
-            wi[rw] = new WISpaceNodePDE[cols];
-            for (unsigned int cl=0; cl<cols; cl++)
-            {
-                wi[rw][cl].u = new double[layerNumber];
-            }
-        }
+//    u = new double[layerNumber];
+//    ux = new double[layerNumber];
+//    uy = new double[layerNumber];
 
-        unsigned int Nx = dimX.sizeN();
-        unsigned int Ny = dimY.sizeN();
+//    i = (unsigned int)(round(x*dimX.sizeN()));
+//    j = (unsigned int)(round(y*dimY.sizeN()));
 
-        double hx = dimX.step();
-        double hy = dimY.step();
-
-        unsigned int rx = (unsigned int)(round(x*Nx));
-        unsigned int ry = (unsigned int)(round(y*Ny));
-
-        double dx = 0.0;
-        double dy = 0.0;
-
-        wi[0][0].i = rx - 1; wi[0][0].x = wi[0][0].i*hx; wi[0][0].j = ry - 1; wi[0][0].y = wi[0][0].j*hy; dx = fabs(wi[0][0].x-x); dy = fabs(wi[0][0].y-y); wi[0][0].w = 0.0;
-        wi[0][1].i = rx + 0; wi[0][1].x = wi[0][1].i*hx; wi[0][1].j = ry - 1; wi[0][1].y = wi[0][1].j*hy; dx = fabs(wi[0][1].x-x); dy = fabs(wi[0][1].y-y); wi[0][1].w = 0.0;
-        wi[0][2].i = rx + 1; wi[0][2].x = wi[0][2].i*hx; wi[0][2].j = ry - 1; wi[0][2].y = wi[0][2].j*hy; dx = fabs(wi[0][2].x-x); dy = fabs(wi[0][2].y-y); wi[0][2].w = 0.0;
-        wi[1][0].i = rx - 1; wi[1][0].x = wi[1][0].i*hx; wi[1][0].j = ry + 0; wi[1][0].y = wi[1][0].j*hy; dx = fabs(wi[1][0].x-x); dy = fabs(wi[1][0].y-y); wi[1][0].w = 0.0;
-        wi[1][1].i = rx + 0; wi[1][1].x = wi[1][1].i*hx; wi[1][1].j = ry + 0; wi[1][1].y = wi[1][1].j*hy; dx = fabs(wi[1][1].x-x); dy = fabs(wi[1][1].y-y); wi[1][1].w = 0.0;
-        wi[1][2].i = rx + 1; wi[1][2].x = wi[1][2].i*hx; wi[1][2].j = ry + 0; wi[1][2].y = wi[1][2].j*hy; dx = fabs(wi[1][2].x-x); dy = fabs(wi[1][2].y-y); wi[1][2].w = 0.0;
-        wi[2][0].i = rx - 1; wi[2][0].x = wi[2][0].i*hx; wi[2][0].j = ry + 1; wi[2][0].y = wi[2][0].j*hy; dx = fabs(wi[2][0].x-x); dy = fabs(wi[2][0].y-y); wi[2][0].w = 0.0;
-        wi[2][1].i = rx + 0; wi[2][1].x = wi[2][1].i*hx; wi[2][1].j = ry + 1; wi[2][1].y = wi[2][1].j*hy; dx = fabs(wi[2][1].x-x); dy = fabs(wi[2][1].y-y); wi[2][1].w = 0.0;
-        wi[2][2].i = rx + 1; wi[2][2].x = wi[2][2].i*hx; wi[2][2].j = ry + 1; wi[2][2].y = wi[2][2].j*hy; dx = fabs(wi[2][2].x-x); dy = fabs(wi[2][2].y-y); wi[2][2].w = 0.0;
-    }
-    
-    if (rows==4 && cols==4)
-    {
-        this->rows = rows;
-        this->cols = cols;
-        this->layerNumber = layerNumber;
-        this->wi = new WISpaceNodePDE*[rows];
-        for (unsigned int rw=0; rw<rows; rw++)
-        {
-            wi[rw] = new WISpaceNodePDE[cols];
-            for (unsigned int cl=0; cl<cols; cl++)
-            {
-                wi[rw][cl].u = new double[layerNumber];
-            }
-        }
-
-        unsigned int Nx = dimX.sizeN();
-        unsigned int Ny = dimY.sizeN();
-
-        double hx = dimX.step();
-        double hy = dimY.step();
-
-        unsigned int rx = (unsigned int)(floor(x*Nx));
-        unsigned int ry = (unsigned int)(floor(y*Ny));
-
-        double hx3 = hx*hx*hx;
-        double hx32 = (1.0/(2.0*hx3));
-        double hx36 = (1.0/(6.0*hx3));
-
-        double hy3 = hy*hy*hy;
-        double hy32 = (1.0/(2.0*hy3));
-        double hy36 = (1.0/(6.0*hy3));
-
-        double dx = 0.0;
-        double dy = 0.0;
-
-        wi[1][1].i = rx + 0; wi[1][1].x = wi[1][1].i*hx; wi[1][1].j = ry + 0; wi[1][1].y = wi[1][1].j*hy; dx = fabs(wi[1][1].x-x); dy = fabs(wi[1][1].y-y);
-        wi[1][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-        wi[2][1].i = rx + 0; wi[2][1].x = wi[2][1].i*hx; wi[2][1].j = ry + 1; wi[2][1].y = wi[2][1].j*hy; dx = fabs(wi[2][1].x-x); dy = fabs(wi[2][1].y-y);
-        wi[2][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-        wi[2][2].i = rx + 1; wi[2][2].x = wi[2][2].i*hx; wi[2][2].j = ry + 1; wi[2][2].y = wi[2][2].j*hy; dx = fabs(wi[2][2].x-x); dy = fabs(wi[2][2].y-y);
-        wi[2][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-        wi[1][2].i = rx + 1; wi[1][2].x = wi[1][2].i*hx; wi[1][2].j = ry + 0; wi[1][2].y = wi[1][2].j*hy; dx = fabs(wi[1][2].x-x); dy = fabs(wi[1][2].y-y);
-        wi[1][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-        wi[0][0].i = rx - 1; wi[0][0].x = wi[0][0].i*hx; wi[0][0].j = ry - 1; wi[0][0].y = wi[0][0].j*hy; dx = fabs(wi[0][0].x-x); dy = fabs(wi[0][0].y-y);
-        wi[0][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36) * ((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-        wi[1][0].i = rx - 1; wi[1][0].x = wi[1][0].i*hx; wi[1][0].j = ry + 0; wi[1][0].y = wi[1][0].j*hy; dx = fabs(wi[1][0].x-x); dy = fabs(wi[1][0].y-y);
-        wi[1][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-        wi[2][0].i = rx - 1; wi[2][0].x = wi[2][0].i*hx; wi[2][0].j = ry + 1; wi[2][0].y = wi[2][0].j*hy; dx = fabs(wi[2][0].x-x); dy = fabs(wi[2][0].y-y);
-        wi[2][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-        wi[3][0].i = rx - 1; wi[3][0].x = wi[3][0].i*hx; wi[3][0].j = ry + 2; wi[3][0].y = wi[3][0].j*hy; dx = fabs(wi[3][0].x-x); dy = fabs(wi[3][0].y-y);
-        wi[3][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-        wi[3][1].i = rx + 0; wi[3][1].x = wi[3][1].i*hx; wi[3][1].j = ry + 2; wi[3][1].y = wi[3][1].j*hy; dx = fabs(wi[3][1].x-x); dy = fabs(wi[3][1].y-y);
-        wi[3][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-        wi[3][2].i = rx + 1; wi[3][2].x = wi[3][2].i*hx; wi[3][2].j = ry + 2; wi[3][2].y = wi[3][2].j*hy; dx = fabs(wi[3][2].x-x); dy = fabs(wi[3][2].y-y);
-        wi[3][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-        wi[3][3].i = rx + 2; wi[3][3].x = wi[3][3].i*hx; wi[3][3].j = ry + 2; wi[3][3].y = wi[3][3].j*hy; dx = fabs(wi[3][3].x-x); dy = fabs(wi[3][3].y-y);
-        wi[3][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-        wi[2][3].i = rx + 2; wi[2][3].x = wi[2][3].i*hx; wi[2][3].j = ry + 1; wi[2][3].y = wi[2][3].j*hy; dx = fabs(wi[2][3].x-x); dy = fabs(wi[2][3].y-y);
-        wi[2][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-        wi[1][3].i = rx + 2; wi[1][3].x = wi[1][3].i*hx; wi[1][3].j = ry + 0; wi[1][3].y = wi[1][3].j*hy; dx = fabs(wi[1][3].x-x); dy = fabs(wi[1][3].y-y);
-        wi[1][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
-
-        wi[0][3].i = rx + 2; wi[0][3].x = wi[0][3].i*hx; wi[0][3].j = ry - 1; wi[0][3].y = wi[0][3].j*hy; dx = fabs(wi[0][3].x-x); dy = fabs(wi[0][3].y-y);
-        wi[0][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-        wi[0][2].i = rx + 1; wi[0][2].x = wi[0][2].i*hx; wi[0][2].j = ry - 1; wi[0][2].y = wi[0][2].j*hy; dx = fabs(wi[0][2].x-x); dy = fabs(wi[0][2].y-y);
-        wi[0][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-
-        wi[0][1].i = rx + 0; wi[0][1].x = wi[0][1].i*hx; wi[0][1].j = ry - 1; wi[0][1].y = wi[0][1].j*hy; dx = fabs(wi[0][1].x-x); dy = fabs(wi[0][1].y-y);
-        wi[0][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
-    }
-}
-
-void ExtendedSpaceNode2DH::clearWeights()
-{
-    if (_INFO_ROWS_ == 1 && _INFO_COLS_ == 1)
-    {
-        //puts("clearWeights...");
-        delete [] u;
-        delete [] ux;
-        delete [] uy;
-    }
-    else
-    {
-        for (unsigned int rw=0; rw<rows; rw++)
-        {
-            for (unsigned int cl=0; cl<cols; cl++)
-            {
-                delete [] (wi[rw][cl].u);
-            }
-            delete [] wi[rw];
-        }
-        delete [] wi;
-    }
-}
-
-double ExtendedSpaceNode2DH::value(unsigned int layer) const
-{
-//    double hx = dimX.step();
-//    double hy = dimY.step();
-
-//    unsigned int Nx = dimX.sizeN();
-//    unsigned int Ny = dimY.sizeN();
-
-//    if (_DISTRIBUTION_METHOD_  == 2)
+//    if (rows==1 && cols==1)
 //    {
-//        unsigned int rx = (unsigned int) (ceil( pt.x * Nx ));
-//        unsigned int ry = (unsigned int) (ceil( pt.y * Ny ));
-
-//        double h1x = fabs(pt.x - rx*hx);
-//        double h1y = fabs(pt.y - ry*hy);
-//        double h2x = hx-fabs(pt.x - rx*hx);
-//        double h2y = hx-fabs(pt.y - ry*hy);
-
-//        ExtendedSpacePointNode node00; node00.id = id; node00.pt = pt; node00.i = rx+0; node00.j = ry+0; node00.w = ((h2x/hx)*(h2y/hy))/(hx*hy); nodes.push_back(node00);
-//        ExtendedSpacePointNode node01; node01.id = id; node01.pt = pt; node01.i = rx+0; node01.j = ry+1; node01.w = ((h2x/hx)*(h1y/hy))/(hx*hy); nodes.push_back(node01);
-//        ExtendedSpacePointNode node11; node11.id = id; node11.pt = pt; node11.i = rx+1; node11.j = ry+1; node11.w = ((h1x/hx)*(h1y/hy))/(hx*hy); nodes.push_back(node11);
-//        ExtendedSpacePointNode node10; node10.id = id; node10.pt = pt; node10.i = rx+0; node10.j = ry+0; node10.w = ((h1x/hx)*(h2y/hy))/(hx*hy); nodes.push_back(node10);
+//        //puts("extendWeights...");
+//        //u = new double[layerNumber];
+//        //ux = new double[layerNumber];
+//        //uy = new double[layerNumber];
 //    }
 
-    if (_INFO_ROWS_ == 1 && _INFO_COLS_ == 1)
-    {
-        //puts("value...");
-        return u[layer];
-    }
-    if (_INFO_ROWS_ == 3 && _INFO_COLS_ == 3) return value2(layer);
-    if (_INFO_ROWS_ == 4 && _INFO_COLS_ == 4) return value1(layer);
-    return NAN;
-}
+//    if (rows==3 && cols==3)
+//    {
+//        //this->rows = rows;
+//        //this->cols = cols;
+//        //this->layerNumber = layerNumber;
+//        //this->wi = new WISpaceNodePDE*[rows];
+//        //for (unsigned int rw=0; rw<rows; rw++)
+//        //{
+//        //    wi[rw] = new WISpaceNodePDE[cols];
+//        //    for (unsigned int cl=0; cl<cols; cl++)
+//        //    {
+//        //        wi[rw][cl].u = new double[layerNumber];
+//        //    }
+//        //}
 
-double ExtendedSpaceNode2DH::value3(unsigned int ln) const
-{
-    //double cx =
-}
+//        //unsigned int Nx = dimX.sizeN();
+//        //unsigned int Ny = dimY.sizeN();
 
+//        //double hx = dimX.step();
+//        //double hy = dimY.step();
+
+//        //unsigned int rx = (unsigned int)(round(x*Nx));
+//        //unsigned int ry = (unsigned int)(round(y*Ny));
+
+//        //double dx = 0.0;
+//        //double dy = 0.0;
+
+//        //wi[0][0].i = rx - 1; wi[0][0].x = wi[0][0].i*hx; wi[0][0].j = ry - 1; wi[0][0].y = wi[0][0].j*hy; dx = fabs(wi[0][0].x-x); dy = fabs(wi[0][0].y-y); wi[0][0].w = 0.0;
+//        //wi[0][1].i = rx + 0; wi[0][1].x = wi[0][1].i*hx; wi[0][1].j = ry - 1; wi[0][1].y = wi[0][1].j*hy; dx = fabs(wi[0][1].x-x); dy = fabs(wi[0][1].y-y); wi[0][1].w = 0.0;
+//        //wi[0][2].i = rx + 1; wi[0][2].x = wi[0][2].i*hx; wi[0][2].j = ry - 1; wi[0][2].y = wi[0][2].j*hy; dx = fabs(wi[0][2].x-x); dy = fabs(wi[0][2].y-y); wi[0][2].w = 0.0;
+//        //wi[1][0].i = rx - 1; wi[1][0].x = wi[1][0].i*hx; wi[1][0].j = ry + 0; wi[1][0].y = wi[1][0].j*hy; dx = fabs(wi[1][0].x-x); dy = fabs(wi[1][0].y-y); wi[1][0].w = 0.0;
+//        //wi[1][1].i = rx + 0; wi[1][1].x = wi[1][1].i*hx; wi[1][1].j = ry + 0; wi[1][1].y = wi[1][1].j*hy; dx = fabs(wi[1][1].x-x); dy = fabs(wi[1][1].y-y); wi[1][1].w = 0.0;
+//        //wi[1][2].i = rx + 1; wi[1][2].x = wi[1][2].i*hx; wi[1][2].j = ry + 0; wi[1][2].y = wi[1][2].j*hy; dx = fabs(wi[1][2].x-x); dy = fabs(wi[1][2].y-y); wi[1][2].w = 0.0;
+//        //wi[2][0].i = rx - 1; wi[2][0].x = wi[2][0].i*hx; wi[2][0].j = ry + 1; wi[2][0].y = wi[2][0].j*hy; dx = fabs(wi[2][0].x-x); dy = fabs(wi[2][0].y-y); wi[2][0].w = 0.0;
+//        //wi[2][1].i = rx + 0; wi[2][1].x = wi[2][1].i*hx; wi[2][1].j = ry + 1; wi[2][1].y = wi[2][1].j*hy; dx = fabs(wi[2][1].x-x); dy = fabs(wi[2][1].y-y); wi[2][1].w = 0.0;
+//        //wi[2][2].i = rx + 1; wi[2][2].x = wi[2][2].i*hx; wi[2][2].j = ry + 1; wi[2][2].y = wi[2][2].j*hy; dx = fabs(wi[2][2].x-x); dy = fabs(wi[2][2].y-y); wi[2][2].w = 0.0;
+//    }
+    
+//    if (rows==4 && cols==4)
+//    {
+//        //this->rows = rows;
+//        //this->cols = cols;
+//        this->layerNumber = layerNumber;
+//        //this->wi = new WISpaceNodePDE*[rows];
+//        //for (unsigned int rw=0; rw<rows; rw++)
+//        //{
+//        //    wi[rw] = new WISpaceNodePDE[cols];
+//        //    for (unsigned int cl=0; cl<cols; cl++)
+//        //    {
+//        //        wi[rw][cl].u = new double[layerNumber];
+//        //    }
+//        //}
+
+//        //unsigned int Nx = dimX.sizeN();
+//        //unsigned int Ny = dimY.sizeN();
+
+//        //double hx = dimX.step();
+//        //double hy = dimY.step();
+
+//        //unsigned int rx = (unsigned int)(floor(x*Nx));
+//        //unsigned int ry = (unsigned int)(floor(y*Ny));
+
+//        //double hx3 = hx*hx*hx;
+//        //double hx32 = (1.0/(2.0*hx3));
+//        //double hx36 = (1.0/(6.0*hx3));
+
+//        //double hy3 = hy*hy*hy;
+//        //double hy32 = (1.0/(2.0*hy3));
+//        //double hy36 = (1.0/(6.0*hy3));
+
+//        //double dx = 0.0;
+//        //double dy = 0.0;
+
+//        //wi[1][1].i = rx + 0; wi[1][1].x = wi[1][1].i*hx; wi[1][1].j = ry + 0; wi[1][1].y = wi[1][1].j*hy; dx = fabs(wi[1][1].x-x); dy = fabs(wi[1][1].y-y);
+//        //wi[1][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+//        //wi[2][1].i = rx + 0; wi[2][1].x = wi[2][1].i*hx; wi[2][1].j = ry + 1; wi[2][1].y = wi[2][1].j*hy; dx = fabs(wi[2][1].x-x); dy = fabs(wi[2][1].y-y);
+//        //wi[2][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+//        //wi[2][2].i = rx + 1; wi[2][2].x = wi[2][2].i*hx; wi[2][2].j = ry + 1; wi[2][2].y = wi[2][2].j*hy; dx = fabs(wi[2][2].x-x); dy = fabs(wi[2][2].y-y);
+//        //wi[2][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+//        //wi[1][2].i = rx + 1; wi[1][2].x = wi[1][2].i*hx; wi[1][2].j = ry + 0; wi[1][2].y = wi[1][2].j*hy; dx = fabs(wi[1][2].x-x); dy = fabs(wi[1][2].y-y);
+//        //wi[1][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+//        //wi[0][0].i = rx - 1; wi[0][0].x = wi[0][0].i*hx; wi[0][0].j = ry - 1; wi[0][0].y = wi[0][0].j*hy; dx = fabs(wi[0][0].x-x); dy = fabs(wi[0][0].y-y);
+//        //wi[0][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36) * ((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+//        //wi[1][0].i = rx - 1; wi[1][0].x = wi[1][0].i*hx; wi[1][0].j = ry + 0; wi[1][0].y = wi[1][0].j*hy; dx = fabs(wi[1][0].x-x); dy = fabs(wi[1][0].y-y);
+//        //wi[1][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36) * ((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+//        //wi[2][0].i = rx - 1; wi[2][0].x = wi[2][0].i*hx; wi[2][0].j = ry + 1; wi[2][0].y = wi[2][0].j*hy; dx = fabs(wi[2][0].x-x); dy = fabs(wi[2][0].y-y);
+//        //wi[2][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+//        //wi[3][0].i = rx - 1; wi[3][0].x = wi[3][0].i*hx; wi[3][0].j = ry + 2; wi[3][0].y = wi[3][0].j*hy; dx = fabs(wi[3][0].x-x); dy = fabs(wi[3][0].y-y);
+//        //wi[3][0].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+//        //wi[3][1].i = rx + 0; wi[3][1].x = wi[3][1].i*hx; wi[3][1].j = ry + 2; wi[3][1].y = wi[3][1].j*hy; dx = fabs(wi[3][1].x-x); dy = fabs(wi[3][1].y-y);
+//        //wi[3][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+//        //wi[3][2].i = rx + 1; wi[3][2].x = wi[3][2].i*hx; wi[3][2].j = ry + 2; wi[3][2].y = wi[3][2].j*hy; dx = fabs(wi[3][2].x-x); dy = fabs(wi[3][2].y-y);
+//        //wi[3][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+//        //wi[3][3].i = rx + 2; wi[3][3].x = wi[3][3].i*hx; wi[3][3].j = ry + 2; wi[3][3].y = wi[3][3].j*hy; dx = fabs(wi[3][3].x-x); dy = fabs(wi[3][3].y-y);
+//        //wi[3][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+//        //wi[2][3].i = rx + 2; wi[2][3].x = wi[2][3].i*hx; wi[2][3].j = ry + 1; wi[2][3].y = wi[2][3].j*hy; dx = fabs(wi[2][3].x-x); dy = fabs(wi[2][3].y-y);
+//        //wi[2][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+//        //wi[1][3].i = rx + 2; wi[1][3].x = wi[1][3].i*hx; wi[1][3].j = ry + 0; wi[1][3].y = wi[1][3].j*hy; dx = fabs(wi[1][3].x-x); dy = fabs(wi[1][3].y-y);
+//        //wi[1][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(hy+dy)*hy32);
+
+//        //wi[0][3].i = rx + 2; wi[0][3].x = wi[0][3].i*hx; wi[0][3].j = ry - 1; wi[0][3].y = wi[0][3].j*hy; dx = fabs(wi[0][3].x-x); dy = fabs(wi[0][3].y-y);
+//        //wi[0][3].w = ((2.0*hx-dx)*(hx-dx)*(3.0*hx-dx)*hx36)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+//        //wi[0][2].i = rx + 1; wi[0][2].x = wi[0][2].i*hx; wi[0][2].j = ry - 1; wi[0][2].y = wi[0][2].j*hy; dx = fabs(wi[0][2].x-x); dy = fabs(wi[0][2].y-y);
+//        //wi[0][2].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+
+//        //wi[0][1].i = rx + 0; wi[0][1].x = wi[0][1].i*hx; wi[0][1].j = ry - 1; wi[0][1].y = wi[0][1].j*hy; dx = fabs(wi[0][1].x-x); dy = fabs(wi[0][1].y-y);
+//        //wi[0][1].w = ((2.0*hx-dx)*(hx-dx)*(hx+dx)*hx32)*((2.0*hy-dy)*(hy-dy)*(3.0*hy-dy)*hy36);
+//    }
+//}
+
+//void ExtendedSpaceNode2DH::clearWeights()
+//{
+//    delete [] u;
+//    delete [] ux;
+//    delete [] uy;
+
+//    if (_INFO_ROWS_ == 1 && _INFO_COLS_ == 1)
+//    {
+//        //puts("clearWeights...");
+//        //delete [] u;
+//        //delete [] ux;
+//        //delete [] uy;
+//    }
+//    else
+//    {
+//        //for (unsigned int rw=0; rw<rows; rw++)
+//        //{
+//        //    for (unsigned int cl=0; cl<cols; cl++)
+//        //    {
+//        //        delete [] (wi[rw][cl].u);
+//        //    }
+//        //    delete [] wi[rw];
+//        //}
+//        //delete [] wi;
+//    }
+//}
+
+//double ExtendedSpaceNode2DH::value(unsigned int layer) const
+//{
+//    return u[layer];
+
+////    double hx = dimX.step();
+////    double hy = dimY.step();
+
+////    unsigned int Nx = dimX.sizeN();
+////    unsigned int Ny = dimY.sizeN();
+
+////    if (_DISTRIBUTION_METHOD_  == 2)
+////    {
+////        unsigned int rx = (unsigned int) (ceil( pt.x * Nx ));
+////        unsigned int ry = (unsigned int) (ceil( pt.y * Ny ));
+
+////        double h1x = fabs(pt.x - rx*hx);
+////        double h1y = fabs(pt.y - ry*hy);
+////        double h2x = hx-fabs(pt.x - rx*hx);
+////        double h2y = hx-fabs(pt.y - ry*hy);
+
+////        ExtendedSpacePointNode node00; node00.id = id; node00.pt = pt; node00.i = rx+0; node00.j = ry+0; node00.w = ((h2x/hx)*(h2y/hy))/(hx*hy); nodes.push_back(node00);
+////        ExtendedSpacePointNode node01; node01.id = id; node01.pt = pt; node01.i = rx+0; node01.j = ry+1; node01.w = ((h2x/hx)*(h1y/hy))/(hx*hy); nodes.push_back(node01);
+////        ExtendedSpacePointNode node11; node11.id = id; node11.pt = pt; node11.i = rx+1; node11.j = ry+1; node11.w = ((h1x/hx)*(h1y/hy))/(hx*hy); nodes.push_back(node11);
+////        ExtendedSpacePointNode node10; node10.id = id; node10.pt = pt; node10.i = rx+0; node10.j = ry+0; node10.w = ((h1x/hx)*(h2y/hy))/(hx*hy); nodes.push_back(node10);
+////    }
+
+////    if (_INFO_ROWS_ == 1 && _INFO_COLS_ == 1)
+////    {
+////        //puts("value...");
+////        return u[layer];
+////    }
+////    if (_INFO_ROWS_ == 3 && _INFO_COLS_ == 3) return value2(layer);
+////    if (_INFO_ROWS_ == 4 && _INFO_COLS_ == 4) return value1(layer);
+////    return NAN;
+//}
+
+//double ExtendedSpaceNode2DH::valueDx(unsigned int layer) const
+//{
+//    return ux[layer];
+////    if (_INFO_ROWS_ == 1 && _INFO_COLS_ == 1)
+////    {
+////        //puts("valueDx...");
+////        return ux[layer];
+////    }
+////    if (_INFO_ROWS_ == 3 && _INFO_COLS_ == 3) return valueDx2(layer);
+////    if (_INFO_ROWS_ == 4 && _INFO_COLS_ == 4) return valueDx1(layer);
+////    return NAN;
+//}
+
+//double ExtendedSpaceNode2DH::valueDy(unsigned int layer) const
+//{
+//    return uy[layer];
+////    if (_INFO_ROWS_ == 1 && _INFO_COLS_ == 1)
+////    {
+////        //puts("valueDy...");
+////        return uy[layer];
+////    }
+////    if (_INFO_ROWS_ == 3 && _INFO_COLS_ == 3) return valueDy2(layer);
+////    if (_INFO_ROWS_ == 4 && _INFO_COLS_ == 4) return valueDy1(layer);
+////    return NAN;
+//}
+
+/*
 double ExtendedSpaceNode2DH::value1(unsigned int layer) const
 {
     double Lx[] = {0.0, 0.0, 0.0, 0.0};
     double Ly[] = {0.0, 0.0, 0.0, 0.0};
-    
+
     double y0 = wi[0][0].y;
     double y1 = wi[1][0].y;
     double y2 = wi[2][0].y;
@@ -801,7 +837,7 @@ double ExtendedSpaceNode2DH::value1(unsigned int layer) const
     Ly[1] = ((y-y0)*(y-y2)*(y-y3))/((y1-y0)*(y1-y2)*(y1-y3));
     Ly[2] = ((y-y0)*(y-y1)*(y-y3))/((y2-y0)*(y2-y1)*(y2-y3));
     Ly[3] = ((y-y0)*(y-y1)*(y-y2))/((y3-y0)*(y3-y1)*(y3-y2));
-    
+
     double x0 = wi[0][0].x;
     double x1 = wi[0][1].x;
     double x2 = wi[0][2].x;
@@ -810,7 +846,7 @@ double ExtendedSpaceNode2DH::value1(unsigned int layer) const
     Lx[1] = ((x-x0)*(x-x2)*(x-x3))/((x1-x0)*(x1-x2)*(x1-x3));
     Lx[2] = ((x-x0)*(x-x1)*(x-x3))/((x2-x0)*(x2-x1)*(x2-x3));
     Lx[3] = ((x-x0)*(x-x1)*(x-x2))/((x3-x0)*(x3-x1)*(x3-x2));
-    
+
     double P = 0.0;
     for (unsigned int j=0; j<rows; j++)
     {
@@ -827,31 +863,9 @@ double ExtendedSpaceNode2DH::value2(unsigned int layer) const
 {
     return wi[1][1].u[layer];
 }
+*/
 
-double ExtendedSpaceNode2DH::valueDx(unsigned int layer) const
-{
-    if (_INFO_ROWS_ == 1 && _INFO_COLS_ == 1)
-    {
-        //puts("valueDx...");
-        return ux[layer];
-    }
-    if (_INFO_ROWS_ == 3 && _INFO_COLS_ == 3) return valueDx2(layer);
-    if (_INFO_ROWS_ == 4 && _INFO_COLS_ == 4) return valueDx1(layer);
-    return NAN;
-}
-
-double ExtendedSpaceNode2DH::valueDy(unsigned int layer) const
-{
-    if (_INFO_ROWS_ == 1 && _INFO_COLS_ == 1)
-    {
-        //puts("valueDy...");
-        return uy[layer];
-    }
-    if (_INFO_ROWS_ == 3 && _INFO_COLS_ == 3) return valueDy2(layer);
-    if (_INFO_ROWS_ == 4 && _INFO_COLS_ == 4) return valueDy1(layer);
-    return NAN;
-}
-
+/*
 double ExtendedSpaceNode2DH::valueDx1(unsigned int layer) const
 {
     double Lx[] = {0.0, 0.0, 0.0, 0.0};
@@ -931,3 +945,30 @@ double ExtendedSpaceNode2DH::valueDy2(unsigned int layer) const
 {
     return (wi[2][1].u[layer]-wi[0][1].u[layer])/(2.0*0.01);
 }
+*/
+
+void SpacePointInfo::clearWeights()
+{
+    delete [] u;   u = NULL;
+    delete [] ux;  ux = NULL;
+    delete [] uy;  uy = NULL;
+}
+
+//void IProblem2H2D::forwardS()
+//{
+//    IProblem2HForward2D frw;
+//    frw.addSpaceDimension(Dimension(0.01, 0, 100));
+//    frw.addSpaceDimension(Dimension(0.01, 0, 100));
+//    frw.setTimeDimension(Dimension(0.01, 0, 100000));
+
+//    EquationParameter e_prm;
+//    e_prm.a = 1.0;
+//    e_prm.lambda = +2.0;
+//    frw.mEquParameter = e_prm;
+
+//    DoubleMatrix u;
+//    DoubleMatrix ut;
+//    frw.calculateMVD_N(u, ut);
+
+//    IPrinter::printMatrix(u);
+//}

@@ -10,14 +10,15 @@ namespace IProblem2H
 class IProblem2HBackward2D : public IHyperbolicIBVP
 {
 public:
-    void calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode2DH> &info, bool use, const vector<ExtendedSpaceNode2DH> &u_info) const;
+    void calculateMVD(DoubleMatrix &p, std::vector<SpacePointInfo> &p_info, bool use, const std::vector<SpacePointInfo> &u_info) const;
 private:
-    void calculateMVD_N(DoubleMatrix &p, vector<ExtendedSpaceNode2DH> &info, bool use, const vector<ExtendedSpaceNode2DH> &u_info) const;
-    void calculateMVD_D(DoubleMatrix &p, vector<ExtendedSpaceNode2DH> &info, bool use, const vector<ExtendedSpaceNode2DH> &u_info) const;
+    void calculateMVD_D(DoubleMatrix &p, std::vector<SpacePointInfo> &p_info, bool use, const std::vector<SpacePointInfo> &u_info) const;
+    void calculateMVD_N(DoubleMatrix &p, std::vector<SpacePointInfo> &p_info, bool use, const std::vector<SpacePointInfo> &u_info) const;
+
 public:
     virtual void layerInfo(const DoubleMatrix &p, unsigned int layerNumber) const;
 
-    void add2Info(const DoubleMatrix &p, vector<ExtendedSpaceNode2DH> &info, const std::vector<ExtendedSpacePointNode> &cntPointNodes, unsigned int ln, double hx, double hy, unsigned int rows, unsigned int cols) const;
+    void add2Info(const DoubleMatrix &p, std::vector<SpacePointInfo> &info, const std::vector<ExtendedSpacePointNode> &cntPointNodes, unsigned int ln, double hx, double hy, unsigned int rows, unsigned int cols) const;
 
     EquationParameter mEquParameter;
     OptimizeParameter mOptParameter;

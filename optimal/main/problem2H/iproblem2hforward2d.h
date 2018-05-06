@@ -9,14 +9,15 @@ namespace IProblem2H
 class IProblem2HForward2D : public IHyperbolicIBVP
 {
 public:
-    void calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
+    void calculateMVD(DoubleMatrix &u, DoubleMatrix &ut, std::vector<SpacePointInfo> &info, bool use) const;
+
     void extendPoints(std::vector<ExtendedSpacePointNode> &obsPointNodes, std::vector<ExtendedSpacePointNode> &cntDeltaNodes,
                       std::vector<ExtendedSpacePointNode> &qPointNodes, const Dimension &dimX, const Dimension &dimY) const;
     void findRowsCols(std::vector<unsigned int> &rows0, std::vector<unsigned int> &rows1, std::vector<unsigned int> &rows2,
                       std::vector<unsigned int> &cols0, std::vector<unsigned int> &cols1, std::vector<unsigned int> &cols2,
                       std::vector<ExtendedSpacePointNode> &obsPointNodes, std::vector<ExtendedSpacePointNode> &cntDeltaNodes,
                       unsigned int N, unsigned int M) const;
-    void initialLayers(DoubleMatrix &u00, DoubleMatrix &u05, DoubleMatrix &u10, vector<ExtendedSpaceNode2DH> &info, bool use,
+    void initialLayers(DoubleMatrix &u00, DoubleMatrix &u05, DoubleMatrix &u10, std::vector<SpacePointInfo> &info, bool use,
                        std::vector<ExtendedSpacePointNode> &obsPointNodes, std::vector<ExtendedSpacePointNode> &cntDeltaNodes,
                        std::vector<ExtendedSpacePointNode> &qPointNodes,unsigned int N, unsigned int M,
                        double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const;
@@ -28,18 +29,19 @@ public:
                      DoubleMatrix &u15, DoubleMatrix &u) const;
     void freeVectors(double *a1X, double *b1X, double *c1X, double *d1X, double *x1X,
                      double *a1Y, double *b1Y, double *c1Y, double *d1Y, double *x1Y) const;
-    void prepareInfo(unsigned int N, std::vector<SpacePoint> points, std::vector<ExtendedSpaceNode2DH> &info,
+    void prepareInfo(unsigned int N, const std::vector<SpacePoint> &points, std::vector<SpacePointInfo> &info,
                      unsigned int L, const Dimension &dimX, const Dimension &dimY) const;
 
 private:
-    void calculateMVD_N(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
+    //void calculateMVD_N(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
 
-    void calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
-    void calculateMVD_D1(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
-    void calculateMVD_D2(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
-    void calculateMVD_D3(DoubleMatrix &u, DoubleMatrix &ut, vector<ExtendedSpaceNode2DH> &info, bool use) const;
+    void calculateMVD_D(DoubleMatrix &u, DoubleMatrix &ut, std::vector<SpacePointInfo> &info, bool use) const;
+    void calculateMVD_D_(DoubleMatrix &u, DoubleMatrix &ut, std::vector<SpacePointInfo> &info, bool use) const;
+    //void calculateMVD_D1(DoubleMatrix &u, DoubleMatrix &ut, std::vector<ExtendedSpaceNode2DH> &info, bool use) const;
+    //void calculateMVD_D2(DoubleMatrix &u, DoubleMatrix &ut, std::vector<ExtendedSpaceNode2DH> &info, bool use) const;
+    //void calculateMVD_D3(DoubleMatrix &u, DoubleMatrix &ut, std::vector<ExtendedSpaceNode2DH> &info, bool use) const;
 public:
-    void calculateMVD_N(DoubleMatrix &u, DoubleMatrix &ut) const;
+    //void calculateMVD_N(DoubleMatrix &u, DoubleMatrix &ut) const;
 
     virtual void layerInfo(const DoubleMatrix &u, unsigned int layerNumber) const;
     virtual void layerInfo(const DoubleMatrix &u, const DoubleMatrix &ut, unsigned int layerNumber) const;
@@ -54,7 +56,7 @@ protected:
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
 private:
-    void add2Info(const DoubleMatrix &u, vector<ExtendedSpaceNode2DH> &info, const std::vector<ExtendedSpacePointNode> &obsPointNodes,
+    void add2Info(const DoubleMatrix &u, vector<SpacePointInfo> &info, const std::vector<ExtendedSpacePointNode> &obsPointNodes,
                   unsigned int ln, double hx, double hy, unsigned int rows, unsigned int cols) const;
 };
 
