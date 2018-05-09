@@ -74,17 +74,17 @@ void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, Optimize
         o_prm.xi.resize(e_prm.No);
         o_prm.eta.resize(e_prm.Nc);
 
-        o_prm.xi[0].x = 0.4500; o_prm.xi[0].y = 0.1200;
-        o_prm.xi[1].x = 0.7600; o_prm.xi[1].y = 0.9200;
+        o_prm.xi[0].x = 0.3000; o_prm.xi[0].y = 0.8000;
+        o_prm.xi[1].x = 0.6000; o_prm.xi[1].y = 0.4000;
         
-        o_prm.eta[0].x = 0.2500; o_prm.eta[0].y = 0.8400;
-        o_prm.eta[1].x = 0.4300; o_prm.eta[1].y = 0.5500;
+        o_prm.eta[0].x = 0.5000; o_prm.eta[0].y = 0.7000;
+        o_prm.eta[1].x = 0.7000; o_prm.eta[1].y = 0.3000;
         
-        o_prm.k[0][0] = +2.4200; o_prm.k[0][1] = +2.8400;
-        o_prm.k[1][0] = +1.1500; o_prm.k[1][1] = +1.2800;
+        o_prm.k[0][0] = +1.1200; o_prm.k[0][1] = +1.2400;
+        o_prm.k[1][0] = +2.4500; o_prm.k[1][1] = +2.1800;
 
-        o_prm.z[0][0] = +3.5500; o_prm.z[0][1] = +5.4400;
-        o_prm.z[1][0] = +4.7400; o_prm.z[1][1] = +3.5300;
+        o_prm.z[0][0] = +0.5000; o_prm.z[0][1] = +0.4000;
+        o_prm.z[1][0] = +0.7000; o_prm.z[1][1] = +0.5000;
 
         o_prm0 = o_prm;
         //        o_prm0.k.resize(e_prm.Nc, e_prm.No, 0.0);
@@ -199,7 +199,7 @@ void IProblem2H2D::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //forward();
     //    forwardS();
-    //checkGradient();
+    checkGradient();
     IPrinter::printSeperatorLine();
     optimization1();
 
