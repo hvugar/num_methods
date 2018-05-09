@@ -447,10 +447,10 @@ void IFunctional::gradient(const DoubleVector &pv, DoubleVector &g) const
     u_info.clear();
     p_info.clear();
 
-    DoubleVector gk = g.mid(0, Nc*No-1);                         gk.L2Normalize(); for (unsigned int i=0; i<Nc*No; i++) g[i] = gk[i];
-    DoubleVector gz = g.mid(Nc*No, 2*Nc*No-1);                   gz.L2Normalize(); for (unsigned int i=0; i<Nc*No; i++) g[Nc*No+i] = gz[i];
-    DoubleVector gx = g.mid(2*Nc*No, 2*Nc*No+2*No-1);            gx.L2Normalize(); for (unsigned int i=0; i<2*No;  i++) g[2*Nc*No+i] = gx[i];
-    DoubleVector ge = g.mid(2*Nc*No+2*No, 2*Nc*No+2*No+2*Nc-1);  ge.L2Normalize(); for (unsigned int i=0; i<2*Nc; i++)  g[2*Nc*No+2*No+i] = ge[i];
+    //DoubleVector gk = g.mid(0, Nc*No-1);                         gk.L2Normalize(); for (unsigned int i=0; i<Nc*No; i++) g[i] = gk[i];
+    //DoubleVector gz = g.mid(Nc*No, 2*Nc*No-1);                   gz.L2Normalize(); for (unsigned int i=0; i<Nc*No; i++) g[Nc*No+i] = gz[i];
+    //DoubleVector gx = g.mid(2*Nc*No, 2*Nc*No+2*No-1);            gx.L2Normalize(); for (unsigned int i=0; i<2*No;  i++) g[2*Nc*No+i] = gx[i];
+    //DoubleVector ge = g.mid(2*Nc*No+2*No, 2*Nc*No+2*No+2*Nc-1);  ge.L2Normalize(); for (unsigned int i=0; i<2*Nc; i++)  g[2*Nc*No+2*No+i] = ge[i];
 }
 
 void IFunctional::project(DoubleVector &pv, unsigned int index)
