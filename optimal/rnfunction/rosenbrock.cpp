@@ -61,7 +61,7 @@ double Rosenbrock::fx(const DoubleVector& x) const
     return ((x1-1.0) * (x1-1.0)) + 100 * (x2 - x1 * x1) * (x2 - x1 * x1);
 }
 
-void Rosenbrock::gradient(const DoubleVector& x, DoubleVector &g)
+void Rosenbrock::gradient(const DoubleVector& x, DoubleVector &g) const
 {
     IGradient::Gradient(this, grad_step, x, g);
 }

@@ -46,7 +46,7 @@ double QuadraticFunction::fx(const DoubleVector& x) const
     //return 4.0*x1*x1 + 3.0*x2*x2 - 4.0*x1*x2 + x1;
 }
 
-void QuadraticFunction::gradient(const DoubleVector& x, DoubleVector &g)
+void QuadraticFunction::gradient(const DoubleVector& x, DoubleVector &g) const
 {
     IGradient::Gradient(this, grad_step, x, g);
 }

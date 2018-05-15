@@ -64,7 +64,7 @@ double BoothFunction::fx(const DoubleVector& x) const
     return (x1 + 2.0*x2 - 7.0)*(x1 + 2.0*x2 - 7.0) + (2.0*x1 + x2 - 5.0)*(2.0*x1 + x2 - 5.0);
 }
 
-void BoothFunction::gradient(const DoubleVector& x, DoubleVector &g)
+void BoothFunction::gradient(const DoubleVector& x, DoubleVector &g) const
 {
     IGradient::Gradient(this, grad_step, x, g);
 }
@@ -91,7 +91,7 @@ void BoothFunction::print(unsigned int i, const DoubleVector &x, const DoubleVec
     printf("\n");
 }
 
-void BoothFunction::project(DoubleVector &x, int index)
+void BoothFunction::project(DoubleVector &x, unsigned int index)
 {
     C_UNUSED(x);
     C_UNUSED(index);

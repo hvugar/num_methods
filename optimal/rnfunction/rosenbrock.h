@@ -13,9 +13,10 @@ class MINIMUMSHARED_EXPORT Rosenbrock : public RnFunction, public IGradient, pub
 public:
     Rosenbrock();
     virtual ~Rosenbrock() {}
-
+    //RnFunction
     virtual double fx(const DoubleVector& x) const;
-    virtual void gradient(const DoubleVector &x, DoubleVector &g);
+    //IGradient
+    virtual void gradient(const DoubleVector &x, DoubleVector &g) const;
     //Printer
     virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const;
 

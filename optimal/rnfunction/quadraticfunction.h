@@ -12,10 +12,11 @@ class MINIMUMSHARED_EXPORT QuadraticFunction : public RnFunction, public IGradie
 public:
     QuadraticFunction();
     virtual ~QuadraticFunction() {}
-
+    //RnFunction
     virtual double fx(const DoubleVector& x) const;
-    virtual void gradient(const DoubleVector &x, DoubleVector &g);
-    //Printer
+    //IGradient
+    virtual void gradient(const DoubleVector &x, DoubleVector &g) const;
+    //IPrinter
     virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const;
 
     static void Main(int argc, char *argv[]);

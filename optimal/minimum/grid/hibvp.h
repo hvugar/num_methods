@@ -14,12 +14,11 @@ protected:
 
 /**
  * @brief The HyperbolicIBVP class
- * u_t(x,t) = a(x,t)u_xx(x,t) + f(x,t)
- *          t in (0,T], x in (0, l),
+ * u_t(x,t) = a(x,t)u_xx(x,t) + f(x,t), t in (0,T], x in (0, l),
  * u(x,0)   = fi1(x), x in [0,l],
  * u_t(x,0) = fi2(x), x in [0,l],
- * u(0,t) = m1(t), t in (0,T],
- * u(1,t) = m2(t), t in (0,T].
+ * u(0,t)   = m1(t),  t in (0,T],
+ * u(1,t)   = m2(t),  t in (0,T].
  */
 
 class MINIMUMSHARED_EXPORT HyperbolicIBVP : protected IHyperbolicIBVP

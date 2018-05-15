@@ -64,7 +64,7 @@ double BealesFunction::fx(const DoubleVector& x) const
     return (1.5 - x1 + x1*x2)*(1.5 - x1 + x1*x2) + (2.25 - x1 + x1*x2*x2)*(2.25 - x1 + x1*x2*x2) + (2.625 - x1 + x1*x2*x2*x2)*(2.625 - x1 + x1*x2*x2*x2);
 }
 
-void BealesFunction::gradient(const DoubleVector& x, DoubleVector &g)
+void BealesFunction::gradient(const DoubleVector& x, DoubleVector &g) const
 {
     IGradient::Gradient(this, grad_step, x, g);
 }
@@ -91,7 +91,7 @@ void BealesFunction::print(unsigned int i, const DoubleVector &x, const DoubleVe
     printf("\n");
 }
 
-void BealesFunction::project(DoubleVector& x, int index)
+void BealesFunction::project(DoubleVector& x, unsigned int index)
 {
     C_UNUSED(x);
     C_UNUSED(index);
