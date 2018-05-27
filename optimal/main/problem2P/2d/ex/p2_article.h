@@ -1,7 +1,7 @@
 #ifndef P2_ARTICLE_H
 #define P2_ARTICLE_H
 
-#include "../abs/abstractproblem22d.h"
+//#include "../abs/abstractproblem22d.h"
 #include "../abs/jfunctional.h"
 #include "../abs/pfunctional.h"
 

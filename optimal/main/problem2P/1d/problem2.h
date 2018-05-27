@@ -35,7 +35,7 @@ public:
 
 public:
     virtual double fx(const DoubleVector &x) const;
-    virtual void gradient(const DoubleVector &x, DoubleVector &g);
+    virtual void gradient(const DoubleVector &x, DoubleVector &g) const;
 
     virtual double integral(const DoubleMatrix &u) const;
 

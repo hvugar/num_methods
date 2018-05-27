@@ -17,7 +17,7 @@ void IProblem2Backward2D::calculateMVD1(DoubleMatrix &p, vector<ExtendedSpaceNod
     double ht = td.step();
 
     unsigned int Lc = mParameter.Lc;
-    unsigned int Lo = mParameter.Lo;
+    //unsigned int Lo = mParameter.Lo;
 
     if (use == true)
     {
@@ -637,7 +637,7 @@ void IProblem2Backward2D::calculateMVD(DoubleMatrix &p, vector<ExtendedSpaceNode
     double ht = td.step();
 
     unsigned int Lc = mParameter.Lc;
-    unsigned int Lo = mParameter.Lo;
+    //unsigned int Lo = mParameter.Lo;
 
     if (use == true)
     {

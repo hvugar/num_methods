@@ -1,6 +1,6 @@
 #include "p2_article.h"
 
-void Problem2Article::Main(int argc, char *argv[])
+void Problem2Article::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //Table1_Y1();
     //Table2_Y1();

@@ -174,7 +174,7 @@ double dp(double x, unsigned int N, double hx, const DoubleMatrix &p, unsigned i
 //           +1.0/(6.0*hx*hx*hx)*((x-xp0)*(x-xp1)+(x-xm1)*(x-xp1)+(x-xm1)*(x-xp0))*p[m][i+2];
 }
 
-void Problem2::gradient(const DoubleVector &prms, DoubleVector &g)
+void Problem2::gradient(const DoubleVector &prms, DoubleVector &g) const
 {
     unsigned int N = mSpaceDimension.sizeN();
     unsigned int M = mTimeDimension.sizeN();
@@ -338,7 +338,7 @@ void Problem2::paremeters2Array(const DoubleMatrix &k, const DoubleMatrix &z, co
     }
 }
 
-double Problem2::mu(unsigned int n) const
+double Problem2::mu(unsigned int) const
 {
     return 1.0;
 }

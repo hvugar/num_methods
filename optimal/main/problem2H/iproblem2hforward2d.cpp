@@ -3178,7 +3178,7 @@ void IProblem2HForward2D::layerInfo(const DoubleMatrix &u UNUSED_PARAM, const Do
     //    printf("%6d %20.8f %20.8f u:%20.8f %20.8f ut:%20.8f %20.8f\n", ln, sum0, sum1, u.min(), u.max(), ut.min(), ut.max());
 }
 
-double IProblem2HForward2D::initial1(const SpaceNodePDE & sn) const
+double IProblem2HForward2D::initial1(const SpaceNodePDE & sn UNUSED_PARAM) const
 {
     return 0.0;
     //return 0.01*sin(M_PI*sn.x)*sin(M_PI*sn.y);
@@ -3202,7 +3202,7 @@ double IProblem2HForward2D::f(const SpaceNodePDE &, const TimeNodePDE &) const
 void IProblem2HForward2D::add2Info(const DoubleMatrix &u,
                                    std::vector<SpacePointInfo> &info,
                                    const std::vector<ExtendedSpacePointNode> &obsPointNodes,
-                                   unsigned int ln, double hx, double hy, unsigned int rows, unsigned int cols) const
+                                   unsigned int ln, double hx, double hy, unsigned int rows UNUSED_PARAM, unsigned int cols UNUSED_PARAM) const
 {
     if (_DISTRIBUTION_METHOD_ == 1)
     {
@@ -4325,8 +4325,10 @@ void IProblem2HForward2D::findRowsCols(std::vector<unsigned int> &rows0, std::ve
 }
 
 void IProblem2HForward2D::initialLayers(DoubleMatrix &u00, DoubleMatrix &u05, DoubleMatrix &u10, std::vector<SpacePointInfo> &info, bool use,
-                                        std::vector<ExtendedSpacePointNode> &obsPointNodes, std::vector<ExtendedSpacePointNode> &cntDeltaNodes,
-                                        std::vector<ExtendedSpacePointNode> &qPointNodes, unsigned int N, unsigned int M,
+                                        std::vector<ExtendedSpacePointNode> &obsPointNodes,
+                                        std::vector<ExtendedSpacePointNode> &cntDeltaNodes UNUSED_PARAM,
+                                        std::vector<ExtendedSpacePointNode> &qPointNodes UNUSED_PARAM,
+                                        unsigned int N, unsigned int M,
                                         double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const
 {
     //unsigned int No = mEquParameter.No;

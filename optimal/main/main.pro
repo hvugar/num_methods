@@ -52,3 +52,6 @@ HEADERS += \
     ivp/nlode1oex1.h \
     nonlinearequationex1.h \
     loadedlinearode1order.h \
+
+OBJECTS_DIR = .obj
+MOC_DIR = .moc

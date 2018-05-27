@@ -614,6 +614,8 @@ void IFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVecto
 //    ifunc->optimizeZ = i%4==0;
 //    ifunc->optimizeC = i%4==1;
 //    ifunc->optimizeO = i%4==2;
+
+    C_UNUSED(ifunc);
 }
 
 void IFunctional::toVector(const OptimizeParameter &prm, DoubleVector &pv) const

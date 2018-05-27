@@ -699,7 +699,7 @@ double IProblem2HBackward2D::f(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNo
 void IProblem2HBackward2D::add2Info(const DoubleMatrix &p,
                                     std::vector<SpacePointInfo> &info,
                                     const std::vector<ExtendedSpacePointNode> &cntPointNodes,
-                                    unsigned int ln, double hx, double hy, unsigned int rows, unsigned int cols) const
+                                    unsigned int ln, double hx, double hy, unsigned int rows UNUSED_PARAM, unsigned int cols UNUSED_PARAM) const
 {
     if (_DISTRIBUTION_METHOD_ == 1)
     {

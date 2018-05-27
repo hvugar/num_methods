@@ -16,7 +16,7 @@ void IProblem2Forward2D::calculateMVD1(DoubleMatrix &u, vector<ExtendedSpaceNode
     double hy = yd.step();
     double ht = td.step();
 
-    unsigned int Lc = mParameter.Lc;
+    //unsigned int Lc = mParameter.Lc;
     unsigned int Lo = mParameter.Lo;
 
     if (use == true)
@@ -653,7 +653,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
     double hy = yd.step();
     double ht = td.step();
 
-    unsigned int Lc = mParameter.Lc;
+    //unsigned int Lc = mParameter.Lc;
     unsigned int Lo = mParameter.Lo;
 
     if (use == true)
