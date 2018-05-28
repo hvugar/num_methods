@@ -590,15 +590,12 @@ double Problem2HDirichlet::penalty(const std::vector<SpacePointInfo> &info, cons
 
     for (unsigned int i=0; i<mEquParameter.Nc; i++)
     {
-        double _gp0 = gpi(i, 0, info, o_prm);
-        p_sum += 0.5*_gp0*_gp0;
+        double _gp0 = gpi(i, 0, info, o_prm); p_sum += 0.5*_gp0*_gp0;
         for (unsigned int l=1; l<=L-1; l++)
         {
-            double _gpi = gpi(i, l, info, o_prm);
-            p_sum += _gpi*_gpi;
+            double _gpi = gpi(i, l, info, o_prm); p_sum += _gpi*_gpi;
         }
-        double _gpL = gpi(i, L, info, o_prm);
-        p_sum += 0.5*_gpL*_gpL;
+        double _gpL = gpi(i, L, info, o_prm); p_sum += 0.5*_gpL*_gpL;
     }
 
     return p_sum*ht;
@@ -610,12 +607,12 @@ double Problem2HDirichlet::gpi(unsigned int i, unsigned int layer, const std::ve
     return p > 0.0 ? p : 0.0;
 }
 
-double Problem2HDirichlet::g0i(unsigned int i, unsigned int layer, const std::vector<SpacePointInfo> &info, const OptimizeParameter &o_prm) const
+double Problem2HDirichlet::g0i(unsigned int i, unsigned int layer, const std::vector<SpacePointInfo> &u_info, const OptimizeParameter &o_prm) const
 {
     double vi = 0.0;
     for (unsigned int j=0; j<mEquParameter.No; j++)
     {
-        const SpacePointInfo &node = info[j];
+        const SpacePointInfo &node = u_info[j];
         vi += o_prm.k[i][j] * (node.value(layer)-o_prm.z[i][j]);
     }
     return (vmax.at(i) + vmin.at(i))/2.0 - vi;
