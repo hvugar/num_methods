@@ -188,6 +188,9 @@ void Problem2::gradient(const DoubleVector &prms, DoubleVector &g) const
 
     array2Parameters(prms, k, z, xi, eta);
 
+    Problem2Forward &forward = const_cast<Problem2Forward&>(this->forward);
+    Problem2Backward &backward = const_cast<Problem2Backward&>(this->backward);
+
     DoubleMatrix u;
     forward.a = a; forward.lambda0 = lambda0; forward.lambda1 = lambda1; forward.lambda2 = lambda2; forward.theta = theta;
     forward.k = k; forward.z = z; forward.xi = xi; forward.eta = eta; forward.Lo = Lo; forward.Lc = Lc;

@@ -897,8 +897,8 @@ double IProblem1::vf(unsigned int m, const DoubleVector &k, const DoubleVector &
 
 double IProblem1::sgn_min(unsigned int m, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const
 {
-    double aa = sign(vd0(m, k, z, e, u));
-    double bb = fmin(0.0, gf(m, k, z, e, u));;
+    //double aa = sign(vd0(m, k, z, e, u));
+    //double bb = fmin(0.0, gf(m, k, z, e, u));;
     return sign(vd0(m, k, z, e, u)) * fmin(0.0, gf(m, k, z, e, u));
 }
 

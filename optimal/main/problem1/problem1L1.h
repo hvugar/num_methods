@@ -32,11 +32,13 @@ public:
 
     virtual double fx(const DoubleVector &x) const;
     virtual void gradient(const DoubleVector &x, DoubleVector &g) const;
+
     virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const;
     virtual void project(DoubleVector &x, unsigned int index);
 
     double initial(unsigned int i) const;
     double mu(unsigned int i UNUSED_PARAM) const { return 1.0; }
+
     // qovma 1
     void calculateU(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht) const;
     void calculateUN2L2R(DoubleMatrix &u, unsigned int N, unsigned int M, double hx, double ht);
