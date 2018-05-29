@@ -405,7 +405,7 @@ double Problem2HDirichlet::fx(const DoubleVector &pv) const
 
     DoubleMatrix u;
     DoubleMatrix ut;
-    std::vector<SpacePointInfo> u_info;
+    spif_vector u_info;
     solveForwardIBVP(u, u_info, true, ut);
 
     double intgrl = integral0(u, ut);
@@ -422,9 +422,9 @@ double Problem2HDirichlet::fx(const DoubleVector &pv) const
     return sum;
 }
 
-double Problem2HDirichlet::mu(double x, double y) const
+double Problem2HDirichlet::mu(double x UNUSED_PARAM, double y UNUSED_PARAM) const
 {
-    return 1.0;
+    return sin(M_PI*x) * sin(M_PI*y);
 }
 
 double Problem2HDirichlet::integral0(const DoubleMatrix &u, const DoubleMatrix &ut) const
@@ -438,38 +438,38 @@ double Problem2HDirichlet::integral0(const DoubleMatrix &u, const DoubleMatrix &
     double sum1 = 0.0;
     double utmp = 0.0;
 
-    utmp = u[0][0]   - V0[0][0];   sum0 += 0.25 * utmp * utmp;
-    utmp = u[0][Nx]  - V0[0][Nx];  sum0 += 0.25 * utmp * utmp;
-    utmp = u[Ny][0]  - V0[Ny][0];  sum0 += 0.25 * utmp * utmp;
-    utmp = u[Ny][Nx] - V0[Ny][Nx]; sum0 += 0.25 * utmp * utmp;
+    utmp = u[0][0]   - V0[0][0];   sum0 += 0.25 * utmp * utmp * mu(0.0, 0.0);
+    utmp = u[0][Nx]  - V0[0][Nx];  sum0 += 0.25 * utmp * utmp * mu(1.0, 0.0);
+    utmp = u[Ny][0]  - V0[Ny][0];  sum0 += 0.25 * utmp * utmp * mu(0.0, 1.0);
+    utmp = u[Ny][Nx] - V0[Ny][Nx]; sum0 += 0.25 * utmp * utmp * mu(1.0, 1.0);
 
-    utmp = ut[0][0]   - V1[0][0];   sum1 += 0.25 * utmp * utmp;
-    utmp = ut[0][Nx]  - V1[0][Nx];  sum1 += 0.25 * utmp * utmp;
-    utmp = ut[Ny][0]  - V1[Ny][0];  sum1 += 0.25 * utmp * utmp;
-    utmp = ut[Ny][Nx] - V1[Ny][Nx]; sum1 += 0.25 * utmp * utmp;
+    utmp = ut[0][0]   - V1[0][0];   sum1 += 0.25 * utmp * utmp * mu(0.0, 0.0);
+    utmp = ut[0][Nx]  - V1[0][Nx];  sum1 += 0.25 * utmp * utmp * mu(1.0, 0.0);
+    utmp = ut[Ny][0]  - V1[Ny][0];  sum1 += 0.25 * utmp * utmp * mu(0.0, 1.0);
+    utmp = ut[Ny][Nx] - V1[Ny][Nx]; sum1 += 0.25 * utmp * utmp * mu(1.0, 1.0);
 
     for (unsigned int n1=1; n1<=Nx-1; n1++)
     {
-        utmp = u[0][n1]   - V0[0][n1];  sum0 += 0.5 * utmp * utmp;
-        utmp = u[Ny][n1]  - V0[Ny][n1]; sum0 += 0.5 * utmp * utmp;
-        utmp = ut[0][n1]  - V1[0][n1];  sum1 += 0.5 * utmp * utmp;
-        utmp = ut[Ny][n1] - V1[Ny][n1]; sum1 += 0.5 * utmp * utmp;
+        utmp = u[0][n1]   - V0[0][n1];  sum0 += 0.5 * utmp * utmp * mu(n1*hx, 0.0);
+        utmp = u[Ny][n1]  - V0[Ny][n1]; sum0 += 0.5 * utmp * utmp * mu(n1*hx, 1.0);
+        utmp = ut[0][n1]  - V1[0][n1];  sum1 += 0.5 * utmp * utmp * mu(n1*hx, 0.0);
+        utmp = ut[Ny][n1] - V1[Ny][n1]; sum1 += 0.5 * utmp * utmp * mu(n1*hx, 1.0);
     }
 
     for (unsigned int n2=1; n2<=Ny-1; n2++)
     {
-        utmp = u[n2][0]  - V0[n2][0];   sum0 += 0.5 * utmp * utmp * mu(0*hx,  n2*hy);
-        utmp = u[n2][Nx] - V0[n2][Nx];  sum0 += 0.5 * utmp * utmp * mu(Nx*hx, n2*hy);
-        utmp = ut[n2][0]  - V1[n2][0];  sum1 += 0.5 * utmp * utmp * mu(0*hx,  n2*hy);
-        utmp = ut[n2][Nx] - V1[n2][Nx]; sum1 += 0.5 * utmp * utmp * mu(Nx*hx, n2*hy);
+        utmp = u[n2][0]  - V0[n2][0];   sum0 += 0.5 * utmp * utmp * mu(0*hx,  n2*hy) * mu(0.0, n2*hy);
+        utmp = u[n2][Nx] - V0[n2][Nx];  sum0 += 0.5 * utmp * utmp * mu(Nx*hx, n2*hy) * mu(1.0, n2*hy);
+        utmp = ut[n2][0]  - V1[n2][0];  sum1 += 0.5 * utmp * utmp * mu(0*hx,  n2*hy) * mu(0.0, n2*hy);
+        utmp = ut[n2][Nx] - V1[n2][Nx]; sum1 += 0.5 * utmp * utmp * mu(Nx*hx, n2*hy) * mu(1.0, n2*hy);
     }
 
     for (unsigned int n2=1; n2<=Ny-1; n2++)
     {
         for (unsigned int n1=1; n1<=Nx-1; n1++)
         {
-            utmp = u[n2][n1] - V0[n2][n1];  sum0 += utmp * utmp * mu(n2*hy, n1*hx);
-            utmp = ut[n2][n1] - V1[n2][n1]; sum1 += utmp * utmp * mu(n2*hy, n1*hx);
+            utmp = u[n2][n1] - V0[n2][n1];  sum0 += utmp * utmp * mu(n2*hy, n1*hx) * mu(n1*hx, n2*hy);
+            utmp = ut[n2][n1] - V1[n2][n1]; sum1 += utmp * utmp * mu(n2*hy, n1*hx) * mu(n1*hx, n2*hy);
         }
     }
 
@@ -489,28 +489,28 @@ double Problem2HDirichlet::integral1(const DoubleMatrix &u, const DoubleMatrix &
     double sum0 = 0.0;
     double utmp = 0.0;
 
-    utmp = u[0][0]   - V0[0][0];   sum0 += 0.25 * utmp * utmp;
-    utmp = u[0][Nx]  - V0[0][Nx];  sum0 += 0.25 * utmp * utmp;
-    utmp = u[Ny][0]  - V0[Ny][0];  sum0 += 0.25 * utmp * utmp;
-    utmp = u[Ny][Nx] - V0[Ny][Nx]; sum0 += 0.25 * utmp * utmp;
+    utmp = u[0][0]   - V0[0][0];   sum0 += 0.25 * utmp * utmp * mu(0.0, 0.0);
+    utmp = u[0][Nx]  - V0[0][Nx];  sum0 += 0.25 * utmp * utmp * mu(1.0, 0.0);
+    utmp = u[Ny][0]  - V0[Ny][0];  sum0 += 0.25 * utmp * utmp * mu(0.0, 1.0);
+    utmp = u[Ny][Nx] - V0[Ny][Nx]; sum0 += 0.25 * utmp * utmp * mu(1.0, 1.0);
 
     for (unsigned int n1=1; n1<=Nx-1; n1++)
     {
-        utmp = u[0][n1]   - V0[0][n1];  sum0 += 0.5 * utmp * utmp;
-        utmp = u[Ny][n1]  - V0[Ny][n1]; sum0 += 0.5 * utmp * utmp;
+        utmp = u[0][n1]   - V0[0][n1];  sum0 += 0.5 * utmp * utmp * mu(n1*hx, 0.0);
+        utmp = u[Ny][n1]  - V0[Ny][n1]; sum0 += 0.5 * utmp * utmp * mu(n1*hx, 1.0);
     }
 
     for (unsigned int n2=1; n2<=Ny-1; n2++)
     {
-        utmp = u[n2][0]  - V0[n2][0];   sum0 += 0.5 * utmp * utmp * mu(0*hx,  n2*hy);
-        utmp = u[n2][Nx] - V0[n2][Nx];  sum0 += 0.5 * utmp * utmp * mu(Nx*hx, n2*hy);
+        utmp = u[n2][0]  - V0[n2][0];   sum0 += 0.5 * utmp * utmp * mu(0*hx,  n2*hy) * mu(0.0, n2*hy);
+        utmp = u[n2][Nx] - V0[n2][Nx];  sum0 += 0.5 * utmp * utmp * mu(Nx*hx, n2*hy) * mu(1.0, n2*hy);
     }
 
     for (unsigned int n2=1; n2<=Ny-1; n2++)
     {
         for (unsigned int n1=1; n1<=Nx-1; n1++)
         {
-            utmp = u[n2][n1] - V0[n2][n1];  sum0 += utmp * utmp * mu(n2*hy, n1*hx);
+            utmp = u[n2][n1] - V0[n2][n1];  sum0 += utmp * utmp * mu(n2*hy, n1*hx) * mu(n1*hx, n2*hy);
         }
     }
 
@@ -529,28 +529,28 @@ double Problem2HDirichlet::integral2(const DoubleMatrix &, const DoubleMatrix &u
     double sum1 = 0.0;
     double utmp = 0.0;
 
-    utmp = ut[0][0]   - V1[0][0];   sum1 += 0.25 * utmp * utmp;
-    utmp = ut[0][Nx]  - V1[0][Nx];  sum1 += 0.25 * utmp * utmp;
-    utmp = ut[Ny][0]  - V1[Ny][0];  sum1 += 0.25 * utmp * utmp;
-    utmp = ut[Ny][Nx] - V1[Ny][Nx]; sum1 += 0.25 * utmp * utmp;
+    utmp = ut[0][0]   - V1[0][0];   sum1 += 0.25 * utmp * utmp * mu(0.0, 0.0);
+    utmp = ut[0][Nx]  - V1[0][Nx];  sum1 += 0.25 * utmp * utmp * mu(1.0, 0.0);
+    utmp = ut[Ny][0]  - V1[Ny][0];  sum1 += 0.25 * utmp * utmp * mu(0.0, 1.0);
+    utmp = ut[Ny][Nx] - V1[Ny][Nx]; sum1 += 0.25 * utmp * utmp * mu(1.0, 1.0);
 
     for (unsigned int n1=1; n1<=Nx-1; n1++)
     {
-        utmp = ut[0][n1]  - V1[0][n1];  sum1 += 0.5 * utmp * utmp;
-        utmp = ut[Ny][n1] - V1[Ny][n1]; sum1 += 0.5 * utmp * utmp;
+        utmp = ut[0][n1]  - V1[0][n1];  sum1 += 0.5 * utmp * utmp * mu(n1*hx, 0.0);
+        utmp = ut[Ny][n1] - V1[Ny][n1]; sum1 += 0.5 * utmp * utmp * mu(n1*hx, 1.0);
     }
 
     for (unsigned int n2=1; n2<=Ny-1; n2++)
     {
-        utmp = ut[n2][0]  - V1[n2][0];  sum1 += 0.5 * utmp * utmp * mu(0*hx,  n2*hy);
-        utmp = ut[n2][Nx] - V1[n2][Nx]; sum1 += 0.5 * utmp * utmp * mu(Nx*hx, n2*hy);
+        utmp = ut[n2][0]  - V1[n2][0];  sum1 += 0.5 * utmp * utmp * mu(0*hx,  n2*hy) * mu(0.0, n2*hy);
+        utmp = ut[n2][Nx] - V1[n2][Nx]; sum1 += 0.5 * utmp * utmp * mu(Nx*hx, n2*hy) * mu(1.0, n2*hy);
     }
 
     for (unsigned int n2=1; n2<=Ny-1; n2++)
     {
         for (unsigned int n1=1; n1<=Nx-1; n1++)
         {
-            utmp = ut[n2][n1] - V1[n2][n1]; sum1 += utmp * utmp * mu(n2*hy, n1*hx);
+            utmp = ut[n2][n1] - V1[n2][n1]; sum1 += utmp * utmp * mu(n2*hy, n1*hx) * mu(n1*hx, n2*hy);
         }
     }
 
@@ -581,7 +581,7 @@ double Problem2HDirichlet::norm(const EquationParameter& e_prm, const OptimizePa
     return norm;
 }
 
-double Problem2HDirichlet::penalty(const std::vector<SpacePointInfo> &info, const OptimizeParameter &o_prm) const
+double Problem2HDirichlet::penalty(const spif_vector &info, const OptimizeParameter &o_prm) const
 {
     double ht = mtimeDimension.step();
     unsigned int L = mtimeDimension.sizeN();
@@ -601,13 +601,13 @@ double Problem2HDirichlet::penalty(const std::vector<SpacePointInfo> &info, cons
     return p_sum*ht;
 }
 
-double Problem2HDirichlet::gpi(unsigned int i, unsigned int layer, const std::vector<SpacePointInfo> &info, const OptimizeParameter &o_prm) const
+double Problem2HDirichlet::gpi(unsigned int i, unsigned int layer, const spif_vector &info, const OptimizeParameter &o_prm) const
 {
     double p = fabs(g0i(i, layer, info, o_prm)) - (vmax.at(i) - vmin.at(i))/2.0;
     return p > 0.0 ? p : 0.0;
 }
 
-double Problem2HDirichlet::g0i(unsigned int i, unsigned int layer, const std::vector<SpacePointInfo> &u_info, const OptimizeParameter &o_prm) const
+double Problem2HDirichlet::g0i(unsigned int i, unsigned int layer, const spif_vector &u_info, const OptimizeParameter &o_prm) const
 {
     double vi = 0.0;
     for (unsigned int j=0; j<mEquParameter.No; j++)
@@ -643,12 +643,12 @@ void Problem2HDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) cons
     DoubleMatrix ut;
     DoubleMatrix p;
 
-    std::vector<SpacePointInfo> u_info;
+    spif_vector u_info;
     solveForwardIBVP(u, u_info, true, ut);
 
     prob->UT = u;
     prob->UTt = ut;
-    std::vector<SpacePointInfo> p_info;
+    spif_vector p_info;
     solveBackwardIBVP(p, p_info, true, u_info);
 
     g.clear();
@@ -847,7 +847,7 @@ void Problem2HDirichlet::print(unsigned int i, const DoubleVector &x, const Doub
     DoubleMatrix u;
     DoubleMatrix ut;
 
-    std::vector<SpacePointInfo> info;
+    spif_vector info;
     solveForwardIBVP(u, info, false, ut);
 
     //printf("optimizeK:%d optimizeZ:%d optimizeC:%d optimizeO:%d\n", optimizeK, optimizeZ, optimizeC, optimizeO);
@@ -996,7 +996,7 @@ void Problem2HDirichlet::project(DoubleVector &pv, unsigned int index)
 }
 
 //forward -------------------------------------
-void Problem2HDirichlet::solveForwardIBVP(DoubleMatrix &u, std::vector<SpacePointInfo> &u_info, bool use, DoubleMatrix &ut) const
+void Problem2HDirichlet::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bool use, DoubleMatrix &ut) const
 {
     Dimension dimX = spaceDimension(Dimension::DimensionX);
     Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -1037,13 +1037,13 @@ void Problem2HDirichlet::solveForwardIBVP(DoubleMatrix &u, std::vector<SpacePoin
     u.clear(); u.resize(M+1, N+1);
 
     //----------------------------------------------------------------------------------------------//
-    std::vector<ExtendedSpacePointNode> obsPointNodes, cntDeltaNodes, qPointNodes;
+    espn_vector obsPointNodes, cntDeltaNodes, qPointNodes;
     for (unsigned int j=0; j<No; j++) distributeDeltaG(mOptParameter.xi[j], j, obsPointNodes, dimX, dimY, 4);
     for (unsigned int i=0; i<Nc; i++) distributeDeltaG(mOptParameter.eta[i], i, cntDeltaNodes, dimX, dimY, 4);
     for (unsigned int s=0; s<Ns; s++) distributeDeltaG(mEquParameter.theta[s], s, qPointNodes, dimX, dimY, 4);
 
     //----------------------------------------------------------------------------------------------//
-    std::vector<unsigned int> rows0, rows1, rows2, cols0, cols1, cols2;
+    uint_vector rows0, rows1, rows2, cols0, cols1, cols2;
     f_findRowsCols(rows0, rows1, rows2, cols0, cols1, cols2, obsPointNodes, cntDeltaNodes, N, M);
     //-------------------------------------------- info --------------------------------------------//
     if (use == true) f_prepareInfo(No, mOptParameter.xi, u_info, L, dimX, dimY);
@@ -1438,12 +1438,13 @@ void Problem2HDirichlet::solveForwardIBVP(DoubleMatrix &u, std::vector<SpacePoin
         {
             //throw std::exception();
 
-            double* a2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
-            double* b2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
-            double* c2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
-            double* d2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
-            double* x2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
-            DoubleMatrix w2(cols1.size()*(M-1), cols1.size()*(M-1), 0.0);
+            unsigned int cols1_size = cols1.size()*(M-1);
+            double* a2 = (double*) malloc(sizeof(double)*cols1_size);
+            double* b2 = (double*) malloc(sizeof(double)*cols1_size);
+            double* c2 = (double*) malloc(sizeof(double)*cols1_size);
+            double* d2 = (double*) malloc(sizeof(double)*cols1_size);
+            double* x2 = (double*) malloc(sizeof(double)*cols1_size);
+            DoubleMatrix w2(cols1_size, cols1_size, 0.0);
 
             unsigned int offset = 0;
             for (unsigned int col=0; col<cols1.size(); col++)
@@ -1621,9 +1622,8 @@ double Problem2HDirichlet::f_boundary(const SpaceNodePDE &, const TimeNodePDE &,
     return 0.0;
 }
 
-void Problem2HDirichlet::f_findRowsCols(std::vector<unsigned int> &rows0, std::vector<unsigned int> &rows1, std::vector<unsigned int> &rows2,
-                                        std::vector<unsigned int> &cols0, std::vector<unsigned int> &cols1, std::vector<unsigned int> &cols2,
-                                        std::vector<ExtendedSpacePointNode> &obsPointNodes, std::vector<ExtendedSpacePointNode> &cntDeltaNodes, unsigned int N, unsigned int M) const
+void Problem2HDirichlet::f_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2, uint_vector &cols0, uint_vector &cols1, uint_vector &cols2,
+                                        espn_vector &obsPointNodes, espn_vector &cntDeltaNodes, unsigned int N, unsigned int M) const
 {
     for (unsigned int m=1; m<=M-1; m++)
     {
@@ -1681,9 +1681,9 @@ void Problem2HDirichlet::f_findRowsCols(std::vector<unsigned int> &rows0, std::v
     }
 }
 
-void Problem2HDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u05, DoubleMatrix &u10, std::vector<SpacePointInfo> &u_info, bool use,
-                                         std::vector<ExtendedSpacePointNode> &obsPointNodes, std::vector<ExtendedSpacePointNode> &cntDeltaNodes UNUSED_PARAM,
-                                         std::vector<ExtendedSpacePointNode> &qPointNodes UNUSED_PARAM, unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const
+void Problem2HDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u05, DoubleMatrix &u10, spif_vector &u_info, bool use,
+                                         espn_vector &obsPointNodes, espn_vector &cntDeltaNodes UNUSED_PARAM,
+                                         espn_vector &qPointNodes UNUSED_PARAM, unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const
 {
     SpaceNodePDE sn;
     for (unsigned int m=0; m<=M; m++)
@@ -1760,7 +1760,7 @@ void Problem2HDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u05, D
     f_layerInfo(u10, u10, 1);
 }
 
-void Problem2HDirichlet::f_prepareInfo(unsigned int No, const std::vector<SpacePoint> &points, std::vector<SpacePointInfo> &u_info,
+void Problem2HDirichlet::f_prepareInfo(unsigned int No, const std::vector<SpacePoint> &points, spif_vector &u_info,
                                        unsigned int L, const Dimension &dimX, const Dimension &dimY) const
 {
     u_info.resize(No);
@@ -1782,7 +1782,7 @@ void Problem2HDirichlet::f_prepareInfo(unsigned int No, const std::vector<SpaceP
     }
 }
 
-void Problem2HDirichlet::f_add2Info(const DoubleMatrix &u, std::vector<SpacePointInfo> &u_info, const std::vector<ExtendedSpacePointNode> &obsPointNodes, unsigned int ln, double hx, double hy, int method) const
+void Problem2HDirichlet::f_add2Info(const DoubleMatrix &u, spif_vector &u_info, const espn_vector &obsPointNodes, unsigned int ln, double hx, double hy, int method) const
 {
     if (method == 1)
     {
@@ -1849,7 +1849,7 @@ void Problem2HDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, const D
 //forward -------------------------------------
 
 // backward -----------------------------------
-void Problem2HDirichlet::solveBackwardIBVP(DoubleMatrix &p, std::vector<SpacePointInfo> &p_info, bool use, const std::vector<SpacePointInfo> &u_info) const
+void Problem2HDirichlet::solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info, bool use, const spif_vector &u_info) const
 {
     Dimension dimX = spaceDimension(Dimension::DimensionX);
     Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -1890,12 +1890,12 @@ void Problem2HDirichlet::solveBackwardIBVP(DoubleMatrix &p, std::vector<SpacePoi
     p.clear(); p.resize(M+1, N+1);
 
     //--------------------------------------------------------------------------------------------//
-    std::vector<ExtendedSpacePointNode> obsDeltaNodes, cntPointNodes;
+    espn_vector obsDeltaNodes, cntPointNodes;
     for (unsigned int j=0; j<No; j++) distributeDeltaG(mOptParameter.xi[j], j, obsDeltaNodes, dimX, dimY, 4);
     for (unsigned int i=0; i<Nc; i++) distributeDeltaG(mOptParameter.eta[i], i, cntPointNodes, dimX, dimY, 4);
 
     //----------------------------------------------------------------------------------------------//
-    std::vector<unsigned int> rows0, rows1, rows2, cols0, cols1, cols2;
+    uint_vector rows0, rows1, rows2, cols0, cols1, cols2;
     b_findRowsCols(rows0, rows1, rows2, cols0, cols1, cols2, cntPointNodes, obsDeltaNodes, N, M);
     //-------------------------------------------- info --------------------------------------------//
     if (use == true) b_prepareInfo(Nc, mOptParameter.eta, p_info, L, dimX, dimY);
@@ -1905,17 +1905,19 @@ void Problem2HDirichlet::solveBackwardIBVP(DoubleMatrix &p, std::vector<SpacePoi
     b_initialLayers(p00, p05, p10, p_info, use, cntPointNodes, obsDeltaNodes, N, M, hx, hy, ht, aa__hxhx, aa__hyhy, lambda);
     //------------------------------------- initial conditions -------------------------------------//
 
-    double *a1X = (double *) malloc(sizeof(double)*(N-1));
-    double *b1X = (double *) malloc(sizeof(double)*(N-1));
-    double *c1X = (double *) malloc(sizeof(double)*(N-1));
-    double *d1X = (double *) malloc(sizeof(double)*(N-1));
-    double *x1X = (double *) malloc(sizeof(double)*(N-1));
+    double *ax = (double *) malloc(sizeof(double)*(N-1)); for (unsigned int n=1; n<=N-1; n++) ax[n-1] = m_aa_htht__hxhx_h;
+    double *bx = (double *) malloc(sizeof(double)*(N-1)); for (unsigned int n=1; n<=N-1; n++) bx[n-1] = p_aa_htht__hxhx___lambda_ht;
+    double *cx = (double *) malloc(sizeof(double)*(N-1)); for (unsigned int n=1; n<=N-1; n++) cx[n-1] = m_aa_htht__hxhx_h;
+    double *dx = (double *) malloc(sizeof(double)*(N-1));
+    double *rx = (double *) malloc(sizeof(double)*(N-1));
+    ax[0] = cx[N-2] = 0.0;
 
-    double *a1Y = (double *) malloc(sizeof(double)*(M-1));
-    double *b1Y = (double *) malloc(sizeof(double)*(M-1));
-    double *c1Y = (double *) malloc(sizeof(double)*(M-1));
-    double *d1Y = (double *) malloc(sizeof(double)*(M-1));
-    double *x1Y = (double *) malloc(sizeof(double)*(M-1));
+    double *ay = (double *) malloc(sizeof(double)*(M-1)); for (unsigned int m=1; m<=M-1; m++) ay[m-1] = m_aa_htht__hyhy_h;
+    double *by = (double *) malloc(sizeof(double)*(M-1)); for (unsigned int m=1; m<=M-1; m++) by[m-1] = p_aa_htht__hyhy___lambda_ht;
+    double *cy = (double *) malloc(sizeof(double)*(M-1)); for (unsigned int m=1; m<=M-1; m++) cy[m-1] = m_aa_htht__hyhy_h;
+    double *dy = (double *) malloc(sizeof(double)*(M-1));
+    double *ry = (double *) malloc(sizeof(double)*(M-1));
+    ay[0] = cy[M-2] = 0.0;
 
     SpaceNodePDE sn;
     TimeNodePDE tn;
@@ -1927,6 +1929,7 @@ void Problem2HDirichlet::solveBackwardIBVP(DoubleMatrix &p, std::vector<SpacePoi
         //------------------------------------- approximatin to x direction conditions -------------------------------------//
         tn.i = l; tn.t = tn.i*ht;
 
+        //------------------------------------- border -------------------------------------//
         SpaceNodePDE sn0;
         SpaceNodePDE sn1;
 
@@ -1957,8 +1960,9 @@ void Problem2HDirichlet::solveBackwardIBVP(DoubleMatrix &p, std::vector<SpacePoi
             p[0][n] = b_boundary(sn0, tn);
             p[M][n] = b_boundary(sn1, tn);
         }
+        //------------------------------------- border -------------------------------------//
 
-        //--------------------------------------------------------------------------//
+        //------------------------------------- approximatin to x direction conditions -------------------------------------//
         for (unsigned int row=0; row<rows0.size(); row++)
         {
             unsigned int m = rows0.at(row);
@@ -1967,26 +1971,19 @@ void Problem2HDirichlet::solveBackwardIBVP(DoubleMatrix &p, std::vector<SpacePoi
             {
                 sn.i = n; sn.x = n*hx;
 
-                if (m == 0)     d1X[n-1] = p_aa_htht__hyhy_h*(p10[0][n]   - 2.0*p10[1][n]   + p10[2][n]);
-                if (m>0 && m<M) d1X[n-1] = p_aa_htht__hyhy_h*(p10[m-1][n] - 2.0*p10[m][n]   + p10[m+1][n]);
-                if (m == M)     d1X[n-1] = p_aa_htht__hyhy_h*(p10[M-2][n] - 2.0*p10[M-1][n] + p10[M][n]);
+                if (m == 0)     dx[n-1] = p_aa_htht__hyhy_h*(p10[0][n]   - 2.0*p10[1][n]   + p10[2][n]);
+                if (m>0 && m<M) dx[n-1] = p_aa_htht__hyhy_h*(p10[m-1][n] - 2.0*p10[m][n]   + p10[m+1][n]);
+                if (m == M)     dx[n-1] = p_aa_htht__hyhy_h*(p10[M-2][n] - 2.0*p10[M-1][n] + p10[M][n]);
 
-                d1X[n-1] += 0.5*(p10[m][n]-p00[m][n]) + p10[m][n];
-                d1X[n-1] += 0.5*lambda*ht*(4.0*p10[m][n]-p05[m][n]);
-
-                a1X[n-1] = m_aa_htht__hxhx_h;
-                b1X[n-1] = p_aa_htht__hxhx___lambda_ht;
-                c1X[n-1] = m_aa_htht__hxhx_h;
+                dx[n-1] += 0.5*(p10[m][n]-p00[m][n]) + p10[m][n];
+                dx[n-1] += 0.5*lambda*ht*(4.0*p10[m][n]-p05[m][n]);
             }
 
-            a1X[0]   = 0.0;
-            c1X[N-2] = 0.0;
+            dx[0]   -= m_aa_htht__hxhx_h * p15[m][0];
+            dx[N-2] -= m_aa_htht__hxhx_h * p15[m][N];
 
-            d1X[0]   -= m_aa_htht__hxhx_h * p15[m][0];
-            d1X[N-2] -= m_aa_htht__hxhx_h * p15[m][N];
-
-            tomasAlgorithm(a1X, b1X, c1X, d1X, x1X, N-1);
-            for (unsigned int n=1; n<=N-1; n++) p15[m][n] = x1X[n-1];
+            tomasAlgorithm(ax, bx, cx, dx, rx, N-1);
+            for (unsigned int n=1; n<=N-1; n++) p15[m][n] = rx[n-1];
         }
 
         if (rows2.size() == 0)
@@ -1999,16 +1996,12 @@ void Problem2HDirichlet::solveBackwardIBVP(DoubleMatrix &p, std::vector<SpacePoi
                 {
                     sn.i = n; sn.x = n*hx;
 
-                    if (m == 0)     d1X[n-1] = p_aa_htht__hyhy_h*(p10[0][n]   - 2.0*p10[1][n]   + p10[2][n]);
-                    if (m>0 && m<M) d1X[n-1] = p_aa_htht__hyhy_h*(p10[m-1][n] - 2.0*p10[m][n]   + p10[m+1][n]);
-                    if (m == M)     d1X[n-1] = p_aa_htht__hyhy_h*(p10[M-2][n] - 2.0*p10[M-1][n] + p10[M][n]);
+                    if (m == 0)     dx[n-1] = p_aa_htht__hyhy_h*(p10[0][n]   - 2.0*p10[1][n]   + p10[2][n]);
+                    if (m>0 && m<M) dx[n-1] = p_aa_htht__hyhy_h*(p10[m-1][n] - 2.0*p10[m][n]   + p10[m+1][n]);
+                    if (m == M)     dx[n-1] = p_aa_htht__hyhy_h*(p10[M-2][n] - 2.0*p10[M-1][n] + p10[M][n]);
 
-                    d1X[n-1] += 0.5*(p10[m][n]-p00[m][n]) + p10[m][n];
-                    d1X[n-1] += 0.5*lambda*ht*(4.0*p10[m][n]-p05[m][n]);
-
-                    a1X[n-1] = m_aa_htht__hxhx_h;
-                    b1X[n-1] = p_aa_htht__hxhx___lambda_ht;
-                    c1X[n-1] = m_aa_htht__hxhx_h;
+                    dx[n-1] += 0.5*(p10[m][n]-p00[m][n]) + p10[m][n];
+                    dx[n-1] += 0.5*lambda*ht*(4.0*p10[m][n]-p05[m][n]);
 
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int onj=0; onj<obsDeltaNodes.size(); onj++)
@@ -2019,26 +2012,23 @@ void Problem2HDirichlet::solveBackwardIBVP(DoubleMatrix &p, std::vector<SpacePoi
                             for (unsigned int cni=0; cni<cntPointNodes.size(); cni++)
                             {
                                 const ExtendedSpacePointNode &cpn = cntPointNodes[cni];
-                                d1X[n-1] += htht_h * mOptParameter.k[cpn.id][odn.id] * p15[cpn.j][cpn.i] * (cpn.w * (hx*hy)) * odn.w;
+                                dx[n-1] += htht_h * mOptParameter.k[cpn.id][odn.id] * p15[cpn.j][cpn.i] * (cpn.w * (hx*hy)) * odn.w;
                             }
 
                             for (unsigned int i=0; i<Nc; i++)
                             {
-                                d1X[n-1] += 2.0*r * htht_h * mOptParameter.k[i][odn.id] * gpi(i, l, u_info, mOptParameter)*sgn(g0i(i, l, u_info, mOptParameter)) * odn.w;
+                                dx[n-1] += 2.0*r * htht_h * mOptParameter.k[i][odn.id] * gpi(i, l, u_info, mOptParameter)*sgn(g0i(i, l, u_info, mOptParameter)) * odn.w;
                             }
                         }
                     }
                     //------------------------------------- Adding delta part -------------------------------------//
                 }
 
-                a1X[0]   = 0.0;
-                c1X[N-2] = 0.0;
+                dx[0]   -= m_aa_htht__hxhx_h * p15[m][0];
+                dx[N-2] -= m_aa_htht__hxhx_h * p15[m][N];
 
-                d1X[0]   -= m_aa_htht__hxhx_h * p15[m][0];
-                d1X[N-2] -= m_aa_htht__hxhx_h * p15[m][N];
-
-                tomasAlgorithm(a1X, b1X, c1X, d1X, x1X, N-1);
-                for (unsigned int n=1; n<=N-1; n++) p15[m][n] = x1X[n-1];
+                tomasAlgorithm(ax, bx, cx, dx, rx, N-1);
+                for (unsigned int n=1; n<=N-1; n++) p15[m][n] = rx[n-1];
             }
         }
 
@@ -2046,12 +2036,13 @@ void Problem2HDirichlet::solveBackwardIBVP(DoubleMatrix &p, std::vector<SpacePoi
         {
             //throw std::exception();
 
-            double* a1 = (double*) malloc(sizeof(double)*rows1.size()*(N-1));
-            double* b1 = (double*) malloc(sizeof(double)*rows1.size()*(N-1));
-            double* c1 = (double*) malloc(sizeof(double)*rows1.size()*(N-1));
-            double* d1 = (double*) malloc(sizeof(double)*rows1.size()*(N-1));
-            double* x1 = (double*) malloc(sizeof(double)*rows1.size()*(N-1));
-            DoubleMatrix w1(rows1.size()*(N-1), rows1.size()*(N-1), 0.0);
+            unsigned int row1_size = rows1.size()*(N-1);
+            double* a1 = (double*) malloc(sizeof(double)*row1_size);
+            double* b1 = (double*) malloc(sizeof(double)*row1_size);
+            double* c1 = (double*) malloc(sizeof(double)*row1_size);
+            double* d1 = (double*) malloc(sizeof(double)*row1_size);
+            double* x1 = (double*) malloc(sizeof(double)*row1_size);
+            DoubleMatrix w1(row1_size, row1_size, 0.0);
 
             unsigned int offset = 0;
             for (unsigned int row=0; row<rows1.size(); row++)
@@ -2155,26 +2146,20 @@ void Problem2HDirichlet::solveBackwardIBVP(DoubleMatrix &p, std::vector<SpacePoi
             {
                 sn.j = m; sn.y = m*hy;
 
-                if (n==0)       d1Y[m-1] = p_aa_htht__hxhx_h*(p15[m][0]   - 2.0*p15[m][1]   + p15[m][2]);
-                if (n>0 && n<N) d1Y[m-1] = p_aa_htht__hxhx_h*(p15[m][n-1] - 2.0*p15[m][n]   + p15[m][n+1]);
-                if (n==N)       d1Y[m-1] = p_aa_htht__hxhx_h*(p15[m][N-2] - 2.0*p15[m][N-1] + p15[m][N]);
+                if (n==0)       dy[m-1] = p_aa_htht__hxhx_h*(p15[m][0]   - 2.0*p15[m][1]   + p15[m][2]);
+                if (n>0 && n<N) dy[m-1] = p_aa_htht__hxhx_h*(p15[m][n-1] - 2.0*p15[m][n]   + p15[m][n+1]);
+                if (n==N)       dy[m-1] = p_aa_htht__hxhx_h*(p15[m][N-2] - 2.0*p15[m][N-1] + p15[m][N]);
 
-                d1Y[m-1] += 0.5*(p10[m][n]-p00[m][n]) + p15[m][n];
-                d1Y[m-1] += 0.5*lambda*ht*(4.0*p15[m][n]-p10[m][n]);
+                dy[m-1] += 0.5*(p10[m][n]-p00[m][n]) + p15[m][n];
+                dy[m-1] += 0.5*lambda*ht*(4.0*p15[m][n]-p10[m][n]);
 
-                a1Y[m-1] = m_aa_htht__hyhy_h;
-                b1Y[m-1] = p_aa_htht__hyhy___lambda_ht;
-                c1Y[m-1] = m_aa_htht__hyhy_h;
             }
 
-            a1Y[0]   = 0.0;
-            c1Y[M-2] = 0.0;
+            dy[0]   -= m_aa_htht__hyhy_h * p[0][n];
+            dy[M-2] -= m_aa_htht__hyhy_h * p[M][n];
 
-            d1Y[0]   -= m_aa_htht__hyhy_h * p[0][n];
-            d1Y[M-2] -= m_aa_htht__hyhy_h * p[M][n];
-
-            tomasAlgorithm(a1Y, b1Y, c1Y, d1Y, x1Y, M-1);
-            for (unsigned int m=1; m<=M-1; m++) p[m][n] = x1Y[m-1];
+            tomasAlgorithm(ay, by, cy, dy, ry, M-1);
+            for (unsigned int m=1; m<=M-1; m++) p[m][n] = ry[m-1];
         }
 
         if (cols2.size() == 0)
@@ -2187,16 +2172,12 @@ void Problem2HDirichlet::solveBackwardIBVP(DoubleMatrix &p, std::vector<SpacePoi
                 {
                     sn.j = m; sn.y = m*hy;
 
-                    if (n==0)       d1Y[m-1] = p_aa_htht__hxhx_h*(p15[m][0]   - 2.0*p15[m][1]   + p15[m][2]);
-                    if (n>0 && n<N) d1Y[m-1] = p_aa_htht__hxhx_h*(p15[m][n-1] - 2.0*p15[m][n]   + p15[m][n+1]);
-                    if (n==N)       d1Y[m-1] = p_aa_htht__hxhx_h*(p15[m][N-2] - 2.0*p15[m][N-1] + p15[m][N]);
+                    if (n==0)       dy[m-1] = p_aa_htht__hxhx_h*(p15[m][0]   - 2.0*p15[m][1]   + p15[m][2]);
+                    if (n>0 && n<N) dy[m-1] = p_aa_htht__hxhx_h*(p15[m][n-1] - 2.0*p15[m][n]   + p15[m][n+1]);
+                    if (n==N)       dy[m-1] = p_aa_htht__hxhx_h*(p15[m][N-2] - 2.0*p15[m][N-1] + p15[m][N]);
 
-                    d1Y[m-1] += 0.5*(p10[m][n]-p00[m][n]) + p15[m][n];
-                    d1Y[m-1] += 0.5*lambda*ht*(4.0*p15[m][n]-p10[m][n]);
-
-                    a1Y[m-1] = m_aa_htht__hyhy_h;
-                    b1Y[m-1] = p_aa_htht__hyhy___lambda_ht;
-                    c1Y[m-1] = m_aa_htht__hyhy_h;
+                    dy[m-1] += 0.5*(p10[m][n]-p00[m][n]) + p15[m][n];
+                    dy[m-1] += 0.5*lambda*ht*(4.0*p15[m][n]-p10[m][n]);
 
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int onj=0; onj<obsDeltaNodes.size(); onj++)
@@ -2207,26 +2188,23 @@ void Problem2HDirichlet::solveBackwardIBVP(DoubleMatrix &p, std::vector<SpacePoi
                             for (unsigned int cni=0; cni<cntPointNodes.size(); cni++)
                             {
                                 const ExtendedSpacePointNode &cpn = cntPointNodes.at(cni);
-                                d1Y[m-1] += htht_h * mOptParameter.k[cpn.id][odn.id] * p[cpn.j][cpn.i] * (cpn.w * (hx*hy)) * odn.w;
+                                dy[m-1] += htht_h * mOptParameter.k[cpn.id][odn.id] * p[cpn.j][cpn.i] * (cpn.w * (hx*hy)) * odn.w;
                             }
 
                             for (unsigned int i=0; i<Nc; i++)
                             {
-                                d1Y[m-1] += 2.0 * r * htht_h * mOptParameter.k[i][odn.id] * gpi(i, l, u_info, mOptParameter)*sgn(g0i(i, l, u_info, mOptParameter)) * odn.w;
+                                dy[m-1] += 2.0 * r * htht_h * mOptParameter.k[i][odn.id] * gpi(i, l, u_info, mOptParameter)*sgn(g0i(i, l, u_info, mOptParameter)) * odn.w;
                             }
                         }
                     }
                     //------------------------------------- Adding delta part -------------------------------------//
                 }
 
-                a1Y[0]   = 0.0;
-                c1Y[M-2] = 0.0;
+                dy[0]   -= m_aa_htht__hyhy_h * p[0][n];
+                dy[M-2] -= m_aa_htht__hyhy_h * p[M][n];
 
-                d1Y[0]   -= m_aa_htht__hyhy_h * p[0][n];
-                d1Y[M-2] -= m_aa_htht__hyhy_h * p[M][n];
-
-                tomasAlgorithm(a1Y, b1Y, c1Y, d1Y, x1Y, M-1);
-                for (unsigned int m=1; m<=M-1; m++) p[m][n] = x1Y[m-1];
+                tomasAlgorithm(ay, by, cy, dy, ry, M-1);
+                for (unsigned int m=1; m<=M-1; m++) p[m][n] = ry[m-1];
             }
         }
 
@@ -2234,12 +2212,13 @@ void Problem2HDirichlet::solveBackwardIBVP(DoubleMatrix &p, std::vector<SpacePoi
         {
             //throw std::exception();
 
-            double* a2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
-            double* b2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
-            double* c2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
-            double* d2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
-            double* x2 = (double*) malloc(sizeof(double)*cols1.size()*(M-1));
-            DoubleMatrix w2(cols1.size()*(M-1), cols1.size()*(M-1), 0.0);
+            unsigned int cols1_size = cols1.size()*(M-1);
+            double* a2 = (double*) malloc(sizeof(double)*cols1_size);
+            double* b2 = (double*) malloc(sizeof(double)*cols1_size);
+            double* c2 = (double*) malloc(sizeof(double)*cols1_size);
+            double* d2 = (double*) malloc(sizeof(double)*cols1_size);
+            double* x2 = (double*) malloc(sizeof(double)*cols1_size);
+            DoubleMatrix w2(cols1_size, cols1_size, 0.0);
 
             unsigned int offset = 0;
             for (unsigned int col=0; col<cols1.size(); col++)
@@ -2345,17 +2324,17 @@ void Problem2HDirichlet::solveBackwardIBVP(DoubleMatrix &p, std::vector<SpacePoi
         b_layerInfo(p, l);
     }
 
-    free(x1X);
-    free(d1X);
-    free(c1X);
-    free(b1X);
-    free(a1X);
+    free(rx);
+    free(dx);
+    free(cx);
+    free(bx);
+    free(ax);
 
-    free(x1Y);
-    free(d1Y);
-    free(c1Y);
-    free(b1Y);
-    free(a1Y);
+    free(ry);
+    free(dy);
+    free(cy);
+    free(by);
+    free(ay);
 
     rows0.clear();
     rows1.clear();
@@ -2376,12 +2355,12 @@ void Problem2HDirichlet::solveBackwardIBVP(DoubleMatrix &p, std::vector<SpacePoi
 
 double Problem2HDirichlet::b_initial1(const SpaceNodePDE &sn) const
 {
-    return -2.0* alpha1 * (UTt[sn.j][sn.i]-V1[sn.j][sn.i]);
+    return -2.0* alpha1 * (UTt[sn.j][sn.i]-V1[sn.j][sn.i]) * mu(sn.x, sn.y);
 }
 
 double Problem2HDirichlet::b_initial2(const SpaceNodePDE &sn) const
 {
-    return 2.0* alpha0 * (UT[sn.j][sn.i]-V0[sn.j][sn.i]) + mEquParameter.lambda * b_initial1(sn);
+    return 2.0* alpha0 * (UT[sn.j][sn.i]-V0[sn.j][sn.i]) * mu(sn.x, sn.y) + mEquParameter.lambda * b_initial1(sn);
 }
 
 double Problem2HDirichlet::b_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const
@@ -2389,9 +2368,9 @@ double Problem2HDirichlet::b_boundary(const SpaceNodePDE &, const TimeNodePDE &,
     return 0.0;
 }
 
-void Problem2HDirichlet::b_findRowsCols(std::vector<unsigned int> &rows0, std::vector<unsigned int> &rows1, std::vector<unsigned int> &rows2,
-                                        std::vector<unsigned int> &cols0, std::vector<unsigned int> &cols1, std::vector<unsigned int> &cols2,
-                                        std::vector<ExtendedSpacePointNode> &cntPointNodes, std::vector<ExtendedSpacePointNode> &obsDeltaNodes, unsigned int N, unsigned int M) const
+void Problem2HDirichlet::b_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2,
+                                        uint_vector &cols0, uint_vector &cols1, uint_vector &cols2,
+                                        espn_vector &cntPointNodes, espn_vector &obsDeltaNodes, unsigned int N, unsigned int M) const
 {
     for (unsigned int m=1; m<=M-1; m++)
     {
@@ -2448,8 +2427,8 @@ void Problem2HDirichlet::b_findRowsCols(std::vector<unsigned int> &rows0, std::v
     }
 }
 
-void Problem2HDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p05, DoubleMatrix &p10, std::vector<SpacePointInfo> &p_info, bool use,
-                                         std::vector<ExtendedSpacePointNode> &cntPointNodes, std::vector<ExtendedSpacePointNode> &obsDeltaNodes,
+void Problem2HDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p05, DoubleMatrix &p10, spif_vector &p_info, bool use,
+                                         espn_vector &cntPointNodes, espn_vector &obsDeltaNodes,
                                          unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const
 {
     unsigned int L = mtimeDimension.sizeN();
@@ -2512,7 +2491,7 @@ void Problem2HDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p05, D
 
 }
 
-void Problem2HDirichlet::b_prepareInfo(unsigned int Nc, const std::vector<SpacePoint> &points, std::vector<SpacePointInfo> &p_info,
+void Problem2HDirichlet::b_prepareInfo(unsigned int Nc, const std::vector<SpacePoint> &points, spif_vector &p_info,
                                        unsigned int L, const Dimension &dimX, const Dimension &dimY) const
 {
     p_info.resize(Nc);
@@ -2535,7 +2514,7 @@ void Problem2HDirichlet::b_prepareInfo(unsigned int Nc, const std::vector<SpaceP
 
 }
 
-void Problem2HDirichlet::b_add2Info(const DoubleMatrix &p, std::vector<SpacePointInfo> &p_info, const std::vector<ExtendedSpacePointNode> &cntPointNodes, unsigned int ln, double hx, double hy, int method) const
+void Problem2HDirichlet::b_add2Info(const DoubleMatrix &p, spif_vector &p_info, const espn_vector &cntPointNodes, unsigned int ln, double hx, double hy, int method) const
 {
     if (method == 1)
     {
@@ -2599,7 +2578,7 @@ void Problem2HDirichlet::b_layerInfo(const DoubleMatrix &p UNUSED_PARAM, unsigne
 
 // backward -----------------------------------
 
-void Problem2HDirichlet::distributeDelta(const SpacePoint &pt, std::vector<ExtendedSpacePointNode> &nodes, unsigned int id, const Dimension &dimX, const Dimension &dimY, unsigned int k, int method)
+void Problem2HDirichlet::distributeDelta(const SpacePoint &pt, espn_vector &nodes, unsigned int id, const Dimension &dimX, const Dimension &dimY, unsigned int k, int method)
 {
     if (method == 1) distributeDeltaP(pt, id, nodes, dimX, dimY);
 
@@ -2608,7 +2587,7 @@ void Problem2HDirichlet::distributeDelta(const SpacePoint &pt, std::vector<Exten
     if (method == 4) distributeDeltaG(pt, id, nodes, dimX, dimY, k);
 }
 
-void Problem2HDirichlet::distributeDeltaP(const SpacePoint &pt, unsigned int id, std::vector<ExtendedSpacePointNode> &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int)
+void Problem2HDirichlet::distributeDeltaP(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int)
 {
     double hx = dimX.step();
     double hy = dimY.step();
@@ -2622,7 +2601,7 @@ void Problem2HDirichlet::distributeDeltaP(const SpacePoint &pt, unsigned int id,
     ExtendedSpacePointNode node; node.id = id; node.pt = pt; node.i = rx; node.j = ry; node.w = 1.0/(hx*hy); nodes.push_back(node);
 }
 
-void Problem2HDirichlet::distributeDeltaR(const SpacePoint &pt, unsigned int id, std::vector<ExtendedSpacePointNode> &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int)
+void Problem2HDirichlet::distributeDeltaR(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int)
 {
     double hx = dimX.step();
     double hy = dimY.step();
@@ -2644,7 +2623,7 @@ void Problem2HDirichlet::distributeDeltaR(const SpacePoint &pt, unsigned int id,
     ExtendedSpacePointNode node10; node10.id = id; node10.pt = pt; node10.i = rx+1; node10.j = ry+0; node10.w = ((h1x/hx)*(h2y/hy))/(hx*hy); nodes.push_back(node10);
 }
 
-void Problem2HDirichlet::distributeDeltaG(const SpacePoint &pt, unsigned int id, std::vector<ExtendedSpacePointNode> &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int k) const
+void Problem2HDirichlet::distributeDeltaG(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int k) const
 {
     double hx = dimX.step();
     double hy = dimY.step();

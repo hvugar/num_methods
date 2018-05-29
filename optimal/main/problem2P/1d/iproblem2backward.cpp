@@ -193,7 +193,7 @@ double IProblem2Backward::f(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodeP
 
 double IProblem2Backward::delta(const SpaceNodePDE &sn UNUSED_PARAM, unsigned int j UNUSED_PARAM) const
 {
-    Dimension sd = spaceDimension(Dimension::DimensionX);
+    //Dimension sd = spaceDimension(Dimension::DimensionX);
     //double hx = sd.step();
 
     // Approximation delta function using normal distribution formula
