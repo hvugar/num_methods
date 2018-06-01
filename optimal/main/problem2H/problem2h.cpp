@@ -2,9 +2,9 @@
 
 void Problem2HDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    checkGradient();
-    //IPrinter::printSeperatorLine();
-    //optimization1();
+//    checkGradient();
+//    IPrinter::printSeperatorLine();
+    optimization2();
 }
 
 void Problem2HDirichlet::initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, OptimizeParameter &o_prm0)
@@ -13,56 +13,56 @@ void Problem2HDirichlet::initParameters(EquationParameter &e_prm, OptimizeParame
     e_prm.lambda = +0.01;
 
     {
-        e_prm.Ns = 5;
+        e_prm.Ns = 3;
         e_prm.q.resize(e_prm.Ns);
         e_prm.theta.resize(e_prm.Ns);
 
-        //e_prm.q[0] = -0.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
-        //e_prm.q[0] = -0.2; e_prm.theta[0].x = 0.200; e_prm.theta[0].y = 0.200;
-        //e_prm.q[1] = -0.5; e_prm.theta[1].x = 0.800; e_prm.theta[1].y = 0.800;
+        e_prm.q[0] = 0.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
+        e_prm.q[0] = 0.3; e_prm.theta[0].x = 0.2000; e_prm.theta[0].y = 0.2000;
+        e_prm.q[1] = 0.5; e_prm.theta[1].x = 0.8000; e_prm.theta[1].y = 0.8000;
 
-        e_prm.q[0] = -0.75; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
-        e_prm.q[1] = -0.31; e_prm.theta[1].x = 0.2500; e_prm.theta[1].y = 0.2500;
-        e_prm.q[2] = -0.25; e_prm.theta[2].x = 0.2500; e_prm.theta[2].y = 0.7500;
-        e_prm.q[3] = -0.56; e_prm.theta[3].x = 0.7500; e_prm.theta[3].y = 0.7500;
-        e_prm.q[4] = -0.15; e_prm.theta[4].x = 0.7500; e_prm.theta[4].y = 0.2500;
+        //        e_prm.q[0] = -0.75; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
+        //        e_prm.q[1] = -0.31; e_prm.theta[1].x = 0.2500; e_prm.theta[1].y = 0.2500;
+        //        e_prm.q[2] = -0.25; e_prm.theta[2].x = 0.2500; e_prm.theta[2].y = 0.7500;
+        //        e_prm.q[3] = -0.56; e_prm.theta[3].x = 0.7500; e_prm.theta[3].y = 0.7500;
+        //        e_prm.q[4] = -0.15; e_prm.theta[4].x = 0.7500; e_prm.theta[4].y = 0.2500;
     }
 
     {
-//        e_prm.Nc = 2;
-//        e_prm.No = 2;
+        //        e_prm.Nc = 2;
+        //        e_prm.No = 2;
 
-//        o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
-//        o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
-//        o_prm.xi.resize(e_prm.No);
-//        o_prm.eta.resize(e_prm.Nc);
+        //        o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+        //        o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+        //        o_prm.xi.resize(e_prm.No);
+        //        o_prm.eta.resize(e_prm.Nc);
 
-//        o_prm.k[0][0] = -0.9186; o_prm.k[0][1] = -0.9051; o_prm.k[1][0] = -1.0169; o_prm.k[1][1] = -1.0221;
-//        o_prm.z[0][0] = +0.3232; o_prm.z[0][1] = +0.2617; o_prm.z[1][0] = +0.2469; o_prm.z[1][1] = +0.0996;
-//        o_prm.xi[0].x = 0.2078; o_prm.xi[0].y = 0.2080; o_prm.xi[1].x = 0.8455; o_prm.xi[1].y = 0.8491;
-//        o_prm.eta[0].x = 0.7623; o_prm.eta[0].y = 0.2708; o_prm.eta[1].x = 0.2636; o_prm.eta[1].y = 0.7636;
+        //        o_prm.k[0][0] = -0.9186; o_prm.k[0][1] = -0.9051; o_prm.k[1][0] = -1.0169; o_prm.k[1][1] = -1.0221;
+        //        o_prm.z[0][0] = +0.3232; o_prm.z[0][1] = +0.2617; o_prm.z[1][0] = +0.2469; o_prm.z[1][1] = +0.0996;
+        //        o_prm.xi[0].x = 0.2078; o_prm.xi[0].y = 0.2080; o_prm.xi[1].x = 0.8455; o_prm.xi[1].y = 0.8491;
+        //        o_prm.eta[0].x = 0.7623; o_prm.eta[0].y = 0.2708; o_prm.eta[1].x = 0.2636; o_prm.eta[1].y = 0.7636;
 
-//        o_prm.k[0][0] = -1.7000; o_prm.k[0][1] = -1.3000; o_prm.k[1][0] = -1.6000; o_prm.k[1][1] = -1.5000;
-//        o_prm.z[0][0] = +0.0000; o_prm.z[0][1] = +0.0000; o_prm.z[1][0] = +0.0000; o_prm.z[1][1] = +0.0000;
-//        o_prm.xi[0].x = +0.4000; o_prm.xi[0].y = +0.6000; o_prm.xi[1].x = 0.9000; o_prm.xi[1].y = 0.2000;
-//        o_prm.eta[0].x = +0.2000; o_prm.eta[0].y = +0.4500; o_prm.eta[1].x = 0.6500; o_prm.eta[1].y = 0.7500;
+        //        o_prm.k[0][0] = -1.7000; o_prm.k[0][1] = -1.3000; o_prm.k[1][0] = -1.6000; o_prm.k[1][1] = -1.5000;
+        //        o_prm.z[0][0] = +0.0000; o_prm.z[0][1] = +0.0000; o_prm.z[1][0] = +0.0000; o_prm.z[1][1] = +0.0000;
+        //        o_prm.xi[0].x = +0.4000; o_prm.xi[0].y = +0.6000; o_prm.xi[1].x = 0.9000; o_prm.xi[1].y = 0.2000;
+        //        o_prm.eta[0].x = +0.2000; o_prm.eta[0].y = +0.4500; o_prm.eta[1].x = 0.6500; o_prm.eta[1].y = 0.7500;
 
-//        o_prm0 = o_prm;
+        //        o_prm0 = o_prm;
     }
 
     {
-        //                e_prm.No = 3;
-        //                e_prm.Nc = 2;
+        //e_prm.No = 3;
+        //e_prm.Nc = 2;
 
-        //                o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
-        //                o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
-        //                o_prm.xi.resize(e_prm.No);
-        //                o_prm.eta.resize(e_prm.Nc);
+        //o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+        //o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+        //o_prm.xi.resize(e_prm.No);
+        //o_prm.eta.resize(e_prm.Nc);
 
-        //                o_prm.k[0][0] = -0.1200; o_prm.k[0][1] = -0.2400; o_prm.k[0][2] = -2.2400; o_prm.k[1][0] = -0.4500; o_prm.k[1][1] = -0.1800; o_prm.k[1][2] = -2.1800;
-        //                o_prm.z[0][0] = +0.5000; o_prm.z[0][1] = +0.4000; o_prm.z[0][2] = +0.4000; o_prm.z[1][0] = +0.7000; o_prm.z[1][1] = +0.5000; o_prm.z[1][2] = +0.5000;
-        //                o_prm.xi[0].x = 0.5000; o_prm.xi[0].y = 0.6000; o_prm.xi[1].x = 0.7000; o_prm.xi[1].y = 0.2000; o_prm.xi[2].x = 0.5000; o_prm.xi[2].y = 0.5000;
-        //                o_prm.eta[0].x = 0.2000; o_prm.eta[0].y = 0.7000; o_prm.eta[1].x = 0.8000; o_prm.eta[1].y = 0.3000;
+        //o_prm.k[0][0] = -0.1200; o_prm.k[0][1] = -0.2400; o_prm.k[0][2] = -2.2400; o_prm.k[1][0] = -0.4500; o_prm.k[1][1] = -0.1800; o_prm.k[1][2] = -2.1800;
+        //o_prm.z[0][0] = +0.5000; o_prm.z[0][1] = +0.4000; o_prm.z[0][2] = +0.4000; o_prm.z[1][0] = +0.7000; o_prm.z[1][1] = +0.5000; o_prm.z[1][2] = +0.5000;
+        //o_prm.xi[0].x = 0.5000; o_prm.xi[0].y = 0.6000; o_prm.xi[1].x = 0.7000; o_prm.xi[1].y = 0.2000; o_prm.xi[2].x = 0.5000; o_prm.xi[2].y = 0.5000;
+        //o_prm.eta[0].x = 0.2000; o_prm.eta[0].y = 0.7000; o_prm.eta[1].x = 0.8000; o_prm.eta[1].y = 0.3000;
     }
 
     {
@@ -206,7 +206,7 @@ void Problem2HDirichlet::checkGradient()
     OptimizeParameter o_prm0;
     initParameters(e_prm, o_prm, o_prm0);
 
-    Problem2HDirichlet prob(Dimension(0.01, 0, 500), Dimension(hx, 0, Nx), Dimension(hy, 0, Ny), e_prm, o_prm, o_prm0);
+    Problem2HDirichlet prob(Dimension(0.01, 0, 100), Dimension(hx, 0, Nx), Dimension(hy, 0, Ny), e_prm, o_prm, o_prm0);
     prob.optimizeK = true;
     prob.optimizeZ = true;
     prob.optimizeC = true;
@@ -224,18 +224,17 @@ void Problem2HDirichlet::checkGradient()
     {
         IPrinter::printSeperatorLine();
         DoubleVector pv;
-        prob.toVector(o_prm, pv);
+        prob.PrmToVector(o_prm, pv);
         IPrinter::print(pv, pv.length(), 6, 4);
         IPrinter::printSeperatorLine();
         DoubleVector pv0;
-        prob.toVector(o_prm0, pv0);
+        prob.PrmToVector(o_prm0, pv0);
         IPrinter::print(pv0, pv0.length(), 6, 4);
         IPrinter::printSeperatorLine();
         DoubleVector ag(pv.length());
 
         double functional = prob.fx(pv);
         printf("Functional: %f\n", functional);
-        //return;
         puts("Calculating gradients....");
         prob.gradient(pv, ag);
         puts("Gradients are calculated.");
@@ -254,16 +253,16 @@ void Problem2HDirichlet::checkGradient()
         IGradient::Gradient(&prob, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
         puts("Numerical gradients are calculated.");
 
-        //puts("Calculating numerical gradients.... hx=0.001");
-        //puts("*** Calculating numerical gradients for k...... dh=0.001");
-        //IGradient::Gradient(&ifunc, 0.001, pv, ng2, 0*e_prm.Nc*e_prm.No,            1*e_prm.Nc*e_prm.No-1);
-        //puts("*** Calculating numerical gradients for z...... dh=0.001");
-        //IGradient::Gradient(&ifunc, 0.001, pv, ng2, 1*e_prm.Nc*e_prm.No,            2*e_prm.Nc*e_prm.No-1);
-        //puts("*** Calculating numerical gradients for xi..... dh=0.001");
-        //IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+0*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-        //puts("*** Calculating numerical gradients for eta.... dh=0.001");
-        //IGradient::Gradient(&ifunc, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-        //puts("Numerical gradients are calculated.");
+        puts("Calculating numerical gradients.... hx=0.001");
+        puts("*** Calculating numerical gradients for k...... dh=0.001");
+        IGradient::Gradient(&prob, 0.001, pv, ng2, 0*e_prm.Nc*e_prm.No,            1*e_prm.Nc*e_prm.No-1);
+        puts("*** Calculating numerical gradients for z...... dh=0.001");
+        IGradient::Gradient(&prob, 0.001, pv, ng2, 1*e_prm.Nc*e_prm.No,            2*e_prm.Nc*e_prm.No-1);
+        puts("*** Calculating numerical gradients for xi..... dh=0.001");
+        IGradient::Gradient(&prob, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+0*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
+        puts("*** Calculating numerical gradients for eta.... dh=0.001");
+        IGradient::Gradient(&prob, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
+        puts("Numerical gradients are calculated.");
 
         //k------------------------------------------------------//
         IPrinter::printSeperatorLine("k");
@@ -330,15 +329,29 @@ void Problem2HDirichlet::checkGradient()
 
 void Problem2HDirichlet::optimization1()
 {
-    double hx, hy; hx = hy = 0.01;
-    unsigned Nx, Ny; Nx = Ny = 100;
+    //    EquationParameter e_prm;
+    //    OptimizeParameter o_prm;
+    //    OptimizeParameter o_prm0;
+    //    initParameters(e_prm, o_prm, o_prm0);
+    //    DoubleVector x;
+
+    //    DoubleVector r; r << 0.1 << 1.0 << 2.0 << 10.0 << 100.0;
+    //    for (unsigned int i=0; i<r.length(); i++)
+    //    {
+    //        calculateWithPenalty();
+    //    }
+
 
     EquationParameter e_prm;
     OptimizeParameter o_prm;
     OptimizeParameter o_prm0;
     initParameters(e_prm, o_prm, o_prm0);
 
-    Problem2HDirichlet prob(Dimension(0.01, 0, 500), Dimension(hx, 0, Nx), Dimension(hy, 0, Ny), e_prm, o_prm, o_prm0);
+    double hx, hy; hx = hy = 0.01;
+    unsigned Nx, Ny; Nx = Ny = 100;
+
+
+    Problem2HDirichlet prob(Dimension(0.01, 0, 200), Dimension(hx, 0, Nx), Dimension(hy, 0, Ny), e_prm, o_prm, o_prm0);
     prob.optimizeK = true;
     prob.optimizeZ = true;
     prob.optimizeC = true;
@@ -359,22 +372,111 @@ void Problem2HDirichlet::optimization1()
     g.setGradient(&prob);
     g.setPrinter(&prob);
     g.setProjection(&prob);
-    g.setEpsilon1(0.000000001);
-    g.setEpsilon2(0.000000001);
-    g.setEpsilon3(0.000000001);
+    g.setEpsilon1(0.01);
+    g.setEpsilon2(0.01);
+    g.setEpsilon3(0.01);
     g.setR1MinimizeEpsilon(0.1, 0.001);
-    //g.setNormalize(true);
+    g.setNormalize(true);
     g.showEndMessage(true);
     g.setResetIteration(true);
 
     DoubleVector x;
-    prob.toVector(o_prm, x);
+    prob.PrmToVector(o_prm, x);
     g.calculate(x);
 }
 
+void Problem2HDirichlet::optimization2()
+{
+    DoubleVector r; r << 0.1 << 1.0 << 2.0 << 10.0 << 100.0;
 
-Problem2HDirichlet::Problem2HDirichlet(const Dimension &time, const Dimension &dimx, const Dimension &dimy, const EquationParameter &mEquParameter,
-                                       const OptimizeParameter &mOptParameter, const OptimizeParameter &mOptParameter0)
+    EquationParameter e_prm;
+    OptimizeParameter o_prm;
+    OptimizeParameter o_prm0;
+    initParameters(e_prm, o_prm, o_prm0);
+
+    double hx, hy; hx = hy = 0.01;
+    unsigned Nx, Ny; Nx = Ny = 100;
+
+    Problem2HDirichlet prob(Dimension(0.01, 0, 200), Dimension(hx, 0, Nx), Dimension(hy, 0, Ny), e_prm, o_prm, o_prm0);
+    prob.optimizeK = true;
+    prob.optimizeZ = true;
+    prob.optimizeC = true;
+    prob.optimizeO = true;
+
+    prob.alpha0 = 1.0; prob.V0.resize(Ny+1, Nx+1, 0.0);
+    prob.alpha1 = 1.0; prob.V1.resize(Ny+1, Nx+1, 0.0);
+
+    prob.regEpsilon = 0.0;
+
+    prob.r = 1.00;
+    prob.vmin.resize(e_prm.Nc, -5.0);
+    prob.vmax.resize(e_prm.Nc, +5.0);
+
+    DoubleVector x;
+    prob.PrmToVector(o_prm, x);
+    for (unsigned int i=0; i<r.length(); i++)
+    {
+        prob.r = r[i];
+        prob.optimizeK = true;
+        prob.optimizeZ = true;
+        prob.optimizeC = true;
+        prob.optimizeO = true;
+
+        ConjugateGradient g;
+        //SteepestDescentGradient g;
+        g.setFunction(&prob);
+        g.setGradient(&prob);
+        g.setPrinter(&prob);
+        g.setProjection(&prob);
+        g.setEpsilon1(0.01);
+        g.setEpsilon2(0.01);
+        g.setEpsilon3(0.01);
+        g.setR1MinimizeEpsilon(0.1, 0.001);
+        g.setNormalize(true);
+        g.showEndMessage(true);
+        g.setResetIteration(true);
+
+        g.calculate(x);
+    }
+}
+
+//void Problem2HDirichlet::calculateWithPenalty(const DoubleVector &pv, double r, const EquationParameter &e_prm, const OptimizeParameter &o_prm0)
+//{
+//    double hx, hy; hx = hy = 0.01;
+//    unsigned Nx, Ny; Nx = Ny = 100;
+
+//    Problem2HDirichlet prob(Dimension(0.01, 0, 100), Dimension(hx, 0, Nx), Dimension(hy, 0, Ny), e_prm, o_prm, o_prm0);
+//    prob.optimizeK = true;
+//    prob.optimizeZ = true;
+//    prob.optimizeC = true;
+//    prob.optimizeO = true;
+
+//    prob.alpha0 = 1.0; prob.V0.resize(Ny+1, Nx+1, 0.0);
+//    prob.alpha1 = 1.0; prob.V1.resize(Ny+1, Nx+1, 0.0);
+
+//    prob.regEpsilon = 0.0;
+
+//    prob.vmin.resize(e_prm.Nc, -5.0);
+//    prob.vmax.resize(e_prm.Nc, +5.0);
+
+//    prob.r = r;
+
+//    ConjugateGradient g;
+//    g.setFunction(&prob);
+//    g.setGradient(&prob);
+//    g.setPrinter(&prob);
+//    g.setProjection(&prob);
+//    g.setEpsilon1(0.0001);
+//    g.setEpsilon2(0.0001);
+//    g.setEpsilon3(0.0001);
+//    g.setR1MinimizeEpsilon(0.1, 0.001);
+//    g.setNormalize(true);
+//    g.showEndMessage(true);
+//    g.setResetIteration(true);
+//    g.calculate(pv);
+//}
+
+Problem2HDirichlet::Problem2HDirichlet(const Dimension &time, const Dimension &dimx, const Dimension &dimy, const EquationParameter &mEquParameter, const OptimizeParameter &mOptParameter, const OptimizeParameter &mOptParameter0)
 {
     setTimeDimension(time);
     addSpaceDimension(dimx);
@@ -398,7 +500,7 @@ Problem2HDirichlet::~Problem2HDirichlet()
 double Problem2HDirichlet::fx(const DoubleVector &pv) const
 {
     OptimizeParameter o_prm;
-    fromVector(pv, o_prm);
+    VectorToPrm(pv, o_prm);
 
     Problem2HDirichlet* prob = const_cast<Problem2HDirichlet*>(this);
     prob->mOptParameter = o_prm;
@@ -626,18 +728,18 @@ void Problem2HDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) cons
     unsigned int No = mEquParameter.No;
 
     OptimizeParameter o_prm;
-    fromVector(pv, o_prm);
+    VectorToPrm(pv, o_prm);
 
     Problem2HDirichlet* prob = const_cast<Problem2HDirichlet*>(this);
     prob->mOptParameter = o_prm;
 
-//    IProblem2HBackward2D backward;
-//    backward.setTimeDimension(mTimeDimension);
-//    backward.addSpaceDimension(mSpaceDimensionX);
-//    backward.addSpaceDimension(mSpaceDimensionY);
-//    backward.mEquParameter = mEquParameter;
-//    backward.mOptParameter = o_prm;
-//    backward.ifunc = const_cast<IFunctional*>(this);
+    //    IProblem2HBackward2D backward;
+    //    backward.setTimeDimension(mTimeDimension);
+    //    backward.addSpaceDimension(mSpaceDimensionX);
+    //    backward.addSpaceDimension(mSpaceDimensionY);
+    //    backward.mEquParameter = mEquParameter;
+    //    backward.mOptParameter = o_prm;
+    //    backward.ifunc = const_cast<IFunctional*>(this);
 
     DoubleMatrix u;
     DoubleMatrix ut;
@@ -840,7 +942,7 @@ void Problem2HDirichlet::print(unsigned int i, const DoubleVector &x, const Doub
 {
     Problem2HDirichlet* ifunc = const_cast<Problem2HDirichlet*>(this);
     OptimizeParameter o_prm;
-    fromVector(x, o_prm);
+    VectorToPrm(x, o_prm);
 
     ifunc->mOptParameter = o_prm;
 
@@ -868,16 +970,16 @@ void Problem2HDirichlet::print(unsigned int i, const DoubleVector &x, const Doub
         printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
     }
 
-//    ifunc->optimizeK = (i%4==3);
-//    ifunc->optimizeZ = (i%4==0);
-//    ifunc->optimizeO = (i%4==1);
-//    ifunc->optimizeC = (i%4==2);
+    //    ifunc->optimizeK = (i%4==3);
+    //    ifunc->optimizeZ = (i%4==0);
+    //    ifunc->optimizeO = (i%4==1);
+    //    ifunc->optimizeC = (i%4==2);
 
-//    printf("I[%3d]: %8.6f %8.6f %8.6f R:%.2f e:%.3f  \n", i, integral1(u, ut), integral2(u, ut), f, r, regEpsilon);
-//    printf("k: %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", x[ 0], x[ 1], x[ 2], x[ 3], x[ 4], x[ 5], x[ 6], x[ 7]);
-//    printf("z: %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", x[ 8], x[ 9], x[10], x[11], x[12], x[13], x[14], x[15]);
-//    printf("o: %8.4f %8.4f %8.4f %8.4f\n",                         x[16], x[17], x[18], x[19]);
-//    printf("c: %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", x[20], x[21], x[22], x[23], x[24], x[25], x[26], x[27]);
+    //    printf("I[%3d]: %8.6f %8.6f %8.6f R:%.2f e:%.3f  \n", i, integral1(u, ut), integral2(u, ut), f, r, regEpsilon);
+    //    printf("k: %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", x[ 0], x[ 1], x[ 2], x[ 3], x[ 4], x[ 5], x[ 6], x[ 7]);
+    //    printf("z: %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", x[ 8], x[ 9], x[10], x[11], x[12], x[13], x[14], x[15]);
+    //    printf("o: %8.4f %8.4f %8.4f %8.4f\n",                         x[16], x[17], x[18], x[19]);
+    //    printf("c: %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n", x[20], x[21], x[22], x[23], x[24], x[25], x[26], x[27]);
 
     //IPrinter::print(x,x.length(),8,4);
     //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f   o:%.4f %.4f %.4f %.4f   c:%.4f %.4f %.4f %.4f\n",
@@ -891,37 +993,37 @@ void Problem2HDirichlet::print(unsigned int i, const DoubleVector &x, const Doub
     u.clear();
     ut.clear();
 
-//    DoubleVector v1;
-//    DoubleVector v2;
+    //    DoubleVector v1;
+    //    DoubleVector v2;
 
-//    for (int i=0; i<=mTimeDimension.sizeN(); i++)
-//    {
-//        v1 << mParameter.k[0][0]*(info[0].value(i) - mParameter.z[0][0]) + mParameter.k[0][1]*(info[1].value(i) - mParameter.z[0][1]);
-//        v2 << mParameter.k[1][0]*(info[0].value(i) - mParameter.z[1][0]) + mParameter.k[1][1]*(info[1].value(i) - mParameter.z[1][1]);
-//    }
+    //    for (int i=0; i<=mTimeDimension.sizeN(); i++)
+    //    {
+    //        v1 << mParameter.k[0][0]*(info[0].value(i) - mParameter.z[0][0]) + mParameter.k[0][1]*(info[1].value(i) - mParameter.z[0][1]);
+    //        v2 << mParameter.k[1][0]*(info[0].value(i) - mParameter.z[1][0]) + mParameter.k[1][1]*(info[1].value(i) - mParameter.z[1][1]);
+    //    }
 
-//    IPrinter::printVector(v1,"v1: "); v1.clear();
-//    IPrinter::printVector(v2,"v2: "); v2.clear();
+    //    IPrinter::printVector(v1,"v1: "); v1.clear();
+    //    IPrinter::printVector(v2,"v2: "); v2.clear();
 
-//    if (result == GradientMethod::BREAK_DISTANCE_LESS || result == GradientMethod::BREAK_GRADIENT_NORM_LESS)
-//    {
-//        IPrinter::printSeperatorLine();
-//    }
+    //    if (result == GradientMethod::BREAK_DISTANCE_LESS || result == GradientMethod::BREAK_GRADIENT_NORM_LESS)
+    //    {
+    //        IPrinter::printSeperatorLine();
+    //    }
 
-//    ifunc->optimizeK = i%2==1;
-//    ifunc->optimizeZ = i%2==1;
-//    ifunc->optimizeC = i%2==0;
-//    ifunc->optimizeO = i%2==0;
+    //    ifunc->optimizeK = i%2==1;
+    //    ifunc->optimizeZ = i%2==1;
+    //    ifunc->optimizeC = i%2==0;
+    //    ifunc->optimizeO = i%2==0;
 
-//    ifunc->optimizeK = i%4==0;
-//    ifunc->optimizeZ = i%4==1;
-//    ifunc->optimizeC = i%4==2;
-//    ifunc->optimizeO = i%4==3;
+    //    ifunc->optimizeK = i%4==0;
+    //    ifunc->optimizeZ = i%4==1;
+    //    ifunc->optimizeC = i%4==2;
+    //    ifunc->optimizeO = i%4==3;
 
-//    ifunc->optimizeK = i%4==3;
-//    ifunc->optimizeZ = i%4==0;
-//    ifunc->optimizeC = i%4==1;
-//    ifunc->optimizeO = i%4==2;
+    //    ifunc->optimizeK = i%4==3;
+    //    ifunc->optimizeZ = i%4==0;
+    //    ifunc->optimizeC = i%4==1;
+    //    ifunc->optimizeO = i%4==2;
 
     C_UNUSED(ifunc);
 }
@@ -947,52 +1049,52 @@ void Problem2HDirichlet::project(DoubleVector &pv, unsigned int index)
         if (pv[index] > 0.95) pv[index] = 0.95;
     }
 
-//    double dx = 0.09;
+    //    double dx = 0.09;
 
-//    if (index == 12 && fabs(pv[8] - pv[12])<dx)
-//    {
-//        pv[12] = pv[8] + dx;
-//        if (pv[12] > 0.95) pv[12] = pv[8] - dx;
-//    }
+    //    if (index == 12 && fabs(pv[8] - pv[12])<dx)
+    //    {
+    //        pv[12] = pv[8] + dx;
+    //        if (pv[12] > 0.95) pv[12] = pv[8] - dx;
+    //    }
 
-//    if (index == 12 && fabs(pv[10] - pv[12])<dx)
-//    {
-//        pv[12] = pv[10] + dx;
-//        if (pv[12] > 0.95) pv[12] = pv[10] - dx;
-//    }
+    //    if (index == 12 && fabs(pv[10] - pv[12])<dx)
+    //    {
+    //        pv[12] = pv[10] + dx;
+    //        if (pv[12] > 0.95) pv[12] = pv[10] - dx;
+    //    }
 
-//    if (index == 14 && fabs(pv[8] - pv[14])<dx)
-//    {
-//        pv[14] = pv[8] + dx;
-//        if (pv[14] > 0.95) pv[14] = pv[8] - dx;
-//    }
-//    if (index == 14 && fabs(pv[10] - pv[14])<dx)
-//    {
-//        pv[14] = pv[10] + dx;
-//        if (pv[14] > 0.95) pv[14] = pv[10] - dx;
-//    }
+    //    if (index == 14 && fabs(pv[8] - pv[14])<dx)
+    //    {
+    //        pv[14] = pv[8] + dx;
+    //        if (pv[14] > 0.95) pv[14] = pv[8] - dx;
+    //    }
+    //    if (index == 14 && fabs(pv[10] - pv[14])<dx)
+    //    {
+    //        pv[14] = pv[10] + dx;
+    //        if (pv[14] > 0.95) pv[14] = pv[10] - dx;
+    //    }
 
-//    if (index == 13 && fabs(pv[9] - pv[13])<dx)
-//    {
-//        pv[13] = pv[9] + dx;
-//        if (pv[13] > 0.95) pv[13] = pv[9] - dx;
-//    }
-//    if (index == 13 && fabs(pv[11] - pv[13])<dx)
-//    {
-//        pv[13] = pv[11] + dx;
-//        if (pv[13] > 0.95) pv[13] = pv[11] - dx;
-//    }
+    //    if (index == 13 && fabs(pv[9] - pv[13])<dx)
+    //    {
+    //        pv[13] = pv[9] + dx;
+    //        if (pv[13] > 0.95) pv[13] = pv[9] - dx;
+    //    }
+    //    if (index == 13 && fabs(pv[11] - pv[13])<dx)
+    //    {
+    //        pv[13] = pv[11] + dx;
+    //        if (pv[13] > 0.95) pv[13] = pv[11] - dx;
+    //    }
 
-//    if (index == 15 && fabs(pv[9] - pv[15])<dx)
-//    {
-//        pv[15] = pv[9] + dx;
-//        if (pv[15] > 0.95) pv[15] = pv[9] - dx;
-//    }
-//    if (index == 15 && fabs(pv[11] - pv[15])<dx)
-//    {
-//        pv[15] = pv[11] + dx;
-//        if (pv[15] > 0.95) pv[15] = pv[11] - dx;
-//    }
+    //    if (index == 15 && fabs(pv[9] - pv[15])<dx)
+    //    {
+    //        pv[15] = pv[9] + dx;
+    //        if (pv[15] > 0.95) pv[15] = pv[9] - dx;
+    //    }
+    //    if (index == 15 && fabs(pv[11] - pv[15])<dx)
+    //    {
+    //        pv[15] = pv[11] + dx;
+    //        if (pv[15] > 0.95) pv[15] = pv[11] - dx;
+    //    }
 }
 
 //forward -------------------------------------
@@ -1038,9 +1140,9 @@ void Problem2HDirichlet::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, 
 
     //----------------------------------------------------------------------------------------------//
     espn_vector obsPointNodes, cntDeltaNodes, qPointNodes;
-    for (unsigned int j=0; j<No; j++) distributeDeltaG(mOptParameter.xi[j], j, obsPointNodes, dimX, dimY, 4);
-    for (unsigned int i=0; i<Nc; i++) distributeDeltaG(mOptParameter.eta[i], i, cntDeltaNodes, dimX, dimY, 4);
-    for (unsigned int s=0; s<Ns; s++) distributeDeltaG(mEquParameter.theta[s], s, qPointNodes, dimX, dimY, 4);
+    for (unsigned int j=0; j<No; j++) distributeDelta0(mOptParameter.xi[j], j, obsPointNodes, dimX, dimY, 4, 4);
+    for (unsigned int i=0; i<Nc; i++) distributeDelta0(mOptParameter.eta[i], i, cntDeltaNodes, dimX, dimY, 4, 4);
+    for (unsigned int s=0; s<Ns; s++) distributeDelta0(mEquParameter.theta[s], s, qPointNodes, dimX, dimY, 4, 4);
 
     //----------------------------------------------------------------------------------------------//
     uint_vector rows0, rows1, rows2, cols0, cols1, cols2;
@@ -1891,8 +1993,8 @@ void Problem2HDirichlet::solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info,
 
     //--------------------------------------------------------------------------------------------//
     espn_vector obsDeltaNodes, cntPointNodes;
-    for (unsigned int j=0; j<No; j++) distributeDeltaG(mOptParameter.xi[j], j, obsDeltaNodes, dimX, dimY, 4);
-    for (unsigned int i=0; i<Nc; i++) distributeDeltaG(mOptParameter.eta[i], i, cntPointNodes, dimX, dimY, 4);
+    for (unsigned int j=0; j<No; j++) distributeDelta0(mOptParameter.xi[j], j, obsDeltaNodes, dimX, dimY, 4, 4);
+    for (unsigned int i=0; i<Nc; i++) distributeDelta0(mOptParameter.eta[i], i, cntPointNodes, dimX, dimY, 4, 4);
 
     //----------------------------------------------------------------------------------------------//
     uint_vector rows0, rows1, rows2, cols0, cols1, cols2;
@@ -2368,8 +2470,7 @@ double Problem2HDirichlet::b_boundary(const SpaceNodePDE &, const TimeNodePDE &,
     return 0.0;
 }
 
-void Problem2HDirichlet::b_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2,
-                                        uint_vector &cols0, uint_vector &cols1, uint_vector &cols2,
+void Problem2HDirichlet::b_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2, uint_vector &cols0, uint_vector &cols1, uint_vector &cols2,
                                         espn_vector &cntPointNodes, espn_vector &obsDeltaNodes, unsigned int N, unsigned int M) const
 {
     for (unsigned int m=1; m<=M-1; m++)
@@ -2427,8 +2528,7 @@ void Problem2HDirichlet::b_findRowsCols(uint_vector &rows0, uint_vector &rows1, 
     }
 }
 
-void Problem2HDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p05, DoubleMatrix &p10, spif_vector &p_info, bool use,
-                                         espn_vector &cntPointNodes, espn_vector &obsDeltaNodes,
+void Problem2HDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p05, DoubleMatrix &p10, spif_vector &p_info, bool use, espn_vector &cntPointNodes, espn_vector &obsDeltaNodes,
                                          unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const
 {
     unsigned int L = mtimeDimension.sizeN();
@@ -2511,7 +2611,6 @@ void Problem2HDirichlet::b_prepareInfo(unsigned int Nc, const std::vector<SpaceP
         inf.ux = new double[L+1];
         inf.uy = new double[L+1];
     }
-
 }
 
 void Problem2HDirichlet::b_add2Info(const DoubleMatrix &p, spif_vector &p_info, const espn_vector &cntPointNodes, unsigned int ln, double hx, double hy, int method) const
@@ -2578,7 +2677,7 @@ void Problem2HDirichlet::b_layerInfo(const DoubleMatrix &p UNUSED_PARAM, unsigne
 
 // backward -----------------------------------
 
-void Problem2HDirichlet::distributeDelta(const SpacePoint &pt, espn_vector &nodes, unsigned int id, const Dimension &dimX, const Dimension &dimY, unsigned int k, int method)
+void Problem2HDirichlet::distributeDelta0(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int k, int method) const
 {
     if (method == 1) distributeDeltaP(pt, id, nodes, dimX, dimY);
 
@@ -2587,7 +2686,7 @@ void Problem2HDirichlet::distributeDelta(const SpacePoint &pt, espn_vector &node
     if (method == 4) distributeDeltaG(pt, id, nodes, dimX, dimY, k);
 }
 
-void Problem2HDirichlet::distributeDeltaP(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int)
+void Problem2HDirichlet::distributeDeltaP(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int) const
 {
     double hx = dimX.step();
     double hy = dimY.step();
@@ -2601,7 +2700,7 @@ void Problem2HDirichlet::distributeDeltaP(const SpacePoint &pt, unsigned int id,
     ExtendedSpacePointNode node; node.id = id; node.pt = pt; node.i = rx; node.j = ry; node.w = 1.0/(hx*hy); nodes.push_back(node);
 }
 
-void Problem2HDirichlet::distributeDeltaR(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int)
+void Problem2HDirichlet::distributeDeltaR(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int) const
 {
     double hx = dimX.step();
     double hy = dimY.step();
@@ -2662,7 +2761,7 @@ void Problem2HDirichlet::distributeDeltaG(const SpacePoint &pt, unsigned int id,
     }
 }
 
-void Problem2HDirichlet::toVector(const OptimizeParameter &prm, DoubleVector &pv) const
+void Problem2HDirichlet::PrmToVector(const OptimizeParameter &prm, DoubleVector &pv) const
 {
     unsigned int Nc = mEquParameter.Nc;
     unsigned int No = mEquParameter.No;
@@ -2702,7 +2801,7 @@ void Problem2HDirichlet::toVector(const OptimizeParameter &prm, DoubleVector &pv
     }
 }
 
-void Problem2HDirichlet::fromVector(const DoubleVector &pv, OptimizeParameter &prm) const
+void Problem2HDirichlet::VectorToPrm(const DoubleVector &pv, OptimizeParameter &prm) const
 {
     unsigned int Nc = mEquParameter.Nc;
     unsigned int No = mEquParameter.No;
