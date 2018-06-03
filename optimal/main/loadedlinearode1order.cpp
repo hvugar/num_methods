@@ -14,6 +14,7 @@ void LoadedLinearODE1Order::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARA
 
 double LoadedLinearODE1Order::A(const GridNodeODE &node, unsigned int row, unsigned int col) const
 {
+    C_UNUSED(node);
     if (row == 0) { if (col == 0) return 1.0; if (col == 0) return 3.0; if (col == 0) return 5.0; }
     if (row == 1) { if (col == 0) return 0.0; if (col == 0) return 4.0; if (col == 0) return 2.0; }
     if (row == 2) { if (col == 0) return 1.0; if (col == 0) return 5.0; if (col == 0) return 8.0; }

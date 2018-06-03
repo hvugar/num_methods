@@ -68,9 +68,12 @@ class Problem2HDirichlet : public RnFunction, public IGradient, public InitialBo
 {
 public:
     static void Main(int argc, char* argv[]);
-    static void checkGradient();
+    static void checkGradient(const Problem2HDirichlet &prob);
     static void optimization1();
-    static void optimization2();
+
+    static void example1();
+    static void example2();
+
     static void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, OptimizeParameter &o_prm0);
 
     Problem2HDirichlet(const Dimension &time, const Dimension &dimx, const Dimension &dimy, const EquationParameter &eprm, const OptimizeParameter &oprm, const OptimizeParameter &oprm0);
@@ -136,7 +139,7 @@ private:
 
     EquationParameter mEquParameter;
     OptimizeParameter mOptParameter;
-    OptimizeParameter mOptParameter0;
+    OptimizeParameter mRegParameter;
     double r;
 
     DoubleVector vmin;
