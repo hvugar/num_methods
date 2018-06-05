@@ -102,8 +102,6 @@ protected:
     virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const;
     virtual void project(DoubleVector &x, unsigned int index);
 
-//    static void calculateWithPenalty(const DoubleVector &pv, double R);
-
 private:
 
     //forward -------------------------------------

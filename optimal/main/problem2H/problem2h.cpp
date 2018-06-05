@@ -2,10 +2,11 @@
 
 void Problem2HDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    //    checkGradient();
-    //    IPrinter::printSeperatorLine();
-    //    optimization2();
-    example1();
+    //checkGradient();
+    //IPrinter::printSeperatorLine();
+    //optimization2();
+    //example1();
+    example2();
 }
 
 void Problem2HDirichlet::initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, OptimizeParameter &o_prm0)
@@ -199,9 +200,6 @@ void Problem2HDirichlet::initParameters(EquationParameter &e_prm, OptimizeParame
 
 void Problem2HDirichlet::checkGradient(const Problem2HDirichlet &prob)
 {
-    //    double hx, hy; hx = hy = 0.01;
-    //    unsigned Nx, Ny; Nx = Ny = 100;
-
     EquationParameter e_prm = prob.mEquParameter;
     OptimizeParameter o_prm = prob.mOptParameter;
     OptimizeParameter r_prm = prob.mRegParameter;
@@ -232,7 +230,6 @@ void Problem2HDirichlet::checkGradient(const Problem2HDirichlet &prob)
     IPrinter::print(pv0, pv0.length(), 6, 4);
     IPrinter::printSeperatorLine();
     DoubleVector ag(pv.length());
-
     double functional = prob.fx(pv);
     printf("Functional: %f\n", functional);
     puts("Calculating gradients....");
@@ -396,8 +393,8 @@ void Problem2HDirichlet::example1()
     e_prm.theta.resize(e_prm.Ns);
 
     e_prm.q[0] = 0.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
-    e_prm.q[0] = 0.3; e_prm.theta[0].x = 0.2000; e_prm.theta[0].y = 0.2000;
-    e_prm.q[1] = 0.5; e_prm.theta[1].x = 0.8000; e_prm.theta[1].y = 0.8000;
+    e_prm.q[1] = 0.3; e_prm.theta[1].x = 0.2000; e_prm.theta[1].y = 0.2000;
+    e_prm.q[2] = 0.5; e_prm.theta[2].x = 0.8000; e_prm.theta[2].y = 0.8000;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -459,11 +456,17 @@ void Problem2HDirichlet::example1()
 
         prob.regEpsilon = 0.0;
 
-        if (i==0) prob.PrmToVector(o_prm, x);
-
         prob.r = r[i];
         prob.vmin.resize(e_prm.Nc, -2.0);
         prob.vmax.resize(e_prm.Nc, +2.0);
+
+        if (i==0)
+        {
+            prob.PrmToVector(o_prm, x);
+
+            checkGradient(prob);
+            IPrinter::printSeperatorLine();
+        }
 
         ConjugateGradient g;
         g.setFunction(&prob);
@@ -482,8 +485,116 @@ void Problem2HDirichlet::example1()
 
         IPrinter::printSeperatorLine(NULL, '=');
     }
+}
 
-    fclose(stdout);
+void Problem2HDirichlet::example2()
+{
+    // Equation parameters ---------------------------------------------------------------------
+    EquationParameter e_prm;
+    e_prm.a = 1.0;
+    e_prm.lambda = 0.01;
+
+    e_prm.Ns = 3;
+    e_prm.q.resize(e_prm.Ns);
+    e_prm.theta.resize(e_prm.Ns);
+
+//    e_prm.q[0] = 0.8; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7500;
+//    e_prm.q[1] = 0.1; e_prm.theta[1].x = 0.3500; e_prm.theta[1].y = 0.9500;
+//    e_prm.q[2] = 0.5; e_prm.theta[2].x = 0.8500; e_prm.theta[2].y = 0.4500;
+
+    e_prm.q[0] = 0.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
+    e_prm.q[1] = 0.3; e_prm.theta[1].x = 0.2000; e_prm.theta[1].y = 0.2000;
+    e_prm.q[2] = 0.5; e_prm.theta[2].x = 0.8000; e_prm.theta[2].y = 0.8000;
+
+    e_prm.No = 2;
+    e_prm.Nc = 2;
+
+    // Optimization parameters ---------------------------------------------------------------------
+    OptimizeParameter o_prm;
+    o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm.xi.resize(e_prm.No);
+    o_prm.eta.resize(e_prm.Nc);
+
+    o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm.xi.resize(e_prm.No);
+    o_prm.eta.resize(e_prm.Nc);
+
+    o_prm.xi[0].x = 0.5500; o_prm.xi[0].y = 0.1500;
+    o_prm.xi[1].x = 0.7400; o_prm.xi[1].y = 0.3800;
+
+    o_prm.eta[0].x = 0.2800; o_prm.eta[0].y = 0.7500;
+    o_prm.eta[1].x = 0.8500; o_prm.eta[1].y = 0.8900;
+
+    o_prm.k[0][0] = +2.3400; o_prm.k[0][1] = -2.7400;
+    o_prm.k[1][0] = +1.5800; o_prm.k[1][1] = +1.9500;
+
+    o_prm.z[0][0] = +1.9800; o_prm.z[0][1] = -3.8500;
+    o_prm.z[1][0] = -2.7700; o_prm.z[1][1] = +4.8900;
+
+    // Regulirization parameters ---------------------------------------------------------------------
+    OptimizeParameter r_prm = o_prm;
+
+    DoubleVector r; r << 1.0 << 2.0 << 10.0 << 100.0;
+
+    double hx, hy; hx = hy = 0.01;
+    unsigned Nx, Ny; Nx = Ny = 100;
+
+    Dimension dimt(0.01, 0, 500);
+    Dimension dimx(hx, 0, Nx);
+    Dimension dimy(hy, 0, Ny);
+
+    // Checking gradients ---------------------------------------------------------------------
+
+    //checkGradient(prob);
+    //IPrinter::printSeperatorLine();
+
+    // ----------------------------------------------------------------------------------------
+
+    DoubleVector x;
+    for (unsigned int i=0; i<r.length(); i++)
+    {
+        Problem2HDirichlet prob(dimt, dimx, dimy, e_prm, o_prm, r_prm);
+        prob.optimizeK = true;
+        prob.optimizeZ = true;
+        prob.optimizeC = true;
+        prob.optimizeO = true;
+
+        prob.alpha0 = 1.0; prob.V0.resize(Ny+1, Nx+1, 0.0);
+        prob.alpha1 = 1.0; prob.V1.resize(Ny+1, Nx+1, 0.0);
+
+        prob.regEpsilon = 0.0;
+
+        prob.r = r[i];
+        prob.vmin.resize(e_prm.Nc, -2.0);
+        prob.vmax.resize(e_prm.Nc, +2.0);
+
+        if (i==0)
+        {
+            prob.PrmToVector(o_prm, x);
+
+            checkGradient(prob);
+            IPrinter::printSeperatorLine();
+        }
+
+        ConjugateGradient g;
+        g.setFunction(&prob);
+        g.setGradient(&prob);
+        g.setPrinter(&prob);
+        g.setProjection(&prob);
+        g.setEpsilon1(0.01);
+        g.setEpsilon2(0.01);
+        g.setEpsilon3(0.01);
+        g.setR1MinimizeEpsilon(0.1, 0.001);
+        g.setNormalize(true);
+        g.showEndMessage(true);
+        g.setResetIteration(true);
+
+        g.calculate(x);
+
+        IPrinter::printSeperatorLine(NULL, '=');
+    }
 }
 
 Problem2HDirichlet::Problem2HDirichlet(const Dimension &time, const Dimension &dimx, const Dimension &dimy, const EquationParameter &mEquParameter, const OptimizeParameter &mOptParameter, const OptimizeParameter &mOptParameter0)
@@ -518,7 +629,7 @@ double Problem2HDirichlet::fx(const DoubleVector &pv) const
     DoubleMatrix u;
     DoubleMatrix ut;
     spif_vector u_info;
-    solveForwardIBVP(u, u_info, true, ut);
+    prob->solveForwardIBVP(u, u_info, true, ut);
 
     double intgrl = integral0(u, ut);
     u.clear();
