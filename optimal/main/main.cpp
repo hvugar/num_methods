@@ -62,11 +62,23 @@
 #include "nonlinearequationex1.h"
 #include "loadedlinearode1order.h"
 
+#include <grid/hpibvp.h>
+#include "heatequationibvp1.h"
+
 #include <QtGui>
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    QGuiApplication app(argc, argv);
+    HeatEquationIBVP1 eq1;
+    eq1.setTimeDimension(Dimension(0.00001, 0, 100000));
+    eq1.addSpaceDimension(Dimension(0.01, 0, 100));
+    DoubleVector u;
+    eq1.gridMethod1(u, 0.1);
+    IPrinter::printVector(u);
+    return 0;
+
+
+//    QGuiApplication app(argc, argv);
 
 //    DoubleVector a(11, -0.5); a[0] = 0.0;
 //    DoubleVector b(11, +2.000015);
@@ -105,7 +117,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Problem2Article::Main(argc, argv);
     //IProblem2H::IProblem2H2D::Main(argc, argv);
     //IPrinter::printSeperatorLine("+");
-    Problem2HDirichlet::Main(argc, argv);
+    //Problem2HDirichlet::Main(argc, argv);
 
     //LinearEquation::func1(a, b, c, d, e, x, N);
 
