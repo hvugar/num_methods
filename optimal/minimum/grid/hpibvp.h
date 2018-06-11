@@ -28,6 +28,7 @@ public:
      * @param a
      */
     void gridMethod1(DoubleVector &u, double a = 1.0);
+
 };
 
 #endif // HEATEQUATIONIBVP_H

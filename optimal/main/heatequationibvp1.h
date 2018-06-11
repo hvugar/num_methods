@@ -2,6 +2,7 @@
 #define HEATEQUATIONIBVP_1_H
 
 #include <grid/hpibvp.h>
+#include <grid/hpibvp2d.h>
 #include <printer.h>
 
 class HeatEquationIBVP1 : public InitialBoundaryValueProblemPDE //: public HeatEquationIBVP
@@ -21,5 +22,14 @@ public:
 
     void gridMethod1(DoubleVector &u, double a = 1.0);
 };
+
+
+class HeatEquationIBVP12D : public HeatEquationIBVP2D
+{
+public:
+    virtual ~HeatEquationIBVP2D();
+protected:
+
+}
 
 #endif // HEATEQUATIONIBVP_1_H
