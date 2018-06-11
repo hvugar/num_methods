@@ -86,3 +86,38 @@ void HeatEquationIBVP1::gridMethod1(DoubleVector &u, double a)
     free(kd);
     free(rx);
 }
+
+HeatEquationIBVP2D1::HeatEquationIBVP2D1()
+{}
+
+HeatEquationIBVP2D1::~HeatEquationIBVP2D1()
+{}
+
+double HeatEquationIBVP2D1::initial(const SpaceNodePDE &sn) const
+{
+    return sn.x*sn.x + sn.y*sn.y;
+}
+
+double HeatEquationIBVP2D1::boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const
+{
+    return NAN;
+}
+
+double HeatEquationIBVP2D1::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+    return 1.0 - 4.0*a*a + alpha*((sn.x*sn.x + sn.y*sn.y + tn.t) - env0(sn, tn));
+}
+
+double HeatEquationIBVP2D1::env0(const SpaceNodePDE &, const TimeNodePDE &) const
+{
+    return 0.5;
+}
+
+double HeatEquationIBVP2D1::env1(const SpaceNodePDE & sn, const TimeNodePDE &tn) const
+{
+    if (sn.i==0)   return sn.y*sn.y + tn.t;
+    if (sn.j==0)   return sn.x*sn.x + tn.t;
+    if (sn.i==100) return sn.y*sn.y + tn.t + 1.0 - 2.0*lambda;
+    if (sn.j==100) return sn.x*sn.x + tn.t + 1.0 - 2.0*lambda;
+    return NAN;
+}

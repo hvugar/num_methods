@@ -69,12 +69,21 @@
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    HeatEquationIBVP1 eq1;
-    eq1.setTimeDimension(Dimension(0.00001, 0, 100000));
-    eq1.addSpaceDimension(Dimension(0.01, 0, 100));
-    DoubleVector u;
-    eq1.gridMethod1(u, 0.1);
-    IPrinter::printVector(u);
+//    HeatEquationIBVP1 eq1;
+//    eq1.setTimeDimension(Dimension(0.00001, 0, 100000));
+//    eq1.addSpaceDimension(Dimension(0.01, 0, 100));
+//    DoubleVector u;
+//    eq1.gridMethod1(u, 0.1);
+//    IPrinter::printVector(u);
+
+    HeatEquationIBVP2D1 heat;
+    heat.setTimeDimension(Dimension(0.01, 0, 100));
+    heat.addSpaceDimension(Dimension(0.01, 0, 100));
+    heat.addSpaceDimension(Dimension(0.01, 0, 100));
+    DoubleMatrix u;
+    heat.calculateU(u, heat.a, heat.alpha, heat.lambda);
+    IPrinter::printMatrix(u);
+
     return 0;
 
 

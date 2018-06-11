@@ -62,8 +62,7 @@ SOURCES += \
     nonlinearequation.cpp \
     utils/random.cpp \
     ode/lode2o.cpp \
-    ode/nlode2o.cpp \
-    grid/hpibvp2d.cpp
+    ode/nlode2o.cpp
 
 HEADERS += global.h \
     cmatrix.h \
@@ -112,5 +111,4 @@ HEADERS += global.h \
     nonlinearequation.h \
     utils/random.h \
     ode/lode2o.h \
-    ode/nlode2o.h \
-    grid/hpibvp2d.h
+    ode/nlode2o.h

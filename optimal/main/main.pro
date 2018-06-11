@@ -14,7 +14,7 @@ TARGET = main
 #QMAKE_CXXFLAGS += -O0
 #QMAKE_CXXFLAGS += -ffloat-store
 #QMAKE_CXXFLAGS += -ffast-math
-QMAKE_CXXFLAGS += -D__USE_MINGW_ANSI_STDIO
+#QMAKE_CXXFLAGS += -D__USE_MINGW_ANSI_STDIO
 
 INCLUDEPATH += ../minimum
 LIBS += -L../bin -lminimum
