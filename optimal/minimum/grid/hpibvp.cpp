@@ -182,12 +182,14 @@ void HeatEquationIBVP2D::calculateU(DoubleMatrix &u, double a, double alpha, dou
         }
     }
     layerInfo(u, 0);
+    IPrinter::printMatrix(u);
+    IPrinter::printSeperatorLine();
     //------------------------------------- initial conditions -------------------------------------//
 
-    double a2_ht__hx2 = ((a*a*ht)/(hx*hx));
-    double a2_ht__hy2 = ((a*a*ht)/(hy*hy));
-    double a2_lambda_ht__hy = (a*a*lambda*ht)/(hy);
-    double a2_lambda_ht__hx = (a*a*lambda*ht)/(hx);
+    //double a2_ht__hx2 = ((a*a*ht)/(hx*hx));
+    //double a2_ht__hy2 = ((a*a*ht)/(hy*hy));
+    //double a2_lambda_ht__hy = (a*a*lambda*ht)/(hy);
+    //double a2_lambda_ht__hx = (a*a*lambda*ht)/(hx);
 
     double *a1X = (double *) malloc(sizeof(double)*(N+1));
     double *b1X = (double *) malloc(sizeof(double)*(N+1));
@@ -218,33 +220,38 @@ void HeatEquationIBVP2D::calculateU(DoubleMatrix &u, double a, double alpha, dou
 
                 d1X[n] = 2.0*u[m][n] + alpha*ht*env0(sn, tn) + ht*f(sn, tn);
 
-                if (m==0)       d1X[n] += a2_ht__hy2*(u[0][n]   - 2.0*u[1][n]   + u[2][n]);
-                if (m>0 && m<M) d1X[n] += a2_ht__hy2*(u[m-1][n] - 2.0*u[m][n]   + u[m+1][n]);
-                if (m==M)       d1X[n] += a2_ht__hy2*(u[M-2][n] - 2.0*u[M-1][n] + u[M][n]);
+                if (m==0)       d1X[n] += ((a*a*ht))*((u[0][n]   - 2.0*u[1][n]   + u[2][n])/(hy*hy));
+                if (m>0 && m<M) d1X[n] += ((a*a*ht))*((u[m-1][n] - 2.0*u[m][n]   + u[m+1][n])/(hy*hy));
+                if (m==M)       d1X[n] += ((a*a*ht))*((u[M-2][n] - 2.0*u[M-1][n] + u[M][n])/(hy*hy));
 
                 if (n == 0)
                 {
                     a1X[0] = 0.0;
-                    b1X[0] = +2.0 + 2.0*a2_ht__hx2 + alpha*ht + 2.0*(a*a*lambda*ht/hx);
-                    c1X[0] = -2.0*a2_ht__hx2;
-                    d1X[0] += 2.0*(a*a*lambda*ht/hx)*env1(sn, tn);
+                    b1X[0] = +2.0 + 2.0*((a*a*ht)/(hx*hx)) + alpha*ht - 2.0*(a*a*lambda*ht/hx);
+                    c1X[0] = -2.0*((a*a*ht)/(hx*hx));
+                    d1X[0] -= 2.0*(a*a*lambda*ht/hx)*env1(sn, tn);
                 }
                 else if (n == N)
                 {
-                    a1X[N] = -2.0*a2_ht__hx2;
-                    b1X[N] = +2.0 + 2.0*a2_ht__hx2 + alpha*ht + 2.0*(a*a*lambda*ht/hx);
+                    a1X[N] = -2.0*((a*a*ht)/(hx*hx));
+                    b1X[N] = +2.0 + 2.0*((a*a*ht)/(hx*hx)) + alpha*ht - 2.0*(a*a*lambda*ht/hx);
                     c1X[N] = 0.0;
-                    d1X[N] += 2.0*(a*a*lambda*ht/hx)*env1(sn, tn);
+                    d1X[N] -= 2.0*(a*a*lambda*ht/hx)*env1(sn, tn);
                 }
                 else // n=1,...,N-1; m=1,...,M-1.
                 {
-                    a1X[n] = -a2_ht__hx2;
-                    b1X[n] = +2.0 + 2.0*a2_ht__hx2 + alpha*ht;
-                    c1X[n] = -a2_ht__hx2;
+                    a1X[n] = -(a*a*ht)/(hx*hx);
+                    b1X[n] = +2.0 + 2.0*((a*a*ht)/(hx*hx)) + alpha*ht;
+                    c1X[n] = -(a*a*ht)/(hx*hx);
                 }
             }
             tomasAlgorithm(a1X, b1X, c1X, d1X, x1X, N+1);
             for (unsigned int n=0; n<=N; n++) uh[m][n] = x1X[n];
+        }
+        if (l==1)
+        {
+            IPrinter::printMatrix(uh);
+            IPrinter::printSeperatorLine();
         }
         //------------------------------------- approximatin to x direction conditions -------------------------------------//
 
@@ -254,35 +261,36 @@ void HeatEquationIBVP2D::calculateU(DoubleMatrix &u, double a, double alpha, dou
         for (unsigned int n=0; n<=N; n++)
         {
             sn.i = n; sn.x = n*hx;
+
             for (unsigned int m=0; m<=M; m++)
             {
                 sn.j = m; sn.y = m*hy;
 
                 d1Y[m] = 2.0*uh[m][n] + alpha*ht*env0(sn, tn) + ht*f(sn, tn);
 
-                if (n==0)       d1Y[m] += a2_ht__hx2*(uh[m][0]   - 2.0*uh[m][1]   + uh[m][2]);
-                if (n>0 && n<N) d1Y[m] += a2_ht__hx2*(uh[m][n-1] - 2.0*uh[m][n]   + uh[m][n+1]);
-                if (n==N)       d1Y[m] += a2_ht__hx2*(uh[m][N-2] - 2.0*uh[m][N-1] + uh[m][N]);
+                if (n==0)       d1Y[m] += ((a*a*ht))*((uh[m][0]   - 2.0*uh[m][1]   + uh[m][2])/(hx*hx));
+                if (n>0 && n<N) d1Y[m] += ((a*a*ht))*((uh[m][n-1] - 2.0*uh[m][n]   + uh[m][n+1])/(hx*hx));
+                if (n==N)       d1Y[m] += ((a*a*ht))*((uh[m][N-2] - 2.0*uh[m][N-1] + uh[m][N])/(hx*hx));
 
                 if (m == 0)
                 {
                     a1Y[0] = 0.0;
-                    b1Y[0] = +2.0 + 2.0*a2_ht__hy2 + alpha*ht + 2.0*(a*a*lambda*ht/hy);
-                    c1Y[0] = -2.0*a2_ht__hy2;
-                    d1Y[0] += 2.0*(a*a*lambda*ht/hy)*env1(sn, tn);
+                    b1Y[0] = +2.0 + 2.0*((a*a*ht)/(hy*hy)) + alpha*ht - 2.0*(a*a*lambda*ht/hy);
+                    c1Y[0] = -2.0*((a*a*ht)/(hy*hy));
+                    d1Y[0] -= 2.0*(a*a*lambda*ht/hy)*env1(sn, tn);
                 }
                 else if (m == M)
                 {
-                    a1Y[M] = -2.0*a2_ht__hy2;
-                    b1Y[M] = +2.0 + 2.0*a2_ht__hy2 + alpha*ht + 2.0*(a*a*lambda*ht/hy);
+                    a1Y[M] = -2.0*((a*a*ht)/(hy*hy));
+                    b1Y[M] = +2.0 + 2.0*((a*a*ht)/(hy*hy)) + alpha*ht - 2.0*(a*a*lambda*ht/hy);
                     c1Y[M] = 0.0;
-                    d1Y[M] += 2.0*(a*a*lambda*ht/hy)*env1(sn, tn);
+                    d1Y[M] -= 2.0*(a*a*lambda*ht/hy)*env1(sn, tn);
                 }
                 else // n=1,...,N-1; m=1,...,M-1.
                 {
-                    a1Y[m] = -a2_ht__hy2;
-                    b1Y[m] = +2.0 + 2.0*a2_ht__hy2 + alpha*ht;
-                    c1Y[m] = -a2_ht__hy2;
+                    a1Y[m] = -((a*a*ht)/(hy*hy));
+                    b1Y[m] = +2.0 + 2.0*((a*a*ht)/(hy*hy)) + alpha*ht;
+                    c1Y[m] = -((a*a*ht)/(hy*hy));
                 }
             }
             tomasAlgorithm(a1Y, b1Y, c1Y, d1Y, x1Y, M+1);
@@ -294,6 +302,7 @@ void HeatEquationIBVP2D::calculateU(DoubleMatrix &u, double a, double alpha, dou
         if (l==1)
         {
             IPrinter::printMatrix(u);
+            IPrinter::printSeperatorLine();
         }
     }
     uh.clear();

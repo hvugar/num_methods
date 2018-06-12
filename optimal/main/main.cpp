@@ -77,11 +77,12 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //    IPrinter::printVector(u);
 
     HeatEquationIBVP2D1 heat;
-    heat.setTimeDimension(Dimension(0.01, 0, 100));
+    heat.setTimeDimension(Dimension(0.001, 0, 1000));
     heat.addSpaceDimension(Dimension(0.01, 0, 100));
     heat.addSpaceDimension(Dimension(0.01, 0, 100));
     DoubleMatrix u;
     heat.calculateU(u, heat.a, heat.alpha, heat.lambda);
+    IPrinter::printSeperatorLine();
     IPrinter::printMatrix(u);
 
     return 0;

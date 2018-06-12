@@ -39,7 +39,7 @@ protected:
 public:
     double a = 1.0;
     double alpha = 0.0;
-    double lambda = 0.001;
+    double lambda = 0.01;
 };
 
 #endif // HEATEQUATIONIBVP_1_H
