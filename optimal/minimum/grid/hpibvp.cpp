@@ -220,13 +220,13 @@ void HeatEquationIBVP2D::calculateU(DoubleMatrix &u, double a, double alpha, dou
 
                 d1X[n] = 2.0*u[m][n] + alpha*ht*env0(sn, tn) + ht*f(sn, tn);
 
-                if (m==0)       d1X[n] += ((a*a*ht))*((u[0][n]   - 2.0*u[1][n]   + u[2][n])/(hy*hy));
+                if (m==0)       d1X[n] += ((a*a*ht))*2.0;//((u[0][n]   - 2.0*u[1][n]   + u[2][n])/(hy*hy));
                 if (m>0 && m<M) d1X[n] += ((a*a*ht))*((u[m-1][n] - 2.0*u[m][n]   + u[m+1][n])/(hy*hy));
                 if (m==M)       d1X[n] += ((a*a*ht))*((u[M-2][n] - 2.0*u[M-1][n] + u[M][n])/(hy*hy));
 
                 if (n == 0)
                 {
-                    a1X[0] = 0.0;
+                    a1X[0] = +0.0;
                     b1X[0] = +2.0 + 2.0*((a*a*ht)/(hx*hx)) + alpha*ht - 2.0*(a*a*lambda*ht/hx);
                     c1X[0] = -2.0*((a*a*ht)/(hx*hx));
                     d1X[0] -= 2.0*(a*a*lambda*ht/hx)*env1(sn, tn);
@@ -235,7 +235,7 @@ void HeatEquationIBVP2D::calculateU(DoubleMatrix &u, double a, double alpha, dou
                 {
                     a1X[N] = -2.0*((a*a*ht)/(hx*hx));
                     b1X[N] = +2.0 + 2.0*((a*a*ht)/(hx*hx)) + alpha*ht - 2.0*(a*a*lambda*ht/hx);
-                    c1X[N] = 0.0;
+                    c1X[N] = +0.0;
                     d1X[N] -= 2.0*(a*a*lambda*ht/hx)*env1(sn, tn);
                 }
                 else // n=1,...,N-1; m=1,...,M-1.
@@ -248,6 +248,8 @@ void HeatEquationIBVP2D::calculateU(DoubleMatrix &u, double a, double alpha, dou
             tomasAlgorithm(a1X, b1X, c1X, d1X, x1X, N+1);
             for (unsigned int n=0; n<=N; n++) uh[m][n] = x1X[n];
         }
+        //for (unsigned int n=0; n<=N; n++) uh[0][n] = n*hx*n*hx + 0.0*0.0 + tn.t;
+        //for (unsigned int n=0; n<=N; n++) uh[M][n] = n*hx*n*hx + 1.0*1.0 + tn.t;
         if (l==1)
         {
             IPrinter::printMatrix(uh);
@@ -274,7 +276,7 @@ void HeatEquationIBVP2D::calculateU(DoubleMatrix &u, double a, double alpha, dou
 
                 if (m == 0)
                 {
-                    a1Y[0] = 0.0;
+                    a1Y[0] = +0.0;
                     b1Y[0] = +2.0 + 2.0*((a*a*ht)/(hy*hy)) + alpha*ht - 2.0*(a*a*lambda*ht/hy);
                     c1Y[0] = -2.0*((a*a*ht)/(hy*hy));
                     d1Y[0] -= 2.0*(a*a*lambda*ht/hy)*env1(sn, tn);
@@ -283,7 +285,7 @@ void HeatEquationIBVP2D::calculateU(DoubleMatrix &u, double a, double alpha, dou
                 {
                     a1Y[M] = -2.0*((a*a*ht)/(hy*hy));
                     b1Y[M] = +2.0 + 2.0*((a*a*ht)/(hy*hy)) + alpha*ht - 2.0*(a*a*lambda*ht/hy);
-                    c1Y[M] = 0.0;
+                    c1Y[M] = +0.0;
                     d1Y[M] -= 2.0*(a*a*lambda*ht/hy)*env1(sn, tn);
                 }
                 else // n=1,...,N-1; m=1,...,M-1.
@@ -296,6 +298,8 @@ void HeatEquationIBVP2D::calculateU(DoubleMatrix &u, double a, double alpha, dou
             tomasAlgorithm(a1Y, b1Y, c1Y, d1Y, x1Y, M+1);
             for (unsigned int m=0; m<=M; m++) u[m][n] = x1Y[m];
         }
+        //for (unsigned int m=0; m<=M; m++) u[m][0] = hy*m*hy*m + 0.0*0.0 + tn.t;
+        //for (unsigned int m=0; m<=M; m++) u[m][N] = hy*m*hy*m + 1.0*1.0 + tn.t;
         //------------------------------------- approximatin to y direction conditions -------------------------------------//
 
         layerInfo(u, l);
