@@ -526,22 +526,24 @@ void Problem2HDirichlet::example2()
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
-    double k1 = 1.10;
-    double k2 = 0.90;
-    double k3 = 1.10;
-    double k4 = 0.90;
+    double k1 = 1.00;
+    double k2 = 1.00;
+    double k3 = 1.00;
+    double k4 = 1.00;
 
     o_prm.k[0][0] = +2.3400*k1; o_prm.k[0][1] = -2.7400*k2;
     o_prm.k[1][0] = +1.5800*k3; o_prm.k[1][1] = +1.9500*k4;
 
-    o_prm.z[0][0] = +1.9800*k1; o_prm.z[0][1] = -3.8500*k2;
-    o_prm.z[1][0] = -2.7700*k3; o_prm.z[1][1] = +4.8900*k4;
+//    o_prm.z[0][0] = +1.9800*k1; o_prm.z[0][1] = -3.8500*k2;
+//    o_prm.z[1][0] = -2.7700*k3; o_prm.z[1][1] = +4.8900*k4;
+    o_prm.z[0][0] = +0.5000*k1; o_prm.z[0][1] = -0.4000*k2;
+    o_prm.z[1][0] = -0.3000*k3; o_prm.z[1][1] = +0.6000*k4;
 
-    o_prm.xi[0].x = 0.5500*k1; o_prm.xi[0].y = 0.1500*k2;
-    o_prm.xi[1].x = 0.7400*k3; o_prm.xi[1].y = 0.3800*k4;
+    o_prm.xi[0].x = 0.5500+0.00; o_prm.xi[0].y = 0.1500-0.01;
+    o_prm.xi[1].x = 0.7400+0.00; o_prm.xi[1].y = 0.3800-0.01;
 
-    o_prm.eta[0].x = 0.2800*k1; o_prm.eta[0].y = 0.7500*k2;
-    o_prm.eta[1].x = 0.8500*k3; o_prm.eta[1].y = 0.8900*k4;
+    o_prm.eta[0].x = 0.2800+0.00; o_prm.eta[0].y = 0.7500-0.00;
+    o_prm.eta[1].x = 0.8500-0.00; o_prm.eta[1].y = 0.8900+0.00;
 
     // Regulirization parameters ---------------------------------------------------------------------
     OptimizeParameter r_prm = o_prm;
