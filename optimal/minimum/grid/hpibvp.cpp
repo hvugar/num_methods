@@ -220,7 +220,7 @@ void HeatEquationIBVP2D::calculateU(DoubleMatrix &u, double a, double alpha, dou
 
                 d1X[n] = 2.0*u[m][n] + alpha*ht*env0(sn, tn) + ht*f(sn, tn);
 
-                if (m==0)       d1X[n] += ((a*a*ht))*2.0;//((u[0][n]   - 2.0*u[1][n]   + u[2][n])/(hy*hy));
+                if (m==0)       d1X[n] += ((a*a*ht))*((u[0][n]   - 2.0*u[1][n]   + u[2][n])/(hy*hy));
                 if (m>0 && m<M) d1X[n] += ((a*a*ht))*((u[m-1][n] - 2.0*u[m][n]   + u[m+1][n])/(hy*hy));
                 if (m==M)       d1X[n] += ((a*a*ht))*((u[M-2][n] - 2.0*u[M-1][n] + u[M][n])/(hy*hy));
 
@@ -254,7 +254,7 @@ void HeatEquationIBVP2D::calculateU(DoubleMatrix &u, double a, double alpha, dou
         {
             IPrinter::printMatrix(uh);
             IPrinter::printSeperatorLine();
-        }
+        }return;
         //------------------------------------- approximatin to x direction conditions -------------------------------------//
 
         //------------------------------------- approximatin to y direction conditions -------------------------------------//
