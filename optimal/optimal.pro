@@ -15,3 +15,5 @@ SUBDIRS += minimum \
 #SUBDIRS += imager
 SUBDIRS += problem2H
 SUBDIRS += main
+
+main.depends = minimum
