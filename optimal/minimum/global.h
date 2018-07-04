@@ -17,6 +17,7 @@
 #define UNUSED_PARAM __attribute__ ((unused))
 #else
 #define UNUSED_PARAM
+#define M_PI 3.14
 #endif
 
 #if (defined(__cplusplus))
