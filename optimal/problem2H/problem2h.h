@@ -82,6 +82,7 @@ public:
     virtual ~Problem2HDirichlet();
 
     virtual double fx(const DoubleVector &x) const;
+    virtual void gradient(const DoubleVector &, DoubleVector &) const;
 
 protected:
     double mu(double x, double y) const;
@@ -93,8 +94,6 @@ protected:
     double penalty(const spif_vector &info, const OptimizeParameter &o_prm) const;
     double gpi(unsigned int i, unsigned int layer, const spif_vector &info, const OptimizeParameter &o_prm) const;
     double g0i(unsigned int i, unsigned int layer, const spif_vector &info, const OptimizeParameter &o_prm) const;
-
-    virtual void gradient(const DoubleVector &, DoubleVector &) const;
 
 public:
     void PrmToVector(const OptimizeParameter &prm, DoubleVector &x) const;

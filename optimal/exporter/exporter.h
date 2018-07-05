@@ -11,9 +11,9 @@ extern "C" {
 #  define EXPORTERSHARED_EXPORT __declspec(dllimport)
 #endif
 
-double EXPORTERSHARED_EXPORT init_pr(double *x);
-double EXPORTERSHARED_EXPORT call_fx(double *x);
-double EXPORTERSHARED_EXPORT call_gr(double *x);
+EXPORTERSHARED_EXPORT double init_pr(double *x);
+EXPORTERSHARED_EXPORT double call_fx(double *x);
+EXPORTERSHARED_EXPORT void call_gr(double *x, double *g);
 
 #ifdef __cplusplus
 }

@@ -80,10 +80,10 @@ double call_fx(double *x)
     return prob.fx(px);
 }
 
-void call_gr(double *x, double y)
+void call_gr(double *x, double *g)
 {
     DoubleVector px(x, 16);
     DoubleVector gr(x, 16);
     prob.gradient(px, gr);
-    y = gr.data();
+    g = gr.data();
 }

@@ -1,8 +1,7 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 
-SUBDIRS += minimum \
-    exporter
+SUBDIRS += minimum
 #SUBDIRS += rnfunction
 #SUBDIRS += control
 #SUBDIRS += third-party
@@ -15,5 +14,8 @@ SUBDIRS += minimum \
 #SUBDIRS += imager
 SUBDIRS += problem2H
 SUBDIRS += main
+SUBDIRS += exporter
 
 main.depends = minimum
+problem2H.depends = minimum
+exporter.depends = problem2H
