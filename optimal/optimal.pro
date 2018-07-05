@@ -2,6 +2,7 @@ TEMPLATE = subdirs
 CONFIG += ordered
 
 SUBDIRS += minimum
+#SUBDIRS += imaging
 #SUBDIRS += rnfunction
 #SUBDIRS += control
 #SUBDIRS += third-party
@@ -10,11 +11,10 @@ SUBDIRS += minimum
 #SUBDIRS += parabolic
 #SUBDIRS += hyperbolic
 #SUBDIRS += discrete
-#SUBDIRS += imaging
 #SUBDIRS += imager
 SUBDIRS += problem2H
-SUBDIRS += main
 SUBDIRS += exporter
+#SUBDIRS += main
 
 main.depends = minimum
 problem2H.depends = minimum

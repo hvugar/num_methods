@@ -15,8 +15,8 @@ DESTDIR  = ../bin
 INCLUDEPATH += ../problem2H
 LIBS += -L../bin -lproblem2H
 
-#INCLUDEPATH += ../minimum
-#LIBS += -L../bin -lminimum
+INCLUDEPATH += ../minimum
+LIBS += -L../bin -lminimum
 
 DEFINES += EXPORTER_LIBRARY
 

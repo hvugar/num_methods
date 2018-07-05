@@ -87,3 +87,8 @@ void call_gr(double *x, double *g)
     prob.gradient(px, gr);
     g = gr.data();
 }
+
+double add_fx(double x, double y)
+{
+    return x + y;
+}
