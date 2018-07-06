@@ -1,3 +1,4 @@
+TARGET = minimum
 TEMPLATE = lib
 CONFIG += console
 CONFIG -= app_bundle

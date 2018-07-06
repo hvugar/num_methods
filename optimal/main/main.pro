@@ -34,6 +34,9 @@ LIBS += -L../bin -lborder
 INCLUDEPATH += ../imaging
 LIBS += -L../bin -limaging
 
+INCLUDEPATH += ../problem2H
+LIBS += -L../bin -lproblem2H
+
 DESTDIR += ../bin
 
 #include(problem1/problem1.pri)

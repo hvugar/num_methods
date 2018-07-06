@@ -19,6 +19,7 @@ LIBS += -L../bin -lminimum
 
 HEADERS += \
         problem2h_global.h \
-        problem2h.h
+        problem2h.h \
+        exporter.h
 
-SOURCES += problem2h.cpp
+SOURCES += problem2h.cpp exporter.cpp

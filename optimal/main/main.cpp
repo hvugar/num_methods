@@ -24,8 +24,7 @@
 #include "problem2P/2d/dirakdelta.h"
 #include "problem2P/2d/ex/p2_article.h"
 
-//#include "problem2H/iproblem2h2d.h"
-#include "problem2H/problem2h.h"
+#include <problem2h.h>
 
 #include "problem4/problem4ex1.h"
 #include "problem4/problem4ex2.h"
@@ -76,16 +75,16 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //    eq1.gridMethod1(u, 0.1);
 //    IPrinter::printVector(u);
 
-    HeatEquationIBVP2D1 heat;
-    heat.setTimeDimension(Dimension(0.001, 0, 1000));
-    heat.addSpaceDimension(Dimension(0.01, 0, 100));
-    heat.addSpaceDimension(Dimension(0.01, 0, 100));
-    DoubleMatrix u;
-    heat.calculateU(u, heat.a, heat.alpha, heat.lambda);
-    IPrinter::printSeperatorLine();
-    IPrinter::printMatrix(u);
+//    HeatEquationIBVP2D1 heat;
+//    heat.setTimeDimension(Dimension(0.001, 0, 1000));
+//    heat.addSpaceDimension(Dimension(0.01, 0, 100));
+//    heat.addSpaceDimension(Dimension(0.01, 0, 100));
+//    DoubleMatrix u;
+//    heat.calculateU(u, heat.a, heat.alpha, heat.lambda);
+//    IPrinter::printSeperatorLine();
+//    IPrinter::printMatrix(u);
 
-    return 0;
+//    return 0;
 
 
 //    QGuiApplication app(argc, argv);
@@ -127,7 +126,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Problem2Article::Main(argc, argv);
     //IProblem2H::IProblem2H2D::Main(argc, argv);
     //IPrinter::printSeperatorLine("+");
-    //Problem2HDirichlet::Main(argc, argv);
+    Problem2HDirichlet::Main(argc, argv);
 
     //LinearEquation::func1(a, b, c, d, e, x, N);
 
