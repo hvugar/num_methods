@@ -1,5 +1,5 @@
 #include "exporter.h"
-#include <problem2h.h>
+#include "problem2h.h"
 
 Problem2HDirichlet prob;
 
@@ -58,18 +58,25 @@ void init_pr()
     Dimension dimx(hx, 0, Nx);
     Dimension dimy(hy, 0, Ny);
 
+//    Problem2HDirichlet prob1;
     prob.setTimeDimension(time);
     prob.addSpaceDimension(dimx);
     prob.addSpaceDimension(dimy);
+    prob.mEquParameter = e_prm;
+//    prob.mOptParameter = o_prm;
+    prob.mRegParameter = r_prm;
 
     prob.optimizeK = true;
     prob.optimizeZ = true;
     prob.optimizeC = true;
     prob.optimizeO = true;
+
     prob.alpha0 = 1.0; prob.V0.resize(Ny+1, Nx+1, 0.0);
     prob.alpha1 = 1.0; prob.V1.resize(Ny+1, Nx+1, 0.0);
+
     prob.regEpsilon = 0.0;
-    prob.r = 1.0;
+
+    prob.r = 2.0;
     prob.vmin.resize(e_prm.Nc, -2.0);
     prob.vmax.resize(e_prm.Nc, +2.0);
 }
@@ -80,15 +87,12 @@ double call_fx(double *x)
     return prob.fx(px);
 }
 
-void call_gr(double *x, double *g)
+void call_gr(double *x, double *g, unsigned int size)
 {
-    DoubleVector px(x, 16);
-    DoubleVector gr(x, 16);
+    DoubleVector px(x, size);
+    DoubleVector gr(x, size);
     prob.gradient(px, gr);
-    g = gr.data();
-}
 
-double add_fx(double x, double y)
-{
-    return x + y;
+    for (unsigned int i=0; i<size; i++)
+        g[i] = gr.at(i);
 }
