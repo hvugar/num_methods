@@ -5,8 +5,8 @@ void Problem2HDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //checkGradient();
     //IPrinter::printSeperatorLine();
     //optimization2();
-    //example1();
-    example2();
+    example1();
+    //example2();
 }
 
 void Problem2HDirichlet::initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, OptimizeParameter &o_prm0)
@@ -406,27 +406,10 @@ void Problem2HDirichlet::example1()
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
-    o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
-    o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
-    o_prm.xi.resize(e_prm.No);
-    o_prm.eta.resize(e_prm.Nc);
-
-    double k1 = 1.05;
-    double k2 = 0.95;
-    double k3 = 1.05;
-    double k4 = 1.10;
-
-    o_prm.k[0][0] = +1.1200*k1; o_prm.k[0][1] = +1.2400*k2;
-    o_prm.k[1][0] = +2.4500*k3; o_prm.k[1][1] = +2.1800*k4;
-
-    o_prm.z[0][0] = +0.5000*k1; o_prm.z[0][1] = +0.4000*k2;
-    o_prm.z[1][0] = +0.7000*k3; o_prm.z[1][1] = +0.5000*k4;
-
-    o_prm.xi[0].x = 0.3000*k1; o_prm.xi[0].y = 0.8000*k2;
-    o_prm.xi[1].x = 0.6000*k3; o_prm.xi[1].y = 0.4000*k4;
-
-    o_prm.eta[0].x = 0.5000*k1; o_prm.eta[0].y = 0.7000*k2;
-    o_prm.eta[1].x = 0.7000*k3; o_prm.eta[1].y = 0.3000*k4;
+    o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +2.4500; o_prm.k[1][1]  = +2.1800;
+    o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = +0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
+    o_prm.xi[0].x  = +0.3000; o_prm.xi[0].y  = +0.8000; o_prm.xi[1].x  = +0.6000; o_prm.xi[1].y  = +0.4000;
+    o_prm.eta[0].x = +0.5000; o_prm.eta[0].y = +0.7000; o_prm.eta[1].x = +0.7000; o_prm.eta[1].y = +0.3000;
 
     // Regulirization parameters ---------------------------------------------------------------------
     OptimizeParameter r_prm = o_prm;
@@ -436,7 +419,7 @@ void Problem2HDirichlet::example1()
     double hx, hy; hx = hy = 0.01;
     unsigned Nx, Ny; Nx = Ny = 100;
 
-    Dimension dimt(0.01, 0, 500);
+    Dimension time(0.01, 0, 500);
     Dimension dimx(hx, 0, Nx);
     Dimension dimy(hy, 0, Ny);
 
@@ -450,7 +433,13 @@ void Problem2HDirichlet::example1()
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
     {
-        Problem2HDirichlet prob(dimt, dimx, dimy, e_prm, o_prm, r_prm);
+        Problem2HDirichlet prob;
+        prob.setTimeDimension(time);
+        prob.addSpaceDimension(dimx);
+        prob.addSpaceDimension(dimy);
+        prob.mEquParameter = e_prm;
+        prob.mOptParameter = o_prm;
+        prob.mRegParameter = r_prm;
         prob.optimizeK = true;
         prob.optimizeZ = true;
         prob.optimizeC = true;
@@ -469,8 +458,8 @@ void Problem2HDirichlet::example1()
         {
             prob.PrmToVector(o_prm, x);
 
-            checkGradient(prob);
-            IPrinter::printSeperatorLine();
+            //checkGradient(prob);
+            //IPrinter::printSeperatorLine();
         }
 
         ConjugateGradient g;
@@ -526,39 +515,48 @@ void Problem2HDirichlet::example2()
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
-//    o_prm.k[0][0] = +2.3400; o_prm.k[0][1] = -2.7400;
-//    o_prm.k[1][0] = +1.5800; o_prm.k[1][1] = +1.9500;
+    o_prm.k[0][0]  = +2.3400; o_prm.k[0][1]  = -2.7400; o_prm.k[1][0]  = +1.5800; o_prm.k[1][1]  = +1.9500;
+    o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = -0.4000; o_prm.z[1][0]  = -0.3000; o_prm.z[1][1]  = +0.6000;
+    o_prm.xi[0].x  = +0.5500; o_prm.xi[0].y  = +0.1400; o_prm.xi[1].x  = +0.7400; o_prm.xi[1].y  = +0.3700;
+    o_prm.eta[0].x = +0.2800; o_prm.eta[0].y = +0.7500; o_prm.eta[1].x = +0.8500; o_prm.eta[1].y = +0.8900;
+//    +2.3400, -2.7400, +1.5800, +1.9500, +0.5000, -0.4000, -0.3000, +0.6000,
+//    +0.5500, +0.1400, +0.7400, +0.3700, +0.2800, +0.7500, +0.8500, +0.8900,
+
 //    o_prm.k[0][0] = +2.4229; o_prm.k[0][1] = -2.4453;
 //    o_prm.k[1][0] = +1.8412; o_prm.k[1][1] = +2.1660;
-    o_prm.k[0][0] = +2.0440; o_prm.k[0][1] = -2.3185;
-    o_prm.k[1][0] = +1.8133; o_prm.k[1][1] = +2.3553;
+//    o_prm.k[0][0] = +2.0440; o_prm.k[0][1] = -2.3185;
+//    o_prm.k[1][0] = +1.8133; o_prm.k[1][1] = +2.3553;
 
-//    o_prm.z[0][0] = +0.5000; o_prm.z[0][1] = -0.4000;
-//    o_prm.z[1][0] = -0.3000; o_prm.z[1][1] = +0.6000;
 //    o_prm.z[0][0] = +0.2000; o_prm.z[0][1] = -0.0439;
 //    o_prm.z[1][0] = -0.3203; o_prm.z[1][1] = +0.5721;
-    o_prm.z[0][0] = +0.2198; o_prm.z[0][1] = -0.0629;
-    o_prm.z[1][0] = -0.3247; o_prm.z[1][1] = +0.5672;
+//    o_prm.z[0][0] = +0.2198; o_prm.z[0][1] = -0.0629;
+//    o_prm.z[1][0] = -0.3247; o_prm.z[1][1] = +0.5672;
 
-//    o_prm.xi[0].x = 0.5500; o_prm.xi[0].y = 0.1400;
-//    o_prm.xi[1].x = 0.7400; o_prm.xi[1].y = 0.3700;
 //    o_prm.xi[0].x = 0.5030; o_prm.xi[0].y = 0.2125;
 //    o_prm.xi[1].x = 0.8903; o_prm.xi[1].y = 0.4200;
-    o_prm.xi[0].x = +0.4951; o_prm.xi[0].y = +0.2267;
-    o_prm.xi[1].x = +0.9068; o_prm.xi[1].y = +0.4109;
+//    o_prm.xi[0].x = +0.4951; o_prm.xi[0].y = +0.2267;
+//    o_prm.xi[1].x = +0.9068; o_prm.xi[1].y = +0.4109;
 
-//    o_prm.eta[0].x = 0.2800; o_prm.eta[0].y = 0.7500;
-//    o_prm.eta[1].x = 0.8500; o_prm.eta[1].y = 0.8900;
 //    o_prm.eta[0].x = 0.1804; o_prm.eta[0].y = 0.7732;
 //    o_prm.eta[1].x = 0.8029; o_prm.eta[1].y = 0.6982;
-    o_prm.eta[0].x = +0.1745; o_prm.eta[0].y = +0.7807;
-    o_prm.eta[1].x = +0.7901; o_prm.eta[1].y = +0.7071;
+//    o_prm.eta[0].x = +0.1745; o_prm.eta[0].y = +0.7807;
+//    o_prm.eta[1].x = +0.7901; o_prm.eta[1].y = +0.7071;
 
 
 //    +2.0440,-2.3185,+1.8133,+2.3553,
 //    +0.2198,-0.0629,-0.3247,+0.5672,
 //    +0.4951,+0.2267,+0.9068,+0.4109,
 //    +0.1745,+0.7807,+0.7901,+0.7071;
+
+//    o_prm.k[0][0]  = +2.3199; o_prm.k[0][1]  = -2.6193; o_prm.k[1][0]  = +1.5956; o_prm.k[1][1]  = +1.9759;
+//    o_prm.z[0][0]  = +0.2105; o_prm.z[0][1]  = -0.0597; o_prm.z[1][0]  = -0.2872; o_prm.z[1][1]  = +0.6144;
+//    o_prm.xi[0].x  = +0.3810; o_prm.xi[0].y  = +0.2625; o_prm.xi[1].x  = +0.8788; o_prm.xi[1].y  = +0.4078;
+//    o_prm.eta[0].x = +0.2957; o_prm.eta[0].y = +0.6892; o_prm.eta[1].x = +0.7464; o_prm.eta[1].y = +0.7672;
+//    +2.3199, -2.6193, +1.5956, +1.9759, +0.2105  -0.0597, -0.2872, +0.6144,
+//    +0.3810  +0.2625, +0.8788, +0.4078, +0.2957, +0.6892, +0.7464, +0.7672; 0.0037;
+
+    //+2.4045,  -2.4473,  +1.9092,   +2.1860,   +0.2031,  -0.0511,  -0.3136,   +0.5790,
+    //+0.5043,  +0.2105,  +0.8899,   +0.4208,   +0.1791,  +0.7716,  +0.8049,   +0.6970, 0.004803;
 
 
     // Regulirization parameters ---------------------------------------------------------------------
@@ -583,10 +581,13 @@ void Problem2HDirichlet::example2()
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
     {
-        Problem2HDirichlet prob(time, dimx, dimy, e_prm, o_prm, r_prm);
+        Problem2HDirichlet prob;
         prob.setTimeDimension(time);
         prob.addSpaceDimension(dimx);
         prob.addSpaceDimension(dimy);
+        prob.mEquParameter = e_prm;
+        prob.mOptParameter = o_prm;
+        prob.mRegParameter = r_prm;
         prob.optimizeK = true;
         prob.optimizeZ = true;
         prob.optimizeC = true;

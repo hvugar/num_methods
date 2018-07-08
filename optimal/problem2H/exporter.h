@@ -18,6 +18,8 @@ double EXPORTERSHARED_EXPORT call_fx(double *x);
 
 void EXPORTERSHARED_EXPORT call_gr(double *x, double *g, unsigned int size);
 
+void EXPORTERSHARED_EXPORT setPenaltyR(double r);
+
 #ifdef __cplusplus
 }
 #endif

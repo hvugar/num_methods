@@ -41,7 +41,6 @@ DESTDIR += ../bin
 
 #include(problem1/problem1.pri)
 #include(problem2P/problem2P.pri)
-#include(problem2H/problem2H.pri)
 #include(problem4/problem4.pri)
 #include(problem5/problem5.pri)
 #include(load_sys/load_sys.pri)
