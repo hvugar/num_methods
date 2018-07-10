@@ -6,14 +6,14 @@
 #include <exception>
 #include <string>
 
-class MINIMUMSHARED_EXPORT DoubleMatrixException : public std::exception
+class DoubleMatrixException : public std::exception
 {
 public:
-    DoubleMatrixException(unsigned int msgCode = 0) NOEXCEPT;
-    DoubleMatrixException(const DoubleMatrixException&) NOEXCEPT;
-    DoubleMatrixException& operator= (const DoubleMatrixException&) NOEXCEPT;
+    MINIMUMSHARED_EXPORT DoubleMatrixException(unsigned int msgCode = 0) NOEXCEPT;
+    MINIMUMSHARED_EXPORT DoubleMatrixException(const DoubleMatrixException&) NOEXCEPT;
+    MINIMUMSHARED_EXPORT DoubleMatrixException& operator= (const DoubleMatrixException&) NOEXCEPT;
     //virtual ~DoubleMatrixException()  {}
-    virtual const char* what() const NOEXCEPT;
+    MINIMUMSHARED_EXPORT virtual const char* what() const NOEXCEPT;
 
 private:
     unsigned int msgCode;

@@ -84,6 +84,9 @@ public:
     virtual double fx(const DoubleVector &x) const;
     virtual void gradient(const DoubleVector &, DoubleVector &) const;
 
+    virtual double pfx(const DoubleVector &x) const;
+    virtual void pgradient(const DoubleVector &, DoubleVector &) const;
+
 protected:
     double mu(double x, double y) const;
     double integral0(const DoubleMatrix &u, const DoubleMatrix &ut) const;

@@ -17,12 +17,12 @@ class invalid_step_exception : public std::invalid_argument
 
 };
 
-class MINIMUMSHARED_EXPORT FunctionException : public std::exception
+class FunctionException : public std::exception
 {
 public:
-    FunctionException() throw() {}
-    virtual ~FunctionException() throw();
-    virtual const char* what() const throw();
+    MINIMUMSHARED_EXPORT FunctionException() throw() {}
+    MINIMUMSHARED_EXPORT virtual ~FunctionException() throw();
+    MINIMUMSHARED_EXPORT virtual const char* what() const throw();
 };
 
 #endif // EXCEPTIONS_H

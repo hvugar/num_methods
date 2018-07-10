@@ -17,14 +17,14 @@ class MINIMUMSHARED_EXPORT InitialValueProblem {};
  * @brief The InitialBoundaryValueProblemPDE class
  * @see ParabolicIBVP
  */
-class MINIMUMSHARED_EXPORT InitialBoundaryValueProblemPDE : public BoundaryValueProblemPDE, public InitialValueProblem
+class InitialBoundaryValueProblemPDE : public BoundaryValueProblemPDE, public InitialValueProblem
 {
 public:
-    void setTimeDimension(const Dimension &dimension);
-    const Dimension& timeDimension() const;
-    void addSpaceDimension(const Dimension &dimension);
-    const Dimension& spaceDimension(Dimension::SpaceDimension dim) const;
-    unsigned int dimSize();
+    MINIMUMSHARED_EXPORT void setTimeDimension(const Dimension &dimension);
+    MINIMUMSHARED_EXPORT const Dimension& timeDimension() const;
+    MINIMUMSHARED_EXPORT void addSpaceDimension(const Dimension &dimension);
+    MINIMUMSHARED_EXPORT const Dimension& spaceDimension(Dimension::SpaceDimension dim) const;
+    MINIMUMSHARED_EXPORT unsigned int dimSize();
 
 protected:
     Dimension mtimeDimension;

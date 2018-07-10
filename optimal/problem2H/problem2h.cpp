@@ -659,6 +659,24 @@ Problem2HDirichlet::Problem2HDirichlet(const Dimension &time, const Dimension &d
 Problem2HDirichlet::~Problem2HDirichlet()
 {}
 
+double Problem2HDirichlet::pfx(const DoubleVector &x) const
+{
+    unsigned int offset = 2*mEquParameter.Nc*mEquParameter.No;
+    unsigned int length = offset + 2*(mEquParameter.Nc+mEquParameter.No);
+    DoubleVector px = x;
+    for (unsigned int i=offset; i<length; i++) const_cast<Problem2HDirichlet*>(this)->project(px, i);
+    return fx(px);
+}
+
+void Problem2HDirichlet::pgradient(const DoubleVector &x, DoubleVector &g) const
+{
+    unsigned int offset = 2*mEquParameter.Nc*mEquParameter.No;
+    unsigned int length = offset + 2*(mEquParameter.Nc+mEquParameter.No);
+    DoubleVector px = x;
+    for (unsigned int i=offset; i<length; i++) const_cast<Problem2HDirichlet*>(this)->project(px, i);
+    gradient(px,g);
+}
+
 double Problem2HDirichlet::fx(const DoubleVector &pv) const
 {
     OptimizeParameter o_prm;

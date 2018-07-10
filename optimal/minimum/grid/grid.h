@@ -87,17 +87,17 @@ private:
     int mmaxN;
 };
 
-class MINIMUMSHARED_EXPORT UniformPDEGrid
+class UniformPDEGrid
 {
 public:
-    UniformPDEGrid();
-    UniformPDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaceDimensions);
+    MINIMUMSHARED_EXPORT UniformPDEGrid();
+    MINIMUMSHARED_EXPORT UniformPDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaceDimensions);
 
-    void setTimeDimension(const Dimension &timeDimension);
-    void addSpaceDimension(const Dimension &spaceDimension);
+    MINIMUMSHARED_EXPORT void setTimeDimension(const Dimension &timeDimension);
+    MINIMUMSHARED_EXPORT void addSpaceDimension(const Dimension &spaceDimension);
 
-    const Dimension& timeDimension() const;
-    const Dimension& spaceDimension(Dimension::SpaceDimension dimension) const;
+    MINIMUMSHARED_EXPORT const Dimension& timeDimension() const;
+    MINIMUMSHARED_EXPORT const Dimension& spaceDimension(Dimension::SpaceDimension dimension) const;
 private:
     Dimension mtimeDimension;
     std::vector<Dimension> mspaceDimensions;

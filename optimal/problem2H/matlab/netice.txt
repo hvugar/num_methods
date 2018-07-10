@@ -1,0 +1,188 @@
+>> optimizer1 trust-region-reflective
+
+                                Norm of      First-order 
+ Iteration        f(x)          step          optimality   CG-iterations
+     0           0.779765                          7.13                
+     1           0.245624      0.0994615           1.63           2
+     2           0.173448       0.891882         0.0744           2
+     3           0.173448             10         0.0744           2
+     4           0.173448            2.5         0.0744           0
+     5           0.102076          0.625         0.0705           0
+     6          0.0902054          0.625          0.709           2
+     7          0.0902054        0.15625          0.709           1
+     8          0.0902054      0.0390625          0.709           0
+     9          0.0902054     0.00976562          0.709           0
+    10          0.0902054     0.00244141          0.709           0
+    11          0.0902054    0.000610352          0.709           0
+    12          0.0902054    0.000152588          0.709           0
+    13          0.0902054     3.8147e-05          0.709           0
+    14          0.0902054    9.53674e-06          0.709           0
+    15          0.0902054    2.38419e-06          0.709           0
+    16          0.0902054    5.96046e-07          0.709           0
+
+Local minimum possible.
+
+fmincon stopped because the size of the current step is less than
+the default value of the step size tolerance.
+
+<stopping criteria details>
+
+fx: 0.090205. x:   2.3683  -3.8766   1.2055   1.8228   0.3511  -0.3617  -0.3112   0.5861   0.7524   0.0238   0.4483   0.4566   0.4658   0.4992   0.9737   0.9062 
+Elapsed time is 19699.797447 seconds.
+
+>> optimizer1 interior-point
+                                            First-order      Norm of
+ Iter F-count            f(x)  Feasibility   optimality         step
+    0       1    0.7797651     0.000e+00    7.134e+00
+    1       5    0.6081553     0.000e+00    1.204e+00    1.195e+00
+    2       6    0.2302568     0.000e+00    5.920e-01    8.341e-01
+    3      15    0.08535860    0.000e+00    3.859e-01    2.604e-01
+    4      23    0.06683085    0.000e+00    1.383e-01    6.490e-02
+    5      30    0.06319026    0.000e+00    2.211e-01    3.154e-02
+    6      36    0.06380484    0.000e+00    2.151e-01    3.028e-02
+    7      41    0.06162496    0.000e+00    2.133e-01    3.164e-02
+    8      46    0.05818113    0.000e+00    1.339e-01    6.275e-02
+    9      55    0.05825787    0.000e+00    9.301e-02    7.256e-03
+   10      62    0.05796103    0.000e+00    1.508e-01    3.973e-02
+   11      67    0.05664415    0.000e+00    1.038e-01    4.008e-02
+   12      75    0.05603031    0.000e+00    3.299e-02    9.790e-03
+   13      82    0.05603938    0.000e+00    5.565e-02    4.983e-03
+   14      88    0.05600738    0.000e+00    2.646e-02    2.502e-03
+   15      95    0.05601207    0.000e+00    1.565e-02    1.219e-03
+   16     102    0.05599862    0.000e+00    4.540e-02    1.628e-02
+   17     108    0.05579692    0.000e+00    1.951e-02    8.149e-03
+   18     114    0.05572933    0.000e+00    2.133e-02    8.082e-03
+   19     119    0.05571875    0.000e+00    3.089e-02    1.621e-02
+   20     126    0.05567175    0.000e+00    2.315e-02    4.078e-03
+   21     133    0.05566929    0.000e+00    9.404e-03    1.996e-03
+   22     140    0.05566917    0.000e+00    6.028e-03    5.037e-04
+
+Local minimum possible. Constraints satisfied.
+
+fmincon stopped because the size of the current step is less than
+the default value of the step size tolerance and constraints are 
+satisfied to within the default value of the constraint tolerance.
+
+<stopping criteria details>
+
+fx: 0.055669. x:   2.2053  -1.7908   1.6211   1.9734   0.1196   0.1370  -0.3982   0.4783   0.5230   0.3937   0.5947   0.4423   0.4106   0.5971   0.6068   0.6039 
+Elapsed time is 7782.721448 seconds.
+
+>> optimizer1 sqp
+ Iter  Func-count            Fval   Feasibility   Step Length       Norm of   First-order  
+                                                                       step    optimality
+    0           1    7.797651e-01     0.000e+00     1.000e+00     0.000e+00     7.134e+00  
+    1           9    5.718370e-01     0.000e+00     1.176e-01     1.123e+00     9.350e-01  
+    2          11    3.140270e-01     0.000e+00     1.000e+00     4.849e-01     4.042e-01  
+    3          13    1.667772e-01     0.000e+00     1.000e+00     6.715e-01     8.046e-02  
+    4          15    1.496885e-01     0.000e+00     1.000e+00     2.722e-01     6.370e-02  
+    5          17    1.418332e-01     0.000e+00     1.000e+00     2.272e-01     1.281e-01  
+    6          19    1.186489e-01     0.000e+00     1.000e+00     6.737e-01     1.598e-01  
+    7          27    1.141456e-01     0.000e+00     1.176e-01     4.582e-01     6.023e-02  
+    8          29    1.112216e-01     0.000e+00     1.000e+00     5.146e-02     4.722e-02  
+    9          32    4.040680e-02     0.000e+00     7.000e-01     1.115e+00     1.437e-01  
+   10          38    3.601484e-02     0.000e+00     2.401e-01     1.694e-01     1.298e-01  
+   11          40    3.422625e-02     0.000e+00     1.000e+00     1.127e-01     8.941e-02  
+   12          42    3.292376e-02     0.000e+00     1.000e+00     4.160e-02     8.838e-03  
+   13          44    3.276321e-02     0.000e+00     1.000e+00     3.700e-02     9.330e-03  
+   14          46    3.233573e-02     0.000e+00     1.000e+00     1.648e-01     1.791e-02  
+   15          48    3.216052e-02     0.000e+00     1.000e+00     1.277e-01     1.031e-02  
+   16          51    3.214783e-02     0.000e+00     7.000e-01     4.752e-02     4.341e-03  
+   17          81    3.214783e-02     0.000e+00     2.254e-05     9.384e-07     4.341e-03  
+
+Local minimum possible. Constraints satisfied.
+
+fmincon stopped because the size of the current step is less than
+the default value of the step size tolerance and constraints are 
+satisfied to within the default value of the constraint tolerance.
+
+<stopping criteria details>
+
+fx: 0.032148. x:   2.7580   0.4438  -0.0116   1.0795   0.0390  -0.1060  -0.2519   0.7397   0.5500   0.1400   0.7400   0.3700   0.2800   0.7500   0.8500   0.8900 
+Elapsed time is 95.483040 seconds.
+
+>> optimizer1 sqp-legacy
+                                                               Norm of First-order
+ Iter  Func-count            Fval Feasibility  Step Length        step  optimality
+    0           1    7.797651e-01   0.000e+00                            7.134e+00
+    1           9    5.718370e-01   0.000e+00    1.176e-01   1.123e+00   9.350e-01
+    2          11    3.140270e-01   0.000e+00    1.000e+00   4.849e-01   4.042e-01
+    3          13    1.667772e-01   0.000e+00    1.000e+00   6.715e-01   8.046e-02
+    4          15    1.496885e-01   0.000e+00    1.000e+00   2.722e-01   6.370e-02
+    5          17    1.418332e-01   0.000e+00    1.000e+00   2.272e-01   1.281e-01
+    6          19    1.186489e-01   0.000e+00    1.000e+00   6.737e-01   1.598e-01
+    7          27    1.141456e-01   0.000e+00    1.176e-01   4.582e-01   6.023e-02
+    8          29    1.112216e-01   0.000e+00    1.000e+00   5.146e-02   4.722e-02
+    9          32    4.040680e-02   0.000e+00    7.000e-01   1.115e+00   1.437e-01
+   10          38    3.601484e-02   0.000e+00    2.401e-01   1.694e-01   1.298e-01
+   11          40    3.422625e-02   0.000e+00    1.000e+00   1.127e-01   8.941e-02
+   12          42    3.292376e-02   0.000e+00    1.000e+00   4.160e-02   8.838e-03
+   13          44    3.276321e-02   0.000e+00    1.000e+00   3.700e-02   9.330e-03
+   14          46    3.233573e-02   0.000e+00    1.000e+00   1.648e-01   1.791e-02
+   15          48    3.216052e-02   0.000e+00    1.000e+00   1.277e-01   1.031e-02
+   16          51    3.214783e-02   0.000e+00    7.000e-01   4.752e-02   4.341e-03
+   17          81    3.214783e-02   0.000e+00    2.254e-05   9.384e-07   4.341e-03
+
+Local minimum possible. Constraints satisfied.
+
+fmincon stopped because the size of the current step is less than
+the default value of the step size tolerance and constraints are 
+satisfied to within the default value of the constraint tolerance.
+
+<stopping criteria details>
+
+fx: 0.032148. x:   2.7580   0.4438  -0.0116   1.0795   0.0390  -0.1060  -0.2519   0.7397   0.5500   0.1400   0.7400   0.3700   0.2800   0.7500   0.8500   0.8900 
+Elapsed time is 92.866465 seconds.
+
+
+>> optimizer1 active-set
+
+                                Max     Line search  Directional  First-order 
+ Iter F-count        f(x)   constraint   steplength   derivative   optimality Procedure 
+    0      1     0.779765        -0.11                                         
+    1      6     0.665898        -0.11        0.125        -9.55         1.56   
+    2      8     0.265064        -0.11            1        -1.24         0.27   
+    3     10     0.189559        -0.11            1       -0.296        0.132   
+    4     12      0.13555        -0.11            1       -0.176        0.104   
+    5     14     0.127204        -0.11            1      -0.0605         0.14   
+    6     17     0.107159        -0.11          0.5      -0.0626       0.0824   
+    7     20     0.106377        -0.11          0.5      -0.0408       0.0482   
+    8     22    0.0964332        -0.11            1      -0.0641        0.039   
+    9     27    0.0794532        -0.11        0.125      -0.0608         0.02   
+   10     29    0.0786247        -0.11            1      -0.0178       0.0151   
+   11     31    0.0783527        -0.11            1      -0.0158       0.0158   
+   12     33    0.0782324        -0.11            1       -0.009       0.0171   
+   13     35    0.0779226        -0.11            1      -0.0107       0.0092  Hessian modified  
+   14     38    0.0779045        -0.11          0.5     -0.00596      0.00558   
+   15     41    0.0778878        -0.11          0.5     -0.00537      0.00422  Hessian modified  
+   16     44    0.0778815        -0.11          0.5     -0.00415      0.00447  Hessian modified  
+   17     47     0.077877        -0.11          0.5     -0.00367      0.00464  Hessian modified  
+   18     50    0.0778701        -0.11          0.5     -0.00347      0.00661  Hessian modified  
+   19     53    0.0778594        -0.11          0.5     -0.00334       0.0102  Hessian modified  
+   20     56    0.0778511        -0.11          0.5     -0.00322       0.0142  Hessian modified  
+   21     60    0.0778447        -0.11         0.25     -0.00308       0.0163  Hessian modified  
+   22     65    0.0778371        -0.11        0.125     -0.00317       0.0174  Hessian modified  
+   23     68    0.0770224        -0.11          0.5     -0.00323       0.0185   
+   24     75    0.0763299        -0.11       0.0313     -0.00654       0.0156  Hessian modified  
+   25     79     0.076301        -0.11         0.25     -0.00506       0.0135   
+   26     81    0.0761469        -0.11            1      -0.0101       0.0098   
+   27     83    0.0758808        -0.11            1     -0.00935      0.00664  Hessian modified  
+   28     85    0.0753225        -0.11            1     -0.00866       0.0118  Hessian modified  
+   29     87    0.0748566        -0.11            1     -0.00567       0.0176  Hessian modified  
+   30     89    0.0743262        -0.11            1      -0.0051       0.0183  Hessian modified  
+   31     91     0.073789        -0.11            1     -0.00519       0.0135  Hessian modified  
+   32     93    0.0732114        -0.11            1      -0.0055      0.00439  Hessian modified  
+   33     95    0.0730204        -0.11            1     -0.00467      0.00323  Hessian modified  
+   34     97    0.0730108        -0.11            1     -0.00325      0.00199  Hessian modified  
+No active inequalities.
+
+Local minimum possible. Constraints satisfied.
+
+fmincon stopped because the predicted change in the objective function
+is less than the default value of the function tolerance and constraints 
+are satisfied to within the default value of the constraint tolerance.
+
+<stopping criteria details>
+
+fx: 0.073011. x:   2.6439  -0.8318  -0.5289   2.6419  -0.3479  -0.0628  -0.6643  -0.3399   0.5500   0.1400   0.7400   0.3700   0.2800   0.7500   0.8500   0.8900 
+Elapsed time is 137.390541 seconds.
