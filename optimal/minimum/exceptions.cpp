@@ -1,13 +1,5 @@
 #include "exceptions.h"
 
-exceptions::exceptions()
-{
-
-}
-
-exceptions::~exceptions()
-{
-}
 
 FunctionException::~FunctionException() throw()
 {}

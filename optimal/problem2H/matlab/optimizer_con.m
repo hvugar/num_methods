@@ -1,12 +1,12 @@
 tic
-% options = optimoptions('fmincon', 'Algorithm','sqp', 'SpecifyObjectiveGradient', true);
-options.Display = 'iter'; %'iter'
+options = optimoptions('fmincon', 'Algorithm','sqp', 'SpecifyObjectiveGradient', true);
+options.Display = 'iter-detailed'; %'iter'
 % options.SpecifyObjectiveGradient = true;
 % options.Algorithm = 'trust-region'; %quasi-newton
 options.CheckGradients = false;
 % options.StepTolerance = 1e-6;
-
 problem.options = options;
+
 problem.Aineq = []; problem.bineq = [];
 problem.Aeq = [];   problem.beq = [];
 problem.lb = [-1e+10, -1e+10, -1e+10, -1e+10, -1e+10, -1e+10, -1e+10, -1e+10, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]; 

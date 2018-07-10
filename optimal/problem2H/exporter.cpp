@@ -49,8 +49,8 @@ void init_pr()
     prob.mRegParameter = r_prm;
     prob.optimizeK = true;
     prob.optimizeZ = true;
-    prob.optimizeC = false;
-    prob.optimizeO = false;
+    prob.optimizeC = true;
+    prob.optimizeO = true;
 
     prob.alpha0 = 1.0; prob.V0.resize(Ny+1, Nx+1, 0.0);
     prob.alpha1 = 1.0; prob.V1.resize(Ny+1, Nx+1, 0.0);
