@@ -1,5 +1,5 @@
 tic
-options = optimoptions('fmincon', 'Algorithm', 'sqp-legac', 'SpecifyObjectiveGradient', true);
+options = optimoptions('fmincon', 'Algorithm', 'sqp-legacy', 'SpecifyObjectiveGradient', true);
 options.Display = 'iter-detailed';
 % options.Algorithm = 'interior-point';
 % options.SpecifyObjectiveGradient = true;
