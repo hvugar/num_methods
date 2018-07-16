@@ -15,6 +15,6 @@ x0 = [+2.3400, -2.7400, +1.5800, +1.9500, +0.5000, -0.4000, -0.3000, +0.6000, +0
 loadlibrary('problem2H', 'exporter.h');
 
 calllib('problem2H', 'init_pr');
-calllib('problem2H', 'setPenaltyR', 1);
+calllib('problem2H', 'setPenaltyR', 1.0);
 
 disp('Initialized.');

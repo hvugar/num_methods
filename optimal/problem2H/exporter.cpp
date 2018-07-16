@@ -65,7 +65,7 @@ void init_pr()
 double call_fx(double *x)
 {
     DoubleVector px(x, 16);
-    return prob.pfx(px);
+    return prob.fx(px);
 }
 
 void call_gr(double *x, double *g, unsigned int size)
@@ -73,7 +73,7 @@ void call_gr(double *x, double *g, unsigned int size)
     DoubleVector px(size); for (unsigned int i=0; i<size; i++) px[i] = x[i];
     DoubleVector gr(size); for (unsigned int i=0; i<size; i++) gr[i] = 0.0;
 
-    prob.pgradient(px, gr);
+    prob.gradient(px, gr);
 
     for (unsigned int i=0; i<size; i++) g[i] = gr[i];
 
