@@ -1,13 +1,14 @@
-#ifndef PROBLEM2H_H
-#define PROBLEM2H_H
+#ifndef PROBLEM2HN_H
+#define PROBLEM2HN_H
 
 #include "common.h"
 
-class PROBLEM2HSHARED_EXPORT Problem2HDirichlet : public RnFunction, public IGradient, public InitialBoundaryValueProblemPDE, public IProjection, public IPrinter
+
+class PROBLEM2HSHARED_EXPORT Problem2HNDirichlet : public RnFunction, public IGradient, public InitialBoundaryValueProblemPDE, public IProjection, public IPrinter
 {
 public:
     static void Main(int argc, char* argv[]);
-    static void checkGradient(const Problem2HDirichlet &prob);
+    static void checkGradient(const Problem2HNDirichlet &prob);
     static void optimization1();
 
     static void example1();
@@ -15,9 +16,9 @@ public:
 
     static void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, OptimizeParameter &o_prm0);
 
-    Problem2HDirichlet();
-    Problem2HDirichlet(const Dimension &time, const Dimension &dimx, const Dimension &dimy, const EquationParameter &eprm, const OptimizeParameter &oprm, const OptimizeParameter &oprm0);
-    virtual ~Problem2HDirichlet();
+    Problem2HNDirichlet();
+    Problem2HNDirichlet(const Dimension &time, const Dimension &dimx, const Dimension &dimy, const EquationParameter &eprm, const OptimizeParameter &oprm, const OptimizeParameter &oprm0);
+    virtual ~Problem2HNDirichlet();
 
     virtual double fx(const DoubleVector &x) const;
     virtual void gradient(const DoubleVector &, DoubleVector &) const;
@@ -26,11 +27,11 @@ public:
     //virtual void pgradient(const DoubleVector &, DoubleVector &) const;
 
 protected:
-    double mu(double x, double y) const;
+    inline double mu(double x, double y) const;
     double integral0(const DoubleMatrix &u, const DoubleMatrix &ut) const;
     double integral1(const DoubleMatrix &u, const DoubleMatrix &ut) const;
     double integral2(const DoubleMatrix &u, const DoubleMatrix &ut) const;
-    double norm(const EquationParameter& eprm, const OptimizeParameter &oprm, const OptimizeParameter &oprm0) const;
+    double norm(const EquationParameter &eprm, const OptimizeParameter &oprm, const OptimizeParameter &oprm0) const;
 
     double penalty(const spif_vector &info, const OptimizeParameter &o_prm) const;
     double gpi(unsigned int i, unsigned int layer, const spif_vector &info, const OptimizeParameter &o_prm) const;
@@ -48,7 +49,7 @@ public:
 private:
 
     //forward -------------------------------------
-    void solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bool use, DoubleMatrix &ut) const;
+    void solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const;
     double f_initial1(const SpaceNodePDE &sn) const;
     double f_initial2(const SpaceNodePDE &sn) const;
     double f_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
@@ -95,6 +96,8 @@ public:
 
     DoubleMatrix UT;
     DoubleMatrix UTt;
+    double DT = 0.01;
+    unsigned int DL = 5;
 
     bool optimizeK;
     bool optimizeZ;

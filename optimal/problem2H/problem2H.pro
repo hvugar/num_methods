@@ -17,9 +17,10 @@ DEFINES += PROBLEM2H_LIBRARY
 INCLUDEPATH += ../minimum
 LIBS += -L../bin -lminimum
 
-HEADERS += \
-        problem2h_global.h \
-        problem2h.h \
-        exporter.h
+HEADERS += problem2h_global.h common.h
 
-SOURCES += problem2h.cpp exporter.cpp
+HEADERS += exporter.h
+SOURCES += exporter.cpp
+
+HEADERS += problem2h.h   problem2hN.h
+SOURCES += problem2h.cpp problem2hN.cpp

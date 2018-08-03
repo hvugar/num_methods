@@ -18,6 +18,7 @@
 //#include "problem2P/2d/ex/problem22dex3.h"
 //#include "problem2P/2d/ex/problem22dex4.h"
 //#include "problem2P/2d/ex/problem22dex5.h"
+
 #include "problem2P/2d/ex/expol.h"
 #include "problem2P/2d/cproblem2forward2d.h"
 #include "problem2P/2d/cproblem2backward2d.h"
@@ -25,6 +26,7 @@
 #include "problem2P/2d/ex/p2_article.h"
 
 #include <problem2h.h>
+#include <problem2hN.h>
 
 #include "problem4/problem4ex1.h"
 #include "problem4/problem4ex2.h"
