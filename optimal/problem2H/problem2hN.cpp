@@ -2092,7 +2092,7 @@ void Problem2HNDirichlet::solveForwardIBVP_N(std::vector<DoubleMatrix> &u, spif_
 
         if (rows2.size() != 0)
         {
-            //throw std::exception();
+            throw std::exception();
 
             unsigned int row1_size = rows1.size()*(N-1);
             double* a1 = (double*) malloc(sizeof(double)*row1_size);
@@ -2312,7 +2312,7 @@ void Problem2HNDirichlet::solveForwardIBVP_N(std::vector<DoubleMatrix> &u, spif_
 
         if ( cols2.size() != 0)
         {
-            //throw std::exception();
+            throw std::exception();
 
             unsigned int cols1_size = cols1.size()*(M-1);
             double* a2 = (double*) malloc(sizeof(double)*cols1_size);
