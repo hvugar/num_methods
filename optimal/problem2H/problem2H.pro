@@ -7,22 +7,21 @@
 TEMPLATE = lib
 TARGET = problem2H
 CONFIG  -= app_bundle
-CONFIG  -= qt
+#CONFIG  -= qt
 CONFIG  += console
 CONFIG  += dll
 DESTDIR  = ../bin
+QT       += core gui widgets
 
 DEFINES += PROBLEM2H_LIBRARY
 
 INCLUDEPATH += ../minimum
 LIBS += -L../bin -lminimum
 
-HEADERS += problem2h_global.h common.h \
-    problem2hnm.h
+HEADERS += problem2h_global.h common.h
 
-HEADERS += exporter.h
-SOURCES += exporter.cpp \
-    problem2hnm.cpp
+#HEADERS += exporter.h
+#SOURCES += exporter.cpp
 
-HEADERS += problem2h.h   problem2hN.h
-SOURCES += problem2h.cpp problem2hN.cpp
+HEADERS += problem2h.h   problem2hN.h   problem2hnm.h
+SOURCES += problem2h.cpp problem2hN.cpp problem2hnm.cpp

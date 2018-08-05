@@ -3,7 +3,6 @@ TEMPLATE = lib
 CONFIG += static
 
 QT       += core gui widgets
-CONFIG += static
 
 INCLUDEPATH += ../minimum
 LIBS += -L../bin -lminimum

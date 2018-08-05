@@ -2,7 +2,7 @@
 #define PROBLEM2HN_H
 
 #include "common.h"
-
+#include "../imaging/imaging.h"
 
 class PROBLEM2HSHARED_EXPORT Problem2HNDirichlet : public RnFunction, public IGradient, public InitialBoundaryValueProblemPDE, public IProjection, public IPrinter
 {
@@ -50,6 +50,8 @@ private:
 
     //forward -------------------------------------
     void solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const;
+    void solveForwardIBVP_N(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const;
+
     double f_initial1(const SpaceNodePDE &sn) const;
     double f_initial2(const SpaceNodePDE &sn) const;
     double f_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
