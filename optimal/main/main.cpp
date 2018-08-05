@@ -19,14 +19,15 @@
 //#include "problem2P/2d/ex/problem22dex4.h"
 //#include "problem2P/2d/ex/problem22dex5.h"
 
-#include "problem2P/2d/ex/expol.h"
-#include "problem2P/2d/cproblem2forward2d.h"
-#include "problem2P/2d/cproblem2backward2d.h"
-#include "problem2P/2d/dirakdelta.h"
-#include "problem2P/2d/ex/p2_article.h"
+#include "../problem2P/2d/ex/expol.h"
+#include "../problem2P/2d/cproblem2forward2d.h"
+#include "../problem2P/2d/cproblem2backward2d.h"
+#include "../problem2P/2d/dirakdelta.h"
+#include "../problem2P/2d/ex/p2_article.h"
 
-#include <problem2h.h>
-#include <problem2hN.h>
+#include "../problem2H/problem2h.h"
+#include "../problem2H/problem2hN.h"
+#include "../problem2H/problem2hnm.h"
 
 #include "problem4/problem4ex1.h"
 #include "problem4/problem4ex2.h"
@@ -128,7 +129,9 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Problem2Article::Main(argc, argv);
     //IProblem2H::IProblem2H2D::Main(argc, argv);
     //IPrinter::printSeperatorLine("+");
-    Problem2HDirichlet::Main(argc, argv);
+//    Problem2HDirichlet::Main(argc, argv);
+    Problem2HNM::Main(argc, argv);
+    return 0;
 
     //LinearEquation::func1(a, b, c, d, e, x, N);
 

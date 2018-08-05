@@ -905,10 +905,10 @@ double Problem2HDirichlet::g0i(unsigned int i, unsigned int layer, const spif_ve
 
 void Problem2HDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) const
 {
-    unsigned int L = mtimeDimension.sizeN();
+    const unsigned int L = mtimeDimension.sizeN();
+    const unsigned int Nc = mEquParameter.Nc;
+    const unsigned int No = mEquParameter.No;
     double ht = mtimeDimension.step();
-    unsigned int Nc = mEquParameter.Nc;
-    unsigned int No = mEquParameter.No;
 
     OptimizeParameter o_prm;
     VectorToPrm(pv, o_prm);
@@ -1277,6 +1277,7 @@ void Problem2HDirichlet::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, 
     DoubleMatrix u05(M+1, N+1);
     DoubleMatrix u10(M+1, N+1);
     DoubleMatrix u15(M+1, N+1);
+
     u.clear(); u.resize(M+1, N+1);
 
     //----------------------------------------------------------------------------------------------//
