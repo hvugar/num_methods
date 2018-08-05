@@ -18,6 +18,9 @@ DEFINES += PROBLEM2H_LIBRARY
 INCLUDEPATH += ../minimum
 LIBS += -L../bin -lminimum
 
+INCLUDEPATH += ../imaging
+LIBS += -L../bin -limaging
+
 HEADERS += problem2h_global.h common.h
 
 #HEADERS += exporter.h

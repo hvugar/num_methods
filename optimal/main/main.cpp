@@ -90,7 +90,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //    return 0;
 
 
-//    QGuiApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
 
 //    DoubleVector a(11, -0.5); a[0] = 0.0;
 //    DoubleVector b(11, +2.000015);
