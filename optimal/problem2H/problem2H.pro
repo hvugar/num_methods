@@ -9,7 +9,7 @@ TARGET = problem2H
 CONFIG  -= app_bundle
 #CONFIG  -= qt
 CONFIG  += console
-CONFIG  += dll
+CONFIG  += shared
 DESTDIR  = ../bin
 QT       += core gui widgets
 

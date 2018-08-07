@@ -1,8 +1,8 @@
 TARGET = imaging
 TEMPLATE = lib
-CONFIG += static
+CONFIG += shared
 
-QT       += core gui widgets
+QT     += core gui widgets
 
 INCLUDEPATH += ../minimum
 LIBS += -L../bin -lminimum

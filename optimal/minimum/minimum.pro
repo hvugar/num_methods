@@ -3,7 +3,7 @@ TEMPLATE = lib
 CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
-CONFIG += dll
+CONFIG += shared
 #DEFINES += OS_UNIX
 
 #QMAKE_CXXFLAGS += -O3

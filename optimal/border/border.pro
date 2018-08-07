@@ -7,7 +7,7 @@ TARGET   = border
 CONFIG  += console
 CONFIG  -= app_bundle
 CONFIG  -= qt
-CONFIG  += dll
+CONFIG  += shared
 DESTDIR  = ../bin
 
 INCLUDEPATH += ../minimum
