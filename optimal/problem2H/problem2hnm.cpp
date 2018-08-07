@@ -425,7 +425,7 @@ void Problem2HNM::solveEquation2D2(const Dimension &time, const Dimension &dimx,
                 sn.i = n; sn.x = n*hx;
 
                 ax[n-1] = -(a*a*ht*ht)/(hx*hx);
-                bx[n-1] = 8.0+(2.0*a*a*ht*ht)/(hx*hx)+(3.0*lambda*ht);
+                bx[n-1] = 8.0+2.0*((a*a*ht*ht)/(hx*hx))+3.0*(lambda*ht);
                 cx[n-1] = -(a*a*ht*ht)/(hx*hx);
 
                 dx[n-1] = ((a*a*ht*ht)/(hy*hy))*(u10[m-1][n]-2.0*u10[m][n]+u10[m+1][n]);
@@ -630,18 +630,19 @@ void Problem2HNM::solveEquation2D3(const Dimension &time, const Dimension &dimx,
             {
                 sn.i = n; sn.x = n*hx;
 
-                ax[n-1] = -((1.5*a*a*ht*ht)/(hx*hx));
-                bx[n-1] = 12.0+(3.0*a*a*ht*ht)/(hx*hx)+(5.5*lambda*ht);
-                cx[n-1] = -((1.5*a*a*ht*ht)/(hx*hx));
+                ax[n-1] = -((a*a*ht*ht)/(hx*hx));
+                bx[n-1] = +8.0+2.0*((a*a*ht*ht)/(hx*hx))+(11.0/3.0)*(lambda*ht);
+                cx[n-1] = -((a*a*ht*ht)/(hx*hx));
 
-                dx[n-1] = +((1.5*a*a*ht*ht)/(hy*hy))*(u10[m-1][n]-2.0*u10[m][n]+u10[m+1][n]);
-                dx[n-1] += (0.5*lambda*ht)*(18.0*u10[m][n]-9.0*u05[m][n]+2.0*u00[m][n]);
-                dx[n-1] += 30.0*u10[m][n]-24.0*u05[m][n]+6.0*u00[m][n];
-                dx[n-1] += 1.5*ht*ht*f(sn,tn05);
+                dx[n-1] = 0.0;
+                dx[n-1] += +((a*a*ht*ht)/(hy*hy))*(u10[m-1][n]-2.0*u10[m][n]+u10[m+1][n]);
+                dx[n-1] += +4.0*(5.0*u10[m][n]-4.0*u05[m][n]+u00[m][n]);
+                dx[n-1] += +((lambda*ht)/3.0)*(18.0*u10[m][n]-9.0*u05[m][n]+2.0*u00[m][n]);
+                dx[n-1] += ht*ht*f(sn,tn05);
             }
 
-            dx[0]   -= -((1.5*a*a*ht*ht)/(hx*hx)) * u15[m][0];
-            dx[N-2] -= -((1.5*a*a*ht*ht)/(hx*hx)) * u15[m][N];
+            dx[0]   -= -((a*a*ht*ht)/(hx*hx)) * u15[m][0];
+            dx[N-2] -= -((a*a*ht*ht)/(hx*hx)) * u15[m][N];
 
             ax[0] = cx[N-2] = 0.0;
 
@@ -661,18 +662,19 @@ void Problem2HNM::solveEquation2D3(const Dimension &time, const Dimension &dimx,
             {
                 sn.j = m; sn.y = m*hy;
 
-                ay[m-1] = -((1.5*a*a*ht*ht)/(hy*hy));
-                by[m-1] = 12.0+(3.0*a*a*ht*ht)/(hy*hy)+(5.5*lambda*ht);
-                cy[m-1] = -((1.5*a*a*ht*ht)/(hy*hy));
+                ay[m-1] = -((a*a*ht*ht)/(hy*hy));
+                by[m-1] = +8.0+2.0*((a*a*ht*ht)/(hy*hy))+(11.0/3.0)*(lambda*ht);
+                cy[m-1] = -((a*a*ht*ht)/(hy*hy));
 
-                dy[m-1] = +((1.5*a*a*ht*ht)/(hx*hx))*(u15[m][n-1]-2.0*u15[m][n]+u15[m][n+1]);
-                dy[m-1] += (0.5*lambda*ht)*(18.0*u15[m][n]-9.0*u10[m][n]+2.0*u05[m][n]);
-                dy[m-1] += 30.0*u15[m][n]-24.0*u10[m][n]+6.0*u05[m][n];
-                dy[m-1] += 1.5*ht*ht*f(sn,tn10);
+                dy[m-1] = 0.0;
+                dy[m-1] += ((a*a*ht*ht)/(hx*hx))*(u15[m][n-1]-2.0*u15[m][n]+u15[m][n+1]);
+                dy[m-1] += 4.0*(5.0*u15[m][n]-4.0*u10[m][n]+u05[m][n]);
+                dy[m-1] += ((lambda*ht)/3.0)*(18.0*u15[m][n]-9.0*u10[m][n]+2.0*u05[m][n]);
+                dy[m-1] += ht*ht*f(sn,tn10);
             }
 
-            dy[0]   -= -((1.5*a*a*ht*ht)/(hy*hy)) * u20[0][n];
-            dy[M-2] -= -((1.5*a*a*ht*ht)/(hy*hy)) * u20[M][n];
+            dy[0]   -= -((a*a*ht*ht)/(hy*hy)) * u20[0][n];
+            dy[M-2] -= -((a*a*ht*ht)/(hy*hy)) * u20[M][n];
 
             ay[0] = cy[M-2] = 0.0;
 
