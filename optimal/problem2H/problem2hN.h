@@ -49,8 +49,10 @@ public:
 private:
 
     //forward -------------------------------------
-    void solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const;
+    void solveForwardIBVPCaseC(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const;
     void solveForwardIBVP_N(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const;
+
+    void solveForwardIBVPCaseA1(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const;
 
     double f_initial1(const SpaceNodePDE &sn) const;
     double f_initial2(const SpaceNodePDE &sn) const;
