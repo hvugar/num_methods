@@ -6,7 +6,7 @@ void Problem2HNM::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     prob.a = 1.0;
     prob.lambda = 0.01;
     DoubleMatrix u;
-    prob.solveEquation2D2(Dimension(0.001, 0, 1000), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), u);
+    prob.solveEquation2D1(Dimension(0.001, 0, 1000), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), u);
 
     //DoubleVector u;
     //prob.solveEquation1D1(Dimension(0.001, 0, 1000), Dimension(0.01, 0, 100), u);
@@ -26,8 +26,8 @@ double U(const SpaceNodePDE &sn, const TimeNodePDE &tn)
     /********* 2D *********/
     //return sn.x*sn.x + sn.y*sn.y + tn.t;                    // solveEquation2D1 solveEquation2D2 solveEquation2D3 works
     //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t;          // solveEquation2D2 solveEquation2D3 works
-    //return sn.x*sn.x + sn.y*sn.y + tn.t*tn.t;               // solveEquation2D1 solveEquation2D2 solveEquation2D3 works
-    return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t*tn.t;     // solveEquation2D2 solveEquation2D3 works
+    return sn.x*sn.x + sn.y*sn.y + tn.t*tn.t;               // solveEquation2D1 solveEquation2D2 solveEquation2D3 works
+    //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t*tn.t;     // solveEquation2D2 solveEquation2D3 works
     //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t*tn.t*tn.t;//
 }
 
@@ -48,8 +48,8 @@ double Problem2HNM::initial2(const SpaceNodePDE &) const
 
     //return 1.0;
     //return 1.0;
-    //return 0.0;
     return 0.0;
+    //return 0.0;
     //return 0.0;
 }
 
@@ -70,8 +70,8 @@ double Problem2HNM::f(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn
 
     //return 0.0 - 4.0*a*a + lambda;
     //return 0.0 - (6.0*a*a*sn.x + 6.0*a*a*sn.y) + lambda;
-    //return 2.0 - 4.0*a*a + lambda*2.0*tn.t;
-    return 2.0 - (6.0*a*a*sn.x + 6.0*a*a*sn.y) + lambda*2.0*tn.t;
+    return 2.0 - 4.0*a*a + lambda*2.0*tn.t;
+    //return 2.0 - (6.0*a*a*sn.x + 6.0*a*a*sn.y) + lambda*2.0*tn.t;
     //return 6.0*tn.t - (6.0*a*a*sn.x + 6.0*a*a*sn.y) + lambda*3.0*tn.t*tn.t;
 }
 
@@ -100,6 +100,18 @@ void Problem2HNM::solveEquation2D1(const Dimension &time, const Dimension &dimx,
     DoubleMatrix u10(M+1, N+1);
     DoubleMatrix u15(M+1, N+1);
     DoubleMatrix u20(M+1, N+1);
+
+//    const double m_aa_htht__hxhx = -0.25*(a*a*ht*ht)/(hx*hx);
+//    const double p_aa_htht__hxhx___lambda_ht = +1.0 + 0.50*(a*a*ht*ht)/(hx*hx) + 0.75*(lambda*ht);
+//    const double p_aa_htht__hyhy = +0.25*(a*a*ht*ht)/(hy*hy);
+
+//    const double m_aa_htht__hyhy = -0.25*(a*a*ht*ht)/(hy*hy);
+//    const double p_aa_htht__hyhy___lambda_ht = +1.0 + 0.50*(a*a*ht*ht)/(hy*hy) + 0.75*(lambda*ht);
+//    const double p_aa_htht__hxhx = +0.25*(a*a*ht*ht)/(hx*hx);
+
+//    const double htht_h = 0.25*ht*ht;
+//    const double aa__hxhx = (a*a)/(hx*hx);
+//    const double aa__hyhy = (a*a)/(hy*hy);
 
     SpaceNodePDE sn;
     TimeNodePDE tn;

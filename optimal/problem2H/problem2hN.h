@@ -49,7 +49,9 @@ public:
 private:
 
     //forward -------------------------------------
-    void solveForwardIBVPCaseC(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const;
+    //CaseC
+    void solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const;
+
     void solveForwardIBVP_N(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const;
 
     void solveForwardIBVPCaseA1(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const;
