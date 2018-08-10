@@ -1,12 +1,12 @@
 #include "problem2h.h"
 
-#define CASE_A1
+#define CASE_C
 
 void Problem2HDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //optimization2();
-    example1();
-    //example2();
+    //example1();
+    example2();
 }
 
 void Problem2HDirichlet::initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, OptimizeParameter &o_prm0)
@@ -414,8 +414,8 @@ void Problem2HDirichlet::example1()
     // Regulirization parameters ---------------------------------------------------------------------
     OptimizeParameter r_prm = o_prm;
 
-    DoubleVector r; r << 0.0;
-    //r << 1.0 << 2.0 << 10.0 << 100.0;
+    DoubleVector r; //r << 0.0;
+    r << 1.0 << 2.0 << 10.0 << 100.0;
 
     double hx, hy; hx = hy = 0.01;
     unsigned Nx, Ny; Nx = Ny = 100;
@@ -461,7 +461,6 @@ void Problem2HDirichlet::example1()
 
             checkGradient(prob);
             IPrinter::printSeperatorLine();
-            continue;
         }
 
         ConjugateGradient g;
@@ -608,8 +607,8 @@ void Problem2HDirichlet::example2()
         {
             prob.PrmToVector(o_prm, x);
 
-            //            checkGradient(prob);
-            //            IPrinter::printSeperatorLine();
+            checkGradient(prob);
+            IPrinter::printSeperatorLine();
         }
 
         ConjugateGradient g;
