@@ -1,19 +1,19 @@
 #include "problem2hN.h"
 
-#define CASE_A1
-
 void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //checkGradient();
     //IPrinter::printSeperatorLine();
     //optimization2();
-    //example1();
+    example1();
     //example2();
+    return;
 
     Problem2HNDirichlet prob;
     prob.setTimeDimension(Dimension(0.001, 0, 100));
     prob.addSpaceDimension(Dimension(0.001, 0, 1000));
     prob.addSpaceDimension(Dimension(0.001, 0, 1000));
+
 
     EquationParameter eprm;
     OptimizeParameter oprm;
@@ -57,19 +57,15 @@ void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     std::vector<DoubleMatrix> u;
     spif_vector info;
-#if defined(CASE_A1) || defined(CASE_A2) || defined(CASE_A3)
-    prob.solveForwardIBVPCaseA1(u, info, false);
-#endif
+    prob.solveForwardIBVP(u, info, false);
 }
 
-double MIN = +10000.0;
-double MAX = -10000.0;
 void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
-    double min = u.min();
-    double max = u.max();
-    if (MIN>min) MIN = min;
-    if (MAX<max) MAX = max;
+    //    double min = u.min();
+    //    double max = u.max();
+    //    if (MIN>min) MIN = min;
+    //    if (MAX<max) MAX = max;
 
     //    double norm = 0.0;
     //    for (unsigned int m=0; m<u.rows(); m++)
@@ -80,10 +76,10 @@ void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsign
     //        }
     //    }
 
-    QPixmap pic;
-    visualizeMatrixHeat(u, min, max, pic);
-    pic.save("images/pic"+QString("%1").arg(ln)+".png", "PNG");
-    printf("Layer: %d min: %f max: %f min: %f max: %f norm: %f\n", ln, MIN, MAX, min, max, fabs(max-min));
+    //    QPixmap pic;
+    //    visualizeMatrixHeat(u, min, max, pic);
+    //    pic.save("images/f/pic"+QString("%1").arg(ln)+".png", "PNG");
+    //    printf("Layer: %d min: %f max: %f min: %f max: %f norm: %f\n", ln, MIN, MAX, min, max, fabs(max-min));
 }
 
 void Problem2HNDirichlet::initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, OptimizeParameter &o_prm0)
@@ -435,8 +431,7 @@ void Problem2HNDirichlet::optimization1()
     prob.optimizeC = true;
     prob.optimizeO = true;
 
-    prob.alpha0 = 1.0; prob.V0.resize(Ny+1, Nx+1, 0.0);
-    prob.alpha1 = 1.0; prob.V1.resize(Ny+1, Nx+1, 0.0);
+    prob.V0.resize(Ny+1, Nx+1, 0.0);
 
     prob.regEpsilon = 0.0;
 
@@ -505,12 +500,7 @@ void Problem2HNDirichlet::example1()
     Dimension dimx(hx, 0, Nx);
     Dimension dimy(hy, 0, Ny);
 
-    // Checking gradients ---------------------------------------------------------------------
-
-    //checkGradient(prob);
-    //IPrinter::printSeperatorLine();
-
-    // ----------------------------------------------------------------------------------------
+    // Checking gradients ----------------------------------------------------------------------------
 
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
@@ -527,14 +517,14 @@ void Problem2HNDirichlet::example1()
         prob.optimizeC = true;
         prob.optimizeO = true;
 
-        prob.alpha0 = 1.0; prob.V0.resize(Ny+1, Nx+1, 0.0);
-        prob.alpha1 = 1.0; prob.V1.resize(Ny+1, Nx+1, 0.0);
+        prob.V0.resize(Ny+1, Nx+1, 0.0);
 
         prob.regEpsilon = 0.0;
 
         prob.r = r[i];
         prob.vmin.resize(e_prm.Nc, -2.0);
         prob.vmax.resize(e_prm.Nc, +2.0);
+        prob.LD = 5;
 
         if (i==0)
         {
@@ -675,21 +665,21 @@ void Problem2HNDirichlet::example2()
         prob.optimizeC = true;
         prob.optimizeO = true;
 
-        prob.alpha0 = 1.0; prob.V0.resize(Ny+1, Nx+1, 0.0);
-        prob.alpha1 = 1.0; prob.V1.resize(Ny+1, Nx+1, 0.0);
+        prob.V0.resize(Ny+1, Nx+1, 0.0);
 
         prob.regEpsilon = 0.0;
 
         prob.r = r[i];
         prob.vmin.resize(e_prm.Nc, -2.0);
         prob.vmax.resize(e_prm.Nc, +2.0);
+        prob.LD = 5;
 
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
 
-            //            checkGradient(prob);
-            //            IPrinter::printSeperatorLine();
+            checkGradient(prob);
+            IPrinter::printSeperatorLine();
         }
 
         ConjugateGradient g;
@@ -713,8 +703,6 @@ void Problem2HNDirichlet::example2()
 
 Problem2HNDirichlet::Problem2HNDirichlet()
 {
-    this->alpha0 = 1.0;
-    this->alpha1 = 1.0;
     r = 0.0;
     regEpsilon = 0.0;
 }
@@ -729,10 +717,7 @@ Problem2HNDirichlet::Problem2HNDirichlet(const Dimension &time, const Dimension 
     this->mOptParameter = mOptParameter;
     this->mRegParameter = mOptParameter0;
 
-    this->alpha0 = 1.0;
-    this->alpha1 = 1.0;
     V0.resize(dimy.sizeN()+1, dimx.sizeN()+1, 0.0);
-    V1.resize(dimy.sizeN()+1, dimx.sizeN()+1, 0.0);
 
     r = 0.0;
     regEpsilon = 0.0;
@@ -743,7 +728,9 @@ Problem2HNDirichlet::~Problem2HNDirichlet()
 
 double Problem2HNDirichlet::fx(const DoubleVector &pv) const
 {
+    //puts("-double Problem2HNDirichlet::fx(const DoubleVector &pv) const");
     OptimizeParameter o_prm;
+
     VectorToPrm(pv, o_prm);
 
     Problem2HNDirichlet* prob = const_cast<Problem2HNDirichlet*>(this);
@@ -753,19 +740,21 @@ double Problem2HNDirichlet::fx(const DoubleVector &pv) const
     spif_vector u_info;
     prob->solveForwardIBVP(u, u_info, true);
 
-    //    double intgrl = integral0(u, ut);
-    //    u.clear();
-    //    ut.clear();
+    double intgrl = integral(u);
 
-    //    double nrm = norm(mEquParameter, o_prm, mRegParameter);
-    //    double pnt = penalty(u_info, o_prm);
+    for (unsigned int i=0; i<=LD; i++) u[i].clear();
+    u.clear();
 
-    double sum = 0.0;//intgrl + regEpsilon*nrm + r*pnt;
+    double nrm = norm(mEquParameter, o_prm, mRegParameter);
+    double pnt = penalty(u_info, o_prm);
 
-    //    for (unsigned int j=0; j<u_info.size(); j++)
-    //    {
-    //        u_info[j].clearWeights();
-    //    }
+    double sum = intgrl + regEpsilon*nrm + r*pnt;
+
+    for (unsigned int j=0; j<u_info.size(); j++)
+    {
+        u_info[j].clearWeights();
+    }
+    //puts("+double Problem2HNDirichlet::fx(const DoubleVector &pv) const");
 
     return sum;
 }
@@ -775,136 +764,61 @@ double Problem2HNDirichlet::mu(double x UNUSED_PARAM, double y UNUSED_PARAM) con
     return 1.0;//sin(M_PI*x) * sin(M_PI*y);
 }
 
-double Problem2HNDirichlet::integral0(const DoubleMatrix &u, const DoubleMatrix &ut) const
+double Problem2HNDirichlet::integral(const std::vector<DoubleMatrix> &us) const
 {
-    double hx = spaceDimension(Dimension::DimensionX).step();
-    double hy = spaceDimension(Dimension::DimensionY).step();
-    unsigned int Nx = spaceDimension(Dimension::DimensionX).sizeN();
-    unsigned int Ny = spaceDimension(Dimension::DimensionY).sizeN();
+    const double hx = spaceDimension(Dimension::DimensionX).step();
+    const double hy = spaceDimension(Dimension::DimensionY).step();
+    const double ht = timeDimension().step();
 
-    double sum0 = 0.0;
-    double sum1 = 0.0;
-    double utmp = 0.0;
+    const unsigned int N = spaceDimension(Dimension::DimensionX).sizeN();
+    const unsigned int M = spaceDimension(Dimension::DimensionY).sizeN();
+    const unsigned int L = timeDimension().sizeN();
+    const unsigned int LLD = L + LD;
 
-    utmp = u[0][0]   - V0[0][0];   sum0 += 0.25 * utmp * utmp * mu(0.0, 0.0);
-    utmp = u[0][Nx]  - V0[0][Nx];  sum0 += 0.25 * utmp * utmp * mu(1.0, 0.0);
-    utmp = u[Ny][0]  - V0[Ny][0];  sum0 += 0.25 * utmp * utmp * mu(0.0, 1.0);
-    utmp = u[Ny][Nx] - V0[Ny][Nx]; sum0 += 0.25 * utmp * utmp * mu(1.0, 1.0);
+    double sum = 0.0;
+    //printf("--- %d %d %d %d\n", L, LD, LLD, us.size());
 
-    utmp = ut[0][0]   - V1[0][0];   sum1 += 0.25 * utmp * utmp * mu(0.0, 0.0);
-    utmp = ut[0][Nx]  - V1[0][Nx];  sum1 += 0.25 * utmp * utmp * mu(1.0, 0.0);
-    utmp = ut[Ny][0]  - V1[Ny][0];  sum1 += 0.25 * utmp * utmp * mu(0.0, 1.0);
-    utmp = ut[Ny][Nx] - V1[Ny][Nx]; sum1 += 0.25 * utmp * utmp * mu(1.0, 1.0);
-
-    for (unsigned int n1=1; n1<=Nx-1; n1++)
+    for (unsigned int l=L; l<=LLD; l++)
     {
-        utmp = u[0][n1]   - V0[0][n1];  sum0 += 0.5 * utmp * utmp * mu(n1*hx, 0.0);
-        utmp = u[Ny][n1]  - V0[Ny][n1]; sum0 += 0.5 * utmp * utmp * mu(n1*hx, 1.0);
-        utmp = ut[0][n1]  - V1[0][n1];  sum1 += 0.5 * utmp * utmp * mu(n1*hx, 0.0);
-        utmp = ut[Ny][n1] - V1[Ny][n1]; sum1 += 0.5 * utmp * utmp * mu(n1*hx, 1.0);
-    }
+        double sum0 = 0.0;
+        double utmp = 0.0;
 
-    for (unsigned int n2=1; n2<=Ny-1; n2++)
-    {
-        utmp = u[n2][0]  - V0[n2][0];   sum0 += 0.5 * utmp * utmp * mu(0*hx,  n2*hy) * mu(0.0, n2*hy);
-        utmp = u[n2][Nx] - V0[n2][Nx];  sum0 += 0.5 * utmp * utmp * mu(Nx*hx, n2*hy) * mu(1.0, n2*hy);
-        utmp = ut[n2][0]  - V1[n2][0];  sum1 += 0.5 * utmp * utmp * mu(0*hx,  n2*hy) * mu(0.0, n2*hy);
-        utmp = ut[n2][Nx] - V1[n2][Nx]; sum1 += 0.5 * utmp * utmp * mu(Nx*hx, n2*hy) * mu(1.0, n2*hy);
-    }
+        const DoubleMatrix &u = us.at(2*(l-L));
 
-    for (unsigned int n2=1; n2<=Ny-1; n2++)
-    {
-        for (unsigned int n1=1; n1<=Nx-1; n1++)
+        utmp = u[0][0] - V0[0][0]; sum0 += 0.25 * utmp * utmp;// * mu(0.0, 0.0);
+        utmp = u[0][N] - V0[0][N]; sum0 += 0.25 * utmp * utmp;// * mu(1.0, 0.0);
+        utmp = u[M][0] - V0[M][0]; sum0 += 0.25 * utmp * utmp;// * mu(0.0, 1.0);
+        utmp = u[M][N] - V0[M][N]; sum0 += 0.25 * utmp * utmp;// * mu(1.0, 1.0);
+
+        for (unsigned int n1=1; n1<=N-1; n1++)
         {
-            utmp = u[n2][n1] - V0[n2][n1];  sum0 += utmp * utmp * mu(n2*hy, n1*hx) * mu(n1*hx, n2*hy);
-            utmp = ut[n2][n1] - V1[n2][n1]; sum1 += utmp * utmp * mu(n2*hy, n1*hx) * mu(n1*hx, n2*hy);
+            utmp = u[0][n1] - V0[0][n1]; sum0 += 0.5 * utmp * utmp;// * mu(n1*hx, 0.0);
+            utmp = u[M][n1] - V0[M][n1]; sum0 += 0.5 * utmp * utmp;// * mu(n1*hx, 1.0);
         }
-    }
 
-    sum0 *= (hx*hy);
-    sum1 *= (hx*hy);
-
-    return alpha0*sum0 + alpha1*sum1;
-}
-
-double Problem2HNDirichlet::integral1(const DoubleMatrix &u, const DoubleMatrix &) const
-{
-    double hx = spaceDimension(Dimension::DimensionX).step();
-    double hy = spaceDimension(Dimension::DimensionY).step();
-    unsigned int Nx = spaceDimension(Dimension::DimensionX).sizeN();
-    unsigned int Ny = spaceDimension(Dimension::DimensionY).sizeN();
-
-    double sum0 = 0.0;
-    double utmp = 0.0;
-
-    utmp = u[0][0]   - V0[0][0];   sum0 += 0.25 * utmp * utmp * mu(0.0, 0.0);
-    utmp = u[0][Nx]  - V0[0][Nx];  sum0 += 0.25 * utmp * utmp * mu(1.0, 0.0);
-    utmp = u[Ny][0]  - V0[Ny][0];  sum0 += 0.25 * utmp * utmp * mu(0.0, 1.0);
-    utmp = u[Ny][Nx] - V0[Ny][Nx]; sum0 += 0.25 * utmp * utmp * mu(1.0, 1.0);
-
-    for (unsigned int n1=1; n1<=Nx-1; n1++)
-    {
-        utmp = u[0][n1]   - V0[0][n1];  sum0 += 0.5 * utmp * utmp * mu(n1*hx, 0.0);
-        utmp = u[Ny][n1]  - V0[Ny][n1]; sum0 += 0.5 * utmp * utmp * mu(n1*hx, 1.0);
-    }
-
-    for (unsigned int n2=1; n2<=Ny-1; n2++)
-    {
-        utmp = u[n2][0]  - V0[n2][0];   sum0 += 0.5 * utmp * utmp * mu(0*hx,  n2*hy) * mu(0.0, n2*hy);
-        utmp = u[n2][Nx] - V0[n2][Nx];  sum0 += 0.5 * utmp * utmp * mu(Nx*hx, n2*hy) * mu(1.0, n2*hy);
-    }
-
-    for (unsigned int n2=1; n2<=Ny-1; n2++)
-    {
-        for (unsigned int n1=1; n1<=Nx-1; n1++)
+        for (unsigned int n2=1; n2<=M-1; n2++)
         {
-            utmp = u[n2][n1] - V0[n2][n1];  sum0 += utmp * utmp * mu(n2*hy, n1*hx) * mu(n1*hx, n2*hy);
+            utmp = u[n2][0] - V0[n2][0]; sum0 += 0.5 * utmp * utmp;// * mu(0*hx, n2*hy) * mu(0.0, n2*hy);
+            utmp = u[n2][N] - V0[n2][N]; sum0 += 0.5 * utmp * utmp;// * mu(N*hx, n2*hy) * mu(1.0, n2*hy);
         }
-    }
 
-    sum0 *= (hx*hy);
-
-    return sum0;
-}
-
-double Problem2HNDirichlet::integral2(const DoubleMatrix &, const DoubleMatrix &ut) const
-{
-    double hx = spaceDimension(Dimension::DimensionX).step();
-    double hy = spaceDimension(Dimension::DimensionY).step();
-    unsigned int Nx = spaceDimension(Dimension::DimensionX).sizeN();
-    unsigned int Ny = spaceDimension(Dimension::DimensionY).sizeN();
-
-    double sum1 = 0.0;
-    double utmp = 0.0;
-
-    utmp = ut[0][0]   - V1[0][0];   sum1 += 0.25 * utmp * utmp * mu(0.0, 0.0);
-    utmp = ut[0][Nx]  - V1[0][Nx];  sum1 += 0.25 * utmp * utmp * mu(1.0, 0.0);
-    utmp = ut[Ny][0]  - V1[Ny][0];  sum1 += 0.25 * utmp * utmp * mu(0.0, 1.0);
-    utmp = ut[Ny][Nx] - V1[Ny][Nx]; sum1 += 0.25 * utmp * utmp * mu(1.0, 1.0);
-
-    for (unsigned int n1=1; n1<=Nx-1; n1++)
-    {
-        utmp = ut[0][n1]  - V1[0][n1];  sum1 += 0.5 * utmp * utmp * mu(n1*hx, 0.0);
-        utmp = ut[Ny][n1] - V1[Ny][n1]; sum1 += 0.5 * utmp * utmp * mu(n1*hx, 1.0);
-    }
-
-    for (unsigned int n2=1; n2<=Ny-1; n2++)
-    {
-        utmp = ut[n2][0]  - V1[n2][0];  sum1 += 0.5 * utmp * utmp * mu(0*hx,  n2*hy) * mu(0.0, n2*hy);
-        utmp = ut[n2][Nx] - V1[n2][Nx]; sum1 += 0.5 * utmp * utmp * mu(Nx*hx, n2*hy) * mu(1.0, n2*hy);
-    }
-
-    for (unsigned int n2=1; n2<=Ny-1; n2++)
-    {
-        for (unsigned int n1=1; n1<=Nx-1; n1++)
+        for (unsigned int n2=1; n2<=M-1; n2++)
         {
-            utmp = ut[n2][n1] - V1[n2][n1]; sum1 += utmp * utmp * mu(n2*hy, n1*hx) * mu(n1*hx, n2*hy);
+            for (unsigned int n1=1; n1<=N-1; n1++)
+            {
+                utmp = u[n2][n1] - V0[n2][n1];  sum0 += utmp * utmp;// * mu(n2*hy, n1*hx) * mu(n1*hx, n2*hy);
+            }
         }
+
+        sum0 *= (hx*hy);
+
+        if (l == L || l == LLD)
+            sum += sum0;
+        else
+            sum += 0.5*sum0;
     }
 
-    sum1 *= (hx*hy);
-
-    return sum1;
+    return sum*ht;
 }
 
 double Problem2HNDirichlet::norm(const EquationParameter& e_prm, const OptimizeParameter &o_prm, const OptimizeParameter &o_prm0) const
@@ -968,10 +882,11 @@ double Problem2HNDirichlet::g0i(unsigned int i, unsigned int layer, const spif_v
 
 void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) const
 {
-    unsigned int L = mtimeDimension.sizeN();
-    double ht = mtimeDimension.step();
-    unsigned int Nc = mEquParameter.Nc;
-    unsigned int No = mEquParameter.No;
+    const unsigned int L = mtimeDimension.sizeN();
+    const double ht = mtimeDimension.step();
+    const unsigned int Nc = mEquParameter.Nc;
+    const unsigned int No = mEquParameter.No;
+    const unsigned int LLD = L + LD;
 
     OptimizeParameter o_prm;
     VectorToPrm(pv, o_prm);
@@ -980,16 +895,13 @@ void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) con
     prob->mOptParameter = o_prm;
 
     std::vector<DoubleMatrix> u;
-    DoubleMatrix ut;
-    DoubleMatrix p;
+    std::vector<DoubleMatrix> p;
 
     spif_vector u_info;
     solveForwardIBVP(u, u_info, true);
 
-    //prob->UT = u;
-    prob->UTt = ut;
     spif_vector p_info;
-    solveBackwardIBVP(p, p_info, true, u_info);
+    solveBackwardIBVP(u, p_info, true, u_info);
 
     g.clear();
     g.resize(pv.length(), 0.0);
@@ -1010,11 +922,11 @@ void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) con
                 double zij = o_prm.z[i][j];
 
                 grad_Kij += 0.5 * (pi.value(0) + 2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))) * (uj.value(0) - zij);
-                for (unsigned int m=1; m<=L-1; m++)
+                for (unsigned int m=1; m<=LLD-1; m++)
                 {
                     grad_Kij += (pi.value(m) + 2.0*r*gpi(i,m,u_info,o_prm)*sgn(g0i(i,m,u_info,o_prm))) * (uj.value(m) - zij);
                 }
-                grad_Kij += 0.5 * (pi.value(L) + 2.0*r*gpi(i,L,u_info,o_prm)*sgn(g0i(i,L,u_info,o_prm))) * (uj.value(L) - zij);
+                grad_Kij += 0.5 * (pi.value(LLD) + 2.0*r*gpi(i,LLD,u_info,o_prm)*sgn(g0i(i,LLD,u_info,o_prm))) * (uj.value(LLD) - zij);
                 grad_Kij *= -ht;
 
                 g[gi++] = grad_Kij + 2.0*regEpsilon*(o_prm.k[i][j] - mRegParameter.k[i][j]);
@@ -1045,11 +957,11 @@ void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) con
                 double kij = o_prm.k[i][j];
 
                 grad_Zij += 0.5 * (pi.value(0) + 2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))) * kij;
-                for (unsigned int m=1; m<=L-1; m++)
+                for (unsigned int m=1; m<=LLD-1; m++)
                 {
                     grad_Zij += (pi.value(m) + 2.0*r*gpi(i,m,u_info,o_prm)*sgn(g0i(i,m,u_info,o_prm))) * kij;
                 }
-                grad_Zij += 0.5 * (pi.value(L) + 2.0*r*gpi(i,L,u_info,o_prm)*sgn(g0i(i,L,u_info,o_prm))) * kij;
+                grad_Zij += 0.5 * (pi.value(LLD) + 2.0*r*gpi(i,LLD,u_info,o_prm)*sgn(g0i(i,LLD,u_info,o_prm))) * kij;
                 grad_Zij *= ht;
 
                 g[gi++] = grad_Zij + 2.0*regEpsilon*(o_prm.z[i][j] - mRegParameter.z[i][j]);
@@ -1083,7 +995,7 @@ void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) con
             gradXijX += 0.5 * uj.valueDx(0) * vi;
             gradXijY += 0.5 * uj.valueDy(0) * vi;
 
-            for (unsigned int m=1; m<=L-1; m++)
+            for (unsigned int m=1; m<=LLD-1; m++)
             {
                 vi = 0.0;
                 for (unsigned int i=0; i<Nc; i++) vi += o_prm.k[i][j]*(p_info[i].value(m) + 2.0*r*gpi(i,m,u_info,o_prm)*sgn(g0i(i,m,u_info,o_prm)));
@@ -1092,9 +1004,9 @@ void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) con
             }
 
             vi = 0.0;
-            for (unsigned int i=0; i<Nc; i++) vi += o_prm.k[i][j]*(p_info[i].value(L) + 2.0*r*gpi(i,L,u_info,o_prm)*sgn(g0i(i,L,u_info,o_prm)));
-            gradXijX += 0.5 * uj.valueDx(L) * vi;
-            gradXijY += 0.5 * uj.valueDy(L) * vi;
+            for (unsigned int i=0; i<Nc; i++) vi += o_prm.k[i][j]*(p_info[i].value(LLD) + 2.0*r*gpi(i,LLD,u_info,o_prm)*sgn(g0i(i,LLD,u_info,o_prm)));
+            gradXijX += 0.5 * uj.valueDx(LLD) * vi;
+            gradXijY += 0.5 * uj.valueDy(LLD) * vi;
 
             gradXijX *= -ht;
             gradXijY *= -ht;
@@ -1128,7 +1040,7 @@ void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) con
             gradEtaiX += 0.5 * pi.valueDx(0) * vi;
             gradEtaiY += 0.5 * pi.valueDy(0) * vi;
 
-            for (unsigned int m=1; m<=L-1; m++)
+            for (unsigned int m=1; m<=LLD-1; m++)
             {
                 vi = 0.0;
                 for (unsigned int j=0; j<No; j++) vi += o_prm.k[i][j] * (u_info[j].value(m) - o_prm.z[i][j]);
@@ -1137,9 +1049,9 @@ void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) con
             }
 
             vi = 0.0;
-            for (unsigned int j=0; j<No; j++) vi += o_prm.k[i][j] * (u_info[j].value(L) - o_prm.z[i][j]);
-            gradEtaiX += 0.5 * pi.valueDx(L) * vi;
-            gradEtaiY += 0.5 * pi.valueDy(L) * vi;
+            for (unsigned int j=0; j<No; j++) vi += o_prm.k[i][j] * (u_info[j].value(LLD) - o_prm.z[i][j]);
+            gradEtaiX += 0.5 * pi.valueDx(LLD) * vi;
+            gradEtaiY += 0.5 * pi.valueDy(LLD) * vi;
 
             gradEtaiX *= -ht;
             gradEtaiY *= -ht;
@@ -1180,7 +1092,6 @@ void Problem2HNDirichlet::print(unsigned int i UNUSED_PARAM, const DoubleVector 
     ifunc->mOptParameter = o_prm;
 
     std::vector<DoubleMatrix> u;
-    DoubleMatrix ut;
 
     spif_vector u_info;
     solveForwardIBVP(u, u_info, true);
@@ -1188,7 +1099,7 @@ void Problem2HNDirichlet::print(unsigned int i UNUSED_PARAM, const DoubleVector 
     if (result == GradientMethod::BREAK_FIRST_ITERATION)
     {
         IPrinter::printSeperatorLine();
-        //printf("I[%3d]: I1:%8.6f I2:%8.6f P:%8.6f F:%8.6f R:%.2f e:%.3f %s\n", i, integral1(u, ut), integral2(u, ut), penalty(u_info, o_prm), f, r, regEpsilon, "BREAK_FIRST_ITERATION");
+        printf("I[%3d]: I1:%8.6f P:%8.6f F:%8.6f R:%.2f e:%.3f %s\n", i, integral(u), penalty(u_info, o_prm), f, r, regEpsilon, "BREAK_FIRST_ITERATION");
         printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
         printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
     }
@@ -1196,7 +1107,7 @@ void Problem2HNDirichlet::print(unsigned int i UNUSED_PARAM, const DoubleVector 
     if (result == GradientMethod::FIRST_ITERATION)
     {
         IPrinter::printSeperatorLine();
-        //printf("I[%3d]: I1:%8.6f I2:%8.6f P:%8.6f F:%8.6f R:%.2f e:%.3f %s\n", i, integral1(u, ut), integral2(u, ut), penalty(u_info, o_prm), f, r, regEpsilon, "FIRST_ITERATION");
+        printf("I[%3d]: I1:%8.6f P:%8.6f F:%8.6f R:%.2f e:%.3f %s\n", i, integral(u), penalty(u_info, o_prm), f, r, regEpsilon, "FIRST_ITERATION");
         printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
         printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
     }
@@ -1204,7 +1115,7 @@ void Problem2HNDirichlet::print(unsigned int i UNUSED_PARAM, const DoubleVector 
     if (result == GradientMethod::BREAK_GRADIENT_NORM_LESS)
     {
         IPrinter::printSeperatorLine();
-        //printf("I[%3d]: I1:%8.6f I2:%8.6f P:%8.6f F:%8.6f R:%.2f e:%.3f %s\n", i, integral1(u, ut), integral2(u, ut), penalty(u_info, o_prm), f, r, regEpsilon, "BREAK_GRADIENT_NORM_LESS");
+        printf("I[%3d]: I1:%8.6f P:%8.6f F:%8.6f R:%.2f e:%.3f %s\n", i, integral(u), penalty(u_info, o_prm), f, r, regEpsilon, "BREAK_GRADIENT_NORM_LESS");
         printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
         printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
     }
@@ -1212,7 +1123,7 @@ void Problem2HNDirichlet::print(unsigned int i UNUSED_PARAM, const DoubleVector 
     if (result == GradientMethod::BREAK_DISTANCE_LESS)
     {
         IPrinter::printSeperatorLine();
-        //printf("I[%3d]: I1:%8.6f I2:%8.6f P:%8.6f F:%8.6f R:%.2f e:%.3f %s\n", i, integral1(u, ut), integral2(u, ut), penalty(u_info, o_prm), f, r, regEpsilon, "BREAK_DISTANCE_LESS");
+        printf("I[%3d]: I1:%8.6f P:%8.6f F:%8.6f R:%.2f e:%.3f %s\n", i, integral(u), penalty(u_info, o_prm), f, r, regEpsilon, "BREAK_DISTANCE_LESS");
         printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
         printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
     }
@@ -1220,13 +1131,12 @@ void Problem2HNDirichlet::print(unsigned int i UNUSED_PARAM, const DoubleVector 
     if (result == GradientMethod::NEXT_ITERATION)
     {
         IPrinter::printSeperatorLine();
-        //printf("I[%3d]: I1:%8.6f I2:%8.6f P:%8.6f F:%8.6f R:%.2f e:%.3f %s\n", i, integral1(u, ut), integral2(u, ut), penalty(u_info, o_prm), f, r, regEpsilon, "NEXT_ITERATION");
+        printf("I[%3d]: I1:%8.6f P:%8.6f F:%8.6f R:%.2f e:%.3f %s\n", i, integral(u), penalty(u_info, o_prm), f, r, regEpsilon, "NEXT_ITERATION");
         printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
         printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
     }
 
     u.clear();
-    ut.clear();
     u_info.clear();
 
     C_UNUSED(ifunc);
@@ -1302,18 +1212,20 @@ void Problem2HNDirichlet::project(DoubleVector &pv, unsigned int index)
 }
 
 //forward -------------------------------------
-void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u_ UNUSED_PARAM, spif_vector &u_info, bool use) const
+void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const
 {
-    const Dimension dimx = spaceDimension(Dimension::DimensionX);
-    const Dimension dimy = spaceDimension(Dimension::DimensionY);
-    Dimension time = timeDimension();
+    //puts("-void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const");
+    const Dimension dimX = spaceDimension(Dimension::DimensionX);
+    const Dimension dimY = spaceDimension(Dimension::DimensionY);
+    const Dimension time = timeDimension();
 
-    const unsigned int N = dimx.sizeN();
-    const unsigned int M = dimy.sizeN();
+    const unsigned int N = dimX.sizeN();
+    const unsigned int M = dimY.sizeN();
     const unsigned int L = time.sizeN();
+    const unsigned int LLD = L+LD;
 
-    const double hx = dimx.step();
-    const double hy = dimy.step();
+    const double hx = dimX.step();
+    const double hy = dimY.step();
     const double ht = time.step();
 
     const double a = mEquParameter.a;
@@ -1330,9 +1242,11 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u_ UNUSED_
     const double p_aa_htht__hyhy___lambda_ht = +2.0 + 2.0*(a*a*ht*ht)/(hy*hy) + 3.0*(lambda*ht);
     const double p_aa_htht__hxhx = +(a*a*ht*ht)/(hx*hx);
 
-    double aa__hxhx = (a*a)/(hx*hx);
-    double aa__hyhy = (a*a)/(hy*hy);
-    double htht = ht*ht;
+    const double htht = ht*ht;
+    const double lambda_ht = lambda*ht;
+
+    const double aa__hxhx = (a*a)/(hx*hx);
+    const double aa__hyhy = (a*a)/(hy*hy);
 
     DoubleMatrix u00(M+1, N+1);
     DoubleMatrix u05(M+1, N+1);
@@ -1340,23 +1254,19 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u_ UNUSED_
     DoubleMatrix u15(M+1, N+1);
     DoubleMatrix u20(M+1, N+1);
 
-    //    for (unsigned int l=L; l<=L+DL; l++)
-    //    {
-    //        u[l-L].clear();
-    //        u[l-L].resize(M+1, N+1);
-    //    }
+    u.resize(2*LD+1); for (unsigned int l=0; l<=2*LD; l++) u[l].resize(M+1, N+1);
 
     //----------------------------------------------------------------------------------------------//
     espn_vector obsPointNodes, cntDeltaNodes, qPointNodes;
-    for (unsigned int j=0; j<No; j++) distributeDelta0(mOptParameter.xi[j], j, obsPointNodes, dimx, dimy, 4, 4);
-    for (unsigned int i=0; i<Nc; i++) distributeDelta0(mOptParameter.eta[i], i, cntDeltaNodes, dimx, dimy, 4, 4);
-    for (unsigned int s=0; s<Ns; s++) distributeDelta0(mEquParameter.theta[s], s, qPointNodes, dimx, dimy, 4, 4);
+    for (unsigned int j=0; j<No; j++) distributeDelta0(mOptParameter.xi[j], j, obsPointNodes, dimX, dimY, 4, 4);
+    for (unsigned int i=0; i<Nc; i++) distributeDelta0(mOptParameter.eta[i], i, cntDeltaNodes, dimX, dimY, 4, 4);
+    for (unsigned int s=0; s<Ns; s++) distributeDelta0(mEquParameter.theta[s], s, qPointNodes, dimX, dimY, 4, 4);
 
     //----------------------------------------------------------------------------------------------//
     uint_vector rows0, rows1, rows2, cols0, cols1, cols2;
     f_findRowsCols(rows0, rows1, rows2, cols0, cols1, cols2, obsPointNodes, cntDeltaNodes, N, M);
     //-------------------------------------------- info --------------------------------------------//
-    if (use == true) f_prepareInfo(No, mOptParameter.xi, u_info, L, dimx, dimy);
+    if (use == true) f_prepareInfo(No, mOptParameter.xi, u_info, L+LD, dimX, dimY);
     //----------------------------------------------------------------------------------------------//
 
     //------------------------------------- initial conditions -------------------------------------//
@@ -1378,11 +1288,14 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u_ UNUSED_
     ay[0] = cy[M-2] = 0.0;
 
     SpaceNodePDE sn;
-    TimeNodePDE tn;
 
-    for (unsigned int l=2; l<=L; l++)
+    for (unsigned int l=2; l<=LLD; l++)
     {
-        //------------------------------------- border -------------------------------------//
+        TimeNodePDE tn20; tn20.i = l; tn20.t = l*ht;
+        TimeNodePDE tn15; tn15.i = l; tn15.t = l*ht-0.5*ht;
+
+        /**************************************************** border conditions ***************************************************/
+
         SpaceNodePDE sn0;
         SpaceNodePDE sn1;
 
@@ -1390,74 +1303,64 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u_ UNUSED_
         sn1.i = N; sn1.x = hx*N;
         for (unsigned int m=0; m<=M; m++)
         {
-            sn0.j = m; sn0.y = m*hy;
-            sn1.j = m; sn1.y = m*hy;
-
-            u15[m][0] = f_boundary(sn0, tn);
-            u15[m][N] = f_boundary(sn1, tn);
-
-            u20[m][0] = f_boundary(sn0, tn);
-            u20[m][N] = f_boundary(sn1, tn);
+            sn0.j = m; sn0.y = m*hy; u15[m][0] = f_boundary(sn0, tn15); u20[m][0] = f_boundary(sn0, tn20);
+            sn1.j = m; sn1.y = m*hy; u15[m][N] = f_boundary(sn1, tn15); u20[m][N] = f_boundary(sn1, tn20);
         }
 
         sn0.j = 0; sn0.y = 0.0;
         sn1.j = M; sn1.y = hy*M;
         for (unsigned int n=0; n<=N; n++)
         {
-            sn0.i = n; sn0.x = n*hx;
-            sn1.i = n; sn1.x = n*hx;
-
-            u15[0][n] = f_boundary(sn0, tn);
-            u15[M][n] = f_boundary(sn1, tn);
-
-            u20[0][n] = f_boundary(sn0, tn);
-            u20[M][n] = f_boundary(sn1, tn);
+            sn0.i = n; sn0.x = n*hx; u15[0][n] = f_boundary(sn0, tn15); u20[0][n] = f_boundary(sn0, tn20);
+            sn1.i = n; sn1.x = n*hx; u15[M][n] = f_boundary(sn1, tn15); u20[M][n] = f_boundary(sn1, tn20);
         }
-        //------------------------------------- border -------------------------------------//
 
-        //------------------------------------- approximatin to x direction conditions -------------------------------------//
-        tn.i = l; tn.t = tn.i*ht;
+        /**************************************************** border conditions ***************************************************/
 
-        //--------------------------------------------------------------------------//
+        /**************************************************** x direction apprx ***************************************************/
 
-        for (unsigned int row=0; row<rows0.size(); row++)
+        if (rows0.size() != 0)
         {
-            unsigned int m = rows0.at(row);
-            sn.j = m; sn.y = m*hy;
-            for (unsigned int n=1; n<=N-1; n++)
+            for (unsigned int row=0; row<rows0.size(); row++)
             {
-                sn.i = n; sn.x = n*hx;
+                unsigned int m = rows0.at(row);
+                sn.j = m; sn.y = m*hy;
+                for (unsigned int n=1; n<=N-1; n++)
+                {
+                    sn.i = n; sn.x = n*hx;
 
-                if (m == 0)     dx[n-1] = p_aa_htht__hyhy*(u10[0][n]   - 2.0*u10[1][n]   + u10[2][n]);
-                if (m>0 && m<M) dx[n-1] = p_aa_htht__hyhy*(u10[m-1][n] - 2.0*u10[m][n]   + u10[m+1][n]);
-                if (m == M)     dx[n-1] = p_aa_htht__hyhy*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
+                    dx[n-1] = 0.0;
+                    if (m>0 && m<M)  dx[n-1] = p_aa_htht__hyhy*(u10[m-1][n] - 2.0*u10[m][n]   + u10[m+1][n]);
+                    else if (m == 0) dx[n-1] = p_aa_htht__hyhy*(u10[0][n]   - 2.0*u10[1][n]   + u10[2][n]);
+                    else if (m == M) dx[n-1] = p_aa_htht__hyhy*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
 
-                dx[n-1] += lambda*ht*(4.0*u10[m][n]-u05[m][n]);
-                dx[n-1] += (u10[m][n]-u00[m][n]) + 2.0*u10[m][n];
+                    dx[n-1] += (u10[m][n]-u00[m][n]) + 2.0*u10[m][n];
+                    dx[n-1] += lambda_ht*(4.0*u10[m][n]-u05[m][n]);
 
-                //if (l==2)
-                //{
-                //    for (unsigned int si=0; si<qPointNodes.size(); si++)
-                //    {
-                //        const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
-                //        if (qNode.i == sn.i && qNode.j == sn.j)
-                //        {
-                //            dx[n-1] += (mEquParameter.q[qNode.id] * qNode.w * (2.0/ht))*((ht*ht)*0.5);
-                //        }
-                //    }
-                //}
+                    //if (l==2)
+                    //{
+                    //    for (unsigned int si=0; si<qPointNodes.size(); si++)
+                    //    {
+                    //        const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
+                    //        if (qNode.i == sn.i && qNode.j == sn.j)
+                    //        {
+                    //            dx[n-1] += (mEquParameter.q[qNode.id] * qNode.w * (2.0/ht))*((ht*ht)*0.5);
+                    //        }
+                    //    }
+                    //}
+                }
+
+                dx[0]   -= m_aa_htht__hxhx * u15[m][0];
+                dx[N-2] -= m_aa_htht__hxhx * u15[m][N];
+
+                tomasAlgorithm(ax, bx, cx, dx, rx, N-1);
+                for (unsigned int n=1; n<=N-1; n++) u15[m][n] = rx[n-1];
             }
-
-            dx[0]   -= m_aa_htht__hxhx * u15[m][0];
-            dx[N-2] -= m_aa_htht__hxhx * u15[m][N];
-
-            tomasAlgorithm(ax, bx, cx, dx, rx, N-1);
-            for (unsigned int n=1; n<=N-1; n++) u15[m][n] = rx[n-1];
         }
 
         if (rows1.size() != 0 && rows2.size() == 0)
         {
-            throw std::exception();
+            //throw std::exception();
 
             double* U15 = (double *) malloc(sizeof(double)*No);
             for (unsigned int j=0; j<No; j++) U15[j] = 0.0;
@@ -1475,12 +1378,13 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u_ UNUSED_
                 {
                     sn.i = n; sn.x = n*hx;
 
-                    if (m == 0)     dx[n-1] = p_aa_htht__hyhy*(u10[0][n]   - 2.0*u10[1][n]   + u10[2][n]);
-                    if (m>0 && m<M) dx[n-1] = p_aa_htht__hyhy*(u10[m-1][n] - 2.0*u10[m][n]   + u10[m+1][n]);
-                    if (m == M)     dx[n-1] = p_aa_htht__hyhy*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
+                    dx[n-1] = 0.0;
+                    if (m>0 && m<M)  dx[n-1] = p_aa_htht__hyhy*(u10[m-1][n] - 2.0*u10[m][n]   + u10[m+1][n]);
+                    else if (m == 0) dx[n-1] = p_aa_htht__hyhy*(u10[0][n]   - 2.0*u10[1][n]   + u10[2][n]);
+                    else if (m == M) dx[n-1] = p_aa_htht__hyhy*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
 
-                    dx[n-1] += lambda*ht*(4.0*u10[m][n]-u05[m][n]);
                     dx[n-1] += (u10[m][n]-u00[m][n]) + 2.0*u10[m][n];
+                    dx[n-1] += lambda_ht*(4.0*u10[m][n]-u05[m][n]);
 
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int cni=0; cni<cntDeltaNodes.size(); cni++)
@@ -1492,15 +1396,6 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u_ UNUSED_
                             {
                                 dx[n-1] += htht * mOptParameter.k[cdn.id][j] * (U15[j]-mOptParameter.z[cdn.id][j]) * cdn.w;
                             }
-                            //for (unsigned int odj=0; odj<obsPointNodes.size(); odj++)
-                            //{
-                            //    const ExtendedSpacePointNode &opn = obsPointNodes[odj];
-                            //    dx[n-1] += htht_h * mOptParameter.k[cdn.id][opn.id] * u15[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
-                            //}
-                            //for (unsigned int j=0; j<No; j++)
-                            //{
-                            //    dx[n-1] -= htht_h * mOptParameter.k[cdn.id][j] * mOptParameter.z[cdn.id][j] * cdn.w;
-                            //}
                         }
                     }
                     //------------------------------------- Adding delta part -------------------------------------//
@@ -1528,9 +1423,9 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u_ UNUSED_
             free(U15);
         }
 
-        if (rows2.size() != 0)
+        if (rows1.size() != 0 && rows2.size() != 0)
         {
-            throw std::exception();
+            //throw std::exception();
 
             unsigned int row1_size = rows1.size()*(N-1);
             double* a1 = (double*) malloc(sizeof(double)*row1_size);
@@ -1538,7 +1433,7 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u_ UNUSED_
             double* c1 = (double*) malloc(sizeof(double)*row1_size);
             double* d1 = (double*) malloc(sizeof(double)*row1_size);
             double* x1 = (double*) malloc(sizeof(double)*row1_size);
-            DoubleMatrix w2(row1_size, row1_size, 0.0);
+            DoubleMatrix w1(row1_size, row1_size, 0.0);
 
             unsigned int offset = 0;
             for (unsigned int row=0; row<rows1.size(); row++)
@@ -1550,12 +1445,13 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u_ UNUSED_
                 {
                     sn.i = n; sn.x = n*hx;
 
-                    if (m==0)       d1[offset+(n-1)] = p_aa_htht__hyhy*(u10[0][n]   - 2.0*u10[1][n]   + u10[2][n]);
+                    d1[offset+(n-1)] = 0.0;
                     if (m>0 && m<M) d1[offset+(n-1)] = p_aa_htht__hyhy*(u10[m-1][n] - 2.0*u10[m][n]   + u10[m+1][n]);
-                    if (m==M)       d1[offset+(n-1)] = p_aa_htht__hyhy*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
+                    else if (m==0)  d1[offset+(n-1)] = p_aa_htht__hyhy*(u10[0][n]   - 2.0*u10[1][n]   + u10[2][n]);
+                    else if (m==M)  d1[offset+(n-1)] = p_aa_htht__hyhy*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
 
-                    d1[offset+(n-1)] += lambda*ht*(4.0*u10[m][n]-u05[m][n]);
                     d1[offset+(n-1)] += (u10[m][n]-u00[m][n]) + 2.0*u10[m][n];
+                    d1[offset+(n-1)] += lambda_ht*(4.0*u10[m][n]-u05[m][n]);
 
                     a1[offset+(n-1)] = m_aa_htht__hxhx;
                     b1[offset+(n-1)] = p_aa_htht__hxhx___lambda_ht;
@@ -1577,16 +1473,17 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u_ UNUSED_
                                     if (opn.j == rows1[rs])
                                     {
                                         found = true;
-                                        w2[offset+(n-1)][rs*(N-1)+(opn.i-1)] -= htht * mOptParameter.k[cdn.id][opn.id] * (opn.w * (hx*hy)) * cdn.w;
+                                        w1[offset+(n-1)][rs*(N-1)+(opn.i-1)] -= htht * mOptParameter.k[cdn.id][opn.id] * (opn.w * (hx*hy)) * cdn.w;
                                         break;
                                     }
                                 }
 
-                                if (found == false)
+                                if (!found)
                                 {
                                     d1[offset+(n-1)] += htht * mOptParameter.k[cdn.id][opn.id] * u15[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
                                 }
                             }
+
                             for (unsigned int j=0; j<No; j++)
                             {
                                 d1[offset+(n-1)] -= htht * mOptParameter.k[cdn.id][j] * mOptParameter.z[cdn.id][j] * cdn.w;
@@ -1617,7 +1514,7 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u_ UNUSED_
                 offset += N-1;
             }
 
-            LinearEquation::func1(a1, b1, c1, d1, w2.data(), x1, row1_size);
+            LinearEquation::func1(a1, b1, c1, d1, w1.data(), x1, row1_size);
 
             offset = 0;
             for (unsigned int row=0; row<rows1.size(); row++)
@@ -1630,66 +1527,67 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u_ UNUSED_
                 offset += N-1;
             }
 
-            w2.clear();
+            w1.clear();
             free(x1);
             free(d1);
             free(c1);
             free(b1);
             free(a1);
         }
-        //--------------------------------------------------------------------------//
 
-        //------------------------------------- approximatin to x direction conditions -------------------------------------//
+        /**************************************************** x direction apprx ***************************************************/
 
-        //------------------------------------- approximatin to y direction conditions -------------------------------------//
-        //tn.i = l+1; tn.t = tn.i*ht;
-        //--------------------------------------------------------------------------//
+        /**************************************************** y direction apprx ***************************************************/
 
-        for (unsigned int col=0; col<cols0.size(); col++)
+        if (cols0.size() != 0)
         {
-            unsigned int n = cols0.at(col);
-            sn.i = n; sn.x = n*hx;
-            for (unsigned int m=1; m<=M-1; m++)
+            for (unsigned int col=0; col<cols0.size(); col++)
             {
-                sn.j = m; sn.y = m*hy;
-
-                if (n==0)       dy[m-1] = p_aa_htht__hxhx*(u15[m][0]   - 2.0*u15[m][1]   + u15[m][2]);
-                if (n>0 && n<N) dy[m-1] = p_aa_htht__hxhx*(u15[m][n-1] - 2.0*u15[m][n]   + u15[m][n+1]);
-                if (n==N)       dy[m-1] = p_aa_htht__hxhx*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
-
-                dy[m-1] += lambda*ht*(4.0*u15[m][n]-u10[m][n]);
-                dy[m-1] += (u10[m][n]-u00[m][n]) + 2.0*u15[m][n];
-
-                if (l==2)
+                unsigned int n = cols0.at(col);
+                sn.i = n; sn.x = n*hx;
+                for (unsigned int m=1; m<=M-1; m++)
                 {
-                    for (unsigned int si=0; si<qPointNodes.size(); si++)
+                    sn.j = m; sn.y = m*hy;
+                    \
+                    dy[m-1] = 0.0;
+                    if (n>0 && n<N) dy[m-1] = p_aa_htht__hxhx*(u15[m][n-1] - 2.0*u15[m][n]   + u15[m][n+1]);
+                    else if (n==0)  dy[m-1] = p_aa_htht__hxhx*(u15[m][0]   - 2.0*u15[m][1]   + u15[m][2]);
+                    else if (n==N)  dy[m-1] = p_aa_htht__hxhx*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
+
+                    dy[m-1] += (u10[m][n]-u00[m][n]) + 2.0*u15[m][n];
+                    dy[m-1] += lambda_ht*(4.0*u15[m][n]-u10[m][n]);
+
+                    if (l==2)
                     {
-                        const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
-                        if (qNode.i == sn.i && qNode.j == sn.j)
+                        for (unsigned int si=0; si<qPointNodes.size(); si++)
                         {
-                            dy[m-1] += (mEquParameter.q[qNode.id] * qNode.w * (1.0/ht)) * htht;
+                            const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
+                            if (qNode.i == sn.i && qNode.j == sn.j)
+                            {
+                                dy[m-1] += (mEquParameter.q[qNode.id] * qNode.w * (1.0/ht)) * htht;
+                            }
                         }
                     }
                 }
+
+                dy[0]   -= m_aa_htht__hyhy * u20[0][n];
+                dy[M-2] -= m_aa_htht__hyhy * u20[M][n];
+
+                tomasAlgorithm(ay, by, cy, dy, ry, M-1);
+                for (unsigned int m=1; m<=M-1; m++) u20[m][n] = ry[m-1];
             }
-
-            dy[0]   -= m_aa_htht__hyhy * u20[0][n];
-            dy[M-2] -= m_aa_htht__hyhy * u20[M][n];
-
-            tomasAlgorithm(ay, by, cy, dy, ry, M-1);
-            for (unsigned int m=1; m<=M-1; m++) u20[m][n] = ry[m-1];
         }
 
         if (cols1.size() != 0 && cols2.size() == 0)
         {
-            throw std::exception();
+            //throw std::exception();
 
-            double* U = (double *) malloc(sizeof(double)*No);
-            for (unsigned int j=0; j<No; j++) U[j] = 0.0;
+            double* U20 = (double *) malloc(sizeof(double)*No);
+            for (unsigned int j=0; j<No; j++) U20[j] = 0.0;
             for (unsigned int odj=0; odj<obsPointNodes.size(); odj++)
             {
                 const ExtendedSpacePointNode &opn = obsPointNodes[odj];
-                U[opn.id] += u20[opn.j][opn.i] * (opn.w * (hx*hy));
+                U20[opn.id] += u20[opn.j][opn.i] * (opn.w * (hx*hy));
             }
 
             for (unsigned int col=0; col<cols1.size(); col++)
@@ -1700,12 +1598,13 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u_ UNUSED_
                 {
                     sn.j = m; sn.y = m*hy;
 
-                    if (n==0)       dy[m-1] = p_aa_htht__hxhx*(u15[m][0]   - 2.0*u15[m][1]   + u15[m][2]);
+                    dy[m-1] = 0.0;
                     if (n>0 && n<N) dy[m-1] = p_aa_htht__hxhx*(u15[m][n-1] - 2.0*u15[m][n]   + u15[m][n+1]);
-                    if (n==N)       dy[m-1] = p_aa_htht__hxhx*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
+                    else if (n==0)       dy[m-1] = p_aa_htht__hxhx*(u15[m][0]   - 2.0*u15[m][1]   + u15[m][2]);
+                    else if (n==N)       dy[m-1] = p_aa_htht__hxhx*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
 
                     dy[m-1] += (u10[m][n]-u00[m][n]) + 2.0*u15[m][n];
-                    dy[m-1] += lambda*ht*(4.0*u15[m][n]-u10[m][n]);
+                    dy[m-1] += lambda_ht*(4.0*u15[m][n]-u10[m][n]);
 
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int cni=0; cni<cntDeltaNodes.size(); cni++)
@@ -1715,17 +1614,8 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u_ UNUSED_
                         {
                             for (unsigned int j=0; j<No; j++)
                             {
-                                dy[m-1] += htht * mOptParameter.k[cdn.id][j] * (U[j]-mOptParameter.z[cdn.id][j]) * cdn.w;
+                                dy[m-1] += htht * mOptParameter.k[cdn.id][j] * (U20[j]-mOptParameter.z[cdn.id][j]) * cdn.w;
                             }
-                            //for (unsigned int onj=0; onj<obsPointNodes.size(); onj++)
-                            //{
-                            //    const ExtendedSpacePointNode &opn = obsPointNodes.at(onj);
-                            //    dy[m-1] += htht_h * mOptParameter.k[cdn.id][opn.id] * u[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
-                            //}
-                            //for (unsigned int j=0; j<No; j++)
-                            //{
-                            //    dy[m-1] -= htht_h * mOptParameter.k[cdn.id][j] * mOptParameter.z[cdn.id][j] * cdn.w;
-                            //}
                         }
                     }
                     //------------------------------------- Adding delta part -------------------------------------//
@@ -1750,12 +1640,12 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u_ UNUSED_
                 for (unsigned int m=1; m<=M-1; m++) u20[m][n] = ry[m-1];
             }
 
-            free(U);
+            free(U20);
         }
 
-        if (cols2.size() != 0)
+        if (cols1.size() != 0 && cols2.size() != 0)
         {
-            throw std::exception();
+            //throw std::exception();
 
             unsigned int cols1_size = cols1.size()*(M-1);
             double* a2 = (double*) malloc(sizeof(double)*cols1_size);
@@ -1775,12 +1665,13 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u_ UNUSED_
                 {
                     sn.j = m; sn.y = m*hy;
 
-                    if (n==0)       d2[offset+(m-1)] = p_aa_htht__hxhx*(u15[m][0]   - 2.0*u15[m][1]   + u15[m][2]);
+                    d2[offset+(m-1)] = 0.0;
                     if (n>0 && n<N) d2[offset+(m-1)] = p_aa_htht__hxhx*(u15[m][n-1] - 2.0*u15[m][n]   + u15[m][n+1]);
-                    if (n==N)       d2[offset+(m-1)] = p_aa_htht__hxhx*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
+                    else if (n==0)  d2[offset+(m-1)] = p_aa_htht__hxhx*(u15[m][0]   - 2.0*u15[m][1]   + u15[m][2]);
+                    else if (n==N)  d2[offset+(m-1)] = p_aa_htht__hxhx*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
 
                     d2[offset+(m-1)] += (u10[m][n] - u00[m][n]) + 2.0*u15[m][n];
-                    d2[offset+(m-1)] += lambda*ht*(4.0*u15[m][n] - u10[m][n]);
+                    d2[offset+(m-1)] += lambda_ht*(4.0*u15[m][n] - u10[m][n]);
 
                     a2[offset+(m-1)] = m_aa_htht__hyhy;
                     b2[offset+(m-1)] = p_aa_htht__hyhy___lambda_ht;
@@ -1862,673 +1753,8 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u_ UNUSED_
             free(b2);
             free(a2);
         }
-        //--------------------------------------------------------------------------//
-
-        //------------------------------------- approximatin to y direction conditions -------------------------------------//
-
-        //        if (l==L)
-        //        {
-        //            ut.clear();
-        //            ut.resize(M+1, N+1);
-        //            for (unsigned int m=0; m<=M; m++)
-        //            {
-        //                for (unsigned int n=0; n<=N; n++)
-        //                {
-        //                    ut[m][n] = (3.0*u[m][n]-4.0*u10[m][n]+u00[m][n])/(2.0*ht);
-        //                    //ut[m][n] = (u[m][n]-u10[m][n])/(ht);
-        //                }
-        //            }
-        //            f_layerInfo(u, ut, l);
-        //        }
-
-        for (unsigned int m=0; m<=M; m++)
-        {
-            for (unsigned int n=0; n<=N; n++)
-            {
-                u00[m][n] = u10[m][n];
-                u10[m][n] = u20[m][n];
-                u05[m][n] = u15[m][n];
-            }
-        }
-
-        if (use == true) f_add2Info(u20, u_info, obsPointNodes, l, hx, hy);
-
-        f_layerInfo(u20, l);
-    }
-
-    free(rx);
-    free(dx);
-    free(cx);
-    free(bx);
-    free(ax);
-
-    free(ry);
-    free(dy);
-    free(cy);
-    free(by);
-    free(ay);
-
-    rows0.clear();
-    rows1.clear();
-    rows2.clear();
-
-    cols0.clear();
-    cols1.clear();
-    cols2.clear();
-
-    qPointNodes.clear();
-    obsPointNodes.clear();
-    cntDeltaNodes.clear();
-
-    u00.clear();
-    u05.clear();
-    u10.clear();
-    u15.clear();
-}
-
-void Problem2HNDirichlet::solveForwardIBVPCaseA1(std::vector<DoubleMatrix> &u_ UNUSED_PARAM, spif_vector &u_info, bool use) const
-{
-    const Dimension dimx = spaceDimension(Dimension::DimensionX);
-    const Dimension dimy = spaceDimension(Dimension::DimensionY);
-    Dimension time = timeDimension();
-
-    const unsigned int N = dimx.sizeN();
-    const unsigned int M = dimy.sizeN();
-    const unsigned int L = time.sizeN();
-
-    const double hx = dimx.step();
-    const double hy = dimy.step();
-    const double ht = time.step();
-
-    const double a = mEquParameter.a;
-    const double lambda = mEquParameter.lambda;
-    const unsigned int No = mEquParameter.No;
-    const unsigned int Nc = mEquParameter.Nc;
-    const unsigned int Ns = mEquParameter.Ns;
-
-    DoubleMatrix u00(M+1, N+1);
-    DoubleMatrix u05(M+1, N+1);
-    DoubleMatrix u10(M+1, N+1);
-    DoubleMatrix u15(M+1, N+1);
-    DoubleMatrix u20(M+1, N+1);
-
-#ifdef CASE_A1
-    const double m_aa_htht__hxhx = -(a*a*ht*ht)/(hx*hx);
-    const double p_aa_htht__hxhx___lambda_ht = +4.0 + 2.0*(a*a*ht*ht)/(hx*hx) + 3.0*(lambda*ht);
-    const double p_aa_htht__hyhy = +(a*a*ht*ht)/(hy*hy);
-    const double m_aa_htht__hyhy = -(a*a*ht*ht)/(hy*hy);
-    const double p_aa_htht__hyhy___lambda_ht = +4.0 + 2.0*(a*a*ht*ht)/(hy*hy) + 3.0*(lambda*ht);
-    const double p_aa_htht__hxhx = +(a*a*ht*ht)/(hx*hx);
-    const double htht = ht*ht;
-    const double aa__hxhx = (a*a)/(hx*hx);
-    const double aa__hyhy = (a*a)/(hy*hy);
-#endif
-#ifdef CASE_A2
-    const double m_aa_htht__hxhx = -(a*a*ht*ht)/(hx*hx);
-    const double p_aa_htht__hxhx___lambda_ht = +8.0 + 2.0*(a*a*ht*ht)/(hx*hx) + 3.0*(lambda*ht);
-    const double p_aa_htht__hyhy = +(a*a*ht*ht)/(hy*hy);
-    const double m_aa_htht__hyhy = -(a*a*ht*ht)/(hy*hy);
-    const double p_aa_htht__hyhy___lambda_ht = +8.0 + 2.0*(a*a*ht*ht)/(hy*hy) + 3.0*(lambda*ht);
-    const double p_aa_htht__hxhx = +(a*a*ht*ht)/(hx*hx);
-    const double htht = ht*ht;
-    const double aa__hxhx = (a*a)/(hx*hx);
-    const double aa__hyhy = (a*a)/(hy*hy);
-#endif
-#ifdef CASE_A3
-    const double m_aa_htht__hxhx = -(a*a*ht*ht)/(hx*hx);
-    const double p_aa_htht__hxhx___lambda_ht = +8.0 + 2.0*(a*a*ht*ht)/(hx*hx) + (11.0/3.0)*(lambda*ht);
-    const double p_aa_htht__hyhy = +(a*a*ht*ht)/(hy*hy);
-    const double m_aa_htht__hyhy = -(a*a*ht*ht)/(hy*hy);
-    const double p_aa_htht__hyhy___lambda_ht = +8.0 + 2.0*(a*a*ht*ht)/(hy*hy) + (11.0/3.0)*(lambda*ht);
-    const double p_aa_htht__hxhx = +(a*a*ht*ht)/(hx*hx);
-    const double htht = ht*ht;
-    const double aa__hxhx = (a*a)/(hx*hx);
-    const double aa__hyhy = (a*a)/(hy*hy);
-#endif
-
-    //----------------------------------------------------------------------------------------------//
-    espn_vector obsPointNodes, cntDeltaNodes, qPointNodes;
-    for (unsigned int j=0; j<No; j++) distributeDelta0(mOptParameter.xi[j], j, obsPointNodes, dimx, dimy, 4, 4);
-    for (unsigned int i=0; i<Nc; i++) distributeDelta0(mOptParameter.eta[i], i, cntDeltaNodes, dimx, dimy, 4, 4);
-    for (unsigned int s=0; s<Ns; s++) distributeDelta0(mEquParameter.theta[s], s, qPointNodes, dimx, dimy, 4, 4);
-
-    //----------------------------------------------------------------------------------------------//
-    uint_vector rows0, rows1, rows2, cols0, cols1, cols2;
-    f_findRowsCols(rows0, rows1, rows2, cols0, cols1, cols2, obsPointNodes, cntDeltaNodes, N, M);
-    //-------------------------------------------- info --------------------------------------------//
-    if (use == true) f_prepareInfo(No, mOptParameter.xi, u_info, L, dimx, dimy);
-    //----------------------------------------------------------------------------------------------//
-
-    //------------------------------------- initial conditions -------------------------------------//
-    f_initialLayers(u00, u05, u10, u_info, use, obsPointNodes, cntDeltaNodes, qPointNodes, N, M, hx, hy, ht, aa__hxhx, aa__hyhy, lambda);
-    //------------------------------------- initial conditions -------------------------------------//
-
-    double *ax = (double *) malloc(sizeof(double)*(N-1)); for (unsigned int n=1; n<=N-1; n++) ax[n-1] = m_aa_htht__hxhx;
-    double *bx = (double *) malloc(sizeof(double)*(N-1)); for (unsigned int n=1; n<=N-1; n++) bx[n-1] = p_aa_htht__hxhx___lambda_ht;
-    double *cx = (double *) malloc(sizeof(double)*(N-1)); for (unsigned int n=1; n<=N-1; n++) cx[n-1] = m_aa_htht__hxhx;
-    double *dx = (double *) malloc(sizeof(double)*(N-1));
-    double *rx = (double *) malloc(sizeof(double)*(N-1));
-    ax[0] = cx[N-2] = 0.0;
-
-    double *ay = (double *) malloc(sizeof(double)*(M-1)); for (unsigned int m=1; m<=M-1; m++) ay[m-1] = m_aa_htht__hyhy;
-    double *by = (double *) malloc(sizeof(double)*(M-1)); for (unsigned int m=1; m<=M-1; m++) by[m-1] = p_aa_htht__hyhy___lambda_ht;
-    double *cy = (double *) malloc(sizeof(double)*(M-1)); for (unsigned int m=1; m<=M-1; m++) cy[m-1] = m_aa_htht__hyhy;
-    double *dy = (double *) malloc(sizeof(double)*(M-1));
-    double *ry = (double *) malloc(sizeof(double)*(M-1));
-    ay[0] = cy[M-2] = 0.0;
-
-    SpaceNodePDE sn;
-    //TimeNodePDE tn;
-
-    for (unsigned int l=2; l<=L; l++)
-    {
-        TimeNodePDE tn20; tn20.i = l; tn20.t = l*ht;
-        TimeNodePDE tn15; tn15.i = l; tn15.t = l*ht-0.5*ht;
-
-        /**************************************************** border conditions ***************************************************/
-        SpaceNodePDE sn0;
-        SpaceNodePDE sn1;
-
-        sn0.i = 0; sn0.x = 0.0;
-        sn1.i = N; sn1.x = hx*N;
-        for (unsigned int m=0; m<=M; m++)
-        {
-            sn0.j = m; sn0.y = m*hy; u15[m][0] = f_boundary(sn0, tn15); u20[m][0] = f_boundary(sn0, tn20);
-            sn1.j = m; sn1.y = m*hy; u15[m][N] = f_boundary(sn1, tn15); u20[m][N] = f_boundary(sn1, tn20);
-        }
-
-        sn0.j = 0; sn0.y = 0.0;
-        sn1.j = M; sn1.y = hy*M;
-        for (unsigned int n=0; n<=N; n++)
-        {
-            sn0.i = n; sn0.x = n*hx; u15[0][n] = f_boundary(sn0, tn15); u20[0][n] = f_boundary(sn0, tn20);
-            sn1.i = n; sn1.x = n*hx; u15[M][n] = f_boundary(sn1, tn15); u20[M][n] = f_boundary(sn1, tn20);
-        }
-        /**************************************************** border conditions ***************************************************/
-
-        /**************************************************** x direction apprx ***************************************************/
-
-        for (unsigned int row=0; row<rows0.size(); row++)
-        {
-            unsigned int m = rows0.at(row);
-            sn.j = m; sn.y = m*hy;
-            for (unsigned int n=1; n<=N-1; n++)
-            {
-                sn.i = n; sn.x = n*hx;
-
-                dx[n-1] = 0.0;
-                if (m>0 && m<M) dx[n-1] = p_aa_htht__hyhy*(u10[m-1][n] - 2.0*u10[m][n]   + u10[m+1][n]);
-                //else if (m == 0)     dx[n-1] = p_aa_htht__hyhy*(u10[0][n]   - 2.0*u10[1][n]   + u10[2][n]);
-                //else if (m == M)     dx[n-1] = p_aa_htht__hyhy*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
-
-#ifdef CASE_A1
-                dx[n-1] += lambda*ht*(4.0*u10[m][n]-u05[m][n]);
-                dx[n-1] += 4.0*(2.0*u10[m][n]-u05[m][n]);
-#endif
-#ifdef CASE_A2
-                dx[n-1] += lambda*ht*(4.0*u10[m][n]-u05[m][n]);
-                dx[n-1] += 4.0*(5.0*u10[m][n]-4.0*u05[m][n]+u00[m][n]);
-#endif
-#ifdef CASE_A3
-                dx[n-1] += (lambda*ht/3.0)*(18.0*u10[m][n]-9.0*u05[m][n]+2.0*u00[m][n]);
-                dx[n-1] += 4.0*(5.0*u10[m][n]-4.0*u05[m][n]+u00[m][n]);
-#endif
-                //if (l==2)
-                //{
-                //    for (unsigned int si=0; si<qPointNodes.size(); si++)
-                //    {
-                //        const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
-                //        if (qNode.i == sn.i && qNode.j == sn.j)
-                //        {
-                //            dx[n-1] += (mEquParameter.q[qNode.id] * qNode.w * (2.0/ht))*((ht*ht)*0.5);
-                //        }
-                //    }
-                //}
-            }
-
-            dx[0]   -= m_aa_htht__hxhx * u15[m][0];
-            dx[N-2] -= m_aa_htht__hxhx * u15[m][N];
-
-            tomasAlgorithm(ax, bx, cx, dx, rx, N-1);
-            for (unsigned int n=1; n<=N-1; n++) u15[m][n] = rx[n-1];
-        }
-
-        /*
-        if (rows1.size() != 0 && rows2.size() == 0)
-        {
-            throw std::exception();
-
-            double* U15 = (double *) malloc(sizeof(double)*No);
-            for (unsigned int j=0; j<No; j++) U15[j] = 0.0;
-            for (unsigned int odj=0; odj<obsPointNodes.size(); odj++)
-            {
-                const ExtendedSpacePointNode &opn = obsPointNodes[odj];
-                U15[opn.id] += u15[opn.j][opn.i] * (opn.w * (hx*hy));
-            }
-
-            for (unsigned int row=0; row<rows1.size(); row++)
-            {
-                unsigned int m = rows1.at(row);
-                sn.j = m; sn.y = m*hy;
-                for (unsigned int n=1; n<=N-1; n++)
-                {
-                    sn.i = n; sn.x = n*hx;
-
-                    if (m == 0)     dx[n-1] = p_aa_htht__hyhy*(u10[0][n]   - 2.0*u10[1][n]   + u10[2][n]);
-                    if (m>0 && m<M) dx[n-1] = p_aa_htht__hyhy*(u10[m-1][n] - 2.0*u10[m][n]   + u10[m+1][n]);
-                    if (m == M)     dx[n-1] = p_aa_htht__hyhy*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
-
-                    dx[n-1] += 0.5*(u10[m][n]-u00[m][n]) + u10[m][n];
-                    dx[n-1] += 0.5*lambda*ht*(4.0*u10[m][n]-u05[m][n]);
-
-                    //------------------------------------- Adding delta part -------------------------------------//
-                    for (unsigned int cni=0; cni<cntDeltaNodes.size(); cni++)
-                    {
-                        const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
-                        if (cdn.i == sn.i && cdn.j == sn.j)
-                        {
-                            for (unsigned int j=0; j<No; j++)
-                            {
-                                dx[n-1] += htht_h * mOptParameter.k[cdn.id][j] * (U15[j]-mOptParameter.z[cdn.id][j]) * cdn.w;
-                            }
-                            //for (unsigned int odj=0; odj<obsPointNodes.size(); odj++)
-                            //{
-                            //    const ExtendedSpacePointNode &opn = obsPointNodes[odj];
-                            //    dx[n-1] += htht_h * mOptParameter.k[cdn.id][opn.id] * u15[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
-                            //}
-                            //for (unsigned int j=0; j<No; j++)
-                            //{
-                            //    dx[n-1] -= htht_h * mOptParameter.k[cdn.id][j] * mOptParameter.z[cdn.id][j] * cdn.w;
-                            //}
-                        }
-                    }
-                    //------------------------------------- Adding delta part -------------------------------------//
-
-                    //if (l==2)
-                    //{
-                    //    for (unsigned int si=0; si<qPointNodes.size(); si++)
-                    //    {
-                    //        const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
-                    //        if (qNode.i == sn.i && qNode.j == sn.j)
-                    //        {
-                    //            dx[n-1] += (mEquParameter.q[qNode.id] * qNode.w * (2.0/ht)) * htht_h;
-                    //        }
-                    //    }
-                    //}
-                }
-
-                dx[0]   -= m_aa_htht__hxhx * u15[m][0];
-                dx[N-2] -= m_aa_htht__hxhx * u15[m][N];
-
-                tomasAlgorithm(ax, bx, cx, dx, rx, N-1);
-                for (unsigned int n=1; n<=N-1; n++) u15[m][n] = rx[n-1];
-            }
-
-            free(U15);
-        }
-
-        if (rows2.size() != 0)
-        {
-            throw std::exception();
-
-            unsigned int row1_size = rows1.size()*(N-1);
-            double* a1 = (double*) malloc(sizeof(double)*row1_size);
-            double* b1 = (double*) malloc(sizeof(double)*row1_size);
-            double* c1 = (double*) malloc(sizeof(double)*row1_size);
-            double* d1 = (double*) malloc(sizeof(double)*row1_size);
-            double* x1 = (double*) malloc(sizeof(double)*row1_size);
-            DoubleMatrix w2(row1_size, row1_size, 0.0);
-
-            unsigned int offset = 0;
-            for (unsigned int row=0; row<rows1.size(); row++)
-            {
-                unsigned int m = rows1.at(row);
-                sn.j = m; sn.y = m*hy;
-
-                for (unsigned int n=1; n<=N-1; n++)
-                {
-                    sn.i = n; sn.x = n*hx;
-
-                    if (m==0)       d1[offset+(n-1)] = p_aa_htht__hyhy*(u10[0][n]   - 2.0*u10[1][n]   + u10[2][n]);
-                    if (m>0 && m<M) d1[offset+(n-1)] = p_aa_htht__hyhy*(u10[m-1][n] - 2.0*u10[m][n]   + u10[m+1][n]);
-                    if (m==M)       d1[offset+(n-1)] = p_aa_htht__hyhy*(u10[M-2][n] - 2.0*u10[M-1][n] + u10[M][n]);
-
-                    d1[offset+(n-1)] += 0.5*(u10[m][n]-u00[m][n]) + u10[m][n];
-                    d1[offset+(n-1)] += 0.5*lambda*ht*(4.0*u10[m][n]-u05[m][n]);
-
-                    a1[offset+(n-1)] = m_aa_htht__hxhx;
-                    b1[offset+(n-1)] = p_aa_htht__hxhx___lambda_ht;
-                    c1[offset+(n-1)] = m_aa_htht__hxhx;
-
-                    //------------------------------------- Adding delta part -------------------------------------//
-                    for (unsigned int cni=0; cni<cntDeltaNodes.size(); cni++)
-                    {
-                        const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
-                        if (cdn.i == sn.i && cdn.j == sn.j)
-                        {
-                            for (unsigned int odj=0; odj<obsPointNodes.size(); odj++)
-                            {
-                                const ExtendedSpacePointNode &opn = obsPointNodes.at(odj);
-
-                                bool found = false;
-                                for (unsigned int rs=0; rs<rows1.size(); rs++)
-                                {
-                                    if (opn.j == rows1[rs])
-                                    {
-                                        found = true;
-                                        w2[offset+(n-1)][rs*(N-1)+(opn.i-1)] -= htht_h * mOptParameter.k[cdn.id][opn.id] * (opn.w * (hx*hy)) * cdn.w;
-                                        break;
-                                    }
-                                }
-
-                                if (found == false)
-                                {
-                                    d1[offset+(n-1)] += htht_h * mOptParameter.k[cdn.id][opn.id] * u15[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
-                                }
-                            }
-                            for (unsigned int j=0; j<No; j++)
-                            {
-                                d1[offset+(n-1)] -= htht_h * mOptParameter.k[cdn.id][j] * mOptParameter.z[cdn.id][j] * cdn.w;
-                            }
-                        }
-                    }
-                    //------------------------------------- Adding delta part -------------------------------------//
-
-                    //if (l==2)
-                    //{
-                    //    for (unsigned int si=0; si<qPointNodes.size(); si++)
-                    //    {
-                    //        const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
-                    //        if (qNode.i == sn.i && qNode.j == sn.j)
-                    //        {
-                    //            d1[offset+(n-1)] += (mEquParameter.q[qNode.id] * qNode.w * (2.0/ht)) * htht_h;
-                    //        }
-                    //    }
-                    //}
-                }
-
-                a1[offset+0]   = 0.0;
-                c1[offset+N-2] = 0.0;
-
-                d1[offset+0]   -= m_aa_htht__hxhx * u15[m][0];
-                d1[offset+N-2] -= m_aa_htht__hxhx * u15[m][N];
-
-                offset += N-1;
-            }
-
-            LinearEquation::func1(a1, b1, c1, d1, w2.data(), x1, row1_size);
-
-            offset = 0;
-            for (unsigned int row=0; row<rows1.size(); row++)
-            {
-                unsigned int m=rows1.at(row);
-                for (unsigned int n=1; n<=N-1; n++)
-                {
-                    u15[m][n] = x1[offset+(n-1)];
-                }
-                offset += N-1;
-            }
-
-            w2.clear();
-            free(x1);
-            free(d1);
-            free(c1);
-            free(b1);
-            free(a1);
-        }
-        */
-
-        /**************************************************** x direction apprx ***************************************************/
 
         /**************************************************** y direction apprx ***************************************************/
-        //tn.i = l+1; tn.t = tn.i*ht;
-
-        for (unsigned int col=0; col<cols0.size(); col++)
-        {
-            unsigned int n = cols0.at(col);
-            sn.i = n; sn.x = n*hx;
-            for (unsigned int m=1; m<=M-1; m++)
-            {
-                sn.j = m; sn.y = m*hy;
-
-                dy[m-1] = 0.0;
-                if (n>0 && n<N) dy[m-1] = p_aa_htht__hxhx*(u15[m][n-1] - 2.0*u15[m][n]   + u15[m][n+1]);
-                //else if (n==0)       dy[m-1] = p_aa_htht__hxhx*(u15[m][0]   - 2.0*u15[m][1]   + u15[m][2]);
-                //else if (n==N)       dy[m-1] = p_aa_htht__hxhx*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
-
-#ifdef CASE_A1
-                dy[m-1] += lambda*ht*(4.0*u15[m][n]-u10[m][n]);
-                dy[m-1] += 4.0*(2.0*u15[m][n]-u10[m][n]);
-#endif
-
-#ifdef CASE_A2
-                dy[m-1] += lambda*ht*(4.0*u15[m][n]-u10[m][n]);
-                dy[m-1] += 4.0*(5.0*u15[m][n]-4.0*u10[m][n]+u05[m][n]);
-#endif
-#ifdef CASE_A3
-                dy[m-1] += (lambda*ht/3.0)*(18.0*u15[m][n]-9.0*u10[m][n]+2.0*u05[m][n]);
-                dy[m-1] += 4.0*(5.0*u15[m][n]-4.0*u10[m][n]+u05[m][n]);
-#endif
-
-                if (l==2)
-                {
-                    for (unsigned int si=0; si<qPointNodes.size(); si++)
-                    {
-                        const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
-                        if (qNode.i == sn.i && qNode.j == sn.j)
-                        {
-                            dy[m-1] += (mEquParameter.q[qNode.id] * qNode.w * (1.0/ht)) * htht;
-                        }
-                    }
-                }
-            }
-
-            dy[0]   -= m_aa_htht__hyhy * u20[0][n];
-            dy[M-2] -= m_aa_htht__hyhy * u20[M][n];
-
-            tomasAlgorithm(ay, by, cy, dy, ry, M-1);
-            for (unsigned int m=1; m<=M-1; m++) u20[m][n] = ry[m-1];
-        }
-        /*
-        if (cols1.size() != 0 && cols2.size() == 0)
-        {
-            throw std::exception();
-
-            double* U = (double *) malloc(sizeof(double)*No);
-            for (unsigned int j=0; j<No; j++) U[j] = 0.0;
-            for (unsigned int odj=0; odj<obsPointNodes.size(); odj++)
-            {
-                const ExtendedSpacePointNode &opn = obsPointNodes[odj];
-                U[opn.id] += u20[opn.j][opn.i] * (opn.w * (hx*hy));
-            }
-
-            for (unsigned int col=0; col<cols1.size(); col++)
-            {
-                unsigned int n = cols1.at(col);
-                sn.i = n; sn.x = n*hx;
-                for (unsigned int m=1; m<=M-1; m++)
-                {
-                    sn.j = m; sn.y = m*hy;
-
-                    if (n==0)       dy[m-1] = p_aa_htht__hxhx*(u15[m][0]   - 2.0*u15[m][1]   + u15[m][2]);
-                    if (n>0 && n<N) dy[m-1] = p_aa_htht__hxhx*(u15[m][n-1] - 2.0*u15[m][n]   + u15[m][n+1]);
-                    if (n==N)       dy[m-1] = p_aa_htht__hxhx*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
-
-                    dy[m-1] += 0.5*(u10[m][n]-u00[m][n]) + u15[m][n];
-                    dy[m-1] += 0.5*lambda*ht*(4.0*u15[m][n]-u10[m][n]);
-
-                    //------------------------------------- Adding delta part -------------------------------------//
-                    for (unsigned int cni=0; cni<cntDeltaNodes.size(); cni++)
-                    {
-                        const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
-                        if (cdn.i == sn.i && cdn.j == sn.j)
-                        {
-                            for (unsigned int j=0; j<No; j++)
-                            {
-                                dy[m-1] += htht_h * mOptParameter.k[cdn.id][j] * (U[j]-mOptParameter.z[cdn.id][j]) * cdn.w;
-                            }
-                            //for (unsigned int onj=0; onj<obsPointNodes.size(); onj++)
-                            //{
-                            //    const ExtendedSpacePointNode &opn = obsPointNodes.at(onj);
-                            //    dy[m-1] += htht_h * mOptParameter.k[cdn.id][opn.id] * u[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
-                            //}
-                            //for (unsigned int j=0; j<No; j++)
-                            //{
-                            //    dy[m-1] -= htht_h * mOptParameter.k[cdn.id][j] * mOptParameter.z[cdn.id][j] * cdn.w;
-                            //}
-                        }
-                    }
-                    //------------------------------------- Adding delta part -------------------------------------//
-
-                    if (l==2)
-                    {
-                        for (unsigned int si=0; si<qPointNodes.size(); si++)
-                        {
-                            const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
-                            if (qNode.i == sn.i && qNode.j == sn.j)
-                            {
-                                dy[m-1] += (mEquParameter.q[qNode.id] * qNode.w * (1.0/ht)) * htht_h;
-                            }
-                        }
-                    }
-                }
-
-                dy[0]   -= m_aa_htht__hyhy * u20[0][n];
-                dy[M-2] -= m_aa_htht__hyhy * u20[M][n];
-
-                tomasAlgorithm(ay, by, cy, dy, ry, M-1);
-                for (unsigned int m=1; m<=M-1; m++) u20[m][n] = ry[m-1];
-            }
-
-            free(U);
-        }
-
-        if (cols2.size() != 0)
-        {
-            throw std::exception();
-
-            unsigned int cols1_size = cols1.size()*(M-1);
-            double* a2 = (double*) malloc(sizeof(double)*cols1_size);
-            double* b2 = (double*) malloc(sizeof(double)*cols1_size);
-            double* c2 = (double*) malloc(sizeof(double)*cols1_size);
-            double* d2 = (double*) malloc(sizeof(double)*cols1_size);
-            double* x2 = (double*) malloc(sizeof(double)*cols1_size);
-            DoubleMatrix w2(cols1_size, cols1_size, 0.0);
-
-            unsigned int offset = 0;
-            for (unsigned int col=0; col<cols1.size(); col++)
-            {
-                unsigned int n = cols1.at(col);
-                sn.i = n; sn.x = n*hx;
-
-                for (unsigned int m=1; m<=M-1; m++)
-                {
-                    sn.j = m; sn.y = m*hy;
-
-                    if (n==0)       d2[offset+(m-1)] = p_aa_htht__hxhx*(u15[m][0]   - 2.0*u15[m][1]   + u15[m][2]);
-                    if (n>0 && n<N) d2[offset+(m-1)] = p_aa_htht__hxhx*(u15[m][n-1] - 2.0*u15[m][n]   + u15[m][n+1]);
-                    if (n==N)       d2[offset+(m-1)] = p_aa_htht__hxhx*(u15[m][N-2] - 2.0*u15[m][N-1] + u15[m][N]);
-
-                    d2[offset+(m-1)] += 0.5*(u10[m][n] - u00[m][n]) + u15[m][n];
-                    d2[offset+(m-1)] += 0.5*lambda*ht*(4.0*u15[m][n] - u10[m][n]);
-
-                    a2[offset+(m-1)] = m_aa_htht__hyhy;
-                    b2[offset+(m-1)] = p_aa_htht__hyhy___lambda_ht;
-                    c2[offset+(m-1)] = m_aa_htht__hyhy;
-
-                    //------------------------------------- Adding delta part -------------------------------------//
-                    for (unsigned int cni=0; cni<cntDeltaNodes.size(); cni++)
-                    {
-                        const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
-                        if (cdn.i == sn.i && cdn.j == sn.j)
-                        {
-                            for (unsigned int onj=0; onj<obsPointNodes.size(); onj++)
-                            {
-                                const ExtendedSpacePointNode &opn = obsPointNodes.at(onj);
-
-                                bool found = false;
-                                for (unsigned int cs=0; cs<cols1.size(); cs++)
-                                {
-                                    if (opn.i == cols1[cs])
-                                    {
-                                        found = true;
-                                        w2[offset+(m-1)][cs*(M-1)+(opn.j-0)] -= htht_h * mOptParameter.k[cdn.id][opn.id] * (opn.w * (hx*hy)) * cdn.w;
-                                        break;
-                                    }
-                                }
-
-                                if (!found)
-                                {
-                                    d2[offset+(m-1)] += htht_h * mOptParameter.k[cdn.id][opn.id] * u20[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
-                                }
-                            }
-                            for (unsigned int j=0; j<No; j++)
-                            {
-                                d2[offset+(m-1)] -= htht_h * mOptParameter.k[cdn.id][j] * mOptParameter.z[cdn.id][j] * cdn.w;
-                            }
-                        }
-                    }
-                    //------------------------------------- Adding delta part -------------------------------------//
-
-                    if (l==2)
-                    {
-                        for (unsigned int si=0; si<qPointNodes.size(); si++)
-                        {
-                            const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
-                            if (qNode.i == sn.i && qNode.j == sn.j)
-                            {
-                                d2[offset+(m-1)] += (mEquParameter.q[qNode.id] * qNode.w * (1.0/ht)) * htht_h;
-                            }
-                        }
-                    }
-                }
-
-                a2[offset+0]   = 0.0;
-                c2[offset+M-2] = 0.0;
-
-                d2[offset+0]   -= m_aa_htht__hyhy * u20[0][n];
-                d2[offset+M-2] -= m_aa_htht__hyhy * u20[M][n];
-
-                offset += M-1;
-            }
-
-            LinearEquation::func1(a2, b2, c2, d2, w2.data(), x2, cols1.size()*(M-1));
-
-            offset = 0;
-            for (unsigned int col=0; col<cols1.size(); col++)
-            {
-                unsigned int n=cols1.at(col);
-                for (unsigned int m=1; m<=M-1; m++)
-                {
-                    u20[m][n] = x2[offset+(m-1)];
-                }
-                offset += M-1;
-            }
-
-            w2.clear();
-            free(x2);
-            free(d2);
-            free(c2);
-            free(b2);
-            free(a2);
-        }
-        */
-        /**************************************************** x direction apprx ***************************************************/
-
-        //        if (l==L)
-        //        {
-        //            ut.clear();
-        //            ut.resize(M+1, N+1);
-        //            for (unsigned int m=0; m<=M; m++)
-        //            {
-        //                for (unsigned int n=0; n<=N; n++)
-        //                {
-        //                    ut[m][n] = (3.0*u[m][n]-4.0*u10[m][n]+u00[m][n])/(2.0*ht);
-        //                    //ut[m][n] = (u[m][n]-u10[m][n])/(ht);
-        //                }
-        //            }
-        //            f_layerInfo(u, ut, l);
-        //        }
 
         for (unsigned int m=0; m<=M; m++)
         {
@@ -2543,6 +1769,30 @@ void Problem2HNDirichlet::solveForwardIBVPCaseA1(std::vector<DoubleMatrix> &u_ U
         if (use == true) f_add2Info(u20, u_info, obsPointNodes, l, hx, hy);
 
         f_layerInfo(u20, l);
+
+        if (l == L)
+        {
+            for (unsigned int m=0; m<=M; m++)
+            {
+                for (unsigned int n=0; n<=N; n++)
+                {
+                    u[l-L][m][n] = u20[m][n];
+                }
+            }
+        }
+
+        if (l >= (L+1) && l < LLD)
+        {
+            for (unsigned int m=0; m<=M; m++)
+            {
+                for (unsigned int n=0; n<=N; n++)
+                {
+                    u[l-L+1][m][n] = u15[m][n];
+                    u[l-L+2][m][n] = u20[m][n];
+                }
+            }
+        }
+
     }
 
     free(rx);
@@ -2573,12 +1823,13 @@ void Problem2HNDirichlet::solveForwardIBVPCaseA1(std::vector<DoubleMatrix> &u_ U
     u05.clear();
     u10.clear();
     u15.clear();
+    u20.clear();
+    //puts("+void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const");
 }
 
 double Problem2HNDirichlet::f_initial1(const SpaceNodePDE &sn) const
 {
     return 0.0;
-    //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
 }
 
 double Problem2HNDirichlet::f_initial2(const SpaceNodePDE &) const
@@ -2589,7 +1840,6 @@ double Problem2HNDirichlet::f_initial2(const SpaceNodePDE &) const
 double Problem2HNDirichlet::f_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType) const
 {
     return 0.0;
-    //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t*tn.t;
 }
 
 void Problem2HNDirichlet::f_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2, uint_vector &cols0, uint_vector &cols1, uint_vector &cols2,
@@ -2694,7 +1944,6 @@ void Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u05, 
             sn.i = n; sn.x = n*hx;
 
             double sum = 0.0;
-
             sum += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]);
             sum += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]);
             sum -= lambda*f_initial2(sn);
@@ -2733,7 +1982,7 @@ void Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u05, 
 }
 
 void Problem2HNDirichlet::f_prepareInfo(unsigned int No, const std::vector<SpacePoint> &points, spif_vector &u_info,
-                                        unsigned int L, const Dimension &dimX, const Dimension &dimY) const
+                                        unsigned int LLD, const Dimension &dimX, const Dimension &dimY) const
 {
     u_info.resize(No);
     for (unsigned int j=0; j<No; j++)
@@ -2747,10 +1996,10 @@ void Problem2HNDirichlet::f_prepareInfo(unsigned int No, const std::vector<Space
         inf.i = (unsigned int)( round( inf.x * dimX.sizeN() ) );
         inf.j = (unsigned int)( round( inf.y * dimY.sizeN() ) );
 
-        inf.layerNumber = L+1;
-        inf.u  = new double[L+1];
-        inf.ux = new double[L+1];
-        inf.uy = new double[L+1];
+        inf.layerNumber = LLD+1;
+        inf.u  = new double[LLD+1];
+        inf.ux = new double[LLD+1];
+        inf.uy = new double[LLD+1];
     }
 }
 
@@ -2819,45 +2068,46 @@ void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, const 
 //forward -------------------------------------
 
 // backward -----------------------------------
-void Problem2HNDirichlet::solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info, bool use, const spif_vector &u_info) const
+void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vector &p_info, bool use, const spif_vector &u_info) const
 {
-    Dimension dimX = spaceDimension(Dimension::DimensionX);
-    Dimension dimY = spaceDimension(Dimension::DimensionY);
-    Dimension time = timeDimension();
+    //puts("-void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vector &p_info, bool use, const spif_vector &u_info) const");
+    const Dimension dimX = spaceDimension(Dimension::DimensionX);
+    const Dimension dimY = spaceDimension(Dimension::DimensionY);
+    const Dimension time = timeDimension();
 
-    unsigned int N = dimX.sizeN();
-    unsigned int M = dimY.sizeN();
-    unsigned int L = time.sizeN();
+    const unsigned int N = dimX.sizeN();
+    const unsigned int M = dimY.sizeN();
+    const unsigned int L = time.sizeN();
+    const unsigned int LLD = L+LD;
 
-    double hx = dimX.step();
-    double hy = dimY.step();
-    double ht = time.step();
+    const double hx = dimX.step();
+    const double hy = dimY.step();
+    const double ht = time.step();
 
-    double a = mEquParameter.a;
-    double lambda = mEquParameter.lambda;
-    unsigned int No = mEquParameter.No;
-    unsigned int Nc = mEquParameter.Nc;
-    //unsigned int Ns = mEquParameter.Ns;
+    const double a = mEquParameter.a;
+    const double lambda = mEquParameter.lambda;
+    const unsigned int No = mEquParameter.No;
+    const unsigned int Nc = mEquParameter.Nc;
 
-    double m_aa_htht__hxhx_h = -0.5*(a*a*ht*ht)/(hx*hx);
-    double p_aa_htht__hxhx___lambda_ht = +1.0 + (a*a*ht*ht)/(hx*hx) + 1.5*lambda*ht;
-    double p_aa_htht__hxhx_h = +0.5*(a*a*ht*ht)/(hx*hx);
+    const double m_aa_htht__hxhx = -(a*a*ht*ht)/(hx*hx);
+    const double p_aa_htht__hxhx___lambda_ht = +2.0 + 2.0*(a*a*ht*ht)/(hx*hx) + 3.0*lambda*ht;
+    const double p_aa_htht__hxhx = +(a*a*ht*ht)/(hx*hx);
 
-    double m_aa_htht__hyhy_h = -0.5*(a*a*ht*ht)/(hy*hy);
-    double p_aa_htht__hyhy___lambda_ht = +1.0 + (a*a*ht*ht)/(hy*hy) + 1.5*lambda*ht;
-    double p_aa_htht__hyhy_h = +0.5*(a*a*ht*ht)/(hy*hy);
+    const double m_aa_htht__hyhy = -(a*a*ht*ht)/(hy*hy);
+    const double p_aa_htht__hyhy___lambda_ht = +2.0 + 2.0*(a*a*ht*ht)/(hy*hy) + 3.0*lambda*ht;
+    const double p_aa_htht__hyhy = +(a*a*ht*ht)/(hy*hy);
 
-    //double m_aa_htht__hxhx = -(a*a*ht*ht)/(hx*hx);
-    //double m_aa_htht__hyhy = -(a*a*ht*ht)/(hy*hy);
-    double aa__hxhx = (a*a)/(hx*hx);
-    double aa__hyhy = (a*a)/(hy*hy);
-    double htht_h = 0.5*ht*ht;
+    const double htht = ht*ht;
+    const double lambda_ht = lambda*ht;
+
+    const double aa__hxhx = (a*a)/(hx*hx);
+    const double aa__hyhy = (a*a)/(hy*hy);
 
     DoubleMatrix p00(M+1, N+1);
     DoubleMatrix p05(M+1, N+1);
     DoubleMatrix p10(M+1, N+1);
     DoubleMatrix p15(M+1, N+1);
-    p.clear(); p.resize(M+1, N+1);
+    DoubleMatrix p20(M+1, N+1);
 
     //--------------------------------------------------------------------------------------------//
     espn_vector obsDeltaNodes, cntPointNodes;
@@ -2868,38 +2118,36 @@ void Problem2HNDirichlet::solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info
     uint_vector rows0, rows1, rows2, cols0, cols1, cols2;
     b_findRowsCols(rows0, rows1, rows2, cols0, cols1, cols2, cntPointNodes, obsDeltaNodes, N, M);
     //-------------------------------------------- info --------------------------------------------//
-    if (use == true) b_prepareInfo(Nc, mOptParameter.eta, p_info, L, dimX, dimY);
+    if (use == true) b_prepareInfo(Nc, mOptParameter.eta, p_info, L+LD, dimX, dimY);
     //-------------------------------------------- info --------------------------------------------//
 
     //------------------------------------- initial conditions -------------------------------------//
     b_initialLayers(p00, p05, p10, p_info, use, cntPointNodes, obsDeltaNodes, N, M, hx, hy, ht, aa__hxhx, aa__hyhy, lambda);
     //------------------------------------- initial conditions -------------------------------------//
 
-    double *ax = (double *) malloc(sizeof(double)*(N-1)); for (unsigned int n=1; n<=N-1; n++) ax[n-1] = m_aa_htht__hxhx_h;
+    double *ax = (double *) malloc(sizeof(double)*(N-1)); for (unsigned int n=1; n<=N-1; n++) ax[n-1] = m_aa_htht__hxhx;
     double *bx = (double *) malloc(sizeof(double)*(N-1)); for (unsigned int n=1; n<=N-1; n++) bx[n-1] = p_aa_htht__hxhx___lambda_ht;
-    double *cx = (double *) malloc(sizeof(double)*(N-1)); for (unsigned int n=1; n<=N-1; n++) cx[n-1] = m_aa_htht__hxhx_h;
+    double *cx = (double *) malloc(sizeof(double)*(N-1)); for (unsigned int n=1; n<=N-1; n++) cx[n-1] = m_aa_htht__hxhx;
     double *dx = (double *) malloc(sizeof(double)*(N-1));
     double *rx = (double *) malloc(sizeof(double)*(N-1));
     ax[0] = cx[N-2] = 0.0;
 
-    double *ay = (double *) malloc(sizeof(double)*(M-1)); for (unsigned int m=1; m<=M-1; m++) ay[m-1] = m_aa_htht__hyhy_h;
+    double *ay = (double *) malloc(sizeof(double)*(M-1)); for (unsigned int m=1; m<=M-1; m++) ay[m-1] = m_aa_htht__hyhy;
     double *by = (double *) malloc(sizeof(double)*(M-1)); for (unsigned int m=1; m<=M-1; m++) by[m-1] = p_aa_htht__hyhy___lambda_ht;
-    double *cy = (double *) malloc(sizeof(double)*(M-1)); for (unsigned int m=1; m<=M-1; m++) cy[m-1] = m_aa_htht__hyhy_h;
+    double *cy = (double *) malloc(sizeof(double)*(M-1)); for (unsigned int m=1; m<=M-1; m++) cy[m-1] = m_aa_htht__hyhy;
     double *dy = (double *) malloc(sizeof(double)*(M-1));
     double *ry = (double *) malloc(sizeof(double)*(M-1));
     ay[0] = cy[M-2] = 0.0;
 
     SpaceNodePDE sn;
-    TimeNodePDE tn;
 
-    for (unsigned int l1=2; l1<=L; l1++)
+    for (unsigned int l1=2,l=LLD-l1; l1<=LLD; l1++,l=LLD-l1)
     {
-        unsigned int l = L-l1;
+        TimeNodePDE tn20; tn20.i = l; tn20.t = l*ht;
+        TimeNodePDE tn15; tn15.i = l; tn15.t = l*ht+0.5*ht;
 
-        //------------------------------------- approximatin to x direction conditions -------------------------------------//
-        tn.i = l; tn.t = tn.i*ht;
+        /**************************************************** border conditions ***************************************************/
 
-        //------------------------------------- border -------------------------------------//
         SpaceNodePDE sn0;
         SpaceNodePDE sn1;
 
@@ -2907,57 +2155,55 @@ void Problem2HNDirichlet::solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info
         sn1.i = N; sn1.x = hx*N;
         for (unsigned int m=0; m<=M; m++)
         {
-            sn0.j = m; sn0.y = m*hy;
-            sn1.j = m; sn1.y = m*hy;
-
-            p15[m][0] = b_boundary(sn0, tn);
-            p15[m][N] = b_boundary(sn1, tn);
-
-            p[m][0] = b_boundary(sn0, tn);
-            p[m][N] = b_boundary(sn1, tn);
+            sn0.j = m; sn0.y = m*hy; p15[m][0] = b_boundary(sn0, tn15); p20[m][0] = b_boundary(sn0, tn20);
+            sn1.j = m; sn1.y = m*hy; p15[m][N] = b_boundary(sn1, tn15); p20[m][N] = b_boundary(sn1, tn20);
         }
 
         sn0.j = 0; sn0.y = 0.0;
         sn1.j = M; sn1.y = hy*M;
         for (unsigned int n=0; n<=N; n++)
         {
-            sn0.i = n; sn0.x = n*hx;
-            sn1.i = n; sn1.x = n*hx;
-
-            p15[0][n] = b_boundary(sn0, tn);
-            p15[M][n] = b_boundary(sn1, tn);
-
-            p[0][n] = b_boundary(sn0, tn);
-            p[M][n] = b_boundary(sn1, tn);
+            sn0.i = n; sn0.x = n*hx; p15[0][n] = b_boundary(sn0, tn15); p20[0][n] = b_boundary(sn0, tn20);
+            sn1.i = n; sn1.x = n*hx; p15[M][n] = b_boundary(sn1, tn15); p20[M][n] = b_boundary(sn1, tn20);
         }
-        //------------------------------------- border -------------------------------------//
 
-        //------------------------------------- approximatin to x direction conditions -------------------------------------//
-        for (unsigned int row=0; row<rows0.size(); row++)
+        /**************************************************** border conditions ***************************************************/
+
+        /**************************************************** x direction apprx ***************************************************/
+        //printf("-/* x direction apprx */ %d %d\n", l, l1);
+        if (rows0.size() != 0)
         {
-            unsigned int m = rows0.at(row);
-            sn.j = m; sn.y = m*hy;
-            for (unsigned int n=1; n<=N-1; n++)
+            for (unsigned int row=0; row<rows0.size(); row++)
             {
-                sn.i = n; sn.x = n*hx;
+                unsigned int m = rows0.at(row);
+                sn.j = m; sn.y = m*hy;
+                for (unsigned int n=1; n<=N-1; n++)
+                {
+                    sn.i = n; sn.x = n*hx;
 
-                if (m == 0)     dx[n-1] = p_aa_htht__hyhy_h*(p10[0][n]   - 2.0*p10[1][n]   + p10[2][n]);
-                if (m>0 && m<M) dx[n-1] = p_aa_htht__hyhy_h*(p10[m-1][n] - 2.0*p10[m][n]   + p10[m+1][n]);
-                if (m == M)     dx[n-1] = p_aa_htht__hyhy_h*(p10[M-2][n] - 2.0*p10[M-1][n] + p10[M][n]);
+                    dx[n-1] = 0.0;
+                    if (m>0 && m<M)  dx[n-1] = p_aa_htht__hyhy*(p10[m-1][n] - 2.0*p10[m][n]   + p10[m+1][n]);
+                    else if (m == 0) dx[n-1] = p_aa_htht__hyhy*(p10[0][n]   - 2.0*p10[1][n]   + p10[2][n]);
+                    else if (m == M) dx[n-1] = p_aa_htht__hyhy*(p10[M-2][n] - 2.0*p10[M-1][n] + p10[M][n]);
 
-                dx[n-1] += 0.5*(p10[m][n]-p00[m][n]) + p10[m][n];
-                dx[n-1] += 0.5*lambda*ht*(4.0*p10[m][n]-p05[m][n]);
+                    dx[n-1] += (p10[m][n]-p00[m][n]) + 2.0*p10[m][n];
+                    dx[n-1] += lambda_ht*(4.0*p10[m][n]-p05[m][n]);
+
+                    if (L <= l && l <= LLD) dx[n-1] -= 2.0*htht*(u[2*(l-L)+1][m][n] - V0[m][n]);
+                }
+
+                dx[0]   -= m_aa_htht__hxhx * p15[m][0];
+                dx[N-2] -= m_aa_htht__hxhx * p15[m][N];
+
+                tomasAlgorithm(ax, bx, cx, dx, rx, N-1);
+                for (unsigned int n=1; n<=N-1; n++) p15[m][n] = rx[n-1];
             }
-
-            dx[0]   -= m_aa_htht__hxhx_h * p15[m][0];
-            dx[N-2] -= m_aa_htht__hxhx_h * p15[m][N];
-
-            tomasAlgorithm(ax, bx, cx, dx, rx, N-1);
-            for (unsigned int n=1; n<=N-1; n++) p15[m][n] = rx[n-1];
         }
-
-        if (rows2.size() == 0)
+//printf("-/** x direction apprx */ %d %d\n", l, l1);
+        if (rows1.size() != 0 && rows2.size() == 0)
         {
+            //throw std::exception();
+
             for (unsigned int row=0; row<rows1.size(); row++)
             {
                 unsigned int m = rows1.at(row);
@@ -2966,12 +2212,15 @@ void Problem2HNDirichlet::solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info
                 {
                     sn.i = n; sn.x = n*hx;
 
-                    if (m == 0)     dx[n-1] = p_aa_htht__hyhy_h*(p10[0][n]   - 2.0*p10[1][n]   + p10[2][n]);
-                    if (m>0 && m<M) dx[n-1] = p_aa_htht__hyhy_h*(p10[m-1][n] - 2.0*p10[m][n]   + p10[m+1][n]);
-                    if (m == M)     dx[n-1] = p_aa_htht__hyhy_h*(p10[M-2][n] - 2.0*p10[M-1][n] + p10[M][n]);
+                    dx[n-1] = 0.0;
+                    if (m>0 && m<M)  dx[n-1] = p_aa_htht__hyhy*(p10[m-1][n] - 2.0*p10[m][n]   + p10[m+1][n]);
+                    else if (m == 0) dx[n-1] = p_aa_htht__hyhy*(p10[0][n]   - 2.0*p10[1][n]   + p10[2][n]);
+                    else if (m == M) dx[n-1] = p_aa_htht__hyhy*(p10[M-2][n] - 2.0*p10[M-1][n] + p10[M][n]);
 
-                    dx[n-1] += 0.5*(p10[m][n]-p00[m][n]) + p10[m][n];
-                    dx[n-1] += 0.5*lambda*ht*(4.0*p10[m][n]-p05[m][n]);
+                    dx[n-1] += (p10[m][n]-p00[m][n]) + 2.0*p10[m][n];
+                    dx[n-1] += lambda_ht*(4.0*p10[m][n]-p05[m][n]);
+
+                    if (L <= l && l <= LLD) dx[n-1] -= 2.0*htht*(u[2*(l-L)+1][m][n] - V0[m][n]);
 
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int onj=0; onj<obsDeltaNodes.size(); onj++)
@@ -2982,27 +2231,27 @@ void Problem2HNDirichlet::solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info
                             for (unsigned int cni=0; cni<cntPointNodes.size(); cni++)
                             {
                                 const ExtendedSpacePointNode &cpn = cntPointNodes[cni];
-                                dx[n-1] += htht_h * mOptParameter.k[cpn.id][odn.id] * p15[cpn.j][cpn.i] * (cpn.w * (hx*hy)) * odn.w;
+                                dx[n-1] += htht * mOptParameter.k[cpn.id][odn.id] * p15[cpn.j][cpn.i] * (cpn.w * (hx*hy)) * odn.w;
                             }
 
                             for (unsigned int i=0; i<Nc; i++)
                             {
-                                dx[n-1] += 2.0*r * htht_h * mOptParameter.k[i][odn.id] * gpi(i, l, u_info, mOptParameter)*sgn(g0i(i, l, u_info, mOptParameter)) * odn.w;
+                                dx[n-1] += 2.0*r * htht * mOptParameter.k[i][odn.id] * gpi(i, l, u_info, mOptParameter)*sgn(g0i(i, l, u_info, mOptParameter)) * odn.w;
                             }
                         }
                     }
                     //------------------------------------- Adding delta part -------------------------------------//
                 }
 
-                dx[0]   -= m_aa_htht__hxhx_h * p15[m][0];
-                dx[N-2] -= m_aa_htht__hxhx_h * p15[m][N];
+                dx[0]   -= m_aa_htht__hxhx * p15[m][0];
+                dx[N-2] -= m_aa_htht__hxhx * p15[m][N];
 
                 tomasAlgorithm(ax, bx, cx, dx, rx, N-1);
                 for (unsigned int n=1; n<=N-1; n++) p15[m][n] = rx[n-1];
             }
         }
-
-        if (rows2.size() != 0)
+//printf("-/*** x direction apprx */ %d %d\n", l, l1);
+        if (rows1.size() != 0 && rows2.size() != 0)
         {
             //throw std::exception();
 
@@ -3024,16 +2273,19 @@ void Problem2HNDirichlet::solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info
                 {
                     sn.i = n; sn.x = n*hx;
 
-                    if (m == 0)     d1[offset+(n-1)] = p_aa_htht__hyhy_h*(p10[0][n]   - 2.0*p10[1][n]   + p10[2][n]);
-                    if (m>0 && m<M) d1[offset+(n-1)] = p_aa_htht__hyhy_h*(p10[m-1][n] - 2.0*p10[m][n]   + p10[m+1][n]);
-                    if (m == M)     d1[offset+(n-1)] = p_aa_htht__hyhy_h*(p10[M-2][n] - 2.0*p10[M-1][n] + p10[M][n]);
+                    d1[offset+(n-1)] = 0.0;
+                    if (m>0 && m<M)  d1[offset+(n-1)] = p_aa_htht__hyhy*(p10[m-1][n] - 2.0*p10[m][n]   + p10[m+1][n]);
+                    else if (m == 0) d1[offset+(n-1)] = p_aa_htht__hyhy*(p10[0][n]   - 2.0*p10[1][n]   + p10[2][n]);
+                    else if (m == M) d1[offset+(n-1)] = p_aa_htht__hyhy*(p10[M-2][n] - 2.0*p10[M-1][n] + p10[M][n]);
 
-                    d1[offset+(n-1)] += 0.5*(p10[m][n]-p00[m][n]) + p10[m][n];
-                    d1[offset+(n-1)] += 0.5*lambda*ht*(4.0*p10[m][n]-p05[m][n]);
+                    d1[offset+(n-1)] += (p10[m][n]-p00[m][n]) + 2.0*p10[m][n];
+                    d1[offset+(n-1)] += lambda_ht*(4.0*p10[m][n]-p05[m][n]);
 
-                    a1[offset+(n-1)] = m_aa_htht__hxhx_h;
+                    if (L <= l && l <= LLD) d1[offset+(n-1)] -= 2.0*htht*(u[2*(l-L)+1][m][n] - V0[m][n]);
+
+                    a1[offset+(n-1)] = m_aa_htht__hxhx;
                     b1[offset+(n-1)] = p_aa_htht__hxhx___lambda_ht;
-                    c1[offset+(n-1)] = m_aa_htht__hxhx_h;
+                    c1[offset+(n-1)] = m_aa_htht__hxhx;
 
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int onj=0; onj<obsDeltaNodes.size(); onj++)
@@ -3051,14 +2303,14 @@ void Problem2HNDirichlet::solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info
                                     if (cpn.j == rows1[rs])
                                     {
                                         found = true;
-                                        w1[offset+(n-1)][rs*(N-1)+(cpn.i-1)] -= htht_h * mOptParameter.k[cpn.id][odn.id] * (cpn.w * (hx*hy)) * odn.w;
+                                        w1[offset+(n-1)][rs*(N-1)+(cpn.i-1)] -= htht * mOptParameter.k[cpn.id][odn.id] * (cpn.w * (hx*hy)) * odn.w;
                                         break;
                                     }
                                 }
 
                                 if (!found)
                                 {
-                                    d1[offset+(n-1)] += htht_h * mOptParameter.k[cpn.id][odn.id] * p15[cpn.j][cpn.i] * (cpn.w * (hx*hy)) * odn.w;
+                                    d1[offset+(n-1)] += htht * mOptParameter.k[cpn.id][odn.id] * p15[cpn.j][cpn.i] * (cpn.w * (hx*hy)) * odn.w;
                                 }
                             }
 
@@ -3074,8 +2326,8 @@ void Problem2HNDirichlet::solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info
                 a1[offset+0]   = 0.0;
                 c1[offset+N-2] = 0.0;
 
-                d1[offset+0]   -= m_aa_htht__hxhx_h * p15[m][0];
-                d1[offset+N-2] -= m_aa_htht__hxhx_h * p15[m][N];
+                d1[offset+0]   -= m_aa_htht__hxhx * p15[m][0];
+                d1[offset+N-2] -= m_aa_htht__hxhx * p15[m][N];
 
                 offset += N-1;
             }
@@ -3100,40 +2352,44 @@ void Problem2HNDirichlet::solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info
             free(b1);
             free(a1);
         }
-        //--------------------------------------------------------------------------//
+        //printf("+/* x direction apprx */ %d %d\n", l, l1);
+        /**************************************************** x direction apprx ***************************************************/
 
-        //------------------------------------- approximatin to x direction conditions -------------------------------------//
-
-        //------------------------------------- approximatin to y direction conditions -------------------------------------//
-        //tn.i = l+1; tn.t = tn.i*ht;
-        //--------------------------------------------------------------------------//
-
-        for (unsigned int col=0; col<cols0.size(); col++)
+        /**************************************************** y direction apprx ***************************************************/
+        //printf("-/* y direction apprx */ %d %d\n", l, l1);
+        if (cols0.size() != 0)
         {
-            unsigned int n = cols0.at(col);
-            sn.i = n; sn.x = n*hx;
-            for (unsigned int m=1; m<=M-1; m++)
+            for (unsigned int col=0; col<cols0.size(); col++)
             {
-                sn.j = m; sn.y = m*hy;
+                unsigned int n = cols0.at(col);
+                sn.i = n; sn.x = n*hx;
+                for (unsigned int m=1; m<=M-1; m++)
+                {
+                    sn.j = m; sn.y = m*hy;
 
-                if (n==0)       dy[m-1] = p_aa_htht__hxhx_h*(p15[m][0]   - 2.0*p15[m][1]   + p15[m][2]);
-                if (n>0 && n<N) dy[m-1] = p_aa_htht__hxhx_h*(p15[m][n-1] - 2.0*p15[m][n]   + p15[m][n+1]);
-                if (n==N)       dy[m-1] = p_aa_htht__hxhx_h*(p15[m][N-2] - 2.0*p15[m][N-1] + p15[m][N]);
+                    dy[m-1] = 0.0;
+                    if (n>0 && n<N) dy[m-1] = p_aa_htht__hxhx*(p15[m][n-1] - 2.0*p15[m][n]   + p15[m][n+1]);
+                    else if (n==0)  dy[m-1] = p_aa_htht__hxhx*(p15[m][0]   - 2.0*p15[m][1]   + p15[m][2]);
+                    else if (n==N)  dy[m-1] = p_aa_htht__hxhx*(p15[m][N-2] - 2.0*p15[m][N-1] + p15[m][N]);
 
-                dy[m-1] += 0.5*(p10[m][n]-p00[m][n]) + p15[m][n];
-                dy[m-1] += 0.5*lambda*ht*(4.0*p15[m][n]-p10[m][n]);
+                    dy[m-1] += (p10[m][n]-p00[m][n]) + 2.0*p15[m][n];
+                    dy[m-1] += lambda_ht*(4.0*p15[m][n]-p10[m][n]);
 
+                    if (L <= l && l <= LLD) dy[m-1] -= 2.0*htht*(u[2*(l-L)][m][n] - V0[m][n]);
+                }
+
+                dy[0]   -= m_aa_htht__hyhy * p20[0][n];
+                dy[M-2] -= m_aa_htht__hyhy * p20[M][n];
+
+                tomasAlgorithm(ay, by, cy, dy, ry, M-1);
+                for (unsigned int m=1; m<=M-1; m++) p20[m][n] = ry[m-1];
             }
-
-            dy[0]   -= m_aa_htht__hyhy_h * p[0][n];
-            dy[M-2] -= m_aa_htht__hyhy_h * p[M][n];
-
-            tomasAlgorithm(ay, by, cy, dy, ry, M-1);
-            for (unsigned int m=1; m<=M-1; m++) p[m][n] = ry[m-1];
         }
 
-        if (cols2.size() == 0)
+        if (cols1.size() != 0 && cols2.size() == 0)
         {
+            //throw std::exception();
+
             for (unsigned int col=0; col<cols1.size(); col++)
             {
                 unsigned int n = cols1.at(col);
@@ -3142,12 +2398,15 @@ void Problem2HNDirichlet::solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info
                 {
                     sn.j = m; sn.y = m*hy;
 
-                    if (n==0)       dy[m-1] = p_aa_htht__hxhx_h*(p15[m][0]   - 2.0*p15[m][1]   + p15[m][2]);
-                    if (n>0 && n<N) dy[m-1] = p_aa_htht__hxhx_h*(p15[m][n-1] - 2.0*p15[m][n]   + p15[m][n+1]);
-                    if (n==N)       dy[m-1] = p_aa_htht__hxhx_h*(p15[m][N-2] - 2.0*p15[m][N-1] + p15[m][N]);
+                    dy[m-1] = 0.0;
+                    if (n>0 && n<N) dy[m-1] = p_aa_htht__hxhx*(p15[m][n-1] - 2.0*p15[m][n]   + p15[m][n+1]);
+                    else if (n==0)  dy[m-1] = p_aa_htht__hxhx*(p15[m][0]   - 2.0*p15[m][1]   + p15[m][2]);
+                    else if (n==N)  dy[m-1] = p_aa_htht__hxhx*(p15[m][N-2] - 2.0*p15[m][N-1] + p15[m][N]);
 
-                    dy[m-1] += 0.5*(p10[m][n]-p00[m][n]) + p15[m][n];
-                    dy[m-1] += 0.5*lambda*ht*(4.0*p15[m][n]-p10[m][n]);
+                    dy[m-1] += (p10[m][n]-p00[m][n]) + 2.0*p15[m][n];
+                    dy[m-1] += lambda_ht*(4.0*p15[m][n]-p10[m][n]);
+
+                    if (L <= l && l <= LLD) dy[m-1] -= 2.0*htht*(u[2*(l-L)][m][n] - V0[m][n]);
 
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int onj=0; onj<obsDeltaNodes.size(); onj++)
@@ -3158,27 +2417,28 @@ void Problem2HNDirichlet::solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info
                             for (unsigned int cni=0; cni<cntPointNodes.size(); cni++)
                             {
                                 const ExtendedSpacePointNode &cpn = cntPointNodes.at(cni);
-                                dy[m-1] += htht_h * mOptParameter.k[cpn.id][odn.id] * p[cpn.j][cpn.i] * (cpn.w * (hx*hy)) * odn.w;
+                                dy[m-1] += htht * mOptParameter.k[cpn.id][odn.id] * p20[cpn.j][cpn.i] * (cpn.w * (hx*hy)) * odn.w;
                             }
 
                             for (unsigned int i=0; i<Nc; i++)
                             {
-                                dy[m-1] += 2.0 * r * htht_h * mOptParameter.k[i][odn.id] * gpi(i, l, u_info, mOptParameter)*sgn(g0i(i, l, u_info, mOptParameter)) * odn.w;
+                                dy[m-1] += 2.0 * r * htht * mOptParameter.k[i][odn.id] * gpi(i, l, u_info, mOptParameter)*sgn(g0i(i, l, u_info, mOptParameter)) * odn.w;
                             }
                         }
                     }
+
                     //------------------------------------- Adding delta part -------------------------------------//
                 }
 
-                dy[0]   -= m_aa_htht__hyhy_h * p[0][n];
-                dy[M-2] -= m_aa_htht__hyhy_h * p[M][n];
+                dy[0]   -= m_aa_htht__hyhy * p20[0][n];
+                dy[M-2] -= m_aa_htht__hyhy * p20[M][n];
 
                 tomasAlgorithm(ay, by, cy, dy, ry, M-1);
-                for (unsigned int m=1; m<=M-1; m++) p[m][n] = ry[m-1];
+                for (unsigned int m=1; m<=M-1; m++) p20[m][n] = ry[m-1];
             }
         }
 
-        if (cols2.size() != 0)
+        if (cols1.size() != 0 && cols2.size() != 0)
         {
             //throw std::exception();
 
@@ -3200,16 +2460,19 @@ void Problem2HNDirichlet::solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info
                 {
                     sn.j = m; sn.y = m*hy;
 
-                    if (n==0)       d2[offset+(m-1)] = p_aa_htht__hxhx_h*(p15[m][0]   - 2.0*p15[m][1]   + p15[m][2]);
-                    if (n>0 && n<N) d2[offset+(m-1)] = p_aa_htht__hxhx_h*(p15[m][n-1] - 2.0*p15[m][n]   + p15[m][n+1]);
-                    if (n==N)       d2[offset+(m-1)] = p_aa_htht__hxhx_h*(p15[m][N-2] - 2.0*p15[m][N-1] + p15[m][N]);
+                    d2[offset+(m-1)] = 0.0;
+                    if (n>0 && n<N) d2[offset+(m-1)] = p_aa_htht__hxhx*(p15[m][n-1] - 2.0*p15[m][n]   + p15[m][n+1]);
+                    else if (n==0)  d2[offset+(m-1)] = p_aa_htht__hxhx*(p15[m][0]   - 2.0*p15[m][1]   + p15[m][2]);
+                    else if (n==N)  d2[offset+(m-1)] = p_aa_htht__hxhx*(p15[m][N-2] - 2.0*p15[m][N-1] + p15[m][N]);
 
-                    d2[offset+(m-1)] += 0.5*(p10[m][n]-p00[m][n]) + p15[m][n];
-                    d2[offset+(m-1)] += 0.5*lambda*ht*(4.0*p15[m][n]-p10[m][n]);
+                    d2[offset+(m-1)] += (p10[m][n]-p00[m][n]) + 2.0*p15[m][n];
+                    d2[offset+(m-1)] += lambda*ht*(4.0*p15[m][n]-p10[m][n]);
 
-                    a2[offset+(m-1)] = m_aa_htht__hyhy_h;
+                    if (L <= l && l <= LLD) d2[offset+(m-1)] -= 2.0*htht*(u[2*(l-L)][m][n] - V0[m][n]);
+
+                    a2[offset+(m-1)] = m_aa_htht__hyhy;
                     b2[offset+(m-1)] = p_aa_htht__hyhy___lambda_ht;
-                    c2[offset+(m-1)] = m_aa_htht__hyhy_h;
+                    c2[offset+(m-1)] = m_aa_htht__hyhy;
 
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int onj=0; onj<obsDeltaNodes.size(); onj++)
@@ -3227,20 +2490,20 @@ void Problem2HNDirichlet::solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info
                                     if (cpn.i == cols1[cs])
                                     {
                                         found = true;
-                                        w2[offset+(m-1)][cs*(M-1)+(cpn.j-1)] -= htht_h * mOptParameter.k[cpn.id][odn.id] * (cpn.w * (hx*hy)) * odn.w;
+                                        w2[offset+(m-1)][cs*(M-1)+(cpn.j-1)] -= htht * mOptParameter.k[cpn.id][odn.id] * (cpn.w * (hx*hy)) * odn.w;
                                         break;
                                     }
                                 }
 
                                 if (!found)
                                 {
-                                    d2[offset+(m-1)] += htht_h * mOptParameter.k[cpn.id][odn.id] * p[cpn.j][cpn.i] * (cpn.w * (hx*hy)) * odn.w;
+                                    d2[offset+(m-1)] += htht * mOptParameter.k[cpn.id][odn.id] * p20[cpn.j][cpn.i] * (cpn.w * (hx*hy)) * odn.w;
                                 }
                             }
 
                             for (unsigned int i=0; i<Nc; i++)
                             {
-                                d2[offset+(m-1)] += 2.0 * r * htht_h *  mOptParameter.k[i][odn.id] * gpi(i, l, u_info, mOptParameter)*sgn(g0i(i, l, u_info, mOptParameter)) * odn.w;
+                                d2[offset+(m-1)] += 2.0 * r * htht *  mOptParameter.k[i][odn.id] * gpi(i, l, u_info, mOptParameter)*sgn(g0i(i, l, u_info, mOptParameter)) * odn.w;
                             }
                         }
                     }
@@ -3250,8 +2513,8 @@ void Problem2HNDirichlet::solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info
                 a2[offset+0]   = 0.0;
                 c2[offset+M-2] = 0.0;
 
-                d2[offset+0]   -= m_aa_htht__hyhy_h * p[0][n];
-                d2[offset+M-2] -= m_aa_htht__hyhy_h * p[M][n];
+                d2[offset+0]   -= m_aa_htht__hyhy * p20[0][n];
+                d2[offset+M-2] -= m_aa_htht__hyhy * p20[M][n];
 
                 offset += M-1;
             }
@@ -3264,7 +2527,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info
                 unsigned int n=cols1.at(col);
                 for (unsigned int m=1; m<=M-1; m++)
                 {
-                    p[m][n] = x2[offset+(m-1)];
+                    p20[m][n] = x2[offset+(m-1)];
                 }
                 offset += M-1;
             }
@@ -3276,22 +2539,23 @@ void Problem2HNDirichlet::solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info
             free(b2);
             free(a2);
         }
-        //--------------------------------------------------------------------------//
-
-        //------------------------------------- approximatin to y direction conditions -------------------------------------//
+        //printf("+/* y direction apprx */ %d %d\n", l, l1);
+        /**************************************************** y direction apprx ***************************************************/
 
         for (unsigned int m=0; m<=M; m++)
         {
             for (unsigned int n=0; n<=N; n++)
             {
                 p00[m][n] = p10[m][n];
-                p10[m][n] = p[m][n];
+                p10[m][n] = p20[m][n];
                 p05[m][n] = p15[m][n];
             }
         }
-
-        if (use == true) b_add2Info(p, p_info, cntPointNodes, l, hx, hy);
-        b_layerInfo(p, l);
+        //printf("-/*  */ %d %d\n", l, l1);
+        if (use == true) b_add2Info(p20, p_info, cntPointNodes, l, hx, hy);
+        //printf("+/*  */ %d %d\n", l, l1);
+        b_layerInfo(p20, l);
+        //printf("*/*  */ %d %d\n", l, l1);
     }
 
     free(rx);
@@ -3321,16 +2585,20 @@ void Problem2HNDirichlet::solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info
     p05.clear();
     p10.clear();
     p15.clear();
+    p20.clear();
+    //puts("+void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vector &p_info, bool use, const spif_vector &u_info) const");
 }
 
-double Problem2HNDirichlet::b_initial1(const SpaceNodePDE &sn) const
+double Problem2HNDirichlet::b_initial1(const SpaceNodePDE &sn UNUSED_PARAM) const
 {
-    return -2.0* alpha1 * (UTt[sn.j][sn.i]-V1[sn.j][sn.i]) * mu(sn.x, sn.y);
+    return 0.0;
+    //return -2.0* alpha1 * (UTt[sn.j][sn.i]-V1[sn.j][sn.i]) * mu(sn.x, sn.y);
 }
 
-double Problem2HNDirichlet::b_initial2(const SpaceNodePDE &sn) const
+double Problem2HNDirichlet::b_initial2(const SpaceNodePDE &sn UNUSED_PARAM) const
 {
-    return 2.0* alpha0 * (UT[sn.j][sn.i]-V0[sn.j][sn.i]) * mu(sn.x, sn.y) + mEquParameter.lambda * b_initial1(sn);
+    return 0.0;
+    //return 2.0* alpha0 * (UT[sn.j][sn.i]-V0[sn.j][sn.i]) * mu(sn.x, sn.y) + mEquParameter.lambda * b_initial1(sn);
 }
 
 double Problem2HNDirichlet::b_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const
@@ -3400,6 +2668,8 @@ void Problem2HNDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p05, 
                                           unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const
 {
     unsigned int L = mtimeDimension.sizeN();
+    unsigned int LLD = L+LD;
+
     SpaceNodePDE sn;
     for (unsigned int m=0; m<=M; m++)
     {
@@ -3410,27 +2680,37 @@ void Problem2HNDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p05, 
             p00[m][n] = b_initial1(sn);
         }
     }
-    if (use == true) b_add2Info(p00, p_info, cntPointNodes, L, hx, hy);
-    b_layerInfo(p00, L);
 
-    double hh = 0.5*ht;
+    TimeNodePDE tn05; tn05.i = LLD-1; tn05.t = LLD*ht + 0.5*ht;
+    TimeNodePDE tn10; tn10.i = LLD-1; tn10.t = LLD*ht;
+
+    SpaceNodePDE sn0, sn1;
+    sn0.i = 0; sn0.x = 0.0;
+    sn1.i = N; sn1.x = N*hx;
     for (unsigned int m=0; m<=M; m++)
     {
+        sn0.j = m; sn0.y = m*hy; p05[m][0] = f_boundary(sn0, tn05); p10[m][0] = f_boundary(sn0, tn10);
+        sn1.j = m; sn1.y = m*hy; p05[m][N] = f_boundary(sn1, tn05); p10[m][N] = f_boundary(sn1, tn10);
+    }
+
+    sn0.j = 0;  sn0.y = 0.0;
+    sn1.j = M; sn1.y = M*hy;
+    for (unsigned int n=0; n<=N; n++)
+    {
+        sn0.i = n; sn0.x = n*hx; p05[0][n] = f_boundary(sn0, tn05); p10[0][n] = f_boundary(sn0, tn10);
+        sn1.i = n; sn1.x = n*hx; p05[M][n] = f_boundary(sn1, tn05); p10[M][n] = f_boundary(sn1, tn10);
+    }
+
+    for (unsigned int m=1; m<=M-1; m++)
+    {
         sn.j = m; sn.y = m*hy;
-        for (unsigned int n=0; n<=N; n++)
+        for (unsigned int n=1; n<=N-1; n++)
         {
             sn.i = n; sn.x = n*hx;
 
             double sum = 0.0;
-
-            if (n==0)      sum += aa__hxhx*(p00[m][n]-2.0*p00[m][n+1]+p00[m][n+2]);
-            else if (n==N) sum += aa__hxhx*(p00[m][n-2]-2.0*p00[m][n-1]+p00[m][n]);
-            else           sum += aa__hxhx*(p00[m][n-1]-2.0*p00[m][n]+p00[m][n+1]);
-
-            if (m==0)      sum += aa__hyhy*(p00[m][n]-2.0*p00[m+1][n]+p00[m+2][n]);
-            else if (m==M) sum += aa__hyhy*(p00[m-2][n]-2.0*p00[m-1][n]+p00[m][n]);
-            else           sum += aa__hyhy*(p00[m-1][n]-2.0*p00[m][n]+p00[m+1][n]);
-
+            sum += aa__hxhx*(p00[m][n-1]-2.0*p00[m][n]+p00[m][n+1]);
+            sum += aa__hyhy*(p00[m-1][n]-2.0*p00[m][n]+p00[m+1][n]);
             sum += lambda*b_initial2(sn);
 
             for (unsigned int odn=0; odn<obsDeltaNodes.size(); odn++)
@@ -3449,18 +2729,19 @@ void Problem2HNDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p05, 
                 }
             }
 
-            p05[m][n] = p00[m][n] - hh*b_initial2(sn) + 0.5*hh*hh*sum;
-            p10[m][n] = p00[m][n] - ht*b_initial2(sn) + 0.5*ht*ht*sum;
+            p05[m][n] = p00[m][n] - b_initial2(sn)*ht*0.5 + 0.125*ht*ht*sum;
+            p10[m][n] = p00[m][n] - b_initial2(sn)*ht     + 0.500*ht*ht*sum;
         }
     }
 
-    if (use == true) b_add2Info(p10, p_info, cntPointNodes, L-1, hx, hy);
-    b_layerInfo(p10, L-1);
-
+    if (use == true) b_add2Info(p00, p_info, cntPointNodes, LLD, hx, hy);
+    b_layerInfo(p00, LLD);
+    if (use == true) b_add2Info(p10, p_info, cntPointNodes, LLD-1, hx, hy);
+    b_layerInfo(p10, LLD-1);
 }
 
 void Problem2HNDirichlet::b_prepareInfo(unsigned int Nc, const std::vector<SpacePoint> &points, spif_vector &p_info,
-                                        unsigned int L, const Dimension &dimX, const Dimension &dimY) const
+                                        unsigned int LLD, const Dimension &dimX, const Dimension &dimY) const
 {
     p_info.resize(Nc);
     for (unsigned int i=0; i<Nc; i++)
@@ -3474,10 +2755,10 @@ void Problem2HNDirichlet::b_prepareInfo(unsigned int Nc, const std::vector<Space
         inf.i = (unsigned int)( round( inf.x * dimX.sizeN() ) );
         inf.j = (unsigned int)( round( inf.y * dimY.sizeN() ) );
 
-        inf.layerNumber = L+1;
-        inf.u = new double[L+1];
-        inf.ux = new double[L+1];
-        inf.uy = new double[L+1];
+        inf.layerNumber = LLD+1;
+        inf.u = new double[LLD+1];
+        inf.ux = new double[LLD+1];
+        inf.uy = new double[LLD+1];
     }
 }
 
@@ -3541,7 +2822,16 @@ void Problem2HNDirichlet::b_add2Info(const DoubleMatrix &p, spif_vector &p_info,
     }
 }
 
-void Problem2HNDirichlet::b_layerInfo(const DoubleMatrix &p UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const {}
+void Problem2HNDirichlet::b_layerInfo(const DoubleMatrix &p UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
+{
+    //double min = p.min();
+    //double max = p.max();
+
+    //QPixmap pic;
+    //visualizeMatrixHeat(p, min, max, pic);
+    //pic.save("images/b/pic"+QString("%1").arg(ln)+".png", "PNG");
+    //printf("Layer: %d min: %f max: %f min: %f max: %f norm: %f\n", ln, min, max, min, max, fabs(max-min));
+}
 
 // backward -----------------------------------
 
@@ -3716,6 +3006,3 @@ void Problem2HNDirichlet::VectorToPrm(const DoubleVector &pv, OptimizeParameter 
         prm.eta[i].y = pv[index]; index++;
     }
 }
-
-
-//return -2.0*ifunc->alpha1*(UTt[sn.j][sn.i]-ifunc->V1[sn.j][sn.i]);

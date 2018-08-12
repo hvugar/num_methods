@@ -26,5 +26,11 @@ HEADERS += problem2h_global.h common.h
 #HEADERS += exporter.h
 #SOURCES += exporter.cpp
 
-HEADERS += problem2h.h   problem2hN.h   problem2hnm.h
-SOURCES += problem2h.cpp problem2hN.cpp problem2hnm.cpp
+HEADERS += problem2h.h   problem2hN.h
+SOURCES += problem2h.cpp problem2hN.cpp
+
+#HEADERS += problem2hN_back.h
+#SOURCES += problem2hN_back.cpp
+
+#HEADERS += problem2hnm.h
+#SOURCES += problem2hnm.cpp

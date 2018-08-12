@@ -23,14 +23,9 @@ public:
     virtual double fx(const DoubleVector &x) const;
     virtual void gradient(const DoubleVector &, DoubleVector &) const;
 
-    //virtual double pfx(const DoubleVector &x) const;
-    //virtual void pgradient(const DoubleVector &, DoubleVector &) const;
-
 protected:
     inline double mu(double x, double y) const;
-    double integral0(const DoubleMatrix &u, const DoubleMatrix &ut) const;
-    double integral1(const DoubleMatrix &u, const DoubleMatrix &ut) const;
-    double integral2(const DoubleMatrix &u, const DoubleMatrix &ut) const;
+    double integral(const std::vector<DoubleMatrix> &u) const;
     double norm(const EquationParameter &eprm, const OptimizeParameter &oprm, const OptimizeParameter &oprm0) const;
 
     double penalty(const spif_vector &info, const OptimizeParameter &o_prm) const;
@@ -49,12 +44,7 @@ public:
 private:
 
     //forward -------------------------------------
-    //CaseC
-    void solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const;
-
-    void solveForwardIBVP_N(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const;
-
-    void solveForwardIBVPCaseA1(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const;
+    void solveForwardIBVP(std::vector<DoubleMatrix> &u_, spif_vector &u_info, bool use) const;
 
     double f_initial1(const SpaceNodePDE &sn) const;
     double f_initial2(const SpaceNodePDE &sn) const;
@@ -68,7 +58,7 @@ private:
     void f_layerInfo(const DoubleMatrix &u, const DoubleMatrix &ut, unsigned int ln) const;
 
     // backward -----------------------------------
-    void solveBackwardIBVP(DoubleMatrix &p, spif_vector &p_info, bool use, const spif_vector &u_info) const;
+    void solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vector &p_info, bool use, const spif_vector &u_info) const;
     double b_initial1(const SpaceNodePDE &sn) const;
     double b_initial2(const SpaceNodePDE &sn) const;
     double b_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
@@ -96,14 +86,7 @@ public:
     double regEpsilon;
 
     DoubleMatrix V0;
-    double alpha0;
-    DoubleMatrix V1;
-    double alpha1;
-
-    DoubleMatrix UT;
-    DoubleMatrix UTt;
-    double DT = 0.01;
-    unsigned int DL = 5;
+    unsigned int LD;
 
     bool optimizeK;
     bool optimizeZ;

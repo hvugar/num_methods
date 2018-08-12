@@ -264,7 +264,7 @@ void IPrinter::printSeperatorLine(const char* msg, char c, FILE* file)
         start = strlen(msg)+1;
     }
 
-    for (int i=start; i<columns; i++) fprintf(file,"%c", c);
+    for (int i=start; i<columns-1; i++) fprintf(file,"%c", c);
 
 #ifdef _INC_WINDOWS
     fputs("\n", file);
