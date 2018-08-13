@@ -472,6 +472,8 @@ void Problem2HNDirichlet::example1()
     e_prm.q[0] = 0.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
     e_prm.q[1] = 0.3; e_prm.theta[1].x = 0.2000; e_prm.theta[1].y = 0.2000;
     e_prm.q[2] = 0.5; e_prm.theta[2].x = 0.8000; e_prm.theta[2].y = 0.8000;
+    e_prm.q[3] = 0.8; e_prm.theta[3].x = 0.3000; e_prm.theta[3].y = 0.7000;
+    e_prm.q[4] = 0.4; e_prm.theta[4].x = 0.8000; e_prm.theta[4].y = 0.3000;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -484,14 +486,14 @@ void Problem2HNDirichlet::example1()
     o_prm.eta.resize(e_prm.Nc);
 
     o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +2.4500; o_prm.k[1][1]  = +2.1800;
-    o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = +0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
+    o_prm.z[0][0]  = +1.5000; o_prm.z[0][1]  = -1.4000; o_prm.z[1][0]  = +1.7000; o_prm.z[1][1]  = +1.5000;
     o_prm.xi[0].x  = +0.3000; o_prm.xi[0].y  = +0.8000; o_prm.xi[1].x  = +0.6000; o_prm.xi[1].y  = +0.4000;
     o_prm.eta[0].x = +0.5000; o_prm.eta[0].y = +0.7000; o_prm.eta[1].x = +0.7000; o_prm.eta[1].y = +0.3000;
 
     // Regulirization parameters ---------------------------------------------------------------------
     OptimizeParameter r_prm = o_prm;
 
-    DoubleVector r; r << 1.0 << 2.0 << 10.0 << 100.0;
+    DoubleVector r; r << 0.01 << 0.1 << 1.0 << 2.0 << 10.0 << 100.0;
 
     double hx, hy; hx = hy = 0.01;
     unsigned Nx, Ny; Nx = Ny = 100;
@@ -524,14 +526,14 @@ void Problem2HNDirichlet::example1()
         prob.r = r[i];
         prob.vmin.resize(e_prm.Nc, -2.0);
         prob.vmax.resize(e_prm.Nc, +2.0);
-        prob.LD = 5;
+        prob.LD = 10;
 
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
 
-            //checkGradient(prob);
-            //IPrinter::printSeperatorLine();
+            checkGradient(prob);
+            IPrinter::printSeperatorLine();
         }
 
         ConjugateGradient g;
@@ -539,10 +541,10 @@ void Problem2HNDirichlet::example1()
         g.setGradient(&prob);
         g.setPrinter(&prob);
         g.setProjection(&prob);
-        g.setEpsilon1(0.01);
-        g.setEpsilon2(0.01);
-        g.setEpsilon3(0.01);
-        g.setR1MinimizeEpsilon(0.1, 0.001);
+        g.setEpsilon1(0.0001);
+        g.setEpsilon2(0.0001);
+        g.setEpsilon3(0.0001);
+        g.setR1MinimizeEpsilon(0.01, 0.001);
         g.setNormalize(true);
         g.showEndMessage(true);
         g.setResetIteration(true);
