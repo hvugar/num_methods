@@ -281,31 +281,15 @@ void Problem2HNDirichlet::checkGradient(const Problem2HNDirichlet &prob)
     EquationParameter e_prm = prob.mEquParameter;
     OptimizeParameter o_prm = prob.mOptParameter;
     OptimizeParameter r_prm = prob.mRegParameter;
-    //initParameters(e_prm, o_prm, o_prm0);
-
-    //Problem2HDirichlet prob(Dimension(0.01, 0, 100), Dimension(hx, 0, Nx), Dimension(hy, 0, Ny), e_prm, o_prm, o_prm0);
-    //prob.optimizeK = true;
-    //prob.optimizeZ = true;
-    //prob.optimizeC = true;
-    //prob.optimizeO = true;
-
-    //prob.alpha0 = 1.0; prob.V0.resize(Ny+1, Nx+1, 0.0);
-    //prob.alpha1 = 1.0; prob.V1.resize(Ny+1, Nx+1, 0.0);
-
-    //prob.regEpsilon = 0.0;
-
-    //prob.r = 1.00;
-    //prob.vmin.resize(e_prm.Nc, -5.0);
-    //prob.vmax.resize(e_prm.Nc, +5.0);
 
     IPrinter::printSeperatorLine();
     DoubleVector pv;
     prob.PrmToVector(o_prm, pv);
     IPrinter::print(pv, pv.length(), 6, 4);
     IPrinter::printSeperatorLine();
-    DoubleVector pv0;
-    prob.PrmToVector(r_prm, pv0);
-    IPrinter::print(pv0, pv0.length(), 6, 4);
+    DoubleVector r_pv;
+    prob.PrmToVector(r_prm, r_pv);
+    IPrinter::print(r_pv, r_pv.length(), 6, 4);
     IPrinter::printSeperatorLine();
     DoubleVector ag(pv.length());
     double functional = prob.fx(pv);
@@ -465,15 +449,15 @@ void Problem2HNDirichlet::example1()
     e_prm.a = 1.0;
     e_prm.lambda = 0.01;
 
-    e_prm.Ns = 3;
+    e_prm.Ns = 5;
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = 0.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
-    e_prm.q[1] = 0.3; e_prm.theta[1].x = 0.2000; e_prm.theta[1].y = 0.2000;
-    e_prm.q[2] = 0.5; e_prm.theta[2].x = 0.8000; e_prm.theta[2].y = 0.8000;
-    e_prm.q[3] = 0.8; e_prm.theta[3].x = 0.3000; e_prm.theta[3].y = 0.7000;
-    e_prm.q[4] = 0.4; e_prm.theta[4].x = 0.8000; e_prm.theta[4].y = 0.3000;
+    e_prm.q[0] = 4.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
+    e_prm.q[1] = 2.3; e_prm.theta[1].x = 0.2000; e_prm.theta[1].y = 0.2000;
+    e_prm.q[2] = 3.5; e_prm.theta[2].x = 0.8000; e_prm.theta[2].y = 0.8000;
+    e_prm.q[3] = 5.8; e_prm.theta[3].x = 0.3000; e_prm.theta[3].y = 0.7000;
+    e_prm.q[4] = 2.4; e_prm.theta[4].x = 0.8000; e_prm.theta[4].y = 0.3000;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -485,15 +469,40 @@ void Problem2HNDirichlet::example1()
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
+    //o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +2.4500; o_prm.k[1][1]  = +2.1800;
+    //o_prm.z[0][0]  = +1.5000; o_prm.z[0][1]  = -1.4000; o_prm.z[1][0]  = +1.7000; o_prm.z[1][1]  = +1.5000;
+    //o_prm.xi[0].x  = +0.3000; o_prm.xi[0].y  = +0.8000; o_prm.xi[1].x  = +0.6000; o_prm.xi[1].y  = +0.4000;
+    //o_prm.eta[0].x = +0.5000; o_prm.eta[0].y = +0.7000; o_prm.eta[1].x = +0.7000; o_prm.eta[1].y = +0.3000;
+
     o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +2.4500; o_prm.k[1][1]  = +2.1800;
     o_prm.z[0][0]  = +1.5000; o_prm.z[0][1]  = -1.4000; o_prm.z[1][0]  = +1.7000; o_prm.z[1][1]  = +1.5000;
     o_prm.xi[0].x  = +0.3000; o_prm.xi[0].y  = +0.8000; o_prm.xi[1].x  = +0.6000; o_prm.xi[1].y  = +0.4000;
     o_prm.eta[0].x = +0.5000; o_prm.eta[0].y = +0.7000; o_prm.eta[1].x = +0.7000; o_prm.eta[1].y = +0.3000;
 
     // Regulirization parameters ---------------------------------------------------------------------
-    OptimizeParameter r_prm = o_prm;
+    OptimizeParameter r_prm;
+    r_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+    r_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+    r_prm.xi.resize(e_prm.No);
+    r_prm.eta.resize(e_prm.Nc);
 
-    DoubleVector r; r << 0.01 << 0.1 << 1.0 << 2.0 << 10.0 << 100.0;
+    // r = 0.01
+    r_prm.k[0][0]  = -0.1433; r_prm.k[0][1]  = +0.2481; r_prm.k[1][0]  = +1.0715; r_prm.k[1][1]  = -0.7702;
+    r_prm.z[0][0]  = +1.1141; r_prm.z[0][1]  = -1.7490; r_prm.z[1][0]  = +0.6137; r_prm.z[1][1]  = +0.7212;
+    r_prm.xi[0].x  = +0.1137; r_prm.xi[0].y  = +0.8865; r_prm.xi[1].x  = +0.0502; r_prm.xi[1].y  = +0.9498;
+    r_prm.eta[0].x = +0.9420; r_prm.eta[0].y = +0.7940; r_prm.eta[1].x = +0.9472; r_prm.eta[1].y = +0.0528;
+
+    // r = 100.0
+    //r_prm.k[0][0]  = -0.0953; r_prm.k[0][1]  = +0.1448; r_prm.k[1][0]  = +1.0591; r_prm.k[1][1]  = -0.7964;
+    //r_prm.z[0][0]  = +1.1060; r_prm.z[0][1]  = -1.7351; r_prm.z[1][0]  = +0.5721; r_prm.z[1][1]  = +0.7514;
+    //r_prm.xi[0].x  = +0.2024; r_prm.xi[0].y  = +0.7993; r_prm.xi[1].x  = +0.0513; r_prm.xi[1].y  = +0.9487;
+    //r_prm.eta[0].x = +0.9410; r_prm.eta[0].y = +0.7091; r_prm.eta[1].x = +0.8438; r_prm.eta[1].y = +0.1553;
+
+    //r_prm = o_prm;
+    // Regulirization parameters ---------------------------------------------------------------------
+
+    DoubleVector r; r << 0.010 << 0.100 << 1.000 << 2.000 << 10.00 << 100.00;
+    DoubleVector e; e << 0.000 << 0.000 << 0.000 << 0.000 << 0.000 << 0.0000;
 
     double hx, hy; hx = hy = 0.01;
     unsigned Nx, Ny; Nx = Ny = 100;
@@ -521,8 +530,7 @@ void Problem2HNDirichlet::example1()
 
         prob.V0.resize(Ny+1, Nx+1, 0.0);
 
-        prob.regEpsilon = 0.0;
-
+        prob.regEpsilon = r[i];
         prob.r = r[i];
         prob.vmin.resize(e_prm.Nc, -2.0);
         prob.vmax.resize(e_prm.Nc, +2.0);
@@ -541,10 +549,10 @@ void Problem2HNDirichlet::example1()
         g.setGradient(&prob);
         g.setPrinter(&prob);
         g.setProjection(&prob);
-        g.setEpsilon1(0.0001);
-        g.setEpsilon2(0.0001);
-        g.setEpsilon3(0.0001);
-        g.setR1MinimizeEpsilon(0.01, 0.001);
+        g.setEpsilon1(0.00001);
+        g.setEpsilon2(0.00001);
+        g.setEpsilon3(0.00001);
+        g.setR1MinimizeEpsilon(0.1, 0.001);
         g.setNormalize(true);
         g.showEndMessage(true);
         g.setResetIteration(true);
