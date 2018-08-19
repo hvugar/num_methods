@@ -14,12 +14,18 @@ public:
     virtual ~SteepestDescentGradient();
 
     virtual void calculate(DoubleVector &x);
+
+    R1FxMinimizer &r1Minimizer();
+    const R1FxMinimizer& r1Minimizer() const;
+
 protected:
-    virtual double minimize(const DoubleVector &x, const DoubleVector &g);
+    virtual double minimize(const DoubleVector &x, const DoubleVector &g) const;
     virtual double fx(double alpha) const;
 
     DoubleVector *mx;
     DoubleVector *mg;
+
+    R1FxMinimizer r1m;
 };
 
 #endif // STEEPEST_DESCENT_GRADIENT_H

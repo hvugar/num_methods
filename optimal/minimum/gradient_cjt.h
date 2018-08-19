@@ -25,14 +25,20 @@ public:
     virtual ~ConjugateGradient();
 
     virtual void calculate(DoubleVector &x);
+    R1FxMinimizer &r1Minimizer();
+    const R1FxMinimizer& r1Minimizer() const;
+
     void setAlgorithm(Algorithm algorithm);
     void setResetIteration(bool reset);
+
 protected:
-    virtual double minimize(const DoubleVector &x, const DoubleVector &g);
+    virtual double minimize(const DoubleVector &x, const DoubleVector &g) const;
     virtual double fx(double alpha) const;
     
     DoubleVector *mx;
     DoubleVector *ms;
+    R1FxMinimizer r1m;
+
 private:
     Algorithm malgoritm;
     bool mResetIteration;

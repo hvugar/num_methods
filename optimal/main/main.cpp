@@ -68,6 +68,28 @@
 #include "heatequationibvp1.h"
 
 #include <QtGui>
+#include <../minimum/r1minimize.h>
+
+struct R1MinimizeCallback : public R1FxMinimizer::Callback
+{
+    virtual void straightLineSearchCallback(unsigned int i, double x, double a, double b, double fxa, double fxb, unsigned int fx_count) const
+    {
+        printf("l %4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f %4d\n", i, a, x, b, fxa, function()->fx(x), fxb, fx_count);
+    }
+
+    virtual void goldenSectionSearchCallback(unsigned int i, double x, double a, double b, double fxx, double fxa, double fxb, unsigned int fx_count) const
+    {
+        printf("g %4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f %4d\n", i, a, x, b, fxa, fxx, fxb, fx_count);
+    }
+
+};
+
+class MyFunction : public R1Function
+{
+public:
+    //virtual double fx(double x) const { return (x-0.0)*(x-0.0)*(x-0.0)*(x-0.0) - x*x + 0.1; }
+    virtual double fx(double x) const { return (x-0.0)*(x-0.0); }
+};
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -91,6 +113,21 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 
     QGuiApplication app(argc, argv);
+
+
+    R1FxMinimizer r1m;
+    MyFunction *f1 = new MyFunction();
+    double a,b,fxa,fxb,x;
+    r1m.setFunction(f1);
+    r1m.setCallback(new R1MinimizeCallback);
+    //r1m.straightLineSearch(-0.7, 0.01, a, b, fxa, fxb);
+    r1m.swann(-0.7, 0.01, a, b, fxa, fxb);
+    puts("---");
+    //r1m.halphIntervalMethod(x, a, b, 0.0001);
+    r1m.goldenSectionSearch(x, a, b, 0.0001);
+    printf("n %4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", -1, a, x, b, r1m.function()->fx(a), r1m.function()->fx(x), r1m.function()->fx(b));
+    return 0;
+
 
 //    DoubleVector a(11, -0.5); a[0] = 0.0;
 //    DoubleVector b(11, +2.000015);

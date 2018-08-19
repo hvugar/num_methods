@@ -7,6 +7,7 @@
 SteepestDescentGradient::SteepestDescentGradient() : GradientMethod()
 {
     setNormalize(true);
+    r1m.setFunction(this);
 }
 
 SteepestDescentGradient::~SteepestDescentGradient()
@@ -98,7 +99,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
     g.clear();
 }
 
-double SteepestDescentGradient::minimize(const DoubleVector &x, const DoubleVector &g)
+double SteepestDescentGradient::minimize(const DoubleVector &x, const DoubleVector &g) const
 {
     C_UNUSED(x);
     C_UNUSED(g);
@@ -106,8 +107,13 @@ double SteepestDescentGradient::minimize(const DoubleVector &x, const DoubleVect
     double alpha0 = 0.0;
     double a,b,alpha;
 
-    stranghLineSearch(alpha0, min_step, a, b, this);
-    goldenSectionSearch(a, b, alpha, this, min_epsilon);
+    //stranghLineSearch(alpha0, min_step, a, b, this);
+    //goldenSectionSearch(a, b, alpha, this, min_epsilon);
+    //if (fx(alpha) > fx(alpha0)) alpha = alpha0;
+
+    double fxa, fxb;
+    r1m.straightLineSearch(alpha0, min_step, a, b, fxa, fxb);
+    r1m.goldenSectionSearch(alpha, a, b, min_epsilon);
     if (fx(alpha) > fx(alpha0)) alpha = alpha0;
 
     return alpha;
@@ -127,4 +133,14 @@ double SteepestDescentGradient::fx(double alpha) const
     }
 
     return m_fn->fx(cx);
+}
+
+R1FxMinimizer &SteepestDescentGradient::r1Minimizer()
+{
+    return r1m;
+}
+
+const R1FxMinimizer& SteepestDescentGradient::r1Minimizer() const
+{
+    return r1m;
 }

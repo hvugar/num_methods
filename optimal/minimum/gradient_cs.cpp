@@ -68,7 +68,7 @@ void ConstStepGradient::calculate(DoubleVector &x)
     } while (distance > epsilon2());
 }
 
-double ConstStepGradient::minimize(const DoubleVector &x, const DoubleVector &g)
+double ConstStepGradient::minimize(const DoubleVector &x, const DoubleVector &g) const
 {
     unsigned int n = x.length();
 

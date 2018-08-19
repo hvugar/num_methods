@@ -97,7 +97,7 @@ public:
     void showEndMessage(bool showEndMessage);
 
 protected:
-    virtual double minimize(const DoubleVector &x, const DoubleVector &g) = 0;
+    virtual double minimize(const DoubleVector &x, const DoubleVector &g) const = 0;
 
     RnFunction *m_fn;
     IGradient *m_gr;

@@ -540,8 +540,8 @@ void Problem2HNDirichlet::example1()
         {
             prob.PrmToVector(o_prm, x);
 
-            checkGradient(prob);
-            IPrinter::printSeperatorLine();
+            //checkGradient(prob);
+            //IPrinter::printSeperatorLine();
         }
 
         ConjugateGradient g;
@@ -688,8 +688,8 @@ void Problem2HNDirichlet::example2()
         {
             prob.PrmToVector(o_prm, x);
 
-            checkGradient(prob);
-            IPrinter::printSeperatorLine();
+            //checkGradient(prob);
+            //IPrinter::printSeperatorLine();
         }
 
         ConjugateGradient g;
