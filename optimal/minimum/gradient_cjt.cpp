@@ -186,8 +186,8 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
     //if (fx(alpha) > fx(alpha0)) alpha = alpha0;
 
     double fxa, fxb;
-    //r1m.straightLineSearch(alpha0, min_step, a, b, fxa, fxb);
-    r1m.swann(alpha0, min_step, a, b, fxa, fxb);
+    r1m.straightLineSearch(alpha0, min_step, a, b, fxa, fxb);
+    //r1m.swann(alpha0, min_step, a, b, fxa, fxb);
     r1m.goldenSectionSearch(alpha, a, b, min_epsilon);
     if (fx(alpha) > fx(alpha0)) alpha = alpha0;
 
