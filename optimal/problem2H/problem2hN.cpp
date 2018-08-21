@@ -449,15 +449,15 @@ void Problem2HNDirichlet::example1()
     e_prm.a = 1.0;
     e_prm.lambda = 0.01;
 
-    e_prm.Ns = 5;
+    e_prm.Ns = 3;
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = 4.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
-    e_prm.q[1] = 2.3; e_prm.theta[1].x = 0.2000; e_prm.theta[1].y = 0.2000;
-    e_prm.q[2] = 3.5; e_prm.theta[2].x = 0.8000; e_prm.theta[2].y = 0.8000;
-    e_prm.q[3] = 5.8; e_prm.theta[3].x = 0.3000; e_prm.theta[3].y = 0.7000;
-    e_prm.q[4] = 2.4; e_prm.theta[4].x = 0.8000; e_prm.theta[4].y = 0.3000;
+    e_prm.q[0] = 0.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
+    e_prm.q[1] = 0.3; e_prm.theta[1].x = 0.2000; e_prm.theta[1].y = 0.2000;
+    e_prm.q[2] = 0.5; e_prm.theta[2].x = 0.8000; e_prm.theta[2].y = 0.8000;
+    //e_prm.q[3] = 5.8; e_prm.theta[3].x = 0.3000; e_prm.theta[3].y = 0.7000;
+    //e_prm.q[4] = 2.4; e_prm.theta[4].x = 0.8000; e_prm.theta[4].y = 0.3000;
 
     e_prm.No = 2;
     e_prm.Nc = 2;

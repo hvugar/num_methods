@@ -121,12 +121,13 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     r1m.setFunction(f1);
     r1m.setCallback(new R1MinimizeCallback);
     //r1m.straightLineSearch(-0.7, 0.01, a, b, fxa, fxb);
-    r1m.swann(-0.7, 0.01, a, b, fxa, fxb);
+    bool unimodal;
+    r1m.swann(-0.7, 0.01, a, b, fxa, fxb, unimodal);
     puts("---");
     //r1m.halphIntervalMethod(x, a, b, 0.0001);
     r1m.goldenSectionSearch(x, a, b, 0.0001);
     printf("n %4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", -1, a, x, b, r1m.function()->fx(a), r1m.function()->fx(x), r1m.function()->fx(b));
-    return 0;
+    //return 0;
 
 
 //    DoubleVector a(11, -0.5); a[0] = 0.0;
