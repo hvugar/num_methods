@@ -25,8 +25,9 @@ public:
     virtual ~ConjugateGradient();
 
     virtual void calculate(DoubleVector &x);
-    R1FxMinimizer &r1Minimizer();
-    const R1FxMinimizer& r1Minimizer() const;
+
+    R1FxMinimizer &R1Minimizer();
+    const R1FxMinimizer& R1Minimizer() const;
 
     void setAlgorithm(Algorithm algorithm);
     void setResetIteration(bool reset);

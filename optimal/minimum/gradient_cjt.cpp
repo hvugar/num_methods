@@ -187,8 +187,8 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
 
     double fxa, fxb;
     bool unimodal;
-    r1m.straightLineSearch(alpha0, min_step, a, b, fxa, fxb, unimodal);
-    //r1m.swann(alpha0, min_step, a, b, fxa, fxb, unimodal);
+    //r1m.straightLineSearch(alpha0, min_step, a, b, fxa, fxb, unimodal);
+    r1m.swann(alpha0, min_step, a, b, fxa, fxb, unimodal);
     if (unimodal)
     {
         r1m.goldenSectionSearch(alpha, a, b, min_epsilon);
@@ -228,12 +228,12 @@ void ConjugateGradient::setResetIteration(bool reset)
     mResetIteration = reset;
 }
 
-R1FxMinimizer &ConjugateGradient::r1Minimizer()
+R1FxMinimizer &ConjugateGradient::R1Minimizer()
 {
     return r1m;
 }
 
-const R1FxMinimizer& ConjugateGradient::r1Minimizer() const
+const R1FxMinimizer& ConjugateGradient::R1Minimizer() const
 {
     return r1m;
 }

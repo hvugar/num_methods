@@ -4,6 +4,29 @@
 #include "common.h"
 #include "../imaging/imaging.h"
 
+struct Problem2HNDirichletR1MinimizeCallback : public R1FxMinimizer::Callback
+{
+    virtual void straightLineSearchCallback(unsigned int i, double x, double a, double b, double fxa, double fxb, unsigned int fx_count) const
+    {
+        printf("l %4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f %4d\n", i, a, x, b, fxa, function()->fx(x), fxb, fx_count);
+    }
+
+    virtual void swannCallback(unsigned int i, double x, double a, double b, double fxa, double fxb, unsigned int fx_count) const
+    {
+        straightLineSearchCallback(i, x, a, b, fxa, fxb, fx_count);
+    }
+
+    virtual void goldenSectionSearchCallback(unsigned int i, double x, double a, double b, double fxx, double fxa, double fxb, unsigned int fx_count) const
+    {
+        printf("g %4d %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f %4d\n", i, a, x, b, fxa, fxx, fxb, fx_count);
+    }
+
+    virtual void halphIntervalMethodCallback(unsigned int i, double x, double a, double b, double fxx, double fxa, double fxb, unsigned int fx_count) const
+    {
+        goldenSectionSearchCallback(i, x, a, b, fxx, fxa, fxb, fx_count);
+    }
+};
+
 class PROBLEM2HSHARED_EXPORT Problem2HNDirichlet : public RnFunction, public IGradient, public InitialBoundaryValueProblemPDE, public IProjection, public IPrinter
 {
 public:

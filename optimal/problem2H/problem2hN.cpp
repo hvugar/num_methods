@@ -449,15 +449,15 @@ void Problem2HNDirichlet::example1()
     e_prm.a = 1.0;
     e_prm.lambda = 0.01;
 
-    e_prm.Ns = 3;
+    e_prm.Ns = 5;
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = 0.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
-    e_prm.q[1] = 0.3; e_prm.theta[1].x = 0.2000; e_prm.theta[1].y = 0.2000;
-    e_prm.q[2] = 0.5; e_prm.theta[2].x = 0.8000; e_prm.theta[2].y = 0.8000;
-    //e_prm.q[3] = 5.8; e_prm.theta[3].x = 0.3000; e_prm.theta[3].y = 0.7000;
-    //e_prm.q[4] = 2.4; e_prm.theta[4].x = 0.8000; e_prm.theta[4].y = 0.3000;
+    e_prm.q[0] = 4.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
+    e_prm.q[1] = 3.3; e_prm.theta[1].x = 0.2000; e_prm.theta[1].y = 0.2000;
+    e_prm.q[2] = 3.5; e_prm.theta[2].x = 0.8000; e_prm.theta[2].y = 0.8000;
+    e_prm.q[3] = 5.8; e_prm.theta[3].x = 0.3000; e_prm.theta[3].y = 0.7000;
+    e_prm.q[4] = 2.4; e_prm.theta[4].x = 0.8000; e_prm.theta[4].y = 0.3000;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -545,6 +545,7 @@ void Problem2HNDirichlet::example1()
         }
 
         ConjugateGradient g;
+        g.R1Minimizer().setCallback(new Problem2HNDirichletR1MinimizeCallback);
         g.setFunction(&prob);
         g.setGradient(&prob);
         g.setPrinter(&prob);
@@ -1221,7 +1222,12 @@ void Problem2HNDirichlet::project(DoubleVector &pv, unsigned int index)
     }
 }
 
-//forward -------------------------------------
+/**
+ * @brief Problem2HNDirichlet::solveForwardIBVP
+ * @param u
+ * @param u_info
+ * @param use
+ */
 void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const
 {
     //puts("-void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const");
@@ -1834,10 +1840,9 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     u10.clear();
     u15.clear();
     u20.clear();
-    //puts("+void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const");
 }
 
-double Problem2HNDirichlet::f_initial1(const SpaceNodePDE &sn) const
+double Problem2HNDirichlet::f_initial1(const SpaceNodePDE &sn UNUSED_PARAM) const
 {
     return 0.0;
 }
@@ -1847,7 +1852,7 @@ double Problem2HNDirichlet::f_initial2(const SpaceNodePDE &) const
     return 0.0;
 }
 
-double Problem2HNDirichlet::f_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType) const
+double Problem2HNDirichlet::f_boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM, BoundaryType) const
 {
     return 0.0;
 }

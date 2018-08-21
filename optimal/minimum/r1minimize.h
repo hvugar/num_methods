@@ -18,14 +18,19 @@ double MINIMUMSHARED_EXPORT goldenSectionSearch2(double &a, double &b, double &x
 class MINIMUMSHARED_EXPORT R1FxMinimizer
 {
 public:
-    struct Callback
+    struct MINIMUMSHARED_EXPORT Callback
     {
         friend class R1FxMinimizer;
+        R1Function* function() const;
 
         virtual void straightLineSearchCallback(unsigned int iteration, double x, double a, double b, double fxa, double fxb, unsigned int fx_count) const;
-        virtual void goldenSectionSearchCallback(unsigned int iteration, double x, double a, double b, double fxx, double fxa, double fxb, unsigned int fx_count) const;
+        virtual void swannCallback(unsigned int iteration, double x, double a, double b, double fxa, double fxb, unsigned int fx_count) const;
 
-        R1Function* function() const;
+        virtual void goldenSectionSearchCallback(unsigned int iteration, double x, double a, double b, double fxx, double fxa, double fxb, unsigned int fx_count) const;
+        virtual void halphIntervalMethodCallback(unsigned int iteration, double x, double a, double b, double fxx, double fxa, double fxb, unsigned int fx_count) const;
+        virtual void dichotomyCallback(unsigned int iteration, double x, double a, double b, double fxx, double fxa, double fxb, unsigned int fx_count) const;
+        virtual void uniformLineSearchCallback(unsigned int iteration, double x, double a, double b, double fxx, double fxa, double fxb, unsigned int fx_count) const;
+        virtual void fibonachiMethodCallback(unsigned int iteration, double x, double a, double b, double fxx, double fxa, double fxb, unsigned int fx_count) const;
 
     private:
         R1Function* mfunction;

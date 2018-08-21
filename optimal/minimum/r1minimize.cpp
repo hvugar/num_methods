@@ -171,7 +171,7 @@ void R1FxMinimizer::swann(double x, double step, double &a, double &b, double &f
     fxb = mfunction->fx(b);        fx_count++;
     double fxx = mfunction->fx(x); fx_count++;
 
-    if (mcallback) mcallback->straightLineSearchCallback(iteration, x, a, b, fxa, fxb, fx_count);
+    if (mcallback) mcallback->swannCallback(iteration, x, a, b, fxa, fxb, fx_count);
 
     // if fxa and fxb are both greater than fxx, then minimum point is inside a and b
     // начальный интервал неопределенности найден
@@ -184,21 +184,21 @@ void R1FxMinimizer::swann(double x, double step, double &a, double &b, double &f
         // if fxa equals fxb
         if (fabs(fxa - fxb) <= DBL_EPSILON)
         {
-            if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
+            if (mcallback) mcallback->swannCallback(++iteration, x, a, b, fxa, fxb, fx_count);
         }
         else if (fxa < fxb)
         {
             b = x;
             fxb = mfunction->fx(b); fx_count++;
 
-            if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
+            if (mcallback) mcallback->swannCallback(++iteration, x, a, b, fxa, fxb, fx_count);
         }
         else if (fxa > fxb)
         {
             a = x;
             fxa = mfunction->fx(a); fx_count++;
 
-            if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
+            if (mcallback) mcallback->swannCallback(++iteration, x, a, b, fxa, fxb, fx_count);
         }
         //fprintf(stderr, "%f %f %f %f %f %f\n", fxa, fxx, fxb, x - fstep, x, x + fstep);
         fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", -2, a, x, b, fxa, fxx, fxb);
@@ -222,7 +222,7 @@ void R1FxMinimizer::swann(double x, double step, double &a, double &b, double &f
             fxx = fxb;
             fxb = mfunction->fx(b); fx_count++;
 
-            if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
+            if (mcallback) mcallback->swannCallback(++iteration, x, a, b, fxa, fxb, fx_count);
         }
         return;
     }
@@ -243,7 +243,7 @@ void R1FxMinimizer::swann(double x, double step, double &a, double &b, double &f
             fxx = fxa;
             fxa = mfunction->fx(a); fx_count++;
 
-            if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
+            if (mcallback) mcallback->swannCallback(++iteration, x, a, b, fxa, fxb, fx_count);
         }
         return;
     }
@@ -326,8 +326,8 @@ void R1FxMinimizer::goldenSectionSearch(double &x, double &a, double &b, double 
             check_x1 = true; // x1 novbeti iterasiyada axtarilacaq
         }
 
-        iteration++;
         x = (b+a)/2.0;
+        iteration++;
         if (mcallback) mcallback->goldenSectionSearchCallback(iteration, x, a, b, NAN, NAN, NAN, fx__count);
     }
 
@@ -375,7 +375,7 @@ void R1FxMinimizer::halphIntervalMethod(double &x, double &a, double &b, double 
     x = (a+b)/2.0;
     double f_xm = mfunction->fx(x); fx__count++;
 
-    if (mcallback) mcallback->goldenSectionSearchCallback(iteration, x, a, b, NAN, NAN, NAN, fx__count);
+    if (mcallback) mcallback->halphIntervalMethodCallback(iteration, x, a, b, NAN, NAN, NAN, fx__count);
 
     while ( l > epsilon )
     {
@@ -405,9 +405,9 @@ void R1FxMinimizer::halphIntervalMethod(double &x, double &a, double &b, double 
         }
         l = fabs(b - a);
 
-        iteration++;
         x = (b+a)/2.0;
-        if (mcallback) mcallback->goldenSectionSearchCallback(iteration, x, a, b, NAN, NAN, NAN, fx__count);
+        iteration++;
+        if (mcallback) mcallback->halphIntervalMethodCallback(iteration, x, a, b, NAN, NAN, NAN, fx__count);
     }
 
     //x = (b + a) /  2.0;
@@ -448,7 +448,7 @@ void R1FxMinimizer::dichotomyMethod(double &x, double &a, double &b, double epsi
         throw std::invalid_argument(msg);
     }
 
-    if (mcallback) mcallback->goldenSectionSearchCallback(iteration, x, a, b, NAN, NAN, NAN, fx__count);
+    if (mcallback) mcallback->dichotomyCallback(iteration, x, a, b, NAN, NAN, NAN, fx__count);
 
     while ( fabs(b - a) > epsilon )
     {
@@ -468,7 +468,8 @@ void R1FxMinimizer::dichotomyMethod(double &x, double &a, double &b, double epsi
         }
 
         x = (a + b)/2.0;
-        if (mcallback) mcallback->goldenSectionSearchCallback(++iteration, x, a, b, NAN, NAN, NAN, fx__count);
+        iteration++;
+        if (mcallback) mcallback->dichotomyCallback(iteration, x, a, b, NAN, NAN, NAN, fx__count);
     }
 }
 
@@ -596,15 +597,6 @@ void R1FxMinimizer::setFunction(R1Function *function)
     this->mfunction = function;
 }
 
-/**
- * @brief R1Minimize::Callback::straightLineSearchCallback
- * @param iteration
- * @param x
- * @param a
- * @param b
- * @param fxa
- * @param fxb
- */
 void R1FxMinimizer::Callback::straightLineSearchCallback(unsigned int iteration, double x, double a, double b, double fxa, double fxb, unsigned int fx_count) const
 {
     C_UNUSED(iteration);
@@ -616,18 +608,66 @@ void R1FxMinimizer::Callback::straightLineSearchCallback(unsigned int iteration,
     C_UNUSED(fx_count);
 }
 
-/**
- * @brief R1Minimize::Callback::goldenSectionSearchCallback
- * @param iteration
- * @param x
- * @param a
- * @param b
- * @param fxx
- * @param fxa
- * @param fxb
- * @param fx_count
- */
+void R1FxMinimizer::Callback::swannCallback(unsigned int iteration, double x, double a, double b, double fxa, double fxb, unsigned int fx_count) const
+{
+    C_UNUSED(iteration);
+    C_UNUSED(x);
+    C_UNUSED(a);
+    C_UNUSED(b);
+    C_UNUSED(fxa);
+    C_UNUSED(fxb);
+    C_UNUSED(fx_count);
+}
+
 void R1FxMinimizer::Callback::goldenSectionSearchCallback(unsigned int iteration, double x, double a, double b, double fxx, double fxa, double fxb, unsigned int fx_count) const
+{
+    C_UNUSED(iteration);
+    C_UNUSED(x);
+    C_UNUSED(a);
+    C_UNUSED(b);
+    C_UNUSED(fxx);
+    C_UNUSED(fxa);
+    C_UNUSED(fxb);
+    C_UNUSED(fx_count);
+}
+
+void R1FxMinimizer::Callback::halphIntervalMethodCallback(unsigned int iteration, double x, double a, double b, double fxx, double fxa, double fxb, unsigned int fx_count) const
+{
+    C_UNUSED(iteration);
+    C_UNUSED(x);
+    C_UNUSED(a);
+    C_UNUSED(b);
+    C_UNUSED(fxx);
+    C_UNUSED(fxa);
+    C_UNUSED(fxb);
+    C_UNUSED(fx_count);
+}
+
+void R1FxMinimizer::Callback::dichotomyCallback(unsigned int iteration, double x, double a, double b, double fxx, double fxa, double fxb, unsigned int fx_count) const
+{
+    C_UNUSED(iteration);
+    C_UNUSED(x);
+    C_UNUSED(a);
+    C_UNUSED(b);
+    C_UNUSED(fxx);
+    C_UNUSED(fxa);
+    C_UNUSED(fxb);
+    C_UNUSED(fx_count);
+}
+
+void R1FxMinimizer::Callback::uniformLineSearchCallback(unsigned int iteration, double x, double a, double b, double fxx, double fxa, double fxb, unsigned int fx_count) const
+{
+    C_UNUSED(iteration);
+    C_UNUSED(x);
+    C_UNUSED(a);
+    C_UNUSED(b);
+    C_UNUSED(fxx);
+    C_UNUSED(fxa);
+    C_UNUSED(fxb);
+    C_UNUSED(fx_count);
+}
+
+void R1FxMinimizer::Callback::fibonachiMethodCallback(unsigned int iteration, double x, double a, double b, double fxx, double fxa, double fxb, unsigned int fx_count) const
 {
     C_UNUSED(iteration);
     C_UNUSED(x);
