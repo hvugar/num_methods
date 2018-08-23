@@ -191,10 +191,23 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
     r1m.swann(alpha0, min_step, a, b, fxa, fxb, unimodal);
     if (unimodal)
     {
+        printf("%s\n", "unimodal");
         r1m.goldenSectionSearch(alpha, a, b, min_epsilon);
     }
     else
     {
+        //double h = (b-a)/100.0;
+        //for (unsigned int i=0; i<=100; i++)
+        //{
+        //    double x = a + i*h;
+        //    double y = this->fx(x);
+        //    printf("%f %f\n", x, y);
+        //}
+        //double x = -0.3;
+        //double y = this->fx(x);
+        //printf("%f %f\n", x, y);
+        //exit(-1);
+
         fxa < fxb ? alpha = a : alpha = b;
     }
     if (fx(alpha) > fx(alpha0)) alpha = alpha0;
@@ -208,6 +221,7 @@ double ConjugateGradient::fx(double alpha) const
     const DoubleVector &s = *ms;
     unsigned int n = x.length();
 
+    printf("--- o: %f %f %f %f c: %f %f %f %f\n", x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
     DoubleVector cx = x;
     for (unsigned int i=0; i<n; i++)
     {
@@ -215,6 +229,7 @@ double ConjugateGradient::fx(double alpha) const
         if (m_projection != NULL) m_projection->project(cx, i);
     }
 
+    printf("--- o: %f %f %f %f c: %f %f %f %f\n", cx[8], cx[9], cx[10], cx[11], cx[12], cx[13], cx[14], cx[15]);
     return m_fn->fx(cx);
 }
 

@@ -124,18 +124,18 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     QGuiApplication app(argc, argv);
 
 
-    R1FxMinimizer r1m;
-    MyFunction *f1 = new MyFunction();
-    double a,b,fxa,fxb,x;
-    bool unimodal;
-    r1m.setFunction(f1);
-    r1m.setCallback(new R1MinimizeCallback);
+    //R1FxMinimizer r1m;
+    //MyFunction *f1 = new MyFunction();
+    //double a,b,fxa,fxb,x;
+    //bool unimodal;
+    //r1m.setFunction(f1);
+    //r1m.setCallback(new R1MinimizeCallback);
     //r1m.straightLineSearch(-0.7, 0.01, a, b, fxa, fxb, unimodal);
-    r1m.swann(-0.7, 0.01, a, b, fxa, fxb, unimodal);
-    puts("---");
+    //r1m.swann(-0.7, 0.01, a, b, fxa, fxb, unimodal);
+    //puts("---");
     //r1m.halphIntervalMethod(x, a, b, 0.0001);
-    r1m.goldenSectionSearch(x, a, b, 0.0001);
-    printf("n %4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", -1, a, x, b, r1m.function()->fx(a), r1m.function()->fx(x), r1m.function()->fx(b));
+    //r1m.goldenSectionSearch(x, a, b, 0.0001);
+    //printf("n %4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", -1, a, x, b, r1m.function()->fx(a), r1m.function()->fx(x), r1m.function()->fx(b));
     //return 0;
 
 
