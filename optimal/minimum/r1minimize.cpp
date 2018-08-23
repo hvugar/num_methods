@@ -180,16 +180,16 @@ void R1FxMinimizer::swann(double x, double step, double &a, double &b, double &f
     if (fxa >= fxx && fxb >= fxx)
     {
         unimodal = true;
-        if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
+        if (mcallback) mcallback->swannCallback(++iteration, x, a, b, fxa, fxb, fx_count);
         return;
     }
 
     if (fxa < fxx && fxx > fxb)
     {
         unimodal = false;
-        if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
-//        fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", -2, a, x, b, fxa, fxx, fxb);
-        fprintf(stderr, "e %4d a:%10.6f x:%10.6f b:%10.6f fxa:%10.6f fxx:%10.6f fxb:%10.6f fx_c:nt%4d\n", -2, a, x, b, fxa, fxx, fxb, fx_count);
+        if (mcallback) mcallback->swannCallback(++iteration, x, a, b, fxa, fxb, fx_count);
+        //fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", -2, a, x, b, fxa, fxx, fxb);
+        //fprintf(stderr, "e %4d a:%10.6f x:%10.6f b:%10.6f fxa:%10.6f fxx:%10.6f fxb:%10.6f fx_c:nt%4d\n", -2, a, x, b, fxa, fxx, fxb, fx_count);
         fputs("Function is not unimodal\n", stderr);
         return;
     }

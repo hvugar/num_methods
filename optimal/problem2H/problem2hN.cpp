@@ -26,11 +26,11 @@ void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     eprm.q.resize(eprm.Ns);
     eprm.theta.resize(eprm.Ns);
 
-    eprm.q[0] = 2.0; eprm.theta[0].x = 0.5000; eprm.theta[0].y = 0.5000;
-    eprm.q[1] = 2.0; eprm.theta[1].x = 0.2000; eprm.theta[1].y = 0.2000;
-    eprm.q[2] = 2.0; eprm.theta[2].x = 0.8000; eprm.theta[2].y = 0.8000;
-    eprm.q[3] = 2.0; eprm.theta[3].x = 0.2000; eprm.theta[3].y = 0.8000;
-    eprm.q[4] = 2.0; eprm.theta[4].x = 0.8000; eprm.theta[4].y = 0.2000;
+    eprm.q[0] = 5.0; eprm.theta[0].x = 0.5000; eprm.theta[0].y = 0.5000;
+    eprm.q[1] = 5.0; eprm.theta[1].x = 0.2000; eprm.theta[1].y = 0.2000;
+    eprm.q[2] = 5.0; eprm.theta[2].x = 0.8000; eprm.theta[2].y = 0.8000;
+    eprm.q[3] = 5.0; eprm.theta[3].x = 0.2000; eprm.theta[3].y = 0.8000;
+    eprm.q[4] = 5.0; eprm.theta[4].x = 0.8000; eprm.theta[4].y = 0.2000;
 
     eprm.No = 0;
     eprm.Nc = 0;
@@ -453,11 +453,11 @@ void Problem2HNDirichlet::example1()
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = 1.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
-    e_prm.q[1] = 1.3; e_prm.theta[1].x = 0.2000; e_prm.theta[1].y = 0.2000;
-    e_prm.q[2] = 1.5; e_prm.theta[2].x = 0.8000; e_prm.theta[2].y = 0.8000;
-    e_prm.q[3] = 1.8; e_prm.theta[3].x = 0.3000; e_prm.theta[3].y = 0.7000;
-    e_prm.q[4] = 1.4; e_prm.theta[4].x = 0.8000; e_prm.theta[4].y = 0.3000;
+    e_prm.q[0] = 10.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
+    e_prm.q[1] = 14.3; e_prm.theta[1].x = 0.2000; e_prm.theta[1].y = 0.2000;
+    e_prm.q[2] = 12.5; e_prm.theta[2].x = 0.8000; e_prm.theta[2].y = 0.8000;
+    e_prm.q[3] = 10.8; e_prm.theta[3].x = 0.3000; e_prm.theta[3].y = 0.7000;
+    e_prm.q[4] = 11.4; e_prm.theta[4].x = 0.8000; e_prm.theta[4].y = 0.3000;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -474,12 +474,17 @@ void Problem2HNDirichlet::example1()
     //o_prm.xi[0].x  = +0.3000; o_prm.xi[0].y  = +0.8000; o_prm.xi[1].x  = +0.6000; o_prm.xi[1].y  = +0.4000;
     //o_prm.eta[0].x = +0.5000; o_prm.eta[0].y = +0.7000; o_prm.eta[1].x = +0.7000; o_prm.eta[1].y = +0.3000;
 
-    o_prm.k[0][0]  = +2.1200; o_prm.k[0][1]  = +3.2400; o_prm.k[1][0]  = +2.4500; o_prm.k[1][1]  = +2.1800;
+    //o_prm.k[0][0]  = +1.0000; o_prm.k[0][1]  = +1.0000; o_prm.k[1][0]  = +1.0000; o_prm.k[1][1]  = +1.0000;
+    //o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = +0.7000; o_prm.z[1][0]  = +0.4000; o_prm.z[1][1]  = +8.0000;
+    o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
     o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = -0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
     //o_prm.xi[0].x  = +0.3000; o_prm.xi[0].y  = +0.8000; o_prm.xi[1].x  = +0.6000; o_prm.xi[1].y  = +0.4000;
-    o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
     //o_prm.eta[0].x = +0.5000; o_prm.eta[0].y = +0.7000; o_prm.eta[1].x = +0.7000; o_prm.eta[1].y = +0.3000;
-    o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5174; o_prm.eta[1].y = +0.4751;
+    o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
+    o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
+
+    //o_prm.xi[0].x  = +0.4074; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.2851;
+    //o_prm.eta[0].x = +0.5000; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5000; o_prm.eta[1].y = +0.4751;
 
     // Regulirization parameters ---------------------------------------------------------------------
     OptimizeParameter r_prm;
@@ -489,7 +494,7 @@ void Problem2HNDirichlet::example1()
     r_prm.eta.resize(e_prm.Nc);
 
     // r = 0.01
-    r_prm.k[0][0]  = -0.1433; r_prm.k[0][1]  = +0.2481; r_prm.k[1][0]  = +1.0715; r_prm.k[1][1]  = -0.7702;
+    r_prm.k[0][0]  = +0.1433; r_prm.k[0][1]  = +0.2481; r_prm.k[1][0]  = +1.0715; r_prm.k[1][1]  = +0.7702;
     r_prm.z[0][0]  = +1.1141; r_prm.z[0][1]  = -1.7490; r_prm.z[1][0]  = +0.6137; r_prm.z[1][1]  = +0.7212;
     r_prm.xi[0].x  = +0.1137; r_prm.xi[0].y  = +0.8865; r_prm.xi[1].x  = +0.0502; r_prm.xi[1].y  = +0.9498;
     r_prm.eta[0].x = +0.9420; r_prm.eta[0].y = +0.7940; r_prm.eta[1].x = +0.9472; r_prm.eta[1].y = +0.0528;
@@ -503,8 +508,8 @@ void Problem2HNDirichlet::example1()
     //r_prm = o_prm;
     // Regulirization parameters ---------------------------------------------------------------------
 
-    DoubleVector r; r << 0.0000 << 0.1000 << 1.0000 << 2.0000 << 5.0000 << 10.0000 << 100.00;
-    DoubleVector e; e << 0.0000 << 0.0000 << 0.0000 << 0.0000 << 0.0000 <<  0.0000 << 0.0000;
+    DoubleVector r; r << 0.0000;// << 2.0000 << 5.0000 << 10.0000 << 100.00;
+    DoubleVector e; e << 0.0000;// << 0.0000 << 0.0000 << 0.0000 << 0.0000 <<  0.0000 << 0.0000;
 
     double hx, hy; hx = hy = 0.01;
     unsigned Nx, Ny; Nx = Ny = 100;
@@ -534,21 +539,21 @@ void Problem2HNDirichlet::example1()
 
         prob.regEpsilon = e[i];
         prob.r = r[i];
-        prob.vmin.resize(e_prm.Nc, -3.0);
-        prob.vmax.resize(e_prm.Nc, +3.0);
+        prob.vmin.resize(e_prm.Nc, -2.0);
+        prob.vmax.resize(e_prm.Nc, +2.0);
         prob.LD = 10;
 
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
 
-            checkGradient(prob);
-            IPrinter::printSeperatorLine();
-            return;
+            //checkGradient(prob);
+            //IPrinter::printSeperatorLine();
+            //return;
         }
 
         ConjugateGradient g;
-        g.R1Minimizer().setCallback(new Problem2HNDirichletR1MinimizeCallback);
+        //g.R1Minimizer().setCallback(new Problem2HNDirichletR1MinimizeCallback);
         g.setFunction(&prob);
         g.setGradient(&prob);
         g.setPrinter(&prob);
@@ -790,7 +795,6 @@ double Problem2HNDirichlet::integral(const std::vector<DoubleMatrix> &us) const
     const unsigned int LLD = L + LD;
 
     double sum = 0.0;
-    //printf("--- %d %d %d %d\n", L, LD, LLD, us.size());
 
     for (unsigned int l=L; l<=LLD; l++)
     {
@@ -833,6 +837,7 @@ double Problem2HNDirichlet::integral(const std::vector<DoubleMatrix> &us) const
     }
 
     return sum*ht;
+
 }
 
 double Problem2HNDirichlet::norm(const EquationParameter& e_prm, const OptimizeParameter &o_prm, const OptimizeParameter &o_prm0) const
@@ -1110,45 +1115,17 @@ void Problem2HNDirichlet::print(unsigned int i UNUSED_PARAM, const DoubleVector 
     spif_vector u_info;
     solveForwardIBVP(u, u_info, true);
 
-    if (result == GradientMethod::BREAK_FIRST_ITERATION)
-    {
-        IPrinter::printSeperatorLine();
-        printf("I[%3d]: I1:%8.6f P:%8.6f F:%8.6f R:%.2f e:%.3f %s\n", i, integral(u), penalty(u_info, o_prm), f, r, regEpsilon, "BREAK_FIRST_ITERATION");
-        printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
-        printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
-    }
+    const char* msg = NULL;
+    if (result == GradientMethod::BREAK_FIRST_ITERATION)    msg = "BREAK_FIRST_ITERATION";
+    if (result == GradientMethod::FIRST_ITERATION)          msg = "FIRST_ITERATION";
+    if (result == GradientMethod::BREAK_GRADIENT_NORM_LESS) msg = "BREAK_GRADIENT_NORM_LESS";
+    if (result == GradientMethod::BREAK_DISTANCE_LESS)      msg = "BREAK_DISTANCE_LESS";
+    if (result == GradientMethod::NEXT_ITERATION)           msg = "NEXT_ITERATION";
 
-    if (result == GradientMethod::FIRST_ITERATION)
-    {
-        IPrinter::printSeperatorLine();
-        printf("I[%3d]: I1:%8.6f P:%8.6f F:%8.6f R:%.2f e:%.3f %s\n", i, integral(u), penalty(u_info, o_prm), f, r, regEpsilon, "FIRST_ITERATION");
-        printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
-        printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
-    }
-
-    if (result == GradientMethod::BREAK_GRADIENT_NORM_LESS)
-    {
-        IPrinter::printSeperatorLine();
-        printf("I[%3d]: I1:%8.6f P:%8.6f F:%8.6f R:%.2f e:%.3f %s\n", i, integral(u), penalty(u_info, o_prm), f, r, regEpsilon, "BREAK_GRADIENT_NORM_LESS");
-        printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
-        printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
-    }
-
-    if (result == GradientMethod::BREAK_DISTANCE_LESS)
-    {
-        IPrinter::printSeperatorLine();
-        printf("I[%3d]: I1:%8.6f P:%8.6f F:%8.6f R:%.2f e:%.3f %s\n", i, integral(u), penalty(u_info, o_prm), f, r, regEpsilon, "BREAK_DISTANCE_LESS");
-        printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
-        printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
-    }
-
-    if (result == GradientMethod::NEXT_ITERATION)
-    {
-        IPrinter::printSeperatorLine();
-        printf("I[%3d]: I1:%8.6f P:%8.6f F:%8.6f R:%.2f e:%.3f %s\n", i, integral(u), penalty(u_info, o_prm), f, r, regEpsilon, "NEXT_ITERATION");
-        printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
-        printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
-    }
+    printf("I[%3d]: I1:%8.6f P:%8.6f F:%8.6f R:%.2f e:%.3f %s\n", i, integral(u), penalty(u_info, o_prm), f, r, regEpsilon, msg);
+    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
+    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
+    IPrinter::printSeperatorLine();
 
     u.clear();
     u_info.clear();
@@ -1284,8 +1261,8 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     //----------------------------------------------------------------------------------------------//
     uint_vector rows0, rows1, rows2, cols0, cols1, cols2;
     f_findRowsCols(rows0, rows1, rows2, cols0, cols1, cols2, obsPointNodes, cntDeltaNodes, N, M);
-    for (unsigned int i=0; i<cols1.size(); i++) printf("%d\n", cols1[i]);
-    printf("%d %d %d %d %d %d\n", rows0.size(), rows1.size(), rows2.size(), cols0.size(), cols1.size(), cols2.size());
+    //for (unsigned int i=0; i<cols1.size(); i++) printf("%d\n", cols1[i]);
+    //printf("%d %d %d %d %d %d\n", rows0.size(), rows1.size(), rows2.size(), cols0.size(), cols1.size(), cols2.size());
     //-------------------------------------------- info --------------------------------------------//
     if (use == true) f_prepareInfo(No, mOptParameter.xi, u_info, L+LD, dimX, dimY);
     //----------------------------------------------------------------------------------------------//
@@ -1391,6 +1368,17 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                 U15[opn.id] += u15[opn.j][opn.i] * (opn.w * (hx*hy));
             }
 
+            double *v = new double[Nc];
+            for (unsigned int i=0; i<Nc; i++)
+            {
+                v[i] = 0.0;
+                for (unsigned int j=0; j<No; j++)
+                {
+                    v[i] += mOptParameter.k[i][j] * (U15[j]-mOptParameter.z[i][j]);
+                }
+            }
+            //printf("l %d v: %f %f\n", l, v[0], v[1]);
+
             for (unsigned int row=0; row<rows1.size(); row++)
             {
                 unsigned int m = rows1.at(row);
@@ -1413,10 +1401,11 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                         const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
                         if (cdn.i == sn.i && cdn.j == sn.j)
                         {
-                            for (unsigned int j=0; j<No; j++)
-                            {
-                                dx[n-1] += htht * mOptParameter.k[cdn.id][j] * (U15[j]-mOptParameter.z[cdn.id][j]) * cdn.w;
-                            }
+                            dx[n-1] += htht * v[cdn.id] * cdn.w;
+                            //for (unsigned int j=0; j<No; j++)
+                            //{
+                            //    dx[n-1] += htht * mOptParameter.k[cdn.id][j] * (U15[j]-mOptParameter.z[cdn.id][j]) * cdn.w;
+                            //}
                         }
                     }
                     //------------------------------------- Adding delta part -------------------------------------//
@@ -1441,12 +1430,13 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                 for (unsigned int n=1; n<=N-1; n++) u15[m][n] = rx[n-1];
             }
 
+            delete [] v;
             free(U15);
         }
 
         if (rows1.size() != 0 && rows2.size() != 0)
         {
-            throw std::exception();
+            //throw std::exception();
 
             unsigned int row1_size = rows1.size()*(N-1);
             double* a1 = (double*) malloc(sizeof(double)*row1_size);
@@ -1612,6 +1602,16 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
             }
             //printf("%d %d U: %f %f %d\n", obsPointNodes.size(), cntDeltaNodes.size(), U20[0], U20[1], cols1.size());
 
+            double *v = new double[Nc];
+            for (unsigned int i=0; i<Nc; i++)
+            {
+                v[i] = 0.0;
+                for (unsigned int j=0; j<No; j++)
+                {
+                    v[i] += mOptParameter.k[i][j] * (U20[j]-mOptParameter.z[i][j]);
+                }
+            }
+
             for (unsigned int col=0; col<cols1.size(); col++)
             {
                 unsigned int n = cols1.at(col);
@@ -1634,11 +1634,12 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                         const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cni);
                         if (cdn.i == sn.i && cdn.j == sn.j)
                         {
-                            for (unsigned int j=0; j<No; j++)
-                            {
-                                if (cols1[col]==48 && l==3) printf("%d %d %f %d %d\n", cdn.id, j, cdn.w, cdn.i, cdn.j);
-                                dy[m-1] += htht * mOptParameter.k[cdn.id][j] * (U20[j]-mOptParameter.z[cdn.id][j]) * cdn.w;
-                            }
+                            dy[m-1] += htht * v[cdn.id] * cdn.w;
+                            //for (unsigned int j=0; j<No; j++)
+                            //{
+                            //    if (cols1[col]==48 && l==3) printf("%d %d %f %d %d\n", cdn.id, j, cdn.w, cdn.i, cdn.j);
+                            //    dy[m-1] += htht * mOptParameter.k[cdn.id][j] * (U20[j]-mOptParameter.z[cdn.id][j]) * cdn.w;
+                            //}
                         }
                     }
                     //------------------------------------- Adding delta part -------------------------------------//
@@ -1663,12 +1664,13 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                 for (unsigned int m=1; m<=M-1; m++) u20[m][n] = ry[m-1];
             }
 
+            delete [] v;
             free(U20);
         }
 
         if (cols1.size() != 0 && cols2.size() != 0)
         {
-            throw std::exception();
+            //throw std::exception();
 
             unsigned int cols1_size = cols1.size()*(M-1);
             double* a2 = (double*) malloc(sizeof(double)*cols1_size);
