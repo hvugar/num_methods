@@ -232,7 +232,9 @@ double ConjugateGradient::fx(double alpha) const
     }
 
     //printf("--- o: %f %f %f %f c: %f %f %f %f\n", cx[8], cx[9], cx[10], cx[11], cx[12], cx[13], cx[14], cx[15]);
-    return m_fn->fx(cx);
+    double f = m_fn->fx(cx);
+    printf("alpha: %12.8f fx: %18.8f\n", alpha, f);
+    return f;
 }
 
 void ConjugateGradient::setAlgorithm(Algorithm algorithm)
