@@ -7,12 +7,12 @@
 
 /**
  * @brief         Метод прямого поиска. Установления границ интервала.
- * @param x       Произвольно выбранная начальная точка
- * @param step    Величина шага
- * @param a       Начальная точка отрезка
- * @param b       Конечнная точка отрезка
- * @param fxa     Величина функции в точке a
- * @param fxb     Величина функции в точке b
+ * @param x       Произвольно выбранная начальная точка.
+ * @param step    Величина шага.
+ * @param a       Начальная точка отрезка.
+ * @param b       Конечнная точка отрезка.
+ * @param fxa     Величина функции в точке a.
+ * @param fxb     Величина функции в точке b.
  */
 void R1FxMinimizer::straightLineSearch(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const
 {
@@ -42,6 +42,10 @@ void R1FxMinimizer::straightLineSearch(double x, double step, double &a, double 
     if (mcallback) mcallback->straightLineSearchCallback(iteration, x, a, b, fxa, fxb, fx_count);
 
     // if fxa and fxb are both greater than fxx, then minimum point is inside a and b
+    /**
+     *
+     *
+     */
     if (fxa >= fxx && fxb >= fxx)
     {
         unimodal = true;
@@ -141,12 +145,12 @@ void R1FxMinimizer::straightLineSearch(double x, double step, double &a, double 
 
 /**
  * @brief          Метод Свенна. Установления границ интервала.
- * @param x        Произвольно выбранная начальная точка
- * @param step     Величина шага
- * @param a        Начальная точка отрезка
- * @param b        Конечнная точка отрезка
- * @param fxa      Величина функции в точке a
- * @param fxb      Величина функции в точке b
+ * @param x        Произвольно выбранная начальная точка.
+ * @param step     Величина шага.
+ * @param a        Начальная точка отрезка.
+ * @param b        Конечнная точка отрезка.
+ * @param fxa      Величина функции в точке a.
+ * @param fxb      Величина функции в точке b.
  */
 void R1FxMinimizer::swann(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const
 {
@@ -277,10 +281,10 @@ void R1FxMinimizer::swann(double x, double step, double &a, double &b, double &f
  *                 сечения на каждой итерации, кроме первой, требуется только одно новое вычисление функции. Условия
  *                 окончания процесса поиска стандартные: поиск заканчивается, когда длина текущего интервала
  *                 неопределенности оказывается меньше установленной величины.
- * @param x        Точка минимума
- * @param a        Начальная точка отрезка
- * @param b        Конечнная точка отрезка
- * @param epsilon  Число эпсилон для останова метода
+ * @param x        Точка минимума.
+ * @param a        Начальная точка отрезка.
+ * @param b        Конечнная точка отрезка.
+ * @param epsilon  Число эпсилон для останова метода.
  */
 void R1FxMinimizer::goldenSectionSearch(double &x, double &a, double &b, double epsilon) const
 {
@@ -369,10 +373,10 @@ void R1FxMinimizer::goldenSectionSearch(double &x, double &a, double &b, double 
  *                 распределенных на текущем интервале (делящих его на четыре равные части). Условия окончания
  *                 процесса поиска стандартные: поиск заканчивается, когда длина текущего интервала неопределенности
  *                 оказывается меньше установленной величины.
- * @param x        Точка минимума
- * @param a        Начальная точка отрезка
- * @param b        Конечнная точка отрезка
- * @param epsilon  Число эпсилон для останова метода
+ * @param x        Точка минимума.
+ * @param a        Начальная точка отрезка.
+ * @param b        Конечнная точка отрезка.
+ * @param epsilon  Число эпсилон для останова метода.
  */
 void R1FxMinimizer::halphIntervalMethod(double &x, double &a, double &b, double epsilon) const
 {
@@ -439,17 +443,17 @@ void R1FxMinimizer::halphIntervalMethod(double &x, double &a, double &b, double 
 }
 
 /**
- * @brief          Метод дихотомии
+ * @brief          Метод дихотомии.
  *                 Метод относится к последовательным стратегиям. Задается начальный интервал неопределенности и
  *                 требуемая точность. Алгоритм опирается на анализ значений функции в двух точках. Для их нахождения
  *                 текущий интервал неопределенности делится пополам и в обе стороны от середины откладывается по — step/2,
  *                 где step - малое положительное число. Условия окончания процесса поиска стандартные: поиск заканчивается,
  *                 когда длина текущего интервала неопределенности оказывается меньше установленной величины.
- * @param x        Точка минимума
- * @param a        Начальная точка отрезка
- * @param b        Конечнная точка отрезка
- * @param epsilon  Число эпсилон для останова метода
- * @param step     Малое число
+ * @param x        Точка минимума.
+ * @param a        Начальная точка отрезка.
+ * @param b        Конечнная точка отрезка.
+ * @param epsilon  Число эпсилон для останова метода.
+ * @param step     Малое число.
  */
 void R1FxMinimizer::dichotomyMethod(double &x, double &a, double &b, double epsilon, double step) const
 {
@@ -501,10 +505,10 @@ void R1FxMinimizer::dichotomyMethod(double &x, double &a, double &b, double epsi
  *                 интервал делится на n + 1 равных интервалов). Путем сравнения величин
  *                 f(xi), i = 1,...,n находится точка xк, в которой значение функции наименьшее.
  *                 Искомая точка минимума х* считается заключенной в интервале [хk-1, хk+1].
- * @param x        Точка минимума
- * @param a        Начальная точка отрезка
- * @param b        Конечнная точка отрезка
- * @param n        Количество вычислений функции
+ * @param x        Точка минимума.
+ * @param a        Начальная точка отрезка.
+ * @param b        Конечнная точка отрезка.
+ * @param n        Количество вычислений функции.
  */
 void R1FxMinimizer::uniformLineSearch(double &x, double &a, double &b, unsigned int n) const
 {
@@ -564,11 +568,11 @@ void R1FxMinimizer::uniformLineSearch(double &x, double &a, double &b, unsigned 
  *                 вычисления функции, а на каждой последующей - только по одному. Условия окончания процесса
  *                 поиска стандартные: поиск заканчивается, когда длина текущего интервала неопределенности
  *                 оказывается меньше установленной величины.
- * @param x        Точка минимума
- * @param a        Начальная точка отрезка
- * @param b        Конечнная точка отрезка
- * @param epsilon  Число эпсилон для останова метода
- * @param step     Малое число
+ * @param x        Точка минимума.
+ * @param a        Начальная точка отрезка.
+ * @param b        Конечнная точка отрезка.
+ * @param epsilon  Число эпсилон для останова метода.
+ * @param step     Малое число.
  */
 void R1FxMinimizer::fibonachiMethod(double &x, double &a, double &b, double epsilon, double step) const
 {

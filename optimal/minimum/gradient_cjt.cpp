@@ -112,6 +112,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
          * One-dimensional minimization along the direction of a anti-gradient
          **************************************************************************************/
         alpha = minimize(x, s);
+        printf("After minimization: %.8f\n", alpha);
 
         /**************************************************************************************
          * Calculation current point.
@@ -178,6 +179,12 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
     C_UNUSED(x);
     C_UNUSED(s);
 
+    for (int i=-100; i<=+100; i++)
+    {
+        double a_lpha = i*0.01;
+        printf("%f %f\n", a_lpha, fx(a_lpha));
+    }
+
     double alpha0 = 0.0;
     double a,b,alpha;
 
@@ -189,6 +196,7 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
     bool unimodal;
     //r1m.straightLineSearch(alpha0, min_step, a, b, fxa, fxb, unimodal);
     r1m.swann(alpha0, min_step, a, b, fxa, fxb, unimodal);
+    puts("---");
     if (unimodal)
     {
         //printf("%s\n", "unimodal");
@@ -233,7 +241,8 @@ double ConjugateGradient::fx(double alpha) const
 
     //printf("--- o: %f %f %f %f c: %f %f %f %f\n", cx[8], cx[9], cx[10], cx[11], cx[12], cx[13], cx[14], cx[15]);
     double f = m_fn->fx(cx);
-    printf("alpha: %12.8f fx: %18.8f\n", alpha, f);
+    //printf("alpha: %12.8f fx: %18.8f\n", alpha, f);
+
     return f;
 }
 

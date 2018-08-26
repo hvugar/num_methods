@@ -36,6 +36,7 @@ public:
 
     static void example1();
     static void example2();
+    static void example3();
 
     static void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, OptimizeParameter &o_prm0);
 
@@ -49,6 +50,7 @@ public:
 protected:
     inline double mu(double x, double y) const;
     double integral(const std::vector<DoubleMatrix> &u) const;
+    double integralU(const DoubleMatrix &u) const;
     double norm(const EquationParameter &eprm, const OptimizeParameter &oprm, const OptimizeParameter &oprm0) const;
 
     double penalty(const spif_vector &info, const OptimizeParameter &o_prm) const;
@@ -69,6 +71,9 @@ private:
     //forward -------------------------------------
     void solveForwardIBVP(std::vector<DoubleMatrix> &u_, spif_vector &u_info, bool use) const;
 
+    void solveForwardIBVP1(std::vector<DoubleMatrix> &u_, spif_vector &u_info, bool use) const;
+    void f_initialLayers1(DoubleMatrix &u00, DoubleMatrix &u10, spif_vector &info, bool use, espn_vector &obsPointNodes, espn_vector &cntDeltaNodes, espn_vector &qPointNodes, unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const;
+
     double f_initial1(const SpaceNodePDE &sn) const;
     double f_initial2(const SpaceNodePDE &sn) const;
     double f_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
@@ -76,6 +81,7 @@ private:
     void f_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2, uint_vector &cols0, uint_vector &cols1, uint_vector &cols2, espn_vector &obsPointNodes, espn_vector &cntDeltaNodes, unsigned int N, unsigned int M) const;
     void f_prepareInfo(unsigned int No, const std::vector<SpacePoint> &points, spif_vector &u_info, unsigned int L, const Dimension &dimX, const Dimension &dimY) const;
     void f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u05, DoubleMatrix &u10, spif_vector &info, bool use, espn_vector &obsPointNodes, espn_vector &cntDeltaNodes, espn_vector &qPointNodes, unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const;
+    void f_borderLayer(DoubleMatrix &u, DoubleMatrix &uh, unsigned int ln) const;
     void f_add2Info(const DoubleMatrix &u, spif_vector &u_info, const espn_vector &obsPointNodes, unsigned int ln, double hx, double hy, int method = 4) const;
     void f_layerInfo(const DoubleMatrix &u, unsigned int ln) const;
     void f_layerInfo(const DoubleMatrix &u, const DoubleMatrix &ut, unsigned int ln) const;
