@@ -20,17 +20,17 @@ protected:
     virtual double f(unsigned int n) const = 0;
 
 public:
-    void calculateX(DoubleVector &x, double h, unsigned int N);
+    void calculateX(DoubleVector &x, double h, unsigned int N) const;
 
-    void calculateN2L2RD(DoubleVector &x, double h, unsigned int N);
-    void calculateN2R2LD(DoubleVector &x, double h, unsigned int N);
+    void calculateN2L2RD(DoubleVector &x, double h, unsigned int N) const;
+    void calculateN2R2LD(DoubleVector &x, double h, unsigned int N) const;
 
-    void calculateN4L2RD(DoubleVector &x, double h, unsigned int N);
-    void calculateN4R2LD(DoubleVector &x, double h, unsigned int N);
-    void calculateN4CNTR(DoubleVector &x, double h, unsigned int N);
+    void calculateN4L2RD(DoubleVector &x, double h, unsigned int N) const;
+    void calculateN4R2LD(DoubleVector &x, double h, unsigned int N) const;
+    void calculateN4CNTR(DoubleVector &x, double h, unsigned int N) const;
 
-    void calculateN6L2RD(DoubleVector &x, double h, unsigned int N);
-    void calculateN6R2LD(DoubleVector &x, double h, unsigned int N);
+    void calculateN6L2RD(DoubleVector &x, double h, unsigned int N) const;
+    void calculateN6R2LD(DoubleVector &x, double h, unsigned int N) const;
 };
 
 #endif // LINEARBOUNDARYVALUEPROBLEMODE_H

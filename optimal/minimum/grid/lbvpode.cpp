@@ -60,7 +60,7 @@ double N6D2[7][7] =
     {+10.0,  -72.0,   +225.0, -400.0, +450.0, -360.0, +147.0}
 };
 
-void LinearBoundaryValueProblemODE::calculateX(DoubleVector &x, double h, unsigned int N)
+void LinearBoundaryValueProblemODE::calculateX(DoubleVector &x, double h, unsigned int N) const
 {
     x.clear();
     x.resize(N+1);
@@ -106,7 +106,7 @@ void LinearBoundaryValueProblemODE::calculateX(DoubleVector &x, double h, unsign
     rx.clear();
 }
 
-void LinearBoundaryValueProblemODE::calculateN2L2RD(DoubleVector &x, double h, unsigned int N)
+void LinearBoundaryValueProblemODE::calculateN2L2RD(DoubleVector &x, double h, unsigned int N) const
 {
     const unsigned int k = 2;
     double m1 = 1.0/(2.0*h);
@@ -199,7 +199,7 @@ void LinearBoundaryValueProblemODE::calculateN2L2RD(DoubleVector &x, double h, u
     A.clear();
 }
 
-void LinearBoundaryValueProblemODE::calculateN2R2LD(DoubleVector &x, double h, unsigned int N)
+void LinearBoundaryValueProblemODE::calculateN2R2LD(DoubleVector &x, double h, unsigned int N) const
 {
     const unsigned int k = 2;
     double m1 = 1.0/(2.0*h);
@@ -293,7 +293,7 @@ void LinearBoundaryValueProblemODE::calculateN2R2LD(DoubleVector &x, double h, u
     A.clear();
 }
 
-void LinearBoundaryValueProblemODE::calculateN4L2RD(DoubleVector &x, double h, unsigned int N)
+void LinearBoundaryValueProblemODE::calculateN4L2RD(DoubleVector &x, double h, unsigned int N) const
 {
     const unsigned int k = 4;
     double m1 = 1.0/(12.0*h);
@@ -444,7 +444,7 @@ void LinearBoundaryValueProblemODE::calculateN4L2RD(DoubleVector &x, double h, u
     A.clear();
 }
 
-void LinearBoundaryValueProblemODE::calculateN4R2LD(DoubleVector &x, double h, unsigned int N)
+void LinearBoundaryValueProblemODE::calculateN4R2LD(DoubleVector &x, double h, unsigned int N) const
 {
     const unsigned int k = 4;
     double m1 = 1.0/(12.0*h);
@@ -585,7 +585,7 @@ void LinearBoundaryValueProblemODE::calculateN4R2LD(DoubleVector &x, double h, u
     A.clear();
 }
 
-void LinearBoundaryValueProblemODE::calculateN4CNTR(DoubleVector &x, double h, unsigned int N)
+void LinearBoundaryValueProblemODE::calculateN4CNTR(DoubleVector &x, double h, unsigned int N) const
 {
     const unsigned int k = 4;
     double m1 = 1.0/(12.0*h);
@@ -775,7 +775,7 @@ void LinearBoundaryValueProblemODE::calculateN4CNTR(DoubleVector &x, double h, u
     A.clear();
 }
 
-void LinearBoundaryValueProblemODE::calculateN6L2RD(DoubleVector &x, double h, unsigned int N)
+void LinearBoundaryValueProblemODE::calculateN6L2RD(DoubleVector &x, double h, unsigned int N) const
 {
     const unsigned int k = 6;
     double m1 = 1.0/(60.0*h);
@@ -976,7 +976,7 @@ void LinearBoundaryValueProblemODE::calculateN6L2RD(DoubleVector &x, double h, u
     A.clear();
 }
 
-void LinearBoundaryValueProblemODE::calculateN6R2LD(DoubleVector &x, double h, unsigned int N)
+void LinearBoundaryValueProblemODE::calculateN6R2LD(DoubleVector &x, double h, unsigned int N) const
 {
     const unsigned int k = 6;
     double m1 = 1.0/(60.0*h);

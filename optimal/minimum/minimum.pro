@@ -85,6 +85,7 @@ HEADERS += global.h \
     matrix2d.h \
     vector2d.h \
     matrix3d.h \
+    cmethods.h \
     grid/bvp.h \
     grid/ibvp.h \
     grid/lbvpode.h \

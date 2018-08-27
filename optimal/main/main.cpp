@@ -68,7 +68,9 @@
 #include "heatequationibvp1.h"
 
 #include <QtGui>
-#include <../minimum/r1minimize.h>
+#include <r1minimize.h>
+
+#include "templatea.h"
 
 struct R1MinimizeCallback : public R1FxMinimizer::Callback
 {
@@ -122,6 +124,9 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 
     QGuiApplication app(argc, argv);
+
+    TemplateA::Main(argc, argv);
+    return 0;
 
 
     //R1FxMinimizer r1m;
