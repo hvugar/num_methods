@@ -67,12 +67,11 @@ public:
     virtual void project(DoubleVector &x, unsigned int index);
 
 private:
+    void solveForwardIBVP1(std::vector<DoubleMatrix> &u_, spif_vector &u_info, bool use) const;
+    void f_initialLayers1(DoubleMatrix &u00, DoubleMatrix &u10, spif_vector &info, bool use, espn_vector &obsPointNodes, espn_vector &cntDeltaNodes, espn_vector &qPointNodes, unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const;
 
     //forward -------------------------------------
     void solveForwardIBVP(std::vector<DoubleMatrix> &u_, spif_vector &u_info, bool use) const;
-
-    void solveForwardIBVP1(std::vector<DoubleMatrix> &u_, spif_vector &u_info, bool use) const;
-    void f_initialLayers1(DoubleMatrix &u00, DoubleMatrix &u10, spif_vector &info, bool use, espn_vector &obsPointNodes, espn_vector &cntDeltaNodes, espn_vector &qPointNodes, unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const;
 
     double f_initial1(const SpaceNodePDE &sn) const;
     double f_initial2(const SpaceNodePDE &sn) const;

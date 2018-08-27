@@ -9,6 +9,7 @@
 class MINIMUMSHARED_EXPORT LinearODE2ndOrder : virtual public LinearODE
 {
 public:
+
     /**
      * @brief solveBoundaryValueProblem
      * @param left  Boundary condition on left side

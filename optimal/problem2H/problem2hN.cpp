@@ -684,10 +684,10 @@ void Problem2HNDirichlet::example3()
     Problem2HNDirichlet prob;
     unsigned int Nx = 100;
     unsigned int Ny = 100;
-    unsigned int Nt = 200;
+    unsigned int Nt = 2000;
     double hx = 0.01;
     double hy = 0.01;
-    double ht = 0.005;
+    double ht = 0.0005;
 
     prob.setTimeDimension(Dimension(ht, 0, Nt));
     prob.addSpaceDimension(Dimension(hx, 0, Nx));
@@ -723,7 +723,7 @@ void Problem2HNDirichlet::example3()
     prob.mRegParameter = oprm;
     prob.regEpsilon = 0.0;
     prob.r = 0.0;
-    prob.LD = 10;
+    prob.LD = 5;
 
     prob.optimizeK = true;
     prob.optimizeZ = true;
@@ -2525,14 +2525,16 @@ void Problem2HNDirichlet::f_initialLayers1(DoubleMatrix &u00, DoubleMatrix &u10,
             sn.i = n; sn.x = n*hx;
             u00[m][n] = f_initial1(sn);
 
-            for (unsigned int si=0; si<qPointNodes.size(); si++)
-            {
-                const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
-                if (qNode.i == sn.i && qNode.j == sn.j)
-                {
-                    u00[m][n] += mEquParameter.q[qNode.id] * qNode.w;
-                }
-            }
+//            double Q = 0.0;
+//            for (unsigned int si=0; si<qPointNodes.size(); si++)
+//            {
+//                const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
+//                if (qNode.i == sn.i && qNode.j == sn.j)
+//                {
+//                    Q += mEquParameter.q[qNode.id] * qNode.w;
+//                }
+//            }
+//            u00[m][n] += Q;
         }
     }
 
@@ -2562,7 +2564,6 @@ void Problem2HNDirichlet::f_initialLayers1(DoubleMatrix &u00, DoubleMatrix &u10,
         {
             sn.i = n; sn.x = n*hx;
 
-
             double Q = 0.0;
             for (unsigned int si=0; si<qPointNodes.size(); si++)
             {
@@ -2576,10 +2577,10 @@ void Problem2HNDirichlet::f_initialLayers1(DoubleMatrix &u00, DoubleMatrix &u10,
             double sum = 0.0;
             sum += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]);
             sum += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]);
-            sum -= lambda*(f_initial2(sn));
-            u10[m][n] = u00[m][n] + (f_initial2(sn))*ht + 0.5*ht*ht*sum;
+            sum -= lambda*f_initial2(sn);
+            u10[m][n] = u00[m][n] + f_initial2(sn)*ht + 0.5*ht*ht*sum;
 
-            u10[m][n] += Q;
+            u10[m][n] += Q*ht;
         }
     }
 
