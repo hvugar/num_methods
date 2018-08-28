@@ -85,6 +85,8 @@ private:
     void f_layerInfo(const DoubleMatrix &u, unsigned int ln) const;
     void f_layerInfo(const DoubleMatrix &u, const DoubleMatrix &ut, unsigned int ln) const;
 
+    void solveBackwardIBVP1(const std::vector<DoubleMatrix> &u, spif_vector &p_info, bool use, const spif_vector &u_info) const;
+
     // backward -----------------------------------
     void solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vector &p_info, bool use, const spif_vector &u_info) const;
     double b_initial1(const SpaceNodePDE &sn) const;
