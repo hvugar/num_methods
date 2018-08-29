@@ -179,11 +179,11 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
     C_UNUSED(x);
     C_UNUSED(s);
 
-    for (int i=-100; i<=+100; i++)
-    {
-        double a_lpha = i*0.01;
-        printf("%f %f\n", a_lpha, fx(a_lpha));
-    }
+//    for (int i=-100; i<=+100; i++)
+//    {
+//        double a_lpha = i*0.01;
+//        printf("%f\n", fx(a_lpha));
+//    }
 
     double alpha0 = 0.0;
     double a,b,alpha;

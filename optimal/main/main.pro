@@ -50,14 +50,16 @@ SOURCES += main.cpp \
     nonlinearequationex1.cpp \
     loadedlinearode1order.cpp \
     heatequationibvp1.cpp \
-    templatea.cpp
+    templatea.cpp \
+    templateb.cpp
 
 HEADERS += \
     ivp/nlode1oex1.h \
     nonlinearequationex1.h \
     loadedlinearode1order.h \
     heatequationibvp1.h \
-    templatea.h
+    templatea.h \
+    templateb.h
 
 OBJECTS_DIR = .obj
 MOC_DIR = .moc

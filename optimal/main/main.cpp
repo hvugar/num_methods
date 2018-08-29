@@ -125,8 +125,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     QGuiApplication app(argc, argv);
 
-    TemplateA::Main(argc, argv);
-    return 0;
+//    TemplateA::Main(argc, argv);
+//    return 0;
 
 
     //R1FxMinimizer r1m;
