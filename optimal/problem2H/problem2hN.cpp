@@ -2,16 +2,16 @@
 
 void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    example1();
+    //example1();
     //example2();
-    //example3();
+    example3();
     return;
 }
 
 void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
-    //double min = u.min();
-    //double max = u.max();
+    double min = u.min();
+    double max = u.max();
     //    if (MIN>min) MIN = min;
     //    if (MAX<max) MAX = max;
 
@@ -24,10 +24,10 @@ void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsign
     //        }
     //    }
 
-    //QPixmap pic;
-    //visualizeMatrixHeat(u, min, max, pic);
-    //pic.save("images/f/500/pic"+QString("%1").arg(ln)+".png", "PNG");
-    //printf("Layer: %d min: %f max: %f min: %f max: %f norm: %f\n", ln, min, max, min, max, fabs(max-min));
+    QPixmap pic;
+    visualizeMatrixHeat(u, min, max, pic);
+    pic.save("images/f/500/pic"+QString("%1").arg(ln)+".png", "PNG");
+    printf("Layer: %d min: %f max: %f min: %f max: %f norm: %f\n", ln, min, max, min, max, fabs(max-min));
 }
 
 void Problem2HNDirichlet::initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, OptimizeParameter &o_prm0)
@@ -699,15 +699,15 @@ void Problem2HNDirichlet::example3()
 
     eprm.a = +1.0;
     eprm.lambda = +0.0;
-    eprm.Ns = 1;
+    eprm.Ns = 5;
     eprm.q.resize(eprm.Ns);
     eprm.theta.resize(eprm.Ns);
 
     eprm.q[0] = 5.0; eprm.theta[0].x = 0.5000; eprm.theta[0].y = 0.5000;
-    //eprm.q[1] = 5.0; eprm.theta[1].x = 0.2500; eprm.theta[1].y = 0.2500;
-    //eprm.q[2] = 5.0; eprm.theta[2].x = 0.7500; eprm.theta[2].y = 0.7500;
-    //eprm.q[3] = 5.0; eprm.theta[3].x = 0.2500; eprm.theta[3].y = 0.7500;
-    //eprm.q[4] = 5.0; eprm.theta[4].x = 0.7500; eprm.theta[4].y = 0.2500;
+    eprm.q[1] = 5.0; eprm.theta[1].x = 0.2500; eprm.theta[1].y = 0.2500;
+    eprm.q[2] = 5.0; eprm.theta[2].x = 0.7500; eprm.theta[2].y = 0.7500;
+    eprm.q[3] = 5.0; eprm.theta[3].x = 0.2500; eprm.theta[3].y = 0.7500;
+    eprm.q[4] = 5.0; eprm.theta[4].x = 0.7500; eprm.theta[4].y = 0.2500;
 
     eprm.No = 0;
     eprm.Nc = 0;
@@ -739,7 +739,7 @@ void Problem2HNDirichlet::example3()
 //    double res = prob.fx(x);
 //    printf("%f\n", res);
 
-    printf("%f\n", prob.integralU(u.at(0)));
+//    printf("%f\n", prob.integralU(u.at(0)));
 }
 
 Problem2HNDirichlet::Problem2HNDirichlet()
