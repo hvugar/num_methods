@@ -2,12 +2,12 @@ TEMPLATE = subdirs
 CONFIG += ordered
 
 SUBDIRS += minimum
-SUBDIRS += imaging
+#SUBDIRS += imaging
 #SUBDIRS += rnfunction
 #SUBDIRS += control
 #SUBDIRS += third-party
 #SUBDIRS += point
-SUBDIRS += border
+#SUBDIRS += border
 #SUBDIRS += parabolic
 #SUBDIRS += hyperbolic
 #SUBDIRS += discrete

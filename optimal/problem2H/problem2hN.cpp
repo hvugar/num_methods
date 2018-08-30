@@ -2,16 +2,16 @@
 
 void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    //example1();
+    example1();
     //example2();
-    example3();
+    //example3();
     return;
 }
 
 void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
-    double min = u.min();
-    double max = u.max();
+    //double min = u.min();
+    //double max = u.max();
     //    if (MIN>min) MIN = min;
     //    if (MAX<max) MAX = max;
 
@@ -24,10 +24,10 @@ void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsign
     //        }
     //    }
 
-    QPixmap pic;
-    visualizeMatrixHeat(u, min, max, pic);
-    pic.save("images/f/500/pic"+QString("%1").arg(ln)+".png", "PNG");
-    printf("Layer: %d min: %f max: %f min: %f max: %f norm: %f\n", ln, min, max, min, max, fabs(max-min));
+    //QPixmap pic;
+    //visualizeMatrixHeat(u, min, max, pic);
+    //pic.save("images/f/500/pic"+QString("%1").arg(ln)+".png", "PNG");
+    //printf("Layer: %d min: %f max: %f min: %f max: %f norm: %f\n", ln, min, max, min, max, fabs(max-min));
 }
 
 void Problem2HNDirichlet::initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, OptimizeParameter &o_prm0)
@@ -401,11 +401,11 @@ void Problem2HNDirichlet::example1()
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = +2.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
-    e_prm.q[1] = +2.3; e_prm.theta[1].x = 0.2000; e_prm.theta[1].y = 0.2000;
-    e_prm.q[2] = +2.5; e_prm.theta[2].x = 0.8000; e_prm.theta[2].y = 0.8000;
-    e_prm.q[3] = +2.8; e_prm.theta[3].x = 0.3000; e_prm.theta[3].y = 0.7000;
-    e_prm.q[4] = +2.4; e_prm.theta[4].x = 0.8000; e_prm.theta[4].y = 0.3000;
+    e_prm.q[0] = +10.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
+    e_prm.q[1] = +10.3; e_prm.theta[1].x = 0.2000; e_prm.theta[1].y = 0.2000;
+    e_prm.q[2] = +10.5; e_prm.theta[2].x = 0.8000; e_prm.theta[2].y = 0.8000;
+    e_prm.q[3] = +10.8; e_prm.theta[3].x = 0.3000; e_prm.theta[3].y = 0.7000;
+    e_prm.q[4] = +10.4; e_prm.theta[4].x = 0.8000; e_prm.theta[4].y = 0.3000;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -456,7 +456,7 @@ void Problem2HNDirichlet::example1()
     //r_prm = o_prm;
     // Regulirization parameters ---------------------------------------------------------------------
 
-    DoubleVector r; r << 0.0100 << 0.1000 << 1.0000 << 2.0000 << 5.0000 << 10.000 << 100.00;
+    DoubleVector r; r << 0.0000 << 2.0000 << 5.0000 << 10.000 << 100.00;
     DoubleVector e; e << 0.0000 << 0.0000 << 0.0000 << 0.0000 << 0.0000 << 0.0000 << 0.0000;
 
     double hx, hy; hx = hy = 0.01;
@@ -489,8 +489,8 @@ void Problem2HNDirichlet::example1()
 
         prob.regEpsilon = e[i];
         prob.r = r[i];
-        prob.vmin.resize(e_prm.Nc, -2.0);
-        prob.vmax.resize(e_prm.Nc, +2.0);
+        prob.vmin.resize(e_prm.Nc, -5.0);
+        prob.vmax.resize(e_prm.Nc, +5.0);
         prob.LD = 10;
 
         if (i==0)
