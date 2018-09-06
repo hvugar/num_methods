@@ -887,11 +887,11 @@ double Problem2HNDirichlet::fx(const DoubleVector &pv) const
     Problem2HNDirichlet* prob = const_cast<Problem2HNDirichlet*>(this);
     prob->mOptParameter = o_prm;
 
-    puts("--double Problem2HNDirichlet::fx(const DoubleVector &pv) const");
+    //printf("--double Problem2HNDirichlet::fx(const DoubleVector &pv) const   ");
     std::vector<DoubleMatrix> u;
     spif_vector u_info;
     prob->solveForwardIBVP(u, u_info, true);
-    puts("++double Problem2HNDirichlet::fx(const DoubleVector &pv) const");
+    //puts("++double Problem2HNDirichlet::fx(const DoubleVector &pv) const");
 
     double intgrl = integral(u);
 
@@ -1051,11 +1051,13 @@ void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) con
     std::vector<DoubleMatrix> u;
     std::vector<DoubleMatrix> p;
 
+    //printf("1 ");
     spif_vector u_info;
     solveForwardIBVP(u, u_info, true);
-
+    //printf("2 ");
     spif_vector p_info;
     solveBackwardIBVP(u, p_info, true, u_info);
+    //printf("3\n");
 
     g.clear();
     g.resize(pv.length(), 0.0);
@@ -3630,7 +3632,15 @@ void Problem2HNDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u,
             double* c1 = (double*) malloc(sizeof(double)*row1_size);
             double* d1 = (double*) malloc(sizeof(double)*row1_size);
             double* x1 = (double*) malloc(sizeof(double)*row1_size);
-            DoubleMatrix w1(row1_size, row1_size, 0.0);
+
+            double ** w1 = (double**) malloc(sizeof(double*)*row1_size);
+            for (unsigned int i=0; i<row1_size; i++)
+            {
+                w1[i] = (double*) malloc(sizeof(double)*row1_size);
+                for (unsigned int j=0; j<row1_size; j++) w1[i][j] = 0.0;
+            }
+
+            //DoubleMatrix w1(row1_size, row1_size, 0.0);
 
             unsigned int offset = 0;
             for (unsigned int row=0; row<rows1.size(); row++)
@@ -3700,9 +3710,9 @@ void Problem2HNDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u,
 
                 offset += N-1;
             }
-
-            LinearEquation::func1(a1, b1, c1, d1, w1.data(), x1, rows1.size()*(N-1));
-
+printf("%d 1 1-1 ",l);
+            LinearEquation::func1(a1, b1, c1, d1, w1, x1, row1_size);
+printf("1-2 \n");
             offset = 0;
             for (unsigned int row=0; row<rows1.size(); row++)
             {
@@ -3714,7 +3724,13 @@ void Problem2HNDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u,
                 offset += N-1;
             }
 
-            w1.clear();
+            for (unsigned int i=0; i<row1_size; i++)
+            {
+                free(w1[i]);
+            }
+            free(w1);
+
+            //w1.clear();
             free(x1);
             free(d1);
             free(c1);
@@ -3923,7 +3939,9 @@ void Problem2HNDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u,
         if (use == true) b_add2Info(p20, p_info, cntPointNodes, l, hx, hy);
 
         b_layerInfo(p20, l);
+
     }
+    printf("- ");
 
     free(rx);
     free(dx);
@@ -3951,7 +3969,7 @@ void Problem2HNDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u,
     p00.clear();
     p10.clear();
     p15.clear();
-    p20.clear();
+    p20.clear();puts("+");
 }
 
 double Problem2HNDirichlet::b_initial1(const SpaceNodePDE &sn UNUSED_PARAM) const

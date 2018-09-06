@@ -86,11 +86,12 @@ void LinearEquation::FirstRowLoaded(const double *e, double f, const double *a, 
 
 void LinearEquation::func1(const double *a, const double *b, const double *c, const double *d, double **e, double *x, unsigned int N)
 {
+    puts("------");
     double *v = (double*) malloc(sizeof(double)*N);
     tomasAlgorithm(a, b, c, d, v, N);
 
     std::vector<unsigned int> selectedCols;
-
+printf("------0 %d\n", selectedCols.size());
     for (unsigned int col=0; col<N; col++)
     {
         for (unsigned int row=0; row<N; row++)
@@ -102,13 +103,14 @@ void LinearEquation::func1(const double *a, const double *b, const double *c, co
             }
         }
     }
+    printf("------1 %d\n", selectedCols.size());
     double **w = (double**) malloc(sizeof(double*) * selectedCols.size());
 
     for (unsigned int i=0; i<selectedCols.size(); i++)
     {
         w[i] = (double*) malloc(sizeof(double)*N);
     }
-
+    //puts("------2");
     for (unsigned int sc=0; sc<selectedCols.size(); sc++)
     {
         for (unsigned int row=0; row<N; row++)
@@ -117,20 +119,22 @@ void LinearEquation::func1(const double *a, const double *b, const double *c, co
         }
         tomasAlgorithm(a, b, c, w[sc], w[sc], N);
     }
-
+    //puts("------3");
     DoubleMatrix M(selectedCols.size(), selectedCols.size(), 0.0);
     DoubleVector A(selectedCols.size());
     DoubleVector u(selectedCols.size(), 0.0);
     for (unsigned int scr=0; scr<selectedCols.size(); scr++)
     {
+        //printf("---------31 %d %d\n", scr, selectedCols[scr]);
         A[scr] = v[selectedCols[scr]];
+        //puts("---------32");
         for (unsigned int scc=0; scc<selectedCols.size(); scc++)
         {
             M[scr][scc] = -w[scc][selectedCols[scr]];
             if (scr==scc) M[scr][scc] += 1.0;
         }
     }
-
+    //puts("------4");
     LinearEquation::GaussianElimination(M, A, u);
 
     for (unsigned int i=0; i<N; i++)
@@ -138,6 +142,7 @@ void LinearEquation::func1(const double *a, const double *b, const double *c, co
         x[i] = v[i];
         for (unsigned int sc=0; sc<selectedCols.size(); sc++) x[i] += w[sc][i]*u[sc];
     }
+    //puts("------5");
 
     M.clear();
     A.clear();
