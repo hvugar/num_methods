@@ -104,7 +104,7 @@ double SteepestDescentGradient::minimize(const DoubleVector &x, const DoubleVect
     C_UNUSED(x);
     C_UNUSED(g);
 
-    double alpha0 = 0.0;
+    double alpha0 = +min_step;
     double a,b,alpha;
 
     //stranghLineSearch(alpha0, min_step, a, b, this);

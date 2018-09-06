@@ -185,7 +185,7 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
 //        printf("%f\n", fx(a_lpha));
 //    }
 
-    double alpha0 = 0.0;
+    double alpha0 = +min_step;
     double a,b,alpha;
 
     //stranghLineSearch(alpha0, min_step, a, b, this);
