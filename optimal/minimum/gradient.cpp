@@ -2,29 +2,20 @@
 #include "function.h"
 #include <math.h>
 
-GradientMethod::GradientMethod() : m_fn(NULL), m_printer(NULL), m_projection(NULL)
-{
-    m_epsilon1 = 0.1;
-    m_epsilon2 = 0.1;
-    m_epsilon3 = 0.1;
-    min_step = 0.1;
-    min_epsilon = 0.01;
-    iterationCount = 0;
-    m_normalize = true;
-    mshowEndMessage = true;
-}
+GradientMethod::GradientMethod() : m_fn(NULL), m_gr(NULL), m_printer(NULL), m_printer_gr(NULL), m_projection(NULL),
+    m_epsilon1(0.1), m_epsilon2(0.1), m_epsilon3(0.1), min_step(0.1), min_epsilon(0.01),
+    m_iteration_count(0), m_normalize(true), m_show_end_message(true)
+{}
 
-GradientMethod::~GradientMethod()
-{
-}
+GradientMethod::~GradientMethod() {}
 
 /**
  * @brief Objective function
  * @param f
  */
-void GradientMethod::setFunction(RnFunction *f)
+void GradientMethod::setFunction(RnFunction *fn)
 {
-    m_fn = f;
+    m_fn = fn;
 }
 
 /**
@@ -106,14 +97,9 @@ void GradientMethod::setR1MinimizeEpsilon(double step, double epsilon)
     min_epsilon = epsilon;
 }
 
-//void GradientMethod::setGradientStep(double step)
-//{
-//    grad_step = step;
-//}
-
 int GradientMethod::count() const
 {
-    return iterationCount;
+    return m_iteration_count;
 }
 
 void GradientMethod::setPrinter(IPrinter *printer)
@@ -133,6 +119,6 @@ void GradientMethod::setNormalize(bool normalize)
 
 void GradientMethod::showEndMessage(bool showEndMessage)
 {
-    mshowEndMessage = showEndMessage;
+    m_show_end_message = showEndMessage;
 }
 

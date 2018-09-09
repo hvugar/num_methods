@@ -31,7 +31,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
 
     mx = &x;
     ms = &s;
-    iterationCount = 0;
+    m_iteration_count = 0;
 
     /**************************************************************************************
      * Gradient of objective functionin initial point.
@@ -46,16 +46,16 @@ void ConjugateGradient::calculate(DoubleVector& x)
     double gradient_norm = g.L2Norm();
     if (gradient_norm < epsilon1())
     {
-        if (m_printer != NULL) m_printer->print(iterationCount, x, g, m_fn->fx(x), GradientMethod::BREAK_FIRST_ITERATION);
-        if (mshowEndMessage) puts("Optimisation ends, because norm of gradient is less than epsilon...");
+        if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, m_fn->fx(x), GradientMethod::BREAK_FIRST_ITERATION);
+        if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than epsilon...");
         return;
     }
     f1 = m_fn->fx(x);
-    if (m_printer != NULL) m_printer->print(iterationCount, x, g, f1, GradientMethod::FIRST_ITERATION);
+    if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, f1, GradientMethod::FIRST_ITERATION);
 
     do
     {
-        iterationCount++;
+        m_iteration_count++;
 
         if (malgoritm == FLETCHER_REEVES)
         {
@@ -143,8 +143,8 @@ void ConjugateGradient::calculate(DoubleVector& x)
         double gradient_norm = g.L2Norm();
         if (gradient_norm < epsilon1())
         {
-            if (m_printer != NULL) m_printer->print(iterationCount, x, g, f2, GradientMethod::BREAK_GRADIENT_NORM_LESS);
-            if (mshowEndMessage) puts("Optimisation ends, because norm of gradient is less than epsilon...");
+            if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, f2, GradientMethod::BREAK_GRADIENT_NORM_LESS);
+            if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than epsilon...");
             break;
         }
 
@@ -156,15 +156,15 @@ void ConjugateGradient::calculate(DoubleVector& x)
          **************************************************************************************/
         if (distance < epsilon2() && fabs(f2 - f1) < epsilon3())
         {
-            if (m_printer != NULL) m_printer->print(iterationCount, x, g, f2, GradientMethod::BREAK_DISTANCE_LESS);
-            if (mshowEndMessage) puts("Optimisation ends, because distance between last and current point less than epsilon...");
+            if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, f2, GradientMethod::BREAK_DISTANCE_LESS);
+            if (m_show_end_message) puts("Optimisation ends, because distance between last and current point less than epsilon...");
             break;
         }
 
         /**************************************************************************************
          * Printing iteration information.
          **************************************************************************************/
-        if (m_printer != NULL) m_printer->print(iterationCount, x, g, f2, GradientMethod::NEXT_ITERATION);
+        if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, f2, GradientMethod::NEXT_ITERATION);
 
         f1 = f2;
 

@@ -10,6 +10,7 @@ class RnFunction;
 class IGradient;
 class IPrinter;
 class IProjection;
+class IGradientPrinter;
 
 /**
  * @brief The Abstract Gradient Method class
@@ -100,25 +101,29 @@ protected:
     virtual double minimize(const DoubleVector &x, const DoubleVector &g) const = 0;
 
     /**
-     * @brief Этап устонавления границ интервала
+     * @brief Этап установления границ интервала
      */
     //void straightLineSearch(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const;
     //void swann(double x, double step, double &a, double &b, double &fx, double &fxb, bool &unimodal) const;
 
-
     RnFunction *m_fn;
     IGradient *m_gr;
+    IPrinter* m_printer;
+    IGradientPrinter *m_printer_gr;
+    IProjection *m_projection;
     double m_epsilon1;
     double m_epsilon2;
     double m_epsilon3;
-    double min_epsilon;
     double min_step;
-    int iterationCount;
+    double min_epsilon;
+    int m_iteration_count;
     bool m_normalize;
-    IPrinter* m_printer;
-    IProjection *m_projection;
+    bool m_show_end_message;
+};
 
-    bool mshowEndMessage;
+struct MINIMUMSHARED_EXPORT IGradientPrinter
+{
+    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double fxResult, GradientMethod::MethodResult result, double alpha);
 };
 
 #endif // GRADIENT_H

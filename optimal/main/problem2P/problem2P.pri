@@ -1,3 +1,22 @@
+#TEMPLATE = lib
+#TARGET = problem2H
+#CONFIG  -= app_bundle
+##CONFIG  -= qt
+#CONFIG  += console
+#CONFIG  += shared
+#DESTDIR  = ../bin
+#QT       += core gui widgets
+
+#DEFINES += PROBLEM2P_LIBRARY
+
+#INCLUDEPATH += ../minimum
+#LIBS += -L../bin -lminimum
+
+#INCLUDEPATH += ../imaging
+#LIBS += -L../bin -limaging
+
+#HEADERS += problem2p_global.h common.h
+
 SOURCES += \
     $$PWD/1d/problem2.cpp \
     $$PWD/1d/iproblem2forward.cpp \

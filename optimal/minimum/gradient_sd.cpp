@@ -25,7 +25,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
 
     mx = &x;
     mg = &g;
-    iterationCount = 0;
+    m_iteration_count = 0;
 
     // Gradient of objectiv function in current point
     m_gr->gradient(x, g);
@@ -36,16 +36,16 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
     double gradient_norm = g.L2Norm();
     if (gradient_norm < epsilon1())
     {
-        if (m_printer != NULL) m_printer->print(iterationCount, x, g, f1, BREAK_FIRST_ITERATION);
-        if (mshowEndMessage) puts("Optimisation ends, because norm of gradient is less than epsilon...");
+        if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, f1, BREAK_FIRST_ITERATION);
+        if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than epsilon...");
         return;
     }
-    if (m_printer != NULL) m_printer->print(iterationCount, x, g, f1, FIRST_ITERATION);
+    if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, f1, FIRST_ITERATION);
 
     do
     {
 
-        iterationCount++;
+        m_iteration_count++;
 
         /* Normalize vector */
         if (m_normalize) g.L2Normalize();
@@ -77,20 +77,20 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
         double gradient_norm = g.L2Norm();
         if (gradient_norm < epsilon1())
         {
-            if (m_printer != NULL) m_printer->print(iterationCount, x, g, f2, GradientMethod::BREAK_GRADIENT_NORM_LESS);
-            if (mshowEndMessage) puts("Optimisation ends, because norm of gradient is less than epsilon...");
+            if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, f2, GradientMethod::BREAK_GRADIENT_NORM_LESS);
+            if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than epsilon...");
             break;
         }
 
         /* calculating distance previous and new point */
         if (distance < epsilon2() && fabs(f2 - f1) < epsilon3())
         {
-            if (m_printer != NULL) m_printer->print(iterationCount, x, g, f2, GradientMethod::BREAK_DISTANCE_LESS);
-            if (mshowEndMessage) puts("Optimisation ends, because distance between last and current point less than epsilon...");
+            if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, f2, GradientMethod::BREAK_DISTANCE_LESS);
+            if (m_show_end_message) puts("Optimisation ends, because distance between last and current point less than epsilon...");
             break;
         }
 
-        if (m_printer != NULL) m_printer->print(iterationCount, x, g, f2, GradientMethod::NEXT_ITERATION);
+        if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, f2, GradientMethod::NEXT_ITERATION);
 
         f1 = f2;
 

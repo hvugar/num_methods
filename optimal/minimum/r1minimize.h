@@ -46,13 +46,34 @@ public:
     R1Function* function() const;
 
     /**
-     * @brief Этап устонавления границ интервала
+     * @brief Этап установления границ интервала.
+     * @param x    Произвольно выбранная начальная исходная точка.
+     * @param step Подбираемая некоторым способом величина шага.
+     * @param a
+     * @param b
+     * @param fxa
+     * @param fxb
+     * @param unimodal
      */
     void straightLineSearch(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const;
+    /**
+     * @brief Этап установления границ интервала. Метод Свенна.
+     * @param x     Произвольно выбранная начальная исходная точка.
+     * @param step  Подбираемая некоторым способом величина шага.
+     * @param a
+     * @param b
+     * @param fx
+     * @param fxb
+     * @param unimodal
+     */
     void swann(double x, double step, double &a, double &b, double &fx, double &fxb, bool &unimodal) const;
 
     /**
      * @brief Этап уменьшения интервала
+     * @param x
+     * @param a
+     * @param b
+     * @param epsilon
      */
     void goldenSectionSearch(double &x, double &a, double &b, double epsilon) const;
     void halphIntervalMethod(double &x, double &a, double &b, double epsilon) const;
