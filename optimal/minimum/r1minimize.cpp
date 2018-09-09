@@ -122,25 +122,25 @@ void R1FxMinimizer::straightLineSearch(double x, double step, double &a, double 
     }
 
     // from right to left <<--
-//    if ( fxa <= fxx && fxx <= fxb )
-//    {
-//        puts("<<----------------");
-//        //straightLineSearchCallback(iteration, x, a, b, fxa, fxb);
-//        while ( fxa < fxx )
-//        {
-//            x = x - fstep;
-//            a = x - fstep;
-//            b = x + fstep;
+    if ( fxa <= fxx && fxx <= fxb )
+    {
+        puts("<<----------------");
+        //straightLineSearchCallback(iteration, x, a, b, fxa, fxb);
+        while ( fxa < fxx )
+        {
+            x = x - fstep;
+            a = x - fstep;
+            b = x + fstep;
 
-//            fxb = fxx;
-//            fxx = fxa;
-//            fxa = mfunction->fx(a); fx_count++;
+            fxb = fxx;
+            fxx = fxa;
+            fxa = mfunction->fx(a); fx_count++;
 
-//            if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
-//        }
-//        unimodal = true;
-//        return;
-//    }
+            if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
+        }
+        unimodal = true;
+        return;
+    }
 }
 
 /**
@@ -251,26 +251,26 @@ void R1FxMinimizer::swann(double x, double step, double &a, double &b, double &f
     }
 
     // from right to left <<--
-    if ( fxa <= fxx && fxx <= fxb )
-    {
-        puts("<<----------------");
-        unsigned int k = 1;
-        while ( fxa < fxx )
-        {
-            b = x;
-            x = a;
-            a = x - pow(2.0, k) * fstep;
-            k++;
+//    if ( fxa <= fxx && fxx <= fxb )
+//    {
+//        puts("<<----------------");
+//        unsigned int k = 1;
+//        while ( fxa < fxx )
+//        {
+//            b = x;
+//            x = a;
+//            a = x - pow(2.0, k) * fstep;
+//            k++;
 
-            fxb = fxx;
-            fxx = fxa;
-            fxa = mfunction->fx(a); fx_count++;
+//            fxb = fxx;
+//            fxx = fxa;
+//            fxa = mfunction->fx(a); fx_count++;
 
-            if (mcallback) mcallback->swannCallback(++iteration, x, a, b, fxa, fxb, fx_count);
-        }
-        unimodal = true;
-        return;
-    }
+//            if (mcallback) mcallback->swannCallback(++iteration, x, a, b, fxa, fxb, fx_count);
+//        }
+//        unimodal = true;
+//        return;
+//    }
 }
 
 /**

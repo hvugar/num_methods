@@ -1,12 +1,13 @@
 #include "problem2hN.h"
 
+#define SAVE_TO_IMG1s
+
 void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //example1();
     //example2();
     //example3();
     example4();
-    return;
 }
 
 void example4()
@@ -21,8 +22,8 @@ void example4()
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = +5.2; e_prm.theta[0].x = 0.4300; e_prm.theta[0].y = 0.7500;
-    e_prm.q[1] = +5.3; e_prm.theta[1].x = 0.8700; e_prm.theta[1].y = 0.2300;
+    e_prm.q[0] = -5.2; e_prm.theta[0].x = 0.4300; e_prm.theta[0].y = 0.7500;
+    e_prm.q[1] = -5.3; e_prm.theta[1].x = 0.8700; e_prm.theta[1].y = 0.2300;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -36,9 +37,21 @@ void example4()
     o_prm.eta.resize(e_prm.Nc);
 
     o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
-    o_prm.z[0][0]  = +5.5000; o_prm.z[0][1]  = -4.4000; o_prm.z[1][0]  = +3.7000; o_prm.z[1][1]  = +1.5000;
+    o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = -0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
     o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
     o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
+
+//    o_prm.k[0][0]  = +1.0667; o_prm.k[0][1]  = +1.1309; o_prm.k[1][0]  = +1.0974; o_prm.k[1][1]  = +0.8603;
+//    o_prm.z[0][0]  = +0.4870; o_prm.z[0][1]  = -0.4140; o_prm.z[1][0]  = +0.3969; o_prm.z[1][1]  = +0.2696;
+//    o_prm.xi[0].x  = +0.0500; o_prm.xi[0].y  = +0.6306; o_prm.xi[1].x  = +0.9500; o_prm.xi[1].y  = +0.5327;
+//    o_prm.eta[0].x = +0.8600; o_prm.eta[0].y = +0.9500; o_prm.eta[1].x = +0.5128; o_prm.eta[1].y = +0.7914;
+
+
+//    I[  0]: I1:0.008685 P:0.002241 F:0.053510 R:20.00 e:0.000 FIRST_ITERATION
+//    k:  1.0667   1.1309   1.0974   0.8603 z:  0.4870  -0.4140   0.3969   0.2696 o:   0.0500    0.6306    0.9500    0.5327 c:   0.8600    0.9500    0.5128    0.7914
+//    k:  0.0034  -0.0021   0.9459  -0.0501 z:  0.0062   0.0065   0.4967   0.3893 o:  11.1207    0.9461    2.4875    0.8258 c:  -0.0068   -0.0236   -0.0344   -0.0674
+//    ---------
+
 
     // Regularization parameters
     OptimizeParameter r_prm;
@@ -62,9 +75,9 @@ void example4()
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 1.0000 << 2.0000 << 5.0000 << 10.000;// << 20.000 << 50.000 << 100.00;
+    DoubleVector r; r << 1.0000 << 1000.0 << 1000.0 << 10000.0;// << 20.000 << 50.000 << 100.00;
     // Regularization coefficients
-    DoubleVector e; e << 1.0000 << 1.0000 << 0.1000 << 0.0100;// << 0.0000 << 0.0000 << 0.0000;
+    DoubleVector e; e << 0.0000 << 0.0000 << 0.0000 << 0.0000;// << 0.0000 << 0.0000 << 0.0000;
 
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
@@ -100,14 +113,15 @@ void example4()
         //ConjugateGradient g;
         //g.setResetIteration(true);
         SteepestDescentGradient g;
+        //ConstStepGradient g;
         //g.R1Minimizer().setCallback(new Problem2HNDirichletR1MinimizeCallback);
         g.setFunction(&prob);
         g.setGradient(&prob);
         g.setPrinter(&prob);
         g.setProjection(&prob);
-        g.setEpsilon1(0.00001);
-        g.setEpsilon2(0.00001);
-        g.setEpsilon3(0.00001);
+        g.setEpsilon1(0.0001);
+        g.setEpsilon2(0.0001);
+        g.setEpsilon3(0.0001);
         g.setR1MinimizeEpsilon(0.1, 0.001);
         g.setNormalize(true);
         g.showEndMessage(true);
@@ -118,10 +132,22 @@ void example4()
     }
 }
 
+void Problem2HNDirichlet::experimentInfo(const Problem2HNDirichlet &prob) const
+{
+    printf("Experiment #: %l", time(NULL));
+
+    printf("Grid info: time: %.6f x: %.6f y: %.6f\n", prob.timeDimension().step(),
+                                                      prob.spaceDimension(Dimension::DimensionX).step(),
+                                                      prob.spaceDimension(Dimension::DimensionY).step());
+
+    //printf("Optimization epsilon: %f %f %f\n");
+}
+
 void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
-    //double min = u.min();
-    //double max = u.max();
+#ifdef SAVE_TO_IMG
+    double min = u.min();
+    double max = u.max();
     //    if (MIN>min) MIN = min;
     //    if (MAX<max) MAX = max;
 
@@ -134,10 +160,11 @@ void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsign
     //        }
     //    }
 
-    //QPixmap pic;
-    //visualizeMatrixHeat(u, min, max, pic);
-    //pic.save("images/f/500/pic"+QString("%1").arg(ln)+".png", "PNG");
-    //printf("Layer: %d min: %f max: %f min: %f max: %f norm: %f\n", ln, min, max, min, max, fabs(max-min));
+    QPixmap pic;
+    visualizeMatrixHeat(u, min, max, pic);
+    pic.save("images/f/500/pic"+QString("%1").arg(ln)+".png", "PNG");
+    printf("Layer: %d min: %f max: %f min: %f max: %f norm: %f\n", ln, min, max, min, max, fabs(max-min));
+#endif
 }
 
 void Problem2HNDirichlet::initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, OptimizeParameter &o_prm0)
@@ -808,24 +835,29 @@ void Problem2HNDirichlet::example3()
     //prob.initParameters(eprm, oprm, oprm0);
 
     eprm.a = +1.0;
-    eprm.lambda = +0.0;
-    eprm.Ns = 5;
+    eprm.lambda = +0.01;
+    eprm.Ns = 1;
     eprm.q.resize(eprm.Ns);
     eprm.theta.resize(eprm.Ns);
 
-    eprm.q[0] = 5.0; eprm.theta[0].x = 0.5000; eprm.theta[0].y = 0.5000;
-    eprm.q[1] = 5.0; eprm.theta[1].x = 0.2500; eprm.theta[1].y = 0.2500;
-    eprm.q[2] = 5.0; eprm.theta[2].x = 0.7500; eprm.theta[2].y = 0.7500;
-    eprm.q[3] = 5.0; eprm.theta[3].x = 0.2500; eprm.theta[3].y = 0.7500;
-    eprm.q[4] = 5.0; eprm.theta[4].x = 0.7500; eprm.theta[4].y = 0.2500;
+    eprm.q[0] = 1.0; eprm.theta[0].x = 0.5000; eprm.theta[0].y = 0.5000;
+    //eprm.q[1] = 1.0; eprm.theta[1].x = 0.2500; eprm.theta[1].y = 0.2500;
+    //eprm.q[2] = 1.0; eprm.theta[2].x = 0.7500; eprm.theta[2].y = 0.7500;
+    //eprm.q[3] = 1.0; eprm.theta[3].x = 0.2500; eprm.theta[3].y = 0.7500;
+    //eprm.q[4] = 1.0; eprm.theta[4].x = 0.7500; eprm.theta[4].y = 0.2500;
 
-    eprm.No = 0;
-    eprm.Nc = 0;
+    eprm.No = 2;
+    eprm.Nc = 2;
 
     oprm.k.resize(eprm.Nc, eprm.No, 0.0);
     oprm.z.resize(eprm.Nc, eprm.No, 0.0);
     oprm.xi.resize(eprm.No);
     oprm.eta.resize(eprm.Nc);
+
+    oprm.k[0][0]  = -1.0000; oprm.k[0][1]  = -1.0000; oprm.k[1][0]  = -1.0000; oprm.k[1][1]  = -1.0000;
+    oprm.z[0][0]  = +1.0000; oprm.z[0][1]  = +1.0000; oprm.z[1][0]  = +1.0000; oprm.z[1][1]  = +1.0000;
+    oprm.xi[0].x  = +0.2500; oprm.xi[0].y  = +0.2500; oprm.xi[1].x  = +0.7500; oprm.xi[1].y  = +0.7500;
+    oprm.eta[0].x = +0.2500; oprm.eta[0].y = +0.2500; oprm.eta[1].x = +0.7500; oprm.eta[1].y = +0.7500;
 
     prob.mEquParameter = eprm;
     prob.mOptParameter = oprm;
@@ -879,7 +911,6 @@ Problem2HNDirichlet::~Problem2HNDirichlet()
 
 double Problem2HNDirichlet::fx(const DoubleVector &pv) const
 {
-    //puts("-double Problem2HNDirichlet::fx(const DoubleVector &pv) const");
     OptimizeParameter o_prm;
 
     VectorToPrm(pv, o_prm);
@@ -887,11 +918,9 @@ double Problem2HNDirichlet::fx(const DoubleVector &pv) const
     Problem2HNDirichlet* prob = const_cast<Problem2HNDirichlet*>(this);
     prob->mOptParameter = o_prm;
 
-    //printf("--double Problem2HNDirichlet::fx(const DoubleVector &pv) const   ");
     std::vector<DoubleMatrix> u;
     spif_vector u_info;
     prob->solveForwardIBVP(u, u_info, true);
-    //puts("++double Problem2HNDirichlet::fx(const DoubleVector &pv) const");
 
     double intgrl = integral(u);
 
@@ -1035,7 +1064,6 @@ double Problem2HNDirichlet::g0i(unsigned int i, unsigned int layer, const spif_v
 
 void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) const
 {
-    puts("-void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) const");
     const unsigned int L = mtimeDimension.sizeN();
     const double ht = mtimeDimension.step();
     const unsigned int Nc = mEquParameter.Nc;
@@ -1049,15 +1077,11 @@ void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) con
     prob->mOptParameter = o_prm;
 
     std::vector<DoubleMatrix> u;
-    std::vector<DoubleMatrix> p;
 
-    //printf("1 ");
     spif_vector u_info;
     solveForwardIBVP(u, u_info, true);
-    //printf("2 ");
     spif_vector p_info;
     solveBackwardIBVP(u, p_info, true, u_info);
-    //printf("3\n");
 
     g.clear();
     g.resize(pv.length(), 0.0);
@@ -1237,17 +1261,15 @@ void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) con
 
     u_info.clear();
     p_info.clear();
-
-    puts("+void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) const");
 }
 
 void Problem2HNDirichlet::print(unsigned int i UNUSED_PARAM, const DoubleVector &x, const DoubleVector &g, double f UNUSED_PARAM, GradientMethod::MethodResult result) const
 {
-    Problem2HNDirichlet* ifunc = const_cast<Problem2HNDirichlet*>(this);
+    Problem2HNDirichlet* prob = const_cast<Problem2HNDirichlet*>(this);
     OptimizeParameter o_prm;
     VectorToPrm(x, o_prm);
 
-    ifunc->mOptParameter = o_prm;
+    prob->mOptParameter = o_prm;
 
     std::vector<DoubleMatrix> u;
 
@@ -1264,12 +1286,20 @@ void Problem2HNDirichlet::print(unsigned int i UNUSED_PARAM, const DoubleVector 
     printf("I[%3d]: I1:%8.6f P:%8.6f F:%8.6f R:%.2f e:%.3f %s\n", i, integral(u), penalty(u_info, o_prm), f, r, regEpsilon, msg);
     printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
     printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%9.4f %9.4f %9.4f %9.4f c:%9.4f %9.4f %9.4f %9.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
-    IPrinter::printSeperatorLine();
 
     u.clear();
     u_info.clear();
 
-    C_UNUSED(ifunc);
+//    if (i==0)
+//    {
+//    prob->optimizeK = i%2==0;//i%4==3;
+//    prob->optimizeZ = i%2==0;//i%4==0;
+//    prob->optimizeO = i%2==1;//i%4==1;
+//    prob->optimizeC = i%2==1;//i%4==2;
+//    }
+
+    C_UNUSED(prob);
+    IPrinter::printSeperatorLine();
 }
 
 void Problem2HNDirichlet::project(DoubleVector &pv, unsigned int index)
@@ -1292,6 +1322,7 @@ void Problem2HNDirichlet::project(DoubleVector &pv, unsigned int index)
         if (pv[index] < 0.05) pv[index] = 0.05;
         if (pv[index] > 0.95) pv[index] = 0.95;
     }
+    //return;
 
     double dx = 0.09;
 
@@ -2321,7 +2352,7 @@ void Problem2HNDirichlet::solveForwardIBVP1(std::vector<DoubleMatrix> &u, spif_v
                 for (unsigned int m=1; m<=M-1; m++)
                 {
                     sn.j = m; sn.y = m*hy;
-                    \
+
                     dy[m-1] = 0.0;
                     if (n>0 && n<N) dy[m-1] = p_aa_htht__hxhx*(u15[m][n-1] - 2.0*u15[m][n]   + u15[m][n+1]);
                     else if (n==0)  dy[m-1] = p_aa_htht__hxhx*(u15[m][0]   - 2.0*u15[m][1]   + u15[m][2]);
@@ -3442,6 +3473,8 @@ void Problem2HNDirichlet::solveBackwardIBVP0(const std::vector<DoubleMatrix> &u,
 
 void Problem2HNDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u, spif_vector &p_info, bool use, const spif_vector &u_info) const
 {
+    //printf("eta: 0: %f %f 1: %f %f\n", mOptParameter.eta[0].x, mOptParameter.eta[0].y, mOptParameter.eta[1].x, mOptParameter.eta[1].y);
+    //printf("xi : 0: %f %f 1: %f %f\n", mOptParameter.xi[0].x, mOptParameter.xi[0].y, mOptParameter.xi[1].x, mOptParameter.xi[1].y);
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
     const Dimension time = timeDimension();
@@ -3632,15 +3665,7 @@ void Problem2HNDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u,
             double* c1 = (double*) malloc(sizeof(double)*row1_size);
             double* d1 = (double*) malloc(sizeof(double)*row1_size);
             double* x1 = (double*) malloc(sizeof(double)*row1_size);
-
-            double ** w1 = (double**) malloc(sizeof(double*)*row1_size);
-            for (unsigned int i=0; i<row1_size; i++)
-            {
-                w1[i] = (double*) malloc(sizeof(double)*row1_size);
-                for (unsigned int j=0; j<row1_size; j++) w1[i][j] = 0.0;
-            }
-
-            //DoubleMatrix w1(row1_size, row1_size, 0.0);
+            DoubleMatrix w1(row1_size, row1_size, 0.0);
 
             unsigned int offset = 0;
             for (unsigned int row=0; row<rows1.size(); row++)
@@ -3711,8 +3736,8 @@ void Problem2HNDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u,
                 offset += N-1;
             }
 printf("%d 1 1-1 ",l);
-            LinearEquation::func1(a1, b1, c1, d1, w1, x1, row1_size);
-printf("1-2 \n");
+            LinearEquation::func1(a1, b1, c1, d1, w1.data(), x1, row1_size);
+printf("1-2 ");
             offset = 0;
             for (unsigned int row=0; row<rows1.size(); row++)
             {
@@ -3724,18 +3749,12 @@ printf("1-2 \n");
                 offset += N-1;
             }
 
-            for (unsigned int i=0; i<row1_size; i++)
-            {
-                free(w1[i]);
-            }
-            free(w1);
-
-            //w1.clear();
-            free(x1);
-            free(d1);
-            free(c1);
-            free(b1);
-            free(a1);
+            w1.clear(); printf("1-3 ");
+            free(x1);printf("1-4 ");
+            free(d1);printf("1-5 ");
+            free(c1);printf("1-6 ");
+            free(b1);printf("1-7 ");
+            free(a1);printf("1-8 ");
         }
 
         /**************************************************** x direction apprx ***************************************************/
@@ -3941,7 +3960,6 @@ printf("1-2 \n");
         b_layerInfo(p20, l);
 
     }
-    printf("- ");
 
     free(rx);
     free(dx);
@@ -3969,7 +3987,7 @@ printf("1-2 \n");
     p00.clear();
     p10.clear();
     p15.clear();
-    p20.clear();puts("+");
+    p20.clear();
 }
 
 double Problem2HNDirichlet::b_initial1(const SpaceNodePDE &sn UNUSED_PARAM) const
@@ -4199,8 +4217,6 @@ void Problem2HNDirichlet::b_initialLayers1(DoubleMatrix &p00, DoubleMatrix &p10,
     if (use == true) b_add2Info(p10, p_info, cntPointNodes, LLD-1, hx, hy);
     b_layerInfo(p10, LLD-1);
 }
-
-
 
 void Problem2HNDirichlet::b_prepareInfo(unsigned int Nc, const std::vector<SpacePoint> &points, spif_vector &p_info,
                                         unsigned int LLD, const Dimension &dimX, const Dimension &dimY) const

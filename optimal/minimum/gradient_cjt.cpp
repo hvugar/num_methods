@@ -196,7 +196,7 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
     bool unimodal;
     r1m.straightLineSearch(alpha0, min_step, a, b, fxa, fxb, unimodal);
     //r1m.swann(alpha0, min_step, a, b, fxa, fxb, unimodal);
-    puts("---");
+    //puts("---");
     if (unimodal)
     {
         //printf("%s\n", "unimodal");

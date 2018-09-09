@@ -86,12 +86,11 @@ void LinearEquation::FirstRowLoaded(const double *e, double f, const double *a, 
 
 void LinearEquation::func1(const double *a, const double *b, const double *c, const double *d, double **e, double *x, unsigned int N)
 {
-    puts("------");
-    double *v = (double*) malloc(sizeof(double)*N);
+    double *v = new double[N];
+    //double *v = (double*) malloc(sizeof(double)*N);
     tomasAlgorithm(a, b, c, d, v, N);
 
     std::vector<unsigned int> selectedCols;
-printf("------0 %d\n", selectedCols.size());
     for (unsigned int col=0; col<N; col++)
     {
         for (unsigned int row=0; row<N; row++)
@@ -103,15 +102,18 @@ printf("------0 %d\n", selectedCols.size());
             }
         }
     }
-    printf("------1 %d\n", selectedCols.size());
-    double **w = (double**) malloc(sizeof(double*) * selectedCols.size());
+    unsigned int selectedColsSize = selectedCols.size();
 
-    for (unsigned int i=0; i<selectedCols.size(); i++)
+    //double **w = (double**) malloc(sizeof(double*) * selectedColsSize);
+    double **w = new double*[selectedColsSize];
+
+    for (unsigned int i=0; i<selectedColsSize; i++)
     {
-        w[i] = (double*) malloc(sizeof(double)*N);
+        //w[i] = (double*) malloc(sizeof(double)*N);
+        w[i] = new double[N];
     }
-    //puts("------2");
-    for (unsigned int sc=0; sc<selectedCols.size(); sc++)
+
+    for (unsigned int sc=0; sc<selectedColsSize; sc++)
     {
         for (unsigned int row=0; row<N; row++)
         {
@@ -119,36 +121,34 @@ printf("------0 %d\n", selectedCols.size());
         }
         tomasAlgorithm(a, b, c, w[sc], w[sc], N);
     }
-    //puts("------3");
-    DoubleMatrix M(selectedCols.size(), selectedCols.size(), 0.0);
-    DoubleVector A(selectedCols.size());
-    DoubleVector u(selectedCols.size(), 0.0);
-    for (unsigned int scr=0; scr<selectedCols.size(); scr++)
+
+    DoubleMatrix M(selectedColsSize, selectedColsSize, 0.0);
+    DoubleVector A(selectedColsSize);
+    DoubleVector u(selectedColsSize, 0.0);
+    for (unsigned int scr=0; scr<selectedColsSize; scr++)
     {
-        //printf("---------31 %d %d\n", scr, selectedCols[scr]);
         A[scr] = v[selectedCols[scr]];
-        //puts("---------32");
-        for (unsigned int scc=0; scc<selectedCols.size(); scc++)
+        for (unsigned int scc=0; scc<selectedColsSize; scc++)
         {
             M[scr][scc] = -w[scc][selectedCols[scr]];
             if (scr==scc) M[scr][scc] += 1.0;
         }
     }
-    //puts("------4");
+
     LinearEquation::GaussianElimination(M, A, u);
 
     for (unsigned int i=0; i<N; i++)
     {
         x[i] = v[i];
-        for (unsigned int sc=0; sc<selectedCols.size(); sc++) x[i] += w[sc][i]*u[sc];
+        for (unsigned int sc=0; sc<selectedColsSize; sc++) x[i] += w[sc][i]*u[sc];
     }
-    //puts("------5");
 
     M.clear();
     A.clear();
     u.clear();
-    for (unsigned int sc=0; sc<selectedCols.size(); sc++) free(w[sc]);
-    free(w);
-    free(v);
+//    for (unsigned int sc=0; sc<selectedColsSize; sc++) free(w[sc]);
+    for (unsigned int sc=0; sc<selectedColsSize; sc++) delete [] w[sc];
+    delete [] w;
+    delete [] v;
     selectedCols.clear();
 }

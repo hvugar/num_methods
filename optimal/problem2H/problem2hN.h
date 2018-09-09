@@ -50,6 +50,8 @@ public:
     virtual double fx(const DoubleVector &x) const;
     virtual void gradient(const DoubleVector &, DoubleVector &) const;
 
+    void experimentInfo(const Problem2HNDirichlet &prob) const;
+
 protected:
     inline double mu(double x, double y) const;
     double integral(const std::vector<DoubleMatrix> &u) const;

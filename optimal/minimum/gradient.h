@@ -99,6 +99,13 @@ public:
 protected:
     virtual double minimize(const DoubleVector &x, const DoubleVector &g) const = 0;
 
+    /**
+     * @brief Этап устонавления границ интервала
+     */
+    //void straightLineSearch(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const;
+    //void swann(double x, double step, double &a, double &b, double &fx, double &fxb, bool &unimodal) const;
+
+
     RnFunction *m_fn;
     IGradient *m_gr;
     double m_epsilon1;

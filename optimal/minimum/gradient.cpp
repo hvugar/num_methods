@@ -135,3 +135,4 @@ void GradientMethod::showEndMessage(bool showEndMessage)
 {
     mshowEndMessage = showEndMessage;
 }
+

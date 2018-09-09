@@ -2,13 +2,16 @@
 #define PROBLEM2H_COMMON_H
 
 #include <vector>
+#include <set>
 #include <algorithm>
+#include <time.h>
 #include <function.h>
 #include <gradient.h>
 #include <projection.h>
 #include <printer.h>
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
+#include <gradient_cs.h>
 #include <grid/ibvp.h>
 #include "problem2h_global.h"
 
@@ -63,6 +66,7 @@ struct PROBLEM2HSHARED_EXPORT SpacePointInfo : public SpaceNodePDE
 };
 
 typedef std::vector<unsigned int>           uint_vector;
+typedef std::set<unsigned int>              uint_set;
 typedef std::vector<ExtendedSpacePointNode> espn_vector;
 typedef std::vector<SpacePointInfo>         spif_vector;
 
