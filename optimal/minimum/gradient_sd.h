@@ -7,16 +7,13 @@
  * @brief Method of Steepest Descent Gradient
  * Метод наискорейшего градиентного спуска.
  */
-class MINIMUMSHARED_EXPORT SteepestDescentGradient : public GradientMethod, protected R1Function
+class MINIMUMSHARED_EXPORT SteepestDescentGradient : public GradientMethod
 {
 public:
     SteepestDescentGradient();
     virtual ~SteepestDescentGradient();
 
     virtual void calculate(DoubleVector &x);
-
-    R1FxMinimizer &r1Minimizer();
-    const R1FxMinimizer& r1Minimizer() const;
 
 protected:
     virtual double minimize(const DoubleVector &x, const DoubleVector &g) const;
@@ -25,7 +22,7 @@ protected:
     DoubleVector *mx;
     DoubleVector *mg;
 
-    R1FxMinimizer r1m;
+    //R1FxMinimizer r1m;
 };
 
 #endif // STEEPEST_DESCENT_GRADIENT_H

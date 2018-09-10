@@ -36,10 +36,17 @@ void example4()
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
-    o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
-    o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = -0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
-    o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
-    o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
+    //y10
+//    o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
+//    o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = -0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
+//    o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
+//    o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
+
+    //y20
+    o_prm.k[0][0]  = -2.6400; o_prm.k[0][1]  = +3.7400; o_prm.k[1][0]  = -2.1800; o_prm.k[1][1]  = -2.0700;
+    o_prm.z[0][0]  = -0.9500; o_prm.z[0][1]  = +0.8500; o_prm.z[1][0]  = -0.1400; o_prm.z[1][1]  = -0.4500;
+    o_prm.xi[0].x  = +0.1486; o_prm.xi[0].y  = +0.1284; o_prm.xi[1].x  = +0.7525; o_prm.xi[1].y  = +0.7920;
+    o_prm.eta[0].x = +0.8512; o_prm.eta[0].y = +0.3245; o_prm.eta[1].x = +0.2854; o_prm.eta[1].y = +0.6515;
 
 //    o_prm.k[0][0]  = +1.0667; o_prm.k[0][1]  = +1.1309; o_prm.k[1][0]  = +1.0974; o_prm.k[1][1]  = +0.8603;
 //    o_prm.z[0][0]  = +0.4870; o_prm.z[0][1]  = -0.4140; o_prm.z[1][0]  = +0.3969; o_prm.z[1][1]  = +0.2696;
@@ -63,6 +70,8 @@ void example4()
     r_prm.xi[0].x  = +0.4679; r_prm.xi[0].y  = +0.5770; r_prm.xi[1].x  = +0.7140; r_prm.xi[1].y  = +0.2614;
     r_prm.eta[0].x = +0.5579; r_prm.eta[0].y = +0.8282; r_prm.eta[1].x = +0.8040; r_prm.eta[1].y = +0.8040;
 
+    //o_prm = r_prm;
+
     // Grid parameters
     double hx = 0.010; unsigned int Nx = 100;
     double hy = 0.010; unsigned int Ny = 100;
@@ -73,9 +82,9 @@ void example4()
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 10.000 << 100.00 << 100.00 << 1000.0;// << 20.000 << 50.000 << 100.00;
+    DoubleVector r; r << 1.0000 << 10.000 << 100.000 << 1000.0;// << 20.000 << 50.000 << 100.00;
     // Regularization coefficients
-    DoubleVector e; e << 1.0000 << 1.0000 << 1.0000 << 0.0000;// << 0.0000 << 0.0000 << 0.0000;
+    DoubleVector e; e << 0.0000 << 0.0000 << 0.00000 << 0.0000;// << 0.0000 << 0.0000 << 0.0000;
 
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
@@ -97,8 +106,8 @@ void example4()
         prob.regEpsilon = e[i];
         prob.r = r[i];
 
-        prob.vmin.resize(e_prm.Nc, -0.5);
-        prob.vmax.resize(e_prm.Nc, +0.5);
+        prob.vmin.resize(e_prm.Nc, -2.5);
+        prob.vmax.resize(e_prm.Nc, +2.5);
         prob.LD = 10;
 
         if (i==0)
@@ -108,8 +117,8 @@ void example4()
             //IPrinter::printSeperatorLine();
         }
 
-        //ConjugateGradient g;
-        //g.setResetIteration(true);
+//        ConjugateGradient g;
+//        g.setResetIteration(true);
         SteepestDescentGradient g;
         //ConstStepGradient g;
         //g.R1Minimizer().setCallback(new Problem2HNDirichletR1MinimizeCallback);
@@ -1287,13 +1296,18 @@ void Problem2HNDirichlet::print(unsigned int i UNUSED_PARAM, const DoubleVector 
 
     printf("I[%3d]: I1:%8.6f P:%8.6f N:%8.6f F:%8.6f R:%.2f e:%.3f %s\n", i, ing, pnt, nrm, f, r, regEpsilon, msg);
     printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
-    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %9.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
+    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
     DoubleVector n = g;
     n.L2Normalize();
-    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %9.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]);
+    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]);
 
     u.clear();
     u_info.clear();
+
+//    prob->optimizeK = i%2==0;
+//    prob->optimizeZ = i%2==0;
+//    prob->optimizeO = i%2==1;
+//    prob->optimizeC = i%2==1;
 
 //    if (i==0)
 //    {

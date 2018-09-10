@@ -7,7 +7,7 @@
 ConjugateGradient::ConjugateGradient() : GradientMethod()
 {
     setNormalize(true);
-    r1m.setFunction(this);
+//    r1m.setFunction(this);
     setAlgorithm(FLETCHER_REEVES);
     setResetIteration(true);
 }
@@ -179,12 +179,6 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
     C_UNUSED(x);
     C_UNUSED(s);
 
-//    for (int i=-100; i<=+100; i++)
-//    {
-//        double a_lpha = i*0.01;
-//        printf("%f\n", fx(a_lpha));
-//    }
-
     double alpha0 = +min_step;
     double a,b,alpha;
 
@@ -194,13 +188,13 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
 
     double fxa, fxb;
     bool unimodal;
-    r1m.straightLineSearch(alpha0, min_step, a, b, fxa, fxb, unimodal);
+    straightLineSearch(alpha0, min_step, a, b, fxa, fxb, unimodal);
     //r1m.swann(alpha0, min_step, a, b, fxa, fxb, unimodal);
     //puts("---");
     if (unimodal)
     {
         //printf("%s\n", "unimodal");
-        r1m.goldenSectionSearch(alpha, a, b, min_epsilon);
+        goldenSectionSearch(alpha, a, b, min_epsilon);
         //printf("alpha %.8f\n", alpha);
     }
     else
@@ -256,13 +250,13 @@ void ConjugateGradient::setResetIteration(bool reset)
     mResetIteration = reset;
 }
 
-R1FxMinimizer &ConjugateGradient::R1Minimizer()
-{
-    return r1m;
-}
+//R1FxMinimizer &ConjugateGradient::R1Minimizer()
+//{
+//    return r1m;
+//}
 
-const R1FxMinimizer& ConjugateGradient::R1Minimizer() const
-{
-    return r1m;
-}
+//const R1FxMinimizer& ConjugateGradient::R1Minimizer() const
+//{
+//    return r1m;
+//}
 

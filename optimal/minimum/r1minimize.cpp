@@ -6,13 +6,14 @@
 #include <string>
 
 /**
- * @brief         Метод прямого поиска. Установления границ интервала.
- * @param x       Произвольно выбранная начальная точка.
- * @param step    Величина шага.
- * @param a       Начальная точка отрезка.
- * @param b       Конечнная точка отрезка.
- * @param fxa     Величина функции в точке a.
- * @param fxb     Величина функции в точке b.
+ * @brief          Метод прямого поиска. Установления границ интервала.
+ * @param x        Произвольно выбранная начальная точка.
+ * @param step     Величина шага.
+ * @param a        Начальная точка отрезка.
+ * @param b        Конечнная точка отрезка.
+ * @param fxa      Величина функции в точке a.
+ * @param fxb      Величина функции в точке b.
+ * @param unimodal
  */
 void R1FxMinimizer::straightLineSearch(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const
 {
@@ -151,6 +152,7 @@ void R1FxMinimizer::straightLineSearch(double x, double step, double &a, double 
  * @param b        Конечнная точка отрезка.
  * @param fxa      Величина функции в точке a.
  * @param fxb      Величина функции в точке b.
+ * @param unimodal
  */
 void R1FxMinimizer::swann(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const
 {

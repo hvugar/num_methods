@@ -5,6 +5,7 @@
 
 #include "r1minimize.h"
 #include "exceptions.h"
+#include "function.h"
 
 class RnFunction;
 class IGradient;
@@ -15,7 +16,7 @@ class IGradientPrinter;
 /**
  * @brief The Abstract Gradient Method class
  */
-class MINIMUMSHARED_EXPORT GradientMethod
+class MINIMUMSHARED_EXPORT GradientMethod : protected R1Function
 {
 public:
     enum MethodResult
@@ -74,14 +75,14 @@ public:
     int count() const;
 
     /**
-     * @brief setPrinter
-     * @param printer
+     * @brief Вывод информации о значениях параметров оптимизации на каждой итерации.
+     * @param printer Интерфейс для вывода информации о значениях параметров оптимизации на каждой итерации.
      */
     void setPrinter(IPrinter *printer);
 
     /**
-     * @brief setProjection
-     * @param projection
+     * @brief Метод проекции для значений параметров оптимизации.
+     * @param projection Интерфейс для проекции значений параметров оптимизации.
      */
     void setProjection(IProjection *projection);
 
@@ -98,13 +99,69 @@ public:
     void showEndMessage(bool showEndMessage);
 
 protected:
+
+    /**
+     * @brief minimize
+     * @param x
+     * @param g
+     * @return
+     */
     virtual double minimize(const DoubleVector &x, const DoubleVector &g) const = 0;
 
     /**
-     * @brief Этап установления границ интервала
+     * @brief          Метод прямого поиска. Установления границ интервала.
+     * @param x        Произвольно выбранная начальная точка.
+     * @param step     Величина шага.
+     * @param a        Начальная точка отрезка.
+     * @param b        Конечнная точка отрезка.
+     * @param fxa      Величина функции в точке a.
+     * @param fxb      Величина функции в точке b.
+     * @param unimodal
      */
-    //void straightLineSearch(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const;
-    //void swann(double x, double step, double &a, double &b, double &fx, double &fxb, bool &unimodal) const;
+    void straightLineSearch(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const;
+
+    /**
+     * @brief          Метод Свенна. Установления границ интервала.
+     * @param x        Произвольно выбранная начальная точка.
+     * @param step     Величина шага.
+     * @param a        Начальная точка отрезка.
+     * @param b        Конечнная точка отрезка.
+     * @param fxa      Величина функции в точке a.
+     * @param fxb      Величина функции в точке b.
+     * @param unimodal
+     */
+    void swann(double x, double step, double &a, double &b, double &fx, double &fxb, bool &unimodal) const;
+
+    /**
+     * @brief          Метод золотого сечения.
+     *                 Метод относится к последовательным стратегиям. Задается начальный интервал неопределенности и
+     *                 требуемая точность. Алгоритм уменьшения интервала опирается на анализ значений функции в двух точках.
+     *                 В качестве точек вычисления функции выбираются точки золотого сечения. Тогда с учетом свойств золотого
+     *                 сечения на каждой итерации, кроме первой, требуется только одно новое вычисление функции. Условия
+     *                 окончания процесса поиска стандартные: поиск заканчивается, когда длина текущего интервала
+     *                 неопределенности оказывается меньше установленной величины.
+     * @param x        Точка минимума.
+     * @param a        Начальная точка отрезка.
+     * @param b        Конечнная точка отрезка.
+     * @param epsilon  Число эпсилон для останова метода.
+     */
+    void goldenSectionSearch(double &x, double &a, double &b, double epsilon) const;
+
+    /**
+     * @brief          Метод деления интервала пополам.
+     *                 Метод относится к последовательным стратегиям и позволяет исключить из дальнейшего
+     *                 рассмотрения на каждой итерации в точности половину текущего интервала неопределенности.
+     *                 Задается начальный интервал неопределенности, а алгоритм уменьшения интервала, являясь, как и
+     *                 в общем случае, "гарантирующим", основан на анализе величин функции в трех точках, равномерно
+     *                 распределенных на текущем интервале (делящих его на четыре равные части). Условия окончания
+     *                 процесса поиска стандартные: поиск заканчивается, когда длина текущего интервала неопределенности
+     *                 оказывается меньше установленной величины.
+     * @param x        Точка минимума.
+     * @param a        Начальная точка отрезка.
+     * @param b        Конечнная точка отрезка.
+     * @param epsilon  Число эпсилон для останова метода.
+     */
+    void halphIntervalMethod(double &x, double &a, double &b, double epsilon) const;
 
     RnFunction *m_fn;
     IGradient *m_gr;
