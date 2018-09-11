@@ -1,7 +1,7 @@
 #include "problem2hN.h"
 
 #define SAVE_TO_IMG1s
-#define EXAMPLE4_SAMPLE_2
+#define EXAMPLE4_SAMPLE_1
 
 void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -121,15 +121,15 @@ void example4()
         prob.regEpsilon = e[i];
         prob.r = r[i];
 
-        prob.vmin.resize(e_prm.Nc, -1.5);
-        prob.vmax.resize(e_prm.Nc, +1.5);
+        prob.vmin.resize(e_prm.Nc, -0.1);
+        prob.vmax.resize(e_prm.Nc, +0.1);
         prob.LD = 10;
 
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
-            prob.checkGradient(prob);
-            IPrinter::printSeperatorLine();
+            //prob.checkGradient(prob);
+            //IPrinter::printSeperatorLine();
         }
 
         //        ConjugateGradient g;
