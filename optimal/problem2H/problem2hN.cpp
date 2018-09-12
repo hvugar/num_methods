@@ -16,7 +16,7 @@ void example4()
     // Equation parameters
     EquationParameter e_prm;
     e_prm.a = 1.0;
-    e_prm.lambda = 0.01;
+    e_prm.lambda = 0.00;
 
     // Pulse influences
     e_prm.Ns = 2;
@@ -44,7 +44,6 @@ void example4()
     r_prm.xi.resize(e_prm.No);
     r_prm.eta.resize(e_prm.Nc);
 
-    //y10
 #ifdef EXAMPLE4_SAMPLE_1
     o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
     o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = -0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
@@ -57,7 +56,6 @@ void example4()
     r_prm.eta[0].x = +0.5579; r_prm.eta[0].y = +0.8282; r_prm.eta[1].x = +0.8040; r_prm.eta[1].y = +0.7535;
 #endif
 
-    //y20
 #ifdef EXAMPLE4_SAMPLE_2
     o_prm.k[0][0]  = -2.6400; o_prm.k[0][1]  = +3.7400; o_prm.k[1][0]  = -2.1800; o_prm.k[1][1]  = -2.0700;
     o_prm.z[0][0]  = -0.9500; o_prm.z[0][1]  = +0.8500; o_prm.z[1][0]  = -0.1400; o_prm.z[1][1]  = -0.4500;
@@ -90,7 +88,7 @@ void example4()
     // Grid parameters
     double hx = 0.010; unsigned int Nx = 100;
     double hy = 0.010; unsigned int Ny = 100;
-    double ht = 0.010; unsigned int Nt = 500;
+    double ht = 0.010; unsigned int Nt = 100;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
@@ -121,9 +119,11 @@ void example4()
         prob.regEpsilon = e[i];
         prob.r = r[i];
 
-        prob.vmin.resize(e_prm.Nc, -0.1);
+<<<<<<< .mine        prob.vmin.resize(e_prm.Nc, -0.002);
+        prob.vmax.resize(e_prm.Nc, +0.002);
+=======        prob.vmin.resize(e_prm.Nc, -0.1);
         prob.vmax.resize(e_prm.Nc, +0.1);
-        prob.LD = 10;
+>>>>>>> .theirs        prob.LD = 10;
 
         if (i==0)
         {
@@ -144,7 +144,7 @@ void example4()
         g.setEpsilon1(0.0001);
         g.setEpsilon2(0.0001);
         g.setEpsilon3(0.0001);
-        g.setR1MinimizeEpsilon(1.0, 0.001);
+        g.setR1MinimizeEpsilon(0.1, 0.001);
         g.setNormalize(true);
         g.showEndMessage(true);
 
@@ -1299,22 +1299,22 @@ void Problem2HNDirichlet::print(unsigned int i UNUSED_PARAM, const DoubleVector 
     solveForwardIBVP(u, u_info, true);
 
     const char* msg = NULL;
-    if (result == GradientMethod::BREAK_FIRST_ITERATION)    msg = "BREAK_FIRST_ITERATION";
-    if (result == GradientMethod::FIRST_ITERATION)          msg = "FIRST_ITERATION";
+    if (result == GradientMethod::BREAK_FIRST_ITERATION)    msg = "BREAK_FIRST_ITERATION   ";
+    if (result == GradientMethod::FIRST_ITERATION)          msg = "FIRST_ITERATION         ";
     if (result == GradientMethod::BREAK_GRADIENT_NORM_LESS) msg = "BREAK_GRADIENT_NORM_LESS";
-    if (result == GradientMethod::BREAK_DISTANCE_LESS)      msg = "BREAK_DISTANCE_LESS";
-    if (result == GradientMethod::NEXT_ITERATION)           msg = "NEXT_ITERATION";
+    if (result == GradientMethod::BREAK_DISTANCE_LESS)      msg = "BREAK_DISTANCE_LESS     ";
+    if (result == GradientMethod::NEXT_ITERATION)           msg = "NEXT_ITERATION          ";
 
     double ing = integral(u);
     double pnt = penalty(u_info, o_prm);
     double nrm = norm(prob->mEquParameter, prob->mOptParameter, prob->mRegParameter);
 
-    printf("I[%3d]: I1:%8.6f P:%8.6f N:%8.6f F:%8.6f R:%.2f e:%.3f %s\n", i, ing, pnt, nrm, f, r, regEpsilon, msg);
+    printf("I[%3d]: I:%10.6f P:%12.6f N:%10.6f F:%10.6f R:%5.2f e:%5.3f ", i, ing, pnt, nrm, f, r, regEpsilon);
     printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
-    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
-    DoubleVector n = g;
-    n.L2Normalize();
-    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]);
+//    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
+//    DoubleVector n = g;
+//    n.L2Normalize();
+//    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]);
 
     u.clear();
     u_info.clear();
@@ -1333,7 +1333,7 @@ void Problem2HNDirichlet::print(unsigned int i UNUSED_PARAM, const DoubleVector 
     //    }
 
     C_UNUSED(prob);
-    IPrinter::printSeperatorLine();
+    //IPrinter::printSeperatorLine();
 }
 
 void Problem2HNDirichlet::project(DoubleVector &pv, unsigned int index)
