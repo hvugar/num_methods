@@ -83,12 +83,12 @@ void example4()
     //k: -0.0012   0.0042  -0.0007   0.0004 z:  0.0000  -0.0000   0.0006   0.0007 o:  0.0216   0.0217   0.0103  -0.0187 c:  0.0001  -0.0002   0.0014   0.0011
     //k: -0.0308   0.1121  -0.0186   0.0111 z:  0.0007  -0.0005   0.0151   0.0197 o:  0.5748   0.5771   0.2729  -0.4952 c:  0.0014  -0.0066   0.0382   0.0281
 
-//    o_prm = r_prm;
+    //    o_prm = r_prm;
 
     // Grid parameters
-    double hx = 0.010; unsigned int Nx = 100;
-    double hy = 0.010; unsigned int Ny = 100;
-    double ht = 0.010; unsigned int Nt = 100;
+    double hx = 0.010; int Nx = 100;
+    double hy = 0.010; int Ny = 100;
+    double ht = 0.010; int Nt = 200;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
@@ -97,7 +97,7 @@ void example4()
     // Penalty paramteres
     DoubleVector r; r << 1.0000 << 10.000 << 100.000 << 1000.0;// << 20.000 << 50.000 << 100.00;
     // Regularization coefficients
-    DoubleVector e; e << 1.0000 << 1.0000 << 1.00000 << 0.0000;// << 0.0000 << 0.0000 << 0.0000;
+    DoubleVector e; e << 0.0000 << 0.0000 << 0.00000 << 0.0000;// << 0.0000 << 0.0000 << 0.0000;
 
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
@@ -119,11 +119,9 @@ void example4()
         prob.regEpsilon = e[i];
         prob.r = r[i];
 
-<<<<<<< .mine        prob.vmin.resize(e_prm.Nc, -0.002);
-        prob.vmax.resize(e_prm.Nc, +0.002);
-=======        prob.vmin.resize(e_prm.Nc, -0.1);
-        prob.vmax.resize(e_prm.Nc, +0.1);
->>>>>>> .theirs        prob.LD = 10;
+        prob.vmin.resize(e_prm.Nc, -0.5);
+        prob.vmax.resize(e_prm.Nc, +1.0);
+        prob.LD = 10;
 
         if (i==0)
         {
@@ -619,9 +617,9 @@ void Problem2HNDirichlet::example1()
     DoubleVector e; e << 0.0000 << 0.0000 << 0.0000 << 0.0000 << 0.0000 << 0.0000 << 0.0000;
 
     double hx, hy; hx = hy = 0.01;
-    unsigned Nx, Ny; Nx = Ny = 100;
+    int Nx, Ny; Nx = Ny = 100;
     double ht = 0.01;
-    unsigned int Nt = 500;
+    int Nt = 500;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
@@ -1081,7 +1079,7 @@ double Problem2HNDirichlet::g0i(unsigned int i, unsigned int layer, const spif_v
         const SpacePointInfo &node = u_info[j];
         vi += o_prm.k[i][j] * (node.value(layer)-o_prm.z[i][j]);
     }
-    return (vmax.at(i) + vmin.at(i))/2.0 - vi;
+    return vi - (vmax.at(i) + vmin.at(i))/2.0;
 }
 
 void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) const
@@ -1298,7 +1296,7 @@ void Problem2HNDirichlet::print(unsigned int i UNUSED_PARAM, const DoubleVector 
     spif_vector u_info;
     solveForwardIBVP(u, u_info, true);
 
-    const char* msg = NULL;
+    const char* msg = 0;
     if (result == GradientMethod::BREAK_FIRST_ITERATION)    msg = "BREAK_FIRST_ITERATION   ";
     if (result == GradientMethod::FIRST_ITERATION)          msg = "FIRST_ITERATION         ";
     if (result == GradientMethod::BREAK_GRADIENT_NORM_LESS) msg = "BREAK_GRADIENT_NORM_LESS";
@@ -1311,10 +1309,10 @@ void Problem2HNDirichlet::print(unsigned int i UNUSED_PARAM, const DoubleVector 
 
     printf("I[%3d]: I:%10.6f P:%12.6f N:%10.6f F:%10.6f R:%5.2f e:%5.3f ", i, ing, pnt, nrm, f, r, regEpsilon);
     printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
-//    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
-//    DoubleVector n = g;
-//    n.L2Normalize();
-//    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]);
+    //    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
+    //    DoubleVector n = g;
+    //    n.L2Normalize();
+    //    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]);
 
     u.clear();
     u_info.clear();
@@ -1358,7 +1356,7 @@ void Problem2HNDirichlet::project(DoubleVector &pv, unsigned int index)
     }
     //return;
 
-    double dx = 0.09;
+    double dx = 0.10;
 
     if (index == 12 && fabs(pv[8] - pv[12])<dx)
     {
@@ -3771,7 +3769,7 @@ void Problem2HNDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u,
             }
             printf("%d 1 1-1 ",l);
             LinearEquation::func1(a1, b1, c1, d1, w1.data(), x1, row1_size);
-            printf("1-2 ");
+            printf("%d 1 1-2 ",l);
             offset = 0;
             for (unsigned int row=0; row<rows1.size(); row++)
             {
@@ -3783,12 +3781,12 @@ void Problem2HNDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u,
                 offset += N-1;
             }
 
-            w1.clear(); printf("1-3 ");
-            free(x1);printf("1-4 ");
-            free(d1);printf("1-5 ");
-            free(c1);printf("1-6 ");
-            free(b1);printf("1-7 ");
-            free(a1);printf("1-8 ");
+            w1.clear();
+            free(x1);
+            free(d1);
+            free(c1);
+            free(b1);
+            free(a1);
         }
 
         /**************************************************** x direction apprx ***************************************************/
