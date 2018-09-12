@@ -21,8 +21,6 @@ protected:
 
     DoubleVector *mx;
     DoubleVector *mg;
-
-    //R1FxMinimizer r1m;
 };
 
 #endif // STEEPEST_DESCENT_GRADIENT_H

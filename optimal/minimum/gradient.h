@@ -11,7 +11,7 @@ class RnFunction;
 class IGradient;
 class IPrinter;
 class IProjection;
-struct IGradientPrinter;
+class IGradientPrinter;
 
 /**
  * @brief The Abstract Gradient Method class

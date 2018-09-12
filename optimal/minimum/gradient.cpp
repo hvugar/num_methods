@@ -215,7 +215,7 @@ void GradientMethod::straightLineSearch(double x, double step, double &a, double
     // from left to right -->>
     if ( fxa >= fxx && fxx >= fxb )
     {
-        puts("---------------->>");
+        //puts("---------------->>");
         //straightLineSearchCallback(iteration, x, a, b, fxa, fxb);
         while ( fxx > fxb)
         {
@@ -236,7 +236,7 @@ void GradientMethod::straightLineSearch(double x, double step, double &a, double
     // from right to left <<--
     if ( fxa <= fxx && fxx <= fxb )
     {
-        puts("<<----------------");
+        //puts("<<----------------");
         //straightLineSearchCallback(iteration, x, a, b, fxa, fxb);
         while ( fxa < fxx )
         {

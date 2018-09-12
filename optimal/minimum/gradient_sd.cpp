@@ -52,7 +52,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
 
         /* R1 minimization in direct of antigradient */
         alpha = minimize(x, g);
-        printf("%f %d\n", alpha, n);
+        //printf("%f %d\n", alpha, n);
 
         distance = 0.0;
         double f1 = m_fn->fx(x);
@@ -104,12 +104,8 @@ double SteepestDescentGradient::minimize(const DoubleVector &x, const DoubleVect
     C_UNUSED(x);
     C_UNUSED(g);
 
-    double alpha0 = 0;//+min_step;
+    double alpha0 = min_step;
     double a,b,alpha;
-
-    //stranghLineSearch(alpha0, min_step, a, b, this);
-    //goldenSectionSearch(a, b, alpha, this, min_epsilon);
-    //if (fx(alpha) > fx(alpha0)) alpha = alpha0;
 
     double fxa, fxb;
     bool unimodal;
@@ -142,13 +138,3 @@ double SteepestDescentGradient::fx(double alpha) const
 
     return m_fn->fx(cx);
 }
-
-//R1FxMinimizer &SteepestDescentGradient::r1Minimizer()
-//{
-//    return r1m;
-//}
-
-//const R1FxMinimizer& SteepestDescentGradient::r1Minimizer() const
-//{
-//    return r1m;
-//}
