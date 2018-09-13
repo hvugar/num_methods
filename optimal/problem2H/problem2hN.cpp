@@ -119,8 +119,8 @@ void example4()
         prob.regEpsilon = e[i];
         prob.r = r[i];
 
-        prob.vmin.resize(e_prm.Nc, -0.5);
-        prob.vmax.resize(e_prm.Nc, +0.5);
+        prob.vmin.resize(e_prm.Nc, -0.05);
+        prob.vmax.resize(e_prm.Nc, +0.05);
         prob.LD = 10;
 
         if (i==0)
@@ -1307,7 +1307,7 @@ void Problem2HNDirichlet::print(unsigned int i UNUSED_PARAM, const DoubleVector 
     double pnt = penalty(u_info, o_prm);
     double nrm = norm(prob->mEquParameter, prob->mOptParameter, prob->mRegParameter);
 
-    printf("I[%3d]: I:%10.6f P:%12.6f N:%10.6f F:%10.6f R:%5.2f e:%5.3f ", i, ing, pnt, nrm, f, r, regEpsilon);
+    printf("I[%3d]: I:%10.6f P:%12.6f N:%10.6f F:%10.6f R:%5.2f e:%5.3f \n", i, ing, pnt, nrm, f, r, regEpsilon);
     printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
     //    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
     //    DoubleVector n = g;
@@ -2607,7 +2607,7 @@ void Problem2HNDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u,
 
         if (rows1.size() != 0 && rows2.size() != 0)
         {
-            puts("start");
+//            puts("start");
             //throw std::exception();
 
             //            unsigned int row1_size = rows1.size()*(N-1);
@@ -2624,61 +2624,61 @@ void Problem2HNDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u,
             for (unsigned int row=0; row<rows1.size(); row++)
             {
                 unsigned int m = rows1.at(row);
-                sn.j = m; sn.y = m*hy;
+//                sn.j = m; sn.y = m*hy;
 
                 for (unsigned int n=1; n<=N-1; n++)
                 {
                     sn.i = n; sn.x = n*hx;
 
-                    //if (offset+(n-1) >= row1_size) throw std::exception();
+//                    //if (offset+(n-1) >= row1_size) throw std::exception();
 
                     d1[offset+(n-1)] = 0.0;
                     if (m>0 && m<M)  d1[offset+(n-1)] = p_aa_htht__hyhy*(p10[m-1][n] - 2.0*p10[m][n]   + p10[m+1][n]);
                     else if (m == 0) d1[offset+(n-1)] = p_aa_htht__hyhy*(p10[0][n]   - 2.0*p10[1][n]   + p10[2][n]);
                     else if (m == M) d1[offset+(n-1)] = p_aa_htht__hyhy*(p10[M-2][n] - 2.0*p10[M-1][n] + p10[M][n]);
 
-                    dx[offset+(n-1)] += lambda_ht*(p10[m][n] - 0.5*(p10[m][n]-p00[m][n]));
-                    dx[offset+(n-1)] += 2.0*p10[m][n] + (p10[m][n]-p00[m][n]);
+                    d1[offset+(n-1)] += lambda_ht*(p10[m][n] - 0.5*(p10[m][n]-p00[m][n]));
+                    d1[offset+(n-1)] += 2.0*p10[m][n] + (p10[m][n]-p00[m][n]);
 
-//                    //if (L <= l && l <= LLD) d1[offset+(n-1)] -= 2.0*htht*(u.at(2*(l-L)+1)[m][n] - V0[m][n]);
+                    if (L <= l && l <= LLD) d1[offset+(n-1)] -= 2.0*htht*(u.at(2*(l-L)+1)[m][n] - V0[m][n]);
 
                     a1[offset+(n-1)] = m_aa_htht__hxhx;
                     b1[offset+(n-1)] = p_aa_htht__hxhx___lambda_ht;
                     c1[offset+(n-1)] = m_aa_htht__hxhx;
 
-//                    //------------------------------------- Adding delta part -------------------------------------//
-//                    for (unsigned int onj=0; onj<obsDeltaNodes.size(); onj++)
-//                    {
-//                        const ExtendedSpacePointNode &odn = obsDeltaNodes.at(onj);
-//                        if (odn.i == sn.i && odn.j == sn.j)
-//                        {
-//                            for (unsigned int cni=0; cni<cntPointNodes.size(); cni++)
-//                            {
-//                                const ExtendedSpacePointNode &cpn = cntPointNodes[cni];
+                    //------------------------------------- Adding delta part -------------------------------------//
+                    for (unsigned int onj=0; onj<obsDeltaNodes.size(); onj++)
+                    {
+                        const ExtendedSpacePointNode &odn = obsDeltaNodes.at(onj);
+                        if (odn.i == sn.i && odn.j == sn.j)
+                        {
+                            for (unsigned int cni=0; cni<cntPointNodes.size(); cni++)
+                            {
+                                const ExtendedSpacePointNode &cpn = cntPointNodes[cni];
 
-//                                bool found = false;
-//                                for (unsigned int rs=0; rs<rows1.size(); rs++)
-//                                {
-//                                    if (cpn.j == rows1[rs])
-//                                    {
-//                                        found = true;
-//                                        w1[offset+(n-1)][rs*(N-1)+(cpn.i-1)] -= htht * mOptParameter.k[cpn.id][odn.id] * (cpn.w * (hx*hy)) * odn.w;
-//                                        break;
-//                                    }
-//                                }
+                                bool found = false;
+                                for (unsigned int rs=0; rs<rows1.size(); rs++)
+                                {
+                                    if (cpn.j == rows1[rs])
+                                    {
+                                        found = true;
+                                        w1[offset+(n-1)][rs*(N-1)+(cpn.i-1)] -= htht * mOptParameter.k[cpn.id][odn.id] * (cpn.w * (hx*hy)) * odn.w;
+                                        break;
+                                    }
+                                }
 
-//                                if (!found)
-//                                {
-//                                    d1[offset+(n-1)] += htht * mOptParameter.k[cpn.id][odn.id] * p15[cpn.j][cpn.i] * (cpn.w * (hx*hy)) * odn.w;
-//                                }
-//                            }
+                                if (!found)
+                                {
+                                    d1[offset+(n-1)] += htht * mOptParameter.k[cpn.id][odn.id] * p15[cpn.j][cpn.i] * (cpn.w * (hx*hy)) * odn.w;
+                                }
+                            }
 
-//                            for (unsigned int i=0; i<Nc; i++)
-//                            {
-//                                d1[offset+(n-1)] += 2.0 * r * ht *  mOptParameter.k[i][odn.id] * gpi(i, l, u_info, mOptParameter)*sgn(g0i(i, l, u_info, mOptParameter)) * odn.w;
-//                            }
-//                        }
-//                    }
+                            for (unsigned int i=0; i<Nc; i++)
+                            {
+                                d1[offset+(n-1)] += 2.0 * r * ht *  mOptParameter.k[i][odn.id] * gpi(i, l, u_info, mOptParameter)*sgn(g0i(i, l, u_info, mOptParameter)) * odn.w;
+                            }
+                        }
+                    }
                     //------------------------------------- Adding delta part -------------------------------------//
                 }
 
@@ -2691,9 +2691,9 @@ void Problem2HNDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u,
                 offset += N-1;
             }
 
-            printf("backward x--------%d %d %d\n", row1_size, rows1.size(), l);
-            //LinearEquation::func1(a1, b1, c1, d1, w1, x1, row1_size);
-            puts("backward ---------");
+            //printf("backward x--------%d %d %d\n", row1_size, rows1.size(), l);
+            LinearEquation::func1(a1, b1, c1, d1, w1, x1, row1_size);
+            //puts("backward ---------");
 
             offset = 0;
             for (unsigned int row=0; row<rows1.size(); row++)
@@ -2712,7 +2712,7 @@ void Problem2HNDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u,
             //            free(c1);
             //            free(b1);
             //            free(a1);
-            puts("end");
+            //puts("end");
         }
 
         /**************************************************** x direction apprx ***************************************************/
@@ -2829,8 +2829,8 @@ void Problem2HNDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u,
                     else if (n==0)  d2[offset+(m-1)] = p_aa_htht__hxhx*(p15[m][0]   - 2.0*p15[m][1]   + p15[m][2]);
                     else if (n==N)  d2[offset+(m-1)] = p_aa_htht__hxhx*(p15[m][N-2] - 2.0*p15[m][N-1] + p15[m][N]);
 
-                    dy[offset+(m-1)] += lambda_ht*(p15[m][n] - 0.5*(p10[m][n]-p00[m][n]));
-                    dy[offset+(m-1)] += 2.0*p15[m][n] + (p10[m][n]-p00[m][n]);
+                    d2[offset+(m-1)] += lambda_ht*(p15[m][n] - 0.5*(p10[m][n]-p00[m][n]));
+                    d2[offset+(m-1)] += 2.0*p15[m][n] + (p10[m][n]-p00[m][n]);
 
                     if (L <= l && l <= LLD) d2[offset+(m-1)] -= 2.0*htht*(u[2*(l-L)][m][n] - V0[m][n]);
 
@@ -2854,7 +2854,7 @@ void Problem2HNDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u,
                                     if (cpn.i == cols1[cs])
                                     {
                                         found = true;
-                                        //w2[offset+(m-1)][cs*(M-1)+(cpn.j-1)] -= htht * mOptParameter.k[cpn.id][odn.id] * (cpn.w * (hx*hy)) * odn.w;
+                                        w2[offset+(m-1)][cs*(M-1)+(cpn.j-1)] -= htht * mOptParameter.k[cpn.id][odn.id] * (cpn.w * (hx*hy)) * odn.w;
                                         break;
                                     }
                                 }
@@ -2867,7 +2867,7 @@ void Problem2HNDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u,
 
                             for (unsigned int i=0; i<Nc; i++)
                             {
-                                //d2[offset+(m-1)] += 2.0 * r * htht *  mOptParameter.k[i][odn.id] * gpi(i, l, u_info, mOptParameter)*sgn(g0i(i, l, u_info, mOptParameter)) * odn.w;
+                                d2[offset+(m-1)] += 2.0 * r * htht *  mOptParameter.k[i][odn.id] * gpi(i, l, u_info, mOptParameter)*sgn(g0i(i, l, u_info, mOptParameter)) * odn.w;
                             }
                         }
                     }
