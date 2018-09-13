@@ -81,7 +81,7 @@ private:
     void b_initialLayers1(DoubleMatrix &p00, DoubleMatrix &p10, spif_vector &p_info, bool use, espn_vector &cntPointNodes, espn_vector &obsDeltaNodes, unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const;
 
     //forward -------------------------------------
-    void solveForwardIBVP0(std::vector<DoubleMatrix> &u_, spif_vector &u_info, bool use) const;
+    //void solveForwardIBVP0(std::vector<DoubleMatrix> &u_, spif_vector &u_info, bool use) const;
 
     double f_initial1(const SpaceNodePDE &sn) const;
     double f_initial2(const SpaceNodePDE &sn) const;
@@ -95,7 +95,7 @@ private:
     void f_layerInfo(const DoubleMatrix &u, unsigned int ln) const;
 
     // backward -----------------------------------
-    void solveBackwardIBVP0(const std::vector<DoubleMatrix> &u, spif_vector &p_info, bool use, const spif_vector &u_info) const;
+    //void solveBackwardIBVP0(const std::vector<DoubleMatrix> &u, spif_vector &p_info, bool use, const spif_vector &u_info) const;
     double b_initial1(const SpaceNodePDE &sn) const;
     double b_initial2(const SpaceNodePDE &sn) const;
     double b_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
