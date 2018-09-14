@@ -54,7 +54,7 @@ void JFunctional::setEnvrTemperatures(const DoubleVector &thetas, const DoubleVe
     this->p_thetas = p_thetas;
 }
 
-void JFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const
+void JFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double alpha UNUSED_PARAM, GradientMethod::MethodResult result) const
 {
     IFunctional::print(i,x,g,f,result);
 

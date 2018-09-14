@@ -14,7 +14,7 @@ public:
     void setInitTemperatures(const DoubleVector &fis, const DoubleVector &p_fis);
     void setEnvrTemperatures(const DoubleVector &thetas, const DoubleVector &p_thetas);
 
-    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const;
+    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const;
 
 private:
     DoubleVector fis;

@@ -169,8 +169,8 @@ void GradientMethod::straightLineSearch(double x, double step, double &a, double
     {
         unimodal = false;
         //if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
-        fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", -2, a, x, b, fxa, fxx, fxb);
-        fputs("Function is not unimodal\n", stderr);
+        //fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", -2, a, x, b, fxa, fxx, fxb);
+        //fputs("Function is not unimodal\n", stderr);
         return;
     }
 

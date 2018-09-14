@@ -1091,7 +1091,7 @@ void Problem2HDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) cons
     p_info.clear();
 }
 
-void Problem2HDirichlet::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const
+void Problem2HDirichlet::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const
 {
     Problem2HDirichlet* ifunc = const_cast<Problem2HDirichlet*>(this);
     OptimizeParameter o_prm;
