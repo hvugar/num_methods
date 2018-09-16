@@ -1,12 +1,13 @@
 function [fx gr] = call_fx_m(x)
     % Calculate objective fx
-    % disp('Calculating function value.');
+%     disp('Calculating function value...');
+%     disp(x);
     fx = calllib('problem2H', 'call_fx', x);
-    % disp('Function calculated; '+fx);
-    % fprintf('Function calculated %f\n',fx);
+%     disp('Function calculated; ');
+%     fprintf('Function calculated %f\n',fx);
     
     if nargout > 1 %gradient required
-        % disp('---> Calculating gradient value.');
+%         disp('---> Calculating gradient value.');
         gr = zeros(1,16);
         [x gr] = calllib('problem2H', 'call_gr', x, gr, 16);
         % disp(x);

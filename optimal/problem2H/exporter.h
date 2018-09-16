@@ -1,7 +1,6 @@
 #ifndef EXPORTER_H
 #define EXPORTER_H
 
-
 #if defined(PROBLEM2H_LIBRARY)
 #  define EXPORTERSHARED_EXPORT __declspec(dllexport)
 #else

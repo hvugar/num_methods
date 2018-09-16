@@ -93,10 +93,10 @@ public:
     void setNormalize(bool normalize);
 
     /**
-     * @brief showEndMessage
-     * @param showEndMessage
+     * @brief showExitMessage
+     * @param shem
      */
-    void showEndMessage(bool showEndMessage);
+    void showExitMessage(bool shem);
 
 protected:
 
@@ -173,14 +173,20 @@ protected:
     double m_epsilon3;
     double min_step;
     double min_epsilon;
-    int m_iteration_count;
+    unsigned int m_iteration_count;
     bool m_normalize;
     bool m_show_end_message;
+
+    double _optimalityTolerance;
+    double _functionTolerance;
+    double _stepTolerance;
+    double _constraintTolerance;
+    unsigned int _maxIterations;
 };
 
-struct MINIMUMSHARED_EXPORT IGradientPrinter
-{
-    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double fxResult, GradientMethod::MethodResult result, double alpha);
-};
+//struct MINIMUMSHARED_EXPORT IGradientPrinter
+//{
+//    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double fxResult, GradientMethod::MethodResult result, double alpha);
+//};
 
 #endif // GRADIENT_H

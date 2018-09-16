@@ -1,7 +1,9 @@
 #include "exporter.h"
-#include "problem2h.h"
+#include "problem2hN.h"
 
-Problem2HDirichlet prob;
+#define EXAMPLE4_SAMPLE_1
+
+Problem2HNDirichlet prob;
 
 void init_pr()
 {
@@ -10,40 +12,76 @@ void init_pr()
     e_prm.a = 1.0;
     e_prm.lambda = 0.01;
 
-    e_prm.Ns = 3;
+    // Pulse influences
+    e_prm.Ns = 2;
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = 0.2; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
-    e_prm.q[1] = 0.3; e_prm.theta[1].x = 0.2000; e_prm.theta[1].y = 0.2000;
-    e_prm.q[2] = 0.5; e_prm.theta[2].x = 0.8000; e_prm.theta[2].y = 0.8000;
+    e_prm.q[0] = -5.2; e_prm.theta[0].x = 0.4300; e_prm.theta[0].y = 0.7500;
+    e_prm.q[1] = -5.3; e_prm.theta[1].x = 0.8700; e_prm.theta[1].y = 0.2300;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
 
-    // Optimization parameters ---------------------------------------------------------------------
+    // Optimization parameters
     OptimizeParameter o_prm;
+
     o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
-    o_prm.k[0][0]  = +2.3400; o_prm.k[0][1]  = -2.7400; o_prm.k[1][0]  = +1.5800; o_prm.k[1][1]  = +1.9500;
-    o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = -0.4000; o_prm.z[1][0]  = -0.3000; o_prm.z[1][1]  = +0.6000;
-    o_prm.xi[0].x  = +0.5500; o_prm.xi[0].y  = +0.1400; o_prm.xi[1].x  = +0.7400; o_prm.xi[1].y  = +0.3700;
-    o_prm.eta[0].x = +0.2800; o_prm.eta[0].y = +0.7500; o_prm.eta[1].x = +0.8500; o_prm.eta[1].y = +0.8900;
+    // Regularization parameters
+    OptimizeParameter r_prm;
+    r_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+    r_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+    r_prm.xi.resize(e_prm.No);
+    r_prm.eta.resize(e_prm.Nc);
 
-    // Regulirization parameters ---------------------------------------------------------------------
-    OptimizeParameter r_prm = o_prm;
+#ifdef EXAMPLE4_SAMPLE_1
+    o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
+    o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = -0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
+    o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
+    o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
 
-    DoubleVector r; r << 1.0 << 2.0 << 10.0 << 100.0;
+    r_prm.k[0][0]  = +0.4639; r_prm.k[0][1]  = -0.0136; r_prm.k[1][0]  = +0.1977; r_prm.k[1][1]  = -0.5896;
+    r_prm.z[0][0]  = +0.3014; r_prm.z[0][1]  = -0.6160; r_prm.z[1][0]  = -0.1914; r_prm.z[1][1]  = -0.2933;
+    r_prm.xi[0].x  = +0.4679; r_prm.xi[0].y  = +0.5770; r_prm.xi[1].x  = +0.7140; r_prm.xi[1].y  = +0.2614;
+    r_prm.eta[0].x = +0.5579; r_prm.eta[0].y = +0.8282; r_prm.eta[1].x = +0.8040; r_prm.eta[1].y = +0.7535;
 
-    double hx, hy; hx = hy = 0.01;
-    unsigned Nx, Ny; Nx = Ny = 100;
+//    r_prm.k[0][0]  = +0.5636; r_prm.k[0][1]  = -0.2421; r_prm.k[1][0]  = +0.2505; r_prm.k[1][1]  = -0.7679;
+//    r_prm.z[0][0]  = +0.3220; r_prm.z[0][1]  = -0.6179; r_prm.z[1][0]  = -0.1833; r_prm.z[1][1]  = -0.3160;
+//    r_prm.xi[0].x  = +0.4269; r_prm.xi[0].y  = +0.3364; r_prm.xi[1].x  = +0.8651; r_prm.xi[1].y  = +0.2336;
+//    r_prm.eta[0].x = +0.5436; r_prm.eta[0].y = +0.5788; r_prm.eta[1].x = +0.5269; r_prm.eta[1].y = +0.5860;
 
-    prob.setTimeDimension(Dimension(0.01, 0, 500));
-    prob.addSpaceDimension(Dimension(hx, 0, Nx));
-    prob.addSpaceDimension(Dimension(hy, 0, Ny));
+    //o_prm = r_prm;
+#endif
+
+#ifdef EXAMPLE4_SAMPLE_2
+    o_prm.k[0][0]  = -2.6400; o_prm.k[0][1]  = +3.7400; o_prm.k[1][0]  = -2.1800; o_prm.k[1][1]  = -2.0700;
+    o_prm.z[0][0]  = -0.9500; o_prm.z[0][1]  = +0.8500; o_prm.z[1][0]  = -0.1400; o_prm.z[1][1]  = -0.4500;
+    o_prm.xi[0].x  = +0.1486; o_prm.xi[0].y  = +0.1284; o_prm.xi[1].x  = +0.7525; o_prm.xi[1].y  = +0.7920;
+    o_prm.eta[0].x = +0.8512; o_prm.eta[0].y = +0.3245; o_prm.eta[1].x = +0.2854; o_prm.eta[1].y = +0.6515;
+
+    r_prm.k[0][0]  = -0.7053; r_prm.k[0][1]  = +0.6419; r_prm.k[1][0]  = -0.8886; r_prm.k[1][1]  = -1.2510;
+    r_prm.z[0][0]  = -1.9027; r_prm.z[0][1]  = +1.2513; r_prm.z[1][0]  = -0.1182; r_prm.z[1][1]  = -0.3907;
+    r_prm.xi[0].x  = +0.0500; r_prm.xi[0].y  = +0.0500; r_prm.xi[1].x  = +0.2210; r_prm.xi[1].y  = +0.8799;
+    r_prm.eta[0].x = +0.5281; r_prm.eta[0].y = +0.6057; r_prm.eta[1].x = +0.3210; r_prm.eta[1].y = +0.2266;
+    o_prm = r_prm;
+#endif
+
+    // Grid parameters
+    double hx = 0.010; int Nx = 100;
+    double hy = 0.010; int Ny = 100;
+    double ht = 0.010; int Nt = 500;
+
+    Dimension time(ht, 0, Nt);
+    Dimension dimx(hx, 0, Nx);
+    Dimension dimy(hy, 0, Ny);
+
+    prob.setTimeDimension(time);
+    prob.addSpaceDimension(dimx);
+    prob.addSpaceDimension(dimy);
     prob.mEquParameter = e_prm;
     prob.mOptParameter = o_prm;
     prob.mRegParameter = r_prm;
@@ -51,15 +89,15 @@ void init_pr()
     prob.optimizeZ = true;
     prob.optimizeC = true;
     prob.optimizeO = true;
+    prob.LD = 50;
 
-    prob.alpha0 = 1.0; prob.V0.resize(Ny+1, Nx+1, 0.0);
-    prob.alpha1 = 1.0; prob.V1.resize(Ny+1, Nx+1, 0.0);
+    prob.V0.resize(Ny+1, Nx+1, 0.0);
 
     prob.regEpsilon = 0.0;
+    prob.r = 0.0;
 
-    prob.r = 1.0;
-    prob.vmin.resize(e_prm.Nc, -2.0);
-    prob.vmax.resize(e_prm.Nc, +2.0);
+    prob.vmin.resize(e_prm.Nc, -1.5);
+    prob.vmax.resize(e_prm.Nc, +1.5);
 }
 
 double call_fx(double *x)

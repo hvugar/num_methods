@@ -1,13 +1,13 @@
-#ifndef PROBLEM2H_H
-#define PROBLEM2H_H
+#ifndef PROBLEM2HO_H
+#define PROBLEM2HO_H
 
 #include "common.h"
 
-class PROBLEM2HSHARED_EXPORT Problem2HDirichlet : public RnFunction, public IGradient, public InitialBoundaryValueProblemPDE, public IProjection, public IPrinter
+class PROBLEM2HSHARED_EXPORT Problem2HODirichlet : public RnFunction, public IGradient, public InitialBoundaryValueProblemPDE, public IProjection, public IPrinter
 {
 public:
     static void Main(int argc, char* argv[]);
-    static void checkGradient(const Problem2HDirichlet &prob);
+    static void checkGradient(const Problem2HODirichlet &prob);
     static void optimization1();
 
     static void example1();
@@ -15,9 +15,9 @@ public:
 
     static void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, OptimizeParameter &o_prm0);
 
-    Problem2HDirichlet();
-    Problem2HDirichlet(const Dimension &time, const Dimension &dimx, const Dimension &dimy, const EquationParameter &eprm, const OptimizeParameter &oprm, const OptimizeParameter &oprm0);
-    virtual ~Problem2HDirichlet();
+    Problem2HODirichlet();
+    Problem2HODirichlet(const Dimension &time, const Dimension &dimx, const Dimension &dimy, const EquationParameter &eprm, const OptimizeParameter &oprm, const OptimizeParameter &oprm0);
+    virtual ~Problem2HODirichlet();
 
     virtual double fx(const DoubleVector &x) const;
     virtual void gradient(const DoubleVector &, DoubleVector &) const;
@@ -102,4 +102,4 @@ public:
     bool optimizeO;
 };
 
-#endif // PROBLEM2H_H
+#endif // PROBLEM2HO_H

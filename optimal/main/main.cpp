@@ -12,20 +12,20 @@
 #include "problem1/art_problem1.h"
 #include "problem1/loadedheatequation.h"
 
-#include "problem2P/1d/problem2.h"
+//#include "problem2P/1d/problem2.h"
 //#include "problem2P/2d/ex/problem22dex1.h"
 //#include "problem2P/2d/ex/problem22dex2.h"
 //#include "problem2P/2d/ex/problem22dex3.h"
 //#include "problem2P/2d/ex/problem22dex4.h"
 //#include "problem2P/2d/ex/problem22dex5.h"
 
-#include "../problem2P/2d/ex/expol.h"
-#include "../problem2P/2d/cproblem2forward2d.h"
-#include "../problem2P/2d/cproblem2backward2d.h"
-#include "../problem2P/2d/dirakdelta.h"
-#include "../problem2P/2d/ex/p2_article.h"
+//#include "../problem2P/2d/ex/expol.h"
+//#include "../problem2P/2d/cproblem2forward2d.h"
+//#include "../problem2P/2d/cproblem2backward2d.h"
+//#include "../problem2P/2d/dirakdelta.h"
+//#include "../problem2P/2d/ex/p2_article.h"
 
-#include "../problem2H/problem2h.h"
+#include "../problem2H/problem2hO.h"
 #include "../problem2H/problem2hN.h"
 #include "../problem2H/problem2hnm.h"
 
@@ -72,13 +72,6 @@
 
 #include "templatea.h"
 
-class MyFunction : public R1Function
-{
-public:
-    //virtual double fx(double x) const { return (x-0.0)*(x-0.0)*(x-0.0)*(x-0.0) - x*x + 0.1; }
-    virtual double fx(double x) const { return (x-0.0)*(x-0.0); }
-};
-
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
 //    HeatEquationIBVP1 eq1;
@@ -100,7 +93,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //    return 0;
 
 
-    QGuiApplication app(argc, argv);
+//    QGuiApplication app(argc, argv);
 
 //    TemplateA::Main(argc, argv);
 //    return 0;

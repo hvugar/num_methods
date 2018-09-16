@@ -19,8 +19,8 @@ TARGET = main
 INCLUDEPATH += ../minimum
 LIBS += -L../bin -lminimum
 
-INCLUDEPATH += ../border
-LIBS += -L../bin -lborder
+#INCLUDEPATH += ../border
+#LIBS += -L../bin -lborder
 
 #INCLUDEPATH += ../hyperbolic
 #LIBS += -L../bin -lhyperbolic
@@ -31,8 +31,11 @@ LIBS += -L../bin -lborder
 #INCLUDEPATH += ../rnfunction
 #LIBS += -L../bin -lrnfunction
 
-INCLUDEPATH += ../imaging
-LIBS += -L../bin -limaging
+#INCLUDEPATH += ../imaging
+#LIBS += -L../bin -limaging
+
+#INCLUDEPATH += ../problem2P
+#LIBS += -L../bin -lproblem2P
 
 INCLUDEPATH += ../problem2H
 LIBS += -L../bin -lproblem2H
@@ -40,7 +43,7 @@ LIBS += -L../bin -lproblem2H
 DESTDIR += ../bin
 
 #include(problem1/problem1.pri)
-include(problem2P/problem2P.pri)
+#include(problem2P/problem2P.pri)
 #include(problem4/problem4.pri)
 #include(problem5/problem5.pri)
 #include(load_sys/load_sys.pri)

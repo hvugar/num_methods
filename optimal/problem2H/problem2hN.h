@@ -29,6 +29,7 @@ struct Problem2HNDirichletR1MinimizeCallback : public R1FxMinimizer::Callback
 
 void example4();
 
+void example5();
 
 class PROBLEM2HSHARED_EXPORT Problem2HNDirichlet : public RnFunction, public IGradient, public InitialBoundaryValueProblemPDE, public IProjection, public IPrinter
 {

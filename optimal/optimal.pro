@@ -12,9 +12,11 @@ SUBDIRS += minimum
 #SUBDIRS += hyperbolic
 #SUBDIRS += discrete
 #SUBDIRS += imager
+#SUBDIRS += problem2P
 SUBDIRS += problem2H
 SUBDIRS += main
 
 main.depends = minimum
 problem2H.depends = minimum
+#exporter.depends = problem2P
 exporter.depends = problem2H
