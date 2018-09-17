@@ -93,7 +93,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //    return 0;
 
 
-//    QGuiApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
 
 //    TemplateA::Main(argc, argv);
 //    return 0;
