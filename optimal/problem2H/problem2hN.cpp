@@ -46,7 +46,7 @@ void example4()
     r_prm.eta.resize(e_prm.Nc);
 
 #ifdef EXAMPLE4_SAMPLE_1
-    o_prm.k[0][0]  = -0.1200; o_prm.k[0][1]  = -0.2400; o_prm.k[1][0]  = -0.4500; o_prm.k[1][1]  = +0.1800;
+    o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
     o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = -0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
     o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
     o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
@@ -80,7 +80,7 @@ void example4()
     // Grid parameters
     double hx = 0.010; int Nx = 100;
     double hy = 0.010; int Ny = 100;
-    double ht = 0.010; int Nt = 500;
+    double ht = 0.010; int Nt = 200;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
@@ -102,9 +102,9 @@ void example4()
         prob.mOptParameter = o_prm;
         prob.mRegParameter = r_prm;
         prob.optimizeK = true;
-        prob.optimizeZ = true;
-        prob.optimizeC = true;
-        prob.optimizeO = true;
+        prob.optimizeZ = false;
+        prob.optimizeC = false;
+        prob.optimizeO = false;
 
         prob.V0.resize(Ny+1, Nx+1, 0.0);
 
@@ -129,11 +129,9 @@ void example4()
         //            IPrinter::printSeperatorLine();
         //        }
 
-        //        ConjugateGradient g;
-        //        g.setResetIteration(true);
+        //ConjugateGradient g;
         SteepestDescentGradient g;
         //ConstStepGradient g;
-        //g.R1Minimizer().setCallback(new Problem2HNDirichletR1MinimizeCallback);
         g.setFunction(&prob);
         g.setGradient(&prob);
         g.setPrinter(&prob);
@@ -141,34 +139,34 @@ void example4()
         g.setEpsilon1(0.0001);
         g.setEpsilon2(0.0001);
         g.setEpsilon3(0.0001);
-        g.setR1MinimizeEpsilon(0.1, 0.001);
+        g.setR1MinimizeEpsilon(1.0, 0.001);
         g.setNormalize(true);
         g.showExitMessage(true);
 
 
-//        DoubleVector gr;
-//        prob.gradient(x, gr);
-//        gr[0] = gr[1] = gr[2] = gr[3] = gr[4] = gr[5] = gr[6] = gr[7] = 0.0;
-//        gr.L2Normalize();
-//        g.mg = &gr;
-//        g.mx = &x;
-//        DoubleVector cx(gr.length());
-//        for (int i = 0; i <= +200;  i++)
-//        {
-//            double a = 0.01*i;
-//            for (unsigned int i=0; i<gr.length(); i++)
-//            {
-//                cx[i] = x[i] - a * gr[i];
-//                //if (m_projection != NULL) m_projection->project(cx, i);
-//            }
-//            prob.project(cx);
-//            double f = prob.fx(cx);
-//            printf("%f %f ", a, f);
-//            printf("k:%7.4f %7.4f %7.4f %7.4f z:%7.4f %7.4f %7.4f %7.4f o:%6.4f %6.4f %6.4f %6.4f c:%6.4f %6.4f %6.4f %6.4f\n",
-//                   cx[0], cx[1], cx[2], cx[3], cx[4], cx[5], cx[6], cx[7], cx[8], cx[9], cx[10], cx[11], cx[12], cx[13], cx[14], cx[15]);
+        //        DoubleVector gr;
+        //        prob.gradient(x, gr);
+        //        gr[0] = gr[1] = gr[2] = gr[3] = gr[4] = gr[5] = gr[6] = gr[7] = 0.0;
+        //        gr.L2Normalize();
+        //        g.mg = &gr;
+        //        g.mx = &x;
+        //        DoubleVector cx(gr.length());
+        //        for (int i = 0; i <= +200;  i++)
+        //        {
+        //            double a = 0.01*i;
+        //            for (unsigned int i=0; i<gr.length(); i++)
+        //            {
+        //                cx[i] = x[i] - a * gr[i];
+        //                //if (m_projection != NULL) m_projection->project(cx, i);
+        //            }
+        //            prob.project(cx);
+        //            double f = prob.fx(cx);
+        //            printf("%f %f ", a, f);
+        //            printf("k:%7.4f %7.4f %7.4f %7.4f z:%7.4f %7.4f %7.4f %7.4f o:%6.4f %6.4f %6.4f %6.4f c:%6.4f %6.4f %6.4f %6.4f\n",
+        //                   cx[0], cx[1], cx[2], cx[3], cx[4], cx[5], cx[6], cx[7], cx[8], cx[9], cx[10], cx[11], cx[12], cx[13], cx[14], cx[15]);
 
-//        }
-//        exit(-1);
+        //        }
+        //        exit(-1);
 
         g.calculate(x);
 
@@ -1465,29 +1463,35 @@ void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const Dou
 
     C_UNUSED(prob);
     //IPrinter::printSeperatorLine();
+
+    prob->optimizeK = i%4 == 3;
+    prob->optimizeZ = i%4 == 0;
+    prob->optimizeC = i%4 == 1;
+    prob->optimizeO = i%4 == 2;
 }
 
 void Problem2HNDirichlet::project(DoubleVector &pv, unsigned int index)
 {
     return;
-    unsigned int Nc = mEquParameter.Nc;
-    unsigned int No = mEquParameter.No;
 
-    unsigned int offset = 2*Nc*No;
+//    unsigned int Nc = mEquParameter.Nc;
+//    unsigned int No = mEquParameter.No;
 
-    // xi
-    if ( offset <= index && index <= offset + 2*No - 1 )
-    {
-        if (pv[index] < 0.05) pv[index] = 0.05;
-        if (pv[index] > 0.95) pv[index] = 0.95;
-    }
+//    unsigned int offset = 2*Nc*No;
 
-    // eta
-    if ( offset + 2*No <= index && index <= offset + 2*No + 2*Nc - 1 )
-    {
-        if (pv[index] < 0.05) pv[index] = 0.05;
-        if (pv[index] > 0.95) pv[index] = 0.95;
-    }
+//    // xi
+//    if ( offset <= index && index <= offset + 2*No - 1 )
+//    {
+//        if (pv[index] < 0.05) pv[index] = 0.05;
+//        if (pv[index] > 0.95) pv[index] = 0.95;
+//    }
+
+//    // eta
+//    if ( offset + 2*No <= index && index <= offset + 2*No + 2*Nc - 1 )
+//    {
+//        if (pv[index] < 0.05) pv[index] = 0.05;
+//        if (pv[index] > 0.95) pv[index] = 0.95;
+//    }
 
     //return;
     //projectControlPoints(pv, index);
@@ -1502,7 +1506,6 @@ void Problem2HNDirichlet::project(DoubleVector &pv) const
     unsigned int start = 2*Nc*No;
     unsigned int end  =  2*Nc*No + 2*No + 2*Nc - 1;
 
-    //IPrinter::print(pv);
     for (unsigned int index = start; index <=end; index++)
     {
         if (pv[index] < 0.05) pv[index] = 0.05;
@@ -1510,14 +1513,9 @@ void Problem2HNDirichlet::project(DoubleVector &pv) const
     }
     for (unsigned int index = start; index <=end; index++)
     {
-        //projectControlPoints(pv, index);
-        projectMeasurePoints(pv, index);
+        projectControlPoints(pv, index);
+        //projectMeasurePoints(pv, index);
     }
-    //IPrinter::print(pv);
-
-    //return;
-    //projectControlPoints(pv, index);
-    //projectMeasurePoints(pv, index);
 }
 
 void Problem2HNDirichlet::projectControlPoints(DoubleVector &pv, unsigned int index) const

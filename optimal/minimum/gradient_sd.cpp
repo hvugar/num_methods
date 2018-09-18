@@ -7,7 +7,6 @@
 SteepestDescentGradient::SteepestDescentGradient() : GradientMethod()
 {
     setNormalize(true);
-    //    r1m.setFunction(this);
 }
 
 SteepestDescentGradient::~SteepestDescentGradient()
@@ -27,33 +26,49 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
     mg = &g;
     m_iteration_count = 0;
 
-    // Gradient of objectiv function in current point
+    /**************************************************************************************
+     * Gradient of objective functionin on initial point.
+     **************************************************************************************/
     m_gr->gradient(x, g);
-    f1 = m_fn->fx(x);
 
-    /* checking gradient norm */
-    /* if gradient norm at current point is less than epsilon then return. no minimize */
+    /**************************************************************************************
+     * Checking for gradient vector norm that is less of epsilon.
+     * If gradient vector norm in current point is less than epsilon then break the iteration.
+     * Finish minimization.
+     **************************************************************************************/
     double gradient_norm = g.L2Norm();
     if (gradient_norm < epsilon1())
     {
-        if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, f1, alpha, BREAK_FIRST_ITERATION);
+        if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, m_fn->fx(x), alpha, BREAK_FIRST_ITERATION);
         if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than epsilon...");
         return;
     }
+
+    /**************************************************************************************
+     * Value of objective functionin on initial point.
+     **************************************************************************************/
+    f1 = m_fn->fx(x);
+
     if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, f1, alpha, FIRST_ITERATION);
 
     do
     {
         m_iteration_count++;
 
-        /* Normalize vector */
+        /**************************************************************************************
+         * Normalization of a vector
+         **************************************************************************************/
         if (m_normalize) g.L2Normalize();
 
-        /* R1 minimization in direct of antigradient */
+        /**************************************************************************************
+         * One-dimensional minimization along the direction of a anti-gradient
+         **************************************************************************************/
         alpha = minimize(x, g);
 
+        /**************************************************************************************
+         * Calculation next point.
+         **************************************************************************************/
         distance = 0.0;
-        double f1 = m_fn->fx(x);
         for (unsigned int i=0; i < n; i++)
         {
             double cx = x[i];
@@ -61,18 +76,25 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
 
             if (m_projection != NULL) m_projection->project(x, i);
 
-            // calculating distance
+            /**************************************************************************************
+             * Calculating distance.
+             **************************************************************************************/
             distance += (x[i]-cx)*(x[i]-cx);
         }
         if (m_projection != NULL) m_projection->project(x);
         distance = sqrt(distance);
         f2 = m_fn->fx(x);
 
-        // Gradient of objectiv function in current point
+        /**************************************************************************************
+         * Gradient of objectiv function in next point
+         **************************************************************************************/
         m_gr->gradient(x, g);
 
-        /* checking gradient norm */
-        /* if gradient norm at current point is less than epsilon then return. no minimize */
+        /**************************************************************************************
+         * Checking for gradient vector norm that is less of epsilon.
+         * If gradient vector norm in current point is less than epsilon then break the iteration.
+         * Finish minimization.
+         **************************************************************************************/
         double gradient_norm = g.L2Norm();
         if (gradient_norm < epsilon1())
         {
@@ -81,7 +103,12 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
             break;
         }
 
-        /* calculating distance previous and new point */
+        /**************************************************************************************
+         * Calculating distance between the previous and current points.
+         * Calculating difference values of functions in previous and current points.
+         * If distance and difference is less than epsilon then break the iteration.
+         * Finish minimization.
+         **************************************************************************************/
         if (distance < epsilon2() && fabs(f2 - f1) < epsilon3())
         {
             if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, f2, alpha, GradientMethod::BREAK_DISTANCE_LESS);
@@ -89,6 +116,9 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
             break;
         }
 
+        /**************************************************************************************
+         * Printing iteration information.
+         **************************************************************************************/
         if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, f2, alpha, GradientMethod::NEXT_ITERATION);
 
         f1 = f2;
@@ -132,12 +162,14 @@ double SteepestDescentGradient::fx(double alpha) const
     DoubleVector &g = *mg;
     unsigned int n = x.length();
 
-    DoubleVector cx(n);
+    DoubleVector cx = x;
     for (unsigned int i=0; i<n; i++)
     {
         cx[i] = x[i] - alpha * g[i];
         if (m_projection != NULL) m_projection->project(cx, i);
     }
+
     if (m_projection != NULL) m_projection->project(cx);
+
     return m_fn->fx(cx);
 }

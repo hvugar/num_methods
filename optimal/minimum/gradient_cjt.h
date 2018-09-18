@@ -26,9 +26,6 @@ public:
 
     virtual void calculate(DoubleVector &x);
 
-    //R1FxMinimizer &R1Minimizer();
-    //const R1FxMinimizer& R1Minimizer() const;
-
     void setAlgorithm(Algorithm algorithm);
     void setResetIteration(bool reset);
 
@@ -38,7 +35,6 @@ protected:
     
     DoubleVector *mx;
     DoubleVector *ms;
-    //R1FxMinimizer r1m;
 
 private:
     Algorithm malgoritm;
