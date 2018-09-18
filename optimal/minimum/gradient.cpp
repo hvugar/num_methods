@@ -169,48 +169,10 @@ void GradientMethod::straightLineSearch(double x, double step, double &a, double
     {
         unimodal = false;
         //if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
-        fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", -2, a, x, b, fxa, fxx, fxb);
-        fputs("Function is not unimodal\n", stderr);
+        //fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", -2, a, x, b, fxa, fxx, fxb);
+        //fputs("Function is not unimodal\n", stderr);
         return;
     }
-
-//    // if fxa and fxb are both lesser than fxx then there is not minimum. function is not unimodal
-//    if (fxa < fxx && fxx > fxb)
-//    {
-//        // if fxa equals fxb
-//        if (fabs(fxa - fxb) <= DBL_EPSILON)
-//        {
-//            //puts("y1 = y2");
-//            //a = x - fstep;
-//            //b = x + fstep;
-//            if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
-//            //return;
-//        }
-//        else if (fxa < fxb)
-//        {
-//            //puts("y1 < y2");
-//            //a = x - fstep;
-//            b = x;
-//            fxb = mfunction->fx(b); fx_count++;
-
-//            if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
-//            //return;
-//        }
-//        else if (fxa > fxb)
-//        {
-//            //puts("y1 > y2");
-//            a = x;
-//            //b = x + fstep;
-//            fxa = mfunction->fx(a); fx_count++;
-
-//            if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
-//            //return;
-//        }
-//        //fprintf(stderr, "%f %f %f %f %f %f\n", fxa, fxx, fxb, x - fstep, x, x + fstep);
-//        fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", -2, a, x, b, fxa, fxx, fxb);
-//        fputs("Function is not unimodal\n", stderr);
-//        return;
-//    }
 
     // from left to right -->>
     if ( fxa >= fxx && fxx >= fxb )

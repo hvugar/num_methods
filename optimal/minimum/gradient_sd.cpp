@@ -64,6 +64,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
             // calculating distance
             distance += (x[i]-cx)*(x[i]-cx);
         }
+        if (m_projection != NULL) m_projection->project(x);
         distance = sqrt(distance);
         f2 = m_fn->fx(x);
 
@@ -102,22 +103,6 @@ double SteepestDescentGradient::minimize(const DoubleVector &x, const DoubleVect
     C_UNUSED(x);
     C_UNUSED(g);
 
-//    for (int i = -100; i <= +100;  i++)
-//    {
-//        double a = 0.001*i;
-//        double f = fx(a);
-//        printf("%f %f\n", a, f);
-//        //printf("   %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n", g[0], g[1], g[2], g[3],
-//        //        g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
-//        //printf("   %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n", x[0], x[1], x[2], x[3],
-//        //        x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
-//        //printf("   %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n", x[0]-a*g[0], x[1]-a*g[1], x[2]-a*g[2], x[3]-a*g[3],
-//        //                                                            x[4]-a*g[4], x[5]-a*g[5], x[6]-a*g[6], x[7]-a*g[7],
-//        //                                                            x[8]-a*g[8], x[9]-a*g[9], x[10]-a*g[10], x[11]-a*g[11],
-//        //                                                            x[12]-a*g[12], x[13]-a*g[13], x[14]-a*g[14], x[15]-a*g[15]);
-//    }
-//    exit(-1);
-
     double alpha0 = min_step;
     double a,b,alpha;
 
@@ -153,12 +138,6 @@ double SteepestDescentGradient::fx(double alpha) const
         cx[i] = x[i] - alpha * g[i];
         if (m_projection != NULL) m_projection->project(cx, i);
     }
-
-    //printf("mg %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n", g[0], g[1], g[2], g[3],
-    //        g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
-    //printf("xx %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n", x[0], x[1], x[2], x[3],
-    //        x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
-    //printf("cx %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n", cx[0], cx[1], cx[2], cx[3],
-    //        cx[4], cx[5], cx[6], cx[7], cx[8], cx[9], cx[10], cx[11], cx[12], cx[13], cx[14], cx[15]);
+    if (m_projection != NULL) m_projection->project(cx);
     return m_fn->fx(cx);
 }

@@ -1,7 +1,7 @@
 #include "problem2hN.h"
 
 #define SAVE_TO_IMG1
-#define EXAMPLE4_SAMPLE_2
+#define EXAMPLE4_SAMPLE_1
 
 void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -46,7 +46,7 @@ void example4()
     r_prm.eta.resize(e_prm.Nc);
 
 #ifdef EXAMPLE4_SAMPLE_1
-    o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
+    o_prm.k[0][0]  = -0.1200; o_prm.k[0][1]  = -0.2400; o_prm.k[1][0]  = -0.4500; o_prm.k[1][1]  = +0.1800;
     o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = -0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
     o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
     o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
@@ -87,9 +87,9 @@ void example4()
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 1.0000 << 10.000 << 100.000 << 1000.0;// << 20.000 << 50.000 << 100.00;
+    DoubleVector r; r << 0.0000;// << 10.000 << 100.000 << 1000.0;// << 20.000 << 50.000 << 100.00;
     // Regularization coefficients
-    DoubleVector e; e << 0.0000 << 0.0000 << 0.00000 << 0.0000;// << 0.0000 << 0.0000 << 0.0000;
+    DoubleVector e; e << 0.0000;// << 0.0000 << 0.00000 << 0.0000;// << 0.0000 << 0.0000 << 0.0000;
 
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
@@ -111,23 +111,23 @@ void example4()
         prob.regEpsilon = e[i];
         prob.r = r[i];
 
-        prob.vmin.resize(e_prm.Nc, -1.5);
-        prob.vmax.resize(e_prm.Nc, +1.5);
+        prob.vmin.resize(e_prm.Nc, -2.0);
+        prob.vmax.resize(e_prm.Nc, +2.0);
         prob.LD = 50;
 
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
-//            prob.checkGradient(prob);
-//            IPrinter::printSeperatorLine();
+            //            prob.checkGradient(prob);
+            //            IPrinter::printSeperatorLine();
         }
-//        else
-//        {
-//            prob.VectorToPrm(x, o_prm);
-//            prob.mOptParameter = o_prm;
-//            prob.checkGradient(prob);
-//            IPrinter::printSeperatorLine();
-//        }
+        //        else
+        //        {
+        //            prob.VectorToPrm(x, o_prm);
+        //            prob.mOptParameter = o_prm;
+        //            prob.checkGradient(prob);
+        //            IPrinter::printSeperatorLine();
+        //        }
 
         //        ConjugateGradient g;
         //        g.setResetIteration(true);
@@ -141,9 +141,34 @@ void example4()
         g.setEpsilon1(0.0001);
         g.setEpsilon2(0.0001);
         g.setEpsilon3(0.0001);
-        g.setR1MinimizeEpsilon(0.01, 0.001);
+        g.setR1MinimizeEpsilon(0.1, 0.001);
         g.setNormalize(true);
         g.showExitMessage(true);
+
+
+//        DoubleVector gr;
+//        prob.gradient(x, gr);
+//        gr[0] = gr[1] = gr[2] = gr[3] = gr[4] = gr[5] = gr[6] = gr[7] = 0.0;
+//        gr.L2Normalize();
+//        g.mg = &gr;
+//        g.mx = &x;
+//        DoubleVector cx(gr.length());
+//        for (int i = 0; i <= +200;  i++)
+//        {
+//            double a = 0.01*i;
+//            for (unsigned int i=0; i<gr.length(); i++)
+//            {
+//                cx[i] = x[i] - a * gr[i];
+//                //if (m_projection != NULL) m_projection->project(cx, i);
+//            }
+//            prob.project(cx);
+//            double f = prob.fx(cx);
+//            printf("%f %f ", a, f);
+//            printf("k:%7.4f %7.4f %7.4f %7.4f z:%7.4f %7.4f %7.4f %7.4f o:%6.4f %6.4f %6.4f %6.4f c:%6.4f %6.4f %6.4f %6.4f\n",
+//                   cx[0], cx[1], cx[2], cx[3], cx[4], cx[5], cx[6], cx[7], cx[8], cx[9], cx[10], cx[11], cx[12], cx[13], cx[14], cx[15]);
+
+//        }
+//        exit(-1);
 
         g.calculate(x);
 
@@ -1427,9 +1452,9 @@ void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const Dou
     double pnt = penalty(u_info, o_prm);
     double nrm = norm(prob->mEquParameter, prob->mOptParameter, prob->mRegParameter);
 
-    printf("I[%3d]: I:%10.6f P:%12.6f N:%10.6f F:%10.6f R:%7.3f e:%5.3f a:%10.6f  ", i, ing, pnt, nrm, f, r, regEpsilon, alpha);
+    printf("I[%3d]: F:%10.6f I:%10.6f P:%12.6f N:%10.6f R:%7.3f e:%5.3f a:%10.6f  ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
     //if (result == GradientMethod::BREAK_GRADIENT_NORM_LESS || result == GradientMethod::BREAK_DISTANCE_LESS)
-        printf("k:%7.4f %7.4f %7.4f %7.4f z:%7.4f %7.4f %7.4f %7.4f o:%6.4f %6.4f %6.4f %6.4f c:%6.4f %6.4f %6.4f %6.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
+    printf("k:%7.4f %7.4f %7.4f %7.4f z:%7.4f %7.4f %7.4f %7.4f o:%6.4f %6.4f %6.4f %6.4f c:%6.4f %6.4f %6.4f %6.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
     //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
     //DoubleVector n = g;
     //n.L2Normalize();
@@ -1444,12 +1469,7 @@ void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const Dou
 
 void Problem2HNDirichlet::project(DoubleVector &pv, unsigned int index)
 {
-    //    if (index < 4)
-    //    {
-    //        if ( pv[index] > -0.99 ) pv[index] = -0.99;
-    //        if ( pv[index] < +0.99 ) pv[index] = +0.99;
-    //    }
-
+    return;
     unsigned int Nc = mEquParameter.Nc;
     unsigned int No = mEquParameter.No;
 
@@ -1468,55 +1488,183 @@ void Problem2HNDirichlet::project(DoubleVector &pv, unsigned int index)
         if (pv[index] < 0.05) pv[index] = 0.05;
         if (pv[index] > 0.95) pv[index] = 0.95;
     }
-//    return;
 
+    //return;
+    //projectControlPoints(pv, index);
+    projectMeasurePoints(pv, index);
+}
+
+void Problem2HNDirichlet::project(DoubleVector &pv) const
+{
+    unsigned int Nc = mEquParameter.Nc;
+    unsigned int No = mEquParameter.No;
+
+    unsigned int start = 2*Nc*No;
+    unsigned int end  =  2*Nc*No + 2*No + 2*Nc - 1;
+
+    //IPrinter::print(pv);
+    for (unsigned int index = start; index <=end; index++)
+    {
+        if (pv[index] < 0.05) pv[index] = 0.05;
+        if (pv[index] > 0.95) pv[index] = 0.95;
+    }
+    for (unsigned int index = start; index <=end; index++)
+    {
+        //projectControlPoints(pv, index);
+        projectMeasurePoints(pv, index);
+    }
+    //IPrinter::print(pv);
+
+    //return;
+    //projectControlPoints(pv, index);
+    //projectMeasurePoints(pv, index);
+}
+
+void Problem2HNDirichlet::projectControlPoints(DoubleVector &pv, unsigned int index) const
+{
     double dx = 0.10;
 
-    if (index == 12 && fabs(pv[8] - pv[12])<dx)
+    if (index == 12)
     {
-        pv[12] = pv[8] + dx;
-        if (pv[12] > 0.95) pv[12] = pv[8] - dx;
+        if (fabs(pv[12] - pv[8])<dx)
+        {
+            pv[12] = pv[8] + dx;
+            if (pv[12] > 0.95) pv[12] = pv[8] - dx;
+        }
+        if (fabs(pv[12] - pv[10])<dx)
+        {
+            pv[12] = pv[10] + dx;
+            if (pv[12] > 0.95) pv[12] = pv[10] - dx;
+        }
     }
 
-    if (index == 12 && fabs(pv[10] - pv[12])<dx)
+    if (index == 13)
     {
-        pv[12] = pv[10] + dx;
-        if (pv[12] > 0.95) pv[12] = pv[10] - dx;
+        if (fabs(pv[13] - pv[9])<dx)
+        {
+            pv[13] = pv[9] + dx;
+            if (pv[13] > 0.95) pv[13] = pv[9] - dx;
+        }
+        if (fabs(pv[13] - pv[11])<dx)
+        {
+            pv[13] = pv[11] + dx;
+            if (pv[13] > 0.95) pv[13] = pv[11] - dx;
+        }
     }
 
-    if (index == 14 && fabs(pv[8] - pv[14])<dx)
+    if (index == 14)
     {
-        pv[14] = pv[8] + dx;
-        if (pv[14] > 0.95) pv[14] = pv[8] - dx;
-    }
-    if (index == 14 && fabs(pv[10] - pv[14])<dx)
-    {
-        pv[14] = pv[10] + dx;
-        if (pv[14] > 0.95) pv[14] = pv[10] - dx;
-    }
-
-    if (index == 13 && fabs(pv[9] - pv[13])<dx)
-    {
-        pv[13] = pv[9] + dx;
-        if (pv[13] > 0.95) pv[13] = pv[9] - dx;
-    }
-    if (index == 13 && fabs(pv[11] - pv[13])<dx)
-    {
-        pv[13] = pv[11] + dx;
-        if (pv[13] > 0.95) pv[13] = pv[11] - dx;
+        if (fabs(pv[14] - pv[8])<dx)
+        {
+            pv[14] = pv[8] + dx;
+            if (pv[14] > 0.95) pv[14] = pv[8] - dx;
+        }
+        if (fabs(pv[14] - pv[10])<dx)
+        {
+            pv[14] = pv[10] + dx;
+            if (pv[14] > 0.95) pv[14] = pv[10] - dx;
+        }
     }
 
-    if (index == 15 && fabs(pv[9] - pv[15])<dx)
+    if (index == 15)
     {
-        pv[15] = pv[9] + dx;
-        if (pv[15] > 0.95) pv[15] = pv[9] - dx;
-    }
-    if (index == 15 && fabs(pv[11] - pv[15])<dx)
-    {
-        pv[15] = pv[11] + dx;
-        if (pv[15] > 0.95) pv[15] = pv[11] - dx;
+        if (fabs(pv[15] - pv[9])<dx)
+        {
+            pv[15] = pv[9] + dx;
+            if (pv[15] > 0.95) pv[15] = pv[9] - dx;
+        }
+        if (fabs(pv[15] - pv[11])<dx)
+        {
+            pv[15] = pv[11] + dx;
+            if (pv[15] > 0.95) pv[15] = pv[11] - dx;
+        }
     }
 }
+
+void Problem2HNDirichlet::projectMeasurePoints(DoubleVector &pv, unsigned int index) const
+{
+    double dx = 0.10;
+
+    //IPrinter::print(pv);
+    if (index == 8)
+    {
+        //if (fabs(pv[8] - pv[10])<dx)
+        //{
+        //    pv[8] = pv[10] + dx;
+        //    if (pv[8] > 0.95) pv[8] = pv[10] - dx;
+        //}
+        if (fabs(pv[8] - pv[12])<dx)
+        {
+            pv[8] = pv[12] + dx;
+            if (pv[8] > 0.95) pv[8] = pv[12] - dx;
+        }
+        if (fabs(pv[8] - pv[14])<dx)
+        {
+            pv[8] = pv[14] + dx;
+            if (pv[8] > 0.95) pv[8] = pv[14] - dx;
+        }
+
+    }
+
+    if (index == 9)
+    {
+        //if (fabs(pv[9] - pv[11])<dx)
+        //{
+        //    pv[9] = pv[11] + dx;
+        //    if (pv[9] > 0.95) pv[9] = pv[11] - dx;
+        //}
+        if (fabs(pv[9] - pv[13])<dx)
+        {
+            pv[9] = pv[13] + dx;
+            if (pv[9] > 0.95) pv[9] = pv[13] - dx;
+        }
+        if (fabs(pv[9] - pv[15])<dx)
+        {
+            pv[9] = pv[15] + dx;
+            if (pv[9] > 0.95) pv[9] = pv[15] - dx;
+        }
+    }
+
+    if (index == 10)
+    {
+        //if (fabs(pv[10] - pv[8])<dx)
+        //{
+        //    pv[10] = pv[8] + dx;
+        //    if (pv[10] > 0.95) pv[10] = pv[8] - dx;
+        //}
+        if (fabs(pv[10] - pv[12])<dx)
+        {
+            pv[10] = pv[12] + dx;
+            if (pv[10] > 0.95) pv[10] = pv[12] - dx;
+        }
+        if (fabs(pv[10] - pv[14])<dx)
+        {
+            pv[10] = pv[12] + dx;
+            if (pv[10] > 0.95) pv[10] = pv[12] - dx;
+        }
+    }
+
+    if (index == 11)
+    {
+        //if (fabs(pv[11] - pv[9])<dx)
+        //{
+        //    pv[11] = pv[9] + dx;
+        //    if (pv[11] > 0.95) pv[11] = pv[9] - dx;
+        //}
+        if (fabs(pv[11] - pv[13])<dx)
+        {
+            pv[11] = pv[13] + dx;
+            if (pv[11] > 0.95) pv[11] = pv[13] - dx;
+        }
+        if (fabs(pv[11] - pv[15])<dx)
+        {
+            pv[11] = pv[15] + dx;
+            if (pv[11] > 0.95) pv[11] = pv[15] - dx;
+        }
+    }
+    //IPrinter::print(pv);
+}
+
 
 void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const
 {

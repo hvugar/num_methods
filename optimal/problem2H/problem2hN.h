@@ -70,7 +70,12 @@ public:
     virtual double boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const { return NAN; }
 
     virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const;
+
     virtual void project(DoubleVector &x, unsigned int index);
+    virtual void project(DoubleVector &x) const;
+
+    virtual void projectControlPoints(DoubleVector &x, unsigned int index) const;
+    virtual void projectMeasurePoints(DoubleVector &x, unsigned int index) const;
 
 private:
     void solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const;
