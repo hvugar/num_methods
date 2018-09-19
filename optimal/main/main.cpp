@@ -26,7 +26,7 @@
 //#include "../problem2P/2d/ex/p2_article.h"
 
 #include "../problem2H/problem2hO.h"
-#include "../problem2H/problem2hN.h"
+#include "../problem2H/problem2h_solver.h"
 #include "../problem2H/problem2hnm.h"
 
 #include "problem4/problem4ex1.h"

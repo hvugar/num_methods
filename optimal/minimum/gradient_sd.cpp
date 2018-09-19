@@ -133,7 +133,7 @@ double SteepestDescentGradient::minimize(const DoubleVector &x, const DoubleVect
     C_UNUSED(x);
     C_UNUSED(g);
 
-    double alpha0 = min_step;
+    double alpha0 = 0.0;
     double a,b,alpha;
 
     double fxa, fxb;

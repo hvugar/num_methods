@@ -154,10 +154,6 @@ void GradientMethod::straightLineSearch(double x, double step, double &a, double
     //if (mcallback) mcallback->straightLineSearchCallback(iteration, x, a, b, fxa, fxb, fx_count);
 
     // if fxa and fxb are both greater than fxx, then minimum point is inside a and b
-    /**
-     *
-     *
-     */
     if (fxa >= fxx && fxb >= fxx)
     {
         unimodal = true;

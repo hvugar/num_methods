@@ -1,5 +1,5 @@
 #include "exporter.h"
-#include "problem2hN.h"
+#include "problem2h_solver.h"
 
 #define EXAMPLE4_SAMPLE_1
 

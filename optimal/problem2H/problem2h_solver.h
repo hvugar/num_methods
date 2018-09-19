@@ -4,54 +4,19 @@
 #include "common.h"
 #include "../imaging/imaging.h"
 
-struct Problem2HNDirichletR1MinimizeCallback : public R1FxMinimizer::Callback
-{
-    virtual void straightLineSearchCallback(unsigned int i, double x, double a, double b, double fxa, double fxb, unsigned int fx_count) const
-    {
-        printf("l %4d a:%10.6f x:%10.6f b:%10.6f fxa:%10.6f fxx:%10.6f fxb:%10.6f fx_c:nt%4d\n", i, a, x, b, fxa, function()->fx(x), fxb, fx_count);
-    }
-
-    virtual void swannCallback(unsigned int i, double x, double a, double b, double fxa, double fxb, unsigned int fx_count) const
-    {
-        printf("s %4d a:%10.6f x:%10.6f b:%10.6f fxa:%10.6f fxx:%10.6f fxb:%10.6f fx_c:nt%4d\n", i, a, x, b, fxa, function()->fx(x), fxb, fx_count);
-    }
-
-    virtual void goldenSectionSearchCallback(unsigned int i, double x, double a, double b, double fxx, double fxa, double fxb, unsigned int fx_count) const
-    {
-        printf("g %4d a:%10.6f x:%10.6f b:%10.6f fxa:%10.6f fxx:%10.6f fxb:%10.6f fx_cnt:%4d\n", i, a, x, b, fxa, fxx, fxb, fx_count);
-    }
-
-    virtual void halphIntervalMethodCallback(unsigned int i, double x, double a, double b, double fxx, double fxa, double fxb, unsigned int fx_count) const
-    {
-        goldenSectionSearchCallback(i, x, a, b, fxx, fxa, fxb, fx_count);
-    }
-};
-
-void example4();
-
-void example5();
-
 class PROBLEM2HSHARED_EXPORT Problem2HNDirichlet : public RnFunction, public IGradient, public InitialBoundaryValueProblemPDE, public IProjection, public IPrinter
 {
 public:
     static void Main(int argc, char* argv[]);
     static void checkGradient(const Problem2HNDirichlet &prob);
-    static void optimization1();
-
-    static void example1();
-    static void example2();
-    static void example3();
 
     static void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, OptimizeParameter &o_prm0);
 
     Problem2HNDirichlet();
-    Problem2HNDirichlet(const Dimension &time, const Dimension &dimx, const Dimension &dimy, const EquationParameter &eprm, const OptimizeParameter &oprm, const OptimizeParameter &oprm0);
     virtual ~Problem2HNDirichlet();
 
     virtual double fx(const DoubleVector &x) const;
     virtual void gradient(const DoubleVector &, DoubleVector &) const;
-
-    void experimentInfo(const Problem2HNDirichlet &prob) const;
 
 protected:
     inline double mu(double x, double y) const;
@@ -77,7 +42,6 @@ public:
     virtual void projectControlPoints(DoubleVector &x, unsigned int index) const;
     virtual void projectMeasurePoints(DoubleVector &x, unsigned int index) const;
 
-private:
     void solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const;
     void solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vector &p_info, bool use, const spif_vector &u_info) const;
 
@@ -135,6 +99,9 @@ public:
     bool optimizeZ;
     bool optimizeC;
     bool optimizeO;
+
+    bool usePenalty;
+    bool useNormal;
 };
 
 #endif // PROBLEM2H_H
