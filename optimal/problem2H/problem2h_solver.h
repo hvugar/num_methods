@@ -2,15 +2,12 @@
 #define PROBLEM2HN_H
 
 #include "common.h"
-#include "../imaging/imaging.h"
 
 class PROBLEM2HSHARED_EXPORT Problem2HNDirichlet : public RnFunction, public IGradient, public InitialBoundaryValueProblemPDE, public IProjection, public IPrinter
 {
 public:
     static void Main(int argc, char* argv[]);
     static void checkGradient(const Problem2HNDirichlet &prob);
-
-    static void initParameters(EquationParameter &e_prm, OptimizeParameter &o_prm, OptimizeParameter &o_prm0);
 
     Problem2HNDirichlet();
     virtual ~Problem2HNDirichlet();

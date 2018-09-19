@@ -14,6 +14,7 @@
 #include <gradient_cs.h>
 #include <grid/ibvp.h>
 #include "problem2h_global.h"
+#include "../imaging/imaging.h"
 
 struct PROBLEM2HSHARED_EXPORT OptimizeParameter
 {

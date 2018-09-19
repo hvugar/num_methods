@@ -3,14 +3,13 @@
 #include <cmethods.h>
 #include <grid/pibvp.h>
 #include <grid/hibvp.h>
-//#include <ode/cauchyp.h>
 #include <ode/nlode1o.h>
 
-#include "problem1/problem1L1.h"
-#include "problem1/problem1L2.h"
-#include "problem1/problem1L3.h"
-#include "problem1/art_problem1.h"
-#include "problem1/loadedheatequation.h"
+//#include "problem1/problem1L1.h"
+//#include "problem1/problem1L2.h"
+//#include "problem1/problem1L3.h"
+//#include "problem1/art_problem1.h"
+//#include "problem1/loadedheatequation.h"
 
 //#include "problem2P/1d/problem2.h"
 //#include "problem2P/2d/ex/problem22dex1.h"
@@ -25,37 +24,7 @@
 //#include "../problem2P/2d/dirakdelta.h"
 //#include "../problem2P/2d/ex/p2_article.h"
 
-#include "../problem2H/problem2hO.h"
 #include "../problem2H/problem2h_solver.h"
-#include "../problem2H/problem2hnm.h"
-
-#include "problem4/problem4ex1.h"
-#include "problem4/problem4ex2.h"
-
-#include "problem5/nllparabolic.h"
-
-//#include <../border/borderparabolicd.h>
-//#include <../border/borderparabolicn.h>
-//#include <../border/borderparabolic2d.h>
-#include <../border/borderhyperbolic2d.h>
-
-#include <../border/grid/parabolicibvp1.h>
-#include <../border/grid/parabolicibvp2.h>
-
-//#include <../border/grid/hyperbolicibvp1.h>
-//#include <../border/grid/newtonheatequationex1.h>
-
-//#include <../parabolic/1d/heatcontrol.h>
-//#include <../parabolic/1d/heatcontrol1.h>
-
-#include <../rnfunction/rosenbrock.h>
-#include <../rnfunction/quadraticfunction.h>
-
-#include "load_sys/slodenlcsv.h"
-#include "load_sys/slodenlcsm.h"
-#include "load_sys/slodenlcsv2.h"
-#include "load_sys/lode1oex1.h"
-
 #include "ivp/nlode1oex1.h"
 
 #include <utils/matrix.h>

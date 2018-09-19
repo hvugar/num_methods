@@ -67,7 +67,7 @@ void example1()
     // Regulirization parameters ---------------------------------------------------------------------
 
     DoubleVector r; r << 0.0000 << 2.0000 << 5.0000 << 10.000 << 100.00;
-    DoubleVector e; e << 0.0000 << 0.0000 << 0.0000 << 0.0000 << 0.0000 << 0.0000 << 0.0000;
+    DoubleVector e; e << 0.0000 << 0.0000 << 0.0000 << 0.0000 << 0.0000;
 
     double hx, hy; hx = hy = 0.01;
     int Nx, Ny; Nx = Ny = 100;
@@ -101,7 +101,7 @@ void example1()
         prob.r = r[i];
         prob.vmin.resize(e_prm.Nc, -5.0);
         prob.vmax.resize(e_prm.Nc, +5.0);
-        prob.LD = 10;
+        prob.LD = 50;
 
         if (i==0)
         {
@@ -111,9 +111,8 @@ void example1()
             //IPrinter::printSeperatorLine();
         }
 
-        ConjugateGradient g;
-        //SteepestDescentGradient g;
-        //g.R1Minimizer().setCallback(new Problem2HNDirichletR1MinimizeCallback);
+        //ConjugateGradient g;
+        SteepestDescentGradient g;
         g.setFunction(&prob);
         g.setGradient(&prob);
         g.setPrinter(&prob);
@@ -124,7 +123,6 @@ void example1()
         g.setR1MinimizeEpsilon(1.0, 0.001);
         g.setNormalize(true);
         g.showExitMessage(true);
-        g.setResetIteration(true);
 
         g.calculate(x);
 
@@ -354,7 +352,7 @@ void example4()
     // Equation parameters
     EquationParameter e_prm;
     e_prm.a = 1.0;
-    e_prm.lambda = 0.01;
+    e_prm.lambda = +0.01;
 
     // Pulse influences
     e_prm.Ns = 2;
@@ -383,7 +381,7 @@ void example4()
     r_prm.eta.resize(e_prm.Nc);
 
 #ifdef EXAMPLE4_SAMPLE_1
-    o_prm.k[0][0]  = -2.1200; o_prm.k[0][1]  = -2.2400; o_prm.k[1][0]  = -2.4500; o_prm.k[1][1]  = -2.1800;
+    o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
     o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = -0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
     o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
     o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
@@ -420,7 +418,7 @@ void example4()
     // Grid parameters
     double hx = 0.010; int Nx = 100;
     double hy = 0.010; int Ny = 100;
-    double ht = 0.010; int Nt = 500;
+    double ht = 0.001; int Nt = 500;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
@@ -451,8 +449,8 @@ void example4()
         prob.regEpsilon = e[i];
         prob.r = r[i];
 
-        prob.vmin.resize(e_prm.Nc, -2.0);
-        prob.vmax.resize(e_prm.Nc, +2.0);
+        prob.vmin.resize(e_prm.Nc, -1.5);
+        prob.vmax.resize(e_prm.Nc, +1.5);
         prob.LD = 50;
 
         if (i==0)
@@ -461,13 +459,6 @@ void example4()
             //            prob.checkGradient(prob);
             //            IPrinter::printSeperatorLine();
         }
-        //        else
-        //        {
-        //            prob.VectorToPrm(x, o_prm);
-        //            prob.mOptParameter = o_prm;
-        //            prob.checkGradient(prob);
-        //            IPrinter::printSeperatorLine();
-        //        }
 
         //ConjugateGradient g;
         SteepestDescentGradient g;
@@ -479,10 +470,9 @@ void example4()
         g.setEpsilon1(0.0001);
         g.setEpsilon2(0.0001);
         g.setEpsilon3(0.0001);
-        g.setR1MinimizeEpsilon(0.1, 0.001);
+        g.setR1MinimizeEpsilon(1.0, 0.0001);
         g.setNormalize(true);
         g.showExitMessage(true);
-
 
 //        DoubleVector gr;
 //        prob.gradient(x, gr);
