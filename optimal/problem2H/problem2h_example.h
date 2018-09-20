@@ -3,7 +3,7 @@
 
 #include "problem2h_solver.h"
 
-#define EXAMPLE4_SAMPLE_2
+#define EXAMPLE4_SAMPLE_1
 
 class Problem2HExample {};
 

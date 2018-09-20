@@ -529,7 +529,7 @@ void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const Dou
     double pnt = penalty(u_info, o_prm);
     double nrm = norm(prob->mEquParameter, prob->mOptParameter, prob->mRegParameter);
 
-    printf("I[%3d]: F:%10.6f I:%10.6f P:%12.6f N:%10.6f R:%7.3f e:%5.3f a:%10.6f  ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
+    printf("I[%3d]: F:%10.6f I:%10.6f P:%12.6f N:%10.6f R:%7.3f e:%5.3f a:%10.6f  \n", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
     //if (result == GradientMethod::BREAK_GRADIENT_NORM_LESS || result == GradientMethod::BREAK_DISTANCE_LESS)
     printf("k:%7.4f %7.4f %7.4f %7.4f z:%7.4f %7.4f %7.4f %7.4f o: %6.4f %6.4f %6.4f %6.4f c: %6.4f %6.4f %6.4f %6.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
     //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
@@ -547,6 +547,7 @@ void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const Dou
 //    prob->optimizeZ = i%4 == 0;
 //    prob->optimizeC = i%4 == 1;
 //    prob->optimizeO = i%4 == 2;
+//    if (alpha > 0.00001) prob->gm->setR1MinimizeEpsilon(alpha, 0.0001);
 }
 
 void Problem2HNDirichlet::project(DoubleVector &pv, unsigned int index)
@@ -685,7 +686,7 @@ void Problem2HNDirichlet::projectControlPoints(DoubleVector &pv, unsigned int in
 
 void Problem2HNDirichlet::projectMeasurePoints(DoubleVector &pv, unsigned int index) const
 {
-    double dist = 0.02;
+    double dist = 0.10;
 
     if (index == 8)
     {
@@ -774,7 +775,6 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
 {
     solveBackwardIBVP1(u, p_info, use, u_info);
 }
-
 
 void Problem2HNDirichlet::solveForwardIBVP1(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const
 {

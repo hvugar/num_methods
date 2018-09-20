@@ -99,6 +99,8 @@ public:
 
     bool usePenalty;
     bool useNormal;
+
+    GradientMethod *gm;
 };
 
 #endif // PROBLEM2H_H

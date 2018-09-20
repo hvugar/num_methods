@@ -396,7 +396,7 @@ void example4()
     r_prm.xi[0].x  = +0.4269; r_prm.xi[0].y  = +0.3364; r_prm.xi[1].x  = +0.8651; r_prm.xi[1].y  = +0.2336;
     r_prm.eta[0].x = +0.5436; r_prm.eta[0].y = +0.5788; r_prm.eta[1].x = +0.5269; r_prm.eta[1].y = +0.5860;
 
-    //o_prm = r_prm;
+    r_prm = o_prm;
 
     //Measure k:-1.1212 -1.2418 -1.4580 -1.1793 z: 0.4961 -0.4043  0.6879  0.4902 o: 0.3976 0.8678 0.8008 0.3278 c: 0.5370 0.7321 0.5276 0.4524 // 0.060
     //Control k:-1.1227 -1.2402 -1.4438 -1.1749 z: 0.4976 -0.4026  0.6870  0.4894 o: 0.4336 0.7616 0.6664 0.4268 c: 0.5336 0.8616 0.5664 0.5268 // 0.046
@@ -418,7 +418,7 @@ void example4()
     // Grid parameters
     double hx = 0.010; int Nx = 100;
     double hy = 0.010; int Ny = 100;
-    double ht = 0.001; int Nt = 500;
+    double ht = 0.010; int Nt = 500;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
@@ -456,8 +456,8 @@ void example4()
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
-            //            prob.checkGradient(prob);
-            //            IPrinter::printSeperatorLine();
+            //prob.checkGradient(prob);
+            //IPrinter::printSeperatorLine();
         }
 
         //ConjugateGradient g;
@@ -467,12 +467,13 @@ void example4()
         g.setGradient(&prob);
         g.setPrinter(&prob);
         g.setProjection(&prob);
-        g.setEpsilon1(0.0001);
-        g.setEpsilon2(0.0001);
-        g.setEpsilon3(0.0001);
-        g.setR1MinimizeEpsilon(1.0, 0.0001);
+        g.setEpsilon1(0.00001);
+        g.setEpsilon2(0.00001);
+        g.setEpsilon3(0.00001);
+        g.setR1MinimizeEpsilon(0.1, 0.01);
         g.setNormalize(true);
         g.showExitMessage(true);
+        prob.gm = &g;
 
 //        DoubleVector gr;
 //        prob.gradient(x, gr);
@@ -481,9 +482,10 @@ void example4()
 //        g.mg = &gr;
 //        g.mx = &x;
 //        DoubleVector cx(gr.length());
+//        IPrinter::print(gr.mid(8, 15),10,6,4);
 //        for (int i = 0; i <= 200;  i++)
 //        {
-//            double a = 0.001*i;
+//            double a = 0.01*i;
 //            for (unsigned int i=0; i<gr.length(); i++)
 //            {
 //                cx[i] = x[i] - a * gr[i];
@@ -491,9 +493,8 @@ void example4()
 //            }
 //            prob.project(cx);
 //            double f = prob.fx(cx);
-//            printf("%f %f ", a, f);
-//            printf("k: %7.4f %7.4f %7.4f %7.4f z: %7.4f %7.4f %7.4f %7.4f o: %6.4f %6.4f %6.4f %6.4f c: %6.4f %6.4f %6.4f %6.4f\n",
-//                   cx[0], cx[1], cx[2], cx[3], cx[4], cx[5], cx[6], cx[7], cx[8], cx[9], cx[10], cx[11], cx[12], cx[13], cx[14], cx[15]);
+//            printf("%.3f %f ", a, f);
+//            printf("ko: %6.4f %6.4f %6.4f %6.4f c: %6.4f %6.4f %6.4f %6.4f\n", cx[8], cx[9], cx[10], cx[11], cx[12], cx[13], cx[14], cx[15]);
 
 //        }
 //        exit(-1);

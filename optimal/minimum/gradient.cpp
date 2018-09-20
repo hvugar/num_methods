@@ -263,36 +263,6 @@ void GradientMethod::swann(double x, double step, double &a, double &b, double &
         return;
     }
 
-
-//    // if fxa and fxb are both lesser than fxx then there is not minimum. function is not unimodal
-//    // функция не является
-//    if (fxa < fxx && fxx > fxb)
-//    {
-//        // if fxa equals fxb
-//        if (fabs(fxa - fxb) <= DBL_EPSILON)
-//        {
-//            if (mcallback) mcallback->swannCallback(++iteration, x, a, b, fxa, fxb, fx_count);
-//        }
-//        else if (fxa < fxb)
-//        {
-//            b = x;
-//            fxb = mfunction->fx(b); fx_count++;
-
-//            if (mcallback) mcallback->swannCallback(++iteration, x, a, b, fxa, fxb, fx_count);
-//        }
-//        else if (fxa > fxb)
-//        {
-//            a = x;
-//            fxa = mfunction->fx(a); fx_count++;
-
-//            if (mcallback) mcallback->swannCallback(++iteration, x, a, b, fxa, fxb, fx_count);
-//        }
-//        //fprintf(stderr, "%f %f %f %f %f %f\n", fxa, fxx, fxb, x - fstep, x, x + fstep);
-//        fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", -2, a, x, b, fxa, fxx, fxb);
-//        fputs("Function is not unimodal\n", stderr);
-//        return;
-//    }
-
     // from left to right -->>
     if ( fxa >= fxx && fxx >= fxb )
     {
