@@ -1,7 +1,7 @@
 #include "problem2h_solver.h"
 #include "problem2h_example.h"
 
-#define SAVE_TO_IMG1
+#define SAVE_TO_IMG
 
 void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -14,7 +14,10 @@ void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
-#ifdef SAVE_TO_IMG
+#ifdef SAVE_TO_IMG1
+    if (ln != 1 && ln != timeDimension().sizeN()+LD) return;
+    //if (ln < timeDimension().sizeN()) return;
+
     double min = u.min();
     double max = u.max();
     //    if (MIN>min) MIN = min;
@@ -32,7 +35,7 @@ void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsign
     QPixmap pic;
     visualizeMatrixHeat(u, min, max, pic);
     pic.save("images/f/500/pic"+QString("%1").arg(ln)+".png", "PNG");
-    //printf("Layer: %d min: %f max: %f min: %f max: %f norm: %f\n", ln, min, max, min, max, fabs(max-min));
+    printf("Layer: %4d min: %8.4f max: %8.4f min: %8.4f max: %8.4f norm: %8.4f\n", ln, min, max, min, max, fabs(max-min));
 #endif
 }
 
@@ -305,6 +308,15 @@ double Problem2HNDirichlet::g0i(unsigned int i, unsigned int layer, const spif_v
         vi += o_prm.k[i][j] * (node.value(layer)-o_prm.z[i][j]);
     }
     return (vmax.at(i) + vmin.at(i))/2.0 - vi;
+}
+
+double Problem2HNDirichlet::sign(double x) const
+{
+    if (x < 0.0)
+        return -1.0;
+    else if (x > 0.0)
+        return +1.0;
+    else return 0.0;
 }
 
 void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) const
@@ -600,8 +612,6 @@ void Problem2HNDirichlet::project(DoubleVector &pv) const
     }
     //IPrinter::print(pv.mid(start, end));
 }
-
-double sign(double x) { if (x < 0.0) return -1.0; else if (x > 0.0) return +1.0; else return 0.0; }
 
 void Problem2HNDirichlet::projectControlPoints(DoubleVector &pv, unsigned int index) const
 {

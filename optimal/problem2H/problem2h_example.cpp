@@ -359,8 +359,8 @@ void example4()
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = -5.2; e_prm.theta[0].x = 0.4300; e_prm.theta[0].y = 0.7500;
-    e_prm.q[1] = -5.3; e_prm.theta[1].x = 0.8700; e_prm.theta[1].y = 0.2300;
+    e_prm.q[0] = +0.012; e_prm.theta[0].x = 0.4300; e_prm.theta[0].y = 0.7500;
+    e_prm.q[1] = +0.013; e_prm.theta[1].x = 0.8700; e_prm.theta[1].y = 0.2300;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -418,41 +418,38 @@ void example4()
     // Grid parameters
     double hx = 0.010; int Nx = 100;
     double hy = 0.010; int Ny = 100;
-    double ht = 0.010; int Nt = 500;
+    double ht = 0.005; int Nt = 200;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 0.0000;// << 10.000 << 100.000 << 1000.0;// << 20.000 << 50.000 << 100.00;
+    DoubleVector r; r << 1.0000 << 10.000 << 100.000 << 1000.0;
     // Regularization coefficients
-    DoubleVector e; e << 0.0000;// << 0.0000 << 0.00000 << 0.0000;// << 0.0000 << 0.0000 << 0.0000;
+    DoubleVector e; e << 0.0000 << 0.0000 << 0.00000 << 0.0000;
+
+    Problem2HNDirichlet prob;
+    prob.setTimeDimension(time);
+    prob.addSpaceDimension(dimx);
+    prob.addSpaceDimension(dimy);
+    prob.mEquParameter = e_prm;
+    prob.mOptParameter = o_prm;
+    prob.mRegParameter = r_prm;
+    prob.optimizeK = true;
+    prob.optimizeZ = true;
+    prob.optimizeC = true;
+    prob.optimizeO = true;
+    prob.V0.resize(Ny+1, Nx+1, 0.0);
+    prob.vmin.resize(e_prm.Nc, +0.0000);
+    prob.vmax.resize(e_prm.Nc, +0.0002);
+    prob.LD = 50;
 
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
     {
-        Problem2HNDirichlet prob;
-        prob.setTimeDimension(time);
-        prob.addSpaceDimension(dimx);
-        prob.addSpaceDimension(dimy);
-        prob.mEquParameter = e_prm;
-        prob.mOptParameter = o_prm;
-        prob.mRegParameter = r_prm;
-        prob.optimizeK = true;
-        prob.optimizeZ = true;
-        prob.optimizeC = true;
-        prob.optimizeO = true;
-
-        prob.V0.resize(Ny+1, Nx+1, 0.0);
-
         prob.regEpsilon = e[i];
         prob.r = r[i];
-
-        prob.vmin.resize(e_prm.Nc, -1.5);
-        prob.vmax.resize(e_prm.Nc, +1.5);
-        prob.LD = 50;
-
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
@@ -462,7 +459,6 @@ void example4()
 
         //ConjugateGradient g;
         SteepestDescentGradient g;
-        //ConstStepGradient g;
         g.setFunction(&prob);
         g.setGradient(&prob);
         g.setPrinter(&prob);
@@ -470,7 +466,7 @@ void example4()
         g.setEpsilon1(0.00001);
         g.setEpsilon2(0.00001);
         g.setEpsilon3(0.00001);
-        g.setR1MinimizeEpsilon(0.1, 0.01);
+        g.setR1MinimizeEpsilon(1.0, 0.01);
         g.setNormalize(true);
         g.showExitMessage(true);
         prob.gm = &g;
@@ -485,7 +481,7 @@ void example4()
 //        IPrinter::print(gr.mid(8, 15),10,6,4);
 //        for (int i = 0; i <= 200;  i++)
 //        {
-//            double a = 0.01*i;
+//            double a = 0.001*i;
 //            for (unsigned int i=0; i<gr.length(); i++)
 //            {
 //                cx[i] = x[i] - a * gr[i];

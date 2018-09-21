@@ -16,14 +16,18 @@ public:
     virtual void gradient(const DoubleVector &, DoubleVector &) const;
 
 protected:
+    /** Integral part of functional */
     inline double mu(double x, double y) const;
     double integral(const std::vector<DoubleMatrix> &u) const;
     double integralU(const DoubleMatrix &u) const;
     double norm(const EquationParameter &eprm, const OptimizeParameter &oprm, const OptimizeParameter &oprm0) const;
 
+
+    /** Penalty part of functional */
     double penalty(const spif_vector &info, const OptimizeParameter &o_prm) const;
     double gpi(unsigned int i, unsigned int layer, const spif_vector &info, const OptimizeParameter &o_prm) const;
     double g0i(unsigned int i, unsigned int layer, const spif_vector &info, const OptimizeParameter &o_prm) const;
+    double sign(double x) const;
 
 public:
     void PrmToVector(const OptimizeParameter &prm, DoubleVector &x) const;

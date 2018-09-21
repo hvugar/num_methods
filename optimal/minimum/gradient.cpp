@@ -165,16 +165,17 @@ void GradientMethod::straightLineSearch(double x, double step, double &a, double
     {
         unimodal = false;
         //if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
-        //fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", -2, a, x, b, fxa, fxx, fxb);
-        //fputs("Function is not unimodal\n", stderr);
+        fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", -2, a, x, b, fxa, fxx, fxb);
+        fputs("Function is not unimodal\n", stderr);
         return;
     }
 
     // from left to right -->>
     if ( fxa >= fxx && fxx >= fxb )
     {
-        //puts("---------------->>");
+        puts("---------------->>");
         //straightLineSearchCallback(iteration, x, a, b, fxa, fxb);
+        fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", iteration, a, x, b, fxa, fxx, fxb);
         while ( fxx > fxb)
         {
             x = x + fstep;
@@ -185,6 +186,7 @@ void GradientMethod::straightLineSearch(double x, double step, double &a, double
             fxx = fxb;
             fxb = fx(b); fx_count++;
 
+            fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", ++iteration, a, x, b, fxa, fxx, fxb);
             //if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
         }
         unimodal = true;
@@ -194,8 +196,9 @@ void GradientMethod::straightLineSearch(double x, double step, double &a, double
     // from right to left <<--
     if ( fxa <= fxx && fxx <= fxb )
     {
-        //puts("<<----------------");
+        puts("<<----------------");
         //straightLineSearchCallback(iteration, x, a, b, fxa, fxb);
+        fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", iteration, a, x, b, fxa, fxx, fxb);
         while ( fxa < fxx )
         {
             x = x - fstep;
@@ -206,6 +209,7 @@ void GradientMethod::straightLineSearch(double x, double step, double &a, double
             fxx = fxa;
             fxa = fx(a); fx_count++;
 
+            fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", ++iteration, a, x, b, fxa, fxx, fxb);
             //if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
         }
         unimodal = true;
