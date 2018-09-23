@@ -15,7 +15,7 @@ public:
     virtual double fx(const DoubleVector &x) const;
     virtual void gradient(const DoubleVector &, DoubleVector &) const;
 
-protected:
+//protected:
     /** Integral part of functional */
     inline double mu(double x, double y) const;
     double integral(const std::vector<DoubleMatrix> &u) const;
@@ -78,11 +78,12 @@ public:
     void b_layerInfo(const DoubleMatrix &p, unsigned int ln) const;
 
     // common -----------------------------------
-    void distributeDelta0(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int k, int method=4) const;
-    void distributeDeltaP(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int k=0) const;
-    void distributeDeltaR(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int k=0) const;
-    void distributeDeltaG(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int k) const;
+    void distributeDelta0(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, int method = 4, unsigned int k = 3) const;
+    void distributeDeltaP(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY) const;
+    void distributeDeltaR(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY) const;
+    void distributeDeltaG(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int k = 3) const;
 
+    double distributeTimeDelta(double t, double ht, unsigned int ln, const espn_vector &qPointNodes, const SpaceNodePDE &sn) const;
 public:
     EquationParameter mEquParameter;
     OptimizeParameter mOptParameter;

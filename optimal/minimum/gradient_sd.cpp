@@ -141,7 +141,7 @@ double SteepestDescentGradient::minimize(const DoubleVector &x, const DoubleVect
 
     straightLineSearch(alpha0, min_step, a, b, fxa, fxb, unimodal);
     //swann(alpha0, min_step, a, b, fxa, fxb, unimodal);
-    printf("unimodal %d\n", unimodal);
+    //printf("unimodal %d\n", unimodal);
 
     if (unimodal)
     {

@@ -16,6 +16,72 @@
 #include "problem2h_global.h"
 #include "../imaging/imaging.h"
 
+//double hx = dimX.step();
+//double hy = dimY.step();
+
+//unsigned int Nx = dimX.sizeN();
+//unsigned int Ny = dimY.sizeN();
+
+//unsigned int rx = (unsigned int) ( round(pt.x*Nx) );
+//unsigned int ry = (unsigned int) ( round(pt.y*Ny) );
+
+//double sigmaX = hx;
+//double sigmaY = hy;
+
+//double sumX = 0.0;
+//for (unsigned int n=rx-k; n<=rx+k; n++) sumX += exp(-((n*hx-pt.x)*(n*hx-pt.x))/(2.0*sigmaX*sigmaX));
+//sumX *= hx;
+
+//double sumY = 0.0;
+//for (unsigned int m=ry-k; m<=ry+k; m++) sumY += exp(-((m*hy-pt.y)*(m*hy-pt.y))/(2.0*sigmaY*sigmaY));
+//sumY *= hy;
+
+//double sigma = (sumX*sumY) / (2.0*M_PI);
+//double factor = 1.0/((2.0*M_PI)*sigma);
+
+//for (unsigned int m=ry-k; m<=ry+k; m++)
+//{
+//    for (unsigned int n=rx-k; n<=rx+k; n++)
+//    {
+//        ExtendedSpacePointNode node;
+//        node.i = n; node.x = n*hx;
+//        node.j = m; node.y = m*hy;
+//        node.pt = pt; node.id = id;
+//        node.w = factor*exp(-0.5*(((node.x-pt.x)*(node.x-pt.x))/(sigmaX*sigmaX)+((node.y-pt.y)*(node.y-pt.y))/(sigmaY*sigmaY)));
+//        node.isCenter = ( m==ry && n==rx );
+//        nodes.push_back(node);
+//    }
+//}
+
+
+struct PulseInfluence
+{
+    unsigned int id = 0;
+    double x;
+    double y;
+    unsigned int rx;
+    unsigned int ry;
+    double q;
+    unsigned int extCount;
+    double **w;
+
+    bool contains(unsigned int n, unsigned int m) const { return (rx-extCount <= n && n <= rx+extCount) && (ry-extCount <= m && m <= ry+extCount);  }
+
+    double q_w(unsigned int n, unsigned m) const { return contains(n,m) ? w[m][n] : 0.0; }
+
+    void distribute(double x, double y, unsigned int Nx, unsigned int Ny, double hx, double hy)
+    {
+        rx = (unsigned int) round( x*Nx );
+        ry = (unsigned int) round( y*Ny );
+
+        w = new double*[2*extCount + 1];
+        for (unsigned int m = 0; m <= 2*extCount; m++)
+        {
+            w[m] = new double[2*extCount + 1];
+        }
+    }
+};
+
 struct PROBLEM2HSHARED_EXPORT OptimizeParameter
 {
     DoubleMatrix k;
@@ -44,26 +110,35 @@ struct PROBLEM2HSHARED_EXPORT ExtendedSpacePointNode
     double x;
     double y;
     double w;
+    bool isCenter;
 };
 
 struct PROBLEM2HSHARED_EXPORT SpacePointInfo : public SpaceNodePDE
 {
     unsigned int id;
-    double *u;
-    double *ux;
-    double *uy;
+    double *_vl;
+    double *_dx;
+    double *_dy;
     unsigned int layerNumber;
+
+    inline void createSpacePointInfos(unsigned int layerNumber)
+    {
+        _vl = new double[layerNumber];
+        _dx = new double[layerNumber];
+        _dy = new double[layerNumber];
+        this->layerNumber = layerNumber;
+    }
 
     inline void clearWeights()
     {
-        delete [] u;   u = NULL;
-        delete [] ux;  ux = NULL;
-        delete [] uy;  uy = NULL;
+        delete [] _vl;  _vl = NULL;
+        delete [] _dx;  _dx = NULL;
+        delete [] _dy;  _dy = NULL;
     }
 
-    inline double value(unsigned int layer) const { return u[layer]; }
-    inline double valueDx(unsigned int layer) const { return ux[layer]; }
-    inline double valueDy(unsigned int layer) const { return uy[layer]; }
+    inline double vl(unsigned int layer) const { return _vl[layer]; }
+    inline double dx(unsigned int layer) const { return _dx[layer]; }
+    inline double dy(unsigned int layer) const { return _dy[layer]; }
 };
 
 typedef std::vector<unsigned int>           uint_vector;
