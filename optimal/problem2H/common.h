@@ -69,7 +69,7 @@ struct PulseInfluence
 
     double q_w(unsigned int n, unsigned m) const { return contains(n,m) ? w[m][n] : 0.0; }
 
-    void distribute(double x, double y, unsigned int Nx, unsigned int Ny, double hx, double hy)
+    void distribute(double x, double y, unsigned int Nx, unsigned int Ny/*, double hx, double hy*/)
     {
         rx = (unsigned int) round( x*Nx );
         ry = (unsigned int) round( y*Ny );

@@ -594,6 +594,8 @@ void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const Dou
 
 void Problem2HNDirichlet::project(DoubleVector &pv, unsigned int index)
 {
+    C_UNUSED(pv);
+    C_UNUSED(index);
     return;
 
     //    unsigned int Nc = mEquParameter.Nc;
