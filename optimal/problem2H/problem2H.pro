@@ -30,12 +30,6 @@ SOURCES += problem2h_exporter.cpp
 HEADERS += problem2h_solver.h problem2h_example.h
 SOURCES += problem2h_solver.cpp problem2h_example.cpp
 
-#HEADERS += problem2hO.h
-#SOURCES += problem2hO.cpp
-
-#HEADERS += problem2hN_back.h
-#SOURCES += problem2hN_back.cpp
-
 #HEADERS += problem2hnm.h
 #SOURCES += problem2hnm.cpp
 
