@@ -34,3 +34,6 @@ SOURCES += problem2h_solver.cpp problem2h_example.cpp
 #SOURCES += problem2hnm.cpp
 
 OTHER_FILES += matlab/*
+
+OBJECTS_DIR = release/.obj
+MOC_DIR = release/.moc
