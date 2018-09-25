@@ -3,9 +3,9 @@
 
 void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    example1();
-    IPrinter::printSeperatorLine();
     //example2();
+    //IPrinter::printSeperatorLine();
+    example1();
 }
 
 double MIN = +1000.0;
@@ -2357,6 +2357,16 @@ void Problem2HNDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, 
 
     /************************************************************************/
 
+    double *psi = (double*) malloc(sizeof(double)*mEquParameter.Nc);
+    for (unsigned int i=0; i<mEquParameter.Nc; i++) psi[i] = 0.0;
+
+    for (unsigned int cpn=0; cpn<cntPointNodes.size(); cpn++)
+    {
+        const ExtendedSpacePointNode &cntNode = cntPointNodes.at(cpn);
+        psi[cntNode.id] += p00[cntNode.j][cntNode.i]*(cntNode.w*(hx*hy));
+    }
+
+
     for (unsigned int m=1; m<=M-1; m++)
     {
         sn.j = m; sn.y = m*hy;
@@ -2369,31 +2379,40 @@ void Problem2HNDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, 
             sum += aa__hyhy*(p00[m-1][n]-2.0*p00[m][n]+p00[m+1][n]);
             sum += lambda*b_initial2(sn);
 
-            for (unsigned int odn=0; odn<obsDeltaNodes.size(); odn++)
-            {
-                const ExtendedSpacePointNode &obsNode = obsDeltaNodes.at(odn);
-                if (obsNode.i == n && obsNode.j == m)
-                {
-                    for (unsigned int cpn=0; cpn<cntPointNodes.size(); cpn++)
-                    {
-                        const ExtendedSpacePointNode &cntNode = cntPointNodes.at(cpn);
-                        if (cntNode.i == n && cntNode.j == m)
-                        {
-                            sum += mOptParameter.k[cntNode.id][obsNode.id] * p00[m][n]*(cntNode.w*(hx*hy)) * obsNode.w;
-                        }
-                    }
-                }
-            }
+//            for (unsigned int odn=0; odn<obsDeltaNodes.size(); odn++)
+//            {
+//                const ExtendedSpacePointNode &obsNode = obsDeltaNodes.at(odn);
+//                if (obsNode.i == n && obsNode.j == m)
+//                {
+//                    sum +=
 
-            p10[m][n] = p00[m][n] - b_initial2(sn)*ht + 0.5*ht*ht*sum;
+
+//                    for (unsigned int cpn=0; cpn<cntPointNodes.size(); cpn++)
+//                    {
+//                        const ExtendedSpacePointNode &cntNode = cntPointNodes.at(cpn);
+//                        if (cntNode.i == n && cntNode.j == m)
+//                        {
+//                            sum += mOptParameter.k[cntNode.id][obsNode.id] * p00[m][n]*(cntNode.w*(hx*hy)) * obsNode.w;
+//                        }
+//                    }
+//                }
+//            }
+
+            p05[m][n] = p00[m][n] - b_initial2(sn)*ht*0.5 + 0.125*ht*ht*sum;
+            p10[m][n] = p00[m][n] - b_initial2(sn)*ht*1.0 + 0.500*ht*ht*sum;
         }
     }
 
+    free(psi);
+
     if (use == true) b_add2Info(p00, p_info, cntPointNodes, LLD, hx, hy);
-    b_layerInfo(p00, LLD);
+    b_layerInfo(p00, 2.0*LLD);
 
     if (use == true) b_add2Info(p10, p_info, cntPointNodes, LLD-1, hx, hy);
-    b_layerInfo(p10, LLD-1);
+    b_layerInfo(p10, 2*(LLD-1)+1);
+
+    if (use == true) b_add2Info(p10, p_info, cntPointNodes, LLD-1, hx, hy);
+    b_layerInfo(p10, 2*(LLD-1)+0);
 }
 
 void Problem2HNDirichlet::b_prepareInfo(unsigned int Nc, const std::vector<SpacePoint> &points, spif_vector &p_info,

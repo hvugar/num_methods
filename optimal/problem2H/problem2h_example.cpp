@@ -77,7 +77,7 @@ void example1()
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 0.0000 << 0.0100 << 0.10000 << 1.0000;
+    DoubleVector r; r << 10.000 << 0.0100 << 0.10000 << 1.0000;
     // Regularization coefficients
     DoubleVector e; e << 0.0000 << 0.0000 << 0.00000 << 0.0000;
 
@@ -227,11 +227,10 @@ void example2()
     spif_vector info;
     prob.solveForwardIBVP(u, info, false);
 
-//    IPrinter::printSeperatorLine();
-//    DoubleMatrix &m = u.at(0);
-//    IPrinter::printMatrix(m);
-//    IPrinter::printSeperatorLine();
-
-//    printf("%f\n", prob.integralU(m));
+    //IPrinter::printSeperatorLine();
+    //DoubleMatrix &m = u.at(2*prob.LD);
+    //IPrinter::printMatrix(m);
+    //IPrinter::printSeperatorLine();
+    //printf("%f\n", prob.integralU(m));
 }
 
