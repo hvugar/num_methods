@@ -322,17 +322,14 @@ double Problem2HNDirichlet::g0i(unsigned int i, unsigned int layer, const spif_v
         const SpacePointInfo &u_xij = u_info[j];
         vi += o_prm.k[i][j] * ( u_xij.vl(layer) - o_prm.z[i][j] );
     }
-    //printf("%d %d %f\n", i, layer, vi);
     return ( vmax.at(i) + vmin.at(i) )/2.0 - vi;
 }
 
 double Problem2HNDirichlet::sign(double x) const
 {
-    if (x < 0.0)
-        return -1.0;
-    else if (x > 0.0)
-        return +1.0;
-    else return 0.0;
+    if (x < 0.0)       return -1.0;
+    else if (x > 0.0)  return +1.0;
+    else               return  0.0;
 }
 
 void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) const
@@ -380,6 +377,7 @@ void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) con
                     grad_Kij += (pi.vl(2*ln) + 2.0*r*gpi(i,2*ln,u_info,o_prm)*sgn(g0i(i,2*ln,u_info,o_prm))) * (uj.vl(2*ln) - zij);
                 }
                 grad_Kij += 0.5 * (pi.vl(2*LLD) + 2.0*r*gpi(i,2*LLD,u_info,o_prm)*sgn(g0i(i,2*LLD,u_info,o_prm))) * (uj.vl(2*LLD) - zij);
+
                 grad_Kij *= -ht;
 
                 g[gi++] = grad_Kij + 2.0*regEpsilon*(o_prm.k[i][j] - mRegParameter.k[i][j]);
@@ -1747,7 +1745,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
     //-------------------------------------------- info --------------------------------------------//
 
     //------------------------------------- initial conditions -------------------------------------//
-    b_initialLayers(p00, p10, p_info, use, cntPointNodes, obsDeltaNodes, N, M, hx, hy, ht, aa__hxhx, aa__hyhy, lambda);
+    b_initialLayers(p00, p10, p_info, u_info, use, cntPointNodes, obsDeltaNodes, N, M, hx, hy, ht, aa__hxhx, aa__hyhy, lambda);
     //------------------------------------- initial conditions -------------------------------------//
 
     double *ax = (double *) malloc(sizeof(double)*(N-1)); for (unsigned int n=1; n<=N-1; n++) ax[n-1] = m_aa_htht__hxhx;
@@ -2317,9 +2315,11 @@ void Problem2HNDirichlet::b_findRowsCols(uint_vector &rows0, uint_vector &rows1,
     }
 }
 
-void Problem2HNDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, spif_vector &p_info, bool use, espn_vector &cntPointNodes, espn_vector &obsDeltaNodes,
-                                           unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const
+void Problem2HNDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, spif_vector &p_info, const spif_vector &u_info, bool use,
+                                          espn_vector &cntPointNodes, espn_vector &obsDeltaNodes, unsigned int N, unsigned int M, double
+                                          hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const
 {
+    DoubleMatrix p05 = p00;
     unsigned int L = mtimeDimension.sizeN();
     unsigned int LLD = L+LD;
 
@@ -2366,7 +2366,6 @@ void Problem2HNDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, 
         psi[cntNode.id] += p00[cntNode.j][cntNode.i]*(cntNode.w*(hx*hy));
     }
 
-
     for (unsigned int m=1; m<=M-1; m++)
     {
         sn.j = m; sn.y = m*hy;
@@ -2379,14 +2378,24 @@ void Problem2HNDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, 
             sum += aa__hyhy*(p00[m-1][n]-2.0*p00[m][n]+p00[m+1][n]);
             sum += lambda*b_initial2(sn);
 
+            for (unsigned int odn=0; odn<obsDeltaNodes.size(); odn++)
+            {
+                const ExtendedSpacePointNode &obsNode = obsDeltaNodes.at(odn);
+                if (obsNode.i == n && obsNode.j == m)
+                {
+                    for (unsigned int i=0; i<mEquParameter.Nc; i++)
+                    {
+                        sum += mOptParameter.k[i][obsNode.id] *
+                                (psi[i]+2.0*r*gpi(i, 2*LLD, u_info, mOptParameter)*sgn(g0i(i, 2*LLD, u_info, mOptParameter))) * obsNode.w;
+                    }
+                }
+            }
+
 //            for (unsigned int odn=0; odn<obsDeltaNodes.size(); odn++)
 //            {
 //                const ExtendedSpacePointNode &obsNode = obsDeltaNodes.at(odn);
 //                if (obsNode.i == n && obsNode.j == m)
 //                {
-//                    sum +=
-
-
 //                    for (unsigned int cpn=0; cpn<cntPointNodes.size(); cpn++)
 //                    {
 //                        const ExtendedSpacePointNode &cntNode = cntPointNodes.at(cpn);
@@ -2403,15 +2412,15 @@ void Problem2HNDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, 
         }
     }
 
-    free(psi);
+//    free(psi);
 
-    if (use == true) b_add2Info(p00, p_info, cntPointNodes, LLD, hx, hy);
-    b_layerInfo(p00, 2.0*LLD);
+    if (use == true) b_add2Info(p00, p_info, cntPointNodes, 2*LLD, hx, hy);
+    b_layerInfo(p00, 2*LLD);
 
-    if (use == true) b_add2Info(p10, p_info, cntPointNodes, LLD-1, hx, hy);
-    b_layerInfo(p10, 2*(LLD-1)+1);
+    if (use == true) b_add2Info(p05, p_info, cntPointNodes, 2*(LLD-1)+1, hx, hy);
+    b_layerInfo(p05, 2*(LLD-1)+1);
 
-    if (use == true) b_add2Info(p10, p_info, cntPointNodes, LLD-1, hx, hy);
+    if (use == true) b_add2Info(p10, p_info, cntPointNodes, 2*(LLD-1)+0, hx, hy);
     b_layerInfo(p10, 2*(LLD-1)+0);
 }
 

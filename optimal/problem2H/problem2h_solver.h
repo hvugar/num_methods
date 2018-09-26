@@ -58,7 +58,9 @@ public:
 
     // backward -----------------------------------
     void solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vector &p_info, bool use, const spif_vector &u_info) const;
-    void b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, spif_vector &p_info, bool use, espn_vector &cntPointNodes, espn_vector &obsDeltaNodes, unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const;
+    void b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, spif_vector &p_info, const spif_vector &u_info, bool use,
+                         espn_vector &cntPointNodes, espn_vector &obsDeltaNodes, unsigned int N, unsigned int M,
+                         double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const;
     double b_initial1(const SpaceNodePDE &sn) const;
     double b_initial2(const SpaceNodePDE &sn) const;
     double b_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;

@@ -22,7 +22,9 @@ INCLUDEPATH += ../imaging
 LIBS += -L../bin -limaging
 
 HEADERS += problem2h_global.h
+
 HEADERS += common.h
+SOURCES += common.cpp
 
 HEADERS += problem2h_exporter.h
 SOURCES += problem2h_exporter.cpp

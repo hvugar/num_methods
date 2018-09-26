@@ -115,30 +115,23 @@ struct PROBLEM2HSHARED_EXPORT ExtendedSpacePointNode
 
 struct PROBLEM2HSHARED_EXPORT SpacePointInfo : public SpaceNodePDE
 {
-    unsigned int id;
-    double *_vl;
-    double *_dx;
-    double *_dy;
-    unsigned int layerNumber;
+    SpacePointInfo();
+    SpacePointInfo(unsigned int id, unsigned int layerNumber);
+    virtual ~SpacePointInfo();
 
-    inline void createSpacePointInfos(unsigned int layerNumber)
-    {
-        _vl = new double[layerNumber];
-        _dx = new double[layerNumber];
-        _dy = new double[layerNumber];
-        this->layerNumber = layerNumber;
-    }
-
-    inline void clearWeights()
-    {
-        delete [] _vl;  _vl = NULL;
-        delete [] _dx;  _dx = NULL;
-        delete [] _dy;  _dy = NULL;
-    }
+    void createSpacePointInfos(unsigned int layerNumber);
+    void clearWeights();
 
     inline double vl(unsigned int layer) const { return _vl[layer]; }
     inline double dx(unsigned int layer) const { return _dx[layer]; }
     inline double dy(unsigned int layer) const { return _dy[layer]; }
+
+    unsigned int id;
+    unsigned int layerNumber;
+
+    double *_vl;
+    double *_dx;
+    double *_dy;
 };
 
 typedef std::vector<unsigned int>           uint_vector;
