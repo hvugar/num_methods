@@ -846,7 +846,8 @@ void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     DoubleMatrix u20(M+1, N+1);
 
     for (unsigned int l=0; l<u.size(); l++) u[l].clear(); u.clear();
-    u.resize(2*LD+1); for (unsigned int l=0; l<u.size(); l++) u[l].resize(M+1, N+1);
+    unsigned int u_size = 2*LD + 1;
+    u.resize(u_size); for (unsigned int l=0; l<u_size; l++) u[l].resize(M+1, N+1);
 
     //----------------------------------------------------------------------------------------------//
     espn_vector obsPointNodes, cntDeltaNodes, qPointNodes;
@@ -1427,7 +1428,7 @@ void Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, 
                                            espn_vector &obsPointNodes, espn_vector &cntDeltaNodes UNUSED_PARAM,
                                            espn_vector &qPointNodes UNUSED_PARAM, unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const
 {
-    DoubleMatrix u05(M+1, N+1);
+    DoubleMatrix u05 = u00;
     /************************************************************************/
     SpaceNodePDE sn;
     for (unsigned int m=0; m<=M; m++)
@@ -1441,6 +1442,7 @@ void Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, 
     }
 
     /************************************************************************/
+    TimeNodePDE tn05; tn05.i = 1; tn05.t = 0.5*ht;
     TimeNodePDE tn10; tn10.i = 1; tn10.t = ht;
 
     SpaceNodePDE sn0, sn1;
@@ -1448,16 +1450,16 @@ void Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, 
     sn1.i = N; sn1.x = N*hx;
     for (unsigned int m=0; m<=M; m++)
     {
-        sn0.j = m; sn0.y = m*hy; u10[m][0] = f_boundary(sn0, tn10);
-        sn1.j = m; sn1.y = m*hy; u10[m][N] = f_boundary(sn1, tn10);
+        sn0.j = m; sn0.y = m*hy; u10[m][0] = f_boundary(sn0, tn10); u05[m][0] = f_boundary(sn0, tn05);
+        sn1.j = m; sn1.y = m*hy; u10[m][N] = f_boundary(sn1, tn10); u05[m][N] = f_boundary(sn1, tn05);
     }
 
-    sn0.j = 0;  sn0.y = 0.0;
+    sn0.j = 0; sn0.y = 0.0;
     sn1.j = M; sn1.y = M*hy;
     for (unsigned int n=0; n<=N; n++)
     {
-        sn0.i = n; sn0.x = n*hx; u10[0][n] = f_boundary(sn0, tn10);
-        sn1.i = n; sn1.x = n*hx; u10[M][n] = f_boundary(sn1, tn10);
+        sn0.i = n; sn0.x = n*hx; u10[0][n] = f_boundary(sn0, tn10); u05[0][n] = f_boundary(sn0, tn05);
+        sn1.i = n; sn1.x = n*hx; u10[M][n] = f_boundary(sn1, tn10); u05[M][n] = f_boundary(sn1, tn05);
     }
 
     /************************************************************************/
@@ -1474,8 +1476,8 @@ void Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, 
             sum += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]);
             sum -= lambda*f_initial2(sn);
 
-            u05[m][n] = u00[m][n] + f_initial2(sn)*ht + 0.125*ht*ht*sum;
-            u10[m][n] = u00[m][n] + f_initial2(sn)*ht + 0.500*ht*ht*sum;
+            u05[m][n] = u00[m][n] + (0.5*ht) * f_initial2(sn) + (0.125*ht*ht) * sum;
+            u10[m][n] = u00[m][n] + (1.0*ht) * f_initial2(sn) + (0.500*ht*ht) * sum;
 
 #ifdef APPROXIMATE_TIME_RECTANGLE
             double Q = 0.0;
@@ -1489,9 +1491,10 @@ void Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, 
             }
             u10[m][n] += Q*ht*0.5;
 #endif
+
 #ifdef APPROXIMATE_TIME_NORM_DIST
-            u05[m][n] += 0.125*ht*ht*distributeTimeDelta(0.5*ht, ht, 1, qPointNodes, sn);
-            u10[m][n] += 0.500*ht*ht*distributeTimeDelta(1.0*ht, ht, 2, qPointNodes, sn);
+            u05[m][n] += (0.125*ht*ht)*distributeTimeDelta(0.5*ht, ht, 1, qPointNodes, sn);
+            u10[m][n] += (0.500*ht*ht)*distributeTimeDelta(1.0*ht, ht, 2, qPointNodes, sn);
 #endif
         }
     }
@@ -1798,7 +1801,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
 
     SpaceNodePDE sn;
 
-    for (unsigned int l1=2,l=LLD-l1; l1<=LLD; l1++,l=LLD-l1)
+    for (unsigned int l=LLD-2; l != (unsigned)0-1; l--)
     {
         TimeNodePDE tn20; tn20.i = l; tn20.t = l*ht;
         TimeNodePDE tn15; tn15.i = l; tn15.t = l*ht+0.5*ht;
@@ -1847,7 +1850,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                     dx[n-1] += 2.0*p10[m][n] + (p10[m][n]-p00[m][n]);
 
                     //------------------------------------- Adding functional part --------------------------------//
-                    if (L <= l && l <= LLD) dx[n-1] += -2.0*htht*(u[2*(l-L)+1][m][n] - V0[m][n]);
+                    if (L <= l && l <= LLD) dx[n-1] += -2.0*(u.at(2*(l-L)+1)[m][n] - V0[m][n]) * htht;
                     //------------------------------------- Adding functional part --------------------------------//
                 }
 
@@ -1879,6 +1882,10 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                     dx[n-1] += lambda_ht*(p10[m][n] - 0.5*(p10[m][n]-p00[m][n]));
                     dx[n-1] += 2.0*p10[m][n] + (p10[m][n]-p00[m][n]);
 
+                    //------------------------------------- Adding functional part --------------------------------//
+                    if (L <= l && l <= LLD) dx[n-1] += -2.0*(u.at(2*(l-L)+1)[m][n] - V0[m][n]) * htht;
+                    //------------------------------------- Adding functional part --------------------------------//
+
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int onj=0; onj<obsDeltaNodes.size(); onj++)
                     {
@@ -1898,10 +1905,6 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                         }
                     }
                     //------------------------------------- Adding delta part -------------------------------------//
-
-                    //------------------------------------- Adding functional part --------------------------------//
-                    if (L <= l && l <= LLD) dx[n-1] += -2.0*htht*(u[2*(l-L)+1][m][n] - V0[m][n]);
-                    //------------------------------------- Adding functional part --------------------------------//
                 }
 
                 dx[0]   -= m_aa_htht__hxhx * p15[m][0];
@@ -1914,7 +1917,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
 
         if (rows1.size() != 0 && rows2.size() != 0)
         {
-            //throw std::exception();
+            throw std::exception();
 
             for (unsigned int i=0; i < row1_size; i++) for (unsigned int j=0; j < row1_size; j++) w1[i][j] = 0.0;
 
@@ -1939,6 +1942,10 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                     a1[offset+(n-1)] = m_aa_htht__hxhx;
                     b1[offset+(n-1)] = p_aa_htht__hxhx___lambda_ht;
                     c1[offset+(n-1)] = m_aa_htht__hxhx;
+
+                    //------------------------------------- Adding functional part --------------------------------//
+                    if (L <= l && l <= LLD) d1[offset+(n-1)] += -2.0*(u.at(2*(l-L)+1)[m][n] - V0[m][n]) * htht;
+                    //------------------------------------- Adding functional part --------------------------------//
 
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int onj=0; onj<obsDeltaNodes.size(); onj++)
@@ -1974,11 +1981,6 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                         }
                     }
                     //------------------------------------- Adding delta part -------------------------------------//
-
-                    //------------------------------------- Adding functional part --------------------------------//
-                    if (L <= l && l <= LLD) d1[offset+(n-1)] += -2.0*htht*(u.at(2*(l-L)+1)[m][n] - V0[m][n]);
-                    //------------------------------------- Adding functional part --------------------------------//
-
                 }
 
                 a1[offset+0]   = 0.0;
@@ -2027,7 +2029,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                     dy[m-1] += 2.0*p15[m][n] + (p10[m][n]-p00[m][n]);
 
                     //------------------------------------- Adding functional part --------------------------------//
-                    if (L <= l && l <= LLD) dy[m-1] += -2.0*htht*(u[2*(l-L)][m][n] - V0[m][n]);
+                    if (L <= l && l <= LLD) dy[m-1] += -2.0*(u[2*(l-L)][m][n] - V0[m][n]) * htht;
                     //------------------------------------- Adding functional part --------------------------------//
                 }
 
@@ -2059,6 +2061,10 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                     dy[m-1] += lambda_ht*(p15[m][n] - 0.5*(p10[m][n]-p00[m][n]));
                     dy[m-1] += 2.0*p15[m][n] + (p10[m][n]-p00[m][n]);
 
+                    //------------------------------------- Adding functional part --------------------------------//
+                    if (L <= l && l <= LLD) dy[m-1] += -2.0*(u[2*(l-L)][m][n] - V0[m][n]) * htht;
+                    //------------------------------------- Adding functional part --------------------------------//
+
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int onj=0; onj<obsDeltaNodes.size(); onj++)
                     {
@@ -2078,10 +2084,6 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                         }
                     }
                     //------------------------------------- Adding delta part -------------------------------------//
-
-                    //------------------------------------- Adding functional part --------------------------------//
-                    if (L <= l && l <= LLD) dy[m-1] += -2.0*htht*(u[2*(l-L)][m][n] - V0[m][n]);
-                    //------------------------------------- Adding functional part --------------------------------//
                 }
 
                 dy[0]   -= m_aa_htht__hyhy * p20[0][n];
@@ -2094,7 +2096,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
 
         if (cols1.size() != 0 && cols2.size() != 0)
         {
-            //throw std::exception();
+            throw std::exception();
 
             for (unsigned int i=0; i < cols1_size; i++) for (unsigned int j=0; j < cols1_size; j++) w2[i][j] = 0.0;
 
@@ -2119,6 +2121,10 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                     a2[offset+(m-1)] = m_aa_htht__hyhy;
                     b2[offset+(m-1)] = p_aa_htht__hyhy___lambda_ht;
                     c2[offset+(m-1)] = m_aa_htht__hyhy;
+
+                    //------------------------------------- Adding functional part --------------------------------//
+                    if (L <= l && l <= LLD) d2[offset+(m-1)] += -2.0*(u[2*(l-L)][m][n] - V0[m][n]) * htht;
+                    //------------------------------------- Adding functional part --------------------------------//
 
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int onj=0; onj<obsDeltaNodes.size(); onj++)
@@ -2154,10 +2160,6 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                         }
                     }
                     //------------------------------------- Adding delta part -------------------------------------//
-
-                    //------------------------------------- Adding functional part --------------------------------//
-                    if (L <= l && l <= LLD) d2[offset+(m-1)] += -2.0*htht*(u[2*(l-L)][m][n] - V0[m][n]);
-                    //------------------------------------- Adding functional part --------------------------------//
                 }
 
                 a2[offset+0]   = 0.0;
@@ -2255,6 +2257,11 @@ double Problem2HNDirichlet::b_initial2(const SpaceNodePDE &sn UNUSED_PARAM) cons
 double Problem2HNDirichlet::b_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const
 {
     return 0.0;
+}
+
+double Problem2HNDirichlet::b_characteristic(const DoubleMatrix &u, unsigned int n, unsigned int m) const
+{
+    return -2.0*(u[m][n] - V0[m][n]);
 }
 
 void Problem2HNDirichlet::b_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2, uint_vector &cols0, uint_vector &cols1, uint_vector &cols2,
