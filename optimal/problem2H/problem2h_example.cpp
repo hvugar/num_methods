@@ -227,6 +227,11 @@ void example2()
     spif_vector info;
     prob.solveForwardIBVP(u, info, false);
 
+    IPrinter::printSeperatorLine();
+    IPrinter::printMatrix(u.at(0));
+    IPrinter::printSeperatorLine();
+    printf("%f\n", sqrt(prob.integralU(u.at(0))));
+
     //IPrinter::printSeperatorLine();
     //DoubleMatrix &m = u.at(2*prob.LD);
     //IPrinter::printMatrix(m);
