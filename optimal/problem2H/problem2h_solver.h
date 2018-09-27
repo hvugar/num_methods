@@ -7,7 +7,8 @@ class PROBLEM2HSHARED_EXPORT Problem2HNDirichlet : public RnFunction, public IGr
 {
 public:
     static void Main(int argc, char* argv[]);
-    static void checkGradient(const Problem2HNDirichlet &prob);
+    static void checkGradient1(const Problem2HNDirichlet &prob);
+    static void checkGradient2(const Problem2HNDirichlet &prob);
 
     Problem2HNDirichlet();
     virtual ~Problem2HNDirichlet();
@@ -25,8 +26,8 @@ public:
 
     /** Penalty part of functional */
     double penalty(const spif_vector &info, const OptimizeParameter &o_prm) const;
-    double gpi(unsigned int i, unsigned int layer, const spif_vector &info, const OptimizeParameter &o_prm) const;
-    double g0i(unsigned int i, unsigned int layer, const spif_vector &info, const OptimizeParameter &o_prm) const;
+    double gpi(unsigned int i, unsigned int layer, const spif_vector &u_info, const OptimizeParameter &o_prm) const;
+    double g0i(unsigned int i, unsigned int layer, const spif_vector &u_info, const OptimizeParameter &o_prm) const;
     double sign(double x) const;
 
 public:
