@@ -123,30 +123,6 @@ void example1()
         g.showExitMessage(true);
         prob.gm = &g;
 
-        //        DoubleVector gr;
-        //        prob.gradient(x, gr);
-        //        gr[0] = gr[1] = gr[2] = gr[3] = gr[4] = gr[5] = gr[6] = gr[7] = 0.0;
-        //        gr.L2Normalize();
-        //        g.mg = &gr;
-        //        g.mx = &x;
-        //        DoubleVector cx(gr.length());
-        //        IPrinter::print(gr.mid(8, 15),10,6,4);
-        //        for (int i = 0; i <= 200;  i++)
-        //        {
-        //            double a = 0.001*i;
-        //            for (unsigned int i=0; i<gr.length(); i++)
-        //            {
-        //                cx[i] = x[i] - a * gr[i];
-        //                //if (m_projection != NULL) m_projection->project(cx, i);
-        //            }
-        //            prob.project(cx);
-        //            double f = prob.fx(cx);
-        //            printf("%.3f %f ", a, f);
-        //            printf("ko: %6.4f %6.4f %6.4f %6.4f c: %6.4f %6.4f %6.4f %6.4f\n", cx[8], cx[9], cx[10], cx[11], cx[12], cx[13], cx[14], cx[15]);
-
-        //        }
-        //        exit(-1);
-
         g.calculate(x);
 
         IPrinter::printSeperatorLine(NULL, '=');
@@ -227,10 +203,11 @@ void example2()
     spif_vector info;
     prob.solveForwardIBVP(u, info, false);
 
+    DoubleMatrix u0 = u.at(0);
     IPrinter::printSeperatorLine();
-    IPrinter::printMatrix(u.at(0));
+    IPrinter::printMatrix(u0);
     IPrinter::printSeperatorLine();
-    printf("%f\n", sqrt(prob.integralU(u.at(0))));
+    printf("%f\n", sqrt(prob.integralU(u0)));
 
     //IPrinter::printSeperatorLine();
     //DoubleMatrix &m = u.at(2*prob.LD);
