@@ -95,9 +95,8 @@ void example1()
         prob.optimizeZ = true;
         prob.optimizeC = true;
         prob.optimizeO = true;
-        prob.V0.resize(Ny+1, Nx+1, 0.0);
-        prob.vmin.resize(e_prm.Nc, +0.0004);
-        prob.vmax.resize(e_prm.Nc, +0.0008);
+        prob.vmin.resize(e_prm.Nc, +1.5);
+        prob.vmax.resize(e_prm.Nc, +1.8);
         prob.LD = 50;
 
         prob.regEpsilon = e[i];
@@ -105,7 +104,7 @@ void example1()
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
-            prob.checkGradient2(prob);
+            prob.checkGradient1(prob);
             IPrinter::printSeperatorLine();
         }
 
@@ -118,7 +117,7 @@ void example1()
         g.setEpsilon1(0.000001);
         g.setEpsilon2(0.000001);
         g.setEpsilon3(0.000001);
-        g.setR1MinimizeEpsilon(0.1, 0.001);
+        g.setR1MinimizeEpsilon(0.1, 0.01);
         g.setNormalize(true);
         g.showExitMessage(true);
         prob.gm = &g;
@@ -176,7 +175,7 @@ void example2()
     // Grid parameters
     double hx = 0.010; int Nx = 100;
     double hy = 0.010; int Ny = 100;
-    double ht = 0.010; int Nt = 100;
+    double ht = 0.005; int Nt = 200;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
@@ -193,7 +192,6 @@ void example2()
     prob.optimizeZ = true;
     prob.optimizeC = true;
     prob.optimizeO = true;
-    prob.V0.resize(Ny+1, Nx+1, 0.0);
     prob.vmin.resize(e_prm.Nc, +0.004);
     prob.vmax.resize(e_prm.Nc, +0.008);
     prob.LD = 1;

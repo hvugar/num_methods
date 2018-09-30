@@ -91,8 +91,6 @@ void init_pr()
     prob.optimizeO = true;
     prob.LD = 50;
 
-    prob.V0.resize(Ny+1, Nx+1, 0.0);
-
     prob.regEpsilon = 0.0;
     prob.r = 0.0;
 

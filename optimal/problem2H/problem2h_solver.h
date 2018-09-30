@@ -16,9 +16,7 @@ public:
     virtual double fx(const DoubleVector &x) const;
     virtual void gradient(const DoubleVector &, DoubleVector &) const;
 
-//protected:
     /** Integral part of functional */
-    inline double mu(double x, double y) const;
     double integral(const std::vector<DoubleMatrix> &u) const;
     double integralU(const DoubleMatrix &u) const;
     double norm(const EquationParameter &eprm, const OptimizeParameter &oprm, const OptimizeParameter &oprm0) const;
@@ -82,10 +80,10 @@ public:
 
     double distributeTimeDelta(double t, double ht, unsigned int ln, const espn_vector &qPointNodes, const SpaceNodePDE &sn) const;
 
-    void solveForwardIBVP2(std::vector<DoubleMatrix> &u_, spif_vector &u_info, bool use) const;
-    void f_initialLayers2(DoubleMatrix &u00, DoubleMatrix &u05, DoubleMatrix &u10, spif_vector &info, bool use, espn_vector &obsPointNodes, espn_vector &cntDeltaNodes, espn_vector &qPointNodes, unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const;
-    void solveBackwardIBVP2(const std::vector<DoubleMatrix> &u, spif_vector &p_info, bool use, const spif_vector &u_info) const;
-    void b_initialLayers2(DoubleMatrix &p00, DoubleMatrix &p05, DoubleMatrix &p10, spif_vector &p_info, bool use, espn_vector &cntPointNodes, espn_vector &obsDeltaNodes, unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const;
+    //void solveForwardIBVP2(std::vector<DoubleMatrix> &u_, spif_vector &u_info, bool use) const;
+    //void f_initialLayers2(DoubleMatrix &u00, DoubleMatrix &u05, DoubleMatrix &u10, spif_vector &info, bool use, espn_vector &obsPointNodes, espn_vector &cntDeltaNodes, espn_vector &qPointNodes, unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const;
+    //void solveBackwardIBVP2(const std::vector<DoubleMatrix> &u, spif_vector &p_info, bool use, const spif_vector &u_info) const;
+    //void b_initialLayers2(DoubleMatrix &p00, DoubleMatrix &p05, DoubleMatrix &p10, spif_vector &p_info, bool use, espn_vector &cntPointNodes, espn_vector &obsDeltaNodes, unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const;
 public:
     EquationParameter mEquParameter;
     OptimizeParameter mOptParameter;
@@ -96,7 +94,6 @@ public:
     DoubleVector vmax;
     double regEpsilon;
 
-    DoubleMatrix V0;
     unsigned int LD;
 
     bool optimizeK;
