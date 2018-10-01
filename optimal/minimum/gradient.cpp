@@ -1,4 +1,6 @@
 #include "gradient.h"
+#include "vectornormalizer.h"
+#include "function.h"
 #include <math.h>
 #include <float.h>
 
@@ -120,6 +122,11 @@ void GradientMethod::setNormalize(bool normalize)
 void GradientMethod::showExitMessage(bool showEndMessage)
 {
     m_show_end_message = showEndMessage;
+}
+
+void GradientMethod::setVectorNormalizer(IVectorNormalizer *normalizer)
+{
+    m_normalizer = normalizer;
 }
 
 /**

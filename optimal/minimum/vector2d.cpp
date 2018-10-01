@@ -116,6 +116,21 @@ unsigned int DoubleVector::length() const
  *                      NORM
  *******************************************************************/
 
+//double DoubleVector::norm(IVectorNormalizer::Norm norm) const
+//{
+//    switch (norm) {
+//    case IVectorNormalizer::EUCLIDEAN_NORM: IVectorNormalizer::EuclideanNorm(this); break;
+//    case IVectorNormalizer::L1_NORM: IVectorNormalizer::L1Norm(this); break;
+//    case IVectorNormalizer::L2_NORM: IVectorNormalizer::L2Norm(this); break;
+//    case IVectorNormalizer::LInf_NORM: IVectorNormalizer::LInfNorm(this); break;
+//    default:
+//        break;
+//    }
+
+//    };
+//    return IVectorNormalizer::
+//}
+
 double DoubleVector::L1Norm() const
 {
     double norm = 0.0;

@@ -5,7 +5,7 @@ void example1()
     // Equation parameters
     EquationParameter e_prm;
     e_prm.a = 1.0;
-    e_prm.lambda = +0.01;
+    e_prm.lambda = +0.0;
 
     // Pulse influences
     e_prm.Ns = 2;
@@ -104,8 +104,8 @@ void example1()
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
-            prob.checkGradient1(prob);
-            IPrinter::printSeperatorLine();
+            //prob.checkGradient1(prob);
+            //IPrinter::printSeperatorLine();
         }
 
         //ConjugateGradient g;
@@ -114,9 +114,9 @@ void example1()
         g.setGradient(&prob);
         g.setPrinter(&prob);
         g.setProjection(&prob);
-        g.setEpsilon1(0.000001);
-        g.setEpsilon2(0.000001);
-        g.setEpsilon3(0.000001);
+        g.setEpsilon1(0.00001);
+        g.setEpsilon2(0.00001);
+        g.setEpsilon3(0.00001);
         g.setR1MinimizeEpsilon(0.1, 0.01);
         g.setNormalize(true);
         g.showExitMessage(true);

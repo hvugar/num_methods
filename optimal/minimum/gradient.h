@@ -12,6 +12,7 @@ class IGradient;
 class IPrinter;
 class IProjection;
 class IGradientPrinter;
+class IVectorNormalizer;
 
 /**
  * @brief The Abstract Gradient Method class
@@ -98,6 +99,12 @@ public:
      */
     void showExitMessage(bool shem);
 
+    /**
+     * @brief setVectorNormalizer
+     * @param normalizer
+     */
+    void setVectorNormalizer(IVectorNormalizer *normalizer);
+
 protected:
 
     /**
@@ -177,11 +184,12 @@ protected:
     bool m_normalize;
     bool m_show_end_message;
 
-    double _optimalityTolerance;
-    double _functionTolerance;
-    double _stepTolerance;
-    double _constraintTolerance;
-    unsigned int _maxIterations;
+    double m_optimalityTolerance;
+    double m_functionTolerance;
+    double m_stepTolerance;
+    double m_constraintTolerance;
+    unsigned int m_maxIterations;
+    IVectorNormalizer *m_normalizer;
 };
 
 //struct MINIMUMSHARED_EXPORT IGradientPrinter

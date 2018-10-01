@@ -5,6 +5,7 @@
 #include <iostream>
 
 class DoubleMatrix;
+class IVectorNormalizer;
 
 class MINIMUMSHARED_EXPORT DoubleVector
 {
@@ -77,6 +78,7 @@ public:
     //friend MINIMUMSHARED_EXPORT std::ostream& operator <<(std::ostream& os, const DoubleVector& v);
 
     friend class DoubleMatrix;
+    friend class IVectorNormalizer;
 private:
     unsigned int mLength;
     double *mData;
