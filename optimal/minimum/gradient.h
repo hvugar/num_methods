@@ -1,11 +1,10 @@
-#ifndef GRADIENT_H
-#define GRADIENT_H
+#ifndef GRADIENT_METHOD_H
+#define GRADIENT_METHOD_H
 
 #include "global.h"
-
-//#include "r1minimize.h"
-#include "exceptions.h"
+#include "vector2d.h"
 #include "function.h"
+#include "exceptions.h"
 
 class RnFunction;
 class IGradient;
@@ -42,39 +41,63 @@ public:
     virtual void setGradient(IGradient *gradient);
 
     /**
-     * @brief Epsilon for gradient norm
+     * @brief optimalityTolerance
      * @return
      */
-    double epsilon1() const;
-    void setEpsilon1(double epsilon);
-
+    auto optimalityTolerance() const -> double;
     /**
-     * @brief Epsilon for points distance
-     * @return
+     * @brief setOptimalityTolerance
+     * @param optimalityTolerance
      */
-    double epsilon2() const;
-    void setEpsilon2(double epsilon);
-
+    auto setOptimalityTolerance(double optimalityTolerance) -> void;
     /**
-     * @brief Epsilon for function result
+     * @brief stepTolerance
      * @return
      */
-    double epsilon3() const;
-    void setEpsilon3(double epsilon);
-
+    auto stepTolerance() const -> double;
+    /**
+     * @brief setStepTolerance
+     * @param stepTolerance
+     */
+    auto setStepTolerance(double stepTolerance) -> void;
+    /**
+     * @brief functionTolerance
+     * @return
+     */
+    auto functionTolerance() const -> double;
+    /**
+     * @brief setFunctionTolerance
+     * @param functionTolerance
+     */
+    auto setFunctionTolerance(double functionTolerance) -> void;
+    /**
+     * @brief constraintTolerance
+     * @return
+     */
+    auto constraintTolerance() const -> double;
+    /**
+     * @brief setConstraintTolerance
+     * @param functionTolerance
+     */
+    auto setConstraintTolerance(double constraintTolerance) -> void;
+    /**
+     * @brief setTolerance
+     * @param optimalityTolerance
+     * @param stepTolerance
+     * @param functionTolerance
+     */
+    auto setTolerance(double optimalityTolerance, double stepTolerance, double functionTolerance) -> void;
     /**
      * @brief setR1MinimizeEpsilon
      * @param step
      * @param epsilon1
      */
     void setR1MinimizeEpsilon(double step, double epsilon);
-
     /**
      * @brief count
      * @return
      */
     unsigned int count() const;
-
     /**
      * @brief Вывод информации о значениях параметров оптимизации на каждой итерации.
      * @param printer Интерфейс для вывода информации о значениях параметров оптимизации на каждой итерации.
@@ -86,24 +109,21 @@ public:
      * @param projection Интерфейс для проекции значений параметров оптимизации.
      */
     void setProjection(IProjection *projection);
-
     /**
      * @brief setNormalize
      * @param normalize
      */
     void setNormalize(bool normalize);
-
     /**
      * @brief showExitMessage
      * @param shem
      */
     void showExitMessage(bool shem);
-
     /**
-     * @brief setVectorNormalizer
+     * @brief setGradientNormalizer
      * @param normalizer
      */
-    void setVectorNormalizer(IVectorNormalizer *normalizer);
+    void setGradientNormalizer(IVectorNormalizer *normalizer);
 
 protected:
 
@@ -114,7 +134,6 @@ protected:
      * @return
      */
     virtual double minimize(const DoubleVector &x, const DoubleVector &g) const = 0;
-
     /**
      * @brief          Метод прямого поиска. Установления границ интервала.
      * @param x        Произвольно выбранная начальная точка.
@@ -126,7 +145,6 @@ protected:
      * @param unimodal
      */
     void straightLineSearch(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const;
-
     /**
      * @brief          Метод Свенна. Установления границ интервала.
      * @param x        Произвольно выбранная начальная точка.
@@ -138,7 +156,6 @@ protected:
      * @param unimodal
      */
     void swann(double x, double step, double &a, double &b, double &fx, double &fxb, bool &unimodal) const;
-
     /**
      * @brief          Метод золотого сечения.
      *                 Метод относится к последовательным стратегиям. Задается начальный интервал неопределенности и
@@ -153,7 +170,6 @@ protected:
      * @param epsilon  Число эпсилон для останова метода.
      */
     void goldenSectionSearch(double &x, double &a, double &b, double epsilon) const;
-
     /**
      * @brief          Метод деления интервала пополам.
      *                 Метод относится к последовательным стратегиям и позволяет исключить из дальнейшего
@@ -173,28 +189,19 @@ protected:
     RnFunction *m_fn;
     IGradient *m_gr;
     IPrinter* m_printer;
-    IGradientPrinter *m_printer_gr;
     IProjection *m_projection;
-    double m_epsilon1;
-    double m_epsilon2;
-    double m_epsilon3;
-    double min_step;
-    double min_epsilon;
-    unsigned int m_iteration_count;
-    bool m_normalize;
-    bool m_show_end_message;
-
     double m_optimalityTolerance;
     double m_functionTolerance;
     double m_stepTolerance;
     double m_constraintTolerance;
-    unsigned int m_maxIterations;
+    double min_step;
+    double min_epsilon;
+    unsigned int m_iteration_count;
+    bool m_show_end_message;
+    bool m_normalize;
     IVectorNormalizer *m_normalizer;
+    unsigned int m_maxIterations;
+
 };
 
-//struct MINIMUMSHARED_EXPORT IGradientPrinter
-//{
-//    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double fxResult, GradientMethod::MethodResult result, double alpha);
-//};
-
-#endif // GRADIENT_H
+#endif // GRADIENT_METHOD_H

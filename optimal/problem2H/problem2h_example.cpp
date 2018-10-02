@@ -1,4 +1,32 @@
 #include "problem2h_example.h"
+#include "vectornormalizer.h"
+
+class Problem2HNVectorNormalizer : public IVectorNormalizer
+{
+public:
+    virtual auto norm(const DoubleVector &v) const -> double;
+    virtual auto normalize(DoubleVector &v) const -> void;
+};
+
+auto Problem2HNVectorNormalizer::norm(const DoubleVector &v) const -> double
+{
+    return EuclideanNorm(v);
+}
+
+auto Problem2HNVectorNormalizer::normalize(DoubleVector &v) const -> void
+{
+    DoubleVector kv = v.mid(0, 3);   IVectorNormalizer::EuclideanNormalize(kv);
+    DoubleVector zv = v.mid(4, 7);   IVectorNormalizer::EuclideanNormalize(zv);
+    DoubleVector ov = v.mid(8, 11);  IVectorNormalizer::EuclideanNormalize(ov);
+    DoubleVector cv = v.mid(12, 15); IVectorNormalizer::EuclideanNormalize(cv);
+
+    v[0]  = kv[0]; v[1]  = kv[1];  v[2]  = kv[2]; v[3]  = kv[3];
+    v[4]  = zv[0]; v[5]  = zv[1];  v[6]  = zv[2]; v[7]  = zv[3];
+    v[8]  = ov[0]; v[9]  = ov[1];  v[10] = ov[2]; v[11] = ov[3];
+    v[12] = cv[0]; v[13] = cv[1];  v[14] = cv[2]; v[15] = cv[3];
+
+    kv.clear(); zv.clear(); ov.clear(); cv.clear();
+}
 
 void example1()
 {
@@ -114,11 +142,12 @@ void example1()
         g.setGradient(&prob);
         g.setPrinter(&prob);
         g.setProjection(&prob);
-        g.setEpsilon1(0.00001);
-        g.setEpsilon2(0.00001);
-        g.setEpsilon3(0.00001);
+        g.setOptimalityTolerance(0.00001);
+        g.setStepTolerance(0.00001);
+        g.setFunctionTolerance(0.00001);
         g.setR1MinimizeEpsilon(0.1, 0.01);
         g.setNormalize(true);
+        g.setGradientNormalizer(new Problem2HNVectorNormalizer);
         g.showExitMessage(true);
         prob.gm = &g;
 

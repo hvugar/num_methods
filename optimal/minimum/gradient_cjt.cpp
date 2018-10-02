@@ -2,6 +2,7 @@
 #include "printer.h"
 #include "projection.h"
 #include "function.h"
+#include "vectornormalizer.h"
 #include <math.h>
 
 ConjugateGradient::ConjugateGradient() : GradientMethod()
@@ -38,15 +39,16 @@ void ConjugateGradient::calculate(DoubleVector& x)
     m_gr->gradient(x, g);
 
     /**************************************************************************************
-     * Checking for gradient vector norm that is less of epsilon.
-     * If gradient vector norm in current point is less than epsilon then break the iteration.
+     * Checking for gradient vector norm that is less of optimality tolerance.
+     * If gradient vector norm in current point is less than optimality tolerance then break the iteration.
      * Finish minimization.
      **************************************************************************************/
-    double gradient_norm = g.L2Norm();
-    if (gradient_norm < epsilon1())
+    double gradient_norm = 0.0;
+    if (m_normalizer) gradient_norm = m_normalizer->norm(g);
+    if (gradient_norm < optimalityTolerance())
     {
-        if (m_printer) m_printer->print(m_iteration_count, x, g, m_fn->fx(x), alpha, GradientMethod::BREAK_FIRST_ITERATION);
-        if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than epsilon...");
+        if (m_printer) m_printer->print(m_iteration_count, x, g, m_fn->fx(x), alpha, BREAK_FIRST_ITERATION);
+        if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than optimality tolerance...");
         return;
     }
 
@@ -55,7 +57,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
      **************************************************************************************/
     f1 = m_fn->fx(x);
 
-    if (m_printer) m_printer->print(m_iteration_count, x, g, f1, alpha, GradientMethod::FIRST_ITERATION);
+    if (m_printer) m_printer->print(m_iteration_count, x, g, f1, alpha, FIRST_ITERATION);
 
     do
     {
@@ -108,9 +110,9 @@ void ConjugateGradient::calculate(DoubleVector& x)
         }
 
         /**************************************************************************************
-         * Normalization of a vector
+         * Normalization of a gradient vector
          **************************************************************************************/
-        if (m_normalize) s.L2Normalize();
+        if (m_normalize && m_normalizer) m_normalizer->normalize(g);
 
         /**************************************************************************************
          * One-dimensional minimization along the direction of a anti-gradient
@@ -143,28 +145,29 @@ void ConjugateGradient::calculate(DoubleVector& x)
         m_gr->gradient(x, g);
 
         /**************************************************************************************
-         * Checking for gradient vector norm that is less of epsilon.
-         * If gradient vector norm in current point is less than epsilon then break the iteration.
+         * Checking for gradient vector norm that is less of optimality tolerance.
+         * If gradient vector norm in current point is less than optimality tolerance then break the iteration.
          * Finish minimization.
          **************************************************************************************/
-        double gradient_norm = g.L2Norm();
-        if (gradient_norm < epsilon1())
+        double gradient_norm = 0.0;
+        if (m_normalizer) gradient_norm = m_normalizer->norm(g);
+        if (gradient_norm < optimalityTolerance())
         {
-            if (m_printer) m_printer->print(m_iteration_count, x, g, f2, alpha, GradientMethod::BREAK_GRADIENT_NORM_LESS);
-            if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than epsilon...");
+            if (m_printer) m_printer->print(m_iteration_count, x, g, f2, alpha, BREAK_GRADIENT_NORM_LESS);
+            if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than optimality tolerance...");
             break;
         }
 
         /**************************************************************************************
          * Calculating distance between the previous and current points.
          * Calculating difference values of functions in previous and current points.
-         * If distance and difference is less than epsilon then break the iteration.
+         * If distance and difference is less than step tolerance then break the iteration.
          * Finish minimization.
          **************************************************************************************/
-        if (distance < epsilon2() && fabs(f2 - f1) < epsilon3())
+        if (distance < stepTolerance() && fabs(f2 - f1) < functionTolerance())
         {
-            if (m_printer) m_printer->print(m_iteration_count, x, g, f2, alpha, GradientMethod::BREAK_DISTANCE_LESS);
-            if (m_show_end_message) puts("Optimisation ends, because distance between last and current point less than epsilon...");
+            if (m_printer) m_printer->print(m_iteration_count, x, g, f2, alpha, BREAK_DISTANCE_LESS);
+            if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
             break;
         }
 
@@ -219,10 +222,10 @@ double ConjugateGradient::fx(double alpha) const
     for (unsigned int i=0; i<n; i++)
     {
         cx[i] = x[i] + alpha * s[i];
-        if (!m_projection) m_projection->project(cx, i);
+        if (m_projection) m_projection->project(cx, i);
     }
 
-    if (!m_projection) m_projection->project(cx);
+    if (m_projection) m_projection->project(cx);
 
     return m_fn->fx(cx);
 }

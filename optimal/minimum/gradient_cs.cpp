@@ -27,9 +27,9 @@ void ConstStepGradient::calculate(DoubleVector &x)
         /* calculating function gradient at current point */
         m_gr->gradient(x, g);
 
-        /* if gradinet norm at current point is less than epsilon then break. no minimize */
+        /* if gradinet norm at current point is less than optimality tolerance then break. no minimize */
         double gradNorm = g.L2Norm();
-        if (gradNorm < epsilon1())
+        if (gradNorm < optimalityTolerance())
         {
             puts("Optimisation ends, because L2 norm of gradient is less than epsilon...");
             break;
@@ -59,13 +59,13 @@ void ConstStepGradient::calculate(DoubleVector &x)
         double f2 = m_fn->fx(x);
 
         /* calculating distance previous and new point */
-        if (distance < epsilon2() && fabs(f2 - f1) < epsilon2())
+        if (distance < stepTolerance() && fabs(f2 - f1) < functionTolerance())
         {
             puts("Optimisation ends, because distance between last and current point less than epsilon...");
             break;
         }
 
-    } while (distance > epsilon2());
+    } while (true);
 }
 
 double ConstStepGradient::minimize(const DoubleVector &x, const DoubleVector &g) const

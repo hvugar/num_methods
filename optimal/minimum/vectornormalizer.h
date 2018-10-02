@@ -35,8 +35,6 @@ public:
     static auto LpNormalize(DoubleVector &v, double p) -> void;
     static auto LInfNorm(const DoubleVector &v) -> double;
     static auto LInfNormalize(DoubleVector &v) -> void;
-
-    friend class DoubleVector;
 };
 
 #endif // VECTORNORMALIZER_H

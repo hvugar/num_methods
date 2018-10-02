@@ -5,6 +5,8 @@
 #include <math.h>
 #include <float.h>
 
+/******************************************** DefaultNormalizer ****************************************/
+
 class DefaultNormalizer : public IVectorNormalizer
 {
 public:
@@ -15,7 +17,7 @@ public:
 
 DefaultNormalizer::~DefaultNormalizer() {}
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////
+/******************************************** DefaultGradient *****************************************/
 
 class DefaultGradient : public IGradient
 {
@@ -28,7 +30,7 @@ DefaultGradient::~DefaultGradient() {}
 
 auto DefaultGradient::gradient(const DoubleVector &, DoubleVector &) const -> void {}
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////
+/******************************************** DefaultPrinter *****************************************/
 
 class DefaultPrinter : public IPrinter
 {
@@ -37,15 +39,15 @@ public:
                        double alpha, GradientMethod::MethodResult result) const -> void;
 };
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*****************************************************************************************************/
 
-GradientMethod::GradientMethod() : m_fn(NULL), m_gr(NULL), m_printer(NULL), m_printer_gr(NULL), m_projection(NULL),
-    m_epsilon1(0.1), m_epsilon2(0.1), m_epsilon3(0.1), min_step(0.1), min_epsilon(0.01),
-    m_iteration_count(0), m_normalize(true), m_show_end_message(true), m_normalizer(NULL)
+GradientMethod::GradientMethod() : m_fn(NULL), m_gr(NULL), m_printer(NULL), m_projection(NULL),
+    m_optimalityTolerance(0.1), m_functionTolerance(0.1), m_stepTolerance(0.1),
+    min_step(0.1), min_epsilon(0.01),
+    m_iteration_count(0), m_show_end_message(true), m_normalize(true), m_normalizer(NULL)
 {
     m_gr = new DefaultGradient();
-    m_normalize = new DefaultNormalizer();
-    m_printer = new DefaultPrinter();
+    m_normalizer = new DefaultNormalizer();
 }
 
 GradientMethod::~GradientMethod() {}
@@ -78,58 +80,51 @@ void GradientMethod::setGradient(IGradient *gr)
     m_gr = gr;
 }
 
-/**
- * @brief Epsilon for gradient norm
- * @return
- */
-double GradientMethod::epsilon1() const
+auto GradientMethod::optimalityTolerance() const -> double
 {
-    return m_epsilon1;
+    return m_optimalityTolerance;
 }
 
-/**
- * @brief Epsilon for gradient norm
- * @param epsilon
- */
-void GradientMethod::setEpsilon1(double epsilon)
+auto GradientMethod::setOptimalityTolerance(double optimalityTolerance) -> void
 {
-    m_epsilon1 = epsilon;
+    m_optimalityTolerance = optimalityTolerance;
 }
 
-/**
- * @brief Epsilon for distance between points
- * @return
- */
-double GradientMethod::epsilon2() const
+auto GradientMethod::stepTolerance() const -> double
 {
-    return m_epsilon2;
+    return m_stepTolerance;
 }
 
-/**
- * @brief Epsilon for distance between points
- * @param epsilon
- */
-void GradientMethod::setEpsilon2(double epsilon)
+auto GradientMethod::setStepTolerance(double stepTolerance) -> void
 {
-    m_epsilon2 = epsilon;
+    m_stepTolerance = stepTolerance;
 }
 
-/**
- * @brief Epsilon for distance between points
- * @param epsilon
- */
-void GradientMethod::setEpsilon3(double epsilon)
+auto GradientMethod::functionTolerance() const -> double
 {
-    m_epsilon3 = epsilon;
+    return m_functionTolerance;
 }
 
-/**
- * @brief Epsilon for distance between points
- * @return
- */
-double GradientMethod::epsilon3() const
+auto GradientMethod::setFunctionTolerance(double functionTolerance) -> void
 {
-    return m_epsilon3;
+    m_functionTolerance = functionTolerance;
+}
+
+auto GradientMethod::constraintTolerance() const -> double
+{
+    return m_constraintTolerance;
+}
+
+auto GradientMethod::setConstraintTolerance(double constraintTolerance) -> void
+{
+    m_constraintTolerance = constraintTolerance;
+}
+
+auto GradientMethod::setTolerance(double optimalityTolerance, double stepTolerance, double functionTolerance) -> void
+{
+    m_optimalityTolerance = optimalityTolerance;
+    m_stepTolerance = stepTolerance;
+    m_functionTolerance = functionTolerance;
 }
 
 void GradientMethod::setR1MinimizeEpsilon(double step, double epsilon)
@@ -163,7 +158,7 @@ void GradientMethod::showExitMessage(bool showEndMessage)
     m_show_end_message = showEndMessage;
 }
 
-void GradientMethod::setVectorNormalizer(IVectorNormalizer *normalizer)
+void GradientMethod::setGradientNormalizer(IVectorNormalizer *normalizer)
 {
     m_normalizer = normalizer;
 }
