@@ -5,10 +5,12 @@
 #include <vector2d.h>
 #include <matrix2d.h>
 #include <printer.h>
+#include <r1minimize.h>
 
 class MINIMUMSHARED_EXPORT NonLinearEquation
 {
 protected:
+    virtual ~NonLinearEquation();
     virtual double fx(const DoubleVector &x, unsigned int num = 0) const = 0;
 
 public:

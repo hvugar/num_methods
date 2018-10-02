@@ -9,6 +9,7 @@
 class MINIMUMSHARED_EXPORT IPrinter
 {
 public:
+    virtual ~IPrinter();
     virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const = 0;
 
 public:
@@ -24,7 +25,7 @@ public:
     static void print(const DoubleVector &v, unsigned int N=10, unsigned int width=14, unsigned int presicion=10, FILE *file=stdout);
     static void printCube(const DoubleVector& x, unsigned int M, unsigned int N2, unsigned int N1, FILE *file = stdout);
     static void printDateTime(FILE *file = stdout);
-    static void printSeperatorLine(const char* msg = NULL, char c='-', FILE* file=stdout);
+    static void printSeperatorLine(const char* msg = NULL, char c='-', FILE* file = stdout);
 };
 
 #endif // PRINTER_H

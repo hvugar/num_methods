@@ -2,6 +2,7 @@
 #include "printer.h"
 #include "projection.h"
 #include "function.h"
+#include "vectornormalizer.h"
 #include <math.h>
 
 SteepestDescentGradient::SteepestDescentGradient() : GradientMethod()
@@ -36,10 +37,12 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
      * If gradient vector norm in current point is less than epsilon then break the iteration.
      * Finish minimization.
      **************************************************************************************/
-    double gradient_norm = g.L2Norm();
+    double gradient_norm;
+    if (m_normalizer) gradient_norm = m_normalizer->norm(g);
+    else gradient_norm = g.L2Norm();
     if (gradient_norm < epsilon1())
     {
-        if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, m_fn->fx(x), alpha, BREAK_FIRST_ITERATION);
+        if (m_printer) m_printer->print(m_iteration_count, x, g, m_fn->fx(x), alpha, BREAK_FIRST_ITERATION);
         if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than epsilon...");
         return;
     }
@@ -49,7 +52,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
      **************************************************************************************/
     f1 = m_fn->fx(x);
 
-    if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, f1, alpha, FIRST_ITERATION);
+    if (m_printer) m_printer->print(m_iteration_count, x, g, f1, alpha, FIRST_ITERATION);
 
     do
     {
@@ -58,7 +61,12 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
         /**************************************************************************************
          * Normalization of a vector
          **************************************************************************************/
-        if (m_normalize) g.L2Normalize();
+        //if (m_normalize) g.L2Normalize();
+        if (m_normalize)
+        {
+            if (m_normalizer) m_normalizer->normalize(g);
+            else              m_normalizer->EuclideanNormalize(g);
+        }
 
         /**************************************************************************************
          * One-dimensional minimization along the direction of a anti-gradient
@@ -74,14 +82,14 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
             double cx = x[i];
             x[i] = x[i] - alpha * g[i];
 
-            if (m_projection != NULL) m_projection->project(x, i);
+            if (m_projection) m_projection->project(x, i);
 
             /**************************************************************************************
              * Calculating distance.
              **************************************************************************************/
             distance += (x[i]-cx)*(x[i]-cx);
         }
-        if (m_projection != NULL) m_projection->project(x);
+        if (m_projection) m_projection->project(x);
         distance = sqrt(distance);
         f2 = m_fn->fx(x);
 
@@ -98,7 +106,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
         double gradient_norm = g.L2Norm();
         if (gradient_norm < epsilon1())
         {
-            if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, f2, alpha, GradientMethod::BREAK_GRADIENT_NORM_LESS);
+            if (m_printer) m_printer->print(m_iteration_count, x, g, f2, alpha, GradientMethod::BREAK_GRADIENT_NORM_LESS);
             if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than epsilon...");
             break;
         }
@@ -111,7 +119,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
          **************************************************************************************/
         if (distance < epsilon2() && fabs(f2 - f1) < epsilon3())
         {
-            if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, f2, alpha, GradientMethod::BREAK_DISTANCE_LESS);
+            if (m_printer) m_printer->print(m_iteration_count, x, g, f2, alpha, GradientMethod::BREAK_DISTANCE_LESS);
             if (m_show_end_message) puts("Optimisation ends, because distance between last and current point less than epsilon...");
             break;
         }
@@ -119,7 +127,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
         /**************************************************************************************
          * Printing iteration information.
          **************************************************************************************/
-        if (m_printer != NULL) m_printer->print(m_iteration_count, x, g, f2, alpha, GradientMethod::NEXT_ITERATION);
+        if (m_printer) m_printer->print(m_iteration_count, x, g, f2, alpha, GradientMethod::NEXT_ITERATION);
 
         f1 = f2;
 

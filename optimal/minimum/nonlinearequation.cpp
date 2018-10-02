@@ -1,5 +1,8 @@
 #include "nonlinearequation.h"
 
+NonLinearEquation::~NonLinearEquation()
+{}
+
 void NonLinearEquation::calculateSimpleIdetartion(const DoubleVector &x0, DoubleVector &x, double epsilon)
 {
     unsigned int n = x0.length();

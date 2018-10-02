@@ -1,13 +1,52 @@
 #include "gradient.h"
 #include "vectornormalizer.h"
+#include "printer.h"
 #include "function.h"
 #include <math.h>
 #include <float.h>
 
+class DefaultNormalizer : public IVectorNormalizer
+{
+public:
+    virtual ~DefaultNormalizer();
+    inline virtual auto norm(const DoubleVector &v) const -> double { return EuclideanNorm(v); }
+    inline virtual auto normalize(DoubleVector &v) const -> void { EuclideanNormalize(v); }
+};
+
+DefaultNormalizer::~DefaultNormalizer() {}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class DefaultGradient : public IGradient
+{
+public:
+    virtual ~DefaultGradient();
+    virtual auto gradient(const DoubleVector &x, DoubleVector &g) const -> void;
+};
+
+DefaultGradient::~DefaultGradient() {}
+
+auto DefaultGradient::gradient(const DoubleVector &, DoubleVector &) const -> void {}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class DefaultPrinter : public IPrinter
+{
+public:
+    virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f,
+                       double alpha, GradientMethod::MethodResult result) const -> void;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 GradientMethod::GradientMethod() : m_fn(NULL), m_gr(NULL), m_printer(NULL), m_printer_gr(NULL), m_projection(NULL),
     m_epsilon1(0.1), m_epsilon2(0.1), m_epsilon3(0.1), min_step(0.1), min_epsilon(0.01),
-    m_iteration_count(0), m_normalize(true), m_show_end_message(true)
-{}
+    m_iteration_count(0), m_normalize(true), m_show_end_message(true), m_normalizer(NULL)
+{
+    m_gr = new DefaultGradient();
+    m_normalize = new DefaultNormalizer();
+    m_printer = new DefaultPrinter();
+}
 
 GradientMethod::~GradientMethod() {}
 
@@ -99,7 +138,7 @@ void GradientMethod::setR1MinimizeEpsilon(double step, double epsilon)
     min_epsilon = epsilon;
 }
 
-int GradientMethod::count() const
+unsigned int GradientMethod::count() const
 {
     return m_iteration_count;
 }

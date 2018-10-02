@@ -3,7 +3,7 @@
 
 #include "global.h"
 
-#include "r1minimize.h"
+//#include "r1minimize.h"
 #include "exceptions.h"
 #include "function.h"
 
@@ -73,7 +73,7 @@ public:
      * @brief count
      * @return
      */
-    int count() const;
+    unsigned int count() const;
 
     /**
      * @brief Вывод информации о значениях параметров оптимизации на каждой итерации.

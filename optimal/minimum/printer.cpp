@@ -6,6 +6,8 @@
 #include <windows.h>
 #endif
 
+IPrinter::~IPrinter() {}
+
 void IPrinter::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n, const char* s, FILE* f)
 {
     C_UNUSED(s);
