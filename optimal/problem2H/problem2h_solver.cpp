@@ -8,6 +8,8 @@ void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //example1();
 }
 
+double MIN = +100000.0;
+double MAX = -100000.0;
 void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
     //    if (ln == 2*timeDimension().sizeN())
@@ -19,29 +21,41 @@ void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsign
     //    }
     //    return;
 
-    if (ln == 2)
+    if (ln%2 == 0)
     {
+        char filename1[40];
+        int size1 = sprintf(filename1, "e:/data/img/image%d.png", ln);
+        filename1[size1] = 0;
+        char filename2[40];
+        int size2 = sprintf(filename2, "e:/data/txt/image%d.txt", ln);
+        filename2[size2] = 0;
+
+        double min = u.min();
+        double max = u.max();
+        if (MIN>min) MIN = min;
+        if (MAX<max) MAX = max;
+
         puts("Generating image...");
         QPixmap pxm;
-        visualGrayScale(u, u.min(), u.max(), pxm, 0, 0);
-        pxm.save("E:/image001.png", "PNG");
-        printf("Image generated. ln: %d min: %f max: %f\n", 1, u.min(), u.max());
-        FILE* file = fopen("E:/image001.txt", "w");
+        visualGrayScale(u, min, max, pxm, 0, 0);
+        pxm.save(QString(filename1), "PNG");
+        printf("Image generated. ln: %d min: %f max: %f MIN: %f MAX: %f\n", ln/2, min, max, MIN, MAX);
+        FILE* file = fopen(filename2, "w");
         IPrinter::print(u, u.rows(), u.cols(), 10, 8, file);
         fclose(file);
     }
 
-    if (ln == 2*timeDimension().sizeN())
-    {
-        puts("Generating image...");
-        QPixmap pxm;
-        visualGrayScale(u, u.min(), u.max(), pxm, 0, 0);
-        pxm.save("E:/image1000.png", "PNG");
-        printf("Image generated. ln: %d min: %f max: %f\n", 1000, u.min(), u.max());
-        FILE* file = fopen("E:/image1000.txt", "w");
-        IPrinter::print(u, u.rows(), u.cols(), 10, 8, file);
-        fclose(file);
-    }
+//    if (ln == 2*timeDimension().sizeN())
+//    {
+//        puts("Generating image...");
+//        QPixmap pxm;
+//        visualGrayScale(u, u.min(), u.max(), pxm, 0, 0);
+//        pxm.save("E:/image1000.png", "PNG");
+//        printf("Image generated. ln: %d min: %f max: %f\n", 1000, u.min(), u.max());
+//        FILE* file = fopen("E:/image1000.txt", "w");
+//        IPrinter::print(u, u.rows(), u.cols(), 10, 8, file);
+//        fclose(file);
+//    }
 
 #ifdef SAVE_TO_IMG
     //if (ln != 1 && ln != timeDimension().sizeN()+LD) return;
@@ -2724,11 +2738,11 @@ void Problem2HNDirichlet::distributeDeltaP(const SpacePoint &pt, unsigned int id
     double hx = dimX.step();
     double hy = dimY.step();
 
-    unsigned int Nx = dimX.sizeN();
-    unsigned int Ny = dimY.sizeN();
+    unsigned int Nx = static_cast<unsigned int> ( dimX.sizeN() );
+    unsigned int Ny = static_cast<unsigned int> ( dimY.sizeN() );
 
-    unsigned int rx = (unsigned int) (round( pt.x * Nx ));
-    unsigned int ry = (unsigned int) (round( pt.y * Ny ));
+    unsigned int rx = static_cast<unsigned int> ( round( pt.x * Nx ) );
+    unsigned int ry = static_cast<unsigned int> ( round( pt.y * Ny ) );
 
     ExtendedSpacePointNode node; node.id = id; node.pt = pt; node.i = rx; node.j = ry; node.w = 1.0/(hx*hy); nodes.push_back(node);
 }
@@ -2738,11 +2752,11 @@ void Problem2HNDirichlet::distributeDeltaR(const SpacePoint &pt, unsigned int id
     double hx = dimX.step();
     double hy = dimY.step();
 
-    unsigned int Nx = dimX.sizeN();
-    unsigned int Ny = dimY.sizeN();
+    unsigned int Nx = static_cast<unsigned int> ( dimX.sizeN() );
+    unsigned int Ny = static_cast<unsigned int> ( dimY.sizeN() );
 
-    unsigned int rx = (unsigned int) (floor( pt.x * Nx ));
-    unsigned int ry = (unsigned int) (floor( pt.y * Ny ));
+    unsigned int rx = static_cast<unsigned int> ( floor( pt.x * Nx ) );
+    unsigned int ry = static_cast<unsigned int> ( floor( pt.y * Ny ) );
 
     double h1x = fabs(pt.x - rx*hx);
     double h1y = fabs(pt.y - ry*hy);
@@ -2760,14 +2774,14 @@ void Problem2HNDirichlet::distributeDeltaG(const SpacePoint &pt, unsigned int id
     double hx = dimX.step();
     double hy = dimY.step();
 
-    unsigned int Nx = dimX.sizeN();
-    unsigned int Ny = dimY.sizeN();
+    unsigned int Nx = static_cast<unsigned int> ( dimX.sizeN() );
+    unsigned int Ny = static_cast<unsigned int> ( dimY.sizeN() );
 
     unsigned int rx = (unsigned int) ( round(pt.x*Nx) );
     unsigned int ry = (unsigned int) ( round(pt.y*Ny) );
 
-    double sigmaX = 10.0*hx;
-    double sigmaY = 10.0*hy;
+    double sigmaX = hx;
+    double sigmaY = hy;
 
     double sumX = 0.0;
     for (unsigned int n=rx-k; n<=rx+k; n++) sumX += exp(-((n*hx-pt.x)*(n*hx-pt.x))/(2.0*sigmaX*sigmaX));
@@ -2797,7 +2811,7 @@ void Problem2HNDirichlet::distributeDeltaG(const SpacePoint &pt, unsigned int id
 
 double Problem2HNDirichlet::distributeTimeDelta(double t, double ht, unsigned int ln, const espn_vector &qPointNodes, const SpaceNodePDE &sn) const
 {
-    if ( ln >= 200 ) return 0.0;
+    if ( ln >= 20 ) return 0.0;
 
     double Q = 0.0;
     for (unsigned int si=0; si<qPointNodes.size(); si++)
@@ -2809,8 +2823,8 @@ double Problem2HNDirichlet::distributeTimeDelta(double t, double ht, unsigned in
         }
     }
 
-    double sigma = 10.0*ht;
-    double mu = 40.0*ht;
+    double sigma = ht;
+    double mu = 4.0*ht;
     return ( 1.0/(sqrt(2*M_PI)*sigma) ) * exp( -((t - mu)*(t - mu))/(2.0*sigma*sigma) ) * Q;
 }
 

@@ -168,7 +168,7 @@ void example2()
     r_prm.xi.resize(e_prm.No);
     r_prm.eta.resize(e_prm.Nc);
 
-    o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
+    //o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
     o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = +0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
     o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
     o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
@@ -176,9 +176,9 @@ void example2()
     r_prm = o_prm;
 
     // Grid parameters
-    double hx = 0.0010; int Nx = 1000;
-    double hy = 0.0010; int Ny = 1000;
-    double ht = 0.0005; int Nt = 2000;
+    double hx = 0.010; int Nx = 100;
+    double hy = 0.010; int Ny = 100;
+    double ht = 0.005; int Nt = 200;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
@@ -197,7 +197,7 @@ void example2()
     prob.optimizeO = true;
     prob.vmin.resize(e_prm.Nc, +0.004);
     prob.vmax.resize(e_prm.Nc, +0.008);
-    prob.LD = 1;
+    prob.LD = 10;
     prob.regEpsilon = 0.0;
 
     std::vector<DoubleMatrix> u;

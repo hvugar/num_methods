@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
     }
 
     QWidget *w = QWidget::createWindowContainer(surface);
+
     w->show();
 
     return a.exec();

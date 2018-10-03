@@ -1,21 +1,22 @@
 #include "matrixsurface.h"
 #include <matrix2d.h>
+#include <printer.h>
 
 MatrixSurface::MatrixSurface(QObject *parent) : Q3DSurface()
 {
     minX = +0.0f;
-    maxX = +1000.0f;
+    maxX = +100.0f;
     minZ = +0.0f;
-    maxZ = +1000.0f;
-    minY = 0.0f;
-    maxY = 1.0f;
+    maxZ = +100.0f;
+    minY = -0.456183f*100.0f;
+    maxY = +1.255503f*100.0f;
 
     rotationX = 30.0f;
     rotationY = 90.0f;
     rotationZ = 30.0f;
 
-    //countX = 1000;
-    //countZ = 1000;
+    countX = 100;
+    countZ = 100;
 
     setReflection(true);
     setSelectionMode(QAbstract3DGraph::SelectionNone);
@@ -31,15 +32,18 @@ MatrixSurface::MatrixSurface(QObject *parent) : Q3DSurface()
     axisX()->setRange(minX, maxX);
     axisY()->setRange(minY, maxY);
     axisZ()->setRange(minZ, maxZ);
+    axisY()->setSegmentCount(1);
+
+    //setAspectRatio(10.0);
+    setFlipHorizontalGrid(false);
 
     axisX()->setLabelAutoRotation(rotationX);
     axisY()->setLabelAutoRotation(rotationY);
     axisZ()->setLabelAutoRotation(rotationZ);
 
     m_Proxy = new QSurfaceDataProxy();
-    //m_Proxy->setValueRanges(0.0f, 1000.0f, 0.0f, 1000.0f);
 
-    fillMatrix("E:/image001.txt", 1001, 1001);
+    fillMatrix("e:/data/txt/image200.txt", 101, 101);
 
     m_Series = new QSurface3DSeries(m_Proxy);
     m_Series->setItemLabelFormat(QStringLiteral("(@xLabel, @zLabel): @yLabel"));
@@ -55,7 +59,7 @@ MatrixSurface::MatrixSurface(QObject *parent) : Q3DSurface()
     gr.setColorAt(0.5, Qt::darkYellow);
     gr.setColorAt(0.6, 0xFFC700);
     gr.setColorAt(0.7, 0xFF7700);
-    gr.setColorAt(1.0, Qt::darkRed);
+    gr.setColorAt(0.10, Qt::darkRed);
 
     m_Series->setBaseGradient(gr);
     m_Series->setColorStyle(Q3DTheme::ColorStyleRangeGradient);
@@ -101,7 +105,7 @@ void MatrixSurface::fillMatrix(const QString &filename, int w, int h)
         int index = 0;
         for (int j = 0; j <= countX; j++) {
             float x = j;
-            float y = (float) m.at(i, j)*100;
+            float y = (float) (m[i][j]*100.0f);
             (*newRow)[index++].setPosition(QVector3D(x, y, z));
         }
         *dataArray << newRow;

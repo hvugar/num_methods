@@ -35,7 +35,6 @@ HeightMapSurface::HeightMapSurface(QObject *parent) : Q3DSurface()
     axisY()->setLabelAutoRotation(rotationY);
     axisZ()->setLabelAutoRotation(rotationZ);
 
-
     QImage heightMapImage("E:/image1000.png");
     //QImage heightMapImage("E:/ASTGDEMV2_0N38E045.jpg");
     m_Proxy = new QHeightMapSurfaceDataProxy(heightMapImage);

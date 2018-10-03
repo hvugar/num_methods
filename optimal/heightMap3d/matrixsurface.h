@@ -38,6 +38,7 @@ public:
 
     void fillMatrix(const QString &filename, int w, int h);
 
+
 signals:
 
 public slots:
