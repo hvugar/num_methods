@@ -812,7 +812,7 @@ void IProblem1::calculateP(DoubleMatrix &p, const DoubleMatrix &u, const DoubleV
     free(da);
 }
 
-void IProblem1::print(unsigned int i, const DoubleVector &y, const DoubleVector &g, double r, GradientMethod::MethodResult) const
+void IProblem1::print(unsigned int i, const DoubleVector &y, const DoubleVector &g, double fx, double alpha, GradientMethod::MethodResult) const
 {
     IProblem1 *pm = const_cast<IProblem1*>(this);
     DoubleVector k,z,e;
@@ -836,7 +836,7 @@ void IProblem1::print(unsigned int i, const DoubleVector &y, const DoubleVector 
     DoubleVector nz = n.mid(1*L,2*L-1);
     DoubleVector ne = n.mid(2*L,3*L-1);
 
-    printf("J[%d]: %.10f R: %.2f  I: %.10f P: %.10f\n", i, r, R, pm->integral(u), pm->penalty(k,z,e,u));
+    printf("J[%d]: %.10f R: %.2f  I: %.10f P: %.10f Alpha %.4\n", i, fx, R, pm->integral(u), pm->penalty(k,z,e,u), alpha);
     printf("k: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", k[s]); printf("\n");
     //printf("a: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", ak[s]); printf(" | "); ak.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", ak[s]); printf("\n");
     //printf("n: "); for (unsigned int s=0; s<L; s++) printf("%18.10f", nk[s]); printf(" | "); nk.L2Normalize(); for (unsigned int s=0; s<L; s++) printf("%18.10f", nk[s]); printf("\n");

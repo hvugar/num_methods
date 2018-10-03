@@ -325,12 +325,12 @@ void ExpOptimalLetters::Table2Y1()
     g.setGradient(&jfunc);
     g.setPrinter(&jfunc);
     g.setProjection(&jfunc);
-    g.setEpsilon1(0.000);
-    g.setEpsilon2(0.000);
-    g.setEpsilon3(0.000);
+    g.setOptimalityTolerance(0.000);
+    g.setStepTolerance(0.000);
+    g.setFunctionTolerance(0.000);
     g.setR1MinimizeEpsilon(1.0, 0.001);
     g.setNormalize(true);
-    g.showEndMessage(true);
+    g.showExitMessage(true);
     //g.setResetIteration(false);
 
     DoubleVector x; jfunc.toVector(prm, x);
@@ -387,12 +387,12 @@ void ExpOptimalLetters::Table2Y2()
     g.setGradient(&jfunc);
     g.setPrinter(&jfunc);
     g.setProjection(&jfunc);
-    g.setEpsilon1(0.000);
-    g.setEpsilon2(0.000);
-    g.setEpsilon3(0.000);
+    g.setOptimalityTolerance(0.000);
+    g.setStepTolerance(0.000);
+    g.setFunctionTolerance(0.000);
     g.setR1MinimizeEpsilon(1.0, 0.001);
     g.setNormalize(true);
-    g.showEndMessage(true);
+    g.showExitMessage(true);
     //g.setResetIteration(false);
 
     DoubleVector x; jfunc.toVector(prm, x);
@@ -449,12 +449,12 @@ void ExpOptimalLetters::Table3Y2()
     g.setGradient(&jfunc);
     g.setPrinter(&jfunc);
     g.setProjection(&jfunc);
-    g.setEpsilon1(0.000);
-    g.setEpsilon2(0.000);
-    g.setEpsilon3(0.000);
+    g.setOptimalityTolerance(0.000);
+    g.setStepTolerance(0.000);
+    g.setFunctionTolerance(0.000);
     g.setR1MinimizeEpsilon(1.0, 0.001);
     g.setNormalize(true);
-    g.showEndMessage(true);
+    g.showExitMessage(true);
     //g.setResetIteration(false);
 
     DoubleVector x; jfunc.toVector(prm, x);

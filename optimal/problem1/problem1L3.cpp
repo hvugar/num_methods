@@ -86,9 +86,9 @@ Problem1L3::Problem1L3()
     g.setGradient(this);
     g.setPrinter(this);
     g.setProjection(this);
-    g.setEpsilon1(0.00000001);
-    g.setEpsilon2(0.00000001);
-    g.setEpsilon3(0.00000001);
+    g.setOptimalityTolerance(0.00000001);
+    g.setStepTolerance(0.00000001);
+    g.setFunctionTolerance(0.00000001);
     g.setR1MinimizeEpsilon(2.0, 0.00000001);
     g.setNormalize(true);
     g.calculate(x0);

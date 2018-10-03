@@ -72,7 +72,7 @@ protected:
     virtual double norm(const DoubleVector &k, const DoubleVector &z, const DoubleVector &e) const;
     virtual double penalty(const DoubleVector &k, const DoubleVector &z, const DoubleVector &e, const DoubleMatrix &u) const;
 
-    virtual void print(unsigned int i, const DoubleVector &y, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const;
+    virtual void print(unsigned int i, const DoubleVector &y, const DoubleVector &g, double fx, double alpha, GradientMethod::MethodResult result) const;
 
     virtual void calculateU(DoubleMatrix &u, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e) const;
     virtual void calculateU1(DoubleMatrix &u, const DoubleVector &k, const DoubleVector &z, const DoubleVector &e) const;

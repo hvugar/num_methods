@@ -16,12 +16,12 @@ void PFunctional::calculate(DoubleVector &x, double r)
         g.setGradient(func);
         g.setPrinter(func);
         g.setProjection(func);
-        g.setEpsilon1(0.0001);
-        g.setEpsilon2(0.0001);
-        g.setEpsilon3(0.0001);
+        g.setOptimalityTolerance(0.0001);
+        g.setStepTolerance(0.0001);
+        g.setFunctionTolerance(0.0001);
         g.setR1MinimizeEpsilon(0.1, 0.01);
         //g.setNormalize(true);
-        g.showEndMessage(true);
+        g.showExitMessage(true);
         //g.setResetIteration(false);
 
         g.calculate(x);

@@ -126,7 +126,6 @@ public:
     void setGradientNormalizer(IVectorNormalizer *normalizer);
 
 protected:
-
     /**
      * @brief minimize
      * @param x
@@ -186,6 +185,7 @@ protected:
      */
     void halphIntervalMethod(double &x, double &a, double &b, double epsilon) const;
 
+protected:
     RnFunction *m_fn;
     IGradient *m_gr;
     IPrinter* m_printer;

@@ -153,12 +153,12 @@ void Problem1L2::optimize(DoubleVector &x0) const
     g.setGradient(p);
     g.setPrinter(p);
     g.setProjection(p);
-    g.setEpsilon1(0.0001);//0.00000001
-    g.setEpsilon2(0.0001);//0.00000001
-    g.setEpsilon3(0.0001);//0.00000001
+    g.setOptimalityTolerance(0.0001);//0.00000001
+    g.setStepTolerance(0.0001);//0.00000001
+    g.setFunctionTolerance(0.0001);//0.00000001
     g.setR1MinimizeEpsilon(1.0, 0.00001); //0.00000001
     g.setNormalize(true);
-    g.showEndMessage(true);
+    g.showExitMessage(true);
     g.setResetIteration(false);
     g.calculate(x0);
 

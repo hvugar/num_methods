@@ -237,12 +237,12 @@ void Problem2Article::Table2_Y1()
     g.setGradient(&jfunc);
     g.setPrinter(&jfunc);
     g.setProjection(&jfunc);
-    g.setEpsilon1(0.0000001);
-    g.setEpsilon2(0.0000001);
-    g.setEpsilon3(0.0000001);
+    g.setOptimalityTolerance(0.0000001);
+    g.setStepTolerance(0.0000001);
+    g.setFunctionTolerance(0.0000001);
     g.setR1MinimizeEpsilon(0.1, 0.001);
     g.setNormalize(true);
-    g.showEndMessage(true);
+    g.showExitMessage(true);
     //g.setResetIteration(false);
 
     DoubleVector x; jfunc.toVector(prm, x);
@@ -302,12 +302,12 @@ void Problem2Article::Table3_Y1()
     g.setGradient(&jfunc);
     g.setPrinter(&jfunc);
     g.setProjection(&jfunc);
-    g.setEpsilon1(0.0000001);
-    g.setEpsilon2(0.0000001);
-    g.setEpsilon3(0.0000001);
+    g.setOptimalityTolerance(0.0000001);
+    g.setStepTolerance(0.0000001);
+    g.setFunctionTolerance(0.0000001);
     g.setR1MinimizeEpsilon(0.1, 0.001);
     g.setNormalize(true);
-    g.showEndMessage(true);
+    g.showExitMessage(true);
     //g.setResetIteration(false);
 
     DoubleVector x; jfunc.toVector(prm, x);
@@ -388,12 +388,12 @@ void Problem2Article::Table23_Y1()
         grad.setPrinter(&jfunc);
         grad.setGradient(&jfunc);
         grad.setProjection(&jfunc);
-        grad.setEpsilon1(0.0000001);
-        grad.setEpsilon2(0.0000001);
-        grad.setEpsilon3(0.0000001);
+        grad.setOptimalityTolerance(0.0000001);
+        grad.setStepTolerance(0.0000001);
+        grad.setFunctionTolerance(0.0000001);
         grad.setR1MinimizeEpsilon(10.0, 0.00001);
         grad.setNormalize(true);
-        grad.showEndMessage(false);
+        grad.showExitMessage(false);
         grad.setResetIteration(false);
         grad.calculate(x);
     }
@@ -613,12 +613,12 @@ void Problem2Article::Table2_Y2()
     g.setGradient(&jfunc);
     g.setPrinter(&jfunc);
     g.setProjection(&jfunc);
-    g.setEpsilon1(0.0000001);
-    g.setEpsilon2(0.0000001);
-    g.setEpsilon3(0.0000001);
+    g.setOptimalityTolerance(0.0000001);
+    g.setStepTolerance(0.0000001);
+    g.setFunctionTolerance(0.0000001);
     g.setR1MinimizeEpsilon(0.1, 0.001);
     g.setNormalize(true);
-    g.showEndMessage(true);
+    g.showExitMessage(true);
     //g.setResetIteration(false);
 
     DoubleVector x; jfunc.toVector(prm, x);
@@ -678,12 +678,12 @@ void Problem2Article::Table3_Y2()
     g.setGradient(&jfunc);
     g.setPrinter(&jfunc);
     g.setProjection(&jfunc);
-    g.setEpsilon1(0.0000001);
-    g.setEpsilon2(0.0000001);
-    g.setEpsilon3(0.0000001);
+    g.setOptimalityTolerance(0.0000001);
+    g.setStepTolerance(0.0000001);
+    g.setFunctionTolerance(0.0000001);
     g.setR1MinimizeEpsilon(0.1, 0.001);
     g.setNormalize(true);
-    g.showEndMessage(true);
+    g.showExitMessage(true);
     //g.setResetIteration(false);
 
     DoubleVector x; jfunc.toVector(prm, x);

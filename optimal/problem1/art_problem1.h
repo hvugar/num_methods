@@ -26,6 +26,7 @@ public:
     void optimize(DoubleVector &x0) const;
 
     virtual void project(DoubleVector &x, unsigned int index);
+    virtual void project(DoubleVector &) const {}
 
     void table1Generate();
     void table2Generate();

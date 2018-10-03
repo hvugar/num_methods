@@ -5,7 +5,7 @@ void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     example2();
     IPrinter::printSeperatorLine();
-    example1();
+    //example1();
 }
 
 void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
@@ -657,6 +657,26 @@ void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) con
     p_info.clear();
 }
 
+auto Problem2HNDirichlet::norm(const DoubleVector &v) const -> double
+{
+    return EuclideanNorm(v);
+}
+
+auto Problem2HNDirichlet::normalize(DoubleVector &v) const -> void
+{
+    DoubleVector kv = v.mid(0, 3);   IVectorNormalizer::EuclideanNormalize(kv);
+    DoubleVector zv = v.mid(4, 7);   IVectorNormalizer::EuclideanNormalize(zv);
+    DoubleVector ov = v.mid(8, 11);  IVectorNormalizer::EuclideanNormalize(ov);
+    DoubleVector cv = v.mid(12, 15); IVectorNormalizer::EuclideanNormalize(cv);
+
+    v[0]  = kv[0]; v[1]  = kv[1];  v[2]  = kv[2]; v[3]  = kv[3];
+    v[4]  = zv[0]; v[5]  = zv[1];  v[6]  = zv[2]; v[7]  = zv[3];
+    v[8]  = ov[0]; v[9]  = ov[1];  v[10] = ov[2]; v[11] = ov[3];
+    v[12] = cv[0]; v[13] = cv[1];  v[14] = cv[2]; v[15] = cv[3];
+
+    kv.clear(); zv.clear(); ov.clear(); cv.clear();
+}
+
 void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const
 {
     C_UNUSED(i); C_UNUSED(x); C_UNUSED(g); C_UNUSED(f); C_UNUSED(alpha); C_UNUSED(result);
@@ -714,7 +734,7 @@ void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const Dou
     //    exit(-1);
 }
 
-void Problem2HNDirichlet::project(DoubleVector &pv, unsigned int index)
+auto Problem2HNDirichlet::project(DoubleVector &pv, unsigned int index) -> void
 {
     C_UNUSED(pv);
     C_UNUSED(index);
@@ -744,7 +764,7 @@ void Problem2HNDirichlet::project(DoubleVector &pv, unsigned int index)
     //projectMeasurePoints(pv, index);
 }
 
-void Problem2HNDirichlet::project(DoubleVector &pv) const
+auto Problem2HNDirichlet::project(DoubleVector &pv) const -> void
 {
     unsigned int Nc = mEquParameter.Nc;
     unsigned int No = mEquParameter.No;
@@ -767,7 +787,7 @@ void Problem2HNDirichlet::project(DoubleVector &pv) const
     //IPrinter::print(pv.mid(start, end));
 }
 
-void Problem2HNDirichlet::projectControlPoints(DoubleVector &pv, unsigned int index) const
+auto Problem2HNDirichlet::projectControlPoints(DoubleVector &pv, unsigned int index) const -> void
 {
     double dist = 0.10;
 
@@ -848,7 +868,7 @@ void Problem2HNDirichlet::projectControlPoints(DoubleVector &pv, unsigned int in
     }
 }
 
-void Problem2HNDirichlet::projectMeasurePoints(DoubleVector &pv, unsigned int index) const
+auto Problem2HNDirichlet::projectMeasurePoints(DoubleVector &pv, unsigned int index) const -> void
 {
     double dist = 0.10;
 
@@ -929,7 +949,7 @@ void Problem2HNDirichlet::projectMeasurePoints(DoubleVector &pv, unsigned int in
     }
 }
 
-void Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const
+auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vector &u_info, bool use) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);

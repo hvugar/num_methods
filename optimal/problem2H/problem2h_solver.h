@@ -3,7 +3,9 @@
 
 #include "common.h"
 
-class PROBLEM2HSHARED_EXPORT Problem2HNDirichlet : public RnFunction, public IGradient, public InitialBoundaryValueProblemPDE, public IProjection, public IPrinter
+class PROBLEM2HSHARED_EXPORT Problem2HNDirichlet : public RnFunction,
+        public IGradient, public InitialBoundaryValueProblemPDE, public IProjection, public IPrinter,
+        public IVectorNormalizer
 {
 public:
     static void Main(int argc, char* argv[]);
@@ -13,14 +15,16 @@ public:
     Problem2HNDirichlet();
     virtual ~Problem2HNDirichlet();
 
-    virtual double fx(const DoubleVector &x) const;
-    virtual void gradient(const DoubleVector &, DoubleVector &) const;
+    virtual auto fx(const DoubleVector &x) const -> double;
+    virtual auto gradient(const DoubleVector &, DoubleVector &) const -> void;
+
+    virtual auto norm(const DoubleVector &v) const -> double;
+    virtual auto normalize(DoubleVector &v) const -> void;
 
     /** Integral part of functional */
     double integral(const std::vector<DoubleMatrix> &u) const;
     double integralU(const DoubleMatrix &u) const;
     double norm(const EquationParameter &eprm, const OptimizeParameter &oprm, const OptimizeParameter &oprm0) const;
-
 
     /** Penalty part of functional */
     double penalty(const spif_vector &info, const OptimizeParameter &o_prm) const;

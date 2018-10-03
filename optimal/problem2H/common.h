@@ -12,6 +12,8 @@
 #include <gradient_cjt.h>
 #include <gradient_sd.h>
 #include <gradient_cs.h>
+#include <vector2d.h>
+#include <vectornormalizer.h>
 #include <grid/ibvp.h>
 #include "problem2h_global.h"
 #include "../imaging/imaging.h"

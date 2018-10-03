@@ -97,9 +97,9 @@ void Problem1L1::initialize()
     g.setGradient(this);
     g.setPrinter(this);
     g.setProjection(this);
-    g.setEpsilon1(0.00000001);
-    g.setEpsilon2(0.00000001);
-    g.setEpsilon3(0.00000001);
+    g.setOptimalityTolerance(0.00000001);
+    g.setStepTolerance(0.00000001);
+    g.setFunctionTolerance(0.00000001);
     g.setR1MinimizeEpsilon(2.0, 0.00000001);
     g.setNormalize(true);
     g.calculate(x0);
@@ -373,7 +373,7 @@ void Problem1L1::gradient(const DoubleVector &x, DoubleVector &g) const
 #endif
 }
 
-void Problem1L1::print(unsigned int i, const DoubleVector &x, const DoubleVector &, double, GradientMethod::MethodResult) const
+void Problem1L1::print(unsigned int i, const DoubleVector &x, const DoubleVector &, double, double, GradientMethod::MethodResult) const
 {
     int j = 0;
     printf("x: ");

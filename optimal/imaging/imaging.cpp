@@ -87,3 +87,24 @@ void visualHeatColorGradinet2(QPixmap &img, int w, int h)
     painter.fillRect(0,0,w,h,QBrush(gradient));
     painter.end();
 }
+
+void visualGrayScale(const DoubleMatrix &m, double min, double max, QPixmap &pxm, size_t, size_t)
+{
+    unsigned int rows = m.rows();
+    unsigned int cols = m.cols();
+
+    pxm = QPixmap(static_cast<int>(cols), static_cast<int>(rows));
+    pxm.fill(Qt::transparent);
+    QPainter painter(&pxm);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    for (unsigned int j=0; j<rows; j++)
+    {
+        for (unsigned int i=0; i<cols; i++)
+        {
+            int gray = static_cast<int>(((m[j][i]-min)/(max-min))*255);
+            QColor color(gray, gray, gray);
+            painter.setPen(color);
+            painter.drawPoint(static_cast<int>(i), static_cast<int>(rows-(j+1)));
+        }
+    }
+}

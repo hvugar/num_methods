@@ -1,32 +1,6 @@
 #include "problem2h_example.h"
 #include "vectornormalizer.h"
-
-class Problem2HNVectorNormalizer : public IVectorNormalizer
-{
-public:
-    virtual auto norm(const DoubleVector &v) const -> double;
-    virtual auto normalize(DoubleVector &v) const -> void;
-};
-
-auto Problem2HNVectorNormalizer::norm(const DoubleVector &v) const -> double
-{
-    return EuclideanNorm(v);
-}
-
-auto Problem2HNVectorNormalizer::normalize(DoubleVector &v) const -> void
-{
-    DoubleVector kv = v.mid(0, 3);   IVectorNormalizer::EuclideanNormalize(kv);
-    DoubleVector zv = v.mid(4, 7);   IVectorNormalizer::EuclideanNormalize(zv);
-    DoubleVector ov = v.mid(8, 11);  IVectorNormalizer::EuclideanNormalize(ov);
-    DoubleVector cv = v.mid(12, 15); IVectorNormalizer::EuclideanNormalize(cv);
-
-    v[0]  = kv[0]; v[1]  = kv[1];  v[2]  = kv[2]; v[3]  = kv[3];
-    v[4]  = zv[0]; v[5]  = zv[1];  v[6]  = zv[2]; v[7]  = zv[3];
-    v[8]  = ov[0]; v[9]  = ov[1];  v[10] = ov[2]; v[11] = ov[3];
-    v[12] = cv[0]; v[13] = cv[1];  v[14] = cv[2]; v[15] = cv[3];
-
-    kv.clear(); zv.clear(); ov.clear(); cv.clear();
-}
+#include "imaging.h"
 
 void example1()
 {
@@ -142,12 +116,12 @@ void example1()
         g.setGradient(&prob);
         g.setPrinter(&prob);
         g.setProjection(&prob);
-        g.setOptimalityTolerance(0.00001);
-        g.setStepTolerance(0.00001);
-        g.setFunctionTolerance(0.00001);
+        g.setGradientNormalizer(&prob);
+        g.setOptimalityTolerance(0.0001);
+        g.setStepTolerance(0.0001);
+        g.setFunctionTolerance(0.0001);
         g.setR1MinimizeEpsilon(0.1, 0.01);
         g.setNormalize(true);
-        g.setGradientNormalizer(new Problem2HNVectorNormalizer);
         g.showExitMessage(true);
         prob.gm = &g;
 
@@ -202,9 +176,9 @@ void example2()
     r_prm = o_prm;
 
     // Grid parameters
-    double hx = 0.010; int Nx = 100;
-    double hy = 0.010; int Ny = 100;
-    double ht = 0.005; int Nt = 200;
+    double hx = 0.0010; int Nx = 1000;
+    double hy = 0.0010; int Ny = 1000;
+    double ht = 0.0005; int Nt = 2000;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
@@ -235,6 +209,12 @@ void example2()
     IPrinter::printMatrix(u0);
     IPrinter::printSeperatorLine();
     printf("%f\n", sqrt(prob.integralU(u0)));
+
+    puts("Generating image...");
+    QPixmap pxm;
+    visualGrayScale(u0, u0.min(), u0.max(), pxm, 0, 0);
+    pxm.save("E:/image.png", "PNG");
+    puts("Image generated.");
 
     //IPrinter::printSeperatorLine();
     //DoubleMatrix &m = u.at(2*prob.LD);
