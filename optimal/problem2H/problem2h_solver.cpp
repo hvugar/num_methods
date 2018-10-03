@@ -19,6 +19,30 @@ void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsign
     //    }
     //    return;
 
+    if (ln == 2)
+    {
+        puts("Generating image...");
+        QPixmap pxm;
+        visualGrayScale(u, u.min(), u.max(), pxm, 0, 0);
+        pxm.save("E:/image001.png", "PNG");
+        printf("Image generated. ln: %d min: %f max: %f\n", 1, u.min(), u.max());
+        FILE* file = fopen("E:/image001.txt", "w");
+        IPrinter::print(u, u.rows(), u.cols(), 10, 8, file);
+        fclose(file);
+    }
+
+    if (ln == 2*timeDimension().sizeN())
+    {
+        puts("Generating image...");
+        QPixmap pxm;
+        visualGrayScale(u, u.min(), u.max(), pxm, 0, 0);
+        pxm.save("E:/image1000.png", "PNG");
+        printf("Image generated. ln: %d min: %f max: %f\n", 1000, u.min(), u.max());
+        FILE* file = fopen("E:/image1000.txt", "w");
+        IPrinter::print(u, u.rows(), u.cols(), 10, 8, file);
+        fclose(file);
+    }
+
 #ifdef SAVE_TO_IMG
     //if (ln != 1 && ln != timeDimension().sizeN()+LD) return;
     //if (ln < timeDimension().sizeN()) return;
@@ -2742,8 +2766,8 @@ void Problem2HNDirichlet::distributeDeltaG(const SpacePoint &pt, unsigned int id
     unsigned int rx = (unsigned int) ( round(pt.x*Nx) );
     unsigned int ry = (unsigned int) ( round(pt.y*Ny) );
 
-    double sigmaX = hx;
-    double sigmaY = hy;
+    double sigmaX = 10.0*hx;
+    double sigmaY = 10.0*hy;
 
     double sumX = 0.0;
     for (unsigned int n=rx-k; n<=rx+k; n++) sumX += exp(-((n*hx-pt.x)*(n*hx-pt.x))/(2.0*sigmaX*sigmaX));
@@ -2773,7 +2797,7 @@ void Problem2HNDirichlet::distributeDeltaG(const SpacePoint &pt, unsigned int id
 
 double Problem2HNDirichlet::distributeTimeDelta(double t, double ht, unsigned int ln, const espn_vector &qPointNodes, const SpaceNodePDE &sn) const
 {
-    if ( ln >= 20 ) return 0.0;
+    if ( ln >= 200 ) return 0.0;
 
     double Q = 0.0;
     for (unsigned int si=0; si<qPointNodes.size(); si++)
@@ -2785,8 +2809,8 @@ double Problem2HNDirichlet::distributeTimeDelta(double t, double ht, unsigned in
         }
     }
 
-    double sigma = ht;
-    double mu = 4.0*ht;
+    double sigma = 10.0*ht;
+    double mu = 40.0*ht;
     return ( 1.0/(sqrt(2*M_PI)*sigma) ) * exp( -((t - mu)*(t - mu))/(2.0*sigma*sigma) ) * Q;
 }
 

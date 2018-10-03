@@ -101,7 +101,7 @@ void visualGrayScale(const DoubleMatrix &m, double min, double max, QPixmap &pxm
     {
         for (unsigned int i=0; i<cols; i++)
         {
-            int gray = static_cast<int>(((m[j][i]-min)/(max-min))*255);
+            int gray = static_cast<int>((1.0 - (m[j][i]-min)/(max-min))*255);
             QColor color(gray, gray, gray);
             painter.setPen(color);
             painter.drawPoint(static_cast<int>(i), static_cast<int>(rows-(j+1)));

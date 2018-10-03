@@ -1,6 +1,7 @@
 TARGET = imaging
 TEMPLATE = lib
 CONFIG += shared
+CONFIG -= app_bundle
 
 QT     += core gui widgets
 

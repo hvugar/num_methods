@@ -210,12 +210,6 @@ void example2()
     IPrinter::printSeperatorLine();
     printf("%f\n", sqrt(prob.integralU(u0)));
 
-    puts("Generating image...");
-    QPixmap pxm;
-    visualGrayScale(u0, u0.min(), u0.max(), pxm, 0, 0);
-    pxm.save("E:/image.png", "PNG");
-    puts("Image generated.");
-
     //IPrinter::printSeperatorLine();
     //DoubleMatrix &m = u.at(2*prob.LD);
     //IPrinter::printMatrix(m);
