@@ -40,7 +40,12 @@ struct SpacePointExt : public SpacePoint
     unsigned int id;
     unsigned int rx;
     unsigned int ry;
-    GridNodeMap distPoints;
+
+    const GridNodeMap &distPoints() const { return m_distPoints; }
+    GridNodeMap &distPoints() { return m_distPoints; }
+
+private:
+    GridNodeMap m_distPoints;
 };
 
 typedef std::vector<SpacePointExt> vector_SpacePointExt;

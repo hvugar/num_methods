@@ -136,30 +136,30 @@ void example2()
     // Equation parameters
     EquationParameter e_prm;
     e_prm.a = +1.0;
-    e_prm.lambda = +0.01;
+    e_prm.lambda = +0.00;
 
     // Pulse influences
-    e_prm.Ns = 1;
+    e_prm.Ns = 5;
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
     //e_prm.q[0] = +0.12; e_prm.theta[0].x = 0.4300; e_prm.theta[0].y = 0.7500;
     //e_prm.q[1] = +0.13; e_prm.theta[1].x = 0.8700; e_prm.theta[1].y = 0.2300;
-    e_prm.q[0] = +1.12; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
-//    e_prm.q[1] = +0.12; e_prm.theta[1].x = 0.2500; e_prm.theta[1].y = 0.2500;
-//    e_prm.q[2] = +0.12; e_prm.theta[2].x = 0.7500; e_prm.theta[2].y = 0.7500;
-//    e_prm.q[3] = +0.12; e_prm.theta[3].x = 0.2500; e_prm.theta[3].y = 0.7500;
-//    e_prm.q[4] = +0.12; e_prm.theta[4].x = 0.7500; e_prm.theta[4].y = 0.2500;
+    e_prm.q[0] = +0.12; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
+    e_prm.q[1] = +0.12; e_prm.theta[1].x = 0.2500; e_prm.theta[1].y = 0.2500;
+    e_prm.q[2] = +0.12; e_prm.theta[2].x = 0.7500; e_prm.theta[2].y = 0.7500;
+    e_prm.q[3] = +0.12; e_prm.theta[3].x = 0.2500; e_prm.theta[3].y = 0.7500;
+    e_prm.q[4] = +0.12; e_prm.theta[4].x = 0.7500; e_prm.theta[4].y = 0.2500;
 
-    e_prm.No = 0;
-    e_prm.Nc = 0;
+    e_prm.No = 2;
+    e_prm.Nc = 2;
 
     // Optimization parameters
     OptimizeParameter o_prm;
-    //o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
-    //o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
-    //o_prm.xi.resize(e_prm.No);
-    //o_prm.eta.resize(e_prm.Nc);
+    o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm.xi.resize(e_prm.No);
+    o_prm.eta.resize(e_prm.Nc);
 
     // Regularization parameters
     OptimizeParameter r_prm;
@@ -168,17 +168,17 @@ void example2()
     r_prm.xi.resize(e_prm.No);
     r_prm.eta.resize(e_prm.Nc);
 
-    //o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
-    //o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = +0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
-    //o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
-    //o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
+    o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
+    o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = +0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
+    o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
+    o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
 
     r_prm = o_prm;
 
     // Grid parameters
-    double hx = 0.0010; int Nx = 1000;
-    double hy = 0.0010; int Ny = 1000;
-    double ht = 0.0010; int Nt = 2000;
+    double hx = 0.010; int Nx = 100;
+    double hy = 0.010; int Ny = 100;
+    double ht = 0.005; int Nt = 200;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);

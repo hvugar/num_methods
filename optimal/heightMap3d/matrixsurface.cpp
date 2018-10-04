@@ -7,25 +7,24 @@
 MatrixSurface::MatrixSurface(QObject *parent) : Q3DSurface()
 {
     minX = +0.0f;
-    maxX = +1000.0f;
+    maxX = +100.0f;
     minZ = +0.0f;
-    maxZ = +1000.0f;
-    //minY = -0.456183f*100.0f;
-    //maxY = +1.255503f*100.0f;
+    maxZ = +100.0f;
+    minY = -0.054f;
+    maxY = +0.066f;
 
 //    maxY = +1.255582;
 //    minY = -0.452912;
 
-    maxY = +0.115524;
-    minY = -0.052888;
-
+//    maxY = +0.115524;
+//    minY = -0.052888;
 
     rotationX = 30.0f;
     rotationY = 90.0f;
     rotationZ = 30.0f;
 
-    countX = 1000;
-    countZ = 1000;
+    countX = 100;
+    countZ = 100;
 
     setReflection(true);
     setSelectionMode(QAbstract3DGraph::SelectionNone);
@@ -43,8 +42,9 @@ MatrixSurface::MatrixSurface(QObject *parent) : Q3DSurface()
     axisZ()->setRange(minZ, maxZ);
     axisY()->setSegmentCount(1);
 
-    //setAspectRatio(10.0);
+    setAspectRatio(2.5);
     setFlipHorizontalGrid(false);
+    qDebug() << aspectRatio();
 
     axisX()->setLabelAutoRotation(rotationX);
     axisY()->setLabelAutoRotation(rotationY);
@@ -59,13 +59,15 @@ MatrixSurface::MatrixSurface(QObject *parent) : Q3DSurface()
     QLinearGradient gr;
     gr.setColorAt(0.0, Qt::darkBlue);
     gr.setColorAt(0.1, Qt::blue);
-    gr.setColorAt(0.2, Qt::darkGreen);
-    gr.setColorAt(0.3, Qt::green);
-    gr.setColorAt(0.4, Qt::yellow);
-    gr.setColorAt(0.5, Qt::darkYellow);
-    gr.setColorAt(0.6, 0xFFC700);
-    gr.setColorAt(0.7, 0xFF7700);
-    gr.setColorAt(0.10, Qt::darkRed);
+    gr.setColorAt(0.2, Qt::white);
+    gr.setColorAt(0.3, Qt::darkGreen);
+    gr.setColorAt(0.4, Qt::green);
+    gr.setColorAt(0.5, Qt::yellow);
+    gr.setColorAt(0.6, Qt::darkYellow);
+    gr.setColorAt(0.7, 0xFFC700);
+    gr.setColorAt(0.8, 0xFF7700);
+    gr.setColorAt(0.9, Qt::red);
+    gr.setColorAt(1.0, Qt::darkRed);
 
     m_Series->setBaseGradient(gr);
     m_Series->setColorStyle(Q3DTheme::ColorStyleRangeGradient);
@@ -76,7 +78,7 @@ MatrixSurface::MatrixSurface(QObject *parent) : Q3DSurface()
 //    fillMatrix("e:/data/txt/image400.txt", 101, 101);
     QTimer *timer = new QTimer;
     QTimer::connect(timer, SIGNAL(timeout()), this, SLOT(timeout()));
-    timer->setInterval(10);
+    timer->setInterval(100);
     timer->start();
 }
 
@@ -130,7 +132,7 @@ void MatrixSurface::fillMatrix(const QString &filename, int w, int h)
 
 void MatrixSurface::timeout()
 {
-    count += 20;
-    qDebug() << QString("e:/data/txt/image%1.txt").arg(count);
+    count += 2;
+    //qDebug() << QString("e:/data/txt/image%1.txt").arg(count);
     fillMatrix(QString("e:/data/txt/image%1.txt").arg(count), 1001, 1001);
 }
