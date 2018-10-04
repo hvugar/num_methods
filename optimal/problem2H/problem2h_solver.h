@@ -82,7 +82,9 @@ public:
     void distributeDeltaR(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY) const;
     void distributeDeltaG(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int k = 3) const;
 
-    double distributeTimeDelta(double t, double ht, unsigned int ln, const espn_vector &qPointNodes, const SpaceNodePDE &sn) const;
+    double distributeTimeDelta(double t, double ht, unsigned int ln, const espn_vector &qPointNodes, const SpaceNodePDE &sn, const vector_SpacePointExt& spxs) const;
+
+    void distributePulseDelta(std::vector<SpacePointExt> &spxs, const std::vector<SpacePoint> &thetas, const Dimension &dimX, const Dimension &dimY) const;
 
     //void solveForwardIBVP2(std::vector<DoubleMatrix> &u_, spif_vector &u_info, bool use) const;
     //void f_initialLayers2(DoubleMatrix &u00, DoubleMatrix &u05, DoubleMatrix &u10, spif_vector &info, bool use, espn_vector &obsPointNodes, espn_vector &cntDeltaNodes, espn_vector &qPointNodes, unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const;

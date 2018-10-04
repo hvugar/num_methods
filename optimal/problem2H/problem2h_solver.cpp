@@ -45,17 +45,17 @@ void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsign
         fclose(file);
     }
 
-//    if (ln == 2*timeDimension().sizeN())
-//    {
-//        puts("Generating image...");
-//        QPixmap pxm;
-//        visualGrayScale(u, u.min(), u.max(), pxm, 0, 0);
-//        pxm.save("E:/image1000.png", "PNG");
-//        printf("Image generated. ln: %d min: %f max: %f\n", 1000, u.min(), u.max());
-//        FILE* file = fopen("E:/image1000.txt", "w");
-//        IPrinter::print(u, u.rows(), u.cols(), 10, 8, file);
-//        fclose(file);
-//    }
+    //    if (ln == 2*timeDimension().sizeN())
+    //    {
+    //        puts("Generating image...");
+    //        QPixmap pxm;
+    //        visualGrayScale(u, u.min(), u.max(), pxm, 0, 0);
+    //        pxm.save("E:/image1000.png", "PNG");
+    //        printf("Image generated. ln: %d min: %f max: %f\n", 1000, u.min(), u.max());
+    //        FILE* file = fopen("E:/image1000.txt", "w");
+    //        IPrinter::print(u, u.rows(), u.cols(), 10, 8, file);
+    //        fclose(file);
+    //    }
 
 #ifdef SAVE_TO_IMG
     //if (ln != 1 && ln != timeDimension().sizeN()+LD) return;
@@ -1035,7 +1035,17 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     espn_vector obsPointNodes, cntDeltaNodes, qPointNodes;
     for (unsigned int j=0; j<No; j++) distributeDelta0(mOptParameter.xi[j], j, obsPointNodes, dimX, dimY, 4, 4);
     for (unsigned int i=0; i<Nc; i++) distributeDelta0(mOptParameter.eta[i], i, cntDeltaNodes, dimX, dimY, 4, 4);
-    for (unsigned int s=0; s<Ns; s++) distributeDelta0(mEquParameter.theta[s], s, qPointNodes, dimX, dimY, 4, 4);
+
+    std::vector<SpacePointExt> qSpacePointExts;
+    for (unsigned int s=0; s<Ns; s++)
+    {
+        SpacePointExt spx; spx.id = s;
+        spx.x  =  mEquParameter.theta[s].x;
+        spx.y  =  mEquParameter.theta[s].y;
+        distributePulseDelta(qSpacePointExts, mEquParameter.theta, dimX, dimY);
+        qSpacePointExts.push_back(spx);
+    }
+    //for (unsigned int s=0; s<Ns; s++) distributeDelta0(mEquParameter.theta[s], s, qPointNodes, dimX, dimY, 4, 4);
 
     //----------------------------------------------------------------------------------------------//
     uint_vector rows0, rows1, rows2, cols0, cols1, cols2;
@@ -1138,7 +1148,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     dx[n-1] += 2.0*u10[m][n] + (u10[m][n]-u00[m][n]);
 
                     //------------------------------------- Adding time delta part --------------------------------//
-                    dx[n-1] += htht*distributeTimeDelta(tn15.t, ht, 2*l-1, qPointNodes, sn);
+                    dx[n-1] += htht*distributeTimeDelta(tn15.t, ht, 2*l-1, qPointNodes, sn, qSpacePointExts);
                     //------------------------------------- Adding time delta part --------------------------------//
                 }
 
@@ -1200,7 +1210,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding time delta part --------------------------------//
-                    dx[n-1] += htht*distributeTimeDelta(tn15.t, ht, 2*l-1, qPointNodes, sn);
+                    dx[n-1] += htht*distributeTimeDelta(tn15.t, ht, 2*l-1, qPointNodes, sn, qSpacePointExts);
                     //------------------------------------- Adding time delta part --------------------------------//
                 }
 
@@ -1279,7 +1289,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding time delta part --------------------------------//
-                    d1[index] += htht*distributeTimeDelta(tn15.t, ht, 2*l-1, qPointNodes, sn);
+                    d1[index] += htht*distributeTimeDelta(tn15.t, ht, 2*l-1, qPointNodes, sn, qSpacePointExts);
                     //------------------------------------- Adding time delta part --------------------------------//
                 }
 
@@ -1329,7 +1339,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     dy[m-1] += 2.0*u15[m][n] + (u10[m][n]-u00[m][n]);
 
                     //------------------------------------- Adding time delta part --------------------------------//
-                    dy[m-1] += htht*distributeTimeDelta(tn20.t, ht, 2*l, qPointNodes, sn);
+                    dy[m-1] += htht*distributeTimeDelta(tn20.t, ht, 2*l, qPointNodes, sn, qSpacePointExts);
                     //------------------------------------- Adding time delta part --------------------------------//
                 }
 
@@ -1391,7 +1401,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding time delta part --------------------------------//
-                    dy[m-1] += htht*distributeTimeDelta(tn20.t, ht, 2*l, qPointNodes, sn);
+                    dy[m-1] += htht*distributeTimeDelta(tn20.t, ht, 2*l, qPointNodes, sn, qSpacePointExts);
                     //------------------------------------- Adding time delta part --------------------------------//
                 }
 
@@ -1470,7 +1480,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding time delta part --------------------------------//
-                    d2[index] += htht*distributeTimeDelta(tn20.t, ht, 2*l, qPointNodes, sn);
+                    d2[index] += htht*distributeTimeDelta(tn20.t, ht, 2*l, qPointNodes, sn, qSpacePointExts);
                     //------------------------------------- Adding time delta part --------------------------------//
                 }
 
@@ -1661,8 +1671,8 @@ void Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, 
             //            u05[m][n] += (0.125*ht*ht) * sum1;
             //            u10[m][n] += (0.500*ht*ht) * sum1;
 
-            u05[m][n] += (0.125*ht*ht)*distributeTimeDelta(0.5*ht, ht, 1, qPointNodes, sn);
-            u10[m][n] += (0.500*ht*ht)*distributeTimeDelta(1.0*ht, ht, 2, qPointNodes, sn);
+            u05[m][n] += (0.125*ht*ht)*distributeTimeDelta(0.5*ht, ht, 1, qPointNodes, sn, qSpacePointExts);
+            u10[m][n] += (0.500*ht*ht)*distributeTimeDelta(1.0*ht, ht, 2, qPointNodes, sn, qSpacePointExts);
         }
     }
 
@@ -2780,8 +2790,8 @@ void Problem2HNDirichlet::distributeDeltaG(const SpacePoint &pt, unsigned int id
     unsigned int rx = (unsigned int) ( round(pt.x*Nx) );
     unsigned int ry = (unsigned int) ( round(pt.y*Ny) );
 
-    double sigmaX = hx;
-    double sigmaY = hy;
+    double sigmaX = 50.0*hx;
+    double sigmaY = 50.0*hy;
 
     double sumX = 0.0;
     for (unsigned int n=rx-k; n<=rx+k; n++) sumX += exp(-((n*hx-pt.x)*(n*hx-pt.x))/(2.0*sigmaX*sigmaX));
@@ -2809,19 +2819,103 @@ void Problem2HNDirichlet::distributeDeltaG(const SpacePoint &pt, unsigned int id
     }
 }
 
-double Problem2HNDirichlet::distributeTimeDelta(double t, double ht, unsigned int ln, const espn_vector &qPointNodes, const SpaceNodePDE &sn) const
+void Problem2HNDirichlet::distributePulseDelta(std::vector<SpacePointExt> &spxs, const std::vector<SpacePoint> &thetas, const Dimension &dimX, const Dimension &dimY) const
+{
+    double hx = dimX.step();
+    double hy = dimY.step();
+
+    unsigned int Nx = static_cast<unsigned int> ( dimX.sizeN() );
+    unsigned int Ny = static_cast<unsigned int> ( dimY.sizeN() );
+
+    double sigmaX = (static_cast<double>(Nx)/10)*hx;
+    double sigmaY = (static_cast<double>(Ny)/10)*hy;
+
+    unsigned int k = 4*10;
+    unsigned int Ns =  thetas.size();
+
+    for (unsigned int s=0; s<Ns; s++)
+    {
+        const SpacePoint &theta = thetas[s];
+        SpacePointExt spx;
+
+        unsigned int rx = static_cast<double> ( round(theta.x*Nx) );
+        unsigned int ry = static_cast<double> ( round(theta.y*Ny) );
+        spx.rx = rx;
+        spx.ry = ry;
+
+        double sumX = 0.0;
+        for (unsigned int n=rx-k; n<=rx+k; n++) sumX += exp(-((n*hx-theta.x)*(n*hx-theta.x))/(2.0*sigmaX*sigmaX));
+        sumX *= hx;
+
+        double sumY = 0.0;
+        for (unsigned int m=ry-k; m<=ry+k; m++) sumY += exp(-((m*hy-theta.y)*(m*hy-theta.y))/(2.0*sigmaY*sigmaY));
+        sumY *= hy;
+
+        double sigma = (sumX*sumY) / (2.0*M_PI);
+        double factor = 1.0/((2.0*M_PI)*sigma);
+
+        SpacePointExt::GridNodeMap &map = spx.distPoints;
+        for (unsigned int m=ry-k; m<=ry+k; m++)
+        {
+            for (unsigned int n=rx-k; n<=rx+k; n++)
+            {
+                SpacePointExt::GridNodeWeight node;
+                node.i = n; node.x = n*hx;
+                node.j = m; node.y = m*hy;
+                node.id = theta.id;
+                node.w = factor*exp(-0.5*(((node.x-theta.x)*(node.x-theta.x))/(sigmaX*sigmaX)+((node.y-theta.y)*(node.y-theta.y))/(sigmaY*sigmaY)));
+                node.isCenter = ( m==ry && n==rx );
+                map.insert( SpacePointExt::GridNodePairWeight(  SpacePointExt::GridNodePair(m, n), node ) );
+            }
+        }
+    }
+}
+
+#include <utility>
+#include <map>
+typedef std::pair<unsigned int, unsigned int> grid_coord;
+std::map<std::pair<unsigned int, unsigned int>, double> qPointMap;
+std::map<std::pair<unsigned int, unsigned int>, double>::iterator it;
+
+double Problem2HNDirichlet::distributeTimeDelta(double t, double ht, unsigned int ln, const espn_vector &qPointNodes, const SpaceNodePDE &sn, const vector_SpacePointExt& spxs) const
 {
     if ( ln >= 20 ) return 0.0;
 
     double Q = 0.0;
-    for (unsigned int si=0; si<qPointNodes.size(); si++)
+    for (unsigned int i=0; i<spxs.size(); i++)
     {
-        const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
-        if (qNode.i == sn.i && qNode.j == sn.j)
-        {
-            Q += mEquParameter.q[qNode.id] * qNode.w;
-        }
+        SpacePointExt::GridNodePair<sn.j, sn.i> node;
+        SpacePointExt::GridNodeMap::iterator w = spxs.find( node );
+        Q += w->second.w;
     }
+
+
+    //    if (qPointMap.empty())
+    //    {
+    //        for (unsigned int si=0; si<qPointNodes.size(); si++)
+    //        {
+    //            const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
+    //            std::pair<unsigned int, unsigned int> coord = std::make_pair(qNode.j, qNode.i);
+    //            qPointMap.insert(std::pair<grid_coord, double>(coord, qNode.w));
+    //        }
+    //    }
+
+    //    if ( 100 > sn.i || sn.i > 900) return 0.0;
+
+    //    std::pair<unsigned int, unsigned int> coord = std::make_pair(sn.j, sn.i);
+    //    it = qPointMap.find(coord);
+    //    return it->second;
+
+
+    //    double Q = 0.0;
+    //    for (unsigned int si=0; si<qPointNodes.size(); si++)
+    //    {
+    //        const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
+    //        if (qNode.i == sn.i && qNode.j == sn.j)
+    //        {
+    //            Q += mEquParameter.q[qNode.id] * qNode.w;
+    //        }
+    //    }
 
     double sigma = ht;
     double mu = 4.0*ht;

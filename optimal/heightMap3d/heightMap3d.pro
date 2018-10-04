@@ -29,9 +29,11 @@ SOURCES += \
         main.cpp \
         widget.cpp \
     heightmapsurface.cpp \
-    matrixsurface.cpp
+    matrixsurface.cpp \
+    player.cpp
 
 HEADERS += \
         widget.h \
     heightmapsurface.h \
-    matrixsurface.h
+    matrixsurface.h \
+    player.h

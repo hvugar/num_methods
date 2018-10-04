@@ -4,6 +4,8 @@
 #include <vector>
 #include <set>
 #include <algorithm>
+#include <map>
+#include <utility>
 #include <time.h>
 #include <function.h>
 #include <gradient.h>
@@ -17,6 +19,31 @@
 #include <grid/ibvp.h>
 #include "problem2h_global.h"
 #include "../imaging/imaging.h"
+
+struct SpacePointExt : public SpacePoint
+{
+    typedef std::pair<unsigned int, unsigned int> GridNodePair;
+
+    struct GridNodeWeight
+    {
+        unsigned int id;
+        unsigned int i;
+        unsigned int j;
+        double x;
+        double y;
+        double w;
+        bool isCenter;
+    };
+    typedef std::pair<GridNodePair, GridNodeWeight> GridNodePairWeight;
+    typedef std::map <GridNodePair, GridNodeWeight> GridNodeMap;
+
+    unsigned int id;
+    unsigned int rx;
+    unsigned int ry;
+    GridNodeMap distPoints;
+};
+
+typedef std::vector<SpacePointExt> vector_SpacePointExt;
 
 struct PROBLEM2HSHARED_EXPORT OptimizeParameter
 {

@@ -1,22 +1,31 @@
 #include "matrixsurface.h"
 #include <matrix2d.h>
 #include <printer.h>
+#include "player.h"
+#include <QTimer>
 
 MatrixSurface::MatrixSurface(QObject *parent) : Q3DSurface()
 {
     minX = +0.0f;
-    maxX = +100.0f;
+    maxX = +1000.0f;
     minZ = +0.0f;
-    maxZ = +100.0f;
-    minY = -0.456183f*100.0f;
-    maxY = +1.255503f*100.0f;
+    maxZ = +1000.0f;
+    //minY = -0.456183f*100.0f;
+    //maxY = +1.255503f*100.0f;
+
+//    maxY = +1.255582;
+//    minY = -0.452912;
+
+    maxY = +0.115524;
+    minY = -0.052888;
+
 
     rotationX = 30.0f;
     rotationY = 90.0f;
     rotationZ = 30.0f;
 
-    countX = 100;
-    countZ = 100;
+    countX = 1000;
+    countZ = 1000;
 
     setReflection(true);
     setSelectionMode(QAbstract3DGraph::SelectionNone);
@@ -42,11 +51,8 @@ MatrixSurface::MatrixSurface(QObject *parent) : Q3DSurface()
     axisZ()->setLabelAutoRotation(rotationZ);
 
     m_Proxy = new QSurfaceDataProxy();
-
-    fillMatrix("e:/data/txt/image200.txt", 101, 101);
-
     m_Series = new QSurface3DSeries(m_Proxy);
-    m_Series->setItemLabelFormat(QStringLiteral("(@xLabel, @zLabel): @yLabel"));
+    m_Series->setItemLabelFormat(QStringLiteral("(@xLabel, @yLabel): @xLabel"));
     m_Series->setDrawMode(QSurface3DSeries::DrawSurface);
     m_Series->setFlatShadingEnabled(true);
 
@@ -64,7 +70,14 @@ MatrixSurface::MatrixSurface(QObject *parent) : Q3DSurface()
     m_Series->setBaseGradient(gr);
     m_Series->setColorStyle(Q3DTheme::ColorStyleRangeGradient);
 
+    removeSeries(m_Series);
     addSeries(m_Series);
+
+//    fillMatrix("e:/data/txt/image400.txt", 101, 101);
+    QTimer *timer = new QTimer;
+    QTimer::connect(timer, SIGNAL(timeout()), this, SLOT(timeout()));
+    timer->setInterval(10);
+    timer->start();
 }
 
 void MatrixSurface::fillMatrix(const QString &filename, int w, int h)
@@ -105,10 +118,19 @@ void MatrixSurface::fillMatrix(const QString &filename, int w, int h)
         int index = 0;
         for (int j = 0; j <= countX; j++) {
             float x = j;
-            float y = (float) (m[i][j]*100.0f);
+            float y = (float) (m[i][j]);
             (*newRow)[index++].setPosition(QVector3D(x, y, z));
         }
         *dataArray << newRow;
     }
     m_Proxy->resetArray(dataArray);
+
+//    QWidget::
+}
+
+void MatrixSurface::timeout()
+{
+    count += 20;
+    qDebug() << QString("e:/data/txt/image%1.txt").arg(count);
+    fillMatrix(QString("e:/data/txt/image%1.txt").arg(count), 1001, 1001);
 }

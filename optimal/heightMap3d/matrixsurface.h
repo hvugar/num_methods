@@ -38,10 +38,12 @@ public:
 
     void fillMatrix(const QString &filename, int w, int h);
 
+    int count = 0;
 
 signals:
 
 public slots:
+    void timeout();
 };
 
 #endif // MATRIXSURFACE_H
