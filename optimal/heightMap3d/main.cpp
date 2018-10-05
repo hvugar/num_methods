@@ -8,8 +8,8 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    //Q3DSurface *surface = new HeightMapSurface();
-    Q3DSurface *surface = new MatrixSurface();
+    Q3DSurface *surface = new HeightMapSurface();
+    //Q3DSurface *surface = new MatrixSurface();
 
     if (!surface->hasContext()) {
         QMessageBox msgBox;

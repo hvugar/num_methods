@@ -136,7 +136,7 @@ void example2()
     // Equation parameters
     EquationParameter e_prm;
     e_prm.a = +1.0;
-    e_prm.lambda = +0.00;
+    e_prm.lambda = +0.01;
 
     // Pulse influences
     e_prm.Ns = 5;
@@ -171,7 +171,9 @@ void example2()
     o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
     o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = +0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
     o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
-    o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
+    //o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
+    //o_prm.eta[0].x = +0.5574; o_prm.eta[0].y = +0.7835; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4951;
+    o_prm.eta[0].x = +0.4574; o_prm.eta[0].y = +0.6935; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
 
     r_prm = o_prm;
 

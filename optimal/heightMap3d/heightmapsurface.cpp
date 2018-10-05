@@ -3,11 +3,11 @@
 HeightMapSurface::HeightMapSurface(QObject *parent) : Q3DSurface()
 {
     minX = +0.0f;
-    maxX = +1000.0f;
+    maxX = +480000.0f;
     minZ = +0.0f;
-    maxZ = +1000.0f;
-    minY = 0.0f;
-    maxY = 1.0f;
+    maxZ = +380000.0f;
+    minY = -0.0f;
+    maxY = +255.0f;
 
     rotationX = 30.0f;
     rotationY = 90.0f;
@@ -24,6 +24,8 @@ HeightMapSurface::HeightMapSurface(QObject *parent) : Q3DSurface()
     setAxisY(new QValue3DAxis);
     setAxisZ(new QValue3DAxis);
 
+    setAspectRatio(25.0f);
+
     axisX()->setLabelFormat("x: %.2f");
     axisZ()->setLabelFormat("z: %.2f");
     axisY()->setLabelFormat("y: %.2f");
@@ -35,10 +37,9 @@ HeightMapSurface::HeightMapSurface(QObject *parent) : Q3DSurface()
     axisY()->setLabelAutoRotation(rotationY);
     axisZ()->setLabelAutoRotation(rotationZ);
 
-    QImage heightMapImage("E:/image1000.png");
-    //QImage heightMapImage("E:/ASTGDEMV2_0N38E045.jpg");
+    QImage heightMapImage("f:/azerb3.png");
     m_Proxy = new QHeightMapSurfaceDataProxy(heightMapImage);
-    m_Proxy->setValueRanges(0.0f, 1000.0f, 0.0f, 1000.0f);
+    m_Proxy->setValueRanges(0.0f, 480000.0f, 0.0f, 380000.0f);
 
     m_Series = new QSurface3DSeries(m_Proxy);
     m_Series->setItemLabelFormat(QStringLiteral("(@xLabel, @zLabel): @yLabel"));
@@ -46,14 +47,19 @@ HeightMapSurface::HeightMapSurface(QObject *parent) : Q3DSurface()
     m_Series->setFlatShadingEnabled(true);
 
     QLinearGradient gr;
-    gr.setColorAt(0.0, Qt::darkBlue);
-    gr.setColorAt(0.1, Qt::blue);
-    gr.setColorAt(0.2, Qt::darkGreen);
-    gr.setColorAt(0.3, Qt::green);
-    gr.setColorAt(0.4, Qt::yellow);
-    gr.setColorAt(0.5, Qt::darkYellow);
-    gr.setColorAt(0.6, 0xFFC700);
-    gr.setColorAt(0.7, 0xFF7700);
+//    gr.setColorAt(0.0, Qt::darkBlue);
+//    gr.setColorAt(0.1, Qt::blue);
+//    gr.setColorAt(0.2, Qt::darkGreen);
+//    gr.setColorAt(0.3, Qt::green);
+//    gr.setColorAt(0.4, Qt::yellow);
+//    gr.setColorAt(0.5, Qt::darkYellow);
+//    gr.setColorAt(0.6, 0xFFC700);
+//    gr.setColorAt(0.7, 0xFF7700);
+//    gr.setColorAt(1.0, Qt::darkRed);
+
+    gr.setColorAt(0.0, Qt::darkGreen);
+    gr.setColorAt(0.5, Qt::yellow);
+    gr.setColorAt(0.8, Qt::red);
     gr.setColorAt(1.0, Qt::darkRed);
 
     m_Series->setBaseGradient(gr);
