@@ -62,7 +62,8 @@ public:
                         const std::vector<SpacePointExt> &obsPointNodeExts) const;
     void f_prepareInfo(unsigned int No, const std::vector<SpacePoint> &points, spif_vector &u_info, unsigned int L, const Dimension &dimX, const Dimension &dimY) const;
     void f_borderLayer(DoubleMatrix &u, DoubleMatrix &uh, unsigned int ln) const;
-    void f_add2Info(const DoubleMatrix &u, spif_vector &u_info, const espn_vector &obsPointNodes, unsigned int ln, double hx, double hy, int method = 4) const;
+    void f_add2Info(const DoubleMatrix &u, spif_vector &u_info, const espn_vector &obsPointNodes, unsigned int ln, double hx, double hy,
+                    const std::vector<SpacePointExt> &obsPointNodeExts, int method = 4) const;
     void f_layerInfo(const DoubleMatrix &u, unsigned int ln) const;
 
     // backward -----------------------------------
@@ -87,6 +88,9 @@ public:
     void distributeDeltaG(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int k = 3) const;
 
     double distributeTimeDelta(double t, double ht, unsigned int ln, const espn_vector &qPointNodes, const SpaceNodePDE &sn, const vector_SpacePointExt& spxs) const;
+
+    void distributeDeltaGaussPulse(const SpacePoint &pt, unsigned id, std::vector<ExtendedSpacePointNode> &qPointNodes,
+                                   const Dimension &dimX, const Dimension &dimY, unsigned int k=4) const;
 
     void distributePulseDelta(std::vector<SpacePointExt> &spxs, const std::vector<SpacePoint> &thetas, const Dimension &dimX, const Dimension &dimY) const;
     void distributeControlDelta(std::vector<SpacePointExt> &spxs, const std::vector<SpacePoint> &etas, const Dimension &dimX, const Dimension &dimY) const;

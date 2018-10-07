@@ -15,7 +15,7 @@ SUBDIRS += imaging
 #SUBDIRS += problem1
 #SUBDIRS += problem2P
 SUBDIRS += problem2H
-SUBDIRS += heightMap3d
+#SUBDIRS += heightMap3d
 SUBDIRS += main
 
 main.depends = minimum

@@ -2,6 +2,14 @@
 #include "vectornormalizer.h"
 #include "imaging.h"
 
+void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
+{
+    //example2();
+    //IPrinter::printSeperatorLine();
+    //example1();
+    example3();
+}
+
 void example1()
 {
     // Equation parameters
@@ -106,8 +114,8 @@ void example1()
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
-            //prob.checkGradient1(prob);
-            //IPrinter::printSeperatorLine();
+            prob.checkGradient1(prob);
+            IPrinter::printSeperatorLine();
         }
 
         //ConjugateGradient g;
@@ -171,9 +179,8 @@ void example2()
     o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
     o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = +0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
     o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
-    //o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
-    //o_prm.eta[0].x = +0.5574; o_prm.eta[0].y = +0.7835; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4951;
-    o_prm.eta[0].x = +0.4574; o_prm.eta[0].y = +0.6935; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
+    o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
+    //o_prm.eta[0].x = +0.4574; o_prm.eta[0].y = +0.6935; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
 
     r_prm = o_prm;
 
@@ -204,7 +211,10 @@ void example2()
 
     std::vector<DoubleMatrix> u;
     spif_vector info;
+    clock_t start = clock();
     prob.solveForwardIBVP(u, info, false);
+    clock_t end = clock();
+    printf ("It took me %d clicks (%f seconds).\n",end-start,((float)(end-start))/CLOCKS_PER_SEC);
 
     DoubleMatrix u0 = u.at(0);
     IPrinter::printSeperatorLine();
@@ -219,3 +229,110 @@ void example2()
     //printf("%f\n", prob.integralU(m));
 }
 
+void example3()
+{
+    // Equation parameters
+    EquationParameter e_prm;
+    e_prm.a = 1.0;
+    e_prm.lambda = +0.0;
+
+    // Pulse influences
+    e_prm.Ns = 1;
+    e_prm.q.resize(e_prm.Ns);
+    e_prm.theta.resize(e_prm.Ns);
+
+    e_prm.q[0] = +5.0; e_prm.theta[0].x = 0.4300; e_prm.theta[0].y = 0.7500;
+    //e_prm.q[1] = +6.0; e_prm.theta[1].x = 0.7200; e_prm.theta[1].y = 0.3500;
+
+    e_prm.No = 2;
+    e_prm.Nc = 2;
+
+    // Optimization parameters
+    OptimizeParameter o_prm;
+    o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm.xi.resize(e_prm.No);
+    o_prm.eta.resize(e_prm.Nc);
+
+    // Regularization parameters
+    OptimizeParameter r_prm;
+    r_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+    r_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+    r_prm.xi.resize(e_prm.No);
+    r_prm.eta.resize(e_prm.Nc);
+
+#ifdef EXAMPLE4_SAMPLE_1
+    o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
+    o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = -0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
+    o_prm.xi[0].x  = +0.4048; o_prm.xi[0].y  = +0.5954; o_prm.xi[1].x  = +0.6725; o_prm.xi[1].y  = +0.3518;
+    o_prm.eta[0].x = +0.5257; o_prm.eta[0].y = +0.7657; o_prm.eta[1].x = +0.5529; o_prm.eta[1].y = +0.4795;
+
+    r_prm.k[0][0]  = +0.5636; r_prm.k[0][1]  = -0.2421; r_prm.k[1][0]  = +0.2505; r_prm.k[1][1]  = -0.7679;
+    r_prm.z[0][0]  = +0.3220; r_prm.z[0][1]  = -0.6179; r_prm.z[1][0]  = -0.1833; r_prm.z[1][1]  = -0.3160;
+    r_prm.xi[0].x  = +0.4269; r_prm.xi[0].y  = +0.3364; r_prm.xi[1].x  = +0.8651; r_prm.xi[1].y  = +0.2336;
+    r_prm.eta[0].x = +0.5436; r_prm.eta[0].y = +0.5788; r_prm.eta[1].x = +0.5269; r_prm.eta[1].y = +0.5860;
+
+    r_prm = o_prm;
+#endif
+
+    // Grid parameters
+    double hx = 0.010; int Nx = 100;
+    double hy = 0.010; int Ny = 100;
+    double ht = 0.005; int Nt = 200;
+
+    Dimension time(ht, 0, Nt);
+    Dimension dimx(hx, 0, Nx);
+    Dimension dimy(hy, 0, Ny);
+
+    // Penalty paramteres
+    DoubleVector r; r << 1.0000 << 10.000 << 100.000 << 1000.0;
+    // Regularization coefficients
+    DoubleVector e; e << 0.0000 << 0.0000 << 0.00000 << 0.0000;
+
+    DoubleVector x;
+    for (unsigned int i=0; i<r.length(); i++)
+    {
+        Problem2HNDirichlet prob;
+        prob.setTimeDimension(time);
+        prob.addSpaceDimension(dimx);
+        prob.addSpaceDimension(dimy);
+        prob.mEquParameter = e_prm;
+        prob.mOptParameter = o_prm;
+        prob.mRegParameter = r_prm;
+        prob.optimizeK = true;
+        prob.optimizeZ = true;
+        prob.optimizeC = true;
+        prob.optimizeO = true;
+        prob.vmin.resize(e_prm.Nc, -0.5);
+        prob.vmax.resize(e_prm.Nc, +0.5);
+        prob.LD = 50;
+
+        prob.regEpsilon = e[i];
+        prob.r = r[i];
+        if (i==0)
+        {
+            prob.PrmToVector(o_prm, x);
+            //prob.checkGradient1(prob);
+            //IPrinter::printSeperatorLine();
+        }
+
+        //ConjugateGradient g;
+        SteepestDescentGradient g;
+        g.setFunction(&prob);
+        g.setGradient(&prob);
+        g.setPrinter(&prob);
+        g.setProjection(&prob);
+        //g.setGradientNormalizer(&prob);
+        g.setOptimalityTolerance(0.00001);
+        g.setStepTolerance(0.00001);
+        g.setFunctionTolerance(0.00001);
+        g.setR1MinimizeEpsilon(0.1, 0.001);
+        g.setNormalize(true);
+        g.showExitMessage(true);
+        prob.gm = &g;
+
+        g.calculate(x);
+
+        IPrinter::printSeperatorLine(NULL, '=');
+    }
+}

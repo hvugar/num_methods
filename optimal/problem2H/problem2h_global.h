@@ -12,5 +12,6 @@
 #endif
 
 #define SAVE_TO_IMG_
+#define OLD_VERSION
 
 #endif // PROBLEM2H_GLOBAL_H
