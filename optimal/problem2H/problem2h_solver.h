@@ -57,7 +57,10 @@ public:
     double f_initial2(const SpaceNodePDE &sn) const;
     double f_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
 
-    void f_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2, uint_vector &cols0, uint_vector &cols1, uint_vector &cols2, espn_vector &obsPointNodes, espn_vector &cntDeltaNodes, unsigned int N, unsigned int M) const;
+    void f_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2, uint_vector &cols0, uint_vector &cols1, uint_vector &cols2, espn_vector &obsPointNodes,
+                        espn_vector &cntDeltaNodes, unsigned int N, unsigned int M,
+                        const std::vector<ExtendedSpacePoint> &cntExtSpacePoints,
+                        const std::vector<ExtendedSpacePoint> &msnExtSpacePoints) const;
     void f_prepareInfo(unsigned int No, const std::vector<SpacePoint> &points, spif_vector &u_info, unsigned int L, const Dimension &dimX, const Dimension &dimY) const;
     void f_borderLayer(DoubleMatrix &u, DoubleMatrix &uh, unsigned int ln) const;
     void f_add2Info(const DoubleMatrix &u, spif_vector &u_info, const espn_vector &obsPointNodes, unsigned int ln, double hx, double hy,

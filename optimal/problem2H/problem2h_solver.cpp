@@ -1044,7 +1044,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
 
     //----------------------------------------------------------------------------------------------//
     uint_vector rows0, rows1, rows2, cols0, cols1, cols2;
-    f_findRowsCols(rows0, rows1, rows2, cols0, cols1, cols2, obsPointNodes, cntDeltaNodes, N, M);
+    f_findRowsCols(rows0, rows1, rows2, cols0, cols1, cols2, obsPointNodes, cntDeltaNodes, N, M, cntExtSpacePoints, msnExtSpacePoints);
     //cntDeltaNodes.clear();
     //obsPointNodes.clear();;
     //-------------------------------------------- info --------------------------------------------//
@@ -1982,7 +1982,9 @@ double Problem2HNDirichlet::f_boundary(const SpaceNodePDE &sn UNUSED_PARAM, cons
 }
 
 void Problem2HNDirichlet::f_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2, uint_vector &cols0, uint_vector &cols1, uint_vector &cols2,
-                                         espn_vector &obsPointNodes, espn_vector &cntDeltaNodes, unsigned int N, unsigned int M) const
+                                         espn_vector &obsPointNodes, espn_vector &cntDeltaNodes, unsigned int N, unsigned int M,
+                                         const std::vector<ExtendedSpacePoint> &cntExtSpacePoints,
+                                         const std::vector<ExtendedSpacePoint> &msnExtSpacePoints) const
 {
 #ifdef OLD_VERSION
     for (unsigned int m=1; m<=M-1; m++)
@@ -2045,24 +2047,35 @@ void Problem2HNDirichlet::f_findRowsCols(uint_vector &rows0, uint_vector &rows1,
     {
         bool found1 = false;
         bool found2 = false;
-        for (unsigned int i=0; i<cntDeltaNodes.size(); i++)
+        for(std::vector<ExtendedSpacePoint>::const_iterator csp_it=cntExtSpacePoints.begin(); csp_it != cntExtSpacePoints.end(); csp_it++)
         {
-            const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(i);
-
-            if (cdn.j == m)
+            const ExtendedSpacePoint &cxsp = *csp_it;
+            const std::vector<ExtendedSpacePointNode1> &c_nodes = cxsp.nodes;
+            for (std::vector<ExtendedSpacePointNode1>::const_iterator cnode_it=c_nodes.begin(); cnode_it != c_nodes.end(); cnode_it++)
             {
-                found1 = true;
-                for (unsigned int j=0; j<obsPointNodes.size(); j++)
+                const ExtendedSpacePointNode1 &cnode = *cnode_it;
+                if (cnode.ny == m)
                 {
-                    const ExtendedSpacePointNode &opn = obsPointNodes.at(j);
-                    if (opn.j == m)
+                    found1 = true;
+                    for(std::vector<ExtendedSpacePoint>::const_iterator msp_it=msnExtSpacePoints.begin(); msp_it != msnExtSpacePoints.end(); msp_it++)
                     {
-                        found2 = true;
-                        break;
+                        const ExtendedSpacePoint &mxsp = *msp_it;
+                        const std::vector<ExtendedSpacePointNode1> &mnodes = mxsp.nodes;
+                        for (std::vector<ExtendedSpacePointNode1>::const_iterator mnode_it=mnodes.begin(); mnode_it != mnodes.end(); mnode_it++)
+                        {
+                            const ExtendedSpacePointNode1 &mnode = *mnode_it;
+                            if (mnode.ny == m)
+                            {
+                                found2 = true;
+                                break;
+                            }
+                        }
+                        if (found2) break;
                     }
+                    break;
                 }
-                break;
             }
+            if (found1) break;
         }
         if (found1 == false && found2 == false) if(std::find(rows0.begin(), rows0.end(), m) == rows0.end()) rows0.push_back(m);
         if (found1 == true  && found2 == true)  if(std::find(rows2.begin(), rows2.end(), m) == rows2.end()) rows2.push_back(m);
@@ -2073,23 +2086,35 @@ void Problem2HNDirichlet::f_findRowsCols(uint_vector &rows0, uint_vector &rows1,
     {
         bool found1 = false;
         bool found2 = false;
-        for (unsigned int i=0; i<cntDeltaNodes.size(); i++)
+        for(std::vector<ExtendedSpacePoint>::const_iterator csp_it=cntExtSpacePoints.begin(); csp_it != cntExtSpacePoints.end(); csp_it++)
         {
-            const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(i);
-            if (cdn.i == n)
+            const ExtendedSpacePoint &cxsp = *csp_it;
+            const std::vector<ExtendedSpacePointNode1> &c_nodes = cxsp.nodes;
+            for (std::vector<ExtendedSpacePointNode1>::const_iterator cnode_it=c_nodes.begin(); cnode_it != c_nodes.end(); cnode_it++)
             {
-                found1 = true;
-                for (unsigned int j=0; j<obsPointNodes.size(); j++)
+                const ExtendedSpacePointNode1 &cnode = *cnode_it;
+                if (cnode.nx == n)
                 {
-                    const ExtendedSpacePointNode &opn = obsPointNodes.at(j);
-                    if (opn.i == n)
+                    found1 = true;
+                    for(std::vector<ExtendedSpacePoint>::const_iterator msp_it=msnExtSpacePoints.begin(); msp_it != msnExtSpacePoints.end(); msp_it++)
                     {
-                        found2 = true;
-                        break;
+                        const ExtendedSpacePoint &mxsp = *msp_it;
+                        const std::vector<ExtendedSpacePointNode1> &mnodes = mxsp.nodes;
+                        for (std::vector<ExtendedSpacePointNode1>::const_iterator mnode_it=mnodes.begin(); mnode_it != mnodes.end(); mnode_it++)
+                        {
+                            const ExtendedSpacePointNode1 &mnode = *mnode_it;
+                            if (mnode.nx == n)
+                            {
+                                found2 = true;
+                                break;
+                            }
+                        }
+                        if (found2) break;
                     }
+                    break;
                 }
-                break;
             }
+            if (found1) break;
         }
         if (found1 == false && found2 == false) if(std::find(cols0.begin(), cols0.end(), n) == cols0.end()) cols0.push_back(n);
         if (found1 == true  && found2 == true)  if(std::find(cols2.begin(), cols2.end(), n) == cols2.end()) cols2.push_back(n);
