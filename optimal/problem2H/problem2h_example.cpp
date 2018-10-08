@@ -4,10 +4,10 @@
 
 void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    //example2();
-    //IPrinter::printSeperatorLine();
-    //example1();
-    example3();
+    example2();
+    IPrinter::printSeperatorLine();
+    example1();
+    //example3();
 }
 
 void example1()
@@ -179,8 +179,8 @@ void example2()
     o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
     o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = +0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
     o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
-    o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
-    //o_prm.eta[0].x = +0.4574; o_prm.eta[0].y = +0.6935; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
+    //o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
+    o_prm.eta[0].x = +0.4574; o_prm.eta[0].y = +0.6935; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
 
     r_prm = o_prm;
 
@@ -210,11 +210,11 @@ void example2()
     prob.regEpsilon = 0.0;
 
     std::vector<DoubleMatrix> u;
-    spif_vector info;
+    spif_vector u_info;
     clock_t start = clock();
-    prob.solveForwardIBVP(u, info, false);
+    prob.solveForwardIBVP(u, u_info, true);
     clock_t end = clock();
-    printf ("It took me %d clicks (%f seconds).\n",end-start,((float)(end-start))/CLOCKS_PER_SEC);
+    printf ("Forward took me %d clicks (%f seconds).\n",end-start,((float)(end-start))/CLOCKS_PER_SEC);
 
     DoubleMatrix u0 = u.at(0);
     IPrinter::printSeperatorLine();
@@ -222,11 +222,11 @@ void example2()
     IPrinter::printSeperatorLine();
     printf("%f\n", sqrt(prob.integralU(u0)));
 
-    //IPrinter::printSeperatorLine();
-    //DoubleMatrix &m = u.at(2*prob.LD);
-    //IPrinter::printMatrix(m);
-    //IPrinter::printSeperatorLine();
-    //printf("%f\n", prob.integralU(m));
+    spif_vector p_info;
+    start = clock();
+    prob.solveBackwardIBVP(u, p_info, true, u_info);
+    end = clock();
+    printf ("Backward took me %d clicks (%f seconds).\n",end-start,((float)(end-start))/CLOCKS_PER_SEC);
 }
 
 void example3()
@@ -234,14 +234,14 @@ void example3()
     // Equation parameters
     EquationParameter e_prm;
     e_prm.a = 1.0;
-    e_prm.lambda = +0.0;
+    e_prm.lambda = +0.01;
 
     // Pulse influences
     e_prm.Ns = 1;
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = +5.0; e_prm.theta[0].x = 0.4300; e_prm.theta[0].y = 0.7500;
+    e_prm.q[0] = +0.5; e_prm.theta[0].x = 0.4300; e_prm.theta[0].y = 0.7500;
     //e_prm.q[1] = +6.0; e_prm.theta[1].x = 0.7200; e_prm.theta[1].y = 0.3500;
 
     e_prm.No = 2;
@@ -278,7 +278,7 @@ void example3()
     // Grid parameters
     double hx = 0.010; int Nx = 100;
     double hy = 0.010; int Ny = 100;
-    double ht = 0.005; int Nt = 200;
+    double ht = 0.010; int Nt = 200;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
@@ -303,8 +303,8 @@ void example3()
         prob.optimizeZ = true;
         prob.optimizeC = true;
         prob.optimizeO = true;
-        prob.vmin.resize(e_prm.Nc, -0.5);
-        prob.vmax.resize(e_prm.Nc, +0.5);
+        prob.vmin.resize(e_prm.Nc, -0.05);
+        prob.vmax.resize(e_prm.Nc, +0.05);
         prob.LD = 50;
 
         prob.regEpsilon = e[i];

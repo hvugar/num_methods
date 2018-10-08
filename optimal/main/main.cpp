@@ -39,79 +39,9 @@
 #include <QtGui>
 #include <r1minimize.h>
 
-#include "templatea.h"
-
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-//    HeatEquationIBVP1 eq1;
-//    eq1.setTimeDimension(Dimension(0.00001, 0, 100000));
-//    eq1.addSpaceDimension(Dimension(0.01, 0, 100));
-//    DoubleVector u;
-//    eq1.gridMethod1(u, 0.1);
-//    IPrinter::printVector(u);
-
-//    HeatEquationIBVP2D1 heat;
-//    heat.setTimeDimension(Dimension(0.001, 0, 1000));
-//    heat.addSpaceDimension(Dimension(0.01, 0, 100));
-//    heat.addSpaceDimension(Dimension(0.01, 0, 100));
-//    DoubleMatrix u;
-//    heat.calculateU(u, heat.a, heat.alpha, heat.lambda);
-//    IPrinter::printSeperatorLine();
-//    IPrinter::printMatrix(u);
-
-//    return 0;
-
-
-    QGuiApplication app(argc, argv);
-
-//    TemplateA::Main(argc, argv);
-//    return 0;
-
-
-    //R1FxMinimizer r1m;
-    //MyFunction *f1 = new MyFunction();
-    //double a,b,fxa,fxb,x;
-    //bool unimodal;
-    //r1m.setFunction(f1);
-    //r1m.setCallback(new R1MinimizeCallback);
-    //r1m.straightLineSearch(-0.7, 0.01, a, b, fxa, fxb, unimodal);
-    //r1m.swann(-0.7, 0.01, a, b, fxa, fxb, unimodal);
-    //puts("---");
-    //r1m.halphIntervalMethod(x, a, b, 0.0001);
-    //r1m.goldenSectionSearch(x, a, b, 0.0001);
-    //printf("n %4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", -1, a, x, b, r1m.function()->fx(a), r1m.function()->fx(x), r1m.function()->fx(b));
-    //return 0;
-
-
-//    DoubleVector a(11, -0.5); a[0] = 0.0;
-//    DoubleVector b(11, +2.000015);
-//    DoubleVector c(11, -0.5); c[10] = 0.0;
-//    DoubleMatrix w(11, 11, 0.0);
-//    DoubleVector d(11, 0.0);
-//    DoubleVector x(11, 0.0);
-
-//    w[2][7] = 1;
-//    w[7][2] = -5;
-//    w[9][2] = +7;
-//    w[9][8] = 1.0;
-//    w[4][7] = 10;
-
-//    d[0] = 1.000015;
-//    d[1] = 2.00003;
-//    d[2] = 11.000045;
-//    d[3] = 4.00006;
-//    d[4] = 85.000075;
-//    d[5] = 6.00009;
-//    d[6] = 7.000105;
-//    d[7] = -6.99988;
-//    d[8] = 14.000135;
-//    d[9] = 23;
-//    d[10] = 10.000075;
-
-
-//    LinearEquation::func1(a.data(), b.data(), c.data(), d.data(), w.data(), x.data(), 11);
-//    IPrinter::print(x);
-//    return 0.0;
+    //QGuiApplication app(argc, argv);
 
     //BorderHyperbolic2D::Main(argc, argv);
     //BorderHyperbolic2DN::Main(argc, argv);

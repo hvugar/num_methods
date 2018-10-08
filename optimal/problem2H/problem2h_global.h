@@ -5,13 +5,14 @@
 #if defined(PROBLEM2H_LIBRARY)
 #  define PROBLEM2HSHARED_EXPORT __declspec(dllexport)
 #else
-#  define PROBLEM2HSHARED_EXPORT __declspec(dllimport)
+#define PROBLEM2HSHARED_EXPORT __declspec(dllimport)
 #endif
 #else
 #define PROBLEM2HSHARED_EXPORT
 #endif
 
 #define SAVE_TO_IMG_
-#define OLD_VERSION
+#define OLD_VERSION_
+#define NEW_VERSION
 
 #endif // PROBLEM2H_GLOBAL_H

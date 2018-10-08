@@ -64,5 +64,5 @@ HEADERS += \
     templatea.h \
     templateb.h
 
-OBJECTS_DIR = .obj
-MOC_DIR = .moc
+OBJECTS_DIR = release/.obj
+MOC_DIR = release/.moc

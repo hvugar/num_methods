@@ -51,26 +51,25 @@ public:
     void f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, spif_vector &u_info, bool use,
                          espn_vector &obsPointNodes, espn_vector &cntDeltaNodes, espn_vector &qPointNodes, unsigned int N, unsigned int M,
                          double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda,
-                         const std::vector<SpacePointExt> &qSpacePointExts,
-                         const std::vector<SpacePointExt> &obsPointNodeExts) const;
+                         const std::vector<ExtendedSpacePoint> &qExtSpacePoints,
+                         std::vector<ExtendedSpacePoint> &msnExtSpacePoints) const;
     double f_initial1(const SpaceNodePDE &sn) const;
     double f_initial2(const SpaceNodePDE &sn) const;
     double f_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
 
-    void f_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2, uint_vector &cols0, uint_vector &cols1, uint_vector &cols2, espn_vector &obsPointNodes, espn_vector &cntDeltaNodes, unsigned int N, unsigned int M,
-                        const std::vector<SpacePointExt> &cntDeltaNodeExts,
-                        const std::vector<SpacePointExt> &obsPointNodeExts) const;
+    void f_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2, uint_vector &cols0, uint_vector &cols1, uint_vector &cols2, espn_vector &obsPointNodes, espn_vector &cntDeltaNodes, unsigned int N, unsigned int M) const;
     void f_prepareInfo(unsigned int No, const std::vector<SpacePoint> &points, spif_vector &u_info, unsigned int L, const Dimension &dimX, const Dimension &dimY) const;
     void f_borderLayer(DoubleMatrix &u, DoubleMatrix &uh, unsigned int ln) const;
     void f_add2Info(const DoubleMatrix &u, spif_vector &u_info, const espn_vector &obsPointNodes, unsigned int ln, double hx, double hy,
-                    const std::vector<SpacePointExt> &obsPointNodeExts, int method = 4) const;
+                    std::vector<ExtendedSpacePoint> &extMsmnts, int method = 4) const;
     void f_layerInfo(const DoubleMatrix &u, unsigned int ln) const;
 
     // backward -----------------------------------
     void solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vector &p_info, bool use, const spif_vector &u_info) const;
-    void b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, spif_vector &p_info, const spif_vector &u_info, bool use,
+    void b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, spif_vector &p_info, bool use, const spif_vector &u_info,
                          espn_vector &cntPointNodes, espn_vector &obsDeltaNodes, unsigned int N, unsigned int M,
-                         double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const;
+                         double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda,
+                         std::vector<ExtendedSpacePoint> &cntExtSpacePoints) const;
     double b_initial1(const SpaceNodePDE &sn) const;
     double b_initial2(const SpaceNodePDE &sn) const;
     double b_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
@@ -82,24 +81,19 @@ public:
     void b_layerInfo(const DoubleMatrix &p, unsigned int ln) const;
 
     // common -----------------------------------
-    void distributeDelta0(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, int method = 4, unsigned int k = 3) const;
+    void distributeDelta0(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, int method = 4, unsigned int k = 4) const;
     void distributeDeltaP(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY) const;
     void distributeDeltaR(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY) const;
-    void distributeDeltaG(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int k = 3) const;
+    void distributeDeltaG(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int k = 4) const;
 
-    double distributeTimeDelta(double t, double ht, unsigned int ln, const espn_vector &qPointNodes, const SpaceNodePDE &sn, const vector_SpacePointExt& spxs) const;
+    double distributeTimeDelta(double t, double ht, unsigned int ln, const espn_vector &qPointNodes, const SpaceNodePDE &sn, const std::vector<ExtendedSpacePoint> &xsps) const;
 
     void distributeDeltaGaussPulse(const SpacePoint &pt, unsigned id, std::vector<ExtendedSpacePointNode> &qPointNodes,
                                    const Dimension &dimX, const Dimension &dimY, unsigned int k=4) const;
 
-    void distributePulseDelta(std::vector<SpacePointExt> &spxs, const std::vector<SpacePoint> &thetas, const Dimension &dimX, const Dimension &dimY) const;
-    void distributeControlDelta(std::vector<SpacePointExt> &spxs, const std::vector<SpacePoint> &etas, const Dimension &dimX, const Dimension &dimY) const;
-    void distributeMeasurePoint(std::vector<SpacePointExt> &spxs, const std::vector<SpacePoint> &xis, const Dimension &dimX, const Dimension &dimY) const;
-
-    //void solveForwardIBVP2(std::vector<DoubleMatrix> &u_, spif_vector &u_info, bool use) const;
-    //void f_initialLayers2(DoubleMatrix &u00, DoubleMatrix &u05, DoubleMatrix &u10, spif_vector &info, bool use, espn_vector &obsPointNodes, espn_vector &cntDeltaNodes, espn_vector &qPointNodes, unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const;
-    //void solveBackwardIBVP2(const std::vector<DoubleMatrix> &u, spif_vector &p_info, bool use, const spif_vector &u_info) const;
-    //void b_initialLayers2(DoubleMatrix &p00, DoubleMatrix &p05, DoubleMatrix &p10, spif_vector &p_info, bool use, espn_vector &cntPointNodes, espn_vector &obsDeltaNodes, unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda) const;
+    void newDistributeDeltaGaussPulse(const std::vector<SpacePoint> &thetas, std::vector<ExtendedSpacePoint> &extThetas, const Dimension &dimX, const Dimension &dimY) const;
+    void newDistributeDeltaGauseCntrl(const std::vector<SpacePoint> &cntrls, std::vector<ExtendedSpacePoint> &extCntrls, const Dimension &dimX, const Dimension &dimY) const;
+    void newDistributeDeltaGauseMsmnt(const std::vector<SpacePoint> &msmnts, std::vector<ExtendedSpacePoint> &extMsmnts, const Dimension &dimX, const Dimension &dimY) const;
 public:
     EquationParameter mEquParameter;
     OptimizeParameter mOptParameter;

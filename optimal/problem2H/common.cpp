@@ -1,39 +1,36 @@
 #include "common.h"
 
 SpacePointInfo::SpacePointInfo()
-    : SpaceNodePDE(), id(0), layerNumber(0)
 {
-    _vl = NULL;
-    _dx = NULL;
-    _dy = NULL;
+    init(0);
 }
 
-SpacePointInfo::SpacePointInfo(unsigned int id, unsigned int layerNumber)
-    : SpaceNodePDE(), id(id), layerNumber(layerNumber)
+SpacePointInfo::SpacePointInfo(unsigned int length)
 {
-    _vl = new double[layerNumber];
-    _dx = new double[layerNumber];
-    _dy = new double[layerNumber];
+    init(length);
 }
 
 SpacePointInfo::~SpacePointInfo()
 {
-    delete [] _vl;  _vl = NULL;
-    delete [] _dx;  _dx = NULL;
-    delete [] _dy;  _dy = NULL;
+    clear();
 }
 
-void SpacePointInfo::createSpacePointInfos(unsigned int layerNumber)
+void SpacePointInfo::init(unsigned int length)
 {
-    _vl = new double[layerNumber];
-    _dx = new double[layerNumber];
-    _dy = new double[layerNumber];
-    this->layerNumber = layerNumber;
+    this->length = length;
+    vl.resize(length);
+    dx.resize(length);
+    dy.resize(length);
+}
+void SpacePointInfo::clear()
+{
+    dy.clear();
+    dx.clear();
+    vl.clear();
+    length = 0;
 }
 
-void SpacePointInfo::clearWeights()
+auto ExtendedSpacePoint::contains(int nx, int ny) const -> bool
 {
-    delete [] _vl;  _vl = NULL;
-    delete [] _dx;  _dx = NULL;
-    delete [] _dy;  _dy = NULL;
+    return (minX <= nx && nx <= maxX && minY <= ny && ny <= maxY);
 }
