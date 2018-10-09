@@ -70,18 +70,6 @@ struct PROBLEM2HSHARED_EXPORT ExtendedSpacePoint : public SpacePoint
     auto contains(const SpaceNodePDE &sn) const -> bool { return ((minX <= sn.i && sn.i <= maxX) && (minY <= sn.j && sn.j <= maxY)); }
 };
 
-struct PROBLEM2HSHARED_EXPORT ExtendedSpacePointNode
-{
-    SpacePoint pt;
-    unsigned int id;
-    unsigned int i;
-    unsigned int j;
-    double x;
-    double y;
-    double w;
-    bool isCenter;
-};
-
 struct PROBLEM2HSHARED_EXPORT SpacePointInfo : public SpacePoint
 {
     SpacePointInfo();
@@ -96,38 +84,7 @@ struct PROBLEM2HSHARED_EXPORT SpacePointInfo : public SpacePoint
     std::vector<double> dy;
 };
 
-//struct SpacePointExt : public SpacePoint
-//{
-//    typedef std::pair<unsigned int, unsigned int> GridNodePair;
-
-//    struct GridNodeWeight
-//    {
-//        unsigned int id;
-//        unsigned int i;
-//        unsigned int j;
-//        double x;
-//        double y;
-//        double w;
-//        bool isCenter;
-//    };
-//    typedef std::pair<GridNodePair, GridNodeWeight> GridNodePairWeight;
-//    typedef std::map <GridNodePair, GridNodeWeight> GridNodeMap;
-
-//    unsigned int id;
-//    unsigned int rx;
-//    unsigned int ry;
-
-//    const GridNodeMap &distPoints() const { return m_distPoints; }
-//    GridNodeMap &distPoints() { return m_distPoints; }
-
-//private:
-//    GridNodeMap m_distPoints;
-//};
-
-//typedef std::vector<SpacePointExt> vector_SpacePointExt;
 typedef std::vector<unsigned int>           uint_vector;
-typedef std::set<unsigned int>              uint_set;
-typedef std::vector<ExtendedSpacePointNode> espn_vector;
 typedef std::vector<SpacePointInfo>         spif_vector;
 
 #endif // PROBLEM2H_COMMON_H

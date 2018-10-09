@@ -1029,30 +1029,21 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     u.resize(u_size); for (unsigned int l=0; l<u_size; l++) u[l].resize(M+1, N+1);
 
     //----------------------------------------------------------------------------------------------//
-    espn_vector obsPointNodes, cntDeltaNodes, qPointNodes;
     std::vector<ExtendedSpacePoint> msnExtSpacePoints, cntExtSpacePoints, qExtSpacePoints;
-#if defined(OLD_VERSION) || defined(NEW_VERSION)
-    for (unsigned int j=0; j<No; j++) distributeDelta0(mOptParameter.xi[j], j, obsPointNodes, dimX, dimY, 4);
-    for (unsigned int i=0; i<Nc; i++) distributeDelta0(mOptParameter.eta[i], i, cntDeltaNodes, dimX, dimY, 4);
-    for (unsigned int s=0; s<Ns; s++) distributeDeltaGaussPulse(mEquParameter.theta[s], s, qPointNodes, dimX, dimY);
-#endif
-#ifdef NEW_VERSION
     newDistributeDeltaGaussPulse(mEquParameter.theta, qExtSpacePoints, dimX, dimY);
     newDistributeDeltaGaussCntrl(mOptParameter.eta, cntExtSpacePoints, dimX, dimY);
     newDistributeDeltaGaussMsmnt(mOptParameter.xi,  msnExtSpacePoints, dimX, dimY);
-#endif
 
     //----------------------------------------------------------------------------------------------//
     uint_vector rows0, rows1, rows2, cols0, cols1, cols2;
-    f_findRowsCols(rows0, rows1, rows2, cols0, cols1, cols2, obsPointNodes, cntDeltaNodes, N, M, cntExtSpacePoints, msnExtSpacePoints);
+    f_findRowsCols(rows0, rows1, rows2, cols0, cols1, cols2, N, M, cntExtSpacePoints, msnExtSpacePoints);
 
     //-------------------------------------------- info --------------------------------------------//
     if (use == true) f_prepareInfo(No, mOptParameter.xi, u_info, LLD, dimX, dimY);
     //----------------------------------------------------------------------------------------------//
 
     //------------------------------------- initial conditions -------------------------------------//
-    f_initialLayers(u00, u10, u_info, use, obsPointNodes, cntDeltaNodes, qPointNodes, N, M, hx, hy, ht, aa__hxhx, aa__hyhy, lambda,
-                    qExtSpacePoints, msnExtSpacePoints);
+    f_initialLayers(u00, u10, u_info, use, N, M, hx, hy, ht, aa__hxhx, aa__hyhy, lambda, qExtSpacePoints, msnExtSpacePoints, cntExtSpacePoints);
     //------------------------------------- initial conditions -------------------------------------//
 
     double *ax = static_cast<double*>( malloc(sizeof(double)*(N-1)) ); for (unsigned int n=1; n<=N-1; n++) ax[n-1] = m_aa_htht__hxhx;
@@ -1144,7 +1135,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     dx[n-1] += 2.0*u10[m][n] + (u10[m][n]-u00[m][n]);
 
                     //------------------------------------- Adding time delta part --------------------------------//
-                    dx[n-1] += htht*distributeTimeDelta(tn15.t, ht, 2*l-1, qPointNodes, sn, qExtSpacePoints);
+                    dx[n-1] += htht*distributeTimeDelta(tn15.t, ht, 2*l-1, sn, qExtSpacePoints);
                     //------------------------------------- Adding time delta part --------------------------------//
                 }
 
@@ -1162,14 +1153,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
             double *_v15 = new double[Nc];
 
             double* _u15 = new double[No]; for (unsigned int j=0; j<No; j++) _u15[j] = 0.0;
-#ifdef OLD_VERSION
-            for (unsigned int opj=0; opj<obsPointNodes.size(); opj++)
-            {
-                const ExtendedSpacePointNode &opn = obsPointNodes[opj];
-                _u15[opn.id] += u15[opn.j][opn.i] * (opn.w * (hx*hy));
-            }
-#endif
-#ifdef NEW_VERSION
+
             for (unsigned int j=0; j<No; j++)
             {
                 const ExtendedSpacePoint &extendedSpacePoint = msnExtSpacePoints.at(j);
@@ -1181,7 +1165,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     _u15[j] += u15[node.ny][node.nx] * (node.w * (hx*hy));
                 }
             }
-#endif
+
             for (unsigned int i=0; i<Nc; i++)
             {
                 _v15[i] = 0.0;
@@ -1209,17 +1193,6 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     dx[n-1] += 2.0*u10[m][n] + (u10[m][n]-u00[m][n]);
 
                     //------------------------------------- Adding delta part -------------------------------------//
-#ifdef OLD_VERSION
-                    for (unsigned int cdi=0; cdi<cntDeltaNodes.size(); cdi++)
-                    {
-                        const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cdi);
-                        if (cdn.i == sn.i && cdn.j == sn.j)
-                        {
-                            dx[n-1] += htht * _v15[cdn.id] * cdn.w;
-                        }
-                    }
-#endif
-#ifdef NEW_VERSION
                     for (unsigned int i=0; i<Nc; i++)
                     {
                         const ExtendedSpacePoint &extendedSpacePoint = cntExtSpacePoints.at(i);
@@ -1234,11 +1207,10 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                             }
                         }
                     }
-#endif
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding time delta part --------------------------------//
-                    dx[n-1] += htht*distributeTimeDelta(tn15.t, ht, 2*l-1, qPointNodes, sn, qExtSpacePoints);
+                    dx[n-1] += htht*distributeTimeDelta(tn15.t, ht, 2*l-1, sn, qExtSpacePoints);
                     //------------------------------------- Adding time delta part --------------------------------//
                 }
 
@@ -1282,41 +1254,6 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     c1[index] = m_aa_htht__hxhx;
 
                     //------------------------------------- Adding delta part -------------------------------------//
-#ifdef OLD_VERSION
-                    for (unsigned int cdi=0; cdi<cntDeltaNodes.size(); cdi++)
-                    {
-                        const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cdi);
-                        if (cdn.i == sn.i && cdn.j == sn.j)
-                        {
-                            for (unsigned int opj=0; opj<obsPointNodes.size(); opj++)
-                            {
-                                const ExtendedSpacePointNode &opn = obsPointNodes.at(opj);
-
-                                bool found = false;
-                                for (unsigned int rs=0; rs<rows1.size(); rs++)
-                                {
-                                    if (opn.j == rows1[rs])
-                                    {
-                                        found = true;
-                                        w1[index][rs*(N-1)+(opn.i-1)] -= htht * mOptParameter.k[cdn.id][opn.id] * (opn.w * (hx*hy)) * cdn.w;
-                                        break;
-                                    }
-                                }
-
-                                if (!found)
-                                {
-                                    d1[index] += htht * mOptParameter.k[cdn.id][opn.id] * u15[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
-                                }
-                            }
-
-                            for (unsigned int j=0; j<No; j++)
-                            {
-                                d1[index] -= htht * mOptParameter.k[cdn.id][j] * mOptParameter.z[cdn.id][j] * cdn.w;
-                            }
-                        }
-                    }
-#endif
-#ifdef NEW_VERSION
                     for (unsigned int i=0; i<Nc; i++)
                     {
                         const ExtendedSpacePoint &cExtendedSpacePoint = cntExtSpacePoints.at(i);
@@ -1366,11 +1303,10 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                             }
                         }
                     }
-#endif
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding time delta part --------------------------------//
-                    d1[index] += htht*distributeTimeDelta(tn15.t, ht, 2*l-1, qPointNodes, sn, qExtSpacePoints);
+                    d1[index] += htht*distributeTimeDelta(tn15.t, ht, 2*l-1, sn, qExtSpacePoints);
                     //------------------------------------- Adding time delta part --------------------------------//
                 }
 
@@ -1420,7 +1356,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     dy[m-1] += 2.0*u15[m][n] + (u10[m][n]-u00[m][n]);
 
                     //------------------------------------- Adding time delta part --------------------------------//
-                    dy[m-1] += htht*distributeTimeDelta(tn20.t, ht, 2*l, qPointNodes, sn, qExtSpacePoints);
+                    dy[m-1] += htht*distributeTimeDelta(tn20.t, ht, 2*l, sn, qExtSpacePoints);
                     //------------------------------------- Adding time delta part --------------------------------//
                 }
 
@@ -1438,14 +1374,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
             double *_v20 = new double[Nc];
 
             double* _u20 = new double[No]; for (unsigned int j=0; j<No; j++) _u20[j] = 0.0;
-#ifdef OLD_VERSION
-            for (unsigned int opj=0; opj<obsPointNodes.size(); opj++)
-            {
-                const ExtendedSpacePointNode &opn = obsPointNodes[opj];
-                _u20[opn.id] += u20[opn.j][opn.i] * (opn.w * (hx*hy));
-            }
-#endif
-#ifdef NEW_VERSION
+
             for (unsigned int j=0; j<No; j++)
             {
                 const ExtendedSpacePoint &extendedSpacePoint = msnExtSpacePoints.at(j);
@@ -1457,7 +1386,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     _u20[j] += u20[node.ny][node.nx] * (node.w * (hx*hy));
                 }
             }
-#endif
+
             for (unsigned int i=0; i<Nc; i++)
             {
                 _v20[i] = 0.0;
@@ -1466,6 +1395,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     _v20[i] += mOptParameter.k[i][j] * ( _u20[j] - mOptParameter.z[i][j] );
                 }
             }
+
             delete [] _u20;
 
             for (unsigned int col=0; col<cols1.size(); col++)
@@ -1485,17 +1415,6 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     dy[m-1] += 2.0*u15[m][n] + (u10[m][n]-u00[m][n]);
 
                     //------------------------------------- Adding delta part -------------------------------------//
-#ifdef OLD_VERSION
-                    for (unsigned int cdi=0; cdi<cntDeltaNodes.size(); cdi++)
-                    {
-                        const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cdi);
-                        if (cdn.i == sn.i && cdn.j == sn.j)
-                        {
-                            dy[m-1] += htht * _v20[cdn.id] * cdn.w;
-                        }
-                    }
-#endif
-#ifdef NEW_VERSION
                     for (unsigned int i=0; i<Nc; i++)
                     {
                         const ExtendedSpacePoint &extendedSpacePoint = cntExtSpacePoints.at(i);
@@ -1510,11 +1429,10 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                             }
                         }
                     }
-#endif
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding time delta part --------------------------------//
-                    dy[m-1] += htht*distributeTimeDelta(tn20.t, ht, 2*l, qPointNodes, sn, qExtSpacePoints);
+                    dy[m-1] += htht*distributeTimeDelta(tn20.t, ht, 2*l, sn, qExtSpacePoints);
                     //------------------------------------- Adding time delta part --------------------------------//
                 }
 
@@ -1558,41 +1476,6 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     c2[index] = m_aa_htht__hyhy;
 
                     //------------------------------------- Adding delta part -------------------------------------//
-#ifdef OLD_VERSION
-                    for (unsigned int cdi=0; cdi<cntDeltaNodes.size(); cdi++)
-                    {
-                        const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cdi);
-                        if (cdn.i == sn.i && cdn.j == sn.j)
-                        {
-                            for (unsigned int opj=0; opj<obsPointNodes.size(); opj++)
-                            {
-                                const ExtendedSpacePointNode &opn = obsPointNodes.at(opj);
-
-                                bool found = false;
-                                for (unsigned int cs=0; cs<cols1.size(); cs++)
-                                {
-                                    if (opn.i == cols1[cs])
-                                    {
-                                        found = true;
-                                        w2[index][cs*(M-1)+(opn.j-1)] -= htht * mOptParameter.k[cdn.id][opn.id] * (opn.w * (hx*hy)) * cdn.w;
-                                        break;
-                                    }
-                                }
-
-                                if (!found)
-                                {
-                                    d2[index] += htht * mOptParameter.k[cdn.id][opn.id] * u20[opn.j][opn.i] * (opn.w * (hx*hy)) * cdn.w;
-                                }
-                            }
-
-                            for (unsigned int j=0; j<No; j++)
-                            {
-                                d2[index] -= htht * mOptParameter.k[cdn.id][j] * mOptParameter.z[cdn.id][j] * cdn.w;
-                            }
-                        }
-                    }
-#endif
-#ifdef NEW_VERSION
                     for (unsigned int i=0; i<Nc; i++)
                     {
                         const ExtendedSpacePoint &cExtendedSpacePoint = cntExtSpacePoints.at(i);
@@ -1642,11 +1525,10 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                             }
                         }
                     }
-#endif
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding time delta part --------------------------------//
-                    d2[index] += htht*distributeTimeDelta(tn20.t, ht, 2*l, qPointNodes, sn, qExtSpacePoints);
+                    d2[index] += htht*distributeTimeDelta(tn20.t, ht, 2*l, sn, qExtSpacePoints);
                     //------------------------------------- Adding time delta part --------------------------------//
                 }
 
@@ -1675,8 +1557,8 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
 
         /**************************************************** y direction apprx ***************************************************/
 
-        if (use == true) f_add2Info(u15, u_info, obsPointNodes, 2*l-1, hx, hy, msnExtSpacePoints); f_layerInfo(u15, 2*l-1);
-        if (use == true) f_add2Info(u20, u_info, obsPointNodes, 2*l+0, hx, hy, msnExtSpacePoints); f_layerInfo(u20, 2*l+0);
+        if (use == true) f_add2Info(u15, u_info, 2*l-1, hx, hy, msnExtSpacePoints); f_layerInfo(u15, 2*l-1);
+        if (use == true) f_add2Info(u20, u_info, 2*l+0, hx, hy, msnExtSpacePoints); f_layerInfo(u20, 2*l+0);
 
         for (unsigned int m=0; m<=M; m++)
         {
@@ -1755,9 +1637,9 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     cols1.clear();
     cols2.clear();
 
-    qPointNodes.clear();
-    obsPointNodes.clear();
-    cntDeltaNodes.clear();
+//    qPointNodes.clear();
+//    obsPointNodes.clear();
+//    cntDeltaNodes.clear();
 
     u00.clear();
     u10.clear();
@@ -1765,12 +1647,11 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     u20.clear();
 }
 
-void Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, spif_vector &u_info, bool use,
-                                          espn_vector &obsPointNodes, espn_vector &cntDeltaNodes UNUSED_PARAM,
-                                          espn_vector &qPointNodes UNUSED_PARAM, unsigned int N, unsigned int M,
+void Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, spif_vector &u_info, bool use, unsigned int N, unsigned int M,
                                           double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda,
                                           const std::vector<ExtendedSpacePoint> &qExtSpacePoints,
-                                          const std::vector<ExtendedSpacePoint> &msnExtSpacePoints) const
+                                          const std::vector<ExtendedSpacePoint> &msnExtSpacePoints,
+                                          const std::vector<ExtendedSpacePoint> &cntExtSpacePoints) const
 {
     DoubleMatrix u05 = u00;
 
@@ -1826,34 +1707,34 @@ void Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, 
             u05[m][n] = u00[m][n] + (0.5*ht) * f_initial2(sn) + (0.125*ht*ht) * sum;
             u10[m][n] = u00[m][n] + (1.0*ht) * f_initial2(sn) + (0.500*ht*ht) * sum;
 
-            //            double sum1 = 0.0;
-            //            for (unsigned int cdi=0; cdi<cntDeltaNodes.size(); cdi++)
-            //            {
-            //                const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cdi);
-            //                if (cdn.i == n && cdn.j == m)
-            //                {
-            //                    for (unsigned int j=0; j<mEquParameter.No; j++)
-            //                        sum1 -= mOptParameter.z[cdn.id][j] * cdn.w;
-            //                }
-            //            }
+            double sum1 = 0.0;
+            //for (unsigned int cdi=0; cdi<cntDeltaNodes.size(); cdi++)
+            //{
+            //    const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cdi);
+            //    if (cdn.i == n && cdn.j == m)
+            //    {
+            //        for (unsigned int j=0; j<mEquParameter.No; j++)
+            //            sum1 -= mOptParameter.z[cdn.id][j] * cdn.w;
+            //    }
+            //}
 
-            //            u05[m][n] += (0.125*ht*ht) * sum1;
-            //            u10[m][n] += (0.500*ht*ht) * sum1;
+            u05[m][n] += (0.125*ht*ht) * sum1;
+            u10[m][n] += (0.500*ht*ht) * sum1;
 
-            u05[m][n] += (0.125*ht*ht)*distributeTimeDelta(0.5*ht, ht, 1, qPointNodes, sn, qExtSpacePoints);
-            u10[m][n] += (0.500*ht*ht)*distributeTimeDelta(1.0*ht, ht, 2, qPointNodes, sn, qExtSpacePoints);
+            u05[m][n] += (0.125*ht*ht)*distributeTimeDelta(0.5*ht, ht, 1, sn, qExtSpacePoints);
+            u10[m][n] += (0.500*ht*ht)*distributeTimeDelta(1.0*ht, ht, 2, sn, qExtSpacePoints);
         }
     }
 
     /************************************************************************/
 
-    if (use == true) f_add2Info(u00, u_info, obsPointNodes, 0, hx, hy, msnExtSpacePoints);
+    if (use == true) f_add2Info(u00, u_info, 0, hx, hy, msnExtSpacePoints);
     f_layerInfo(u00, 0);
 
-    if (use == true) f_add2Info(u05, u_info, obsPointNodes, 1, hx, hy, msnExtSpacePoints);
+    if (use == true) f_add2Info(u05, u_info, 1, hx, hy, msnExtSpacePoints);
     f_layerInfo(u05, 1);
 
-    if (use == true) f_add2Info(u10, u_info, obsPointNodes, 2, hx, hy, msnExtSpacePoints);
+    if (use == true) f_add2Info(u10, u_info, 2, hx, hy, msnExtSpacePoints);
     f_layerInfo(u10, 2);
 }
 
@@ -1872,68 +1753,10 @@ double Problem2HNDirichlet::f_boundary(const SpaceNodePDE &sn UNUSED_PARAM, cons
     return 0.0;
 }
 
-void Problem2HNDirichlet::f_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2, uint_vector &cols0, uint_vector &cols1, uint_vector &cols2,
-                                         espn_vector &obsPointNodes, espn_vector &cntDeltaNodes, unsigned int N, unsigned int M,
+void Problem2HNDirichlet::f_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2, uint_vector &cols0, uint_vector &cols1, uint_vector &cols2, unsigned int N, unsigned int M,
                                          const std::vector<ExtendedSpacePoint> &cntExtSpacePoints,
                                          const std::vector<ExtendedSpacePoint> &msnExtSpacePoints) const
 {
-#ifdef OLD_VERSION
-    for (unsigned int m=1; m<=M-1; m++)
-    {
-        bool found1 = false;
-        bool found2 = false;
-        for (unsigned int i=0; i<cntDeltaNodes.size(); i++)
-        {
-            const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(i);
-
-            if (cdn.j == m)
-            {
-                found1 = true;
-                for (unsigned int j=0; j<obsPointNodes.size(); j++)
-                {
-                    const ExtendedSpacePointNode &opn = obsPointNodes.at(j);
-                    if (opn.j == m)
-                    {
-                        found2 = true;
-                        break;
-                    }
-                }
-                break;
-            }
-        }
-        if (found1 == false && found2 == false) if(std::find(rows0.begin(), rows0.end(), m) == rows0.end()) rows0.push_back(m);
-        if (found1 == true  && found2 == true)  if(std::find(rows2.begin(), rows2.end(), m) == rows2.end()) rows2.push_back(m);
-        if (found1 == true)                     if(std::find(rows1.begin(), rows1.end(), m) == rows1.end()) rows1.push_back(m);
-    }
-
-    for (unsigned int n=1; n<=N-1; n++)
-    {
-        bool found1 = false;
-        bool found2 = false;
-        for (unsigned int i=0; i<cntDeltaNodes.size(); i++)
-        {
-            const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(i);
-            if (cdn.i == n)
-            {
-                found1 = true;
-                for (unsigned int j=0; j<obsPointNodes.size(); j++)
-                {
-                    const ExtendedSpacePointNode &opn = obsPointNodes.at(j);
-                    if (opn.i == n)
-                    {
-                        found2 = true;
-                        break;
-                    }
-                }
-                break;
-            }
-        }
-        if (found1 == false && found2 == false) if(std::find(cols0.begin(), cols0.end(), n) == cols0.end()) cols0.push_back(n);
-        if (found1 == true  && found2 == true)  if(std::find(cols2.begin(), cols2.end(), n) == cols2.end()) cols2.push_back(n);
-        if (found1 == true)                     if(std::find(cols1.begin(), cols1.end(), n) == cols1.end()) cols1.push_back(n);
-    }
-#endif
-#ifdef NEW_VERSION
     for (unsigned int m=1; m<=M-1; m++)
     {
         bool found1 = false;
@@ -2011,70 +1834,12 @@ void Problem2HNDirichlet::f_findRowsCols(uint_vector &rows0, uint_vector &rows1,
         if (found1 == true  && found2 == true)  if(std::find(cols2.begin(), cols2.end(), n) == cols2.end()) cols2.push_back(n);
         if (found1 == true)                     if(std::find(cols1.begin(), cols1.end(), n) == cols1.end()) cols1.push_back(n);
     }
-#endif
 }
 
-void Problem2HNDirichlet::b_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2, uint_vector &cols0, uint_vector &cols1, uint_vector &cols2,
-                                         espn_vector &cntPointNodes, espn_vector &obsDeltaNodes, unsigned int N, unsigned int M,
+void Problem2HNDirichlet::b_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2, uint_vector &cols0, uint_vector &cols1, uint_vector &cols2, unsigned int N, unsigned int M,
                                          const std::vector<ExtendedSpacePoint> &msnExtSpacePoints,
                                          const std::vector<ExtendedSpacePoint> &cntExtSpacePoints) const
 {
-#ifdef OLD_VERSION
-    for (unsigned int m=1; m<=M-1; m++)
-    {
-        bool found1 = false;
-        bool found2 = false;
-        for (unsigned int j=0; j<obsDeltaNodes.size(); j++)
-        {
-            const ExtendedSpacePointNode &odn = obsDeltaNodes.at(j);
-            if (odn.j == m)
-            {
-                found1 = true;
-                for (unsigned int i=0; i<cntPointNodes.size(); i++)
-                {
-                    const ExtendedSpacePointNode &cpn = cntPointNodes.at(i);
-                    if (cpn.j == m)
-                    {
-                        found2 = true;
-                        break;
-                    }
-                }
-                break;
-            }
-        }
-        if (found1 == false && found2 == false) if(std::find(rows0.begin(), rows0.end(), m) == rows0.end()) rows0.push_back(m);
-        if (found1 == true  && found2 == true)  if(std::find(rows2.begin(), rows2.end(), m) == rows2.end()) rows2.push_back(m);
-        if (found1 == true)                     if(std::find(rows1.begin(), rows1.end(), m) == rows1.end()) rows1.push_back(m);
-    }
-
-    for (unsigned int n=1; n<=N-1; n++)
-    {
-        bool found1 = false;
-        bool found2 = false;
-        for (unsigned int j=0; j<obsDeltaNodes.size(); j++)
-        {
-            const ExtendedSpacePointNode &odn = obsDeltaNodes.at(j);
-            if (odn.i == n)
-            {
-                found1 = true;
-                for (unsigned int i=0; i<cntPointNodes.size(); i++)
-                {
-                    const ExtendedSpacePointNode &cpn = cntPointNodes.at(i);
-                    if (cpn.i == n)
-                    {
-                        found2 = true;
-                        break;
-                    }
-                }
-                break;
-            }
-        }
-        if (found1 == false && found2 == false) if(std::find(cols0.begin(), cols0.end(), n) == cols0.end()) cols0.push_back(n);
-        if (found1 == true  && found2 == true)  if(std::find(cols2.begin(), cols2.end(), n) == cols2.end()) cols2.push_back(n);
-        if (found1 == true)                     if(std::find(cols1.begin(), cols1.end(), n) == cols1.end()) cols1.push_back(n);
-    }
-#endif
-#ifdef NEW_VERSION
     for (unsigned int m=1; m<=M-1; m++)
     {
         bool found1 = false;
@@ -2152,9 +1917,7 @@ void Problem2HNDirichlet::b_findRowsCols(uint_vector &rows0, uint_vector &rows1,
         if (found1 == true  && found2 == true)  if(std::find(cols2.begin(), cols2.end(), n) == cols2.end()) cols2.push_back(n);
         if (found1 == true)                     if(std::find(cols1.begin(), cols1.end(), n) == cols1.end()) cols1.push_back(n);
     }
-#endif
 }
-
 
 void Problem2HNDirichlet::f_borderLayer(DoubleMatrix &u, DoubleMatrix &um5, unsigned int ln) const
 {
@@ -2220,71 +1983,10 @@ void Problem2HNDirichlet::b_prepareInfo(unsigned int Nc, const std::vector<Space
     }
 }
 
-void Problem2HNDirichlet::f_add2Info(const DoubleMatrix &u, spif_vector &u_info, const espn_vector &obsPointNodes, unsigned int ln,
-                                     double hx, double hy, const std::vector<ExtendedSpacePoint> &extMsmnts, int method) const
+void Problem2HNDirichlet::f_add2Info(const DoubleMatrix &u, spif_vector &u_info, unsigned int ln, double hx, double hy, const std::vector<ExtendedSpacePoint> &extMsmnts, int method) const
 {
-    if (method == 1)
+    if (method == 1 || method == 2 || method == 4)
     {
-#ifdef OLD_VERSION
-        for (unsigned int j=0; j<u_info.size(); j++) u_info[j].vl[ln] = u_info[j].dx[ln] = u_info[j].dy[ln] = 0.0;
-
-        for (unsigned int opj=0; opj<obsPointNodes.size(); opj++)
-        {
-            const ExtendedSpacePointNode &opn = obsPointNodes[opj];
-            SpacePointInfo &ui = u_info[opn.id];
-
-            ui.vl[ln] += u[opn.j][opn.i] * (opn.w * (hx*hy));
-            if (opn.isCenter)
-            {
-                ui.dx[ln] = (u[opn.j][opn.i+1] - u[opn.j][opn.i-1])/(2.0*hx);
-                ui.dy[ln] = (u[opn.j+1][opn.i] - u[opn.j-1][opn.i])/(2.0*hy);
-            }
-        }
-#endif
-    }
-
-    if (method == 2)
-    {
-#ifdef OLD_VERSION
-        for (unsigned int j=0; j<u_info.size(); j++) u_info[j].vl[ln] = u_info[j].dx[ln] = u_info[j].dy[ln] = 0.0;
-
-        for (unsigned int opj=0; opj<obsPointNodes.size(); opj++)
-        {
-            const ExtendedSpacePointNode &opn = obsPointNodes[opj];
-            SpacePointInfo &ui = u_info[opn.id];
-
-            ui.vl[ln] += u[opn.j][opn.i] * (opn.w * (hx*hy));
-            if (opn.isCenter)
-            {
-                ui.dx[ln] = (u[opn.j][opn.i+1] - u[opn.j][opn.i-1])/(2.0*hx);
-                ui.dy[ln] = (u[opn.j+1][opn.i] - u[opn.j-1][opn.i])/(2.0*hy);
-            }
-        }
-#endif
-    }
-
-    if (method == 4)
-    {
-#ifdef OLD_VERSION
-        for (unsigned int j=0; j<u_info.size(); j++) u_info[j].vl[ln] = u_info[j].dx[ln] = u_info[j].dy[ln] = 0.0;
-
-        for (unsigned int opj=0; opj<obsPointNodes.size(); opj++)
-        {
-            const ExtendedSpacePointNode &opn = obsPointNodes[opj];
-            SpacePointInfo &ui = u_info[opn.id];
-
-            ui.vl[ln] += u[opn.j][opn.i] * (opn.w * (hx*hy));
-            if (opn.isCenter)
-            {
-                ui.dx[ln] = (u[opn.j][opn.i+1] - u[opn.j][opn.i-1])/(2.0*hx);
-                ui.dy[ln] = (u[opn.j+1][opn.i] - u[opn.j-1][opn.i])/(2.0*hy);
-
-                ui.dx[ln] += ((ui.x-opn.i*hx)/(hx*hx))*(u[opn.j][opn.i+1] - 2.0*u[opn.j][opn.i] + u[opn.j][opn.i-1]);
-                ui.dy[ln] += ((ui.y-opn.j*hy)/(hy*hy))*(u[opn.j+1][opn.i] - 2.0*u[opn.j][opn.i] + u[opn.j-1][opn.i]);
-            }
-        }
-#endif
-#ifdef NEW_VERSION
         unsigned int No = static_cast<unsigned int>(extMsmnts.size());
         for (unsigned int j=0; j<No; j++)
         {
@@ -2305,75 +2007,13 @@ void Problem2HNDirichlet::f_add2Info(const DoubleMatrix &u, spif_vector &u_info,
                 }
             }
         }
-#endif
     }
 }
 
-void Problem2HNDirichlet::b_add2Info(const DoubleMatrix &p, spif_vector &p_info, const espn_vector &cntPointNodes, unsigned int ln,
-                                     double hx, double hy, const std::vector<ExtendedSpacePoint> &extCntrls, int method) const
+void Problem2HNDirichlet::b_add2Info(const DoubleMatrix &p, spif_vector &p_info, unsigned int ln, double hx, double hy, const std::vector<ExtendedSpacePoint> &extCntrls, int method) const
 {
-    if (method == 1)
+    if (method == 1 || method == 2 || method == 4)
     {
-#ifdef OLD_VERSION
-        for (unsigned int j=0; j<p_info.size(); j++) p_info[j].vl[ln] = p_info[j].dx[ln] = p_info[j].dy[ln] = 0.0;
-
-        for (unsigned int cpi=0; cpi<cntPointNodes.size(); cpi++)
-        {
-            const ExtendedSpacePointNode &cpn = cntPointNodes[cpi];
-            SpacePointInfo &pi = p_info[cpn.id];
-
-            pi.vl[ln] += p[cpn.j][cpn.i] * (cpn.w * (hx*hy));
-            if (cpn.isCenter)
-            {
-                pi.dx[ln] = (p[cpn.j][cpn.i+1] - p[cpn.j][cpn.i-1])/(2.0*hx);
-                pi.dy[ln] = (p[cpn.j+1][cpn.i] - p[cpn.j-1][cpn.i])/(2.0*hy);
-            }
-        }
-#endif
-    }
-
-    if (method == 2)
-    {
-#ifdef OLD_VERSION
-        for (unsigned int j=0; j<p_info.size(); j++) p_info[j].vl[ln] = p_info[j].dx[ln] = p_info[j].dy[ln] = 0.0;
-
-        for (unsigned int cpi=0; cpi<cntPointNodes.size(); cpi++)
-        {
-            const ExtendedSpacePointNode &cpn = cntPointNodes[cpi];
-            SpacePointInfo &pi = p_info[cpn.id];
-
-            pi.vl[ln] += p[cpn.j][cpn.i] * (cpn.w * (hx*hy));
-            if (cpn.isCenter)
-            {
-                pi.dx[ln] = (p[cpn.j][cpn.i+1] - p[cpn.j][cpn.i-1])/(2.0*hx);
-                pi.dy[ln] = (p[cpn.j+1][cpn.i] - p[cpn.j-1][cpn.i])/(2.0*hy);
-            }
-        }
-#endif
-    }
-
-    if (method == 4)
-    {
-#ifdef OLD_VERSION
-        for (unsigned int j=0; j<p_info.size(); j++) p_info[j].vl[ln] = p_info[j].dx[ln] = p_info[j].dy[ln] = 0.0;
-
-        for (unsigned int cpi=0; cpi<cntPointNodes.size(); cpi++)
-        {
-            const ExtendedSpacePointNode &cpn = cntPointNodes[cpi];
-            SpacePointInfo &pi = p_info[cpn.id];
-
-            pi.vl[ln] += p[cpn.j][cpn.i] * (cpn.w * (hx*hy));
-            if (cpn.isCenter)
-            {
-                pi.dx[ln] = (p[cpn.j][cpn.i+1] - p[cpn.j][cpn.i-1])/(2.0*hx);
-                pi.dy[ln] = (p[cpn.j+1][cpn.i] - p[cpn.j-1][cpn.i])/(2.0*hy);
-
-                pi.dx[ln] += ((pi.x-cpn.i*hx)/(hx*hx))*(p[cpn.j][cpn.i+1] - 2.0*p[cpn.j][cpn.i] + p[cpn.j][cpn.i-1]);
-                pi.dy[ln] += ((pi.y-cpn.j*hy)/(hy*hy))*(p[cpn.j+1][cpn.i] - 2.0*p[cpn.j][cpn.i] + p[cpn.j-1][cpn.i]);
-            }
-        }
-#endif
-#ifdef NEW_VERSION
         unsigned int Nc = static_cast<unsigned int>(extCntrls.size());
         for (unsigned int i=0; i<Nc; i++)
         {
@@ -2394,7 +2034,6 @@ void Problem2HNDirichlet::b_add2Info(const DoubleMatrix &p, spif_vector &p_info,
                 }
             }
         }
-#endif
     }
 }
 
@@ -2438,28 +2077,21 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
     DoubleMatrix p20(M+1, N+1);
 
     //--------------------------------------------------------------------------------------------//
-    espn_vector obsDeltaNodes, cntPointNodes;
-    std::vector<ExtendedSpacePoint> cntExtSpacePoints, msnExtSpacePoints, qExtSpacePoints;
-#if defined(OLD_VERSION) || defined(NEW_VERSION)
-    for (unsigned int j=0; j<No; j++) distributeDelta0(mOptParameter.xi[j], j, obsDeltaNodes, dimX, dimY, 4);
-    for (unsigned int i=0; i<Nc; i++) distributeDelta0(mOptParameter.eta[i], i, cntPointNodes, dimX, dimY, 4);
-#endif
-#ifdef NEW_VERSION
+    std::vector<ExtendedSpacePoint> cntExtSpacePoints, msnExtSpacePoints;
     newDistributeDeltaGaussCntrl(mOptParameter.eta, cntExtSpacePoints, dimX, dimY);
     newDistributeDeltaGaussMsmnt(mOptParameter.xi,  msnExtSpacePoints, dimX, dimY);
-#endif
+
 
     //----------------------------------------------------------------------------------------------//
     uint_vector rows0, rows1, rows2, cols0, cols1, cols2;
-    b_findRowsCols(rows0, rows1, rows2, cols0, cols1, cols2, cntPointNodes, obsDeltaNodes, N, M, msnExtSpacePoints, cntExtSpacePoints);
+    b_findRowsCols(rows0, rows1, rows2, cols0, cols1, cols2, N, M, msnExtSpacePoints, cntExtSpacePoints);
 
     //-------------------------------------------- info --------------------------------------------//
     if (use == true) b_prepareInfo(Nc, mOptParameter.eta, p_info, LLD, dimX, dimY);
     //-------------------------------------------- info --------------------------------------------//
 
     //------------------------------------- initial conditions -------------------------------------//
-    b_initialLayers(p00, p10, p_info, use, u_info, cntPointNodes, obsDeltaNodes, N, M, hx, hy, ht, aa__hxhx, aa__hyhy, lambda,
-                    cntExtSpacePoints);
+    b_initialLayers(p00, p10, p_info, use, u_info, N, M, hx, hy, ht, aa__hxhx, aa__hyhy, lambda, cntExtSpacePoints, msnExtSpacePoints);
     //------------------------------------- initial conditions -------------------------------------//
 
     double *ax = static_cast<double*>( malloc(sizeof(double)*(N-1)) ); for (unsigned int n=1; n<=N-1; n++) ax[n-1] = m_aa_htht__hxhx;
@@ -2569,14 +2201,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
             double *_w15 = new double[No];
 
             double* _p15 = new double[Nc]; for (unsigned int i=0; i<Nc; i++) _p15[i] = 0.0;
-#ifdef OLD_VERSION
-            for (unsigned int cpi=0; cpi<cntPointNodes.size(); cpi++)
-            {
-                const ExtendedSpacePointNode &cpn = cntPointNodes[cpi];
-                _p15[cpn.id] += p15[cpn.j][cpn.i] * (cpn.w * (hx*hy));
-            }
-#endif
-#ifdef NEW_VERSION
+
             for (unsigned int i=0; i<Nc; i++)
             {
                 const ExtendedSpacePoint &extendedSpacePoint = cntExtSpacePoints.at(i);
@@ -2588,7 +2213,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                     _p15[i] += p15[node.ny][node.nx] * (node.w * (hx*hy));
                 }
             }
-#endif
+
             for (unsigned int j=0; j<No; j++)
             {
                 _w15[j] = 0.0;
@@ -2597,6 +2222,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                     _w15[j] += mOptParameter.k[i][j] * ( _p15[i] + 2.0*r*gpi(i, 2*l+1, u_info, mOptParameter)*sgn(g0i(i, 2*l+1, u_info, mOptParameter)));
                 }
             }
+
             delete [] _p15;
 
             for (unsigned int row=0; row<rows1.size(); row++)
@@ -2616,17 +2242,6 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                     dx[n-1] += 2.0*p10[m][n] + (p10[m][n]-p00[m][n]);
 
                     //------------------------------------- Adding delta part -------------------------------------//
-#ifdef OLD_VERSION
-                    for (unsigned int odj=0; odj<obsDeltaNodes.size(); odj++)
-                    {
-                        const ExtendedSpacePointNode &odn = obsDeltaNodes.at(odj);
-                        if (odn.i == sn.i && odn.j == sn.j)
-                        {
-                            dx[n-1] += htht * _w15[odn.id] * odn.w;
-                        }
-                    }
-#endif
-#ifdef NEW_VERSION
                     for (unsigned int j=0; j<No; j++)
                     {
                         const ExtendedSpacePoint &extendedSpacePoint = msnExtSpacePoints.at(j);
@@ -2641,7 +2256,6 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                             }
                         }
                     }
-#endif
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding functional part --------------------------------//
@@ -2689,41 +2303,6 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                     c1[index] = m_aa_htht__hxhx;
 
                     //------------------------------------- Adding delta part -------------------------------------//
-#ifdef OLD_VERSION
-                    for (unsigned int odj=0; odj<obsDeltaNodes.size(); odj++)
-                    {
-                        const ExtendedSpacePointNode &odn = obsDeltaNodes.at(odj);
-                        if (odn.i == sn.i && odn.j == sn.j)
-                        {
-                            for (unsigned int cdi=0; cdi<cntPointNodes.size(); cdi++)
-                            {
-                                const ExtendedSpacePointNode &cpn = cntPointNodes[cdi];
-
-                                bool found = false;
-                                for (unsigned int rs=0; rs<rows1.size(); rs++)
-                                {
-                                    if (cpn.j == rows1[rs])
-                                    {
-                                        found = true;
-                                        w1[index][rs*(N-1)+(cpn.i-1)] -= htht * mOptParameter.k[cpn.id][odn.id] * (cpn.w * (hx*hy)) * odn.w;
-                                        break;
-                                    }
-                                }
-
-                                if (!found)
-                                {
-                                    d1[index] += htht * mOptParameter.k[cpn.id][odn.id] * p15[cpn.j][cpn.i] * (cpn.w * (hx*hy)) * odn.w;
-                                }
-                            }
-
-                            for (unsigned int i=0; i<Nc; i++)
-                            {
-                                d1[index] += 2.0 * r * htht *  mOptParameter.k[i][odn.id] * gpi(i, 2*l+1, u_info, mOptParameter)*sgn(g0i(i, 2*l+1, u_info, mOptParameter)) * odn.w;
-                            }
-                        }
-                    }
-#endif
-#ifdef NEW_VERSION
                     for (unsigned int j=0; j<No; j++)
                     {
                         const ExtendedSpacePoint &mExtendedSpacePoint = msnExtSpacePoints.at(j);
@@ -2773,7 +2352,6 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                             }
                         }
                     }
-#endif
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding functional part --------------------------------//
@@ -2845,14 +2423,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
             double *_w20 = new double[No];
 
             double* _p20 = new double[Nc]; for (unsigned int i=0; i<Nc; i++) _p20[i] = 0.0;
-#ifdef OLD_VERSION
-            for (unsigned int cpi=0; cpi<cntPointNodes.size(); cpi++)
-            {
-                const ExtendedSpacePointNode &cpn = cntPointNodes[cpi];
-                _p20[cpn.id] += p20[cpn.j][cpn.i] * (cpn.w * (hx*hy));
-            }
-#endif
-#ifdef NEW_VERSION
+
             for (unsigned int i=0; i<Nc; i++)
             {
                 const ExtendedSpacePoint &extendedSpacePoint = cntExtSpacePoints.at(i);
@@ -2864,7 +2435,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                     _p20[i] += p20[node.ny][node.nx] * (node.w * (hx*hy));
                 }
             }
-#endif
+
             for (unsigned int j=0; j<No; j++)
             {
                 _w20[j] = 0.0;
@@ -2892,17 +2463,6 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                     dy[m-1] += 2.0*p15[m][n] + (p10[m][n]-p00[m][n]);
 
                     //------------------------------------- Adding delta part -------------------------------------//
-#ifdef OLD_VERSION
-                    for (unsigned int odj=0; odj<obsDeltaNodes.size(); odj++)
-                    {
-                        const ExtendedSpacePointNode &odn = obsDeltaNodes.at(odj);
-                        if (odn.i == sn.i && odn.j == sn.j)
-                        {
-                            dy[m-1] += htht * _w20[odn.id] * odn.w;
-                        }
-                    }
-#endif
-#ifdef NEW_VERSION
                     for (unsigned int j=0; j<No; j++)
                     {
                         const ExtendedSpacePoint &extendedSpacePoint = msnExtSpacePoints.at(j);
@@ -2917,7 +2477,6 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                             }
                         }
                     }
-#endif
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding functional part --------------------------------//
@@ -2965,41 +2524,6 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                     c2[index] = m_aa_htht__hyhy;
 
                     //------------------------------------- Adding delta part -------------------------------------//
-#ifdef OLD_VERSION
-                    for (unsigned int odj=0; odj<obsDeltaNodes.size(); odj++)
-                    {
-                        const ExtendedSpacePointNode &odn = obsDeltaNodes.at(odj);
-                        if (odn.i == sn.i && odn.j == sn.j)
-                        {
-                            for (unsigned int cpi=0; cpi<cntPointNodes.size(); cpi++)
-                            {
-                                const ExtendedSpacePointNode &cpn = cntPointNodes[cpi];
-
-                                bool found = false;
-                                for (unsigned int cs=0; cs<cols1.size(); cs++)
-                                {
-                                    if (cpn.i == cols1[cs])
-                                    {
-                                        found = true;
-                                        w2[index][cs*(M-1)+(cpn.j-1)] -= htht * mOptParameter.k[cpn.id][odn.id] * (cpn.w * (hx*hy)) * odn.w;
-                                        break;
-                                    }
-                                }
-
-                                if (!found)
-                                {
-                                    d2[index] += htht * mOptParameter.k[cpn.id][odn.id] * p20[cpn.j][cpn.i] * (cpn.w * (hx*hy)) * odn.w;
-                                }
-                            }
-
-                            for (unsigned int i=0; i<Nc; i++)
-                            {
-                                d2[index] += 2.0 * r * htht *  mOptParameter.k[i][odn.id] * gpi(i, 2*l, u_info, mOptParameter)*sgn(g0i(i, 2*l, u_info, mOptParameter)) * odn.w;
-                            }
-                        }
-                    }
-#endif
-#ifdef NEW_VERSION
                     for (unsigned int j=0; j<No; j++)
                     {
                         const ExtendedSpacePoint &mExtendedSpacePoint = msnExtSpacePoints.at(j);
@@ -3049,7 +2573,6 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                             }
                         }
                     }
-#endif
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding functional part --------------------------------//
@@ -3082,8 +2605,8 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
 
         /**************************************************** y direction apprx ***************************************************/
 
-        if (use == true) b_add2Info(p15, p_info, cntPointNodes, 2*l+1, hx, hy, cntExtSpacePoints); b_layerInfo(p15, 2*l+1);
-        if (use == true) b_add2Info(p20, p_info, cntPointNodes, 2*l+0, hx, hy, cntExtSpacePoints); b_layerInfo(p20, 2*l+0);
+        if (use == true) b_add2Info(p15, p_info, 2*l+1, hx, hy, cntExtSpacePoints); b_layerInfo(p15, 2*l+1);
+        if (use == true) b_add2Info(p20, p_info, 2*l+0, hx, hy, cntExtSpacePoints); b_layerInfo(p20, 2*l+0);
 
         for (unsigned int m=0; m<=M; m++)
         {
@@ -3135,8 +2658,8 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
     cols1.clear();
     cols2.clear();
 
-    obsDeltaNodes.clear();
-    cntPointNodes.clear();
+//    obsDeltaNodes.clear();
+//    cntPointNodes.clear();
 
     p00.clear();
     p10.clear();
@@ -3145,9 +2668,9 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
 }
 
 void Problem2HNDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, spif_vector &p_info, bool use, const spif_vector &u_info,
-                                          espn_vector &cntPointNodes, espn_vector &obsDeltaNodes, unsigned int N, unsigned int M, double
-                                          hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda,
-                                          const std::vector<ExtendedSpacePoint> &cntExtSpacePoints) const
+                                          unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda,
+                                          const std::vector<ExtendedSpacePoint> &cntExtSpacePoints,
+                                          const std::vector<ExtendedSpacePoint> &msnExtSpacePoints) const
 {
     DoubleMatrix p05 = p00;
     unsigned int L = mtimeDimension.sizeN();
@@ -3190,24 +2713,21 @@ void Problem2HNDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, 
 
     unsigned int No = mEquParameter.No;
     unsigned int Nc = mEquParameter.Nc;
+
     double *_w = new double[No];
 
-    double* _p = new double[Nc]; for (unsigned int i=0; i<Nc; i++) _p[i] = 0.0;
+    double* _p00 = new double[Nc]; for (unsigned int i=0; i<Nc; i++) _p00[i] = 0.0;
 
-    //    for (unsigned int i=0; i<Nc; i++)
-    //    {
-    //        const ExtendedSpacePoint &esp = cntExtSpacePoints.at(i);
-    //        const std::vector<ExtendedSpacePointNode1> &nodes = esp.nodes;
-    //        for (unsigned int ni=0; ni<nodes.size(); ni++)
-    //        {
-    //            const ExtendedSpacePointNode1 &node = nodes.at(ni);
-    //            _p[cpn.id] += p00[node.ny][node.nx] * (node.w * (hx*hy));
-    //        }
-    //    }
-    for (unsigned int cpi=0; cpi<cntPointNodes.size(); cpi++)
+    for (unsigned int i=0; i<Nc; i++)
     {
-        const ExtendedSpacePointNode &cpn = cntPointNodes[cpi];
-        _p[cpn.id] += p00[cpn.j][cpn.i] * (cpn.w * (hx*hy));
+        const ExtendedSpacePoint &extendedSpacePoint = cntExtSpacePoints.at(i);
+        const std::vector<ExtendedSpacePointNode1> &nodes = extendedSpacePoint.nodes;
+        unsigned int nodes_size = nodes.size();
+        for (unsigned int ni=0; ni<nodes_size; ni++)
+        {
+            const ExtendedSpacePointNode1 &node = nodes.at(ni);
+            _p00[i] += p00[node.ny][node.nx] * (node.w * (hx*hy));
+        }
     }
 
     for (unsigned int j=0; j<No; j++)
@@ -3215,10 +2735,11 @@ void Problem2HNDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, 
         _w[j] = 0.0;
         for (unsigned int i=0; i<Nc; i++)
         {
-            _w[j] += mOptParameter.k[i][j] * (_p[i] + 2.0*r*gpi(i, 2*LLD, u_info, mOptParameter)*sgn(g0i(i,2*LLD, u_info, mOptParameter)));
+            _w[j] += mOptParameter.k[i][j] * (_p00[i] + 2.0*r*gpi(i, 2*LLD, u_info, mOptParameter)*sgn(g0i(i,2*LLD, u_info, mOptParameter)));
         }
     }
-    delete [] _p;
+
+    delete [] _p00;
 
     /************************************************************************/
 
@@ -3238,12 +2759,18 @@ void Problem2HNDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, 
             p10[m][n] = p00[m][n] - (ht*1.0) * b_initial2(sn) + 0.500*ht*ht*sum;
 
             double sum1 = 0.0;
-            for (unsigned int odj=0; odj<obsDeltaNodes.size(); odj++)
+            for (unsigned int j=0; j<No; j++)
             {
-                const ExtendedSpacePointNode &odn = obsDeltaNodes.at(odj);
-                if (odn.i == n && odn.j == m)
+                const ExtendedSpacePoint &extendedSpacePoint = msnExtSpacePoints.at(j);
+                if (extendedSpacePoint.contains(sn))
                 {
-                    sum1 += _w[odn.id] * odn.w;
+                    const std::vector<ExtendedSpacePointNode1> &nodes = extendedSpacePoint.nodes;
+                    unsigned int nodes_size = nodes.size();
+                    for (unsigned int nj=0; nj<nodes_size; nj++)
+                    {
+                        const ExtendedSpacePointNode1 &node = nodes.at(nj);
+                        if (node.equals(sn)) sum1 += _w[j] * node.w;
+                    }
                 }
             }
 
@@ -3254,13 +2781,13 @@ void Problem2HNDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, 
 
     /************************************************************************/
 
-    if (use == true) b_add2Info(p00, p_info, cntPointNodes, 2*LLD, hx, hy, cntExtSpacePoints);
+    if (use == true) b_add2Info(p00, p_info, 2*LLD, hx, hy, cntExtSpacePoints);
     b_layerInfo(p00, 2*LLD);
 
-    if (use == true) b_add2Info(p05, p_info, cntPointNodes, 2*(LLD-1)+1, hx, hy, cntExtSpacePoints);
+    if (use == true) b_add2Info(p05, p_info, 2*(LLD-1)+1, hx, hy, cntExtSpacePoints);
     b_layerInfo(p05, 2*(LLD-1)+1);
 
-    if (use == true) b_add2Info(p10, p_info, cntPointNodes, 2*(LLD-1)+0, hx, hy, cntExtSpacePoints);
+    if (use == true) b_add2Info(p10, p_info, 2*(LLD-1)+0, hx, hy, cntExtSpacePoints);
     b_layerInfo(p10, 2*(LLD-1)+0);
 
     delete [] _w;
@@ -3307,132 +2834,132 @@ void Problem2HNDirichlet::b_layerInfo(const DoubleMatrix &p UNUSED_PARAM, unsign
 
 // backward -----------------------------------
 
-void Problem2HNDirichlet::distributeDelta0(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, int method, unsigned int k) const
-{
-    if (method == 1) distributeDeltaP(pt, id, nodes, dimX, dimY);
+//void Problem2HNDirichlet::distributeDelta0(const SpacePoint &pt, unsigned int id, const Dimension &dimX, const Dimension &dimY, int method, unsigned int k) const
+//{
+//    if (method == 1) distributeDeltaP(pt, id, nodes, dimX, dimY);
 
-    if (method == 2) distributeDeltaR(pt, id, nodes, dimX, dimY);
+//    if (method == 2) distributeDeltaR(pt, id, nodes, dimX, dimY);
 
-    if (method == 4) distributeDeltaG(pt, id, nodes, dimX, dimY, k);
-}
+//    if (method == 4) distributeDeltaG(pt, id, nodes, dimX, dimY, k);
+//}
 
-void Problem2HNDirichlet::distributeDeltaP(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY) const
-{
-    double hx = dimX.step();
-    double hy = dimY.step();
+//void Problem2HNDirichlet::distributeDeltaP(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY) const
+//{
+//    double hx = dimX.step();
+//    double hy = dimY.step();
 
-    unsigned int Nx = static_cast<unsigned int> ( dimX.sizeN() );
-    unsigned int Ny = static_cast<unsigned int> ( dimY.sizeN() );
+//    unsigned int Nx = static_cast<unsigned int> ( dimX.sizeN() );
+//    unsigned int Ny = static_cast<unsigned int> ( dimY.sizeN() );
 
-    unsigned int rx = static_cast<unsigned int> ( round( pt.x * Nx ) );
-    unsigned int ry = static_cast<unsigned int> ( round( pt.y * Ny ) );
+//    unsigned int rx = static_cast<unsigned int> ( round( pt.x * Nx ) );
+//    unsigned int ry = static_cast<unsigned int> ( round( pt.y * Ny ) );
 
-    ExtendedSpacePointNode node; node.id = id; node.pt = pt; node.i = rx; node.j = ry; node.w = 1.0/(hx*hy); nodes.push_back(node);
-}
+//    ExtendedSpacePointNode node; node.id = id; node.pt = pt; node.i = rx; node.j = ry; node.w = 1.0/(hx*hy); nodes.push_back(node);
+//}
 
-void Problem2HNDirichlet::distributeDeltaR(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY) const
-{
-    double hx = dimX.step();
-    double hy = dimY.step();
+//void Problem2HNDirichlet::distributeDeltaR(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY) const
+//{
+//    double hx = dimX.step();
+//    double hy = dimY.step();
 
-    unsigned int Nx = static_cast<unsigned int> ( dimX.sizeN() );
-    unsigned int Ny = static_cast<unsigned int> ( dimY.sizeN() );
+//    unsigned int Nx = static_cast<unsigned int> ( dimX.sizeN() );
+//    unsigned int Ny = static_cast<unsigned int> ( dimY.sizeN() );
 
-    unsigned int rx = static_cast<unsigned int> ( floor( pt.x * Nx ) );
-    unsigned int ry = static_cast<unsigned int> ( floor( pt.y * Ny ) );
+//    unsigned int rx = static_cast<unsigned int> ( floor( pt.x * Nx ) );
+//    unsigned int ry = static_cast<unsigned int> ( floor( pt.y * Ny ) );
 
-    double h1x = fabs(pt.x - rx*hx);
-    double h1y = fabs(pt.y - ry*hy);
-    double h2x = hx-fabs(pt.x - rx*hx);
-    double h2y = hx-fabs(pt.y - ry*hy);
+//    double h1x = fabs(pt.x - rx*hx);
+//    double h1y = fabs(pt.y - ry*hy);
+//    double h2x = hx-fabs(pt.x - rx*hx);
+//    double h2y = hx-fabs(pt.y - ry*hy);
 
-    ExtendedSpacePointNode node00; node00.id = id; node00.pt = pt; node00.i = rx+0; node00.j = ry+0; node00.w = ((h2x/hx)*(h2y/hy))/(hx*hy); nodes.push_back(node00);
-    ExtendedSpacePointNode node01; node01.id = id; node01.pt = pt; node01.i = rx+0; node01.j = ry+1; node01.w = ((h2x/hx)*(h1y/hy))/(hx*hy); nodes.push_back(node01);
-    ExtendedSpacePointNode node11; node11.id = id; node11.pt = pt; node11.i = rx+1; node11.j = ry+1; node11.w = ((h1x/hx)*(h1y/hy))/(hx*hy); nodes.push_back(node11);
-    ExtendedSpacePointNode node10; node10.id = id; node10.pt = pt; node10.i = rx+1; node10.j = ry+0; node10.w = ((h1x/hx)*(h2y/hy))/(hx*hy); nodes.push_back(node10);
-}
+//    ExtendedSpacePointNode node00; node00.id = id; node00.pt = pt; node00.i = rx+0; node00.j = ry+0; node00.w = ((h2x/hx)*(h2y/hy))/(hx*hy); nodes.push_back(node00);
+//    ExtendedSpacePointNode node01; node01.id = id; node01.pt = pt; node01.i = rx+0; node01.j = ry+1; node01.w = ((h2x/hx)*(h1y/hy))/(hx*hy); nodes.push_back(node01);
+//    ExtendedSpacePointNode node11; node11.id = id; node11.pt = pt; node11.i = rx+1; node11.j = ry+1; node11.w = ((h1x/hx)*(h1y/hy))/(hx*hy); nodes.push_back(node11);
+//    ExtendedSpacePointNode node10; node10.id = id; node10.pt = pt; node10.i = rx+1; node10.j = ry+0; node10.w = ((h1x/hx)*(h2y/hy))/(hx*hy); nodes.push_back(node10);
+//}
 
-void Problem2HNDirichlet::distributeDeltaG(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int k) const
-{
-    double hx = dimX.step();
-    double hy = dimY.step();
+//void Problem2HNDirichlet::distributeDeltaG(const SpacePoint &pt, unsigned int id, espn_vector &nodes, const Dimension &dimX, const Dimension &dimY, unsigned int k) const
+//{
+//    double hx = dimX.step();
+//    double hy = dimY.step();
 
-    unsigned int Nx = static_cast<unsigned int> ( dimX.sizeN() );
-    unsigned int Ny = static_cast<unsigned int> ( dimY.sizeN() );
+//    unsigned int Nx = static_cast<unsigned int> ( dimX.sizeN() );
+//    unsigned int Ny = static_cast<unsigned int> ( dimY.sizeN() );
 
-    unsigned int rx = static_cast<unsigned int> ( round(pt.x*Nx) );
-    unsigned int ry = static_cast<unsigned int> ( round(pt.y*Ny) );
+//    unsigned int rx = static_cast<unsigned int> ( round(pt.x*Nx) );
+//    unsigned int ry = static_cast<unsigned int> ( round(pt.y*Ny) );
 
-    double sigmaX = 1.0*hx;
-    double sigmaY = 1.0*hy;
+//    double sigmaX = 1.0*hx;
+//    double sigmaY = 1.0*hy;
 
-    double sumX = 0.0;
-    for (unsigned int n=rx-k; n<=rx+k; n++) sumX += exp(-((n*hx-pt.x)*(n*hx-pt.x))/(2.0*sigmaX*sigmaX));
-    sumX *= hx;
+//    double sumX = 0.0;
+//    for (unsigned int n=rx-k; n<=rx+k; n++) sumX += exp(-((n*hx-pt.x)*(n*hx-pt.x))/(2.0*sigmaX*sigmaX));
+//    sumX *= hx;
 
-    double sumY = 0.0;
-    for (unsigned int m=ry-k; m<=ry+k; m++) sumY += exp(-((m*hy-pt.y)*(m*hy-pt.y))/(2.0*sigmaY*sigmaY));
-    sumY *= hy;
+//    double sumY = 0.0;
+//    for (unsigned int m=ry-k; m<=ry+k; m++) sumY += exp(-((m*hy-pt.y)*(m*hy-pt.y))/(2.0*sigmaY*sigmaY));
+//    sumY *= hy;
 
-    double sigma = (sumX*sumY) / (2.0*M_PI);
-    double factor = 1.0/((2.0*M_PI)*sigma);
+//    double sigma = (sumX*sumY) / (2.0*M_PI);
+//    double factor = 1.0/((2.0*M_PI)*sigma);
 
-    for (unsigned int m=ry-k; m<=ry+k; m++)
-    {
-        for (unsigned int n=rx-k; n<=rx+k; n++)
-        {
-            ExtendedSpacePointNode node;
-            node.i = n; node.x = n*hx;
-            node.j = m; node.y = m*hy;
-            node.pt = pt; node.id = id;
-            node.w = factor*exp(-0.5*(((node.x-pt.x)*(node.x-pt.x))/(sigmaX*sigmaX)+((node.y-pt.y)*(node.y-pt.y))/(sigmaY*sigmaY)));
-            node.isCenter = ( m==ry && n==rx );
-            nodes.push_back(node);
-        }
-    }
-}
+//    for (unsigned int m=ry-k; m<=ry+k; m++)
+//    {
+//        for (unsigned int n=rx-k; n<=rx+k; n++)
+//        {
+//            ExtendedSpacePointNode node;
+//            node.i = n; node.x = n*hx;
+//            node.j = m; node.y = m*hy;
+//            node.pt = pt; node.id = id;
+//            node.w = factor*exp(-0.5*(((node.x-pt.x)*(node.x-pt.x))/(sigmaX*sigmaX)+((node.y-pt.y)*(node.y-pt.y))/(sigmaY*sigmaY)));
+//            node.isCenter = ( m==ry && n==rx );
+//            nodes.push_back(node);
+//        }
+//    }
+//}
 
-void Problem2HNDirichlet::distributeDeltaGaussPulse(const SpacePoint &pt, unsigned id, std::vector<ExtendedSpacePointNode> &qPointNodes,
-                                                    const Dimension &dimX, const Dimension &dimY, unsigned int k) const
-{
-    double hx = dimX.step();
-    double hy = dimY.step();
+//void Problem2HNDirichlet::distributeDeltaGaussPulse(const SpacePoint &pt, unsigned id, std::vector<ExtendedSpacePointNode> &qPointNodes,
+//                                                    const Dimension &dimX, const Dimension &dimY, unsigned int k) const
+//{
+//    double hx = dimX.step();
+//    double hy = dimY.step();
 
-    unsigned int Nx = static_cast<unsigned int> ( dimX.sizeN() );
-    unsigned int Ny = static_cast<unsigned int> ( dimY.sizeN() );
+//    unsigned int Nx = static_cast<unsigned int> ( dimX.sizeN() );
+//    unsigned int Ny = static_cast<unsigned int> ( dimY.sizeN() );
 
-    unsigned int rx = static_cast<unsigned int> ( round(pt.x*Nx) );
-    unsigned int ry = static_cast<unsigned int> ( round(pt.y*Ny) );
+//    unsigned int rx = static_cast<unsigned int> ( round(pt.x*Nx) );
+//    unsigned int ry = static_cast<unsigned int> ( round(pt.y*Ny) );
 
-    k *= 5;
-    double sigmaX = hx*5.0;
-    double sigmaY = hy*5.0;
+//    k *= 5;
+//    double sigmaX = hx*5.0;
+//    double sigmaY = hy*5.0;
 
-    double sumX = 0.0;
-    for (unsigned int n=rx-k; n<=rx+k; n++) sumX += exp(-((n*hx-pt.x)*(n*hx-pt.x))/(2.0*sigmaX*sigmaX));
-    sumX *= hx;
+//    double sumX = 0.0;
+//    for (unsigned int n=rx-k; n<=rx+k; n++) sumX += exp(-((n*hx-pt.x)*(n*hx-pt.x))/(2.0*sigmaX*sigmaX));
+//    sumX *= hx;
 
-    double sumY = 0.0;
-    for (unsigned int m=ry-k; m<=ry+k; m++) sumY += exp(-((m*hy-pt.y)*(m*hy-pt.y))/(2.0*sigmaY*sigmaY));
-    sumY *= hy;
+//    double sumY = 0.0;
+//    for (unsigned int m=ry-k; m<=ry+k; m++) sumY += exp(-((m*hy-pt.y)*(m*hy-pt.y))/(2.0*sigmaY*sigmaY));
+//    sumY *= hy;
 
-    double sigma = (sumX*sumY) / (2.0*M_PI);
-    double factor = 1.0/((2.0*M_PI)*sigma);
+//    double sigma = (sumX*sumY) / (2.0*M_PI);
+//    double factor = 1.0/((2.0*M_PI)*sigma);
 
-    for (unsigned int m=ry-k; m<=ry+k; m++)
-    {
-        for (unsigned int n=rx-k; n<=rx+k; n++)
-        {
-            ExtendedSpacePointNode node;
-            node.i = n; node.x = n*hx;
-            node.j = m; node.y = m*hy;
-            node.pt = pt; node.id = id;
-            node.w = factor*exp(-0.5*(((node.x-pt.x)*(node.x-pt.x))/(sigmaX*sigmaX)+((node.y-pt.y)*(node.y-pt.y))/(sigmaY*sigmaY)));
-            node.isCenter = ( m==ry && n==rx );
-            qPointNodes.push_back(node);
-        }
-    }
-}
+//    for (unsigned int m=ry-k; m<=ry+k; m++)
+//    {
+//        for (unsigned int n=rx-k; n<=rx+k; n++)
+//        {
+//            ExtendedSpacePointNode node;
+//            node.i = n; node.x = n*hx;
+//            node.j = m; node.y = m*hy;
+//            node.pt = pt; node.id = id;
+//            node.w = factor*exp(-0.5*(((node.x-pt.x)*(node.x-pt.x))/(sigmaX*sigmaX)+((node.y-pt.y)*(node.y-pt.y))/(sigmaY*sigmaY)));
+//            node.isCenter = ( m==ry && n==rx );
+//            qPointNodes.push_back(node);
+//        }
+//    }
+//}
 
 void Problem2HNDirichlet::newDistributeDeltaGaussPulse(const std::vector<SpacePoint> &thetas, std::vector<ExtendedSpacePoint> &extThetas, const Dimension &dimX, const Dimension &dimY) const
 {
@@ -3605,23 +3132,14 @@ void Problem2HNDirichlet::newDistributeDeltaGaussMsmnt(const std::vector<SpacePo
     }
 }
 
-double Problem2HNDirichlet::distributeTimeDelta(double t, double ht, unsigned int ln, const espn_vector &qPointNodes, const SpaceNodePDE &sn, const std::vector<ExtendedSpacePoint> &xsps) const
+double Problem2HNDirichlet::distributeTimeDelta(double t, double ht, unsigned int ln, const SpaceNodePDE &sn, const std::vector<ExtendedSpacePoint> &xsps) const
 {
     if ( ln >= 40 ) return 0.0;
 
     double Q = 0.0;
-#ifdef OLD_VERSION
-    for (unsigned int si=0; si<qPointNodes.size(); si++)
-    {
-        const ExtendedSpacePointNode &qNode = qPointNodes.at(si);
-        if (qNode.i == sn.i && qNode.j == sn.j)
-        {
-            Q += mEquParameter.q[qNode.id] * qNode.w;
-        }
-    }
-#endif
-#ifdef NEW_VERSION
+
     unsigned int Ns = xsps.size();
+
     for (unsigned int s=0; s<Ns; s++)
     {
         double q = mEquParameter.q[s];
@@ -3640,7 +3158,7 @@ double Problem2HNDirichlet::distributeTimeDelta(double t, double ht, unsigned in
             }
         }
     }
-#endif
+
     const double sigma = 5.0*ht;
     const double mu = 20.0*ht;
     const double factor = 1.0 / (sqrt(2*M_PI)*sigma);
