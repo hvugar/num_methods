@@ -4,10 +4,10 @@
 
 void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    example2();
-    IPrinter::printSeperatorLine();
-    example1();
-    //example3();
+    //example2();
+    //IPrinter::printSeperatorLine();
+    //example1();
+    example3();
 }
 
 void example1()
@@ -241,7 +241,7 @@ void example3()
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = +0.5; e_prm.theta[0].x = 0.4300; e_prm.theta[0].y = 0.7500;
+    e_prm.q[0] = +2.9; e_prm.theta[0].x = 0.4300; e_prm.theta[0].y = 0.7500;
     //e_prm.q[1] = +6.0; e_prm.theta[1].x = 0.7200; e_prm.theta[1].y = 0.3500;
 
     e_prm.No = 2;
@@ -285,7 +285,7 @@ void example3()
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 1.0000 << 10.000 << 100.000 << 1000.0;
+    DoubleVector r; r << 0.0000 << 10.000 << 100.000 << 1000.0;
     // Regularization coefficients
     DoubleVector e; e << 0.0000 << 0.0000 << 0.00000 << 0.0000;
 
@@ -323,10 +323,10 @@ void example3()
         g.setPrinter(&prob);
         g.setProjection(&prob);
         //g.setGradientNormalizer(&prob);
-        g.setOptimalityTolerance(0.00001);
-        g.setStepTolerance(0.00001);
-        g.setFunctionTolerance(0.00001);
-        g.setR1MinimizeEpsilon(0.1, 0.001);
+        g.setOptimalityTolerance(0.0001);
+        g.setStepTolerance(0.0001);
+        g.setFunctionTolerance(0.0001);
+        g.setR1MinimizeEpsilon(0.1, 0.01);
         g.setNormalize(true);
         g.showExitMessage(true);
         prob.gm = &g;
