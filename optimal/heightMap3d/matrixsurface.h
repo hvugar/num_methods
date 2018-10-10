@@ -37,6 +37,7 @@ public:
     int countY;
 
     void fillMatrix(const QString &filename, int w, int h);
+    void fillMatrix1(const QString &filename, int w, int h);
 
     int count = 0;
 

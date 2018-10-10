@@ -37,3 +37,6 @@ HEADERS += \
     heightmapsurface.h \
     matrixsurface.h \
     player.h
+
+RESOURCES += \
+    maps.qrc

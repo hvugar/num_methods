@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/"/>
+    <qresource prefix="/maps">
+        <file alias="azerb_dem">D:/azerb_dem.bin</file>
+    </qresource>
+</RCC>
