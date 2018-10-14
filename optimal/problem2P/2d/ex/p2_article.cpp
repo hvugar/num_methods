@@ -1,4 +1,7 @@
 #include "p2_article.h"
+#include "../abs/jfunctional.h"
+#include "../abs/pfunctional.h"
+
 
 void Problem2Article::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -7,14 +10,14 @@ void Problem2Article::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Table3_Y1();
     //Table23_Y1();
 
-    //Table1_Y2();
+    Table1_Y2();
     //Table2_Y2();
     //Table3_Y2();
 
     //Table2Y1();
     //Table2Y2();
 
-    image1();
+    //image1();
 }
 
 void Problem2Article::Table1_Y1()

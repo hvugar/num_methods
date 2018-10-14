@@ -1,11 +1,9 @@
 #ifndef P2_ARTICLE_H
 #define P2_ARTICLE_H
 
-//#include "../abs/abstractproblem22d.h"
-#include "../abs/jfunctional.h"
-#include "../abs/pfunctional.h"
+#include "../../problem2p_global.h"
 
-class Problem2Article
+class PROBLEM2PSHARED_EXPORT Problem2Article
 {
 public:
     static void Main(int argc, char* argv[]);

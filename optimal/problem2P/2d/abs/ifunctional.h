@@ -23,8 +23,9 @@ public:
 
     virtual void gradient(const DoubleVector &prms, DoubleVector &g) const;
 
-    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const;
-    virtual void project(DoubleVector &x, unsigned int index);
+    virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g,
+                       double f, GradientMethod::MethodResult result) const -> void;
+    virtual auto project(DoubleVector &x, unsigned int index) -> void;
 
     void setGridParameters(Dimension timeDimension, Dimension spaceDimensionX, Dimension spaceDimensionY);
     void setGridTimeDimension(Dimension timeDimension);

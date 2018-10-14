@@ -34,8 +34,8 @@ LIBS += -L../bin -lminimum
 #INCLUDEPATH += ../imaging
 #LIBS += -L../bin -limaging
 
-#INCLUDEPATH += ../problem2P
-#LIBS += -L../bin -lproblem2P
+INCLUDEPATH += ../problem2P
+LIBS += -L../bin -lproblem2P
 
 INCLUDEPATH += ../problem2H
 LIBS += -L../bin -lproblem2H

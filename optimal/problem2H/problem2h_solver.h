@@ -24,7 +24,7 @@ public:
     /** Integral part of functional */
     double integral(const std::vector<DoubleMatrix> &u) const;
     double integralU(const DoubleMatrix &u) const;
-    double norm(const EquationParameter &eprm, const OptimizeParameter &oprm, const OptimizeParameter &oprm0) const;
+    double norm(const EquationParameter &eprm, const OptimizeParameter &oprm, const OptimizeParameter &r_prm) const;
 
     /** Penalty part of functional */
     double penalty(const spif_vector &info, const OptimizeParameter &o_prm) const;

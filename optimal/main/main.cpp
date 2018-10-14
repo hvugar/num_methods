@@ -22,9 +22,10 @@
 //#include "../problem2P/2d/cproblem2forward2d.h"
 //#include "../problem2P/2d/cproblem2backward2d.h"
 //#include "../problem2P/2d/dirakdelta.h"
-//#include "../problem2P/2d/ex/p2_article.h"
+#include "../problem2P/2d/ex/p2_article.h"
 
-#include "../problem2H/problem2h_solver.h"
+#include "../problem2P/problem2p_solver.h"
+//#include "../problem2H/problem2h_solver.h"
 #include "ivp/nlode1oex1.h"
 
 #include <utils/matrix.h>
@@ -41,7 +42,11 @@
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    //QGuiApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
+
+    Problem2PNeumann::Main(argc, argv);
+    //Problem2HNDirichlet::Main(argc, argv);
+    return 0;
 
     //BorderHyperbolic2D::Main(argc, argv);
     //BorderHyperbolic2DN::Main(argc, argv);
@@ -51,9 +56,9 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //IProblem2H::IProblem2H2D::Main(argc, argv);
     //IPrinter::printSeperatorLine("+");
     //Problem2HDirichlet::Main(argc, argv);
-    Problem2HNDirichlet::Main(argc, argv);
+    //Problem2HNDirichlet::Main(argc, argv);
     //Problem2HNM::Main(argc, argv);
-    return 0;
+    //return 0;
 
     //LinearEquation::func1(a, b, c, d, e, x, N);
 

@@ -39,7 +39,7 @@ struct PROBLEM2HSHARED_EXPORT EquationParameter
     double lambda;
 };
 
-struct PROBLEM2HSHARED_EXPORT ExtendedSpacePointNode1
+struct PROBLEM2HSHARED_EXPORT ExtendedSpacePointNode
 {
     double x;
     double y;
@@ -64,7 +64,7 @@ struct PROBLEM2HSHARED_EXPORT ExtendedSpacePoint : public SpacePoint
     int minY;
     int maxY;
 
-    std::vector<ExtendedSpacePointNode1> nodes;
+    std::vector<ExtendedSpacePointNode> nodes;
 
     auto contains(int nx, int ny) const -> bool;
     auto contains(const SpaceNodePDE &sn) const -> bool { return ((minX <= sn.i && sn.i <= maxX) && (minY <= sn.j && sn.j <= maxY)); }
