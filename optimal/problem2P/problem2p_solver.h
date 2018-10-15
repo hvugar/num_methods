@@ -16,9 +16,13 @@ public:
     Problem2PNeumann();
     virtual ~Problem2PNeumann();
 
-    virtual auto gradient(const DoubleVector &, DoubleVector &) const -> void;
-
     virtual auto fx(const DoubleVector &x) const -> double;
+    virtual auto gradient(const DoubleVector &, DoubleVector &) const -> void;
+    virtual auto boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const -> double { return 0.0; }
+    virtual auto project(DoubleVector &x, unsigned int index) -> void;
+    virtual auto project(DoubleVector &x) const -> void;
+    virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g,
+                       double f, double alpha, GradientMethod::MethodResult result) const -> void;
 
     /** Integral part of functional */
     auto mu(double x, double y) const -> double;
@@ -31,12 +35,6 @@ public:
     auto penalty(const spif_vector &info, const OptimizeParameter &o_prm) const ->double;
     auto gpi(unsigned int i, unsigned int layer, const spif_vector &u_info, const OptimizeParameter &o_prm) const -> double;
     auto g0i(unsigned int i, unsigned int layer, const spif_vector &u_info, const OptimizeParameter &o_prm) const -> double;
-
-    /* utilities */
-    virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g,
-                       double f, double alpha, GradientMethod::MethodResult result) const -> void;
-    virtual auto project(DoubleVector &x, unsigned int index) -> void;
-    virtual auto project(DoubleVector &x) const -> void;
 
     /* Initial boundary value problems */
     auto solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bool use, const OptimizeParameter &mOptParameter) const -> void;
@@ -70,8 +68,6 @@ public:
 
     auto f_layerInfo(const DoubleMatrix &u, unsigned int ln) const -> void;
     auto b_layerInfo(const DoubleMatrix &p, unsigned int ln) const -> void;
-
-    virtual auto boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const -> double { return 0.0; }
 
     auto newDistributeDeltaGaussCntrl(const std::vector<SpacePoint> &cntrls, std::vector<ExtendedSpacePoint> &extCntrls, const Dimension &dimX, const Dimension &dimY) const -> void;
     auto newDistributeDeltaGaussMsmnt(const std::vector<SpacePoint> &msmnts, std::vector<ExtendedSpacePoint> &extMsmnts, const Dimension &dimX, const Dimension &dimY) const -> void;

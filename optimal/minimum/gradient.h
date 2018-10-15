@@ -201,7 +201,6 @@ protected:
     bool m_normalize;
     IVectorNormalizer *m_normalizer;
     unsigned int m_maxIterations;
-
 };
 
 #endif // GRADIENT_METHOD_H

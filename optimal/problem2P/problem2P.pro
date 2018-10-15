@@ -16,9 +16,13 @@ INCLUDEPATH += ../imaging
 LIBS += -L../bin -limaging
 
 HEADERS += problem2p_global.h \
-    problem2p_common.h \
-    problem2p_solver.h \
-    problem2p_example.h
+           problem2p_common.h \
+           problem2p_solver.h \
+           problem2p_example.h
+
+SOURCES += problem2p_common.cpp \
+           problem2p_solver.cpp \
+           problem2p_example.cpp
 
 SOURCES += \
     1d/problem2.cpp \
@@ -36,10 +40,7 @@ SOURCES += \
     2d/abs/ifunctional.cpp \
     2d/abs/jfunctional.cpp \
     2d/abs/pfunctional.cpp \
-    2d/ex/p2_article.cpp \
-    problem2p_common.cpp \
-    problem2p_solver.cpp \
-    problem2p_example.cpp
+    2d/ex/p2_article.cpp
     #2d/abs/abstractproblem22d.cpp \
     #2d/ex/problem22dex1.cpp \
     #2d/ex/problem22dex2.cpp \

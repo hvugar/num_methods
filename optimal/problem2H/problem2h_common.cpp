@@ -1,4 +1,4 @@
-#include "common.h"
+#include "problem2h_common.h"
 
 SpacePointInfo::SpacePointInfo()
 {

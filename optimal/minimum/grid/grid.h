@@ -60,6 +60,10 @@ public:
     };
 
     Dimension(double step=0.01, int minN = 0, int maxN=100);
+    //Dimension(const Dimension &dim);
+    //virtual ~Dimension() {}
+
+    //Dimension& operator=(const Dimension &dim) const;
 
     virtual double step() const;
     virtual int minN() const;

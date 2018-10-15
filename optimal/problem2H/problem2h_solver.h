@@ -1,7 +1,7 @@
 #ifndef PROBLEM2HN_H
 #define PROBLEM2HN_H
 
-#include "common.h"
+#include "problem2h_common.h"
 
 class PROBLEM2HSHARED_EXPORT Problem2HNDirichlet : public RnFunction,
         public IGradient, public InitialBoundaryValueProblemPDE, public IProjection, public IPrinter,

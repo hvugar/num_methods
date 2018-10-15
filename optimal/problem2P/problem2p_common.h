@@ -9,7 +9,7 @@
 #include <gradient_sd.h>
 #include <gradient_cjt.h>
 
-#include <imaging.h>
+#include "../imaging/imaging.h"
 
 #include <algorithm>
 #include <vector>
@@ -43,8 +43,7 @@ struct ExtendedSpacePointNode
     double w;
     bool isCenter;
 
-    inline auto equals(const SpaceNodePDE &sn) const -> bool
-    { return (sn.i == nx && sn.j == ny); }
+    inline auto equals(const SpaceNodePDE &sn) const -> bool { return (sn.i == nx && sn.j == ny); }
 };
 
 struct ExtendedSpacePoint : public SpacePoint
