@@ -423,14 +423,14 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
     double *cx = static_cast<double*>( malloc(sizeof(double)*(N+1)) ); for (unsigned int n=0; n<=N; n++) cx[n] = m_aa_ht__hxhx;
     double *dx = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
     double *rx = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
-    ax[0] = cx[N] = 0.0; bx[0] += aa_lambda_ht__hx; bx[N] += aa_lambda_ht__hx;
+    ax[0] = cx[N] = 0.0; bx[0] -= aa_lambda_ht__hx; bx[N] -= aa_lambda_ht__hx;
 
     double *ay = static_cast<double*>( malloc(sizeof(double)*(M+1)) ); for (unsigned int m=0; m<=M; m++) ay[m] = m_aa_ht__hyhy;
     double *by = static_cast<double*>( malloc(sizeof(double)*(M+1)) ); for (unsigned int m=0; m<=M; m++) by[m] = p_aa_ht__hyhy___alpha_ht;
     double *cy = static_cast<double*>( malloc(sizeof(double)*(M+1)) ); for (unsigned int m=0; m<=M; m++) cy[m] = m_aa_ht__hyhy;
     double *dy = static_cast<double*>( malloc(sizeof(double)*(M+1)) );
     double *ry = static_cast<double*>( malloc(sizeof(double)*(M+1)) );
-    ay[0] = cy[M] = 0.0; by[0] += aa_lambda_ht__hy; by[M] += aa_lambda_ht__hy;
+    ay[0] = cy[M] = 0.0; by[0] -= aa_lambda_ht__hy; by[M] -= aa_lambda_ht__hy;
 
     const unsigned int rows1_size = rows1.size()*(N+1);
     double *a1=NULL, *b1=NULL, *c1=NULL, *d1=NULL, *x1=NULL, **w1=NULL;
@@ -476,15 +476,15 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                     sn.i = n; sn.x = n*hx;
 
                     dx[n] = 0.0;
-                    if (m>0 && m<M)  dx[n] = p_aa_ht__hyhy*(u00[m-1][n] - 2.0*u00[m][n]   + u00[m+1][n]);
-                    else if (m == 0) dx[n] = p_aa_ht__hyhy*(u00[0][n]   - 2.0*u00[1][n]   + u00[2][n]);
-                    else if (m == M) dx[n] = p_aa_ht__hyhy*(u00[M-2][n] - 2.0*u00[M-1][n] + u00[M][n]);
+                    if (m>0 && m<M)  dx[n] += p_aa_ht__hyhy*(u00[m-1][n] - 2.0*u00[m][n]   + u00[m+1][n]);
+                    else if (m == 0) dx[n] += p_aa_ht__hyhy*(u00[0][n]   - 2.0*u00[1][n]   + u00[2][n]);
+                    else if (m == M) dx[n] += p_aa_ht__hyhy*(u00[M-2][n] - 2.0*u00[M-1][n] + u00[M][n]);
 
                     dx[n] += u00[m][n] + alpha_ht05*theta;
                 }
 
-                dx[0] -= aa_lambda_ht__hx*theta;
-                dx[N] -= aa_lambda_ht__hx*theta;
+                dx[0] += aa_lambda_ht__hx*theta;
+                dx[N] += aa_lambda_ht__hx*theta;
 
                 tomasAlgorithm(ax, bx, cx, dx, rx, N+1);
                 for (unsigned int n=0; n<=N; n++) u05[m][n] = rx[n];
@@ -521,6 +521,7 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
             }
 
             delete [] _u05;
+            //printf("%f %f\n", _v05[0], _v05[1]);
 
             for (unsigned int row=0; row<rows1.size(); row++)
             {
@@ -532,9 +533,9 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                     sn.i = n; sn.x = n*hx;
 
                     dx[n] = 0.0;
-                    if (m>0 && m<M)  dx[n] = p_aa_ht__hyhy*(u00[m-1][n] - 2.0*u00[m][n]   + u00[m+1][n]);
-                    else if (m == 0) dx[n] = p_aa_ht__hyhy*(u00[0][n]   - 2.0*u00[1][n]   + u00[2][n]);
-                    else if (m == M) dx[n] = p_aa_ht__hyhy*(u00[M-2][n] - 2.0*u00[M-1][n] + u00[M][n]);
+                    if (m>0 && m<M)  dx[n] += p_aa_ht__hyhy*(u00[m-1][n] - 2.0*u00[m][n]   + u00[m+1][n]);
+                    else if (m == 0) dx[n] += p_aa_ht__hyhy*(u00[0][n]   - 2.0*u00[1][n]   + u00[2][n]);
+                    else if (m == M) dx[n] += p_aa_ht__hyhy*(u00[M-2][n] - 2.0*u00[M-1][n] + u00[M][n]);
 
                     dx[n] += u00[m][n] + alpha_ht05*theta;
 
@@ -556,8 +557,8 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                     //------------------------------------- Adding delta part -------------------------------------//
                 }
 
-                dx[0] -= aa_lambda_ht__hx*theta;
-                dx[N] -= aa_lambda_ht__hx*theta;
+                dx[0] += aa_lambda_ht__hx*theta;
+                dx[N] += aa_lambda_ht__hx*theta;
 
                 tomasAlgorithm(ax, bx, cx, dx, rx, N+1);
                 for (unsigned int n=0; n<=N; n++) u05[m][n] = rx[n];
@@ -687,15 +688,15 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                     sn.j = m; sn.y = m*hy;
 
                     dy[m] = 0.0;
-                    if (n>0 && n<N) dy[m] = p_aa_ht__hxhx*(u05[m][n-1] - 2.0*u05[m][n]   + u05[m][n+1]);
-                    else if (n==0)  dy[m] = p_aa_ht__hxhx*(u05[m][0]   - 2.0*u05[m][1]   + u05[m][2]);
-                    else if (n==N)  dy[m] = p_aa_ht__hxhx*(u05[m][N-2] - 2.0*u05[m][N-1] + u05[m][N]);
+                    if (n>0 && n<N) dy[m] += p_aa_ht__hxhx*(u05[m][n-1] - 2.0*u05[m][n]   + u05[m][n+1]);
+                    else if (n==0)  dy[m] += p_aa_ht__hxhx*(u05[m][0]   - 2.0*u05[m][1]   + u05[m][2]);
+                    else if (n==N)  dy[m] += p_aa_ht__hxhx*(u05[m][N-2] - 2.0*u05[m][N-1] + u05[m][N]);
 
                     dy[m] += u05[m][n] + alpha_ht05*theta;
                 }
 
-                dy[0] -= aa_lambda_ht__hy*theta;
-                dy[M] -= aa_lambda_ht__hy*theta;
+                dy[0] += aa_lambda_ht__hy*theta;
+                dy[M] += aa_lambda_ht__hy*theta;
 
                 tomasAlgorithm(ay, by, cy, dy, ry, M+1);
                 for (unsigned int m=0; m<=M; m++) u10[m][n] = ry[m];
@@ -732,6 +733,7 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
             }
 
             delete [] _u10;
+            //printf("%f %f\n", _v10[0], _v10[1]);
 
             for (unsigned int col=0; col<cols1.size(); col++)
             {
@@ -743,9 +745,9 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                     sn.j = m; sn.y = m*hy;
 
                     dy[m] = 0.0;
-                    if (n>0 && n<N) dy[m] = p_aa_ht__hxhx*(u05[m][n-1] - 2.0*u05[m][n]   + u05[m][n+1]);
-                    else if (n==0)  dy[m] = p_aa_ht__hxhx*(u05[m][0]   - 2.0*u05[m][1]   + u05[m][2]);
-                    else if (n==N)  dy[m] = p_aa_ht__hxhx*(u05[m][N-2] - 2.0*u05[m][N-1] + u05[m][N]);
+                    if (n>0 && n<N) dy[m] += p_aa_ht__hxhx*(u05[m][n-1] - 2.0*u05[m][n]   + u05[m][n+1]);
+                    else if (n==0)  dy[m] += p_aa_ht__hxhx*(u05[m][0]   - 2.0*u05[m][1]   + u05[m][2]);
+                    else if (n==N)  dy[m] += p_aa_ht__hxhx*(u05[m][N-2] - 2.0*u05[m][N-1] + u05[m][N]);
 
                     dy[m] += u05[m][n] + alpha_ht05*theta;
 
@@ -767,8 +769,8 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                     //------------------------------------- Adding delta part -------------------------------------//
                 }
 
-                dy[0] -= aa_lambda_ht__hy*theta;
-                dy[M] -= aa_lambda_ht__hy*theta;
+                dy[0] += aa_lambda_ht__hy*theta;
+                dy[M] += aa_lambda_ht__hy*theta;
 
                 tomasAlgorithm(ay, by, cy, dy, ry, M+1);
                 for (unsigned int m=0; m<=M; m++) u10[m][n] = ry[m];
@@ -1809,6 +1811,7 @@ void Problem2PNeumann::b_add2Info(const DoubleMatrix &p, spif_vector &p_info, un
 
 auto Problem2PNeumann::f_layerInfo(const DoubleMatrix &u, unsigned int ln) const -> void
 {
+
     QPixmap pic;
     visualizeMatrixHeat(u, u.min(), u.max(), pic);
     pic.save("images/problem2P/f/100/pic_"+QString("%1").arg(ln)+".png", "PNG");
