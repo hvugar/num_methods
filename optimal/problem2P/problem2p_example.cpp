@@ -1,11 +1,11 @@
 #include "problem2p_example.h"
 
-void Problem2PNeumann::Main(int argc, char** argv)
+void Problem2PNeumann::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
 {
     example1();
 }
 
-void Problem2PNeumann::checkGradient1(const Problem2PNeumann &prob, const OptimizeParameter &o_prm)
+auto Problem2PNeumann::checkGradient1(const Problem2PNeumann &prob, const OptimizeParameter &o_prm) -> void
 {
     EquationParameter e_prm = prob.mEquParameter;
     OptimizeParameter r_prm = prob.mRegParameter;
@@ -113,7 +113,7 @@ void Problem2PNeumann::checkGradient1(const Problem2PNeumann &prob, const Optimi
     IPrinter::printSeperatorLine();
 }
 
-void Problem2PNeumann::checkGradient2(const Problem2PNeumann &prob, const OptimizeParameter &o_prm)
+auto Problem2PNeumann::checkGradient2(const Problem2PNeumann &prob, const OptimizeParameter &o_prm) -> void
 {
     EquationParameter e_prm = prob.mEquParameter;
     //OptimizeParameter o_prm = prob.mOptParameter;
@@ -262,11 +262,27 @@ auto example1() -> void
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
-    o_prm.k[0][0] = -0.12; o_prm.k[0][1] = -0.24; o_prm.k[1][0] = -0.38; o_prm.k[1][1] = -0.58;
-    //o_prm.k[0][0] = +0.00; o_prm.k[0][1] = +0.00; o_prm.k[1][0] = +0.00; o_prm.k[1][1] = +0.00;
-    o_prm.z[0][0] = +8.50; o_prm.z[0][1] = +7.40; o_prm.z[1][0] = +7.70; o_prm.z[1][1] = +9.50;
-    o_prm.xi[0].x  = 0.65; o_prm.xi[0].y  = 0.25; o_prm.xi[1].x  = 0.85; o_prm.xi[1].y  = 0.65;
-    o_prm.eta[0].x = 0.25; o_prm.eta[0].y = 0.45; o_prm.eta[1].x = 0.45; o_prm.eta[1].y = 0.85;
+    /***************************************************************************************************/
+    o_prm.k[0][0]  =  -0.85;  o_prm.k[0][1]  =  -0.48;  o_prm.k[1][0]  =  -0.74;  o_prm.k[1][1] =  -0.15;
+    //o_prm.k[0][0]  =  -5.85;  o_prm.k[0][1]  =  -3.48;  o_prm.k[1][0]  =  -4.74;  o_prm.k[1][1] =  -6.15;
+    o_prm.z[0][0]  = +14.91;  o_prm.z[0][1]  = +11.45;  o_prm.z[1][0]  = +16.84;  o_prm.z[1][1] = +12.38;
+    o_prm.xi[0].x  =   0.69;  o_prm.xi[0].y  =   0.65;  o_prm.xi[1].x  =   0.42;  o_prm.xi[1].y =   0.47;
+    o_prm.eta[0].x =   0.85;  o_prm.eta[0].y =   0.86;  o_prm.eta[1].x =   0.23;  o_prm.eta[1].y =  0.23;
+    /***************************************************************************************************/
+
+    /***************************************************************************************************/
+    //o_prm.k[0][0] = -2.12; o_prm.k[0][1] = +1.24; o_prm.k[1][0] = -2.38; o_prm.k[1][1] = +2.58;
+    //o_prm.z[0][0] = +8.50; o_prm.z[0][1] = +7.40; o_prm.z[1][0] = +7.70; o_prm.z[1][1] = +9.50;
+    //o_prm.xi[0].x =  0.63; o_prm.xi[0].y =  0.52; o_prm.xi[1].x =  0.84; o_prm.xi[1].y =  0.68;
+    //o_prm.eta[0].x = 0.46; o_prm.eta[0].y = 0.85; o_prm.eta[1].x = 0.24; o_prm.eta[1].y = 0.24;
+    /***************************************************************************************************/
+
+    /***************************************************************************************************/
+    //o_prm.k[0][0] = -0.12; o_prm.k[0][1] = -0.24; o_prm.k[1][0] = -0.38; o_prm.k[1][1] = -0.58;
+    //o_prm.z[0][0] = +8.50; o_prm.z[0][1] = +7.40; o_prm.z[1][0] = +7.70; o_prm.z[1][1] = +9.50;
+    //o_prm.xi[0].x  = 0.25; o_prm.xi[0].y  = 0.25; o_prm.xi[1].x  = 0.75; o_prm.xi[1].y  = 0.75;
+    //o_prm.eta[0].x = 0.25; o_prm.eta[0].y = 0.75; o_prm.eta[1].x = 0.75; o_prm.eta[1].y = 0.25;
+    /***************************************************************************************************/
 
     // Regularization parameters
     OptimizeParameter r_prm;
@@ -274,6 +290,12 @@ auto example1() -> void
     r_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
     r_prm.xi.resize(e_prm.No);
     r_prm.eta.resize(e_prm.Nc);
+    /***************************************************************************************************/
+    r_prm.k[0][0]  =  -2.00;  r_prm.k[0][1]  =  +0.70;  r_prm.k[1][0]  =  +0.71;  r_prm.k[1][1]  =  -2.38;
+    r_prm.z[0][0]  =  +7.96;  r_prm.z[0][1]  =  +5.83;  r_prm.z[1][0]  =  +7.68;  r_prm.z[1][1]  =  +9.72;
+    r_prm.xi[0].x  = 0.0501;  r_prm.xi[0].y  = 0.0501;  r_prm.xi[1].x  = 0.9500;  r_prm.xi[1].y  = 0.0751;
+    r_prm.eta[0].x = 0.4149;  r_prm.eta[0].y = 0.7549;  r_prm.eta[1].x = 0.4052;  r_prm.eta[1].y = 0.7077;
+    /***************************************************************************************************/
 
     // Grid parameters
     double hx = 0.010; int Nx = 100;
@@ -285,9 +307,10 @@ auto example1() -> void
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 1.0000 << 10.000 << 50.0000 << 100.00;
+    DoubleVector r; r << 0.0000 << 10.000 << 50.0000 << 100.00;
+
     // Regularization coefficients
-    DoubleVector e; e << 1.0000 << 0.0000 << 0.00000 << 0.0000;
+    DoubleVector e; e << 0.0000 << 0.0000 << 0.00000 << 0.0000;
 
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
@@ -322,7 +345,7 @@ auto example1() -> void
         g.setGradient(&prob);
         g.setPrinter(&prob);
         g.setProjection(&prob);
-        //g.setGradientNormalizer(&prob);
+        g.setGradientNormalizer(&prob);
         g.setOptimalityTolerance(0.0001);
         g.setStepTolerance(0.0001);
         g.setFunctionTolerance(0.0001);

@@ -5,7 +5,8 @@
 
 class PROBLEM2PSHARED_EXPORT Problem2PNeumann : public RnFunction, public IGradient,
                                                 public InitialBoundaryValueProblemPDE,
-                                                public IProjection, public IPrinter
+                                                public IProjection, public IPrinter,
+                                                public IVectorNormalizer
 {
 public:
     static void Main(int argc, char** argv);
@@ -23,6 +24,8 @@ public:
     virtual auto project(DoubleVector &x) const -> void;
     virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g,
                        double f, double alpha, GradientMethod::MethodResult result) const -> void;
+    virtual auto norm(const DoubleVector &v) const -> double;
+    virtual auto normalize(DoubleVector &v) const -> void;
 
     /** Integral part of functional */
     auto mu(double x, double y) const -> double;
@@ -35,6 +38,10 @@ public:
     auto penalty(const spif_vector &info, const OptimizeParameter &o_prm) const ->double;
     auto gpi(unsigned int i, unsigned int layer, const spif_vector &u_info, const OptimizeParameter &o_prm) const -> double;
     auto g0i(unsigned int i, unsigned int layer, const spif_vector &u_info, const OptimizeParameter &o_prm) const -> double;
+    auto sign(double x) const -> double;
+
+    auto projectControlPoints(DoubleVector &x, unsigned int index) const -> void;
+    auto projectMeasurePoints(DoubleVector &x, unsigned int index) const -> void;
 
     /* Initial boundary value problems */
     auto solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bool use, const OptimizeParameter &mOptParameter) const -> void;

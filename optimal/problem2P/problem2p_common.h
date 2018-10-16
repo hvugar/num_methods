@@ -8,6 +8,7 @@
 #include <grid/ibvp.h>
 #include <gradient_sd.h>
 #include <gradient_cjt.h>
+#include <vectornormalizer.h>
 
 #include "../imaging/imaging.h"
 

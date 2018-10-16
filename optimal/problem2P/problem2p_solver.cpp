@@ -1,4 +1,5 @@
 #include "problem2p_solver.h"
+#define OH1
 
 Problem2PNeumann::Problem2PNeumann() {}
 
@@ -348,15 +349,270 @@ auto Problem2PNeumann::g0i(unsigned int i, unsigned int layer, const spif_vector
     return ( vmax.at(i) + vmin.at(i) )/2.0 - vi;
 }
 
-auto Problem2PNeumann::print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g,
+auto Problem2PNeumann::sign(double x) const -> double
+{
+    if (x < 0.0)       return -1.0;
+    else if (x > 0.0)  return +1.0;
+    else               return  0.0;
+}
+
+auto Problem2PNeumann::print(unsigned int i, const DoubleVector &x, const DoubleVector &g,
                              double f, double alpha, GradientMethod::MethodResult result) const -> void
-{}
+{
+    C_UNUSED(i); C_UNUSED(x); C_UNUSED(g); C_UNUSED(f); C_UNUSED(alpha); C_UNUSED(result);
+    const char* msg = 0; C_UNUSED(msg);
+    if (result == GradientMethod::BREAK_FIRST_ITERATION)    msg = "BREAK_FIRST_ITERATION   ";
+    if (result == GradientMethod::FIRST_ITERATION)          msg = "FIRST_ITERATION         ";
+    if (result == GradientMethod::BREAK_GRADIENT_NORM_LESS) msg = "BREAK_GRADIENT_NORM_LESS";
+    if (result == GradientMethod::BREAK_DISTANCE_LESS)      msg = "BREAK_DISTANCE_LESS     ";
+    if (result == GradientMethod::NEXT_ITERATION)           msg = "NEXT_ITERATION          ";
+
+    Problem2PNeumann* prob = const_cast<Problem2PNeumann*>(this);
+    OptimizeParameter mOptParameter;
+    VectorToPrm(x, mOptParameter);
+    DoubleMatrix u;
+    spif_vector u_info;
+    solveForwardIBVP(u, u_info, true, mOptParameter);
+    double ing = integral(u);
+    double pnt = penalty(u_info, mOptParameter);
+    double nrm = norm(mEquParameter, mOptParameter, mRegParameter);
+
+    const unsigned int v_length = static_cast<const unsigned int>( timeDimension().sizeN() );
+    DoubleVector v1(v_length+1);
+    DoubleVector v2(v_length+1);
+
+    for (unsigned int ln=0; ln<=v_length; ln++)
+    {
+        v1[ln] = mOptParameter.k[0][0] * (u_info.at(0).vl[2*ln] - mOptParameter.z[0][0]) + mOptParameter.k[0][1] * (u_info.at(1).vl[2*ln] - mOptParameter.z[0][1]);
+        v2[ln] = mOptParameter.k[1][0] * (u_info.at(0).vl[2*ln] - mOptParameter.z[1][0]) + mOptParameter.k[1][1] * (u_info.at(1).vl[2*ln] - mOptParameter.z[1][1]);
+    }
+
+    IPrinter::printVector(v1, "v1: ", 10);
+    IPrinter::printVector(v2, "v2: ", 10);
+
+    printf("I[%3d]: F:%10.6f I:%10.6f P:%12.6f N:%10.6f R:%7.3f e:%5.3f a:%10.6f min:%10.6f max:%10.6f \n",
+           i, f, ing, pnt, nrm, r, regEpsilon, alpha, u.min(), u.max());
+    //if (result == GradientMethod::BREAK_GRADIENT_NORM_LESS || result == GradientMethod::BREAK_DISTANCE_LESS)
+    printf("k:%10.4f %10.4f %10.4f %10.4f z:%10.4f %10.4f %10.4f %10.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
+    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
+    //DoubleVector n = g;
+    //n.L2Normalize();
+    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]);
+
+    u.clear();
+    u_info.clear();
+
+    C_UNUSED(prob);
+    IPrinter::printSeperatorLine();
+}
+
+auto Problem2PNeumann::norm(const DoubleVector &v) const -> double
+{
+    return EuclideanNorm(v);
+}
+
+auto Problem2PNeumann::normalize(DoubleVector &v) const -> void
+{
+    DoubleVector kv = v.mid(0, 3);   IVectorNormalizer::EuclideanNormalize(kv);
+    DoubleVector zv = v.mid(4, 7);   IVectorNormalizer::EuclideanNormalize(zv);
+    DoubleVector ov = v.mid(8, 11);  IVectorNormalizer::EuclideanNormalize(ov);
+    DoubleVector cv = v.mid(12, 15); IVectorNormalizer::EuclideanNormalize(cv);
+
+    v[0]  = kv[0]; v[1]  = kv[1];  v[2]  = kv[2]; v[3]  = kv[3];
+    v[4]  = zv[0]; v[5]  = zv[1];  v[6]  = zv[2]; v[7]  = zv[3];
+    v[8]  = ov[0]; v[9]  = ov[1];  v[10] = ov[2]; v[11] = ov[3];
+    v[12] = cv[0]; v[13] = cv[1];  v[14] = cv[2]; v[15] = cv[3];
+
+    kv.clear(); zv.clear(); ov.clear(); cv.clear();
+}
 
 auto Problem2PNeumann::project(DoubleVector &x, unsigned int index) -> void
 {}
 
-auto Problem2PNeumann::project(DoubleVector &x) const -> void
-{}
+auto Problem2PNeumann::project(DoubleVector &pv) const -> void
+{
+    unsigned int Nc = mEquParameter.Nc;
+    unsigned int No = mEquParameter.No;
+
+    unsigned int start = 2*Nc*No;
+    unsigned int end  =  2*Nc*No + 2*No + 2*Nc - 1;
+
+    for (unsigned int index = start; index <= end; index++)
+    {
+        if (pv[index] < 0.05) pv[index] = 0.05;
+        if (pv[index] > 0.95) pv[index] = 0.95;
+    }
+
+    //IPrinter::print(pv.mid(start, end));
+    for (unsigned int index = start; index <=end; index++)
+    {
+        //projectControlPoints(pv, index);
+        projectMeasurePoints(pv, index);
+    }
+    //IPrinter::print(pv.mid(start, end));
+}
+
+auto Problem2PNeumann::projectControlPoints(DoubleVector &pv, unsigned int index) const -> void
+{
+    double dist = 0.10;
+
+    if (index == 12)
+    {
+        if (fabs(pv[12] - pv[ 8])<dist) pv[12] = pv[ 8] + sign(pv[12] - pv[ 8])*dist;
+        if (fabs(pv[12] - pv[10])<dist) pv[12] = pv[10] + sign(pv[12] - pv[10])*dist;
+        if (pv[12] < 0.05) pv[12] = 0.05;
+        if (pv[12] > 0.95) pv[12] = 0.95;
+
+        //        if (fabs(pv[12] - pv[8])<dx)
+        //        {
+        //            pv[12] = pv[8] + dx;
+        //            if (pv[12] > 0.95) pv[12] = pv[8] - dx;
+        //        }
+        //        if (fabs(pv[12] - pv[10])<dx)
+        //        {
+        //            pv[12] = pv[10] + dx;
+        //            if (pv[12] > 0.95) pv[12] = pv[10] - dx;
+        //        }
+    }
+
+    if (index == 13)
+    {
+        if (fabs(pv[13] - pv[ 9])<dist) pv[13] = pv[ 9] + sign(pv[13] - pv[ 9])*dist;
+        if (fabs(pv[13] - pv[11])<dist) pv[13] = pv[11] + sign(pv[13] - pv[11])*dist;
+        if (pv[13] < 0.05) pv[13] = 0.05;
+        if (pv[13] > 0.95) pv[13] = 0.95;
+
+        //        if (fabs(pv[13] - pv[9])<dx)
+        //        {
+        //            pv[13] = pv[9] + dx;
+        //            if (pv[13] > 0.95) pv[13] = pv[9] - dx;
+        //        }
+        //        if (fabs(pv[13] - pv[11])<dx)
+        //        {
+        //            pv[13] = pv[11] + dx;
+        //            if (pv[13] > 0.95) pv[13] = pv[11] - dx;
+        //        }
+    }
+
+    if (index == 14)
+    {
+        if (fabs(pv[14] - pv[ 8])<dist) pv[14] = pv[ 8] + sign(pv[14] - pv[ 8])*dist;
+        if (fabs(pv[14] - pv[10])<dist) pv[14] = pv[10] + sign(pv[14] - pv[10])*dist;
+        if (pv[14] < 0.05) pv[14] = 0.05;
+        if (pv[14] > 0.95) pv[14] = 0.95;
+
+        //        if (fabs(pv[14] - pv[8])<dx)
+        //        {
+        //            pv[14] = pv[8] + dx;
+        //            if (pv[14] > 0.95) pv[14] = pv[8] - dx;
+        //        }
+        //        if (fabs(pv[14] - pv[10])<dx)
+        //        {
+        //            pv[14] = pv[10] + dx;
+        //            if (pv[14] > 0.95) pv[14] = pv[10] - dx;
+        //        }
+    }
+
+    if (index == 15)
+    {
+        if (fabs(pv[15] - pv[ 9])<dist) pv[15] = pv[ 9] + sign(pv[15] - pv[ 9])*dist;
+        if (fabs(pv[15] - pv[11])<dist) pv[15] = pv[11] + sign(pv[15] - pv[11])*dist;
+        if (pv[15] < 0.05) pv[15] = 0.05;
+        if (pv[15] > 0.95) pv[15] = 0.95;
+
+        //        if (fabs(pv[15] - pv[9])<dx)
+        //        {
+        //            pv[15] = pv[9] + dx;
+        //            if (pv[15] > 0.95) pv[15] = pv[9] - dx;
+        //        }
+        //        if (fabs(pv[15] - pv[11])<dx)
+        //        {
+        //            pv[15] = pv[11] + dx;
+        //            if (pv[15] > 0.95) pv[15] = pv[11] - dx;
+        //        }
+    }
+}
+
+auto Problem2PNeumann::projectMeasurePoints(DoubleVector &pv, unsigned int index) const -> void
+{
+    double dist = 0.10;
+
+    if (index == 8)
+    {
+        if (fabs(pv[ 8] - pv[12])<dist) pv[8] = pv[12] + sign(pv[ 8] - pv[12])*dist;
+        if (fabs(pv[ 8] - pv[14])<dist) pv[8] = pv[14] + sign(pv[ 8] - pv[14])*dist;
+        if (pv[8] < 0.05) pv[8] = 0.05;
+        if (pv[8] > 0.95) pv[8] = 0.95;
+
+        //        if ( fabs(pv[8] - pv[12]) < dist)
+        //        {
+        //            pv[8] = pv[12] + dist;
+        //            if (pv[8] > 0.95) pv[8] = pv[12] - dist;
+        //        }
+        //        if (fabs(pv[8] - pv[14])<dist)
+        //        {
+        //            pv[8] = pv[14] + dist;
+        //            if (pv[8] > 0.95) pv[8] = pv[14] - dist;
+        //        }
+    }
+
+    if (index == 9)
+    {
+        if (fabs(pv[ 9] - pv[13])<dist) pv[9] = pv[13] + sign(pv[ 9] - pv[13])*dist;
+        if (fabs(pv[ 9] - pv[15])<dist) pv[9] = pv[15] + sign(pv[ 9] - pv[15])*dist;
+        if (pv[9] < 0.05) pv[9] = 0.05;
+        if (pv[9] > 0.95) pv[9] = 0.95;
+
+        //        if (fabs(pv[9] - pv[13])<dist)
+        //        {
+        //            pv[9] = pv[13] + dist;
+        //            if (pv[9] > 0.95) pv[9] = pv[13] - dist;
+        //        }
+        //        if (fabs(pv[9] - pv[15])<dist)
+        //        {
+        //            pv[9] = pv[15] + dist;
+        //            if (pv[9] > 0.95) pv[9] = pv[15] - dist;
+        //        }
+    }
+
+    if (index == 10)
+    {
+        if (fabs(pv[10] - pv[12])<dist) pv[10] = pv[12] + sign(pv[10] - pv[12])*dist;
+        if (fabs(pv[10] - pv[14])<dist) pv[10] = pv[14] + sign(pv[10] - pv[14])*dist;
+        if (pv[10] < 0.05) pv[10] = 0.05;
+        if (pv[10] > 0.95) pv[10] = 0.95;
+
+        //        if (fabs(pv[10] - pv[12])<dist)
+        //        {
+        //            pv[10] = pv[12] + dist;
+        //            if (pv[10] > 0.95) pv[10] = pv[12] - dist;
+        //        }
+        //        if (fabs(pv[10] - pv[14])<dist)
+        //        {
+        //            pv[10] = pv[14] + dist;
+        //            if (pv[10] > 0.95) pv[10] = pv[12] - dist;
+        //        }
+    }
+
+    if (index == 11)
+    {
+        if (fabs(pv[11] - pv[13])<dist) pv[11] = pv[13] + sign(pv[11] - pv[13])*dist;
+        if (fabs(pv[11] - pv[15])<dist) pv[11] = pv[15] + sign(pv[11] - pv[15])*dist;
+        if (pv[11] < 0.05) pv[11] = 0.05;
+        if (pv[11] > 0.95) pv[11] = 0.95;
+
+        //        if (fabs(pv[11] - pv[13])<dist)
+        //        {
+        //            pv[11] = pv[13] + dist;
+        //            if (pv[11] > 0.95) pv[11] = pv[13] - dist;
+        //        }
+        //        if (fabs(pv[11] - pv[15])<dist)
+        //        {
+        //            pv[11] = pv[15] + dist;
+        //            if (pv[11] > 0.95) pv[11] = pv[15] - dist;
+        //        }
+    }
+}
 
 auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bool use, const OptimizeParameter &mOptParameter) const -> void
 {
@@ -488,9 +744,15 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                     sn.i = n; sn.x = n*hx;
 
                     dx[n] = 0.0;
+#ifdef OH1
                     if (m>0 && m<M)  dx[n] += p_aa_ht05__hyhy*(u00[m-1][n] - 2.0*u00[m][n]   + u00[m+1][n]);
                     else if (m == 0) dx[n] += p_aa_ht05__hyhy*(u00[0][n]   - 2.0*u00[1][n]   + u00[2][n]);
                     else if (m == M) dx[n] += p_aa_ht05__hyhy*(u00[M-2][n] - 2.0*u00[M-1][n] + u00[M][n]);
+#else
+                    if (m>0 && m<M)  dx[n] += p_aa_ht05__hyhy*(u00[m-1][n] - 2.0*u00[m][n]   + u00[m+1][n]);
+                    else if (m == 0) dx[n] += p_aa_ht05__hyhy*(2.0*u00[0][n] - 5.0*u00[1][n]   + 4.0*u00[2][n]   - u00[3][n]);
+                    else if (m == M) dx[n] += p_aa_ht05__hyhy*(2.0*u00[M][n] - 5.0*u00[M-1][n] + 4.0*u00[M-2][n] - u00[M-3][n]);
+#endif
 
                     dx[n] += u00[m][n] + alpha_ht05*theta;
                 }
@@ -519,7 +781,7 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                 for (unsigned int nj=0; nj<nodes_size; nj++)
                 {
                     const ExtendedSpacePointNode &node = nodes.at(nj);
-                    _u05[j] += u05[node.ny][node.nx] * (node.w * (hx*hy));
+                    _u05[j] += u05[static_cast<const unsigned int>(node.ny)][static_cast<const unsigned int>(node.nx)] * (node.w * (hx*hy));
                 }
             }
 
@@ -544,9 +806,15 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                     sn.i = n; sn.x = n*hx;
 
                     dx[n] = 0.0;
+#ifdef OH1
                     if (m>0 && m<M)  dx[n] += p_aa_ht05__hyhy*(u00[m-1][n] - 2.0*u00[m][n]   + u00[m+1][n]);
                     else if (m == 0) dx[n] += p_aa_ht05__hyhy*(u00[0][n]   - 2.0*u00[1][n]   + u00[2][n]);
                     else if (m == M) dx[n] += p_aa_ht05__hyhy*(u00[M-2][n] - 2.0*u00[M-1][n] + u00[M][n]);
+#else
+                    if (m>0 && m<M)  dx[n] += p_aa_ht05__hyhy*(u00[m-1][n] - 2.0*u00[m][n]   + u00[m+1][n]);
+                    else if (m == 0) dx[n] += p_aa_ht05__hyhy*(2.0*u00[0][n] - 5.0*u00[1][n]   + 4.0*u00[2][n]   - u00[3][n]);
+                    else if (m == M) dx[n] += p_aa_ht05__hyhy*(2.0*u00[M][n] - 5.0*u00[M-1][n] + 4.0*u00[M-2][n] - u00[M-3][n]);
+#endif
 
                     dx[n] += u00[m][n] + alpha_ht05*theta;
 
@@ -580,7 +848,7 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
 
         if (rows1.size() != 0 && rows2.size() != 0)
         {
-            throw std::exception();
+            //throw std::exception();
 
             for (unsigned int m=0; m<rows1_size; m++) for (unsigned int n=0; n<rows1_size; n++) w1[m][n] = 0.0;
 
@@ -594,14 +862,19 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                 {
                     sn.i = n; sn.x = n*hx;
 
-                    const unsigned int index = offset+(n+1);
+                    const unsigned int index = offset+n;
                     d1[index] = 0.0;
+#ifdef OH1
                     if (m>0 && m<M) d1[index] = p_aa_ht05__hyhy*(u00[m-1][n] - 2.0*u00[m][n]   + u00[m+1][n]);
                     else if (m==0)  d1[index] = p_aa_ht05__hyhy*(u00[0][n]   - 2.0*u00[1][n]   + u00[2][n]);
                     else if (m==M)  d1[index] = p_aa_ht05__hyhy*(u00[M-2][n] - 2.0*u00[M-1][n] + u00[M][n]);
+#else
+                    if (m>0 && m<M)  d1[index] += p_aa_ht05__hyhy*(u00[m-1][n] - 2.0*u00[m][n]   + u00[m+1][n]);
+                    else if (m == 0) d1[index] += p_aa_ht05__hyhy*(2.0*u00[0][n] - 5.0*u00[1][n]   + 4.0*u00[2][n]   - u00[3][n]);
+                    else if (m == M) d1[index] += p_aa_ht05__hyhy*(2.0*u00[M][n] - 5.0*u00[M-1][n] + 4.0*u00[M-2][n] - u00[M-3][n]);
+#endif
 
-                    d1[index] += u00[m][n];
-                    d1[index] += alpha_ht05*theta;
+                    d1[index] += u00[m][n] + alpha_ht05*theta;
 
                     a1[index] = m_aa_ht05__hxhx;
                     b1[index] = p_aa_ht__hxhx___alpha_ht05;
@@ -636,10 +909,10 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                                     bool found = false;
                                     for (unsigned int rs=0; rs<rows1.size(); rs++)
                                     {
-                                        if (node2.ny == rows1[rs])
+                                        if (static_cast<unsigned int>(node2.ny) == rows1[rs])
                                         {
                                             found = true;
-                                            w1[index][rs*(N+1)+(node2.nx)] -= ht05 * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w;
+                                            w1[index][rs*(N+1)+(static_cast<unsigned int>(node2.nx))] -= ht05 * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w;
                                             break;
                                         }
                                     }
@@ -699,9 +972,15 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                     sn.j = m; sn.y = m*hy;
 
                     dy[m] = 0.0;
+#ifdef OH1
                     if (n>0 && n<N)  dy[m] += p_aa_ht05__hxhx*(u05[m][n-1] - 2.0*u05[m][n]   + u05[m][n+1]);
                     else if (n == 0) dy[m] += p_aa_ht05__hxhx*(u05[m][0]   - 2.0*u05[m][1]   + u05[m][2]);
                     else if (n == N) dy[m] += p_aa_ht05__hxhx*(u05[m][N-2] - 2.0*u05[m][N-1] + u05[m][N]);
+#else
+                    if (n>0 && n<N)  dy[m] += p_aa_ht05__hxhx*(u05[m][n-1] - 2.0*u05[m][n]   + u05[m][n+1]);
+                    else if (n == 0) dy[m] += p_aa_ht05__hxhx*(2.0*u05[m][0] - 5.0*u05[m][1]   + 4.0*u05[m][2]   - u05[m][3]);
+                    else if (n == N) dy[m] += p_aa_ht05__hxhx*(2.0*u05[m][N] - 5.0*u05[m][N-1] + 4.0*u05[m][N-2] - u05[m][N-3]);
+#endif
 
                     dy[m] += u05[m][n] + alpha_ht05*theta;
                 }
@@ -755,9 +1034,15 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                     sn.j = m; sn.y = m*hy;
 
                     dy[m] = 0.0;
+#ifdef OH1
                     if (n>0 && n<N) dy[m] += p_aa_ht05__hxhx*(u05[m][n-1] - 2.0*u05[m][n]   + u05[m][n+1]);
                     else if (n==0)  dy[m] += p_aa_ht05__hxhx*(u05[m][0]   - 2.0*u05[m][1]   + u05[m][2]);
                     else if (n==N)  dy[m] += p_aa_ht05__hxhx*(u05[m][N-2] - 2.0*u05[m][N-1] + u05[m][N]);
+#else
+                    if (n>0 && n<N)  dy[m] += p_aa_ht05__hxhx*(u05[m][n-1] - 2.0*u05[m][n]   + u05[m][n+1]);
+                    else if (n == 0) dy[m] += p_aa_ht05__hxhx*(2.0*u05[m][0] - 5.0*u05[m][1]   + 4.0*u05[m][2]   - u05[m][3]);
+                    else if (n == N) dy[m] += p_aa_ht05__hxhx*(2.0*u05[m][N] - 5.0*u05[m][N-1] + 4.0*u05[m][N-2] - u05[m][N-3]);
+#endif
 
                     dy[m] += u05[m][n] + alpha_ht05*theta;
 
@@ -791,7 +1076,7 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
 
         if (cols1.size() != 0 && cols2.size() != 0)
         {
-            throw std::exception();
+            //throw std::exception();
 
             for (unsigned int m=0; m<cols1_size; m++) for (unsigned int n=0; n<cols1_size; n++) w2[m][n] = 0.0;
 
@@ -801,18 +1086,23 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                 unsigned int n = cols1.at(col);
                 sn.i = n; sn.x = n*hx;
 
-                for (unsigned int m=1; m<=M-1; m++)
+                for (unsigned int m=0; m<=M; m++)
                 {
                     sn.j = m; sn.y = m*hy;
 
-                    const unsigned int index = offset+(m-1);
+                    const unsigned int index = offset+m;
                     d2[index] = 0.0;
+#ifdef OH1
                     if (n>0 && n<N) d2[index] = p_aa_ht05__hxhx*(u05[m][n-1] - 2.0*u05[m][n]   + u05[m][n+1]);
                     else if (n==0)  d2[index] = p_aa_ht05__hxhx*(u05[m][0]   - 2.0*u05[m][1]   + u05[m][2]);
                     else if (n==N)  d2[index] = p_aa_ht05__hxhx*(u05[m][N-2] - 2.0*u05[m][N-1] + u05[m][N]);
+#else
+                    if (n>0 && n<N)  d2[index] += p_aa_ht05__hxhx*(u05[m][n-1] - 2.0*u05[m][n]   + u05[m][n+1]);
+                    else if (n == 0) d2[index] += p_aa_ht05__hxhx*(2.0*u05[m][0] - 5.0*u05[m][1]   + 4.0*u05[m][2]   - u05[m][3]);
+                    else if (n == N) d2[index] += p_aa_ht05__hxhx*(2.0*u05[m][N] - 5.0*u05[m][N-1] + 4.0*u05[m][N-2] - u05[m][N-3]);
+#endif
 
-                    d2[index] += u05[m][n];
-                    d2[index] += alpha_ht05*theta;
+                    d2[index] += u05[m][n] + alpha_ht05*theta;
 
                     a2[index] = m_aa_ht05__hyhy;
                     b2[index] = p_aa_ht__hyhy___alpha_ht05;
@@ -847,10 +1137,10 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                                     bool found = false;
                                     for (unsigned int cs=0; cs<cols1.size(); cs++)
                                     {
-                                        if (node2.nx == cols1[cs])
+                                        if (static_cast<unsigned int>(node2.nx) == cols1[cs])
                                         {
                                             found = true;
-                                            w2[index][cs*(M+1)+(node2.ny)] -= ht05 * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w;
+                                            w2[index][cs*(M+1)+(static_cast<unsigned int>(node2.ny))] -= ht05 * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w;
                                             break;
                                         }
                                     }
@@ -1039,12 +1329,12 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
     double *cy = static_cast<double*>( malloc(sizeof(double)*(M+1)) );
     double *dy = static_cast<double*>( malloc(sizeof(double)*(M+1)) );
     double *ry = static_cast<double*>( malloc(sizeof(double)*(M+1)) );
-     for (unsigned int m=0; m<=M; m++)
-     {
-         ay[m] = m_aa_ht05__hyhy;
-         by[m] = p_aa_ht__hyhy___alpha_ht05;
-         cy[m] = m_aa_ht05__hyhy;
-     }
+    for (unsigned int m=0; m<=M; m++)
+    {
+        ay[m] = m_aa_ht05__hyhy;
+        by[m] = p_aa_ht__hyhy___alpha_ht05;
+        cy[m] = m_aa_ht05__hyhy;
+    }
     ay[0] = cy[M] = 0.0;
     by[0] += aa_lambda_ht__hy;
     by[M] += aa_lambda_ht__hy;
@@ -1093,9 +1383,16 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                     sn.i = n; sn.x = n*hx;
 
                     dx[n] = 0.0;
+#ifdef OH1
                     if (m>0 && m<M)  dx[n] += p_aa_ht05__hyhy*(p00[m-1][n] - 2.0*p00[m][n]   + p00[m+1][n]);
                     else if (m == 0) dx[n] += p_aa_ht05__hyhy*(p00[0][n]   - 2.0*p00[1][n]   + p00[2][n]);
                     else if (m == M) dx[n] += p_aa_ht05__hyhy*(p00[M-2][n] - 2.0*p00[M-1][n] + p00[M][n]);
+#else
+                    if (m>0 && m<M)  dx[n] += p_aa_ht05__hyhy*(p00[m-1][n] - 2.0*p00[m][n]   + p00[m+1][n]);
+                    else if (m == 0) dx[n] += p_aa_ht05__hyhy*(2.0*p00[0][n] - 5.0*p00[1][n]   + 4.0*p00[2][n]   - p00[3][n]);
+                    else if (m == M) dx[n] += p_aa_ht05__hyhy*(2.0*p00[M][n] - 5.0*p00[M-1][n] + 4.0*p00[M-2][n] - p00[M-3][n]);
+#endif
+
 
                     dx[n] += p00[m][n];
                 }
@@ -1149,9 +1446,15 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                     sn.i = n; sn.x = n*hx;
 
                     dx[n] = 0.0;
+#ifdef OH1
                     if (m>0 && m<M)  dx[n] += p_aa_ht05__hyhy*(p00[m-1][n] - 2.0*p00[m][n]   + p00[m+1][n]);
                     else if (m == 0) dx[n] += p_aa_ht05__hyhy*(p00[0][n]   - 2.0*p00[1][n]   + p00[2][n]);
                     else if (m == M) dx[n] += p_aa_ht05__hyhy*(p00[M-2][n] - 2.0*p00[M-1][n] + p00[M][n]);
+#else
+                    if (m>0 && m<M)  dx[n] += p_aa_ht05__hyhy*(p00[m-1][n] - 2.0*p00[m][n]   + p00[m+1][n]);
+                    else if (m == 0) dx[n] += p_aa_ht05__hyhy*(2.0*p00[0][n] - 5.0*p00[1][n]   + 4.0*p00[2][n]   - p00[3][n]);
+                    else if (m == M) dx[n] += p_aa_ht05__hyhy*(2.0*p00[M][n] - 5.0*p00[M-1][n] + 4.0*p00[M-2][n] - p00[M-3][n]);
+#endif
 
                     dx[n] += p00[m][n];
 
@@ -1199,11 +1502,17 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                 {
                     sn.i = n; sn.x = n*hx;
 
-                    const unsigned int index = offset+(n+1);
+                    const unsigned int index = offset+n;
                     d1[index] = 0.0;
-                    if (m>0 && m<M)  d1[index] = p_aa_ht05__hyhy*(p00[m-1][n] - 2.0*p00[m][n]   + p00[m+1][n]);
-                    else if (m == 0) d1[index] = p_aa_ht05__hyhy*(p00[0][n]   - 2.0*p00[1][n]   + p00[2][n]);
-                    else if (m == M) d1[index] = p_aa_ht05__hyhy*(p00[M-2][n] - 2.0*p00[M-1][n] + p00[M][n]);
+#ifdef OH1
+                    if (m>0 && m<M)  d1[index] += p_aa_ht05__hyhy*(p00[m-1][n] - 2.0*p00[m][n]   + p00[m+1][n]);
+                    else if (m == 0) d1[index] += p_aa_ht05__hyhy*(p00[0][n]   - 2.0*p00[1][n]   + p00[2][n]);
+                    else if (m == M) d1[index] += p_aa_ht05__hyhy*(p00[M-2][n] - 2.0*p00[M-1][n] + p00[M][n]);
+#else
+                    if (m>0 && m<M)  d1[index] += p_aa_ht05__hyhy*(p00[m-1][n] - 2.0*p00[m][n]   + p00[m+1][n]);
+                    else if (m == 0) d1[index] += p_aa_ht05__hyhy*(2.0*p00[0][n] - 5.0*p00[1][n]   + 4.0*p00[2][n]   - p00[3][n]);
+                    else if (m == M) d1[index] += p_aa_ht05__hyhy*(2.0*p00[M][n] - 5.0*p00[M-1][n] + 4.0*p00[M-2][n] - p00[M-3][n]);
+#endif
 
                     d1[index] += p00[m][n];
 
@@ -1240,10 +1549,10 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                                     bool found = false;
                                     for (unsigned int rs=0; rs<rows1.size(); rs++)
                                     {
-                                        if (node2.ny == rows1[rs])
+                                        if (static_cast<unsigned int>(node2.ny) == rows1[rs])
                                         {
                                             found = true;
-                                            w1[index][rs*(N-1)+(node2.nx-1)] -= ht05 * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w;
+                                            w1[index][rs*(N+1)+static_cast<unsigned int>(node2.nx)] -= ht05 * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w;
                                             break;
                                         }
                                     }
@@ -1266,7 +1575,8 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
 
                 a1[offset+0] = 0.0;
                 c1[offset+N] = 0.0;
-                by[offset+0] += aa_lambda_ht__hy; by[offset+M] += aa_lambda_ht__hy;
+                b1[offset+0] += aa_lambda_ht__hx;
+                b1[offset+M] += aa_lambda_ht__hx;
 
                 offset += N+1;
             }
@@ -1301,9 +1611,15 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                     sn.j = m; sn.y = m*hy;
 
                     dy[m] = 0.0;
+#ifdef OH1
                     if (n>0 && n<N) dy[m] += p_aa_ht05__hxhx*(p05[m][n-1] - 2.0*p05[m][n]   + p05[m][n+1]);
                     else if (n==0)  dy[m] += p_aa_ht05__hxhx*(p05[m][0]   - 2.0*p05[m][1]   + p05[m][2]);
                     else if (n==N)  dy[m] += p_aa_ht05__hxhx*(p05[m][N-2] - 2.0*p05[m][N-1] + p05[m][N]);
+#else
+                    if (n>0 && n<N)  dy[m] += p_aa_ht05__hxhx*(p05[m][n-1] - 2.0*p05[m][n]   + p05[m][n+1]);
+                    else if (n == 0) dy[m] += p_aa_ht05__hxhx*(2.0*p05[m][0] - 5.0*p05[m][1]   + 4.0*p05[m][2]   - p05[m][3]);
+                    else if (n == N) dy[m] += p_aa_ht05__hxhx*(2.0*p05[m][N] - 5.0*p05[m][N-1] + 4.0*p05[m][N-2] - p05[m][N-3]);
+#endif
 
                     dy[m] += p05[m][n];
                 }
@@ -1356,9 +1672,16 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                     sn.j = m; sn.y = m*hy;
 
                     dy[m] = 0.0;
+#ifdef OH1
                     if (n>0 && n<N) dy[m] += p_aa_ht05__hxhx*(p05[m][n-1] - 2.0*p05[m][n]   + p05[m][n+1]);
                     else if (n==0)  dy[m] += p_aa_ht05__hxhx*(p05[m][0]   - 2.0*p05[m][1]   + p05[m][2]);
                     else if (n==N)  dy[m] += p_aa_ht05__hxhx*(p05[m][N-2] - 2.0*p05[m][N-1] + p05[m][N]);
+#else
+                    if (n>0 && n<N)  dy[m] += p_aa_ht05__hxhx*(p05[m][n-1] - 2.0*p05[m][n]   + p05[m][n+1]);
+                    else if (n == 0) dy[m] += p_aa_ht05__hxhx*(2.0*p05[m][0] - 5.0*p05[m][1]   + 4.0*p05[m][2]   - p05[m][3]);
+                    else if (n == N) dy[m] += p_aa_ht05__hxhx*(2.0*p05[m][N] - 5.0*p05[m][N-1] + 4.0*p05[m][N-2] - p05[m][N-3]);
+#endif
+
 
                     dy[m] += p05[m][n];
 
@@ -1406,11 +1729,17 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                 {
                     sn.j = m; sn.y = m*hy;
 
-                    const unsigned int index = offset+(m+1);
+                    const unsigned int index = offset+m;
                     d2[index] = 0.0;
+#ifdef OH1
                     if (n>0 && n<N) d2[index] = p_aa_ht05__hxhx*(p05[m][n-1] - 2.0*p05[m][n]   + p05[m][n+1]);
                     else if (n==0)  d2[index] = p_aa_ht05__hxhx*(p05[m][0]   - 2.0*p05[m][1]   + p05[m][2]);
                     else if (n==N)  d2[index] = p_aa_ht05__hxhx*(p05[m][N-2] - 2.0*p05[m][N-1] + p05[m][N]);
+#else
+                    if (n>0 && n<N)  d2[index] += p_aa_ht05__hxhx*(p05[m][n-1] - 2.0*p05[m][n]   + p05[m][n+1]);
+                    else if (n == 0) d2[index] += p_aa_ht05__hxhx*(2.0*p05[m][0] - 5.0*p05[m][1]   + 4.0*p05[m][2]   - p05[m][3]);
+                    else if (n == N) d2[index] += p_aa_ht05__hxhx*(2.0*p05[m][N] - 5.0*p05[m][N-1] + 4.0*p05[m][N-2] - p05[m][N-3]);
+#endif
 
                     d2[index] += p05[m][n];
 
@@ -1447,10 +1776,10 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                                     bool found = false;
                                     for (unsigned int cs=0; cs<cols1.size(); cs++)
                                     {
-                                        if (node2.nx == cols1[cs])
+                                        if (static_cast<unsigned int>(node2.nx) == cols1[cs])
                                         {
                                             found = true;
-                                            w2[index][cs*(M+1)+(node2.ny)] -= ht05 * mOptParameter.k[i][i] * (node2.w * (hx*hy)) * w;
+                                            w2[index][cs*(M+1)+static_cast<unsigned int>(node2.ny)] -= ht05 * mOptParameter.k[i][i] * (node2.w * (hx*hy)) * w;
                                             break;
                                         }
                                     }
@@ -1471,8 +1800,10 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                     //------------------------------------- Adding delta part -------------------------------------//
                 }
 
-                a2[offset+0] += aa_lambda_ht__hy;
-                c2[offset+M] += aa_lambda_ht__hy;
+                a2[offset+0] = 0.0;
+                c2[offset+N] = 0.0;
+                b2[offset+0] += aa_lambda_ht__hy;
+                b2[offset+M] += aa_lambda_ht__hy;
 
                 offset += M+1;
             }
@@ -1860,16 +2191,16 @@ void Problem2PNeumann::b_add2Info(const DoubleMatrix &p, spif_vector &p_info, un
 
 auto Problem2PNeumann::f_layerInfo(const DoubleMatrix &u, unsigned int ln) const -> void
 {
-//    QPixmap pic;
-//    visualizeMatrixHeat(u, u.min(), u.max(), pic);
-//    pic.save("images/problem2P/f/100/pic_"+QString("%1").arg(ln)+".png", "PNG");
+    //    QPixmap pic;
+    //    visualizeMatrixHeat(u, u.min(), u.max(), pic);
+    //    pic.save("images/problem2P/f/100/pic_"+QString("%1").arg(ln)+".png", "PNG");
 }
 
 auto Problem2PNeumann::b_layerInfo(const DoubleMatrix &p, unsigned int ln) const -> void
 {
-//    QPixmap pic;
-//    visualizeMatrixHeat(p, p.min(), p.max(), pic);
-//    pic.save("images/problem2P/b/100/pic_"+QString("%1").arg(ln)+".png", "PNG");
+    //    QPixmap pic;
+    //    visualizeMatrixHeat(p, p.min(), p.max(), pic);
+    //    pic.save("images/problem2P/b/100/pic_"+QString("%1").arg(ln)+".png", "PNG");
 }
 
 auto Problem2PNeumann::newDistributeDeltaGaussCntrl(const std::vector<SpacePoint> &cntrls,
