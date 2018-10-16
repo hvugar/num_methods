@@ -21,7 +21,6 @@ void Problem2PNeumann::checkGradient1(const Problem2PNeumann &prob, const Optimi
     IPrinter::printSeperatorLine();
     double functional = prob.fx(pv);
     printf("Functional: %f\n", functional);
-    return;
     puts("Calculating gradients....");
     DoubleVector ag(pv.length());
     prob.gradient(pv, ag);
@@ -250,8 +249,8 @@ auto example1() -> void
     e_prm.a = 1.0;
     e_prm.alpha = 0.01;
     e_prm.lambda = +0.01;
-    e_prm.theta = 6.3;
-    e_prm.phi = 0.0;
+    e_prm.theta = +6.3;
+    e_prm.phi = +0.2;
 
     e_prm.Nc = 2;
     e_prm.No = 2;
@@ -263,8 +262,8 @@ auto example1() -> void
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
-    //o_prm.k[0][0] = -0.12; o_prm.k[0][1] = -0.24; o_prm.k[1][0] = -0.38; o_prm.k[1][1] = -0.58;
-    o_prm.k[0][0] = +0.00; o_prm.k[0][1] = +0.00; o_prm.k[1][0] = +0.00; o_prm.k[1][1] = +0.00;
+    o_prm.k[0][0] = -0.12; o_prm.k[0][1] = -0.24; o_prm.k[1][0] = -0.38; o_prm.k[1][1] = -0.58;
+    //o_prm.k[0][0] = +0.00; o_prm.k[0][1] = +0.00; o_prm.k[1][0] = +0.00; o_prm.k[1][1] = +0.00;
     o_prm.z[0][0] = +8.50; o_prm.z[0][1] = +7.40; o_prm.z[1][0] = +7.70; o_prm.z[1][1] = +9.50;
     o_prm.xi[0].x  = 0.65; o_prm.xi[0].y  = 0.25; o_prm.xi[1].x  = 0.85; o_prm.xi[1].y  = 0.65;
     o_prm.eta[0].x = 0.25; o_prm.eta[0].y = 0.45; o_prm.eta[1].x = 0.45; o_prm.eta[1].y = 0.85;
@@ -286,9 +285,9 @@ auto example1() -> void
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 0.0000 << 10.000 << 50.0000 << 100.00;
+    DoubleVector r; r << 1.0000 << 10.000 << 50.0000 << 100.00;
     // Regularization coefficients
-    DoubleVector e; e << 0.0000 << 0.0000 << 0.00000 << 0.0000;
+    DoubleVector e; e << 1.0000 << 0.0000 << 0.00000 << 0.0000;
 
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
@@ -305,7 +304,8 @@ auto example1() -> void
         prob.optimizeO = true;
         prob.vmin.resize(e_prm.Nc, -5.00);
         prob.vmax.resize(e_prm.Nc, +20.8);
-        prob.U.resize(Ny+1, Nx+1, 10.0);
+        prob.U.resize(static_cast<const unsigned int>(Ny+1),
+                      static_cast<const unsigned int>(Nx+1), 10.0);
 
         prob.regEpsilon = e[i];
         prob.r = r[i];
@@ -316,21 +316,21 @@ auto example1() -> void
             IPrinter::printSeperatorLine();
         }
 
-//        //ConjugateGradient g;
-//        SteepestDescentGradient g;
-//        g.setFunction(&prob);
-//        g.setGradient(&prob);
-//        g.setPrinter(&prob);
-//        g.setProjection(&prob);
-//        //g.setGradientNormalizer(&prob);
-//        g.setOptimalityTolerance(0.0001);
-//        g.setStepTolerance(0.0001);
-//        g.setFunctionTolerance(0.0001);
-//        g.setR1MinimizeEpsilon(0.1, 0.01);
-//        g.setNormalize(true);
-//        g.showExitMessage(true);
+        //ConjugateGradient g;
+        SteepestDescentGradient g;
+        g.setFunction(&prob);
+        g.setGradient(&prob);
+        g.setPrinter(&prob);
+        g.setProjection(&prob);
+        //g.setGradientNormalizer(&prob);
+        g.setOptimalityTolerance(0.0001);
+        g.setStepTolerance(0.0001);
+        g.setFunctionTolerance(0.0001);
+        g.setR1MinimizeEpsilon(0.1, 0.01);
+        g.setNormalize(true);
+        g.showExitMessage(true);
 
-//        g.calculate(x);
+        g.calculate(x);
 
         IPrinter::printSeperatorLine(NULL, '=');
     }
