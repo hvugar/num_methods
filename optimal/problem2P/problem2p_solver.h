@@ -24,18 +24,18 @@ public:
     virtual auto project(DoubleVector &x) const -> void;
     virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g,
                        double f, double alpha, GradientMethod::MethodResult result) const -> void;
-    virtual auto norm(const DoubleVector &v) const -> double;
+    virtual auto fx_norm(const DoubleVector &v) const -> double;
     virtual auto normalize(DoubleVector &v) const -> void;
 
     /** Integral part of functional */
     auto mu(double x, double y) const -> double;
-    auto integral(const DoubleMatrix &u) const -> double;
+    auto fx_integral(const DoubleMatrix &u) const -> double;
 
     /** Norm part of functional */
-    auto norm(const EquationParameter &eprm, const OptimizeParameter &oprm, const OptimizeParameter &rprm) const -> double;
+    auto fx_norm(const EquationParameter &eprm, const OptimizeParameter &oprm, const OptimizeParameter &rprm) const -> double;
 
     /** Penalty part of functional */
-    auto penalty(const spif_vector &info, const OptimizeParameter &o_prm) const ->double;
+    auto fx_penalty(const spif_vector &info, const OptimizeParameter &o_prm) const ->double;
     auto gpi(unsigned int i, unsigned int layer, const spif_vector &u_info, const OptimizeParameter &o_prm) const -> double;
     auto g0i(unsigned int i, unsigned int layer, const spif_vector &u_info, const OptimizeParameter &o_prm) const -> double;
     auto sign(double x) const -> double;

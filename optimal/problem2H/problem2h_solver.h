@@ -18,13 +18,13 @@ public:
     virtual auto fx(const DoubleVector &x) const -> double;
     virtual auto gradient(const DoubleVector &, DoubleVector &) const -> void;
 
-    virtual auto norm(const DoubleVector &v) const -> double;
+    virtual auto fx_norm(const DoubleVector &v) const -> double;
     virtual auto normalize(DoubleVector &v) const -> void;
 
     /** Integral part of functional */
     double integral(const std::vector<DoubleMatrix> &u) const;
     double integralU(const DoubleMatrix &u) const;
-    double norm(const EquationParameter &eprm, const OptimizeParameter &oprm, const OptimizeParameter &r_prm) const;
+    double fx_norm(const EquationParameter &eprm, const OptimizeParameter &oprm, const OptimizeParameter &r_prm) const;
 
     /** Penalty part of functional */
     double penalty(const spif_vector &info, const OptimizeParameter &o_prm) const;

@@ -344,7 +344,7 @@ double Problem2HNDirichlet::fx(const DoubleVector &pv) const
     for (unsigned int i=0; i<=LD; i++) u[i].clear();
     u.clear();
 
-    double nrm = norm(mEquParameter, o_prm, mRegParameter);
+    double nrm = fx_norm(mEquParameter, o_prm, mRegParameter);
     double pnt = penalty(u_info, o_prm);
 
     double sum = intgrl + regEpsilon*nrm + r*pnt;
@@ -419,7 +419,7 @@ double Problem2HNDirichlet::integralU(const DoubleMatrix &u) const
     return usum*(hx*hy);
 }
 
-double Problem2HNDirichlet::norm(const EquationParameter& e_prm, const OptimizeParameter &o_prm, const OptimizeParameter &r_prm) const
+double Problem2HNDirichlet::fx_norm(const EquationParameter& e_prm, const OptimizeParameter &o_prm, const OptimizeParameter &r_prm) const
 {
     double _norm = 0.0;
     const unsigned int Nc = e_prm.Nc;
@@ -700,7 +700,7 @@ void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) con
     p_info.clear();
 }
 
-auto Problem2HNDirichlet::norm(const DoubleVector &v) const -> double
+auto Problem2HNDirichlet::fx_norm(const DoubleVector &v) const -> double
 {
     return EuclideanNorm(v);
 }
@@ -739,7 +739,7 @@ void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const Dou
     solveForwardIBVP(u, u_info, true);
     double ing = integral(u);
     double pnt = penalty(u_info, o_prm);
-    double nrm = norm(prob->mEquParameter, prob->mOptParameter, prob->mRegParameter);
+    double nrm = fx_norm(prob->mEquParameter, prob->mOptParameter, prob->mRegParameter);
 
     unsigned int v_length = timeDimension().sizeN() + LD;
     DoubleVector v1(v_length+1);

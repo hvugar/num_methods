@@ -44,6 +44,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     QGuiApplication app(argc, argv);
 
+    //Problem2Article::Main(argc, argv);
+    //IPrinter::printSeperatorLine();
     Problem2PNeumann::Main(argc, argv);
     //Problem2HNDirichlet::Main(argc, argv);
     return 0;

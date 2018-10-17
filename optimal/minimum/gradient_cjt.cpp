@@ -44,7 +44,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
      * Finish minimization.
      **************************************************************************************/
     double gradient_norm = 0.0;
-    if (m_normalizer) gradient_norm = m_normalizer->norm(g);
+    if (m_normalizer) gradient_norm = m_normalizer->fx_norm(g);
     if (gradient_norm < optimalityTolerance())
     {
         if (m_printer) m_printer->print(m_iteration_count, x, g, m_fn->fx(x), alpha, BREAK_FIRST_ITERATION);
@@ -150,7 +150,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
          * Finish minimization.
          **************************************************************************************/
         double gradient_norm = 0.0;
-        if (m_normalizer) gradient_norm = m_normalizer->norm(g);
+        if (m_normalizer) gradient_norm = m_normalizer->fx_norm(g);
         if (gradient_norm < optimalityTolerance())
         {
             if (m_printer) m_printer->print(m_iteration_count, x, g, f2, alpha, BREAK_GRADIENT_NORM_LESS);

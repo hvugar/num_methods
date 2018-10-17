@@ -11,7 +11,7 @@ class DefaultNormalizer : public IVectorNormalizer
 {
 public:
     virtual ~DefaultNormalizer();
-    inline virtual auto norm(const DoubleVector &v) const -> double { return EuclideanNorm(v); }
+    inline virtual auto fx_norm(const DoubleVector &v) const -> double { return EuclideanNorm(v); }
     inline virtual auto normalize(DoubleVector &v) const -> void { EuclideanNormalize(v); }
 };
 

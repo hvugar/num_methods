@@ -56,7 +56,6 @@ void Problem2Article::Table1_Y1()
     jfunc.setParameter0(prm0);
 
     DoubleVector hx; jfunc.toVector(prm0, hx);
-    IPrinter::print(hx, hx.length(), 6, 4);
 
 //    Parameter prm(Lc, Lo);
 //    prm.k[0][0] = -5.85; prm.k[0][1] = -3.48;
@@ -99,13 +98,15 @@ void Problem2Article::Table1_Y1()
     DoubleVector ag(pv.length());
     IPrinter::print(pv, pv.length(), 6, 4);
     IPrinter::printSeperatorLine();
+    IPrinter::print(hx, hx.length(), 6, 4);
+    IPrinter::printSeperatorLine();
+
+    double functional = jfunc.fx(pv);
+    printf("Functional: %f\n", functional);
 
     puts("Calculating gradients....");
     jfunc.gradient(pv,ag);
     puts("Gradients are calculated.");
-
-    double functional = jfunc.fx(pv);
-    printf("Functional: %f\n", functional);
 
     DoubleVector ng1(pv.length(), 0.0);
     DoubleVector ng2(pv.length(), 0.0);
@@ -114,15 +115,15 @@ void Problem2Article::Table1_Y1()
         puts("Calculating numerical gradients.... hx=0.01");
         IGradient::Gradient(&jfunc, 0.01, pv, ng1, 0*prm.Lc*prm.Lo,          1*prm.Lc*prm.Lo-1);
         IGradient::Gradient(&jfunc, 0.01, pv, ng1, 1*prm.Lc*prm.Lo,          2*prm.Lc*prm.Lo-1);
-        IGradient::Gradient(&jfunc, 0.01, pv, ng1, 2*prm.Lc*prm.Lo+0*prm.Lc, 2*prm.Lc*prm.Lo+2*prm.Lc-1);
-        IGradient::Gradient(&jfunc, 0.01, pv, ng1, 2*prm.Lc*prm.Lo+2*prm.Lc, 2*prm.Lc*prm.Lo+2*prm.Lc+2*prm.Lo-1);
+        IGradient::Gradient(&jfunc, 0.01, pv, ng1, 2*prm.Lc*prm.Lo+0*prm.Lo, 2*prm.Lc*prm.Lo+2*prm.Lo-1);
+        IGradient::Gradient(&jfunc, 0.01, pv, ng1, 2*prm.Lc*prm.Lo+2*prm.Lo, 2*prm.Lc*prm.Lo+2*prm.Lo+2*prm.Lc-1);
         puts("Numerical gradients are calculated.");
 
         puts("Calculating numerical gradients.... hx=0.001");
         IGradient::Gradient(&jfunc, 0.001, pv, ng2, 0*prm.Lc*prm.Lo,          1*prm.Lc*prm.Lo-1);
         IGradient::Gradient(&jfunc, 0.001, pv, ng2, 1*prm.Lc*prm.Lo,          2*prm.Lc*prm.Lo-1);
-        IGradient::Gradient(&jfunc, 0.001, pv, ng2, 2*prm.Lc*prm.Lo+0*prm.Lc, 2*prm.Lc*prm.Lo+2*prm.Lc-1);
-        IGradient::Gradient(&jfunc, 0.001, pv, ng2, 2*prm.Lc*prm.Lo+2*prm.Lc, 2*prm.Lc*prm.Lo+2*prm.Lc+2*prm.Lo-1);
+        IGradient::Gradient(&jfunc, 0.001, pv, ng2, 2*prm.Lc*prm.Lo+0*prm.Lo, 2*prm.Lc*prm.Lo+2*prm.Lo-1);
+        IGradient::Gradient(&jfunc, 0.001, pv, ng2, 2*prm.Lc*prm.Lo+2*prm.Lo, 2*prm.Lc*prm.Lo+2*prm.Lo+2*prm.Lc-1);
         puts("Numerical gradients are calculated.");
 
         //k------------------------------------------------------//
@@ -155,26 +156,11 @@ void Problem2Article::Table1_Y1()
         IPrinter::print(nz2,nz2.length(),14,4);
         IPrinter::printSeperatorLine();
 
-        //eta------------------------------------------------------//
-        DoubleVector pe0 = pv.mid(2*prm.Lc*prm.Lo, 2*prm.Lc*prm.Lo+2*prm.Lc-1);
-        DoubleVector ae0 = ag.mid(2*prm.Lc*prm.Lo, 2*prm.Lc*prm.Lo+2*prm.Lc-1);
-        DoubleVector ne1 = ng1.mid(2*prm.Lc*prm.Lo, 2*prm.Lc*prm.Lo+2*prm.Lc-1);
-        DoubleVector ne2 = ng2.mid(2*prm.Lc*prm.Lo, 2*prm.Lc*prm.Lo+2*prm.Lc-1);
-
-        IPrinter::print(pe0,pe0.length(),14,4);
-        IPrinter::print(ae0,ae0.length(),14,4); ae0.L2Normalize();
-        IPrinter::print(ne1,ne1.length(),14,4); ne1.L2Normalize();
-        IPrinter::print(ne2,ne2.length(),14,4); ne2.L2Normalize();
-        IPrinter::print(ae0,ae0.length(),14,4);
-        IPrinter::print(ne1,ne1.length(),14,4);
-        IPrinter::print(ne2,ne2.length(),14,4);
-        IPrinter::printSeperatorLine();
-
         //xi------------------------------------------------------//
-        DoubleVector px0 = pv.mid(2*prm.Lc*prm.Lo+2*prm.Lc, 2*prm.Lc*prm.Lo+2*prm.Lc+2*prm.Lo-1);
-        DoubleVector ax0 = ag.mid(2*prm.Lc*prm.Lo+2*prm.Lc, 2*prm.Lc*prm.Lo+2*prm.Lc+2*prm.Lo-1);
-        DoubleVector nx1 = ng1.mid(2*prm.Lc*prm.Lo+2*prm.Lc, 2*prm.Lc*prm.Lo+2*prm.Lc+2*prm.Lo-1);
-        DoubleVector nx2 = ng2.mid(2*prm.Lc*prm.Lo+2*prm.Lc, 2*prm.Lc*prm.Lo+2*prm.Lc+2*prm.Lo-1);
+        DoubleVector px0 = pv.mid(2*prm.Lc*prm.Lo, 2*prm.Lc*prm.Lo);
+        DoubleVector ax0 = ag.mid(2*prm.Lc*prm.Lo, 2*prm.Lc*prm.Lo+2*prm.Lo-1);
+        DoubleVector nx1 = ng1.mid(2*prm.Lc*prm.Lo, 2*prm.Lc*prm.Lo+2*prm.Lo-1);
+        DoubleVector nx2 = ng2.mid(2*prm.Lc*prm.Lo, 2*prm.Lc*prm.Lo+2*prm.Lo-1);
 
         IPrinter::print(px0,px0.length(),14,4);
         IPrinter::print(ax0,ax0.length(),14,4); ax0.L2Normalize();
@@ -183,6 +169,21 @@ void Problem2Article::Table1_Y1()
         IPrinter::print(ax0,ax0.length(),14,4);
         IPrinter::print(nx1,nx1.length(),14,4);
         IPrinter::print(nx2,nx2.length(),14,4);
+        IPrinter::printSeperatorLine();
+
+        //eta------------------------------------------------------//
+        DoubleVector pe0 = pv.mid(2*prm.Lc*prm.Lo+2*prm.Lo, 2*prm.Lc*prm.Lo+2*prm.Lo+2*prm.Lc-1);
+        DoubleVector ae0 = ag.mid(2*prm.Lc*prm.Lo+2*prm.Lo, 2*prm.Lc*prm.Lo+2*prm.Lo+2*prm.Lc-1);
+        DoubleVector ne1 = ng1.mid(2*prm.Lc*prm.Lo+2*prm.Lo, 2*prm.Lc*prm.Lo+2*prm.Lo+2*prm.Lc-1);
+        DoubleVector ne2 = ng2.mid(2*prm.Lc*prm.Lo+2*prm.Lo, 2*prm.Lc*prm.Lo+2*prm.Lo+2*prm.Lc-1);
+
+        IPrinter::print(pe0,pe0.length(),14,4);
+        IPrinter::print(ae0,ae0.length(),14,4); ae0.L2Normalize();
+        IPrinter::print(ne1,ne1.length(),14,4); ne1.L2Normalize();
+        IPrinter::print(ne2,ne2.length(),14,4); ne2.L2Normalize();
+        IPrinter::print(ae0,ae0.length(),14,4);
+        IPrinter::print(ne1,ne1.length(),14,4);
+        IPrinter::print(ne2,ne2.length(),14,4);
         IPrinter::printSeperatorLine();
     }
 }

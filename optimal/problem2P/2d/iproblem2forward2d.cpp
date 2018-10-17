@@ -796,253 +796,6 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
     TimeNodePDE tn;
     for (unsigned int l=1; l<=L; l++)
     {
-        //------------------------------------- approximatin to y direction conditions -------------------------------------//
-        {
-            tn.i = l;
-            tn.t = l*ht - 0.5*ht;
-            //--------------------------------------------------------------------------//
-            {
-                for (unsigned int col=0; col<cols0.size(); col++)
-                {
-                    unsigned int n = cols0[col];
-                    sn.i = n; sn.x = n*hx;
-                    for (unsigned int m=0; m<=M; m++)
-                    {
-                        sn.j = m; sn.y = m*hy;
-
-                        d1Y[m] = 2.0*u[m][n] + lambda0*theta*ht;
-#ifdef USE_ADDITIONAL_FUNCTIONS
-                        d1Y[m] += ht*f(sn, tn);
-#endif
-                        if (n==0)       d1Y[m] += a2_ht__hx2*(u.at(m,0)   - 2.0*u.at(m,1)   + u.at(m,2));
-                        if (n>0 && n<N) d1Y[m] += a2_ht__hx2*(u.at(m,n-1) - 2.0*u.at(m,n)   + u.at(m,n+1));
-                        if (n==N)       d1Y[m] += a2_ht__hx2*(u.at(m,N-2) - 2.0*u.at(m,N-1) + u.at(m,N));
-
-                        if (m == 0)
-                        {
-                            a1Y[0] = 0.0;
-                            b1Y[0] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
-                            c1Y[0] = -2.0*a2_ht__hy2;
-                            d1Y[0] += 2.0*a2_lambda_ht__hy*theta;
-#ifdef USE_ADDITIONAL_FUNCTIONS
-                            d1Y[0] += ((2.0*a*a*ht)/(hy))*g3(sn, tn);
-#endif
-                        }
-                        else if (m == M)
-                        {
-                            a1Y[M] = -2.0*a2_ht__hy2;
-                            b1Y[M] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
-                            c1Y[M] = 0.0;
-                            d1Y[M] += 2.0*a2_lambda_ht__hy*theta;
-#ifdef USE_ADDITIONAL_FUNCTIONS
-                            d1Y[M] += ((2.0*a*a*ht)/(hy))*g4(sn, tn);
-#endif
-                        }
-                        else
-                        {
-                            a1Y[m] = -a2_ht__hy2;
-                            b1Y[m] = 2.0 + 2.0*a2_ht__hy2 + lambda0_ht;
-                            c1Y[m] = -a2_ht__hy2;
-                        }
-                    }
-                    tomasAlgorithm(a1Y, b1Y, c1Y, d1Y, x1Y, M+1);
-                    for (unsigned int m=0; m<=M; m++) uh[m][n] = x1Y[m];
-                }
-            }
-            //--------------------------------------------------------------------------//
-            if (cols2.size() == 0)
-            {
-                for (unsigned int col=0; col<cols1.size(); col++)
-                {
-                    unsigned int n=cols1[col];
-                    sn.i = n; sn.x = n*hx;
-                    for (unsigned int m=0; m<=M; m++)
-                    {
-                        sn.j = m; sn.y = m*hy;
-
-                        d1Y[m] = 2.0*u[m][n] + lambda0*theta*ht;
-#ifdef USE_ADDITIONAL_FUNCTIONS
-                        d1Y[m] += ht*f(sn, tn);
-#endif
-                        if (n==0)       d1Y[m] += a2_ht__hx2*(u.at(m,0)   - 2.0*u.at(m,1)   + u.at(m,2));
-                        if (n>0 && n<N) d1Y[m] += a2_ht__hx2*(u.at(m,n-1) - 2.0*u.at(m,n)   + u.at(m,n+1));
-                        if (n==N)       d1Y[m] += a2_ht__hx2*(u.at(m,N-2) - 2.0*u.at(m,N-1) + u.at(m,N));
-
-                        if (m == 0)
-                        {
-                            a1Y[0] = 0.0;
-                            b1Y[0] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
-                            c1Y[0] = -2.0*a2_ht__hy2;
-                            d1Y[0] += 2.0*a2_lambda_ht__hy*theta;
-#ifdef USE_ADDITIONAL_FUNCTIONS
-                            d1Y[0] += ((2.0*a*a*ht)/(hy))*g3(sn, tn);
-#endif
-                        }
-                        else if (m == M)
-                        {
-                            a1Y[M] = -2.0*a2_ht__hy2;
-                            b1Y[M] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
-                            c1Y[M] = 0.0;
-                            d1Y[M] += 2.0*a2_lambda_ht__hy*theta;
-#ifdef USE_ADDITIONAL_FUNCTIONS
-                            d1Y[M] += ((2.0*a*a*ht)/(hy))*g4(sn, tn);
-#endif
-                        }
-                        else
-                        {
-                            a1Y[m] = -a2_ht__hy2;
-                            b1Y[m] = 2.0 + 2.0*a2_ht__hy2 + lambda0_ht;
-                            c1Y[m] = -a2_ht__hy2;
-                        }
-
-                        for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
-                        {
-                            const ControlDeltaNode &cdn = cndeltaNodes.at(cni);
-                            if (cdn.i == sn.i && cdn.j == sn.j)
-                            {
-                                for (unsigned int s=0; s<observeNodes.size(); s++)
-                                {
-                                    const ObservationNode &on = observeNodes.at(s);
-                                    d1Y[m] += ht * mParameter.k[cdn.id][on.id] * uh[on.j][on.i] * cdn.w * on.w*rand_error();
-                                }
-
-                                for (unsigned int j=0; j<Lo; j++)
-                                {
-                                    d1Y[m] -= ht * mParameter.k[cdn.id][j] * mParameter.z[cdn.id][j] * cdn.w;
-                                }
-                            }
-                        }
-                    }
-                    tomasAlgorithm(a1Y, b1Y, c1Y, d1Y, x1Y, M+1);
-                    for (unsigned int m=0; m<=M; m++) uh[m][n] = x1Y[m];
-                }
-            }
-            else
-            {
-                double* a2 = (double*) malloc(sizeof(double)*cols1.size()*(M+1));
-                double* b2 = (double*) malloc(sizeof(double)*cols1.size()*(M+1));
-                double* c2 = (double*) malloc(sizeof(double)*cols1.size()*(M+1));
-                double* d2 = (double*) malloc(sizeof(double)*cols1.size()*(M+1));
-                double* x2 = (double*) malloc(sizeof(double)*cols1.size()*(M+1));
-                DoubleMatrix w2(cols1.size()*(M+1), cols1.size()*(M+1), 0.0);
-
-                unsigned int offset = 0;
-                for (unsigned int col=0; col<cols1.size(); col++)
-                {
-                    unsigned int n = cols1.at(col);
-                    sn.i = n; sn.x = n*hx;
-
-                    for (unsigned int m=0; m<=M; m++)
-                    {
-                        sn.j = m; sn.y = m*hy;
-
-                        d2[offset+m] = 2.0*u[m][n] + lambda0*theta*ht;
-#ifdef USE_ADDITIONAL_FUNCTIONS
-                        d2[offset+m] += ht*f(sn, tn);
-#endif
-                        if (n==0)       d2[offset+m] += a2_ht__hx2*(u.at(m,0)   - 2.0*u.at(m,1)   + u.at(m,2));
-                        if (n>0 && n<N) d2[offset+m] += a2_ht__hx2*(u.at(m,n-1) - 2.0*u.at(m,n)   + u.at(m,n+1));
-                        if (n==N)       d2[offset+m] += a2_ht__hx2*(u.at(m,N-2) - 2.0*u.at(m,N-1) + u.at(m,N));
-
-                        if (m == 0)
-                        {
-                            a2[offset+0] = 0.0;
-                            b2[offset+0] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
-                            c2[offset+0] = -2.0*a2_ht__hy2;
-                            d2[offset+0] += 2.0*a2_lambda_ht__hy*theta;
-#ifdef USE_ADDITIONAL_FUNCTIONS
-                            d2[offset+0] += ((2.0*a*a*ht)/hy)*g3(sn, tn);
-#endif
-                        }
-                        else if (m == M)
-                        {
-                            a2[offset+M] = -2.0*a2_ht__hy2;
-                            b2[offset+M] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
-                            c2[offset+M] = 0.0;
-                            d2[offset+M] += 2.0*a2_lambda_ht__hy*theta;
-#ifdef USE_ADDITIONAL_FUNCTIONS
-                            d2[offset+M] += ((2.0*a*a*ht)/(hy))*g4(sn, tn);
-#endif
-                        }
-                        else
-                        {
-                            a2[offset+m] = -a2_ht__hy2;
-                            b2[offset+m] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht;
-                            c2[offset+m] = -a2_ht__hy2;
-                        }
-
-                        //------------------------------------- Adding delta part -------------------------------------//
-                        for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
-                        {
-                            const ControlDeltaNode &cdn = cndeltaNodes.at(cni);
-                            if (cdn.i == sn.i && cdn.j == sn.j)
-                            {
-                                for (unsigned int s=0; s<observeNodes.size(); s++)
-                                {
-                                    const ObservationNode &on = observeNodes.at(s);
-
-                                    //if (on.n == cdn.n)
-                                    //{
-                                    //    w2[offset+m][cdn.n*(M+1)+on.m] += -ht * mParameter.k[cdn.i][on.j] * cdn.w * on.w;
-                                    //}
-                                    //else
-                                    //{
-                                    //    d2[offset+m] += ht * mParameter.k[cdn.i][on.j] * uh[on.m][on.n] * cdn.w * on.w;
-                                    //}
-
-                                    bool found = false;
-                                    for (unsigned int cs=0; cs<cols1.size(); cs++)
-                                    {
-                                        if (on.i == cols1[cs])
-                                        {
-                                            found = true;
-                                            w2[offset+m][cs*(M+1)+on.j] += -ht * mParameter.k[cdn.id][on.id] * cdn.w * on.w*rand_error();
-                                        }
-                                    }
-
-                                    if (!found)
-                                    {
-                                        d2[offset+m] += ht * mParameter.k[cdn.id][on.id] * uh[on.j][on.i] * cdn.w * on.w*rand_error();
-                                    }
-                                }
-
-                                for (unsigned int j=0; j<Lo; j++)
-                                {
-                                    d2[offset+m] -= ht * mParameter.k[cdn.id][j] * mParameter.z[cdn.id][j] * cdn.w;
-                                }
-                            }
-                        }
-                        //------------------------------------- Adding delta part -------------------------------------//
-                    }
-                    offset += M+1;
-                }
-
-                LinearEquation::func1(a2, b2, c2, d2, w2.data(), x2, cols1.size()*(M+1));
-
-                offset = 0;
-                for (unsigned int col=0; col<cols1.size(); col++)
-                {
-                    unsigned int n=cols1.at(col);
-                    for (unsigned int m=0; m<=M; m++)
-                    {
-                        uh[m][n] = x2[offset+m];
-                    }
-                    offset += M+1;
-                }
-
-                w2.clear();
-                free(x2);
-                free(d2);
-                free(c2);
-                free(b2);
-                free(a2);
-            }
-            //--------------------------------------------------------------------------//
-        }
-        //IPrinter::printMatrix(uh);
-        //IPrinter::printSeperatorLine();
-        //------------------------------------- approximatin to y direction conditions -------------------------------------//
-
         //------------------------------------- approximatin to x direction conditions -------------------------------------//
         {
             tn.i = l;
@@ -1056,14 +809,14 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                     {
                         sn.i = n; sn.x = n*hx;
 
-                        d1X[n] = 2.0*uh[m][n] + lambda0*theta*ht;
+                        d1X[n] = 2.0*u[m][n] + lambda0*theta*ht;
 #ifdef USE_ADDITIONAL_FUNCTIONS
                         d1X[n] += ht*f(sn, tn);
 #endif
 
-                        if (m==0)       d1X[n] += a2_ht__hy2*(uh[0][n]   - 2.0*uh[1][n]   + uh[2][n]);
-                        if (m>0 && m<M) d1X[n] += a2_ht__hy2*(uh[m-1][n] - 2.0*uh[m][n]   + uh[m+1][n]);
-                        if (m==M)       d1X[n] += a2_ht__hy2*(uh[M-2][n] - 2.0*uh[M-1][n] + uh[M][n]);
+                        if (m==0)       d1X[n] += a2_ht__hy2*(u[0][n]   - 2.0*u[1][n]   + u[2][n]);
+                        if (m>0 && m<M) d1X[n] += a2_ht__hy2*(u[m-1][n] - 2.0*u[m][n]   + u[m+1][n]);
+                        if (m==M)       d1X[n] += a2_ht__hy2*(u[M-2][n] - 2.0*u[M-1][n] + u[M][n]);
 
                         if (n == 0)
                         {
@@ -1092,8 +845,9 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                             c1X[n] = -a2_ht__hx2;
                         }
                     }
+
                     tomasAlgorithm(a1X, b1X, c1X, d1X, x1X, N+1);
-                    for (unsigned int n=0; n<=N; n++) u[m][n] = x1X[n];
+                    for (unsigned int n=0; n<=N; n++) uh[m][n] = x1X[n];
                 }
             }
 
@@ -1107,13 +861,13 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                     {
                         sn.i = n; sn.x = n*hx;
 
-                        d1X[n] = 2.0*uh[m][n] + lambda0*theta*ht;
+                        d1X[n] = 2.0*u[m][n] + lambda0*theta*ht;
 #ifdef USE_ADDITIONAL_FUNCTIONS
                         d1X[n] += ht*f(sn, tn);
 #endif
-                        if (m==0)       d1X[n] += a2_ht__hy2*(uh[0][n]   - 2.0*uh[1][n]   + uh[2][n]);
-                        if (m>0 && m<M) d1X[n] += a2_ht__hy2*(uh[m-1][n] - 2.0*uh[m][n]   + uh[m+1][n]);
-                        if (m==M)       d1X[n] += a2_ht__hy2*(uh[M-2][n] - 2.0*uh[M-1][n] + uh[M][n]);
+                        if (m==0)       d1X[n] += a2_ht__hy2*(u[0][n]   - 2.0*u[1][n]   + u[2][n]);
+                        if (m>0 && m<M) d1X[n] += a2_ht__hy2*(u[m-1][n] - 2.0*u[m][n]   + u[m+1][n]);
+                        if (m==M)       d1X[n] += a2_ht__hy2*(u[M-2][n] - 2.0*u[M-1][n] + u[M][n]);
 
                         if (n == 0)
                         {
@@ -1150,7 +904,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                                 for (unsigned int s=0; s<observeNodes.size(); s++)
                                 {
                                     const ObservationNode &on = observeNodes[s];
-                                    d1X[n] += ht * mParameter.k[cdn.id][on.id] * u[on.j][on.i] * cdn.w * on.w*rand_error();
+                                    d1X[n] += ht * mParameter.k[cdn.id][on.id] * uh[on.j][on.i] * cdn.w * on.w*rand_error();
                                 }
 
                                 for (unsigned int j=0; j<Lo; j++)
@@ -1161,7 +915,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                         }
                     }
                     tomasAlgorithm(a1X, b1X, c1X, d1X, x1X, N+1);
-                    for (unsigned int n=0; n<=N; n++) u[m][n] = x1X[n];
+                    for (unsigned int n=0; n<=N; n++) uh[m][n] = x1X[n];
                 }
             }
             else
@@ -1183,13 +937,13 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                     {
                         sn.i = n; sn.x = n*hx;
 
-                        d2[offset+n] = 2.0*uh[m][n] + lambda0*theta*ht;
+                        d2[offset+n] = 2.0*u[m][n] + lambda0*theta*ht;
 #ifdef USE_ADDITIONAL_FUNCTIONS
                         d2[offset+n] += ht*f(sn, tn);
 #endif
-                        if (m==0)       d2[offset+n] += a2_ht__hy2*(uh[0][n]   - 2.0*uh[1][n]   + uh[2][n]);
-                        if (m>0 && m<M) d2[offset+n] += a2_ht__hy2*(uh[m-1][n] - 2.0*uh[m][n]   + uh[m+1][n]);
-                        if (m==M)       d2[offset+n] += a2_ht__hy2*(uh[M-2][n] - 2.0*uh[M-1][n] + uh[M][n]);
+                        if (m==0)       d2[offset+n] += a2_ht__hy2*(u[0][n]   - 2.0*u[1][n]   + u[2][n]);
+                        if (m>0 && m<M) d2[offset+n] += a2_ht__hy2*(u[m-1][n] - 2.0*u[m][n]   + u[m+1][n]);
+                        if (m==M)       d2[offset+n] += a2_ht__hy2*(u[M-2][n] - 2.0*u[M-1][n] + u[M][n]);
 
                         if (n == 0)
                         {
@@ -1251,7 +1005,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
 
                                     if (!found)
                                     {
-                                        d2[offset+n] += ht * mParameter.k[cdn.id][on.id] * u[on.j][on.i] * cdn.w * on.w*rand_error();
+                                        d2[offset+n] += ht * mParameter.k[cdn.id][on.id] * uh[on.j][on.i] * cdn.w * on.w*rand_error();
                                     }
                                 }
 
@@ -1274,7 +1028,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
                     unsigned int m=rows1.at(row);
                     for (unsigned int n=0; n<=N; n++)
                     {
-                        u[m][n] = x2[offset+n];
+                        uh[m][n] = x2[offset+n];
                     }
                     offset += N+1;
                 }
@@ -1291,6 +1045,255 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
         //IPrinter::printMatrix(u[l]);
         //IPrinter::printSeperatorLine();
         //------------------------------------- approximatin to x direction conditions -------------------------------------//
+
+        //------------------------------------- approximatin to y direction conditions -------------------------------------//
+        {
+            tn.i = l;
+            tn.t = l*ht - 0.5*ht;
+            //--------------------------------------------------------------------------//
+            {
+                for (unsigned int col=0; col<cols0.size(); col++)
+                {
+                    unsigned int n = cols0[col];
+                    sn.i = n; sn.x = n*hx;
+                    for (unsigned int m=0; m<=M; m++)
+                    {
+                        sn.j = m; sn.y = m*hy;
+
+                        d1Y[m] = 2.0*uh[m][n] + lambda0*theta*ht;
+#ifdef USE_ADDITIONAL_FUNCTIONS
+                        d1Y[m] += ht*f(sn, tn);
+#endif
+                        if (n==0)       d1Y[m] += a2_ht__hx2*(uh.at(m,0)   - 2.0*uh.at(m,1)   + uh.at(m,2));
+                        if (n>0 && n<N) d1Y[m] += a2_ht__hx2*(uh.at(m,n-1) - 2.0*uh.at(m,n)   + uh.at(m,n+1));
+                        if (n==N)       d1Y[m] += a2_ht__hx2*(uh.at(m,N-2) - 2.0*uh.at(m,N-1) + uh.at(m,N));
+
+                        if (m == 0)
+                        {
+                            a1Y[0] = 0.0;
+                            b1Y[0] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
+                            c1Y[0] = -2.0*a2_ht__hy2;
+                            d1Y[0] += 2.0*a2_lambda_ht__hy*theta;
+#ifdef USE_ADDITIONAL_FUNCTIONS
+                            d1Y[0] += ((2.0*a*a*ht)/(hy))*g3(sn, tn);
+#endif
+                        }
+                        else if (m == M)
+                        {
+                            a1Y[M] = -2.0*a2_ht__hy2;
+                            b1Y[M] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
+                            c1Y[M] = 0.0;
+                            d1Y[M] += 2.0*a2_lambda_ht__hy*theta;
+#ifdef USE_ADDITIONAL_FUNCTIONS
+                            d1Y[M] += ((2.0*a*a*ht)/(hy))*g4(sn, tn);
+#endif
+                        }
+                        else
+                        {
+                            a1Y[m] = -a2_ht__hy2;
+                            b1Y[m] = 2.0 + 2.0*a2_ht__hy2 + lambda0_ht;
+                            c1Y[m] = -a2_ht__hy2;
+                        }
+                    }
+                    tomasAlgorithm(a1Y, b1Y, c1Y, d1Y, x1Y, M+1);
+                    for (unsigned int m=0; m<=M; m++) u[m][n] = x1Y[m];
+                }
+            }
+            //--------------------------------------------------------------------------//
+            if (cols2.size() == 0)
+            {
+                for (unsigned int col=0; col<cols1.size(); col++)
+                {
+                    unsigned int n=cols1[col];
+                    sn.i = n; sn.x = n*hx;
+                    for (unsigned int m=0; m<=M; m++)
+                    {
+                        sn.j = m; sn.y = m*hy;
+
+                        d1Y[m] = 2.0*uh[m][n] + lambda0*theta*ht;
+#ifdef USE_ADDITIONAL_FUNCTIONS
+                        d1Y[m] += ht*f(sn, tn);
+#endif
+                        if (n==0)       d1Y[m] += a2_ht__hx2*(uh.at(m,0)   - 2.0*uh.at(m,1)   + uh.at(m,2));
+                        if (n>0 && n<N) d1Y[m] += a2_ht__hx2*(uh.at(m,n-1) - 2.0*uh.at(m,n)   + uh.at(m,n+1));
+                        if (n==N)       d1Y[m] += a2_ht__hx2*(uh.at(m,N-2) - 2.0*uh.at(m,N-1) + uh.at(m,N));
+
+                        if (m == 0)
+                        {
+                            a1Y[0] = 0.0;
+                            b1Y[0] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
+                            c1Y[0] = -2.0*a2_ht__hy2;
+                            d1Y[0] += 2.0*a2_lambda_ht__hy*theta;
+#ifdef USE_ADDITIONAL_FUNCTIONS
+                            d1Y[0] += ((2.0*a*a*ht)/(hy))*g3(sn, tn);
+#endif
+                        }
+                        else if (m == M)
+                        {
+                            a1Y[M] = -2.0*a2_ht__hy2;
+                            b1Y[M] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
+                            c1Y[M] = 0.0;
+                            d1Y[M] += 2.0*a2_lambda_ht__hy*theta;
+#ifdef USE_ADDITIONAL_FUNCTIONS
+                            d1Y[M] += ((2.0*a*a*ht)/(hy))*g4(sn, tn);
+#endif
+                        }
+                        else
+                        {
+                            a1Y[m] = -a2_ht__hy2;
+                            b1Y[m] = 2.0 + 2.0*a2_ht__hy2 + lambda0_ht;
+                            c1Y[m] = -a2_ht__hy2;
+                        }
+
+                        for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
+                        {
+                            const ControlDeltaNode &cdn = cndeltaNodes.at(cni);
+                            if (cdn.i == sn.i && cdn.j == sn.j)
+                            {
+                                for (unsigned int s=0; s<observeNodes.size(); s++)
+                                {
+                                    const ObservationNode &on = observeNodes.at(s);
+                                    d1Y[m] += ht * mParameter.k[cdn.id][on.id] * u[on.j][on.i] * cdn.w * on.w*rand_error();
+                                }
+
+                                for (unsigned int j=0; j<Lo; j++)
+                                {
+                                    d1Y[m] -= ht * mParameter.k[cdn.id][j] * mParameter.z[cdn.id][j] * cdn.w;
+                                }
+                            }
+                        }
+                    }
+                    tomasAlgorithm(a1Y, b1Y, c1Y, d1Y, x1Y, M+1);
+                    for (unsigned int m=0; m<=M; m++) u[m][n] = x1Y[m];
+                }
+            }
+            else
+            {
+                double* a2 = (double*) malloc(sizeof(double)*cols1.size()*(M+1));
+                double* b2 = (double*) malloc(sizeof(double)*cols1.size()*(M+1));
+                double* c2 = (double*) malloc(sizeof(double)*cols1.size()*(M+1));
+                double* d2 = (double*) malloc(sizeof(double)*cols1.size()*(M+1));
+                double* x2 = (double*) malloc(sizeof(double)*cols1.size()*(M+1));
+                DoubleMatrix w2(cols1.size()*(M+1), cols1.size()*(M+1), 0.0);
+
+                unsigned int offset = 0;
+                for (unsigned int col=0; col<cols1.size(); col++)
+                {
+                    unsigned int n = cols1.at(col);
+                    sn.i = n; sn.x = n*hx;
+
+                    for (unsigned int m=0; m<=M; m++)
+                    {
+                        sn.j = m; sn.y = m*hy;
+
+                        d2[offset+m] = 2.0*uh[m][n] + lambda0*theta*ht;
+#ifdef USE_ADDITIONAL_FUNCTIONS
+                        d2[offset+m] += ht*f(sn, tn);
+#endif
+                        if (n==0)       d2[offset+m] += a2_ht__hx2*(uh.at(m,0)   - 2.0*uh.at(m,1)   + uh.at(m,2));
+                        if (n>0 && n<N) d2[offset+m] += a2_ht__hx2*(uh.at(m,n-1) - 2.0*uh.at(m,n)   + uh.at(m,n+1));
+                        if (n==N)       d2[offset+m] += a2_ht__hx2*(uh.at(m,N-2) - 2.0*uh.at(m,N-1) + uh.at(m,N));
+
+                        if (m == 0)
+                        {
+                            a2[offset+0] = 0.0;
+                            b2[offset+0] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
+                            c2[offset+0] = -2.0*a2_ht__hy2;
+                            d2[offset+0] += 2.0*a2_lambda_ht__hy*theta;
+#ifdef USE_ADDITIONAL_FUNCTIONS
+                            d2[offset+0] += ((2.0*a*a*ht)/hy)*g3(sn, tn);
+#endif
+                        }
+                        else if (m == M)
+                        {
+                            a2[offset+M] = -2.0*a2_ht__hy2;
+                            b2[offset+M] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht + 2.0*a2_lambda_ht__hy;
+                            c2[offset+M] = 0.0;
+                            d2[offset+M] += 2.0*a2_lambda_ht__hy*theta;
+#ifdef USE_ADDITIONAL_FUNCTIONS
+                            d2[offset+M] += ((2.0*a*a*ht)/(hy))*g4(sn, tn);
+#endif
+                        }
+                        else
+                        {
+                            a2[offset+m] = -a2_ht__hy2;
+                            b2[offset+m] = +2.0 + 2.0*a2_ht__hy2 + lambda0_ht;
+                            c2[offset+m] = -a2_ht__hy2;
+                        }
+
+                        //------------------------------------- Adding delta part -------------------------------------//
+                        for (unsigned int cni=0; cni<cndeltaNodes.size(); cni++)
+                        {
+                            const ControlDeltaNode &cdn = cndeltaNodes.at(cni);
+                            if (cdn.i == sn.i && cdn.j == sn.j)
+                            {
+                                for (unsigned int s=0; s<observeNodes.size(); s++)
+                                {
+                                    const ObservationNode &on = observeNodes.at(s);
+
+                                    //if (on.n == cdn.n)
+                                    //{
+                                    //    w2[offset+m][cdn.n*(M+1)+on.m] += -ht * mParameter.k[cdn.i][on.j] * cdn.w * on.w;
+                                    //}
+                                    //else
+                                    //{
+                                    //    d2[offset+m] += ht * mParameter.k[cdn.i][on.j] * uh[on.m][on.n] * cdn.w * on.w;
+                                    //}
+
+                                    bool found = false;
+                                    for (unsigned int cs=0; cs<cols1.size(); cs++)
+                                    {
+                                        if (on.i == cols1[cs])
+                                        {
+                                            found = true;
+                                            w2[offset+m][cs*(M+1)+on.j] += -ht * mParameter.k[cdn.id][on.id] * cdn.w * on.w*rand_error();
+                                        }
+                                    }
+
+                                    if (!found)
+                                    {
+                                        d2[offset+m] += ht * mParameter.k[cdn.id][on.id] * u[on.j][on.i] * cdn.w * on.w*rand_error();
+                                    }
+                                }
+
+                                for (unsigned int j=0; j<Lo; j++)
+                                {
+                                    d2[offset+m] -= ht * mParameter.k[cdn.id][j] * mParameter.z[cdn.id][j] * cdn.w;
+                                }
+                            }
+                        }
+                        //------------------------------------- Adding delta part -------------------------------------//
+                    }
+                    offset += M+1;
+                }
+
+                LinearEquation::func1(a2, b2, c2, d2, w2.data(), x2, cols1.size()*(M+1));
+
+                offset = 0;
+                for (unsigned int col=0; col<cols1.size(); col++)
+                {
+                    unsigned int n=cols1.at(col);
+                    for (unsigned int m=0; m<=M; m++)
+                    {
+                        u[m][n] = x2[offset+m];
+                    }
+                    offset += M+1;
+                }
+
+                w2.clear();
+                free(x2);
+                free(d2);
+                free(c2);
+                free(b2);
+                free(a2);
+            }
+            //--------------------------------------------------------------------------//
+        }
+        //IPrinter::printMatrix(uh);
+        //IPrinter::printSeperatorLine();
+        //------------------------------------- approximatin to y direction conditions -------------------------------------//
+
+
 
         if (use == true)
         {
@@ -1310,6 +1313,7 @@ void IProblem2Forward2D::calculateMVD(DoubleMatrix &u, vector<ExtendedSpaceNode2
         }
 
         layerInfo(u, l);
+
     }
 
     free(x1X);
@@ -1614,32 +1618,32 @@ void IProblem2Forward2D::extendObservationPoint3(const SpaceNodePDE &xi, std::ve
     }
     extpoint.clear();
 
-//    Dimension xd = spaceDimension(Dimension::DimensionX);
-//    Dimension yd = spaceDimension(Dimension::DimensionY);
-//    double hx = xd.step();
-//    double hy = yd.step();
-//    unsigned int Nx = xd.sizeN();
-//    unsigned int Ny = yd.sizeN();
+    //    Dimension xd = spaceDimension(Dimension::DimensionX);
+    //    Dimension yd = spaceDimension(Dimension::DimensionY);
+    //    double hx = xd.step();
+    //    double hy = yd.step();
+    //    unsigned int Nx = xd.sizeN();
+    //    unsigned int Ny = yd.sizeN();
 
-//    double sigmaX = hx;
-//    double sigmaY = hy;
+    //    double sigmaX = hx;
+    //    double sigmaY = hy;
 
-//    unsigned int rx = (unsigned int)(round(xi.x*Nx));
-//    unsigned int ry = (unsigned int)(round(xi.y*Ny));
+    //    unsigned int rx = (unsigned int)(round(xi.x*Nx));
+    //    unsigned int ry = (unsigned int)(round(xi.y*Ny));
 
-//    double factor = (1.0/(2.0*M_PI*sigmaX*sigmaY));
+    //    double factor = (1.0/(2.0*M_PI*sigmaX*sigmaY));
 
-//    unsigned int k=5;
-//    for (unsigned int n=rx-k; n<=rx+k; n++)
-//    {
-//        for (unsigned int m=ry-k; m<=ry+k; m++)
-//        {
-//            ObservationNode on;
-//            on.i = n; on.x = n*hx; on.j = m; on.y = m*hy; on.pt = xi; on.id = j;
-//            on.w = factor*exp(-0.5*(((on.x-xi.x)*(on.x-xi.x))/(sigmaX*sigmaX)+((on.y-xi.y)*(on.y-xi.y))/(sigmaY*sigmaY))) * (hx*hy);
-//            ons.push_back(on);
-//        }
-//    }
+    //    unsigned int k=5;
+    //    for (unsigned int n=rx-k; n<=rx+k; n++)
+    //    {
+    //        for (unsigned int m=ry-k; m<=ry+k; m++)
+    //        {
+    //            ObservationNode on;
+    //            on.i = n; on.x = n*hx; on.j = m; on.y = m*hy; on.pt = xi; on.id = j;
+    //            on.w = factor*exp(-0.5*(((on.x-xi.x)*(on.x-xi.x))/(sigmaX*sigmaX)+((on.y-xi.y)*(on.y-xi.y))/(sigmaY*sigmaY))) * (hx*hy);
+    //            ons.push_back(on);
+    //        }
+    //    }
 }
 
 void IProblem2Forward2D::extendContrlDeltaPoint0(const SpaceNodePDE &eta, std::vector<ControlDeltaNode> &cps, unsigned int i) const
@@ -1800,32 +1804,32 @@ void IProblem2Forward2D::extendContrlDeltaPoint3(const SpaceNodePDE &eta, std::v
     }
     extpoint.clear();
 
-//    Dimension xd = spaceDimension(Dimension::DimensionX);
-//    Dimension yd = spaceDimension(Dimension::DimensionY);
-//    double hx = xd.step();
-//    double hy = yd.step();
-//    unsigned int Nx = xd.sizeN();
-//    unsigned int Ny = yd.sizeN();
+    //    Dimension xd = spaceDimension(Dimension::DimensionX);
+    //    Dimension yd = spaceDimension(Dimension::DimensionY);
+    //    double hx = xd.step();
+    //    double hy = yd.step();
+    //    unsigned int Nx = xd.sizeN();
+    //    unsigned int Ny = yd.sizeN();
 
-//    double sigmaX = hx;
-//    double sigmaY = hy;
+    //    double sigmaX = hx;
+    //    double sigmaY = hy;
 
-//    unsigned int rx = (unsigned int)(round(eta.x*Nx));
-//    unsigned int ry = (unsigned int)(round(eta.y*Ny));
+    //    unsigned int rx = (unsigned int)(round(eta.x*Nx));
+    //    unsigned int ry = (unsigned int)(round(eta.y*Ny));
 
-//    double factor = (1.0/(2.0*M_PI*sigmaX*sigmaY));
+    //    double factor = (1.0/(2.0*M_PI*sigmaX*sigmaY));
 
-//    unsigned int k=5;
-//    for (unsigned int n=rx-k; n<=rx+k; n++)
-//    {
-//        for (unsigned int m=ry-k; m<=ry+k; m++)
-//        {
-//            ControlDeltaNode cn;
-//            cn.i = n; cn.x = n*hx; cn.j = m; cn.y = m*hy; cn.pt = eta; cn.id = i;
-//            cn.w = factor*exp(-0.5*(((cn.x-eta.x)*(cn.x-eta.x))/(sigmaX*sigmaX)+((cn.y-eta.y)*(cn.y-eta.y))/(sigmaY*sigmaY)));
-//            cps.push_back(cn);
-//        }
-//    }
+    //    unsigned int k=5;
+    //    for (unsigned int n=rx-k; n<=rx+k; n++)
+    //    {
+    //        for (unsigned int m=ry-k; m<=ry+k; m++)
+    //        {
+    //            ControlDeltaNode cn;
+    //            cn.i = n; cn.x = n*hx; cn.j = m; cn.y = m*hy; cn.pt = eta; cn.id = i;
+    //            cn.w = factor*exp(-0.5*(((cn.x-eta.x)*(cn.x-eta.x))/(sigmaX*sigmaX)+((cn.y-eta.y)*(cn.y-eta.y))/(sigmaY*sigmaY)));
+    //            cps.push_back(cn);
+    //        }
+    //    }
 }
 
 //--------------------------//
