@@ -34,7 +34,8 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
 
     /**************************************************************************************
      * Checking for gradient vector norm that is less of optimality tolerance.
-     * If gradient vector norm in current point is less than optimality tolerance then break the iteration.
+     * If gradient vector norm in current point is less than optimality tolerance then break
+     * the iteration.
      * Finish minimization.
      **************************************************************************************/
     double gradient_norm = 0.0;
@@ -71,12 +72,12 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
          * Calculation next point.
          **************************************************************************************/
         distance = 0.0;
-        for (unsigned int i=0; i < n; i++)
+        for (unsigned int i=0; i<n; i++)
         {
             double cx = x[i];
             x[i] = x[i] - alpha * g[i];
 
-            if (m_projection) m_projection->project(x, i);
+            //if (m_projection) m_projection->project(x, i);
 
             /**************************************************************************************
              * Calculating distance.
@@ -94,7 +95,8 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
 
         /**************************************************************************************
          * Checking for gradient vector norm that is less of optimality tolerance.
-         * If gradient vector norm in current point is less than optimality tolerance then break the iteration.
+         * If gradient vector norm in current point is less than optimality tolerance then break
+         * the iteration.
          * Finish minimization.
          **************************************************************************************/
         double gradient_norm = 0.0;
@@ -169,7 +171,7 @@ double SteepestDescentGradient::fx(double alpha) const
     for (unsigned int i=0; i<n; i++)
     {
         cx[i] = x[i] - alpha * g[i];
-        if (m_projection) m_projection->project(cx, i);
+        //if (m_projection) m_projection->project(cx, i);
     }
 
     if (m_projection) m_projection->project(cx);

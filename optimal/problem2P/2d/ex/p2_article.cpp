@@ -5,7 +5,7 @@
 
 void Problem2Article::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    Table1_Y1();
+    //Table1_Y1();
     //Table2_Y1();
     //Table3_Y1();
     //Table23_Y1();
