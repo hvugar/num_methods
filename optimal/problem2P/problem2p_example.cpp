@@ -534,7 +534,7 @@ auto example3() -> void
     DoubleVector r; r << 1.0000 << 20.000 << 50.0000 << 100.00;
 
     // Regularization coefficients
-    DoubleVector e; e << 1.0000 << 0.0000 << 0.00000 << 0.0000;
+    DoubleVector e; e << 0.0000 << 0.0000 << 0.00000 << 0.0000;
 
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
@@ -549,8 +549,8 @@ auto example3() -> void
         prob.optimizeZ = true;
         prob.optimizeC = true;
         prob.optimizeO = true;
-        prob.vmin.resize(e_prm.Nc,  -0.00);
-        prob.vmax.resize(e_prm.Nc, +15.00);
+        prob.vmin.resize(e_prm.Nc,   0.00);
+        prob.vmax.resize(e_prm.Nc, +18.00);
         prob.U.resize(static_cast<const unsigned int>(Ny+1), static_cast<const unsigned int>(Nx+1), 10.0);
 
         prob.VectorToPrm(rv, r_prm);
