@@ -19,7 +19,7 @@ public:
     };
 
 public:
-    virtual auto fx_norm(const DoubleVector &v) const -> double = 0;
+    virtual auto norm(const DoubleVector &v) const -> double = 0;
     virtual auto normalize(DoubleVector &v) const -> void = 0;
 
 public:

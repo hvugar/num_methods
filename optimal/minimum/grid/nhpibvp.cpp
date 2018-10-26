@@ -1,5 +1,8 @@
 #include "nhpibvp.h"
 
+auto INewtonHeatEquation::layerInfo(DoubleVector &, unsigned int) const -> void {}
+auto INewtonHeatEquation::layerInfo(DoubleMatrix &, unsigned int) const -> void {}
+
 /**
  * @brief Shebeke usulu
  * @param u

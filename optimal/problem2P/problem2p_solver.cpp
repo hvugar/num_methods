@@ -1,5 +1,5 @@
 #include "problem2p_solver.h"
-#define OH2
+#define OH1
 
 Problem2PNeumann::Problem2PNeumann() {}
 
@@ -12,7 +12,7 @@ auto Problem2PNeumann::gradient(const DoubleVector &pv, DoubleVector &gv) const 
     const unsigned int Nc  = mEquParameter.Nc;
     const unsigned int No  = mEquParameter.No;
 
-    OptimizeParameter mOptParameter;
+    OptimizeParameterP mOptParameter;
     VectorToPrm(pv, mOptParameter);
 
     DoubleMatrix u;
@@ -31,11 +31,11 @@ auto Problem2PNeumann::gradient(const DoubleVector &pv, DoubleVector &gv) const 
     {
         for (unsigned int i=0; i<Nc; i++)
         {
-            const SpacePointInfo &pi = p_info[i];
+            const SpacePointInfoP &pi = p_info[i];
 
             for (unsigned int j=0; j<No; j++)
             {
-                const SpacePointInfo &uj = u_info[j];
+                const SpacePointInfoP &uj = u_info[j];
 
                 double grad_Kij = 0.0;
                 double zij = mOptParameter.z[i][j];
@@ -69,7 +69,7 @@ auto Problem2PNeumann::gradient(const DoubleVector &pv, DoubleVector &gv) const 
     {
         for (unsigned int i=0; i<Nc; i++)
         {
-            const SpacePointInfo &pi = p_info[i];
+            const SpacePointInfoP &pi = p_info[i];
 
             for (unsigned int j=0; j<No; j++)
             {
@@ -104,7 +104,7 @@ auto Problem2PNeumann::gradient(const DoubleVector &pv, DoubleVector &gv) const 
     {
         for (unsigned int j=0; j<No; j++)
         {
-            const SpacePointInfo &uj = u_info[j];
+            const SpacePointInfoP &uj = u_info[j];
 
             double gradXijX = 0.0;
             double gradXijY = 0.0;
@@ -149,7 +149,7 @@ auto Problem2PNeumann::gradient(const DoubleVector &pv, DoubleVector &gv) const 
     {
         for (unsigned int i=0; i<Nc; i++)
         {
-            const SpacePointInfo &pi = p_info[i];
+            const SpacePointInfoP &pi = p_info[i];
 
             double gradEtaiX = 0.0;
             double gradEtaiY = 0.0;
@@ -205,7 +205,7 @@ auto Problem2PNeumann::gradient(const DoubleVector &pv, DoubleVector &gv) const 
 
 auto Problem2PNeumann::fx(const DoubleVector &pv) const -> double
 {
-    OptimizeParameter mOptParameter;
+    OptimizeParameterP mOptParameter;
 
     VectorToPrm(pv, mOptParameter);
 
@@ -274,7 +274,7 @@ auto Problem2PNeumann::fx_integral(const DoubleMatrix &u) const -> double
     return usum*(hx*hy);
 }
 
-auto Problem2PNeumann::fx_norm(const EquationParameter& e_prm, const OptimizeParameter &o_prm, const OptimizeParameter &r_prm) const -> double
+auto Problem2PNeumann::fx_norm(const EquationParameterP& e_prm, const OptimizeParameterP &o_prm, const OptimizeParameterP &r_prm) const -> double
 {
     double _norm = 0.0;
     const unsigned int Nc = e_prm.Nc;
@@ -304,7 +304,7 @@ auto Problem2PNeumann::fx_norm(const EquationParameter& e_prm, const OptimizePar
     return _norm;
 }
 
-auto Problem2PNeumann::fx_penalty(const spif_vector &info, const OptimizeParameter &o_prm) const -> double
+auto Problem2PNeumann::fx_penalty(const spif_vector &info, const OptimizeParameterP &o_prm) const -> double
 {
     const double ht = mtimeDimension.step();
 
@@ -332,18 +332,18 @@ auto Problem2PNeumann::fx_penalty(const spif_vector &info, const OptimizeParamet
     return _penalty;
 }
 
-auto Problem2PNeumann::gpi(unsigned int i, unsigned int layer, const spif_vector &u_info, const OptimizeParameter &o_prm) const -> double
+auto Problem2PNeumann::gpi(unsigned int i, unsigned int layer, const spif_vector &u_info, const OptimizeParameterP &o_prm) const -> double
 {
     double gpi_ln = fabs( g0i(i, layer, u_info, o_prm) ) - ( vmax.at(i) - vmin.at(i) )/2.0;
     return gpi_ln > 0.0 ? gpi_ln : 0.0;
 }
 
-auto Problem2PNeumann::g0i(unsigned int i, unsigned int layer, const spif_vector &u_info, const OptimizeParameter &o_prm) const -> double
+auto Problem2PNeumann::g0i(unsigned int i, unsigned int layer, const spif_vector &u_info, const OptimizeParameterP &o_prm) const -> double
 {
     double vi = 0.0;
     for (unsigned int j=0; j<mEquParameter.No; j++)
     {
-        const SpacePointInfo &u_xij = u_info[j];
+        const SpacePointInfoP &u_xij = u_info[j];
         vi += o_prm.k[i][j] * ( u_xij.vl[layer] - o_prm.z[i][j] );
     }
     return ( vmax.at(i) + vmin.at(i) )/2.0 - vi;
@@ -368,7 +368,7 @@ auto Problem2PNeumann::print(unsigned int i, const DoubleVector &x, const Double
     if (result == GradientMethod::NEXT_ITERATION)           msg = "NEXT_ITERATION          ";
 
     Problem2PNeumann* prob = const_cast<Problem2PNeumann*>(this);
-    OptimizeParameter mOptParameter;
+    OptimizeParameterP mOptParameter;
     VectorToPrm(x, mOptParameter);
     DoubleMatrix u;
     spif_vector u_info;
@@ -394,15 +394,22 @@ auto Problem2PNeumann::print(unsigned int i, const DoubleVector &x, const Double
            i, f, ing, pnt, nrm, r, regEpsilon, alpha, u.min(), u.max());
     printf("k:%10.4f %10.4f %10.4f %10.4f z:%10.4f %10.4f %10.4f %10.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n",
            x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
+    printf("k:%10.4f %10.4f %10.4f %10.4f z:%10.4f %10.4f %10.4f %10.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n",
+           g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
 
     u.clear();
     u_info.clear();
 
     C_UNUSED(prob);
     IPrinter::printSeperatorLine();
+
+    prob->optimizeK = (i%4==0);
+    prob->optimizeZ = (i%4==1);
+    prob->optimizeO = (i%4==2);
+    prob->optimizeC = (i%4==3);
 }
 
-auto Problem2PNeumann::fx_norm(const DoubleVector &v) const -> double
+auto Problem2PNeumann::norm(const DoubleVector &v) const -> double
 {
     return EuclideanNorm(v);
 }
@@ -522,7 +529,7 @@ auto Problem2PNeumann::projectMeasurePoints(DoubleVector &pv, unsigned int index
     }
 }
 
-auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bool use, const OptimizeParameter &mOptParameter) const -> void
+auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bool use, const OptimizeParameterP &mOptParameter) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -564,7 +571,7 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
     u.resize(M+1, N+1);
 
     //----------------------------------------------------------------------------------------------//
-    std::vector<ExtendedSpacePoint> msnExtSpacePoints, cntExtSpacePoints;
+    std::vector<ExtendedSpacePointP> msnExtSpacePoints, cntExtSpacePoints;
     newDistributeDeltaGaussCntrl(mOptParameter.eta, cntExtSpacePoints, dimX, dimY);
     newDistributeDeltaGaussMsmnt(mOptParameter.xi,  msnExtSpacePoints, dimX, dimY);
     //----------------------------------------------------------------------------------------------//
@@ -682,12 +689,12 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
 
             for (unsigned int j=0; j<No; j++)
             {
-                const ExtendedSpacePoint &extendedSpacePoint = msnExtSpacePoints.at(j);
-                const std::vector<ExtendedSpacePointNode> &nodes = extendedSpacePoint.nodes;
+                const ExtendedSpacePointP &extendedSpacePoint = msnExtSpacePoints.at(j);
+                const std::vector<ExtendedSpacePointNodeP> &nodes = extendedSpacePoint.nodes;
                 const unsigned int nodes_size = static_cast<const unsigned int>( nodes.size() );
                 for (unsigned int nj=0; nj<nodes_size; nj++)
                 {
-                    const ExtendedSpacePointNode &node = nodes.at(nj);
+                    const ExtendedSpacePointNodeP &node = nodes.at(nj);
                     _u05[j] += u05[static_cast<const unsigned int>(node.ny)][static_cast<const unsigned int>(node.nx)] * (node.w * (hx*hy));
                 }
             }
@@ -728,14 +735,14 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int i=0; i<Nc; i++)
                     {
-                        const ExtendedSpacePoint &extendedSpacePoint = cntExtSpacePoints.at(i);
+                        const ExtendedSpacePointP &extendedSpacePoint = cntExtSpacePoints.at(i);
                         if (extendedSpacePoint.contains(sn))
                         {
-                            const std::vector<ExtendedSpacePointNode> &nodes = extendedSpacePoint.nodes;
+                            const std::vector<ExtendedSpacePointNodeP> &nodes = extendedSpacePoint.nodes;
                             const unsigned int nodes_size = static_cast<const unsigned int>( nodes.size() );
                             for (unsigned int ni=0; ni<nodes_size; ni++)
                             {
-                                const ExtendedSpacePointNode &node = nodes.at(ni);
+                                const ExtendedSpacePointNodeP &node = nodes.at(ni);
                                 if (node.equals(sn)) dx[n] += ht05 * _v05[i] * node.w;
                             }
                         }
@@ -790,14 +797,14 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int i=0; i<Nc; i++)
                     {
-                        const ExtendedSpacePoint &cExtendedSpacePoint = cntExtSpacePoints.at(i);
+                        const ExtendedSpacePointP &cExtendedSpacePoint = cntExtSpacePoints.at(i);
                         if (cExtendedSpacePoint.contains(sn))
                         {
                             double w = 0.0;
-                            const std::vector<ExtendedSpacePointNode> &nodes1 = cExtendedSpacePoint.nodes;
+                            const std::vector<ExtendedSpacePointNodeP> &nodes1 = cExtendedSpacePoint.nodes;
                             for (unsigned int ni=0; ni<nodes1.size(); ni++)
                             {
-                                const ExtendedSpacePointNode &node1 = nodes1.at(ni);
+                                const ExtendedSpacePointNodeP &node1 = nodes1.at(ni);
                                 if (node1.equals(sn))
                                 {
                                     w = node1.w;
@@ -807,11 +814,11 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
 
                             for (unsigned int j=0; j<No; j++)
                             {
-                                const ExtendedSpacePoint &mExtendedSpacePoint = msnExtSpacePoints.at(j);
-                                const std::vector<ExtendedSpacePointNode> &nodes2 = mExtendedSpacePoint.nodes;
+                                const ExtendedSpacePointP &mExtendedSpacePoint = msnExtSpacePoints.at(j);
+                                const std::vector<ExtendedSpacePointNodeP> &nodes2 = mExtendedSpacePoint.nodes;
                                 for (unsigned int nj=0; nj<nodes2.size(); nj++)
                                 {
-                                    const ExtendedSpacePointNode &node2 = nodes2.at(nj);
+                                    const ExtendedSpacePointNodeP &node2 = nodes2.at(nj);
 
                                     bool found = false;
                                     for (unsigned int rs=0; rs<rows1.size(); rs++)
@@ -909,12 +916,12 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
 
             for (unsigned int j=0; j<No; j++)
             {
-                const ExtendedSpacePoint &extendedSpacePoint = msnExtSpacePoints.at(j);
-                const std::vector<ExtendedSpacePointNode> &nodes = extendedSpacePoint.nodes;
+                const ExtendedSpacePointP &extendedSpacePoint = msnExtSpacePoints.at(j);
+                const std::vector<ExtendedSpacePointNodeP> &nodes = extendedSpacePoint.nodes;
                 const unsigned int nodes_size = static_cast<const unsigned int>( nodes.size() );
                 for (unsigned int nj=0; nj<nodes_size; nj++)
                 {
-                    const ExtendedSpacePointNode &node = nodes.at(nj);
+                    const ExtendedSpacePointNodeP &node = nodes.at(nj);
                     _u10[j] += u10[node.ny][node.nx] * (node.w * (hx*hy));
                 }
             }
@@ -955,14 +962,14 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int i=0; i<Nc; i++)
                     {
-                        const ExtendedSpacePoint &extendedSpacePoint = cntExtSpacePoints.at(i);
+                        const ExtendedSpacePointP &extendedSpacePoint = cntExtSpacePoints.at(i);
                         if (extendedSpacePoint.contains(sn))
                         {
-                            const std::vector<ExtendedSpacePointNode> &nodes = extendedSpacePoint.nodes;
+                            const std::vector<ExtendedSpacePointNodeP> &nodes = extendedSpacePoint.nodes;
                             const unsigned int nodes_size = static_cast<const unsigned int>( nodes.size() );
                             for (unsigned int ni=0; ni<nodes_size; ni++)
                             {
-                                const ExtendedSpacePointNode &node = nodes.at(ni);
+                                const ExtendedSpacePointNodeP &node = nodes.at(ni);
                                 if (node.equals(sn)) dy[m] += ht05 * _v10[i] * node.w;
                             }
                         }
@@ -1017,14 +1024,14 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int i=0; i<Nc; i++)
                     {
-                        const ExtendedSpacePoint &cExtendedSpacePoint = cntExtSpacePoints.at(i);
+                        const ExtendedSpacePointP &cExtendedSpacePoint = cntExtSpacePoints.at(i);
                         if (cExtendedSpacePoint.contains(sn))
                         {
                             double w = 0.0;
-                            const std::vector<ExtendedSpacePointNode> &nodes1 = cExtendedSpacePoint.nodes;
+                            const std::vector<ExtendedSpacePointNodeP> &nodes1 = cExtendedSpacePoint.nodes;
                             for (unsigned int ni=0; ni<nodes1.size(); ni++)
                             {
-                                const ExtendedSpacePointNode &node1 = nodes1.at(ni);
+                                const ExtendedSpacePointNodeP &node1 = nodes1.at(ni);
                                 if (node1.equals(sn))
                                 {
                                     w = node1.w;
@@ -1034,11 +1041,11 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
 
                             for (unsigned int j=0; j<No; j++)
                             {
-                                const ExtendedSpacePoint &mExtendedSpacePoint = msnExtSpacePoints.at(j);
-                                const std::vector<ExtendedSpacePointNode> &nodes2 = mExtendedSpacePoint.nodes;
+                                const ExtendedSpacePointP &mExtendedSpacePoint = msnExtSpacePoints.at(j);
+                                const std::vector<ExtendedSpacePointNodeP> &nodes2 = mExtendedSpacePoint.nodes;
                                 for (unsigned int nj=0; nj<nodes2.size(); nj++)
                                 {
-                                    const ExtendedSpacePointNode &node2 = nodes2.at(nj);
+                                    const ExtendedSpacePointNodeP &node2 = nodes2.at(nj);
 
                                     bool found = false;
                                     for (unsigned int cs=0; cs<cols1.size(); cs++)
@@ -1158,7 +1165,7 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
     u10.clear();
 }
 
-auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_info, bool use, const spif_vector &u_info, const OptimizeParameter &mOptParameter) const -> void
+auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_info, bool use, const spif_vector &u_info, const OptimizeParameterP &mOptParameter) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -1200,7 +1207,7 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
 
 
     //--------------------------------------------------------------------------------------------//
-    std::vector<ExtendedSpacePoint> cntExtSpacePoints, msnExtSpacePoints;
+    std::vector<ExtendedSpacePointP> cntExtSpacePoints, msnExtSpacePoints;
     newDistributeDeltaGaussCntrl(mOptParameter.eta, cntExtSpacePoints, dimX, dimY);
     newDistributeDeltaGaussMsmnt(mOptParameter.xi,  msnExtSpacePoints, dimX, dimY);
     //----------------------------------------------------------------------------------------------//
@@ -1318,12 +1325,12 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
 
             for (unsigned int i=0; i<Nc; i++)
             {
-                const ExtendedSpacePoint &extendedSpacePoint = cntExtSpacePoints.at(i);
-                const std::vector<ExtendedSpacePointNode> &nodes = extendedSpacePoint.nodes;
+                const ExtendedSpacePointP &extendedSpacePoint = cntExtSpacePoints.at(i);
+                const std::vector<ExtendedSpacePointNodeP> &nodes = extendedSpacePoint.nodes;
                 const unsigned int nodes_size = static_cast<const unsigned int>( nodes.size() );
                 for (unsigned int ni=0; ni<nodes_size; ni++)
                 {
-                    const ExtendedSpacePointNode &node = nodes.at(ni);
+                    const ExtendedSpacePointNodeP &node = nodes.at(ni);
                     _p05[i] += p05[node.ny][node.nx] * (node.w * (hx*hy));
                 }
             }
@@ -1364,14 +1371,14 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int j=0; j<No; j++)
                     {
-                        const ExtendedSpacePoint &extendedSpacePoint = msnExtSpacePoints.at(j);
+                        const ExtendedSpacePointP &extendedSpacePoint = msnExtSpacePoints.at(j);
                         if (extendedSpacePoint.contains(sn))
                         {
-                            const std::vector<ExtendedSpacePointNode> &nodes = extendedSpacePoint.nodes;
+                            const std::vector<ExtendedSpacePointNodeP> &nodes = extendedSpacePoint.nodes;
                             unsigned int nodes_size = static_cast<const unsigned int>( nodes.size() );
                             for (unsigned int nj=0; nj<nodes_size; nj++)
                             {
-                                const ExtendedSpacePointNode &node = nodes.at(nj);
+                                const ExtendedSpacePointNodeP &node = nodes.at(nj);
                                 if (node.equals(sn)) dx[n] += ht05 * _w05[j] * node.w;
                             }
                         }
@@ -1426,14 +1433,14 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int j=0; j<No; j++)
                     {
-                        const ExtendedSpacePoint &mExtendedSpacePoint = msnExtSpacePoints.at(j);
+                        const ExtendedSpacePointP &mExtendedSpacePoint = msnExtSpacePoints.at(j);
                         if (mExtendedSpacePoint.contains(sn))
                         {
                             double w = 0.0;
-                            const std::vector<ExtendedSpacePointNode> &nodes1 = mExtendedSpacePoint.nodes;
+                            const std::vector<ExtendedSpacePointNodeP> &nodes1 = mExtendedSpacePoint.nodes;
                             for (unsigned int nj=0; nj<nodes1.size(); nj++)
                             {
-                                const ExtendedSpacePointNode &node1 = nodes1.at(nj);
+                                const ExtendedSpacePointNodeP &node1 = nodes1.at(nj);
                                 if (node1.equals(sn))
                                 {
                                     w = node1.w;
@@ -1443,11 +1450,11 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
 
                             for (unsigned int i=0; i<Nc; i++)
                             {
-                                const ExtendedSpacePoint &cExtendedSpacePoint = cntExtSpacePoints.at(i);
-                                const std::vector<ExtendedSpacePointNode> &nodes2 = cExtendedSpacePoint.nodes;
+                                const ExtendedSpacePointP &cExtendedSpacePoint = cntExtSpacePoints.at(i);
+                                const std::vector<ExtendedSpacePointNodeP> &nodes2 = cExtendedSpacePoint.nodes;
                                 for (unsigned int ni=0; ni<nodes2.size(); ni++)
                                 {
-                                    const ExtendedSpacePointNode &node2 = nodes2.at(ni);
+                                    const ExtendedSpacePointNodeP &node2 = nodes2.at(ni);
 
                                     bool found = false;
                                     for (unsigned int rs=0; rs<rows1.size(); rs++)
@@ -1543,12 +1550,12 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
 
             for (unsigned int i=0; i<Nc; i++)
             {
-                const ExtendedSpacePoint &extendedSpacePoint = cntExtSpacePoints.at(i);
-                const std::vector<ExtendedSpacePointNode> &nodes = extendedSpacePoint.nodes;
+                const ExtendedSpacePointP &extendedSpacePoint = cntExtSpacePoints.at(i);
+                const std::vector<ExtendedSpacePointNodeP> &nodes = extendedSpacePoint.nodes;
                 const unsigned int nodes_size = static_cast<const unsigned int>( nodes.size() );
                 for (unsigned int ni=0; ni<nodes_size; ni++)
                 {
-                    const ExtendedSpacePointNode &node = nodes.at(ni);
+                    const ExtendedSpacePointNodeP &node = nodes.at(ni);
                     _p10[i] += p10[node.ny][node.nx] * (node.w * (hx*hy));
                 }
             }
@@ -1589,14 +1596,14 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int j=0; j<No; j++)
                     {
-                        const ExtendedSpacePoint &extendedSpacePoint = msnExtSpacePoints.at(j);
+                        const ExtendedSpacePointP &extendedSpacePoint = msnExtSpacePoints.at(j);
                         if (extendedSpacePoint.contains(sn))
                         {
-                            const std::vector<ExtendedSpacePointNode> &nodes = extendedSpacePoint.nodes;
+                            const std::vector<ExtendedSpacePointNodeP> &nodes = extendedSpacePoint.nodes;
                             const unsigned int nodes_size = static_cast<const unsigned int>( nodes.size() );
                             for (unsigned int nj=0; nj<nodes_size; nj++)
                             {
-                                const ExtendedSpacePointNode &node = nodes.at(nj);
+                                const ExtendedSpacePointNodeP &node = nodes.at(nj);
                                 if (node.equals(sn)) dy[m] += ht05 * _w10[j] * node.w;
                             }
                         }
@@ -1651,14 +1658,14 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                     //------------------------------------- Adding delta part -------------------------------------//
                     for (unsigned int j=0; j<No; j++)
                     {
-                        const ExtendedSpacePoint &mExtendedSpacePoint = msnExtSpacePoints.at(j);
+                        const ExtendedSpacePointP &mExtendedSpacePoint = msnExtSpacePoints.at(j);
                         if (mExtendedSpacePoint.contains(sn))
                         {
                             double w = 0.0;
-                            const std::vector<ExtendedSpacePointNode> &nodes1 = mExtendedSpacePoint.nodes;
+                            const std::vector<ExtendedSpacePointNodeP> &nodes1 = mExtendedSpacePoint.nodes;
                             for (unsigned int nj=0; nj<nodes1.size(); nj++)
                             {
-                                const ExtendedSpacePointNode &node1 = nodes1.at(nj);
+                                const ExtendedSpacePointNodeP &node1 = nodes1.at(nj);
                                 if (node1.equals(sn))
                                 {
                                     w = node1.w;
@@ -1668,11 +1675,11 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
 
                             for (unsigned int i=0; i<Nc; i++)
                             {
-                                const ExtendedSpacePoint &cExtendedSpacePoint = cntExtSpacePoints.at(i);
-                                const std::vector<ExtendedSpacePointNode> &nodes2 = cExtendedSpacePoint.nodes;
+                                const ExtendedSpacePointP &cExtendedSpacePoint = cntExtSpacePoints.at(i);
+                                const std::vector<ExtendedSpacePointNodeP> &nodes2 = cExtendedSpacePoint.nodes;
                                 for (unsigned int ni=0; ni<nodes2.size(); ni++)
                                 {
-                                    const ExtendedSpacePointNode &node2 = nodes2.at(ni);
+                                    const ExtendedSpacePointNodeP &node2 = nodes2.at(ni);
 
                                     bool found = false;
                                     for (unsigned int cs=0; cs<cols1.size(); cs++)
@@ -1784,7 +1791,7 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
 }
 
 auto Problem2PNeumann::f_initialLayers(DoubleMatrix &u00, spif_vector &u_info, bool use, unsigned int N, unsigned int M,
-                                       double hx, double hy, const std::vector<ExtendedSpacePoint> &msnExtSpacePoints) const -> void
+                                       double hx, double hy, const std::vector<ExtendedSpacePointP> &msnExtSpacePoints) const -> void
 {
     SpaceNodePDE sn;
     for (unsigned int m=0; m<=M; m++)
@@ -1802,7 +1809,7 @@ auto Problem2PNeumann::f_initialLayers(DoubleMatrix &u00, spif_vector &u_info, b
 }
 
 auto Problem2PNeumann::b_initialLayers(DoubleMatrix &p00, spif_vector &p_info, bool use, unsigned int N, unsigned int M,
-                                       double hx, double hy, const std::vector<ExtendedSpacePoint> &cntExtSpacePoints,
+                                       double hx, double hy, const std::vector<ExtendedSpacePointP> &cntExtSpacePoints,
                                        const DoubleMatrix &u) const -> void
 {
     const unsigned int L = static_cast<const unsigned int>( mtimeDimension.sizeN() );
@@ -1825,30 +1832,30 @@ auto Problem2PNeumann::b_initialLayers(DoubleMatrix &p00, spif_vector &p_info, b
 auto Problem2PNeumann::f_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2,
                                       uint_vector &cols0, uint_vector &cols1, uint_vector &cols2,
                                       unsigned int N, unsigned int M,
-                                      const std::vector<ExtendedSpacePoint> &cntExtSpacePoints,
-                                      const std::vector<ExtendedSpacePoint> &msnExtSpacePoints) const -> void
+                                      const std::vector<ExtendedSpacePointP> &cntExtSpacePoints,
+                                      const std::vector<ExtendedSpacePointP> &msnExtSpacePoints) const -> void
 {
     for (unsigned int m=0; m<=M; m++)
     {
         bool found1 = false;
         bool found2 = false;
-        for(std::vector<ExtendedSpacePoint>::const_iterator csp_it=cntExtSpacePoints.begin(); csp_it != cntExtSpacePoints.end(); csp_it++)
+        for(std::vector<ExtendedSpacePointP>::const_iterator csp_it=cntExtSpacePoints.begin(); csp_it != cntExtSpacePoints.end(); csp_it++)
         {
-            const ExtendedSpacePoint &cxsp = *csp_it;
-            const std::vector<ExtendedSpacePointNode> &c_nodes = cxsp.nodes;
-            for (std::vector<ExtendedSpacePointNode>::const_iterator cnode_it=c_nodes.begin(); cnode_it != c_nodes.end(); cnode_it++)
+            const ExtendedSpacePointP &cxsp = *csp_it;
+            const std::vector<ExtendedSpacePointNodeP> &c_nodes = cxsp.nodes;
+            for (std::vector<ExtendedSpacePointNodeP>::const_iterator cnode_it=c_nodes.begin(); cnode_it != c_nodes.end(); cnode_it++)
             {
-                const ExtendedSpacePointNode &cnode = *cnode_it;
+                const ExtendedSpacePointNodeP &cnode = *cnode_it;
                 if (static_cast<unsigned int>(cnode.ny) == m)
                 {
                     found1 = true;
-                    for(std::vector<ExtendedSpacePoint>::const_iterator msp_it=msnExtSpacePoints.begin(); msp_it != msnExtSpacePoints.end(); msp_it++)
+                    for(std::vector<ExtendedSpacePointP>::const_iterator msp_it=msnExtSpacePoints.begin(); msp_it != msnExtSpacePoints.end(); msp_it++)
                     {
-                        const ExtendedSpacePoint &mxsp = *msp_it;
-                        const std::vector<ExtendedSpacePointNode> &mnodes = mxsp.nodes;
-                        for (std::vector<ExtendedSpacePointNode>::const_iterator mnode_it=mnodes.begin(); mnode_it != mnodes.end(); mnode_it++)
+                        const ExtendedSpacePointP &mxsp = *msp_it;
+                        const std::vector<ExtendedSpacePointNodeP> &mnodes = mxsp.nodes;
+                        for (std::vector<ExtendedSpacePointNodeP>::const_iterator mnode_it=mnodes.begin(); mnode_it != mnodes.end(); mnode_it++)
                         {
-                            const ExtendedSpacePointNode &mnode = *mnode_it;
+                            const ExtendedSpacePointNodeP &mnode = *mnode_it;
                             if (static_cast<unsigned int>(mnode.ny) == m)
                             {
                                 found2 = true;
@@ -1871,23 +1878,23 @@ auto Problem2PNeumann::f_findRowsCols(uint_vector &rows0, uint_vector &rows1, ui
     {
         bool found1 = false;
         bool found2 = false;
-        for(std::vector<ExtendedSpacePoint>::const_iterator csp_it=cntExtSpacePoints.begin(); csp_it != cntExtSpacePoints.end(); csp_it++)
+        for(std::vector<ExtendedSpacePointP>::const_iterator csp_it=cntExtSpacePoints.begin(); csp_it != cntExtSpacePoints.end(); csp_it++)
         {
-            const ExtendedSpacePoint &cxsp = *csp_it;
-            const std::vector<ExtendedSpacePointNode> &c_nodes = cxsp.nodes;
-            for (std::vector<ExtendedSpacePointNode>::const_iterator cnode_it=c_nodes.begin(); cnode_it != c_nodes.end(); cnode_it++)
+            const ExtendedSpacePointP &cxsp = *csp_it;
+            const std::vector<ExtendedSpacePointNodeP> &c_nodes = cxsp.nodes;
+            for (std::vector<ExtendedSpacePointNodeP>::const_iterator cnode_it=c_nodes.begin(); cnode_it != c_nodes.end(); cnode_it++)
             {
-                const ExtendedSpacePointNode &cnode = *cnode_it;
+                const ExtendedSpacePointNodeP &cnode = *cnode_it;
                 if (static_cast<unsigned int>(cnode.nx) == n)
                 {
                     found1 = true;
-                    for(std::vector<ExtendedSpacePoint>::const_iterator msp_it=msnExtSpacePoints.begin(); msp_it != msnExtSpacePoints.end(); msp_it++)
+                    for(std::vector<ExtendedSpacePointP>::const_iterator msp_it=msnExtSpacePoints.begin(); msp_it != msnExtSpacePoints.end(); msp_it++)
                     {
-                        const ExtendedSpacePoint &mxsp = *msp_it;
-                        const std::vector<ExtendedSpacePointNode> &mnodes = mxsp.nodes;
-                        for (std::vector<ExtendedSpacePointNode>::const_iterator mnode_it=mnodes.begin(); mnode_it != mnodes.end(); mnode_it++)
+                        const ExtendedSpacePointP &mxsp = *msp_it;
+                        const std::vector<ExtendedSpacePointNodeP> &mnodes = mxsp.nodes;
+                        for (std::vector<ExtendedSpacePointNodeP>::const_iterator mnode_it=mnodes.begin(); mnode_it != mnodes.end(); mnode_it++)
                         {
-                            const ExtendedSpacePointNode &mnode = *mnode_it;
+                            const ExtendedSpacePointNodeP &mnode = *mnode_it;
                             if (static_cast<unsigned int>(mnode.nx) == n)
                             {
                                 found2 = true;
@@ -1910,30 +1917,30 @@ auto Problem2PNeumann::f_findRowsCols(uint_vector &rows0, uint_vector &rows1, ui
 auto Problem2PNeumann::b_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2,
                                       uint_vector &cols0, uint_vector &cols1, uint_vector &cols2,
                                       unsigned int N, unsigned int M,
-                                      const std::vector<ExtendedSpacePoint> &msnExtSpacePoints,
-                                      const std::vector<ExtendedSpacePoint> &cntExtSpacePoints) const -> void
+                                      const std::vector<ExtendedSpacePointP> &msnExtSpacePoints,
+                                      const std::vector<ExtendedSpacePointP> &cntExtSpacePoints) const -> void
 {
     for (unsigned int m=0; m<=M; m++)
     {
         bool found1 = false;
         bool found2 = false;
-        for(std::vector<ExtendedSpacePoint>::const_iterator csp_it=msnExtSpacePoints.begin(); csp_it != msnExtSpacePoints.end(); csp_it++)
+        for(std::vector<ExtendedSpacePointP>::const_iterator csp_it=msnExtSpacePoints.begin(); csp_it != msnExtSpacePoints.end(); csp_it++)
         {
-            const ExtendedSpacePoint &cxsp = *csp_it;
-            const std::vector<ExtendedSpacePointNode> &c_nodes = cxsp.nodes;
-            for (std::vector<ExtendedSpacePointNode>::const_iterator cnode_it=c_nodes.begin(); cnode_it != c_nodes.end(); cnode_it++)
+            const ExtendedSpacePointP &cxsp = *csp_it;
+            const std::vector<ExtendedSpacePointNodeP> &c_nodes = cxsp.nodes;
+            for (std::vector<ExtendedSpacePointNodeP>::const_iterator cnode_it=c_nodes.begin(); cnode_it != c_nodes.end(); cnode_it++)
             {
-                const ExtendedSpacePointNode &cnode = *cnode_it;
+                const ExtendedSpacePointNodeP &cnode = *cnode_it;
                 if (static_cast<unsigned int>(cnode.ny) == m)
                 {
                     found1 = true;
-                    for(std::vector<ExtendedSpacePoint>::const_iterator msp_it=cntExtSpacePoints.begin(); msp_it != cntExtSpacePoints.end(); msp_it++)
+                    for(std::vector<ExtendedSpacePointP>::const_iterator msp_it=cntExtSpacePoints.begin(); msp_it != cntExtSpacePoints.end(); msp_it++)
                     {
-                        const ExtendedSpacePoint &mxsp = *msp_it;
-                        const std::vector<ExtendedSpacePointNode> &mnodes = mxsp.nodes;
-                        for (std::vector<ExtendedSpacePointNode>::const_iterator mnode_it=mnodes.begin(); mnode_it != mnodes.end(); mnode_it++)
+                        const ExtendedSpacePointP &mxsp = *msp_it;
+                        const std::vector<ExtendedSpacePointNodeP> &mnodes = mxsp.nodes;
+                        for (std::vector<ExtendedSpacePointNodeP>::const_iterator mnode_it=mnodes.begin(); mnode_it != mnodes.end(); mnode_it++)
                         {
-                            const ExtendedSpacePointNode &mnode = *mnode_it;
+                            const ExtendedSpacePointNodeP &mnode = *mnode_it;
                             if (static_cast<unsigned int>(mnode.ny) == m)
                             {
                                 found2 = true;
@@ -1956,23 +1963,23 @@ auto Problem2PNeumann::b_findRowsCols(uint_vector &rows0, uint_vector &rows1, ui
     {
         bool found1 = false;
         bool found2 = false;
-        for(std::vector<ExtendedSpacePoint>::const_iterator csp_it=msnExtSpacePoints.begin(); csp_it != msnExtSpacePoints.end(); csp_it++)
+        for(std::vector<ExtendedSpacePointP>::const_iterator csp_it=msnExtSpacePoints.begin(); csp_it != msnExtSpacePoints.end(); csp_it++)
         {
-            const ExtendedSpacePoint &cxsp = *csp_it;
-            const std::vector<ExtendedSpacePointNode> &c_nodes = cxsp.nodes;
-            for (std::vector<ExtendedSpacePointNode>::const_iterator cnode_it=c_nodes.begin(); cnode_it != c_nodes.end(); cnode_it++)
+            const ExtendedSpacePointP &cxsp = *csp_it;
+            const std::vector<ExtendedSpacePointNodeP> &c_nodes = cxsp.nodes;
+            for (std::vector<ExtendedSpacePointNodeP>::const_iterator cnode_it=c_nodes.begin(); cnode_it != c_nodes.end(); cnode_it++)
             {
-                const ExtendedSpacePointNode &cnode = *cnode_it;
+                const ExtendedSpacePointNodeP &cnode = *cnode_it;
                 if (static_cast<unsigned int>(cnode.nx) == n)
                 {
                     found1 = true;
-                    for(std::vector<ExtendedSpacePoint>::const_iterator msp_it=cntExtSpacePoints.begin(); msp_it != cntExtSpacePoints.end(); msp_it++)
+                    for(std::vector<ExtendedSpacePointP>::const_iterator msp_it=cntExtSpacePoints.begin(); msp_it != cntExtSpacePoints.end(); msp_it++)
                     {
-                        const ExtendedSpacePoint &mxsp = *msp_it;
-                        const std::vector<ExtendedSpacePointNode> &mnodes = mxsp.nodes;
-                        for (std::vector<ExtendedSpacePointNode>::const_iterator mnode_it=mnodes.begin(); mnode_it != mnodes.end(); mnode_it++)
+                        const ExtendedSpacePointP &mxsp = *msp_it;
+                        const std::vector<ExtendedSpacePointNodeP> &mnodes = mxsp.nodes;
+                        for (std::vector<ExtendedSpacePointNodeP>::const_iterator mnode_it=mnodes.begin(); mnode_it != mnodes.end(); mnode_it++)
                         {
-                            const ExtendedSpacePointNode &mnode = *mnode_it;
+                            const ExtendedSpacePointNodeP &mnode = *mnode_it;
                             if (static_cast<unsigned int>(mnode.nx) == n)
                             {
                                 found2 = true;
@@ -1997,7 +2004,7 @@ auto Problem2PNeumann::f_prepareInfo(unsigned int No, const std::vector<SpacePoi
     u_info.resize(No);
     for (unsigned int j=0; j<No; j++)
     {
-        SpacePointInfo &inf = u_info[j];
+        SpacePointInfoP &inf = u_info[j];
         const SpacePoint &sp = points[j];
         inf.x = sp.x;
         inf.y = sp.y;
@@ -2010,7 +2017,7 @@ auto Problem2PNeumann::b_prepareInfo(unsigned int Nc, const std::vector<SpacePoi
     p_info.resize(Nc);
     for (unsigned int i=0; i<Nc; i++)
     {
-        SpacePointInfo &inf = p_info[i];
+        SpacePointInfoP &inf = p_info[i];
         const SpacePoint &sp = points[i];
         inf.x = sp.x;
         inf.y = sp.y;
@@ -2029,19 +2036,19 @@ auto Problem2PNeumann::b_initial(const SpaceNodePDE &sn, const DoubleMatrix &u) 
 }
 
 auto Problem2PNeumann::f_add2Info(const DoubleMatrix &u, spif_vector &u_info, unsigned int ln, double hx, double hy,
-                                  const std::vector<ExtendedSpacePoint> &extMsmnts, int method) const -> void
+                                  const std::vector<ExtendedSpacePointP> &extMsmnts, int method) const -> void
 {
     if (method == 1 || method == 2 || method == 4)
     {
         unsigned int No = static_cast<unsigned int>(extMsmnts.size());
         for (unsigned int j=0; j<No; j++)
         {
-            const ExtendedSpacePoint &xsp = extMsmnts.at(j);
-            SpacePointInfo &ui = u_info[j];
+            const ExtendedSpacePointP &xsp = extMsmnts.at(j);
+            SpacePointInfoP &ui = u_info[j];
             const unsigned int nodes_size = static_cast<const unsigned int>( xsp.nodes.size() );
             for (unsigned int i=0; i<nodes_size; i++)
             {
-                const ExtendedSpacePointNode &node = xsp.nodes.at(i);
+                const ExtendedSpacePointNodeP &node = xsp.nodes.at(i);
                 const unsigned int nx = static_cast<const unsigned int>(node.nx);
                 const unsigned int ny = static_cast<const unsigned int>(node.ny);
                 ui.vl[ln] += u[ny][nx] * (node.w * (hx*hy));
@@ -2062,19 +2069,19 @@ auto Problem2PNeumann::f_add2Info(const DoubleMatrix &u, spif_vector &u_info, un
 }
 
 void Problem2PNeumann::b_add2Info(const DoubleMatrix &p, spif_vector &p_info, unsigned int ln, double hx, double hy,
-                                  const std::vector<ExtendedSpacePoint> &extCntrls, int method) const
+                                  const std::vector<ExtendedSpacePointP> &extCntrls, int method) const
 {
     if (method == 1 || method == 2 || method == 4)
     {
         unsigned int Nc = static_cast<unsigned int>(extCntrls.size());
         for (unsigned int i=0; i<Nc; i++)
         {
-            const ExtendedSpacePoint &xsp = extCntrls.at(i);
-            SpacePointInfo &pi = p_info[i];
+            const ExtendedSpacePointP &xsp = extCntrls.at(i);
+            SpacePointInfoP &pi = p_info[i];
             const unsigned int nodes_size = static_cast<const unsigned int>( xsp.nodes.size() );
             for (unsigned int i=0; i<nodes_size; i++)
             {
-                const ExtendedSpacePointNode &node = xsp.nodes.at(i);
+                const ExtendedSpacePointNodeP &node = xsp.nodes.at(i);
                 const unsigned int nx = static_cast<const unsigned int>(node.nx);
                 const unsigned int ny = static_cast<const unsigned int>(node.ny);
                 pi.vl[ln] += p[ny][nx] * (node.w * (hx*hy));
@@ -2113,7 +2120,7 @@ auto Problem2PNeumann::b_layerInfo(const DoubleMatrix &p, unsigned int ln) const
 }
 
 auto Problem2PNeumann::newDistributeDeltaGaussCntrl(const std::vector<SpacePoint> &cntrls,
-                                                    std::vector<ExtendedSpacePoint> &extCntrls,
+                                                    std::vector<ExtendedSpacePointP> &extCntrls,
                                                     const Dimension &dimX, const Dimension &dimY) const -> void
 {
     double hx = dimX.step();
@@ -2133,7 +2140,7 @@ auto Problem2PNeumann::newDistributeDeltaGaussCntrl(const std::vector<SpacePoint
     for (unsigned int c=0; c<Nc; c++)
     {
         const SpacePoint &cntrl = cntrls.at(c);
-        ExtendedSpacePoint &extCntrl = extCntrls.at(c);
+        ExtendedSpacePointP &extCntrl = extCntrls.at(c);
 
         extCntrl.x = cntrl.x;
         extCntrl.y = cntrl.y;
@@ -2160,7 +2167,7 @@ auto Problem2PNeumann::newDistributeDeltaGaussCntrl(const std::vector<SpacePoint
         {
             for (int n=extCntrl.minX; n<=extCntrl.maxX; n++)
             {
-                ExtendedSpacePointNode node;
+                ExtendedSpacePointNodeP node;
                 node.nx = n; node.x = n*hx;
                 node.ny = m; node.y = m*hy;
                 node.w = factor*exp(-0.5*(((node.x-cntrl.x)*(node.x-cntrl.x))/(sigmaX*sigmaX)+((node.y-cntrl.y)*(node.y-cntrl.y))/(sigmaY*sigmaY)));
@@ -2172,7 +2179,7 @@ auto Problem2PNeumann::newDistributeDeltaGaussCntrl(const std::vector<SpacePoint
 }
 
 auto Problem2PNeumann::newDistributeDeltaGaussMsmnt(const std::vector<SpacePoint> &msmnts,
-                                                    std::vector<ExtendedSpacePoint> &extMsmnts,
+                                                    std::vector<ExtendedSpacePointP> &extMsmnts,
                                                     const Dimension &dimX, const Dimension &dimY) const -> void
 {
     double hx = dimX.step();
@@ -2192,7 +2199,7 @@ auto Problem2PNeumann::newDistributeDeltaGaussMsmnt(const std::vector<SpacePoint
     for (unsigned int c=0; c<Nc; c++)
     {
         const SpacePoint &msmnt = msmnts.at(c);
-        ExtendedSpacePoint &extMsmnt = extMsmnts.at(c);
+        ExtendedSpacePointP &extMsmnt = extMsmnts.at(c);
 
         extMsmnt.x = msmnt.x;
         extMsmnt.y = msmnt.y;
@@ -2219,7 +2226,7 @@ auto Problem2PNeumann::newDistributeDeltaGaussMsmnt(const std::vector<SpacePoint
         {
             for (int n=extMsmnt.minX; n<=extMsmnt.maxX; n++)
             {
-                ExtendedSpacePointNode node;
+                ExtendedSpacePointNodeP node;
                 node.nx = n; node.x = n*hx;
                 node.ny = m; node.y = m*hy;
                 node.w = factor*exp(-0.5*(((node.x-msmnt.x)*(node.x-msmnt.x))/(sigmaX*sigmaX)+((node.y-msmnt.y)*(node.y-msmnt.y))/(sigmaY*sigmaY)));
@@ -2230,7 +2237,7 @@ auto Problem2PNeumann::newDistributeDeltaGaussMsmnt(const std::vector<SpacePoint
     }
 }
 
-auto Problem2PNeumann::VectorToPrm(const DoubleVector &pv, OptimizeParameter &prm) const -> void
+auto Problem2PNeumann::VectorToPrm(const DoubleVector &pv, OptimizeParameterP &prm) const -> void
 {
     unsigned int Nc = mEquParameter.Nc;
     unsigned int No = mEquParameter.No;
@@ -2278,7 +2285,7 @@ auto Problem2PNeumann::VectorToPrm(const DoubleVector &pv, OptimizeParameter &pr
     }
 }
 
-auto Problem2PNeumann::PrmToVector(const OptimizeParameter &prm, DoubleVector &pv) const -> void
+auto Problem2PNeumann::PrmToVector(const OptimizeParameterP &prm, DoubleVector &pv) const -> void
 {
     unsigned int Nc = mEquParameter.Nc;
     unsigned int No = mEquParameter.No;

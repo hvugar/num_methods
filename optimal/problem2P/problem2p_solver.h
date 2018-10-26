@@ -10,8 +10,8 @@ class PROBLEM2PSHARED_EXPORT Problem2PNeumann : public RnFunction, public IGradi
 {
 public:
     static void Main(int argc, char** argv);
-    static void checkGradient1(const Problem2PNeumann &prob, const OptimizeParameter &o_prm);
-    static void checkGradient2(const Problem2PNeumann &prob, const OptimizeParameter &o_prm);
+    static void checkGradient1(const Problem2PNeumann &prob, const OptimizeParameterP &o_prm);
+    static void checkGradient2(const Problem2PNeumann &prob, const OptimizeParameterP &o_prm);
 
 public:
     Problem2PNeumann();
@@ -24,7 +24,7 @@ public:
     virtual auto project(DoubleVector &x) const -> void;
     virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g,
                        double f, double alpha, GradientMethod::MethodResult result) const -> void;
-    virtual auto fx_norm(const DoubleVector &v) const -> double;
+    virtual auto norm(const DoubleVector &v) const -> double;
     virtual auto normalize(DoubleVector &v) const -> void;
 
     /** Integral part of functional */
@@ -32,36 +32,36 @@ public:
     auto fx_integral(const DoubleMatrix &u) const -> double;
 
     /** Norm part of functional */
-    auto fx_norm(const EquationParameter &eprm, const OptimizeParameter &oprm, const OptimizeParameter &rprm) const -> double;
+    auto fx_norm(const EquationParameterP &eprm, const OptimizeParameterP &oprm, const OptimizeParameterP &rprm) const -> double;
 
     /** Penalty part of functional */
-    auto fx_penalty(const spif_vector &info, const OptimizeParameter &o_prm) const ->double;
-    auto gpi(unsigned int i, unsigned int layer, const spif_vector &u_info, const OptimizeParameter &o_prm) const -> double;
-    auto g0i(unsigned int i, unsigned int layer, const spif_vector &u_info, const OptimizeParameter &o_prm) const -> double;
+    auto fx_penalty(const spif_vector &info, const OptimizeParameterP &o_prm) const ->double;
+    auto gpi(unsigned int i, unsigned int layer, const spif_vector &u_info, const OptimizeParameterP &o_prm) const -> double;
+    auto g0i(unsigned int i, unsigned int layer, const spif_vector &u_info, const OptimizeParameterP &o_prm) const -> double;
     auto sign(double x) const -> double;
 
     auto projectControlPoints(DoubleVector &x, unsigned int index) const -> void;
     auto projectMeasurePoints(DoubleVector &x, unsigned int index) const -> void;
 
     /* Initial boundary value problems */
-    auto solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bool use, const OptimizeParameter &mOptParameter) const -> void;
-    auto solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_info, bool use, const spif_vector &u_info, const OptimizeParameter &mOptParameter) const -> void;
+    auto solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bool use, const OptimizeParameterP &mOptParameter) const -> void;
+    auto solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_info, bool use, const spif_vector &u_info, const OptimizeParameterP &mOptParameter) const -> void;
 
     auto f_initialLayers(DoubleMatrix &u00, spif_vector &u_info, bool use, unsigned int N, unsigned int M,
-                         double hx, double hy, const std::vector<ExtendedSpacePoint> &msnExtSpacePoints) const -> void;
+                         double hx, double hy, const std::vector<ExtendedSpacePointP> &msnExtSpacePoints) const -> void;
     auto b_initialLayers(DoubleMatrix &p00, spif_vector &p_info, bool use, unsigned int N, unsigned int M,
-                         double hx, double hy, const std::vector<ExtendedSpacePoint> &cntExtSpacePoints,
+                         double hx, double hy, const std::vector<ExtendedSpacePointP> &cntExtSpacePoints,
                          const DoubleMatrix &u) const -> void;
     auto f_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2,
                         uint_vector &cols0, uint_vector &cols1, uint_vector &cols2,
                         unsigned int N, unsigned int M,
-                        const std::vector<ExtendedSpacePoint> &cntExtSpacePoints,
-                        const std::vector<ExtendedSpacePoint> &msnExtSpacePoints) const -> void;
+                        const std::vector<ExtendedSpacePointP> &cntExtSpacePoints,
+                        const std::vector<ExtendedSpacePointP> &msnExtSpacePoints) const -> void;
     auto b_findRowsCols(uint_vector &rows0, uint_vector &rows1, uint_vector &rows2,
                         uint_vector &cols0, uint_vector &cols1, uint_vector &cols2,
                         unsigned int N, unsigned int M,
-                        const std::vector<ExtendedSpacePoint> &msnExtSpacePoints,
-                        const std::vector<ExtendedSpacePoint> &cntExtSpacePoints) const -> void;
+                        const std::vector<ExtendedSpacePointP> &msnExtSpacePoints,
+                        const std::vector<ExtendedSpacePointP> &cntExtSpacePoints) const -> void;
     auto f_prepareInfo(unsigned int No, const std::vector<SpacePoint> &points, spif_vector &u_info, unsigned int L) const -> void;
     auto b_prepareInfo(unsigned int Nc, const std::vector<SpacePoint> &points, spif_vector &p_info, unsigned int L) const -> void;
 
@@ -69,22 +69,21 @@ public:
     auto b_initial(const SpaceNodePDE &sn, const DoubleMatrix &u) const -> double;
 
     auto f_add2Info(const DoubleMatrix &u, spif_vector &u_info, unsigned int ln, double hx, double hy,
-                    const std::vector<ExtendedSpacePoint> &extMsmnts, int method = 4) const -> void;
+                    const std::vector<ExtendedSpacePointP> &extMsmnts, int method = 4) const -> void;
     auto b_add2Info(const DoubleMatrix &p, spif_vector &p_info, unsigned int ln, double hx, double hy,
-                    const std::vector<ExtendedSpacePoint> &extCntrls, int method = 4) const -> void;
+                    const std::vector<ExtendedSpacePointP> &extCntrls, int method = 4) const -> void;
 
     auto f_layerInfo(const DoubleMatrix &u, unsigned int ln) const -> void;
     auto b_layerInfo(const DoubleMatrix &p, unsigned int ln) const -> void;
 
-    auto newDistributeDeltaGaussCntrl(const std::vector<SpacePoint> &cntrls, std::vector<ExtendedSpacePoint> &extCntrls, const Dimension &dimX, const Dimension &dimY) const -> void;
-    auto newDistributeDeltaGaussMsmnt(const std::vector<SpacePoint> &msmnts, std::vector<ExtendedSpacePoint> &extMsmnts, const Dimension &dimX, const Dimension &dimY) const -> void;
+    auto newDistributeDeltaGaussCntrl(const std::vector<SpacePoint> &cntrls, std::vector<ExtendedSpacePointP> &extCntrls, const Dimension &dimX, const Dimension &dimY) const -> void;
+    auto newDistributeDeltaGaussMsmnt(const std::vector<SpacePoint> &msmnts, std::vector<ExtendedSpacePointP> &extMsmnts, const Dimension &dimX, const Dimension &dimY) const -> void;
 
-    auto VectorToPrm(const DoubleVector &pv, OptimizeParameter &prm) const -> void;
-    auto PrmToVector(const OptimizeParameter &prm, DoubleVector &pv) const -> void;
+    auto VectorToPrm(const DoubleVector &pv, OptimizeParameterP &prm) const -> void;
+    auto PrmToVector(const OptimizeParameterP &prm, DoubleVector &pv) const -> void;
 
-    EquationParameter mEquParameter;
-    //OptimizeParameter mOptParameter;
-    OptimizeParameter mRegParameter;
+    EquationParameterP mEquParameter;
+    OptimizeParameterP mRegParameter;
     double r;
 
     DoubleVector vmin;

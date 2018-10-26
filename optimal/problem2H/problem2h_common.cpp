@@ -1,28 +1,33 @@
 #include "problem2h_common.h"
 
-SpacePointInfo::SpacePointInfo()
+auto ExtendedSpacePointH::contains(int nx, int ny) const -> bool
+{
+    return (minX <= nx && nx <= maxX && minY <= ny && ny <= maxY);
+}
+
+SpacePointInfoH::SpacePointInfoH()
 {
     init(0);
 }
 
-SpacePointInfo::SpacePointInfo(unsigned int length)
+SpacePointInfoH::SpacePointInfoH(unsigned int length)
 {
     init(length);
 }
 
-SpacePointInfo::~SpacePointInfo()
+SpacePointInfoH::~SpacePointInfoH()
 {
     clear();
 }
 
-void SpacePointInfo::init(unsigned int length)
+void SpacePointInfoH::init(unsigned int length)
 {
     this->length = length;
     vl.resize(length);
     dx.resize(length);
     dy.resize(length);
 }
-void SpacePointInfo::clear()
+void SpacePointInfoH::clear()
 {
     dy.clear();
     dx.clear();
@@ -30,7 +35,4 @@ void SpacePointInfo::clear()
     length = 0;
 }
 
-auto ExtendedSpacePoint::contains(int nx, int ny) const -> bool
-{
-    return (minX <= nx && nx <= maxX && minY <= ny && ny <= maxY);
-}
+

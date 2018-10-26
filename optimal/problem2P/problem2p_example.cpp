@@ -7,10 +7,10 @@ void Problem2PNeumann::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
     example3();
 }
 
-auto Problem2PNeumann::checkGradient1(const Problem2PNeumann &prob, const OptimizeParameter &o_prm) -> void
+auto Problem2PNeumann::checkGradient1(const Problem2PNeumann &prob, const OptimizeParameterP &o_prm) -> void
 {
-    EquationParameter e_prm = prob.mEquParameter;
-    OptimizeParameter r_prm = prob.mRegParameter;
+    EquationParameterP e_prm = prob.mEquParameter;
+    OptimizeParameterP r_prm = prob.mRegParameter;
 
     IPrinter::printSeperatorLine();
     DoubleVector pv;
@@ -115,11 +115,11 @@ auto Problem2PNeumann::checkGradient1(const Problem2PNeumann &prob, const Optimi
     IPrinter::printSeperatorLine();
 }
 
-auto Problem2PNeumann::checkGradient2(const Problem2PNeumann &prob, const OptimizeParameter &o_prm) -> void
+auto Problem2PNeumann::checkGradient2(const Problem2PNeumann &prob, const OptimizeParameterP &o_prm) -> void
 {
-    EquationParameter e_prm = prob.mEquParameter;
+    EquationParameterP e_prm = prob.mEquParameter;
     //OptimizeParameter o_prm = prob.mOptParameter;
-    OptimizeParameter r_prm = prob.mRegParameter;
+    OptimizeParameterP r_prm = prob.mRegParameter;
 
     IPrinter::printSeperatorLine();
     DoubleVector pv;
@@ -247,7 +247,7 @@ auto Problem2PNeumann::checkGradient2(const Problem2PNeumann &prob, const Optimi
 
 auto example1() -> void
 {
-    EquationParameter e_prm;
+    EquationParameterP e_prm;
     e_prm.a = 1.0;
     e_prm.alpha = 0.01;
     e_prm.lambda = +0.01;
@@ -260,7 +260,7 @@ auto example1() -> void
     /*********************************************************************************************************
      * Optimization parameters Table 1
      *********************************************************************************************************/
-    OptimizeParameter o_prm;
+    OptimizeParameterP o_prm;
     o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.xi.resize(e_prm.No);
@@ -292,7 +292,7 @@ auto example1() -> void
      * Regularization parameters
      * Table 1, Example 1,2
      *********************************************************************************************************/
-    OptimizeParameter r_prm;
+    OptimizeParameterP r_prm;
     r_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     r_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
     r_prm.xi.resize(e_prm.No);
@@ -338,7 +338,7 @@ auto example1() -> void
 
 auto example2() -> void
 {
-    EquationParameter e_prm;
+    EquationParameterP e_prm;
     e_prm.a = 1.0;
     e_prm.alpha = 0.001;
     e_prm.lambda = +0.001;
@@ -351,7 +351,7 @@ auto example2() -> void
     /*********************************************************************************************************
      * Optimization parameters Table 1
      *********************************************************************************************************/
-    OptimizeParameter o_prm;
+    OptimizeParameterP o_prm;
     o_prm.k.resize(e_prm.Nc, e_prm.No, -0.5);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 10.0);
     o_prm.xi.resize(e_prm.No);
@@ -383,7 +383,7 @@ auto example2() -> void
      * Regularization parameters
      * Table 1, Example 1,2
      *********************************************************************************************************/
-    OptimizeParameter r_prm;
+    OptimizeParameterP r_prm;
     r_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     r_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
     r_prm.xi.resize(e_prm.No);
@@ -457,7 +457,7 @@ auto example2() -> void
 
 auto example3() -> void
 {
-    EquationParameter e_prm;
+    EquationParameterP e_prm;
     e_prm.a = 1.0;
     e_prm.alpha = 0.001;
     e_prm.lambda = +0.001;
@@ -470,7 +470,7 @@ auto example3() -> void
     /*********************************************************************************************************
      * Optimization parameters Table 1
      *********************************************************************************************************/
-    OptimizeParameter o_prm;
+    OptimizeParameterP o_prm;
     o_prm.k.resize(e_prm.Nc, e_prm.No, -0.5);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 10.0);
     o_prm.xi.resize(e_prm.No);
@@ -502,7 +502,7 @@ auto example3() -> void
      * Regularization parameters
      * Table 1, Example 1,2
      *********************************************************************************************************/
-    OptimizeParameter r_prm;
+    OptimizeParameterP r_prm;
     r_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     r_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
     r_prm.xi.resize(e_prm.No);
@@ -531,10 +531,10 @@ auto example3() -> void
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 1.0000 << 20.000 << 50.0000 << 100.00;
+    DoubleVector r; r << 0.0000;// << 20.000 << 50.0000 << 100.00;
 
     // Regularization coefficients
-    DoubleVector e; e << 0.0000 << 0.0000 << 0.00000 << 0.0000;
+    DoubleVector e; e << 0.0000;// << 0.0000 << 0.00000 << 0.0000;
 
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
@@ -549,8 +549,8 @@ auto example3() -> void
         prob.optimizeZ = true;
         prob.optimizeC = true;
         prob.optimizeO = true;
-        prob.vmin.resize(e_prm.Nc,   0.00);
-        prob.vmax.resize(e_prm.Nc, +18.00);
+        prob.vmin.resize(e_prm.Nc, -5.00);
+        prob.vmax.resize(e_prm.Nc, +5.00);
         prob.U.resize(static_cast<const unsigned int>(Ny+1), static_cast<const unsigned int>(Nx+1), 10.0);
 
         prob.VectorToPrm(rv, r_prm);
@@ -578,6 +578,7 @@ auto example3() -> void
         g.setR1MinimizeEpsilon(0.1, 0.0001);
         g.setNormalize(true);
         g.showExitMessage(true);
+        g.setMaxIterations(100);
 
         g.calculate(x);
 

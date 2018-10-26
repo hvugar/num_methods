@@ -11,7 +11,7 @@ class DefaultNormalizer : public IVectorNormalizer
 {
 public:
     virtual ~DefaultNormalizer();
-    inline virtual auto fx_norm(const DoubleVector &v) const -> double { return EuclideanNorm(v); }
+    inline virtual auto norm(const DoubleVector &v) const -> double { return EuclideanNorm(v); }
     inline virtual auto normalize(DoubleVector &v) const -> void { EuclideanNormalize(v); }
 };
 
@@ -44,7 +44,8 @@ public:
 GradientMethod::GradientMethod() : m_fn(NULL), m_gr(NULL), m_printer(NULL), m_projection(NULL),
     m_optimalityTolerance(0.1), m_functionTolerance(0.1), m_stepTolerance(0.1),
     min_step(0.1), min_epsilon(0.01),
-    m_iteration_count(0), m_show_end_message(true), m_normalize(true), m_normalizer(NULL)
+    m_show_end_message(true), m_normalize(true), m_normalizer(NULL),
+    m_iterationCount(0), m_maxIterations(UINT32_MAX)
 {
     m_gr = new DefaultGradient();
     m_normalizer = new DefaultNormalizer();
@@ -135,7 +136,7 @@ void GradientMethod::setR1MinimizeEpsilon(double step, double epsilon)
 
 unsigned int GradientMethod::count() const
 {
-    return m_iteration_count;
+    return m_iterationCount;
 }
 
 void GradientMethod::setPrinter(IPrinter *printer)
@@ -161,6 +162,26 @@ void GradientMethod::showExitMessage(bool showEndMessage)
 void GradientMethod::setGradientNormalizer(IVectorNormalizer *normalizer)
 {
     m_normalizer = normalizer;
+}
+
+auto GradientMethod::setMaxIterations(unsigned int maxIterations) -> void
+{
+    m_maxIterations = maxIterations;
+}
+
+auto GradientMethod::maxIterations() const -> unsigned int
+{
+    return m_maxIterations;
+}
+
+auto GradientMethod::setMaxFunctionEvaluations(unsigned int maxFunctionEvaluations) -> void
+{
+    m_maxFunctionEvaluations = maxFunctionEvaluations;
+}
+
+auto GradientMethod::maxFunctionEvaluations() const -> unsigned int
+{
+    return m_maxFunctionEvaluations;
 }
 
 /**

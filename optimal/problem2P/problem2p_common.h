@@ -16,7 +16,7 @@
 #include <vector>
 #include <utility>
 
-struct OptimizeParameter
+struct OptimizeParameterP
 {
     DoubleMatrix k;
     DoubleMatrix z;
@@ -24,7 +24,7 @@ struct OptimizeParameter
     std::vector<SpacePoint> eta;
 };
 
-struct EquationParameter
+struct EquationParameterP
 {
     unsigned int No;
     unsigned int Nc;
@@ -35,7 +35,7 @@ struct EquationParameter
     double phi;
 };
 
-struct ExtendedSpacePointNode
+struct ExtendedSpacePointNodeP
 {
     double x;
     double y;
@@ -47,7 +47,7 @@ struct ExtendedSpacePointNode
     inline auto equals(const SpaceNodePDE &sn) const -> bool { return (sn.i == nx && sn.j == ny); }
 };
 
-struct ExtendedSpacePoint : public SpacePoint
+struct ExtendedSpacePointP : public SpacePoint
 {
     unsigned int id;
     int rx;
@@ -60,7 +60,7 @@ struct ExtendedSpacePoint : public SpacePoint
     int minY;
     int maxY;
 
-    std::vector<ExtendedSpacePointNode> nodes;
+    std::vector<ExtendedSpacePointNodeP> nodes;
 
     auto contains(int nx, int ny) const -> bool;
     auto contains(const SpaceNodePDE &sn) const -> bool
@@ -70,11 +70,11 @@ struct ExtendedSpacePoint : public SpacePoint
     }
 };
 
-struct SpacePointInfo : public SpacePoint
+struct SpacePointInfoP : public SpacePoint
 {
-    SpacePointInfo();
-    SpacePointInfo(unsigned int length);
-    virtual ~SpacePointInfo();
+    SpacePointInfoP();
+    SpacePointInfoP(unsigned int length);
+    virtual ~SpacePointInfoP();
     void init(unsigned int length);
     void clear();
 
@@ -84,7 +84,7 @@ struct SpacePointInfo : public SpacePoint
     std::vector<double> dy;
 };
 
-typedef std::vector<unsigned int>    uint_vector;
-typedef std::vector<SpacePointInfo>  spif_vector;
+typedef std::vector<unsigned int>     uint_vector;
+typedef std::vector<SpacePointInfoP>  spif_vector;
 
 #endif // PROBLEM2P_COMMON_H

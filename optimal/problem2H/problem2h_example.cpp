@@ -13,7 +13,7 @@ void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 void example1()
 {
     // Equation parameters
-    EquationParameter e_prm;
+    EquationParameterH e_prm;
     e_prm.a = 1.0;
     e_prm.lambda = +0.0;
 
@@ -29,14 +29,14 @@ void example1()
     e_prm.Nc = 2;
 
     // Optimization parameters
-    OptimizeParameter o_prm;
+    OptimizeParameterH o_prm;
     o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
     // Regularization parameters
-    OptimizeParameter r_prm;
+    OptimizeParameterH r_prm;
     r_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     r_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
     r_prm.xi.resize(e_prm.No);
@@ -142,7 +142,7 @@ void example1()
 void example2()
 {
     // Equation parameters
-    EquationParameter e_prm;
+    EquationParameterH e_prm;
     e_prm.a = +1.0;
     e_prm.lambda = +0.01;
 
@@ -163,14 +163,14 @@ void example2()
     e_prm.Nc = 2;
 
     // Optimization parameters
-    OptimizeParameter o_prm;
+    OptimizeParameterH o_prm;
     o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
     // Regularization parameters
-    OptimizeParameter r_prm;
+    OptimizeParameterH r_prm;
     r_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     r_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
     r_prm.xi.resize(e_prm.No);
@@ -232,7 +232,7 @@ void example2()
 void example3()
 {
     // Equation parameters
-    EquationParameter e_prm;
+    EquationParameterH e_prm;
     e_prm.a = 1.0;
     e_prm.lambda = +0.01;
 
@@ -248,14 +248,14 @@ void example3()
     e_prm.Nc = 2;
 
     // Optimization parameters
-    OptimizeParameter o_prm;
+    OptimizeParameterH o_prm;
     o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
     // Regularization parameters
-    OptimizeParameter r_prm;
+    OptimizeParameterH r_prm;
     r_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     r_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
     r_prm.xi.resize(e_prm.No);

@@ -124,6 +124,26 @@ public:
      * @param normalizer
      */
     void setGradientNormalizer(IVectorNormalizer *normalizer);
+    /**
+     * @brief Максимальное количество повторений позволено.
+     * @param maxIterations
+     */
+    auto setMaxIterations(unsigned int maxIterations) -> void;
+    /**
+     * @brief Максимальное количество повторений позволено.
+     * @return
+     */
+    auto maxIterations() const -> unsigned int;
+    /**
+     * @brief Максимальное количество оценок функции позволено.
+     * @param maxFunctionEvaluations
+     */
+    auto setMaxFunctionEvaluations(unsigned int maxFunctionEvaluations) -> void;
+    /**
+     * @brief Максимальное количество оценок функции позволено.
+     * @return
+     */
+    auto maxFunctionEvaluations() const -> unsigned int;
 
 protected:
     /**
@@ -196,11 +216,12 @@ protected:
     double m_constraintTolerance;
     double min_step;
     double min_epsilon;
-    unsigned int m_iteration_count;
     bool m_show_end_message;
     bool m_normalize;
     IVectorNormalizer *m_normalizer;
+    unsigned int m_iterationCount;
     unsigned int m_maxIterations;
+    unsigned int m_maxFunctionEvaluations;
 };
 
 #endif // GRADIENT_METHOD_H

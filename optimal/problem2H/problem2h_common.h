@@ -20,7 +20,7 @@
 #include "problem2h_global.h"
 #include "../imaging/imaging.h"
 
-struct PROBLEM2HSHARED_EXPORT OptimizeParameter
+struct PROBLEM2HSHARED_EXPORT OptimizeParameterH
 {
     DoubleMatrix k;
     DoubleMatrix z;
@@ -28,7 +28,7 @@ struct PROBLEM2HSHARED_EXPORT OptimizeParameter
     std::vector<SpacePoint> eta;
 };
 
-struct PROBLEM2HSHARED_EXPORT EquationParameter
+struct PROBLEM2HSHARED_EXPORT EquationParameterH
 {
     unsigned int No;
     unsigned int Nc;
@@ -39,7 +39,7 @@ struct PROBLEM2HSHARED_EXPORT EquationParameter
     double lambda;
 };
 
-struct PROBLEM2HSHARED_EXPORT ExtendedSpacePointNode
+struct PROBLEM2HSHARED_EXPORT ExtendedSpacePointNodeH
 {
     double x;
     double y;
@@ -51,7 +51,7 @@ struct PROBLEM2HSHARED_EXPORT ExtendedSpacePointNode
     inline auto equals(const SpaceNodePDE &sn) const -> bool { return (sn.i == nx && sn.j == ny); }
 };
 
-struct PROBLEM2HSHARED_EXPORT ExtendedSpacePoint : public SpacePoint
+struct PROBLEM2HSHARED_EXPORT ExtendedSpacePointH : public SpacePoint
 {
     unsigned int id;
     int rx;
@@ -64,17 +64,17 @@ struct PROBLEM2HSHARED_EXPORT ExtendedSpacePoint : public SpacePoint
     int minY;
     int maxY;
 
-    std::vector<ExtendedSpacePointNode> nodes;
+    std::vector<ExtendedSpacePointNodeH> nodes;
 
     auto contains(int nx, int ny) const -> bool;
     auto contains(const SpaceNodePDE &sn) const -> bool { return ((minX <= sn.i && sn.i <= maxX) && (minY <= sn.j && sn.j <= maxY)); }
 };
 
-struct PROBLEM2HSHARED_EXPORT SpacePointInfo : public SpacePoint
+struct PROBLEM2HSHARED_EXPORT SpacePointInfoH: public SpacePoint
 {
-    SpacePointInfo();
-    SpacePointInfo(unsigned int length);
-    virtual ~SpacePointInfo();
+    SpacePointInfoH();
+    SpacePointInfoH(unsigned int length);
+    virtual ~SpacePointInfoH();
     void init(unsigned int length);
     void clear();
 
@@ -84,7 +84,7 @@ struct PROBLEM2HSHARED_EXPORT SpacePointInfo : public SpacePoint
     std::vector<double> dy;
 };
 
-typedef std::vector<unsigned int>           uint_vector;
-typedef std::vector<SpacePointInfo>         spif_vector;
+typedef std::vector<unsigned int>            uint_vector;
+typedef std::vector<SpacePointInfoH>         spif_vector;
 
 #endif // PROBLEM2H_COMMON_H

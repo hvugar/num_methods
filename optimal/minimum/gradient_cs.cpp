@@ -16,7 +16,7 @@ void ConstStepGradient::calculate(DoubleVector &x)
 {
     unsigned int n = x.length();
 
-    m_iteration_count = 0;
+    m_iterationCount = 0;
     double distance = 0.0;
     double alpha = 0.0;
 
@@ -35,7 +35,7 @@ void ConstStepGradient::calculate(DoubleVector &x)
             break;
         }
 
-        m_iteration_count++;
+        m_iterationCount++;
 
         /* Normalize vector */
         if (m_normalize) g.L2Normalize();

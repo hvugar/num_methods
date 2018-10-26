@@ -25,7 +25,8 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
 
     mx = &x;
     mg = &g;
-    m_iteration_count = 0;
+    m_iterationCount = 0;
+    //unsigned int m_funcEvaluationCount = 0;
 
     /**************************************************************************************
      * Gradient of objective functionin on initial point.
@@ -39,10 +40,10 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
      * Finish minimization.
      **************************************************************************************/
     double gradient_norm = 0.0;
-    if (m_normalizer) gradient_norm = m_normalizer->fx_norm(g);
+    if (m_normalizer) gradient_norm = m_normalizer->norm(g);
     if (gradient_norm < optimalityTolerance())
     {
-        if (m_printer) m_printer->print(m_iteration_count, x, g, m_fn->fx(x), alpha, BREAK_FIRST_ITERATION);
+        if (m_printer) m_printer->print(m_iterationCount, x, g, m_fn->fx(x), alpha, BREAK_FIRST_ITERATION);
         if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than optimality tolerance...");
         return;
     }
@@ -52,11 +53,11 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
      **************************************************************************************/
     f1 = m_fn->fx(x);
 
-    if (m_printer) m_printer->print(m_iteration_count, x, g, f1, alpha, FIRST_ITERATION);
+    if (m_printer) m_printer->print(m_iterationCount, x, g, f1, alpha, FIRST_ITERATION);
 
     do
     {
-        m_iteration_count++;
+        m_iterationCount++;
 
         /**************************************************************************************
          * Normalization of a gradient vector
@@ -71,10 +72,10 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
         /**************************************************************************************
          * Calculation next point.
          **************************************************************************************/
-        distance = 0.0;
+        DoubleVector cx = x;
         for (unsigned int i=0; i<n; i++)
         {
-            double cx = x[i];
+            //double cx = x[i];
             x[i] = x[i] - alpha * g[i];
 
             //if (m_projection) m_projection->project(x, i);
@@ -82,10 +83,15 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
             /**************************************************************************************
              * Calculating distance.
              **************************************************************************************/
-            distance += (x[i]-cx)*(x[i]-cx);
+            //distance += (x[i]-cx)*(x[i]-cx);
         }
         if (m_projection) m_projection->project(x);
+
+        double distance = 0.0;
+        for (unsigned int i=0; i<n; i++) { distance += (cx[i]-x[i])*(cx[i]-x[i]); }
         distance = sqrt(distance);
+        cx.clear();
+
         f2 = m_fn->fx(x);
 
         /**************************************************************************************
@@ -100,10 +106,10 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
          * Finish minimization.
          **************************************************************************************/
         double gradient_norm = 0.0;
-        if (m_normalizer) gradient_norm = m_normalizer->fx_norm(g);
+        if (m_normalizer) gradient_norm = m_normalizer->norm(g);
         if (gradient_norm < optimalityTolerance())
         {
-            if (m_printer) m_printer->print(m_iteration_count, x, g, f2, alpha, BREAK_GRADIENT_NORM_LESS);
+            if (m_printer) m_printer->print(m_iterationCount, x, g, f2, alpha, BREAK_GRADIENT_NORM_LESS);
             if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than optimality tolerance...");
             break;
         }
@@ -116,15 +122,39 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
          **************************************************************************************/
         if (distance < stepTolerance() && fabs(f2 - f1) < functionTolerance())
         {
-            if (m_printer) m_printer->print(m_iteration_count, x, g, f2, alpha, BREAK_DISTANCE_LESS);
+            if (m_printer) m_printer->print(m_iterationCount, x, g, f2, alpha, BREAK_DISTANCE_LESS);
             if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
+            break;
+        }
+
+        /**************************************************************************************
+         *
+         *
+         *
+         **************************************************************************************/
+        if (m_iterationCount >= maxIterations())
+        {
+            if (m_printer) m_printer->print(m_iterationCount, x, g, f2, alpha, BREAK_DISTANCE_LESS);
+            if (m_show_end_message) puts("Optimisation ends, because iteration count reached max allowed iterations number...");
+            break;
+        }
+
+        /**************************************************************************************
+         *
+         *
+         *
+         **************************************************************************************/
+        if (maxFunctionEvaluations() != maxFunctionEvaluations())
+        {
+            if (m_printer) m_printer->print(m_iterationCount, x, g, f2, alpha, BREAK_DISTANCE_LESS);
+            if (m_show_end_message) puts("Optimisation ends, because max function evaluation count reached max allowed number...");
             break;
         }
 
         /**************************************************************************************
          * Printing iteration information.
          **************************************************************************************/
-        if (m_printer) m_printer->print(m_iteration_count, x, g, f2, alpha, GradientMethod::NEXT_ITERATION);
+        if (m_printer) m_printer->print(m_iterationCount, x, g, f2, alpha, GradientMethod::NEXT_ITERATION);
 
         f1 = f2;
 
@@ -175,6 +205,8 @@ double SteepestDescentGradient::fx(double alpha) const
     }
 
     if (m_projection) m_projection->project(cx);
+    double r_fx = m_fn->fx(cx);
+    cx.clear();
 
-    return m_fn->fx(cx);
+    return r_fx;
 }

@@ -8,7 +8,7 @@ Problem2HNDirichlet prob;
 void init_pr()
 {
     // Equation parameters ---------------------------------------------------------------------
-    EquationParameter e_prm;
+    EquationParameterH e_prm;
     e_prm.a = 1.0;
     e_prm.lambda = 0.01;
 
@@ -24,7 +24,7 @@ void init_pr()
     e_prm.Nc = 2;
 
     // Optimization parameters
-    OptimizeParameter o_prm;
+    OptimizeParameterH o_prm;
 
     o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
@@ -32,7 +32,7 @@ void init_pr()
     o_prm.eta.resize(e_prm.Nc);
 
     // Regularization parameters
-    OptimizeParameter r_prm;
+    OptimizeParameterH r_prm;
     r_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     r_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
     r_prm.xi.resize(e_prm.No);
