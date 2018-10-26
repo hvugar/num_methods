@@ -11,6 +11,9 @@ auto Problem2PNeumann::gradient(const DoubleVector &pv, DoubleVector &gv) const 
     const double ht        = mtimeDimension.step();
     const unsigned int Nc  = mEquParameter.Nc;
     const unsigned int No  = mEquParameter.No;
+#ifdef TIME_DISCRETE
+    const unsigned int Nt = mEquParameter.Nt;
+#endif
 
     OptimizeParameterP mOptParameter;
     VectorToPrm(pv, mOptParameter);
@@ -188,6 +191,49 @@ auto Problem2PNeumann::gradient(const DoubleVector &pv, DoubleVector &gv) const 
             gv[gi++] = 0.0;
         }
     }
+
+#ifdef TIME_DISCRETE
+    // tau
+    if (true)
+    {
+        for (unsigned int s=0; s<Nt; s++)
+        {
+            unsigned int tau0 = 0;
+            unsigned int tau1 = mOptParameter.dt[s];
+            if (s!=0) tau0 = mOptParameter.dt[s-1];
+
+            double gradTaus = 0.0;
+            double sumP = 0.0;
+            for (unsigned int i=0; i<Nc; i++)
+            {
+                const SpacePointInfoP &pi = p_info[i];
+                double pi_vl = pi.vl[tau1*2];
+
+                double intPi = 0.0;
+                for (unsigned p=tau0; p<=tau1; p++) intPi += ht*pi.vl[p];
+
+                for (unsigned int j=0; j<No; j++)
+                {
+                    const SpacePointInfoP &uj = u_info[j];
+
+                    double uj0_vl = uj.vl[2*tau0];
+                    double uj1_vl = uj.vl[2*tau1];
+
+                    double kij = mOptParameter.k[i][j];
+                    gradTaus += pi_vl * kij * (uj0_vl-uj1_vl);
+
+                    sumP += intPi*kij*(uj.vl[2*tau1]-uj.vl[2*tau1-2])/ht;
+                }
+            }
+
+            gv[gi++] = -gradTaus+sumP;
+        }
+    }
+    else
+    {
+        for (unsigned int nt=0; nt<Nt; nt++) gv[gi++] = 0.0;
+    }
+#endif
 
     for (unsigned int i=0; i<u_info.size(); i++)
     {
@@ -641,8 +687,23 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
 
     SpaceNodePDE sn;
 
+#ifdef TIME_DISCRETE
+    std::vector<unsigned int> discrete_times;
+    discrete_times.push_back(0);
+    for (unsigned int i=0; i<mEquParameter.Nt; i++) discrete_times.push_back(mOptParameter.dt[i]);
+#endif
+
     for (unsigned int l=1; l<=L; l++)
     {
+
+#ifdef TIME_DISCRETE
+        unsigned int current_time = 0;
+        for (unsigned int i=0; i<discrete_times.size(); i++)
+        {
+            if (discrete_times[i] < l) current_time = discrete_times[i];
+        }
+#endif
+
         /**************************************************** x direction apprx ***************************************************/
 
         if (rows0.size() != 0)
@@ -673,7 +734,6 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                 dx[0] += aa_lambda_ht__hx*theta;
                 dx[N] += aa_lambda_ht__hx*theta;
 
-                //printf("%f %f %f %f %f %f\n", ax[0], bx[0], cx[0], ax[N], bx[N], cx[N]);
                 tomasAlgorithm(ax, bx, cx, dx, rx, N+1);
                 for (unsigned int n=0; n<=N; n++) u05[m][n] = rx[n];
             }
@@ -687,6 +747,9 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
 
             double* _u05 = new double[No]; for (unsigned int j=0; j<No; j++) _u05[j] = 0.0;
 
+#ifdef TIME_DISCRETE
+            for (unsigned int j=0; j<No; j++) _u05[j] = u_info[j].vl[2*current_time];
+#else
             for (unsigned int j=0; j<No; j++)
             {
                 const ExtendedSpacePointP &extendedSpacePoint = msnExtSpacePoints.at(j);
@@ -698,6 +761,7 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                     _u05[j] += u05[static_cast<const unsigned int>(node.ny)][static_cast<const unsigned int>(node.nx)] * (node.w * (hx*hy));
                 }
             }
+#endif
 
             for (unsigned int i=0; i<Nc; i++)
             {
@@ -762,7 +826,7 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
 
         if (rows1.size() != 0 && rows2.size() != 0)
         {
-            //throw std::exception();
+            throw std::exception();
 
             for (unsigned int m=0; m<rows1_size; m++) for (unsigned int n=0; n<rows1_size; n++) w1[m][n] = 0.0;
 
@@ -914,6 +978,9 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
 
             double* _u10 = new double[No]; for (unsigned int j=0; j<No; j++) _u10[j] = 0.0;
 
+#ifdef TIME_DISCRETE
+            for (unsigned int j=0; j<No; j++) _u10[j] = u_info[j].vl[2*current_time];
+#else
             for (unsigned int j=0; j<No; j++)
             {
                 const ExtendedSpacePointP &extendedSpacePoint = msnExtSpacePoints.at(j);
@@ -925,6 +992,7 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                     _u10[j] += u10[node.ny][node.nx] * (node.w * (hx*hy));
                 }
             }
+#endif
 
             for (unsigned int i=0; i<Nc; i++)
             {
@@ -989,7 +1057,7 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
 
         if (cols1.size() != 0 && cols2.size() != 0)
         {
-            //throw std::exception();
+            throw std::exception();
 
             for (unsigned int m=0; m<cols1_size; m++) for (unsigned int n=0; n<cols1_size; n++) w2[m][n] = 0.0;
 
@@ -1277,8 +1345,24 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
 
     SpaceNodePDE sn;
 
+#ifdef TIME_DISCRETE
+    std::vector<unsigned int> discrete_times;
+    discrete_times.push_back(0);
+    for (unsigned int i=0; i<mEquParameter.Nt; i++) discrete_times.push_back(mOptParameter.dt[i]);
+#endif
+
     for (unsigned int l=L-1; l != (unsigned int)0-1; l--)
     {
+
+#ifdef TIME_DISCRETE
+        unsigned int current_time = 0;
+        unsigned int current_indx = 0;
+        for (unsigned int i=0; i<discrete_times.size(); i++)
+        {
+            if (discrete_times[i] < l+1) current_indx = i;
+            current_time = discrete_times[current_indx];
+        }
+#endif
         /**************************************************** x direction apprx ***************************************************/
 
         if (rows0.size() != 0)
@@ -1323,6 +1407,27 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
 
             double* _p05 = new double[Nc]; for (unsigned int i=0; i<Nc; i++) _p05[i] = 0.0;
 
+#ifdef TIME_DISCRETE
+            if (l == current_time)
+            {
+                unsigned int start = discrete_times[current_indx];
+                unsigned int end   = 0;
+                if (current_indx == discrete_times.size()-1)
+                {
+                    end = L;
+                }
+                else
+                {
+                    end = discrete_times[current_indx+1];
+                }
+                for (unsigned int i=0; i<Nc; i++)
+                {
+                    for (unsigned int ln=start; ln<end; ln++) _p05[i] += ht*p_info[i].vl[2*ln];
+                    _p05[i] *= (1.0/ht);
+                }
+            }
+#else
+
             for (unsigned int i=0; i<Nc; i++)
             {
                 const ExtendedSpacePointP &extendedSpacePoint = cntExtSpacePoints.at(i);
@@ -1334,6 +1439,7 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                     _p05[i] += p05[node.ny][node.nx] * (node.w * (hx*hy));
                 }
             }
+#endif
 
             for (unsigned int j=0; j<No; j++)
             {
@@ -1398,7 +1504,7 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
 
         if (rows1.size() != 0 && rows2.size() != 0)
         {
-            //throw std::exception();
+            throw std::exception();
 
             for (unsigned int m=0; m<rows1_size; m++) for (unsigned int n=0; n<rows1_size; n++) w1[m][n] = 0.0;
 
@@ -1548,6 +1654,26 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
 
             double* _p10 = new double[Nc]; for (unsigned int i=0; i<Nc; i++) _p10[i] = 0.0;
 
+#ifdef TIME_DISCRETE
+            if (l == current_time)
+            {
+                unsigned int start = discrete_times[current_indx];
+                unsigned int end   = 0;
+                if (current_indx == discrete_times.size()-1)
+                {
+                    end = L;
+                }
+                else
+                {
+                    end = discrete_times[current_indx+1];
+                }
+                for (unsigned int i=0; i<Nc; i++)
+                {
+                    for (unsigned int ln=start; ln<end; ln++) _p10[i] += ht*p_info[i].vl[2*ln];
+                    _p10[i] *= (1.0/ht);
+                }
+            }
+#else
             for (unsigned int i=0; i<Nc; i++)
             {
                 const ExtendedSpacePointP &extendedSpacePoint = cntExtSpacePoints.at(i);
@@ -1559,6 +1685,7 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                     _p10[i] += p10[node.ny][node.nx] * (node.w * (hx*hy));
                 }
             }
+#endif
 
             for (unsigned int j=0; j<No; j++)
             {
@@ -1623,7 +1750,7 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
 
         if (cols1.size() != 0 && cols2.size() != 0)
         {
-            //throw std::exception();
+            throw std::exception();
 
             for (unsigned int m=0; m<cols1_size; m++) for (unsigned int n=0; n<cols1_size; n++) w2[m][n] = 0.0;
 
@@ -2241,6 +2368,9 @@ auto Problem2PNeumann::VectorToPrm(const DoubleVector &pv, OptimizeParameterP &p
 {
     unsigned int Nc = mEquParameter.Nc;
     unsigned int No = mEquParameter.No;
+#ifdef TIME_DISCRETE
+    unsigned int Nt = mEquParameter.Nt;
+#endif
 
     unsigned int index = 0;
 
@@ -2283,15 +2413,29 @@ auto Problem2PNeumann::VectorToPrm(const DoubleVector &pv, OptimizeParameterP &p
         prm.eta[i].x = pv[index]; index++;
         prm.eta[i].y = pv[index]; index++;
     }
+
+#ifdef TIME_DISCRETE
+    for (unsigned int nt=0; nt<Nt; nt++)
+    {
+        prm.dt.push_back(static_cast<unsigned int>(pv[index])); index++;
+    }
+#endif
 }
 
 auto Problem2PNeumann::PrmToVector(const OptimizeParameterP &prm, DoubleVector &pv) const -> void
 {
     unsigned int Nc = mEquParameter.Nc;
     unsigned int No = mEquParameter.No;
+#ifdef TIME_DISCRETE
+    unsigned int Nt = mEquParameter.Nt;
+#endif
 
     pv.clear();
+#ifdef TIME_DISCRETE
+    pv.resize(2*Nc*No+2*No+2*Nc+Nt);
+#else
     pv.resize(2*Nc*No+2*No+2*Nc);
+#endif
 
     for (unsigned int i=0; i<Nc; i++)
     {
@@ -2320,4 +2464,11 @@ auto Problem2PNeumann::PrmToVector(const OptimizeParameterP &prm, DoubleVector &
         pv[2*i + 0 + 2*No + 2*Nc*No] = prm.eta[i].x;
         pv[2*i + 1 + 2*No + 2*Nc*No] = prm.eta[i].y;
     }
+
+#ifdef TIME_DISCRETE
+    for (unsigned int nt=0; nt<Nt; nt++)
+    {
+        pv[nt + 2*Nc + 2*No + 2*Nc*No] = prm.dt[nt];
+    }
+#endif
 }

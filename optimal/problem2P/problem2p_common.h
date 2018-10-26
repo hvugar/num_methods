@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <vector>
 #include <utility>
+#define TIME_DISCRETE
 
 struct OptimizeParameterP
 {
@@ -22,6 +23,9 @@ struct OptimizeParameterP
     DoubleMatrix z;
     std::vector<SpacePoint> xi;
     std::vector<SpacePoint> eta;
+#ifdef TIME_DISCRETE
+    std::vector<unsigned int> dt;
+#endif
 };
 
 struct EquationParameterP
@@ -33,6 +37,9 @@ struct EquationParameterP
     double lambda;
     double theta;
     double phi;
+#ifdef TIME_DISCRETE
+    unsigned int Nt;
+#endif
 };
 
 struct ExtendedSpacePointNodeP

@@ -6,5 +6,6 @@
 auto example1() -> void;
 auto example2() -> void;
 auto example3() -> void;
+auto example4() -> void;
 
 #endif // PROBLEM2P_EXAMPLE_H
