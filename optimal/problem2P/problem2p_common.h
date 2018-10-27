@@ -24,7 +24,7 @@ struct OptimizeParameterP
     std::vector<SpacePoint> xi;
     std::vector<SpacePoint> eta;
 #ifdef TIME_DISCRETE
-    std::vector<unsigned int> dt;
+    std::vector<double> tau;
 #endif
 };
 
@@ -51,7 +51,7 @@ struct ExtendedSpacePointNodeP
     double w;
     bool isCenter;
 
-    inline auto equals(const SpaceNodePDE &sn) const -> bool { return (sn.i == nx && sn.j == ny); }
+    inline auto equals(const SpaceNodePDE &sn) const -> bool { return (sn.i == static_cast<unsigned int>(nx) && sn.j == static_cast<unsigned int>(ny)); }
 };
 
 struct ExtendedSpacePointP : public SpacePoint
@@ -72,8 +72,8 @@ struct ExtendedSpacePointP : public SpacePoint
     auto contains(int nx, int ny) const -> bool;
     auto contains(const SpaceNodePDE &sn) const -> bool
     {
-        return ((minX <= sn.i && sn.i <= maxX) &&
-                (minY <= sn.j && sn.j <= maxY));
+        return ((minX <= static_cast<int>(sn.i) && static_cast<int>(sn.i) <= maxX) &&
+                (minY <= static_cast<int>(sn.j) && static_cast<int>(sn.j) <= maxY));
     }
 };
 

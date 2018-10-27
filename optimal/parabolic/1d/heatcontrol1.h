@@ -55,9 +55,9 @@ public:
     } backward;
 
     virtual double fx(const DoubleVector& f) const;
-    virtual void gradient(const DoubleVector& f, DoubleVector &g);
+    virtual void gradient(const DoubleVector& f, DoubleVector &g) const;
 
-    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const;
+    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx, double alpha, GradientMethod::MethodResult result) const;
 
 private:
     double ht;

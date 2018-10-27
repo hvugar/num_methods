@@ -15,9 +15,9 @@ void HeatControl1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     ConjugateGradient g;
     g.setGradient(&hc);
     g.setFunction(&hc);
-    g.setEpsilon1(0.0000001);
-    g.setEpsilon2(0.0000001);
-    g.setEpsilon3(0.0000001);
+    g.setOptimalityTolerance(0.0000001);
+    g.setFunctionTolerance(0.0000001);
+    g.setStepTolerance(0.0000001);
     g.setR1MinimizeEpsilon(0.1, 0.0000001);
     g.setPrinter(&hc);
     g.setNormalize(true);
@@ -37,11 +37,11 @@ HeatControl1::HeatControl1()
     U.resize(N+1);
     for (unsigned int i=0; i<=N; i++) U[i] = u(i*hx, 1.0);
 
-    forward.setTimeDimension(Dimension(ht,M,0));
-    forward.addSpaceDimension(Dimension(hx,N,0));
+    forward.setTimeDimension(Dimension(ht, M, 0));
+    forward.addSpaceDimension(Dimension(hx, N, 0));
 
-    backward.setTimeDimension(Dimension(ht,M,0));
-    backward.addSpaceDimension(Dimension(hx,N,0));
+    backward.setTimeDimension(Dimension(ht, M, 0));
+    backward.addSpaceDimension(Dimension(hx, N, 0));
     backward.pU = &U;
 }
 
@@ -79,16 +79,18 @@ double HeatControl1::fx(const DoubleVector &f) const
     return sum + norm;
 }
 
-void HeatControl1::gradient(const DoubleVector &f, DoubleVector &g)
+void HeatControl1::gradient(const DoubleVector &f, DoubleVector &g) const
 {
+    HeatControl1* hc = const_cast<HeatControl1*>(this);
+
     DoubleVector u;
-    forward.pf = &f;
+    hc->forward.pf = &f;
     forward.gridMethod(u);
 
     DoubleVector p;
     DoubleMatrix psi(M+1, N+1);
-    backward.pp = &psi;
-    backward.pu = &u;
+    hc->backward.pp = &psi;
+    hc->backward.pu = &u;
     backward.gridMethod(p);
 
     for (unsigned int m=0; m<=M; m++)
@@ -101,9 +103,10 @@ void HeatControl1::gradient(const DoubleVector &f, DoubleVector &g)
     }
 }
 
-void HeatControl1::print(unsigned int i, const DoubleVector &, const DoubleVector &, double fx, GradientMethod::MethodResult result) const
+void HeatControl1::print(unsigned int i, const DoubleVector &, const DoubleVector &, double fx, double alpha, GradientMethod::MethodResult result) const
 {
     C_UNUSED(result);
+    C_UNUSED(alpha);
     printf("J[%d]: %.14f\n", i, fx);
 }
 

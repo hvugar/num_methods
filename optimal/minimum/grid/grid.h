@@ -65,10 +65,10 @@ public:
 
     //Dimension& operator=(const Dimension &dim) const;
 
-    virtual double step() const;
-    virtual int minN() const;
-    virtual int maxN() const;
-    virtual int sizeN() const;
+    double step() const;
+    int minN() const;
+    int maxN() const;
+    int sizeN() const;
 
 protected:
     double mstep;

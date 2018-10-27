@@ -28,7 +28,7 @@ public:
     virtual ~HeatControl() {}
 
     virtual double fx(const DoubleVector& f) const;
-    virtual void gradient(const DoubleVector& f, DoubleVector &g);
+    virtual void gradient(const DoubleVector &f, DoubleVector &g) const;
 
     virtual double initial(unsigned int i) const;
     virtual double boundary(Boundary type, unsigned int j) const;
@@ -38,7 +38,7 @@ public:
     virtual double bboundary(Boundary type, unsigned int j) const;
     virtual double bf(unsigned int i, unsigned int j) const;
 
-    virtual void print(unsigned int i, const DoubleVector& f0, const DoubleVector &g, double fx, GradientMethod::MethodResult result) const;
+    virtual void print(unsigned int i, const DoubleVector &f0, const DoubleVector &g, double fx, double alpha, GradientMethod::MethodResult result) const;
 
 private:
     double ht;

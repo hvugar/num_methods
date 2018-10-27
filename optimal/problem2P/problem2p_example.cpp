@@ -32,255 +32,18 @@ auto Problem2PNeumann::checkGradient1(const Problem2PNeumann &prob, const Optimi
     DoubleVector ng1(pv.length(), 0.0);
     DoubleVector ng2(pv.length(), 0.0);
 
-    puts("Calculating numerical gradients.... dh=0.01");
-    puts("*** Calculating numerical gradients for k...... dh=0.01");
-    IGradient::Gradient(&prob, 0.01, pv, ng1, 0*e_prm.Nc*e_prm.No,            1*e_prm.Nc*e_prm.No-1);
-    puts("*** Calculating numerical gradients for z...... dh=0.01");
-    IGradient::Gradient(&prob, 0.01, pv, ng1, 1*e_prm.Nc*e_prm.No,            2*e_prm.Nc*e_prm.No-1);
-    puts("*** Calculating numerical gradients for xi..... dh=0.01");
-    IGradient::Gradient(&prob, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No+0*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    puts("*** Calculating numerical gradients for eta.... dh=0.01");
-    IGradient::Gradient(&prob, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    puts("Numerical gradients are calculated.");
-
-    puts("Calculating numerical gradients.... hx=0.001");
-    puts("*** Calculating numerical gradients for k...... dh=0.001");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 0*e_prm.Nc*e_prm.No,            1*e_prm.Nc*e_prm.No-1);
-    puts("*** Calculating numerical gradients for z...... dh=0.001");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 1*e_prm.Nc*e_prm.No,            2*e_prm.Nc*e_prm.No-1);
-    puts("*** Calculating numerical gradients for xi..... dh=0.001");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+0*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    puts("*** Calculating numerical gradients for eta.... dh=0.001");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    puts("Numerical gradients are calculated.");
-
-    //k------------------------------------------------------//
-    IPrinter::printSeperatorLine("k");
-    DoubleVector pk0 = pv.mid(0, e_prm.Nc*e_prm.No-1);
-    DoubleVector ak0 = ag.mid(0, e_prm.Nc*e_prm.No-1);
-    DoubleVector nk1 = ng1.mid(0, e_prm.Nc*e_prm.No-1);
-    DoubleVector nk2 = ng2.mid(0, e_prm.Nc*e_prm.No-1);
-
-    IPrinter::print(pk0,pk0.length(),14,4);
-    IPrinter::print(ak0,ak0.length(),14,4); ak0.L2Normalize();
-    IPrinter::print(nk1,nk1.length(),14,4); nk1.L2Normalize();
-    IPrinter::print(nk2,nk2.length(),14,4); nk2.L2Normalize();
-    IPrinter::print(ak0,ak0.length(),14,4);
-    IPrinter::print(nk1,nk1.length(),14,4);
-    IPrinter::print(nk2,nk2.length(),14,4);
-
-    //z------------------------------------------------------//
-    IPrinter::printSeperatorLine("z");
-    DoubleVector pz0 = pv.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
-    DoubleVector az0 = ag.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
-    DoubleVector nz1 = ng1.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
-    DoubleVector nz2 = ng2.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
-
-    IPrinter::print(pz0,pz0.length(),14,4);
-    IPrinter::print(az0,az0.length(),14,4); az0.L2Normalize();
-    IPrinter::print(nz1,nz1.length(),14,4); nz1.L2Normalize();
-    IPrinter::print(nz2,nz2.length(),14,4); nz2.L2Normalize();
-    IPrinter::print(az0,az0.length(),14,4);
-    IPrinter::print(nz1,nz1.length(),14,4);
-    IPrinter::print(nz2,nz2.length(),14,4);
-
-    //xi------------------------------------------------------//
-    IPrinter::printSeperatorLine("xi");
-    DoubleVector pe0 = pv.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    DoubleVector ae0 = ag.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    DoubleVector ne1 = ng1.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    DoubleVector ne2 = ng2.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-
-    IPrinter::print(pe0,pe0.length(),14,4);
-    IPrinter::print(ae0,ae0.length(),14,4); ae0.L2Normalize();
-    IPrinter::print(ne1,ne1.length(),14,4); ne1.L2Normalize();
-    IPrinter::print(ne2,ne2.length(),14,4); ne2.L2Normalize();
-    IPrinter::print(ae0,ae0.length(),14,4);
-    IPrinter::print(ne1,ne1.length(),14,4);
-    IPrinter::print(ne2,ne2.length(),14,4);
-
-    //eta------------------------------------------------------//
-    IPrinter::printSeperatorLine("eta");
-    DoubleVector px0 = pv.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    DoubleVector ax0 = ag.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    DoubleVector nx1 = ng1.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    DoubleVector nx2 = ng2.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-
-    IPrinter::print(px0,px0.length(),14,4);
-    IPrinter::print(ax0,ax0.length(),14,4); ax0.L2Normalize();
-    IPrinter::print(nx1,nx1.length(),14,4); nx1.L2Normalize();
-    IPrinter::print(nx2,nx2.length(),14,4); nx2.L2Normalize();
-    IPrinter::print(ax0,ax0.length(),14,4);
-    IPrinter::print(nx1,nx1.length(),14,4);
-    IPrinter::print(nx2,nx2.length(),14,4);
-    IPrinter::printSeperatorLine();
-}
-
-auto Problem2PNeumann::checkGradient2(const Problem2PNeumann &prob, const OptimizeParameterP &o_prm) -> void
-{
-    EquationParameterP e_prm = prob.mEquParameter;
-    //OptimizeParameter o_prm = prob.mOptParameter;
-    OptimizeParameterP r_prm = prob.mRegParameter;
-
-    IPrinter::printSeperatorLine();
-    DoubleVector pv;
-    prob.PrmToVector(o_prm, pv);
-    IPrinter::print(pv, pv.length(), 8, 4);
-    IPrinter::printSeperatorLine();
-    DoubleVector r_pv;
-    prob.PrmToVector(r_prm, r_pv);
-    IPrinter::print(r_pv, r_pv.length(), 8, 4);
-    IPrinter::printSeperatorLine();
-    DoubleVector ag(pv.length());
-    double functional = prob.fx(pv);
-    printf("Functional: %f\n", functional);
-    puts("Calculating gradients....");
-    prob.gradient(pv, ag);
-    puts("Gradients are calculated.");
-
-    DoubleVector ng1(pv.length(), 0.0);
-    DoubleVector ng2(pv.length(), 0.0);
-
-    puts("Calculating numerical gradients.... dh=0.01");
-    puts("*** Calculating numerical gradients for k...... dh=0.01");
-    IGradient::Gradient(&prob, 0.01, pv, ng1, 0*e_prm.Nc*e_prm.No,            1*e_prm.Nc*e_prm.No-1);
-    puts("*** Calculating numerical gradients for z...... dh=0.01");
-    IGradient::Gradient(&prob, 0.01, pv, ng1, 1*e_prm.Nc*e_prm.No,            2*e_prm.Nc*e_prm.No-1);
-    puts("*** Calculating numerical gradients for xi..... dh=0.01");
-    IGradient::Gradient(&prob, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No+0*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    puts("*** Calculating numerical gradients for eta.... dh=0.01");
-    IGradient::Gradient(&prob, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    puts("Numerical gradients are calculated.");
-
-    puts("Calculating numerical gradients.... hx=0.001");
-    puts("*** Calculating numerical gradients for k...... dh=0.001");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 0*e_prm.Nc*e_prm.No,            1*e_prm.Nc*e_prm.No-1);
-    puts("*** Calculating numerical gradients for z...... dh=0.001");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 1*e_prm.Nc*e_prm.No,            2*e_prm.Nc*e_prm.No-1);
-    puts("*** Calculating numerical gradients for xi..... dh=0.001");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+0*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    puts("*** Calculating numerical gradients for eta.... dh=0.001");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    puts("Numerical gradients are calculated.");
-
-    DoubleVector nag  = ag;  nag.EuclideanNormalize();
-    DoubleVector nng1 = ng1; nng1.EuclideanNormalize();
-    DoubleVector nng2 = ng2; nng2.EuclideanNormalize();
-
-    //k------------------------------------------------------//
-    IPrinter::printSeperatorLine("k");
-    DoubleVector pk0 = pv.mid(0, e_prm.Nc*e_prm.No-1);
-    IPrinter::print(pk0,pk0.length(),14,4);
-
-    DoubleVector ak0 = ag.mid(0, e_prm.Nc*e_prm.No-1);
-    DoubleVector nk1 = ng1.mid(0, e_prm.Nc*e_prm.No-1);
-    DoubleVector nk2 = ng2.mid(0, e_prm.Nc*e_prm.No-1);
-    IPrinter::print(ak0,ak0.length(),14,4);
-    IPrinter::print(nk1,nk1.length(),14,4);
-    IPrinter::print(nk2,nk2.length(),14,4);
-
-    DoubleVector nak0 = nag.mid(0, e_prm.Nc*e_prm.No-1);
-    DoubleVector nnk1 = nng1.mid(0, e_prm.Nc*e_prm.No-1);
-    DoubleVector nnk2 = nng2.mid(0, e_prm.Nc*e_prm.No-1);
-
-    IPrinter::print(nak0,nak0.length(),14,4);
-    IPrinter::print(nnk1,nnk1.length(),14,4);
-    IPrinter::print(nnk2,nnk2.length(),14,4);
-
-    //z------------------------------------------------------//
-    IPrinter::printSeperatorLine("z");
-    DoubleVector pz0 = pv.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
-    IPrinter::print(pz0,pz0.length(),14,4);
-
-    DoubleVector az0 = ag.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
-    DoubleVector nz1 = ng1.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
-    DoubleVector nz2 = ng2.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
-    IPrinter::print(az0,az0.length(),14,4);
-    IPrinter::print(nz1,nz1.length(),14,4);
-    IPrinter::print(nz2,nz2.length(),14,4);
-
-    DoubleVector naz0 = nag.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
-    DoubleVector nnz1 = nng1.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
-    DoubleVector nnz2 = nng2.mid(e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No-1);
-    IPrinter::print(naz0,naz0.length(),14,4);
-    IPrinter::print(nnz1,nnz1.length(),14,4);
-    IPrinter::print(nnz2,nnz2.length(),14,4);
-
-    //xi------------------------------------------------------//
-    IPrinter::printSeperatorLine("xi");
-    DoubleVector pe0 = pv.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    IPrinter::print(pe0,pe0.length(),14,4);
-
-    DoubleVector ae0 = ag.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    DoubleVector ne1 = ng1.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    DoubleVector ne2 = ng2.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    IPrinter::print(ae0,ae0.length(),14,4);
-    IPrinter::print(ne1,ne1.length(),14,4);
-    IPrinter::print(ne2,ne2.length(),14,4);
-
-    DoubleVector nae0 = nag.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    DoubleVector nne1 = nng1.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    DoubleVector nne2 = nng2.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    IPrinter::print(nae0,nae0.length(),14,4);
-    IPrinter::print(nne1,nne1.length(),14,4);
-    IPrinter::print(nne2,nne2.length(),14,4);
-
-    //eta------------------------------------------------------//
-    IPrinter::printSeperatorLine("eta");
-    DoubleVector px0 = pv.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    IPrinter::print(px0,px0.length(),14,4);
-
-    DoubleVector ax0 = ag.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    DoubleVector nx1 = ng1.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    DoubleVector nx2 = ng2.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    IPrinter::print(ax0,ax0.length(),14,4);
-    IPrinter::print(nx1,nx1.length(),14,4);
-    IPrinter::print(nx2,nx2.length(),14,4);
-
-    DoubleVector nax0 = nag.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    DoubleVector nnx1 = nng1.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    DoubleVector nnx2 = nng2.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    IPrinter::print(nax0,nax0.length(),14,4);
-    IPrinter::print(nnx1,nnx1.length(),14,4);
-    IPrinter::print(nnx2,nnx2.length(),14,4);
-    IPrinter::printSeperatorLine();
-}
-
-auto Problem2PNeumann::checkGradient3(const Problem2PNeumann &prob, const OptimizeParameterP &o_prm) -> void
-{
-    EquationParameterP e_prm = prob.mEquParameter;
-    OptimizeParameterP r_prm = prob.mRegParameter;
-
-    IPrinter::printSeperatorLine();
-    DoubleVector pv;
-    prob.PrmToVector(o_prm, pv);
-    IPrinter::print(pv, pv.length(), 8, 4);
-    IPrinter::printSeperatorLine();
-    DoubleVector r_pv;
-    prob.PrmToVector(r_prm, r_pv);
-    IPrinter::print(r_pv, r_pv.length(), 8, 4);
-    IPrinter::printSeperatorLine();
-    double functional = prob.fx(pv);
-    printf("Functional: %f\n", functional);
-    puts("Calculating gradients....");
-    DoubleVector ag(pv.length());
-    prob.gradient(pv, ag);
-    puts("Gradients are calculated.");
-
-    DoubleVector ng1(pv.length(), 0.0);
-    DoubleVector ng2(pv.length(), 0.0);
-
-    unsigned int sk = 0*e_prm.Nc*e_prm.No;
-    unsigned int fk = 1*e_prm.Nc*e_prm.No-1;
-    unsigned int sz = 1*e_prm.Nc*e_prm.No;
-    unsigned int fz = 2*e_prm.Nc*e_prm.No-1;
-    unsigned int so = 2*e_prm.Nc*e_prm.No+0*e_prm.No;
-    unsigned int fo = 2*e_prm.Nc*e_prm.No+2*e_prm.No-1;
-    unsigned int sc = 2*e_prm.Nc*e_prm.No+2*e_prm.No;
-    unsigned int fc = 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1;
+    const unsigned int sk = 0*e_prm.Nc*e_prm.No;
+    const unsigned int fk = 1*e_prm.Nc*e_prm.No-1;
+    const unsigned int sz = 1*e_prm.Nc*e_prm.No;
+    const unsigned int fz = 2*e_prm.Nc*e_prm.No-1;
+    const unsigned int so = 2*e_prm.Nc*e_prm.No+0*e_prm.No;
+    const unsigned int fo = 2*e_prm.Nc*e_prm.No+2*e_prm.No-1;
+    const unsigned int sc = 2*e_prm.Nc*e_prm.No+2*e_prm.No;
+    const unsigned int fc = 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1;
+#ifdef TIME_DISCRETE
     unsigned int st = 2*e_prm.Nc*e_prm.No + 2*e_prm.No + 2*e_prm.Nc;
     unsigned int ft = 2*e_prm.Nc*e_prm.No + 2*e_prm.No + 2*e_prm.Nc + e_prm.Nt-1;
-
+#endif
     puts("Calculating numerical gradients.... dh=0.01");
     puts("*** Calculating numerical gradients for k...... dh=0.01");
     IGradient::Gradient(&prob, 0.01, pv, ng1, sk, fk);
@@ -290,8 +53,10 @@ auto Problem2PNeumann::checkGradient3(const Problem2PNeumann &prob, const Optimi
     IGradient::Gradient(&prob, 0.01, pv, ng1, so, fo);
     puts("*** Calculating numerical gradients for eta.... dh=0.01");
     IGradient::Gradient(&prob, 0.01, pv, ng1, sc, fc);
+#ifdef TIME_DISCRETE
     puts("*** Calculating numerical gradients for tau.... dh=0.01");
     IGradient::Gradient(&prob, 0.01, pv, ng1, st, ft);
+#endif
     puts("Numerical gradients are calculated.");
 
     puts("Calculating numerical gradients.... hx=0.001");
@@ -303,8 +68,10 @@ auto Problem2PNeumann::checkGradient3(const Problem2PNeumann &prob, const Optimi
     IGradient::Gradient(&prob, 0.001, pv, ng2, so, fo);
     puts("*** Calculating numerical gradients for eta.... dh=0.001");
     IGradient::Gradient(&prob, 0.001, pv, ng2, sc, fc);
-    puts("*** Calculating numerical gradients for tau.... dh=0.001");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, st, ft);
+#ifdef TIME_DISCRETE
+    puts("*** Calculating numerical gradients for tau.... dh=0.005");
+    IGradient::Gradient(&prob, 0.005, pv, ng2, st, ft);
+#endif
     puts("Numerical gradients are calculated.");
 
     //k------------------------------------------------------//
@@ -339,10 +106,10 @@ auto Problem2PNeumann::checkGradient3(const Problem2PNeumann &prob, const Optimi
 
     //xi------------------------------------------------------//
     IPrinter::printSeperatorLine("xi");
-    DoubleVector pe0 = pv.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    DoubleVector ae0 = ag.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    DoubleVector ne1 = ng1.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
-    DoubleVector ne2 = ng2.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
+    DoubleVector pe0 = pv.mid(so, fo);
+    DoubleVector ae0 = ag.mid(so, fo);
+    DoubleVector ne1 = ng1.mid(so, fo);
+    DoubleVector ne2 = ng2.mid(so, fo);
 
     IPrinter::print(pe0,pe0.length(),14,4);
     IPrinter::print(ae0,ae0.length(),14,4); ae0.L2Normalize();
@@ -354,10 +121,10 @@ auto Problem2PNeumann::checkGradient3(const Problem2PNeumann &prob, const Optimi
 
     //eta------------------------------------------------------//
     IPrinter::printSeperatorLine("eta");
-    DoubleVector px0 = pv.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    DoubleVector ax0 = ag.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    DoubleVector nx1 = ng1.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    DoubleVector nx2 = ng2.mid(2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
+    DoubleVector px0 = pv.mid(sc, fc);
+    DoubleVector ax0 = ag.mid(sc, fc);
+    DoubleVector nx1 = ng1.mid(sc, fc);
+    DoubleVector nx2 = ng2.mid(sc, fc);
 
     IPrinter::print(px0,px0.length(),14,4);
     IPrinter::print(ax0,ax0.length(),14,4); ax0.L2Normalize();
@@ -367,6 +134,7 @@ auto Problem2PNeumann::checkGradient3(const Problem2PNeumann &prob, const Optimi
     IPrinter::print(nx1,nx1.length(),14,4);
     IPrinter::print(nx2,nx2.length(),14,4);
 
+#ifdef TIME_DISCRETE
     //tau------------------------------------------------------//
     IPrinter::printSeperatorLine("tau");
 
@@ -382,6 +150,178 @@ auto Problem2PNeumann::checkGradient3(const Problem2PNeumann &prob, const Optimi
     IPrinter::print(at0,at0.length(),14,4);
     IPrinter::print(nt1,nt1.length(),14,4);
     IPrinter::print(nt2,nt2.length(),14,4);
+#endif
+    IPrinter::printSeperatorLine();
+}
+
+auto Problem2PNeumann::checkGradient2(const Problem2PNeumann &prob, const OptimizeParameterP &o_prm) -> void
+{
+    EquationParameterP e_prm = prob.mEquParameter;
+    OptimizeParameterP r_prm = prob.mRegParameter;
+
+    IPrinter::printSeperatorLine();
+    DoubleVector pv;
+    prob.PrmToVector(o_prm, pv);
+    IPrinter::print(pv, pv.length(), 8, 4);
+    IPrinter::printSeperatorLine();
+    DoubleVector r_pv;
+    prob.PrmToVector(r_prm, r_pv);
+    IPrinter::print(r_pv, r_pv.length(), 8, 4);
+    IPrinter::printSeperatorLine();
+    DoubleVector ag(pv.length());
+    double functional = prob.fx(pv);
+    printf("Functional: %f\n", functional);
+    puts("Calculating gradients....");
+    prob.gradient(pv, ag);
+    puts("Gradients are calculated.");
+
+    DoubleVector ng1(pv.length(), 0.0);
+    DoubleVector ng2(pv.length(), 0.0);
+
+    const unsigned int sk = 0*e_prm.Nc*e_prm.No;
+    const unsigned int fk = 1*e_prm.Nc*e_prm.No-1;
+    const unsigned int sz = 1*e_prm.Nc*e_prm.No;
+    const unsigned int fz = 2*e_prm.Nc*e_prm.No-1;
+    const unsigned int so = 2*e_prm.Nc*e_prm.No+0*e_prm.No;
+    const unsigned int fo = 2*e_prm.Nc*e_prm.No+2*e_prm.No-1;
+    const unsigned int sc = 2*e_prm.Nc*e_prm.No+2*e_prm.No;
+    const unsigned int fc = 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1;
+#ifdef TIME_DISCRETE
+    unsigned int st = 2*e_prm.Nc*e_prm.No + 2*e_prm.No + 2*e_prm.Nc;
+    unsigned int ft = 2*e_prm.Nc*e_prm.No + 2*e_prm.No + 2*e_prm.Nc + e_prm.Nt-1;
+#endif
+    puts("Calculating numerical gradients.... dh=0.01");
+    puts("*** Calculating numerical gradients for k...... dh=0.01");
+    IGradient::Gradient(&prob, 0.01, pv, ng1, sk, fk);
+    puts("*** Calculating numerical gradients for z...... dh=0.01");
+    IGradient::Gradient(&prob, 0.01, pv, ng1, sz, fz);
+    puts("*** Calculating numerical gradients for xi..... dh=0.01");
+    IGradient::Gradient(&prob, 0.01, pv, ng1, so, fo);
+    puts("*** Calculating numerical gradients for eta.... dh=0.01");
+    IGradient::Gradient(&prob, 0.01, pv, ng1, sc, fc);
+#ifdef TIME_DISCRETE
+    puts("*** Calculating numerical gradients for tau.... dh=0.01");
+    IGradient::Gradient(&prob, 0.01, pv, ng1, st, ft);
+#endif
+    puts("Numerical gradients are calculated.");
+
+    puts("Calculating numerical gradients.... hx=0.001");
+    puts("*** Calculating numerical gradients for k...... dh=0.001");
+    IGradient::Gradient(&prob, 0.001, pv, ng2, sk, fk);
+    puts("*** Calculating numerical gradients for z...... dh=0.001");
+    IGradient::Gradient(&prob, 0.001, pv, ng2, sz, fz);
+    puts("*** Calculating numerical gradients for xi..... dh=0.001");
+    IGradient::Gradient(&prob, 0.001, pv, ng2, so, fo);
+    puts("*** Calculating numerical gradients for eta.... dh=0.001");
+    IGradient::Gradient(&prob, 0.001, pv, ng2, sc, fc);
+#ifdef TIME_DISCRETE
+    puts("*** Calculating numerical gradients for tau.... dh=0.005");
+    IGradient::Gradient(&prob, 0.005, pv, ng2, st, ft);
+#endif
+    puts("Numerical gradients are calculated.");
+
+    DoubleVector nag0  = ag; nag0.EuclideanNormalize();
+    DoubleVector nng1 = ng1; nng1.EuclideanNormalize();
+    DoubleVector nng2 = ng2; nng2.EuclideanNormalize();
+
+    //k------------------------------------------------------//
+    IPrinter::printSeperatorLine("k");
+    DoubleVector pk0 = pv.mid(sk, fk);
+    IPrinter::print(pk0,pk0.length(),14,4);
+
+    DoubleVector ak0 = ag.mid(sk, fk);
+    DoubleVector nk1 = ng1.mid(sk, fk);
+    DoubleVector nk2 = ng2.mid(sk, fk);
+    IPrinter::print(ak0,ak0.length(),14,4);
+    IPrinter::print(nk1,nk1.length(),14,4);
+    IPrinter::print(nk2,nk2.length(),14,4);
+
+    DoubleVector nak0 = nag0.mid(sk, fk);
+    DoubleVector nnk1 = nng1.mid(sk, fk);
+    DoubleVector nnk2 = nng2.mid(sk, fk);
+
+    IPrinter::print(nak0,nak0.length(),14,4);
+    IPrinter::print(nnk1,nnk1.length(),14,4);
+    IPrinter::print(nnk2,nnk2.length(),14,4);
+
+    //z------------------------------------------------------//
+    IPrinter::printSeperatorLine("z");
+    DoubleVector pz0 = pv.mid(sz, fz);
+    IPrinter::print(pz0,pz0.length(),14,4);
+
+    DoubleVector az0 = ag.mid(sz, fz);
+    DoubleVector nz1 = ng1.mid(sz, fz);
+    DoubleVector nz2 = ng2.mid(sz, fz);
+    IPrinter::print(az0,az0.length(),14,4);
+    IPrinter::print(nz1,nz1.length(),14,4);
+    IPrinter::print(nz2,nz2.length(),14,4);
+
+    DoubleVector naz0 = nag0.mid(sz, fz);
+    DoubleVector nnz1 = nng1.mid(sz, fz);
+    DoubleVector nnz2 = nng2.mid(sz, fz);
+    IPrinter::print(naz0,naz0.length(),14,4);
+    IPrinter::print(nnz1,nnz1.length(),14,4);
+    IPrinter::print(nnz2,nnz2.length(),14,4);
+
+    //xi------------------------------------------------------//
+    IPrinter::printSeperatorLine("xi");
+    DoubleVector pe0 = pv.mid(so, fo);
+    IPrinter::print(pe0,pe0.length(),14,4);
+
+    DoubleVector ae0 = ag.mid(so, fo);
+    DoubleVector ne1 = ng1.mid(so, fo);
+    DoubleVector ne2 = ng2.mid(so, fo);
+    IPrinter::print(ae0,ae0.length(),14,4);
+    IPrinter::print(ne1,ne1.length(),14,4);
+    IPrinter::print(ne2,ne2.length(),14,4);
+
+    DoubleVector nae0 = nag0.mid(so, fo);
+    DoubleVector nne1 = nng1.mid(so, fo);
+    DoubleVector nne2 = nng2.mid(so, fo);
+    IPrinter::print(nae0,nae0.length(),14,4);
+    IPrinter::print(nne1,nne1.length(),14,4);
+    IPrinter::print(nne2,nne2.length(),14,4);
+
+    //eta------------------------------------------------------//
+    IPrinter::printSeperatorLine("eta");
+    DoubleVector px0 = pv.mid(sc, fc);
+    IPrinter::print(px0,px0.length(),14,4);
+
+    DoubleVector ax0 = ag.mid(sc, fc);
+    DoubleVector nx1 = ng1.mid(sc, fc);
+    DoubleVector nx2 = ng2.mid(sc, fc);
+    IPrinter::print(ax0,ax0.length(),14,4);
+    IPrinter::print(nx1,nx1.length(),14,4);
+    IPrinter::print(nx2,nx2.length(),14,4);
+
+    DoubleVector nax0 = nag0.mid(sc, fc);
+    DoubleVector nnx1 = nng1.mid(sc, fc);
+    DoubleVector nnx2 = nng2.mid(sc, fc);
+    IPrinter::print(nax0,nax0.length(),14,4);
+    IPrinter::print(nnx1,nnx1.length(),14,4);
+    IPrinter::print(nnx2,nnx2.length(),14,4);
+
+#ifdef TIME_DISCRETE
+    //tau------------------------------------------------------//
+    IPrinter::printSeperatorLine("tau");
+    DoubleVector pt0 = pv.mid(sc, fc);
+    IPrinter::print(pt0,pt0.length(),14,4);
+
+    DoubleVector at0 = ag.mid(st, ft);
+    DoubleVector nt1 = ng1.mid(st, ft);
+    DoubleVector nt2 = ng2.mid(st, ft);
+    IPrinter::print(pt0,pt0.length(),14,4);
+    IPrinter::print(nt1,nt1.length(),14,4);
+    IPrinter::print(nt2,nt2.length(),14,4);
+
+    DoubleVector nat0 = nag0.mid(st, ft);
+    DoubleVector nnt1 = nng1.mid(st, ft);
+    DoubleVector nnt2 = nng2.mid(st, ft);
+    IPrinter::print(nat0,nat0.length(),14,4);
+    IPrinter::print(nnt1,nnt1.length(),14,4);
+    IPrinter::print(nnt2,nnt2.length(),14,4);
+#endif
+
     IPrinter::printSeperatorLine();
 }
 
@@ -658,7 +598,7 @@ auto example3() -> void
     rv << -1.1964 << -1.2618 << -1.2777 << -1.3481
        << 10.0071 << 10.0033 << 10.0071 << 10.0026
        <<  0.9500 <<  0.3487 <<  0.2838 <<  0.6895
-       <<  0.8935 <<  0.9469 <<  0.0500 <<  0.0721;
+        <<  0.8935 <<  0.9469 <<  0.0500 <<  0.0721;
     /*********************************************************************************************************/
 
     // Grid parameters
@@ -801,15 +741,17 @@ auto example4() -> void
 
     Problem2PNeumann prob;
 
+#ifdef TIME_DISCRETE
     e_prm.Nt = 3;
 
-    o_prm.dt.push_back(50);
-    o_prm.dt.push_back(130);
-    o_prm.dt.push_back(180);
+    o_prm.tau.push_back(0.25);
+    o_prm.tau.push_back(0.50);
+    o_prm.tau.push_back(0.75);
 
-    r_prm.dt.push_back(20);
-    r_prm.dt.push_back(130);
-    r_prm.dt.push_back(180);
+    r_prm.tau.push_back(0.25);
+    r_prm.tau.push_back(0.50);
+    r_prm.tau.push_back(0.75);
+#endif
 
     prob.setTimeDimension(time);
     prob.addSpaceDimension(dimx);
@@ -824,8 +766,8 @@ auto example4() -> void
     prob.vmax.resize(e_prm.Nc, +5.0);
     prob.U.resize(static_cast<const unsigned int>(Ny+1), static_cast<const unsigned int>(Nx+1), 10.0);
     prob.regEpsilon = 0.0;
-    prob.r = 10.0;
-    prob.checkGradient3(prob, o_prm);
+    prob.r = 0.0;
+    prob.checkGradient1(prob, o_prm);
 }
 
 

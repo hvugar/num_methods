@@ -15,9 +15,9 @@ void HeatControl::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     ConjugateGradient g;
     g.setGradient(&hc);
     g.setFunction(&hc);
-    g.setEpsilon1(0.0000001);
-    g.setEpsilon2(0.0000001);
-    g.setEpsilon3(0.0000001);
+    g.setOptimalityTolerance(0.0000001);
+    g.setFunctionTolerance(0.0000001);
+    g.setStepTolerance(0.0000001);
     g.setR1MinimizeEpsilon(0.1, 0.0000001);
     g.setPrinter(&hc);
     g.setNormalize(true);
@@ -73,13 +73,14 @@ double HeatControl::fx(const DoubleVector &f) const
     return sum + norm;
 }
 
-void HeatControl::gradient(const DoubleVector &f, DoubleVector &g)
+void HeatControl::gradient(const DoubleVector &f, DoubleVector &g) const
 {
-    pf = &f;
+    HeatControl* hc = const_cast<HeatControl*>(this);
+    hc->pf = &f;
     DoubleVector u;
     IParabolicEquation::calculateU(u, hx, ht, N, M, a);
 
-    pu = &u;
+    hc->pu = &u;
     DoubleMatrix psi;
     IBackwardParabolicEquation::calculateU(psi, hx, ht, N, M, a);
 
@@ -131,8 +132,11 @@ double HeatControl::bf(unsigned int i, unsigned int j) const
     return 0.0;
 }
 
-void HeatControl::print(unsigned int i, const DoubleVector&, const DoubleVector &, double fx, GradientMethod::MethodResult result) const
+void HeatControl::print(unsigned int i, const DoubleVector &f0, const DoubleVector &g, double fx, double alpha, GradientMethod::MethodResult result) const
 {
+    C_UNUSED(f0);
+    C_UNUSED(g);
+    C_UNUSED(alpha);
     C_UNUSED(result);
     printf("J[%d]: %.14f\n", i, fx);
 }

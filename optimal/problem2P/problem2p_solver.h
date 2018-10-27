@@ -12,7 +12,6 @@ public:
     static void Main(int argc, char** argv);
     static void checkGradient1(const Problem2PNeumann &prob, const OptimizeParameterP &o_prm);
     static void checkGradient2(const Problem2PNeumann &prob, const OptimizeParameterP &o_prm);
-    static void checkGradient3(const Problem2PNeumann &prob, const OptimizeParameterP &o_prm);
 
 public:
     Problem2PNeumann();

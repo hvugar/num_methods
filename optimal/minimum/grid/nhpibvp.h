@@ -52,7 +52,7 @@ protected:
     virtual auto layerInfo(DoubleVector &u, unsigned int ln) const -> void;
     virtual auto layerInfo(DoubleMatrix &u, unsigned int ln) const -> void;
 public:
-    auto calculate() const;
+    auto calculate() const -> void;
 };
 
 #endif // NEWTONHEATEQUATION_H

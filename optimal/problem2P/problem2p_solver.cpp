@@ -196,42 +196,49 @@ auto Problem2PNeumann::gradient(const DoubleVector &pv, DoubleVector &gv) const 
     // tau
     if (true)
     {
+        std::vector<unsigned int> discrete_times;
+        discrete_times.push_back(0);
         for (unsigned int s=0; s<Nt; s++)
         {
-            unsigned int taum = 0;
-            unsigned int taus = mOptParameter.dt[s];
-            unsigned int taup = 0;
+            const double tau = mOptParameter.tau[s];
+            discrete_times.push_back(static_cast<unsigned int>(round(tau*L)));
+        }
+        discrete_times.push_back(L);
 
-            if (s != 0)    taum = mOptParameter.dt[s-1];
-            if (s == Nt-1) taup = L; else taup = mOptParameter.dt[s+1];
+        for (unsigned int s=0; s<Nt; s++)
+        {
+            const unsigned int taum = discrete_times[s+0];
+            const unsigned int taus = discrete_times[s+1];
+            const unsigned int taup = discrete_times[s+2];
 
-            printf("%u %u %u %u\n", s, taum, taus, taup);
-//            continue;
+            printf("%4u %4u %4u %4u\n", s, taum, taus, taup);
+            //continue;
 
-            double gradTaus = 0.0;
+            double grad = 0.0;
             for (unsigned int i=0; i<Nc; i++)
             {
                 const SpacePointInfoP &pi = p_info[i];
-                double pi_vl = pi.vl[taus*2];
+                const double pi_vl = pi.vl[taus*2];
 
-                double intPi = 0.0;
-                for (unsigned p=taus; p<=taup; p++) intPi += ht*pi.vl[2*p];
+                double pi_in = 0.0;
+                pi_in += 0.5*ht*pi.vl[2*taus];
+                for (unsigned p=taus+1; p<=taup-1; p++) pi_in += ht*pi.vl[2*p];
+                pi_in += 0.5*ht*pi.vl[2*taup];
 
                 for (unsigned int j=0; j<No; j++)
                 {
-                    const SpacePointInfoP &uj = u_info[j];
-
-                    double ujm_vl = uj.vl[2*taum];
-                    double ujs_vl = uj.vl[2*taus];
-
                     double kij = mOptParameter.k[i][j];
-                    gradTaus += pi_vl * kij * (ujm_vl-ujs_vl);
 
-                    gradTaus += intPi*kij*(uj.vl[2*taus]-uj.vl[2*taus-2])/ht;
+                    const SpacePointInfoP &uj = u_info[j];
+                    const double uj_vlm = uj.vl[2*taum];
+                    const double uj_vls = uj.vl[2*taus];
+
+                    grad = pi_vl * kij * (uj_vlm - uj_vls);
+                    grad = pi_in * kij * (uj.vl[2*taus+2] - uj.vl[2*taus])/ht;
                 }
             }
-
-            gv[gi++] = -gradTaus;
+            //printf("---- %u %u %u %u\n", s, taum, taus, taup);
+            gv[gi++] = -grad;
         }
     }
     else
@@ -600,6 +607,9 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
     const double theta    = mEquParameter.theta;
     const unsigned int No = mEquParameter.No;
     const unsigned int Nc = mEquParameter.Nc;
+#ifdef TIME_DISCRETE
+    const unsigned int Nt = mEquParameter.Nt;
+#endif
 
     const double m_aa_ht05__hxhx = -(0.5*a*a*ht)/(hx*hx);
     const double p_aa_ht__hxhx___alpha_ht05 = +1.0 + (a*a*ht)/(hx*hx) + 0.5*alpha*ht;
@@ -695,7 +705,13 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
 #ifdef TIME_DISCRETE
     std::vector<unsigned int> discrete_times;
     discrete_times.push_back(0);
-    for (unsigned int i=0; i<mEquParameter.Nt; i++) discrete_times.push_back(mOptParameter.dt[i]);
+    for (unsigned int s=0; s<Nt; s++)
+    {
+        const double tau = mOptParameter.tau[s];
+        discrete_times.push_back(static_cast<unsigned int>(round(tau*L)));
+    }
+    discrete_times.push_back(L);
+    //printf("%4u %4u %4u %4u %4u %4u\n", discrete_times.size(), discrete_times[0], discrete_times[1], discrete_times[2], discrete_times[3], discrete_times[4]);
 #endif
 
     for (unsigned int l=1; l<=L; l++)
@@ -705,8 +721,9 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
         unsigned int current_time = 0;
         for (unsigned int i=0; i<discrete_times.size(); i++)
         {
-            if (discrete_times[i] < l) current_time = discrete_times[i];
+            if (discrete_times[i] <= l) current_time = discrete_times[i];
         }
+        //printf("F %4u %4u\n", l, current_time);
 #endif
 
         /**************************************************** x direction apprx ***************************************************/
@@ -1258,6 +1275,9 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
     //const double theta    = mEquParameter.theta;
     const unsigned int No = mEquParameter.No;
     const unsigned int Nc = mEquParameter.Nc;
+#ifdef TIME_DISCRETE
+    const unsigned int Nt = mEquParameter.Nt;
+#endif
 
     const double m_aa_ht05__hxhx = -(0.5*a*a*ht)/(hx*hx);
     const double p_aa_ht__hxhx___alpha_ht05 = +1.0 + (a*a*ht)/(hx*hx) + 0.5*alpha*ht;
@@ -1353,20 +1373,25 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
 #ifdef TIME_DISCRETE
     std::vector<unsigned int> discrete_times;
     discrete_times.push_back(0);
-    for (unsigned int i=0; i<mEquParameter.Nt; i++) discrete_times.push_back(mOptParameter.dt[i]);
+    for (unsigned int s=0; s<Nt; s++)
+    {
+        const double tau = mOptParameter.tau[s];
+        discrete_times.push_back(static_cast<unsigned int>(round(tau*L)));
+    }
+    discrete_times.push_back(L);
 #endif
 
-    for (unsigned int l=L-1; l != (unsigned int)0-1; l--)
+    for (unsigned int l=L-1; l != static_cast<unsigned int>(0)-1; l--)
     {
 
 #ifdef TIME_DISCRETE
-        unsigned int current_time = 0;
-        unsigned int current_indx = 0;
+        unsigned int current_time = 0;  unsigned int current_indx = 0;
         for (unsigned int i=0; i<discrete_times.size(); i++)
         {
-            if (discrete_times[i] < l+1) current_indx = i;
+            if (discrete_times[i] <= l) current_indx = i;
             current_time = discrete_times[current_indx];
         }
+        //printf("B %4u %4u\n", l, current_time);
 #endif
         /**************************************************** x direction apprx ***************************************************/
 
@@ -1415,20 +1440,25 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
 #ifdef TIME_DISCRETE
             if (l == current_time)
             {
-                unsigned int start = discrete_times[current_indx];
-                unsigned int end   = 0;
-                if (current_indx == discrete_times.size()-1)
-                {
-                    end = L;
-                }
-                else
-                {
-                    end = discrete_times[current_indx+1];
-                }
+                unsigned int taus = discrete_times[current_indx+0];
+                unsigned int taup = discrete_times[current_indx+1];
+//                if (current_indx == discrete_times.size()-1)
+//                {
+//                    taup = L;
+//                }
+//                else
+//                {
+//                    taup = discrete_times[current_indx+1];
+//                }
+
                 for (unsigned int i=0; i<Nc; i++)
                 {
-                    for (unsigned int ln=start; ln<end; ln++) _p05[i] += ht*p_info[i].vl[2*ln];
-                    _p05[i] *= (1.0/ht);
+                    const SpacePointInfoP &pi = p_info[i];
+                    double pi_in = 0.0;
+                    pi_in += 0.5 * ht * pi.vl[2*taus];
+                    for (unsigned int ln=taus+1; ln<=taup-1; ln++) pi_in += ht * pi.vl[2*ln];
+                    pi_in += 0.5 * ht * pi.vl[2*taup];
+                    _p05[i] = pi_in * (1.0/ht);
                 }
             }
 #else
@@ -1662,21 +1692,34 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
 #ifdef TIME_DISCRETE
             if (l == current_time)
             {
-                unsigned int start = discrete_times[current_indx];
-                unsigned int end   = 0;
-                if (current_indx == discrete_times.size()-1)
-                {
-                    end = L;
-                }
-                else
-                {
-                    end = discrete_times[current_indx+1];
-                }
+                unsigned int taus = discrete_times[current_indx+0];
+                unsigned int taup = discrete_times[current_indx+1];
                 for (unsigned int i=0; i<Nc; i++)
                 {
-                    for (unsigned int ln=start; ln<end; ln++) _p10[i] += ht*p_info[i].vl[2*ln];
-                    _p10[i] *= (1.0/ht);
+                    const SpacePointInfoP &pi = p_info[i];
+                    double pi_in = 0.0;
+                    pi_in += 0.5 * ht * pi.vl[2*taus];
+                    for (unsigned int ln=taus+1; ln<=taup-1; ln++) pi_in += ht * pi.vl[2*ln];
+                    pi_in += 0.5 * ht * pi.vl[2*taup];
+                    _p10[i] = pi_in * (1.0/ht);
                 }
+
+
+//                unsigned int start = discrete_times[current_indx];
+//                unsigned int end   = 0;
+//                if (current_indx == discrete_times.size()-1)
+//                {
+//                    end = L;
+//                }
+//                else
+//                {
+//                    end = discrete_times[current_indx+1];
+//                }
+//                for (unsigned int i=0; i<Nc; i++)
+//                {
+//                    for (unsigned int ln=start; ln<end; ln++) _p10[i] += ht*p_info[i].vl[2*ln];
+//                    _p10[i] *= (1.0/ht);
+//                }
             }
 #else
             for (unsigned int i=0; i<Nc; i++)
@@ -2420,9 +2463,10 @@ auto Problem2PNeumann::VectorToPrm(const DoubleVector &pv, OptimizeParameterP &p
     }
 
 #ifdef TIME_DISCRETE
-    for (unsigned int nt=0; nt<Nt; nt++)
+    for (unsigned int s=0; s<Nt; s++)
     {
-        prm.dt.push_back(static_cast<unsigned int>(pv[index])); index++;
+        const double tau = pv[index]; index++;
+        prm.tau.push_back(tau);
     }
 #endif
 }
@@ -2471,9 +2515,9 @@ auto Problem2PNeumann::PrmToVector(const OptimizeParameterP &prm, DoubleVector &
     }
 
 #ifdef TIME_DISCRETE
-    for (unsigned int nt=0; nt<Nt; nt++)
+    for (unsigned int s=0; s<Nt; s++)
     {
-        pv[nt + 2*Nc + 2*No + 2*Nc*No] = prm.dt[nt];
+        pv[s + 2*Nc + 2*No + 2*Nc*No] = prm.tau[s];
     }
 #endif
 }
