@@ -803,7 +803,9 @@ auto example4() -> void
 
     e_prm.Nt = 3;
 
-
+    o_prm.dt.push_back(50);
+    o_prm.dt.push_back(130);
+    o_prm.dt.push_back(180);
 
     r_prm.dt.push_back(20);
     r_prm.dt.push_back(130);
