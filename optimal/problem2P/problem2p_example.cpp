@@ -803,13 +803,11 @@ auto example4() -> void
 
     e_prm.Nt = 3;
 
-    o_prm.dt.push_back(50);
-    o_prm.dt.push_back(100);
-    o_prm.dt.push_back(150);
 
-    r_prm.dt.push_back(50);
-    r_prm.dt.push_back(100);
-    r_prm.dt.push_back(150);
+
+    r_prm.dt.push_back(20);
+    r_prm.dt.push_back(130);
+    r_prm.dt.push_back(180);
 
     prob.setTimeDimension(time);
     prob.addSpaceDimension(dimx);
@@ -821,10 +819,10 @@ auto example4() -> void
     prob.optimizeC = true;
     prob.optimizeO = true;
     prob.vmin.resize(e_prm.Nc, -5.00);
-    prob.vmax.resize(e_prm.Nc, +20.0);
+    prob.vmax.resize(e_prm.Nc, +5.0);
     prob.U.resize(static_cast<const unsigned int>(Ny+1), static_cast<const unsigned int>(Nx+1), 10.0);
     prob.regEpsilon = 0.0;
-    prob.r = 0.0;
+    prob.r = 10.0;
     prob.checkGradient3(prob, o_prm);
 }
 

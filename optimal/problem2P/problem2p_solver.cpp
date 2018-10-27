@@ -198,35 +198,40 @@ auto Problem2PNeumann::gradient(const DoubleVector &pv, DoubleVector &gv) const 
     {
         for (unsigned int s=0; s<Nt; s++)
         {
-            unsigned int tau0 = 0;
-            unsigned int tau1 = mOptParameter.dt[s];
-            if (s!=0) tau0 = mOptParameter.dt[s-1];
+            unsigned int taum = 0;
+            unsigned int taus = mOptParameter.dt[s];
+            unsigned int taup = 0;
+
+            if (s != 0)    taum = mOptParameter.dt[s-1];
+            if (s == Nt-1) taup = L; else taup = mOptParameter.dt[s+1];
+
+            printf("%u %u %u %u\n", s, taum, taus, taup);
+//            continue;
 
             double gradTaus = 0.0;
-            double sumP = 0.0;
             for (unsigned int i=0; i<Nc; i++)
             {
                 const SpacePointInfoP &pi = p_info[i];
-                double pi_vl = pi.vl[tau1*2];
+                double pi_vl = pi.vl[taus*2];
 
                 double intPi = 0.0;
-                for (unsigned p=tau0; p<=tau1; p++) intPi += ht*pi.vl[p];
+                for (unsigned p=taus; p<=taup; p++) intPi += ht*pi.vl[2*p];
 
                 for (unsigned int j=0; j<No; j++)
                 {
                     const SpacePointInfoP &uj = u_info[j];
 
-                    double uj0_vl = uj.vl[2*tau0];
-                    double uj1_vl = uj.vl[2*tau1];
+                    double ujm_vl = uj.vl[2*taum];
+                    double ujs_vl = uj.vl[2*taus];
 
                     double kij = mOptParameter.k[i][j];
-                    gradTaus += pi_vl * kij * (uj0_vl-uj1_vl);
+                    gradTaus += pi_vl * kij * (ujm_vl-ujs_vl);
 
-                    sumP += intPi*kij*(uj.vl[2*tau1]-uj.vl[2*tau1-2])/ht;
+                    gradTaus += intPi*kij*(uj.vl[2*taus]-uj.vl[2*taus-2])/ht;
                 }
             }
 
-            gv[gi++] = -gradTaus+sumP;
+            gv[gi++] = -gradTaus;
         }
     }
     else
