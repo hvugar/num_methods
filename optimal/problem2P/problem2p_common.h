@@ -89,6 +89,8 @@ struct SpacePointInfoP : public SpacePoint
     std::vector<double> vl;
     std::vector<double> dx;
     std::vector<double> dy;
+    std::vector<double> dxx;
+    std::vector<double> dyy;
 };
 
 typedef std::vector<unsigned int>     uint_vector;

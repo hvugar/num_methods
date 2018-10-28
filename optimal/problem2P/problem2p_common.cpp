@@ -21,11 +21,15 @@ void SpacePointInfoP::init(unsigned int length)
     vl.resize(length);
     dx.resize(length);
     dy.resize(length);
+    dxx.resize(length);
+    dyy.resize(length);
 }
 void SpacePointInfoP::clear()
 {
     dy.clear();
     dx.clear();
+    dyy.clear();
+    dxx.clear();
     vl.clear();
     length = 0;
 }

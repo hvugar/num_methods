@@ -304,13 +304,13 @@ auto Problem2PNeumann::checkGradient2(const Problem2PNeumann &prob, const Optimi
 #ifdef TIME_DISCRETE
     //tau------------------------------------------------------//
     IPrinter::printSeperatorLine("tau");
-    DoubleVector pt0 = pv.mid(sc, fc);
+    DoubleVector pt0 = pv.mid(st, ft);
     IPrinter::print(pt0,pt0.length(),14,4);
 
     DoubleVector at0 = ag.mid(st, ft);
     DoubleVector nt1 = ng1.mid(st, ft);
     DoubleVector nt2 = ng2.mid(st, ft);
-    IPrinter::print(pt0,pt0.length(),14,4);
+    IPrinter::print(at0,at0.length(),14,4);
     IPrinter::print(nt1,nt1.length(),14,4);
     IPrinter::print(nt2,nt2.length(),14,4);
 
@@ -689,7 +689,9 @@ auto example4() -> void
     /**********************************************************************************************************
      * Example 1
      **********************************************************************************************************/
+    //o_prm.k[0][0]  = -0.0585;  o_prm.k[0][1]  = -0.0348;  o_prm.k[1][0]  = -0.0474;  o_prm.k[1][1]  = -0.0615;
     o_prm.k[0][0]  = -0.5850;  o_prm.k[0][1]  = -0.3480;  o_prm.k[1][0]  = -0.4740;  o_prm.k[1][1]  = -0.6150;
+    //o_prm.k[0][0]  = -5.8500;  o_prm.k[0][1]  = -3.4800;  o_prm.k[1][0]  = -4.7400;  o_prm.k[1][1]  = -6.1500;
     o_prm.z[0][0]  = 14.9100;  o_prm.z[0][1]  = 11.4500;  o_prm.z[1][0]  = 16.8400;  o_prm.z[1][1]  = 12.3800;
     o_prm.xi[0].x  =  0.6900;  o_prm.xi[0].y  =  0.6500;  o_prm.xi[1].x  =  0.4200;  o_prm.xi[1].y  =  0.4700;
     o_prm.eta[0].x =  0.8500;  o_prm.eta[0].y =  0.8600;  o_prm.eta[1].x =  0.2300;  o_prm.eta[1].y =  0.2300;
