@@ -764,7 +764,7 @@ auto example4() -> void
     prob.optimizeZ = true;
     prob.optimizeC = true;
     prob.optimizeO = true;
-    prob.vmin.resize(e_prm.Nc, -5.00);
+    prob.vmin.resize(e_prm.Nc, -5.0);
     prob.vmax.resize(e_prm.Nc, +5.0);
     prob.U.resize(static_cast<const unsigned int>(Ny+1), static_cast<const unsigned int>(Nx+1), 10.0);
     prob.regEpsilon = 0.0;

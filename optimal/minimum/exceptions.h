@@ -4,10 +4,7 @@
 #include "global.h"
 #include <stdexcept>
 
-class invalid_step_exception : public std::invalid_argument
-{
-
-};
+class invalid_step_exception : public std::invalid_argument {};
 
 class MINIMUMSHARED_EXPORT FunctionException : public std::exception
 {
