@@ -746,9 +746,9 @@ auto example4() -> void
 #ifdef TIME_DISCRETE
     e_prm.Nt = 3;
 
-    o_prm.tau.push_back(0.25);
-    o_prm.tau.push_back(0.50);
-    o_prm.tau.push_back(0.75);
+    o_prm.tau.push_back(0.10);
+    o_prm.tau.push_back(0.40);
+    o_prm.tau.push_back(0.80);
 
     r_prm.tau.push_back(0.25);
     r_prm.tau.push_back(0.50);
@@ -764,12 +764,25 @@ auto example4() -> void
     prob.optimizeZ = true;
     prob.optimizeC = true;
     prob.optimizeO = true;
+#ifdef TIME_DISCRETE
+    prob.optimezeT = true;
+#endif
     prob.vmin.resize(e_prm.Nc, -5.0);
     prob.vmax.resize(e_prm.Nc, +5.0);
     prob.U.resize(static_cast<const unsigned int>(Ny+1), static_cast<const unsigned int>(Nx+1), 10.0);
     prob.regEpsilon = 0.0;
     prob.r = 0.0;
     prob.checkGradient1(prob, o_prm);
+
+    DoubleMatrix u;
+    spif_vector u_info;
+    prob.solveForwardIBVP(u, u_info, true, o_prm);
+    const SpacePointInfoP &ui1 = u_info[0];
+    const SpacePointInfoP &ui2 = u_info[1];
+    for (unsigned int i=0; i<ui1.length; i+=2)
+    {
+        printf("%6f %10.6f %10.6f\n", (i/2)*0.005, ui1.vl[i], ui2.vl[i]);
+    }
 }
 
 

@@ -345,7 +345,7 @@ auto Problem2PNeumann::gradient(const DoubleVector &pv, DoubleVector &gv) const 
 
 #ifdef TIME_DISCRETE
     // tau
-    if (true)
+    if (optimezeT)
     {
         double a = mEquParameter.a;
         double alpha = mEquParameter.alpha;
@@ -384,7 +384,7 @@ auto Problem2PNeumann::gradient(const DoubleVector &pv, DoubleVector &gv) const 
                     const double uj_vls = uj.vl[2*taus];
 
                     grad += pi_vl * kij * (uj_vlm - uj_vls);
-                    grad += pi_in * kij * (uj.vl[2*taus] - uj.vl[2*taus-2])/ht;
+                    grad += pi_in * kij * (uj.vl[2*taus+2] - uj.vl[2*taus-2])/(2*ht);
                     //grad += pi_in * kij * a*a*(uj.dxx[2*taus] + uj.dyy[2*taus]
                     //        - alpha*(uj.vl[2*taus]-theta));
                 }
@@ -1543,7 +1543,7 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
             if (discrete_times[i] <= l) current_indx = i;
             current_time = discrete_times[current_indx];
         }
-        printf("B %4u %4u\n", l, current_time);
+        //printf("B %4u %4u\n", l, current_time);
 #endif
         /**************************************************** x direction apprx ***************************************************/
 

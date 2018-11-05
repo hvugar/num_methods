@@ -96,6 +96,9 @@ public:
     bool optimizeZ;
     bool optimizeC;
     bool optimizeO;
+#ifdef TIME_DISCRETE
+    bool optimezeT;
+#endif
 };
 
 #endif // PROBLEM2P_SOLVER_H
