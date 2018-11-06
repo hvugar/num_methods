@@ -384,9 +384,8 @@ auto Problem2PNeumann::gradient(const DoubleVector &pv, DoubleVector &gv) const 
                     const double uj_vls = uj.vl[2*taus];
 
                     grad += pi_vl * kij * (uj_vlm - uj_vls);
-                    grad += pi_in * kij * (uj.vl[2*taus+2] - uj.vl[2*taus-2])/(2*ht);
-                    //grad += pi_in * kij * a*a*(uj.dxx[2*taus] + uj.dyy[2*taus]
-                    //        - alpha*(uj.vl[2*taus]-theta));
+                    //grad += pi_in * kij * (uj.vl[2*taus+2] - uj.vl[2*taus-2])/(2*ht);
+                    grad += pi_in * kij * a*a*(uj.dxx[2*taus] + uj.dyy[2*taus] - alpha*(uj.vl[2*taus]-theta));
                 }
             }
             //printf("---- %u %u %u %u\n", s, taum, taus, taup);
