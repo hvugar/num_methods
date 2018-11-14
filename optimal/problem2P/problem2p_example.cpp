@@ -3,9 +3,9 @@
 void Problem2PNeumann::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
 {
     //example1();
-    //example2();
+    example2();
     //example3();
-    example4();
+    //example4();
 }
 
 auto Problem2PNeumann::checkGradient1(const Problem2PNeumann &prob, const OptimizeParameterP &o_prm) -> void
@@ -532,6 +532,15 @@ auto example2() -> void
         g.calculate(x);
 
         IPrinter::printSeperatorLine(NULL, '=');
+
+        spif_vector u_info;
+        DoubleMatrix u;
+        prob.setTimeDimension(Dimension(0.005, 0, 200));
+        prob.VectorToPrm(x, o_prm);
+        prob.solveForwardIBVP(u, u_info, false, o_prm);
+        FILE *file = fopen("data_t1.txt", "w");
+        IPrinter::printMatrix(u, u.rows(), u.cols(), NULL, file);
+        fclose(file);
     }
 }
 
@@ -663,7 +672,7 @@ auto example3() -> void
         g.calculate(x);
 
         IPrinter::printSeperatorLine(NULL, '=');
-    }
+    }    
 }
 
 auto example4() -> void

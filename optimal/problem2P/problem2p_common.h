@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <vector>
 #include <utility>
-#define TIME_DISCRETE
+#define TIME_DISCRETE1
 
 struct OptimizeParameterP
 {
