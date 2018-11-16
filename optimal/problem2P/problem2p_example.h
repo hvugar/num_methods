@@ -8,4 +8,8 @@ auto example2() -> void;
 auto example3() -> void;
 auto example4() -> void;
 
+auto arc_example1() -> void;
+//auto arc_example2() -> void;
+
+
 #endif // PROBLEM2P_EXAMPLE_H

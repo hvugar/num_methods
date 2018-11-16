@@ -96,4 +96,13 @@ struct SpacePointInfoP : public SpacePoint
 typedef std::vector<unsigned int>     uint_vector;
 typedef std::vector<SpacePointInfoP>  spif_vector;
 
+class grid_exception : public std::exception
+{
+public:
+    grid_exception(const std::string &message) : std::exception() { this->message = message; }
+    virtual char const* what() const { return message.data(); }
+private:
+    std::string message;
+};
+
 #endif // PROBLEM2P_COMMON_H

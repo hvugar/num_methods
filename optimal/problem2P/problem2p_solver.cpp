@@ -612,10 +612,10 @@ auto Problem2PNeumann::print(unsigned int i, const DoubleVector &x, const Double
     C_UNUSED(prob);
     IPrinter::printSeperatorLine();
 
-    prob->optimizeK = (i%4==0);
-    prob->optimizeZ = (i%4==1);
-    prob->optimizeO = (i%4==2);
-    prob->optimizeC = (i%4==3);
+    //    prob->optimizeK = (i%4==0);
+    //    prob->optimizeZ = (i%4==1);
+    //    prob->optimizeO = (i%4==2);
+    //    prob->optimizeC = (i%4==3);
 }
 
 auto Problem2PNeumann::norm(const DoubleVector &v) const -> double
@@ -915,6 +915,7 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
         if (rows1.size() != 0 && rows2.size() == 0)
         {
             //throw std::exception();
+            //throw grid_exception("forward x1");
 
             double *_v05 = new double[Nc];
 
@@ -935,6 +936,7 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                 }
             }
 #endif
+            for (unsigned int j=0; j<No; j++) _u05[j] *= (1.0+noise);
 
             for (unsigned int i=0; i<Nc; i++)
             {
@@ -999,7 +1001,8 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
 
         if (rows1.size() != 0 && rows2.size() != 0)
         {
-            throw std::exception();
+            //throw std::exception();
+            //throw grid_exception("forward x2");
 
             for (unsigned int m=0; m<rows1_size; m++) for (unsigned int n=0; n<rows1_size; n++) w1[m][n] = 0.0;
 
@@ -1063,14 +1066,14 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                                         if (static_cast<unsigned int>(node2.ny) == rows1[rs])
                                         {
                                             found = true;
-                                            w1[index][rs*(N+1)+(static_cast<unsigned int>(node2.nx))] -= ht05 * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w;
+                                            w1[index][rs*(N+1)+(static_cast<unsigned int>(node2.nx))] -= ht05 * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w * (1.0 + noise);
                                             break;
                                         }
                                     }
 
                                     if (!found)
                                     {
-                                        d1[index] += ht05 * mOptParameter.k[i][j] * u00[node2.ny][node2.nx] * (node2.w * (hx*hy)) * w;
+                                        d1[index] += ht05 * mOptParameter.k[i][j] * u00[node2.ny][node2.nx] * (node2.w * (hx*hy)) * w * (1.0 + noise);
                                     }
                                 }
                             }
@@ -1146,6 +1149,7 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
         if (cols1.size() != 0 && cols2.size() == 0)
         {
             //throw std::exception();
+            //throw grid_exception("forward y1");
 
             double *_v10 = new double[Nc];
 
@@ -1166,6 +1170,7 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                 }
             }
 #endif
+            for (unsigned int j=0; j<No; j++) _u10[j] *= (1.0+noise);
 
             for (unsigned int i=0; i<Nc; i++)
             {
@@ -1230,7 +1235,8 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
 
         if (cols1.size() != 0 && cols2.size() != 0)
         {
-            throw std::exception();
+            //throw std::exception();
+            //throw grid_exception("forward y2");
 
             for (unsigned int m=0; m<cols1_size; m++) for (unsigned int n=0; n<cols1_size; n++) w2[m][n] = 0.0;
 
@@ -1294,14 +1300,14 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                                         if (static_cast<unsigned int>(node2.nx) == cols1[cs])
                                         {
                                             found = true;
-                                            w2[index][cs*(M+1)+(static_cast<unsigned int>(node2.ny))] -= ht05 * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w;
+                                            w2[index][cs*(M+1)+(static_cast<unsigned int>(node2.ny))] -= ht05 * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w * (1.0 + noise);
                                             break;
                                         }
                                     }
 
                                     if (!found)
                                     {
-                                        d2[index] += ht05 * mOptParameter.k[i][j] * u10[node2.ny][node2.nx] * (node2.w * (hx*hy)) * w;
+                                        d2[index] += ht05 * mOptParameter.k[i][j] * u10[node2.ny][node2.nx] * (node2.w * (hx*hy)) * w * (1.0 + noise);
                                     }
                                 }
                             }
@@ -1583,6 +1589,7 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
         if (rows1.size() != 0 && rows2.size() == 0)
         {
             //throw std::exception();
+            //throw grid_exception("backward x1");
 
             double *_w05 = new double[No];
 
@@ -1691,7 +1698,8 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
 
         if (rows1.size() != 0 && rows2.size() != 0)
         {
-            throw std::exception();
+            //throw std::exception();
+            //throw grid_exception("backward x2");
 
             for (unsigned int m=0; m<rows1_size; m++) for (unsigned int n=0; n<rows1_size; n++) w1[m][n] = 0.0;
 
@@ -1836,6 +1844,7 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
         if (cols1.size() != 0 && cols2.size() == 0)
         {
             //throw std::exception();
+            //throw grid_exception("backward y1");
 
             double *_w10 = new double[No];
 
@@ -1951,7 +1960,8 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
 
         if (cols1.size() != 0 && cols2.size() != 0)
         {
-            throw std::exception();
+            //throw std::exception();
+            //throw grid_exception("backward y2");
 
             for (unsigned int m=0; m<cols1_size; m++) for (unsigned int n=0; n<cols1_size; n++) w2[m][n] = 0.0;
 

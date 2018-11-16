@@ -91,6 +91,7 @@ public:
 
     double regEpsilon;
     DoubleMatrix U;
+    double noise = 0.00;
 
     bool optimizeK;
     bool optimizeZ;
