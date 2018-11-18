@@ -40,14 +40,9 @@
 #include <QtGui>
 #include <r1minimize.h>
 
-struct A
-{
-    int i;
-};
-
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    QGuiApplication app(argc, argv);
+    //QGuiApplication app(argc, argv);
 
     //Problem2Article::Main(argc, argv);
     //IPrinter::printSeperatorLine();

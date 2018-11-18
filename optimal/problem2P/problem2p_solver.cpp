@@ -1,5 +1,4 @@
 #include "problem2p_solver.h"
-#define OH1
 
 Problem2PNeumann::Problem2PNeumann() {}
 
@@ -88,12 +87,12 @@ auto Problem2PNeumann::gradient(const DoubleVector &pv, DoubleVector &gv) const 
                 double grad_Kij = 0.0;
                 double zij = mOptParameter.z[i][j];
 
-                grad_Kij += 0.5 * (pi.vl[0] + 2.0*r*gpi(i,0,u_info,mOptParameter)*sgn(g0i(i,0,u_info,mOptParameter))) * (uj.vl[0] - zij);
+                grad_Kij += 0.5 * (pi.vl[0] + 2.0*r1*gpi(i,0,u_info,mOptParameter)*sgn(g0i(i,0,u_info,mOptParameter))) * (uj.vl[0] - zij);
                 for (unsigned int ln=1; ln<=L-1; ln++)
                 {
-                    grad_Kij += (pi.vl[2*ln] + 2.0*r*gpi(i,2*ln,u_info,mOptParameter)*sgn(g0i(i,2*ln,u_info,mOptParameter))) * (uj.vl[2*ln] - zij);
+                    grad_Kij += (pi.vl[2*ln] + 2.0*r1*gpi(i,2*ln,u_info,mOptParameter)*sgn(g0i(i,2*ln,u_info,mOptParameter))) * (uj.vl[2*ln] - zij);
                 }
-                grad_Kij += 0.5 * (pi.vl[2*L] + 2.0*r*gpi(i,2*L,u_info,mOptParameter)*sgn(g0i(i,2*L,u_info,mOptParameter))) * (uj.vl[2*L] - zij);
+                grad_Kij += 0.5 * (pi.vl[2*L] + 2.0*r1*gpi(i,2*L,u_info,mOptParameter)*sgn(g0i(i,2*L,u_info,mOptParameter))) * (uj.vl[2*L] - zij);
 
                 grad_Kij *= -ht;
 
@@ -155,12 +154,12 @@ auto Problem2PNeumann::gradient(const DoubleVector &pv, DoubleVector &gv) const 
                 double grad_Zij = 0.0;
                 double kij = mOptParameter.k[i][j];
 
-                grad_Zij += 0.5 * (pi.vl[0] + 2.0*r*gpi(i,0,u_info,mOptParameter)*sgn(g0i(i,0,u_info,mOptParameter))) * kij;
+                grad_Zij += 0.5 * (pi.vl[0] + 2.0*r1*gpi(i,0,u_info,mOptParameter)*sgn(g0i(i,0,u_info,mOptParameter))) * kij;
                 for (unsigned int ln=1; ln<=L-1; ln++)
                 {
-                    grad_Zij += (pi.vl[2*ln] + 2.0*r*gpi(i,2*ln,u_info,mOptParameter)*sgn(g0i(i,2*ln,u_info,mOptParameter))) * kij;
+                    grad_Zij += (pi.vl[2*ln] + 2.0*r1*gpi(i,2*ln,u_info,mOptParameter)*sgn(g0i(i,2*ln,u_info,mOptParameter))) * kij;
                 }
-                grad_Zij += 0.5 * (pi.vl[2*L] + 2.0*r*gpi(i,2*L,u_info,mOptParameter)*sgn(g0i(i,2*L,u_info,mOptParameter))) * kij;
+                grad_Zij += 0.5 * (pi.vl[2*L] + 2.0*r1*gpi(i,2*L,u_info,mOptParameter)*sgn(g0i(i,2*L,u_info,mOptParameter))) * kij;
                 grad_Zij *= ht;
 
                 gv [gi++] = grad_Zij + 2.0*regEpsilon*(mOptParameter.z[i][j] - mRegParameter.z[i][j]);
@@ -231,28 +230,39 @@ auto Problem2PNeumann::gradient(const DoubleVector &pv, DoubleVector &gv) const 
             double vi = 0.0;
 
             vi = 0.0;
-            for (unsigned int i=0; i<Nc; i++) vi += mOptParameter.k[i][j] * (p_info[i].vl[0] + 2.0*r*gpi(i,0,u_info,mOptParameter)*sgn(g0i(i,0,u_info,mOptParameter)));
+            for (unsigned int i=0; i<Nc; i++) vi += mOptParameter.k[i][j] * (p_info[i].vl[0] + 2.0*r1*gpi(i,0,u_info,mOptParameter)*sgn(g0i(i,0,u_info,mOptParameter)));
             gradXijX += 0.5 * uj.dx[0] * vi;
             gradXijY += 0.5 * uj.dy[0] * vi;
 
             for (unsigned int ln=1; ln<=L-1; ln++)
             {
                 vi = 0.0;
-                for (unsigned int i=0; i<Nc; i++) vi += mOptParameter.k[i][j]*(p_info[i].vl[2*ln] + 2.0*r*gpi(i,2*ln,u_info,mOptParameter)*sgn(g0i(i,2*ln,u_info,mOptParameter)));
+                for (unsigned int i=0; i<Nc; i++) vi += mOptParameter.k[i][j]*(p_info[i].vl[2*ln] + 2.0*r1*gpi(i,2*ln,u_info,mOptParameter)*sgn(g0i(i,2*ln,u_info,mOptParameter)));
                 gradXijX += uj.dx[2*ln] * vi;
                 gradXijY += uj.dy[2*ln] * vi;
             }
 
             vi = 0.0;
-            for (unsigned int i=0; i<Nc; i++) vi += mOptParameter.k[i][j]*(p_info[i].vl[2*L] + 2.0*r*gpi(i,2*L,u_info,mOptParameter)*sgn(g0i(i,2*L,u_info,mOptParameter)));
+            for (unsigned int i=0; i<Nc; i++) vi += mOptParameter.k[i][j]*(p_info[i].vl[2*L] + 2.0*r1*gpi(i,2*L,u_info,mOptParameter)*sgn(g0i(i,2*L,u_info,mOptParameter)));
             gradXijX += 0.5 * uj.dx[2*L] * vi;
             gradXijY += 0.5 * uj.dy[2*L] * vi;
 
             gradXijX *= -ht;
             gradXijY *= -ht;
 
-            gv[gi++] = gradXijX + 2.0*regEpsilon*(mOptParameter.xi[j].x - mRegParameter.xi[j].x);
-            gv[gi++] = gradXijY + 2.0*regEpsilon*(mOptParameter.xi[j].y - mRegParameter.xi[j].y);
+            double p2x = 0.0;
+            double p2y = 0.0;
+            const SpacePoint &eta = mOptParameter.eta[j];
+            for (unsigned int i=0; i<Nc; i++)
+            {
+                const SpacePoint &xi = mOptParameter.xi[i];
+                p2x += (eta.x - xi.x)*hpij(eta, xi);
+                p2y += (eta.y - xi.y)*hpij(eta, xi);
+            }
+
+            gv[gi++] = gradXijX + 2.0*regEpsilon*(mOptParameter.xi[j].x - mRegParameter.xi[j].x) - 4.0*r2*p2x;
+            gv[gi++] = gradXijY + 2.0*regEpsilon*(mOptParameter.xi[j].y - mRegParameter.xi[j].y) - 4.0*r2*p2y;
+
         }
 #endif
     }
@@ -329,8 +339,18 @@ auto Problem2PNeumann::gradient(const DoubleVector &pv, DoubleVector &gv) const 
             gradEtaiX *= -ht;
             gradEtaiY *= -ht;
 
-            gv[gi++] = gradEtaiX + 2.0*regEpsilon*(mOptParameter.eta[i].x - mRegParameter.eta[i].x);
-            gv[gi++] = gradEtaiY + 2.0*regEpsilon*(mOptParameter.eta[i].y - mRegParameter.eta[i].y);
+            double p2x = 0.0;
+            double p2y = 0.0;
+            const SpacePoint &xi = mOptParameter.xi[i];
+            for (unsigned int j=0; j<No; j++)
+            {
+                const SpacePoint &eta = mOptParameter.eta[j];
+                p2x += (eta.x - xi.x)*hpij(eta, xi);
+                p2y += (eta.y - xi.y)*hpij(eta, xi);
+            }
+
+            gv[gi++] = gradEtaiX + 2.0*regEpsilon*(mOptParameter.eta[i].x - mRegParameter.eta[i].x) + 4.0*r2*p2x;
+            gv[gi++] = gradEtaiY + 2.0*regEpsilon*(mOptParameter.eta[i].y - mRegParameter.eta[i].y) + 4.0*r2*p2x;
         }
 #endif
     }
@@ -426,9 +446,10 @@ auto Problem2PNeumann::fx(const DoubleVector &pv) const -> double
 
     double nrm = fx_norm(mEquParameter, mOptParameter, mRegParameter);
 
-    double pnt = fx_penalty(u_info, mOptParameter);
+    double pnt1 = fx_penalty1(u_info, mOptParameter);
+    double pnt2 = fx_penalty2(mOptParameter);
 
-    double sum = intgrl + regEpsilon*nrm + r*pnt;
+    double sum = intgrl + regEpsilon*nrm + r1*pnt1 + r2*pnt2;
 
     for (unsigned int j=0; j<u_info.size(); j++)
     {
@@ -513,7 +534,7 @@ auto Problem2PNeumann::fx_norm(const EquationParameterP& e_prm, const OptimizePa
     return _norm;
 }
 
-auto Problem2PNeumann::fx_penalty(const spif_vector &info, const OptimizeParameterP &o_prm) const -> double
+auto Problem2PNeumann::fx_penalty1(const spif_vector &info, const OptimizeParameterP &o_prm) const -> double
 {
     const double ht = mtimeDimension.step();
 
@@ -565,6 +586,32 @@ auto Problem2PNeumann::sign(double x) const -> double
     else               return  0.0;
 }
 
+auto Problem2PNeumann::fx_penalty2(const OptimizeParameterP &o_prm) const -> double
+{
+    double pntl = 0.0;
+    unsigned int Nc = mEquParameter.Nc;
+    unsigned int No = mEquParameter.No;
+
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        const SpacePoint &eta = o_prm.eta[i];
+        for (unsigned int j=0; j<No; j++)
+        {
+            const SpacePoint &xi = o_prm.xi[j];
+            pntl += hpij(eta, xi);
+        }
+    }
+
+    return pntl*pntl;
+}
+
+auto Problem2PNeumann::hpij(const SpacePoint &eta, const SpacePoint &xi) const -> double
+{
+    double pij = d*d - (eta.x-xi.x)*(eta.x-xi.x) - (eta.y-xi.y)*(eta.y-xi.y);
+    //printf("%f %f %f %f %f %f\n", d, pij, eta.x, eta.y, xi.x, xi.y);
+    return (pij < 0.0) ? 0.0 : pij;
+}
+
 auto Problem2PNeumann::print(unsigned int i, const DoubleVector &x, const DoubleVector &g,
                              double f, double alpha, GradientMethod::MethodResult result) const -> void
 {
@@ -583,7 +630,8 @@ auto Problem2PNeumann::print(unsigned int i, const DoubleVector &x, const Double
     spif_vector u_info;
     solveForwardIBVP(u, u_info, true, mOptParameter);
     double ing = fx_integral(u);
-    double pnt = fx_penalty(u_info, mOptParameter);
+    double pnt1 = fx_penalty1(u_info, mOptParameter);
+    double pnt2 = fx_penalty2(mOptParameter);
     double nrm = fx_norm(mEquParameter, mOptParameter, mRegParameter);
 
     const unsigned int v_length = static_cast<const unsigned int>( timeDimension().sizeN() );
@@ -599,12 +647,9 @@ auto Problem2PNeumann::print(unsigned int i, const DoubleVector &x, const Double
     IPrinter::printVector(v1, "v1: ", 10);
     IPrinter::printVector(v2, "v2: ", 10);
 
-    printf("I[%3d]: F:%10.6f I:%10.6f P:%12.6f N:%10.6f R:%7.3f e:%5.3f a:%10.6f min:%10.6f max:%10.6f \n",
-           i, f, ing, pnt, nrm, r, regEpsilon, alpha, u.min(), u.max());
-    printf("k:%10.4f %10.4f %10.4f %10.4f z:%10.4f %10.4f %10.4f %10.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n",
-           x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
-    printf("k:%10.4f %10.4f %10.4f %10.4f z:%10.4f %10.4f %10.4f %10.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n",
-           g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
+    printf("I[%3d]: F:%10.6f I:%10.6f P1:%12.6f P2:%12.6f N:%10.6f R:%7.3f e:%5.3f a:%10.6f min:%10.6f max:%10.6f \n", i, f, ing, pnt1, pnt2, nrm, r1, regEpsilon, alpha, u.min(), u.max());
+    printf("k:%10.4f %10.4f %10.4f %10.4f z:%10.4f %10.4f %10.4f %10.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
+    printf("k:%10.4f %10.4f %10.4f %10.4f z:%10.4f %10.4f %10.4f %10.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
 
     u.clear();
     u_info.clear();
@@ -612,10 +657,10 @@ auto Problem2PNeumann::print(unsigned int i, const DoubleVector &x, const Double
     C_UNUSED(prob);
     IPrinter::printSeperatorLine();
 
-    //    prob->optimizeK = (i%4==0);
-    //    prob->optimizeZ = (i%4==1);
-    //    prob->optimizeO = (i%4==2);
-    //    prob->optimizeC = (i%4==3);
+//        prob->optimizeK = (i%2==1);
+//        prob->optimizeZ = (i%2==0);
+//        prob->optimizeO = (i%4==2);
+//        prob->optimizeC = (i%4==3);
 }
 
 auto Problem2PNeumann::norm(const DoubleVector &v) const -> double
@@ -654,6 +699,8 @@ auto Problem2PNeumann::project(DoubleVector &pv) const -> void
         if (pv[index] < 0.05) pv[index] = 0.05;
         if (pv[index] > 0.95) pv[index] = 0.95;
     }
+
+    //return;
 
     //IPrinter::print(pv.mid(start, end));
     for (unsigned int index = start; index <=end; index++)
@@ -826,7 +873,7 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
     cy[M] = 0.0; by[M] += aa_lambda_ht__hy; ay[M] += m_aa_ht05__hyhy;
 
     const unsigned int rows1_size = static_cast<const unsigned int>( rows1.size()*(N+1) );
-    double *a1=NULL, *b1=NULL, *c1=NULL, *d1=NULL, *x1=NULL, **w1=NULL;
+    double *a1=nullptr, *b1=nullptr, *c1=nullptr, *d1=nullptr, *x1=nullptr, **w1=nullptr;
     if (rows1.size() != 0 && rows2.size() != 0)
     {
         a1 = static_cast<double*> ( malloc(sizeof(double)*rows1_size) );
@@ -839,7 +886,7 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
     }
 
     const unsigned int cols1_size = static_cast<const unsigned int>( cols1.size()*(M+1) );
-    double *a2=NULL, *b2=NULL, *c2=NULL, *d2=NULL, *x2=NULL, **w2=NULL;
+    double *a2=nullptr, *b2=nullptr, *c2=nullptr, *d2=nullptr, *x2=nullptr, **w2=nullptr;
     if (cols1.size() != 0 && cols2.size() != 0)
     {
         a2 = static_cast<double*> ( malloc(sizeof(double)*cols1_size) );
@@ -914,15 +961,16 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
 
         if (rows1.size() != 0 && rows2.size() == 0)
         {
-            //throw std::exception();
             //throw grid_exception("forward x1");
-
-            double *_v05 = new double[Nc];
 
             double* _u05 = new double[No]; for (unsigned int j=0; j<No; j++) _u05[j] = 0.0;
 
 #ifdef TIME_DISCRETE
-            for (unsigned int j=0; j<No; j++) _u05[j] = u_info[j].vl[2*current_time];
+            for (unsigned int j=0; j<No; j++)
+            {
+                _u05[j] = u_info[j].vl[2*current_time];
+                _u05[j] *= (1.0 + noise);
+            }
 #else
             for (unsigned int j=0; j<No; j++)
             {
@@ -932,11 +980,15 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                 for (unsigned int nj=0; nj<nodes_size; nj++)
                 {
                     const ExtendedSpacePointNodeP &node = nodes.at(nj);
-                    _u05[j] += u05[static_cast<const unsigned int>(node.ny)][static_cast<const unsigned int>(node.nx)] * (node.w * (hx*hy));
+                    unsigned int node_nx = static_cast<const unsigned int>(node.nx);
+                    unsigned int node_ny = static_cast<const unsigned int>(node.ny);
+                    _u05[j] += u05[node_ny][node_nx] * (node.w * (hx*hy));
                 }
+                _u05[j] *= (1.0 + noise);
             }
 #endif
-            for (unsigned int j=0; j<No; j++) _u05[j] *= (1.0+noise);
+
+            double *_v05 = new double[Nc];
 
             for (unsigned int i=0; i<Nc; i++)
             {
@@ -1001,7 +1053,6 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
 
         if (rows1.size() != 0 && rows2.size() != 0)
         {
-            //throw std::exception();
             //throw grid_exception("forward x2");
 
             for (unsigned int m=0; m<rows1_size; m++) for (unsigned int n=0; n<rows1_size; n++) w1[m][n] = 0.0;
@@ -1059,21 +1110,23 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                                 for (unsigned int nj=0; nj<nodes2.size(); nj++)
                                 {
                                     const ExtendedSpacePointNodeP &node2 = nodes2.at(nj);
+                                    unsigned int node2_nx = static_cast<unsigned int>(node2.nx);
+                                    unsigned int node2_ny = static_cast<unsigned int>(node2.ny);
 
                                     bool found = false;
                                     for (unsigned int rs=0; rs<rows1.size(); rs++)
                                     {
-                                        if (static_cast<unsigned int>(node2.ny) == rows1[rs])
+                                        if (node2_ny == rows1[rs])
                                         {
                                             found = true;
-                                            w1[index][rs*(N+1)+(static_cast<unsigned int>(node2.nx))] -= ht05 * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w * (1.0 + noise);
+                                            w1[index][rs*(N+1)+node2_nx] -= ht05 * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w * (1.0 + noise);
                                             break;
                                         }
                                     }
 
                                     if (!found)
                                     {
-                                        d1[index] += ht05 * mOptParameter.k[i][j] * u00[node2.ny][node2.nx] * (node2.w * (hx*hy)) * w * (1.0 + noise);
+                                        d1[index] += ht05 * mOptParameter.k[i][j] * u00[node2_ny][node2_nx] * (node2.w * (hx*hy)) * w * (1.0 + noise);
                                     }
                                 }
                             }
@@ -1148,15 +1201,16 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
 
         if (cols1.size() != 0 && cols2.size() == 0)
         {
-            //throw std::exception();
             //throw grid_exception("forward y1");
-
-            double *_v10 = new double[Nc];
 
             double* _u10 = new double[No]; for (unsigned int j=0; j<No; j++) _u10[j] = 0.0;
 
 #ifdef TIME_DISCRETE
-            for (unsigned int j=0; j<No; j++) _u10[j] = u_info[j].vl[2*current_time];
+            for (unsigned int j=0; j<No; j++)
+            {
+                _u10[j] = u_info[j].vl[2*current_time];
+                _u10[j] *= (1.0+noise);
+            }
 #else
             for (unsigned int j=0; j<No; j++)
             {
@@ -1166,11 +1220,15 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                 for (unsigned int nj=0; nj<nodes_size; nj++)
                 {
                     const ExtendedSpacePointNodeP &node = nodes.at(nj);
-                    _u10[j] += u10[node.ny][node.nx] * (node.w * (hx*hy));
+                    unsigned int node_nx = static_cast<unsigned int>(node.nx);
+                    unsigned int node_ny = static_cast<unsigned int>(node.ny);
+                    _u10[j] += u10[node_ny][node_nx] * (node.w * (hx*hy));
                 }
+                _u10[j] *= (1.0+noise);
             }
 #endif
-            for (unsigned int j=0; j<No; j++) _u10[j] *= (1.0+noise);
+
+            double *_v10 = new double[Nc];
 
             for (unsigned int i=0; i<Nc; i++)
             {
@@ -1235,7 +1293,6 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
 
         if (cols1.size() != 0 && cols2.size() != 0)
         {
-            //throw std::exception();
             //throw grid_exception("forward y2");
 
             for (unsigned int m=0; m<cols1_size; m++) for (unsigned int n=0; n<cols1_size; n++) w2[m][n] = 0.0;
@@ -1293,21 +1350,23 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
                                 for (unsigned int nj=0; nj<nodes2.size(); nj++)
                                 {
                                     const ExtendedSpacePointNodeP &node2 = nodes2.at(nj);
+                                    unsigned int node2_nx = static_cast<unsigned int>(node2.nx);
+                                    unsigned int node2_ny = static_cast<unsigned int>(node2.ny);
 
                                     bool found = false;
                                     for (unsigned int cs=0; cs<cols1.size(); cs++)
                                     {
-                                        if (static_cast<unsigned int>(node2.nx) == cols1[cs])
+                                        if (node2_nx == cols1[cs])
                                         {
                                             found = true;
-                                            w2[index][cs*(M+1)+(static_cast<unsigned int>(node2.ny))] -= ht05 * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w * (1.0 + noise);
+                                            w2[index][cs*(M+1)+node2_ny] -= ht05 * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w * (1.0 + noise);
                                             break;
                                         }
                                     }
 
                                     if (!found)
                                     {
-                                        d2[index] += ht05 * mOptParameter.k[i][j] * u10[node2.ny][node2.nx] * (node2.w * (hx*hy)) * w * (1.0 + noise);
+                                        d2[index] += ht05 * mOptParameter.k[i][j] * u10[node2_ny][node2_nx] * (node2.w * (hx*hy)) * w * (1.0 + noise);
                                     }
                                 }
                             }
@@ -1500,7 +1559,7 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
     cy[M] = 0.0; by[M] += aa_lambda_ht__hy; ay[M] += m_aa_ht05__hyhy;
 
     const unsigned int rows1_size = static_cast<const unsigned int>( rows1.size()*(N+1) );
-    double *a1=NULL, *b1=NULL, *c1=NULL, *d1=NULL, *x1=NULL, **w1=NULL;
+    double *a1=nullptr, *b1=nullptr, *c1=nullptr, *d1=nullptr, *x1=nullptr, **w1=nullptr;
     if (rows1.size() != 0 && rows2.size() != 0)
     {
         a1 = static_cast<double*> ( malloc(sizeof(double)*rows1_size) );
@@ -1513,7 +1572,7 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
     }
 
     const unsigned int cols1_size = static_cast<const unsigned int>( cols1.size()*(M+1) );
-    double *a2=NULL, *b2=NULL, *c2=NULL, *d2=NULL, *x2=NULL, **w2=NULL;
+    double *a2=nullptr, *b2=nullptr, *c2=nullptr, *d2=nullptr, *x2=nullptr, **w2=nullptr;
     if (cols1.size() != 0 && cols2.size() != 0)
     {
         a2 = static_cast<double*> ( malloc(sizeof(double)*cols1_size) );
@@ -1630,7 +1689,9 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                 for (unsigned int ni=0; ni<nodes_size; ni++)
                 {
                     const ExtendedSpacePointNodeP &node = nodes.at(ni);
-                    _p05[i] += p05[node.ny][node.nx] * (node.w * (hx*hy));
+                    unsigned int node_nx = static_cast<unsigned int>(node.nx);
+                    unsigned int node_ny = static_cast<unsigned int>(node.ny);
+                    _p05[i] += p05[node_ny][node_nx] * (node.w * (hx*hy));
                 }
             }
 #endif
@@ -1640,7 +1701,7 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                 _w05[j] = 0.0;
                 for (unsigned int i=0; i<Nc; i++)
                 {
-                    _w05[j] += mOptParameter.k[i][j] * ( _p05[i] + 2.0*r*gpi(i, 2*l+1, u_info, mOptParameter)*sgn(g0i(i, 2*l+1, u_info, mOptParameter)));
+                    _w05[j] += mOptParameter.k[i][j] * ( _p05[i] + 2.0*r1*gpi(i, 2*l+1, u_info, mOptParameter)*sgn(g0i(i, 2*l+1, u_info, mOptParameter)));
                 }
             }
 
@@ -1756,6 +1817,8 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                                 for (unsigned int ni=0; ni<nodes2.size(); ni++)
                                 {
                                     const ExtendedSpacePointNodeP &node2 = nodes2.at(ni);
+                                    unsigned int node2_nx = static_cast<unsigned int>(node2.nx);
+                                    unsigned int node2_ny = static_cast<unsigned int>(node2.ny);
 
                                     bool found = false;
                                     for (unsigned int rs=0; rs<rows1.size(); rs++)
@@ -1763,21 +1826,21 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                                         if (static_cast<unsigned int>(node2.ny) == rows1[rs])
                                         {
                                             found = true;
-                                            w1[index][rs*(N+1)+static_cast<unsigned int>(node2.nx)] -= ht05 * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w;
+                                            w1[index][rs*(N+1)+node2_nx] -= ht05 * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w;
                                             break;
                                         }
                                     }
 
                                     if (!found)
                                     {
-                                        d1[index] += ht05 * mOptParameter.k[i][j] * p05[node2.ny][node2.nx] * (node2.w * (hx*hy)) * w;
+                                        d1[index] += ht05 * mOptParameter.k[i][j] * p05[node2_ny][node2_nx] * (node2.w * (hx*hy)) * w;
                                     }
                                 }
                             }
 
                             for (unsigned int i=0; i<Nc; i++)
                             {
-                                d1[index] += 2.0 * r * ht05 *  mOptParameter.k[i][j] * gpi(i, 2*l+1, u_info, mOptParameter)*sgn(g0i(i, 2*l+1, u_info, mOptParameter)) * w;
+                                d1[index] += 2.0 * r1 * ht05 *  mOptParameter.k[i][j] * gpi(i, 2*l+1, u_info, mOptParameter)*sgn(g0i(i, 2*l+1, u_info, mOptParameter)) * w;
                             }
                         }
                     }
@@ -1892,7 +1955,9 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                 for (unsigned int ni=0; ni<nodes_size; ni++)
                 {
                     const ExtendedSpacePointNodeP &node = nodes.at(ni);
-                    _p10[i] += p10[node.ny][node.nx] * (node.w * (hx*hy));
+                    unsigned int node_nx = static_cast<unsigned int>(node.nx);
+                    unsigned int node_ny = static_cast<unsigned int>(node.ny);
+                    _p10[i] += p10[node_ny][node_nx] * (node.w * (hx*hy));
                 }
             }
 #endif
@@ -1902,7 +1967,7 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                 _w10[j] = 0.0;
                 for (unsigned int i=0; i<Nc; i++)
                 {
-                    _w10[j] += mOptParameter.k[i][j] * (_p10[i] + 2.0*r*gpi(i, 2*l+0, u_info, mOptParameter)*sgn(g0i(i, 2*l+0, u_info, mOptParameter)));
+                    _w10[j] += mOptParameter.k[i][j] * (_p10[i] + 2.0*r1*gpi(i, 2*l+0, u_info, mOptParameter)*sgn(g0i(i, 2*l+0, u_info, mOptParameter)));
                 }
             }
             delete [] _p10;
@@ -2018,6 +2083,8 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                                 for (unsigned int ni=0; ni<nodes2.size(); ni++)
                                 {
                                     const ExtendedSpacePointNodeP &node2 = nodes2.at(ni);
+                                    unsigned int node2_nx = static_cast<unsigned int>(node2.nx);
+                                    unsigned int node2_ny = static_cast<unsigned int>(node2.ny);
 
                                     bool found = false;
                                     for (unsigned int cs=0; cs<cols1.size(); cs++)
@@ -2025,21 +2092,21 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
                                         if (static_cast<unsigned int>(node2.nx) == cols1[cs])
                                         {
                                             found = true;
-                                            w2[index][cs*(M+1)+static_cast<unsigned int>(node2.ny)] -= ht05 * mOptParameter.k[i][i] * (node2.w * (hx*hy)) * w;
+                                            w2[index][cs*(M+1)+node2_ny] -= ht05 * mOptParameter.k[i][i] * (node2.w * (hx*hy)) * w;
                                             break;
                                         }
                                     }
 
                                     if (!found)
                                     {
-                                        d2[index] += ht05 * mOptParameter.k[i][i] * p10[node2.ny][node2.nx] * (node2.w * (hx*hy)) * w;
+                                        d2[index] += ht05 * mOptParameter.k[i][i] * p10[node2_ny][node2_nx] * (node2.w * (hx*hy)) * w;
                                     }
                                 }
                             }
 
                             for (unsigned int i=0; i<Nc; i++)
                             {
-                                d2[index] += 2.0 * r * ht05 *  mOptParameter.k[i][j] * gpi(i, 2*l, u_info, mOptParameter)*sgn(g0i(i, 2*l, u_info, mOptParameter)) * w;
+                                d2[index] += 2.0 * r1 * ht05 *  mOptParameter.k[i][j] * gpi(i, 2*l, u_info, mOptParameter)*sgn(g0i(i, 2*l, u_info, mOptParameter)) * w;
                             }
                         }
                     }

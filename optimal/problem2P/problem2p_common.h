@@ -9,13 +9,16 @@
 #include <gradient_sd.h>
 #include <gradient_cjt.h>
 #include <vectornormalizer.h>
+#include <benchmark.h>
 
 #include "../imaging/imaging.h"
 
 #include <algorithm>
 #include <vector>
 #include <utility>
+
 #define TIME_DISCRETE1
+#define OH1
 
 struct OptimizeParameterP
 {
@@ -40,6 +43,34 @@ struct EquationParameterP
 #ifdef TIME_DISCRETE
     unsigned int Nt;
 #endif
+};
+
+struct EquationParameterPr
+{
+    EquationParameterPr(double a, double alpha, double lambda, double theta, double phi, unsigned int Nc, unsigned int No)
+        : a(a), alpha(alpha), lambda(lambda), theta(theta), phi(phi), Nc(Nc), No(No) {}
+
+    double a;
+    double alpha;
+    double lambda;
+    double theta;
+    double phi;
+
+    unsigned int Nc = 0;
+    unsigned int No = 0;
+
+    DoubleMatrix k;
+    DoubleMatrix z;
+    std::vector<SpacePoint> xi;
+    std::vector<SpacePoint> eta;
+
+#ifdef TIME_DISCRETE
+    unsigned int Nt;
+    std::vector<double> tau;
+#endif
+
+    auto toVector(DoubleVector &x) const -> void;
+    auto fromVector(const DoubleVector &x, unsigned int Nc, unsigned int No) -> void;
 };
 
 struct ExtendedSpacePointNodeP
@@ -100,7 +131,7 @@ class grid_exception : public std::exception
 {
 public:
     grid_exception(const std::string &message) : std::exception() { this->message = message; }
-    virtual char const* what() const { return message.data(); }
+    virtual char const* what() const _GLIBCXX_USE_NOEXCEPT { return message.data(); }
 private:
     std::string message;
 };

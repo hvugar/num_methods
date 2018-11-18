@@ -37,8 +37,8 @@ LIBS += -L../bin -lminimum
 INCLUDEPATH += ../problem2P
 LIBS += -L../bin -lproblem2P
 
-INCLUDEPATH += ../problem2H
-LIBS += -L../bin -lproblem2H
+#INCLUDEPATH += ../problem2H
+#LIBS += -L../bin -lproblem2H
 
 DESTDIR += ../bin
 

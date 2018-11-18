@@ -5,15 +5,23 @@ CONFIG   -= app_bundle
 CONFIG   += console
 CONFIG   += shared
 DESTDIR  = ../bin
-QT       += core gui widgets
 
 DEFINES += PROBLEM2P_LIBRARY
+#DEFINES += USE_IMAGING
+#DEFINES += OLD_SOURCES
 
 INCLUDEPATH += ../minimum
 LIBS += -L../bin -lminimum
 
+defined(USE_IMAGING) {
+message("Using imaging library")
 INCLUDEPATH += ../imaging
 LIBS += -L../bin -limaging
+QT       += core gui widgets
+}
+
+OBJECTS_DIR = release/.obj
+MOC_DIR = release/.moc
 
 HEADERS += problem2p_global.h \
            problem2p_common.h \
@@ -24,6 +32,8 @@ SOURCES += problem2p_common.cpp \
            problem2p_solver.cpp \
            problem2p_example.cpp
 
+defined(OLD_SOURCES) {
+    message("Using old sources")
 SOURCES += \
     1d/problem2.cpp \
     1d/iproblem2forward.cpp \
@@ -71,6 +81,4 @@ HEADERS += \
     2d/abs/jfunctional.h \
     2d/abs/pfunctional.h \
     2d/ex/p2_article.h
-	
-OBJECTS_DIR = release/.obj
-MOC_DIR = release/.moc
+}

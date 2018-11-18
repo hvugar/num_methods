@@ -35,10 +35,14 @@ public:
     auto fx_norm(const EquationParameterP &eprm, const OptimizeParameterP &oprm, const OptimizeParameterP &rprm) const -> double;
 
     /** Penalty part of functional */
-    auto fx_penalty(const spif_vector &info, const OptimizeParameterP &o_prm) const ->double;
+    auto fx_penalty1(const spif_vector &info, const OptimizeParameterP &o_prm) const ->double;
     auto gpi(unsigned int i, unsigned int layer, const spif_vector &u_info, const OptimizeParameterP &o_prm) const -> double;
     auto g0i(unsigned int i, unsigned int layer, const spif_vector &u_info, const OptimizeParameterP &o_prm) const -> double;
     auto sign(double x) const -> double;
+
+    /** Penalty for control and measurement point distances */
+    auto fx_penalty2(const OptimizeParameterP &o_prm) const -> double;
+    auto hpij(const SpacePoint &eta, const SpacePoint &xi) const -> double;
 
     auto projectControlPoints(DoubleVector &x, unsigned int index) const -> void;
     auto projectMeasurePoints(DoubleVector &x, unsigned int index) const -> void;
@@ -84,7 +88,9 @@ public:
 
     EquationParameterP mEquParameter;
     OptimizeParameterP mRegParameter;
-    double r;
+    double r1;
+    double r2;
+    double d;
 
     DoubleVector vmin;
     DoubleVector vmax;

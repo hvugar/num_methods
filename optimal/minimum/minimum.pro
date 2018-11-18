@@ -67,7 +67,8 @@ SOURCES += \
     utils/random.cpp \
     ode/lode2o.cpp \
     ode/nlode2o.cpp \
-    vectornormalizer.cpp
+    vectornormalizer.cpp \
+    benchmark.cpp
 
 HEADERS += global.h \
     cmatrix.h \
@@ -118,4 +119,5 @@ HEADERS += global.h \
     utils/random.h \
     ode/lode2o.h \
     ode/nlode2o.h \
-    vectornormalizer.h
+    vectornormalizer.h \
+    benchmark.h

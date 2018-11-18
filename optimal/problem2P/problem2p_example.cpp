@@ -3,11 +3,11 @@
 void Problem2PNeumann::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
 {
     //example1();
-    example2();
+    //example2();
     //example3();
     //example4();
 
-    //arc_example1();
+    arc_example1();
     //arc_example2();
 }
 
@@ -26,7 +26,7 @@ auto Problem2PNeumann::checkGradient1(const Problem2PNeumann &prob, const Optimi
     IPrinter::print(r_pv, r_pv.length(), 8, 4);
     IPrinter::printSeperatorLine();
     double functional = prob.fx(pv);
-    printf("Functional: %f\n", functional);
+    printf("Functional: %f Penalty: %f\n", functional, prob.fx_penalty2(o_prm));
     puts("Calculating gradients....");
     DoubleVector ag(pv.length());
     prob.gradient(pv, ag);
@@ -415,7 +415,7 @@ auto example1() -> void
     prob.vmax.resize(e_prm.Nc, +20.0);
     prob.U.resize(static_cast<const unsigned int>(Ny+1), static_cast<const unsigned int>(Nx+1), 10.0);
     prob.regEpsilon = 0.0;
-    prob.r = 0.1;
+    prob.r1 = 0.1;
     prob.checkGradient1(prob, o_prm);
 }
 
@@ -423,9 +423,9 @@ auto example2() -> void
 {
     EquationParameterP e_prm;
     e_prm.a = 1.0;
-    e_prm.alpha = 0.001;
-    e_prm.lambda = +0.001;
-    e_prm.theta = +0.3;
+    e_prm.alpha = 0.01;
+    e_prm.lambda = +0.01;
+    e_prm.theta = +6.2;
     e_prm.phi = +0.2;
 
     e_prm.Nc = 2;
@@ -435,15 +435,15 @@ auto example2() -> void
      * Optimization parameters Table 1
      *********************************************************************************************************/
     OptimizeParameterP o_prm;
-    o_prm.k.resize(e_prm.Nc, e_prm.No, -0.5);
-    o_prm.z.resize(e_prm.Nc, e_prm.No, 10.0);
+    o_prm.k.resize(e_prm.Nc, e_prm.No, -0.1);
+    o_prm.z.resize(e_prm.Nc, e_prm.No, +10.0);
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
     /**********************************************************************************************************
      * Example 1
      **********************************************************************************************************/
-    //o_prm.k[0][0]  = -5.8500;  o_prm.k[0][1]  = -3.4800;  o_prm.k[1][0]  = -4.7400;  o_prm.k[1][1]  = -6.1500;
-    //o_prm.z[0][0]  = 14.9100;  o_prm.z[0][1]  = 11.4500;  o_prm.z[1][0]  = 16.8400;  o_prm.z[1][1]  = 12.3800;
+    o_prm.k[0][0]  = -5.8500;  o_prm.k[0][1]  = -3.4800;  o_prm.k[1][0]  = -4.7400;  o_prm.k[1][1]  = -6.1500;
+    o_prm.z[0][0]  = 14.9100;  o_prm.z[0][1]  = 11.4500;  o_prm.z[1][0]  = 16.8400;  o_prm.z[1][1]  = 12.3800;
     o_prm.xi[0].x  =  0.6900;  o_prm.xi[0].y  =  0.6500;  o_prm.xi[1].x  =  0.4200;  o_prm.xi[1].y  =  0.4700;
     o_prm.eta[0].x =  0.8500;  o_prm.eta[0].y =  0.8600;  o_prm.eta[1].x =  0.2300;  o_prm.eta[1].y =  0.2300;
     /**********************************************************************************************************
@@ -475,6 +475,11 @@ auto example2() -> void
     r_prm.z[0][0]  = +7.9600;  r_prm.z[0][1]  = +5.8300;  r_prm.z[1][0]  = +7.6800;  r_prm.z[1][1]  = +9.7200;
     r_prm.xi[0].x  =  0.0501;  r_prm.xi[0].y  =  0.0501;  r_prm.xi[1].x  =  0.9500;  r_prm.xi[1].y  =  0.0751;
     r_prm.eta[0].x =  0.4149;  r_prm.eta[0].y =  0.7549;  r_prm.eta[1].x =  0.4052;  r_prm.eta[1].y =  0.7077;
+
+//    r_prm.k[0][0]  = -1.2554;  r_prm.k[0][1]  = -1.2615;  r_prm.k[1][0]  = -1.2520;  r_prm.k[1][1]  = -1.2622;
+//    r_prm.z[0][0]  = +10.135;  r_prm.z[0][1]  = +10.136;  r_prm.z[1][0]  = +10.146;  r_prm.z[1][1]  = +10.146;
+//    r_prm.xi[0].x  =  0.5786;  r_prm.xi[0].y  =  0.4661;  r_prm.xi[1].x  =  0.4661;  r_prm.xi[1].y  =  0.4661;
+//    r_prm.eta[0].x =  0.7990;  r_prm.eta[0].y =  0.7990;  r_prm.eta[1].x =  0.2407;  r_prm.eta[1].y =  0.2407;
     /*********************************************************************************************************/
 
     // Grid parameters
@@ -487,13 +492,13 @@ auto example2() -> void
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 0.0000;// << 20.000 << 50.0000 << 100.00;
-
+    DoubleVector r1; r1 << 0.1000000 << 1.0000000;// << 50.0000 << 100.00;
+    DoubleVector r2; r2 << 0000000.0 << 1000000.0;// << 50.0000 << 100.00;
     // Regularization coefficients
-    DoubleVector e; e << 0.0000;// << 0.0000 << 0.00000 << 0.0000;
+    DoubleVector re; re << 1.0000000 << 0.0000000;// << 0.00000 << 0.0000;
 
     DoubleVector x;
-    for (unsigned int i=0; i<r.length(); i++)
+    for (unsigned int i=0; i<r1.length(); i++)
     {
         Problem2PNeumann prob;
         prob.setTimeDimension(time);
@@ -503,20 +508,22 @@ auto example2() -> void
         prob.mRegParameter = r_prm;
         prob.optimizeK = true;
         prob.optimizeZ = true;
-        prob.optimizeC = true;
         prob.optimizeO = true;
-        prob.vmin.resize(e_prm.Nc,  -0.00);
-        prob.vmax.resize(e_prm.Nc, +25.00);
-        prob.noise = 0.01;
+        prob.optimizeC = true;
+        prob.vmin.resize(e_prm.Nc, -5.00);
+        prob.vmax.resize(e_prm.Nc, +20.0);
+        prob.noise = 0.00;
+        prob.d = 0.02;
         prob.U.resize(static_cast<const unsigned int>(Ny+1), static_cast<const unsigned int>(Nx+1), 10.0);
 
-        prob.regEpsilon = e[i];
-        prob.r = r[i];
+        prob.regEpsilon = re[i];
+        prob.r1 = r1[i];
+        prob.r2 = r2[i];
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
             //prob.checkGradient1(prob, o_prm);
-            IPrinter::printSeperatorLine();
+            //IPrinter::printSeperatorLine();
         }
 
         //ConjugateGradient g;
@@ -529,13 +536,13 @@ auto example2() -> void
         g.setOptimalityTolerance(0.00001);
         g.setStepTolerance(0.00001);
         g.setFunctionTolerance(0.00001);
-        g.setR1MinimizeEpsilon(0.1, 0.0001);
+        g.setR1MinimizeEpsilon(0.1, 0.001);
         g.setNormalize(true);
         g.showExitMessage(true);
 
         g.calculate(x);
 
-        IPrinter::printSeperatorLine(NULL, '=');
+        IPrinter::printSeperatorLine(nullptr, '=');
 
         OptimizeParameterP oo_prm;
         spif_vector u_info;
@@ -545,7 +552,7 @@ auto example2() -> void
             prob.setTimeDimension(Dimension(0.005, 0, 200));
             prob.solveForwardIBVP(u, u_info, false, oo_prm);
             FILE *file = fopen("data_t10.txt", "w");
-            IPrinter::printMatrix(u, u.rows(), u.cols(), NULL, file);
+            IPrinter::printMatrix(u, u.rows(), u.cols(), nullptr, file);
             fclose(file);
         }
 
@@ -554,7 +561,7 @@ auto example2() -> void
             prob.setTimeDimension(Dimension(0.005, 0, 300));
             prob.solveForwardIBVP(u, u_info, false, oo_prm);
             FILE *file = fopen("data_t15.txt", "w");
-            IPrinter::printMatrix(u, u.rows(), u.cols(), NULL, file);
+            IPrinter::printMatrix(u, u.rows(), u.cols(), nullptr, file);
             fclose(file);
         }
 
@@ -564,7 +571,7 @@ auto example2() -> void
             prob.setTimeDimension(Dimension(0.005, 0, 200));
             prob.solveForwardIBVP(u, u_info, false, oo_prm);
             FILE *file = fopen("data_t20.txt", "w");
-            IPrinter::printMatrix(u, u.rows(), u.cols(), NULL, file);
+            IPrinter::printMatrix(u, u.rows(), u.cols(), nullptr, file);
             fclose(file);
         }
     }
@@ -672,11 +679,11 @@ auto example3() -> void
         prob.mRegParameter = r_prm;
 
         prob.regEpsilon = e[i];
-        prob.r = r[i];
+        prob.r1 = r[i];
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
-            //prob.checkGradient1(prob, o_prm);
+            prob.checkGradient1(prob, o_prm);
             IPrinter::printSeperatorLine();
         }
 
@@ -697,7 +704,7 @@ auto example3() -> void
 
         g.calculate(x);
 
-        IPrinter::printSeperatorLine(NULL, '=');
+        IPrinter::printSeperatorLine(nullptr, '=');
     }
 }
 
@@ -806,7 +813,7 @@ auto example4() -> void
     prob.vmax.resize(e_prm.Nc, +5.0);
     prob.U.resize(static_cast<const unsigned int>(Ny+1), static_cast<const unsigned int>(Nx+1), 10.0);
     prob.regEpsilon = 0.0;
-    prob.r = 0.0;
+    prob.r1 = 0.0;
     prob.checkGradient1(prob, o_prm);
 
     DoubleMatrix u;
@@ -836,8 +843,8 @@ auto arc_example1() -> void
      * Optimization parameters Table 1
      *********************************************************************************************************/
     OptimizeParameterP o_prm;
-    o_prm.k.resize(e_prm.Nc, e_prm.No, -0.1);
-    o_prm.z.resize(e_prm.Nc, e_prm.No, +9.9);
+    o_prm.k.resize(e_prm.Nc, e_prm.No, -1.25);
+    o_prm.z.resize(e_prm.Nc, e_prm.No, +10.0);
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
     /**********************************************************************************************************
@@ -889,13 +896,13 @@ auto arc_example1() -> void
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 1.0000 << 20.000 << 50.0000 << 100.00;
-
+    DoubleVector r1; r1 << 1.0000000;// << 20.000 << 50.0000 << 100.00;
+    DoubleVector r2; r2 << 1000000.0;// << 20.000 << 50.0000 << 100.00;
     // Regularization coefficients
-    DoubleVector e; e << 0.0000 << 0.0000 << 0.00000 << 0.0000;
+    DoubleVector re; re << 0.0000000;// << 0.0000 << 0.00000 << 0.0000;
 
     DoubleVector x;
-    for (unsigned int i=0; i<r.length(); i++)
+    for (unsigned int i=0; i<r1.length(); i++)
     {
         Problem2PNeumann prob;
         prob.setTimeDimension(time);
@@ -910,10 +917,14 @@ auto arc_example1() -> void
         prob.vmin.resize(e_prm.Nc, -0.000);
         prob.vmax.resize(e_prm.Nc, +12.00);
         prob.noise = 0.00;
-        prob.U.resize(static_cast<const unsigned int>(Ny+1), static_cast<const unsigned int>(Nx+1), 10.0);
+        const unsigned int rows = static_cast<const unsigned int>(Ny+1);
+        const unsigned int cols = static_cast<const unsigned int>(Nx+1);
+        prob.U.resize(rows, cols, 10.0);
 
-        prob.regEpsilon = e[i];
-        prob.r = r[i];
+        prob.regEpsilon = re[i];
+        prob.r1 = r1[i];
+        prob.r2 = r2[i];
+
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
@@ -937,16 +948,38 @@ auto arc_example1() -> void
 
         g.calculate(x);
 
-        IPrinter::printSeperatorLine(NULL, '=');
+        IPrinter::printSeperatorLine(nullptr, '=');
 
-        //        spif_vector u_info;
-        //        DoubleMatrix u;
-        //        prob.setTimeDimension(Dimension(0.005, 0, 200));
-        //        prob.VectorToPrm(x, o_prm);
-        //        prob.solveForwardIBVP(u, u_info, false, o_prm);
-        //        FILE *file = fopen("data_t1.txt", "w");
-        //        IPrinter::printMatrix(u, u.rows(), u.cols(), NULL, file);
-        //        fclose(file);
+        OptimizeParameterP oo_prm;
+        spif_vector u_info;
+        prob.VectorToPrm(x, oo_prm);
+        {
+            DoubleMatrix u;
+            prob.setTimeDimension(Dimension(0.005, 0, 200));
+            prob.solveForwardIBVP(u, u_info, false, oo_prm);
+            FILE *file = fopen("data_t10.txt", "w");
+            IPrinter::printMatrix(u, u.rows(), u.cols(), nullptr, file);
+            fclose(file);
+        }
+
+        {
+            DoubleMatrix u;
+            prob.setTimeDimension(Dimension(0.005, 0, 300));
+            prob.solveForwardIBVP(u, u_info, false, oo_prm);
+            FILE *file = fopen("data_t15.txt", "w");
+            IPrinter::printMatrix(u, u.rows(), u.cols(), nullptr, file);
+            fclose(file);
+        }
+
+        prob.VectorToPrm(x, oo_prm);
+        {
+            DoubleMatrix u;
+            prob.setTimeDimension(Dimension(0.005, 0, 200));
+            prob.solveForwardIBVP(u, u_info, false, oo_prm);
+            FILE *file = fopen("data_t20.txt", "w");
+            IPrinter::printMatrix(u, u.rows(), u.cols(), nullptr, file);
+            fclose(file);
+        }
     }
 }
 
