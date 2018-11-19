@@ -41,10 +41,10 @@ public:
 
 /*****************************************************************************************************/
 
-GradientMethod::GradientMethod() : m_fn(NULL), m_gr(NULL), m_printer(NULL), m_projection(NULL),
+GradientMethod::GradientMethod() : m_fn(nullptr), m_gr(nullptr), m_printer(nullptr), m_projection(nullptr),
     m_optimalityTolerance(0.1), m_functionTolerance(0.1), m_stepTolerance(0.1),
     min_step(0.1), min_epsilon(0.01),
-    m_show_end_message(true), m_normalize(true), m_normalizer(NULL),
+    m_show_end_message(true), m_normalize(true), m_normalizer(nullptr),
     m_iterationCount(0), m_maxIterations(UINT32_MAX)
 {
     m_gr = new DefaultGradient();
@@ -196,7 +196,7 @@ auto GradientMethod::maxFunctionEvaluations() const -> unsigned int
  */
 void GradientMethod::straightLineSearch(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const
 {
-    unsigned int iteration = 0;
+    unsigned int iteration = 0; C_UNUSED(iteration)
     unsigned int fx_count = 0;
 
     if ( step <= 0.0 )
@@ -291,7 +291,7 @@ void GradientMethod::straightLineSearch(double x, double step, double &a, double
  */
 void GradientMethod::swann(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const
 {
-    unsigned int iteration = 0;
+    unsigned int iteration = 0; C_UNUSED(iteration)
     unsigned int fx_count = 0;
 
     if ( step <= 0.0 )

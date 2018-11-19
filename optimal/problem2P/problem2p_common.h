@@ -131,7 +131,8 @@ class grid_exception : public std::exception
 {
 public:
     grid_exception(const std::string &message) : std::exception() { this->message = message; }
-    virtual char const* what() const _GLIBCXX_USE_NOEXCEPT { return message.data(); }
+    virtual ~grid_exception() {}
+    virtual char const* what() const noexcept { return message.data(); }
 private:
     std::string message;
 };
