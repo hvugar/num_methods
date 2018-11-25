@@ -1,9 +1,3 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2018-07-04T14:44:06
-#
-#-------------------------------------------------
-
 TEMPLATE = lib
 TARGET = problem2H
 CONFIG  -= app_bundle
@@ -11,31 +5,40 @@ CONFIG  -= app_bundle
 CONFIG  += console
 CONFIG  += shared
 DESTDIR  = ../bin
-QT       += core gui widgets
 
 DEFINES += PROBLEM2H_LIBRARY
+#DEFINES += USE_IMAGING
+#DEFINES += OLD_SOURCES
 
 INCLUDEPATH += ../minimum
 LIBS += -L../bin -lminimum
 
+defined(USE_IMAGING) {
+message("Using imaging library")
 INCLUDEPATH += ../imaging
 LIBS += -L../bin -limaging
+QT       += core gui widgets
+}
 
-HEADERS += problem2h_global.h
+OBJECTS_DIR = release/.obj
+MOC_DIR = release/.moc
 
-HEADERS += problem2h_common.h
-SOURCES += problem2h_common.cpp
+HEADERS += problem2h_global.h \
+           problem2h_common.h \
+           problem2h_solver.h \
+           problem2h_example.h
+
+SOURCES += problem2h_common.cpp \
+           problem2h_solver.cpp \
+           problem2h_example.cpp
 
 HEADERS += problem2h_exporter.h
 SOURCES += problem2h_exporter.cpp
 
-HEADERS += problem2h_solver.h problem2h_example.h
-SOURCES += problem2h_solver.cpp problem2h_example.cpp
-
+defined(OLD_SOURCES) {
+    message("Using old sources")
 #HEADERS += problem2hnm.h
 #SOURCES += problem2hnm.cpp
+}
 
 OTHER_FILES += matlab/*
-
-OBJECTS_DIR = release/.obj
-MOC_DIR = release/.moc

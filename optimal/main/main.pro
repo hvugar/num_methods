@@ -37,8 +37,8 @@ LIBS += -L../bin -lminimum
 INCLUDEPATH += ../problem2P
 LIBS += -L../bin -lproblem2P
 
-#INCLUDEPATH += ../problem2H
-#LIBS += -L../bin -lproblem2H
+INCLUDEPATH += ../problem2H
+LIBS += -L../bin -lproblem2H
 
 DESTDIR += ../bin
 
@@ -48,21 +48,23 @@ DESTDIR += ../bin
 #include(problem5/problem5.pri)
 #include(load_sys/load_sys.pri)
 
-SOURCES += main.cpp \
-    ivp/nlode1oex1.cpp \
-    nonlinearequationex1.cpp \
-    loadedlinearode1order.cpp \
-    heatequationibvp1.cpp \
-    templatea.cpp \
-    templateb.cpp
+SOURCES += main.cpp
 
-HEADERS += \
-    ivp/nlode1oex1.h \
-    nonlinearequationex1.h \
-    loadedlinearode1order.h \
-    heatequationibvp1.h \
-    templatea.h \
-    templateb.h
+#SOURCES += \
+#    ivp/nlode1oex1.cpp \
+#    nonlinearequationex1.cpp \
+#    loadedlinearode1order.cpp \
+#    heatequationibvp1.cpp \
+#    templatea.cpp \
+#    templateb.cpp
+
+#HEADERS += \
+#    ivp/nlode1oex1.h \
+#    nonlinearequationex1.h \
+#    loadedlinearode1order.h \
+#    heatequationibvp1.h \
+#    templatea.h \
+#    templateb.h
 
 OBJECTS_DIR = release/.obj
 MOC_DIR = release/.moc

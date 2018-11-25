@@ -72,10 +72,8 @@ public:
     auto f_initial(const SpaceNodePDE &sn) const -> double;
     auto b_initial(const SpaceNodePDE &sn, const DoubleMatrix &u) const -> double;
 
-    auto f_add2Info(const DoubleMatrix &u, spif_vector &u_info, unsigned int ln, double hx, double hy,
-                    const std::vector<ExtendedSpacePointP> &extMsmnts, int method = 4) const -> void;
-    auto b_add2Info(const DoubleMatrix &p, spif_vector &p_info, unsigned int ln, double hx, double hy,
-                    const std::vector<ExtendedSpacePointP> &extCntrls, int method = 4) const -> void;
+    auto f_add2Info(const DoubleMatrix &u, spif_vector &u_info, unsigned int ln, double hx, double hy, const std::vector<ExtendedSpacePointP> &extMsmnts, int method = 4) const -> void;
+    auto b_add2Info(const DoubleMatrix &p, spif_vector &p_info, unsigned int ln, double hx, double hy, const std::vector<ExtendedSpacePointP> &extCntrls, int method = 4) const -> void;
 
     auto f_layerInfo(const DoubleMatrix &u, unsigned int ln) const -> void;
     auto b_layerInfo(const DoubleMatrix &p, unsigned int ln) const -> void;

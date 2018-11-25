@@ -14,7 +14,7 @@ SUBDIRS += minimum
 #SUBDIRS += border
 #SUBDIRS += problem1
 SUBDIRS += problem2P
-#SUBDIRS += problem2H
+SUBDIRS += problem2H
 #SUBDIRS += heightMap3d
 SUBDIRS += main
 

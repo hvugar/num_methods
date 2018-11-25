@@ -5,8 +5,6 @@
 
 #define EXAMPLE4_SAMPLE_1
 
-class Problem2HExample {};
-
 void example1();
 
 void example2();

@@ -25,7 +25,7 @@
 #include "../problem2P/2d/ex/p2_article.h"
 
 #include "../problem2P/problem2p_solver.h"
-//#include "../problem2H/problem2h_solver.h"
+#include "../problem2H/problem2h_solver.h"
 #include "ivp/nlode1oex1.h"
 
 #include <utils/matrix.h>
@@ -46,8 +46,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //Problem2Article::Main(argc, argv);
     //IPrinter::printSeperatorLine();
-    Problem2PNeumann::Main(argc, argv);
-    //Problem2HNDirichlet::Main(argc, argv);
+    //Problem2PNeumann::Main(argc, argv);
+    Problem2HNDirichlet::Main(argc, argv);
     return 0;
 
     //BorderHyperbolic2D::Main(argc, argv);

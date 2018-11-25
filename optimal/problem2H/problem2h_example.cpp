@@ -1,12 +1,15 @@
 #include "problem2h_example.h"
 #include "vectornormalizer.h"
+#ifdef USE_IMAGING
 #include "imaging.h"
+#endif
 
 void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    example2();
-    IPrinter::printSeperatorLine();
     example1();
+    //IPrinter::printSeperatorLine();
+    //example2();
+    //IPrinter::printSeperatorLine();
     //example3();
 }
 
@@ -15,15 +18,15 @@ void example1()
     // Equation parameters
     EquationParameterH e_prm;
     e_prm.a = 1.0;
-    e_prm.lambda = +0.0;
+    e_prm.lambda = +0.01;
 
     // Pulse influences
     e_prm.Ns = 2;
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = +0.012; e_prm.theta[0].x = 0.4300; e_prm.theta[0].y = 0.7500;
-    e_prm.q[1] = +0.013; e_prm.theta[1].x = 0.8700; e_prm.theta[1].y = 0.2300;
+    e_prm.q[0] = +0.52; e_prm.theta[0].x = 0.4300; e_prm.theta[0].y = 0.7500;
+    e_prm.q[1] = +0.93; e_prm.theta[1].x = 0.8700; e_prm.theta[1].y = 0.2300;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -48,8 +51,8 @@ void example1()
 //    o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
 //    o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
 
-    o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
-    o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = -0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
+    o_prm.k[0][0]  = -1.5200; o_prm.k[0][1]  = -1.5400; o_prm.k[1][0]  = -1.5500; o_prm.k[1][1]  = -1.5800;
+    o_prm.z[0][0]  = +0.0050; o_prm.z[0][1]  = -0.0040; o_prm.z[1][0]  = +0.0070; o_prm.z[1][1]  = +0.0070;
     o_prm.xi[0].x  = +0.4048; o_prm.xi[0].y  = +0.5954; o_prm.xi[1].x  = +0.6725; o_prm.xi[1].y  = +0.3518;
     o_prm.eta[0].x = +0.5257; o_prm.eta[0].y = +0.7657; o_prm.eta[1].x = +0.5529; o_prm.eta[1].y = +0.4795;
 
@@ -87,9 +90,9 @@ void example1()
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 1.0000 << 10.000 << 50.0000 << 100.00;
+    DoubleVector r; r << 1.0000;// << 10.000 << 50.0000 << 100.00;
     // Regularization coefficients
-    DoubleVector e; e << 0.0000 << 0.0000 << 0.00000 << 0.0000;
+    DoubleVector e; e << 0.0000;// << 0.0000 << 0.00000 << 0.0000;
 
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
@@ -101,12 +104,12 @@ void example1()
         prob.mEquParameter = e_prm;
         prob.mOptParameter = o_prm;
         prob.mRegParameter = r_prm;
-        prob.optimizeK = true;
+        prob.optimizeK = false;
         prob.optimizeZ = true;
-        prob.optimizeC = true;
-        prob.optimizeO = true;
-        prob.vmin.resize(e_prm.Nc, +1.5);
-        prob.vmax.resize(e_prm.Nc, +1.8);
+        prob.optimizeC = false;
+        prob.optimizeO = false;
+        prob.vmin.resize(e_prm.Nc, +0.05);
+        prob.vmax.resize(e_prm.Nc, -0.05);
         prob.LD = 50;
 
         prob.regEpsilon = e[i];
@@ -114,7 +117,7 @@ void example1()
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
-            prob.checkGradient1(prob);
+            //prob.checkGradient1(prob);
             IPrinter::printSeperatorLine();
         }
 
@@ -124,23 +127,40 @@ void example1()
         g.setGradient(&prob);
         g.setPrinter(&prob);
         g.setProjection(&prob);
-        g.setGradientNormalizer(&prob);
+        //g.setGradientNormalizer(&prob);
         g.setOptimalityTolerance(0.0001);
         g.setStepTolerance(0.0001);
         g.setFunctionTolerance(0.0001);
-        g.setR1MinimizeEpsilon(0.1, 0.01);
+        g.setR1MinimizeEpsilon(0.1, 0.001);
         g.setNormalize(true);
         g.showExitMessage(true);
         prob.gm = &g;
 
         g.calculate(x);
 
-        IPrinter::printSeperatorLine(NULL, '=');
+        IPrinter::printSeperatorLine(nullptr, '=');
     }
 }
 
 void example2()
 {
+    //
+//    EquationParameterHE prm;
+//    prm.a = 1.0;
+//    prm.lambda = 0.01;
+
+//    prm.Nc = 2;
+//    prm.No = 2;
+//    prm.Nd = 5;
+
+//    prm.k.resize(prm.Nc, prm.No, 0.0);
+//    prm.z.resize(prm.Nc, prm.No, 0.0);
+//    prm.xi.resize(prm.No);
+//    prm.eta.resize(prm.Nc);
+
+//    prm.eta_ext.resize(prm.Nc);
+//    prm.xi_ext.resize(prm.No);
+
     // Equation parameters
     EquationParameterH e_prm;
     e_prm.a = +1.0;
@@ -210,7 +230,7 @@ void example2()
     prob.regEpsilon = 0.0;
 
     std::vector<DoubleMatrix> u;
-    spif_vector u_info;
+    spif_vectorH u_info;
     clock_t start = clock();
     prob.solveForwardIBVP(u, u_info, true);
     clock_t end = clock();
@@ -222,7 +242,7 @@ void example2()
     IPrinter::printSeperatorLine();
     printf("%f\n", sqrt(prob.integralU(u0)));
 
-    spif_vector p_info;
+    spif_vectorH p_info;
     start = clock();
     prob.solveBackwardIBVP(u, p_info, true, u_info);
     end = clock();
@@ -333,6 +353,6 @@ void example3()
 
         g.calculate(x);
 
-        IPrinter::printSeperatorLine(NULL, '=');
+        IPrinter::printSeperatorLine(nullptr, '=');
     }
 }

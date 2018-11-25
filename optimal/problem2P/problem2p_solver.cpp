@@ -700,8 +700,6 @@ auto Problem2PNeumann::project(DoubleVector &pv) const -> void
         if (pv[index] > 0.95) pv[index] = 0.95;
     }
 
-    //return;
-
     //IPrinter::print(pv.mid(start, end));
     for (unsigned int index = start; index <=end; index++)
     {
@@ -2430,18 +2428,7 @@ auto Problem2PNeumann::b_prepareInfo(unsigned int Nc, const std::vector<SpacePoi
     }
 }
 
-auto Problem2PNeumann::f_initial(const SpaceNodePDE &) const -> double
-{
-    return mEquParameter.phi;
-}
-
-auto Problem2PNeumann::b_initial(const SpaceNodePDE &sn, const DoubleMatrix &u) const -> double
-{
-    return -2.0*mu(sn.x, sn.y)*(u[sn.j][sn.i]-U[sn.j][sn.i]);
-}
-
-auto Problem2PNeumann::f_add2Info(const DoubleMatrix &u, spif_vector &u_info, unsigned int ln, double hx, double hy,
-                                  const std::vector<ExtendedSpacePointP> &extMsmnts, int method) const -> void
+auto Problem2PNeumann::f_add2Info(const DoubleMatrix &u, spif_vector &u_info, unsigned int ln, double hx, double hy, const std::vector<ExtendedSpacePointP> &extMsmnts, int method) const -> void
 {
     if (method == 1 || method == 2 || method == 4)
     {
@@ -2476,8 +2463,7 @@ auto Problem2PNeumann::f_add2Info(const DoubleMatrix &u, spif_vector &u_info, un
     }
 }
 
-void Problem2PNeumann::b_add2Info(const DoubleMatrix &p, spif_vector &p_info, unsigned int ln, double hx, double hy,
-                                  const std::vector<ExtendedSpacePointP> &extCntrls, int method) const
+auto Problem2PNeumann::b_add2Info(const DoubleMatrix &p, spif_vector &p_info, unsigned int ln, double hx, double hy, const std::vector<ExtendedSpacePointP> &extCntrls, int method) const -> void
 {
     if (method == 1 || method == 2 || method == 4)
     {
@@ -2507,6 +2493,16 @@ void Problem2PNeumann::b_add2Info(const DoubleMatrix &p, spif_vector &p_info, un
             }
         }
     }
+}
+
+auto Problem2PNeumann::f_initial(const SpaceNodePDE &) const -> double
+{
+    return mEquParameter.phi;
+}
+
+auto Problem2PNeumann::b_initial(const SpaceNodePDE &sn, const DoubleMatrix &u) const -> double
+{
+    return -2.0*mu(sn.x, sn.y)*(u[sn.j][sn.i]-U[sn.j][sn.i]);
 }
 
 auto Problem2PNeumann::f_layerInfo(const DoubleMatrix &u, unsigned int ln) const -> void
