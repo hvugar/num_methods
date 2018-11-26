@@ -3,11 +3,17 @@
 #include <map>
 #include <utility>
 
+#ifdef USE_IMAGING
+#include <QPixmap>
+#include <imaging.h>
+#endif
+
 double MIN = +100000.0;
 double MAX = -100000.0;
+
 void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
-    return;
+//    return;
 
 //    if (ln == 0 || ln == 2 || ln == 2*timeDimension().sizeN())
 //    {
@@ -18,31 +24,32 @@ void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsign
 //    }
 //    return;
 
-//    if (ln%2 == 0 && false)
-//    {
-//        char filename1[40];
-//        int size1 = sprintf(filename1, "e:/data/img/image%d.png", ln);
-//        filename1[size1] = 0;
-//        char filename2[40];
-//        int size2 = sprintf(filename2, "e:/data/txt/image%d.txt", ln);
-//        filename2[size2] = 0;
+    if (ln%2 == 0)
+    {
+#ifdef USE_IMAGING
+        char filename1[40];
+        int size1 = sprintf(filename1, "e:/data/img/image%d.png", ln);
+        filename1[size1] = 0;
+        //char filename2[40];
+        //int size2 = sprintf(filename2, "e:/data/txt/image%d.txt", ln);
+        //filename2[size2] = 0;
 
-//        double min = u.min();
-//        double max = u.max();
-//        if (MIN>min) MIN = min;
-//        if (MAX<max) MAX = max;
+        double min = u.min();
+        double max = u.max();
+        if (MIN>min) MIN = min;
+        if (MAX<max) MAX = max;
 
-//#ifdef USE_IMAGING
-//        puts("Generating image...");
-//        QPixmap pxm;
-//        visualGrayScale(u, min, max, pxm, 0, 0);
-//        pxm.save(QString(filename1), "PNG");
-//        printf("Image generated. ln: %d min: %f max: %f MIN: %f MAX: %f\n", ln/2, min, max, MIN, MAX);
-//        FILE* file = fopen(filename2, "w");
-//        IPrinter::print(u, u.rows(), u.cols(), 10, 8, file);
-//        fclose(file);
-//#endif
-//    }
+        puts("Generating image...");
+        QPixmap pxm;
+        //visualGrayScale(u, min, max, pxm, 0, 0);
+        visualizeMatrixHeat(u, min, max, pxm, 0, 0);
+        pxm.save(QString(filename1), "PNG");
+        printf("Image generated. ln: %d min: %f max: %f MIN: %f MAX: %f\n", ln/2, min, max, MIN, MAX);
+        //FILE* file = fopen(filename2, "w");
+        //IPrinter::print(u, u.rows(), u.cols(), 10, 8, file);
+        //fclose(file);
+#endif
+    }
 
 //    //    if (ln == 2*timeDimension().sizeN())
 //    //    {
@@ -343,21 +350,12 @@ double Problem2HNDirichlet::fx(const DoubleVector &pv) const
     prob->solveForwardIBVP(u, u_info, true);
 
     double intgrl = integral(u);
-
-    for (unsigned int i=0; i<=LD; i++) u[i].clear();
-    u.clear();
-
     double nrm = norm(mEquParameter, o_prm, mRegParameter);
     double pnt = penalty(u_info, o_prm);
-
     double sum = intgrl + regEpsilon*nrm + r*pnt;
 
-    for (unsigned int j=0; j<u_info.size(); j++)
-    {
-        u_info[j].clear();
-    }
-    u_info.clear();
-    //printf("%f %f %f\n", intgrl, pnt, nrm);
+    for (unsigned int i=0; i<u.size(); i++)      u[i].clear();      u.clear();
+    for (unsigned int j=0; j<u_info.size(); j++) u_info[j].clear(); u_info.clear();
 
     return sum;
 }
@@ -365,22 +363,13 @@ double Problem2HNDirichlet::fx(const DoubleVector &pv) const
 double Problem2HNDirichlet::integral(const std::vector<DoubleMatrix> &vu) const
 {
     const double ht = timeDimension().step();
-
-    const unsigned int L = static_cast<const unsigned int>( timeDimension().sizeN() );
-    const unsigned int LLD = L + LD;
-
     double sum = 0.0;
-
-    const DoubleMatrix &uL = vu.at(0);
-    sum += 0.5*integralU(uL);
-    for (unsigned int l=L+1; l<=LLD-1; l++)
+    const DoubleMatrix &u0 = vu[0]; sum += 0.5*integralU(u0);
+    for (unsigned int l=1; l<=LD-1; l++)
     {
-        const DoubleMatrix &u = vu.at(2*(l-L));
-        sum += integralU(u);
+        const DoubleMatrix &u1 = vu[2*l]; sum += integralU(u1);
     }
-    const DoubleMatrix &uLLD = vu.at(2*LD);
-    sum += 0.5*integralU(uLLD);
-
+    const DoubleMatrix &u2 = vu[2*LD]; sum += 0.5*integralU(u2);
     return sum*ht;
 }
 
@@ -726,7 +715,7 @@ auto Problem2HNDirichlet::normalize(DoubleVector &v) const -> void
 void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const
 {
     C_UNUSED(i); C_UNUSED(x); C_UNUSED(g); C_UNUSED(f); C_UNUSED(alpha); C_UNUSED(result);
-    const char* msg = 0; C_UNUSED(msg);
+    const char* msg = nullptr; C_UNUSED(msg);
     if (result == GradientMethod::BREAK_FIRST_ITERATION)    msg = "BREAK_FIRST_ITERATION   ";
     if (result == GradientMethod::FIRST_ITERATION)          msg = "FIRST_ITERATION         ";
     if (result == GradientMethod::BREAK_GRADIENT_NORM_LESS) msg = "BREAK_GRADIENT_NORM_LESS";
@@ -755,14 +744,13 @@ void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const Dou
         v2[ln] = v(1, o_prm, mEquParameter,  u_info, 2*ln);//o_prm.k[1][0] * (u_info.at(0).vl[2*ln] - o_prm.z[1][0]) + o_prm.k[1][1] * (u_info.at(1).vl[2*ln] - o_prm.z[1][1]);
     }
 
-    IPrinter::printVector(v1, "v1", 10);
-    IPrinter::printVector(v2, "v2", 10);
+    //IPrinter::printVector(v1, "v1", 10);
+    //IPrinter::printVector(v2, "v2", 10);
 
-    printf("I[%3d]: F:%10.6f I:%10.6f P:%12.6f N:%10.6f R:%7.3f e:%5.3f a:%10.6f min:%10.6f max:%10.6f \n",
-           i, f, ing, pnt, nrm, r, regEpsilon, alpha, u.at(0).min(), u.at(0).max());
-    //if (result == GradientMethod::BREAK_GRADIENT_NORM_LESS || result == GradientMethod::BREAK_DISTANCE_LESS)
-    printf("k:%7.4f %7.4f %7.4f %7.4f z:%7.4f %7.4f %7.4f %7.4f o: %6.4f %6.4f %6.4f %6.4f c: %6.4f %6.4f %6.4f %6.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
-    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
+    printf("I[%3d]: F:%10.6f I:%10.6f P:%12.6f N:%10.6f R:%7.3f e:%5.3f a:%10.6f min:%10.6f max:%10.6f min:%10.6f max:%10.6f intU0: %10.6f intULD: %10.6f\n", i, f, ing, pnt, nrm, r, regEpsilon, alpha, u.at(0).min(), u.at(0).max(), u.at(2*LD).min(), u.at(2*LD).max(),
+           integralU(u[0]), integralU(u[LD]));
+    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
+    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
     //DoubleVector n = g;
     //n.L2Normalize();
     //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]);
@@ -2923,7 +2911,7 @@ auto Problem2HNDirichlet::newDistributeDeltaGaussPulse(const std::vector<SpacePo
         extTheta.y = theta.y;
         extTheta.rx = static_cast<int> ( round(extTheta.x*Nx) );
         extTheta.ry = static_cast<int> ( round(extTheta.y*Ny) );
-        extTheta.k = k;//*5;
+        extTheta.k = 4;//k*5;
         extTheta.minX = extTheta.rx - extTheta.k;
         extTheta.maxX = extTheta.rx + extTheta.k;
         extTheta.minY = extTheta.ry - extTheta.k;

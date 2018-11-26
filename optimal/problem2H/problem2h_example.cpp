@@ -1,7 +1,7 @@
 #include "problem2h_example.h"
 #include "vectornormalizer.h"
 #ifdef USE_IMAGING
-#include "imaging.h"
+#include <imaging.h>
 #endif
 
 void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
@@ -21,12 +21,13 @@ void example1()
     e_prm.lambda = +0.01;
 
     // Pulse influences
-    e_prm.Ns = 2;
+    e_prm.Ns = 3;
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = +0.52; e_prm.theta[0].x = 0.4300; e_prm.theta[0].y = 0.7500;
-    e_prm.q[1] = +0.93; e_prm.theta[1].x = 0.8700; e_prm.theta[1].y = 0.2300;
+    e_prm.q[0] = -0.252; e_prm.theta[0].x = 0.2584; e_prm.theta[0].y = 0.7586;
+    e_prm.q[1] = -0.293; e_prm.theta[1].x = 0.5782; e_prm.theta[1].y = 0.2356;
+    e_prm.q[2] = -0.265; e_prm.theta[2].x = 0.8754; e_prm.theta[2].y = 0.5374;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -51,8 +52,8 @@ void example1()
 //    o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
 //    o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
 
-    o_prm.k[0][0]  = -1.5200; o_prm.k[0][1]  = -1.5400; o_prm.k[1][0]  = -1.5500; o_prm.k[1][1]  = -1.5800;
-    o_prm.z[0][0]  = +0.0050; o_prm.z[0][1]  = -0.0040; o_prm.z[1][0]  = +0.0070; o_prm.z[1][1]  = +0.0070;
+    o_prm.k[0][0]  = -0.5200; o_prm.k[0][1]  = -0.5400; o_prm.k[1][0]  = -0.5500; o_prm.k[1][1]  = -0.5800;
+    o_prm.z[0][0]  = +2.5050; o_prm.z[0][1]  = -2.5040; o_prm.z[1][0]  = +2.5070; o_prm.z[1][1]  = +2.5070;
     o_prm.xi[0].x  = +0.4048; o_prm.xi[0].y  = +0.5954; o_prm.xi[1].x  = +0.6725; o_prm.xi[1].y  = +0.3518;
     o_prm.eta[0].x = +0.5257; o_prm.eta[0].y = +0.7657; o_prm.eta[1].x = +0.5529; o_prm.eta[1].y = +0.4795;
 
@@ -83,14 +84,14 @@ void example1()
     // Grid parameters
     double hx = 0.010; int Nx = 100;
     double hy = 0.010; int Ny = 100;
-    double ht = 0.005; int Nt = 200;
+    double ht = 0.005; int Nt = 400;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 1.0000;// << 10.000 << 50.0000 << 100.00;
+    DoubleVector r; r << 0.0000;// << 10.000 << 50.0000 << 100.00;
     // Regularization coefficients
     DoubleVector e; e << 0.0000;// << 0.0000 << 0.00000 << 0.0000;
 
@@ -104,12 +105,12 @@ void example1()
         prob.mEquParameter = e_prm;
         prob.mOptParameter = o_prm;
         prob.mRegParameter = r_prm;
-        prob.optimizeK = false;
+        prob.optimizeK = true;
         prob.optimizeZ = true;
-        prob.optimizeC = false;
-        prob.optimizeO = false;
-        prob.vmin.resize(e_prm.Nc, +0.05);
-        prob.vmax.resize(e_prm.Nc, -0.05);
+        prob.optimizeC = true;
+        prob.optimizeO = true;
+        prob.vmin.resize(e_prm.Nc, +0.5);
+        prob.vmax.resize(e_prm.Nc, -0.5);
         prob.LD = 50;
 
         prob.regEpsilon = e[i];
@@ -119,6 +120,11 @@ void example1()
             prob.PrmToVector(o_prm, x);
             //prob.checkGradient1(prob);
             IPrinter::printSeperatorLine();
+
+//            std::vector<DoubleMatrix> u;
+//            spif_vectorH u_info;
+//            prob.solveForwardIBVP(u, u_info, false);
+//            return;
         }
 
         //ConjugateGradient g;
@@ -127,10 +133,10 @@ void example1()
         g.setGradient(&prob);
         g.setPrinter(&prob);
         g.setProjection(&prob);
-        //g.setGradientNormalizer(&prob);
-        g.setOptimalityTolerance(0.0001);
-        g.setStepTolerance(0.0001);
-        g.setFunctionTolerance(0.0001);
+        g.setGradientNormalizer(&prob);
+        g.setOptimalityTolerance(0.0000001);
+        g.setFunctionTolerance(0.0000001);
+        g.setStepTolerance(0.0000001);
         g.setR1MinimizeEpsilon(0.1, 0.001);
         g.setNormalize(true);
         g.showExitMessage(true);
@@ -234,7 +240,7 @@ void example2()
     clock_t start = clock();
     prob.solveForwardIBVP(u, u_info, true);
     clock_t end = clock();
-    printf ("Forward took me %d clicks (%f seconds).\n",end-start,((float)(end-start))/CLOCKS_PER_SEC);
+    printf ("Forward took me %u clicks (%f seconds).\n", static_cast<unsigned int>(end-start), static_cast<double>(end-start)/CLOCKS_PER_SEC);
 
     DoubleMatrix u0 = u.at(0);
     IPrinter::printSeperatorLine();
@@ -246,7 +252,7 @@ void example2()
     start = clock();
     prob.solveBackwardIBVP(u, p_info, true, u_info);
     end = clock();
-    printf ("Backward took me %d clicks (%f seconds).\n",end-start,((float)(end-start))/CLOCKS_PER_SEC);
+    printf ("Backward took me %d clicks (%f seconds).\n", static_cast<unsigned int>(end-start), static_cast<double>(end-start)/CLOCKS_PER_SEC);
 }
 
 void example3()

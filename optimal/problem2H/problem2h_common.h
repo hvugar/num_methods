@@ -18,9 +18,6 @@
 #include <vectornormalizer.h>
 #include <grid/ibvp.h>
 #include "problem2h_global.h"
-#ifdef USE_IMAGING
-#include "../imaging/imaging.h"
-#endif
 
 //struct PROBLEM2HSHARED_EXPORT EquationParameterHE
 //{
@@ -78,6 +75,16 @@
 //    std::vector<SpacePointExt> eta_ext;
 //    std::vector<SpacePointExt> theta_ext;
 //};
+
+struct GridH
+{
+    std::vector<unsigned int> rows0;
+    std::vector<unsigned int> rows1;
+    std::vector<unsigned int> rows2;
+    std::vector<unsigned int> cols0;
+    std::vector<unsigned int> cols1;
+    std::vector<unsigned int> cols2;
+};
 
 struct PROBLEM2HSHARED_EXPORT OptimizeParameterH
 {

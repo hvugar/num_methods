@@ -13,12 +13,12 @@ DEFINES += PROBLEM2H_LIBRARY
 INCLUDEPATH += ../minimum
 LIBS += -L../bin -lminimum
 
-defined(USE_IMAGING) {
-message("Using imaging library")
+#defined(USE_IMAGING) {
+#message("Using imaging library")
 INCLUDEPATH += ../imaging
-LIBS += -L../bin -limaging
-QT       += core gui widgets
-}
+LIBS        += -L../bin -limaging
+QT          += core gui widgets
+#}
 
 OBJECTS_DIR = release/.obj
 MOC_DIR = release/.moc
