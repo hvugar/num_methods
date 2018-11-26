@@ -922,8 +922,9 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     newDistributeDeltaGaussCntrl(mOptParameter.eta, cntExtSpacePoints, dimX, dimY);
     newDistributeDeltaGaussMsmnt(mOptParameter.xi,  msnExtSpacePoints, dimX, dimY);
     //----------------------------------------------------------------------------------------------//
+    GridH grid;
     uint_vectorH rows0, rows1, rows2, cols0, cols1, cols2;
-    f_findRowsCols(rows0, rows1, rows2, cols0, cols1, cols2, N, M, cntExtSpacePoints, msnExtSpacePoints);
+    f_findRowsCols(grid, rows0, rows1, rows2, cols0, cols1, cols2, N, M, cntExtSpacePoints, msnExtSpacePoints);
     //-------------------------------------------- info --------------------------------------------//
     if (use == true) f_prepareInfo(No, mOptParameter.xi, u_info, LLD);
     //----------------------------------------------------------------------------------------------//
@@ -1667,7 +1668,7 @@ double Problem2HNDirichlet::f_boundary(const SpaceNodePDE &sn UNUSED_PARAM, cons
     return 0.0;
 }
 
-void Problem2HNDirichlet::f_findRowsCols(uint_vectorH &rows0, uint_vectorH &rows1, uint_vectorH &rows2, uint_vectorH &cols0, uint_vectorH &cols1, uint_vectorH &cols2, unsigned int N, unsigned int M,
+void Problem2HNDirichlet::f_findRowsCols(GridH &grid, uint_vectorH &rows0, uint_vectorH &rows1, uint_vectorH &rows2, uint_vectorH &cols0, uint_vectorH &cols1, uint_vectorH &cols2, unsigned int N, unsigned int M,
                                          const std::vector<ExtendedSpacePointH> &cntExtSpacePoints,
                                          const std::vector<ExtendedSpacePointH> &msnExtSpacePoints) const
 {
@@ -1682,7 +1683,7 @@ void Problem2HNDirichlet::f_findRowsCols(uint_vectorH &rows0, uint_vectorH &rows
             for (std::vector<ExtendedSpacePointNodeH>::const_iterator cnode_it=c_nodes.begin(); cnode_it != c_nodes.end(); cnode_it++)
             {
                 const ExtendedSpacePointNodeH &cnode = *cnode_it;
-                if (cnode.ny == m)
+                if (static_cast<unsigned int>(cnode.ny) == m)
                 {
                     found1 = true;
                     for(std::vector<ExtendedSpacePointH>::const_iterator msp_it=msnExtSpacePoints.begin(); msp_it != msnExtSpacePoints.end(); msp_it++)
@@ -1692,7 +1693,7 @@ void Problem2HNDirichlet::f_findRowsCols(uint_vectorH &rows0, uint_vectorH &rows
                         for (std::vector<ExtendedSpacePointNodeH>::const_iterator mnode_it=mnodes.begin(); mnode_it != mnodes.end(); mnode_it++)
                         {
                             const ExtendedSpacePointNodeH &mnode = *mnode_it;
-                            if (mnode.ny == m)
+                            if (static_cast<unsigned int>(mnode.ny) == m)
                             {
                                 found2 = true;
                                 break;
@@ -1708,6 +1709,10 @@ void Problem2HNDirichlet::f_findRowsCols(uint_vectorH &rows0, uint_vectorH &rows
         if (found1 == false && found2 == false) if(std::find(rows0.begin(), rows0.end(), m) == rows0.end()) rows0.push_back(m);
         if (found1 == true  && found2 == true)  if(std::find(rows2.begin(), rows2.end(), m) == rows2.end()) rows2.push_back(m);
         if (found1 == true)                     if(std::find(rows1.begin(), rows1.end(), m) == rows1.end()) rows1.push_back(m);
+
+        if (found1 == false && found2 == false) if(std::find(grid.rows0.begin(), grid.rows0.end(), m) == grid.rows0.end()) grid.rows0.push_back(m);
+        if (found1 == true  && found2 == true)  if(std::find(grid.rows2.begin(), grid.rows2.end(), m) == grid.rows2.end()) grid.rows2.push_back(m);
+        if (found1 == true)                     if(std::find(grid.rows1.begin(), grid.rows1.end(), m) == grid.rows1.end()) grid.rows1.push_back(m);
     }
 
     for (unsigned int n=1; n<=N-1; n++)
@@ -1721,7 +1726,7 @@ void Problem2HNDirichlet::f_findRowsCols(uint_vectorH &rows0, uint_vectorH &rows
             for (std::vector<ExtendedSpacePointNodeH>::const_iterator cnode_it=c_nodes.begin(); cnode_it != c_nodes.end(); cnode_it++)
             {
                 const ExtendedSpacePointNodeH &cnode = *cnode_it;
-                if (cnode.nx == n)
+                if (static_cast<unsigned int>(cnode.nx) == n)
                 {
                     found1 = true;
                     for(std::vector<ExtendedSpacePointH>::const_iterator msp_it=msnExtSpacePoints.begin(); msp_it != msnExtSpacePoints.end(); msp_it++)
@@ -1731,7 +1736,7 @@ void Problem2HNDirichlet::f_findRowsCols(uint_vectorH &rows0, uint_vectorH &rows
                         for (std::vector<ExtendedSpacePointNodeH>::const_iterator mnode_it=mnodes.begin(); mnode_it != mnodes.end(); mnode_it++)
                         {
                             const ExtendedSpacePointNodeH &mnode = *mnode_it;
-                            if (mnode.nx == n)
+                            if (static_cast<unsigned int>(mnode.nx) == n)
                             {
                                 found2 = true;
                                 break;
@@ -1747,10 +1752,14 @@ void Problem2HNDirichlet::f_findRowsCols(uint_vectorH &rows0, uint_vectorH &rows
         if (found1 == false && found2 == false) if(std::find(cols0.begin(), cols0.end(), n) == cols0.end()) cols0.push_back(n);
         if (found1 == true  && found2 == true)  if(std::find(cols2.begin(), cols2.end(), n) == cols2.end()) cols2.push_back(n);
         if (found1 == true)                     if(std::find(cols1.begin(), cols1.end(), n) == cols1.end()) cols1.push_back(n);
+
+        if (found1 == false && found2 == false) if(std::find(grid.cols0.begin(), grid.cols0.end(), n) == grid.cols0.end()) grid.cols0.push_back(n);
+        if (found1 == true  && found2 == true)  if(std::find(grid.cols2.begin(), grid.cols2.end(), n) == grid.cols2.end()) grid.cols2.push_back(n);
+        if (found1 == true)                     if(std::find(grid.cols1.begin(), grid.cols1.end(), n) == grid.cols1.end()) grid.cols1.push_back(n);
     }
 }
 
-void Problem2HNDirichlet::b_findRowsCols(uint_vectorH &rows0, uint_vectorH &rows1, uint_vectorH &rows2, uint_vectorH &cols0, uint_vectorH &cols1, uint_vectorH &cols2, unsigned int N, unsigned int M,
+void Problem2HNDirichlet::b_findRowsCols(GridH &grid, uint_vectorH &rows0, uint_vectorH &rows1, uint_vectorH &rows2, uint_vectorH &cols0, uint_vectorH &cols1, uint_vectorH &cols2, unsigned int N, unsigned int M,
                                          const std::vector<ExtendedSpacePointH> &msnExtSpacePoints,
                                          const std::vector<ExtendedSpacePointH> &cntExtSpacePoints) const
 {
@@ -1765,7 +1774,7 @@ void Problem2HNDirichlet::b_findRowsCols(uint_vectorH &rows0, uint_vectorH &rows
             for (std::vector<ExtendedSpacePointNodeH>::const_iterator cnode_it=c_nodes.begin(); cnode_it != c_nodes.end(); cnode_it++)
             {
                 const ExtendedSpacePointNodeH &cnode = *cnode_it;
-                if (cnode.ny == m)
+                if (static_cast<unsigned int>(cnode.ny) == m)
                 {
                     found1 = true;
                     for(std::vector<ExtendedSpacePointH>::const_iterator msp_it=cntExtSpacePoints.begin(); msp_it != cntExtSpacePoints.end(); msp_it++)
@@ -1775,7 +1784,7 @@ void Problem2HNDirichlet::b_findRowsCols(uint_vectorH &rows0, uint_vectorH &rows
                         for (std::vector<ExtendedSpacePointNodeH>::const_iterator mnode_it=mnodes.begin(); mnode_it != mnodes.end(); mnode_it++)
                         {
                             const ExtendedSpacePointNodeH &mnode = *mnode_it;
-                            if (mnode.ny == m)
+                            if (static_cast<unsigned int>(mnode.ny) == m)
                             {
                                 found2 = true;
                                 break;
@@ -1791,6 +1800,10 @@ void Problem2HNDirichlet::b_findRowsCols(uint_vectorH &rows0, uint_vectorH &rows
         if (found1 == false && found2 == false) if(std::find(rows0.begin(), rows0.end(), m) == rows0.end()) rows0.push_back(m);
         if (found1 == true  && found2 == true)  if(std::find(rows2.begin(), rows2.end(), m) == rows2.end()) rows2.push_back(m);
         if (found1 == true)                     if(std::find(rows1.begin(), rows1.end(), m) == rows1.end()) rows1.push_back(m);
+
+        if (found1 == false && found2 == false) if(std::find(grid.rows0.begin(), grid.rows0.end(), m) == grid.rows0.end()) grid.rows0.push_back(m);
+        if (found1 == true  && found2 == true)  if(std::find(grid.rows2.begin(), grid.rows2.end(), m) == grid.rows2.end()) grid.rows2.push_back(m);
+        if (found1 == true)                     if(std::find(grid.rows1.begin(), grid.rows1.end(), m) == grid.rows1.end()) grid.rows1.push_back(m);
     }
 
     for (unsigned int n=1; n<=N-1; n++)
@@ -1804,7 +1817,7 @@ void Problem2HNDirichlet::b_findRowsCols(uint_vectorH &rows0, uint_vectorH &rows
             for (std::vector<ExtendedSpacePointNodeH>::const_iterator cnode_it=c_nodes.begin(); cnode_it != c_nodes.end(); cnode_it++)
             {
                 const ExtendedSpacePointNodeH &cnode = *cnode_it;
-                if (cnode.nx == n)
+                if (static_cast<unsigned int>(cnode.nx) == n)
                 {
                     found1 = true;
                     for(std::vector<ExtendedSpacePointH>::const_iterator msp_it=cntExtSpacePoints.begin(); msp_it != cntExtSpacePoints.end(); msp_it++)
@@ -1814,7 +1827,7 @@ void Problem2HNDirichlet::b_findRowsCols(uint_vectorH &rows0, uint_vectorH &rows
                         for (std::vector<ExtendedSpacePointNodeH>::const_iterator mnode_it=mnodes.begin(); mnode_it != mnodes.end(); mnode_it++)
                         {
                             const ExtendedSpacePointNodeH &mnode = *mnode_it;
-                            if (mnode.nx == n)
+                            if (static_cast<unsigned int>(mnode.nx) == n)
                             {
                                 found2 = true;
                                 break;
@@ -1830,6 +1843,10 @@ void Problem2HNDirichlet::b_findRowsCols(uint_vectorH &rows0, uint_vectorH &rows
         if (found1 == false && found2 == false) if(std::find(cols0.begin(), cols0.end(), n) == cols0.end()) cols0.push_back(n);
         if (found1 == true  && found2 == true)  if(std::find(cols2.begin(), cols2.end(), n) == cols2.end()) cols2.push_back(n);
         if (found1 == true)                     if(std::find(cols1.begin(), cols1.end(), n) == cols1.end()) cols1.push_back(n);
+
+        if (found1 == false && found2 == false) if(std::find(grid.cols0.begin(), grid.cols0.end(), n) == grid.cols0.end()) grid.cols0.push_back(n);
+        if (found1 == true  && found2 == true)  if(std::find(grid.cols2.begin(), grid.cols2.end(), n) == grid.cols2.end()) grid.cols2.push_back(n);
+        if (found1 == true)                     if(std::find(grid.cols1.begin(), grid.cols1.end(), n) == grid.cols1.end()) grid.cols1.push_back(n);
     }
 }
 
@@ -2008,8 +2025,9 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
 
 
     //----------------------------------------------------------------------------------------------//
+    GridH grid;
     uint_vectorH rows0, rows1, rows2, cols0, cols1, cols2;
-    b_findRowsCols(rows0, rows1, rows2, cols0, cols1, cols2, N, M, msnExtSpacePoints, cntExtSpacePoints);
+    b_findRowsCols(grid, rows0, rows1, rows2, cols0, cols1, cols2, N, M, msnExtSpacePoints, cntExtSpacePoints);
 
     //-------------------------------------------- info --------------------------------------------//
     if (use == true) b_prepareInfo(Nc, mOptParameter.eta, p_info, LLD);
@@ -2033,9 +2051,9 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
     double *ry = static_cast<double*>( malloc(sizeof(double)*(M-1)) );
     ay[0] = cy[M-2] = 0.0;
 
-    const unsigned int row1_size = static_cast<const unsigned int>(rows1.size()*(N-1));
+    const unsigned int row1_size = static_cast<const unsigned int>(grid.rows1.size()*(N-1));
     double* a1=nullptr, *b1=nullptr, *c1=nullptr, *d1=nullptr, *x1=nullptr, **w1=nullptr;
-    if (rows1.size() != 0 && rows2.size() != 0)
+    if (grid.rows1.size() != 0 && grid.rows2.size() != 0)
     {
         a1 = static_cast<double*>( malloc(sizeof(double)*row1_size) );
         b1 = static_cast<double*>( malloc(sizeof(double)*row1_size) );
@@ -2046,9 +2064,9 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
         for (unsigned int row=0; row < row1_size; row++) w1[row] = static_cast<double*>( malloc(sizeof(double)*row1_size) );
     }
 
-    const unsigned int cols1_size = static_cast<const unsigned int>(cols1.size()*(M-1));
+    const unsigned int cols1_size = static_cast<const unsigned int>(grid.cols1.size()*(M-1));
     double *a2=nullptr, *b2=nullptr, *c2=nullptr, *d2=nullptr, *x2=nullptr, **w2=nullptr;
-    if (cols1.size() != 0 && cols2.size() != 0)
+    if (grid.cols1.size() != 0 && grid.cols2.size() != 0)
     {
         a2 = static_cast<double*>( malloc(sizeof(double)*cols1_size) );
         b2 = static_cast<double*>( malloc(sizeof(double)*cols1_size) );
@@ -2089,11 +2107,11 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
 
         /**************************************************** x direction apprx ***************************************************/
 
-        if (rows0.size() != 0)
+        if (grid.rows0.size() != 0)
         {
-            for (unsigned int row=0; row<rows0.size(); row++)
+            for (unsigned int row=0; row<grid.rows0.size(); row++)
             {
-                unsigned int m = rows0.at(row);
+                unsigned int m = grid.rows0.at(row);
                 sn.j = m; sn.y = m*hy;
                 for (unsigned int n=1; n<=N-1; n++)
                 {
@@ -2120,7 +2138,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
             }
         }
 
-        if (rows1.size() != 0 && rows2.size() == 0)
+        if (grid.rows1.size() != 0 && grid.rows2.size() == 0)
         {
             //throw std::exception();
             double *_w15 = new double[No];
@@ -2150,9 +2168,9 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
 
             delete [] _p15;
 
-            for (unsigned int row=0; row<rows1.size(); row++)
+            for (unsigned int row=0; row<grid.rows1.size(); row++)
             {
-                unsigned int m = rows1.at(row);
+                unsigned int m = grid.rows1.at(row);
                 sn.j = m; sn.y = m*hy;
                 for (unsigned int n=1; n<=N-1; n++)
                 {
@@ -2198,16 +2216,16 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
             delete [] _w15;
         }
 
-        if (rows1.size() != 0 && rows2.size() != 0)
+        if (grid.rows1.size() != 0 && grid.rows2.size() != 0)
         {
             //throw std::exception();
 
             for (unsigned int m=0; m<row1_size; m++) for (unsigned int n=0; n<row1_size; n++) w1[m][n] = 0.0;
 
             unsigned int offset = 0;
-            for (unsigned int row=0; row<rows1.size(); row++)
+            for (unsigned int row=0; row<grid.rows1.size(); row++)
             {
-                unsigned int m = rows1.at(row);
+                unsigned int m = grid.rows1.at(row);
                 sn.j = m; sn.y = m*hy;
 
                 for (unsigned int n=1; n<=N-1; n++)
@@ -2254,9 +2272,9 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                                     const ExtendedSpacePointNodeH &node2 = nodes2.at(ni);
 
                                     bool found = false;
-                                    for (unsigned int rs=0; rs<rows1.size(); rs++)
+                                    for (unsigned int rs=0; rs<grid.rows1.size(); rs++)
                                     {
-                                        if (node2.ny == rows1[rs])
+                                        if (node2.ny == grid.rows1[rs])
                                         {
                                             found = true;
                                             w1[index][rs*(N-1)+(node2.nx-1)] -= htht * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w;
@@ -2296,9 +2314,9 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
             LinearEquation::func1(a1, b1, c1, d1, w1, x1, row1_size);
 
             offset = 0;
-            for (unsigned int row=0; row<rows1.size(); row++)
+            for (unsigned int row=0; row<grid.rows1.size(); row++)
             {
-                unsigned int m=rows1.at(row);
+                unsigned int m=grid.rows1.at(row);
                 for (unsigned int n=1; n<=N-1; n++)
                 {
                     p15[m][n] = x1[offset+(n-1)];
@@ -2311,11 +2329,11 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
 
         /**************************************************** y direction apprx ***************************************************/
 
-        if (cols0.size() != 0)
+        if (grid.cols0.size() != 0)
         {
-            for (unsigned int col=0; col<cols0.size(); col++)
+            for (unsigned int col=0; col<grid.cols0.size(); col++)
             {
-                unsigned int n = cols0.at(col);
+                unsigned int n = grid.cols0.at(col);
                 sn.i = n; sn.x = n*hx;
                 for (unsigned int m=1; m<=M-1; m++)
                 {
@@ -2342,7 +2360,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
             }
         }
 
-        if (cols1.size() != 0 && cols2.size() == 0)
+        if (grid.cols1.size() != 0 && grid.cols2.size() == 0)
         {
             //throw std::exception();
             double *_w20 = new double[No];
@@ -2371,9 +2389,9 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
             }
             delete [] _p20;
 
-            for (unsigned int col=0; col<cols1.size(); col++)
+            for (unsigned int col=0; col<grid.cols1.size(); col++)
             {
-                unsigned int n = cols1.at(col);
+                unsigned int n = grid.cols1.at(col);
                 sn.i = n; sn.x = n*hx;
                 for (unsigned int m=1; m<=M-1; m++)
                 {
@@ -2419,16 +2437,16 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
             delete [] _w20;
         }
 
-        if (cols1.size() != 0 && cols2.size() != 0)
+        if (grid.cols1.size() != 0 && grid.cols2.size() != 0)
         {
             //throw std::exception();
 
             for (unsigned int m=0; m<cols1_size; m++) for (unsigned int n=0; n<cols1_size; n++) w2[m][n] = 0.0;
 
             unsigned int offset = 0;
-            for (unsigned int col=0; col<cols1.size(); col++)
+            for (unsigned int col=0; col<grid.cols1.size(); col++)
             {
-                unsigned int n = cols1.at(col);
+                unsigned int n = grid.cols1.at(col);
                 sn.i = n; sn.x = n*hx;
 
                 for (unsigned int m=1; m<=M-1; m++)
@@ -2475,9 +2493,9 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                                     const ExtendedSpacePointNodeH &node2 = nodes2.at(ni);
 
                                     bool found = false;
-                                    for (unsigned int cs=0; cs<cols1.size(); cs++)
+                                    for (unsigned int cs=0; cs<grid.cols1.size(); cs++)
                                     {
-                                        if (node2.nx == cols1[cs])
+                                        if (node2.nx == grid.cols1[cs])
                                         {
                                             found = true;
                                             w2[index][cs*(M-1)+(node2.ny-1)] -= htht * mOptParameter.k[i][i] * (node2.w * (hx*hy)) * w;
@@ -2517,9 +2535,9 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
             LinearEquation::func1(a2, b2, c2, d2, w2, x2, cols1_size);
 
             offset = 0;
-            for (unsigned int col=0; col<cols1.size(); col++)
+            for (unsigned int col=0; col<grid.cols1.size(); col++)
             {
-                unsigned int n=cols1.at(col);
+                unsigned int n=grid.cols1.at(col);
                 for (unsigned int m=1; m<=M-1; m++)
                 {
                     p20[m][n] = x2[offset+(m-1)];
@@ -2543,7 +2561,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
         }
     }
 
-    if (rows1.size() != 0 && rows2.size() != 0)
+    if (grid.rows1.size() != 0 && grid.rows2.size() != 0)
     {
         for (unsigned int row=0; row < row1_size; row++) free(w1[row]); free(w1);
         free(x1);
@@ -2553,7 +2571,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
         free(a1);
     }
 
-    if (cols1.size() != 0 && cols2.size() != 0)
+    if (grid.cols1.size() != 0 && grid.cols2.size() != 0)
     {
         for (unsigned int col=0; col < cols1_size; col++) free(w2[col]); free(w2);
         free(x2);
@@ -2575,13 +2593,13 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
     free(by);
     free(ay);
 
-    rows0.clear();
-    rows1.clear();
-    rows2.clear();
+    grid.rows0.clear();
+    grid.rows1.clear();
+    grid.rows2.clear();
 
-    cols0.clear();
-    cols1.clear();
-    cols2.clear();
+    grid.cols0.clear();
+    grid.cols1.clear();
+    grid.cols2.clear();
 
     msnExtSpacePoints.clear();
     cntExtSpacePoints.clear();
