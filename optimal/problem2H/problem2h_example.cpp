@@ -25,9 +25,13 @@ void example1()
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = -0.252; e_prm.theta[0].x = 0.2584; e_prm.theta[0].y = 0.7586;
-    e_prm.q[1] = -0.293; e_prm.theta[1].x = 0.5782; e_prm.theta[1].y = 0.2356;
-    e_prm.q[2] = -0.265; e_prm.theta[2].x = 0.8754; e_prm.theta[2].y = 0.5374;
+//    e_prm.q[0] = +0.252; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7500;
+//    e_prm.q[1] = +0.293; e_prm.theta[1].x = 0.5700; e_prm.theta[1].y = 0.2300;
+//    e_prm.q[2] = +0.265; e_prm.theta[2].x = 0.8700; e_prm.theta[2].y = 0.5300;
+    e_prm.q[0] = +1.00; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7500;
+    e_prm.q[1] = +1.00; e_prm.theta[1].x = 0.5700; e_prm.theta[1].y = 0.2300;
+    e_prm.q[2] = +1.00; e_prm.theta[2].x = 0.8700; e_prm.theta[2].y = 0.5300;
+
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -121,10 +125,10 @@ void example1()
             //prob.checkGradient1(prob);
             IPrinter::printSeperatorLine();
 
-//            std::vector<DoubleMatrix> u;
-//            spif_vectorH u_info;
-//            prob.solveForwardIBVP(u, u_info, false);
-//            return;
+            std::vector<DoubleMatrix> u;
+            spif_vectorH u_info;
+            prob.solveForwardIBVP(u, u_info, false);
+            return;
         }
 
         //ConjugateGradient g;

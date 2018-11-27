@@ -15,18 +15,20 @@ void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsign
 {
 //    return;
 
-//    if (ln == 0 || ln == 2 || ln == 2*timeDimension().sizeN())
-//    {
-//        IPrinter::printSeperatorLine();
-//        IPrinter::printMatrix(u);
-//        IPrinter::printSeperatorLine();
-//        printf("%f\n", sqrt(integralU(u)));
-//    }
-//    return;
+    if (ln == 2)
+    {
+        FILE* file = fopen("layer2.txt", "w");
+        IPrinter::printSeperatorLine();
+        IPrinter::printMatrix(u, u.rows(), u.cols(), nullptr, file);
+        IPrinter::printSeperatorLine();
+        printf("%f\n", sqrt(integralU(u)));
+        fclose(file);
+    }
+    return;
 
     if (ln%2 == 0)
     {
-#ifdef USE_IMAGING
+//#ifdef USE_IMAGING
         char filename1[40];
         int size1 = sprintf(filename1, "e:/data/img/image%d.png", ln);
         filename1[size1] = 0;
@@ -39,16 +41,16 @@ void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsign
         if (MIN>min) MIN = min;
         if (MAX<max) MAX = max;
 
-        puts("Generating image...");
-        QPixmap pxm;
+        //puts("Generating image...");
+        //QPixmap pxm;
         //visualGrayScale(u, min, max, pxm, 0, 0);
-        visualizeMatrixHeat(u, min, max, pxm, 0, 0);
-        pxm.save(QString(filename1), "PNG");
+        //visualizeMatrixHeat(u, min, max, pxm, 0, 0);
+        //pxm.save(QString(filename1), "PNG");
         printf("Image generated. ln: %d min: %f max: %f MIN: %f MAX: %f\n", ln/2, min, max, MIN, MAX);
         //FILE* file = fopen(filename2, "w");
         //IPrinter::print(u, u.rows(), u.cols(), 10, 8, file);
         //fclose(file);
-#endif
+//#endif
     }
 
 //    //    if (ln == 2*timeDimension().sizeN())
@@ -1643,8 +1645,8 @@ void Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, 
             sum += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]);
             sum -= lambda*(f_initial2(sn)+Q);
 
-            u05[m][n] = u00[m][n] + (0.5*ht) * (f_initial2(sn)+Q) + (0.125*ht*ht) * sum;
-            u10[m][n] = u00[m][n] + (1.0*ht) * (f_initial2(sn)+Q) + (0.500*ht*ht) * sum;
+            u05[m][n] = u00[m][n] + (0.5*ht) * (f_initial2(sn)+Q);// + (0.125*ht*ht) * sum;
+            u10[m][n] = u00[m][n] + (1.0*ht) * (f_initial2(sn)+Q);// + (0.500*ht*ht) * sum;
 
             //double sum1 = 0.0;
             //for (unsigned int cdi=0; cdi<cntDeltaNodes.size(); cdi++)
