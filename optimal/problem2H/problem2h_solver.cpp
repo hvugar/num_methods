@@ -932,6 +932,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     //------------------------------------- initial conditions -------------------------------------//
     f_initialLayers(u00, u10, u_info, use, N, M, hx, hy, ht, aa__hxhx, aa__hyhy, lambda, qExtSpacePoints, msnExtSpacePoints, cntExtSpacePoints);
     //------------------------------------- initial conditions -------------------------------------//
+    return;
 
     double *ax = static_cast<double*>( malloc(sizeof(double)*(N-1)) );
     double *bx = static_cast<double*>( malloc(sizeof(double)*(N-1)) );
@@ -1570,8 +1571,6 @@ void Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, 
 {
     DoubleMatrix u05 = u00;
 
-
-
     /************************************************************************/
     SpaceNodePDE sn;
     for (unsigned int m=0; m<=M; m++)
@@ -1617,15 +1616,37 @@ void Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, 
         {
             sn.i = n; sn.x = n*hx;
 
+            double Q = 0.0;
+            const unsigned int Ns = static_cast<const unsigned int>(qExtSpacePoints.size());
+            for (unsigned int s=0; s<Ns; s++)
+            {
+                double q = mEquParameter.q[s];
+                const ExtendedSpacePointH &extendedSpacePoint = qExtSpacePoints.at(s);
+                if (extendedSpacePoint.contains(sn))
+                {
+                    const std::vector<ExtendedSpacePointNodeH> &nodes = extendedSpacePoint.nodes;
+                    const unsigned int nodes_size = static_cast<const unsigned int>(nodes.size());
+                    for (unsigned int i=0; i<nodes_size; i++)
+                    {
+                        const ExtendedSpacePointNodeH &node = nodes.at(i);
+                        if (node.equals(sn))
+                        {
+                            Q += q * node.w;
+                        }
+                    }
+                }
+            }
+            //Q *= (1.0/ht);
+
             double sum = 0.0;
             sum += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]);
             sum += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]);
-            sum -= lambda*f_initial2(sn);
+            sum -= lambda*(f_initial2(sn)+Q);
 
-            u05[m][n] = u00[m][n] + (0.5*ht) * f_initial2(sn) + (0.125*ht*ht) * sum;
-            u10[m][n] = u00[m][n] + (1.0*ht) * f_initial2(sn) + (0.500*ht*ht) * sum;
+            u05[m][n] = u00[m][n] + (0.5*ht) * (f_initial2(sn)+Q) + (0.125*ht*ht) * sum;
+            u10[m][n] = u00[m][n] + (1.0*ht) * (f_initial2(sn)+Q) + (0.500*ht*ht) * sum;
 
-            double sum1 = 0.0;
+            //double sum1 = 0.0;
             //for (unsigned int cdi=0; cdi<cntDeltaNodes.size(); cdi++)
             //{
             //    const ExtendedSpacePointNode &cdn = cntDeltaNodes.at(cdi);
@@ -1635,12 +1656,11 @@ void Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, 
             //            sum1 -= mOptParameter.z[cdn.id][j] * cdn.w;
             //    }
             //}
+            //u05[m][n] += (0.125*ht*ht) * sum1;
+            //u10[m][n] += (0.500*ht*ht) * sum1;
 
-            u05[m][n] += (0.125*ht*ht) * sum1;
-            u10[m][n] += (0.500*ht*ht) * sum1;
-
-            u05[m][n] += (0.125*ht*ht)*distributeTimeDelta(0.5*ht, ht, 1, sn, qExtSpacePoints);
-            u10[m][n] += (0.500*ht*ht)*distributeTimeDelta(1.0*ht, ht, 2, sn, qExtSpacePoints);
+            //u05[m][n] += (0.125*ht*ht)*distributeTimeDelta(0.5*ht, ht, 1, sn, qExtSpacePoints);
+            //u10[m][n] += (0.500*ht*ht)*distributeTimeDelta(1.0*ht, ht, 2, sn, qExtSpacePoints);
         }
     }
 
@@ -3196,6 +3216,8 @@ void Problem2HNDirichlet::newDistributeDeltaGaussMsmnt(const std::vector<SpacePo
 
 double Problem2HNDirichlet::distributeTimeDelta(double t, double ht, unsigned int ln, const SpaceNodePDE &sn, const std::vector<ExtendedSpacePointH> &xsps) const
 {
+    return 0.0;
+
     if ( ln >= 40 ) return 0.0;
 
     double Q = 0.0;
