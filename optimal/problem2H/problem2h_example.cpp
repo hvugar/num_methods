@@ -18,7 +18,7 @@ void example1()
     // Equation parameters
     EquationParameterH e_prm;
     e_prm.a = 1.0;
-    e_prm.lambda = +0.01;
+    e_prm.lambda = +0.00;
 
     // Pulse influences
     e_prm.Ns = 3;
@@ -28,9 +28,10 @@ void example1()
 //    e_prm.q[0] = +0.252; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7500;
 //    e_prm.q[1] = +0.293; e_prm.theta[1].x = 0.5700; e_prm.theta[1].y = 0.2300;
 //    e_prm.q[2] = +0.265; e_prm.theta[2].x = 0.8700; e_prm.theta[2].y = 0.5300;
-    e_prm.q[0] = +1.00; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7500;
-    e_prm.q[1] = +1.00; e_prm.theta[1].x = 0.5700; e_prm.theta[1].y = 0.2300;
-    e_prm.q[2] = +1.00; e_prm.theta[2].x = 0.8700; e_prm.theta[2].y = 0.5300;
+    e_prm.q[0] = +0.15; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7500;
+    e_prm.q[1] = +0.25; e_prm.theta[1].x = 0.5700; e_prm.theta[1].y = 0.2300;
+    e_prm.q[2] = +0.20; e_prm.theta[2].x = 0.8700; e_prm.theta[2].y = 0.5300;
+//    e_prm.q[0] = +0.015; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
 
 
     e_prm.No = 2;
@@ -56,8 +57,8 @@ void example1()
 //    o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
 //    o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
 
-    o_prm.k[0][0]  = -0.5200; o_prm.k[0][1]  = -0.5400; o_prm.k[1][0]  = -0.5500; o_prm.k[1][1]  = -0.5800;
-    o_prm.z[0][0]  = +2.5050; o_prm.z[0][1]  = -2.5040; o_prm.z[1][0]  = +2.5070; o_prm.z[1][1]  = +2.5070;
+    o_prm.k[0][0]  = +2.0520; o_prm.k[0][1]  = +2.0540; o_prm.k[1][0]  = +2.0550; o_prm.k[1][1]  = +2.0580;
+    o_prm.z[0][0]  = +0.0000; o_prm.z[0][1]  = -0.0000; o_prm.z[1][0]  = +0.0000; o_prm.z[1][1]  = +0.0000;
     o_prm.xi[0].x  = +0.4048; o_prm.xi[0].y  = +0.5954; o_prm.xi[1].x  = +0.6725; o_prm.xi[1].y  = +0.3518;
     o_prm.eta[0].x = +0.5257; o_prm.eta[0].y = +0.7657; o_prm.eta[1].x = +0.5529; o_prm.eta[1].y = +0.4795;
 
@@ -88,7 +89,7 @@ void example1()
     // Grid parameters
     double hx = 0.010; int Nx = 100;
     double hy = 0.010; int Ny = 100;
-    double ht = 0.005; int Nt = 400;
+    double ht = 0.005; int Nt = 200;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
@@ -111,11 +112,11 @@ void example1()
         prob.mRegParameter = r_prm;
         prob.optimizeK = true;
         prob.optimizeZ = true;
-        prob.optimizeC = true;
         prob.optimizeO = true;
+        prob.optimizeC = true;
         prob.vmin.resize(e_prm.Nc, +0.5);
         prob.vmax.resize(e_prm.Nc, -0.5);
-        prob.LD = 50;
+        prob.LD = 20;
 
         prob.regEpsilon = e[i];
         prob.r = r[i];
@@ -125,10 +126,10 @@ void example1()
             //prob.checkGradient1(prob);
             IPrinter::printSeperatorLine();
 
-            std::vector<DoubleMatrix> u;
-            spif_vectorH u_info;
-            prob.solveForwardIBVP(u, u_info, false);
-            return;
+//            std::vector<DoubleMatrix> u;
+//            spif_vectorH u_info;
+//            prob.solveForwardIBVP(u, u_info, false);
+//            return;
         }
 
         //ConjugateGradient g;
@@ -137,11 +138,11 @@ void example1()
         g.setGradient(&prob);
         g.setPrinter(&prob);
         g.setProjection(&prob);
-        g.setGradientNormalizer(&prob);
+        //g.setGradientNormalizer(&prob);
         g.setOptimalityTolerance(0.0000001);
         g.setFunctionTolerance(0.0000001);
         g.setStepTolerance(0.0000001);
-        g.setR1MinimizeEpsilon(0.1, 0.001);
+        g.setR1MinimizeEpsilon(0.01, 0.001);
         g.setNormalize(true);
         g.showExitMessage(true);
         prob.gm = &g;

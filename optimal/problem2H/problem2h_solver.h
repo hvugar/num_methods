@@ -86,6 +86,7 @@ public:
     auto newDistributeDeltaGaussMsmnt(const std::vector<SpacePoint> &msmnts, std::vector<ExtendedSpacePointH> &extMsmnts, const Dimension &dimX, const Dimension &dimY) const -> void;
 
     auto v(unsigned int i, OptimizeParameterH o_prm, EquationParameterH e_prm, const spif_vectorH &u_info, unsigned int ln) const -> double;
+
 public:
     EquationParameterH mEquParameter;
     OptimizeParameterH mOptParameter;
@@ -95,6 +96,7 @@ public:
     DoubleVector vmin;
     DoubleVector vmax;
     double regEpsilon;
+    double noise = 0.0;
 
     unsigned int LD;
 

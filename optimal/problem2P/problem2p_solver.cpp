@@ -657,10 +657,10 @@ auto Problem2PNeumann::print(unsigned int i, const DoubleVector &x, const Double
     C_UNUSED(prob);
     IPrinter::printSeperatorLine();
 
-//        prob->optimizeK = (i%2==1);
-//        prob->optimizeZ = (i%2==0);
-//        prob->optimizeO = (i%4==2);
-//        prob->optimizeC = (i%4==3);
+//    prob->optimizeK = (i%2==1);
+//    prob->optimizeZ = (i%2==0);
+//    prob->optimizeO = (i%4==2);
+//    prob->optimizeC = (i%4==3);
 }
 
 auto Problem2PNeumann::norm(const DoubleVector &v) const -> double
