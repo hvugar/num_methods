@@ -2,10 +2,14 @@
 #include "vectornormalizer.h"
 #ifdef USE_IMAGING
 #include <imaging.h>
+#include <QtGui/QGuiApplication>
 #endif
 
 void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
+#ifdef USE_IMAGING
+    QGuiApplication app(argc, argv);
+#endif
     example1();
     //IPrinter::printSeperatorLine();
     //example2();
@@ -25,14 +29,13 @@ void example1()
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-//    e_prm.q[0] = +0.252; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7500;
-//    e_prm.q[1] = +0.293; e_prm.theta[1].x = 0.5700; e_prm.theta[1].y = 0.2300;
-//    e_prm.q[2] = +0.265; e_prm.theta[2].x = 0.8700; e_prm.theta[2].y = 0.5300;
+    //    e_prm.q[0] = +0.252; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7500;
+    //    e_prm.q[1] = +0.293; e_prm.theta[1].x = 0.5700; e_prm.theta[1].y = 0.2300;
+    //    e_prm.q[2] = +0.265; e_prm.theta[2].x = 0.8700; e_prm.theta[2].y = 0.5300;
     e_prm.q[0] = +0.15; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7500;
     e_prm.q[1] = +0.25; e_prm.theta[1].x = 0.5700; e_prm.theta[1].y = 0.2300;
     e_prm.q[2] = +0.20; e_prm.theta[2].x = 0.8700; e_prm.theta[2].y = 0.5300;
-//    e_prm.q[0] = +0.015; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
-
+//        e_prm.q[0] = +1.000; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -52,17 +55,17 @@ void example1()
     r_prm.eta.resize(e_prm.Nc);
 
 #ifdef EXAMPLE4_SAMPLE_1
-//    o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
-//    o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = -0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
-//    o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
-//    o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
+    //    o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
+    //    o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = -0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
+    //    o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
+    //    o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
 
-    o_prm.k[0][0]  = +2.0520; o_prm.k[0][1]  = +2.0540; o_prm.k[1][0]  = +2.0550; o_prm.k[1][1]  = +2.0580;
-    o_prm.z[0][0]  = +0.0000; o_prm.z[0][1]  = -0.0000; o_prm.z[1][0]  = +0.0000; o_prm.z[1][1]  = +0.0000;
+    o_prm.k[0][0]  = +0.5200; o_prm.k[0][1]  = +0.5400; o_prm.k[1][0]  = +0.5500; o_prm.k[1][1]  = +0.5800;
+    o_prm.z[0][0]  = +0.3400; o_prm.z[0][1]  = -0.1200; o_prm.z[1][0]  = +0.2000; o_prm.z[1][1]  = +0.1000;
     o_prm.xi[0].x  = +0.4048; o_prm.xi[0].y  = +0.5954; o_prm.xi[1].x  = +0.6725; o_prm.xi[1].y  = +0.3518;
     o_prm.eta[0].x = +0.5257; o_prm.eta[0].y = +0.7657; o_prm.eta[1].x = +0.5529; o_prm.eta[1].y = +0.4795;
 
-    r_prm.k[0][0]  = +0.5636; r_prm.k[0][1]  = -0.2421; r_prm.k[1][0]  = +0.2505; r_prm.k[1][1]  = -0.7679;
+    //r_prm.k[0][0]  = +0.5636; r_prm.k[0][1]  = -0.2421; r_prm.k[1][0]  = +0.2505; r_prm.k[1][1]  = -0.7679;
     r_prm.z[0][0]  = +0.3220; r_prm.z[0][1]  = -0.6179; r_prm.z[1][0]  = -0.1833; r_prm.z[1][1]  = -0.3160;
     r_prm.xi[0].x  = +0.4269; r_prm.xi[0].y  = +0.3364; r_prm.xi[1].x  = +0.8651; r_prm.xi[1].y  = +0.2336;
     r_prm.eta[0].x = +0.5436; r_prm.eta[0].y = +0.5788; r_prm.eta[1].x = +0.5269; r_prm.eta[1].y = +0.5860;
@@ -96,7 +99,7 @@ void example1()
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 0.0000;// << 10.000 << 50.0000 << 100.00;
+    DoubleVector r; r << 0.0000;//<< 10.000 << 50.0000 << 100.00;
     // Regularization coefficients
     DoubleVector e; e << 0.0000;// << 0.0000 << 0.00000 << 0.0000;
 
@@ -139,10 +142,10 @@ void example1()
         g.setPrinter(&prob);
         g.setProjection(&prob);
         //g.setGradientNormalizer(&prob);
-        g.setOptimalityTolerance(0.0000001);
-        g.setFunctionTolerance(0.0000001);
-        g.setStepTolerance(0.0000001);
-        g.setR1MinimizeEpsilon(0.01, 0.001);
+        g.setOptimalityTolerance(0.0001);
+        g.setFunctionTolerance(0.0001);
+        g.setStepTolerance(0.0001);
+        g.setR1MinimizeEpsilon(0.1, 0.01);
         g.setNormalize(true);
         g.showExitMessage(true);
         prob.gm = &g;
@@ -156,21 +159,21 @@ void example1()
 void example2()
 {
     //
-//    EquationParameterHE prm;
-//    prm.a = 1.0;
-//    prm.lambda = 0.01;
+    //    EquationParameterHE prm;
+    //    prm.a = 1.0;
+    //    prm.lambda = 0.01;
 
-//    prm.Nc = 2;
-//    prm.No = 2;
-//    prm.Nd = 5;
+    //    prm.Nc = 2;
+    //    prm.No = 2;
+    //    prm.Nd = 5;
 
-//    prm.k.resize(prm.Nc, prm.No, 0.0);
-//    prm.z.resize(prm.Nc, prm.No, 0.0);
-//    prm.xi.resize(prm.No);
-//    prm.eta.resize(prm.Nc);
+    //    prm.k.resize(prm.Nc, prm.No, 0.0);
+    //    prm.z.resize(prm.Nc, prm.No, 0.0);
+    //    prm.xi.resize(prm.No);
+    //    prm.eta.resize(prm.Nc);
 
-//    prm.eta_ext.resize(prm.Nc);
-//    prm.xi_ext.resize(prm.No);
+    //    prm.eta_ext.resize(prm.Nc);
+    //    prm.xi_ext.resize(prm.No);
 
     // Equation parameters
     EquationParameterH e_prm;

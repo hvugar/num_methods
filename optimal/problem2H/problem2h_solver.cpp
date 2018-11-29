@@ -8,20 +8,36 @@
 #include <imaging.h>
 #endif
 
-double MIN = +100000.0;
-double MAX = -100000.0;
+//double MIN = +100000.0;
+//double MAX = -100000.0;
 
 void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
     return;
 
-    if (ln == 2)
+    static double MIN = +100000.0;
+    static double MAX = -100000.0;
+
+    if (ln%2 == 0 || ln == 3)
     {
-        FILE* file = fopen("layer2.txt", "w");
-        IPrinter::printSeperatorLine();
+        double min = u.min();
+        double max = u.max();
+        if (MIN>min) MIN = min;
+        if (MAX<max) MAX = max;
+        printf("ln: %d min: %f max: %f MIN: %f MAX: %f %.10f\n", (ln/2), min, max, MIN, MAX, integralU(u));
+    }
+
+    if (ln == 2 || ln == 4 || ln == 6 || ln == 8 || ln == 3)
+    {
+        char filename1[40];
+        int size1 = sprintf(filename1, "h_layer%d.txt", ln);
+        filename1[size1] = 0;
+
+        FILE* file = fopen(filename1, "w");
+        //IPrinter::printSeperatorLine();
         IPrinter::printMatrix(u, u.rows(), u.cols(), nullptr, file);
-        IPrinter::printSeperatorLine();
-        printf("%f\n", sqrt(integralU(u)));
+        //IPrinter::printSeperatorLine();
+        //printf("%f\n", sqrt(integralU(u)));
         fclose(file);
     }
     return;
@@ -739,8 +755,8 @@ void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const Dou
         v2[ln] = v(1, o_prm, mEquParameter, u_info, 2*ln);
     }
 
-    //IPrinter::printVector(v1, "v1", 10);
-    //IPrinter::printVector(v2, "v2", 10);
+    IPrinter::printVector(v1, "v1", 10);
+    IPrinter::printVector(v2, "v2", 10);
 
     printf("I[%3d]: F:%.6f I:%.6f P:%.6f N:%.6f R:%.3f e:%.3f a:%.6f min:%.6f max:%.6f min:%.6f max:%.6f U0:%.8f UT:%.8f\n", i, f, ing, pnt, nrm, r, regEpsilon, alpha, u.at(0).min(), u.at(0).max(), u.at(2*LD).min(), u.at(2*LD).max(),
            integralU(u[0]), integralU(u[LD]));
@@ -781,13 +797,25 @@ auto Problem2HNDirichlet::project(DoubleVector &pv) const -> void
         if (pv[index] > 0.95) pv[index] = 0.95;
     }
 
+//    for (unsigned int index = start; index <= end; index++)
+//    {
+//        if (index ==  8) { if (pv[ 8] < 0.15) pv[ 8] = 0.15; if (pv[ 8] > 0.45) pv[ 8] = 0.45; }
+//        if (index ==  9) { if (pv[ 9] < 0.55) pv[ 9] = 0.55; if (pv[ 9] > 0.95) pv[ 9] = 0.95; }
+//        if (index == 10) { if (pv[10] < 0.55) pv[10] = 0.55; if (pv[10] > 0.85) pv[10] = 0.85; }
+//        if (index == 11) { if (pv[11] < 0.15) pv[11] = 0.15; if (pv[11] > 0.55) pv[11] = 0.55; }
+
+//        if (index == 12) { if (pv[12] < 0.05) pv[12] = 0.05; if (pv[12] > 0.35) pv[12] = 0.35; }
+//        if (index == 13) { if (pv[13] < 0.05) pv[13] = 0.05; if (pv[13] > 0.45) pv[13] = 0.45; }
+//        if (index == 14) { if (pv[14] < 0.55) pv[14] = 0.55; if (pv[14] > 0.85) pv[14] = 0.85; }
+//        if (index == 15) { if (pv[15] < 0.65) pv[15] = 0.65; if (pv[15] > 0.95) pv[15] = 0.95; }
+//    }
+
     //IPrinter::print(pv.mid(start, end));
     for (unsigned int index = start; index <=end; index++)
     {
         //projectControlPoints(pv, index);
         projectMeasurePoints(pv, index);
     }
-    //IPrinter::print(pv.mid(start, end));
 }
 
 auto Problem2HNDirichlet::projectControlPoints(DoubleVector &pv, unsigned int index) const -> void
@@ -1032,7 +1060,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     dx[n-1] += 2.0*u10[m][n] + (u10[m][n]-u00[m][n]);
 
                     //------------------------------------- Adding time delta part --------------------------------//
-                    dx[n-1] += htht*distributeTimeDelta(tn15.t, ht, 2*l-1, sn, qExtSpacePoints);
+                    //dx[n-1] += htht*distributeTimeDelta(tn15.t, ht, 2*l-1, sn, qExtSpacePoints);
                     //------------------------------------- Adding time delta part --------------------------------//
                 }
 
@@ -1112,7 +1140,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding time delta part --------------------------------//
-                    dx[n-1] += htht*distributeTimeDelta(tn15.t, ht, 2*l-1, sn, qExtSpacePoints);
+                    //dx[n-1] += htht*distributeTimeDelta(tn15.t, ht, 2*l-1, sn, qExtSpacePoints);
                     //------------------------------------- Adding time delta part --------------------------------//
                 }
 
@@ -1210,7 +1238,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding time delta part --------------------------------//
-                    d1[index] += htht*distributeTimeDelta(tn15.t, ht, 2*l-1, sn, qExtSpacePoints);
+                    //d1[index] += htht*distributeTimeDelta(tn15.t, ht, 2*l-1, sn, qExtSpacePoints);
                     //------------------------------------- Adding time delta part --------------------------------//
                 }
 
@@ -1260,7 +1288,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     dy[m-1] += 2.0*u15[m][n] + (u10[m][n]-u00[m][n]);
 
                     //------------------------------------- Adding time delta part --------------------------------//
-                    dy[m-1] += htht*distributeTimeDelta(tn20.t, ht, 2*l, sn, qExtSpacePoints);
+                    //dy[m-1] += htht*distributeTimeDelta(tn20.t, ht, 2*l, sn, qExtSpacePoints);
                     //------------------------------------- Adding time delta part --------------------------------//
                 }
 
@@ -1340,7 +1368,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding time delta part --------------------------------//
-                    dy[m-1] += htht*distributeTimeDelta(tn20.t, ht, 2*l, sn, qExtSpacePoints);
+                    //dy[m-1] += htht*distributeTimeDelta(tn20.t, ht, 2*l, sn, qExtSpacePoints);
                     //------------------------------------- Adding time delta part --------------------------------//
                 }
 
@@ -1438,7 +1466,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding time delta part --------------------------------//
-                    d2[index] += htht*distributeTimeDelta(tn20.t, ht, 2*l, sn, qExtSpacePoints);
+                    //d2[index] += htht*distributeTimeDelta(tn20.t, ht, 2*l, sn, qExtSpacePoints);
                     //------------------------------------- Adding time delta part --------------------------------//
                 }
 
@@ -1577,9 +1605,6 @@ void Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, 
         }
     }
 
-    if (use == true) f_add2Info(u00, u_info, 0, hx, hy, msnExtSpacePoints);
-    f_layerInfo(u00, 0);
-
     /************************************************************************/
     TimeNodePDE tn05; tn05.i = 1; tn05.t = 0.5*ht;
     TimeNodePDE tn10; tn10.i = 1; tn10.t = ht;
@@ -1636,8 +1661,8 @@ void Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, 
             sum += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]);
             sum -= lambda*(f_initial2(sn)+Q);
 
-            u05[m][n] = u00[m][n] + (0.5*ht) * (f_initial2(sn)+Q) + (0.125*ht*ht) * sum;
-            u10[m][n] = u00[m][n] + (1.0*ht) * (f_initial2(sn)+Q) + (0.500*ht*ht) * sum;
+            u05[m][n] = u00[m][n] + (0.5*ht) * (f_initial2(sn)+Q);// + (0.125*ht*ht) * sum;
+            u10[m][n] = u00[m][n] + (1.0*ht) * (f_initial2(sn)+Q);// + (0.500*ht*ht) * sum;
 
             //double sum1 = 0.0;
             //for (unsigned int cdi=0; cdi<cntDeltaNodes.size(); cdi++)
@@ -1658,6 +1683,8 @@ void Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, 
     }
 
     /************************************************************************/
+    if (use == true) f_add2Info(u00, u_info, 0, hx, hy, msnExtSpacePoints);
+    f_layerInfo(u00, 0);
 
     if (use == true) f_add2Info(u05, u_info, 1, hx, hy, msnExtSpacePoints);
     f_layerInfo(u05, 1);
@@ -2940,6 +2967,25 @@ auto Problem2HNDirichlet::newDistributeDeltaGaussPulse(const std::vector<SpacePo
     extThetas.clear();
     extThetas.resize(Ns);
 
+//    const SpacePoint &theta = thetas.at(0);
+//    ExtendedSpacePointH &extTheta = extThetas.at(0);
+//    extTheta.x = theta.x;
+//    extTheta.y = theta.y;
+//    extTheta.rx = static_cast<int> ( round(extTheta.x*Nx) );
+//    extTheta.ry = static_cast<int> ( round(extTheta.y*Ny) );
+//    extTheta.k = 0;
+//    extTheta.minX = extTheta.rx - extTheta.k;
+//    extTheta.maxX = extTheta.rx + extTheta.k;
+//    extTheta.minY = extTheta.ry - extTheta.k;
+//    extTheta.maxY = extTheta.ry + extTheta.k;
+//    ExtendedSpacePointNodeH node;
+//    node.nx = 50; node.x = 50*hx;
+//    node.ny = 50; node.y = 50*hy;
+//    node.w = 1.0/(hx*hy);
+//    node.isCenter = true;
+//    extTheta.nodes.push_back(node);
+//    return;
+
     int k = 12;
     double sigmaX = hx*3.0;
     double sigmaY = hy*3.0;
@@ -2967,8 +3013,9 @@ auto Problem2HNDirichlet::newDistributeDeltaGaussPulse(const std::vector<SpacePo
         for (int m=extTheta.minY; m<=extTheta.maxY; m++) sumY += exp(-((m*hy-theta.y)*(m*hy-theta.y))/(2.0*sigmaY*sigmaY));
         sumY *= hy;
 
-        double sigma = (sumX*sumY) / (2.0*M_PI);
-        double factor = 1.0/((2.0*M_PI)*sigma);
+        //double sigma = (sumX*sumY) / (2.0*M_PI);
+        //double factor = 1.0/((2.0*M_PI)*sigma);
+        double factor = 1.0/(2.0*M_PI*sigmaX*sigmaY);
 
         for (int m=extTheta.minY; m<=extTheta.maxY; m++)
         {
