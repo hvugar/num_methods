@@ -5,6 +5,8 @@
 
 class MINIMUMSHARED_EXPORT IHyperbolicIBVP : public InitialBoundaryValueProblemPDE
 {
+public:
+    virtual ~IHyperbolicIBVP();
 protected:
     virtual double initial1(const SpaceNodePDE &sn) const = 0;
     virtual double initial2(const SpaceNodePDE &sn) const = 0;

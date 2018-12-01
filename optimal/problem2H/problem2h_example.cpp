@@ -55,17 +55,17 @@ void example1()
     r_prm.eta.resize(e_prm.Nc);
 
 #ifdef EXAMPLE4_SAMPLE_1
-    //    o_prm.k[0][0]  = +1.1200; o_prm.k[0][1]  = +1.2400; o_prm.k[1][0]  = +1.4500; o_prm.k[1][1]  = +1.1800;
-    //    o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = -0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
-    //    o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
-    //    o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
+    o_prm.k[0][0]  = +0.3462; o_prm.k[0][1]  = +0.7383; o_prm.k[1][0]  = +0.6315; o_prm.k[1][1]  = +0.5525;
+    o_prm.z[0][0]  = -0.0512; o_prm.z[0][1]  = -0.6107; o_prm.z[1][0]  = -0.1725; o_prm.z[1][1]  = -0.2991;
+    o_prm.xi[0].x  = +0.3857; o_prm.xi[0].y  = +0.5434; o_prm.xi[1].x  = +0.7666; o_prm.xi[1].y  = +0.6793;
+    o_prm.eta[0].x = +0.6666; o_prm.eta[0].y = +0.7939; o_prm.eta[1].x = +0.4857; o_prm.eta[1].y = +0.3796;
 
-    o_prm.k[0][0]  = +0.5200; o_prm.k[0][1]  = +0.5400; o_prm.k[1][0]  = +0.5500; o_prm.k[1][1]  = +0.5800;
-    o_prm.z[0][0]  = +0.3400; o_prm.z[0][1]  = -0.1200; o_prm.z[1][0]  = +0.2000; o_prm.z[1][1]  = +0.1000;
-    o_prm.xi[0].x  = +0.4048; o_prm.xi[0].y  = +0.5954; o_prm.xi[1].x  = +0.6725; o_prm.xi[1].y  = +0.3518;
-    o_prm.eta[0].x = +0.5257; o_prm.eta[0].y = +0.7657; o_prm.eta[1].x = +0.5529; o_prm.eta[1].y = +0.4795;
+    //o_prm.k[0][0]  = +0.5200; o_prm.k[0][1]  = +0.5400; o_prm.k[1][0]  = +0.5500; o_prm.k[1][1]  = +0.5800;
+    //o_prm.z[0][0]  = +0.3400; o_prm.z[0][1]  = -0.1200; o_prm.z[1][0]  = +0.2000; o_prm.z[1][1]  = +0.1000;
+    //o_prm.xi[0].x  = +0.4048; o_prm.xi[0].y  = +0.5954; o_prm.xi[1].x  = +0.6725; o_prm.xi[1].y  = +0.3518;
+    //o_prm.eta[0].x = +0.5257; o_prm.eta[0].y = +0.7657; o_prm.eta[1].x = +0.5529; o_prm.eta[1].y = +0.4795;
 
-    //r_prm.k[0][0]  = +0.5636; r_prm.k[0][1]  = -0.2421; r_prm.k[1][0]  = +0.2505; r_prm.k[1][1]  = -0.7679;
+    r_prm.k[0][0]  = +0.5636; r_prm.k[0][1]  = -0.2421; r_prm.k[1][0]  = +0.2505; r_prm.k[1][1]  = -0.7679;
     r_prm.z[0][0]  = +0.3220; r_prm.z[0][1]  = -0.6179; r_prm.z[1][0]  = -0.1833; r_prm.z[1][1]  = -0.3160;
     r_prm.xi[0].x  = +0.4269; r_prm.xi[0].y  = +0.3364; r_prm.xi[1].x  = +0.8651; r_prm.xi[1].y  = +0.2336;
     r_prm.eta[0].x = +0.5436; r_prm.eta[0].y = +0.5788; r_prm.eta[1].x = +0.5269; r_prm.eta[1].y = +0.5860;
@@ -129,10 +129,10 @@ void example1()
             //prob.checkGradient1(prob);
             IPrinter::printSeperatorLine();
 
-//            std::vector<DoubleMatrix> u;
-//            spif_vectorH u_info;
-//            prob.solveForwardIBVP(u, u_info, false);
-//            return;
+            std::vector<DoubleMatrix> u;
+            spif_vectorH u_info;
+            prob.solveForwardIBVP(u, u_info, false);
+            return;
         }
 
         //ConjugateGradient g;

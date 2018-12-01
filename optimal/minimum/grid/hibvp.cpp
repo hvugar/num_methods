@@ -1,5 +1,75 @@
 #include "hibvp.h"
 
+IHyperbolicIBVP::~IHyperbolicIBVP() {}
+
+void IHyperbolicIBVP::calculateU(DoubleVector &u, const Dimension &dimx, const Dimension &time, double a, double lambda) const
+{
+    const double hx = dimx.step();
+    const double ht = time.step();
+    const unsigned int N = static_cast<const unsigned int>(dimx.sizeN());
+    const unsigned int M = static_cast<const unsigned int>(time.sizeN());
+
+    const double alpha = -lambda*(a*a)*((ht*ht)/(hx*hx));
+    const double betta = +(1.0 + 2.0*lambda*(a*a)*((ht*ht)/(hx*hx)));
+    const double gamma = +(1.0-2.0*lambda)*(a*a)*((ht*ht)/(hx*hx));
+    const double theta = +lambda*(a*a)*((ht*ht)/(hx*hx));
+    const double htht  = ht*ht;
+
+    u.clear();
+    u.resize(N+1);
+
+    DoubleVector u0(N+1);
+    DoubleVector u1(N+1);
+
+    double *da = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *db = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *dc = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *dd = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *rx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+
+    for (unsigned int n=0; n<N-1; n++)
+    {
+        da[n] = dc[n] = alpha;
+        db[n] = betta;
+    }
+    da[0] = 0.0; dc[N-2] = 0.0;
+
+    SpaceNodePDE sn;
+    for (unsigned int n=1; n<=N-1; n++)
+    {
+        sn.i = n; sn.x = n*hx;
+        u0[n] = initial1(sn);
+
+        u1[n] = u0[n] + ht*initial2(sn);
+        //u1[i] += ht*ht;
+    }
+
+    TimeNodePDE tn2, tn1, tn0;
+    for (unsigned int m=2; m<=M; m++)
+    {
+        tn2.i = m-0; tn2.t = tn2.i*ht;
+        tn1.i = m-1; tn1.t = tn1.i*ht;
+        tn0.i = m-2; tn0.t = tn0.i*ht;
+
+        u[0] = boundary(sn, tn2);
+        u[N] = boundary(sn, tn2);
+        for (unsigned int n=1; n<=N-1; n++)
+        {
+            sn.i = n; sn.x = n*hx;
+            dd[n-1] = gamma*(u1[n-1]-2.0*u1[n]+u1[n+1])
+                    + theta*(u0[n-1]-2.0*u0[n]+u0[n+1])
+                    + 2.0*u1[n] - u0[n];
+            dd[n-1] += htht*(lambda*f(sn, tn2) + (1.0-2.0*lambda)*f(sn, tn1) + lambda*f(sn, tn0));
+        }
+        dd[0]   -= alpha*u[0];
+        dd[N-2] -= alpha*u[N];
+
+        tomasAlgorithm(da, db, dc, dd, rx, N-1);
+
+        for (unsigned int n=0; n<=N-2; n++) u[n+1] = rx[n];
+    }
+}
+
 void HyperbolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction)
 {
     C_UNUSED(u);
