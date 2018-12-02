@@ -8,12 +8,9 @@
 #include <imaging.h>
 #endif
 
-//double MIN = +100000.0;
-//double MAX = -100000.0;
-
 void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
-//    return;
+    return;
 
     static double MIN = +100000.0;
     static double MAX = -100000.0;
@@ -26,11 +23,12 @@ void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsign
         if (MAX<max) MAX = max;
         printf("ln: %d min: %f max: %f MIN: %f MAX: %f %.10f\n", (ln/2), min, max, MIN, MAX, integralU(u));
     }
+//    return;
 
-    if (ln == 2 /*|| ln == 4 || ln == 6 || ln == 8 || ln == 3 || ln == 200*/ || ln % 40 == 0)
+    if (ln%20 == 0)
     {
         char filename1[40];
-        int size1 = sprintf(filename1, "txt/h_layer%d.txt", ln);
+        int size1 = sprintf(filename1, "txt/h_layer%d.txt", (ln/2));
         filename1[size1] = 0;
 
         FILE* file = fopen(filename1, "w");
@@ -401,28 +399,28 @@ double Problem2HNDirichlet::integralU(const DoubleMatrix &u) const
     double udiff = 0.0;
     double usum = 0.0;
 
-    udiff = u[0][0]; usum += 0.25 * udiff * udiff;
-    udiff = u[0][N]; usum += 0.25 * udiff * udiff;
-    udiff = u[M][0]; usum += 0.25 * udiff * udiff;
-    udiff = u[M][N]; usum += 0.25 * udiff * udiff;
+    udiff = u[0][0]; usum += 0.25 * udiff * udiff * mu(0, 0);
+    udiff = u[0][N]; usum += 0.25 * udiff * udiff * mu(N, 0);
+    udiff = u[M][0]; usum += 0.25 * udiff * udiff * mu(0, M);
+    udiff = u[M][N]; usum += 0.25 * udiff * udiff * mu(N, M);
 
     for (unsigned int n=1; n<=N-1; n++)
     {
-        udiff = u[0][n]; usum += 0.5 * udiff * udiff;
-        udiff = u[M][n]; usum += 0.5 * udiff * udiff;
+        udiff = u[0][n]; usum += 0.5 * udiff * udiff * mu(n, 0);
+        udiff = u[M][n]; usum += 0.5 * udiff * udiff * mu(n, M);
     }
 
     for (unsigned int m=1; m<=M-1; m++)
     {
-        udiff = u[m][0]; usum += 0.5 * udiff * udiff;
-        udiff = u[m][N]; usum += 0.5 * udiff * udiff;
+        udiff = u[m][0]; usum += 0.5 * udiff * udiff * mu(0, m);
+        udiff = u[m][N]; usum += 0.5 * udiff * udiff * mu(N, m);
     }
 
     for (unsigned int m=1; m<=M-1; m++)
     {
         for (unsigned int n=1; n<=N-1; n++)
         {
-            udiff = u[m][n]; usum += udiff * udiff;
+            udiff = u[m][n]; usum += udiff * udiff * mu(n, m);
         }
     }
 
@@ -761,7 +759,7 @@ void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const Dou
     printf("I[%3d]: F:%.6f I:%.6f P:%.6f N:%.6f R:%.3f e:%.3f a:%.6f min:%.6f max:%.6f min:%.6f max:%.6f U0:%.8f UT:%.8f\n", i, f, ing, pnt, nrm, r, regEpsilon, alpha, u.at(0).min(), u.at(0).max(), u.at(2*LD).min(), u.at(2*LD).max(),
            integralU(u[0]), integralU(u[LD]));
     printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
-    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
+    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
     //DoubleVector n = g;
     //n.L2Normalize();
     //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]);
@@ -772,10 +770,10 @@ void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const Dou
     C_UNUSED(prob);
     IPrinter::printSeperatorLine();
 
-    //    prob->optimizeK = i%4 == 3;
-    //    prob->optimizeZ = i%4 == 0;
-    //    prob->optimizeC = i%4 == 1;
-    //    prob->optimizeO = i%4 == 2;
+//    prob->optimizeK = i%4 == 3;
+//    prob->optimizeZ = i%4 == 0;
+//    prob->optimizeC = i%4 == 1;
+//    prob->optimizeO = i%4 == 2;
     //    if (alpha > 0.00001) prob->gm->setR1MinimizeEpsilon(alpha, 0.0001);
     //    exit(-1);
 }
@@ -2166,7 +2164,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                     dx[n-1] += 2.0*p10[m][n] + (p10[m][n]-p00[m][n]);
 
                     //------------------------------------- Adding functional part --------------------------------//
-                    if (L <= l && l <= LLD) dx[n-1] += -2.0*(u.at(2*(l-L)+1)[m][n]) * htht;
+                    if (L <= l && l <= LLD) dx[n-1] += -2.0*mu(sn.i,sn.j)*(u.at(2*(l-L)+1)[m][n]) * htht;
                     //------------------------------------- Adding functional part --------------------------------//
                 }
 
@@ -2244,7 +2242,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding functional part --------------------------------//
-                    if (L <= l && l <= LLD) dx[n-1] += -2.0*(u.at(2*(l-L))[m][n]) * htht;
+                    if (L <= l && l <= LLD) dx[n-1] += -2.0*mu(sn.i,sn.j)*(u.at(2*(l-L))[m][n]) * htht;
                     //------------------------------------- Adding functional part --------------------------------//
                 }
 
@@ -2342,7 +2340,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding functional part --------------------------------//
-                    if (L <= l && l <= LLD) d1[index] += -2.0*(u.at(2*(l-L)+1)[m][n]) * htht;
+                    if (L <= l && l <= LLD) d1[index] += -2.0*mu(sn.i,sn.j)*(u.at(2*(l-L)+1)[m][n]) * htht;
                     //------------------------------------- Adding functional part --------------------------------//
                 }
 
@@ -2469,7 +2467,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding functional part --------------------------------//
-                    if (L <= l && l <= LLD) dy[m-1] += -2.0*(u[2*(l-L)][m][n]) * htht;
+                    if (L <= l && l <= LLD) dy[m-1] += -2.0*mu(sn.i,sn.j)*(u[2*(l-L)][m][n]) * htht;
                     //------------------------------------- Adding functional part --------------------------------//
                 }
 
@@ -2568,7 +2566,7 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
                     //------------------------------------- Adding delta part -------------------------------------//
 
                     //------------------------------------- Adding functional part --------------------------------//
-                    if (L <= l && l <= LLD) d2[index] += -2.0*(u[2*(l-L)][m][n]) * htht;
+                    if (L <= l && l <= LLD) d2[index] += -2.0*mu(sn.i,sn.j)*(u[2*(l-L)][m][n]) * htht;
                     //------------------------------------- Adding functional part --------------------------------//
                 }
 
@@ -2804,7 +2802,7 @@ double Problem2HNDirichlet::b_boundary(const SpaceNodePDE &, const TimeNodePDE &
 
 double Problem2HNDirichlet::b_characteristic(const DoubleMatrix &u, unsigned int n, unsigned int m) const
 {
-    return -2.0*(u[m][n]);
+    return -2.0*mu(n,m)*(u[m][n]);
 }
 
 void Problem2HNDirichlet::b_layerInfo(const DoubleMatrix &p UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
@@ -2986,9 +2984,9 @@ auto Problem2HNDirichlet::newDistributeDeltaGaussPulse(const std::vector<SpacePo
 //    extTheta.nodes.push_back(node);
 //    return;
 
-    int k = 12;
-    double sigmaX = hx*3.0;
-    double sigmaY = hy*3.0;
+    const int k = 4;
+    const double sigmaX = 1.0*hx;
+    const double sigmaY = 1.0*hy;
 
     for (unsigned int s=0; s<Ns; s++)
     {

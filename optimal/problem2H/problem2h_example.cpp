@@ -29,13 +29,9 @@ void example1()
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    //    e_prm.q[0] = +0.252; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7500;
-    //    e_prm.q[1] = +0.293; e_prm.theta[1].x = 0.5700; e_prm.theta[1].y = 0.2300;
-    //    e_prm.q[2] = +0.265; e_prm.theta[2].x = 0.8700; e_prm.theta[2].y = 0.5300;
-    e_prm.q[0] = +0.15; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7500;
-    e_prm.q[1] = +0.25; e_prm.theta[1].x = 0.5700; e_prm.theta[1].y = 0.2300;
-    e_prm.q[2] = +0.20; e_prm.theta[2].x = 0.8700; e_prm.theta[2].y = 0.5300;
-//        e_prm.q[0] = +1.000; e_prm.theta[0].x = 0.5000; e_prm.theta[0].y = 0.5000;
+    e_prm.q[0] = +0.145; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7200;
+    e_prm.q[1] = +0.157; e_prm.theta[1].x = 0.5400; e_prm.theta[1].y = 0.2700;
+    e_prm.q[2] = +0.148; e_prm.theta[2].x = 0.7400; e_prm.theta[2].y = 0.6300;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -55,8 +51,8 @@ void example1()
     r_prm.eta.resize(e_prm.Nc);
 
 #ifdef EXAMPLE4_SAMPLE_1
-    o_prm.k[0][0]  = +0.3462; o_prm.k[0][1]  = +0.7383; o_prm.k[1][0]  = +0.6315; o_prm.k[1][1]  = +0.5525;
-    o_prm.z[0][0]  = -0.0512; o_prm.z[0][1]  = -0.6107; o_prm.z[1][0]  = -0.1725; o_prm.z[1][1]  = -0.2991;
+    o_prm.k[0][0]  = -0.8462; o_prm.k[0][1]  = -0.5738; o_prm.k[1][0]  = -0.5631; o_prm.k[1][1]  = -0.4552;
+    o_prm.z[0][0]  = -2.1245; o_prm.z[0][1]  = +3.1784; o_prm.z[1][0]  = -3.0587; o_prm.z[1][1]  = +2.0641;
     o_prm.xi[0].x  = +0.3857; o_prm.xi[0].y  = +0.5434; o_prm.xi[1].x  = +0.7666; o_prm.xi[1].y  = +0.6793;
     o_prm.eta[0].x = +0.6666; o_prm.eta[0].y = +0.7939; o_prm.eta[1].x = +0.4857; o_prm.eta[1].y = +0.3796;
 
@@ -92,16 +88,16 @@ void example1()
     // Grid parameters
     double hx = 0.010; int Nx = 100;
     double hy = 0.010; int Ny = 100;
-    double ht = 0.005; int Nt = 200;
+    double ht = 0.010; int Nt = 200;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 0.0000;//<< 10.000 << 50.0000 << 100.00;
+    DoubleVector r; r << 0.00 << 1000.0;// << 50.0000 << 100.00;
     // Regularization coefficients
-    DoubleVector e; e << 0.0000;// << 0.0000 << 0.00000 << 0.0000;
+    DoubleVector e; e << 0.0000 << 0.0000;// << 0.00000 << 0.0000;
 
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
@@ -113,12 +109,12 @@ void example1()
         prob.mEquParameter = e_prm;
         prob.mOptParameter = o_prm;
         prob.mRegParameter = r_prm;
-        prob.optimizeK = true;
+        prob.optimizeK = false;
         prob.optimizeZ = true;
-        prob.optimizeO = true;
-        prob.optimizeC = true;
-        prob.vmin.resize(e_prm.Nc, +0.5);
-        prob.vmax.resize(e_prm.Nc, -0.5);
+        prob.optimizeO = false;
+        prob.optimizeC = false;
+        prob.vmin.resize(e_prm.Nc, -0.005);
+        prob.vmax.resize(e_prm.Nc, +0.005);
         prob.LD = 20;
 
         prob.regEpsilon = e[i];
@@ -126,13 +122,13 @@ void example1()
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
-            //prob.checkGradient1(prob);
+            prob.checkGradient1(prob);
             IPrinter::printSeperatorLine();
 
-            std::vector<DoubleMatrix> u;
-            spif_vectorH u_info;
-            prob.solveForwardIBVP(u, u_info, false);
-            return;
+//            std::vector<DoubleMatrix> u;
+//            spif_vectorH u_info;
+//            prob.solveForwardIBVP(u, u_info, false);
+//            return;
         }
 
         //ConjugateGradient g;
@@ -142,10 +138,10 @@ void example1()
         g.setPrinter(&prob);
         g.setProjection(&prob);
         //g.setGradientNormalizer(&prob);
-        g.setOptimalityTolerance(0.0001);
-        g.setFunctionTolerance(0.0001);
-        g.setStepTolerance(0.0001);
-        g.setR1MinimizeEpsilon(0.1, 0.01);
+        g.setOptimalityTolerance(0.00001);
+        g.setFunctionTolerance(0.00001);
+        g.setStepTolerance(0.00001);
+        g.setR1MinimizeEpsilon(1.0, 0.01);
         g.setNormalize(true);
         g.showExitMessage(true);
         prob.gm = &g;

@@ -62,7 +62,9 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
         /**************************************************************************************
          * Normalization of a gradient vector
          **************************************************************************************/
-        if (m_normalize && m_normalizer) m_normalizer->normalize(g);
+        IPrinter::print(g,g.length(), 10, 6);
+        if (m_normalize && m_normalizer != nullptr) m_normalizer->normalize(g);
+        IPrinter::print(g,g.length(), 10, 6);
 
         /**************************************************************************************
          * One-dimensional minimization along the direction of a anti-gradient

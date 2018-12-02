@@ -2,8 +2,10 @@
 
 IHyperbolicIBVP::~IHyperbolicIBVP() {}
 
-void IHyperbolicIBVP::calculateU(DoubleVector &u, const Dimension &dimx, const Dimension &time, double a, double lambda) const
+void IHyperbolicIBVP::calculateU1(DoubleVector &u, double a, double lambda) const
 {
+    const Dimension &dimx = spaceDimension(Dimension::DimensionX);
+    const Dimension &time = timeDimension();
     const double hx = dimx.step();
     const double ht = time.step();
     const unsigned int N = static_cast<const unsigned int>(dimx.sizeN());
@@ -35,23 +37,37 @@ void IHyperbolicIBVP::calculateU(DoubleVector &u, const Dimension &dimx, const D
     da[0] = 0.0; dc[N-2] = 0.0;
 
     SpaceNodePDE sn;
-    for (unsigned int n=1; n<=N-1; n++)
+    TimeNodePDE tn0, tn1, tn2;
+
+    for (unsigned int n=0; n<=N; n++)
     {
         sn.i = n; sn.x = n*hx;
         u0[n] = initial1(sn);
-
-        u1[n] = u0[n] + ht*initial2(sn);
-        //u1[i] += ht*ht;
     }
+    IPrinter::printVector(u0);
 
-    TimeNodePDE tn2, tn1, tn0;
+    tn0.i = 0; tn0.t = tn0.i*ht;
+    tn1.i = 1; tn1.t = tn1.i*ht;
+    sn.i = 0; sn.x = 0*hx;
+    u1[0] = boundary(sn, tn1);
+    for (unsigned int n=1; n<=N-1; n++)
+    {
+        sn.i = n; sn.x = n*hx;
+        u1[n] = u0[n] + ht*initial2(sn) + 0.5*ht*ht*(a*a*((u0[n-1]-2.0*u0[n]+u0[n+1]))/(hx*hx)+f(sn, tn0));
+    }
+    sn.i = N; sn.x = N*hx;
+    u1[N] = boundary(sn, tn1);
+    IPrinter::printVector(u1);
+
     for (unsigned int m=2; m<=M; m++)
     {
-        tn2.i = m-0; tn2.t = tn2.i*ht;
+        tn2.i = m+0; tn2.t = tn2.i*ht;
         tn1.i = m-1; tn1.t = tn1.i*ht;
         tn0.i = m-2; tn0.t = tn0.i*ht;
 
+        sn.i = 0; sn.x = 0*hx;
         u[0] = boundary(sn, tn2);
+        sn.i = N; sn.x = N*hx;
         u[N] = boundary(sn, tn2);
         for (unsigned int n=1; n<=N-1; n++)
         {
@@ -66,7 +82,98 @@ void IHyperbolicIBVP::calculateU(DoubleVector &u, const Dimension &dimx, const D
 
         tomasAlgorithm(da, db, dc, dd, rx, N-1);
 
-        for (unsigned int n=0; n<=N-2; n++) u[n+1] = rx[n];
+        for (unsigned int n=1; n<=N-1; n++) u[n] = rx[n-1];
+
+        for (unsigned int n=0; n<=N; n++)
+        {
+            u0[n] = u1[n];
+            u1[n] = u[n];
+        }
+        IPrinter::printVector(u);
+    }
+}
+
+void IHyperbolicIBVP::calculateU2(DoubleVector &u, double a) const
+{
+    const Dimension &dimx = spaceDimension(Dimension::DimensionX);
+    const Dimension &time = timeDimension();
+    const double hx = dimx.step();
+    const double ht = time.step();
+    const unsigned int N = static_cast<const unsigned int>(dimx.sizeN());
+    const unsigned int M = static_cast<const unsigned int>(time.sizeN());
+
+    const double alpha = -(a*a)*((ht*ht)/(hx*hx));
+    const double betta = +(1.0 + 2.0*(a*a)*((ht*ht)/(hx*hx)));
+    const double htht  = ht*ht;
+
+    u.clear();
+    u.resize(N+1);
+
+    DoubleVector u0(N+1);
+    DoubleVector u1(N+1);
+
+    double *da = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *db = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *dc = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *dd = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *rx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+
+    for (unsigned int n=0; n<N-1; n++)
+    {
+        da[n] = dc[n] = alpha;
+        db[n] = betta;
+    }
+    da[0] = 0.0; dc[N-2] = 0.0;
+
+    SpaceNodePDE sn;
+    TimeNodePDE tn0, tn1;
+
+    for (unsigned int n=0; n<=N; n++)
+    {
+        sn.i = n; sn.x = n*hx;
+        u0[n] = initial1(sn);
+    }
+    IPrinter::printVector(u0);
+
+    tn0.i = 0; tn0.t = tn0.i*ht;
+    tn1.i = 1; tn1.t = tn1.i*ht;
+    sn.i = 0; sn.x = 0*hx;
+    u1[0] = boundary(sn, tn1);
+    for (unsigned int n=1; n<=N-1; n++)
+    {
+        sn.i = n; sn.x = n*hx;
+        u1[n] = u0[n] + ht*initial2(sn) + 0.5*ht*ht*(a*a*((u0[n-1]-2.0*u0[n]+u0[n+1]))/(hx*hx)+f(sn, tn0));
+    }
+    sn.i = N; sn.x = N*hx;
+    u1[N] = boundary(sn, tn1);
+    IPrinter::printVector(u1);
+
+    for (unsigned int m=2; m<=M; m++)
+    {
+        tn0.i = m+0; tn0.t = tn0.i*ht;
+
+        sn.i = 0; sn.x = 0*hx;
+        u[0] = boundary(sn, tn0);
+        sn.i = N; sn.x = N*hx;
+        u[N] = boundary(sn, tn0);
+        for (unsigned int n=1; n<=N-1; n++)
+        {
+            sn.i = n; sn.x = n*hx;
+            dd[n-1] = 2.0*u1[n] - u0[n] + htht*f(sn, tn0);
+        }
+        dd[0]   -= alpha*u[0];
+        dd[N-2] -= alpha*u[N];
+
+        tomasAlgorithm(da, db, dc, dd, rx, N-1);
+
+        for (unsigned int n=1; n<=N-1; n++) u[n] = rx[n-1];
+
+        for (unsigned int n=0; n<=N; n++)
+        {
+            u0[n] = u1[n];
+            u1[n] = u[n];
+        }
+        IPrinter::printVector(u);
     }
 }
 

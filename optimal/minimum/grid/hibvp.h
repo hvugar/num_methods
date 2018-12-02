@@ -3,6 +3,10 @@
 
 #include "ibvp.h"
 
+/**
+ * @brief The IHyperbolicIBVP class
+ * u_tt(x,t) = a^2u_xx(x,t) + f(x,t), t in (0,T], x in (0,l)
+ */
 class MINIMUMSHARED_EXPORT IHyperbolicIBVP : public InitialBoundaryValueProblemPDE
 {
 public:
@@ -12,6 +16,11 @@ protected:
     virtual double initial2(const SpaceNodePDE &sn) const = 0;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const = 0;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
+    
+public:
+    void calculateU1(DoubleVector &u, double a=1.0, double lambda=0.25) const;
+    void calculateU2(DoubleVector &u, double a=1.0) const;
+    void calculateU3(DoubleMatrix &u, double a=1.0, double lambda=0.25) const;
 };
 
 /**

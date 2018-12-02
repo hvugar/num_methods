@@ -66,6 +66,20 @@ void HyperbolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //    }
 }
 
+void HyperbolicIBVP2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
+{
+    HyperbolicIBVP2 hibvp;
+    hibvp.setTimeDimension(Dimension(0.005, 0, 200));
+    hibvp.addSpaceDimension(Dimension(0.01, 0, 100));
+    DoubleVector u;
+    hibvp.calculateU1(u, 1.0, 0.25);
+    IPrinter::printVector(u);
+    IPrinter::printSeperatorLine();
+    hibvp.calculateU2(u, 1.0);
+    IPrinter::printVector(u);
+    IPrinter::printSeperatorLine();
+}
+
 HyperbolicIBVP1::HyperbolicIBVP1()
 {
 }
@@ -107,4 +121,37 @@ double HyperbolicIBVP1::U(unsigned int n, unsigned int m) const
     double x = n*spaceDimension(Dimension::DimensionX).step();
     return x*x*(t+1.0)*(t+1.0);
 }
+
+double HyperbolicIBVP2::initial1(const SpaceNodePDE &sn UNUSED_PARAM) const
+{
+    //return sn.x*sn.x;
+    //return sn.x*sn.x*sn.x;
+    //return sn.x*sn.x*sn.x;
+    return 0.0;
+}
+
+double HyperbolicIBVP2::initial2(const SpaceNodePDE &sn UNUSED_PARAM) const
+{
+    //return 0.0;
+    //return 0.0;
+    //return 0.0;
+    if (sn.i == 50) return 1000.0; return 0.0;
+}
+
+double HyperbolicIBVP2::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM, BoundaryType) const
+{
+    //return sn.x*sn.x+tn.t*tn.t;
+    //return sn.x*sn.x*sn.x+tn.t*tn.t;
+    //return sn.x*sn.x*sn.x+tn.t*tn.t*tn.t;
+    return 0.0;
+}
+
+double HyperbolicIBVP2::f(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
+{
+    //return 2.0 - 2.0*a*a;
+    //return 2.0 - 6.0*a*a*sn.x;
+    //return 6.0*tn.t - 6.0*a*a*sn.x;
+    return 0.0;
+}
+
 

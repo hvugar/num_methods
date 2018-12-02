@@ -19,8 +19,8 @@ TARGET = main
 INCLUDEPATH += ../minimum
 LIBS += -L../bin -lminimum
 
-#INCLUDEPATH += ../border
-#LIBS += -L../bin -lborder
+INCLUDEPATH += ../border
+LIBS += -L../bin -lborder
 
 #INCLUDEPATH += ../hyperbolic
 #LIBS += -L../bin -lhyperbolic
