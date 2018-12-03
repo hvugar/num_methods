@@ -753,16 +753,14 @@ void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const Dou
         v2[ln] = v(1, o_prm, mEquParameter, u_info, 2*ln);
     }
 
-    IPrinter::printVector(v1, "v1", 10);
-    IPrinter::printVector(v2, "v2", 10);
+    //IPrinter::printVector(v1, "v1", 10);
+    //IPrinter::printVector(v2, "v2", 10);
 
-    printf("I[%3d]: F:%.6f I:%.6f P:%.6f N:%.6f R:%.3f e:%.3f a:%.6f min:%.6f max:%.6f min:%.6f max:%.6f U0:%.8f UT:%.8f\n", i, f, ing, pnt, nrm, r, regEpsilon, alpha, u.at(0).min(), u.at(0).max(), u.at(2*LD).min(), u.at(2*LD).max(),
-           integralU(u[0]), integralU(u[LD]));
+    printf("I[%3d]: F:%.8f I:%.8f P:%.8f N:%.8f R:%.3f e:%.3f a:%.6f min:%.6f max:%.6f min:%.6f max:%.6f U0:%.8f UT:%.8f\n", i, f, ing, pnt, nrm, r, regEpsilon, alpha, u.at(0).min(), u.at(0).max(), u.at(2*LD).min(), u.at(2*LD).max(), integralU(u[0]), integralU(u[LD]));
     printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
     printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
-    //DoubleVector n = g;
-    //n.L2Normalize();
-    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o:%8.4f %8.4f %8.4f %8.4f c:%8.4f %8.4f %8.4f %8.4f\n", n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]);
+    DoubleVector n = g; n.L2Normalize();
+    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]);
 
     u.clear();
     u_info.clear();
@@ -774,8 +772,6 @@ void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const Dou
 //    prob->optimizeZ = i%4 == 0;
 //    prob->optimizeC = i%4 == 1;
 //    prob->optimizeO = i%4 == 2;
-    //    if (alpha > 0.00001) prob->gm->setR1MinimizeEpsilon(alpha, 0.0001);
-    //    exit(-1);
 }
 
 auto Problem2HNDirichlet::project(DoubleVector &, unsigned int) -> void
@@ -954,11 +950,11 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     f_initialLayers(u00, u10, u_info, use, N, M, hx, hy, ht, aa__hxhx, aa__hyhy, lambda, qExtSpacePoints, msnExtSpacePoints, cntExtSpacePoints);
     //------------------------------------- initial conditions -------------------------------------//
 
-    double *ax = static_cast<double*>( malloc(sizeof(double)*(N-1)) );
-    double *bx = static_cast<double*>( malloc(sizeof(double)*(N-1)) );
-    double *cx = static_cast<double*>( malloc(sizeof(double)*(N-1)) );
-    double *dx = static_cast<double*>( malloc(sizeof(double)*(N-1)) );
-    double *rx = static_cast<double*>( malloc(sizeof(double)*(N-1)) );
+    double *ax = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *bx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *cx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *dx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *rx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
     for (unsigned int n=1; n<=N-1; n++)
     {
         ax[n-1] = m_aa_htht__hxhx;
@@ -968,11 +964,11 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     ax[0] = 0.0;
     cx[N-2] = 0.0;
 
-    double *ay = static_cast<double*>( malloc(sizeof(double)*(M-1)) );
-    double *by = static_cast<double*>( malloc(sizeof(double)*(M-1)) );
-    double *cy = static_cast<double*>( malloc(sizeof(double)*(M-1)) );
-    double *dy = static_cast<double*>( malloc(sizeof(double)*(M-1)) );
-    double *ry = static_cast<double*>( malloc(sizeof(double)*(M-1)) );
+    double *ay = static_cast<double*>(malloc(sizeof(double)*(M-1)));
+    double *by = static_cast<double*>(malloc(sizeof(double)*(M-1)));
+    double *cy = static_cast<double*>(malloc(sizeof(double)*(M-1)));
+    double *dy = static_cast<double*>(malloc(sizeof(double)*(M-1)));
+    double *ry = static_cast<double*>(malloc(sizeof(double)*(M-1)));
     for (unsigned int m=1; m<=M-1; m++)
     {
         ay[m-1] = m_aa_htht__hyhy;
@@ -986,12 +982,12 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     double *a1=nullptr, *b1=nullptr, *c1=nullptr, *d1=nullptr, *x1=nullptr, **w1=nullptr;
     if (rows1.size() != 0 && rows2.size() != 0)
     {
-        a1 = static_cast<double*> ( malloc(sizeof(double)*rows1_size) );
-        b1 = static_cast<double*> ( malloc(sizeof(double)*rows1_size) );
-        c1 = static_cast<double*> ( malloc(sizeof(double)*rows1_size) );
-        d1 = static_cast<double*> ( malloc(sizeof(double)*rows1_size) );
-        x1 = static_cast<double*> ( malloc(sizeof(double)*rows1_size) );
-        w1 = static_cast<double**> ( malloc(sizeof(double*)*rows1_size) );
+        a1 = static_cast<double*>(malloc(sizeof(double)*rows1_size));
+        b1 = static_cast<double*>(malloc(sizeof(double)*rows1_size));
+        c1 = static_cast<double*>(malloc(sizeof(double)*rows1_size));
+        d1 = static_cast<double*>(malloc(sizeof(double)*rows1_size));
+        x1 = static_cast<double*>(malloc(sizeof(double)*rows1_size));
+        w1 = static_cast<double**>(malloc(sizeof(double*)*rows1_size));
         for (unsigned int row=0; row < rows1_size; row++) w1[row] = static_cast<double*> ( malloc(sizeof(double)*rows1_size) );
     }
 
@@ -999,10 +995,10 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     double *a2=nullptr, *b2=nullptr, *c2=nullptr, *d2=nullptr, *x2=nullptr, **w2=nullptr;
     if (cols1.size() != 0 && cols2.size() != 0)
     {
-        a2 = static_cast<double*> ( malloc(sizeof(double)*cols1_size) );
-        b2 = static_cast<double*> ( malloc(sizeof(double)*cols1_size) );
-        c2 = static_cast<double*> ( malloc(sizeof(double)*cols1_size) );
-        d2 = static_cast<double*> ( malloc(sizeof(double)*cols1_size) );
+        a2 = static_cast<double*> (malloc(sizeof(double)*cols1_size) );
+        b2 = static_cast<double*> (malloc(sizeof(double)*cols1_size) );
+        c2 = static_cast<double*> (malloc(sizeof(double)*cols1_size) );
+        d2 = static_cast<double*> (malloc(sizeof(double)*cols1_size) );
         x2 = static_cast<double*> ( malloc(sizeof(double)*cols1_size) );
         w2 = static_cast<double**> ( malloc(sizeof(double*)*cols1_size) );
         for (unsigned int col=0; col < cols1_size; col++) w2[col] = static_cast<double*> ( malloc(sizeof(double)*cols1_size) );
