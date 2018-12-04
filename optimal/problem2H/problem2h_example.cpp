@@ -10,9 +10,9 @@ void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 #ifdef USE_IMAGING
     QGuiApplication app(argc, argv);
 #endif
-    //example1();
+    example1();
     //example2();
-    example3();
+    //example3();
 }
 
 void example1()
@@ -101,10 +101,12 @@ void example1()
             //prob.checkGradient1(prob);
             IPrinter::printSeperatorLine();
 
-            //            std::vector<DoubleMatrix> u;
-            //            spif_vectorH u_info;
-            //            prob.solveForwardIBVP(u, u_info, false);
-            //            return;
+            prob.mOptParameter = r_prm;
+            std::vector<DoubleMatrix> u;
+            spif_vectorH u_info;
+            prob.solveForwardIBVP(u, u_info, false);
+            prob.mOptParameter = o_prm;
+            return;
         }
 
         //ConjugateGradient g;

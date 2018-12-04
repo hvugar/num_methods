@@ -10,7 +10,7 @@
 
 void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
-    return;
+    //return;
 
     static double MIN = +100000.0;
     static double MAX = -100000.0;
@@ -25,7 +25,7 @@ void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsign
     }
 //    return;
 
-    if (ln%20 == 0)
+    if (ln == 10 || ln%20 == 0)
     {
         char filename1[40];
         int size1 = sprintf(filename1, "txt/h_layer%d.txt", (ln/2));
