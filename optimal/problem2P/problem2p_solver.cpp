@@ -6,7 +6,7 @@ Problem2PNeumann::~Problem2PNeumann() {}
 
 auto Problem2PNeumann::gradient(const DoubleVector &pv, DoubleVector &gv) const -> void
 {
-    const unsigned int L   = static_cast<const unsigned int>( mtimeDimension.sizeN() );
+    const unsigned int L   = static_cast<const unsigned int>( mtimeDimension.size() );
     const double ht        = mtimeDimension.step();
     const unsigned int Nc  = mEquParameter.Nc;
     const unsigned int No  = mEquParameter.No;
@@ -470,8 +470,8 @@ auto Problem2PNeumann::fx_integral(const DoubleMatrix &u) const -> double
 {
     const double hx      = spaceDimension(Dimension::DimensionX).step();
     const double hy      = spaceDimension(Dimension::DimensionY).step();
-    const unsigned int N = static_cast<const unsigned int> ( spaceDimension(Dimension::DimensionX).sizeN() );
-    const unsigned int M = static_cast<const unsigned int> ( spaceDimension(Dimension::DimensionY).sizeN() );
+    const unsigned int N = static_cast<const unsigned int> ( spaceDimension(Dimension::DimensionX).size() );
+    const unsigned int M = static_cast<const unsigned int> ( spaceDimension(Dimension::DimensionY).size() );
 
     double udiff = 0.0;
     double usum = 0.0;
@@ -538,7 +538,7 @@ auto Problem2PNeumann::fx_penalty1(const spif_vector &info, const OptimizeParame
 {
     const double ht = mtimeDimension.step();
 
-    const unsigned int L = static_cast<const unsigned int> ( mtimeDimension.sizeN() );
+    const unsigned int L = static_cast<const unsigned int> ( mtimeDimension.size() );
 
     double _penalty = 0.0;
     for (unsigned int i=0; i<mEquParameter.Nc; i++)
@@ -634,7 +634,7 @@ auto Problem2PNeumann::print(unsigned int i, const DoubleVector &x, const Double
     double pnt2 = fx_penalty2(mOptParameter);
     double nrm = fx_norm(mEquParameter, mOptParameter, mRegParameter);
 
-    const unsigned int v_length = static_cast<const unsigned int>( timeDimension().sizeN() );
+    const unsigned int v_length = static_cast<const unsigned int>( timeDimension().size() );
     DoubleVector v1(v_length+1);
     DoubleVector v2(v_length+1);
 
@@ -789,9 +789,9 @@ auto Problem2PNeumann::solveForwardIBVP(DoubleMatrix &u, spif_vector &u_info, bo
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
     const Dimension time = timeDimension();
 
-    const unsigned int N = static_cast<const unsigned int> ( dimX.sizeN() );
-    const unsigned int M = static_cast<const unsigned int> ( dimY.sizeN() );
-    const unsigned int L = static_cast<const unsigned int> ( time.sizeN() );
+    const unsigned int N = static_cast<const unsigned int> ( dimX.size() );
+    const unsigned int M = static_cast<const unsigned int> ( dimY.size() );
+    const unsigned int L = static_cast<const unsigned int> ( time.size() );
 
     const double hx = dimX.step();
     const double hy = dimY.step();
@@ -1475,9 +1475,9 @@ auto Problem2PNeumann::solveBackwardIBVP(const DoubleMatrix &u, spif_vector &p_i
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
     const Dimension time = timeDimension();
 
-    const unsigned int N = static_cast<const unsigned int>( dimX.sizeN() );
-    const unsigned int M = static_cast<const unsigned int>( dimY.sizeN() );
-    const unsigned int L = static_cast<const unsigned int>( time.sizeN() );
+    const unsigned int N = static_cast<const unsigned int>( dimX.size() );
+    const unsigned int M = static_cast<const unsigned int>( dimY.size() );
+    const unsigned int L = static_cast<const unsigned int>( time.size() );
 
     const double hx = dimX.step();
     const double hy = dimY.step();
@@ -2215,7 +2215,7 @@ auto Problem2PNeumann::b_initialLayers(DoubleMatrix &p00, spif_vector &p_info, b
                                        double hx, double hy, const std::vector<ExtendedSpacePointP> &cntExtSpacePoints,
                                        const DoubleMatrix &u) const -> void
 {
-    const unsigned int L = static_cast<const unsigned int>( mtimeDimension.sizeN() );
+    const unsigned int L = static_cast<const unsigned int>( mtimeDimension.size() );
 
     SpaceNodePDE sn;
     for (unsigned int m=0; m<=M; m++)
@@ -2530,8 +2530,8 @@ auto Problem2PNeumann::newDistributeDeltaGaussCntrl(const std::vector<SpacePoint
     double hx = dimX.step();
     double hy = dimY.step();
 
-    unsigned int Nx = static_cast<unsigned int> ( dimX.sizeN() );
-    unsigned int Ny = static_cast<unsigned int> ( dimY.sizeN() );
+    unsigned int Nx = static_cast<unsigned int> ( dimX.size() );
+    unsigned int Ny = static_cast<unsigned int> ( dimY.size() );
     unsigned int Nc = static_cast<unsigned int> ( cntrls.size() );
 
     extCntrls.clear();
@@ -2589,8 +2589,8 @@ auto Problem2PNeumann::newDistributeDeltaGaussMsmnt(const std::vector<SpacePoint
     double hx = dimX.step();
     double hy = dimY.step();
 
-    unsigned int Nx = static_cast<unsigned int> ( dimX.sizeN() );
-    unsigned int Ny = static_cast<unsigned int> ( dimY.sizeN() );
+    unsigned int Nx = static_cast<unsigned int> ( dimX.size() );
+    unsigned int Ny = static_cast<unsigned int> ( dimY.size() );
     unsigned int Nc = static_cast<unsigned int> ( msmnts.size() );
 
     extMsmnts.clear();

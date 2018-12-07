@@ -24,11 +24,11 @@ void LoadedHeatEquation::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
 
     IPrinter::printSeperatorLine("Real process:");
 
-    DoubleVector U(dim1.sizeN()+1);
+    DoubleVector U(dim1.size()+1);
     TimeNodePDE tn;
     tn.i = 1;//time.sizeN();
     tn.t = tn.i*time.step();
-    for (int n=dim1.minN(); n<=dim1.maxN(); n++)
+    for (int n=dim1.min(); n<=dim1.max(); n++)
     {
         SpaceNodePDE sn;
         sn.i = n;
@@ -63,8 +63,7 @@ double LoadedHeatEquation::initial(const SpaceNodePDE &sn) const
     //return 2.0;
 }
 
-double LoadedHeatEquation::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM,
-                                    BoundaryType boundary UNUSED_PARAM) const
+double LoadedHeatEquation::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
     return NAN;
 }

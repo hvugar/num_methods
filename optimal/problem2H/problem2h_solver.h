@@ -36,7 +36,7 @@ public:
     void PrmToVector(const OptimizeParameterH &prm, DoubleVector &x) const;
     void VectorToPrm(const DoubleVector &x, OptimizeParameterH &prm) const;
 
-    virtual double boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const { return NAN; }
+    virtual double boundary(const SpaceNodePDE &, const TimeNodePDE &) const { return NAN; }
 
     virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const;
 
@@ -63,8 +63,8 @@ public:
     double b_initial1(const SpaceNodePDE &sn) const;
     double f_initial2(const SpaceNodePDE &sn) const;
     double b_initial2(const SpaceNodePDE &sn) const;
-    double f_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
-    double b_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
+    double f_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    double b_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
     void f_findRowsCols(GridH &grid, uint_vectorH &rows0, uint_vectorH &rows1, uint_vectorH &rows2, uint_vectorH &cols0, uint_vectorH &cols1, uint_vectorH &cols2, unsigned int N, unsigned int M,
                         const std::vector<ExtendedSpacePointH> &cntExtSpacePoints, const std::vector<ExtendedSpacePointH> &msnExtSpacePoints) const;

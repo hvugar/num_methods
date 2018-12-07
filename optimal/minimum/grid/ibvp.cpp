@@ -1,6 +1,8 @@
 #include "ibvp.h"
 #include "linearequation.h"
 
+InitialBoundaryValueProblemPDE::~InitialBoundaryValueProblemPDE() {}
+
 unsigned int InitialBoundaryValueProblemPDE::dimSize()
 {
     return mspaceDimension.size();

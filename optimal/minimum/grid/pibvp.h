@@ -7,14 +7,22 @@ class MINIMUMSHARED_EXPORT IParabolicIBVP : public InitialBoundaryValueProblemPD
 {
 protected:
     virtual double initial(const SpaceNodePDE &sn) const = 0;
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const = 0;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn/*, BoundaryType boundary = Unused*/) const = 0;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
+};
+
+class MINIMUMSHARED_EXPORT ParabolicIBVP_1 : public IParabolicIBVP
+{
+protected:
+    virtual void layerInfo(const DoubleVector &, unsigned int) const;
+    virtual void layerInfo(const DoubleMatrix &, unsigned int) const;
+public:
+    void calculate1(DoubleVector &u, double a = 1.0) const;
 };
 
 /**
  * @brief The ParabolicIBVP class
- * u_t(x,t) = a(x,t)u_xx(x,t) + f(x,t),
- *          t in (0,T], x in (0, l),
+ * u_t(x,t) = a(x,t)u_xx(x,t) + f(x,t), t in (0,T], x in (0, l),
  * u(x,0) = fi(x), x in [0,l],
  * u(0,t) = m1(t), t in (0,T],
  * u(l,t) = m2(t), t in (0,T].

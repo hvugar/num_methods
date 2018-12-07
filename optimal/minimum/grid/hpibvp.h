@@ -10,7 +10,7 @@ public:
 
 protected:
     virtual double initial(const SpaceNodePDE &sn) const = 0;
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const = 0;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
 
 public:
@@ -35,7 +35,7 @@ class MINIMUMSHARED_EXPORT HeatEquationIBVP2D : public InitialBoundaryValueProbl
 {
 protected:
     virtual double initial(const SpaceNodePDE &sn) const = 0;
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const = 0;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
 
     virtual double env0(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;

@@ -19,9 +19,9 @@ void ParabolicIBVP2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         double hx = dimx.step();
         double hy = dimy.step();
 
-        unsigned int M  = time.sizeN();
-        unsigned int Nx = dimx.sizeN();
-        unsigned int Ny = dimy.sizeN();
+        unsigned int M  = time.size();
+        unsigned int Nx = dimx.size();
+        unsigned int Ny = dimy.size();
 
         DoubleMatrix u(Ny+1, Nx+1);
         clock_t t = clock();
@@ -90,7 +90,7 @@ double ParabolicIBVP2::initial(const SpaceNodePDE &sn) const
     return U(sn, tn);
 }
 
-double ParabolicIBVP2::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType) const
+double ParabolicIBVP2::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     return U(sn, tn);
 }

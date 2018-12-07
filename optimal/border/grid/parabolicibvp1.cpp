@@ -10,13 +10,13 @@ void ParabolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         Dimension spaceDimension = p.spaceDimension(Dimension::DimensionX);
         Dimension timeDimension  = p.spaceDimension(Dimension::DimensionX);
 
-        unsigned int minN = spaceDimension.minN();
-        unsigned int maxN = spaceDimension.maxN();
-        unsigned int N    = spaceDimension.sizeN();
+        unsigned int minN = spaceDimension.min();
+        unsigned int maxN = spaceDimension.max();
+        unsigned int N    = spaceDimension.size();
 
-        unsigned int minM = timeDimension.minN();
-        unsigned int maxM = timeDimension.maxN();
-        unsigned int M    = timeDimension.sizeN();
+        unsigned int minM = timeDimension.min();
+        unsigned int maxM = timeDimension.max();
+        unsigned int M    = timeDimension.size();
 
         DoubleMatrix u(M+1, N+1);
 
@@ -130,14 +130,14 @@ double ParabolicIBVP1::initial(const SpaceNodePDE& sn) const
     return NAN;
 }
 
-double ParabolicIBVP1::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary) const
+double ParabolicIBVP1::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     C_UNUSED(sn);
 
 #ifdef SAMPLE_0
     double t = tn.t;
-    if (boundary == BoundaryValueProblem::Left)  return 0.0;
-    if (boundary == BoundaryValueProblem::Right) return t;
+    if (sn.i == 0)  return 0.0;
+    if (sn.i == 100) return t;
 #endif
 
 #if defined(SAMPLE_13)

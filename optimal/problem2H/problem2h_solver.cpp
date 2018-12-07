@@ -393,8 +393,8 @@ double Problem2HNDirichlet::integralU(const DoubleMatrix &u) const
 {
     const double hx = spaceDimension(Dimension::DimensionX).step();
     const double hy = spaceDimension(Dimension::DimensionY).step();
-    const unsigned int N = static_cast<const unsigned int> ( spaceDimension(Dimension::DimensionX).sizeN() );
-    const unsigned int M = static_cast<const unsigned int> ( spaceDimension(Dimension::DimensionY).sizeN() );
+    const unsigned int N = static_cast<const unsigned int> ( spaceDimension(Dimension::DimensionX).size() );
+    const unsigned int M = static_cast<const unsigned int> ( spaceDimension(Dimension::DimensionY).size() );
 
     double udiff = 0.0;
     double usum = 0.0;
@@ -460,7 +460,7 @@ double Problem2HNDirichlet::norm(const EquationParameterH& e_prm, const Optimize
 double Problem2HNDirichlet::penalty(const spif_vectorH &info, const OptimizeParameterH &o_prm) const
 {
     const double ht = mtimeDimension.step();
-    const unsigned int L = static_cast<const unsigned int> ( mtimeDimension.sizeN() );
+    const unsigned int L = static_cast<const unsigned int> ( mtimeDimension.size() );
 
     double pnlt = 0.0;
     for (unsigned int i=0; i<mEquParameter.Nc; i++)
@@ -508,7 +508,7 @@ double Problem2HNDirichlet::sign(double x) const
 
 void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) const
 {
-    const unsigned int L   = static_cast<const unsigned int>(mtimeDimension.sizeN());
+    const unsigned int L   = static_cast<const unsigned int>(mtimeDimension.size());
     const double ht        = mtimeDimension.step();
     const unsigned int Nc  = mEquParameter.Nc;
     const unsigned int No  = mEquParameter.No;
@@ -743,7 +743,7 @@ void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const Dou
     double pnt = penalty(u_info, o_prm);
     double nrm = norm(prob->mEquParameter, prob->mOptParameter, prob->mRegParameter);
 
-    const unsigned int v_length = static_cast<const unsigned int>(timeDimension().sizeN()) + LD;
+    const unsigned int v_length = static_cast<const unsigned int>(timeDimension().size()) + LD;
     DoubleVector v1(v_length+1);
     DoubleVector v2(v_length+1);
 
@@ -892,9 +892,9 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
     const Dimension time = timeDimension();
 
-    const unsigned int N = static_cast<const unsigned int> ( dimX.sizeN() );
-    const unsigned int M = static_cast<const unsigned int> ( dimY.sizeN() );
-    const unsigned int L = static_cast<const unsigned int> ( time.sizeN() );
+    const unsigned int N = static_cast<const unsigned int> ( dimX.size() );
+    const unsigned int M = static_cast<const unsigned int> ( dimY.size() );
+    const unsigned int L = static_cast<const unsigned int> ( time.size() );
     const unsigned int LLD = L+LD;
 
     const double hx = dimX.step();
@@ -1697,7 +1697,7 @@ double Problem2HNDirichlet::f_initial2(const SpaceNodePDE &) const
     return 0.0;
 }
 
-double Problem2HNDirichlet::f_boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM, BoundaryType) const
+double Problem2HNDirichlet::f_boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
     return 0.0;
 }
@@ -1890,8 +1890,8 @@ void Problem2HNDirichlet::f_borderLayer(DoubleMatrix &u, DoubleMatrix &um5, unsi
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
     const Dimension time = timeDimension();
 
-    const unsigned int N = static_cast<const unsigned int>(dimX.sizeN());
-    const unsigned int M = static_cast<const unsigned int>(dimY.sizeN());
+    const unsigned int N = static_cast<const unsigned int>(dimX.size());
+    const unsigned int M = static_cast<const unsigned int>(dimY.size());
 
     const double hx = dimX.step();
     const double hy = dimY.step();
@@ -2019,9 +2019,9 @@ void Problem2HNDirichlet::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
     const Dimension time = timeDimension();
 
-    const unsigned int N = static_cast<const unsigned int>( dimX.sizeN() );
-    const unsigned int M = static_cast<const unsigned int>( dimY.sizeN() );
-    const unsigned int L = static_cast<const unsigned int>( time.sizeN() );
+    const unsigned int N = static_cast<const unsigned int>( dimX.size() );
+    const unsigned int M = static_cast<const unsigned int>( dimY.size() );
+    const unsigned int L = static_cast<const unsigned int>( time.size() );
     const unsigned int LLD = L+LD;
 
     const double hx = dimX.step();
@@ -2659,7 +2659,7 @@ void Problem2HNDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, 
                                           const std::vector<ExtendedSpacePointH> &msnExtSpacePoints) const
 {
     DoubleMatrix p05 = p00;
-    const unsigned int L = static_cast<const unsigned int>(mtimeDimension.sizeN());
+    const unsigned int L = static_cast<const unsigned int>(mtimeDimension.size());
     const unsigned int LLD = L+LD;
 
     /************************************************************************/
@@ -2791,7 +2791,7 @@ double Problem2HNDirichlet::b_initial2(const SpaceNodePDE &sn UNUSED_PARAM) cons
     return 0.0;
 }
 
-double Problem2HNDirichlet::b_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const
+double Problem2HNDirichlet::b_boundary(const SpaceNodePDE &, const TimeNodePDE &) const
 {
     return 0.0;
 }
@@ -2954,8 +2954,8 @@ auto Problem2HNDirichlet::newDistributeDeltaGaussPulse(const std::vector<SpacePo
     double hx = dimX.step();
     double hy = dimY.step();
 
-    unsigned int Nx = static_cast<unsigned int> ( dimX.sizeN() );
-    unsigned int Ny = static_cast<unsigned int> ( dimY.sizeN() );
+    unsigned int Nx = static_cast<unsigned int> ( dimX.size() );
+    unsigned int Ny = static_cast<unsigned int> ( dimY.size() );
     unsigned int Ns = static_cast<unsigned int> ( thetas.size() );
 
     extThetas.clear();
@@ -3072,8 +3072,8 @@ auto Problem2HNDirichlet::newDistributeDeltaGaussCntrl(const std::vector<SpacePo
     double hx = dimX.step();
     double hy = dimY.step();
 
-    unsigned int Nx = static_cast<unsigned int> ( dimX.sizeN() );
-    unsigned int Ny = static_cast<unsigned int> ( dimY.sizeN() );
+    unsigned int Nx = static_cast<unsigned int> ( dimX.size() );
+    unsigned int Ny = static_cast<unsigned int> ( dimY.size() );
     unsigned int Nc = static_cast<unsigned int> ( cntrls.size() );
 
     extCntrls.clear();
@@ -3168,8 +3168,8 @@ void Problem2HNDirichlet::newDistributeDeltaGaussMsmnt(const std::vector<SpacePo
     double hx = dimX.step();
     double hy = dimY.step();
 
-    unsigned int Nx = static_cast<unsigned int> ( dimX.sizeN() );
-    unsigned int Ny = static_cast<unsigned int> ( dimY.sizeN() );
+    unsigned int Nx = static_cast<unsigned int> ( dimX.size() );
+    unsigned int Ny = static_cast<unsigned int> ( dimY.size() );
     unsigned int No = static_cast<unsigned int> ( msmnts.size() );
 
     extMsmnts.clear();

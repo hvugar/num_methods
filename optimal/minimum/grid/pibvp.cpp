@@ -1,6 +1,87 @@
 #include "pibvp.h"
 #include <limits>
 
+void ParabolicIBVP_1::calculate1(DoubleVector &u, double a) const
+{
+    const Dimension &dim1 = spaceDimension(Dimension::DimensionX);
+
+    const double ht = mtimeDimension.step();
+    const double hx = dim1.step();
+
+    const int minM = mtimeDimension.min();
+    const int maxM = mtimeDimension.max();
+    const unsigned int difM = static_cast<const unsigned int>(maxM - minM);
+
+    const int minN = dim1.min();
+    const int maxN = dim1.max();
+    const unsigned int N = static_cast<const unsigned int>(maxN - minN);
+
+    const double h = (a*a*ht)/(hx*hx);
+
+    u.clear();
+    u.resize(N+1);
+
+    double *ka = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *kb = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *kc = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *kd = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *rx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+
+    /* initial condition */
+    SpaceNodePDE sn;
+    for (int n=minN; n<=maxM; n++)
+    {
+        sn.i = n; sn.x = sn.i*hx; u[n-minN] = initial(sn);
+    }
+    layerInfo(u, 0);
+
+    SpaceNodePDE lsn; lsn.i = minN; lsn.x = minN*hx;
+    SpaceNodePDE rsn; rsn.i = maxN; rsn.x = maxN*hx;
+
+    TimeNodePDE tn;
+    for (unsigned int m=1; m<=difM; m++)
+    {
+        tn.i = m+minM;
+        tn.t = tn.i*ht;
+
+        for (unsigned int n=1; n<=N-1; n++)
+        {
+            sn.i = n+minN;
+            sn.x = sn.i*hx;
+
+            double alpha = -h;
+            double betta = 1.0 - 2.0*alpha;
+
+            ka[n-1] = alpha;
+            kb[n-1] = betta;
+            kc[n-1] = alpha;
+            kd[n-1] = u[n] + ht * f(sn, tn);
+        }
+
+        ka[0]   = 0.0;
+        kc[N-2] = 0.0;
+
+        /* border conditions */
+        u[0] = boundary(lsn, tn);
+        u[N] = boundary(rsn, tn);
+
+        kd[0]   += h * u[0];
+        kd[N-2] += h * u[N];
+
+        tomasAlgorithm(ka, kb, kc, kd, rx, N-1);
+
+        for (unsigned int n=1; n<=N-1; n++) u[n] = rx[n-1];
+
+        layerInfo(u, m);
+    }
+
+    free(ka);
+    free(kb);
+    free(kc);
+    free(kd);
+    free(rx);
+}
+
 void funcL(const double* a, const double *b, const double *c, const double *d, double *x, unsigned int N)
 {
     double *e = (double*) malloc(sizeof(double)*N);
@@ -53,13 +134,13 @@ void ParabolicIBVP::gridMethod(DoubleVector &u, SweepMethodDirection direction) 
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
+    unsigned int minM = time.min();
+    unsigned int maxM = time.max();
     unsigned int M = maxM-minM;
 
     double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
+    unsigned int minN = dim1.min();
+    unsigned int maxN = dim1.max();
     unsigned int N = maxN-minN;
 
     double h = ht/(hx*hx);
@@ -115,8 +196,8 @@ void ParabolicIBVP::gridMethod(DoubleVector &u, SweepMethodDirection direction) 
         kc[N-2] = 0.0;
 
         /* border conditions */
-        u[0] = boundary(lsn, tn, Left);
-        u[N] = boundary(rsn, tn, Right);
+        //u[0] = boundary(lsn, tn, Left);
+        //u[N] = boundary(rsn, tn, Right);
 
         kd[0]   += a(lsn,tn) * h * u[0];
         kd[N-2] += a(rsn,tn) * h * u[N];
@@ -146,13 +227,13 @@ void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction) 
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
+    unsigned int minM = time.min();
+    unsigned int maxM = time.max();
     unsigned int M = maxM-minM;
 
     double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
+    unsigned int minN = dim1.min();
+    unsigned int maxN = dim1.max();
     unsigned int N = maxN-minN;
 
     double h = ht/(hx*hx);
@@ -207,8 +288,8 @@ void ParabolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction) 
         kc[N-2] = 0.0;
 
         /* border conditions */
-        u[m][0] = boundary(lsn, tn, Left);
-        u[m][N] = boundary(rsn, tn, Right);
+        u[m][0] = boundary(lsn, tn);
+        u[m][N] = boundary(rsn, tn);
 
         kd[0]   += a(lsn,tn) * h * u[m][0];
         kd[N-2] += a(rsn,tn) * h * u[m][N];
@@ -231,13 +312,13 @@ void ParabolicIBVP::gridMethod1L(DoubleMatrix &u, SweepMethodDirection direction
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
+    unsigned int minM = time.min();
+    unsigned int maxM = time.max();
     unsigned int M = maxM-minM;
 
     double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
+    unsigned int minN = dim1.min();
+    unsigned int maxN = dim1.max();
     unsigned int N = maxN-minN;
 
     double h = ht/(hx*hx);
@@ -292,8 +373,8 @@ void ParabolicIBVP::gridMethod1L(DoubleMatrix &u, SweepMethodDirection direction
         kc[N-2] = 0.0;
 
         /* border conditions */
-        u[m][0] = boundary(lsn, tn, Left);
-        u[m][N] = boundary(rsn, tn, Right);
+        u[m][0] = boundary(lsn, tn);
+        u[m][N] = boundary(rsn, tn);
 
         kd[0]   += a(lsn,tn) * h * u[m][0];
         kd[N-2] += a(rsn,tn) * h * u[m][N];
@@ -316,13 +397,13 @@ void ParabolicIBVP::gridMethod1LT(DoubleMatrix &u, SweepMethodDirection directio
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
+    unsigned int minM = time.min();
+    unsigned int maxM = time.max();
     unsigned int M = maxM-minM;
 
     double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
+    unsigned int minN = dim1.min();
+    unsigned int maxN = dim1.max();
     unsigned int N = maxN-minN;
 
     double h = ht/(hx*hx);
@@ -377,8 +458,8 @@ void ParabolicIBVP::gridMethod1LT(DoubleMatrix &u, SweepMethodDirection directio
         kc[N-2] = 0.0;
 
         /* border conditions */
-        u[m][0] = boundary(lsn, tn, Left);
-        u[m][N] = boundary(rsn, tn, Right);
+        u[m][0] = boundary(lsn, tn);
+        u[m][N] = boundary(rsn, tn);
 
         kd[0]   += a(lsn,tn) * h * u[m][0];
         kd[N-2] += a(rsn,tn) * h * u[m][N];
@@ -500,13 +581,13 @@ void ParabolicIBVP::gridMethod1R(DoubleMatrix &u, SweepMethodDirection direction
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
+    unsigned int minM = time.min();
+    unsigned int maxM = time.max();
     unsigned int M = maxM-minM;
 
     double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
+    unsigned int minN = dim1.min();
+    unsigned int maxN = dim1.max();
     unsigned int N = maxN-minN;
 
     double h = ht/(hx*hx);
@@ -561,8 +642,8 @@ void ParabolicIBVP::gridMethod1R(DoubleMatrix &u, SweepMethodDirection direction
         kc[N-2] = 0.0;
 
         /* border conditions */
-        u[m][0] = boundary(lsn, tn, Left);
-        u[m][N] = boundary(rsn, tn, Right);
+        u[m][0] = boundary(lsn, tn);
+        u[m][N] = boundary(rsn, tn);
 
         kd[0]   += a(lsn,tn) * h * u[m][0];
         kd[N-2] += a(rsn,tn) * h * u[m][N];
@@ -652,13 +733,13 @@ void ParabolicIBVP::gridMethod2(DoubleMatrix &u, SweepMethodDirection direction 
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
+    unsigned int minM = time.min();
+    unsigned int maxM = time.max();
     unsigned int M = maxM-minM;
 
     double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
+    unsigned int minN = dim1.min();
+    unsigned int maxN = dim1.max();
     unsigned int N = maxN-minN;
 
     double h = ht/(hx*hx);
@@ -713,8 +794,8 @@ void ParabolicIBVP::gridMethod2(DoubleMatrix &u, SweepMethodDirection direction 
         kc[N-2] = 0.0;
 
         /* border conditions */
-        u[m][0] = boundary(lsn, tn, Left);
-        u[m][N] = boundary(rsn, tn, Right);
+        u[m][0] = boundary(lsn, tn);
+        u[m][N] = boundary(rsn, tn);
 
         kd[0]   += a(lsn,tn) * h * u[m][0];
         kd[N-2] += a(rsn,tn) * h * u[m][N];
@@ -842,13 +923,13 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u) const
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
+    unsigned int minM = time.min();
+    unsigned int maxM = time.max();
     unsigned int M = maxM - minM;
 
     double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
+    unsigned int minN = dim1.min();
+    unsigned int maxN = dim1.max();
     unsigned int N = maxN - minN;
 
     const unsigned int k = 2;
@@ -882,8 +963,8 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u) const
         tn.t = tn.i*ht;
 
         /* border conditions */
-        u[m][0] = boundary(lsn, tn, Left);
-        u[m][N] = boundary(rsn, tn, Right);
+        u[m][0] = boundary(lsn, tn);
+        u[m][N] = boundary(rsn, tn);
 
         /* n=1 */
         isn.i = minN+1;
@@ -962,13 +1043,13 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
+    unsigned int minM = time.min();
+    unsigned int maxM = time.max();
     unsigned int M = maxM - minM;
 
     double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
+    unsigned int minN = dim1.min();
+    unsigned int maxN = dim1.max();
     unsigned int N = maxN - minN;
 
     const unsigned int k = 4;
@@ -1004,8 +1085,8 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
         tn.t = tn.i*ht;
 
         /* border conditions */
-        u[m][0] = boundary(lsn, tn, Left);
-        u[m][N] = boundary(rsn, tn, Right);
+        u[m][0] = boundary(lsn, tn);
+        u[m][N] = boundary(rsn, tn);
 
         /* using 2nd scheme, at point n=1 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         isn.i = minN+1;
@@ -1231,13 +1312,13 @@ void ParabolicIBVP::calculateN4L2RDX(DoubleMatrix &u) const
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
+    unsigned int minM = time.min();
+    unsigned int maxM = time.max();
     unsigned int M = maxM - minM;
 
     double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
+    unsigned int minN = dim1.min();
+    unsigned int maxN = dim1.max();
     unsigned int N = maxN - minN;
 
     const unsigned int k = 4;
@@ -1273,8 +1354,8 @@ void ParabolicIBVP::calculateN4L2RDX(DoubleMatrix &u) const
         tn.t = tn.i*ht;
 
         /* border conditions */
-        u[m][0] = boundary(lsn, tn, Left);
-        u[m][N] = boundary(rsn, tn, Right);
+        u[m][0] = boundary(lsn, tn);
+        u[m][N] = boundary(rsn, tn);
 
         /* using 2nd scheme, at point n=1 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         isn.i = minN+1;
@@ -1512,13 +1593,13 @@ void ParabolicIBVP::calculateN6L2RD(DoubleMatrix &u) const
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
+    unsigned int minM = time.min();
+    unsigned int maxM = time.max();
     unsigned int M = maxM - minM;
 
     double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
+    unsigned int minN = dim1.min();
+    unsigned int maxN = dim1.max();
     unsigned int N = maxN - minN;
 
     const unsigned int k = 6;
@@ -1555,8 +1636,8 @@ void ParabolicIBVP::calculateN6L2RD(DoubleMatrix &u) const
         tn.t = tn.i*ht;
 
         /* border conditions */
-        u[m][0] = boundary(lsn, tn, Left);
-        u[m][N] = boundary(rsn, tn, Right);
+        u[m][0] = boundary(lsn, tn);
+        u[m][N] = boundary(rsn, tn);
 
         /* using 2nd scheme, at point n=1 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         isn.i = minN+1;
@@ -1800,9 +1881,9 @@ void ParabolicIBVP::calculateMVD(DoubleMatrix &u) const
     double ht = time.step();
     double h1 = dim1.step();
     double h2 = dim2.step();
-    unsigned int M = time.maxN();
-    unsigned int N1 = dim1.maxN();
-    unsigned int N2 = dim2.maxN();
+    unsigned int M = time.max();
+    unsigned int N1 = dim1.max();
+    unsigned int N2 = dim2.max();
 
     double a1 = 1.0;
     double a2 = 1.0;
@@ -1957,9 +2038,9 @@ void ParabolicIBVP::calculateMVD_TEST(DoubleMatrix &u) const
     double ht = time.step();
     double h1 = dim1.step();
     double h2 = dim2.step();
-    unsigned int M = time.maxN();
-    unsigned int N1 = dim1.maxN();
-    unsigned int N2 = dim2.maxN();
+    unsigned int M = time.max();
+    unsigned int N1 = dim1.max();
+    unsigned int N2 = dim2.max();
 
     double a1 = 1.0;
     double a2 = 1.0;

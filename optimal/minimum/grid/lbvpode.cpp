@@ -83,16 +83,16 @@ void LinearBoundaryValueProblemODE::calculateX(DoubleVector &x, double h, unsign
         dd[i-1] = f(i);
     }
 
-    dd[0]   -= da[0]*boundary(Left);
-    dd[N-2] -= dc[N-2]*boundary(Right);
+    //dd[0]   -= da[0]*boundary(Left);
+    //dd[N-2] -= dc[N-2]*boundary(Right);
 
     da[0]   = 0.0;
     dc[N-2] = 0.0;
 
     tomasAlgorithm(da.data(), db.data(), dc.data(), dd.data(), rx.data(), rx.length());
 
-    x[0] = boundary(Left);
-    x[N] = boundary(Right);
+    //x[0] = boundary(Left);
+    //x[N] = boundary(Right);
 
     for (unsigned int i=1; i<=N-1; i++)
     {
@@ -121,8 +121,8 @@ void LinearBoundaryValueProblemODE::calculateN2L2RD(DoubleVector &x, double h, u
     DoubleMatrix ems(N-k, k);
 
     /* border conditions */
-    x.at(0) = boundary(Left);
-    x.at(N) = boundary(Right);
+    //x.at(0) = boundary(Left);
+    //x.at(N) = boundary(Right);
 
     /* - + - */
     double alpha0 = r(1)*m2;
@@ -214,8 +214,8 @@ void LinearBoundaryValueProblemODE::calculateN2R2LD(DoubleVector &x, double h, u
     DoubleMatrix ems(N-k, k);
 
     /* border conditions */
-    x.at(0) = boundary(Left);
-    x.at(N) = boundary(Right);
+    //x.at(0) = boundary(Left);
+    //x.at(N) = boundary(Right);
 
     /* - + - */
     double alpha0 = r(1)*m2;
@@ -308,8 +308,8 @@ void LinearBoundaryValueProblemODE::calculateN4L2RD(DoubleVector &x, double h, u
     DoubleMatrix ems(N-k, k);
 
     /* border conditions */
-    x.at(0) = boundary(Left);
-    x.at(N) = boundary(Right);
+    //x.at(0) = boundary(Left);
+    //x.at(N) = boundary(Right);
 
     double alpha0 = r(1)*m2;
     double betta0 = p(1)*m1;
@@ -459,8 +459,8 @@ void LinearBoundaryValueProblemODE::calculateN4R2LD(DoubleVector &x, double h, u
     DoubleMatrix ems(N-k, k);
 
     /* border conditions */
-    x.at(0) = boundary(Left);
-    x.at(N) = boundary(Right);
+    //x.at(0) = boundary(Left);
+    //x.at(N) = boundary(Right);
 
     double alpha0 = r(1)*m2;
     double betta0 = p(1)*m1;
@@ -600,8 +600,8 @@ void LinearBoundaryValueProblemODE::calculateN4CNTR(DoubleVector &x, double h, u
     DoubleMatrix ems(N-k, k);
 
     /* border conditions */
-    x.at(0) = boundary(Left);
-    x.at(N) = boundary(Right);
+    //x.at(0) = boundary(Left);
+    //x.at(N) = boundary(Right);
 
     double alpha = r(2)*m2;
     double betta = p(2)*m1;
@@ -790,8 +790,8 @@ void LinearBoundaryValueProblemODE::calculateN6L2RD(DoubleVector &x, double h, u
     DoubleMatrix ems(N-k, k);
 
     /* border conditions */
-    x.at(0) = boundary(Left);
-    x.at(N) = boundary(Right);
+    //x.at(0) = boundary(Left);
+    //x.at(N) = boundary(Right);
 
     double alpha0 = r(1)*m2;
     double betta0 = p(1)*m1;
@@ -991,8 +991,8 @@ void LinearBoundaryValueProblemODE::calculateN6R2LD(DoubleVector &x, double h, u
     DoubleMatrix ems(N-k, k);
 
     /* border conditions */
-    x.at(0) = boundary(Left);
-    x.at(N) = boundary(Right);
+    //x.at(0) = boundary(Left);
+    //x.at(N) = boundary(Right);
 
     double alpha1 = r(1)*m2;
     double betta1 = p(1)*m1;

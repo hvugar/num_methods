@@ -1,24 +1,21 @@
 #include "grid.h"
 #include <cstdio>
 
-SpaceNodePDE::SpaceNodePDE() : i(0), x(0.0), j(0), y(0.0), k(0), z(0.0) {}
-
-SpaceNodePDE::SpaceNodePDE(unsigned int i, double x) : i(i), x(x), j(0), y(0.0), k(0), z(0.0) {}
-
-SpaceNodePDE::SpaceNodePDE(unsigned int i, unsigned int j, double x, double y) : i(i), x(x), j(j), y(y), k(0), z(0.0) {}
-
-SpaceNodePDE::SpaceNodePDE(unsigned int i, unsigned int j, unsigned int k, double x, double y, double z) : i(i), x(x), j(j), y(y), k(k), z(z) {}
-
-SpaceNodePDE::SpaceNodePDE(const SpaceNodePDE &node) : i(node.i), x(node.x), j(node.j), y(node.y), k(node.k), z(node.z) {}
-
-void SpaceNodePDE::setPoint(double x, double y)
+SpaceNodePDE::SpaceNodePDE(int i, double x, int j, double y, int k, double z) : i(i), j(j), k(k)
 {
     this->x = x;
     this->y = y;
+    this->z = z;
 }
 
-UniformODEGrid::UniformODEGrid(double step, int min, int max) : mstep(step), mminN(min), mmaxN(max)
-{}
+SpaceNodePDE::SpaceNodePDE(const SpaceNodePDE &sn) : i(sn.i), j(sn.j), k(sn.k)
+{
+    this->x = sn.x;
+    this->y = sn.y;
+    this->z = sn.z;
+}
+
+UniformODEGrid::UniformODEGrid(double step, int min, int max) : mstep(step), mminN(min), mmaxN(max) {}
 
 double UniformODEGrid::step() const
 {
@@ -73,13 +70,13 @@ const Dimension& UniformPDEGrid::spaceDimension(Dimension::SpaceDimension dimens
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Dimension::Dimension(double step, int minN, int maxN) : mstep(step), mminN(minN), mmaxN(maxN)
+Dimension::Dimension(double step, int minN, int maxN) : m_step(step), m_min(minN), m_max(maxN)
 {}
 
-double Dimension::step() const { return mstep; }
+double Dimension::step() const { return m_step; }
 
-int Dimension::minN() const { return mminN; }
+int Dimension::min() const { return m_min; }
 
-int Dimension::maxN() const { return mmaxN; }
+int Dimension::max() const { return m_max; }
 
-int Dimension::sizeN() const { return mmaxN-mminN; }
+int Dimension::size() const { return m_max-m_min; }

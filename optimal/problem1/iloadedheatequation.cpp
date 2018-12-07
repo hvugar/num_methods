@@ -9,13 +9,13 @@ void ILoadedHeatEquation::getGridParameters(double &hx, unsigned int &N, double 
     Dimension dim1 = mspaceDimension.at(0);
 
     ht = time.step();
-    minM = time.minN();
-    maxM = time.maxN();
+    minM = time.min();
+    maxM = time.max();
     M = maxM-minM;
 
     hx = dim1.step();
-    minN = dim1.minN();
-    maxN = dim1.maxN();
+    minN = dim1.min();
+    maxN = dim1.max();
     N = maxN-minN;
 }
 
@@ -234,13 +234,13 @@ void ILoadedHeatEquation::transferringConditions4(DoubleVector &u)
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
+    unsigned int minM = time.min();
+    unsigned int maxM = time.max();
     unsigned int M = maxM-minM;
 
     double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
+    unsigned int minN = dim1.min();
+    unsigned int maxN = dim1.max();
     unsigned int N = maxN-minN;
 
     /* initializing vector and coifficients */
@@ -438,13 +438,13 @@ void ILoadedHeatEquation::calculateM2(DoubleVector &u)
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
+    unsigned int minM = time.min();
+    unsigned int maxM = time.max();
     unsigned int M = maxM-minM;
 
     double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
+    unsigned int minN = dim1.min();
+    unsigned int maxN = dim1.max();
     unsigned int N = maxN-minN;
 
     /* initializing vector and coifficients */

@@ -6,16 +6,16 @@ void IHyperbolicIBVP::calculateU1(DoubleVector &u, double a, double lambda) cons
 {
     const Dimension &dimx = spaceDimension(Dimension::DimensionX);
     const Dimension &time = timeDimension();
+    const unsigned int N = static_cast<const unsigned int>(dimx.size());
+    const unsigned int M = static_cast<const unsigned int>(time.size());
     const double hx = dimx.step();
     const double ht = time.step();
-    const unsigned int N = static_cast<const unsigned int>(dimx.sizeN());
-    const unsigned int M = static_cast<const unsigned int>(time.sizeN());
 
     const double alpha = -lambda*(a*a)*((ht*ht)/(hx*hx));
     const double betta = +(1.0 + 2.0*lambda*(a*a)*((ht*ht)/(hx*hx)));
     const double gamma = +(1.0-2.0*lambda)*(a*a)*((ht*ht)/(hx*hx));
     const double theta = +lambda*(a*a)*((ht*ht)/(hx*hx));
-    const double htht  = ht*ht;
+    const double ht_ht = ht*ht;
 
     u.clear();
     u.resize(N+1);
@@ -44,7 +44,7 @@ void IHyperbolicIBVP::calculateU1(DoubleVector &u, double a, double lambda) cons
         sn.i = n; sn.x = n*hx;
         u0[n] = initial1(sn);
     }
-    IPrinter::printVector(u0);
+    //IPrinter::printVector(u0);
 
     tn0.i = 0; tn0.t = tn0.i*ht;
     tn1.i = 1; tn1.t = tn1.i*ht;
@@ -75,7 +75,7 @@ void IHyperbolicIBVP::calculateU1(DoubleVector &u, double a, double lambda) cons
             dd[n-1] = gamma*(u1[n-1]-2.0*u1[n]+u1[n+1])
                     + theta*(u0[n-1]-2.0*u0[n]+u0[n+1])
                     + 2.0*u1[n] - u0[n];
-            dd[n-1] += htht*(lambda*f(sn, tn2) + (1.0-2.0*lambda)*f(sn, tn1) + lambda*f(sn, tn0));
+            dd[n-1] += ht_ht*(lambda*f(sn, tn2) + (1.0-2.0*lambda)*f(sn, tn1) + lambda*f(sn, tn0));
         }
         dd[0]   -= alpha*u[0];
         dd[N-2] -= alpha*u[N];
@@ -91,20 +91,26 @@ void IHyperbolicIBVP::calculateU1(DoubleVector &u, double a, double lambda) cons
         }
         IPrinter::printVector(u);
     }
+
+    free(rx);
+    free(dd);
+    free(dc);
+    free(db);
+    free(da);
 }
 
 void IHyperbolicIBVP::calculateU2(DoubleVector &u, double a) const
 {
     const Dimension &dimx = spaceDimension(Dimension::DimensionX);
     const Dimension &time = timeDimension();
+    const unsigned int N = static_cast<const unsigned int>(dimx.size());
+    const unsigned int M = static_cast<const unsigned int>(time.size());
     const double hx = dimx.step();
     const double ht = time.step();
-    const unsigned int N = static_cast<const unsigned int>(dimx.sizeN());
-    const unsigned int M = static_cast<const unsigned int>(time.sizeN());
 
     const double alpha = -(a*a)*((ht*ht)/(hx*hx));
     const double betta = +(1.0 + 2.0*(a*a)*((ht*ht)/(hx*hx)));
-    const double htht  = ht*ht;
+    const double ht_ht = ht*ht;
 
     u.clear();
     u.resize(N+1);
@@ -159,7 +165,7 @@ void IHyperbolicIBVP::calculateU2(DoubleVector &u, double a) const
         for (unsigned int n=1; n<=N-1; n++)
         {
             sn.i = n; sn.x = n*hx;
-            dd[n-1] = 2.0*u1[n] - u0[n] + htht*f(sn, tn0);
+            dd[n-1] = 2.0*u1[n] - u0[n] + ht_ht*f(sn, tn0);
         }
         dd[0]   -= alpha*u[0];
         dd[N-2] -= alpha*u[N];
@@ -194,13 +200,13 @@ void HyperbolicIBVP::gridMethod0(DoubleMatrix &u, SweepMethodDirection direction
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
+    unsigned int minM = time.min();
+    unsigned int maxM = time.max();
     unsigned int M = maxM-minM;
 
     double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
+    unsigned int minN = dim1.min();
+    unsigned int maxN = dim1.max();
     unsigned int N = maxN-minN;
 
     double lambda = 0.25;
@@ -287,8 +293,8 @@ void HyperbolicIBVP::gridMethod0(DoubleMatrix &u, SweepMethodDirection direction
         kc[N-2] = 0.0;
 
         /* border conditions */
-        u[m+1][0] = boundary(lsn, tn, Left);
-        u[m+1][N] = boundary(rsn, tn, Right);
+        u[m+1][0] = boundary(lsn, tn);
+        u[m+1][N] = boundary(rsn, tn);
 
         kd[0]   += a(lsn,tn) * lambda * h * u[m+1][0];
         kd[N-2] += a(rsn,tn) * lambda * h * u[m+1][N];
@@ -316,13 +322,13 @@ void HyperbolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
+    unsigned int minM = time.min();
+    unsigned int maxM = time.max();
     unsigned int M = maxM-minM;
 
     double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
+    unsigned int minN = dim1.min();
+    unsigned int maxN = dim1.max();
     unsigned int N = maxN-minN;
 
     double lambda = 0.25;
@@ -397,8 +403,8 @@ void HyperbolicIBVP::gridMethod1(DoubleMatrix &u, SweepMethodDirection direction
         kc[N-2] = 0.0;
 
         /* border conditions */
-        u[m][0] = boundary(lsn, tn, Left);
-        u[m][N] = boundary(rsn, tn, Right);
+        u[m][0] = boundary(lsn, tn);
+        u[m][N] = boundary(rsn, tn);
 
         kd[0]   += a(lsn,tn) * lambda * h * u[m][0];
         kd[N-2] += a(rsn,tn) * lambda * h * u[m][N];
@@ -426,13 +432,13 @@ void HyperbolicIBVP::gridMethod2(DoubleMatrix &u, SweepMethodDirection direction
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
+    unsigned int minM = time.min();
+    unsigned int maxM = time.max();
     unsigned int M = maxM-minM;
 
     double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
+    unsigned int minN = dim1.min();
+    unsigned int maxN = dim1.max();
     unsigned int N = maxN-minN;
 
     double lambda = 0.25;
@@ -507,8 +513,8 @@ void HyperbolicIBVP::gridMethod2(DoubleMatrix &u, SweepMethodDirection direction
         kc[N-2] = 0.0;
 
         /* border conditions */
-        u[m][0] = boundary(lsn, tn, Left);
-        u[m][N] = boundary(rsn, tn, Right);
+        u[m][0] = boundary(lsn, tn);
+        u[m][N] = boundary(rsn, tn);
 
         kd[0]   += a(lsn,tn) * (1.0-2.0*lambda) * h * u[m][0];
         kd[N-2] += a(rsn,tn) * (1.0-2.0*lambda) * h * u[m][N];

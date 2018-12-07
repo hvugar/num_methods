@@ -12,7 +12,7 @@ public:
 
 protected:
     virtual double initial(const SpaceNodePDE &sn) const = 0;
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const = 0;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
     virtual double a(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
 

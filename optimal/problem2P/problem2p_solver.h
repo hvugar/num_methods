@@ -19,7 +19,7 @@ public:
 
     virtual auto fx(const DoubleVector &x) const -> double;
     virtual auto gradient(const DoubleVector &, DoubleVector &) const -> void;
-    virtual auto boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType) const -> double { return 0.0; }
+    virtual auto boundary(const SpaceNodePDE &, const TimeNodePDE &) const -> double { return 0.0; }
     virtual auto project(DoubleVector &x, unsigned int index) -> void;
     virtual auto project(DoubleVector &x) const -> void;
     virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g,

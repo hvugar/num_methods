@@ -19,13 +19,13 @@ void NewtonHeatEquation::calculateGM1(DoubleVector &u, SweepMethodDirection dire
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
+    unsigned int minM = time.min();
+    unsigned int maxM = time.max();
     unsigned int M = maxM-minM;
 
     double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
+    unsigned int minN = dim1.min();
+    unsigned int maxN = dim1.max();
     unsigned int N = maxN-minN;
 
     u.clear();
@@ -115,13 +115,13 @@ void NewtonHeatEquation::calculateGM2(DoubleVector &u, SweepMethodDirection dire
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
+    unsigned int minM = time.min();
+    unsigned int maxM = time.max();
     unsigned int M = maxM-minM;
 
     double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
+    unsigned int minN = dim1.min();
+    unsigned int maxN = dim1.max();
     unsigned int N = maxN-minN;
 
     u.clear();
@@ -283,13 +283,13 @@ void NewtonHeatEquation::calculateGM3(DoubleVector &u, SweepMethodDirection dire
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
+    unsigned int minM = time.min();
+    unsigned int maxM = time.max();
     unsigned int M = maxM-minM;
 
     double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
+    unsigned int minN = dim1.min();
+    unsigned int maxN = dim1.max();
     unsigned int N = maxN-minN;
 
     u.clear();

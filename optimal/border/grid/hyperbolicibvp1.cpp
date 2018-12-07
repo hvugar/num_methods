@@ -6,13 +6,13 @@ void HyperbolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     p.setTimeDimension(Dimension(0.1, 10, 0));
     p.addSpaceDimension(Dimension(0.1, 10, 0));
     {
-        unsigned int minN = p.spaceDimension(Dimension::DimensionX).minN();
-        unsigned int maxN = p.spaceDimension(Dimension::DimensionX).maxN();
-        unsigned int N = p.spaceDimension(Dimension::DimensionX).sizeN();
+        unsigned int minN = p.spaceDimension(Dimension::DimensionX).min();
+        unsigned int maxN = p.spaceDimension(Dimension::DimensionX).max();
+        unsigned int N = p.spaceDimension(Dimension::DimensionX).size();
 
-        unsigned int minM = p.timeDimension().minN();
-        unsigned int maxM = p.timeDimension().maxN();
-        unsigned int M = p.timeDimension().sizeN();
+        unsigned int minM = p.timeDimension().min();
+        unsigned int maxM = p.timeDimension().max();
+        unsigned int M = p.timeDimension().size();
 
         DoubleMatrix u(M+1, N+1);
 
@@ -94,12 +94,12 @@ double HyperbolicIBVP1::initial2(const SpaceNodePDE &sn) const
     return 2.0*sn.x*sn.x;
 }
 
-double HyperbolicIBVP1::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary) const
+double HyperbolicIBVP1::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     C_UNUSED(sn);
     double t = tn.t;
-    if (boundary == BoundaryValueProblem::Left)  return 0.0;
-    if (boundary == BoundaryValueProblem::Right) return (t+1.0)*(t+1.0);
+    if (sn.i == 0)   return 0.0;
+    if (sn.i == 100) return (t+1.0)*(t+1.0);
     return 0.0;
 }
 
@@ -138,7 +138,7 @@ double HyperbolicIBVP2::initial2(const SpaceNodePDE &sn UNUSED_PARAM) const
     if (sn.i == 50) return 1000.0; return 0.0;
 }
 
-double HyperbolicIBVP2::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM, BoundaryType) const
+double HyperbolicIBVP2::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
     //return sn.x*sn.x+tn.t*tn.t;
     //return sn.x*sn.x*sn.x+tn.t*tn.t;

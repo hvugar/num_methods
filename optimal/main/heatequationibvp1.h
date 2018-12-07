@@ -12,7 +12,7 @@ public:
 
 //protected:
 //    virtual double initial(const SpaceNodePDE &) const;
-    virtual double boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryType boundary = Unused) const;
+    virtual double boundary(const SpaceNodePDE &, const TimeNodePDE &) const;
 //    virtual double f(const SpaceNodePDE &, const TimeNodePDE &) const;
 
 public:
@@ -31,7 +31,7 @@ public:
 
 protected:
     virtual double initial(const SpaceNodePDE &sn) const;
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary = Unused) const;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
     virtual double env0(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;

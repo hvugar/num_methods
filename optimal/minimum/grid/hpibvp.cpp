@@ -11,13 +11,13 @@ void HeatEquationIBVP::gridMethod(DoubleVector &u, double a, SweepMethodDirectio
     Dimension dim1 = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int minM = time.minN();
-    unsigned int maxM = time.maxN();
+    unsigned int minM = time.min();
+    unsigned int maxM = time.max();
     unsigned int M = maxM-minM;
 
     double hx = dim1.step();
-    unsigned int minN = dim1.minN();
-    unsigned int maxN = dim1.maxN();
+    unsigned int minN = dim1.min();
+    unsigned int maxN = dim1.max();
     unsigned int N = maxN-minN;
 
     double h = ht/(hx*hx);
@@ -73,8 +73,8 @@ void HeatEquationIBVP::gridMethod(DoubleVector &u, double a, SweepMethodDirectio
         kc[N-2] = 0.0;
 
         /* border conditions */
-        u[0] = boundary(lsn, tn, Left);
-        u[N] = boundary(rsn, tn, Right);
+        u[0] = boundary(lsn, tn);
+        u[N] = boundary(rsn, tn);
 
         kd[0]   += a*a * h * u[0];
         kd[N-2] += a*a * h * u[N];
@@ -98,10 +98,10 @@ void HeatEquationIBVP::gridMethod1(DoubleVector &u, double a)
     Dimension dimX = mspaceDimension.at(0);
 
     double ht = time.step();
-    unsigned int M = time.sizeN();
+    unsigned int M = time.size();
 
     double hx = dimX.step();
-    unsigned int N =dimX.sizeN();
+    unsigned int N =dimX.size();
 
     u.clear();
     u.resize(N+1);
@@ -158,9 +158,9 @@ void HeatEquationIBVP2D::calculateU(DoubleMatrix &u, double a, double alpha, dou
     Dimension yd = spaceDimension(Dimension::DimensionY);
     Dimension td = timeDimension();
 
-    unsigned int N = xd.sizeN();
-    unsigned int M = yd.sizeN();
-    unsigned int L = td.sizeN();
+    unsigned int N = xd.size();
+    unsigned int M = yd.size();
+    unsigned int L = td.size();
     double hx = xd.step();
     double hy = yd.step();
     double ht = td.step();

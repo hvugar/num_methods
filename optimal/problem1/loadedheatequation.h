@@ -12,7 +12,7 @@ public:
     double U(const SpaceNodePDE &sn,const TimeNodePDE &tn) const;
 
     virtual double initial(const SpaceNodePDE &sn) const;
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryType boundary) const;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
     virtual double g(const TimeNodePDE &tn) const;

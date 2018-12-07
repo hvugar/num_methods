@@ -12,11 +12,11 @@ void NewtonHeatEquationEx1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARA
     Dimension dim1(0.01, 100, 0);
     ex1.addSpaceDimension(dim1);
 
-    DoubleVector U(dim1.sizeN()+1);
+    DoubleVector U(dim1.size()+1);
     TimeNodePDE tn;
-    tn.i = time.sizeN();
+    tn.i = time.size();
     tn.t = tn.i*time.step();
-    for (int n=dim1.minN(); n<=dim1.maxN(); n++)
+    for (int n=dim1.min(); n<=dim1.max(); n++)
     {
         SpaceNodePDE sn;
         sn.i = n;
@@ -60,7 +60,7 @@ double NewtonHeatEquationEx1::initial(const SpaceNodePDE &sn UNUSED_PARAM) const
     return NAN;
 }
 
-double NewtonHeatEquationEx1::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM, BoundaryType boundary UNUSED_PARAM) const
+double NewtonHeatEquationEx1::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
     double t = tn.t; C_UNUSED(t);
     double x = sn.x; C_UNUSED(x);

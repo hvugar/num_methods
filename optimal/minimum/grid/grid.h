@@ -4,13 +4,6 @@
 #include <global.h>
 #include <vector>
 
-struct MINIMUMSHARED_EXPORT GridNodeODE
-{
-    inline GridNodeODE(double x, int i) : x(x), i(i) {}
-    double x;
-    int i;
-};
-
 struct MINIMUMSHARED_EXPORT SpacePoint
 {
     double x;
@@ -18,29 +11,26 @@ struct MINIMUMSHARED_EXPORT SpacePoint
     double z;
 };
 
-//struct MINIMUMSHARED_EXPORT SpaceGridNode
-//{
-//    unsigned int i;
-//    unsigned int j;
-//    unsigned int k;
-//};
-
-struct MINIMUMSHARED_EXPORT SpaceNodePDE
+struct MINIMUMSHARED_EXPORT TimeMoment
 {
-    SpaceNodePDE();
-    SpaceNodePDE(unsigned int i, double x);
-    SpaceNodePDE(unsigned int i, unsigned int j, double x, double y);
-    SpaceNodePDE(unsigned int i, unsigned int j, unsigned int k, double x, double y, double z);
-    SpaceNodePDE(const SpaceNodePDE& node);
+    double t;
+};
 
-    void setPoint(double x, double y);
-
-    unsigned int i;
+struct MINIMUMSHARED_EXPORT GridNodeODE
+{
+    inline GridNodeODE(double x, int i) : x(x), i(i) {}
     double x;
-    unsigned int j;
-    double y;
-    unsigned int k;
-    double z;
+    int i;
+};
+
+struct MINIMUMSHARED_EXPORT SpaceNodePDE : public SpacePoint
+{
+    SpaceNodePDE(int i=0, double x=0.0, int j=0, double y=0.0, int k=0, double z=0.0);
+    SpaceNodePDE(const SpaceNodePDE &sn);
+
+    int i;
+    int j;
+    int k;
 };
 
 struct MINIMUMSHARED_EXPORT TimeNodePDE
@@ -59,21 +49,17 @@ public:
         DimensionZ = 2
     };
 
-    Dimension(double step=0.01, int minN = 0, int maxN=100);
-    //Dimension(const Dimension &dim);
-    //virtual ~Dimension() {}
+    Dimension(double step=0.01, int min = 0, int max = 100);
 
-    //Dimension& operator=(const Dimension &dim) const;
-
-    double step() const;
-    int minN() const;
-    int maxN() const;
-    int sizeN() const;
+    auto step() const -> double;
+    auto min() const -> int;
+    auto max() const -> int;
+    auto size() const -> int;
 
 protected:
-    double mstep;
-    int mminN;
-    int mmaxN;
+    double m_step;
+    int m_min;
+    int m_max;
 };
 
 class MINIMUMSHARED_EXPORT UniformODEGrid
@@ -91,17 +77,17 @@ private:
     int mmaxN;
 };
 
-class UniformPDEGrid
+class MINIMUMSHARED_EXPORT UniformPDEGrid
 {
 public:
-    MINIMUMSHARED_EXPORT UniformPDEGrid();
-    MINIMUMSHARED_EXPORT UniformPDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaceDimensions);
+    UniformPDEGrid();
+    UniformPDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaceDimensions);
 
-    MINIMUMSHARED_EXPORT void setTimeDimension(const Dimension &timeDimension);
-    MINIMUMSHARED_EXPORT void addSpaceDimension(const Dimension &spaceDimension);
+    void setTimeDimension(const Dimension &timeDimension);
+    void addSpaceDimension(const Dimension &spaceDimension);
 
-    MINIMUMSHARED_EXPORT const Dimension& timeDimension() const;
-    MINIMUMSHARED_EXPORT const Dimension& spaceDimension(Dimension::SpaceDimension dimension) const;
+    const Dimension& timeDimension() const;
+    const Dimension& spaceDimension(Dimension::SpaceDimension dimension) const;
 private:
     Dimension mtimeDimension;
     std::vector<Dimension> mspaceDimensions;

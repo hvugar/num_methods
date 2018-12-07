@@ -20,6 +20,8 @@ class MINIMUMSHARED_EXPORT InitialValueProblem {};
 class MINIMUMSHARED_EXPORT InitialBoundaryValueProblemPDE : public BoundaryValueProblemPDE, public InitialValueProblem
 {
 public:
+    virtual ~InitialBoundaryValueProblemPDE();
+
     void setTimeDimension(const Dimension &dimension);
     const Dimension& timeDimension() const;
     void addSpaceDimension(const Dimension &dimension);
