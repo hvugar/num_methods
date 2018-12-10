@@ -10,7 +10,7 @@
 
 void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
-    //return;
+    return;
 
     static double MIN = +100000.0;
     static double MAX = -100000.0;
@@ -756,7 +756,7 @@ void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const Dou
     //IPrinter::printVector(v1, "v1", 10);
     //IPrinter::printVector(v2, "v2", 10);
 
-    printf("I[%3d]: F:%.8f I:%.8f P:%.8f N:%.8f R:%.3f e:%.3f a:%.6f min:%.6f max:%.6f min:%.6f max:%.6f U0:%.8f UT:%.8f\n", i, f, ing, pnt, nrm, r, regEpsilon, alpha, u.at(0).min(), u.at(0).max(), u.at(2*LD).min(), u.at(2*LD).max(), integralU(u[0]), integralU(u[LD]));
+    printf("I[%3d]: F:%.5f I:%.5f P:%.5f N:%.5f R:%.3f e:%.3f a:%.6f min:%.6f max:%.6f min:%.6f max:%.6f U0:%.8f UT:%.8f\n", i, f, ing, pnt, nrm, r, regEpsilon, alpha, u.at(0).min(), u.at(0).max(), u.at(2*LD).min(), u.at(2*LD).max(), integralU(u[0]), integralU(u[LD]));
     printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
     printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
     DoubleVector n = g; n.L2Normalize();
@@ -1085,7 +1085,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     unsigned int node_ny = static_cast<const unsigned int>(node.ny);
                     _u15[j] += u15[node_ny][node_nx] * (node.w * (hx*hy));
                 }
-                //_u05[j] *= (1.0 + noise);
+                _u15[j] *= (1.0 + noise);
             }
 
             double *_v15 = new double[Nc];
@@ -1211,14 +1211,14 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                                         if (node2_ny == rows1[rs])
                                         {
                                             found = true;
-                                            w1[index][rs*(N-1)+(node2_nx-1)] -= htht * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w;
+                                            w1[index][rs*(N-1)+(node2_nx-1)] -= htht * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w * (1.0+noise);
                                             break;
                                         }
                                     }
 
                                     if (!found)
                                     {
-                                        d1[index] += htht * mOptParameter.k[i][j] * u15[node2_ny][node2_nx] * (node2.w * (hx*hy)) * w;
+                                        d1[index] += htht * mOptParameter.k[i][j] * u15[node2_ny][node2_nx] * (node2.w * (hx*hy)) * w * (1.0+noise);
                                     }
                                 }
                             }
@@ -1313,7 +1313,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     unsigned int node_ny = static_cast<unsigned int>(node.ny);
                     _u20[j] += u20[node_ny][node_nx] * (node.w * (hx*hy));
                 }
-                //_u20[j] *= (1.0+noise);
+                _u20[j] *= (1.0+noise);
             }
 
             double *_v20 = new double[Nc];
@@ -1439,14 +1439,14 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                                         if (node2_nx == cols1[cs])
                                         {
                                             found = true;
-                                            w2[index][cs*(M-1)+(node2_ny-1)] -= htht * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w;
+                                            w2[index][cs*(M-1)+(node2_ny-1)] -= htht * mOptParameter.k[i][j] * (node2.w * (hx*hy)) * w * (1.0+noise);
                                             break;
                                         }
                                     }
 
                                     if (!found)
                                     {
-                                        d2[index] += htht * mOptParameter.k[i][j] * u20[node2_ny][node2_nx] * (node2.w * (hx*hy)) * w;
+                                        d2[index] += htht * mOptParameter.k[i][j] * u20[node2_ny][node2_nx] * (node2.w * (hx*hy)) * w * (1.0+noise);
                                     }
                                 }
                             }

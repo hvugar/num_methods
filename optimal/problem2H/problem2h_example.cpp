@@ -5,6 +5,22 @@
 #include <QtGui/QGuiApplication>
 #endif
 
+struct ProjectionEx1 : public IProjection
+{
+    virtual void project(DoubleVector &x, unsigned int index);
+    virtual void project(DoubleVector &) const;
+};
+
+void ProjectionEx1::project(DoubleVector &) const
+{
+
+}
+
+void ProjectionEx1::project(DoubleVector &x, unsigned int index)
+{
+
+}
+
 void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
 #ifdef USE_IMAGING
@@ -17,6 +33,8 @@ void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 void example1()
 {
+
+
     // Equation parameters
     EquationParameterH e_prm;
     e_prm.a = 1.0;
@@ -59,21 +77,22 @@ void example1()
     r_prm.xi[0].x  = +0.3849; r_prm.xi[0].y  = +0.5442; r_prm.xi[1].x  = +0.7661; r_prm.xi[1].y  = +0.6785;
     r_prm.eta[0].x = +0.6656; r_prm.eta[0].y = +0.7909; r_prm.eta[1].x = +0.4856; r_prm.eta[1].y = +0.3810;
 
-    //r_prm = o_prm;
+    //o_prm = r_prm;
 
     // Grid parameters
     double hx = 0.010; int Nx = 100;
     double hy = 0.010; int Ny = 100;
-    double ht = 0.010; int Nt = 200;
+    double ht = 0.005; int Nt = 400;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 0.10 << 1.0 << 10.0 << 100.00;
+    DoubleVector r; r << 0.1000 << 1.0000 << 10.000 << 100.00;
     // Regularization coefficients
-    DoubleVector e; e << 1.00 << 0.10 << 0.010 << 0.00100;
+    DoubleVector e; e << 0.0000 << 0.0000 << 0.0000 << 0.0000;
+    //DoubleVector e; e << 1.00 << 0.10 << 0.010 << 0.0010;
 
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
@@ -92,6 +111,7 @@ void example1()
         prob.vmin.resize(e_prm.Nc, -0.005);
         prob.vmax.resize(e_prm.Nc, +0.005);
         prob.LD = 20;
+        prob.noise = 0.00;
 
         prob.regEpsilon = e[i];
         prob.r = r[i];
@@ -100,13 +120,6 @@ void example1()
             prob.PrmToVector(o_prm, x);
             //prob.checkGradient1(prob);
             IPrinter::printSeperatorLine();
-
-            prob.mOptParameter = r_prm;
-            std::vector<DoubleMatrix> u;
-            spif_vectorH u_info;
-            prob.solveForwardIBVP(u, u_info, false);
-            prob.mOptParameter = o_prm;
-            return;
         }
 
         //ConjugateGradient g;
@@ -116,11 +129,11 @@ void example1()
         g.setPrinter(&prob);
         g.setProjection(&prob);
         //g.setGradientNormalizer(&prob);
-        g.setOptimalityTolerance(0.00001);
-        g.setFunctionTolerance(0.00001);
-        g.setStepTolerance(0.00001);
+        g.setOptimalityTolerance(0.001);
+        g.setFunctionTolerance(0.001);
+        g.setStepTolerance(0.001);
         g.setR1MinimizeEpsilon(0.1, 0.01);
-        g.setMaxIterations(50);
+        g.setMaxIterations(20);
         g.setNormalize(true);
         g.showExitMessage(true);
         prob.gm = &g;

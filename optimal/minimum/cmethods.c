@@ -85,7 +85,7 @@ double trapesium1(CR1Function fx, unsigned int n, double a, double b)
 
 double trapesium2(CR1Function fx, double h, double a, double b)
 {
-    unsigned int n = (unsigned int)round((b - a)/h);
+    unsigned int n = (unsigned int)(round((b - a)/h));
     double sum = 0.0;
     unsigned int i;
     for (i=0; i<=(n-1); i++)
@@ -155,7 +155,7 @@ void tomasAlgorithm1(const double *a, const double *b, const double *c, const do
     double *q = (double*)(malloc(sizeof(double)*n));
     double *g = (double*)(malloc(sizeof(double)*n));
 
-    for (unsigned int )
+//    for (unsigned int )
 
     free(g);
     free(q);
