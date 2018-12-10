@@ -9,11 +9,28 @@ struct ProjectionEx1 : public IProjection
 {
     virtual void project(DoubleVector &x, unsigned int index);
     virtual void project(DoubleVector &) const;
+
+    Problem2HNDirichlet *prob;
 };
 
-void ProjectionEx1::project(DoubleVector &) const
+void ProjectionEx1::project(DoubleVector &x) const
 {
+    unsigned int Nc = 2;
+    unsigned int No = 2;
+    unsigned int offset = 2u*Nc*No;
 
+    if ( x[ 8] < 0.05 ) x[ 8] = 0.05; if ( x[ 8] > 0.45 ) x[ 8] = 0.45;
+    if ( x[ 9] < 0.55 ) x[ 9] = 0.55; if ( x[ 9] > 0.95 ) x[ 9] = 0.95;
+    if ( x[10] < 0.55 ) x[10] = 0.55; if ( x[10] > 0.95 ) x[10] = 0.95;
+    if ( x[11] < 0.05 ) x[11] = 0.05; if ( x[11] > 0.45 ) x[11] = 0.45;
+
+    if ( x[12] < 0.05 ) x[12] = 0.05; if ( x[12] > 0.45 ) x[12] = 0.45;
+    if ( x[13] < 0.05 ) x[13] = 0.05; if ( x[13] > 0.45 ) x[13] = 0.45;
+    if ( x[14] < 0.55 ) x[14] = 0.55; if ( x[14] > 0.95 ) x[14] = 0.95;
+    if ( x[15] < 0.55 ) x[15] = 0.55; if ( x[15] > 0.95 ) x[15] = 0.95;
+
+    //DoubleVector x0 = x.mid(8,x.length()-1);
+    //IPrinter::print(x0);
 }
 
 void ProjectionEx1::project(DoubleVector &x, unsigned int index)
@@ -64,6 +81,11 @@ void example1()
     o_prm.xi[0].x  = +0.6527; o_prm.xi[0].y  = +0.8412; o_prm.xi[1].x  = +0.7412; o_prm.xi[1].y  = +0.2483;
     o_prm.eta[0].x = +0.3254; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.9462; o_prm.eta[1].y = +0.4966;
 
+    o_prm.k[0][0]  = -0.1262; o_prm.k[0][1]  = -0.4038; o_prm.k[1][0]  = -1.7431; o_prm.k[1][1]  = -2.8052;
+    o_prm.z[0][0]  = -2.0245; o_prm.z[0][1]  = +3.0784; o_prm.z[1][0]  = -5.0587; o_prm.z[1][1]  = +8.0641;
+    o_prm.xi[0].x  = +0.1527; o_prm.xi[0].y  = +0.8412; o_prm.xi[1].x  = +0.7412; o_prm.xi[1].y  = +0.2483;
+    o_prm.eta[0].x = +0.3254; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.9462; o_prm.eta[1].y = +0.5966;
+
 
     // Regularization parameters
     OptimizeParameterH r_prm;
@@ -82,14 +104,14 @@ void example1()
     // Grid parameters
     double hx = 0.010; int Nx = 100;
     double hy = 0.010; int Ny = 100;
-    double ht = 0.005; int Nt = 400;
+    double ht = 0.010; int Nt = 200;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 0.1000 << 1.0000 << 10.000 << 100.00;
+    DoubleVector r; r << 1.0000 << 10.000 << 20.000 << 50.000;
     // Regularization coefficients
     DoubleVector e; e << 0.0000 << 0.0000 << 0.0000 << 0.0000;
     //DoubleVector e; e << 1.00 << 0.10 << 0.010 << 0.0010;
@@ -127,12 +149,13 @@ void example1()
         g.setFunction(&prob);
         g.setGradient(&prob);
         g.setPrinter(&prob);
-        g.setProjection(&prob);
+        //g.setProjection(&prob);
+        g.setProjection(new ProjectionEx1);
         //g.setGradientNormalizer(&prob);
         g.setOptimalityTolerance(0.001);
         g.setFunctionTolerance(0.001);
         g.setStepTolerance(0.001);
-        g.setR1MinimizeEpsilon(0.1, 0.01);
+        g.setR1MinimizeEpsilon(0.01, 0.001);
         g.setMaxIterations(20);
         g.setNormalize(true);
         g.showExitMessage(true);
