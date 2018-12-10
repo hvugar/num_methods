@@ -1,7 +1,7 @@
 #include "pibvp.h"
 #include <limits>
 
-void ParabolicIBVP_1::calculate1(DoubleVector &u, double a) const
+void CCParabolicIBVP::calculate1(DoubleVector &u, double a) const
 {
     const Dimension &dim1 = spaceDimension(Dimension::DimensionX);
 
@@ -81,6 +81,99 @@ void ParabolicIBVP_1::calculate1(DoubleVector &u, double a) const
     free(kd);
     free(rx);
 }
+
+void CCParabolicIBVP::calculate1(DoubleMatrix &u, double a) const
+{
+    const Dimension &dim1 = spaceDimension(Dimension::DimensionX);
+    const Dimension &dim2 = spaceDimension(Dimension::DimensionY);
+    const Dimension &time = mtimeDimension;
+
+    const double hx = dim1.step();
+    const double hy = dim2.step();
+    const double ht = time.step();
+
+    const unsigned int N = dim1.size();
+    const unsigned int M = dim2.size();
+    const unsigned int L = time.size();
+
+    const double alpha = -(a*a*ht)/(hx*hx);
+    const double betta = +1.0+2.0*(a*a*ht)/(hx*hx)+2.0*(a*a*ht)/(hy*hy);
+    const double gamma = -(a*a*ht)/(hy*hy);
+
+    const unsigned int N0 = N-1;
+    const unsigned int M0 = M-1;
+
+    double *da = static_cast<double*>(malloc(sizeof(double)*(M0*N0)));
+    double *db = static_cast<double*>(malloc(sizeof(double)*(M0*N0)));
+    double *dc = static_cast<double*>(malloc(sizeof(double)*(M0*N0)));
+    double *dd = static_cast<double*>(malloc(sizeof(double)*(M0*N0)));
+    double *de = static_cast<double*>(malloc(sizeof(double)*(M0*N0)));
+    double *ff = static_cast<double*>(malloc(sizeof(double)*(M0*N0)));
+    double *rx = static_cast<double*>(malloc(sizeof(double)*(M0*N0)));
+
+    DoubleMatrix u0(M+1, N+1);
+    u.clear();
+    u.resize(M+1, N+1);
+    TimeNodePDE tn;
+    SpaceNodePDE sn;
+
+    for (unsigned int m=0; m<=M; m++)
+    {
+        sn.j = m; sn.y = m*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn.i = n; sn.x = n*hx;
+            u[m][n] = initial(sn);
+        }
+    }
+
+    unsigned int inx = 0;
+    for (unsigned int m=1; m<=M0; m++)
+    {
+        sn.j = m; sn.y = m*hy;
+        for (unsigned int n=1; n<=N0; n++)
+        {
+            sn.i = n; sn.x = n*hx;
+
+            da[inx] = alpha;
+            db[inx] = betta;
+            dc[inx] = alpha;
+            dd[inx] = gamma;
+            de[inx] = gamma;
+            ff[inx] = ht*f(sn,tn) + u0[m][n];
+
+            if (n==1)  { ff[inx] -= da[inx]*u[m][0]; da[inx] = 0.0; }
+            if (n==N0) { ff[inx] -= dc[inx]*u[m][N]; dc[inx] = 0.0; }
+            if (m==1)  { ff[inx] -= dd[inx]*u[0][n]; dd[inx] = 0.0; }
+            if (m==M0) { ff[inx] -= de[inx]*u[M][n]; de[inx] = 0.0; }
+
+            inx++;
+        }
+    }
+
+
+
+    //puts("111");
+    //IPrinter::printVector(da,M0*N0,nullptr,M0*N0,0,0,"data_a.txt");
+    //IPrinter::printVector(db,M0*N0,nullptr,M0*N0,0,0,"data_b.txt");
+    //IPrinter::printVector(dc,M0*N0,nullptr,M0*N0,0,0,"data_c.txt");
+    //IPrinter::printVector(dd,M0*N0,nullptr,M0*N0,0,0,"data_d.txt");
+    //IPrinter::printVector(de,M0*N0,nullptr,M0*N0,0,0,"data_e.txt");
+    //IPrinter::printVector(ff,M0*N0,nullptr,M0*N0,0,0,"data_f.txt");
+    //puts("222");
+
+    free(rx);
+    free(ff);
+    free(de);
+    free(dd);
+    free(dc);
+    free(db);
+    free(da);
+}
+
+void CCParabolicIBVP::layerInfo(const DoubleMatrix &, unsigned int) const {}
+
+void CCParabolicIBVP::layerInfo(const DoubleVector &, unsigned int) const {}
 
 void funcL(const double* a, const double *b, const double *c, const double *d, double *x, unsigned int N)
 {

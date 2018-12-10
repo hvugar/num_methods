@@ -132,7 +132,7 @@ void IPrinter::printVector(double *x, unsigned int size, const char *s, unsigned
         unsigned int N = (end-start+1) / n;
         for (unsigned int i=start; i<=end; i++)
         {
-            if ((i-start)%N==0) fprintf(file, "%14.10f ", x[i]);
+            if ((i-start)%N==0) fprintf(file, "%6.2f ", x[i]);
         }
     }
     else
@@ -140,7 +140,7 @@ void IPrinter::printVector(double *x, unsigned int size, const char *s, unsigned
         unsigned int N = size / n;
         for (unsigned int i=0; i<size; i++)
         {
-            if (i%N==0) fprintf(file, "%14.10f ", x[i]);
+            if (i%N==0) fprintf(file, "%6.2f ", x[i]);
         }
     }
     fputs("\n", file);

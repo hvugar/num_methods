@@ -198,3 +198,36 @@ double ParabolicIBVP2::a(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE 
     return 1.0;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void CCParabolicIBVP1::Main(int argc, char *argv[])
+{
+    CCParabolicIBVP1 p;
+    p.setTimeDimension(Dimension(0.1, 0, 10));
+    p.addSpaceDimension(Dimension(0.1, 0, 10));
+    p.addSpaceDimension(Dimension(0.1, 0, 10));
+    DoubleMatrix u;
+    p.calculate1(u);
+}
+
+double CCParabolicIBVP1::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+    return tn.t + sn.x*sn.x + sn.y+sn.y;
+}
+
+double CCParabolicIBVP1::initial(const SpaceNodePDE &sn) const
+{
+    TimeNodePDE tn; tn.i = 0; tn.t = 0.0;
+    return U(sn, tn);
+}
+
+double CCParabolicIBVP1::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+    return U(sn, tn);
+}
+
+double CCParabolicIBVP1::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+    double a = 1.0;
+    return 1.0 - 4.0*a*a;
+}
