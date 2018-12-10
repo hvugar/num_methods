@@ -1,5 +1,23 @@
 #include "function.h"
 
+R1Function::~R1Function() {}
+
+R2Function::~R2Function() {}
+
+R3Function::~R3Function() {}
+
+RnFunction::~RnFunction() {}
+
+VectorFunction::~VectorFunction() {}
+
+VectorRnFunction::~VectorRnFunction() {}
+
+MatrixR1Function::~MatrixR1Function() {}
+
+MatrixRnFunction::~MatrixRnFunction() {}
+
+IGradient::~IGradient() {}
+
 double sgn(double x)
 {
     if (x < 0.0) return -1.0;
