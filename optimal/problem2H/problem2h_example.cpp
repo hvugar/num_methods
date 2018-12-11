@@ -9,16 +9,10 @@ struct ProjectionEx1 : public IProjection
 {
     virtual void project(DoubleVector &x, unsigned int index);
     virtual void project(DoubleVector &) const;
-
-    Problem2HNDirichlet *prob;
 };
 
 void ProjectionEx1::project(DoubleVector &x) const
 {
-    unsigned int Nc = 2;
-    unsigned int No = 2;
-    unsigned int offset = 2u*Nc*No;
-
     if ( x[ 8] < 0.05 ) x[ 8] = 0.05; if ( x[ 8] > 0.45 ) x[ 8] = 0.45;
     if ( x[ 9] < 0.55 ) x[ 9] = 0.55; if ( x[ 9] > 0.95 ) x[ 9] = 0.95;
     if ( x[10] < 0.55 ) x[10] = 0.55; if ( x[10] > 0.95 ) x[10] = 0.95;
@@ -33,10 +27,7 @@ void ProjectionEx1::project(DoubleVector &x) const
     //IPrinter::print(x0);
 }
 
-void ProjectionEx1::project(DoubleVector &x, unsigned int index)
-{
-
-}
+void ProjectionEx1::project(DoubleVector &, unsigned int) {}
 
 void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -86,6 +77,11 @@ void example1()
     o_prm.xi[0].x  = +0.1527; o_prm.xi[0].y  = +0.8412; o_prm.xi[1].x  = +0.7412; o_prm.xi[1].y  = +0.2483;
     o_prm.eta[0].x = +0.3254; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.9462; o_prm.eta[1].y = +0.5966;
 
+    o_prm.k[0][0]  = -0.1262; o_prm.k[0][1]  = -0.4038; o_prm.k[1][0]  = -0.7431; o_prm.k[1][1]  = -0.8052;
+    o_prm.z[0][0]  = -0.0245; o_prm.z[0][1]  = +0.0784; o_prm.z[1][0]  = -0.0587; o_prm.z[1][1]  = +0.0641;
+    o_prm.xi[0].x  = +0.1527; o_prm.xi[0].y  = +0.8412; o_prm.xi[1].x  = +0.7412; o_prm.xi[1].y  = +0.2483;
+    o_prm.eta[0].x = +0.3254; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.9462; o_prm.eta[1].y = +0.5966;
+
 
     // Regularization parameters
     OptimizeParameterH r_prm;
@@ -111,7 +107,7 @@ void example1()
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 1.0000 << 10.000 << 20.000 << 50.000;
+    DoubleVector r; r << 0.0000 << 10.000 << 20.000 << 50.000;
     // Regularization coefficients
     DoubleVector e; e << 0.0000 << 0.0000 << 0.0000 << 0.0000;
     //DoubleVector e; e << 1.00 << 0.10 << 0.010 << 0.0010;
@@ -142,20 +138,28 @@ void example1()
             prob.PrmToVector(o_prm, x);
             //prob.checkGradient1(prob);
             IPrinter::printSeperatorLine();
+
+//            std::vector<DoubleMatrix> u;
+//            spif_vectorH u_info;
+//            prob.solveForwardIBVP(u, u_info, false);
+
+//            IPrinter::printMatrix(8,4,u[0]);
+//            return;
+
         }
 
-        //ConjugateGradient g;
-        SteepestDescentGradient g;
+        ConjugateGradient g;
+        //SteepestDescentGradient g;
         g.setFunction(&prob);
         g.setGradient(&prob);
         g.setPrinter(&prob);
-        //g.setProjection(&prob);
-        g.setProjection(new ProjectionEx1);
+        g.setProjection(&prob);
+        //g.setProjection(new ProjectionEx1);
         //g.setGradientNormalizer(&prob);
-        g.setOptimalityTolerance(0.001);
-        g.setFunctionTolerance(0.001);
-        g.setStepTolerance(0.001);
-        g.setR1MinimizeEpsilon(0.01, 0.001);
+        g.setOptimalityTolerance(0.0001);
+        g.setFunctionTolerance(0.0001);
+        g.setStepTolerance(0.0001);
+        g.setR1MinimizeEpsilon(0.1, 0.01);
         g.setMaxIterations(20);
         g.setNormalize(true);
         g.showExitMessage(true);

@@ -17,7 +17,7 @@ ConjugateGradient::~ConjugateGradient()
 
 void ConjugateGradient::calculate(DoubleVector& x)
 {
-    double distance = 0.0;
+    //double distance = 0.0;
     double alpha = 0.0;
     double f1 = 0.0;
     double f2 = 0.0;
@@ -46,10 +46,10 @@ void ConjugateGradient::calculate(DoubleVector& x)
      * Finish minimization.
      **************************************************************************************/
     double gradient_norm = 0.0;
-    if (m_normalizer) gradient_norm = m_normalizer->norm(g);
+    if (m_normalizer != nullptr) gradient_norm = m_normalizer->norm(g);
     if (gradient_norm < optimalityTolerance())
     {
-        if (m_printer) m_printer->print(m_iterationCount, x, g, m_fn->fx(x), alpha, BREAK_FIRST_ITERATION);
+        if (m_printer) m_printer->print(m_iterationCount, x, g, m_fn->fx(x), alpha, GradientMethod::BREAK_FIRST_ITERATION);
         if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than optimality tolerance...");
         return;
     }
@@ -59,7 +59,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
      **************************************************************************************/
     f1 = m_fn->fx(x);
 
-    if (m_printer) m_printer->print(m_iterationCount, x, g, f1, alpha, FIRST_ITERATION);
+    if (m_printer) m_printer->print(m_iterationCount, x, g, f1, alpha, GradientMethod::FIRST_ITERATION);
 
     do
     {
@@ -114,7 +114,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
         /**************************************************************************************
          * Normalization of a gradient vector
          **************************************************************************************/
-        if (m_normalize && m_normalizer) m_normalizer->normalize(g);
+        if (m_normalize && m_normalizer != nullptr) m_normalizer->normalize(g);
 
         /**************************************************************************************
          * One-dimensional minimization along the direction of a anti-gradient
@@ -137,7 +137,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
              **************************************************************************************/
             //distance += (x[i]-cx)*(x[i]-cx);
         }
-        if (m_projection) m_projection->project(x);
+        if (m_projection != nullptr) m_projection->project(x);
 
         double distance = 0.0;
         for (unsigned int i=0; i<n; i++) { distance += (cx[i]-x[i])*(cx[i]-x[i]); }
@@ -161,7 +161,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
         if (m_normalizer) gradient_norm = m_normalizer->norm(g);
         if (gradient_norm < optimalityTolerance())
         {
-            if (m_printer) m_printer->print(m_iterationCount, x, g, f2, alpha, BREAK_GRADIENT_NORM_LESS);
+            if (m_printer) m_printer->print(m_iterationCount, x, g, f2, alpha, GradientMethod::BREAK_GRADIENT_NORM_LESS);
             if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than optimality tolerance...");
             break;
         }
@@ -174,7 +174,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
          **************************************************************************************/
         if (distance < stepTolerance() && fabs(f2 - f1) < functionTolerance())
         {
-            if (m_printer) m_printer->print(m_iterationCount, x, g, f2, alpha, BREAK_DISTANCE_LESS);
+            if (m_printer != nullptr) m_printer->print(m_iterationCount, x, g, f2, alpha, GradientMethod::BREAK_DISTANCE_LESS);
             if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
             break;
         }
@@ -186,7 +186,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
          **************************************************************************************/
         if (m_iterationCount >= maxIterations())
         {
-            if (m_printer) m_printer->print(m_iterationCount, x, g, f2, alpha, BREAK_DISTANCE_LESS);
+            if (m_printer != nullptr) m_printer->print(m_iterationCount, x, g, f2, alpha, GradientMethod::BREAK_DISTANCE_LESS);
             if (m_show_end_message) puts("Optimisation ends, because iteration count reached max allowed iterations number...");
             break;
         }
@@ -198,7 +198,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
          **************************************************************************************/
         if (maxFunctionEvaluations() != maxFunctionEvaluations())
         {
-            if (m_printer) m_printer->print(m_iterationCount, x, g, f2, alpha, BREAK_DISTANCE_LESS);
+            if (m_printer != nullptr) m_printer->print(m_iterationCount, x, g, f2, alpha, GradientMethod::BREAK_DISTANCE_LESS);
             if (m_show_end_message) puts("Optimisation ends, because max function evaluation count reached max allowed number...");
             break;
         }
@@ -206,7 +206,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
         /**************************************************************************************
          * Printing iteration information.
          **************************************************************************************/
-        if (m_printer) m_printer->print(m_iterationCount, x, g, f2, alpha, GradientMethod::NEXT_ITERATION);
+        if (m_printer != nullptr) m_printer->print(m_iterationCount, x, g, f2, alpha, GradientMethod::NEXT_ITERATION);
 
         f1 = f2;
 
@@ -257,7 +257,7 @@ double ConjugateGradient::fx(double alpha) const
         //if (m_projection) m_projection->project(cx, i);
     }
 
-    if (m_projection) m_projection->project(cx);
+    if (m_projection != nullptr) m_projection->project(cx);
     double r_fx = m_fn->fx(cx);
     cx.clear();
 

@@ -15,7 +15,7 @@ SteepestDescentGradient::~SteepestDescentGradient()
 
 void SteepestDescentGradient::calculate(DoubleVector &x)
 {
-    double distance = 0.0;
+    //double distance = 0.0;
     double alpha = 0.0;
     double f1 = 0.0;
     double f2 = 0.0;
