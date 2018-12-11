@@ -169,10 +169,10 @@ double SteepestDescentGradient::minimize(const DoubleVector &x, const DoubleVect
     C_UNUSED(g);
 
     double alpha0 = min_step;
-    double a,b,alpha;
+    double a=0.0, b=0.0, alpha=0.0;
 
-    double fxa, fxb;
-    bool unimodal;
+    double fxa = 0.0, fxb = 0.0;
+    bool unimodal = false;
 
     straightLineSearch(alpha0, min_step, a, b, fxa, fxb, unimodal);
     //swann(alpha0, min_step, a, b, fxa, fxb, unimodal);

@@ -114,7 +114,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
         /**************************************************************************************
          * Normalization of a gradient vector
          **************************************************************************************/
-        if (m_normalize && m_normalizer != nullptr) m_normalizer->normalize(g);
+        if (m_normalize && m_normalizer != nullptr) m_normalizer->normalize(s);
 
         /**************************************************************************************
          * One-dimensional minimization along the direction of a anti-gradient
@@ -222,10 +222,10 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
     C_UNUSED(s);
 
     double alpha0 = min_step;
-    double a,b,alpha;
+    double a=0.0, b=0.0, alpha=0.0;
 
-    double fxa, fxb;
-    bool unimodal;
+    double fxa = 0.0, fxb = 0.0;
+    bool unimodal = false;
 
     straightLineSearch(alpha0, min_step, a, b, fxa, fxb, unimodal);
     //swann(alpha0, min_step, a, b, fxa, fxb, unimodal);
