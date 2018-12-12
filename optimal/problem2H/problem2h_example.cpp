@@ -41,8 +41,6 @@ void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 void example1()
 {
-
-
     // Equation parameters
     EquationParameterH e_prm;
     e_prm.a = 1.0;
@@ -54,7 +52,7 @@ void example1()
     e_prm.theta.resize(e_prm.Ns);
 
     e_prm.q[0] = +0.145; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7200;
-    e_prm.q[1] = +0.157; e_prm.theta[1].x = 0.5400; e_prm.theta[1].y = 0.2700;
+    e_prm.q[1] = +0.157; e_prm.theta[1].x = 0.6400; e_prm.theta[1].y = 0.2700;
     //e_prm.q[2] = +0.148; e_prm.theta[2].x = 0.7400; e_prm.theta[2].y = 0.6300;
 
     e_prm.No = 2;
@@ -67,8 +65,8 @@ void example1()
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
-    o_prm.k[0][0]  = -0.1262; o_prm.k[0][1]  = -0.4038; o_prm.k[1][0]  = -1.7431; o_prm.k[1][1]  = -2.8052;
-    o_prm.z[0][0]  = -2.0245; o_prm.z[0][1]  = +3.0784; o_prm.z[1][0]  = -5.0587; o_prm.z[1][1]  = +8.0641;
+    o_prm.k[0][0]  = -2.1062; o_prm.k[0][1]  = -2.1038; o_prm.k[1][0]  = -2.1031; o_prm.k[1][1]  = -2.1052;
+    o_prm.z[0][0]  = -0.0245; o_prm.z[0][1]  = -0.0784; o_prm.z[1][0]  = -0.0587; o_prm.z[1][1]  = -0.0641;
     o_prm.xi[0].x  = +0.6527; o_prm.xi[0].y  = +0.8412; o_prm.xi[1].x  = +0.7412; o_prm.xi[1].y  = +0.2483;
     o_prm.eta[0].x = +0.3254; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.9462; o_prm.eta[1].y = +0.4966;
 
@@ -100,16 +98,16 @@ void example1()
     // Grid parameters
     double hx = 0.010; int Nx = 100;
     double hy = 0.010; int Ny = 100;
-    double ht = 0.010; int Nt = 200;
+    double ht = 0.010; int Nt = 500;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 0.0000 << 10.000 << 20.000 << 50.000;
+    DoubleVector r; r << 0.0000;// << 10.000 << 20.000 << 50.000;
     // Regularization coefficients
-    DoubleVector e; e << 0.0000 << 0.0000 << 0.0000 << 0.0000;
+    DoubleVector e; e << 0.0000;// << 0.0000 << 0.0000 << 0.0000;
     //DoubleVector e; e << 1.00 << 0.10 << 0.010 << 0.0010;
 
     DoubleVector x;
@@ -139,12 +137,20 @@ void example1()
             //prob.checkGradient1(prob);
             IPrinter::printSeperatorLine();
 
-//            std::vector<DoubleMatrix> u;
-//            spif_vectorH u_info;
-//            prob.solveForwardIBVP(u, u_info, false);
+            std::vector<DoubleMatrix> u;
+            spif_vectorH u_info;
+            prob.solveForwardIBVP(u, u_info, false);
+
+
+//            for (unsigned int i=50; i<500; i++)
+//            {
+//                Dimension time(ht, 0, Nt);
+//                prob.setTimeDimension(time);
+
+//            }
 
 //            IPrinter::printMatrix(8,4,u[0]);
-//            return;
+            return;
 
         }
 

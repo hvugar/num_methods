@@ -10,6 +10,9 @@
 
 void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
+    if (ln%2==0) printf("ln: %d fx: %8.6f min: %8.6f max: %8.6f\n", (ln/2), integralU(u), u.min(), u.max());
+
+
     return;
 
     static double MIN = +100000.0;
@@ -393,8 +396,8 @@ double Problem2HNDirichlet::integralU(const DoubleMatrix &u) const
 {
     const double hx = spaceDimension(Dimension::DimensionX).step();
     const double hy = spaceDimension(Dimension::DimensionY).step();
-    const unsigned int N = static_cast<const unsigned int> ( spaceDimension(Dimension::DimensionX).size() );
-    const unsigned int M = static_cast<const unsigned int> ( spaceDimension(Dimension::DimensionY).size() );
+    const unsigned int N = static_cast<unsigned int> ( spaceDimension(Dimension::DimensionX).size() );
+    const unsigned int M = static_cast<unsigned int> ( spaceDimension(Dimension::DimensionY).size() );
 
     double udiff = 0.0;
     double usum = 0.0;
