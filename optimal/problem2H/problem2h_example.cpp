@@ -65,7 +65,7 @@ void example1()
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
-    o_prm.k[0][0]  = -2.1062; o_prm.k[0][1]  = -2.1038; o_prm.k[1][0]  = -2.1031; o_prm.k[1][1]  = -2.1052;
+    //o_prm.k[0][0]  = -2.1062; o_prm.k[0][1]  = -2.1038; o_prm.k[1][0]  = -2.1031; o_prm.k[1][1]  = -2.1052;
     o_prm.z[0][0]  = -0.0245; o_prm.z[0][1]  = -0.0784; o_prm.z[1][0]  = -0.0587; o_prm.z[1][1]  = -0.0641;
     o_prm.xi[0].x  = +0.6527; o_prm.xi[0].y  = +0.8412; o_prm.xi[1].x  = +0.7412; o_prm.xi[1].y  = +0.2483;
     o_prm.eta[0].x = +0.3254; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.9462; o_prm.eta[1].y = +0.4966;
@@ -93,7 +93,7 @@ void example1()
     r_prm.xi[0].x  = +0.3849; r_prm.xi[0].y  = +0.5442; r_prm.xi[1].x  = +0.7661; r_prm.xi[1].y  = +0.6785;
     r_prm.eta[0].x = +0.6656; r_prm.eta[0].y = +0.7909; r_prm.eta[1].x = +0.4856; r_prm.eta[1].y = +0.3810;
 
-    //o_prm = r_prm;
+    o_prm = r_prm;
 
     // Grid parameters
     double hx = 0.010; int Nx = 100;
@@ -137,17 +137,17 @@ void example1()
             //prob.checkGradient1(prob);
             IPrinter::printSeperatorLine();
 
-            std::vector<DoubleMatrix> u;
-            spif_vectorH u_info;
-            prob.solveForwardIBVP(u, u_info, false);
+//            std::vector<DoubleMatrix> u;
+//            spif_vectorH u_info;
+//            prob.solveForwardIBVP(u, u_info, false);
 
 
-//            for (unsigned int i=50; i<500; i++)
-//            {
-//                Dimension time(ht, 0, Nt);
-//                prob.setTimeDimension(time);
-
-//            }
+            for (int i=0; i<1000; i++)
+            {
+                prob.setTimeDimension(Dimension(ht, 0, i));
+                printf("ln:%d fx:%8.6f\n", i, prob.fx(x));
+                //IPrinter::printMatrix(8,4,u[0]);
+            }
 
 //            IPrinter::printMatrix(8,4,u[0]);
             return;

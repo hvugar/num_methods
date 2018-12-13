@@ -10,7 +10,7 @@
 
 void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
-    if (ln%2==0) printf("ln: %d fx: %8.6f min: %8.6f max: %8.6f\n", (ln/2), integralU(u), u.min(), u.max());
+    //if (ln%2==0) printf("ln: %d fx: %8.6f min: %8.6f max: %8.6f\n", (ln/2), integralU(u), u.min(), u.max());
 
 
     return;
