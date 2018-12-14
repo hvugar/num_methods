@@ -18,9 +18,20 @@ protected:
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
     
 public:
-    void calculateU1(DoubleVector &u, double a=1.0, double lambda=0.25) const;
     void calculateU2(DoubleVector &u, double a=1.0) const;
     void calculateU3(DoubleMatrix &u, double a=1.0, double lambda=0.25) const;
+};
+
+class MINIMUMSHARED_EXPORT CCIHyperbolicIBVP : public IHyperbolicIBVP
+{
+public:
+    virtual ~CCIHyperbolicIBVP();
+
+public:
+    void calculateU1(DoubleVector &u, double a=1.0, double lambda=0.25) const;
+
+    virtual void layerInfo(const DoubleVector &, unsigned int) const {}
+    virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
 };
 
 /**

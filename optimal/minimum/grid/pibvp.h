@@ -11,7 +11,7 @@ protected:
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
 };
 
-class MINIMUMSHARED_EXPORT CCParabolicIBVP : public IParabolicIBVP
+class MINIMUMSHARED_EXPORT CCIParabolicIBVP : public IParabolicIBVP
 {
 protected:
     virtual void layerInfo(const DoubleVector &, unsigned int) const;

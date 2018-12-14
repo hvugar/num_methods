@@ -1,7 +1,7 @@
 #include "pibvp.h"
 #include <limits>
 
-void CCParabolicIBVP::calculate1(DoubleVector &u, double a) const
+void CCIParabolicIBVP::calculate1(DoubleVector &u, double a) const
 {
     const Dimension &dim1 = spaceDimension(Dimension::DimensionX);
 
@@ -82,7 +82,7 @@ void CCParabolicIBVP::calculate1(DoubleVector &u, double a) const
     free(rx);
 }
 
-void CCParabolicIBVP::calculate1(DoubleMatrix &u, double a) const
+void CCIParabolicIBVP::calculate1(DoubleMatrix &u, double a) const
 {
     const Dimension &dim1 = spaceDimension(Dimension::DimensionX);
     const Dimension &dim2 = spaceDimension(Dimension::DimensionY);
@@ -171,9 +171,9 @@ void CCParabolicIBVP::calculate1(DoubleMatrix &u, double a) const
     free(da);
 }
 
-void CCParabolicIBVP::layerInfo(const DoubleMatrix &, unsigned int) const {}
+void CCIParabolicIBVP::layerInfo(const DoubleMatrix &, unsigned int) const {}
 
-void CCParabolicIBVP::layerInfo(const DoubleVector &, unsigned int) const {}
+void CCIParabolicIBVP::layerInfo(const DoubleVector &, unsigned int) const {}
 
 void funcL(const double* a, const double *b, const double *c, const double *d, double *x, unsigned int N)
 {

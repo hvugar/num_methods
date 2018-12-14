@@ -69,15 +69,14 @@ void HyperbolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 void HyperbolicIBVP2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     HyperbolicIBVP2 hibvp;
-    hibvp.setTimeDimension(Dimension(0.005, 0, 200));
+    hibvp.setTimeDimension(Dimension(0.005, 0, 200*50));
     hibvp.addSpaceDimension(Dimension(0.01, 0, 100));
     DoubleVector u;
-    hibvp.calculateU1(u, 1.0, 0.25);
-    IPrinter::printVector(u);
+    hibvp.calculateU1(u, 2.0, 0.25);
     IPrinter::printSeperatorLine();
-    hibvp.calculateU2(u, 1.0);
-    IPrinter::printVector(u);
-    IPrinter::printSeperatorLine();
+    //    hibvp.calculateU2(u, 1.0);
+    //    IPrinter::printVector(u);
+    //    IPrinter::printSeperatorLine();
 }
 
 HyperbolicIBVP1::HyperbolicIBVP1()
@@ -124,18 +123,26 @@ double HyperbolicIBVP1::U(unsigned int n, unsigned int m) const
 
 double HyperbolicIBVP2::initial1(const SpaceNodePDE &sn UNUSED_PARAM) const
 {
+    const static double hx = spaceDimension(Dimension::DimensionX).step();
+    static double sigma = 3.0 * hx;
+
     //return sn.x*sn.x;
     //return sn.x*sn.x*sn.x;
     //return sn.x*sn.x*sn.x;
-    return 0.0;
+    //return 0.0;
+    return 1.0/(sqrt(2.0*M_PI)*sigma)*exp(-((0.5-sn.i*hx)*(0.5-sn.i*hx))/(2.0*sigma*sigma))*0.05;
 }
 
 double HyperbolicIBVP2::initial2(const SpaceNodePDE &sn UNUSED_PARAM) const
 {
+    const static double hx = spaceDimension(Dimension::DimensionX).step();
+    static double sigma = 3.0 * hx;
+
     //return 0.0;
     //return 0.0;
     //return 0.0;
-    if (sn.i == 50) return 1000.0; return 0.0;
+    //return 1.0/(sqrt(2.0*M_PI)*sigma)*exp(-((0.5-sn.i*hx)*(0.5-sn.i*hx))/(2.0*sigma*sigma))*0.05;
+    return 0.0;
 }
 
 double HyperbolicIBVP2::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
@@ -154,4 +161,69 @@ double HyperbolicIBVP2::f(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE
     return 0.0;
 }
 
+void HyperbolicIBVP2::layerInfo(const DoubleVector &u, unsigned int ln) const
+{
+    const static double ht = timeDimension().step();
+    const static unsigned int N = static_cast<unsigned int> ( spaceDimension(Dimension::DimensionX).size() );
 
+    DoubleVector &_u0 = const_cast<HyperbolicIBVP2*>(this)->u0;
+    DoubleVector &_u1 = const_cast<HyperbolicIBVP2*>(this)->u1;
+    DoubleVector &_u2 = const_cast<HyperbolicIBVP2*>(this)->u2;
+    DoubleVector &_ut = const_cast<HyperbolicIBVP2*>(this)->ut;
+
+    _ut.resize(N+1, 0.0);
+
+    if (ln == 0) { const_cast<HyperbolicIBVP2*>(this)->u0 = u; }
+    if (ln == 1) { const_cast<HyperbolicIBVP2*>(this)->u1 = u; }
+    if (ln == 2) { const_cast<HyperbolicIBVP2*>(this)->u2 = u; }
+
+    if (ln >= 3)
+    {
+        _u0 = _u1; _u1 = _u2; _u2 = u;
+    }
+
+    if (ln >= 2)
+    {
+        for (unsigned int n=0; n<=N; n++)
+        {
+            _ut[n] = (_u2[n] - _u0[n])/(2.0*ht);
+        }
+    }
+
+    //if (ln%2000==0) IPrinter::printVector(u, nullptr, u.length());
+    if (ln > 1) printf("%d %f %f %f\n", ln, integralU1(u), integralU2(u), integralU1(u)+integralU2(u));
+}
+
+double HyperbolicIBVP2::integralU1(const DoubleVector &) const
+{
+    const static double hx = spaceDimension(Dimension::DimensionX).step();
+    const static unsigned int N = static_cast<unsigned int> ( spaceDimension(Dimension::DimensionX).size() );
+
+    double sum = 0.0;
+
+    sum += 0.50 * u1[0]*u1[0];
+    for (unsigned int n=1; n<=N-1; n++)
+    {
+        sum += u1[n]*u1[n];
+    }
+    sum += 0.50 * u1[N]*u1[N];
+
+    return sum*hx;
+}
+
+double HyperbolicIBVP2::integralU2(const DoubleVector &) const
+{
+    const double hx = spaceDimension(Dimension::DimensionX).step();
+    const unsigned int N = static_cast<unsigned int> ( spaceDimension(Dimension::DimensionX).size() );
+
+    double sum = 0.0;
+
+    sum += 0.50 * ut[0]*ut[0];
+    for (unsigned int n=1; n<=N-1; n++)
+    {
+        sum += ut[n]*ut[n];
+    }
+    sum += 0.50 * ut[N]*ut[N];
+
+    return sum*hx;
+}

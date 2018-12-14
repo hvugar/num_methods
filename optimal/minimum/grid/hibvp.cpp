@@ -2,12 +2,14 @@
 
 IHyperbolicIBVP::~IHyperbolicIBVP() {}
 
-void IHyperbolicIBVP::calculateU1(DoubleVector &u, double a, double lambda) const
+CCIHyperbolicIBVP::~CCIHyperbolicIBVP() {}
+
+void CCIHyperbolicIBVP::calculateU1(DoubleVector &u, double a, double lambda) const
 {
     const Dimension &dimx = spaceDimension(Dimension::DimensionX);
     const Dimension &time = timeDimension();
-    const unsigned int N = static_cast<const unsigned int>(dimx.size());
-    const unsigned int M = static_cast<const unsigned int>(time.size());
+    const unsigned int N = static_cast<unsigned int>(dimx.size());
+    const unsigned int M = static_cast<unsigned int>(time.size());
     const double hx = dimx.step();
     const double ht = time.step();
 
@@ -44,7 +46,7 @@ void IHyperbolicIBVP::calculateU1(DoubleVector &u, double a, double lambda) cons
         sn.i = n; sn.x = n*hx;
         u0[n] = initial1(sn);
     }
-    //IPrinter::printVector(u0);
+    layerInfo(u0, 0);
 
     tn0.i = 0; tn0.t = tn0.i*ht;
     tn1.i = 1; tn1.t = tn1.i*ht;
@@ -57,7 +59,7 @@ void IHyperbolicIBVP::calculateU1(DoubleVector &u, double a, double lambda) cons
     }
     sn.i = N; sn.x = N*hx;
     u1[N] = boundary(sn, tn1);
-    IPrinter::printVector(u1);
+    layerInfo(u1, 1);
 
     for (unsigned int m=2; m<=M; m++)
     {
@@ -89,7 +91,8 @@ void IHyperbolicIBVP::calculateU1(DoubleVector &u, double a, double lambda) cons
             u0[n] = u1[n];
             u1[n] = u[n];
         }
-        IPrinter::printVector(u);
+
+        layerInfo(u, m);
     }
 
     free(rx);
