@@ -72,7 +72,7 @@ void HyperbolicIBVP2::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     hibvp.setTimeDimension(Dimension(0.005, 0, 200*50));
     hibvp.addSpaceDimension(Dimension(0.01, 0, 100));
     DoubleVector u;
-    hibvp.calculateU1(u, 2.0, 0.25);
+    hibvp.calculateD11(u, 2.0, 0.25);
     IPrinter::printSeperatorLine();
     //    hibvp.calculateU2(u, 1.0);
     //    IPrinter::printVector(u);

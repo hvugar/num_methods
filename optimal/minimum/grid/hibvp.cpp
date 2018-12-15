@@ -4,7 +4,7 @@ IHyperbolicIBVP::~IHyperbolicIBVP() {}
 
 CCIHyperbolicIBVP::~CCIHyperbolicIBVP() {}
 
-void CCIHyperbolicIBVP::calculateU1(DoubleVector &u, double a, double lambda) const
+void CCIHyperbolicIBVP::calculateD11(DoubleVector &u, double a, double lambda) const
 {
     const Dimension &dimx = spaceDimension(Dimension::DimensionX);
     const Dimension &time = timeDimension();
@@ -14,7 +14,7 @@ void CCIHyperbolicIBVP::calculateU1(DoubleVector &u, double a, double lambda) co
     const double ht = time.step();
 
     const double alpha = -lambda*(a*a)*((ht*ht)/(hx*hx));
-    const double betta = +(1.0 + 2.0*lambda*(a*a)*((ht*ht)/(hx*hx)));
+    const double betta = +1.0 + 2.0*lambda*(a*a)*((ht*ht)/(hx*hx));
     const double gamma = +(1.0-2.0*lambda)*(a*a)*((ht*ht)/(hx*hx));
     const double theta = +lambda*(a*a)*((ht*ht)/(hx*hx));
     const double ht_ht = ht*ht;
@@ -77,7 +77,8 @@ void CCIHyperbolicIBVP::calculateU1(DoubleVector &u, double a, double lambda) co
             dd[n-1] = gamma*(u1[n-1]-2.0*u1[n]+u1[n+1])
                     + theta*(u0[n-1]-2.0*u0[n]+u0[n+1])
                     + 2.0*u1[n] - u0[n];
-            dd[n-1] += ht_ht*(lambda*f(sn, tn2) + (1.0-2.0*lambda)*f(sn, tn1) + lambda*f(sn, tn0));
+            //dd[n-1] += ht_ht*(lambda*f(sn, tn2) + (1.0-2.0*lambda)*f(sn, tn1) + lambda*f(sn, tn0));
+            dd[n-1] += ht_ht*f(sn, tn1);
         }
         dd[0]   -= alpha*u[0];
         dd[N-2] -= alpha*u[N];
@@ -102,7 +103,7 @@ void CCIHyperbolicIBVP::calculateU1(DoubleVector &u, double a, double lambda) co
     free(da);
 }
 
-void IHyperbolicIBVP::calculateU2(DoubleVector &u, double a) const
+void CCIHyperbolicIBVP::calculateD12(DoubleVector &u, double a) const
 {
     const Dimension &dimx = spaceDimension(Dimension::DimensionX);
     const Dimension &time = timeDimension();
@@ -142,33 +143,32 @@ void IHyperbolicIBVP::calculateU2(DoubleVector &u, double a) const
         sn.i = n; sn.x = n*hx;
         u0[n] = initial1(sn);
     }
-    IPrinter::printVector(u0);
+    layerInfo(u0, 0);
 
     tn0.i = 0; tn0.t = tn0.i*ht;
     tn1.i = 1; tn1.t = tn1.i*ht;
-    sn.i = 0; sn.x = 0*hx;
-    u1[0] = boundary(sn, tn1);
+
+    sn.i = 0; sn.x = 0*hx; u1[0] = boundary(sn, tn1);
     for (unsigned int n=1; n<=N-1; n++)
     {
         sn.i = n; sn.x = n*hx;
         u1[n] = u0[n] + ht*initial2(sn) + 0.5*ht*ht*(a*a*((u0[n-1]-2.0*u0[n]+u0[n+1]))/(hx*hx)+f(sn, tn0));
     }
-    sn.i = N; sn.x = N*hx;
-    u1[N] = boundary(sn, tn1);
-    IPrinter::printVector(u1);
+    sn.i = N; sn.x = N*hx; u1[N] = boundary(sn, tn1);
+    layerInfo(u0, 1);
 
+    TimeNodePDE tn;
     for (unsigned int m=2; m<=M; m++)
     {
-        tn0.i = m+0; tn0.t = tn0.i*ht;
+        tn.i = m; tn.t = tn.i*ht;
 
-        sn.i = 0; sn.x = 0*hx;
-        u[0] = boundary(sn, tn0);
-        sn.i = N; sn.x = N*hx;
-        u[N] = boundary(sn, tn0);
+        sn.i = 0; sn.x = 0*hx; u[0] = boundary(sn, tn);
+        sn.i = N; sn.x = N*hx; u[N] = boundary(sn, tn);
+
         for (unsigned int n=1; n<=N-1; n++)
         {
             sn.i = n; sn.x = n*hx;
-            dd[n-1] = 2.0*u1[n] - u0[n] + ht_ht*f(sn, tn0);
+            dd[n-1] = 2.0*u1[n] - u0[n] + ht_ht*f(sn, tn);
         }
         dd[0]   -= alpha*u[0];
         dd[N-2] -= alpha*u[N];
@@ -182,9 +182,12 @@ void IHyperbolicIBVP::calculateU2(DoubleVector &u, double a) const
             u0[n] = u1[n];
             u1[n] = u[n];
         }
-        IPrinter::printVector(u);
+        layerInfo(u, m);
     }
 }
+
+void CCIHyperbolicIBVP::calculateD21(DoubleMatrix &u, double a, double lambda) const
+{}
 
 void HyperbolicIBVP::gridMethod(DoubleMatrix &u, SweepMethodDirection direction)
 {
