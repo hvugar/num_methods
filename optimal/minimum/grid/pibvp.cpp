@@ -84,17 +84,17 @@ void CCIParabolicIBVP::calculate1(DoubleVector &u, double a) const
 
 void CCIParabolicIBVP::calculate1(DoubleMatrix &u, double a) const
 {
-    const Dimension &dim1 = spaceDimension(Dimension::DimensionX);
-    const Dimension &dim2 = spaceDimension(Dimension::DimensionY);
-    const Dimension &time = mtimeDimension;
+    const Dimension &dimX = spaceDimension(Dimension::DimensionX);
+    const Dimension &dimY = spaceDimension(Dimension::DimensionY);
+    const Dimension &time = timeDimension();
 
-    const double hx = dim1.step();
-    const double hy = dim2.step();
+    const double hx = dimX.step();
+    const double hy = dimY.step();
     const double ht = time.step();
 
-    const unsigned int N = dim1.size();
-    const unsigned int M = dim2.size();
-    const unsigned int L = time.size();
+    const unsigned int N = static_cast<unsigned int>(dimX.size());
+    const unsigned int M = static_cast<unsigned int>(dimY.size());
+    const unsigned int L = static_cast<unsigned int>(time.size());
 
     const double alpha = -(a*a*ht)/(hx*hx);
     const double betta = +1.0+2.0*(a*a*ht)/(hx*hx)+2.0*(a*a*ht)/(hy*hy);

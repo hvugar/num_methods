@@ -6,12 +6,16 @@ TEMPLATE = lib
 TARGET   = border
 CONFIG  += console
 CONFIG  -= app_bundle
-CONFIG  -= qt
+#CONFIG  -= qt
 CONFIG  += shared
 DESTDIR  = ../bin
 
 INCLUDEPATH += ../minimum
 LIBS += -L../bin -lminimum
+
+INCLUDEPATH += ../imaging
+LIBS        += -L../bin -limaging
+QT          += core gui widgets
 
 DEFINES += MINIMUM_LIBRARY
 
@@ -23,7 +27,6 @@ HEADERS += \
            borderhyperbolic2d.h \
            borderhyperbolic2d1.h \
            grid/parabolicibvp1.h \
-           grid/parabolicibvp2.h \
            grid/hyperbolicibvp1.h \
     grid/newtonheatequationex1.h
 SOURCES += \
@@ -33,6 +36,5 @@ SOURCES += \
            borderhyperbolic2d.cpp \
            borderhyperbolic2d1.cpp \
            grid/parabolicibvp1.cpp \
-           grid/parabolicibvp2.cpp \
            grid/hyperbolicibvp1.cpp \
     grid/newtonheatequationex1.cpp

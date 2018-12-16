@@ -35,26 +35,28 @@
 #include "loadedlinearode1order.h"
 
 #include <grid/hpibvp.h>
+#include <grid/hyperbolicibvp1.h>
 #include <grid/parabolicibvp1.h>
-#include <grid/parabolicibvp2.h>
+#include <grid/newtonheatequationex1.h>
 #include "heatequationibvp1.h"
 
 #include <QtGui>
 #include <r1minimize.h>
 
-#include <grid/hyperbolicibvp1.h>
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //CCParabolicIBVP1::Main(argc, argv);
-    HyperbolicIBVP2::Main(argc, argv);
+    //CCIHyperbolicIBVP1::Main(argc, argv);
+    //CC1IHyperbolicIBVP1::Main(argc, argv);
+    //HyperbolicIBVP2::Main(argc, argv);
     //return 0;
     //QGuiApplication app(argc, argv);
 
     //Problem2Article::Main(argc, argv);
     //IPrinter::printSeperatorLine();
     //Problem2PNeumann::Main(argc, argv);
-    //Problem2HNDirichlet::Main(argc, argv);
+    Problem2HNDirichlet::Main(argc, argv);
     return 0;
 
     //BorderHyperbolic2D::Main(argc, argv);

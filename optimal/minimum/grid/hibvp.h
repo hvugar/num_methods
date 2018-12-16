@@ -23,13 +23,28 @@ class MINIMUMSHARED_EXPORT CCIHyperbolicIBVP : public IHyperbolicIBVP
 {
 public:
     virtual ~CCIHyperbolicIBVP();
+
     virtual void layerInfo(const DoubleVector &, unsigned int) const {}
     virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
 
 public:
-    void calculateD11(DoubleVector &u, double a=1.0, double lambda=0.25) const;
-    void calculateD12(DoubleVector &u, double a=1.0) const;
-    void calculateD21(DoubleMatrix &u, double a=1.0, double lambda=0.25) const;
+    void calculateD1V1(DoubleVector &u, double a) const;
+    void calculateD1V2(DoubleVector &u, double a, double lambda=0.25) const;
+    void calculateD2V1(DoubleMatrix &u, double a) const;
+    void calculateD2V2(DoubleMatrix &u, double a, double lambda=0.25) const;
+};
+
+class MINIMUMSHARED_EXPORT CC1IHyperbolicIBVP : public IHyperbolicIBVP
+{
+public:
+    virtual ~CC1IHyperbolicIBVP();
+
+    virtual void layerInfo(const DoubleVector &, unsigned int) const {}
+    virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
+
+public:
+    void calculateD2V1(DoubleMatrix &u, double a, double sigma) const;
+    void calculateD2V2(DoubleMatrix &u, double a, double lambda=0.25) const;
 };
 
 /**
@@ -40,9 +55,11 @@ public:
  * u(0,t)   = m1(t),  t in (0,T],
  * u(1,t)   = m2(t),  t in (0,T].
  */
-
 class MINIMUMSHARED_EXPORT HyperbolicIBVP : protected IHyperbolicIBVP
 {
+public:
+    virtual ~HyperbolicIBVP();
+
 protected:
     virtual double a(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
     virtual void layerInfo(const DoubleVector &, unsigned int) const {}

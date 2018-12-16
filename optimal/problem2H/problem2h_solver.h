@@ -46,10 +46,21 @@ public:
     virtual void projectControlPoints(DoubleVector &x, unsigned int index) const;
     virtual void projectMeasurePoints(DoubleVector &x, unsigned int index) const;
 
+    void solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const
+    {
+        solveForwardIBVP2(u, u_info, use);
+    }
+
+    void solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const
+    {
+        solveBackwardIBVP2(u, p_info, use, u_info);
+    }
     //forward -------------------------------------
+    void solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const;
+    void solveBackwardIBVP2(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const;
     //backward ------------------------------------
-    void solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const;
-    void solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const;
+    void solveForwardIBVP1(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const;
+    void solveBackwardIBVP1(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const;
     void f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, spif_vectorH &u_info, bool use, unsigned int N, unsigned int M,
                          double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda,
                          const std::vector<ExtendedSpacePointH> &qExtSpacePoints,

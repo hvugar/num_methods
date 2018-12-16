@@ -34,8 +34,8 @@ void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 #ifdef USE_IMAGING
     QGuiApplication app(argc, argv);
 #endif
-    example1();
-    //example2();
+    //example1();
+    example2();
     //example3();
 }
 
@@ -65,7 +65,7 @@ void example1()
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
-    //o_prm.k[0][0]  = -2.1062; o_prm.k[0][1]  = -2.1038; o_prm.k[1][0]  = -2.1031; o_prm.k[1][1]  = -2.1052;
+    o_prm.k[0][0]  = -2.1062; o_prm.k[0][1]  = -2.1038; o_prm.k[1][0]  = -2.1031; o_prm.k[1][1]  = -2.1052;
     o_prm.z[0][0]  = -0.0245; o_prm.z[0][1]  = -0.0784; o_prm.z[1][0]  = -0.0587; o_prm.z[1][1]  = -0.0641;
     o_prm.xi[0].x  = +0.6527; o_prm.xi[0].y  = +0.8412; o_prm.xi[1].x  = +0.7412; o_prm.xi[1].y  = +0.2483;
     o_prm.eta[0].x = +0.3254; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.9462; o_prm.eta[1].y = +0.4966;
@@ -93,7 +93,7 @@ void example1()
     r_prm.xi[0].x  = +0.3849; r_prm.xi[0].y  = +0.5442; r_prm.xi[1].x  = +0.7661; r_prm.xi[1].y  = +0.6785;
     r_prm.eta[0].x = +0.6656; r_prm.eta[0].y = +0.7909; r_prm.eta[1].x = +0.4856; r_prm.eta[1].y = +0.3810;
 
-    o_prm = r_prm;
+    //o_prm = r_prm;
 
     // Grid parameters
     double hx = 0.010; int Nx = 100;
@@ -105,9 +105,9 @@ void example1()
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 0.0000;// << 10.000 << 20.000 << 50.000;
+    DoubleVector r; r << 1.0000 << 10.000 << 20.000 << 50.000;
     // Regularization coefficients
-    DoubleVector e; e << 0.0000;// << 0.0000 << 0.0000 << 0.0000;
+    DoubleVector e; e << 0.0000 << 0.0000 << 0.0000 << 0.0000;
     //DoubleVector e; e << 1.00 << 0.10 << 0.010 << 0.0010;
 
     DoubleVector x;
@@ -142,15 +142,15 @@ void example1()
 //            prob.solveForwardIBVP(u, u_info, false);
 
 
-            for (int i=0; i<1000; i++)
-            {
-                prob.setTimeDimension(Dimension(ht, 0, i));
-                printf("ln:%d fx:%8.6f\n", i, prob.fx(x));
-                //IPrinter::printMatrix(8,4,u[0]);
-            }
+//            for (int i=0; i<1000; i++)
+//            {
+//                prob.setTimeDimension(Dimension(ht, 0, i));
+//                printf("ln:%d fx:%8.6f\n", i, prob.fx(x));
+//                //IPrinter::printMatrix(8,4,u[0]);
+//            }
 
 //            IPrinter::printMatrix(8,4,u[0]);
-            return;
+            //return;
 
         }
 
@@ -189,8 +189,8 @@ void example2()
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = +0.145; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7200;
-    e_prm.q[1] = +0.157; e_prm.theta[1].x = 0.5400; e_prm.theta[1].y = 0.2700;
+    e_prm.q[0] = +0.545; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7200;
+    e_prm.q[1] = +0.657; e_prm.theta[1].x = 0.5400; e_prm.theta[1].y = 0.2700;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -207,6 +207,11 @@ void example2()
     o_prm.xi[0].x  = +0.7524; o_prm.xi[0].y  = +0.4828; o_prm.xi[1].x  = +0.1274; o_prm.xi[1].y  = +0.8234;
     o_prm.eta[0].x = +0.8635; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.2496; o_prm.eta[1].y = +0.6536;
 
+    o_prm.k[0][0]  = -0.3450; o_prm.k[0][1]  = -0.5410; o_prm.k[1][0]  = -0.4310; o_prm.k[1][1]  = -0.9840;
+    o_prm.z[0][0]  = +0.1245; o_prm.z[0][1]  = +0.0325; o_prm.z[1][0]  = -0.1452; o_prm.z[1][1]  = +0.2154;
+    o_prm.xi[0].x  = +0.2754; o_prm.xi[0].y  = +0.2438; o_prm.xi[1].x  = +0.4271; o_prm.xi[1].y  = +0.3824;
+    o_prm.eta[0].x = +0.3865; o_prm.eta[0].y = +0.4365; o_prm.eta[1].x = +0.6294; o_prm.eta[1].y = +0.5466;
+
 
     // Regularization parameters
     OptimizeParameterH r_prm;
@@ -221,6 +226,7 @@ void example2()
     r_prm.eta[0].x = +0.3865; r_prm.eta[0].y = +0.4365; r_prm.eta[1].x = +0.6294; r_prm.eta[1].y = +0.5466;
 
     //r_prm = o_prm;
+    //o_prm = r_prm;
 
     // Grid parameters
     double hx = 0.010; int Nx = 100;
@@ -232,9 +238,11 @@ void example2()
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 0.10 << 1.0 << 10.0 << 100.00;
+    //DoubleVector r; r << 0.10 << 1.0 << 10.0 << 100.00;
+    DoubleVector r; r << 0.00 << 0.00 << 0.00 << 0.00;
     // Regularization coefficients
-    DoubleVector e; e << 1.00 << 0.10 << 0.010 << 0.00100;
+    //DoubleVector e; e << 1.00 << 0.10 << 0.010 << 0.00100;
+    DoubleVector e; e << 0.00 << 0.00 << 0.000 << 0.000;
 
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
@@ -268,8 +276,8 @@ void example2()
             //            return;
         }
 
-        //ConjugateGradient g;
-        SteepestDescentGradient g;
+        ConjugateGradient g;
+        //SteepestDescentGradient g;
         g.setFunction(&prob);
         g.setGradient(&prob);
         g.setPrinter(&prob);
