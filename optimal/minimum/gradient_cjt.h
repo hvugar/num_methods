@@ -32,7 +32,12 @@ public:
 protected:
     virtual double minimize(const DoubleVector &x, const DoubleVector &g) const;
     virtual double fx(double alpha) const;
-    
+
+    virtual void callBeforeFindingLine() const {}
+    virtual void callAftreFindingLine() const {}
+    virtual void callBeforeGoldenSearch() const {}
+    virtual void callAfterGoldenSearch() const {}
+
     DoubleVector *mx;
     DoubleVector *ms;
 

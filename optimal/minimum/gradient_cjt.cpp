@@ -227,9 +227,12 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
     double fxa = 0.0, fxb = 0.0;
     bool unimodal = false;
 
+    callBeforeFindingLine();
     straightLineSearch(alpha0, min_step, a, b, fxa, fxb, unimodal);
     //swann(alpha0, min_step, a, b, fxa, fxb, unimodal);
+    callAftreFindingLine();
 
+    callBeforeGoldenSearch();
     if (unimodal)
     {
         goldenSectionSearch(alpha, a, b, min_epsilon);
@@ -238,6 +241,7 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
     {
         fxa < fxb ? alpha = a : alpha = b;
     }
+    callAfterGoldenSearch();
 
     if (fx(alpha) > fx(alpha0)) alpha = alpha0;
 

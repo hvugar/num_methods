@@ -16,6 +16,7 @@
 #include <gradient_cs.h>
 #include <vector2d.h>
 #include <vectornormalizer.h>
+#include <benchmark.h>
 #include <grid/ibvp.h>
 #include "problem2h_global.h"
 

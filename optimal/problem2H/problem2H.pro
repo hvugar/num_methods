@@ -26,10 +26,12 @@ MOC_DIR = release/.moc
 HEADERS += problem2h_global.h \
            problem2h_common.h \
            problem2h_solver.h \
+           problem2h_solver1.h \
            problem2h_example.h
 
 SOURCES += problem2h_common.cpp \
            problem2h_solver.cpp \
+           problem2h_solver1.cpp \
            problem2h_example.cpp
 
 HEADERS += problem2h_exporter.h

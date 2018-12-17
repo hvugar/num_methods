@@ -13,6 +13,22 @@ struct ProjectionEx1 : public IProjection
 
 void ProjectionEx1::project(DoubleVector &x) const
 {
+    const double mn = 0.05;
+    const double mx = 0.95;
+    for (unsigned int i=8; i<=15; i++) { if (x[i]<mn) x[i] = mn; if ( x[i] > mx ) x[i] = mx; }
+    //if ( x[ 8] < mn ) x[ 8] = mn; if ( x[ 8] > mx ) x[ 8] = mx;
+    //if ( x[ 9] < mn ) x[ 9] = mn; if ( x[ 9] > mx ) x[ 9] = mx;
+    //if ( x[10] < mn ) x[10] = mn; if ( x[10] > mx ) x[10] = mx;
+    //if ( x[11] < mn ) x[11] = mn; if ( x[11] > mx ) x[11] = mx;
+
+    //if ( x[12] < mn ) x[12] = mn; if ( x[12] > mx ) x[12] = mx;
+    //if ( x[13] < mn ) x[13] = mn; if ( x[13] > mx ) x[13] = mx;
+    //if ( x[14] < mn ) x[14] = mn; if ( x[14] > mx ) x[14] = mx;
+    //if ( x[15] < mn ) x[15] = mn; if ( x[15] > mx ) x[15] = mx;
+
+    return;
+
+
     if ( x[ 8] < 0.05 ) x[ 8] = 0.05; if ( x[ 8] > 0.45 ) x[ 8] = 0.45;
     if ( x[ 9] < 0.55 ) x[ 9] = 0.55; if ( x[ 9] > 0.95 ) x[ 9] = 0.95;
     if ( x[10] < 0.55 ) x[10] = 0.55; if ( x[10] > 0.95 ) x[10] = 0.95;
@@ -160,7 +176,7 @@ void example1()
         g.setGradient(&prob);
         g.setPrinter(&prob);
         g.setProjection(&prob);
-        //g.setProjection(new ProjectionEx1);
+        g.setProjection(new ProjectionEx1);
         //g.setGradientNormalizer(&prob);
         g.setOptimalityTolerance(0.0001);
         g.setFunctionTolerance(0.0001);
@@ -189,8 +205,8 @@ void example2()
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = +0.545; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7200;
-    e_prm.q[1] = +0.657; e_prm.theta[1].x = 0.5400; e_prm.theta[1].y = 0.2700;
+    e_prm.q[0] = +1.545; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7200;
+    e_prm.q[1] = +1.557; e_prm.theta[1].x = 0.5400; e_prm.theta[1].y = 0.2700;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -202,15 +218,16 @@ void example2()
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
-    o_prm.k[0][0]  = -1.0345; o_prm.k[0][1]  = -2.5401; o_prm.k[1][0]  = -1.1431; o_prm.k[1][1]  = -1.0984;
-    o_prm.z[0][0]  = +3.1245; o_prm.z[0][1]  = +1.8532; o_prm.z[1][0]  = -2.4512; o_prm.z[1][1]  = +2.5421;
+    //o_prm.k[0][0]  = -1.0345; o_prm.k[0][1]  = -2.5401; o_prm.k[1][0]  = -1.1431; o_prm.k[1][1]  = -1.0984;
+    //o_prm.z[0][0]  = +3.1245; o_prm.z[0][1]  = +1.8532; o_prm.z[1][0]  = -2.4512; o_prm.z[1][1]  = +2.5421;
     o_prm.xi[0].x  = +0.7524; o_prm.xi[0].y  = +0.4828; o_prm.xi[1].x  = +0.1274; o_prm.xi[1].y  = +0.8234;
     o_prm.eta[0].x = +0.8635; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.2496; o_prm.eta[1].y = +0.6536;
 
     o_prm.k[0][0]  = -0.3450; o_prm.k[0][1]  = -0.5410; o_prm.k[1][0]  = -0.4310; o_prm.k[1][1]  = -0.9840;
-    o_prm.z[0][0]  = +0.1245; o_prm.z[0][1]  = +0.0325; o_prm.z[1][0]  = -0.1452; o_prm.z[1][1]  = +0.2154;
-    o_prm.xi[0].x  = +0.2754; o_prm.xi[0].y  = +0.2438; o_prm.xi[1].x  = +0.4271; o_prm.xi[1].y  = +0.3824;
-    o_prm.eta[0].x = +0.3865; o_prm.eta[0].y = +0.4365; o_prm.eta[1].x = +0.6294; o_prm.eta[1].y = +0.5466;
+    //o_prm.z[0][0]  = +0.1245; o_prm.z[0][1]  = +0.0325; o_prm.z[1][0]  = -0.1452; o_prm.z[1][1]  = +0.2154;
+    o_prm.z[0][0]  = +0.0124; o_prm.z[0][1]  = +0.0325; o_prm.z[1][0]  = -0.0452; o_prm.z[1][1]  = +0.0154;
+    //o_prm.xi[0].x  = +0.2754; o_prm.xi[0].y  = +0.2438; o_prm.xi[1].x  = +0.4271; o_prm.xi[1].y  = +0.3824;
+    //o_prm.eta[0].x = +0.3865; o_prm.eta[0].y = +0.4365; o_prm.eta[1].x = +0.6294; o_prm.eta[1].y = +0.5466;
 
 
     // Regularization parameters
@@ -231,7 +248,7 @@ void example2()
     // Grid parameters
     double hx = 0.010; int Nx = 100;
     double hy = 0.010; int Ny = 100;
-    double ht = 0.010; int Nt = 200;
+    double ht = 0.010; int Nt = 1000;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
@@ -239,7 +256,7 @@ void example2()
 
     // Penalty paramteres
     //DoubleVector r; r << 0.10 << 1.0 << 10.0 << 100.00;
-    DoubleVector r; r << 0.00 << 0.00 << 0.00 << 0.00;
+    DoubleVector r; r << 5.00 << 10.00 << 100.00 << 0.00;
     // Regularization coefficients
     //DoubleVector e; e << 1.00 << 0.10 << 0.010 << 0.00100;
     DoubleVector e; e << 0.00 << 0.00 << 0.000 << 0.000;
@@ -247,7 +264,7 @@ void example2()
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
     {
-        Problem2HNDirichlet prob;
+        Problem2HNDirichlet1 prob;
         prob.setTimeDimension(time);
         prob.addSpaceDimension(dimx);
         prob.addSpaceDimension(dimy);
@@ -258,9 +275,9 @@ void example2()
         prob.optimizeZ = true;
         prob.optimizeO = true;
         prob.optimizeC = true;
-        prob.vmin.resize(e_prm.Nc, -0.005);
-        prob.vmax.resize(e_prm.Nc, +0.005);
-        prob.LD = 20;
+        prob.vmin.resize(e_prm.Nc, -0.05);
+        prob.vmax.resize(e_prm.Nc, +0.05);
+        prob.LD = 100;
 
         prob.regEpsilon = e[i];
         prob.r = r[i];
@@ -283,6 +300,7 @@ void example2()
         g.setPrinter(&prob);
         g.setProjection(&prob);
         //g.setGradientNormalizer(&prob);
+        g.setProjection(new ProjectionEx1);
         g.setOptimalityTolerance(0.00001);
         g.setFunctionTolerance(0.00001);
         g.setStepTolerance(0.00001);
