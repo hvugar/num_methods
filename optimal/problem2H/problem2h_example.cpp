@@ -109,7 +109,7 @@ void example1()
     r_prm.xi[0].x  = +0.3849; r_prm.xi[0].y  = +0.5442; r_prm.xi[1].x  = +0.7661; r_prm.xi[1].y  = +0.6785;
     r_prm.eta[0].x = +0.6656; r_prm.eta[0].y = +0.7909; r_prm.eta[1].x = +0.4856; r_prm.eta[1].y = +0.3810;
 
-    //o_prm = r_prm;
+    o_prm = r_prm;
 
     // Grid parameters
     double hx = 0.010; int Nx = 100;
@@ -153,20 +153,19 @@ void example1()
             //prob.checkGradient1(prob);
             IPrinter::printSeperatorLine();
 
-//            std::vector<DoubleMatrix> u;
-//            spif_vectorH u_info;
-//            prob.solveForwardIBVP(u, u_info, false);
+            std::vector<DoubleMatrix> u;
+            spif_vectorH u_info;
+            prob.solveForwardIBVP(u, u_info, false);
 
+            for (int i=0; i<10000; i++)
+            {
+                prob.setTimeDimension(Dimension(ht, 0, i));
+                printf("ln:%d fx:%8.6f\n", i, prob.fx(x));
+                //IPrinter::printMatrix(8,4,u[0]);
+            }
 
-//            for (int i=0; i<1000; i++)
-//            {
-//                prob.setTimeDimension(Dimension(ht, 0, i));
-//                printf("ln:%d fx:%8.6f\n", i, prob.fx(x));
-//                //IPrinter::printMatrix(8,4,u[0]);
-//            }
-
-//            IPrinter::printMatrix(8,4,u[0]);
-            //return;
+            IPrinter::printMatrix(8,4,u[0]);
+            return;
 
         }
 
@@ -205,8 +204,8 @@ void example2()
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = +1.545; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7200;
-    e_prm.q[1] = +1.557; e_prm.theta[1].x = 0.5400; e_prm.theta[1].y = 0.2700;
+    e_prm.q[0] = -0.645; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7200;
+    e_prm.q[1] = -0.657; e_prm.theta[1].x = 0.5400; e_prm.theta[1].y = 0.2700;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -219,13 +218,14 @@ void example2()
     o_prm.eta.resize(e_prm.Nc);
 
     //o_prm.k[0][0]  = -1.0345; o_prm.k[0][1]  = -2.5401; o_prm.k[1][0]  = -1.1431; o_prm.k[1][1]  = -1.0984;
-    //o_prm.z[0][0]  = +3.1245; o_prm.z[0][1]  = +1.8532; o_prm.z[1][0]  = -2.4512; o_prm.z[1][1]  = +2.5421;
-    o_prm.xi[0].x  = +0.7524; o_prm.xi[0].y  = +0.4828; o_prm.xi[1].x  = +0.1274; o_prm.xi[1].y  = +0.8234;
-    o_prm.eta[0].x = +0.8635; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.2496; o_prm.eta[1].y = +0.6536;
-
     o_prm.k[0][0]  = -0.3450; o_prm.k[0][1]  = -0.5410; o_prm.k[1][0]  = -0.4310; o_prm.k[1][1]  = -0.9840;
+
+    //o_prm.z[0][0]  = +3.1245; o_prm.z[0][1]  = +1.8532; o_prm.z[1][0]  = -2.4512; o_prm.z[1][1]  = +2.5421;
     //o_prm.z[0][0]  = +0.1245; o_prm.z[0][1]  = +0.0325; o_prm.z[1][0]  = -0.1452; o_prm.z[1][1]  = +0.2154;
     o_prm.z[0][0]  = +0.0124; o_prm.z[0][1]  = +0.0325; o_prm.z[1][0]  = -0.0452; o_prm.z[1][1]  = +0.0154;
+
+    o_prm.xi[0].x  = +0.7524; o_prm.xi[0].y  = +0.4828; o_prm.xi[1].x  = +0.1274; o_prm.xi[1].y  = +0.8234;
+    o_prm.eta[0].x = +0.8635; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.2496; o_prm.eta[1].y = +0.6536;
     //o_prm.xi[0].x  = +0.2754; o_prm.xi[0].y  = +0.2438; o_prm.xi[1].x  = +0.4271; o_prm.xi[1].y  = +0.3824;
     //o_prm.eta[0].x = +0.3865; o_prm.eta[0].y = +0.4365; o_prm.eta[1].x = +0.6294; o_prm.eta[1].y = +0.5466;
 
@@ -242,13 +242,28 @@ void example2()
     r_prm.xi[0].x  = +0.2754; r_prm.xi[0].y  = +0.2438; r_prm.xi[1].x  = +0.4271; r_prm.xi[1].y  = +0.3824;
     r_prm.eta[0].x = +0.3865; r_prm.eta[0].y = +0.4365; r_prm.eta[1].x = +0.6294; r_prm.eta[1].y = +0.5466;
 
+    r_prm.k[0][0]  = -0.3839; r_prm.k[0][1]  = -0.7371; r_prm.k[1][0]  = -0.5532; r_prm.k[1][1]  = -1.3051;
+    r_prm.z[0][0]  = +0.0238; r_prm.z[0][1]  = +0.0467; r_prm.z[1][0]  = -0.0352; r_prm.z[1][1]  = +0.0366;
+    r_prm.xi[0].x  = +0.5203; r_prm.xi[0].y  = +0.2636; r_prm.xi[1].x  = +0.2521; r_prm.xi[1].y  = +0.7225;
+    r_prm.eta[0].x = +0.5911; r_prm.eta[0].y = +0.4344; r_prm.eta[1].x = +0.4637; r_prm.eta[1].y = +0.5160;
+
+    r_prm.k[0][0]  = -0.6010; r_prm.k[0][1]  = -0.8657; r_prm.k[1][0]  = -0.8284; r_prm.k[1][1]  = -1.4035;
+    r_prm.z[0][0]  = -0.0108; r_prm.z[0][1]  = -0.0128; r_prm.z[1][0]  = -0.0671; r_prm.z[1][1]  = -0.0328;
+    r_prm.xi[0].x  = +0.5117; r_prm.xi[0].y  = +0.2698; r_prm.xi[1].x  = +0.2562; r_prm.xi[1].y  = +0.7156;
+    r_prm.eta[0].x = +0.5353; r_prm.eta[0].y = +0.4041; r_prm.eta[1].x = +0.4411; r_prm.eta[1].y = +0.5339;
+
+    //k: -0.3839  -0.7371  -0.5532  -1.3051
+    //z:  0.0238   0.0467  -0.0352   0.0366
+    //o:  0.5203   0.2636   0.2521   0.7225
+    //c:  0.5911   0.4344   0.4637   0.5160
+
     //r_prm = o_prm;
-    //o_prm = r_prm;
+    o_prm = r_prm;
 
     // Grid parameters
     double hx = 0.010; int Nx = 100;
     double hy = 0.010; int Ny = 100;
-    double ht = 0.010; int Nt = 1000;
+    double ht = 0.010; int Nt = 500;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
@@ -256,7 +271,7 @@ void example2()
 
     // Penalty paramteres
     //DoubleVector r; r << 0.10 << 1.0 << 10.0 << 100.00;
-    DoubleVector r; r << 5.00 << 10.00 << 100.00 << 0.00;
+    DoubleVector r; r << 0.00 << 10.00 << 100.00 << 0.00;
     // Regularization coefficients
     //DoubleVector e; e << 1.00 << 0.10 << 0.010 << 0.00100;
     DoubleVector e; e << 0.00 << 0.00 << 0.000 << 0.000;
@@ -287,14 +302,27 @@ void example2()
             //prob.checkGradient1(prob);
             IPrinter::printSeperatorLine();
 
-            //            std::vector<DoubleMatrix> u;
-            //            spif_vectorH u_info;
-            //            prob.solveForwardIBVP(u, u_info, false);
-            //            return;
+//            std::vector<DoubleMatrix> u;
+//            spif_vectorH u_info;
+//            prob.solveForwardIBVP(u, u_info, false);
+
+            FILE *file = fopen("e:/data.txt", "w");
+            for (int i=0; i<10000; i++)
+            {
+                prob.setTimeDimension(Dimension(ht, 0, i));
+                fprintf(file, "ln:%d fx:%8.6f\n", i, prob.fx(x));
+                fprintf(stdout, "ln:%d fx:%8.6f\n", i, prob.fx(x));
+                fflush(file);
+                //IPrinter::printMatrix(8,4,u[0]);
+            }
+            fclose(file);
+
+//            IPrinter::printMatrix(8,4,u[0]);
+            return;
         }
 
-        ConjugateGradient g;
-        //SteepestDescentGradient g;
+        //ConjugateGradient g;
+        SteepestDescentGradient g;
         g.setFunction(&prob);
         g.setGradient(&prob);
         g.setPrinter(&prob);
