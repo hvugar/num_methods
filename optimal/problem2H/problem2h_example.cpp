@@ -258,7 +258,7 @@ void example2()
     //c:  0.5911   0.4344   0.4637   0.5160
 
     //r_prm = o_prm;
-    o_prm = r_prm;
+    //o_prm = r_prm;
 
     // Grid parameters
     double hx = 0.010; int Nx = 100;
@@ -286,8 +286,8 @@ void example2()
         prob.mEquParameter = e_prm;
         prob.mOptParameter = o_prm;
         prob.mRegParameter = r_prm;
-        prob.optimizeK = true;
-        prob.optimizeZ = true;
+        prob.optimizeK = false;
+        prob.optimizeZ = false;
         prob.optimizeO = true;
         prob.optimizeC = true;
         prob.vmin.resize(e_prm.Nc, -0.05);
@@ -305,20 +305,18 @@ void example2()
 //            std::vector<DoubleMatrix> u;
 //            spif_vectorH u_info;
 //            prob.solveForwardIBVP(u, u_info, false);
-
-            FILE *file = fopen("e:/data.txt", "w");
-            for (int i=0; i<10000; i++)
-            {
-                prob.setTimeDimension(Dimension(ht, 0, i));
-                fprintf(file, "ln:%d fx:%8.6f\n", i, prob.fx(x));
-                fprintf(stdout, "ln:%d fx:%8.6f\n", i, prob.fx(x));
-                fflush(file);
-                //IPrinter::printMatrix(8,4,u[0]);
-            }
-            fclose(file);
-
+//            FILE *file = fopen("e:/data.txt", "w");
+//            for (int i=0; i<10000; i++)
+//            {
+//                prob.setTimeDimension(Dimension(ht, 0, i));
+//                fprintf(file, "ln:%d fx:%8.6f\n", i, prob.fx(x));
+//                fprintf(stdout, "ln:%d fx:%8.6f\n", i, prob.fx(x));
+//                fflush(file);
+//                IPrinter::printMatrix(8,4,u[0]);
+//            }
+//            fclose(file);
 //            IPrinter::printMatrix(8,4,u[0]);
-            return;
+//            return;
         }
 
         //ConjugateGradient g;
@@ -332,7 +330,7 @@ void example2()
         g.setOptimalityTolerance(0.00001);
         g.setFunctionTolerance(0.00001);
         g.setStepTolerance(0.00001);
-        g.setR1MinimizeEpsilon(0.1, 0.01);
+        g.setR1MinimizeEpsilon(0.01, 0.001);
         g.setMaxIterations(50);
         g.setNormalize(true);
         g.showExitMessage(true);

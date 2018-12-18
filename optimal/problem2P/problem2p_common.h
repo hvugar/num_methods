@@ -82,7 +82,7 @@ struct ExtendedSpacePointNodeP
     double w;
     bool isCenter;
 
-    inline auto equals(const SpaceNodePDE &sn) const -> bool { return (sn.i == static_cast<unsigned int>(nx) && sn.j == static_cast<unsigned int>(ny)); }
+    inline auto equals(const SpaceNodePDE &sn) const -> bool { return (sn.i == static_cast<int>(nx) && sn.j == static_cast<int>(ny)); }
 };
 
 struct ExtendedSpacePointP : public SpacePoint
@@ -131,7 +131,7 @@ class grid_exception : public std::exception
 {
 public:
     grid_exception(const std::string &message) : std::exception() { this->message = message; }
-    virtual ~grid_exception() {}
+    virtual ~grid_exception();
     virtual char const* what() const noexcept { return message.data(); }
 private:
     std::string message;

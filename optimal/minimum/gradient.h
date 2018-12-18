@@ -6,8 +6,6 @@
 #include "function.h"
 #include "exceptions.h"
 
-class RnFunction;
-class IGradient;
 class IPrinter;
 class IProjection;
 class IGradientPrinter;

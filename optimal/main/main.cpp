@@ -57,7 +57,6 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //IPrinter::printSeperatorLine();
     //Problem2PNeumann::Main(argc, argv);
     Problem2HNDirichlet::Main(argc, argv);
-    return 0;
 
     //BorderHyperbolic2D::Main(argc, argv);
     //BorderHyperbolic2DN::Main(argc, argv);

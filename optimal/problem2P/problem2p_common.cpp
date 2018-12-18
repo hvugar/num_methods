@@ -38,3 +38,5 @@ auto ExtendedSpacePointP::contains(int nx, int ny) const -> bool
 {
     return (minX <= nx && nx <= maxX && minY <= ny && ny <= maxY);
 }
+
+grid_exception::~grid_exception() {}

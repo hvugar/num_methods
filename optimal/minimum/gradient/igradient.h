@@ -6,9 +6,7 @@
 #include "../r1minimize.h"
 #include "../function.h"
 
-class RnFunction;
 struct R1Function;
-class IGradient;
 class IPrinter;
 class IProjection;
 
