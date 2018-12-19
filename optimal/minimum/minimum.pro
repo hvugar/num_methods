@@ -52,7 +52,6 @@ SOURCES += \
     grid/bpibvp.cpp \
     grid/nhpibvp.cpp \
     grid/integral1.cpp \
-    gradient/igradient.cpp \
     nonuniformgrid.cpp \
     utils/matrix.cpp \
     utils/vector.cpp \
@@ -101,7 +100,6 @@ HEADERS += global.h \
     grid/grid.h \
     grid/bpibvp.h \
     grid/nhpibvp.h \
-    gradient/igradient.h \
     grid/integral1.h \
     nonuniformgrid.h \
     #ode/cauchyp.h \

@@ -728,11 +728,11 @@ void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const Dou
 {
     C_UNUSED(i); C_UNUSED(x); C_UNUSED(g); C_UNUSED(f); C_UNUSED(alpha); C_UNUSED(result);
     const char* msg = nullptr; C_UNUSED(msg);
-    if (result == GradientMethod::BREAK_FIRST_ITERATION)    msg = "BREAK_FIRST_ITERATION   ";
-    if (result == GradientMethod::FIRST_ITERATION)          msg = "FIRST_ITERATION         ";
-    if (result == GradientMethod::BREAK_GRADIENT_NORM_LESS) msg = "BREAK_GRADIENT_NORM_LESS";
-    if (result == GradientMethod::BREAK_DISTANCE_LESS)      msg = "BREAK_DISTANCE_LESS     ";
-    if (result == GradientMethod::NEXT_ITERATION)           msg = "NEXT_ITERATION          ";
+    if (result == GradientMethod::MethodResult::BREAK_FIRST_ITERATION)    msg = "BREAK_FIRST_ITERATION   ";
+    if (result == GradientMethod::MethodResult::FIRST_ITERATION)          msg = "FIRST_ITERATION         ";
+    if (result == GradientMethod::MethodResult::BREAK_GRADIENT_NORM_LESS) msg = "BREAK_GRADIENT_NORM_LESS";
+    if (result == GradientMethod::MethodResult::BREAK_DISTANCE_LESS)      msg = "BREAK_DISTANCE_LESS     ";
+    if (result == GradientMethod::MethodResult::NEXT_ITERATION)           msg = "NEXT_ITERATION          ";
 
     Problem2HNDirichlet* prob = const_cast<Problem2HNDirichlet*>(this);
     //prob->gm->setStepTolerance(10.0*alpha);
@@ -1000,18 +1000,18 @@ auto Problem2HNDirichlet::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_v
         SpaceNodePDE sn0;
         SpaceNodePDE sn1;
 
-        sn0.i = 0; sn0.x = 0.0; sn1.i = N; sn1.x = hx*N;
+        sn0.i = 0; sn0.x = 0.0; sn1.i = static_cast<int>(N); sn1.x = hx*N;
         for (unsigned int m=0; m<=M; m++)
         {
-            sn0.j = m; sn0.y = m*hy; u15[m][0] = f_boundary(sn0, tn15); u20[m][0] = f_boundary(sn0, tn20);
-            sn1.j = m; sn1.y = m*hy; u15[m][N] = f_boundary(sn1, tn15); u20[m][N] = f_boundary(sn1, tn20);
+            sn0.j = static_cast<int>(m); sn0.y = m*hy; u15[m][0] = f_boundary(sn0, tn15); u20[m][0] = f_boundary(sn0, tn20);
+            sn1.j = static_cast<int>(m); sn1.y = m*hy; u15[m][N] = f_boundary(sn1, tn15); u20[m][N] = f_boundary(sn1, tn20);
         }
 
-        sn0.j = 0; sn0.y = 0.0; sn1.j = M; sn1.y = hy*M;
+        sn0.j = 0; sn0.y = 0.0; sn1.j = static_cast<int>(M); sn1.y = hy*M;
         for (unsigned int n=0; n<=N; n++)
         {
-            sn0.i = n; sn0.x = n*hx; u15[0][n] = f_boundary(sn0, tn15); u20[0][n] = f_boundary(sn0, tn20);
-            sn1.i = n; sn1.x = n*hx; u15[M][n] = f_boundary(sn1, tn15); u20[M][n] = f_boundary(sn1, tn20);
+            sn0.i = static_cast<int>(n); sn0.x = n*hx; u15[0][n] = f_boundary(sn0, tn15); u20[0][n] = f_boundary(sn0, tn20);
+            sn1.i = static_cast<int>(n); sn1.x = n*hx; u15[M][n] = f_boundary(sn1, tn15); u20[M][n] = f_boundary(sn1, tn20);
         }
 
         /**************************************************** border conditions ***************************************************/
@@ -1048,11 +1048,11 @@ auto Problem2HNDirichlet::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_v
 
         for (unsigned int m=1; m<=M-1; m++)
         {
-            sn.j = m; sn.y = m*hy;
+            sn.j = static_cast<int>(m); sn.y = m*hy;
 
             for (unsigned int n=1; n<=N-1; n++)
             {
-                sn.i = n; sn.x = n*hx;
+                sn.i = static_cast<int>(n); sn.x = n*hx;
                 dx[n-1] = 0.0;
                 //if (m>0 && m<M)  dx[n-1] = p_aa_htht__hyhy*(u10[m-1][n] - 2.0*u10[m][n]   + u10[m+1][n]);
                 //else if (m == 0) dx[n-1] = p_aa_htht__hyhy*(u10[0][n]   - 2.0*u10[1][n]   + u10[2][n]);

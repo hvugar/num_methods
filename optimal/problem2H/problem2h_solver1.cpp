@@ -16,27 +16,27 @@ void Problem2HNDirichlet1::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsig
     static double MIN = +100000.0;
     static double MAX = -100000.0;
 
-    if (ln%2 == 0 || ln == 3)
-    {
-        double min = u.min();
-        double max = u.max();
-        if (MIN>min) MIN = min;
-        if (MAX<max) MAX = max;
-        printf("ln: %d min: %f max: %f MIN: %f MAX: %f %.10f\n", (ln/2), min, max, MIN, MAX, integralU(u));
-    }
-    //    return;
+    //if (ln%2 == 0 || ln == 3)
+    //{
+    //    double min = u.min();
+    //    double max = u.max();
+    //    if (MIN>min) MIN = min;
+    //    if (MAX<max) MAX = max;
+    //    printf("ln: %d min: %f max: %f MIN: %f MAX: %f %.10f\n", (ln/2), min, max, MIN, MAX, integralU(u));
+    //}
+    //return;
 
-    if (ln == 10 || ln%20 == 0)
+    if (ln == 0 || ln == 1 || ln <= 20 || ln%100 == 0)
     {
         char filename1[40];
-        int size1 = sprintf(filename1, "txt/h_layer%d.txt", (ln/2));
+        int size1 = sprintf(filename1, "txt/h_layer%d.txt", ln);
         filename1[size1] = 0;
 
         FILE* file = fopen(filename1, "w");
         //IPrinter::printSeperatorLine();
         IPrinter::printMatrix(u, u.rows(), u.cols(), nullptr, file);
         //IPrinter::printSeperatorLine();
-        //printf("%f\n", sqrt(integralU(u)));
+        printf("%d %f %f %f %f %f\n", ln, sqrt(integralU(u)), integralU(u), integralU(u)*integralU(u), u.min(), u.max(), integralU(u));
         fclose(file);
     }
     return;
@@ -103,6 +103,63 @@ void Problem2HNDirichlet1::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsig
     //    pic.save("images/f/100/pic_"+QString("%1").arg(ln)+".png", "PNG");
     //    printf("Layer: %4d min: %8.4f max: %8.4f min: %8.4f max: %8.4f diff: %8.4f norm: %10.8f\n", ln, min, max, MIN, MAX, fabs(max-min), sqrt(integralU(u)));
     //#endif
+}
+
+void Problem2HNDirichlet1::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const
+{
+    C_UNUSED(i); C_UNUSED(x); C_UNUSED(g); C_UNUSED(f); C_UNUSED(alpha); C_UNUSED(result);
+    const char* msg = nullptr; C_UNUSED(msg);
+    if (result == GradientMethod::MethodResult::BREAK_FIRST_ITERATION)    msg = "BREAK_FIRST_ITERATION   ";
+    if (result == GradientMethod::MethodResult::FIRST_ITERATION)          msg = "FIRST_ITERATION         ";
+    if (result == GradientMethod::MethodResult::BREAK_GRADIENT_NORM_LESS) msg = "BREAK_GRADIENT_NORM_LESS";
+    if (result == GradientMethod::MethodResult::BREAK_DISTANCE_LESS)      msg = "BREAK_DISTANCE_LESS     ";
+    if (result == GradientMethod::MethodResult::NEXT_ITERATION)           msg = "NEXT_ITERATION          ";
+
+    Problem2HNDirichlet1* prob = const_cast<Problem2HNDirichlet1*>(this);
+    OptimizeParameterH o_prm;
+    VectorToPrm(x, o_prm);
+    prob->mOptParameter = o_prm;
+    std::vector<DoubleMatrix> u;
+    spif_vectorH u_info;
+    solveForwardIBVP(u, u_info, true);
+    double ing = integral(u);
+    double pnt = penalty(u_info, o_prm);
+    double nrm = norm(prob->mEquParameter, prob->mOptParameter, prob->mRegParameter);
+
+//    const unsigned int v_length = static_cast<const unsigned int>(timeDimension().size()) + LD;
+//    DoubleVector v1(v_length+1);
+//    DoubleVector v2(v_length+1);
+
+//    for (unsigned int ln=0; ln<=v_length; ln++)
+//    {
+//        v1[ln] = v(0, o_prm, mEquParameter, u_info, ln);
+//        v2[ln] = v(1, o_prm, mEquParameter, u_info, ln);
+//    }
+
+//    IPrinter::printVector(v1, "v1", 10);
+//    IPrinter::printVector(v2, "v2", 10);
+
+    printf("I[%3d]: F:%.5f I:%.5f P:%.5f N:%.5f R:%.3f e:%.3f a:%.6f ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
+    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %6.4f %6.4f %6.4f %6.4f c: %6.4f %6.4f %6.4f %6.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
+
+    //printf("I[%3d]: F:%.5f I:%.5f P:%.5f N:%.5f R:%.3f e:%.3f a:%.6f ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
+    //printf("min:%.6f max:%.6f min:%.6f max:%.6f U0:%.8f UT:%.8f", u.at(0).min(), u.at(0).max(), u.at(LD).min(), u.at(LD).max(), integralU(u[0]), integralU(u[LD]));
+    //printf("\n");
+    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
+    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
+    //DoubleVector n = g; n.L2Normalize();
+    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]);
+
+    u.clear();
+    u_info.clear();
+
+    C_UNUSED(prob);
+    //IPrinter::printSeperatorLine();
+
+//    prob->optimizeK = i%4 == 3;
+//    prob->optimizeZ = i%4 == 0;
+//    prob->optimizeO = i%4 == 1;
+//    prob->optimizeC = i%4 == 2;
 }
 
 void Problem2HNDirichlet1::checkGradient1(const Problem2HNDirichlet1 &prob)
@@ -381,12 +438,9 @@ double Problem2HNDirichlet1::integral(const std::vector<DoubleMatrix> &vu) const
 {
     const double ht = timeDimension().step();
     double sum = 0.0;
-    const DoubleMatrix &u0 = vu[0]; sum += 0.5*integralU(u0);
-    for (unsigned int l=1; l<=LD-1; l++)
-    {
-        const DoubleMatrix &u1 = vu[l]; sum += integralU(u1);
-    }
-    const DoubleMatrix &u2 = vu[LD]; sum += 0.5*integralU(u2);
+    sum += 0.5*integralU(vu[0]);
+    for (unsigned int l=1; l<=LD-1; l++) { sum += integralU(vu[l]); }
+    sum += 0.5*integralU(vu[LD]);
     return sum*ht;
 }
 
@@ -720,60 +774,6 @@ auto Problem2HNDirichlet1::normalize(DoubleVector &v) const -> void
     if (optimizeZ) { DoubleVector zv = v.mid(4, 7);   IVectorNormalizer::EuclideanNormalize(zv); v[4]  = zv[0]; v[5]  = zv[1];  v[6]  = zv[2]; v[7]  = zv[3]; zv.clear(); }
     if (optimizeO) { DoubleVector ov = v.mid(8, 11);  IVectorNormalizer::EuclideanNormalize(ov); v[8]  = ov[0]; v[9]  = ov[1];  v[10] = ov[2]; v[11] = ov[3]; ov.clear(); }
     if (optimizeZ) { DoubleVector cv = v.mid(12, 15); IVectorNormalizer::EuclideanNormalize(cv); v[12] = cv[0]; v[13] = cv[1];  v[14] = cv[2]; v[15] = cv[3]; cv.clear(); }
-}
-
-void Problem2HNDirichlet1::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const
-{
-    C_UNUSED(i); C_UNUSED(x); C_UNUSED(g); C_UNUSED(f); C_UNUSED(alpha); C_UNUSED(result);
-    const char* msg = nullptr; C_UNUSED(msg);
-    if (result == GradientMethod::BREAK_FIRST_ITERATION)    msg = "BREAK_FIRST_ITERATION   ";
-    if (result == GradientMethod::FIRST_ITERATION)          msg = "FIRST_ITERATION         ";
-    if (result == GradientMethod::BREAK_GRADIENT_NORM_LESS) msg = "BREAK_GRADIENT_NORM_LESS";
-    if (result == GradientMethod::BREAK_DISTANCE_LESS)      msg = "BREAK_DISTANCE_LESS     ";
-    if (result == GradientMethod::NEXT_ITERATION)           msg = "NEXT_ITERATION          ";
-
-    Problem2HNDirichlet1* prob = const_cast<Problem2HNDirichlet1*>(this);
-    OptimizeParameterH o_prm;
-    VectorToPrm(x, o_prm);
-    prob->mOptParameter = o_prm;
-    std::vector<DoubleMatrix> u;
-    spif_vectorH u_info;
-    solveForwardIBVP(u, u_info, true);
-    double ing = integral(u);
-    double pnt = penalty(u_info, o_prm);
-    double nrm = norm(prob->mEquParameter, prob->mOptParameter, prob->mRegParameter);
-
-//    const unsigned int v_length = static_cast<const unsigned int>(timeDimension().size()) + LD;
-//    DoubleVector v1(v_length+1);
-//    DoubleVector v2(v_length+1);
-
-//    for (unsigned int ln=0; ln<=v_length; ln++)
-//    {
-//        v1[ln] = v(0, o_prm, mEquParameter, u_info, ln);
-//        v2[ln] = v(1, o_prm, mEquParameter, u_info, ln);
-//    }
-
-//    IPrinter::printVector(v1, "v1", 10);
-//    IPrinter::printVector(v2, "v2", 10);
-
-    printf("I[%3d]: F:%.5f I:%.5f P:%.5f N:%.5f R:%.3f e:%.3f a:%.6f ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
-    printf("min:%.6f max:%.6f min:%.6f max:%.6f U0:%.8f UT:%.8f", u.at(0).min(), u.at(0).max(), u.at(LD).min(), u.at(LD).max(), integralU(u[0]), integralU(u[LD]));
-    printf("\n");
-    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
-    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
-    DoubleVector n = g; n.L2Normalize();
-    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]);
-
-    u.clear();
-    u_info.clear();
-
-    C_UNUSED(prob);
-    IPrinter::printSeperatorLine();
-
-//    prob->optimizeK = i%4 == 3;
-//    prob->optimizeZ = i%4 == 0;
-//    prob->optimizeO = i%4 == 1;
-//    prob->optimizeC = i%4 == 2;
 }
 
 auto Problem2HNDirichlet1::project(DoubleVector &, unsigned int) -> void {}
@@ -3551,9 +3551,9 @@ auto Problem2HNDirichlet1::newDistributeDeltaGaussPulse(const std::vector<SpaceP
     //    extTheta.nodes.push_back(node);
     //    return;
 
-    const int k = 4;
-    const double sigmaX = 5.0*hx;
-    const double sigmaY = 5.0*hy;
+    const int k = 24;
+    const double sigmaX = 6.0*hx;
+    const double sigmaY = 6.0*hy;
 
     for (unsigned int s=0; s<Ns; s++)
     {
@@ -3564,7 +3564,7 @@ auto Problem2HNDirichlet1::newDistributeDeltaGaussPulse(const std::vector<SpaceP
         extTheta.y = theta.y;
         extTheta.rx = static_cast<int>( round(extTheta.x*Nx) );
         extTheta.ry = static_cast<int>( round(extTheta.y*Ny) );
-        extTheta.k = 5*k;
+        extTheta.k = k;
         extTheta.minX = extTheta.rx - extTheta.k;
         extTheta.maxX = extTheta.rx + extTheta.k;
         extTheta.minY = extTheta.ry - extTheta.k;

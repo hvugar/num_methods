@@ -43,7 +43,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
     if (m_normalizer != nullptr) gradient_norm = m_normalizer->norm(g);
     if (gradient_norm < optimalityTolerance())
     {
-        if (m_printer) m_printer->print(m_iterationCount, x, g, m_fn->fx(x), alpha, GradientMethod::BREAK_FIRST_ITERATION);
+        if (m_printer) m_printer->print(m_iterationCount, x, g, m_fn->fx(x), alpha, MethodResult::BREAK_FIRST_ITERATION);
         if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than optimality tolerance...");
         return;
     }
@@ -53,7 +53,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
      **************************************************************************************/
     f1 = m_fn->fx(x);
 
-    if (m_printer != nullptr) m_printer->print(m_iterationCount, x, g, f1, alpha, GradientMethod::FIRST_ITERATION);
+    if (m_printer != nullptr) m_printer->print(m_iterationCount, x, g, f1, alpha, MethodResult::FIRST_ITERATION);
 
     do
     {
@@ -109,7 +109,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
         if (m_normalizer != nullptr) gradient_norm = m_normalizer->norm(g);
         if (gradient_norm < optimalityTolerance())
         {
-            if (m_printer != nullptr) m_printer->print(m_iterationCount, x, g, f2, alpha, GradientMethod::BREAK_GRADIENT_NORM_LESS);
+            if (m_printer != nullptr) m_printer->print(m_iterationCount, x, g, f2, alpha, MethodResult::BREAK_GRADIENT_NORM_LESS);
             if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than optimality tolerance...");
             break;
         }
@@ -122,7 +122,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
          **************************************************************************************/
         if (distance < stepTolerance() && fabs(f2 - f1) < functionTolerance())
         {
-            if (m_printer != nullptr) m_printer->print(m_iterationCount, x, g, f2, alpha, GradientMethod::BREAK_DISTANCE_LESS);
+            if (m_printer != nullptr) m_printer->print(m_iterationCount, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
             if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
             break;
         }
@@ -134,7 +134,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
          **************************************************************************************/
         if (m_iterationCount >= maxIterations())
         {
-            if (m_printer != nullptr) m_printer->print(m_iterationCount, x, g, f2, alpha, GradientMethod::BREAK_DISTANCE_LESS);
+            if (m_printer != nullptr) m_printer->print(m_iterationCount, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
             if (m_show_end_message) puts("Optimisation ends, because iteration count reached max allowed iterations number...");
             break;
         }
@@ -146,7 +146,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
          **************************************************************************************/
         if (maxFunctionEvaluations() != maxFunctionEvaluations())
         {
-            if (m_printer != nullptr) m_printer->print(m_iterationCount, x, g, f2, alpha, GradientMethod::BREAK_DISTANCE_LESS);
+            if (m_printer != nullptr) m_printer->print(m_iterationCount, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
             if (m_show_end_message) puts("Optimisation ends, because max function evaluation count reached max allowed number...");
             break;
         }
@@ -154,7 +154,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
         /**************************************************************************************
          * Printing iteration information.
          **************************************************************************************/
-        if (m_printer != nullptr) m_printer->print(m_iterationCount, x, g, f2, alpha, GradientMethod::NEXT_ITERATION);
+        if (m_printer != nullptr) m_printer->print(m_iterationCount, x, g, f2, alpha, MethodResult::NEXT_ITERATION);
 
         f1 = f2;
 

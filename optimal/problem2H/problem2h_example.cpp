@@ -204,8 +204,10 @@ void example2()
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = -0.645; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7200;
-    e_prm.q[1] = -0.657; e_prm.theta[1].x = 0.5400; e_prm.theta[1].y = 0.2700;
+    //e_prm.q[0] = +0.645; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7200;
+    //e_prm.q[1] = +0.657; e_prm.theta[1].x = 0.5400; e_prm.theta[1].y = 0.2700;
+    e_prm.q[0] = +0.245; e_prm.theta[0].x = 0.3500; e_prm.theta[0].y = 0.3500;
+    e_prm.q[1] = +0.257; e_prm.theta[1].x = 0.6500; e_prm.theta[1].y = 0.6500;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -218,14 +220,17 @@ void example2()
     o_prm.eta.resize(e_prm.Nc);
 
     //o_prm.k[0][0]  = -1.0345; o_prm.k[0][1]  = -2.5401; o_prm.k[1][0]  = -1.1431; o_prm.k[1][1]  = -1.0984;
-    o_prm.k[0][0]  = -0.3450; o_prm.k[0][1]  = -0.5410; o_prm.k[1][0]  = -0.4310; o_prm.k[1][1]  = -0.9840;
+    //o_prm.k[0][0]  = -0.3450; o_prm.k[0][1]  = -0.5410; o_prm.k[1][0]  = -0.4310; o_prm.k[1][1]  = -0.9840;
+    o_prm.k[0][0]  = -0.0345*(0.9); o_prm.k[0][1]  = -0.0541*(1.1); o_prm.k[1][0]  = -0.0431*(1.1); o_prm.k[1][1]  = -0.0984*(0.9);
 
     //o_prm.z[0][0]  = +3.1245; o_prm.z[0][1]  = +1.8532; o_prm.z[1][0]  = -2.4512; o_prm.z[1][1]  = +2.5421;
     //o_prm.z[0][0]  = +0.1245; o_prm.z[0][1]  = +0.0325; o_prm.z[1][0]  = -0.1452; o_prm.z[1][1]  = +0.2154;
-    o_prm.z[0][0]  = +0.0124; o_prm.z[0][1]  = +0.0325; o_prm.z[1][0]  = -0.0452; o_prm.z[1][1]  = +0.0154;
+    o_prm.z[0][0]  = +0.0124*(1.1); o_prm.z[0][1]  = +0.0325*(0.9); o_prm.z[1][0]  = -0.0452*(1.1); o_prm.z[1][1]  = +0.0154*(0.9);
 
-    o_prm.xi[0].x  = +0.7524; o_prm.xi[0].y  = +0.4828; o_prm.xi[1].x  = +0.1274; o_prm.xi[1].y  = +0.8234;
-    o_prm.eta[0].x = +0.8635; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.2496; o_prm.eta[1].y = +0.6536;
+    o_prm.xi[0].x  = +0.7524+(+0.01); o_prm.xi[0].y  = +0.4828+(-0.01); o_prm.xi[1].x  = +0.1274+(+0.01); o_prm.xi[1].y  = +0.8234+(-0.01);
+    //o_prm.eta[0].x = +0.8635; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.2496; o_prm.eta[1].y = +0.6536;
+    //o_prm.eta[0].x = +0.3500; o_prm.eta[0].y = +0.3500; o_prm.eta[1].x = +0.6500; o_prm.eta[1].y = +0.6500;
+    o_prm.eta[0].x = +0.3500+(+0.01); o_prm.eta[0].y = +0.6500+(-0.01); o_prm.eta[1].x = +0.6500+(+0.01); o_prm.eta[1].y = +0.3500+(-0.01);
     //o_prm.xi[0].x  = +0.2754; o_prm.xi[0].y  = +0.2438; o_prm.xi[1].x  = +0.4271; o_prm.xi[1].y  = +0.3824;
     //o_prm.eta[0].x = +0.3865; o_prm.eta[0].y = +0.4365; o_prm.eta[1].x = +0.6294; o_prm.eta[1].y = +0.5466;
 
@@ -271,10 +276,10 @@ void example2()
 
     // Penalty paramteres
     //DoubleVector r; r << 0.10 << 1.0 << 10.0 << 100.00;
-    DoubleVector r; r << 0.00 << 10.00 << 100.00 << 0.00;
+    DoubleVector r; r << 0.00;// << 10.00 << 100.00 << 0.00;
     // Regularization coefficients
     //DoubleVector e; e << 1.00 << 0.10 << 0.010 << 0.00100;
-    DoubleVector e; e << 0.00 << 0.00 << 0.000 << 0.000;
+    DoubleVector e; e << 0.00;// << 0.00 << 0.000 << 0.000;
 
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
@@ -286,13 +291,13 @@ void example2()
         prob.mEquParameter = e_prm;
         prob.mOptParameter = o_prm;
         prob.mRegParameter = r_prm;
-        prob.optimizeK = false;
-        prob.optimizeZ = false;
+        prob.optimizeK = true;
+        prob.optimizeZ = true;
         prob.optimizeO = true;
         prob.optimizeC = true;
         prob.vmin.resize(e_prm.Nc, -0.05);
         prob.vmax.resize(e_prm.Nc, +0.05);
-        prob.LD = 100;
+        prob.LD = 50;
 
         prob.regEpsilon = e[i];
         prob.r = r[i];
@@ -302,9 +307,10 @@ void example2()
             //prob.checkGradient1(prob);
             IPrinter::printSeperatorLine();
 
-//            std::vector<DoubleMatrix> u;
-//            spif_vectorH u_info;
-//            prob.solveForwardIBVP(u, u_info, false);
+            std::vector<DoubleMatrix> u;
+            spif_vectorH u_info;
+            prob.solveForwardIBVP(u, u_info, false);
+
 //            FILE *file = fopen("e:/data.txt", "w");
 //            for (int i=0; i<10000; i++)
 //            {
@@ -319,7 +325,7 @@ void example2()
 //            return;
         }
 
-        //ConjugateGradient g;
+        //ConjugateGradient g; g.setAlgorithm(ConjugateGradient::Algorithm::FLETCHER_REEVES);
         SteepestDescentGradient g;
         g.setFunction(&prob);
         g.setGradient(&prob);
@@ -330,7 +336,7 @@ void example2()
         g.setOptimalityTolerance(0.00001);
         g.setFunctionTolerance(0.00001);
         g.setStepTolerance(0.00001);
-        g.setR1MinimizeEpsilon(0.01, 0.001);
+        g.setR1MinimizeEpsilon(0.1, 0.01);
         g.setMaxIterations(50);
         g.setNormalize(true);
         g.showExitMessage(true);

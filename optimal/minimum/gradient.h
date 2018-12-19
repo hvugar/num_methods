@@ -17,7 +17,7 @@ class IVectorNormalizer;
 class MINIMUMSHARED_EXPORT GradientMethod : protected R1Function
 {
 public:
-    enum MethodResult
+    enum class MethodResult
     {
         NEXT_ITERATION = 0,
         FIRST_ITERATION = 1,

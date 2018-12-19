@@ -12,7 +12,7 @@
 class MINIMUMSHARED_EXPORT ConjugateGradient : public GradientMethod
 {
 public:
-    enum Algorithm
+    enum class Algorithm
     {
         FLETCHER_REEVES = 0,
         POLAK_RIBIERE = 1,
