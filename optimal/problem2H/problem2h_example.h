@@ -12,4 +12,6 @@ void example2();
 
 void example3();
 
+void prod_example1();
+
 #endif // PROBLEM2HEXAMPLE_H

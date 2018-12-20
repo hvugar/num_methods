@@ -50,26 +50,26 @@ void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 #ifdef USE_IMAGING
     QGuiApplication app(argc, argv);
 #endif
+    prod_example1();
     //example1();
-    example2();
+    //example2();
     //example3();
 }
 
-void example1()
+void prod_example1()
 {
     // Equation parameters
     EquationParameterH e_prm;
     e_prm.a = 1.0;
-    e_prm.lambda = +0.00;
+    e_prm.lambda = +0.000;
 
     // Pulse influences
     e_prm.Ns = 2;
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = +0.145; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7200;
-    e_prm.q[1] = +0.157; e_prm.theta[1].x = 0.6400; e_prm.theta[1].y = 0.2700;
-    //e_prm.q[2] = +0.148; e_prm.theta[2].x = 0.7400; e_prm.theta[2].y = 0.6300;
+    e_prm.q[0] = +0.2; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.2500;
+    e_prm.q[1] = +0.2; e_prm.theta[1].x = 0.7500; e_prm.theta[1].y = 0.7500;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -81,15 +81,151 @@ void example1()
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
-    o_prm.k[0][0]  = -2.1062; o_prm.k[0][1]  = -2.1038; o_prm.k[1][0]  = -2.1031; o_prm.k[1][1]  = -2.1052;
-    o_prm.z[0][0]  = -0.0245; o_prm.z[0][1]  = -0.0784; o_prm.z[1][0]  = -0.0587; o_prm.z[1][1]  = -0.0641;
+//    DoubleVector y;
+//    y << -1.1262 << -1.4038 << -1.7431 << -1.8052;
+//    y << -2.0245 << +3.0784 << -1.7431 << -1.8052;
+//    y << -1.1262 << -1.4038 << -1.7431 << -1.8052;
+//    y << -1.1262 << -1.4038 << -1.7431 << -1.8052;
+
+    o_prm.k[0][0]  = -1.1262; o_prm.k[0][1]  = -1.4038; o_prm.k[1][0]  = -1.7431; o_prm.k[1][1]  = -1.8052;
+    o_prm.z[0][0]  = -2.0245; o_prm.z[0][1]  = +3.0784; o_prm.z[1][0]  = -5.0587; o_prm.z[1][1]  = +8.0641;
     o_prm.xi[0].x  = +0.6527; o_prm.xi[0].y  = +0.8412; o_prm.xi[1].x  = +0.7412; o_prm.xi[1].y  = +0.2483;
     o_prm.eta[0].x = +0.3254; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.9462; o_prm.eta[1].y = +0.4966;
 
-    //o_prm.k[0][0]  = -0.1262; o_prm.k[0][1]  = -0.4038; o_prm.k[1][0]  = -1.7431; o_prm.k[1][1]  = -2.8052;
-    //o_prm.z[0][0]  = -2.0245; o_prm.z[0][1]  = +3.0784; o_prm.z[1][0]  = -5.0587; o_prm.z[1][1]  = +8.0641;
+    // Regularization parameters
+    OptimizeParameterH r_prm;
+    r_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+    r_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+    r_prm.xi.resize(e_prm.No);
+    r_prm.eta.resize(e_prm.Nc);
+
+//    r_prm.k[0][0]  = -0.0182; r_prm.k[0][1]  = -0.0125; r_prm.k[1][0]  = -0.0155; r_prm.k[1][1]  = -0.0131;
+//    r_prm.z[0][0]  = -0.0262; r_prm.z[0][1]  = -0.0773; r_prm.z[1][0]  = -0.0570; r_prm.z[1][1]  = +0.0653;
+//    r_prm.xi[0].x  = +0.3849; r_prm.xi[0].y  = +0.5442; r_prm.xi[1].x  = +0.7661; r_prm.xi[1].y  = +0.6785;
+//    r_prm.eta[0].x = +0.6656; r_prm.eta[0].y = +0.7909; r_prm.eta[1].x = +0.4856; r_prm.eta[1].y = +0.3810;
+
+    r_prm.k[0][0]  = -0.1820; r_prm.k[0][1]  = -0.1250; r_prm.k[1][0]  = -0.1550; r_prm.k[1][1]  = -0.1310;
+    r_prm.z[0][0]  = -0.0262; r_prm.z[0][1]  = -0.0773; r_prm.z[1][0]  = -0.0570; r_prm.z[1][1]  = +0.0653;
+    r_prm.xi[0].x  = +0.3849; r_prm.xi[0].y  = +0.5442; r_prm.xi[1].x  = +0.7661; r_prm.xi[1].y  = +0.6785;
+    r_prm.eta[0].x = +0.6656; r_prm.eta[0].y = +0.7909; r_prm.eta[1].x = +0.4856; r_prm.eta[1].y = +0.3810;
+
+    o_prm = r_prm;
+
+    // Grid parameters
+    double hx = 0.010; int Nx = 100;
+    double hy = 0.010; int Ny = 100;
+    double ht = 0.010; int Nt = 500;
+
+    Dimension time(ht, 0, Nt);
+    Dimension dimx(hx, 0, Nx);
+    Dimension dimy(hy, 0, Ny);
+
+    // Penalty paramteres
+    DoubleVector r; r << 0.0000 << 1.0000 << 20.000 << 50.000;
+    // Regularization coefficients
+    DoubleVector e; e << 0.0000 << 0.1000 << 0.0100 << 0.0000;
+
+    DoubleVector x;
+    for (unsigned int i=0; i<r.length(); i++)
+    {
+        Problem2HNDirichlet1 prob;
+        prob.setTimeDimension(time);
+        prob.addSpaceDimension(dimx);
+        prob.addSpaceDimension(dimy);
+        prob.mEquParameter = e_prm;
+        prob.mOptParameter = o_prm;
+        prob.mRegParameter = r_prm;
+        prob.optimizeK = true;
+        prob.optimizeZ = true;
+        prob.optimizeO = true;
+        prob.optimizeC = true;
+        prob.vmin.resize(e_prm.Nc, -0.05);
+        prob.vmax.resize(e_prm.Nc, +0.05);
+        prob.LD = 20;
+        prob.noise = 0.00;
+
+        prob.regEpsilon = e[i];
+        prob.r = r[i];
+        if (i==0)
+        {
+            prob.PrmToVector(o_prm, x);
+            printf("Fx: %10.6f\n", prob.fx(x)); return;
+            //prob.checkGradient1(prob);
+            IPrinter::printSeperatorLine();
+
+//            for (int i=0; i<10000; i++)
+//            {
+//                if (i%20==0)
+//                {
+//                    prob.setTimeDimension(Dimension(ht, 0, i));
+//                    printf("ln:%d fx:%8.6f\n", i, prob.fx(x));
+//                    //IPrinter::printMatrix(8,4,u[0]);
+//                }
+//            }
+//            IPrinter::printMatrix(8,4,u[0]);
+            prob.fx(x);
+            return;
+        }
+
+        //ConjugateGradient g;
+        SteepestDescentGradient g;
+        g.setFunction(&prob);
+        g.setGradient(&prob);
+        g.setPrinter(&prob);
+        g.setProjection(&prob);
+        g.setProjection(new ProjectionEx1);
+        //g.setGradientNormalizer(&prob);
+        g.setOptimalityTolerance(0.0001);
+        g.setFunctionTolerance(0.0001);
+        g.setStepTolerance(0.0001);
+        g.setR1MinimizeEpsilon(0.1, 0.01);
+        g.setMaxIterations(50);
+        g.setNormalize(false);
+        g.showExitMessage(true);
+        //prob.gm = &g;
+
+        g.calculate(x);
+
+        IPrinter::printSeperatorLine(nullptr, '=');
+    }
+}
+
+void example1()
+{
+    // Equation parameters
+    EquationParameterH e_prm;
+    e_prm.a = 1.0;
+    e_prm.lambda = +0.001;
+
+    // Pulse influences
+    e_prm.Ns = 2;
+    e_prm.q.resize(e_prm.Ns);
+    e_prm.theta.resize(e_prm.Ns);
+
+    //    e_prm.q[0] = +0.145; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7200;
+    //    e_prm.q[1] = +0.157; e_prm.theta[1].x = 0.6400; e_prm.theta[1].y = 0.2700;
+    e_prm.q[0] = +0.145; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.7200;
+    e_prm.q[1] = +0.157; e_prm.theta[1].x = 0.6400; e_prm.theta[1].y = 0.2700;
+
+    e_prm.No = 2;
+    e_prm.Nc = 2;
+
+    // Optimization parameters
+    OptimizeParameterH o_prm;
+    o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm.xi.resize(e_prm.No);
+    o_prm.eta.resize(e_prm.Nc);
+
+    //o_prm.k[0][0]  = -2.1062; o_prm.k[0][1]  = -2.1038; o_prm.k[1][0]  = -2.1031; o_prm.k[1][1]  = -2.1052;
+    //o_prm.z[0][0]  = -0.0245; o_prm.z[0][1]  = -0.0784; o_prm.z[1][0]  = -0.0587; o_prm.z[1][1]  = -0.0641;
     //o_prm.xi[0].x  = +0.1527; o_prm.xi[0].y  = +0.8412; o_prm.xi[1].x  = +0.7412; o_prm.xi[1].y  = +0.2483;
-    //o_prm.eta[0].x = +0.3254; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.9462; o_prm.eta[1].y = +0.5966;
+    //o_prm.eta[0].x = +0.3254; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.9462; o_prm.eta[1].y = +0.4966;
+
+    o_prm.k[0][0]  = -0.1262; o_prm.k[0][1]  = -0.4038; o_prm.k[1][0]  = -1.7431; o_prm.k[1][1]  = -2.8052;
+    o_prm.z[0][0]  = -2.0245; o_prm.z[0][1]  = +3.0784; o_prm.z[1][0]  = -5.0587; o_prm.z[1][1]  = +8.0641;
+    o_prm.xi[0].x  = +0.6527; o_prm.xi[0].y  = +0.8412; o_prm.xi[1].x  = +0.7412; o_prm.xi[1].y  = +0.2483;
+    o_prm.eta[0].x = +0.3254; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.9462; o_prm.eta[1].y = +0.4966;
 
     //o_prm.k[0][0]  = -0.1262; o_prm.k[0][1]  = -0.4038; o_prm.k[1][0]  = -0.7431; o_prm.k[1][1]  = -0.8052;
     //o_prm.z[0][0]  = -0.0245; o_prm.z[0][1]  = +0.0784; o_prm.z[1][0]  = -0.0587; o_prm.z[1][1]  = +0.0641;
@@ -123,7 +259,7 @@ void example1()
     // Penalty paramteres
     DoubleVector r; r << 1.0000 << 10.000 << 20.000 << 50.000;
     // Regularization coefficients
-    DoubleVector e; e << 0.0000 << 0.0000 << 0.0000 << 0.0000;
+    DoubleVector e; e << 1.0000 << 0.0000 << 0.0000 << 0.0000;
     //DoubleVector e; e << 1.00 << 0.10 << 0.010 << 0.0010;
 
     DoubleVector x;
@@ -140,9 +276,9 @@ void example1()
         prob.optimizeZ = true;
         prob.optimizeO = true;
         prob.optimizeC = true;
-        prob.vmin.resize(e_prm.Nc, -0.005);
-        prob.vmax.resize(e_prm.Nc, +0.005);
-        prob.LD = 20;
+        prob.vmin.resize(e_prm.Nc, -0.05);
+        prob.vmax.resize(e_prm.Nc, +0.05);
+        prob.LD = 50;
         prob.noise = 0.00;
 
         prob.regEpsilon = e[i];
@@ -153,19 +289,19 @@ void example1()
             //prob.checkGradient1(prob);
             IPrinter::printSeperatorLine();
 
-            std::vector<DoubleMatrix> u;
-            spif_vectorH u_info;
-            prob.solveForwardIBVP(u, u_info, false);
+            //            std::vector<DoubleMatrix> u;
+            //            spif_vectorH u_info;
+            //            prob.solveForwardIBVP(u, u_info, false);
 
-            for (int i=0; i<10000; i++)
-            {
-                prob.setTimeDimension(Dimension(ht, 0, i));
-                printf("ln:%d fx:%8.6f\n", i, prob.fx(x));
-                //IPrinter::printMatrix(8,4,u[0]);
-            }
+            //            for (int i=0; i<10000; i++)
+            //            {
+            //                prob.setTimeDimension(Dimension(ht, 0, i));
+            //                printf("ln:%d fx:%8.6f\n", i, prob.fx(x));
+            //                //IPrinter::printMatrix(8,4,u[0]);
+            //            }
 
-            IPrinter::printMatrix(8,4,u[0]);
-            return;
+            //            IPrinter::printMatrix(8,4,u[0]);
+            //            return;
 
         }
 
@@ -234,6 +370,10 @@ void example2()
     //o_prm.xi[0].x  = +0.2754; o_prm.xi[0].y  = +0.2438; o_prm.xi[1].x  = +0.4271; o_prm.xi[1].y  = +0.3824;
     //o_prm.eta[0].x = +0.3865; o_prm.eta[0].y = +0.4365; o_prm.eta[1].x = +0.6294; o_prm.eta[1].y = +0.5466;
 
+    o_prm.k[0][0]  = +0.1200; o_prm.k[0][1]  = +0.2400; o_prm.k[1][0]  = +0.4500; o_prm.k[1][1]  = +0.1800;
+    o_prm.z[0][0]  = +0.5000; o_prm.z[0][1]  = -0.4000; o_prm.z[1][0]  = +0.7000; o_prm.z[1][1]  = +0.5000;
+    o_prm.xi[0].x  = +0.4274; o_prm.xi[0].y  = +0.6735; o_prm.xi[1].x  = +0.6710; o_prm.xi[1].y  = +0.3851;
+    o_prm.eta[0].x = +0.5174; o_prm.eta[0].y = +0.7635; o_prm.eta[1].x = +0.5570; o_prm.eta[1].y = +0.4751;
 
     // Regularization parameters
     OptimizeParameterH r_prm;
@@ -276,7 +416,7 @@ void example2()
 
     // Penalty paramteres
     //DoubleVector r; r << 0.10 << 1.0 << 10.0 << 100.00;
-    DoubleVector r; r << 0.00;// << 10.00 << 100.00 << 0.00;
+    DoubleVector r; r << 1.00;// << 10.00 << 100.00 << 0.00;
     // Regularization coefficients
     //DoubleVector e; e << 1.00 << 0.10 << 0.010 << 0.00100;
     DoubleVector e; e << 0.00;// << 0.00 << 0.000 << 0.000;
@@ -311,18 +451,18 @@ void example2()
             spif_vectorH u_info;
             prob.solveForwardIBVP(u, u_info, false);
 
-//            FILE *file = fopen("e:/data.txt", "w");
-//            for (int i=0; i<10000; i++)
-//            {
-//                prob.setTimeDimension(Dimension(ht, 0, i));
-//                fprintf(file, "ln:%d fx:%8.6f\n", i, prob.fx(x));
-//                fprintf(stdout, "ln:%d fx:%8.6f\n", i, prob.fx(x));
-//                fflush(file);
-//                IPrinter::printMatrix(8,4,u[0]);
-//            }
-//            fclose(file);
-//            IPrinter::printMatrix(8,4,u[0]);
-//            return;
+            //            FILE *file = fopen("e:/data.txt", "w");
+            //            for (int i=0; i<10000; i++)
+            //            {
+            //                prob.setTimeDimension(Dimension(ht, 0, i));
+            //                fprintf(file, "ln:%d fx:%8.6f\n", i, prob.fx(x));
+            //                fprintf(stdout, "ln:%d fx:%8.6f\n", i, prob.fx(x));
+            //                fflush(file);
+            //                IPrinter::printMatrix(8,4,u[0]);
+            //            }
+            //            fclose(file);
+            //            IPrinter::printMatrix(8,4,u[0]);
+            //            return;
         }
 
         //ConjugateGradient g; g.setAlgorithm(ConjugateGradient::Algorithm::FLETCHER_REEVES);

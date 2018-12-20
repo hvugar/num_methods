@@ -11,7 +11,7 @@
 void Problem2HNDirichlet1::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
     //printf("ln: %d fx: %8.6f min: %8.6f max: %8.6f\n", ln, integralU(u), u.min(), u.max());
-    return;
+    //return;
 
     static double MIN = +100000.0;
     static double MAX = -100000.0;
@@ -26,7 +26,7 @@ void Problem2HNDirichlet1::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsig
     //}
     //return;
 
-    if (ln == 0 || ln == 1 || ln <= 20 || ln%100 == 0)
+    if (ln == 0 || ln == 1 || ln <= 50 || ln%100 == 0)
     {
         char filename1[40];
         int size1 = sprintf(filename1, "txt/h_layer%d.txt", ln);
@@ -36,7 +36,7 @@ void Problem2HNDirichlet1::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsig
         //IPrinter::printSeperatorLine();
         IPrinter::printMatrix(u, u.rows(), u.cols(), nullptr, file);
         //IPrinter::printSeperatorLine();
-        printf("%d %f %f %f %f %f\n", ln, sqrt(integralU(u)), integralU(u), integralU(u)*integralU(u), u.min(), u.max(), integralU(u));
+        printf("%d %f %f %f %f %f %f\n", ln, sqrt(integralU(u)), integralU(u), integralU(u)*integralU(u), u.min(), u.max(), integralU(u));
         fclose(file);
     }
     return;
@@ -3552,8 +3552,8 @@ auto Problem2HNDirichlet1::newDistributeDeltaGaussPulse(const std::vector<SpaceP
     //    return;
 
     const int k = 24;
-    const double sigmaX = 6.0*hx;
-    const double sigmaY = 6.0*hy;
+    const double sigmaX = 8.0*hx;
+    const double sigmaY = 8.0*hy;
 
     for (unsigned int s=0; s<Ns; s++)
     {
@@ -3579,7 +3579,7 @@ auto Problem2HNDirichlet1::newDistributeDeltaGaussPulse(const std::vector<SpaceP
         sumY *= hy;
 
         double sigma = (sumX*sumY) / (2.0*M_PI);
-        double factor = 1.0/((2.0*M_PI)*sigma);
+        double factor = 1.0/(2.0*M_PI*sigma);
         //double factor = 1.0/(2.0*M_PI*sigmaX*sigmaY);
 
         for (int m=extTheta.minY; m<=extTheta.maxY; m++)

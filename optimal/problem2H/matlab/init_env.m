@@ -8,9 +8,10 @@ end
 
 copyfile ..\..\bin\problem2H.dll .
 copyfile ..\..\bin\minimum.dll .
-copyfile ..\..\problem2H\exporter.h .
+copyfile ..\..\problem2H\problem2h_exporter.h .
+copyfile ..\..\problem2H\problem2h_global.h .
 
-loadlibrary('problem2H', 'exporter.h');
+loadlibrary('problem2H', 'problem2h_exporter.h');
 
 calllib('problem2H', 'init_pr');
 calllib('problem2H', 'setPenaltyR', 1.0);
