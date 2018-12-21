@@ -11,7 +11,7 @@
 void Problem2HNDirichlet1::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
     //printf("ln: %d fx: %8.6f min: %8.6f max: %8.6f\n", ln, integralU(u), u.min(), u.max());
-    //return;
+    return;
 
     static double MIN = +100000.0;
     static double MAX = -100000.0;
@@ -126,35 +126,35 @@ void Problem2HNDirichlet1::print(unsigned int i, const DoubleVector &x, const Do
     double pnt = penalty(u_info, o_prm);
     double nrm = norm(prob->mEquParameter, prob->mOptParameter, prob->mRegParameter);
 
-//    const unsigned int v_length = static_cast<const unsigned int>(timeDimension().size()) + LD;
-//    DoubleVector v1(v_length+1);
-//    DoubleVector v2(v_length+1);
+    const unsigned int v_length = static_cast<const unsigned int>(timeDimension().size()) + LD;
+    DoubleVector v1(v_length+1);
+    DoubleVector v2(v_length+1);
 
-//    for (unsigned int ln=0; ln<=v_length; ln++)
-//    {
-//        v1[ln] = v(0, o_prm, mEquParameter, u_info, ln);
-//        v2[ln] = v(1, o_prm, mEquParameter, u_info, ln);
-//    }
+    for (unsigned int ln=0; ln<=v_length; ln++)
+    {
+        v1[ln] = v(0, o_prm, mEquParameter, u_info, ln);
+        v2[ln] = v(1, o_prm, mEquParameter, u_info, ln);
+    }
 
-//    IPrinter::printVector(v1, "v1", 10);
-//    IPrinter::printVector(v2, "v2", 10);
+    IPrinter::printVector(v1, "v1", 10);
+    IPrinter::printVector(v2, "v2", 10);
+
+//    printf("I[%3d]: F:%.5f I:%.5f P:%.5f N:%.5f R:%.3f e:%.3f a:%.6f ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
+//    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %6.4f %6.4f %6.4f %6.4f c: %6.4f %6.4f %6.4f %6.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
 
     printf("I[%3d]: F:%.5f I:%.5f P:%.5f N:%.5f R:%.3f e:%.3f a:%.6f ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
-    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %6.4f %6.4f %6.4f %6.4f c: %6.4f %6.4f %6.4f %6.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
-
-    //printf("I[%3d]: F:%.5f I:%.5f P:%.5f N:%.5f R:%.3f e:%.3f a:%.6f ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
-    //printf("min:%.6f max:%.6f min:%.6f max:%.6f U0:%.8f UT:%.8f", u.at(0).min(), u.at(0).max(), u.at(LD).min(), u.at(LD).max(), integralU(u[0]), integralU(u[LD]));
-    //printf("\n");
-    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
-    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
-    //DoubleVector n = g; n.L2Normalize();
-    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]);
+    printf("min:%.6f max:%.6f min:%.6f max:%.6f U0:%.8f UT:%.8f", u.at(0).min(), u.at(0).max(), u.at(LD).min(), u.at(LD).max(), integralU(u[0]), integralU(u[LD]));
+    printf("\n");
+    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
+    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
+    DoubleVector n = g; n.L2Normalize();
+    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]);
 
     u.clear();
     u_info.clear();
 
     C_UNUSED(prob);
-    //IPrinter::printSeperatorLine();
+    IPrinter::printSeperatorLine();
 
 //    prob->optimizeK = i%4 == 3;
 //    prob->optimizeZ = i%4 == 0;

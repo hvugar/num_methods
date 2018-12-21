@@ -61,15 +61,15 @@ void prod_example1()
     // Equation parameters
     EquationParameterH e_prm;
     e_prm.a = 1.0;
-    e_prm.lambda = +0.000;
+    e_prm.lambda = +0.0;
 
     // Pulse influences
     e_prm.Ns = 2;
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-    e_prm.q[0] = +0.2; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.2500;
-    e_prm.q[1] = +0.2; e_prm.theta[1].x = 0.7500; e_prm.theta[1].y = 0.7500;
+    e_prm.q[0] = +0.514; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.2500;
+    e_prm.q[1] = +0.528; e_prm.theta[1].x = 0.7500; e_prm.theta[1].y = 0.7500;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -87,10 +87,15 @@ void prod_example1()
 //    y << -1.1262 << -1.4038 << -1.7431 << -1.8052;
 //    y << -1.1262 << -1.4038 << -1.7431 << -1.8052;
 
-    o_prm.k[0][0]  = -1.1262; o_prm.k[0][1]  = -1.4038; o_prm.k[1][0]  = -1.7431; o_prm.k[1][1]  = -1.8052;
-    o_prm.z[0][0]  = -2.0245; o_prm.z[0][1]  = +3.0784; o_prm.z[1][0]  = -5.0587; o_prm.z[1][1]  = +8.0641;
-    o_prm.xi[0].x  = +0.6527; o_prm.xi[0].y  = +0.8412; o_prm.xi[1].x  = +0.7412; o_prm.xi[1].y  = +0.2483;
-    o_prm.eta[0].x = +0.3254; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.9462; o_prm.eta[1].y = +0.4966;
+    o_prm.k[0][0]  = -2.1820; o_prm.k[0][1]  = -2.1250; o_prm.k[1][0]  = -2.1550; o_prm.k[1][1]  = -2.1310;
+    o_prm.z[0][0]  = -0.0262; o_prm.z[0][1]  = -0.0773; o_prm.z[1][0]  = -0.0570; o_prm.z[1][1]  = +0.0653;
+    o_prm.xi[0].x  = +0.3849; o_prm.xi[0].y  = +0.5442; o_prm.xi[1].x  = +0.7661; o_prm.xi[1].y  = +0.6785;
+    o_prm.eta[0].x = +0.6656; o_prm.eta[0].y = +0.7909; o_prm.eta[1].x = +0.4856; o_prm.eta[1].y = +0.3810;
+
+    //o_prm.k[0][0]  = -1.1262; o_prm.k[0][1]  = -1.4038; o_prm.k[1][0]  = -1.7431; o_prm.k[1][1]  = -1.8052;
+    //o_prm.z[0][0]  = -2.0245; o_prm.z[0][1]  = +3.0784; o_prm.z[1][0]  = -5.0587; o_prm.z[1][1]  = +8.0641;
+    //o_prm.xi[0].x  = +0.6527; o_prm.xi[0].y  = +0.8412; o_prm.xi[1].x  = +0.7412; o_prm.xi[1].y  = +0.2483;
+    //o_prm.eta[0].x = +0.3254; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.9462; o_prm.eta[1].y = +0.4966;
 
     // Regularization parameters
     OptimizeParameterH r_prm;
@@ -104,12 +109,15 @@ void prod_example1()
 //    r_prm.xi[0].x  = +0.3849; r_prm.xi[0].y  = +0.5442; r_prm.xi[1].x  = +0.7661; r_prm.xi[1].y  = +0.6785;
 //    r_prm.eta[0].x = +0.6656; r_prm.eta[0].y = +0.7909; r_prm.eta[1].x = +0.4856; r_prm.eta[1].y = +0.3810;
 
-    r_prm.k[0][0]  = -0.1820; r_prm.k[0][1]  = -0.1250; r_prm.k[1][0]  = -0.1550; r_prm.k[1][1]  = -0.1310;
+    //r_prm.k[0][0]  = -1.1820; r_prm.k[0][1]  = -1.1250; r_prm.k[1][0]  = -1.1550; r_prm.k[1][1]  = -1.1310;
+    //r_prm.k[0][0]  = -2.1820; r_prm.k[0][1]  = -2.1250; r_prm.k[1][0]  = -2.1550; r_prm.k[1][1]  = -2.1310;
+    //r_prm.k[0][0]  = -3.1820; r_prm.k[0][1]  = -3.1250; r_prm.k[1][0]  = -3.1550; r_prm.k[1][1]  = -3.1310;
+    //r_prm.k[0][0]  = +0.1820; r_prm.k[0][1]  = +0.1250; r_prm.k[1][0]  = +0.1550; r_prm.k[1][1]  = +0.1310;
     r_prm.z[0][0]  = -0.0262; r_prm.z[0][1]  = -0.0773; r_prm.z[1][0]  = -0.0570; r_prm.z[1][1]  = +0.0653;
     r_prm.xi[0].x  = +0.3849; r_prm.xi[0].y  = +0.5442; r_prm.xi[1].x  = +0.7661; r_prm.xi[1].y  = +0.6785;
     r_prm.eta[0].x = +0.6656; r_prm.eta[0].y = +0.7909; r_prm.eta[1].x = +0.4856; r_prm.eta[1].y = +0.3810;
 
-    o_prm = r_prm;
+    //o_prm = r_prm;
 
     // Grid parameters
     double hx = 0.010; int Nx = 100;
@@ -121,9 +129,9 @@ void prod_example1()
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 0.0000 << 1.0000 << 20.000 << 50.000;
+    DoubleVector r; r << 0.0000;// << 1.0000 << 20.000 << 50.000;
     // Regularization coefficients
-    DoubleVector e; e << 0.0000 << 0.1000 << 0.0100 << 0.0000;
+    DoubleVector e; e << 0.0000;// << 0.1000 << 0.0100 << 0.0000;
 
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
@@ -139,9 +147,9 @@ void prod_example1()
         prob.optimizeZ = true;
         prob.optimizeO = true;
         prob.optimizeC = true;
-        prob.vmin.resize(e_prm.Nc, -0.05);
-        prob.vmax.resize(e_prm.Nc, +0.05);
-        prob.LD = 20;
+        prob.vmin.resize(e_prm.Nc, -0.5);
+        prob.vmax.resize(e_prm.Nc, +0.5);
+        prob.LD = 50;
         prob.noise = 0.00;
 
         prob.regEpsilon = e[i];
@@ -149,26 +157,26 @@ void prod_example1()
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
-            printf("Fx: %10.6f\n", prob.fx(x)); return;
-            //prob.checkGradient1(prob);
-            IPrinter::printSeperatorLine();
+//            printf("Fx: %10.6f\n", prob.fx(x)); return;
+//            prob.checkGradient1(prob);
+//            IPrinter::printSeperatorLine();
 
-//            for (int i=0; i<10000; i++)
-//            {
-//                if (i%20==0)
-//                {
-//                    prob.setTimeDimension(Dimension(ht, 0, i));
-//                    printf("ln:%d fx:%8.6f\n", i, prob.fx(x));
-//                    //IPrinter::printMatrix(8,4,u[0]);
-//                }
-//            }
+            for (int i=0; i<10000; i++)
+            {
+                if (i%20==0)
+                {
+                    prob.setTimeDimension(Dimension(ht, 0, i));
+                    printf("ln:%d fx:%8.6f\n", i, prob.fx(x));
+                    //IPrinter::printMatrix(8,4,u[0]);
+                }
+            }
 //            IPrinter::printMatrix(8,4,u[0]);
-            prob.fx(x);
+//            prob.fx(x);
             return;
         }
 
-        //ConjugateGradient g;
-        SteepestDescentGradient g;
+        ConjugateGradient g;
+        //SteepestDescentGradient g;
         g.setFunction(&prob);
         g.setGradient(&prob);
         g.setPrinter(&prob);
