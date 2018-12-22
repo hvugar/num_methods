@@ -46,6 +46,7 @@
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
+    srand(time(NULL));
     //CCParabolicIBVP1::Main(argc, argv);
     //CCIHyperbolicIBVP1::Main(argc, argv);
     //CC1IHyperbolicIBVP1::Main(argc, argv);

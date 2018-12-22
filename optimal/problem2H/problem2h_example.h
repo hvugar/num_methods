@@ -14,4 +14,6 @@ void example3();
 
 void prod_example1();
 
+void prod_figure1(Problem2HNDirichlet1& prob, double ht, const DoubleVector &x);
+
 #endif // PROBLEM2HEXAMPLE_H

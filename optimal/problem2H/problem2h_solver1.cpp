@@ -1098,7 +1098,7 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
                 const unsigned int node_ny = static_cast<unsigned int>(node.ny);
                 _u[j] += u10[node_ny][node_nx] * (node.w * (hx*hy));
             }
-            _u[j] *= (1.0 + noise);
+            _u[j] *= (1.0 + noise * (rand()%2==0 ? +1.0 : -1.0));
         }
 
         double *_v = new double[Nc];

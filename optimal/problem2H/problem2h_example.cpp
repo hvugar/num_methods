@@ -81,21 +81,18 @@ void prod_example1()
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
-//    DoubleVector y;
-//    y << -1.1262 << -1.4038 << -1.7431 << -1.8052;
-//    y << -2.0245 << +3.0784 << -1.7431 << -1.8052;
-//    y << -1.1262 << -1.4038 << -1.7431 << -1.8052;
-//    y << -1.1262 << -1.4038 << -1.7431 << -1.8052;
-
-    o_prm.k[0][0]  = -2.1820; o_prm.k[0][1]  = -2.1250; o_prm.k[1][0]  = -2.1550; o_prm.k[1][1]  = -2.1310;
-    o_prm.z[0][0]  = -0.0262; o_prm.z[0][1]  = -0.0773; o_prm.z[1][0]  = -0.0570; o_prm.z[1][1]  = +0.0653;
-    o_prm.xi[0].x  = +0.3849; o_prm.xi[0].y  = +0.5442; o_prm.xi[1].x  = +0.7661; o_prm.xi[1].y  = +0.6785;
-    o_prm.eta[0].x = +0.6656; o_prm.eta[0].y = +0.7909; o_prm.eta[1].x = +0.4856; o_prm.eta[1].y = +0.3810;
-
-    //o_prm.k[0][0]  = -1.1262; o_prm.k[0][1]  = -1.4038; o_prm.k[1][0]  = -1.7431; o_prm.k[1][1]  = -1.8052;
-    //o_prm.z[0][0]  = -2.0245; o_prm.z[0][1]  = +3.0784; o_prm.z[1][0]  = -5.0587; o_prm.z[1][1]  = +8.0641;
-    //o_prm.xi[0].x  = +0.6527; o_prm.xi[0].y  = +0.8412; o_prm.xi[1].x  = +0.7412; o_prm.xi[1].y  = +0.2483;
-    //o_prm.eta[0].x = +0.3254; o_prm.eta[0].y = +0.3654; o_prm.eta[1].x = +0.9462; o_prm.eta[1].y = +0.4966;
+    // Initial I:0.03533
+    //o_prm.k[0][0]  = -2.1820; o_prm.k[0][1]  = -2.1250; o_prm.k[1][0]  = -2.1550; o_prm.k[1][1]  = -2.1310;
+    //o_prm.z[0][0]  = +0.0000; o_prm.z[0][1]  = +0.0000; o_prm.z[1][0]  = +0.0000; o_prm.z[1][1]  = +0.0000;
+    //o_prm.z[0][0]  = +0.0125; o_prm.z[0][1]  = +0.0268; o_prm.z[1][0]  = +0.0359; o_prm.z[1][1]  = +0.0186;
+    //o_prm.xi[0].x  = +0.3849; o_prm.xi[0].y  = +0.5442; o_prm.xi[1].x  = +0.7661; o_prm.xi[1].y  = +0.6785;
+    //o_prm.eta[0].x = +0.6656; o_prm.eta[0].y = +0.7909; o_prm.eta[1].x = +0.4856; o_prm.eta[1].y = +0.3810;
+    // Optimal I:0.00054           --------------------------------------------------------------------------
+    o_prm.k[0][0]  = -2.1866; o_prm.k[0][1]  = -2.1325; o_prm.k[1][0]  = -2.1321; o_prm.k[1][1]  = -2.1712;
+    o_prm.z[0][0]  = +0.0359; o_prm.z[0][1]  = +0.0496; o_prm.z[1][0]  = +0.1320; o_prm.z[1][1]  = +0.1145;
+    o_prm.xi[0].x  = +0.2732; o_prm.xi[0].y  = +0.6012; o_prm.xi[1].x  = +0.7578; o_prm.xi[1].y  = +0.7590;
+    o_prm.eta[0].x = +0.6968; o_prm.eta[0].y = +0.6892; o_prm.eta[1].x = +0.3987; o_prm.eta[1].y = +0.3898;
+    // ------------------------------------------------------------------------------------------------------
 
     // Regularization parameters
     OptimizeParameterH r_prm;
@@ -113,10 +110,11 @@ void prod_example1()
     //r_prm.k[0][0]  = -2.1820; r_prm.k[0][1]  = -2.1250; r_prm.k[1][0]  = -2.1550; r_prm.k[1][1]  = -2.1310;
     //r_prm.k[0][0]  = -3.1820; r_prm.k[0][1]  = -3.1250; r_prm.k[1][0]  = -3.1550; r_prm.k[1][1]  = -3.1310;
     //r_prm.k[0][0]  = +0.1820; r_prm.k[0][1]  = +0.1250; r_prm.k[1][0]  = +0.1550; r_prm.k[1][1]  = +0.1310;
-    r_prm.z[0][0]  = -0.0262; r_prm.z[0][1]  = -0.0773; r_prm.z[1][0]  = -0.0570; r_prm.z[1][1]  = +0.0653;
-    r_prm.xi[0].x  = +0.3849; r_prm.xi[0].y  = +0.5442; r_prm.xi[1].x  = +0.7661; r_prm.xi[1].y  = +0.6785;
-    r_prm.eta[0].x = +0.6656; r_prm.eta[0].y = +0.7909; r_prm.eta[1].x = +0.4856; r_prm.eta[1].y = +0.3810;
+    //r_prm.z[0][0]  = -0.0262; r_prm.z[0][1]  = -0.0773; r_prm.z[1][0]  = -0.0570; r_prm.z[1][1]  = +0.0653;
+    //r_prm.xi[0].x  = +0.3849; r_prm.xi[0].y  = +0.5442; r_prm.xi[1].x  = +0.7661; r_prm.xi[1].y  = +0.6785;
+    //r_prm.eta[0].x = +0.6656; r_prm.eta[0].y = +0.7909; r_prm.eta[1].x = +0.4856; r_prm.eta[1].y = +0.3810;
 
+    //r_prm = o_prm;
     //o_prm = r_prm;
 
     // Grid parameters
@@ -150,33 +148,24 @@ void prod_example1()
         prob.vmin.resize(e_prm.Nc, -0.5);
         prob.vmax.resize(e_prm.Nc, +0.5);
         prob.LD = 50;
-        prob.noise = 0.00;
+        prob.noise = 0.01;
 
         prob.regEpsilon = e[i];
         prob.r = r[i];
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
+            //prob.checkGradient1(prob);
+            prod_figure1(prob, ht, x);
+            return;
 //            printf("Fx: %10.6f\n", prob.fx(x)); return;
-//            prob.checkGradient1(prob);
 //            IPrinter::printSeperatorLine();
-
-            for (int i=0; i<10000; i++)
-            {
-                if (i%20==0)
-                {
-                    prob.setTimeDimension(Dimension(ht, 0, i));
-                    printf("ln:%d fx:%8.6f\n", i, prob.fx(x));
-                    //IPrinter::printMatrix(8,4,u[0]);
-                }
-            }
 //            IPrinter::printMatrix(8,4,u[0]);
 //            prob.fx(x);
-            return;
         }
 
-        ConjugateGradient g;
-        //SteepestDescentGradient g;
+        //ConjugateGradient g;
+        SteepestDescentGradient g;
         g.setFunction(&prob);
         g.setGradient(&prob);
         g.setPrinter(&prob);
@@ -195,6 +184,18 @@ void prod_example1()
         g.calculate(x);
 
         IPrinter::printSeperatorLine(nullptr, '=');
+    }
+}
+
+void prod_figure1(Problem2HNDirichlet1& prob, double ht, const DoubleVector &x)
+{
+    for (int i=0; i<=1000; i++)
+    {
+        //if (i%10==0)
+        {
+            prob.setTimeDimension(Dimension(ht, 0, i));
+            printf("ln:%d fx:%8.6f\n", i, prob.fx(x));
+        }
     }
 }
 
