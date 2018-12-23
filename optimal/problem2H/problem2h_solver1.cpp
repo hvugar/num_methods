@@ -10,6 +10,29 @@
 
 void Problem2HNDirichlet1::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
+    return;
+    {
+        Problem2HNDirichlet1* tmp = const_cast<Problem2HNDirichlet1*>(this);
+        std::vector<DoubleMatrix> &rvu = tmp->vu;
+        rvu.push_back(u);
+        if (ln > LD) rvu.erase(rvu.begin());
+        if (ln == 501)
+        {
+            tmp->mOptParameter.k[0][0] = 0.0;
+            tmp->mOptParameter.k[0][1] = 0.0;
+            tmp->mOptParameter.k[1][0] = 0.0;
+            tmp->mOptParameter.k[1][1] = 0.0;
+            //tmp->mEquParameter.lambda = 0.01;
+        }
+        //std::cout << ln << " " << rvu.size() << std::endl;
+        if (rvu.size() == 51)
+        {
+            double fx = integral(rvu);
+            printf("%d,%.10f\n", ln-50, fx);
+        }
+    }
+
+
     //printf("ln: %d fx: %8.6f min: %8.6f max: %8.6f\n", ln, integralU(u), u.min(), u.max());
     return;
 
@@ -436,11 +459,12 @@ double Problem2HNDirichlet1::fx(const DoubleVector &pv) const
 
 double Problem2HNDirichlet1::integral(const std::vector<DoubleMatrix> &vu) const
 {
+    unsigned int size = static_cast<unsigned int>(vu.size());
     const double ht = timeDimension().step();
     double sum = 0.0;
     sum += 0.5*integralU(vu[0]);
-    for (unsigned int l=1; l<=LD-1; l++) { sum += integralU(vu[l]); }
-    sum += 0.5*integralU(vu[LD]);
+    for (unsigned int l=1; l<=size-1; l++) { sum += integralU(vu[l]); }
+    sum += 0.5*integralU(vu[size-1]);
     return sum*ht;
 }
 
@@ -809,7 +833,7 @@ auto Problem2HNDirichlet1::project(DoubleVector &pv) const -> void
     for (unsigned int index = start; index <=end; index++)
     {
         //projectControlPoints(pv, index);
-        //projectMeasurePoints(pv, index);
+        projectMeasurePoints(pv, index);
     }
 }
 

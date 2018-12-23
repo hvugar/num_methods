@@ -61,7 +61,7 @@ void prod_example1()
     // Equation parameters
     EquationParameterH e_prm;
     e_prm.a = 1.0;
-    e_prm.lambda = +0.0;
+    e_prm.lambda = +0.01;
 
     // Pulse influences
     e_prm.Ns = 2;
@@ -82,16 +82,24 @@ void prod_example1()
     o_prm.eta.resize(e_prm.Nc);
 
     // Initial I:0.03533
-    //o_prm.k[0][0]  = -2.1820; o_prm.k[0][1]  = -2.1250; o_prm.k[1][0]  = -2.1550; o_prm.k[1][1]  = -2.1310;
+    //o_prm.k[0][0]  = +0.0000; o_prm.k[0][1]  = +0.0000; o_prm.k[1][0]  = +0.0000; o_prm.k[1][1]  = +0.0000;
     //o_prm.z[0][0]  = +0.0000; o_prm.z[0][1]  = +0.0000; o_prm.z[1][0]  = +0.0000; o_prm.z[1][1]  = +0.0000;
-    //o_prm.z[0][0]  = +0.0125; o_prm.z[0][1]  = +0.0268; o_prm.z[1][0]  = +0.0359; o_prm.z[1][1]  = +0.0186;
-    //o_prm.xi[0].x  = +0.3849; o_prm.xi[0].y  = +0.5442; o_prm.xi[1].x  = +0.7661; o_prm.xi[1].y  = +0.6785;
-    //o_prm.eta[0].x = +0.6656; o_prm.eta[0].y = +0.7909; o_prm.eta[1].x = +0.4856; o_prm.eta[1].y = +0.3810;
+    //o_prm.k[0][0]  = -1.1820; o_prm.k[0][1]  = -1.1250; o_prm.k[1][0]  = -1.1550; o_prm.k[1][1]  = -1.1310;
+    o_prm.k[0][0]  = -2.1820; o_prm.k[0][1]  = -2.1250; o_prm.k[1][0]  = -2.1550; o_prm.k[1][1]  = -2.1310;
+    o_prm.z[0][0]  = +0.0125; o_prm.z[0][1]  = +0.0268; o_prm.z[1][0]  = +0.0359; o_prm.z[1][1]  = +0.0186;
+    o_prm.xi[0].x  = +0.3849; o_prm.xi[0].y  = +0.5442; o_prm.xi[1].x  = +0.7661; o_prm.xi[1].y  = +0.6785;
+    o_prm.eta[0].x = +0.6656; o_prm.eta[0].y = +0.7909; o_prm.eta[1].x = +0.4856; o_prm.eta[1].y = +0.3810;
     // Optimal I:0.00054           --------------------------------------------------------------------------
-    o_prm.k[0][0]  = -2.1866; o_prm.k[0][1]  = -2.1325; o_prm.k[1][0]  = -2.1321; o_prm.k[1][1]  = -2.1712;
-    o_prm.z[0][0]  = +0.0359; o_prm.z[0][1]  = +0.0496; o_prm.z[1][0]  = +0.1320; o_prm.z[1][1]  = +0.1145;
-    o_prm.xi[0].x  = +0.2732; o_prm.xi[0].y  = +0.6012; o_prm.xi[1].x  = +0.7578; o_prm.xi[1].y  = +0.7590;
-    o_prm.eta[0].x = +0.6968; o_prm.eta[0].y = +0.6892; o_prm.eta[1].x = +0.3987; o_prm.eta[1].y = +0.3898;
+    //o_prm.k[0][0]  = -2.1866; o_prm.k[0][1]  = -2.1325; o_prm.k[1][0]  = -2.1321; o_prm.k[1][1]  = -2.1712;
+    //o_prm.z[0][0]  = +0.0359; o_prm.z[0][1]  = +0.0496; o_prm.z[1][0]  = +0.1320; o_prm.z[1][1]  = +0.1145;
+    //o_prm.xi[0].x  = +0.2732; o_prm.xi[0].y  = +0.6012; o_prm.xi[1].x  = +0.7578; o_prm.xi[1].y  = +0.7590;
+    //o_prm.eta[0].x = +0.6968; o_prm.eta[0].y = +0.6892; o_prm.eta[1].x = +0.3987; o_prm.eta[1].y = +0.3898;
+    // ------------------------------------------------------------------------------------------------------
+    // Optimal I:0.00093           --------------------------------------------------------------------------
+    //o_prm.k[0][0]  = -1.2826; o_prm.k[0][1]  = -1.0983; o_prm.k[1][0]  = -1.4301; o_prm.k[1][1]  = -1.1559;
+    //o_prm.z[0][0]  = -0.1559; o_prm.z[0][1]  = -0.1369; o_prm.z[1][0]  = -0.0990; o_prm.z[1][1]  = -0.1317;
+    //o_prm.xi[0].x  = +0.1391; o_prm.xi[0].y  = +0.8715; o_prm.xi[1].x  = +0.7716; o_prm.xi[1].y  = +0.7722;
+    //o_prm.eta[0].x = +0.6358; o_prm.eta[0].y = +0.5878; o_prm.eta[1].x = +0.3662; o_prm.eta[1].y = +0.3292;
     // ------------------------------------------------------------------------------------------------------
 
     // Regularization parameters
@@ -101,10 +109,10 @@ void prod_example1()
     r_prm.xi.resize(e_prm.No);
     r_prm.eta.resize(e_prm.Nc);
 
-//    r_prm.k[0][0]  = -0.0182; r_prm.k[0][1]  = -0.0125; r_prm.k[1][0]  = -0.0155; r_prm.k[1][1]  = -0.0131;
-//    r_prm.z[0][0]  = -0.0262; r_prm.z[0][1]  = -0.0773; r_prm.z[1][0]  = -0.0570; r_prm.z[1][1]  = +0.0653;
-//    r_prm.xi[0].x  = +0.3849; r_prm.xi[0].y  = +0.5442; r_prm.xi[1].x  = +0.7661; r_prm.xi[1].y  = +0.6785;
-//    r_prm.eta[0].x = +0.6656; r_prm.eta[0].y = +0.7909; r_prm.eta[1].x = +0.4856; r_prm.eta[1].y = +0.3810;
+    //r_prm.k[0][0]  = -0.0182; r_prm.k[0][1]  = -0.0125; r_prm.k[1][0]  = -0.0155; r_prm.k[1][1]  = -0.0131;
+    //r_prm.z[0][0]  = -0.0262; r_prm.z[0][1]  = -0.0773; r_prm.z[1][0]  = -0.0570; r_prm.z[1][1]  = +0.0653;
+    //r_prm.xi[0].x  = +0.3849; r_prm.xi[0].y  = +0.5442; r_prm.xi[1].x  = +0.7661; r_prm.xi[1].y  = +0.6785;
+    //r_prm.eta[0].x = +0.6656; r_prm.eta[0].y = +0.7909; r_prm.eta[1].x = +0.4856; r_prm.eta[1].y = +0.3810;
 
     //r_prm.k[0][0]  = -1.1820; r_prm.k[0][1]  = -1.1250; r_prm.k[1][0]  = -1.1550; r_prm.k[1][1]  = -1.1310;
     //r_prm.k[0][0]  = -2.1820; r_prm.k[0][1]  = -2.1250; r_prm.k[1][0]  = -2.1550; r_prm.k[1][1]  = -2.1310;
@@ -127,7 +135,7 @@ void prod_example1()
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 0.0000;// << 1.0000 << 20.000 << 50.000;
+    DoubleVector r; r << 1.0000;// << 1.0000 << 20.000 << 50.000;
     // Regularization coefficients
     DoubleVector e; e << 0.0000;// << 0.1000 << 0.0100 << 0.0000;
 
@@ -148,16 +156,32 @@ void prod_example1()
         prob.vmin.resize(e_prm.Nc, -0.5);
         prob.vmax.resize(e_prm.Nc, +0.5);
         prob.LD = 50;
-        prob.noise = 0.01;
+        prob.noise = 0.00;
 
         prob.regEpsilon = e[i];
         prob.r = r[i];
+
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
+
+//            prob.setTimeDimension(Dimension(0.01, 0, 3000));
+//            std::vector<DoubleMatrix> u;
+//            spif_vectorH u_info;
+//            prob.solveForwardIBVP(u, u_info, true);
+
+//            FILE* cfile = fopen("e:/Google Drive/Problems/Problem2_H/Experiments/control2.txt", "w");
+//            for (unsigned int ln=0; ln<=3000; ln++)
+//            {
+//                fprintf(cfile, "%d,%.10f,%.10f\n", ln, prob.v(0, o_prm, e_prm, u_info, ln), prob.v(1, o_prm, e_prm, u_info, ln));
+//            }
+//            fclose(cfile);
+
+//            return;
+
             //prob.checkGradient1(prob);
-            prod_figure1(prob, ht, x);
-            return;
+            //prod_figure1(prob, ht, x);
+            //return;
 //            printf("Fx: %10.6f\n", prob.fx(x)); return;
 //            IPrinter::printSeperatorLine();
 //            IPrinter::printMatrix(8,4,u[0]);

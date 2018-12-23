@@ -119,6 +119,7 @@ public:
 
     GradientMethod *gm;
 //    EquationParameterHE mParameter;
+    std::vector<DoubleMatrix> vu;
 };
 
 #endif // PROBLEM2H_SOLVER1_H

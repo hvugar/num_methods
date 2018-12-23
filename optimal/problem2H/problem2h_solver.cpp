@@ -811,7 +811,7 @@ auto Problem2HNDirichlet::project(DoubleVector &pv) const -> void
     for (unsigned int index = start; index <=end; index++)
     {
         //projectControlPoints(pv, index);
-        //projectMeasurePoints(pv, index);
+        projectMeasurePoints(pv, index);
     }
 }
 

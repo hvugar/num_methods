@@ -89,13 +89,47 @@ void CC1IHyperbolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     QGuiApplication app(argc, argv);
 
     CC1IHyperbolicIBVP1 hibvp;
-    hibvp.setTimeDimension(Dimension(0.01, 0, 100));
+    hibvp.a = 1.0;
+    hibvp.sigma = 0.0;
+    hibvp.setTimeDimension(Dimension(0.005, 0, 200));
     hibvp.addSpaceDimension(Dimension(0.01, 0, 100));
     hibvp.addSpaceDimension(Dimension(0.01, 0, 100));
 
     DoubleMatrix u;
-    hibvp.calculateD2V1(u, hibvp.a, hibvp.sigma);
+    //hibvp.calculateD2V1(u, hibvp.a, hibvp.sigma);
+    hibvp.explicitCalculateD2V1(u, hibvp.a, hibvp.sigma);
+    IPrinter::printMatrix(u);
     IPrinter::printSeperatorLine();
+}
+
+void CC1IHyperbolicIBVP1::layerInfo(const DoubleMatrix &u, unsigned int ln) const
+{
+    if (ln==0 || ln==1 || ln==200)
+    {
+        IPrinter::printMatrix(u);
+        IPrinter::printSeperatorLine();
+    }
+
+    //    if (ln == 0) const_cast<CC1IHyperbolicIBVP1*>(this)->u10 = u;
+    //    if (ln == 1) const_cast<CC1IHyperbolicIBVP1*>(this)->u10 = u;
+    //    if (ln >= 2) const_cast<CC1IHyperbolicIBVP1*>(this)->u10 = u;
+
+    //    //if (ln == 0 || ln == 1 || ln == 2 || ln%100==0)
+    //    {
+    //        //IPrinter::printMatrix(u);
+    //        //IPrinter::printSeperatorLine();
+
+            char filename1[40];
+            int size1 = sprintf(filename1, "e:/data/img2/image%d.png", ln);
+            filename1[size1] = 0;
+
+            double min = u.min();
+            double max = u.max();
+
+            QPixmap pxm;
+            visualizeMatrixHeat(u, min, max, pxm, 0, 0);
+            pxm.save(QString(filename1), "PNG");
+    //    }
 }
 
 HyperbolicIBVP1::HyperbolicIBVP1()
@@ -168,8 +202,8 @@ double distribute_blows(const Dimension &dimX, const Dimension &dimY, const Spac
     double hx = dimX.step();
     double hy = dimY.step();
 
-    const double sigmaX = 12.0*hx;
-    const double sigmaY = 12.0*hy;
+    const double sigmaX = 3.0*hx;
+    const double sigmaY = 3.0*hy;
     double sum = 0.0;
     for (unsigned int s=0; s<2; s++)
     {
@@ -412,29 +446,5 @@ double CC1IHyperbolicIBVP1::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) con
     const static Dimension &dimY = spaceDimension(Dimension::DimensionY);
     //return sigma - 4.0*a*a + 0.0;
     //return sigma - 4.0*a*a + 2.0;
-    return distribute_control(dimX, dimY, sn, this->u10);
-}
-
-void CC1IHyperbolicIBVP1::layerInfo(const DoubleMatrix &u, unsigned int ln) const
-{
-    if (ln == 0) const_cast<CC1IHyperbolicIBVP1*>(this)->u10 = u;
-    if (ln == 1) const_cast<CC1IHyperbolicIBVP1*>(this)->u10 = u;
-    if (ln >= 2) const_cast<CC1IHyperbolicIBVP1*>(this)->u10 = u;
-
-    //if (ln == 0 || ln == 1 || ln == 2 || ln%100==0)
-    {
-        //IPrinter::printMatrix(u);
-        //IPrinter::printSeperatorLine();
-
-        char filename1[40];
-        int size1 = sprintf(filename1, "e:/data/img2/image%d.png", ln);
-        filename1[size1] = 0;
-
-        double min = u10.min();
-        double max = u10.max();
-
-        QPixmap pxm;
-        visualizeMatrixHeat(u10, min, max, pxm, 0, 0);
-        pxm.save(QString(filename1), "PNG");
-    }
+    return 0.0;//distribute_control(dimX, dimY, sn, this->u10);
 }

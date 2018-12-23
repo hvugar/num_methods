@@ -46,10 +46,10 @@
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    srand(time(NULL));
+    srand(time(0));
     //CCParabolicIBVP1::Main(argc, argv);
     //CCIHyperbolicIBVP1::Main(argc, argv);
-    //CC1IHyperbolicIBVP1::Main(argc, argv);
+    CC1IHyperbolicIBVP1::Main(argc, argv);
     //HyperbolicIBVP2::Main(argc, argv);
     //return 0;
     //QGuiApplication app(argc, argv);
@@ -57,7 +57,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Problem2Article::Main(argc, argv);
     //IPrinter::printSeperatorLine();
     //Problem2PNeumann::Main(argc, argv);
-    Problem2HNDirichlet::Main(argc, argv);
+    //Problem2HNDirichlet::Main(argc, argv);
 
     //BorderHyperbolic2D::Main(argc, argv);
     //BorderHyperbolic2DN::Main(argc, argv);

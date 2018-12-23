@@ -43,8 +43,14 @@ public:
     virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
 
 public:
+    void explicitCalculateD2V1(DoubleMatrix &m, double a, double alpha) const;
+    void implicitCalculateD2V1(DoubleMatrix &m, double a, double alpha) const;
+
     void calculateD2V1(DoubleMatrix &u, double a, double sigma) const;
     void calculateD2V2(DoubleMatrix &u, double a, double lambda=0.25) const;
+
+private:
+    auto calculateInitialD2(DoubleMatrix &u00, DoubleMatrix &u10, unsigned int N, unsigned int M, double hx, double hy, double ht, double a, double sigma) const -> void;
 };
 
 /**
