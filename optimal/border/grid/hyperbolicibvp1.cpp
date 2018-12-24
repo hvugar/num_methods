@@ -86,18 +86,18 @@ void CCIHyperbolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 void CC1IHyperbolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    QGuiApplication app(argc, argv);
+    //QGuiApplication app(argc, argv);
 
     CC1IHyperbolicIBVP1 hibvp;
     hibvp.a = 1.0;
-    hibvp.sigma = 0.0;
+    hibvp.alpha = 0.0;
     hibvp.setTimeDimension(Dimension(0.005, 0, 200));
     hibvp.addSpaceDimension(Dimension(0.01, 0, 100));
     hibvp.addSpaceDimension(Dimension(0.01, 0, 100));
 
     DoubleMatrix u;
-    //hibvp.calculateD2V1(u, hibvp.a, hibvp.sigma);
-    hibvp.explicitCalculateD2V1(u, hibvp.a, hibvp.sigma);
+    hibvp.explicit_calculate_D2V1(u, hibvp.a, hibvp.alpha);
+    //hibvp.implicit_calculate_D2V1(u, hibvp.a, hibvp.alpha);
     IPrinter::printMatrix(u);
     IPrinter::printSeperatorLine();
 }
@@ -109,6 +109,7 @@ void CC1IHyperbolicIBVP1::layerInfo(const DoubleMatrix &u, unsigned int ln) cons
         IPrinter::printMatrix(u);
         IPrinter::printSeperatorLine();
     }
+    return;
 
     //    if (ln == 0) const_cast<CC1IHyperbolicIBVP1*>(this)->u10 = u;
     //    if (ln == 1) const_cast<CC1IHyperbolicIBVP1*>(this)->u10 = u;

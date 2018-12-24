@@ -162,8 +162,8 @@ void Problem2HNDirichlet1::print(unsigned int i, const DoubleVector &x, const Do
     IPrinter::printVector(v1, "v1", 10);
     IPrinter::printVector(v2, "v2", 10);
 
-//    printf("I[%3d]: F:%.5f I:%.5f P:%.5f N:%.5f R:%.3f e:%.3f a:%.6f ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
-//    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %6.4f %6.4f %6.4f %6.4f c: %6.4f %6.4f %6.4f %6.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
+    //    printf("I[%3d]: F:%.5f I:%.5f P:%.5f N:%.5f R:%.3f e:%.3f a:%.6f ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
+    //    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %6.4f %6.4f %6.4f %6.4f c: %6.4f %6.4f %6.4f %6.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
 
     printf("I[%3d]: F:%.5f I:%.5f P:%.5f N:%.5f R:%.3f e:%.3f a:%.6f ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
     printf("min:%.6f max:%.6f min:%.6f max:%.6f U0:%.8f UT:%.8f", u.at(0).min(), u.at(0).max(), u.at(LD).min(), u.at(LD).max(), integralU(u[0]), integralU(u[LD]));
@@ -179,10 +179,10 @@ void Problem2HNDirichlet1::print(unsigned int i, const DoubleVector &x, const Do
     C_UNUSED(prob);
     IPrinter::printSeperatorLine();
 
-//    prob->optimizeK = i%4 == 3;
-//    prob->optimizeZ = i%4 == 0;
-//    prob->optimizeO = i%4 == 1;
-//    prob->optimizeC = i%4 == 2;
+    //    prob->optimizeK = i%4 == 3;
+    //    prob->optimizeZ = i%4 == 0;
+    //    prob->optimizeO = i%4 == 1;
+    //    prob->optimizeC = i%4 == 2;
 }
 
 void Problem2HNDirichlet1::checkGradient1(const Problem2HNDirichlet1 &prob)
@@ -931,6 +931,7 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
     const double lambda   = mEquParameter.lambda;
     const unsigned int No = mEquParameter.No;
     const unsigned int Nc = mEquParameter.Nc;
+    const unsigned int Ns = mEquParameter.Ns;
 
     const double m_aa_htht__hxhx = -(a*a*ht*ht)/(hx*hx);
     const double p_aa_htht__hxhx___lambda_ht = +2.0 + 2.0*(a*a*ht*ht)/(hx*hx) + (lambda*ht);
@@ -960,6 +961,11 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
     newDistributeDeltaGaussPulse(mEquParameter.theta, qExtSpacePoints, dimX, dimY);
     newDistributeDeltaGaussCntrl(mOptParameter.eta, cntExtSpacePoints, dimX, dimY);
     newDistributeDeltaGaussMsmnt(mOptParameter.xi,  msnExtSpacePoints, dimX, dimY);
+
+    //std::vector<DeltaGrid> msnDeltaGrid(No); for (unsigned int j=0; j<No; j++) { msnDeltaGrid[j].initGrid(N,hx,M,hy,mOptParameter.xi[j], 1, 1); }
+    //std::vector<DeltaGrid> cntDeltaGrid(Nc); for (unsigned int i=0; i<Nc; i++) { cntDeltaGrid[i].initGrid(N,hx,M,hy,mOptParameter.eta[i], 1, 1); }
+    //std::vector<DeltaGrid> plsDeltaGrid(Ns); for (unsigned int s=0; s<Ns; s++) { plsDeltaGrid[s].initGrid(N,hx,M,hy,mEquParameter.theta[s], 5, 5); }
+
     //----------------------------------------------------------------------------------------------//
     if (use == true) f_prepareInfo(No, mOptParameter.xi, u_info, LLD);
     //----------------------------------------------------------------------------------------------//
@@ -1010,8 +1016,8 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
             {
                 double q = mEquParameter.q[s];
                 const ExtendedSpacePointH &extendedSpacePoint = qExtSpacePoints.at(s);
-//                printf("%f %d %d %d\n", extendedSpacePoint.x, extendedSpacePoint.rx,
-//                       extendedSpacePoint.minX, extendedSpacePoint.maxX);
+                //                printf("%f %d %d %d\n", extendedSpacePoint.x, extendedSpacePoint.rx,
+                //                       extendedSpacePoint.minX, extendedSpacePoint.maxX);
                 if (extendedSpacePoint.contains(sn))
                 {
                     const std::vector<ExtendedSpacePointNodeH> &nodes = extendedSpacePoint.nodes;
@@ -1027,7 +1033,7 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
                 }
             }
 
-//            printf("%f %f %f\n", mEquParameter.q[0], mEquParameter.q[1], Q);
+            //            printf("%f %f %f\n", mEquParameter.q[0], mEquParameter.q[1], Q);
 
             double sum = 0.0;
             sum += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]);
@@ -1111,10 +1117,11 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
         double* _u = new double[No];
         for (unsigned int j=0; j<No; j++)
         {
+            _u[j] = 0.0;
+
             const ExtendedSpacePointH &extendedSpacePoint = msnExtSpacePoints.at(j);
             const std::vector<ExtendedSpacePointNodeH> &nodes = extendedSpacePoint.nodes;
             const unsigned int nodes_size = static_cast<unsigned int>(nodes.size());
-            _u[j] = 0.0;
             for (unsigned int nj=0; nj<nodes_size; nj++)
             {
                 const ExtendedSpacePointNodeH &node = nodes.at(nj);
@@ -1122,6 +1129,16 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
                 const unsigned int node_ny = static_cast<unsigned int>(node.ny);
                 _u[j] += u10[node_ny][node_nx] * (node.w * (hx*hy));
             }
+
+            //const  DeltaGrid &mdg = msnDeltaGrid[j];
+            //for (unsigned int m=mdg.minY(); m<=mdg.maxY(); m++)
+            //{
+            //    for (unsigned int n=mdg.minX(); n<=mdg.maxX(); n++)
+            //    {
+            //        _u[j] += u10[m][n] * mdg.weight(n,m) * (hx*hy);
+            //    }
+            //}
+
             _u[j] *= (1.0 + noise * (rand()%2==0 ? +1.0 : -1.0));
         }
 
@@ -1135,6 +1152,19 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
             }
         }
         delete [] _u;
+
+//        DeltaGrid fxGrid; SpacePoint sp;
+//        fxGrid.initGrid(N,hx,M,hy,sp);
+//        for (unsigned int m=0; m<=M; m++)
+//        {
+//            for (unsigned int n=0; n<=N; n++)
+//            {
+//                fxGrid.data()[m][n] = 0.0;
+//                double _fx = 0.0;
+//                for (unsigned int i=0; i<Nc; i++) _fx += _v[i] * cntDeltaGrid[i].weight(n,m);
+//                fxGrid.data()[m][n] = _fx;
+//            }
+//        }
 
         /**************************************************** x direction apprx ***************************************************/
 
@@ -1166,8 +1196,10 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
                             if (node.equals(sn)) _fx += _v[i] * node.w;
                         }
                     }
+                    //_fx += _v[i] * cntDeltaGrid[i].weight(n,m);
                 }
                 dx[n-1] += htht *_fx;
+                //dx[n-1] += htht *fxGrid.weight(n,m);
                 //------------------------------------- Adding delta part -------------------------------------//
             }
             dx[0]   -= m_aa_htht__hxhx * u15[m][0];
@@ -1207,8 +1239,10 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
                             if (node.equals(sn)) _fx += _v[i] * node.w;
                         }
                     }
+                    //_fx += _v[i] * cntDeltaGrid[i].weight(n,m);
                 }
-                dy[m-1] += ht * ht *_fx;
+                dy[m-1] += htht *_fx;
+                //dy[m-1] += htht *fxGrid.weight(n,m);
             }
             dy[0]   -= m_aa_htht__hyhy * u20[0][n];
             dy[M-2] -= m_aa_htht__hyhy * u20[M][n];
@@ -1260,6 +1294,10 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
     qExtSpacePoints.clear();
     msnExtSpacePoints.clear();
     cntExtSpacePoints.clear();
+
+    //for (unsigned int j=0; j<No; j++) msnDeltaGrid[j].cleanGrid();
+    //for (unsigned int i=0; i<Nc; i++) cntDeltaGrid[i].cleanGrid();
+    //for (unsigned int s=0; s<Ns; s++) plsDeltaGrid[s].cleanGrid();
 
     u00.clear();
     u10.clear();
@@ -1780,7 +1818,7 @@ auto Problem2HNDirichlet1::solveBackwardIBVP2(const std::vector<DoubleMatrix> &u
 //            {
 //                unsigned int m = rows0.at(row);
 //                sn.j = m; sn.y = m*hy;
-                
+
 //                for (unsigned int n=1; n<=N-1; n++)
 //                {
 //                    sn.i = n; sn.x = n*hx;

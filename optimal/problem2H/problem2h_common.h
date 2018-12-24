@@ -87,6 +87,49 @@ struct GridH
     std::vector<unsigned int> cols2;
 };
 
+class DeltaGrid
+{
+public:
+    DeltaGrid();
+    virtual ~DeltaGrid();
+
+    auto initGrid(unsigned int _N, double _hx, unsigned int _M, double _hy, const SpacePoint& p, unsigned int sigmaXN = 1, unsigned int sigmaYN = 1) -> void;
+    auto cleanGrid() -> void;
+
+    auto isCenter(const SpaceNodePDE &sn) const -> bool;
+    auto isCenter(unsigned int n, unsigned int m) const -> bool;
+
+    auto isContains(const SpaceNodePDE &sn) const -> bool;
+    auto isContains(unsigned int n, unsigned int m) const -> bool;
+
+    auto weight(const SpaceNodePDE &sn) const -> double;
+    auto weight(unsigned int n, unsigned int m) const -> double;
+
+    unsigned int minX() const { return _minX; }
+    unsigned int maxX() const { return _maxX; }
+    unsigned int minY() const { return _minY; }
+    unsigned int maxY() const { return _maxY; }
+
+    double **data() { return nwmx; }
+    double **data() const { return nwmx; }
+
+private:
+
+    unsigned int _N;
+    unsigned int _M;
+    double _hx;
+    double _hy;
+    SpacePoint _p;
+
+    double **nwmx;
+    unsigned int _rx;
+    unsigned int _ry;
+    unsigned int _minX;
+    unsigned int _maxX;
+    unsigned int _minY;
+    unsigned int _maxY;
+};
+
 struct PROBLEM2HSHARED_EXPORT OptimizeParameterH
 {
     DoubleMatrix k;
