@@ -12,87 +12,14 @@ public:
     const DoubleMatrix *u10 = nullptr;
 
 protected:
-    virtual double initial1(const SpaceNodePDE &) const
-    {
-        return 0.0;
-    }
+    virtual double initial1(const SpaceNodePDE &sn) const;
+    virtual double initial2(const SpaceNodePDE &sn) const;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &) const;
 
-    virtual double initial2(const SpaceNodePDE &sn) const
-    {
-        static unsigned int Ns = e_prm->Ns;
-        static std::vector<DeltaGrid> thetaGridList;
-
-        if (!_initialCalculation)
-        {
-            thetaGridList.resize(Ns);
-            for (unsigned int s=0; s<Ns; s++)
-            {
-                thetaGridList[s].initGrid(N, hx, M, hy, e_prm->theta[s], 5, 5);
-            }
-            const_cast<Problem2HNDirichletForward1*>(this)->_initialCalculation = true;
-        }
-
-        double sum = 0.0;
-        for (unsigned int s=0; s<Ns; s++) sum += e_prm->q[s]*thetaGridList[s].weight(sn);
-        return sum;
-    }
-
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &) const
-    {
-        return 0.0;
-    }
-
-    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &) const
-    {
-        static unsigned int No = e_prm->No;
-        static unsigned int Nc = e_prm->Nc;
-        static unsigned int Ns = e_prm->Ns;
-
-        for (unsigned int i=0; i<Nc; i++)
-        {
-            double vi = 0.0;
-            for (unsigned int j=0; j<No; j++)
-            {
-
-            }
-        }
-
-        return 0.0;
-    }
-
-    void setU10(const DoubleMatrix &u10)
-    {
-        const size_t No = msrmGridList.size();
-        u_xi.clear();
-        u_xi.resize(No);
-
-        for (size_t j=0; j<No; j++)
-        {
-            u_xi[j] = 0.0;
-            const  DeltaGrid &mdg = msrmGridList[j];
-            for (unsigned int m=mdg.minY(); m<=mdg.maxY(); m++)
-            {
-                for (unsigned int n=mdg.minX(); n<=mdg.maxX(); n++)
-                {
-                    u_xi[j] += u10[m][n] * mdg.weight(n,m) * (hx*hy);
-                }
-            }
-            //u_xi[j] *= (1.0 + noise * (rand()%2==0 ? +1.0 : -1.0));
-        }
-    }
-
-    void setEquationParameters(const EquationParameterH &e_prm, const OptimizeParameterH& o_prm)
-    {
-        this->e_prm = &e_prm;
-        this->o_prm = &o_prm;
-
-        unsigned int No = e_prm.No;
-        for (unsigned int j=0; j<msrmGridList.size(); j++) msrmGridList[j].cleanGrid();
-        for (unsigned int j=0; j<No; j++)
-        {
-            msrmGridList[j].initGrid(N, hx, M, hy, o_prm.xi[j], 1, 1);
-        }
-    }
+public:
+    void setU10(const DoubleMatrix &u10);
+    void setEquationParameters(const EquationParameterH &e_prm, const OptimizeParameterH& o_prm);
 
 private:
     unsigned int N;

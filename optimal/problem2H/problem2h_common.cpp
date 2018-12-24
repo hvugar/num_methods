@@ -61,36 +61,38 @@ DeltaGrid::DeltaGrid() : _N(0), _M(0), _hx(0.0), _hy(0.0) {}
 
 DeltaGrid::~DeltaGrid() { cleanGrid(); }
 
-auto DeltaGrid::initGrid(unsigned int N, double hx, unsigned int M, double hy, const SpacePoint& p, unsigned int sigmaXN, unsigned int sigmaYN) -> void
+auto DeltaGrid::initGrid(unsigned int N, double hx, unsigned int M, double hy) -> void
 {
     this->_N = N;
     this->_M = M;
     this->_hx = hx;
     this->_hy = hy;
-    this->_p = p;
-
-
-    unsigned int kx = 4*sigmaXN;
-    unsigned int ky = 4*sigmaYN;
-    double sigmaX = hx*sigmaXN;
-    double sigmaY = hy*sigmaYN;
 
     nwmx = new double*[M+1];
     for (unsigned int m=0; m<=M; m++) nwmx[m] = new double[N+1];
+}
 
-    _rx = static_cast<unsigned int>(round(p.x*N));
-    _ry = static_cast<unsigned int>(round(p.y*M));
+auto DeltaGrid::setPoint(const SpacePoint &p, unsigned int sigmaXN, unsigned int sigmaYN) -> void
+{
+    _p = p;
+    _rx = static_cast<unsigned int>(round(p.x*_N));
+    _ry = static_cast<unsigned int>(round(p.y*_M));
+
+    unsigned int kx = 4*sigmaXN;
+    unsigned int ky = 4*sigmaYN;
+    double sigmaX = _hx*sigmaXN;
+    double sigmaY = _hy*sigmaYN;
 
     _minX = _rx - kx; _maxX = _rx + kx;
     _minY = _ry - ky; _maxY = _ry + ky;
 
     double sumX = 0.0;
-    for (unsigned int n=_minX; n<=_maxX; n++) sumX += exp(-((n*hx-p.x)*(n*hx-p.x))/(2.0*sigmaX*sigmaX));
-    sumX *= hx;
+    for (unsigned int n=_minX; n<=_maxX; n++) sumX += exp(-((n*_hx-p.x)*(n*_hx-p.x))/(2.0*sigmaX*sigmaX));
+    sumX *= _hx;
 
     double sumY = 0.0;
-    for (unsigned int m=_minY; m<=_maxY; m++) sumY += exp(-((m*hy-p.y)*(m*hy-p.y))/(2.0*sigmaY*sigmaY));
-    sumY *= hy;
+    for (unsigned int m=_minY; m<=_maxY; m++) sumY += exp(-((m*_hy-p.y)*(m*_hy-p.y))/(2.0*sigmaY*sigmaY));
+    sumY *= _hy;
 
     double sigma = (sumX*sumY) / (2.0*M_PI);
     double factor = 1.0/((2.0*M_PI)*sigma);
@@ -98,14 +100,15 @@ auto DeltaGrid::initGrid(unsigned int N, double hx, unsigned int M, double hy, c
     SpaceNodePDE sn;
     for (unsigned int m=_minY; m<=_maxY; m++)
     {
-        sn.j = static_cast<int>(m); sn.y = m*hy;
+        sn.j = static_cast<int>(m); sn.y = m*_hy;
         for (unsigned int n=_minX; n<=_maxX; n++)
         {
-            sn.i = static_cast<int>(n); sn.x = n*hx;
+            sn.i = static_cast<int>(n); sn.x = n*_hx;
             nwmx[m][n] = factor*exp(-0.5*(((sn.x-p.x)*(sn.x-p.x))/(sigmaX*sigmaX)+((sn.y-p.y)*(sn.y-p.y))/(sigmaY*sigmaY)));
         }
     }
 }
+
 
 auto DeltaGrid::cleanGrid() -> void
 {

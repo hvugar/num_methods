@@ -53,7 +53,20 @@ public:
 
 private:
     void initial_calculate(DoubleVector &u00, DoubleVector &u10, unsigned int N, double hx, double ht, double a, double sigma) const;
-    void initial_calculate(DoubleMatrix &u00, DoubleMatrix &u10, unsigned int N, unsigned int M, double hx, double hy, double ht, double a, double sigma) const;
+    void initial_calculate(DoubleMatrix &u00, DoubleMatrix &u10, unsigned int N, unsigned int M, double hx, double hy, double ht, double a, double alpha) const;
+};
+
+class MINIMUMSHARED_EXPORT ConjugateCC1IHyperbolicIBVP : public IHyperbolicIBVP
+{
+public:
+    virtual ~ConjugateCC1IHyperbolicIBVP();
+
+    virtual void layerInfo(const DoubleVector &, unsigned int) const {}
+    virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
+
+    void explicit_calculate_D2V1(DoubleMatrix &u, double a, double alpha) const;
+private:
+    void initial_calculate(DoubleMatrix &u00, DoubleMatrix &u10, unsigned int N, unsigned int M, double hx, double hy, double ht, double a, double alpha, const TimeNodePDE &tn) const;
 };
 
 /**

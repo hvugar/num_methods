@@ -93,7 +93,8 @@ public:
     DeltaGrid();
     virtual ~DeltaGrid();
 
-    auto initGrid(unsigned int _N, double _hx, unsigned int _M, double _hy, const SpacePoint& p, unsigned int sigmaXN = 1, unsigned int sigmaYN = 1) -> void;
+    auto initGrid(unsigned int _N, double _hx, unsigned int _M, double _hy) -> void;
+    auto setPoint(const SpacePoint &p, unsigned int sigmaX=1, unsigned int sigmaY=1) -> void;
     auto cleanGrid() -> void;
 
     auto isCenter(const SpaceNodePDE &sn) const -> bool;
