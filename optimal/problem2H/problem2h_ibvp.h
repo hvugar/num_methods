@@ -11,21 +11,26 @@ public:
     const OptimizeParameterH *o_prm = nullptr;
     const DoubleMatrix *u10 = nullptr;
 
+    virtual void layerInfo(const DoubleMatrix &, unsigned int) const;
+
 protected:
     virtual double initial1(const SpaceNodePDE &sn) const;
     virtual double initial2(const SpaceNodePDE &sn) const;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &) const;
+    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
 public:
-    void setU10(const DoubleMatrix &u10);
-    void setEquationParameters(const EquationParameterH &e_prm, const OptimizeParameterH& o_prm);
+    void setEquationParameters(const EquationParameterH &e_prm,
+                               const OptimizeParameterH &o_prm,
+                               unsigned int N, double hx,
+                               unsigned int M, double hy);
 
 private:
-    GridSpace2D grid;
     bool _initialCalculation = false;
-    std::vector<double> u_xi;
     std::vector<DeltaGrid> msrmGridList;
+    std::vector<DeltaGrid> cntrGridList;
+
+    double **fx_value;
 };
 
 #endif // PROBLEM2H_IBVP_H
