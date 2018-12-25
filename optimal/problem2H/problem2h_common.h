@@ -87,6 +87,14 @@ struct GridH
     std::vector<unsigned int> cols2;
 };
 
+struct GridSpace2D
+{
+    unsigned int N;
+    unsigned int M;
+    double hx;
+    double hy;
+};
+
 class DeltaGrid
 {
 public:
