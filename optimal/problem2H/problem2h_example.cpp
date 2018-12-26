@@ -104,10 +104,10 @@ void prod_example1()
     //o_prm.eta[0].x = +0.6358; o_prm.eta[0].y = +0.5878; o_prm.eta[1].x = +0.3662; o_prm.eta[1].y = +0.3292;
     // ------------------------------------------------------------------------------------------------------
     // Optimal I:0.00046           --------------------------------------------------------------------------
-    o_prm.k[0][0]  = -2.2155; o_prm.k[0][1]  = -2.1080; o_prm.k[1][0]  = -2.0897; o_prm.k[1][1]  = -2.2124;
-    o_prm.z[0][0]  = +0.0359; o_prm.z[0][1]  = +0.0496; o_prm.z[1][0]  = +0.1208; o_prm.z[1][1]  = -0.1028;
-    o_prm.xi[0].x  = +0.3943; o_prm.xi[0].y  = +0.7138; o_prm.xi[1].x  = +0.7461; o_prm.xi[1].y  = +0.6914;
-    o_prm.eta[0].x = +0.6914; o_prm.eta[0].y = +0.6823; o_prm.eta[1].x = +0.3760; o_prm.eta[1].y = +0.3700;
+    //o_prm.k[0][0]  = -2.2155; o_prm.k[0][1]  = -2.1080; o_prm.k[1][0]  = -2.0897; o_prm.k[1][1]  = -2.2124;
+    //o_prm.z[0][0]  = +0.0359; o_prm.z[0][1]  = +0.0496; o_prm.z[1][0]  = +0.1208; o_prm.z[1][1]  = -0.1028;
+    //o_prm.xi[0].x  = +0.3943; o_prm.xi[0].y  = +0.7138; o_prm.xi[1].x  = +0.7461; o_prm.xi[1].y  = +0.6914;
+    //o_prm.eta[0].x = +0.6914; o_prm.eta[0].y = +0.6823; o_prm.eta[1].x = +0.3760; o_prm.eta[1].y = +0.3700;
     // ------------------------------------------------------------------------------------------------------
 
     // Regularization parameters
@@ -164,7 +164,7 @@ void prod_example1()
         prob.vmin.resize(e_prm.Nc, -0.5);
         prob.vmax.resize(e_prm.Nc, +0.5);
         prob.LD = 50;
-        prob.noise = 0.10;
+        prob.noise = 0.00;
 
         prob.regEpsilon = e[i];
         prob.r = r[i];
@@ -173,10 +173,21 @@ void prod_example1()
         {
             prob.PrmToVector(o_prm, x);
 
-            prob.setTimeDimension(Dimension(0.01, 0, 3000));
-            std::vector<DoubleMatrix> u;
+            //prob.setTimeDimension(Dimension(0.01, 0, 3000));
+            std::vector<DoubleMatrix> u2;
+            std::vector<DoubleMatrix> u3;
             spif_vectorH u_info;
-            prob.solveForwardIBVP(u, u_info, true);
+
+            prob.solveForwardIBVP2(u2, u_info, false);
+            IPrinter::printMatrix(u2[0]);
+            IPrinter::printSeperatorLine();
+
+            prob.solveForwardIBVP3(u3, u_info, false);
+            IPrinter::printMatrix(u3[0]);
+            IPrinter::printSeperatorLine();
+
+            //prob.solveForwardIBVP3(u, u_info, true);
+
 
             //FILE* cfile = fopen("e:/Google Drive/Problems/Problem2_H/Experiments/control2.txt", "w");
             //for (unsigned int ln=0; ln<=3000; ln++)

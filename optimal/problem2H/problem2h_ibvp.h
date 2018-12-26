@@ -9,8 +9,6 @@ class PROBLEM2HSHARED_EXPORT Problem2HNDirichletForward1 : public CC1IHyperbolic
 public:
     const EquationParameterH *e_prm = nullptr;
     const OptimizeParameterH *o_prm = nullptr;
-    const DoubleMatrix *u10 = nullptr;
-
     virtual void layerInfo(const DoubleMatrix &, unsigned int) const;
 
 protected:
@@ -20,17 +18,16 @@ protected:
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
 public:
-    void setEquationParameters(const EquationParameterH &e_prm,
-                               const OptimizeParameterH &o_prm,
-                               unsigned int N, double hx,
-                               unsigned int M, double hy);
+    void setEquationParameters(const EquationParameterH &e_prm, const OptimizeParameterH &o_prm, unsigned int N, double hx, unsigned int M, double hy);
 
 private:
     bool _initialCalculation = false;
+    std::vector<DeltaGrid> thetaGridList;
     std::vector<DeltaGrid> msrmGridList;
     std::vector<DeltaGrid> cntrGridList;
 
-    double **fx_value;
+    DoubleMatrix ixv;
+    DoubleMatrix fxv;
 };
 
 #endif // PROBLEM2H_IBVP_H

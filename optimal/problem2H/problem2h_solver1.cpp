@@ -10,7 +10,7 @@
 
 void Problem2HNDirichlet1::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
-    //return;
+    return;
     {
         Problem2HNDirichlet1* tmp = const_cast<Problem2HNDirichlet1*>(this);
         std::vector<DoubleMatrix> &rvu = tmp->vu;
@@ -915,6 +915,7 @@ auto Problem2HNDirichlet1::projectMeasurePoints(DoubleVector &pv, unsigned int i
 auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const -> void
 {
     Benchmark b; b.tick();
+
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
     const Dimension time = timeDimension();
@@ -1306,6 +1307,35 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
     u20.clear();
     b.tock();
     //b.printWallClocDuration();printf("\b");
+}
+
+auto Problem2HNDirichlet1::solveForwardIBVP3(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const -> void
+{
+    const Dimension dimX = spaceDimension(Dimension::DimensionX);
+    const Dimension dimY = spaceDimension(Dimension::DimensionY);
+    const Dimension time = timeDimension();
+
+    const unsigned int N = static_cast<unsigned int> ( dimX.size() );
+    const unsigned int M = static_cast<unsigned int> ( dimY.size() );
+    const unsigned int L = static_cast<unsigned int> ( time.size() );
+    const unsigned int LLD = L+LD;
+
+    const double hx = dimX.step();
+    const double hy = dimY.step();
+    const double ht = time.step();
+
+    const double a        = mEquParameter.a;
+    const double lambda   = mEquParameter.lambda;
+
+    Problem2HNDirichletForward1 prob;
+    prob.setEquationParameters(mEquParameter, mOptParameter, N, hx, M, hy);
+    prob.setTimeDimension(time);
+    prob.addSpaceDimension(dimX);
+    prob.addSpaceDimension(dimY);
+    DoubleMatrix um;
+    u.resize(1);
+    prob.explicit_calculate_D2V1(um, a, lambda);
+    u[0] = um;
 }
 
 auto Problem2HNDirichlet1::solveBackwardIBVP2(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const -> void
