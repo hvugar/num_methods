@@ -16,6 +16,7 @@ double Problem2HNDirichletForward1::f(const SpaceNodePDE &sn, const TimeNodePDE 
 
 void Problem2HNDirichletForward1::setEquationParameters(const EquationParameterH &e_prm, const OptimizeParameterH &o_prm, unsigned int N, double hx, unsigned int M, double hy)
 {
+    IPrinter::printSeperatorLine();
     this->e_prm = &e_prm;
     this->o_prm = &o_prm;
 
@@ -37,23 +38,23 @@ void Problem2HNDirichletForward1::setEquationParameters(const EquationParameterH
         msrmGridList[j].setPoint(o_prm.xi[j], 1, 1);
     }
 
-    msrmGridList.resize(No);
+    cntrGridList.resize(Nc);
     for (unsigned int i=0; i<Nc; i++)
     {
         cntrGridList[i].initGrid(N, hx, M, hy);
         cntrGridList[i].setPoint(o_prm.eta[i], 1, 1);
     }
 
-
     thetaGridList.resize(Ns);
     for (unsigned int s=0; s<Ns; s++)
     {
         thetaGridList[s].initGrid(N, hx, M, hy);
-        thetaGridList[s].setPoint(e_prm.theta[s], 5, 5);
+        thetaGridList[s].setPoint(e_prm.theta[s], 8, 8);
     }
 
     ixv.resize(M+1, N+1);
     fxv.resize(M+1, N+1);
+    IPrinter::printSeperatorLine();
 }
 
 void Problem2HNDirichletForward1::layerInfo(const DoubleMatrix &u, unsigned int ln) const
@@ -69,16 +70,22 @@ void Problem2HNDirichletForward1::layerInfo(const DoubleMatrix &u, unsigned int 
     const static unsigned int Nc = e_prm->Nc;
     const static unsigned int Ns = e_prm->Ns;
 
+    if (ln == 1 or ln == 2)
+    {
+        IPrinter::printSeperatorLine();
+        IPrinter::printMatrix(u);
+        IPrinter::printSeperatorLine();
+    }
+
     if (ln == 0)
     {
-        static std::vector<DeltaGrid> thetaGridList;
-
         for (unsigned int m=0; m<=M; m++)
         {
             for (unsigned int n=0; n<=N; n++)
             {
                 ixv[m][n] = 0.0;
-                for (unsigned int s=0; s<Ns; s++) ixv[m][n] += e_prm->q[s]*thetaGridList[s].weight(n,m);
+                for (unsigned int s=0; s<Ns; s++)
+                    ixv[m][n] += e_prm->q[s]*thetaGridList[s].weight(n,m);
             }
         }
     }

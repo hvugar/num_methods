@@ -10,6 +10,12 @@
 
 void Problem2HNDirichlet1::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
+    if (ln==1 or ln == 2)
+    {
+        IPrinter::printSeperatorLine();
+        IPrinter::printMatrix(u);
+        IPrinter::printSeperatorLine();
+    }
     return;
     {
         Problem2HNDirichlet1* tmp = const_cast<Problem2HNDirichlet1*>(this);

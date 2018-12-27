@@ -78,8 +78,8 @@ auto DeltaGrid::setPoint(const SpacePoint &p, unsigned int sigmaXN, unsigned int
     _rx = static_cast<unsigned int>(round(p.x*_N));
     _ry = static_cast<unsigned int>(round(p.y*_M));
 
-    unsigned int kx = 4*sigmaXN;
-    unsigned int ky = 4*sigmaYN;
+    unsigned int kx = 3*sigmaXN;
+    unsigned int ky = 3*sigmaYN;
     double sigmaX = _hx*sigmaXN;
     double sigmaY = _hy*sigmaYN;
 
@@ -95,7 +95,7 @@ auto DeltaGrid::setPoint(const SpacePoint &p, unsigned int sigmaXN, unsigned int
     sumY *= _hy;
 
     double sigma = (sumX*sumY) / (2.0*M_PI);
-    double factor = 1.0/((2.0*M_PI)*sigma);
+    double factor = 1.0/(2.0*M_PI*sigma);
 
     SpaceNodePDE sn;
     for (unsigned int m=_minY; m<=_maxY; m++)
