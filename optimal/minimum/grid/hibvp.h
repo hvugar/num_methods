@@ -53,7 +53,9 @@ public:
 
 private:
     void initial_calculate(DoubleVector &u00, DoubleVector &u10, unsigned int N, double hx, double ht, double a, double sigma) const;
-    void initial_calculate(DoubleMatrix &u00, DoubleMatrix &u10, unsigned int N, unsigned int M, double hx, double hy, double ht, double a, double alpha) const;
+
+    void initial_calculate(DoubleMatrix &u00, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, double ht, double a, double alpha) const;
+    void border__calculate(DoubleMatrix &u15, DoubleMatrix &u20, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn15, const TimeNodePDE &tn20) const;
 };
 
 class MINIMUMSHARED_EXPORT ConjugateCC1IHyperbolicIBVP : public IHyperbolicIBVP
@@ -64,9 +66,17 @@ public:
     virtual void layerInfo(const DoubleVector &, unsigned int) const {}
     virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
 
+public:
+    void explicit_calculate_D1V1(DoubleVector &u, double a, double alpha) const;
+    void implicit_calculate_D1V1(DoubleVector &u, double a, double alpha) const;
+    void implicit_calculate_D1V2(DoubleVector &u, double a, double alpha, double lambda=0.25) const;
+
     void explicit_calculate_D2V1(DoubleMatrix &u, double a, double alpha) const;
+    void implicit_calculate_D2V1(DoubleMatrix &u, double a, double alpha) const;
+    void implicit_calculate_D2V2(DoubleMatrix &u, double a, double alpha, double lambda=0.25) const;
+
 private:
-    void initial_calculate(DoubleMatrix &u00, DoubleMatrix &u10, unsigned int N, unsigned int M, double hx, double hy, double ht, double a, double alpha, const TimeNodePDE &tn) const;
+    void initial_calculate(DoubleMatrix &u00, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, double ht, double a, double alpha, const TimeNodePDE &tn) const;
 };
 
 /**

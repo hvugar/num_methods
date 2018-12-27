@@ -173,18 +173,18 @@ void prod_example1()
         {
             prob.PrmToVector(o_prm, x);
 
-            //prob.setTimeDimension(Dimension(0.01, 0, 3000));
+            prob.setTimeDimension(Dimension(0.01, 0, 500));
             std::vector<DoubleMatrix> u2;
             std::vector<DoubleMatrix> u3;
             spif_vectorH u_info;
 
             prob.solveForwardIBVP2(u2, u_info, false);
             //IPrinter::printMatrix(u2[0]);
-            IPrinter::printSeperatorLine();
+            //IPrinter::printSeperatorLine();
 
             prob.solveForwardIBVP3(u3, u_info, false);
             //IPrinter::printMatrix(u3[0]);
-            IPrinter::printSeperatorLine();
+            //IPrinter::printSeperatorLine();
 
             //prob.solveForwardIBVP3(u, u_info, true);
 

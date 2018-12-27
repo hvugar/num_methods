@@ -69,7 +69,11 @@ auto DeltaGrid::initGrid(unsigned int N, double hx, unsigned int M, double hy) -
     this->_hy = hy;
 
     nwmx = new double*[M+1];
-    for (unsigned int m=0; m<=M; m++) nwmx[m] = new double[N+1];
+    for (unsigned int m=0; m<=M; m++)
+    {
+        nwmx[m] = new double[N+1];
+        for (unsigned int n=0; n<=N; n++) nwmx[m][n] = 0.0;
+    }
 }
 
 auto DeltaGrid::setPoint(const SpacePoint &p, unsigned int sigmaXN, unsigned int sigmaYN) -> void

@@ -10,12 +10,12 @@
 
 void Problem2HNDirichlet1::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
-    if (ln==1 or ln == 2)
+    if (ln==500)
     {
-        IPrinter::printSeperatorLine();
+        IPrinter::printSeperatorLine("+layerInfo: ln == 2");
         IPrinter::printMatrix(u);
-        IPrinter::printSeperatorLine();
     }
+
     return;
     {
         Problem2HNDirichlet1* tmp = const_cast<Problem2HNDirichlet1*>(this);
@@ -970,9 +970,24 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
     newDistributeDeltaGaussCntrl(mOptParameter.eta, cntExtSpacePoints, dimX, dimY);
     newDistributeDeltaGaussMsmnt(mOptParameter.xi,  msnExtSpacePoints, dimX, dimY);
 
-    //std::vector<DeltaGrid> msnDeltaGrid(No); for (unsigned int j=0; j<No; j++) { msnDeltaGrid[j].initGrid(N,hx,M,hy,mOptParameter.xi[j], 1, 1); }
-    //std::vector<DeltaGrid> cntDeltaGrid(Nc); for (unsigned int i=0; i<Nc; i++) { cntDeltaGrid[i].initGrid(N,hx,M,hy,mOptParameter.eta[i], 1, 1); }
-    //std::vector<DeltaGrid> plsDeltaGrid(Ns); for (unsigned int s=0; s<Ns; s++) { plsDeltaGrid[s].initGrid(N,hx,M,hy,mEquParameter.theta[s], 5, 5); }
+//    std::vector<DeltaGrid> msnDeltaGrid(No);
+//    for (unsigned int j=0; j<No; j++)
+//    {
+//        msnDeltaGrid[j].initGrid(N,hx,M,hy);
+//        msnDeltaGrid[j].setPoint(mOptParameter.xi[j], 1, 1);
+//    }
+//    std::vector<DeltaGrid> cntDeltaGrid(Nc);
+//    for (unsigned int i=0; i<Nc; i++)
+//    {
+//        cntDeltaGrid[i].initGrid(N,hx,M,hy);
+//        cntDeltaGrid[i].setPoint(mOptParameter.eta[i], 1, 1);
+//    }
+//    std::vector<DeltaGrid> plsDeltaGrid(Ns);
+//    for (unsigned int s=0; s<Ns; s++)
+//    {
+//        plsDeltaGrid[s].initGrid(N,hx,M,hy);
+//        plsDeltaGrid[s].setPoint(mEquParameter.theta[s], 8, 8);
+//    }
 
     //----------------------------------------------------------------------------------------------//
     if (use == true) f_prepareInfo(No, mOptParameter.xi, u_info, LLD);
@@ -1097,7 +1112,7 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
 
     for (unsigned int ln=2; ln<=LLD; ln++)
     {
-        TimeNodePDE tn20; tn20.i = ln; tn20.t = ln*ht-0.0*ht;
+        TimeNodePDE tn20; tn20.i = ln; tn20.t = ln*ht;
         TimeNodePDE tn15; tn15.i = ln; tn15.t = ln*ht-0.5*ht;
         TimeNodePDE tn10; tn10.i = ln; tn10.t = ln*ht-1.0*ht;
 
@@ -1138,7 +1153,7 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
                 _u[j] += u10[node_ny][node_nx] * (node.w * (hx*hy));
             }
 
-            //const  DeltaGrid &mdg = msnDeltaGrid[j];
+            //const DeltaGrid &mdg = msnDeltaGrid[j];
             //for (unsigned int m=mdg.minY(); m<=mdg.maxY(); m++)
             //{
             //    for (unsigned int n=mdg.minX(); n<=mdg.maxX(); n++)
@@ -1146,8 +1161,7 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
             //        _u[j] += u10[m][n] * mdg.weight(n,m) * (hx*hy);
             //    }
             //}
-
-            _u[j] *= (1.0 + noise * (rand()%2==0 ? +1.0 : -1.0));
+            //_u[j] *= (1.0 + noise * (rand()%2==0 ? +1.0 : -1.0));
         }
 
         double *_v = new double[Nc];
@@ -1161,18 +1175,18 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
         }
         delete [] _u;
 
-//        DeltaGrid fxGrid; SpacePoint sp;
-//        fxGrid.initGrid(N,hx,M,hy,sp);
-//        for (unsigned int m=0; m<=M; m++)
-//        {
-//            for (unsigned int n=0; n<=N; n++)
-//            {
-//                fxGrid.data()[m][n] = 0.0;
-//                double _fx = 0.0;
-//                for (unsigned int i=0; i<Nc; i++) _fx += _v[i] * cntDeltaGrid[i].weight(n,m);
-//                fxGrid.data()[m][n] = _fx;
-//            }
-//        }
+        //DoubleMatrix fxv(M+1, N+1, 0.0);
+        //for (unsigned int m=0; m<=M; m++)
+        //{
+        //    for (unsigned int n=0; n<=N; n++)
+        //    {
+        //        fxv[m][n] = 0.0;
+        //        for (unsigned int i=0; i<Nc; i++)
+        //        {
+        //            fxv[m][n] += _v[i] * cntDeltaGrid[i].weight(n,m);
+        //        }
+        //    }
+        //}
 
         /**************************************************** x direction apprx ***************************************************/
 
@@ -1185,8 +1199,8 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
                 sn.i = static_cast<int>(n); sn.x = n*hx;
 
                 dx[n-1] = 0.0;
-                dx[n-1] = p_aa_htht__hyhy*(u10[m-1][n]-2.0*u10[m][n]+u10[m+1][n]);
-                dx[n-1] += 2.0*u10[m][n] + (u10[m][n]-u00[m][n]);
+                dx[n-1] += p_aa_htht__hyhy*(u10[m-1][n] - 2.0*u10[m][n] + u10[m+1][n]);
+                dx[n-1] += 2.0*u10[m][n] + (u10[m][n] - u00[m][n]);
                 dx[n-1] += lambda_ht*(u10[m][n] - 0.5*(u10[m][n]-u00[m][n]));
 
                 //------------------------------------- Adding delta part -------------------------------------//
@@ -1207,7 +1221,7 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
                     //_fx += _v[i] * cntDeltaGrid[i].weight(n,m);
                 }
                 dx[n-1] += htht *_fx;
-                //dx[n-1] += htht *fxGrid.weight(n,m);
+                //dx[n-1] += htht * fxv[m][n];
                 //------------------------------------- Adding delta part -------------------------------------//
             }
             dx[0]   -= m_aa_htht__hxhx * u15[m][0];
@@ -1229,7 +1243,7 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
                 sn.j = static_cast<int>(m); sn.y = m*hy;
 
                 dy[m-1] = 0.0;
-                dy[m-1] = p_aa_htht__hxhx*(u15[m][n-1] - 2.0*u15[m][n]   + u15[m][n+1]);
+                dy[m-1] += p_aa_htht__hxhx*(u15[m][n-1] - 2.0*u15[m][n] + u15[m][n+1]);
                 dy[m-1] += 2.0*u15[m][n] + (u10[m][n]-u00[m][n]);
                 dy[m-1] += lambda_ht*(u15[m][n] - 0.5*(u10[m][n]-u00[m][n]));
 
@@ -1250,7 +1264,7 @@ auto Problem2HNDirichlet1::solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_
                     //_fx += _v[i] * cntDeltaGrid[i].weight(n,m);
                 }
                 dy[m-1] += htht *_fx;
-                //dy[m-1] += htht *fxGrid.weight(n,m);
+                //dy[m-1] += htht *fxv[m][n];;
             }
             dy[0]   -= m_aa_htht__hyhy * u20[0][n];
             dy[M-2] -= m_aa_htht__hyhy * u20[M][n];
@@ -1340,7 +1354,7 @@ auto Problem2HNDirichlet1::solveForwardIBVP3(std::vector<DoubleMatrix> &u, spif_
     prob.addSpaceDimension(dimY);
     DoubleMatrix um;
     u.resize(1);
-    prob.explicit_calculate_D2V1(um, a, lambda);
+    prob.implicit_calculate_D2V1(um, a, lambda);
     u[0] = um;
 }
 
@@ -3747,7 +3761,7 @@ auto Problem2HNDirichlet1::newDistributeDeltaGaussCntrl(const std::vector<SpaceP
     extCntrls.clear();
     extCntrls.resize(Nc);
 
-    int k = 4;
+    int k = 3;
     double sigmaX = hx;
     double sigmaY = hy;
 
@@ -3843,7 +3857,7 @@ void Problem2HNDirichlet1::newDistributeDeltaGaussMsmnt(const std::vector<SpaceP
     extMsmnts.clear();
     extMsmnts.resize(No);
 
-    int k = 4;
+    int k = 3;
     double sigmaX = hx;
     double sigmaY = hy;
 

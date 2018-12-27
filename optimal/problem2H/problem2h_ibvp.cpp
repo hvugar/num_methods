@@ -52,8 +52,9 @@ void Problem2HNDirichletForward1::setEquationParameters(const EquationParameterH
         thetaGridList[s].setPoint(e_prm.theta[s], 8, 8);
     }
 
-    ixv.resize(M+1, N+1);
-    fxv.resize(M+1, N+1);
+    ixv.resize(M+1, N+1, 0.0);
+    fxv.resize(M+1, N+1, 0.0);
+
     IPrinter::printSeperatorLine();
 }
 
@@ -70,11 +71,10 @@ void Problem2HNDirichletForward1::layerInfo(const DoubleMatrix &u, unsigned int 
     const static unsigned int Nc = e_prm->Nc;
     const static unsigned int Ns = e_prm->Ns;
 
-    if (ln == 1 or ln == 2)
+    if (ln==500)
     {
-        IPrinter::printSeperatorLine();
+        IPrinter::printSeperatorLine("*layerInfo: ln == 2");
         IPrinter::printMatrix(u);
-        IPrinter::printSeperatorLine();
     }
 
     if (ln == 0)
@@ -84,8 +84,7 @@ void Problem2HNDirichletForward1::layerInfo(const DoubleMatrix &u, unsigned int 
             for (unsigned int n=0; n<=N; n++)
             {
                 ixv[m][n] = 0.0;
-                for (unsigned int s=0; s<Ns; s++)
-                    ixv[m][n] += e_prm->q[s]*thetaGridList[s].weight(n,m);
+                for (unsigned int s=0; s<Ns; s++) ixv[m][n] += e_prm->q[s]*thetaGridList[s].weight(n,m);
             }
         }
     }
@@ -104,7 +103,7 @@ void Problem2HNDirichletForward1::layerInfo(const DoubleMatrix &u, unsigned int 
                     _u[j] += u[m][n] * mdg.weight(n,m) * (hx*hy);
                 }
             }
-            //u_xi[j] *= (1.0 + noise * (rand()%2==0 ? +1.0 : -1.0));
+            //_u[j] *= (1.0 + noise * (rand()%2==0 ? +1.0 : -1.0));
         }
 
         double *_v = new double[Nc];
@@ -118,9 +117,9 @@ void Problem2HNDirichletForward1::layerInfo(const DoubleMatrix &u, unsigned int 
         }
         delete [] _u;
 
-        for (unsigned int m=1; m<=M-1; m++)
+        for (unsigned int m=0; m<=M; m++)
         {
-            for (unsigned int n=1; n<=N-1; n++)
+            for (unsigned int n=0; n<=N; n++)
             {
                 fxv[m][n] = 0.0;
                 for (unsigned int i=0; i<Nc; i++)
