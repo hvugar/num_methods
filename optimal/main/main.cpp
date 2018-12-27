@@ -48,9 +48,11 @@
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     srand(time(0));
+    CC1IHyperbolicIBVP1::Main(argc, argv);
+    //Problem2HNDirichlet::Main(argc, argv);
+
     //CCParabolicIBVP1::Main(argc, argv);
     //CCIHyperbolicIBVP1::Main(argc, argv);
-    //CC1IHyperbolicIBVP1::Main(argc, argv);
     //HyperbolicIBVP2::Main(argc, argv);
     //return 0;
     //QGuiApplication app(argc, argv);
@@ -59,7 +61,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //IPrinter::printSeperatorLine();
     //Problem2PNeumann::Main(argc, argv);
     //Problem2HNDirichletForward1 p;
-    Problem2HNDirichlet::Main(argc, argv);
+    //Problem2HNDirichlet::Main(argc, argv);
 
     //BorderHyperbolic2D::Main(argc, argv);
     //BorderHyperbolic2DN::Main(argc, argv);
@@ -69,7 +71,6 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //IProblem2H::IProblem2H2D::Main(argc, argv);
     //IPrinter::printSeperatorLine("+");
     //Problem2HDirichlet::Main(argc, argv);
-    //Problem2HNDirichlet::Main(argc, argv);
     //Problem2HNM::Main(argc, argv);
     //return 0;
 

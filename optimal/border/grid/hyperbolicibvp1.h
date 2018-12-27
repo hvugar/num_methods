@@ -70,7 +70,7 @@ protected:
 
 private:
     double a = 1.0;
-    double alpha = 0.001;
+    double alpha = 0.1;
     DoubleMatrix u10;
 };
 

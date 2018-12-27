@@ -49,6 +49,7 @@ public:
 
     void explicit_calculate_D2V1(DoubleMatrix &u, double a, double alpha) const;
     void implicit_calculate_D2V1(DoubleMatrix &u, double a, double alpha) const;
+    void implicit_calculate_D2V3(DoubleMatrix &u, double a, double alpha) const;
     void implicit_calculate_D2V2(DoubleMatrix &u, double a, double alpha, double lambda=0.25) const;
 
 private:
@@ -76,7 +77,7 @@ public:
     void implicit_calculate_D2V2(DoubleMatrix &u, double a, double alpha, double lambda=0.25) const;
 
 private:
-    void initial_calculate(DoubleMatrix &u00, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, double ht, double a, double alpha, const TimeNodePDE &tn) const;
+    void initial_calculate(DoubleMatrix &u00, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, double ht, double a, double alpha) const;
 };
 
 /**
