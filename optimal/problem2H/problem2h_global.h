@@ -16,4 +16,9 @@
 #define NEW_VERSION
 //#define TIME_DISCRETE_H
 
+#ifdef USE_IMAGING
+#include <QPixmap>
+#include <imaging.h>
+#endif
+
 #endif // PROBLEM2H_GLOBAL_H

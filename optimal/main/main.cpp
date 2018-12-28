@@ -47,9 +47,11 @@
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    srand(time(0));
-    CC1IHyperbolicIBVP1::Main(argc, argv);
-    //Problem2HNDirichlet::Main(argc, argv);
+    //srand(time(0));
+    //CC1IHyperbolicIBVP1::Main(argc, argv);
+    //IPrinter::printSeperatorLine();
+    //ConjugateCC1IHyperbolicIBVP1::Main(argc, argv);
+    Problem2HNDirichlet::Main(argc, argv);
 
     //CCParabolicIBVP1::Main(argc, argv);
     //CCIHyperbolicIBVP1::Main(argc, argv);

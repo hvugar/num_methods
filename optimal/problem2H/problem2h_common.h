@@ -18,6 +18,7 @@
 #include <vectornormalizer.h>
 #include <benchmark.h>
 #include <grid/ibvp.h>
+#include <grid/hibvp.h>
 #include "problem2h_global.h"
 
 //struct PROBLEM2HSHARED_EXPORT EquationParameterHE

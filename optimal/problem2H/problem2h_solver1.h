@@ -2,8 +2,6 @@
 #define PROBLEM2H_SOLVER1_H
 
 #include "problem2h_common.h"
-#include <grid/hibvp.h>
-#include "problem2h_ibvp.h"
 
 class PROBLEM2HSHARED_EXPORT Problem2HNDirichlet1 : public RnFunction, public IGradient, public InitialBoundaryValueProblemPDE, public IProjection, public IPrinter, public IVectorNormalizer
 {
@@ -46,19 +44,9 @@ public:
     virtual void projectControlPoints(DoubleVector &x, unsigned int index) const;
     virtual void projectMeasurePoints(DoubleVector &x, unsigned int index) const;
 
-    void solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const
-    {
-        solveForwardIBVP2(u, u_info, use);
-    }
-
-    void solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const
-    {
-        solveBackwardIBVP2(u, p_info, use, u_info);
-    }
-    //forward -------------------------------------
-    void solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const;
-    void solveForwardIBVP3(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const;
-    void solveBackwardIBVP2(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const;
+    // ibvp -------------------------------------
+    void solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const;
+    void solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const;
     //backward ------------------------------------
     //void solveForwardIBVP1(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const;
     //void solveBackwardIBVP1(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const;

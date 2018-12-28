@@ -1,5 +1,5 @@
-#ifndef PROBLEM2HN_H
-#define PROBLEM2HN_H
+#ifndef PROBLEM2H_SOLVER0_H
+#define PROBLEM2H_SOLVER0_H
 
 #include "problem2h_common.h"
 
@@ -123,4 +123,4 @@ public:
 //    EquationParameterHE mParameter;
 };
 
-#endif // PROBLEM2H_H
+#endif // PROBLEM2H_SOLVER0_H

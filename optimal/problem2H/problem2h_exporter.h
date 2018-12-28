@@ -1,5 +1,5 @@
-#ifndef EXPORTER_H
-#define EXPORTER_H
+#ifndef PROBLEM2H_EXPORTER_H
+#define PROBLEM2H_EXPORTER_H
 
 #include "problem2h_global.h"
 
@@ -19,5 +19,4 @@ void PROBLEM2HSHARED_EXPORT setPenaltyR(double r);
 }
 #endif
 
-
-#endif // EXPORTER_H
+#endif // PROBLEM2H_EXPORTER_H

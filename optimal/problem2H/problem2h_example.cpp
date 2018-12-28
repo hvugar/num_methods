@@ -85,17 +85,17 @@ void prod_example1()
     //o_prm.k[0][0]  = +0.0000; o_prm.k[0][1]  = +0.0000; o_prm.k[1][0]  = +0.0000; o_prm.k[1][1]  = +0.0000;
     //o_prm.z[0][0]  = +0.0000; o_prm.z[0][1]  = +0.0000; o_prm.z[1][0]  = +0.0000; o_prm.z[1][1]  = +0.0000;
     //o_prm.k[0][0]  = -1.1820; o_prm.k[0][1]  = -1.1250; o_prm.k[1][0]  = -1.1550; o_prm.k[1][1]  = -1.1310;
-    o_prm.k[0][0]  = -2.1820; o_prm.k[0][1]  = -2.1250; o_prm.k[1][0]  = -2.1550; o_prm.k[1][1]  = -2.1310;
-    o_prm.z[0][0]  = +0.0125; o_prm.z[0][1]  = +0.0268; o_prm.z[1][0]  = +0.0359; o_prm.z[1][1]  = +0.0186;
-    o_prm.xi[0].x  = +0.3849; o_prm.xi[0].y  = +0.5442; o_prm.xi[1].x  = +0.7861; o_prm.xi[1].y  = +0.6785;
-    o_prm.eta[0].x = +0.6656; o_prm.eta[0].y = +0.7909; o_prm.eta[1].x = +0.4956; o_prm.eta[1].y = +0.3810;
+    //o_prm.k[0][0]  = -2.1820; o_prm.k[0][1]  = -2.1250; o_prm.k[1][0]  = -2.1550; o_prm.k[1][1]  = -2.1310;
+    //o_prm.z[0][0]  = +0.0125; o_prm.z[0][1]  = +0.0268; o_prm.z[1][0]  = +0.0359; o_prm.z[1][1]  = +0.0186;
+    //o_prm.xi[0].x  = +0.3849; o_prm.xi[0].y  = +0.5442; o_prm.xi[1].x  = +0.7861; o_prm.xi[1].y  = +0.6785;
+    //o_prm.eta[0].x = +0.6656; o_prm.eta[0].y = +0.7909; o_prm.eta[1].x = +0.4956; o_prm.eta[1].y = +0.3810;
     //o_prm.xi[0].x  = +0.1849; o_prm.xi[0].y  = +0.2442; o_prm.xi[1].x  = +0.4861; o_prm.xi[1].y  = +0.7785;
     //o_prm.eta[0].x = +0.3656; o_prm.eta[0].y = +0.3909; o_prm.eta[1].x = +0.9156; o_prm.eta[1].y = +0.9410;
     // Optimal I:0.00054           --------------------------------------------------------------------------
-    //o_prm.k[0][0]  = -2.1866; o_prm.k[0][1]  = -2.1325; o_prm.k[1][0]  = -2.1321; o_prm.k[1][1]  = -2.1712;
-    //o_prm.z[0][0]  = +0.0359; o_prm.z[0][1]  = +0.0496; o_prm.z[1][0]  = +0.1320; o_prm.z[1][1]  = +0.1145;
-    //o_prm.xi[0].x  = +0.2732; o_prm.xi[0].y  = +0.6012; o_prm.xi[1].x  = +0.7578; o_prm.xi[1].y  = +0.7590;
-    //o_prm.eta[0].x = +0.6968; o_prm.eta[0].y = +0.6892; o_prm.eta[1].x = +0.3987; o_prm.eta[1].y = +0.3898;
+    o_prm.k[0][0]  = -2.1866; o_prm.k[0][1]  = -2.1325; o_prm.k[1][0]  = -2.1321; o_prm.k[1][1]  = -2.1712;
+    o_prm.z[0][0]  = +0.0359; o_prm.z[0][1]  = +0.0496; o_prm.z[1][0]  = +0.1320; o_prm.z[1][1]  = +0.1145;
+    o_prm.xi[0].x  = +0.2732; o_prm.xi[0].y  = +0.6012; o_prm.xi[1].x  = +0.7578; o_prm.xi[1].y  = +0.7590;
+    o_prm.eta[0].x = +0.6968; o_prm.eta[0].y = +0.6892; o_prm.eta[1].x = +0.3987; o_prm.eta[1].y = +0.3898;
     // ------------------------------------------------------------------------------------------------------
     // Optimal I:0.00093           --------------------------------------------------------------------------
     //o_prm.k[0][0]  = -1.2826; o_prm.k[0][1]  = -1.0983; o_prm.k[1][0]  = -1.4301; o_prm.k[1][1]  = -1.1559;
@@ -150,7 +150,7 @@ void prod_example1()
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
     {
-        Problem2HNDirichlet1 prob;
+        Problem2HNDirichlet2 prob;
         prob.setTimeDimension(time);
         prob.addSpaceDimension(dimx);
         prob.addSpaceDimension(dimy);
@@ -172,21 +172,7 @@ void prod_example1()
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
-
-            prob.setTimeDimension(Dimension(0.01, 0, 500));
-            std::vector<DoubleMatrix> u2;
-            std::vector<DoubleMatrix> u3;
-            spif_vectorH u_info;
-
-            prob.solveForwardIBVP2(u2, u_info, false);
-            //IPrinter::printMatrix(u2[0]);
-            //IPrinter::printSeperatorLine();
-
-            prob.solveForwardIBVP3(u3, u_info, false);
-            //IPrinter::printMatrix(u3[0]);
-            //IPrinter::printSeperatorLine();
-
-            //prob.solveForwardIBVP3(u, u_info, true);
+//            prob.solveForwardIBVP3(u, u_info, true);
 
 
             //FILE* cfile = fopen("e:/Google Drive/Problems/Problem2_H/Experiments/control2.txt", "w");
@@ -196,7 +182,7 @@ void prod_example1()
             //}
             //fclose(cfile);
 
-            return;
+//            return;
 
             //prob.checkGradient1(prob);
             //prod_figure1(prob, ht, x);
@@ -230,7 +216,7 @@ void prod_example1()
     }
 }
 
-void prod_figure1(Problem2HNDirichlet1& prob, double ht, const DoubleVector &x)
+void prod_figure1(Problem2HNDirichlet1 &prob, double ht, const DoubleVector &x)
 {
     for (int i=0; i<=1000; i++)
     {

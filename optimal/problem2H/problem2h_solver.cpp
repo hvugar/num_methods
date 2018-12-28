@@ -1,12 +1,4 @@
 #include "problem2h_solver.h"
-#include "problem2h_example.h"
-#include <map>
-#include <utility>
-
-#ifdef USE_IMAGING
-#include <QPixmap>
-#include <imaging.h>
-#endif
 
 void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
