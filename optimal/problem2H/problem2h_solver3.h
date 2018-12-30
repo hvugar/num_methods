@@ -47,14 +47,12 @@ public:
     // ibvp -------------------------------------
     void solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const;
     void solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const;
-    //backward ------------------------------------
-    //void solveForwardIBVP1(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const;
-    //void solveBackwardIBVP1(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const;
-    //void f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, spif_vectorH &u_info, bool use, unsigned int N, unsigned int M,
-    //                     double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda,
-    //                     const std::vector<ExtendedSpacePointH> &qExtSpacePoints,
-    //                     const std::vector<ExtendedSpacePointH> &msnExtSpacePoints,
-    //                     const std::vector<ExtendedSpacePointH> &cntExtSpacePoints) const;
+    void f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, spif_vectorH &u_info, bool use,
+                         unsigned int N, double hx, unsigned int M, double hy,
+                         double ht, double aa__hxhx, double aa__hyhy, double lambda,
+                         const std::vector<ExtendedSpacePointH> &qExtSpacePoints,
+                         const std::vector<ExtendedSpacePointH> &msnExtSpacePoints,
+                         const std::vector<ExtendedSpacePointH> &cntExtSpacePoints) const;
     //void b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, spif_vectorH &p_info, bool use, const spif_vectorH &u_info, unsigned int N, unsigned int M,
     //                     double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda,
     //                     const std::vector<ExtendedSpacePointH> &cntExtSpacePoints,

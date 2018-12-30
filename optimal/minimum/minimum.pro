@@ -67,7 +67,8 @@ SOURCES += \
     ode/lode2o.cpp \
     ode/nlode2o.cpp \
     vectornormalizer.cpp \
-    benchmark.cpp
+    benchmark.cpp \
+    deltagrid.cpp
 
 HEADERS += global.h \
     cmatrix.h \
@@ -118,4 +119,5 @@ HEADERS += global.h \
     ode/lode2o.h \
     ode/nlode2o.h \
     vectornormalizer.h \
-    benchmark.h
+    benchmark.h \
+    deltagrid.h

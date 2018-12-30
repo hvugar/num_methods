@@ -19,6 +19,7 @@
 #include <benchmark.h>
 #include <grid/ibvp.h>
 #include <grid/hibvp.h>
+#include <deltagrid.h>
 #include "problem2h_global.h"
 
 //struct PROBLEM2HSHARED_EXPORT EquationParameterHE
@@ -96,49 +97,6 @@ struct GridSpace2D
     double hy;
 };
 
-class DeltaGrid
-{
-public:
-    DeltaGrid();
-    virtual ~DeltaGrid();
-
-    auto initGrid(unsigned int _N, double _hx, unsigned int _M, double _hy) -> void;
-    auto setPoint(const SpacePoint &p, unsigned int sigmaX=1, unsigned int sigmaY=1) -> void;
-    auto cleanGrid() -> void;
-
-    auto isCenter(const SpaceNodePDE &sn) const -> bool;
-    auto isCenter(unsigned int n, unsigned int m) const -> bool;
-
-    auto isContains(const SpaceNodePDE &sn) const -> bool;
-    auto isContains(unsigned int n, unsigned int m) const -> bool;
-
-    auto weight(const SpaceNodePDE &sn) const -> double;
-    auto weight(unsigned int n, unsigned int m) const -> double;
-
-    unsigned int minX() const { return _minX; }
-    unsigned int maxX() const { return _maxX; }
-    unsigned int minY() const { return _minY; }
-    unsigned int maxY() const { return _maxY; }
-
-    double **data() { return nwmx; }
-    double **data() const { return nwmx; }
-
-private:
-
-    unsigned int _N;
-    unsigned int _M;
-    double _hx;
-    double _hy;
-    SpacePoint _p;
-
-    double **nwmx;
-    unsigned int _rx;
-    unsigned int _ry;
-    unsigned int _minX;
-    unsigned int _maxX;
-    unsigned int _minY;
-    unsigned int _maxY;
-};
 
 struct PROBLEM2HSHARED_EXPORT OptimizeParameterH
 {

@@ -581,7 +581,7 @@ void CC1IHyperbolicIBVP::explicit_calculate_D2V1(DoubleMatrix &u, double a, doub
 
     for (unsigned int ln=2; ln<=L; ln++)
     {
-        TimeNodePDE tn20; tn20.i = ln+0; tn20.t = tn20.i*ht;
+        TimeNodePDE tn20; tn20.i = ln;   tn20.t = tn20.i*ht;
         TimeNodePDE tn10; tn10.i = ln-1; tn10.t = tn10.i*ht;
 
         /**************************** border conditions ****************************/

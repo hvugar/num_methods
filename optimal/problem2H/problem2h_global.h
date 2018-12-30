@@ -18,6 +18,7 @@
 
 #ifdef USE_IMAGING
 #include <QPixmap>
+#include <QGuiApplication>
 #include <imaging.h>
 #endif
 

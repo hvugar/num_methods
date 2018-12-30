@@ -1,9 +1,4 @@
 #include "problem2h_example.h"
-#include "vectornormalizer.h"
-#ifdef USE_IMAGING
-#include <imaging.h>
-#include <QtGui/QGuiApplication>
-#endif
 
 struct ProjectionEx1 : public IProjection
 {
@@ -15,32 +10,27 @@ void ProjectionEx1::project(DoubleVector &x) const
 {
     const double mn = 0.05;
     const double mx = 0.95;
-    for (unsigned int i=8; i<=15; i++) { if (x[i]<mn) x[i] = mn; if ( x[i] > mx ) x[i] = mx; }
-    //if ( x[ 8] < mn ) x[ 8] = mn; if ( x[ 8] > mx ) x[ 8] = mx;
-    //if ( x[ 9] < mn ) x[ 9] = mn; if ( x[ 9] > mx ) x[ 9] = mx;
-    //if ( x[10] < mn ) x[10] = mn; if ( x[10] > mx ) x[10] = mx;
-    //if ( x[11] < mn ) x[11] = mn; if ( x[11] > mx ) x[11] = mx;
-
-    //if ( x[12] < mn ) x[12] = mn; if ( x[12] > mx ) x[12] = mx;
-    //if ( x[13] < mn ) x[13] = mn; if ( x[13] > mx ) x[13] = mx;
-    //if ( x[14] < mn ) x[14] = mn; if ( x[14] > mx ) x[14] = mx;
-    //if ( x[15] < mn ) x[15] = mn; if ( x[15] > mx ) x[15] = mx;
+    for (unsigned int i=8; i<=15; i++)
+    {
+        if (x[i]<mn) x[i] = mn;
+        if (x[i]>mx) x[i] = mx;
+    }
 
     return;
 
 
-    if ( x[ 8] < 0.05 ) x[ 8] = 0.05; if ( x[ 8] > 0.45 ) x[ 8] = 0.45;
-    if ( x[ 9] < 0.55 ) x[ 9] = 0.55; if ( x[ 9] > 0.95 ) x[ 9] = 0.95;
-    if ( x[10] < 0.55 ) x[10] = 0.55; if ( x[10] > 0.95 ) x[10] = 0.95;
-    if ( x[11] < 0.05 ) x[11] = 0.05; if ( x[11] > 0.45 ) x[11] = 0.45;
+//    if ( x[ 8] < 0.05 ) x[ 8] = 0.05; if ( x[ 8] > 0.45 ) x[ 8] = 0.45;
+//    if ( x[ 9] < 0.55 ) x[ 9] = 0.55; if ( x[ 9] > 0.95 ) x[ 9] = 0.95;
+//    if ( x[10] < 0.55 ) x[10] = 0.55; if ( x[10] > 0.95 ) x[10] = 0.95;
+//    if ( x[11] < 0.05 ) x[11] = 0.05; if ( x[11] > 0.45 ) x[11] = 0.45;
 
-    if ( x[12] < 0.05 ) x[12] = 0.05; if ( x[12] > 0.45 ) x[12] = 0.45;
-    if ( x[13] < 0.05 ) x[13] = 0.05; if ( x[13] > 0.45 ) x[13] = 0.45;
-    if ( x[14] < 0.55 ) x[14] = 0.55; if ( x[14] > 0.95 ) x[14] = 0.95;
-    if ( x[15] < 0.55 ) x[15] = 0.55; if ( x[15] > 0.95 ) x[15] = 0.95;
+//    if ( x[12] < 0.05 ) x[12] = 0.05; if ( x[12] > 0.45 ) x[12] = 0.45;
+//    if ( x[13] < 0.05 ) x[13] = 0.05; if ( x[13] > 0.45 ) x[13] = 0.45;
+//    if ( x[14] < 0.55 ) x[14] = 0.55; if ( x[14] > 0.95 ) x[14] = 0.95;
+//    if ( x[15] < 0.55 ) x[15] = 0.55; if ( x[15] > 0.95 ) x[15] = 0.95;
 
-    //DoubleVector x0 = x.mid(8,x.length()-1);
-    //IPrinter::print(x0);
+//    DoubleVector x0 = x.mid(8,x.length()-1);
+//    IPrinter::print(x0);
 }
 
 void ProjectionEx1::project(DoubleVector &, unsigned int) {}
@@ -96,6 +86,7 @@ void prod_example1()
     o_prm.z[0][0]  = +0.0359; o_prm.z[0][1]  = +0.0496; o_prm.z[1][0]  = +0.1320; o_prm.z[1][1]  = +0.1145;
     o_prm.xi[0].x  = +0.2732; o_prm.xi[0].y  = +0.6012; o_prm.xi[1].x  = +0.7578; o_prm.xi[1].y  = +0.7590;
     o_prm.eta[0].x = +0.6968; o_prm.eta[0].y = +0.6892; o_prm.eta[1].x = +0.3987; o_prm.eta[1].y = +0.3898;
+    //o_prm.eta[0].x = +0.2500; o_prm.eta[0].y = +0.2500; o_prm.eta[1].x = +0.7500; o_prm.eta[1].y = +0.7500;
     // ------------------------------------------------------------------------------------------------------
     // Optimal I:0.00093           --------------------------------------------------------------------------
     //o_prm.k[0][0]  = -1.2826; o_prm.k[0][1]  = -1.0983; o_prm.k[1][0]  = -1.4301; o_prm.k[1][1]  = -1.1559;
@@ -136,7 +127,8 @@ void prod_example1()
     // Grid parameters
     double hx = 0.010; int Nx = 100;
     double hy = 0.010; int Ny = 100;
-    double ht = 0.010; int Nt = 500;
+    //double ht = 0.010; int Nt = 500;
+    double ht = 0.005; int Nt = 1000;
 
     Dimension time(ht, 0, Nt);
     Dimension dimx(hx, 0, Nx);
@@ -150,7 +142,7 @@ void prod_example1()
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
     {
-        Problem2HNDirichlet2 prob;
+        Problem2HNDirichlet4 prob;
         prob.setTimeDimension(time);
         prob.addSpaceDimension(dimx);
         prob.addSpaceDimension(dimy);
@@ -172,7 +164,11 @@ void prod_example1()
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
-//            prob.solveForwardIBVP3(u, u_info, true);
+
+            //std::vector<DoubleMatrix> u;
+            //spif_vectorH u_info;
+            //prob.solveForwardIBVP(u, u_info, false);
+            //return;
 
 
             //FILE* cfile = fopen("e:/Google Drive/Problems/Problem2_H/Experiments/control2.txt", "w");
@@ -198,7 +194,7 @@ void prod_example1()
         g.setFunction(&prob);
         g.setGradient(&prob);
         g.setPrinter(&prob);
-        g.setProjection(&prob);
+        //g.setProjection(&prob);
         g.setProjection(new ProjectionEx1);
         //g.setGradientNormalizer(&prob);
         g.setOptimalityTolerance(0.0001);
