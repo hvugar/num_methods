@@ -916,9 +916,17 @@ auto Problem2HNDirichlet4::projectMeasurePoints(DoubleVector &pv, unsigned int i
 }
 
 void Problem2HNDirichlet4::initDeltaGrids(std::vector<DeltaGrid2D> &pulseDeltaGridList, std::vector<DeltaGrid2D> &msrntDeltaGridList, std::vector<DeltaGrid2D> &cntrlDeltaGridList,
-                                          const EquationParameterH &equationParameter, const OptimizeParameterH &optimizeParameter,
-                                          unsigned int N, double hx, unsigned int M, double hy) const
+                                          const EquationParameterH &equationParameter, const OptimizeParameterH &optimizeParameter) const
 {
+    const Dimension dimX = spaceDimension(Dimension::DimensionX);
+    const Dimension dimY = spaceDimension(Dimension::DimensionY);
+
+    const unsigned int N = static_cast<unsigned int> ( dimX.size() );
+    const unsigned int M = static_cast<unsigned int> ( dimY.size() );
+
+    const double hx = dimX.step();
+    const double hy = dimY.step();
+
     const unsigned int No = equationParameter.No;
     const unsigned int Nc = equationParameter.Nc;
     const unsigned int Ns = equationParameter.Ns;
@@ -950,14 +958,15 @@ void Problem2HNDirichlet4::initDeltaGrids(std::vector<DeltaGrid2D> &pulseDeltaGr
 
 void Problem2HNDirichlet4::releaseDeltaGrids(std::vector<DeltaGrid2D> &pulseDeltaGridList, std::vector<DeltaGrid2D> &msrntDeltaGridList, std::vector<DeltaGrid2D> &cntrlDeltaGridList) const
 {
-    for (unsigned int s=0; s<pulseDeltaGridList.size(); s++) pulseDeltaGridList[s].cleanGrid(); pulseDeltaGridList.clear();
+    for (auto it = pulseDeltaGridList.begin(); it != pulseDeltaGridList.end(); it++) it->cleanGrid(); pulseDeltaGridList.clear();
+    //    for (unsigned int s=0; s<pulseDeltaGridList.size(); s++) pulseDeltaGridList[s].cleanGrid(); pulseDeltaGridList.clear();
     for (unsigned int j=0; j<msrntDeltaGridList.size(); j++) msrntDeltaGridList[j].cleanGrid(); msrntDeltaGridList.clear();
     for (unsigned int i=0; i<cntrlDeltaGridList.size(); i++) cntrlDeltaGridList[i].cleanGrid(); cntrlDeltaGridList.clear();
 }
 
 void Problem2HNDirichlet4::f_currentLayer(const DoubleMatrix &u10, const EquationParameterH &equationParameter, const OptimizeParameterH &optimizeParameter,
                                           const std::vector<DeltaGrid2D> &msrntDeltaGridList, const std::vector<DeltaGrid2D> &cntrlDeltaGridList,
-                                          unsigned int N, double hx, unsigned int M, double hy, DoubleMatrix &fxv) const
+                                          unsigned int N, double hx, unsigned int M, double hy, DoubleMatrix &fxv, unsigned int) const
 {
     unsigned int No = equationParameter.No;
     unsigned int Nc = equationParameter.Nc;
@@ -1004,9 +1013,59 @@ void Problem2HNDirichlet4::f_currentLayer(const DoubleMatrix &u10, const Equatio
     delete [] _v;
 }
 
+void Problem2HNDirichlet4::b_currentLayer(const DoubleMatrix &p10, const EquationParameterH &equationParameter, const OptimizeParameterH &optimizeParameter,
+                                          const std::vector<DeltaGrid2D> &msrntDeltaGridList, const std::vector<DeltaGrid2D> &cntrlDeltaGridList,
+                                          unsigned int N, double hx, unsigned int M, double hy, DoubleMatrix &fxv, unsigned int ln, const spif_vectorH &u_info) const
+{
+    unsigned int No = equationParameter.No;
+    unsigned int Nc = equationParameter.Nc;
+
+    double* _p = new double[Nc];
+    double *_w = new double[No];
+
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        _p[i] = 0.0;
+        const DeltaGrid2D &cdg = cntrlDeltaGridList[i];
+        for (unsigned int m=cdg.minY(); m<=cdg.maxY(); m++)
+        {
+            for (unsigned int n=cdg.minX(); n<=cdg.maxX(); n++)
+            {
+                _p[i] += p10[m][n] * cdg.weight(n,m) * (hx*hy);
+            }
+        }
+
+    }
+
+    for (unsigned int j=0; j<No; j++)
+    {
+        _w[j] = 0.0;
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            double _gpi = gpi(i, ln+1, u_info, mOptParameter);
+            double _sgn = sgn(g0i(i, ln+1, u_info, mOptParameter));
+            _w[j] += mOptParameter.k[j][i] * (_p[i] + 2.0*r*_gpi*_sgn);
+        }
+    }
+
+    for (unsigned int m=0; m<=M; m++)
+    {
+        for (unsigned int n=0; n<=N; n++)
+        {
+            fxv[m][n] = 0.0;
+            for (unsigned int j=0; j<No; j++)
+            {
+                fxv[m][n] += _w[j] * msrntDeltaGridList[j].weight(n,m);
+            }
+        }
+    }
+
+    delete [] _p;
+    delete [] _w;
+}
+
 auto Problem2HNDirichlet4::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const -> void
 {
-#define method_new
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
     const Dimension time = timeDimension();
@@ -1041,20 +1100,19 @@ auto Problem2HNDirichlet4::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_v
     DoubleMatrix u10(M+1, N+1);
     DoubleMatrix u20(M+1, N+1);
 
-    for (unsigned int l=0; l<u.size(); l++) u[l].clear(); u.clear();
-    unsigned int u_size = LD + 1;
-    u.resize(u_size); for (unsigned int l=0; l<u_size; l++) u[l].resize(M+1, N+1);
-
     //----------------------------------------------------------------------------------------------//
     std::vector<DeltaGrid2D> pulseDeltaGridList, msrntDeltaGridList, cntrlDeltaGridList;
-    initDeltaGrids(pulseDeltaGridList, msrntDeltaGridList, cntrlDeltaGridList, mEquParameter, mOptParameter, N, hx, M, hy);
+    initDeltaGrids(pulseDeltaGridList, msrntDeltaGridList, cntrlDeltaGridList, mEquParameter, mOptParameter);
     //----------------------------------------------------------------------------------------------//
     if (use == true) f_prepareInfo(No, mOptParameter.xi, u_info, LLD);
     //----------------------------------------------------------------------------------------------//
-
     //------------------------------------- initial conditions -------------------------------------//
     f_initialLayers(u00, u10, u_info, use, N, hx, M, hy, ht, aa__hxhx, aa__hyhy, lambda, pulseDeltaGridList, msrntDeltaGridList, cntrlDeltaGridList);
     //------------------------------------- initial conditions -------------------------------------//
+
+    for (unsigned int l=0; l<u.size(); l++) u[l].clear(); u.clear();
+    unsigned int u_size = LD + 1;
+    u.resize(u_size); for (unsigned int l=0; l<u_size; l++) u[l].resize(M+1, N+1);
 
     DoubleMatrix fxv(M+1, N+1);
 
@@ -1066,7 +1124,7 @@ auto Problem2HNDirichlet4::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_v
         /**************************************************** border conditions ***************************************************/
         f_borderCalculate(u20, N, hx, M, hy, tn20);
         /**************************************************** border conditions ***************************************************/
-        f_currentLayer(u10, mEquParameter, mOptParameter, msrntDeltaGridList, cntrlDeltaGridList, N, hx, M, hy, fxv);
+        f_currentLayer(u10, mEquParameter, mOptParameter, msrntDeltaGridList, cntrlDeltaGridList, N, hx, M, hy, fxv, ln);
         /**************************************************************************************************************************/
         SpaceNodePDE sn;
         for (unsigned int m=1; m<=M-1; m++)
@@ -1122,7 +1180,6 @@ auto Problem2HNDirichlet4::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10,
                                            const std::vector<DeltaGrid2D> &cntrlDeltaGridList) const -> void
 {
     unsigned int Ns = mEquParameter.Ns;
-
     /***********************************************************************************************/
     SpaceNodePDE sn;
     for (unsigned int m=0; m<=M; m++)
@@ -1165,6 +1222,80 @@ auto Problem2HNDirichlet4::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10,
     /***********************************************************************************************/
 }
 
+auto Problem2HNDirichlet4::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, spif_vectorH &p_info, bool use,
+                                           unsigned int N, double hx, unsigned int M, double hy,
+                                           double ht, double aa__hxhx, double aa__hyhy, double lambda,
+                                           const std::vector<DeltaGrid2D> &pulseDeltaGridList,
+                                           const std::vector<DeltaGrid2D> &msrntDeltaGridList,
+                                           const std::vector<DeltaGrid2D> &cntrlDeltaGridList) const -> void
+{
+    unsigned int Ns = mEquParameter.Ns;
+    const Dimension time = timeDimension();
+    const unsigned int L = static_cast<unsigned int> ( time.size() );
+    const unsigned int LLD = L+LD;
+    /***********************************************************************************************/
+    SpaceNodePDE sn;
+    for (unsigned int m=0; m<=M; m++)
+    {
+        sn.j = static_cast<int>(m); sn.y = m*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn.i = static_cast<int>(n); sn.x = n*hx;
+            p00[m][n] = b_initial1(sn);
+        }
+    }
+    b_layerInfo(p00, LLD);
+    if (use == true) b_add2Info(p00, p_info, LLD, hx, hy, cntrlDeltaGridList);
+    /***********************************************************************************************/
+    //    double *_w = new double[No];
+    //    double* _p00 = new double[Nc]; for (unsigned int i=0; i<Nc; i++) _p00[i] = 0.0;
+    //    for (unsigned int i=0; i<Nc; i++)
+    //    {
+    //        const ExtendedSpacePointH &extendedSpacePoint = cntExtSpacePoints.at(i);
+    //        const std::vector<ExtendedSpacePointNodeH> &nodes = extendedSpacePoint.nodes;
+    //        const unsigned int nodes_size = static_cast<unsigned int>( nodes.size() );
+    //        for (unsigned int ni=0; ni<nodes_size; ni++)
+    //        {
+    //            const ExtendedSpacePointNodeH &node = nodes.at(ni);
+    //            const unsigned int node_nx = static_cast<unsigned int>(node.nx);
+    //            const unsigned int node_ny = static_cast<unsigned int>(node.ny);
+    //            _p00[i] += p00[node_ny][node_nx] * (node.w * (hx*hy));
+    //        }
+    //    }
+
+    //    for (unsigned int j=0; j<No; j++)
+    //    {
+    //        _w[j] = 0.0;
+    //        for (unsigned int i=0; i<Nc; i++)
+    //        {
+    //            _w[j] += mOptParameter.k[i][j] * (_p00[i] + 2.0*r*gpi(i, LLD, u_info, mOptParameter)*sgn(g0i(i,LLD, u_info, mOptParameter)));
+    //        }
+    //    }
+
+    //    delete [] _p00;
+
+    TimeNodePDE tn10; tn10.i = LLD-1; tn10.t = tn10.i*ht;
+    f_borderCalculate(p10, N, hx, M, hy, tn10);
+    for (unsigned int m=1; m<=M-1; m++)
+    {
+        sn.j = static_cast<int>(m); sn.y = m*hy;
+        for (unsigned int n=1; n<=N-1; n++)
+        {
+            sn.i = static_cast<int>(n); sn.x = n*hx;
+
+            double sum = 0.0;
+            sum += aa__hxhx*(p00[m][n-1]-2.0*p00[m][n]+p00[m][n+1]);
+            sum += aa__hyhy*(p00[m-1][n]-2.0*p00[m][n]+p00[m+1][n]);
+            sum += lambda*b_initial2(sn);
+
+            p10[m][n] = p00[m][n] - ht*b_initial2(sn) + 0.5*ht*ht*sum;
+        }
+    }
+    b_layerInfo(p10, LLD-1);
+    if (use == true) b_add2Info(p10, p_info, LLD-1, hx, hy, cntrlDeltaGridList);
+    /***********************************************************************************************/
+}
+
 void Problem2HNDirichlet4::f_borderCalculate(DoubleMatrix &u, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn) const
 {
     SpaceNodePDE sn0, sn1;
@@ -1181,6 +1312,25 @@ void Problem2HNDirichlet4::f_borderCalculate(DoubleMatrix &u, unsigned int N, do
     {
         sn0.i = static_cast<int>(n); sn0.x = n*hx; u[0][n] = f_boundary(sn0, tn);
         sn1.i = static_cast<int>(n); sn1.x = n*hx; u[M][n] = f_boundary(sn1, tn);
+    }
+}
+
+void Problem2HNDirichlet4::b_borderCalculate(DoubleMatrix &p, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn) const
+{
+    SpaceNodePDE sn0, sn1;
+    sn0.i = static_cast<int>(0); sn0.x = 0*hx;
+    sn1.i = static_cast<int>(N); sn1.x = N*hx;
+    for (unsigned int m=0; m<=M; m++)
+    {
+        sn0.j = static_cast<int>(m); sn0.y = m*hy; p[m][0] = b_boundary(sn0, tn);
+        sn1.j = static_cast<int>(m); sn1.y = m*hy; p[m][N] = b_boundary(sn1, tn);
+    }
+    sn0.j = static_cast<int>(0); sn0.y = 0*hy;
+    sn1.j = static_cast<int>(M); sn1.y = M*hy;
+    for (unsigned int n=0; n<=N; n++)
+    {
+        sn0.i = static_cast<int>(n); sn0.x = n*hx; p[0][n] = b_boundary(sn0, tn);
+        sn1.i = static_cast<int>(n); sn1.x = n*hx; p[M][n] = b_boundary(sn1, tn);
     }
 }
 
@@ -1220,111 +1370,16 @@ auto Problem2HNDirichlet4::solveBackwardIBVP(const std::vector<DoubleMatrix> &u,
     DoubleMatrix p20(M+1, N+1);
 
     //--------------------------------------------------------------------------------------------//
-    std::vector<ExtendedSpacePointH> cntExtSpacePoints, msnExtSpacePoints;
-    newDistributeDeltaGaussCntrl(mOptParameter.eta, cntExtSpacePoints, dimX, dimY);
-    newDistributeDeltaGaussMsmnt(mOptParameter.xi,  msnExtSpacePoints, dimX, dimY);
+    std::vector<DeltaGrid2D> pulseDeltaGridList, msrntDeltaGridList, cntrlDeltaGridList;
+    initDeltaGrids(pulseDeltaGridList, msrntDeltaGridList, cntrlDeltaGridList, mEquParameter, mOptParameter);
     //----------------------------------------------------------------------------------------------//
-    //-------------------------------------------- info --------------------------------------------//
     if (use == true) b_prepareInfo(Nc, mOptParameter.eta, p_info, LLD);
-    //-------------------------------------------- info --------------------------------------------//
-
+    //----------------------------------------------------------------------------------------------//
     //------------------------------------- initial conditions -------------------------------------//
-    //------------------------------------- first layer -------------------------------------//
-    SpaceNodePDE sn;
-    for (unsigned int m=0; m<=M; m++)
-    {
-        sn.j = static_cast<int>(m); sn.y = m*hy;
-        for (unsigned int n=0; n<=N; n++)
-        {
-            sn.i = static_cast<int>(n); sn.x = n*hx;
-            p00[m][n] = b_initial1(sn);
-        }
-    }
-    if (use == true) b_add2Info(p00, p_info, LLD, hx, hy, cntExtSpacePoints); b_layerInfo(p00, LLD);
-    //------------------------------------- first layer -------------------------------------//
-    //------------------------------------- second layer -------------------------------------//
-    SpaceNodePDE sn0, sn1;
-    TimeNodePDE tn10; tn10.i = LLD-1; tn10.t = tn10.i*ht;
-    sn0.i = static_cast<int>(0); sn0.x = 0*hx;
-    sn1.i = static_cast<int>(N); sn1.x = N*hx;
-    for (unsigned int m=0; m<=M; m++)
-    {
-        sn0.j = static_cast<int>(m); sn0.y = m*hy; p10[m][0] = b_boundary(sn0, tn10);
-        sn1.j = static_cast<int>(m); sn1.y = m*hy; p10[m][N] = b_boundary(sn1, tn10);
-    }
-
-    sn0.j = static_cast<int>(0); sn0.y = 0*hy;
-    sn1.j = static_cast<int>(M); sn1.y = M*hy;
-    for (unsigned int n=0; n<=N; n++)
-    {
-        sn0.i = static_cast<int>(n); sn0.x = n*hx; p10[0][n] = b_boundary(sn0, tn10);
-        sn1.i = static_cast<int>(n); sn1.x = n*hx; p10[M][n] = b_boundary(sn1, tn10);
-    }
-
-    double *_w = new double[No];
-    double* _p00 = new double[Nc]; for (unsigned int i=0; i<Nc; i++) _p00[i] = 0.0;
-    for (unsigned int i=0; i<Nc; i++)
-    {
-        const ExtendedSpacePointH &extendedSpacePoint = cntExtSpacePoints.at(i);
-        const std::vector<ExtendedSpacePointNodeH> &nodes = extendedSpacePoint.nodes;
-        const unsigned int nodes_size = static_cast<unsigned int>( nodes.size() );
-        for (unsigned int ni=0; ni<nodes_size; ni++)
-        {
-            const ExtendedSpacePointNodeH &node = nodes.at(ni);
-            const unsigned int node_nx = static_cast<unsigned int>(node.nx);
-            const unsigned int node_ny = static_cast<unsigned int>(node.ny);
-            _p00[i] += p00[node_ny][node_nx] * (node.w * (hx*hy));
-        }
-    }
-
-    for (unsigned int j=0; j<No; j++)
-    {
-        _w[j] = 0.0;
-        for (unsigned int i=0; i<Nc; i++)
-        {
-            _w[j] += mOptParameter.k[i][j] * (_p00[i] + 2.0*r*gpi(i, LLD, u_info, mOptParameter)*sgn(g0i(i,LLD, u_info, mOptParameter)));
-        }
-    }
-
-    delete [] _p00;
-
-    for (unsigned int m=1; m<=M-1; m++)
-    {
-        sn.j = static_cast<int>(m); sn.y = m*hy;
-        for (unsigned int n=1; n<=N-1; n++)
-        {
-            sn.i = static_cast<int>(n); sn.x = n*hx;
-
-            double sum = 0.0;
-            sum += aa__hxhx*(p00[m][n-1]-2.0*p00[m][n]+p00[m][n+1]);
-            sum += aa__hyhy*(p00[m-1][n]-2.0*p00[m][n]+p00[m+1][n]);
-            sum += lambda*b_initial2(sn);
-
-            p10[m][n] = p00[m][n] - ht * b_initial2(sn) + 0.5*ht*ht*sum;
-
-            double sum1 = 0.0;
-            for (unsigned int j=0; j<No; j++)
-            {
-                const ExtendedSpacePointH &extendedSpacePoint = msnExtSpacePoints.at(j);
-                if (extendedSpacePoint.contains(sn))
-                {
-                    const std::vector<ExtendedSpacePointNodeH> &nodes = extendedSpacePoint.nodes;
-                    const unsigned int nodes_size = static_cast<unsigned int>(nodes.size());
-                    for (unsigned int nj=0; nj<nodes_size; nj++)
-                    {
-                        const ExtendedSpacePointNodeH &node = nodes.at(nj);
-                        if (node.equals(sn)) sum1 += _w[j] * node.w;
-                    }
-                }
-            }
-
-            p10[m][n] += (0.5*ht*ht)*sum1;
-        }
-    }
-    if (use == true) b_add2Info(p10, p_info, LLD-1, hx, hy, cntExtSpacePoints); b_layerInfo(p10, (LLD-1)+0);
-    //------------------------------------- second layer -------------------------------------//
-    //b_initialLayers(p00, p10, p_info, use, u_info, N, M, hx, hy, ht, aa__hxhx, aa__hyhy, lambda, cntExtSpacePoints, msnExtSpacePoints);
+    b_initialLayers(p00, p10, p_info, use, N, hx, M, hy, ht, aa__hxhx, aa__hyhy, lambda, pulseDeltaGridList, msrntDeltaGridList, cntrlDeltaGridList);
     //------------------------------------- initial conditions -------------------------------------//
+
+    DoubleMatrix fxv(M+1, N+1);
 
     const unsigned int size_ln = static_cast<unsigned int>(0)-1;
     for (unsigned int ln=LLD-2; ln != size_ln; ln--)
@@ -1333,49 +1388,9 @@ auto Problem2HNDirichlet4::solveBackwardIBVP(const std::vector<DoubleMatrix> &u,
         TimeNodePDE tn10; tn10.i = ln+1; tn10.t = tn10.i*ht;
 
         /**************************************************** border conditions ***************************************************/
-        SpaceNodePDE sn0, sn1;
-        sn0.i = 0; sn0.x = 0.0; sn1.i = static_cast<int>(N); sn1.x = hx*N;
-        for (unsigned int m=0; m<=M; m++)
-        {
-            sn0.j = static_cast<int>(m); sn0.y = m*hy; p20[m][0] = b_boundary(sn0, tn20);
-            sn1.j = static_cast<int>(m); sn1.y = m*hy; p20[m][N] = b_boundary(sn1, tn20);
-        }
-        sn0.j = 0; sn0.y = 0.0; sn1.j = static_cast<int>(M); sn1.y = hy*M;
-        for (unsigned int n=0; n<=N; n++)
-        {
-            sn0.i = static_cast<int>(n); sn0.x = n*hx; p20[0][n] = b_boundary(sn0, tn20);
-            sn1.i = static_cast<int>(n); sn1.x = n*hx; p20[M][n] = b_boundary(sn1, tn20);
-        }
+        b_borderCalculate(p20, N, hx, M, hy, tn20);
         /**************************************************** border conditions ***************************************************/
-
-        double* _p = new double[Nc]; for (unsigned int i=0; i<Nc; i++) _p[i] = 0.0;
-        for (unsigned int i=0; i<Nc; i++)
-        {
-            const ExtendedSpacePointH &extendedSpacePoint = cntExtSpacePoints.at(i);
-            const std::vector<ExtendedSpacePointNodeH> &nodes = extendedSpacePoint.nodes;
-            const unsigned int nodes_size = static_cast<unsigned int>(nodes.size());
-            for (unsigned int ni=0; ni<nodes_size; ni++)
-            {
-                const ExtendedSpacePointNodeH &node = nodes.at(ni);
-                const unsigned int node_nx = static_cast<unsigned int>(node.nx);
-                const unsigned int node_ny = static_cast<unsigned int>(node.ny);
-                _p[i] += p10[node_ny][node_nx] * (node.w * (hx*hy));
-            }
-        }
-
-        double *_w = new double[No];
-        for (unsigned int j=0; j<No; j++)
-        {
-            _w[j] = 0.0;
-            for (unsigned int i=0; i<Nc; i++)
-            {
-                double _gpi = gpi(i, ln+1, u_info, mOptParameter);
-                double _sgn = sgn(g0i(i, ln+1, u_info, mOptParameter));
-                _w[j] += mOptParameter.k[i][j] * (_p[i] + 2.0*r*_gpi*_sgn);
-            }
-        }
-        delete [] _p;
-
+        b_currentLayer(p10, mEquParameter, mOptParameter, msrntDeltaGridList, cntrlDeltaGridList, N, hx, M, hy, fxv, ln, u_info);
         /**************************************************************************************************************************/
         SpaceNodePDE sn;
         for (unsigned int m=1; m<=M-1; m++)
@@ -1384,28 +1399,8 @@ auto Problem2HNDirichlet4::solveBackwardIBVP(const std::vector<DoubleMatrix> &u,
             for (unsigned int n=1; n<=N-1; n++)
             {
                 sn.i = static_cast<int>(n); sn.x = n*hx;
-                p20[m][n] = inv__alpha_ht * (aa_htht__hxhx*(p10[m][n-1]-2.0*p10[m][n]+p10[m][n+1])
-                        + aa_htht__hyhy*(p10[m-1][n]-2.0*p10[m][n]+p10[m+1][n])
-                        + lambda_ht_05*p00[m][n] + 2.0*p10[m][n] - p00[m][n]/* + ht*ht*f(sn,tn10)*/);
-                //------------------------------------- Adding delta part -------------------------------------//
-                double _fx = 0.0;
-                for (unsigned int j=0; j<No; j++)
-                {
-                    const ExtendedSpacePointH &extendedSpacePoint = msnExtSpacePoints.at(j);
-                    if (extendedSpacePoint.contains(sn))
-                    {
-                        const std::vector<ExtendedSpacePointNodeH> &nodes = extendedSpacePoint.nodes;
-                        const unsigned int nodes_size = static_cast<unsigned int>(nodes.size());
-                        for (unsigned int nj=0; nj<nodes_size; nj++)
-                        {
-                            const ExtendedSpacePointNodeH &node = nodes.at(nj);
-                            if (node.equals(sn)) _fx += _w[j] * node.w;
-                        }
-                    }
-                }
-                p20[m][n] += inv__alpha_ht * ht_ht *_fx;
-                //------------------------------------- Adding delta part -------------------------------------//
-
+                p20[m][n] = inv__alpha_ht * (aa_htht__hxhx*(p10[m][n-1]-2.0*p10[m][n]+p10[m][n+1]) + aa_htht__hyhy*(p10[m-1][n]-2.0*p10[m][n]+p10[m+1][n])
+                        + lambda_ht_05*p00[m][n] + 2.0*p10[m][n] - p00[m][n] + ht_ht*fxv[m][n]);
                 //------------------------------------- Adding functional part --------------------------------//
                 double _mu = mu(static_cast<unsigned int>(sn.i),static_cast<unsigned int>(sn.j));
                 if (L <= ln && ln <= LLD) p20[m][n] += -2.0*_mu*(u[ln-L+1][m][n]) * ht_ht * inv__alpha_ht;
@@ -1413,10 +1408,8 @@ auto Problem2HNDirichlet4::solveBackwardIBVP(const std::vector<DoubleMatrix> &u,
             }
         }
         /**************************************************************************************************************************/
-
-        delete [] _w;
-
-        if (use == true) b_add2Info(p20, p_info, ln, hx, hy, cntExtSpacePoints); b_layerInfo(p20, ln);
+        b_layerInfo(p20, ln);
+        if (use == true) b_add2Info(p20, p_info, ln, hx, hy, cntrlDeltaGridList);
 
         for (unsigned int m=0; m<=M; m++)
         {
@@ -1428,8 +1421,8 @@ auto Problem2HNDirichlet4::solveBackwardIBVP(const std::vector<DoubleMatrix> &u,
         }
     }
 
-    msnExtSpacePoints.clear();
-    cntExtSpacePoints.clear();
+    fxv.clear();
+    releaseDeltaGrids(pulseDeltaGridList, msrntDeltaGridList, cntrlDeltaGridList);
 
     p00.clear();
     p10.clear();
@@ -1546,35 +1539,38 @@ auto Problem2HNDirichlet4::f_add2Info(const DoubleMatrix &u, spif_vectorH &u_inf
     }
 }
 
-auto Problem2HNDirichlet4::b_add2Info(const DoubleMatrix &p, spif_vectorH &p_info, unsigned int ln, double hx, double hy, const std::vector<ExtendedSpacePointH> &extCntrls, int method) const -> void
+auto Problem2HNDirichlet4::b_add2Info(const DoubleMatrix &p, spif_vectorH &p_info, unsigned int ln, double hx, double hy, const std::vector<DeltaGrid2D> &cntrlDeltaGridList) const -> void
 {
-    if (method == 1 || method == 2 || method == 4)
+    unsigned int Nc = static_cast<unsigned int>(cntrlDeltaGridList.size());
+    for (unsigned int i=0; i<Nc; i++)
     {
-        unsigned int Nc = static_cast<unsigned int>(extCntrls.size());
-        for (unsigned int i=0; i<Nc; i++)
+        SpacePointInfoH &pi =  p_info[i];
+        const DeltaGrid2D &cdg = cntrlDeltaGridList[i];
+
+        pi.vl[ln] = 0.0;
+        for (unsigned int m=cdg.minY(); m<=cdg.maxY(); m++)
         {
-            const ExtendedSpacePointH &xsp = extCntrls.at(i);
-            SpacePointInfoH &pi = p_info[i];
-            const unsigned int nodes_size = static_cast<const unsigned int>( xsp.nodes.size() );
-            for (unsigned int i=0; i<nodes_size; i++)
+            for (unsigned int n=cdg.minX(); n<=cdg.maxX(); n++)
             {
-                const ExtendedSpacePointNodeH &node = xsp.nodes.at(i);
-                const unsigned int nx = static_cast<const unsigned int>(node.nx);
-                const unsigned int ny = static_cast<const unsigned int>(node.ny);
-                pi.vl[ln] += p[ny][nx] * (node.w * (hx*hy));
-                if (node.isCenter)
-                {
-                    const unsigned int rx = static_cast<const unsigned int>(xsp.rx);
-                    const unsigned int ry = static_cast<const unsigned int>(xsp.ry);
-
-                    pi.dx[ln] = (p[ry][rx+1] - p[ry][rx-1])/(2.0*hx);
-                    pi.dy[ln] = (p[ry+1][rx] - p[ry-1][rx])/(2.0*hy);
-
-                    pi.dx[ln] += ((xsp.x-rx*hx)/(hx*hx))*(p[ry][rx+1] - 2.0*p[ry][rx] + p[ry][rx-1]);
-                    pi.dy[ln] += ((xsp.y-ry*hy)/(hy*hy))*(p[ry+1][rx] - 2.0*p[ry][rx] + p[ry-1][rx]);
-                }
+                pi.vl[ln] += p[m][n] * cdg.weight(n,m) * (hx*hy);
             }
         }
+
+        double px = cdg.p().x;
+        double py = cdg.p().y;
+        unsigned int rx = cdg.rx();
+        unsigned int ry = cdg.ry();
+
+        pi.dx[ln] = (p[ry][rx+1] - p[ry][rx-1])/(2.0*hx);
+        pi.dy[ln] = (p[ry+1][rx] - p[ry-1][rx])/(2.0*hy);
+
+        pi.dx[ln] += ((px-rx*hx)/(hx*hx))*(p[ry][rx+1] - 2.0*p[ry][rx] + p[ry][rx-1]);
+        pi.dy[ln] += ((py-ry*hy)/(hy*hy))*(p[ry+1][rx] - 2.0*p[ry][rx] + p[ry-1][rx]);
+
+        //ui.dxx[ln] = (1.0/(hx*hx))*(u[ry][rx+1] - 2.0*u[ry][rx] + u[ry][rx-1]);
+        //ui.dyy[ln] = (1.0/(hy*hy))*(u[ry+1][rx] - 2.0*u[ry][rx] + u[ry-1][rx]);
+
+
     }
 }
 
@@ -1600,349 +1596,349 @@ auto Problem2HNDirichlet4::b_characteristic(const DoubleMatrix &u, unsigned int 
 auto Problem2HNDirichlet4::b_layerInfo(const DoubleMatrix &p UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
 {}
 
-auto Problem2HNDirichlet4::newDistributeDeltaGaussPulse(const std::vector<SpacePoint> &thetas, std::vector<ExtendedSpacePointH> &extThetas, const Dimension &dimX, const Dimension &dimY) const -> void
-{
-    double hx = dimX.step();
-    double hy = dimY.step();
+//auto Problem2HNDirichlet4::newDistributeDeltaGaussPulse(const std::vector<SpacePoint> &thetas, std::vector<ExtendedSpacePointH> &extThetas, const Dimension &dimX, const Dimension &dimY) const -> void
+//{
+//    double hx = dimX.step();
+//    double hy = dimY.step();
 
-    unsigned int Nx = static_cast<unsigned int> ( dimX.size() );
-    unsigned int Ny = static_cast<unsigned int> ( dimY.size() );
-    unsigned int Ns = static_cast<unsigned int> ( thetas.size() );
+//    unsigned int Nx = static_cast<unsigned int> ( dimX.size() );
+//    unsigned int Ny = static_cast<unsigned int> ( dimY.size() );
+//    unsigned int Ns = static_cast<unsigned int> ( thetas.size() );
 
-    extThetas.clear();
-    extThetas.resize(Ns);
+//    extThetas.clear();
+//    extThetas.resize(Ns);
 
-    //    const SpacePoint &theta = thetas.at(0);
-    //    ExtendedSpacePointH &extTheta = extThetas.at(0);
-    //    extTheta.x = theta.x;
-    //    extTheta.y = theta.y;
-    //    extTheta.rx = static_cast<int> ( round(extTheta.x*Nx) );
-    //    extTheta.ry = static_cast<int> ( round(extTheta.y*Ny) );
-    //    extTheta.k = 0;
-    //    extTheta.minX = extTheta.rx - extTheta.k;
-    //    extTheta.maxX = extTheta.rx + extTheta.k;
-    //    extTheta.minY = extTheta.ry - extTheta.k;
-    //    extTheta.maxY = extTheta.ry + extTheta.k;
-    //    ExtendedSpacePointNodeH node;
-    //    node.nx = 50; node.x = 50*hx;
-    //    node.ny = 50; node.y = 50*hy;
-    //    node.w = 1.0/(hx*hy);
-    //    node.isCenter = true;
-    //    extTheta.nodes.push_back(node);
-    //    return;
+//    //    const SpacePoint &theta = thetas.at(0);
+//    //    ExtendedSpacePointH &extTheta = extThetas.at(0);
+//    //    extTheta.x = theta.x;
+//    //    extTheta.y = theta.y;
+//    //    extTheta.rx = static_cast<int> ( round(extTheta.x*Nx) );
+//    //    extTheta.ry = static_cast<int> ( round(extTheta.y*Ny) );
+//    //    extTheta.k = 0;
+//    //    extTheta.minX = extTheta.rx - extTheta.k;
+//    //    extTheta.maxX = extTheta.rx + extTheta.k;
+//    //    extTheta.minY = extTheta.ry - extTheta.k;
+//    //    extTheta.maxY = extTheta.ry + extTheta.k;
+//    //    ExtendedSpacePointNodeH node;
+//    //    node.nx = 50; node.x = 50*hx;
+//    //    node.ny = 50; node.y = 50*hy;
+//    //    node.w = 1.0/(hx*hy);
+//    //    node.isCenter = true;
+//    //    extTheta.nodes.push_back(node);
+//    //    return;
 
-    const int k = 24;
-    const double sigmaX = 8.0*hx;
-    const double sigmaY = 8.0*hy;
+//    const int k = 24;
+//    const double sigmaX = 8.0*hx;
+//    const double sigmaY = 8.0*hy;
 
-    for (unsigned int s=0; s<Ns; s++)
-    {
-        const SpacePoint &theta = thetas.at(s);
-        ExtendedSpacePointH &extTheta = extThetas.at(s);
+//    for (unsigned int s=0; s<Ns; s++)
+//    {
+//        const SpacePoint &theta = thetas.at(s);
+//        ExtendedSpacePointH &extTheta = extThetas.at(s);
 
-        extTheta.x = theta.x;
-        extTheta.y = theta.y;
-        extTheta.rx = static_cast<int>( round(extTheta.x*Nx) );
-        extTheta.ry = static_cast<int>( round(extTheta.y*Ny) );
-        extTheta.k = k;
-        extTheta.minX = extTheta.rx - extTheta.k;
-        extTheta.maxX = extTheta.rx + extTheta.k;
-        extTheta.minY = extTheta.ry - extTheta.k;
-        extTheta.maxY = extTheta.ry + extTheta.k;
+//        extTheta.x = theta.x;
+//        extTheta.y = theta.y;
+//        extTheta.rx = static_cast<int>( round(extTheta.x*Nx) );
+//        extTheta.ry = static_cast<int>( round(extTheta.y*Ny) );
+//        extTheta.k = k;
+//        extTheta.minX = extTheta.rx - extTheta.k;
+//        extTheta.maxX = extTheta.rx + extTheta.k;
+//        extTheta.minY = extTheta.ry - extTheta.k;
+//        extTheta.maxY = extTheta.ry + extTheta.k;
 
-        double sumX = 0.0;
-        for (int n=extTheta.minX; n<=extTheta.maxX; n++) sumX += exp(-((n*hx-theta.x)*(n*hx-theta.x))/(2.0*sigmaX*sigmaX));
-        sumX *= hx;
+//        double sumX = 0.0;
+//        for (int n=extTheta.minX; n<=extTheta.maxX; n++) sumX += exp(-((n*hx-theta.x)*(n*hx-theta.x))/(2.0*sigmaX*sigmaX));
+//        sumX *= hx;
 
-        double sumY = 0.0;
-        for (int m=extTheta.minY; m<=extTheta.maxY; m++) sumY += exp(-((m*hy-theta.y)*(m*hy-theta.y))/(2.0*sigmaY*sigmaY));
-        sumY *= hy;
+//        double sumY = 0.0;
+//        for (int m=extTheta.minY; m<=extTheta.maxY; m++) sumY += exp(-((m*hy-theta.y)*(m*hy-theta.y))/(2.0*sigmaY*sigmaY));
+//        sumY *= hy;
 
-        double sigma = (sumX*sumY) / (2.0*M_PI);
-        double factor = 1.0/(2.0*M_PI*sigma);
-        //double factor = 1.0/(2.0*M_PI*sigmaX*sigmaY);
+//        double sigma = (sumX*sumY) / (2.0*M_PI);
+//        double factor = 1.0/(2.0*M_PI*sigma);
+//        //double factor = 1.0/(2.0*M_PI*sigmaX*sigmaY);
 
-        for (int m=extTheta.minY; m<=extTheta.maxY; m++)
-        {
-            for (int n=extTheta.minX; n<=extTheta.maxX; n++)
-            {
-                ExtendedSpacePointNodeH node;
-                node.nx = n; node.x = n*hx;
-                node.ny = m; node.y = m*hy;
-                node.w = factor*exp(-0.5*(((node.x-theta.x)*(node.x-theta.x))/(sigmaX*sigmaX)+((node.y-theta.y)*(node.y-theta.y))/(sigmaY*sigmaY)));
-                node.isCenter = ( m==extTheta.ry && n==extTheta.rx );
-                extTheta.nodes.push_back(node);
-            }
-        }
-    }
+//        for (int m=extTheta.minY; m<=extTheta.maxY; m++)
+//        {
+//            for (int n=extTheta.minX; n<=extTheta.maxX; n++)
+//            {
+//                ExtendedSpacePointNodeH node;
+//                node.nx = n; node.x = n*hx;
+//                node.ny = m; node.y = m*hy;
+//                node.w = factor*exp(-0.5*(((node.x-theta.x)*(node.x-theta.x))/(sigmaX*sigmaX)+((node.y-theta.y)*(node.y-theta.y))/(sigmaY*sigmaY)));
+//                node.isCenter = ( m==extTheta.ry && n==extTheta.rx );
+//                extTheta.nodes.push_back(node);
+//            }
+//        }
+//    }
 
-    //    EquationParameterHE &prm = const_cast<EquationParameterHE&>(this->mParameter);
-    //    for (unsigned int s=0; s<Ns; s++)
-    //    {
-    //        SpacePoint &msmnt = prm.theta[s];
-    //        EquationParameterHE::SpacePointExt &spe = prm.theta_ext[s];
+//    //    EquationParameterHE &prm = const_cast<EquationParameterHE&>(this->mParameter);
+//    //    for (unsigned int s=0; s<Ns; s++)
+//    //    {
+//    //        SpacePoint &msmnt = prm.theta[s];
+//    //        EquationParameterHE::SpacePointExt &spe = prm.theta_ext[s];
 
-    //        spe.rx = static_cast<unsigned int>(round(msmnt.x*Nx));
-    //        spe.ry = static_cast<unsigned int>(round(msmnt.y*Ny));
-    //        spe.minX = spe.rx - k;
-    //        spe.maxX = spe.rx + k;
-    //        spe.minY = spe.ry - k;
-    //        spe.maxY = spe.ry + k;
+//    //        spe.rx = static_cast<unsigned int>(round(msmnt.x*Nx));
+//    //        spe.ry = static_cast<unsigned int>(round(msmnt.y*Ny));
+//    //        spe.minX = spe.rx - k;
+//    //        spe.maxX = spe.rx + k;
+//    //        spe.minY = spe.ry - k;
+//    //        spe.maxY = spe.ry + k;
 
-    //        double sumX = 0.0;
-    //        for (unsigned int n=spe.minX; n<=spe.maxX; n++) sumX += exp(-((n*hx-msmnt.x)*(n*hx-msmnt.x))/(2.0*sigmaX*sigmaX));
-    //        sumX *= hx;
+//    //        double sumX = 0.0;
+//    //        for (unsigned int n=spe.minX; n<=spe.maxX; n++) sumX += exp(-((n*hx-msmnt.x)*(n*hx-msmnt.x))/(2.0*sigmaX*sigmaX));
+//    //        sumX *= hx;
 
-    //        double sumY = 0.0;
-    //        for (unsigned int m=spe.minY; m<=spe.maxY; m++) sumY += exp(-((m*hy-msmnt.y)*(m*hy-msmnt.y))/(2.0*sigmaY*sigmaY));
-    //        sumY *= hy;
+//    //        double sumY = 0.0;
+//    //        for (unsigned int m=spe.minY; m<=spe.maxY; m++) sumY += exp(-((m*hy-msmnt.y)*(m*hy-msmnt.y))/(2.0*sigmaY*sigmaY));
+//    //        sumY *= hy;
 
-    //        double sigma = (sumX*sumY) / (2.0*M_PI);
-    //        double factor = 1.0/((2.0*M_PI)*sigma);
+//    //        double sigma = (sumX*sumY) / (2.0*M_PI);
+//    //        double factor = 1.0/((2.0*M_PI)*sigma);
 
-    //        spe.nodes.clear();
-    //        for (unsigned int m=spe.minY; m<=spe.maxY; m++)
-    //        {
-    //            for (unsigned int n=spe.minX; n<=spe.maxX; n++)
-    //            {
-    //                EquationParameterHE::SpacePointExt::Node node;
-    //                node.nx = n; node.x = n*hx;
-    //                node.ny = m; node.y = m*hy;
-    //                node.w = factor*exp(-0.5*(((node.x-msmnt.x)*(node.x-msmnt.x))/(sigmaX*sigmaX)+((node.y-msmnt.y)*(node.y-msmnt.y))/(sigmaY*sigmaY)));
-    //                node.isCenter = ( m==spe.ry && n==spe.rx );
-    //                spe.nodes.push_back(node);
-    //            }
-    //        }
-    //    }
-}
+//    //        spe.nodes.clear();
+//    //        for (unsigned int m=spe.minY; m<=spe.maxY; m++)
+//    //        {
+//    //            for (unsigned int n=spe.minX; n<=spe.maxX; n++)
+//    //            {
+//    //                EquationParameterHE::SpacePointExt::Node node;
+//    //                node.nx = n; node.x = n*hx;
+//    //                node.ny = m; node.y = m*hy;
+//    //                node.w = factor*exp(-0.5*(((node.x-msmnt.x)*(node.x-msmnt.x))/(sigmaX*sigmaX)+((node.y-msmnt.y)*(node.y-msmnt.y))/(sigmaY*sigmaY)));
+//    //                node.isCenter = ( m==spe.ry && n==spe.rx );
+//    //                spe.nodes.push_back(node);
+//    //            }
+//    //        }
+//    //    }
+//}
 
-auto Problem2HNDirichlet4::newDistributeDeltaGaussCntrl(const std::vector<SpacePoint> &cntrls, std::vector<ExtendedSpacePointH> &extCntrls, const Dimension &dimX, const Dimension &dimY) const -> void
-{
-    double hx = dimX.step();
-    double hy = dimY.step();
+//auto Problem2HNDirichlet4::newDistributeDeltaGaussCntrl(const std::vector<SpacePoint> &cntrls, std::vector<ExtendedSpacePointH> &extCntrls, const Dimension &dimX, const Dimension &dimY) const -> void
+//{
+//    double hx = dimX.step();
+//    double hy = dimY.step();
 
-    unsigned int Nx = static_cast<unsigned int> ( dimX.size() );
-    unsigned int Ny = static_cast<unsigned int> ( dimY.size() );
-    unsigned int Nc = static_cast<unsigned int> ( cntrls.size() );
+//    unsigned int Nx = static_cast<unsigned int> ( dimX.size() );
+//    unsigned int Ny = static_cast<unsigned int> ( dimY.size() );
+//    unsigned int Nc = static_cast<unsigned int> ( cntrls.size() );
 
-    extCntrls.clear();
-    extCntrls.resize(Nc);
+//    extCntrls.clear();
+//    extCntrls.resize(Nc);
 
-    int k = 3;
-    double sigmaX = hx;
-    double sigmaY = hy;
+//    int k = 3;
+//    double sigmaX = hx;
+//    double sigmaY = hy;
 
-    for (unsigned int c=0; c<Nc; c++)
-    {
-        const SpacePoint &cntrl = cntrls.at(c);
-        ExtendedSpacePointH &extCntrl = extCntrls.at(c);
+//    for (unsigned int c=0; c<Nc; c++)
+//    {
+//        const SpacePoint &cntrl = cntrls.at(c);
+//        ExtendedSpacePointH &extCntrl = extCntrls.at(c);
 
-        extCntrl.x = cntrl.x;
-        extCntrl.y = cntrl.y;
-        extCntrl.rx = static_cast<int>(round(extCntrl.x*Nx));
-        extCntrl.ry = static_cast<int>(round(extCntrl.y*Ny));
-        extCntrl.k = k;
-        extCntrl.minX = extCntrl.rx - extCntrl.k;
-        extCntrl.maxX = extCntrl.rx + extCntrl.k;
-        extCntrl.minY = extCntrl.ry - extCntrl.k;
-        extCntrl.maxY = extCntrl.ry + extCntrl.k;
+//        extCntrl.x = cntrl.x;
+//        extCntrl.y = cntrl.y;
+//        extCntrl.rx = static_cast<int>(round(extCntrl.x*Nx));
+//        extCntrl.ry = static_cast<int>(round(extCntrl.y*Ny));
+//        extCntrl.k = k;
+//        extCntrl.minX = extCntrl.rx - extCntrl.k;
+//        extCntrl.maxX = extCntrl.rx + extCntrl.k;
+//        extCntrl.minY = extCntrl.ry - extCntrl.k;
+//        extCntrl.maxY = extCntrl.ry + extCntrl.k;
 
-        double sumX = 0.0;
-        for (int n=extCntrl.minX; n<=extCntrl.maxX; n++) sumX += exp(-((n*hx-cntrl.x)*(n*hx-cntrl.x))/(2.0*sigmaX*sigmaX));
-        sumX *= hx;
+//        double sumX = 0.0;
+//        for (int n=extCntrl.minX; n<=extCntrl.maxX; n++) sumX += exp(-((n*hx-cntrl.x)*(n*hx-cntrl.x))/(2.0*sigmaX*sigmaX));
+//        sumX *= hx;
 
-        double sumY = 0.0;
-        for (int m=extCntrl.minY; m<=extCntrl.maxY; m++) sumY += exp(-((m*hy-cntrl.y)*(m*hy-cntrl.y))/(2.0*sigmaY*sigmaY));
-        sumY *= hy;
+//        double sumY = 0.0;
+//        for (int m=extCntrl.minY; m<=extCntrl.maxY; m++) sumY += exp(-((m*hy-cntrl.y)*(m*hy-cntrl.y))/(2.0*sigmaY*sigmaY));
+//        sumY *= hy;
 
-        double sigma = (sumX*sumY) / (2.0*M_PI);
-        double factor = 1.0/((2.0*M_PI)*sigma);
+//        double sigma = (sumX*sumY) / (2.0*M_PI);
+//        double factor = 1.0/((2.0*M_PI)*sigma);
 
-        for (int m=extCntrl.minY; m<=extCntrl.maxY; m++)
-        {
-            for (int n=extCntrl.minX; n<=extCntrl.maxX; n++)
-            {
-                ExtendedSpacePointNodeH node;
-                node.nx = n; node.x = n*hx;
-                node.ny = m; node.y = m*hy;
-                node.w = factor*exp(-0.5*(((node.x-cntrl.x)*(node.x-cntrl.x))/(sigmaX*sigmaX)+((node.y-cntrl.y)*(node.y-cntrl.y))/(sigmaY*sigmaY)));
-                node.isCenter = ( m==extCntrl.ry && n==extCntrl.rx );
-                extCntrl.nodes.push_back(node);
-            }
-        }
-    }
+//        for (int m=extCntrl.minY; m<=extCntrl.maxY; m++)
+//        {
+//            for (int n=extCntrl.minX; n<=extCntrl.maxX; n++)
+//            {
+//                ExtendedSpacePointNodeH node;
+//                node.nx = n; node.x = n*hx;
+//                node.ny = m; node.y = m*hy;
+//                node.w = factor*exp(-0.5*(((node.x-cntrl.x)*(node.x-cntrl.x))/(sigmaX*sigmaX)+((node.y-cntrl.y)*(node.y-cntrl.y))/(sigmaY*sigmaY)));
+//                node.isCenter = ( m==extCntrl.ry && n==extCntrl.rx );
+//                extCntrl.nodes.push_back(node);
+//            }
+//        }
+//    }
 
-    //    EquationParameterHE &prm = const_cast<EquationParameterHE&>(this->mParameter);
-    //    for (unsigned int i=0; i<Nc; i++)
-    //    {
-    //        SpacePoint &cntrl = prm.eta[i];
-    //        EquationParameterHE::SpacePointExt &spe = prm.eta_ext[i];
+//    //    EquationParameterHE &prm = const_cast<EquationParameterHE&>(this->mParameter);
+//    //    for (unsigned int i=0; i<Nc; i++)
+//    //    {
+//    //        SpacePoint &cntrl = prm.eta[i];
+//    //        EquationParameterHE::SpacePointExt &spe = prm.eta_ext[i];
 
-    //        spe.rx = static_cast<unsigned int>( round(cntrl.x*Nx));
-    //        spe.ry = static_cast<unsigned int>( round(cntrl.y*Ny));
-    //        spe.minX = spe.rx - k;
-    //        spe.maxX = spe.rx + k;
-    //        spe.minY = spe.ry - k;
-    //        spe.maxY = spe.ry + k;
+//    //        spe.rx = static_cast<unsigned int>( round(cntrl.x*Nx));
+//    //        spe.ry = static_cast<unsigned int>( round(cntrl.y*Ny));
+//    //        spe.minX = spe.rx - k;
+//    //        spe.maxX = spe.rx + k;
+//    //        spe.minY = spe.ry - k;
+//    //        spe.maxY = spe.ry + k;
 
-    //        double sumX = 0.0;
-    //        for (unsigned int n=spe.minX; n<=spe.maxX; n++) sumX += exp(-((n*hx-cntrl.x)*(n*hx-cntrl.x))/(2.0*sigmaX*sigmaX));
-    //        sumX *= hx;
+//    //        double sumX = 0.0;
+//    //        for (unsigned int n=spe.minX; n<=spe.maxX; n++) sumX += exp(-((n*hx-cntrl.x)*(n*hx-cntrl.x))/(2.0*sigmaX*sigmaX));
+//    //        sumX *= hx;
 
-    //        double sumY = 0.0;
-    //        for (unsigned int m=spe.minY; m<=spe.maxY; m++) sumY += exp(-((m*hy-cntrl.y)*(m*hy-cntrl.y))/(2.0*sigmaY*sigmaY));
-    //        sumY *= hy;
+//    //        double sumY = 0.0;
+//    //        for (unsigned int m=spe.minY; m<=spe.maxY; m++) sumY += exp(-((m*hy-cntrl.y)*(m*hy-cntrl.y))/(2.0*sigmaY*sigmaY));
+//    //        sumY *= hy;
 
-    //        double sigma = (sumX*sumY) / (2.0*M_PI);
-    //        double factor = 1.0/((2.0*M_PI)*sigma);
+//    //        double sigma = (sumX*sumY) / (2.0*M_PI);
+//    //        double factor = 1.0/((2.0*M_PI)*sigma);
 
-    //        spe.nodes.clear();
-    //        for (unsigned int m=spe.minY; m<=spe.maxY; m++)
-    //        {
-    //            for (unsigned int n=spe.minX; n<=spe.maxX; n++)
-    //            {
-    //                EquationParameterHE::SpacePointExt::Node node;
-    //                node.nx = n; node.x = n*hx;
-    //                node.ny = m; node.y = m*hy;
-    //                node.w = factor*exp(-0.5*(((node.x-cntrl.x)*(node.x-cntrl.x))/(sigmaX*sigmaX)+((node.y-cntrl.y)*(node.y-cntrl.y))/(sigmaY*sigmaY)));
-    //                node.isCenter = ( m==spe.ry && n==spe.rx );
-    //                spe.nodes.push_back(node);
-    //            }
-    //        }
-    //    }
-}
+//    //        spe.nodes.clear();
+//    //        for (unsigned int m=spe.minY; m<=spe.maxY; m++)
+//    //        {
+//    //            for (unsigned int n=spe.minX; n<=spe.maxX; n++)
+//    //            {
+//    //                EquationParameterHE::SpacePointExt::Node node;
+//    //                node.nx = n; node.x = n*hx;
+//    //                node.ny = m; node.y = m*hy;
+//    //                node.w = factor*exp(-0.5*(((node.x-cntrl.x)*(node.x-cntrl.x))/(sigmaX*sigmaX)+((node.y-cntrl.y)*(node.y-cntrl.y))/(sigmaY*sigmaY)));
+//    //                node.isCenter = ( m==spe.ry && n==spe.rx );
+//    //                spe.nodes.push_back(node);
+//    //            }
+//    //        }
+//    //    }
+//}
 
-auto Problem2HNDirichlet4::newDistributeDeltaGaussMsmnt(const std::vector<SpacePoint> &msmnts, std::vector<ExtendedSpacePointH> &extMsmnts, const Dimension &dimX, const Dimension &dimY) const -> void
-{
-    double hx = dimX.step();
-    double hy = dimY.step();
+//auto Problem2HNDirichlet4::newDistributeDeltaGaussMsmnt(const std::vector<SpacePoint> &msmnts, std::vector<ExtendedSpacePointH> &extMsmnts, const Dimension &dimX, const Dimension &dimY) const -> void
+//{
+//    double hx = dimX.step();
+//    double hy = dimY.step();
 
-    unsigned int Nx = static_cast<unsigned int> ( dimX.size() );
-    unsigned int Ny = static_cast<unsigned int> ( dimY.size() );
-    unsigned int No = static_cast<unsigned int> ( msmnts.size() );
+//    unsigned int Nx = static_cast<unsigned int> ( dimX.size() );
+//    unsigned int Ny = static_cast<unsigned int> ( dimY.size() );
+//    unsigned int No = static_cast<unsigned int> ( msmnts.size() );
 
-    extMsmnts.clear();
-    extMsmnts.resize(No);
+//    extMsmnts.clear();
+//    extMsmnts.resize(No);
 
-    int k = 3;
-    double sigmaX = hx;
-    double sigmaY = hy;
+//    int k = 3;
+//    double sigmaX = hx;
+//    double sigmaY = hy;
 
-    for (unsigned int c=0; c<No; c++)
-    {
-        const SpacePoint &msmnt = msmnts.at(c);
-        ExtendedSpacePointH &extMsmnt = extMsmnts.at(c);
+//    for (unsigned int c=0; c<No; c++)
+//    {
+//        const SpacePoint &msmnt = msmnts.at(c);
+//        ExtendedSpacePointH &extMsmnt = extMsmnts.at(c);
 
-        extMsmnt.x = msmnt.x;
-        extMsmnt.y = msmnt.y;
-        extMsmnt.rx = static_cast<int>(round(extMsmnt.x*Nx));
-        extMsmnt.ry = static_cast<int>(round(extMsmnt.y*Ny));
-        extMsmnt.k = k;
-        extMsmnt.minX = extMsmnt.rx - extMsmnt.k;
-        extMsmnt.maxX = extMsmnt.rx + extMsmnt.k;
-        extMsmnt.minY = extMsmnt.ry - extMsmnt.k;
-        extMsmnt.maxY = extMsmnt.ry + extMsmnt.k;
+//        extMsmnt.x = msmnt.x;
+//        extMsmnt.y = msmnt.y;
+//        extMsmnt.rx = static_cast<int>(round(extMsmnt.x*Nx));
+//        extMsmnt.ry = static_cast<int>(round(extMsmnt.y*Ny));
+//        extMsmnt.k = k;
+//        extMsmnt.minX = extMsmnt.rx - extMsmnt.k;
+//        extMsmnt.maxX = extMsmnt.rx + extMsmnt.k;
+//        extMsmnt.minY = extMsmnt.ry - extMsmnt.k;
+//        extMsmnt.maxY = extMsmnt.ry + extMsmnt.k;
 
-        double sumX = 0.0;
-        for (int n=extMsmnt.minX; n<=extMsmnt.maxX; n++) sumX += exp(-((n*hx-msmnt.x)*(n*hx-msmnt.x))/(2.0*sigmaX*sigmaX));
-        sumX *= hx;
+//        double sumX = 0.0;
+//        for (int n=extMsmnt.minX; n<=extMsmnt.maxX; n++) sumX += exp(-((n*hx-msmnt.x)*(n*hx-msmnt.x))/(2.0*sigmaX*sigmaX));
+//        sumX *= hx;
 
-        double sumY = 0.0;
-        for (int m=extMsmnt.minY; m<=extMsmnt.maxY; m++) sumY += exp(-((m*hy-msmnt.y)*(m*hy-msmnt.y))/(2.0*sigmaY*sigmaY));
-        sumY *= hy;
+//        double sumY = 0.0;
+//        for (int m=extMsmnt.minY; m<=extMsmnt.maxY; m++) sumY += exp(-((m*hy-msmnt.y)*(m*hy-msmnt.y))/(2.0*sigmaY*sigmaY));
+//        sumY *= hy;
 
-        double sigma = (sumX*sumY) / (2.0*M_PI);
-        double factor = 1.0/((2.0*M_PI)*sigma);
+//        double sigma = (sumX*sumY) / (2.0*M_PI);
+//        double factor = 1.0/((2.0*M_PI)*sigma);
 
-        for (int m=extMsmnt.minY; m<=extMsmnt.maxY; m++)
-        {
-            for (int n=extMsmnt.minX; n<=extMsmnt.maxX; n++)
-            {
-                ExtendedSpacePointNodeH node;
-                node.nx = n; node.x = n*hx;
-                node.ny = m; node.y = m*hy;
-                node.w = factor*exp(-0.5*(((node.x-msmnt.x)*(node.x-msmnt.x))/(sigmaX*sigmaX)+((node.y-msmnt.y)*(node.y-msmnt.y))/(sigmaY*sigmaY)));
-                node.isCenter = ( m==extMsmnt.ry && n==extMsmnt.rx );
-                extMsmnt.nodes.push_back(node);
-            }
-        }
-    }
+//        for (int m=extMsmnt.minY; m<=extMsmnt.maxY; m++)
+//        {
+//            for (int n=extMsmnt.minX; n<=extMsmnt.maxX; n++)
+//            {
+//                ExtendedSpacePointNodeH node;
+//                node.nx = n; node.x = n*hx;
+//                node.ny = m; node.y = m*hy;
+//                node.w = factor*exp(-0.5*(((node.x-msmnt.x)*(node.x-msmnt.x))/(sigmaX*sigmaX)+((node.y-msmnt.y)*(node.y-msmnt.y))/(sigmaY*sigmaY)));
+//                node.isCenter = ( m==extMsmnt.ry && n==extMsmnt.rx );
+//                extMsmnt.nodes.push_back(node);
+//            }
+//        }
+//    }
 
-    //    EquationParameterHE &prm = const_cast<EquationParameterHE&>(this->mParameter);
-    //    for (unsigned int j=0; j<No; j++)
-    //    {
-    //        SpacePoint &msmnt = prm.xi[j];
-    //        EquationParameterHE::SpacePointExt &spe = prm.xi_ext[j];
+//    //    EquationParameterHE &prm = const_cast<EquationParameterHE&>(this->mParameter);
+//    //    for (unsigned int j=0; j<No; j++)
+//    //    {
+//    //        SpacePoint &msmnt = prm.xi[j];
+//    //        EquationParameterHE::SpacePointExt &spe = prm.xi_ext[j];
 
-    //        spe.rx = static_cast<unsigned int>(round(msmnt.x*Nx));
-    //        spe.ry = static_cast<unsigned int>(round(msmnt.y*Ny));
-    //        spe.minX = spe.rx - k;
-    //        spe.maxX = spe.rx + k;
-    //        spe.minY = spe.ry - k;
-    //        spe.maxY = spe.ry + k;
+//    //        spe.rx = static_cast<unsigned int>(round(msmnt.x*Nx));
+//    //        spe.ry = static_cast<unsigned int>(round(msmnt.y*Ny));
+//    //        spe.minX = spe.rx - k;
+//    //        spe.maxX = spe.rx + k;
+//    //        spe.minY = spe.ry - k;
+//    //        spe.maxY = spe.ry + k;
 
-    //        double sumX = 0.0;
-    //        for (unsigned int n=spe.minX; n<=spe.maxX; n++) sumX += exp(-((n*hx-msmnt.x)*(n*hx-msmnt.x))/(2.0*sigmaX*sigmaX));
-    //        sumX *= hx;
+//    //        double sumX = 0.0;
+//    //        for (unsigned int n=spe.minX; n<=spe.maxX; n++) sumX += exp(-((n*hx-msmnt.x)*(n*hx-msmnt.x))/(2.0*sigmaX*sigmaX));
+//    //        sumX *= hx;
 
-    //        double sumY = 0.0;
-    //        for (unsigned int m=spe.minY; m<=spe.maxY; m++) sumY += exp(-((m*hy-msmnt.y)*(m*hy-msmnt.y))/(2.0*sigmaY*sigmaY));
-    //        sumY *= hy;
+//    //        double sumY = 0.0;
+//    //        for (unsigned int m=spe.minY; m<=spe.maxY; m++) sumY += exp(-((m*hy-msmnt.y)*(m*hy-msmnt.y))/(2.0*sigmaY*sigmaY));
+//    //        sumY *= hy;
 
-    //        double sigma = (sumX*sumY) / (2.0*M_PI);
-    //        double factor = 1.0/((2.0*M_PI)*sigma);
+//    //        double sigma = (sumX*sumY) / (2.0*M_PI);
+//    //        double factor = 1.0/((2.0*M_PI)*sigma);
 
-    //        spe.nodes.clear();
-    //        for (unsigned int m=spe.minY; m<=spe.maxY; m++)
-    //        {
-    //            for (unsigned int n=spe.minX; n<=spe.maxX; n++)
-    //            {
-    //                EquationParameterHE::SpacePointExt::Node node;
-    //                node.nx = n; node.x = n*hx;
-    //                node.ny = m; node.y = m*hy;
-    //                node.w = factor*exp(-0.5*(((node.x-msmnt.x)*(node.x-msmnt.x))/(sigmaX*sigmaX)+((node.y-msmnt.y)*(node.y-msmnt.y))/(sigmaY*sigmaY)));
-    //                node.isCenter = ( m==spe.ry && n==spe.rx );
-    //                spe.nodes.push_back(node);
-    //            }
-    //        }
-    //    }
-}
+//    //        spe.nodes.clear();
+//    //        for (unsigned int m=spe.minY; m<=spe.maxY; m++)
+//    //        {
+//    //            for (unsigned int n=spe.minX; n<=spe.maxX; n++)
+//    //            {
+//    //                EquationParameterHE::SpacePointExt::Node node;
+//    //                node.nx = n; node.x = n*hx;
+//    //                node.ny = m; node.y = m*hy;
+//    //                node.w = factor*exp(-0.5*(((node.x-msmnt.x)*(node.x-msmnt.x))/(sigmaX*sigmaX)+((node.y-msmnt.y)*(node.y-msmnt.y))/(sigmaY*sigmaY)));
+//    //                node.isCenter = ( m==spe.ry && n==spe.rx );
+//    //                spe.nodes.push_back(node);
+//    //            }
+//    //        }
+//    //    }
+//}
 
-auto Problem2HNDirichlet4::distributeTimeDelta(double t, double ht, unsigned int ln, const SpaceNodePDE &sn, const std::vector<ExtendedSpacePointH> &xsps) const -> double
-{
-    return 0.0;
+//auto Problem2HNDirichlet4::distributeTimeDelta(double t, double ht, unsigned int ln, const SpaceNodePDE &sn, const std::vector<ExtendedSpacePointH> &xsps) const -> double
+//{
+//    return 0.0;
 
-    if ( ln >= 40 ) return 0.0;
+//    if ( ln >= 40 ) return 0.0;
 
-    double Q = 0.0;
+//    double Q = 0.0;
 
-    const unsigned int Ns = static_cast<const unsigned int>(xsps.size());
+//    const unsigned int Ns = static_cast<const unsigned int>(xsps.size());
 
-    for (unsigned int s=0; s<Ns; s++)
-    {
-        double q = mEquParameter.q[s];
-        const ExtendedSpacePointH &extendedSpacePoint = xsps.at(s);
-        if (extendedSpacePoint.contains(sn))
-        {
-            const std::vector<ExtendedSpacePointNodeH> &nodes = extendedSpacePoint.nodes;
-            const unsigned int nodes_size = static_cast<const unsigned int>(nodes.size());
-            //printf_s("%d\n", nodes_size);
-            for (unsigned int i=0; i<nodes_size; i++)
-            {
-                const ExtendedSpacePointNodeH &node = nodes.at(i);
-                if (node.equals(sn))
-                {
-                    Q += q * node.w;
-                }
-            }
-        }
-    }
+//    for (unsigned int s=0; s<Ns; s++)
+//    {
+//        double q = mEquParameter.q[s];
+//        const ExtendedSpacePointH &extendedSpacePoint = xsps.at(s);
+//        if (extendedSpacePoint.contains(sn))
+//        {
+//            const std::vector<ExtendedSpacePointNodeH> &nodes = extendedSpacePoint.nodes;
+//            const unsigned int nodes_size = static_cast<const unsigned int>(nodes.size());
+//            //printf_s("%d\n", nodes_size);
+//            for (unsigned int i=0; i<nodes_size; i++)
+//            {
+//                const ExtendedSpacePointNodeH &node = nodes.at(i);
+//                if (node.equals(sn))
+//                {
+//                    Q += q * node.w;
+//                }
+//            }
+//        }
+//    }
 
-    const double sigma = 5.0*ht;
-    const double mu = 20.0*ht;
-    const double factor = 1.0 / (sqrt(2*M_PI)*sigma);
-    return factor * exp( -0.5*((t - mu)*(t - mu))/(sigma*sigma) ) * Q;
-}
+//    const double sigma = 5.0*ht;
+//    const double mu = 20.0*ht;
+//    const double factor = 1.0 / (sqrt(2*M_PI)*sigma);
+//    return factor * exp( -0.5*((t - mu)*(t - mu))/(sigma*sigma) ) * Q;
+//}
 
 auto Problem2HNDirichlet4::PrmToVector(const OptimizeParameterH &prm, DoubleVector &pv) const -> void
 {

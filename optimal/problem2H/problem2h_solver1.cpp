@@ -1133,7 +1133,6 @@ auto Problem2HNDirichlet1::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_v
         for (unsigned int j=0; j<No; j++)
         {
             _u[j] = 0.0;
-
             const ExtendedSpacePointH &extendedSpacePoint = msnExtSpacePoints.at(j);
             const std::vector<ExtendedSpacePointNodeH> &nodes = extendedSpacePoint.nodes;
             const unsigned int nodes_size = static_cast<unsigned int>(nodes.size());

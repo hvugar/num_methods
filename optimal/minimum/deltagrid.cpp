@@ -1,6 +1,6 @@
 #include "deltagrid.h"
 
-const char* DeltaGridException::what() const _NOEXCEPT
+const char* DeltaGridException::what() const noexcept
 {
     return "delta grid exception:";
 }

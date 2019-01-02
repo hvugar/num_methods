@@ -1,6 +1,6 @@
 #include "problem2h_ibvp.h"
 
-Problem2HNDirichletForward1::Problem2HNDirichletForward1() : CC1IHyperbolicIBVP ()
+Problem2HNDirichletForward1::Problem2HNDirichletForward1() : CdIHyperbolicIBVP ()
 {}
 
 double Problem2HNDirichletForward1::initial1(const SpaceNodePDE &) const { return 0.0; }

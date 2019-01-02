@@ -6,7 +6,7 @@
 class  Problem2HNDirichletForward1;
 class  Problem2HNDirichletBackward1;
 
-class PROBLEM2HSHARED_EXPORT Problem2HNDirichletForward1 : public CC1IHyperbolicIBVP
+class PROBLEM2HSHARED_EXPORT Problem2HNDirichletForward1 : public CdIHyperbolicIBVP
 {
 public:
     Problem2HNDirichletForward1();
@@ -45,7 +45,7 @@ private:
 
 //**********************************************************************************************************//
 
-class PROBLEM2HSHARED_EXPORT Problem2HNDirichletBackward1 : public ConjugateCC1IHyperbolicIBVP
+class PROBLEM2HSHARED_EXPORT Problem2HNDirichletBackward1 : public ConjugateCdIHyperbolicIBVP
 {
 public:
     Problem2HNDirichletBackward1(const Problem2HNDirichletForward1& fw);

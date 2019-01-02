@@ -19,27 +19,39 @@ protected:
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
 };
 
-class MINIMUMSHARED_EXPORT CCIHyperbolicIBVP : public IHyperbolicIBVP
+class MINIMUMSHARED_EXPORT CcIHyperbolicIBVP : public IHyperbolicIBVP
 {
 public:
-    virtual ~CCIHyperbolicIBVP();
+    virtual ~CcIHyperbolicIBVP();
 
     virtual void layerInfo(const DoubleVector &, unsigned int) const {}
     virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
 
 public:
-    void calculateD1V1(DoubleVector &u, double a) const;
-    void calculateD1V2(DoubleVector &u, double a, double lambda=0.25) const;
-    void calculateD2V1(DoubleMatrix &u, double a) const;
-    void calculateD2V2(DoubleMatrix &u, double a, double lambda=0.25) const;
+    void explicit_calculate_D1V1(DoubleVector &u, double a) const;
+    void implicit_calculate_D1V1(DoubleVector &u, double a) const;
+    void implicit_calculate_D1V2(DoubleVector &u, double a, double lambda=0.25) const;
+
+    void explicit_calculate_D2V1(DoubleMatrix &u, double a) const;
+    void implicit_calculate_D2V1(DoubleMatrix &u, double a) const;
+    void implicit_calculate_D2V2(DoubleMatrix &u, double a, double lambda=0.25) const;
+
+    void implicit_calculate_D2V3(DoubleMatrix &u, double a) const;
+
+private:
+    void initial_calculate(DoubleVector &u00, DoubleVector &u10, unsigned int N, double hx, double ht, double a) const;
+
+    void initial_calculate(DoubleMatrix &u00, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, double ht, double a) const;
+    void border1_calculate(DoubleMatrix &u15, DoubleMatrix &u20, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn15, const TimeNodePDE &tn20) const;
+    void border2_calculate(DoubleMatrix &u20, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn20) const;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class MINIMUMSHARED_EXPORT CC1IHyperbolicIBVP : public IHyperbolicIBVP
+class MINIMUMSHARED_EXPORT CdIHyperbolicIBVP : public IHyperbolicIBVP
 {
 public:
-    virtual ~CC1IHyperbolicIBVP();
+    virtual ~CdIHyperbolicIBVP();
 
     virtual void layerInfo(const DoubleVector &, unsigned int) const {}
     virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
@@ -51,8 +63,8 @@ public:
 
     void explicit_calculate_D2V1(DoubleMatrix &u, double a, double alpha) const;
     void implicit_calculate_D2V1(DoubleMatrix &u, double a, double alpha) const;
-    void implicit_calculate_D2V3(DoubleMatrix &u, double a, double alpha) const;
     void implicit_calculate_D2V2(DoubleMatrix &u, double a, double alpha, double lambda=0.25) const;
+    void implicit_calculate_D2V3(DoubleMatrix &u, double a, double alpha) const;
 
 private:
     void initial_calculate(DoubleVector &u00, DoubleVector &u10, unsigned int N, double hx, double ht, double a, double sigma) const;
@@ -64,10 +76,10 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class MINIMUMSHARED_EXPORT ConjugateCC1IHyperbolicIBVP : public IHyperbolicIBVP
+class MINIMUMSHARED_EXPORT ConjugateCdIHyperbolicIBVP : public IHyperbolicIBVP
 {
 public:
-    virtual ~ConjugateCC1IHyperbolicIBVP();
+    virtual ~ConjugateCdIHyperbolicIBVP();
 
     virtual void layerInfo(const DoubleVector &, unsigned int) const {}
     virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
@@ -109,7 +121,6 @@ protected:
     virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
 
 public:
-    void gridMethod(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);
     void gridMethod0(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);
     void gridMethod1(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);
     void gridMethod2(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep);

@@ -23,7 +23,9 @@ public:
     static void Main(int argc, char* argv[]);
 };
 
-class MINIMUMSHARED_EXPORT CCIHyperbolicIBVP1 : public CCIHyperbolicIBVP
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class MINIMUMSHARED_EXPORT CcIHyperbolicIBVP1 : public CcIHyperbolicIBVP
 {
 public:
     static void Main(int argc, char* argv[]);
@@ -54,12 +56,12 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class MINIMUMSHARED_EXPORT CC1IHyperbolicIBVP1 : public CC1IHyperbolicIBVP
+class MINIMUMSHARED_EXPORT CdIHyperbolicIBVP1 : public CdIHyperbolicIBVP
 {
 public:
     static void Main(int argc, char* argv[]);
 
-    virtual ~CC1IHyperbolicIBVP1();
+    virtual ~CdIHyperbolicIBVP1();
 
     virtual void layerInfo(const DoubleVector &, unsigned int) const {}
     virtual void layerInfo(const DoubleMatrix &, unsigned int) const;
@@ -71,19 +73,19 @@ protected:
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
 private:
-    double a = 1.0;
-    double alpha = 0.1;
+    double a;
+    double alpha;
     DoubleMatrix u10;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class MINIMUMSHARED_EXPORT ConjugateCC1IHyperbolicIBVP1 : public ConjugateCC1IHyperbolicIBVP
+class MINIMUMSHARED_EXPORT ConjugateCdIHyperbolicIBVP1 : public ConjugateCdIHyperbolicIBVP
 {
 public:
     static void Main(int argc, char* argv[]);
 
-    virtual ~ConjugateCC1IHyperbolicIBVP1();
+    virtual ~ConjugateCdIHyperbolicIBVP1();
 
     virtual void layerInfo(const DoubleVector &, unsigned int) const {}
     virtual void layerInfo(const DoubleMatrix &, unsigned int) const;

@@ -47,22 +47,32 @@ public:
 
     // ibvp -------------------------------------
     void initDeltaGrids(std::vector<DeltaGrid2D> &pulseDeltaGridList, std::vector<DeltaGrid2D> &msrntDeltaGridList, std::vector<DeltaGrid2D> &cntrlDeltaGridList,
-                        const EquationParameterH &equationParameter, const OptimizeParameterH &optimizeParameter, unsigned int N, double hx, unsigned int M, double hy) const;
+                        const EquationParameterH &equationParameter, const OptimizeParameterH &optimizeParameter) const;
     void releaseDeltaGrids(std::vector<DeltaGrid2D> &pulseDeltaGridList, std::vector<DeltaGrid2D> &msrntDeltaGridList, std::vector<DeltaGrid2D> &f_add2Info) const;
-    void solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const;
-
-    void solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const;
     void f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, spif_vectorH &u_info, bool use,
                          unsigned int N, double hx, unsigned int M, double hy,
                          double ht, double aa__hxhx, double aa__hyhy, double lambda,
                          const std::vector<DeltaGrid2D> &pulseDeltaGridList,
                          const std::vector<DeltaGrid2D> &msrntDeltaGridList,
                          const std::vector<DeltaGrid2D> &cntrlDeltaGridList) const;
+    void b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, spif_vectorH &p_info, bool use,
+                         unsigned int N, double hx, unsigned int M, double hy,
+                         double ht, double aa__hxhx, double aa__hyhy, double lambda,
+                         const std::vector<DeltaGrid2D> &pulseDeltaGridList,
+                         const std::vector<DeltaGrid2D> &msrntDeltaGridList,
+                         const std::vector<DeltaGrid2D> &cntrlDeltaGridList) const;
     void f_borderCalculate(DoubleMatrix &u, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn) const;
+    void b_borderCalculate(DoubleMatrix &p, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn) const;
+    void solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const;
+
+    // ibvp -------------------------------------
+    void solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const;
     void f_currentLayer(const DoubleMatrix &u10, const EquationParameterH &equationParameter, const OptimizeParameterH &optimizeParameter,
                         const std::vector<DeltaGrid2D> &msrntDeltaGridList, const std::vector<DeltaGrid2D> &cntrlDeltaGridList,
-                        unsigned int N, double hx, unsigned int M, double hy, DoubleMatrix &fxv) const;
-
+                        unsigned int N, double hx, unsigned int M, double hy, DoubleMatrix &fxv, unsigned int ln) const;
+    void b_currentLayer(const DoubleMatrix &p10, const EquationParameterH &equationParameter, const OptimizeParameterH &optimizeParameter,
+                        const std::vector<DeltaGrid2D> &msrntDeltaGridList, const std::vector<DeltaGrid2D> &cntrlDeltaGridList,
+                        unsigned int N, double hx, unsigned int M, double hy, DoubleMatrix &fxv, unsigned int ln, const spif_vectorH &u_info) const;
     //void b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, spif_vectorH &p_info, bool use, const spif_vectorH &u_info, unsigned int N, unsigned int M,
     //                     double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda,
     //                     const std::vector<ExtendedSpacePointH> &cntExtSpacePoints,
@@ -82,16 +92,16 @@ public:
     auto b_prepareInfo(unsigned int Nc, const std::vector<SpacePoint> &points, spif_vectorH &p_info, unsigned int LLD) const -> void;
     void f_borderLayer(DoubleMatrix &u, DoubleMatrix &uh, unsigned int ln) const;
     auto f_add2Info(const DoubleMatrix &u, spif_vectorH &u_info, unsigned int ln, double hx, double hy, const std::vector<DeltaGrid2D> &msrntDeltaGridList) const -> void;
-    auto b_add2Info(const DoubleMatrix &p, spif_vectorH &p_info, unsigned int ln, double hx, double hy, const std::vector<ExtendedSpacePointH> &extCntrls, int method = 4) const -> void;
+    auto b_add2Info(const DoubleMatrix &p, spif_vectorH &p_info, unsigned int ln, double hx, double hy, const std::vector<DeltaGrid2D> &cntrlDeltaGridList) const -> void;
     void f_layerInfo(const DoubleMatrix &u, unsigned int ln) const;
     void b_layerInfo(const DoubleMatrix &p, unsigned int ln) const;
     auto b_characteristic(const DoubleMatrix &u, unsigned int n, unsigned int m) const -> double;
 
     // common -----------------------------------
-    auto distributeTimeDelta(double t, double ht, unsigned int ln, const SpaceNodePDE &sn, const std::vector<ExtendedSpacePointH> &qPointNodes) const -> double;
-    auto newDistributeDeltaGaussPulse(const std::vector<SpacePoint> &thetas, std::vector<ExtendedSpacePointH> &extThetas, const Dimension &dimX, const Dimension &dimY) const -> void;
-    auto newDistributeDeltaGaussCntrl(const std::vector<SpacePoint> &cntrls, std::vector<ExtendedSpacePointH> &extCntrls, const Dimension &dimX, const Dimension &dimY) const -> void;
-    auto newDistributeDeltaGaussMsmnt(const std::vector<SpacePoint> &msmnts, std::vector<ExtendedSpacePointH> &extMsmnts, const Dimension &dimX, const Dimension &dimY) const -> void;
+    //auto distributeTimeDelta(double t, double ht, unsigned int ln, const SpaceNodePDE &sn, const std::vector<ExtendedSpacePointH> &qPointNodes) const -> double;
+    //auto newDistributeDeltaGaussPulse(const std::vector<SpacePoint> &thetas, std::vector<ExtendedSpacePointH> &extThetas, const Dimension &dimX, const Dimension &dimY) const -> void;
+    //auto newDistributeDeltaGaussCntrl(const std::vector<SpacePoint> &cntrls, std::vector<ExtendedSpacePointH> &extCntrls, const Dimension &dimX, const Dimension &dimY) const -> void;
+    //auto newDistributeDeltaGaussMsmnt(const std::vector<SpacePoint> &msmnts, std::vector<ExtendedSpacePointH> &extMsmnts, const Dimension &dimX, const Dimension &dimY) const -> void;
 
     auto v(unsigned int i, OptimizeParameterH o_prm, EquationParameterH e_prm, const spif_vectorH &u_info, unsigned int ln) const -> double;
     auto mu(unsigned int, unsigned int) const -> double { return 1.0; }
@@ -118,8 +128,8 @@ public:
 
     GradientMethod *gm;
     std::vector<DoubleMatrix> vu;
-
-    DoubleMatrix f_initLayer;
+    //DoubleMatrix f_initLayer;
+    //DoubleMatrix b_initLayer;
 };
 
 #endif // PROBLEM2H_SOLVER4_H
