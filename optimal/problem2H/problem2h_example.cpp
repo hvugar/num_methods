@@ -135,7 +135,7 @@ void prod_example1()
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 1.0000;// << 1.0000 << 20.000 << 50.000;
+    DoubleVector r; r << 0.0000;// << 1.0000 << 20.000 << 50.000;
     // Regularization coefficients
     DoubleVector e; e << 0.0000;// << 0.1000 << 0.0100 << 0.0000;
 
@@ -153,9 +153,9 @@ void prod_example1()
         prob.optimizeZ = true;
         prob.optimizeO = true;
         prob.optimizeC = true;
-        prob.vmin.resize(e_prm.Nc, -0.5);
-        prob.vmax.resize(e_prm.Nc, +0.5);
-        prob.LD = 50;
+        prob.vmin.resize(e_prm.Nc, -0.2);
+        prob.vmax.resize(e_prm.Nc, +0.2);
+        prob.LD = 100;
         prob.noise = 0.00;
 
         prob.regEpsilon = e[i];
@@ -189,8 +189,8 @@ void prod_example1()
 //            prob.fx(x);
         }
 
-        //ConjugateGradient g;
-        SteepestDescentGradient g;
+        ConjugateGradient g;
+        //SteepestDescentGradient g;
         g.setFunction(&prob);
         g.setGradient(&prob);
         g.setPrinter(&prob);

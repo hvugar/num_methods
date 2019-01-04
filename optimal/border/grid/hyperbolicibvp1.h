@@ -35,6 +35,8 @@ public:
 
     double integralU1(const DoubleVector &u) const;
     double integralU2(const DoubleVector &u) const;
+    double integralU1(const DoubleMatrix &u) const;
+    double integralU2(const DoubleMatrix &u) const;
 
 protected:
     virtual double initial1(const SpaceNodePDE &sn) const;
@@ -45,12 +47,16 @@ protected:
 private:
     double a = 1.0;
 
-    DoubleVector u2;
-    DoubleVector u1;
-    DoubleVector u0;
-    DoubleVector ut;
+    DoubleVector vu0;
+    DoubleVector vu1;
+    DoubleVector vu2;
+    DoubleVector vut;
 
-    DoubleMatrix u10;
+    DoubleMatrix mu0;
+    DoubleMatrix mu1;
+    DoubleMatrix mu2;
+    DoubleMatrix mut;
+
     bool calculateU = true;
 };
 

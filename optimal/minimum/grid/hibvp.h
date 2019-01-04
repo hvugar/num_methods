@@ -37,6 +37,7 @@ public:
     void implicit_calculate_D2V2(DoubleMatrix &u, double a, double lambda=0.25) const;
 
     void implicit_calculate_D2V3(DoubleMatrix &u, double a) const;
+    void implicit_calculate_D2V4(DoubleMatrix &u, double a) const;
 
 private:
     void initial_calculate(DoubleVector &u00, DoubleVector &u10, unsigned int N, double hx, double ht, double a) const;

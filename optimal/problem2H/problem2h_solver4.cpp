@@ -3,6 +3,7 @@
 auto Problem2HNDirichlet4::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
 {
     return;
+
     if (ln==500)
     {
         IPrinter::printSeperatorLine("+layerInfo: ln == 2");
@@ -1509,6 +1510,7 @@ auto Problem2HNDirichlet4::b_prepareInfo(unsigned int Nc, const std::vector<Spac
 auto Problem2HNDirichlet4::f_add2Info(const DoubleMatrix &u, spif_vectorH &u_info, unsigned int ln, double hx, double hy, const std::vector<DeltaGrid2D> &msrntDeltaGridList) const -> void
 {
     unsigned int No = static_cast<unsigned int>(msrntDeltaGridList.size());
+
     for (unsigned int j=0; j<No; j++)
     {
         SpacePointInfoH &ui =  u_info[j];
