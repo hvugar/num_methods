@@ -910,6 +910,47 @@ auto Problem2HNDirichlet1::projectMeasurePoints(DoubleVector &pv, unsigned int i
     }
 }
 
+void Problem2HNDirichlet1::initDeltaGrids(std::vector<DeltaGrid2D> &pulseDeltaGridList, std::vector<DeltaGrid2D> &msrntDeltaGridList, std::vector<DeltaGrid2D> &cntrlDeltaGridList,
+                                          const EquationParameterH &equationParameter, const OptimizeParameterH &optimizeParameter) const
+{
+    const Dimension dimX = spaceDimension(Dimension::DimensionX);
+    const Dimension dimY = spaceDimension(Dimension::DimensionY);
+
+    const unsigned int N = static_cast<unsigned int> ( dimX.size() );
+    const unsigned int M = static_cast<unsigned int> ( dimY.size() );
+
+    const double hx = dimX.step();
+    const double hy = dimY.step();
+
+    const unsigned int No = equationParameter.No;
+    const unsigned int Nc = equationParameter.Nc;
+    const unsigned int Ns = equationParameter.Ns;
+
+    pulseDeltaGridList.resize(Ns);
+    for (unsigned int s=0; s<Ns; s++)
+    {
+        SpacePoint sp = equationParameter.theta[s];
+        pulseDeltaGridList[s].initGrid(N,hx,M,hy);
+        pulseDeltaGridList[s].distributeGauss(sp, 8, 8);
+    }
+
+    msrntDeltaGridList.resize(No);
+    for (unsigned int j=0; j<No; j++)
+    {
+        SpacePoint sp = optimizeParameter.xi[j];
+        msrntDeltaGridList[j].initGrid(N,hx,M,hy);
+        msrntDeltaGridList[j].distributeGauss(sp);
+    }
+
+    cntrlDeltaGridList.resize(Nc);
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        SpacePoint sp = optimizeParameter.eta[i];
+        cntrlDeltaGridList[i].initGrid(N,hx,M,hy);
+        cntrlDeltaGridList[i].distributeGauss(sp);
+    }
+}
+
 auto Problem2HNDirichlet1::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
@@ -926,64 +967,101 @@ auto Problem2HNDirichlet1::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_v
     const double ht = time.step();
 
     const double a        = mEquParameter.a;
-    const double lambda   = mEquParameter.lambda;
+    const double alpha   =  mEquParameter.lambda;
     const unsigned int No = mEquParameter.No;
     const unsigned int Nc = mEquParameter.Nc;
     const unsigned int Ns = mEquParameter.Ns;
+    const double lambda = 0.25;
 
-    const double m_aa_htht__hxhx = -(a*a*ht*ht)/(hx*hx);
-    const double p_aa_htht__hxhx___lambda_ht = +2.0 + 2.0*(a*a*ht*ht)/(hx*hx) + (lambda*ht);
-    const double p_aa_htht__hyhy = +(a*a*ht*ht)/(hy*hy);
+    const double ht_ht_025 = ht*ht*0.25;
+    const double alpha_ht_025 = alpha*ht*0.25;
 
-    const double m_aa_htht__hyhy = -(a*a*ht*ht)/(hy*hy);
-    const double p_aa_htht__hyhy___lambda_ht = +2.0 + 2.0*(a*a*ht*ht)/(hy*hy) + (lambda*ht);
-    const double p_aa_htht__hxhx = +(a*a*ht*ht)/(hx*hx);
+    const double m_aa_htht__hxhx_025_lambda = -(0.25*a*a)*((ht*ht)/(hx*hx))*lambda;
+    const double b_aa_htht__hxhx = +(1.0 + 0.5*(a*a)*((ht*ht)/(hx*hx))*lambda + alpha_ht_025);
+    const double p_aa_htht__hyhy_025 = +(0.25*a*a)*((ht*ht)/(hy*hy));
+    const double p_aa_htht__hyhy_025_lambda = +(0.25*a*a)*((ht*ht)/(hy*hy))*lambda;
+    const double p_aa_htht__hyhy_025_1m2lambda = +(0.25*a*a)*((ht*ht)/(hy*hy))*(1.0-2.0*lambda);
 
-    const double ht_ht = ht*ht;
-    const double lambda_ht = lambda*ht;
+    const double m_aa_htht__hyhy_025_lambda = -(0.25*a*a)*((ht*ht)/(hy*hy))*lambda;
+    const double b_aa_htht__hyhy = +(1.0 + 0.5*(a*a)*((ht*ht)/(hy*hy))*lambda + alpha_ht_025);
+    const double p_aa_htht__hxhx_025 = +(0.25*a*a)*((ht*ht)/(hx*hx));
+    const double p_aa_htht__hxhx_025_lambda = +(0.25*a*a)*((ht*ht)/(hx*hx))*lambda;
+    const double p_aa_htht__hxhx_025_1m2lambda = +(0.25*a*a)*((ht*ht)/(hx*hx))*(1.0-2.0*lambda);
 
     const double aa__hxhx = (a*a)/(hx*hx);
     const double aa__hyhy = (a*a)/(hy*hy);
 
     DoubleMatrix u00(M+1, N+1);
+    DoubleMatrix u05(M+1, N+1);
     DoubleMatrix u10(M+1, N+1);
     DoubleMatrix u15(M+1, N+1);
     DoubleMatrix u20(M+1, N+1);
 
-    for (unsigned int l=0; l<u.size(); l++) u[l].clear(); u.clear();
-    unsigned int u_size = LD + 1;
-    u.resize(u_size); for (unsigned int l=0; l<u_size; l++) u[l].resize(M+1, N+1);
-
     //----------------------------------------------------------------------------------------------//
-    std::vector<ExtendedSpacePointH> msnExtSpacePoints, cntExtSpacePoints, qExtSpacePoints;
-    newDistributeDeltaGaussPulse(mEquParameter.theta, qExtSpacePoints, dimX, dimY);
-    newDistributeDeltaGaussCntrl(mOptParameter.eta, cntExtSpacePoints, dimX, dimY);
-    newDistributeDeltaGaussMsmnt(mOptParameter.xi,  msnExtSpacePoints, dimX, dimY);
-
-//    std::vector<DeltaGrid> msnDeltaGrid(No);
-//    for (unsigned int j=0; j<No; j++)
-//    {
-//        msnDeltaGrid[j].initGrid(N,hx,M,hy);
-//        msnDeltaGrid[j].setPoint(mOptParameter.xi[j], 1, 1);
-//    }
-//    std::vector<DeltaGrid> cntDeltaGrid(Nc);
-//    for (unsigned int i=0; i<Nc; i++)
-//    {
-//        cntDeltaGrid[i].initGrid(N,hx,M,hy);
-//        cntDeltaGrid[i].setPoint(mOptParameter.eta[i], 1, 1);
-//    }
-//    std::vector<DeltaGrid> plsDeltaGrid(Ns);
-//    for (unsigned int s=0; s<Ns; s++)
-//    {
-//        plsDeltaGrid[s].initGrid(N,hx,M,hy);
-//        plsDeltaGrid[s].setPoint(mEquParameter.theta[s], 8, 8);
-//    }
-
-    //----------------------------------------------------------------------------------------------//
-    if (use == true) f_prepareInfo(No, mOptParameter.xi, u_info, LLD);
+    for (unsigned int ln=0; ln<u.size(); ln++) u[ln].clear(); u.clear();
+    unsigned int u_size = 2*LD + 1;
+    u.resize(u_size); for (unsigned int ln=0; ln<u_size; ln++) u[ln].resize(M+1, N+1);
     //----------------------------------------------------------------------------------------------//
 
+    //----------------------------------------------------------------------------------------------//
+    std::vector<DeltaGrid2D> pulseDeltaGridList, msrntDeltaGridList, cntrlDeltaGridList;
+    //initDeltaGrids(pulseDeltaGridList, msrntDeltaGridList, cntrlDeltaGridList, mEquParameter, mOptParameter);
+    //----------------------------------------------------------------------------------------------//
+    if (use == true)
+    {
+        u_info.resize(No);
+        for (unsigned int j=0; j<No; j++)
+        {
+            SpacePointInfoH &info = u_info[j];
+            const SpacePoint &sp = mOptParameter.xi[j];
+            info.x = sp.x;
+            info.y = sp.y;
+            info.init(2*LLD+1);
+        }
+    }
+    //----------------------------------------------------------------------------------------------//
     //------------------------------------- initial conditions -------------------------------------//
+    SpaceNodePDE sn;
+    for (unsigned int m=0; m<=M; m++)
+    {
+        sn.j = static_cast<int>(m); sn.y = m*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn.i = static_cast<int>(n); sn.x = n*hx;
+            u00[m][n] = f_initial1(sn);
+        }
+    }
+    f_layerInfo(u00, 0);
+    if (use == true) f_add2Info(u00, u_info, 0, hx, hy, msrntDeltaGridList);
+    /***********************************************************************************************/
+    TimeNodePDE tn10; tn10.i = 1; tn10.t = tn10.i*ht;
+    f_borderCalculate(u10, N, hx, M, hy, tn10);
+    for (unsigned int m=1; m<=M-1; m++)
+    {
+        sn.j = static_cast<int>(m); sn.y = m*hy;
+        for (unsigned int n=1; n<=N-1; n++)
+        {
+            sn.i = static_cast<int>(n); sn.x = n*hx;
+
+            double q_value = 0.0;
+            for (unsigned int s=0; s<Ns; s++)
+            {
+                q_value += mEquParameter.q[s]*pulseDeltaGridList[s].weight(sn);
+            }
+
+            double sum = 0.0;
+            sum += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]);
+            sum += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]);
+            sum -= lambda*(f_initial2(sn)+q_value);
+
+            u10[m][n] = u00[m][n] + ht*(f_initial2(sn)+q_value) + 0.5*ht*ht*sum;
+        }
+    }
+    f_layerInfo(u10, 1);
+    if (use == true) f_add2Info(u10, u_info, 1, hx, hy, msrntDeltaGridList);
+    /***********************************************************************************************/
+
+
     //------------------------------------- first layer -------------------------------------//
     SpaceNodePDE sn;
     for (unsigned int m=0; m<=M; m++)

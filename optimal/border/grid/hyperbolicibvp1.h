@@ -7,22 +7,6 @@
 #include <QGuiApplication>
 #include "../imaging/imaging.h"
 
-class MINIMUMSHARED_EXPORT HyperbolicIBVP1 : public HyperbolicIBVP
-{
-public:
-    HyperbolicIBVP1();
-    double U(unsigned int i, unsigned int j) const;
-
-protected:
-    virtual double initial1(const SpaceNodePDE &sn) const;
-    virtual double initial2(const SpaceNodePDE &sn) const;
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    virtual double a(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-public:
-    static void Main(int argc, char* argv[]);
-};
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class MINIMUMSHARED_EXPORT CcIHyperbolicIBVP1 : public CcIHyperbolicIBVP
@@ -46,6 +30,7 @@ protected:
 
 private:
     double a = 1.0;
+    unsigned int method = 0;
 
     DoubleVector vu0;
     DoubleVector vu1;

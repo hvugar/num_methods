@@ -148,20 +148,6 @@ void tomasAlgorithm(const double *a, const double *b, const double *c, const dou
     free(q);
 }
 
-void tomasAlgorithm1(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int n,
-                                          const double *e, const double *f)
-{
-    double *p = (double*)(malloc(sizeof(double)*n));
-    double *q = (double*)(malloc(sizeof(double)*n));
-    double *g = (double*)(malloc(sizeof(double)*n));
-
-//    for (unsigned int )
-
-    free(g);
-    free(q);
-    free(p);
-}
-
 
 /**
  * @brief Метод прогонки с трехдиагональной матрицей

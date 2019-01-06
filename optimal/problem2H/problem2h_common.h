@@ -22,68 +22,12 @@
 #include <deltagrid.h>
 #include "problem2h_global.h"
 
-//struct PROBLEM2HSHARED_EXPORT EquationParameterHE
-//{
-//    struct SpacePointExt
-//    {
-//        unsigned int rx;
-//        unsigned int ry;
-//        unsigned int minX;
-//        unsigned int maxX;
-//        unsigned int minY;
-//        unsigned int maxY;
-
-//        auto contains(int nx, int ny) const -> bool;
-//        auto contains(const SpaceNodePDE &sn) const -> bool;
-
-//        struct Node {
-//            double x;
-//            double y;
-//            unsigned int nx;
-//            unsigned int ny;
-//            double w;
-//            bool isCenter;
-//        };
-
-//        std::vector<Node> nodes;
-
-//        unsigned int length;
-//        std::vector<double> xi_vl;
-//        std::vector<double> xi_dx;
-//        std::vector<double> xi_dy;
-//    };
-
-//    EquationParameterHE();
-//    EquationParameterHE(unsigned int Nc, unsigned int No, unsigned int Nd, unsigned int length, unsigned int gw = 3);
-
-//    unsigned int Nc;
-//    unsigned int No;
-//    unsigned int Nd;
-//#ifdef TIME_DISCRETE_H
-//    unsigned int Nt;
-//#endif
-//    DoubleMatrix k;
-//    DoubleMatrix z;
-//    std::vector<SpacePoint> xi;
-//    std::vector<SpacePoint> eta;
-//#ifdef TIME_DISCRETE_H
-//    DoubleVector tau;
-//#endif
-//    std::vector<SpacePoint> theta;
-//    DoubleVector q;
-//    double a;
-//    double lambda;
-
-//    std::vector<SpacePointExt> xi_ext;
-//    std::vector<SpacePointExt> eta_ext;
-//    std::vector<SpacePointExt> theta_ext;
-//};
-
 struct GridH
 {
     std::vector<unsigned int> rows0;
     std::vector<unsigned int> rows1;
     std::vector<unsigned int> rows2;
+
     std::vector<unsigned int> cols0;
     std::vector<unsigned int> cols1;
     std::vector<unsigned int> cols2;
@@ -97,13 +41,13 @@ struct GridSpace2D
     double hy;
 };
 
-
 struct PROBLEM2HSHARED_EXPORT OptimizeParameterH
 {
     DoubleMatrix k;
     DoubleMatrix z;
     std::vector<SpacePoint> xi;
     std::vector<SpacePoint> eta;
+
 #ifdef TIME_DISCRETE_H
     std::vector<double> tau;
 #endif

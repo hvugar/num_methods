@@ -48,12 +48,12 @@ public:
 
     void solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const
     {
-        solveForwardIBVP2(u, u_info, use);
+        solveForwardIBVP1(u, u_info, use);
     }
 
     void solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const
     {
-        solveBackwardIBVP2(u, p_info, use, u_info);
+        solveBackwardIBVP1(u, p_info, use, u_info);
     }
     //forward -------------------------------------
     void solveForwardIBVP2(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const;

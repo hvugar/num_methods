@@ -108,3 +108,27 @@ void visualGrayScale(const DoubleMatrix &m, double min, double max, QPixmap &pxm
         }
     }
 }
+
+void visualString(const DoubleVector& v, double min, double max, int w, int h, QPixmap &pxm, QColor bg, QColor fg, const QString &filename)
+{
+    pxm = QPixmap(w, h);
+    pxm.fill(bg);
+
+    double hx = static_cast<double>(w) / static_cast<double>(v.length());
+    double hy = static_cast<double>(h) / static_cast<double>(max-min);
+
+    QPainter painter(&pxm);
+    painter.setPen(fg);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    for (unsigned int i=0; i<=v.length()-2;i++)
+    {
+        QPointF p1;
+        p1.rx() = i*hx;
+        p1.ry() = (max-v[i])*hy;
+        QPointF p2;
+        p2.rx() = (i+1)*hx;
+        p2.ry() = (max-v[i+1])*hy;
+        painter.drawLine(p1, p2);
+    }
+    if (!filename.isNull()) pxm.save(filename, "PNG");
+}

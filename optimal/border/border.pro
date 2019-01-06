@@ -21,20 +21,20 @@ DEFINES += MINIMUM_LIBRARY
 
 # Input
 HEADERS += \
-           borderparabolicd.h \
-           borderparabolicn.h \
-           borderparabolic2d.h \
-           borderhyperbolic2d.h \
-           borderhyperbolic2d1.h \
-           grid/parabolicibvp1.h \
+#           borderparabolicd.h \
+#           borderparabolicn.h \
+#           borderparabolic2d.h \
+#           borderhyperbolic2d.h \
+#           borderhyperbolic2d1.h \
+#           grid/parabolicibvp1.h \
            grid/hyperbolicibvp1.h \
-    grid/newtonheatequationex1.h
+           grid/newtonheatequationex1.h
 SOURCES += \
-           borderparabolicd.cpp \
-           borderparabolicn.cpp \
-           borderparabolic2d.cpp \
-           borderhyperbolic2d.cpp \
-           borderhyperbolic2d1.cpp \
-           grid/parabolicibvp1.cpp \
+#           borderparabolicd.cpp \
+#           borderparabolicn.cpp \
+#           borderparabolic2d.cpp \
+#           borderhyperbolic2d.cpp \
+#           borderhyperbolic2d1.cpp \
+#           grid/parabolicibvp1.cpp \
            grid/hyperbolicibvp1.cpp \
-    grid/newtonheatequationex1.cpp
+           grid/newtonheatequationex1.cpp

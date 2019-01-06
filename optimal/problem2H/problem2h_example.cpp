@@ -142,7 +142,7 @@ void prod_example1()
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
     {
-        Problem2HNDirichlet4 prob;
+        Problem2HNDirichlet prob;
         prob.setTimeDimension(time);
         prob.addSpaceDimension(dimx);
         prob.addSpaceDimension(dimy);
@@ -212,7 +212,7 @@ void prod_example1()
     }
 }
 
-void prod_figure1(Problem2HNDirichlet1 &prob, double ht, const DoubleVector &x)
+void prod_figure1(Problem2HNDirichlet &prob, double ht, const DoubleVector &x)
 {
     for (int i=0; i<=1000; i++)
     {
@@ -458,7 +458,7 @@ void example2()
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
     {
-        Problem2HNDirichlet1 prob;
+        Problem2HNDirichlet prob;
         prob.setTimeDimension(time);
         prob.addSpaceDimension(dimx);
         prob.addSpaceDimension(dimy);
