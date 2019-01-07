@@ -47,6 +47,9 @@ public:
     double **nodes() { return m_nodes; }
     double **nodes() const { return m_nodes; }
 
+    bool *_rows;
+    bool *_cols;
+
 private:
 
     unsigned int mN;

@@ -55,13 +55,21 @@ struct PROBLEM2HSHARED_EXPORT OptimizeParameterH
 
 struct PROBLEM2HSHARED_EXPORT EquationParameterH
 {
+    double a;
+    double lambda;
+
     unsigned int No;
     unsigned int Nc;
+
+    DoubleMatrix k;
+    DoubleMatrix z;
+    std::vector<SpacePoint> xi;
+    std::vector<SpacePoint> eta;
+
     unsigned int Ns;
     std::vector<SpacePoint> theta;
     DoubleVector q;
-    double a;
-    double lambda;
+
 #ifdef TIME_DISCRETE_H
     unsigned int Nt;
 #endif

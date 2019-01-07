@@ -22,6 +22,9 @@ auto DeltaGrid2D::initGrid(unsigned int N, double hx, unsigned int M, double hy)
         m_nodes[m] = new double[N+1];
         for (unsigned int n=0; n<=N; n++) m_nodes[m][n] = 0.0;
     }
+
+    _rows = new bool[M+1]; for (unsigned int m=0; m<=M; m++) _rows[m] = false;
+    _cols = new bool[N+1]; for (unsigned int n=0; n<=N; n++) _cols[n] = false;
 }
 
 auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned sigmaXNum, unsigned int sigmaYNum) -> void
@@ -62,6 +65,9 @@ auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned sigmaXNum, unsi
             m_nodes[m][n] = factor*exp(-(((sn.x-sp.x)*(sn.x-sp.x))/(2.0*sigmaX*sigmaX) + ((sn.y-sp.y)*(sn.y-sp.y))/(2.0*sigmaY*sigmaY)));
         }
     }
+
+    for (unsigned int m=_minY; m<=_maxY; m++) _rows[m] = true;
+    for (unsigned int n=_minX; n<=_maxX; n++) _cols[n] = true;
 }
 
 auto DeltaGrid2D::distributeSigle(const SpacePoint& sp) -> void

@@ -166,10 +166,14 @@ void prod_example1()
             prob.PrmToVector(o_prm, x);
             prob.checkGradient1(prob);
 
-            //std::vector<DoubleMatrix> u;
-            //spif_vectorH u_info;
-            //prob.solveForwardIBVP(u, u_info, false);
-            //return;
+//            std::vector<DoubleMatrix> u;
+//            spif_vectorH u_info;
+//            prob.solveForwardIBVP(u, u_info, false);
+
+//            spif_vectorH p_info;
+//            prob.solveBackwardIBVP(u, p_info, false, u_info);
+
+//            return;
 
 
             //FILE* cfile = fopen("e:/Google Drive/Problems/Problem2_H/Experiments/control2.txt", "w");
