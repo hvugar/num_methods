@@ -481,21 +481,35 @@ void CdIHyperbolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     CdIHyperbolicIBVP1 hibvp;
     hibvp.a = 1.0;
     hibvp.alpha = 0.1;
-    hibvp.setTimeDimension(Dimension(0.005, 0, 200));
+    hibvp.setTimeDimension(Dimension(0.01, 0, 100));
     hibvp.addSpaceDimension(Dimension(0.01, 0, 100));
     hibvp.addSpaceDimension(Dimension(0.01, 0, 100));
 
     DoubleMatrix u;
-    hibvp.explicit_calculate_D2V1(u, hibvp.a, hibvp.alpha);
+    //hibvp.explicit_calculate_D2V1(u, hibvp.a, hibvp.alpha);
     hibvp.implicit_calculate_D2V1(u, hibvp.a, hibvp.alpha);
 }
 
 void CdIHyperbolicIBVP1::layerInfo(const DoubleMatrix &u, unsigned int ln) const
 {
-    if (ln==200)
+    if (ln==100)
     {
         IPrinter::printMatrix(u);
         IPrinter::printSeperatorLine();
+
+        SpaceNodePDE sp; TimeNodePDE tn; tn.i = 100; tn.t = 1.0;
+        double sum = 0.0;
+        for (unsigned int m=0; m<=100; m++)
+        {
+            sp.y = m*0.01;
+            for (unsigned int n=0; n<=100; n++)
+            {
+                sp.x = n*0.01;
+                sum += (u[m][n]-boundary(sp, tn))*(u[m][n]-boundary(sp, tn));
+            }
+        }
+        sum = sqrt(0.01*0.01*sum);
+        printf("Norm: %.8f\n", sum);
     }
 
     //if (ln%1==0) { double w = u.min(); if (w < 0.0) {} else { w = u.max(); } printf("%14.10f\n", w); }
@@ -520,6 +534,7 @@ double CdIHyperbolicIBVP1::initial1(const SpaceNodePDE &sn) const
     //return sn.x*sn.x + sn.y*sn.y;
     //return sn.x*sn.x + sn.y*sn.y;
     //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
+    //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
     return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
     //return 0.0;
     //return 0.0;
@@ -543,6 +558,7 @@ double CdIHyperbolicIBVP1::initial2(const SpaceNodePDE &sn) const
 
     // 2D
     //return 1.0;
+    //return 0.0;
     //return 0.0;
     //return 0.0;
     return 0.0;
@@ -570,7 +586,8 @@ double CdIHyperbolicIBVP1::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const T
     //return sn.x*sn.x + sn.y*sn.y + tn.t;
     //return sn.x*sn.x + sn.y*sn.y + tn.t*tn.t;
     //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t*tn.t;
-    return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t*tn.t*tn.t;
+    //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t*tn.t*tn.t;
+    return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t*tn.t*tn.t*tn.t;
     //return 0.0;
     //return 0.0;
     //return 0.0;
@@ -595,7 +612,8 @@ double CdIHyperbolicIBVP1::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) cons
     //return 0.0 - (a*a)*(2.0+2.0);
     //return 2.0 - (a*a)*(2.0+2.0);
     //return 2.0 - 6.0*a*a*(sn.x+sn.y) + alpha*2.0*tn.t;
-    return 6.0*tn.t - 6.0*a*a*(sn.x+sn.y) + alpha*3.0*tn.t*tn.t;
+    //return 6.0*tn.t - 6.0*a*a*(sn.x+sn.y) + alpha*3.0*tn.t*tn.t;
+    return 12.0*tn.t*tn.t - 6.0*a*a*(sn.x+sn.y) + alpha*4.0*tn.t*tn.t*tn.t;
     //return 0.0;
     //return 0.0;
     //return 0.0;

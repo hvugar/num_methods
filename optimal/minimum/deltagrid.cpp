@@ -29,8 +29,8 @@ auto DeltaGrid2D::initGrid(unsigned int N, double hx, unsigned int M, double hy)
 
 auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned sigmaXNum, unsigned int sigmaYNum) -> void
 {
-    unsigned int kx = 3*sigmaXNum;
-    unsigned int ky = 3*sigmaYNum;
+    unsigned int kx = 4*sigmaXNum;
+    unsigned int ky = 4*sigmaYNum;
     double sigmaX = mhx*sigmaXNum;
     double sigmaY = mhy*sigmaYNum;
 
@@ -62,7 +62,7 @@ auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned sigmaXNum, unsi
         for (unsigned int n=_minX; n<=_maxX; n++)
         {
             sn.i = static_cast<int>(n); sn.x = n*mhx;
-            m_nodes[m][n] = factor*exp(-(((sn.x-sp.x)*(sn.x-sp.x))/(2.0*sigmaX*sigmaX) + ((sn.y-sp.y)*(sn.y-sp.y))/(2.0*sigmaY*sigmaY)));
+            m_nodes[m][n] = factor*exp(-0.5*(((sn.x-sp.x)*(sn.x-sp.x))/(sigmaX*sigmaX) + ((sn.y-sp.y)*(sn.y-sp.y))/(sigmaY*sigmaY)));
         }
     }
 

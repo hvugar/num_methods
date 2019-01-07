@@ -3,7 +3,7 @@
 
 #include "problem2h_common.h"
 
-class PROBLEM2HSHARED_EXPORT Problem2HDirichlet
+class PROBLEM2HSHARED_EXPORT Problem2HDirichlet : public InitialBoundaryValueProblemPDE
 {
 public:
     auto setEquationParameter(const EquationParameterH& equParemeter) -> void;
@@ -12,17 +12,9 @@ public:
 
 private :
     EquationParameterH mEquParameter;
-    DoubleMatrix mpulseDeltaGrid;
-};
 
-auto Problem2HDirichlet::initiatePulseGrid() -> void
-{
-    const unsigned int Ns = mEquParameter.Ns;
-    std::vector<DeltaGrid2D> deltaGrids;
-    for (unsigned int s=0; s<Ns; s++)
-    {
-    }
-}
+    DoubleMatrix mPulseWeightMatrix;
+};
 
 class PROBLEM2HSHARED_EXPORT Problem2HNDirichlet : public RnFunction,
         public IGradient, public InitialBoundaryValueProblemPDE, public IProjection, public IPrinter,
@@ -131,6 +123,12 @@ public:
 
     GradientMethod *gm;
 //    EquationParameterHE mParameter;
+
+    DoubleMatrix mPulseWeightMatrix;
+    DoubleMatrix mCurfxWeightMatrix;
+
+    auto initiatePulseGrid() const -> void;
+    auto currentLayerFGrid(const DoubleMatrix &u) const -> void;
 };
 
 #endif // PROBLEM2H_SOLVER0_H

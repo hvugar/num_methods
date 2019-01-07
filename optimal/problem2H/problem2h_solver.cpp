@@ -1,4 +1,4 @@
-#include "problem2h_solver.h"
+﻿#include "problem2h_solver.h"
 
 void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
@@ -941,61 +941,61 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     u.resize(u_size); for (unsigned int ln=0; ln<u_size; ln++) u[ln].resize(M+1, N+1);
 
     //----------------------------------------------------------------------------------------------//
-    std::vector<DeltaGrid2D> pulseDeltaGridList; pulseDeltaGridList.resize(Ns);
-    std::vector<DeltaGrid2D> measuremntGirdList; measuremntGirdList.resize(No);
-    std::vector<DeltaGrid2D> cntrlDeltaGridList; cntrlDeltaGridList.resize(Nc);
+//    std::vector<DeltaGrid2D> pulseDeltaGridList; pulseDeltaGridList.resize(Ns);
+//    std::vector<DeltaGrid2D> measuremntGirdList; measuremntGirdList.resize(No);
+//    std::vector<DeltaGrid2D> cntrlDeltaGridList; cntrlDeltaGridList.resize(Nc);
 
-    for (unsigned int s=0; s<Ns; s++)
-    {
-        pulseDeltaGridList[s].initGrid(N, hx, M, hy);
-        pulseDeltaGridList[s].distributeGauss(mEquParameter.theta[s], 8, 8);
-    }
+//    for (unsigned int s=0; s<Ns; s++)
+//    {
+//        pulseDeltaGridList[s].initGrid(N, hx, M, hy);
+//        pulseDeltaGridList[s].distributeGauss(mEquParameter.theta[s], 8, 8);
+//    }
 
-    for (unsigned int j=0; j<No; j++)
-    {
-        measuremntGirdList[j].initGrid(N, hx, M, hy);
-        measuremntGirdList[j].distributeGauss(mOptParameter.xi[j], 1, 1);
-    }
+//    for (unsigned int j=0; j<No; j++)
+//    {
+//        measuremntGirdList[j].initGrid(N, hx, M, hy);
+//        measuremntGirdList[j].distributeGauss(mOptParameter.xi[j], 1, 1);
+//    }
 
-    for (unsigned int i=0; i<Nc; i++)
-    {
-        cntrlDeltaGridList[i].initGrid(N, hx, M, hy);
-        cntrlDeltaGridList[i].distributeGauss(mOptParameter.eta[i], 1, 1);
-    }
+//    for (unsigned int i=0; i<Nc; i++)
+//    {
+//        cntrlDeltaGridList[i].initGrid(N, hx, M, hy);
+//        cntrlDeltaGridList[i].distributeGauss(mOptParameter.eta[i], 1, 1);
+//    }
 
-    std::vector<unsigned int> rows0, rows1, rows2, cols0, cols1, cols2;
+//    std::vector<unsigned int> rows0, rows1, rows2, cols0, cols1, cols2;
 
-    for (unsigned int m=1; m<=M-1; m++)
-    {
-        bool foundC = false;
-        bool foundM = false;
-        for (unsigned int i=0; i<Nc; i++) { foundC |= cntrlDeltaGridList[i]._rows[m]; }
-        for (unsigned int j=0; j<No; j++) { foundM |= measuremntGirdList[j]._rows[m]; }
-        if ( foundC==false && foundM==false && std::find(rows0.begin(), rows0.end(), m) == rows0.end()) rows0.push_back(m);
-        if ( foundC==true                   && std::find(rows1.begin(), rows1.end(), m) == rows1.end()) rows1.push_back(m);
-        if ( foundC==true  && foundM==true  && std::find(rows2.begin(), rows2.end(), m) == rows2.end()) rows2.push_back(m);
-    }
+//    for (unsigned int m=1; m<=M-1; m++)
+//    {
+//        bool foundC = false;
+//        bool foundM = false;
+//        for (unsigned int i=0; i<Nc; i++) { foundC |= cntrlDeltaGridList[i]._rows[m]; }
+//        for (unsigned int j=0; j<No; j++) { foundM |= measuremntGirdList[j]._rows[m]; }
+//        if ( foundC==false && foundM==false && std::find(rows0.begin(), rows0.end(), m) == rows0.end()) rows0.push_back(m);
+//        if ( foundC==true                   && std::find(rows1.begin(), rows1.end(), m) == rows1.end()) rows1.push_back(m);
+//        if ( foundC==true  && foundM==true  && std::find(rows2.begin(), rows2.end(), m) == rows2.end()) rows2.push_back(m);
+//    }
 
-    for (unsigned int n=1; n<=N-1; n++)
-    {
-        bool foundC = false;
-        bool foundM = false;
-        for (unsigned int i=0; i<Nc; i++) { foundC |= cntrlDeltaGridList[i]._cols[n]; }
-        for (unsigned int j=0; j<No; j++) { foundM |= measuremntGirdList[j]._cols[n]; }
-        if ( foundC==false && foundM==false && std::find(cols0.begin(), cols0.end(), n) == cols0.end()) cols0.push_back(n);
-        if ( foundC==true                   && std::find(cols1.begin(), cols1.end(), n) == cols1.end()) cols1.push_back(n);
-        if ( foundC==true  && foundM==true  && std::find(cols2.begin(), cols2.end(), n) == cols2.end()) cols2.push_back(n);
-    }
+//    for (unsigned int n=1; n<=N-1; n++)
+//    {
+//        bool foundC = false;
+//        bool foundM = false;
+//        for (unsigned int i=0; i<Nc; i++) { foundC |= cntrlDeltaGridList[i]._cols[n]; }
+//        for (unsigned int j=0; j<No; j++) { foundM |= measuremntGirdList[j]._cols[n]; }
+//        if ( foundC==false && foundM==false && std::find(cols0.begin(), cols0.end(), n) == cols0.end()) cols0.push_back(n);
+//        if ( foundC==true                   && std::find(cols1.begin(), cols1.end(), n) == cols1.end()) cols1.push_back(n);
+//        if ( foundC==true  && foundM==true  && std::find(cols2.begin(), cols2.end(), n) == cols2.end()) cols2.push_back(n);
+//    }
 
-    //std::vector<ExtendedSpacePointH> msnExtSpacePoints, cntExtSpacePoints, qExtSpacePoints;
-    //newDistributeDeltaGaussPulse(mEquParameter.theta, qExtSpacePoints, dimX, dimY);
-    //newDistributeDeltaGaussCntrl(mOptParameter.eta, cntExtSpacePoints, dimX, dimY);
-    //newDistributeDeltaGaussMsmnt(mOptParameter.xi,  msnExtSpacePoints, dimX, dimY);
+    std::vector<ExtendedSpacePointH> msnExtSpacePoints, cntExtSpacePoints, qExtSpacePoints;
+    newDistributeDeltaGaussPulse(mEquParameter.theta, qExtSpacePoints, dimX, dimY);
+    newDistributeDeltaGaussCntrl(mOptParameter.eta, cntExtSpacePoints, dimX, dimY);
+    newDistributeDeltaGaussMsmnt(mOptParameter.xi,  msnExtSpacePoints, dimX, dimY);
 
     //----------------------------------------------------------------------------------------------//
-    //GridH grid;
-    //uint_vectorH rows0, rows1, rows2, cols0, cols1, cols2;
-    //f_findRowsCols(grid, rows0, rows1, rows2, cols0, cols1, cols2, N, M, cntExtSpacePoints, msnExtSpacePoints);
+    GridH grid;
+    uint_vectorH rows0, rows1, rows2, cols0, cols1, cols2;
+    f_findRowsCols(grid, rows0, rows1, rows2, cols0, cols1, cols2, N, M, cntExtSpacePoints, msnExtSpacePoints);
     //-------------------------------------------- info --------------------------------------------//
     if (use == true) f_prepareInfo(No, mOptParameter.xi, u_info, LLD);
     //----------------------------------------------------------------------------------------------//
@@ -1055,6 +1055,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     //------------------------------------- initial conditions -------------------------------------//
     //f_initialLayers(u00, u05, u10, u_info, use, N, M, hx, hy, ht, aa__hxhx, aa__hyhy, alpha, qExtSpacePoints, msnExtSpacePoints, cntExtSpacePoints);
     /************************************************************************/
+    initiatePulseGrid();
     SpaceNodePDE sn00;
     for (unsigned int m=0; m<=M; m++)
     {
@@ -1091,15 +1092,15 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
             sn10.i = static_cast<int>(n); sn10.x = n*hx;
 
             double Q = 0.0;
-            for (unsigned int s=0; s<Ns; s++)
-            {
-                Q += mEquParameter.q[s]*pulseDeltaGridList[s].weight(sn10);
-            }
+//            for (unsigned int s=0; s<Ns; s++)
+//            {
+//                Q += mEquParameter.q[s]*pulseDeltaGridList[s].weight(sn10);
+//            }
 
             double sum = 0.0;
             sum += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]);
             sum += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]);
-            sum -= lambda*(f_initial2(sn10)+Q);
+            sum -= alpha*(f_initial2(sn10)+Q);
 
             u05[m][n] = u00[m][n] + (0.5*ht) * (f_initial2(sn10)+Q) + (0.125*ht*ht) * sum;
             u10[m][n] = u00[m][n] + (1.0*ht) * (f_initial2(sn10)+Q) + (0.500*ht*ht) * sum;
@@ -1165,34 +1166,35 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
         if (rows1.size() != 0 && rows2.size() == 0)
         {
             //throw grid_exception("forward x1");
+            currentLayerFGrid(u10);
 
-            double* _u15 = new double[No];
-            for (unsigned int j=0; j<No; j++)
-            {
-                const ExtendedSpacePointH &extendedSpacePoint = msnExtSpacePoints.at(j);
-                const std::vector<ExtendedSpacePointNodeH> &nodes = extendedSpacePoint.nodes;
-                const unsigned int nodes_size = static_cast<unsigned int>(nodes.size());
-                _u15[j] = 0.0;
-                for (unsigned int nj=0; nj<nodes_size; nj++)
-                {
-                    const ExtendedSpacePointNodeH &node = nodes.at(nj);
-                    const unsigned int node_nx = static_cast<unsigned int>(node.nx);
-                    const unsigned int node_ny = static_cast<unsigned int>(node.ny);
-                    _u15[j] += u15[node_ny][node_nx] * (node.w * (hx*hy));
-                }
-                _u15[j] *= (1.0 + noise);
-            }
+//            double* _u15 = new double[No];
+//            for (unsigned int j=0; j<No; j++)
+//            {
+//                const ExtendedSpacePointH &extendedSpacePoint = msnExtSpacePoints.at(j);
+//                const std::vector<ExtendedSpacePointNodeH> &nodes = extendedSpacePoint.nodes;
+//                const unsigned int nodes_size = static_cast<unsigned int>(nodes.size());
+//                _u15[j] = 0.0;
+//                for (unsigned int nj=0; nj<nodes_size; nj++)
+//                {
+//                    const ExtendedSpacePointNodeH &node = nodes.at(nj);
+//                    const unsigned int node_nx = static_cast<unsigned int>(node.nx);
+//                    const unsigned int node_ny = static_cast<unsigned int>(node.ny);
+//                    _u15[j] += u10[node_ny][node_nx] * (node.w * (hx*hy));
+//                }
+//                _u15[j] *= (1.0 + noise);
+//            }
 
-            double *_v15 = new double[Nc];
-            for (unsigned int i=0; i<Nc; i++)
-            {
-                _v15[i] = 0.0;
-                for (unsigned int j=0; j<No; j++)
-                {
-                    _v15[i] += mOptParameter.k[i][j] * (_u15[j] - mOptParameter.z[i][j]);
-                }
-            }
-            delete [] _u15;
+//            double *_v15 = new double[Nc];
+//            for (unsigned int i=0; i<Nc; i++)
+//            {
+//                _v15[i] = 0.0;
+//                for (unsigned int j=0; j<No; j++)
+//                {
+//                    _v15[i] += mOptParameter.k[i][j] * (_u15[j] - mOptParameter.z[i][j]);
+//                }
+//            }
+//            delete [] _u15;
 
             for (unsigned int row=0; row<rows1.size(); row++)
             {
@@ -1207,21 +1209,21 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     dx[n-1] += (u10[m][n-1] - 2.0*u10[m][n] + u10[m][n+1])*p_aa_htht__hxhx_025_1m2lambda;
                     dx[n-1] += (u05[m][n-1] - 2.0*u05[m][n] + u05[m][n+1])*p_aa_htht__hxhx_025_lambda;
                     //------------------------------------- Adding delta part -------------------------------------//
-                    double fx15 = 0.0;
-                    for (unsigned int i=0; i<Nc; i++)
-                    {
-                        const ExtendedSpacePointH &extendedSpacePoint = cntExtSpacePoints.at(i);
-                        if (extendedSpacePoint.contains(sn))
-                        {
-                            const std::vector<ExtendedSpacePointNodeH> &nodes = extendedSpacePoint.nodes;
-                            const unsigned int nodes_size = static_cast<unsigned int>( nodes.size() );
-                            for (unsigned int ni=0; ni<nodes_size; ni++)
-                            {
-                                const ExtendedSpacePointNodeH &node = nodes.at(ni);
-                                if (node.equals(sn)) fx15 += _v15[i] * node.w;
-                            }
-                        }
-                    }
+                    double fx15 = mCurfxWeightMatrix[m][n];
+//                    for (unsigned int i=0; i<Nc; i++)
+//                    {
+//                        const ExtendedSpacePointH &extendedSpacePoint = cntExtSpacePoints.at(i);
+//                        if (extendedSpacePoint.contains(sn))
+//                        {
+//                            const std::vector<ExtendedSpacePointNodeH> &nodes = extendedSpacePoint.nodes;
+//                            const unsigned int nodes_size = static_cast<unsigned int>( nodes.size() );
+//                            for (unsigned int ni=0; ni<nodes_size; ni++)
+//                            {
+//                                const ExtendedSpacePointNodeH &node = nodes.at(ni);
+//                                if (node.equals(sn)) fx15 += _v15[i] * node.w;
+//                            }
+//                        }
+//                    }
                     dx[n-1] += ht_ht_025 * fx15;
                     //------------------------------------- Adding delta part -------------------------------------//
                 }
@@ -1230,7 +1232,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                 tomasAlgorithm(ax, bx, cx, dx, rx, N-1);
                 for (unsigned int n=1; n<=N-1; n++) u15[m][n] = rx[n-1];
             }
-            delete [] _v15;
+//            delete [] _v15;
         }
 
         if (rows1.size() != 0 && rows2.size() != 0)
@@ -1361,36 +1363,37 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
         if (cols1.size() != 0 && cols2.size() == 0)
         {
             //throw grid_exception("forward y1");
+            currentLayerFGrid(u15);
 
-            double* _u20 = new double[No];
+//            double* _u20 = new double[No];
 
-            for (unsigned int j=0; j<No; j++)
-            {
-                const ExtendedSpacePointH &extendedSpacePoint = msnExtSpacePoints.at(j);
-                const std::vector<ExtendedSpacePointNodeH> &nodes = extendedSpacePoint.nodes;
-                const unsigned int nodes_size = static_cast<unsigned int>(nodes.size());
-                _u20[j] = 0.0;
-                for (unsigned int nj=0; nj<nodes_size; nj++)
-                {
-                    const ExtendedSpacePointNodeH &node = nodes.at(nj);
-                    const unsigned int node_nx = static_cast<unsigned int>(node.nx);
-                    const unsigned int node_ny = static_cast<unsigned int>(node.ny);
-                    _u20[j] += u20[node_ny][node_nx] * (node.w * (hx*hy));
-                }
-                _u20[j] *= (1.0+noise);
-            }
+//            for (unsigned int j=0; j<No; j++)
+//            {
+//                const ExtendedSpacePointH &extendedSpacePoint = msnExtSpacePoints.at(j);
+//                const std::vector<ExtendedSpacePointNodeH> &nodes = extendedSpacePoint.nodes;
+//                const unsigned int nodes_size = static_cast<unsigned int>(nodes.size());
+//                _u20[j] = 0.0;
+//                for (unsigned int nj=0; nj<nodes_size; nj++)
+//                {
+//                    const ExtendedSpacePointNodeH &node = nodes.at(nj);
+//                    const unsigned int node_nx = static_cast<unsigned int>(node.nx);
+//                    const unsigned int node_ny = static_cast<unsigned int>(node.ny);
+//                    _u20[j] += u15[node_ny][node_nx] * (node.w * (hx*hy));
+//                }
+//                _u20[j] *= (1.0+noise);
+//            }
 
-            double *_v20 = new double[Nc];
-            for (unsigned int i=0; i<Nc; i++)
-            {
-                _v20[i] = 0.0;
-                for (unsigned int j=0; j<No; j++)
-                {
-                    _v20[i] += mOptParameter.k[i][j] * ( _u20[j] - mOptParameter.z[i][j] );
-                }
-            }
+//            double *_v20 = new double[Nc];
+//            for (unsigned int i=0; i<Nc; i++)
+//            {
+//                _v20[i] = 0.0;
+//                for (unsigned int j=0; j<No; j++)
+//                {
+//                    _v20[i] += mOptParameter.k[i][j] * ( _u20[j] - mOptParameter.z[i][j] );
+//                }
+//            }
 
-            delete [] _u20;
+//            delete [] _u20;
 
             for (unsigned int col=0; col<cols1.size(); col++)
             {
@@ -1406,21 +1409,21 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                     dy[m-1] += (u15[m-1][n] - 2.0*u15[m][n] + u15[m+1][n])*p_aa_htht__hyhy_025_1m2lambda;
                     dy[m-1] += (u10[m-1][n] - 2.0*u10[m][n] + u10[m+1][n])*p_aa_htht__hyhy_025_lambda;
                     //------------------------------------- Adding delta part -------------------------------------//
-                    double fx20 = 0.0;
-                    for (unsigned int i=0; i<Nc; i++)
-                    {
-                        const ExtendedSpacePointH &extendedSpacePoint = cntExtSpacePoints.at(i);
-                        if (extendedSpacePoint.contains(sn))
-                        {
-                            const std::vector<ExtendedSpacePointNodeH> &nodes = extendedSpacePoint.nodes;
-                            const unsigned int nodes_size = static_cast<unsigned int>(nodes.size());
-                            for (unsigned int ni=0; ni<nodes_size; ni++)
-                            {
-                                const ExtendedSpacePointNodeH &node = nodes.at(ni);
-                                if (node.equals(sn)) fx20 += _v20[i] * node.w;
-                            }
-                        }
-                    }
+                    double fx20 = mCurfxWeightMatrix[m][n];
+//                    for (unsigned int i=0; i<Nc; i++)
+//                    {
+//                        const ExtendedSpacePointH &extendedSpacePoint = cntExtSpacePoints.at(i);
+//                        if (extendedSpacePoint.contains(sn))
+//                        {
+//                            const std::vector<ExtendedSpacePointNodeH> &nodes = extendedSpacePoint.nodes;
+//                            const unsigned int nodes_size = static_cast<unsigned int>(nodes.size());
+//                            for (unsigned int ni=0; ni<nodes_size; ni++)
+//                            {
+//                                const ExtendedSpacePointNodeH &node = nodes.at(ni);
+//                                if (node.equals(sn)) fx20 += _v20[i] * node.w;
+//                            }
+//                        }
+//                    }
                     dy[m-1] += ht_ht_025 * fx20;
                     //------------------------------------- Adding delta part -------------------------------------//
                 }
@@ -1430,7 +1433,7 @@ auto Problem2HNDirichlet::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
                 for (unsigned int m=1; m<=M-1; m++) u20[m][n] = ry[m-1];
             }
 
-            delete [] _v20;
+//            delete [] _v20;
         }
 
         if (cols1.size() != 0 && cols2.size() != 0)
@@ -1701,9 +1704,126 @@ auto Problem2HNDirichlet::f_initial1(const SpaceNodePDE &sn UNUSED_PARAM) const 
     return 0.0;
 }
 
-auto Problem2HNDirichlet::f_initial2(const SpaceNodePDE &) const -> double
+auto Problem2HNDirichlet::initiatePulseGrid() const -> void
 {
-    return 0.0;
+    const Dimension dimX = spaceDimension(Dimension::DimensionX);
+    const Dimension dimY = spaceDimension(Dimension::DimensionY);
+
+    const unsigned int N = static_cast<const unsigned int> ( dimX.size() );
+    const unsigned int M = static_cast<const unsigned int> ( dimY.size() );
+
+    const double hx = dimX.step();
+    const double hy = dimY.step();
+
+    const_cast<Problem2HNDirichlet*>(this)->mPulseWeightMatrix.clear();
+    const_cast<Problem2HNDirichlet*>(this)->mPulseWeightMatrix.resize(M+1, N+1, 0.0);
+
+    const unsigned int Ns = mEquParameter.Ns;
+    std::vector<DeltaGrid2D> deltaGrids(Ns);
+    for (unsigned int s=0; s<Ns; s++)
+    {
+        deltaGrids[s].initGrid(N, hx, M, hy);
+        deltaGrids[s].distributeGauss(mEquParameter.theta[s], 1, 1);
+    }
+
+    for (unsigned int m=0; m<=M; m++)
+    {
+        for (unsigned int n=0; n<=N; n++)
+        {
+            const_cast<Problem2HNDirichlet*>(this)->mPulseWeightMatrix[m][n] = 0.0;
+            for (unsigned int s=0; s<Ns; s++)
+            {
+                const_cast<Problem2HNDirichlet*>(this)->mPulseWeightMatrix[m][n] += mEquParameter.q[s]*deltaGrids[s].weight(n, m);
+            }
+        }
+    }
+
+    for (unsigned int s=0; s<Ns; s++)
+    {
+        deltaGrids[s].cleanGrid();
+    }
+    deltaGrids.clear();
+}
+
+auto Problem2HNDirichlet::currentLayerFGrid(const DoubleMatrix &u) const -> void
+{
+    const Dimension dimX = spaceDimension(Dimension::DimensionX);
+    const Dimension dimY = spaceDimension(Dimension::DimensionY);
+
+    const unsigned int N = static_cast<const unsigned int> ( dimX.size() );
+    const unsigned int M = static_cast<const unsigned int> ( dimY.size() );
+
+    const double hx = dimX.step();
+    const double hy = dimY.step();
+
+    const_cast<Problem2HNDirichlet*>(this)->mCurfxWeightMatrix.clear();
+    const_cast<Problem2HNDirichlet*>(this)->mCurfxWeightMatrix.resize(M+1, N+1, 0.0);
+
+    const unsigned int Nc = mEquParameter.Nc;
+    std::vector<DeltaGrid2D> controlDeltaGrids(Nc);
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        controlDeltaGrids[i].initGrid(N, hx, M, hy);
+        controlDeltaGrids[i].distributeGauss(mOptParameter.eta[i], 1, 1);
+    }
+
+    const unsigned int No = mEquParameter.No;
+    std::vector<DeltaGrid2D> measurementDeltaGrids(No);
+    for (unsigned int j=0; j<No; j++)
+    {
+        measurementDeltaGrids[j].initGrid(N, hx, M, hy);
+        measurementDeltaGrids[j].distributeGauss(mOptParameter.xi[j], 1, 1);
+    }
+
+    double* _u = new double[No];
+    for (unsigned int j=0; j<No; j++)
+    {
+        _u[j] = 0.0;
+        const DeltaGrid2D &dg = measurementDeltaGrids[j];
+        for (unsigned int m=dg.minY(); m<=dg.maxY(); m++)
+        {
+            for (unsigned int n=dg.minX(); n<=dg.maxX(); n++)
+            {
+                _u[j] += u[m][n] * (dg.weight(n,m) * (hx*hy));
+            }
+        }
+        _u[j] *= (1.0 + noise);
+    }
+
+    double *_v = new double[Nc];
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        _v[i] = 0.0;
+        for (unsigned int j=0; j<No; j++)
+        {
+            _v[i] += mOptParameter.k[i][j] * (_u[j] - mOptParameter.z[i][j]);
+        }
+    }
+    delete [] _u;
+
+    for (unsigned int m=0; m<=M; m++)
+    {
+        for (unsigned int n=0; n<=N; n++)
+        {
+            const_cast<Problem2HNDirichlet*>(this)->mCurfxWeightMatrix[m][n] = 0.0;
+            for (unsigned int i=0; i<Nc; i++)
+            {
+                const DeltaGrid2D &dg = controlDeltaGrids[i];
+                const_cast<Problem2HNDirichlet*>(this)->mCurfxWeightMatrix[m][n] += _v[i] * dg.weight(n,m);
+            }
+        }
+    }
+
+    delete [] _v;
+
+    for (unsigned int j=0; j<No; j++) measurementDeltaGrids[j].cleanGrid(); measurementDeltaGrids.clear();
+    for (unsigned int i=0; i<Nc; i++) controlDeltaGrids[i].cleanGrid(); controlDeltaGrids.clear();
+}
+
+auto Problem2HNDirichlet::f_initial2(const SpaceNodePDE &sn) const -> double
+{
+    //return 0.0;
+    return mPulseWeightMatrix[sn.j][sn.i];
 }
 
 double Problem2HNDirichlet::f_boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
