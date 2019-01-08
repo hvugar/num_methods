@@ -53,6 +53,12 @@ struct PROBLEM2HSHARED_EXPORT OptimizeParameterH
 #endif
 };
 
+struct InitialPulse
+{
+    double q;
+    SpacePoint theta;
+};
+
 struct PROBLEM2HSHARED_EXPORT EquationParameterH
 {
     double a;
@@ -69,6 +75,8 @@ struct PROBLEM2HSHARED_EXPORT EquationParameterH
     unsigned int Ns;
     std::vector<SpacePoint> theta;
     DoubleVector q;
+
+    std::vector<InitialPulse> pulseVector;
 
 #ifdef TIME_DISCRETE_H
     unsigned int Nt;

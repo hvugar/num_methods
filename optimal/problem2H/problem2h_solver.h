@@ -3,19 +3,6 @@
 
 #include "problem2h_common.h"
 
-class PROBLEM2HSHARED_EXPORT Problem2HDirichlet : public InitialBoundaryValueProblemPDE
-{
-public:
-    auto setEquationParameter(const EquationParameterH& equParemeter) -> void;
-    auto equationParemeter() const -> EquationParameterH&;
-    auto initiatePulseGrid() -> void;
-
-private :
-    EquationParameterH mEquParameter;
-
-    DoubleMatrix mPulseWeightMatrix;
-};
-
 class PROBLEM2HSHARED_EXPORT Problem2HNDirichlet : public RnFunction,
         public IGradient, public InitialBoundaryValueProblemPDE, public IProjection, public IPrinter,
         public IVectorNormalizer
@@ -46,50 +33,52 @@ public:
     double sign(double x) const;
 
 public:
-    void PrmToVector(const OptimizeParameterH &prm, DoubleVector &x) const;
-    void VectorToPrm(const DoubleVector &x, OptimizeParameterH &prm) const;
+    virtual auto boundary(const SpaceNodePDE &, const TimeNodePDE &) const -> double { return NAN; }
 
-    virtual double boundary(const SpaceNodePDE &, const TimeNodePDE &) const { return NAN; }
+    virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const -> void;
 
-    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const;
+    virtual auto project(DoubleVector &x, unsigned int index) -> void;
+    virtual auto project(DoubleVector &x) const -> void;
 
-    virtual void project(DoubleVector &x, unsigned int index);
-    virtual void project(DoubleVector &x) const;
+    virtual auto projectControlPoints(DoubleVector &x, unsigned int index) const -> void;
+    virtual auto projectMeasurePoints(DoubleVector &x, unsigned int index) const -> void;
 
-    virtual void projectControlPoints(DoubleVector &x, unsigned int index) const;
-    virtual void projectMeasurePoints(DoubleVector &x, unsigned int index) const;
+    auto solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const -> void { solveForwardIBVP1(u, u_info, use); }
+    auto solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const -> void { solveBackwardIBVP1(u, p_info, use, u_info); }
 
-    auto solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const -> void;
-    auto solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const -> void;
-    auto f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u05, DoubleMatrix &u10,
-                         spif_vectorH &u_info, bool use, unsigned int N, unsigned int M,
+    auto solveForwardIBVP1(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const -> void;
+    auto solveBackwardIBVP1(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const -> void;
+
+    auto f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u05, DoubleMatrix &u10, spif_vectorH &u_info, bool use, unsigned int N, unsigned int M,
                          double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda,
-                         const std::vector<ExtendedSpacePointH> &qExtSpacePoints,
-                         const std::vector<ExtendedSpacePointH> &msnExtSpacePoints,
+                         const std::vector<ExtendedSpacePointH> &qExtSpacePoints, const std::vector<ExtendedSpacePointH> &msnExtSpacePoints,
                          const std::vector<ExtendedSpacePointH> &cntExtSpacePoints) const -> void;
-    auto b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p05, DoubleMatrix &p10,
-                         spif_vectorH &p_info, bool use, const spif_vectorH &u_info, unsigned int N, unsigned int M,
+    auto b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p05, DoubleMatrix &p10, spif_vectorH &p_info, bool use, const spif_vectorH &u_info, unsigned int N, unsigned int M,
                          double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda,
-                         const std::vector<ExtendedSpacePointH> &cntExtSpacePoints,
-                         const std::vector<ExtendedSpacePointH> &msnExtSpacePoints) const -> void;
+                         const std::vector<ExtendedSpacePointH> &cntExtSpacePoints, const std::vector<ExtendedSpacePointH> &msnExtSpacePoints) const -> void;
+
     auto f_initial1(const SpaceNodePDE &sn) const -> double;
     auto b_initial1(const SpaceNodePDE &sn) const -> double;
+
     auto f_initial2(const SpaceNodePDE &sn) const -> double;
     auto b_initial2(const SpaceNodePDE &sn) const -> double;
+
     auto f_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double;
     auto b_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double;
 
-    void f_findRowsCols(GridH &grid, uint_vectorH &rows0, uint_vectorH &rows1, uint_vectorH &rows2, uint_vectorH &cols0, uint_vectorH &cols1, uint_vectorH &cols2, unsigned int N, unsigned int M,
-                        const std::vector<ExtendedSpacePointH> &cntExtSpacePoints, const std::vector<ExtendedSpacePointH> &msnExtSpacePoints) const;
-    void b_findRowsCols(GridH &grid, uint_vectorH &rows0, uint_vectorH &rows1, uint_vectorH &rows2, uint_vectorH &cols0, uint_vectorH &cols1, uint_vectorH &cols2, unsigned int N, unsigned int M,
-                        const std::vector<ExtendedSpacePointH> &msnExtSpacePoints, const std::vector<ExtendedSpacePointH> &cntExtSpacePoints) const;
+    auto f_findRowsCols(GridH &grid, uint_vectorH &rows0, uint_vectorH &rows1, uint_vectorH &rows2, uint_vectorH &cols0, uint_vectorH &cols1, uint_vectorH &cols2, unsigned int N, unsigned int M,
+                        const std::vector<ExtendedSpacePointH> &cntExtSpacePoints, const std::vector<ExtendedSpacePointH> &msnExtSpacePoints) const -> void;
+    auto b_findRowsCols(GridH &grid, uint_vectorH &rows0, uint_vectorH &rows1, uint_vectorH &rows2, uint_vectorH &cols0, uint_vectorH &cols1, uint_vectorH &cols2, unsigned int N, unsigned int M,
+                        const std::vector<ExtendedSpacePointH> &msnExtSpacePoints, const std::vector<ExtendedSpacePointH> &cntExtSpacePoints) const -> void;
+
     auto f_prepareInfo(unsigned int No, const std::vector<SpacePoint> &points, spif_vectorH &u_info, unsigned int LLD) const -> void;
     auto b_prepareInfo(unsigned int Nc, const std::vector<SpacePoint> &points, spif_vectorH &p_info, unsigned int LLD) const -> void;
-    void f_borderLayer(DoubleMatrix &u, DoubleMatrix &uh, unsigned int ln) const;
+
+    auto f_borderLayer(DoubleMatrix &u, DoubleMatrix &uh, unsigned int ln) const -> void;
     auto f_add2Info(const DoubleMatrix &u, spif_vectorH &u_info, unsigned int ln, double hx, double hy, const std::vector<ExtendedSpacePointH> &extMsmnts, int method = 4) const -> void;
     auto b_add2Info(const DoubleMatrix &p, spif_vectorH &p_info, unsigned int ln, double hx, double hy, const std::vector<ExtendedSpacePointH> &extCntrls, int method = 4) const -> void;
-    void f_layerInfo(const DoubleMatrix &u, unsigned int ln) const;
-    void b_layerInfo(const DoubleMatrix &p, unsigned int ln) const;
+    auto f_layerInfo(const DoubleMatrix &u, unsigned int ln) const -> void;
+    auto b_layerInfo(const DoubleMatrix &p, unsigned int ln) const -> void;
     auto b_characteristic(const DoubleMatrix &u, unsigned int n, unsigned int m) const -> double;
 
     // common -----------------------------------
@@ -100,6 +89,9 @@ public:
 
     auto v(unsigned int i, OptimizeParameterH o_prm, EquationParameterH e_prm, const spif_vectorH &u_info, unsigned int ln) const -> double;
     auto mu(unsigned int, unsigned int) const -> double { return 1.0; }
+    auto PrmToVector(const OptimizeParameterH &prm, DoubleVector &x) const -> void;
+    auto VectorToPrm(const DoubleVector &x, OptimizeParameterH &prm) const -> void;
+
 public:
     EquationParameterH mEquParameter;
     OptimizeParameterH mOptParameter;
@@ -125,10 +117,12 @@ public:
 //    EquationParameterHE mParameter;
 
     DoubleMatrix mPulseWeightMatrix;
-    DoubleMatrix mCurfxWeightMatrix;
+    DoubleMatrix mCrFfxWeightMatrix;
+    DoubleMatrix mCrBfxWeightMatrix;
 
     auto initiatePulseGrid() const -> void;
     auto currentLayerFGrid(const DoubleMatrix &u) const -> void;
+    auto currentLayerBGrid(const DoubleMatrix &p, double ln, const spif_vectorH &u_info) const -> void;
 };
 
 #endif // PROBLEM2H_SOLVER0_H
