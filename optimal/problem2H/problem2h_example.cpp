@@ -82,7 +82,7 @@ void prod_example1()
     //o_prm.k[0][0]  = +0.0000; o_prm.k[0][1]  = +0.0000; o_prm.k[1][0]  = +0.0000; o_prm.k[1][1]  = +0.0000;
     //o_prm.z[0][0]  = +0.0000; o_prm.z[0][1]  = +0.0000; o_prm.z[1][0]  = +0.0000; o_prm.z[1][1]  = +0.0000;
     //o_prm.k[0][0]  = -1.1820; o_prm.k[0][1]  = -1.1250; o_prm.k[1][0]  = -1.1550; o_prm.k[1][1]  = -1.1310;
-    o_prm.k[0][0]  = -2.1820; o_prm.k[0][1]  = -2.1250; o_prm.k[1][0]  = -2.1550; o_prm.k[1][1]  = -2.1310;
+    o_prm.k[0][0]  = -3.1820; o_prm.k[0][1]  = -3.1250; o_prm.k[1][0]  = -3.1550; o_prm.k[1][1]  = -3.1310;
     o_prm.z[0][0]  = +0.0125; o_prm.z[0][1]  = +0.0268; o_prm.z[1][0]  = +0.0359; o_prm.z[1][1]  = +0.0186;
     o_prm.xi[0].x  = +0.3849; o_prm.xi[0].y  = +0.5442; o_prm.xi[1].x  = +0.7861; o_prm.xi[1].y  = +0.6785;
     o_prm.eta[0].x = +0.6656; o_prm.eta[0].y = +0.7909; o_prm.eta[1].x = +0.4956; o_prm.eta[1].y = +0.3810;
@@ -141,7 +141,7 @@ void prod_example1()
     Dimension dimy(hy, 0, Ny);
 
     // Penalty paramteres
-    DoubleVector r; r << 0.0100 << 0.1000 << 1.000 << 2.000;
+    DoubleVector r; r << 0.0000 << 0.1000 << 1.000 << 2.000;
     // Regularization coefficients
     DoubleVector e; e << 0.0000 << 0.0000 << 0.0000 << 0.0000;
 
@@ -170,7 +170,7 @@ void prod_example1()
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
-            prob.checkGradient1(prob);
+//            prob.checkGradient1(prob);
 
 //            std::vector<DoubleMatrix> u;
 //            spif_vectorH u_info;
