@@ -4,15 +4,15 @@
 #include "problem2h_common.h"
 #include "problem2h_ibvp.h"
 
-class PROBLEM2HSHARED_EXPORT Problem2HNDirichlet4 : public RnFunction, public IGradient, public InitialBoundaryValueProblemPDE, public IProjection, public IPrinter, public IVectorNormalizer
+class PROBLEM2HSHARED_EXPORT Problem2HDirichlet4 : public RnFunction, public IGradient, public InitialBoundaryValueProblemPDE, public IProjection, public IPrinter, public IVectorNormalizer
 {
 public:
     static void Main(int argc, char* argv[]);
-    static void checkGradient1(const Problem2HNDirichlet4 &prob);
-    static void checkGradient2(const Problem2HNDirichlet4 &prob);
+    static void checkGradient1(const Problem2HDirichlet4 &prob);
+    static void checkGradient2(const Problem2HDirichlet4 &prob);
 
-    Problem2HNDirichlet4();
-    virtual ~Problem2HNDirichlet4();
+    Problem2HDirichlet4();
+    virtual ~Problem2HDirichlet4();
 
     virtual auto fx(const DoubleVector &x) const -> double;
     virtual auto gradient(const DoubleVector &, DoubleVector &) const -> void;
@@ -88,11 +88,11 @@ public:
     //                    const std::vector<ExtendedSpacePointH> &cntExtSpacePoints, const std::vector<ExtendedSpacePointH> &msnExtSpacePoints) const;
     //void b_findRowsCols(GridH &grid, uint_vectorH &rows0, uint_vectorH &rows1, uint_vectorH &rows2, uint_vectorH &cols0, uint_vectorH &cols1, uint_vectorH &cols2, unsigned int N, unsigned int M,
     //                    const std::vector<ExtendedSpacePointH> &msnExtSpacePoints, const std::vector<ExtendedSpacePointH> &cntExtSpacePoints) const;
-    auto f_prepareInfo(unsigned int No, const std::vector<SpacePoint> &points, spif_vectorH &u_info, unsigned int LLD) const -> void;
-    auto b_prepareInfo(unsigned int Nc, const std::vector<SpacePoint> &points, spif_vectorH &p_info, unsigned int LLD) const -> void;
+    auto prepareInfo(unsigned int N, const std::vector<SpacePoint> &points, spif_vectorH &info, unsigned int size) const -> void;
     void f_borderLayer(DoubleMatrix &u, DoubleMatrix &uh, unsigned int ln) const;
     auto f_add2Info(const DoubleMatrix &u, spif_vectorH &u_info, unsigned int ln, double hx, double hy, const std::vector<DeltaGrid2D> &msrntDeltaGridList) const -> void;
     auto b_add2Info(const DoubleMatrix &p, spif_vectorH &p_info, unsigned int ln, double hx, double hy, const std::vector<DeltaGrid2D> &cntrlDeltaGridList) const -> void;
+    auto add2Info(const DoubleMatrix &u, spif_vectorH &info, unsigned int ln, double hx, double hy, const std::vector<DeltaGrid2D> &deltaList) const -> void;
     void f_layerInfo(const DoubleMatrix &u, unsigned int ln) const;
     void b_layerInfo(const DoubleMatrix &p, unsigned int ln) const;
     auto b_characteristic(const DoubleMatrix &u, unsigned int n, unsigned int m) const -> double;
@@ -130,6 +130,10 @@ public:
     std::vector<DoubleMatrix> vu;
     //DoubleMatrix f_initLayer;
     //DoubleMatrix b_initLayer;
+
+    DoubleMatrix mPulseWeightMatrix;
+
+    auto initiatePulseGrid() const -> void;
 };
 
 #endif // PROBLEM2H_SOLVER4_H

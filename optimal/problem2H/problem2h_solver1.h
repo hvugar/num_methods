@@ -45,11 +45,8 @@ public:
     virtual auto projectControlPoints(DoubleVector &x, unsigned int index) const -> void;
     virtual auto projectMeasurePoints(DoubleVector &x, unsigned int index) const -> void;
 
-    auto solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const -> void { solveForwardIBVP1(u, u_info, use); }
-    auto solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const -> void { solveBackwardIBVP1(u, p_info, use, u_info); }
-
-    auto solveForwardIBVP1(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const -> void;
-    auto solveBackwardIBVP1(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const -> void;
+    auto solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use, double lambda=0.25) const -> void;
+    auto solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const -> void;
 
     auto f_initial1(const SpaceNodePDE &sn) const -> double;
     auto b_initial1(const SpaceNodePDE &sn) const -> double;
@@ -92,6 +89,8 @@ public:
 
     bool usePenalty;
     bool useNormal;
+
+    std::vector<DoubleMatrix> vu;
 
     //GradientMethod *gm;
 

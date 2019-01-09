@@ -35,7 +35,7 @@ void ProjectionEx1::project(DoubleVector &x) const
 
 void ProjectionEx1::project(DoubleVector &, unsigned int) {}
 
-void Problem2HNDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
+void Problem2HDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
 #ifdef USE_IMAGING
     QGuiApplication app(argc, argv);
@@ -78,14 +78,26 @@ void prod_example1()
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
+    o_prm.k[0][0]  = -2.0610; o_prm.k[0][1]  = -1.9376; o_prm.k[1][0]  = -2.1707; o_prm.k[1][1]  = -1.8527;
+    o_prm.z[0][0]  = -0.0461; o_prm.z[0][1]  = -0.0246; o_prm.z[1][0]  = +0.0319; o_prm.z[1][1]  = +0.0161;
+    o_prm.xi[0].x  = +0.6402; o_prm.xi[0].y  = +0.4899; o_prm.xi[1].x  = +0.8148; o_prm.xi[1].y  = +0.9500;
+    o_prm.eta[0].x = +0.9500; o_prm.eta[0].y = +0.4609; o_prm.eta[1].x = +0.2512; o_prm.eta[1].y = +0.8932;
+
+
+
+
+
+
     // Initial I:0.03533
     //o_prm.k[0][0]  = +0.0000; o_prm.k[0][1]  = +0.0000; o_prm.k[1][0]  = +0.0000; o_prm.k[1][1]  = +0.0000;
     //o_prm.z[0][0]  = +0.0000; o_prm.z[0][1]  = +0.0000; o_prm.z[1][0]  = +0.0000; o_prm.z[1][1]  = +0.0000;
     //o_prm.k[0][0]  = -1.1820; o_prm.k[0][1]  = -1.1250; o_prm.k[1][0]  = -1.1550; o_prm.k[1][1]  = -1.1310;
-    o_prm.k[0][0]  = -3.1820; o_prm.k[0][1]  = -3.1250; o_prm.k[1][0]  = -3.1550; o_prm.k[1][1]  = -3.1310;
-    o_prm.z[0][0]  = +0.0125; o_prm.z[0][1]  = +0.0268; o_prm.z[1][0]  = +0.0359; o_prm.z[1][1]  = +0.0186;
-    o_prm.xi[0].x  = +0.3849; o_prm.xi[0].y  = +0.5442; o_prm.xi[1].x  = +0.7861; o_prm.xi[1].y  = +0.6785;
-    o_prm.eta[0].x = +0.6656; o_prm.eta[0].y = +0.7909; o_prm.eta[1].x = +0.4956; o_prm.eta[1].y = +0.3810;
+
+    //o_prm.k[0][0]  = -2.1820; o_prm.k[0][1]  = -2.1250; o_prm.k[1][0]  = -2.1550; o_prm.k[1][1]  = -2.1310;
+    //o_prm.z[0][0]  = +0.0125; o_prm.z[0][1]  = +0.0268; o_prm.z[1][0]  = +0.0359; o_prm.z[1][1]  = +0.0186;
+    //o_prm.xi[0].x  = +0.3849; o_prm.xi[0].y  = +0.5442; o_prm.xi[1].x  = +0.7861; o_prm.xi[1].y  = +0.6785;
+    //o_prm.eta[0].x = +0.6656; o_prm.eta[0].y = +0.7909; o_prm.eta[1].x = +0.4956; o_prm.eta[1].y = +0.3810;
+
     //o_prm.xi[0].x  = +0.1849; o_prm.xi[0].y  = +0.2442; o_prm.xi[1].x  = +0.4861; o_prm.xi[1].y  = +0.7785;
     //o_prm.eta[0].x = +0.3656; o_prm.eta[0].y = +0.3909; o_prm.eta[1].x = +0.9156; o_prm.eta[1].y = +0.9410;
     // Optimal I:0.00054           --------------------------------------------------------------------------
@@ -131,25 +143,18 @@ void prod_example1()
     //r_prm = o_prm;
     //o_prm = r_prm;
 
-    // Grid parameters
-    double hx = 0.010; int Nx = 100;
-    double hy = 0.010; int Ny = 100;
-    double ht = 0.010; int Nt = 500;
-
-    Dimension time(ht, 0, Nt);
-    Dimension dimx(hx, 0, Nx);
-    Dimension dimy(hy, 0, Ny);
-
     // Penalty paramteres
-    DoubleVector r; r << 0.0000 << 0.1000 << 1.000 << 2.000;
+    DoubleVector r; r << 0.0000 << 0.0000 << 0.000;
     // Regularization coefficients
-    DoubleVector e; e << 0.0000 << 0.0000 << 0.0000 << 0.0000;
+    DoubleVector e; e << 0.0000 << 0.0000 << 0.0000;
+    DoubleVector e1; e1 << 0.1000 << 0.0100 << 0.0010;
+    DoubleVector e2; e2 << 0.0100 << 0.0010 << 0.0001;
 
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
     {
         Problem2HDirichlet1 prob;
-        prob.setTimeDimension(Dimension(0.010, 0, 500));
+        prob.setTimeDimension(Dimension(0.01, 0, 600));
         prob.addSpaceDimension(Dimension(0.010, 0, 100));
         prob.addSpaceDimension(Dimension(0.010, 0, 100));
         prob.mEquParameter = e_prm;
@@ -172,9 +177,10 @@ void prod_example1()
             prob.PrmToVector(o_prm, x);
 //            prob.checkGradient1(prob);
 
-//            std::vector<DoubleMatrix> u;
-//            spif_vectorH u_info;
-//            prob.solveForwardIBVP(u, u_info, false);
+            std::vector<DoubleMatrix> u;
+            spif_vectorH u_info;
+            prob.solveForwardIBVP(u, u_info, false);
+            return;
 
 //            spif_vectorH p_info;
 //            prob.solveBackwardIBVP(u, p_info, false, u_info);
@@ -199,18 +205,18 @@ void prod_example1()
 //            prob.fx(x);
         }
 
-        ConjugateGradient g;
-        //SteepestDescentGradient g;
+        //ConjugateGradient g;
+        SteepestDescentGradient g;
         g.setFunction(&prob);
         g.setGradient(&prob);
         g.setPrinter(&prob);
         //g.setProjection(&prob);
         g.setProjection(new ProjectionEx1);
         //g.setGradientNormalizer(&prob);
-        g.setOptimalityTolerance(0.0001);
-        g.setFunctionTolerance(0.0001);
-        g.setStepTolerance(0.0001);
-        g.setR1MinimizeEpsilon(0.1, 0.01);
+        g.setOptimalityTolerance(0.00001);
+        g.setFunctionTolerance(0.00001);
+        g.setStepTolerance(0.00001);
+        g.setR1MinimizeEpsilon(e1[i], e2[i]);
         g.setMaxIterations(50);
         g.setNormalize(false);
         g.showExitMessage(true);
@@ -222,7 +228,7 @@ void prod_example1()
     }
 }
 
-void prod_figure1(Problem2HNDirichlet &prob, double ht, const DoubleVector &x)
+void prod_figure1(Problem2HDirichlet &prob, double ht, const DoubleVector &x)
 {
     for (int i=0; i<=1000; i++)
     {
@@ -309,7 +315,7 @@ void example1()
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
     {
-        Problem2HNDirichlet prob;
+        Problem2HDirichlet prob;
         prob.setTimeDimension(time);
         prob.addSpaceDimension(dimx);
         prob.addSpaceDimension(dimy);
@@ -468,7 +474,7 @@ void example2()
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
     {
-        Problem2HNDirichlet prob;
+        Problem2HDirichlet prob;
         prob.setTimeDimension(time);
         prob.addSpaceDimension(dimx);
         prob.addSpaceDimension(dimy);
@@ -594,7 +600,7 @@ void example3()
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
     {
-        Problem2HNDirichlet prob;
+        Problem2HDirichlet prob;
         prob.setTimeDimension(time);
         prob.addSpaceDimension(dimx);
         prob.addSpaceDimension(dimy);

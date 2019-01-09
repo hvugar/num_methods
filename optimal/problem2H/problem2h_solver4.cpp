@@ -1,7 +1,8 @@
 #include "problem2h_solver4.h"
 
-auto Problem2HNDirichlet4::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
+auto Problem2HDirichlet4::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
 {
+    //printf("%4d %.8f %.8f\n", ln, u.min(), u.max());
     return;
 
     if (ln==500)
@@ -12,7 +13,7 @@ auto Problem2HNDirichlet4::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsig
 
     return;
     {
-        Problem2HNDirichlet4* tmp = const_cast<Problem2HNDirichlet4*>(this);
+        Problem2HDirichlet4* tmp = const_cast<Problem2HDirichlet4*>(this);
         std::vector<DoubleMatrix> &rvu = tmp->vu;
         rvu.push_back(u);
         if (ln > LD) rvu.erase(rvu.begin());
@@ -129,7 +130,7 @@ auto Problem2HNDirichlet4::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsig
     //#endif
 }
 
-auto Problem2HNDirichlet4::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const -> void
+auto Problem2HDirichlet4::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const -> void
 {
     C_UNUSED(i); C_UNUSED(x); C_UNUSED(g); C_UNUSED(f); C_UNUSED(alpha); C_UNUSED(result);
     const char* msg = nullptr; C_UNUSED(msg);
@@ -139,7 +140,7 @@ auto Problem2HNDirichlet4::print(unsigned int i, const DoubleVector &x, const Do
     if (result == GradientMethod::MethodResult::BREAK_DISTANCE_LESS)      msg = "BREAK_DISTANCE_LESS     ";
     if (result == GradientMethod::MethodResult::NEXT_ITERATION)           msg = "NEXT_ITERATION          ";
 
-    Problem2HNDirichlet4* prob = const_cast<Problem2HNDirichlet4*>(this);
+    Problem2HDirichlet4* prob = const_cast<Problem2HDirichlet4*>(this);
     OptimizeParameterH o_prm;
     VectorToPrm(x, o_prm);
     prob->mOptParameter = o_prm;
@@ -186,7 +187,7 @@ auto Problem2HNDirichlet4::print(unsigned int i, const DoubleVector &x, const Do
     //    prob->optimizeC = i%4 == 2;
 }
 
-auto Problem2HNDirichlet4::checkGradient1(const Problem2HNDirichlet4 &prob) -> void
+auto Problem2HDirichlet4::checkGradient1(const Problem2HDirichlet4 &prob) -> void
 {
     EquationParameterH e_prm = prob.mEquParameter;
     OptimizeParameterH o_prm = prob.mOptParameter;
@@ -295,7 +296,7 @@ auto Problem2HNDirichlet4::checkGradient1(const Problem2HNDirichlet4 &prob) -> v
     IPrinter::printSeperatorLine();
 }
 
-auto Problem2HNDirichlet4::checkGradient2(const Problem2HNDirichlet4 &prob) -> void
+auto Problem2HDirichlet4::checkGradient2(const Problem2HDirichlet4 &prob) -> void
 {
     EquationParameterH e_prm = prob.mEquParameter;
     OptimizeParameterH o_prm = prob.mOptParameter;
@@ -425,15 +426,15 @@ auto Problem2HNDirichlet4::checkGradient2(const Problem2HNDirichlet4 &prob) -> v
     IPrinter::printSeperatorLine();
 }
 
-Problem2HNDirichlet4::Problem2HNDirichlet4()
+Problem2HDirichlet4::Problem2HDirichlet4()
 {
     r = 0.0;
     regEpsilon = 0.0;
 }
 
-Problem2HNDirichlet4::~Problem2HNDirichlet4() {}
+Problem2HDirichlet4::~Problem2HDirichlet4() {}
 
-double Problem2HNDirichlet4::fx(const DoubleVector &pv) const
+double Problem2HDirichlet4::fx(const DoubleVector &pv) const
 {
     OptimizeParameterH o_prm;
 
@@ -444,7 +445,7 @@ double Problem2HNDirichlet4::fx(const DoubleVector &pv) const
     //    forward.addSpaceDimension()
     //    forward.setParameters(mEquParameter, o_prm, LD);
 
-    Problem2HNDirichlet4* prob = const_cast<Problem2HNDirichlet4*>(this);
+    Problem2HDirichlet4* prob = const_cast<Problem2HDirichlet4*>(this);
     prob->mOptParameter = o_prm;
 
     std::vector<DoubleMatrix> u;
@@ -462,7 +463,7 @@ double Problem2HNDirichlet4::fx(const DoubleVector &pv) const
     return sum;
 }
 
-double Problem2HNDirichlet4::integral(const std::vector<DoubleMatrix> &vu) const
+double Problem2HDirichlet4::integral(const std::vector<DoubleMatrix> &vu) const
 {
     unsigned int size = static_cast<unsigned int>(vu.size());
     const double ht = timeDimension().step();
@@ -473,7 +474,7 @@ double Problem2HNDirichlet4::integral(const std::vector<DoubleMatrix> &vu) const
     return sum*ht;
 }
 
-double Problem2HNDirichlet4::integralU(const DoubleMatrix &u) const
+double Problem2HDirichlet4::integralU(const DoubleMatrix &u) const
 {
     const double hx = spaceDimension(Dimension::DimensionX).step();
     const double hy = spaceDimension(Dimension::DimensionY).step();
@@ -511,7 +512,7 @@ double Problem2HNDirichlet4::integralU(const DoubleMatrix &u) const
     return usum*(hx*hy);
 }
 
-double Problem2HNDirichlet4::norm(const EquationParameterH& e_prm, const OptimizeParameterH &o_prm, const OptimizeParameterH &r_prm) const
+double Problem2HDirichlet4::norm(const EquationParameterH& e_prm, const OptimizeParameterH &o_prm, const OptimizeParameterH &r_prm) const
 {
     double _norm = 0.0;
     const unsigned int Nc = e_prm.Nc;
@@ -541,7 +542,7 @@ double Problem2HNDirichlet4::norm(const EquationParameterH& e_prm, const Optimiz
     return _norm;
 }
 
-double Problem2HNDirichlet4::penalty(const spif_vectorH &info, const OptimizeParameterH &o_prm) const
+double Problem2HDirichlet4::penalty(const spif_vectorH &info, const OptimizeParameterH &o_prm) const
 {
     const double ht = mtimeDimension.step();
     const unsigned int L = static_cast<const unsigned int> ( mtimeDimension.size() );
@@ -566,13 +567,13 @@ double Problem2HNDirichlet4::penalty(const spif_vectorH &info, const OptimizePar
     return pnlt;
 }
 
-double Problem2HNDirichlet4::gpi(unsigned int i, unsigned int layer, const spif_vectorH &u_info, const OptimizeParameterH &o_prm) const
+double Problem2HDirichlet4::gpi(unsigned int i, unsigned int layer, const spif_vectorH &u_info, const OptimizeParameterH &o_prm) const
 {
     double gpi_ln = fabs( g0i(i, layer, u_info, o_prm) ) - ( vmax.at(i) - vmin.at(i) )/2.0;
     return gpi_ln > 0.0 ? gpi_ln : 0.0;
 }
 
-double Problem2HNDirichlet4::g0i(unsigned int i, unsigned int layer, const spif_vectorH &u_info, const OptimizeParameterH &o_prm) const
+double Problem2HDirichlet4::g0i(unsigned int i, unsigned int layer, const spif_vectorH &u_info, const OptimizeParameterH &o_prm) const
 {
     double vi = 0.0;
     for (unsigned int j=0; j<mEquParameter.No; j++)
@@ -583,14 +584,14 @@ double Problem2HNDirichlet4::g0i(unsigned int i, unsigned int layer, const spif_
     return ( vmax.at(i) + vmin.at(i) )/2.0 - vi;
 }
 
-double Problem2HNDirichlet4::sign(double x) const
+double Problem2HDirichlet4::sign(double x) const
 {
     if (x < 0.0)       return -1.0;
     else if (x > 0.0)  return +1.0;
     else               return  0.0;
 }
 
-void Problem2HNDirichlet4::gradient(const DoubleVector & pv, DoubleVector &g) const
+void Problem2HDirichlet4::gradient(const DoubleVector & pv, DoubleVector &g) const
 {
     const unsigned int L   = static_cast<const unsigned int>(mtimeDimension.size());
     const double ht        = mtimeDimension.step();
@@ -601,7 +602,7 @@ void Problem2HNDirichlet4::gradient(const DoubleVector & pv, DoubleVector &g) co
     OptimizeParameterH o_prm;
     VectorToPrm(pv, o_prm);
 
-    Problem2HNDirichlet4* prob = const_cast<Problem2HNDirichlet4*>(this);
+    Problem2HDirichlet4* prob = const_cast<Problem2HDirichlet4*>(this);
     prob->mOptParameter = o_prm;
 
     std::vector<DoubleMatrix> u;
@@ -792,12 +793,12 @@ void Problem2HNDirichlet4::gradient(const DoubleVector & pv, DoubleVector &g) co
     p_info.clear();
 }
 
-auto Problem2HNDirichlet4::norm(const DoubleVector &v) const -> double
+auto Problem2HDirichlet4::norm(const DoubleVector &v) const -> double
 {
     return EuclideanNorm(v);
 }
 
-auto Problem2HNDirichlet4::normalize(DoubleVector &v) const -> void
+auto Problem2HDirichlet4::normalize(DoubleVector &v) const -> void
 {
     if (optimizeK) { DoubleVector kv = v.mid(0, 3);   IVectorNormalizer::EuclideanNormalize(kv); v[0]  = kv[0]; v[1]  = kv[1];  v[2]  = kv[2]; v[3]  = kv[3]; kv.clear(); }
     if (optimizeZ) { DoubleVector zv = v.mid(4, 7);   IVectorNormalizer::EuclideanNormalize(zv); v[4]  = zv[0]; v[5]  = zv[1];  v[6]  = zv[2]; v[7]  = zv[3]; zv.clear(); }
@@ -805,9 +806,9 @@ auto Problem2HNDirichlet4::normalize(DoubleVector &v) const -> void
     if (optimizeZ) { DoubleVector cv = v.mid(12, 15); IVectorNormalizer::EuclideanNormalize(cv); v[12] = cv[0]; v[13] = cv[1];  v[14] = cv[2]; v[15] = cv[3]; cv.clear(); }
 }
 
-auto Problem2HNDirichlet4::project(DoubleVector &, unsigned int) -> void {}
+auto Problem2HDirichlet4::project(DoubleVector &, unsigned int) -> void {}
 
-auto Problem2HNDirichlet4::project(DoubleVector &pv) const -> void
+auto Problem2HDirichlet4::project(DoubleVector &pv) const -> void
 {
     unsigned int Nc = mEquParameter.Nc;
     unsigned int No = mEquParameter.No;
@@ -842,7 +843,7 @@ auto Problem2HNDirichlet4::project(DoubleVector &pv) const -> void
     }
 }
 
-auto Problem2HNDirichlet4::projectControlPoints(DoubleVector &pv, unsigned int index) const -> void
+auto Problem2HDirichlet4::projectControlPoints(DoubleVector &pv, unsigned int index) const -> void
 {
     double dist = 0.10;
 
@@ -879,7 +880,7 @@ auto Problem2HNDirichlet4::projectControlPoints(DoubleVector &pv, unsigned int i
     }
 }
 
-auto Problem2HNDirichlet4::projectMeasurePoints(DoubleVector &pv, unsigned int index) const -> void
+auto Problem2HDirichlet4::projectMeasurePoints(DoubleVector &pv, unsigned int index) const -> void
 {
     double dist = 0.10;
 
@@ -916,7 +917,7 @@ auto Problem2HNDirichlet4::projectMeasurePoints(DoubleVector &pv, unsigned int i
     }
 }
 
-void Problem2HNDirichlet4::initDeltaGrids(std::vector<DeltaGrid2D> &pulseDeltaGridList, std::vector<DeltaGrid2D> &msrntDeltaGridList, std::vector<DeltaGrid2D> &cntrlDeltaGridList,
+void Problem2HDirichlet4::initDeltaGrids(std::vector<DeltaGrid2D> &pulseDeltaGridList, std::vector<DeltaGrid2D> &msrntDeltaGridList, std::vector<DeltaGrid2D> &cntrlDeltaGridList,
                                           const EquationParameterH &equationParameter, const OptimizeParameterH &optimizeParameter) const
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
@@ -937,7 +938,7 @@ void Problem2HNDirichlet4::initDeltaGrids(std::vector<DeltaGrid2D> &pulseDeltaGr
     {
         SpacePoint sp = equationParameter.theta[s];
         pulseDeltaGridList[s].initGrid(N,hx,M,hy);
-        pulseDeltaGridList[s].distributeGauss(sp, 8, 8);
+        pulseDeltaGridList[s].distributeGauss(sp, 6, 6);
     }
 
     msrntDeltaGridList.resize(No);
@@ -957,7 +958,7 @@ void Problem2HNDirichlet4::initDeltaGrids(std::vector<DeltaGrid2D> &pulseDeltaGr
     }
 }
 
-void Problem2HNDirichlet4::releaseDeltaGrids(std::vector<DeltaGrid2D> &pulseDeltaGridList, std::vector<DeltaGrid2D> &msrntDeltaGridList, std::vector<DeltaGrid2D> &cntrlDeltaGridList) const
+void Problem2HDirichlet4::releaseDeltaGrids(std::vector<DeltaGrid2D> &pulseDeltaGridList, std::vector<DeltaGrid2D> &msrntDeltaGridList, std::vector<DeltaGrid2D> &cntrlDeltaGridList) const
 {
     for (auto it = pulseDeltaGridList.begin(); it != pulseDeltaGridList.end(); it++) it->cleanGrid(); pulseDeltaGridList.clear();
     //    for (unsigned int s=0; s<pulseDeltaGridList.size(); s++) pulseDeltaGridList[s].cleanGrid(); pulseDeltaGridList.clear();
@@ -965,7 +966,7 @@ void Problem2HNDirichlet4::releaseDeltaGrids(std::vector<DeltaGrid2D> &pulseDelt
     for (unsigned int i=0; i<cntrlDeltaGridList.size(); i++) cntrlDeltaGridList[i].cleanGrid(); cntrlDeltaGridList.clear();
 }
 
-void Problem2HNDirichlet4::f_currentLayer(const DoubleMatrix &u10, const EquationParameterH &equationParameter, const OptimizeParameterH &optimizeParameter,
+void Problem2HDirichlet4::f_currentLayer(const DoubleMatrix &u10, const EquationParameterH &equationParameter, const OptimizeParameterH &optimizeParameter,
                                           const std::vector<DeltaGrid2D> &msrntDeltaGridList, const std::vector<DeltaGrid2D> &cntrlDeltaGridList,
                                           unsigned int N, double hx, unsigned int M, double hy, DoubleMatrix &fxv, unsigned int) const
 {
@@ -1014,7 +1015,7 @@ void Problem2HNDirichlet4::f_currentLayer(const DoubleMatrix &u10, const Equatio
     delete [] _v;
 }
 
-void Problem2HNDirichlet4::b_currentLayer(const DoubleMatrix &p10, const EquationParameterH &equationParameter, const OptimizeParameterH &optimizeParameter,
+void Problem2HDirichlet4::b_currentLayer(const DoubleMatrix &p10, const EquationParameterH &equationParameter, const OptimizeParameterH &optimizeParameter,
                                           const std::vector<DeltaGrid2D> &msrntDeltaGridList, const std::vector<DeltaGrid2D> &cntrlDeltaGridList,
                                           unsigned int N, double hx, unsigned int M, double hy, DoubleMatrix &fxv, unsigned int ln, const spif_vectorH &u_info) const
 {
@@ -1065,7 +1066,7 @@ void Problem2HNDirichlet4::b_currentLayer(const DoubleMatrix &p10, const Equatio
     delete [] _w;
 }
 
-auto Problem2HNDirichlet4::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const -> void
+auto Problem2HDirichlet4::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -1081,18 +1082,17 @@ auto Problem2HNDirichlet4::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_v
     const double ht = time.step();
 
     const double a        = mEquParameter.a;
-    const double lambda   = mEquParameter.lambda;
+    const double alpha    = mEquParameter.lambda;
     const unsigned int No = mEquParameter.No;
     const unsigned int Nc = mEquParameter.Nc;
-    const unsigned int Ns = mEquParameter.Ns;
 
-    const double lambda_ht_05 = lambda*ht*0.5;
-    const double inv__alpha_ht = 1.0/(1.0 + lambda_ht_05);
+    const double alpha_ht_05 = alpha*ht*0.5;
+    const double inv__alpha_ht = 1.0/(1.0 + alpha_ht_05);
     const double aa_htht__hxhx = ((a*a*ht*ht)/(hx*hx));
     const double aa_htht__hyhy = ((a*a*ht*ht)/(hy*hy));
 
     const double ht_ht = ht*ht;
-    const double lambda_ht = lambda*ht;
+    const double alpha_ht = alpha*ht;
 
     const double aa__hxhx = (a*a)/(hx*hx);
     const double aa__hyhy = (a*a)/(hy*hy);
@@ -1101,19 +1101,76 @@ auto Problem2HNDirichlet4::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_v
     DoubleMatrix u10(M+1, N+1);
     DoubleMatrix u20(M+1, N+1);
 
-    //----------------------------------------------------------------------------------------------//
-    std::vector<DeltaGrid2D> pulseDeltaGridList, msrntDeltaGridList, cntrlDeltaGridList;
-    initDeltaGrids(pulseDeltaGridList, msrntDeltaGridList, cntrlDeltaGridList, mEquParameter, mOptParameter);
-    //----------------------------------------------------------------------------------------------//
-    if (use == true) f_prepareInfo(No, mOptParameter.xi, u_info, LLD);
-    //----------------------------------------------------------------------------------------------//
-    //------------------------------------- initial conditions -------------------------------------//
-    f_initialLayers(u00, u10, u_info, use, N, hx, M, hy, ht, aa__hxhx, aa__hyhy, lambda, pulseDeltaGridList, msrntDeltaGridList, cntrlDeltaGridList);
-    //------------------------------------- initial conditions -------------------------------------//
-
     for (unsigned int l=0; l<u.size(); l++) u[l].clear(); u.clear();
     unsigned int u_size = LD + 1;
     u.resize(u_size); for (unsigned int l=0; l<u_size; l++) u[l].resize(M+1, N+1);
+
+    //----------------------------------------------------------------------------------------------//
+    std::vector<DeltaGrid2D> measuremntGirdList(No);
+    std::vector<DeltaGrid2D> cntrlDeltaGridList(Nc);
+
+    for (unsigned int j=0; j<No; j++)
+    {
+        measuremntGirdList[j].initGrid(N,hx,M,hy);
+        measuremntGirdList[j].distributeGauss(mOptParameter.xi[j], 1, 1);
+    }
+
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        cntrlDeltaGridList[i].initGrid(N,hx,M,hy);
+        cntrlDeltaGridList[i].distributeGauss(mOptParameter.eta[i], 1, 1);
+    }
+
+    //----------------------------------------------------------------------------------------------//
+    if (use == true) prepareInfo(No, mOptParameter.xi, u_info, LLD+1);
+    //----------------------------------------------------------------------------------------------//
+    //------------------------------------- initial conditions -------------------------------------//
+    //f_initialLayers(u00, u10, u_info, use, N, hx, M, hy, ht, aa__hxhx, aa__hyhy, alpha, pulseDeltaGridList, measuremntGirdList, cntrlDeltaGridList);
+    initiatePulseGrid();
+    SpaceNodePDE sn00;
+    for (unsigned int m=0; m<=M; m++)
+    {
+        sn00.j = static_cast<int>(m); sn00.y = m*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn00.i = static_cast<int>(n); sn00.x = n*hx;
+            u00[m][n] = f_initial1(sn00);
+        }
+    }
+    if (use == true) add2Info(u00, u_info, 0, hx, hy, measuremntGirdList); f_layerInfo(u00, 0);
+    /************************************************************************/
+    TimeNodePDE tn10; tn10.i = 1; tn10.t = ht;
+    SpaceNodePDE sn05, sn10;
+    sn05.i = 0; sn05.x = 0.0; sn10.i = static_cast<int>(N); sn10.x = N*hx;
+    for (unsigned int m=0; m<=M; m++)
+    {
+        sn05.j = static_cast<int>(m); sn05.y = m*hy; u10[m][0] = f_boundary(sn05, tn10);
+        sn10.j = static_cast<int>(m); sn10.y = m*hy; u10[m][N] = f_boundary(sn10, tn10);
+    }
+    sn05.j = 0; sn05.y = 0.0; sn10.j = static_cast<int>(M); sn10.y = M*hy;
+    for (unsigned int n=0; n<=N; n++)
+    {
+        sn05.i = static_cast<int>(n); sn05.x = n*hx; u10[0][n] = f_boundary(sn05, tn10);
+        sn10.i = static_cast<int>(n); sn10.x = n*hx; u10[M][n] = f_boundary(sn10, tn10);
+    }
+    for (unsigned int m=1; m<=M-1; m++)
+    {
+        sn10.j = static_cast<int>(m); sn10.y = m*hy;
+        for (unsigned int n=1; n<=N-1; n++)
+        {
+            sn10.i = static_cast<int>(n); sn10.x = n*hx;
+
+            double sum = 0.0;
+            sum += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]);
+            sum += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]);
+            sum -= alpha*(f_initial2(sn10));
+
+            u10[m][n] = u00[m][n] + 1.0*ht*f_initial2(sn10) + (0.5*ht*ht) * sum;
+        }
+    }
+    if (use == true) add2Info(u10, u_info, 2, hx, hy, measuremntGirdList); f_layerInfo(u10, 1);
+    /************************************************************************/
+    //------------------------------------- initial conditions -------------------------------------//
 
     DoubleMatrix fxv(M+1, N+1);
 
@@ -1124,8 +1181,21 @@ auto Problem2HNDirichlet4::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_v
 
         /**************************************************** border conditions ***************************************************/
         f_borderCalculate(u20, N, hx, M, hy, tn20);
+        SpaceNodePDE sn0, sn1;
+        sn0.i = static_cast<int>(0); sn0.x = 0*hx; sn1.i = static_cast<int>(N); sn1.x = N*hx;
+        for (unsigned int m=0; m<=M; m++)
+        {
+            sn0.j = static_cast<int>(m); sn0.y = m*hy; u20[m][0] = f_boundary(sn0, tn20);
+            sn1.j = static_cast<int>(m); sn1.y = m*hy; u20[m][N] = f_boundary(sn1, tn20);
+        }
+        sn0.j = static_cast<int>(0); sn0.y = 0*hy; sn1.j = static_cast<int>(M); sn1.y = M*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn0.i = static_cast<int>(n); sn0.x = n*hx; u20[0][n] = f_boundary(sn0, tn20);
+            sn1.i = static_cast<int>(n); sn1.x = n*hx; u20[M][n] = f_boundary(sn1, tn20);
+        }
         /**************************************************** border conditions ***************************************************/
-        f_currentLayer(u10, mEquParameter, mOptParameter, msrntDeltaGridList, cntrlDeltaGridList, N, hx, M, hy, fxv, ln);
+        f_currentLayer(u10, mEquParameter, mOptParameter, measuremntGirdList, cntrlDeltaGridList, N, hx, M, hy, fxv, ln);
         /**************************************************************************************************************************/
         SpaceNodePDE sn;
         for (unsigned int m=1; m<=M-1; m++)
@@ -1135,12 +1205,12 @@ auto Problem2HNDirichlet4::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_v
             {
                 sn.i = static_cast<int>(n); sn.x = n*hx;
                 u20[m][n] = inv__alpha_ht * (aa_htht__hxhx*(u10[m][n-1]-2.0*u10[m][n]+u10[m][n+1]) + aa_htht__hyhy*(u10[m-1][n]-2.0*u10[m][n]+u10[m+1][n])
-                        + lambda_ht_05*u00[m][n] + 2.0*u10[m][n] - u00[m][n] + ht_ht*fxv[m][n]);
+                        + alpha_ht_05*u00[m][n] + 2.0*u10[m][n] - u00[m][n] + ht_ht*fxv[m][n]);
             }
         }
         /**************************************************************************************************************************/
         f_layerInfo(u20, ln);
-        if (use == true) f_add2Info(u20, u_info, ln, hx, hy, msrntDeltaGridList);
+        if (use == true) f_add2Info(u20, u_info, ln, hx, hy, measuremntGirdList);
 
         for (unsigned int m=0; m<=M; m++)
         {
@@ -1166,14 +1236,14 @@ auto Problem2HNDirichlet4::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_v
     }
 
     fxv.clear();
-    releaseDeltaGrids(pulseDeltaGridList, msrntDeltaGridList, cntrlDeltaGridList);
+    //releaseDeltaGrids(pulseDeltaGridList, msrntDeltaGridList, cntrlDeltaGridList);
 
     u00.clear();
     u10.clear();
     u20.clear();
 }
 
-auto Problem2HNDirichlet4::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, spif_vectorH &u_info, bool use,
+auto Problem2HDirichlet4::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10, spif_vectorH &u_info, bool use,
                                            unsigned int N, double hx, unsigned int M, double hy,
                                            double ht, double aa__hxhx, double aa__hyhy, double lambda,
                                            const std::vector<DeltaGrid2D> &pulseDeltaGridList,
@@ -1223,7 +1293,7 @@ auto Problem2HNDirichlet4::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u10,
     /***********************************************************************************************/
 }
 
-auto Problem2HNDirichlet4::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, spif_vectorH &p_info, bool use,
+auto Problem2HDirichlet4::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10, spif_vectorH &p_info, bool use,
                                            unsigned int N, double hx, unsigned int M, double hy,
                                            double ht, double aa__hxhx, double aa__hyhy, double lambda,
                                            const std::vector<DeltaGrid2D> &pulseDeltaGridList,
@@ -1297,7 +1367,7 @@ auto Problem2HNDirichlet4::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p10,
     /***********************************************************************************************/
 }
 
-void Problem2HNDirichlet4::f_borderCalculate(DoubleMatrix &u, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn) const
+void Problem2HDirichlet4::f_borderCalculate(DoubleMatrix &u, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn) const
 {
     SpaceNodePDE sn0, sn1;
     sn0.i = static_cast<int>(0); sn0.x = 0*hx;
@@ -1316,7 +1386,7 @@ void Problem2HNDirichlet4::f_borderCalculate(DoubleMatrix &u, unsigned int N, do
     }
 }
 
-void Problem2HNDirichlet4::b_borderCalculate(DoubleMatrix &p, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn) const
+void Problem2HDirichlet4::b_borderCalculate(DoubleMatrix &p, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn) const
 {
     SpaceNodePDE sn0, sn1;
     sn0.i = static_cast<int>(0); sn0.x = 0*hx;
@@ -1335,7 +1405,7 @@ void Problem2HNDirichlet4::b_borderCalculate(DoubleMatrix &p, unsigned int N, do
     }
 }
 
-auto Problem2HNDirichlet4::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const -> void
+auto Problem2HDirichlet4::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -1374,7 +1444,7 @@ auto Problem2HNDirichlet4::solveBackwardIBVP(const std::vector<DoubleMatrix> &u,
     std::vector<DeltaGrid2D> pulseDeltaGridList, msrntDeltaGridList, cntrlDeltaGridList;
     initDeltaGrids(pulseDeltaGridList, msrntDeltaGridList, cntrlDeltaGridList, mEquParameter, mOptParameter);
     //----------------------------------------------------------------------------------------------//
-    if (use == true) b_prepareInfo(Nc, mOptParameter.eta, p_info, LLD);
+    if (use == true) prepareInfo(Nc, mOptParameter.eta, p_info, LLD+1);
     //----------------------------------------------------------------------------------------------//
     //------------------------------------- initial conditions -------------------------------------//
     b_initialLayers(p00, p10, p_info, use, N, hx, M, hy, ht, aa__hxhx, aa__hyhy, lambda, pulseDeltaGridList, msrntDeltaGridList, cntrlDeltaGridList);
@@ -1430,22 +1500,23 @@ auto Problem2HNDirichlet4::solveBackwardIBVP(const std::vector<DoubleMatrix> &u,
     p20.clear();
 }
 
-auto Problem2HNDirichlet4::f_initial1(const SpaceNodePDE &sn UNUSED_PARAM) const -> double
+auto Problem2HDirichlet4::f_initial1(const SpaceNodePDE &sn UNUSED_PARAM) const -> double
 {
     return 0.0;
 }
 
-auto Problem2HNDirichlet4::f_initial2(const SpaceNodePDE &) const -> double
+auto Problem2HDirichlet4::f_initial2(const SpaceNodePDE &sn) const -> double
+{
+    //return 0.0;
+    return mPulseWeightMatrix[sn.j][sn.i];
+}
+
+auto Problem2HDirichlet4::f_boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const -> double
 {
     return 0.0;
 }
 
-auto Problem2HNDirichlet4::f_boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const -> double
-{
-    return 0.0;
-}
-
-auto Problem2HNDirichlet4::f_borderLayer(DoubleMatrix &u, DoubleMatrix &um5, unsigned int ln) const -> void
+auto Problem2HDirichlet4::f_borderLayer(DoubleMatrix &u, DoubleMatrix &um5, unsigned int ln) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -1481,33 +1552,20 @@ auto Problem2HNDirichlet4::f_borderLayer(DoubleMatrix &u, DoubleMatrix &um5, uns
     }
 }
 
-auto Problem2HNDirichlet4::f_prepareInfo(unsigned int No, const std::vector<SpacePoint> &points, spif_vectorH &u_info, unsigned int LLD) const -> void
+auto Problem2HDirichlet4::prepareInfo(unsigned int N, const std::vector<SpacePoint> &points, spif_vectorH &info, unsigned int size) const -> void
 {
-    u_info.resize(No);
-    for (unsigned int j=0; j<No; j++)
+    info.resize(N);
+    for (unsigned int i=0; i<N; i++)
     {
-        SpacePointInfoH &inf = u_info[j];
-        const SpacePoint &sp = points[j];
-        inf.x = sp.x;
-        inf.y = sp.y;
-        inf.init(LLD+1);
-    }
-}
-
-auto Problem2HNDirichlet4::b_prepareInfo(unsigned int Nc, const std::vector<SpacePoint> &points, spif_vectorH &p_info, unsigned int LLD) const -> void
-{
-    p_info.resize(Nc);
-    for (unsigned int i=0; i<Nc; i++)
-    {
-        SpacePointInfoH &inf = p_info[i];
+        SpacePointInfoH &inf = info[i];
         const SpacePoint &sp = points[i];
         inf.x = sp.x;
         inf.y = sp.y;
-        inf.init(LLD+1);
+        inf.init(size);
     }
 }
 
-auto Problem2HNDirichlet4::f_add2Info(const DoubleMatrix &u, spif_vectorH &u_info, unsigned int ln, double hx, double hy, const std::vector<DeltaGrid2D> &msrntDeltaGridList) const -> void
+auto Problem2HDirichlet4::f_add2Info(const DoubleMatrix &u, spif_vectorH &u_info, unsigned int ln, double hx, double hy, const std::vector<DeltaGrid2D> &msrntDeltaGridList) const -> void
 {
     unsigned int No = static_cast<unsigned int>(msrntDeltaGridList.size());
 
@@ -1541,7 +1599,40 @@ auto Problem2HNDirichlet4::f_add2Info(const DoubleMatrix &u, spif_vectorH &u_inf
     }
 }
 
-auto Problem2HNDirichlet4::b_add2Info(const DoubleMatrix &p, spif_vectorH &p_info, unsigned int ln, double hx, double hy, const std::vector<DeltaGrid2D> &cntrlDeltaGridList) const -> void
+auto Problem2HDirichlet4::add2Info(const DoubleMatrix &u, spif_vectorH &info, unsigned int ln, double hx, double hy, const std::vector<DeltaGrid2D> &deltaList) const -> void
+{
+    unsigned int N = static_cast<unsigned int>(deltaList.size());
+
+    for (unsigned int i=0; i<N; i++)
+    {
+        const DeltaGrid2D &dg = deltaList.at(i);
+        SpacePointInfoH &ui = info[i];
+
+        for (unsigned int m=dg.minY(); m<=dg.maxY(); m++)
+        {
+            for (unsigned int n=dg.minX(); n<=dg.maxX(); n++)
+            {
+                ui.vl[ln] += u[m][n] * (dg.weight(n,m) * (hx*hy));
+                if (dg.isCenter(n,m))
+                {
+                    const unsigned int rx = static_cast<const unsigned int>(dg.rx());
+                    const unsigned int ry = static_cast<const unsigned int>(dg.ry());
+
+                    ui.dx[ln] = (u[ry][rx+1] - u[ry][rx-1])/(2.0*hx);
+                    ui.dy[ln] = (u[ry+1][rx] - u[ry-1][rx])/(2.0*hy);
+
+                    ui.dx[ln] += ((dg.p().x-rx*hx)/(hx*hx))*(u[ry][rx+1] - 2.0*u[ry][rx] + u[ry][rx-1]);
+                    ui.dy[ln] += ((dg.p().y-ry*hy)/(hy*hy))*(u[ry+1][rx] - 2.0*u[ry][rx] + u[ry-1][rx]);
+
+                    //ui.dxx[ln] = (1.0/(hx*hx))*(u[ry][rx+1] - 2.0*u[ry][rx] + u[ry][rx-1]);
+                    //ui.dyy[ln] = (1.0/(hy*hy))*(u[ry+1][rx] - 2.0*u[ry][rx] + u[ry-1][rx]);
+                }
+            }
+        }
+    }
+}
+
+auto Problem2HDirichlet4::b_add2Info(const DoubleMatrix &p, spif_vectorH &p_info, unsigned int ln, double hx, double hy, const std::vector<DeltaGrid2D> &cntrlDeltaGridList) const -> void
 {
     unsigned int Nc = static_cast<unsigned int>(cntrlDeltaGridList.size());
     for (unsigned int i=0; i<Nc; i++)
@@ -1576,26 +1667,26 @@ auto Problem2HNDirichlet4::b_add2Info(const DoubleMatrix &p, spif_vectorH &p_inf
     }
 }
 
-auto Problem2HNDirichlet4::b_initial1(const SpaceNodePDE &sn UNUSED_PARAM) const -> double
+auto Problem2HDirichlet4::b_initial1(const SpaceNodePDE &sn UNUSED_PARAM) const -> double
 {
     return 0.0;
 }
 
-auto Problem2HNDirichlet4::b_initial2(const SpaceNodePDE &sn UNUSED_PARAM) const -> double
+auto Problem2HDirichlet4::b_initial2(const SpaceNodePDE &sn UNUSED_PARAM) const -> double
 {
     return 0.0;
 }
 
-auto Problem2HNDirichlet4::b_boundary(const SpaceNodePDE &, const TimeNodePDE &) const -> double {
+auto Problem2HDirichlet4::b_boundary(const SpaceNodePDE &, const TimeNodePDE &) const -> double {
     return 0.0;
 }
 
-auto Problem2HNDirichlet4::b_characteristic(const DoubleMatrix &u, unsigned int n, unsigned int m) const -> double
+auto Problem2HDirichlet4::b_characteristic(const DoubleMatrix &u, unsigned int n, unsigned int m) const -> double
 {
     return -2.0*mu(n,m)*(u[m][n]);
 }
 
-auto Problem2HNDirichlet4::b_layerInfo(const DoubleMatrix &p UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
+auto Problem2HDirichlet4::b_layerInfo(const DoubleMatrix &p UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
 {}
 
 //auto Problem2HNDirichlet4::newDistributeDeltaGaussPulse(const std::vector<SpacePoint> &thetas, std::vector<ExtendedSpacePointH> &extThetas, const Dimension &dimX, const Dimension &dimY) const -> void
@@ -1942,7 +2033,7 @@ auto Problem2HNDirichlet4::b_layerInfo(const DoubleMatrix &p UNUSED_PARAM, unsig
 //    return factor * exp( -0.5*((t - mu)*(t - mu))/(sigma*sigma) ) * Q;
 //}
 
-auto Problem2HNDirichlet4::PrmToVector(const OptimizeParameterH &prm, DoubleVector &pv) const -> void
+auto Problem2HDirichlet4::PrmToVector(const OptimizeParameterH &prm, DoubleVector &pv) const -> void
 {
     unsigned int Nc = mEquParameter.Nc;
     unsigned int No = mEquParameter.No;
@@ -1979,7 +2070,7 @@ auto Problem2HNDirichlet4::PrmToVector(const OptimizeParameterH &prm, DoubleVect
     }
 }
 
-auto Problem2HNDirichlet4::VectorToPrm(const DoubleVector &pv, OptimizeParameterH &prm) const -> void
+auto Problem2HDirichlet4::VectorToPrm(const DoubleVector &pv, OptimizeParameterH &prm) const -> void
 {
     unsigned int Nc = mEquParameter.Nc;
     unsigned int No = mEquParameter.No;
@@ -2027,7 +2118,7 @@ auto Problem2HNDirichlet4::VectorToPrm(const DoubleVector &pv, OptimizeParameter
     }
 }
 
-auto Problem2HNDirichlet4::v(unsigned int i, OptimizeParameterH o_prm, EquationParameterH e_prm, const spif_vectorH &u_info, unsigned int ln) const -> double
+auto Problem2HDirichlet4::v(unsigned int i, OptimizeParameterH o_prm, EquationParameterH e_prm, const spif_vectorH &u_info, unsigned int ln) const -> double
 {
     const unsigned int No = static_cast<const unsigned int>(e_prm.No);
     double v = 0.0;
@@ -2036,4 +2127,45 @@ auto Problem2HNDirichlet4::v(unsigned int i, OptimizeParameterH o_prm, EquationP
         v += o_prm.k[i][j] * (u_info[j].vl[ln]-o_prm.z[i][j]);
     }
     return v;
+}
+
+auto Problem2HDirichlet4::initiatePulseGrid() const -> void
+{
+    const Dimension dimX = spaceDimension(Dimension::DimensionX);
+    const Dimension dimY = spaceDimension(Dimension::DimensionY);
+
+    const unsigned int N = static_cast<const unsigned int> ( dimX.size() );
+    const unsigned int M = static_cast<const unsigned int> ( dimY.size() );
+
+    const double hx = dimX.step();
+    const double hy = dimY.step();
+
+    const_cast<Problem2HDirichlet4*>(this)->mPulseWeightMatrix.clear();
+    const_cast<Problem2HDirichlet4*>(this)->mPulseWeightMatrix.resize(M+1, N+1, 0.0);
+
+    const unsigned int Ns = mEquParameter.Ns;
+    std::vector<DeltaGrid2D> deltaGrids(Ns);
+    for (unsigned int s=0; s<Ns; s++)
+    {
+        deltaGrids[s].initGrid(N, hx, M, hy);
+        deltaGrids[s].distributeGauss(mEquParameter.theta[s], 6, 6);
+    }
+
+    for (unsigned int m=0; m<=M; m++)
+    {
+        for (unsigned int n=0; n<=N; n++)
+        {
+            const_cast<Problem2HDirichlet4*>(this)->mPulseWeightMatrix[m][n] = 0.0;
+            for (unsigned int s=0; s<Ns; s++)
+            {
+                const_cast<Problem2HDirichlet4*>(this)->mPulseWeightMatrix[m][n] += mEquParameter.q[s]*deltaGrids[s].weight(n, m);
+            }
+        }
+    }
+
+    for (unsigned int s=0; s<Ns; s++)
+    {
+        deltaGrids[s].cleanGrid();
+    }
+    deltaGrids.clear();
 }

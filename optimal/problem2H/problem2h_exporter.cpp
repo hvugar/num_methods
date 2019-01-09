@@ -4,7 +4,7 @@
 
 #define EXAMPLE4_SAMPLE_1
 
-Problem2HNDirichlet prob;
+Problem2HDirichlet prob;
 
 void init_pr2()
 {

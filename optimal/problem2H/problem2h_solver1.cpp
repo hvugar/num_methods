@@ -1,7 +1,35 @@
 ﻿#include "problem2h_solver1.h"
 
 auto Problem2HDirichlet1::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
-{}
+{
+    //printf("%4d %.8f %.8f\n", ln, u.min(), u.max());
+
+    {
+        Problem2HDirichlet1* tmp = const_cast<Problem2HDirichlet1*>(this);
+        std::vector<DoubleMatrix> &rvu = tmp->vu;
+
+        if (ln%2==0) rvu.push_back(u);
+
+//        if (ln > 2*LD+1) rvu.erase(rvu.begin());
+
+//        if (ln == 1001)
+//        {
+//            tmp->mOptParameter.k[0][0] = 0.0;
+//            tmp->mOptParameter.k[0][1] = 0.0;
+//            tmp->mOptParameter.k[1][0] = 0.0;
+//            tmp->mOptParameter.k[1][1] = 0.0;
+//        }
+
+        std::cout << ln << " " << rvu.size() << std::endl;
+
+//        if (rvu.size() == 100)
+//        {
+//            double fx = integral(rvu);
+//            printf("%d,%.10f\n", ln-50, fx);
+//            printf("%.10f\n", fx);
+//        }
+    }
+}
 
 auto Problem2HDirichlet1::b_layerInfo(const DoubleMatrix &p UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
 {}
@@ -789,7 +817,7 @@ auto Problem2HDirichlet1::projectMeasurePoints(DoubleVector &pv, unsigned int in
     }
 }
 
-auto Problem2HDirichlet1::solveForwardIBVP1(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const -> void
+auto Problem2HDirichlet1::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use, double lambda) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -803,7 +831,6 @@ auto Problem2HDirichlet1::solveForwardIBVP1(std::vector<DoubleMatrix> &u, spif_v
     const double hx = dimX.step();
     const double hy = dimY.step();
     const double ht = time.step();
-    const double lambda = 0.25;
 
     const double a        = mEquParameter.a;
     const double alpha    = mEquParameter.lambda;
@@ -842,26 +869,6 @@ auto Problem2HDirichlet1::solveForwardIBVP1(std::vector<DoubleMatrix> &u, spif_v
     unsigned int u_size = 2*LD + 1;
     u.resize(u_size); for (unsigned int ln=0; ln<u_size; ln++) u[ln].resize(M+1, N+1);
 
-    //----------------------------------------------------------------------------------------------//
-    std::vector<DeltaGrid2D> measuremntGirdList(No);
-    std::vector<DeltaGrid2D> cntrlDeltaGridList(Nc);
-
-    for (unsigned int j=0; j<No; j++)
-    {
-        measuremntGirdList[j].initGrid(N, hx, M, hy);
-        measuremntGirdList[j].distributeGauss(mOptParameter.xi[j], 1, 1);
-    }
-
-    for (unsigned int i=0; i<Nc; i++)
-    {
-        cntrlDeltaGridList[i].initGrid(N, hx, M, hy);
-        cntrlDeltaGridList[i].distributeGauss(mOptParameter.eta[i], 1, 1);
-    }
-
-    //-------------------------------------------- info --------------------------------------------//
-    if (use == true) prepareInfo(No,  mOptParameter.xi, u_info, 2*LLD+1);
-    //----------------------------------------------------------------------------------------------//
-
     double *ax = static_cast<double*>(malloc(sizeof(double)*(N-1)));
     double *bx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
     double *cx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
@@ -887,6 +894,26 @@ auto Problem2HDirichlet1::solveForwardIBVP1(std::vector<DoubleMatrix> &u, spif_v
         cy[m-1] = m_aa_htht__hyhy_025_lambda;
     }
     ay[0] = cy[M-2] = 0.0;
+
+    //----------------------------------------------------------------------------------------------//
+    std::vector<DeltaGrid2D> measuremntGirdList(No);
+    std::vector<DeltaGrid2D> cntrlDeltaGridList(Nc);
+
+    for (unsigned int j=0; j<No; j++)
+    {
+        measuremntGirdList[j].initGrid(N, hx, M, hy);
+        measuremntGirdList[j].distributeGauss(mOptParameter.xi[j], 1, 1);
+    }
+
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        cntrlDeltaGridList[i].initGrid(N, hx, M, hy);
+        cntrlDeltaGridList[i].distributeGauss(mOptParameter.eta[i], 1, 1);
+    }
+
+    //-------------------------------------------- info --------------------------------------------//
+    if (use == true) prepareInfo(No,  mOptParameter.xi, u_info, 2*LLD+1);
+    //----------------------------------------------------------------------------------------------//
 
     //------------------------------------- initial conditions -------------------------------------//
     initiatePulseGrid();
@@ -1066,7 +1093,7 @@ auto Problem2HDirichlet1::initiatePulseGrid() const -> void
     for (unsigned int s=0; s<Ns; s++)
     {
         deltaGrids[s].initGrid(N, hx, M, hy);
-        deltaGrids[s].distributeGauss(mEquParameter.theta[s], 1, 1);
+        deltaGrids[s].distributeGauss(mEquParameter.theta[s], 6, 6);
     }
 
     for (unsigned int m=0; m<=M; m++)
@@ -1265,7 +1292,7 @@ auto Problem2HDirichlet1::add2Info(const DoubleMatrix &u, spif_vectorH &info, un
     }
 }
 
-auto Problem2HDirichlet1::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const -> void
+auto Problem2HDirichlet1::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);

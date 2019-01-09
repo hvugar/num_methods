@@ -16,6 +16,6 @@ void example3();
 
 void prod_example1();
 
-void prod_figure1(Problem2HNDirichlet& prob, double ht, const DoubleVector &x);
+void prod_figure1(Problem2HDirichlet& prob, double ht, const DoubleVector &x);
 
 #endif // PROBLEM2H_EXAMPLE_H

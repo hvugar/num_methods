@@ -3,17 +3,17 @@
 
 #include "problem2h_common.h"
 
-class PROBLEM2HSHARED_EXPORT Problem2HNDirichlet : public RnFunction,
+class PROBLEM2HSHARED_EXPORT Problem2HDirichlet : public RnFunction,
         public IGradient, public InitialBoundaryValueProblemPDE, public IProjection, public IPrinter,
         public IVectorNormalizer
 {
 public:
     static void Main(int argc, char* argv[]);
-    static void checkGradient1(const Problem2HNDirichlet &prob);
-    static void checkGradient2(const Problem2HNDirichlet &prob);
+    static void checkGradient1(const Problem2HDirichlet &prob);
+    static void checkGradient2(const Problem2HDirichlet &prob);
 
-    Problem2HNDirichlet();
-    virtual ~Problem2HNDirichlet();
+    Problem2HDirichlet();
+    virtual ~Problem2HDirichlet();
 
     virtual auto fx(const DoubleVector &x) const -> double;
     virtual auto gradient(const DoubleVector &, DoubleVector &) const -> void;

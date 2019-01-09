@@ -1,6 +1,6 @@
 ﻿#include "problem2h_solver.h"
 
-void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
+void Problem2HDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const
 {
     //IPrinter::printMatrix(u);
     //IPrinter::printSeperatorLine();
@@ -101,7 +101,7 @@ void Problem2HNDirichlet::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsign
     //#endif
 }
 
-void Problem2HNDirichlet::checkGradient1(const Problem2HNDirichlet &prob)
+void Problem2HDirichlet::checkGradient1(const Problem2HDirichlet &prob)
 {
     EquationParameterH e_prm = prob.mEquParameter;
     OptimizeParameterH o_prm = prob.mOptParameter;
@@ -210,7 +210,7 @@ void Problem2HNDirichlet::checkGradient1(const Problem2HNDirichlet &prob)
     IPrinter::printSeperatorLine();
 }
 
-void Problem2HNDirichlet::checkGradient2(const Problem2HNDirichlet &prob)
+void Problem2HDirichlet::checkGradient2(const Problem2HDirichlet &prob)
 {
     EquationParameterH e_prm = prob.mEquParameter;
     OptimizeParameterH o_prm = prob.mOptParameter;
@@ -340,22 +340,22 @@ void Problem2HNDirichlet::checkGradient2(const Problem2HNDirichlet &prob)
     IPrinter::printSeperatorLine();
 }
 
-Problem2HNDirichlet::Problem2HNDirichlet()
+Problem2HDirichlet::Problem2HDirichlet()
 {
     r = 0.0;
     regEpsilon = 0.0;
 }
 
-Problem2HNDirichlet::~Problem2HNDirichlet()
+Problem2HDirichlet::~Problem2HDirichlet()
 {}
 
-double Problem2HNDirichlet::fx(const DoubleVector &pv) const
+double Problem2HDirichlet::fx(const DoubleVector &pv) const
 {
     OptimizeParameterH o_prm;
 
     VectorToPrm(pv, o_prm);
 
-    Problem2HNDirichlet* prob = const_cast<Problem2HNDirichlet*>(this);
+    Problem2HDirichlet* prob = const_cast<Problem2HDirichlet*>(this);
     prob->mOptParameter = o_prm;
 
     std::vector<DoubleMatrix> u;
@@ -373,7 +373,7 @@ double Problem2HNDirichlet::fx(const DoubleVector &pv) const
     return sum;
 }
 
-double Problem2HNDirichlet::integral(const std::vector<DoubleMatrix> &vu) const
+double Problem2HDirichlet::integral(const std::vector<DoubleMatrix> &vu) const
 {
     const double ht = timeDimension().step();
     double sum = 0.0;
@@ -386,7 +386,7 @@ double Problem2HNDirichlet::integral(const std::vector<DoubleMatrix> &vu) const
     return sum*ht;
 }
 
-double Problem2HNDirichlet::integralU(const DoubleMatrix &u) const
+double Problem2HDirichlet::integralU(const DoubleMatrix &u) const
 {
     const double hx = spaceDimension(Dimension::DimensionX).step();
     const double hy = spaceDimension(Dimension::DimensionY).step();
@@ -424,7 +424,7 @@ double Problem2HNDirichlet::integralU(const DoubleMatrix &u) const
     return usum*(hx*hy);
 }
 
-double Problem2HNDirichlet::norm(const EquationParameterH& e_prm, const OptimizeParameterH &o_prm, const OptimizeParameterH &r_prm) const
+double Problem2HDirichlet::norm(const EquationParameterH& e_prm, const OptimizeParameterH &o_prm, const OptimizeParameterH &r_prm) const
 {
     double _norm = 0.0;
     const unsigned int Nc = e_prm.Nc;
@@ -454,7 +454,7 @@ double Problem2HNDirichlet::norm(const EquationParameterH& e_prm, const Optimize
     return _norm;
 }
 
-double Problem2HNDirichlet::penalty(const spif_vectorH &info, const OptimizeParameterH &o_prm) const
+double Problem2HDirichlet::penalty(const spif_vectorH &info, const OptimizeParameterH &o_prm) const
 {
     const double ht = mtimeDimension.step();
     const unsigned int L = static_cast<const unsigned int> ( mtimeDimension.size() );
@@ -479,13 +479,13 @@ double Problem2HNDirichlet::penalty(const spif_vectorH &info, const OptimizePara
     return pnlt;
 }
 
-double Problem2HNDirichlet::gpi(unsigned int i, unsigned int layer, const spif_vectorH &u_info, const OptimizeParameterH &o_prm) const
+double Problem2HDirichlet::gpi(unsigned int i, unsigned int layer, const spif_vectorH &u_info, const OptimizeParameterH &o_prm) const
 {
     double gpi_ln = fabs( g0i(i, layer, u_info, o_prm) ) - ( vmax.at(i) - vmin.at(i) )/2.0;
     return gpi_ln > 0.0 ? gpi_ln : 0.0;
 }
 
-double Problem2HNDirichlet::g0i(unsigned int i, unsigned int layer, const spif_vectorH &u_info, const OptimizeParameterH &o_prm) const
+double Problem2HDirichlet::g0i(unsigned int i, unsigned int layer, const spif_vectorH &u_info, const OptimizeParameterH &o_prm) const
 {
     double vi = 0.0;
     for (unsigned int j=0; j<mEquParameter.No; j++)
@@ -496,14 +496,14 @@ double Problem2HNDirichlet::g0i(unsigned int i, unsigned int layer, const spif_v
     return ( vmax.at(i) + vmin.at(i) )/2.0 - vi;
 }
 
-double Problem2HNDirichlet::sign(double x) const
+double Problem2HDirichlet::sign(double x) const
 {
     if (x < 0.0)       return -1.0;
     else if (x > 0.0)  return +1.0;
     else               return  0.0;
 }
 
-void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) const
+void Problem2HDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) const
 {
     const unsigned int L   = static_cast<const unsigned int>(mtimeDimension.size());
     const double ht        = mtimeDimension.step();
@@ -514,7 +514,7 @@ void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) con
     OptimizeParameterH o_prm;
     VectorToPrm(pv, o_prm);
 
-    Problem2HNDirichlet* prob = const_cast<Problem2HNDirichlet*>(this);
+    Problem2HDirichlet* prob = const_cast<Problem2HDirichlet*>(this);
     prob->mOptParameter = o_prm;
 
     std::vector<DoubleMatrix> u;
@@ -705,12 +705,12 @@ void Problem2HNDirichlet::gradient(const DoubleVector & pv, DoubleVector &g) con
     p_info.clear();
 }
 
-auto Problem2HNDirichlet::norm(const DoubleVector &v) const -> double
+auto Problem2HDirichlet::norm(const DoubleVector &v) const -> double
 {
     return EuclideanNorm(v);
 }
 
-auto Problem2HNDirichlet::normalize(DoubleVector &v) const -> void
+auto Problem2HDirichlet::normalize(DoubleVector &v) const -> void
 {
     if (optimizeK) { DoubleVector kv = v.mid(0, 3);   IVectorNormalizer::EuclideanNormalize(kv); v[0]  = kv[0]; v[1]  = kv[1];  v[2]  = kv[2]; v[3]  = kv[3]; kv.clear(); }
     if (optimizeZ) { DoubleVector zv = v.mid(4, 7);   IVectorNormalizer::EuclideanNormalize(zv); v[4]  = zv[0]; v[5]  = zv[1];  v[6]  = zv[2]; v[7]  = zv[3]; zv.clear(); }
@@ -718,7 +718,7 @@ auto Problem2HNDirichlet::normalize(DoubleVector &v) const -> void
     if (optimizeZ) { DoubleVector cv = v.mid(12, 15); IVectorNormalizer::EuclideanNormalize(cv); v[12] = cv[0]; v[13] = cv[1];  v[14] = cv[2]; v[15] = cv[3]; cv.clear(); }
 }
 
-void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const
+void Problem2HDirichlet::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const
 {
     C_UNUSED(i); C_UNUSED(x); C_UNUSED(g); C_UNUSED(f); C_UNUSED(alpha); C_UNUSED(result);
     const char* msg = nullptr; C_UNUSED(msg);
@@ -728,7 +728,7 @@ void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const Dou
     if (result == GradientMethod::MethodResult::BREAK_DISTANCE_LESS)      msg = "BREAK_DISTANCE_LESS     ";
     if (result == GradientMethod::MethodResult::NEXT_ITERATION)           msg = "NEXT_ITERATION          ";
 
-    Problem2HNDirichlet* prob = const_cast<Problem2HNDirichlet*>(this);
+    Problem2HDirichlet* prob = const_cast<Problem2HDirichlet*>(this);
     //prob->gm->setStepTolerance(10.0*alpha);
     OptimizeParameterH o_prm;
     VectorToPrm(x, o_prm);
@@ -773,10 +773,10 @@ void Problem2HNDirichlet::print(unsigned int i, const DoubleVector &x, const Dou
     //prob->optimizeC = i%4 == 2;
 }
 
-auto Problem2HNDirichlet::project(DoubleVector &, unsigned int) -> void
+auto Problem2HDirichlet::project(DoubleVector &, unsigned int) -> void
 {}
 
-auto Problem2HNDirichlet::project(DoubleVector &pv) const -> void
+auto Problem2HDirichlet::project(DoubleVector &pv) const -> void
 {
     unsigned int Nc = mEquParameter.Nc;
     unsigned int No = mEquParameter.No;
@@ -811,7 +811,7 @@ auto Problem2HNDirichlet::project(DoubleVector &pv) const -> void
     }
 }
 
-auto Problem2HNDirichlet::projectControlPoints(DoubleVector &pv, unsigned int index) const -> void
+auto Problem2HDirichlet::projectControlPoints(DoubleVector &pv, unsigned int index) const -> void
 {
     double dist = 0.10;
 
@@ -848,7 +848,7 @@ auto Problem2HNDirichlet::projectControlPoints(DoubleVector &pv, unsigned int in
     }
 }
 
-auto Problem2HNDirichlet::projectMeasurePoints(DoubleVector &pv, unsigned int index) const -> void
+auto Problem2HDirichlet::projectMeasurePoints(DoubleVector &pv, unsigned int index) const -> void
 {
     double dist = 0.10;
 
@@ -885,7 +885,7 @@ auto Problem2HNDirichlet::projectMeasurePoints(DoubleVector &pv, unsigned int in
     }
 }
 
-auto Problem2HNDirichlet::solveForwardIBVP1(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const -> void
+auto Problem2HDirichlet::solveForwardIBVP1(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -1610,7 +1610,7 @@ auto Problem2HNDirichlet::solveForwardIBVP1(std::vector<DoubleMatrix> &u, spif_v
     u20.clear();
 }
 
-auto Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u05, DoubleMatrix &u10,
+auto Problem2HDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u05, DoubleMatrix &u10,
                                           spif_vectorH &u_info, bool use, unsigned int N, unsigned int M,
                                           double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda,
                                           const std::vector<ExtendedSpacePointH> &qExtSpacePoints,
@@ -1699,12 +1699,12 @@ auto Problem2HNDirichlet::f_initialLayers(DoubleMatrix &u00, DoubleMatrix &u05, 
     f_layerInfo(u10, 2);
 }
 
-auto Problem2HNDirichlet::f_initial1(const SpaceNodePDE &sn UNUSED_PARAM) const -> double
+auto Problem2HDirichlet::f_initial1(const SpaceNodePDE &sn UNUSED_PARAM) const -> double
 {
     return 0.0;
 }
 
-auto Problem2HNDirichlet::initiatePulseGrid() const -> void
+auto Problem2HDirichlet::initiatePulseGrid() const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -1715,8 +1715,8 @@ auto Problem2HNDirichlet::initiatePulseGrid() const -> void
     const double hx = dimX.step();
     const double hy = dimY.step();
 
-    const_cast<Problem2HNDirichlet*>(this)->mPulseWeightMatrix.clear();
-    const_cast<Problem2HNDirichlet*>(this)->mPulseWeightMatrix.resize(M+1, N+1, 0.0);
+    const_cast<Problem2HDirichlet*>(this)->mPulseWeightMatrix.clear();
+    const_cast<Problem2HDirichlet*>(this)->mPulseWeightMatrix.resize(M+1, N+1, 0.0);
 
     const unsigned int Ns = mEquParameter.Ns;
     std::vector<DeltaGrid2D> deltaGrids(Ns);
@@ -1730,10 +1730,10 @@ auto Problem2HNDirichlet::initiatePulseGrid() const -> void
     {
         for (unsigned int n=0; n<=N; n++)
         {
-            const_cast<Problem2HNDirichlet*>(this)->mPulseWeightMatrix[m][n] = 0.0;
+            const_cast<Problem2HDirichlet*>(this)->mPulseWeightMatrix[m][n] = 0.0;
             for (unsigned int s=0; s<Ns; s++)
             {
-                const_cast<Problem2HNDirichlet*>(this)->mPulseWeightMatrix[m][n] += mEquParameter.q[s]*deltaGrids[s].weight(n, m);
+                const_cast<Problem2HDirichlet*>(this)->mPulseWeightMatrix[m][n] += mEquParameter.q[s]*deltaGrids[s].weight(n, m);
             }
         }
     }
@@ -1745,7 +1745,7 @@ auto Problem2HNDirichlet::initiatePulseGrid() const -> void
     deltaGrids.clear();
 }
 
-auto Problem2HNDirichlet::currentLayerFGrid(const DoubleMatrix &u) const -> void
+auto Problem2HDirichlet::currentLayerFGrid(const DoubleMatrix &u) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -1756,8 +1756,8 @@ auto Problem2HNDirichlet::currentLayerFGrid(const DoubleMatrix &u) const -> void
     const double hx = dimX.step();
     const double hy = dimY.step();
 
-    const_cast<Problem2HNDirichlet*>(this)->mCrFfxWeightMatrix.clear();
-    const_cast<Problem2HNDirichlet*>(this)->mCrFfxWeightMatrix.resize(M+1, N+1, 0.0);
+    const_cast<Problem2HDirichlet*>(this)->mCrFfxWeightMatrix.clear();
+    const_cast<Problem2HDirichlet*>(this)->mCrFfxWeightMatrix.resize(M+1, N+1, 0.0);
 
     const unsigned int Nc = mEquParameter.Nc;
     std::vector<DeltaGrid2D> controlDeltaGrids(Nc);
@@ -1805,11 +1805,11 @@ auto Problem2HNDirichlet::currentLayerFGrid(const DoubleMatrix &u) const -> void
     {
         for (unsigned int n=0; n<=N; n++)
         {
-            const_cast<Problem2HNDirichlet*>(this)->mCrFfxWeightMatrix[m][n] = 0.0;
+            const_cast<Problem2HDirichlet*>(this)->mCrFfxWeightMatrix[m][n] = 0.0;
             for (unsigned int i=0; i<Nc; i++)
             {
                 const DeltaGrid2D &dg = controlDeltaGrids[i];
-                const_cast<Problem2HNDirichlet*>(this)->mCrFfxWeightMatrix[m][n] += _v[i] * dg.weight(n,m);
+                const_cast<Problem2HDirichlet*>(this)->mCrFfxWeightMatrix[m][n] += _v[i] * dg.weight(n,m);
             }
         }
     }
@@ -1820,7 +1820,7 @@ auto Problem2HNDirichlet::currentLayerFGrid(const DoubleMatrix &u) const -> void
     for (unsigned int i=0; i<Nc; i++) controlDeltaGrids[i].cleanGrid(); controlDeltaGrids.clear();
 }
 
-auto Problem2HNDirichlet::currentLayerBGrid(const DoubleMatrix &p, double ln, const spif_vectorH &u_info) const -> void
+auto Problem2HDirichlet::currentLayerBGrid(const DoubleMatrix &p, double ln, const spif_vectorH &u_info) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -1831,8 +1831,8 @@ auto Problem2HNDirichlet::currentLayerBGrid(const DoubleMatrix &p, double ln, co
     const double hx = dimX.step();
     const double hy = dimY.step();
 
-    const_cast<Problem2HNDirichlet*>(this)->mCrBfxWeightMatrix.clear();
-    const_cast<Problem2HNDirichlet*>(this)->mCrBfxWeightMatrix.resize(M+1, N+1, 0.0);
+    const_cast<Problem2HDirichlet*>(this)->mCrBfxWeightMatrix.clear();
+    const_cast<Problem2HDirichlet*>(this)->mCrBfxWeightMatrix.resize(M+1, N+1, 0.0);
 
     const unsigned int Nc = mEquParameter.Nc;
     std::vector<DeltaGrid2D> controlDeltaGrids(Nc);
@@ -1879,11 +1879,11 @@ auto Problem2HNDirichlet::currentLayerBGrid(const DoubleMatrix &p, double ln, co
     {
         for (unsigned int n=0; n<=N; n++)
         {
-            const_cast<Problem2HNDirichlet*>(this)->mCrBfxWeightMatrix[m][n] = 0.0;
+            const_cast<Problem2HDirichlet*>(this)->mCrBfxWeightMatrix[m][n] = 0.0;
             for (unsigned int j=0; j<No; j++)
             {
                 const DeltaGrid2D &dg = measurementDeltaGrids[j];
-                const_cast<Problem2HNDirichlet*>(this)->mCrBfxWeightMatrix[m][n] += _w[j] * dg.weight(n,m);
+                const_cast<Problem2HDirichlet*>(this)->mCrBfxWeightMatrix[m][n] += _w[j] * dg.weight(n,m);
             }
         }
     }
@@ -1894,18 +1894,18 @@ auto Problem2HNDirichlet::currentLayerBGrid(const DoubleMatrix &p, double ln, co
     for (unsigned int i=0; i<Nc; i++) controlDeltaGrids[i].cleanGrid(); controlDeltaGrids.clear();
 }
 
-auto Problem2HNDirichlet::f_initial2(const SpaceNodePDE &sn) const -> double
+auto Problem2HDirichlet::f_initial2(const SpaceNodePDE &sn) const -> double
 {
     //return 0.0;
     return mPulseWeightMatrix[sn.j][sn.i];
 }
 
-double Problem2HNDirichlet::f_boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
+double Problem2HDirichlet::f_boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
     return 0.0;
 }
 
-void Problem2HNDirichlet::f_findRowsCols(GridH &grid, uint_vectorH &rows0, uint_vectorH &rows1, uint_vectorH &rows2, uint_vectorH &cols0, uint_vectorH &cols1, uint_vectorH &cols2, unsigned int N, unsigned int M,
+void Problem2HDirichlet::f_findRowsCols(GridH &grid, uint_vectorH &rows0, uint_vectorH &rows1, uint_vectorH &rows2, uint_vectorH &cols0, uint_vectorH &cols1, uint_vectorH &cols2, unsigned int N, unsigned int M,
                                          const std::vector<ExtendedSpacePointH> &cntExtSpacePoints,
                                          const std::vector<ExtendedSpacePointH> &msnExtSpacePoints) const
 {
@@ -1996,7 +1996,7 @@ void Problem2HNDirichlet::f_findRowsCols(GridH &grid, uint_vectorH &rows0, uint_
     }
 }
 
-void Problem2HNDirichlet::b_findRowsCols(GridH &grid, uint_vectorH &rows0, uint_vectorH &rows1, uint_vectorH &rows2, uint_vectorH &cols0, uint_vectorH &cols1, uint_vectorH &cols2, unsigned int N, unsigned int M,
+void Problem2HDirichlet::b_findRowsCols(GridH &grid, uint_vectorH &rows0, uint_vectorH &rows1, uint_vectorH &rows2, uint_vectorH &cols0, uint_vectorH &cols1, uint_vectorH &cols2, unsigned int N, unsigned int M,
                                          const std::vector<ExtendedSpacePointH> &msnExtSpacePoints,
                                          const std::vector<ExtendedSpacePointH> &cntExtSpacePoints) const
 {
@@ -2087,7 +2087,7 @@ void Problem2HNDirichlet::b_findRowsCols(GridH &grid, uint_vectorH &rows0, uint_
     }
 }
 
-void Problem2HNDirichlet::f_borderLayer(DoubleMatrix &u, DoubleMatrix &um5, unsigned int ln) const
+void Problem2HDirichlet::f_borderLayer(DoubleMatrix &u, DoubleMatrix &um5, unsigned int ln) const
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -2123,7 +2123,7 @@ void Problem2HNDirichlet::f_borderLayer(DoubleMatrix &u, DoubleMatrix &um5, unsi
     }
 }
 
-auto Problem2HNDirichlet::f_prepareInfo(unsigned int No, const std::vector<SpacePoint> &points, spif_vectorH &u_info, unsigned int LLD) const -> void
+auto Problem2HDirichlet::f_prepareInfo(unsigned int No, const std::vector<SpacePoint> &points, spif_vectorH &u_info, unsigned int LLD) const -> void
 {
     u_info.resize(No);
     for (unsigned int j=0; j<No; j++)
@@ -2136,7 +2136,7 @@ auto Problem2HNDirichlet::f_prepareInfo(unsigned int No, const std::vector<Space
     }
 }
 
-auto Problem2HNDirichlet::b_prepareInfo(unsigned int Nc, const std::vector<SpacePoint> &points, spif_vectorH &p_info, unsigned int LLD) const -> void
+auto Problem2HDirichlet::b_prepareInfo(unsigned int Nc, const std::vector<SpacePoint> &points, spif_vectorH &p_info, unsigned int LLD) const -> void
 {
     p_info.resize(Nc);
     for (unsigned int i=0; i<Nc; i++)
@@ -2149,7 +2149,7 @@ auto Problem2HNDirichlet::b_prepareInfo(unsigned int Nc, const std::vector<Space
     }
 }
 
-auto Problem2HNDirichlet::f_add2Info(const DoubleMatrix &u, spif_vectorH &u_info, unsigned int ln, double hx, double hy, const std::vector<ExtendedSpacePointH> &extMsmnts, int method) const -> void
+auto Problem2HDirichlet::f_add2Info(const DoubleMatrix &u, spif_vectorH &u_info, unsigned int ln, double hx, double hy, const std::vector<ExtendedSpacePointH> &extMsmnts, int method) const -> void
 {
     if (method == 1 || method == 2 || method == 4)
     {
@@ -2184,7 +2184,7 @@ auto Problem2HNDirichlet::f_add2Info(const DoubleMatrix &u, spif_vectorH &u_info
     }
 }
 
-auto Problem2HNDirichlet::b_add2Info(const DoubleMatrix &p, spif_vectorH &p_info, unsigned int ln, double hx, double hy, const std::vector<ExtendedSpacePointH> &extCntrls, int method) const -> void
+auto Problem2HDirichlet::b_add2Info(const DoubleMatrix &p, spif_vectorH &p_info, unsigned int ln, double hx, double hy, const std::vector<ExtendedSpacePointH> &extCntrls, int method) const -> void
 {
     if (method == 1 || method == 2 || method == 4)
     {
@@ -2216,7 +2216,7 @@ auto Problem2HNDirichlet::b_add2Info(const DoubleMatrix &p, spif_vectorH &p_info
     }
 }
 
-auto Problem2HNDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const -> void
+auto Problem2HDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -2935,7 +2935,7 @@ auto Problem2HNDirichlet::solveBackwardIBVP1(const std::vector<DoubleMatrix> &u,
     p20.clear();
 }
 
-auto Problem2HNDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p05, DoubleMatrix &p10,
+auto Problem2HDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p05, DoubleMatrix &p10,
                                           spif_vectorH &p_info, bool use, const spif_vectorH &u_info,
                                           unsigned int N, unsigned int M, double hx, double hy, double ht, double aa__hxhx, double aa__hyhy, double lambda,
                                           const std::vector<ExtendedSpacePointH> &cntExtSpacePoints,
@@ -3060,27 +3060,27 @@ auto Problem2HNDirichlet::b_initialLayers(DoubleMatrix &p00, DoubleMatrix &p05, 
     delete [] _w;
 }
 
-auto Problem2HNDirichlet::b_initial1(const SpaceNodePDE &sn UNUSED_PARAM) const -> double
+auto Problem2HDirichlet::b_initial1(const SpaceNodePDE &sn UNUSED_PARAM) const -> double
 {
     return 0.0;
 }
 
-auto Problem2HNDirichlet::b_initial2(const SpaceNodePDE &sn UNUSED_PARAM) const -> double
+auto Problem2HDirichlet::b_initial2(const SpaceNodePDE &sn UNUSED_PARAM) const -> double
 {
     return 0.0;
 }
 
-auto Problem2HNDirichlet::b_boundary(const SpaceNodePDE &, const TimeNodePDE &) const -> double
+auto Problem2HDirichlet::b_boundary(const SpaceNodePDE &, const TimeNodePDE &) const -> double
 {
     return 0.0;
 }
 
-auto Problem2HNDirichlet::b_characteristic(const DoubleMatrix &u, unsigned int n, unsigned int m) const -> double
+auto Problem2HDirichlet::b_characteristic(const DoubleMatrix &u, unsigned int n, unsigned int m) const -> double
 {
     return -2.0*mu(n,m)*(u[m][n]);
 }
 
-auto Problem2HNDirichlet::b_layerInfo(const DoubleMatrix &p UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
+auto Problem2HDirichlet::b_layerInfo(const DoubleMatrix &p UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
 {
 //    IPrinter::printMatrix(p);
 //    IPrinter::printSeperatorLine();
@@ -3103,7 +3103,7 @@ auto Problem2HNDirichlet::b_layerInfo(const DoubleMatrix &p UNUSED_PARAM, unsign
 //    }
 }
 
-auto Problem2HNDirichlet::newDistributeDeltaGaussPulse(const std::vector<SpacePoint> &thetas, std::vector<ExtendedSpacePointH> &extThetas, const Dimension &dimX, const Dimension &dimY) const -> void
+auto Problem2HDirichlet::newDistributeDeltaGaussPulse(const std::vector<SpacePoint> &thetas, std::vector<ExtendedSpacePointH> &extThetas, const Dimension &dimX, const Dimension &dimY) const -> void
 {
     double hx = dimX.step();
     double hy = dimY.step();
@@ -3161,7 +3161,7 @@ auto Problem2HNDirichlet::newDistributeDeltaGaussPulse(const std::vector<SpacePo
     }
 }
 
-auto Problem2HNDirichlet::newDistributeDeltaGaussCntrl(const std::vector<SpacePoint> &cntrls,std::vector<ExtendedSpacePointH> &extCntrls,
+auto Problem2HDirichlet::newDistributeDeltaGaussCntrl(const std::vector<SpacePoint> &cntrls,std::vector<ExtendedSpacePointH> &extCntrls,
                                                        const Dimension &dimX, const Dimension &dimY) const -> void
 {
     double hx = dimX.step();
@@ -3258,7 +3258,7 @@ auto Problem2HNDirichlet::newDistributeDeltaGaussCntrl(const std::vector<SpacePo
     //    }
 }
 
-auto Problem2HNDirichlet::newDistributeDeltaGaussMsmnt(const std::vector<SpacePoint> &msmnts, std::vector<ExtendedSpacePointH> &extMsmnts, const Dimension &dimX, const Dimension &dimY) const -> void
+auto Problem2HDirichlet::newDistributeDeltaGaussMsmnt(const std::vector<SpacePoint> &msmnts, std::vector<ExtendedSpacePointH> &extMsmnts, const Dimension &dimX, const Dimension &dimY) const -> void
 {
     double hx = dimX.step();
     double hy = dimY.step();
@@ -3354,7 +3354,7 @@ auto Problem2HNDirichlet::newDistributeDeltaGaussMsmnt(const std::vector<SpacePo
     //    }
 }
 
-double Problem2HNDirichlet::distributeTimeDelta(double t, double ht, unsigned int ln, const SpaceNodePDE &sn, const std::vector<ExtendedSpacePointH> &xsps) const
+double Problem2HDirichlet::distributeTimeDelta(double t, double ht, unsigned int ln, const SpaceNodePDE &sn, const std::vector<ExtendedSpacePointH> &xsps) const
 {
     return 0.0;
 
@@ -3390,7 +3390,7 @@ double Problem2HNDirichlet::distributeTimeDelta(double t, double ht, unsigned in
     return factor * exp( -0.5*((t - mu)*(t - mu))/(sigma*sigma) ) * Q;
 }
 
-void Problem2HNDirichlet::PrmToVector(const OptimizeParameterH &prm, DoubleVector &pv) const
+void Problem2HDirichlet::PrmToVector(const OptimizeParameterH &prm, DoubleVector &pv) const
 {
     unsigned int Nc = mEquParameter.Nc;
     unsigned int No = mEquParameter.No;
@@ -3427,7 +3427,7 @@ void Problem2HNDirichlet::PrmToVector(const OptimizeParameterH &prm, DoubleVecto
     }
 }
 
-void Problem2HNDirichlet::VectorToPrm(const DoubleVector &pv, OptimizeParameterH &prm) const
+void Problem2HDirichlet::VectorToPrm(const DoubleVector &pv, OptimizeParameterH &prm) const
 {
     unsigned int Nc = mEquParameter.Nc;
     unsigned int No = mEquParameter.No;
@@ -3475,7 +3475,7 @@ void Problem2HNDirichlet::VectorToPrm(const DoubleVector &pv, OptimizeParameterH
     }
 }
 
-auto Problem2HNDirichlet::v(unsigned int i, OptimizeParameterH o_prm, EquationParameterH e_prm, const spif_vectorH &u_info, unsigned int ln) const -> double
+auto Problem2HDirichlet::v(unsigned int i, OptimizeParameterH o_prm, EquationParameterH e_prm, const spif_vectorH &u_info, unsigned int ln) const -> double
 {
     const unsigned int No = static_cast<const unsigned int>(e_prm.No);
     double v = 0.0;
