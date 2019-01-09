@@ -3,32 +3,32 @@
 auto Problem2HDirichlet1::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
 {
     //printf("%4d %.8f %.8f\n", ln, u.min(), u.max());
+    return;
 
     {
         Problem2HDirichlet1* tmp = const_cast<Problem2HDirichlet1*>(this);
         std::vector<DoubleMatrix> &rvu = tmp->vu;
 
-        if (ln%2==0)
+        rvu.push_back(u);
+        if (rvu.size() > 2*LD+1) rvu.erase(rvu.begin());
+
+        if (ln == 1001)
         {
-            rvu.push_back(u);
-            if (rvu.size() > LD) rvu.erase(rvu.begin());
+            tmp->mOptParameter.k[0][0] = 0.0;
+            tmp->mOptParameter.k[0][1] = 0.0;
+            tmp->mOptParameter.k[1][0] = 0.0;
+            tmp->mOptParameter.k[1][1] = 0.0;
+        }
 
-            if (ln == 1001)
+        if (rvu.size() == 2*LD+1)
+        {
+            //std::cout << ln << " " << rvu.size() << std::endl;
+            if (ln%2==0)
             {
-                tmp->mOptParameter.k[0][0] = 0.0;
-                tmp->mOptParameter.k[0][1] = 0.0;
-                tmp->mOptParameter.k[1][0] = 0.0;
-                tmp->mOptParameter.k[1][1] = 0.0;
+            double fx = integral(rvu);
+            printf("%d %d %.10f\n", ln, ln/2-50, fx);
             }
-
-            std::cout << ln << " " << rvu.size() << std::endl;
-
-            if (rvu.size() == LD)
-            {
-                double fx = integral(rvu);
-                printf("%d,%.10f\n", ln/2-50, fx);
-                printf("%.10f\n", fx);
-            }
+            //printf("%.10f\n", fx);
         }
     }
 }

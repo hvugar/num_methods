@@ -40,13 +40,78 @@
 #include <grid/parabolicibvp1.h>
 #include <grid/newtonheatequationex1.h>
 #include "heatequationibvp1.h"
+#include <deltagrid.h>
 
 #include <QtGui>
 #include <r1minimize.h>
 
+double funcU(double x, double y)
+{
+    return sin(M_PI*x)*sin(M_PI*y);
+}
+
+double funcUx(double x, double y)
+{
+    return M_PI*cos(M_PI*x)*sin(M_PI*y);
+}
+
+double funcUy(double x, double y)
+{
+    return M_PI*sin(M_PI*x)*cos(M_PI*y);
+}
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
+//    DeltaGrid2D delta;
+//    unsigned int N = 100, M = 100;
+//    double hx = 0.01, hy = 0.01;
+//    delta.initGrid(N, hx, M, hy);
+//    SpacePoint p; p.x = 0.5428; p.y = 0.3232;
+//    delta.distributeGauss(p, 1, 1);
+//    DoubleMatrix u(M+1, N+1);
+//    for (unsigned int m=0; m<=M; m++)
+//    {
+//        for (unsigned int n=0; n<=N; n++)
+//        {
+//            u[m][n] = funcU(n*hx, m*hy);
+//        }
+//    }
+//    double U = 0.0, Ux = 0.0, Uy = 0.0;
+//    //U = u[delta.ry()][delta.rx()];
+//    for (unsigned int m=delta.minY(); m<=delta.maxY(); m++)
+//    {
+//        for (unsigned int n=delta.minX(); n<=delta.maxX(); n++)
+//        {
+//            double k = 1.0;
+//            //            if (m==delta.minY()) k *= 0.5;
+//            //            if (m==delta.maxY()) k *= 0.5;
+//            //            if (n==delta.minX()) k *= 0.5;
+//            //            if (n==delta.maxX()) k *= 0.5;
+//            U += k*u[m][n]*delta.weight(n,m)*(hx*hy);
+
+//            if (delta.isCenter(n,m))
+//            {
+//                const unsigned int rx = static_cast<const unsigned int>(delta.rx());
+//                const unsigned int ry = static_cast<const unsigned int>(delta.ry());
+//                const unsigned int px = static_cast<const unsigned int>(delta.p().x);
+//                const unsigned int py = static_cast<const unsigned int>(delta.p().y);
+
+//                Ux = (u[ry][rx+1] - u[ry][rx-1])/(2.0*hx);
+//                Uy = (u[ry+1][rx] - u[ry-1][rx])/(2.0*hy);
+
+//                Ux += ((delta.p().x-rx*hx)/(hx*hx))*(u[ry][rx+1] - 2.0*u[ry][rx] + u[ry][rx-1]);
+//                Uy += ((delta.p().y-ry*hy)/(hy*hy))*(u[ry+1][rx] - 2.0*u[ry][rx] + u[ry-1][rx]);
+
+//                //ui.dxx[ln] = (1.0/(hx*hx))*(u[ry][rx+1] - 2.0*u[ry][rx] + u[ry][rx-1]);
+//                //ui.dyy[ln] = (1.0/(hy*hy))*(u[ry+1][rx] - 2.0*u[ry][rx] + u[ry-1][rx]);
+//            }
+//        }
+//    }
+//    printf("%.14f %.14f %.14f\n%.14f %.14f %.14f\n %4d %4d\n", U, Ux, Uy, funcU(p.x, p.y), funcUx(p.x, p.y), funcUy(p.x, p.y), delta.rx(), delta.ry());
+//    return 0;
+
+
+
     //srand(time(0));
     //CcIHyperbolicIBVP1::Main(argc, argv);
     //CdIHyperbolicIBVP1::Main(argc, argv);
