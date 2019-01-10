@@ -63,10 +63,11 @@ void prod_example1()
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
-//    e_prm.q[0] = +0.514; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.2500;
-//    e_prm.q[1] = +0.528; e_prm.theta[1].x = 0.7500; e_prm.theta[1].y = 0.7500;
-    e_prm.q[0] = +0.314; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
-    e_prm.q[1] = +0.328; e_prm.theta[1].x = 0.7382; e_prm.theta[1].y = 0.6518;
+    e_prm.q[0] = +0.514; e_prm.theta[0].x = 0.2500; e_prm.theta[0].y = 0.2500;
+    e_prm.q[1] = +0.528; e_prm.theta[1].x = 0.7500; e_prm.theta[1].y = 0.7500;
+
+//    e_prm.q[0] = +0.314; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
+//    e_prm.q[1] = +0.328; e_prm.theta[1].x = 0.7382; e_prm.theta[1].y = 0.6518;
 
     e_prm.No = 2;
     e_prm.Nc = 2;
@@ -83,20 +84,26 @@ void prod_example1()
 //    o_prm.xi[0].x  = +0.6402; o_prm.xi[0].y  = +0.4899; o_prm.xi[1].x  = +0.8148; o_prm.xi[1].y  = +0.9500;
 //    o_prm.eta[0].x = +0.9500; o_prm.eta[0].y = +0.4609; o_prm.eta[1].x = +0.2512; o_prm.eta[1].y = +0.8932;
 
-    //o_prm.k[0][0]  = +0.4062; o_prm.k[0][1]  = -0.1118; o_prm.k[1][0]  = +0.6411; o_prm.k[1][1]  = -0.5024;
-    o_prm.z[0][0]  = +0.0207; o_prm.z[0][1]  = -0.0022; o_prm.z[1][0]  = +0.0460; o_prm.z[1][1]  = -0.0277;
-    o_prm.xi[0].x  = +0.4985; o_prm.xi[0].y  = +0.5005; o_prm.xi[1].x  = +0.7629; o_prm.xi[1].y  = +0.6422;
-    o_prm.eta[0].x = +0.7180; o_prm.eta[0].y = +0.7701; o_prm.eta[1].x = +0.4996; o_prm.eta[1].y = +0.4999;
+    // 0.00640
+//    o_prm.k[0][0]  = +0.7140; o_prm.k[0][1]  = -0.3012; o_prm.k[1][0]  = +0.8444; o_prm.k[1][1]  = -0.6901;
+    o_prm.z[0][0]  = +0.0351; o_prm.z[0][1]  = +0.0238; o_prm.z[1][0]  = +0.1098; o_prm.z[1][1]  = -0.0302;
+    o_prm.xi[0].x  = +0.4605; o_prm.xi[0].y  = +0.4316; o_prm.xi[1].x  = +0.7556; o_prm.xi[1].y  = +0.6413;
+    o_prm.eta[0].x = +0.7516; o_prm.eta[0].y = +0.8028; o_prm.eta[1].x = +0.4595; o_prm.eta[1].y = +0.4302;
+
+//    o_prm.k[0][0]  = +0.4062; o_prm.k[0][1]  = -0.1118; o_prm.k[1][0]  = +0.6411; o_prm.k[1][1]  = -0.5024;
+//    o_prm.z[0][0]  = +0.0207; o_prm.z[0][1]  = -0.0022; o_prm.z[1][0]  = +0.0460; o_prm.z[1][1]  = -0.0277;
+//    o_prm.xi[0].x  = +0.4985; o_prm.xi[0].y  = +0.5005; o_prm.xi[1].x  = +0.7629; o_prm.xi[1].y  = +0.6422;
+//    o_prm.eta[0].x = +0.7180; o_prm.eta[0].y = +0.7701; o_prm.eta[1].x = +0.4996; o_prm.eta[1].y = +0.4999;
 
     // Initial I:0.03533
     //o_prm.k[0][0]  = +0.0000; o_prm.k[0][1]  = +0.0000; o_prm.k[1][0]  = +0.0000; o_prm.k[1][1]  = +0.0000;
     //o_prm.z[0][0]  = +0.0000; o_prm.z[0][1]  = +0.0000; o_prm.z[1][0]  = +0.0000; o_prm.z[1][1]  = +0.0000;
     //o_prm.k[0][0]  = -1.1820; o_prm.k[0][1]  = -1.1250; o_prm.k[1][0]  = -1.1550; o_prm.k[1][1]  = -1.1310;
 
-    //o_prm.k[0][0]  = +2.1820; o_prm.k[0][1]  = +2.1250; o_prm.k[1][0]  = +2.1550; o_prm.k[1][1]  = +2.1310;
-    //o_prm.z[0][0]  = +0.0125; o_prm.z[0][1]  = +0.0268; o_prm.z[1][0]  = +0.0359; o_prm.z[1][1]  = +0.0186;
-    //o_prm.xi[0].x  = +0.3849; o_prm.xi[0].y  = +0.5442; o_prm.xi[1].x  = +0.7861; o_prm.xi[1].y  = +0.6785;
-    //o_prm.eta[0].x = +0.6656; o_prm.eta[0].y = +0.7909; o_prm.eta[1].x = +0.4956; o_prm.eta[1].y = +0.3810;
+//    o_prm.k[0][0]  = +2.1820; o_prm.k[0][1]  = +2.1250; o_prm.k[1][0]  = +2.1550; o_prm.k[1][1]  = +2.1310;
+//    o_prm.z[0][0]  = +0.0125; o_prm.z[0][1]  = +0.0268; o_prm.z[1][0]  = +0.0359; o_prm.z[1][1]  = +0.0186;
+//    o_prm.xi[0].x  = +0.3849; o_prm.xi[0].y  = +0.5442; o_prm.xi[1].x  = +0.7861; o_prm.xi[1].y  = +0.6785;
+//    o_prm.eta[0].x = +0.6656; o_prm.eta[0].y = +0.7909; o_prm.eta[1].x = +0.4956; o_prm.eta[1].y = +0.3810;
 
     //o_prm.xi[0].x  = +0.1849; o_prm.xi[0].y  = +0.2442; o_prm.xi[1].x  = +0.4861; o_prm.xi[1].y  = +0.7785;
     //o_prm.eta[0].x = +0.3656; o_prm.eta[0].y = +0.3909; o_prm.eta[1].x = +0.9156; o_prm.eta[1].y = +0.9410;
@@ -147,8 +154,8 @@ void prod_example1()
     DoubleVector r; r << 0.0000 << 0.0000 << 0.000;
     // Regularization coefficients
     DoubleVector e; e << 0.0000 << 0.0000 << 0.0000;
-    DoubleVector e1; e1 << 0.1000 << 0.0100 << 0.0010;
-    DoubleVector e2; e2 << 0.0100 << 0.0010 << 0.0001;
+    DoubleVector e1; e1 << 0.01000 << 0.0100 << 0.0010;
+    DoubleVector e2; e2 << 0.0100 << 0.010 << 0.0001;
 
     DoubleVector x;
     for (unsigned int i=0; i<r.length(); i++)
@@ -167,7 +174,7 @@ void prod_example1()
         prob.vmin.resize(e_prm.Nc, -0.05);
         prob.vmax.resize(e_prm.Nc, +0.05);
         prob.LD = 50;
-        prob.noise = 0.00;
+        prob.noise = 0.0;
 
         prob.regEpsilon = e[i];
         prob.r = r[i];

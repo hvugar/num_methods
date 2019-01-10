@@ -12,13 +12,13 @@ auto Problem2HDirichlet1::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsign
         rvu.push_back(u);
         if (rvu.size() > 2*LD+1) rvu.erase(rvu.begin());
 
-        if (ln == 1001)
-        {
-            tmp->mOptParameter.k[0][0] = 0.0;
-            tmp->mOptParameter.k[0][1] = 0.0;
-            tmp->mOptParameter.k[1][0] = 0.0;
-            tmp->mOptParameter.k[1][1] = 0.0;
-        }
+//        if (ln == 1001)
+//        {
+//            tmp->mOptParameter.k[0][0] = 0.0;
+//            tmp->mOptParameter.k[0][1] = 0.0;
+//            tmp->mOptParameter.k[1][0] = 0.0;
+//            tmp->mOptParameter.k[1][1] = 0.0;
+//        }
 
         if (rvu.size() == 2*LD+1)
         {
