@@ -1,0 +1,91 @@
+#ifndef PROBLEM2H_SOLVER_BASE_H
+#define PROBLEM2H_SOLVER_BASE_H
+
+#include "problem2h_common.h"
+
+class Problem2hDirichletBase : public InitialBoundaryValueProblemPDE, public RnFunction, public IGradient, public IProjection, public IPrinter, public IVectorNormalizer
+{
+public:
+    static void Main(int argc, char* argv[]);
+    static void checkGradient1(const Problem2hDirichletBase &prob);
+    static void checkGradient2(const Problem2hDirichletBase &prob);
+
+    Problem2hDirichletBase();
+    virtual ~Problem2hDirichletBase();
+
+    /** Functional and gradient **/
+    virtual auto fx(const DoubleVector &x) const -> double = 0;
+    virtual auto gradient(const DoubleVector &, DoubleVector &) const -> void = 0;
+    /** Integral part of functional */
+    virtual auto integral(const std::vector<DoubleMatrix> &u) const -> double = 0;
+    virtual auto integralU(const DoubleMatrix &u) const -> double;
+    /** Penalty part of functional */
+    virtual auto penalty(const spif_vectorH &info, const OptimizeParameterH &o_prm) const -> double = 0;
+    virtual auto gpi(unsigned int i, unsigned int ln, const spif_vectorH &u_info, const OptimizeParameterH &o_prm) const -> double;
+    virtual auto g0i(unsigned int i, unsigned int ln, const spif_vectorH &u_info, const OptimizeParameterH &o_prm) const -> double;
+    /** Norm part of functional */
+    virtual auto norm(const EquationParameterH &eprm, const OptimizeParameterH &oprm, const OptimizeParameterH &r_prm) const -> double;
+    /** ibv **/
+    virtual auto solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use, double lambda=0.25) const -> void = 0;
+    virtual auto solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const -> void = 0;
+
+    virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const -> void;
+
+    virtual auto initPulseWeightMatrix(const std::vector<SpacePoint> &theta, const std::vector<double> q) const -> void;
+
+    virtual auto f_initial1(const SpaceNodePDE &sn) const -> double;
+    virtual auto f_initial2(const SpaceNodePDE &sn) const -> double;
+    virtual auto f_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double;
+
+    virtual auto b_initial1(const SpaceNodePDE &sn) const -> double;
+    virtual auto b_initial2(const SpaceNodePDE &sn) const -> double;
+    virtual auto b_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double;
+
+    virtual auto f_layerInfo(const DoubleMatrix &u, unsigned int ln) const -> void;
+    virtual auto b_layerInfo(const DoubleMatrix &p, unsigned int ln) const -> void;
+
+    virtual auto project(DoubleVector &x, unsigned int index) -> void;
+    virtual auto project(DoubleVector &x) const -> void;
+
+    virtual auto projectControlPoints(DoubleVector &x, unsigned int index) const -> void;
+    virtual auto projectMeasurePoints(DoubleVector &x, unsigned int index) const -> void;
+
+    auto prepareInfo(unsigned int N, const std::vector<SpacePoint> &points, spif_vectorH &info, unsigned int size) const -> void;
+    auto add2Info(const DoubleMatrix &u, spif_vectorH &info, unsigned int ln, double hx, double hy, const std::vector<DeltaGrid2D> &deltaList) const -> void;
+
+    auto b_characteristic(const DoubleMatrix &u, unsigned int n, unsigned int m) const -> double;
+
+    auto PrmToVector(const OptimizeParameterH &prm, DoubleVector &x) const -> void;
+    auto VectorToPrm(const DoubleVector &x, OptimizeParameterH &prm) const -> void;
+    auto v(unsigned int i, OptimizeParameterH o_prm, EquationParameterH e_prm, const spif_vectorH &u_info, unsigned int ln) const -> double;
+    auto mu(unsigned int, unsigned int) const -> double { return 1.0; }
+    auto sign(double x) const -> double;
+
+    virtual auto norm(const DoubleVector &v) const -> double;
+    virtual auto normalize(DoubleVector &v) const -> void;
+public:
+    EquationParameterH mEquParameter;
+    OptimizeParameterH mOptParameter;
+    OptimizeParameterH mRegParameter;
+
+    DoubleVector vmin;
+    DoubleVector vmax;
+
+    unsigned int LD;
+    bool optimizeK;
+    bool optimizeZ;
+    bool optimizeC;
+    bool optimizeO;
+
+    double r;
+    double regEpsilon;
+    double noise = 0.0;
+
+protected:
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+
+private:
+    DoubleMatrix mPulseWeightMatrix;
+};
+
+#endif // PROBLEM2H_SOLVER_BASE_H

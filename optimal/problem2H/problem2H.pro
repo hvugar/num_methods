@@ -29,14 +29,16 @@ HEADERS += problem2h_global.h \
            problem2h_solver1.h \
            problem2h_solver4.h \
            problem2h_example.h \
-           problem2h_ibvp.h
+           problem2h_ibvp.h \
+    problem2h_solver_base.h
 
 SOURCES += problem2h_common.cpp \
            problem2h_solver.cpp \
            problem2h_solver1.cpp \
            problem2h_solver4.cpp \
            problem2h_example.cpp \
-           problem2h_ibvp.cpp
+           problem2h_ibvp.cpp \
+    problem2h_solver_base.cpp
 
 HEADERS += problem2h_exporter.h
 SOURCES += problem2h_exporter.cpp

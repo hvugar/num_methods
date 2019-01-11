@@ -25,8 +25,10 @@ public:
 
 class MINIMUMSHARED_EXPORT BoundaryValueProblemODE : protected BoundaryValueProblem
 {
-protected:
+public:
     virtual ~BoundaryValueProblemODE();
+
+protected:
     virtual double boundary() const = 0;
 };
 
@@ -34,6 +36,8 @@ class MINIMUMSHARED_EXPORT BoundaryValueProblemPDE : protected BoundaryValueProb
 {
 public:
     virtual ~BoundaryValueProblemPDE();
+
+protected:
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
 };
 

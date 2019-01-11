@@ -34,28 +34,3 @@ void SpacePointInfoH::clear()
     vl.clear();
     length = 0;
 }
-
-//EquationParameterHE::EquationParameterHE()
-//{
-//    EquationParameterHE(0,0,0,0,0);
-//}
-
-//EquationParameterHE::EquationParameterHE(unsigned int Nc, unsigned int No, unsigned int Nd, unsigned int length, unsigned int gw)
-//{
-//    this->Nc = Nc;
-//    this->No = No;
-//    this->Nd = Nd;
-//    k.resize(Nc, No, 0.0);
-//    z.resize(Nc, No, 0.0);
-//    xi.resize(No);
-//    eta.resize(Nc);
-//    q.resize(Nd);
-//    theta.resize(Nd);
-
-//    xi_ext.resize(No);  for (unsigned int j=0; j<No; j++) xi_ext[j].length = length;
-//    eta_ext.resize(Nc); for (unsigned int i=0; i<No; i++) eta_ext[i].length = length;
-//    theta.resize(Nd);
-//}
-
-
-

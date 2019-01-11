@@ -3,27 +3,27 @@
 
 InitialBoundaryValueProblemPDE::~InitialBoundaryValueProblemPDE() {}
 
-unsigned int InitialBoundaryValueProblemPDE::dimSize()
+auto InitialBoundaryValueProblemPDE::dimSize() const -> unsigned int
 {
-    return mspaceDimension.size();
+    return static_cast<unsigned>(mspaceDimension.size());
 }
 
-void InitialBoundaryValueProblemPDE::setTimeDimension(const Dimension &dimension)
+auto InitialBoundaryValueProblemPDE::setTimeDimension(const Dimension &dimension) -> void
 {
     mtimeDimension = dimension;
 }
 
-const Dimension &InitialBoundaryValueProblemPDE::timeDimension() const
+auto InitialBoundaryValueProblemPDE::timeDimension() const -> const Dimension &
 {
     return mtimeDimension;
 }
 
-void InitialBoundaryValueProblemPDE::addSpaceDimension(const Dimension &dimension)
+auto InitialBoundaryValueProblemPDE::addSpaceDimension(const Dimension &dimension) -> void
 {
     mspaceDimension.push_back(dimension);
 }
 
-const Dimension &InitialBoundaryValueProblemPDE::spaceDimension(Dimension::SpaceDimension dim) const
+auto InitialBoundaryValueProblemPDE::spaceDimension(Dimension::SpaceDimension dim) const -> const Dimension&
 {
     return mspaceDimension.at(dim);
 }

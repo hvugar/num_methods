@@ -74,9 +74,9 @@ struct PROBLEM2HSHARED_EXPORT EquationParameterH
 
     unsigned int Ns;
     std::vector<SpacePoint> theta;
-    DoubleVector q;
+    std::vector<double> q;
 
-    std::vector<InitialPulse> pulseVector;
+//    std::vector<InitialPulse> pulseVector;
 
 #ifdef TIME_DISCRETE_H
     unsigned int Nt;
