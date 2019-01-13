@@ -5,16 +5,16 @@ const char* DeltaGridException::what() const noexcept
     return "delta grid exception:";
 }
 
-DeltaGrid2D::DeltaGrid2D() : mN(0), mM(0), mhx(0.0), mhy(0.0) {}
+DeltaGrid2D::DeltaGrid2D() : _N(0), _M(0), _hx(0.0), _hy(0.0) {}
 
 DeltaGrid2D::~DeltaGrid2D() { cleanGrid(); }
 
 auto DeltaGrid2D::initGrid(unsigned int N, double hx, unsigned int M, double hy) -> void
 {
-    this->mN = N;
-    this->mM = M;
-    this->mhx = hx;
-    this->mhy = hy;
+    this->_N = N;
+    this->_M = M;
+    this->_hx = hx;
+    this->_hy = hy;
 
     m_nodes = new double*[M+1];
     for (unsigned int m=0; m<=M; m++)
@@ -29,28 +29,28 @@ auto DeltaGrid2D::initGrid(unsigned int N, double hx, unsigned int M, double hy)
 
 auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned sigmaXNum, unsigned int sigmaYNum) -> void
 {
-    unsigned int kx = 4*sigmaXNum;
-    unsigned int ky = 4*sigmaYNum;
-    double sigmaX = mhx*sigmaXNum;
-    double sigmaY = mhy*sigmaYNum;
+    unsigned int kx = 3*sigmaXNum;
+    unsigned int ky = 3*sigmaYNum;
+    double sigmaX = _hx*sigmaXNum;
+    double sigmaY = _hy*sigmaYNum;
 
-    _rx = static_cast<unsigned int>( round(sp.x*mN) );
-    _ry = static_cast<unsigned int>( round(sp.y*mM) );
+    _rx = static_cast<unsigned int>( round(sp.x*_N) );
+    _ry = static_cast<unsigned int>( round(sp.y*_M) );
 
-    if (_rx < kx or _ry < ky or _rx > mN-kx or _ry > mM-ky) throw DeltaGridException();
+    if (_rx < kx or _ry < ky or _rx > _N-kx or _ry > _M-ky) throw DeltaGridException();
 
-    mp = sp;
+    _p = sp;
 
     _minX = _rx - kx; _maxX = _rx + kx;
     _minY = _ry - ky; _maxY = _ry + ky;
 
     double sumX = 0.0;
-    for (unsigned int n=_minX; n<=_maxX; n++) sumX += exp(-((n*mhx-sp.x)*(n*mhx-sp.x))/(2.0*sigmaX*sigmaX));
-    sumX *= mhx;
+    for (unsigned int n=_minX; n<=_maxX; n++) sumX += exp(-((n*_hx-sp.x)*(n*_hx-sp.x))/(2.0*sigmaX*sigmaX));
+    sumX *= _hx;
 
     double sumY = 0.0;
-    for (unsigned int m=_minY; m<=_maxY; m++) sumY += exp(-((m*mhy-sp.y)*(m*mhy-sp.y))/(2.0*sigmaY*sigmaY));
-    sumY *= mhy;
+    for (unsigned int m=_minY; m<=_maxY; m++) sumY += exp(-((m*_hy-sp.y)*(m*_hy-sp.y))/(2.0*sigmaY*sigmaY));
+    sumY *= _hy;
 
     double sigma = (sumX*sumY) / (2.0*M_PI);
     double factor = 1.0/(2.0*M_PI*sigma);
@@ -58,11 +58,12 @@ auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned sigmaXNum, unsi
     SpaceNodePDE sn;
     for (unsigned int m=_minY; m<=_maxY; m++)
     {
-        sn.j = static_cast<int>(m); sn.y = m*mhy;
+        sn.j = static_cast<int>(m); sn.y = m*_hy;
         for (unsigned int n=_minX; n<=_maxX; n++)
         {
-            sn.i = static_cast<int>(n); sn.x = n*mhx;
-            m_nodes[m][n] = factor*exp(-0.5*(((sn.x-sp.x)*(sn.x-sp.x))/(sigmaX*sigmaX) + ((sn.y-sp.y)*(sn.y-sp.y))/(sigmaY*sigmaY)));
+            sn.i = static_cast<int>(n); sn.x = n*_hx;
+            m_nodes[m][n] = factor*exp(-(((sn.x-sp.x)*(sn.x-sp.x))/(2.0*sigmaX*sigmaX) +
+                                         ((sn.y-sp.y)*(sn.y-sp.y))/(2.0*sigmaY*sigmaY)));
         }
     }
 
@@ -72,27 +73,71 @@ auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned sigmaXNum, unsi
 
 auto DeltaGrid2D::distributeSigle(const SpacePoint& sp) -> void
 {
-    _rx = static_cast<unsigned int>( round(sp.x*mN) );
-    _ry = static_cast<unsigned int>( round(sp.y*mM) );
+    _rx = static_cast<unsigned int>( round(sp.x*_N) );
+    _ry = static_cast<unsigned int>( round(sp.y*_M) );
 
-    mp = sp;
+    _p = sp;
 
     _minX = _maxX = _rx;
     _minY = _maxY = _ry;
 
-    m_nodes[_ry][_rx] = 1.0/(mhx*mhy);
+    m_nodes[_ry][_rx] = 1.0/(_hx*_hy);
 }
 
-auto DeltaGrid2D::distributeRect4(const SpacePoint& sp) -> void
+auto DeltaGrid2D::distributeRect4(const SpacePoint&) -> void
 {}
+
+auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u) const -> double
+{
+    double pu = 0.0;
+    for (unsigned int m=minY(); m<=maxY(); m++)
+    {
+        for (unsigned int n=minX(); n<=maxX(); n++)
+        {
+            pu += u[m][n] * weight(n,m) * _hx * _hy;
+        }
+    }
+    return pu;
+}
+
+
+double Lx(double ex, double x[], unsigned int Nx)
+{
+    return ((ex-x[1])*(ex-x[2]))/((x[0]-x[1])*(x[0]-x[2]));
+}
+
+auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, double &dx, double &dy) const -> double
+{
+    const unsigned int rx = static_cast<unsigned int>(_rx);
+    const unsigned int ry = static_cast<unsigned int>(_ry);
+    const double px = p().x;
+    const double py = p().y;
+
+//    dx = (u[ry][rx+1] - u[ry][rx-1])/(2.0*_hx);
+//    dy = (u[ry+1][rx] - u[ry-1][rx])/(2.0*_hy);
+
+//    dx += (px-rx*_hx)*((u[ry][rx+1] - 2.0*u[ry][rx] + u[ry][rx-1])/(_hx*_hx));
+//    dy += (py-ry*_hy)*((u[ry+1][rx] - 2.0*u[ry][rx] + u[ry-1][rx])/(_hy*_hy));
+
+    dx = (u[ry][rx-2] - 8.0*u[ry][rx-1] + 8.0*u[ry][rx+1] - u[ry][rx+2])/(12.0*_hx);
+    dy = (u[ry-2][rx] - 8.0*u[ry-1][rx] + 8.0*u[ry+1][rx] - u[ry+2][rx])/(12.0*_hy);
+
+    dx += ((px-rx*_hx))*((-2.0*u[ry][rx-2] + 32.0*u[ry][rx-1] - 60.0*u[ry][rx] + 32.0*u[ry][rx+1] - 2.0*u[ry][rx+2])/(24.0*_hx*_hx));
+    dy += ((py-ry*_hy))*((-2.0*u[ry-2][rx] + 32.0*u[ry-1][rx] - 60.0*u[ry][rx] + 32.0*u[ry+1][rx] - 2.0*u[ry+2][rx])/(24.0*_hy*_hy));
+
+
+    return consentrateInPoint(u);
+}
 
 auto DeltaGrid2D::cleanGrid() -> void
 {
-    if (mM==0 || mN == 0) return;
-    for (unsigned int m=0; m<=mM; m++) delete [] m_nodes[m];
+    if (_M==0 || _N == 0) return;
+    for (unsigned int m=0; m<=_M; m++) delete [] m_nodes[m];
     delete [] m_nodes;
-    mN = 0;
-    mM = 0;
+    delete [] _rows;
+    delete [] _cols;
+    _N = 0;
+    _M = 0;
 }
 
 auto DeltaGrid2D::isCenter(const SpaceNodePDE &sn) const -> bool
@@ -130,8 +175,8 @@ auto DeltaGrid2D::weight(unsigned int n, unsigned int m) const -> double
 auto DeltaGrid2D::rx() const -> unsigned int { return _rx; }
 auto DeltaGrid2D::ry() const -> unsigned int { return _ry; }
 
-auto DeltaGrid2D::p() const -> const SpacePoint& { return mp; }
-auto DeltaGrid2D::p() -> SpacePoint& { return mp; }
+auto DeltaGrid2D::p() const -> const SpacePoint& { return _p; }
+auto DeltaGrid2D::p() -> SpacePoint& { return _p; }
 
 auto DeltaGrid2D::minX() const -> unsigned int { return _minX; }
 auto DeltaGrid2D::maxX() const -> unsigned int { return _maxX; }

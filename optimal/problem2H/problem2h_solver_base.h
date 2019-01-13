@@ -14,7 +14,7 @@ public:
     virtual ~Problem2hDirichletBase();
 
     /** Functional and gradient **/
-    virtual auto fx(const DoubleVector &x) const -> double = 0;
+    virtual auto fx(const DoubleVector &x) const -> double;
     virtual auto gradient(const DoubleVector &, DoubleVector &) const -> void = 0;
     /** Integral part of functional */
     virtual auto integral(const std::vector<DoubleMatrix> &u) const -> double = 0;
@@ -27,7 +27,7 @@ public:
     virtual auto norm(const EquationParameterH &eprm, const OptimizeParameterH &oprm, const OptimizeParameterH &r_prm) const -> double;
     /** ibv **/
     virtual auto solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use, double lambda=0.25) const -> void = 0;
-    virtual auto solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const -> void = 0;
+    virtual auto solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info, double lambda=0.25) const -> void = 0;
 
     virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const -> void;
 
@@ -63,6 +63,12 @@ public:
 
     virtual auto norm(const DoubleVector &v) const -> double;
     virtual auto normalize(DoubleVector &v) const -> void;
+
+    auto currentLayerFGrid(const DoubleMatrix &u, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids) const -> void;
+    auto currentLayerBGrid(const DoubleMatrix &p, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids,
+                           double ln, const spif_vectorH &u_info) const -> void;
+
+    auto setGridDimensions(const Dimension &time, const Dimension &dimX, const Dimension &dimY) -> void;
 public:
     EquationParameterH mEquParameter;
     OptimizeParameterH mOptParameter;
@@ -72,20 +78,25 @@ public:
     DoubleVector vmax;
 
     unsigned int LD;
-    bool optimizeK;
-    bool optimizeZ;
-    bool optimizeC;
-    bool optimizeO;
 
-    double r;
-    double regEpsilon;
+    bool optimizeK = true;
+    bool optimizeZ = true;
+    bool optimizeC = true;
+    bool optimizeO = true;
+
+    double r = 0.0;
+    double regEpsilon = 0.0;
     double noise = 0.0;
+
+    std::vector<DoubleMatrix> vu;
 
 protected:
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
-private:
+protected:
     DoubleMatrix mPulseWeightMatrix;
+    DoubleMatrix mCrFfxWeightMatrix;
+    DoubleMatrix mCrBfxWeightMatrix;
 };
 
 #endif // PROBLEM2H_SOLVER_BASE_H

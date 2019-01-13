@@ -4,6 +4,7 @@
 #include "grid/grid.h"
 #include <cmath>
 #include <exception>
+#include <matrix2d.h>
 
 class MINIMUMSHARED_EXPORT DeltaGridException : public std::exception
 {
@@ -23,6 +24,9 @@ public:
     auto distributeGauss(const SpacePoint& sp, unsigned sigmaXNum = 1, unsigned int sigmaYNum = 1) -> void;
     auto distributeSigle(const SpacePoint& sp) -> void;
     auto distributeRect4(const SpacePoint& sp) -> void;
+
+    auto consentrateInPoint(const DoubleMatrix &m) const -> double;
+    auto consentrateInPoint(const DoubleMatrix &m, double &dx, double &dy) const -> double;
 
     auto isCenter(const SpaceNodePDE &sn) const -> bool;
     auto isCenter(unsigned int n, unsigned int m) const -> bool;
@@ -52,11 +56,11 @@ public:
 
 private:
 
-    unsigned int mN;
-    unsigned int mM;
-    double mhx;
-    double mhy;
-    SpacePoint mp;
+    unsigned int _N;
+    unsigned int _M;
+    double _hx;
+    double _hy;
+    SpacePoint _p;
 
     double **m_nodes;
     unsigned int _rx;

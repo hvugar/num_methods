@@ -5,40 +5,14 @@ Problem2HDirichlet1::Problem2HDirichlet1() : Problem2hDirichletBase () {}
 Problem2HDirichlet1::~Problem2HDirichlet1()
 {}
 
-auto Problem2HDirichlet1::fx(const DoubleVector &pv) const -> double
-{
-    OptimizeParameterH o_prm;
-
-    VectorToPrm(pv, o_prm);
-
-    Problem2HDirichlet1* prob = const_cast<Problem2HDirichlet1*>(this);
-    prob->mOptParameter = o_prm;
-
-    std::vector<DoubleMatrix> u;
-    spif_vectorH u_info;
-    prob->solveForwardIBVP(u, u_info, true);
-
-    double intgrl = integral(u);
-
-    double nrm = norm(mEquParameter, o_prm, mRegParameter);
-    double pnt = penalty(u_info, o_prm);
-    double sum = intgrl + regEpsilon*nrm + r*pnt;
-
-    for (unsigned int i=0; i<u.size(); i++)      u[i].clear();      u.clear();
-    for (unsigned int j=0; j<u_info.size(); j++) u_info[j].clear(); u_info.clear();
-
-    return sum;
-}
-
 double Problem2HDirichlet1::integral(const std::vector<DoubleMatrix> &vu) const
 {
     const double ht = timeDimension().step();
-    unsigned int LD2 = 2*LD;
     double sum = 0.0;
     sum += 0.5*integralU(vu[0]);
-    for (unsigned int ln=1; ln<=LD-1; ln++)
+    for (unsigned int ln=2; ln<=2*(LD-1); ln+=2)
     {
-        sum += integralU(vu[2*ln]);
+        sum += integralU(vu[ln]);
     }
     sum += 0.5*integralU(vu[2*LD]);
     return sum*ht;
@@ -86,9 +60,9 @@ auto Problem2HDirichlet1::gradient(const DoubleVector &pv, DoubleVector &g) cons
     std::vector<DoubleMatrix> u;
 
     spif_vectorH u_info;
-    solveForwardIBVP(u, u_info, true);puts("111");
+    solveForwardIBVP(u, u_info, true);
     spif_vectorH p_info;
-    solveBackwardIBVP(u, p_info, true, u_info);puts("222");
+    solveBackwardIBVP(u, p_info, true, u_info);
 
     g.clear();
     g.resize(pv.length(), 0.0);
@@ -108,12 +82,12 @@ auto Problem2HDirichlet1::gradient(const DoubleVector &pv, DoubleVector &g) cons
                 double grad_Kij = 0.0;
                 double zij = o_prm.z[i][j];
 
-                grad_Kij += 0.5 * (pi.vl[0] + 2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))) * (uj.vl[0] - zij); //printf("%f %f\n", pi.vl[0], uj.vl[0]);
+                grad_Kij += 0.5 * (pi.vl[0] + 2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))) * (uj.vl[0] - zij);
                 for (unsigned int ln=1; ln<=LLD-1; ln++)
                 {
-                    grad_Kij += (pi.vl[2*ln] + 2.0*r*gpi(i,2*ln,u_info,o_prm)*sgn(g0i(i,2*ln,u_info,o_prm))) * (uj.vl[2*ln] - zij); //printf("%f %f\n", pi.vl[2*ln], uj.vl[2*ln]);
+                    grad_Kij += (pi.vl[2*ln] + 2.0*r*gpi(i,2*ln,u_info,o_prm)*sgn(g0i(i,2*ln,u_info,o_prm))) * (uj.vl[2*ln] - zij);
                 }
-                grad_Kij += 0.5 * (pi.vl[2*LLD] + 2.0*r*gpi(i,2*LLD,u_info,o_prm)*sgn(g0i(i,2*LLD,u_info,o_prm))) * (uj.vl[2*LLD] - zij); //printf("%f %f\n", pi.vl[2*LLD], uj.vl[2*LLD]);
+                grad_Kij += 0.5 * (pi.vl[2*LLD] + 2.0*r*gpi(i,2*LLD,u_info,o_prm)*sgn(g0i(i,2*LLD,u_info,o_prm))) * (uj.vl[2*LLD] - zij);
 
                 grad_Kij *= -ht;
 
@@ -291,10 +265,6 @@ auto Problem2HDirichlet1::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     const unsigned int No = mEquParameter.No;
     const unsigned int Nc = mEquParameter.Nc;
 
-#ifdef TIME_DISCRETE_H
-    const unsigned int Nt = mEquParameter.Nt;
-#endif
-
     const double ht_ht_025 = ht*ht*0.25;
     const double alpha_ht_025 = alpha*ht*0.25;
 
@@ -352,7 +322,6 @@ auto Problem2HDirichlet1::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     //----------------------------------------------------------------------------------------------//
     std::vector<DeltaGrid2D> measuremntGirdList(No);
     std::vector<DeltaGrid2D> cntrlDeltaGridList(Nc);
-
     for (unsigned int j=0; j<No; j++)
     {
         measuremntGirdList[j].initGrid(N, hx, M, hy);
@@ -364,13 +333,13 @@ auto Problem2HDirichlet1::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
         cntrlDeltaGridList[i].initGrid(N, hx, M, hy);
         cntrlDeltaGridList[i].distributeGauss(mOptParameter.eta[i], 1, 1);
     }
-
     //-------------------------------------------- info --------------------------------------------//
     if (use == true) prepareInfo(No,  mOptParameter.xi, u_info, 2*LLD+1);
     //----------------------------------------------------------------------------------------------//
 
     //------------------------------------- initial conditions -------------------------------------//
     initPulseWeightMatrix(mEquParameter.theta, mEquParameter.q);
+    /************************************************************************/
     SpaceNodePDE sn00;
     for (unsigned int m=0; m<=M; m++)
     {
@@ -523,129 +492,9 @@ auto Problem2HDirichlet1::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     u20.clear();
 }
 
-auto Problem2HDirichlet1::currentLayerFGrid(const DoubleMatrix &u,
-                                            const std::vector<DeltaGrid2D> &controlDeltaGrids,
-                                            const std::vector<DeltaGrid2D> &measurementDeltaGrids) const -> void
-{
-    const Dimension dimX = spaceDimension(Dimension::DimensionX);
-    const Dimension dimY = spaceDimension(Dimension::DimensionY);
-
-    const unsigned int N = static_cast<const unsigned int> ( dimX.size() );
-    const unsigned int M = static_cast<const unsigned int> ( dimY.size() );
-
-    const double hx = dimX.step();
-    const double hy = dimY.step();
-
-    const_cast<Problem2HDirichlet1*>(this)->mCrFfxWeightMatrix.clear();
-    const_cast<Problem2HDirichlet1*>(this)->mCrFfxWeightMatrix.resize(M+1, N+1, 0.0);
-
-    const unsigned int Nc = mEquParameter.Nc;
-    const unsigned int No = mEquParameter.No;
-
-    double* _u = new double[No];
-    for (unsigned int j=0; j<No; j++)
-    {
-        _u[j] = 0.0;
-        const DeltaGrid2D &dg = measurementDeltaGrids[j];
-        for (unsigned int m=dg.minY(); m<=dg.maxY(); m++)
-        {
-            for (unsigned int n=dg.minX(); n<=dg.maxX(); n++)
-            {
-                _u[j] += u[m][n] * (dg.weight(n,m) * (hx*hy));
-            }
-        }
-        _u[j] *= (1.0 + noise);
-    }
-
-    double *_v = new double[Nc];
-    for (unsigned int i=0; i<Nc; i++)
-    {
-        _v[i] = 0.0;
-        for (unsigned int j=0; j<No; j++)
-        {
-            _v[i] += mOptParameter.k[i][j] * (_u[j] - mOptParameter.z[i][j]);
-        }
-    }
-    delete [] _u;
-
-    for (unsigned int m=0; m<=M; m++)
-    {
-        for (unsigned int n=0; n<=N; n++)
-        {
-            const_cast<Problem2HDirichlet1*>(this)->mCrFfxWeightMatrix[m][n] = 0.0;
-            for (unsigned int i=0; i<Nc; i++)
-            {
-                const DeltaGrid2D &dg = controlDeltaGrids[i];
-                const_cast<Problem2HDirichlet1*>(this)->mCrFfxWeightMatrix[m][n] += _v[i] * dg.weight(n,m);
-            }
-        }
-    }
-
-    delete [] _v;
-}
-
-auto Problem2HDirichlet1::currentLayerBGrid(const DoubleMatrix &p, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids,
-                                            double ln, const spif_vectorH &u_info) const -> void
-{
-    const Dimension dimX = spaceDimension(Dimension::DimensionX);
-    const Dimension dimY = spaceDimension(Dimension::DimensionY);
-
-    const unsigned int N = static_cast<const unsigned int> ( dimX.size() );
-    const unsigned int M = static_cast<const unsigned int> ( dimY.size() );
-
-    const double hx = dimX.step();
-    const double hy = dimY.step();
-
-    const_cast<Problem2HDirichlet1*>(this)->mCrBfxWeightMatrix.clear();
-    const_cast<Problem2HDirichlet1*>(this)->mCrBfxWeightMatrix.resize(M+1, N+1, 0.0);
-
-    const unsigned int Nc = mEquParameter.Nc;
-    const unsigned int No = mEquParameter.No;
-
-    double* _p = new double[Nc];
-    for (unsigned int i=0; i<Nc; i++)
-    {
-        _p[i] = 0.0;
-        const DeltaGrid2D &dg = controlDeltaGrids[i];
-        for (unsigned int m=dg.minY(); m<=dg.maxY(); m++)
-        {
-            for (unsigned int n=dg.minX(); n<=dg.maxX(); n++)
-            {
-                _p[i] += p[m][n] * (dg.weight(n,m) * (hx*hy));
-            }
-        }
-    }
-
-    double *_w = new double[No];
-    for (unsigned int j=0; j<No; j++)
-    {
-        _w[j] = 0.0;
-        for (unsigned int i=0; i<Nc; i++)
-        {
-            _w[j] += mOptParameter.k[i][j] * (_p[i] + 2.0*r*gpi(i, ln, u_info, mOptParameter)*sgn(g0i(i, ln, u_info, mOptParameter)) );
-        }
-    }
-    delete [] _p;
-
-    for (unsigned int m=0; m<=M; m++)
-    {
-        for (unsigned int n=0; n<=N; n++)
-        {
-            const_cast<Problem2HDirichlet1*>(this)->mCrBfxWeightMatrix[m][n] = 0.0;
-            for (unsigned int j=0; j<No; j++)
-            {
-                const DeltaGrid2D &dg = measurementDeltaGrids[j];
-                const_cast<Problem2HDirichlet1*>(this)->mCrBfxWeightMatrix[m][n] += _w[j] * dg.weight(n,m);
-            }
-        }
-    }
-
-    delete [] _w;
-}
 
 
-
-auto Problem2HDirichlet1::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const -> void
+auto Problem2HDirichlet1::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info, double lambda) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -659,7 +508,6 @@ auto Problem2HDirichlet1::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
     const double hx = dimX.step();
     const double hy = dimY.step();
     const double ht = time.step();
-    const double lambda = 0.25;
 
     const double a        = mEquParameter.a;
     const double alpha    = mEquParameter.lambda;
@@ -690,24 +538,6 @@ auto Problem2HDirichlet1::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
     DoubleMatrix p15(M+1, N+1);
     DoubleMatrix p20(M+1, N+1);
 
-    //--------------------------------------------------------------------------------------------//
-    std::vector<DeltaGrid2D> measuremntGirdList(No);
-    std::vector<DeltaGrid2D> cntrlDeltaGridList(Nc);
-    for (unsigned int j=0; j<No; j++)
-    {
-        measuremntGirdList[j].initGrid(N, hx, M, hy);
-        measuremntGirdList[j].distributeGauss(mOptParameter.xi[j], 1, 1);
-    }
-
-    for (unsigned int i=0; i<Nc; i++)
-    {
-        cntrlDeltaGridList[i].initGrid(N, hx, M, hy);
-        cntrlDeltaGridList[i].distributeGauss(mOptParameter.eta[i], 1, 1);
-    }
-    //-------------------------------------------- info --------------------------------------------//
-    if (use == true) prepareInfo(Nc,  mOptParameter.eta, p_info, 2*LLD+1);
-    //-------------------------------------------- info --------------------------------------------//
-
     double *ax = static_cast<double*>( malloc(sizeof(double)*(N-1)) );
     double *bx = static_cast<double*>( malloc(sizeof(double)*(N-1)) );
     double *cx = static_cast<double*>( malloc(sizeof(double)*(N-1)) );
@@ -734,6 +564,24 @@ auto Problem2HDirichlet1::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
     }
     ay[0] = cy[M-2] = 0.0;
 
+    //--------------------------------------------------------------------------------------------//
+    std::vector<DeltaGrid2D> measuremntGirdList(No);
+    std::vector<DeltaGrid2D> cntrlDeltaGridList(Nc);
+    for (unsigned int j=0; j<No; j++)
+    {
+        measuremntGirdList[j].initGrid(N, hx, M, hy);
+        measuremntGirdList[j].distributeGauss(mOptParameter.xi[j], 1, 1);
+    }
+
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        cntrlDeltaGridList[i].initGrid(N, hx, M, hy);
+        cntrlDeltaGridList[i].distributeGauss(mOptParameter.eta[i], 1, 1);
+    }
+    //-------------------------------------------- info --------------------------------------------//
+    if (use == true) prepareInfo(Nc,  mOptParameter.eta, p_info, 2*LLD+1);
+    //-------------------------------------------- info --------------------------------------------//
+
     //------------------------------------- initial conditions -------------------------------------//
     /************************************************************************/
     SpaceNodePDE sn00;
@@ -748,8 +596,8 @@ auto Problem2HDirichlet1::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
     }
     if (use == true) add2Info(p00, p_info, 2*LLD, hx, hy, cntrlDeltaGridList); b_layerInfo(p00, 2*LLD);
     /************************************************************************/
-    TimeNodePDE tn05; tn05.i = LLD-1; tn05.t = LLD*ht + 0.5*ht;
-    TimeNodePDE tn10; tn10.i = LLD-1; tn10.t = LLD*ht;
+    TimeNodePDE tn05; tn05.i = LLD-1; tn05.t = LLD*ht - 0.5*ht;
+    TimeNodePDE tn10; tn10.i = LLD-1; tn10.t = LLD*ht - 1.0*ht;
     SpaceNodePDE sn05, sn10;
     sn05.i = 0; sn05.x = 0.0; sn10.i = static_cast<int>(N); sn10.x = N*hx;
     for (unsigned int m=0; m<=M; m++)
@@ -782,7 +630,7 @@ auto Problem2HDirichlet1::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
         _w[j] = 0.0;
         for (unsigned int i=0; i<Nc; i++)
         {
-            _w[j] += mOptParameter.k[i][j] * (_p00[i] + 2.0*r*gpi(i, 2*LLD, u_info, mOptParameter)*sgn(g0i(i,2*LLD, u_info, mOptParameter)));
+            _w[j] += mOptParameter.k[i][j] * (_p00[i] + 2.0*r*gpi(i, 2*LLD, u_info, mOptParameter)*sgn(g0i(i,2*LLD,u_info,mOptParameter)));
         }
     }
     delete [] _p00;
@@ -797,20 +645,19 @@ auto Problem2HDirichlet1::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
             double sum = 0.0;
             sum += aa__hxhx*(p00[m][n-1]-2.0*p00[m][n]+p00[m][n+1]);
             sum += aa__hyhy*(p00[m-1][n]-2.0*p00[m][n]+p00[m+1][n]);
-            sum += lambda*b_initial2(sn10);
-
+            sum += alpha*b_initial2(sn10);
             for (unsigned int j=0; j<No; j++)
             {
-                const DeltaGrid2D &dg = measuremntGirdList[j];
-                sum += _w[j] * dg.weight(n,m);
+                sum += _w[j] * measuremntGirdList[j].weight(n,m);
             }
+            sum -= 2.0*mu(n,m)*(u.at(2*LD)[m][n]);
 
             p05[m][n] = p00[m][n] - (ht*0.5) * b_initial2(sn10) + 0.125*ht*ht*sum;
             p10[m][n] = p00[m][n] - (ht*1.0) * b_initial2(sn10) + 0.500*ht*ht*sum;
         }
     }
-    if (use == true) add2Info(p05, p_info, 2*(LLD-1)+1, hx, hy, cntrlDeltaGridList); b_layerInfo(p05, 2*LLD-1);
-    if (use == true) add2Info(p10, p_info, 2*(LLD-1)+0, hx, hy, cntrlDeltaGridList); b_layerInfo(p10, 2*LLD-2);
+    if (use == true) add2Info(p05, p_info, 2*LLD-1, hx, hy, cntrlDeltaGridList); b_layerInfo(p05, 2*LLD-1);
+    if (use == true) add2Info(p10, p_info, 2*LLD-2, hx, hy, cntrlDeltaGridList); b_layerInfo(p10, 2*LLD-2);
     /************************************************************************/
     delete [] _w;
     SpaceNodePDE sn;

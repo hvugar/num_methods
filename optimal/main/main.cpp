@@ -66,7 +66,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //    unsigned int N = 100, M = 100;
 //    double hx = 0.01, hy = 0.01;
 //    delta.initGrid(N, hx, M, hy);
-//    SpacePoint p; p.x = 0.5428; p.y = 0.3232;
+//    SpacePoint p; p.x = 0.5400; p.y = 0.3000;
 //    delta.distributeGauss(p, 1, 1);
 //    DoubleMatrix u(M+1, N+1);
 //    for (unsigned int m=0; m<=M; m++)
@@ -77,6 +77,12 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //        }
 //    }
 //    double U = 0.0, Ux = 0.0, Uy = 0.0;
+
+//    double a, b, c;
+//    a = delta.consentrateInPoint(u, b, c);
+//    printf("%.6f %.6f %.6f\n%.6f %.6f %.6f\n %4d %4d\n", a, b, c,
+//           funcU(p.x, p.y), funcUx(p.x, p.y), funcUy(p.x, p.y), delta.rx(), delta.ry());
+
 //    //U = u[delta.ry()][delta.rx()];
 //    for (unsigned int m=delta.minY(); m<=delta.maxY(); m++)
 //    {
@@ -96,18 +102,21 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //                const unsigned int px = static_cast<const unsigned int>(delta.p().x);
 //                const unsigned int py = static_cast<const unsigned int>(delta.p().y);
 
-//                Ux = (u[ry][rx+1] - u[ry][rx-1])/(2.0*hx);
-//                Uy = (u[ry+1][rx] - u[ry-1][rx])/(2.0*hy);
+////                Ux = (u[ry][rx+1] - u[ry][rx-1])/(2.0*hx);
+////                Uy = (u[ry+1][rx] - u[ry-1][rx])/(2.0*hy);
+////                Ux += ((delta.p().x-rx*hx)/(hx*hx))*(u[ry][rx+1] - 2.0*u[ry][rx] + u[ry][rx-1]);
+////                Uy += ((delta.p().y-ry*hy)/(hy*hy))*(u[ry+1][rx] - 2.0*u[ry][rx] + u[ry-1][rx]);
 
-//                Ux += ((delta.p().x-rx*hx)/(hx*hx))*(u[ry][rx+1] - 2.0*u[ry][rx] + u[ry][rx-1]);
-//                Uy += ((delta.p().y-ry*hy)/(hy*hy))*(u[ry+1][rx] - 2.0*u[ry][rx] + u[ry-1][rx]);
 
-//                //ui.dxx[ln] = (1.0/(hx*hx))*(u[ry][rx+1] - 2.0*u[ry][rx] + u[ry][rx-1]);
-//                //ui.dyy[ln] = (1.0/(hy*hy))*(u[ry+1][rx] - 2.0*u[ry][rx] + u[ry-1][rx]);
+//                Ux = (u[ry][rx-2] - 8.0*u[ry][rx-1] + 8.0*u[ry][rx+1] - u[ry][rx+2])/(12.0*hx);
+//                Uy = (u[ry-2][rx] - 8.0*u[ry-1][rx] + 8.0*u[ry+1][rx] - u[ry+2][rx])/(12.0*hy);
+
+//                Ux += ((delta.p().x-rx*hx))*((-2.0*u[ry][rx-2] + 32.0*u[ry][rx-1] - 60.0*u[ry][rx] + 32.0*u[ry][rx+1] - 2.0*u[ry][rx+2])/(24.0*hx*hx));
+//                Uy += ((delta.p().y-ry*hy))*((-2.0*u[ry-2][rx] + 32.0*u[ry-1][rx] - 60.0*u[ry][rx] + 32.0*u[ry+1][rx] - 2.0*u[ry+2][rx])/(24.0*hy*hy));
 //            }
 //        }
 //    }
-//    printf("%.14f %.14f %.14f\n%.14f %.14f %.14f\n %4d %4d\n", U, Ux, Uy, funcU(p.x, p.y), funcUx(p.x, p.y), funcUy(p.x, p.y), delta.rx(), delta.ry());
+//    printf("%.6f %.6f %.6f\n%.6f %.6f %.6f\n %4d %4d\n", U, Ux, Uy, funcU(p.x, p.y), funcUx(p.x, p.y), funcUy(p.x, p.y), delta.rx(), delta.ry());
 //    return 0;
 
 

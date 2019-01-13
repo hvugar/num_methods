@@ -34,3 +34,16 @@ void SpacePointInfoH::clear()
     vl.clear();
     length = 0;
 }
+
+EquationParameterH1::EquationParameterH1(unsigned int Nc, unsigned int No, unsigned int Ns, double a, double alpha)
+{
+    this->Nc = Nc;
+    this->No = No;
+    this->Ns = Ns;
+    this->a = a;
+    this->alpha = alpha;
+
+    op.k.resize(Nc, No); op.z.resize(Nc, No); op.xi.resize(No); op.eta.resize(Nc);
+    rp.k.resize(Nc, No); rp.z.resize(Nc, No); rp.xi.resize(No); rp.eta.resize(Nc);
+    pulseVector.resize(Ns);
+}

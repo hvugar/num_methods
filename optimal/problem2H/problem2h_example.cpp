@@ -19,18 +19,18 @@ void ProjectionEx1::project(DoubleVector &x) const
     return;
 
 
-//    if ( x[ 8] < 0.05 ) x[ 8] = 0.05; if ( x[ 8] > 0.45 ) x[ 8] = 0.45;
-//    if ( x[ 9] < 0.55 ) x[ 9] = 0.55; if ( x[ 9] > 0.95 ) x[ 9] = 0.95;
-//    if ( x[10] < 0.55 ) x[10] = 0.55; if ( x[10] > 0.95 ) x[10] = 0.95;
-//    if ( x[11] < 0.05 ) x[11] = 0.05; if ( x[11] > 0.45 ) x[11] = 0.45;
+    //    if ( x[ 8] < 0.05 ) x[ 8] = 0.05; if ( x[ 8] > 0.45 ) x[ 8] = 0.45;
+    //    if ( x[ 9] < 0.55 ) x[ 9] = 0.55; if ( x[ 9] > 0.95 ) x[ 9] = 0.95;
+    //    if ( x[10] < 0.55 ) x[10] = 0.55; if ( x[10] > 0.95 ) x[10] = 0.95;
+    //    if ( x[11] < 0.05 ) x[11] = 0.05; if ( x[11] > 0.45 ) x[11] = 0.45;
 
-//    if ( x[12] < 0.05 ) x[12] = 0.05; if ( x[12] > 0.45 ) x[12] = 0.45;
-//    if ( x[13] < 0.05 ) x[13] = 0.05; if ( x[13] > 0.45 ) x[13] = 0.45;
-//    if ( x[14] < 0.55 ) x[14] = 0.55; if ( x[14] > 0.95 ) x[14] = 0.95;
-//    if ( x[15] < 0.55 ) x[15] = 0.55; if ( x[15] > 0.95 ) x[15] = 0.95;
+    //    if ( x[12] < 0.05 ) x[12] = 0.05; if ( x[12] > 0.45 ) x[12] = 0.45;
+    //    if ( x[13] < 0.05 ) x[13] = 0.05; if ( x[13] > 0.45 ) x[13] = 0.45;
+    //    if ( x[14] < 0.55 ) x[14] = 0.55; if ( x[14] > 0.95 ) x[14] = 0.95;
+    //    if ( x[15] < 0.55 ) x[15] = 0.55; if ( x[15] > 0.95 ) x[15] = 0.95;
 
-//    DoubleVector x0 = x.mid(8,x.length()-1);
-//    IPrinter::print(x0);
+    //    DoubleVector x0 = x.mid(8,x.length()-1);
+    //    IPrinter::print(x0);
 }
 
 void ProjectionEx1::project(DoubleVector &, unsigned int) {}
@@ -54,71 +54,77 @@ void prod_example1()
     e_prm.lambda = +0.00;
 
     // Pulse influences
-    e_prm.Nc = 2;
+    e_prm.Ns = 2;
     e_prm.q.resize(e_prm.Ns);
     e_prm.theta.resize(e_prm.Ns);
 
     // Optimization parameters
     OptimizeParameterH o_prm;
-    e_prm.Ns = 2;
+    e_prm.Nc = 2;
     e_prm.No = 2;
     o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
-    e_prm.q[0] = +0.314; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
-    e_prm.q[1] = +0.328; e_prm.theta[1].x = 0.7382; e_prm.theta[1].y = 0.6518;
-    o_prm.k[0][0]  = -2.0610; o_prm.k[0][1]  = -1.9376; o_prm.k[1][0]  = -2.1707; o_prm.k[1][1]  = -1.8527;
+    e_prm.q[0] = +0.214; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
+    e_prm.q[1] = +0.228; e_prm.theta[1].x = 0.7382; e_prm.theta[1].y = 0.6518;
+    o_prm.k[0][0]  = -2.0610; o_prm.k[0][1]  = -2.9376; o_prm.k[1][0]  = -2.1707; o_prm.k[1][1]  = -2.8527;
     o_prm.z[0][0]  = -0.0461; o_prm.z[0][1]  = -0.0246; o_prm.z[1][0]  = +0.0319; o_prm.z[1][1]  = +0.0161;
-    o_prm.xi[0].x  = +0.6402; o_prm.xi[0].y  = +0.4899; o_prm.xi[1].x  = +0.8148; o_prm.xi[1].y  = +0.9500;
-    o_prm.eta[0].x = +0.9500; o_prm.eta[0].y = +0.4609; o_prm.eta[1].x = +0.2512; o_prm.eta[1].y = +0.8932;
-    puts("OK");
+    o_prm.xi[0].x  = +0.5400; o_prm.xi[0].y  = +0.3500; o_prm.xi[1].x  = +0.8200; o_prm.xi[1].y  = +0.9400;
+    o_prm.eta[0].x = +0.1200; o_prm.eta[0].y = +0.6200; o_prm.eta[1].x = +0.3400; o_prm.eta[1].y = +0.3400;
+
+    // 0.010242
+    //e_prm.q[0] = +0.314; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
+    //e_prm.q[1] = +0.328; e_prm.theta[1].x = 0.7382; e_prm.theta[1].y = 0.6518;
+    //o_prm.k[0][0]  = -2.0610; o_prm.k[0][1]  = -1.9376; o_prm.k[1][0]  = -2.1707; o_prm.k[1][1]  = -1.8527;
+    //o_prm.z[0][0]  = -0.0461; o_prm.z[0][1]  = -0.0246; o_prm.z[1][0]  = +0.0319; o_prm.z[1][1]  = +0.0161;
+    //o_prm.xi[0].x  = +0.6402; o_prm.xi[0].y  = +0.4899; o_prm.xi[1].x  = +0.8148; o_prm.xi[1].y  = +0.9500;
+    //o_prm.eta[0].x = +0.9500; o_prm.eta[0].y = +0.4609; o_prm.eta[1].x = +0.2512; o_prm.eta[1].y = +0.8932;
 
     // 0.006407
     //e_prm.q[0] = +0.314; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
     //e_prm.q[1] = +0.328; e_prm.theta[1].x = 0.7382; e_prm.theta[1].y = 0.6518;
-    //o_prm.k[0][0]  = +0.7140; o_prm.k[0][1]  = -0.3012; o_prm.k[1][0]  = +0.8444; o_prm.k[1][1]  = -0.6901;
+    //o_prm.k[0][0]  = +0.7700; o_prm.k[0][1]  = -0.5100; o_prm.k[1][0]  = +0.8444; o_prm.k[1][1]  = -0.6901;
     //o_prm.z[0][0]  = +0.0351; o_prm.z[0][1]  = +0.0238; o_prm.z[1][0]  = +0.1098; o_prm.z[1][1]  = -0.0302;
     //o_prm.xi[0].x  = +0.4605; o_prm.xi[0].y  = +0.4316; o_prm.xi[1].x  = +0.7556; o_prm.xi[1].y  = +0.6413;
     //o_prm.eta[0].x = +0.7516; o_prm.eta[0].y = +0.8028; o_prm.eta[1].x = +0.4595; o_prm.eta[1].y = +0.4302;
 
-//    o_prm.k[0][0]  = +0.4062; o_prm.k[0][1]  = -0.1118; o_prm.k[1][0]  = +0.6411; o_prm.k[1][1]  = -0.5024;
-//    o_prm.z[0][0]  = +0.0207; o_prm.z[0][1]  = -0.0022; o_prm.z[1][0]  = +0.0460; o_prm.z[1][1]  = -0.0277;
-//    o_prm.xi[0].x  = +0.4985; o_prm.xi[0].y  = +0.5005; o_prm.xi[1].x  = +0.7629; o_prm.xi[1].y  = +0.6422;
-//    o_prm.eta[0].x = +0.7180; o_prm.eta[0].y = +0.7701; o_prm.eta[1].x = +0.4996; o_prm.eta[1].y = +0.4999;
+    // 0.008546
+    //e_prm.q[0] = +0.314; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
+    //e_prm.q[1] = +0.328; e_prm.theta[1].x = 0.7382; e_prm.theta[1].y = 0.6518;
+    //o_prm.k[0][0]  = +0.4062; o_prm.k[0][1]  = -0.1118; o_prm.k[1][0]  = +0.6411; o_prm.k[1][1]  = -0.5024;
+    //o_prm.z[0][0]  = +0.0207; o_prm.z[0][1]  = -0.0022; o_prm.z[1][0]  = +0.0460; o_prm.z[1][1]  = -0.0277;
+    //o_prm.xi[0].x  = +0.4985; o_prm.xi[0].y  = +0.5005; o_prm.xi[1].x  = +0.7629; o_prm.xi[1].y  = +0.6422;
+    //o_prm.eta[0].x = +0.7180; o_prm.eta[0].y = +0.7701; o_prm.eta[1].x = +0.4996; o_prm.eta[1].y = +0.4999;
 
-    // Initial I:0.03533
+    // 0.016549 --------------------------------------------------------------------------------------------
+    //e_prm.q[0] = +0.314; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
+    //e_prm.q[1] = +0.328; e_prm.theta[1].x = 0.7382; e_prm.theta[1].y = 0.6518;
     //o_prm.k[0][0]  = +0.0000; o_prm.k[0][1]  = +0.0000; o_prm.k[1][0]  = +0.0000; o_prm.k[1][1]  = +0.0000;
     //o_prm.z[0][0]  = +0.0000; o_prm.z[0][1]  = +0.0000; o_prm.z[1][0]  = +0.0000; o_prm.z[1][1]  = +0.0000;
+    //o_prm.xi[0].x  = +0.3849; o_prm.xi[0].y  = +0.5442; o_prm.xi[1].x  = +0.7861; o_prm.xi[1].y  = +0.6785;
+    //o_prm.eta[0].x = +0.6656; o_prm.eta[0].y = +0.7909; o_prm.eta[1].x = +0.4956; o_prm.eta[1].y = +0.3810;
+    //-----------------------------------------------------------------------------------------------------
+
+    // 0.012435 --------------------------------------------------------------------------------------------
+    //e_prm.q[0] = +0.314; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
+    //e_prm.q[1] = +0.328; e_prm.theta[1].x = 0.7382; e_prm.theta[1].y = 0.6518;
     //o_prm.k[0][0]  = -1.1820; o_prm.k[0][1]  = -1.1250; o_prm.k[1][0]  = -1.1550; o_prm.k[1][1]  = -1.1310;
+    //o_prm.z[0][0]  = +0.0125; o_prm.z[0][1]  = +0.0268; o_prm.z[1][0]  = +0.0359; o_prm.z[1][1]  = +0.0186;
+    //o_prm.xi[0].x  = +0.3849; o_prm.xi[0].y  = +0.5442; o_prm.xi[1].x  = +0.7861; o_prm.xi[1].y  = +0.6785;
+    //o_prm.eta[0].x = +0.6656; o_prm.eta[0].y = +0.7909; o_prm.eta[1].x = +0.4956; o_prm.eta[1].y = +0.3810;
+    //-----------------------------------------------------------------------------------------------------
 
-//    o_prm.k[0][0]  = +2.1820; o_prm.k[0][1]  = +2.1250; o_prm.k[1][0]  = +2.1550; o_prm.k[1][1]  = +2.1310;
-//    o_prm.z[0][0]  = +0.0125; o_prm.z[0][1]  = +0.0268; o_prm.z[1][0]  = +0.0359; o_prm.z[1][1]  = +0.0186;
-//    o_prm.xi[0].x  = +0.3849; o_prm.xi[0].y  = +0.5442; o_prm.xi[1].x  = +0.7861; o_prm.xi[1].y  = +0.6785;
-//    o_prm.eta[0].x = +0.6656; o_prm.eta[0].y = +0.7909; o_prm.eta[1].x = +0.4956; o_prm.eta[1].y = +0.3810;
-
-    //o_prm.xi[0].x  = +0.1849; o_prm.xi[0].y  = +0.2442; o_prm.xi[1].x  = +0.4861; o_prm.xi[1].y  = +0.7785;
-    //o_prm.eta[0].x = +0.3656; o_prm.eta[0].y = +0.3909; o_prm.eta[1].x = +0.9156; o_prm.eta[1].y = +0.9410;
-    // Optimal I:0.00054           --------------------------------------------------------------------------
-    //o_prm.k[0][0]  = -2.1866; o_prm.k[0][1]  = -2.1325; o_prm.k[1][0]  = -2.1321; o_prm.k[1][1]  = -2.1712;
-    //o_prm.z[0][0]  = +0.0359; o_prm.z[0][1]  = +0.0496; o_prm.z[1][0]  = +0.1320; o_prm.z[1][1]  = +0.1145;
-    //o_prm.xi[0].x  = +0.2732; o_prm.xi[0].y  = +0.6012; o_prm.xi[1].x  = +0.7578; o_prm.xi[1].y  = +0.7590;
-    //o_prm.eta[0].x = +0.6968; o_prm.eta[0].y = +0.6892; o_prm.eta[1].x = +0.3987; o_prm.eta[1].y = +0.3898;
+    // 0.009912 -------------------------------------------------------------------------------------------
+    //    e_prm.q[0] = +0.314; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
+    //    e_prm.q[1] = +0.328; e_prm.theta[1].x = 0.7382; e_prm.theta[1].y = 0.6518;
+    //    o_prm.k[0][0]  = -2.1866; o_prm.k[0][1]  = -2.1325; o_prm.k[1][0]  = -2.1321; o_prm.k[1][1]  = -2.1712;
+    //    o_prm.z[0][0]  = +0.0359; o_prm.z[0][1]  = +0.0496; o_prm.z[1][0]  = +0.1320; o_prm.z[1][1]  = +0.1145;
+    //    o_prm.xi[0].x  = +0.2732; o_prm.xi[0].y  = +0.6012; o_prm.xi[1].x  = +0.7578; o_prm.xi[1].y  = +0.7590;
+    //    o_prm.eta[0].x = +0.6968; o_prm.eta[0].y = +0.6892; o_prm.eta[1].x = +0.3987; o_prm.eta[1].y = +0.3898;
     //o_prm.eta[0].x = +0.2500; o_prm.eta[0].y = +0.2500; o_prm.eta[1].x = +0.7500; o_prm.eta[1].y = +0.7500;
-    // ------------------------------------------------------------------------------------------------------
-    // Optimal I:0.00093           --------------------------------------------------------------------------
-    //o_prm.k[0][0]  = -1.2826; o_prm.k[0][1]  = -1.0983; o_prm.k[1][0]  = -1.4301; o_prm.k[1][1]  = -1.1559;
-    //o_prm.z[0][0]  = -0.1559; o_prm.z[0][1]  = -0.1369; o_prm.z[1][0]  = -0.0990; o_prm.z[1][1]  = -0.1317;
-    //o_prm.xi[0].x  = +0.1391; o_prm.xi[0].y  = +0.8715; o_prm.xi[1].x  = +0.7716; o_prm.xi[1].y  = +0.7722;
-    //o_prm.eta[0].x = +0.6358; o_prm.eta[0].y = +0.5878; o_prm.eta[1].x = +0.3662; o_prm.eta[1].y = +0.3292;
-    // ------------------------------------------------------------------------------------------------------
-    // Optimal I:0.00046           --------------------------------------------------------------------------
-    //o_prm.k[0][0]  = -2.2155; o_prm.k[0][1]  = -2.1080; o_prm.k[1][0]  = -2.0897; o_prm.k[1][1]  = -2.2124;
-    //o_prm.z[0][0]  = +0.0359; o_prm.z[0][1]  = +0.0496; o_prm.z[1][0]  = +0.1208; o_prm.z[1][1]  = -0.1028;
-    //o_prm.xi[0].x  = +0.3943; o_prm.xi[0].y  = +0.7138; o_prm.xi[1].x  = +0.7461; o_prm.xi[1].y  = +0.6914;
-    //o_prm.eta[0].x = +0.6914; o_prm.eta[0].y = +0.6823; o_prm.eta[1].x = +0.3760; o_prm.eta[1].y = +0.3700;
-    // ------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------------------------
 
     // Regularization parameters
     OptimizeParameterH r_prm;
@@ -154,9 +160,7 @@ void prod_example1()
     for (unsigned int i=0; i<r.length(); i++)
     {
         Problem2HDirichlet1 prob;
-        prob.setTimeDimension(Dimension(0.005, 0, 1000));
-        prob.addSpaceDimension(Dimension(0.010, 0, 100));
-        prob.addSpaceDimension(Dimension(0.010, 0, 100));
+        prob.setGridDimensions(Dimension(0.010, 0, 500), Dimension(0.010, 0, 100), Dimension(0.010, 0, 100));
         prob.mEquParameter = e_prm;
         prob.mOptParameter = o_prm;
         prob.mRegParameter = r_prm;
@@ -164,9 +168,9 @@ void prod_example1()
         prob.optimizeZ = true;
         prob.optimizeO = true;
         prob.optimizeC = true;
-        prob.vmin.resize(e_prm.Nc, -0.05);
-        prob.vmax.resize(e_prm.Nc, +0.05);
-        prob.LD = 100;
+        prob.vmin.resize(e_prm.Nc, -0.5);
+        prob.vmax.resize(e_prm.Nc, +0.5);
+        prob.LD = 50;
         prob.noise = 0.0;
 
         prob.regEpsilon = e[i];
@@ -174,23 +178,31 @@ void prod_example1()
 
         if (i==0)
         {
-            IPrinter::printSeperatorLine();
             prob.PrmToVector(o_prm, x);
-            IPrinter::printSeperatorLine();
-//            prob.checkGradient1(prob);
+            prob.checkGradient1(prob);
+            //prob.checkGradient2(prob);
+            //return;
+
+//            printf("fx: %.10f\n", prob.fx(x));
+//            for (int n=-100; n<=100; n++)
+//            {
+//                x[3] = n*0.01;
+//                printf("%f %f\n", n*0.01, prob.fx(x));
+//            }
+//
 //            return;
 
-//            std::vector<DoubleMatrix> u;
-//            spif_vectorH u_info, p_info;
-//            prob.solveForwardIBVP(u, u_info, true);
-//            IPrinter::printSeperatorLine();
-//            prob.solveBackwardIBVP(u, p_info, true, u_info);
-//            return;
+            //            std::vector<DoubleMatrix> u;
+            //            spif_vectorH u_info, p_info;
+            //            prob.solveForwardIBVP(u, u_info, true);
+            //            IPrinter::printSeperatorLine();
+            //            prob.solveBackwardIBVP(u, p_info, true, u_info);
+            //            return;
 
-//            spif_vectorH p_info;
-//            prob.solveBackwardIBVP(u, p_info, false, u_info);
+            //            spif_vectorH p_info;
+            //            prob.solveBackwardIBVP(u, p_info, false, u_info);
 
-//            return;
+            //            return;
 
 
             //FILE* cfile = fopen("e:/Google Drive/Problems/Problem2_H/Experiments/control2.txt", "w");
@@ -200,14 +212,14 @@ void prod_example1()
             //}
             //fclose(cfile);
 
-//            return;
+            //            return;
 
             //prod_figure1(prob, ht, x);
             //return;
-//            printf("Fx: %10.6f\n", prob.fx(x)); return;
-//            IPrinter::printSeperatorLine();
-//            IPrinter::printMatrix(8,4,u[0]);
-//            prob.fx(x);
+            //            printf("Fx: %10.6f\n", prob.fx(x)); return;
+            //            IPrinter::printSeperatorLine();
+            //            IPrinter::printMatrix(8,4,u[0]);
+            //            prob.fx(x);
         }
 
         //ConjugateGradient g;
@@ -226,8 +238,7 @@ void prod_example1()
         g.setNormalize(false);
         g.showExitMessage(true);
         //prob.gm = &g;
-puts("11");
-        g.calculate(x);puts("22");
+        g.calculate(x);
 
         IPrinter::printSeperatorLine(nullptr, '=');
     }

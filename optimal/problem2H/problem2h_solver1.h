@@ -9,7 +9,6 @@ public:
     Problem2HDirichlet1();
     virtual ~Problem2HDirichlet1();
 
-    virtual auto fx(const DoubleVector &x) const -> double;
     virtual auto gradient(const DoubleVector &, DoubleVector &) const -> void;
 
     /** Integral part of functional */
@@ -20,17 +19,7 @@ public:
 
 public:
     auto solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use, double lambda=0.25) const -> void;
-    auto solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info) const -> void;
-
-public:
-    std::vector<DoubleMatrix> vu;
-
-    DoubleMatrix mCrFfxWeightMatrix;
-    DoubleMatrix mCrBfxWeightMatrix;
-
-    auto currentLayerFGrid(const DoubleMatrix &u, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids) const -> void;
-    auto currentLayerBGrid(const DoubleMatrix &p, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids,
-                           double ln, const spif_vectorH &u_info) const -> void;
+    auto solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info, double lambda=0.25) const -> void;
 };
 
 #endif // PROBLEM2H_SOLVER1_H

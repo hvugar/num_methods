@@ -973,7 +973,7 @@ void Problem2HDirichlet4::f_currentLayer(const DoubleMatrix &u10, const Equation
     unsigned int No = equationParameter.No;
     unsigned int Nc = equationParameter.Nc;
 
-    double* _u = new double[No];
+    double *_u = new double[No];
     double *_v = new double[Nc];
 
     for (unsigned int j=0; j<No; j++)

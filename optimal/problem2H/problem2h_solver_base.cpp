@@ -6,7 +6,12 @@ Problem2hDirichletBase::Problem2hDirichletBase()
     regEpsilon = 0.0;
 }
 
-Problem2hDirichletBase::~Problem2hDirichletBase() {}
+Problem2hDirichletBase::~Problem2hDirichletBase()
+{
+    mPulseWeightMatrix.clear();
+    mCrFfxWeightMatrix.clear();
+    mCrBfxWeightMatrix.clear();
+}
 
 auto Problem2hDirichletBase::initPulseWeightMatrix(const std::vector<SpacePoint> &theta,
                                                    const std::vector<double> q) const -> void
@@ -23,24 +28,21 @@ auto Problem2hDirichletBase::initPulseWeightMatrix(const std::vector<SpacePoint>
     const unsigned int Ns = static_cast<unsigned int>(theta.size());
     DoubleMatrix &pulseWeightMatrix = const_cast<Problem2hDirichletBase*>(this)->mPulseWeightMatrix;
 
-    pulseWeightMatrix.clear();
-    pulseWeightMatrix.resize(M+1, N+1, 0.0);
-
     std::vector<DeltaGrid2D> deltaGrids(Ns);
     for (unsigned int s=0; s<Ns; s++)
     {
         deltaGrids[s].initGrid(N, hx, M, hy);
-        deltaGrids[s].distributeGauss(theta[s], 6, 6);
+        deltaGrids[s].distributeGauss(theta[s], 8, 8);
     }
 
     for (unsigned int m=0; m<=M; m++)
     {
         for (unsigned int n=0; n<=N; n++)
         {
-           pulseWeightMatrix[m][n] = 0.0;
+            pulseWeightMatrix[m][n] = 0.0;
             for (unsigned int s=0; s<Ns; s++)
             {
-               pulseWeightMatrix[m][n] += q[s]*deltaGrids[s].weight(n, m);
+                pulseWeightMatrix[m][n] += q[s]*deltaGrids[s].weight(n, m);
             }
         }
     }
@@ -88,42 +90,42 @@ auto Problem2hDirichletBase::b_boundary(const SpaceNodePDE &sn UNUSED_PARAM, con
 
 auto Problem2hDirichletBase::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
 {
-    if (ln == 1000) IPrinter::printMatrix(u);
+    //    if (ln == 1000) IPrinter::printMatrix(u);
 
-//    printf("%4d %.8f %.8f\n", ln, u.min(), u.max());
+    //    printf("%4d %.8f %.8f\n", ln, u.min(), u.max());
     return;
 
-//    {
-//        Problem2hDirichletBase* tmp = const_cast<Problem2hDirichletBase*>(this);
-//        std::vector<DoubleMatrix> &rvu = tmp->vu;
+    {
+        Problem2hDirichletBase* tmp = const_cast<Problem2hDirichletBase*>(this);
+        std::vector<DoubleMatrix> &rvu = tmp->vu;
 
-//        rvu.push_back(u);
-//        if (rvu.size() > 2*LD+1) rvu.erase(rvu.begin());
+        rvu.push_back(u);
+        if (rvu.size() > 2*LD+1) rvu.erase(rvu.begin());
 
-////        if (ln == 1001)
-////        {
-////            tmp->mOptParameter.k[0][0] = 0.0;
-////            tmp->mOptParameter.k[0][1] = 0.0;
-////            tmp->mOptParameter.k[1][0] = 0.0;
-////            tmp->mOptParameter.k[1][1] = 0.0;
-////        }
+        //        if (ln == 1001)
+        //        {
+        //            tmp->mOptParameter.k[0][0] = 0.0;
+        //            tmp->mOptParameter.k[0][1] = 0.0;
+        //            tmp->mOptParameter.k[1][0] = 0.0;
+        //            tmp->mOptParameter.k[1][1] = 0.0;
+        //        }
 
-//        if (rvu.size() == 2*LD+1)
-//        {
-//            //std::cout << ln << " " << rvu.size() << std::endl;
-//            if (ln%2==0)
-//            {
-//            double fx = integral(rvu);
-//            printf("%d %d %.10f\n", ln, ln/2-50, fx);
-//            }
-//            //printf("%.10f\n", fx);
-//        }
-//    }
+        if (rvu.size() == 2*LD+1)
+        {
+            //std::cout << ln << " " << rvu.size() << std::endl;
+            if (ln%2==0)
+            {
+                double fx = integral(rvu);
+                printf("%d %d %.10f\n", ln, ln/2-50, fx);
+            }
+            //printf("%.10f\n", fx);
+        }
+    }
 }
 
 auto Problem2hDirichletBase::b_layerInfo(const DoubleMatrix &p UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
 {
-    if (ln == 0) IPrinter::printMatrix(p);
+    //    if (ln == 0) IPrinter::printMatrix(p);
 }
 
 auto Problem2hDirichletBase::checkGradient1(const Problem2hDirichletBase &prob) -> void
@@ -160,7 +162,6 @@ auto Problem2hDirichletBase::checkGradient1(const Problem2hDirichletBase &prob) 
     IGradient::Gradient(&prob, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No+0*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No-1);
     puts("*** Calculating numerical gradients for eta.... dh=0.01");
     IGradient::Gradient(&prob, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    puts("Numerical gradients are calculated.");
 
     puts("Calculating numerical gradients.... hx=0.001");
     puts("*** Calculating numerical gradients for k...... dh=0.001");
@@ -232,7 +233,7 @@ auto Problem2hDirichletBase::checkGradient1(const Problem2hDirichletBase &prob) 
     IPrinter::print(ax0,ax0.length(),14,4);
     IPrinter::print(nx1,nx1.length(),14,4);
     IPrinter::print(nx2,nx2.length(),14,4);
-    IPrinter::printSeperatorLine();
+    IPrinter::printSeperatorLine();printf("%f\n", o_prm.eta[1].x);
 }
 
 auto Problem2hDirichletBase::checkGradient2(const Problem2hDirichletBase &prob) -> void
@@ -240,6 +241,8 @@ auto Problem2hDirichletBase::checkGradient2(const Problem2hDirichletBase &prob) 
     EquationParameterH e_prm = prob.mEquParameter;
     OptimizeParameterH o_prm = prob.mOptParameter;
     OptimizeParameterH r_prm = prob.mRegParameter;
+
+    printf("%f\n", prob.mOptParameter.eta[1].x);
 
     IPrinter::printSeperatorLine();
     DoubleVector pv;
@@ -462,8 +465,8 @@ auto Problem2hDirichletBase::project(DoubleVector &pv) const -> void
 
     for (unsigned int index = start; index <= end; index++)
     {
-        if (pv[index] < 0.05) pv[index] = 0.05;
-        if (pv[index] > 0.95) pv[index] = 0.95;
+        if (pv[index] <= 0.05) pv[index] = 0.05;
+        if (pv[index] >= 0.95) pv[index] = 0.95;
     }
 
     //    for (unsigned int index = start; index <= end; index++)
@@ -480,11 +483,11 @@ auto Problem2hDirichletBase::project(DoubleVector &pv) const -> void
     //    }
 
     //IPrinter::print(pv.mid(start, end));
-    for (unsigned int index = start; index <=end; index++)
-    {
-        //projectControlPoints(pv, index);
-        projectMeasurePoints(pv, index);
-    }
+    //for (unsigned int index = start; index <=end; index++)
+    //{
+    //    //projectControlPoints(pv, index);
+    //    projectMeasurePoints(pv, index);
+    //}
 }
 
 auto Problem2hDirichletBase::projectControlPoints(DoubleVector &pv, unsigned int index) const -> void
@@ -618,6 +621,14 @@ auto Problem2hDirichletBase::print(unsigned int i, const DoubleVector &x, const 
     double pnt = penalty(u_info, o_prm);
     double nrm = norm(prob->mEquParameter, prob->mOptParameter, prob->mRegParameter);
 
+    DoubleVector uf, um, ux;
+    for (unsigned int i=0; i<=50; i+=5)
+    {
+        uf << integralU(u[i]);
+        um << u[i].min();
+        ux << u[i].max();
+    }
+
     const unsigned int v_length = static_cast<const unsigned int>(timeDimension().size()) + LD;
     DoubleVector v1(v_length+1);
     DoubleVector v2(v_length+1);
@@ -630,6 +641,9 @@ auto Problem2hDirichletBase::print(unsigned int i, const DoubleVector &x, const 
 
     IPrinter::printVector(v1, "v1", 10);
     IPrinter::printVector(v2, "v2", 10);
+    IPrinter::printVector(uf, "uf", 10);
+    IPrinter::printVector(um, "um", 10);
+    IPrinter::printVector(ux, "ux", 10);
 
     printf("I[%3d]: F:%.6f I:%.6f P:%.6f N:%.5f R:%.3f e:%.3f a:%.6f ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
     printf("min:%.6f max:%.6f min:%.6f max:%.6f U0:%.8f UT:%.8f", u.at(0).min(), u.at(0).max(), u.at(2*LD).min(), u.at(2*LD).max(), integralU(u[0]), integralU(u[LD]));
@@ -649,6 +663,31 @@ auto Problem2hDirichletBase::print(unsigned int i, const DoubleVector &x, const 
     //prob->optimizeZ = i%4 == 0;
     //prob->optimizeO = i%4 == 1;
     //prob->optimizeC = i%4 == 2;
+}
+
+auto Problem2hDirichletBase::fx(const DoubleVector &pv) const -> double
+{
+    OptimizeParameterH o_prm;
+
+    VectorToPrm(pv, o_prm);
+
+    Problem2hDirichletBase* prob = const_cast<Problem2hDirichletBase*>(this);
+    prob->mOptParameter = o_prm;
+
+    std::vector<DoubleMatrix> u;
+    spif_vectorH u_info;
+    prob->solveForwardIBVP(u, u_info, true);
+
+    double intgrl = integral(u);
+
+    double nrm = norm(mEquParameter, o_prm, mRegParameter);
+    double pnt = penalty(u_info, o_prm);
+    double sum = intgrl + regEpsilon*nrm + r*pnt;
+
+    for (unsigned int i=0; i<u.size(); i++)      u[i].clear();      u.clear();
+    for (unsigned int j=0; j<u_info.size(); j++) u_info[j].clear(); u_info.clear();
+
+    return sum;
 }
 
 double Problem2hDirichletBase::norm(const EquationParameterH& e_prm, const OptimizeParameterH &o_prm, const OptimizeParameterH &r_prm) const
@@ -752,32 +791,170 @@ auto Problem2hDirichletBase::prepareInfo(unsigned int N, const std::vector<Space
 
 auto Problem2hDirichletBase::add2Info(const DoubleMatrix &u, spif_vectorH &info, unsigned int ln, double hx, double hy, const std::vector<DeltaGrid2D> &deltaList) const -> void
 {
-    unsigned int N = static_cast<unsigned int>(deltaList.size());
+    const unsigned int N = static_cast<unsigned int>(deltaList.size());
 
     for (unsigned int i=0; i<N; i++)
     {
         const DeltaGrid2D &deltagrid = deltaList[i];
         SpacePointInfoH &ui = info[i];
+        ui.vl[ln] = deltagrid.consentrateInPoint(u, ui.dx[ln], ui.dy[ln]);
 
-        for (unsigned int m=deltagrid.minY(); m<=deltagrid.maxY(); m++)
+//        for (unsigned int m=deltagrid.minY(); m<=deltagrid.maxY(); m++)
+//        {
+//            for (unsigned int n=deltagrid.minX(); n<=deltagrid.maxX(); n++)
+//            {
+//                ui.vl[ln] += u[m][n] * (deltagrid.weight(n,m) * (hx*hy));
+//            }
+//        }
+
+//        const unsigned int rx = static_cast<unsigned int>(deltagrid.rx());
+//        const unsigned int ry = static_cast<unsigned int>(deltagrid.ry());
+//        const double px = deltagrid.p().x;
+//        const double py = deltagrid.p().y;
+
+//        ui.dx[ln] = (u[ry][rx+1] - u[ry][rx-1])/(2.0*hx);
+//        ui.dy[ln] = (u[ry+1][rx] - u[ry-1][rx])/(2.0*hy);
+
+//        ui.dx[ln] += ((px-rx*hx)/(hx*hx))*(u[ry][rx+1] - 2.0*u[ry][rx] + u[ry][rx-1]);
+//        ui.dy[ln] += ((py-ry*hy)/(hy*hy))*(u[ry+1][rx] - 2.0*u[ry][rx] + u[ry-1][rx]);
+    }
+}
+
+auto Problem2hDirichletBase::currentLayerFGrid(const DoubleMatrix &u,
+                                            const std::vector<DeltaGrid2D> &controlDeltaGrids,
+                                            const std::vector<DeltaGrid2D> &measurementDeltaGrids) const -> void
+{
+    const Dimension dimX = spaceDimension(Dimension::DimensionX);
+    const Dimension dimY = spaceDimension(Dimension::DimensionY);
+
+    const unsigned int N = static_cast<const unsigned int> ( dimX.size() );
+    const unsigned int M = static_cast<const unsigned int> ( dimY.size() );
+
+    const double hx = dimX.step();
+    const double hy = dimY.step();
+
+    Problem2hDirichletBase* const_this = const_cast<Problem2hDirichletBase*>(this);
+
+//    const_this->mCrFfxWeightMatrix.clear();
+//    const_this->mCrFfxWeightMatrix.resize(M+1, N+1, 0.0);
+
+    const unsigned int Nc = mEquParameter.Nc;
+    const unsigned int No = mEquParameter.No;
+
+    double* _u = new double[No];
+    for (unsigned int j=0; j<No; j++)
+    {
+        _u[j] = measurementDeltaGrids[j].consentrateInPoint(u);
+//        const DeltaGrid2D &dg = measurementDeltaGrids[j];
+//        for (unsigned int m=dg.minY(); m<=dg.maxY(); m++)
+//        {
+//            for (unsigned int n=dg.minX(); n<=dg.maxX(); n++)
+//            {
+//                _u[j] += u[m][n] * dg.weight(n,m) * (hx*hy);
+//            }
+//        }
+        //_u[j] *= (1.0 + noise);
+    }
+
+    double *_v = new double[Nc];
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        _v[i] = 0.0;
+        for (unsigned int j=0; j<No; j++)
         {
-            for (unsigned int n=deltagrid.minX(); n<=deltagrid.maxX(); n++)
+            _v[i] += mOptParameter.k[i][j] * (_u[j] - mOptParameter.z[i][j]);
+        }
+    }
+    delete [] _u;
+
+    for (unsigned int m=0; m<=M; m++)
+    {
+        for (unsigned int n=0; n<=N; n++)
+        {
+            const_this->mCrFfxWeightMatrix[m][n] = 0.0;
+            for (unsigned int i=0; i<Nc; i++)
             {
-                ui.vl[ln] += u[m][n] * (deltagrid.weight(n,m) * (hx*hy));
-                if (deltagrid.isCenter(n,m))
-                {
-                    const unsigned int rx = static_cast<const unsigned int>(deltagrid.rx());
-                    const unsigned int ry = static_cast<const unsigned int>(deltagrid.ry());
-                    const unsigned int px = static_cast<const unsigned int>(deltagrid.p().x);
-                    const unsigned int py = static_cast<const unsigned int>(deltagrid.p().y);
-
-                    ui.dx[ln] = (u[ry][rx+1] - u[ry][rx-1])/(2.0*hx);
-                    ui.dy[ln] = (u[ry+1][rx] - u[ry-1][rx])/(2.0*hy);
-
-                    ui.dx[ln] += (px-rx*hx)*((u[ry][rx+1] - 2.0*u[ry][rx] + u[ry][rx-1])/(hx*hx));
-                    ui.dy[ln] += (py-ry*hy)*((u[ry+1][rx] - 2.0*u[ry][rx] + u[ry-1][rx])/(hy*hy));
-                }
+                const DeltaGrid2D &dg = controlDeltaGrids[i];
+                const_this->mCrFfxWeightMatrix[m][n] += _v[i] * dg.weight(n,m);
             }
         }
     }
+
+    delete [] _v;
 }
+
+auto Problem2hDirichletBase::currentLayerBGrid(const DoubleMatrix &p, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids,
+                                            double ln, const spif_vectorH &u_info) const -> void
+{
+    const Dimension dimX = spaceDimension(Dimension::DimensionX);
+    const Dimension dimY = spaceDimension(Dimension::DimensionY);
+
+    const unsigned int N = static_cast<const unsigned int> ( dimX.size() );
+    const unsigned int M = static_cast<const unsigned int> ( dimY.size() );
+
+    const double hx = dimX.step();
+    const double hy = dimY.step();
+
+    Problem2hDirichletBase* const_this = const_cast<Problem2hDirichletBase*>(this);
+//    const_this->mCrBfxWeightMatrix.clear();
+//    const_this->mCrBfxWeightMatrix.resize(M+1, N+1, 0.0);
+
+    const unsigned int Nc = mEquParameter.Nc;
+    const unsigned int No = mEquParameter.No;
+
+    double* _p = new double[Nc];
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        _p[i] = controlDeltaGrids[i].consentrateInPoint(p);
+//        const DeltaGrid2D &dg = controlDeltaGrids[i];
+//        for (unsigned int m=dg.minY(); m<=dg.maxY(); m++)
+//        {
+//            for (unsigned int n=dg.minX(); n<=dg.maxX(); n++)
+//            {
+//                _p[i] += p[m][n] * (dg.weight(n,m) * (hx*hy));
+//            }
+//        }
+    }
+
+    double *_w = new double[No];
+    for (unsigned int j=0; j<No; j++)
+    {
+        _w[j] = 0.0;
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            _w[j] += mOptParameter.k[i][j] * (_p[i] + 2.0*r*gpi(i, ln, u_info, mOptParameter)*sgn(g0i(i, ln, u_info, mOptParameter)) );
+        }
+    }
+    delete [] _p;
+
+    for (unsigned int m=0; m<=M; m++)
+    {
+        for (unsigned int n=0; n<=N; n++)
+        {
+            const_this->mCrBfxWeightMatrix[m][n] = 0.0;
+            for (unsigned int j=0; j<No; j++)
+            {
+                const DeltaGrid2D &dg = measurementDeltaGrids[j];
+                const_this->mCrBfxWeightMatrix[m][n] += _w[j] * dg.weight(n,m);
+            }
+        }
+    }
+
+    delete [] _w;
+}
+
+void Problem2hDirichletBase::setGridDimensions(const Dimension &time, const Dimension &dimX, const Dimension &dimY)
+{
+    setTimeDimension(time);
+    addSpaceDimension(dimX);
+    addSpaceDimension(dimY);
+
+    const unsigned int N = static_cast<const unsigned int> ( dimX.size() );
+    const unsigned int M = static_cast<const unsigned int> ( dimY.size() );
+
+    mPulseWeightMatrix.resize(M+1, N+1);
+    mCrFfxWeightMatrix.resize(M+1, N+1);
+    mCrBfxWeightMatrix.resize(M+1, N+1);
+}
+
+

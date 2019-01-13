@@ -83,6 +83,39 @@ struct PROBLEM2HSHARED_EXPORT EquationParameterH
 #endif
 };
 
+struct PROBLEM2HSHARED_EXPORT EquationParameterH1
+{
+    struct InitialPulse
+    {
+        double q;
+        SpacePoint theta;
+    };
+
+    struct OptimizationParam
+    {
+        DoubleMatrix k;
+        DoubleMatrix z;
+        std::vector<SpacePoint> xi;
+        std::vector<SpacePoint> eta;
+    };
+
+    EquationParameterH1(unsigned int Nc, unsigned int No, unsigned int Ns, double a = 1.0, double alpha = 0.01);
+
+    double a;
+    double alpha;
+    unsigned int No;
+    unsigned int Nc;
+    unsigned int Ns;
+private:
+    OptimizationParam op;
+    OptimizationParam rp;
+    std::vector<InitialPulse> pulseVector;
+
+#ifdef TIME_DISCRETE_H
+    unsigned int Nt;
+#endif
+};
+
 struct PROBLEM2HSHARED_EXPORT ExtendedSpacePointNodeH
 {
     double x;
