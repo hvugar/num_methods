@@ -18,8 +18,8 @@ public:
     virtual auto penalty(const spif_vectorH &info, const OptimizeParameterH &o_prm) const -> double;
 
 public:
-    auto solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use, double lambda=0.25) const -> void;
-    auto solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info, double lambda=0.25) const -> void;
+    auto solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use, const DoubleVector &pv, double lambda=0.25) const -> void;
+    auto solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info, const DoubleVector &pv, double lambda=0.25) const -> void;
 };
 
 #endif // PROBLEM2H_SOLVER1_H

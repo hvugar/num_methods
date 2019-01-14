@@ -60,9 +60,9 @@ auto Problem2HDirichlet1::gradient(const DoubleVector &pv, DoubleVector &g) cons
     std::vector<DoubleMatrix> u;
 
     spif_vectorH u_info;
-    solveForwardIBVP(u, u_info, true);
+    solveForwardIBVP(u, u_info, true, pv);
     spif_vectorH p_info;
-    solveBackwardIBVP(u, p_info, true, u_info);
+    solveBackwardIBVP(u, p_info, true, u_info, pv);
 
     g.clear();
     g.resize(pv.length(), 0.0);
@@ -245,7 +245,7 @@ auto Problem2HDirichlet1::gradient(const DoubleVector &pv, DoubleVector &g) cons
     p_info.clear();
 }
 
-auto Problem2HDirichlet1::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use, double lambda) const -> void
+auto Problem2HDirichlet1::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use, const DoubleVector &pv, double lambda) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -318,6 +318,9 @@ auto Problem2HDirichlet1::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
         cy[m-1] = m_aa_htht__hyhy_025_lambda;
     }
     ay[0] = cy[M-2] = 0.0;
+
+    //OptimizeParameterH mOptParameter;
+    //VectorToPrm(pv, mOptParameter);
 
     //----------------------------------------------------------------------------------------------//
     std::vector<DeltaGrid2D> measuremntGirdList(No);
@@ -494,7 +497,7 @@ auto Problem2HDirichlet1::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
 
 
 
-auto Problem2HDirichlet1::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info, double lambda) const -> void
+auto Problem2HDirichlet1::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info, const DoubleVector &pv, double lambda) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -563,6 +566,9 @@ auto Problem2HDirichlet1::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, 
         cy[m-1] = m_aa_htht__hyhy_025_lambda;
     }
     ay[0] = cy[M-2] = 0.0;
+
+    OptimizeParameterH mOptParameter;
+    VectorToPrm(pv, mOptParameter);
 
     //--------------------------------------------------------------------------------------------//
     std::vector<DeltaGrid2D> measuremntGirdList(No);

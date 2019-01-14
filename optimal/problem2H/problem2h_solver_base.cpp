@@ -90,9 +90,8 @@ auto Problem2hDirichletBase::b_boundary(const SpaceNodePDE &sn UNUSED_PARAM, con
 
 auto Problem2hDirichletBase::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
 {
-    //    if (ln == 1000) IPrinter::printMatrix(u);
-
-    //    printf("%4d %.8f %.8f\n", ln, u.min(), u.max());
+    //if (ln == 1000) IPrinter::printMatrix(u);
+    //printf("%4d %.8f %.8f\n", ln, u.min(), u.max());
     return;
 
     {
@@ -102,13 +101,13 @@ auto Problem2hDirichletBase::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, uns
         rvu.push_back(u);
         if (rvu.size() > 2*LD+1) rvu.erase(rvu.begin());
 
-        //        if (ln == 1001)
-        //        {
-        //            tmp->mOptParameter.k[0][0] = 0.0;
-        //            tmp->mOptParameter.k[0][1] = 0.0;
-        //            tmp->mOptParameter.k[1][0] = 0.0;
-        //            tmp->mOptParameter.k[1][1] = 0.0;
-        //        }
+//        if (ln == 1101)
+//        {
+//            tmp->mOptParameter.k[0][0] = 0.0;
+//            tmp->mOptParameter.k[0][1] = 0.0;
+//            tmp->mOptParameter.k[1][0] = 0.0;
+//            tmp->mOptParameter.k[1][1] = 0.0;
+//        }
 
         if (rvu.size() == 2*LD+1)
         {
@@ -616,7 +615,7 @@ auto Problem2hDirichletBase::print(unsigned int i, const DoubleVector &x, const 
     prob->mOptParameter = o_prm;
     std::vector<DoubleMatrix> u;
     spif_vectorH u_info;
-    solveForwardIBVP(u, u_info, true);
+    solveForwardIBVP(u, u_info, true, x);
     double ing = integral(u);
     double pnt = penalty(u_info, o_prm);
     double nrm = norm(prob->mEquParameter, prob->mOptParameter, prob->mRegParameter);
@@ -676,7 +675,7 @@ auto Problem2hDirichletBase::fx(const DoubleVector &pv) const -> double
 
     std::vector<DoubleMatrix> u;
     spif_vectorH u_info;
-    prob->solveForwardIBVP(u, u_info, true);
+    prob->solveForwardIBVP(u, u_info, true, pv);
 
     double intgrl = integral(u);
 

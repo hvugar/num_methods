@@ -67,12 +67,22 @@ void prod_example1()
     o_prm.xi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
-    e_prm.q[0] = +0.214; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
-    e_prm.q[1] = +0.228; e_prm.theta[1].x = 0.7382; e_prm.theta[1].y = 0.6518;
+    // 0.003691
+    e_prm.q[0] = +0.214; e_prm.theta[0].x = 0.2800; e_prm.theta[0].y = 0.3200;
+    e_prm.q[1] = +0.228; e_prm.theta[1].x = 0.7300; e_prm.theta[1].y = 0.6500;
     o_prm.k[0][0]  = -2.0610; o_prm.k[0][1]  = -2.9376; o_prm.k[1][0]  = -2.1707; o_prm.k[1][1]  = -2.8527;
+    o_prm.k[0][0]  = -1.0000; o_prm.k[0][1]  = -1.0000; o_prm.k[1][0]  = -1.0000; o_prm.k[1][1]  = -1.0000;
     o_prm.z[0][0]  = -0.0461; o_prm.z[0][1]  = -0.0246; o_prm.z[1][0]  = +0.0319; o_prm.z[1][1]  = +0.0161;
     o_prm.xi[0].x  = +0.5400; o_prm.xi[0].y  = +0.3500; o_prm.xi[1].x  = +0.8200; o_prm.xi[1].y  = +0.9400;
     o_prm.eta[0].x = +0.1200; o_prm.eta[0].y = +0.6200; o_prm.eta[1].x = +0.3400; o_prm.eta[1].y = +0.3400;
+
+    // 0.000970
+//    e_prm.q[0] = +0.114; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
+//    e_prm.q[1] = +0.128; e_prm.theta[1].x = 0.7382; e_prm.theta[1].y = 0.6518;
+//    o_prm.k[0][0]  = -2.0549; o_prm.k[0][1]  = -2.9331; o_prm.k[1][0]  = -2.1590; o_prm.k[1][1]  = -2.8405;
+//    o_prm.z[0][0]  = +0.0108; o_prm.z[0][1]  = +0.0567; o_prm.z[1][0]  = +0.0567; o_prm.z[1][1]  = +0.0581;
+//    o_prm.xi[0].x  = +0.2325; o_prm.xi[0].y  = +0.2669; o_prm.xi[1].x  = +0.9500; o_prm.xi[1].y  = +0.9500;
+//    o_prm.eta[0].x = +0.1609; o_prm.eta[0].y = +0.5142; o_prm.eta[1].x = +0.2802; o_prm.eta[1].y = +0.2701;
 
     // 0.010242
     //e_prm.q[0] = +0.314; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
@@ -179,22 +189,23 @@ void prod_example1()
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
-            prob.checkGradient1(prob);
+            //prob.checkGradient1(prob);
             //prob.checkGradient2(prob);
             //return;
 
-//            printf("fx: %.10f\n", prob.fx(x));
-//            for (int n=-100; n<=100; n++)
-//            {
-//                x[3] = n*0.01;
-//                printf("%f %f\n", n*0.01, prob.fx(x));
-//            }
-//
-//            return;
+            //            printf("fx: %.10f\n", prob.fx(x));
+            //            for (int n=-100; n<=100; n++)
+            //            {
+            //                x[3] = n*0.01;
+            //                printf("%f %f\n", n*0.01, prob.fx(x));
+            //            }
+            //
+            //            return;
 
-            //            std::vector<DoubleMatrix> u;
-            //            spif_vectorH u_info, p_info;
-            //            prob.solveForwardIBVP(u, u_info, true);
+            std::vector<DoubleMatrix> u;
+            spif_vectorH u_info, p_info;
+            prob.solveForwardIBVP(u, u_info, true, x);
+
             //            IPrinter::printSeperatorLine();
             //            prob.solveBackwardIBVP(u, p_info, true, u_info);
             //            return;
@@ -202,7 +213,7 @@ void prod_example1()
             //            spif_vectorH p_info;
             //            prob.solveBackwardIBVP(u, p_info, false, u_info);
 
-            //            return;
+//            return;
 
 
             //FILE* cfile = fopen("e:/Google Drive/Problems/Problem2_H/Experiments/control2.txt", "w");

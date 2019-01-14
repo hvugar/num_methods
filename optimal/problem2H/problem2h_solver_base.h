@@ -26,8 +26,8 @@ public:
     /** Norm part of functional */
     virtual auto norm(const EquationParameterH &eprm, const OptimizeParameterH &oprm, const OptimizeParameterH &r_prm) const -> double;
     /** ibv **/
-    virtual auto solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use, double lambda=0.25) const -> void = 0;
-    virtual auto solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info, double lambda=0.25) const -> void = 0;
+    virtual auto solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use, const DoubleVector &x, double lambda=0.25) const -> void = 0;
+    virtual auto solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info, const DoubleVector &x, double lambda=0.25) const -> void = 0;
 
     virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const -> void;
 
