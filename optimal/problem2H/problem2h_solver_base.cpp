@@ -99,23 +99,26 @@ auto Problem2hDirichletBase::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, uns
         std::vector<DoubleMatrix> &rvu = tmp->vu;
 
         rvu.push_back(u);
+        //if (rvu.size() > 3) rvu.erase(rvu.begin());
         if (rvu.size() > 2*LD+1) rvu.erase(rvu.begin());
 
-//        if (ln == 1101)
-//        {
-//            tmp->mOptParameter.k[0][0] = 0.0;
-//            tmp->mOptParameter.k[0][1] = 0.0;
-//            tmp->mOptParameter.k[1][0] = 0.0;
-//            tmp->mOptParameter.k[1][1] = 0.0;
-//        }
+        if (ln == 1701)
+        {
+            tmp->mOptParameter.k[0][0] = 0.0;
+            tmp->mOptParameter.k[0][1] = 0.0;
+            tmp->mOptParameter.k[1][0] = 0.0;
+            tmp->mOptParameter.k[1][1] = 0.0;
+        }
 
         if (rvu.size() == 2*LD+1)
+//        if (rvu.size() == 3)
         {
             //std::cout << ln << " " << rvu.size() << std::endl;
             if (ln%2==0)
             {
                 double fx = integral(rvu);
-                printf("%d %d %.10f\n", ln, ln/2-50, fx);
+                //printf("%d %d %.10f\n", ln, ln/2-50, fx);
+                printf("%.10f\n", fx);
             }
             //printf("%.10f\n", fx);
         }
@@ -620,13 +623,13 @@ auto Problem2hDirichletBase::print(unsigned int i, const DoubleVector &x, const 
     double pnt = penalty(u_info, o_prm);
     double nrm = norm(prob->mEquParameter, prob->mOptParameter, prob->mRegParameter);
 
-    DoubleVector uf, um, ux;
-    for (unsigned int i=0; i<=50; i+=5)
-    {
-        uf << integralU(u[i]);
-        um << u[i].min();
-        ux << u[i].max();
-    }
+//    DoubleVector uf, um, ux;
+//    for (unsigned int i=0; i<=50; i+=5)
+//    {
+//        uf << integralU(u[i]);
+//        um << u[i].min();
+//        ux << u[i].max();
+//    }
 
     const unsigned int v_length = static_cast<const unsigned int>(timeDimension().size()) + LD;
     DoubleVector v1(v_length+1);
@@ -640,12 +643,12 @@ auto Problem2hDirichletBase::print(unsigned int i, const DoubleVector &x, const 
 
     IPrinter::printVector(v1, "v1", 10);
     IPrinter::printVector(v2, "v2", 10);
-    IPrinter::printVector(uf, "uf", 10);
-    IPrinter::printVector(um, "um", 10);
-    IPrinter::printVector(ux, "ux", 10);
+//    IPrinter::printVector(uf, "uf", 10);
+//    IPrinter::printVector(um, "um", 10);
+//    IPrinter::printVector(ux, "ux", 10);
 
     printf("I[%3d]: F:%.6f I:%.6f P:%.6f N:%.5f R:%.3f e:%.3f a:%.6f ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
-    printf("min:%.6f max:%.6f min:%.6f max:%.6f U0:%.8f UT:%.8f", u.at(0).min(), u.at(0).max(), u.at(2*LD).min(), u.at(2*LD).max(), integralU(u[0]), integralU(u[LD]));
+    printf("min:%.6f max:%.6f U:%.8f", u.at(1).min(), u.at(1).max(), integralU(u[0]));
     printf("\n");
     printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
     printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);

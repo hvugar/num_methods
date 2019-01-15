@@ -60,21 +60,54 @@ void prod_example1()
 
     // Optimization parameters
     OptimizeParameterH o_prm;
-    e_prm.Nc = 2;
-    e_prm.No = 2;
+    e_prm.Nc = 10;
+    e_prm.No = 10;
     o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.xi.resize(e_prm.No);
+    for (unsigned int j=0; j<e_prm.No; j++)
+    {
+        o_prm.xi[j].x = Random::value(0, 1, 4);
+        if (o_prm.xi[j].x <= 0.05) o_prm.xi[j].x = 0.05;
+        if (o_prm.xi[j].x >= 0.95) o_prm.xi[j].x = 0.95;
+        o_prm.xi[j].y = Random::value(0, 1, 4);
+        if (o_prm.xi[j].y <= 0.05) o_prm.xi[j].y = 0.05;
+        if (o_prm.xi[j].y >= 0.95) o_prm.xi[j].y = 0.95;
+    }
     o_prm.eta.resize(e_prm.Nc);
+    for (unsigned int i=0; i<e_prm.Nc; i++)
+    {
+        o_prm.eta[i].x = Random::value(0, 1, 4);
+        if (o_prm.eta[i].x <= 0.05) o_prm.eta[i].x = 0.05;
+        if (o_prm.eta[i].x >= 0.95) o_prm.eta[i].x = 0.95;
+        o_prm.eta[i].y = Random::value(0, 1, 4);
+        if (o_prm.eta[i].y <= 0.05) o_prm.eta[i].y = 0.05;
+        if (o_prm.eta[i].y >= 0.95) o_prm.eta[i].y = 0.95;
+    }
 
     // 0.003691
     e_prm.q[0] = +0.214; e_prm.theta[0].x = 0.2800; e_prm.theta[0].y = 0.3200;
     e_prm.q[1] = +0.228; e_prm.theta[1].x = 0.7300; e_prm.theta[1].y = 0.6500;
-    o_prm.k[0][0]  = -2.0610; o_prm.k[0][1]  = -2.9376; o_prm.k[1][0]  = -2.1707; o_prm.k[1][1]  = -2.8527;
-    o_prm.k[0][0]  = -1.0000; o_prm.k[0][1]  = -1.0000; o_prm.k[1][0]  = -1.0000; o_prm.k[1][1]  = -1.0000;
-    o_prm.z[0][0]  = -0.0461; o_prm.z[0][1]  = -0.0246; o_prm.z[1][0]  = +0.0319; o_prm.z[1][1]  = +0.0161;
-    o_prm.xi[0].x  = +0.5400; o_prm.xi[0].y  = +0.3500; o_prm.xi[1].x  = +0.8200; o_prm.xi[1].y  = +0.9400;
-    o_prm.eta[0].x = +0.1200; o_prm.eta[0].y = +0.6200; o_prm.eta[1].x = +0.3400; o_prm.eta[1].y = +0.3400;
+    //o_prm.k[0][0]  = -2.0610; o_prm.k[0][1]  = -2.9376; o_prm.k[1][0]  = -2.1707; o_prm.k[1][1]  = -2.8527;
+    //o_prm.k[0][0]  = -1.0000; o_prm.k[0][1]  = -1.0000; o_prm.k[1][0]  = -1.0000; o_prm.k[1][1]  = -1.0000;
+    //o_prm.z[0][0]  = -0.0461; o_prm.z[0][1]  = -0.0246; o_prm.z[1][0]  = +0.0319; o_prm.z[1][1]  = +0.0161;
+    //o_prm.xi[0].x  = +0.5400; o_prm.xi[0].y  = +0.3500; o_prm.xi[1].x  = +0.8200; o_prm.xi[1].y  = +0.9400;
+    //o_prm.eta[0].x = +0.1200; o_prm.eta[0].y = +0.6200; o_prm.eta[1].x = +0.3400; o_prm.eta[1].y = +0.3400;
+    // 0.125920 0.006414
+    //o_prm.k[0][0]  = -0.9638; o_prm.k[0][1]  = -0.9802; o_prm.k[1][0]  = -0.9901; o_prm.k[1][1]  = -0.9610;
+    //o_prm.z[0][0]  = +0.0316; o_prm.z[0][1]  = +0.0549; o_prm.z[1][0]  = -0.0157; o_prm.z[1][1]  = -0.0320;
+    //o_prm.xi[0].x  = +0.3976; o_prm.xi[0].y  = +0.2742; o_prm.xi[1].x  = +0.5096; o_prm.xi[1].y  = +0.9500;
+    //o_prm.eta[0].x = +0.0704; o_prm.eta[0].y = +0.4156; o_prm.eta[1].x = +0.2761; o_prm.eta[1].y = +0.3156;
+    // 0.004239 T = 500
+    //o_prm.k[0][0]  = -2.0562; o_prm.k[0][1]  = -2.9358; o_prm.k[1][0]  = -2.1636; o_prm.k[1][1]  = -2.8476;
+    //o_prm.z[0][0]  = -0.0443; o_prm.z[0][1]  = -0.0220; o_prm.z[1][0]  = +0.0309; o_prm.z[1][1]  = +0.0148;
+    //o_prm.xi[0].x  = +0.3239; o_prm.xi[0].y  = +0.2673; o_prm.xi[1].x  = +0.8670; o_prm.xi[1].y  = +0.9493;
+    //o_prm.eta[0].x = +0.0505; o_prm.eta[0].y = +0.5758; o_prm.eta[1].x = +0.3337; o_prm.eta[1].y = +0.2093;
+    // 0.005570 T = 800
+    //o_prm.k[0][0]  = -2.0555; o_prm.k[0][1]  = -2.9339; o_prm.k[1][0]  = -2.1573; o_prm.k[1][1]  = -2.8487;
+    //o_prm.z[0][0]  = -0.0518; o_prm.z[0][1]  = -0.0328; o_prm.z[1][0]  = +0.0132; o_prm.z[1][1]  = -0.0085;
+    //o_prm.xi[0].x  = +0.6037; o_prm.xi[0].y  = +0.2893; o_prm.xi[1].x  = +0.8227; o_prm.xi[1].y  = +0.9491;
+    //o_prm.eta[0].x = +0.1115; o_prm.eta[0].y = +0.6668; o_prm.eta[1].x = +0.3663; o_prm.eta[1].y = +0.2768;
 
     // 0.000970
 //    e_prm.q[0] = +0.114; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
@@ -202,9 +235,9 @@ void prod_example1()
             //
             //            return;
 
-            std::vector<DoubleMatrix> u;
-            spif_vectorH u_info, p_info;
-            prob.solveForwardIBVP(u, u_info, true, x);
+//            std::vector<DoubleMatrix> u;
+//            spif_vectorH u_info, p_info;
+//            prob.solveForwardIBVP(u, u_info, true, x);
 
             //            IPrinter::printSeperatorLine();
             //            prob.solveBackwardIBVP(u, p_info, true, u_info);

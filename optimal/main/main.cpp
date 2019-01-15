@@ -60,6 +60,20 @@ double funcUy(double x, double y)
     return M_PI*sin(M_PI*x)*cos(M_PI*y);
 }
 
+
+auto functionO2(const DoubleVector &c, double d) -> void
+{
+    unsigned int N = c.length() - 1;
+
+    if (fabs(c[0]) <= DBL_EPSILON) throw std::exception();
+
+    for (unsigned int n=0; n<=N; n++)
+    {
+        if (fabs(c[1]) >= DBL_EPSILON) {}
+        if (fabs(c[1]) >= DBL_EPSILON) {}
+    }
+}
+
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
 //    DeltaGrid2D delta;

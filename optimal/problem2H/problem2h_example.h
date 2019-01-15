@@ -4,7 +4,10 @@
 #include "problem2h_common.h"
 #include "problem2h_solver.h"
 #include "problem2h_solver1.h"
+#include "problem2h_solver2.h"
 #include "problem2h_solver4.h"
+
+
 
 #define EXAMPLE4_SAMPLE_1
 

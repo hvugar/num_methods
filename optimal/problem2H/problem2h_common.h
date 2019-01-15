@@ -20,6 +20,7 @@
 #include <grid/ibvp.h>
 #include <grid/hibvp.h>
 #include <deltagrid.h>
+#include <utils/random.h>
 #include "problem2h_global.h"
 
 struct GridH

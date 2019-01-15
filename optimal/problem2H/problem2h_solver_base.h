@@ -96,6 +96,7 @@ protected:
 protected:
     DoubleMatrix mPulseWeightMatrix;
     DoubleMatrix mCrFfxWeightMatrix;
+
     DoubleMatrix mCrBfxWeightMatrix;
 };
 
