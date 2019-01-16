@@ -17,10 +17,10 @@ public:
     virtual void layerInfo(const DoubleVector &, unsigned int) const;
     virtual void layerInfo(const DoubleMatrix &, unsigned int) const;
 
-    double integralU1(const DoubleVector &u) const;
-    double integralU2(const DoubleVector &u) const;
-    double integralU1(const DoubleMatrix &u) const;
-    double integralU2(const DoubleMatrix &u) const;
+    double integralUP(const DoubleVector &u) const;
+    double integralUK(const DoubleVector &u) const;
+    double integralUP(const DoubleMatrix &u) const;
+    double integralUK(const DoubleMatrix &u) const;
 
 protected:
     virtual double initial1(const SpaceNodePDE &sn) const;
@@ -40,7 +40,9 @@ private:
     DoubleMatrix mu0;
     DoubleMatrix mu1;
     DoubleMatrix mu2;
+
     DoubleMatrix mut;
+    DoubleMatrix muc;
 
     bool calculateU = true;
 };

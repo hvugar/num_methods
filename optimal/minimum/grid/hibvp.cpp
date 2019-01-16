@@ -490,8 +490,8 @@ void CcIHyperbolicIBVP::implicit_calculate_D2V1_initial(DoubleMatrix &u00, Doubl
             u05[m][n] = u00[m][n] + initial2(sn)*ht*0.5;
             u10[m][n] = u00[m][n] + initial2(sn)*ht;
 
-            u05[m][n] += (aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1])+aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n])+f(sn,tn00))*htht_05*0.25;
-            u10[m][n] += (aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1])+aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n])+f(sn,tn00))*htht_05;
+            //u05[m][n] += (aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1])+aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n])+f(sn,tn00))*htht_05*0.25;
+            //u10[m][n] += (aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1])+aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n])+f(sn,tn00))*htht_05;
         }
     }
    layerInfo(u10, 1);
