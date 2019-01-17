@@ -40,6 +40,9 @@ LIBS += -L../bin -lproblem2P
 INCLUDEPATH += ../problem2H
 LIBS += -L../bin -lproblem2H
 
+INCLUDEPATH += ../problem1H
+LIBS += -L../bin -lproblem1H
+
 DESTDIR += ../bin
 
 #include(problem1/problem1.pri)

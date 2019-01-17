@@ -15,6 +15,7 @@ SUBDIRS += border
 #SUBDIRS += problem1
 #SUBDIRS += problem2P
 SUBDIRS += problem2H
+SUBDIRS += problem1H
 #SUBDIRS += heightMap3d
 SUBDIRS += main
 
@@ -22,6 +23,8 @@ main.depends = minimum
 main.depends = problem1
 main.depends = problem2P
 main.depends = problem2H
+main.depends = problem1H
 problem1.depends = minimum
 problem2P.depends = minimum
 problem2H.depends = minimum
+problem1H.depends = minimum

@@ -21,7 +21,7 @@ public:
     auto initGrid(unsigned int N, double hx, unsigned int M, double hy) -> void;
     auto cleanGrid() -> void;
 
-    auto distributeGauss(const SpacePoint& sp, unsigned sigmaXNum = 1, unsigned int sigmaYNum = 1) -> void;
+    auto distributeGauss(const SpacePoint& sp, unsigned int sigmaXNum = 1, unsigned int sigmaYNum = 1) -> void;
     auto distributeSigle(const SpacePoint& sp) -> void;
     auto distributeRect4(const SpacePoint& sp) -> void;
 
@@ -69,6 +69,54 @@ private:
     unsigned int _maxX;
     unsigned int _minY;
     unsigned int _maxY;
+};
+
+class MINIMUMSHARED_EXPORT DeltaGrid1D
+{
+public:
+    DeltaGrid1D();
+    virtual ~DeltaGrid1D();
+
+    auto initGrid(unsigned int N, double hx) -> void;
+    auto cleanGrid() -> void;
+
+    auto distributeGauss(const SpacePoint& sp, unsigned int sigmaXNum = 1) -> void;
+    auto distributeSigle(const SpacePoint& sp) -> void;
+    auto distributeRect4(const SpacePoint& sp) -> void;
+
+    auto consentrateInPoint(const DoubleVector &m) const -> double;
+    auto consentrateInPoint(const DoubleVector &m, double &dx) const -> double;
+
+    auto isCenter(const SpaceNodePDE &sn) const -> bool;
+    auto isCenter(unsigned int n) const -> bool;
+
+    auto isContains(const SpaceNodePDE &sn) const -> bool;
+    auto isContains(unsigned int n) const -> bool;
+
+    auto weight(const SpaceNodePDE &sn) const -> double;
+    auto weight(unsigned int n) const -> double;
+
+    auto rx() const -> unsigned int;
+
+    auto p() const -> const SpacePoint&;
+    auto p() -> SpacePoint&;
+
+    auto minX() const -> unsigned int;
+    auto maxX() const -> unsigned int;
+
+    double *nodes() { return m_nodes; }
+    double *nodes() const { return m_nodes; }
+
+private:
+
+    unsigned int _N;
+    double _hx;
+    SpacePoint _p;
+
+    double *m_nodes;
+    unsigned int _rx;
+    unsigned int _minX;
+    unsigned int _maxX;
 };
 
 #endif // DELTA_GRID_H
