@@ -29,6 +29,8 @@
 #include "../problem2H/problem2h_ibvp.h"
 #include "ivp/nlode1oex1.h"
 
+#include "../problem1H/problem1h_example.h"
+
 #include <utils/matrix.h>
 #include <utils/random.h>
 
@@ -136,11 +138,12 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 
     //srand(time(0));
-    CcIHyperbolicIBVP1::Main(argc, argv);
+//    CcIHyperbolicIBVP1::Main(argc, argv);
 //    CdIHyperbolicIBVP1::Main(argc, argv);
     //IPrinter::printSeperatorLine();
     //ConjugateCC1IHyperbolicIBVP1::Main(argc, argv);
 //    Problem2HDirichlet::Main(argc, argv);
+    Problem1HDirichlet1::Main(argc, argv);
 
     //CCParabolicIBVP1::Main(argc, argv);
     //CCIHyperbolicIBVP1::Main(argc, argv);
