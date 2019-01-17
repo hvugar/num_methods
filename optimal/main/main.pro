@@ -48,7 +48,8 @@ DESTDIR += ../bin
 #include(problem5/problem5.pri)
 #include(load_sys/load_sys.pri)
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    nonlocal.cpp
 
 #SOURCES += \
 #    ivp/nlode1oex1.cpp \
@@ -68,3 +69,6 @@ SOURCES += main.cpp
 
 OBJECTS_DIR = release/.obj
 MOC_DIR = release/.moc
+
+HEADERS += \
+    nonlocal.h
