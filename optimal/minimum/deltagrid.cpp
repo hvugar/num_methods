@@ -1,8 +1,11 @@
 #include "deltagrid.h"
 
+DeltaGridException::DeltaGridException(const std::string &msg) : message(msg) {}
+
 const char* DeltaGridException::what() const noexcept
 {
-    return "delta grid exception:";
+    std::string msg = "DeltaGridException: " + message;
+    return msg.data();
 }
 
 DeltaGrid2D::DeltaGrid2D() : _N(0), _M(0), _hx(0.0), _hy(0.0) {}
@@ -37,7 +40,8 @@ auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned sigmaXNum, unsi
     _rx = static_cast<unsigned int>( round(sp.x*_N) );
     _ry = static_cast<unsigned int>( round(sp.y*_M) );
 
-    if (_rx < kx or _ry < ky or _rx > _N-kx or _ry > _M-ky) throw DeltaGridException();
+    if (_rx < kx or _ry < ky or _rx > _N-kx or _ry > _M-ky)
+        throw DeltaGridException();
 
     _p = sp;
 
@@ -153,13 +157,13 @@ auto DeltaGrid2D::isCenter(unsigned int n, unsigned int m) const -> bool
 auto DeltaGrid2D::isContains(const SpaceNodePDE &sn) const -> bool
 {
     return (sn.i >= static_cast<int>(_minX)) && (sn.i <= static_cast<int>(_maxX)) &&
-            (sn.j >= static_cast<int>(_minY)) && (sn.j <= static_cast<int>(_maxY));
+           (sn.j >= static_cast<int>(_minY)) && (sn.j <= static_cast<int>(_maxY));
 }
 
 auto DeltaGrid2D::isContains(unsigned int n, unsigned int m) const -> bool
 {
     return (n >= _minX) && (n <= _maxX) &&
-            (m >= _minY) && (m <= _maxY);
+           (m >= _minY) && (m <= _maxY);
 }
 
 auto DeltaGrid2D::weight(const SpaceNodePDE &sn) const -> double
@@ -213,7 +217,7 @@ auto DeltaGrid1D::distributeGauss(const SpacePoint& sp, unsigned sigmaXNum) -> v
 
     _rx = static_cast<unsigned int>( round(sp.x*_N) );
 
-    if (_rx < kx || _rx > _N-kx) throw DeltaGridException();
+    if (_rx < kx || _rx > _N-kx) throw DeltaGridException(std::to_string(sp.x));
 
     _p = sp;
     _minX = _rx - kx; _maxX = _rx + kx;

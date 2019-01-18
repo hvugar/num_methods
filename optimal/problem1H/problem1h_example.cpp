@@ -66,62 +66,31 @@ void prod_example1()
     o_prm.ksi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
-    e_prm.theta[0].q = +0.214; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
-    e_prm.theta[0].q = +0.228; e_prm.theta[1].x = 0.7382; e_prm.theta[1].y = 0.6518;
+    e_prm.theta[0].q = +0.514; e_prm.theta[0].x = 0.2845;
+    e_prm.theta[1].q = +0.528; e_prm.theta[1].x = 0.7382;
+
+    // (70.749111 200)
     //o_prm.k[0][0]  = -2.0610; o_prm.k[0][1]  = -2.9376; o_prm.k[1][0]  = -2.1707; o_prm.k[1][1]  = -2.8527;
     //o_prm.z[0][0]  = -0.0461; o_prm.z[0][1]  = -0.0246; o_prm.z[1][0]  = +0.0319; o_prm.z[1][1]  = +0.0161;
+    o_prm.k[0][0]  = -2.5900; o_prm.k[0][1]  = -1.8100; o_prm.k[1][0]  = -1.5700; o_prm.k[1][1]  = -2.76000;
     o_prm.ksi[0].x = +0.5400; o_prm.ksi[1].x = +0.8200; o_prm.eta[0].x = +0.1200; o_prm.eta[1].x = +0.3400;
+    // 0.011497
+    //o_prm.k[0][0]  = -0.7099; o_prm.k[0][1]  = -1.7252; o_prm.k[1][0]  = -0.0766; o_prm.k[1][1]  = -0.7024;
+    //o_prm.z[0][0]  = +0.9573; o_prm.z[0][1]  = +1.4058; o_prm.z[1][0]  = +1.7626; o_prm.z[1][1]  = +2.2906;
+    //o_prm.ksi[0].x = +0.0500; o_prm.ksi[1].x = +0.9500; o_prm.eta[0].x = +0.0713; o_prm.eta[1].x = +0.9500;
+    // 0.013009
+    //o_prm.k[0][0]  = -1.0584; o_prm.k[0][1]  = -0.5405; o_prm.k[1][0]  = -1.4563; o_prm.k[1][1]  = -0.9511;
+    //o_prm.z[0][0]  = +0.0148; o_prm.z[0][1]  = +0.0033; o_prm.z[1][0]  = +0.0116; o_prm.z[1][1]  = -0.0467;
+    //o_prm.ksi[0].x = +0.8140; o_prm.ksi[1].x = +0.1057; o_prm.eta[0].x = +0.5469; o_prm.eta[1].x = +0.5550;
+    // 0.013374
+    //o_prm.k[0][0]  = -2.4222; o_prm.k[0][1]  = -3.2657; o_prm.k[1][0]  = -2.7579; o_prm.k[1][1]  = -3.4396;
+    //o_prm.z[0][0]  = -0.0116; o_prm.z[0][1]  = +0.0072; o_prm.z[1][0]  = +0.0181; o_prm.z[1][1]  = -0.0154;
+    //o_prm.ksi[0].x = +0.8291; o_prm.ksi[1].x = +0.1942; o_prm.eta[0].x = +0.8983; o_prm.eta[1].x = +0.1548;
+    // 0.002373 50
+    //o_prm.k[0][0]  = -1.6920; o_prm.k[0][1]  = -2.6234; o_prm.k[1][0]  = -1.5632; o_prm.k[1][1]  = -2.2822;
+    //o_prm.z[0][0]  = +0.2738; o_prm.z[0][1]  = +0.4353; o_prm.z[1][0]  = +0.3810; o_prm.z[1][1]  = +0.4680;
+    //o_prm.ksi[0].x = +0.0500; o_prm.ksi[1].x = +0.9500; o_prm.eta[0].x = +0.0537; o_prm.eta[1].x = +0.9500;
 
-    // 0.010242
-    //e_prm.q[0] = +0.314; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
-    //e_prm.q[1] = +0.328; e_prm.theta[1].x = 0.7382; e_prm.theta[1].y = 0.6518;
-    //o_prm.k[0][0]  = -2.0610; o_prm.k[0][1]  = -1.9376; o_prm.k[1][0]  = -2.1707; o_prm.k[1][1]  = -1.8527;
-    //o_prm.z[0][0]  = -0.0461; o_prm.z[0][1]  = -0.0246; o_prm.z[1][0]  = +0.0319; o_prm.z[1][1]  = +0.0161;
-    //o_prm.xi[0].x  = +0.6402; o_prm.xi[0].y  = +0.4899; o_prm.xi[1].x  = +0.8148; o_prm.xi[1].y  = +0.9500;
-    //o_prm.eta[0].x = +0.9500; o_prm.eta[0].y = +0.4609; o_prm.eta[1].x = +0.2512; o_prm.eta[1].y = +0.8932;
-
-    // 0.006407
-    //e_prm.q[0] = +0.314; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
-    //e_prm.q[1] = +0.328; e_prm.theta[1].x = 0.7382; e_prm.theta[1].y = 0.6518;
-    //o_prm.k[0][0]  = +0.7700; o_prm.k[0][1]  = -0.5100; o_prm.k[1][0]  = +0.8444; o_prm.k[1][1]  = -0.6901;
-    //o_prm.z[0][0]  = +0.0351; o_prm.z[0][1]  = +0.0238; o_prm.z[1][0]  = +0.1098; o_prm.z[1][1]  = -0.0302;
-    //o_prm.xi[0].x  = +0.4605; o_prm.xi[0].y  = +0.4316; o_prm.xi[1].x  = +0.7556; o_prm.xi[1].y  = +0.6413;
-    //o_prm.eta[0].x = +0.7516; o_prm.eta[0].y = +0.8028; o_prm.eta[1].x = +0.4595; o_prm.eta[1].y = +0.4302;
-
-    // 0.008546
-    //e_prm.q[0] = +0.314; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
-    //e_prm.q[1] = +0.328; e_prm.theta[1].x = 0.7382; e_prm.theta[1].y = 0.6518;
-    //o_prm.k[0][0]  = +0.4062; o_prm.k[0][1]  = -0.1118; o_prm.k[1][0]  = +0.6411; o_prm.k[1][1]  = -0.5024;
-    //o_prm.z[0][0]  = +0.0207; o_prm.z[0][1]  = -0.0022; o_prm.z[1][0]  = +0.0460; o_prm.z[1][1]  = -0.0277;
-    //o_prm.xi[0].x  = +0.4985; o_prm.xi[0].y  = +0.5005; o_prm.xi[1].x  = +0.7629; o_prm.xi[1].y  = +0.6422;
-    //o_prm.eta[0].x = +0.7180; o_prm.eta[0].y = +0.7701; o_prm.eta[1].x = +0.4996; o_prm.eta[1].y = +0.4999;
-
-    // 0.016549 --------------------------------------------------------------------------------------------
-    //e_prm.q[0] = +0.314; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
-    //e_prm.q[1] = +0.328; e_prm.theta[1].x = 0.7382; e_prm.theta[1].y = 0.6518;
-    //o_prm.k[0][0]  = +0.0000; o_prm.k[0][1]  = +0.0000; o_prm.k[1][0]  = +0.0000; o_prm.k[1][1]  = +0.0000;
-    //o_prm.z[0][0]  = +0.0000; o_prm.z[0][1]  = +0.0000; o_prm.z[1][0]  = +0.0000; o_prm.z[1][1]  = +0.0000;
-    //o_prm.xi[0].x  = +0.3849; o_prm.xi[0].y  = +0.5442; o_prm.xi[1].x  = +0.7861; o_prm.xi[1].y  = +0.6785;
-    //o_prm.eta[0].x = +0.6656; o_prm.eta[0].y = +0.7909; o_prm.eta[1].x = +0.4956; o_prm.eta[1].y = +0.3810;
-    //-----------------------------------------------------------------------------------------------------
-
-    // 0.012435 --------------------------------------------------------------------------------------------
-    //e_prm.q[0] = +0.314; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
-    //e_prm.q[1] = +0.328; e_prm.theta[1].x = 0.7382; e_prm.theta[1].y = 0.6518;
-    //o_prm.k[0][0]  = -1.1820; o_prm.k[0][1]  = -1.1250; o_prm.k[1][0]  = -1.1550; o_prm.k[1][1]  = -1.1310;
-    //o_prm.z[0][0]  = +0.0125; o_prm.z[0][1]  = +0.0268; o_prm.z[1][0]  = +0.0359; o_prm.z[1][1]  = +0.0186;
-    //o_prm.xi[0].x  = +0.3849; o_prm.xi[0].y  = +0.5442; o_prm.xi[1].x  = +0.7861; o_prm.xi[1].y  = +0.6785;
-    //o_prm.eta[0].x = +0.6656; o_prm.eta[0].y = +0.7909; o_prm.eta[1].x = +0.4956; o_prm.eta[1].y = +0.3810;
-    //-----------------------------------------------------------------------------------------------------
-
-    // 0.009912 -------------------------------------------------------------------------------------------
-    //    e_prm.q[0] = +0.314; e_prm.theta[0].x = 0.2845; e_prm.theta[0].y = 0.2845;
-    //    e_prm.q[1] = +0.328; e_prm.theta[1].x = 0.7382; e_prm.theta[1].y = 0.6518;
-    //    o_prm.k[0][0]  = -2.1866; o_prm.k[0][1]  = -2.1325; o_prm.k[1][0]  = -2.1321; o_prm.k[1][1]  = -2.1712;
-    //    o_prm.z[0][0]  = +0.0359; o_prm.z[0][1]  = +0.0496; o_prm.z[1][0]  = +0.1320; o_prm.z[1][1]  = +0.1145;
-    //    o_prm.xi[0].x  = +0.2732; o_prm.xi[0].y  = +0.6012; o_prm.xi[1].x  = +0.7578; o_prm.xi[1].y  = +0.7590;
-    //    o_prm.eta[0].x = +0.6968; o_prm.eta[0].y = +0.6892; o_prm.eta[1].x = +0.3987; o_prm.eta[1].y = +0.3898;
-    //o_prm.eta[0].x = +0.2500; o_prm.eta[0].y = +0.2500; o_prm.eta[1].x = +0.7500; o_prm.eta[1].y = +0.7500;
     //-----------------------------------------------------------------------------------------------------
 
     // Regularization parameters
@@ -131,24 +100,8 @@ void prod_example1()
     r_prm.ksi.resize(e_prm.No);
     r_prm.eta.resize(e_prm.Nc);
 
-    //r_prm.k[0][0]  = -0.0182; r_prm.k[0][1]  = -0.0125; r_prm.k[1][0]  = -0.0155; r_prm.k[1][1]  = -0.0131;
-    //r_prm.z[0][0]  = -0.0262; r_prm.z[0][1]  = -0.0773; r_prm.z[1][0]  = -0.0570; r_prm.z[1][1]  = +0.0653;
-    //r_prm.xi[0].x  = +0.3849; r_prm.xi[0].y  = +0.5442; r_prm.xi[1].x  = +0.7661; r_prm.xi[1].y  = +0.6785;
-    //r_prm.eta[0].x = +0.6656; r_prm.eta[0].y = +0.7909; r_prm.eta[1].x = +0.4856; r_prm.eta[1].y = +0.3810;
-
-    //r_prm.k[0][0]  = -1.1820; r_prm.k[0][1]  = -1.1250; r_prm.k[1][0]  = -1.1550; r_prm.k[1][1]  = -1.1310;
-    //r_prm.k[0][0]  = -2.1820; r_prm.k[0][1]  = -2.1250; r_prm.k[1][0]  = -2.1550; r_prm.k[1][1]  = -2.1310;
-    //r_prm.k[0][0]  = -3.1820; r_prm.k[0][1]  = -3.1250; r_prm.k[1][0]  = -3.1550; r_prm.k[1][1]  = -3.1310;
-    //r_prm.k[0][0]  = +0.1820; r_prm.k[0][1]  = +0.1250; r_prm.k[1][0]  = +0.1550; r_prm.k[1][1]  = +0.1310;
-    //r_prm.z[0][0]  = -0.0262; r_prm.z[0][1]  = -0.0773; r_prm.z[1][0]  = -0.0570; r_prm.z[1][1]  = +0.0653;
-    //r_prm.xi[0].x  = +0.3849; r_prm.xi[0].y  = +0.5442; r_prm.xi[1].x  = +0.7661; r_prm.xi[1].y  = +0.6785;
-    //r_prm.eta[0].x = +0.6656; r_prm.eta[0].y = +0.7909; r_prm.eta[1].x = +0.4856; r_prm.eta[1].y = +0.3810;
-
-    //r_prm = o_prm;
-    //o_prm = r_prm;
-
     // Penalty paramteres
-    DoubleVector r; r << 0.0000 << 0.0000 << 0.000;
+    DoubleVector r; r << 0.0000;// << 0.0000 << 0.000;
     // Regularization coefficients
     DoubleVector e; e << 0.0000 << 0.0000 << 0.0000;
     DoubleVector e1; e1 << 0.1000 << 0.0100 << 0.0010;
@@ -177,49 +130,25 @@ void prod_example1()
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
-            prob.checkGradient1(prob);
+            //prob.checkGradient1(prob);
             //prob.checkGradient2(prob);
+            //IPrinter::printSeperatorLine();
             //return;
 
-//            printf("fx: %.10f\n", prob.fx(x));
-//            for (int n=-100; n<=100; n++)
-//            {
-//                x[3] = n*0.01;
-//                printf("%f %f\n", n*0.01, prob.fx(x));
-//            }
-//
-//            return;
-
-            //            std::vector<DoubleMatrix> u;
-            //            spif_vectorH u_info, p_info;
-            //            prob.solveForwardIBVP(u, u_info, true);
-            //            IPrinter::printSeperatorLine();
-            //            prob.solveBackwardIBVP(u, p_info, true, u_info);
-            //            return;
-
-            //            spif_vectorH p_info;
-            //            prob.solveBackwardIBVP(u, p_info, false, u_info);
-
-            //            return;
-
-
-            //FILE* cfile = fopen("e:/Google Drive/Problems/Problem2_H/Experiments/control2.txt", "w");
-            //for (unsigned int ln=0; ln<=3000; ln++)
-            //{
-            //    fprintf(cfile, "%d,%.10f,%.10f\n", ln, prob.v(0, o_prm, e_prm, u_info, ln), prob.v(1, o_prm, e_prm, u_info, ln));
-            //}
-            //fclose(cfile);
-
-            //            return;
-
-            //prod_figure1(prob, ht, x);
+            prob.printLayers = false;
+            if (prob.printLayers)
+            {
+                std::vector<DoubleVector> u;
+                spif_vector1H u_info, p_info;
+                prob.solveForwardIBVP(u, u_info, true);
+                return;
+            }
+            //IPrinter::printSeperatorLine();
+            //prob.solveBackwardIBVP(u, p_info, true, u_info);
             //return;
-            //            printf("Fx: %10.6f\n", prob.fx(x)); return;
-            //            IPrinter::printSeperatorLine();
-            //            IPrinter::printMatrix(8,4,u[0]);
-            //            prob.fx(x);
         }
 
+        IPrinter::print(x, x.length(), 6, 4);
         //ConjugateGradient g;
         SteepestDescentGradient g;
         g.setFunction(&prob);
@@ -232,13 +161,36 @@ void prod_example1()
         g.setFunctionTolerance(0.00001);
         g.setStepTolerance(0.00001);
         g.setR1MinimizeEpsilon(e1[i], e2[i]);
-        g.setMaxIterations(50);
+        //g.setMaxIterations(50);
         g.setNormalize(false);
         g.showExitMessage(true);
         //prob.gm = &g;
         g.calculate(x);
+        //IPrinter::print(x, x.length(), 6, 4);
 
         IPrinter::printSeperatorLine(nullptr, '=');
+        return;
+
+        //x.clear();
+        //0.012558
+        //x << -0.9747 << -0.2779 << 1.1427 << -0.1328 << 0.4921 << 0.2416 << -0.1491 << 0.2960 << 0.1881 << 0.9500 << 0.2076 << 0.6641;
+        //0.003731
+        //x << -1.5687 << -0.6123 << 1.5319 << -0.4288 << 1.2693 << 0.4855 << -1.0917 << 0.4616 <<  0.5381 <<  0.3260 <<  0.4519 << 0.7312;
+        //1.720225
+        //x << -2.5900 << -1.8100 << -1.5700 << -2.7600 << 0.0000  << 0.0000 <<  0.0000 <<  0.0000 <<  0.5400 << 0.8200 <<  0.1200  << 0.3400;
+
+        IPrinter::print(x, x.length(), 6, 4);
+        prob.VectorToPrm(x, o_prm);
+        prob.mOptParameter = o_prm;
+        prob.printLayers = true;
+        if (prob.printLayers)
+        {
+            prob.setGridDimensions(Dimension(0.010, 0, 2000), Dimension(0.010, 0, 100));
+            std::vector<DoubleVector> u;
+            spif_vector1H u_info, p_info;
+            prob.solveForwardIBVP(u, u_info, true);
+            return;
+        }
     }
 }
 

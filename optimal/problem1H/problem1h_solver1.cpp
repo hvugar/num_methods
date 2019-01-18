@@ -57,7 +57,6 @@ auto Problem1HDirichlet1::gradient(const DoubleVector &pv, DoubleVector &g) cons
     prob->mOptParameter = o_prm;
 
     std::vector<DoubleVector> u;
-
     spif_vector1H u_info;
     solveForwardIBVP(u, u_info, true);
     spif_vector1H p_info;
@@ -120,7 +119,7 @@ auto Problem1HDirichlet1::gradient(const DoubleVector &pv, DoubleVector &g) cons
                 grad_Zij += 0.5 * (pi.vl[0] + 2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))) * kij;
                 for (unsigned int ln=1; ln<=LLD-1; ln++)
                 {
-                    grad_Zij += (pi.vl[ln] + 2.0*r*gpi(i,ln,u_info,o_prm)*sgn(g0i(i,2*ln,u_info,o_prm))) * kij;
+                    grad_Zij += (pi.vl[ln] + 2.0*r*gpi(i,ln,u_info,o_prm)*sgn(g0i(i,ln,u_info,o_prm))) * kij;
                 }
                 grad_Zij += 0.5 * (pi.vl[LLD] + 2.0*r*gpi(i,LLD,u_info,o_prm)*sgn(g0i(i,LLD,u_info,o_prm))) * kij;
                 grad_Zij *= ht;

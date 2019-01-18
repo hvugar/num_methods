@@ -9,7 +9,10 @@
 class MINIMUMSHARED_EXPORT DeltaGridException : public std::exception
 {
 public:
+    DeltaGridException(const std::string &msg = "");
     virtual const char* what() const noexcept;
+private:
+    std::string message;
 };
 
 class MINIMUMSHARED_EXPORT DeltaGrid2D

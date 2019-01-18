@@ -90,6 +90,8 @@ public:
 
     std::vector<DoubleVector> vu;
 
+    bool printLayers = false;
+
 protected:
     virtual auto boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double;
 

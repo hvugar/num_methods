@@ -21,6 +21,8 @@ void MINIMUMSHARED_EXPORT visualGrayScale(const DoubleMatrix &m, double min, dou
 
 void MINIMUMSHARED_EXPORT visualString(const DoubleVector& v, double min, double max, int w, int h, QPixmap &pxm,
                                        QColor bg = Qt::transparent, QColor fg = Qt::black, const QString &filename = QString::null);
+void MINIMUMSHARED_EXPORT visualString1(const DoubleVector& v, double min, double max, int w, int h, QColor bg = Qt::transparent,
+                                       QColor fg = Qt::black, const QString &filename = QString::null);
 
 #ifdef __cplusplus
 }

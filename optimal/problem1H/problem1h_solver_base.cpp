@@ -1,5 +1,46 @@
 #include "problem1h_solver_base.h"
 
+auto Problem1HDirichletBase::f_layerInfo(const DoubleVector &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
+{
+    const Dimension time = timeDimension();
+    const unsigned int L = static_cast<const unsigned int> ( time.size() );
+    //IPrinter::printVector(u, nullptr, 100);
+    //printf("%4d %.8f %.8f\n", ln, u.min(), u.max());
+    //    return;
+
+    if (printLayers)
+    {
+        Problem1HDirichletBase* tmp = const_cast<Problem1HDirichletBase*>(this);
+        std::vector<DoubleVector> &rvu = tmp->vu;
+
+        rvu.push_back(u);
+        if (rvu.size() > LD+1) rvu.erase(rvu.begin());
+
+        //if (ln == L+1)
+        //{
+        //    tmp->mOptParameter.k[0][0] = 0.0;
+        //    tmp->mOptParameter.k[0][1] = 0.0;
+        //    tmp->mOptParameter.k[1][0] = 0.0;
+        //    tmp->mOptParameter.k[1][1] = 0.0;
+        //}
+
+        if (rvu.size() == LD+1)
+        {
+            double fx = integral(rvu);
+            printf("%d %d %.10f\n", ln, ln-LD, fx);
+//            printf("%.10f %.10f %.10f\n", fx, u.min(), u.max());
+        }
+
+        //printf("%d,%.10f,%.10f\n", ln, u.min(), u.max());
+        //visualString1(u, -1.00, +1.00, 100, 100, Qt::white, Qt::blue, QString("d:/img/string/%1.png").arg(ln,5));
+    }
+}
+
+auto Problem1HDirichletBase::b_layerInfo(const DoubleVector &p UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
+{
+    //    if (ln == 0) IPrinter::printMatrix(p);
+}
+
 Problem1HDirichletBase::Problem1HDirichletBase()
 {
     r = 0.0;
@@ -75,46 +116,6 @@ auto Problem1HDirichletBase::b_initial2(const SpaceNodePDE &sn UNUSED_PARAM) con
 auto Problem1HDirichletBase::b_boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const -> double
 {
     return 0.0;
-}
-
-auto Problem1HDirichletBase::f_layerInfo(const DoubleVector &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
-{
-    //    if (ln == 1000) IPrinter::printMatrix(u);
-
-    //    printf("%4d %.8f %.8f\n", ln, u.min(), u.max());
-    return;
-
-    {
-        Problem1HDirichletBase* tmp = const_cast<Problem1HDirichletBase*>(this);
-        std::vector<DoubleVector> &rvu = tmp->vu;
-
-        rvu.push_back(u);
-        if (rvu.size() > 2*LD+1) rvu.erase(rvu.begin());
-
-        //        if (ln == 1001)
-        //        {
-        //            tmp->mOptParameter.k[0][0] = 0.0;
-        //            tmp->mOptParameter.k[0][1] = 0.0;
-        //            tmp->mOptParameter.k[1][0] = 0.0;
-        //            tmp->mOptParameter.k[1][1] = 0.0;
-        //        }
-
-        if (rvu.size() == 2*LD+1)
-        {
-            //std::cout << ln << " " << rvu.size() << std::endl;
-            if (ln%2==0)
-            {
-                double fx = integral(rvu);
-                printf("%d %d %.10f\n", ln, ln/2-50, fx);
-            }
-            //printf("%.10f\n", fx);
-        }
-    }
-}
-
-auto Problem1HDirichletBase::b_layerInfo(const DoubleVector &p UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
-{
-    //    if (ln == 0) IPrinter::printMatrix(p);
 }
 
 auto Problem1HDirichletBase::checkGradient1(const Problem1HDirichletBase &prob) -> void
@@ -446,7 +447,7 @@ auto Problem1HDirichletBase::project(DoubleVector &pv) const -> void
     unsigned int No = mEquParameter.No;
 
     unsigned int start = 2*Nc*No;
-    unsigned int end  =  2*Nc*No + 2*No + 2*Nc - 1;
+    unsigned int end  =  2*Nc*No + No + Nc - 1;
 
     for (unsigned int index = start; index <= end; index++)
     {
@@ -618,34 +619,36 @@ auto Problem1HDirichletBase::print(unsigned int i, const DoubleVector &x, const 
     DoubleVector v1(v_length+1);
     DoubleVector v2(v_length+1);
 
-//    for (unsigned int ln=0; ln<=v_length; ln++)
-//    {
-//        v1[ln] = v(0, o_prm, mEquParameter, u_info, 2*ln);
-//        v2[ln] = v(1, o_prm, mEquParameter, u_info, 2*ln);
-//    }
+    //    for (unsigned int ln=0; ln<=v_length; ln++)
+    //    {
+    //        v1[ln] = v(0, o_prm, mEquParameter, u_info, 2*ln);
+    //        v2[ln] = v(1, o_prm, mEquParameter, u_info, 2*ln);
+    //    }
 
-//    IPrinter::printVector(v1, "v1", 10);
-//    IPrinter::printVector(v2, "v2", 10);
-//    IPrinter::printVector(uf, "uf", 10);
-//    IPrinter::printVector(um, "um", 10);
-//    IPrinter::printVector(ux, "ux", 10);
+    //    IPrinter::printVector(v1, "v1", 10);
+    //    IPrinter::printVector(v2, "v2", 10);
+    //    IPrinter::printVector(uf, "uf", 10);
+    //    IPrinter::printVector(um, "um", 10);
+    //    IPrinter::printVector(ux, "ux", 10);
 
-    printf("I[%3d]: F:%.6f I:%.6f P:%.6f N:%.5f R:%.3f e:%.3f a:%.6f ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
-    printf("min:%.6f max:%.6f min:%.6f max:%.6f U0:%.8f UT:%.8f", u.at(0).min(), u.at(0).max(), u.at(LD).min(), u.at(LD).max(), integralU(u[0]), integralU(u[LD]));
-    printf("\n");
+    printf("I[%3d]: I:%.6f ", i, f);
+    //printf("min:%10.6f max:%10.6f min:%10.6f max:%10.6f U0:%.8f UT:%.8f ", u.at(0).min(), u.at(0).max(), u.at(LD).min(), u.at(LD).max(), integralU(u[0]), integralU(u[LD]));
+    //printf("I[%3d]: F:%.6f I:%.6f P:%.6f N:%.5f R:%.3f e:%.3f a:%.6f ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
+    //printf("min:%.6f max:%.6f min:%.6f max:%.6f U0:%.8f UT:%.8f", u.at(0).min(), u.at(0).max(), u.at(LD).min(), u.at(LD).max(), integralU(u[0]), integralU(u[LD]));
+    //printf("\n");
     printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f c: %8.4f %8.4f\n",
            x[0], x[1], x[2], x[3],      x[4], x[5], x[6], x[7],      x[8], x[9], x[10], x[11]);
-    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f c: %8.4f %8.4f\n",
-           g[0], g[1], g[2], g[3],      g[4], g[5], g[6], g[7],      g[8], g[9], g[10], g[11]);
-    DoubleVector n = g; n.L2Normalize();
-    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f c: %8.4f %8.4f\n",
-           n[0], n[1], n[2], n[3],      n[4], n[5], n[6], n[7],      n[8], n[9], n[10], n[11]);
+    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f c: %8.4f %8.4f\n",
+    //       g[0], g[1], g[2], g[3],      g[4], g[5], g[6], g[7],      g[8], g[9], g[10], g[11]);
+    //DoubleVector n = g; n.L2Normalize();
+    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f c: %8.4f %8.4f\n",
+    //       n[0], n[1], n[2], n[3],      n[4], n[5], n[6], n[7],      n[8], n[9], n[10], n[11]);
 
     u.clear();
     u_info.clear();
 
     C_UNUSED(prob);
-    IPrinter::printSeperatorLine();
+    //IPrinter::printSeperatorLine();
 
     //prob->optimizeK = i%4 == 3;
     //prob->optimizeZ = i%4 == 0;
