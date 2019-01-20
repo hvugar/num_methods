@@ -46,6 +46,7 @@
 
 #include <QtGui>
 #include <r1minimize.h>
+#include "nonlocal.h"
 
 double funcU(double x, double y)
 {
@@ -78,6 +79,21 @@ auto functionO2(const DoubleVector &c, double d) -> void
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
+    NonLocal nl;
+
+//    DoubleVector a(101, 0.0);
+//    a[0] = a[50] = a[100] = 1.0;
+//    double b = a[0]*nl.x(0.0) + a[50]*nl.x(0.5) + a[100]*nl.x(1.0);
+//    nl.solve(a, b, 0.01);
+
+    DoubleVector a(11, 0.0);
+    a[0] = a[5] = a[10] = 1.0;
+    double b = a[0]*nl.x(0.0) + a[5]*nl.x(0.5) + a[10]*nl.x(1.0);
+    nl.solve(a, b, 0.1);
+
+
+    return 0;
+
 //    DeltaGrid2D delta;
 //    unsigned int N = 100, M = 100;
 //    double hx = 0.01, hy = 0.01;

@@ -5,59 +5,31 @@
 #include <limits>
 #include <cmath>
 #include <cfloat>
+#include <linearequation.h>
+#include <vector>
 
-//class NonLocal
-//{
-//public:
-//    NonLocal();
-//    virtual ~NonLocal();
+class NonLocal
+{
+public:
+    NonLocal();
+    virtual ~NonLocal();
 
-//    void solve(DoubleVector &c, double d, double h);
+    void solve(const DoubleVector &a, double b, double h) const;
+    virtual void calculateAlpha(double *alpha, unsigned int n, unsigned int k, double h) const;
+    virtual void calculateAlpha(DoubleVector *alpha, unsigned int m, unsigned int k, double h, unsigned int N) const;
+    virtual void calculateOther(DoubleMatrix &c, DoubleVector &d, unsigned int N, unsigned int k, double h, double *betta) const;
 
-//    virtual double a(double t) const;
-//    virtual double b(double t) const;
+    void solveSystem(const std::vector<DoubleMatrix> &C, const DoubleVector &d, double h, unsigned int N) const;
 
-//    bool equalZero(double) const;
-//};
+    virtual double a(double t) const;
+    virtual double b(double t) const;
 
-//NonLocal::~NonLocal() {}
+    virtual double A(double t, unsigned int n) const;
+    virtual double B(double t, unsigned int n) const;
 
-//bool NonLocal::equalZero(double x) const
-//{
-//    return fabs(x) <= DBL_EPSILON;
-//}
+    bool equalZero(double) const;
 
-//void NonLocal::solve(DoubleVector &c, double d, double h)
-//{
-//    unsigned int N = c.length();
-//    if (N < 2) throw std::exception();
-//    if (equalZero(c[0])) throw std::exception();
-//    if (equalZero(c[N])) throw std::exception();
-
-//    unsigned int M = 0;
-//    for (unsigned int i=2; i<=N; i++) if (!equalZero(c[i])) { M++; }
-
-//    double *p = new double[N];
-//    double *q = new double[N];
-//    double *k = new double[N];
-//    double **C = new double*[M];
-
-//    p[0] = c[0]; q[0] = c[1]; k[0] = d;
-
-//    for (unsigned int i=1; i<=N; i++)
-//    {
-//        double t = (i-1)*h;
-//        double m = 3.0+2.0*h*a(t);
-//        double a1 = +4.0/m;
-//        double a2 = -1.0/m;
-//        double a3 = -b(t)/m;
-
-//        p[i] = p[i-1]*a1 + q[i-1];
-//        q[i] = p[i-1]*a2;
-//        k[i] = k[i-1] - p[i-1]*a2;
-
-
-//    }
-//}
+    virtual double x(double t) const;
+};
 
 #endif // NONLOCAL_H

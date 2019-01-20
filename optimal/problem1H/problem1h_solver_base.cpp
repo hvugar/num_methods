@@ -89,13 +89,16 @@ auto Problem1HDirichletBase::boundary(const SpaceNodePDE &, const TimeNodePDE &)
 
 auto Problem1HDirichletBase::f_initial1(const SpaceNodePDE &sn UNUSED_PARAM) const -> double
 {
-    return 0.0;
+    unsigned int n = static_cast<unsigned int>(sn.i);
+    return mPulseWeightVector[n];
+    //return 0.0;
 }
 
 auto Problem1HDirichletBase::f_initial2(const SpaceNodePDE &sn) const -> double
 {
-    unsigned int n = static_cast<unsigned int>(sn.i);
-    return mPulseWeightVector[n];
+    return 0.0;
+    //unsigned int n = static_cast<unsigned int>(sn.i);
+    //return mPulseWeightVector[n];
 }
 
 auto Problem1HDirichletBase::f_boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const -> double
@@ -631,12 +634,26 @@ auto Problem1HDirichletBase::print(unsigned int i, const DoubleVector &x, const 
     //    IPrinter::printVector(um, "um", 10);
     //    IPrinter::printVector(ux, "ux", 10);
 
-    printf("I[%3d]: I:%.6f ", i, f);
-    //printf("min:%10.6f max:%10.6f min:%10.6f max:%10.6f U0:%.8f UT:%.8f ", u.at(0).min(), u.at(0).max(), u.at(LD).min(), u.at(LD).max(), integralU(u[0]), integralU(u[LD]));
+    DoubleMatrix u00(101, 101); SpaceNodePDE sn;
+    for (unsigned int m=0; m<=100; m++)
+    {
+        sn.j = static_cast<int>(m); sn.y = sn.j*0.01;
+        for (unsigned int n=0; n<=100; n++)
+        {
+            sn.i = static_cast<int>(n); sn.x = sn.i*0.01;
+            u00[m][n] = f_initial1(sn);
+        }
+    }
+
+    printf("I[%3d]: I:%.8f ", i, f);
+    printf("mn:%8.6f mx:%8.6f ", u00.min(), u00.max());
+    printf("mn:%8.6f mx:%8.6f ", u[00].min(), u[00].max());
+    printf("mn:%8.6f mx:%8.6f ", u[LD].min(), u[LD].max());
+    printf("U0:%.8f UT:%.8f ", integralU(u[0]), integralU(u[LD]));
     //printf("I[%3d]: F:%.6f I:%.6f P:%.6f N:%.5f R:%.3f e:%.3f a:%.6f ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
     //printf("min:%.6f max:%.6f min:%.6f max:%.6f U0:%.8f UT:%.8f", u.at(0).min(), u.at(0).max(), u.at(LD).min(), u.at(LD).max(), integralU(u[0]), integralU(u[LD]));
     //printf("\n");
-    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f c: %8.4f %8.4f\n",
+    printf("\nk:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f c: %8.4f %8.4f\n",
            x[0], x[1], x[2], x[3],      x[4], x[5], x[6], x[7],      x[8], x[9], x[10], x[11]);
     //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f c: %8.4f %8.4f\n",
     //       g[0], g[1], g[2], g[3],      g[4], g[5], g[6], g[7],      g[8], g[9], g[10], g[11]);

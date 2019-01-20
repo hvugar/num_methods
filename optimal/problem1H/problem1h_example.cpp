@@ -66,13 +66,13 @@ void prod_example1()
     o_prm.ksi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 
-    e_prm.theta[0].q = +0.514; e_prm.theta[0].x = 0.2845;
-    e_prm.theta[1].q = +0.528; e_prm.theta[1].x = 0.7382;
+    e_prm.theta[0].q = +0.114; e_prm.theta[0].x = 0.2845;
+    e_prm.theta[1].q = +0.128; e_prm.theta[1].x = 0.7382;
 
     // (70.749111 200)
     //o_prm.k[0][0]  = -2.0610; o_prm.k[0][1]  = -2.9376; o_prm.k[1][0]  = -2.1707; o_prm.k[1][1]  = -2.8527;
     //o_prm.z[0][0]  = -0.0461; o_prm.z[0][1]  = -0.0246; o_prm.z[1][0]  = +0.0319; o_prm.z[1][1]  = +0.0161;
-    o_prm.k[0][0]  = -2.5900; o_prm.k[0][1]  = -1.8100; o_prm.k[1][0]  = -1.5700; o_prm.k[1][1]  = -2.76000;
+    //o_prm.k[0][0]  = -2.5900; o_prm.k[0][1]  = -1.8100; o_prm.k[1][0]  = -1.5700; o_prm.k[1][1]  = -2.76000;
     o_prm.ksi[0].x = +0.5400; o_prm.ksi[1].x = +0.8200; o_prm.eta[0].x = +0.1200; o_prm.eta[1].x = +0.3400;
     // 0.011497
     //o_prm.k[0][0]  = -0.7099; o_prm.k[0][1]  = -1.7252; o_prm.k[1][0]  = -0.0766; o_prm.k[1][1]  = -0.7024;
@@ -149,8 +149,8 @@ void prod_example1()
         }
 
         IPrinter::print(x, x.length(), 6, 4);
-        //ConjugateGradient g;
-        SteepestDescentGradient g;
+        ConjugateGradient g;
+        //SteepestDescentGradient g;
         g.setFunction(&prob);
         g.setGradient(&prob);
         g.setPrinter(&prob);
@@ -169,7 +169,7 @@ void prod_example1()
         //IPrinter::print(x, x.length(), 6, 4);
 
         IPrinter::printSeperatorLine(nullptr, '=');
-        return;
+        //return;
 
         //x.clear();
         //0.012558
@@ -185,7 +185,7 @@ void prod_example1()
         prob.printLayers = true;
         if (prob.printLayers)
         {
-            prob.setGridDimensions(Dimension(0.010, 0, 2000), Dimension(0.010, 0, 100));
+            prob.setGridDimensions(Dimension(0.010, 0, 1000), Dimension(0.010, 0, 100));
             std::vector<DoubleVector> u;
             spif_vector1H u_info, p_info;
             prob.solveForwardIBVP(u, u_info, true);
