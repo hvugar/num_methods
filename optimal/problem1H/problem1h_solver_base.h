@@ -64,7 +64,8 @@ public:
     virtual auto norm(const DoubleVector &v) const -> double;
     virtual auto normalize(DoubleVector &v) const -> void;
 
-    auto currentLayerFGrid(const DoubleVector &u, const std::vector<DeltaGrid1D> &controlDeltaGrids, const std::vector<DeltaGrid1D> &measurementDeltaGrids) const -> void;
+    auto currentLayerFGrid(const DoubleVector &u, const std::vector<DeltaGrid1D> &controlDeltaGrids, const std::vector<DeltaGrid1D> &measurementDeltaGrids,
+                           unsigned int ln) const -> void;
     auto currentLayerBGrid(const DoubleVector &p, const std::vector<DeltaGrid1D> &controlDeltaGrids, const std::vector<DeltaGrid1D> &measurementDeltaGrids,
                            unsigned int ln, const spif_vector1H &u_info) const -> void;
 

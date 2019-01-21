@@ -28,7 +28,7 @@ auto Problem1HDirichletBase::f_layerInfo(const DoubleVector &u UNUSED_PARAM, uns
         {
             double fx = integral(rvu);
             printf("%d %d %.10f\n", ln, ln-LD, fx);
-//            printf("%.10f %.10f %.10f\n", fx, u.min(), u.max());
+            //            printf("%.10f %.10f %.10f\n", fx, u.min(), u.max());
         }
 
         //printf("%d,%.10f,%.10f\n", ln, u.min(), u.max());
@@ -366,6 +366,35 @@ auto Problem1HDirichletBase::PrmToVector(const OptimizeParameter1H &prm, DoubleV
     unsigned int Nc = mEquParameter.Nc;
     unsigned int No = mEquParameter.No;
 
+#ifdef DISCRETE_DELTA_TIME
+    unsigned int Nt = mEquParameter.Nt;
+    pv.clear();
+    pv.resize(2*Nc*No*Nt+No+Nc);
+
+    unsigned int index = 0;
+    for (unsigned int s=0; s<Nt; s++)
+    {
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            for (unsigned int j=0; j<No; j++)
+            {
+                pv[index] = prm.k[s][i][j]; index++;
+            }
+        }
+    }
+    for (unsigned int s=0; s<Nt; s++)
+    {
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            for (unsigned int j=0; j<No; j++)
+            {
+                pv[index] = prm.z[s][i][j]; index++;
+            }
+        }
+    }
+    for (unsigned int j=0; j<No; j++) { pv[index] = prm.ksi[j].x; index++; }
+    for (unsigned int i=0; i<Nc; i++) { pv[index] = prm.eta[i].x; index++; }
+#else
     pv.clear();
     pv.resize(2*Nc*No+No+Nc);
 
@@ -394,6 +423,7 @@ auto Problem1HDirichletBase::PrmToVector(const OptimizeParameter1H &prm, DoubleV
     {
         pv[i + No + 2*Nc*No] = prm.eta[i].x;
     }
+#endif
 }
 
 auto Problem1HDirichletBase::VectorToPrm(const DoubleVector &pv, OptimizeParameter1H &prm) const -> void
@@ -403,6 +433,49 @@ auto Problem1HDirichletBase::VectorToPrm(const DoubleVector &pv, OptimizeParamet
 
     unsigned int index = 0;
 
+#ifdef DISCRETE_DELTA_TIME
+    unsigned int Nt = mEquParameter.Nt;
+
+    delete [] prm.k; prm.k = new DoubleMatrix[Nt]; for (unsigned int s=0; s<Nt; s++) prm.k[s].resize(Nc, No);
+    for (unsigned int s=0; s<Nt; s++)
+    {
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            for (unsigned int j=0; j<No; j++)
+            {
+                prm.k[s][i][j] = pv[index]; index++;
+            }
+        }
+    }
+
+    delete [] prm.z; prm.z = new DoubleMatrix[Nt]; for (unsigned int s=0; s<Nt; s++) prm.z[s].resize(Nc, No);
+    for (unsigned int s=0; s<Nt; s++)
+    {
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            for (unsigned int j=0; j<No; j++)
+            {
+                prm.z[s][i][j] = pv[index]; index++;
+            }
+        }
+    }
+
+    prm.ksi.clear();
+    prm.ksi.resize(No);
+    for (unsigned int j=0; j<No; j++)
+    {
+        prm.ksi[j].x = pv[index]; index++;
+    }
+
+    prm.eta.clear();
+    prm.eta.resize(Nc);
+
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        prm.eta[i].x = pv[index]; index++;
+    }
+
+#else
     prm.k.clear();
     prm.k.resize(Nc, No);
 
@@ -440,6 +513,7 @@ auto Problem1HDirichletBase::VectorToPrm(const DoubleVector &pv, OptimizeParamet
     {
         prm.eta[i].x = pv[index]; index++;
     }
+#endif
 }
 
 auto Problem1HDirichletBase::project(DoubleVector &, unsigned int) -> void {}
@@ -562,6 +636,9 @@ auto Problem1HDirichletBase::sign(double x) const -> double
 
 auto Problem1HDirichletBase::v(unsigned int i, OptimizeParameter1H o_prm, EquationParameter1H e_prm, const spif_vector1H &u_info, unsigned int ln) const -> double
 {
+#ifdef DISCRETE_DELTA_TIME
+    return 0.0;
+#else
     const unsigned int No = static_cast<const unsigned int>(e_prm.No);
     double v = 0.0;
     for (unsigned int j=0; j<No; j++)
@@ -569,16 +646,24 @@ auto Problem1HDirichletBase::v(unsigned int i, OptimizeParameter1H o_prm, Equati
         v += o_prm.k[i][j] * (u_info[j].vl[ln]-o_prm.z[i][j]);
     }
     return v;
+#endif
 }
 
 auto Problem1HDirichletBase::gpi(unsigned int i, unsigned int layer, const spif_vector1H &u_info, const OptimizeParameter1H &o_prm) const -> double
 {
+#ifdef DISCRETE_DELTA_TIME
+    return 0.0;
+#else
     double gpi_ln = fabs( g0i(i, layer, u_info, o_prm) ) - ( vmax.at(i) - vmin.at(i) )/2.0;
     return gpi_ln > 0.0 ? gpi_ln : 0.0;
+#endif
 }
 
 auto Problem1HDirichletBase::g0i(unsigned int i, unsigned int layer, const spif_vector1H &u_info, const OptimizeParameter1H &o_prm) const -> double
 {
+#ifdef DISCRETE_DELTA_TIME
+    return 0.0;
+#else
     double vi = 0.0;
     for (unsigned int j=0; j<mEquParameter.No; j++)
     {
@@ -586,6 +671,7 @@ auto Problem1HDirichletBase::g0i(unsigned int i, unsigned int layer, const spif_
         vi += o_prm.k[i][j] * ( u_xij.vl[layer] - o_prm.z[i][j] );
     }
     return ( vmax.at(i) + vmin.at(i) )/2.0 - vi;
+#endif
 }
 
 auto Problem1HDirichletBase::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const -> void
@@ -789,17 +875,56 @@ auto Problem1HDirichletBase::add2Info(const DoubleVector &u, spif_vector1H &info
 
 auto Problem1HDirichletBase::currentLayerFGrid(const DoubleVector &u,
                                                const std::vector<DeltaGrid1D> &controlDeltaGrids,
-                                               const std::vector<DeltaGrid1D> &measurementDeltaGrids) const -> void
+                                               const std::vector<DeltaGrid1D> &measurementDeltaGrids, unsigned int ln) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
-    const unsigned int N = static_cast<const unsigned int> ( dimX.size() );
-    const double hx = dimX.step();
+    const Dimension time = timeDimension();
+    const unsigned int N = static_cast<unsigned int> ( dimX.size() );
+    const double ht = time.step();
 
     Problem1HDirichletBase* const_this = const_cast<Problem1HDirichletBase*>(this);
-
     const unsigned int Nc = mEquParameter.Nc;
     const unsigned int No = mEquParameter.No;
 
+#ifdef DISCRETE_DELTA_TIME
+    const unsigned int Nt = mEquParameter.Nt;
+    const double sigma = ht;
+
+    double wt = 0.0;
+    for (unsigned int s=0; s<Nt; s++)
+    {
+        wt += (1.0/sqrt(2.0*M_PI*sigma*sigma))*exp(-((ln*ht-mOptParameter.timeMoments[s])*(ln*ht-mOptParameter.timeMoments[s]))/(2.0*sigma*sigma));
+
+        double* _u = new double[No];
+        for (unsigned int j=0; j<No; j++)
+        {
+            _u[j] = measurementDeltaGrids[j].consentrateInPoint(u);
+        }
+
+        double *_v = new double[Nc];
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            _v[i] = 0.0;
+            for (unsigned int j=0; j<No; j++)
+            {
+                _v[i] += mOptParameter.k[s][i][j] * (_u[j] - mOptParameter.z[s][i][j]);
+            }
+        }
+        delete [] _u;
+
+        for (unsigned int n=0; n<=N; n++)
+        {
+            const_this->mCrFfxWeightMatrix[n] = 0.0;
+            for (unsigned int i=0; i<Nc; i++)
+            {
+                const DeltaGrid1D &dg = controlDeltaGrids[i];
+                const_this->mCrFfxWeightMatrix[n] += _v[i] * dg.weight(n) * wt;
+            }
+        }
+
+        delete [] _v;
+    }
+#else
     double* _u = new double[No];
     for (unsigned int j=0; j<No; j++)
     {
@@ -829,20 +954,61 @@ auto Problem1HDirichletBase::currentLayerFGrid(const DoubleVector &u,
     }
 
     delete [] _v;
+#endif
 }
 
 auto Problem1HDirichletBase::currentLayerBGrid(const DoubleVector &p, const std::vector<DeltaGrid1D> &controlDeltaGrids, const std::vector<DeltaGrid1D> &measurementDeltaGrids,
                                                unsigned int ln, const spif_vector1H &u_info) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
-
-    const unsigned int N = static_cast<const unsigned int> ( dimX.size() );
+    const Dimension time = timeDimension();
+    const unsigned int N = static_cast<unsigned int> ( dimX.size() );
+    const double ht = time.step();
 
     Problem1HDirichletBase* const_this = const_cast<Problem1HDirichletBase*>(this);
 
     const unsigned int Nc = mEquParameter.Nc;
     const unsigned int No = mEquParameter.No;
 
+#ifdef DISCRETE_DELTA_TIME
+    const unsigned int Nt = mEquParameter.Nt;
+    const double sigma = ht;
+
+    double wt = 0.0;
+    for (unsigned int s=0; s<Nt; s++)
+    {
+        wt += (1.0/sqrt(2.0*M_PI*sigma*sigma))*exp(-((ln*ht-mOptParameter.timeMoments[s])*(ln*ht-mOptParameter.timeMoments[s]))/(2.0*sigma*sigma));
+
+        double* _p = new double[Nc];
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            _p[i] = controlDeltaGrids[i].consentrateInPoint(p);
+        }
+
+        double *_w = new double[No];
+        for (unsigned int j=0; j<No; j++)
+        {
+            _w[j] = 0.0;
+            for (unsigned int i=0; i<Nc; i++)
+            {
+                _w[j] += mOptParameter.k[s][i][j] * (_p[i] + 2.0*r*gpi(i, ln, u_info, mOptParameter)*sgn(g0i(i, ln, u_info, mOptParameter)) );
+            }
+        }
+        delete [] _p;
+
+        for (unsigned int n=0; n<=N; n++)
+        {
+            const_this->mCrBfxWeightMatrix[n] = 0.0;
+            for (unsigned int j=0; j<No; j++)
+            {
+                const DeltaGrid1D &dg = measurementDeltaGrids[j];
+                const_this->mCrBfxWeightMatrix[n] += _w[j] * dg.weight(n) * wt;
+            }
+        }
+
+        delete [] _w;
+    }
+#else
     double* _p = new double[Nc];
     for (unsigned int i=0; i<Nc; i++)
     {
@@ -871,6 +1037,7 @@ auto Problem1HDirichletBase::currentLayerBGrid(const DoubleVector &p, const std:
     }
 
     delete [] _w;
+#endif
 }
 
 auto Problem1HDirichletBase::setGridDimensions(const Dimension &time, const Dimension &dimX) -> void

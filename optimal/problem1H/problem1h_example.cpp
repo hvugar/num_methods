@@ -52,12 +52,23 @@ void prod_example1()
     EquationParameter1H e_prm;
     e_prm.a = 1.0;
     e_prm.alpha = +0.00;
-
+#ifdef DISCRETE_DELTA_TIME
+    e_prm.Nt = 10;
+#endif
     // Pulse influences
     e_prm.Ns = 2;
     e_prm.theta.resize(e_prm.Ns);
 
     // Optimization parameters
+#ifdef DISCRETE_DELTA_TIME
+    OptimizeParameter1H o_prm;
+    e_prm.Nc = 2;
+    e_prm.No = 2;
+    o_prm.k = new DoubleMatrix[e_prm.Nt]; for (unsigned int s=0; s<e_prm.Nt; s++) o_prm.k[s].resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm.z = new DoubleMatrix[e_prm.Nt]; for (unsigned int s=0; s<e_prm.Nt; s++) o_prm.z[s].resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm.ksi.resize(e_prm.No);
+    o_prm.eta.resize(e_prm.Nc);
+#else
     OptimizeParameter1H o_prm;
     e_prm.Nc = 2;
     e_prm.No = 2;
@@ -65,6 +76,7 @@ void prod_example1()
     o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.ksi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
+#endif
 
     e_prm.theta[0].q = +0.114; e_prm.theta[0].x = 0.2845;
     e_prm.theta[1].q = +0.128; e_prm.theta[1].x = 0.7382;
@@ -95,10 +107,15 @@ void prod_example1()
 
     // Regularization parameters
     OptimizeParameter1H r_prm;
+#ifdef DISCRETE_DELTA_TIME
+    o_prm.k = new DoubleMatrix[e_prm.Nt]; for (unsigned int s=0; s<e_prm.Nt; s++) o_prm.k[s].resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm.z = new DoubleMatrix[e_prm.Nt]; for (unsigned int s=0; s<e_prm.Nt; s++) o_prm.z[s].resize(e_prm.Nc, e_prm.No, 0.0);
+#else
     r_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     r_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
     r_prm.ksi.resize(e_prm.No);
     r_prm.eta.resize(e_prm.Nc);
+#endif
 
     // Penalty paramteres
     DoubleVector r; r << 0.0000;// << 0.0000 << 0.000;
@@ -149,8 +166,8 @@ void prod_example1()
         }
 
         IPrinter::print(x, x.length(), 6, 4);
-        ConjugateGradient g;
-        //SteepestDescentGradient g;
+        //ConjugateGradient g;
+        SteepestDescentGradient g;
         g.setFunction(&prob);
         g.setGradient(&prob);
         g.setPrinter(&prob);

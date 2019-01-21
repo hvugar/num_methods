@@ -22,29 +22,16 @@
 #include <deltagrid.h>
 #include "problem1h_global.h"
 
-//struct GridH
-//{
-//    std::vector<unsigned int> rows0;
-//    std::vector<unsigned int> rows1;
-//    std::vector<unsigned int> rows2;
-
-//    std::vector<unsigned int> cols0;
-//    std::vector<unsigned int> cols1;
-//    std::vector<unsigned int> cols2;
-//};
-
-//struct GridSpace2D
-//{
-//    unsigned int N;
-//    unsigned int M;
-//    double hx;
-//    double hy;
-//};
-
 struct PROBLEM1HSHARED_EXPORT OptimizeParameter1H
 {
+#ifdef DISCRETE_DELTA_TIME
+    DoubleMatrix *k;
+    DoubleMatrix *z;
+    std::vector<double> timeMoments;
+#else
     DoubleMatrix k;
     DoubleMatrix z;
+#endif
     std::vector<SpacePoint> ksi;
     std::vector<SpacePoint> eta;
 };
@@ -61,11 +48,9 @@ struct PROBLEM1HSHARED_EXPORT EquationParameter1H
 
     unsigned int No;
     unsigned int Nc;
-
-//    DoubleMatrix k;
-//    DoubleMatrix z;
-//    std::vector<SpacePoint> xi;
-//    std::vector<SpacePoint> eta;
+#ifdef DISCRETE_DELTA_TIME
+    unsigned int Nt;
+#endif
 
     unsigned int Ns;
     std::vector<PulseSpacePoint1H> theta;
@@ -76,39 +61,6 @@ struct PROBLEM1HSHARED_EXPORT EquationParameter1H
     unsigned int Nt;
 #endif
 };
-
-//struct PROBLEM2HSHARED_EXPORT EquationParameter1H1
-//{
-//    struct InitialPulse
-//    {
-//        double q;
-//        SpacePoint theta;
-//    };
-
-//    struct OptimizationParam
-//    {
-//        DoubleMatrix k;
-//        DoubleMatrix z;
-//        std::vector<SpacePoint> xi;
-//        std::vector<SpacePoint> eta;
-//    };
-
-//    EquationParameterH1(unsigned int Nc, unsigned int No, unsigned int Ns, double a = 1.0, double alpha = 0.01);
-
-//    double a;
-//    double alpha;
-//    unsigned int No;
-//    unsigned int Nc;
-//    unsigned int Ns;
-//private:
-//    OptimizationParam op;
-//    OptimizationParam rp;
-//    std::vector<InitialPulse> pulseVector;
-
-//#ifdef TIME_DISCRETE_H
-//    unsigned int Nt;
-//#endif
-//};
 
 struct PROBLEM1HSHARED_EXPORT ExtendedSpacePointNode1H
 {
