@@ -203,14 +203,19 @@ auto Problem1HDirichlet1::gradient(const DoubleVector &pv, DoubleVector &g) cons
             const SpacePointInfo1H &uj = u_info[j];
 
             double gradXijX = 0.0;
-            double vi = 0.0;
+            //double vi = 0.0;
 
             for (unsigned int s=0; s<Nt; s++)
             {
                 unsigned int ln = static_cast<unsigned int>(mEquParameter.timeMoments[s]/ht);
-                vi = 0.0;
-                for (unsigned int i=0; i<Nc; i++) vi += o_prm.k[s][i][j] * (p_info[i].vl[ln] /*+ 2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))*/);
-                gradXijX += uj.dx[ln] * vi;
+                for (unsigned int i=0; i<Nc; i++)
+                    gradXijX += o_prm.k[s][i][j] * (p_info[i].vl[ln] /*+ 2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))*/)
+                            * u_info[j].dx[ln];
+
+
+                //vi = 0.0;
+                //for (unsigned int i=0; i<Nc; i++) vi += o_prm.k[s][i][j] * (p_info[i].vl[ln] /*+ 2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))*/);
+                //gradXijX += uj.dx[ln] * vi;
                 //for (unsigned int i=0; i<Nc; i++) vi += o_prm.k[s][i][j] * (p_info[i].vl[0] /*+ 2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))*/);
                 //gradXijX += 0.5 * uj.dx[0] * vi;
                 //for (unsigned int ln=1; ln<=LLD-1; ln++)
@@ -433,7 +438,7 @@ auto Problem1HDirichlet1::solveForwardIBVP(std::vector<DoubleVector> &u, spif_ve
 
         double sum = 0.0;
         sum += aa__hxhx*(u00[n-1]-2.0*u00[n]+u00[n+1]);
-        sum -= alpha*(f_initial2(sn10));
+        sum -= alpha*f_initial2(sn10);
         u10[n] = u00[n] + ht*f_initial2(sn10) + (0.5*ht*ht) * sum;
     }
     if (use == true) add2Info(u10, u_info, 1, hx, measuremntGirdList); f_layerInfo(u10, 2);
@@ -477,7 +482,7 @@ auto Problem1HDirichlet1::solveForwardIBVP(std::vector<DoubleVector> &u, spif_ve
 
         /**************************************************** saving last LD layers ***********************************************/
         if ( L == ln ) u[0] = u20;
-        if ( L+1 <= ln && ln <= LLD ) { u[(ln-L)] = u20; }
+        if ( L+1 <= ln && ln <= LLD ) { u[ln-L] = u20; }
         /**************************************************** saving last LD layers ***********************************************/
     }
 

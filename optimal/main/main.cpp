@@ -172,7 +172,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 
 
-    //srand(time(0));
+//    srand(time(0));
 //    CcIHyperbolicIBVP1::Main(argc, argv);
 //    CdIHyperbolicIBVP1::Main(argc, argv);
     //IPrinter::printSeperatorLine();

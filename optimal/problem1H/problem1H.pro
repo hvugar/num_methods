@@ -27,6 +27,7 @@ HEADERS += problem1h_global.h \
            problem1h_common.h \
 #           problem2h_solver.h \
            problem1h_solver1.h \
+           problem1h_solver2.h \
 #           problem2h_solver4.h \
            problem1h_example.h \
 #           problem2h_ibvp.h \
@@ -35,6 +36,7 @@ HEADERS += problem1h_global.h \
 SOURCES += problem1h_common.cpp \
 #           problem1h_solver.cpp \
            problem1h_solver1.cpp \
+           problem1h_solver2.cpp \
 #           problem2h_solver4.cpp \
            problem1h_example.cpp \
 #           problem2h_ibvp.cpp \

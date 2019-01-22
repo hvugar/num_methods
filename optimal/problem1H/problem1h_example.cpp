@@ -53,9 +53,9 @@ void prod_example1()
     e_prm.a = 1.0;
     e_prm.alpha = +0.00;
 #ifdef DISCRETE_DELTA_TIME
-    e_prm.Nt = 5;
+    e_prm.Nt = 10;
     e_prm.timeMoments.resize(e_prm.Nt);
-    for (unsigned int s=0; s<e_prm.Nt; s++) e_prm.timeMoments[s] = (s+1)*1.0;
+    for (unsigned int s=0; s<e_prm.Nt; s++) e_prm.timeMoments[s] = (s+1)*0.5;
 #endif
     // Pulse influences
     e_prm.Ns = 2;
@@ -70,11 +70,24 @@ void prod_example1()
     o_prm.z = new DoubleMatrix[e_prm.Nt]; for (unsigned int s=0; s<e_prm.Nt; s++) o_prm.z[s].resize(e_prm.Nc, e_prm.No, 0.01);
     o_prm.ksi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
+
+    for (unsigned int s=0; s<e_prm.Nt; s++)
+    {
+        o_prm.k[s].resize(e_prm.Nc, e_prm.No, 0.0);
+        for (unsigned int r=0; r<e_prm.Nc; r++)
+        {
+            for (unsigned int c=0; c<e_prm.No; c++)
+            {
+                o_prm.k[s][r][c] = static_cast<double>((rand() % 1000))/1000.0;
+            }
+        }
+    }
+
 #else
     OptimizeParameter1H o_prm;
     e_prm.Nc = 2;
     e_prm.No = 2;
-    o_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm.k.resize(e_prm.Nc, e_prm.No, -0.5);
     o_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
     o_prm.ksi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
@@ -88,6 +101,7 @@ void prod_example1()
     //o_prm.z[0][0]  = -0.0461; o_prm.z[0][1]  = -0.0246; o_prm.z[1][0]  = +0.0319; o_prm.z[1][1]  = +0.0161;
     //o_prm.k[0][0]  = -2.5900; o_prm.k[0][1]  = -1.8100; o_prm.k[1][0]  = -1.5700; o_prm.k[1][1]  = -2.76000;
     o_prm.ksi[0].x = +0.5400; o_prm.ksi[1].x = +0.8200; o_prm.eta[0].x = +0.1200; o_prm.eta[1].x = +0.3400;
+    //o_prm.ksi[0].x = +0.1400; o_prm.ksi[1].x = +0.6200; o_prm.eta[0].x = +0.2000; o_prm.eta[1].x = +0.8000;
     // 0.011497
     //o_prm.k[0][0]  = -0.7099; o_prm.k[0][1]  = -1.7252; o_prm.k[1][0]  = -0.0766; o_prm.k[1][1]  = -0.7024;
     //o_prm.z[0][0]  = +0.9573; o_prm.z[0][1]  = +1.4058; o_prm.z[1][0]  = +1.7626; o_prm.z[1][1]  = +2.2906;
@@ -110,8 +124,8 @@ void prod_example1()
     // Regularization parameters
     OptimizeParameter1H r_prm;
 #ifdef DISCRETE_DELTA_TIME
-    r_prm.k = new DoubleMatrix[e_prm.Nt]; for (unsigned int s=0; s<e_prm.Nt; s++) o_prm.k[s].resize(e_prm.Nc, e_prm.No, 0.0);
-    r_prm.z = new DoubleMatrix[e_prm.Nt]; for (unsigned int s=0; s<e_prm.Nt; s++) o_prm.z[s].resize(e_prm.Nc, e_prm.No, 0.0);
+    r_prm.k = new DoubleMatrix[e_prm.Nt]; for (unsigned int s=0; s<e_prm.Nt; s++) r_prm.k[s].resize(e_prm.Nc, e_prm.No, 0.0);
+    r_prm.z = new DoubleMatrix[e_prm.Nt]; for (unsigned int s=0; s<e_prm.Nt; s++) r_prm.z[s].resize(e_prm.Nc, e_prm.No, 0.0);
     r_prm.ksi.resize(e_prm.No);
     r_prm.eta.resize(e_prm.Nc);
 #else
@@ -183,7 +197,7 @@ void prod_example1()
         g.setStepTolerance(0.00001);
         g.setR1MinimizeEpsilon(e1[i], e2[i]);
         g.setMaxIterations(50);
-        g.setNormalize(false);
+        g.setNormalize(true);
         g.showExitMessage(true);
         //prob.gm = &g;
         g.calculate(x);
