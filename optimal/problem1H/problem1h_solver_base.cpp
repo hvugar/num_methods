@@ -148,23 +148,23 @@ auto Problem1HDirichletBase::checkGradient1(const Problem1HDirichletBase &prob) 
 
     puts("Calculating numerical gradients.... dh=0.01");
     puts("*** Calculating numerical gradients for k...... dh=0.01");
-    IGradient::Gradient(&prob, 0.01, pv, ng1, 0*e_prm.Nc*e_prm.No,          1*e_prm.Nc*e_prm.No-1);
+    IGradient::Gradient(&prob, 0.01, pv, ng1, 0*e_prm.Nc*e_prm.No*e_prm.Nt,          1*e_prm.Nc*e_prm.No*e_prm.Nt-1);
     puts("*** Calculating numerical gradients for z...... dh=0.01");
-    IGradient::Gradient(&prob, 0.01, pv, ng1, 1*e_prm.Nc*e_prm.No,          2*e_prm.Nc*e_prm.No-1);
+    IGradient::Gradient(&prob, 0.01, pv, ng1, 1*e_prm.Nc*e_prm.No*e_prm.Nt,          2*e_prm.Nc*e_prm.No*e_prm.Nt-1);
     puts("*** Calculating numerical gradients for xi..... dh=0.01");
-    IGradient::Gradient(&prob, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No,          2*e_prm.Nc*e_prm.No+e_prm.No-1);
+    IGradient::Gradient(&prob, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No*e_prm.Nt,          2*e_prm.Nc*e_prm.No*e_prm.Nt+e_prm.No-1);
     puts("*** Calculating numerical gradients for eta.... dh=0.01");
-    IGradient::Gradient(&prob, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No+e_prm.No, 2*e_prm.Nc*e_prm.No+e_prm.No+e_prm.Nc-1);
+    IGradient::Gradient(&prob, 0.01, pv, ng1, 2*e_prm.Nc*e_prm.No*e_prm.Nt+e_prm.No, 2*e_prm.Nc*e_prm.No*e_prm.Nt+e_prm.No+e_prm.Nc-1);
 
     puts("Calculating numerical gradients.... hx=0.001");
     puts("*** Calculating numerical gradients for k...... dh=0.001");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 0*e_prm.Nc*e_prm.No,          1*e_prm.Nc*e_prm.No-1);
+    IGradient::Gradient(&prob, 0.001, pv, ng2, 0*e_prm.Nc*e_prm.No*e_prm.Nt,          1*e_prm.Nc*e_prm.No*e_prm.Nt-1);
     puts("*** Calculating numerical gradients for z...... dh=0.001");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 1*e_prm.Nc*e_prm.No,          2*e_prm.Nc*e_prm.No-1);
+    IGradient::Gradient(&prob, 0.001, pv, ng2, 1*e_prm.Nc*e_prm.No*e_prm.Nt,          2*e_prm.Nc*e_prm.No*e_prm.Nt-1);
     puts("*** Calculating numerical gradients for xi..... dh=0.001");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No,          2*e_prm.Nc*e_prm.No+e_prm.No-1);
+    IGradient::Gradient(&prob, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No*e_prm.Nt,          2*e_prm.Nc*e_prm.No*e_prm.Nt+e_prm.No-1);
     puts("*** Calculating numerical gradients for eta.... dh=0.001");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No+e_prm.No, 2*e_prm.Nc*e_prm.No+e_prm.No+e_prm.Nc-1);
+    IGradient::Gradient(&prob, 0.001, pv, ng2, 2*e_prm.Nc*e_prm.No*e_prm.Nt+e_prm.No, 2*e_prm.Nc*e_prm.No*e_prm.Nt+e_prm.No+e_prm.Nc-1);
     puts("Numerical gradients are calculated.");
 
     //k------------------------------------------------------//
@@ -199,10 +199,10 @@ auto Problem1HDirichletBase::checkGradient1(const Problem1HDirichletBase &prob) 
 
     //xi------------------------------------------------------//
     IPrinter::printSeperatorLine("xi");
-    DoubleVector pe0 = pv.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+e_prm.No-1);
-    DoubleVector ae0 = ag.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+e_prm.No-1);
-    DoubleVector ne1 = ng1.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+e_prm.No-1);
-    DoubleVector ne2 = ng2.mid(2*e_prm.Nc*e_prm.No, 2*e_prm.Nc*e_prm.No+e_prm.No-1);
+    DoubleVector pe0 = pv.mid(2*e_prm.Nc*e_prm.No*e_prm.Nt, 2*e_prm.Nc*e_prm.No*e_prm.Nt+e_prm.No-1);
+    DoubleVector ae0 = ag.mid(2*e_prm.Nc*e_prm.No*e_prm.Nt, 2*e_prm.Nc*e_prm.No*e_prm.Nt+e_prm.No-1);
+    DoubleVector ne1 = ng1.mid(2*e_prm.Nc*e_prm.No*e_prm.Nt, 2*e_prm.Nc*e_prm.No*e_prm.Nt+e_prm.No-1);
+    DoubleVector ne2 = ng2.mid(2*e_prm.Nc*e_prm.No*e_prm.Nt, 2*e_prm.Nc*e_prm.No*e_prm.Nt+e_prm.No-1);
 
     IPrinter::print(pe0,pe0.length(),14,4);
     IPrinter::print(ae0,ae0.length(),14,4); ae0.L2Normalize();
@@ -214,10 +214,10 @@ auto Problem1HDirichletBase::checkGradient1(const Problem1HDirichletBase &prob) 
 
     //eta------------------------------------------------------//
     IPrinter::printSeperatorLine("eta");
-    DoubleVector px0 = pv.mid(2*e_prm.Nc*e_prm.No+e_prm.No, 2*e_prm.Nc*e_prm.No+e_prm.No+e_prm.Nc-1);
-    DoubleVector ax0 = ag.mid(2*e_prm.Nc*e_prm.No+e_prm.No, 2*e_prm.Nc*e_prm.No+e_prm.No+e_prm.Nc-1);
-    DoubleVector nx1 = ng1.mid(2*e_prm.Nc*e_prm.No+e_prm.No, 2*e_prm.Nc*e_prm.No+e_prm.No+e_prm.Nc-1);
-    DoubleVector nx2 = ng2.mid(2*e_prm.Nc*e_prm.No+e_prm.No, 2*e_prm.Nc*e_prm.No+e_prm.No+e_prm.Nc-1);
+    DoubleVector px0 = pv.mid(2*e_prm.Nc*e_prm.No*e_prm.Nt+e_prm.No, 2*e_prm.Nc*e_prm.No*e_prm.Nt+e_prm.No+e_prm.Nc-1);
+    DoubleVector ax0 = ag.mid(2*e_prm.Nc*e_prm.No*e_prm.Nt+e_prm.No, 2*e_prm.Nc*e_prm.No*e_prm.Nt+e_prm.No+e_prm.Nc-1);
+    DoubleVector nx1 = ng1.mid(2*e_prm.Nc*e_prm.No*e_prm.Nt+e_prm.No, 2*e_prm.Nc*e_prm.No*e_prm.Nt+e_prm.No+e_prm.Nc-1);
+    DoubleVector nx2 = ng2.mid(2*e_prm.Nc*e_prm.No*e_prm.Nt+e_prm.No, 2*e_prm.Nc*e_prm.No*e_prm.Nt+e_prm.No+e_prm.Nc-1);
 
     IPrinter::print(px0,px0.length(),14,4);
     IPrinter::print(ax0,ax0.length(),14,4); ax0.L2Normalize();
@@ -436,7 +436,8 @@ auto Problem1HDirichletBase::VectorToPrm(const DoubleVector &pv, OptimizeParamet
 #ifdef DISCRETE_DELTA_TIME
     unsigned int Nt = mEquParameter.Nt;
 
-    delete [] prm.k; prm.k = new DoubleMatrix[Nt]; for (unsigned int s=0; s<Nt; s++) prm.k[s].resize(Nc, No);
+    //delete [] prm.k;
+    prm.k = new DoubleMatrix[Nt]; for (unsigned int s=0; s<Nt; s++) prm.k[s].resize(Nc, No);
     for (unsigned int s=0; s<Nt; s++)
     {
         for (unsigned int i=0; i<Nc; i++)
@@ -448,7 +449,8 @@ auto Problem1HDirichletBase::VectorToPrm(const DoubleVector &pv, OptimizeParamet
         }
     }
 
-    delete [] prm.z; prm.z = new DoubleMatrix[Nt]; for (unsigned int s=0; s<Nt; s++) prm.z[s].resize(Nc, No);
+    //delete [] prm.z;
+    prm.z = new DoubleMatrix[Nt]; for (unsigned int s=0; s<Nt; s++) prm.z[s].resize(Nc, No);
     for (unsigned int s=0; s<Nt; s++)
     {
         for (unsigned int i=0; i<Nc; i++)
@@ -523,8 +525,14 @@ auto Problem1HDirichletBase::project(DoubleVector &pv) const -> void
     unsigned int Nc = mEquParameter.Nc;
     unsigned int No = mEquParameter.No;
 
+#ifdef DISCRETE_DELTA_TIME
+    unsigned int Nt = mEquParameter.Nt;
+    unsigned int start = 2*Nc*No*Nt;
+    unsigned int end  =  2*Nc*No*Nt + No + Nc - 1;
+#else
     unsigned int start = 2*Nc*No;
     unsigned int end  =  2*Nc*No + No + Nc - 1;
+#endif
 
     for (unsigned int index = start; index <= end; index++)
     {
@@ -693,8 +701,8 @@ auto Problem1HDirichletBase::print(unsigned int i, const DoubleVector &x, const 
     spif_vector1H u_info;
     solveForwardIBVP(u, u_info, true);
     double ing = integral(u);
-    double pnt = penalty(u_info, o_prm);
-    double nrm = norm(prob->mEquParameter, prob->mOptParameter, prob->mRegParameter);
+    double pnt = 0.0;//penalty(u_info, o_prm);
+    double nrm = 0.0;//norm(prob->mEquParameter, prob->mOptParameter, prob->mRegParameter);
 
     DoubleVector uf, um, ux;
     for (unsigned int i=0; i<=50; i+=5)
@@ -740,7 +748,7 @@ auto Problem1HDirichletBase::print(unsigned int i, const DoubleVector &x, const 
     //printf("min:%.6f max:%.6f min:%.6f max:%.6f U0:%.8f UT:%.8f", u.at(0).min(), u.at(0).max(), u.at(LD).min(), u.at(LD).max(), integralU(u[0]), integralU(u[LD]));
     //printf("\n");
     printf("\nk:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f c: %8.4f %8.4f\n",
-           x[0], x[1], x[2], x[3],      x[4], x[5], x[6], x[7],      x[8], x[9], x[10], x[11]);
+           x[0], x[1], x[2], x[3],      x[4], x[5], x[6], x[7],      x[80], x[81], x[82], x[83]);
     //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f c: %8.4f %8.4f\n",
     //       g[0], g[1], g[2], g[3],      g[4], g[5], g[6], g[7],      g[8], g[9], g[10], g[11]);
     //DoubleVector n = g; n.L2Normalize();
@@ -774,8 +782,8 @@ auto Problem1HDirichletBase::fx(const DoubleVector &pv) const -> double
 
     double intgrl = integral(u);
 
-    double nrm = norm(mEquParameter, o_prm, mRegParameter);
-    double pnt = penalty(u_info, o_prm);
+    double nrm = 0.0;//norm(mEquParameter, o_prm, mRegParameter);
+    double pnt = 0.0;//penalty(u_info, o_prm);
     double sum = intgrl + regEpsilon*nrm + r*pnt;
 
     for (unsigned int i=0; i<u.size(); i++)      u[i].clear();      u.clear();
@@ -893,7 +901,7 @@ auto Problem1HDirichletBase::currentLayerFGrid(const DoubleVector &u,
     double wt = 0.0;
     for (unsigned int s=0; s<Nt; s++)
     {
-        wt += (1.0/sqrt(2.0*M_PI*sigma*sigma))*exp(-((ln*ht-mOptParameter.timeMoments[s])*(ln*ht-mOptParameter.timeMoments[s]))/(2.0*sigma*sigma));
+        wt += (1.0/sqrt(2.0*M_PI*sigma*sigma))*exp(-((ln*ht-mEquParameter.timeMoments[s])*(ln*ht-mEquParameter.timeMoments[s]))/(2.0*sigma*sigma));
 
         double* _u = new double[No];
         for (unsigned int j=0; j<No; j++)
@@ -977,7 +985,7 @@ auto Problem1HDirichletBase::currentLayerBGrid(const DoubleVector &p, const std:
     double wt = 0.0;
     for (unsigned int s=0; s<Nt; s++)
     {
-        wt += (1.0/sqrt(2.0*M_PI*sigma*sigma))*exp(-((ln*ht-mOptParameter.timeMoments[s])*(ln*ht-mOptParameter.timeMoments[s]))/(2.0*sigma*sigma));
+        wt += (1.0/sqrt(2.0*M_PI*sigma*sigma))*exp(-((ln*ht-mEquParameter.timeMoments[s])*(ln*ht-mEquParameter.timeMoments[s]))/(2.0*sigma*sigma));
 
         double* _p = new double[Nc];
         for (unsigned int i=0; i<Nc; i++)

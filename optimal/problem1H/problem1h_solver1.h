@@ -20,8 +20,9 @@ public:
 public:
     auto solveForwardIBVP(std::vector<DoubleVector> &u, spif_vector1H &u_info, bool use, double lambda=0.25) const -> void;
     auto solveBackwardIBVP(const std::vector<DoubleVector> &u, spif_vector1H &p_info, bool use, const spif_vector1H &u_info, double lambda=0.25) const -> void;
-
+#ifdef DISCRETE_DELTA_TIME
     double momentWeight(unsigned int ln, double ht, unsigned int s) const;
+#endif
 };
 
 #endif // PROBLEM1H_SOLVER1_H

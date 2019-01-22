@@ -53,7 +53,9 @@ void prod_example1()
     e_prm.a = 1.0;
     e_prm.alpha = +0.00;
 #ifdef DISCRETE_DELTA_TIME
-    e_prm.Nt = 10;
+    e_prm.Nt = 5;
+    e_prm.timeMoments.resize(e_prm.Nt);
+    for (unsigned int s=0; s<e_prm.Nt; s++) e_prm.timeMoments[s] = (s+1)*1.0;
 #endif
     // Pulse influences
     e_prm.Ns = 2;
@@ -64,8 +66,8 @@ void prod_example1()
     OptimizeParameter1H o_prm;
     e_prm.Nc = 2;
     e_prm.No = 2;
-    o_prm.k = new DoubleMatrix[e_prm.Nt]; for (unsigned int s=0; s<e_prm.Nt; s++) o_prm.k[s].resize(e_prm.Nc, e_prm.No, 0.0);
-    o_prm.z = new DoubleMatrix[e_prm.Nt]; for (unsigned int s=0; s<e_prm.Nt; s++) o_prm.z[s].resize(e_prm.Nc, e_prm.No, 0.0);
+    o_prm.k = new DoubleMatrix[e_prm.Nt]; for (unsigned int s=0; s<e_prm.Nt; s++) o_prm.k[s].resize(e_prm.Nc, e_prm.No, -1.0);
+    o_prm.z = new DoubleMatrix[e_prm.Nt]; for (unsigned int s=0; s<e_prm.Nt; s++) o_prm.z[s].resize(e_prm.Nc, e_prm.No, 0.01);
     o_prm.ksi.resize(e_prm.No);
     o_prm.eta.resize(e_prm.Nc);
 #else
@@ -108,8 +110,10 @@ void prod_example1()
     // Regularization parameters
     OptimizeParameter1H r_prm;
 #ifdef DISCRETE_DELTA_TIME
-    o_prm.k = new DoubleMatrix[e_prm.Nt]; for (unsigned int s=0; s<e_prm.Nt; s++) o_prm.k[s].resize(e_prm.Nc, e_prm.No, 0.0);
-    o_prm.z = new DoubleMatrix[e_prm.Nt]; for (unsigned int s=0; s<e_prm.Nt; s++) o_prm.z[s].resize(e_prm.Nc, e_prm.No, 0.0);
+    r_prm.k = new DoubleMatrix[e_prm.Nt]; for (unsigned int s=0; s<e_prm.Nt; s++) o_prm.k[s].resize(e_prm.Nc, e_prm.No, 0.0);
+    r_prm.z = new DoubleMatrix[e_prm.Nt]; for (unsigned int s=0; s<e_prm.Nt; s++) o_prm.z[s].resize(e_prm.Nc, e_prm.No, 0.0);
+    r_prm.ksi.resize(e_prm.No);
+    r_prm.eta.resize(e_prm.Nc);
 #else
     r_prm.k.resize(e_prm.Nc, e_prm.No, 0.0);
     r_prm.z.resize(e_prm.Nc, e_prm.No, 0.0);
@@ -147,19 +151,19 @@ void prod_example1()
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
-            //prob.checkGradient1(prob);
+            prob.checkGradient1(prob);
             //prob.checkGradient2(prob);
             //IPrinter::printSeperatorLine();
             //return;
 
-            prob.printLayers = false;
-            if (prob.printLayers)
-            {
-                std::vector<DoubleVector> u;
-                spif_vector1H u_info, p_info;
-                prob.solveForwardIBVP(u, u_info, true);
-                return;
-            }
+            //prob.printLayers = false;
+            //if (prob.printLayers)
+            //{
+            //    std::vector<DoubleVector> u;
+            //    spif_vector1H u_info, p_info;
+            //    prob.solveForwardIBVP(u, u_info, true);
+            //    return;
+            //}
             //IPrinter::printSeperatorLine();
             //prob.solveBackwardIBVP(u, p_info, true, u_info);
             //return;
@@ -178,7 +182,7 @@ void prod_example1()
         g.setFunctionTolerance(0.00001);
         g.setStepTolerance(0.00001);
         g.setR1MinimizeEpsilon(e1[i], e2[i]);
-        //g.setMaxIterations(50);
+        g.setMaxIterations(50);
         g.setNormalize(false);
         g.showExitMessage(true);
         //prob.gm = &g;

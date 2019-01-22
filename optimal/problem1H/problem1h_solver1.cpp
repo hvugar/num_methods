@@ -79,25 +79,21 @@ auto Problem1HDirichlet1::gradient(const DoubleVector &pv, DoubleVector &g) cons
             for (unsigned int i=0; i<Nc; i++)
             {
                 const SpacePointInfo1H &pi = p_info[i];
-
                 for (unsigned int j=0; j<No; j++)
                 {
                     const SpacePointInfo1H &uj = u_info[j];
-
-                    double grad_Kij = 0.0;
                     double zij = o_prm.z[s][i][j];
-
-                    grad_Kij += 0.5 * (pi.vl[0] + 2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))) * (uj.vl[0] - zij) * momentWeight(0, ht, s);
-
-                    for (unsigned int ln=1; ln<=LLD-1; ln++)
-                    {
-                        grad_Kij += (pi.vl[ln] + 2.0*r*gpi(i,ln,u_info,o_prm)*sgn(g0i(i,ln,u_info,o_prm))) * (uj.vl[ln] - zij) * momentWeight(ln, ht, s);
-                    }
-                    grad_Kij += 0.5 * (pi.vl[LLD] + 2.0*r*gpi(i, LLD,u_info,o_prm)*sgn(g0i(i,LLD,u_info,o_prm))) * (uj.vl[LLD] - zij) * momentWeight(LLD, ht, s);
-
-                    grad_Kij *= -ht;
-
-                    g[gi++] = grad_Kij + 2.0*regEpsilon*(o_prm.k[i][j] - mRegParameter.k[i][j]);
+                    double grad_Kij = 0.0;
+                    unsigned int ln = static_cast<unsigned int>(mEquParameter.timeMoments[s]/ht);
+                    grad_Kij = -(pi.vl[ln] /*+ 2.0*r*gpi(i,ln,u_info,o_prm)*sgn(g0i(i,ln,u_info,o_prm))*/) * (uj.vl[ln] - zij);
+                    //grad_Kij += 0.5 * (pi.vl[0] /*+ 2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))*/) * (uj.vl[0] - zij) * momentWeight(0, ht, s);
+                    //for (unsigned int ln=1; ln<=LLD-1; ln++)
+                    //{
+                    //    grad_Kij += (pi.vl[ln] /*+ 2.0*r*gpi(i,ln,u_info,o_prm)*sgn(g0i(i,ln,u_info,o_prm))*/) * (uj.vl[ln] - zij) * momentWeight(ln, ht, s);
+                    //}
+                    //grad_Kij += 0.5 * (pi.vl[LLD] /*+ 2.0*r*gpi(i, LLD,u_info,o_prm)*sgn(g0i(i,LLD,u_info,o_prm))*/) * (uj.vl[LLD] - zij) * momentWeight(LLD, ht, s);
+                    //grad_Kij *= -ht;
+                    g[gi++] = grad_Kij /*+ 2.0*regEpsilon*(o_prm.k[i][j] - mRegParameter.k[i][j])*/;
                 }
             }
         }
@@ -147,22 +143,20 @@ auto Problem1HDirichlet1::gradient(const DoubleVector &pv, DoubleVector &g) cons
             for (unsigned int i=0; i<Nc; i++)
             {
                 const SpacePointInfo1H &pi = p_info[i];
-
                 for (unsigned int j=0; j<No; j++)
                 {
-                    double grad_Zij = 0.0;
                     double kij = o_prm.k[s][i][j];
-
-                    grad_Zij += 0.5 * (pi.vl[0] + 2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))) * kij * momentWeight(0, ht, s);
-                            for (unsigned int ln=1; ln<=LLD-1; ln++)
-                    {
-                        grad_Zij += (pi.vl[ln] + 2.0*r*gpi(i,ln,u_info,o_prm)*sgn(g0i(i,ln,u_info,o_prm))) * kij * momentWeight(ln, ht, s);
-                    }
-                    grad_Zij += 0.5 * (pi.vl[LLD] + 2.0*r*gpi(i,LLD,u_info,o_prm)*sgn(g0i(i,LLD,u_info,o_prm))) * kij * momentWeight(LLD, ht, s);
-
-                    grad_Zij *= ht;
-
-                    g[gi++] = grad_Zij + 2.0*regEpsilon*(o_prm.z[i][j] - mRegParameter.z[i][j]);
+                    double grad_Zij = 0.0;
+                    unsigned int ln = static_cast<unsigned int>(mEquParameter.timeMoments[s]/ht);
+                    grad_Zij = (pi.vl[ln] /*+ 2.0*r*gpi(i,ln,u_info,o_prm)*sgn(g0i(i,ln,u_info,o_prm))*/) * kij;
+                    //grad_Zij += 0.5 * (pi.vl[0] /*+ 2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))*/) * kij * momentWeight(0, ht, s);
+                    //for (unsigned int ln=1; ln<=LLD-1; ln++)
+                    //{
+                    //    grad_Zij += (pi.vl[ln] /*+ 2.0*r*gpi(i,ln,u_info,o_prm)*sgn(g0i(i,ln,u_info,o_prm))*/) * kij * momentWeight(ln, ht, s);
+                    //}
+                    //grad_Zij += 0.5 * (pi.vl[LLD] /*+ 2.0*r*gpi(i,LLD,u_info,o_prm)*sgn(g0i(i,LLD,u_info,o_prm))*/) * kij * momentWeight(LLD, ht, s);
+                    //grad_Zij *= ht;
+                    g[gi++] = grad_Zij /*+ 2.0*regEpsilon*(o_prm.z[i][j] - mRegParameter.z[i][j])*/;
                 }
             }
         }
@@ -204,34 +198,34 @@ auto Problem1HDirichlet1::gradient(const DoubleVector &pv, DoubleVector &g) cons
     if (optimizeO)
     {
 #ifdef DISCRETE_DELTA_TIME
-        for (unsigned int s=0; s<Nt; s++)
+        for (unsigned int j=0; j<No; j++)
         {
-            for (unsigned int j=0; j<No; j++)
+            const SpacePointInfo1H &uj = u_info[j];
+
+            double gradXijX = 0.0;
+            double vi = 0.0;
+
+            for (unsigned int s=0; s<Nt; s++)
             {
-                const SpacePointInfo1H &uj = u_info[j];
-
-                double gradXijX = 0.0;
-                double vi = 0.0;
-
+                unsigned int ln = static_cast<unsigned int>(mEquParameter.timeMoments[s]/ht);
                 vi = 0.0;
-                for (unsigned int i=0; i<Nc; i++) vi += o_prm.k[s][i][j] * (p_info[i].vl[0] + 2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))) * momentWeight(0, ht, s);
-                gradXijX += 0.5 * uj.dx[0] * vi;
-
-                for (unsigned int ln=1; ln<=LLD-1; ln++)
-                {
-                    vi = 0.0;
-                    for (unsigned int i=0; i<Nc; i++) vi += o_prm.k[s][i][j]*(p_info[i].vl[ln] + 2.0*r*gpi(i,ln,u_info,o_prm)*sgn(g0i(i,ln,u_info,o_prm))) * momentWeight(ln, ht, s);
-                    gradXijX += uj.dx[ln] * vi;
-                }
-
-                vi = 0.0;
-                for (unsigned int i=0; i<Nc; i++) vi += o_prm.k[s][i][j]*(p_info[i].vl[LLD] + 2.0*r*gpi(i,LLD,u_info,o_prm)*sgn(g0i(i,LLD,u_info,o_prm))) * momentWeight(LLD, ht, s);
-                gradXijX += 0.5 * uj.dx[LLD] * vi;
-
-                gradXijX *= -ht;
-
-                g[gi++] = gradXijX + 2.0*regEpsilon*(o_prm.ksi[j].x - mRegParameter.ksi[j].x);
+                for (unsigned int i=0; i<Nc; i++) vi += o_prm.k[s][i][j] * (p_info[i].vl[ln] /*+ 2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))*/);
+                gradXijX += uj.dx[ln] * vi;
+                //for (unsigned int i=0; i<Nc; i++) vi += o_prm.k[s][i][j] * (p_info[i].vl[0] /*+ 2.0*r*gpi(i,0,u_info,o_prm)*sgn(g0i(i,0,u_info,o_prm))*/);
+                //gradXijX += 0.5 * uj.dx[0] * vi;
+                //for (unsigned int ln=1; ln<=LLD-1; ln++)
+                //{
+                //    vi = 0.0;
+                //    for (unsigned int i=0; i<Nc; i++) vi += o_prm.k[s][i][j]*(p_info[i].vl[ln] /*+ 2.0*r*gpi(i,ln,u_info,o_prm)*sgn(g0i(i,ln,u_info,o_prm)*/);
+                //    gradXijX += uj.dx[ln] * vi;
+                //}
+                //vi = 0.0;
+                //for (unsigned int i=0; i<Nc; i++) vi += o_prm.k[s][i][j]*(p_info[i].vl[LLD] /*+ 2.0*r*gpi(i,LLD,u_info,o_prm)*sgn(g0i(i,LLD,u_info,o_prm))*/);
+                //gradXijX += 0.5 * uj.dx[LLD] * vi;
+                //gradXijX *= -ht;
             }
+
+            g[gi++] = -gradXijX /*+ 2.0*regEpsilon*(o_prm.ksi[j].x - mRegParameter.ksi[j].x)*/;
         }
 #else
         for (unsigned int j=0; j<No; j++)
@@ -274,34 +268,32 @@ auto Problem1HDirichlet1::gradient(const DoubleVector &pv, DoubleVector &g) cons
     if (optimizeC)
     {
 #ifdef DISCRETE_DELTA_TIME
-        for (unsigned int s=0; s<Nt; s++)
+        for (unsigned int i=0; i<Nc; i++)
         {
-            for (unsigned int i=0; i<Nc; i++)
+            const SpacePointInfo1H &pi = p_info[i];
+            double gradEtaiX = 0.0;
+            double vi = 0.0;
+            for (unsigned int s=0; s<Nt; s++)
             {
-                const SpacePointInfo1H &pi = p_info[i];
-
-                double gradEtaiX = 0.0;
-                double vi = 0.0;
-
+                unsigned int ln = static_cast<unsigned int>(mEquParameter.timeMoments[s]/ht);
                 vi = 0.0;
-                for (unsigned int j=0; j<No; j++) vi += o_prm.k[s][i][j] * (u_info[j].vl[0] - o_prm.z[s][i][j]) * momentWeight(0, ht, s);;
-                gradEtaiX += 0.5 * pi.dx[0] * vi;
-
-                for (unsigned int ln=1; ln<=LLD-1; ln++)
-                {
-                    vi = 0.0;
-                    for (unsigned int j=0; j<No; j++) vi += o_prm.k[s][i][j] * (u_info[j].vl[ln] - o_prm.z[s][i][j]) * momentWeight(ln, ht, s);;
-                    gradEtaiX += pi.dx[ln] * vi;
-                }
-
-                vi = 0.0;
-                for (unsigned int j=0; j<No; j++) vi += o_prm.k[s][i][j] * (u_info[j].vl[LLD] - o_prm.z[s][i][j]) * momentWeight(LLD, ht, s);;
-                gradEtaiX += 0.5 * pi.dx[LLD] * vi;
-
-                gradEtaiX *= -ht;
-
-                g[gi++] = gradEtaiX + 2.0*regEpsilon*(o_prm.eta[i].x - mRegParameter.eta[i].x);
+                for (unsigned int j=0; j<No; j++) vi += o_prm.k[s][i][j] * (u_info[j].vl[ln] - o_prm.z[s][i][j]);
+                gradEtaiX += pi.dx[ln] * vi;
+                //vi = 0.0;
+                //for (unsigned int j=0; j<No; j++) vi += o_prm.k[s][i][j] * (u_info[j].vl[0] - o_prm.z[s][i][j]) * momentWeight(0, ht, s);
+                //gradEtaiX += 0.5 * pi.dx[0] * vi;
+                //for (unsigned int ln=1; ln<=LLD-1; ln++)
+                //{
+                //    vi = 0.0;
+                //    for (unsigned int j=0; j<No; j++) vi += o_prm.k[s][i][j] * (u_info[j].vl[ln] - o_prm.z[s][i][j]) * momentWeight(ln, ht, s);
+                //    gradEtaiX += pi.dx[ln] * vi;
+                //}
+                //vi = 0.0;
+                //for (unsigned int j=0; j<No; j++) vi += o_prm.k[s][i][j] * (u_info[j].vl[LLD] - o_prm.z[s][i][j]) * momentWeight(LLD, ht, s);;
+                //gradEtaiX += 0.5 * pi.dx[LLD] * vi;
+                //gradEtaiX *= -ht;
             }
+            g[gi++] = -gradEtaiX /*+ 2.0*regEpsilon*(o_prm.eta[i].x - mRegParameter.eta[i].x)*/;
         }
 #else
         for (unsigned int i=0; i<Nc; i++)
@@ -503,8 +495,6 @@ auto Problem1HDirichlet1::solveForwardIBVP(std::vector<DoubleVector> &u, spif_ve
     u20.clear();
 }
 
-
-
 auto Problem1HDirichlet1::solveBackwardIBVP(const std::vector<DoubleVector> &u, spif_vector1H &p_info, bool use, const spif_vector1H &u_info, double lambda) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
@@ -597,7 +587,7 @@ auto Problem1HDirichlet1::solveBackwardIBVP(const std::vector<DoubleVector> &u, 
         _w[j] = 0.0;
         for (unsigned int i=0; i<Nc; i++)
         {
-            _w[j] += mOptParameter.k[i][j] * (_p00[i] + 2.0*r*gpi(i, LLD, u_info, mOptParameter)*sgn(g0i(i,LLD,u_info,mOptParameter)));
+            //_w[j] += mOptParameter.k[i][j] * (_p00[i] /*+ 2.0*r*gpi(i, LLD, u_info, mOptParameter)*sgn(g0i(i,LLD,u_info,mOptParameter))*/);
         }
     }
     delete [] _p00;
@@ -671,10 +661,12 @@ auto Problem1HDirichlet1::solveBackwardIBVP(const std::vector<DoubleVector> &u, 
     p20.clear();
 }
 
+#ifdef DISCRETE_DELTA_TIME
 double Problem1HDirichlet1::momentWeight(unsigned int ln, double ht, unsigned int s) const
 {
     const double sigma = ht;
-    return (1.0/sqrt(2.0*M_PI*sigma*sigma))*exp(-((ln*ht-mOptParameter.timeMoments[s])*(0.0*ht-mOptParameter.timeMoments[s]))/(2.0*sigma*sigma));
+    return (1.0/sqrt(2.0*M_PI*sigma*sigma))*exp(-((ln*ht-mEquParameter.timeMoments[s])*(ln*ht-mEquParameter.timeMoments[s]))/(2.0*sigma*sigma));
 }
+#endif
 
 
