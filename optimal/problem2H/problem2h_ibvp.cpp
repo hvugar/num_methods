@@ -60,7 +60,7 @@ void Problem2HNDirichletForward1::setParameters(const EquationParameterH &equati
     tetaGridList.resize(Ns);
     for (unsigned int s=0; s<Ns; s++)
     {
-        const SpacePoint &sp = equationParameter.theta[s];
+        const SpacePoint &sp = equationParameter.pulses[s].theta;
         tetaGridList[s].initGrid(N, hx, M, hy);
         tetaGridList[s].distributeGauss(sp, 8, 8);
     }
@@ -73,7 +73,7 @@ void Problem2HNDirichletForward1::setParameters(const EquationParameterH &equati
         for (unsigned int n=0; n<=N; n++)
         {
             ixv[m][n] = 0.0;
-            for (unsigned int s=0; s<Ns; s++) ixv[m][n] += equationParameter.q[s]*tetaGridList[s].weight(n,m);
+            for (unsigned int s=0; s<Ns; s++) ixv[m][n] += equationParameter.pulses[s].q*tetaGridList[s].weight(n,m);
         }
     }
 

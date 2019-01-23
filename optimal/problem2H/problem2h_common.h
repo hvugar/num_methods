@@ -44,8 +44,13 @@ struct GridSpace2D
 
 struct PROBLEM2HSHARED_EXPORT OptimizeParameterH
 {
+#if !defined (DISCRETE_DELTA_TIME)
     DoubleMatrix k;
     DoubleMatrix z;
+#else
+    DoubleMatrix *k;
+    DoubleMatrix *z;
+#endif
     std::vector<SpacePoint> xi;
     std::vector<SpacePoint> eta;
 
@@ -56,8 +61,11 @@ struct PROBLEM2HSHARED_EXPORT OptimizeParameterH
 
 struct InitialPulse
 {
-    double q;
+    InitialPulse();
+    InitialPulse(const SpacePoint &sp, double q);
+
     SpacePoint theta;
+    double q;
 };
 
 struct PROBLEM2HSHARED_EXPORT EquationParameterH
@@ -68,49 +76,16 @@ struct PROBLEM2HSHARED_EXPORT EquationParameterH
     unsigned int No;
     unsigned int Nc;
 
-    DoubleMatrix k;
-    DoubleMatrix z;
+#if !defined (DISCRETE_DELTA_TIME)
+#else
+    unsigned int Nt;
+    std::vector<double> timeMoments;
+#endif
     std::vector<SpacePoint> xi;
     std::vector<SpacePoint> eta;
 
     unsigned int Ns;
-    std::vector<SpacePoint> theta;
-    std::vector<double> q;
-
-//    std::vector<InitialPulse> pulseVector;
-
-#ifdef TIME_DISCRETE_H
-    unsigned int Nt;
-#endif
-};
-
-struct PROBLEM2HSHARED_EXPORT EquationParameterH1
-{
-    struct InitialPulse
-    {
-        double q;
-        SpacePoint theta;
-    };
-
-    struct OptimizationParam
-    {
-        DoubleMatrix k;
-        DoubleMatrix z;
-        std::vector<SpacePoint> xi;
-        std::vector<SpacePoint> eta;
-    };
-
-    EquationParameterH1(unsigned int Nc, unsigned int No, unsigned int Ns, double a = 1.0, double alpha = 0.01);
-
-    double a;
-    double alpha;
-    unsigned int No;
-    unsigned int Nc;
-    unsigned int Ns;
-private:
-    OptimizationParam op;
-    OptimizationParam rp;
-    std::vector<InitialPulse> pulseVector;
+    std::vector<InitialPulse> pulses;
 
 #ifdef TIME_DISCRETE_H
     unsigned int Nt;

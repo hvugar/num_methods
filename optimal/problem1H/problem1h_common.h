@@ -24,7 +24,7 @@
 
 struct PROBLEM1HSHARED_EXPORT OptimizeParameter1H
 {
-#ifdef DISCRETE_DELTA_TIME
+#if defined(DISCRETE_DELTA_TIME) || defined(HEAVISIDE_STEP_TIME)
     DoubleMatrix *k;
     DoubleMatrix *z;
 #else
@@ -47,7 +47,7 @@ struct PROBLEM1HSHARED_EXPORT EquationParameter1H
 
     unsigned int No;
     unsigned int Nc;
-#ifdef DISCRETE_DELTA_TIME
+#if defined(DISCRETE_DELTA_TIME) || defined(HEAVISIDE_STEP_TIME)
     unsigned int Nt;
     std::vector<double> timeMoments;
 #endif

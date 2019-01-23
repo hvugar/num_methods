@@ -3,7 +3,7 @@
 
 #include "problem2h_solver_base.h"
 
-class PROBLEM2HSHARED_EXPORT Problem2HDirichlet2 : public Problem2hDirichletBase
+class PROBLEM2HSHARED_EXPORT Problem2HDirichlet2 : public Problem2HDirichletBase
 {
 public:
     Problem2HDirichlet2();

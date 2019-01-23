@@ -79,7 +79,7 @@ auto functionO2(const DoubleVector &c, double d) -> void
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    NonLocal nl;
+//    NonLocal nl;
 
 //    DoubleVector a(101, 0.0);
 //    a[0] = a[50] = a[100] = 1.0;
@@ -172,13 +172,13 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 
 
-//    srand(time(0));
-//    CcIHyperbolicIBVP1::Main(argc, argv);
-//    CdIHyperbolicIBVP1::Main(argc, argv);
+    srand(time(0));
+    //CcIHyperbolicIBVP1::Main(argc, argv);
+    //CdIHyperbolicIBVP1::Main(argc, argv);
     //IPrinter::printSeperatorLine();
     //ConjugateCC1IHyperbolicIBVP1::Main(argc, argv);
-//    Problem2HDirichlet::Main(argc, argv);
-    Problem1HDirichlet1::Main(argc, argv);
+    //Problem1HDirichlet1::Main(argc, argv);
+    Problem2HDirichlet::Main(argc, argv);
 
     //CCParabolicIBVP1::Main(argc, argv);
     //CCIHyperbolicIBVP1::Main(argc, argv);

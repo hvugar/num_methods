@@ -1,6 +1,8 @@
 #include "grid.h"
 #include <cstdio>
 
+SpacePoint::SpacePoint(double x, double y, double z) : x(x), y(y), z(z) {}
+
 SpaceNodePDE::SpaceNodePDE(int i, double x, int j, double y, int k, double z) : i(i), j(j), k(k)
 {
     this->x = x;

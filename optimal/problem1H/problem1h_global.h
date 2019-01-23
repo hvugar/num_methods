@@ -23,5 +23,6 @@
 #endif
 
 #define DISCRETE_DELTA_TIME
+#define HEAVISIDE_STEP_TIME1
 
 #endif // PROBLEM2H_GLOBAL_H

@@ -3,15 +3,15 @@
 
 #include "problem2h_common.h"
 
-class Problem2hDirichletBase : public InitialBoundaryValueProblemPDE, public RnFunction, public IGradient, public IProjection, public IPrinter, public IVectorNormalizer
+class Problem2HDirichletBase : public InitialBoundaryValueProblemPDE, public RnFunction, public IGradient, public IProjection, public IPrinter, public IVectorNormalizer
 {
 public:
     static void Main(int argc, char* argv[]);
-    static void checkGradient1(const Problem2hDirichletBase &prob);
-    static void checkGradient2(const Problem2hDirichletBase &prob);
+    static void checkGradient1(const Problem2HDirichletBase &prob);
+    static void checkGradient2(const Problem2HDirichletBase &prob);
 
-    Problem2hDirichletBase();
-    virtual ~Problem2hDirichletBase();
+    Problem2HDirichletBase();
+    virtual ~Problem2HDirichletBase();
 
     /** Functional and gradient **/
     virtual auto fx(const DoubleVector &x) const -> double;
@@ -31,7 +31,7 @@ public:
 
     virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const -> void;
 
-    virtual auto initPulseWeightMatrix(const std::vector<SpacePoint> &theta, const std::vector<double> q) const -> void;
+    virtual auto initPulseWeightMatrix(const std::vector<InitialPulse> &pulses) const -> void;
 
     virtual auto f_initial1(const SpaceNodePDE &sn) const -> double;
     virtual auto f_initial2(const SpaceNodePDE &sn) const -> double;
@@ -64,9 +64,10 @@ public:
     virtual auto norm(const DoubleVector &v) const -> double;
     virtual auto normalize(DoubleVector &v) const -> void;
 
-    auto currentLayerFGrid(const DoubleMatrix &u, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids) const -> void;
+    auto currentLayerFGrid(const DoubleMatrix &u, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids,
+                           unsigned int ln) const -> void;
     auto currentLayerBGrid(const DoubleMatrix &p, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids,
-                           double ln, const spif_vectorH &u_info) const -> void;
+                           unsigned int ln, const spif_vectorH &u_info) const -> void;
 
     auto setGridDimensions(const Dimension &time, const Dimension &dimX, const Dimension &dimY) -> void;
 public:
