@@ -13,7 +13,7 @@ Problem2HDirichletBase::~Problem2HDirichletBase()
     mCrBfxWeightMatrix.clear();
 }
 
-auto Problem2HDirichletBase::initPulseWeightMatrix(const std::vector<InitialPulse> &pulses) const -> void
+auto Problem2HDirichletBase::initPulseWeightMatrix(const std::vector<InitialPulse2D> &pulses) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -90,45 +90,47 @@ auto Problem2HDirichletBase::b_boundary(const SpaceNodePDE &sn UNUSED_PARAM, con
 
 auto Problem2HDirichletBase::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
 {
-    //if (ln == 1000) IPrinter::printMatrix(u);
+    const Dimension time = timeDimension();
+    const unsigned int L = static_cast<const unsigned int> ( time.size() );
+    //IPrinter::printVector(u, nullptr, 100);
     //printf("%4d %.8f %.8f\n", ln, u.min(), u.max());
-    return;
+    //    return;
 
+    if (printLayers && ln%2==0)
     {
+        FILE *file;
+        if (ln == 0) file = fopen("D:/data2D.txt", "w"); else file = fopen("D:/data2D.txt", "a");
+
         Problem2HDirichletBase* tmp = const_cast<Problem2HDirichletBase*>(this);
         std::vector<DoubleMatrix> &rvu = tmp->vu;
 
         rvu.push_back(u);
-        //if (rvu.size() > 3) rvu.erase(rvu.begin());
         if (rvu.size() > 2*LD+1) rvu.erase(rvu.begin());
 
-        if (ln == 1701)
-        {
-            //            tmp->mOptParameter.k[0][0] = 0.0;
-            //            tmp->mOptParameter.k[0][1] = 0.0;
-            //            tmp->mOptParameter.k[1][0] = 0.0;
-            //            tmp->mOptParameter.k[1][1] = 0.0;
-        }
+        //if (ln == L+1)
+        //{
+        //    tmp->mOptParameter.k[0][0] = 0.0;
+        //    tmp->mOptParameter.k[0][1] = 0.0;
+        //    tmp->mOptParameter.k[1][0] = 0.0;
+        //    tmp->mOptParameter.k[1][1] = 0.0;
+        //}
 
         if (rvu.size() == 2*LD+1)
-            //        if (rvu.size() == 3)
         {
-            //std::cout << ln << " " << rvu.size() << std::endl;
-            if (ln%2==0)
-            {
-                double fx = integral(rvu);
-                //printf("%d %d %.10f\n", ln, ln/2-50, fx);
-                printf("%.10f\n", fx);
-            }
-            //printf("%.10f\n", fx);
+            double fx = integral(rvu);
+            //fprintf(file, "%.10f\n", fx);
+            //printf("%d %d %.10f\n", ln, ln-LD, fx);
+            fprintf(file, "%.10f %.10f %.10f\n", fx, u.min(), u.max());
         }
+        fclose(file);
+
+        //printf("%d,%.10f,%.10f\n", ln, u.min(), u.max());
+        //visualString1(u, -1.00, +1.00, 100, 100, Qt::white, Qt::blue, QString("d:/img/string/%1.png").arg(ln,5));
     }
 }
 
 auto Problem2HDirichletBase::b_layerInfo(const DoubleMatrix &p UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
-{
-    //    if (ln == 0) IPrinter::printMatrix(p);
-}
+{}
 
 auto Problem2HDirichletBase::checkGradient1(const Problem2HDirichletBase &prob) -> void
 {
@@ -158,24 +160,32 @@ auto Problem2HDirichletBase::checkGradient1(const Problem2HDirichletBase &prob) 
     const unsigned int offset = e_prm.Nc*e_prm.No*e_prm.Nt;
 
     puts("Calculating numerical gradients.... dh=0.01");
-    puts("*** Calculating numerical gradients for k...... dh=0.01");
+    printf("*** Calculating numerical gradients for k...... dh=0.01 ");
     IGradient::Gradient(&prob, 0.01, pv, ng1, 0*offset, 1*offset-1);
-    puts("*** Calculating numerical gradients for z...... dh=0.01");
+    printf("Calculated.\n");
+    printf("*** Calculating numerical gradients for z...... dh=0.01 ");
     IGradient::Gradient(&prob, 0.01, pv, ng1, 1*offset, 2*offset-1);
-    puts("*** Calculating numerical gradients for xi..... dh=0.01");
+    printf("Calculated.\n");
+    printf("*** Calculating numerical gradients for xi..... dh=0.01 ");
     IGradient::Gradient(&prob, 0.01, pv, ng1, 2*offset+0*e_prm.No, 2*offset+2*e_prm.No-1);
-    puts("*** Calculating numerical gradients for eta.... dh=0.01");
+    printf("Calculated.\n");
+    printf("*** Calculating numerical gradients for eta.... dh=0.01 ");
     IGradient::Gradient(&prob, 0.01, pv, ng1, 2*offset+2*e_prm.No, 2*offset+2*e_prm.No+2*e_prm.Nc-1);
+    printf("Calculated.\n");
 
     puts("Calculating numerical gradients.... hx=0.001");
-    puts("*** Calculating numerical gradients for k...... dh=0.001");
+    printf("*** Calculating numerical gradients for k...... dh=0.001 ");
     IGradient::Gradient(&prob, 0.001, pv, ng2, 0*offset, 1*offset-1);
-    puts("*** Calculating numerical gradients for z...... dh=0.001");
+    printf("Calculated.\n");
+    printf("*** Calculating numerical gradients for z...... dh=0.001 ");
     IGradient::Gradient(&prob, 0.001, pv, ng2, 1*offset, 2*offset-1);
-    puts("*** Calculating numerical gradients for xi..... dh=0.001");
+    printf("Calculated.\n");
+    printf("*** Calculating numerical gradients for xi..... dh=0.001 ");
     IGradient::Gradient(&prob, 0.001, pv, ng2, 2*offset+0*e_prm.No, 2*offset+2*e_prm.No-1);
-    puts("*** Calculating numerical gradients for eta.... dh=0.001");
+    printf("Calculated.\n");
+    printf("*** Calculating numerical gradients for eta.... dh=0.001 ");
     IGradient::Gradient(&prob, 0.001, pv, ng2, 2*offset+2*e_prm.No, 2*offset+2*e_prm.No+2*e_prm.Nc-1);
+    printf("Calculated.\n");
     puts("Numerical gradients are calculated.");
 
     const unsigned int N = 20;
@@ -188,13 +198,13 @@ auto Problem2HDirichletBase::checkGradient1(const Problem2HDirichletBase &prob) 
     DoubleVector nk1 = ng1.mid(0, offset-1);
     DoubleVector nk2 = ng2.mid(0, offset-1);
 
-    IPrinter::print(pk0,pk0.length(),14,4);
-    IPrinter::print(ak0,ak0.length(),14,4); ak0.L2Normalize();
-    IPrinter::print(nk1,nk1.length(),14,4); nk1.L2Normalize();
-    IPrinter::print(nk2,nk2.length(),14,4); nk2.L2Normalize();
-    IPrinter::print(ak0,ak0.length(),14,4);
-    IPrinter::print(nk1,nk1.length(),14,4);
-    IPrinter::print(nk2,nk2.length(),14,4);
+    IPrinter::print(pk0,N,W,P);
+    IPrinter::print(ak0,N,W,P); ak0.L2Normalize();
+    IPrinter::print(nk1,N,W,P); nk1.L2Normalize();
+    IPrinter::print(nk2,N,W,P); nk2.L2Normalize();
+    IPrinter::print(ak0,N,W,P);
+    IPrinter::print(nk1,N,W,P);
+    IPrinter::print(nk2,N,W,P);
 
     //z------------------------------------------------------//
     IPrinter::printSeperatorLine("z");
@@ -203,13 +213,13 @@ auto Problem2HDirichletBase::checkGradient1(const Problem2HDirichletBase &prob) 
     DoubleVector nz1 = ng1.mid(offset, 2*offset-1);
     DoubleVector nz2 = ng2.mid(offset, 2*offset-1);
 
-    IPrinter::print(pz0,pz0.length(),14,4);
-    IPrinter::print(az0,az0.length(),14,4); az0.L2Normalize();
-    IPrinter::print(nz1,nz1.length(),14,4); nz1.L2Normalize();
-    IPrinter::print(nz2,nz2.length(),14,4); nz2.L2Normalize();
-    IPrinter::print(az0,az0.length(),14,4);
-    IPrinter::print(nz1,nz1.length(),14,4);
-    IPrinter::print(nz2,nz2.length(),14,4);
+    IPrinter::print(pz0,N,W,P);
+    IPrinter::print(az0,N,W,P); az0.L2Normalize();
+    IPrinter::print(nz1,N,W,P); nz1.L2Normalize();
+    IPrinter::print(nz2,N,W,P); nz2.L2Normalize();
+    IPrinter::print(az0,N,W,P);
+    IPrinter::print(nz1,N,W,P);
+    IPrinter::print(nz2,N,W,P);
 
     //xi------------------------------------------------------//
     IPrinter::printSeperatorLine("xi");
@@ -228,10 +238,10 @@ auto Problem2HDirichletBase::checkGradient1(const Problem2HDirichletBase &prob) 
 
     //eta------------------------------------------------------//
     IPrinter::printSeperatorLine("eta");
-    DoubleVector px0 = pv.mid(2*offset+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    DoubleVector ax0 = ag.mid(2*offset+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    DoubleVector nx1 = ng1.mid(2*offset+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
-    DoubleVector nx2 = ng2.mid(2*offset+2*e_prm.No, 2*e_prm.Nc*e_prm.No+2*e_prm.No+2*e_prm.Nc-1);
+    DoubleVector px0 = pv.mid(2*offset+2*e_prm.No, 2*offset+2*e_prm.No+2*e_prm.Nc-1);
+    DoubleVector ax0 = ag.mid(2*offset+2*e_prm.No, 2*offset+2*e_prm.No+2*e_prm.Nc-1);
+    DoubleVector nx1 = ng1.mid(2*offset+2*e_prm.No, 2*offset+2*e_prm.No+2*e_prm.Nc-1);
+    DoubleVector nx2 = ng2.mid(2*offset+2*e_prm.No, 2*offset+2*e_prm.No+2*e_prm.Nc-1);
 
     IPrinter::print(px0,px0.length(),14,4);
     IPrinter::print(ax0,ax0.length(),14,4); ax0.L2Normalize();
@@ -240,7 +250,7 @@ auto Problem2HDirichletBase::checkGradient1(const Problem2HDirichletBase &prob) 
     IPrinter::print(ax0,ax0.length(),14,4);
     IPrinter::print(nx1,nx1.length(),14,4);
     IPrinter::print(nx2,nx2.length(),14,4);
-    IPrinter::printSeperatorLine();printf("%f\n", o_prm.eta[1].x);
+    IPrinter::printSeperatorLine();
 }
 
 auto Problem2HDirichletBase::checkGradient2(const Problem2HDirichletBase &prob) -> void
@@ -723,17 +733,16 @@ auto Problem2HDirichletBase::print(unsigned int i, const DoubleVector &x, const 
     if (result == GradientMethod::MethodResult::BREAK_DISTANCE_LESS)      msg = "BREAK_DISTANCE_LESS     ";
     if (result == GradientMethod::MethodResult::NEXT_ITERATION)           msg = "NEXT_ITERATION          ";
 
-    Problem2HDirichletBase* prob = const_cast<Problem2HDirichletBase*>(this);
-    //prob->gm->setStepTolerance(10.0*alpha);
-    OptimizeParameterH o_prm;
-    VectorToPrm(x, o_prm);
-    prob->mOptParameter = o_prm;
+    //Problem2HDirichletBase* prob = const_cast<Problem2HDirichletBase*>(this);
+    //OptimizeParameterH o_prm;
+    //VectorToPrm(x, o_prm);
+    //prob->mOptParameter = o_prm;
     std::vector<DoubleMatrix> u;
     spif_vectorH u_info;
     solveForwardIBVP(u, u_info, true, x);
     double ing = integral(u);
-    double pnt = penalty(u_info, o_prm);
-    double nrm = norm(prob->mEquParameter, prob->mOptParameter, prob->mRegParameter);
+    double pnt = 0.0;//penalty(u_info, o_prm);
+    double nrm = 0.0;//norm(prob->mEquParameter, prob->mOptParameter, prob->mRegParameter);
 
     //    DoubleVector uf, um, ux;
     //    for (unsigned int i=0; i<=50; i+=5)
@@ -743,35 +752,36 @@ auto Problem2HDirichletBase::print(unsigned int i, const DoubleVector &x, const 
     //        ux << u[i].max();
     //    }
 
-    const unsigned int v_length = static_cast<const unsigned int>(timeDimension().size()) + LD;
-    DoubleVector v1(v_length+1);
-    DoubleVector v2(v_length+1);
+    //const unsigned int v_length = static_cast<const unsigned int>(timeDimension().size()) + LD;
+    //DoubleVector v1(v_length+1);
+    //DoubleVector v2(v_length+1);
 
-    for (unsigned int ln=0; ln<=v_length; ln++)
-    {
-        v1[ln] = v(0, o_prm, mEquParameter, u_info, 2*ln);
-        v2[ln] = v(1, o_prm, mEquParameter, u_info, 2*ln);
-    }
+    //for (unsigned int ln=0; ln<=v_length; ln++)
+    //{
+    //    v1[ln] = v(0, o_prm, mEquParameter, u_info, 2*ln);
+    //    v2[ln] = v(1, o_prm, mEquParameter, u_info, 2*ln);
+    //}
 
-    IPrinter::printVector(v1, "v1", 10);
-    IPrinter::printVector(v2, "v2", 10);
+    //IPrinter::printVector(v1, "v1", 10);
+    //IPrinter::printVector(v2, "v2", 10);
     //    IPrinter::printVector(uf, "uf", 10);
     //    IPrinter::printVector(um, "um", 10);
     //    IPrinter::printVector(ux, "ux", 10);
 
     printf("I[%3d]: F:%.6f I:%.6f P:%.6f N:%.5f R:%.3f e:%.3f a:%.6f ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
-    printf("min:%.6f max:%.6f U:%.8f", u.at(1).min(), u.at(1).max(), integralU(u[0]));
+    printf("min:%.6f max:%.6f U:%.8f ", u.front().min(), u.front().max(), integralU(u.front()));
+    printf("min:%.6f max:%.6f U:%.8f ", u.back().min(), u.back().max(), integralU(u.back()));
     printf("\n");
-    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
-    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
-    DoubleVector n = g; n.L2Normalize();
-    printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]);
+    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
+    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
+    //DoubleVector n = g; n.L2Normalize();
+    //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]);
 
-    u.clear();
-    u_info.clear();
+    //u.clear();
+    //u_info.clear();
 
-    C_UNUSED(prob);
-    IPrinter::printSeperatorLine();
+    //C_UNUSED(prob);
+    //IPrinter::printSeperatorLine();
 
     //prob->optimizeK = i%4 == 3;
     //prob->optimizeZ = i%4 == 0;
@@ -781,27 +791,40 @@ auto Problem2HDirichletBase::print(unsigned int i, const DoubleVector &x, const 
 
 auto Problem2HDirichletBase::fx(const DoubleVector &pv) const -> double
 {
-    OptimizeParameterH o_prm;
-
-    VectorToPrm(pv, o_prm);
-
     Problem2HDirichletBase* prob = const_cast<Problem2HDirichletBase*>(this);
+
+    OptimizeParameterH o_prm;
+    VectorToPrm(pv, o_prm);
     prob->mOptParameter = o_prm;
 
-    std::vector<DoubleMatrix> u;
-    spif_vectorH u_info;
-    prob->solveForwardIBVP(u, u_info, true, pv);
+    const DoubleVector &Q1 = mEquParameter.Q1;
+    const DoubleVector &Q2 = mEquParameter.Q2;
 
-    double intgrl = integral(u);
+    double SUM = 0.0;
+    for (unsigned int q1=0; q1<Q1.length(); q1++)
+    {
+        prob->mEquParameter.pulses[0].q = Q1[q1];
+        for (unsigned int q2=0; q2<Q2.length(); q2++)
+        {
+            prob->mEquParameter.pulses[1].q = Q2[q2];
 
-    double nrm = 0.0;//norm(mEquParameter, o_prm, mRegParameter);
-    double pnt = 0.0;//penalty(u_info, o_prm);
-    double sum = intgrl + regEpsilon*nrm + r*pnt;
+            std::vector<DoubleMatrix> u;
+            spif_vectorH u_info;
+            prob->solveForwardIBVP(u, u_info, true, pv);
 
-    for (unsigned int i=0; i<u.size(); i++)      u[i].clear();      u.clear();
-    for (unsigned int j=0; j<u_info.size(); j++) u_info[j].clear(); u_info.clear();
+            double intgrl = integral(u);
+            double nrm = 0.0;//norm(mEquParameter, o_prm, mRegParameter);
+            double pnt = 0.0;//penalty(u_info, o_prm);
+            double sum = intgrl + regEpsilon*nrm + r*pnt;
 
-    return sum;
+            for (unsigned int i=0; i<u.size(); i++)      u[i].clear();      u.clear();
+            for (unsigned int j=0; j<u_info.size(); j++) u_info[j].clear(); u_info.clear();
+
+            SUM += sum * (1.0/(double(Q1.length())*double(Q2.length())));
+        }
+    }
+
+    return SUM;
 }
 
 double Problem2HDirichletBase::norm(const EquationParameterH& e_prm, const OptimizeParameterH &o_prm, const OptimizeParameterH &r_prm) const
@@ -931,22 +954,52 @@ auto Problem2HDirichletBase::currentLayerFGrid(const DoubleMatrix &u,
     const double ht = time.step();
 
     Problem2HDirichletBase* const_this = const_cast<Problem2HDirichletBase*>(this);
-    for (unsigned int m=0; m<=M; m++)
-    {
-        for (unsigned int n=0; n<=N; n++)
-        {
-            const_this->mCrFfxWeightMatrix[m][n] = 0.0;
-        }
-    }
 
     const unsigned int Nc = mEquParameter.Nc;
     const unsigned int No = mEquParameter.No;
 
 #if defined (DISCRETE_DELTA_TIME)
     const unsigned int Nt = mEquParameter.Nt;
-#endif
+    for (unsigned int m=0; m<=M; m++) for (unsigned int n=0; n<=N; n++) const_this->mCrFfxWeightMatrix[m][n] = 0.0;
 
-#if !defined (DISCRETE_DELTA_TIME)
+    for (unsigned int s=0; s<Nt; s++)
+    {
+        double wt = 0.0;
+        unsigned int cln = static_cast<unsigned int>(mEquParameter.timeMoments[s]/ht);
+        if ((2*cln+0 == ln) || (2*cln+1 == ln)) { wt = 2.0/ht; } else { continue; }
+
+        double* _u = new double[No];
+        for (unsigned int j=0; j<No; j++)
+        {
+            _u[j] = measurementDeltaGrids[j].consentrateInPoint(u);
+            //_u[j] *= (1.0 + noise);
+        }
+
+        double *_v = new double[Nc];
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            _v[i] = 0.0;
+            for (unsigned int j=0; j<No; j++)
+            {
+                _v[i] += mOptParameter.k[s][i][j] * (_u[j] - mOptParameter.z[s][i][j]);
+            }
+        }
+        delete [] _u;
+
+        for (unsigned int m=0; m<=M; m++)
+        {
+            for (unsigned int n=0; n<=N; n++)
+            {
+                for (unsigned int i=0; i<Nc; i++)
+                {
+                    const DeltaGrid2D &dg = controlDeltaGrids[i];
+                    const_this->mCrFfxWeightMatrix[m][n] += _v[i] * dg.weight(n,m) * wt;
+                }
+            }
+        }
+        delete [] _v;
+    }
+#else
     double* _u = new double[No];
     for (unsigned int j=0; j<No; j++)
     {
@@ -978,45 +1031,6 @@ auto Problem2HDirichletBase::currentLayerFGrid(const DoubleMatrix &u,
         }
     }
     delete [] _v;
-#else
-    for (unsigned int s=0; s<Nt; s++)
-    {
-        double wt = 0.0;
-        unsigned int cln = static_cast<unsigned int>(mEquParameter.timeMoments[s]/ht);
-        if (cln != ln) { continue; } else { wt = 1.0/ht; }
-
-        double* _u = new double[No];
-        for (unsigned int j=0; j<No; j++)
-        {
-            _u[j] = measurementDeltaGrids[j].consentrateInPoint(u);
-            //_u[j] *= (1.0 + noise);
-        }
-
-        double *_v = new double[Nc];
-        for (unsigned int i=0; i<Nc; i++)
-        {
-            _v[i] = 0.0;
-            for (unsigned int j=0; j<No; j++)
-            {
-                _v[i] += mOptParameter.k[s][i][j] * (_u[j] - mOptParameter.z[s][i][j]);
-            }
-        }
-        delete [] _u;
-
-        for (unsigned int m=0; m<=M; m++)
-        {
-            for (unsigned int n=0; n<=N; n++)
-            {
-                //const_this->mCrFfxWeightMatrix[m][n] = 0.0;
-                for (unsigned int i=0; i<Nc; i++)
-                {
-                    const DeltaGrid2D &dg = controlDeltaGrids[i];
-                    const_this->mCrFfxWeightMatrix[m][n] += _v[i] * dg.weight(n,m) * wt;
-                }
-            }
-        }
-        delete [] _v;
-    }
 #endif
 }
 
@@ -1035,22 +1049,53 @@ auto Problem2HDirichletBase::currentLayerBGrid(const DoubleMatrix &p, const std:
     const double ht = time.step();
 
     Problem2HDirichletBase* const_this = const_cast<Problem2HDirichletBase*>(this);
-    for (unsigned int m=0; m<=M; m++)
-    {
-        for (unsigned int n=0; n<=N; n++)
-        {
-            const_this->mCrFfxWeightMatrix[m][n] = 0.0;
-        }
-    }
 
     const unsigned int Nc = mEquParameter.Nc;
     const unsigned int No = mEquParameter.No;
 
 #if defined (DISCRETE_DELTA_TIME)
     const unsigned int Nt = mEquParameter.Nt;
-#endif
+    for (unsigned int m=0; m<=M; m++) for (unsigned int n=0; n<=N; n++) const_this->mCrBfxWeightMatrix[m][n] = 0.0;
 
-#if !defined (DISCRETE_DELTA_TIME)
+    for (unsigned int s=0; s<Nt; s++)
+    {
+        double wt = 0.0;
+        unsigned int cln = static_cast<unsigned int>(mEquParameter.timeMoments[s]/ht);
+        if ((2*cln+0 == ln) || (2*cln-1 == ln)) { wt = 2.0/ht; } else { continue; }
+
+        double* _p = new double[Nc];
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            _p[i] = controlDeltaGrids[i].consentrateInPoint(p);
+        }
+
+        double *_w = new double[No];
+        for (unsigned int j=0; j<No; j++)
+        {
+            _w[j] = 0.0;
+            for (unsigned int i=0; i<Nc; i++)
+            {
+                _w[j] += mOptParameter.k[s][i][j] * _p[i];
+                //_w[j] += mOptParameter.k[s][i][j] * 2.0*r*gpi(i, ln, u_info, mOptParameter)*sgn(g0i(i, ln, u_info, mOptParameter));
+            }
+        }
+        delete [] _p;
+
+        for (unsigned int m=0; m<=M; m++)
+        {
+            for (unsigned int n=0; n<=N; n++)
+            {
+                for (unsigned int j=0; j<No; j++)
+                {
+                    const DeltaGrid2D &dg = measurementDeltaGrids[j];
+                    const_this->mCrBfxWeightMatrix[m][n] += _w[j] * dg.weight(n,m) * wt;
+                }
+            }
+        }
+
+        delete [] _w;
+    }
+#else
     double* _p = new double[Nc];
     for (unsigned int i=0; i<Nc; i++)
     {
@@ -1082,45 +1127,6 @@ auto Problem2HDirichletBase::currentLayerBGrid(const DoubleMatrix &p, const std:
     }
 
     delete [] _w;
-#else
-    for (unsigned int s=0; s<Nt; s++)
-    {
-        double wt = 0.0;
-        unsigned int cln = static_cast<unsigned int>(mEquParameter.timeMoments[s]/ht);
-        if (cln != ln) { continue; } else { wt = 1.0/ht; }
-
-        double* _p = new double[Nc];
-        for (unsigned int i=0; i<Nc; i++)
-        {
-            _p[i] = controlDeltaGrids[i].consentrateInPoint(p);
-        }
-
-        double *_w = new double[No];
-        for (unsigned int j=0; j<No; j++)
-        {
-            _w[j] = 0.0;
-            for (unsigned int i=0; i<Nc; i++)
-            {
-                _w[j] += mOptParameter.k[s][i][j] * (_p[i] + 2.0*r*gpi(i, ln, u_info, mOptParameter)*sgn(g0i(i, ln, u_info, mOptParameter)) );
-            }
-        }
-        delete [] _p;
-
-        for (unsigned int m=0; m<=M; m++)
-        {
-            for (unsigned int n=0; n<=N; n++)
-            {
-                const_this->mCrBfxWeightMatrix[m][n] = 0.0;
-                for (unsigned int j=0; j<No; j++)
-                {
-                    const DeltaGrid2D &dg = measurementDeltaGrids[j];
-                    const_this->mCrBfxWeightMatrix[m][n] += _w[j] * dg.weight(n,m) * wt;
-                }
-            }
-        }
-
-        delete [] _w;
-    }
 #endif
 }
 

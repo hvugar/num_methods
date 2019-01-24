@@ -58,27 +58,27 @@ Problem1HDirichletBase::~Problem1HDirichletBase()
     mCrBfxWeightMatrix.clear();
 }
 
-auto Problem1HDirichletBase::initPulseWeightVector(const std::vector<PulseSpacePoint1H> &theta) const -> void
+auto Problem1HDirichletBase::initPulseWeightVector(const std::vector<InitialPulse1D> &pulses) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const unsigned int N = static_cast<const unsigned int> ( dimX.size() );
     const double hx = dimX.step();
 
-    const unsigned int Ns = static_cast<unsigned int>(theta.size());
+    const unsigned int Ns = static_cast<unsigned int>(pulses.size());
     DoubleVector &pulseWeightVector = const_cast<Problem1HDirichletBase*>(this)->mPulseWeightVector;
 
     std::vector<DeltaGrid1D> deltaGrids(Ns);
     for (unsigned int s=0; s<Ns; s++)
     {
         deltaGrids[s].initGrid(N, hx);
-        deltaGrids[s].distributeGauss(theta[s], 8);
+        deltaGrids[s].distributeGauss(pulses[s].theta, 8);
     }
     for (unsigned int n=0; n<=N; n++)
     {
         pulseWeightVector[n] = 0.0;
         for (unsigned int s=0; s<Ns; s++)
         {
-            pulseWeightVector[n] += theta[s].q * deltaGrids[s].weight(n);
+            pulseWeightVector[n] += pulses[s].q * deltaGrids[s].weight(n);
         }
     }
 
@@ -779,27 +779,53 @@ auto Problem1HDirichletBase::print(unsigned int i, const DoubleVector &x, const 
 
 auto Problem1HDirichletBase::fx(const DoubleVector &pv) const -> double
 {
-    OptimizeParameter1H o_prm;
-
-    VectorToPrm(pv, o_prm);
-
     Problem1HDirichletBase* prob = const_cast<Problem1HDirichletBase*>(this);
+
+    OptimizeParameter1H o_prm;
+    VectorToPrm(pv, o_prm);
     prob->mOptParameter = o_prm;
 
-    std::vector<DoubleVector> u;
-    spif_vector1H u_info;
-    prob->solveForwardIBVP(u, u_info, true);
+    const DoubleVector &Q1 = mEquParameter.Q1;
+    const DoubleVector &Q2 = mEquParameter.Q2;
+    const DoubleVector &X1 = mEquParameter.X1;
+    const DoubleVector &X2 = mEquParameter.X2;
 
-    double intgrl = integral(u);
+    double SUM = 0.0;
+    for (unsigned int x1=0; x1<X1.length(); x1++)
+    {
+        prob->mEquParameter.pulses[0].theta.x = X1[x1];
+        for (unsigned int x2=0; x2<X2.length(); x2++)
+        {
+            prob->mEquParameter.pulses[1].theta.x = X2[x2];
 
-    double nrm = 0.0;//norm(mEquParameter, o_prm, mRegParameter);
-    double pnt = 0.0;//penalty(u_info, o_prm);
-    double sum = intgrl + regEpsilon*nrm + r*pnt;
+            for (unsigned int q1=0; q1<Q1.length(); q1++)
+            {
+                prob->mEquParameter.pulses[0].q = Q1[q1];
+                for (unsigned int q2=0; q2<Q2.length(); q2++)
+                {
+                    prob->mEquParameter.pulses[1].q = Q2[q2];
 
-    for (unsigned int i=0; i<u.size(); i++)      u[i].clear();      u.clear();
-    for (unsigned int j=0; j<u_info.size(); j++) u_info[j].clear(); u_info.clear();
+                    std::vector<DoubleVector> u;
+                    spif_vector1H u_info;
+                    prob->solveForwardIBVP(u, u_info, true);
 
-    return sum;
+                    double intgrl = integral(u);
+                    double nrm = 0.0;//norm(mEquParameter, o_prm, mRegParameter);
+                    double pnt = 0.0;//penalty(u_info, o_prm);
+                    double sum = intgrl + regEpsilon*nrm + r*pnt;
+
+                    for (unsigned int i=0; i<u.size(); i++)      u[i].clear();      u.clear();
+                    for (unsigned int j=0; j<u_info.size(); j++) u_info[j].clear(); u_info.clear();
+
+                    SUM += sum
+                            * (1.0/(double(Q1.length())*double(Q2.length())))
+                            * (1.0/(double(X1.length())*double(X2.length())));
+                }
+            }
+        }
+    }
+
+    return SUM;
 }
 
 auto Problem1HDirichletBase::norm(const EquationParameter1H& e_prm, const OptimizeParameter1H &o_prm, const OptimizeParameter1H &r_prm) const -> double

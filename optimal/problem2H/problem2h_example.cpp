@@ -51,12 +51,17 @@ void prod_example1()
     // Equation parameters
     EquationParameterH e_prm;
     e_prm.a = 1.0;
-    e_prm.lambda = +0.00;
+    e_prm.alpha = +0.00;
+
+    e_prm.Q1 << 0.21 << 0.22 << 0.24;
+    e_prm.Q2 << 0.25 << 0.27 << 0.29;
+
 #if defined(DISCRETE_DELTA_TIME)
     e_prm.Nt = 10;
     e_prm.timeMoments.resize(e_prm.Nt);
-    for (unsigned int s=0; s<e_prm.Nt; s++) e_prm.timeMoments[s] = (s+1)*0.5;
+    for (unsigned int s=0; s<e_prm.Nt; s++) e_prm.timeMoments[s] = (s+1)*0.2;
 #endif
+
     // Pulse influences
     e_prm.Ns = 2;
     e_prm.pulses.resize(e_prm.Ns);
@@ -76,8 +81,11 @@ void prod_example1()
         {
             for (unsigned int c=0; c<e_prm.No; c++)
             {
+                //o_prm.k[s][r][c] = -static_cast<double>((rand() % 1000))/1000.0;
                 //o_prm.k[s][r][c] = 1.0-static_cast<double>((rand() % 2000))/1000.0;
                 //o_prm.z[s][r][c] = +static_cast<double>((rand() % 1000))/100000.0;
+                //o_prm.k[s][r][c] = sin(c*10.0)*cos(r*20.0)*sin(s*0.1);
+                //o_prm.z[s][r][c] = cos(c*10.0)*sin(r*20.0)*sin(s*0.2);
             }
         }
     }
@@ -89,34 +97,14 @@ void prod_example1()
     o_prm.xi.resize(e_prm.No);
 #endif
 
-    for (unsigned int j=0; j<e_prm.No; j++)
-    {
-        o_prm.xi[j].x = Random::value(0, 1, 4);
-        if (o_prm.xi[j].x <= 0.05) o_prm.xi[j].x = 0.05;
-        if (o_prm.xi[j].x >= 0.95) o_prm.xi[j].x = 0.95;
-        o_prm.xi[j].y = Random::value(0, 1, 4);
-        if (o_prm.xi[j].y <= 0.05) o_prm.xi[j].y = 0.05;
-        if (o_prm.xi[j].y >= 0.95) o_prm.xi[j].y = 0.95;
-    }
-    o_prm.eta.resize(e_prm.Nc);
-    for (unsigned int i=0; i<e_prm.Nc; i++)
-    {
-        o_prm.eta[i].x = Random::value(0, 1, 4);
-        if (o_prm.eta[i].x <= 0.05) o_prm.eta[i].x = 0.05;
-        if (o_prm.eta[i].x >= 0.95) o_prm.eta[i].x = 0.95;
-        o_prm.eta[i].y = Random::value(0, 1, 4);
-        if (o_prm.eta[i].y <= 0.05) o_prm.eta[i].y = 0.05;
-        if (o_prm.eta[i].y >= 0.95) o_prm.eta[i].y = 0.95;
-    }
-
     // 0.003691
-    e_prm.pulses[0] = InitialPulse(SpacePoint(0.2800, 0.3200), 0.214);
-    e_prm.pulses[1] = InitialPulse(SpacePoint(0.7300, 0.6500), 0.228);
+    e_prm.pulses[0] = InitialPulse2D(SpacePoint(0.2800, 0.3200), 0.21);
+    e_prm.pulses[1] = InitialPulse2D(SpacePoint(0.7300, 0.6500), 0.25);
     //o_prm.k[0][0]  = -2.0610; o_prm.k[0][1]  = -2.9376; o_prm.k[1][0]  = -2.1707; o_prm.k[1][1]  = -2.8527;
     //o_prm.k[0][0]  = -1.0000; o_prm.k[0][1]  = -1.0000; o_prm.k[1][0]  = -1.0000; o_prm.k[1][1]  = -1.0000;
     //o_prm.z[0][0]  = -0.0461; o_prm.z[0][1]  = -0.0246; o_prm.z[1][0]  = +0.0319; o_prm.z[1][1]  = +0.0161;
-    //o_prm.xi[0].x  = +0.5400; o_prm.xi[0].y  = +0.3500; o_prm.xi[1].x  = +0.8200; o_prm.xi[1].y  = +0.9400;
-    //o_prm.eta[0].x = +0.1200; o_prm.eta[0].y = +0.6200; o_prm.eta[1].x = +0.3400; o_prm.eta[1].y = +0.3400;
+    o_prm.xi[0].x  = +0.5400; o_prm.xi[0].y  = +0.3500; o_prm.xi[1].x  = +0.8200; o_prm.xi[1].y  = +0.9400;
+    o_prm.eta[0].x = +0.1200; o_prm.eta[0].y = +0.6200; o_prm.eta[1].x = +0.3400; o_prm.eta[1].y = +0.3400;
 
     // Regularization parameters
     OptimizeParameterH r_prm;
@@ -144,7 +132,7 @@ void prod_example1()
 #endif
 
     // Penalty paramteres
-    DoubleVector r; r << 0.0000 << 0.0000 << 0.000;
+    DoubleVector r; r << 0.0000;// << 0.0000 << 0.000;
     // Regularization coefficients
     DoubleVector e; e << 0.0000 << 0.0000 << 0.0000;
     DoubleVector e1; e1 << 0.1000 << 0.0100 << 0.0010;
@@ -154,8 +142,9 @@ void prod_example1()
     for (unsigned int i=0; i<r.length(); i++)
     {
         Problem2HDirichlet1 prob;
-        prob.setGridDimensions(Dimension(0.010, 0, 500),
-                               Dimension(0.010, 0, 100), Dimension(0.010, 0, 100));
+        prob.setGridDimensions(Dimension(0.010, 0, 200),
+                               Dimension(0.010, 0, 100),
+                               Dimension(0.010, 0, 100));
         prob.mEquParameter = e_prm;
         prob.mOptParameter = o_prm;
         prob.mRegParameter = r_prm;
@@ -165,7 +154,7 @@ void prod_example1()
         prob.optimizeC = true;
         prob.vmin.resize(e_prm.Nc, -0.5);
         prob.vmax.resize(e_prm.Nc, +0.5);
-        prob.LD = 50;
+        prob.LD = 20;
         prob.noise = 0.0;
 
         prob.regEpsilon = e[i];
@@ -174,7 +163,7 @@ void prod_example1()
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
-            prob.checkGradient1(prob);
+            //prob.checkGradient1(prob);
             //prob.checkGradient2(prob);
             //return;
 
@@ -203,13 +192,26 @@ void prod_example1()
         g.setFunctionTolerance(0.00001);
         g.setStepTolerance(0.00001);
         g.setR1MinimizeEpsilon(e1[i], e2[i]);
-        g.setMaxIterations(50);
+        g.setMaxIterations(20);
         g.setNormalize(false);
         g.showExitMessage(true);
         //prob.gm = &g;
         g.calculate(x);
 
         IPrinter::printSeperatorLine(nullptr, '=');
+
+        IPrinter::print(x, x.length(), 6, 4);
+        prob.VectorToPrm(x, o_prm);
+        prob.mOptParameter = o_prm;
+        prob.printLayers = true;
+        if (prob.printLayers)
+        {
+            prob.setGridDimensions(Dimension(0.010, 0, 800), Dimension(0.010, 0, 100), Dimension(0.010, 0, 100));
+            std::vector<DoubleMatrix> u;
+            spif_vectorH u_info, p_info;
+            prob.solveForwardIBVP(u, u_info, true, x, 0.25);
+        }
+        puts("End");
     }
 }
 

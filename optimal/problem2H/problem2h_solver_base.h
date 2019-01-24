@@ -31,7 +31,7 @@ public:
 
     virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const -> void;
 
-    virtual auto initPulseWeightMatrix(const std::vector<InitialPulse> &pulses) const -> void;
+    virtual auto initPulseWeightMatrix(const std::vector<InitialPulse2D> &pulses) const -> void;
 
     virtual auto f_initial1(const SpaceNodePDE &sn) const -> double;
     virtual auto f_initial2(const SpaceNodePDE &sn) const -> double;
@@ -90,6 +90,7 @@ public:
     double noise = 0.0;
 
     std::vector<DoubleMatrix> vu;
+    bool printLayers = false;
 
 protected:
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;

@@ -31,7 +31,7 @@ public:
 
     virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const -> void;
 
-    virtual auto initPulseWeightVector(const std::vector<PulseSpacePoint1H> &theta) const -> void;
+    virtual auto initPulseWeightVector(const std::vector<InitialPulse1D> &pulses) const -> void;
 
     virtual auto f_initial1(const SpaceNodePDE &sn) const -> double;
     virtual auto f_initial2(const SpaceNodePDE &sn) const -> double;

@@ -1,5 +1,9 @@
 #include "problem1h_common.h"
 
+InitialPulse1D::InitialPulse1D() : theta(SpacePoint()), q(0.0) {}
+
+InitialPulse1D::InitialPulse1D(const SpacePoint &sp, double q) : theta(sp), q(q) {}
+
 auto ExtendedSpacePoint1H::contains(int nx, int ny) const -> bool
 {
     return (minX <= nx && nx <= maxX);

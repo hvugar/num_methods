@@ -52,6 +52,12 @@ void prod_example1()
     EquationParameter1H e_prm;
     e_prm.a = 1.0;
     e_prm.alpha = +0.00;
+
+    e_prm.Q1 << 0.21 << 0.22 << 0.24;
+    e_prm.Q2 << 0.25 << 0.27 << 0.29;
+    e_prm.X1 << 0.28 << 0.29 << 0.30 << 0.31;
+    e_prm.X2 << 0.69 << 0.70 << 0.72 << 0.73;
+
 #if defined(DISCRETE_DELTA_TIME) || defined(HEAVISIDE_STEP_TIME)
     e_prm.Nt = 10;
     e_prm.timeMoments.resize(e_prm.Nt);
@@ -59,7 +65,7 @@ void prod_example1()
 #endif
     // Pulse influences
     e_prm.Ns = 2;
-    e_prm.theta.resize(e_prm.Ns);
+    e_prm.pulses.resize(e_prm.Ns);
 
     // Optimization parameters
 #if defined(DISCRETE_DELTA_TIME) || defined(HEAVISIDE_STEP_TIME)
@@ -78,7 +84,7 @@ void prod_example1()
         {
             for (unsigned int c=0; c<e_prm.No; c++)
             {
-                //o_prm.k[s][r][c] = 1.0-static_cast<double>((rand() % 2000))/1000.0;
+                o_prm.k[s][r][c] = 1.0-static_cast<double>((rand() % 2000))/1000.0;
                 //o_prm.z[s][r][c] = +static_cast<double>((rand() % 1000))/100000.0;
             }
         }
@@ -93,8 +99,8 @@ void prod_example1()
     o_prm.eta.resize(e_prm.Nc);
 #endif
 
-    e_prm.theta[0].q = +0.114; e_prm.theta[0].x = 0.2800;
-    e_prm.theta[1].q = +0.128; e_prm.theta[1].x = 0.7300;
+    e_prm.pulses[0] = InitialPulse1D(SpacePoint(0.28), 0.114);
+    e_prm.pulses[1] = InitialPulse1D(SpacePoint(0.73), 0.128);
 
     // (70.749111 200)
     //o_prm.k[0][0]  = -2.0610; o_prm.k[0][1]  = -2.9376; o_prm.k[1][0]  = -2.1707; o_prm.k[1][1]  = -2.8527;
@@ -166,7 +172,7 @@ void prod_example1()
         if (i==0)
         {
             prob.PrmToVector(o_prm, x);
-            //prob.checkGradient1(prob);
+            prob.checkGradient1(prob);
             //prob.checkGradient2(prob);
             //IPrinter::printSeperatorLine();
             //return;

@@ -177,8 +177,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //CdIHyperbolicIBVP1::Main(argc, argv);
     //IPrinter::printSeperatorLine();
     //ConjugateCC1IHyperbolicIBVP1::Main(argc, argv);
-    //Problem1HDirichlet1::Main(argc, argv);
-    Problem2HDirichlet::Main(argc, argv);
+    Problem1HDirichlet1::Main(argc, argv);
+    //Problem2HDirichlet::Main(argc, argv);
 
     //CCParabolicIBVP1::Main(argc, argv);
     //CCIHyperbolicIBVP1::Main(argc, argv);

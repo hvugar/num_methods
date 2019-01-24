@@ -22,9 +22,18 @@
 #include <deltagrid.h>
 #include "problem1h_global.h"
 
+struct PROBLEM1HSHARED_EXPORT InitialPulse1D
+{
+    InitialPulse1D();
+    InitialPulse1D(const SpacePoint &sp, double q);
+
+    SpacePoint theta;
+    double q;
+};
+
 struct PROBLEM1HSHARED_EXPORT OptimizeParameter1H
 {
-#if defined(DISCRETE_DELTA_TIME) || defined(HEAVISIDE_STEP_TIME)
+#if defined(DISCRETE_DELTA_TIME)
     DoubleMatrix *k;
     DoubleMatrix *z;
 #else
@@ -35,11 +44,6 @@ struct PROBLEM1HSHARED_EXPORT OptimizeParameter1H
     std::vector<SpacePoint> eta;
 };
 
-struct PulseSpacePoint1H : public SpacePoint
-{
-    double q;
-};
-
 struct PROBLEM1HSHARED_EXPORT EquationParameter1H
 {
     double a;
@@ -47,15 +51,19 @@ struct PROBLEM1HSHARED_EXPORT EquationParameter1H
 
     unsigned int No;
     unsigned int Nc;
-#if defined(DISCRETE_DELTA_TIME) || defined(HEAVISIDE_STEP_TIME)
+
+#if defined(DISCRETE_DELTA_TIME)
     unsigned int Nt;
     std::vector<double> timeMoments;
 #endif
 
     unsigned int Ns;
-    std::vector<PulseSpacePoint1H> theta;
+    std::vector<InitialPulse1D> pulses;
 
-//    std::vector<InitialPulse> pulseVector;
+    DoubleVector Q1;
+    DoubleVector Q2;
+    DoubleVector X1;
+    DoubleVector X2;
 
 #ifdef TIME_DISCRETE_H
     unsigned int Nt;

@@ -23,6 +23,15 @@
 #include <utils/random.h>
 #include "problem2h_global.h"
 
+struct PROBLEM2HSHARED_EXPORT InitialPulse2D
+{
+    InitialPulse2D();
+    InitialPulse2D(const SpacePoint &sp, double q);
+
+    SpacePoint theta;
+    double q;
+};
+
 struct GridH
 {
     std::vector<unsigned int> rows0;
@@ -44,12 +53,12 @@ struct GridSpace2D
 
 struct PROBLEM2HSHARED_EXPORT OptimizeParameterH
 {
-#if !defined (DISCRETE_DELTA_TIME)
-    DoubleMatrix k;
-    DoubleMatrix z;
-#else
+#if defined (DISCRETE_DELTA_TIME)
     DoubleMatrix *k;
     DoubleMatrix *z;
+#else
+    DoubleMatrix k;
+    DoubleMatrix z;
 #endif
     std::vector<SpacePoint> xi;
     std::vector<SpacePoint> eta;
@@ -59,33 +68,24 @@ struct PROBLEM2HSHARED_EXPORT OptimizeParameterH
 #endif
 };
 
-struct InitialPulse
-{
-    InitialPulse();
-    InitialPulse(const SpacePoint &sp, double q);
-
-    SpacePoint theta;
-    double q;
-};
-
 struct PROBLEM2HSHARED_EXPORT EquationParameterH
 {
     double a;
-    double lambda;
+    double alpha;
 
     unsigned int No;
     unsigned int Nc;
 
-#if !defined (DISCRETE_DELTA_TIME)
-#else
+#if defined (DISCRETE_DELTA_TIME)
     unsigned int Nt;
     std::vector<double> timeMoments;
 #endif
-    std::vector<SpacePoint> xi;
-    std::vector<SpacePoint> eta;
 
     unsigned int Ns;
-    std::vector<InitialPulse> pulses;
+    std::vector<InitialPulse2D> pulses;
+
+    DoubleVector Q1;
+    DoubleVector Q2;
 
 #ifdef TIME_DISCRETE_H
     unsigned int Nt;
