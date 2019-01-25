@@ -776,9 +776,9 @@ auto Problem2HDirichletBase::print(unsigned int i, const DoubleVector &x, const 
     //    IPrinter::printVector(um, "um", 10);
     //    IPrinter::printVector(ux, "ux", 10);
 
-    printf("I[%3d]: F:%.6f I:%.6f P:%.6f N:%.5f R:%.3f e:%.3f a:%.6f ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
-    printf("min:%.6f max:%.6f U:%.8f ", u.front().min(), u.front().max(), integralU(u.front()));
-    printf("min:%.6f max:%.6f U:%.8f ", u.back().min(), u.back().max(), integralU(u.back()));
+    printf("I[%3d]: F:%.6f I:%.6f P:%.6f N:%.5f R:%.3f e:%.3f a:%10.6f ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
+    printf("min:%10.6f max:%10.6f U:%.8f ", u.front().min(), u.front().max(), integralU(u.front()));
+    printf("min:%10.6f max:%10.6f U:%.8f ", u.back().min(), u.back().max(), integralU(u.back()));
     printf("\n");
     //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
     //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);

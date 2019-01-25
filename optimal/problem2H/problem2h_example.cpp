@@ -52,8 +52,9 @@ void prod_example1()
                 //o_prm.k[s][r][c] = -fabs(sin((c+1)*10.0)*cos((r+1)*20.0)*sin((s+1)*0.1));
                 //o_prm.z[s][r][c] = cos((c+1)*10.0)*sin((r+1)*20.0)*sin((s+1)*0.2);
 
-                o_prm.k[s][r][c] = -0.05;
-                o_prm.z[s][r][c] = +0.05;
+                o_prm.k[s][r][c] = +0.500;//-sin(c+r+s+1.0);// * (1.0 + (rand()%2==0 ? +0.020 : -0.020));
+                o_prm.z[s][r][c] = -0.005;//-cos(c+r+s+1.0);// * (1.0 + (rand()%2==0 ? +0.020 : -0.020));
+                //printf("%d %d %d %f %f\n", s, r, c, -sin(c+r+s+1.0), -cos(c+r+s+1.0));
             }
         }
     }
@@ -71,8 +72,10 @@ void prod_example1()
     //o_prm.k[0][0]  = -2.0610; o_prm.k[0][1]  = -2.9376; o_prm.k[1][0]  = -2.1707; o_prm.k[1][1]  = -2.8527;
     //o_prm.k[0][0]  = -1.0000; o_prm.k[0][1]  = -1.0000; o_prm.k[1][0]  = -1.0000; o_prm.k[1][1]  = -1.0000;
     //o_prm.z[0][0]  = -0.0461; o_prm.z[0][1]  = -0.0246; o_prm.z[1][0]  = +0.0319; o_prm.z[1][1]  = +0.0161;
-    o_prm.xi[0].x  = +0.5400; o_prm.xi[0].y  = +0.3500; o_prm.xi[1].x  = +0.8200; o_prm.xi[1].y  = +0.9400;
-    o_prm.eta[0].x = +0.2000; o_prm.eta[0].y = +0.6000; o_prm.eta[1].x = +0.7000; o_prm.eta[1].y = +0.4000;
+    o_prm.xi[0].x  = +0.5400 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/; o_prm.xi[0].y  = +0.3500 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/;
+    o_prm.xi[1].x  = +0.8200 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/; o_prm.xi[1].y  = +0.9400 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/;
+    o_prm.eta[0].x = +0.2200 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/; o_prm.eta[0].y = +0.6300 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/;
+    o_prm.eta[1].x = +0.7100 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/; o_prm.eta[1].y = +0.4700 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/;
 
     // Regularization parameters
     OptimizeParameterH r_prm;
@@ -100,7 +103,7 @@ void prod_example1()
 #endif
 
     // Penalty paramteres
-    DoubleVector r; r << 0.0000;// << 0.0000 << 0.000;
+    DoubleVector r; r << 0.0000 << 0.0000 << 0.000;
     // Regularization coefficients
     DoubleVector e; e << 0.0000 << 0.0000 << 0.0000;
     DoubleVector e1; e1 << 0.1000 << 0.0100 << 0.0010;
@@ -164,11 +167,17 @@ void prod_example1()
         g.setNormalize(false);
         g.showExitMessage(true);
         //prob.gm = &g;
+
+        IPrinter::printSeperatorLine(nullptr, '*');
+        IPrinter::print(x, x.length(), 7, 4);
+        IPrinter::printSeperatorLine(nullptr, '*');
+
         g.calculate(x);
 
         IPrinter::printSeperatorLine(nullptr, '=');
+        IPrinter::print(x, x.length(), 7, 4);
+        IPrinter::printSeperatorLine(nullptr, '=');
 
-        IPrinter::print(x, x.length(), 6, 4);
         prob.VectorToPrm(x, o_prm);
         prob.mOptParameter = o_prm;
         prob.printLayers = true;
