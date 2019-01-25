@@ -59,6 +59,9 @@ double Problem2HDirichletBase::boundary(const SpaceNodePDE &, const TimeNodePDE 
 auto Problem2HDirichletBase::f_initial1(const SpaceNodePDE &sn UNUSED_PARAM) const -> double
 {
     return 0.0;
+    //unsigned int m = static_cast<unsigned int>(sn.j);
+    //unsigned int n = static_cast<unsigned int>(sn.i);
+    //return mPulseWeightMatrix[m][n];
 }
 
 auto Problem2HDirichletBase::f_initial2(const SpaceNodePDE &sn) const -> double
@@ -66,6 +69,7 @@ auto Problem2HDirichletBase::f_initial2(const SpaceNodePDE &sn) const -> double
     unsigned int m = static_cast<unsigned int>(sn.j);
     unsigned int n = static_cast<unsigned int>(sn.i);
     return mPulseWeightMatrix[m][n];
+    //return 0.0;
 }
 
 auto Problem2HDirichletBase::f_boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const -> double
@@ -99,7 +103,7 @@ auto Problem2HDirichletBase::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, uns
     if (printLayers && ln%2==0)
     {
         FILE *file;
-        if (ln == 0) file = fopen("D:/data2D.txt", "w"); else file = fopen("D:/data2D.txt", "a");
+        if (ln == 0) file = fopen("data2D.txt", "w"); else file = fopen("data2D.txt", "a");
 
         Problem2HDirichletBase* tmp = const_cast<Problem2HDirichletBase*>(this);
         std::vector<DoubleMatrix> &rvu = tmp->vu;
@@ -121,6 +125,10 @@ auto Problem2HDirichletBase::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, uns
             //fprintf(file, "%.10f\n", fx);
             //printf("%d %d %.10f\n", ln, ln-LD, fx);
             fprintf(file, "%.10f %.10f %.10f\n", fx, u.min(), u.max());
+        }
+        else
+        {
+            fprintf(file, "%.10f %.10f %.10f\n", 0.0, u.min(), u.max());
         }
         fclose(file);
 
@@ -149,7 +157,7 @@ auto Problem2HDirichletBase::checkGradient1(const Problem2HDirichletBase &prob) 
     IPrinter::printSeperatorLine();
     DoubleVector ag(pv.length());
     double functional = prob.fx(pv);
-    printf("Functional: %f\n", functional);
+    printf("Functional: %f\n", functional);//exit(-1);
     puts("Calculating gradients....");
     prob.gradient(pv, ag);
     puts("Gradients are calculated.");
@@ -173,20 +181,20 @@ auto Problem2HDirichletBase::checkGradient1(const Problem2HDirichletBase &prob) 
     IGradient::Gradient(&prob, 0.01, pv, ng1, 2*offset+2*e_prm.No, 2*offset+2*e_prm.No+2*e_prm.Nc-1);
     printf("Calculated.\n");
 
-    puts("Calculating numerical gradients.... hx=0.001");
-    printf("*** Calculating numerical gradients for k...... dh=0.001 ");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 0*offset, 1*offset-1);
-    printf("Calculated.\n");
-    printf("*** Calculating numerical gradients for z...... dh=0.001 ");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 1*offset, 2*offset-1);
-    printf("Calculated.\n");
-    printf("*** Calculating numerical gradients for xi..... dh=0.001 ");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 2*offset+0*e_prm.No, 2*offset+2*e_prm.No-1);
-    printf("Calculated.\n");
-    printf("*** Calculating numerical gradients for eta.... dh=0.001 ");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 2*offset+2*e_prm.No, 2*offset+2*e_prm.No+2*e_prm.Nc-1);
-    printf("Calculated.\n");
-    puts("Numerical gradients are calculated.");
+//    puts("Calculating numerical gradients.... hx=0.001");
+//    printf("*** Calculating numerical gradients for k...... dh=0.001 ");
+//    IGradient::Gradient(&prob, 0.001, pv, ng2, 0*offset, 1*offset-1);
+//    printf("Calculated.\n");
+//    printf("*** Calculating numerical gradients for z...... dh=0.001 ");
+//    IGradient::Gradient(&prob, 0.001, pv, ng2, 1*offset, 2*offset-1);
+//    printf("Calculated.\n");
+//    printf("*** Calculating numerical gradients for xi..... dh=0.001 ");
+//    IGradient::Gradient(&prob, 0.001, pv, ng2, 2*offset+0*e_prm.No, 2*offset+2*e_prm.No-1);
+//    printf("Calculated.\n");
+//    printf("*** Calculating numerical gradients for eta.... dh=0.001 ");
+//    IGradient::Gradient(&prob, 0.001, pv, ng2, 2*offset+2*e_prm.No, 2*offset+2*e_prm.No+2*e_prm.Nc-1);
+//    printf("Calculated.\n");
+//    puts("Numerical gradients are calculated.");
 
     const unsigned int N = 20;
     const unsigned int W = 10;
@@ -966,7 +974,7 @@ auto Problem2HDirichletBase::currentLayerFGrid(const DoubleMatrix &u,
     {
         double wt = 0.0;
         unsigned int cln = static_cast<unsigned int>(mEquParameter.timeMoments[s]/ht);
-        if ((2*cln+0 == ln) || (2*cln+1 == ln)) { wt = 2.0/ht; } else { continue; }
+        if ((2*cln+0 == ln) || (2*cln+1 == ln)) { wt = 1.0/ht; } else { continue; }
 
         double* _u = new double[No];
         for (unsigned int j=0; j<No; j++)
@@ -999,6 +1007,11 @@ auto Problem2HDirichletBase::currentLayerFGrid(const DoubleMatrix &u,
         }
         delete [] _v;
     }
+
+    //printf("Layer: %d\n", ln);
+    //IPrinter::printMatrix(mCrFfxWeightMatrix);
+
+
 #else
     double* _u = new double[No];
     for (unsigned int j=0; j<No; j++)
@@ -1061,7 +1074,7 @@ auto Problem2HDirichletBase::currentLayerBGrid(const DoubleMatrix &p, const std:
     {
         double wt = 0.0;
         unsigned int cln = static_cast<unsigned int>(mEquParameter.timeMoments[s]/ht);
-        if ((2*cln+0 == ln) || (2*cln-1 == ln)) { wt = 2.0/ht; } else { continue; }
+        if ((2*cln+0 == ln) || (2*cln-1 == ln)) { wt = 1.0/ht; } else { continue; }
 
         double* _p = new double[Nc];
         for (unsigned int i=0; i<Nc; i++)

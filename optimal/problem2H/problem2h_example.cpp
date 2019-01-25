@@ -1,40 +1,5 @@
 #include "problem2h_example.h"
 
-struct ProjectionEx1 : public IProjection
-{
-    virtual void project(DoubleVector &x, unsigned int index);
-    virtual void project(DoubleVector &) const;
-};
-
-void ProjectionEx1::project(DoubleVector &x) const
-{
-    const double mn = 0.05;
-    const double mx = 0.95;
-    for (unsigned int i=8; i<=15; i++)
-    {
-        if (x[i]<mn) x[i] = mn;
-        if (x[i]>mx) x[i] = mx;
-    }
-
-    return;
-
-
-    //    if ( x[ 8] < 0.05 ) x[ 8] = 0.05; if ( x[ 8] > 0.45 ) x[ 8] = 0.45;
-    //    if ( x[ 9] < 0.55 ) x[ 9] = 0.55; if ( x[ 9] > 0.95 ) x[ 9] = 0.95;
-    //    if ( x[10] < 0.55 ) x[10] = 0.55; if ( x[10] > 0.95 ) x[10] = 0.95;
-    //    if ( x[11] < 0.05 ) x[11] = 0.05; if ( x[11] > 0.45 ) x[11] = 0.45;
-
-    //    if ( x[12] < 0.05 ) x[12] = 0.05; if ( x[12] > 0.45 ) x[12] = 0.45;
-    //    if ( x[13] < 0.05 ) x[13] = 0.05; if ( x[13] > 0.45 ) x[13] = 0.45;
-    //    if ( x[14] < 0.55 ) x[14] = 0.55; if ( x[14] > 0.95 ) x[14] = 0.95;
-    //    if ( x[15] < 0.55 ) x[15] = 0.55; if ( x[15] > 0.95 ) x[15] = 0.95;
-
-    //    DoubleVector x0 = x.mid(8,x.length()-1);
-    //    IPrinter::print(x0);
-}
-
-void ProjectionEx1::project(DoubleVector &, unsigned int) {}
-
 void Problem2HDirichlet::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
 #ifdef USE_IMAGING
@@ -53,13 +18,13 @@ void prod_example1()
     e_prm.a = 1.0;
     e_prm.alpha = +0.00;
 
-    e_prm.Q1 << 0.21 << 0.22 << 0.24;
-    e_prm.Q2 << 0.25 << 0.27 << 0.29;
+    e_prm.Q1 << 0.21;// << 0.22 << 0.24;
+    e_prm.Q2 << 0.25;// << 0.27 << 0.29;
 
 #if defined(DISCRETE_DELTA_TIME)
     e_prm.Nt = 10;
     e_prm.timeMoments.resize(e_prm.Nt);
-    for (unsigned int s=0; s<e_prm.Nt; s++) e_prm.timeMoments[s] = (s+1)*0.2;
+    for (unsigned int s=0; s<e_prm.Nt; s++) e_prm.timeMoments[s] = (s)*0.3;
 #endif
 
     // Pulse influences
@@ -84,8 +49,11 @@ void prod_example1()
                 //o_prm.k[s][r][c] = -static_cast<double>((rand() % 1000))/1000.0;
                 //o_prm.k[s][r][c] = 1.0-static_cast<double>((rand() % 2000))/1000.0;
                 //o_prm.z[s][r][c] = +static_cast<double>((rand() % 1000))/100000.0;
-                //o_prm.k[s][r][c] = sin(c*10.0)*cos(r*20.0)*sin(s*0.1);
-                //o_prm.z[s][r][c] = cos(c*10.0)*sin(r*20.0)*sin(s*0.2);
+                //o_prm.k[s][r][c] = -fabs(sin((c+1)*10.0)*cos((r+1)*20.0)*sin((s+1)*0.1));
+                //o_prm.z[s][r][c] = cos((c+1)*10.0)*sin((r+1)*20.0)*sin((s+1)*0.2);
+
+                o_prm.k[s][r][c] = -0.05;
+                o_prm.z[s][r][c] = +0.05;
             }
         }
     }
@@ -104,7 +72,7 @@ void prod_example1()
     //o_prm.k[0][0]  = -1.0000; o_prm.k[0][1]  = -1.0000; o_prm.k[1][0]  = -1.0000; o_prm.k[1][1]  = -1.0000;
     //o_prm.z[0][0]  = -0.0461; o_prm.z[0][1]  = -0.0246; o_prm.z[1][0]  = +0.0319; o_prm.z[1][1]  = +0.0161;
     o_prm.xi[0].x  = +0.5400; o_prm.xi[0].y  = +0.3500; o_prm.xi[1].x  = +0.8200; o_prm.xi[1].y  = +0.9400;
-    o_prm.eta[0].x = +0.1200; o_prm.eta[0].y = +0.6200; o_prm.eta[1].x = +0.3400; o_prm.eta[1].y = +0.3400;
+    o_prm.eta[0].x = +0.2000; o_prm.eta[0].y = +0.6000; o_prm.eta[1].x = +0.7000; o_prm.eta[1].y = +0.4000;
 
     // Regularization parameters
     OptimizeParameterH r_prm;
@@ -142,7 +110,7 @@ void prod_example1()
     for (unsigned int i=0; i<r.length(); i++)
     {
         Problem2HDirichlet1 prob;
-        prob.setGridDimensions(Dimension(0.010, 0, 200),
+        prob.setGridDimensions(Dimension(0.010, 0, 300),
                                Dimension(0.010, 0, 100),
                                Dimension(0.010, 0, 100));
         prob.mEquParameter = e_prm;
@@ -154,7 +122,7 @@ void prod_example1()
         prob.optimizeC = true;
         prob.vmin.resize(e_prm.Nc, -0.5);
         prob.vmax.resize(e_prm.Nc, +0.5);
-        prob.LD = 20;
+        prob.LD = 30;
         prob.noise = 0.0;
 
         prob.regEpsilon = e[i];
@@ -192,7 +160,7 @@ void prod_example1()
         g.setFunctionTolerance(0.00001);
         g.setStepTolerance(0.00001);
         g.setR1MinimizeEpsilon(e1[i], e2[i]);
-        g.setMaxIterations(20);
+        g.setMaxIterations(50);
         g.setNormalize(false);
         g.showExitMessage(true);
         //prob.gm = &g;
