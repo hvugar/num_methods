@@ -189,64 +189,31 @@ void NonLocal::calculateOtherSystem(DoubleMatrix &C, DoubleVector &d, unsigned i
     C.clear(); C.resize((k+1)*M, (k+1)*M);
     d.clear(); d.resize((k+1)*M);
 
-//    IPrinter::print(bt[1]);
-//    IPrinter::print(bt[2]);
+    //    IPrinter::print(bt[1]);
+    //    IPrinter::print(bt[2]);
 
     if (k==2)
     {
-        double t = (N-2)*h;
-//        C[0][0] = +0.0;  C[0][1] = +0.0; C[0][2] = +0.0; C[0][3] = bt[1][0][0]; C[0][4] = bt[1][0][1]; C[0][5] = bt[1][0][2]; C[0][6] = bt[2][0][0]; C[0][7] = bt[2][0][1]; C[0][8] = bt[2][0][2]; d[0] = bt[0][0][0];
-//        C[1][0] = +0.0;  C[1][1] = +0.0; C[1][2] = +0.0; C[1][3] = bt[1][1][0]; C[1][4] = bt[1][1][1]; C[1][5] = bt[1][1][2]; C[1][6] = bt[2][1][0]; C[1][7] = bt[2][1][1]; C[1][8] = bt[2][1][2]; d[1] = bt[0][1][0];
-//        C[2][0] = +0.0;  C[2][1] = +0.0; C[2][2] = +0.0; C[2][3] = bt[1][2][0]; C[2][4] = bt[1][2][1]; C[2][5] = bt[1][2][2]; C[2][6] = bt[2][2][0]; C[2][7] = bt[2][2][1]; C[2][8] = bt[2][2][2]; d[2] = bt[0][2][0];
-
-        C[0][0] = -3.0;  C[0][1] = +0.0; C[0][2] = +0.0; C[0][3] = +4.0; C[0][4] = +0.0; C[0][5] = +0.0; C[0][6] = -1.0; C[0][7] = +0.0; C[0][8] = +0.0; d[0] = 2.0*h*B(t,1);
-        C[1][0] = +0.0;  C[1][1] = -3.0; C[1][2] = +0.0; C[1][3] = +0.0; C[1][4] = +4.0; C[1][5] = +0.0; C[1][6] = +0.0; C[1][7] = -1.0; C[1][8] = +0.0; d[1] = 2.0*h*B(t,2);
-        C[2][0] = +0.0;  C[2][1] = +0.0; C[2][2] = -3.0; C[2][3] = +0.0; C[2][4] = +0.0; C[2][5] = +4.0; C[2][6] = +0.0; C[2][7] = +0.0; C[2][8] = -1.0; d[2] = 2.0*h*B(t,3);
-        C[0][0] += -2.0*h*A(t,1,1); C[0][1] += -2.0*h*A(t,1,2); C[0][2] += -2.0*h*A(t,1,3);
-        C[1][0] += -2.0*h*A(t,2,1); C[1][1] += -2.0*h*A(t,2,2); C[1][2] += -2.0*h*A(t,2,3);
-        C[2][0] += -2.0*h*A(t,3,1); C[2][1] += -2.0*h*A(t,3,2); C[2][2] += -2.0*h*A(t,3,3);
-
-
-        t = (N-1)*h;
-        C[3][0] = -1.0;  C[3][1] = +0.0; C[3][2] = +0.0; C[3][3] = +0.0; C[3][4] = +0.0; C[3][5] = +0.0; C[3][6] = +1.0; C[3][7] = +0.0; C[3][8] = +0.0; d[3] = 2.0*h*B(t,1);
-        C[4][0] = +0.0;  C[4][1] = -1.0; C[4][2] = +0.0; C[4][3] = +0.0; C[4][4] = +0.0; C[4][5] = +0.0; C[4][6] = +0.0; C[4][7] = +1.0; C[4][8] = +0.0; d[4] = 2.0*h*B(t,2);
-        C[5][0] = +0.0;  C[5][1] = +0.0; C[5][2] = -1.0; C[5][3] = +0.0; C[5][4] = +0.0; C[5][5] = +0.0; C[5][6] = +0.0; C[5][7] = +0.0; C[5][8] = +1.0; d[5] = 2.0*h*B(t,3);
-        C[3][3] += -2.0*h*A(t,1,1); C[3][4] += -2.0*h*A(t,1,2); C[3][5] += -2.0*h*A(t,1,3);
-        C[4][3] += -2.0*h*A(t,2,1); C[4][4] += -2.0*h*A(t,2,2); C[4][5] += -2.0*h*A(t,2,3);
-        C[5][3] += -2.0*h*A(t,3,1); C[5][4] += -2.0*h*A(t,3,2); C[5][5] += -2.0*h*A(t,3,3);
-
-        t = (N-0)*h;
-        C[6][0] = +1.0;  C[6][1] = +0.0; C[6][2] = +0.0; C[6][3] = -4.0; C[6][4] = +0.0; C[6][5] = +0.0; C[6][6] = +3.0; C[6][7] = +0.0; C[6][8] = +0.0; d[6] = 2.0*h*B(t,1);
-        C[7][0] = +0.0;  C[7][1] = +1.0; C[7][2] = +0.0; C[7][3] = +0.0; C[7][4] = -4.0; C[7][5] = +0.0; C[7][6] = +0.0; C[7][7] = +3.0; C[7][8] = +0.0; d[7] = 2.0*h*B(t,2);
-        C[8][0] = +0.0;  C[8][1] = +0.0; C[8][2] = +1.0; C[8][3] = +0.0; C[8][4] = +0.0; C[8][5] = -4.0; C[8][6] = +0.0; C[8][7] = +0.0; C[8][8] = +3.0; d[8] = 2.0*h*B(t,3);
-        C[6][6] += -2.0*h*A(t,1,1); C[6][7] += -2.0*h*A(t,1,2); C[6][8] += -2.0*h*A(t,1,3);
-        C[7][6] += -2.0*h*A(t,2,1); C[7][7] += -2.0*h*A(t,2,2); C[7][8] += -2.0*h*A(t,2,3);
-        C[8][6] += -2.0*h*A(t,3,1); C[8][7] += -2.0*h*A(t,3,2); C[8][8] += -2.0*h*A(t,3,3);
-
-        //        double t = (N-2)*h;
-        //        for (unsigned int r=0; r<M; r++)
-        //        {
-        //            for (unsigned int c=0*M; c<1*M; c++) { C[r][c] = +0.0; }
-        //            for (unsigned int c=1*M; c<2*M; c++) { C[r][c] = betta[1][r][c-1*M]; }
-        //            for (unsigned int c=2*M; c<3*M; c++) { C[r][c] = betta[2][r][c-2*M]; }
-        //            d[r] = betta[0][r][0];
-        //        }
-        //        t = (N-1)*h;
-        //        for (unsigned int r=1*M; r<2*M; r++)
-        //        {
-        //            for (unsigned int c=0*M; c<1*M; c++) { C[r][c] = +0.0;                  if ((r%M)==c) C[r][c] += -1.0; }
-        //            for (unsigned int c=1*M; c<2*M; c++) { C[r][c] = -2.0*h*A(t, r+1, c+1); if (r==c)     C[r][c] += +0.0; }
-        //            for (unsigned int c=2*M; c<3*M; c++) { C[r][c] = +0.0;                  if (r==(c-M)) C[r][c] += +1.0;}
-        //            d[r] = 2.0*h*B(t,r%M+1);
-        //        }
-        //        t = (N-0)*h;
-        //        for (unsigned int r=2*M; r<3*M; r++)
-        //        {
-        //            for (unsigned int c=0*M; c<1*M; c++) { C[r][c] = +0.0;                  if ((r%M)==c) C[r][c] += +1.0; }
-        //            for (unsigned int c=1*M; c<2*M; c++) { C[r][c] = +0.0;                  if ((r-M)==c) C[r][c] += -4.0; }
-        //            for (unsigned int c=2*M; c<3*M; c++) { C[r][c] = -2.0*h*A(t, r+1, c+1); if (r==c)     C[r][c] += +3.0; }
-        //            d[r] = 2.0*h*B(t,r%M+1);
-        //        }
+        double t1 = (N-1)*h;
+        double t0 = (N-0)*h;
+        for (unsigned int r=0; r<M; r++)
+        {
+            for (unsigned int c=0; c<M; c++)
+            {
+                C[0*M+r][0*M+c] = 0.0;
+                C[0*M+r][1*M+c] = bt[1][r][c];
+                C[0*M+r][2*M+c] = bt[2][r][c];
+                C[1*M+r][0*M+c] = 0.0;                  if (r==c) C[1*M+r][0*M+c] += -1.0;
+                C[1*M+r][1*M+c] = -2.0*h*A(t1,r+1,c+1); if (r==c) C[1*M+r][1*M+c] += +0.0;
+                C[1*M+r][2*M+c] = 0.0;                  if (r==c) C[1*M+r][2*M+c] += +1.0;
+                C[2*M+r][0*M+c] = 0.0;                  if (r==c) C[2*M+r][0*M+c] += +1.0;
+                C[2*M+r][1*M+c] = 0.0;                  if (r==c) C[2*M+r][1*M+c] += -4.0;
+                C[2*M+r][2*M+c] = -2.0*h*A(t0,r+1,c+1); if (r==c) C[2*M+r][2*M+c] += +3.0;
+            }
+            d[0*M+r] = bt[0][r][0];
+            d[1*M+r] = 2.0*h*B(t1,r+1);
+            d[2*M+r] = 2.0*h*B(t0,r+1);
+        }
     }
     if (k==3)
     {
@@ -400,45 +367,91 @@ void NonLocal::solveSystem(const std::vector<DoubleMatrix> &C, const DoubleVecto
 
     calculateOtherSystem(F, g, N, k, h, betta[end], M);
 
-    IPrinter::printSeperatorLine();
+    IPrinter::printSeperatorLine("F");
     IPrinter::print(F);
-    IPrinter::printSeperatorLine();
-    IPrinter::print(g);
+    IPrinter::printSeperatorLine("g");
+    IPrinter::print(g, g.length());
+
+    IPrinter::printSeperatorLine("X");
+    DoubleVector X(9);
+    X[0] = x(0.98, 1); X[1] = x(0.98, 2); X[2] = x(0.98, 3);
+    X[3] = x(0.99, 1); X[4] = x(0.99, 2); X[5] = x(0.99, 3);
+    X[6] = x(1.00, 1); X[7] = x(1.00, 2); X[8] = x(1.00, 3);
+    IPrinter::print(X, X.length());
     IPrinter::printSeperatorLine();
 
-    DoubleVector aa(9);
-    aa[0] = x(0.98, 1); aa[1] = x(0.98, 2); aa[2] = x(0.98, 3);
-    aa[3] = x(0.99, 1); aa[4] = x(0.99, 2); aa[5] = x(0.99, 3);
-    aa[6] = x(1.00, 1); aa[7] = x(1.00, 2); aa[8] = x(1.00, 3);
-    //IPrinter::print(aa);
-
-    double aaa = 0.0;
-    for (unsigned int i=0; i<9; i++) aaa += F[3][i]*aa[i];
-    printf("%f\n", aaa);
+    //    double aaa = 0.0;
+    //    for (unsigned int i=0; i<9; i++)
+    //    {
+    //        aaa += F[0][i]*X[i];
+    //    }
+    //    printf("%.14f\n", aaa);
 
     DoubleVector xf((k+1)*M);
     LinearEquation::GaussianElimination(F, g, xf);
-    IPrinter::print(xf);
+    IPrinter::print(xf, xf.length());
+    IPrinter::printSeperatorLine();
 
+    double aaa = 0.0;
+    for (unsigned int i=0; i<9; i++)
+    {
+        aaa += F[8][i]*xf[i];
+    }
+    printf("%.10f\n", aaa);
 
-    //    double norm = 0.0;
-    //    DoubleVector x(N+1);
-    //    for (unsigned int n=N; n>=N-k; n--)
-    //    {
-    //        x[n] = xf[n-(N-k)];
-    //        //printf("%4d %.8f %.8f\n", n, x[n], NonLocal::x(n*h));
-    //        printf("%.8f\n", x[n]);
-    //        norm += (x[n]-NonLocal::x(n*h))*(x[n]-NonLocal::x(n*h));
-    //    }
-    xf.clear();
+    //    //    double norm = 0.0;
+    //    //    DoubleVector x(N+1);
+    //    //    for (unsigned int n=N; n>=N-k; n--)
+    //    //    {
+    //    //        x[n] = xf[n-(N-k)];
+    //    //        //printf("%4d %.8f %.8f\n", n, x[n], NonLocal::x(n*h));
+    //    //        printf("%.8f\n", x[n]);
+    //    //        norm += (x[n]-NonLocal::x(n*h))*(x[n]-NonLocal::x(n*h));
+    //    //    }
+    //    xf.clear();
 
     F.clear();
     g.clear();
+
+    std::vector<DoubleVector> x(N+1); for (unsigned int n=0; n<=N; n++) x[n].resize(M);
+
+    unsigned int s = xf.length()-M;
+    unsigned int e = xf.length()-1;
+    for (unsigned int n=N; n>=N-k; n--)
+    {
+        x[n] = xf.mid(s, e);
+        s -= M;
+        e -= M;
+    }
+    xf.clear();
+
+    unsigned int stop = static_cast<unsigned int>(0)-1;
+    for (unsigned int n=(N-k)-1; n!=stop; n--)
+    {
+        x[n] = betta[n][0];
+        for (unsigned int j=2; j<=k; j++) x[n] -= betta[n][j]*x[n+j-1];
+        for (unsigned int j=n+k; j<=N; j++) x[n] -= C[j]*x[j];
+        betta[n][1].inverse();
+        x[n] = betta[n][1]*x[n];
+
+        //printf("%4d %.8f %.8f\n", n, x[n], NonLocal::x(n*h));
+        //printf("%.8f\n", x[n]);
+        //norm += (x[n]-NonLocal::x(n*h))*(x[n]-NonLocal::x(n*h));
+    }
+
+    for (unsigned int m=0; m<M; m++)
+    {
+        for (unsigned int n=0; n<=N; n++)
+        {
+            if (n%10==0) printf("%14.10f ", x[n][m]);
+        }
+        puts("");
+    }
 }
 
 double NonLocal::a(double t UNUSED_PARAM) const
 {
-    return t;//exp(t);
+    return 1.0;//exp(t);
 }
 
 double NonLocal::b(double t UNUSED_PARAM) const
@@ -466,9 +479,9 @@ double NonLocal::A(double t, unsigned int r UNUSED_PARAM, unsigned int c UNUSED_
 
 double NonLocal::B(double t, unsigned int n) const
 {
-    if (n == 1) return -(A(t,1,1)*x(t,1)+A(t,1,2)*x(t,2)+A(t,1,3)*x(3)) + 1.0;
-    if (n == 2) return -(A(t,2,1)*x(t,1)+A(t,2,2)*x(t,2)+A(t,2,3)*x(3)) + 2.0*t;
-    if (n == 3) return -(A(t,3,1)*x(t,1)+A(t,3,2)*x(t,2)+A(t,3,3)*x(3)) + 3.0*t*t;
+    if (n == 1) return -(A(t,1,1)*x(t,1)+A(t,1,2)*x(t,2)+A(t,1,3)*x(t,3)) + 1.0;
+    if (n == 2) return -(A(t,2,1)*x(t,1)+A(t,2,2)*x(t,2)+A(t,2,3)*x(t,3)) + 2.0*t;
+    if (n == 3) return -(A(t,3,1)*x(t,1)+A(t,3,2)*x(t,2)+A(t,3,3)*x(t,3)) + 2.0*t+1.0;
     return NAN;
 }
 
@@ -476,7 +489,7 @@ double NonLocal::x(double t, unsigned int n) const
 {
     if (n == 1) return t;
     if (n == 2) return t*t;
-    if (n == 3) return t*t*t;
+    if (n == 3) return t*t+t;
     return NAN;
 }
 
