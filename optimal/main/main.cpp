@@ -52,7 +52,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //srand(static_cast<unsigned int>(time(nullptr)));
 
-    NonLocal nl;
+    NonLocalSystem nl;
 
     //DoubleVector a(101, 0.0);
     //a[0] = a[50] = a[100] = 1.0;
@@ -65,39 +65,61 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     std::vector<DoubleMatrix> C;
     C.resize(N+1);
     for (unsigned int n=0; n<=N; n++) C[n].resize(M,M,0.0);
-    C[0].clear();   C[0].resize(M,M,1.0);
-    C[50].clear();  C[50].resize(M,M,2.0);
-    C[100].clear(); C[100].resize(M,M,3.0);
+    //C[0].clear();   C[0].resize(M,M,1.0);
+    //C[10].clear();  C[5].resize(M,M,2.0);
+    //C[20].clear();  C[10].resize(M,M,3.0);
 
     for (unsigned int j=0; j<3; j++)
     {
         for (unsigned int i=0; i<3; i++)
         {
             C[0][j][i] = Random::value(0,1,4);
-            C[50][j][i] = Random::value(0,1,4);
-            C[100][j][i] = Random::value(0,1,4);
+            C[N/2][j][i] = Random::value(0,1,4);
+            C[N][j][i] = Random::value(0,1,4);
         }
     }
 
     DoubleVector d;
     d.resize(M);
-    d[0] = (C[0])[0][0]*nl.x(0.0,1)   + (C[0])[0][1]*nl.x(0.0,2)   + (C[0])[0][2]*nl.x(0.0,3)+
-            (C[50])[0][0]*nl.x(0.5,1)  + (C[50])[0][1]*nl.x(0.5,2)  + (C[50])[0][2]*nl.x(0.5,3)+
-            (C[100])[0][0]*nl.x(1.0,1) + (C[100])[0][1]*nl.x(1.0,2) + (C[100])[0][2]*nl.x(1.0,3);
+    DoubleVector x00; x00 << nl.x(0.0,1) << nl.x(0.0,2) << nl.x(0.0,3);
+    DoubleVector x05; x05 << nl.x(0.5,1) << nl.x(0.5,2) << nl.x(0.5,3);
+    DoubleVector x10; x10 << nl.x(1.0,1) << nl.x(1.0,2) << nl.x(1.0,3);
+    d = C[0]*x00 + C[N/2]*x05 + C[N]*x10;
+    std::vector<DoubleVector> x;
+    nl.solve(C, d, x, Dimension(h, 0, static_cast<int>(N)), M);
 
-    d[1] = (C[0])[1][0]*nl.x(0.0,1)   + (C[0])[1][1]*nl.x(0.0,2)   + (C[0])[1][2]*nl.x(0.0,3)+
-            (C[50])[1][0]*nl.x(0.5,1)  + (C[50])[1][1]*nl.x(0.5,2)  + (C[50])[1][2]*nl.x(0.5,3)+
-            (C[100])[1][0]*nl.x(1.0,1) + (C[100])[1][1]*nl.x(1.0,2) + (C[100])[1][2]*nl.x(1.0,3);
+    for (unsigned int m=0; m<M; m++)
+    {
+        for (unsigned int n=0; n<=N; n++)
+        {
+            if (n%(N/10)==0) printf("%14.10f ", x[n][m]);
+        }
+        puts("");
+    }
+    IPrinter::printSeperatorLine();
 
-    d[2] = (C[0])[2][0]*nl.x(0.0,1)   + (C[0])[2][1]*nl.x(0.0,2)   + (C[0])[2][2]*nl.x(0.0,3)+
-            (C[50])[2][0]*nl.x(0.5,1)  + (C[50])[2][1]*nl.x(0.5,2)  + (C[50])[2][2]*nl.x(0.5,3)+
-            (C[100])[2][0]*nl.x(1.0,1) + (C[100])[2][1]*nl.x(1.0,2) + (C[100])[2][2]*nl.x(1.0,3);
+    for (unsigned int m=0; m<M; m++)
+    {
+        for (unsigned int n=0; n<=N; n++)
+        {
+            if (n%(N/10)==0) printf("%14.10f ", nl.x(n*h, m+1));
+        }
+        puts("");
+    }
 
-    printf("%f %f %f\n", d[0], d[1], d[2]);
+    double norm[] = {0.0, 0.0, 0.0};
+    for (unsigned int m=0; m<M; m++)
+    {
+        norm[m] = 0.0;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            norm[m] += (x[n][m]-nl.x(n*h, m+1))*(x[n][m]-nl.x(n*h, m+1));
+        }
+        norm[m] = sqrt(norm[m]);
+    }
+    printf("Norms: %.10f %.10f %.10f\n", norm[0], norm[1], norm[2]);
 
-    nl.solveSystem(C, d, h, M);
-
-    return 0;
+//    return 0;
 
 
     //CcIHyperbolicIBVP1::Main(argc, argv);

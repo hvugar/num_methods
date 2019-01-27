@@ -19,57 +19,56 @@ DoubleMatrixException& DoubleMatrixException::operator =(const DoubleMatrixExcep
 
 const char* DoubleMatrixException::what() const NOEXCEPT
 {
-    if (msgCode == 1) return "Dimension of matrixs do not matches!";
-    if (msgCode == 2) return "Matrix is not square matrix!";
-    if (msgCode == 3) return "Matrix columns and row are not equals!";
+    if (msgCode == 1) return "Error: Dimension of matrixs do not matches!";
+    if (msgCode == 2) return "Error: Matrix is not square matrix!";
+    if (msgCode == 3) return "Error: Matrix columns and row are not equals!";
+    if (msgCode == 4) return "Error: Determinant of matrix is equal to zero.";
     return "";
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DoubleMatrix::DoubleMatrix(unsigned int rows, unsigned int cols, double value) : mRows(0), mCols(0), mData(NULL)
+DoubleMatrix::DoubleMatrix(unsigned int rows, unsigned int cols, double value) : mRows(0), mCols(0), mData(nullptr)
 {
     if (rows > 0 && cols > 0)
     {
         mRows = rows;
         mCols = cols;
-        mData = (double**)(malloc(sizeof(double*)*rows));
+        mData = static_cast<double**>(malloc(sizeof(double*)*rows));
         for (unsigned int i=0; i<rows; i++)
         {
-            mData[i] = (double*)malloc(sizeof(double)*cols);
+            mData[i] = static_cast<double*>(malloc(sizeof(double)*cols));
             for (unsigned int j=0; j<cols; j++) mData[i][j] = value;
         }
     }
 }
 
-DoubleMatrix::DoubleMatrix(const DoubleMatrix &matrix) : mRows(0), mCols(0), mData(NULL)
+DoubleMatrix::DoubleMatrix(const DoubleMatrix &matrix) : mRows(0), mCols(0), mData(nullptr)
 {
     //puts("DoubleMatrix::DoubleMatrix(const DoubleMatrix &matrix)");
     if (matrix.mRows > 0 && matrix.mCols > 0)
     {
         mRows = matrix.mRows;
         mCols = matrix.mCols;
-        mData = (double**) (malloc(sizeof(double*)*mRows));
+        mData = static_cast<double**>(malloc(sizeof(double*)*mRows));
         for (unsigned int i=0; i<mRows; i++)
         {
-            mData[i] = (double*)malloc(sizeof(double)*mCols);
+            mData[i] = static_cast<double*>(malloc(sizeof(double)*mCols));
             memcpy(mData[i], matrix.mData[i], sizeof(double)*mCols);
         }
     }
 }
 
-DoubleMatrix::DoubleMatrix(const DoubleVector &vector) : mRows(0), mCols(0), mData(NULL)
+DoubleMatrix::DoubleMatrix(const DoubleVector &vector) : mRows(0), mCols(0), mData(nullptr)
 {
-    //puts("DoubleMatrix::DoubleMatrix(const DoubleVector &vector) : mRows(0), mCols(0), mData(NULL)");
-
     if (vector.length() > 0)
     {
         mRows = vector.length();
         mCols = 1;
-        mData = (double**) malloc(sizeof(double*)*mRows);
+        mData = static_cast<double**>(malloc(sizeof(double*)*mRows));
         for (unsigned int i=0; i<mRows; i++)
         {
-            mData[i] = (double*) malloc(sizeof(double)*mCols);
+            mData[i] = static_cast<double*>(malloc(sizeof(double)*mCols));
             mData[i][0] = vector.at(i);
         }
     }
@@ -77,9 +76,7 @@ DoubleMatrix::DoubleMatrix(const DoubleVector &vector) : mRows(0), mCols(0), mDa
 
 DoubleMatrix::~DoubleMatrix()
 {
-    //puts("DoubleMatrix::~DoubleMatrix()1");
     clear();
-    //puts("DoubleMatrix::~DoubleMatrix()2");
 }
 
 unsigned int DoubleMatrix::rows() const
@@ -94,24 +91,23 @@ unsigned int DoubleMatrix::cols() const
 
 bool DoubleMatrix::empty() const
 {
-    return (mRows == 0 || mCols == 0 || mData == NULL);
+    return (mRows == 0 || mCols == 0 || mData == nullptr);
 }
 
 void DoubleMatrix::clear()
 {
-    if (mData != NULL)
-    {
-        for (unsigned int row=0; row<mRows; row++)
-        {
-            free(mData[row]);
-            mData[row] = NULL;
-        }
+    if (mData == nullptr) return;
 
-        free(mData);
-        mData = NULL;
-        mRows = 0;
-        mCols = 0;
+    for (unsigned int row=0; row<mRows; row++)
+    {
+        free(mData[row]);
+        mData[row] = nullptr;
     }
+
+    free(mData);
+    mData = nullptr;
+    mRows = 0;
+    mCols = 0;
 }
 
 void DoubleMatrix::resize(unsigned int rows, unsigned int cols, double value)
@@ -122,12 +118,12 @@ void DoubleMatrix::resize(unsigned int rows, unsigned int cols, double value)
 
     if (rows > 0 && cols > 0)
     {
-        if (mData == NULL)
+        if (mData == nullptr)
         {
-            mData = (double**) malloc(sizeof(double*)*rows);
+            mData = static_cast<double**>(malloc(sizeof(double*)*rows));
             for (unsigned int row=0; row<rows; row++)
             {
-                mData[row] = (double*) malloc(sizeof(double)*cols);
+                mData[row] = static_cast<double*>(malloc(sizeof(double)*cols));
                 for (unsigned int col=0; col<cols; col++) mData[row][col] = value;
             }
             mRows = rows;
@@ -135,10 +131,10 @@ void DoubleMatrix::resize(unsigned int rows, unsigned int cols, double value)
         }
         else
         {
-            double **ptr = (double **) malloc(sizeof(double*) * rows);
+            double **ptr = static_cast<double**>(malloc(sizeof(double*) * rows));
             for (unsigned int row=0; row<rows; row++)
             {
-                ptr[row] = (double*) malloc(sizeof(double)*cols);
+                ptr[row] = static_cast<double*>(malloc(sizeof(double)*cols));
 
                 if (row < mRows)
                 {
@@ -147,8 +143,8 @@ void DoubleMatrix::resize(unsigned int rows, unsigned int cols, double value)
                 }
                 else
                 {
-                   for (unsigned int col=0; col<cols; col++)
-                       ptr[row][col] = value;
+                    for (unsigned int col=0; col<cols; col++)
+                        ptr[row][col] = value;
                 }
             }
 
@@ -163,27 +159,15 @@ void DoubleMatrix::resize(unsigned int rows, unsigned int cols, double value)
 
 double& DoubleMatrix::at(unsigned int row, unsigned int col)
 {
-    if (row>=mRows)
-    {
-        throw std::out_of_range("row index out of range");
-    }
-    if (col>=mCols)
-    {
-        throw std::out_of_range("column index out of range");
-    }
+    if (row>=mRows) { throw std::out_of_range("Error: Row index out of range"); }
+    if (col>=mCols) { throw std::out_of_range("Error: Column index out of range"); }
     return mData[row][col];
 }
 
 const double& DoubleMatrix::at(unsigned int row, unsigned int col) const
 {
-    if (row>=mRows)
-    {
-        throw std::out_of_range("row index out of range");
-    }
-    if (col>=mCols)
-    {
-        throw std::out_of_range("column index out of range");
-    }
+    if (row>=mRows) { throw std::out_of_range("Error: Row index out of range"); }
+    if (col>=mCols) { throw std::out_of_range("Error: Column index out of range"); }
     return mData[row][col];
 }
 
@@ -261,7 +245,7 @@ DoubleMatrix DoubleMatrix::HilbertMatrix(unsigned int rows, unsigned int cols)
     DoubleMatrix matrix(rows, cols);
     for (unsigned int row=0; row<rows; row++)
         for (unsigned int col=0; col<cols; col++)
-            matrix.mData[row][col] = 1.0/(double)(row+col+1);
+            matrix.mData[row][col] = 1.0/static_cast<double>(row+col+1);
     return matrix;
 }
 
@@ -281,9 +265,9 @@ bool DoubleMatrix::dioqonalMatrix() const
 
 bool DoubleMatrix::identityMatrix() const
 {
-    for (unsigned int row=0; row < mRows; row++)
+    for (unsigned int row=0; row<mRows; row++)
     {
-        for (unsigned int col=0; col < mCols; col++)
+        for (unsigned int col=0; col<mCols; col++)
         {
             if (row != col && fabs(mData[row][col]) > DBL_EPSILON) return false;
             if (row == col && fabs(mData[row][col]) != 1.0) return false;
@@ -332,7 +316,9 @@ bool DoubleMatrix::equals(const DoubleMatrix &matrix) const
         return equals;
     }
     else
+    {
         return false;
+    }
 }
 
 double DoubleMatrix::min() const
@@ -365,10 +351,7 @@ double DoubleMatrix::determinant2() const
 {
     double det = 0.0;
 
-    if (mRows != mCols)
-    {
-        throw DoubleMatrixException(2);
-    }
+    if (mRows != mCols) { throw DoubleMatrixException(2); }
 
     if (mRows == 1 && mCols == 1)
         return mData[0][0];
@@ -389,25 +372,41 @@ double DoubleMatrix::determinant2() const
 
 double DoubleMatrix::determinant() const
 {
-    double det = 0.0;
+    if (mRows != mCols) { throw DoubleMatrixException(2); }
 
-    if (mRows != mCols)
+    // Checking properties of the determinant ---------------------------------------------------------------
+    for (unsigned int r=0; r<mRows; r++)
     {
-        throw DoubleMatrixException(2);
+        bool row_items_are_zero = true;
+        for (unsigned int c=0; c<mCols; c++) if (fabs(mData[r][c]) > DBL_EPSILON) row_items_are_zero = false;
+        if (row_items_are_zero) return 0.0;
+    }
+    for (unsigned int c=0; c<mRows; c++)
+    {
+        bool col_items_are_zero = true;
+        for (unsigned int r=0; r<mCols; r++) if (fabs(mData[r][c]) > DBL_EPSILON) col_items_are_zero = false;
+        if (col_items_are_zero) return 0.0;
     }
 
-    DoubleMatrix T = *this;
+    if (identityMatrix()) return 1.0;
+
+    // ------------------------------------------------------------------------------------------------------
+
+    double det = 0.0;
+
+    // Gaussian elimination ---------------------------------------------------------------------------------
+    DoubleMatrix mx = *this;
 
     for (unsigned k=0; k < mRows; k++)
     {
-        if (fabs(T.at(k,k)) <= DBL_EPSILON)
+        if (fabs(mx.at(k,k)) <= DBL_EPSILON)
         {
             bool swiched = false;
             for (unsigned int p=k+1; p<mRows; p++)
             {
-                if (fabs(T.at(p,k)) > DBL_EPSILON)
+                if (fabs(mx.at(p,k)) > DBL_EPSILON)
                 {
-                    T.switchRows(k, p);
+                    mx.switchRows(k, p);
                     swiched = true;
                     //break;
                 }
@@ -417,16 +416,17 @@ double DoubleMatrix::determinant() const
 
         for (unsigned int j=k+1; j<mRows; j++)
         {
-            double c = -(T.at(j,k)/T.at(k,k));
+            double c = -(mx.at(j,k)/mx.at(k,k));
             for (unsigned int i=k; i<mCols; i++)
             {
-                T.at(j,i) = T.at(j,i) + T.at(k,i) * c;
+                mx.at(j,i) = mx.at(j,i) + mx.at(k,i) * c;
             }
         }
     }
     det = 1.0;
-    for (unsigned int i=0; i<mRows; i++) det *= T.at(i,i);
-    T.clear();
+    for (unsigned int i=0; i<mRows; i++) det *= mx.at(i,i);
+    mx.clear();
+    // Gaussian elimination ---------------------------------------------------------------------------------
 
     return det;
 }
@@ -437,10 +437,10 @@ void DoubleMatrix::transpose()
 
     unsigned int rows = mCols;
     unsigned int cols = mRows;
-    double **data = (double**)(malloc(sizeof(double*)*rows));
+    double **data = static_cast<double**>(malloc(sizeof(double*)*rows));
     for (unsigned int i=0; i<rows; i++)
     {
-        data[i] = (double*)malloc(sizeof(double)*cols);
+        data[i] = static_cast<double*>(malloc(sizeof(double)*cols));
         for (unsigned int j=0; j<cols; j++) data[i][j] = mData[j][i];
     }
     clear();
@@ -451,7 +451,10 @@ void DoubleMatrix::transpose()
 
 void DoubleMatrix::inverse()
 {
-    double idet = 1.0/determinant();
+    double det = determinant();
+    if (fabs(det) <= DBL_EPSILON) throw DoubleMatrixException(4);
+
+    double idet = 1.0/det;
 
     DoubleMatrix m = *this;
 
@@ -532,10 +535,10 @@ DoubleMatrix& DoubleMatrix::operator =(const DoubleMatrix &m)
         {
             mRows = m.mRows;
             mCols = m.mCols;
-            mData = (double**) malloc(sizeof(double*)*mRows);
+            mData = static_cast<double**>(malloc(sizeof(double*)*mRows));
             for (unsigned int i=0; i<mRows; i++)
             {
-                mData[i] = (double *) malloc(sizeof(double)*mCols);
+                mData[i] = static_cast<double*>(malloc(sizeof(double)*mCols));
                 memcpy(mData[i], m.mData[i], sizeof(double)*mCols);
             }
         }
@@ -550,10 +553,10 @@ DoubleMatrix& DoubleMatrix::operator =(const DoubleVector &v)
         clear();
         mRows = v.length();
         mCols = 1;
-        mData = (double**) malloc(sizeof(double*)*mRows);
+        mData = static_cast<double**>(malloc(sizeof(double*)*mRows));
         for (unsigned int i=0; i<mRows; i++)
         {
-            mData[i] = (double*) malloc(sizeof(double)*mCols);
+            mData[i] = static_cast<double*>(malloc(sizeof(double)*mCols));
             mData[i][0] = v.at(i);
         }
     }
@@ -666,8 +669,7 @@ DoubleMatrix operator +(DoubleMatrix m1, const DoubleMatrix& m2)
 {
     if (!m1.dimEquals(m2))
     {
-        printf("DoubleMatrix operator +(const DoubleMatrix& m1, const DoubleMatrix& m2) %d %d %d %d\n",
-               m1.rows(), m1.cols(), m2.rows(), m2.cols());
+        printf("DoubleMatrix operator +(const DoubleMatrix& m1, const DoubleMatrix& m2) %d %d %d %d\n", m1.rows(), m1.cols(), m2.rows(), m2.cols());
         throw DoubleMatrixException(1);
     }
 
@@ -685,8 +687,7 @@ DoubleMatrix operator -(DoubleMatrix m1, const DoubleMatrix& m2)
 {
     if (!m1.dimEquals(m2))
     {
-        printf("DoubleMatrix operator -(DoubleMatrix m1, const DoubleMatrix& m2) %d %d %d %d\n",
-               m1.rows(), m1.cols(), m2.rows(), m2.cols());
+        printf("DoubleMatrix operator -(DoubleMatrix m1, const DoubleMatrix& m2) %d %d %d %d\n", m1.rows(), m1.cols(), m2.rows(), m2.cols());
         throw DoubleMatrixException(1);
     }
 
@@ -704,8 +705,7 @@ DoubleMatrix operator *(const DoubleMatrix &m1, const DoubleMatrix &m2)
 {
     if (m1.cols() != m2.rows())
     {
-        printf("DoubleMatrix& DoubleMatrix::operator *(const DoubleMatrix &matrix) %d %d %d %d\n",
-               m1.rows(), m1.cols(), m2.rows(), m2.cols());
+        printf("DoubleMatrix& DoubleMatrix::operator *(const DoubleMatrix &matrix) %d %d %d %d\n", m1.rows(), m1.cols(), m2.rows(), m2.cols());
         throw DoubleMatrixException(3);
     }
 
@@ -789,7 +789,7 @@ bool operator !=(const DoubleMatrix &matrix1, const DoubleMatrix& matrix2)
 
 void DoubleMatrix::switchRows(unsigned int row1, unsigned int row2)
 {
-    double *row = (double*)malloc(sizeof(double) * mCols);
+    double *row = static_cast<double*>(malloc(sizeof(double) * mCols));
     memcpy(row, mData[row1], sizeof(double)*mCols);
     memcpy(mData[row1], mData[row2], sizeof(double)*mCols);
     memcpy(mData[row2], row, sizeof(double)*mCols);
