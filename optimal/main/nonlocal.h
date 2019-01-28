@@ -8,6 +8,7 @@
 #include <linearequation.h>
 #include <vector>
 #include <grid/grid.h>
+#include <ode/diffequ.h>
 
 class INonLocal
 {
@@ -24,7 +25,7 @@ protected:
     virtual double x(double t) const = 0;
 };
 
-class INonLocalSystem
+class INonLocalSystem : public SystemLinearODE1stOrder
 {
 public:
     virtual ~INonLocalSystem();
@@ -32,9 +33,8 @@ public:
     virtual void solve(const std::vector<DoubleMatrix> &C, const DoubleVector &d, std::vector<DoubleVector> &x, const Dimension &dim, unsigned int N) const;
 
 protected:
-    virtual double A(double t, unsigned int r, unsigned int c) const = 0;
-    virtual double B(double t, unsigned int n) const = 0;
-    virtual double x(double t, unsigned int n) const = 0;
+    virtual double A(double t, unsigned int n, unsigned int row, unsigned int col) const = 0;
+    virtual double B(double t, unsigned int n, unsigned int m) const = 0;
 
 private:
     virtual void getAlpha(DoubleMatrix *alpha, unsigned int n, unsigned int k, double h, unsigned int M) const;
@@ -58,8 +58,8 @@ class NonLocalSystem : public INonLocalSystem
 public:
     virtual ~NonLocalSystem();
 
-    virtual double A(double t, unsigned int r, unsigned int c) const;
-    virtual double B(double t, unsigned int n) const;
+    virtual double A(double t, unsigned int n, unsigned int row, unsigned int col) const;
+    virtual double B(double t, unsigned int n, unsigned int m) const;
     virtual double x(double t, unsigned int n) const;
 };
 

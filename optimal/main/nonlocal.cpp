@@ -186,18 +186,18 @@ void INonLocalSystem::getAlpha(DoubleMatrix *alpha, unsigned int n, unsigned int
 {
     if (k == 2)
     {
-        double t = h*n;
+        double t = n*h;
         DoubleMatrix mx(M, M);
         for (unsigned int r=0; r<M; r++)
         {
             for (unsigned int c=0; c<M; c++)
             {
-                mx[r][c] = 2.0*h*A(t, r+1, c+1);
+                mx[r][c] = 2.0*h*A(t, n, r+1, c+1);
             }
             mx[r][r] += 3.0;
         }
         mx.inverse();
-        alpha[0].resize(M, 1, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[0])[m][0] = -2.0*h*B(t, m+1); } alpha[0] = mx*alpha[0];
+        alpha[0].resize(M, 1, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[0])[m][0] = -2.0*h*B(t,n,m+1); } alpha[0] = mx*alpha[0];
         alpha[1].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[1])[m][m] = +4.0; }             alpha[1] = mx*alpha[1];
         alpha[2].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[2])[m][m] = -1.0; }             alpha[2] = mx*alpha[2];
 
@@ -228,19 +228,19 @@ void INonLocalSystem::getAlpha(DoubleMatrix *alpha, unsigned int n, unsigned int
     }
     if (k==4)
     {
-        double t = h*n;
+        double t = n*h;
         DoubleMatrix mx(M, M);
         for (unsigned int r=0; r<M; r++)
         {
             for (unsigned int c=0; c<M; c++)
             {
-                mx[r][c] = 12.0*h*A(t, r+1, c+1);
+                mx[r][c] = 12.0*h*A(t, n, r+1, c+1);
             }
             mx[r][r] += 25.0;
         }
         mx.inverse();
 
-        alpha[0].resize(M, 1, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[0])[m][0] = -12.0*h*B(t, m+1); } alpha[0] = mx*alpha[0];
+        alpha[0].resize(M, 1, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[0])[m][0] = -12.0*h*B(t,n,m+1); } alpha[0] = mx*alpha[0];
         alpha[1].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[1])[m][m] = +48.0; }             alpha[1] = mx*alpha[1];
         alpha[2].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[2])[m][m] = -36.0; }             alpha[2] = mx*alpha[2];
         alpha[3].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[3])[m][m] = +16.0; }             alpha[3] = mx*alpha[3];
@@ -262,19 +262,19 @@ void INonLocalSystem::getAlpha(DoubleMatrix *alpha, unsigned int n, unsigned int
     }
     if (k==6)
     {
-        double t = h*n;
+        double t = n*h;
         DoubleMatrix mx(M, M);
         for (unsigned int r=0; r<M; r++)
         {
             for (unsigned int c=0; c<M; c++)
             {
-                mx[r][c] = 60.0*h*A(t, r+1, c+1);
+                mx[r][c] = 60.0*h*A(t, n, r+1, c+1);
             }
             mx[r][r] += 147.0;
         }
         mx.inverse();
 
-        alpha[0].resize(M, 1, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[0])[m][0] = -60.0*h*B(t, m+1); } alpha[0] = mx*alpha[0];
+        alpha[0].resize(M, 1, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[0])[m][0] = -60.0*h*B(t,n,m+1); } alpha[0] = mx*alpha[0];
         alpha[1].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[1])[m][m] = +360.0; }            alpha[1] = mx*alpha[1];
         alpha[2].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[2])[m][m] = -450.0; }            alpha[2] = mx*alpha[2];
         alpha[3].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[3])[m][m] = +400.0; }            alpha[3] = mx*alpha[3];
@@ -315,17 +315,17 @@ void INonLocalSystem::getEquations(DoubleMatrix &C, DoubleVector &d, unsigned in
                 C[0*M+r][1*M+c] = bt[1][r][c];
                 C[0*M+r][2*M+c] = bt[2][r][c];
 
-                C[1*M+r][0*M+c] = 0.0;                  if (r==c) C[1*M+r][0*M+c] += -1.0;
-                C[1*M+r][1*M+c] = -2.0*h*A(t1,r+1,c+1); if (r==c) C[1*M+r][1*M+c] += +0.0;
-                C[1*M+r][2*M+c] = 0.0;                  if (r==c) C[1*M+r][2*M+c] += +1.0;
+                C[1*M+r][0*M+c] = 0.0;                      if (r==c) C[1*M+r][0*M+c] += -1.0;
+                C[1*M+r][1*M+c] = -2.0*h*A(t1,N-1,r+1,c+1); if (r==c) C[1*M+r][1*M+c] += +0.0;
+                C[1*M+r][2*M+c] = 0.0;                      if (r==c) C[1*M+r][2*M+c] += +1.0;
 
-                C[2*M+r][0*M+c] = 0.0;                  if (r==c) C[2*M+r][0*M+c] += +1.0;
-                C[2*M+r][1*M+c] = 0.0;                  if (r==c) C[2*M+r][1*M+c] += -4.0;
-                C[2*M+r][2*M+c] = -2.0*h*A(t0,r+1,c+1); if (r==c) C[2*M+r][2*M+c] += +3.0;
+                C[2*M+r][0*M+c] = 0.0;                      if (r==c) C[2*M+r][0*M+c] += +1.0;
+                C[2*M+r][1*M+c] = 0.0;                      if (r==c) C[2*M+r][1*M+c] += -4.0;
+                C[2*M+r][2*M+c] = -2.0*h*A(t0,N-0,r+1,c+1); if (r==c) C[2*M+r][2*M+c] += +3.0;
             }
             d[0*M+r] = bt[0][r][0];
-            d[1*M+r] = 2.0*h*B(t1,r+1);
-            d[2*M+r] = 2.0*h*B(t0,r+1);
+            d[1*M+r] = 2.0*h*B(t1,N-1,r+1);
+            d[2*M+r] = 2.0*h*B(t0,N-0,r+1);
         }
 
 //        double t2 = (N-2)*h;
@@ -399,35 +399,35 @@ void INonLocalSystem::getEquations(DoubleMatrix &C, DoubleVector &d, unsigned in
                 C[0*M+r][3*M+c] = bt[3][r][c];
                 C[0*M+r][4*M+c] = bt[4][r][c];
 
-                C[1*M+r][0*M+c] = 0.0;                   if (r==c) C[1*M+r][0*M+c] += -3.0;
-                C[1*M+r][1*M+c] = -12.0*h*A(t3,r+1,c+1); if (r==c) C[1*M+r][1*M+c] += -10.0;
-                C[1*M+r][2*M+c] = 0.0;                   if (r==c) C[1*M+r][2*M+c] += +18.0;
-                C[1*M+r][3*M+c] = 0.0;                   if (r==c) C[1*M+r][3*M+c] += -6.0;
-                C[1*M+r][4*M+c] = 0.0;                   if (r==c) C[1*M+r][4*M+c] += +1.0;
+                C[1*M+r][0*M+c] = 0.0;                         if (r==c) C[1*M+r][0*M+c] += -3.0;
+                C[1*M+r][1*M+c] = -12.0*h*A(t3, N-3, r+1,c+1); if (r==c) C[1*M+r][1*M+c] += -10.0;
+                C[1*M+r][2*M+c] = 0.0;                         if (r==c) C[1*M+r][2*M+c] += +18.0;
+                C[1*M+r][3*M+c] = 0.0;                         if (r==c) C[1*M+r][3*M+c] += -6.0;
+                C[1*M+r][4*M+c] = 0.0;                         if (r==c) C[1*M+r][4*M+c] += +1.0;
 
-                C[2*M+r][0*M+c] = 0.0;                   if (r==c) C[2*M+r][0*M+c] += +1.0;
-                C[2*M+r][1*M+c] = 0.0;                   if (r==c) C[2*M+r][1*M+c] += -8.0;
-                C[2*M+r][2*M+c] = -12.0*h*A(t2,r+1,c+1); if (r==c) C[2*M+r][2*M+c] += +0.0;
-                C[2*M+r][3*M+c] = 0.0;                   if (r==c) C[2*M+r][3*M+c] += +8.0;
-                C[2*M+r][4*M+c] = 0.0;                   if (r==c) C[2*M+r][4*M+c] += -1.0;
+                C[2*M+r][0*M+c] = 0.0;                         if (r==c) C[2*M+r][0*M+c] += +1.0;
+                C[2*M+r][1*M+c] = 0.0;                         if (r==c) C[2*M+r][1*M+c] += -8.0;
+                C[2*M+r][2*M+c] = -12.0*h*A(t2, N-2, r+1,c+1); if (r==c) C[2*M+r][2*M+c] += +0.0;
+                C[2*M+r][3*M+c] = 0.0;                         if (r==c) C[2*M+r][3*M+c] += +8.0;
+                C[2*M+r][4*M+c] = 0.0;                         if (r==c) C[2*M+r][4*M+c] += -1.0;
 
-                C[3*M+r][0*M+c] = 0.0;                   if (r==c) C[3*M+r][0*M+c] += -1.0;
-                C[3*M+r][1*M+c] = 0.0;                   if (r==c) C[3*M+r][1*M+c] += +6.0;
-                C[3*M+r][2*M+c] = 0.0;                   if (r==c) C[3*M+r][2*M+c] += -18.0;
-                C[3*M+r][3*M+c] = -12.0*h*A(t1,r+1,c+1); if (r==c) C[3*M+r][3*M+c] += +10.0;
-                C[3*M+r][4*M+c] = 0.0;                   if (r==c) C[3*M+r][4*M+c] += +3.0;
+                C[3*M+r][0*M+c] = 0.0;                         if (r==c) C[3*M+r][0*M+c] += -1.0;
+                C[3*M+r][1*M+c] = 0.0;                         if (r==c) C[3*M+r][1*M+c] += +6.0;
+                C[3*M+r][2*M+c] = 0.0;                         if (r==c) C[3*M+r][2*M+c] += -18.0;
+                C[3*M+r][3*M+c] = -12.0*h*A(t1, N-1, r+1,c+1); if (r==c) C[3*M+r][3*M+c] += +10.0;
+                C[3*M+r][4*M+c] = 0.0;                         if (r==c) C[3*M+r][4*M+c] += +3.0;
 
-                C[4*M+r][0*M+c] = 0.0;                   if (r==c) C[4*M+r][0*M+c] += +3.0;
-                C[4*M+r][1*M+c] = 0.0;                   if (r==c) C[4*M+r][1*M+c] += -16.0;
-                C[4*M+r][2*M+c] = 0.0;                   if (r==c) C[4*M+r][2*M+c] += +36.0;
-                C[4*M+r][3*M+c] = 0.0;                   if (r==c) C[4*M+r][3*M+c] += -48.0;
-                C[4*M+r][4*M+c] = -12.0*h*A(t0,r+1,c+1); if (r==c) C[4*M+r][4*M+c] += +25.0;
+                C[4*M+r][0*M+c] = 0.0;                         if (r==c) C[4*M+r][0*M+c] += +3.0;
+                C[4*M+r][1*M+c] = 0.0;                         if (r==c) C[4*M+r][1*M+c] += -16.0;
+                C[4*M+r][2*M+c] = 0.0;                         if (r==c) C[4*M+r][2*M+c] += +36.0;
+                C[4*M+r][3*M+c] = 0.0;                         if (r==c) C[4*M+r][3*M+c] += -48.0;
+                C[4*M+r][4*M+c] = -12.0*h*A(t0, N-0, r+1,c+1); if (r==c) C[4*M+r][4*M+c] += +25.0;
             }
             d[0*M+r] = bt[0][r][0];
-            d[1*M+r] = +12.0*h*B(t3,r+1);
-            d[2*M+r] = +12.0*h*B(t2,r+1);
-            d[3*M+r] = +12.0*h*B(t1,r+1);
-            d[4*M+r] = +12.0*h*B(t0,r+1);
+            d[1*M+r] = +12.0*h*B(t3, N-3, r+1);
+            d[2*M+r] = +12.0*h*B(t2, N-2, r+1);
+            d[3*M+r] = +12.0*h*B(t1, N-1, r+1);
+            d[4*M+r] = +12.0*h*B(t0, N-0, r+1);
         }
 
         //        c[0][0] =  0.0;  c[0][1] = betta[1]; c[0][2] = betta[2]; c[0][3] = betta[3]; c[0][4] = betta[4]; d[0] = betta[0];
@@ -469,7 +469,7 @@ void INonLocalSystem::getEquations(DoubleMatrix &C, DoubleVector &d, unsigned in
                 C[0*M+r][6*M+c] = bt[6][r][c];
 
                 C[1*M+r][0*M+c] = 0.0;                   if (r==c) C[1*M+r][0*M+c] += -10.0;
-                C[1*M+r][1*M+c] = -60.0*h*A(t5,r+1,c+1); if (r==c) C[1*M+r][1*M+c] += -77.0;
+                C[1*M+r][1*M+c] = -60.0*h*A(t5,N-5,r+1,c+1); if (r==c) C[1*M+r][1*M+c] += -77.0;
                 C[1*M+r][2*M+c] = 0.0;                   if (r==c) C[1*M+r][2*M+c] += +150.0;
                 C[1*M+r][3*M+c] = 0.0;                   if (r==c) C[1*M+r][3*M+c] += -100.0;
                 C[1*M+r][4*M+c] = 0.0;                   if (r==c) C[1*M+r][4*M+c] += +50.0;
@@ -478,7 +478,7 @@ void INonLocalSystem::getEquations(DoubleMatrix &C, DoubleVector &d, unsigned in
 
                 C[2*M+r][0*M+c] = 0.0;                   if (r==c) C[2*M+r][0*M+c] += +2.0;
                 C[2*M+r][1*M+c] = 0.0;                   if (r==c) C[2*M+r][1*M+c] += -24.0;
-                C[2*M+r][2*M+c] = -60.0*h*A(t4,r+1,c+1); if (r==c) C[2*M+r][2*M+c] += -35.0;
+                C[2*M+r][2*M+c] = -60.0*h*A(t4,N-4,r+1,c+1); if (r==c) C[2*M+r][2*M+c] += -35.0;
                 C[2*M+r][3*M+c] = 0.0;                   if (r==c) C[2*M+r][3*M+c] += +80.0;
                 C[2*M+r][4*M+c] = 0.0;                   if (r==c) C[2*M+r][4*M+c] += -30.0;
                 C[2*M+r][5*M+c] = 0.0;                   if (r==c) C[2*M+r][5*M+c] += +8.0;
@@ -487,7 +487,7 @@ void INonLocalSystem::getEquations(DoubleMatrix &C, DoubleVector &d, unsigned in
                 C[3*M+r][0*M+c] = 0.0;                   if (r==c) C[3*M+r][0*M+c] += -1.0;
                 C[3*M+r][1*M+c] = 0.0;                   if (r==c) C[3*M+r][1*M+c] += +9.0;
                 C[3*M+r][2*M+c] = 0.0;                   if (r==c) C[3*M+r][2*M+c] += -45.0;
-                C[3*M+r][3*M+c] = -60.0*h*A(t3,r+1,c+1); if (r==c) C[3*M+r][3*M+c] += +0.0;
+                C[3*M+r][3*M+c] = -60.0*h*A(t3,N-3,r+1,c+1); if (r==c) C[3*M+r][3*M+c] += +0.0;
                 C[3*M+r][4*M+c] = 0.0;                   if (r==c) C[3*M+r][4*M+c] += +45.0;
                 C[3*M+r][5*M+c] = 0.0;                   if (r==c) C[3*M+r][5*M+c] += -9.0;
                 C[3*M+r][6*M+c] = 0.0;                   if (r==c) C[3*M+r][6*M+c] += +1.0;
@@ -496,7 +496,7 @@ void INonLocalSystem::getEquations(DoubleMatrix &C, DoubleVector &d, unsigned in
                 C[4*M+r][1*M+c] = 0.0;                   if (r==c) C[4*M+r][1*M+c] += -8.0;
                 C[4*M+r][2*M+c] = 0.0;                   if (r==c) C[4*M+r][2*M+c] += +30.0;
                 C[4*M+r][3*M+c] = 0.0;                   if (r==c) C[4*M+r][3*M+c] += -80.0;
-                C[4*M+r][4*M+c] = -60.0*h*A(t2,r+1,c+1); if (r==c) C[4*M+r][4*M+c] += +35.0;
+                C[4*M+r][4*M+c] = -60.0*h*A(t2,N-2,r+1,c+1); if (r==c) C[4*M+r][4*M+c] += +35.0;
                 C[4*M+r][5*M+c] = 0.0;                   if (r==c) C[4*M+r][5*M+c] += +24.0;
                 C[4*M+r][6*M+c] = 0.0;                   if (r==c) C[4*M+r][6*M+c] += -2.0;
 
@@ -505,7 +505,7 @@ void INonLocalSystem::getEquations(DoubleMatrix &C, DoubleVector &d, unsigned in
                 C[5*M+r][2*M+c] = 0.0;                   if (r==c) C[5*M+r][2*M+c] += -50.0;
                 C[5*M+r][3*M+c] = 0.0;                   if (r==c) C[5*M+r][3*M+c] += +100.0;
                 C[5*M+r][4*M+c] = 0.0;                   if (r==c) C[5*M+r][4*M+c] += -150.0;
-                C[5*M+r][5*M+c] = -60.0*h*A(t1,r+1,c+1); if (r==c) C[5*M+r][5*M+c] += +77.0;
+                C[5*M+r][5*M+c] = -60.0*h*A(t1,N-1,r+1,c+1); if (r==c) C[5*M+r][5*M+c] += +77.0;
                 C[5*M+r][6*M+c] = 0.0;                   if (r==c) C[5*M+r][6*M+c] += +10.0;
 
                 C[6*M+r][0*M+c] = 0.0;                   if (r==c) C[6*M+r][0*M+c] += +10.0;
@@ -514,15 +514,15 @@ void INonLocalSystem::getEquations(DoubleMatrix &C, DoubleVector &d, unsigned in
                 C[6*M+r][3*M+c] = 0.0;                   if (r==c) C[6*M+r][3*M+c] += -400.0;
                 C[6*M+r][4*M+c] = 0.0;                   if (r==c) C[6*M+r][4*M+c] += +450.0;
                 C[6*M+r][5*M+c] = 0.0;                   if (r==c) C[6*M+r][5*M+c] += -360.0;
-                C[6*M+r][6*M+c] = -60.0*h*A(t0,r+1,c+1); if (r==c) C[6*M+r][6*M+c] += +147.0;
+                C[6*M+r][6*M+c] = -60.0*h*A(t0,N-0,r+1,c+1); if (r==c) C[6*M+r][6*M+c] += +147.0;
             }
             d[0*M+r] = bt[0][r][0];
-            d[1*M+r] = +60.0*h*B(t5,r+1);
-            d[2*M+r] = +60.0*h*B(t4,r+1);
-            d[3*M+r] = +60.0*h*B(t3,r+1);
-            d[4*M+r] = +60.0*h*B(t2,r+1);
-            d[5*M+r] = +60.0*h*B(t1,r+1);
-            d[6*M+r] = +60.0*h*B(t0,r+1);
+            d[1*M+r] = +60.0*h*B(t5,N-5,r+1);
+            d[2*M+r] = +60.0*h*B(t4,N-4,r+1);
+            d[3*M+r] = +60.0*h*B(t3,N-3,r+1);
+            d[4*M+r] = +60.0*h*B(t2,N-2,r+1);
+            d[5*M+r] = +60.0*h*B(t1,N-1,r+1);
+            d[6*M+r] = +60.0*h*B(t0,N-0,r+1);
         }
         //        c[0][0] =  0.0;  c[0][1] = betta[1]; c[0][2] = betta[2]; c[0][3] = betta[3]; c[0][4] = betta[4]; c[0][5] = betta[5]; c[0][6] = betta[6]; d[0] = betta[0];
         //        //c[0][0] =  -147.0;  c[0][1] = 360.0; c[0][2] = -450.0; c[0][3] = +400.0; c[0][4] = -225.0; c[0][5] = +72.0; c[0][6] = -10.0; d[0] = +60.0*h*b((N-6)*h); c[0][0] += -60.0*h*a((N-6)*h);
@@ -657,16 +657,16 @@ void INonLocalSystem::solve(const std::vector<DoubleMatrix> &C, const DoubleVect
 
 NonLocalSystem::~NonLocalSystem() {}
 
-double NonLocalSystem::A(double t UNUSED_PARAM, unsigned int r UNUSED_PARAM, unsigned int c UNUSED_PARAM) const
+double NonLocalSystem::A(double t UNUSED_PARAM, unsigned int n UNUSED_PARAM, unsigned int row UNUSED_PARAM, unsigned int col UNUSED_PARAM) const
 {
     return 1.0;//cos(t*t)+0.5*sin(r*t);
 }
 
-double NonLocalSystem::B(double t UNUSED_PARAM, unsigned int n UNUSED_PARAM) const
+double NonLocalSystem::B(double t UNUSED_PARAM, unsigned int n, unsigned int m UNUSED_PARAM) const
 {
-    if (n == 1) return -(A(t,1,1)*x(t,1)+A(t,1,2)*x(t,2)+A(t,1,3)*x(t,3)) + 1.0;
-    if (n == 2) return -(A(t,2,1)*x(t,1)+A(t,2,2)*x(t,2)+A(t,2,3)*x(t,3)) + 2.0*t;
-    if (n == 3) return -(A(t,3,1)*x(t,1)+A(t,3,2)*x(t,2)+A(t,3,3)*x(t,3)) + 2.0*t+1.0;
+    if (m == 1) return -(A(t,n,1,1)*x(t,1)+A(t,n,1,2)*x(t,2)+A(t,n,1,3)*x(t,3)) + 1.0;
+    if (m == 2) return -(A(t,n,2,1)*x(t,1)+A(t,n,2,2)*x(t,2)+A(t,n,2,3)*x(t,3)) + 2.0*t;
+    if (m == 3) return -(A(t,n,3,1)*x(t,1)+A(t,n,3,2)*x(t,2)+A(t,n,3,3)*x(t,3)) + 2.0*t+1.0;
 
 //    if (n == 1) return -(A(t,1,1)*x(t,1)+A(t,1,2)*x(t,2)+A(t,1,3)*x(t,3)) + 6.0*M_PI*cos(6.0*M_PI*t);
 //    if (n == 2) return -(A(t,2,1)*x(t,1)+A(t,2,2)*x(t,2)+A(t,2,3)*x(t,3)) - 8.0*M_PI*sin(8.0*M_PI*t);
@@ -674,11 +674,11 @@ double NonLocalSystem::B(double t UNUSED_PARAM, unsigned int n UNUSED_PARAM) con
     return NAN;
 }
 
-double NonLocalSystem::x(double t UNUSED_PARAM, unsigned int n UNUSED_PARAM) const
+double NonLocalSystem::x(double t UNUSED_PARAM, unsigned int m UNUSED_PARAM) const
 {
-    if (n == 1) return t;
-    if (n == 2) return t*t;
-    if (n == 3) return t*t+t;
+    if (m == 1) return t;
+    if (m == 2) return t*t;
+    if (m == 3) return t*t+t;
 
 //    if (n == 1) return sin(6.0*M_PI*t);
 //    if (n == 2) return cos(8.0*M_PI*t);
