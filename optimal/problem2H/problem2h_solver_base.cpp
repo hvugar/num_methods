@@ -157,7 +157,7 @@ auto Problem2HDirichletBase::checkGradient1(const Problem2HDirichletBase &prob) 
     IPrinter::printSeperatorLine();
     DoubleVector ag(pv.length());
     double functional = prob.fx(pv);
-    printf("Functional: %f\n", functional);//exit(-1);
+    printf("Functional: %f\n", functional);exit(-1);
     puts("Calculating gradients....");
     prob.gradient(pv, ag);
     puts("Gradients are calculated.");
@@ -181,20 +181,20 @@ auto Problem2HDirichletBase::checkGradient1(const Problem2HDirichletBase &prob) 
     IGradient::Gradient(&prob, 0.01, pv, ng1, 2*offset+2*e_prm.No, 2*offset+2*e_prm.No+2*e_prm.Nc-1);
     printf("Calculated.\n");
 
-//    puts("Calculating numerical gradients.... hx=0.001");
-//    printf("*** Calculating numerical gradients for k...... dh=0.001 ");
-//    IGradient::Gradient(&prob, 0.001, pv, ng2, 0*offset, 1*offset-1);
-//    printf("Calculated.\n");
-//    printf("*** Calculating numerical gradients for z...... dh=0.001 ");
-//    IGradient::Gradient(&prob, 0.001, pv, ng2, 1*offset, 2*offset-1);
-//    printf("Calculated.\n");
-//    printf("*** Calculating numerical gradients for xi..... dh=0.001 ");
-//    IGradient::Gradient(&prob, 0.001, pv, ng2, 2*offset+0*e_prm.No, 2*offset+2*e_prm.No-1);
-//    printf("Calculated.\n");
-//    printf("*** Calculating numerical gradients for eta.... dh=0.001 ");
-//    IGradient::Gradient(&prob, 0.001, pv, ng2, 2*offset+2*e_prm.No, 2*offset+2*e_prm.No+2*e_prm.Nc-1);
-//    printf("Calculated.\n");
-//    puts("Numerical gradients are calculated.");
+    //    puts("Calculating numerical gradients.... hx=0.001");
+    //    printf("*** Calculating numerical gradients for k...... dh=0.001 ");
+    //    IGradient::Gradient(&prob, 0.001, pv, ng2, 0*offset, 1*offset-1);
+    //    printf("Calculated.\n");
+    //    printf("*** Calculating numerical gradients for z...... dh=0.001 ");
+    //    IGradient::Gradient(&prob, 0.001, pv, ng2, 1*offset, 2*offset-1);
+    //    printf("Calculated.\n");
+    //    printf("*** Calculating numerical gradients for xi..... dh=0.001 ");
+    //    IGradient::Gradient(&prob, 0.001, pv, ng2, 2*offset+0*e_prm.No, 2*offset+2*e_prm.No-1);
+    //    printf("Calculated.\n");
+    //    printf("*** Calculating numerical gradients for eta.... dh=0.001 ");
+    //    IGradient::Gradient(&prob, 0.001, pv, ng2, 2*offset+2*e_prm.No, 2*offset+2*e_prm.No+2*e_prm.Nc-1);
+    //    printf("Calculated.\n");
+    //    puts("Numerical gradients are calculated.");
 
     const unsigned int N = 20;
     const unsigned int W = 10;
@@ -710,17 +710,23 @@ auto Problem2HDirichletBase::v(unsigned int i, OptimizeParameterH o_prm, Equatio
 auto Problem2HDirichletBase::gpi(unsigned int i, unsigned int layer, const spif_vectorH &u_info, const OptimizeParameterH &o_prm) const -> double
 {
 #if defined (DISCRETE_DELTA_TIME)
-    return 0.0;
+    double gpi_ln = fabs( g0i(i, layer, u_info, o_prm) ) - ( vmax.at(i) - vmin.at(i) )/2.0;
+    return gpi_ln > 0.0 ? gpi_ln : 0.0;
 #else
     double gpi_ln = fabs( g0i(i, layer, u_info, o_prm) ) - ( vmax.at(i) - vmin.at(i) )/2.0;
     return gpi_ln > 0.0 ? gpi_ln : 0.0;
 #endif
 }
 
-auto Problem2HDirichletBase::g0i(unsigned int i, unsigned int layer, const spif_vectorH &u_info, const OptimizeParameterH &o_prm) const -> double
+auto Problem2HDirichletBase::g0i(unsigned int i, unsigned int ln, const spif_vectorH &u_info, const OptimizeParameterH &o_prm) const -> double
 {
     double vi = 0.0;
 #if defined (DISCRETE_DELTA_TIME)
+    for (unsigned int j=0; j<mEquParameter.No; j++)
+    {
+        const SpacePointInfoH &u_xij = u_info[j];
+        vi += o_prm.k[ln][i][j] * ( u_xij.vl[ln] - o_prm.z[ln][i][j] );
+    }
 #else
     for (unsigned int j=0; j<mEquParameter.No; j++)
     {
@@ -821,8 +827,8 @@ auto Problem2HDirichletBase::fx(const DoubleVector &pv) const -> double
             prob->solveForwardIBVP(u, u_info, true, pv);
 
             double intgrl = integral(u);
-            double nrm = 0.0;//norm(mEquParameter, o_prm, mRegParameter);
-            double pnt = 0.0;//penalty(u_info, o_prm);
+            double pnt = penalty(u_info, o_prm);
+            double nrm = norm(mEquParameter, o_prm, mRegParameter);
             double sum = intgrl + regEpsilon*nrm + r*pnt;
 
             for (unsigned int i=0; i<u.size(); i++)      u[i].clear();      u.clear();
@@ -841,6 +847,33 @@ double Problem2HDirichletBase::norm(const EquationParameterH& e_prm, const Optim
     const unsigned int Nc = e_prm.Nc;
     const unsigned int No = e_prm.No;
 
+#if defined (DISCRETE_DELTA_TIME)
+    const unsigned int Nt = mEquParameter.Nt;
+
+    for (unsigned int s=0; s<Nt; s++)
+    {
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            for (unsigned int j=0; j<No; j++)
+            {
+                _norm += (o_prm.k[s][i][j] - r_prm.k[s][i][j])*(o_prm.k[s][i][j] - r_prm.k[s][i][j]);
+                _norm += (o_prm.z[s][i][j] - r_prm.z[s][i][j])*(o_prm.z[s][i][j] - r_prm.z[s][i][j]);
+            }
+        }
+    }
+
+    for (unsigned int j=0; j<No; j++)
+    {
+        _norm += (o_prm.xi[j].x - r_prm.xi[j].x)*(o_prm.xi[j].x - r_prm.xi[j].x);
+        _norm += (o_prm.xi[j].y - r_prm.xi[j].y)*(o_prm.xi[j].y - r_prm.xi[j].y);
+    }
+
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        _norm += (o_prm.eta[i].x - r_prm.eta[i].x)*(o_prm.eta[i].x - r_prm.eta[i].x);
+        _norm += (o_prm.eta[i].y - r_prm.eta[i].y)*(o_prm.eta[i].y - r_prm.eta[i].y);
+    }
+#else
     for (unsigned int i=0; i<Nc; i++)
     {
         for (unsigned int j=0; j<No; j++)
@@ -861,6 +894,7 @@ double Problem2HDirichletBase::norm(const EquationParameterH& e_prm, const Optim
         _norm += (o_prm.eta[i].x - r_prm.eta[i].x)*(o_prm.eta[i].x - r_prm.eta[i].x);
         _norm += (o_prm.eta[i].y - r_prm.eta[i].y)*(o_prm.eta[i].y - r_prm.eta[i].y);
     }
+#endif
 
     return _norm;
 }
@@ -1089,7 +1123,7 @@ auto Problem2HDirichletBase::currentLayerBGrid(const DoubleMatrix &p, const std:
             for (unsigned int i=0; i<Nc; i++)
             {
                 _w[j] += mOptParameter.k[s][i][j] * _p[i];
-                //_w[j] += mOptParameter.k[s][i][j] * 2.0*r*gpi(i, ln, u_info, mOptParameter)*sgn(g0i(i, ln, u_info, mOptParameter));
+                _w[j] += mOptParameter.k[s][i][j] * 2.0*r*gpi(i, ln, u_info, mOptParameter)*sgn(g0i(i, ln, u_info, mOptParameter));
             }
         }
         delete [] _p;

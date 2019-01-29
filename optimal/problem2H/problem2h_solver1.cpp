@@ -21,25 +21,35 @@ double Problem2HDirichlet1::integral(const std::vector<DoubleMatrix> &vu) const
 auto Problem2HDirichlet1::penalty(const spif_vectorH &info, const OptimizeParameterH &o_prm) const -> double
 {
     const double ht = mtimeDimension.step();
-    const unsigned int L = static_cast<const unsigned int> ( mtimeDimension.size() );
 
     double pnlt = 0.0;
+#if defined(DISCRETE_DELTA_TIME)
+    const unsigned int Nt  = mEquParameter.Nt;
+    for (unsigned int s=0; s<Nt; s++)
+    {
+        const unsigned int ln = 2*static_cast<unsigned int>(mEquParameter.timeMoments[s]/ht);
+        for (unsigned int i=0; i<mEquParameter.Nc; i++)
+        {
+            double _gpi_s = gpi(i, ln, info, o_prm);
+            pnlt += _gpi_s*_gpi_s;
+        }
+    }
+#else
+    const unsigned int L = static_cast<const unsigned int> ( mtimeDimension.size() );
     for (unsigned int i=0; i<mEquParameter.Nc; i++)
     {
-        double pnlt_i = 0.0;
-        double _gpi_0 = gpi(i, 0, info, o_prm);
-        pnlt_i += 0.5*_gpi_0*_gpi_0;
-        for (unsigned int l=1; l<=L+LD-1; l++)
+        double pnlt = 0.0;
+
+        double _gpi_00 = gpi(i, 0, info, o_prm); pnlt += 0.5*_gpi_00*_gpi_00;
+        for (unsigned int ln=2; ln<=2*(L+LD-1); ln+=2)
         {
-            double _gpi_l = gpi(i, 2*l, info, o_prm);
-            pnlt_i += _gpi_l*_gpi_l;
+            double _gpi_ln = gpi(i, ln, info, o_prm); pnlt += _gpi_ln*_gpi_ln;
         }
-        double _gpi_L = gpi(i, 2*(L+LD), info, o_prm);
-        pnlt_i += 0.5*_gpi_L*_gpi_L;
+        double _gpi_L = gpi(i, 2*(L+LD), info, o_prm); pnlt += 0.5*_gpi_L*_gpi_L;
 
-        pnlt += pnlt_i*ht;
+        pnlt += pnlt*ht;
     }
-
+#endif
     return pnlt;
 }
 
@@ -98,8 +108,8 @@ auto Problem2HDirichlet1::gradient(const DoubleVector &pv, DoubleVector &g) cons
                             double zij = o_prm.z[s][i][j];
                             double grad_Kij = 0.0;
                             grad_Kij += -(uj.vl[ln] - zij) * pi.vl[ln];
-                            //grad_Kij += -(uj.vl[ln] - zij) * 2.0*r*gpi(i,ln,u_info,o_prm)*sgn(g0i(i,ln,u_info,o_prm));
-                            //grad_Kij += +2.0*regEpsilon*(o_prm.k[s][i][j] - mRegParameter.k[s][i][j]);
+                            grad_Kij += -(uj.vl[ln] - zij) * 2.0*r*gpi(i,ln,u_info,o_prm)*sgn(g0i(i,ln,u_info,o_prm));
+                            grad_Kij += +2.0*regEpsilon*(o_prm.k[s][i][j] - mRegParameter.k[s][i][j]);
                             g[gi++] += grad_Kij * (1.0/(double(Q1.length())*double(Q2.length())));
                         }
                     }
@@ -156,8 +166,8 @@ auto Problem2HDirichlet1::gradient(const DoubleVector &pv, DoubleVector &g) cons
                             double kij = o_prm.k[s][i][j];
                             double grad_Zij = 0.0;
                             grad_Zij += kij * pi.vl[ln];
-                            //grad_Zij += kij * 2.0*r*gpi(i,ln,u_info,o_prm)*sgn(g0i(i,ln,u_info,o_prm));
-                            //grad_Zij += +2.0*regEpsilon*(o_prm.z[s][i][j] - mRegParameter.z[s][i][j]);
+                            grad_Zij += kij * 2.0*r*gpi(i,ln,u_info,o_prm)*sgn(g0i(i,ln,u_info,o_prm));
+                            grad_Zij += +2.0*regEpsilon*(o_prm.z[s][i][j] - mRegParameter.z[s][i][j]);
                             g[gi++] += grad_Zij * (1.0/(double(Q1.length())*double(Q2.length())));
                         }
                     }
@@ -215,13 +225,13 @@ auto Problem2HDirichlet1::gradient(const DoubleVector &pv, DoubleVector &g) cons
                         {
                             gradXijX += -o_prm.k[s][i][j] * uj.dx[ln] * p_info[i].vl[ln];
                             gradXijY += -o_prm.k[s][i][j] * uj.dy[ln] * p_info[i].vl[ln];
-                            //gradXijX += -o_prm.k[s][i][j] * uj.dx[ln] * 2.0*r*gpi(i,ln,u_info,o_prm)*sgn(g0i(i,ln,u_info,o_prm));
-                            //gradXijY += -o_prm.k[s][i][j] * uj.dy[ln] * 2.0*r*gpi(i,ln,u_info,o_prm)*sgn(g0i(i,ln,u_info,o_prm));
+                            gradXijX += -o_prm.k[s][i][j] * uj.dx[ln] * 2.0*r*gpi(i,ln,u_info,o_prm)*sgn(g0i(i,ln,u_info,o_prm));
+                            gradXijY += -o_prm.k[s][i][j] * uj.dy[ln] * 2.0*r*gpi(i,ln,u_info,o_prm)*sgn(g0i(i,ln,u_info,o_prm));
                         }
                     }
 
-                    //gradXijX += 2.0*regEpsilon*(o_prm.xi[j].x - mRegParameter.xi[j].x);
-                    //gradXijY += 2.0*regEpsilon*(o_prm.xi[j].y - mRegParameter.xi[j].y);
+                    gradXijX += 2.0*regEpsilon*(o_prm.xi[j].x - mRegParameter.xi[j].x);
+                    gradXijY += 2.0*regEpsilon*(o_prm.xi[j].y - mRegParameter.xi[j].y);
 
                     g[gi++] += gradXijX * (1.0/(double(Q1.length())*double(Q2.length())));
                     g[gi++] += gradXijY * (1.0/(double(Q1.length())*double(Q2.length())));
@@ -292,8 +302,8 @@ auto Problem2HDirichlet1::gradient(const DoubleVector &pv, DoubleVector &g) cons
                         }
                     }
 
-                    //gradEtaiX += 2.0*regEpsilon*(o_prm.eta[i].x - mRegParameter.eta[i].x);
-                    //gradEtaiY += 2.0*regEpsilon*(o_prm.eta[i].y - mRegParameter.eta[i].y);
+                    gradEtaiX += 2.0*regEpsilon*(o_prm.eta[i].x - mRegParameter.eta[i].x);
+                    gradEtaiY += 2.0*regEpsilon*(o_prm.eta[i].y - mRegParameter.eta[i].y);
 
                     g[gi++] += gradEtaiX * (1.0/(double(Q1.length())*double(Q2.length())));
                     g[gi++] += gradEtaiY * (1.0/(double(Q1.length())*double(Q2.length())));

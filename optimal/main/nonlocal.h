@@ -9,6 +9,7 @@
 #include <vector>
 #include <grid/grid.h>
 #include <ode/diffequ.h>
+#include <utils/random.h>
 
 class INonLocal
 {
@@ -56,6 +57,7 @@ public:
 class NonLocalSystem : public INonLocalSystem
 {
 public:
+    static void Main(int argc, char** argv);
     virtual ~NonLocalSystem();
 
     virtual double A(double t, unsigned int n, unsigned int row, unsigned int col) const;
