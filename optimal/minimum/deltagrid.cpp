@@ -40,8 +40,7 @@ auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned sigmaXNum, unsi
     _rx = static_cast<unsigned int>( round(sp.x*_N) );
     _ry = static_cast<unsigned int>( round(sp.y*_M) );
 
-    if (_rx < kx or _ry < ky or _rx > _N-kx or _ry > _M-ky)
-        throw DeltaGridException();
+    if (_rx < kx or _ry < ky or _rx > _N-kx or _ry > _M-ky) throw DeltaGridException("Point:["+std::to_string(sp.x)+","+std::to_string(sp.y)+"]");
 
     _p = sp;
 

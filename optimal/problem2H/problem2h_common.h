@@ -78,7 +78,7 @@ struct PROBLEM2HSHARED_EXPORT EquationParameterH
 
 #if defined (DISCRETE_DELTA_TIME)
     unsigned int Nt;
-    std::vector<double> timeMoments;
+    std::vector<TimeNodePDE> timeMoments;
 #endif
 
     unsigned int Ns;

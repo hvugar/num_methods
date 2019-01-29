@@ -16,6 +16,9 @@ public:
 
     /** Penalty part of functional */
     virtual auto penalty(const spif_vectorH &info, const OptimizeParameterH &o_prm) const -> double;
+    virtual auto gpi(unsigned int i, unsigned int ln, const spif_vectorH &u_info, const OptimizeParameterH &o_prm) const -> double;
+    virtual auto g0i(unsigned int i, unsigned int ln, const spif_vectorH &u_info, const OptimizeParameterH &o_prm) const -> double;
+    virtual auto v(unsigned int i, OptimizeParameterH o_prm, EquationParameterH e_prm, const spif_vectorH &u_info, unsigned int s) const -> double;
 
     auto solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use, const DoubleVector &pv, double lambda=0.25) const -> void;
     auto solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info, const DoubleVector &pv, double lambda=0.25) const -> void;
