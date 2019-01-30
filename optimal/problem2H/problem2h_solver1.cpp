@@ -60,6 +60,12 @@ auto Problem2HDirichlet1::penalty(const spif_vectorH &info, const OptimizeParame
 
 auto Problem2HDirichlet1::gpi(unsigned int i, unsigned int s, const spif_vectorH &u_info, const OptimizeParameterH &o_prm) const -> double
 {
+    const Dimension time = timeDimension();
+    const unsigned int L = time.size();
+    const unsigned int LLD = L + LD;
+    const unsigned int ln = mEquParameter.timeMoments[s].i;
+    if (ln>LLD) return 0.0;
+
 #if defined (DISCRETE_DELTA_TIME)
     double gpi_ln = fabs( g0i(i, s, u_info, o_prm) ) - ( vmax.at(i) - vmin.at(i) )/2.0;
     return gpi_ln > 0.0 ? gpi_ln : 0.0;
@@ -329,8 +335,14 @@ auto Problem2HDirichlet1::gradient(const DoubleVector &pv, DoubleVector &g) cons
             {
                 for (unsigned int j=0; j<No; j++)
                 {
-                    g[gi++] = 0.0;
-                    g[gi++] = 0.0;
+//                    g[gi++] = 0.0;
+//                    g[gi++] = 0.0;
+                    DoubleVector x1 = pv; x1[gi] -= 0.01;
+                    DoubleVector x2 = pv; x2[gi] += 0.01;
+                    g[gi++] = (fx(x2)-fx(x1))/(2.0*0.01);
+                    DoubleVector y1 = pv; y1[gi] -= 0.01;
+                    DoubleVector y2 = pv; y2[gi] += 0.01;
+                    g[gi++] = (fx(y2)-fx(y1))/(2.0*0.01);
                 }
             }
 
@@ -400,8 +412,15 @@ auto Problem2HDirichlet1::gradient(const DoubleVector &pv, DoubleVector &g) cons
             {
                 for (unsigned int i=0; i<Nc; i++)
                 {
-                    g[gi++] = 0.0;
-                    g[gi++] = 0.0;
+//                    g[gi++] = 0.0;
+//                    g[gi++] = 0.0;
+                    DoubleVector x1 = pv; x1[gi] -= 0.01;
+                    DoubleVector x2 = pv; x2[gi] += 0.01;
+                    g[gi++] = (fx(x2)-fx(x1))/(2.0*0.01);
+                    DoubleVector y1 = pv; y1[gi] -= 0.01;
+                    DoubleVector y2 = pv; y2[gi] += 0.01;
+                    g[gi++] = (fx(y2)-fx(y1))/(2.0*0.01);
+
                 }
             }
 

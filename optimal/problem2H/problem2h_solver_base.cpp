@@ -169,10 +169,10 @@ auto Problem2HDirichletBase::checkGradient1(const Problem2HDirichletBase &prob) 
 
     puts("Calculating numerical gradients.... dh=0.01");
     printf("*** Calculating numerical gradients for k...... dh=0.01 ");
-    IGradient::Gradient(&prob, 0.01, pv, ng1, 0*offset, 1*offset-1);
+    //IGradient::Gradient(&prob, 0.01, pv, ng1, 0*offset, 1*offset-1);
     printf("Calculated.\n");
     printf("*** Calculating numerical gradients for z...... dh=0.01 ");
-    IGradient::Gradient(&prob, 0.01, pv, ng1, 1*offset, 2*offset-1);
+    //IGradient::Gradient(&prob, 0.01, pv, ng1, 1*offset, 2*offset-1);
     printf("Calculated.\n");
     printf("*** Calculating numerical gradients for xi..... dh=0.01 ");
     IGradient::Gradient(&prob, 0.01, pv, ng1, 2*offset+0*e_prm.No, 2*offset+2*e_prm.No-1);
@@ -779,8 +779,8 @@ auto Problem2HDirichletBase::print(unsigned int i, const DoubleVector &x, const 
         v1[s] = v(0, o_prm, mEquParameter, u_info, s);
         v2[s] = v(1, o_prm, mEquParameter, u_info, s);
     }
-    IPrinter::printVector(v1, "v1", v1.length());
-    IPrinter::printVector(v2, "v2", v2.length());
+    //IPrinter::printVector(v1, "v1", v1.length());
+    //IPrinter::printVector(v2, "v2", v2.length());
 
 
     //for (unsigned int ln=0; ln<=v_length; ln++)
@@ -798,10 +798,10 @@ auto Problem2HDirichletBase::print(unsigned int i, const DoubleVector &x, const 
     printf("I[%3d]: F:%.6f I:%.6f P:%.6f N:%.5f R:%.3f e:%.3f a:%10.6f ", i, f, ing, pnt, nrm, r, regEpsilon, alpha);
     printf("min:%10.6f max:%10.6f U:%.8f ", u.front().min(), u.front().max(), integralU(u.front()));
     printf("min:%10.6f max:%10.6f U:%.8f ", u.back().min(), u.back().max(), integralU(u.back()));
-    printf("\n");
+    //printf("\n");
     //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15]);
     unsigned int s = 2*(mEquParameter.Nc*mEquParameter.No*mEquParameter.Nt);
-    printf("o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", x[s+0], x[s+1], x[s+2], x[s+3], x[s+4], x[s+5], x[s+6], x[s+7]);
+    printf("o: %6.4f %6.4f %6.4f %6.4f c: %6.4f %6.4f %6.4f %6.4f\n", x[s+0], x[s+1], x[s+2], x[s+3], x[s+4], x[s+5], x[s+6], x[s+7]);
     //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", g[0], g[1], g[2], g[3], g[4], g[5], g[6], g[7], g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
     //DoubleVector n = g; n.L2Normalize();
     //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]);
@@ -843,7 +843,7 @@ auto Problem2HDirichletBase::fx(const DoubleVector &pv) const -> double
 
             double intgrl = integral(u);
             double pnt = penalty(u_info, o_prm);
-            double nrm = norm(mEquParameter, o_prm, mRegParameter);
+            double nrm = 0.0;//norm(mEquParameter, o_prm, mRegParameter);
             double sum = intgrl + regEpsilon*nrm + r*pnt;
 
             for (unsigned int i=0; i<u.size(); i++)      u[i].clear();      u.clear();

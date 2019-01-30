@@ -245,8 +245,8 @@ void prod_example2()
     e_prm.a = 1.0;
     e_prm.alpha = +0.00;
 
-    e_prm.Q1 << 0.21;// << 0.22 << 0.24;
-    e_prm.Q2 << 0.25;// << 0.27 << 0.29;
+    e_prm.Q1 << 0.31;// << 0.22 << 0.24;
+    e_prm.Q2 << 0.35;// << 0.27 << 0.29;
 
 #if defined(DISCRETE_DELTA_TIME)
     e_prm.Nt = 10;
@@ -281,7 +281,7 @@ void prod_example2()
                 //o_prm.k[s][r][c] = 1.0-static_cast<double>((rand() % 2000))/1000.0;
                 //o_prm.z[s][r][c] = +static_cast<double>((rand() % 1000))/100000.0;
                 o_prm.k[s][r][c] = -fabs(sin((c+1)*10.0)*cos((r+1)*20.0)*sin((s+1)*0.1));
-                o_prm.z[s][r][c] = cos((c+1)*10.0)*sin((r+1)*20.0)*sin((s+1)*0.2);
+                o_prm.z[s][r][c] = cos((c+1)*10.0)*sin((r+1)*20.0)*sin((s+1)*0.2)/100.0;
 
                 //o_prm.k[s][r][c] = +0.500;//-sin(c+r+s+1.0);// * (1.0 + (rand()%2==0 ? +0.020 : -0.020));
                 //o_prm.z[s][r][c] = -0.005;//-cos(c+r+s+1.0);// * (1.0 + (rand()%2==0 ? +0.020 : -0.020));
@@ -298,8 +298,8 @@ void prod_example2()
 #endif
 
     // 0.003691
-    e_prm.pulses[0] = InitialPulse2D(SpacePoint(0.2800, 0.3200), 0.21);
-    e_prm.pulses[1] = InitialPulse2D(SpacePoint(0.7300, 0.6500), 0.25);
+    e_prm.pulses[0] = InitialPulse2D(SpacePoint(0.2800, 0.3200), 0.00);
+    e_prm.pulses[1] = InitialPulse2D(SpacePoint(0.7300, 0.6500), 0.00);
     //o_prm.k[0][0]  = -2.0610; o_prm.k[0][1]  = -2.9376; o_prm.k[1][0]  = -2.1707; o_prm.k[1][1]  = -2.8527;
     //o_prm.k[0][0]  = -1.0000; o_prm.k[0][1]  = -1.0000; o_prm.k[1][0]  = -1.0000; o_prm.k[1][1]  = -1.0000;
     //o_prm.z[0][0]  = -0.0461; o_prm.z[0][1]  = -0.0246; o_prm.z[1][0]  = +0.0319; o_prm.z[1][1]  = +0.0161;
@@ -334,7 +334,7 @@ void prod_example2()
 #endif
 
     // Penalty paramteres
-    DoubleVector r; r << 1.0000 << 10.0000 << 100.000;
+    DoubleVector r; r << 0.0000;// << 10.0000 << 100.000;
     // Regularization coefficients
     DoubleVector e; e << 0.0000 << 0.0000 << 0.0000;
     DoubleVector e1; e1 << 0.1000 << 0.100 << 0.10;
@@ -352,8 +352,8 @@ void prod_example2()
         prob.mRegParameter = r_prm;
         prob.optimizeK = true;
         prob.optimizeZ = true;
-        prob.optimizeO = true;
-        prob.optimizeC = true;
+        prob.optimizeO = false;
+        prob.optimizeC = false;
         prob.vmin.resize(e_prm.Nc, -0.005);
         prob.vmax.resize(e_prm.Nc, +0.005);
         prob.LD = 30;
@@ -387,14 +387,14 @@ void prod_example2()
         g.setFunction(&prob);
         g.setGradient(&prob);
         g.setPrinter(&prob);
-        //g.setProjection(&prob);
+        g.setProjection(&prob);
         g.setProjection(new Example2Proj(e_prm.Nc, e_prm.No, e_prm.Nt));
         //g.setGradientNormalizer(&prob);
         g.setOptimalityTolerance(0.00001);
         g.setFunctionTolerance(0.00001);
         g.setStepTolerance(0.00001);
         g.setR1MinimizeEpsilon(e1[i], e2[i]);
-        g.setMaxIterations(50);
+        g.setMaxIterations(100);
         g.setNormalize(false);
         g.showExitMessage(true);
         //prob.gm = &g;
