@@ -678,8 +678,6 @@ auto Problem2HDirichlet1::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_ve
     u20.clear();
 }
 
-
-
 auto Problem2HDirichlet1::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info, const DoubleVector &pv, double lambda) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);

@@ -23,30 +23,30 @@ QT          += core gui widgets
 OBJECTS_DIR = release/.obj
 MOC_DIR = release/.moc
 
+HEADERS += problem2h_solver_delta.h
+SOURCES += problem2h_solver_delta.cpp
+
 HEADERS += problem2h_global.h \
-           problem2h_common.h \
-#           problem2h_common_delta.h \
-#           problem2h_solver.h \
-           problem2h_solver1.h \
-           problem2h_solver_delta.h \
+           problem2h_common.h
+#           problem2h_solver_base.h \
+#           problem2h_solver1.h \
+#           problem2h_example.h \
+#           problem2h_solver.h
 #           problem2h_solver2.h \
 #           problem2h_solver4.h \
-           problem2h_example.h \
 #           problem2h_ibvp.h \
-           problem2h_solver_base.h
 
-SOURCES += problem2h_common.cpp \
-#           problem2h_solver.cpp \
-           problem2h_solver1.cpp \
-           problem2h_solver_delta.cpp \
+SOURCES += problem2h_common.cpp
+#           problem2h_solver_base.cpp \
+#           problem2h_solver1.cpp \
+#           problem2h_example.cpp \
+#           problem2h_solver.cpp
 #           problem2h_solver2.cpp \
 #           problem2h_solver4.cpp \
-           problem2h_example.cpp \
 #           problem2h_ibvp.cpp \
-           problem2h_solver_base.cpp
 
-HEADERS += problem2h_exporter.h
-SOURCES += problem2h_exporter.cpp
+#HEADERS += problem2h_exporter.h
+#SOURCES += problem2h_exporter.cpp
 
 defined(OLD_SOURCES) {
     message("Using old sources")

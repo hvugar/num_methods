@@ -32,6 +32,44 @@ struct PROBLEM2HSHARED_EXPORT InitialPulse2D
     double q;
 };
 
+struct PROBLEM2HSHARED_EXPORT EquaParameter2H
+{
+    double a;
+    double alpha;
+
+    unsigned int Np;
+    std::vector<InitialPulse2D> pulses;
+    unsigned int Nt;
+    std::vector<TimeNodePDE> tm;
+
+    unsigned int Nc;
+    unsigned int No;
+    struct {
+        std::vector<DoubleMatrix> k;
+        std::vector<DoubleMatrix> z;
+        std::vector<SpacePoint> ksi;
+        std::vector<SpacePoint> eta;
+    } opt, reg;
+
+    auto initPulseParemeters(unsigned int Np) -> void;
+    auto initParemeters(unsigned int Nt, unsigned int Nc, unsigned int No) -> void;
+    auto clearParameters() -> void;
+    auto OptimalParameterFromVector(const DoubleVector &x) -> void;
+    auto OptimalParameterToVector(DoubleVector &x) const -> void;
+};
+
+struct PROBLEM2HSHARED_EXPORT FuncParameter2H
+{
+    DoubleVector vmin;
+    DoubleVector vmax;
+    double r = 0.0;
+    double regEpsilon = 0.0;
+    DoubleVector Q1;
+    DoubleVector Q2;
+    std::vector<SpacePoint> Theta1;
+    std::vector<SpacePoint> Theta2;
+};
+
 struct GridH
 {
     std::vector<unsigned int> rows0;

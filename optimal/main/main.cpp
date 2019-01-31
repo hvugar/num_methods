@@ -27,6 +27,7 @@
 #include "../problem2P/problem2p_solver.h"
 #include "../problem2H/problem2h_solver.h"
 #include "../problem2H/problem2h_ibvp.h"
+#include "../problem2H/problem2h_solver_delta.h"
 #include "ivp/nlode1oex1.h"
 
 #include "../problem1H/problem1h_example.h"
@@ -60,6 +61,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //ConjugateCC1IHyperbolicIBVP1::Main(argc, argv);
     //Problem1HDirichlet1::Main(argc, argv);
     Problem2HDirichlet::Main(argc, argv);
+    Problem2HDirichletDelta::Main(argc, argv);
 
     //CCParabolicIBVP1::Main(argc, argv);
     //CCIHyperbolicIBVP1::Main(argc, argv);
