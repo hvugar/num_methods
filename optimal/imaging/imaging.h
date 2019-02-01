@@ -8,6 +8,8 @@
 #include <vector2d.h>
 #include <matrix2d.h>
 #include <global.h>
+#include <math.h>
+#include <float.h>
 
 #ifdef __cplusplus
 extern "C" {

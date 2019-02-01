@@ -4,6 +4,8 @@ InitialPulse2D::InitialPulse2D() : theta(SpacePoint()), q(0.0) {}
 
 InitialPulse2D::InitialPulse2D(const SpacePoint &sp, double q) : theta(sp), q(q) {}
 
+InitialPulse2D::InitialPulse2D(const InitialPulse2D &pulse) : theta(pulse.theta), q(pulse.q) {}
+
 auto ExtendedSpacePointH::contains(int nx, int ny) const -> bool
 {
     return (minX <= nx && nx <= maxX && minY <= ny && ny <= maxY);
@@ -160,5 +162,45 @@ auto EquaParameter2H::OptimalParameterToVector(DoubleVector &x) const -> void
     {
         x[index++] = opt.eta[i].x;
         x[index++] = opt.eta[i].y;
+    }
+}
+
+auto EquaParameter2H::RegularParameterToVector(DoubleVector &x) const -> void
+{
+    x.clear();
+    x.resize(2*Nc*No*Nt+2*No+2*Nc);
+
+    unsigned int index = 0;
+    for (unsigned int s=0; s<Nt; s++)
+    {
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            for (unsigned int j=0; j<No; j++)
+            {
+                x[index++] = reg.k[s][i][j];
+            }
+        }
+    }
+    for (unsigned int s=0; s<Nt; s++)
+    {
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            for (unsigned int j=0; j<No; j++)
+            {
+                x[index++] = reg.z[s][i][j];
+            }
+        }
+    }
+
+    for (unsigned int j=0; j<No; j++)
+    {
+        x[index++] = reg.ksi[j].x;
+        x[index++] = reg.ksi[j].y;
+    }
+
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        x[index++] = reg.eta[i].x;
+        x[index++] = reg.eta[i].y;
     }
 }

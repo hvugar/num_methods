@@ -6,7 +6,7 @@
 void visualizeVectorHeat(const DoubleVector &v, double min, double max, QPixmap &img, unsigned int w, unsigned int h)
 {
     C_UNUSED(w);
-    unsigned int size = v.length();
+    int size = static_cast<int>(v.length());
     img = QPixmap(size, h);
     img.fill(Qt::transparent);
     QPainter painter(&img);
@@ -31,9 +31,10 @@ void visualizeMatrixHeat(const DoubleMatrix& m, double min, double max, QPixmap 
 {
     C_UNUSED(w);
     C_UNUSED(h);
+
     unsigned int rows = m.rows();
     unsigned int cols = m.cols();
-    img = QPixmap(cols, rows);
+    img = QPixmap(static_cast<int>(cols), static_cast<int>(rows));
     img.fill(Qt::transparent);
     QPainter painter(&img);
     painter.setRenderHint(QPainter::Antialiasing, true);
@@ -43,13 +44,13 @@ void visualizeMatrixHeat(const DoubleMatrix& m, double min, double max, QPixmap 
         {
             double u = m.at(j,i);
             double ratio = 0.0;
-            if (min!=max) ratio = 2.0 * (u-min) / (max - min);
+            if (fabs(max-min)>=DBL_EPSILON) ratio = 2.0 * (u-min) / (max - min);
             int b = int(MAX(0, 255*(1 - ratio)));
             int r = int(MAX(0, 255*(ratio - 1)));
             int g = 255 - b - r;
             QColor c(r, g, b);
             painter.setPen(c);
-            painter.drawPoint(i, rows-j-1);
+            painter.drawPoint(static_cast<int>(i), static_cast<int>(rows-j-1));
         }
     }
 }

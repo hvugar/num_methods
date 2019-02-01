@@ -27,6 +27,7 @@ struct PROBLEM2HSHARED_EXPORT InitialPulse2D
 {
     InitialPulse2D();
     InitialPulse2D(const SpacePoint &sp, double q);
+    InitialPulse2D(const InitialPulse2D& pulse);
 
     SpacePoint theta;
     double q;
@@ -56,6 +57,7 @@ struct PROBLEM2HSHARED_EXPORT EquaParameter2H
     auto clearParameters() -> void;
     auto OptimalParameterFromVector(const DoubleVector &x) -> void;
     auto OptimalParameterToVector(DoubleVector &x) const -> void;
+    auto RegularParameterToVector(DoubleVector &x) const -> void;
 };
 
 struct PROBLEM2HSHARED_EXPORT FuncParameter2H
