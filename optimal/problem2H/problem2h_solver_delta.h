@@ -74,7 +74,6 @@ public:
     FuncParameter2H funcPrm;
 
 private:
-
     bool optimizeK = true;
     bool optimizeZ = true;
     bool optimizeC = true;

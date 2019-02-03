@@ -162,7 +162,7 @@ void prod_example1()
         g.setGradient(&prob);
         g.setPrinter(&prob);
         g.setProjection(&prob);
-        //g.setProjection(new ProjectionEx1);
+        g.setProjection(new ProjectionEx1);
         //g.setGradientNormalizer(&prob);
         g.setOptimalityTolerance(0.00001);
         g.setFunctionTolerance(0.00001);
