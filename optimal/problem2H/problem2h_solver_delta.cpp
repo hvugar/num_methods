@@ -3,9 +3,7 @@
 void Problem2HDirichletDelta::Main(int argc, char* argv[])
 {
     QGuiApplication app(argc, argv);
-    puts("start");
     example1();
-    puts("finish");
 }
 
 auto Problem2HDirichletDelta::example1() -> void
@@ -17,8 +15,8 @@ auto Problem2HDirichletDelta::example1() -> void
 
     // Functional parameters
     FuncParameter2H funcPrm;
-    funcPrm.Q1 << 0.021;// << 0.22 << 0.24;
-    funcPrm.Q2 << 0.025;// << 0.27 << 0.29;
+    funcPrm.Q1 << 0.051;// << 0.22 << 0.24;
+    funcPrm.Q2 << 0.055;// << 0.27 << 0.29;
 
     equaPrm.Nt = 10;
     equaPrm.tm.resize(equaPrm.Nt);
@@ -43,35 +41,46 @@ auto Problem2HDirichletDelta::example1() -> void
                 //equaPrm.opt.z[s][r][c] = 0.01*cos((c+1)*10.0)*sin((r+1)*20.0)*sin((s+1)*0.2);
 
                 //equaPrm.opt.k[s][r][c] = 0.500+(rand()%1000)*0.0001;
-                equaPrm.opt.k[s][r][c] = +0.900-0.1*sin(c+r+s+1.0);// * (1.0 + (rand()%2==0 ? +0.020 : -0.020));
-                equaPrm.opt.z[s][r][c] = -0.005-0.001*cos(c+r+s+1.0);// * (1.0 + (rand()%2==0 ? +0.020 : -0.020));
+                equaPrm.opt.k[s][r][c] = +sin(c+r+s+1.0);// * (1.0 + (rand()%2==0 ? +0.020 : -0.020));
+                equaPrm.opt.z[s][r][c] = 0.1-0.01*cos(c+r+s+1.0);// * (1.0 + (rand()%2==0 ? +0.020 : -0.020));
                 //printf("%d %d %d %f %f\n", s, r, c, -sin(c+r+s+1.0), -cos(c+r+s+1.0));
             }
         }
     }
 
+    equaPrm.opt.k[0][0][0] *= -0.1;
+    equaPrm.opt.k[0][0][1] *= -0.1;
+    equaPrm.opt.k[0][1][0] *= -0.1;
+    equaPrm.opt.k[0][1][1] *= -0.1;
+
+    equaPrm.opt.k[1][0][0] *= -0.1;
+    equaPrm.opt.k[1][0][1] *= -0.1;
+    equaPrm.opt.k[1][1][0] *= -0.1;
+    equaPrm.opt.k[1][1][1] *= -0.1;
+
+
     equaPrm.initPulseParemeters(2);
 
     // 0.003691
-    equaPrm.pulses[0] = InitialPulse2D(SpacePoint(0.7100, 0.7400), 0.21);
-    equaPrm.pulses[1] = InitialPulse2D(SpacePoint(0.2700, 0.2800), 0.25);
-    //o_prm.k[0][0]  = -2.0610; o_prm.k[0][1]  = -2.9376; o_prm.k[1][0]  = -2.1707; o_prm.k[1][1]  = -2.8527;
-    //o_prm.k[0][0]  = -1.0000; o_prm.k[0][1]  = -1.0000; o_prm.k[1][0]  = -1.0000; o_prm.k[1][1]  = -1.0000;
-    //o_prm.z[0][0]  = -0.0461; o_prm.z[0][1]  = -0.0246; o_prm.z[1][0]  = +0.0319; o_prm.z[1][1]  = +0.0161;
-    equaPrm.opt.ksi[0].x = +0.3400 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/; equaPrm.opt.ksi[0].y = +0.3500 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/;
-    equaPrm.opt.ksi[1].x = +0.8200 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/; equaPrm.opt.ksi[1].y = +0.9100 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/;
-    equaPrm.opt.eta[0].x = +0.2200 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/; equaPrm.opt.eta[0].y = +0.6300 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/;
-    equaPrm.opt.eta[1].x = +0.7100 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/; equaPrm.opt.eta[1].y = +0.4700 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/;
+    equaPrm.pulses[0] = InitialPulse2D(SpacePoint(0.2600, 0.2600), 0.51);
+    equaPrm.pulses[1] = InitialPulse2D(SpacePoint(0.7300, 0.7200), 0.55);
+    equaPrm.opt.ksi[0].x = +0.3400; equaPrm.opt.ksi[0].y = +0.3500;
+    equaPrm.opt.ksi[1].x = +0.8200; equaPrm.opt.ksi[1].y = +0.9100;
+    equaPrm.opt.eta[0].x = +0.2200; equaPrm.opt.eta[0].y = +0.6300;
+    equaPrm.opt.eta[1].x = +0.7100; equaPrm.opt.eta[1].y = +0.3700;
 
-    //equaPrm.pulses[0] = InitialPulse2D(SpacePoint(0.7500, 0.5000), 0.25);
-    //equaPrm.pulses[1] = InitialPulse2D(SpacePoint(0.2500, 0.5000), 0.25);
-    //equaPrm.opt.ksi[0].x = +0.2500 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/; equaPrm.opt.ksi[0].y = +0.2500 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/;
-    //equaPrm.opt.ksi[1].x = +0.7500 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/; equaPrm.opt.ksi[1].y = +0.7500 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/;
-    //equaPrm.opt.eta[0].x = +0.2500 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/; equaPrm.opt.eta[0].y = +0.7500 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/;
-    //equaPrm.opt.eta[1].x = +0.7500 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/; equaPrm.opt.eta[1].y = +0.2500 /*+ ((rand()%2==0 ? +0.010 : -0.010))*/;
+//    equaPrm.opt.ksi[0].x = +0.2500; equaPrm.opt.ksi[0].y = +0.2500;
+//    equaPrm.opt.ksi[1].x = +0.7500; equaPrm.opt.ksi[1].y = +0.7500;
+//    equaPrm.opt.eta[0].x = +0.2500; equaPrm.opt.eta[0].y = +0.7500;
+//    equaPrm.opt.eta[1].x = +0.7500; equaPrm.opt.eta[1].y = +0.2500;
+
+//    equaPrm.opt.ksi[0].x = +0.2500; equaPrm.opt.ksi[0].y = +0.2500;
+//    equaPrm.opt.ksi[1].x = +0.7500; equaPrm.opt.ksi[1].y = +0.7500;
+//    equaPrm.opt.eta[0].x = +0.2500; equaPrm.opt.eta[0].y = +0.7500;
+//    equaPrm.opt.eta[1].x = +0.7500; equaPrm.opt.eta[1].y = +0.2500;
 
     // Penalty paramteres
-    DoubleVector r; r << 0.0000 << 0.0000 << 0.000;
+    DoubleVector r; r << 0.0000;// << 0.0000 << 0.000;
     // Regularization coefficients
     DoubleVector e; e << 0.0000 << 0.0000 << 0.0000;
     DoubleVector e1; e1 << 0.1000 << 0.0100 << 0.0010;
@@ -126,23 +135,31 @@ auto Problem2HDirichletDelta::example1() -> void
         g.setProjection(&prob);
         //g.setProjection(new ProjectionEx1);
         //g.setGradientNormalizer(&prob);
-        g.setOptimalityTolerance(0.00001);
-        g.setFunctionTolerance(0.00001);
-        g.setStepTolerance(0.00001);
+        g.setOptimalityTolerance(0.0001);
+        g.setFunctionTolerance(0.0001);
+        g.setStepTolerance(0.0001);
         g.setR1MinimizeEpsilon(e1[i], e2[i]);
-        g.setMaxIterations(50);
+        g.setMaxIterations(20);
         g.setNormalize(false);
         g.showExitMessage(true);
         //prob.gm = &g;
 
         IPrinter::printSeperatorLine(nullptr, '*');
-        IPrinter::print(x, x.length(), 7, 4);
+        printf("ok: "); IPrinter::print(x.mid(00, 19), x.mid(00, 19).length(), 9, 6);
+        printf("ok: "); IPrinter::print(x.mid(20, 39), x.mid(20, 39).length(), 9, 6);
+        printf("oz: "); IPrinter::print(x.mid(40, 59), x.mid(40, 59).length(), 9, 6);
+        printf("oz: "); IPrinter::print(x.mid(60, 79), x.mid(60, 79).length(), 9, 6);
+        printf("xy: "); IPrinter::print(x.mid(80, 87), x.mid(80, 87).length(), 9, 6);
         IPrinter::printSeperatorLine(nullptr, '*');
 
-        g.calculate(x);
+        //g.calculate(x);
 
         IPrinter::printSeperatorLine(nullptr, '=');
-        IPrinter::print(x, x.length(), 7, 4);
+        printf("ok: "); IPrinter::print(x.mid(00, 19), x.mid(00, 19).length(), 9, 6);
+        printf("ok: "); IPrinter::print(x.mid(20, 39), x.mid(20, 39).length(), 9, 6);
+        printf("oz: "); IPrinter::print(x.mid(40, 59), x.mid(40, 59).length(), 9, 6);
+        printf("oz: "); IPrinter::print(x.mid(60, 79), x.mid(60, 79).length(), 9, 6);
+        printf("xy: "); IPrinter::print(x.mid(80, 87), x.mid(80, 87).length(), 9, 6);
         IPrinter::printSeperatorLine(nullptr, '=');
 
         prob.equaPrm.OptimalParameterFromVector(x);
@@ -1452,10 +1469,10 @@ auto Problem2HDirichletDelta::print(unsigned int i, const DoubleVector &x, const
     //C_UNUSED(prob);
     //IPrinter::printSeperatorLine();
 
-    //prob->optimizeK = i%4 == 3;
-    //prob->optimizeZ = i%4 == 0;
-    //prob->optimizeO = i%4 == 1;
-    //prob->optimizeC = i%4 == 2;
+    prob->optimizeK = i%4 == 3;
+    prob->optimizeZ = i%4 == 0;
+    prob->optimizeO = i%4 == 1;
+    prob->optimizeC = i%4 == 2;
 }
 
 auto Problem2HDirichletDelta::currentLayerFGrid(const DoubleMatrix &u, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids, unsigned int ln) const -> void
@@ -1731,7 +1748,7 @@ auto Problem2HDirichletDelta::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, un
     //printf("%4d %.8f %.8f\n", ln, u.min(), u.max());
     //    return;
 
-    if (printLayers && ln%2==0)
+    if (printLayers)
     {
         FILE *file;
         if (ln == 0) file = fopen("data2D.txt", "w"); else file = fopen("data2D.txt", "a");
@@ -1742,25 +1759,25 @@ auto Problem2HDirichletDelta::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, un
         rvu.push_back(u);
         if (rvu.size() > 2*LD+1) rvu.erase(rvu.begin());
 
-        //if (ln == L+1)
-        //{
-        //    tmp->mOptParameter.k[0][0] = 0.0;
-        //    tmp->mOptParameter.k[0][1] = 0.0;
-        //    tmp->mOptParameter.k[1][0] = 0.0;
-        //    tmp->mOptParameter.k[1][1] = 0.0;
-        //}
+        if (ln%2==0)
+        {
+            std::string filename = "data/txt/f/" + std::to_string(ln/2) + ".txt";
+            IPrinter::print(u, filename.data(), u.rows(), u.cols(), 14, 10);
 
-        if (rvu.size() == 2*LD+1)
-        {
-            double fx = integral(rvu);
-            //fprintf(file, "%.10f\n", fx);
-            //printf("%d %d %.10f\n", ln, ln-LD, fx);
-            fprintf(file, "%.10f %.10f %.10f\n", fx, u.min(), u.max());
+
+            if (rvu.size() == 2*LD+1)
+            {
+                double fx = integral(rvu);
+                //fprintf(file, "%.10f\n", fx);
+                //printf("%d %d %.10f\n", ln, ln-LD, fx);
+                fprintf(file, "%.10f %.10f %.10f\n", fx, u.min(), u.max());
+            }
+            else
+            {
+                fprintf(file, "%.10f %.10f %.10f\n", 0.0, u.min(), u.max());
+            }
         }
-        else
-        {
-            fprintf(file, "%.10f %.10f %.10f\n", 0.0, u.min(), u.max());
-        }
+
         fclose(file);
 
         //printf("%d,%.10f,%.10f\n", ln, u.min(), u.max());
@@ -1818,4 +1835,9 @@ auto Problem2HDirichletDelta::sign(double x) const -> double
     if (x < 0.0)       return -1.0;
     else if (x > 0.0)  return +1.0;
     else               return  0.0;
+}
+
+auto Problem2HDirichletDelta::printOptimalParameters() const -> void
+{
+
 }

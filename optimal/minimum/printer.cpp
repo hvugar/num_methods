@@ -231,6 +231,31 @@ void IPrinter::print(const DoubleMatrix &m, unsigned int M, unsigned int N, unsi
     fflush(file);
 }
 
+void IPrinter::print(const DoubleMatrix &m, const char *filename, unsigned int M, unsigned int N, unsigned int width, unsigned int presicion)
+{
+    C_UNUSED(M);
+    C_UNUSED(N);
+
+    char format[10] = {0};
+    int sz = sprintf(format, "%%%d.%df ", width, presicion);
+    format[sz] = '\0';
+
+    unsigned int rows = m.rows();
+    unsigned int cols = m.cols();
+
+    FILE* file = fopen(filename, "w");
+    for (unsigned int i=0; i<rows; i++)
+    {
+        for (unsigned int j=0; j<cols; j++)
+        {
+            fprintf(file, format, m.at(i,j));
+        }
+        fputs("\n", file);
+        fflush(file);
+    }
+    fclose(file);
+}
+
 void IPrinter::print(const DoubleVector &v, unsigned int N, unsigned int width, unsigned int presicion, FILE *file)
 {
     C_UNUSED(N);

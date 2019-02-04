@@ -21,7 +21,10 @@ public:
     static void printMatrix(const DoubleMatrix &x, unsigned int m = 10, unsigned int n = 10, const char* s = nullptr, FILE* f = stdout);
     static void printMatrix(unsigned int width, unsigned int presicion, const DoubleMatrix &x, unsigned int m = 10, unsigned int n = 10, const char* s = nullptr, FILE* f = stdout);
     static void printAsMatrix(const DoubleVector &x, unsigned int M, unsigned int N, unsigned int m = 10, unsigned int n = 10, const char* s = nullptr, FILE* f = stdout);
+
     static void print(const DoubleMatrix &m, unsigned int M=10, unsigned int N=10, unsigned int width=14, unsigned int presicion=10, FILE *file=stdout);
+    static void print(const DoubleMatrix &m, const char *filename=nullptr, unsigned int M=10, unsigned int N=10, unsigned int width=14, unsigned int presicion=10);
+
     static void print(const DoubleVector &v, unsigned int N=10, unsigned int width=14, unsigned int presicion=10, FILE *file=stdout);
     static void printCube(const DoubleVector& x, unsigned int M, unsigned int N2, unsigned int N1, FILE *file = stdout);
     static void printDateTime(FILE *file = stdout);

@@ -69,6 +69,7 @@ public:
     virtual auto boundary(const SpaceNodePDE &, const TimeNodePDE &) const -> double;
     virtual auto mu(unsigned int, unsigned int) const -> double;
     virtual auto sign(double x) const -> double;
+    virtual auto printOptimalParameters() const -> void;
 
     EquaParameter2H equaPrm;
     FuncParameter2H funcPrm;
