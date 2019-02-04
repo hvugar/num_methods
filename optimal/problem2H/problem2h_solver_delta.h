@@ -3,6 +3,10 @@
 
 #include "problem2h_common.h"
 
+#define PULSE_SIGMA 8
+#define MSRMT_SIGMA 1
+#define CNTRL_SIGMA 1
+
 class PROBLEM2HSHARED_EXPORT Problem2HDirichletDelta :
         public InitialBoundaryValueProblemPDE,
         public RnFunction, public IGradient, public IProjection,
