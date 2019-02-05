@@ -41,8 +41,8 @@ auto Problem2HDirichletDelta::example1() -> void
                 //equaPrm.opt.z[s][r][c] = 0.01*cos((c+1)*10.0)*sin((r+1)*20.0)*sin((s+1)*0.2);
 
                 //equaPrm.opt.k[s][r][c] = 0.500+(rand()%1000)*0.0001;
-                equaPrm.opt.k[s][r][c] = 0.500*sin(c+r+s+1.0);
-                equaPrm.opt.z[s][r][c] = 0.010*cos(c+r+s+1.0);
+                equaPrm.opt.k[s][r][c] = -0.010*sin(c+r+s+1.0);
+                equaPrm.opt.z[s][r][c] = +0.010*cos(c+r+s+1.0);
                 //printf("%d %d %d %f %f\n", s, r, c, -sin(c+r+s+1.0), -cos(c+r+s+1.0));
             }
         }
@@ -57,6 +57,13 @@ auto Problem2HDirichletDelta::example1() -> void
     //    equaPrm.opt.k[1][0][1] *= -0.05;
     //    equaPrm.opt.k[1][1][0] *= -0.05;
     //    equaPrm.opt.k[1][1][1] *= -0.05;
+
+
+//k : -0.133157 -0.122894 -0.096442 -0.083462 -0.091443 -0.261504 -0.052465 -0.218078  0.040356  0.072621  0.072383  0.120989  0.183077  0.064848  0.272080  0.116667 -0.077559 -0.071293 -0.052472  0.018700
+//k :  0.001121  0.015553 -0.024225  0.077602  0.018894  0.311290 -0.018957  0.328789 -0.128780 -0.034718 -0.200417 -0.049177  0.167140  0.027568  0.084241 -0.002661 -0.051402  0.005549 -0.015776  0.007558
+//z : -0.000654  0.000012 -0.008526 -0.007072  0.001434  0.023884 -0.002931  0.027889 -0.006680 -0.014531 -0.008521 -0.018861 -0.030716 -0.013065 -0.036908 -0.016386 -0.013403 -0.013981 -0.017342 -0.019517
+//z :  0.001089 -0.000466  0.001896  0.001053 -0.001961 -0.037828 -0.001175 -0.036064 -0.015312 -0.004401 -0.020819 -0.005555 -0.002565 -0.000449  0.015934  0.002722 -0.025390 -0.017137 -0.019735 -0.013004
+//xy:  0.351946  0.356744  0.797386  0.857274  0.351110  0.623817  0.674405  0.353155
 
 
     equaPrm.initPulseParemeters(2);
@@ -80,7 +87,7 @@ auto Problem2HDirichletDelta::example1() -> void
     //    equaPrm.opt.eta[1].x = +0.7500; equaPrm.opt.eta[1].y = +0.2500;
 
     // Penalty paramteres
-    DoubleVector r; r << 0.0000;// << 0.0000 << 0.000;
+    DoubleVector r; r << 1.0000;// << 0.0000 << 0.000;
     // Regularization coefficients
     DoubleVector e; e << 0.0000 << 0.0000 << 0.0000;
     DoubleVector e1; e1 << 0.1000 << 0.0100 << 0.0010;
@@ -97,13 +104,13 @@ auto Problem2HDirichletDelta::example1() -> void
         prob.optimizeZ = false;
         prob.optimizeO = false;
         prob.optimizeC = false;
-        prob.funcPrm.vmin.resize(equaPrm.Nc, -0.5);
-        prob.funcPrm.vmax.resize(equaPrm.Nc, +0.5);
+        prob.funcPrm.vmin.resize(equaPrm.Nc, -0.05);
+        prob.funcPrm.vmax.resize(equaPrm.Nc, +0.05);
         prob.LD = 30;
         prob.noise = 0.0;
 
-        prob.funcPrm.regEpsilon = 0.0;//e[i];
-        prob.funcPrm.r = 0.0;//r[i];
+        prob.funcPrm.regEpsilon = e[i];
+        prob.funcPrm.r = r[i];
 
         if (i==0)
         {
@@ -139,7 +146,7 @@ auto Problem2HDirichletDelta::example1() -> void
         g.setFunctionTolerance(0.0);
         g.setStepTolerance(0.0);
         g.setR1MinimizeEpsilon(e1[i], e2[i]);
-        g.setMaxIterations(100);
+        g.setMaxIterations(50);
         g.setNormalize(true);
         g.showExitMessage(true);
         //prob.gm = &g;
@@ -668,7 +675,7 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
             // k
             if (optimizeK)
             {
-                puts("Calculating k gradients...");
+                //puts("Calculating k gradients...");
                 for (unsigned int s=0; s<Nt; s++)
                 {
                     const unsigned int ln = 2*equaPrm.tm[s].i;
@@ -681,8 +688,8 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
                             double zij = equaPrm.opt.z[s][i][j];
                             double grad_Kij = 0.0;
                             grad_Kij += -(uj.vl[ln] - zij) * pi.vl[ln];
-                            //grad_Kij += -(uj.vl[ln] - zij) * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
-                            //grad_Kij += +2.0*regEpsilon*(equaPrm.opt.k[s][i][j] - equaPrm.reg.k[s][i][j]);
+                            grad_Kij += -(uj.vl[ln] - zij) * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
+                            grad_Kij += +2.0*regEpsilon*(equaPrm.opt.k[s][i][j] - equaPrm.reg.k[s][i][j]);
                             g[gi++] += grad_Kij * (1.0/(double(Q1.length())*double(Q2.length())));
                         }
                     }
@@ -705,7 +712,7 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
             // z
             if (optimizeZ)
             {
-                puts("Calculating z gradients...");
+                //puts("Calculating z gradients...");
                 for (unsigned int s=0; s<Nt; s++)
                 {
                     const unsigned int ln = 2*equaPrm.tm[s].i;
@@ -717,8 +724,8 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
                             double kij = equaPrm.opt.k[s][i][j];
                             double grad_Zij = 0.0;
                             grad_Zij += kij * pi.vl[ln];
-                            //grad_Zij += kij * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
-                            //grad_Zij += +2.0*regEpsilon*(equaPrm.opt.z[s][i][j] - equaPrm.opt.z[s][i][j]);
+                            grad_Zij += kij * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
+                            grad_Zij += +2.0*regEpsilon*(equaPrm.opt.z[s][i][j] - equaPrm.opt.z[s][i][j]);
                             g[gi++] += grad_Zij * (1.0/(double(Q1.length())*double(Q2.length())));
                         }
                     }
@@ -741,7 +748,7 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
             // xi
             if (optimizeO)
             {
-                puts("Calculating o gradients...");
+                //puts("Calculating o gradients...");
                 for (unsigned int j=0; j<No; j++)
                 {
                     const SpacePointInfoH &uj = u_info[j];
@@ -756,13 +763,13 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
                         {
                             gradXijX += -equaPrm.opt.k[s][i][j] * uj.dx[ln] * p_info[i].vl[ln];
                             gradXijY += -equaPrm.opt.k[s][i][j] * uj.dy[ln] * p_info[i].vl[ln];
-                            //gradXijX += -equaPrm.opt.k[s][i][j] * uj.dx[ln] * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
-                            //gradXijY += -equaPrm.opt.k[s][i][j] * uj.dy[ln] * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
+                            gradXijX += -equaPrm.opt.k[s][i][j] * uj.dx[ln] * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
+                            gradXijY += -equaPrm.opt.k[s][i][j] * uj.dy[ln] * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
                         }
                     }
 
-                    //gradXijX += 2.0*regEpsilon*(equaPrm.opt.ksi[j].x - equaPrm.reg.ksi[j].x);
-                    //gradXijY += 2.0*regEpsilon*(equaPrm.opt.ksi[j].y - equaPrm.reg.ksi[j].y);
+                    gradXijX += 2.0*regEpsilon*(equaPrm.opt.ksi[j].x - equaPrm.reg.ksi[j].x);
+                    gradXijY += 2.0*regEpsilon*(equaPrm.opt.ksi[j].y - equaPrm.reg.ksi[j].y);
 
                     g[gi++] += gradXijX * (1.0/(double(Q1.length())*double(Q2.length())));
                     g[gi++] += gradXijY * (1.0/(double(Q1.length())*double(Q2.length())));
@@ -780,8 +787,7 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
             // eta
             if (optimizeC)
             {
-                puts("Calculating c gradients...");
-
+                //puts("Calculating c gradients...");
                 for (unsigned int i=0; i<Nc; i++)
                 {
                     const SpacePointInfoH &pi = p_info[i];
@@ -1389,7 +1395,7 @@ auto Problem2HDirichletDelta::f_initial1(const SpaceNodePDE &sn UNUSED_PARAM) co
     //return mPulseWeightMatrix[m][n];
 }
 
-auto Problem2HDirichletDelta::f_initial2(const SpaceNodePDE &sn) const -> double
+auto Problem2HDirichletDelta::f_initial2(const SpaceNodePDE &sn UNUSED_PARAM) const -> double
 {
     unsigned int m = static_cast<unsigned int>(sn.j);
     unsigned int n = static_cast<unsigned int>(sn.i);
@@ -1474,19 +1480,19 @@ auto Problem2HDirichletDelta::print(unsigned int i, const DoubleVector &x, const
     //DoubleVector n = g; n.L2Normalize();
     //printf("k:%8.4f %8.4f %8.4f %8.4f z:%8.4f %8.4f %8.4f %8.4f o: %8.4f %8.4f %8.4f %8.4f c: %8.4f %8.4f %8.4f %8.4f\n", n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9], n[10], n[11], n[12], n[13], n[14], n[15]);
 
-    IPrinter::printSeperatorLine("Vector", '-');
-    printf("k : "); IPrinter::print(x.mid(00, 19), x.mid(00, 19).length(), 9, 6);
-    printf("k : "); IPrinter::print(x.mid(20, 39), x.mid(20, 39).length(), 9, 6);
-    printf("z : "); IPrinter::print(x.mid(40, 59), x.mid(40, 59).length(), 9, 6);
-    printf("z : "); IPrinter::print(x.mid(60, 79), x.mid(60, 79).length(), 9, 6);
-    printf("xy: "); IPrinter::print(x.mid(80, 87), x.mid(80, 87).length(), 9, 6);
-    IPrinter::printSeperatorLine("Gradient", '-');
-    printf("k : "); IPrinter::print(g.mid(00, 19), g.mid(00, 19).length(), 9, 6);
-    printf("k : "); IPrinter::print(g.mid(20, 39), g.mid(20, 39).length(), 9, 6);
-    printf("z : "); IPrinter::print(g.mid(40, 59), g.mid(40, 59).length(), 9, 6);
-    printf("z : "); IPrinter::print(g.mid(60, 79), g.mid(60, 79).length(), 9, 6);
-    printf("xy: "); IPrinter::print(g.mid(80, 87), g.mid(80, 87).length(), 9, 6);
-    IPrinter::printSeperatorLine(nullptr, '-');
+    //IPrinter::printSeperatorLine("Vector", '-');
+    //printf("k : "); IPrinter::print(x.mid(00, 19), x.mid(00, 19).length(), 9, 6);
+    //printf("k : "); IPrinter::print(x.mid(20, 39), x.mid(20, 39).length(), 9, 6);
+    //printf("z : "); IPrinter::print(x.mid(40, 59), x.mid(40, 59).length(), 9, 6);
+    //printf("z : "); IPrinter::print(x.mid(60, 79), x.mid(60, 79).length(), 9, 6);
+    //printf("xy: "); IPrinter::print(x.mid(80, 87), x.mid(80, 87).length(), 9, 6);
+    //IPrinter::printSeperatorLine("Gradient", '-');
+    //printf("k : "); IPrinter::print(g.mid(00, 19), g.mid(00, 19).length(), 9, 6);
+    //printf("k : "); IPrinter::print(g.mid(20, 39), g.mid(20, 39).length(), 9, 6);
+    //printf("z : "); IPrinter::print(g.mid(40, 59), g.mid(40, 59).length(), 9, 6);
+    //printf("z : "); IPrinter::print(g.mid(60, 79), g.mid(60, 79).length(), 9, 6);
+    //printf("xy: "); IPrinter::print(g.mid(80, 87), g.mid(80, 87).length(), 9, 6);
+    //IPrinter::printSeperatorLine(nullptr, '-');
 
     //u.clear();
     //u_info.clear();
@@ -1494,10 +1500,15 @@ auto Problem2HDirichletDelta::print(unsigned int i, const DoubleVector &x, const
     //C_UNUSED(prob);
     //IPrinter::printSeperatorLine();
 
-    prob->optimizeK = i%4 == 3;
-    prob->optimizeZ = i%4 == 0;
-    prob->optimizeO = i%4 == 1;
-    prob->optimizeC = i%4 == 2;
+//    prob->optimizeK = (i%4 == 3);
+//    prob->optimizeZ = (i%4 == 0);
+//    prob->optimizeO = (i%4 == 1);
+//    prob->optimizeC = (i%4 == 2);
+
+    prob->optimizeK = (i%3 == 2);
+    prob->optimizeZ = (i%3 == 0);
+    prob->optimizeO = (i%3 == 1);
+    prob->optimizeC = (i%3 == 1);
 }
 
 auto Problem2HDirichletDelta::currentLayerFGrid(const DoubleMatrix &u, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids, unsigned int ln) const -> void
