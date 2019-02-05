@@ -1787,7 +1787,7 @@ auto Problem2HDirichletDelta::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, un
     if (printLayers)
     {
         FILE *file;
-        if (ln == 0) file = fopen("data2D.txt", "w"); else file = fopen("data2D.txt", "a");
+        if (ln == 0) file = fopen("data/data.txt", "w"); else file = fopen("data/data.txt", "a");
 
         Problem2HDirichletDelta* tmp = const_cast<Problem2HDirichletDelta*>(this);
         std::vector<DoubleMatrix> &rvu = tmp->vu;
