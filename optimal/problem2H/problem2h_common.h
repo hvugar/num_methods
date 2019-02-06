@@ -55,9 +55,15 @@ struct PROBLEM2HSHARED_EXPORT EquaParameter2H
     auto initPulseParemeters(unsigned int Np) -> void;
     auto initParemeters(unsigned int Nt, unsigned int Nc, unsigned int No) -> void;
     auto clearParameters() -> void;
+
     auto OptimalParameterFromVector(const DoubleVector &x) -> void;
     auto OptimalParameterToVector(DoubleVector &x) const -> void;
+
     auto RegularParameterToVector(DoubleVector &x) const -> void;
+    auto RegularParameterFromVector(const DoubleVector &x) -> void;
+
+    auto printOptimalParemeters() const -> void;
+    auto printRegularParemeters() const -> void;
 };
 
 struct PROBLEM2HSHARED_EXPORT FuncParameter2H

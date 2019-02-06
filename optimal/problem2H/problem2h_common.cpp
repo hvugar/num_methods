@@ -204,3 +204,69 @@ auto EquaParameter2H::RegularParameterToVector(DoubleVector &x) const -> void
         x[index++] = reg.eta[i].y;
     }
 }
+
+auto EquaParameter2H::RegularParameterFromVector(const DoubleVector &rx) -> void
+{
+    unsigned int index = 0;
+
+    for (unsigned int s=0; s<reg.k.size(); s++) reg.k[s].clear();
+    for (unsigned int s=0; s<reg.z.size(); s++) reg.z[s].clear();
+
+    reg.k.resize(Nt);
+    reg.z.resize(Nt);
+    for (unsigned int s=0; s<Nt; s++)
+    {
+        reg.k[s].clear(); reg.k[s].resize(Nc, No);
+        reg.z[s].clear(); reg.z[s].resize(Nc, No);
+    }
+    reg.ksi.clear(); reg.ksi.resize(No);
+    reg.eta.clear(); reg.eta.resize(Nc);
+
+    for (unsigned int s=0; s<Nt; s++)
+    {
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            for (unsigned int j=0; j<No; j++)
+            {
+                reg.k[s][i][j] = rx[index++];
+            }
+        }
+    }
+
+    for (unsigned int s=0; s<Nt; s++)
+    {
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            for (unsigned int j=0; j<No; j++)
+            {
+                reg.z[s][i][j] = rx[index++];
+            }
+        }
+    }
+
+    for (unsigned int j=0; j<No; j++)
+    {
+        reg.ksi[j].x = rx[index++];
+        reg.ksi[j].y = rx[index++];
+    }
+
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        reg.eta[i].x = rx[index++];
+        reg.eta[i].y = rx[index++];
+    }
+}
+
+auto EquaParameter2H::printOptimalParemeters() const -> void
+{
+//    printf("k : "); IPrinter::print(x.mid(00, 19), x.mid(00, 19).length(), 9, 6);
+//    printf("k : "); IPrinter::print(x.mid(20, 39), x.mid(20, 39).length(), 9, 6);
+//    printf("z : "); IPrinter::print(x.mid(40, 59), x.mid(40, 59).length(), 9, 6);
+//    printf("z : "); IPrinter::print(x.mid(60, 79), x.mid(60, 79).length(), 9, 6);
+//    printf("xy: "); IPrinter::print(x.mid(80, 87), x.mid(80, 87).length(), 9, 6);
+}
+
+auto EquaParameter2H::printRegularParemeters() const -> void
+{
+
+}
