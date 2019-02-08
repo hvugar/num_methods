@@ -26,62 +26,75 @@ auto Problem2HDirichletDelta::example1() -> void
         equaPrm.tm[s].t = (s+1)*0.3;
     }
 
-    // Optimization parameters
-    equaPrm.initParemeters(10, 2, 2);
-//    for (unsigned int s=0; s<equaPrm.Nt; s++)
-//    {
-//        for (unsigned int r=0; r<equaPrm.Nc; r++)
-//        {
-//            for (unsigned int c=0; c<equaPrm.No; c++)
-//            {
-//                //o_prm.k[s][r][c] = -static_cast<double>((rand() % 1000))/1000.0;
-//                //o_prm.k[s][r][c] = 1.0-static_cast<double>((rand() % 2000))/1000.0;
-//                //o_prm.z[s][r][c] = +static_cast<double>((rand() % 1000))/100000.0;
-//                //equaPrm.opt.k[s][r][c] = -0.1*fabs(sin((c+1)*10.0)*cos((r+1)*20.0)*sin((s+1)*0.1));
-//                //equaPrm.opt.z[s][r][c] = 0.01*cos((c+1)*10.0)*sin((r+1)*20.0)*sin((s+1)*0.2);
-//
-//                //equaPrm.opt.k[s][r][c] = 0.500+(rand()%1000)*0.0001;
-//                equaPrm.opt.k[s][r][c] = -0.010*sin(c+r+s+1.0);
-//                equaPrm.opt.z[s][r][c] = +0.010*cos(c+r+s+1.0);
-//                //printf("%d %d %d %f %f\n", s, r, c, -sin(c+r+s+1.0), -cos(c+r+s+1.0));
-//            }
-//        }
-//    }
     equaPrm.initPulseParemeters(2);
     equaPrm.pulses[0] = InitialPulse2D(SpacePoint(0.2600, 0.2600), 0.2);
     equaPrm.pulses[1] = InitialPulse2D(SpacePoint(0.7300, 0.7200), 0.2);
 
+    // Optimization parameters
+    equaPrm.initParemeters(10, 2, 2);
+
+//    DoubleVector ox;
+//    ox << -0.008415 << -0.009093 << -0.009581 << -0.008411 << -0.002504 << -0.001411 << -0.002457 << -0.003568 << -0.002481 << -0.001568;
+//    ox << -0.007568 << -0.009259 << -0.006758 << -0.002589 << -0.005989 << -0.002794 << -0.002389 << -0.003974 << -0.004279 << -0.006570;
+//    ox <<  0.001794 << -0.004570 << -0.002476 << -0.006325 << -0.004125 << -0.002354 << -0.001286 << -0.002321 << -0.004694 << -0.001281;
+//    ox << -0.004281 <<  0.003440 << -0.001575 <<  0.005440 <<  0.001403 <<  0.001845 <<  0.006942 <<  0.004512 <<  0.003267 <<  0.004456;
+//    ox <<  0.005403 << -0.004161 << -0.001461 << -0.009245 << -0.008121 << -0.001997 << -0.001299 << -0.005663 << -0.008647 << -0.002357;
+//    ox << -0.004593 <<  0.002837 << -0.006536 <<  0.002975 <<  0.008237 <<  0.009602 <<  0.002237 <<  0.009512 <<  0.008612 <<  0.007539;
+//    ox <<  0.003602 <<  0.005529 <<  0.006529 << -0.001455 <<  0.002539 << -0.002425 << -0.003428 << -0.009751 << -0.004145 << -0.002851;
+//    ox << -0.005251 << -0.008391 << -0.009111 << -0.002839 << -0.002831 <<  0.005444 << -0.001839 <<  0.002364 <<  0.006544 <<  0.008439;
+//    //ox <<  0.344500 <<  0.382500 <<  0.826700 <<  0.916400;
+//    //ox <<  0.228200 <<  0.636700 <<  0.718400 <<  0.373600;
+//    ox <<  0.144500 <<  0.282500 <<  0.626700 <<  0.716400;
+//    ox <<  0.328200 <<  0.436700 <<  0.618400 <<  0.573600;
+
+//    DoubleVector rx;
+//    rx << -0.115452 << -0.111167 << -0.083476 << -0.075845 <<  0.015146 << -0.215321 << -0.017947 << -0.171416 <<  0.059772 <<  0.089042;
+//    rx <<  0.071801 <<  0.122163 <<  0.156964 <<  0.058127 <<  0.241945 <<  0.105073 << -0.073669 << -0.072246 << -0.028962 <<  0.025317;
+//    rx << -0.006582 <<  0.012226 << -0.054747 <<  0.089466 << -0.004514 <<  0.200153 << +0.008543 <<  0.230858 << -0.124258 << -0.033923;
+//    rx << -0.168729 << -0.065452 <<  0.127873 <<  0.025357 <<  0.063209 << -0.005781 << -0.044238 << -0.020863 << -0.037664 << -0.022886;
+//    rx << -0.008409 <<  0.016980 << -0.003193 << -0.010559 << -0.027209 <<  0.105051 << -0.000021 <<  0.103941 << -0.016936 << -0.021695;
+//    rx << -0.029625 << -0.048136 << -0.031988 << -0.009787 << -0.047384 << -0.033184 << -0.023529 << -0.038822 << -0.042849 << -0.042849;
+//    rx <<  0.005021 <<  0.004248 <<  0.009179 << -0.001834 <<  0.018598 << -0.157891 << -0.006210 << -0.147856 << -0.044797 << -0.012049;
+//    rx << -0.056247 << -0.025108 <<  0.018231 <<  0.002586 <<  0.040771 <<  0.013513 << -0.053478 << -0.028416 << -0.019315 << -0.008417;
+//    rx <<  0.350321 <<  0.361990 <<  0.798991 <<  0.870608;
+//    rx <<  0.344082 <<  0.627388 <<  0.687065 <<  0.348083;
+//    for (unsigned int i=0; i<80; i++) ox[i] *= 10.0;
+
     DoubleVector ox;
-    ox << -0.008415 << -0.009093 << -0.009581 << -0.008411 << -0.002504 << -0.001411 << -0.002457 << -0.003568 << -0.002481 << -0.001568;
-    ox << -0.007568 << -0.009259 << -0.006758 << -0.002589 << -0.005989 << -0.002794 << -0.002389 << -0.003974 << -0.004279 << -0.006570;
-    ox <<  0.001794 << -0.004570 << -0.002476 << -0.006325 << -0.004125 << -0.002354 << -0.001286 << -0.002321 << -0.004694 << -0.001281;
-    ox << -0.004281 <<  0.003440 << -0.001575 <<  0.005440 <<  0.001403 <<  0.000845 <<  0.006942 <<  0.004512 <<  0.003267 <<  0.004456;
-    ox <<  0.005403 << -0.004161 << -0.001461 << -0.009245 << -0.008121 << -0.001997 << -0.001299 << -0.005663 << -0.008647 << -0.002357;
-    ox << -0.004593 <<  0.002837 << -0.006536 <<  0.002975 <<  0.008237 <<  0.009602 <<  0.002237 <<  0.009512 <<  0.008612 <<  0.007539;
-    ox <<  0.003602 <<  0.005529 <<  0.006529 << -0.001455 <<  0.002539 << -0.002425 << -0.003428 << -0.009751 << -0.004145 << -0.002851;
-    ox << -0.005251 << -0.008391 << -0.009111 << -0.002839 << -0.002831 <<  0.005444 << -0.001839 <<  0.002364 <<  0.006544 <<  0.008439;
-    ox <<  0.344500 <<  0.382500 <<  0.826700 <<  0.916400;
-    ox <<  0.228200 <<  0.636700 <<  0.718400 <<  0.373600;
+    ox << +0.005385 << -0.002199 << -0.006781 << +0.003281 << -0.002574 << -0.007911 << -0.002827 << +0.003458 << +0.002461 << -0.002868;
+    ox << +0.006875 << +0.002599 << -0.009575 << -0.002249 << -0.001259 << +0.004423 << +0.008923 << +0.003974 << +0.004489 << +0.003762;
+    ox << -0.009402 << -0.002957 << -0.006576 << +0.006415 << -0.008385 << +0.009921 << +0.001416 << +0.002321 << -0.009274 << -0.001151;
+    ox << +0.001424 << +0.008344 << -0.005865 << -0.004854 <<  0.001312 << +0.004445 << -0.006242 << -0.006395 << -0.006137 << +0.004976;
+    ox << -0.001543 << +0.004164 << -0.001115 << -0.005455 << -0.008401 << -0.004187 << +0.009259 << +0.005656 << -0.004587 << -0.002575;
+    ox << -0.005981 << -0.009127 << -0.003624 << +0.002528 <<  0.002537 << -0.009252 << -0.003723 << -0.001212 << +0.004212 << -0.003419;
+    ox <<  0.002306 << -0.002503 <<  0.006129 << -0.001589 <<  0.002329 << -0.002604 << -0.002893 << -0.003764 << +0.004645 << +0.002853;
+    ox << -0.002551 << -0.004408 << -0.009114 << -0.009739 << -0.004921 << +0.001554 << +0.004218 << -0.005192 << -0.006846 << -0.008455;
+    ox <<  0.424800 <<  0.424700 <<  0.585300 <<  0.755400;
+    ox <<  0.452600 <<  0.738600 <<  0.859800 <<  0.155200;
 
     DoubleVector rx;
-    rx << -0.115452 << -0.111167 << -0.083476 << -0.075845 <<  0.015146 << -0.215321 << -0.017947 << -0.171416 <<  0.059772 <<  0.089042;
-    rx <<  0.071801 <<  0.122163 <<  0.156964 <<  0.058127 <<  0.241945 <<  0.105073 << -0.073669 << -0.072246 << -0.028962 <<  0.025317;
-    rx << -0.006582 <<  0.012226 << -0.054747 <<  0.089466 << -0.004514 <<  0.200153 << +0.008543 <<  0.230858 << -0.124258 << -0.033923;
-    rx << -0.168729 << -0.065452 <<  0.127873 <<  0.025357 <<  0.063209 << -0.005781 << -0.044238 << -0.020863 << -0.037664 << -0.022886;
-    rx << -0.008409 <<  0.016980 << -0.003193 << -0.010559 << -0.027209 <<  0.105051 << -0.000021 <<  0.103941 << -0.016936 << -0.021695;
-    rx << -0.029625 << -0.048136 << -0.031988 << -0.009787 << -0.047384 << -0.033184 << -0.023529 << -0.038822 << -0.042849 << -0.042849;
-    rx <<  0.005021 <<  0.004248 <<  0.009179 << -0.001834 <<  0.018598 << -0.157891 << -0.006210 << -0.147856 << -0.044797 << -0.012049;
-    rx << -0.056247 << -0.025108 <<  0.018231 <<  0.002586 <<  0.040771 <<  0.013513 << -0.053478 << -0.028416 << -0.019315 << -0.008417;
-    rx <<  0.350321 <<  0.361990 <<  0.798991 <<  0.870608;
-    rx <<  0.344082 <<  0.627388 <<  0.687065 <<  0.348083;
+    rx << -0.052860 << -0.131829 << -0.125346 << -0.062369 << -0.098401 << +0.151210 << -0.160653 << +0.081715 <<  0.082606 <<  0.091265;
+    rx <<  0.088970 <<  0.010223 <<  0.073618 <<  0.157582 <<  0.103702 <<  0.057608 << +0.006687 << -0.005278 << -0.056292 << -0.130513;
+    rx << -0.061342 << -0.093878 << -0.012356 << -0.018955 << -0.125526 <<  0.209370 << +0.214609 << +0.095771 << -0.144045 << -0.038590;
+    rx << -0.066774 << -0.019197 << -0.025290 << -0.011601 <<  0.038761 << +0.114508 << -0.063474 << -0.042613 << -0.078461 << -0.020071;
+
+    rx << +0.018128 <<  0.008076 << -0.047522 << -0.051734 << +0.008484 << -0.090564 << +0.106583 << +0.031172 << -0.070607 << +0.004695;
+    rx << -0.071021 << -0.098187 << -0.086194 << +0.062254 << +0.016974 << -0.068689 << +0.010639 << +0.010878 << +0.049764 << -0.050306;
+    rx << -0.027717 << -0.036065 <<  0.031874 << +0.008727 << +0.155427 << -0.213485 << -0.175692 << -0.119446 << -0.094401 << +0.002155;
+    rx << -0.052672 << -0.020833 << -0.140929 << -0.122242 << -0.053923 <<  0.021970 << +0.056006 << -0.034974 << -0.036357 << -0.021392;
+
+    rx <<  0.184987 <<  0.283742 <<  0.614473 <<  0.589827;
+    rx <<  0.313609 <<  0.646414 <<  0.647017 <<  0.374060;
+    for (unsigned int i=0; i<80; i++) ox[i] *= 10.0;
 
     equaPrm.OptimalParameterFromVector(ox);
     equaPrm.RegularParameterFromVector(rx);
 
     // Penalty paramteres
-    DoubleVector r; r << 1.0000 << 10.000 << 100.00;
+    DoubleVector r; r << 0.0000;// << 0.0000 << 0.0000;
     // Regularization coefficients
-    DoubleVector e; e << 0.0000 << 0.0000 << 0.0000;
+//    DoubleVector e; e << 0.0000 << 0.0100 << 0.0010;
+    DoubleVector e; e << 0.1000 << 0.0100 << 0.0010;
 
     DoubleVector e1; e1 << 0.1000 << 0.1000 << 0.1000;
     DoubleVector e2; e2 << 0.0100 << 0.0100 << 0.0100;
@@ -94,7 +107,7 @@ auto Problem2HDirichletDelta::example1() -> void
         prob.equaPrm = equaPrm;
         prob.funcPrm = funcPrm;
         prob.optimizeK = true;
-        prob.optimizeZ = false;
+        prob.optimizeZ = true;
         prob.optimizeO = false;
         prob.optimizeC = false;
         prob.funcPrm.vmin.resize(equaPrm.Nc, -0.05);
@@ -110,21 +123,6 @@ auto Problem2HDirichletDelta::example1() -> void
             prob.equaPrm.OptimalParameterToVector(x);
             //prob.checkGradient1(prob);
             //return;
-
-            //prob.checkGradient2(prob);
-            //return;
-
-            //prob.printLayers = false;
-            //if (prob.printLayers)
-            //{
-            //    std::vector<DoubleVector> u;
-            //    spif_vector1H u_info, p_info;
-            //    prob.solveForwardIBVP(u, u_info, true);
-            //    return;
-            //}
-            //IPrinter::printSeperatorLine();
-            //prob.solveBackwardIBVP(u, p_info, true, u_info);
-            //return;
         }
 
         //ConjugateGradient g;
@@ -135,9 +133,9 @@ auto Problem2HDirichletDelta::example1() -> void
         g.setProjection(&prob);
         //g.setProjection(new ProjectionEx1);
         //g.setGradientNormalizer(&prob);
-        g.setOptimalityTolerance(0.00001);
-        g.setFunctionTolerance(0.00001);
-        g.setStepTolerance(0.00001);
+        g.setOptimalityTolerance(0.0);
+        g.setFunctionTolerance(0.0);
+        g.setStepTolerance(0.0);
         g.setR1MinimizeEpsilon(e1[i], e2[i]);
         g.setMaxIterations(50);
         g.setNormalize(true);
@@ -150,6 +148,14 @@ auto Problem2HDirichletDelta::example1() -> void
         printf("z : "); IPrinter::print(x.mid(40, 59), x.mid(40, 59).length(), 9, 6);
         printf("z : "); IPrinter::print(x.mid(60, 79), x.mid(60, 79).length(), 9, 6);
         printf("xy: "); IPrinter::print(x.mid(80, 87), x.mid(80, 87).length(), 9, 6);
+        IPrinter::printSeperatorLine(nullptr, '*');
+        DoubleVector y; prob.equaPrm.RegularParameterToVector(y);
+        IPrinter::printSeperatorLine(nullptr, '*');
+        printf("k : "); IPrinter::print(y.mid(00, 19), y.mid(00, 19).length(), 9, 6);
+        printf("k : "); IPrinter::print(y.mid(20, 39), y.mid(20, 39).length(), 9, 6);
+        printf("z : "); IPrinter::print(y.mid(40, 59), y.mid(40, 59).length(), 9, 6);
+        printf("z : "); IPrinter::print(y.mid(60, 79), y.mid(60, 79).length(), 9, 6);
+        printf("xy: "); IPrinter::print(y.mid(80, 87), y.mid(80, 87).length(), 9, 6);
         IPrinter::printSeperatorLine(nullptr, '*');
 
         g.calculate(x);
@@ -467,8 +473,14 @@ auto Problem2HDirichletDelta::fx(const DoubleVector &pv) const -> double
             prob->solveForwardIBVP(u, u_info, true, pv);
 
             double intgrl = integral(u);
-            double pnt = penalty(u_info, equaPrm);
-            double nrm = norm(equaPrm);
+            double pnt = 0.0;
+#ifdef USE_PENALTY
+            pnt = penalty(u_info, equaPrm);
+#endif
+            double nrm = 0.0;
+#ifdef USE_NORM
+            nrm = norm(equaPrm);
+#endif
             double sum = intgrl + regEpsilon*nrm + r*pnt;
 
             for (unsigned int i=0; i<u.size(); i++)      u[i].clear();      u.clear();
@@ -681,8 +693,12 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
                             double zij = equaPrm.opt.z[s][i][j];
                             double grad_Kij = 0.0;
                             grad_Kij += -(uj.vl[ln] - zij) * pi.vl[ln];
+#ifdef USE_PENALTY
                             grad_Kij += -(uj.vl[ln] - zij) * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
+#endif
+#ifdef USE_NORM
                             grad_Kij += +2.0*regEpsilon*(equaPrm.opt.k[s][i][j] - equaPrm.reg.k[s][i][j]);
+#endif
                             g[gi++] += grad_Kij * (1.0/(double(Q1.length())*double(Q2.length())));
                         }
                     }
@@ -717,8 +733,12 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
                             double kij = equaPrm.opt.k[s][i][j];
                             double grad_Zij = 0.0;
                             grad_Zij += kij * pi.vl[ln];
+#ifdef USE_PENALTY
                             grad_Zij += kij * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
+#endif
+#ifdef USE_NORM
                             grad_Zij += +2.0*regEpsilon*(equaPrm.opt.z[s][i][j] - equaPrm.opt.z[s][i][j]);
+#endif
                             g[gi++] += grad_Zij * (1.0/(double(Q1.length())*double(Q2.length())));
                         }
                     }
@@ -756,13 +776,16 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
                         {
                             gradXijX += -equaPrm.opt.k[s][i][j] * uj.dx[ln] * p_info[i].vl[ln];
                             gradXijY += -equaPrm.opt.k[s][i][j] * uj.dy[ln] * p_info[i].vl[ln];
+#ifdef USE_PENALTY
                             gradXijX += -equaPrm.opt.k[s][i][j] * uj.dx[ln] * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
                             gradXijY += -equaPrm.opt.k[s][i][j] * uj.dy[ln] * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
+#endif
                         }
                     }
-
+#ifdef USE_NORM
                     gradXijX += 2.0*regEpsilon*(equaPrm.opt.ksi[j].x - equaPrm.reg.ksi[j].x);
                     gradXijY += 2.0*regEpsilon*(equaPrm.opt.ksi[j].y - equaPrm.reg.ksi[j].y);
+#endif
 
                     g[gi++] += gradXijX * (1.0/(double(Q1.length())*double(Q2.length())));
                     g[gi++] += gradXijY * (1.0/(double(Q1.length())*double(Q2.length())));
@@ -797,10 +820,10 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
                             gradEtaiY += -pi.dy[ln] * equaPrm.opt.k[s][i][j] * (u_info[j].vl[ln] - equaPrm.opt.z[s][i][j]);
                         }
                     }
-
+#ifdef USE_NORM
                     gradEtaiX += 2.0*regEpsilon*(equaPrm.opt.eta[i].x - equaPrm.reg.eta[i].x);
                     gradEtaiY += 2.0*regEpsilon*(equaPrm.opt.eta[i].y - equaPrm.reg.eta[i].y);
-
+#endif
                     g[gi++] += gradEtaiX * (1.0/(double(Q1.length())*double(Q2.length())));
                     g[gi++] += gradEtaiY * (1.0/(double(Q1.length())*double(Q2.length())));
                 }
@@ -821,7 +844,9 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
     }
 }
 
-auto Problem2HDirichletDelta::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use, const DoubleVector &pv, double lambda) const -> void
+auto Problem2HDirichletDelta::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use,
+                                               const DoubleVector &pv,
+                                               double lambda) const -> void
 {
     const Dimension dimX = spaceDimension(Dimension::DimensionX);
     const Dimension dimY = spaceDimension(Dimension::DimensionY);
@@ -915,6 +940,33 @@ auto Problem2HDirichletDelta::solveForwardIBVP(std::vector<DoubleMatrix> &u, spi
 
     //------------------------------------- initial conditions -------------------------------------//
     initPulseWeightMatrix(equaPrm.pulses);
+
+    //----------------------------------- initial pulse values -------------------------------------//
+    //    DoubleMatrix &pulseWeightMatrix = const_cast<Problem2HDirichletDelta*>(this)->mPulseWeightMatrix;
+
+    //    const unsigned int Ns = static_cast<unsigned int>(pulses.size());
+    //    DeltaGrid2D *deltaGrids = new DeltaGrid2D[Ns];
+    //    for (unsigned int s=0; s<Ns; s++)
+    //    {
+    //        deltaGrids[s].initGrid(N, hx, M, hy);
+    //        deltaGrids[s].distributeGauss(pulses[s].theta, PULSE_SIGMA, PULSE_SIGMA);
+    //    }
+
+    //    for (unsigned int m=0; m<=M; m++)
+    //    {
+    //        for (unsigned int n=0; n<=N; n++)
+    //        {
+    //            pulseWeightMatrix[m][n] = 0.0;
+    //            for (unsigned int s=0; s<Ns; s++)
+    //            {
+    //                pulseWeightMatrix[m][n] += pulses[s].q*deltaGrids[s].weight(n, m);
+    //            }
+    //        }
+    //    }
+    //    for (unsigned int s=0; s<Ns; s++) deltaGrids[s].cleanGrid();
+    //    delete [] deltaGrids;
+    //----------------------------------- initial pulse values -------------------------------------//
+
     /************************************************************************/
     SpaceNodePDE sn00;
     for (unsigned int m=0; m<=M; m++)
@@ -1353,7 +1405,6 @@ auto Problem2HDirichletDelta::initPulseWeightMatrix(const std::vector<InitialPul
     const double hx = dimX.step();
     const double hy = dimY.step();
 
-
     DoubleMatrix &pulseWeightMatrix = const_cast<Problem2HDirichletDelta*>(this)->mPulseWeightMatrix;
 
     const unsigned int Ns = static_cast<unsigned int>(pulses.size());
@@ -1493,15 +1544,20 @@ auto Problem2HDirichletDelta::print(unsigned int i, const DoubleVector &x, const
     //C_UNUSED(prob);
     //IPrinter::printSeperatorLine();
 
-//    prob->optimizeK = (i%4 == 3);
-//    prob->optimizeZ = (i%4 == 0);
-//    prob->optimizeO = (i%4 == 1);
-//    prob->optimizeC = (i%4 == 2);
+    //    prob->optimizeK = (i%4 == 3);
+    //    prob->optimizeZ = (i%4 == 0);
+    //    prob->optimizeO = (i%4 == 1);
+    //    prob->optimizeC = (i%4 == 2);
 
-    prob->optimizeK = (i%3 == 2);
-    prob->optimizeZ = (i%3 == 0);
-    prob->optimizeO = (i%3 == 1);
-    prob->optimizeC = (i%3 == 1);
+    //    prob->optimizeK = (i%3 == 2);
+    //    prob->optimizeZ = (i%3 == 0);
+    //    prob->optimizeO = (i%3 == 1);
+    //    prob->optimizeC = (i%3 == 1);
+
+        prob->optimizeK = (i%2 == 0);
+        prob->optimizeZ = (i%2 == 0);
+        prob->optimizeO = (i%2 == 1);
+        prob->optimizeC = (i%2 == 1);
 }
 
 auto Problem2HDirichletDelta::currentLayerFGrid(const DoubleMatrix &u, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids, unsigned int ln) const -> void
@@ -1605,7 +1661,9 @@ auto Problem2HDirichletDelta::currentLayerBGrid(const DoubleMatrix &p, const std
             for (unsigned int i=0; i<Nc; i++)
             {
                 _w[j] += equaPrm.opt.k[s][i][j] * _p[i];
+#ifdef USE_PENALTY
                 _w[j] += equaPrm.opt.k[s][i][j] * 2.0*r*gpi(i, s, u_info, equaPrm)*sgn(g0i(i, s, u_info, equaPrm));
+#endif
             }
         }
         delete [] _p;
