@@ -7,7 +7,7 @@
 #define MSRMT_SIGMA 1
 #define CNTRL_SIGMA 1
 #define USE_PENALTY_
-#define USE_NORM
+#define USE_NORM_
 
 class PROBLEM2HSHARED_EXPORT Problem2HDirichletDelta :
         public InitialBoundaryValueProblemPDE,

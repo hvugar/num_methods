@@ -15,8 +15,8 @@ auto Problem2HDirichletDelta::example1() -> void
 
     // Functional parameters
     FuncParameter2H funcPrm;
-    funcPrm.Q1 << 0.2;// << 0.22 << 0.24;
-    funcPrm.Q2 << 0.2;// << 0.27 << 0.29;
+    funcPrm.Q1 << 0.20 << 0.22 << 0.24;
+    funcPrm.Q2 << 0.21 << 0.23 << 0.25;
 
     equaPrm.Nt = 10;
     equaPrm.tm.resize(equaPrm.Nt);
@@ -27,8 +27,8 @@ auto Problem2HDirichletDelta::example1() -> void
     }
 
     equaPrm.initPulseParemeters(2);
-    equaPrm.pulses[0] = InitialPulse2D(SpacePoint(0.2600, 0.2600), 0.2);
-    equaPrm.pulses[1] = InitialPulse2D(SpacePoint(0.7300, 0.7200), 0.2);
+    equaPrm.pulses[0] = InitialPulse2D(SpacePoint(0.2600, 0.2600), 0.20);
+    equaPrm.pulses[1] = InitialPulse2D(SpacePoint(0.7300, 0.7200), 0.21);
 
     // Optimization parameters
     equaPrm.initParemeters(10, 2, 2);
@@ -94,7 +94,7 @@ auto Problem2HDirichletDelta::example1() -> void
     DoubleVector r; r << 0.0000;// << 0.0000 << 0.0000;
     // Regularization coefficients
 //    DoubleVector e; e << 0.0000 << 0.0100 << 0.0010;
-    DoubleVector e; e << 0.1000 << 0.0100 << 0.0010;
+    DoubleVector e; e << 0.0000 << 0.0100 << 0.0010;
 
     DoubleVector e1; e1 << 0.1000 << 0.1000 << 0.1000;
     DoubleVector e2; e2 << 0.0100 << 0.0100 << 0.0100;
