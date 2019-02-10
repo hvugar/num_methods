@@ -13,18 +13,6 @@ struct MINIMUMSHARED_EXPORT SpacePoint
     double z;
 };
 
-struct MINIMUMSHARED_EXPORT TimeMoment
-{
-    double t;
-};
-
-struct MINIMUMSHARED_EXPORT GridNodeODE
-{
-    inline GridNodeODE(double x, int i) : x(x), i(i) {}
-    double x;
-    int i;
-};
-
 struct MINIMUMSHARED_EXPORT SpaceNodePDE : public SpacePoint
 {
     SpaceNodePDE(int i=0, double x=0.0, int j=0, double y=0.0, int k=0, double z=0.0);
@@ -35,11 +23,26 @@ struct MINIMUMSHARED_EXPORT SpaceNodePDE : public SpacePoint
     int k;
 };
 
-struct MINIMUMSHARED_EXPORT TimeNodePDE
+struct MINIMUMSHARED_EXPORT TimeMoment
 {
+    TimeMoment(double t = 0.0);
     double t;
+};
+
+struct MINIMUMSHARED_EXPORT TimeNodePDE : public TimeMoment
+{
+    TimeNodePDE(unsigned int i=0, double t = 0.0);
+    TimeNodePDE(const TimeNodePDE &tn);
     unsigned int i;
 };
+
+struct MINIMUMSHARED_EXPORT GridNodeODE
+{
+    inline GridNodeODE(double x, int i) : x(x), i(i) {}
+    double x;
+    int i;
+};
+
 
 class MINIMUMSHARED_EXPORT Dimension
 {

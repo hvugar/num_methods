@@ -7,7 +7,7 @@
 #define MSRMT_SIGMA 1
 #define CNTRL_SIGMA 1
 #define USE_PENALTY_
-#define USE_NORM_
+#define USE_NORM
 
 class PROBLEM2HSHARED_EXPORT Problem2HDirichletDelta :
         public InitialBoundaryValueProblemPDE,
@@ -42,7 +42,8 @@ public:
 
     auto solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use, const DoubleVector &pv, double lambda=0.25) const -> void;
     auto solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info, const DoubleVector &pv, double lambda=0.25) const -> void;
-
+    auto fxMatrixForward(const DoubleMatrix &u, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids, unsigned int ln) const -> void;
+    auto fxMatrixBackward(const DoubleMatrix &p, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids, unsigned int ln, const spif_vectorH &u_info) const -> void;
     virtual auto initPulseWeightMatrix(const std::vector<InitialPulse2D> &pulses) const -> void;
 
     virtual auto f_initial1(const SpaceNodePDE &sn) const -> double;
@@ -67,9 +68,6 @@ public:
 
     auto b_characteristic(const DoubleMatrix &u, unsigned int n, unsigned int m) const -> double;
 
-    auto currentLayerFGrid(const DoubleMatrix &u, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids, unsigned int ln) const -> void;
-    auto currentLayerBGrid(const DoubleMatrix &p, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids, unsigned int ln, const spif_vectorH &u_info) const -> void;
-
     virtual auto setGridDimensions(const Dimension &time, const Dimension &dimX, const Dimension &dimY) -> void;
     virtual auto v(unsigned int i, unsigned int s, const EquaParameter2H &equaPrm, const spif_vectorH &u_info) const -> double;
     virtual auto boundary(const SpaceNodePDE &, const TimeNodePDE &) const -> double;
@@ -92,10 +90,9 @@ private:
     double noise = 0.0;
 
 protected:
-    DoubleMatrix mPulseWeightMatrix;
-    DoubleMatrix mCrFfxWeightMatrix;
-    DoubleMatrix mCrBfxWeightMatrix;
-
+    DoubleMatrix mInitialMatrixForward;
+    DoubleMatrix mfxMatrixForward;
+    DoubleMatrix mfxMatrixBackward;
 };
 
 #endif // PROBLEM2H_SOLVER1_H

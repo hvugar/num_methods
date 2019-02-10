@@ -10,12 +10,13 @@ SpaceNodePDE::SpaceNodePDE(int i, double x, int j, double y, int k, double z) : 
     this->z = z;
 }
 
-SpaceNodePDE::SpaceNodePDE(const SpaceNodePDE &sn) : i(sn.i), j(sn.j), k(sn.k)
-{
-    this->x = sn.x;
-    this->y = sn.y;
-    this->z = sn.z;
-}
+SpaceNodePDE::SpaceNodePDE(const SpaceNodePDE &sn) : SpacePoint (sn.x, sn.y, sn.z), i(sn.i), j(sn.j), k(sn.k) {}
+
+TimeMoment::TimeMoment(double t) : t(t) {}
+
+TimeNodePDE::TimeNodePDE(unsigned int i, double t) : TimeMoment (t), i(i) {}
+
+TimeNodePDE::TimeNodePDE(const TimeNodePDE &tn) : TimeMoment (tn.t), i(tn.i) {}
 
 UniformODEGrid::UniformODEGrid(double step, int min, int max) : mstep(step), mminN(min), mmaxN(max) {}
 
