@@ -8,31 +8,29 @@ double NonLinearODE1stOrder::f(double, double, unsigned int) const { return NAN;
 
 double NonLinearODE1stOrder::f(double, const DoubleVector &, unsigned int, unsigned int) const { return NAN; }
 
-void NonLinearODE1stOrder::cauchyProblem(double x0, double y0, DoubleVector &y, Method method, Direction direction)
+void NonLinearODE1stOrder::cauchyProblem(double x0, double y0, DoubleVector &y, OdeSolverMethod method, Direction direction)
 {
     switch (method)
     {
-    case RK2:
+    case OdeSolverMethod::RK2:
         calculateRK2(x0, y0, y, direction);
         break;
-    case RK4:
+    case OdeSolverMethod::RK4:
         calculateRK4(x0, y0, y, direction);
         break;
-    case EULER:
+    case OdeSolverMethod::EULER:
         calculateEuler(x0, y0, y, direction);
         break;
-    case EULER_MOD:
+    case OdeSolverMethod::EULER_MOD:
         calculateEulerMod(x0, y0, y, direction);
-        break;
-    default:
         break;
     }
 }
 
 void NonLinearODE1stOrder::calculateRK2(double x0, double y0, DoubleVector &y, Direction direction)
 {
-    unsigned int N = mgrid.sizeN();
-    double h = mgrid.step();
+    unsigned int N = mgrid.dimension().size();
+    double h = mgrid.dimension().step();
 
     y.clear();
     y.resize(N+1);
@@ -77,8 +75,8 @@ void NonLinearODE1stOrder::calculateRK2(double x0, double y0, DoubleVector &y, D
 
 void NonLinearODE1stOrder::calculateRK4(double x0, double y0, DoubleVector &y, Direction direction)
 {
-    unsigned int N = mgrid.sizeN();
-    double h = mgrid.step();
+    unsigned int N = mgrid.dimension().size();
+    double h = mgrid.dimension().step();
 
     y.clear();
     y.resize(N+1);
@@ -135,8 +133,8 @@ void NonLinearODE1stOrder::calculateRK4(double x0, double y0, DoubleVector &y, D
 
 void NonLinearODE1stOrder::calculateEuler(double x0, double y0, DoubleVector &y, Direction direction)
 {
-    unsigned int N = mgrid.sizeN();
-    double h = mgrid.step();
+    unsigned int N = mgrid.dimension().size();
+    double h = mgrid.dimension().step();
 
     y.clear();
     y.resize(N+1);
@@ -172,8 +170,8 @@ void NonLinearODE1stOrder::calculateEuler(double x0, double y0, DoubleVector &y,
 
 void NonLinearODE1stOrder::calculateEulerMod(double x0, double y0, DoubleVector &y, Direction direction)
 {
-    unsigned int N = mgrid.sizeN();
-    double h = mgrid.step();
+    unsigned int N = mgrid.dimension().size();
+    double h = mgrid.dimension().step();
 
     y.clear();
     y.resize(N+1);
@@ -207,7 +205,7 @@ void NonLinearODE1stOrder::calculateEulerMod(double x0, double y0, DoubleVector 
     }
 }
 
-void NonLinearODE1stOrder::cauchyProblem(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Method method, Direction direction)
+void NonLinearODE1stOrder::cauchyProblem(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, OdeSolverMethod method, Direction direction)
 {
     switch (method)
     {
@@ -223,18 +221,16 @@ void NonLinearODE1stOrder::cauchyProblem(double x0, const DoubleVector &y0, std:
     case EULER_MOD:
         calculateEulerMod(x0, y0, ry, direction);
         break;
-    default:
-        break;
     }
 }
 
 void NonLinearODE1stOrder::calculateRK2(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
 {
-    unsigned int minN = grid().minN();
-    unsigned int maxN = grid().maxN();
-    unsigned int N = grid().sizeN();
-    double h = grid().step();
-    unsigned int n = y0.length();
+    const int min = grid().dimension().min();
+    const int max = grid().dimension().max();
+    const int N = grid().dimension().size();
+    const double h = grid().dimension().step();
+    const unsigned int n = y0.length();
 
     ry.clear();
     ry.resize(n);
@@ -254,17 +250,17 @@ void NonLinearODE1stOrder::calculateRK2(double x0, const DoubleVector &y0, std::
         /* initializing */
         for (unsigned int j=0; j<n; j++) ry[j][0] = y0[j];
 
-        for (unsigned int i=minN+1; i<=maxN; i++)
+        for (unsigned int i=min+1; i<=max; i++)
         {
             // k1
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-minN];
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-min];
             for (unsigned int j=0; j<n; j++) k1[j] = f(xn, yn, i-1, j);
 
             // k2
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-minN]+h2*k1[j];
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-min]+h2*k1[j];
             for (unsigned int j=0; j<n; j++) k2[j] = f(xn+h2, yn, i-1, j);
 
-            for (unsigned int j=0; j<n; j++) ry[j][i-minN] = ry[j][(i-1)-minN] + h * k2[j];
+            for (unsigned int j=0; j<n; j++) ry[j][i-min] = ry[j][(i-1)-min] + h * k2[j];
 
             xn += h;
         }
@@ -303,11 +299,12 @@ void NonLinearODE1stOrder::calculateRK2(double x0, const DoubleVector &y0, std::
 
 void NonLinearODE1stOrder::calculateRK4(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
 {
-    unsigned int minN = grid().minN();
-    unsigned int maxN = grid().maxN();
-    unsigned int N = grid().sizeN();
-    double h = grid().step();
-    unsigned int n = y0.length();
+    const int min = grid().dimension().min();
+    const int max = grid().dimension().max();
+    const int N = grid().dimension().size();
+    const double h = grid().dimension().step();
+    const unsigned int n = y0.length();
+
 
     ry.clear();
     ry.resize(n);
@@ -330,25 +327,25 @@ void NonLinearODE1stOrder::calculateRK4(double x0, const DoubleVector &y0, std::
         /* initializing */
         for (unsigned int j=0; j<n; j++) ry[j][0] = y0[j];
 
-        for (unsigned int i=minN; i<maxN; i++)
+        for (unsigned int i=min; i<max; i++)
         {
             // k1
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-minN];
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-min];
             for (unsigned int j=0; j<n; j++) k1[j] = f(xn, yn, i, j);
 
             // k2
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-minN]+h2*k1[j];
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-min]+h2*k1[j];
             for (unsigned int j=0; j<n; j++) k2[j] = f(xn+h2, yn, i, j);
 
             // k3
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-minN]+h2*k2[j];
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-min]+h2*k2[j];
             for (unsigned int j=0; j<n; j++) k3[j] = f(xn+h2, yn, i, j);
 
             // k4
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-minN]+h*k3[j];
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-min]+h*k3[j];
             for (unsigned int j=0; j<n; j++) k4[j] = f(xn+h, yn, i, j);
 
-            for (unsigned int j=0; j<n; j++) ry[j][i-minN+1] = ry[j][i-minN] + h6 * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
+            for (unsigned int j=0; j<n; j++) ry[j][i-min+1] = ry[j][i-min] + h6 * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
 
             xn += h;
         }
@@ -366,25 +363,25 @@ void NonLinearODE1stOrder::calculateRK4(double x0, const DoubleVector &y0, std::
         /* initializing */
         for (unsigned int j=0; j<n; j++) ry[j][N] = y0[j];
 
-        for (unsigned int k=maxN; k!=minN+0; k--)
+        for (unsigned int k=max; k!=min+0; k--)
         {
             // k1
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][k-minN];
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][k-min];
             for (unsigned int j=0; j<n; j++) k1[j] = f(xn, yn, k, j);
 
             // k2
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][k-minN]-h2*k1[j];
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][k-min]-h2*k1[j];
             for (unsigned int j=0; j<n; j++) k2[j] = f(xn-h2, yn, k, j);
 
             // k3
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][k-minN]-h2*k2[j];
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][k-min]-h2*k2[j];
             for (unsigned int j=0; j<n; j++) k3[j] = f(xn-h2, yn, k, j);
 
             // k4
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][k-minN]-h*k3[j];
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][k-min]-h*k3[j];
             for (unsigned int j=0; j<n; j++) k4[j] = f(xn-h, yn, k, j);
 
-            for (unsigned int j=0; j<n; j++) ry[j][k-minN-1] = ry[j][k-minN] - h6 * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
+            for (unsigned int j=0; j<n; j++) ry[j][k-min-1] = ry[j][k-min] - h6 * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
 
             xn -= h;
         }
@@ -399,11 +396,11 @@ void NonLinearODE1stOrder::calculateRK4(double x0, const DoubleVector &y0, std::
 
 void NonLinearODE1stOrder::calculateEuler(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
 {
-    unsigned int minN = grid().minN();
-    unsigned int maxN = grid().maxN();
-    unsigned int N = grid().sizeN();
-    double h = grid().step();
-    unsigned int n = y0.length();
+    const int min = grid().dimension().min();
+    const int max = grid().dimension().max();
+    const int N = grid().dimension().size();
+    const double h = grid().dimension().step();
+    const unsigned int n = y0.length();
 
     ry.clear();
     ry.resize(n);
@@ -416,10 +413,10 @@ void NonLinearODE1stOrder::calculateEuler(double x0, const DoubleVector &y0, std
         /* initializing */
         for (unsigned int j=0; j<n; j++) ry[j][0] = y0[j];
 
-        for (unsigned int i=minN+1; i<=maxN; i++)
+        for (unsigned int i=min+1; i<=max; i++)
         {
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-minN];
-            for (unsigned int j=0; j<n; j++) ry[j][i-minN] = ry[j][(i-1)-minN] + h * f(xn, yn, i-1, j);
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-min];
+            for (unsigned int j=0; j<n; j++) ry[j][i-min] = ry[j][(i-1)-min] + h * f(xn, yn, i-1, j);
 
             xn += h;
         }
@@ -444,11 +441,12 @@ void NonLinearODE1stOrder::calculateEuler(double x0, const DoubleVector &y0, std
 
 void NonLinearODE1stOrder::calculateEulerMod(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
 {
-    unsigned int minN = grid().minN();
-    unsigned int maxN = grid().maxN();
-    unsigned int N = grid().sizeN();
-    double h = grid().step();
-    unsigned int n = y0.length();
+    const int min = grid().dimension().min();
+    const int max = grid().dimension().max();
+    const int N = grid().dimension().size();
+    const double h = grid().dimension().step();
+    const unsigned int n = y0.length();
+
 
     ry.clear();
     ry.resize(n);
@@ -461,10 +459,10 @@ void NonLinearODE1stOrder::calculateEulerMod(double x0, const DoubleVector &y0, 
         /* initializing */
         for (unsigned int j=0; j<n; j++) ry[j][0] = y0[j];
 
-        for (unsigned int i=minN+1; i<=maxN; i++)
+        for (unsigned int i=min+1; i<=max; i++)
         {
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-minN];
-            for (unsigned int j=0; j<n; j++) ry[j][i-minN] = ry[j][(i-1)-minN] + h * f(xn, yn, i-1, j);
+            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-min];
+            for (unsigned int j=0; j<n; j++) ry[j][i-min] = ry[j][(i-1)-min] + h * f(xn, yn, i-1, j);
 
             xn += h;
         }
@@ -487,7 +485,7 @@ void NonLinearODE1stOrder::calculateEulerMod(double x0, const DoubleVector &y0, 
     }
 }
 
-void NonLinearODE1stOrder::cauchyProblem(double x0, const DoubleVector &y0, DoubleVector &ry, Method method, Direction direction)
+void NonLinearODE1stOrder::cauchyProblem(double x0, const DoubleVector &y0, DoubleVector &ry, OdeSolverMethod method, Direction direction)
 {
     switch (method)
     {
@@ -503,18 +501,16 @@ void NonLinearODE1stOrder::cauchyProblem(double x0, const DoubleVector &y0, Doub
     case EULER_MOD:
         //calculateEulerMod(x0, y0, y, direction);
         break;
-    default:
-        break;
     }
 }
 
 void NonLinearODE1stOrder::calculateRK4(double x0, const DoubleVector &y0, DoubleVector &ry, Direction direction)
 {
-    unsigned int minN = grid().minN();
-    unsigned int maxN = grid().maxN();
-    unsigned int N = grid().sizeN();
-    double h = grid().step();
-    unsigned int n = y0.length();
+    const int min = grid().dimension().min();
+    const int max = grid().dimension().max();
+    const int N = grid().dimension().size();
+    const double h = grid().dimension().step();
+    const unsigned int n = y0.length();
 
     ry.clear();
     ry.resize(n, N+1);
@@ -536,7 +532,7 @@ void NonLinearODE1stOrder::calculateRK4(double x0, const DoubleVector &y0, Doubl
         /* initializing */
         for (unsigned int j=0; j<n; j++) ry[j] = y0[j];
 
-        for (unsigned int i=minN+1; i<=maxN; i++)
+        for (unsigned int i=min+1; i<=max; i++)
         {
             // k1
             for (unsigned int j=0; j<n; j++) yn[j] = ry[j];

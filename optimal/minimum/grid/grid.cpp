@@ -18,32 +18,19 @@ TimeNodePDE::TimeNodePDE(unsigned int i, double t) : TimeMoment (t), i(i) {}
 
 TimeNodePDE::TimeNodePDE(const TimeNodePDE &tn) : TimeMoment (tn.t), i(tn.i) {}
 
-UniformODEGrid::UniformODEGrid(double step, int min, int max) : mstep(step), mminN(min), mmaxN(max) {}
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
-double UniformODEGrid::step() const
-{
-    return mstep;
-}
+UniformODEGrid::UniformODEGrid() {}
 
-int UniformODEGrid::minN() const
-{
-    return mminN;
-}
+UniformODEGrid::UniformODEGrid(const Dimension &dimension) : _dimension(dimension) {}
 
-int UniformODEGrid::maxN() const
-{
-    return mmaxN;
-}
+UniformODEGrid::~UniformODEGrid() {}
 
-int UniformODEGrid::sizeN() const
-{
-    return mmaxN - mminN;
-}
+const Dimension &UniformODEGrid::dimension() const { return _dimension; }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UniformPDEGrid::UniformPDEGrid()
-{}
+UniformPDEGrid::UniformPDEGrid() {}
 
 UniformPDEGrid::UniformPDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaceDimensions UNUSED_PARAM)
 {

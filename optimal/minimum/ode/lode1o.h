@@ -21,12 +21,15 @@ public:
 
     void solveHighOderAccuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x, unsigned int k, Direction direction = L2R);
 
+    void calculate(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction = L2R) const;
+    void calculate(double x0, double y0, std::vector<double> &ry, Direction direction = L2R) const;
+
     /* high order accuracy */
 
 private:
-    void highOder2Accuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x, Direction direction = L2R);
-    void highOder4Accuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x, Direction direction = L2R);
-    void highOder6Accuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x, Direction direction = L2R);
+    void highOder2Accuracy(const std::vector<Condition> &cs, const DoubleVector &rs, std::vector<DoubleVector> &x, Direction direction = L2R);
+    void highOder4Accuracy(const std::vector<Condition> &cs, const DoubleVector &rs, std::vector<DoubleVector> &x, Direction direction = L2R);
+    void highOder6Accuracy(const std::vector<Condition> &cs, const DoubleVector &rs, std::vector<DoubleVector> &x, Direction direction = L2R);
 
 protected:
     /**

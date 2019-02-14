@@ -8,7 +8,7 @@
 
 void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const DoubleVector &bt, std::vector<DoubleVector> &x)
 {
-    double h = grid().step();
+    double h = grid().dimension().step();
 
     std::vector<Condition> cs = nscs;
     DoubleVector beta = bt;
@@ -101,7 +101,7 @@ void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const Doub
             HelperB helper;
             helper.p = this;
             helper.n = n;
-            helper.setGrid(UniformODEGrid(h, sc.nmbr, ec.nmbr));
+            helper.setGrid(UniformODEGrid(Dimension(h, sc.nmbr, ec.nmbr)));
             helper.cauchyProblem(sc.time, x0, rx, NonLinearODE1stOrder::RK4);
 
             for (unsigned int i=0; i<n; i++) sc.mtrx[row][i] = rx[i];
@@ -340,8 +340,8 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
 {
     unsigned int en = equationsNumber();
 
-    double h = grid().step();
-    unsigned int N = grid().sizeN();
+    double h = grid().dimension().step();
+    int N = grid().dimension().size();
 
     if (en == 1)
     {
@@ -638,8 +638,8 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
 {
     unsigned int en = equationsNumber();
 
-    double h = grid().step();
-    unsigned int N = grid().sizeN();
+    double h = grid().dimension().step();
+    unsigned int N = grid().dimension().size();
 
     if (en == 1)
     {
@@ -1022,8 +1022,8 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
 {
     unsigned int en = equationsNumber();
 
-    double h = grid().step();
-    unsigned int N = grid().sizeN();
+    double h = grid().dimension().step();
+    unsigned int N = grid().dimension().size();
 
     if (en == 1)
     {

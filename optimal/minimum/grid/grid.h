@@ -54,7 +54,7 @@ public:
         DimensionZ = 2
     };
 
-    Dimension(double step=0.01, int min = 0, int max = 100);
+    Dimension(double step = 0.01, int min = 0, int max = 100);
 
     auto step() const -> double;
     auto min() const -> int;
@@ -70,16 +70,14 @@ protected:
 class MINIMUMSHARED_EXPORT UniformODEGrid
 {
 public:
-    UniformODEGrid(double step = 0.0, int min = 0, int max = 0);
+    UniformODEGrid();
+    explicit UniformODEGrid(const Dimension &dimension);
+    virtual ~UniformODEGrid();
 
-    double step() const;
-    int minN() const;
-    int maxN() const;
-    int sizeN() const;
+    const Dimension &dimension() const;
+
 private:
-    double mstep;
-    int mminN;
-    int mmaxN;
+    Dimension _dimension;
 };
 
 class MINIMUMSHARED_EXPORT UniformPDEGrid

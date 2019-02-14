@@ -6,28 +6,31 @@ NumericalIntegral::NumericalIntegral(const UniformODEGrid &grid) : mgrid(grid)
 
 double NumericalIntegral::rectangleRule(RectangleRuleType type) const
 {
-    unsigned int minN = grid().minN();
-    unsigned int maxN = grid().maxN();
-    double h = grid().step();
+    const int min = grid().dimension().min();
+    const int max = grid().dimension().max();
+    const double h = grid().dimension().step();
 
     double sum = 0.0;
+
     if (type == Left)
     {
-        for (unsigned int n=minN; n<maxN; n++)
+        for (int n=min; n<max; n++)
         {
             sum += f(n*h, n);
         }
     }
+
     if (type == Right)
     {
-        for (unsigned int n=minN+1; n<=maxN; n++)
+        for (int n=min+1; n<=max; n++)
         {
             sum += f(n*h, n);
         }
     }
+
     if (type == Center)
     {
-        for (unsigned int n=minN; n<maxN; n++)
+        for (int n=min; n<max; n++)
         {
             sum += f( 0.5*(n*h+(n+1)*h), n);
         }
@@ -38,12 +41,12 @@ double NumericalIntegral::rectangleRule(RectangleRuleType type) const
 
 double NumericalIntegral::trapezoidalRule() const
 {
-    unsigned int minN = grid().minN();
-    unsigned int maxN = grid().maxN();
-    double h = grid().step();
+    const int min = grid().dimension().min();
+    const int max = grid().dimension().max();
+    const double h = grid().dimension().step();
 
     double sum = 0.0;
-    for (unsigned int n=minN; n<maxN; n++)
+    for (unsigned int n=min; n<max; n++)
     {
         sum += ( f(n*h, n) + f((n+1)*h, n+1) );
     }

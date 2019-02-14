@@ -41,7 +41,7 @@ void ISystemLinearODENonLocalContionsM::calculateForward(DoubleMatrix &x)
     unsigned int n1 = lscs.mtrx.rows();
     unsigned int n2 = rscs.mtrx.rows();
     unsigned int n = n0 + n1 + n2;
-    double h = grid().step();
+    double h = grid().dimension().step();
 
     DoubleVector ix(n+2);
     DoubleVector ox(n+2);

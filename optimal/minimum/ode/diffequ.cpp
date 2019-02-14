@@ -1,5 +1,9 @@
 #include "diffequ.h"
 
+DifferentialEquation::~DifferentialEquation() {}
+
+OrdinaryDifferentialEquation::~OrdinaryDifferentialEquation() {}
+
 unsigned int DifferentialEquation::equationsNumber() const
 {
     return 1;

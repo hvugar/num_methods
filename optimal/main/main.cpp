@@ -49,8 +49,35 @@
 #include <r1minimize.h>
 #include "nonlocal.h"
 
+class A : public NonLinearODE1stOrder
+{
+public:
+    virtual double f(double x, double y, unsigned int k) const;
+};
+
+double A::f(double x, double y, unsigned int k) const
+{
+    double sigma = 0.01;
+//    return  3.0*x*x;// + 4.0*(1.0/(sqrt(2.0*M_PI*sigma*sigma))) * exp(((x-0.5)*(x-0.5))/(-2.0*sigma*sigma));
+//    return  4.0*x*x*x*exp(pow(x,4.0));// + 4.0*(1.0/(sqrt(2.0*M_PI*sigma*sigma))) * exp(((x-0.8)*(x-0.8))/(-2.0*sigma*sigma));
+
+    double w = 0.0;
+    if (k==80) w = 100.0;
+    return  4.0*x*x*x*exp(pow(x,4.0)) + 4.0*w;
+}
+
+
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
+    A a;
+    const unsigned int N = 100;
+    DoubleVector ry; ry.resize(N+1);
+    UniformODEGrid grid(Dimension(0.01, 0, 100));
+    a.setGrid(grid);
+    a.cauchyProblem(0.0, 0.0, ry, OrdinaryDifferentialEquation::OdeSolverMethod::EULER);
+    IPrinter::print(ry,ry.length());
+    return 0;
+
     //srand(static_cast<unsigned int>(time(nullptr)));
 
     //NonLocalSystem::Main(argc, argv);
