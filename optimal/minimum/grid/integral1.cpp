@@ -1,14 +1,14 @@
 #include "integral1.h"
 
-NumericalIntegral::NumericalIntegral(const UniformODEGrid &grid) : mgrid(grid)
+NumericalIntegral::NumericalIntegral(const Dimension &dimension) : _dimension(dimension)
 {
 }
 
 double NumericalIntegral::rectangleRule(RectangleRuleType type) const
 {
-    const int min = grid().dimension().min();
-    const int max = grid().dimension().max();
-    const double h = grid().dimension().step();
+    const int min = dimension().min();
+    const int max = dimension().max();
+    const double h = dimension().step();
 
     double sum = 0.0;
 
@@ -41,12 +41,12 @@ double NumericalIntegral::rectangleRule(RectangleRuleType type) const
 
 double NumericalIntegral::trapezoidalRule() const
 {
-    const int min = grid().dimension().min();
-    const int max = grid().dimension().max();
-    const double h = grid().dimension().step();
+    const int min = dimension().min();
+    const int max = dimension().max();
+    const double h = dimension().step();
 
     double sum = 0.0;
-    for (unsigned int n=min; n<max; n++)
+    for (int n=min; n<max; n++)
     {
         sum += ( f(n*h, n) + f((n+1)*h, n+1) );
     }
@@ -59,12 +59,12 @@ double NumericalIntegral::SimpsonsRule() const
     return 0.0;
 }
 
-const UniformODEGrid& NumericalIntegral::grid() const
+const Dimension& NumericalIntegral::dimension() const
 {
-    return mgrid;
+    return _dimension;
 }
 
-void NumericalIntegral::setGrid(const UniformODEGrid& grid)
+void NumericalIntegral::setDimension(const Dimension& dimension)
 {
-    mgrid = grid;
+    _dimension = dimension;
 }

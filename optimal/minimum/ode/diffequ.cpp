@@ -1,6 +1,10 @@
 #include "diffequ.h"
 
+DifferentialEquation::DifferentialEquation() {}
+
 DifferentialEquation::~DifferentialEquation() {}
+
+OrdinaryDifferentialEquation::OrdinaryDifferentialEquation() {}
 
 OrdinaryDifferentialEquation::~OrdinaryDifferentialEquation() {}
 
@@ -9,22 +13,22 @@ unsigned int DifferentialEquation::equationsNumber() const
     return 1;
 }
 
-const UniformODEGrid& DifferentialEquation::grid() const
+const Dimension& OrdinaryDifferentialEquation::dimension() const
 {
-    return mgrid;
+    return _dimension;
 }
 
-void DifferentialEquation::setGrid(const UniformODEGrid& grid)
+void OrdinaryDifferentialEquation::setDimension(const Dimension &dimension)
 {
-    mgrid = grid;
+    _dimension = dimension;
 }
 
-const UniformODEGrid& SystemDifferentialEquation::grid() const
+const Dimension& SystemDifferentialEquation::dimension() const
 {
-    return mgrid;
+    return _dimension;
 }
 
-void SystemDifferentialEquation::setGrid(const UniformODEGrid &grid)
+void SystemDifferentialEquation::setDimension(const Dimension &dimension)
 {
-    mgrid = grid;
+    _dimension = dimension;
 }

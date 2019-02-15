@@ -7,7 +7,8 @@
 #include "../linearequation.h"
 
 /**
- * @brief Дифференциа́льное уравне́ние — уравнение, в которое входят производные функции,
+ * @brief Дифференциа́льное уравне́ние
+ * Дифференциа́льное уравне́ние — уравнение, в которое входят производные функции,
  * и может входить сама функция, независимая переменная и параметры. Порядок входящих
  * в уравнение производных может быть различен (формально он ничем не ограничен).
  * Производные, функции, независимые переменные и параметры могут входить в уравнение
@@ -18,17 +19,15 @@
 class MINIMUMSHARED_EXPORT DifferentialEquation
 {
 public:
+    DifferentialEquation();
     virtual ~DifferentialEquation();
 
     virtual unsigned int equationsNumber() const;
-    const UniformODEGrid &grid() const;
-    void setGrid(const UniformODEGrid& grid);
-protected:
-    UniformODEGrid mgrid;
 };
 
 /**
- * @brief Обыкновенное дифференциальное уравне́ние (ОДУ) — это дифференциальное уравнение
+ * @brief Обыкновенное дифференциальное уравнение
+ * Обыкновенное дифференциальное уравне́ние (ОДУ) — это дифференциальное уравнение
  * для функции от одной переменной. (Этим оно отличается от уравнения в частных производных,
  * где неизвестная — это функция нескольких переменных.). Таким образом, ОДУ — это уравнения
  * вида F(x,y',y",...,y^(n)) = 0
@@ -41,6 +40,9 @@ protected:
 class MINIMUMSHARED_EXPORT OrdinaryDifferentialEquation : public DifferentialEquation
 {
 public:
+    OrdinaryDifferentialEquation();
+    virtual ~OrdinaryDifferentialEquation();
+
     enum OdeSolverMethod
     {
         RK2,
@@ -55,21 +57,31 @@ public:
         R2L  // Right to Left
     };
 
-    virtual ~OrdinaryDifferentialEquation();
+    Dimension _dimension;
+
+    const Dimension& dimension() const;
+    void setDimension(const Dimension &dimension);
 };
 
+/**
+ * @brief Линейное дифференциальное уравнение с переменными коэффициентами
+ *
+ */
 class MINIMUMSHARED_EXPORT LinearODE : public OrdinaryDifferentialEquation {};
 
+/**
+ * @brief The NonLinearODE class
+ */
 class MINIMUMSHARED_EXPORT NonLinearODE : public OrdinaryDifferentialEquation {};
 
 class MINIMUMSHARED_EXPORT SystemDifferentialEquation
 {
 public:
-    const UniformODEGrid &grid() const;
-    void setGrid(const UniformODEGrid &grid);
+    const Dimension& dimension() const;
+    void setDimension(const Dimension &dimension);
 
 protected:
-    UniformODEGrid mgrid;
+    Dimension _dimension;
 };
 
 class MINIMUMSHARED_EXPORT SystemDifferentialEquationODE : public SystemDifferentialEquation

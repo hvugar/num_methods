@@ -13,6 +13,12 @@ struct MINIMUMSHARED_EXPORT SpacePoint
     double z;
 };
 
+struct MINIMUMSHARED_EXPORT TimeMoment
+{
+    TimeMoment(double t = 0.0);
+    double t;
+};
+
 struct MINIMUMSHARED_EXPORT SpaceNodePDE : public SpacePoint
 {
     SpaceNodePDE(int i=0, double x=0.0, int j=0, double y=0.0, int k=0, double z=0.0);
@@ -23,12 +29,6 @@ struct MINIMUMSHARED_EXPORT SpaceNodePDE : public SpacePoint
     int k;
 };
 
-struct MINIMUMSHARED_EXPORT TimeMoment
-{
-    TimeMoment(double t = 0.0);
-    double t;
-};
-
 struct MINIMUMSHARED_EXPORT TimeNodePDE : public TimeMoment
 {
     TimeNodePDE(unsigned int i=0, double t = 0.0);
@@ -36,64 +36,44 @@ struct MINIMUMSHARED_EXPORT TimeNodePDE : public TimeMoment
     unsigned int i;
 };
 
-struct MINIMUMSHARED_EXPORT GridNodeODE
+struct PointODE
 {
-    inline GridNodeODE(double x, int i) : x(x), i(i) {}
+    PointODE(double x = 0.0);
+
     double x;
-    int i;
 };
 
+struct MINIMUMSHARED_EXPORT PointNodeODE : public PointODE
+{
+    inline PointNodeODE(double x = 0.0, int i = 0) : PointODE(x), i(i) {}
+
+    int i;
+};
 
 class MINIMUMSHARED_EXPORT Dimension
 {
 public:
     enum SpaceDimension
     {
-        DimensionX = 0,
-        DimensionY = 1,
-        DimensionZ = 2
+        DimensionX = 1,
+        DimensionY = 2,
+        DimensionZ = 3
     };
 
     Dimension(double step = 0.01, int min = 0, int max = 100);
 
     auto step() const -> double;
+    auto setStep(double step) -> void;
     auto min() const -> int;
+    auto setMin(int min) -> void;
     auto max() const -> int;
+    auto setMax(int max) -> void;
     auto size() const -> int;
 
 protected:
-    double m_step;
-    int m_min;
-    int m_max;
-};
-
-class MINIMUMSHARED_EXPORT UniformODEGrid
-{
-public:
-    UniformODEGrid();
-    explicit UniformODEGrid(const Dimension &dimension);
-    virtual ~UniformODEGrid();
-
-    const Dimension &dimension() const;
-
-private:
-    Dimension _dimension;
-};
-
-class MINIMUMSHARED_EXPORT UniformPDEGrid
-{
-public:
-    UniformPDEGrid();
-    UniformPDEGrid(const Dimension &timeDimension, std::vector<Dimension> &spaceDimensions);
-
-    void setTimeDimension(const Dimension &timeDimension);
-    void addSpaceDimension(const Dimension &spaceDimension);
-
-    const Dimension& timeDimension() const;
-    const Dimension& spaceDimension(Dimension::SpaceDimension dimension) const;
-private:
-    Dimension mtimeDimension;
-    std::vector<Dimension> mspaceDimensions;
+    double _step;
+    int _min;
+    int _max;
 };
 
 #endif // GRID_H

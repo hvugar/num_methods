@@ -132,6 +132,6 @@ void ISystemLinearODENonLocalContionsV2::calculateCauchyProblem(const Condition 
     };
 
     CauchyProblemM1stOrderA1 cpa(*this);
-    cpa.setGrid(UniformODEGrid(Dimension(h, ec.nmbr, sc.nmbr)));
+    cpa.setDimension(Dimension(h, ec.nmbr, sc.nmbr));
     cpa.cauchyProblem(sc.time, x0, rx, CauchyProblemM1stOrderA1::RK4);
 }

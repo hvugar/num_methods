@@ -29,8 +29,8 @@ void NonLinearODE1stOrder::cauchyProblem(double x0, double y0, DoubleVector &y, 
 
 void NonLinearODE1stOrder::calculateRK2(double x0, double y0, DoubleVector &y, Direction direction)
 {
-    unsigned int N = mgrid.dimension().size();
-    double h = mgrid.dimension().step();
+    int N = dimension().size();
+    double h = dimension().step();
 
     y.clear();
     y.resize(N+1);
@@ -75,8 +75,8 @@ void NonLinearODE1stOrder::calculateRK2(double x0, double y0, DoubleVector &y, D
 
 void NonLinearODE1stOrder::calculateRK4(double x0, double y0, DoubleVector &y, Direction direction)
 {
-    unsigned int N = mgrid.dimension().size();
-    double h = mgrid.dimension().step();
+    int N = dimension().size();
+    double h = dimension().step();
 
     y.clear();
     y.resize(N+1);
@@ -133,8 +133,8 @@ void NonLinearODE1stOrder::calculateRK4(double x0, double y0, DoubleVector &y, D
 
 void NonLinearODE1stOrder::calculateEuler(double x0, double y0, DoubleVector &y, Direction direction)
 {
-    unsigned int N = mgrid.dimension().size();
-    double h = mgrid.dimension().step();
+    unsigned int N = dimension().size();
+    double h = dimension().step();
 
     y.clear();
     y.resize(N+1);
@@ -170,8 +170,8 @@ void NonLinearODE1stOrder::calculateEuler(double x0, double y0, DoubleVector &y,
 
 void NonLinearODE1stOrder::calculateEulerMod(double x0, double y0, DoubleVector &y, Direction direction)
 {
-    unsigned int N = mgrid.dimension().size();
-    double h = mgrid.dimension().step();
+    unsigned int N = dimension().size();
+    double h = dimension().step();
 
     y.clear();
     y.resize(N+1);
@@ -226,10 +226,10 @@ void NonLinearODE1stOrder::cauchyProblem(double x0, const DoubleVector &y0, std:
 
 void NonLinearODE1stOrder::calculateRK2(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
 {
-    const int min = grid().dimension().min();
-    const int max = grid().dimension().max();
-    const int N = grid().dimension().size();
-    const double h = grid().dimension().step();
+    const int min = dimension().min();
+    const int max = dimension().max();
+    const int N = dimension().size();
+    const double h = dimension().step();
     const unsigned int n = y0.length();
 
     ry.clear();
@@ -299,10 +299,10 @@ void NonLinearODE1stOrder::calculateRK2(double x0, const DoubleVector &y0, std::
 
 void NonLinearODE1stOrder::calculateRK4(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
 {
-    const int min = grid().dimension().min();
-    const int max = grid().dimension().max();
-    const int N = grid().dimension().size();
-    const double h = grid().dimension().step();
+    const int min = dimension().min();
+    const int max = dimension().max();
+    const int N = dimension().size();
+    const double h = dimension().step();
     const unsigned int n = y0.length();
 
 
@@ -396,10 +396,10 @@ void NonLinearODE1stOrder::calculateRK4(double x0, const DoubleVector &y0, std::
 
 void NonLinearODE1stOrder::calculateEuler(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
 {
-    const int min = grid().dimension().min();
-    const int max = grid().dimension().max();
-    const int N = grid().dimension().size();
-    const double h = grid().dimension().step();
+    const int min = dimension().min();
+    const int max = dimension().max();
+    const int N = dimension().size();
+    const double h = dimension().step();
     const unsigned int n = y0.length();
 
     ry.clear();
@@ -441,10 +441,10 @@ void NonLinearODE1stOrder::calculateEuler(double x0, const DoubleVector &y0, std
 
 void NonLinearODE1stOrder::calculateEulerMod(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
 {
-    const int min = grid().dimension().min();
-    const int max = grid().dimension().max();
-    const int N = grid().dimension().size();
-    const double h = grid().dimension().step();
+    const int min = dimension().min();
+    const int max = dimension().max();
+    const int N = dimension().size();
+    const double h = dimension().step();
     const unsigned int n = y0.length();
 
 
@@ -506,10 +506,10 @@ void NonLinearODE1stOrder::cauchyProblem(double x0, const DoubleVector &y0, Doub
 
 void NonLinearODE1stOrder::calculateRK4(double x0, const DoubleVector &y0, DoubleVector &ry, Direction direction)
 {
-    const int min = grid().dimension().min();
-    const int max = grid().dimension().max();
-    const int N = grid().dimension().size();
-    const double h = grid().dimension().step();
+    const int min = dimension().min();
+    const int max = dimension().max();
+    const int N = dimension().size();
+    const double h = dimension().step();
     const unsigned int n = y0.length();
 
     ry.clear();

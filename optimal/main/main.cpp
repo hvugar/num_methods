@@ -72,8 +72,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     A a;
     const unsigned int N = 100;
     DoubleVector ry; ry.resize(N+1);
-    UniformODEGrid grid(Dimension(0.01, 0, 100));
-    a.setGrid(grid);
+    a.setDimension(Dimension(0.01, 0, N));
     a.cauchyProblem(0.0, 0.0, ry, OrdinaryDifferentialEquation::OdeSolverMethod::EULER);
     IPrinter::print(ry,ry.length());
     return 0;

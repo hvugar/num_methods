@@ -8,7 +8,7 @@
 
 void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const DoubleVector &bt, std::vector<DoubleVector> &x)
 {
-    double h = grid().dimension().step();
+    double h = dimension().step();
 
     std::vector<Condition> cs = nscs;
     DoubleVector beta = bt;
@@ -42,7 +42,7 @@ void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const Doub
                     //unsigned int n = p->systemOrder();
                     double _SO = S0(t,x,k);
 
-                    GridNodeODE node(t, k);
+                    PointNodeODE node(t, k);
 
                     if (i<n)
                     {
@@ -69,7 +69,7 @@ void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const Doub
                     //unsigned int n = p.systemOrder();
                     double btr = x[n];
 
-                    GridNodeODE node(t, k);
+                    PointNodeODE node(t, k);
 
                     double s1 = 0.0;
                     for (unsigned int i=0; i<n; i++)
@@ -101,7 +101,7 @@ void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const Doub
             HelperB helper;
             helper.p = this;
             helper.n = n;
-            helper.setGrid(UniformODEGrid(Dimension(h, sc.nmbr, ec.nmbr)));
+            helper.setDimension(Dimension(h, sc.nmbr, ec.nmbr));
             helper.cauchyProblem(sc.time, x0, rx, NonLinearODE1stOrder::RK4);
 
             for (unsigned int i=0; i<n; i++) sc.mtrx[row][i] = rx[i];
@@ -145,7 +145,7 @@ void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const Doub
     protected:
         virtual double f(double t, const DoubleVector &x, unsigned int k, unsigned int i) const
         {
-            GridNodeODE node(t,k);
+            PointNodeODE node(t,k);
 
             double res = p->B(node,i);
             for (unsigned int j=0; j<n; j++) res += p->A(node,i,j)*x[j];
@@ -156,7 +156,7 @@ void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const Doub
     HelperB helper;
     helper.p = this;
     helper.n = n;
-    helper.setGrid(grid());
+    helper.setDimension(dimension());
     helper.cauchyProblem(nscs.back().time, x1, x, HelperB::RK4, HelperB::R2L);
 }
 
@@ -175,10 +175,12 @@ void LinearODE1stOrder::solveHighOderAccuracy(const std::vector<Condition> &cs, 
 
 void discretizationL2(const std::vector<LinearODE1stOrder::Condition> &cs, double *b, double h, unsigned int N)
 {
-    unsigned int cnd_size = cs.size();
+    const unsigned int cnd_size = static_cast<unsigned int>( cs.size() );
+
     for (unsigned int s=0; s<cnd_size; s++)
     {
         const LinearODE1stOrder::Condition &cnd = cs[s];
+
         double alpha = cnd.mtrx.at(0,0);
         double time  = cnd.time;
 
@@ -192,10 +194,12 @@ void discretizationL2(const std::vector<LinearODE1stOrder::Condition> &cs, doubl
 
 void discretizationL3(const std::vector<LinearODE1stOrder::Condition> &cs, double *b, double h, unsigned int N)
 {
-    unsigned int cnd_size = cs.size();
+    const unsigned int cnd_size = static_cast<unsigned int>( cs.size() );
+
     for (unsigned int s=0; s<cnd_size; s++)
     {
         const LinearODE1stOrder::Condition &cnd = cs[s];
+
         double alpha = cnd.mtrx.at(0,0);
         double time  = cnd.time;
 
@@ -231,10 +235,12 @@ void discretizationL3(const std::vector<LinearODE1stOrder::Condition> &cs, doubl
 
 void discretizationL4(const std::vector<LinearODE1stOrder::Condition> &cs, double *b, double h, unsigned int N)
 {
-    unsigned int cnd_size = cs.size();
+    const unsigned int cnd_size = static_cast<unsigned int>( cs.size() );
+
     for (unsigned int s=0; s<cnd_size; s++)
     {
         const LinearODE1stOrder::Condition &cnd = cs[s];
+
         double alpha = cnd.mtrx.at(0,0);
         double time  = cnd.time;
 
@@ -276,10 +282,12 @@ void discretization(const std::vector<LinearODE1stOrder::Condition> &cs, double 
 
 void discretizationL2(const std::vector<LinearODE1stOrder::Condition> &cs, DoubleMatrix* b, double h, unsigned int N)
 {
-    unsigned int cnd_size = cs.size();
+    const unsigned int cnd_size = static_cast<unsigned int>( cs.size() );
+
     for (unsigned int s=0; s<cnd_size; s++)
     {
         const LinearODE1stOrder::Condition &cnd = cs[s];
+
         const DoubleMatrix &alpha = cnd.mtrx;
         double time  = cnd.time;
 
@@ -293,10 +301,12 @@ void discretizationL2(const std::vector<LinearODE1stOrder::Condition> &cs, Doubl
 
 void discretizationL4(const std::vector<LinearODE1stOrder::Condition> &cs, DoubleMatrix* b, double h, unsigned int N)
 {
-    unsigned int cnd_size = cs.size();
+    const unsigned int cnd_size = static_cast<unsigned int>( cs.size() );
+
     for (unsigned int s=0; s<cnd_size; s++)
     {
         const LinearODE1stOrder::Condition &cnd = cs[s];
+
         const DoubleMatrix &alpha = cnd.mtrx;
         double time  = cnd.time;
 
@@ -340,8 +350,8 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
 {
     unsigned int en = equationsNumber();
 
-    double h = grid().dimension().step();
-    int N = grid().dimension().size();
+    double h = dimension().step();
+    int N = dimension().size();
 
     if (en == 1)
     {
@@ -388,7 +398,7 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
 
         for (unsigned int n=0; n<=N-2; n++)
         {
-            GridNodeODE node(n*h, n);
+            PointNodeODE node(n*h, n);
 
             double m = 1.0/(2.0*h*A(node)+3.0);
             double alpha1 = +4.0*m;
@@ -415,13 +425,13 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
         m[0][2] = q[N-1];
         c[0] = r[N-1];
 
-        GridNodeODE nodeN1((N-1)*h, N-1);
+        PointNodeODE nodeN1((N-1)*h, N-1);
         m[1][0] = -1.0;
         m[1][1] = -2.0*h*A(nodeN1);
         m[1][2] = +1.0;
         c[1] = 2.0*h*B(nodeN1);
 
-        GridNodeODE nodeN(N*h, N);
+        PointNodeODE nodeN(N*h, N);
         m[2][0] = +1.0;
         m[2][1] = -4.0;
         m[2][2] = 3.0-2.0*h*A(nodeN);
@@ -509,7 +519,7 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
 
         for (unsigned int n=0; n<=N-2; n++)
         {
-            GridNodeODE node(n*h, n);
+            PointNodeODE node(n*h, n);
 
             for (unsigned int row=0; row<en; row++)
             {
@@ -560,7 +570,7 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
             C[row] = r[N-1][row%en][0];
         }
 
-        GridNodeODE nodeN1((N-1)*h, N-1);
+        PointNodeODE nodeN1((N-1)*h, N-1);
         for (unsigned int row=1*en; row<2*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -1.0; }
@@ -569,7 +579,7 @@ void LinearODE1stOrder::highOder2Accuracy(const std::vector<Condition> &cs, cons
             C[row] = 2.0*h*B(nodeN1, row%en);
         }
 
-        GridNodeODE nodeN(N*h, N);
+        PointNodeODE nodeN(N*h, N);
         for (unsigned int row=2*en; row<3*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +1.0; }
@@ -638,8 +648,8 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
 {
     unsigned int en = equationsNumber();
 
-    double h = grid().dimension().step();
-    unsigned int N = grid().dimension().size();
+    double h = dimension().step();
+    unsigned int N = dimension().size();
 
     if (en == 1)
     {
@@ -690,7 +700,7 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
 
         for (unsigned int n=0; n<=N-4; n++)
         {
-            GridNodeODE node(n*h, n);
+            PointNodeODE node(n*h, n);
 
             double m = +1.0/(-12.0*h*A(node)-25.0);
             double alpha1 = -48.0*m;
@@ -722,7 +732,7 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
         m[0][4] = u[N-3];
         c[0] = r[N-3];
 
-        GridNodeODE nodeN3((N-3)*h, N-3);
+        PointNodeODE nodeN3((N-3)*h, N-3);
         m[1][0] = -3.0;
         m[1][1] = -10.0 - 12.0*h*A(nodeN3);
         m[1][2] = +18.0;
@@ -730,7 +740,7 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
         m[1][4] = +1.0;
         c[1] = 12.0*h*B(nodeN3);
 
-        GridNodeODE nodeN2((N-2)*h, N-2);
+        PointNodeODE nodeN2((N-2)*h, N-2);
         m[2][0] = +1.0;
         m[2][1] = -8.0;
         m[2][2] = +0.0 -12.0*h*A(nodeN2);
@@ -738,7 +748,7 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
         m[2][4] = -1.0;
         c[2] = 12.0*h*B(nodeN2);
 
-        GridNodeODE nodeN1((N-1)*h, N-1);
+        PointNodeODE nodeN1((N-1)*h, N-1);
         m[3][0] = -1.0;
         m[3][1] = +6.0;
         m[3][2] = -18.0;
@@ -746,7 +756,7 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
         m[3][4] = +3.0;
         c[3] = 12.0*h*B(nodeN1);
 
-        GridNodeODE nodeN0(N*h, N);
+        PointNodeODE nodeN0(N*h, N);
         m[4][0] = +3.0;
         m[4][1] = -16.0;
         m[4][2] = +36.0;
@@ -846,7 +856,7 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
 
         for (unsigned int n=0; n<=N-4; n++)
         {
-            GridNodeODE node(n*h, n);
+            PointNodeODE node(n*h, n);
 
             for (unsigned int row=0; row<en; row++)
             {
@@ -912,7 +922,7 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
             C[row] = r[N-3][row%en][0];
         }
 
-        GridNodeODE nodeN3((N-3)*h, N-3);
+        PointNodeODE nodeN3((N-3)*h, N-3);
         for (unsigned int row=1*en; row<2*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -3.0; }
@@ -923,7 +933,7 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
             C[row] = 12.0*h*B(nodeN3, row%en);
         }
 
-        GridNodeODE nodeN2((N-2)*h, N-2);
+        PointNodeODE nodeN2((N-2)*h, N-2);
         for (unsigned int row=2*en; row<3*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +1.0; }
@@ -934,7 +944,7 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
             C[row] = 12.0*h*B(nodeN2, row%en);
         }
 
-        GridNodeODE nodeN1((N-1)*h, N-1);
+        PointNodeODE nodeN1((N-1)*h, N-1);
         for (unsigned int row=3*en; row<4*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -1.0; }
@@ -945,7 +955,7 @@ void LinearODE1stOrder::highOder4Accuracy(const std::vector<Condition> &cs, cons
             C[row] = 12.0*h*B(nodeN1, row%en);
         }
 
-        GridNodeODE nodeN0(N*h, N);
+        PointNodeODE nodeN0(N*h, N);
         for (unsigned int row=4*en; row<5*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +3.0; }
@@ -1022,8 +1032,8 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
 {
     unsigned int en = equationsNumber();
 
-    double h = grid().dimension().step();
-    unsigned int N = grid().dimension().size();
+    double h = dimension().step();
+    unsigned int N = dimension().size();
 
     if (en == 1)
     {
@@ -1079,7 +1089,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
 
         for (unsigned int n=0; n<=N-6; n++)
         {
-            GridNodeODE node(n*h, n);
+            PointNodeODE node(n*h, n);
 
             double m = +1.0/(-60.0*h*A(node)-147.0);
             double alpha1 = -360.0*m;
@@ -1117,7 +1127,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
         m[0][6] = z[N-5];
         c[0] = r[N-5];
 
-        GridNodeODE nodeN5((N-5)*h, N-5);
+        PointNodeODE nodeN5((N-5)*h, N-5);
         m[1][0] = -10.0;
         m[1][1] = -77.0 - 60.0*h*A(nodeN5);
         m[1][2] = +150.0;
@@ -1127,7 +1137,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
         m[1][6] = +2.0;
         c[1] = 60.0*h*B(nodeN5);
 
-        GridNodeODE nodeN4((N-4)*h, N-4);
+        PointNodeODE nodeN4((N-4)*h, N-4);
         m[2][0] = +2.0;
         m[2][1] = -24.0;
         m[2][2] = -35.0 - 60.0*h*A(nodeN4);
@@ -1137,7 +1147,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
         m[2][6] = -1.0;
         c[2] = 60.0*h*B(nodeN4);
 
-        GridNodeODE nodeN3((N-3)*h, N-3);
+        PointNodeODE nodeN3((N-3)*h, N-3);
         m[3][0] = -1.0;
         m[3][1] = +9.0;
         m[3][2] = -45.0;
@@ -1147,7 +1157,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
         m[3][6] = +1.0;
         c[3] = 60.0*h*B(nodeN3);
 
-        GridNodeODE nodeN2((N-2)*h, N-2);
+        PointNodeODE nodeN2((N-2)*h, N-2);
         m[4][0] = +1.0;
         m[4][1] = -8.0;
         m[4][2] = +30.0;
@@ -1157,7 +1167,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
         m[4][6] = -2.0;
         c[4] = 60.0*h*B(nodeN2);
 
-        GridNodeODE nodeN1((N-1)*h, N-1);
+        PointNodeODE nodeN1((N-1)*h, N-1);
         m[5][0] = -2.0;
         m[5][1] = +15.0;
         m[5][2] = -50.0;
@@ -1167,7 +1177,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
         m[5][6] = +10.0;
         c[5] = 60.0*h*B(nodeN1);
 
-        GridNodeODE nodeN0(N*h, N);
+        PointNodeODE nodeN0(N*h, N);
         m[6][0] = +10.0;
         m[6][1] = -72.0;
         m[6][2] = +225.0;
@@ -1278,7 +1288,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
 
         for (unsigned int n=0; n<=N-6; n++)
         {
-            GridNodeODE node(n*h, n);
+            PointNodeODE node(n*h, n);
 
             for (unsigned int row=0; row<en; row++)
             {
@@ -1357,7 +1367,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
             C[row] = r[N-5][row%en][0];
         }
 
-        GridNodeODE nodeN5((N-5)*h, N-5);
+        PointNodeODE nodeN5((N-5)*h, N-5);
         for (unsigned int row=1*en; row<2*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -10.0; }
@@ -1370,7 +1380,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
             C[row] = 60.0*h*B(nodeN5, row%en);
         }
 
-        GridNodeODE nodeN4((N-4)*h, N-4);
+        PointNodeODE nodeN4((N-4)*h, N-4);
         for (unsigned int row=2*en; row<3*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +2.0; }
@@ -1383,7 +1393,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
             C[row] = 60.0*h*B(nodeN4, row%en);
         }
 
-        GridNodeODE nodeN3((N-3)*h, N-3);
+        PointNodeODE nodeN3((N-3)*h, N-3);
         for (unsigned int row=3*en; row<4*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -1.0; }
@@ -1396,7 +1406,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
             C[row] = 60.0*h*B(nodeN3, row%en);
         }
 
-        GridNodeODE nodeN2((N-2)*h, N-2);
+        PointNodeODE nodeN2((N-2)*h, N-2);
         for (unsigned int row=4*en; row<5*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +1.0; }
@@ -1409,7 +1419,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
             C[row] = 60.0*h*B(nodeN2, row%en);
         }
 
-        GridNodeODE nodeN1((N-1)*h, N-1);
+        PointNodeODE nodeN1((N-1)*h, N-1);
         for (unsigned int row=5*en; row<6*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += -2.0; }
@@ -1422,7 +1432,7 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
             C[row] = 60.0*h*B(nodeN1, row%en);
         }
 
-        GridNodeODE nodeN0(N*h, N);
+        PointNodeODE nodeN0(N*h, N);
         for (unsigned int row=6*en; row<7*en; row++)
         {
             for (unsigned int col=0*en; col<1*en; col++) { M[row][col] = +0.0; if (row%en == col%en) M[row][col] += +10.0; }
@@ -1504,3 +1514,336 @@ void LinearODE1stOrder::highOder6Accuracy(const std::vector<Condition> &cs, cons
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void LinearODE1stOrder::solve(const std::vector<NonLocalCondition> &C, const DoubleVector &d,
+                              std::vector<DoubleVector> &x,
+                              unsigned int k, unsigned int M, Direction direction) const
+{
+    const unsigned int min = static_cast<unsigned int>( dimension().min() );
+    const unsigned int max = static_cast<unsigned int>( dimension().max() );
+    const unsigned int sze = static_cast<unsigned int>( dimension().size() );
+    const unsigned int end = static_cast<unsigned int>( sze-k+1 );
+    const double h = dimension().step();
+
+    const unsigned int L = static_cast<unsigned int>(C.size());
+
+    std::vector<DoubleMatrix> D;
+    D.resize(sze+1);
+    for (unsigned int i=0; i<=sze; i++) D[i].resize(M,M);
+
+    DoubleMatrix **betta = new DoubleMatrix*[end+1];
+
+    for (unsigned int i=0; i<=end; i++)
+    {
+        betta[i] = new DoubleMatrix[k+1];
+        betta[i][0].resize(sze,1);
+        for (unsigned int j=1; j<=k; j++) betta[i][k].resize(M,M);
+    }
+
+    for (unsigned int i=0; i<=end; i++)
+    {
+        if (i==0)
+        {
+            betta[i][0] = d;
+            for (unsigned int j=1; j<=k; j++) betta[i][j] = D[j-1];
+        }
+        else
+        {
+            DoubleMatrix alpha[k+1];
+            double t = i*h;
+            PointNodeODE node(t,static_cast<int>(i));
+            DoubleMatrix mx(M, M);
+
+            if (k==2)
+            {
+                for (unsigned int r=0; r<M; r++)
+                {
+                    for (unsigned int c=0; c<M; c++)
+                    {
+                        mx[r][c] = 2.0*h*A(node, r+1, c+1);
+                    }
+                    mx[r][r] += 3.0;
+                }
+                mx.inverse();
+                alpha[0].resize(M, 1, 0.0);
+                for (unsigned int m=0; m<M; m++) { (alpha[0])[m][0] = -2.0*h*B(node,m+1); }
+                alpha[0] = mx*alpha[0];
+                alpha[1].resize(M, M, 0.0);
+                for (unsigned int m=0; m<M; m++) { (alpha[1])[m][m] = +4.0; }
+                alpha[1] = mx*alpha[1];
+                alpha[2].resize(M, M, 0.0);
+                for (unsigned int m=0; m<M; m++) { (alpha[2])[m][m] = -1.0; }
+                alpha[2] = mx*alpha[2];
+            }
+
+            if (k==4)
+            {
+                for (unsigned int r=0; r<M; r++)
+                {
+                    for (unsigned int c=0; c<M; c++)
+                    {
+                        mx[r][c] = 12.0*h*A(node, r+1, c+1);
+                    }
+                    mx[r][r] += 25.0;
+                }
+                mx.inverse();
+
+                alpha[0].resize(M, 1, 0.0);
+                for (unsigned int m=0; m<M; m++) { (alpha[0])[m][0] = -12.0*h*B(node,m+1); }
+                alpha[0] = mx*alpha[0];
+                alpha[1].resize(M, M, 0.0);
+                for (unsigned int m=0; m<M; m++) { (alpha[1])[m][m] = +48.0; }
+                alpha[1] = mx*alpha[1];
+                alpha[2].resize(M, M, 0.0);
+                for (unsigned int m=0; m<M; m++) { (alpha[2])[m][m] = -36.0; }
+                alpha[2] = mx*alpha[2];
+                alpha[3].resize(M, M, 0.0);
+                for (unsigned int m=0; m<M; m++) { (alpha[3])[m][m] = +16.0; }
+                alpha[3] = mx*alpha[3];
+                alpha[4].resize(M, M, 0.0);
+                for (unsigned int m=0; m<M; m++) { (alpha[4])[m][m] = -3.0; }
+                alpha[4] = mx*alpha[4];
+            }
+
+            if (k==6)
+            {
+                DoubleMatrix mx(M, M);
+                for (unsigned int r=0; r<M; r++)
+                {
+                    for (unsigned int c=0; c<M; c++)
+                    {
+                        mx[r][c] = 60.0*h*A(node, r+1, c+1);
+                    }
+                    mx[r][r] += 147.0;
+                }
+                mx.inverse();
+
+                alpha[0].resize(M, 1, 0.0);
+                for (unsigned int m=0; m<M; m++) { (alpha[0])[m][0] = -60.0*h*B(node,m+1); }
+                alpha[0] = mx*alpha[0];
+                alpha[1].resize(M, M, 0.0);
+                for (unsigned int m=0; m<M; m++) { (alpha[1])[m][m] = +360.0; }
+                alpha[1] = mx*alpha[1];
+                alpha[2].resize(M, M, 0.0);
+                for (unsigned int m=0; m<M; m++) { (alpha[2])[m][m] = -450.0; }
+                alpha[2] = mx*alpha[2];
+                alpha[3].resize(M, M, 0.0);
+                for (unsigned int m=0; m<M; m++) { (alpha[3])[m][m] = +400.0; }
+                alpha[3] = mx*alpha[3];
+                alpha[4].resize(M, M, 0.0);
+                for (unsigned int m=0; m<M; m++) { (alpha[4])[m][m] = -225.0; }
+                alpha[4] = mx*alpha[4];
+                alpha[5].resize(M, M, 0.0);
+                for (unsigned int m=0; m<M; m++) { (alpha[5])[m][m] = +72.0; }
+                alpha[5] = mx*alpha[5];
+                alpha[6].resize(M, M, 0.0);
+                for (unsigned int m=0; m<M; m++) { (alpha[6])[m][m] = -10.0; }
+                alpha[6] = mx*alpha[6];
+            }
+
+            betta[i][0] = betta[i-1][0] - betta[i-1][1]*alpha[0];
+            for (unsigned int j=1; j<=k-1; j++)
+            {
+                betta[i][j] = betta[i-1][j+1] + betta[i-1][1]*alpha[j];
+            }
+            betta[i][k] = D[k+(i-1)] + betta[i-1][1]*alpha[k];
+        }
+    }
+
+    DoubleMatrix F;
+    DoubleVector g;
+
+    F.clear(); F.resize((k+1)*M, (k+1)*M);
+    g.clear(); g.resize((k+1)*M);
+
+    if (k==2)
+    {
+        double t1 = (sze-1)*h; PointNodeODE node1(t1,static_cast<int>((sze-1)));
+        double t0 = (sze-0)*h; PointNodeODE node0(t0,static_cast<int>((sze-0)));
+        for (unsigned int r=0; r<M; r++)
+        {
+            for (unsigned int c=0; c<M; c++)
+            {
+                F[0*M+r][0*M+c] = 0.0;
+                F[0*M+r][1*M+c] = betta[end][1][r][c];
+                F[0*M+r][2*M+c] = betta[end][2][r][c];
+
+                F[1*M+r][0*M+c] = 0.0;                     if (r==c) F[1*M+r][0*M+c] += -1.0;
+                F[1*M+r][1*M+c] = -2.0*h*A(node1,r+1,c+1); if (r==c) F[1*M+r][1*M+c] += +0.0;
+                F[1*M+r][2*M+c] = 0.0;                     if (r==c) F[1*M+r][2*M+c] += +1.0;
+
+                F[2*M+r][0*M+c] = 0.0;                     if (r==c) F[2*M+r][0*M+c] += +1.0;
+                F[2*M+r][1*M+c] = 0.0;                     if (r==c) F[2*M+r][1*M+c] += -4.0;
+                F[2*M+r][2*M+c] = -2.0*h*A(node0,r+1,c+1); if (r==c) F[2*M+r][2*M+c] += +3.0;
+            }
+            g[0*M+r] = betta[end][0][r][0];
+            g[1*M+r] = 2.0*h*B(node1,r+1);
+            g[2*M+r] = 2.0*h*B(node0,r+1);
+        }
+    }
+
+    if (k==4)
+    {
+        double t3 = (sze-3)*h; PointNodeODE node3(t3,static_cast<int>((sze-3)));
+        double t2 = (sze-2)*h; PointNodeODE node2(t2,static_cast<int>((sze-2)));
+        double t1 = (sze-1)*h; PointNodeODE node1(t1,static_cast<int>((sze-1)));
+        double t0 = (sze-0)*h; PointNodeODE node0(t0,static_cast<int>((sze-0)));
+
+        for (unsigned int r=0; r<M; r++)
+        {
+            for (unsigned int c=0; c<M; c++)
+            {
+                F[0*M+r][0*M+c] = 0.0;
+                F[0*M+r][1*M+c] = betta[end][1][r][c];
+                F[0*M+r][2*M+c] = betta[end][2][r][c];
+                F[0*M+r][3*M+c] = betta[end][3][r][c];
+                F[0*M+r][4*M+c] = betta[end][4][r][c];
+
+                F[1*M+r][0*M+c] = 0.0;                       if (r==c) F[1*M+r][0*M+c] += -3.0;
+                F[1*M+r][1*M+c] = -12.0*h*A(node3, r+1,c+1); if (r==c) F[1*M+r][1*M+c] += -10.0;
+                F[1*M+r][2*M+c] = 0.0;                       if (r==c) F[1*M+r][2*M+c] += +18.0;
+                F[1*M+r][3*M+c] = 0.0;                       if (r==c) F[1*M+r][3*M+c] += -6.0;
+                F[1*M+r][4*M+c] = 0.0;                       if (r==c) F[1*M+r][4*M+c] += +1.0;
+
+                F[2*M+r][0*M+c] = 0.0;                       if (r==c) F[2*M+r][0*M+c] += +1.0;
+                F[2*M+r][1*M+c] = 0.0;                       if (r==c) F[2*M+r][1*M+c] += -8.0;
+                F[2*M+r][2*M+c] = -12.0*h*A(node2, r+1,c+1); if (r==c) F[2*M+r][2*M+c] += +0.0;
+                F[2*M+r][3*M+c] = 0.0;                       if (r==c) F[2*M+r][3*M+c] += +8.0;
+                F[2*M+r][4*M+c] = 0.0;                       if (r==c) F[2*M+r][4*M+c] += -1.0;
+
+                F[3*M+r][0*M+c] = 0.0;                       if (r==c) F[3*M+r][0*M+c] += -1.0;
+                F[3*M+r][1*M+c] = 0.0;                       if (r==c) F[3*M+r][1*M+c] += +6.0;
+                F[3*M+r][2*M+c] = 0.0;                       if (r==c) F[3*M+r][2*M+c] += -18.0;
+                F[3*M+r][3*M+c] = -12.0*h*A(node1, r+1,c+1); if (r==c) F[3*M+r][3*M+c] += +10.0;
+                F[3*M+r][4*M+c] = 0.0;                       if (r==c) F[3*M+r][4*M+c] += +3.0;
+
+                F[4*M+r][0*M+c] = 0.0;                       if (r==c) F[4*M+r][0*M+c] += +3.0;
+                F[4*M+r][1*M+c] = 0.0;                       if (r==c) F[4*M+r][1*M+c] += -16.0;
+                F[4*M+r][2*M+c] = 0.0;                       if (r==c) F[4*M+r][2*M+c] += +36.0;
+                F[4*M+r][3*M+c] = 0.0;                       if (r==c) F[4*M+r][3*M+c] += -48.0;
+                F[4*M+r][4*M+c] = -12.0*h*A(node0, r+1,c+1); if (r==c) F[4*M+r][4*M+c] += +25.0;
+            }
+            g[0*M+r] = betta[end][0][r][0];
+            g[1*M+r] = +12.0*h*B(node3, r+1);
+            g[2*M+r] = +12.0*h*B(node2, r+1);
+            g[3*M+r] = +12.0*h*B(node1, r+1);
+            g[4*M+r] = +12.0*h*B(node0, r+1);
+        }
+
+    }
+
+    if (k==6)
+    {
+        double t5 = (sze-5)*h; PointNodeODE node5(t5,static_cast<int>((sze-5)));
+        double t4 = (sze-4)*h; PointNodeODE node4(t4,static_cast<int>((sze-4)));
+        double t3 = (sze-3)*h; PointNodeODE node3(t3,static_cast<int>((sze-3)));
+        double t2 = (sze-2)*h; PointNodeODE node2(t2,static_cast<int>((sze-2)));
+        double t1 = (sze-1)*h; PointNodeODE node1(t1,static_cast<int>((sze-1)));
+        double t0 = (sze-0)*h; PointNodeODE node0(t0,static_cast<int>((sze-0)));
+
+        for (unsigned int r=0; r<M; r++)
+        {
+            for (unsigned int c=0; c<M; c++)
+            {
+                F[0*M+r][0*M+c] = 0.0;
+                F[0*M+r][1*M+c] = betta[end][1][r][c];
+                F[0*M+r][2*M+c] = betta[end][2][r][c];
+                F[0*M+r][3*M+c] = betta[end][3][r][c];
+                F[0*M+r][4*M+c] = betta[end][4][r][c];
+                F[0*M+r][5*M+c] = betta[end][5][r][c];
+                F[0*M+r][6*M+c] = betta[end][6][r][c];
+
+                F[1*M+r][0*M+c] = 0.0;                      if (r==c) F[1*M+r][0*M+c] += -10.0;
+                F[1*M+r][1*M+c] = -60.0*h*A(node5,r+1,c+1); if (r==c) F[1*M+r][1*M+c] += -77.0;
+                F[1*M+r][2*M+c] = 0.0;                      if (r==c) F[1*M+r][2*M+c] += +150.0;
+                F[1*M+r][3*M+c] = 0.0;                      if (r==c) F[1*M+r][3*M+c] += -100.0;
+                F[1*M+r][4*M+c] = 0.0;                      if (r==c) F[1*M+r][4*M+c] += +50.0;
+                F[1*M+r][5*M+c] = 0.0;                      if (r==c) F[1*M+r][5*M+c] += -15.0;
+                F[1*M+r][6*M+c] = 0.0;                      if (r==c) F[1*M+r][6*M+c] += +2.0;
+
+                F[2*M+r][0*M+c] = 0.0;                      if (r==c) F[2*M+r][0*M+c] += +2.0;
+                F[2*M+r][1*M+c] = 0.0;                      if (r==c) F[2*M+r][1*M+c] += -24.0;
+                F[2*M+r][2*M+c] = -60.0*h*A(node4,r+1,c+1); if (r==c) F[2*M+r][2*M+c] += -35.0;
+                F[2*M+r][3*M+c] = 0.0;                      if (r==c) F[2*M+r][3*M+c] += +80.0;
+                F[2*M+r][4*M+c] = 0.0;                      if (r==c) F[2*M+r][4*M+c] += -30.0;
+                F[2*M+r][5*M+c] = 0.0;                      if (r==c) F[2*M+r][5*M+c] += +8.0;
+                F[2*M+r][6*M+c] = 0.0;                      if (r==c) F[2*M+r][6*M+c] += -1.0;
+
+                F[3*M+r][0*M+c] = 0.0;                      if (r==c) F[3*M+r][0*M+c] += -1.0;
+                F[3*M+r][1*M+c] = 0.0;                      if (r==c) F[3*M+r][1*M+c] += +9.0;
+                F[3*M+r][2*M+c] = 0.0;                      if (r==c) F[3*M+r][2*M+c] += -45.0;
+                F[3*M+r][3*M+c] = -60.0*h*A(node3,r+1,c+1); if (r==c) F[3*M+r][3*M+c] += +0.0;
+                F[3*M+r][4*M+c] = 0.0;                      if (r==c) F[3*M+r][4*M+c] += +45.0;
+                F[3*M+r][5*M+c] = 0.0;                      if (r==c) F[3*M+r][5*M+c] += -9.0;
+                F[3*M+r][6*M+c] = 0.0;                      if (r==c) F[3*M+r][6*M+c] += +1.0;
+
+                F[4*M+r][0*M+c] = 0.0;                      if (r==c) F[4*M+r][0*M+c] += +1.0;
+                F[4*M+r][1*M+c] = 0.0;                      if (r==c) F[4*M+r][1*M+c] += -8.0;
+                F[4*M+r][2*M+c] = 0.0;                      if (r==c) F[4*M+r][2*M+c] += +30.0;
+                F[4*M+r][3*M+c] = 0.0;                      if (r==c) F[4*M+r][3*M+c] += -80.0;
+                F[4*M+r][4*M+c] = -60.0*h*A(node2,r+1,c+1); if (r==c) F[4*M+r][4*M+c] += +35.0;
+                F[4*M+r][5*M+c] = 0.0;                      if (r==c) F[4*M+r][5*M+c] += +24.0;
+                F[4*M+r][6*M+c] = 0.0;                      if (r==c) F[4*M+r][6*M+c] += -2.0;
+
+                F[5*M+r][0*M+c] = 0.0;                      if (r==c) F[5*M+r][0*M+c] += -2.0;
+                F[5*M+r][1*M+c] = 0.0;                      if (r==c) F[5*M+r][1*M+c] += +15.0;
+                F[5*M+r][2*M+c] = 0.0;                      if (r==c) F[5*M+r][2*M+c] += -50.0;
+                F[5*M+r][3*M+c] = 0.0;                      if (r==c) F[5*M+r][3*M+c] += +100.0;
+                F[5*M+r][4*M+c] = 0.0;                      if (r==c) F[5*M+r][4*M+c] += -150.0;
+                F[5*M+r][5*M+c] = -60.0*h*A(node1,r+1,c+1); if (r==c) F[5*M+r][5*M+c] += +77.0;
+                F[5*M+r][6*M+c] = 0.0;                      if (r==c) F[5*M+r][6*M+c] += +10.0;
+
+                F[6*M+r][0*M+c] = 0.0;                      if (r==c) F[6*M+r][0*M+c] += +10.0;
+                F[6*M+r][1*M+c] = 0.0;                      if (r==c) F[6*M+r][1*M+c] += -72.0;
+                F[6*M+r][2*M+c] = 0.0;                      if (r==c) F[6*M+r][2*M+c] += +225.0;
+                F[6*M+r][3*M+c] = 0.0;                      if (r==c) F[6*M+r][3*M+c] += -400.0;
+                F[6*M+r][4*M+c] = 0.0;                      if (r==c) F[6*M+r][4*M+c] += +450.0;
+                F[6*M+r][5*M+c] = 0.0;                      if (r==c) F[6*M+r][5*M+c] += -360.0;
+                F[6*M+r][6*M+c] = -60.0*h*A(node0,r+1,c+1); if (r==c) F[6*M+r][6*M+c] += +147.0;
+            }
+            g[0*M+r] = betta[end][0][r][0];
+            g[1*M+r] = +60.0*h*B(node5,r+1);
+            g[2*M+r] = +60.0*h*B(node4,r+1);
+            g[3*M+r] = +60.0*h*B(node3,r+1);
+            g[4*M+r] = +60.0*h*B(node2,r+1);
+            g[5*M+r] = +60.0*h*B(node1,r+1);
+            g[6*M+r] = +60.0*h*B(node0,r+1);
+        }
+    }
+
+    DoubleVector xf((k+1)*M);
+    LinearEquation::GaussianElimination(F, g, xf);
+
+    F.clear();
+    g.clear();
+
+    x.resize(sze+1); for (unsigned int n=0; n<=sze; n++) x[n].resize(M);
+
+    unsigned int s = xf.length()-M;
+    unsigned int e = xf.length()-1;
+    for (unsigned int n=sze; n>=sze-k; n--)
+    {
+        x[n] = xf.mid(s, e);
+        s -= M;
+        e -= M;
+    }
+    xf.clear();
+
+    unsigned int stop = static_cast<unsigned int>(0)-1;
+    for (unsigned int n=(sze-k)-1; n!=stop; n--)
+    {
+        x[n] = betta[n][0];
+        for (unsigned int j=2; j<=k; j++) x[n] -= betta[n][j]*x[n+j-1];
+        for (unsigned int j=n+k; j<=sze; j++) x[n] -= D[j]*x[j];
+        betta[n][1].inverse();
+        x[n] = betta[n][1]*x[n];
+    }
+
+    for (unsigned int n=0; n<=end; n++)
+    {
+        betta[n][0].clear();
+        for (unsigned int i=1; i<=k; i++) betta[n][k].clear();
+        delete [] betta[n];
+    }
+    delete [] betta;
+}

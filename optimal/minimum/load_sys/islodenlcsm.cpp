@@ -41,7 +41,7 @@ void ISystemLinearODENonLocalContionsM::calculateForward(DoubleMatrix &x)
     unsigned int n1 = lscs.mtrx.rows();
     unsigned int n2 = rscs.mtrx.rows();
     unsigned int n = n0 + n1 + n2;
-    double h = grid().dimension().step();
+    double h = dimension().step();
 
     DoubleVector ix(n+2);
     DoubleVector ox(n+2);
@@ -74,7 +74,7 @@ void ISystemLinearODENonLocalContionsM::calculateForward(DoubleMatrix &x)
                 ix[n+1] = 1.0;
 
                 CauchyProblemM1stOrderAM cpa(*this);
-                cpa.setGrid(UniformODEGrid(h, ec.nmbr, sc.nmbr));
+                cpa.setDimension(Dimension(h, ec.nmbr, sc.nmbr));
                 cpa.row = row;
                 cpa.col = col;
                 cpa.cauchyProblem(sc.time, ix, ox, CauchyProblemM1stOrderAM::RK4, CauchyProblemM1stOrderAM::L2R);
@@ -159,7 +159,7 @@ void ISystemLinearODENonLocalContionsM::calculateBackwardCP(DoubleMatrix &x, std
         }
     }
     CauchyProblemM1stOrderBM cpb(*this);
-    cpb.setGrid(grid());
+    cpb.setDimension(dimension());
     cpb.n = systemOrder();
     std::vector<DoubleVector> rm;
     cpb.cauchyProblem(1.0, y, rm, CauchyProblemM1stOrderBM::RK4, CauchyProblemM1stOrderBM::R2L);

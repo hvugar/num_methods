@@ -4,7 +4,8 @@
 #include "diffequ.h"
 
 /**
- * @brief The Linear ODE 2nd order in canonical (normal) form R(x)y"(x) + P(x)y'(x) + Q(x)y(x) = F(x);
+ * @brief Линейное дифференциальное уравнение второго порядка с переменными коэффициентами
+ * The Linear ODE 2nd order in canonical (normal) form R(x)y"(x) + P(x)y'(x) + Q(x)y(x) = F(x);
  */
 class MINIMUMSHARED_EXPORT LinearODE2ndOrder : virtual public LinearODE
 {
@@ -32,28 +33,28 @@ protected:
      * @param i index of independent variable of given grid
      * @return
      */
-    virtual double R(const GridNodeODE &node, unsigned int row = 0, unsigned int col = 0) const = 0;
+    virtual double R(const PointNodeODE &node, unsigned int row = 0, unsigned int col = 0) const = 0;
     /**
      * @brief P one dimensional matrix-function
      * @param x independent variable
      * @param i index of independent variable of given grid
      * @return
      */
-    virtual double P(const GridNodeODE &node, unsigned int row = 0, unsigned int col = 0) const = 0;
+    virtual double P(const PointNodeODE &node, unsigned int row = 0, unsigned int col = 0) const = 0;
     /**
      * @brief Q one dimensional matrix-function
      * @param x independent variable
      * @param i index of independent variable of given grid
      * @return
      */
-    virtual double Q(const GridNodeODE &node, unsigned int row = 0, unsigned int col = 0) const = 0;
+    virtual double Q(const PointNodeODE &node, unsigned int row = 0, unsigned int col = 0) const = 0;
     /**
      * @brief R one dimensional vector-function
      * @param x independent variable
      * @param i index of independent variable of given grid
      * @return
      */
-    virtual double F(const GridNodeODE &node, unsigned int row = 0) const = 0;
+    virtual double F(const PointNodeODE &node, unsigned int row = 0) const = 0;
 
 private:
 
