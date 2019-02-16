@@ -36,7 +36,7 @@ struct MINIMUMSHARED_EXPORT TimeNodePDE : public TimeMoment
     unsigned int i;
 };
 
-struct PointODE
+struct MINIMUMSHARED_EXPORT PointODE
 {
     PointODE(double x = 0.0);
 

@@ -5,7 +5,7 @@
 
 struct NonLocalCondition
 {
-    double x;
+    PointNodeODE n;
     DoubleMatrix m;
     unsigned int i;
 };
@@ -25,39 +25,53 @@ public:
         unsigned int index;
     };
 
+    enum class AccuracyStep
+    {
+        Step_2 = 2,
+        Step_4 = 4,
+        Step_6 = 6
+    };
+
+    /**
+     * @brief solve transfer of conditions
+     * @param C
+     * @param d
+     * @param x
+     * @param k
+     * @param M
+     * @param direction
+     */
+    void transferOfCondition(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k, unsigned int M, Direction direction = Direction::L2R) const;
+
     void calculate(const std::vector<Condition> &cs, const DoubleVector &bt, std::vector<DoubleVector> &x);
 
-    void solveHighOderAccuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x, unsigned int k, Direction direction = L2R);
+//    void solveHighOderAccuracy(const std::vector<Condition>& cs, const DoubleVector& rs, std::vector<DoubleVector>& x, unsigned int k, Direction direction = L2R);
 
     void calculate(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction = L2R) const;
     void calculate(double x0, double y0, std::vector<double> &ry, Direction direction = L2R) const;
 
-    void solve(const std::vector<NonLocalCondition> &C, const DoubleVector &d,
-               std::vector<DoubleVector> &x,
-               unsigned int k, unsigned int M, Direction direction = Direction::L2R) const;
-
-    /* high order accuracy */
-
-private:
-    void highOder2Accuracy(const std::vector<Condition> &cs, const DoubleVector &rs, std::vector<DoubleVector> &x, Direction direction = L2R);
-    void highOder4Accuracy(const std::vector<Condition> &cs, const DoubleVector &rs, std::vector<DoubleVector> &x, Direction direction = L2R);
-    void highOder6Accuracy(const std::vector<Condition> &cs, const DoubleVector &rs, std::vector<DoubleVector> &x, Direction direction = L2R);
+//private:
+//    void highOder2Accuracy(const std::vector<Condition> &cs, const DoubleVector &rs, std::vector<DoubleVector> &x, Direction direction = L2R);
+//    void highOder4Accuracy(const std::vector<Condition> &cs, const DoubleVector &rs, std::vector<DoubleVector> &x, Direction direction = L2R);
+//    void highOder6Accuracy(const std::vector<Condition> &cs, const DoubleVector &rs, std::vector<DoubleVector> &x, Direction direction = L2R);
 
 protected:
     /**
-     * @brief A one dimensional matrix-function
-     * @param x independent variable
-     * @param i index of independent variable of given grid
+     * @brief A  A nxn dimensional matrix-function
+     * @param node
+     * @param row <= n
+     * @param col <= n
      * @return
      */
-    virtual double A(const PointNodeODE &node, unsigned int row = 0, unsigned int col = 0) const = 0;
+
+    virtual double A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const = 0;
     /**
-     * @brief B one dimensional vector-function
-     * @param x independent variable
-     * @param i index of independent variable of given grid
+     * @brief B n dimensional vector-function
+     * @param node
+     * @param row
      * @return
      */
-    virtual double B(const PointNodeODE &node, unsigned int row = 0) const = 0;
+    virtual double B(const PointNodeODE &node, unsigned int row = 1) const = 0;
 };
 
 

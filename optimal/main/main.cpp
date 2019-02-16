@@ -47,7 +47,7 @@
 
 #include <QtGui>
 #include <r1minimize.h>
-#include "nonlocal.h"
+#include "linearode1storderex1.h"
 
 class A : public NonLinearODE1stOrder
 {
@@ -69,12 +69,15 @@ double A::f(double x, double y, unsigned int k) const
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-    A a;
-    const unsigned int N = 100;
-    DoubleVector ry; ry.resize(N+1);
-    a.setDimension(Dimension(0.01, 0, N));
-    a.cauchyProblem(0.0, 0.0, ry, OrdinaryDifferentialEquation::OdeSolverMethod::EULER);
-    IPrinter::print(ry,ry.length());
+//    A a;
+//    const unsigned int N = 100;
+//    DoubleVector ry; ry.resize(N+1);
+//    a.setDimension(Dimension(0.01, 0, N));
+//    a.cauchyProblem(0.0, 0.0, ry, OrdinaryDifferentialEquation::OdeSolverMethod::EULER);
+//    IPrinter::print(ry,ry.length());
+
+    LinearODE1stOrderEx1::Main(argc, argv);
+
     return 0;
 
     //srand(static_cast<unsigned int>(time(nullptr)));
