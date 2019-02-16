@@ -1,9 +1,9 @@
 #ifndef DIFFENSIALEQUATION_H
 #define DIFFENSIALEQUATION_H
 
-#include "global.h"
-#include <vector2d.h>
-#include "grid/grid.h"
+#include "../global.h"
+#include "../vector2d.h"
+#include "../grid/grid.h"
 #include "../linearequation.h"
 
 /**
@@ -21,8 +21,6 @@ class MINIMUMSHARED_EXPORT DifferentialEquation
 public:
     DifferentialEquation();
     virtual ~DifferentialEquation();
-
-    virtual unsigned int equationsNumber() const;
 };
 
 /**
@@ -57,17 +55,21 @@ public:
         R2L  // Right to Left
     };
 
-    Dimension _dimension;
-
     const Dimension& dimension() const;
     void setDimension(const Dimension &dimension);
+
+    virtual unsigned int count() const = 0;
+
+private:
+    Dimension _dimension;
 };
 
 /**
  * @brief Линейное дифференциальное уравнение с переменными коэффициентами
  *
  */
-class MINIMUMSHARED_EXPORT LinearODE : public OrdinaryDifferentialEquation {};
+class MINIMUMSHARED_EXPORT LinearODE : public OrdinaryDifferentialEquation
+{};
 
 /**
  * @brief The NonLinearODE class
@@ -84,17 +86,17 @@ protected:
     Dimension _dimension;
 };
 
-class MINIMUMSHARED_EXPORT SystemDifferentialEquationODE : public SystemDifferentialEquation
-{};
+//class MINIMUMSHARED_EXPORT SystemDifferentialEquationODE : public SystemDifferentialEquation
+//{};
 
-class MINIMUMSHARED_EXPORT SystemLinearODE : public SystemDifferentialEquationODE {};
+//class MINIMUMSHARED_EXPORT SystemLinearODE : public SystemDifferentialEquationODE {};
 
-class MINIMUMSHARED_EXPORT SystemLinearODE1stOrder : public SystemLinearODE
-{
-protected:
-    virtual double A(double t, unsigned int k, unsigned int row = 0, unsigned int col = 0) const = 0;
-    virtual double B(double t, unsigned int k, unsigned int row = 0) const = 0;
-};
+//class MINIMUMSHARED_EXPORT SystemLinearODE1stOrder : public SystemLinearODE
+//{
+//protected:
+//    virtual double A(double t, unsigned int k, unsigned int row = 0, unsigned int col = 0) const = 0;
+//    virtual double B(double t, unsigned int k, unsigned int row = 0) const = 0;
+//};
 
 //class MINIMUMSHARED_EXPORT SystemNonLinearODE : public SystemDifferentialEquationODE
 //{};

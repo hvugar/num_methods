@@ -48,11 +48,21 @@
 #include <QtGui>
 #include <r1minimize.h>
 #include "linearode1storderex1.h"
+#include "nonlinearode1storderex1.h"
 
 class A : public NonLinearODE1stOrder
 {
 public:
     virtual double f(double x, double y, unsigned int k) const;
+};
+
+class B
+{
+public:
+    B(int i=1) : a(i) { std::cout << "B constructor " << a << std::endl; }
+    virtual ~B() { std::cout << "B destructor" << std::endl; }
+
+    int a;
 };
 
 double A::f(double x, double y, unsigned int k) const
@@ -69,6 +79,11 @@ double A::f(double x, double y, unsigned int k) const
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
+//    B *b = new B[5];
+//    puts("---");
+//    delete [] b;
+//    return 0;
+
 //    A a;
 //    const unsigned int N = 100;
 //    DoubleVector ry; ry.resize(N+1);
@@ -76,7 +91,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //    a.cauchyProblem(0.0, 0.0, ry, OrdinaryDifferentialEquation::OdeSolverMethod::EULER);
 //    IPrinter::print(ry,ry.length());
 
-    LinearODE1stOrderEx1::Main(argc, argv);
+    //LinearODE1stOrderEx1::Main(argc, argv);
+    NonLinearODE1stOrderEx2::Main(argc, argv);
 
     return 0;
 

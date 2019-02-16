@@ -17,6 +17,7 @@ public:
 protected:
     virtual double A(const PointNodeODE &node, unsigned int row = 0, unsigned int col = 0) const;
     virtual double B(const PointNodeODE &node, unsigned int row = 0) const;
+    virtual unsigned int count() const;
     virtual double x(const PointNodeODE &node, unsigned int row = 0) const;
 };
 

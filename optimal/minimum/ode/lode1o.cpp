@@ -6,25 +6,144 @@
 #include <cmethods.h>
 #include <float.h>
 
-void LinearODE1stOrder::transferOfCondition(const std::vector<NonLocalCondition> &C, const DoubleVector &d,
-                              std::vector<DoubleVector> &x,
-                              unsigned int k, unsigned int M, Direction direction) const
+NonLocalCondition::NonLocalCondition() {}
+
+NonLocalCondition::NonLocalCondition(unsigned int i, const PointNodeODE &node, const DoubleMatrix &m) : i(i), n(node), m(m)  {}
+
+NonLocalCondition::~NonLocalCondition()
 {
-    const unsigned int min = static_cast<unsigned int>( dimension().min() );
-    const unsigned int max = static_cast<unsigned int>( dimension().max() );
+    m.clear();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+LinearODE1stOrderException::LinearODE1stOrderException(unsigned int msgCode) NOEXCEPT : _msgCode(msgCode)  {}
+
+LinearODE1stOrderException::~LinearODE1stOrderException() {}
+
+const char* LinearODE1stOrderException::what() const NOEXCEPT
+{
+    if (_msgCode == 1) return "Error: Dimension of matrices do not matches!";
+    if (_msgCode == 2) return "Error: Non-local condition matrix is not square matrix!";
+    if (_msgCode == 3) return "Error: Non-local condition matrix dimension is not matches with count of differensial equations!";
+    if (_msgCode == 4) return "Error: Rigth side of non-local conditions is not matches with count of differensial equations!";
+    return "Error: Unknown error!";
+}
+
+void LinearODE1stOrder::discritize(const std::vector<NonLocalCondition> &co, std::vector<NonLocalCondition> &cn, unsigned int k) const
+{
+    const auto cnd_size = static_cast<unsigned int>( co.size() );
+    const auto h = dimension().step();
+    const auto min = dimension().min();
+    const auto max = dimension().max();
+    //const auto sze = dimension().size();
+
+    unsigned int idx = 0;
+    for (unsigned int s=0; s<cnd_size; s++)
+    {
+        const NonLocalCondition &c = co[s];
+        const DoubleMatrix &m = c.m;
+        const PointNodeODE &n = c.n;
+
+        double min_x = min*h;
+        double max_x = max*h;
+        for (auto i=min; i<=max; i++)
+        {
+            double cx = i*h;
+            auto dh = fabs(n.x - cx);
+
+            if (k==2)
+            {
+                if (dh <= h) cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), (1.0 - dh/h)*m));
+            }
+
+            if (k==3) // TO-DO
+            {
+                double h20 = h*h;
+                double h21 = 1.0/h20;
+                double h22 = 1.0/(2.0*h20);
+
+                if (min_x < n.x && n.x < min_x+h)
+                {
+                    if (i==min+0) cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), ((h-dh)*(2.0*h-dh)) * h22 * m));
+                    if (i==min+1) cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), ((h-dh)*(h+dh)) * h21 * m));
+                    if (i==min+2) cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), ((2.0*h-dh)*(h-dh)) * h22 * m));
+
+                }
+                else if (max_x-h < n.x && n.x < max_x)
+                {
+                    if (i==max-2) cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), ((h-dh)*(2.0*h-dh)) * h22 * m));
+                    if (i==max-1) cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), ((h-dh)*(h+dh)) * h21 * m));
+                    if (i==max-0) cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), ((2.0*h-dh)*(h-dh)) * h22 * m));
+                }
+                else
+                {
+                    if (dh <= h && cx <= n.x)               cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), ((2.0*h-dh)*(h-dh)) * h22 * m));
+                    if (dh <= h && cx >= n.x)               cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), ((h-dh)*(h+dh)) * h21 * m));
+                    if (dh > h && dh <= 2.0*h && cx >= n.x) cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), ((2.0*h-dh)*(h-dh)) * h22 * m));
+                }
+            }
+
+            if (k==4)
+            {
+                double h30 = h*h*h;
+                double h32 = (1.0/(2.0*h30));
+                double h36 = (1.0/(6.0*h30));
+
+                if (min_x < n.x && n.x < min_x+h)
+                {
+                    if (i==min+0) cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36 * m));
+                    if (i==min+1) cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), ((2.0*h+dh)*(h-dh)*(h+dh)) * h32 * m));
+                    if (i==min+2) cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), ((2.0*h-dh)*(h-dh)*(h+dh)) * h32 * m));
+                    if (i==min+3) cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36 * m));
+                }
+                else if (max_x-h < n.x && n.x < max_x)
+                {
+                    if (i==max-3) cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36 * m));
+                    if (i==max-2) cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), ((2.0*h-dh)*(h-dh)*(h+dh)) * h32 * m));
+                    if (i==max-1) cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), ((2.0*h+dh)*(h-dh)*(h+dh)) * h32 * m));
+                    if (i==max-0) cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36 * m));
+                }
+                else
+                {
+                    if (dh <= h)               cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), ((2.0*h-dh)*(h-dh)*(h+dh)) * h32 * m));
+                    if (dh > h && dh <= 2.0*h) cn.push_back(NonLocalCondition(idx++, PointNodeODE(cx, i), ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36 * m));
+                }
+            }
+        }
+    }
+}
+
+void LinearODE1stOrder::transferOfCondition(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const
+{
+    if (co.size() < 2) throw LinearODE1stOrderException(1);
+    for (unsigned int i=0; i<co.size(); i++)
+    {
+        const DoubleMatrix &m = co[i].m;
+        if (!m.squareMatrix()) throw LinearODE1stOrderException(2);
+        if (m.rows() != count()) throw LinearODE1stOrderException(3);
+        if (d.length() != count()) throw LinearODE1stOrderException(4);
+    }
+
+    //const unsigned int min = static_cast<unsigned int>( dimension().min() );
+    //const unsigned int max = static_cast<unsigned int>( dimension().max() );
     const unsigned int sze = static_cast<unsigned int>( dimension().size() );
     const unsigned int end = static_cast<unsigned int>( sze-k+1 );
     const double h = dimension().step();
+    const unsigned int M = count();
 
-    const unsigned int L = static_cast<unsigned int>(C.size());
+    //const unsigned int L = static_cast<unsigned int>(C.size());
 
-    std::vector<DoubleMatrix> D(sze+1);
+    std::vector<NonLocalCondition> C;
+    discritize(co, C);
+
+    DoubleMatrix * const D = new DoubleMatrix[sze+1];
     for (unsigned int i=0; i<=sze; i++) D[i].resize(M,M);
 
     for (unsigned int i=0; i<C.size(); i++)
     {
         unsigned int index = static_cast<unsigned int>(C[i].n.i);
-        D[index] = C[i].m;
+        D[index] += C[i].m;
     }
 
     DoubleMatrix **betta = new DoubleMatrix*[end+1];
@@ -114,7 +233,6 @@ void LinearODE1stOrder::transferOfCondition(const std::vector<NonLocalCondition>
             delete [] alpha;
         }
     }
-
 
     DoubleMatrix F((k+1)*M, (k+1)*M);
     DoubleVector g((k+1)*M);
@@ -313,336 +431,339 @@ void LinearODE1stOrder::transferOfCondition(const std::vector<NonLocalCondition>
     }
     delete [] betta;
     /************************************************************************/
+
+    delete [] D;
+    C.clear();
 }
 
-void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const DoubleVector &bt, std::vector<DoubleVector> &x)
-{
-    double h = dimension().step();
+//void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const DoubleVector &bt, std::vector<DoubleVector> &x)
+//{
+//    double h = dimension().step();
 
-    std::vector<Condition> cs = nscs;
-    DoubleVector beta = bt;
+//    std::vector<Condition> cs = nscs;
+//    DoubleVector beta = bt;
 
-    unsigned int L = cs.size();
-    unsigned int n = 0;
-    if (L!=0) n = cs.at(0).mtrx.rows();
+//    unsigned int L = cs.size();
+//    unsigned int n = 0;
+//    if (L!=0) n = cs.at(0).mtrx.rows();
 
-    DoubleVector x0(n+2);
-    DoubleVector rx(n+2);
-    for (unsigned int row=0; row<n; row++)
-    {
-        for (unsigned int s=0; s<L-1; s++)
-        {
-            Condition &sc = cs.at(s);
-            Condition &ec = cs.at(s+1);
+//    DoubleVector x0(n+2);
+//    DoubleVector rx(n+2);
+//    for (unsigned int row=0; row<n; row++)
+//    {
+//        for (unsigned int s=0; s<L-1; s++)
+//        {
+//            Condition &sc = cs.at(s);
+//            Condition &ec = cs.at(s+1);
 
-            for (unsigned int i=0; i<n; i++) x0[i] = sc.mtrx[row][i];
-            x0[n] = beta[row];
-            x0[n+1] = 1.0;
+//            for (unsigned int i=0; i<n; i++) x0[i] = sc.mtrx[row][i];
+//            x0[n] = beta[row];
+//            x0[n+1] = 1.0;
 
-            struct HelperB : public NonLinearODE1stOrder
-            {
-                LinearODE1stOrder *p;
-                unsigned int n;
+//            struct HelperB : public NonLinearODE1stOrder
+//            {
+//                LinearODE1stOrder *p;
+//                unsigned int n;
 
-                virtual double f(double, double, unsigned int) const { return NAN; }
+//                virtual double f(double, double, unsigned int) const { return NAN; }
 
-                virtual double f(double t, const DoubleVector &x, unsigned int k, unsigned int i) const
-                {
-                    //unsigned int n = p->systemOrder();
-                    double _SO = S0(t,x,k);
+//                virtual double f(double t, const DoubleVector &x, unsigned int k, unsigned int i) const
+//                {
+//                    //unsigned int n = p->systemOrder();
+//                    double _SO = S0(t,x,k);
 
-                    PointNodeODE node(t, k);
+//                    PointNodeODE node(t, k);
 
-                    if (i<n)
-                    {
-                        double res = _SO*x[i];
-                        for (unsigned int j=0; j<n; j++) res -= p->A(node,j,i)*x[j];
-                        return res;
-                    }
-                    else if (i==n)
-                    {
-                        double res = _SO*x[n];
-                        for (unsigned int j=0; j<n; j++) res += p->B(node,j)*x[j];
-                        return res;
-                    }
-                    else
-                    {
-                        return _SO*x[n+1];
-                    }
+//                    if (i<n)
+//                    {
+//                        double res = _SO*x[i];
+//                        for (unsigned int j=0; j<n; j++) res -= p->A(node,j,i)*x[j];
+//                        return res;
+//                    }
+//                    else if (i==n)
+//                    {
+//                        double res = _SO*x[n];
+//                        for (unsigned int j=0; j<n; j++) res += p->B(node,j)*x[j];
+//                        return res;
+//                    }
+//                    else
+//                    {
+//                        return _SO*x[n+1];
+//                    }
 
-                    return NAN;
-                }
+//                    return NAN;
+//                }
 
-                double S0(double t, const DoubleVector &x, unsigned int k) const
-                {
-                    //unsigned int n = p.systemOrder();
-                    double btr = x[n];
+//                double S0(double t, const DoubleVector &x, unsigned int k) const
+//                {
+//                    //unsigned int n = p.systemOrder();
+//                    double btr = x[n];
 
-                    PointNodeODE node(t, k);
+//                    PointNodeODE node(t, k);
 
-                    double s1 = 0.0;
-                    for (unsigned int i=0; i<n; i++)
-                    {
-                        double aa = 0.0;
-                        for (unsigned int j=0; j<n; j++) aa += x[j]*p->A(node,j,i);
-                        s1 += aa*x[i];
-                    }
+//                    double s1 = 0.0;
+//                    for (unsigned int i=0; i<n; i++)
+//                    {
+//                        double aa = 0.0;
+//                        for (unsigned int j=0; j<n; j++) aa += x[j]*p->A(node,j,i);
+//                        s1 += aa*x[i];
+//                    }
 
-                    double s2 = 0.0;
-                    for (unsigned int i=0; i<n; i++)
-                    {
-                        s2 += x[i]*p->B(node,i);
-                    }
-                    s2 *= btr;
+//                    double s2 = 0.0;
+//                    for (unsigned int i=0; i<n; i++)
+//                    {
+//                        s2 += x[i]*p->B(node,i);
+//                    }
+//                    s2 *= btr;
 
 
-                    double m1 = 0.0;
-                    for (unsigned int i=0; i<n; i++)
-                    {
-                        m1 += x[i]*x[i];
-                    }
-                    m1 += btr*btr;
+//                    double m1 = 0.0;
+//                    for (unsigned int i=0; i<n; i++)
+//                    {
+//                        m1 += x[i]*x[i];
+//                    }
+//                    m1 += btr*btr;
 
-                    return (s1-s2)/m1;
-                }
-            };
+//                    return (s1-s2)/m1;
+//                }
+//            };
 
-            HelperB helper;
-            helper.p = this;
-            helper.n = n;
-            helper.setDimension(Dimension(h, sc.nmbr, ec.nmbr));
-            helper.cauchyProblem(sc.time, x0, rx, NonLinearODE1stOrder::RK4);
+//            HelperB helper;
+//            helper.p = this;
+//            helper.n = n;
+//            helper.setDimension(Dimension(h, sc.nmbr, ec.nmbr));
+//            helper.cauchyProblem(sc.time, x0, rx, NonLinearODE1stOrder::RK4);
 
-            for (unsigned int i=0; i<n; i++) sc.mtrx[row][i] = rx[i];
-            beta[row] = rx[n];
-            double M = rx[n+1];
+//            for (unsigned int i=0; i<n; i++) sc.mtrx[row][i] = rx[i];
+//            beta[row] = rx[n];
+//            double M = rx[n+1];
 
-            for (unsigned int j=s+1; j<L; j++)
-            {
-                Condition &cc = cs.at(j);
-                for (unsigned int i=0; i<n; i++) cc.mtrx[row][i] *= M;
-            }
+//            for (unsigned int j=s+1; j<L; j++)
+//            {
+//                Condition &cc = cs.at(j);
+//                for (unsigned int i=0; i<n; i++) cc.mtrx[row][i] *= M;
+//            }
 
-            for (unsigned int i=0; i<n; i++) ec.mtrx[row][i] += rx[i];
-        }
-    }
-    x.clear();
-    rx.clear();
+//            for (unsigned int i=0; i<n; i++) ec.mtrx[row][i] += rx[i];
+//        }
+//    }
+//    x.clear();
+//    rx.clear();
 
-    // Separated conditions in right side
+//    // Separated conditions in right side
 
-    DoubleMatrix A(n, n);
-    DoubleVector b(n);
-    DoubleVector x1(n);
+//    DoubleMatrix A(n, n);
+//    DoubleVector b(n);
+//    DoubleVector x1(n);
 
-    Condition c0 = cs.at(L-1);
-    for (unsigned int row=0; row<n; row++)
-    {
-        for (unsigned int col=0; col<n; col++)
-        {
-            A[row][col] = c0.mtrx[row][col];
-        }
-        b[row] = beta[row];
-    }
+//    Condition c0 = cs.at(L-1);
+//    for (unsigned int row=0; row<n; row++)
+//    {
+//        for (unsigned int col=0; col<n; col++)
+//        {
+//            A[row][col] = c0.mtrx[row][col];
+//        }
+//        b[row] = beta[row];
+//    }
 
-    LinearEquation::GaussianElimination(A, b, x1);
+//    LinearEquation::GaussianElimination(A, b, x1);
 
-    struct HelperB : public NonLinearODE1stOrder
-    {
-        LinearODE1stOrder *p;
-        unsigned int n;
-    protected:
-        virtual double f(double t, const DoubleVector &x, unsigned int k, unsigned int i) const
-        {
-            PointNodeODE node(t,k);
+//    struct HelperB : public NonLinearODE1stOrder
+//    {
+//        LinearODE1stOrder *p;
+//        unsigned int n;
+//    protected:
+//        virtual double f(double t, const DoubleVector &x, unsigned int k, unsigned int i) const
+//        {
+//            PointNodeODE node(t,k);
 
-            double res = p->B(node,i);
-            for (unsigned int j=0; j<n; j++) res += p->A(node,i,j)*x[j];
-            return res;
-        }
-    };
+//            double res = p->B(node,i);
+//            for (unsigned int j=0; j<n; j++) res += p->A(node,i,j)*x[j];
+//            return res;
+//        }
+//    };
 
-    HelperB helper;
-    helper.p = this;
-    helper.n = n;
-    helper.setDimension(dimension());
-    helper.cauchyProblem(nscs.back().time, x1, x, HelperB::RK4, HelperB::R2L);
-}
+//    HelperB helper;
+//    helper.p = this;
+//    helper.n = n;
+//    helper.setDimension(dimension());
+//    helper.cauchyProblem(nscs.back().time, x1, x, HelperB::RK4, HelperB::R2L);
+//}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void discretizationL2(const std::vector<LinearODE1stOrder::Condition> &cs, double *b, double h, unsigned int N)
-{
-    const unsigned int cnd_size = static_cast<unsigned int>( cs.size() );
+//void discretizationL2(const std::vector<LinearODE1stOrder::Condition> &cs, double *b, double h, unsigned int N)
+//{
+//    const unsigned int cnd_size = static_cast<unsigned int>( cs.size() );
 
-    for (unsigned int s=0; s<cnd_size; s++)
-    {
-        const LinearODE1stOrder::Condition &cnd = cs[s];
+//    for (unsigned int s=0; s<cnd_size; s++)
+//    {
+//        const LinearODE1stOrder::Condition &cnd = cs[s];
 
-        double alpha = cnd.mtrx.at(0,0);
-        double time  = cnd.time;
+//        double alpha = cnd.mtrx.at(0,0);
+//        double time  = cnd.time;
 
-        for (unsigned int n=0; n<=N; n++)
-        {
-            double dh = fabs(time - n*h);
-            if (dh <= h) b[n] += (1.0 - dh/h)*alpha;
-        }
-    }
-}
+//        for (unsigned int n=0; n<=N; n++)
+//        {
+//            double dh = fabs(time - n*h);
+//            if (dh <= h) b[n] += (1.0 - dh/h)*alpha;
+//        }
+//    }
+//}
 
-void discretizationL3(const std::vector<LinearODE1stOrder::Condition> &cs, double *b, double h, unsigned int N)
-{
-    const unsigned int cnd_size = static_cast<unsigned int>( cs.size() );
+//void discretizationL3(const std::vector<LinearODE1stOrder::Condition> &cs, double *b, double h, unsigned int N)
+//{
+//    const unsigned int cnd_size = static_cast<unsigned int>( cs.size() );
 
-    for (unsigned int s=0; s<cnd_size; s++)
-    {
-        const LinearODE1stOrder::Condition &cnd = cs[s];
+//    for (unsigned int s=0; s<cnd_size; s++)
+//    {
+//        const LinearODE1stOrder::Condition &cnd = cs[s];
 
-        double alpha = cnd.mtrx.at(0,0);
-        double time  = cnd.time;
+//        double alpha = cnd.mtrx.at(0,0);
+//        double time  = cnd.time;
 
-        double h2 = h*h;
-        double h21 = (1.0/h2) * alpha;
-        double h22 = (1.0/(2.0*h2)) * alpha;
-        for (unsigned int n=0; n<=N; n++)
-        {
-            double curt = n*h;
-            double dh = fabs(time - curt);
+//        double h2 = h*h;
+//        double h21 = (1.0/h2) * alpha;
+//        double h22 = (1.0/(2.0*h2)) * alpha;
+//        for (unsigned int n=0; n<=N; n++)
+//        {
+//            double curt = n*h;
+//            double dh = fabs(time - curt);
 
-            if (0.0 < time && time < h/* && n < 4*/)
-            {
-                if (n==0) b[n] += ((h-dh)*(2.0*h-dh)) * h22;
-                if (n==1) b[n] += ((h-dh)*(h+dh)) * h21;
-                if (n==2) b[n] += ((2.0*h-dh)*(h-dh)) * h22;
-            }
-            else if ((N-1)*h < time && time < N*h/* && n > N-4*/)
-            {
-                if (n==N-2) b[n] += ((h-dh)*(2.0*h-dh)) * h22;
-                if (n==N-1) b[n] += ((h-dh)*(h+dh)) * h21;
-                if (n==N-0) b[n] += ((2.0*h-dh)*(h-dh)) * h22;
-            }
-            else
-            {
-                if (dh <= h && n*h <= time)               b[n] += ((2.0*h-dh)*(h-dh)) * h22;
-                if (dh <= h && n*h >= time)               b[n] += ((h-dh)*(h+dh)) * h21;
-                if (dh > h && dh <= 2.0*h && n*h >= time) b[n] += ((2.0*h-dh)*(h-dh)) * h22;
-            }
-        }
-    }
-}
+//            if (0.0 < time && time < h/* && n < 4*/)
+//            {
+//                if (n==0) b[n] += ((h-dh)*(2.0*h-dh)) * h22;
+//                if (n==1) b[n] += ((h-dh)*(h+dh)) * h21;
+//                if (n==2) b[n] += ((2.0*h-dh)*(h-dh)) * h22;
+//            }
+//            else if ((N-1)*h < time && time < N*h/* && n > N-4*/)
+//            {
+//                if (n==N-2) b[n] += ((h-dh)*(2.0*h-dh)) * h22;
+//                if (n==N-1) b[n] += ((h-dh)*(h+dh)) * h21;
+//                if (n==N-0) b[n] += ((2.0*h-dh)*(h-dh)) * h22;
+//            }
+//            else
+//            {
+//                if (dh <= h && n*h <= time)               b[n] += ((2.0*h-dh)*(h-dh)) * h22;
+//                if (dh <= h && n*h >= time)               b[n] += ((h-dh)*(h+dh)) * h21;
+//                if (dh > h && dh <= 2.0*h && n*h >= time) b[n] += ((2.0*h-dh)*(h-dh)) * h22;
+//            }
+//        }
+//    }
+//}
 
-void discretizationL4(const std::vector<LinearODE1stOrder::Condition> &cs, double *b, double h, unsigned int N)
-{
-    const unsigned int cnd_size = static_cast<unsigned int>( cs.size() );
+//void discretizationL4(const std::vector<LinearODE1stOrder::Condition> &cs, double *b, double h, unsigned int N)
+//{
+//    const unsigned int cnd_size = static_cast<unsigned int>( cs.size() );
 
-    for (unsigned int s=0; s<cnd_size; s++)
-    {
-        const LinearODE1stOrder::Condition &cnd = cs[s];
+//    for (unsigned int s=0; s<cnd_size; s++)
+//    {
+//        const LinearODE1stOrder::Condition &cnd = cs[s];
 
-        double alpha = cnd.mtrx.at(0,0);
-        double time  = cnd.time;
+//        double alpha = cnd.mtrx.at(0,0);
+//        double time  = cnd.time;
 
-        double h3 = h*h*h;
-        double h32 = (1.0/(2.0*h3)) * alpha;
-        double h36 = (1.0/(6.0*h3)) * alpha;
-        for (unsigned int n=0; n<=N; n++)
-        {
-            double curt = n*h;
-            double dh = fabs(time - curt);
+//        double h3 = h*h*h;
+//        double h32 = (1.0/(2.0*h3)) * alpha;
+//        double h36 = (1.0/(6.0*h3)) * alpha;
+//        for (unsigned int n=0; n<=N; n++)
+//        {
+//            double curt = n*h;
+//            double dh = fabs(time - curt);
 
-            if (0.0 < time && time < h/* && n < 4*/)
-            {
-                if (n==0) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
-                if (n==1) b[n] += ((2.0*h+dh)*(h-dh)*(h+dh)) * h32;
-                if (n==2) b[n] += ((2.0*h-dh)*(h-dh)*(h+dh)) * h32;
-                if (n==3) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
-            }
-            else if ((N-1)*h < time && time < N*h/* && n > N-4*/)
-            {
-                if (n==N-3) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
-                if (n==N-2) b[n] += ((2.0*h-dh)*(h-dh)*(h+dh)) * h32;
-                if (n==N-1) b[n] += ((2.0*h+dh)*(h-dh)*(h+dh)) * h32;
-                if (n==N-0) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
-            }
-            else
-            {
-                if (dh <= h)               b[n] += ((2.0*h-dh)*(h-dh)*(h+dh)) * h32;
-                if (dh > h && dh <= 2.0*h) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
-            }
-        }
-    }
-}
+//            if (0.0 < time && time < h/* && n < 4*/)
+//            {
+//                if (n==0) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+//                if (n==1) b[n] += ((2.0*h+dh)*(h-dh)*(h+dh)) * h32;
+//                if (n==2) b[n] += ((2.0*h-dh)*(h-dh)*(h+dh)) * h32;
+//                if (n==3) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+//            }
+//            else if ((N-1)*h < time && time < N*h/* && n > N-4*/)
+//            {
+//                if (n==N-3) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+//                if (n==N-2) b[n] += ((2.0*h-dh)*(h-dh)*(h+dh)) * h32;
+//                if (n==N-1) b[n] += ((2.0*h+dh)*(h-dh)*(h+dh)) * h32;
+//                if (n==N-0) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+//            }
+//            else
+//            {
+//                if (dh <= h)               b[n] += ((2.0*h-dh)*(h-dh)*(h+dh)) * h32;
+//                if (dh > h && dh <= 2.0*h) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+//            }
+//        }
+//    }
+//}
 
-void discretization(const std::vector<LinearODE1stOrder::Condition> &cs, double *b, double h, unsigned int N)
-{
-    discretizationL4(cs, b, h, N);
-}
+//void discretization(const std::vector<LinearODE1stOrder::Condition> &cs, double *b, double h, unsigned int N)
+//{
+//    discretizationL4(cs, b, h, N);
+//}
 
-void discretizationL2(const std::vector<LinearODE1stOrder::Condition> &cs, DoubleMatrix* b, double h, unsigned int N)
-{
-    const unsigned int cnd_size = static_cast<unsigned int>( cs.size() );
+//void discretizationL2(const std::vector<LinearODE1stOrder::Condition> &cs, DoubleMatrix* b, double h, unsigned int N)
+//{
+//    const unsigned int cnd_size = static_cast<unsigned int>( cs.size() );
 
-    for (unsigned int s=0; s<cnd_size; s++)
-    {
-        const LinearODE1stOrder::Condition &cnd = cs[s];
+//    for (unsigned int s=0; s<cnd_size; s++)
+//    {
+//        const LinearODE1stOrder::Condition &cnd = cs[s];
 
-        const DoubleMatrix &alpha = cnd.mtrx;
-        double time  = cnd.time;
+//        const DoubleMatrix &alpha = cnd.mtrx;
+//        double time  = cnd.time;
 
-        for (unsigned int n=0; n<=N; n++)
-        {
-            double dh = fabs(time - n*h);
-            if (dh <= h) b[n] += (1.0 - dh/h)*alpha;
-        }
-    }
-}
+//        for (unsigned int n=0; n<=N; n++)
+//        {
+//            double dh = fabs(time - n*h);
+//            if (dh <= h) b[n] += (1.0 - dh/h)*alpha;
+//        }
+//    }
+//}
 
-void discretizationL4(const std::vector<LinearODE1stOrder::Condition> &cs, DoubleMatrix* b, double h, unsigned int N)
-{
-    const unsigned int cnd_size = static_cast<unsigned int>( cs.size() );
+//void discretizationL4(const std::vector<LinearODE1stOrder::Condition> &cs, DoubleMatrix* b, double h, unsigned int N)
+//{
+//    const unsigned int cnd_size = static_cast<unsigned int>( cs.size() );
 
-    for (unsigned int s=0; s<cnd_size; s++)
-    {
-        const LinearODE1stOrder::Condition &cnd = cs[s];
+//    for (unsigned int s=0; s<cnd_size; s++)
+//    {
+//        const LinearODE1stOrder::Condition &cnd = cs[s];
 
-        const DoubleMatrix &alpha = cnd.mtrx;
-        double time  = cnd.time;
+//        const DoubleMatrix &alpha = cnd.mtrx;
+//        double time  = cnd.time;
 
-        double h3 = h*h*h;
-        DoubleMatrix h32 = (1.0/(2.0*h3)) * alpha;
-        DoubleMatrix h36 = (1.0/(6.0*h3)) * alpha;
-        for (unsigned int n=0; n<=N; n++)
-        {
-            double curt = n*h;
-            double dh = fabs(time - curt);
+//        double h3 = h*h*h;
+//        DoubleMatrix h32 = (1.0/(2.0*h3)) * alpha;
+//        DoubleMatrix h36 = (1.0/(6.0*h3)) * alpha;
+//        for (unsigned int n=0; n<=N; n++)
+//        {
+//            double curt = n*h;
+//            double dh = fabs(time - curt);
 
-            if (0.0 < time && time < h && n < 4)
-            {
-                if (n==0) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
-                if (n==1) b[n] += ((2.0*h+dh)*(h-dh)*(h+dh)) * h32;
-                if (n==2) b[n] += ((2.0*h-dh)*(h-dh)*(h+dh)) * h32;
-                if (n==3) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
-            }
-            else if ((N-1)*h < time && time < N*h && n > N-4)
-            {
-                if (n==N-3) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
-                if (n==N-2) b[n] += ((2.0*h-dh)*(h-dh)*(h+dh)) * h32;
-                if (n==N-1) b[n] += ((2.0*h+dh)*(h-dh)*(h+dh)) * h32;
-                if (n==N-0) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
-            }
-            else
-            {
-                if (dh <= h)               b[n] += ((2.0*h-dh)*(h-dh)*(h+dh)) * h32;
-                if (dh > h && dh <= 2.0*h) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
-            }
-        }
-    }
-}
+//            if (0.0 < time && time < h && n < 4)
+//            {
+//                if (n==0) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+//                if (n==1) b[n] += ((2.0*h+dh)*(h-dh)*(h+dh)) * h32;
+//                if (n==2) b[n] += ((2.0*h-dh)*(h-dh)*(h+dh)) * h32;
+//                if (n==3) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+//            }
+//            else if ((N-1)*h < time && time < N*h && n > N-4)
+//            {
+//                if (n==N-3) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+//                if (n==N-2) b[n] += ((2.0*h-dh)*(h-dh)*(h+dh)) * h32;
+//                if (n==N-1) b[n] += ((2.0*h+dh)*(h-dh)*(h+dh)) * h32;
+//                if (n==N-0) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+//            }
+//            else
+//            {
+//                if (dh <= h)               b[n] += ((2.0*h-dh)*(h-dh)*(h+dh)) * h32;
+//                if (dh > h && dh <= 2.0*h) b[n] += ((2.0*h-dh)*(h-dh)*(3.0*h-dh)) * h36;
+//            }
+//        }
+//    }
+//}
 
-void discretization(const std::vector<LinearODE1stOrder::Condition> &cs, DoubleMatrix* b, double h, unsigned int N)
-{
-    discretizationL4(cs, b, h, N);
-}
+//void discretization(const std::vector<LinearODE1stOrder::Condition> &cs, DoubleMatrix* b, double h, unsigned int N)
+//{
+//    discretizationL4(cs, b, h, N);
+//}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

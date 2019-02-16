@@ -228,43 +228,46 @@ void NonLinearODE1stOrder::calculateRK2(double x0, const DoubleVector &y0, std::
 {
     const int min = dimension().min();
     const int max = dimension().max();
-    const int N = dimension().size();
+    const unsigned int N = static_cast<unsigned int>( dimension().size() );
     const double h = dimension().step();
-    const unsigned int n = y0.length();
+    const unsigned int m = count();
 
-    ry.clear();
-    ry.resize(n);
-    for (unsigned int i=0; i<n; i++) ry[i].resize(N+1);
+    ry.clear(); ry.resize(N+1); for (unsigned int n=0; n<=N; n++) ry[n].resize(m);
 
-    double *k1 = (double*) malloc( sizeof(double) * n );
-    double *k2 = (double*) malloc( sizeof(double) * n );
+    double *k1 = static_cast<double*>( malloc(sizeof(double)*m) );
+    double *k2 = static_cast<double*>( malloc(sizeof(double)*m) );
 
     if (direction == L2R)
     {
         double h2 = h/2.0;
+        ry[0] = y0;
 
-        double xn = x0;
+//        double xn = x0;
 
-        DoubleVector yn(n);
+        DoubleVector yn(m);
 
         /* initializing */
-        for (unsigned int j=0; j<n; j++) ry[j][0] = y0[j];
+//        for (unsigned int j=0; j<n; j++) ry[j][0] = y0[j];
 
-        for (unsigned int i=min+1; i<=max; i++)
+        for (int i=min+1; i<=max; i++)
         {
+            const unsigned int mi = static_cast<unsigned int>(i-min);
+            const PointNodeODE node1((i-1)*h, i-1);
+            const PointNodeODE node2((i-1)*h+h2, i-1);
+
             // k1
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-min];
-            for (unsigned int j=0; j<n; j++) k1[j] = f(xn, yn, i-1, j);
+            //for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-min];
+            for (unsigned int j=0; j<m; j++) k1[j] = f(node1, ry[mi-1], j+1);
 
             // k2
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-min]+h2*k1[j];
-            for (unsigned int j=0; j<n; j++) k2[j] = f(xn+h2, yn, i-1, j);
+            for (unsigned int j=0; j<m; j++) yn[j] = ry[mi-1][j]+h2*k1[j];
+            for (unsigned int j=0; j<m; j++) k2[j] = f(node2, yn, j+1);
 
-            for (unsigned int j=0; j<n; j++) ry[j][i-min] = ry[j][(i-1)-min] + h * k2[j];
-
-            xn += h;
+            for (unsigned int j=0; j<m; j++) ry[mi][j] = ry[mi-1][j] + h * k2[j];
         }
     }
+
+    const unsigned int n = y0.length();
 
     if (direction == R2L)
     {
@@ -301,56 +304,53 @@ void NonLinearODE1stOrder::calculateRK4(double x0, const DoubleVector &y0, std::
 {
     const int min = dimension().min();
     const int max = dimension().max();
-    const int N = dimension().size();
+    const unsigned int N = static_cast<unsigned int>( dimension().size() );
     const double h = dimension().step();
-    const unsigned int n = y0.length();
+    const unsigned int m = count();
 
+    ry.resize(N+1); for (unsigned int n=0; n<=N; n++) ry[n].resize(N+1);
 
-    ry.clear();
-    ry.resize(n);
-    for (unsigned int i=0; i<n; i++) ry[i].resize(N+1);
-
-    double *k1 = ( double* ) malloc( sizeof(double) * n );
-    double *k2 = ( double* ) malloc( sizeof(double) * n );
-    double *k3 = ( double* ) malloc( sizeof(double) * n );
-    double *k4 = ( double* ) malloc( sizeof(double) * n );
+    double *k1 = static_cast<double*>( malloc( sizeof(double)*m ) );
+    double *k2 = static_cast<double*>( malloc( sizeof(double)*m ) );
+    double *k3 = static_cast<double*>( malloc( sizeof(double)*m ) );
+    double *k4 = static_cast<double*>( malloc( sizeof(double)*m ) );
 
     if (direction == L2R)
     {
         double h2 = h/2.0;
         double h6 = h/6.0;
+        ry[0] = y0;
 
-        double xn = x0;
+        DoubleVector yn(m);
 
-        DoubleVector yn(n);
-
-        /* initializing */
-        for (unsigned int j=0; j<n; j++) ry[j][0] = y0[j];
-
-        for (unsigned int i=min; i<max; i++)
+        for (int i=min+1; i<=max; i++)
         {
+            const unsigned int mi = static_cast<unsigned int>(i-min);
+            const PointNodeODE node1((i-1)*h, i-1);
+            const PointNodeODE node2((i-1)*h+h2, i-1);
+            const PointNodeODE node3((i-1)*h+h2, i-1);
+            const PointNodeODE node4((i-1)*h+h, i-1);
+
             // k1
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-min];
-            for (unsigned int j=0; j<n; j++) k1[j] = f(xn, yn, i, j);
+            for (unsigned int j=0; j<m; j++) k1[j] = f(node1, ry[mi-1], j+1);
 
             // k2
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-min]+h2*k1[j];
-            for (unsigned int j=0; j<n; j++) k2[j] = f(xn+h2, yn, i, j);
+            for (unsigned int j=0; j<m; j++) yn[j] = ry[mi-1][j]+h2*k1[j];
+            for (unsigned int j=0; j<m; j++) k2[j] = f(node2, yn, j+1);
 
             // k3
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-min]+h2*k2[j];
-            for (unsigned int j=0; j<n; j++) k3[j] = f(xn+h2, yn, i, j);
+            for (unsigned int j=0; j<m; j++) yn[j] = ry[mi-1][j]+h2*k2[j];
+            for (unsigned int j=0; j<m; j++) k3[j] = f(node3, yn, j+1);
 
             // k4
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i-min]+h*k3[j];
-            for (unsigned int j=0; j<n; j++) k4[j] = f(xn+h, yn, i, j);
+            for (unsigned int j=0; j<m; j++) yn[j] = ry[mi-1][j]+h*k3[j];
+            for (unsigned int j=0; j<m; j++) k4[j] = f(node4, yn, j+1);
 
-            for (unsigned int j=0; j<n; j++) ry[j][i-min+1] = ry[j][i-min] + h6 * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
-
-            xn += h;
+            for (unsigned int j=0; j<m; j++) ry[mi][j] = ry[mi-1][j] + h6 * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
         }
     }
 
+    const unsigned int n = y0.length();
     if (direction == R2L)
     {
         double h2 = h/2.0;
@@ -387,7 +387,6 @@ void NonLinearODE1stOrder::calculateRK4(double x0, const DoubleVector &y0, std::
         }
     }
 
-
     free(k4);
     free(k3);
     free(k2);
@@ -398,32 +397,27 @@ void NonLinearODE1stOrder::calculateEuler(double x0, const DoubleVector &y0, std
 {
     const int min = dimension().min();
     const int max = dimension().max();
-    const int N = dimension().size();
+    const unsigned int N = static_cast<unsigned int>( dimension().size() );
     const double h = dimension().step();
-    const unsigned int n = y0.length();
+    const unsigned int m = count();
 
-    ry.clear();
-    ry.resize(n);
-    for (unsigned int i=0; i<n; i++) ry[i].resize(N+1);
+    ry.resize(N+1); for (unsigned int n=0; n<=N; n++) ry[n].resize(m);
 
     if (direction == L2R)
     {
-        double xn = x0;
-        DoubleVector yn(n);
-        /* initializing */
-        for (unsigned int j=0; j<n; j++) ry[j][0] = y0[j];
-
-        for (unsigned int i=min+1; i<=max; i++)
+        ry[0] = y0;
+        for (int i=min+1; i<=max; i++)
         {
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-min];
-            for (unsigned int j=0; j<n; j++) ry[j][i-min] = ry[j][(i-1)-min] + h * f(xn, yn, i-1, j);
-
-            xn += h;
+            const unsigned int mi = static_cast<unsigned int>(i-min);
+            const PointNodeODE node((i-1)*h, i-1);
+            for (unsigned int j=0; j<m; j++)
+                ry[mi][j] = ry[mi-1][j] + h * f(node, ry[mi-1], j+1);
         }
     }
 
     if (direction == R2L)
     {
+        const unsigned int n = y0.length();
         double xn = x0;
         DoubleVector yn(n);
         /* initializing */
@@ -443,33 +437,27 @@ void NonLinearODE1stOrder::calculateEulerMod(double x0, const DoubleVector &y0, 
 {
     const int min = dimension().min();
     const int max = dimension().max();
-    const int N = dimension().size();
+    const unsigned int N = static_cast<unsigned int>( dimension().size() );
     const double h = dimension().step();
-    const unsigned int n = y0.length();
+    const unsigned int m = count();
 
-
-    ry.clear();
-    ry.resize(n);
-    for (unsigned int i=0; i<n; i++) ry[i].resize(N+1);
+    ry.resize(N+1); for (unsigned int n=0; n<=N; n++) ry[n].resize(m);
 
     if (direction == L2R)
     {
-        double xn = x0;
-        DoubleVector yn(n);
-        /* initializing */
-        for (unsigned int j=0; j<n; j++) ry[j][0] = y0[j];
-
-        for (unsigned int i=min+1; i<=max; i++)
+        ry[0] = y0;
+        for (int i=min+1; i<=max; i++)
         {
-            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-min];
-            for (unsigned int j=0; j<n; j++) ry[j][i-min] = ry[j][(i-1)-min] + h * f(xn, yn, i-1, j);
-
-            xn += h;
+            const unsigned int mi = static_cast<unsigned int>(i-min);
+            const PointNodeODE node((i-1)*h, i-1);
+            for (unsigned int j=0; j<m; j++)
+                ry[mi][j] = ry[mi-1][j] + h * f(node, ry[mi-1], j+1);
         }
     }
 
     if (direction == R2L)
     {
+        const unsigned int n = y0.length();
         double xn = x0;
         DoubleVector yn(n);
         /* initializing */

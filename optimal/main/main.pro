@@ -52,7 +52,8 @@ DESTDIR += ../bin
 #include(load_sys/load_sys.pri)
 
 SOURCES += main.cpp \
-    linearode1storderex1.cpp
+    linearode1storderex1.cpp \
+    nonlinearode1storderex1.cpp
 
 #SOURCES += \
 #    ivp/nlode1oex1.cpp \
@@ -74,4 +75,5 @@ OBJECTS_DIR = release/.obj
 MOC_DIR = release/.moc
 
 HEADERS += \
-    linearode1storderex1.h
+    linearode1storderex1.h \
+    nonlinearode1storderex1.h

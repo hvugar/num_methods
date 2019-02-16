@@ -45,7 +45,7 @@ struct MINIMUMSHARED_EXPORT PointODE
 
 struct MINIMUMSHARED_EXPORT PointNodeODE : public PointODE
 {
-    inline PointNodeODE(double x = 0.0, int i = 0) : PointODE(x), i(i) {}
+    PointNodeODE(double x = 0.0, int i = 0) : PointODE(x), i(i) {}
 
     int i;
 };

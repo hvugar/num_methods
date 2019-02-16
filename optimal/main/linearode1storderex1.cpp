@@ -2,48 +2,41 @@
 
 #define EXAMPLE_1
 
-void LinearODE1stOrderEx1::Main(int argc, char **argv)
+void LinearODE1stOrderEx1::Main(int argc UNUSED_PARAM, char **argv)
 {
     LinearODE1stOrderEx1 nl;
 
     unsigned int N = 100;
-    unsigned int M = 3;
+    unsigned int M = nl.count();
     double h = 0.01;
 
     std::vector<NonLocalCondition> C;
-    C.resize(3);
-    C[0].i = 0;
-    C[0].n = PointNodeODE(0.0, 0);
-    C[0].m.resize(M,M,0.0);
 
-    C[1].i = 1;
-    C[1].n = PointNodeODE(0.5, 50);
-    C[1].m.resize(M,M,0.0);
-
-    C[2].i = 2;
-    C[2].n = PointNodeODE(1.0, 100);
-    C[2].m.resize(M,M,0.0);
+    C.push_back(NonLocalCondition(0, PointNodeODE(0.000, 0), DoubleMatrix(M,M,0.0)));
+    C.push_back(NonLocalCondition(1, PointNodeODE(0.400, 0), DoubleMatrix(M,M,0.0)));
+    C.push_back(NonLocalCondition(2, PointNodeODE(0.500, 0), DoubleMatrix(M,M,0.0)));
+    C.push_back(NonLocalCondition(3, PointNodeODE(1.000, 0), DoubleMatrix(M,M,0.0)));
 
     for (unsigned int r=0; r<M; r++)
     {
         for (unsigned int c=0; c<M; c++)
         {
-            C[0].m[r][c] = Random::value(0,1,4);
-            C[1].m[r][c] = Random::value(0,1,4);
-            C[2].m[r][c] = Random::value(0,1,4);
+            for (unsigned i=0; i<C.size(); i++)
+                C[i].m[r][c] = Random::value(0,1,4);
         }
     }
 
     DoubleVector x00; for (unsigned int m=1; m<=M; m++) x00 << nl.x(C[0].n,m);
     DoubleVector x05; for (unsigned int m=1; m<=M; m++) x05 << nl.x(C[1].n,m);
-    DoubleVector x10; for (unsigned int m=1; m<=M; m++) x10 << nl.x(C[2].n,m);
+    DoubleVector x15; for (unsigned int m=1; m<=M; m++) x15 << nl.x(C[2].n,m);
+    DoubleVector x10; for (unsigned int m=1; m<=M; m++) x10 << nl.x(C[3].n,m);
 
-    DoubleVector d = C[0].m*x00 + C[1].m*x05 + C[2].m*x10;
+    DoubleVector d = C[0].m*x00 + C[1].m*x05 + C[2].m*x15 + C[3].m*x10;
 
     std::vector<DoubleVector> x;
     nl.setDimension(Dimension(h, 0, static_cast<int>(N)));
 
-    nl.transferOfCondition(C, d, x, 2, M);
+    nl.transferOfCondition(C, d, x, 2);
 
     for (unsigned int m=0; m<M; m++)
     {
@@ -124,6 +117,16 @@ double LinearODE1stOrderEx1::B(const PointNodeODE &node, unsigned int r) const
 
     throw std::exception();
     return NAN;
+}
+
+unsigned int LinearODE1stOrderEx1::count() const
+{
+#if defined(EXAMPLE_1) || defined(EXAMPLE_2)
+    return 3;
+#endif
+#if defined(EXAMPLE_3) || defined(EXAMPLE_4)
+    return 1;
+#endif
 }
 
 double LinearODE1stOrderEx1::x(const PointNodeODE &node, unsigned int r UNUSED_PARAM) const

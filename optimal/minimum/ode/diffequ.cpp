@@ -8,11 +8,6 @@ OrdinaryDifferentialEquation::OrdinaryDifferentialEquation() {}
 
 OrdinaryDifferentialEquation::~OrdinaryDifferentialEquation() {}
 
-unsigned int DifferentialEquation::equationsNumber() const
-{
-    return 1;
-}
-
 const Dimension& OrdinaryDifferentialEquation::dimension() const
 {
     return _dimension;
