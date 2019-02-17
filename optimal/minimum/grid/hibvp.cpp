@@ -744,7 +744,7 @@ void CdIHyperbolicIBVP::implicit_calculate_D2V1(DoubleMatrix &u, double a, doubl
     free(ax);
 }
 
-void CdIHyperbolicIBVP::explicit_calculate_D2V1_initial(DoubleVector &u00, DoubleVector &u10, unsigned int N, double hx, double ht, double a, double alpha) const
+void CdIHyperbolicIBVP::explicit_calculate_D1V1_initial(DoubleVector &u00, DoubleVector &u10, unsigned int N, double hx, double ht, double a, double alpha) const
 {
     const double aa__hxhx = (a*a)/(hx*hx);
     const double htht_05 = 0.5*ht*ht;

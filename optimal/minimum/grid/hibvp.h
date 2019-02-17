@@ -63,15 +63,12 @@ public:
     void implicit_calculate_D2V1(DoubleMatrix &u, double a, double alpha, double lambda=0.25) const;
 
 private:
-    void explicit_calculate_D2V1_initial(DoubleVector &u00, DoubleVector &u10, unsigned int N, double hx, double ht, double a, double sigma) const;
+    void explicit_calculate_D1V1_initial(DoubleVector &u00, DoubleVector &u10, unsigned int N, double hx, double ht, double a, double sigma) const;
 
     void explicit_calculate_D2V1_initial(DoubleMatrix &u00, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, double ht, double a, double alpha) const;
     void explicit_calculate_D2V1_border(DoubleMatrix &u, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn) const;
     void implicit_calculate_D2V1_initial(DoubleMatrix &u00, DoubleMatrix &u05, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, double ht, double a, double alpha) const;
     void implicit_calculate_D2V1_border(DoubleMatrix &u05, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn05, const TimeNodePDE &tn10) const;
-
-    void border1_calculate(DoubleMatrix &u15, DoubleMatrix &u20, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn15, const TimeNodePDE &tn20) const;
-    void implicit_calculate_D2V1_border(DoubleMatrix &u20, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn20) const;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
