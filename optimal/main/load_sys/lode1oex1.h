@@ -22,9 +22,9 @@ public:
 
     double X(double t, int i=0) const;
 public:
-    virtual double A(const GridNodeODE &node, unsigned int row = 0, unsigned int col = 0) const;
-    virtual double B(const GridNodeODE &node, unsigned int row = 0) const;
-    virtual unsigned int equationsNumber() const;
+    virtual double A(const PointNodeODE &node, unsigned int row = 0, unsigned int col = 0) const;
+    virtual double B(const PointNodeODE &node, unsigned int row = 0) const;
+    virtual unsigned int count() const;
 };
 
 #endif // LOADLINEARODE1STORDEREX1_H

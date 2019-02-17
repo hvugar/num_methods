@@ -12,8 +12,8 @@ class Zettai : public ISystemLinearODENonLocalContionsM
 public:
     Zettai(const Problem4Ex1 &p4, unsigned int i);
 
-    virtual double A(const GridNodeODE &node, unsigned int row, unsigned int col) const;
-    virtual double B(const GridNodeODE &node, unsigned int row, unsigned int col) const;
+    virtual double A(const PointNodeODE &node, unsigned int row, unsigned int col) const;
+    virtual double B(const PointNodeODE &node, unsigned int row, unsigned int col) const;
 private:
     const Problem4Ex1 &p4;
     unsigned int i;
@@ -28,9 +28,9 @@ public:
     void calculateM(const std::vector<LinearODE1stOrder::Condition> &cs, const DoubleMatrix &betta, std::vector<std::vector<DoubleVector>> &zmi);
 
 protected:
-    virtual double A(const GridNodeODE &node, unsigned int row, unsigned int col) const;
-    virtual double B(const GridNodeODE &node, unsigned int row) const;
-    virtual double C(const GridNodeODE &node, unsigned int row, unsigned int col) const;
+    virtual double A(const PointNodeODE &node, unsigned int row, unsigned int col) const;
+    virtual double B(const PointNodeODE &node, unsigned int row) const;
+    virtual double C(const PointNodeODE &node, unsigned int row, unsigned int col) const;
 private:
     const Problem4Ex1 &p;
     unsigned int i;

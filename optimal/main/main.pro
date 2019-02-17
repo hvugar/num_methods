@@ -45,35 +45,20 @@ LIBS += -L../bin -lproblem1H
 
 DESTDIR += ../bin
 
-#include(problem1/problem1.pri)
-#include(problem2P/problem2P.pri)
 #include(problem4/problem4.pri)
 #include(problem5/problem5.pri)
 #include(load_sys/load_sys.pri)
 
-SOURCES += main.cpp \
-    linearode1storderex1.cpp \
-    nonlinearode1storderex1.cpp
+SOURCES += main.cpp
 
-#SOURCES += \
-#    ivp/nlode1oex1.cpp \
-#    nonlinearequationex1.cpp \
-#    loadedlinearode1order.cpp \
-#    heatequationibvp1.cpp \
-#    templatea.cpp \
-#    templateb.cpp
+SOURCES += nonlinearequationex1.cpp
+HEADERS += nonlinearequationex1.h
 
-#HEADERS += \
-#    ivp/nlode1oex1.h \
-#    nonlinearequationex1.h \
-#    loadedlinearode1order.h \
-#    heatequationibvp1.h \
-#    templatea.h \
-#    templateb.h
+SOURCES += linearode1storderex1.cpp
+HEADERS += linearode1storderex1.h
+
+SOURCES += nonlinearode1storderex1.cpp
+HEADERS += nonlinearode1storderex1.h
 
 OBJECTS_DIR = release/.obj
 MOC_DIR = release/.moc
-
-HEADERS += \
-    linearode1storderex1.h \
-    nonlinearode1storderex1.h
