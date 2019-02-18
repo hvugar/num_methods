@@ -1,12 +1,12 @@
-#ifndef NON_LINEAR_ODE1ST_ORDER_H
-#define NON_LINEAR_ODE1ST_ORDER_H
+#ifndef FIRTS_ORDER_NON_LINEAR_ODE_H
+#define FIRTS_ORDER_NON_LINEAR_ODE_H
 
 #include "diffequ.h"
 
 /**
- * @brief The NonLinear ODE1 1st order in canonical (normal) form y'(x) = f(x, y(x));
+ * @brief The FirstOrderNonLinearODE in canonical (normal) form y'(x) = f(x, y(x));
  */
-class MINIMUMSHARED_EXPORT NonLinearODE1stOrder : virtual public NonLinearODE
+class MINIMUMSHARED_EXPORT FirstOrderNonLinearODE : virtual public NonLinearODE
 {
 public:
     void cauchyProblem(double x0, double y0, DoubleVector &ry, OdeSolverMethod method = OdeSolverMethod::RK4, Direction direction = Direction::L2R);
@@ -17,6 +17,13 @@ protected:
     virtual double f(double x, double y, unsigned int k) const;
     virtual double f(double x, const DoubleVector &y, unsigned int k, unsigned int i) const;
 
+    /**
+     * @brief f
+     * @param node
+     * @param x
+     * @param m
+     * @return
+     */
     virtual double f(const PointNodeODE &node, const DoubleVector &x, unsigned int m = 1) const = 0;
 
 private:
@@ -36,4 +43,4 @@ private:
     void calculateEulerMod(double x0, const DoubleVector &y0, DoubleVector &y, Direction direction = Direction::L2R);
 };
 
-#endif // NON_LINEAR_ODE1ST_ORDER_H
+#endif // FIRTS_ORDER_NON_LINEAR_ODE_H

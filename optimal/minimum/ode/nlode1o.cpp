@@ -4,11 +4,11 @@
 #include <stdlib.h>
 #include <math.h>
 
-double NonLinearODE1stOrder::f(double, double, unsigned int) const { return NAN; }
+double FirstOrderNonLinearODE::f(double, double, unsigned int) const { return NAN; }
 
-double NonLinearODE1stOrder::f(double, const DoubleVector &, unsigned int, unsigned int) const { return NAN; }
+double FirstOrderNonLinearODE::f(double, const DoubleVector &, unsigned int, unsigned int) const { return NAN; }
 
-void NonLinearODE1stOrder::cauchyProblem(double x0, double y0, DoubleVector &y, OdeSolverMethod method, Direction direction)
+void FirstOrderNonLinearODE::cauchyProblem(double x0, double y0, DoubleVector &y, OdeSolverMethod method, Direction direction)
 {
     switch (method)
     {
@@ -27,7 +27,7 @@ void NonLinearODE1stOrder::cauchyProblem(double x0, double y0, DoubleVector &y, 
     }
 }
 
-void NonLinearODE1stOrder::calculateRK2(double x0, double y0, DoubleVector &y, Direction direction)
+void FirstOrderNonLinearODE::calculateRK2(double x0, double y0, DoubleVector &y, Direction direction)
 {
     int N = dimension().size();
     double h = dimension().step();
@@ -73,7 +73,7 @@ void NonLinearODE1stOrder::calculateRK2(double x0, double y0, DoubleVector &y, D
     }
 }
 
-void NonLinearODE1stOrder::calculateRK4(double x0, double y0, DoubleVector &y, Direction direction)
+void FirstOrderNonLinearODE::calculateRK4(double x0, double y0, DoubleVector &y, Direction direction)
 {
     int N = dimension().size();
     double h = dimension().step();
@@ -131,7 +131,7 @@ void NonLinearODE1stOrder::calculateRK4(double x0, double y0, DoubleVector &y, D
     }
 }
 
-void NonLinearODE1stOrder::calculateEuler(double x0, double y0, DoubleVector &y, Direction direction)
+void FirstOrderNonLinearODE::calculateEuler(double x0, double y0, DoubleVector &y, Direction direction)
 {
     unsigned int N = dimension().size();
     double h = dimension().step();
@@ -168,7 +168,7 @@ void NonLinearODE1stOrder::calculateEuler(double x0, double y0, DoubleVector &y,
     }
 }
 
-void NonLinearODE1stOrder::calculateEulerMod(double x0, double y0, DoubleVector &y, Direction direction)
+void FirstOrderNonLinearODE::calculateEulerMod(double x0, double y0, DoubleVector &y, Direction direction)
 {
     unsigned int N = dimension().size();
     double h = dimension().step();
@@ -205,7 +205,7 @@ void NonLinearODE1stOrder::calculateEulerMod(double x0, double y0, DoubleVector 
     }
 }
 
-void NonLinearODE1stOrder::cauchyProblem(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, OdeSolverMethod method, Direction direction)
+void FirstOrderNonLinearODE::cauchyProblem(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, OdeSolverMethod method, Direction direction)
 {
     switch (method)
     {
@@ -224,7 +224,7 @@ void NonLinearODE1stOrder::cauchyProblem(double x0, const DoubleVector &y0, std:
     }
 }
 
-void NonLinearODE1stOrder::calculateRK2(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
+void FirstOrderNonLinearODE::calculateRK2(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
 {
     const int min = dimension().min();
     const int max = dimension().max();
@@ -300,7 +300,7 @@ void NonLinearODE1stOrder::calculateRK2(double x0, const DoubleVector &y0, std::
     free(k1);
 }
 
-void NonLinearODE1stOrder::calculateRK4(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
+void FirstOrderNonLinearODE::calculateRK4(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
 {
     const int min = dimension().min();
     const int max = dimension().max();
@@ -393,7 +393,7 @@ void NonLinearODE1stOrder::calculateRK4(double x0, const DoubleVector &y0, std::
     free(k1);
 }
 
-void NonLinearODE1stOrder::calculateEuler(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
+void FirstOrderNonLinearODE::calculateEuler(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
 {
     const int min = dimension().min();
     const int max = dimension().max();
@@ -433,7 +433,7 @@ void NonLinearODE1stOrder::calculateEuler(double x0, const DoubleVector &y0, std
     }
 }
 
-void NonLinearODE1stOrder::calculateEulerMod(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
+void FirstOrderNonLinearODE::calculateEulerMod(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, Direction direction)
 {
     const int min = dimension().min();
     const int max = dimension().max();
@@ -473,7 +473,7 @@ void NonLinearODE1stOrder::calculateEulerMod(double x0, const DoubleVector &y0, 
     }
 }
 
-void NonLinearODE1stOrder::cauchyProblem(double x0, const DoubleVector &y0, DoubleVector &ry, OdeSolverMethod method, Direction direction)
+void FirstOrderNonLinearODE::cauchyProblem(double x0, const DoubleVector &y0, DoubleVector &ry, OdeSolverMethod method, Direction direction)
 {
     switch (method)
     {
@@ -492,7 +492,7 @@ void NonLinearODE1stOrder::cauchyProblem(double x0, const DoubleVector &y0, Doub
     }
 }
 
-void NonLinearODE1stOrder::calculateRK4(double x0, const DoubleVector &y0, DoubleVector &ry, Direction direction)
+void FirstOrderNonLinearODE::calculateRK4(double x0, const DoubleVector &y0, DoubleVector &ry, Direction direction)
 {
     const int min = dimension().min();
     const int max = dimension().max();

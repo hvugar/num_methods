@@ -17,20 +17,7 @@ NonLocalCondition::~NonLocalCondition()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-LinearODE1stOrderException::LinearODE1stOrderException(unsigned int msgCode) NOEXCEPT : _msgCode(msgCode)  {}
-
-LinearODE1stOrderException::~LinearODE1stOrderException() {}
-
-const char* LinearODE1stOrderException::what() const NOEXCEPT
-{
-    if (_msgCode == 1) return "Error: Dimension of matrices do not matches!";
-    if (_msgCode == 2) return "Error: Non-local condition matrix is not square matrix!";
-    if (_msgCode == 3) return "Error: Non-local condition matrix dimension is not matches with count of differensial equations!";
-    if (_msgCode == 4) return "Error: Rigth side of non-local conditions is not matches with count of differensial equations!";
-    return "Error: Unknown error!";
-}
-
-void LinearODE1stOrder::discritize(const std::vector<NonLocalCondition> &co, std::vector<NonLocalCondition> &cn, unsigned int k) const
+void FirstOrderLinearODE::discritize(const std::vector<NonLocalCondition> &co, std::vector<NonLocalCondition> &cn, unsigned int k) const
 {
     const auto cnd_size = static_cast<unsigned int>( co.size() );
     const auto h = dimension().step();
@@ -114,15 +101,15 @@ void LinearODE1stOrder::discritize(const std::vector<NonLocalCondition> &co, std
     }
 }
 
-void LinearODE1stOrder::transferOfCondition(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const
+void FirstOrderLinearODE::transferOfCondition(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const
 {
-    if (co.size() < 2) throw LinearODE1stOrderException(1);
+    if (co.size() < 2) throw ExceptionODE(1);
     for (unsigned int i=0; i<co.size(); i++)
     {
         const DoubleMatrix &m = co[i].m;
-        if (!m.squareMatrix()) throw LinearODE1stOrderException(2);
-        if (m.rows() != count()) throw LinearODE1stOrderException(3);
-        if (d.length() != count()) throw LinearODE1stOrderException(4);
+        if (!m.squareMatrix()) throw ExceptionODE(2);
+        if (m.rows() != count()) throw ExceptionODE(3);
+        if (d.length() != count()) throw ExceptionODE(4);
     }
 
     //const unsigned int min = static_cast<unsigned int>( dimension().min() );

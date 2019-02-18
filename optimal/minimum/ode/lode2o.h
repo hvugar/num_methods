@@ -1,5 +1,5 @@
-#ifndef LINEARODE2NDORDER_H
-#define LINEARODE2NDORDER_H
+#ifndef SECOND_ORDER_LINEAR_ODE_H
+#define SECOND_ORDER_LINEAR_ODE_H
 
 #include "diffequ.h"
 
@@ -7,7 +7,7 @@
  * @brief Линейное дифференциальное уравнение второго порядка с переменными коэффициентами
  * The Linear ODE 2nd order in canonical (normal) form R(x)y"(x) + P(x)y'(x) + Q(x)y(x) = F(x);
  */
-class MINIMUMSHARED_EXPORT LinearODE2ndOrder : virtual public LinearODE
+class MINIMUMSHARED_EXPORT SecondOrderLinearODE : virtual public LinearODE
 {
 public:
 
@@ -60,4 +60,4 @@ private:
 
 };
 
-#endif // LINEARODE2NDORDER_H
+#endif // SECOND_ORDER_LINEAR_ODE_H

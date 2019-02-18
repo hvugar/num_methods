@@ -10,6 +10,9 @@
 #include <math.h>
 #include "grid.h"
 
+/**
+ * @brief The BoundaryValueProblem class
+ */
 class MINIMUMSHARED_EXPORT BoundaryValueProblem
 {
 public:
@@ -23,15 +26,21 @@ public:
     BoundaryCondition condition;
 };
 
+/**
+ * @brief The BoundaryValueProblemODE class
+ */
 class MINIMUMSHARED_EXPORT BoundaryValueProblemODE : protected BoundaryValueProblem
 {
 public:
     virtual ~BoundaryValueProblemODE();
 
 protected:
-    virtual double boundary() const = 0;
+    virtual double boundary(const PointNodeODE &n) const = 0;
 };
 
+/**
+ * @brief The BoundaryValueProblemPDE class
+ */
 class MINIMUMSHARED_EXPORT BoundaryValueProblemPDE : protected BoundaryValueProblem
 {
 public:

@@ -51,7 +51,7 @@ void NonLinearODE1stOrderEx2::Main(int argc, char **argv)
     printf("Norms: %.10f %.10f %.10f\n", norm[0], norm[1], norm[2]);
 }
 
-NonLinearODE1stOrderEx2::NonLinearODE1stOrderEx2() : NonLinearODE1stOrder() {}
+NonLinearODE1stOrderEx2::NonLinearODE1stOrderEx2() : FirstOrderNonLinearODE() {}
 
 NonLinearODE1stOrderEx2::~NonLinearODE1stOrderEx2() {}
 

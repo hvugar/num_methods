@@ -28,7 +28,7 @@
 #include "linearode1storderex1.h"
 #include "nonlinearode1storderex1.h"
 
-class A : public NonLinearODE1stOrder
+class A : public FirstOrderNonLinearODE
 {
 public:
     virtual double f(double x, double y, unsigned int k) const;

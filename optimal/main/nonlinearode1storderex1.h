@@ -6,7 +6,7 @@
 #include <float.h>
 #include <math.h>
 
-class NonLinearODE1stOrderEx2 : public NonLinearODE1stOrder
+class NonLinearODE1stOrderEx2 : public FirstOrderNonLinearODE
 {
 public:
     static void Main(int argc, char** argv);

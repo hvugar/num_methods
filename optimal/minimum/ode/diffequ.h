@@ -14,7 +14,9 @@
  * Производные, функции, независимые переменные и параметры могут входить в уравнение
  * в различных комбинациях или могут отсутствовать вовсе, кроме хотя бы одной производной.
  * Не любое уравнение, содержащее производные неизвестной функции, является дифференциальным
- * уравнением. Например,   f′(x) = f ( f ( x ) ) {\displaystyle \ f'(x)=f(f(x))} \ f'(x)=f(f(x)) не является дифференциальным уравнением
+ * уравнением.
+ * @see OrdinaryDifferentialEquation
+ * @see
  */
 class MINIMUMSHARED_EXPORT DifferentialEquation
 {
@@ -34,6 +36,8 @@ public:
  * системе дифференциальных уравнений), зависящая от независимой
  * переменной x, штрих означает дифференцирование по x. Число n (порядок старшей производной,
  * входящей в данное уравнение) называется порядком дифференциального уравнения.
+ * @see LinearODE
+ * @see NonLinearODE
  */
 class MINIMUMSHARED_EXPORT OrdinaryDifferentialEquation : public DifferentialEquation
 {
@@ -66,13 +70,16 @@ private:
 
 /**
  * @brief Линейное дифференциальное уравнение с переменными коэффициентами
- *
+ * @see FirstOrderLinearODE
+ * @see SecondOrderLinearODE
  */
 class MINIMUMSHARED_EXPORT LinearODE : public OrdinaryDifferentialEquation
 {};
 
 /**
  * @brief The NonLinearODE class
+ * @see FirstOrderNonLinearODE
+ * @see SecondOrderNonLinearODE
  */
 class MINIMUMSHARED_EXPORT NonLinearODE : public OrdinaryDifferentialEquation {};
 
@@ -86,25 +93,28 @@ protected:
     Dimension _dimension;
 };
 
-//class MINIMUMSHARED_EXPORT SystemDifferentialEquationODE : public SystemDifferentialEquation
-//{};
+class ExceptionODE : std::exception
+{
+public:
+    explicit ExceptionODE(unsigned int msgCode = 0) NOEXCEPT;
+    virtual ~ExceptionODE();
 
-//class MINIMUMSHARED_EXPORT SystemLinearODE : public SystemDifferentialEquationODE {};
+    virtual const char* what() const NOEXCEPT;
 
-//class MINIMUMSHARED_EXPORT SystemLinearODE1stOrder : public SystemLinearODE
-//{
-//protected:
-//    virtual double A(double t, unsigned int k, unsigned int row = 0, unsigned int col = 0) const = 0;
-//    virtual double B(double t, unsigned int k, unsigned int row = 0) const = 0;
-//};
+private:
+    unsigned int _msgCode;
+};
 
-//class MINIMUMSHARED_EXPORT SystemNonLinearODE : public SystemDifferentialEquationODE
-//{};
+class ExceptionPDE : std::exception
+{
+public:
+    explicit ExceptionPDE(unsigned int msgCode = 0) NOEXCEPT;
+    virtual ~ExceptionPDE();
 
-//class MINIMUMSHARED_EXPORT SystemNonLinearODE1stOrder : public SystemNonLinearODE
-//{
-//protected:
-//    virtual double f(double x, const DoubleVector &y, unsigned int k, unsigned int i) const = 0;
-//};
+    virtual const char* what() const NOEXCEPT;
+
+private:
+    unsigned int _msgCode;
+};
 
 #endif // DIFFENSIALEQUATION_H

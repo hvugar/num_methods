@@ -1,5 +1,5 @@
-#ifndef LINEAR_ODE1ST_ORDER_H
-#define LINEAR_ODE1ST_ORDER_H
+#ifndef FIRTS_ORDER_LINEAR_ODE_H
+#define FIRTS_ORDER_LINEAR_ODE_H
 
 #include "diffequ.h"
 
@@ -22,23 +22,11 @@ struct Condition
     unsigned int index;
 };
 
-class LinearODE1stOrderException : std::exception
-{
-public:
-    LinearODE1stOrderException(unsigned int msgCode = 0) NOEXCEPT;
-    virtual ~LinearODE1stOrderException();
-
-    virtual const char* what() const NOEXCEPT;
-
-private:
-    unsigned int _msgCode;
-};
-
 /**
  * @brief Линейное дифференциальное уравнение первого порядка с переменными коэффициентами
  * The Linear ODE 1st order in canonical (normal) form y'(x) = A(x)y(x) + B(x);
  */
-class MINIMUMSHARED_EXPORT LinearODE1stOrder : virtual public LinearODE
+class MINIMUMSHARED_EXPORT FirstOrderLinearODE : virtual public LinearODE
 {
 public:
     enum class AccuracyStep
@@ -82,4 +70,4 @@ private:
 };
 
 
-#endif // LINEAR_ODE1ST_ORDER_H
+#endif // FIRTS_ORDER_LINEAR_ODE_H

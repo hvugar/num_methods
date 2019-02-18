@@ -6,7 +6,7 @@
 #include <float.h>
 #include <math.h>
 
-class LinearODE1stOrderEx1 : public LinearODE1stOrder
+class LinearODE1stOrderEx1 : public FirstOrderLinearODE
 {
 public:
     LinearODE1stOrderEx1();
