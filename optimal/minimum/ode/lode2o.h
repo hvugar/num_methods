@@ -17,44 +17,19 @@ public:
      * @param right Boundary condition on right side
      * @param ry    Result functions
      */
-    void solveBoundaryValueProblem(const DoubleVector &left, const DoubleVector &right, std::vector<DoubleVector> &ry);
+    void solveBoundaryValueProblem(const DoubleVector &left, const DoubleVector &right, std::vector<DoubleVector> &ry) const;
     /**
      * @brief solveCauchyProblem
      * @param initial Initial conditions
      * @param initder Initial derivative conditions
      * @param ry      Result functions
      */
-    void solveCauchyProblem(const DoubleVector &initial, const DoubleVector &initder, std::vector<DoubleVector> &ry);
+    void solveCauchyProblem(const DoubleVector &initial, const DoubleVector &initder, std::vector<DoubleVector> &ry) const;
 
 protected:
-    /**
-     * @brief P one dimensional matrix-function
-     * @param x independent variable
-     * @param i index of independent variable of given grid
-     * @return
-     */
-    virtual double R(const PointNodeODE &node, unsigned int row = 0, unsigned int col = 0) const = 0;
-    /**
-     * @brief P one dimensional matrix-function
-     * @param x independent variable
-     * @param i index of independent variable of given grid
-     * @return
-     */
-    virtual double P(const PointNodeODE &node, unsigned int row = 0, unsigned int col = 0) const = 0;
-    /**
-     * @brief Q one dimensional matrix-function
-     * @param x independent variable
-     * @param i index of independent variable of given grid
-     * @return
-     */
-    virtual double Q(const PointNodeODE &node, unsigned int row = 0, unsigned int col = 0) const = 0;
-    /**
-     * @brief R one dimensional vector-function
-     * @param x independent variable
-     * @param i index of independent variable of given grid
-     * @return
-     */
-    virtual double F(const PointNodeODE &node, unsigned int row = 0) const = 0;
+    virtual double A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const = 0;
+    virtual double B(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const = 0;
+    virtual double C(const PointNodeODE &node, unsigned int row = 1) const = 0;
 
 private:
 
