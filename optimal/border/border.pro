@@ -28,7 +28,8 @@ HEADERS += \
 #           borderhyperbolic2d1.h \
 #           grid/parabolicibvp1.h \
            grid/hyperbolicibvp1.h \
-           grid/newtonheatequationex1.h
+           grid/newtonheatequationex1.h \
+    grid/secondorderlinearodeex1.h
 SOURCES += \
 #           borderparabolicd.cpp \
 #           borderparabolicn.cpp \
@@ -37,4 +38,5 @@ SOURCES += \
 #           borderhyperbolic2d1.cpp \
 #           grid/parabolicibvp1.cpp \
            grid/hyperbolicibvp1.cpp \
-           grid/newtonheatequationex1.cpp
+           grid/newtonheatequationex1.cpp \
+    grid/secondorderlinearodeex1.cpp

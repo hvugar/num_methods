@@ -38,6 +38,7 @@ const char* ExceptionODE::what() const NOEXCEPT
     if (_msgCode == 2) return "Error: Non-local condition matrix is not square matrix!";
     if (_msgCode == 3) return "Error: Non-local condition matrix dimension is not matches with count of differensial equations!";
     if (_msgCode == 4) return "Error: Rigth side of non-local conditions is not matches with count of differensial equations!";
+    if (_msgCode == 5) return "Error: Equations count must be one.";
     return "Error: Unknown error!";
 }
 

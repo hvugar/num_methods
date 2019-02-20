@@ -63,7 +63,6 @@ public:
     void setDimension(const Dimension &dimension);
 
     virtual unsigned int count() const = 0;
-
 private:
     Dimension _dimension;
 };

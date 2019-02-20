@@ -28,6 +28,8 @@
 #include "linearode1storderex1.h"
 #include "nonlinearode1storderex1.h"
 
+#include <grid/secondorderlinearodeex1.h>
+
 class A : public FirstOrderNonLinearODE
 {
 public:
@@ -70,7 +72,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //    IPrinter::print(ry,ry.length());
 
     //LinearODE1stOrderEx1::Main(argc, argv);
-    NonLinearODE1stOrderEx2::Main(argc, argv);
+    //NonLinearODE1stOrderEx2::Main(argc, argv);
+    SecondOrderLinearODEEx1::Main(argc, argv);
 
     return 0;
 
