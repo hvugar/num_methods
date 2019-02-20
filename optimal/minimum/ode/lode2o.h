@@ -24,6 +24,7 @@ public:
     DoubleMatrix a;
     DoubleMatrix b;
     DoubleVector c;
+    double lambda;
 };
 
 class InitialConditionODE
@@ -76,8 +77,8 @@ protected:
     virtual auto B(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const -> double = 0;
     virtual auto C(const PointNodeODE &node, unsigned int row = 1) const -> double = 0;
 
-    virtual auto boundary(const PointNodeODE &node, BoundaryConditionODE &condition) const -> void = 0;
-    virtual auto initial(const PointNodeODE &node, InitialConditionODE &condition) const -> void = 0;
+    virtual auto boundary(const PointNodeODE &node, BoundaryConditionODE &condition, unsigned int row = 1) const -> double = 0;
+    virtual auto initial(const PointNodeODE &node, InitialConditionODE &condition) const -> double = 0;
 };
 
 #endif // SECOND_ORDER_LINEAR_ODE_H
