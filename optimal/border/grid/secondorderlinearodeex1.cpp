@@ -3,8 +3,10 @@
 void SecondOrderLinearODEEx1::Main(int argc, char **argv)
 {
     SecondOrderLinearODEEx1 sol;
+    sol.setDimension(Dimension(0.1,0,10));
     DoubleVector rv;
-    sol.solveInitialValueProblem(rv);
+    //sol.solveInitialValueProblem(rv);
+    sol.solveBoundaryValueProblem(rv);
     IPrinter::printVector(rv);
 }
 
@@ -36,24 +38,30 @@ double SecondOrderLinearODEEx1::boundary(const PointNodeODE &node, BoundaryCondi
     const Dimension &dim = dimension();
     if (node.i == dim.min())
     {
-        condition.boundaryConditionType = BoundaryConditionType::Robin;
-        condition.lambda = 0.5;
+//        condition.boundaryConditionType = BoundaryConditionTypeODE::Dirichlet;
+//        condition.lambda = 0.0;
+//        return 0.0;
+        condition.boundaryConditionType = BoundaryConditionTypeODE::Neumann;
+        condition.lambda = 1.0;
+        return 0.0;
     }
     else if (node.i == dim.max())
     {
-        condition.boundaryConditionType = BoundaryConditionType::Robin;
-        condition.lambda = -0.5;
+//        condition.boundaryConditionType = BoundaryConditionTypeODE::Dirichlet;
+//        condition.lambda = 0.0;
+//        return 1.0;
+        condition.boundaryConditionType = BoundaryConditionTypeODE::Neumann;
+        condition.lambda = 1.0;
+        return 2.0 - condition.lambda;
     }
-    return 0.0;
+    return NAN;
 }
 
-double SecondOrderLinearODEEx1::initial(const PointNodeODE &node, InitialConditionODE &condition) const
+double SecondOrderLinearODEEx1::initial(InitialConditionTypeODE condition, unsigned int) const
 {
-    if (condition.initialConditionType == InitialConditionType::InitialValue)
-        condition.value = 0.0;
-    else
-        condition.value = 0.0;
-    return 0.0;
+    if (condition == InitialConditionTypeODE::InitialValue) return 0.0;
+    if (condition == InitialConditionTypeODE::FirstDerivative) return 0.0;
+    return NAN;
 }
 
 unsigned int SecondOrderLinearODEEx1::count() const

@@ -16,7 +16,7 @@ protected:
     virtual double B(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const;
     virtual double C(const PointNodeODE &node, unsigned int row = 1) const;
 
-    virtual auto initial(const PointNodeODE &node, InitialConditionODE &condition) const -> double;
+    virtual auto initial(InitialConditionTypeODE condition, unsigned int row = 1) const -> double;
     virtual auto boundary(const PointNodeODE &node, BoundaryConditionODE &condition, unsigned int row = 1) const -> double;
 
     virtual unsigned int count() const;

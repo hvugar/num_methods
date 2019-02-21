@@ -4,33 +4,33 @@
 #include "diffequ.h"
 #include "cmethods.h"
 
-enum class BoundaryConditionType
+enum class BoundaryConditionTypeODE
 {
     Dirichlet = 1,
     Neumann = 2,
     Robin = 3
 };
 
-enum class InitialConditionType
+enum class InitialConditionTypeODE
 {
     InitialValue = 0,
-    InitialDerivative = 1
+    FirstDerivative = 1,
+    SecondDerivative = 2
 };
 
 class BoundaryConditionODE
 {
 public:
-    BoundaryConditionType boundaryConditionType;
+    BoundaryConditionTypeODE boundaryConditionType;
     DoubleMatrix a;
     DoubleMatrix b;
-    DoubleVector c;
     double lambda;
 };
 
 class InitialConditionODE
 {
 public:
-    InitialConditionType initialConditionType;
+    InitialConditionTypeODE initialConditionType;
     double value;
 };
 
@@ -41,19 +41,11 @@ public:
 class MINIMUMSHARED_EXPORT SecondOrderLinearODE : public LinearODE
 {
 public:
-
     /**
-     * @brief solveBoundaryValueProblem
-     * @param left  Boundary condition on left side
-     * @param right Boundary condition on right side
-     * @param ry    Result functions
-     */
-    void solveBoundaryValueProblem(const DoubleVector &left, const DoubleVector &right, std::vector<DoubleVector> &ry) const;
-    /**
-     * @brief solveBoundaryValueProblem
+     * @brief solveInitialValueProblem
      * @param rv
      */
-    void solveBoundaryValueProblem(std::vector<DoubleVector> &rv) const;
+    void solveInitialValueProblem(DoubleVector &rv) const;
     /**
      * @brief solveBoundaryValueProblem
      * @param rv
@@ -63,22 +55,20 @@ public:
      * @brief solveInitialValueProblem
      * @param rv
      */
-    void solveInitialValueProblem(DoubleVector &rv) const;
+    void solveInitialValueProblem(std::vector<DoubleVector> &rv) const;
     /**
-     * @brief solveCauchyProblem
-     * @param initial Initial conditions
-     * @param initder Initial derivative conditions
-     * @param ry      Result functions
+     * @brief solveBoundaryValueProblem
+     * @param rv
      */
-    void solveCauchyProblem(const DoubleVector &initial, const DoubleVector &initder, std::vector<DoubleVector> &ry) const;
+    void solveBoundaryValueProblem(std::vector<DoubleVector> &rv) const;
 
 protected:
     virtual auto A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const -> double = 0;
     virtual auto B(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const -> double = 0;
     virtual auto C(const PointNodeODE &node, unsigned int row = 1) const -> double = 0;
 
+    virtual auto initial(InitialConditionTypeODE condition, unsigned int row = 1) const -> double = 0;
     virtual auto boundary(const PointNodeODE &node, BoundaryConditionODE &condition, unsigned int row = 1) const -> double = 0;
-    virtual auto initial(const PointNodeODE &node, InitialConditionODE &condition) const -> double = 0;
 };
 
 #endif // SECOND_ORDER_LINEAR_ODE_H
