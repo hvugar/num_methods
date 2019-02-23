@@ -10,12 +10,6 @@ void SecondOrderLinearODEEx1::Main(int argc, char **argv)
     IPrinter::printVector(rv);
 }
 
-SecondOrderLinearODEEx1::SecondOrderLinearODEEx1()
-{}
-
-SecondOrderLinearODEEx1::~SecondOrderLinearODEEx1()
-{}
-
 double SecondOrderLinearODEEx1::A(const PointNodeODE &node, unsigned int row, unsigned int col) const
 {
     return 1.0;

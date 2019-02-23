@@ -8,9 +8,6 @@ class MINIMUMSHARED_EXPORT SecondOrderLinearODEEx1 : public SecondOrderLinearODE
 public:
     static void Main(int argc, char **argv);
 
-    SecondOrderLinearODEEx1();
-    virtual ~SecondOrderLinearODEEx1();
-
 protected:
     virtual double A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const;
     virtual double B(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const;

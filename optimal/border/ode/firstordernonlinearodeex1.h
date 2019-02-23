@@ -2,21 +2,25 @@
 #define FIRST_ORDER_NON_LINEAR_ODE_EX1_H
 
 #include <ode/nlode1o.h>
+#include <utils/random.h>
+#include <cfloat>
 #include <cmath>
 
-class FirstOrderNonLinearODEEx1 : public FirstOrderNonLinearODE
+class MINIMUMSHARED_EXPORT FirstOrderNonLinearODErEx1 : public FirstOrderNonLinearODE
+{
+public:
+    static void Main(int argc, char** argv);
+
+protected:
+    virtual unsigned int count() const;
+    virtual double x(const PointNodeODE &node, unsigned int row = 1) const;
+    virtual double f(const PointNodeODE &node, const DoubleVector &x, unsigned int r) const;
+};
+
+class FirstOrderNonLinearODEEx2 : public FirstOrderNonLinearODE
 {
 public:
     virtual double f(double x, double y, unsigned int k) const;
-};
-
-class B
-{
-public:
-    B(int i=1) : a(i) { std::cout << "B constructor " << a << std::endl; }
-    virtual ~B() { std::cout << "B destructor" << std::endl; }
-
-    int a;
 };
 
 #endif // FIRST_ORDER_NON_LINEAR_ODE_EX1_H

@@ -25,10 +25,10 @@
 
 #include <QtGui>
 #include <r1minimize.h>
-#include "linearode1storderex1.h"
-#include "nonlinearode1storderex1.h"
 
-#include <grid/secondorderlinearodeex1.h>
+#include <ode/firstorderlinearodeex1.h>
+#include <ode/firstordernonlinearodeex1.h>
+#include <ode/secondorderlinearodeex1.h>
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {

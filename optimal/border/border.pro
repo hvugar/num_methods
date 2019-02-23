@@ -20,7 +20,7 @@ QT          += core gui widgets
 DEFINES += MINIMUM_LIBRARY
 
 # Input
-HEADERS +=
+HEADERS += \
 #           borderparabolicd.h \
 #           borderparabolicn.h \
 #           borderparabolic2d.h \
@@ -38,21 +38,19 @@ SOURCES +=
 
 HEADERS += \
            grid/hyperbolicibvp1.h \
-           grid/newtonheatequationex1.h \
-           grid/secondorderlinearodeex1.h
+           grid/newtonheatequationex1.h
 
 SOURCES += \
            grid/hyperbolicibvp1.cpp \
-           grid/newtonheatequationex1.cpp \
-           grid/secondorderlinearodeex1.cpp
+           grid/newtonheatequationex1.cpp
 
 
 HEADERS += \
            ode/firstordernonlinearodeex1.h \
-           ode/linearode1storderex1.h \
-           ode/nonlinearode1storderex1.h
+           ode/firstorderlinearodeex1.h \
+           ode/secondorderlinearodeex1.h
 
 SOURCES += \
            ode/firstordernonlinearodeex1.cpp \
-           ode/linearode1storderex1.cpp \
-           ode/nonlinearode1storderex1.cpp
+           ode/firstorderlinearodeex1.cpp \
+           ode/secondorderlinearodeex1.cpp

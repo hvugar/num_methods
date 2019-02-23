@@ -1,10 +1,10 @@
-#include "linearode1storderex1.h"
+#include "firstorderlinearodeex1.h"
 
 #define EXAMPLE_1
 
-void LinearODE1stOrderEx1::Main(int argc UNUSED_PARAM, char **argv)
+void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
 {
-    LinearODE1stOrderEx1 nl;
+    FirstOrderLinearODEEx1 nl;
 
     unsigned int N = 100;
     unsigned int M = nl.count();
@@ -71,14 +71,14 @@ void LinearODE1stOrderEx1::Main(int argc UNUSED_PARAM, char **argv)
     printf("Norms: %.10f %.10f %.10f\n", norm[0], norm[1], norm[2]);
 }
 
-LinearODE1stOrderEx1::LinearODE1stOrderEx1()
+FirstOrderLinearODEEx1::FirstOrderLinearODEEx1()
 {
 }
 
-LinearODE1stOrderEx1::~LinearODE1stOrderEx1()
+FirstOrderLinearODEEx1::~FirstOrderLinearODEEx1()
 {}
 
-double LinearODE1stOrderEx1::A(const PointNodeODE &node, unsigned int r, unsigned int c) const
+double FirstOrderLinearODEEx1::A(const PointNodeODE &node, unsigned int r, unsigned int c) const
 {
 #ifdef EXAMPLE_1
     return 1.0;
@@ -94,7 +94,7 @@ double LinearODE1stOrderEx1::A(const PointNodeODE &node, unsigned int r, unsigne
 #endif
 }
 
-double LinearODE1stOrderEx1::B(const PointNodeODE &node, unsigned int r) const
+double FirstOrderLinearODEEx1::B(const PointNodeODE &node, unsigned int r) const
 {
     double t =  node.x;
 
@@ -119,7 +119,7 @@ double LinearODE1stOrderEx1::B(const PointNodeODE &node, unsigned int r) const
     return NAN;
 }
 
-unsigned int LinearODE1stOrderEx1::count() const
+unsigned int FirstOrderLinearODEEx1::count() const
 {
 #if defined(EXAMPLE_1) || defined(EXAMPLE_2)
     return 3;
@@ -129,7 +129,7 @@ unsigned int LinearODE1stOrderEx1::count() const
 #endif
 }
 
-double LinearODE1stOrderEx1::x(const PointNodeODE &node, unsigned int r UNUSED_PARAM) const
+double FirstOrderLinearODEEx1::x(const PointNodeODE &node, unsigned int r UNUSED_PARAM) const
 {
     double t =  node.x;
 
