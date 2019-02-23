@@ -51,14 +51,8 @@ DESTDIR += ../bin
 
 SOURCES += main.cpp
 
-SOURCES += nonlinearequationex1.cpp
-HEADERS += nonlinearequationex1.h
-
-SOURCES += linearode1storderex1.cpp
-HEADERS += linearode1storderex1.h
-
-SOURCES += nonlinearode1storderex1.cpp
-HEADERS += nonlinearode1storderex1.h
+#SOURCES += nonlinearequationex1.cpp
+#HEADERS += nonlinearequationex1.h
 
 OBJECTS_DIR = release/.obj
 MOC_DIR = release/.moc

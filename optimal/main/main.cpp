@@ -30,52 +30,13 @@
 
 #include <grid/secondorderlinearodeex1.h>
 
-class A : public FirstOrderNonLinearODE
-{
-public:
-    virtual double f(double x, double y, unsigned int k) const;
-};
-
-class B
-{
-public:
-    B(int i=1) : a(i) { std::cout << "B constructor " << a << std::endl; }
-    virtual ~B() { std::cout << "B destructor" << std::endl; }
-
-    int a;
-};
-
-double A::f(double x, double y, unsigned int k) const
-{
-    double sigma = 0.01;
-//    return  3.0*x*x;// + 4.0*(1.0/(sqrt(2.0*M_PI*sigma*sigma))) * exp(((x-0.5)*(x-0.5))/(-2.0*sigma*sigma));
-//    return  4.0*x*x*x*exp(pow(x,4.0));// + 4.0*(1.0/(sqrt(2.0*M_PI*sigma*sigma))) * exp(((x-0.8)*(x-0.8))/(-2.0*sigma*sigma));
-
-    double w = 0.0;
-    if (k==80) w = 100.0;
-    return  4.0*x*x*x*exp(pow(x,4.0)) + 4.0*w;
-}
-
-
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
-//    B *b = new B[5];
-//    puts("---");
-//    delete [] b;
-//    return 0;
-
-//    A a;
-//    const unsigned int N = 100;
-//    DoubleVector ry; ry.resize(N+1);
-//    a.setDimension(Dimension(0.01, 0, N));
-//    a.cauchyProblem(0.0, 0.0, ry, OrdinaryDifferentialEquation::OdeSolverMethod::EULER);
-//    IPrinter::print(ry,ry.length());
-
     //LinearODE1stOrderEx1::Main(argc, argv);
     //NonLinearODE1stOrderEx2::Main(argc, argv);
-    SecondOrderLinearODEEx1::Main(argc, argv);
+    //SecondOrderLinearODEEx1::Main(argc, argv);
 
-    return 0;
+    //return 0;
 
     //srand(static_cast<unsigned int>(time(nullptr)));
 

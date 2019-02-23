@@ -25,5 +25,5 @@ auto InitialBoundaryValueProblemPDE::addSpaceDimension(const Dimension &dimensio
 
 auto InitialBoundaryValueProblemPDE::spaceDimension(Dimension::SpaceDimension dim) const -> const Dimension&
 {
-    return mspaceDimension.at(dim);
+    return mspaceDimension.at(dim-1);
 }

@@ -113,20 +113,45 @@ auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, double &dx, double &
 {
     const unsigned int rx = static_cast<unsigned int>(_rx);
     const unsigned int ry = static_cast<unsigned int>(_ry);
+
     const double px = p().x;
     const double py = p().y;
 
-    //    dx = (u[ry][rx+1] - u[ry][rx-1])/(2.0*_hx);
-    //    dy = (u[ry+1][rx] - u[ry-1][rx])/(2.0*_hy);
+//    dx = (u[ry][rx+1] - u[ry][rx-1])/(2.0*_hx);
+//    dy = (u[ry+1][rx] - u[ry-1][rx])/(2.0*_hy);
 
-    //    dx += (px-rx*_hx)*((u[ry][rx+1] - 2.0*u[ry][rx] + u[ry][rx-1])/(_hx*_hx));
-    //    dy += (py-ry*_hy)*((u[ry+1][rx] - 2.0*u[ry][rx] + u[ry-1][rx])/(_hy*_hy));
+//    dx += (px-rx*_hx)*((u[ry][rx+1] - 2.0*u[ry][rx] + u[ry][rx-1])/(_hx*_hx));
+//    dy += (py-ry*_hy)*((u[ry+1][rx] - 2.0*u[ry][rx] + u[ry-1][rx])/(_hy*_hy));
 
-    dx = (u[ry][rx-2] - 8.0*u[ry][rx-1] + 8.0*u[ry][rx+1] - u[ry][rx+2])/(12.0*_hx);
-    dy = (u[ry-2][rx] - 8.0*u[ry-1][rx] + 8.0*u[ry+1][rx] - u[ry+2][rx])/(12.0*_hy);
+    //dx = (u[ry][rx-2] - 8.0*u[ry][rx-1] + 8.0*u[ry][rx+1] - u[ry][rx+2])/(12.0*_hx);
+    //dy = (u[ry-2][rx] - 8.0*u[ry-1][rx] + 8.0*u[ry+1][rx] - u[ry+2][rx])/(12.0*_hy);
 
-    dx += ((px-rx*_hx))*((-2.0*u[ry][rx-2] + 32.0*u[ry][rx-1] - 60.0*u[ry][rx] + 32.0*u[ry][rx+1] - 2.0*u[ry][rx+2])/(24.0*_hx*_hx));
-    dy += ((py-ry*_hy))*((-2.0*u[ry-2][rx] + 32.0*u[ry-1][rx] - 60.0*u[ry][rx] + 32.0*u[ry+1][rx] - 2.0*u[ry+2][rx])/(24.0*_hy*_hy));
+    //dx += ((px-rx*_hx))*((-2.0*u[ry][rx-2] + 32.0*u[ry][rx-1] - 60.0*u[ry][rx] + 32.0*u[ry][rx+1] - 2.0*u[ry][rx+2])/(24.0*_hx*_hx));
+    //dy += ((py-ry*_hy))*((-2.0*u[ry-2][rx] + 32.0*u[ry-1][rx] - 60.0*u[ry][rx] + 32.0*u[ry+1][rx] - 2.0*u[ry+2][rx])/(24.0*_hy*_hy));
+
+    double x0, x1, x2; x0 = (rx-1)*_hx; x1 = rx*_hx; x2 = (rx+1)*_hx;
+    double y0, y1, y2; y0 = (ry-1)*_hy; y1 = ry*_hy; y2 = (ry+1)*_hy;
+
+    dx = (((px-x1)+(px-x2))/((x0-x1)*(x0-x2))) * ( (((py-y1)*(py-y2))/((y0-y1)*(y0-y2)))*u[ry-1][rx-1]
+                                                 + (((py-y2)*(py-y0))/((y1-y2)*(y1-y0)))*u[ry+0][rx-1] +
+                                                   (((py-y0)*(py-y1))/((y2-y0)*(y2-y1)))*u[ry+1][rx-1] )
+       + (((px-x2)+(px-x0))/((x1-x2)*(x1-x0))) * ( (((py-y1)*(py-y2))/((y0-y1)*(y0-y2)))*u[ry-1][rx+0]
+                                                 + (((py-y2)*(py-y0))/((y1-y2)*(y1-y0)))*u[ry+0][rx+0] +
+                                                   (((py-y0)*(py-y1))/((y2-y0)*(y2-y1)))*u[ry+1][rx+0] )
+       + (((px-x0)+(px-x1))/((x2-x0)*(x2-x1))) * ( (((py-y1)*(py-y2))/((y0-y1)*(y0-y2)))*u[ry-1][rx+1]
+                                                 + (((py-y2)*(py-y0))/((y1-y2)*(y1-y0)))*u[ry+0][rx+1] +
+                                                   (((py-y0)*(py-y1))/((y2-y0)*(y2-y1)))*u[ry+1][rx+1] );
+
+    dy = (((py-y1)+(py-y2))/((y0-y1)*(y0-y2))) * ( (((px-x1)*(px-x2))/((x0-x1)*(x0-x2)))*u[ry-1][rx-1]
+                                                 + (((px-x2)*(px-x0))/((x1-x2)*(x1-x0)))*u[ry-1][rx+0] +
+                                                   (((px-x0)*(px-x1))/((x2-x0)*(x2-x1)))*u[ry-1][rx+1] )
+       + (((py-y2)+(py-y0))/((y1-y2)*(y1-y0))) * ( (((px-x1)*(px-x2))/((x0-x1)*(x0-x2)))*u[ry+0][rx-1]
+                                                 + (((px-x2)*(px-x0))/((x1-x2)*(x1-x0)))*u[ry+0][rx+0] +
+                                                   (((px-x0)*(px-x1))/((x2-x0)*(x2-x1)))*u[ry+0][rx+1] )
+       + (((py-y0)+(py-y1))/((y2-y0)*(y2-y1))) * ( (((px-x1)*(px-x2))/((x0-x1)*(x0-x2)))*u[ry+1][rx-1]
+                                                 + (((px-x2)*(px-x0))/((x1-x2)*(x1-x0)))*u[ry+1][rx+0] +
+                                                   (((px-x0)*(px-x1))/((x2-x0)*(x2-x1)))*u[ry+1][rx+1] );
+
 
 
     return consentrateInPoint(u);
