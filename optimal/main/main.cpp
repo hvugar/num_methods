@@ -15,8 +15,6 @@
 #include <utils/matrix.h>
 #include <utils/random.h>
 
-#include "nonlinearequationex1.h"
-
 #include <grid/hpibvp.h>
 #include <grid/hyperbolicibvp1.h>
 #include <grid/parabolicibvp1.h>
@@ -30,11 +28,17 @@
 #include <ode/firstordernonlinearodeex1.h>
 #include <ode/secondorderlinearodeex1.h>
 
+#include "test/deltagrid2dext1.h"
+
+#include <problem0h_solver.h>
+
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     //LinearODE1stOrderEx1::Main(argc, argv);
     //NonLinearODE1stOrderEx2::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);
+
+    //DeltaGrid2DExt1::Main(argc, argv);
 
     //return 0;
 
@@ -42,13 +46,15 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //NonLocalSystem::Main(argc, argv);
 
+    Problem0HFunctional::Main(argc, argv);
+
     //CcIHyperbolicIBVP1::Main(argc, argv);
     //CdIHyperbolicIBVP1::Main(argc, argv);
     //IPrinter::printSeperatorLine();
     //ConjugateCC1IHyperbolicIBVP1::Main(argc, argv);
     //Problem1HDirichlet1::Main(argc, argv);
     //Problem2HDirichlet::Main(argc, argv);
-    Problem2HDirichletDelta::Main(argc, argv);
+    //Problem2HDirichletDelta::Main(argc, argv);
 
     //CCParabolicIBVP1::Main(argc, argv);
     //CCIHyperbolicIBVP1::Main(argc, argv);

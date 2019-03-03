@@ -55,8 +55,8 @@ auto Problem2HDirichletDelta::example1() -> void
     ox << -0.002551 << -0.004408 << -0.009114 << -0.009739 << -0.004921 << +0.001554 << +0.004218 << -0.005192 << -0.006846 << -0.008455;
     //ox <<  0.424800 <<  0.392500 <<  0.585300 <<  0.755400;
     //ox <<  0.352600 <<  0.738600 <<  0.859800 <<  0.155200;
-    ox <<  0.420000 <<  0.390000 <<  0.580000 <<  0.750000;
-    ox <<  0.350000 <<  0.730000 <<  0.850000 <<  0.150000;
+    ox <<  0.421200 <<  0.392800 <<  0.584300 <<  0.751500;
+    ox <<  0.352500 <<  0.733100 <<  0.852900 <<  0.150500;
 
     DoubleVector rx;
     rx << -0.125250 << -0.101923 << -0.122294 << -0.003009 <<  0.341065 <<  0.010695 << -0.142474 << -0.057123 <<  0.015842 <<  0.029494;
@@ -137,12 +137,12 @@ auto Problem2HDirichletDelta::example1() -> void
         if (i==0)
         {
             prob.equaPrm.OptimalParameterToVector(x);
-            prob.checkGradient1(prob);
+//            prob.checkGradient1(prob);
 //            prob.optimizeK = true;
 //            prob.optimizeZ = true;
 //            prob.optimizeO = false;
 //            prob.optimizeC = false;
-            return;
+//            return;
         }
 
         //ConjugateGradient g;

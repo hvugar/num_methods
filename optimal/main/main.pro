@@ -34,6 +34,9 @@ LIBS += -L../bin -lborder
 #INCLUDEPATH += ../imaging
 #LIBS += -L../bin -limaging
 
+INCLUDEPATH += ../problem0H
+LIBS += -L../bin -lproblem0H
+
 INCLUDEPATH += ../problem2P
 LIBS += -L../bin -lproblem2P
 
@@ -49,10 +52,12 @@ DESTDIR += ../bin
 #include(problem5/problem5.pri)
 #include(load_sys/load_sys.pri)
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    test/deltagrid2dext1.cpp
 
-#SOURCES += nonlinearequationex1.cpp
-#HEADERS += nonlinearequationex1.h
+SOURCES += test/nonlinearequationex1.cpp
+HEADERS += test/nonlinearequationex1.h \
+    test/deltagrid2dext1.h
 
 OBJECTS_DIR = release/.obj
 MOC_DIR = release/.moc
