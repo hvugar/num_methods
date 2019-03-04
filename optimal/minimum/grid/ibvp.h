@@ -1,5 +1,5 @@
-#ifndef INITIALBOUNDARYVALUEPROBLEM_H
-#define INITIALBOUNDARYVALUEPROBLEM_H
+#ifndef INITIAL_BOUNDARY_VALUE_PROBLEM_H
+#define INITIAL_BOUNDARY_VALUE_PROBLEM_H
 
 #include "bvp.h"
 #include "grid.h"
@@ -15,7 +15,11 @@ class MINIMUMSHARED_EXPORT InitialValueProblem {};
 
 class MINIMUMSHARED_EXPORT InitialValueProblemODE : public InitialValueProblem {};
 
-class MINIMUMSHARED_EXPORT InitialValueProblemPDE : public InitialValueProblem {};
+class MINIMUMSHARED_EXPORT InitialValueProblemPDE : public InitialValueProblem
+{
+public:
+
+};
 
 /**
  * @brief The InitialBoundaryValueProblemPDE class
@@ -40,4 +44,4 @@ protected:
     std::vector<Dimension> mspaceDimension;
 };
 
-#endif // INITIALBOUNDARYVALUEPROBLEM_H
+#endif // INITIAL_BOUNDARY_VALUE_PROBLEM_H

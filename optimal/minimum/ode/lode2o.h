@@ -4,24 +4,10 @@
 #include "diffequ.h"
 #include "cmethods.h"
 
-enum class BoundaryConditionTypeODE
-{
-    Dirichlet = 1,
-    Neumann = 2,
-    Robin = 3
-};
-
-enum class InitialConditionTypeODE
-{
-    InitialValue = 0,
-    FirstDerivative = 1,
-    SecondDerivative = 2
-};
-
 class BoundaryConditionODE
 {
 public:
-    BoundaryConditionTypeODE boundaryConditionType;
+    BoundaryCondition boundaryConditionType;
     DoubleMatrix a;
     DoubleMatrix b;
     double lambda;
@@ -30,7 +16,7 @@ public:
 class InitialConditionODE
 {
 public:
-    InitialConditionTypeODE initialConditionType;
+    InitialCondition initialConditionType;
     double value;
 };
 
@@ -67,7 +53,7 @@ protected:
     virtual auto B(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const -> double = 0;
     virtual auto C(const PointNodeODE &node, unsigned int row = 1) const -> double = 0;
 
-    virtual auto initial(InitialConditionTypeODE condition, unsigned int row = 1) const -> double = 0;
+    virtual auto initial(InitialCondition condition, unsigned int row = 1) const -> double = 0;
     virtual auto boundary(const PointNodeODE &node, BoundaryConditionODE &condition, unsigned int row = 1) const -> double = 0;
 };
 

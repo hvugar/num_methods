@@ -16,13 +16,6 @@
 class MINIMUMSHARED_EXPORT BoundaryValueProblem
 {
 public:
-    enum BoundaryCondition
-    {
-        Dirichlet = 1,
-        Neumann = 2,
-        Mixed = 3
-    };
-
     BoundaryCondition condition;
 };
 
@@ -35,7 +28,7 @@ public:
     virtual ~BoundaryValueProblemODE();
 
 protected:
-    virtual double boundary(const PointNodeODE &n) const = 0;
+    virtual double boundary(const PointNodeODE &n, BoundaryCondition &condition) const = 0;
 };
 
 /**

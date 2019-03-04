@@ -91,14 +91,14 @@ void CcIHyperbolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     hibvp.addSpaceDimension(Dimension(0.01, 0, 100));
     hibvp.addSpaceDimension(Dimension(0.01, 0, 100));
 
-//    DoubleVector u;
-//    hibvp.method = 1;
-//    hibvp.explicit_calculate_D1V1(u, hibvp.a);
-//    IPrinter::printVector(u);
-//    hibvp.method = 2;
-//    hibvp.implicit_calculate_D1V1(u, hibvp.a);
-//    IPrinter::printSeperatorLine();
-//    IPrinter::printVector(u);
+    //    DoubleVector u;
+    //    hibvp.method = 1;
+    //    hibvp.explicit_calculate_D1V1(u, hibvp.a);
+    //    IPrinter::printVector(u);
+    //    hibvp.method = 2;
+    //    hibvp.implicit_calculate_D1V1(u, hibvp.a);
+    //    IPrinter::printSeperatorLine();
+    //    IPrinter::printVector(u);
 
     DoubleMatrix u;
     //hibvp.explicit_calculate_D2V1(u, hibvp.a);
@@ -112,16 +112,16 @@ void CcIHyperbolicIBVP1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 void CcIHyperbolicIBVP1::layerInfo(const DoubleMatrix &u, unsigned int ln) const
 {
-//    if (ln==1 || ln==2000)
-//    {
-//        IPrinter::printMatrix(u);
-//        IPrinter::printSeperatorLine();
-//    }
+    //    if (ln==1 || ln==2000)
+    //    {
+    //        IPrinter::printMatrix(u);
+    //        IPrinter::printSeperatorLine();
+    //    }
 
-//    if (ln%1==0) { double w = u.min(); if (w < 0.0) {} else { w = u.max(); } printf("%14.10f\n", w); }
-//    return;
+    //    if (ln%1==0) { double w = u.min(); if (w < 0.0) {} else { w = u.max(); } printf("%14.10f\n", w); }
+    //    return;
 
-//    if (ln%2==0)
+    //    if (ln%2==0)
     {
         const static double ht = timeDimension().step();
         const Dimension &dimX = spaceDimension(Dimension::DimensionX);
@@ -155,8 +155,8 @@ void CcIHyperbolicIBVP1::layerInfo(const DoubleMatrix &u, unsigned int ln) const
                     SpaceNodePDE sn;
                     sn.i = static_cast<int>(n); sn.x = n*hx;
                     sn.j = static_cast<int>(m); sn.y = m*hy;
-                    _u1[m][n] = initial1(sn);
-                    _ut[m][n] = initial2(sn);
+                    _u1[m][n] = initial(sn, InitialCondition::InitialValue);
+                    _ut[m][n] = initial(sn, InitialCondition::FirstDerivative);
                 }
             }
             //printf("%5d %.10f %.10f %.10f\n", ln, integralUP(u), integralUK(u), integralUP(u)+integralUK(u));
@@ -185,14 +185,14 @@ void CcIHyperbolicIBVP1::layerInfo(const DoubleMatrix &u, unsigned int ln) const
             }
         }
 
-//        if (ln==0)
+        //        if (ln==0)
         {
             //        //if (ln%20000==0) IPrinter::printVector(u, nullptr, u.length());
             double k = 1.0;
-//            double k = 9.8681840001001186485325310599663*1.9998766945708295048259473561531;
+            //            double k = 9.8681840001001186485325310599663*1.9998766945708295048259473561531;
             //double k = 19.735111566520971090368615144868;
-    //        double k = 691.74162213081364457511246502072;
-    //        double k=13.790947517451899863330960038627;
+            //        double k = 691.74162213081364457511246502072;
+            //        double k=13.790947517451899863330960038627;
             printf("%5d %.10f %.10f %.10f\n", ln, integralUP(u), integralUK(u), k*integralUP(u)+integralUK(u));
         }
         return;
@@ -250,14 +250,14 @@ void CcIHyperbolicIBVP1::layerInfo(const DoubleVector &u, unsigned int ln) const
         pxm.save(QString("d:/img/0/%1.png").arg(ln));
     }
 
-//    QPixmap pxm(1000, 600);
-//    pxm.fill(Qt::yellow);
-//    QPainter painter(&pxm);
-//    QPixmap img1(QString("d:/img/1/%1.png").arg(ln), "PNG");
-//    QPixmap latex(QString("d:/img/latex_1_200.png"), "PNG");
-//    painter.drawPixmap(5, 200, img1);
-//    painter.drawPixmap(1000-540, 10, latex);
-//    pxm.save(QString("d:/img/4/%1.png").arg(ln));
+    //    QPixmap pxm(1000, 600);
+    //    pxm.fill(Qt::yellow);
+    //    QPainter painter(&pxm);
+    //    QPixmap img1(QString("d:/img/1/%1.png").arg(ln), "PNG");
+    //    QPixmap latex(QString("d:/img/latex_1_200.png"), "PNG");
+    //    painter.drawPixmap(5, 200, img1);
+    //    painter.drawPixmap(1000-540, 10, latex);
+    //    pxm.save(QString("d:/img/4/%1.png").arg(ln));
 
     //printf("\rSaved: %d\n", ln);
 
@@ -299,54 +299,53 @@ void CcIHyperbolicIBVP1::layerInfo(const DoubleVector &u, unsigned int ln) const
     if (ln > 1) printf("%5d %.10f %.10f %.10f\n", ln, k*integralUP(u), integralUK(u), k*integralUP(u)+integralUK(u));
 }
 
-double CcIHyperbolicIBVP1::initial1(const SpaceNodePDE &sn UNUSED_PARAM) const
-{
-    const Dimension &dimX = spaceDimension(Dimension::DimensionX); const double hx = dimX.step(); const double sigmaX = 5.0 * hx;
-    const Dimension &dimY = spaceDimension(Dimension::DimensionY); const double hy = dimY.step(); const double sigmaY = 3.0 * hy;
-
-    // 1D
-    //return sn.x*sn.x;
-    //return sn.x*sn.x*sn.x;
-    //return sn.x*sn.x*sn.x;
-    //return 0.0;
-    //return 0.0;
-    //return (1.0/sqrt(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)));
-
-    // 2D
-    //return sn.x*sn.x + sn.y*sn.y;
-    //return sn.x*sn.x + sn.y*sn.y;
-    //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
-    //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
-    //return 0.0;
-    return 0.0;
-    //return (1.0/(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)+((sn.y-0.5)*(sn.y-0.5))/(2.0*sigmaY*sigmaY)));
-
-    //return 0.0;
-}
-
-double CcIHyperbolicIBVP1::initial2(const SpaceNodePDE &sn) const
+double CcIHyperbolicIBVP1::initial(const SpaceNodePDE &sn UNUSED_PARAM, InitialCondition condition) const
 {
     const Dimension &dimX = spaceDimension(Dimension::DimensionX); const double hx = dimX.step(); const double sigmaX = 5.0 * hx;
     const Dimension &dimY = spaceDimension(Dimension::DimensionY); const double hy = dimY.step(); const double sigmaY = 5.0 * hy;
 
-    // 1D
-    //return 0.0;
-    //return 0.0;
-    //return 0.0;
-    //return sin(M_PI*sn.x);
-    //return (1.0/sqrt(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)));
-    //return 0.0;
+    if (condition == InitialCondition::InitialValue)
+    {
+        // 1D
+        //return sn.x*sn.x;
+        //return sn.x*sn.x*sn.x;
+        //return sn.x*sn.x*sn.x;
+        //return 0.0;
+        //return 0.0;
+        //return (1.0/sqrt(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)));
 
-    // 2D
-    //return 1.0;
-    //return 0.0;
-    //return 0.0;
-    //return 0.0;
-    //return sin(M_PI*sn.x)*sin(M_PI*sn.y);
-    return (1.0/(2.0*M_PI*sigmaX*sigmaY)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX) + ((sn.y-0.5)*(sn.y-0.5))/(2.0*sigmaY*sigmaY)));
-    //return 0.0;
+        // 2D
+        //return sn.x*sn.x + sn.y*sn.y;
+        //return sn.x*sn.x + sn.y*sn.y;
+        //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
+        //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
+        //return 0.0;
+        return 0.0;
+        //return (1.0/(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)+((sn.y-0.5)*(sn.y-0.5))/(2.0*sigmaY*sigmaY)));
 
-    //return distribute_blows(dimX, dimY, sn);
+        //return 0.0;
+    }
+    else
+    {
+        // 1D
+        //return 0.0;
+        //return 0.0;
+        //return 0.0;
+        //return sin(M_PI*sn.x);
+        //return (1.0/sqrt(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)));
+        //return 0.0;
+
+        // 2D
+        //return 1.0;
+        //return 0.0;
+        //return 0.0;
+        //return 0.0;
+        //return sin(M_PI*sn.x)*sin(M_PI*sn.y);
+        return (1.0/(2.0*M_PI*sigmaX*sigmaY)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX) + ((sn.y-0.5)*(sn.y-0.5))/(2.0*sigmaY*sigmaY)));
+        //return 0.0;
+
+        //return distribute_blows(dimX, dimY, sn);
+    }
 }
 
 double CcIHyperbolicIBVP1::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
@@ -551,57 +550,57 @@ void CdIHyperbolicIBVP1::layerInfo(const DoubleMatrix &u, unsigned int ln) const
     return;
 }
 
-double CdIHyperbolicIBVP1::initial1(const SpaceNodePDE &sn) const
+double CdIHyperbolicIBVP1::initial(const SpaceNodePDE &sn, InitialCondition condition) const
 {
     C_UNUSED(sn);
-    const Dimension &dimX = spaceDimension(Dimension::DimensionX); const double hx = dimX.step(); const double sigmaX = 5.0 * hx;
-    const Dimension &dimY = spaceDimension(Dimension::DimensionY); const double hy = dimY.step(); const double sigmaY = 3.0 * hy;
 
-    // 1D
-    //return sn.x*sn.x;
-    //return sn.x*sn.x*sn.x;
-    //return sn.x*sn.x*sn.x;
-    //return 0.0;
-    //return 0.0;
-    //return (1.0/sqrt(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)));
+    //const Dimension &dimX = spaceDimension(Dimension::DimensionX); const double hx = dimX.step(); const double sigmaX = 5.0 * hx;
+    //const Dimension &dimY = spaceDimension(Dimension::DimensionY); const double hy = dimY.step(); const double sigmaY = 5.0 * hy;
 
-    // 2D
-    //return sn.x*sn.x + sn.y*sn.y;
-    //return sn.x*sn.x + sn.y*sn.y;
-    //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
-    //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
-    return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
-    //return 0.0;
-    //return 0.0;
-    //return (1.0/(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)+((sn.y-0.5)*(sn.y-0.5))/(2.0*sigmaY*sigmaY)));
+    if (condition == InitialCondition::InitialValue)
+    {
+        // 1D
+        //return sn.x*sn.x;
+        //return sn.x*sn.x*sn.x;
+        //return sn.x*sn.x*sn.x;
+        //return 0.0;
+        //return 0.0;
+        //return (1.0/sqrt(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)));
 
-    //return 0.0;
-}
+        // 2D
+        //return sn.x*sn.x + sn.y*sn.y;
+        //return sn.x*sn.x + sn.y*sn.y;
+        //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
+        //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
+        return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
+        //return 0.0;
+        //return 0.0;
+        //return (1.0/(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)+((sn.y-0.5)*(sn.y-0.5))/(2.0*sigmaY*sigmaY)));
 
-double CdIHyperbolicIBVP1::initial2(const SpaceNodePDE &sn) const
-{
-    const Dimension &dimX = spaceDimension(Dimension::DimensionX); const double hx = dimX.step(); const double sigmaX = 5.0 * hx;
-    const Dimension &dimY = spaceDimension(Dimension::DimensionY); const double hy = dimY.step(); const double sigmaY = 3.0 * hy;
+        //return 0.0;
+    }
+    else
+    {
+        // 1D
+        //return 0.0;
+        //return 0.0;
+        //return 0.0;
+        //return sin(M_PI*sn.x);
+        //return (1.0/sqrt(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)));
+        //return 0.0;
 
-    // 1D
-    //return 0.0;
-    //return 0.0;
-    //return 0.0;
-    //return sin(M_PI*sn.x);
-    //return (1.0/sqrt(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)));
-    //return 0.0;
+        // 2D
+        //return 1.0;
+        //return 0.0;
+        //return 0.0;
+        //return 0.0;
+        return 0.0;
+        //return sin(M_PI*sn.x)*sin(M_PI*sn.y);
+        //return (1.0/(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)+((sn.y-0.5)*(sn.y-0.5))/(2.0*sigmaY*sigmaY)));
+        //return 0.0;
 
-    // 2D
-    //return 1.0;
-    //return 0.0;
-    //return 0.0;
-    //return 0.0;
-    return 0.0;
-    //return sin(M_PI*sn.x)*sin(M_PI*sn.y);
-    //return (1.0/(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)+((sn.y-0.5)*(sn.y-0.5))/(2.0*sigmaY*sigmaY)));
-    //return 0.0;
-
-    //return distribute_blows(dimX, dimY, sn);
+        //return distribute_blows(dimX, dimY, sn);
+    }
 }
 
 double CdIHyperbolicIBVP1::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
@@ -687,14 +686,16 @@ void ConjugateCdIHyperbolicIBVP1::layerInfo(const DoubleMatrix& p, unsigned int 
     }
 }
 
-double ConjugateCdIHyperbolicIBVP1::initial1(const SpaceNodePDE &sn UNUSED_PARAM) const
+double ConjugateCdIHyperbolicIBVP1::initial(const SpaceNodePDE &sn UNUSED_PARAM, InitialCondition condition) const
 {
-    return sn.x*sn.x + sn.y*sn.y + 1.0;
-}
-
-double ConjugateCdIHyperbolicIBVP1::initial2(const SpaceNodePDE &sn UNUSED_PARAM) const
-{
-    return 2.0;
+    if (condition == InitialCondition::InitialValue)
+    {
+        return sn.x*sn.x + sn.y*sn.y + 1.0;
+    }
+    else
+    {
+        return 2.0;
+    }
 }
 
 double ConjugateCdIHyperbolicIBVP1::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const

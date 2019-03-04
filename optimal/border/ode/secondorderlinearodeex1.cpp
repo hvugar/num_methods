@@ -35,7 +35,7 @@ double SecondOrderLinearODEEx1::boundary(const PointNodeODE &node, BoundaryCondi
 //        condition.boundaryConditionType = BoundaryConditionTypeODE::Dirichlet;
 //        condition.lambda = 0.0;
 //        return 0.0;
-        condition.boundaryConditionType = BoundaryConditionTypeODE::Neumann;
+        condition.boundaryConditionType = BoundaryCondition::Neumann;
         condition.lambda = 1.0;
         return 0.0;
     }
@@ -44,17 +44,17 @@ double SecondOrderLinearODEEx1::boundary(const PointNodeODE &node, BoundaryCondi
 //        condition.boundaryConditionType = BoundaryConditionTypeODE::Dirichlet;
 //        condition.lambda = 0.0;
 //        return 1.0;
-        condition.boundaryConditionType = BoundaryConditionTypeODE::Neumann;
+        condition.boundaryConditionType = BoundaryCondition::Neumann;
         condition.lambda = 1.0;
         return 2.0 - condition.lambda;
     }
     return NAN;
 }
 
-double SecondOrderLinearODEEx1::initial(InitialConditionTypeODE condition, unsigned int) const
+double SecondOrderLinearODEEx1::initial(InitialCondition condition, unsigned int) const
 {
-    if (condition == InitialConditionTypeODE::InitialValue) return 0.0;
-    if (condition == InitialConditionTypeODE::FirstDerivative) return 0.0;
+    if (condition == InitialCondition::InitialValue) return 0.0;
+    if (condition == InitialCondition::FirstDerivative) return 0.0;
     return NAN;
 }
 

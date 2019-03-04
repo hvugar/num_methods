@@ -13,8 +13,8 @@ void SecondOrderLinearODE::solveInitialValueProblem(DoubleVector &rv) const
 
     rv.resize(size+1);
 
-    double value = initial(InitialConditionTypeODE::InitialValue);
-    double derivative = initial(InitialConditionTypeODE::FirstDerivative);
+    double value = initial(InitialCondition::InitialValue);
+    double derivative = initial(InitialCondition::FirstDerivative);
 
     PointNodeODE node0(min*h, min);
     rv[0] = value;
@@ -46,20 +46,20 @@ void SecondOrderLinearODE::solveBoundaryValueProblem(DoubleVector &rv) const
     PointNodeODE leftNode(static_cast<double>(min*h), min);
     BoundaryConditionODE leftCondition;
     double leftValue = boundary(leftNode, leftCondition);
-    BoundaryConditionTypeODE leftConditionType = leftCondition.boundaryConditionType;
+    BoundaryCondition leftConditionType = leftCondition.boundaryConditionType;
     double leftLambda = leftCondition.lambda;
 
     PointNodeODE rightNode(static_cast<double>(max*h), max);
     BoundaryConditionODE rightCondition;
     double rightValue = boundary(rightNode, rightCondition);
-    BoundaryConditionTypeODE rightConditionType = rightCondition.boundaryConditionType;
+    BoundaryCondition rightConditionType = rightCondition.boundaryConditionType;
     double rightLambda = rightCondition.lambda;
 
     unsigned int N = size - 1;
     unsigned int start=0;
     unsigned int end=N;
 
-    if (leftConditionType == BoundaryConditionTypeODE::Dirichlet)
+    if (leftConditionType == BoundaryCondition::Dirichlet)
     {
         start = 1;
     }
@@ -69,7 +69,7 @@ void SecondOrderLinearODE::solveBoundaryValueProblem(DoubleVector &rv) const
         start = 0;
     }
 
-    if (rightConditionType == BoundaryConditionTypeODE::Dirichlet)
+    if (rightConditionType == BoundaryCondition::Dirichlet)
     {
         end = N-1;
     }
@@ -86,7 +86,7 @@ void SecondOrderLinearODE::solveBoundaryValueProblem(DoubleVector &rv) const
     double *x = static_cast<double*>(malloc(sizeof(double)*N));
 
     a[0] = 0;
-    if (leftCondition.boundaryConditionType == BoundaryConditionTypeODE::Dirichlet)
+    if (leftCondition.boundaryConditionType == BoundaryCondition::Dirichlet)
     {
         rv[0] = leftValue;
         PointNodeODE node((min+1)*h, min+1);
@@ -104,7 +104,7 @@ void SecondOrderLinearODE::solveBoundaryValueProblem(DoubleVector &rv) const
     }
 
     c[N-1] = 0;
-    if (rightCondition.boundaryConditionType == BoundaryConditionTypeODE::Dirichlet)
+    if (rightCondition.boundaryConditionType == BoundaryCondition::Dirichlet)
     {
         rv[size] = rightValue;
         PointNodeODE node((max-1)*h, static_cast<int>(max-1));

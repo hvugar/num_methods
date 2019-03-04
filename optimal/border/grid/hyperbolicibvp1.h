@@ -23,8 +23,7 @@ public:
     double integralUK(const DoubleMatrix &u) const;
 
 protected:
-    virtual double initial1(const SpaceNodePDE &sn) const;
-    virtual double initial2(const SpaceNodePDE &sn) const;
+    virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
@@ -60,8 +59,7 @@ public:
     virtual void layerInfo(const DoubleMatrix &, unsigned int) const;
 
 protected:
-    virtual double initial1(const SpaceNodePDE &sn) const;
-    virtual double initial2(const SpaceNodePDE &sn) const;
+    virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
@@ -84,8 +82,7 @@ public:
     virtual void layerInfo(const DoubleMatrix &, unsigned int) const;
 
 protected:
-    virtual double initial1(const SpaceNodePDE &sn) const;
-    virtual double initial2(const SpaceNodePDE &sn) const;
+    virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 

@@ -4,6 +4,20 @@
 #include <global.h>
 #include <vector>
 
+enum class BoundaryCondition
+{
+    Dirichlet = 1,
+    Neumann = 2,
+    Robin = 3
+};
+
+enum class InitialCondition
+{
+    InitialValue = 0,
+    FirstDerivative = 1,
+    SecondDerivative = 2
+};
+
 struct MINIMUMSHARED_EXPORT SpacePoint
 {
     SpacePoint(double x = 0.0, double y = 0.0, double z = 0.0);
