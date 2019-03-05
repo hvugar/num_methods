@@ -49,6 +49,10 @@ protected:
     DoubleMatrix u1;
     DoubleMatrix u2;
 
+    DoubleMatrix uL0;
+    DoubleMatrix uL1;
+    DoubleMatrix uL2;
+
     std::vector<Problem0HParameter> psi;
 };
 

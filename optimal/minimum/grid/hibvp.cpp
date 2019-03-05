@@ -725,18 +725,18 @@ void CdIHyperbolicIBVP::implicit_calculate_D2V1(DoubleMatrix &u, double a, doubl
         }
         layerInfo(u20, tn20.i);
         /**************************************************** y direction apprx ***************************************************/
-        u00 = u10;
-        u05 = u15;
-        u10 = u20;
-//        for (unsigned int m=0; m<=M; m++)
-//        {
-//            for (unsigned int n=0; n<=N; n++)
-//            {
-//                u00[m][n] = u10[m][n];
-//                u05[m][n] = u15[m][n];
-//                u10[m][n] = u20[m][n];
-//            }
-//        }
+//        u00 = u10;
+//        u05 = u15;
+//        u10 = u20;
+        for (unsigned int m=0; m<=M; m++)
+        {
+            for (unsigned int n=0; n<=N; n++)
+            {
+                u00[m][n] = u10[m][n];
+                u05[m][n] = u15[m][n];
+                u10[m][n] = u20[m][n];
+            }
+        }
     }
     u.clear(); u.resize(M+1, N+1); for (unsigned int m=0; m<=M; m++) { for (unsigned int n=0; n<=N; n++) { u[m][n] = u20[m][n]; } }
 

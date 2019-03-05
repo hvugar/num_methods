@@ -33,9 +33,9 @@ public:
     double LInfNorm() const;
     double EuclideanNorm() const;
 
-    void L1Normalize();
-    void L2Normalize();
-    void EuclideanNormalize();
+    DoubleVector& L1Normalize();
+    DoubleVector& L2Normalize();
+    DoubleVector& EuclideanNormalize();
 
     /********************************************************************
      *                      NORM

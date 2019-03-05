@@ -9,7 +9,9 @@ void Problem0HFunctional::Main(int argc, char **argv)
     functional.a = 1.0;
     functional.gamma = 0.0;
     functional.alpha0 = 1.0;
-    functional.setDimension(Dimension(0.005, 0, 200), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
+    functional.setDimension(Dimension(0.005, 0, 200),
+                            Dimension(0.010, 0, 100),
+                            Dimension(0.010, 0, 100));
 
     DoubleVector x;
     x.resize(806);
@@ -27,20 +29,27 @@ void Problem0HFunctional::Main(int argc, char **argv)
     DoubleVector ga;
     functional.gradient(x, ga);
     ga.EuclideanNormalize();
-    IPrinter::printVector(ga.mid(0, 400));
-    IPrinter::printVector(ga.mid(0, 400));
-    IPrinter::print(ga.mid(802, 805), 4);
+    IPrinter::printVector(ga.mid(0, 400).EuclideanNormalize());
+    IPrinter::printVector(ga.mid(401, 801).EuclideanNormalize());
+    IPrinter::print(ga.mid(802, 805).EuclideanNormalize(), 4);
     IPrinter::printSeperatorLine();
 
     DoubleVector gn;
     gn.resize(x.length());
-    IGradient::Gradient(&functional, 0.01, x, gn);
+    IGradient::Gradient(&functional, 0.001, x, gn, static_cast<unsigned int>(0x0), static_cast<unsigned int>(400));
+    //IGradient::Gradient(&functional, 0.01, x, gn, static_cast<unsigned int>(401), static_cast<unsigned int>(801));
+
+    gn[000] = 0.0;
+    gn[401] = 0.0;
+    gn[802] = 0.0;
+    gn[803] = 0.0;
+    gn[804] = 0.0;
+    gn[805] = 0.0;
 
     gn.EuclideanNormalize();
-
-    IPrinter::printVector(gn.mid(401, 801));
-    IPrinter::printVector(gn.mid(401, 801));
-    IPrinter::print(gn.mid(802, 805), 4);
+    IPrinter::printVector(gn.mid(0, 400).EuclideanNormalize());
+    IPrinter::printVector(gn.mid(401, 801).EuclideanNormalize());
+    IPrinter::print(gn.mid(802, 805).EuclideanNormalize(), 4);
     IPrinter::printSeperatorLine();
 
 
@@ -100,7 +109,6 @@ auto Problem0HFunctional::setDimension(const Dimension &timeDimension, const Dim
 auto Problem0HFunctional::fx(const DoubleVector &x) const -> double
 {
     vectorToParameter(x);
-    puts("---");
 
     DoubleMatrix u;
     Problem0HForward::implicit_calculate_D2V1(u, Problem0HCommon::a, Problem0HCommon::gamma);
@@ -116,11 +124,10 @@ auto Problem0HFunctional::integral1(const DoubleMatrix &u) const -> double
 {
     const Dimension &dimensionX = Problem0HForward::spaceDimension(Dimension::DimensionX);
     const Dimension &dimensionY = Problem0HForward::spaceDimension(Dimension::DimensionY);
-
-    const double hx = dimensionX.step();
-    const double hy = dimensionY.step();
     const unsigned int N = static_cast<unsigned int> ( dimensionX.size() );
     const unsigned int M = static_cast<unsigned int> ( dimensionY.size() );
+    const double hx = dimensionX.step();
+    const double hy = dimensionY.step();
 
     double udiff = 0.0;
     double usum = 0.0;
@@ -157,11 +164,10 @@ auto Problem0HFunctional::integral2(const DoubleMatrix &u) const -> double
 {
     const Dimension &dimensionX = Problem0HForward::spaceDimension(Dimension::DimensionX);
     const Dimension &dimensionY = Problem0HForward::spaceDimension(Dimension::DimensionY);
-
-    const double hx = dimensionX.step();
-    const double hy = dimensionY.step();
     const unsigned int N = static_cast<unsigned int> ( dimensionX.size() );
     const unsigned int M = static_cast<unsigned int> ( dimensionY.size() );
+    const double hx = dimensionX.step();
+    const double hy = dimensionY.step();
 
     double udiff = 0.0;
     double usum = 0.0;
@@ -230,17 +236,17 @@ auto Problem0HFunctional::gradient(const DoubleVector &x, DoubleVector &g) const
 
 auto Problem0HForward::layerInfo(const DoubleMatrix &u, unsigned int ln) const -> void
 {
-    const unsigned int M = static_cast<unsigned int>(timeDimension().max());
+    const unsigned int L = static_cast<unsigned int>(timeDimension().size());
     const double ht = timeDimension().step();
 
     Problem0HForward *forward = const_cast<Problem0HForward*>(this);
-    if (ln == 2*(M-2)) forward->u2 = u;
-    if (ln == 2*(M-1)) forward->u1 = u;
-    if (ln == 2*(M-0))
+    if (ln == 2*(L-2)) forward->uL2 = u;
+    if (ln == 2*(L-1)) forward->uL1 = u;
+    if (ln == 2*(L-0)) forward->uL0 = u;
+    if (ln == 2*(L-0))
     {
         forward->u1 = u;
-        forward->u2 = u2 - 4.0*u1 + 3.0*u;
-        forward->u2 *= (1.0/(2.0*ht));
+        forward->u2 = (1.0/(2.0*ht))*(uL2 - 4.0*uL1 + 3.0*uL0);
     }
 
     //QString filename1 = QString("data/problem0H/f/txt/f_%1.txt").arg(ln, 4, 10, QChar('0'));
@@ -249,7 +255,7 @@ auto Problem0HForward::layerInfo(const DoubleMatrix &u, unsigned int ln) const -
     //printf("Forward: %4d %0.3f %10.8f %10.8f %4d %4d\n", ln, ln*0.005, u.min(), u.max(), 0, 0);
     //QString filename2 = QString("data/problem0H/f/png/f_%1.png").arg(ln, 4, 10, QChar('0'));
     //QPixmap pixmap;
-    //visualizeMatrixHeat(u, u.min(), u.max(), pixmap, 201, 201);
+    //visualizeMatrixHeat(u, u.min(), u.max(), pixmap, 101, 101);
     //pixmap.save(filename2);
     //IPrinter::printSeperatorLine();
 }
@@ -269,6 +275,7 @@ auto Problem0HForward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
     unsigned int ln = static_cast<unsigned int>(tn.i);
     double _v1 = psi[0].v[ln];
     double _v2 = psi[1].v[ln];
+
 
     double pulse1 = _v1 * psi[0].deltaGrid.weight(sn);//cff1 * exp(-cff2*((sn.x-psi[0].p.x)*(sn.x-psi[0].p.x)+(sn.y-psi[0].p.y)*(sn.y-psi[0].p.y)));
     double pulse2 = _v2 * psi[1].deltaGrid.weight(sn);//cff1 * exp(-cff2*((sn.x-psi[1].p.x)*(sn.x-psi[1].p.x)+(sn.y-psi[1].p.y)*(sn.y-psi[1].p.y)));
@@ -295,20 +302,19 @@ auto Problem0HBckward::layerInfo(const DoubleMatrix &p, unsigned int ln) const -
     Problem0HBckward* const_this = const_cast<Problem0HBckward*>(this);
     const_this->psi[0].psi_vl[ln] = psi[0].deltaGrid.consentrateInPoint(p);
     const_this->psi[1].psi_vl[ln] = psi[1].deltaGrid.consentrateInPoint(p);
-    printf("%d %f %f %d %d\n", ln, const_this->psi[0].psi_vl[ln], const_this->psi[1].psi_vl[ln], psi[0].deltaGrid.minX(), psi[0].deltaGrid.maxX());
+    //printf("%d %f %f %d %d\n", ln, const_this->psi[0].psi_vl[ln], const_this->psi[1].psi_vl[ln], psi[0].deltaGrid.minX(), psi[0].deltaGrid.maxX());
 
-
-    //ps1[ln] = p[];
-    //ps2[ln] = p[];
+    //IPrinter::printMatrix(p);
+    //IPrinter::printSeperatorLine();
 
     //QString filename1 = QString("data/problem0H/b/txt/b_%1.txt").arg(ln, 4, 10, QChar('0'));
     //IPrinter::print(p,filename1.toLatin1().data());
     //IPrinter::printSeperatorLine();
     //printf("Forward: %4d %0.3f %10.8f %10.8f %4d %4d\n", ln, ln*0.005, u.min(), u.max(), 0, 0);
-    //QString filename2 = QString("data/problem0H/b/png/b_%1.png").arg(ln, 4, 10, QChar('0'));
-    //QPixmap pixmap;
-    //visualizeMatrixHeat(p, p.min(), p.max(), pixmap, 201, 201);
-    //pixmap.save(filename2);
+    QString filename2 = QString("data/problem0H/b/png/b_%1.png").arg(ln, 4, 10, QChar('0'));
+    QPixmap pixmap;
+    visualizeMatrixHeat(p, p.min(), p.max(), pixmap, 201, 201);
+    pixmap.save(filename2);
     //IPrinter::printSeperatorLine();
 }
 
@@ -334,7 +340,7 @@ auto Problem0HBckward::f(const SpaceNodePDE&, const TimeNodePDE&) const -> doubl
 
 
 auto Problem0HFunctional::vectorToParameter(const DoubleVector &x) const -> void
-{
+{    
     const Dimension &time = Problem0HForward::timeDimension();
     const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
     const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
@@ -343,7 +349,7 @@ auto Problem0HFunctional::vectorToParameter(const DoubleVector &x) const -> void
     const unsigned int M = static_cast<unsigned int> ( dimY.size() );
     const unsigned int L = static_cast<unsigned int> ( time.size() );
     const double hy = dimX.step();
-    const double hx = dimY.size();
+    const double hx = dimY.step();
     //const double ht = time.size();
 
     Problem0HFunctional* const_this = const_cast<Problem0HFunctional*>(this);
@@ -370,11 +376,11 @@ auto Problem0HFunctional::vectorToParameter(const DoubleVector &x) const -> void
     const_this->psi[1].p.y = x[offset+3];
 
     const_this->psi[0].deltaGrid.cleanGrid();
-    const_this->psi[0].deltaGrid.initGrid(M, hy, N, hx);
+    const_this->psi[0].deltaGrid.initGrid(N, hx, M, hy);
     const_this->psi[0].deltaGrid.distributeGauss(psi[0].p);
 
     const_this->psi[1].deltaGrid.cleanGrid();
-    const_this->psi[1].deltaGrid.initGrid(M, hy, N, hx);
+    const_this->psi[1].deltaGrid.initGrid(N, hx, M, hy);
     const_this->psi[1].deltaGrid.distributeGauss(psi[1].p);
 }
 

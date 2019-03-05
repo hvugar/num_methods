@@ -193,21 +193,23 @@ double DoubleVector::EuclideanNorm() const
     return L2Norm();
 }
 
-void DoubleVector::L1Normalize()
+DoubleVector& DoubleVector::L1Normalize()
 {
     double norm = L1Norm();
     if (norm > DBL_EPSILON) for (unsigned int i=0; i<mLength; i++) mData[i] /= norm;
+    return *this;
 }
 
-void DoubleVector::L2Normalize()
+DoubleVector& DoubleVector::L2Normalize()
 {
     double norm = L2Norm();
     if (norm > DBL_EPSILON) for (unsigned int i=0; i<mLength; i++) mData[i] /= norm;
+    return *this;
 }
 
-void DoubleVector::EuclideanNormalize()
+DoubleVector& DoubleVector::EuclideanNormalize()
 {
-    L2Normalize();
+    return L2Normalize();
 }
 
 /********************************************************************

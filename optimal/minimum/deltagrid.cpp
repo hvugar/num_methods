@@ -30,7 +30,7 @@ auto DeltaGrid2D::initGrid(unsigned int N, double hx, unsigned int M, double hy)
     _cols = new bool[N+1]; for (unsigned int n=0; n<=N; n++) _cols[n] = false;
 }
 
-auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned sigmaXNum, unsigned int sigmaYNum) -> void
+auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned int sigmaXNum, unsigned int sigmaYNum) -> void
 {
     unsigned int kx = 3*sigmaXNum;
     unsigned int ky = 3*sigmaYNum;
