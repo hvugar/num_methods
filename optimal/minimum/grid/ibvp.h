@@ -15,11 +15,7 @@ class MINIMUMSHARED_EXPORT InitialValueProblem {};
 
 class MINIMUMSHARED_EXPORT InitialValueProblemODE : public InitialValueProblem {};
 
-class MINIMUMSHARED_EXPORT InitialValueProblemPDE : public InitialValueProblem
-{
-public:
-
-};
+class MINIMUMSHARED_EXPORT InitialValueProblemPDE : public InitialValueProblem {};
 
 /**
  * @brief The InitialBoundaryValueProblemPDE class

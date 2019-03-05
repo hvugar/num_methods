@@ -4,17 +4,27 @@
 #include <grid/hibvp.h>
 #include <benchmark.h>
 #include <function.h>
+#include <deltagrid.h>
 #include "problem0h_global.h"
 
 #include <functional>
-
-//int count1 = 0;
-//int count2 = 0;
 
 class Problem0HCommon;
 class Problem0HForward;
 class Problem0HBckward;
 class Problem0HFunctional;
+
+struct Problem0HParameter
+{
+    SpacePoint p;
+    std::vector<double> v;
+    std::vector<double> psi_vl;
+    std::vector<double> psi_dx;
+    std::vector<double> psi_dy;
+    DeltaGrid2D deltaGrid;
+};
+
+/*******************************************************************************************************/
 
 class Problem0HCommon
 {
@@ -39,19 +49,10 @@ protected:
     DoubleMatrix u1;
     DoubleMatrix u2;
 
-    struct Psi {
-        double vl;
-        double dx;
-        double dy;
-    };
-
-    std::vector<double> v1;
-    SpacePoint p1;
-    std::vector<double> v2;
-    SpacePoint p2;
-    std::vector<Psi> ps1;
-    std::vector<Psi> ps2;
+    std::vector<Problem0HParameter> psi;
 };
+
+/*******************************************************************************************************/
 
 class Problem0HForward : public CdIHyperbolicIBVP, public virtual Problem0HCommon
 {
@@ -67,6 +68,8 @@ private:
     double p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 };
 
+/*******************************************************************************************************/
+
 class Problem0HBckward : public ConjugateCdIHyperbolicIBVP, public virtual Problem0HCommon
 {
 public:
@@ -77,6 +80,8 @@ protected:
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 };
+
+/*******************************************************************************************************/
 
 class Problem0HFunctional : public RnFunction, public IGradient,
         public virtual Problem0HForward, public virtual Problem0HBckward
@@ -94,6 +99,9 @@ public:
     virtual auto penalty() const -> double;
 
     void setDimension(const Dimension &timeDimension, const Dimension &spaceDimensionX, const Dimension &spaceDimensionY);
+
+    auto vectorToParameter(const DoubleVector &x) const -> void;
+    auto parameterToVector(DoubleVector &x) const -> void;
 
 private:
     Problem0HFunctional* const_this = nullptr;

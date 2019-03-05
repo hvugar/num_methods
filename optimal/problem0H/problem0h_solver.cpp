@@ -9,24 +9,57 @@ void Problem0HFunctional::Main(int argc, char **argv)
     functional.a = 1.0;
     functional.gamma = 0.0;
     functional.alpha0 = 1.0;
-    functional.setDimension(Dimension(0.005, 0, 200), Dimension(0.005, 0, 200), Dimension(0.005, 0, 200));
+    functional.setDimension(Dimension(0.005, 0, 200), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
 
-    Benchmark bencmark;
-    bencmark.tick();
-    DoubleMatrix u;
-    functional.Problem0HForward::implicit_calculate_D2V1(u,functional.a, functional.gamma);
-    bencmark.tock();
-    std::cout << bencmark.CpuDurationSecond() << bencmark.CpuDurationClock() << std::endl;
-    bencmark.tick();
-    functional.Problem0HBckward::implicit_calculate_D2V1(u,functional.a, functional.gamma);
-    bencmark.tock();
-    std::cout << bencmark.CpuDurationSecond() << bencmark.CpuDurationClock() << std::endl;
+    DoubleVector x;
+    x.resize(806);
 
-//    DoubleVector x; x.resize(2*200, 1.0);
-//    DoubleVector g; g.resize(2*200, 1.0);
-//    functional.gradient(x, g);
-//    IPrinter::printVector(g.mid(0, 199));
-//    IPrinter::printVector(g.mid(200, 1199));
+    for (unsigned int i=0; i<=400; i++)
+    {
+        x[i+000] = 1.0;
+        x[i+401] = 1.0;
+    }
+    x[802+0] = 0.35; x[802+1] = 0.65;
+    x[802+2] = 0.75; x[802+3] = 0.25;
+
+    functional.vectorToParameter(x);
+
+    DoubleVector ga;
+    functional.gradient(x, ga);
+    ga.EuclideanNormalize();
+    IPrinter::printVector(ga.mid(0, 400));
+    IPrinter::printVector(ga.mid(0, 400));
+    IPrinter::print(ga.mid(802, 805), 4);
+    IPrinter::printSeperatorLine();
+
+    DoubleVector gn;
+    gn.resize(x.length());
+    IGradient::Gradient(&functional, 0.01, x, gn);
+
+    gn.EuclideanNormalize();
+
+    IPrinter::printVector(gn.mid(401, 801));
+    IPrinter::printVector(gn.mid(401, 801));
+    IPrinter::print(gn.mid(802, 805), 4);
+    IPrinter::printSeperatorLine();
+
+
+    //    Benchmark bencmark;
+    //    bencmark.tick();
+    //    DoubleMatrix u;
+    //    functional.Problem0HForward::implicit_calculate_D2V1(u,functional.a, functional.gamma);
+    //    bencmark.tock();
+    //    std::cout << bencmark.CpuDurationSecond() << bencmark.CpuDurationClock() << std::endl;
+    //    bencmark.tick();
+    //    functional.Problem0HBckward::implicit_calculate_D2V1(u,functional.a, functional.gamma);
+    //    bencmark.tock();
+    //    std::cout << bencmark.CpuDurationSecond() << bencmark.CpuDurationClock() << std::endl;
+
+    //    DoubleVector x; x.resize(2*200, 1.0);
+    //    DoubleVector g; g.resize(2*200, 1.0);
+    //    functional.gradient(x, g);
+    //    IPrinter::printVector(g.mid(0, 199));
+    //    IPrinter::printVector(g.mid(200, 1199));
 }
 
 Problem0HCommon::Problem0HCommon()
@@ -49,8 +82,7 @@ auto Problem0HFunctional::setDimension(const Dimension &timeDimension, const Dim
     //const double hy = spaceDimensionY.step();
     const unsigned int N = static_cast<unsigned int> ( dimensionX.size() );
     const unsigned int M = static_cast<unsigned int> ( dimensionY.size() );
-    const unsigned int T = static_cast<unsigned int> ( timeDimension.size() );
-
+    const unsigned int L = static_cast<unsigned int> ( timeDimension.size() );
 
     U1.resize(M+1, N+1);
     U2.resize(M+1, N+1);
@@ -60,25 +92,15 @@ auto Problem0HFunctional::setDimension(const Dimension &timeDimension, const Dim
     ksi = SpacePoint(0.25, 0.25);
 
     const_this = const_cast<Problem0HFunctional*>(this);
-    const_this->v1.resize(2*T+1);
-    const_this->v2.resize(2*T+1);
+    const_this->psi.resize(2);
+    const_this->psi[0].v.resize(2*L+1);
+    const_this->psi[1].v.resize(2*L+1);
 }
 
 auto Problem0HFunctional::fx(const DoubleVector &x) const -> double
 {
-    const unsigned int L = static_cast<unsigned int> ( Problem0HForward::timeDimension().size() );
-
-    unsigned int offset = 2*L;
-    for (unsigned int i=0; i<=2*L; i++)
-    {
-        const_this->v1[i] = x[i];
-        const_this->v2[i] = x[i+offset];
-    }
-    offset = 4*L+2;
-    const_this->p1.x = x[offset+0];
-    const_this->p1.y = x[offset+1];
-    const_this->p2.x = x[offset+2];
-    const_this->p2.y = x[offset+3];
+    vectorToParameter(x);
+    puts("---");
 
     DoubleMatrix u;
     Problem0HForward::implicit_calculate_D2V1(u, Problem0HCommon::a, Problem0HCommon::gamma);
@@ -178,36 +200,30 @@ auto Problem0HFunctional::penalty() const -> double { return 0.0; }
 
 auto Problem0HFunctional::gradient(const DoubleVector &x, DoubleVector &g) const -> void
 {
+    vectorToParameter(x);
+
     g.clear(); g.resize(x.length());
 
     const Dimension &timeDimension = Problem0HForward::timeDimension();
-    const double ht = timeDimension.step();
     const unsigned int L = static_cast<unsigned int> ( timeDimension.size() );
-
-    const unsigned int offset1 = 2*L;
-    const unsigned int offset2 = 2*(offset1+1);
-
-    for (unsigned int i=0; i<=offset1; i++)
-    {
-        const_this->v1[i] = x[i];
-        const_this->v2[i] = x[i+offset1];
-    }
-
-    const_this->p1.x = x[offset2+0];
-    const_this->p1.y = x[offset2+1];
-    const_this->p2.x = x[offset2+2];
-    const_this->p2.y = x[offset2+3];
-
 
     DoubleMatrix u, p;
     Problem0HForward::implicit_calculate_D2V1(u, a, gamma);
     Problem0HBckward::implicit_calculate_D2V1(p, a, gamma);
 
-    for (unsigned int i=0; i<L; i++)
+    unsigned int size = 2*L;
+    for (unsigned int ln=0; ln<=size; ln++)
     {
-        g[i+0*L] = -Problem0HCommon::ps1[i].vl;
-        g[i+1*L] = -Problem0HCommon::ps2[i].vl;
+        g[ln+0*L]   = -psi[0].psi_vl[ln];
+        g[ln+2*L+1] = -psi[1].psi_vl[ln];
     }
+    g[2*(2*L+1)+0] = 0.0;
+    g[2*(2*L+1)+1] = 0.0;
+    g[2*(2*L+1)+2] = 0.0;
+    g[2*(2*L+1)+3] = 0.0;
+
+    g[000] = 0.0;
+    g[401] = 0.0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -227,18 +243,15 @@ auto Problem0HForward::layerInfo(const DoubleMatrix &u, unsigned int ln) const -
         forward->u2 *= (1.0/(2.0*ht));
     }
 
-
-    std::string filename = std::string("d:/data/files/f/txt/") + std::to_string(ln) + std::string(".txt");
-    IPrinter::print(u,filename.data());
-    IPrinter::printSeperatorLine();
-    printf("Forward: %4d %0.3f %10.8f %10.8f %4d %4d\n", ln, ln*0.005, u.min(), u.max(), 0, 0);
-
-    std::string filename1 = std::string("d:/data/files/f/png/")+std::to_string(ln) + std::string(".png");
-    QPixmap pixmap;
-    visualizeMatrixHeat(u, u.min(), u.max(), pixmap, 201, 201);
-    pixmap.save(QString(filename1.data()));
-
-    IPrinter::printSeperatorLine();
+    //QString filename1 = QString("data/problem0H/f/txt/f_%1.txt").arg(ln, 4, 10, QChar('0'));
+    //IPrinter::print(u,filename1.toLatin1().data());
+    //IPrinter::printSeperatorLine();
+    //printf("Forward: %4d %0.3f %10.8f %10.8f %4d %4d\n", ln, ln*0.005, u.min(), u.max(), 0, 0);
+    //QString filename2 = QString("data/problem0H/f/png/f_%1.png").arg(ln, 4, 10, QChar('0'));
+    //QPixmap pixmap;
+    //visualizeMatrixHeat(u, u.min(), u.max(), pixmap, 201, 201);
+    //pixmap.save(filename2);
+    //IPrinter::printSeperatorLine();
 }
 
 auto Problem0HForward::initial(const SpaceNodePDE &, InitialCondition) const -> double { return 0.0; }
@@ -249,16 +262,18 @@ auto Problem0HForward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
 {
     double pv = p(sn, tn);
 
-    //static const double sigma = 0.005;
+    //static const double sigma = 0.01;
     //static const double cff1 = 1.0/(2.0*M_PI*sigma*sigma);
     //static const double cff2 = 1.0/(2.0*sigma*sigma);
-    //unsigned int ln = static_cast<unsigned int>(tn.i);
-    //double _v1 = v1[ln];
-    //double _v2 = v2[ln];
-    //double pulse1 = _v1 * cff1 * exp(-cff2*((sn.x-p1.x)*(sn.x-p1.x)+(sn.y-p1.y)*(sn.y-p1.y)));
-    //double pulse2 = _v2 * cff1 * exp(-cff2*((sn.x-p2.x)*(sn.x-p2.x)+(sn.y-p2.y)*(sn.y-p2.y)));
 
-    double pulse1, pulse2; pulse1 = pulse2 = 0.0;
+    unsigned int ln = static_cast<unsigned int>(tn.i);
+    double _v1 = psi[0].v[ln];
+    double _v2 = psi[1].v[ln];
+
+    double pulse1 = _v1 * psi[0].deltaGrid.weight(sn);//cff1 * exp(-cff2*((sn.x-psi[0].p.x)*(sn.x-psi[0].p.x)+(sn.y-psi[0].p.y)*(sn.y-psi[0].p.y)));
+    double pulse2 = _v2 * psi[1].deltaGrid.weight(sn);//cff1 * exp(-cff2*((sn.x-psi[1].p.x)*(sn.x-psi[1].p.x)+(sn.y-psi[1].p.y)*(sn.y-psi[1].p.y)));
+
+    //double pulse1, pulse2; pulse1 = pulse2 = 0.0;
 
     return pv + pulse1 + pulse2;
 }
@@ -269,19 +284,7 @@ auto Problem0HForward::p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
     static const double alpha1 = 1.0/(2.0*M_PI*sigma*sigma);
     static const double alpha2 = 1.0/(2.0*sigma*sigma);
     static const double alpha3 = 100.0;
-
     double pv = 5.0 * alpha1 * exp( -alpha2 * ((sn.x-ksi.x)*(sn.x-ksi.x)+(sn.y-ksi.y)*(sn.y-ksi.y)) - alpha3*tn.t);
-    //    if (pv > 0.0000000001)
-    //    {
-    //        count1++;
-    //        //printf("%4d %5.4f %4d %4.3f %4d %4.3f %20.14f %4d\n", tn.i, tn.t, sn.i, sn.x, sn.j, sn.y, pv, count1);
-    //    }
-    //    else
-    //    {
-    //        pv = 0.0;
-    //        count2++;
-    //    }
-
     return pv;
 }
 
@@ -289,20 +292,24 @@ auto Problem0HForward::p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
 
 auto Problem0HBckward::layerInfo(const DoubleMatrix &p, unsigned int ln) const -> void
 {
+    Problem0HBckward* const_this = const_cast<Problem0HBckward*>(this);
+    const_this->psi[0].psi_vl[ln] = psi[0].deltaGrid.consentrateInPoint(p);
+    const_this->psi[1].psi_vl[ln] = psi[1].deltaGrid.consentrateInPoint(p);
+    printf("%d %f %f %d %d\n", ln, const_this->psi[0].psi_vl[ln], const_this->psi[1].psi_vl[ln], psi[0].deltaGrid.minX(), psi[0].deltaGrid.maxX());
+
+
     //ps1[ln] = p[];
     //ps2[ln] = p[];
 
-    std::string filename = std::string("d:/data/files/b/txt/")+std::to_string(ln) + std::string(".txt");
-    IPrinter::print(p,filename.data());
+    //QString filename1 = QString("data/problem0H/b/txt/b_%1.txt").arg(ln, 4, 10, QChar('0'));
+    //IPrinter::print(p,filename1.toLatin1().data());
     //IPrinter::printSeperatorLine();
-    printf("Backward: %4d %0.3f %10.8f %10.8f %4d %4d\n", ln, ln*0.005, p.min(), p.max(), 0, 0);
-
-    std::string filename1 = std::string("d:/data/files/b/png/")+std::to_string(ln) + std::string(".png");
-    QPixmap pixmap;
-    visualizeMatrixHeat(p, p.min(), p.max(), pixmap, 201, 201);
-    pixmap.save(QString(filename1.data()));
-
-    IPrinter::printSeperatorLine();
+    //printf("Forward: %4d %0.3f %10.8f %10.8f %4d %4d\n", ln, ln*0.005, u.min(), u.max(), 0, 0);
+    //QString filename2 = QString("data/problem0H/b/png/b_%1.png").arg(ln, 4, 10, QChar('0'));
+    //QPixmap pixmap;
+    //visualizeMatrixHeat(p, p.min(), p.max(), pixmap, 201, 201);
+    //pixmap.save(filename2);
+    //IPrinter::printSeperatorLine();
 }
 
 auto Problem0HBckward::initial(const SpaceNodePDE &sn, InitialCondition condition) const -> double
@@ -324,3 +331,69 @@ auto Problem0HBckward::boundary(const SpaceNodePDE&, const TimeNodePDE&) const -
 auto Problem0HBckward::f(const SpaceNodePDE&, const TimeNodePDE&) const -> double { return 0.0; }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+auto Problem0HFunctional::vectorToParameter(const DoubleVector &x) const -> void
+{
+    const Dimension &time = Problem0HForward::timeDimension();
+    const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
+    const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
+
+    const unsigned int N = static_cast<unsigned int> ( dimX.size() );
+    const unsigned int M = static_cast<unsigned int> ( dimY.size() );
+    const unsigned int L = static_cast<unsigned int> ( time.size() );
+    const double hy = dimX.step();
+    const double hx = dimY.size();
+    //const double ht = time.size();
+
+    Problem0HFunctional* const_this = const_cast<Problem0HFunctional*>(this);
+
+    const_this->psi[0].v.resize(2*L+1);
+    const_this->psi[1].v.resize(2*L+1);
+    const_this->psi[0].psi_vl.resize(2*L+1);
+    const_this->psi[1].psi_vl.resize(2*L+1);
+    const_this->psi[0].psi_dx.resize(2*L+1);
+    const_this->psi[1].psi_dx.resize(2*L+1);
+    const_this->psi[0].psi_dy.resize(2*L+1);
+    const_this->psi[1].psi_dy.resize(2*L+1);
+
+    unsigned int offset = 2*L;
+    for (unsigned int i=0; i<=2*L; i++)
+    {
+        const_this->psi[0].v[i] = x[i];
+        const_this->psi[1].v[i] = x[i+offset];
+    }
+    offset = 4*L+2;
+    const_this->psi[0].p.x = x[offset+0];
+    const_this->psi[0].p.y = x[offset+1];
+    const_this->psi[1].p.x = x[offset+2];
+    const_this->psi[1].p.y = x[offset+3];
+
+    const_this->psi[0].deltaGrid.cleanGrid();
+    const_this->psi[0].deltaGrid.initGrid(M, hy, N, hx);
+    const_this->psi[0].deltaGrid.distributeGauss(psi[0].p);
+
+    const_this->psi[1].deltaGrid.cleanGrid();
+    const_this->psi[1].deltaGrid.initGrid(M, hy, N, hx);
+    const_this->psi[1].deltaGrid.distributeGauss(psi[1].p);
+}
+
+auto Problem0HFunctional::parameterToVector(DoubleVector &x) const -> void
+{
+    const unsigned int L = static_cast<unsigned int> ( Problem0HForward::timeDimension().size() );
+    Problem0HFunctional* const_this = const_cast<Problem0HFunctional*>(this);
+    x.clear();
+    x.resize(806);
+
+    unsigned int offset = 2*L;
+    for (unsigned int i=0; i<=2*L; i++)
+    {
+        x[i] = const_this->psi[0].v[i];
+        x[i+offset] = const_this->psi[1].v[i];
+    }
+    offset = 4*L+2;
+    x[offset+0] = const_this->psi[0].p.x;
+    x[offset+1] = const_this->psi[0].p.y;
+    x[offset+2] = const_this->psi[1].p.x;
+    x[offset+3] = const_this->psi[1].p.y;
+}
