@@ -17,7 +17,7 @@ class Problem0HFunctional;
 struct Problem0HParameter
 {
     SpacePoint p;
-    std::vector<double> v;
+    std::vector<double> pwr_vl;
     std::vector<double> psi_vl;
     std::vector<double> psi_dx;
     std::vector<double> psi_dy;
@@ -33,7 +33,7 @@ public:
     virtual ~Problem0HCommon();
 
 protected:
-    inline auto virtual mu(const SpaceNodePDE &) const -> double { return 0.0; }
+    inline auto virtual mu(const SpaceNodePDE &) const -> double { return 1.0; }
     inline auto virtual mu(unsigned int, unsigned int) const -> double { return 1.0; }
 
     double a = 1.0;
@@ -53,7 +53,8 @@ protected:
     DoubleMatrix uL1;
     DoubleMatrix uL2;
 
-    std::vector<Problem0HParameter> psi;
+    unsigned int source_number;
+    std::vector<Problem0HParameter> optimalParameters;
 };
 
 /*******************************************************************************************************/
@@ -88,7 +89,7 @@ protected:
 /*******************************************************************************************************/
 
 class Problem0HFunctional : public RnFunction, public IGradient,
-        public virtual Problem0HForward, public virtual Problem0HBckward
+        protected virtual Problem0HForward, protected virtual Problem0HBckward
 {
 public:
     static void Main(int argc, char** argv);
