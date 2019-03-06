@@ -7,7 +7,7 @@ void Problem0HFunctional::Main(int argc, char **argv)
 
     unsigned int N = 100; double hx = 0.01;
     unsigned int M = 100; double hy = 0.01;
-    unsigned int L = 100; double ht = 0.01;
+    unsigned int L = 10; double ht = 0.1;
 
     Problem0HFunctional functional;
     functional.ksi = SpacePoint(0.25, 0.25);
@@ -15,30 +15,52 @@ void Problem0HFunctional::Main(int argc, char **argv)
     functional.gamma = 0.0;
     functional.alpha0 = 0.0;
     functional.source_number = 2;
-    functional.setDimension(Dimension(ht, 0, static_cast<int>(L)), Dimension(hx, 0, static_cast<int>(N)), Dimension(hy, 0, static_cast<int>(M)));
+    functional.setDimension(Dimension(ht, 0, static_cast<int>(L)),
+                            Dimension(hx, 0, static_cast<int>(N)),
+                            Dimension(hy, 0, static_cast<int>(M)));
     functional.optimalParameters[0].p = SpacePoint(0.35, 0.65);
     functional.optimalParameters[1].p = SpacePoint(0.75, 0.25);
 
     DoubleVector x;
     functional.parameterToVector(x);
 
+    unsigned int start1 = 0;
+    unsigned int finish1 = 2*L;
+    unsigned int start2 = 2*L+1;
+    unsigned int finish2 = 2*L+1+2*L;
+    unsigned int start3 = 2*L+1+2*L+1;
+    unsigned int finish3 = 2*L+1+2*L+4;
+
     DoubleVector ga;
     functional.gradient(x, ga);
-    ga.EuclideanNormalize();
-    IPrinter::printVector(ga.mid(0, 2*L).EuclideanNormalize());
-    IPrinter::printVector(ga.mid(2*L+1, 2*2*L+1).EuclideanNormalize());
-    IPrinter::print(ga.mid(2*2*L+2, 2*2*L+5).EuclideanNormalize(), 4);
+    IPrinter::printVector(ga.mid(start1, finish1).EuclideanNormalize());
+    IPrinter::printVector(ga.mid(start2, finish2).EuclideanNormalize());
+    IPrinter::print(ga.mid(start3, finish3).EuclideanNormalize(), 4);
     IPrinter::printSeperatorLine();
 
     DoubleVector gn;
     gn.resize(x.length());
-    IGradient::Gradient(&functional, 0.05, x, gn, static_cast<unsigned int>(0x0), static_cast<unsigned int>(2*L));
-    IGradient::Gradient(&functional, 0.05, x, gn, static_cast<unsigned int>(2*L+1), static_cast<unsigned int>(2*2*L+1));
+    //    IGradient::Gradient(&functional, 0.05, x, gn, static_cast<unsigned int>(0x0),
+    //                                                  static_cast<unsigned int>(2*L));
+    //    IGradient::Gradient(&functional, 0.05, x, gn, static_cast<unsigned int>(2*L+1),
+    //                                                  static_cast<unsigned int>(2*2*L+1));
+    IGradient::Gradient(&functional, 0.05, x, gn, static_cast<unsigned int>(0),
+                        static_cast<unsigned int>(2*(2*L+1)-1));
 
-    gn.EuclideanNormalize();
-    IPrinter::printVector(gn.mid(0, 2*L).EuclideanNormalize());
-    IPrinter::printVector(gn.mid(2*L+1, 2*2*L+1));
-    IPrinter::print(gn.mid(2*2*L+2, 2*2*L+5).EuclideanNormalize(), 4);
+    unsigned int length = 2*L+1;
+    for (unsigned int sn=0; sn<functional.source_number; sn++)
+    {
+        gn[sn*length+0] = 0.0;
+        gn[sn*length+1] = 0.0;
+        gn[sn*length+length-1] = 0.0;
+
+        gn[functional.source_number*length+2*sn+0] = 0.0;
+        gn[functional.source_number*length+2*sn+1] = 0.0;
+    }
+
+    IPrinter::printVector(gn.mid(start1, finish1).EuclideanNormalize());
+    IPrinter::printVector(gn.mid(start2, finish2).EuclideanNormalize());
+    IPrinter::print(gn.mid(start3, finish3).EuclideanNormalize(), 4);
     IPrinter::printSeperatorLine();
 
 
@@ -88,18 +110,18 @@ auto Problem0HFunctional::setDimension(const Dimension &timeDimension, const Dim
     ksi = SpacePoint(0.25, 0.25);
 
     const_this = const_cast<Problem0HFunctional*>(this);
-    const_this->optimalParameters.resize(2);
+    const_this->optimalParameters.resize(source_number);
 
     unsigned int length = 2*L+1;
-    for (unsigned int i=0; i<source_number; i++)
+    for (unsigned int sn=0; sn<source_number; sn++)
     {
-        const_this->optimalParameters[i].pwr_vl.resize(length, 0.10);
-        const_this->optimalParameters[i].pwr_vl[0] = 0.0;
-        const_this->optimalParameters[i].pwr_vl[1] = 0.0;
-        const_this->optimalParameters[i].pwr_vl[2*L] = 0.0;
-        const_this->optimalParameters[i].psi_vl.resize(length);
-        const_this->optimalParameters[i].psi_dx.resize(length);
-        const_this->optimalParameters[i].psi_dy.resize(length);
+        const_this->optimalParameters[sn].pwr_vl.resize(length, 0.10);
+        const_this->optimalParameters[sn].pwr_vl[0] = 0.0;
+        const_this->optimalParameters[sn].pwr_vl[1] = 0.0;
+        const_this->optimalParameters[sn].pwr_vl[2*L] = 0.0;
+        const_this->optimalParameters[sn].psi_vl.resize(length);
+        const_this->optimalParameters[sn].psi_dx.resize(length);
+        const_this->optimalParameters[sn].psi_dy.resize(length);
     }
 }
 
@@ -214,16 +236,20 @@ auto Problem0HFunctional::gradient(const DoubleVector &x, DoubleVector &g) const
     Problem0HForward::implicit_calculate_D2V1(u, a, gamma);
     Problem0HBckward::implicit_calculate_D2V1(p, a, gamma);
 
-    unsigned int size = 2*L;
-    for (unsigned int ln=2; ln<size; ln++)
+    unsigned int length = 2*L+1;
+    for (unsigned int sn=0; sn<source_number; sn++)
     {
-        g[ln]       = -optimalParameters[0].psi_vl[ln];
-        g[ln+2*L+1] = -optimalParameters[1].psi_vl[ln];
+        for (unsigned int ln=0; ln<length; ln++)
+        {
+            g[sn*length+ln] = -optimalParameters[sn].psi_vl[ln];
+        }
+        g[sn*length+0] = 0.0;
+        g[sn*length+1] = 0.0;
+        g[sn*length+length-1] = 0.0;
+
+        g[source_number*length+2*sn+0] = 0.0;
+        g[source_number*length+2*sn+1] = 0.0;
     }
-    g[2*(2*L+1)+0] = 0.0;
-    g[2*(2*L+1)+1] = 0.0;
-    g[2*(2*L+1)+2] = 0.0;
-    g[2*(2*L+1)+3] = 0.0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -346,55 +372,51 @@ auto Problem0HFunctional::vectorToParameter(const DoubleVector &x) const -> void
     //const double ht = time.size();
 
     Problem0HFunctional* const_this = const_cast<Problem0HFunctional*>(this);
+    const_this->optimalParameters.resize(source_number);
 
-    const_this->optimalParameters[0].pwr_vl.resize(2*L+1);
-    const_this->optimalParameters[1].pwr_vl.resize(2*L+1);
-    const_this->optimalParameters[0].psi_vl.resize(2*L+1);
-    const_this->optimalParameters[1].psi_vl.resize(2*L+1);
-    const_this->optimalParameters[0].psi_dx.resize(2*L+1);
-    const_this->optimalParameters[1].psi_dx.resize(2*L+1);
-    const_this->optimalParameters[0].psi_dy.resize(2*L+1);
-    const_this->optimalParameters[1].psi_dy.resize(2*L+1);
-
-    unsigned int offset = 2*L;
-    for (unsigned int i=0; i<=2*L; i++)
+    const unsigned int length = 2*L+1;
+    for (unsigned int sn=0; sn<source_number; sn++)
     {
-        const_this->optimalParameters[0].pwr_vl[i] = x[i];
-        const_this->optimalParameters[1].pwr_vl[i] = x[i+offset];
+        const_this->optimalParameters[sn].pwr_vl.resize(length);
+        const_this->optimalParameters[sn].psi_vl.resize(length);
+        const_this->optimalParameters[sn].psi_dx.resize(length);
+        const_this->optimalParameters[sn].psi_dy.resize(length);
+        for (unsigned int i=0; i<length; i++)
+        {
+            const_this->optimalParameters[sn].pwr_vl[i] = x[sn*length+i];
+        }
+        const_this->optimalParameters[sn].pwr_vl[0] = 0.0;
+        const_this->optimalParameters[sn].pwr_vl[1] = 0.0;
+        const_this->optimalParameters[sn].pwr_vl[length-1] = 0.0;
+
+        const_this->optimalParameters[sn].deltaGrid.cleanGrid();
+        const_this->optimalParameters[sn].deltaGrid.initGrid(N, hx, M, hy);
+        const_this->optimalParameters[sn].deltaGrid.distributeGauss(const_this->optimalParameters[sn].p);
+        const_this->optimalParameters[sn].p.x = x[source_number*length+2*sn+0];
+        const_this->optimalParameters[sn].p.y = x[source_number*length+2*sn+1];
     }
-
-    offset = 4*L+2;
-
-    const_this->optimalParameters[0].p.x = x[offset+0];
-    const_this->optimalParameters[0].p.y = x[offset+1];
-    const_this->optimalParameters[1].p.x = x[offset+2];
-    const_this->optimalParameters[1].p.y = x[offset+3];
-
-    const_this->optimalParameters[0].deltaGrid.cleanGrid();
-    const_this->optimalParameters[0].deltaGrid.initGrid(N, hx, M, hy);
-    const_this->optimalParameters[0].deltaGrid.distributeGauss(optimalParameters[0].p);
-
-    const_this->optimalParameters[1].deltaGrid.cleanGrid();
-    const_this->optimalParameters[1].deltaGrid.initGrid(N, hx, M, hy);
-    const_this->optimalParameters[1].deltaGrid.distributeGauss(optimalParameters[1].p);
 }
 
 auto Problem0HFunctional::parameterToVector(DoubleVector &x) const -> void
 {
     const unsigned int L = static_cast<unsigned int> ( Problem0HForward::timeDimension().size() );
     Problem0HFunctional* const_this = const_cast<Problem0HFunctional*>(this);
-    x.clear();
-    x.resize(806);
 
-    unsigned int offset = 2*L;
-    for (unsigned int i=0; i<=2*L; i++)
+    unsigned int size = (2*L+3)*source_number;
+    x.resize(size);
+
+    unsigned int length = 2*L+1;
+    for (unsigned int sn=0; sn<source_number; sn++)
     {
-        x[i] = const_this->optimalParameters[0].pwr_vl[i];
-        x[i+offset] = const_this->optimalParameters[1].pwr_vl[i];
+        for (unsigned int i=0; i<length; i++)
+        {
+            x[sn*length+i] = const_this->optimalParameters[sn].pwr_vl[i];
+        }
+        x[sn*length+0] = 0.0;
+        x[sn*length+1] = 0.0;
+        x[sn*length+length-1] = 0.0;
+
+        x[source_number*length+2*sn+0] = const_this->optimalParameters[sn].p.x;
+        x[source_number*length+2*sn+1] = const_this->optimalParameters[sn].p.y;
     }
-    offset = 4*L+2;
-    x[offset+0] = const_this->optimalParameters[0].p.x;
-    x[offset+1] = const_this->optimalParameters[0].p.y;
-    x[offset+2] = const_this->optimalParameters[1].p.x;
-    x[offset+3] = const_this->optimalParameters[1].p.y;
 }

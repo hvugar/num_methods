@@ -9,39 +9,39 @@
 #include <stdexcept>
 #include "matrix2d.h"
 
-DoubleVector::DoubleVector(unsigned int size, double val) : mLength(0), mData(NULL)
+DoubleVector::DoubleVector(unsigned int size, double val) : mLength(0), mData(nullptr)
 {
     if (size <= 0) return;
 
     mLength = size;
-    mData = (double*) malloc(sizeof(double) * size);
+    mData = static_cast<double*>(malloc(sizeof(double) * size));
     for (unsigned int i=0; i<size; i++) mData[i] = val;
 }
 
-DoubleVector::DoubleVector(const double* data, unsigned int size) : mLength(0), mData(NULL)
+DoubleVector::DoubleVector(const double* data, unsigned int size) : mLength(0), mData(nullptr)
 {
     if (size <= 0) return;
 
     mLength = size;
-    mData = (double*) malloc(sizeof(double) * size);
+    mData = static_cast<double*>(malloc(sizeof(double) * size));
     memcpy(mData, data, sizeof(double)*size);
 }
 
-DoubleVector::DoubleVector(const DoubleVector &vector) : mLength(0), mData(NULL)
+DoubleVector::DoubleVector(const DoubleVector &vector) : mLength(0), mData(nullptr)
 {
     if (vector.mLength == 0) return;
 
     mLength = vector.mLength;
-    mData = (double*) (malloc(sizeof(double)*mLength));
+    mData = static_cast<double*>(malloc(sizeof(double)*mLength));
     memcpy(mData, vector.mData, sizeof(double)*mLength);
 }
 
-DoubleVector::DoubleVector(const DoubleMatrix &matrix) : mLength(0), mData(NULL)
+DoubleVector::DoubleVector(const DoubleMatrix &matrix) : mLength(0), mData(nullptr)
 {
     if (matrix.cols() != 1) return;
 
     mLength = matrix.rows();
-    mData = (double*) (malloc(sizeof(double)*mLength));
+    mData = static_cast<double*>(malloc(sizeof(double)*mLength));
     for (unsigned int i=0; i<mLength; i++) mData[i] = matrix.at(i,0);
 }
 
@@ -52,10 +52,10 @@ DoubleVector::~DoubleVector()
 
 void DoubleVector::clear()
 {
-    if (mData != NULL)
+    if (mData != nullptr)
     {
         free(mData);
-        mData = NULL;
+        mData = nullptr;
         mLength = 0;
     }
 }
@@ -68,15 +68,15 @@ void DoubleVector::resize(unsigned int length, double value)
 
     if (length > 0)
     {
-        if (mData == NULL)
+        if (mData == nullptr)
         {
-            mData = (double*) malloc(sizeof(double)*length);
+            mData = static_cast<double*>(malloc(sizeof(double)*length));
             for (unsigned int i=0; i<length; i++) mData[i] = value;
             mLength = length;
         }
         else if (length != mLength)
         {
-            double *ptr = (double *) realloc(mData, sizeof(double) * length);
+            double *ptr = static_cast<double*>(realloc(mData, sizeof(double) * length));
             for (unsigned int i=mLength; i<length; i++) ptr[i] = value;
             mData = ptr;
             mLength = length;
@@ -286,7 +286,7 @@ DoubleVector& DoubleVector::operator =(const DoubleVector& other)
     {
         clear();
         mLength = other.mLength;
-        mData = (double*) malloc(sizeof(double)*mLength);
+        mData = static_cast<double*>(malloc(sizeof(double)*mLength));
         memcpy(mData, other.mData, sizeof(double)*mLength);
     }
     return *this;
@@ -427,7 +427,8 @@ bool operator ==(const DoubleVector& v1, const DoubleVector& v2)
     if (v1.mLength != v2.mLength) return false;
 
     unsigned int length = v1.mLength;
-    for (unsigned int i=0; i<length; i++) if (v1.mData[i] != v2.mData[i]) return false;
+    for (unsigned int i=0; i<length; i++)
+        if (v1.mData[i] != v2.mData[i]) return false;
 
     return true;
 }
@@ -439,23 +440,17 @@ bool operator !=(const DoubleVector& v1, const DoubleVector& v2)
 
 DoubleVector& DoubleVector::operator <<(double value)
 {
-    if (mData == NULL)
+    if (mData == nullptr)
     {
         mLength = 1;
-        mData = (double*) malloc(sizeof(double)*mLength);
+        mData = static_cast<double*>(malloc(sizeof(double)*mLength));
         mData[0] = value;
     }
     else
     {
         mLength++;
-        mData = (double*)realloc(mData, sizeof(double)*mLength);
+        mData = static_cast<double*>(realloc(mData, sizeof(double)*mLength));
         mData[mLength-1] = value;
     }
     return *this;
 }
-
-//std::ostream& operator <<(std::ostream& os, const DoubleVector& v)
-//{
-//    for (unsigned int i=0; i<v.mLength; i++) os << v.mData[i] << " ";
-//    return os;
-//}
