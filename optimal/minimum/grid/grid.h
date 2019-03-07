@@ -14,8 +14,8 @@ enum class BoundaryCondition
 enum class InitialCondition
 {
     InitialValue = 0,
-    FirstDerivative = 1,
-    SecondDerivative = 2
+    FirstDerivative = 1//,
+    //SecondDerivative = 2
 };
 
 struct MINIMUMSHARED_EXPORT SpacePoint

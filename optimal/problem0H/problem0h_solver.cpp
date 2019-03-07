@@ -13,7 +13,7 @@ void Problem0HFunctional::Main(int argc, char **argv)
     functional.ksi = SpacePoint(0.25, 0.25);
     functional.a = 1.0;
     functional.gamma = 0.0;
-    functional.alpha0 = 0.0;
+    functional.alpha0 = 1.0;
     functional.source_number = 2;
     functional.setDimension(Dimension(ht, 0, static_cast<int>(L)),
                             Dimension(hx, 0, static_cast<int>(N)),
@@ -23,10 +23,6 @@ void Problem0HFunctional::Main(int argc, char **argv)
 
     DoubleVector x;
     functional.parameterToVector(x);
-
-    //DoubleMatrix u, p;
-    //functional.Problem0HForward::implicit_calculate_D2V1(u, functional.a, functional.gamma);
-    //return;
 
     unsigned int start1 = 0;
     unsigned int finish1 = 2*L;
@@ -44,12 +40,10 @@ void Problem0HFunctional::Main(int argc, char **argv)
 
     DoubleVector gn;
     gn.resize(x.length());
-    //    IGradient::Gradient(&functional, 0.05, x, gn, static_cast<unsigned int>(0x0),
-    //                                                  static_cast<unsigned int>(2*L));
-    //    IGradient::Gradient(&functional, 0.05, x, gn, static_cast<unsigned int>(2*L+1),
-    //                                                  static_cast<unsigned int>(2*2*L+1));
-    IGradient::Gradient(&functional, 0.05, x, gn, static_cast<unsigned int>(0),
-                        static_cast<unsigned int>(2*(2*L+1)-1));
+    //IGradient::Gradient(&functional, 0.05, x, gn, static_cast<unsigned int>(start1), static_cast<unsigned int>(finish1));
+    //IGradient::Gradient(&functional, 0.05, x, gn, static_cast<unsigned int>(start2), static_cast<unsigned int>(finish2));
+    IGradient::Gradient(&functional, 0.01, x, gn, static_cast<unsigned int>(start3), static_cast<unsigned int>(finish3));
+    //IGradient::Gradient(&functional, 0.05, x, gn);
 
     unsigned int length = 2*L+1;
     for (unsigned int sn=0; sn<functional.source_number; sn++)
@@ -66,7 +60,6 @@ void Problem0HFunctional::Main(int argc, char **argv)
     IPrinter::printVector(gn.mid(start2, finish2).EuclideanNormalize());
     IPrinter::print(gn.mid(start3, finish3).EuclideanNormalize(), 4);
     IPrinter::printSeperatorLine();
-
 
     //    Benchmark bencmark;
     //    bencmark.tick();
@@ -134,7 +127,7 @@ auto Problem0HFunctional::fx(const DoubleVector &x) const -> double
     vectorToParameter(x);
 
     DoubleMatrix u;
-    Problem0HForward::implicit_calculate_D2V1(u, Problem0HCommon::a, Problem0HCommon::gamma);
+    Problem0HForward::implicit_calculate_D2V1(u, a, gamma);
     double sum = 0.0;
     sum += integral1(u1);
     sum += alpha0*integral2(u2);
@@ -235,6 +228,7 @@ auto Problem0HFunctional::gradient(const DoubleVector &x, DoubleVector &g) const
 
     const Dimension &timeDimension = Problem0HForward::timeDimension();
     const unsigned int L = static_cast<unsigned int> ( timeDimension.size() );
+    const double ht = static_cast<double>(timeDimension.size());
 
     DoubleMatrix u, p;
     Problem0HForward::implicit_calculate_D2V1(u, a, gamma);
@@ -251,8 +245,24 @@ auto Problem0HFunctional::gradient(const DoubleVector &x, DoubleVector &g) const
         g[sn*length+1] = 0.0;
         g[sn*length+length-1] = 0.0;
 
-        g[source_number*length+2*sn+0] = 0.0;
-        g[source_number*length+2*sn+1] = 0.0;
+        //////////////////////////////////////////////////////////////////
+
+        unsigned ix = source_number*length+2*sn+0;
+        unsigned iy = source_number*length+2*sn+1;
+        g[ix] = 0.0;
+        g[iy] = 0.0;
+        g[ix] += 0.5*optimalParameters[sn].psi_dx[2];
+        g[iy] += 0.5*optimalParameters[sn].psi_dy[2];
+        for (unsigned int ln=3; ln<=2*(L-1); ln++)
+        {
+            g[ix] += optimalParameters[sn].psi_dx[ln];
+            g[iy] += optimalParameters[sn].psi_dy[ln];
+        }
+        g[ix] += 0.5*optimalParameters[sn].psi_dx[2*(L-1)+1];
+        g[iy] += 0.5*optimalParameters[sn].psi_dy[2*(L-1)+1];
+
+        g[ix] *= 0.5*ht;
+        g[iy] *= 0.5*ht;
     }
 }
 
@@ -269,9 +279,9 @@ auto Problem0HForward::layerInfo(const DoubleMatrix &u, unsigned int ln) const -
     if (ln == 2*(L-0)) forward->uL0 = u;
     if (ln == 2*(L-0))
     {
-//        IPrinter::printSeperatorLine((std::string("uL2") + std::to_string(ln)).data()); IPrinter::printMatrix(uL2);
-//        IPrinter::printSeperatorLine((std::string("uL1") + std::to_string(ln)).data()); IPrinter::printMatrix(uL1);
-//        IPrinter::printSeperatorLine((std::string("uL0") + std::to_string(ln)).data()); IPrinter::printMatrix(uL0);
+        //        IPrinter::printSeperatorLine((std::string("uL2") + std::to_string(ln)).data()); IPrinter::printMatrix(uL2);
+        //        IPrinter::printSeperatorLine((std::string("uL1") + std::to_string(ln)).data()); IPrinter::printMatrix(uL1);
+        //        IPrinter::printSeperatorLine((std::string("uL0") + std::to_string(ln)).data()); IPrinter::printMatrix(uL0);
 
         //lxw_workbook  *workbook  = new_workbook("d:\\chart.xlsx");
         //lxw_worksheet *worksheet1 = workbook_add_worksheet(workbook, nullptr);
@@ -297,6 +307,8 @@ auto Problem0HForward::layerInfo(const DoubleMatrix &u, unsigned int ln) const -
 
         forward->u1 = u;
         forward->u2 = (1.0/(2.0*ht))*(uL2 - 4.0*uL1 + 3.0*uL0);
+
+        //IPrinter::printMatrix(forward->u2);
     }
 
     //QString filename1 = QString("data/problem0H/f/txt/f_%1.txt").arg(ln, 4, 10, QChar('0'));
@@ -339,8 +351,8 @@ auto Problem0HForward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
 
 auto Problem0HForward::p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
 {
-    static const double sigmaX = 4.0*Problem0HForward::spaceDimension(Dimension::DimensionX).step();
-    static const double sigmaY = 4.0*Problem0HForward::spaceDimension(Dimension::DimensionY).step();;
+    static const double sigmaX = 8.0*Problem0HForward::spaceDimension(Dimension::DimensionX).step();
+    static const double sigmaY = 8.0*Problem0HForward::spaceDimension(Dimension::DimensionY).step();;
     static const double alpha1 = 1.0/(2.0*M_PI*sigmaX*sigmaY);
     static const double alpha2 = 1.0/(2.0*sigmaX*sigmaY);
     static const double alpha3 = 100.0;
@@ -356,8 +368,11 @@ auto Problem0HBckward::layerInfo(const DoubleMatrix &p, unsigned int ln) const -
 
     for (unsigned int sn=0; sn<source_number; sn++)
     {
-        double psi_vl = optimalParameters[sn].deltaGrid.consentrateInPoint(p);
+        double psi_dx, psi_dy;
+        double psi_vl = optimalParameters[sn].deltaGrid.consentrateInPoint(p, psi_dx, psi_dy);
         const_this->optimalParameters[sn].psi_vl[ln] = psi_vl;
+        const_this->optimalParameters[sn].psi_dx[ln] = psi_dx;
+        const_this->optimalParameters[sn].psi_dy[ln] = psi_dy;
 
         //IPrinter::printSeperatorLine(std::to_string(ln).data());
         //IPrinter::printMatrix(p);
@@ -383,11 +398,11 @@ auto Problem0HBckward::initial(const SpaceNodePDE &sn, InitialCondition conditio
     unsigned int m = static_cast<unsigned int>(sn.j);
     if (condition == InitialCondition::InitialValue)
     {
-        return -2.0*alpha0*(u2[m][n]-U2[m][n]);
+        return -2.0*alpha0*(u2[m][n]/*-U2[m][n]*/);
     }
     else
     {
-        return 2.0*(u1[m][n]-U1[m][n]) + gamma*initial(sn, InitialCondition::InitialValue);
+        return +2.0*(u1[m][n]/*-U1[m][n]*/) + gamma*initial(sn, InitialCondition::InitialValue);
     }
 }
 
@@ -429,11 +444,12 @@ auto Problem0HFunctional::vectorToParameter(const DoubleVector &x) const -> void
         const_this->optimalParameters[sn].pwr_vl[1] = 0.0;
         const_this->optimalParameters[sn].pwr_vl[length-1] = 0.0;
 
+        const_this->optimalParameters[sn].p.x = x[source_number*length+2*sn+0];
+        const_this->optimalParameters[sn].p.y = x[source_number*length+2*sn+1];
+
         const_this->optimalParameters[sn].deltaGrid.cleanGrid();
         const_this->optimalParameters[sn].deltaGrid.initGrid(N, hx, M, hy);
         const_this->optimalParameters[sn].deltaGrid.distributeGauss(const_this->optimalParameters[sn].p);
-        const_this->optimalParameters[sn].p.x = x[source_number*length+2*sn+0];
-        const_this->optimalParameters[sn].p.y = x[source_number*length+2*sn+1];
     }
 }
 
