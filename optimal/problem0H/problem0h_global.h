@@ -19,4 +19,9 @@
 #include <imaging.h>
 #endif
 
+#ifdef USE_LIB_XLSX_WRITER
+#include <xlsxwriter.h>
+#endif
+
+
 #endif // PROBLEM0H_GLOBAL_H

@@ -33,4 +33,13 @@ SOURCES += problem0h_solver.cpp
 #HEADERS += problem2h_exporter.h
 #SOURCES += problem2h_exporter.cpp
 
+DEFINES += USE_LIB_XLSX_WRITER
+#defined(USE_LIB_XLSX_WRITER) {
+INCLUDEPATH += ../../third-party/MinGW/x86_64/libxlsxwriter/include
+LIBS        += -L../../third-party/MinGW/x86_64/libxlsxwriter/lib -lxlsxwriter
+
+INCLUDEPATH += ../../third-party/MinGW/x86_64/zlib/include
+LIBS        += -L../../third-party/MinGW/x86_64/zlib/lib -lzlibstatic
+#}
+
 #OTHER_FILES += matlab/*

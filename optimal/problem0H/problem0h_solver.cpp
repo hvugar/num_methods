@@ -7,7 +7,7 @@ void Problem0HFunctional::Main(int argc, char **argv)
 
     unsigned int N = 100; double hx = 0.01;
     unsigned int M = 100; double hy = 0.01;
-    unsigned int L = 10; double ht = 0.1;
+    unsigned int L = 100; double ht = 0.01;
 
     Problem0HFunctional functional;
     functional.ksi = SpacePoint(0.25, 0.25);
@@ -23,6 +23,10 @@ void Problem0HFunctional::Main(int argc, char **argv)
 
     DoubleVector x;
     functional.parameterToVector(x);
+
+    //DoubleMatrix u, p;
+    //functional.Problem0HForward::implicit_calculate_D2V1(u, functional.a, functional.gamma);
+    //return;
 
     unsigned int start1 = 0;
     unsigned int finish1 = 2*L;
@@ -265,6 +269,32 @@ auto Problem0HForward::layerInfo(const DoubleMatrix &u, unsigned int ln) const -
     if (ln == 2*(L-0)) forward->uL0 = u;
     if (ln == 2*(L-0))
     {
+//        IPrinter::printSeperatorLine((std::string("uL2") + std::to_string(ln)).data()); IPrinter::printMatrix(uL2);
+//        IPrinter::printSeperatorLine((std::string("uL1") + std::to_string(ln)).data()); IPrinter::printMatrix(uL1);
+//        IPrinter::printSeperatorLine((std::string("uL0") + std::to_string(ln)).data()); IPrinter::printMatrix(uL0);
+
+        //lxw_workbook  *workbook  = new_workbook("d:\\chart.xlsx");
+        //lxw_worksheet *worksheet1 = workbook_add_worksheet(workbook, nullptr);
+        //lxw_chartsheet *chartsheet = workbook_add_chartsheet(workbook, nullptr);
+        //lxw_chart *chart = workbook_add_chart(workbook, LXW_CHART_AREA);
+
+        //lxw_format *format = workbook_add_format(workbook);
+        //format_set_num_format(format, "0.0000000000");
+
+        //for (unsigned int row=0; row<u.rows(); row++)
+        //{
+        //    for (unsigned int col=0; col<u.cols(); col++)
+        //    {
+        //        // =Sheet1!$A$1:$A$6
+        //        // =Sheet1!$A$1:$CW$1
+        //        std::string line = "=Sheet1!$A$"+std::to_string(row+1)+":$CW$"+std::to_string(row+1);
+        //        worksheet_write_number(worksheet1, static_cast<lxw_row_t>(row), static_cast<lxw_col_t>(col), u[row][col], format);
+        //        //chart_add_series(chart, nullptr, line.data());
+        //    }
+        //}
+        //chartsheet_set_chart(chartsheet, chart);
+        //workbook_close(workbook);
+
         forward->u1 = u;
         forward->u2 = (1.0/(2.0*ht))*(uL2 - 4.0*uL1 + 3.0*uL0);
     }
@@ -273,10 +303,13 @@ auto Problem0HForward::layerInfo(const DoubleMatrix &u, unsigned int ln) const -
     //IPrinter::print(u,filename1.toLatin1().data());
     //IPrinter::printSeperatorLine();
     //printf("Forward: %4d %0.3f %10.8f %10.8f %4d %4d\n", ln, ln*0.005, u.min(), u.max(), 0, 0);
-    //QString filename2 = QString("data/problem0H/f/png/f_%1.png").arg(ln, 4, 10, QChar('0'));
-    //QPixmap pixmap;
-    //visualizeMatrixHeat(u, u.min(), u.max(), pixmap, 101, 101);
-    //pixmap.save(filename2);
+    //if (ln == 2*(L-2) || ln == 2*(L-1) || ln == 2*(L-0))
+    //{
+    //    QString filename2 = QString("data/problem0H/f/png/f_%1.png").arg(ln, 4, 10, QChar('0'));
+    //    QPixmap pixmap;
+    //    visualizeMatrixHeat(u, u.min(), u.max(), pixmap, 101, 101);
+    //    pixmap.save(filename2);
+    //}
     //IPrinter::printSeperatorLine();
 }
 
@@ -306,12 +339,12 @@ auto Problem0HForward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
 
 auto Problem0HForward::p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
 {
-    static const double sigmaX = 4.0*Problem0HForward::spaceDimension(Dimension::DimensionX).size();
-    static const double sigmaY = 4.0*Problem0HForward::spaceDimension(Dimension::DimensionY).size();;
+    static const double sigmaX = 4.0*Problem0HForward::spaceDimension(Dimension::DimensionX).step();
+    static const double sigmaY = 4.0*Problem0HForward::spaceDimension(Dimension::DimensionY).step();;
     static const double alpha1 = 1.0/(2.0*M_PI*sigmaX*sigmaY);
     static const double alpha2 = 1.0/(2.0*sigmaX*sigmaY);
     static const double alpha3 = 100.0;
-    double pv = 5.0 * alpha1 * exp( -alpha2 * ((sn.x-ksi.x)*(sn.x-ksi.x)+(sn.y-ksi.y)*(sn.y-ksi.y)) - alpha3*tn.t);
+    double pv = alpha1 * exp( -alpha2 * ((sn.x-ksi.x)*(sn.x-ksi.x)+(sn.y-ksi.y)*(sn.y-ksi.y)) - alpha3*tn.t);
     return pv;
 }
 
@@ -320,8 +353,15 @@ auto Problem0HForward::p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
 auto Problem0HBckward::layerInfo(const DoubleMatrix &p, unsigned int ln) const -> void
 {
     Problem0HBckward* const_this = const_cast<Problem0HBckward*>(this);
-    const_this->optimalParameters[0].psi_vl[ln] = optimalParameters[0].deltaGrid.consentrateInPoint(p);
-    const_this->optimalParameters[1].psi_vl[ln] = optimalParameters[1].deltaGrid.consentrateInPoint(p);
+
+    for (unsigned int sn=0; sn<source_number; sn++)
+    {
+        double psi_vl = optimalParameters[sn].deltaGrid.consentrateInPoint(p);
+        const_this->optimalParameters[sn].psi_vl[ln] = psi_vl;
+
+        //IPrinter::printSeperatorLine(std::to_string(ln).data());
+        //IPrinter::printMatrix(p);
+    }
 
     //IPrinter::printMatrix(p);
     //IPrinter::printSeperatorLine();
