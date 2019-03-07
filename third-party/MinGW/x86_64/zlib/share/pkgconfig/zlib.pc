@@ -1,0 +1,13 @@
+prefix=e:/project/hvugar/third-party/tmp/minwg64/install_dir/zlib
+exec_prefix=e:/project/hvugar/third-party/tmp/minwg64/install_dir/zlib
+libdir=e:/project/hvugar/third-party/tmp/minwg64/install_dir/zlib/lib
+sharedlibdir=e:/project/hvugar/third-party/tmp/minwg64/install_dir/zlib/lib
+includedir=e:/project/hvugar/third-party/tmp/minwg64/install_dir/zlib/include
+
+Name: zlib
+Description: zlib compression library
+Version: 1.2.11
+
+Requires:
+Libs: -L${libdir} -L${sharedlibdir} -lz
+Cflags: -I${includedir}
