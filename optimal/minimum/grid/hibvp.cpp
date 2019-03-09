@@ -1,18 +1,21 @@
 #include "hibvp.h"
 
-IHyperbolicIBVP::~IHyperbolicIBVP() {}
+//--------------------------------------------------------------------------------------------------------------//
 
-void IHyperbolicIBVP::setHalfLayerEnabled(bool enabled) const
-{
-    const_cast<IHyperbolicIBVP*>(this)->_isHalfLayerEnabled = enabled;
-}
+IWaveEquationIBVP::IWaveEquationIBVP(double waveSpeed, double waveDissipation) : IHyperbolicIBVP(),
+    _waveSpeed(waveSpeed), _waveDissipation(waveDissipation) {}
 
-bool IHyperbolicIBVP::isHalfLayerEnabled() const
-{
-    return _isHalfLayerEnabled;
-}
+IWaveEquationIBVP::~IWaveEquationIBVP() {}
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+double IWaveEquationIBVP::waveSpeed() const { return _waveSpeed; }
+
+void IWaveEquationIBVP::setWaveSpeed(double waveSpeed) { _waveSpeed = waveSpeed; }
+
+double IWaveEquationIBVP::waveDissipation() const { return _waveDissipation; }
+
+void IWaveEquationIBVP::setWaveDissipation(double waveDissipation) { _waveDissipation = waveDissipation; }
+
+//--------------------------------------------------------------------------------------------------------------//
 
 CcIHyperbolicIBVP::~CcIHyperbolicIBVP() {}
 
@@ -776,7 +779,7 @@ void CdIHyperbolicIBVP::implicit_calculate_D2V1(DoubleMatrix &u, double a, doubl
     SpaceNodePDE sn;
     for (unsigned int ln=2; ln<=L; ln++)
     {
-        //TimeNodePDE tn05; tn05.i = ln-2; tn05.t = tn05.i*ht+0.5*ht;
+        TimeNodePDE tn05; tn05.i = 2*ln-3; tn05.t = 0.5*tn05.i*ht;//tn05.i*ht+0.5*ht;
         TimeNodePDE tn10; tn10.i = 2*ln-2; tn10.t = 0.5*tn10.i*ht;//tn10.i*ht;
         TimeNodePDE tn15; tn15.i = 2*ln-1; tn15.t = 0.5*tn15.i*ht;//tn15.i*ht+0.5*ht;
         TimeNodePDE tn20; tn20.i = 2*ln;   tn20.t = 0.5*tn20.i*ht;//tn20.i*ht;
@@ -784,7 +787,6 @@ void CdIHyperbolicIBVP::implicit_calculate_D2V1(DoubleMatrix &u, double a, doubl
         implicit_calculate_D2V1_border(u15, u20, N, hx, M, hy, tn15, tn20);
         /**************************************************** border conditions ***************************************************/
         /**************************************************** x direction apprx ***************************************************/
-        setHalfLayerEnabled(false);
         for (unsigned int m=1; m<=M-1; m++)
         {
             sn.j = static_cast<int>(m); sn.y = m*hy;
@@ -796,8 +798,8 @@ void CdIHyperbolicIBVP::implicit_calculate_D2V1(DoubleMatrix &u, double a, doubl
                 dx[n-1] += (u05[m][n-1] - 2.0*u05[m][n] + u05[m][n+1])*p_aa_htht__hxhx_025_lambda;
                 dx[n-1] += (u10[m-1][n] - 2.0*u10[m][n] + u10[m+1][n])*p_aa_htht__hyhy_025;
                 dx[n-1] += 2.0*u10[m][n] - u05[m][n] + alpha_ht_025*u05[m][n];
-                dx[n-1] += ht_ht_025*f(sn, tn10);
-                //dx[n-1] += ht_ht_025*(lambda*f(sn, tn05)+(1.0-2.0*lambda)*f(sn, tn10)+lambda*f(sn, tn15));
+                //dx[n-1] += ht_ht_025*f(sn, tn10);
+                dx[n-1] += ht_ht_025*(lambda*f(sn, tn05)+(1.0-2.0*lambda)*f(sn, tn10)+lambda*f(sn, tn15));
             }
             dx[0]   -= u15[m][0]*m_aa_htht__hxhx_025_lambda;
             dx[N-2] -= u15[m][N]*m_aa_htht__hxhx_025_lambda;
@@ -807,7 +809,6 @@ void CdIHyperbolicIBVP::implicit_calculate_D2V1(DoubleMatrix &u, double a, doubl
         layerInfo(u15, tn15.i);
         /**************************************************** x direction apprx ***************************************************/
         /**************************************************** y direction apprx ***************************************************/
-        setHalfLayerEnabled(true);
         for (unsigned int n=1; n<=N-1; n++)
         {
             sn.i = static_cast<int>(n); sn.x = n*hx;
@@ -819,8 +820,8 @@ void CdIHyperbolicIBVP::implicit_calculate_D2V1(DoubleMatrix &u, double a, doubl
                 dy[m-1] += (u10[m-1][n] - 2.0*u10[m][n] + u10[m+1][n])*p_aa_htht__hyhy_025_lambda;
                 dy[m-1] += (u15[m][n-1] - 2.0*u15[m][n] + u15[m][n+1])*p_aa_htht__hxhx_025;
                 dy[m-1] += 2.0*u15[m][n] - u10[m][n] + alpha_ht_025*u10[m][n];
-                dy[m-1] += ht_ht_025*f(sn, tn15);
-                //dy[m-1] += ht_ht_025*(lambda*f(sn, tn10)+(1.0-2.0*lambda)*f(sn, tn15)+lambda*f(sn, tn20));
+                //dy[m-1] += ht_ht_025*f(sn, tn15);
+                dy[m-1] += ht_ht_025*(lambda*f(sn, tn10)+(1.0-2.0*lambda)*f(sn, tn15)+lambda*f(sn, tn20));
             }
             dy[0]   -= u20[0][n]*m_aa_htht__hyhy_025_lambda;
             dy[M-2] -= u20[M][n]*m_aa_htht__hyhy_025_lambda;
@@ -829,18 +830,18 @@ void CdIHyperbolicIBVP::implicit_calculate_D2V1(DoubleMatrix &u, double a, doubl
         }
         layerInfo(u20, tn20.i);
         /**************************************************** y direction apprx ***************************************************/
-//        u00 = u10;
-//        u05 = u15;
-//        u10 = u20;
-        for (unsigned int m=0; m<=M; m++)
-        {
-            for (unsigned int n=0; n<=N; n++)
-            {
-                u00[m][n] = u10[m][n];
-                u05[m][n] = u15[m][n];
-                u10[m][n] = u20[m][n];
-            }
-        }
+        u00 = u10;
+        u05 = u15;
+        u10 = u20;
+//        for (unsigned int m=0; m<=M; m++)
+//        {
+//            for (unsigned int n=0; n<=N; n++)
+//            {
+//                u00[m][n] = u10[m][n];
+//                u05[m][n] = u15[m][n];
+//                u10[m][n] = u20[m][n];
+//            }
+//        }
     }
     u.clear(); u.resize(M+1, N+1); for (unsigned int m=0; m<=M; m++) { for (unsigned int n=0; n<=N; n++) { u[m][n] = u20[m][n]; } }
 
@@ -1137,7 +1138,7 @@ void ConjugateCdIHyperbolicIBVP::implicit_calculate_D2V1(DoubleMatrix &p, double
     const unsigned int size_ln = static_cast<unsigned int>(0)-1;
     for (unsigned int ln=L-2; ln !=size_ln; ln--)
     {
-        //TimeNodePDE tn05; tn05.i = ln-2; tn05.t = tn05.i*ht+0.5*ht;
+        TimeNodePDE tn05; tn05.i = 2*ln+3; tn05.t = 0.5*tn05.i*ht;//tn05.i*ht+0.5*ht;
         TimeNodePDE tn10; tn10.i = 2*ln+2; tn10.t = 0.5*tn10.i*ht;//tn10.i*ht;
         TimeNodePDE tn15; tn15.i = 2*ln+1; tn15.t = 0.5*tn15.i*ht;//tn15.i*ht-0.5*ht;
         TimeNodePDE tn20; tn20.i = 2*ln;   tn20.t = 0.5*tn20.i*ht;//tn20.i*ht;
@@ -1145,7 +1146,6 @@ void ConjugateCdIHyperbolicIBVP::implicit_calculate_D2V1(DoubleMatrix &p, double
         implicit_calculate_D2V1_border(p15, p20, N, hx, M, hy, tn15, tn20);
         /**************************************************** border conditions ***************************************************/
         /**************************************************** x direction apprx ***************************************************/
-        setHalfLayerEnabled(false);
         for (unsigned int m=1; m<=M-1; m++)
         {
             sn.j = static_cast<int>(m); sn.y = m*hy;
@@ -1157,8 +1157,8 @@ void ConjugateCdIHyperbolicIBVP::implicit_calculate_D2V1(DoubleMatrix &p, double
                 dx[n-1] += (p05[m][n-1] - 2.0*p05[m][n] + p05[m][n+1])*p_aa_htht__hxhx_025_lambda;
                 dx[n-1] += (p10[m-1][n] - 2.0*p10[m][n] + p10[m+1][n])*p_aa_htht__hyhy_025;
                 dx[n-1] += 2.0*p10[m][n] - p05[m][n] + alpha_ht_025*p05[m][n];
-                dx[n-1] += ht_ht_025*f(sn, tn10);
-                //dx[n-1] += ht_ht_025*(lambda*f(sn, tn05)+(1.0-2.0*lambda)*f(sn, tn10)+lambda*f(sn, tn15));
+                //dx[n-1] += ht_ht_025*f(sn, tn10);
+                dx[n-1] += ht_ht_025*(lambda*f(sn, tn05)+(1.0-2.0*lambda)*f(sn, tn10)+lambda*f(sn, tn15));
             }
             dx[0]   -= p15[m][0]*m_aa_htht__hxhx_025_lambda;
             dx[N-2] -= p15[m][N]*m_aa_htht__hxhx_025_lambda;
@@ -1168,7 +1168,6 @@ void ConjugateCdIHyperbolicIBVP::implicit_calculate_D2V1(DoubleMatrix &p, double
         layerInfo(p15, tn15.i);
         /**************************************************** x direction apprx ***************************************************/
         /**************************************************** y direction apprx ***************************************************/
-        setHalfLayerEnabled(true);
         for (unsigned int n=1; n<=N-1; n++)
         {
             sn.i = static_cast<int>(n); sn.x = n*hx;
@@ -1180,8 +1179,8 @@ void ConjugateCdIHyperbolicIBVP::implicit_calculate_D2V1(DoubleMatrix &p, double
                 dy[m-1] += (p10[m-1][n] - 2.0*p10[m][n] + p10[m+1][n])*p_aa_htht__hyhy_025_lambda;
                 dy[m-1] += (p15[m][n-1] - 2.0*p15[m][n] + p15[m][n+1])*p_aa_htht__hxhx_025;
                 dy[m-1] += 2.0*p15[m][n] - p10[m][n] + alpha_ht_025*p10[m][n];
-                dy[m-1] += ht_ht_025*f(sn, tn15);
-                //dy[m-1] += ht_ht_025*(lambda*f(sn, tn10)+(1.0-2.0*lambda)*f(sn, tn15)+lambda*f(sn, tn20));
+                //dy[m-1] += ht_ht_025*f(sn, tn15);
+                dy[m-1] += ht_ht_025*(lambda*f(sn, tn10)+(1.0-2.0*lambda)*f(sn, tn15)+lambda*f(sn, tn20));
             }
             dy[0]   -= p20[0][n]*m_aa_htht__hyhy_025_lambda;
             dy[M-2] -= p20[M][n]*m_aa_htht__hyhy_025_lambda;
@@ -1190,15 +1189,18 @@ void ConjugateCdIHyperbolicIBVP::implicit_calculate_D2V1(DoubleMatrix &p, double
         }
         layerInfo(p20, tn20.i);
         /**************************************************** y direction apprx ***************************************************/
-        for (unsigned int m=0; m<=M; m++)
-        {
-            for (unsigned int n=0; n<=N; n++)
-            {
-                p00[m][n] = p10[m][n];
-                p05[m][n] = p15[m][n];
-                p10[m][n] = p20[m][n];
-            }
-        }
+        p00 = p10;
+        p05 = p15;
+        p10 = p20;
+//        for (unsigned int m=0; m<=M; m++)
+//        {
+//            for (unsigned int n=0; n<=N; n++)
+//            {
+//                p00[m][n] = p10[m][n];
+//                p05[m][n] = p15[m][n];
+//                p10[m][n] = p20[m][n];
+//            }
+//        }
     }
     p.clear(); p.resize(M+1, N+1); for (unsigned int m=0; m<=M; m++) { for (unsigned int n=0; n<=N; n++) { p[m][n] = p20[m][n]; } }
 

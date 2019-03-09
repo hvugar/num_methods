@@ -21,8 +21,8 @@ class MINIMUMSHARED_EXPORT InitialValueProblemPDE : public InitialValueProblem {
  * @brief The InitialBoundaryValueProblemPDE class
  * @see ParabolicIBVP
  */
-class MINIMUMSHARED_EXPORT InitialBoundaryValueProblemPDE : public BoundaryValueProblemPDE,
-                                                            public InitialValueProblemPDE
+class MINIMUMSHARED_EXPORT InitialBoundaryValueProblemPDE : public InitialValueProblemPDE,
+        public BoundaryValueProblemPDE
 {
 public:
     virtual ~InitialBoundaryValueProblemPDE();

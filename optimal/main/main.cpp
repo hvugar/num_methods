@@ -37,6 +37,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //LinearODE1stOrderEx1::Main(argc, argv);
     //NonLinearODE1stOrderEx2::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);
+    //CdIHyperbolicIBVP1::Main(argc, argv);
 
     //DeltaGrid2DExt1::Main(argc, argv);
 

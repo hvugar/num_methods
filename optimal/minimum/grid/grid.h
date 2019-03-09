@@ -18,6 +18,12 @@ enum class InitialCondition
     //SecondDerivative = 2
 };
 
+enum class FiniteDifference
+{
+    Explicit = 0,
+    Implicit = 1
+};
+
 struct MINIMUMSHARED_EXPORT SpacePoint
 {
     SpacePoint(double x = 0.0, double y = 0.0, double z = 0.0);
@@ -35,7 +41,7 @@ struct MINIMUMSHARED_EXPORT TimeMoment
 
 struct MINIMUMSHARED_EXPORT SpaceNodePDE : public SpacePoint
 {
-    SpaceNodePDE(int i=0, double x=0.0, int j=0, double y=0.0, int k=0, double z=0.0);
+    SpaceNodePDE(int i = 0, double x = 0.0, int j = 0, double y = 0.0, int k = 0, double z = 0.0);
     SpaceNodePDE(const SpaceNodePDE &sn);
 
     int i;

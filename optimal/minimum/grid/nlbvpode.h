@@ -3,8 +3,6 @@
 
 #include "bvp.h"
 
-class MINIMUMSHARED_EXPORT NonLinearBoundaryValueProblemODE : protected BoundaryValueProblemODE
-{
-};
+class MINIMUMSHARED_EXPORT NonLinearBoundaryValueProblemODE : protected BoundaryValueProblemODE {};
 
 #endif // NONLINEARBOUNDARYVALUEPROBLEMODE_H

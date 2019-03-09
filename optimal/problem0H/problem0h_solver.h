@@ -24,7 +24,7 @@ struct Problem0HParameter
     DeltaGrid2D deltaGrid;
 };
 
-/*******************************************************************************************************/
+//--------------------------------------------------------------------------------------------------------------//
 
 class Problem0HCommon
 {
@@ -33,8 +33,8 @@ public:
     virtual ~Problem0HCommon();
 
 protected:
-    inline auto virtual mu(const SpaceNodePDE &) const -> double { return 1.0; }
-    inline auto virtual mu(unsigned int, unsigned int) const -> double { return 1.0; }
+    //inline auto virtual mu1(const SpaceNodePDE &) const -> double { return 1.0; }
+    //inline auto virtual mu2(unsigned int, unsigned int) const -> double { return 1.0; }
 
     double a = 1.0;
     double gamma = 0.0;
@@ -57,7 +57,7 @@ protected:
     std::vector<Problem0HParameter> optimalParameters;
 };
 
-/*******************************************************************************************************/
+//--------------------------------------------------------------------------------------------------------------//
 
 class Problem0HForward : public CdIHyperbolicIBVP, public virtual Problem0HCommon
 {
@@ -71,9 +71,11 @@ protected:
 
 private:
     double p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    void calculateU1U2(const DoubleMatrix &u, unsigned int ln) const;
+    void saveToExcel(const DoubleMatrix &u, unsigned int ln) const;
 };
 
-/*******************************************************************************************************/
+//--------------------------------------------------------------------------------------------------------------//
 
 class Problem0HBckward : public ConjugateCdIHyperbolicIBVP, public virtual Problem0HCommon
 {
@@ -86,7 +88,7 @@ protected:
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 };
 
-/*******************************************************************************************************/
+//--------------------------------------------------------------------------------------------------------------//
 
 class Problem0HFunctional : public RnFunction, public IGradient,
         protected virtual Problem0HForward, protected virtual Problem0HBckward

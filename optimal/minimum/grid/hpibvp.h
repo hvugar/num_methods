@@ -6,7 +6,6 @@
 class MINIMUMSHARED_EXPORT HeatEquationIBVP : public InitialBoundaryValueProblemPDE
 {
 public:
-//    virtual ~HeatEquationIBVP();
 
 protected:
     virtual double initial(const SpaceNodePDE &sn) const = 0;

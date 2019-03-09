@@ -13,11 +13,7 @@
 /**
  * @brief The BoundaryValueProblem class
  */
-class MINIMUMSHARED_EXPORT BoundaryValueProblem
-{
-public:
-    BoundaryCondition condition;
-};
+class MINIMUMSHARED_EXPORT BoundaryValueProblem {};
 
 /**
  * @brief The BoundaryValueProblemODE class

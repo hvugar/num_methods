@@ -1,5 +1,5 @@
-#ifndef HYPERBOLICIBVP_H
-#define HYPERBOLICIBVP_H
+#ifndef HYPERBOLICI_BVP_H
+#define HYPERBOLICI_BVP_H
 
 #include "ibvp.h"
 
@@ -9,23 +9,36 @@
  */
 class MINIMUMSHARED_EXPORT IHyperbolicIBVP : public InitialBoundaryValueProblemPDE
 {
-public:
-    virtual ~IHyperbolicIBVP();
-
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
-
-protected:
-    bool isHalfLayerEnabled() const;
-    void setHalfLayerEnabled(bool) const;
-
-private:
-    bool _isHalfLayerEnabled = false;
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////s
+//--------------------------------------------------------------------------------------------------------------//
+
+/**
+ * @brief The IWaveEquationIBVP class
+ */
+class MINIMUMSHARED_EXPORT IWaveEquationIBVP : public IHyperbolicIBVP
+{
+public:
+    explicit IWaveEquationIBVP(double waveSpeed = 1.0, double waveDissipation = 0.0);
+    virtual ~IWaveEquationIBVP();
+
+    double waveSpeed() const;
+    void setWaveSpeed(double waveSpeed);
+    double waveDissipation() const;
+    void setWaveDissipation(double waveDissipation);
+
+    //virtual void calculate() const;
+
+protected:
+    double _waveSpeed;
+    double _waveDissipation;
+};
+
+//--------------------------------------------------------------------------------------------------------------//
 
 class MINIMUMSHARED_EXPORT CcIHyperbolicIBVP : public IHyperbolicIBVP
 {
@@ -51,7 +64,7 @@ private:
     void implicit_calculate_D2V1_border(DoubleMatrix &u05, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn05, const TimeNodePDE &tn10) const;
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------------------------//
 
 class MINIMUMSHARED_EXPORT CdIHyperbolicIBVP : public IHyperbolicIBVP
 {
@@ -78,7 +91,7 @@ private:
     void implicit_calculate_D2V1_border(DoubleMatrix &u05, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn05, const TimeNodePDE &tn10) const;
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------------------------//
 
 class MINIMUMSHARED_EXPORT ConjugateCdIHyperbolicIBVP : public IHyperbolicIBVP
 {
@@ -104,6 +117,6 @@ private:
     void implicit_calculate_D2V1_border(DoubleMatrix &u05, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn05, const TimeNodePDE &tn10) const;
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------------------------//
 
-#endif // HYPERBOLICIBVP_H
+#endif // HYPERBOLICI_BVP_H
