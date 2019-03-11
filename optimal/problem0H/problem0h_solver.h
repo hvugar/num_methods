@@ -38,7 +38,10 @@ protected:
 
     double a = 1.0;
     double gamma = 0.0;
-    double alpha0 = 1.0;
+
+    double epsilon1 = 1.0;
+    double epsilon2 = 0.0;
+
     double alpha1 = 1.0;
     double alpha2 = 1.0;
     double alpha3 = 1.0;
@@ -52,6 +55,11 @@ protected:
     DoubleMatrix uL0;
     DoubleMatrix uL1;
     DoubleMatrix uL2;
+
+    double p_sigmaX;
+    double p_sigmaY;
+    unsigned int c_sigmaX;
+    unsigned int c_sigmaY;
 
     unsigned int source_number;
     std::vector<Problem0HParameter> optimalParameters;
@@ -73,6 +81,7 @@ private:
     double p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     void calculateU1U2(const DoubleMatrix &u, unsigned int ln) const;
     void saveToExcel(const DoubleMatrix &u, unsigned int ln) const;
+    void saveToImage(const DoubleMatrix &u, unsigned int ln) const;
 };
 
 //--------------------------------------------------------------------------------------------------------------//

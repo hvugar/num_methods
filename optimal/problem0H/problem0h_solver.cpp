@@ -12,7 +12,6 @@ void Problem0HFunctional::Main(int argc, char **argv)
     functional.ksi = SpacePoint(0.25, 0.25);
     functional.a = 1.0;
     functional.gamma = 0.0;
-    functional.alpha0 = 0.0;
     functional.source_number = 2;
     functional.setDimension(Dimension(ht, 0, static_cast<int>(L)),
                             Dimension(hx, 0, static_cast<int>(N)),
@@ -39,8 +38,8 @@ void Problem0HFunctional::Main(int argc, char **argv)
 
     DoubleVector gn;
     gn.resize(x.length());
-    //IGradient::Gradient(&functional, 0.05, x, gn, static_cast<unsigned int>(start1), static_cast<unsigned int>(finish1));
-    //IGradient::Gradient(&functional, 0.05, x, gn, static_cast<unsigned int>(start2), static_cast<unsigned int>(finish2));
+    IGradient::Gradient(&functional, 0.05, x, gn, static_cast<unsigned int>(start1), static_cast<unsigned int>(finish1));
+    IGradient::Gradient(&functional, 0.05, x, gn, static_cast<unsigned int>(start2), static_cast<unsigned int>(finish2));
     IGradient::Gradient(&functional, 0.005, x, gn, static_cast<unsigned int>(start3), static_cast<unsigned int>(finish3));
     //IGradient::Gradient(&functional, 0.05, x, gn);
 
@@ -94,8 +93,8 @@ auto Problem0HFunctional::setDimension(const Dimension &timeDimension, const Dim
     const unsigned int L = static_cast<unsigned int> ( timeDimension.size() );
     const unsigned int N = static_cast<unsigned int> ( dimensionX.size() );
     const unsigned int M = static_cast<unsigned int> ( dimensionY.size() );
-    //const double hx = spaceDimensionX.step();
-    //const double hy = spaceDimensionY.step();
+    const double hx = dimensionX.step();
+    const double hy = dimensionY.step();
 
     U1.resize(M+1, N+1, 0.0);
     U2.resize(M+1, N+1, 0.0);
@@ -105,19 +104,29 @@ auto Problem0HFunctional::setDimension(const Dimension &timeDimension, const Dim
     ksi = SpacePoint(0.25, 0.25);
 
     const_this = const_cast<Problem0HFunctional*>(this);
-    const_this->optimalParameters.resize(source_number);
+    optimalParameters.resize(source_number);
 
     unsigned int length = 2*L+1;
     for (unsigned int sn=0; sn<source_number; sn++)
     {
-        const_this->optimalParameters[sn].pwr_vl.resize(length, 0.10);
-        //const_this->optimalParameters[sn].pwr_vl[0] = 0.0;
-        //const_this->optimalParameters[sn].pwr_vl[1] = 0.0;
-        //const_this->optimalParameters[sn].pwr_vl[2*L] = 0.0;
-        const_this->optimalParameters[sn].psi_vl.resize(length);
-        const_this->optimalParameters[sn].psi_dx.resize(length);
-        const_this->optimalParameters[sn].psi_dy.resize(length);
+        Problem0HParameter &parameter = const_this->optimalParameters[sn];
+        parameter.pwr_vl.resize(length, 0.10);
+        parameter.pwr_vl[0] = 0.0;
+        parameter.pwr_vl[1] = 0.0;
+        parameter.pwr_vl[2*L] = 0.0;
+        parameter.psi_vl.resize(length);
+        parameter.psi_dx.resize(length);
+        parameter.psi_dy.resize(length);
+
+        parameter.deltaGrid.cleanGrid();
+        parameter.deltaGrid.initGrid(N, hx, M, hy);
     }
+
+    p_sigmaX = 0.04;
+    p_sigmaY = 0.04;
+
+    c_sigmaX = N/200;
+    c_sigmaY = M/200;
 }
 
 auto Problem0HFunctional::fx(const DoubleVector &x) const -> double
@@ -127,8 +136,8 @@ auto Problem0HFunctional::fx(const DoubleVector &x) const -> double
     DoubleMatrix u;
     Problem0HForward::implicit_calculate_D2V1(u, a, gamma);
     double sum = 0.0;
-    sum += integral1(Problem0HForward::u1);
-    sum += alpha0*integral2(Problem0HForward::u2);
+    sum += epsilon1 * integral1(Problem0HForward::u1);
+    sum += epsilon2 * integral2(Problem0HForward::u2);
     //sum += norm();
     //sum += penalty();
     return sum;
@@ -249,14 +258,20 @@ auto Problem0HFunctional::gradient(const DoubleVector &x, DoubleVector &g) const
     {
         const Problem0HParameter &optimalParameter = optimalParameters[sn];
 
+        //IPrinter::printSeperatorLine();
+        //IPrinter::print(optimalParameter.pwr_vl.data(), optimalParameter.pwr_vl.size());
+        //IPrinter::print(optimalParameter.psi_vl.data(), optimalParameter.psi_vl.size());
+        //IPrinter::print(optimalParameter.psi_dx.data(), optimalParameter.psi_dx.size());
+        //IPrinter::print(optimalParameter.psi_dy.data(), optimalParameter.psi_dy.size());
+
         unsigned int offset = sn*length;
-        //g[offset+0] = 1.0;//0.0;
-        //g[offset+1] = 1.0;//0.0;
-        for (unsigned int ln=0; ln<length; ln++)
+        g[offset+0] = 0.0;
+        g[offset+1] = 0.0;
+        for (unsigned int ln=2; ln<=length-2; ln++)
         {
-            g[offset+ln] = 0.0*(sn+1);//-optimalParameter.psi_vl[ln];
+            g[offset+ln] = -optimalParameter.psi_vl[ln];
         }
-        //g[offset+(length-1)] = 1.0;//0.0;
+        g[offset+(length-1)] = 0.0;
 
         //---------------------------------------------------------------------------//
 
@@ -266,17 +281,29 @@ auto Problem0HFunctional::gradient(const DoubleVector &x, DoubleVector &g) const
         unsigned int ln = 0;
         g[ix] = 0.0;
         g[iy] = 0.0;
-        ln = 0;
+        ln = 2;
         g[ix] += 0.5*optimalParameter.psi_dx[ln] * optimalParameter.pwr_vl[ln];
         g[iy] += 0.5*optimalParameter.psi_dy[ln] * optimalParameter.pwr_vl[ln];
-        for (ln=1; ln<=2*(L-1)+1; ln++)
+        for (ln=3; ln<=length-3; ln++)
         {
             g[ix] += optimalParameter.psi_dx[ln] * optimalParameter.pwr_vl[ln];
             g[iy] += optimalParameter.psi_dy[ln] * optimalParameter.pwr_vl[ln];
         }
-        ln = 2*(L-1)+2;
+        ln = length-2;
         g[ix] += 0.5*optimalParameter.psi_dx[ln] * optimalParameter.pwr_vl[ln];
         g[iy] += 0.5*optimalParameter.psi_dy[ln] * optimalParameter.pwr_vl[ln];
+
+        //        ln = 0;
+        //        g[ix] += 0.5*optimalParameter.psi_dx[ln] * optimalParameter.pwr_vl[ln];
+        //        g[iy] += 0.5*optimalParameter.psi_dy[ln] * optimalParameter.pwr_vl[ln];
+        //        for (ln=1; ln<=length-2; ln++)
+        //        {
+        //            g[ix] += optimalParameter.psi_dx[ln] * optimalParameter.pwr_vl[ln];
+        //            g[iy] += optimalParameter.psi_dy[ln] * optimalParameter.pwr_vl[ln];
+        //        }
+        //        ln = length-1;
+        //        g[ix] += 0.5*optimalParameter.psi_dx[ln] * optimalParameter.pwr_vl[ln];
+        //        g[iy] += 0.5*optimalParameter.psi_dy[ln] * optimalParameter.pwr_vl[ln];
 
         g[ix] *= -ht;
         g[iy] *= -ht;
@@ -288,8 +315,8 @@ auto Problem0HFunctional::gradient(const DoubleVector &x, DoubleVector &g) const
 auto Problem0HForward::layerInfo(const DoubleMatrix &u, unsigned int ln) const -> void
 {
     calculateU1U2(u, ln);
-    saveToExcel(u, ln);
-//    if (ln%2 == 0) printf("%4d min: %8.6f max: %8.6f\n", ln, u.min(), u.max());
+    //saveToExcel(u, ln);
+    //if (ln%2 == 0) printf("%4d min: %8.6f max: %8.6f\n", ln, u.min(), u.max());
 }
 
 auto Problem0HForward::initial(const SpaceNodePDE &, InitialCondition) const -> double { return 0.0; }
@@ -300,7 +327,7 @@ auto Problem0HForward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
 {
     double pv = p(sn, tn);
     double pulse1, pulse2; pulse1 = pulse2 = 0.0;
-    //if (tn.i != 0 && tn.i != 1)
+    if (tn.i != 0 && tn.i != 1)
     {
         //static const double sigma = 0.01;
         //static const double cff1 = 1.0/(2.0*M_PI*sigma*sigma);
@@ -318,10 +345,10 @@ auto Problem0HForward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
 
 auto Problem0HForward::p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
 {
-    static const double sigmaX = 8.0*Problem0HForward::spaceDimension(Dimension::DimensionX).step();
-    static const double sigmaY = 8.0*Problem0HForward::spaceDimension(Dimension::DimensionY).step();;
-    static const double alpha1 = 1.0/(2.0*M_PI*sigmaX*sigmaY);
-    static const double alpha2 = 1.0/(2.0*sigmaX*sigmaY);
+    //static const double sigmaX = 8.0*Problem0HForward::spaceDimension(Dimension::DimensionX).step();
+    //static const double sigmaY = 8.0*Problem0HForward::spaceDimension(Dimension::DimensionY).step();
+    static const double alpha1 = 1.0/(2.0*M_PI*p_sigmaX*p_sigmaY);
+    static const double alpha2 = 1.0/(2.0*p_sigmaX*p_sigmaY);
     static const double alpha3 = 100.0;
     double pv = 5.0 * alpha1 * exp( -alpha2 * ((sn.x-ksi.x)*(sn.x-ksi.x)+(sn.y-ksi.y)*(sn.y-ksi.y)) - alpha3*tn.t);
     return pv;
@@ -334,68 +361,81 @@ auto Problem0HForward::calculateU1U2(const DoubleMatrix &u, unsigned int ln) con
     const double ht = time.step();
 
     Problem0HForward *forward = const_cast<Problem0HForward*>(this);
-    if (ln == 2*(L-2)) { forward->u2  = +1.0*u; }
-    if (ln == 2*(L-1)) { forward->u2 += -4.0*u; }
-    if (ln == 2*(L-0)) { forward->u1 = u; forward->u2 += +3.0*u; forward->u2 *= +(1.0/(2.0*ht)); }
+    if (ln == 2*(L-0)) { forward->u1 = u; }
+
+    //if (ln == 2*(L-2)) { forward->u2  = +1.0*u; }
+    //if (ln == 2*(L-1)) { forward->u2 += -4.0*u; }
+    //if (ln == 2*(L-0)) { forward->u2 += +3.0*u; forward->u2 *= +(1.0/(2.0*ht)); }
+
+    //if (ln == 2*(L-3)) { forward->u2  = -2.0*u; }
+    //if (ln == 2*(L-2)) { forward->u2 += +9.0*u; }
+    //if (ln == 2*(L-1)) { forward->u2 += -18.0*u; }
+    //if (ln == 2*(L-0)) { forward->u2 += +11.0*u; forward->u2 *= +(1.0/(6.0*ht)); }
+
+    if (ln == 2*(L-4)) { forward->u2  = +3.0*u; }
+    if (ln == 2*(L-3)) { forward->u2 += -16.0*u; }
+    if (ln == 2*(L-2)) { forward->u2 += +36.0*u; }
+    if (ln == 2*(L-1)) { forward->u2 += -48.0*u; }
+    if (ln == 2*(L-0)) { forward->u2 += +25.0*u; forward->u2 *= +(1.0/(12.0*ht)); }
 }
 
 auto Problem0HForward::saveToExcel(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
 {
-//    const Dimension &time = Problem0HForward::timeDimension();
-//    const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
-//    const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
-//    const unsigned int L = static_cast<unsigned int>(time.size());
-//    const unsigned int N = static_cast<unsigned int>(dimX.size());
-//    const unsigned int M = static_cast<unsigned int>(dimY.size());
-//    const double ht = time.step();
-//    const double hx = dimX.step();
-//    const double hy = dimY.step();
+    //    const Dimension &time = Problem0HForward::timeDimension();
+    //    const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
+    //    const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
+    //    const unsigned int L = static_cast<unsigned int>(time.size());
+    //    const unsigned int N = static_cast<unsigned int>(dimX.size());
+    //    const unsigned int M = static_cast<unsigned int>(dimY.size());
+    //    const double ht = time.step();
+    //    const double hx = dimX.step();
+    //    const double hy = dimY.step();
 
-//    static lxw_workbook *workbook = nullptr;
-//    static lxw_format *format = nullptr;
-//    if (ln == 0)
-//    {
-//        workbook = new_workbook("d:\\chart.xlsx");
-//        format = workbook_add_format(workbook);
-//        format_set_num_format(format, "0.0000000000");
-//    }
-//    if (ln%20==0)
-//    {
-//        std::string name = std::string("layer_")+std::to_string(ln/20);
-//        lxw_worksheet *worksheet = workbook_add_worksheet(workbook, name.data());
-//        for (unsigned int row=0; row<u.rows(); row++)
-//        {
-//            for (unsigned int col=0; col<u.cols(); col++)
-//            {
-//                std::string line = "=Sheet1!$C$"+std::to_string(row+1)+":$C$"+std::to_string(row+1);
-//                worksheet_write_number(worksheet, static_cast<lxw_row_t>(row), static_cast<lxw_col_t>(col), u[row][col], format);
-//            }
-//        }
-//    }
-//    if (ln == 2*L) { workbook_close(workbook); }
+    //    static lxw_workbook *workbook = nullptr;
+    //    static lxw_format *format = nullptr;
+    //    if (ln == 0)
+    //    {
+    //        workbook = new_workbook("d:\\chart.xlsx");
+    //        format = workbook_add_format(workbook);
+    //        format_set_num_format(format, "0.0000000000");
+    //    }
+    //    if (ln%20==0)
+    //    {
+    //        std::string name = std::string("layer_")+std::to_string(ln/20);
+    //        lxw_worksheet *worksheet = workbook_add_worksheet(workbook, name.data());
+    //        for (unsigned int row=0; row<u.rows(); row++)
+    //        {
+    //            for (unsigned int col=0; col<u.cols(); col++)
+    //            {
+    //                std::string line = "=Sheet1!$C$"+std::to_string(row+1)+":$C$"+std::to_string(row+1);
+    //                worksheet_write_number(worksheet, static_cast<lxw_row_t>(row), static_cast<lxw_col_t>(col), u[row][col], format);
+    //            }
+    //        }
+    //    }
+    //    if (ln == 2*L) { workbook_close(workbook); }
 
-//    if (ln == 2*(L-0))
-//    {
-//        lxw_workbook  *workbook  = new_workbook("d:\\chart.xlsx");
-//        lxw_worksheet *worksheet1 = workbook_add_worksheet(workbook, nullptr);
-//        lxw_chartsheet *chartsheet = workbook_add_chartsheet(workbook, nullptr);
-//        lxw_chart *chart = workbook_add_chart(workbook, LXW_CHART_AREA);
-//        lxw_format *format = workbook_add_format(workbook);
-//        format_set_num_format(format, "0.0000000000");
-//        for (unsigned int row=0; row<u.rows(); row++)
-//        {
-//            for (unsigned int col=0; col<u.cols(); col++)
-//            {
-//                // =Sheet1!$A$1:$A$6
-//                // =Sheet1!$A$1:$CW$1
-//                std::string line = "=Sheet1!$A$"+std::to_string(row+1)+":$CW$"+std::to_string(row+1);
-//                worksheet_write_number(worksheet1, static_cast<lxw_row_t>(row), static_cast<lxw_col_t>(col), u[row][col], format);
-//                //chart_add_series(chart, nullptr, line.data());
-//            }
-//        }
-//        chartsheet_set_chart(chartsheet, chart);
-//        workbook_close(workbook);
-//    }
+    //    if (ln == 2*(L-0))
+    //    {
+    //        lxw_workbook  *workbook  = new_workbook("d:\\chart.xlsx");
+    //        lxw_worksheet *worksheet1 = workbook_add_worksheet(workbook, nullptr);
+    //        lxw_chartsheet *chartsheet = workbook_add_chartsheet(workbook, nullptr);
+    //        lxw_chart *chart = workbook_add_chart(workbook, LXW_CHART_AREA);
+    //        lxw_format *format = workbook_add_format(workbook);
+    //        format_set_num_format(format, "0.0000000000");
+    //        for (unsigned int row=0; row<u.rows(); row++)
+    //        {
+    //            for (unsigned int col=0; col<u.cols(); col++)
+    //            {
+    //                // =Sheet1!$A$1:$A$6
+    //                // =Sheet1!$A$1:$CW$1
+    //                std::string line = "=Sheet1!$A$"+std::to_string(row+1)+":$CW$"+std::to_string(row+1);
+    //                worksheet_write_number(worksheet1, static_cast<lxw_row_t>(row), static_cast<lxw_col_t>(col), u[row][col], format);
+    //                //chart_add_series(chart, nullptr, line.data());
+    //            }
+    //        }
+    //        chartsheet_set_chart(chartsheet, chart);
+    //        workbook_close(workbook);
+    //    }
 }
 
 //--------------------------------------------------------------------------------------------------------------//
@@ -434,8 +474,10 @@ auto Problem0HBckward::initial(const SpaceNodePDE &sn, InitialCondition conditio
 {
     unsigned int n = static_cast<unsigned int>(sn.i);
     unsigned int m = static_cast<unsigned int>(sn.j);
-    if (condition == InitialCondition::InitialValue) { return -2.0*alpha0*(u2[m][n]/*-U2[m][n]*/); }
-    else { return +2.0*(u1[m][n]/*-U1[m][n]*/) + gamma*initial(sn, InitialCondition::InitialValue); }
+    if (condition == InitialCondition::InitialValue) { return -2.0*epsilon2*(u2[m][n]/*-U2[m][n]*/); }
+    if (condition == InitialCondition::FirstDerivative) { return +2.0*epsilon1*(u1[m][n]/*-U1[m][n]*/)
+                + gamma*initial(sn, InitialCondition::InitialValue); }
+    return NAN;
 }
 
 auto Problem0HBckward::boundary(const SpaceNodePDE&, const TimeNodePDE&) const -> double { return 0.0; }
@@ -462,24 +504,28 @@ auto Problem0HFunctional::vectorToParameter(const DoubleVector &x) const -> void
     const unsigned int length = 2*L+1;
     for (unsigned int sn=0; sn<source_number; sn++)
     {
-        const_this->optimalParameters[sn].pwr_vl.resize(length);
-        const_this->optimalParameters[sn].psi_vl.resize(length);
-        const_this->optimalParameters[sn].psi_dx.resize(length);
-        const_this->optimalParameters[sn].psi_dy.resize(length);
-        for (unsigned int ln=0; ln<length; ln++)
-        {
-            const_this->optimalParameters[sn].pwr_vl[ln] = x[sn*length+ln];
-        }
-        //const_this->optimalParameters[sn].pwr_vl[0] = 0.0;
-        //const_this->optimalParameters[sn].pwr_vl[1] = 0.0;
-        //const_this->optimalParameters[sn].pwr_vl[length-1] = 0.0;
+        Problem0HParameter &parameter = const_this->optimalParameters[sn];
 
-        const_this->optimalParameters[sn].p.x = x[source_number*length+2*sn+0];
-        const_this->optimalParameters[sn].p.y = x[source_number*length+2*sn+1];
+        parameter.pwr_vl.resize(length);
+        parameter.psi_vl.resize(length);
+        parameter.psi_dx.resize(length);
+        parameter.psi_dy.resize(length);
 
-        const_this->optimalParameters[sn].deltaGrid.cleanGrid();
-        const_this->optimalParameters[sn].deltaGrid.initGrid(N, hx, M, hy);
-        const_this->optimalParameters[sn].deltaGrid.distributeGauss(const_this->optimalParameters[sn].p);
+        //parameter.pwr_vl[0] = 0.0;
+        //parameter.pwr_vl[1] = 0.0;
+        //for (unsigned int ln=2; ln<=length-2; ln++)
+        //{
+        //    parameter.pwr_vl[ln] = x[sn*length+ln];
+        //}
+        //parameter.pwr_vl[length-1] = 0.0;
+        for (unsigned int ln=0; ln<=length-1; ln++) parameter.pwr_vl[ln] = x[sn*length+ln];
+
+        parameter.p.x = x[source_number*length+2*sn+0];
+        parameter.p.y = x[source_number*length+2*sn+1];
+
+        //parameter.deltaGrid.cleanGrid();
+        parameter.deltaGrid.initGrid(N, hx, M, hy);
+        parameter.deltaGrid.distributeGauss(parameter.p, c_sigmaX, c_sigmaY);
     }
 }
 
@@ -501,13 +547,14 @@ auto Problem0HFunctional::parameterToVector(DoubleVector &x) const -> void
     unsigned int length = 2*L+1;
     for (unsigned int sn=0; sn<source_number; sn++)
     {
-        for (unsigned int i=0; i<length; i++)
-        {
-            x[sn*length+i] = optimalParameters[sn].pwr_vl[i];
-        }
-        //x[sn*length+0] = 0.0;
-        //x[sn*length+1] = 0.0;
-        //x[sn*length+length-1] = 0.0;
+        //        x[sn*length+0] = 0.0;
+        //        x[sn*length+1] = 0.0;
+        //        for (unsigned int i=2; i<=length-2; i++)
+        //        {
+        //            x[sn*length+i] = optimalParameters[sn].pwr_vl[i];
+        //        }
+        //        x[sn*length+(length-1)] = 0.0;
+        for (unsigned int i=0; i<=length-1; i++) { x[sn*length+i] = optimalParameters[sn].pwr_vl[i]; }
 
         x[source_number*length+2*sn+0] = optimalParameters[sn].p.x;
         x[source_number*length+2*sn+1] = optimalParameters[sn].p.y;

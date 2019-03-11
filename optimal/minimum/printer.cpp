@@ -79,7 +79,7 @@ void IPrinter::printAsMatrix(const DoubleVector &x, unsigned int M, unsigned int
 
 void IPrinter::printVector(const DoubleVector &x, const char *s, unsigned int n, unsigned int start, unsigned int end, FILE *file)
 {
-    if (s!=NULL) fprintf(file, "%s", s);
+    if (s!=nullptr) fprintf(file, "%s", s);
     if (start != 0 || end != 0)
     {
         unsigned int N = (end-start+1) / n;
@@ -100,9 +100,33 @@ void IPrinter::printVector(const DoubleVector &x, const char *s, unsigned int n,
     fflush(file);
 }
 
+void IPrinter::printVector(const std::vector<double> &x, const char *s, unsigned int n, unsigned int start, unsigned int end, FILE *file)
+{
+    if (s!=nullptr) fprintf(file, "%s", s);
+    if (start != 0 || end != 0)
+    {
+        unsigned int N = (end-start+1) / n;
+        for (unsigned int i=start; i<=end; i++)
+        {
+            if ((i-start)%N==0) fprintf(file, "%14.10f ", x[i]);
+        }
+    }
+    else
+    {
+        unsigned int size = static_cast<unsigned int>(x.size());
+        unsigned int N = size / n;
+        for (unsigned int i=0; i<size; i++)
+        {
+            if (i%N==0) fprintf(file, "%14.10f ", x[i]);
+        }
+    }
+    fputs("\n", file);
+    fflush(file);
+}
+
 void IPrinter::printVector(double *x, unsigned int size, const char *s, unsigned int n, unsigned int start, unsigned int end, FILE *file)
 {
-    if (s!=NULL) fprintf(file, "%s", s);
+    if (s!=nullptr) fprintf(file, "%s", s);
     if (start != 0 || end != 0)
     {
         unsigned int N = (end-start+1) / n;
@@ -126,7 +150,7 @@ void IPrinter::printVector(double *x, unsigned int size, const char *s, unsigned
 void IPrinter::printVector(double *x, unsigned int size, const char *s, unsigned int n, unsigned int start, unsigned int end, const char *filename)
 {
     FILE *file = fopen(filename, "w");
-    if (s!=NULL) fprintf(file, "%s", s);
+    if (s!=nullptr) fprintf(file, "%s", s);
     if (start != 0 || end != 0)
     {
         unsigned int N = (end-start+1) / n;
@@ -153,7 +177,7 @@ void IPrinter::printVector(unsigned int width, unsigned int presicion, const Dou
     int sz = sprintf(format, "%%%d.%df ", width, presicion);
     format[sz] = '\0';
 
-    if (s!=NULL) fprintf(file, "%s", s);
+    if (s!=nullptr) fprintf(file, "%s", s);
     if (start != 0 || end != 0)
     {
         unsigned int N = (end-start+1) / n;
@@ -201,7 +225,7 @@ void IPrinter::printCube(const DoubleVector& x, unsigned int M, unsigned int N2,
 
 void IPrinter::printDateTime(FILE *file)
 {
-    time_t t = time(0);
+    time_t t = time(nullptr);
     struct tm * now = localtime( & t );
     char buf[80];
     strftime(buf, sizeof(buf), "%Y-%m-%d %X", now);
@@ -264,7 +288,7 @@ void IPrinter::print(const DoubleVector &v, unsigned int N, unsigned int width, 
     int sz = sprintf(format, "%%%d.%df ", width, presicion);
     format[sz] = '\0';
 
-//    unsigned int size = v.length();
+    //    unsigned int size = v.length();
     unsigned int size = N;
 
     for (unsigned int i=0; i<size; i++)
@@ -283,7 +307,7 @@ void IPrinter::print(const double *v, unsigned int N, unsigned int width, unsign
     int sz = sprintf(format, "%%%d.%df ", width, presicion);
     format[sz] = '\0';
 
-//    unsigned int size = v.length();
+    //    unsigned int size = v.length();
     unsigned int size = N;
 
     for (unsigned int i=0; i<size; i++)
@@ -305,7 +329,7 @@ void IPrinter::printSeperatorLine(const char* msg, char c, FILE* file)
 #endif
 
     int start = 0;
-    if (msg != NULL)
+    if (msg != nullptr)
     {
         fprintf(file, "%s ", msg);
         start = strlen(msg)+1;

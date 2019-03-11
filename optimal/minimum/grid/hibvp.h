@@ -26,16 +26,26 @@ public:
     explicit IWaveEquationIBVP(double waveSpeed = 1.0, double waveDissipation = 0.0);
     virtual ~IWaveEquationIBVP();
 
-    double waveSpeed() const;
-    void setWaveSpeed(double waveSpeed);
-    double waveDissipation() const;
-    void setWaveDissipation(double waveDissipation);
+    virtual double waveSpeed() const;
+    virtual double waveDissipation() const;
+    virtual double lambda() const;
 
-    //virtual void calculate() const;
+    void setWaveSpeed(double waveSpeed);
+    void setWaveDissipation(double waveDissipation);
+    void setLambda(double lambda);
+
+    virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
+
+    void implicit_calculate_D2V1() const;
+
+protected:
+    void implicit_calculate_D2V1_initial(DoubleMatrix &u00, DoubleMatrix &u05, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, double ht, double a, double alpha) const;
+    void implicit_calculate_D2V1_border(DoubleMatrix &u05, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn05, const TimeNodePDE &tn10) const;
 
 protected:
     double _waveSpeed;
     double _waveDissipation;
+    double _lambda;
 };
 
 //--------------------------------------------------------------------------------------------------------------//

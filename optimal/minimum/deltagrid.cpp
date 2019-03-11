@@ -40,7 +40,8 @@ auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned int sigmaXNum, 
     _rx = static_cast<unsigned int>( round(sp.x*_N) );
     _ry = static_cast<unsigned int>( round(sp.y*_M) );
 
-    if (_rx < kx or _ry < ky or _rx > _N-kx or _ry > _M-ky) throw DeltaGridException("Point:["+std::to_string(sp.x)+","+std::to_string(sp.y)+"]");
+    if (_rx < kx or _ry < ky or _rx > _N-kx or _ry > _M-ky)
+        throw DeltaGridException("Point:["+std::to_string(sp.x)+","+std::to_string(sp.y)+"]");
 
     _p = sp;
 
@@ -57,6 +58,11 @@ auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned int sigmaXNum, 
 
     double sigma = (sumX*sumY) / (2.0*M_PI);
     double factor = 1.0/(2.0*M_PI*sigma);
+
+    for (unsigned int m=0; m<=_M; m++)
+    {
+        for (unsigned int n=0; n<=_N; n++) m_nodes[m][n] = 0.0;
+    }
 
     SpaceNodePDE sn;
     for (unsigned int m=_minY; m<=_maxY; m++)
@@ -203,7 +209,6 @@ auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, double &dx, double &
     double Ry1 = (py-y0)*(py-y2)*(py-y3); double R11 = (y1-y0)*(y1-y2)*(y1-y3);
     double Ry2 = (py-y0)*(py-y1)*(py-y3); double R22 = (y2-y0)*(y2-y1)*(y2-y3);
     double Ry3 = (py-y0)*(py-y1)*(py-y2); double R33 = (y3-y0)*(y3-y1)*(y3-y2);
-
     double Ry0y = (py-y1)*(py-y2)+(py-y2)*(py-y3)+(py-y3)*(py-y1);
     double Ry1y = (py-y0)*(py-y2)+(py-y2)*(py-y3)+(py-y3)*(py-y0);
     double Ry2y = (py-y0)*(py-y1)+(py-y1)*(py-y3)+(py-y3)*(py-y0);

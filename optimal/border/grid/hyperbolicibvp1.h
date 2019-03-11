@@ -64,8 +64,8 @@ protected:
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
 private:
-    double a;
-    double alpha;
+    double a = 1.0;
+    double alpha = 0.0;
     DoubleMatrix u10;
 
     DoubleMatrix u1;
