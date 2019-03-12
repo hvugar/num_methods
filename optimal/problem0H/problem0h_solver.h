@@ -40,7 +40,7 @@ protected:
     double gamma = 0.0;
 
     double epsilon1 = 1.0;
-    double epsilon2 = 0.0;
+    double epsilon2 = 1.0;
 
     double alpha1 = 1.0;
     double alpha2 = 1.0;

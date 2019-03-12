@@ -4,8 +4,8 @@ void Problem0HFunctional::Main(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
 
-    unsigned int N = 200; double hx = 0.005;
-    unsigned int M = 200; double hy = 0.005;
+    unsigned int N = 100; double hx = 0.01;
+    unsigned int M = 100; double hy = 0.01;
     unsigned int L = 200; double ht = 0.005;
 
     Problem0HFunctional functional;
@@ -38,9 +38,9 @@ void Problem0HFunctional::Main(int argc, char **argv)
 
     DoubleVector gn;
     gn.resize(x.length());
-    IGradient::Gradient(&functional, 0.05, x, gn, static_cast<unsigned int>(start1), static_cast<unsigned int>(finish1));
-    IGradient::Gradient(&functional, 0.05, x, gn, static_cast<unsigned int>(start2), static_cast<unsigned int>(finish2));
-    IGradient::Gradient(&functional, 0.005, x, gn, static_cast<unsigned int>(start3), static_cast<unsigned int>(finish3));
+    //IGradient::Gradient(&functional, 0.05, x, gn, static_cast<unsigned int>(start1), static_cast<unsigned int>(finish1));
+    //IGradient::Gradient(&functional, 0.05, x, gn, static_cast<unsigned int>(start2), static_cast<unsigned int>(finish2));
+    IGradient::Gradient(&functional, 0.01, x, gn, static_cast<unsigned int>(start3), static_cast<unsigned int>(finish3));
     //IGradient::Gradient(&functional, 0.05, x, gn);
 
     unsigned int length = 2*L+1;
@@ -110,7 +110,7 @@ auto Problem0HFunctional::setDimension(const Dimension &timeDimension, const Dim
     for (unsigned int sn=0; sn<source_number; sn++)
     {
         Problem0HParameter &parameter = const_this->optimalParameters[sn];
-        parameter.pwr_vl.resize(length, 0.10);
+        parameter.pwr_vl.resize(length, 2.00);
         parameter.pwr_vl[0] = 0.0;
         parameter.pwr_vl[1] = 0.0;
         parameter.pwr_vl[2*L] = 0.0;
@@ -125,8 +125,8 @@ auto Problem0HFunctional::setDimension(const Dimension &timeDimension, const Dim
     p_sigmaX = 0.04;
     p_sigmaY = 0.04;
 
-    c_sigmaX = N/200;
-    c_sigmaY = M/200;
+    c_sigmaX = N/100;
+    c_sigmaY = M/100;
 }
 
 auto Problem0HFunctional::fx(const DoubleVector &x) const -> double
@@ -136,8 +136,8 @@ auto Problem0HFunctional::fx(const DoubleVector &x) const -> double
     DoubleMatrix u;
     Problem0HForward::implicit_calculate_D2V1(u, a, gamma);
     double sum = 0.0;
-    sum += epsilon1 * integral1(Problem0HForward::u1);
-    sum += epsilon2 * integral2(Problem0HForward::u2);
+    sum = sum + epsilon1 * integral1(Problem0HForward::u1);
+    sum = sum + epsilon2 * integral2(Problem0HForward::u2);
     //sum += norm();
     //sum += penalty();
     return sum;
@@ -363,20 +363,23 @@ auto Problem0HForward::calculateU1U2(const DoubleMatrix &u, unsigned int ln) con
     Problem0HForward *forward = const_cast<Problem0HForward*>(this);
     if (ln == 2*(L-0)) { forward->u1 = u; }
 
-    //if (ln == 2*(L-2)) { forward->u2  = +1.0*u; }
-    //if (ln == 2*(L-1)) { forward->u2 += -4.0*u; }
-    //if (ln == 2*(L-0)) { forward->u2 += +3.0*u; forward->u2 *= +(1.0/(2.0*ht)); }
+    //if (ln == 2*(L-2)) { forward->u2  = -1.0*u; }
+    //if (ln == 2*(L-0)) { forward->u2 += +1.0*u; forward->u2 *= (0.5/ht); }
 
-    //if (ln == 2*(L-3)) { forward->u2  = -2.0*u; }
-    //if (ln == 2*(L-2)) { forward->u2 += +9.0*u; }
-    //if (ln == 2*(L-1)) { forward->u2 += -18.0*u; }
-    //if (ln == 2*(L-0)) { forward->u2 += +11.0*u; forward->u2 *= +(1.0/(6.0*ht)); }
+//    if (ln == 2*(L-2)) { forward->u2  = +1.0*u; }
+//    if (ln == 2*(L-1)) { forward->u2 += -4.0*u; }
+//    if (ln == 2*(L-0)) { forward->u2 += +3.0*u; forward->u2 *= 1.0/(2.0*ht); IPrinter::printMatrix(u2); }
+
+//    if (ln == 2*(L-3)) { forward->u2  = -2.0*u; }
+//    if (ln == 2*(L-2)) { forward->u2 += +9.0*u; }
+//    if (ln == 2*(L-1)) { forward->u2 += -18.0*u; }
+//    if (ln == 2*(L-0)) { forward->u2 += +11.0*u; forward->u2 *= +(1.0/(6.0*ht)); IPrinter::printMatrix(u2); }
 
     if (ln == 2*(L-4)) { forward->u2  = +3.0*u; }
     if (ln == 2*(L-3)) { forward->u2 += -16.0*u; }
     if (ln == 2*(L-2)) { forward->u2 += +36.0*u; }
     if (ln == 2*(L-1)) { forward->u2 += -48.0*u; }
-    if (ln == 2*(L-0)) { forward->u2 += +25.0*u; forward->u2 *= +(1.0/(12.0*ht)); }
+    if (ln == 2*(L-0)) { forward->u2 += +25.0*u; forward->u2 *= +(1.0/(12.0*ht)); /*IPrinter::printMatrix(u2);*/ }
 }
 
 auto Problem0HForward::saveToExcel(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
@@ -477,6 +480,7 @@ auto Problem0HBckward::initial(const SpaceNodePDE &sn, InitialCondition conditio
     if (condition == InitialCondition::InitialValue) { return -2.0*epsilon2*(u2[m][n]/*-U2[m][n]*/); }
     if (condition == InitialCondition::FirstDerivative) { return +2.0*epsilon1*(u1[m][n]/*-U1[m][n]*/)
                 + gamma*initial(sn, InitialCondition::InitialValue); }
+    throw std::exception();
     return NAN;
 }
 
