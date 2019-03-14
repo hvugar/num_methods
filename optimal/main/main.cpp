@@ -29,6 +29,7 @@
 #include <ode/secondorderlinearodeex1.h>
 
 #include "test/deltagrid2dext1.h"
+#include <testwaveequation.h>
 
 #include <problem0h_solver.h>
 
@@ -38,7 +39,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //NonLinearODE1stOrderEx2::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);
     //CdIHyperbolicIBVP1::Main(argc, argv);
-    Problem0HFunctional::Main(argc, argv);
+    //Problem0HFunctional::Main(argc, argv);
+    TestWaveEquation::Main(argc, argv);
 
     //DeltaGrid2DExt1::Main(argc, argv);
 

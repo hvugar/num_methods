@@ -22,13 +22,15 @@ QT          += core gui widgets
 OBJECTS_DIR = release/.obj
 MOC_DIR = release/.moc
 
-HEADERS += problem0h_global.h
+HEADERS += problem0h_global.h \
+    testwaveequation.h
 
 #HEADERS += problem0h_common.h
 #SOURCES += problem0h_common.cpp
 
 HEADERS += problem0h_solver.h
-SOURCES += problem0h_solver.cpp
+SOURCES += problem0h_solver.cpp \
+    testwaveequation.cpp
 
 #HEADERS += problem2h_exporter.h
 #SOURCES += problem2h_exporter.cpp

@@ -314,8 +314,9 @@ auto Problem0HFunctional::gradient(const DoubleVector &x, DoubleVector &g) const
 
 auto Problem0HForward::layerInfo(const DoubleMatrix &u, unsigned int ln) const -> void
 {
-    calculateU1U2(u, ln);
+    //calculateU1U2(u, ln);
     //saveToExcel(u, ln);
+    saveToImage(u, ln);
     //if (ln%2 == 0) printf("%4d min: %8.6f max: %8.6f\n", ln, u.min(), u.max());
 }
 
@@ -439,6 +440,30 @@ auto Problem0HForward::saveToExcel(const DoubleMatrix &u UNUSED_PARAM, unsigned 
     //        chartsheet_set_chart(chartsheet, chart);
     //        workbook_close(workbook);
     //    }
+}
+
+auto Problem0HForward::saveToImage(const DoubleMatrix &u, unsigned int ln) const -> void
+{
+//    const Dimension &time = Problem0HForward::timeDimension();
+    const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
+    const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
+//    const unsigned int L = static_cast<unsigned int>(time.size());
+    const unsigned int N = static_cast<unsigned int>(dimX.size());
+    const unsigned int M = static_cast<unsigned int>(dimY.size());
+//    const double ht = time.step();
+//    const double hx = dimX.step();
+//    const double hy = dimY.step();
+
+    //QString filename1 = QString("data/problem0H/b/txt/b_%1.txt").arg(ln, 4, 10, QChar('0'));
+    //IPrinter::print(p,filename1.toLatin1().data());
+    //IPrinter::printSeperatorLine();
+    //printf("Forward: %4d %0.3f %10.8f %10.8f %4d %4d\n", ln, ln*0.005, u.min(), u.max(), 0, 0);
+
+    QString filename2 = QString("data/problem0H/c/png/b_%1.png").arg(ln, 4, 10, QChar('0'));
+    QPixmap pixmap;
+    visualizeMatrixHeat(u, u.min(), u.max(), pixmap, N+1, M+1);
+    pixmap.save(filename2);
+    IPrinter::printSeperatorLine();
 }
 
 //--------------------------------------------------------------------------------------------------------------//
