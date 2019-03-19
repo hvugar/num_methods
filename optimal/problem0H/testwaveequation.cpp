@@ -31,9 +31,8 @@ double TestWaveEquation::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 double TestWaveEquation::initial(const SpaceNodePDE &sn, InitialCondition condition) const
 {
     TimeNodePDE tn; tn.t = 0.0; tn.i = 0;
-    if (condition == InitialCondition::InitialValue) { return U(sn, tn); }
+    if (condition == InitialCondition::InitialValue)    { return U(sn, tn); }
     if (condition == InitialCondition::FirstDerivative) { return -alpha3*U(sn, tn); }
-
     throw std::exception();
 }
 
@@ -45,14 +44,17 @@ double TestWaveEquation::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn)
 double TestWaveEquation::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     double _u = U(sn, tn);
-    return (alpha3*alpha3 - _dissipation*alpha3
-            - _waveSpeed*_waveSpeed * ( 4.0*alpha2*alpha2*((sn.x-p1.x)*(sn.x-p1.x) - 2.0*alpha2) )
-            - _waveSpeed*_waveSpeed * ( 4.0*alpha2*alpha2*((sn.y-p1.y)*(sn.y-p1.y) - 2.0*alpha2) )) *_u;
+    return ( alpha3*alpha3 - _dissipation*alpha3 - _waveSpeed*_waveSpeed *
+               (
+                 ( 4.0*alpha2*alpha2*(sn.x-p1.x)*(sn.x-p1.x) - 2.0*alpha2) +
+                 ( 4.0*alpha2*alpha2*(sn.y-p1.y)*(sn.y-p1.y) - 2.0*alpha2)
+               )
+           ) * _u;
 }
 
 void TestWaveEquation::layerInfo(const DoubleMatrix &u, unsigned int ln) const
 {
-    //saveToImage(u, ln);
+    saveToImage(u, ln);
 
     const Dimension &time = timeDimension();
     const unsigned int L = static_cast<unsigned int>(time.size());
@@ -128,7 +130,7 @@ auto TestWaveEquation::saveToImage(const DoubleMatrix &u, unsigned int ln) const
     //IPrinter::printSeperatorLine();
     //printf("Forward: %4d %0.3f %10.8f %10.8f %4d %4d\n", ln, ln*0.005, u.min(), u.max(), 0, 0);
 
-    QString filename2 = QString("data/problem0H/c/png/b_%1.png").arg(ln, 4, 10, QChar('0'));
+    QString filename2 = QString("data/problem0H/c/png/c_%1.png").arg(ln, 4, 10, QChar('0'));
     QPixmap pixmap;
     visualizeMatrixHeat(u, u.min(), u.max(), pixmap, N+1, M+1);
     pixmap.save(filename2);
