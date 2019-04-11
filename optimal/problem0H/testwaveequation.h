@@ -12,7 +12,7 @@
 class TestWaveEquation : public CdIHyperbolicIBVP
 {
 public:
-    void static Main(int agrc, char** argv);
+    void static Main(int argc, char** argv);
     double U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
     virtual void layerInfo(const DoubleMatrix &, unsigned int) const;
@@ -36,6 +36,27 @@ protected:
     SpacePoint p1;
 
     auto saveToImage(const DoubleMatrix &U, unsigned int ln) const -> void;
+};
+
+class TestWaveEquationEx1 : public IWaveEquationIBVP
+{
+public:
+    void static Main(int argc, char** argv);
+    //double U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+
+    //virtual void layerInfo(const DoubleMatrix &, unsigned int) const;
+    virtual void layerInfo(const DoubleVector &, unsigned int) const;
+
+protected:
+    virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    virtual double boundary1(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
+    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    auto saveToImage(const DoubleVector &v, unsigned int ln) const -> void;
+
+protected:
+    DoubleVector v1;
+    DoubleVector v2;
 };
 
 #endif // TESTWAVEEQUATION_H

@@ -28,7 +28,7 @@ public:
     auto distributeSigle(const SpacePoint& sp) -> void;
     auto distributeRect4(const SpacePoint& sp) -> void;
 
-    auto consentrateInPoint(const DoubleMatrix &m) const -> double;
+    auto consentrateInPoint(const DoubleMatrix &m, int v=4) const -> double;
     auto consentrateInPoint(const DoubleMatrix &m, double &dx, double &dy) const -> double;
 
     auto isCenter(const SpaceNodePDE &sn) const -> bool;

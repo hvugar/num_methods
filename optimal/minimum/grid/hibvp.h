@@ -28,24 +28,31 @@ public:
 
     virtual double waveSpeed() const;
     virtual double waveDissipation() const;
-    virtual double lambda() const;
 
     void setWaveSpeed(double waveSpeed);
     void setWaveDissipation(double waveDissipation);
-    void setLambda(double lambda);
 
-    virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
+    virtual void layerInfo(const DoubleVector &, unsigned int) const {}
 
     void implicit_calculate_D2V1() const;
+    void implicit_calculate_D1V1() const;
+
+    virtual double boundary1(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
+    { return NAN; }
+
+    void calculate() const;
 
 protected:
     void implicit_calculate_D2V1_initial(DoubleMatrix &u00, DoubleMatrix &u05, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, double ht, double a, double alpha) const;
     void implicit_calculate_D2V1_border(DoubleMatrix &u05, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn05, const TimeNodePDE &tn10) const;
 
+    void implicit_calculate_D1V1_border(DoubleVector &u20, unsigned int N, double hx, const TimeNodePDE &tn20) const;
+
+    virtual double lambda() const;
+
 protected:
     double _waveSpeed;
     double _waveDissipation;
-    double _lambda;
 };
 
 //--------------------------------------------------------------------------------------------------------------//
@@ -76,6 +83,7 @@ private:
 
 //--------------------------------------------------------------------------------------------------------------//
 
+//Damped Wave Equation
 class MINIMUMSHARED_EXPORT CdIHyperbolicIBVP : public IHyperbolicIBVP
 {
 public:

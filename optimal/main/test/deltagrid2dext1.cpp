@@ -11,22 +11,28 @@ void DeltaGrid2DExt1::Main(int argc, char **argv)
     {
         for (unsigned int n=0; n<=N; n++)
         {
-            mx[m][n] = 1.0;//ex1.fx(hx*n, hy*m);
+            mx[m][n] = ex1.fx(hx*n, hy*m);
+            //mx[m][n] = 1.0;
         }
     }
 
     DeltaGrid2D dg;
     dg.initGrid(N, hx, M, hy);
+    dg.distributeGauss(SpacePoint(0.421, 0.651), 1, 1);
     //dg.distributeGauss(SpacePoint(0.4224, 0.6538), 1, 1);
-    dg.distributeGauss(SpacePoint(0.425, 0.655), 1, 1);
 
     double dx, dy;
-    //double z = dg.consentrateInPoint(mx, dx, dy);
-    double z = dg.consentrateInPoint(mx);
+    double z = dg.consentrateInPoint(mx, dx, dy);
+    //double z = dg.consentrateInPoint(mx, 4);
 
     printf("%10.6f %10.6f %10.6f\n", ex1.fx(dg.p().x, dg.p().y), ex1.dx(dg.p().x, dg.p().y), ex1.dy(dg.p().x, dg.p().y));
-    printf("%10.6f %10.6f %10.6f\n", ex1.fx(dg.rx()*dg.hx(), dg.ry()*dg.hy()), dg.rx()*1.0, dg.ry()*1.0);
-    printf("%10.6f %10.6f %10.6f %10.6f %10.6f\n", z, dx, dy, dg.p().x, dg.p().y);
+    //printf("%10.6f %10.6f %10.6f\n", ex1.fx(dg.rx()*dg.hx(), dg.ry()*dg.hy()), dg.rx()*1.0, dg.ry()*1.0);
+    puts("---");
+    printf("%10.6f %10.6f %10.6f %10.6f %10.6f\n", dg.consentrateInPoint(mx, 1), dx, dy, dg.p().x, dg.p().y);
+    printf("%10.6f %10.6f %10.6f %10.6f %10.6f\n", dg.consentrateInPoint(mx, 2), dx, dy, dg.p().x, dg.p().y);
+    printf("%10.6f %10.6f %10.6f %10.6f %10.6f\n", dg.consentrateInPoint(mx, 0), dx, dy, dg.p().x, dg.p().y);
+    printf("%10.6f %10.6f %10.6f %10.6f %10.6f\n", dg.consentrateInPoint(mx, 3), dx, dy, dg.p().x, dg.p().y);
+    printf("%10.6f %10.6f %10.6f %10.6f %10.6f\n", dg.consentrateInPoint(mx, 4), dx, dy, dg.p().x, dg.p().y);
 }
 
 double DeltaGrid2DExt1::fx(double x, double y) const

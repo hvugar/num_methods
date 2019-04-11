@@ -96,4 +96,12 @@ protected:
     int _max;
 };
 
+class BoundaryConditionPDE
+{
+public:
+    BoundaryCondition type;
+    double coefficientValue;
+    double coefficientDerivative;
+};
+
 #endif // GRID_H
