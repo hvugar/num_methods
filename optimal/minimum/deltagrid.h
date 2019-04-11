@@ -51,6 +51,9 @@ public:
     auto minY() const -> unsigned int;
     auto maxY() const -> unsigned int;
 
+    auto hx() const -> double;
+    auto hy() const -> double;
+
     double **nodes() { return m_nodes; }
     double **nodes() const { return m_nodes; }
 

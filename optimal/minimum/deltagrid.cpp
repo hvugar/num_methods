@@ -49,15 +49,26 @@ auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned int sigmaXNum, 
     _minY = _ry - ky; _maxY = _ry + ky;
 
     double sumX = 0.0;
-    for (unsigned int n=_minX; n<=_maxX; n++) sumX += exp(-((n*_hx-sp.x)*(n*_hx-sp.x))/(2.0*sigmaX*sigmaX));
+    for (unsigned int n=_minX; n<=_maxX; n++)
+    {
+        double k = 1.0;
+        if (n==_minX || n==_maxX) k = 0.5;
+        sumX += k * exp(-((n*_hx-sp.x)*(n*_hx-sp.x))/(2.0*sigmaX*sigmaX));
+    }
     sumX *= _hx;
 
     double sumY = 0.0;
-    for (unsigned int m=_minY; m<=_maxY; m++) sumY += exp(-((m*_hy-sp.y)*(m*_hy-sp.y))/(2.0*sigmaY*sigmaY));
+    for (unsigned int m=_minY; m<=_maxY; m++)
+    {
+        double k = 1.0;
+        if (m==_minY || m==_maxY) k = 0.5;
+        sumY += k * exp(-((m*_hy-sp.y)*(m*_hy-sp.y))/(2.0*sigmaY*sigmaY));
+    }
     sumY *= _hy;
 
     double sigma = (sumX*sumY) / (2.0*M_PI);
     double factor = 1.0/(2.0*M_PI*sigma);
+//    double factor = 1.0/(2.0*M_PI*sigmaX*sigmaY);
 
     for (unsigned int m=0; m<=_M; m++)
     {
@@ -98,7 +109,9 @@ auto DeltaGrid2D::distributeRect4(const SpacePoint&) -> void
 
 auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u) const -> double
 {
-//    double pu = 0.0;
+    double pu = 0.0;
+
+//    printf("%d %d %d %d %d %d\n", minY(), maxY(), minX(), maxX(), rx(), ry());
 //    for (unsigned int m=minY(); m<=maxY(); m++)
 //    {
 //        for (unsigned int n=minX(); n<=maxX(); n++)
@@ -108,7 +121,23 @@ auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u) const -> double
 //    }
 //    return pu;
 
-//    double pu = 0.0;
+    double k1,k2;
+    for (unsigned int m=minY(); m<=maxY(); m++)
+    {
+        if (m == minY() || m == maxY()) k1 = 0.5; else k1 = 1.0;
+
+        for (unsigned int n=minX(); n<=maxX(); n++)
+        {
+            if (n == minX() || n == maxX()) k2 = 0.5; else k2 = 1.0;
+
+            //printf("%d %d %f %f %f\n", m, n, k1, k2, k1*k2);
+
+            pu += k1 * k2 * u[m][n] * weight(n,m) * _hx * _hy;
+        }
+    }
+    return pu;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //    const unsigned int rx = static_cast<unsigned int>(_rx);
 //    const unsigned int ry = static_cast<unsigned int>(_ry);
 //    const double px = p().x;
@@ -126,29 +155,29 @@ auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u) const -> double
 //                                                   (((py-y0)*(py-y1))/((y2-y0)*(y2-y1)))*u[ry+1][rx+1] );
 //    return pu;
 
-    double pu = 0.0;
-    const unsigned int rx = static_cast<unsigned int>(_rx);
-    const unsigned int ry = static_cast<unsigned int>(_ry);
-    const double px = p().x;
-    const double py = p().y;
-    double x0, x1, x2, x3; x0 = (rx-1)*_hx; x1 = rx*_hx; x2 = (rx+1)*_hx; x3 = (rx+2)*_hx;
-    double y0, y1, y2, y3; y0 = (ry-1)*_hy; y1 = ry*_hy; y2 = (ry+1)*_hy; y3 = (ry+2)*_hy;
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//    const unsigned int rx = static_cast<unsigned int>(_rx);
+//    const unsigned int ry = static_cast<unsigned int>(_ry);
+//    const double px = p().x;
+//    const double py = p().y;
+//    double x0, x1, x2, x3; x0 = (rx-1)*_hx; x1 = rx*_hx; x2 = (rx+1)*_hx; x3 = (rx+2)*_hx;
+//    double y0, y1, y2, y3; y0 = (ry-1)*_hy; y1 = ry*_hy; y2 = (ry+1)*_hy; y3 = (ry+2)*_hy;
 
-    double Lx0 = (px-x1)*(px-x2)*(px-x3); double L00 = (x0-x1)*(x0-x2)*(x0-x3);
-    double Lx1 = (px-x0)*(px-x2)*(px-x3); double L11 = (x1-x0)*(x1-x2)*(x1-x3);
-    double Lx2 = (px-x0)*(px-x1)*(px-x3); double L22 = (x2-x0)*(x2-x1)*(x2-x3);
-    double Lx3 = (px-x0)*(px-x1)*(px-x2); double L33 = (x3-x0)*(x3-x1)*(x3-x2);
+//    double Lx0 = (px-x1)*(px-x2)*(px-x3); double L00 = (x0-x1)*(x0-x2)*(x0-x3);
+//    double Lx1 = (px-x0)*(px-x2)*(px-x3); double L11 = (x1-x0)*(x1-x2)*(x1-x3);
+//    double Lx2 = (px-x0)*(px-x1)*(px-x3); double L22 = (x2-x0)*(x2-x1)*(x2-x3);
+//    double Lx3 = (px-x0)*(px-x1)*(px-x2); double L33 = (x3-x0)*(x3-x1)*(x3-x2);
 
-    double Ry0 = (py-y1)*(py-y2)*(py-y3); double R00 = (y0-y1)*(y0-y2)*(y0-y3);
-    double Ry1 = (py-y0)*(py-y2)*(py-y3); double R11 = (y1-y0)*(y1-y2)*(y1-y3);
-    double Ry2 = (py-y0)*(py-y1)*(py-y3); double R22 = (y2-y0)*(y2-y1)*(y2-y3);
-    double Ry3 = (py-y0)*(py-y1)*(py-y2); double R33 = (y3-y0)*(y3-y1)*(y3-y2);
+//    double Ry0 = (py-y1)*(py-y2)*(py-y3); double R00 = (y0-y1)*(y0-y2)*(y0-y3);
+//    double Ry1 = (py-y0)*(py-y2)*(py-y3); double R11 = (y1-y0)*(y1-y2)*(y1-y3);
+//    double Ry2 = (py-y0)*(py-y1)*(py-y3); double R22 = (y2-y0)*(y2-y1)*(y2-y3);
+//    double Ry3 = (py-y0)*(py-y1)*(py-y2); double R33 = (y3-y0)*(y3-y1)*(y3-y2);
 
-    pu = (Lx0/L00) * ( (Ry0/R00)*u[ry-1][rx-1] + (Ry1/R11)*u[ry+0][rx-1] + (Ry2/R22)*u[ry+1][rx-1] + (Ry3/R33)*u[ry+2][rx-1] )
-       + (Lx1/L11) * ( (Ry0/R00)*u[ry-1][rx+0] + (Ry1/R11)*u[ry+0][rx+0] + (Ry2/R22)*u[ry+1][rx+0] + (Ry3/R33)*u[ry+2][rx+0] )
-       + (Lx2/L22) * ( (Ry0/R00)*u[ry-1][rx+1] + (Ry1/R11)*u[ry+0][rx+1] + (Ry2/R22)*u[ry+1][rx+1] + (Ry3/R33)*u[ry+2][rx+1] )
-       + (Lx3/L33) * ( (Ry0/R00)*u[ry-1][rx+2] + (Ry1/R11)*u[ry+0][rx+2] + (Ry2/R22)*u[ry+1][rx+2] + (Ry3/R33)*u[ry+2][rx+2] );
-    return pu;
+//    pu = (Lx0/L00) * ( (Ry0/R00)*u[ry-1][rx-1] + (Ry1/R11)*u[ry+0][rx-1] + (Ry2/R22)*u[ry+1][rx-1] + (Ry3/R33)*u[ry+2][rx-1] )
+//       + (Lx1/L11) * ( (Ry0/R00)*u[ry-1][rx+0] + (Ry1/R11)*u[ry+0][rx+0] + (Ry2/R22)*u[ry+1][rx+0] + (Ry3/R33)*u[ry+2][rx+0] )
+//       + (Lx2/L22) * ( (Ry0/R00)*u[ry-1][rx+1] + (Ry1/R11)*u[ry+0][rx+1] + (Ry2/R22)*u[ry+1][rx+1] + (Ry3/R33)*u[ry+2][rx+1] )
+//       + (Lx3/L33) * ( (Ry0/R00)*u[ry-1][rx+2] + (Ry1/R11)*u[ry+0][rx+2] + (Ry2/R22)*u[ry+1][rx+2] + (Ry3/R33)*u[ry+2][rx+2] );
+//    return pu;
 }
 
 auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, double &dx, double &dy) const -> double
@@ -280,6 +309,9 @@ auto DeltaGrid2D::minX() const -> unsigned int { return _minX; }
 auto DeltaGrid2D::maxX() const -> unsigned int { return _maxX; }
 auto DeltaGrid2D::minY() const -> unsigned int { return _minY; }
 auto DeltaGrid2D::maxY() const -> unsigned int { return _maxY; }
+
+auto DeltaGrid2D::hx() const -> double { return _hx; }
+auto DeltaGrid2D::hy() const -> double { return _hy; }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

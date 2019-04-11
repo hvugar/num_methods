@@ -40,9 +40,9 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //SecondOrderLinearODEEx1::Main(argc, argv);
     //CdIHyperbolicIBVP1::Main(argc, argv);
     //Problem0HFunctional::Main(argc, argv);
-    TestWaveEquation::Main(argc, argv);
+    //TestWaveEquation::Main(argc, argv);
 
-    //DeltaGrid2DExt1::Main(argc, argv);
+    DeltaGrid2DExt1::Main(argc, argv);
 
     //return 0;
 
