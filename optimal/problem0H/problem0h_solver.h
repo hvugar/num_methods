@@ -40,7 +40,7 @@ protected:
     double gamma = 0.0;
 
     double epsilon1 = 1.0;
-    double epsilon2 = 1.0;
+    double epsilon2 = 0.0;
 
     double alpha1 = 1.0;
     double alpha2 = 1.0;
@@ -95,6 +95,11 @@ protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+
+
+private:
+    auto saveForwardInformarion(const DoubleMatrix &p, unsigned int ln) const -> void;
+    auto saveToImage(const DoubleMatrix &p, unsigned int ln) const -> void;
 };
 
 //--------------------------------------------------------------------------------------------------------------//

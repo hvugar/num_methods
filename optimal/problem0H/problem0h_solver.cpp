@@ -13,6 +13,8 @@ void Problem0HFunctional::Main(int argc, char **argv)
     functional.a = 1.0;
     functional.gamma = 0.0;
     functional.source_number = 2;
+    functional.epsilon1 = 1.0;
+    functional.epsilon2 = 1.0;
     functional.setDimension(Dimension(ht, 0, static_cast<int>(L)),
                             Dimension(hx, 0, static_cast<int>(N)),
                             Dimension(hy, 0, static_cast<int>(M)));
@@ -22,19 +24,16 @@ void Problem0HFunctional::Main(int argc, char **argv)
     DoubleVector x;
     functional.parameterToVector(x);
 
-    unsigned int start1 = 0;
-    unsigned int finish1 = 2*L;
-    unsigned int start2 = 2*L+1;
-    unsigned int finish2 = 2*L+1+2*L;
-    unsigned int start3 = 2*L+1+2*L+1;
-    unsigned int finish3 = 2*L+1+2*L+4;
+    unsigned int start1 = 0*(2*L+1); unsigned int finish1 = 0*(2*L+1)+2*L;
+    unsigned int start2 = 1*(2*L+1); unsigned int finish2 = 1*(2*L+1)+2*L;
+    unsigned int start3 = 2*(2*L+1); unsigned int finish3 = 2*(2*L+1)+3;
 
     DoubleVector ga;
     functional.gradient(x, ga);
-    IPrinter::printVector(ga.mid(start1, finish1).EuclideanNormalize());
-    IPrinter::printVector(ga.mid(start2, finish2).EuclideanNormalize());
+    //IPrinter::printVector(ga.mid(start1, finish1).EuclideanNormalize());
+    //IPrinter::printVector(ga.mid(start2, finish2).EuclideanNormalize());
     IPrinter::print(ga.mid(start3, finish3).EuclideanNormalize(), 4);
-    IPrinter::printSeperatorLine();
+    //IPrinter::printSeperatorLine();
 
     DoubleVector gn;
     gn.resize(x.length());
@@ -51,8 +50,8 @@ void Problem0HFunctional::Main(int argc, char **argv)
         gn[sn*length+length-1] = 0.0;
     }
 
-    IPrinter::printVector(gn.mid(start1, finish1).EuclideanNormalize());
-    IPrinter::printVector(gn.mid(start2, finish2).EuclideanNormalize());
+//    IPrinter::printVector(gn.mid(start1, finish1).EuclideanNormalize());
+//    IPrinter::printVector(gn.mid(start2, finish2).EuclideanNormalize());
     IPrinter::print(gn.mid(start3, finish3).EuclideanNormalize(), 4);
     IPrinter::printSeperatorLine();
 
@@ -136,8 +135,8 @@ auto Problem0HFunctional::fx(const DoubleVector &x) const -> double
     DoubleMatrix u;
     Problem0HForward::implicit_calculate_D2V1(u, a, gamma);
     double sum = 0.0;
-    sum = sum + epsilon1 * integral1(Problem0HForward::u1);
-    sum = sum + epsilon2 * integral2(Problem0HForward::u2);
+    sum += epsilon1 * integral1(Problem0HForward::u1);
+    sum += epsilon2 * integral2(Problem0HForward::u2);
     //sum += norm();
     //sum += penalty();
     return sum;
@@ -314,9 +313,9 @@ auto Problem0HFunctional::gradient(const DoubleVector &x, DoubleVector &g) const
 
 auto Problem0HForward::layerInfo(const DoubleMatrix &u, unsigned int ln) const -> void
 {
-    //calculateU1U2(u, ln);
+    calculateU1U2(u, ln);
     //saveToExcel(u, ln);
-    saveToImage(u, ln);
+    //saveToImage(u, ln);
     //if (ln%2 == 0) printf("%4d min: %8.6f max: %8.6f\n", ln, u.min(), u.max());
 }
 
@@ -364,23 +363,70 @@ auto Problem0HForward::calculateU1U2(const DoubleMatrix &u, unsigned int ln) con
     Problem0HForward *forward = const_cast<Problem0HForward*>(this);
     if (ln == 2*(L-0)) { forward->u1 = u; }
 
-    //if (ln == 2*(L-2)) { forward->u2  = -1.0*u; }
-    //if (ln == 2*(L-0)) { forward->u2 += +1.0*u; forward->u2 *= (0.5/ht); }
+    if (ln == 2*(L-2)) { /*printf("ln: %d\n", ln);*/ forward->u2 *= +0.0; /*IPrinter::printMatrix(u2);*/}
+    if (ln == 2*(L-1)) { /*printf("ln: %d\n", ln);*/ forward->u2  = -1.0*u; /*IPrinter::printMatrix(u2);*/ }
+    if (ln == 2*(L-0)) { forward->u2 += +1.0*u; forward->u2 *= (1.0/ht); /*IPrinter::printMatrix(u2);*/ }
 
-//    if (ln == 2*(L-2)) { forward->u2  = +1.0*u; }
-//    if (ln == 2*(L-1)) { forward->u2 += -4.0*u; }
-//    if (ln == 2*(L-0)) { forward->u2 += +3.0*u; forward->u2 *= 1.0/(2.0*ht); IPrinter::printMatrix(u2); }
+    const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
+    const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
+    const unsigned int N = static_cast<unsigned int>(dimX.size());
+    const unsigned int M = static_cast<unsigned int>(dimY.size());
 
-//    if (ln == 2*(L-3)) { forward->u2  = -2.0*u; }
-//    if (ln == 2*(L-2)) { forward->u2 += +9.0*u; }
-//    if (ln == 2*(L-1)) { forward->u2 += -18.0*u; }
-//    if (ln == 2*(L-0)) { forward->u2 += +11.0*u; forward->u2 *= +(1.0/(6.0*ht)); IPrinter::printMatrix(u2); }
+    if (ln == 2*(L-2))
+    {
+        //forward->u2 *= +0.0; /*IPrinter::printMatrix(u2);*/
+    }
+    if (ln == 2*(L-1))
+    {
+        for (unsigned int m=0; m<=M; m++)
+        {
+            for (unsigned int n=0; n<=N; n++)
+            {
+                forward->u2[m][n] = -u[m][n];
+            }
+        }
 
-    if (ln == 2*(L-4)) { forward->u2  = +3.0*u; }
-    if (ln == 2*(L-3)) { forward->u2 += -16.0*u; }
-    if (ln == 2*(L-2)) { forward->u2 += +36.0*u; }
-    if (ln == 2*(L-1)) { forward->u2 += -48.0*u; }
-    if (ln == 2*(L-0)) { forward->u2 += +25.0*u; forward->u2 *= +(1.0/(12.0*ht)); /*IPrinter::printMatrix(u2);*/ }
+        ///*printf("ln: %d\n", ln);*/ forward->u2  = -1.0*u; /*IPrinter::printMatrix(u2);*/
+    }
+    if (ln == 2*(L-0))
+    {
+        for (unsigned int m=0; m<=M; m++)
+        {
+            for (unsigned int n=0; n<=N; n++)
+            {
+                forward->u2[m][n] += u[m][n];
+            }
+        }
+
+        for (unsigned int m=0; m<=M; m++)
+        {
+            for (unsigned int n=0; n<=N; n++)
+            {
+                forward->u2[m][n] *= (1.0/ht);
+            }
+        }
+
+        //forward->u2 += +1.0*u; forward->u2 *= (1.0/ht); /*IPrinter::printMatrix(u2);*/
+    }
+
+
+//    if (ln == 2*(L-2)) { forward->u2  = -1.0*u; }
+//    if (ln == 2*(L-0)) { forward->u2 += +1.0*u; forward->u2 *= (0.5/ht); }
+
+    //    if (ln == 2*(L-2)) { forward->u2  = +1.0*u; }
+    //    if (ln == 2*(L-1)) { forward->u2 += -4.0*u; }
+    //    if (ln == 2*(L-0)) { forward->u2 += +3.0*u; forward->u2 *= 1.0/(2.0*ht); IPrinter::printMatrix(u2); }
+
+    //    if (ln == 2*(L-3)) { forward->u2  = -2.0*u; }
+    //    if (ln == 2*(L-2)) { forward->u2 += +9.0*u; }
+    //    if (ln == 2*(L-1)) { forward->u2 += -18.0*u; }
+    //    if (ln == 2*(L-0)) { forward->u2 += +11.0*u; forward->u2 *= +(1.0/(6.0*ht)); IPrinter::printMatrix(u2); }
+
+//    if (ln == 2*(L-4)) { forward->u2  = +3.0*u; }
+//    if (ln == 2*(L-3)) { forward->u2 += -16.0*u; }
+//    if (ln == 2*(L-2)) { forward->u2 += +36.0*u; }
+//    if (ln == 2*(L-1)) { forward->u2 += -48.0*u; }
+//    if (ln == 2*(L-0)) { forward->u2 += +25.0*u; forward->u2 *= +(1.0/(12.0*ht)); /*IPrinter::printMatrix(u2);*/ }
 }
 
 auto Problem0HForward::saveToExcel(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
@@ -444,58 +490,34 @@ auto Problem0HForward::saveToExcel(const DoubleMatrix &u UNUSED_PARAM, unsigned 
 
 auto Problem0HForward::saveToImage(const DoubleMatrix &u, unsigned int ln) const -> void
 {
-//    const Dimension &time = Problem0HForward::timeDimension();
+    //const Dimension &time = Problem0HForward::timeDimension();
     const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
     const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
-//    const unsigned int L = static_cast<unsigned int>(time.size());
+    //const unsigned int L = static_cast<unsigned int>(time.size());
     const unsigned int N = static_cast<unsigned int>(dimX.size());
     const unsigned int M = static_cast<unsigned int>(dimY.size());
-//    const double ht = time.step();
-//    const double hx = dimX.step();
-//    const double hy = dimY.step();
+    //const double ht = time.step();
+    //const double hx = dimX.step();
+    //const double hy = dimY.step();
 
     //QString filename1 = QString("data/problem0H/b/txt/b_%1.txt").arg(ln, 4, 10, QChar('0'));
     //IPrinter::print(p,filename1.toLatin1().data());
     //IPrinter::printSeperatorLine();
     //printf("Forward: %4d %0.3f %10.8f %10.8f %4d %4d\n", ln, ln*0.005, u.min(), u.max(), 0, 0);
 
-    QString filename2 = QString("data/problem0H/c/png/b_%1.png").arg(ln, 4, 10, QChar('0'));
+    QString filename2 = QString("data/problem0H/c/png/f_%1.png").arg(ln, 4, 10, QChar('0'));
     QPixmap pixmap;
     visualizeMatrixHeat(u, u.min(), u.max(), pixmap, N+1, M+1);
     pixmap.save(filename2);
-    IPrinter::printSeperatorLine();
+    //IPrinter::printSeperatorLine();
 }
 
 //--------------------------------------------------------------------------------------------------------------//
 
 auto Problem0HBckward::layerInfo(const DoubleMatrix &p, unsigned int ln) const -> void
 {
-    Problem0HBckward* const_this = const_cast<Problem0HBckward*>(this);
-
-    for (unsigned int sn=0; sn<source_number; sn++)
-    {
-        double psi_dx, psi_dy;
-        double psi_vl = optimalParameters[sn].deltaGrid.consentrateInPoint(p, psi_dx, psi_dy);
-        const_this->optimalParameters[sn].psi_vl[ln] = psi_vl;
-        const_this->optimalParameters[sn].psi_dx[ln] = psi_dx;
-        const_this->optimalParameters[sn].psi_dy[ln] = psi_dy;
-
-        //IPrinter::printSeperatorLine(std::to_string(ln).data());
-        //IPrinter::printMatrix(p);
-    }
-
-    //IPrinter::printMatrix(p);
-    //IPrinter::printSeperatorLine();
-
-    //QString filename1 = QString("data/problem0H/b/txt/b_%1.txt").arg(ln, 4, 10, QChar('0'));
-    //IPrinter::print(p,filename1.toLatin1().data());
-    //IPrinter::printSeperatorLine();
-    //printf("Forward: %4d %0.3f %10.8f %10.8f %4d %4d\n", ln, ln*0.005, u.min(), u.max(), 0, 0);
-    //QString filename2 = QString("data/problem0H/b/png/b_%1.png").arg(ln, 4, 10, QChar('0'));
-    //QPixmap pixmap;
-    //visualizeMatrixHeat(p, p.min(), p.max(), pixmap, 201, 201);
-    //pixmap.save(filename2);
-    //IPrinter::printSeperatorLine();
+    saveForwardInformarion(p, ln);
+    //saveToImage(p, ln);
 }
 
 auto Problem0HBckward::initial(const SpaceNodePDE &sn, InitialCondition condition) const -> double
@@ -512,6 +534,44 @@ auto Problem0HBckward::initial(const SpaceNodePDE &sn, InitialCondition conditio
 auto Problem0HBckward::boundary(const SpaceNodePDE&, const TimeNodePDE&) const -> double { return 0.0; }
 
 auto Problem0HBckward::f(const SpaceNodePDE&, const TimeNodePDE&) const -> double { return 0.0; }
+
+auto Problem0HBckward::saveForwardInformarion(const DoubleMatrix &p, unsigned int ln) const -> void
+{
+    Problem0HBckward* const_this = const_cast<Problem0HBckward*>(this);
+
+    for (unsigned int sn=0; sn<source_number; sn++)
+    {
+        double psi_dx, psi_dy;
+        double psi_vl = optimalParameters[sn].deltaGrid.consentrateInPoint(p, psi_dx, psi_dy, 5);
+        const_this->optimalParameters[sn].psi_vl[ln] = psi_vl;
+        const_this->optimalParameters[sn].psi_dx[ln] = psi_dx;
+        const_this->optimalParameters[sn].psi_dy[ln] = psi_dy;
+    }
+}
+
+auto Problem0HBckward::saveToImage(const DoubleMatrix &p, unsigned int ln) const -> void
+{
+    //const Dimension &time = Problem0HBckward::timeDimension();
+    const Dimension &dimX = Problem0HBckward::spaceDimension(Dimension::DimensionX);
+    const Dimension &dimY = Problem0HBckward::spaceDimension(Dimension::DimensionY);
+    //const unsigned int L = static_cast<unsigned int>(time.size());
+    const unsigned int N = static_cast<unsigned int>(dimX.size());
+    const unsigned int M = static_cast<unsigned int>(dimY.size());
+    //const double ht = time.step();
+    //const double hx = dimX.step();
+    //const double hy = dimY.step();
+
+    //QString filename1 = QString("data/problem0H/b/txt/b_%1.txt").arg(ln, 4, 10, QChar('0'));
+    //IPrinter::print(p,filename1.toLatin1().data());
+    //IPrinter::printSeperatorLine();
+    //printf("Forward: %4d %0.3f %10.8f %10.8f %4d %4d\n", ln, ln*0.005, u.min(), u.max(), 0, 0);
+
+    QString filename2 = QString("data/problem0H/c/png/b_%1.png").arg(ln, 4, 10, QChar('0'));
+    QPixmap pixmap;
+    visualizeMatrixHeat(p, p.min(), p.max(), pixmap, N+1, M+1);
+    pixmap.save(filename2);
+    //IPrinter::printSeperatorLine();
+}
 
 //--------------------------------------------------------------------------------------------------------------//
 

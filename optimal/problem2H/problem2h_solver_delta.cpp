@@ -1722,7 +1722,7 @@ auto Problem2HDirichletDelta::add2Info(const DoubleMatrix &u, spif_vectorH &info
     {
         const DeltaGrid2D &deltagrid = deltaList[i];
         SpacePointInfoH &ui = info[i];
-        ui.vl[ln] = deltagrid.consentrateInPoint(u, ui.dx[ln], ui.dy[ln]);
+        ui.vl[ln] = deltagrid.consentrateInPoint(u, ui.dx[ln], ui.dy[ln], 5);
     }
 }
 

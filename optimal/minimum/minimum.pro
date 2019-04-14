@@ -68,7 +68,8 @@ SOURCES += \
     ode/nlode2o.cpp \
     vectornormalizer.cpp \
     benchmark.cpp \
-    deltagrid.cpp
+    deltagrid.cpp \
+    interpolation.cpp
 
 HEADERS += global.h \
     cmatrix.h \
@@ -120,4 +121,5 @@ HEADERS += global.h \
     ode/nlode2o.h \
     vectornormalizer.h \
     benchmark.h \
-    deltagrid.h
+    deltagrid.h \
+    interpolation.h

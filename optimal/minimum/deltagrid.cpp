@@ -107,7 +107,7 @@ auto DeltaGrid2D::distributeSigle(const SpacePoint& sp) -> void
 auto DeltaGrid2D::distributeRect4(const SpacePoint&) -> void
 {}
 
-auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, int v) const -> double
+auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, unsigned int v) const -> double
 {
     double pu = 0.0;
 
@@ -138,7 +138,35 @@ auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, int v) const -> doub
         return pu;
     }
 
-    if (v==0)
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    if (v==3)
+    {
+        //const unsigned int rx = static_cast<unsigned int>(_rx);
+        //const unsigned int ry = static_cast<unsigned int>(_ry);
+        const double px = p().x;
+        const double py = p().y;
+        const unsigned int rx = static_cast<unsigned int>(floor(px/_hx));
+        const unsigned int ry = static_cast<unsigned int>(floor(py/_hy));
+        const double x0 = static_cast<double>(rx+0)*_hx;
+        const double x1 = static_cast<double>(rx+1)*_hx;
+        const double y0 = static_cast<double>(ry+0)*_hy;
+        const double y1 = static_cast<double>(ry+1)*_hy;
+
+        const double Lx0 = (px-x1); const double Lx00 = (x0-x1);
+        const double Lx1 = (px-x0); const double Lx11 = (x1-x0);
+
+        const double Ly0 = (py-y1); const double Ly00 = (y0-y1);
+        const double Ly1 = (py-y0); const double Ly11 = (y1-y0);
+
+        pu = 0.0;
+        pu += (Ly0/Ly00) * ( (Lx0/Lx00)*u[ry+0][rx+0] + (Lx1/Lx11)*u[ry+0][rx+1] );
+        pu += (Ly1/Ly11) * ( (Lx0/Lx00)*u[ry+1][rx+0] + (Lx1/Lx11)*u[ry+1][rx+1] );
+        return pu;
+    }
+
+
+    if (v==31)
     {
         const unsigned int rx = static_cast<unsigned int>(_rx);
         const unsigned int ry = static_cast<unsigned int>(_ry);
@@ -147,18 +175,51 @@ auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, int v) const -> doub
         double x0, x1; x0 = rx*_hx; x1 = (rx+1)*_hx;
         double y0, y1; y0 = ry*_hy; y1 = (ry+1)*_hy;
 
-        double Lx0 = (px-x1); double L00 = (x0-x1);
-        double Lx1 = (px-x0); double L11 = (x1-x0);
+        double Lx0 = (px-x1); double Lx00 = (x0-x1);
+        double Lx1 = (px-x0); double Lx11 = (x1-x0);
 
-        double Ry0 = (py-y1); double R00 = (y0-y1);
-        double Ry1 = (py-y0); double R11 = (y1-y0);
+        double Ly0 = (py-y1); double Ly00 = (y0-y1);
+        double Ly1 = (py-y0); double Ly11 = (y1-y0);
 
-        pu = (Lx0/L00) * ( (Ry0/R00)*u[ry+0][rx+0] + (Ry1/R11)*u[ry+1][rx+0] )
-                + (Lx1/L11) * ( (Ry0/R00)*u[ry+0][rx+1] + (Ry1/R11)*u[ry+1][rx+1] );
+        pu = 0.0;
+        pu += (Lx0/Lx00) * ( (Ly0/Ly00)*u[ry+0][rx+0] + (Ly1/Ly11)*u[ry+1][rx+0] );
+        pu += (Lx1/Lx11) * ( (Ly0/Ly00)*u[ry+0][rx+1] + (Ly1/Ly11)*u[ry+1][rx+1] );
         return pu;
     }
 
-    if (v==3)
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    if (v==4)
+    {
+        //const unsigned int rx = static_cast<unsigned int>(_rx);
+        //const unsigned int ry = static_cast<unsigned int>(_ry);
+        const double px = p().x;
+        const double py = p().y;
+        const unsigned int rx = static_cast<unsigned int>(round(px/_hx));
+        const unsigned int ry = static_cast<unsigned int>(round(py/_hy));
+        const double x0 = static_cast<double>(rx-1)*_hx;
+        const double x1 = static_cast<double>(rx+0)*_hx;
+        const double x2 = static_cast<double>(rx+1)*_hx;
+        const double y0 = static_cast<double>(ry-1)*_hy;
+        const double y1 = static_cast<double>(ry+0)*_hy;
+        const double y2 = static_cast<double>(ry+1)*_hy;
+
+        const double Lx0 = (px-x1)*(px-x2); const double Lx00 = (x0-x1)*(x0-x2);
+        const double Lx1 = (px-x0)*(px-x2); const double Lx11 = (x1-x0)*(x1-x2);
+        const double Lx2 = (px-x0)*(px-x1); const double Lx22 = (x2-x0)*(x2-x1);
+
+        const double Ly0 = (py-y1)*(py-y2); const double Ly00 = (y0-y1)*(y0-y2);
+        const double Ly1 = (py-y0)*(py-y2); const double Ly11 = (y1-y0)*(y1-y2);
+        const double Ly2 = (py-y0)*(py-y1); const double Ly22 = (y2-y0)*(y2-y1);
+
+        pu = 0.0;
+        pu += (Ly0/Ly00) * ( (Lx0/Lx00)*u[ry-1][rx-1] + (Lx1/Lx11)*u[ry-1][rx+0] + (Lx2/Lx22)*u[ry-1][rx+1] );
+        pu += (Ly1/Ly11) * ( (Lx0/Lx00)*u[ry+0][rx-1] + (Lx1/Lx11)*u[ry+0][rx+0] + (Lx2/Lx22)*u[ry+0][rx+1] );
+        pu += (Ly2/Ly22) * ( (Lx0/Lx00)*u[ry+1][rx-1] + (Lx1/Lx11)*u[ry+1][rx+0] + (Lx2/Lx22)*u[ry+1][rx+1] );
+        return pu;
+    }
+
+    if (v==41)
     {
         const unsigned int rx = static_cast<unsigned int>(_rx);
         const unsigned int ry = static_cast<unsigned int>(_ry);
@@ -167,21 +228,59 @@ auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, int v) const -> doub
         double x0, x1, x2; x0 = (rx-1)*_hx; x1 = rx*_hx; x2 = (rx+1)*_hx;
         double y0, y1, y2; y0 = (ry-1)*_hy; y1 = ry*_hy; y2 = (ry+1)*_hy;
 
-        double Lx0 = (px-x1)*(px-x2); double L00 = (x0-x1)*(x0-x2);
-        double Lx1 = (px-x0)*(px-x2); double L11 = (x1-x0)*(x1-x2);
-        double Lx2 = (px-x0)*(px-x1); double L22 = (x2-x0)*(x2-x1);
+        double Lx0 = (px-x1)*(px-x2); double Lx00 = (x0-x1)*(x0-x2);
+        double Lx1 = (px-x0)*(px-x2); double Lx11 = (x1-x0)*(x1-x2);
+        double Lx2 = (px-x0)*(px-x1); double Lx22 = (x2-x0)*(x2-x1);
 
-        double Ry0 = (py-y1)*(py-y2); double R00 = (y0-y1)*(y0-y2);
-        double Ry1 = (py-y0)*(py-y2); double R11 = (y1-y0)*(y1-y2);
-        double Ry2 = (py-y0)*(py-y1); double R22 = (y2-y0)*(y2-y1);
+        double Ly0 = (py-y1)*(py-y2); double Ly00 = (y0-y1)*(y0-y2);
+        double Ly1 = (py-y0)*(py-y2); double Ly11 = (y1-y0)*(y1-y2);
+        double Ly2 = (py-y0)*(py-y1); double Ly22 = (y2-y0)*(y2-y1);
 
-        pu = (Lx0/L00) * ( (Ry0/R00)*u[ry-1][rx-1] + (Ry1/R11)*u[ry+0][rx-1] + (Ry2/R22)*u[ry+1][rx-1] )
-                + (Lx1/L11) * ( (Ry0/R00)*u[ry-1][rx+0] + (Ry1/R11)*u[ry+0][rx+0] + (Ry2/R22)*u[ry+1][rx+0] )
-                + (Lx2/L22) * ( (Ry0/R00)*u[ry-1][rx+1] + (Ry1/R11)*u[ry+0][rx+1] + (Ry2/R22)*u[ry+1][rx+1] );
+        pu = 0.0;
+        pu += (Lx0/Lx00) * ( (Ly0/Ly00)*u[ry-1][rx-1] + (Ly1/Ly11)*u[ry+0][rx-1] + (Ly2/Ly22)*u[ry+1][rx-1] );
+        pu += (Lx1/Lx11) * ( (Ly0/Ly00)*u[ry-1][rx+0] + (Ly1/Ly11)*u[ry+0][rx+0] + (Ly2/Ly22)*u[ry+1][rx+0] );
+        pu += (Lx2/Lx22) * ( (Ly0/Ly00)*u[ry-1][rx+1] + (Ly1/Ly11)*u[ry+0][rx+1] + (Ly2/Ly22)*u[ry+1][rx+1] );
         return pu;
     }
 
-    if (v==4)
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    if (v==5)
+    {
+        //const unsigned int rx = static_cast<unsigned int>(_rx);
+        //const unsigned int ry = static_cast<unsigned int>(_ry);
+        const double px = p().x;
+        const double py = p().y;
+        const unsigned int rx = static_cast<unsigned int>(floor(px/_hx));
+        const unsigned int ry = static_cast<unsigned int>(floor(py/_hy));
+        const double x0 = static_cast<double>(rx-1)*_hx;
+        const double x1 = static_cast<double>(rx+0)*_hx;
+        const double x2 = static_cast<double>(rx+1)*_hx;
+        const double x3 = static_cast<double>(rx+2)*_hx;
+        const double y0 = static_cast<double>(ry-1)*_hy;
+        const double y1 = static_cast<double>(ry+0)*_hy;
+        const double y2 = static_cast<double>(ry+1)*_hy;
+        const double y3 = static_cast<double>(ry+2)*_hy;
+
+        const double Lx0 = (px-x1)*(px-x2)*(px-x3); const double Lx00 = (x0-x1)*(x0-x2)*(x0-x3);
+        const double Lx1 = (px-x0)*(px-x2)*(px-x3); const double Lx11 = (x1-x0)*(x1-x2)*(x1-x3);
+        const double Lx2 = (px-x0)*(px-x1)*(px-x3); const double Lx22 = (x2-x0)*(x2-x1)*(x2-x3);
+        const double Lx3 = (px-x0)*(px-x1)*(px-x2); const double Lx33 = (x3-x0)*(x3-x1)*(x3-x2);
+
+        const double Ly0 = (py-y1)*(py-y2)*(py-y3); const double Ly00 = (y0-y1)*(y0-y2)*(y0-y3);
+        const double Ly1 = (py-y0)*(py-y2)*(py-y3); const double Ly11 = (y1-y0)*(y1-y2)*(y1-y3);
+        const double Ly2 = (py-y0)*(py-y1)*(py-y3); const double Ly22 = (y2-y0)*(y2-y1)*(y2-y3);
+        const double Ly3 = (py-y0)*(py-y1)*(py-y2); const double Ly33 = (y3-y0)*(y3-y1)*(y3-y2);
+
+        pu = 0.0;
+        pu += (Ly0/Ly00) * ( (Lx0/Lx00)*u[ry-1][rx-1] + (Lx1/Lx11)*u[ry-1][rx+0] + (Lx2/Lx22)*u[ry-1][rx+1] + (Lx3/Lx33)*u[ry-1][rx+2] );
+        pu += (Ly1/Ly11) * ( (Lx0/Lx00)*u[ry+0][rx-1] + (Lx1/Lx11)*u[ry+0][rx+0] + (Lx2/Lx22)*u[ry+0][rx+1] + (Lx3/Lx33)*u[ry+0][rx+2] );
+        pu += (Ly2/Ly22) * ( (Lx0/Lx00)*u[ry+1][rx-1] + (Lx1/Lx11)*u[ry+1][rx+0] + (Lx2/Lx22)*u[ry+1][rx+1] + (Lx3/Lx33)*u[ry+1][rx+2] );
+        pu += (Ly3/Ly33) * ( (Lx0/Lx00)*u[ry+2][rx-1] + (Lx1/Lx11)*u[ry+2][rx+0] + (Lx2/Lx22)*u[ry+2][rx+1] + (Lx3/Lx33)*u[ry+2][rx+2] );
+        return pu;
+    }
+
+    if (v==51)
     {
         const unsigned int rx = static_cast<unsigned int>(_rx);
         const unsigned int ry = static_cast<unsigned int>(_ry);
@@ -190,100 +289,129 @@ auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, int v) const -> doub
         double x0, x1, x2, x3; x0 = (rx-1)*_hx; x1 = rx*_hx; x2 = (rx+1)*_hx; x3 = (rx+2)*_hx;
         double y0, y1, y2, y3; y0 = (ry-1)*_hy; y1 = ry*_hy; y2 = (ry+1)*_hy; y3 = (ry+2)*_hy;
 
-        double Lx0 = (px-x1)*(px-x2)*(px-x3); double L00 = (x0-x1)*(x0-x2)*(x0-x3);
-        double Lx1 = (px-x0)*(px-x2)*(px-x3); double L11 = (x1-x0)*(x1-x2)*(x1-x3);
-        double Lx2 = (px-x0)*(px-x1)*(px-x3); double L22 = (x2-x0)*(x2-x1)*(x2-x3);
-        double Lx3 = (px-x0)*(px-x1)*(px-x2); double L33 = (x3-x0)*(x3-x1)*(x3-x2);
+        double Lx0 = (px-x1)*(px-x2)*(px-x3); double Lx00 = (x0-x1)*(x0-x2)*(x0-x3);
+        double Lx1 = (px-x0)*(px-x2)*(px-x3); double Lx11 = (x1-x0)*(x1-x2)*(x1-x3);
+        double Lx2 = (px-x0)*(px-x1)*(px-x3); double Lx22 = (x2-x0)*(x2-x1)*(x2-x3);
+        double Lx3 = (px-x0)*(px-x1)*(px-x2); double Lx33 = (x3-x0)*(x3-x1)*(x3-x2);
 
-        double Ry0 = (py-y1)*(py-y2)*(py-y3); double R00 = (y0-y1)*(y0-y2)*(y0-y3);
-        double Ry1 = (py-y0)*(py-y2)*(py-y3); double R11 = (y1-y0)*(y1-y2)*(y1-y3);
-        double Ry2 = (py-y0)*(py-y1)*(py-y3); double R22 = (y2-y0)*(y2-y1)*(y2-y3);
-        double Ry3 = (py-y0)*(py-y1)*(py-y2); double R33 = (y3-y0)*(y3-y1)*(y3-y2);
+        double Ly0 = (py-y1)*(py-y2)*(py-y3); double Ly00 = (y0-y1)*(y0-y2)*(y0-y3);
+        double Ly1 = (py-y0)*(py-y2)*(py-y3); double Ly11 = (y1-y0)*(y1-y2)*(y1-y3);
+        double Ly2 = (py-y0)*(py-y1)*(py-y3); double Ly22 = (y2-y0)*(y2-y1)*(y2-y3);
+        double Ly3 = (py-y0)*(py-y1)*(py-y2); double Ly33 = (y3-y0)*(y3-y1)*(y3-y2);
 
-        pu = (Lx0/L00) * ( (Ry0/R00)*u[ry-1][rx-1] + (Ry1/R11)*u[ry+0][rx-1] + (Ry2/R22)*u[ry+1][rx-1] + (Ry3/R33)*u[ry+2][rx-1] )
-                + (Lx1/L11) * ( (Ry0/R00)*u[ry-1][rx+0] + (Ry1/R11)*u[ry+0][rx+0] + (Ry2/R22)*u[ry+1][rx+0] + (Ry3/R33)*u[ry+2][rx+0] )
-                + (Lx2/L22) * ( (Ry0/R00)*u[ry-1][rx+1] + (Ry1/R11)*u[ry+0][rx+1] + (Ry2/R22)*u[ry+1][rx+1] + (Ry3/R33)*u[ry+2][rx+1] )
-                + (Lx3/L33) * ( (Ry0/R00)*u[ry-1][rx+2] + (Ry1/R11)*u[ry+0][rx+2] + (Ry2/R22)*u[ry+1][rx+2] + (Ry3/R33)*u[ry+2][rx+2] );
+        pu = 0.0;
+        pu += (Lx0/Lx00) * ( (Ly0/Ly00)*u[ry-1][rx-1] + (Ly1/Ly11)*u[ry+0][rx-1] + (Ly2/Ly22)*u[ry+1][rx-1] + (Ly3/Ly33)*u[ry+2][rx-1] );
+        pu += (Lx1/Lx11) * ( (Ly0/Ly00)*u[ry-1][rx+0] + (Ly1/Ly11)*u[ry+0][rx+0] + (Ly2/Ly22)*u[ry+1][rx+0] + (Ly3/Ly33)*u[ry+2][rx+0] );
+        pu += (Lx2/Lx22) * ( (Ly0/Ly00)*u[ry-1][rx+1] + (Ly1/Ly11)*u[ry+0][rx+1] + (Ly2/Ly22)*u[ry+1][rx+1] + (Ly3/Ly33)*u[ry+2][rx+1] );
+        pu += (Lx3/Lx33) * ( (Ly0/Ly00)*u[ry-1][rx+2] + (Ly1/Ly11)*u[ry+0][rx+2] + (Ly2/Ly22)*u[ry+1][rx+2] + (Ly3/Ly33)*u[ry+2][rx+2] );
         return pu;
     }
 
     return NAN;
 }
 
-auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, double &dx, double &dy) const -> double
+auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, double &dx, double &dy, unsigned int v) const -> double
 {
-    const unsigned int rx = static_cast<unsigned int>(_rx);
-    const unsigned int ry = static_cast<unsigned int>(_ry);
+    if (v == 3)
+    {
+        const double px = p().x;
+        const double py = p().y;
+        const unsigned int rx = static_cast<unsigned int>(floor(px/_hx));
+        const unsigned int ry = static_cast<unsigned int>(floor(py/_hy));
 
-    const double px = p().x;
-    const double py = p().y;
+        const double x0 = static_cast<double>(rx+0)*_hx;
+        const double x1 = static_cast<double>(rx+1)*_hx;
+        const double y0 = static_cast<double>(ry+0)*_hy;
+        const double y1 = static_cast<double>(ry+1)*_hy;
 
-    //    dx = (u[ry][rx+1] - u[ry][rx-1])/(2.0*_hx);
-    //    dy = (u[ry+1][rx] - u[ry-1][rx])/(2.0*_hy);
+        const double Lx0 = (px-x1); const double Lx00 = (x0-x1); const double Lx0x = 1.0;
+        const double Lx1 = (px-x0); const double Lx11 = (x1-x0); const double Lx1x = 1.0;
 
-    //    dx += (px-rx*_hx)*((u[ry][rx+1] - 2.0*u[ry][rx] + u[ry][rx-1])/(_hx*_hx));
-    //    dy += (py-ry*_hy)*((u[ry+1][rx] - 2.0*u[ry][rx] + u[ry-1][rx])/(_hy*_hy));
+        const double Ly0 = (py-y1); const double Ly00 = (y0-y1); const double Ly0y = 1.0;
+        const double Ly1 = (py-y0); const double Ly11 = (y1-y0); const double Ly1y = 1.0;
 
-    //    dx = (u[ry][rx-2] - 8.0*u[ry][rx-1] + 8.0*u[ry][rx+1] - u[ry][rx+2])/(12.0*_hx);
-    //    dy = (u[ry-2][rx] - 8.0*u[ry-1][rx] + 8.0*u[ry+1][rx] - u[ry+2][rx])/(12.0*_hy);
+        dx = 0.0;
+        dx += (Lx0x/Lx00) * ( (Ly0/Ly00)*u[ry+0][rx+0] + (Ly1/Ly11)*u[ry+1][rx+0] );
+        dx += (Lx1x/Lx11) * ( (Ly0/Ly00)*u[ry+0][rx+1] + (Ly1/Ly11)*u[ry+1][rx+1] );
 
-    //    dx += ((px-rx*_hx))*((-2.0*u[ry][rx-2] + 32.0*u[ry][rx-1] - 60.0*u[ry][rx] + 32.0*u[ry][rx+1] - 2.0*u[ry][rx+2])/(24.0*_hx*_hx));
-    //    dy += ((py-ry*_hy ))*((-2.0*u[ry-2][rx] + 32.0*u[ry-1][rx] - 60.0*u[ry][rx] + 32.0*u[ry+1][rx] - 2.0*u[ry+2][rx])/(24.0*_hy*_hy));
+        dy = 0.0;
+        dy += (Ly0y/Ly00) * ( (Lx0/Lx00)*u[ry+0][rx+0] + (Lx1/Lx11)*u[ry+0][rx+1] );
+        dy += (Ly1y/Ly11) * ( (Lx0/Lx00)*u[ry+1][rx+0] + (Lx1/Lx11)*u[ry+1][rx+1] );
+    }
 
-    //    double x0, x1, x2; x0 = (rx-1)*_hx; x1 = rx*_hx; x2 = (rx+1)*_hx;
-    //    double y0, y1, y2; y0 = (ry-1)*_hy; y1 = ry*_hy; y2 = (ry+1)*_hy;
-    //    dx = (((px-x1)+(px-x2))/((x0-x1)*(x0-x2))) * ( (((py-y1)*(py-y2))/((y0-y1)*(y0-y2)))*u[ry-1][rx-1]
-    //                                                 + (((py-y2)*(py-y0))/((y1-y2)*(y1-y0)))*u[ry+0][rx-1] +
-    //                                                   (((py-y0)*(py-y1))/((y2-y0)*(y2-y1)))*u[ry+1][rx-1] )
-    //       + (((px-x2)+(px-x0))/((x1-x2)*(x1-x0))) * ( (((py-y1)*(py-y2))/((y0-y1)*(y0-y2)))*u[ry-1][rx+0]
-    //                                                 + (((py-y2)*(py-y0))/((y1-y2)*(y1-y0)))*u[ry+0][rx+0] +
-    //                                                   (((py-y0)*(py-y1))/((y2-y0)*(y2-y1)))*u[ry+1][rx+0] )
-    //       + (((px-x0)+(px-x1))/((x2-x0)*(x2-x1))) * ( (((py-y1)*(py-y2))/((y0-y1)*(y0-y2)))*u[ry-1][rx+1]
-    //                                                 + (((py-y2)*(py-y0))/((y1-y2)*(y1-y0)))*u[ry+0][rx+1] +
-    //                                                   (((py-y0)*(py-y1))/((y2-y0)*(y2-y1)))*u[ry+1][rx+1] );
+    if (v == 4)
+    {
+        const double px = p().x;
+        const double py = p().y;
+        const unsigned int rx = static_cast<unsigned int>(round(px/_hx));
+        const unsigned int ry = static_cast<unsigned int>(round(py/_hy));
 
-    //    dy = (((py-y1)+(py-y2))/((y0-y1)*(y0-y2))) * ( (((px-x1)*(px-x2))/((x0-x1)*(x0-x2)))*u[ry-1][rx-1]
-    //                                                 + (((px-x2)*(px-x0))/((x1-x2)*(x1-x0)))*u[ry-1][rx+0] +
-    //                                                   (((px-x0)*(px-x1))/((x2-x0)*(x2-x1)))*u[ry-1][rx+1] )
-    //       + (((py-y2)+(py-y0))/((y1-y2)*(y1-y0))) * ( (((px-x1)*(px-x2))/((x0-x1)*(x0-x2)))*u[ry+0][rx-1]
-    //                                                 + (((px-x2)*(px-x0))/((x1-x2)*(x1-x0)))*u[ry+0][rx+0] +
-    //                                                   (((px-x0)*(px-x1))/((x2-x0)*(x2-x1)))*u[ry+0][rx+1] )
-    //       + (((py-y0)+(py-y1))/((y2-y0)*(y2-y1))) * ( (((px-x1)*(px-x2))/((x0-x1)*(x0-x2)))*u[ry+1][rx-1]
-    //                                                 + (((px-x2)*(px-x0))/((x1-x2)*(x1-x0)))*u[ry+1][rx+0] +
-    //                                                   (((px-x0)*(px-x1))/((x2-x0)*(x2-x1)))*u[ry+1][rx+1] );
+        const double x0 = static_cast<double>(rx-1)*_hx;
+        const double x1 = static_cast<double>(rx+0)*_hx;
+        const double x2 = static_cast<double>(rx+1)*_hx;
+        const double y0 = static_cast<double>(ry-1)*_hy;
+        const double y1 = static_cast<double>(ry+0)*_hy;
+        const double y2 = static_cast<double>(ry+1)*_hy;
 
-    double x0, x1, x2, x3; x0 = (rx-1)*_hx; x1 = rx*_hx; x2 = (rx+1)*_hx; x3 = (rx+2)*_hx;
-    double y0, y1, y2, y3; y0 = (ry-1)*_hy; y1 = ry*_hy; y2 = (ry+1)*_hy; y3 = (ry+2)*_hy;
+        const double Lx0 = (px-x1)*(px-x2); const double Lx00 = (x0-x1)*(x0-x2); const double Lx0x = (px-x1)+(px-x2);
+        const double Lx1 = (px-x0)*(px-x2); const double Lx11 = (x1-x0)*(x1-x2); const double Lx1x = (px-x0)+(px-x2);
+        const double Lx2 = (px-x0)*(px-x1); const double Lx22 = (x2-x0)*(x2-x1); const double Lx2x = (px-x0)+(px-x1);
 
-    double Lx0 = (px-x1)*(px-x2)*(px-x3); double L00 = (x0-x1)*(x0-x2)*(x0-x3);
-    double Lx1 = (px-x0)*(px-x2)*(px-x3); double L11 = (x1-x0)*(x1-x2)*(x1-x3);
-    double Lx2 = (px-x0)*(px-x1)*(px-x3); double L22 = (x2-x0)*(x2-x1)*(x2-x3);
-    double Lx3 = (px-x0)*(px-x1)*(px-x2); double L33 = (x3-x0)*(x3-x1)*(x3-x2);
-    double Lx0x = (px-x1)*(px-x2)+(px-x2)*(px-x3)+(px-x3)*(px-x1);
-    double Lx1x = (px-x0)*(px-x2)+(px-x2)*(px-x3)+(px-x3)*(px-x0);
-    double Lx2x = (px-x0)*(px-x1)+(px-x1)*(px-x3)+(px-x3)*(px-x0);
-    double Lx3x = (px-x0)*(px-x1)+(px-x1)*(px-x2)+(px-x2)*(px-x0);
+        const double Ly0 = (py-y1)*(py-y2); const double Ly00 = (y0-y1)*(y0-y2); const double Ly0y = (py-y1)+(py-y2);
+        const double Ly1 = (py-y0)*(py-y2); const double Ly11 = (y1-y0)*(y1-y2); const double Ly1y = (py-y0)+(py-y2);
+        const double Ly2 = (py-y0)*(py-y1); const double Ly22 = (y2-y0)*(y2-y1); const double Ly2y = (py-y0)+(py-y1);
 
-    double Ry0 = (py-y1)*(py-y2)*(py-y3); double R00 = (y0-y1)*(y0-y2)*(y0-y3);
-    double Ry1 = (py-y0)*(py-y2)*(py-y3); double R11 = (y1-y0)*(y1-y2)*(y1-y3);
-    double Ry2 = (py-y0)*(py-y1)*(py-y3); double R22 = (y2-y0)*(y2-y1)*(y2-y3);
-    double Ry3 = (py-y0)*(py-y1)*(py-y2); double R33 = (y3-y0)*(y3-y1)*(y3-y2);
-    double Ry0y = (py-y1)*(py-y2)+(py-y2)*(py-y3)+(py-y3)*(py-y1);
-    double Ry1y = (py-y0)*(py-y2)+(py-y2)*(py-y3)+(py-y3)*(py-y0);
-    double Ry2y = (py-y0)*(py-y1)+(py-y1)*(py-y3)+(py-y3)*(py-y0);
-    double Ry3y = (py-y0)*(py-y1)+(py-y1)*(py-y2)+(py-y2)*(py-y0);
+        dx = 0.0;
+        dx += (Lx0x/Lx00) * ( (Ly0/Ly00)*u[ry-1][rx-1] + (Ly1/Ly11)*u[ry+0][rx-1] + (Ly2/Ly22)*u[ry+1][rx-1] );
+        dx += (Lx1x/Lx11) * ( (Ly0/Ly00)*u[ry-1][rx+0] + (Ly1/Ly11)*u[ry+0][rx+0] + (Ly2/Ly22)*u[ry+1][rx+0] );
+        dx += (Lx2x/Lx22) * ( (Ly0/Ly00)*u[ry-1][rx+1] + (Ly1/Ly11)*u[ry+0][rx+1] + (Ly2/Ly22)*u[ry+1][rx+1] );
 
-    dx = (Lx0x/L00) * ( (Ry0/R00)*u[ry-1][rx-1] + (Ry1/R11)*u[ry+0][rx-1] + (Ry2/R22)*u[ry+1][rx-1] + (Ry3/R33)*u[ry+2][rx-1] )
-            + (Lx1x/L11) * ( (Ry0/R00)*u[ry-1][rx+0] + (Ry1/R11)*u[ry+0][rx+0] + (Ry2/R22)*u[ry+1][rx+0] + (Ry3/R33)*u[ry+2][rx+0] )
-            + (Lx2x/L22) * ( (Ry0/R00)*u[ry-1][rx+1] + (Ry1/R11)*u[ry+0][rx+1] + (Ry2/R22)*u[ry+1][rx+1] + (Ry3/R33)*u[ry+2][rx+1] )
-            + (Lx3x/L33) * ( (Ry0/R00)*u[ry-1][rx+2] + (Ry1/R11)*u[ry+0][rx+2] + (Ry2/R22)*u[ry+1][rx+2] + (Ry3/R33)*u[ry+2][rx+2] );
+        dy = 0.0;
+        dy += (Ly0y/Ly00) * ( (Lx0/Lx00)*u[ry-1][rx-1] + (Lx1/Lx11)*u[ry-1][rx+0] + (Lx2/Lx22)*u[ry-1][rx+1] );
+        dy += (Ly1y/Ly11) * ( (Lx0/Lx00)*u[ry+0][rx-1] + (Lx1/Lx11)*u[ry+0][rx+0] + (Lx2/Lx22)*u[ry+0][rx+1] );
+        dy += (Ly2y/Ly22) * ( (Lx0/Lx00)*u[ry+1][rx-1] + (Lx1/Lx11)*u[ry+1][rx+0] + (Lx2/Lx22)*u[ry+1][rx+1] );
+    }
 
-    dy = (Ry0y/R00) * ( (Lx0/L00)*u[ry-1][rx-1] + (Lx1/L11)*u[ry-1][rx+0] + (Lx2/L22)*u[ry-1][rx+1] + (Lx3/L33)*u[ry-1][rx+2] )
-            + (Ry1y/R11) * ( (Lx0/L00)*u[ry+0][rx-1] + (Lx1/L11)*u[ry+0][rx+0] + (Lx2/L22)*u[ry+0][rx+1] + (Lx3/L33)*u[ry+0][rx+2] )
-            + (Ry2y/R22) * ( (Lx0/L00)*u[ry+1][rx-1] + (Lx1/L11)*u[ry+1][rx+0] + (Lx2/L22)*u[ry+1][rx+1] + (Lx3/L33)*u[ry+1][rx+2] )
-            + (Ry3y/R33) * ( (Lx0/L00)*u[ry+2][rx-1] + (Lx1/L11)*u[ry+2][rx+0] + (Lx2/L22)*u[ry+2][rx+1] + (Lx3/L33)*u[ry+2][rx+2] );
+    if (v == 5)
+    {
+        const double px = p().x;
+        const double py = p().y;
+        const unsigned int rx = static_cast<unsigned int>(floor(px/_hx));
+        const unsigned int ry = static_cast<unsigned int>(floor(py/_hy));
 
-    return consentrateInPoint(u, 4);
+        const double x0 = static_cast<double>(rx-1)*_hx;
+        const double x1 = static_cast<double>(rx+0)*_hx;
+        const double x2 = static_cast<double>(rx+1)*_hx;
+        const double x3 = static_cast<double>(rx+2)*_hx;
+        const double y0 = static_cast<double>(ry-1)*_hy;
+        const double y1 = static_cast<double>(ry+0)*_hy;
+        const double y2 = static_cast<double>(ry+1)*_hy;
+        const double y3 = static_cast<double>(ry+2)*_hy;
+
+        const double Lx0 = (px-x1)*(px-x2)*(px-x3); const double Lx00 = (x0-x1)*(x0-x2)*(x0-x3); const double Lx0x = (px-x1)*(px-x2)+(px-x2)*(px-x3)+(px-x3)*(px-x1);
+        const double Lx1 = (px-x0)*(px-x2)*(px-x3); const double Lx11 = (x1-x0)*(x1-x2)*(x1-x3); const double Lx1x = (px-x0)*(px-x2)+(px-x2)*(px-x3)+(px-x3)*(px-x0);
+        const double Lx2 = (px-x0)*(px-x1)*(px-x3); const double Lx22 = (x2-x0)*(x2-x1)*(x2-x3); const double Lx2x = (px-x0)*(px-x1)+(px-x1)*(px-x3)+(px-x3)*(px-x0);
+        const double Lx3 = (px-x0)*(px-x1)*(px-x2); const double Lx33 = (x3-x0)*(x3-x1)*(x3-x2); const double Lx3x = (px-x0)*(px-x1)+(px-x1)*(px-x2)+(px-x2)*(px-x0);
+
+        const double Ly0 = (py-y1)*(py-y2)*(py-y3); const double Ly00 = (y0-y1)*(y0-y2)*(y0-y3); const double Ly0y = (py-y1)*(py-y2)+(py-y2)*(py-y3)+(py-y3)*(py-y1);
+        const double Ly1 = (py-y0)*(py-y2)*(py-y3); const double Ly11 = (y1-y0)*(y1-y2)*(y1-y3); const double Ly1y = (py-y0)*(py-y2)+(py-y2)*(py-y3)+(py-y3)*(py-y0);
+        const double Ly2 = (py-y0)*(py-y1)*(py-y3); const double Ly22 = (y2-y0)*(y2-y1)*(y2-y3); const double Ly2y = (py-y0)*(py-y1)+(py-y1)*(py-y3)+(py-y3)*(py-y0);
+        const double Ly3 = (py-y0)*(py-y1)*(py-y2); const double Ly33 = (y3-y0)*(y3-y1)*(y3-y2); const double Ly3y = (py-y0)*(py-y1)+(py-y1)*(py-y2)+(py-y2)*(py-y0);
+
+        dx = 0.0;
+        dx += (Lx0x/Lx00) * ( (Ly0/Ly00)*u[ry-1][rx-1] + (Ly1/Ly11)*u[ry+0][rx-1] + (Ly2/Ly22)*u[ry+1][rx-1] + (Ly3/Ly33)*u[ry+2][rx-1] );
+        dx += (Lx1x/Lx11) * ( (Ly0/Ly00)*u[ry-1][rx+0] + (Ly1/Ly11)*u[ry+0][rx+0] + (Ly2/Ly22)*u[ry+1][rx+0] + (Ly3/Ly33)*u[ry+2][rx+0] );
+        dx += (Lx2x/Lx22) * ( (Ly0/Ly00)*u[ry-1][rx+1] + (Ly1/Ly11)*u[ry+0][rx+1] + (Ly2/Ly22)*u[ry+1][rx+1] + (Ly3/Ly33)*u[ry+2][rx+1] );
+        dx += (Lx3x/Lx33) * ( (Ly0/Ly00)*u[ry-1][rx+2] + (Ly1/Ly11)*u[ry+0][rx+2] + (Ly2/Ly22)*u[ry+1][rx+2] + (Ly3/Ly33)*u[ry+2][rx+2] );
+
+        dy = 0.0;
+        dy += (Ly0y/Ly00) * ( (Lx0/Lx00)*u[ry-1][rx-1] + (Lx1/Lx11)*u[ry-1][rx+0] + (Lx2/Lx22)*u[ry-1][rx+1] + (Lx3/Lx33)*u[ry-1][rx+2] );
+        dy += (Ly1y/Ly11) * ( (Lx0/Lx00)*u[ry+0][rx-1] + (Lx1/Lx11)*u[ry+0][rx+0] + (Lx2/Lx22)*u[ry+0][rx+1] + (Lx3/Lx33)*u[ry+0][rx+2] );
+        dy += (Ly2y/Ly22) * ( (Lx0/Lx00)*u[ry+1][rx-1] + (Lx1/Lx11)*u[ry+1][rx+0] + (Lx2/Lx22)*u[ry+1][rx+1] + (Lx3/Lx33)*u[ry+1][rx+2] );
+        dy += (Ly3y/Ly33) * ( (Lx0/Lx00)*u[ry+2][rx-1] + (Lx1/Lx11)*u[ry+2][rx+0] + (Lx2/Lx22)*u[ry+2][rx+1] + (Lx3/Lx33)*u[ry+2][rx+2] );
+    }
+
+    return consentrateInPoint(u, v);
 }
 
 auto DeltaGrid2D::cleanGrid() -> void
@@ -315,8 +443,7 @@ auto DeltaGrid2D::isContains(const SpaceNodePDE &sn) const -> bool
 
 auto DeltaGrid2D::isContains(unsigned int n, unsigned int m) const -> bool
 {
-    return (n >= _minX) && (n <= _maxX) &&
-            (m >= _minY) && (m <= _maxY);
+    return (n >= _minX) && (n <= _maxX) && (m >= _minY) && (m <= _maxY);
 }
 
 auto DeltaGrid2D::weight(const SpaceNodePDE &sn) const -> double
@@ -342,7 +469,6 @@ auto DeltaGrid2D::maxY() const -> unsigned int { return _maxY; }
 
 auto DeltaGrid2D::hx() const -> double { return _hx; }
 auto DeltaGrid2D::hy() const -> double { return _hy; }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
