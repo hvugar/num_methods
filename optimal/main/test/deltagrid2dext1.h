@@ -3,6 +3,15 @@
 
 #include <deltagrid.h>
 
+class DeltaGrid1DExt1
+{
+public:
+    static void Main(int argc, char ** argv);
+
+    double fx(double x) const;
+    double dx(double x) const;
+};
+
 class DeltaGrid2DExt1
 {
 public:

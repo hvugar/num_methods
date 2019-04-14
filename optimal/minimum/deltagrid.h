@@ -90,7 +90,7 @@ public:
     auto distributeSigle(const SpacePoint& sp) -> void;
     auto distributeRect4(const SpacePoint& sp) -> void;
 
-    auto consentrateInPoint(const DoubleVector &m) const -> double;
+    auto consentrateInPoint(const DoubleVector &m, int v) const -> double;
     auto consentrateInPoint(const DoubleVector &m, double &dx) const -> double;
 
     auto isCenter(const SpaceNodePDE &sn) const -> bool;
@@ -112,6 +112,8 @@ public:
 
     double *nodes() { return m_nodes; }
     double *nodes() const { return m_nodes; }
+
+    auto hx() const -> double;
 
 private:
 

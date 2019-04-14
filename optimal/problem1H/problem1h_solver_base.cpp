@@ -947,7 +947,7 @@ auto Problem1HDirichletBase::currentLayerFGrid(const DoubleVector &u,
         double* _u = new double[No];
         for (unsigned int j=0; j<No; j++)
         {
-            _u[j] = measurementDeltaGrids[j].consentrateInPoint(u);
+            _u[j] = measurementDeltaGrids[j].consentrateInPoint(u,4);
         }
 
         double *_v = new double[Nc];
@@ -1076,7 +1076,7 @@ auto Problem1HDirichletBase::currentLayerBGrid(const DoubleVector &p, const std:
         double* _p = new double[Nc];
         for (unsigned int i=0; i<Nc; i++)
         {
-            _p[i] = controlDeltaGrids[i].consentrateInPoint(p);
+            _p[i] = controlDeltaGrids[i].consentrateInPoint(p,4);
         }
 
         double *_w = new double[No];

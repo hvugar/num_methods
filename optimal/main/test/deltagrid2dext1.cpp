@@ -52,3 +52,42 @@ double DeltaGrid2DExt1::dy(double x, double y) const
     //return 8.0*M_PI*sin(8.0*M_PI*x)*cos(8.0*M_PI*y);
     return 40.0*y*cos(20.0*y*y)*sin(5.0*y) + 5.0*sin(20.0*y*y)*cos(5.0*y);
 }
+
+void DeltaGrid1DExt1::Main(int argc, char **argv)
+{
+    DeltaGrid1DExt1 ex1;
+
+    unsigned int N = 100; double hx = 0.01;
+    DoubleVector mx(N+1, 0.0);
+    for (unsigned int n=0; n<=N; n++)
+    {
+        mx[n] = ex1.fx(hx*n);
+    }
+
+    DeltaGrid1D dg;
+    dg.initGrid(N, hx);
+    dg.distributeGauss(SpacePoint(0.42), 1);
+    //dg.distributeGauss(SpacePoint(0.4224, 0.6538), 1, 1);
+
+    double dx;
+    double z = dg.consentrateInPoint(mx, dx);
+    //double z = dg.consentrateInPoint(mx, 4);
+
+    printf("%10.6f %10.6f %10.6f\n", ex1.fx(dg.p().x), ex1.dx(dg.p().x));
+    puts("---");
+    printf("%10.6f %10.6f %10.6f\n", dg.consentrateInPoint(mx, 1), dx, dg.p().x);
+    printf("%10.6f %10.6f %10.6f\n", dg.consentrateInPoint(mx, 2), dx, dg.p().x);
+    printf("%10.6f %10.6f %10.6f\n", dg.consentrateInPoint(mx, 0), dx, dg.p().x);
+    printf("%10.6f %10.6f %10.6f\n", dg.consentrateInPoint(mx, 3), dx, dg.p().x);
+    printf("%10.6f %10.6f %10.6f\n", dg.consentrateInPoint(mx, 4), dx, dg.p().x);
+}
+
+double DeltaGrid1DExt1::fx(double x) const
+{
+    return 0.5*sin(4.0*M_PI*x*x);
+}
+
+double DeltaGrid1DExt1::dx(double x) const
+{
+    return 4.0*M_PI*x*cos(4.0*M_PI*x*x);
+}
