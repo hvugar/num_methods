@@ -95,8 +95,8 @@ auto Problem0HFunctional::setDimension(const Dimension &timeDimension, const Dim
     const double hx = dimensionX.step();
     const double hy = dimensionY.step();
 
-    U1.resize(M+1, N+1, 0.0);
-    U2.resize(M+1, N+1, 0.0);
+    //U1.resize(M+1, N+1, 0.0);
+    //U2.resize(M+1, N+1, 0.0);
     u1.resize(M+1, N+1, 0.0);
     u2.resize(M+1, N+1, 0.0);
 
@@ -136,7 +136,8 @@ auto Problem0HFunctional::fx(const DoubleVector &x) const -> double
     Problem0HForward::implicit_calculate_D2V1(u, a, gamma);
     double sum = 0.0;
     sum += epsilon1 * integral1(Problem0HForward::u1);
-    sum += epsilon2 * integral2(Problem0HForward::u2);
+//    sum += epsilon2 * integral2(Problem0HForward::u2);
+    sum += epsilon2 * integral1(Problem0HForward::u2);
     //sum += norm();
     //sum += penalty();
     return sum;
@@ -185,48 +186,48 @@ auto Problem0HFunctional::integral1(const DoubleMatrix &u) const -> double
     return usum*(hx*hy);
 }
 
-auto Problem0HFunctional::integral2(const DoubleMatrix &u) const -> double
-{
-    //const Dimension &time = Problem0HForward::timeDimension();
-    const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
-    const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
-    //const unsigned int L = static_cast<unsigned int> ( time.size() );
-    const unsigned int N = static_cast<unsigned int> ( dimX.size() );
-    const unsigned int M = static_cast<unsigned int> ( dimY.size() );
-    //const double ht = time.step();
-    const double hx = dimX.step();
-    const double hy = dimY.step();
+//auto Problem0HFunctional::integral2(const DoubleMatrix &u) const -> double
+//{
+//    //const Dimension &time = Problem0HForward::timeDimension();
+//    const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
+//    const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
+//    //const unsigned int L = static_cast<unsigned int> ( time.size() );
+//    const unsigned int N = static_cast<unsigned int> ( dimX.size() );
+//    const unsigned int M = static_cast<unsigned int> ( dimY.size() );
+//    //const double ht = time.step();
+//    const double hx = dimX.step();
+//    const double hy = dimY.step();
 
-    double udiff = 0.0;
-    double usum = 0.0;
+//    double udiff = 0.0;
+//    double usum = 0.0;
 
-    udiff = u[0][0]; usum += 0.25 * udiff * udiff;// * mu(0, 0);
-    udiff = u[0][N]; usum += 0.25 * udiff * udiff;// * mu(N, 0);
-    udiff = u[M][0]; usum += 0.25 * udiff * udiff;// * mu(0, M);
-    udiff = u[M][N]; usum += 0.25 * udiff * udiff;// * mu(N, M);
+//    udiff = u[0][0]; usum += 0.25 * udiff * udiff;// * mu(0, 0);
+//    udiff = u[0][N]; usum += 0.25 * udiff * udiff;// * mu(N, 0);
+//    udiff = u[M][0]; usum += 0.25 * udiff * udiff;// * mu(0, M);
+//    udiff = u[M][N]; usum += 0.25 * udiff * udiff;// * mu(N, M);
 
-    for (unsigned int n=1; n<=N-1; n++)
-    {
-        udiff = u[0][n]; usum += 0.5 * udiff * udiff;// * mu(n, 0);
-        udiff = u[M][n]; usum += 0.5 * udiff * udiff;// * mu(n, M);
-    }
+//    for (unsigned int n=1; n<=N-1; n++)
+//    {
+//        udiff = u[0][n]; usum += 0.5 * udiff * udiff;// * mu(n, 0);
+//        udiff = u[M][n]; usum += 0.5 * udiff * udiff;// * mu(n, M);
+//    }
 
-    for (unsigned int m=1; m<=M-1; m++)
-    {
-        udiff = u[m][0]; usum += 0.5 * udiff * udiff;// * mu(0, m);
-        udiff = u[m][N]; usum += 0.5 * udiff * udiff;// * mu(N, m);
-    }
+//    for (unsigned int m=1; m<=M-1; m++)
+//    {
+//        udiff = u[m][0]; usum += 0.5 * udiff * udiff;// * mu(0, m);
+//        udiff = u[m][N]; usum += 0.5 * udiff * udiff;// * mu(N, m);
+//    }
 
-    for (unsigned int m=1; m<=M-1; m++)
-    {
-        for (unsigned int n=1; n<=N-1; n++)
-        {
-            udiff = u[m][n]; usum += udiff * udiff;// * mu(n, m);
-        }
-    }
+//    for (unsigned int m=1; m<=M-1; m++)
+//    {
+//        for (unsigned int n=1; n<=N-1; n++)
+//        {
+//            udiff = u[m][n]; usum += udiff * udiff;// * mu(n, m);
+//        }
+//    }
 
-    return usum*(hx*hy);
-}
+//    return usum*(hx*hy);
+//}
 
 auto Problem0HFunctional::norm() const -> double { return 0.0; }
 
@@ -361,52 +362,48 @@ auto Problem0HForward::calculateU1U2(const DoubleMatrix &u, unsigned int ln) con
     const double ht = time.step();
 
     Problem0HForward *forward = const_cast<Problem0HForward*>(this);
-    if (ln == 2*(L-0)) { forward->u1 = u; }
+    //if (ln == 2*(L-0)) { forward->u1 = u; }
 
-    if (ln == 2*(L-2)) { /*printf("ln: %d\n", ln);*/ forward->u2 *= +0.0; /*IPrinter::printMatrix(u2);*/}
-    if (ln == 2*(L-1)) { /*printf("ln: %d\n", ln);*/ forward->u2  = -1.0*u; /*IPrinter::printMatrix(u2);*/ }
-    if (ln == 2*(L-0)) { forward->u2 += +1.0*u; forward->u2 *= (1.0/ht); /*IPrinter::printMatrix(u2);*/ }
+    //if (ln == 2*(L-2)) { forward->u2 *= +0.0;}
+    //if (ln == 2*(L-1)) { forward->u2  = -1.0*u;}
+    //if (ln == 2*(L-0)) { forward->u2 += +1.0*u; forward->u2 *= (1.0/ht);}
 
     const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
     const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
     const unsigned int N = static_cast<unsigned int>(dimX.size());
     const unsigned int M = static_cast<unsigned int>(dimY.size());
 
-    if (ln == 2*(L-2))
-    {
-        //forward->u2 *= +0.0; /*IPrinter::printMatrix(u2);*/
-    }
     if (ln == 2*(L-1))
     {
         for (unsigned int m=0; m<=M; m++)
         {
             for (unsigned int n=0; n<=N; n++)
             {
-                forward->u2[m][n] = -u[m][n];
+                forward->u2[m][n] = u[m][n];
             }
         }
 
-        ///*printf("ln: %d\n", ln);*/ forward->u2  = -1.0*u; /*IPrinter::printMatrix(u2);*/
+        //printf("%d\n", ln);
     }
+
     if (ln == 2*(L-0))
     {
+        //IPrinter::printSeperatorLine();
+        //IPrinter::printMatrix(forward->u2);
+        //IPrinter::printSeperatorLine();
         for (unsigned int m=0; m<=M; m++)
         {
             for (unsigned int n=0; n<=N; n++)
             {
-                forward->u2[m][n] += u[m][n];
+                forward->u1[m][n] = u[m][n];
+                forward->u2[m][n] = (u[m][n] - forward->u2[m][n])/ht;
             }
         }
-
-        for (unsigned int m=0; m<=M; m++)
-        {
-            for (unsigned int n=0; n<=N; n++)
-            {
-                forward->u2[m][n] *= (1.0/ht);
-            }
-        }
-
-        //forward->u2 += +1.0*u; forward->u2 *= (1.0/ht); /*IPrinter::printMatrix(u2);*/
+        //printf("%d\n", ln);
+        //IPrinter::printMatrix(forward->u1);
+        //IPrinter::printSeperatorLine();
+        //IPrinter::printMatrix(forward->u2);
+        //IPrinter::printSeperatorLine();
     }
 
 

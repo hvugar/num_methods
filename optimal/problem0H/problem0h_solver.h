@@ -47,8 +47,8 @@ protected:
     double alpha3 = 1.0;
     SpacePoint ksi;
 
-    DoubleMatrix U1;
-    DoubleMatrix U2;
+    //DoubleMatrix U1;
+    //DoubleMatrix U2;
     DoubleMatrix u1;
     DoubleMatrix u2;
 
@@ -115,7 +115,7 @@ public:
     virtual auto gradient(const DoubleVector &x, DoubleVector &g) const -> void;
 
     virtual auto integral1(const DoubleMatrix &u) const -> double;
-    virtual auto integral2(const DoubleMatrix &u) const -> double;
+    //virtual auto integral2(const DoubleMatrix &u) const -> double;
     virtual auto norm() const -> double;
     virtual auto penalty() const -> double;
 
