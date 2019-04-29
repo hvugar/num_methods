@@ -70,4 +70,3 @@ void IGradient::Gradient(const RnFunction *f, double step, const DoubleVector &x
         var_x[i] = cx;
     }
 }
-

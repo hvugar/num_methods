@@ -29,7 +29,8 @@ public:
     auto distributeRect4(const SpacePoint& sp) -> void;
 
     auto consentrateInPoint(const DoubleMatrix &m, unsigned int v=4) const -> double;
-    auto consentrateInPoint(const DoubleMatrix &m, double &dx, double &dy, unsigned int v) const -> double;
+    auto derivativesInPoint(const DoubleMatrix &m, double &dx, double &dy, unsigned int v=4) const -> void;
+    auto consentrateInPoint(const DoubleMatrix &m, double &dx, double &dy, unsigned int v=4) const -> double;
 
     auto isCenter(const SpaceNodePDE &sn) const -> bool;
     auto isCenter(unsigned int n, unsigned int m) const -> bool;

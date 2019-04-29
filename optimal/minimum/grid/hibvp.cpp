@@ -1404,18 +1404,18 @@ void CdIHyperbolicIBVP::implicit_calculate_D2V1(DoubleMatrix &u, double a, doubl
         }
         layerInfo(u20, tn20.i);
         /**************************************************** y direction apprx ***************************************************/
-        u00 = u10;
-        u05 = u15;
-        u10 = u20;
-        //        for (unsigned int m=0; m<=M; m++)
-        //        {
-        //            for (unsigned int n=0; n<=N; n++)
-        //            {
-        //                u00[m][n] = u10[m][n];
-        //                u05[m][n] = u15[m][n];
-        //                u10[m][n] = u20[m][n];
-        //            }
-        //        }
+        //u00 = u10;
+        //u05 = u15;
+        //u10 = u20;
+        for (unsigned int m=0; m<=M; m++)
+        {
+            for (unsigned int n=0; n<=N; n++)
+            {
+                u00[m][n] = u10[m][n];
+                u05[m][n] = u15[m][n];
+                u10[m][n] = u20[m][n];
+            }
+        }
     }
     u.clear(); u.resize(M+1, N+1); for (unsigned int m=0; m<=M; m++) { for (unsigned int n=0; n<=N; n++) { u[m][n] = u20[m][n]; } }
 
@@ -1442,7 +1442,13 @@ void CdIHyperbolicIBVP::implicit_calculate_D2V1_initial(DoubleMatrix &u00, Doubl
 {
     const double aa__hxhx = (a*a)/(hx*hx);
     const double aa__hyhy = (a*a)/(hy*hy);
+    const double ht_05 = ht*0.5;
     const double htht_05 = 0.5*ht*ht;
+    const double htht_05_025 = htht_05*0.25;
+
+    TimeNodePDE tn00; tn00.i = 0; tn00.t = 0.5*tn00.i*ht;
+    TimeNodePDE tn05; tn05.i = 1; tn05.t = 0.5*tn05.i*ht;
+    TimeNodePDE tn10; tn10.i = 2; tn10.t = 0.5*tn10.i*ht;
 
     /***********************************************************************************************/
 
@@ -1456,13 +1462,9 @@ void CdIHyperbolicIBVP::implicit_calculate_D2V1_initial(DoubleMatrix &u00, Doubl
             u00[m][n] = initial(sn, InitialCondition::InitialValue);
         }
     }
-    layerInfo(u00, 0);
+    layerInfo(u00, tn00.i);
 
     /***********************************************************************************************/
-
-    TimeNodePDE tn00; tn00.i = 0; tn00.t = 0.5*tn00.i*ht;
-    TimeNodePDE tn05; tn05.i = 1; tn05.t = 0.5*tn05.i*ht;
-    TimeNodePDE tn10; tn10.i = 2; tn10.t = 0.5*tn10.i*ht;
 
     implicit_calculate_D2V1_border(u05, u10, N, hx, M, hy, tn05, tn10);
 
@@ -1473,17 +1475,17 @@ void CdIHyperbolicIBVP::implicit_calculate_D2V1_initial(DoubleMatrix &u00, Doubl
         {
             sn.i = static_cast<int>(n); sn.x = sn.i*hx;
             double firstDerivative = initial(sn, InitialCondition::FirstDerivative);
-            u05[m][n] = u00[m][n] + firstDerivative*ht*0.5;
-            u10[m][n] = u00[m][n] + firstDerivative*ht;
+            double secndDerivative = aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1])
+                        + aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n])
+                        + f(sn,tn00)
+                        - alpha*firstDerivative;
 
-            u05[m][n] += (aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1])+aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n])+f(sn,tn00)
-                    -alpha*firstDerivative)*htht_05*0.25;
-            u10[m][n] += (aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1])+aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n])+f(sn,tn00)
-                    -alpha*firstDerivative)*htht_05;
+            u05[m][n] = u00[m][n] + firstDerivative*ht_05 + secndDerivative*htht_05_025;
+            u10[m][n] = u00[m][n] + firstDerivative*ht    + secndDerivative*htht_05;
         }
     }
-    layerInfo(u05, 1);
-    layerInfo(u10, 2);
+    layerInfo(u05, tn05.i);
+    layerInfo(u10, tn10.i);
 }
 
 void CdIHyperbolicIBVP::implicit_calculate_D2V1_border(DoubleMatrix &u05, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn05, const TimeNodePDE &tn10) const
@@ -1729,8 +1731,8 @@ void ConjugateCdIHyperbolicIBVP::implicit_calculate_D2V1(DoubleMatrix &p, double
                 dx[n-1] += (p05[m][n-1] - 2.0*p05[m][n] + p05[m][n+1])*p_aa_htht__hxhx_025_lambda;
                 dx[n-1] += (p10[m-1][n] - 2.0*p10[m][n] + p10[m+1][n])*p_aa_htht__hyhy_025;
                 dx[n-1] += 2.0*p10[m][n] - p05[m][n] + alpha_ht_025*p05[m][n];
-                dx[n-1] += ht_ht_025*f(sn, tn10);
-                //dx[n-1] += ht_ht_025*(lambda*f(sn, tn05)+(1.0-2.0*lambda)*f(sn, tn10)+lambda*f(sn, tn15));
+                //dx[n-1] += ht_ht_025*f(sn, tn10);
+                dx[n-1] += ht_ht_025*(lambda*f(sn, tn05)+(1.0-2.0*lambda)*f(sn, tn10)+lambda*f(sn, tn15));
             }
             dx[0]   -= p15[m][0]*m_aa_htht__hxhx_025_lambda;
             dx[N-2] -= p15[m][N]*m_aa_htht__hxhx_025_lambda;
@@ -1751,8 +1753,8 @@ void ConjugateCdIHyperbolicIBVP::implicit_calculate_D2V1(DoubleMatrix &p, double
                 dy[m-1] += (p10[m-1][n] - 2.0*p10[m][n] + p10[m+1][n])*p_aa_htht__hyhy_025_lambda;
                 dy[m-1] += (p15[m][n-1] - 2.0*p15[m][n] + p15[m][n+1])*p_aa_htht__hxhx_025;
                 dy[m-1] += 2.0*p15[m][n] - p10[m][n] + alpha_ht_025*p10[m][n];
-                dy[m-1] += ht_ht_025*f(sn, tn15);
-                //dy[m-1] += ht_ht_025*(lambda*f(sn, tn10)+(1.0-2.0*lambda)*f(sn, tn15)+lambda*f(sn, tn20));
+                //dy[m-1] += ht_ht_025*f(sn, tn15);
+                dy[m-1] += ht_ht_025*(lambda*f(sn, tn10)+(1.0-2.0*lambda)*f(sn, tn15)+lambda*f(sn, tn20));
             }
             dy[0]   -= p20[0][n]*m_aa_htht__hyhy_025_lambda;
             dy[M-2] -= p20[M][n]*m_aa_htht__hyhy_025_lambda;
@@ -1761,18 +1763,18 @@ void ConjugateCdIHyperbolicIBVP::implicit_calculate_D2V1(DoubleMatrix &p, double
         }
         layerInfo(p20, tn20.i);
         /**************************************************** y direction apprx ***************************************************/
-        p00 = p10;
-        p05 = p15;
-        p10 = p20;
-        //        for (unsigned int m=0; m<=M; m++)
-        //        {
-        //            for (unsigned int n=0; n<=N; n++)
-        //            {
-        //                p00[m][n] = p10[m][n];
-        //                p05[m][n] = p15[m][n];
-        //                p10[m][n] = p20[m][n];
-        //            }
-        //        }
+        //p00 = p10;
+        //p05 = p15;
+        //p10 = p20;
+        for (unsigned int m=0; m<=M; m++)
+        {
+            for (unsigned int n=0; n<=N; n++)
+            {
+                p00[m][n] = p10[m][n];
+                p05[m][n] = p15[m][n];
+                p10[m][n] = p20[m][n];
+            }
+        }
     }
     p.clear(); p.resize(M+1, N+1); for (unsigned int m=0; m<=M; m++) { for (unsigned int n=0; n<=N; n++) { p[m][n] = p20[m][n]; } }
 
@@ -1799,7 +1801,12 @@ void ConjugateCdIHyperbolicIBVP::implicit_calculate_D2V1_initial(DoubleMatrix &p
 {
     const double aa__hxhx = (a*a)/(hx*hx);
     const double aa__hyhy = (a*a)/(hy*hy);
+    const double ht_05 = 0.5*ht;
     const double htht_05 = 0.5*ht*ht;
+    const double htht_05_025 = 0.5*ht*ht*0.25;
+    TimeNodePDE tn00; tn00.i = 2*L;   tn00.t = 0.5*tn00.i*ht;
+    TimeNodePDE tn05; tn05.i = 2*L-1; tn05.t = 0.5*tn05.i*ht;
+    TimeNodePDE tn10; tn10.i = 2*L-2; tn10.t = 0.5*tn10.i*ht;
 
     /***********************************************************************************************/
 
@@ -1813,13 +1820,9 @@ void ConjugateCdIHyperbolicIBVP::implicit_calculate_D2V1_initial(DoubleMatrix &p
             p00[m][n] = initial(sn, InitialCondition::InitialValue);
         }
     }
-    layerInfo(p00, 2*L);
+    layerInfo(p00, tn00.i);
 
     /***********************************************************************************************/
-
-    TimeNodePDE tn00; tn00.i = 2*L;   tn00.t = 0.5*tn00.i*ht;//L*ht;
-    TimeNodePDE tn05; tn05.i = 2*L-1; tn05.t = 0.5*tn05.i*ht;//L*ht - 0.5*ht;
-    TimeNodePDE tn10; tn10.i = 2*L-2; tn10.t = 0.5*tn10.i*ht;//L*ht -  ht;
 
     implicit_calculate_D2V1_border(p05, p10, N, hx, M, hy, tn05, tn10);
 
@@ -1830,13 +1833,13 @@ void ConjugateCdIHyperbolicIBVP::implicit_calculate_D2V1_initial(DoubleMatrix &p
         {
             sn.i = static_cast<int>(n); sn.x = sn.i*hx;
             double firstDerivative = initial(sn, InitialCondition::FirstDerivative);
-            p05[m][n] = p00[m][n] - firstDerivative*ht*0.5;
-            p10[m][n] = p00[m][n] - firstDerivative*ht;
+            double secndDericative = aa__hxhx*(p00[m][n-1]-2.0*p00[m][n]+p00[m][n+1])
+                    + aa__hyhy*(p00[m-1][n]-2.0*p00[m][n]+p00[m+1][n])
+                    + f(sn,tn00)
+                    + alpha*firstDerivative;
 
-            p05[m][n] += (aa__hxhx*(p00[m][n-1]-2.0*p00[m][n]+p00[m][n+1])+aa__hyhy*(p00[m-1][n]-2.0*p00[m][n]+p00[m+1][n])+f(sn,tn00)
-                    +alpha*firstDerivative)*htht_05*0.25;
-            p10[m][n] += (aa__hxhx*(p00[m][n-1]-2.0*p00[m][n]+p00[m][n+1])+aa__hyhy*(p00[m-1][n]-2.0*p00[m][n]+p00[m+1][n])+f(sn,tn00)
-                    +alpha*firstDerivative)*htht_05;
+            p05[m][n] = p00[m][n] - firstDerivative*ht_05 + secndDericative*htht_05_025;
+            p10[m][n] = p00[m][n] - firstDerivative*ht    + secndDericative*htht_05;
         }
     }
     layerInfo(p05, tn05.i);

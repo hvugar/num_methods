@@ -98,7 +98,7 @@ protected:
 
 
 private:
-    auto saveForwardInformarion(const DoubleMatrix &p, unsigned int ln) const -> void;
+    auto saveBackwardInformarion(const DoubleMatrix &p, unsigned int ln) const -> void;
     auto saveToImage(const DoubleMatrix &p, unsigned int ln) const -> void;
 };
 
@@ -110,12 +110,14 @@ class Problem0HFunctional : public RnFunction, public IGradient,
 public:
     static void Main(int argc, char** argv);
 
+    static void compareGradients(Problem0HFunctional &functional, unsigned int L);
+
 public:
     virtual auto fx(const DoubleVector &x) const -> double;
     virtual auto gradient(const DoubleVector &x, DoubleVector &g) const -> void;
 
     virtual auto integral1(const DoubleMatrix &u) const -> double;
-    //virtual auto integral2(const DoubleMatrix &u) const -> double;
+    virtual auto integral2(const DoubleMatrix &u) const -> double;
     virtual auto norm() const -> double;
     virtual auto penalty() const -> double;
 

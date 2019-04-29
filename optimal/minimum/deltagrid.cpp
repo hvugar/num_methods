@@ -32,8 +32,8 @@ auto DeltaGrid2D::initGrid(unsigned int N, double hx, unsigned int M, double hy)
 
 auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned int sigmaXNum, unsigned int sigmaYNum) -> void
 {
-    unsigned int kx = 3*sigmaXNum;
-    unsigned int ky = 3*sigmaYNum;
+    unsigned int kx = 4*sigmaXNum;
+    unsigned int ky = 4*sigmaYNum;
     double sigmaX = _hx*sigmaXNum;
     double sigmaY = _hy*sigmaYNum;
 
@@ -310,7 +310,7 @@ auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, unsigned int v) cons
     return NAN;
 }
 
-auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, double &dx, double &dy, unsigned int v) const -> double
+auto DeltaGrid2D::derivativesInPoint(const DoubleMatrix &m, double &dx, double &dy, unsigned int v) const -> void
 {
     if (v == 3)
     {
@@ -331,12 +331,12 @@ auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, double &dx, double &
         const double Ly1 = (py-y0); const double Ly11 = (y1-y0); const double Ly1y = 1.0;
 
         dx = 0.0;
-        dx += (Lx0x/Lx00) * ( (Ly0/Ly00)*u[ry+0][rx+0] + (Ly1/Ly11)*u[ry+1][rx+0] );
-        dx += (Lx1x/Lx11) * ( (Ly0/Ly00)*u[ry+0][rx+1] + (Ly1/Ly11)*u[ry+1][rx+1] );
+        dx += (Lx0x/Lx00) * ( (Ly0/Ly00)*m[ry+0][rx+0] + (Ly1/Ly11)*m[ry+1][rx+0] );
+        dx += (Lx1x/Lx11) * ( (Ly0/Ly00)*m[ry+0][rx+1] + (Ly1/Ly11)*m[ry+1][rx+1] );
 
         dy = 0.0;
-        dy += (Ly0y/Ly00) * ( (Lx0/Lx00)*u[ry+0][rx+0] + (Lx1/Lx11)*u[ry+0][rx+1] );
-        dy += (Ly1y/Ly11) * ( (Lx0/Lx00)*u[ry+1][rx+0] + (Lx1/Lx11)*u[ry+1][rx+1] );
+        dy += (Ly0y/Ly00) * ( (Lx0/Lx00)*m[ry+0][rx+0] + (Lx1/Lx11)*m[ry+0][rx+1] );
+        dy += (Ly1y/Ly11) * ( (Lx0/Lx00)*m[ry+1][rx+0] + (Lx1/Lx11)*m[ry+1][rx+1] );
     }
 
     if (v == 4)
@@ -362,14 +362,14 @@ auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, double &dx, double &
         const double Ly2 = (py-y0)*(py-y1); const double Ly22 = (y2-y0)*(y2-y1); const double Ly2y = (py-y0)+(py-y1);
 
         dx = 0.0;
-        dx += (Lx0x/Lx00) * ( (Ly0/Ly00)*u[ry-1][rx-1] + (Ly1/Ly11)*u[ry+0][rx-1] + (Ly2/Ly22)*u[ry+1][rx-1] );
-        dx += (Lx1x/Lx11) * ( (Ly0/Ly00)*u[ry-1][rx+0] + (Ly1/Ly11)*u[ry+0][rx+0] + (Ly2/Ly22)*u[ry+1][rx+0] );
-        dx += (Lx2x/Lx22) * ( (Ly0/Ly00)*u[ry-1][rx+1] + (Ly1/Ly11)*u[ry+0][rx+1] + (Ly2/Ly22)*u[ry+1][rx+1] );
+        dx += (Lx0x/Lx00) * ( (Ly0/Ly00)*m[ry-1][rx-1] + (Ly1/Ly11)*m[ry+0][rx-1] + (Ly2/Ly22)*m[ry+1][rx-1] );
+        dx += (Lx1x/Lx11) * ( (Ly0/Ly00)*m[ry-1][rx+0] + (Ly1/Ly11)*m[ry+0][rx+0] + (Ly2/Ly22)*m[ry+1][rx+0] );
+        dx += (Lx2x/Lx22) * ( (Ly0/Ly00)*m[ry-1][rx+1] + (Ly1/Ly11)*m[ry+0][rx+1] + (Ly2/Ly22)*m[ry+1][rx+1] );
 
         dy = 0.0;
-        dy += (Ly0y/Ly00) * ( (Lx0/Lx00)*u[ry-1][rx-1] + (Lx1/Lx11)*u[ry-1][rx+0] + (Lx2/Lx22)*u[ry-1][rx+1] );
-        dy += (Ly1y/Ly11) * ( (Lx0/Lx00)*u[ry+0][rx-1] + (Lx1/Lx11)*u[ry+0][rx+0] + (Lx2/Lx22)*u[ry+0][rx+1] );
-        dy += (Ly2y/Ly22) * ( (Lx0/Lx00)*u[ry+1][rx-1] + (Lx1/Lx11)*u[ry+1][rx+0] + (Lx2/Lx22)*u[ry+1][rx+1] );
+        dy += (Ly0y/Ly00) * ( (Lx0/Lx00)*m[ry-1][rx-1] + (Lx1/Lx11)*m[ry-1][rx+0] + (Lx2/Lx22)*m[ry-1][rx+1] );
+        dy += (Ly1y/Ly11) * ( (Lx0/Lx00)*m[ry+0][rx-1] + (Lx1/Lx11)*m[ry+0][rx+0] + (Lx2/Lx22)*m[ry+0][rx+1] );
+        dy += (Ly2y/Ly22) * ( (Lx0/Lx00)*m[ry+1][rx-1] + (Lx1/Lx11)*m[ry+1][rx+0] + (Lx2/Lx22)*m[ry+1][rx+1] );
     }
 
     if (v == 5)
@@ -399,19 +399,23 @@ auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, double &dx, double &
         const double Ly3 = (py-y0)*(py-y1)*(py-y2); const double Ly33 = (y3-y0)*(y3-y1)*(y3-y2); const double Ly3y = (py-y0)*(py-y1)+(py-y1)*(py-y2)+(py-y2)*(py-y0);
 
         dx = 0.0;
-        dx += (Lx0x/Lx00) * ( (Ly0/Ly00)*u[ry-1][rx-1] + (Ly1/Ly11)*u[ry+0][rx-1] + (Ly2/Ly22)*u[ry+1][rx-1] + (Ly3/Ly33)*u[ry+2][rx-1] );
-        dx += (Lx1x/Lx11) * ( (Ly0/Ly00)*u[ry-1][rx+0] + (Ly1/Ly11)*u[ry+0][rx+0] + (Ly2/Ly22)*u[ry+1][rx+0] + (Ly3/Ly33)*u[ry+2][rx+0] );
-        dx += (Lx2x/Lx22) * ( (Ly0/Ly00)*u[ry-1][rx+1] + (Ly1/Ly11)*u[ry+0][rx+1] + (Ly2/Ly22)*u[ry+1][rx+1] + (Ly3/Ly33)*u[ry+2][rx+1] );
-        dx += (Lx3x/Lx33) * ( (Ly0/Ly00)*u[ry-1][rx+2] + (Ly1/Ly11)*u[ry+0][rx+2] + (Ly2/Ly22)*u[ry+1][rx+2] + (Ly3/Ly33)*u[ry+2][rx+2] );
+        dx += (Lx0x/Lx00) * ( (Ly0/Ly00)*m[ry-1][rx-1] + (Ly1/Ly11)*m[ry+0][rx-1] + (Ly2/Ly22)*m[ry+1][rx-1] + (Ly3/Ly33)*m[ry+2][rx-1] );
+        dx += (Lx1x/Lx11) * ( (Ly0/Ly00)*m[ry-1][rx+0] + (Ly1/Ly11)*m[ry+0][rx+0] + (Ly2/Ly22)*m[ry+1][rx+0] + (Ly3/Ly33)*m[ry+2][rx+0] );
+        dx += (Lx2x/Lx22) * ( (Ly0/Ly00)*m[ry-1][rx+1] + (Ly1/Ly11)*m[ry+0][rx+1] + (Ly2/Ly22)*m[ry+1][rx+1] + (Ly3/Ly33)*m[ry+2][rx+1] );
+        dx += (Lx3x/Lx33) * ( (Ly0/Ly00)*m[ry-1][rx+2] + (Ly1/Ly11)*m[ry+0][rx+2] + (Ly2/Ly22)*m[ry+1][rx+2] + (Ly3/Ly33)*m[ry+2][rx+2] );
 
         dy = 0.0;
-        dy += (Ly0y/Ly00) * ( (Lx0/Lx00)*u[ry-1][rx-1] + (Lx1/Lx11)*u[ry-1][rx+0] + (Lx2/Lx22)*u[ry-1][rx+1] + (Lx3/Lx33)*u[ry-1][rx+2] );
-        dy += (Ly1y/Ly11) * ( (Lx0/Lx00)*u[ry+0][rx-1] + (Lx1/Lx11)*u[ry+0][rx+0] + (Lx2/Lx22)*u[ry+0][rx+1] + (Lx3/Lx33)*u[ry+0][rx+2] );
-        dy += (Ly2y/Ly22) * ( (Lx0/Lx00)*u[ry+1][rx-1] + (Lx1/Lx11)*u[ry+1][rx+0] + (Lx2/Lx22)*u[ry+1][rx+1] + (Lx3/Lx33)*u[ry+1][rx+2] );
-        dy += (Ly3y/Ly33) * ( (Lx0/Lx00)*u[ry+2][rx-1] + (Lx1/Lx11)*u[ry+2][rx+0] + (Lx2/Lx22)*u[ry+2][rx+1] + (Lx3/Lx33)*u[ry+2][rx+2] );
+        dy += (Ly0y/Ly00) * ( (Lx0/Lx00)*m[ry-1][rx-1] + (Lx1/Lx11)*m[ry-1][rx+0] + (Lx2/Lx22)*m[ry-1][rx+1] + (Lx3/Lx33)*m[ry-1][rx+2] );
+        dy += (Ly1y/Ly11) * ( (Lx0/Lx00)*m[ry+0][rx-1] + (Lx1/Lx11)*m[ry+0][rx+0] + (Lx2/Lx22)*m[ry+0][rx+1] + (Lx3/Lx33)*m[ry+0][rx+2] );
+        dy += (Ly2y/Ly22) * ( (Lx0/Lx00)*m[ry+1][rx-1] + (Lx1/Lx11)*m[ry+1][rx+0] + (Lx2/Lx22)*m[ry+1][rx+1] + (Lx3/Lx33)*m[ry+1][rx+2] );
+        dy += (Ly3y/Ly33) * ( (Lx0/Lx00)*m[ry+2][rx-1] + (Lx1/Lx11)*m[ry+2][rx+0] + (Lx2/Lx22)*m[ry+2][rx+1] + (Lx3/Lx33)*m[ry+2][rx+2] );
     }
+}
 
-    return consentrateInPoint(u, v);
+auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &m, double &dx, double &dy, unsigned int v) const -> double
+{
+    derivativesInPoint(m, dx, dy, v);
+    return consentrateInPoint(m, v);
 }
 
 auto DeltaGrid2D::cleanGrid() -> void

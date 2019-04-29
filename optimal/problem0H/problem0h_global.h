@@ -23,5 +23,4 @@
 #include <xlsxwriter.h>
 #endif
 
-
 #endif // PROBLEM0H_GLOBAL_H
