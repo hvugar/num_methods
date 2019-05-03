@@ -10,6 +10,8 @@
 
 using namespace std;
 
+//Depreciated
+
 /**
  * @brief The CauchyProblemNonLocalContions class
  * Численное решение систем дифференциальных уравнений с нелокальными условиями.

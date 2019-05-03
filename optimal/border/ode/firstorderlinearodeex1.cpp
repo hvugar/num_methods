@@ -1,6 +1,6 @@
 #include "firstorderlinearodeex1.h"
 
-#define EXAMPLE_1
+#define EXAMPLE_2
 
 void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
 {

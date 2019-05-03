@@ -3,6 +3,8 @@
 
 #include "islodenlcs.h"
 
+//Depreciated
+
 //class MINIMUMSHARED_EXPORT ISystemLinearODENonLocalContionsV2 : public ISystemLinearODENonLocalContions, public SystemDifferentialEquation
 //{
 //public:

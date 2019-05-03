@@ -9,6 +9,8 @@
 #include <vector>
 #include "islodenlcsv.h"
 
+//Depreciated
+
 //class MINIMUMSHARED_EXPORT ISystemLinearODENonLocalContionsM : public SystemDifferentialEquation, public ISystemLinearODENonLocalContions
 //{
 //public:

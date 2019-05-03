@@ -8,6 +8,8 @@
 //#include <ode/cauchyp.h>
 #include <ode/nlode1o.h>
 
+//Depreciated
+
 //class MINIMUMSHARED_EXPORT ISystemLinearODENonLocalContions
 //{
 //public:
