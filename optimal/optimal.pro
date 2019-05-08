@@ -1,7 +1,8 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 
-SUBDIRS += minimum
+SUBDIRS += minimum \
+    kamil
 #SUBDIRS += rnfunction
 #SUBDIRS += control
 #SUBDIRS += third-party
