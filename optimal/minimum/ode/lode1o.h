@@ -2,6 +2,7 @@
 #define FIRTS_ORDER_LINEAR_ODE_H
 
 #include "diffequ.h"
+#include "../grid/ibvp.h"
 
 struct MINIMUMSHARED_EXPORT NonLocalCondition
 {
@@ -26,7 +27,10 @@ struct Condition
  * @brief Линейное дифференциальное уравнение первого порядка с переменными коэффициентами
  * The Linear ODE 1st order in canonical (normal) form y'(x) = A(x)y(x) + B(x);
  */
-class MINIMUMSHARED_EXPORT FirstOrderLinearODE : virtual public LinearODE
+class MINIMUMSHARED_EXPORT FirstOrderLinearODE :
+        virtual public LinearODE,
+        virtual public InitialValueProblemODE,
+        virtual public BoundaryValueProblemODE
 {
 public:
     enum class AccuracyStep
@@ -47,7 +51,12 @@ public:
      */
     void transferOfCondition(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const;
 
+    void solveInitialValueProblem(DoubleVector &rv) const;
+
+    void solveInitialValueProblem(std::vector<DoubleVector> &rv) const;
+
 protected:
+
     /**
      * @brief A  A nxn dimensional matrix-function
      * @param node
@@ -55,8 +64,8 @@ protected:
      * @param col <= n
      * @return
      */
-
     virtual double A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const = 0;
+
     /**
      * @brief B n dimensional vector-function
      * @param node
@@ -64,6 +73,13 @@ protected:
      * @return
      */
     virtual double B(const PointNodeODE &node, unsigned int row = 1) const = 0;
+
+protected:
+    virtual auto initial(InitialCondition condition, unsigned int row = 1) const -> double = 0;
+    virtual auto boundary(const PointNodeODE &node, BoundaryConditionODE &condition, unsigned int row = 1) const -> double = 0;
+
+protected:
+    virtual auto count() const -> unsigned int = 0;
 
 private:
     void discritize(const std::vector<NonLocalCondition> &co, std::vector<NonLocalCondition> &cn, unsigned int k=4) const;

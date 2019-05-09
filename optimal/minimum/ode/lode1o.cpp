@@ -423,6 +423,70 @@ void FirstOrderLinearODE::transferOfCondition(const std::vector<NonLocalConditio
     C.clear();
 }
 
+void FirstOrderLinearODE::solveInitialValueProblem(DoubleVector &rv) const
+{
+    if (count() != 1) throw ExceptionODE(5);
+
+    const Dimension &dim = dimension();
+    const int min = dim.min();
+    const int max = dim.max();
+    const double h = dim.step();
+    const unsigned int size = static_cast<unsigned int>(max-min);
+
+    rv.resize(size+1);
+
+    double value = initial(InitialCondition::InitialValue);
+
+    rv[0] = value;
+    unsigned int ai = 1; // array index
+    for (int i=min; i<max; i++, ai++)
+    {
+        PointNodeODE node(static_cast<double>(i*h), i);
+        double an = A(node)*h + 1.0;
+        double bn = B(node)*h;
+        rv[ai] = an*rv[ai-1] + bn;
+    }
+}
+
+void FirstOrderLinearODE::solveInitialValueProblem(std::vector<DoubleVector> &rv) const
+{
+    const Dimension &dim = dimension();
+    const int min = dim.min();
+    const int max = dim.max();
+    const double h = dim.step();
+    const unsigned int size = static_cast<unsigned int>(max-min);
+    const unsigned int k = count();
+
+    rv.resize(size+1); for (unsigned int i=0; i<=size; i++) rv[i].resize(k);
+
+    DoubleVector &rv0 = rv[0];
+    for (unsigned int row=1; row<=k; row++)
+    {
+        rv0[row-1] = initial(InitialCondition::InitialValue, row);
+    }
+
+    unsigned int ai = 1; // array index
+    DoubleMatrix _A(k, k, 0.0);
+    DoubleMatrix _B(k, 1, 0.0);
+    DoubleMatrix _I = DoubleMatrix::IdentityMatrix(k);
+    for (int i=min; i<max; i++, ai++)
+    {
+        PointNodeODE node(static_cast<double>(i*h), i);
+
+        for (unsigned int row=1; row<=k; row++)
+        {
+            for (unsigned int col=1; col<=k; col++)
+            {
+                _A[row-1][col-1] = A(node, row, col);
+            }
+            _B[row-1][0] = B(node, row);
+        }
+
+        rv[ai] = (h*_A + _I)*rv[ai-1] + h*_B;
+    }
+}
+
+
 //void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const DoubleVector &bt, std::vector<DoubleVector> &x)
 //{
 //    double h = dimension().step();

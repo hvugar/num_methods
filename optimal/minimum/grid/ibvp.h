@@ -1,8 +1,13 @@
 #ifndef INITIAL_BOUNDARY_VALUE_PROBLEM_H
 #define INITIAL_BOUNDARY_VALUE_PROBLEM_H
 
-#include "bvp.h"
 #include "grid.h"
+#include "ivp.h"
+#include "bvp.h"
+#include <math.h>
+#include "../cmethods.h"
+#include "../linearequation.h"
+#include "../matrix3d.h"
 
 enum SweepMethodDirection
 {
@@ -11,17 +16,12 @@ enum SweepMethodDirection
     Centered = 3
 };
 
-class MINIMUMSHARED_EXPORT InitialValueProblem {};
-
-class MINIMUMSHARED_EXPORT InitialValueProblemODE : public InitialValueProblem {};
-
-class MINIMUMSHARED_EXPORT InitialValueProblemPDE : public InitialValueProblem {};
-
 /**
  * @brief The InitialBoundaryValueProblemPDE class
  * @see ParabolicIBVP
  */
-class MINIMUMSHARED_EXPORT InitialBoundaryValueProblemPDE : public InitialValueProblemPDE,
+class MINIMUMSHARED_EXPORT InitialBoundaryValueProblemPDE :
+        public InitialValueProblemPDE,
         public BoundaryValueProblemPDE
 {
 public:

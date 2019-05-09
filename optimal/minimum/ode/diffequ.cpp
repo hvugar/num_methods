@@ -1,9 +1,5 @@
 #include "diffequ.h"
 
-DifferentialEquation::DifferentialEquation() {}
-
-DifferentialEquation::~DifferentialEquation() {}
-
 OrdinaryDifferentialEquation::OrdinaryDifferentialEquation() {}
 
 OrdinaryDifferentialEquation::~OrdinaryDifferentialEquation() {}

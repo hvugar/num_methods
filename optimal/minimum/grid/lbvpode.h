@@ -2,6 +2,8 @@
 #define LINEARBOUNDARYVALUEPROBLEMODE_H
 
 #include "bvp.h"
+#include "../cmethods.h"
+#include "../linearequation.h"
 
 /**
  * @brief The LinearBoundaryValueProblemODE class

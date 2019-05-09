@@ -1,14 +1,32 @@
-#ifndef BOUNDARYVALUEPROBLEM_H
-#define BOUNDARYVALUEPROBLEM_H
+#ifndef BOUNDARY_VALUE_PROBLEM_H
+#define BOUNDARY_VALUE_PROBLEM_H
 
-#include "../vector2d.h"
-#include "../matrix2d.h"
-#include "../matrix3d.h"
-#include "../cmethods.h"
-#include "../printer.h"
-#include "../linearequation.h"
-#include <math.h>
 #include "grid.h"
+#include "../matrix2d.h"
+
+enum class BoundaryCondition
+{
+    Dirichlet = 1,
+    Neumann = 2,
+    Robin = 3
+};
+
+class BoundaryConditionODE
+{
+public:
+    BoundaryCondition boundaryConditionType;
+    DoubleMatrix a;
+    DoubleMatrix b;
+    double lambda;
+};
+
+class BoundaryConditionPDE
+{
+public:
+    BoundaryCondition type;
+    double coefficientValue;
+    double coefficientDerivative;
+};
 
 /**
  * @brief The BoundaryValueProblem class
@@ -24,7 +42,7 @@ public:
     virtual ~BoundaryValueProblemODE();
 
 protected:
-    virtual double boundary(const PointNodeODE &n, BoundaryCondition &condition) const = 0;
+    virtual auto boundary(const PointNodeODE &node, BoundaryConditionODE &condition, unsigned int row = 1) const -> double = 0;
 };
 
 /**
@@ -36,7 +54,7 @@ public:
     virtual ~BoundaryValueProblemPDE();
 
 protected:
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
+    virtual auto boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double = 0;
 };
 
 #endif // BOUNDARYVALUEPROBLEM_H

@@ -2,6 +2,7 @@
 #define PARABOLIC_IBVP_H
 
 #include "ibvp.h"
+#include "../printer.h"
 
 // a - thermal diffusivity
 // k - thermal conductivity

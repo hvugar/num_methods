@@ -4,20 +4,6 @@
 #include <global.h>
 #include <vector>
 
-enum class BoundaryCondition
-{
-    Dirichlet = 1,
-    Neumann = 2,
-    Robin = 3
-};
-
-enum class InitialCondition
-{
-    InitialValue = 0,
-    FirstDerivative = 1//,
-    //SecondDerivative = 2
-};
-
 enum class FiniteDifference
 {
     Explicit = 0,
@@ -94,14 +80,6 @@ protected:
     double _step;
     int _min;
     int _max;
-};
-
-class BoundaryConditionPDE
-{
-public:
-    BoundaryCondition type;
-    double coefficientValue;
-    double coefficientDerivative;
 };
 
 #endif // GRID_H

@@ -1,5 +1,7 @@
 #include "pibvp.h"
 #include <limits>
+#include "../cmethods.h"
+#include "../linearequation.h"
 
 void CCIParabolicIBVP::calculate1(DoubleVector &u, double a) const
 {

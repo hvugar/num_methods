@@ -18,12 +18,7 @@
  * @see OrdinaryDifferentialEquation
  * @see
  */
-class MINIMUMSHARED_EXPORT DifferentialEquation
-{
-public:
-    DifferentialEquation();
-    virtual ~DifferentialEquation();
-};
+class MINIMUMSHARED_EXPORT DifferentialEquation {};
 
 /**
  * @brief Обыкновенное дифференциальное уравнение
@@ -67,20 +62,21 @@ private:
     Dimension _dimension;
 };
 
+class MINIMUMSHARED_EXPORT CanonicalFormODE : public OrdinaryDifferentialEquation{};
+
 /**
  * @brief Линейное дифференциальное уравнение с переменными коэффициентами
  * @see FirstOrderLinearODE
  * @see SecondOrderLinearODE
  */
-class MINIMUMSHARED_EXPORT LinearODE : public OrdinaryDifferentialEquation
-{};
+class MINIMUMSHARED_EXPORT LinearODE : public CanonicalFormODE {};
 
 /**
  * @brief The NonLinearODE class
  * @see FirstOrderNonLinearODE
  * @see SecondOrderNonLinearODE
  */
-class MINIMUMSHARED_EXPORT NonLinearODE : public OrdinaryDifferentialEquation {};
+class MINIMUMSHARED_EXPORT NonLinearODE : public CanonicalFormODE {};
 
 class MINIMUMSHARED_EXPORT SystemDifferentialEquation
 {

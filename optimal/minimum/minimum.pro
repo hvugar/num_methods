@@ -69,7 +69,8 @@ SOURCES += \
     vectornormalizer.cpp \
     benchmark.cpp \
     deltagrid.cpp \
-    interpolation.cpp
+    interpolation.cpp \
+    grid/ivp.cpp
 
 HEADERS += global.h \
     cmatrix.h \
@@ -122,4 +123,5 @@ HEADERS += global.h \
     vectornormalizer.h \
     benchmark.h \
     deltagrid.h \
-    interpolation.h
+    interpolation.h \
+    grid/ivp.h

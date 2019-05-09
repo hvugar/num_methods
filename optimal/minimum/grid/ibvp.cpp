@@ -1,5 +1,6 @@
 #include "ibvp.h"
 #include "linearequation.h"
+#include <math.h>
 
 InitialBoundaryValueProblemPDE::~InitialBoundaryValueProblemPDE() {}
 
