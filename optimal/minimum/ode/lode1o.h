@@ -51,9 +51,17 @@ public:
      */
     void transferOfCondition(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const;
 
+    /**
+     * @brief solveInitialValueProblem
+     * @param rv
+     */
     void solveInitialValueProblem(DoubleVector &rv) const;
 
-    void solveInitialValueProblem(std::vector<DoubleVector> &rv) const;
+    /**
+     * @brief solveInitialValueProblem
+     * @param rv
+     */
+    void solveInitialValueProblem(std::vector<DoubleVector> &rv, ODESolverMethod method = ODESolverMethod::EULER) const;
 
 protected:
 
@@ -64,7 +72,7 @@ protected:
      * @param col <= n
      * @return
      */
-    virtual double A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const = 0;
+    virtual auto A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const -> double = 0;
 
     /**
      * @brief B n dimensional vector-function
@@ -72,17 +80,37 @@ protected:
      * @param row
      * @return
      */
-    virtual double B(const PointNodeODE &node, unsigned int row = 1) const = 0;
+    virtual auto B(const PointNodeODE &node, unsigned int row = 1) const -> double = 0;
 
 protected:
+    /**
+     * @brief initial
+     * @param condition
+     * @param row
+     * @return
+     */
     virtual auto initial(InitialCondition condition, unsigned int row = 1) const -> double = 0;
+
+    /**
+     * @brief boundary
+     * @param node
+     * @param condition
+     * @param row
+     * @return
+     */
     virtual auto boundary(const PointNodeODE &node, BoundaryConditionODE &condition, unsigned int row = 1) const -> double = 0;
 
 protected:
     virtual auto count() const -> unsigned int = 0;
 
 private:
-    void discritize(const std::vector<NonLocalCondition> &co, std::vector<NonLocalCondition> &cn, unsigned int k=4) const;
+
+    auto discritize(const std::vector<NonLocalCondition> &co, std::vector<NonLocalCondition> &cn, unsigned int k=4) const -> void;
+
+    auto solveInitialValueProblemRK2(std::vector<DoubleVector> &rv) const -> void;
+    auto solveInitialValueProblemRK4(std::vector<DoubleVector> &rv) const -> void;
+    auto solveInitialValueProblemEuler(std::vector<DoubleVector> &rv) const -> void;
+    auto solveInitialValueProblemEulerMod(std::vector<DoubleVector> &rv) const -> void;
 };
 
 

@@ -8,20 +8,20 @@ double FirstOrderNonLinearODE::f(double, double, unsigned int) const { return NA
 
 double FirstOrderNonLinearODE::f(double, const DoubleVector &, unsigned int, unsigned int) const { return NAN; }
 
-void FirstOrderNonLinearODE::cauchyProblem(double x0, double y0, DoubleVector &y, OdeSolverMethod method, Direction direction)
+void FirstOrderNonLinearODE::cauchyProblem(double x0, double y0, DoubleVector &y, ODESolverMethod method, Direction direction)
 {
     switch (method)
     {
-    case OdeSolverMethod::RK2:
+    case ODESolverMethod::RUNGE_KUTTA_2:
         calculateRK2(x0, y0, y, direction);
         break;
-    case OdeSolverMethod::RK4:
+    case ODESolverMethod::RUNGE_KUTTA_4:
         calculateRK4(x0, y0, y, direction);
         break;
-    case OdeSolverMethod::EULER:
+    case ODESolverMethod::EULER:
         calculateEuler(x0, y0, y, direction);
         break;
-    case OdeSolverMethod::EULER_MOD:
+    case ODESolverMethod::EULER_MOD:
         calculateEulerMod(x0, y0, y, direction);
         break;
     }
@@ -205,20 +205,20 @@ void FirstOrderNonLinearODE::calculateEulerMod(double x0, double y0, DoubleVecto
     }
 }
 
-void FirstOrderNonLinearODE::cauchyProblem(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, OdeSolverMethod method, Direction direction)
+void FirstOrderNonLinearODE::cauchyProblem(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, ODESolverMethod method, Direction direction)
 {
     switch (method)
     {
-    case RK2:
+    case ODESolverMethod::RUNGE_KUTTA_2:
         calculateRK2(x0, y0, ry, direction);
         break;
-    case RK4:
+    case ODESolverMethod::RUNGE_KUTTA_4:
         calculateRK4(x0, y0, ry, direction);
         break;
-    case EULER:
+    case ODESolverMethod::EULER:
         calculateEuler(x0, y0, ry, direction);
         break;
-    case EULER_MOD:
+    case ODESolverMethod::EULER_MOD:
         calculateEulerMod(x0, y0, ry, direction);
         break;
     }
@@ -473,20 +473,20 @@ void FirstOrderNonLinearODE::calculateEulerMod(double x0, const DoubleVector &y0
     }
 }
 
-void FirstOrderNonLinearODE::cauchyProblem(double x0, const DoubleVector &y0, DoubleVector &ry, OdeSolverMethod method, Direction direction)
+void FirstOrderNonLinearODE::cauchyProblem(double x0, const DoubleVector &y0, DoubleVector &ry, ODESolverMethod method, Direction direction)
 {
     switch (method)
     {
-    case RK2:
+    case ODESolverMethod::RUNGE_KUTTA_2:
         //calculateRK2(x0, y0, y, direction);
         break;
-    case RK4:
+    case ODESolverMethod::RUNGE_KUTTA_4:
         calculateRK4(x0, y0, ry, direction);
         break;
-    case EULER:
+    case ODESolverMethod::EULER:
         //calculateEuler(x0, y0, y, direction);
         break;
-    case EULER_MOD:
+    case ODESolverMethod::EULER_MOD:
         //calculateEulerMod(x0, y0, y, direction);
         break;
     }

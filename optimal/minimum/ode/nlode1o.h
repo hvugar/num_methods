@@ -9,9 +9,9 @@
 class MINIMUMSHARED_EXPORT FirstOrderNonLinearODE : virtual public NonLinearODE
 {
 public:
-    void cauchyProblem(double x0, double y0, DoubleVector &ry, OdeSolverMethod method = OdeSolverMethod::RK4, Direction direction = Direction::L2R);
-    void cauchyProblem(double x0, const DoubleVector &y0, DoubleVector &ry, OdeSolverMethod method = OdeSolverMethod::RK4, Direction direction = Direction::L2R);
-    void cauchyProblem(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, OdeSolverMethod method = OdeSolverMethod::RK4, Direction direction = Direction::L2R);
+    void cauchyProblem(double x0, double y0, DoubleVector &ry, ODESolverMethod method = ODESolverMethod::RUNGE_KUTTA_4, Direction direction = Direction::L2R);
+    void cauchyProblem(double x0, const DoubleVector &y0, DoubleVector &ry, ODESolverMethod method = ODESolverMethod::RUNGE_KUTTA_4, Direction direction = Direction::L2R);
+    void cauchyProblem(double x0, const DoubleVector &y0, std::vector<DoubleVector> &ry, ODESolverMethod method = ODESolverMethod::RUNGE_KUTTA_4, Direction direction = Direction::L2R);
 
 protected:
     virtual double f(double x, double y, unsigned int k) const;

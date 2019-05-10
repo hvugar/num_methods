@@ -16,7 +16,7 @@ void FirstOrderNonLinearODErEx1::Main(int argc, char **argv)
     }
 
     std::vector<DoubleVector> x;
-    nnl.cauchyProblem(0.0, y0, x, OdeSolverMethod::RK4);
+    nnl.cauchyProblem(0.0, y0, x, ODESolverMethod::RUNGE_KUTTA_4);
 
     for (unsigned int m=0; m<M; m++)
     {

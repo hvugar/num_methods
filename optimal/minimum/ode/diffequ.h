@@ -40,10 +40,11 @@ public:
     OrdinaryDifferentialEquation();
     virtual ~OrdinaryDifferentialEquation();
 
-    enum OdeSolverMethod
+    enum class ODESolverMethod
     {
-        RK2,
-        RK4,
+        RUNGE_KUTTA_2,
+        RUNGE_KUTTA_4,
+        RUNGE_KUTTA_6,
         EULER,
         EULER_MOD
     };

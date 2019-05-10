@@ -19,16 +19,20 @@ public:
      * @param rv
      */
     void solveInitialValueProblem(DoubleVector &rv) const;
+
     /**
      * @brief solveBoundaryValueProblem
      * @param rv
      */
     void solveBoundaryValueProblem(DoubleVector &rv) const;
+
     /**
      * @brief solveInitialValueProblem
      * @param rv
      */
+
     void solveInitialValueProblem(std::vector<DoubleVector> &rv) const;
+
     /**
      * @brief solveBoundaryValueProblem
      * @param rv
@@ -36,15 +40,57 @@ public:
     void solveBoundaryValueProblem(std::vector<DoubleVector> &rv) const;
 
 protected:
+
+    /**
+     * @brief A
+     * @param node
+     * @param row
+     * @param col
+     * @return
+     */
     virtual auto A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const -> double = 0;
+
+    /**
+     * @brief B
+     * @param node
+     * @param row
+     * @param col
+     * @return
+     */
     virtual auto B(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const -> double = 0;
+
+    /**
+     * @brief C
+     * @param node
+     * @param row
+     * @return
+     */
     virtual auto C(const PointNodeODE &node, unsigned int row = 1) const -> double = 0;
 
 protected:
+    /**
+     * @brief initial
+     * @param condition
+     * @param row
+     * @return
+     */
     virtual auto initial(InitialCondition condition, unsigned int row = 1) const -> double = 0;
+
+    /**
+     * @brief boundary
+     * @param node
+     * @param condition
+     * @param row
+     * @return
+     */
     virtual auto boundary(const PointNodeODE &node, BoundaryConditionODE &condition, unsigned int row = 1) const -> double = 0;
 
 protected:
+
+    /**
+     * @brief count
+     * @return
+     */
     virtual auto count() const -> unsigned int = 0;
 };
 
