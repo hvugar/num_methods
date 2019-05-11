@@ -1,8 +1,0 @@
-#ifndef NONLINEARBOUNDARYVALUEPROBLEMODE_H
-#define NONLINEARBOUNDARYVALUEPROBLEMODE_H
-
-#include "bvp.h"
-
-class MINIMUMSHARED_EXPORT NonLinearBoundaryValueProblemODE : protected BoundaryValueProblemODE {};
-
-#endif // NONLINEARBOUNDARYVALUEPROBLEMODE_H
