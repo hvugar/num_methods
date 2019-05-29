@@ -119,7 +119,7 @@ int main()
     double D = b*b - 4.0*a*c;
     double z1_1 = (-b - sqrt(D))/(2.0*a);
     double z1_2 = (-b + sqrt(D))/(2.0*a);
-    double g = y02_m1 - z1_2;
+    double g = y02_m1 - z1_1;
     double z2 = y02_00 + y12_00*g;
     double z3 = y02_p1 + y12_p1*g;
     printf("%f %f %f %f %f\n", z1_1, z1_2, D, z2, z3);

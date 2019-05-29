@@ -37,7 +37,7 @@ public:
     double U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 };
 
-class MINIMUMSHARED_EXPORT CCParabolicIBVP1 : public CCIParabolicIBVP
+class MINIMUMSHARED_EXPORT CCParabolicIBVP1 : public IHeatEquationIBVP
 {
 protected:
     virtual double initial(const SpaceNodePDE &sn) const;

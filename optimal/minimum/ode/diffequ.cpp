@@ -14,15 +14,15 @@ void OrdinaryDifferentialEquation::setDimension(const Dimension &dimension)
     _dimension = dimension;
 }
 
-const Dimension& SystemDifferentialEquation::dimension() const
-{
-    return _dimension;
-}
+//const Dimension& SystemDifferentialEquation::dimension() const
+//{
+//    return _dimension;
+//}
 
-void SystemDifferentialEquation::setDimension(const Dimension &dimension)
-{
-    _dimension = dimension;
-}
+//void SystemDifferentialEquation::setDimension(const Dimension &dimension)
+//{
+//    _dimension = dimension;
+//}
 
 ExceptionODE::ExceptionODE(unsigned int msgCode) NOEXCEPT : _msgCode(msgCode)  {}
 

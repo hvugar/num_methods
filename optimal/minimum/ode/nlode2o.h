@@ -13,4 +13,6 @@ protected:
     virtual double f(double x, const DoubleVector &y, const DoubleVector &dy, unsigned int k, unsigned int i) const;
 };
 
+
+
 #endif // SECOND_ORDER_NON_LINEAR_ODE_H

@@ -8,6 +8,46 @@ double FirstOrderNonLinearODE::f(double, double, unsigned int) const { return NA
 
 double FirstOrderNonLinearODE::f(double, const DoubleVector &, unsigned int, unsigned int) const { return NAN; }
 
+auto FirstOrderNonLinearODE::solveInitialValueProblemEuler(DoubleVector &rv) const -> void
+{
+    if (count() != 1) throw ExceptionODE(5);
+
+    const int min = dimension().min();
+    const int max = dimension().max();
+    const unsigned int size = static_cast<unsigned int>(dimension().size());
+    const double h = dimension().step();
+
+    rv.resize(size+1);
+
+    //if (direction == R2L)
+
+    rv[0] = 0;//initial(InitialCondition::InitialValue);
+    unsigned int ai = 1; // array index
+
+    DoubleVector v(1);
+    for (int i=min; i<max; i++, ai++)
+    {
+        PointNodeODE node(static_cast<double>(i*h), i);
+        v[0] = rv[ai-1];
+        rv[ai] = rv[ai-1] + h*f(node, v);
+    }
+
+//    if (direction == R2L)
+//    {
+//        double xn = x0;
+//        double yn = y0;
+
+//        y[N] = yn;
+//        for (unsigned int n=N-1; n!=UINT32_MAX; n--)
+//        {
+//            yn = yn - h*f(xn, yn, n+1);
+//            y[n] = yn;
+//            xn -= h;
+//        }
+//    }
+
+}
+
 void FirstOrderNonLinearODE::cauchyProblem(double x0, double y0, DoubleVector &y, ODESolverMethod method, Direction direction)
 {
     switch (method)
@@ -133,8 +173,11 @@ void FirstOrderNonLinearODE::calculateRK4(double x0, double y0, DoubleVector &y,
 
 void FirstOrderNonLinearODE::calculateEuler(double x0, double y0, DoubleVector &y, Direction direction)
 {
+    //const int min = dimension().min();
+    //const int max = dimension().max();
+    //const int size = dimension().size();
+    const double h = dimension().step();
     unsigned int N = dimension().size();
-    double h = dimension().step();
 
     y.clear();
     y.resize(N+1);
@@ -242,12 +285,12 @@ void FirstOrderNonLinearODE::calculateRK2(double x0, const DoubleVector &y0, std
         double h2 = h/2.0;
         ry[0] = y0;
 
-//        double xn = x0;
+        //        double xn = x0;
 
         DoubleVector yn(m);
 
         /* initializing */
-//        for (unsigned int j=0; j<n; j++) ry[j][0] = y0[j];
+        //        for (unsigned int j=0; j<n; j++) ry[j][0] = y0[j];
 
         for (int i=min+1; i<=max; i++)
         {

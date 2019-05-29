@@ -11,7 +11,10 @@ enum class BoundaryCondition
     Robin = 3
 };
 
-class BoundaryConditionODE
+/**
+ * @brief The BoundaryConditionODE class
+ */
+class MINIMUMSHARED_EXPORT BoundaryConditionODE
 {
 public:
     BoundaryCondition boundaryConditionType;
@@ -20,7 +23,10 @@ public:
     double lambda;
 };
 
-class BoundaryConditionPDE
+/**
+ * @brief The BoundaryConditionPDE class
+ */
+class MINIMUMSHARED_EXPORT BoundaryConditionPDE
 {
 public:
     BoundaryCondition type;

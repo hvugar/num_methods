@@ -1,8 +1,7 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 
-SUBDIRS += minimum \
-    kamil
+SUBDIRS += minimum
 #SUBDIRS += rnfunction
 #SUBDIRS += control
 #SUBDIRS += third-party
@@ -12,13 +11,14 @@ SUBDIRS += minimum \
 #SUBDIRS += discrete
 #SUBDIRS += imager
 SUBDIRS += imaging
-SUBDIRS += border
-SUBDIRS += problem0H
+#SUBDIRS += border
+#SUBDIRS += problem0H
 #SUBDIRS += problem1
-SUBDIRS += problem2P
-SUBDIRS += problem1H
+#SUBDIRS += problem2P
+#SUBDIRS += problem1H
 SUBDIRS += problem2H
 #SUBDIRS += heightMap3d
+#SUBDIRS += kamil
 SUBDIRS += main
 
 main.depends = minimum

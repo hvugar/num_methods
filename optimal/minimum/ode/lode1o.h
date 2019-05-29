@@ -109,6 +109,7 @@ private:
 
     auto solveInitialValueProblemRK2(std::vector<DoubleVector> &rv) const -> void;
     auto solveInitialValueProblemRK4(std::vector<DoubleVector> &rv) const -> void;
+    auto solveInitialValueProblemRK6(std::vector<DoubleVector> &rv) const -> void;
     auto solveInitialValueProblemEuler(std::vector<DoubleVector> &rv) const -> void;
     auto solveInitialValueProblemEulerMod(std::vector<DoubleVector> &rv) const -> void;
 };

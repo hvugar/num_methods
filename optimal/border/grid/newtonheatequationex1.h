@@ -1,7 +1,7 @@
 #ifndef NEWTONHEATEQUATIONEX1_H
 #define NEWTONHEATEQUATIONEX1_H
 
-#include <grid/nhpibvp.h>
+#include <grid/pibvp.h>
 
 #define SAMPLE_2
 

@@ -45,12 +45,24 @@ struct PROBLEM2HSHARED_EXPORT EquaParameter2H
 
     unsigned int Nc;
     unsigned int No;
+
+#if defined (DISCRETE_DELTA_TIME_1)
     struct {
         std::vector<DoubleMatrix> k;
         std::vector<DoubleMatrix> z;
         std::vector<SpacePoint> ksi;
         std::vector<SpacePoint> eta;
     } opt, reg;
+#endif
+
+#if defined (DISCRETE_DELTA_TIME_2)
+    struct {
+        DoubleMatrix k;
+        DoubleMatrix z;
+        std::vector<SpacePoint> ksi;
+        std::vector<SpacePoint> eta;
+    } opt, reg;
+#endif
 
     auto initPulseParemeters(unsigned int Np) -> void;
     auto initParemeters(unsigned int Nt, unsigned int Nc, unsigned int No) -> void;
@@ -97,46 +109,46 @@ struct GridSpace2D
     double hy;
 };
 
-struct PROBLEM2HSHARED_EXPORT OptimizeParameterH
-{
-#if defined (DISCRETE_DELTA_TIME)
-    DoubleMatrix *k;
-    DoubleMatrix *z;
-#else
-    DoubleMatrix k;
-    DoubleMatrix z;
-#endif
-    std::vector<SpacePoint> xi;
-    std::vector<SpacePoint> eta;
+//struct PROBLEM2HSHARED_EXPORT OptimizeParameterH
+//{
+//#if defined (DISCRETE_DELTA_TIME)
+//    DoubleMatrix *k;
+//    DoubleMatrix *z;
+//#else
+//    DoubleMatrix k;
+//    DoubleMatrix z;
+//#endif
+//    std::vector<SpacePoint> xi;
+//    std::vector<SpacePoint> eta;
 
-#ifdef TIME_DISCRETE_H
-    std::vector<double> tau;
-#endif
-};
+//#ifdef TIME_DISCRETE_H
+//    std::vector<double> tau;
+//#endif
+//};
 
-struct PROBLEM2HSHARED_EXPORT EquationParameterH
-{
-    double a;
-    double alpha;
+//struct PROBLEM2HSHARED_EXPORT EquationParameterH
+//{
+//    double a;
+//    double alpha;
 
-    unsigned int No;
-    unsigned int Nc;
+//    unsigned int No;
+//    unsigned int Nc;
 
-#if defined (DISCRETE_DELTA_TIME)
-    unsigned int Nt;
-    std::vector<TimeNodePDE> timeMoments;
-#endif
+//#if defined (DISCRETE_DELTA_TIME)
+//    unsigned int Nt;
+//    std::vector<TimeNodePDE> timeMoments;
+//#endif
 
-    unsigned int Ns;
-    std::vector<InitialPulse2D> pulses;
+//    unsigned int Ns;
+//    std::vector<InitialPulse2D> pulses;
 
-    DoubleVector Q1;
-    DoubleVector Q2;
+//    DoubleVector Q1;
+//    DoubleVector Q2;
 
-#ifdef TIME_DISCRETE_H
-    unsigned int Nt;
-#endif
-};
+//#ifdef TIME_DISCRETE_H
+//    unsigned int Nt;
+//#endif
+//};
 
 struct PROBLEM2HSHARED_EXPORT ExtendedSpacePointNodeH
 {

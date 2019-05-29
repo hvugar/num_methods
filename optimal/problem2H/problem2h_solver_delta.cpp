@@ -20,16 +20,16 @@ auto Problem2HDirichletDelta::example1() -> void
 
     equaPrm.Nt = 10;
     equaPrm.tm.resize(equaPrm.Nt);
-//    equaPrm.tm[0] = TimeNodePDE( 20, 0.2);
-//    equaPrm.tm[1] = TimeNodePDE( 40, 0.4);
-//    equaPrm.tm[2] = TimeNodePDE( 70, 0.7);
-//    equaPrm.tm[3] = TimeNodePDE(100, 1.0);
-//    equaPrm.tm[4] = TimeNodePDE(120, 1.2);
-//    equaPrm.tm[5] = TimeNodePDE(150, 1.5);
-//    equaPrm.tm[6] = TimeNodePDE(180, 1.8);
-//    equaPrm.tm[7] = TimeNodePDE(210, 2.1);
-//    equaPrm.tm[8] = TimeNodePDE(240, 2.4);
-//    equaPrm.tm[9] = TimeNodePDE(290, 2.9);
+    //    equaPrm.tm[0] = TimeNodePDE( 20, 0.2);
+    //    equaPrm.tm[1] = TimeNodePDE( 40, 0.4);
+    //    equaPrm.tm[2] = TimeNodePDE( 70, 0.7);
+    //    equaPrm.tm[3] = TimeNodePDE(100, 1.0);
+    //    equaPrm.tm[4] = TimeNodePDE(120, 1.2);
+    //    equaPrm.tm[5] = TimeNodePDE(150, 1.5);
+    //    equaPrm.tm[6] = TimeNodePDE(180, 1.8);
+    //    equaPrm.tm[7] = TimeNodePDE(210, 2.1);
+    //    equaPrm.tm[8] = TimeNodePDE(240, 2.4);
+    //    equaPrm.tm[9] = TimeNodePDE(290, 2.9);
 
     for (unsigned int s=0; s<equaPrm.Nt; s++)
     {
@@ -73,43 +73,43 @@ auto Problem2HDirichletDelta::example1() -> void
     for (unsigned int i= 0; i<40; i++) ox[i] *= 10.0;
     for (unsigned int i=40; i<80; i++) ox[i] *= 10.0;
 
-//    DoubleVector ox;
-//    ox << -0.008415 << -0.009093 << -0.009581 << -0.008411 << -0.002504 << -0.001411 << -0.002457 << -0.003568 << -0.002481 << -0.001568;
-//    ox << -0.007568 << -0.009259 << -0.006758 << -0.002589 << -0.005989 << -0.002794 << -0.002389 << -0.003974 << -0.004279 << -0.006570;
-//    ox <<  0.001794 << -0.004570 << -0.002476 << -0.006325 << -0.004125 << -0.002354 << -0.001286 << -0.002321 << -0.004694 << -0.001281;
-//    ox << -0.004281 <<  0.003440 << -0.001575 <<  0.005440 <<  0.001403 <<  0.001845 <<  0.006942 <<  0.004512 <<  0.003267 <<  0.004456;
-//    ox <<  0.005403 << -0.004161 << -0.001461 << -0.009245 << -0.008121 << -0.001997 << -0.001299 << -0.005663 << -0.008647 << -0.002357;
-//    ox << -0.004593 <<  0.002837 << -0.006536 <<  0.002975 <<  0.008237 <<  0.009602 <<  0.002237 <<  0.009512 <<  0.008612 <<  0.007539;
-//    ox <<  0.003602 <<  0.005529 <<  0.006529 << -0.001455 <<  0.002539 << -0.002425 << -0.003428 << -0.009751 << -0.004145 << -0.002851;
-//    ox << -0.005251 << -0.008391 << -0.009111 << -0.002839 << -0.002831 <<  0.005444 << -0.001839 <<  0.002364 <<  0.006544 <<  0.008439;
-//    ox <<  0.344500 <<  0.382500 <<  0.826700 <<  0.916400;
-//    ox <<  0.228200 <<  0.636700 <<  0.718400 <<  0.373600;
-//    //ox <<  0.144500 <<  0.282500 <<  0.626700 <<  0.716400;
-//    //ox <<  0.328200 <<  0.686700 <<  0.618400 <<  0.473600;
+    //    DoubleVector ox;
+    //    ox << -0.008415 << -0.009093 << -0.009581 << -0.008411 << -0.002504 << -0.001411 << -0.002457 << -0.003568 << -0.002481 << -0.001568;
+    //    ox << -0.007568 << -0.009259 << -0.006758 << -0.002589 << -0.005989 << -0.002794 << -0.002389 << -0.003974 << -0.004279 << -0.006570;
+    //    ox <<  0.001794 << -0.004570 << -0.002476 << -0.006325 << -0.004125 << -0.002354 << -0.001286 << -0.002321 << -0.004694 << -0.001281;
+    //    ox << -0.004281 <<  0.003440 << -0.001575 <<  0.005440 <<  0.001403 <<  0.001845 <<  0.006942 <<  0.004512 <<  0.003267 <<  0.004456;
+    //    ox <<  0.005403 << -0.004161 << -0.001461 << -0.009245 << -0.008121 << -0.001997 << -0.001299 << -0.005663 << -0.008647 << -0.002357;
+    //    ox << -0.004593 <<  0.002837 << -0.006536 <<  0.002975 <<  0.008237 <<  0.009602 <<  0.002237 <<  0.009512 <<  0.008612 <<  0.007539;
+    //    ox <<  0.003602 <<  0.005529 <<  0.006529 << -0.001455 <<  0.002539 << -0.002425 << -0.003428 << -0.009751 << -0.004145 << -0.002851;
+    //    ox << -0.005251 << -0.008391 << -0.009111 << -0.002839 << -0.002831 <<  0.005444 << -0.001839 <<  0.002364 <<  0.006544 <<  0.008439;
+    //    ox <<  0.344500 <<  0.382500 <<  0.826700 <<  0.916400;
+    //    ox <<  0.228200 <<  0.636700 <<  0.718400 <<  0.373600;
+    //    //ox <<  0.144500 <<  0.282500 <<  0.626700 <<  0.716400;
+    //    //ox <<  0.328200 <<  0.686700 <<  0.618400 <<  0.473600;
 
-//    DoubleVector rx;
-//    rx << -0.107629 << -0.158044 << -0.108772 << -0.111354 << -0.087842 << -0.182702 << -0.178399 << -0.095018 <<  0.077698 <<  0.037216;
-//    rx << -0.029577 << -0.112046 << -0.001187 <<  0.164995 <<  0.045846 <<  0.077016 << -0.110522 << -0.062707 << -0.125581 << -0.139676;
-//    rx <<  0.015192 << -0.031486 << -0.055354 << -0.027126 << -0.169134 << -0.098646 <<  0.146419 <<  0.165281 << -0.146657 << -0.034489;
-//    rx << -0.066862 << -0.009731 <<  0.012910 <<  0.121064 <<  0.024004 <<  0.118247 <<  0.030304 <<  0.027209 <<  0.041410 <<  0.101089;
-//    rx <<  0.022128 << -0.077645 << -0.019998 << -0.089765 << -0.004332 <<  0.082125 <<  0.090855 <<  0.009114 << -0.094706 << -0.021583;
-//    rx <<  0.009802  << 0.115759 << -0.108259  << 0.032727 << -0.038252 << -0.036528 << -0.008582 <<  0.054865 << -0.001345 << -0.072882;
-//    rx <<  0.032744 <<  0.061813 <<  0.066693 <<  0.005660 <<  0.196938 <<  0.081715 << -0.114564 << -0.185153 << -0.147540 << -0.038948;
-//    rx << -0.073464 << -0.077934 << -0.116422 << -0.004037 << -0.045240 << -0.025326 <<  0.011253 <<  0.031801 <<  0.095917 <<  0.136037;
-//    rx <<  0.154108 <<  0.299017 <<  0.618269 <<  0.709296;
-//    rx <<  0.366528 <<  0.634731 <<  0.602577 <<  0.394226;
+    //    DoubleVector rx;
+    //    rx << -0.107629 << -0.158044 << -0.108772 << -0.111354 << -0.087842 << -0.182702 << -0.178399 << -0.095018 <<  0.077698 <<  0.037216;
+    //    rx << -0.029577 << -0.112046 << -0.001187 <<  0.164995 <<  0.045846 <<  0.077016 << -0.110522 << -0.062707 << -0.125581 << -0.139676;
+    //    rx <<  0.015192 << -0.031486 << -0.055354 << -0.027126 << -0.169134 << -0.098646 <<  0.146419 <<  0.165281 << -0.146657 << -0.034489;
+    //    rx << -0.066862 << -0.009731 <<  0.012910 <<  0.121064 <<  0.024004 <<  0.118247 <<  0.030304 <<  0.027209 <<  0.041410 <<  0.101089;
+    //    rx <<  0.022128 << -0.077645 << -0.019998 << -0.089765 << -0.004332 <<  0.082125 <<  0.090855 <<  0.009114 << -0.094706 << -0.021583;
+    //    rx <<  0.009802  << 0.115759 << -0.108259  << 0.032727 << -0.038252 << -0.036528 << -0.008582 <<  0.054865 << -0.001345 << -0.072882;
+    //    rx <<  0.032744 <<  0.061813 <<  0.066693 <<  0.005660 <<  0.196938 <<  0.081715 << -0.114564 << -0.185153 << -0.147540 << -0.038948;
+    //    rx << -0.073464 << -0.077934 << -0.116422 << -0.004037 << -0.045240 << -0.025326 <<  0.011253 <<  0.031801 <<  0.095917 <<  0.136037;
+    //    rx <<  0.154108 <<  0.299017 <<  0.618269 <<  0.709296;
+    //    rx <<  0.366528 <<  0.634731 <<  0.602577 <<  0.394226;
     
-//    for (unsigned int i= 0; i<40; i++) ox[i] *= 10.0;
-//    for (unsigned int i=40; i<80; i++) ox[i] *= 10.0;
+    //    for (unsigned int i= 0; i<40; i++) ox[i] *= 10.0;
+    //    for (unsigned int i=40; i<80; i++) ox[i] *= 10.0;
 
-//    ox = rx;
+    //    ox = rx;
     equaPrm.OptimalParameterFromVector(ox);
     equaPrm.RegularParameterFromVector(rx);
 
     // Penalty paramteres
     DoubleVector r; r << 0.0000;// << 0.0000 << 0.0000;
     // Regularization coefficients
-//    DoubleVector e; e << 0.0000 << 0.0000 << 0.0000;
+    //    DoubleVector e; e << 0.0000 << 0.0000 << 0.0000;
     DoubleVector e; e << 0.0000 << 0.0100 << 0.0000;
 
     DoubleVector e1; e1 << 0.1000 << 0.1000 << 0.1000;
@@ -137,12 +137,12 @@ auto Problem2HDirichletDelta::example1() -> void
         if (i==0)
         {
             prob.equaPrm.OptimalParameterToVector(x);
-//            prob.checkGradient1(prob);
-//            prob.optimizeK = true;
-//            prob.optimizeZ = true;
-//            prob.optimizeO = false;
-//            prob.optimizeC = false;
-//            return;
+            //            prob.checkGradient1(prob);
+            //            prob.optimizeK = true;
+            //            prob.optimizeZ = true;
+            //            prob.optimizeO = false;
+            //            prob.optimizeC = false;
+            //            return;
         }
 
         //ConjugateGradient g;
@@ -574,6 +574,7 @@ auto Problem2HDirichletDelta::norm(const EquaParameter2H &prm) const -> double
     const unsigned int No = prm.No;
     const unsigned int Nt = prm.Nt;
 
+#if defined (DISCRETE_DELTA_TIME_1)
     for (unsigned int s=0; s<Nt; s++)
     {
         const DoubleMatrix &ok = prm.opt.k[s];
@@ -590,6 +591,23 @@ auto Problem2HDirichletDelta::norm(const EquaParameter2H &prm) const -> double
             }
         }
     }
+#endif
+
+#if defined (DISCRETE_DELTA_TIME_2)
+    const DoubleMatrix &ok = prm.opt.k;
+    const DoubleMatrix &rk = prm.reg.k;
+    const DoubleMatrix &oz = prm.opt.z;
+    const DoubleMatrix &rz = prm.reg.z;
+
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        for (unsigned int j=0; j<No; j++)
+        {
+            _norm += (ok[i][j] - rk[i][j])*(ok[i][j] - rk[i][j]);
+            _norm += (oz[i][j] - rz[i][j])*(oz[i][j] - rz[i][j]);
+        }
+    }
+#endif
 
     for (unsigned int j=0; j<No; j++)
     {
@@ -656,6 +674,7 @@ auto Problem2HDirichletDelta::g0i(unsigned int i, unsigned int s, const spif_vec
     const DoubleVector &vmax = funcPrm.vmax;
 
     double vi = 0.0;
+#if defined (DISCRETE_DELTA_TIME_1)
     for (unsigned int j=0; j<No; j++)
     {
         const DoubleMatrix &ok = prm.opt.k[s];
@@ -664,6 +683,7 @@ auto Problem2HDirichletDelta::g0i(unsigned int i, unsigned int s, const spif_vec
         const SpacePointInfoH &u_xij = u_info[j];
         vi += ok[i][j] * ( u_xij.vl[ln] - oz[i][j] );
     }
+#endif
 
     return ( vmax.at(i) + vmin.at(i) )/2.0 - vi;
 }
@@ -705,6 +725,7 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
             if (optimizeK)
             {
                 //puts("Calculating k gradients...");
+#if defined (DISCRETE_DELTA_TIME_1)
                 for (unsigned int s=0; s<Nt; s++)
                 {
                     const unsigned int ln = 2*equaPrm.tm[s].i;
@@ -727,9 +748,35 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
                         }
                     }
                 }
+#endif
+#if defined (DISCRETE_DELTA_TIME_2)
+                for (unsigned int s=0; s<Nt; s++)
+                {
+                    const unsigned int ln = 2*equaPrm.tm[s].i;
+                    for (unsigned int i=0; i<Nc; i++)
+                    {
+                        const SpacePointInfoH &pi = p_info[i];
+                        for (unsigned int j=0; j<No; j++)
+                        {
+                            const SpacePointInfoH &uj = u_info[j];
+                            double zij = equaPrm.opt.z[i][j];
+                            double grad_Kij = 0.0;
+                            grad_Kij += -(uj.vl[ln] - zij) * pi.vl[ln];
+#ifdef USE_PENALTY
+                            grad_Kij += -(uj.vl[ln] - zij) * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
+#endif
+#ifdef USE_NORM
+                            grad_Kij += +2.0*regEpsilon*(equaPrm.opt.k[i][j] - equaPrm.reg.k[i][j]);
+#endif
+                            g[gi++] += grad_Kij * (1.0/(double(Q1.length())*double(Q2.length())));
+                        }
+                    }
+                }
+#endif
             }
             else
             {
+#if defined (DISCRETE_DELTA_TIME_1)
                 for (unsigned int s=0; s<Nt; s++)
                 {
                     for (unsigned int i=0; i<Nc; i++)
@@ -740,12 +787,23 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
                         }
                     }
                 }
+#endif
+#if defined (DISCRETE_DELTA_TIME_2)
+                for (unsigned int i=0; i<Nc; i++)
+                {
+                    for (unsigned int j=0; j<No; j++)
+                    {
+                        g[gi++] = 0.0;
+                    }
+                }
+#endif
             }
 
             // z
             if (optimizeZ)
             {
                 //puts("Calculating z gradients...");
+#if defined (DISCRETE_DELTA_TIME_1)
                 for (unsigned int s=0; s<Nt; s++)
                 {
                     const unsigned int ln = 2*equaPrm.tm[s].i;
@@ -767,9 +825,11 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
                         }
                     }
                 }
+#endif
             }
             else
             {
+#if defined (DISCRETE_DELTA_TIME_1)
                 for (unsigned int s=0; s<Nt; s++)
                 {
                     for (unsigned int i=0; i<Nc; i++)
@@ -780,12 +840,14 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
                         }
                     }
                 }
+#endif
             }
 
             // xi
             if (optimizeO)
             {
                 //puts("Calculating o gradients...");
+#if defined (DISCRETE_DELTA_TIME_1)
                 for (unsigned int j=0; j<No; j++)
                 {
                     const SpacePointInfoH &uj = u_info[j];
@@ -814,20 +876,24 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
                     g[gi++] += gradXijX * (1.0/(double(Q1.length())*double(Q2.length())));
                     g[gi++] += gradXijY * (1.0/(double(Q1.length())*double(Q2.length())));
                 }
+#endif
             }
             else
             {
+#if defined (DISCRETE_DELTA_TIME_1)
                 for (unsigned int j=0; j<No; j++)
                 {
                     g[gi++] = 0.0;
                     g[gi++] = 0.0;
                 }
+#endif
             }
 
             // eta
             if (optimizeC)
             {
                 //puts("Calculating c gradients...");
+#if defined (DISCRETE_DELTA_TIME_1)
                 for (unsigned int i=0; i<Nc; i++)
                 {
                     const SpacePointInfoH &pi = p_info[i];
@@ -851,14 +917,17 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
                     g[gi++] += gradEtaiX * (1.0/(double(Q1.length())*double(Q2.length())));
                     g[gi++] += gradEtaiY * (1.0/(double(Q1.length())*double(Q2.length())));
                 }
+#endif
             }
             else
             {
+#if defined (DISCRETE_DELTA_TIME_1)
                 for (unsigned int i=0; i<Nc; i++)
                 {
                     g[gi++] = 0.0;
                     g[gi++] = 0.0;
                 }
+#endif
             }
 
             for (unsigned int i=0; i<u_info.size(); i++) u_info[i].clear(); u_info.clear();
@@ -1591,12 +1660,12 @@ auto Problem2HDirichletDelta::fxMatrixForward(const DoubleMatrix &u, const std::
         ////printf("ln: %d %d\n", ln, sln);
 
         if (ln == 2*sln) { wt = 2.0/ht; } else { continue; }
-//        if (2*sln <= ln && ln <= 2*sln+16) { wt = 2.0*(1.0/(sqrt(2.0*M_PI)*sigma)) * exp(((ts-t)*(ts-t))/(-2.0*sigma*sigma)); } else { continue; }
-//        if (2*sln-8 <= ln && ln <= 2*sln+8) { wt = (1.0/(sqrt(2.0*M_PI)*sigma)) * exp(((ts-t)*(ts-t))/(-2.0*sigma*sigma)); } else { continue; }
-//        if (wt != 0.0 && s == 0)
-//        {
-//            printf("%d %d %.10f %.10f %.10f\n", ln, 2*sln, wt, ts, t);
-//        }
+        //        if (2*sln <= ln && ln <= 2*sln+16) { wt = 2.0*(1.0/(sqrt(2.0*M_PI)*sigma)) * exp(((ts-t)*(ts-t))/(-2.0*sigma*sigma)); } else { continue; }
+        //        if (2*sln-8 <= ln && ln <= 2*sln+8) { wt = (1.0/(sqrt(2.0*M_PI)*sigma)) * exp(((ts-t)*(ts-t))/(-2.0*sigma*sigma)); } else { continue; }
+        //        if (wt != 0.0 && s == 0)
+        //        {
+        //            printf("%d %d %.10f %.10f %.10f\n", ln, 2*sln, wt, ts, t);
+        //        }
 
         double* _u = new double[No];
         for (unsigned int j=0; j<No; j++)
@@ -1611,7 +1680,9 @@ auto Problem2HDirichletDelta::fxMatrixForward(const DoubleMatrix &u, const std::
             _v[i] = 0.0;
             for (unsigned int j=0; j<No; j++)
             {
+#if defined (DISCRETE_DELTA_TIME_1)
                 _v[i] += equaPrm.opt.k[s][i][j] * (_u[j] - equaPrm.opt.z[s][i][j]);
+#endif
             }
         }
         delete [] _u;
@@ -1663,8 +1734,8 @@ auto Problem2HDirichletDelta::fxMatrixBackward(const DoubleMatrix &p, const std:
         ////printf("ln: %d %d\n", ln, sln);
 
         if (ln == 2*sln) { wt = 2.0/ht; } else { continue; }
-//        if (2*sln-16 <= ln && ln <= 2*sln) { wt = 2.0*(1.0/(sqrt(2.0*M_PI)*sigma)) * exp(((ts-t)*(ts-t))/(-2.0*sigma*sigma)); } else { continue; }
-//        if (2*sln-8 <= ln && ln <= 2*sln+8) { wt = (1.0/(sqrt(2.0*M_PI)*sigma)) * exp(((ts-t)*(ts-t))/(-2.0*sigma*sigma)); } else { continue; }
+        //        if (2*sln-16 <= ln && ln <= 2*sln) { wt = 2.0*(1.0/(sqrt(2.0*M_PI)*sigma)) * exp(((ts-t)*(ts-t))/(-2.0*sigma*sigma)); } else { continue; }
+        //        if (2*sln-8 <= ln && ln <= 2*sln+8) { wt = (1.0/(sqrt(2.0*M_PI)*sigma)) * exp(((ts-t)*(ts-t))/(-2.0*sigma*sigma)); } else { continue; }
 
         double* _p = new double[Nc];
         for (unsigned int i=0; i<Nc; i++)
@@ -1678,7 +1749,9 @@ auto Problem2HDirichletDelta::fxMatrixBackward(const DoubleMatrix &p, const std:
             _w[j] = 0.0;
             for (unsigned int i=0; i<Nc; i++)
             {
+#if defined (DISCRETE_DELTA_TIME_1)
                 _w[j] += equaPrm.opt.k[s][i][j] * _p[i];
+#endif
 #ifdef USE_PENALTY
                 _w[j] += equaPrm.opt.k[s][i][j] * 2.0*r*gpi(i, s, u_info, equaPrm)*sgn(g0i(i, s, u_info, equaPrm));
 #endif
@@ -1925,8 +1998,14 @@ auto Problem2HDirichletDelta::v(unsigned int i, unsigned int s, const EquaParame
 {
     const unsigned int ln = 2*prm.tm[s].i;
     const unsigned int No = static_cast<unsigned int>(prm.No);
+#if defined (DISCRETE_DELTA_TIME_1)
     const DoubleMatrix &ok = prm.opt.k[s];
     const DoubleMatrix &oz = prm.opt.z[s];
+#endif
+#if defined (DISCRETE_DELTA_TIME_2)
+    const DoubleMatrix &ok = prm.opt.k;
+    const DoubleMatrix &oz = prm.opt.z;
+#endif
 
     double v = 0.0;
     for (unsigned int j=0; j<No; j++)

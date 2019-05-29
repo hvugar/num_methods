@@ -43,14 +43,9 @@ SOURCES += \
     cmethods.c \
     grid/bvp.cpp \
     grid/ibvp.cpp \
-    grid/lbvpode.cpp \
-    grid/nlbvpode.cpp \
     grid/pibvp.cpp \
     grid/hibvp.cpp \
-    grid/hpibvp.cpp \
     grid/grid.cpp \
-    grid/bpibvp.cpp \
-    grid/nhpibvp.cpp \
     grid/integral1.cpp \
     nonuniformgrid.cpp \
     utils/matrix.cpp \
@@ -95,14 +90,9 @@ HEADERS += global.h \
     cmethods.h \
     grid/bvp.h \
     grid/ibvp.h \
-    grid/lbvpode.h \
-    grid/nlbvpode.h \
     grid/pibvp.h \
     grid/hibvp.h \
-    grid/hpibvp.h \
     grid/grid.h \
-    grid/bpibvp.h \
-    grid/nhpibvp.h \
     grid/integral1.h \
     nonuniformgrid.h \
     #ode/cauchyp.h \

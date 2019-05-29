@@ -52,13 +52,13 @@ public:
     enum Direction
     {
         L2R, // Left to Right
-        R2L  // Right to Left
+        R2L  // Right to Left000
     };
 
-    const Dimension& dimension() const;
-    void setDimension(const Dimension &dimension);
+    auto dimension() const -> const Dimension&;
+    auto setDimension(const Dimension &dimension) -> void;
 
-    virtual unsigned int count() const = 0;
+    virtual auto count() const -> unsigned int = 0;
 private:
     Dimension _dimension;
 };
@@ -79,15 +79,15 @@ class MINIMUMSHARED_EXPORT LinearODE : public CanonicalFormODE {};
  */
 class MINIMUMSHARED_EXPORT NonLinearODE : public CanonicalFormODE {};
 
-class MINIMUMSHARED_EXPORT SystemDifferentialEquation
-{
-public:
-    const Dimension& dimension() const;
-    void setDimension(const Dimension &dimension);
+//class MINIMUMSHARED_EXPORT SystemDifferentialEquation
+//{
+//public:
+//    const Dimension& dimension() const;
+//    void setDimension(const Dimension &dimension);
 
-protected:
-    Dimension _dimension;
-};
+//protected:
+//    Dimension _dimension;
+//};
 
 class ExceptionODE : std::exception
 {

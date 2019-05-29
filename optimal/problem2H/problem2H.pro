@@ -23,8 +23,14 @@ QT          += core gui widgets
 OBJECTS_DIR = release/.obj
 MOC_DIR = release/.moc
 
+#HEADERS += problem2hnm.h
+#SOURCES += problem2hnm.cpp
+
 HEADERS += problem2h_solver_delta.h
 SOURCES += problem2h_solver_delta.cpp
+
+#HEADERS += problem2h_exporter.h
+#SOURCES += problem2h_exporter.cpp
 
 HEADERS += problem2h_global.h \
            problem2h_common.h
@@ -45,13 +51,8 @@ SOURCES += problem2h_common.cpp
 #           problem2h_solver4.cpp \
 #           problem2h_ibvp.cpp \
 
-#HEADERS += problem2h_exporter.h
-#SOURCES += problem2h_exporter.cpp
-
 defined(OLD_SOURCES) {
     message("Using old sources")
-#HEADERS += problem2hnm.h
-#SOURCES += problem2hnm.cpp
 }
 
 

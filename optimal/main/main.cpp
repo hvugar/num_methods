@@ -11,8 +11,6 @@
 #include <ode/secondorderlinearodeex1.h>
 
 #include "../problem2P/problem2p_solver.h"
-#include "../problem2H/problem2h_solver.h"
-#include "../problem2H/problem2h_ibvp.h"
 #include "../problem2H/problem2h_solver_delta.h"
 
 #include "../problem1H/problem1h_example.h"
@@ -20,7 +18,6 @@
 #include <utils/matrix.h>
 #include <utils/random.h>
 
-#include <grid/hpibvp.h>
 #include <grid/hyperbolicibvp1.h>
 #include <grid/parabolicibvp1.h>
 #include <grid/newtonheatequationex1.h>

@@ -17,6 +17,8 @@ public:
     double value;
 };
 
+class MINIMUMSHARED_EXPORT InitialConditionPDE {};
+
 class MINIMUMSHARED_EXPORT InitialValueProblem {};
 
 class MINIMUMSHARED_EXPORT InitialValueProblemODE : public InitialValueProblem
