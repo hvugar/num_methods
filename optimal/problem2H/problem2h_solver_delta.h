@@ -3,7 +3,7 @@
 
 #include "problem2h_common.h"
 
-#define PULSE_SIGMA 8
+#define PULSE_SIGMA 4
 #define MSRMT_SIGMA 1
 #define CNTRL_SIGMA 1
 #define USE_PENALTY_
@@ -19,7 +19,9 @@ public:
     static void Main(int argc, char* argv[]);
     static void checkGradient1(const Problem2HDirichletDelta &prob);
     static void checkGradient2(const Problem2HDirichletDelta &prob);
+    static void checkGradient3(const Problem2HDirichletDelta &prob);
     static void example1();
+    static void example2();
 
     Problem2HDirichletDelta();
     virtual ~Problem2HDirichletDelta();

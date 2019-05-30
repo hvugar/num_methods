@@ -22,6 +22,6 @@
 #include <imaging.h>
 #endif
 
-#define DISCRETE_DELTA_TIME_1
+#define DISCRETE_DELTA_TIME_2
 
 #endif // PROBLEM2H_GLOBAL_H

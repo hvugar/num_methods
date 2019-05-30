@@ -33,6 +33,7 @@ void SpacePointInfoH::init(unsigned int length)
     dx.resize(length);
     dy.resize(length);
 }
+
 void SpacePointInfoH::clear()
 {
     dy.clear();
