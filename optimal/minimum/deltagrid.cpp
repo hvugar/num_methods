@@ -20,10 +20,16 @@ auto DeltaGrid2D::initGrid(unsigned int N, double hx, unsigned int M, double hy)
     this->_hy = hy;
 
     m_nodes = new double*[M+1];
+    m_der_x = new double*[M+1];
+    m_der_y = new double*[M+1];
     for (unsigned int m=0; m<=M; m++)
     {
         m_nodes[m] = new double[N+1];
+        m_der_x[m] = new double[N+1];
+        m_der_y[m] = new double[N+1];
         for (unsigned int n=0; n<=N; n++) m_nodes[m][n] = 0.0;
+        for (unsigned int n=0; n<=N; n++) m_der_x[m][n] = 0.0;
+        for (unsigned int n=0; n<=N; n++) m_der_y[m][n] = 0.0;
     }
 
     _rows = new bool[M+1]; for (unsigned int m=0; m<=M; m++) _rows[m] = false;
@@ -84,6 +90,8 @@ auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned int sigmaXNum, 
             sn.i = static_cast<int>(n); sn.x = n*_hx;
             m_nodes[m][n] = factor*exp(-(((sn.x-sp.x)*(sn.x-sp.x))/(2.0*sigmaX*sigmaX) +
                                          ((sn.y-sp.y)*(sn.y-sp.y))/(2.0*sigmaY*sigmaY)));
+            m_der_x[m][n] =  m_nodes[m][n] * ((sn.x-sp.x)/(sigmaX*sigmaX));
+            m_der_y[m][n] =  m_nodes[m][n] * ((sn.y-sp.y)/(sigmaY*sigmaY));
         }
     }
 
@@ -310,8 +318,32 @@ auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, unsigned int v) cons
     return NAN;
 }
 
-auto DeltaGrid2D::derivativesInPoint(const DoubleMatrix &m, double &dx, double &dy, unsigned int v) const -> void
+auto DeltaGrid2D::derivativesInPoint(const DoubleMatrix &u, double &dx, double &dy, unsigned int v) const -> void
 {
+    if (v == 0)
+    {
+        const double px = p().x;
+        const double py = p().y;
+        const unsigned int rx = static_cast<unsigned int>(round(px/_hx));
+        const unsigned int ry = static_cast<unsigned int>(round(py/_hy));
+        dx = (u[ry][rx+1]-u[ry][rx-1])/(2.0*_hx);
+        dy = (u[ry+1][rx]-u[ry-1][rx])/(2.0*_hy);
+    }
+
+    if (v==1)
+    {
+        dx = 0.0;
+        dy = 0.0;
+        for (unsigned int m=minY(); m<=maxY(); m++)
+        {
+            for (unsigned int n=minX(); n<=maxX(); n++)
+            {
+                dx += u[m][n] * der_x()[m][n] * _hx * _hy;
+                dy += u[m][n] * der_y()[m][n] * _hx * _hy;
+            }
+        }
+    }
+
     if (v == 3)
     {
         const double px = p().x;
@@ -331,12 +363,12 @@ auto DeltaGrid2D::derivativesInPoint(const DoubleMatrix &m, double &dx, double &
         const double Ly1 = (py-y0); const double Ly11 = (y1-y0); const double Ly1y = 1.0;
 
         dx = 0.0;
-        dx += (Lx0x/Lx00) * ( (Ly0/Ly00)*m[ry+0][rx+0] + (Ly1/Ly11)*m[ry+1][rx+0] );
-        dx += (Lx1x/Lx11) * ( (Ly0/Ly00)*m[ry+0][rx+1] + (Ly1/Ly11)*m[ry+1][rx+1] );
+        dx += (Lx0x/Lx00) * ( (Ly0/Ly00)*u[ry+0][rx+0] + (Ly1/Ly11)*u[ry+1][rx+0] );
+        dx += (Lx1x/Lx11) * ( (Ly0/Ly00)*u[ry+0][rx+1] + (Ly1/Ly11)*u[ry+1][rx+1] );
 
         dy = 0.0;
-        dy += (Ly0y/Ly00) * ( (Lx0/Lx00)*m[ry+0][rx+0] + (Lx1/Lx11)*m[ry+0][rx+1] );
-        dy += (Ly1y/Ly11) * ( (Lx0/Lx00)*m[ry+1][rx+0] + (Lx1/Lx11)*m[ry+1][rx+1] );
+        dy += (Ly0y/Ly00) * ( (Lx0/Lx00)*u[ry+0][rx+0] + (Lx1/Lx11)*u[ry+0][rx+1] );
+        dy += (Ly1y/Ly11) * ( (Lx0/Lx00)*u[ry+1][rx+0] + (Lx1/Lx11)*u[ry+1][rx+1] );
     }
 
     if (v == 4)
@@ -362,14 +394,14 @@ auto DeltaGrid2D::derivativesInPoint(const DoubleMatrix &m, double &dx, double &
         const double Ly2 = (py-y0)*(py-y1); const double Ly22 = (y2-y0)*(y2-y1); const double Ly2y = (py-y0)+(py-y1);
 
         dx = 0.0;
-        dx += (Lx0x/Lx00) * ( (Ly0/Ly00)*m[ry-1][rx-1] + (Ly1/Ly11)*m[ry+0][rx-1] + (Ly2/Ly22)*m[ry+1][rx-1] );
-        dx += (Lx1x/Lx11) * ( (Ly0/Ly00)*m[ry-1][rx+0] + (Ly1/Ly11)*m[ry+0][rx+0] + (Ly2/Ly22)*m[ry+1][rx+0] );
-        dx += (Lx2x/Lx22) * ( (Ly0/Ly00)*m[ry-1][rx+1] + (Ly1/Ly11)*m[ry+0][rx+1] + (Ly2/Ly22)*m[ry+1][rx+1] );
+        dx += (Lx0x/Lx00) * ( (Ly0/Ly00)*u[ry-1][rx-1] + (Ly1/Ly11)*u[ry+0][rx-1] + (Ly2/Ly22)*u[ry+1][rx-1] );
+        dx += (Lx1x/Lx11) * ( (Ly0/Ly00)*u[ry-1][rx+0] + (Ly1/Ly11)*u[ry+0][rx+0] + (Ly2/Ly22)*u[ry+1][rx+0] );
+        dx += (Lx2x/Lx22) * ( (Ly0/Ly00)*u[ry-1][rx+1] + (Ly1/Ly11)*u[ry+0][rx+1] + (Ly2/Ly22)*u[ry+1][rx+1] );
 
         dy = 0.0;
-        dy += (Ly0y/Ly00) * ( (Lx0/Lx00)*m[ry-1][rx-1] + (Lx1/Lx11)*m[ry-1][rx+0] + (Lx2/Lx22)*m[ry-1][rx+1] );
-        dy += (Ly1y/Ly11) * ( (Lx0/Lx00)*m[ry+0][rx-1] + (Lx1/Lx11)*m[ry+0][rx+0] + (Lx2/Lx22)*m[ry+0][rx+1] );
-        dy += (Ly2y/Ly22) * ( (Lx0/Lx00)*m[ry+1][rx-1] + (Lx1/Lx11)*m[ry+1][rx+0] + (Lx2/Lx22)*m[ry+1][rx+1] );
+        dy += (Ly0y/Ly00) * ( (Lx0/Lx00)*u[ry-1][rx-1] + (Lx1/Lx11)*u[ry-1][rx+0] + (Lx2/Lx22)*u[ry-1][rx+1] );
+        dy += (Ly1y/Ly11) * ( (Lx0/Lx00)*u[ry+0][rx-1] + (Lx1/Lx11)*u[ry+0][rx+0] + (Lx2/Lx22)*u[ry+0][rx+1] );
+        dy += (Ly2y/Ly22) * ( (Lx0/Lx00)*u[ry+1][rx-1] + (Lx1/Lx11)*u[ry+1][rx+0] + (Lx2/Lx22)*u[ry+1][rx+1] );
     }
 
     if (v == 5)
@@ -399,16 +431,16 @@ auto DeltaGrid2D::derivativesInPoint(const DoubleMatrix &m, double &dx, double &
         const double Ly3 = (py-y0)*(py-y1)*(py-y2); const double Ly33 = (y3-y0)*(y3-y1)*(y3-y2); const double Ly3y = (py-y0)*(py-y1)+(py-y1)*(py-y2)+(py-y2)*(py-y0);
 
         dx = 0.0;
-        dx += (Lx0x/Lx00) * ( (Ly0/Ly00)*m[ry-1][rx-1] + (Ly1/Ly11)*m[ry+0][rx-1] + (Ly2/Ly22)*m[ry+1][rx-1] + (Ly3/Ly33)*m[ry+2][rx-1] );
-        dx += (Lx1x/Lx11) * ( (Ly0/Ly00)*m[ry-1][rx+0] + (Ly1/Ly11)*m[ry+0][rx+0] + (Ly2/Ly22)*m[ry+1][rx+0] + (Ly3/Ly33)*m[ry+2][rx+0] );
-        dx += (Lx2x/Lx22) * ( (Ly0/Ly00)*m[ry-1][rx+1] + (Ly1/Ly11)*m[ry+0][rx+1] + (Ly2/Ly22)*m[ry+1][rx+1] + (Ly3/Ly33)*m[ry+2][rx+1] );
-        dx += (Lx3x/Lx33) * ( (Ly0/Ly00)*m[ry-1][rx+2] + (Ly1/Ly11)*m[ry+0][rx+2] + (Ly2/Ly22)*m[ry+1][rx+2] + (Ly3/Ly33)*m[ry+2][rx+2] );
+        dx += (Lx0x/Lx00) * ( (Ly0/Ly00)*u[ry-1][rx-1] + (Ly1/Ly11)*u[ry+0][rx-1] + (Ly2/Ly22)*u[ry+1][rx-1] + (Ly3/Ly33)*u[ry+2][rx-1] );
+        dx += (Lx1x/Lx11) * ( (Ly0/Ly00)*u[ry-1][rx+0] + (Ly1/Ly11)*u[ry+0][rx+0] + (Ly2/Ly22)*u[ry+1][rx+0] + (Ly3/Ly33)*u[ry+2][rx+0] );
+        dx += (Lx2x/Lx22) * ( (Ly0/Ly00)*u[ry-1][rx+1] + (Ly1/Ly11)*u[ry+0][rx+1] + (Ly2/Ly22)*u[ry+1][rx+1] + (Ly3/Ly33)*u[ry+2][rx+1] );
+        dx += (Lx3x/Lx33) * ( (Ly0/Ly00)*u[ry-1][rx+2] + (Ly1/Ly11)*u[ry+0][rx+2] + (Ly2/Ly22)*u[ry+1][rx+2] + (Ly3/Ly33)*u[ry+2][rx+2] );
 
         dy = 0.0;
-        dy += (Ly0y/Ly00) * ( (Lx0/Lx00)*m[ry-1][rx-1] + (Lx1/Lx11)*m[ry-1][rx+0] + (Lx2/Lx22)*m[ry-1][rx+1] + (Lx3/Lx33)*m[ry-1][rx+2] );
-        dy += (Ly1y/Ly11) * ( (Lx0/Lx00)*m[ry+0][rx-1] + (Lx1/Lx11)*m[ry+0][rx+0] + (Lx2/Lx22)*m[ry+0][rx+1] + (Lx3/Lx33)*m[ry+0][rx+2] );
-        dy += (Ly2y/Ly22) * ( (Lx0/Lx00)*m[ry+1][rx-1] + (Lx1/Lx11)*m[ry+1][rx+0] + (Lx2/Lx22)*m[ry+1][rx+1] + (Lx3/Lx33)*m[ry+1][rx+2] );
-        dy += (Ly3y/Ly33) * ( (Lx0/Lx00)*m[ry+2][rx-1] + (Lx1/Lx11)*m[ry+2][rx+0] + (Lx2/Lx22)*m[ry+2][rx+1] + (Lx3/Lx33)*m[ry+2][rx+2] );
+        dy += (Ly0y/Ly00) * ( (Lx0/Lx00)*u[ry-1][rx-1] + (Lx1/Lx11)*u[ry-1][rx+0] + (Lx2/Lx22)*u[ry-1][rx+1] + (Lx3/Lx33)*u[ry-1][rx+2] );
+        dy += (Ly1y/Ly11) * ( (Lx0/Lx00)*u[ry+0][rx-1] + (Lx1/Lx11)*u[ry+0][rx+0] + (Lx2/Lx22)*u[ry+0][rx+1] + (Lx3/Lx33)*u[ry+0][rx+2] );
+        dy += (Ly2y/Ly22) * ( (Lx0/Lx00)*u[ry+1][rx-1] + (Lx1/Lx11)*u[ry+1][rx+0] + (Lx2/Lx22)*u[ry+1][rx+1] + (Lx3/Lx33)*u[ry+1][rx+2] );
+        dy += (Ly3y/Ly33) * ( (Lx0/Lx00)*u[ry+2][rx-1] + (Lx1/Lx11)*u[ry+2][rx+0] + (Lx2/Lx22)*u[ry+2][rx+1] + (Lx3/Lx33)*u[ry+2][rx+2] );
     }
 }
 
@@ -422,7 +454,10 @@ auto DeltaGrid2D::cleanGrid() -> void
 {
     if (_M==0 || _N == 0) return;
     for (unsigned int m=0; m<=_M; m++) delete [] m_nodes[m];
+    for (unsigned int m=0; m<=_M; m++) { delete [] m_der_x[m]; delete [] m_der_y[m]; }
     delete [] m_nodes;
+    delete [] m_der_x;
+    delete [] m_der_y;
     delete [] _rows;
     delete [] _cols;
     _N = 0;

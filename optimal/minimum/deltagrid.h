@@ -58,6 +58,9 @@ public:
     double **nodes() { return m_nodes; }
     double **nodes() const { return m_nodes; }
 
+    double **der_x() const { return m_der_x; }
+    double **der_y() const { return m_der_y; }
+
     bool *_rows;
     bool *_cols;
 
@@ -70,6 +73,8 @@ private:
     SpacePoint _p;
 
     double **m_nodes;
+    double **m_der_x;
+    double **m_der_y;
     unsigned int _rx;
     unsigned int _ry;
     unsigned int _minX;
