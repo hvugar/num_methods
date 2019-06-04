@@ -99,6 +99,35 @@ auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned int sigmaXNum, 
     for (unsigned int n=_minX; n<=_maxX; n++) _cols[n] = true;
 }
 
+auto DeltaGrid2D::lumpPointGauss(const DoubleMatrix &mx) const -> double
+{
+    double pu = 0.0;
+    for (unsigned int m=minY(); m<=maxY(); m++)
+    {
+        for (unsigned int n=minX(); n<=maxX(); n++)
+        {
+            pu += mx[m][n] * weight(n,m) * _hx * _hy;
+        }
+    }
+    return pu;
+}
+
+auto DeltaGrid2D::lumpPointGauss(const DoubleMatrix &mx, double &dx, double &dy) const -> double
+{
+    dx = 0.0;
+    dy = 0.0;
+    for (unsigned int m=minY(); m<=maxY(); m++)
+    {
+        for (unsigned int n=minX(); n<=maxX(); n++)
+        {
+            dx += mx[m][n] * der_x()[m][n] * _hx * _hy;
+            dy += mx[m][n] * der_y()[m][n] * _hx * _hy;
+        }
+    }
+
+    return lumpPointGauss(mx);
+}
+
 auto DeltaGrid2D::distributeSigle(const SpacePoint& sp) -> void
 {
     _rx = static_cast<unsigned int>( round(sp.x*_N) );
@@ -330,7 +359,7 @@ auto DeltaGrid2D::derivativesInPoint(const DoubleMatrix &u, double &dx, double &
         dy = (u[ry+1][rx]-u[ry-1][rx])/(2.0*_hy);
     }
 
-    if (v==1)
+    if (v == 1)
     {
         dx = 0.0;
         dy = 0.0;

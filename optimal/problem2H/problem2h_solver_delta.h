@@ -3,9 +3,9 @@
 
 #include "problem2h_common.h"
 
-#define PULSE_SIGMA 4
-#define MSRMT_SIGMA 1
-#define CNTRL_SIGMA 1
+#define PULSE_SIGMA 40
+#define MSRMT_SIGMA 10
+#define CNTRL_SIGMA 10
 #define USE_PENALTY_
 #define USE_NORM_
 
@@ -42,10 +42,10 @@ public:
     /** IPrinter **/
     virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const -> void;
 
-    auto solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use, const DoubleVector &pv, double lambda=0.25) const -> void;
-    auto solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info, const DoubleVector &pv, double lambda=0.25) const -> void;
-    auto fxMatrixForward(const DoubleMatrix &u, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids, unsigned int ln) const -> void;
-    auto fxMatrixBackward(const DoubleMatrix &p, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids, unsigned int ln, const spif_vectorH &u_info) const -> void;
+    virtual auto solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use, const DoubleVector &pv, double lambda=0.25) const -> void;
+    virtual auto solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info, const DoubleVector &pv, double lambda=0.25) const -> void;
+    virtual auto fxMatrixForward(const DoubleMatrix &u, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids, unsigned int ln) const -> void;
+    virtual auto fxMatrixBackward(const DoubleMatrix &p, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids, unsigned int ln, const spif_vectorH &u_info) const -> void;
     virtual auto initPulseWeightMatrix(const std::vector<InitialPulse2D> &pulses) const -> void;
 
     virtual auto f_initial1(const SpaceNodePDE &sn) const -> double;

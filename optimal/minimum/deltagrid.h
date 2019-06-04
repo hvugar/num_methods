@@ -25,6 +25,9 @@ public:
     auto cleanGrid() -> void;
 
     auto distributeGauss(const SpacePoint& sp, unsigned int sigmaXNum = 1, unsigned int sigmaYNum = 1) -> void;
+    auto lumpPointGauss(const DoubleMatrix &mx) const -> double;
+    auto lumpPointGauss(const DoubleMatrix &mx, double &dx, double &dy) const -> double;
+
     auto distributeSigle(const SpacePoint& sp) -> void;
     auto distributeRect4(const SpacePoint& sp) -> void;
 
