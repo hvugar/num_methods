@@ -277,7 +277,7 @@ auto Problem2HDirichletDelta::example2() -> void
     for (unsigned int i=0; i<r.length(); i++)
     {
         Problem2HDirichletDelta prob;
-        prob.setGridDimensions(Dimension(0.001, 0, 3000), Dimension(0.001, 0, 1000), Dimension(0.001, 0, 1000));
+        prob.setGridDimensions(Dimension(0.01, 0, 300), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
         prob.equaPrm = equaPrm;
         prob.funcPrm = funcPrm;
         prob.optimizeK = true;
@@ -295,12 +295,12 @@ auto Problem2HDirichletDelta::example2() -> void
         if (i==0)
         {
             prob.equaPrm.OptimalParameterToVector(x);
-            //prob.checkGradient3(prob);
+            prob.checkGradient3(prob);
             //prob.optimizeK = true;
             //prob.optimizeZ = true;
             //prob.optimizeO = false;
             //prob.optimizeC = false;
-            //return;
+            return;
         }
 
         //ConjugateGradient g;
@@ -1364,20 +1364,20 @@ auto Problem2HDirichletDelta::solveForwardIBVP(std::vector<DoubleMatrix> &u, spi
     ay[0] = cy[M-2] = 0.0;
 
     //----------------------------------------------------------------------------------------------//
-    std::vector<DeltaGrid2D> measuremntGirdList(No);
-    std::vector<DeltaGrid2D> cntrlDeltaGridList(Nc);
+    //std::vector<DeltaGrid2D> measuremntGirdList(No);
+    //std::vector<DeltaGrid2D> cntrlDeltaGridList(Nc);
+    const_cast<Problem2HDirichletDelta*>(this)->measuremntGirdList.resize(No);
+    const_cast<Problem2HDirichletDelta*>(this)->cntrlDeltaGridList.resize(Nc);
     for (unsigned int j=0; j<No; j++)
     {
-        measuremntGirdList[j].initGrid(N, hx, M, hy);
-        measuremntGirdList[j].distributeGauss(equaPrm.opt.ksi[j], MSRMT_SIGMA, MSRMT_SIGMA);
-        //measuremntGirdList[j].distributeSigle(equaPrm.opt.ksi[j]);
+        const_cast<Problem2HDirichletDelta*>(this)->measuremntGirdList[j].initGrid(N, hx, M, hy);
+        const_cast<Problem2HDirichletDelta*>(this)->measuremntGirdList[j].distributeGauss(equaPrm.opt.ksi[j], MSRMT_SIGMA, MSRMT_SIGMA);
     }
 
     for (unsigned int i=0; i<Nc; i++)
     {
-        cntrlDeltaGridList[i].initGrid(N, hx, M, hy);
-        cntrlDeltaGridList[i].distributeGauss(equaPrm.opt.eta[i], CNTRL_SIGMA, CNTRL_SIGMA);
-        //cntrlDeltaGridList[i].distributeSigle(equaPrm.opt.eta[i]);
+        const_cast<Problem2HDirichletDelta*>(this)->cntrlDeltaGridList[i].initGrid(N, hx, M, hy);
+        const_cast<Problem2HDirichletDelta*>(this)->cntrlDeltaGridList[i].distributeGauss(equaPrm.opt.eta[i], CNTRL_SIGMA, CNTRL_SIGMA);
     }
     //-------------------------------------------- info --------------------------------------------//
     if (use == true) prepareInfo(No,  equaPrm.opt.ksi, u_info, 2*LLD+1);
@@ -1463,7 +1463,7 @@ auto Problem2HDirichletDelta::solveForwardIBVP(std::vector<DoubleMatrix> &u, spi
         }
         /**************************************************** border conditions ***************************************************/
         /**************************************************** x direction apprx ***************************************************/
-        fxMatrixForward(u10, cntrlDeltaGridList, measuremntGirdList, 2*ln-2);
+        //fxMatrixForward(u10, cntrlDeltaGridList, measuremntGirdList, 2*ln-2);
         for (unsigned int m=1; m<=M-1; m++)
         {
             sn.j = static_cast<int>(m); sn.y = m*hy;
@@ -1485,7 +1485,7 @@ auto Problem2HDirichletDelta::solveForwardIBVP(std::vector<DoubleMatrix> &u, spi
         if (use == true) add2Info(u15, u_info, 2*ln-1, hx, hy, measuremntGirdList); f_layerInfo(u15, 2*ln-1);
         /**************************************************** x direction apprx ***************************************************/
         /**************************************************** y direction apprx ***************************************************/
-        fxMatrixForward(u15, cntrlDeltaGridList, measuremntGirdList, 2*ln-1);
+        //fxMatrixForward(u15, cntrlDeltaGridList, measuremntGirdList, 2*ln-1);
         for (unsigned int n=1; n<=N-1; n++)
         {
             sn.i = static_cast<int>(n); sn.x = n*hx;
@@ -1533,8 +1533,10 @@ auto Problem2HDirichletDelta::solveForwardIBVP(std::vector<DoubleMatrix> &u, spi
     free(by);
     free(ay);
 
-    for (unsigned int j=0; j<No; j++) measuremntGirdList[j].cleanGrid(); measuremntGirdList.clear();
-    for (unsigned int i=0; i<Nc; i++) cntrlDeltaGridList[i].cleanGrid(); cntrlDeltaGridList.clear();
+    for (unsigned int j=0; j<No; j++) const_cast<Problem2HDirichletDelta*>(this)->measuremntGirdList[j].cleanGrid();
+    const_cast<Problem2HDirichletDelta*>(this)->measuremntGirdList.clear();
+    for (unsigned int i=0; i<Nc; i++) const_cast<Problem2HDirichletDelta*>(this)->cntrlDeltaGridList[i].cleanGrid();
+    const_cast<Problem2HDirichletDelta*>(this)->cntrlDeltaGridList.clear();
 
     u00.clear();
     u05.clear();
@@ -1615,20 +1617,20 @@ auto Problem2HDirichletDelta::solveBackwardIBVP(const std::vector<DoubleMatrix> 
     ay[0] = cy[M-2] = 0.0;
 
     //--------------------------------------------------------------------------------------------//
-    std::vector<DeltaGrid2D> measuremntGirdList(No);
-    std::vector<DeltaGrid2D> cntrlDeltaGridList(Nc);
+    //std::vector<DeltaGrid2D> measuremntGirdList(No);
+    //std::vector<DeltaGrid2D> cntrlDeltaGridList(Nc);
+    const_cast<Problem2HDirichletDelta*>(this)->measuremntGirdList.resize(No);
+    const_cast<Problem2HDirichletDelta*>(this)->cntrlDeltaGridList.resize(Nc);
     for (unsigned int j=0; j<No; j++)
     {
-        measuremntGirdList[j].initGrid(N, hx, M, hy);
-        measuremntGirdList[j].distributeGauss(equaPrm.opt.ksi[j], MSRMT_SIGMA, MSRMT_SIGMA);
-        //measuremntGirdList[j].distributeSigle(equaPrm.opt.ksi[j]);
+        const_cast<Problem2HDirichletDelta*>(this)->measuremntGirdList[j].initGrid(N, hx, M, hy);
+        const_cast<Problem2HDirichletDelta*>(this)->measuremntGirdList[j].distributeGauss(equaPrm.opt.ksi[j], MSRMT_SIGMA, MSRMT_SIGMA);
     }
 
     for (unsigned int i=0; i<Nc; i++)
     {
-        cntrlDeltaGridList[i].initGrid(N, hx, M, hy);
-        cntrlDeltaGridList[i].distributeGauss(equaPrm.opt.eta[i], CNTRL_SIGMA, CNTRL_SIGMA);
-        //cntrlDeltaGridList[i].distributeSigle(equaPrm.opt.eta[i]);
+        const_cast<Problem2HDirichletDelta*>(this)->cntrlDeltaGridList[i].initGrid(N, hx, M, hy);
+        const_cast<Problem2HDirichletDelta*>(this)->cntrlDeltaGridList[i].distributeGauss(equaPrm.opt.eta[i], CNTRL_SIGMA, CNTRL_SIGMA);
     }
     //-------------------------------------------- info --------------------------------------------//
     if (use == true) prepareInfo(Nc, equaPrm.opt.eta, p_info, 2*LLD+1);
@@ -1810,6 +1812,11 @@ auto Problem2HDirichletDelta::solveBackwardIBVP(const std::vector<DoubleMatrix> 
     free(cy);
     free(by);
     free(ay);
+
+    for (unsigned int j=0; j<No; j++) const_cast<Problem2HDirichletDelta*>(this)->measuremntGirdList[j].cleanGrid();
+    const_cast<Problem2HDirichletDelta*>(this)->measuremntGirdList.clear();
+    for (unsigned int i=0; i<Nc; i++) const_cast<Problem2HDirichletDelta*>(this)->cntrlDeltaGridList[i].cleanGrid();
+    const_cast<Problem2HDirichletDelta*>(this)->cntrlDeltaGridList.clear();
 
     p00.clear();
     p05.clear();
@@ -2002,21 +2009,22 @@ auto Problem2HDirichletDelta::fxMatrixForward(const DoubleMatrix &u, const std::
 
     for (unsigned int m=0; m<=M; m++) for (unsigned int n=0; n<=N; n++) const_this->mfxMatrixForward[m][n] = 0.0;
 
+    //bool first = true;
     for (unsigned int s=0; s<Nt; s++)
     {
         double wt = 0.0;
         const unsigned int sln = equaPrm.tm[s].i;
-        double ts = equaPrm.tm[s].t;
-        double sigma = ht;
-        double t = ln*ht*0.5;
-
-        ////if ((ln == 2*sln+0) || (ln == 2*sln+1)) { wt = 1.0/ht; } else { continue; }
-        ////if ((ln == 2*sln-2) || (ln == 2*sln-1)) { wt = 1.0/ht; } else { continue; }
-        ////if ((ln == 2*sln+0) || (ln == 2*sln-1)) { wt = 1.0/ht; } else { continue; }
-        ////if (ln == 2*sln-1) { wt = 2.0/ht; } else { continue; }
-        ////printf("ln: %d %d\n", ln, sln);
-
         if (ln == 2*sln) { wt = 2.0/ht; } else { continue; }
+
+        //double ts = equaPrm.tm[s].t;
+        //double sigma = ht;
+        //double t = ln*ht*0.5;
+
+        //if (first) { for (unsigned int m=0; m<=M; m++) for (unsigned int n=0; n<=N; n++) const_this->mfxMatrixForward[m][n] = 0.0; }
+        //first = false;
+
+        //if (ln == 2*sln || ln == 2*sln-1) { wt = 1.0/ht; } else { continue; }
+        //printf("%d\n", ln);
         //if (2*sln <= ln && ln <= 2*sln+16) { wt = 2.0*(1.0/(sqrt(2.0*M_PI)*sigma)) * exp(((ts-t)*(ts-t))/(-2.0*sigma*sigma)); } else { continue; }
         //if (2*sln-8 <= ln && ln <= 2*sln+8) { wt = (1.0/(sqrt(2.0*M_PI)*sigma)) * exp(((ts-t)*(ts-t))/(-2.0*sigma*sigma)); } else { continue; }
         //if (wt != 0.0 && s == 0)
@@ -2079,10 +2087,13 @@ auto Problem2HDirichletDelta::fxMatrixBackward(const DoubleMatrix &p, const std:
 
     for (unsigned int m=0; m<=M; m++) for (unsigned int n=0; n<=N; n++) const_this->mfxMatrixBackward[m][n] = 0.0;
 
+    //bool first = true;
     for (unsigned int s=0; s<Nt; s++)
     {
         double wt = 0.0;
         const unsigned int sln = equaPrm.tm[s].i;
+        if (ln == 2*sln) { wt = 2.0/ht; } else { continue; }
+
         //double ts = equaPrm.tm[s].t;
         //double sigma = ht;
         //double t = ln*ht*0.5;
@@ -2093,7 +2104,9 @@ auto Problem2HDirichletDelta::fxMatrixBackward(const DoubleMatrix &p, const std:
         //if (ln == 2*sln+1) { wt = 2.0/ht; } else { continue; }
         //printf("ln: %d %d\n", ln, sln);
 
-        if (ln == 2*sln) { wt = 2.0/ht; } else { continue; }
+        //if (first) for (unsigned int m=0; m<=M; m++) for (unsigned int n=0; n<=N; n++) const_this->mfxMatrixBackward[m][n] = 0.0;
+        //first = false;
+        //if (ln == 2*sln || ln == 2*sln+1) { wt = 1.0/ht; } else { continue; }
         //if (2*sln-16 <= ln && ln <= 2*sln) { wt = 2.0*(1.0/(sqrt(2.0*M_PI)*sigma)) * exp(((ts-t)*(ts-t))/(-2.0*sigma*sigma)); } else { continue; }
         //if (2*sln-8 <= ln && ln <= 2*sln+8) { wt = (1.0/(sqrt(2.0*M_PI)*sigma)) * exp(((ts-t)*(ts-t))/(-2.0*sigma*sigma)); } else { continue; }
 
@@ -2277,6 +2290,8 @@ auto Problem2HDirichletDelta::projectMeasurePoints(DoubleVector &pv, unsigned in
 
 auto Problem2HDirichletDelta::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
 {
+    fxMatrixForward(u, cntrlDeltaGridList, measuremntGirdList, ln);
+
     //return;
 //    if (ln%2==0 && printLayers)
 //    {
@@ -2334,6 +2349,8 @@ auto Problem2HDirichletDelta::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, un
 
 auto Problem2HDirichletDelta::b_layerInfo(const DoubleMatrix &p UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
 {
+    //fxMatrixBackward(p, cntrlDeltaGridList, measuremntGirdList, ln, u_info);
+
     return;
 
     if (ln%2==0 && printLayers)

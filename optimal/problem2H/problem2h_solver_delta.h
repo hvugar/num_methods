@@ -3,9 +3,9 @@
 
 #include "problem2h_common.h"
 
-#define PULSE_SIGMA 40
-#define MSRMT_SIGMA 10
-#define CNTRL_SIGMA 10
+#define PULSE_SIGMA 4
+#define MSRMT_SIGMA 1
+#define CNTRL_SIGMA 1
 #define USE_PENALTY_
 #define USE_NORM_
 
@@ -90,6 +90,9 @@ private:
     std::vector<DoubleMatrix> vu;
     bool printLayers = false;
     double noise = 0.0;
+
+    std::vector<DeltaGrid2D> measuremntGirdList;
+    std::vector<DeltaGrid2D> cntrlDeltaGridList;
 
 protected:
     DoubleMatrix mInitialMatrixForward;

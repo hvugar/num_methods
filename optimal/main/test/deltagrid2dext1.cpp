@@ -12,36 +12,24 @@ void DeltaGrid2DExt1::Main(int argc, char **argv)
         for (unsigned int n=0; n<=N; n++)
         {
             mx[m][n] = ex1.fx(hx*n, hy*m);
-            //mx[m][n] = 1.0;
         }
     }
 
     DeltaGrid2D dg;
     dg.initGrid(N, hx, M, hy);
-    dg.distributeGauss(SpacePoint(0.429, 0.659), 1, 1);
-    //dg.distributeGauss(SpacePoint(0.4224, 0.6538), 1, 1);
+    //dg.distributeGauss(SpacePoint(0.429, 0.659), 1, 1);
+    dg.distributeGauss(SpacePoint(0.4224, 0.658), 1, 1);
+    printf("%10.6f %10.6f\n", dg.p().x, dg.p().y);
 
-    double dx, dy;
-    double z = dg.consentrateInPoint(mx, dx, dy, 5);
-    //double z = dg.consentrateInPoint(mx, 4);
-
+    double z, dx, dy;
     printf("%10.6f %10.6f %10.6f\n", ex1.fx(dg.p().x, dg.p().y), ex1.dx(dg.p().x, dg.p().y), ex1.dy(dg.p().x, dg.p().y));
-    //printf("%10.6f %10.6f %10.6f\n", ex1.fx(dg.rx()*dg.hx(), dg.ry()*dg.hy()), dg.rx()*1.0, dg.ry()*1.0);
     puts("---");
-    printf("%10.6f %10.6f %10.6f %10.6f %10.6f\n", dg.consentrateInPoint(mx, 1), dx, dy, dg.p().x, dg.p().y);
-    printf("%10.6f %10.6f %10.6f %10.6f %10.6f\n", dg.consentrateInPoint(mx, 2), dx, dy, dg.p().x, dg.p().y);
-    puts("---");
-    z = dg.consentrateInPoint(mx, dx, dy, 3);
-    printf("%10.6f %10.6f %10.6f %10.6f %10.6f\n", dg.consentrateInPoint(mx, 3), dx, dy, dg.p().x, dg.p().y);
-    //printf("%10.6f %10.6f %10.6f %10.6f %10.6f\n", dg.consentrateInPoint(mx, 31), dx, dy, dg.p().x, dg.p().y);
-    puts("---");
-    z = dg.consentrateInPoint(mx, dx, dy, 4);
-    printf("%10.6f %10.6f %10.6f %10.6f %10.6f\n", dg.consentrateInPoint(mx, 4), dx, dy, dg.p().x, dg.p().y);
-    //printf("%10.6f %10.6f %10.6f %10.6f %10.6f\n", dg.consentrateInPoint(mx, 41), dx, dy, dg.p().x, dg.p().y);
-    puts("---");
-    z = dg.consentrateInPoint(mx, dx, dy, 5);
-    printf("%10.6f %10.6f %10.6f %10.6f %10.6f\n", dg.consentrateInPoint(mx, 5), dx, dy, dg.p().x, dg.p().y);
-    //printf("%10.6f %10.6f %10.6f %10.6f %10.6f\n", dg.consentrateInPoint(mx, 51), dx, dy, dg.p().x, dg.p().y);
+    z = dg.consentrateInPoint(mx, dx, dy, 1); printf("%10.6f %10.6f %10.6f\n", z, dx, dy);
+    z = dg.consentrateInPoint(mx, dx, dy, 2); printf("%10.6f %10.6f %10.6f\n", z, dx, dy);
+    z = dg.consentrateInPoint(mx, dx, dy, 3); printf("%10.6f %10.6f %10.6f\n", z, dx, dy);
+    z = dg.consentrateInPoint(mx, dx, dy, 4); printf("%10.6f %10.6f %10.6f\n", z, dx, dy);
+    z = dg.consentrateInPoint(mx, dx, dy, 5); printf("%10.6f %10.6f %10.6f\n", z, dx, dy);
+    z = dg.lumpPointGauss(mx, dx, dy);        printf("%10.6f %10.6f %10.6f\n", z, dx, dy);
 }
 
 double DeltaGrid2DExt1::fx(double x, double y) const
