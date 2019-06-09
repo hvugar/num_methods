@@ -48,6 +48,8 @@ public:
     virtual auto fxMatrixBackward(const DoubleMatrix &p, const std::vector<DeltaGrid2D> &controlDeltaGrids, const std::vector<DeltaGrid2D> &measurementDeltaGrids, unsigned int ln, const spif_vectorH &u_info) const -> void;
     virtual auto initPulseWeightMatrix(const std::vector<InitialPulse2D> &pulses) const -> void;
 
+    virtual auto initDeltaGrid2D1() const -> void;
+
     virtual auto f_initial1(const SpaceNodePDE &sn) const -> double;
     virtual auto f_initial2(const SpaceNodePDE &sn) const -> double;
     virtual auto f_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double;

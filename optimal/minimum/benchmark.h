@@ -21,7 +21,7 @@ public:
     auto CpuDurationSecond() const -> double;
     auto printDuration() const -> void;
     auto printCpuClockDuration() const -> void;
-    auto printWallClocDuration() const -> void;
+    auto printWallClockDuration() const -> void;
 
 private:
     std::clock_t m_tick;

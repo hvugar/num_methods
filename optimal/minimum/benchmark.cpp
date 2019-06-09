@@ -33,7 +33,7 @@ auto Benchmark::printDuration() const -> void
 {
     std::cout << std::fixed << std::setprecision(2)
               << "CPU time used: "
-              << CpuDurationSecond() << " ms" << " "
+              << CpuDurationSecond() << " ms" << ". "
               << "Wall clock time passed: "
               << std::chrono::duration<double, std::milli>(m_chrone_tock-m_chrone_tick).count() << " ms"
               << std::endl;
@@ -47,7 +47,7 @@ auto Benchmark::printCpuClockDuration() const -> void
               << std::endl;
 }
 
-auto Benchmark::printWallClocDuration() const -> void
+auto Benchmark::printWallClockDuration() const -> void
 {
     std::cout << std::fixed << std::setprecision(2)
               << "Wall clock time passed: "

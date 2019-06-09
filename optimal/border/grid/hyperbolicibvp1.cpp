@@ -737,3 +737,53 @@ double ConjugateCdIHyperbolicIBVP1::f(const SpaceNodePDE &sn UNUSED_PARAM, const
 
 ConjugateCdIHyperbolicIBVP1::~ConjugateCdIHyperbolicIBVP1() {}
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void WaveEquationIBVP::Main(int argc, char* argv[])
+{
+    WaveEquationIBVP w;
+    w.setTimeDimension(Dimension(0.001, 0, 1000));
+    w.addSpaceDimension(Dimension(0.01, 0, 100));
+    w.addSpaceDimension(Dimension(0.01, 0, 100));
+    DoubleMatrix u;
+    Benchmark bm;
+    bm.tick();
+    w.implicit_calculate_D2V1(u, w.a, w.alpha);
+    bm.tock();
+    IPrinter::printMatrix(12, 6, u);
+    bm.printDuration();
+}
+
+double WaveEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition condition) const
+{
+    const auto x = sn.x;
+    const auto y = sn.y;
+
+    if (condition == InitialCondition::InitialValue) return x*x*x + y*y*y;
+    if (condition == InitialCondition::FirstDerivative) return 0.0;
+    return NAN;
+}
+
+double WaveEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+    const auto x = sn.x;
+    const auto y = sn.y;
+    const auto t = tn.t;
+
+    return x*x*x + y*y*y + t*t;
+}
+
+double WaveEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+    const auto x = sn.x;
+    const auto y = sn.y;
+    const auto t = tn.t;
+
+    return 2.0 - 6.0*a*a*(x+y) + 2.0*alpha*t;
+}
+
+void WaveEquationIBVP::layerInfo(const DoubleVector &, unsigned int) const
+{}
+
+void WaveEquationIBVP::layerInfo(const DoubleMatrix &, unsigned int) const
+{}

@@ -195,6 +195,7 @@ auto Problem2HDirichletDelta::example1() -> void
             prob.setGridDimensions(Dimension(0.010, 0, 400), Dimension(0.010, 0, 100), Dimension(0.010, 0, 100));
             std::vector<DoubleMatrix> u;
             spif_vectorH u_info, p_info;
+            //prob.initDeltaGrid2D();
             prob.solveForwardIBVP(u, u_info, true, x, 0.25);
         }
 
@@ -228,7 +229,7 @@ auto Problem2HDirichletDelta::example2() -> void
     //equaPrm.tm[8] = TimeNodePDE(240, 2.4);
     //equaPrm.tm[9] = TimeNodePDE(290, 2.9);
 
-    for (unsigned int s=0; s<equaPrm.Nt; s++) equaPrm.tm[s] = TimeNodePDE((s+1)*30, (s+1)*0.3);
+    for (unsigned int s=0; s<equaPrm.Nt; s++) equaPrm.tm[s] = TimeNodePDE((s+1)*10, (s+1)*0.1);
 
     equaPrm.initPulseParemeters(2);
     equaPrm.pulses[0] = InitialPulse2D(SpacePoint(0.2600, 0.2800), 0.120);
@@ -277,7 +278,7 @@ auto Problem2HDirichletDelta::example2() -> void
     for (unsigned int i=0; i<r.length(); i++)
     {
         Problem2HDirichletDelta prob;
-        prob.setGridDimensions(Dimension(0.01, 0, 300), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
+        prob.setGridDimensions(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
         prob.equaPrm = equaPrm;
         prob.funcPrm = funcPrm;
         prob.optimizeK = true;
@@ -286,7 +287,7 @@ auto Problem2HDirichletDelta::example2() -> void
         prob.optimizeC = true;
         prob.funcPrm.vmin.resize(equaPrm.Nc, -0.099);
         prob.funcPrm.vmax.resize(equaPrm.Nc, +0.099);
-        prob.LD = 30;
+        prob.LD = 10;
         prob.noise = 0.0;
 
         prob.funcPrm.regEpsilon = e[i];
@@ -295,12 +296,25 @@ auto Problem2HDirichletDelta::example2() -> void
         if (i==0)
         {
             prob.equaPrm.OptimalParameterToVector(x);
-            prob.checkGradient3(prob);
+
+            //prob.setGridDimensions(Dimension(0.001, 0, 1000), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
+            //prob.LD = 1;
+            //std::vector<DoubleMatrix> u;
+            //spif_vectorH u_info;
+            //Benchmark bm;
+            //bm.tick();
+            //prob.initDeltaGrid2D();
+            //prob.solveForwardIBVP(u, u_info, false, x);
+            //bm.tock();
+            //bm.printDuration();
+            //return;
+
+            //prob.checkGradient3(prob);
             //prob.optimizeK = true;
             //prob.optimizeZ = true;
             //prob.optimizeO = false;
             //prob.optimizeC = false;
-            return;
+            //return;
         }
 
         //ConjugateGradient g;
@@ -315,7 +329,7 @@ auto Problem2HDirichletDelta::example2() -> void
         g.setFunctionTolerance(0.0000001);
         g.setStepTolerance(0.0000001);
         g.setR1MinimizeEpsilon(e1[i], e2[i]);
-        g.setMaxIterations(50);
+        g.setMaxIterations(500);
         g.setNormalize(true);
         g.showExitMessage(true);
         //prob.gm = &g;
@@ -808,6 +822,7 @@ auto Problem2HDirichletDelta::fx(const DoubleVector &pv) const -> double
 
             std::vector<DoubleMatrix> u;
             spif_vectorH u_info;
+            //prob->initDeltaGrid2D();
             prob->solveForwardIBVP(u, u_info, true, pv);
 
             double intgrl = integral(u);
@@ -1037,6 +1052,7 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
 
             std::vector<DoubleMatrix> u;
             spif_vectorH u_info;
+            //initDeltaGrid2D();
             solveForwardIBVP(u, u_info, true, pv);
             spif_vectorH p_info;
             solveBackwardIBVP(u, p_info, true, u_info, pv);
@@ -1289,11 +1305,40 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
     }
 }
 
+auto Problem2HDirichletDelta::initDeltaGrid2D1() const -> void
+{
+    const unsigned int No = equaPrm.No;
+    const unsigned int Nc = equaPrm.Nc;
+
+    const Dimension &dimX = spaceDimension(Dimension::DimensionX);
+    const Dimension &dimY = spaceDimension(Dimension::DimensionY);
+
+    const unsigned int N = static_cast<const unsigned int> ( dimX.size() );
+    const unsigned int M = static_cast<const unsigned int> ( dimY.size() );
+
+    const double hx = dimX.step();
+    const double hy = dimY.step();
+
+    const_cast<Problem2HDirichletDelta*>(this)->measuremntGirdList.resize(No);
+    const_cast<Problem2HDirichletDelta*>(this)->cntrlDeltaGridList.resize(Nc);
+    for (unsigned int j=0; j<No; j++)
+    {
+        const_cast<Problem2HDirichletDelta*>(this)->measuremntGirdList[j].initGrid(N, hx, M, hy);
+        const_cast<Problem2HDirichletDelta*>(this)->measuremntGirdList[j].distributeGauss(equaPrm.opt.ksi[j], MSRMT_SIGMA, MSRMT_SIGMA);
+    }
+
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        const_cast<Problem2HDirichletDelta*>(this)->cntrlDeltaGridList[i].initGrid(N, hx, M, hy);
+        const_cast<Problem2HDirichletDelta*>(this)->cntrlDeltaGridList[i].distributeGauss(equaPrm.opt.eta[i], CNTRL_SIGMA, CNTRL_SIGMA);
+    }
+}
+
 auto Problem2HDirichletDelta::solveForwardIBVP(std::vector<DoubleMatrix> &u, spif_vectorH &u_info, bool use, const DoubleVector &pv, double lambda) const -> void
 {
-    const Dimension dimX = spaceDimension(Dimension::DimensionX);
-    const Dimension dimY = spaceDimension(Dimension::DimensionY);
-    const Dimension time = timeDimension();
+    const Dimension &dimX = spaceDimension(Dimension::DimensionX);
+    const Dimension &dimY = spaceDimension(Dimension::DimensionY);
+    const Dimension &time = timeDimension();
 
     const unsigned int N = static_cast<const unsigned int> ( dimX.size() );
     const unsigned int M = static_cast<const unsigned int> ( dimY.size() );
@@ -1327,6 +1372,34 @@ auto Problem2HDirichletDelta::solveForwardIBVP(std::vector<DoubleMatrix> &u, spi
     const double aa__hxhx = (a*a)/(hx*hx);
     const double aa__hyhy = (a*a)/(hy*hy);
 
+    double *ax = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *bx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *cx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *dx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *rx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+
+    for (unsigned int n=0; n<=N-2; n++)
+    {
+        ax[n] = m_aa_htht__hxhx_025_lambda;
+        bx[n] = b_aa_htht__hxhx;
+        cx[n] = m_aa_htht__hxhx_025_lambda;
+    }
+    ax[0] = cx[N-2] = 0.0;
+
+    double *ay = static_cast<double*>(malloc(sizeof(double)*(M-1)));
+    double *by = static_cast<double*>(malloc(sizeof(double)*(M-1)));
+    double *cy = static_cast<double*>(malloc(sizeof(double)*(M-1)));
+    double *dy = static_cast<double*>(malloc(sizeof(double)*(M-1)));
+    double *ry = static_cast<double*>(malloc(sizeof(double)*(M-1)));
+
+    for (unsigned int m=0; m<=M-2; m++)
+    {
+        ay[m] = m_aa_htht__hyhy_025_lambda;
+        by[m] = b_aa_htht__hyhy;
+        cy[m] = m_aa_htht__hyhy_025_lambda;
+    }
+    ay[0] = cy[M-2] = 0.0;
+
     DoubleMatrix u00(M+1, N+1);
     DoubleMatrix u05(M+1, N+1);
     DoubleMatrix u10(M+1, N+1);
@@ -1336,32 +1409,6 @@ auto Problem2HDirichletDelta::solveForwardIBVP(std::vector<DoubleMatrix> &u, spi
     for (unsigned int ln=0; ln<u.size(); ln++) u[ln].clear(); u.clear();
     unsigned int u_size = 2*LD + 1;
     u.resize(u_size); for (unsigned int ln=0; ln<u_size; ln++) u[ln].resize(M+1, N+1);
-
-    double *ax = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *bx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *cx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *dx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *rx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    for (unsigned int n=1; n<=N-1; n++)
-    {
-        ax[n-1] = m_aa_htht__hxhx_025_lambda;
-        bx[n-1] = b_aa_htht__hxhx;
-        cx[n-1] = m_aa_htht__hxhx_025_lambda;
-    }
-    ax[0] = cx[N-2] = 0.0;
-
-    double *ay = static_cast<double*>(malloc(sizeof(double)*(M-1)));
-    double *by = static_cast<double*>(malloc(sizeof(double)*(M-1)));
-    double *cy = static_cast<double*>(malloc(sizeof(double)*(M-1)));
-    double *dy = static_cast<double*>(malloc(sizeof(double)*(M-1)));
-    double *ry = static_cast<double*>(malloc(sizeof(double)*(M-1)));
-    for (unsigned int m=1; m<=M-1; m++)
-    {
-        ay[m-1] = m_aa_htht__hyhy_025_lambda;
-        by[m-1] = b_aa_htht__hyhy;
-        cy[m-1] = m_aa_htht__hyhy_025_lambda;
-    }
-    ay[0] = cy[M-2] = 0.0;
 
     //----------------------------------------------------------------------------------------------//
     //std::vector<DeltaGrid2D> measuremntGirdList(No);
@@ -1404,17 +1451,17 @@ auto Problem2HDirichletDelta::solveForwardIBVP(std::vector<DoubleMatrix> &u, spi
     sn05.i = 0; sn05.x = 0.0; sn10.i = static_cast<int>(N); sn10.x = N*hx;
     for (unsigned int m=0; m<=M; m++)
     {
-        u05[m][0] = u10[m][0] = u05[m][N] = u10[m][N] = 0.0;
-        //sn05.j = static_cast<int>(m); sn05.y = m*hy; u10[m][0] = f_boundary(sn05, tn10); u05[m][0] = f_boundary(sn00, tn05);
-        //sn10.j = static_cast<int>(m); sn10.y = m*hy; u10[m][N] = f_boundary(sn10, tn10); u05[m][N] = f_boundary(sn10, tn05);
+        //u05[m][0] = u10[m][0] = u05[m][N] = u10[m][N] = 0.0;
+        sn05.j = static_cast<int>(m); sn05.y = m*hy; u10[m][0] = f_boundary(sn05, tn10); u05[m][0] = f_boundary(sn00, tn05);
+        sn10.j = static_cast<int>(m); sn10.y = m*hy; u10[m][N] = f_boundary(sn10, tn10); u05[m][N] = f_boundary(sn10, tn05);
     }
     sn05.j = 0; sn05.y = 0.0; sn10.j = static_cast<int>(M); sn10.y = M*hy;
     for (unsigned int n=0; n<=N; n++)
     {
 
-        u05[0][n] = u10[0][n] = u05[M][n] = u10[M][n] = 0.0;
-        //sn05.i = static_cast<int>(n); sn05.x = n*hx; u10[0][n] = f_boundary(sn05, tn10); u05[0][n] = f_boundary(sn05, tn05);
-        //sn10.i = static_cast<int>(n); sn10.x = n*hx; u10[M][n] = f_boundary(sn10, tn10); u05[M][n] = f_boundary(sn10, tn05);
+        //u05[0][n] = u10[0][n] = u05[M][n] = u10[M][n] = 0.0;
+        sn05.i = static_cast<int>(n); sn05.x = n*hx; u10[0][n] = f_boundary(sn05, tn10); u05[0][n] = f_boundary(sn05, tn05);
+        sn10.i = static_cast<int>(n); sn10.x = n*hx; u10[M][n] = f_boundary(sn10, tn10); u05[M][n] = f_boundary(sn10, tn05);
     }
     for (unsigned int m=1; m<=M-1; m++)
     {
@@ -1422,14 +1469,15 @@ auto Problem2HDirichletDelta::solveForwardIBVP(std::vector<DoubleMatrix> &u, spi
         for (unsigned int n=1; n<=N-1; n++)
         {
             sn10.i = static_cast<int>(n); sn10.x = n*hx;
+            double firstDerivative = f_initial2(sn10);
 
             double sum = 0.0;
             sum += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]);
             sum += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]);
-            sum -= alpha*(f_initial2(sn10));
+            sum -= alpha*firstDerivative;
 
-            u05[m][n] = u00[m][n] + 0.5*ht*f_initial2(sn10) + (0.125*ht*ht) * sum;
-            u10[m][n] = u00[m][n] + 1.0*ht*f_initial2(sn10) + (0.500*ht*ht) * sum;
+            u05[m][n] = u00[m][n] + 0.5*ht*firstDerivative + (0.125*ht*ht) * sum;
+            u10[m][n] = u00[m][n] + 1.0*ht*firstDerivative + (0.500*ht*ht) * sum;
         }
     }
     if (use == true) add2Info(u05, u_info, 1, hx, hy, measuremntGirdList); f_layerInfo(u05, 1);
@@ -1450,16 +1498,16 @@ auto Problem2HDirichletDelta::solveForwardIBVP(std::vector<DoubleMatrix> &u, spi
         sn0.i = static_cast<int>(0); sn0.x = 0*hx; sn1.i = static_cast<int>(N); sn1.x = N*hx;
         for (unsigned int m=0; m<=M; m++)
         {
-            u15[m][0] = u20[m][0] = u15[m][N] = u20[m][N] = 0.0;
-            //sn0.j = static_cast<int>(m); sn0.y = m*hy; u15[m][0] = f_boundary(sn0, tn15); u20[m][0] = f_boundary(sn0, tn20);
-            //sn1.j = static_cast<int>(m); sn1.y = m*hy; u15[m][N] = f_boundary(sn1, tn15); u20[m][N] = f_boundary(sn1, tn20);
+            //u15[m][0] = u20[m][0] = u15[m][N] = u20[m][N] = 0.0;
+            sn0.j = static_cast<int>(m); sn0.y = m*hy; u15[m][0] = f_boundary(sn0, tn15); u20[m][0] = f_boundary(sn0, tn20);
+            sn1.j = static_cast<int>(m); sn1.y = m*hy; u15[m][N] = f_boundary(sn1, tn15); u20[m][N] = f_boundary(sn1, tn20);
         }
         sn0.j = static_cast<int>(0); sn0.y = 0*hy; sn1.j = static_cast<int>(M); sn1.y = M*hy;
         for (unsigned int n=0; n<=N; n++)
         {
-            u15[0][n] = u20[0][n] = u15[M][n] = u20[M][n] = 0.0;
-            //sn0.i = static_cast<int>(n); sn0.x = n*hx; u15[0][n] = f_boundary(sn0, tn15); u20[0][n] = f_boundary(sn0, tn20);
-            //sn1.i = static_cast<int>(n); sn1.x = n*hx; u15[M][n] = f_boundary(sn1, tn15); u20[M][n] = f_boundary(sn1, tn20);
+            //u15[0][n] = u20[0][n] = u15[M][n] = u20[M][n] = 0.0;
+            sn0.i = static_cast<int>(n); sn0.x = n*hx; u15[0][n] = f_boundary(sn0, tn15); u20[0][n] = f_boundary(sn0, tn20);
+            sn1.i = static_cast<int>(n); sn1.x = n*hx; u15[M][n] = f_boundary(sn1, tn15); u20[M][n] = f_boundary(sn1, tn20);
         }
         /**************************************************** border conditions ***************************************************/
         /**************************************************** x direction apprx ***************************************************/
@@ -1471,10 +1519,10 @@ auto Problem2HDirichletDelta::solveForwardIBVP(std::vector<DoubleMatrix> &u, spi
             {
                 sn.i = static_cast<int>(n); sn.x = n*hx;
                 dx[n-1] = 0.0;
-                dx[n-1] = (u10[m-1][n] - 2.0*u10[m][n] + u10[m+1][n])*p_aa_htht__hyhy_025;
-                dx[n-1] += 2.0*u10[m][n] - u05[m][n] + alpha_ht_025*u05[m][n];
                 dx[n-1] += (u10[m][n-1] - 2.0*u10[m][n] + u10[m][n+1])*p_aa_htht__hxhx_025_1m2lambda;
                 dx[n-1] += (u05[m][n-1] - 2.0*u05[m][n] + u05[m][n+1])*p_aa_htht__hxhx_025_lambda;
+                dx[n-1] += (u10[m-1][n] - 2.0*u10[m][n] + u10[m+1][n])*p_aa_htht__hyhy_025;
+                dx[n-1] += 2.0*u10[m][n] - u05[m][n] + alpha_ht_025*u05[m][n];
                 dx[n-1] += ht_ht_025 * mfxMatrixForward[m][n];
             }
             dx[0]   -= u15[m][0]*m_aa_htht__hxhx_025_lambda;
@@ -1493,10 +1541,10 @@ auto Problem2HDirichletDelta::solveForwardIBVP(std::vector<DoubleMatrix> &u, spi
             {
                 sn.j = static_cast<int>(m); sn.y = m*hy;
                 dy[m-1] = 0.0;
-                dy[m-1] += (u15[m][n-1] - 2.0*u15[m][n] + u15[m][n+1])*p_aa_htht__hxhx_025;
-                dy[m-1] += 2.0*u15[m][n] - u10[m][n] + alpha_ht_025*u10[m][n];
                 dy[m-1] += (u15[m-1][n] - 2.0*u15[m][n] + u15[m+1][n])*p_aa_htht__hyhy_025_1m2lambda;
                 dy[m-1] += (u10[m-1][n] - 2.0*u10[m][n] + u10[m+1][n])*p_aa_htht__hyhy_025_lambda;
+                dy[m-1] += (u15[m][n-1] - 2.0*u15[m][n] + u15[m][n+1])*p_aa_htht__hxhx_025;
+                dy[m-1] += 2.0*u15[m][n] - u10[m][n] + alpha_ht_025*u10[m][n];
                 dy[m-1] += ht_ht_025 * mfxMatrixForward[m][n];
             }
             dy[0]   -= u20[0][n]*m_aa_htht__hyhy_025_lambda;
@@ -1521,6 +1569,12 @@ auto Problem2HDirichletDelta::solveForwardIBVP(std::vector<DoubleMatrix> &u, spi
         /**************************************************** saving last LD layers ***********************************************/
     }
 
+    u00.clear();
+    u05.clear();
+    u10.clear();
+    u15.clear();
+    u20.clear();
+
     free(rx);
     free(dx);
     free(cx);
@@ -1537,13 +1591,6 @@ auto Problem2HDirichletDelta::solveForwardIBVP(std::vector<DoubleMatrix> &u, spi
     const_cast<Problem2HDirichletDelta*>(this)->measuremntGirdList.clear();
     for (unsigned int i=0; i<Nc; i++) const_cast<Problem2HDirichletDelta*>(this)->cntrlDeltaGridList[i].cleanGrid();
     const_cast<Problem2HDirichletDelta*>(this)->cntrlDeltaGridList.clear();
-
-    u00.clear();
-    u05.clear();
-    u10.clear();
-    u15.clear();
-    u20.clear();
-    //puts("+++ solveForwardIBVP");
 }
 
 auto Problem2HDirichletDelta::solveBackwardIBVP(const std::vector<DoubleMatrix> &u, spif_vectorH &p_info, bool use, const spif_vectorH &u_info, const DoubleVector &pv, double lambda) const -> void
@@ -1912,6 +1959,7 @@ auto Problem2HDirichletDelta::print(unsigned int i, const DoubleVector &x, const
     prob->equaPrm.OptimalParameterFromVector(x);
     std::vector<DoubleMatrix> u;
     spif_vectorH u_info;
+    //initDeltaGrid2D();
     solveForwardIBVP(u, u_info, true, x);
     double ing = integral(u);
     double pnt = penalty(u_info, prob->equaPrm);
@@ -2291,8 +2339,8 @@ auto Problem2HDirichletDelta::projectMeasurePoints(DoubleVector &pv, unsigned in
 auto Problem2HDirichletDelta::f_layerInfo(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
 {
     fxMatrixForward(u, cntrlDeltaGridList, measuremntGirdList, ln);
+    return;
 
-    //return;
 //    if (ln%2==0 && printLayers)
 //    {
 //        QPixmap pxm;
