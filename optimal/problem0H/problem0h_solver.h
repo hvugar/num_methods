@@ -32,7 +32,7 @@ public:
     Problem0HCommon();
     virtual ~Problem0HCommon();
 
-protected:
+public:
     //inline auto virtual mu1(const SpaceNodePDE &) const -> double { return 1.0; }
     //inline auto virtual mu2(unsigned int, unsigned int) const -> double { return 1.0; }
 
@@ -58,6 +58,8 @@ protected:
 
     double p_sigmaX;
     double p_sigmaY;
+    double p_sigmaT;
+
     unsigned int c_sigmaX;
     unsigned int c_sigmaY;
 
@@ -111,6 +113,7 @@ public:
     static void Main(int argc, char** argv);
 
     static void compareGradients(Problem0HFunctional &functional, unsigned int L);
+    static void checkingForwardProblem();
 
 public:
     virtual auto fx(const DoubleVector &x) const -> double;

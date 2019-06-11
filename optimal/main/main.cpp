@@ -46,11 +46,9 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //SecondOrderLinearODEEx1::Main(argc, argv);
     //CdIHyperbolicIBVP1::Main(argc, argv);
 
-    //Problem0HFunctional::Main(argc, argv);
     //TestWaveEquation::Main(argc, argv);
     //TestWaveEquationEx1::Main(argc, argv);
-
-    WaveEquationIBVP::Main(argc, argv);
+    //WaveEquationIBVP::Main(argc, argv);
 
     //DeltaGrid2DExt1::Main(argc, argv);
     //DeltaGrid1DExt1::Main(argc, argv);
@@ -66,9 +64,10 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //CdIHyperbolicIBVP1::Main(argc, argv);
     //IPrinter::printSeperatorLine();
     //ConjugateCC1IHyperbolicIBVP1::Main(argc, argv);
+    Problem0HFunctional::Main(argc, argv);
     //Problem1HDirichlet1::Main(argc, argv);
     //Problem2HDirichlet::Main(argc, argv);
-    Problem2HDirichletDelta::Main(argc, argv);
+    //Problem2HDirichletDelta::Main(argc, argv);
 
     //CCParabolicIBVP1::Main(argc, argv);
     //CCIHyperbolicIBVP1::Main(argc, argv);

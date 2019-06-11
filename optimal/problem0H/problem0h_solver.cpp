@@ -3,6 +3,9 @@
 void Problem0HFunctional::Main(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
+    checkingForwardProblem();
+    return;
+
 
     unsigned int N = 100; double hx = 0.01;
     unsigned int M = 100; double hy = 0.01;
@@ -73,6 +76,39 @@ void Problem0HFunctional::compareGradients(Problem0HFunctional &functional, unsi
     IPrinter::printSeperatorLine();
 }
 
+void Problem0HFunctional::checkingForwardProblem()
+{
+    Problem0HForward fw1;
+    fw1.setTimeDimension(Dimension(0.01, 0, 100));
+    fw1.addSpaceDimension(Dimension(0.01, 0, 100));
+    fw1.addSpaceDimension(Dimension(0.01, 0, 100));
+    fw1.source_number = 0;
+    fw1.ksi = SpacePoint(0.50, 0.50);
+    fw1.p_sigmaX = 0.04;
+    fw1.p_sigmaY = 0.04;
+    fw1.p_sigmaT = 0.04;
+
+    DoubleMatrix u1;
+    fw1.implicit_calculate_D2V1(u1, 1.0, 0.0);
+    IPrinter::printMatrix(u1);
+    IPrinter::printSeperatorLine();
+
+    Problem0HForward fw2;
+    fw2.setTimeDimension(Dimension(0.005, 0, 200));
+    fw2.addSpaceDimension(Dimension(0.005, 0, 200));
+    fw2.addSpaceDimension(Dimension(0.005, 0, 200));
+    fw2.source_number = 0;
+    fw2.ksi = SpacePoint(0.50, 0.50);
+    fw2.p_sigmaX = 0.04;
+    fw2.p_sigmaY = 0.04;
+    fw2.p_sigmaT = 0.04;
+
+    DoubleMatrix u2;
+    fw2.implicit_calculate_D2V1(u2, 1.0, 0.0);
+    IPrinter::printMatrix(u2);
+    IPrinter::printSeperatorLine();
+}
+
 Problem0HCommon::Problem0HCommon() {}
 
 Problem0HCommon::~Problem0HCommon() {}
@@ -94,6 +130,13 @@ auto Problem0HFunctional::setDimension(const Dimension &timeDimension, const Dim
     const unsigned int M = static_cast<unsigned int> ( dimensionY.size() );
     const double hx = dimensionX.step();
     const double hy = dimensionY.step();
+
+    p_sigmaX = 0.04;
+    p_sigmaY = 0.04;
+    p_sigmaT = 0.04;
+
+    c_sigmaX = N/100;
+    c_sigmaY = M/100;
 
     //U1.resize(M+1, N+1, 0.0);
     //U2.resize(M+1, N+1, 0.0);
@@ -121,12 +164,6 @@ auto Problem0HFunctional::setDimension(const Dimension &timeDimension, const Dim
         parameter.deltaGrid.cleanGrid();
         parameter.deltaGrid.initGrid(N, hx, M, hy);
     }
-
-    p_sigmaX = 0.04;
-    p_sigmaY = 0.04;
-
-    c_sigmaX = N/100;
-    c_sigmaY = M/100;
 }
 
 auto Problem0HFunctional::fx(const DoubleVector &x) const -> double
@@ -310,7 +347,7 @@ auto Problem0HFunctional::gradient(const DoubleVector &x, DoubleVector &g) const
 
 auto Problem0HForward::layerInfo(const DoubleMatrix &u, unsigned int ln) const -> void
 {
-    calculateU1U2(u, ln);
+    //calculateU1U2(u, ln);
     //saveToExcel(u, ln);
     //saveToImage(u, ln);
     //if (ln%2 == 0) printf("%4d min: %8.6f max: %8.6f\n", ln, u.min(), u.max());
@@ -323,6 +360,7 @@ auto Problem0HForward::boundary(const SpaceNodePDE &, const TimeNodePDE &) const
 auto Problem0HForward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
 {
     double pv = p(sn, tn);
+    return pv;
 
     if (tn.i == 0) return pv;
 
@@ -350,10 +388,22 @@ auto Problem0HForward::p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
 {
     //static const double sigmaX = 8.0*Problem0HForward::spaceDimension(Dimension::DimensionX).step();
     //static const double sigmaY = 8.0*Problem0HForward::spaceDimension(Dimension::DimensionY).step();
-    static const double alpha1 = 1.0/(2.0*M_PI*p_sigmaX*p_sigmaY);
-    static const double alpha2 = 1.0/(2.0*p_sigmaX*p_sigmaY);
-    static const double alpha3 = 100.0;
-    double pv = 5.0 * alpha1 * exp( -alpha2 * ((sn.x-ksi.x)*(sn.x-ksi.x)+(sn.y-ksi.y)*(sn.y-ksi.y)) - alpha3*tn.t);
+
+    //static const double alpha1 = 1.0/(2.0*M_PI*p_sigmaX*p_sigmaY);
+    //static const double alpha2 = 1.0/(2.0*p_sigmaX*p_sigmaY);
+    //static const double alpha3 = 100.0;
+    //double pv = 5.0 * alpha1 * exp( -alpha2 * ((sn.x-ksi.x)*(sn.x-ksi.x)+(sn.y-ksi.y)*(sn.y-ksi.y)) - alpha3*tn.t);
+    //return pv;
+
+    static const double factor1 = 1.0/(2.0*M_PI*p_sigmaX*p_sigmaY);
+    static const double sigmax2 = 1.0/(2.0*p_sigmaX*p_sigmaX);
+    static const double sigmay2 = 1.0/(2.0*p_sigmaY*p_sigmaY);
+    static const double factor2 = 2.0/(sqrt(2.0*M_PI)*p_sigmaT);
+    static const double sigmat2 = 1.0/(2.0*p_sigmaT*p_sigmaT);
+
+    double pv = 1.0;
+    pv *= factor1 * exp(-(sigmax2*(sn.x-ksi.x)*(sn.x-ksi.x)+sigmay2*(sn.y-ksi.y)*(sn.y-ksi.y)));
+    pv *= factor2 * exp(-(sigmat2*(tn.t-0.02)*(tn.t-0.02)));
     return pv;
 }
 
