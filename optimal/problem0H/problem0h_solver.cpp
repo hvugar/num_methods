@@ -92,16 +92,18 @@ void Problem0HFunctional::checkingForwardProblem()
     fw1.implicit_calculate_D2V1(u1, 1.0, 0.0);
     IPrinter::printMatrix(u1);
     IPrinter::printSeperatorLine();
+    return;
 
     Problem0HForward fw2;
     fw2.setTimeDimension(Dimension(0.005, 0, 200));
-    fw2.addSpaceDimension(Dimension(0.005, 0, 200));
-    fw2.addSpaceDimension(Dimension(0.005, 0, 200));
+    fw2.addSpaceDimension(Dimension(0.01, 0, 100));
+    fw2.addSpaceDimension(Dimension(0.01, 0, 100));
     fw2.source_number = 0;
     fw2.ksi = SpacePoint(0.50, 0.50);
-    fw2.p_sigmaX = 0.04;
-    fw2.p_sigmaY = 0.04;
-    fw2.p_sigmaT = 0.04;
+
+    fw2.p_sigmaX = 0.01;
+    fw2.p_sigmaY = 0.01;
+    fw2.p_sigmaT = 0.01;
 
     DoubleMatrix u2;
     fw2.implicit_calculate_D2V1(u2, 1.0, 0.0);
@@ -384,6 +386,7 @@ auto Problem0HForward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
     return pv + pulse1 + pulse2;
 }
 
+int i = -1;
 auto Problem0HForward::p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
 {
     //static const double sigmaX = 8.0*Problem0HForward::spaceDimension(Dimension::DimensionX).step();
@@ -395,16 +398,17 @@ auto Problem0HForward::p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
     //double pv = 5.0 * alpha1 * exp( -alpha2 * ((sn.x-ksi.x)*(sn.x-ksi.x)+(sn.y-ksi.y)*(sn.y-ksi.y)) - alpha3*tn.t);
     //return pv;
 
-    static const double factor1 = 1.0/(2.0*M_PI*p_sigmaX*p_sigmaY);
-    static const double sigmax2 = 1.0/(2.0*p_sigmaX*p_sigmaX);
-    static const double sigmay2 = 1.0/(2.0*p_sigmaY*p_sigmaY);
-    static const double factor2 = 2.0/(sqrt(2.0*M_PI)*p_sigmaT);
-    static const double sigmat2 = 1.0/(2.0*p_sigmaT*p_sigmaT);
+    const double factor1 = 1.0/(2.0*M_PI*p_sigmaX*p_sigmaY);
+    const double sigmax2 = 1.0/(2.0*p_sigmaX*p_sigmaX);
+    const double sigmay2 = 1.0/(2.0*p_sigmaY*p_sigmaY);
+    const double factor2 = 2.0/(sqrt(2.0*M_PI)*p_sigmaT);
+    const double sigmat2 = 1.0/(2.0*p_sigmaT*p_sigmaT);
 
-    double pv = 1.0;
-    pv *= factor1 * exp(-(sigmax2*(sn.x-ksi.x)*(sn.x-ksi.x)+sigmay2*(sn.y-ksi.y)*(sn.y-ksi.y)));
-    pv *= factor2 * exp(-(sigmat2*(tn.t-0.02)*(tn.t-0.02)));
-    return pv;
+    double a = factor1 * exp(-(sigmax2*(sn.x-ksi.x)*(sn.x-ksi.x)+sigmay2*(sn.y-ksi.y)*(sn.y-ksi.y)));
+    double b = factor2 * exp(-(sigmat2*(tn.t-0.0)*(tn.t-0.0)));
+    if (i != tn.i && b >= 0.00000000000001) { printf("%d %f %f\n", tn.i, tn.t, b); i = tn.i; }
+    if (b < 0.00000000000001) i=0;
+    return a*b;
 }
 
 auto Problem0HForward::calculateU1U2(const DoubleMatrix &u, unsigned int ln) const -> void

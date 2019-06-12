@@ -268,8 +268,8 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
                 dx[n-1] += (u05[m][n-1] - 2.0*u05[m][n] + u05[m][n+1])*p_aa_htht__hxhx_025_lambda;
                 dx[n-1] += (u10[m-1][n] - 2.0*u10[m][n] + u10[m+1][n])*p_aa_htht__hyhy_025;
                 dx[n-1] += 2.0*u10[m][n] - u05[m][n] + alpha_ht_025*u05[m][n];
-                //dx[n-1] += ht_ht_025*f(sn, tn10);
-                dx[n-1] += ht_ht_025*(lmbd*f(sn, tn05) + m1_2lambda*f(sn, tn10) + lmbd*f(sn, tn15));
+                dx[n-1] += ht_ht_025*f(sn, tn10);
+                //dx[n-1] += ht_ht_025*(lmbd*f(sn, tn05) + m1_2lambda*f(sn, tn10) + lmbd*f(sn, tn15));
             }
             dx[0]   -= u15[m][0]*m_aa_htht__hxhx_025_lambda;
             dx[N-2] -= u15[m][N]*m_aa_htht__hxhx_025_lambda;
@@ -290,8 +290,8 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
                 dy[m-1] += (u10[m-1][n] - 2.0*u10[m][n] + u10[m+1][n])*p_aa_htht__hyhy_025_lambda;
                 dy[m-1] += (u15[m][n-1] - 2.0*u15[m][n] + u15[m][n+1])*p_aa_htht__hxhx_025;
                 dy[m-1] += 2.0*u15[m][n] - u10[m][n] + alpha_ht_025*u10[m][n];
-                //dy[m-1] += ht_ht_025*f(sn, tn15);
-                dy[m-1] += ht_ht_025*(lmbd*f(sn, tn10) + m1_2lambda*f(sn, tn15) + lmbd*f(sn, tn20));
+                dy[m-1] += ht_ht_025*f(sn, tn15);
+                //dy[m-1] += ht_ht_025*(lmbd*f(sn, tn10) + m1_2lambda*f(sn, tn15) + lmbd*f(sn, tn20));
             }
             dy[0]   -= u20[0][n]*m_aa_htht__hyhy_025_lambda;
             dy[M-2] -= u20[M][n]*m_aa_htht__hyhy_025_lambda;
