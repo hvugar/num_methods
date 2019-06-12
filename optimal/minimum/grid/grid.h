@@ -37,7 +37,7 @@ struct MINIMUMSHARED_EXPORT SpaceNodePDE : public SpacePoint
 
 struct MINIMUMSHARED_EXPORT TimeNodePDE : public TimeMoment
 {
-    TimeNodePDE(unsigned int i=0, double t = 0.0);
+    explicit TimeNodePDE(unsigned int i=0, double t = 0.0);
     TimeNodePDE(const TimeNodePDE &tn);
     unsigned int i;
 };

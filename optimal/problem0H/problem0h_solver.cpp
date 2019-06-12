@@ -79,36 +79,36 @@ void Problem0HFunctional::compareGradients(Problem0HFunctional &functional, unsi
 void Problem0HFunctional::checkingForwardProblem()
 {
     Problem0HForward fw1;
-    fw1.setTimeDimension(Dimension(0.01, 0, 100));
+    fw1.setTimeDimension(Dimension(0.001, 0, 1000));
     fw1.addSpaceDimension(Dimension(0.01, 0, 100));
     fw1.addSpaceDimension(Dimension(0.01, 0, 100));
     fw1.source_number = 0;
     fw1.ksi = SpacePoint(0.50, 0.50);
-    fw1.p_sigmaX = 0.04;
-    fw1.p_sigmaY = 0.04;
-    fw1.p_sigmaT = 0.04;
+    fw1.p_sigmaX = 0.05;
+    fw1.p_sigmaY = 0.05;
+    fw1.p_sigmaT = 0.01;
 
     DoubleMatrix u1;
     fw1.implicit_calculate_D2V1(u1, 1.0, 0.0);
-    IPrinter::printMatrix(u1);
-    IPrinter::printSeperatorLine();
+    //IPrinter::printMatrix(u1);
+    //IPrinter::printSeperatorLine();
     return;
 
-    Problem0HForward fw2;
-    fw2.setTimeDimension(Dimension(0.005, 0, 200));
-    fw2.addSpaceDimension(Dimension(0.01, 0, 100));
-    fw2.addSpaceDimension(Dimension(0.01, 0, 100));
-    fw2.source_number = 0;
-    fw2.ksi = SpacePoint(0.50, 0.50);
+//    Problem0HForward fw2;
+//    fw2.setTimeDimension(Dimension(0.005, 0, 200));
+//    fw2.addSpaceDimension(Dimension(0.01, 0, 100));
+//    fw2.addSpaceDimension(Dimension(0.01, 0, 100));
+//    fw2.source_number = 0;
+//    fw2.ksi = SpacePoint(0.50, 0.50);
 
-    fw2.p_sigmaX = 0.01;
-    fw2.p_sigmaY = 0.01;
-    fw2.p_sigmaT = 0.01;
+//    fw2.p_sigmaX = 0.01;
+//    fw2.p_sigmaY = 0.01;
+//    fw2.p_sigmaT = 0.01;
 
-    DoubleMatrix u2;
-    fw2.implicit_calculate_D2V1(u2, 1.0, 0.0);
-    IPrinter::printMatrix(u2);
-    IPrinter::printSeperatorLine();
+//    DoubleMatrix u2;
+//    fw2.implicit_calculate_D2V1(u2, 1.0, 0.0);
+//    IPrinter::printMatrix(u2);
+//    IPrinter::printSeperatorLine();
 }
 
 Problem0HCommon::Problem0HCommon() {}
@@ -347,8 +347,11 @@ auto Problem0HFunctional::gradient(const DoubleVector &x, DoubleVector &g) const
 
 //--------------------------------------------------------------------------------------------------------------//
 
-auto Problem0HForward::layerInfo(const DoubleMatrix &u, unsigned int ln) const -> void
+auto Problem0HForward::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void
 {
+    if (abs(tn.t - 0.1) <= 0.0) { IPrinter::printMatrix(u); IPrinter::printSeperatorLine(); }
+    if (abs(tn.t - 1.0) <= 0.0) { IPrinter::printMatrix(u); IPrinter::printSeperatorLine(); }
+
     //calculateU1U2(u, ln);
     //saveToExcel(u, ln);
     //saveToImage(u, ln);
@@ -391,6 +394,7 @@ auto Problem0HForward::p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
 {
     //static const double sigmaX = 8.0*Problem0HForward::spaceDimension(Dimension::DimensionX).step();
     //static const double sigmaY = 8.0*Problem0HForward::spaceDimension(Dimension::DimensionY).step();
+    //const double ht = timeDimension().step();
 
     //static const double alpha1 = 1.0/(2.0*M_PI*p_sigmaX*p_sigmaY);
     //static const double alpha2 = 1.0/(2.0*p_sigmaX*p_sigmaY);
@@ -405,9 +409,8 @@ auto Problem0HForward::p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
     const double sigmat2 = 1.0/(2.0*p_sigmaT*p_sigmaT);
 
     double a = factor1 * exp(-(sigmax2*(sn.x-ksi.x)*(sn.x-ksi.x)+sigmay2*(sn.y-ksi.y)*(sn.y-ksi.y)));
-    double b = factor2 * exp(-(sigmat2*(tn.t-0.0)*(tn.t-0.0)));
-    if (i != tn.i && b >= 0.00000000000001) { printf("%d %f %f\n", tn.i, tn.t, b); i = tn.i; }
-    if (b < 0.00000000000001) i=0;
+    double b = factor2 * exp(-(sigmat2*(tn.t-0.01)*(tn.t-0.01)));
+    if (tn.t < 0.0099) b = 0.0;
     return a*b;
 }
 

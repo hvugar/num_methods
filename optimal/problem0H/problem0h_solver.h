@@ -72,7 +72,7 @@ public:
 class Problem0HForward : public CdIHyperbolicIBVP, public virtual Problem0HCommon
 {
 public:
-    virtual void layerInfo(const DoubleMatrix &, unsigned int) const;
+    virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
 
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;

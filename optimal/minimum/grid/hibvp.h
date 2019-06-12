@@ -13,6 +13,9 @@ protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
+
+    virtual void layerInfo(const DoubleVector &, const TimeNodePDE &) const {}
+    virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const {}
 };
 
 //--------------------------------------------------------------------------------------------------------------//
@@ -31,8 +34,6 @@ public:
 
     void setWaveSpeed(double waveSpeed);
     void setWaveDissipation(double waveDissipation);
-
-    virtual void layerInfo(const DoubleVector &, unsigned int) const {}
 
     void implicit_calculate_D2V1() const;
     void implicit_calculate_D1V1() const;
@@ -62,9 +63,6 @@ class MINIMUMSHARED_EXPORT CcIHyperbolicIBVP : public IHyperbolicIBVP
 public:
     virtual ~CcIHyperbolicIBVP();
 
-    virtual void layerInfo(const DoubleVector &, unsigned int) const {}
-    virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
-
 public:
     void explicit_calculate_D1V1(DoubleVector &u, double a) const;
     void implicit_calculate_D1V1(DoubleVector &u, double a, double lambda=0.25) const;
@@ -90,9 +88,6 @@ class MINIMUMSHARED_EXPORT CdIHyperbolicIBVP : public IHyperbolicIBVP
 public:
     virtual ~CdIHyperbolicIBVP();
 
-    virtual void layerInfo(const DoubleVector &, unsigned int) const {}
-    virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
-
 public:
     void explicit_calculate_D1V1(DoubleVector &u, double a, double alpha) const;
     void implicit_calculate_D1V1(DoubleVector &u, double a, double alpha, double lambda=0.25) const;
@@ -116,9 +111,6 @@ class MINIMUMSHARED_EXPORT ConjugateCdIHyperbolicIBVP : public IHyperbolicIBVP
 {
 public:
     virtual ~ConjugateCdIHyperbolicIBVP();
-
-    virtual void layerInfo(const DoubleVector &, unsigned int) const {}
-    virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
 
 public:
     void explicit_calculate_D1V1(DoubleVector &p, double a, double alpha) const;
