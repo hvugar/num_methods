@@ -13,7 +13,7 @@
 
 #define SAVE_TO_IMG_
 
-#ifdef USE_IMAGING
+#ifdef USE_LIB_IMAGING
 #include <QPixmap>
 #include <QGuiApplication>
 #include <imaging.h>

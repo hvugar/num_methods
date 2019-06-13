@@ -6,7 +6,7 @@ CONFIG -= qt
 CONFIG += shared
 
 OBJECTS_DIR = release/.obj
-MOC_DIR = release/.moc
+MOC_DIR     = release/.moc
 
 DEFINES += MINIMUM_LIBRARY
 

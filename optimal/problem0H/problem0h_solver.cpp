@@ -2,29 +2,31 @@
 
 void Problem0HFunctional::Main(int argc, char **argv)
 {
+#ifdef USE_LIB_IMAGING
     QGuiApplication app(argc, argv);
+#endif
     checkingForwardProblem();
     return;
 
 
-//    unsigned int N = 100; double hx = 0.01;
-//    unsigned int M = 100; double hy = 0.01;
-//    unsigned int L = 200; double ht = 0.005;
+    //    unsigned int N = 100; double hx = 0.01;
+    //    unsigned int M = 100; double hy = 0.01;
+    //    unsigned int L = 200; double ht = 0.005;
 
-//    Problem0HFunctional functional;
-//    functional.ksi = SpacePoint(0.25, 0.25);
-//    functional.a = 1.0;
-//    functional.gamma = 0.0;
-//    functional.source_number = 2;
-//    functional.epsilon1 = 1.0;
-//    functional.epsilon2 = 1.0;
-//    functional.setDimension(Dimension(ht, 0, static_cast<int>(L)),
-//                            Dimension(hx, 0, static_cast<int>(N)),
-//                            Dimension(hy, 0, static_cast<int>(M)));
-//    functional.optimalParameters[0].p = SpacePoint(0.308, 0.608);
-//    functional.optimalParameters[1].p = SpacePoint(0.708, 0.208);
+    //    Problem0HFunctional functional;
+    //    functional.ksi = SpacePoint(0.25, 0.25);
+    //    functional.a = 1.0;
+    //    functional.gamma = 0.0;
+    //    functional.source_number = 2;
+    //    functional.epsilon1 = 1.0;
+    //    functional.epsilon2 = 1.0;
+    //    functional.setDimension(Dimension(ht, 0, static_cast<int>(L)),
+    //                            Dimension(hx, 0, static_cast<int>(N)),
+    //                            Dimension(hy, 0, static_cast<int>(M)));
+    //    functional.optimalParameters[0].p = SpacePoint(0.308, 0.608);
+    //    functional.optimalParameters[1].p = SpacePoint(0.708, 0.208);
 
-//    compareGradients(functional, L);
+    //    compareGradients(functional, L);
 }
 
 void Problem0HFunctional::compareGradients(Problem0HFunctional &functional, unsigned int L)
@@ -67,8 +69,8 @@ void Problem0HFunctional::compareGradients(Problem0HFunctional &functional, unsi
     //    gn[sn*length+length-1] = 0.0;
     //}
 
-//    IPrinter::printVector(gn.mid(start1, finish1).EuclideanNormalize());
-//    IPrinter::printVector(gn.mid(start2, finish2).EuclideanNormalize());
+    //    IPrinter::printVector(gn.mid(start1, finish1).EuclideanNormalize());
+    //    IPrinter::printVector(gn.mid(start2, finish2).EuclideanNormalize());
     //IPrinter::print(gn.mid(0, 4).EuclideanNormalize(), 5);
     IPrinter::print(gn.mid(start30, finish30).EuclideanNormalize(), 4);
     //IPrinter::print(gn.mid(start31, finish31).EuclideanNormalize(), 2);
@@ -100,48 +102,51 @@ auto Problem0HForward::p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
     a = factor1 * exp(-(sigmax2*(sn.x-ksi.x)*(sn.x-ksi.x)+sigmay2*(sn.y-ksi.y)*(sn.y-ksi.y)));
     //if (abs(tn.t - 0.01) >= 0.0) b = factor2 * exp(-(sigmat2*(tn.t-0.01)*(tn.t-0.01))); else b = 0.0;
     if (abs(tn.t - 0.01) == 0.0) b = 2.0/ht; else b = 0.0;
+    if (abs(tn.t - ht) == 0.0) b = 1.0/ht; else b = 0.0;
     return a*b;
 }
 
 void Problem0HFunctional::checkingForwardProblem()
 {
     Problem0HForward fw1;
-    fw1.setTimeDimension(Dimension(0.01, 0, 10000));
+    fw1.setTimeDimension(Dimension(0.01, 0, 100));
     fw1.addSpaceDimension(Dimension(0.01, 0, 100));
     fw1.addSpaceDimension(Dimension(0.01, 0, 100));
     fw1.source_number = 0;
-    fw1.ksi = SpacePoint(0.25, 0.36);
+    fw1.ksi = SpacePoint(0.50, 0.50);
     fw1.p_sigmaX = 0.05;
     fw1.p_sigmaY = 0.05;
     fw1.p_sigmaT = 0.01;
 
     DoubleMatrix u1;
-    fw1.implicit_calculate_D2V1(u1, 1.0, 0.1);
+    fw1.implicit_calculate_D2V1(u1, 1.0, 0.0);
     //IPrinter::printMatrix(u1);
     //IPrinter::printSeperatorLine();
     return;
 
-//    Problem0HForward fw2;
-//    fw2.setTimeDimension(Dimension(0.005, 0, 200));
-//    fw2.addSpaceDimension(Dimension(0.01, 0, 100));
-//    fw2.addSpaceDimension(Dimension(0.01, 0, 100));
-//    fw2.source_number = 0;
-//    fw2.ksi = SpacePoint(0.50, 0.50);
+    //    Problem0HForward fw2;
+    //    fw2.setTimeDimension(Dimension(0.005, 0, 200));
+    //    fw2.addSpaceDimension(Dimension(0.01, 0, 100));
+    //    fw2.addSpaceDimension(Dimension(0.01, 0, 100));
+    //    fw2.source_number = 0;
+    //    fw2.ksi = SpacePoint(0.50, 0.50);
 
-//    fw2.p_sigmaX = 0.01;
-//    fw2.p_sigmaY = 0.01;
-//    fw2.p_sigmaT = 0.01;
+    //    fw2.p_sigmaX = 0.01;
+    //    fw2.p_sigmaY = 0.01;
+    //    fw2.p_sigmaT = 0.01;
 
-//    DoubleMatrix u2;
-//    fw2.implicit_calculate_D2V1(u2, 1.0, 0.0);
-//    IPrinter::printMatrix(u2);
-//    IPrinter::printSeperatorLine();
+    //    DoubleMatrix u2;
+    //    fw2.implicit_calculate_D2V1(u2, 1.0, 0.0);
+    //    IPrinter::printMatrix(u2);
+    //    IPrinter::printSeperatorLine();
 }
 
 auto Problem0HForward::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void
 {
-    if (abs(tn.t - 0.1) <= 0.0) { IPrinter::printMatrix(u); IPrinter::printSeperatorLine(); }
-    if (abs(tn.t - 1.0) <= 0.0) { IPrinter::printMatrix(u); IPrinter::printSeperatorLine(); }
+    if (abs(tn.t - 0.1) <= 0.0) { IPrinter::printMatrix(10,6,u); IPrinter::printSeperatorLine(); }
+    if (abs(tn.t - 0.2) <= 0.0) { IPrinter::printMatrix(10,6,u); IPrinter::printSeperatorLine(); }
+    if (abs(tn.t - 0.3) <= 0.0) { IPrinter::printMatrix(10,6,u); IPrinter::printSeperatorLine(); }
+    if (abs(tn.t - 1.0) <= 0.0) { IPrinter::printMatrix(10,6,u); IPrinter::printSeperatorLine(); }
 
     //calculateU1U2(u, ln);
     //saveToExcel(u, ln);
@@ -215,7 +220,7 @@ auto Problem0HFunctional::fx(const DoubleVector &x) const -> double
     Problem0HForward::implicit_calculate_D2V1(u, a, gamma);
     double sum = 0.0;
     sum += epsilon1 * integral1(Problem0HForward::u1);
-//    sum += epsilon2 * integral2(Problem0HForward::u2);
+    //    sum += epsilon2 * integral2(Problem0HForward::u2);
     sum += epsilon2 * integral1(Problem0HForward::u2);
     //sum += norm();
     //sum += penalty();
@@ -481,8 +486,8 @@ auto Problem0HForward::calculateU1U2(const DoubleMatrix &u, unsigned int ln) con
     }
 
 
-//    if (ln == 2*(L-2)) { forward->u2  = -1.0*u; }
-//    if (ln == 2*(L-0)) { forward->u2 += +1.0*u; forward->u2 *= (0.5/ht); }
+    //    if (ln == 2*(L-2)) { forward->u2  = -1.0*u; }
+    //    if (ln == 2*(L-0)) { forward->u2 += +1.0*u; forward->u2 *= (0.5/ht); }
 
     //    if (ln == 2*(L-2)) { forward->u2  = +1.0*u; }
     //    if (ln == 2*(L-1)) { forward->u2 += -4.0*u; }
@@ -493,15 +498,16 @@ auto Problem0HForward::calculateU1U2(const DoubleMatrix &u, unsigned int ln) con
     //    if (ln == 2*(L-1)) { forward->u2 += -18.0*u; }
     //    if (ln == 2*(L-0)) { forward->u2 += +11.0*u; forward->u2 *= +(1.0/(6.0*ht)); IPrinter::printMatrix(u2); }
 
-//    if (ln == 2*(L-4)) { forward->u2  = +3.0*u; }
-//    if (ln == 2*(L-3)) { forward->u2 += -16.0*u; }
-//    if (ln == 2*(L-2)) { forward->u2 += +36.0*u; }
-//    if (ln == 2*(L-1)) { forward->u2 += -48.0*u; }
-//    if (ln == 2*(L-0)) { forward->u2 += +25.0*u; forward->u2 *= +(1.0/(12.0*ht)); /*IPrinter::printMatrix(u2);*/ }
+    //    if (ln == 2*(L-4)) { forward->u2  = +3.0*u; }
+    //    if (ln == 2*(L-3)) { forward->u2 += -16.0*u; }
+    //    if (ln == 2*(L-2)) { forward->u2 += +36.0*u; }
+    //    if (ln == 2*(L-1)) { forward->u2 += -48.0*u; }
+    //    if (ln == 2*(L-0)) { forward->u2 += +25.0*u; forward->u2 *= +(1.0/(12.0*ht)); /*IPrinter::printMatrix(u2);*/ }
 }
 
 auto Problem0HForward::saveToExcel(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
 {
+#ifdef USE_LIB_XLSX_WRITER
     //    const Dimension &time = Problem0HForward::timeDimension();
     //    const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
     //    const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
@@ -557,10 +563,12 @@ auto Problem0HForward::saveToExcel(const DoubleMatrix &u UNUSED_PARAM, unsigned 
     //        chartsheet_set_chart(chartsheet, chart);
     //        workbook_close(workbook);
     //    }
+#endif
 }
 
-auto Problem0HForward::saveToImage(const DoubleMatrix &u, unsigned int ln) const -> void
+auto Problem0HForward::saveToImage(const DoubleMatrix &u UNUSED_PARAM, unsigned int ln UNUSED_PARAM) const -> void
 {
+#ifdef USE_LIB_IMAGING
     //const Dimension &time = Problem0HForward::timeDimension();
     const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
     const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
@@ -581,6 +589,7 @@ auto Problem0HForward::saveToImage(const DoubleMatrix &u, unsigned int ln) const
     visualizeMatrixHeat(u, u.min(), u.max(), pixmap, N+1, M+1);
     pixmap.save(filename2);
     //IPrinter::printSeperatorLine();
+#endif
 }
 
 //--------------------------------------------------------------------------------------------------------------//
@@ -624,6 +633,7 @@ auto Problem0HBckward::saveBackwardInformarion(const DoubleMatrix &p, unsigned i
 
 auto Problem0HBckward::saveToImage(const DoubleMatrix &p, unsigned int ln) const -> void
 {
+#ifdef USE_LIB_IMAGING
     //const Dimension &time = Problem0HBckward::timeDimension();
     const Dimension &dimX = Problem0HBckward::spaceDimension(Dimension::DimensionX);
     const Dimension &dimY = Problem0HBckward::spaceDimension(Dimension::DimensionY);
@@ -644,6 +654,7 @@ auto Problem0HBckward::saveToImage(const DoubleMatrix &p, unsigned int ln) const
     visualizeMatrixHeat(p, p.min(), p.max(), pixmap, N+1, M+1);
     pixmap.save(filename2);
     //IPrinter::printSeperatorLine();
+#endif
 }
 
 //--------------------------------------------------------------------------------------------------------------//
