@@ -1331,6 +1331,8 @@ void ParabolicIBVP::calculateN6L2RD(DoubleMatrix &u) const
     A.clear();
 }
 
+IHeatEquationIBVP::IHeatEquationIBVP(double thermalDiffusivity) : _thermalDiffusivity(thermalDiffusivity) {}
+
 void IHeatEquationIBVP::calculateU(DoubleMatrix &u, double a, double alpha, double lambda)
 {
     Dimension xd = spaceDimension(Dimension::DimensionX);

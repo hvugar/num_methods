@@ -1,6 +1,8 @@
 #ifndef PROBLEM0H_SOLVER_H
 #define PROBLEM0H_SOLVER_H
 
+#include <float.h>
+#include <limits.h>
 #include <grid/hibvp.h>
 #include <benchmark.h>
 #include <function.h>
@@ -26,7 +28,7 @@ struct Problem0HParameter
 
 //--------------------------------------------------------------------------------------------------------------//
 
-class Problem0HCommon
+class PROBLEM0HSHARED_EXPORT Problem0HCommon
 {
 public:
     Problem0HCommon();
@@ -69,7 +71,7 @@ public:
 
 //--------------------------------------------------------------------------------------------------------------//
 
-class Problem0HForward : public CdIHyperbolicIBVP, public virtual Problem0HCommon
+class PROBLEM0HSHARED_EXPORT Problem0HForward : public CdIHyperbolicIBVP, public virtual Problem0HCommon
 {
 public:
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
@@ -88,7 +90,7 @@ private:
 
 //--------------------------------------------------------------------------------------------------------------//
 
-class Problem0HBckward : public ConjugateCdIHyperbolicIBVP, public virtual Problem0HCommon
+class PROBLEM0HSHARED_EXPORT Problem0HBckward : public ConjugateCdIHyperbolicIBVP, public virtual Problem0HCommon
 {
 public:
     virtual void layerInfo(const DoubleMatrix &, unsigned int) const;
@@ -106,7 +108,7 @@ private:
 
 //--------------------------------------------------------------------------------------------------------------//
 
-class Problem0HFunctional : public RnFunction, public IGradient,
+class PROBLEM0HSHARED_EXPORT Problem0HFunctional : public RnFunction, public IGradient,
         protected virtual Problem0HForward, protected virtual Problem0HBckward
 {
 public:

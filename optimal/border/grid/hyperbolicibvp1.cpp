@@ -706,7 +706,7 @@ void ConjugateCdIHyperbolicIBVP1::Main(int argc UNUSED_PARAM, char **argv UNUSED
 
 void ConjugateCdIHyperbolicIBVP1::layerInfo(const DoubleMatrix& p, unsigned int ln) const
 {
-    if (ln==200 or ln==199 or ln==198 or ln==2 or ln==1 or ln==0)
+    if (ln==200 || ln==199 || ln==198 || ln==2 || ln==1 || ln==0)
     {
         IPrinter::printMatrix(p);
         IPrinter::printSeperatorLine();

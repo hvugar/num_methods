@@ -4,20 +4,13 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += shared
-#DEFINES += OS_UNIX
-
-#QMAKE_CXXFLAGS += -O3
-#QMAKE_CXXFLAGS -= -O2
-#QMAKE_CXXFLAGS_RELEASE = -O3
-#QMAKE_CFLAGS += -O3
-#QMAKE_CXXFLAGS += -D__USE_MINGW_ANSI_STDIO
 
 OBJECTS_DIR = release/.obj
 MOC_DIR = release/.moc
 
 DEFINES += MINIMUM_LIBRARY
 
-DESTDIR += ../bin
+DESTDIR = ../bin
 
 SOURCES += \
     function.cpp \

@@ -2,8 +2,8 @@
 #define PROBLEM0H_GLOBAL_H
 
 #ifdef _WIN32
-#if defined(PROBLEM2H_LIBRARY)
-#   define PROBLEM2HSHARED_EXPORT __declspec(dllexport)
+#if defined(PROBLEM0H_LIBRARY)
+#   define PROBLEM0HSHARED_EXPORT __declspec(dllexport)
 #else
 #   define PROBLEM0HSHARED_EXPORT __declspec(dllimport)
 #endif

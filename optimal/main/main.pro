@@ -16,11 +16,13 @@ TARGET = main
 #QMAKE_CXXFLAGS += -ffast-math
 #QMAKE_CXXFLAGS += -D__USE_MINGW_ANSI_STDIO
 
+DESTDIR = ../bin
+
 INCLUDEPATH += ../minimum
 LIBS += -L../bin -lminimum
 
-INCLUDEPATH += ../border
-LIBS += -L../bin -lborder
+#INCLUDEPATH += ../border
+#LIBS += -L../bin -lborder
 
 #INCLUDEPATH += ../hyperbolic
 #LIBS += -L../bin -lhyperbolic
@@ -37,16 +39,14 @@ LIBS += -L../bin -lborder
 INCLUDEPATH += ../problem0H
 LIBS += -L../bin -lproblem0H
 
-INCLUDEPATH += ../problem2P
-LIBS += -L../bin -lproblem2P
+#INCLUDEPATH += ../problem2P
+#LIBS += -L../bin -lproblem2P
 
-INCLUDEPATH += ../problem2H
-LIBS += -L../bin -lproblem2H
+#INCLUDEPATH += ../problem2H
+#LIBS += -L../bin -lproblem2H
 
-INCLUDEPATH += ../problem1H
-LIBS += -L../bin -lproblem1H
-
-DESTDIR += ../bin
+#INCLUDEPATH += ../problem1H
+#LIBS += -L../bin -lproblem1H
 
 #include(problem4/problem4.pri)
 #include(problem5/problem5.pri)
