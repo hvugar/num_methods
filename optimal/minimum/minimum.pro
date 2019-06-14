@@ -5,12 +5,36 @@ CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += shared
 
-OBJECTS_DIR = release/.obj
-MOC_DIR     = release/.moc
-
 DEFINES += MINIMUM_LIBRARY
 
 DESTDIR = ../bin
+
+win32-g++ {
+    CONFIG(release, debug|release) {
+        OBJECTS_DIR = release/.obj/win32-gcc
+        MOC_DIR     = release/.moc/win32-gcc
+    }
+    CONFIG(debug, debug|release) {
+        OBJECTS_DIR = debug/.obj/win32-gcc
+        MOC_DIR     = debug/.moc/win32-gcc
+    }
+}
+
+win32-msvc* {
+    CONFIG(release, debug|release) {
+        OBJECTS_DIR = release/.obj/win32-msvc
+        MOC_DIR     = release/.moc/win32-msvc
+    }
+    CONFIG(debug, debug|release) {
+        OBJECTS_DIR = debug/.obj/win32-msvc
+        MOC_DIR     = debug/.moc/win32-msvc
+    }
+}
+
+unix {
+    CONFIG(release, debug|release) {}
+    CONFIG(debug, debug|release) {}
+}
 
 SOURCES += \
     function.cpp \

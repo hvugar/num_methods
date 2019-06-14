@@ -18,9 +18,6 @@ TARGET = main
 
 DESTDIR = ../bin
 
-INCLUDEPATH += ../minimum
-LIBS += -L../bin -lminimum
-
 #INCLUDEPATH += ../border
 #LIBS += -L../bin -lborder
 
@@ -52,12 +49,43 @@ LIBS += -L../bin -lproblem0H
 #include(problem5/problem5.pri)
 #include(load_sys/load_sys.pri)
 
-SOURCES += main.cpp \
-    test/deltagrid2dext1.cpp
+SOURCES += main.cpp
 
 SOURCES += test/nonlinearequationex1.cpp
-HEADERS += test/nonlinearequationex1.h \
-    test/deltagrid2dext1.h
+HEADERS += test/nonlinearequationex1.h
 
-OBJECTS_DIR = release/.obj
-MOC_DIR = release/.moc
+SOURCES += test/deltagrid2dext1.cpp
+HEADERS += test/deltagrid2dext1.h
+
+win32-g++ {
+    CONFIG(release, debug|release) {
+        OBJECTS_DIR = release/.obj/win32-gcc
+        MOC_DIR     = release/.moc/win32-gcc
+
+        INCLUDEPATH += ../minimum
+        LIBS += -L../bin -lminimum
+    }
+    CONFIG(debug, debug|release) {
+        OBJECTS_DIR = debug/.obj/win32-gcc
+        MOC_DIR     = debug/.moc/win32-gcc
+    }
+}
+
+win32-msvc* {
+    CONFIG(release, debug|release) {
+        OBJECTS_DIR = release/.obj/win32-msvc
+        MOC_DIR     = release/.moc/win32-msvc
+
+        INCLUDEPATH += ../minimum
+        LIBS += -L../bin/minimum.lib
+    }
+    CONFIG(debug, debug|release) {
+        OBJECTS_DIR = debug/.obj/win32-msvc
+        MOC_DIR     = debug/.moc/win32-msvc
+    }
+}
+
+unix {
+    CONFIG(release, debug|release) {}
+    CONFIG(debug, debug|release) {}
+}

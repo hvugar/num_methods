@@ -24,7 +24,43 @@ struct Problem0HParameter
     std::vector<double> psi_dx;
     std::vector<double> psi_dy;
     DeltaGrid2D deltaGrid;
+
+    void create(const Dimension &time, const Dimension &dimX, const Dimension &dimY);
+    void destroy();
+    void distribute(const SpacePoint &p);
 };
+
+void Problem0HParameter::create(const Dimension &time, const Dimension &dimX, const Dimension &dimY)
+{
+    destroy();
+
+    deltaGrid.initGrid(static_cast<unsigned int>(dimX.size()), dimX.step(), static_cast<unsigned int>(dimY.size()), dimY.step());
+
+    const unsigned int L = 2*static_cast<unsigned int>(time.size());
+    pwr_vl.resize(L+1, 5.0);
+    psi_vl.resize(L+1, 0.0);
+    psi_dx.resize(L+1, 0.0);
+    psi_dy.resize(L+1, 0.0);
+
+    pwr_vl[0] = 0.0;
+    pwr_vl[1] = 0.0;
+    pwr_vl[L] = 0.0;
+}
+
+void Problem0HParameter::destroy()
+{
+    deltaGrid.cleanGrid();
+    pwr_vl.clear();
+    psi_vl.clear();
+    psi_dx.clear();
+    psi_dy.clear();
+}
+
+void Problem0HParameter::distribute(const SpacePoint &p)
+{
+    this->p = p;
+    deltaGrid.distributeGauss(p);
+}
 
 //--------------------------------------------------------------------------------------------------------------//
 
@@ -66,6 +102,7 @@ public:
     unsigned int c_sigmaY;
 
     unsigned int source_number;
+
     std::vector<Problem0HParameter> optimalParameters;
 };
 
@@ -83,9 +120,10 @@ protected:
 
 private:
     double p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    void calculateU1U2(const DoubleMatrix &u, unsigned int ln) const;
-    void saveToExcel(const DoubleMatrix &u, unsigned int ln) const;
-    void saveToImage(const DoubleMatrix &u, unsigned int ln) const;
+    void calculateU1U2(const DoubleMatrix &u, const TimeNodePDE &tn) const;
+    void saveToExcel(const DoubleMatrix &u, const TimeNodePDE &tn) const;
+    void saveToImage(const DoubleMatrix &u, const TimeNodePDE &tn) const;
+    void saveToTextF(const DoubleMatrix &u, const TimeNodePDE &tn) const;
 };
 
 //--------------------------------------------------------------------------------------------------------------//
@@ -93,7 +131,7 @@ private:
 class PROBLEM0HSHARED_EXPORT Problem0HBckward : public ConjugateCdIHyperbolicIBVP, public virtual Problem0HCommon
 {
 public:
-    virtual void layerInfo(const DoubleMatrix &, unsigned int) const;
+    virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
 
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
@@ -102,8 +140,8 @@ protected:
 
 
 private:
-    auto saveBackwardInformarion(const DoubleMatrix &p, unsigned int ln) const -> void;
-    auto saveToImage(const DoubleMatrix &p, unsigned int ln) const -> void;
+    auto saveBackwardInformarion(const DoubleMatrix &p, const TimeNodePDE &tn) const -> void;
+    auto saveToImage(const DoubleMatrix &p, const TimeNodePDE &) const -> void;
 };
 
 //--------------------------------------------------------------------------------------------------------------//
@@ -114,12 +152,15 @@ class PROBLEM0HSHARED_EXPORT Problem0HFunctional : public RnFunction, public IGr
 public:
     static void Main(int argc, char** argv);
 
-    static void compareGradients(Problem0HFunctional &functional, unsigned int L);
+    static void compareGradients();
     static void checkingForwardProblem();
 
 public:
     virtual auto fx(const DoubleVector &x) const -> double;
     virtual auto gradient(const DoubleVector &x, DoubleVector &g) const -> void;
+
+    auto forward(DoubleMatrix &u, double a, double gamma) const -> void;
+    auto backward(DoubleMatrix &u, double a, double gamma) const -> void;
 
     virtual auto integral1(const DoubleMatrix &u) const -> double;
     virtual auto integral2(const DoubleMatrix &u) const -> double;
@@ -130,9 +171,6 @@ public:
 
     auto vectorToParameter(const DoubleVector &x) const -> void;
     auto parameterToVector(DoubleVector &x) const -> void;
-
-private:
-    Problem0HFunctional* const_this = nullptr;
 };
 
 

@@ -5,33 +5,13 @@ CONFIG  -= app_bundle
 CONFIG  -= qt
 CONFIG  += shared
 
-OBJECTS_DIR = release/.obj
-MOC_DIR     = release/.moc
-
 DEFINES += PROBLEM0H_LIBRARY
 
 DESTDIR = ../bin
 
-INCLUDEPATH += ../minimum
-LIBS        += -L../bin -lminimum
-
-HEADERS += problem0h_global.h
-
-#HEADERS += problem0h_common.h
-#SOURCES += problem0h_common.cpp
-
-HEADERS += problem0h_solver.h
-SOURCES += problem0h_solver.cpp
-
-#HEADERS += testwaveequation.h
-#SOURCES += testwaveequation.cpp
-
-#HEADERS += problem2h_exporter.h
-#SOURCES += problem2h_exporter.cpp
-
-#DEFINES += USE_LIB_IMAGING
-#DEFINES += USE_LIB_XLSX_WRITER
-#DEFINES += USE_LIB_ZLIB
+DEFINES += USE_LIB_IMAGING
+DEFINES += USE_LIB_XLSX_WRITER
+DEFINES += USE_LIB_ZLIB
 
 win32-g++ {
     CONFIG(release, debug|release) {
@@ -49,6 +29,12 @@ win32-g++ {
             INCLUDEPATH += ../imaging
             LIBS        += -L../bin -limaging
         }
+        OBJECTS_DIR = release/.obj/win32-gcc
+        MOC_DIR     = release/.moc/win32-gcc
+
+        INCLUDEPATH += ../minimum
+        LIBS        += -L../bin -lminimum
+
     }
     CONFIG(debug, debug|release) { }
 }
@@ -67,8 +53,13 @@ win32-msvc* {
             CONFIG      += qt
             QT          += core gui widgets
             INCLUDEPATH += ../imaging
-            LIBS        += -L../bin -limaging
+            LIBS        += ../bin/imaging.lib
         }
+        OBJECTS_DIR = release/.obj/win32-msvc
+        MOC_DIR     = release/.moc/win32-msvc
+
+        INCLUDEPATH += ../minimum
+        LIBS        += ../bin/minimum.lib
     }
     CONFIG(debug, debug|release) { }
 }
@@ -77,5 +68,20 @@ unix {
     CONFIG(release, debug|release) {}
     CONFIG(debug, debug|release) {}
 }
+
+HEADERS += problem0h_global.h
+
+#HEADERS += problem0h_common.h
+#SOURCES += problem0h_common.cpp
+
+HEADERS += problem0h_solver.h
+SOURCES += problem0h_solver.cpp
+
+#HEADERS += testwaveequation.h
+#SOURCES += testwaveequation.cpp
+
+#HEADERS += problem2h_exporter.h
+#SOURCES += problem2h_exporter.cpp
+
 
 #OTHER_FILES += matlab/*
