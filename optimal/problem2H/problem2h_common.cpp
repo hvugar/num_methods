@@ -32,10 +32,14 @@ void SpacePointInfoH::init(unsigned int length)
     vl.resize(length);
     dx.resize(length);
     dy.resize(length);
+    vx.resize(length);
+    vy.resize(length);
 }
 
 void SpacePointInfoH::clear()
 {
+    vy.clear();
+    vx.clear();
     dy.clear();
     dx.clear();
     vl.clear();

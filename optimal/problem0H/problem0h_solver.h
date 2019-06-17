@@ -23,6 +23,8 @@ struct Problem0HParameter
     std::vector<double> psi_vl;
     std::vector<double> psi_dx;
     std::vector<double> psi_dy;
+    std::vector<double> psi_x;
+    std::vector<double> psi_y;
     DeltaGrid2D deltaGrid;
 
     void create(const Dimension &time, const Dimension &dimX, const Dimension &dimY);
@@ -37,14 +39,16 @@ void Problem0HParameter::create(const Dimension &time, const Dimension &dimX, co
     deltaGrid.initGrid(static_cast<unsigned int>(dimX.size()), dimX.step(), static_cast<unsigned int>(dimY.size()), dimY.step());
 
     const unsigned int L = 2*static_cast<unsigned int>(time.size());
-    pwr_vl.resize(L+1, 5.0);
+    pwr_vl.resize(L+1, 0.5);
     psi_vl.resize(L+1, 0.0);
     psi_dx.resize(L+1, 0.0);
     psi_dy.resize(L+1, 0.0);
+    psi_x.resize(L+1, 0.0);
+    psi_y.resize(L+1, 0.0);
 
-    pwr_vl[0] = 0.0;
-    pwr_vl[1] = 0.0;
-    pwr_vl[L] = 0.0;
+    //pwr_vl[0] = 0.0;
+    //pwr_vl[1] = 0.0;
+    //pwr_vl[L] = 0.0;
 }
 
 void Problem0HParameter::destroy()
@@ -54,12 +58,14 @@ void Problem0HParameter::destroy()
     psi_vl.clear();
     psi_dx.clear();
     psi_dy.clear();
+    psi_x.clear();
+    psi_y.clear();
 }
 
 void Problem0HParameter::distribute(const SpacePoint &p)
 {
     this->p = p;
-    deltaGrid.distributeGauss(p);
+    deltaGrid.distributeGauss(p, 1, 1);
 }
 
 //--------------------------------------------------------------------------------------------------------------//
@@ -80,9 +86,9 @@ public:
     double epsilon1 = 1.0;
     double epsilon2 = 0.0;
 
-    double alpha1 = 1.0;
-    double alpha2 = 1.0;
-    double alpha3 = 1.0;
+    //double alpha1 = 1.0;
+    //double alpha2 = 1.0;
+    //double alpha3 = 1.0;
     SpacePoint ksi;
 
     //DoubleMatrix U1;
@@ -108,7 +114,7 @@ public:
 
 //--------------------------------------------------------------------------------------------------------------//
 
-class PROBLEM0HSHARED_EXPORT Problem0HForward : public CdIHyperbolicIBVP, public virtual Problem0HCommon
+class PROBLEM0HSHARED_EXPORT Problem0HForward : public IWaveEquationIBVP, public virtual Problem0HCommon
 {
 public:
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
@@ -147,6 +153,7 @@ private:
 //--------------------------------------------------------------------------------------------------------------//
 
 class PROBLEM0HSHARED_EXPORT Problem0HFunctional : public RnFunction, public IGradient,
+        public IProjection, public IPrinter,
         protected virtual Problem0HForward, protected virtual Problem0HBckward
 {
 public:
@@ -154,10 +161,18 @@ public:
 
     static void compareGradients();
     static void checkingForwardProblem();
+    static void optimization();
 
 public:
     virtual auto fx(const DoubleVector &x) const -> double;
     virtual auto gradient(const DoubleVector &x, DoubleVector &g) const -> void;
+
+    virtual auto project(DoubleVector &x, unsigned int index) -> void;
+    virtual auto project(DoubleVector &) const  -> void;
+
+    virtual auto print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f,
+                       double alpha, GradientMethod::MethodResult result) const -> void;
+
 
     auto forward(DoubleMatrix &u, double a, double gamma) const -> void;
     auto backward(DoubleMatrix &u, double a, double gamma) const -> void;

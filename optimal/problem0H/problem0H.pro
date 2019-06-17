@@ -77,8 +77,8 @@ HEADERS += problem0h_global.h
 HEADERS += problem0h_solver.h
 SOURCES += problem0h_solver.cpp
 
-#HEADERS += testwaveequation.h
-#SOURCES += testwaveequation.cpp
+HEADERS +=
+SOURCES +=
 
 #HEADERS += problem2h_exporter.h
 #SOURCES += problem2h_exporter.cpp

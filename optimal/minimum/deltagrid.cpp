@@ -91,8 +91,8 @@ auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned int nodeX_per_s
             sn.i = static_cast<int>(n); sn.x = n*_hx;
             m_nodes[m][n] = factor*exp(-(((sn.x-sp.x)*(sn.x-sp.x))/(2.0*sigmaX*sigmaX) +
                                          ((sn.y-sp.y)*(sn.y-sp.y))/(2.0*sigmaY*sigmaY)));
-            m_der_x[m][n] =  m_nodes[m][n] * ((sn.x-sp.x)/(sigmaX*sigmaX));
-            m_der_y[m][n] =  m_nodes[m][n] * ((sn.y-sp.y)/(sigmaY*sigmaY));
+            m_der_x[m][n] =  m_nodes[m][n] * (-(sn.x-sp.x)/(sigmaX*sigmaX));
+            m_der_y[m][n] =  m_nodes[m][n] * (-(sn.y-sp.y)/(sigmaY*sigmaY));
         }
     }
 
@@ -113,20 +113,28 @@ auto DeltaGrid2D::lumpPointGauss(const DoubleMatrix &mx) const -> double
     return pu;
 }
 
-auto DeltaGrid2D::lumpPointGauss(const DoubleMatrix &mx, double &dx, double &dy) const -> double
+auto DeltaGrid2D::lumpPointGauss(const DoubleMatrix &u, double &ux, double &uy, double &dx, double &dy) const -> double
 {
+    double pu = 0.0;
+    ux = 0.0;
+    uy = 0.0;
     dx = 0.0;
     dy = 0.0;
     for (unsigned int m=minY(); m<=maxY(); m++)
     {
         for (unsigned int n=minX(); n<=maxX(); n++)
         {
-            dx += mx[m][n] * der_x()[m][n] * _hx * _hy;
-            dy += mx[m][n] * der_y()[m][n] * _hx * _hy;
+            //dx += u[m][n] * der_x()[m][n] * _hx * _hy;
+            //dy += u[m][n] * der_y()[m][n] * _hx * _hy;
+            //pu += mx[m][n] * weight(n,m) * _hx * _hy;
+
+            double _w = weight(n,m);
+            pu += _w * _hx * _hy * u[m][n];
+            ux += _w * _hx * _hy * (u[m][n+1]-u[m][n-1])/(2.0*_hx);
+            uy += _w * _hx * _hy * (u[m+1][n]-u[m-1][n])/(2.0*_hx);
         }
     }
-
-    return lumpPointGauss(mx);
+    return pu;
 }
 
 auto DeltaGrid2D::distributeSigle(const SpacePoint& sp) -> void
@@ -148,35 +156,6 @@ auto DeltaGrid2D::distributeRect4(const SpacePoint&) -> void
 auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, unsigned int v) const -> double
 {
     double pu = 0.0;
-
-    if (v==1)
-    {
-        for (unsigned int m=minY(); m<=maxY(); m++)
-        {
-            for (unsigned int n=minX(); n<=maxX(); n++)
-            {
-                pu += u[m][n] * weight(n,m) * _hx * _hy;
-            }
-        }
-        return pu;
-    }
-
-    if (v==2)
-    {
-        double k1,k2;
-        for (unsigned int m=minY(); m<=maxY(); m++)
-        {
-            if (m == minY() || m == maxY()) k1 = 0.5; else k1 = 1.0;
-            for (unsigned int n=minX(); n<=maxX(); n++)
-            {
-                if (n == minX() || n == maxX()) k2 = 0.5; else k2 = 1.0;
-                pu += k1 * k2 * u[m][n] * weight(n,m) * _hx * _hy;
-            }
-        }
-        return pu;
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////
 
     if (v==3)
     {
@@ -358,20 +337,6 @@ auto DeltaGrid2D::derivativesInPoint(const DoubleMatrix &u, double &dx, double &
         const unsigned int ry = static_cast<unsigned int>(round(py/_hy));
         dx = (u[ry][rx+1]-u[ry][rx-1])/(2.0*_hx);
         dy = (u[ry+1][rx]-u[ry-1][rx])/(2.0*_hy);
-    }
-
-    if (v == 1)
-    {
-        dx = 0.0;
-        dy = 0.0;
-        for (unsigned int m=minY(); m<=maxY(); m++)
-        {
-            for (unsigned int n=minX(); n<=maxX(); n++)
-            {
-                dx += u[m][n] * der_x()[m][n] * _hx * _hy;
-                dy += u[m][n] * der_y()[m][n] * _hx * _hy;
-            }
-        }
     }
 
     if (v == 3)

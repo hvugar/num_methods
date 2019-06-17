@@ -1,27 +1,69 @@
-TEMPLATE = lib
 TARGET = problem2H
-CONFIG  -= app_bundle
-#CONFIG  -= qt
+TEMPLATE = lib
 CONFIG  += console
+CONFIG  -= app_bundle
+CONFIG  -= qt
 CONFIG  += shared
-DESTDIR  = ../bin
 
 DEFINES += PROBLEM2H_LIBRARY
-DEFINES += USE_IMAGING
-#DEFINES += OLD_SOURCES
 
-INCLUDEPATH += ../minimum
-LIBS += -L../bin -lminimum
+DESTDIR  = ../bin
 
-#defined(USE_IMAGING) {
-#message("Using imaging library")
-INCLUDEPATH += ../imaging
-LIBS        += -L../bin -limaging
-QT          += core gui widgets
-#}
+#DEFINES += USE_LIB_IMAGING
+#DEFINES += USE_LIB_XLSX_WRITER
+#DEFINES += USE_LIB_ZLIB
 
-OBJECTS_DIR = release/.obj
-MOC_DIR = release/.moc
+win32-g++ {
+    CONFIG(release, debug|release) {
+        contains(DEFINES, USE_LIB_XLSX_WRITER) {
+            INCLUDEPATH += ../../third-party/MinGW/x86_64/libxlsxwriter/include
+            LIBS        += -L../../third-party/MinGW/x86_64/libxlsxwriter/lib -lxlsxwriter
+        }
+        contains(DEFINES, USE_LIB_ZLIB) {
+            INCLUDEPATH += ../../third-party/MinGW/x86_64/zlib/include
+            LIBS        += -L../../third-party/MinGW/x86_64/zlib/lib -lzlibstatic
+        }
+        contains(DEFINES, USE_LIB_IMAGING) {
+            CONFIG      += qt
+            QT          += core gui widgets
+            INCLUDEPATH += ../imaging
+            LIBS        += -L../bin -limaging
+        }
+        OBJECTS_DIR = release/.obj/win32-gcc
+        MOC_DIR     = release/.moc/win32-gcc
+
+        INCLUDEPATH += ../minimum
+        LIBS        += -L../bin -lminimum
+
+    }
+    CONFIG(debug, debug|release) { }
+}
+
+win32-msvc* {
+    CONFIG(release, debug|release) {
+        contains(DEFINES, USE_LIB_XLSX_WRITER) {
+            INCLUDEPATH += ../../third-party/VC2015/x86_64/libxlsxwriter/include
+            LIBS        += ../../third-party/VC2015/x86_64/libxlsxwriter/lib/xlsxwriter.lib
+        }
+        contains(DEFINES, USE_LIB_ZLIB) {
+            INCLUDEPATH += ../../third-party/VC2015/x86_64/zlib/include
+            LIBS        += ../../third-party/VC2015/x86_64/zlib/lib/zlibstatic.lib
+        }
+        contains(DEFINES, USE_LIB_IMAGING) {
+            CONFIG      += qt
+            QT          += core gui widgets
+            INCLUDEPATH += ../imaging
+            LIBS        += ../bin/imaging.lib
+        }
+        OBJECTS_DIR = release/.obj/win32-msvc
+        MOC_DIR     = release/.moc/win32-msvc
+
+        INCLUDEPATH += ../minimum
+        LIBS        += ../bin/minimum.lib
+    }
+    CONFIG(debug, debug|release) { }
+}
+
 
 #HEADERS += problem2hnm.h
 #SOURCES += problem2hnm.cpp
@@ -51,10 +93,5 @@ SOURCES += problem2h_common.cpp
 #           problem2h_solver4.cpp \
 #           problem2h_ibvp.cpp \
 
-defined(OLD_SOURCES) {
-    message("Using old sources")
-}
-
-
-
-OTHER_FILES += matlab/*
+#OTHER_FILES += matlab/*
+#DEFINES += OLD_SOURCES

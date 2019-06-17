@@ -3,37 +3,25 @@
 #include <cmethods.h>
 #include <grid/pibvp.h>
 #include <grid/hibvp.h>
+#include <utils/matrix.h>
+#include <utils/random.h>
+#include <deltagrid.h>
+#include <r1minimize.h>
 
 #include <ode/nlode1o.h>
 #include <ode/lode1o.h>
 //#include <ode/firstorderlinearodeex1.h>
 //#include <ode/firstordernonlinearodeex1.h>
 //#include <ode/secondorderlinearodeex1.h>
+#include <waveequationibvp.h>
+#include <waveequationibvp.h>
 
+#include "../problem0H/problem0h_solver.h"
+#include "../problem1H/problem1h_example.h"
 #include "../problem2P/problem2p_solver.h"
 #include "../problem2H/problem2h_solver_delta.h"
-
-#include "../problem1H/problem1h_example.h"
-
-#include <utils/matrix.h>
-#include <utils/random.h>
-
-//#include <grid/hyperbolicibvp1.h>
-//#include <grid/parabolicibvp1.h>
-//#include <grid/newtonheatequationex1.h>
-#include <deltagrid.h>
-
-#include <QtGui>
-#include <r1minimize.h>
-
-//#include <ode/firstorderlinearodeex1.h>
-//#include <ode/firstordernonlinearodeex1.h>
-//#include <ode/secondorderlinearodeex1.h>
-
 #include "test/deltagrid2dext1.h"
-#include <testwaveequation.h>
-
-#include <problem0h_solver.h>
+#include "test/nonlinearequationex1.h"
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {

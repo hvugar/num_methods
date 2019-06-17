@@ -1,11 +1,11 @@
 #ifndef NEWTONHEATEQUATIONEX1_H
 #define NEWTONHEATEQUATIONEX1_H
 
-#include <grid/pibvp.h>
+#include "border_global.h"
 
 #define SAMPLE_2
 
-class MINIMUMSHARED_EXPORT NewtonHeatEquationEx1 : public NewtonHeatEquation
+class BORDERSHARED_EXPORT NewtonHeatEquationEx1 : public NewtonHeatEquation
 {
 public:
     static void Main(int argc, char* argv[]);

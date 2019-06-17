@@ -193,6 +193,8 @@ struct PROBLEM2HSHARED_EXPORT SpacePointInfoH: public SpacePoint
     std::vector<double> vl;
     std::vector<double> dx;
     std::vector<double> dy;
+    std::vector<double> vx;
+    std::vector<double> vy;
 };
 
 typedef std::vector<unsigned int>    uint_vectorH;

@@ -2,7 +2,9 @@
 
 void Problem2HDirichletDelta::Main(int argc, char* argv[])
 {
+#ifdef USE_LIB_IMAGING
     QGuiApplication app(argc, argv);
+#endif
     example2();
 }
 
@@ -309,12 +311,12 @@ auto Problem2HDirichletDelta::example2() -> void
             //bm.printDuration();
             //return;
 
-            //prob.checkGradient3(prob);
-            //prob.optimizeK = true;
-            //prob.optimizeZ = true;
-            //prob.optimizeO = false;
-            //prob.optimizeC = false;
-            //return;
+            prob.checkGradient3(prob);
+            prob.optimizeK = true;
+            prob.optimizeZ = true;
+            prob.optimizeO = false;
+            prob.optimizeC = false;
+            return;
         }
 
         //ConjugateGradient g;
@@ -1227,11 +1229,11 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
 #if defined (DISCRETE_DELTA_TIME_2)
                             double kij = equaPrm.opt.k[i][j];
 #endif
-                            gradXijX += -kij * uj.dx[ln] * p_info[i].vl[ln];
-                            gradXijY += -kij * uj.dy[ln] * p_info[i].vl[ln];
+                            gradXijX += kij * uj.dx[ln] * p_info[i].vl[ln];
+                            gradXijY += kij * uj.dy[ln] * p_info[i].vl[ln];
 #ifdef USE_PENALTY
-                            gradXijX += -kij * uj.dx[ln] * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
-                            gradXijY += -kij * uj.dy[ln] * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
+                            gradXijX += kij * uj.dx[ln] * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
+                            gradXijY += kij * uj.dy[ln] * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
 #endif
                         }
                     }
@@ -1277,8 +1279,8 @@ auto Problem2HDirichletDelta::gradient(const DoubleVector &pv, DoubleVector &g) 
                             double kij = equaPrm.opt.k[i][j];
                             double zij = equaPrm.opt.z[i][j];
 #endif
-                            gradEtaiX += -pi.dx[ln] * kij * (u_info[j].vl[ln] - zij);
-                            gradEtaiY += -pi.dy[ln] * kij * (u_info[j].vl[ln] - zij);
+                            gradEtaiX += pi.dx[ln] * kij * (u_info[j].vl[ln] - zij);
+                            gradEtaiY += pi.dy[ln] * kij * (u_info[j].vl[ln] - zij);
                         }
                     }
 #ifdef USE_NORM
@@ -2219,7 +2221,7 @@ auto Problem2HDirichletDelta::add2Info(const DoubleMatrix &u, spif_vectorH &info
     {
         const DeltaGrid2D &deltagrid = deltaList[i];
         SpacePointInfoH &ui = info[i];
-        ui.vl[ln] = deltagrid.lumpPointGauss(u, ui.dx[ln], ui.dy[ln]);
+        ui.vl[ln] = deltagrid.lumpPointGauss(u, ui.dx[ln], ui.dy[ln], ui.vx[ln], ui.vy[ln]);
     }
 }
 
@@ -2401,6 +2403,7 @@ auto Problem2HDirichletDelta::b_layerInfo(const DoubleMatrix &p UNUSED_PARAM, un
 
     return;
 
+#ifdef USE_LIB_IMAGING
     if (ln%2==0 && printLayers)
     {
         QPixmap pxm;
@@ -2408,6 +2411,7 @@ auto Problem2HDirichletDelta::b_layerInfo(const DoubleMatrix &p UNUSED_PARAM, un
         pxm.save(QString("data/images/all/%1_b.png").arg(ln/2, 4, 10, QChar('0')));
         return;
     }
+#endif
 }
 
 void Problem2HDirichletDelta::setGridDimensions(const Dimension &time, const Dimension &dimX, const Dimension &dimY)

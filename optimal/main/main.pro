@@ -18,8 +18,8 @@ TARGET = main
 
 DESTDIR = ../bin
 
-#INCLUDEPATH += ../border
-#LIBS += -L../bin -lborder
+INCLUDEPATH += ../border
+LIBS += -L../bin -lborder
 
 #INCLUDEPATH += ../hyperbolic
 #LIBS += -L../bin -lhyperbolic
@@ -33,14 +33,8 @@ DESTDIR = ../bin
 #INCLUDEPATH += ../imaging
 #LIBS += -L../bin -limaging
 
-INCLUDEPATH += ../problem0H
-LIBS += -L../bin -lproblem0H
-
 #INCLUDEPATH += ../problem2P
 #LIBS += -L../bin -lproblem2P
-
-#INCLUDEPATH += ../problem2H
-#LIBS += -L../bin -lproblem2H
 
 #INCLUDEPATH += ../problem1H
 #LIBS += -L../bin -lproblem1H
@@ -64,6 +58,12 @@ win32-g++ {
 
         INCLUDEPATH += ../minimum
         LIBS += -L../bin -lminimum
+
+        INCLUDEPATH += ../problem0H
+        LIBS += -L../bin -lproblem0H
+
+        INCLUDEPATH += ../problem2H
+        LIBS += -L../bin -lproblem2H
     }
     CONFIG(debug, debug|release) {
         OBJECTS_DIR = debug/.obj/win32-gcc
@@ -77,7 +77,13 @@ win32-msvc* {
         MOC_DIR     = release/.moc/win32-msvc
 
         INCLUDEPATH += ../minimum
-        LIBS += -L../bin/minimum.lib
+        LIBS += ../bin/minimum.lib
+
+        INCLUDEPATH += ../problem0H
+        LIBS += ../bin/problem0H.lib
+
+        INCLUDEPATH += ../problem2H
+        LIBS += ../bin/problem2H.lib
     }
     CONFIG(debug, debug|release) {
         OBJECTS_DIR = debug/.obj/win32-msvc
