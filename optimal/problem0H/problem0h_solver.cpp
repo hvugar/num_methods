@@ -18,8 +18,15 @@ void Problem0HFunctional::compareGradients()
     functional.p_sigmaX = 0.05;
     functional.p_sigmaY = 0.05;
     functional.p_sigmaT = 0.01;
-    functional.a = 1.0;
-    functional.gamma = 0.1;
+
+    functional.forward().setWaveSpeed(1.0);
+    functional.forward().setWaveDissipation(0.0);
+
+    functional.backward().setWaveSpeed(1.0);
+    functional.backward().setWaveDissipation(0.0);
+
+//    functional.a = 1.0;
+//    functional.gamma = 0.1;
     functional.epsilon1 = 1.0;
     functional.epsilon2 = 1.0;
     functional.source_number = 2;
@@ -87,9 +94,9 @@ void Problem0HFunctional::checkingForwardProblem()
     fw1.optimalParameters[1].distribute(SpacePoint(0.708, 0.208));
 
     DoubleMatrix u1;
-    fw1.setWaveSpeed(1.0);
-    fw1.setWaveDissipation(0.0);
-    fw1.forward(u1, 1.0, 0.0);
+    fw1.forward().setWaveSpeed(1.0);
+    fw1.forward().setWaveDissipation(0.0);
+    fw1.forward().implicit_calculate_D2V1();
 
     IPrinter::printMatrix(u1);
     IPrinter::printSeperatorLine();
@@ -146,6 +153,14 @@ void Problem0HFunctional::optimization()
     g.showExitMessage(true);
     g.calculate(x);
 }
+
+Problem0HForward& Problem0HFunctional::forward() { return *this; }
+
+Problem0HBckward& Problem0HFunctional::backward() { return *this; }
+
+const Problem0HForward& Problem0HFunctional::forward() const { return *this; }
+
+const Problem0HBckward& Problem0HFunctional::backward() const { return *this; }
 
 auto Problem0HForward::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void
 {
@@ -216,17 +231,16 @@ auto Problem0HFunctional::fx(const DoubleVector &x) const -> double
 {
     vectorToParameter(x);
 
-    DoubleMatrix u;
-    forward(u, a, gamma);
+    forward().implicit_calculate_D2V1();
     double sum = 0.0;
-    sum += epsilon1 * integral1(Problem0HForward::u1);
-    sum += epsilon2 * integral2(Problem0HForward::u2);
+    sum += epsilon1 * integral1(forward().u1);
+    sum += epsilon2 * integral2(forward().u2);
     //sum += norm();
     //sum += penalty();
     return sum;
 }
 
-auto Problem0HFunctional::integral1(const DoubleMatrix &u) const -> double
+auto Problem0HFunctional::integral1(const DoubleMatrix &) const -> double
 {
     //const Dimension &time = Problem0HForward::timeDimension();
     const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
@@ -241,35 +255,35 @@ auto Problem0HFunctional::integral1(const DoubleMatrix &u) const -> double
     double udiff = 0.0;
     double usum = 0.0;
 
-    udiff = u[0][0]; usum += 0.25 * udiff * udiff;// * mu(0, 0);
-    udiff = u[0][N]; usum += 0.25 * udiff * udiff;// * mu(N, 0);
-    udiff = u[M][0]; usum += 0.25 * udiff * udiff;// * mu(0, M);
-    udiff = u[M][N]; usum += 0.25 * udiff * udiff;// * mu(N, M);
+    udiff = u1[0][0]; usum += 0.25 * udiff * udiff;// * mu(0, 0);
+    udiff = u1[0][N]; usum += 0.25 * udiff * udiff;// * mu(N, 0);
+    udiff = u1[M][0]; usum += 0.25 * udiff * udiff;// * mu(0, M);
+    udiff = u1[M][N]; usum += 0.25 * udiff * udiff;// * mu(N, M);
 
     for (unsigned int n=1; n<=N-1; n++)
     {
-        udiff = u[0][n]; usum += 0.5 * udiff * udiff;// * mu(n, 0);
-        udiff = u[M][n]; usum += 0.5 * udiff * udiff;// * mu(n, M);
+        udiff = u1[0][n]; usum += 0.5 * udiff * udiff;// * mu(n, 0);
+        udiff = u1[M][n]; usum += 0.5 * udiff * udiff;// * mu(n, M);
     }
 
     for (unsigned int m=1; m<=M-1; m++)
     {
-        udiff = u[m][0]; usum += 0.5 * udiff * udiff;// * mu(0, m);
-        udiff = u[m][N]; usum += 0.5 * udiff * udiff;// * mu(N, m);
+        udiff = u1[m][0]; usum += 0.5 * udiff * udiff;// * mu(0, m);
+        udiff = u1[m][N]; usum += 0.5 * udiff * udiff;// * mu(N, m);
     }
 
     for (unsigned int m=1; m<=M-1; m++)
     {
         for (unsigned int n=1; n<=N-1; n++)
         {
-            udiff = u[m][n]; usum += udiff * udiff;// * mu(n, m);
+            udiff = u1[m][n]; usum += udiff * udiff;// * mu(n, m);
         }
     }
 
     return usum*(hx*hy);
 }
 
-auto Problem0HFunctional::integral2(const DoubleMatrix &u) const -> double
+auto Problem0HFunctional::integral2(const DoubleMatrix &) const -> double
 {
     //const Dimension &time = Problem0HForward::timeDimension();
     const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
@@ -284,28 +298,28 @@ auto Problem0HFunctional::integral2(const DoubleMatrix &u) const -> double
     double udiff = 0.0;
     double usum = 0.0;
 
-    udiff = u[0][0]; usum += 0.25 * udiff * udiff;// * mu(0, 0);
-    udiff = u[0][N]; usum += 0.25 * udiff * udiff;// * mu(N, 0);
-    udiff = u[M][0]; usum += 0.25 * udiff * udiff;// * mu(0, M);
-    udiff = u[M][N]; usum += 0.25 * udiff * udiff;// * mu(N, M);
+    udiff = u2[0][0]; usum += 0.25 * udiff * udiff;// * mu(0, 0);
+    udiff = u2[0][N]; usum += 0.25 * udiff * udiff;// * mu(N, 0);
+    udiff = u2[M][0]; usum += 0.25 * udiff * udiff;// * mu(0, M);
+    udiff = u2[M][N]; usum += 0.25 * udiff * udiff;// * mu(N, M);
 
     for (unsigned int n=1; n<=N-1; n++)
     {
-        udiff = u[0][n]; usum += 0.5 * udiff * udiff;// * mu(n, 0);
-        udiff = u[M][n]; usum += 0.5 * udiff * udiff;// * mu(n, M);
+        udiff = u2[0][n]; usum += 0.5 * udiff * udiff;// * mu(n, 0);
+        udiff = u2[M][n]; usum += 0.5 * udiff * udiff;// * mu(n, M);
     }
 
     for (unsigned int m=1; m<=M-1; m++)
     {
-        udiff = u[m][0]; usum += 0.5 * udiff * udiff;// * mu(0, m);
-        udiff = u[m][N]; usum += 0.5 * udiff * udiff;// * mu(N, m);
+        udiff = u2[m][0]; usum += 0.5 * udiff * udiff;// * mu(0, m);
+        udiff = u2[m][N]; usum += 0.5 * udiff * udiff;// * mu(N, m);
     }
 
     for (unsigned int m=1; m<=M-1; m++)
     {
         for (unsigned int n=1; n<=N-1; n++)
         {
-            udiff = u[m][n]; usum += udiff * udiff;// * mu(n, m);
+            udiff = u2[m][n]; usum += udiff * udiff;// * mu(n, m);
         }
     }
 
@@ -315,18 +329,6 @@ auto Problem0HFunctional::integral2(const DoubleMatrix &u) const -> double
 auto Problem0HFunctional::norm() const -> double { return 0.0; }
 
 auto Problem0HFunctional::penalty() const -> double { return 0.0; }
-
-auto Problem0HFunctional::forward(DoubleMatrix &u, double a, double gamma) const -> void
-{
-    //setWaveSpeed(a);
-    //setWaveDissipation(gamma);
-    Problem0HForward::implicit_calculate_D2V1();
-}
-
-auto Problem0HFunctional::backward(DoubleMatrix &p, double a, double gamma)  const -> void
-{
-    Problem0HBckward::implicit_calculate_D2V1(p, a, gamma);
-}
 
 auto Problem0HFunctional::gradient(const DoubleVector &x, DoubleVector &g) const -> void
 {
@@ -344,9 +346,8 @@ auto Problem0HFunctional::gradient(const DoubleVector &x, DoubleVector &g) const
     //const double hy = dimY.step();
     const double ht = time.step();
 
-    DoubleMatrix u, p;
-    forward(u, a, gamma);
-    backward(p, a, gamma);
+    forward().implicit_calculate_D2V1();
+    backward().implicit_calculate_D2V1();
 
     unsigned int length = 2*L+1;
     for (unsigned int sn=0; sn<source_number; sn++)

@@ -48,7 +48,7 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class BORDERSHARED_EXPORT ConjugateCdIHyperbolicIBVP1 : public ConjugateCdIHyperbolicIBVP
+class BORDERSHARED_EXPORT ConjugateCdIHyperbolicIBVP1 : public IConjugateWaveEquationIBVP
 {
 public:
     static void Main(int argc, char* argv[]);

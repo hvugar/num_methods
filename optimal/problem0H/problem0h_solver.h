@@ -134,7 +134,7 @@ private:
 
 //--------------------------------------------------------------------------------------------------------------//
 
-class PROBLEM0HSHARED_EXPORT Problem0HBckward : public ConjugateCdIHyperbolicIBVP, public virtual Problem0HCommon
+class PROBLEM0HSHARED_EXPORT Problem0HBckward : public IConjugateWaveEquationIBVP, public virtual Problem0HCommon
 {
 public:
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
@@ -163,6 +163,12 @@ public:
     static void checkingForwardProblem();
     static void optimization();
 
+    Problem0HForward& forward();
+    Problem0HBckward& backward();
+
+    const Problem0HForward& forward() const;
+    const Problem0HBckward& backward() const;
+
 public:
     virtual auto fx(const DoubleVector &x) const -> double;
     virtual auto gradient(const DoubleVector &x, DoubleVector &g) const -> void;
@@ -172,10 +178,6 @@ public:
 
     virtual auto print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f,
                        double alpha, GradientMethod::MethodResult result) const -> void;
-
-
-    auto forward(DoubleMatrix &u, double a, double gamma) const -> void;
-    auto backward(DoubleMatrix &u, double a, double gamma) const -> void;
 
     virtual auto integral1(const DoubleMatrix &u) const -> double;
     virtual auto integral2(const DoubleMatrix &u) const -> double;
