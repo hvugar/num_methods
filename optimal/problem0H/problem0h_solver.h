@@ -39,7 +39,7 @@ void Problem0HParameter::create(const Dimension &time, const Dimension &dimX, co
     deltaGrid.initGrid(static_cast<unsigned int>(dimX.size()), dimX.step(), static_cast<unsigned int>(dimY.size()), dimY.step());
 
     const unsigned int L = 2*static_cast<unsigned int>(time.size());
-    pwr_vl.resize(L+1, 0.5);
+    pwr_vl.resize(L+1, 0.0);
     psi_vl.resize(L+1, 0.0);
     psi_dx.resize(L+1, 0.0);
     psi_dy.resize(L+1, 0.0);
@@ -118,6 +118,9 @@ class PROBLEM0HSHARED_EXPORT Problem0HForward : public IWaveEquationIBVP, public
 {
 public:
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
+
+    bool f_saveToFileTxt = false;
+    bool f_saveToFilePng = false;
 
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;

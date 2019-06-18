@@ -28,8 +28,8 @@ public:
     virtual double waveSpeed() const;
     virtual double waveDissipation() const;
 
-    void setWaveSpeed(double waveSpeed);
-    void setWaveDissipation(double waveDissipation);
+    virtual void setWaveSpeed(double waveSpeed);
+    virtual void setWaveDissipation(double waveDissipation);
 
     void explicit_calculate_D1V1() const;
     void implicit_calculate_D1V1() const;
@@ -59,16 +59,16 @@ protected:
 
 //--------------------------------------------------------------------------------------------------------------//
 
-class MINIMUMSHARED_EXPORT IConjugateWaveEquationIBVP : public IHyperbolicIBVP
+class MINIMUMSHARED_EXPORT IConjugateWaveEquationIBVP : public IWaveEquationIBVP
 {
 public:
-    explicit IConjugateWaveEquationIBVP(double waveSpeed = 1.0, double waveDissipation = 0.0);
+    //explicit IConjugateWaveEquationIBVP(double waveSpeed = 1.0, double waveDissipation = 0.0);
 
-    virtual double waveSpeed() const;
-    virtual double waveDissipation() const;
+    //virtual double waveSpeed() const;
+    //virtual double waveDissipation() const;
 
-    void setWaveSpeed(double waveSpeed);
-    void setWaveDissipation(double waveDissipation);
+    //void setWaveSpeed(double waveSpeed);
+    //void setWaveDissipation(double waveDissipation);
 
     void explicit_calculate_D1V1() const;
     void implicit_calculate_D1V1() const;
@@ -92,8 +92,8 @@ private:
     void implicit_calculate_D2V1_border(DoubleMatrix &p05, DoubleMatrix &p10, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn05, const TimeNodePDE &tn10) const;
 
 protected:
-    double _waveSpeed;
-    double _waveDissipation;
+    //double _waveSpeed;
+    //double _waveDissipation;
 };
 
 //--------------------------------------------------------------------------------------------------------------//

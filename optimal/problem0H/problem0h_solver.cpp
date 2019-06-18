@@ -7,8 +7,49 @@ void Problem0HFunctional::Main(int argc, char **argv)
 #endif
 
     //checkingForwardProblem();
-    compareGradients();
-    //optimization();
+    //compareGradients();
+    optimization();
+}
+
+void Problem0HFunctional::checkingForwardProblem()
+{
+    int N = 100;
+    int M = 100;
+
+    Problem0HFunctional fw1;
+    fw1.source_number = 2;
+    //fw1.ksi = SpacePoint(0.25, 0.36);
+    fw1.ksi = SpacePoint(0.50, 0.50);
+    fw1.p_sigmaX = 0.05;
+    fw1.p_sigmaY = 0.05;
+    fw1.p_sigmaT = 0.01;
+    //fw1.c_sigmaX = N/100;
+    //fw1.c_sigmaY = M/100;
+
+    fw1.setDimension(Dimension(0.01, 0, 2000), Dimension(0.01, 0, N), Dimension(0.01, 0, M));
+    fw1.optimalParameters[0].distribute(SpacePoint(0.308, 0.608));
+    fw1.optimalParameters[1].distribute(SpacePoint(0.708, 0.208));
+
+    fw1.forward().setWaveSpeed(1.0);
+    fw1.forward().setWaveDissipation(0.0);
+    fw1.forward().implicit_calculate_D2V1();
+    return;
+
+    //    Problem0HForward fw2;
+    //    fw2.setTimeDimension(Dimension(0.005, 0, 200));
+    //    fw2.addSpaceDimension(Dimension(0.01, 0, 100));
+    //    fw2.addSpaceDimension(Dimension(0.01, 0, 100));
+    //    fw2.source_number = 0;
+    //    fw2.ksi = SpacePoint(0.50, 0.50);
+
+    //    fw2.p_sigmaX = 0.01;
+    //    fw2.p_sigmaY = 0.01;
+    //    fw2.p_sigmaT = 0.01;
+
+    //    DoubleMatrix u2;
+    //    fw2.implicit_calculate_D2V1(u2, 1.0, 0.0);
+    //    IPrinter::printMatrix(u2);
+    //    IPrinter::printSeperatorLine();
 }
 
 void Problem0HFunctional::compareGradients()
@@ -20,10 +61,9 @@ void Problem0HFunctional::compareGradients()
     functional.p_sigmaT = 0.01;
 
     functional.forward().setWaveSpeed(1.0);
-    functional.forward().setWaveDissipation(0.0);
-
+    functional.forward().setWaveDissipation(0.00);
     functional.backward().setWaveSpeed(1.0);
-    functional.backward().setWaveDissipation(0.0);
+    functional.backward().setWaveDissipation(0.00);
 
 //    functional.a = 1.0;
 //    functional.gamma = 0.1;
@@ -80,45 +120,6 @@ void Problem0HFunctional::compareGradients()
     IPrinter::printSeperatorLine();
 }
 
-void Problem0HFunctional::checkingForwardProblem()
-{
-    Problem0HFunctional fw1;
-    fw1.source_number = 2;
-    fw1.ksi = SpacePoint(0.25, 0.36);
-    fw1.p_sigmaX = 0.05;
-    fw1.p_sigmaY = 0.05;
-    fw1.p_sigmaT = 0.01;
-
-    fw1.setDimension(Dimension(0.01, 0, 2000), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
-    fw1.optimalParameters[0].distribute(SpacePoint(0.308, 0.608));
-    fw1.optimalParameters[1].distribute(SpacePoint(0.708, 0.208));
-
-    DoubleMatrix u1;
-    fw1.forward().setWaveSpeed(1.0);
-    fw1.forward().setWaveDissipation(0.0);
-    fw1.forward().implicit_calculate_D2V1();
-
-    IPrinter::printMatrix(u1);
-    IPrinter::printSeperatorLine();
-    return;
-
-    //    Problem0HForward fw2;
-    //    fw2.setTimeDimension(Dimension(0.005, 0, 200));
-    //    fw2.addSpaceDimension(Dimension(0.01, 0, 100));
-    //    fw2.addSpaceDimension(Dimension(0.01, 0, 100));
-    //    fw2.source_number = 0;
-    //    fw2.ksi = SpacePoint(0.50, 0.50);
-
-    //    fw2.p_sigmaX = 0.01;
-    //    fw2.p_sigmaY = 0.01;
-    //    fw2.p_sigmaT = 0.01;
-
-    //    DoubleMatrix u2;
-    //    fw2.implicit_calculate_D2V1(u2, 1.0, 0.0);
-    //    IPrinter::printMatrix(u2);
-    //    IPrinter::printSeperatorLine();
-}
-
 void Problem0HFunctional::optimization()
 {
     Problem0HFunctional fw1;
@@ -127,19 +128,22 @@ void Problem0HFunctional::optimization()
     fw1.p_sigmaX = 0.05;
     fw1.p_sigmaY = 0.05;
     fw1.p_sigmaT = 0.01;
+
     fw1.a = 1.0;
     fw1.gamma = 0.0;
+
     fw1.epsilon1 = 1.0;
     fw1.epsilon2 = 1.0;
-    fw1.source_number = 2;
-    fw1.setDimension(Dimension(0.01, 0, 200), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
+
+    fw1.setDimension(Dimension(0.01, 0, 400), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
     fw1.optimalParameters[0].distribute(SpacePoint(0.308, 0.608));
     fw1.optimalParameters[1].distribute(SpacePoint(0.708, 0.208));
+
     DoubleVector x;
     fw1.parameterToVector(x);
 
-    ConjugateGradient g;
-    //SteepestDescentGradient g;
+    //ConjugateGradient g;
+    SteepestDescentGradient g;
     g.setFunction(&fw1);
     g.setGradient(&fw1);
     g.setPrinter(&fw1);
@@ -148,10 +152,26 @@ void Problem0HFunctional::optimization()
     g.setFunctionTolerance(0.0);
     g.setStepTolerance(0.0);
     g.setR1MinimizeEpsilon(0.1, 0.01);
-    g.setMaxIterations(5000);
+    g.setMaxIterations(30);
     g.setNormalize(true);
     g.showExitMessage(true);
     g.calculate(x);
+
+    fw1.vectorToParameter(x);
+    fw1.forward().f_saveToFileTxt = true;
+    fw1.forward().implicit_calculate_D2V1();
+
+    unsigned int L = 100;
+    unsigned int s1 = 0*(2*L+1); unsigned int f1 = 0*(2*L+1)+2*L;
+    unsigned int s2 = 1*(2*L+1); unsigned int f2 = 1*(2*L+1)+2*L;
+    unsigned int s3 = 2*(2*L+1); unsigned int f3 = 2*(2*L+1)+3;
+
+    IPrinter::printVector(x.mid(s1, f1).EuclideanNormalize());
+    IPrinter::printVector(x.mid(s2, f2).EuclideanNormalize());
+    IPrinter::print(x.mid(s3, f3).EuclideanNormalize(), 4);
+    IPrinter::printSeperatorLine();
+
+
 }
 
 Problem0HForward& Problem0HFunctional::forward() { return *this; }
@@ -179,10 +199,12 @@ auto Problem0HForward::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
     //if (abs(tn.t - 0.9) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
     //if (abs(tn.t - 1.0) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
 
-    //saveToExcel(u, tn);
-    //saveToImage(u, tn);
-    //saveToTextF(u, tn);
-    //if (ln%2 == 0) printf("%4d min: %8.6f max: %8.6f\n", ln, u.min(), u.max());
+#ifdef USE_LIB_XLSX_WRITER
+    saveToExcel(u, tn);
+#endif
+
+    if (f_saveToFilePng) saveToImage(u, tn);
+    if (f_saveToFileTxt) saveToTextF(u, tn);
 }
 
 Problem0HCommon::Problem0HCommon() {}
@@ -205,19 +227,10 @@ auto Problem0HFunctional::setDimension(const Dimension &timeDimension, const Dim
     const unsigned int N = static_cast<unsigned int> ( dimensionX.size() );
     const unsigned int M = static_cast<unsigned int> ( dimensionY.size() );
 
-    p_sigmaX = 0.04;
-    p_sigmaY = 0.04;
-    p_sigmaT = 0.04;
-
-    c_sigmaX = N/100;
-    c_sigmaY = M/100;
-
     //U1.resize(M+1, N+1, 0.0);
     //U2.resize(M+1, N+1, 0.0);
     u1.resize(M+1, N+1, 0.0);
     u2.resize(M+1, N+1, 0.0);
-
-    ksi = SpacePoint(0.25, 0.25);
 
     optimalParameters.resize(source_number);
 
@@ -401,7 +414,7 @@ auto Problem0HFunctional::project(DoubleVector &x, unsigned int index) -> void
 auto Problem0HFunctional::project(DoubleVector &) const  -> void {}
 
 auto Problem0HFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f,
-                   double alpha, GradientMethod::MethodResult result) const -> void
+                                double alpha, GradientMethod::MethodResult result) const -> void
 {
     C_UNUSED(i); C_UNUSED(x); C_UNUSED(g); C_UNUSED(f); C_UNUSED(alpha); C_UNUSED(result);
     const char* msg = nullptr; C_UNUSED(msg);
@@ -411,14 +424,16 @@ auto Problem0HFunctional::print(unsigned int i, const DoubleVector &x, const Dou
     if (result == GradientMethod::MethodResult::BREAK_DISTANCE_LESS)      msg = "BREAK_DISTANCE_LESS     ";
     if (result == GradientMethod::MethodResult::NEXT_ITERATION)           msg = "NEXT_ITERATION          ";
 
-    //Problem0HFunctional* fw = const_cast<Problem0HFunctional*>(this);
-    //fw->vectorToParameter(x);
+    Problem0HFunctional* fw = const_cast<Problem0HFunctional*>(this);
+    fw->vectorToParameter(x);
+    forward().implicit_calculate_D2V1();
 
     const Dimension &time = Problem0HForward::timeDimension();
     const unsigned int L = static_cast<unsigned int>(time.size());
     const unsigned int o = (2*L+1)*source_number;
 
-    printf("I[%3d]: F:%.6f I:%.6f P:%.6f N:%.5f R:%.3f e:%.3f a:%10.6f ", i, f, 0.0, 0.0, 0.0, 0.0, 0.0, alpha);
+    printf("I[%3d]: F:%.6f I:%.6f P:%.6f N:%.5f R:%.3f e:%.3f a:%10.6f | ", i, f, 0.0, 0.0, 0.0, 0.0, 0.0, alpha);
+    printf("%12.8f %12.8f | %12.8f %12.8f | ", u1.min(), u1.max(), u2.min(), u2.max());
     printf("eta: %8.6f %8.6f %8.6f %8.6f\n", x[o+0], x[o+1], x[o+2], x[o+3]);
     //IPrinter::printSeperatorLine("-");
 }
@@ -432,8 +447,10 @@ auto Problem0HForward::boundary(const SpaceNodePDE &, const TimeNodePDE &) const
 auto Problem0HForward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
 {
     double pv = p(sn, tn);
+    //return pv;
 
     unsigned int ln = static_cast<unsigned int>(tn.i);
+
     double pulse1 = optimalParameters[0].pwr_vl[ln] * optimalParameters[0].deltaGrid.weight(sn);
     double pulse2 = optimalParameters[1].pwr_vl[ln] * optimalParameters[1].deltaGrid.weight(sn);
 
@@ -442,6 +459,8 @@ auto Problem0HForward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
 
 auto Problem0HForward::p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
 {
+    if (fabs(tn.i - 10.0*p_sigmaT) == 0.0) return 0.0;
+
     //const double ht = timeDimension().step();
     const double factor1 = 1.0/(2.0*M_PI*p_sigmaX*p_sigmaY);
     const double sigmax2 = 1.0/(2.0*p_sigmaX*p_sigmaX);
@@ -449,12 +468,12 @@ auto Problem0HForward::p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
     const double factor2 = 2.0/(sqrt(2.0*M_PI)*p_sigmaT);
     const double sigmat2 = 1.0/(2.0*p_sigmaT*p_sigmaT);
 
-    const double q = 0.1;
+    const double q = 0.05;
 
     double a, b;
     a = factor1 * exp(-(sigmax2*(sn.x-ksi.x)*(sn.x-ksi.x)+sigmay2*(sn.y-ksi.y)*(sn.y-ksi.y)));
     b = factor2 * exp(-(sigmat2*(tn.t-0.0)*(tn.t-0.0)));
-    //if (tn.i == 0) b = 2.0/ht; else b = 0.0;
+
     return q*a*b;
 }
 
@@ -617,10 +636,8 @@ auto Problem0HBckward::initial(const SpaceNodePDE &sn, InitialCondition conditio
     unsigned int n = static_cast<unsigned int>(sn.i);
     unsigned int m = static_cast<unsigned int>(sn.j);
     if (condition == InitialCondition::InitialValue) { return -2.0*epsilon2*(u2[m][n]/*-U2[m][n]*/); }
-    if (condition == InitialCondition::FirstDerivative) { return +2.0*epsilon1*(u1[m][n]/*-U1[m][n]*/)
-                + gamma*initial(sn, InitialCondition::InitialValue); }
+    if (condition == InitialCondition::FirstDerivative) { return +2.0*epsilon1*(u1[m][n]/*-U1[m][n]*/) + gamma*initial(sn, InitialCondition::InitialValue); }
     throw std::exception();
-    return NAN;
 }
 
 auto Problem0HBckward::boundary(const SpaceNodePDE&, const TimeNodePDE&) const -> double { return 0.0; }
