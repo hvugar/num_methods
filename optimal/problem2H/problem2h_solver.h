@@ -6,18 +6,31 @@
 #include <grid/hibvp.h>
 #include <deltagrid.h>
 
-class PROBLEM2HSHARED_EXPORT Problem2HCommon
+struct SpacePointInfo : public SpacePoint
+{
+    std::vector<double> vl;
+    std::vector<double> dx;
+    std::vector<double> dy;
+    DeltaGrid2D deltaGrid;
+};
+
+class Problem2HCommon
 {
 public:
-    unsigned int Nc;
-    unsigned int No;
-
-protected:
     unsigned int Nt;
     std::vector<double> q;
     std::vector<SpacePoint> theta;
     std::vector<DeltaGrid2D> thetaDeltaGrid;
     DoubleMatrix initialMatrix;
+
+    unsigned int Nc;
+    unsigned int No;
+    std::vector<SpacePointInfo> eta;
+    std::vector<SpacePointInfo> ksi;
+    DoubleMatrix layerMatrix;
+
+    DoubleMatrix k;
+    DoubleMatrix z;
 };
 
 class PROBLEM2HSHARED_EXPORT Problem2HForward : virtual public IWaveEquationIBVP, virtual public Problem2HCommon
@@ -32,6 +45,11 @@ protected:
 public:
     void initInitialConditionMatrix(uint32_t Nt, const std::vector<double> &q, const std::vector<SpacePoint> &theta);
     void clearInitialConditionMatrix();
+
+    void initControlMeasurementDeltaGrid(std::vector<SpacePoint> &eta, std::vector<SpacePoint> &ksi);
+    void prepareLayerMatrix(const DoubleMatrix &u, const TimeNodePDE& tn);
+
+
     void saveToTextF(const DoubleMatrix &, const TimeNodePDE &) const;
 };
 

@@ -1535,7 +1535,7 @@ auto Problem2HDirichletDelta::solveForwardIBVP(std::vector<DoubleMatrix> &u, spi
         if (use == true) add2Info(u15, u_info, 2*ln-1, hx, hy, measuremntGirdList); f_layerInfo(u15, 2*ln-1);
         /**************************************************** x direction apprx ***************************************************/
         /**************************************************** y direction apprx ***************************************************/
-        //fxMatrixForward(u15, cntrlDeltaGridList, measuremntGirdList, 2*ln-1);
+        fxMatrixForward(u15, cntrlDeltaGridList, measuremntGirdList, 2*ln-1);
         for (unsigned int n=1; n<=N-1; n++)
         {
             sn.i = static_cast<int>(n); sn.x = n*hx;
