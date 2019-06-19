@@ -71,6 +71,9 @@ win32-msvc* {
 HEADERS += problem2h_solver_delta.h
 SOURCES += problem2h_solver_delta.cpp
 
+HEADERS += problem2h_solver.h
+SOURCES += problem2h_solver.cpp
+
 #HEADERS += problem2h_exporter.h
 #SOURCES += problem2h_exporter.cpp
 

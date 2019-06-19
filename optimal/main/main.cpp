@@ -19,7 +19,7 @@
 #include "../problem0H/problem0h_solver.h"
 #include "../problem1H/problem1h_example.h"
 #include "../problem2P/problem2p_solver.h"
-#include "../problem2H/problem2h_solver_delta.h"
+#include "../problem2H/problem2h_solver.h"
 #include "test/deltagrid2dext1.h"
 #include "test/nonlinearequationex1.h"
 
@@ -52,7 +52,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //CdIHyperbolicIBVP1::Main(argc, argv);
     //IPrinter::printSeperatorLine();
     //ConjugateCC1IHyperbolicIBVP1::Main(argc, argv);
-    Problem0HFunctional::Main(argc, argv);
+    //Problem0HFunctional::Main(argc, argv);
+    Problem2HSolver::Main(argc, argv);
     //Problem1HDirichlet1::Main(argc, argv);
     //Problem2HDirichlet::Main(argc, argv);
     //Problem2HDirichletDelta::Main(argc, argv);
