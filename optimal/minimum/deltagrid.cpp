@@ -8,7 +8,8 @@ const char* DeltaGridException::what() const noexcept
     return msg.data();
 }
 
-DeltaGrid2D::DeltaGrid2D() : _N(0), _M(0), _hx(0.0), _hy(0.0) {}
+DeltaGrid2D::DeltaGrid2D() : _N(0), _M(0), _hx(0.0), _hy(0.0),
+    _minX(0), _maxX(0), _minY(0), _maxY(0) {}
 
 DeltaGrid2D::~DeltaGrid2D() { cleanGrid(); }
 
@@ -36,6 +37,17 @@ auto DeltaGrid2D::initGrid(unsigned int N, double hx, unsigned int M, double hy)
     _cols = new bool[N+1]; for (unsigned int n=0; n<=N; n++) _cols[n] = false;
 }
 
+auto DeltaGrid2D::resetGrid() -> void
+{
+    for (unsigned int m=_minY; m<=_maxY; m++)
+    {
+        for (unsigned int n=_minX; n<=_maxX; n++)
+        {
+            m_nodes[m][n] = 0.0;
+        }
+    }
+}
+
 auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned int nodeX_per_sigmaX, unsigned int nodeY_per_sigmaY) -> void
 {
     unsigned int kx = 4 * nodeX_per_sigmaX;
@@ -49,6 +61,8 @@ auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned int nodeX_per_s
 
     if (_rx < kx || _ry < ky || _rx > _N-kx || _ry > _M-ky)
         throw DeltaGridException("Point:["+std::to_string(sp.x)+","+std::to_string(sp.y)+"]");
+
+    resetGrid();
 
     _p = sp;
 
@@ -103,9 +117,9 @@ auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned int nodeX_per_s
 auto DeltaGrid2D::lumpPointGauss(const DoubleMatrix &mx) const -> double
 {
     double pu = 0.0;
-    for (unsigned int m=minY(); m<=maxY(); m++)
+    for (unsigned int m=_minY; m<=_maxY; m++)
     {
-        for (unsigned int n=minX(); n<=maxX(); n++)
+        for (unsigned int n=_minX; n<=_maxX; n++)
         {
             pu += mx[m][n] * weight(n,m) * _hx * _hy;
         }
@@ -113,21 +127,15 @@ auto DeltaGrid2D::lumpPointGauss(const DoubleMatrix &mx) const -> double
     return pu;
 }
 
-auto DeltaGrid2D::lumpPointGauss(const DoubleMatrix &u, double &ux, double &uy, double &dx, double &dy) const -> double
+auto DeltaGrid2D::lumpPointGauss(const DoubleMatrix &u, double &ux, double &uy) const -> double
 {
     double pu = 0.0;
     ux = 0.0;
     uy = 0.0;
-    dx = 0.0;
-    dy = 0.0;
-    for (unsigned int m=minY(); m<=maxY(); m++)
+    for (unsigned int m=_minY; m<=_maxY; m++)
     {
-        for (unsigned int n=minX(); n<=maxX(); n++)
+        for (unsigned int n=_minX; n<=_maxX; n++)
         {
-            //dx += u[m][n] * der_x()[m][n] * _hx * _hy;
-            //dy += u[m][n] * der_y()[m][n] * _hx * _hy;
-            //pu += mx[m][n] * weight(n,m) * _hx * _hy;
-
             double _w = weight(n,m);
             pu += _w * _hx * _hy * u[m][n];
             ux += _w * _hx * _hy * (u[m][n+1]-u[m][n-1])/(2.0*_hx);

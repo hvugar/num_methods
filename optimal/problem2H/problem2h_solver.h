@@ -21,16 +21,21 @@ public:
     std::vector<double> q;
     std::vector<SpacePoint> theta;
     std::vector<DeltaGrid2D> thetaDeltaGrid;
-    DoubleMatrix initialMatrix;
 
     unsigned int Nc;
     unsigned int No;
     std::vector<SpacePointInfo> eta;
     std::vector<SpacePointInfo> ksi;
-    DoubleMatrix layerMatrix;
 
     DoubleMatrix k;
     DoubleMatrix z;
+
+    DoubleMatrix f_initialMatrix;
+    DoubleMatrix f_layerMatrix;
+    DoubleMatrix b_initialMatrix;
+    DoubleMatrix b_layerMatrix;
+
+    void initMatrixes(const Dimension &dimensionX, const Dimension &dimensionY);
 };
 
 class PROBLEM2HSHARED_EXPORT Problem2HForward : virtual public IWaveEquationIBVP, virtual public Problem2HCommon

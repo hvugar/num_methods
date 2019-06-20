@@ -41,10 +41,26 @@ void Problem2HSolver::Main(int argc, char **argv)
 //    return *this;
 //}
 
+void Problem2HCommon::initMatrixes(const Dimension &dimensionX, const Dimension &dimensionY)
+{
+    f_initialMatrix.clear();
+    f_initialMatrix.resize(static_cast<uint32_t>(dimensionY.size())+1,
+                           static_cast<uint32_t>(dimensionX.size())+1, 0.0);
+    f_layerMatrix.clear();
+    f_layerMatrix.resize(static_cast<uint32_t>(dimensionY.size())+1,
+                         static_cast<uint32_t>(dimensionX.size())+1, 0.0);
+    b_initialMatrix.clear();
+    b_initialMatrix.resize(static_cast<uint32_t>(dimensionY.size())+1,
+                           static_cast<uint32_t>(dimensionX.size())+1, 0.0);
+    b_layerMatrix.clear();
+    b_layerMatrix.resize(static_cast<uint32_t>(dimensionY.size())+1,
+                         static_cast<uint32_t>(dimensionX.size())+1, 0.0);
+}
+
 double Problem2HForward::initial(const SpaceNodePDE &sn, InitialCondition condition) const
 {
     if (condition == InitialCondition::FirstDerivative)
-        return initialMatrix[static_cast<uint32_t>(sn.j)][static_cast<uint32_t>(sn.i)];
+        return f_initialMatrix[static_cast<uint32_t>(sn.j)][static_cast<uint32_t>(sn.i)];
     else
         return 0.0;
 }
@@ -56,7 +72,7 @@ double Problem2HForward::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn)
 
 double Problem2HForward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
-    return layerMatrix[static_cast<unsigned int>(sn.j)][static_cast<unsigned int>(sn.i)];
+    return f_layerMatrix[static_cast<unsigned int>(sn.j)][static_cast<unsigned int>(sn.i)];
 }
 
 void Problem2HForward::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
@@ -151,7 +167,7 @@ void Problem2HForward::initControlMeasurementDeltaGrid(std::vector<SpacePoint> &
         this->ksi[j].dy.resize(length);
         this->ksi[j].deltaGrid.cleanGrid();
         this->ksi[j].deltaGrid.initGrid(static_cast<uint32_t>(dimensionX.size()), dimensionX.step(),
-                                       static_cast<uint32_t>(dimensionY.size()), dimensionX.step());
+                                        static_cast<uint32_t>(dimensionY.size()), dimensionX.step());
         this->ksi[j].deltaGrid.distributeGauss(ksi[j]);
     }
 
@@ -215,7 +231,7 @@ double Problem2HBackward::boundary(const SpaceNodePDE &, const TimeNodePDE &) co
 
 double Problem2HBackward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
-    return 0.0;
+    return b_layerMatrix[static_cast<unsigned int>(sn.j)][static_cast<unsigned int>(sn.i)];
 }
 
 void Problem2HBackward::layerInfo(const DoubleMatrix &, const TimeNodePDE &) const

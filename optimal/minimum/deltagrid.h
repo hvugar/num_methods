@@ -23,10 +23,11 @@ public:
 
     auto initGrid(unsigned int N, double hx, unsigned int M, double hy) -> void;
     auto cleanGrid() -> void;
+    auto resetGrid() -> void;
 
     auto distributeGauss(const SpacePoint& sp, unsigned int nodeX_per_sigmaX = 1, unsigned int nodeY_per_sigmaY = 1) -> void;
     auto lumpPointGauss(const DoubleMatrix &m) const -> double;
-    auto lumpPointGauss(const DoubleMatrix &m, double &mx, double &my, double &dx, double &dy) const -> double;
+    auto lumpPointGauss(const DoubleMatrix &m, double &mx, double &my) const -> double;
 
     auto distributeSigle(const SpacePoint& sp) -> void;
     auto distributeRect4(const SpacePoint& sp) -> void;
