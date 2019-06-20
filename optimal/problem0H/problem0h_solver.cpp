@@ -650,8 +650,8 @@ auto Problem0HBckward::saveBackwardInformarion(const DoubleMatrix &p, const Time
 
     for (unsigned int sn=0; sn<source_number; sn++)
     {
-        double psi_vl, psi_dx, psi_dy, psi_x, psi_y;
-        psi_vl = optimalParameters[sn].deltaGrid.lumpPointGauss(p, psi_dx, psi_dy, psi_x, psi_y);
+        double psi_vl, psi_dx, psi_dy;
+        psi_vl = optimalParameters[sn].deltaGrid.lumpPointGauss(p, psi_dx, psi_dy);
 
         const_this->optimalParameters[sn].psi_vl[tn.i] = psi_vl;
         const_this->optimalParameters[sn].psi_dx[tn.i] = psi_dx;

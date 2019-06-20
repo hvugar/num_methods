@@ -6,26 +6,27 @@
 #include <grid/hibvp.h>
 #include <deltagrid.h>
 
-struct SpacePointInfo : public SpacePoint
+struct SpacePointInfo
 {
     std::vector<double> vl;
     std::vector<double> dx;
     std::vector<double> dy;
-    DeltaGrid2D deltaGrid;
+    unsigned int length;
 };
 
 class Problem2HCommon
 {
 public:
-    unsigned int Nt;
+    unsigned int Nq;
     std::vector<double> q;
-    std::vector<SpacePoint> theta;
-    std::vector<DeltaGrid2D> thetaDeltaGrid;
+    std::vector<DeltaGrid2D> zta;
 
     unsigned int Nc;
     unsigned int No;
-    std::vector<SpacePointInfo> eta;
-    std::vector<SpacePointInfo> ksi;
+    std::vector<DeltaGrid2D> eta;
+    std::vector<SpacePointInfo> p_info;
+    std::vector<DeltaGrid2D> ksi;
+    std::vector<SpacePointInfo> u_info;
 
     DoubleMatrix k;
     DoubleMatrix z;
@@ -35,7 +36,11 @@ public:
     DoubleMatrix b_initialMatrix;
     DoubleMatrix b_layerMatrix;
 
-    void initMatrixes(const Dimension &dimensionX, const Dimension &dimensionY);
+    unsigned int Nt;
+    std::vector<TimeNodePDE> times;
+
+    void initMatrixes(const Dimension &dimensionX, const Dimension &dimensionY, const Dimension &timeDimension, unsigned int Nq, unsigned int Nc, unsigned No);
+    void clearMatrixes();
 };
 
 class PROBLEM2HSHARED_EXPORT Problem2HForward : virtual public IWaveEquationIBVP, virtual public Problem2HCommon
@@ -48,7 +53,7 @@ protected:
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
 
 public:
-    void initInitialConditionMatrix(uint32_t Nt, const std::vector<double> &q, const std::vector<SpacePoint> &theta);
+    void initInitialConditionMatrix(const std::vector<SpacePoint> &zta, const std::vector<double> &q);
     void clearInitialConditionMatrix();
 
     void initControlMeasurementDeltaGrid(std::vector<SpacePoint> &eta, std::vector<SpacePoint> &ksi);

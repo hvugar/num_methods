@@ -2221,7 +2221,7 @@ auto Problem2HDirichletDelta::add2Info(const DoubleMatrix &u, spif_vectorH &info
     {
         const DeltaGrid2D &deltagrid = deltaList[i];
         SpacePointInfoH &ui = info[i];
-        ui.vl[ln] = deltagrid.lumpPointGauss(u, ui.dx[ln], ui.dy[ln], ui.vx[ln], ui.vy[ln]);
+        ui.vl[ln] = deltagrid.lumpPointGauss(u, ui.dx[ln], ui.dy[ln]);
     }
 }
 

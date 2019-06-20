@@ -28,7 +28,7 @@ void DeltaGrid2DExt1::Main(int argc, char **argv)
     z = dg.consentrateInPoint(mx, dx, dy, 3); printf("%10.6f %10.6f %10.6f\n", z, dx, dy);
     z = dg.consentrateInPoint(mx, dx, dy, 4); printf("%10.6f %10.6f %10.6f\n", z, dx, dy);
     z = dg.consentrateInPoint(mx, dx, dy, 5); printf("%10.6f %10.6f %10.6f\n", z, dx, dy);
-    z = dg.lumpPointGauss(mx, dx, dy, vx, vy);        printf("%10.6f %10.6f %10.6f %10.6f %10.6f\n", z, -dx, -dy, vx, vy);
+    z = dg.lumpPointGauss(mx, dx, dy);        printf("%10.6f %10.6f %10.6f %10.6f %10.6f\n", z, -dx, -dy);
 }
 
 double DeltaGrid2DExt1::fx(double x, double y) const
