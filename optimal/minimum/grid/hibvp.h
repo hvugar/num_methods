@@ -24,6 +24,7 @@ class MINIMUMSHARED_EXPORT IWaveEquationIBVP : public IHyperbolicIBVP
 {
 public:
     explicit IWaveEquationIBVP(double waveSpeed = 1.0, double waveDissipation = 0.0);
+    virtual ~IWaveEquationIBVP();
 
     virtual double waveSpeed() const;
     virtual double waveDissipation() const;
@@ -36,6 +37,7 @@ public:
 
     void explicit_calculate_D2V1() const;
     void implicit_calculate_D2V1() const;
+    void implicit_calculate_D2V1X() const;
 
     virtual double lambda() const;
 

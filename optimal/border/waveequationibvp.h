@@ -53,8 +53,6 @@ class BORDERSHARED_EXPORT ConjugateCdIHyperbolicIBVP1 : public IConjugateWaveEqu
 public:
     static void Main(int argc, char* argv[]);
 
-    virtual ~ConjugateCdIHyperbolicIBVP1();
-
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;

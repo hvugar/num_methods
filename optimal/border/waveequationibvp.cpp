@@ -51,8 +51,6 @@ double ConjugateCdIHyperbolicIBVP1::f(const SpaceNodePDE &sn UNUSED_PARAM, const
     return 2.0 - 4.0*a*a - 2.0*tn.t*alpha;
 }
 
-ConjugateCdIHyperbolicIBVP1::~ConjugateCdIHyperbolicIBVP1() {}
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void WaveEquationIBVP::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
@@ -66,7 +64,8 @@ void WaveEquationIBVP::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
 
     Benchmark bm;
     bm.tick();
-    w.implicit_calculate_D2V1();
+    //w.implicit_calculate_D2V1();
+    w.implicit_calculate_D2V1X();
     bm.tock();
     bm.printDuration();
 }
@@ -87,9 +86,9 @@ double WaveEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition condit
         //return (1.0/sqrt(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)));
 
         //--------- 2D ----------//
-        return sn.x*sn.x + sn.y*sn.y;
         //return sn.x*sn.x + sn.y*sn.y;
-        //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
+        //return sn.x*sn.x + sn.y*sn.y;
+        return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
         //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
         //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
         //return 0.0;
@@ -109,9 +108,9 @@ double WaveEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition condit
         //return 0.0;
 
         //--------- 2D ----------//
-        return 1.0;
+        //return 1.0;
         //return 0.0;
-        //return 0.0;
+        return 0.0;
         //return 0.0;
         //return 0.0;
         //return sin(M_PI*sn.x)*sin(M_PI*sn.y);
@@ -133,9 +132,9 @@ double WaveEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn)
     //return 0.0;
 
     //--------- 2D ----------//
-    return sn.x*sn.x + sn.y*sn.y + tn.t;
+    //return sn.x*sn.x + sn.y*sn.y + tn.t;
     //return sn.x*sn.x + sn.y*sn.y + tn.t*tn.t;
-    //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t*tn.t;
+    return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t*tn.t;
     //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t*tn.t*tn.t;
     //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t*tn.t*tn.t*tn.t;
     //return 0.0;
@@ -157,9 +156,9 @@ double WaveEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     //return 0.0;
 
     //--------- 2D ----------//
-    return 0.0 - (a*a)*(2.0+2.0);
+    //return 0.0 - (a*a)*(2.0+2.0);
     //return 2.0 - (a*a)*(2.0+2.0);
-    //return 2.0 - 6.0*a*a*(sn.x+sn.y) + 2.0*alpha*tn.t;
+    return 2.0 - 6.0*a*a*(sn.x+sn.y) + 2.0*alpha*tn.t;
     //return 6.0*tn.t - 6.0*a*a*(sn.x+sn.y) + 3.0*alpha*tn.t*tn.t;
     //return 12.0*tn.t*tn.t - 6.0*a*a*(sn.x+sn.y) + 4.0*alpha*tn.t*tn.t*tn.t;
     //return 0.0;
@@ -169,6 +168,9 @@ double WaveEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 
 void WaveEquationIBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) const
 {
+    C_UNUSED(u);
+    C_UNUSED(tn);
+#ifdef USE_LIB_IMAGING
     QPixmap pxm;
     if (method == 1)
     {
@@ -244,19 +246,19 @@ void WaveEquationIBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) c
     //double k = 1.0/523.3314251378401924542377492593;
     double k = 23.788030395009524606979129597455;
     if (tn.i > 1) printf("%5d %.10f %.10f %.10f\n", tn.i, k*integralUP(u), integralUK(u), k*integralUP(u)+integralUK(u));
-
+#endif
 }
 
 void WaveEquationIBVP::layerInfo(const DoubleMatrix& u, const TimeNodePDE& tn) const
 {
-    //    if (ln==1 || ln==2000)
-    //    {
-    //        IPrinter::printMatrix(u);
-    //        IPrinter::printSeperatorLine();
-    //    }
+    if (tn.i==1 || tn.i==2 || tn.i==3 || tn.i==4 || tn.i==200)
+    {
+        IPrinter::printMatrix(u);
+        IPrinter::printSeperatorLine();
+    }
+    return;
 
-    //    if (ln%1==0) { double w = u.min(); if (w < 0.0) {} else { w = u.max(); } printf("%14.10f\n", w); }
-    //    return;
+    //if (ln%1==0) { double w = u.min(); if (w < 0.0) {} else { w = u.max(); } printf("%14.10f\n", w); }
 
     //    if (ln%2==0)
     {
