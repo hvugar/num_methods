@@ -454,13 +454,13 @@ void IWaveEquationIBVP::implicit_calculate_D2V1X() const
     double *dx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
     double *rx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
 
-    for (unsigned int n=0; n<=N-2; n++)
+    for (unsigned int n=1; n<=N-1; n++)
     {
         ax[n] = m_aa_htht__hxhx_025_lambda;
         bx[n] = b_aa_htht__hxhx;
         cx[n] = m_aa_htht__hxhx_025_lambda;
     }
-    ax[0] = 0.0; cx[N-2] = 0.0;
+    ax[0] = 0.0; ax[1] = 0.0; cx[N-1] = 0.0; cx[N] = 0.0;
 
     double *ay = static_cast<double*>(malloc(sizeof(double)*(M+1)));
     double *by = static_cast<double*>(malloc(sizeof(double)*(M+1)));
@@ -468,13 +468,13 @@ void IWaveEquationIBVP::implicit_calculate_D2V1X() const
     double *dy = static_cast<double*>(malloc(sizeof(double)*(M+1)));
     double *ry = static_cast<double*>(malloc(sizeof(double)*(M+1)));
 
-    for (unsigned int m=0; m<=M-2; m++)
+    for (unsigned int m=1; m<=M-1; m++)
     {
         ay[m] = m_aa_htht__hyhy_025_lambda;
         by[m] = b_aa_htht__hyhy;
         cy[m] = m_aa_htht__hyhy_025_lambda;
     }
-    ay[0] = 0.0; cy[M-2] = 0.0;
+    ay[0] = 0.0; ay[1] = 0.0; cy[M-1] = 0.0; cy[M] = 0.0;
 
     DoubleMatrix u00(M+1, N+1);
     DoubleMatrix u05(M+1, N+1);
@@ -503,19 +503,18 @@ void IWaveEquationIBVP::implicit_calculate_D2V1X() const
             for (unsigned int n=1; n<=N-1; n++)
             {
                 sn.i = static_cast<int>(n); sn.x = n*hx;
-                dx[n-1] = 0.0;
-                dx[n-1] += (u10[m][n-1] - 2.0*u10[m][n] + u10[m][n+1])*p_aa_htht__hxhx_025_1m2lambda;
-                dx[n-1] += (u05[m][n-1] - 2.0*u05[m][n] + u05[m][n+1])*p_aa_htht__hxhx_025_lambda;
-                dx[n-1] += (u10[m-1][n] - 2.0*u10[m][n] + u10[m+1][n])*p_aa_htht__hyhy_025;
-                dx[n-1] += 2.0*u10[m][n] - u05[m][n] + alpha_ht_025*u05[m][n];
-                dx[n-1] += ht_ht_025*f(sn, tn10);
-                //dx[n-1] += ht_ht_025*(_lambda*f(sn, tn05)+(1.0-2.0*_lambda)*f(sn, tn10)+_lambda*f(sn, tn15));
+                dx[n] = 0.0;
+                dx[n] += (u10[m][n-1] - 2.0*u10[m][n] + u10[m][n+1])*p_aa_htht__hxhx_025_1m2lambda;
+                dx[n] += (u05[m][n-1] - 2.0*u05[m][n] + u05[m][n+1])*p_aa_htht__hxhx_025_lambda;
+                dx[n] += (u10[m-1][n] - 2.0*u10[m][n] + u10[m+1][n])*p_aa_htht__hyhy_025;
+                dx[n] += 2.0*u10[m][n] - u05[m][n] + alpha_ht_025*u05[m][n];
+                dx[n] += ht_ht_025*f(sn, tn10);
+                //dx[n] += ht_ht_025*(_lambda*f(sn, tn05)+(1.0-2.0*_lambda)*f(sn, tn10)+_lambda*f(sn, tn15));
             }
-            dx[0]   -= u15[m][0]*m_aa_htht__hxhx_025_lambda;
-            dx[N-2] -= u15[m][N]*m_aa_htht__hxhx_025_lambda;
+            dx[1]   -= u15[m][0]*m_aa_htht__hxhx_025_lambda;
+            dx[N-1] -= u15[m][N]*m_aa_htht__hxhx_025_lambda;
             tomasAlgorithm(ax+1, bx+1, cx+1, dx+1, rx+1, N-1);
             for (unsigned int n=1; n<=N-1; n++) u15[m][n] = rx[n];
-            IPrinter::printVector(u15.row(m));
         }
         layerInfo(u15, tn15);
         /**************************************************** x direction apprx ***************************************************/
@@ -526,16 +525,16 @@ void IWaveEquationIBVP::implicit_calculate_D2V1X() const
             for (unsigned int m=1; m<=M-1; m++)
             {
                 sn.j = static_cast<int>(m); sn.y = m*hy;
-                dy[m-1] = 0.0;
-                dy[m-1] += (u15[m-1][n] - 2.0*u15[m][n] + u15[m+1][n])*p_aa_htht__hyhy_025_1m2lambda;
-                dy[m-1] += (u10[m-1][n] - 2.0*u10[m][n] + u10[m+1][n])*p_aa_htht__hyhy_025_lambda;
-                dy[m-1] += (u15[m][n-1] - 2.0*u15[m][n] + u15[m][n+1])*p_aa_htht__hxhx_025;
-                dy[m-1] += 2.0*u15[m][n] - u10[m][n] + alpha_ht_025*u10[m][n];
-                dy[m-1] += ht_ht_025*f(sn, tn15);
-                //dy[m-1] += ht_ht_025*(_lambda*f(sn, tn10)+(1.0-2.0*_lambda)*f(sn, tn15)+_lambda*f(sn, tn20));
+                dy[m] = 0.0;
+                dy[m] += (u15[m-1][n] - 2.0*u15[m][n] + u15[m+1][n])*p_aa_htht__hyhy_025_1m2lambda;
+                dy[m] += (u10[m-1][n] - 2.0*u10[m][n] + u10[m+1][n])*p_aa_htht__hyhy_025_lambda;
+                dy[m] += (u15[m][n-1] - 2.0*u15[m][n] + u15[m][n+1])*p_aa_htht__hxhx_025;
+                dy[m] += 2.0*u15[m][n] - u10[m][n] + alpha_ht_025*u10[m][n];
+                dy[m] += ht_ht_025*f(sn, tn15);
+                //dy[m] += ht_ht_025*(_lambda*f(sn, tn10)+(1.0-2.0*_lambda)*f(sn, tn15)+_lambda*f(sn, tn20));
             }
-            dy[0]   -= u20[0][n]*m_aa_htht__hyhy_025_lambda;
-            dy[M-2] -= u20[M][n]*m_aa_htht__hyhy_025_lambda;
+            dy[1]   -= u20[0][n]*m_aa_htht__hyhy_025_lambda;
+            dy[M-1] -= u20[M][n]*m_aa_htht__hyhy_025_lambda;
             tomasAlgorithm(ay+1, by+1, cy+1, dy+1, ry+1, M-1);
             for (unsigned int m=1; m<=M-1; m++) u20[m][n] = ry[m];
         }

@@ -1,58 +1,5 @@
 #include "waveequationibvp.h"
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void ConjugateCdIHyperbolicIBVP1::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
-{
-    ConjugateCdIHyperbolicIBVP1 chibvp;
-    chibvp.a = 1.0;
-    chibvp.alpha = 0.1;
-    chibvp.setTimeDimension(Dimension(0.005, 0, 200));
-    chibvp.addSpaceDimension(Dimension(0.01, 0, 100));
-    chibvp.addSpaceDimension(Dimension(0.01, 0, 100));
-
-    DoubleMatrix p;
-    //chibvp.explicit_calculate_D2V1(p, chibvp.a, chibvp.alpha);
-    //chibvp.implicit_calculate_D2V1(p, chibvp.a, chibvp.alpha);
-    //chibvp.implicit_calculate_D2V3(p, chibvp.a, chibvp.alpha);
-    IPrinter::printSeperatorLine("******************");
-    IPrinter::printMatrix(p);
-    IPrinter::printSeperatorLine();
-}
-
-void ConjugateCdIHyperbolicIBVP1::layerInfo(const DoubleMatrix& p, const TimeNodePDE& tn) const
-{
-    if (tn.i==200 || tn.i==199 || tn.i==198 || tn.i==2 || tn.i==1 || tn.i==0)
-    {
-        IPrinter::printMatrix(p);
-        IPrinter::printSeperatorLine();
-    }
-}
-
-double ConjugateCdIHyperbolicIBVP1::initial(const SpaceNodePDE &sn UNUSED_PARAM, InitialCondition condition) const
-{
-    if (condition == InitialCondition::InitialValue)
-    {
-        return sn.x*sn.x + sn.y*sn.y + 1.0;
-    }
-    else
-    {
-        return 2.0;
-    }
-}
-
-double ConjugateCdIHyperbolicIBVP1::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
-{
-    return sn.x*sn.x + sn.y*sn.y + tn.t*tn.t;
-}
-
-double ConjugateCdIHyperbolicIBVP1::f(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
-{
-    return 2.0 - 4.0*a*a - 2.0*tn.t*alpha;
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 void WaveEquationIBVP::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
 {
     WaveEquationIBVP w;
@@ -359,7 +306,7 @@ void WaveEquationIBVP::layerInfo(const DoubleMatrix& u, const TimeNodePDE& tn) c
     //}
 }
 
-auto WaveEquationIBVP::saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const -> void
+void WaveEquationIBVP::saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
 #ifdef USE_LIB_IMAGING
     const Dimension &time = timeDimension();
@@ -382,7 +329,7 @@ auto WaveEquationIBVP::saveToImage(const DoubleMatrix &u UNUSED_PARAM, const Tim
 #endif
 }
 
-auto WaveEquationIBVP::saveToTextF(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn) const -> void
+void WaveEquationIBVP::saveToTextF(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn) const
 {
     std::string txt_number = std::to_string(tn.i);
     std::string filename = std::string("data/border/f/txt/f_") +
@@ -498,3 +445,56 @@ double WaveEquationIBVP::integralUK(const DoubleMatrix &) const
 
     return sum*(hx*hy);
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void ConjugateCdIHyperbolicIBVP1::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
+{
+    ConjugateCdIHyperbolicIBVP1 chibvp;
+    chibvp.a = 1.0;
+    chibvp.alpha = 0.1;
+    chibvp.setTimeDimension(Dimension(0.005, 0, 200));
+    chibvp.addSpaceDimension(Dimension(0.01, 0, 100));
+    chibvp.addSpaceDimension(Dimension(0.01, 0, 100));
+
+    DoubleMatrix p;
+    //chibvp.explicit_calculate_D2V1(p, chibvp.a, chibvp.alpha);
+    //chibvp.implicit_calculate_D2V1(p, chibvp.a, chibvp.alpha);
+    //chibvp.implicit_calculate_D2V3(p, chibvp.a, chibvp.alpha);
+    IPrinter::printSeperatorLine("******************");
+    IPrinter::printMatrix(p);
+    IPrinter::printSeperatorLine();
+}
+
+void ConjugateCdIHyperbolicIBVP1::layerInfo(const DoubleMatrix& p, const TimeNodePDE& tn) const
+{
+    if (tn.i==200 || tn.i==199 || tn.i==198 || tn.i==2 || tn.i==1 || tn.i==0)
+    {
+        IPrinter::printMatrix(p);
+        IPrinter::printSeperatorLine();
+    }
+}
+
+double ConjugateCdIHyperbolicIBVP1::initial(const SpaceNodePDE &sn UNUSED_PARAM, InitialCondition condition) const
+{
+    if (condition == InitialCondition::InitialValue)
+    {
+        return sn.x*sn.x + sn.y*sn.y + 1.0;
+    }
+    else
+    {
+        return 2.0;
+    }
+}
+
+double ConjugateCdIHyperbolicIBVP1::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
+{
+    return sn.x*sn.x + sn.y*sn.y + tn.t*tn.t;
+}
+
+double ConjugateCdIHyperbolicIBVP1::f(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
+{
+    return 2.0 - 4.0*a*a - 2.0*tn.t*alpha;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
