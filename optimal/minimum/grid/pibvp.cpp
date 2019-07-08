@@ -45,6 +45,7 @@ void ParabolicIBVP::gridMethod(DoubleVector &u) const
 
     SpaceNodePDE lsn; lsn.i = minN; lsn.x = minN*hx;
     SpaceNodePDE rsn; rsn.i = maxN; rsn.x = maxN*hx;
+    BoundaryConditionPDE condition;
 
     TimeNodePDE tn;
     for (unsigned int m=1; m<=M; m++)
@@ -71,8 +72,8 @@ void ParabolicIBVP::gridMethod(DoubleVector &u) const
         kc[N-2] = 0.0;
 
         /* border conditions */
-        u[0] = boundary(lsn, tn);
-        u[N] = boundary(rsn, tn);
+        u[0] = boundary(lsn, tn, condition);
+        u[N] = boundary(rsn, tn, condition);
 
         kd[0]   += a(lsn,tn) * h * u[0];
         kd[N-2] += a(rsn,tn) * h * u[N];
@@ -132,6 +133,7 @@ void ParabolicIBVP::gridMethod(DoubleVector &u, double a) const
 
     SpaceNodePDE lsn; lsn.i = minN; lsn.x = minN*hx;
     SpaceNodePDE rsn; rsn.i = maxN; rsn.x = maxN*hx;
+    BoundaryConditionPDE condition;
 
     TimeNodePDE tn;
     for (unsigned int m=1; m<=M; m++)
@@ -155,8 +157,8 @@ void ParabolicIBVP::gridMethod(DoubleVector &u, double a) const
         kc[N-2] = 0.0;
 
         /* border conditions */
-        u[0] = boundary(lsn, tn);
-        u[N] = boundary(rsn, tn);
+        u[0] = boundary(lsn, tn, condition);
+        u[N] = boundary(rsn, tn, condition);
 
         kd[0]   -= alpha * u[0];
         kd[N-2] -= alpha * u[N];
@@ -233,6 +235,7 @@ void ParabolicIBVP::calculateMVD(DoubleMatrix &u) const
 
     TimeNodePDE tn;
     SpaceNodePDE sn;
+    BoundaryConditionPDE condition;
     for (unsigned int k=1; k<=M; k++)
     {
         tn.i = 2*k-1;
@@ -259,8 +262,8 @@ void ParabolicIBVP::calculateMVD(DoubleMatrix &u) const
 
             SpaceNodePDE sn0; sn0.i = 0;  sn0.x = 0.0;   sn0.j = j; sn0.y = j*h2;
             SpaceNodePDE snN; snN.i = N1; snN.x = N1*h1; snN.j = j; snN.y = j*h2;
-            v[j][0]  = boundary(sn0, tn);
-            v[j][N1] = boundary(snN, tn);
+            v[j][0]  = boundary(sn0, tn, condition);
+            v[j][N1] = boundary(snN, tn, condition);
 
             dd1[0]    -= x1_a * v[j][0];
             dd1[N1-2] -= x1_a * v[j][N1];
@@ -274,8 +277,8 @@ void ParabolicIBVP::calculateMVD(DoubleMatrix &u) const
         {
             SpaceNodePDE sn0; sn0.i = i; sn0.x = i*h1; sn0.j = 0;  sn0.y = 0.0;
             SpaceNodePDE snN; snN.i = i; snN.x = i*h1; snN.j = N2; snN.y = N2*h2;
-            v[0][i]  = boundary(sn0, tn);
-            v[N2][i] = boundary(snN, tn);
+            v[0][i]  = boundary(sn0, tn, condition);
+            v[N2][i] = boundary(snN, tn, condition);
         }
 
         tn.i = 2*k;
@@ -300,8 +303,8 @@ void ParabolicIBVP::calculateMVD(DoubleMatrix &u) const
 
             SpaceNodePDE sn0; sn0.i = i; sn0.x = i*h1; sn0.j = 0;  sn0.y = 0.0;
             SpaceNodePDE snN; snN.i = i; snN.x = i*h1; snN.j = N2; snN.y = N2*h2;
-            u[0][i]  = boundary(sn0, tn);
-            u[N2][i] = boundary(snN, tn);
+            u[0][i]  = boundary(sn0, tn, condition);
+            u[N2][i] = boundary(snN, tn, condition);
 
             dd2[0]    -= x2_a * u[0][i];
             dd2[N2-2] -= x2_a * u[N2][i];
@@ -315,8 +318,8 @@ void ParabolicIBVP::calculateMVD(DoubleMatrix &u) const
         {
             SpaceNodePDE sn0; sn0.i = 0;  sn0.x = 0*h1;  sn0.j = j; sn0.y = j*h2;
             SpaceNodePDE snN; snN.i = N1; snN.x = N1*h1; snN.j = j; snN.y = j*h2;
-            u[j][0]  = boundary(sn0, tn);
-            u[j][N1] = boundary(snN, tn);
+            u[j][0]  = boundary(sn0, tn, condition);
+            u[j][N1] = boundary(snN, tn, condition);
         }
     }
 
@@ -404,6 +407,7 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u) const
 
     /* initial condition */
     SpaceNodePDE isn;
+    BoundaryConditionPDE condition;
     for (unsigned int n=0; n<=N; n++)
     {
         isn.i = n+minN;
@@ -422,8 +426,8 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u) const
         tn.t = tn.i*ht;
 
         /* border conditions */
-        u[m][0] = boundary(lsn, tn);
-        u[m][N] = boundary(rsn, tn);
+        u[m][0] = boundary(lsn, tn, condition);
+        u[m][N] = boundary(rsn, tn, condition);
 
         /* n=1 */
         isn.i = minN+1;
@@ -538,14 +542,15 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
     SpaceNodePDE rsn;
     lsn.i = minN; lsn.x = minN*hx;
     rsn.i = maxN; rsn.x = maxN*hx;
+    BoundaryConditionPDE condition;
     for (unsigned int m=1; m<=M; m++)
     {
         tn.i = m+minM;
         tn.t = tn.i*ht;
 
         /* border conditions */
-        u[m][0] = boundary(lsn, tn);
-        u[m][N] = boundary(rsn, tn);
+        u[m][0] = boundary(lsn, tn, condition);
+        u[m][N] = boundary(rsn, tn, condition);
 
         /* using 2nd scheme, at point n=1 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         isn.i = minN+1;
@@ -807,14 +812,15 @@ void ParabolicIBVP::calculateN4L2RDX(DoubleMatrix &u) const
     SpaceNodePDE rsn;
     lsn.i = minN; lsn.x = minN*hx;
     rsn.i = maxN; rsn.x = maxN*hx;
+    BoundaryConditionPDE condition;
     for (unsigned int m=1; m<=M; m++)
     {
         tn.i = m+minM;
         tn.t = tn.i*ht;
 
         /* border conditions */
-        u[m][0] = boundary(lsn, tn);
-        u[m][N] = boundary(rsn, tn);
+        u[m][0] = boundary(lsn, tn, condition);
+        u[m][N] = boundary(rsn, tn, condition);
 
         /* using 2nd scheme, at point n=1 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         isn.i = minN+1;
@@ -1089,14 +1095,15 @@ void ParabolicIBVP::calculateN6L2RD(DoubleMatrix &u) const
     SpaceNodePDE rsn;
     lsn.i = minN; lsn.x = minN*hx;
     rsn.i = maxN; rsn.x = maxN*hx;
+    BoundaryConditionPDE condition;
     for (unsigned int m=1; m<=M; m++)
     {
         tn.i = m+minM;
         tn.t = tn.i*ht;
 
         /* border conditions */
-        u[m][0] = boundary(lsn, tn);
-        u[m][N] = boundary(rsn, tn);
+        u[m][0] = boundary(lsn, tn, condition);
+        u[m][N] = boundary(rsn, tn, condition);
 
         /* using 2nd scheme, at point n=1 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         isn.i = minN+1;

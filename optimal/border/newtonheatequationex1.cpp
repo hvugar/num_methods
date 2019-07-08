@@ -60,7 +60,7 @@ double NewtonHeatEquationEx1::initial(const SpaceNodePDE &sn UNUSED_PARAM) const
     return NAN;
 }
 
-double NewtonHeatEquationEx1::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
+double NewtonHeatEquationEx1::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM, BoundaryConditionPDE &condition UNUSED_PARAM) const
 {
     double t = tn.t; C_UNUSED(t);
     double x = sn.x; C_UNUSED(x);

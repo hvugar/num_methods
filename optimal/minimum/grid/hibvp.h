@@ -11,7 +11,7 @@ class MINIMUMSHARED_EXPORT IHyperbolicIBVP : public InitialBoundaryValueProblemP
 {
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
 
     virtual void layerInfo(const DoubleVector &, const TimeNodePDE &) const {}
@@ -37,17 +37,10 @@ public:
 
     void explicit_calculate_D2V1() const;
     void implicit_calculate_D2V1() const;
-    void implicit_calculate_D2V1X() const;
 
     virtual double lambda() const;
 
 private:
-    void explicit_calculate_D1V1_initial(DoubleVector &u00, DoubleVector &u10, unsigned int N, double hx, double ht, double a, double alpha) const;
-    void explicit_calculate_D1V1_border(DoubleVector &u, unsigned int N, double hx, double ht, const TimeNodePDE &tn) const;
-
-    void implicit_calculate_D1V1_initial(DoubleVector &u00, DoubleVector &u10, unsigned int N, double hx, double ht, double a, double alpha) const;
-    void implicit_calculate_D1V1_border(DoubleVector &u, unsigned int N, double hx, const TimeNodePDE &tn) const;
-
     void explicit_calculate_D2V1_initial(DoubleMatrix &u00, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, double ht, double a, double alpha) const;
     void explicit_calculate_D2V1_border(DoubleMatrix &u, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn) const;
 

@@ -119,6 +119,9 @@ void visualString(const DoubleVector& v, double min, double max, int w, int h, Q
     double hy = static_cast<double>(h) / static_cast<double>(max-min);
 
     QPainter painter(&pxm);
+
+    painter.drawLine(0, h/2, w, h/2);
+
     painter.setPen(fg);
     painter.setRenderHint(QPainter::Antialiasing, true);
     for (unsigned int i=0; i<=v.length()-2;i++)
@@ -131,6 +134,7 @@ void visualString(const DoubleVector& v, double min, double max, int w, int h, Q
         p2.ry() = (max-v[i+1])*hy;
         painter.drawLine(p1, p2);
     }
+
     if (!filename.isNull()) pxm.save(filename, "PNG");
 }
 

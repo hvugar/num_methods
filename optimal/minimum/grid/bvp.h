@@ -29,9 +29,18 @@ public:
 class MINIMUMSHARED_EXPORT BoundaryConditionPDE
 {
 public:
-    BoundaryCondition type;
-    double coefficientValue;
-    double coefficientDerivative;
+    BoundaryConditionPDE(BoundaryCondition condition = BoundaryCondition::Dirichlet, double alpha = 1.0, double beta = 0.0, double gamma = 1.0);
+
+    BoundaryCondition boundaryCondition() const;
+    double alpha() const;
+    double beta() const;
+    double gamma() const;
+
+private:
+    BoundaryCondition _boundaryCondition;
+    double _alpha;
+    double _beta;
+    double _gamma;
 };
 
 /**
@@ -60,7 +69,7 @@ public:
     virtual ~BoundaryValueProblemPDE();
 
 protected:
-    virtual auto boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double = 0;
+    virtual auto boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const -> double = 0;
 };
 
 #endif // BOUNDARYVALUEPROBLEM_H
