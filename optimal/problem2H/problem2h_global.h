@@ -14,7 +14,6 @@
 #define SAVE_TO_IMG_
 #define OLD_VERSION_
 #define NEW_VERSION
-//#define TIME_DISCRETE_H
 
 #ifdef USE_IMAGING
 #include <QPixmap>
