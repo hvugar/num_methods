@@ -136,6 +136,8 @@ void Problem2HCommon::clearMatrixes()
     u_info.clear();
 }
 
+///////////////////////////////////
+
 double Problem2HForward::initial(const SpaceNodePDE &sn, InitialCondition condition) const
 {
     if (condition == InitialCondition::FirstDerivative)
@@ -144,8 +146,9 @@ double Problem2HForward::initial(const SpaceNodePDE &sn, InitialCondition condit
         return 0.0;
 }
 
-double Problem2HForward::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+double Problem2HForward::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM, BoundaryConditionPDE &condition) const
 {
+    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet);
     return 0.0;
 }
 
@@ -276,13 +279,16 @@ void Problem2HForward::prepareLayerMatrix(const DoubleMatrix &u, const TimeNodeP
     }
 }
 
+///////////////////////////////////
+
 double Problem2HBackward::initial(const SpaceNodePDE &, InitialCondition) const
 {
     return 0.0;
 }
 
-double Problem2HBackward::boundary(const SpaceNodePDE &, const TimeNodePDE &) const
+double Problem2HBackward::boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &condition) const
 {
+    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet);
     return 0.0;
 }
 

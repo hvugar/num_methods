@@ -74,7 +74,7 @@ public:
 
     virtual auto setGridDimensions(const Dimension &time, const Dimension &dimX, const Dimension &dimY) -> void;
     virtual auto v(unsigned int i, unsigned int s, const EquaParameter2H &equaPrm, const spif_vectorH &u_info) const -> double;
-    virtual auto boundary(const SpaceNodePDE &, const TimeNodePDE &) const -> double;
+    virtual auto boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &condition) const -> double;
     virtual auto mu(unsigned int, unsigned int) const -> double;
     virtual auto sign(double x) const -> double;
     virtual auto printOptimalParameters() const -> void;

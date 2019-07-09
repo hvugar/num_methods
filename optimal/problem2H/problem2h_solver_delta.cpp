@@ -2449,7 +2449,7 @@ auto Problem2HDirichletDelta::v(unsigned int i, unsigned int s, const EquaParame
     return v;
 }
 
-auto Problem2HDirichletDelta::boundary(const SpaceNodePDE &, const TimeNodePDE &) const -> double { return NAN; }
+auto Problem2HDirichletDelta::boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &) const -> double { return NAN; }
 
 auto Problem2HDirichletDelta::mu(unsigned int, unsigned int) const -> double { return 1.0; }
 

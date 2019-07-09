@@ -64,9 +64,10 @@ win32-msvc* {
     CONFIG(debug, debug|release) { }
 }
 
+HEADERS += problem2h_global.h \
+           problem2h_common.h
 
-#HEADERS += problem2hnm.h
-#SOURCES += problem2hnm.cpp
+SOURCES += problem2h_common.cpp
 
 HEADERS += problem2h_solver_delta.h
 SOURCES += problem2h_solver_delta.cpp
@@ -74,27 +75,11 @@ SOURCES += problem2h_solver_delta.cpp
 HEADERS += problem2h_solver.h
 SOURCES += problem2h_solver.cpp
 
+HEADERS += problem2h_solver_base.h
+SOURCES += problem2h_solver_base.cpp
+
 #HEADERS += problem2h_exporter.h
 #SOURCES += problem2h_exporter.cpp
-
-HEADERS += problem2h_global.h \
-           problem2h_common.h
-#           problem2h_solver_base.h \
-#           problem2h_solver1.h \
-#           problem2h_example.h \
-#           problem2h_solver.h
-#           problem2h_solver2.h \
-#           problem2h_solver4.h \
-#           problem2h_ibvp.h \
-
-SOURCES += problem2h_common.cpp
-#           problem2h_solver_base.cpp \
-#           problem2h_solver1.cpp \
-#           problem2h_example.cpp \
-#           problem2h_solver.cpp
-#           problem2h_solver2.cpp \
-#           problem2h_solver4.cpp \
-#           problem2h_ibvp.cpp \
 
 #OTHER_FILES += matlab/*
 #DEFINES += OLD_SOURCES

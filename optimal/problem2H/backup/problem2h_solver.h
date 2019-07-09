@@ -47,7 +47,7 @@ class PROBLEM2HSHARED_EXPORT Problem2HForward : virtual public IWaveEquationIBVP
 {
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
@@ -67,7 +67,7 @@ class PROBLEM2HSHARED_EXPORT Problem2HBackward : virtual public IConjugateWaveEq
 {
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
