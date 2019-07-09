@@ -124,7 +124,7 @@ public:
 
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
 private:
@@ -144,7 +144,7 @@ public:
 
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
 

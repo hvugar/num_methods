@@ -17,9 +17,9 @@ struct SpacePointInfo
 class Problem2HCommon
 {
 public:
-    unsigned int Nq;
-    std::vector<double> q;
-    std::vector<DeltaGrid2D> zta;
+    //unsigned int Nq;
+    //std::vector<double> q;
+    //std::vector<DeltaGrid2D> zta;
 
     unsigned int Nc;
     unsigned int No;
@@ -53,12 +53,11 @@ protected:
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
 
 public:
-    void initInitialConditionMatrix(const std::vector<SpacePoint> &zta, const std::vector<double> &q);
-    void clearInitialConditionMatrix();
+    void setInitialConditionMatrix(const SpacePoint* &zta, const double* q, unsigned int Nq);
+    void clrInitialConditionMatrix();
 
     void initControlMeasurementDeltaGrid(std::vector<SpacePoint> &eta, std::vector<SpacePoint> &ksi);
     void prepareLayerMatrix(const DoubleMatrix &u, const TimeNodePDE& tn);
-
 
     void saveToTextF(const DoubleMatrix &, const TimeNodePDE &) const;
 };

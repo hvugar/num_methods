@@ -442,7 +442,7 @@ auto Problem0HFunctional::print(unsigned int i, const DoubleVector &x, const Dou
 
 auto Problem0HForward::initial(const SpaceNodePDE &, InitialCondition) const -> double { return 0.0; }
 
-auto Problem0HForward::boundary(const SpaceNodePDE &, const TimeNodePDE &) const -> double { return 0.0; }
+auto Problem0HForward::boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &condition) const -> double { return 0.0; }
 
 auto Problem0HForward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
 {
@@ -640,7 +640,7 @@ auto Problem0HBckward::initial(const SpaceNodePDE &sn, InitialCondition conditio
     throw std::exception();
 }
 
-auto Problem0HBckward::boundary(const SpaceNodePDE&, const TimeNodePDE&) const -> double { return 0.0; }
+auto Problem0HBckward::boundary(const SpaceNodePDE&, const TimeNodePDE&, BoundaryConditionPDE &condition) const -> double { return 0.0; }
 
 auto Problem0HBckward::f(const SpaceNodePDE&, const TimeNodePDE&) const -> double { return 0.0; }
 

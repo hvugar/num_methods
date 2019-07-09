@@ -20,6 +20,8 @@
 #include "../problem1H/problem1h_example.h"
 #include "../problem2P/problem2p_solver.h"
 #include "../problem2H/problem2h_solver.h"
+#include "../problem2H/problem2h_solver_delta.h"
+
 #include "test/deltagrid2dext1.h"
 #include "test/nonlinearequationex1.h"
 
@@ -36,7 +38,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //TestWaveEquation::Main(argc, argv);
     //TestWaveEquationEx1::Main(argc, argv);
-    WaveEquationIBVP::Main(argc, argv); return 0;
+    //WaveEquationIBVP::Main(argc, argv); return 0;
 
     //DeltaGrid2DExt1::Main(argc, argv);
     //DeltaGrid1DExt1::Main(argc, argv);
@@ -53,10 +55,10 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //IPrinter::printSeperatorLine();
     //ConjugateCC1IHyperbolicIBVP1::Main(argc, argv);
     //Problem0HFunctional::Main(argc, argv);
-    Problem2HSolver::Main(argc, argv);
+    //Problem2HSolver::Main(argc, argv);
     //Problem1HDirichlet1::Main(argc, argv);
     //Problem2HDirichlet::Main(argc, argv);
-    //Problem2HDirichletDelta::Main(argc, argv);
+    Problem2HDirichletDelta::Main(argc, argv);
 
     //CCParabolicIBVP1::Main(argc, argv);
     //CCIHyperbolicIBVP1::Main(argc, argv);
