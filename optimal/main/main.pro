@@ -82,8 +82,8 @@ win32-msvc* {
 #        INCLUDEPATH += ../problem0H
 #        LIBS += ../bin/problem0H.lib
 
-#        INCLUDEPATH += ../problem2H
-#        LIBS += ../bin/problem2H.lib
+        INCLUDEPATH += ../problem2H
+        LIBS += ../bin/problem2H.lib
     }
     CONFIG(debug, debug|release) {
         OBJECTS_DIR = debug/.obj/win32-msvc

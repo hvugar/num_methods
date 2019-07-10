@@ -53,7 +53,7 @@ protected:
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
 
 public:
-    void setInitialConditionMatrix(const SpacePoint* &zta, const double* q, unsigned int Nq);
+    void setInitialConditionMatrix(const SpacePoint *zta, const double* q, unsigned int Nq);
     void clrInitialConditionMatrix();
 
     void initControlMeasurementDeltaGrid(std::vector<SpacePoint> &eta, std::vector<SpacePoint> &ksi);
@@ -74,13 +74,14 @@ protected:
 
 class PROBLEM2HSHARED_EXPORT Problem2HFunctional : virtual public Problem2HCommon {};
 
-class PROBLEM2HSHARED_EXPORT Problem2HSolver : virtual public Problem2HForward//, virtual public Problem2HBackward
+class PROBLEM2HSHARED_EXPORT Problem2HSolver : virtual public Problem2HForward,
+                                               virtual public Problem2HBackward
 {
 public:
     static void Main(int argc, char** argv);
 
-    //Problem2HForward& forward();
-    //Problem2HBackward& backward();
+    Problem2HForward& fw() { return *(dynamic_cast<Problem2HForward*>(this)); }
+    Problem2HBackward& bw()  { return *(dynamic_cast<Problem2HBackward*>(this)); }
 };
 
 #endif // PROBLEM2H_SOLVER1_H

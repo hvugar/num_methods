@@ -2,7 +2,7 @@
 
 void Problem2HSolver::Main(int argc, char **argv)
 {
-    Problem2HForward ps;
+    Problem2HSolver ps;
     Dimension dimensionX(0.01, 0, 100);
     Dimension dimensionY(0.01, 0, 100);
     Dimension dimensionT(0.01, 0, 1000);
@@ -15,13 +15,14 @@ void Problem2HSolver::Main(int argc, char **argv)
     ps.setWaveSpeed(1.0);
     ps.setWaveDissipation(0.01);
 
-    std::vector<double> q;
-    q.push_back(0.05);
-    q.push_back(0.05);
-
-    std::vector<SpacePoint> zta;
-    zta.push_back(SpacePoint(0.25, 0.25));
-    zta.push_back(SpacePoint(0.75, 0.75));
+    unsigned int Nq = 2;
+    SpacePoint* zta = new SpacePoint[2];
+    zta[0] = SpacePoint(0.25, 0.25);
+    zta[1] = SpacePoint(0.75, 0.75);
+    double* q = new double[Nq];
+    q[0] = 0.05;
+    q[1] = 0.05;
+    ps.setInitialConditionMatrix(zta, q, Nq);
 
     std::vector<SpacePoint> eta;
     eta.push_back(SpacePoint(0.65, 0.34));
@@ -31,9 +32,11 @@ void Problem2HSolver::Main(int argc, char **argv)
     ksi.push_back(SpacePoint(0.22, 0.54));
     ksi.push_back(SpacePoint(0.82, 0.27));
 
-    ps.setInitialConditionMatrix(zta, q);
-    ps.initControlMeasurementDeltaGrid(eta, ksi);
-    ps.implicit_calculate_D2V1();
+    ps.fw().initControlMeasurementDeltaGrid(eta, ksi);
+    ps.fw().implicit_calculate_D2V1();
+
+    delete [] q;
+    delete [] zta;
 }
 
 //Problem2HForward& Problem2HSolver::forward()
@@ -187,7 +190,7 @@ void Problem2HForward::saveToTextF(const DoubleMatrix &u UNUSED_PARAM, const Tim
     printf("Forward: %4d %0.3f %10.8f %10.8f %10.8f %10.8f %4d %4d\n", tn.i, tn.t, u.min(), u.max(), MIN, MAX, 0, 0);
 }
 
-void Problem2HForward::setInitialConditionMatrix(const SpacePoint* &zta, const double* q, unsigned int Nq)
+void Problem2HForward::setInitialConditionMatrix(const SpacePoint* zta, const double* q, unsigned int Nq)
 {
     const Dimension &dimensionX = spaceDimension(Dimension::DimensionX);
     const Dimension &dimensionY = spaceDimension(Dimension::DimensionY);
