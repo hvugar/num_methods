@@ -6,7 +6,7 @@
 
 void ParabolicIBVP::gridMethod(DoubleVector &u) const
 {
-    const Dimension &dim1 = spaceDimension(Dimension::DimensionX);
+    const Dimension &dim1 = spaceDimensionX();//spaceDimension(Dimension::DimensionX);
     const Dimension &time = timeDimension();
 
     const double ht = time.step();
@@ -94,18 +94,18 @@ void ParabolicIBVP::gridMethod(DoubleVector &u) const
 
 void ParabolicIBVP::gridMethod(DoubleVector &u, double a) const
 {
-    const Dimension &dim1 = spaceDimension(Dimension::DimensionX);
+    const Dimension &dimX = spaceDimensionX();//spaceDimension(Dimension::DimensionX);
     const Dimension &time = timeDimension();
 
     const double ht = time.step();
-    const double hx = dim1.step();
+    const double hx = dimX.step();
 
     const int minM = time.min();
     const int maxM = time.max();
     const unsigned int M = static_cast<unsigned int>(maxM-minM);
 
-    const int minN = dim1.min();
-    const int maxN = dim1.max();
+    const int minN = dimX.min();
+    const int maxN = dimX.max();
     const unsigned int N = static_cast<unsigned int>(maxN-minN);
 
     const double alpha = -(a*a*ht)/(hx*hx);
@@ -179,17 +179,17 @@ void ParabolicIBVP::gridMethod(DoubleVector &u, double a) const
 
 void ParabolicIBVP::calculateMVD(DoubleMatrix &u) const
 {
-    const Dimension &dim1 = mspaceDimension.at(Dimension::DimensionX);
-    const Dimension &dim2 = mspaceDimension.at(Dimension::DimensionY);
+    const Dimension &dimX = spaceDimensionX();//mspaceDimension.at(Dimension::DimensionX);
+    const Dimension &dimY = spaceDimensionY();//mspaceDimension.at(Dimension::DimensionY);
     const Dimension &time = timeDimension();
 
     const double ht = time.step();
-    const double h1 = dim1.step();
-    const double h2 = dim2.step();
+    const double h1 = dimX.step();
+    const double h2 = dimY.step();
 
     const unsigned int M = time.max();
-    const unsigned int N1 = dim1.max();
-    const unsigned int N2 = dim2.max();
+    const unsigned int N1 = dimX.max();
+    const unsigned int N2 = dimY.max();
 
     double a1 = 1.0;
     double a2 = 1.0;
@@ -381,17 +381,14 @@ void funcL(const double* a, const double *b, const double *c, const double *d, d
 
 void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u) const
 {
-    Dimension time = mtimeDimension;
-    Dimension dim1 = mspaceDimension.at(0);
-
-    double ht = time.step();
-    unsigned int minM = time.min();
-    unsigned int maxM = time.max();
+    double ht = _timeDimension.step();
+    unsigned int minM = _timeDimension.min();
+    unsigned int maxM = _timeDimension.max();
     unsigned int M = maxM - minM;
 
-    double hx = dim1.step();
-    unsigned int minN = dim1.min();
-    unsigned int maxN = dim1.max();
+    double hx = _spaceDimensionX.step();
+    unsigned int minN = _spaceDimensionX.min();
+    unsigned int maxN = _spaceDimensionX.max();
     unsigned int N = maxN - minN;
 
     const unsigned int k = 2;
@@ -502,17 +499,14 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u) const
 void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
 {
     /* get parameters */
-    Dimension time = mtimeDimension;
-    Dimension dim1 = mspaceDimension.at(0);
-
-    double ht = time.step();
-    unsigned int minM = time.min();
-    unsigned int maxM = time.max();
+    double ht = _timeDimension.step();
+    unsigned int minM = _timeDimension.min();
+    unsigned int maxM = _timeDimension.max();
     unsigned int M = maxM - minM;
 
-    double hx = dim1.step();
-    unsigned int minN = dim1.min();
-    unsigned int maxN = dim1.max();
+    double hx = _spaceDimensionX.step();
+    unsigned int minN = _spaceDimensionX.min();
+    unsigned int maxN = _spaceDimensionX.max();
     unsigned int N = maxN - minN;
 
     const unsigned int k = 4;
@@ -772,17 +766,14 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
 void ParabolicIBVP::calculateN4L2RDX(DoubleMatrix &u) const
 {
     /* get parameters */
-    Dimension time = mtimeDimension;
-    Dimension dim1 = mspaceDimension.at(0);
-
-    double ht = time.step();
-    unsigned int minM = time.min();
-    unsigned int maxM = time.max();
+    double ht = _timeDimension.step();
+    unsigned int minM = _timeDimension.min();
+    unsigned int maxM = _timeDimension.max();
     unsigned int M = maxM - minM;
 
-    double hx = dim1.step();
-    unsigned int minN = dim1.min();
-    unsigned int maxN = dim1.max();
+    double hx = _spaceDimensionX.step();
+    unsigned int minN = _spaceDimensionX.min();
+    unsigned int maxN = _spaceDimensionX.max();
     unsigned int N = maxN - minN;
 
     const unsigned int k = 4;
@@ -1054,17 +1045,14 @@ void ParabolicIBVP::calculateN4L2RDX(DoubleMatrix &u) const
 void ParabolicIBVP::calculateN6L2RD(DoubleMatrix &u) const
 {
     /* get parameters */
-    Dimension time = mtimeDimension;
-    Dimension dim1 = mspaceDimension.at(0);
-
-    double ht = time.step();
-    unsigned int minM = time.min();
-    unsigned int maxM = time.max();
+    double ht = _timeDimension.step();
+    unsigned int minM = _timeDimension.min();
+    unsigned int maxM = _timeDimension.max();
     unsigned int M = maxM - minM;
 
-    double hx = dim1.step();
-    unsigned int minN = dim1.min();
-    unsigned int maxN = dim1.max();
+    double hx = _spaceDimensionX.step();
+    unsigned int minN = _spaceDimensionX.min();
+    unsigned int maxN = _spaceDimensionX.max();
     unsigned int N = maxN - minN;
 
     const unsigned int k = 6;
@@ -1342,16 +1330,12 @@ IHeatEquationIBVP::IHeatEquationIBVP(double thermalDiffusivity) : _thermalDiffus
 
 void IHeatEquationIBVP::calculateU(DoubleMatrix &u, double a, double alpha, double lambda)
 {
-    Dimension xd = spaceDimension(Dimension::DimensionX);
-    Dimension yd = spaceDimension(Dimension::DimensionY);
-    Dimension td = timeDimension();
-
-    unsigned int N = xd.size();
-    unsigned int M = yd.size();
-    unsigned int L = td.size();
-    double hx = xd.step();
-    double hy = yd.step();
-    double ht = td.step();
+    unsigned int N = _spaceDimensionX.size();
+    unsigned int M = _spaceDimensionY.size();
+    unsigned int L = _timeDimension.size();
+    double hx = _spaceDimensionX.step();
+    double hy = _spaceDimensionY.step();
+    double ht = _timeDimension.step();
 
     u.clear();
     u.resize(M+1, N+1);
@@ -1524,17 +1508,14 @@ void NewtonHeatEquation::calculateGM1(DoubleVector &u, SweepMethodDirection dire
     if (direction == ForwardSweep) algorithm = &tomasAlgorithmL2R;
     if (direction == BackwardSweep) algorithm = &tomasAlgorithmR2L;
 
-    Dimension time = mtimeDimension;
-    Dimension dim1 = mspaceDimension.at(0);
-
-    double ht = time.step();
-    unsigned int minM = time.min();
-    unsigned int maxM = time.max();
+    double ht = _timeDimension.step();
+    unsigned int minM = _timeDimension.min();
+    unsigned int maxM = _timeDimension.max();
     unsigned int M = maxM-minM;
 
-    double hx = dim1.step();
-    unsigned int minN = dim1.min();
-    unsigned int maxN = dim1.max();
+    double hx = _spaceDimensionX.step();
+    unsigned int minN = _spaceDimensionX.min();
+    unsigned int maxN = _spaceDimensionX.max();
     unsigned int N = maxN-minN;
 
     u.clear();
@@ -1620,17 +1601,14 @@ void NewtonHeatEquation::calculateGM2(DoubleVector &u, SweepMethodDirection dire
     //if (direction == ForwardSweep) algorithm = &tomasAlgorithmL2R;
     //if (direction == BackwardSweep) algorithm = &tomasAlgorithmR2L;
 
-    Dimension time = mtimeDimension;
-    Dimension dim1 = mspaceDimension.at(0);
-
-    double ht = time.step();
-    unsigned int minM = time.min();
-    unsigned int maxM = time.max();
+    double ht = _timeDimension.step();
+    unsigned int minM = _timeDimension.min();
+    unsigned int maxM = _timeDimension.max();
     unsigned int M = maxM-minM;
 
-    double hx = dim1.step();
-    unsigned int minN = dim1.min();
-    unsigned int maxN = dim1.max();
+    double hx = _spaceDimensionX.step();
+    unsigned int minN = _spaceDimensionX.min();
+    unsigned int maxN = _spaceDimensionX.max();
     unsigned int N = maxN-minN;
 
     u.clear();
@@ -1788,17 +1766,14 @@ void NewtonHeatEquation::calculateGM3(DoubleVector &u, SweepMethodDirection dire
     if (direction == ForwardSweep) algorithm = &tomasAlgorithmL2R;
     if (direction == BackwardSweep) algorithm = &tomasAlgorithmR2L;
 
-    Dimension time = mtimeDimension;
-    Dimension dim1 = mspaceDimension.at(0);
-
-    double ht = time.step();
-    unsigned int minM = time.min();
-    unsigned int maxM = time.max();
+    double ht = _timeDimension.step();
+    unsigned int minM = _timeDimension.min();
+    unsigned int maxM = _timeDimension.max();
     unsigned int M = maxM-minM;
 
-    double hx = dim1.step();
-    unsigned int minN = dim1.min();
-    unsigned int maxN = dim1.max();
+    double hx = _spaceDimensionX.step();
+    unsigned int minN = _spaceDimensionX.min();
+    unsigned int maxN = _spaceDimensionX.max();
     unsigned int N = maxN-minN;
 
     u.clear();
@@ -1907,17 +1882,14 @@ void BackwardParabolicIBVP::gridMethod(DoubleVector &p, SweepMethodDirection dir
     if (direction == ForwardSweep) algorithm = &tomasAlgorithmL2R;
     if (direction == BackwardSweep) algorithm = &tomasAlgorithmR2L;
 
-    Dimension time = mtimeDimension;
-    Dimension dim1 = mspaceDimension.at(0);
-
-    double ht = time.step();
-    unsigned int minM = time.min();
-    unsigned int maxM = time.max();
+    double ht = _timeDimension.step();
+    unsigned int minM = _timeDimension.min();
+    unsigned int maxM = _timeDimension.max();
     unsigned int M = maxM-minM;
 
-    double hx = dim1.step();
-    unsigned int minN = dim1.min();
-    unsigned int maxN = dim1.max();
+    double hx = _spaceDimensionX.step();
+    unsigned int minN = _spaceDimensionX.min();
+    unsigned int maxN = _spaceDimensionX.max();
     unsigned int N = maxN-minN;
 
     double h = ht/(hx*hx);
@@ -2000,17 +1972,14 @@ void BackwardParabolicIBVP::gridMethod(DoubleMatrix &p, SweepMethodDirection dir
     if (direction == ForwardSweep) algorithm = &tomasAlgorithmL2R;
     if (direction == BackwardSweep) algorithm = &tomasAlgorithmR2L;
 
-    Dimension time = mtimeDimension;
-    Dimension dim1 = mspaceDimension.at(0);
-
-    double ht = time.step();
-    unsigned int minM = time.min();
-    unsigned int maxM = time.max();
+    double ht = _timeDimension.step();
+    unsigned int minM = _timeDimension.min();
+    unsigned int maxM = _timeDimension.max();
     unsigned int M = maxM-minM;
 
-    double hx = dim1.step();
-    unsigned int minN = dim1.min();
-    unsigned int maxN = dim1.max();
+    double hx = _spaceDimensionX.step();
+    unsigned int minN = _spaceDimensionX.min();
+    unsigned int maxN = _spaceDimensionX.max();
     unsigned int N = maxN-minN;
 
     double h = ht/(hx*hx);

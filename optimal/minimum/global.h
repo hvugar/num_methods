@@ -24,7 +24,9 @@
 #if (__cplusplus == 201103)
 #define NOEXCEPT noexcept
 #else
-#define NOEXCEPT throw()
+#define NOEXCEPT
+//#define NOEXCEPT noexcept
+//#define NOEXCEPT throw()
 #endif
 #endif
 

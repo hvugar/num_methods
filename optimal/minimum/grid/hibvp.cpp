@@ -17,7 +17,7 @@ void IWaveEquationIBVP::setWaveDissipation(double waveDissipation) { _waveDissip
 
 void IWaveEquationIBVP::explicit_calculate_D1V1() const
 {
-    const Dimension &dimX = spaceDimension(Dimension::DimensionX);
+    const Dimension &dimX = spaceDimensionX();//spaceDimension(Dimension::DimensionX);
     const Dimension &time = timeDimension();
 
     const unsigned int N = static_cast<unsigned int>( dimX.size() );
@@ -154,7 +154,7 @@ void IWaveEquationIBVP::explicit_calculate_D1V1() const
 
 void IWaveEquationIBVP::implicit_calculate_D1V1() const
 {
-    const Dimension &dimX = spaceDimension(Dimension::DimensionX);
+    const Dimension &dimX = spaceDimensionX();//spaceDimension(Dimension::DimensionX);
     const Dimension &time = timeDimension();
 
     const unsigned int N = static_cast<unsigned int>( dimX.size() );
@@ -348,17 +348,13 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
 
 void IWaveEquationIBVP::explicit_calculate_D2V1() const
 {
-    const Dimension &dimX = spaceDimension(Dimension::DimensionX);
-    const Dimension &dimY = spaceDimension(Dimension::DimensionY);
-    const Dimension &time = timeDimension();
+    const unsigned int N = static_cast<unsigned int>( _spaceDimensionX.size() );
+    const unsigned int M = static_cast<unsigned int>( _spaceDimensionY.size() );
+    const unsigned int L = static_cast<unsigned int>( _timeDimension.size() );
 
-    const unsigned int N = static_cast<unsigned int>( dimX.size() );
-    const unsigned int M = static_cast<unsigned int>( dimY.size() );
-    const unsigned int L = static_cast<unsigned int>( time.size() );
-
-    const double hx = dimX.step();
-    const double hy = dimY.step();
-    const double ht = time.step();
+    const double hx = _spaceDimensionX.step();
+    const double hy = _spaceDimensionY.step();
+    const double ht = _timeDimension.step();
 
     const double a = waveSpeed();
     const double alpha = waveDissipation();
@@ -502,17 +498,13 @@ void IWaveEquationIBVP::explicit_calculate_D2V1() const
 
 void IWaveEquationIBVP::implicit_calculate_D2V1() const
 {
-    const Dimension &dimX = spaceDimension(Dimension::DimensionX);
-    const Dimension &dimY = spaceDimension(Dimension::DimensionY);
-    const Dimension &time = timeDimension();
+    const unsigned int N = static_cast<unsigned int>( _spaceDimensionX.size() );
+    const unsigned int M = static_cast<unsigned int>( _spaceDimensionY.size() );
+    const unsigned int L = static_cast<unsigned int>( _timeDimension.size() );
 
-    const unsigned int N = static_cast<unsigned int>( dimX.size() );
-    const unsigned int M = static_cast<unsigned int>( dimY.size() );
-    const unsigned int L = static_cast<unsigned int>( time.size() );
-
-    const double hx = dimX.step();
-    const double hy = dimY.step();
-    const double ht = time.step();
+    const double hx = _spaceDimensionX.step();
+    const double hy = _spaceDimensionY.step();
+    const double ht = _timeDimension.step();
 
     const double _lambda = lambda();
     const double a = waveSpeed();
@@ -828,17 +820,13 @@ void IConjugateWaveEquationIBVP::implicit_calculate_D1V1() const {}
 
 void IConjugateWaveEquationIBVP::explicit_calculate_D2V1() const
 {
-    const Dimension &dimX = spaceDimension(Dimension::DimensionX);
-    const Dimension &dimY = spaceDimension(Dimension::DimensionY);
-    const Dimension &time = timeDimension();
+    const unsigned int N = static_cast<unsigned int>( _spaceDimensionX.size() );
+    const unsigned int M = static_cast<unsigned int>( _spaceDimensionY.size() );
+    const unsigned int L = static_cast<unsigned int>( _timeDimension.size() );
 
-    const unsigned int N = static_cast<unsigned int>( dimX.size() );
-    const unsigned int M = static_cast<unsigned int>( dimY.size() );
-    const unsigned int L = static_cast<unsigned int>( time.size() );
-
-    const double hx = dimX.step();
-    const double hy = dimY.step();
-    const double ht = time.step();
+    const double hx = _spaceDimensionX.step();
+    const double hy = _spaceDimensionY.step();
+    const double ht = _timeDimension.step();
 
     const double a = waveSpeed();
     const double alpha = waveDissipation();
@@ -893,17 +881,13 @@ void IConjugateWaveEquationIBVP::explicit_calculate_D2V1() const
 
 void IConjugateWaveEquationIBVP::implicit_calculate_D2V1() const
 {
-    const Dimension &dimX = spaceDimension(Dimension::DimensionX);
-    const Dimension &dimY = spaceDimension(Dimension::DimensionY);
-    const Dimension &time = timeDimension();
+    const unsigned int N = static_cast<unsigned int>( _spaceDimensionX.size() );
+    const unsigned int M = static_cast<unsigned int>( _spaceDimensionY.size() );
+    const unsigned int L = static_cast<unsigned int>( _timeDimension.size() );
 
-    const unsigned int N = static_cast<unsigned int>( dimX.size() );
-    const unsigned int M = static_cast<unsigned int>( dimY.size() );
-    const unsigned int L = static_cast<unsigned int>( time.size() );
-
-    const double hx = dimX.step();
-    const double hy = dimY.step();
-    const double ht = time.step();
+    const double hx = _spaceDimensionX.step();
+    const double hy = _spaceDimensionY.step();
+    const double ht = _timeDimension.step();
 
     const double _lambda = lambda();
     const double a = waveSpeed();

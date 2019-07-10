@@ -10,7 +10,7 @@ void NewtonHeatEquationEx1::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARA
     Dimension time(0.001, 1000, 0);
     ex1.setTimeDimension(time);
     Dimension dim1(0.01, 100, 0);
-    ex1.addSpaceDimension(dim1);
+    ex1.setSpaceDimensionX(dim1);
 
     DoubleVector U(dim1.size()+1);
     TimeNodePDE tn;

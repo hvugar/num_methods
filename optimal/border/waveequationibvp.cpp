@@ -12,8 +12,8 @@ void WaveEquationIBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     w.setWaveSpeed(1.0);
     w.setWaveDissipation(0.0);
     w.setTimeDimension(Dimension(0.001, 0, 2000));
-    w.addSpaceDimension(Dimension(0.002, 0, 500));
-    w.addSpaceDimension(Dimension(0.002, 0, 500));
+    w.setSpaceDimensionX(Dimension(0.002, 0, 500));
+    w.setSpaceDimensionY(Dimension(0.002, 0, 500));
 
     Benchmark bm;
     bm.tick();
@@ -25,8 +25,8 @@ void WaveEquationIBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 double WaveEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition condition) const
 {
-    const Dimension &dimX = spaceDimension(Dimension::DimensionX); const double hx = dimX.step(); const double sigmaX = 5.0 * hx;
-    const Dimension &dimY = spaceDimension(Dimension::DimensionY); const double hy = dimY.step(); const double sigmaY = 5.0 * hy;
+    const double hx = _spaceDimensionX.step(); const double sigmaX = 5.0 * hx;
+    const double hy = _spaceDimensionY.step(); const double sigmaY = 5.0 * hy;
 
     if (condition == InitialCondition::InitialValue)
     {
@@ -347,14 +347,11 @@ void WaveEquationIBVP::layerInfo(const DoubleMatrix& u, const TimeNodePDE& tn) c
 
     //    if (ln%2==0)
     {
-        const static double ht = timeDimension().step();
-        const Dimension &dimX = spaceDimension(Dimension::DimensionX);
-        const Dimension &dimY = spaceDimension(Dimension::DimensionY);
-
-        const static unsigned int N = static_cast<unsigned int> ( dimX.size() );
-        const static unsigned int M = static_cast<unsigned int> ( dimY.size() );
-        const double hx = dimX.step();
-        const double hy = dimY.step();
+        const double ht = _timeDimension.step();
+        const unsigned int N = static_cast<unsigned int> ( _spaceDimensionX.size() );
+        const unsigned int M = static_cast<unsigned int> ( _spaceDimensionY.size() );
+        const double hx = _spaceDimensionX.step();
+        const double hy = _spaceDimensionY.step();
 
         DoubleMatrix &_u0 = const_cast<WaveEquationIBVP*>(this)->mu0;
         DoubleMatrix &_u1 = const_cast<WaveEquationIBVP*>(this)->mu1;
@@ -447,15 +444,12 @@ void WaveEquationIBVP::layerInfo(const DoubleMatrix& u, const TimeNodePDE& tn) c
 void WaveEquationIBVP::saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
 #ifdef USE_LIB_IMAGING
-    const Dimension &time = timeDimension();
-    const Dimension &dimX = spaceDimension(Dimension::DimensionX);
-    const Dimension &dimY = spaceDimension(Dimension::DimensionY);
-    //const unsigned int L = static_cast<unsigned int>(time.size());
-    const unsigned int N = static_cast<unsigned int>(dimX.size());
-    const unsigned int M = static_cast<unsigned int>(dimY.size());
-    //const double ht = time.step();
-    //const double hx = dimX.step();
-    //const double hy = dimY.step();
+    //const unsigned int L = static_cast<unsigned int>(_timeDimension.size());
+    const unsigned int N = static_cast<unsigned int>(_spaceDimensionX.size());
+    const unsigned int M = static_cast<unsigned int>(_spaceDimensionY.size());
+    //const double ht = _timeDimension.step();
+    //const double hx = _spaceDimensionX.step();
+    //const double hy = _spaceDimensionY.step();
 
     //QDir path("D:/data2");
     //if (!path.exists()) path.mkdir("D:/data2");
@@ -478,8 +472,8 @@ void WaveEquationIBVP::saveToTextF(const DoubleMatrix &u UNUSED_PARAM, const Tim
 
 double WaveEquationIBVP::integralUP(const DoubleVector &) const
 {
-    const static double hx = spaceDimension(Dimension::DimensionX).step();
-    const static unsigned int N = static_cast<unsigned int> ( spaceDimension(Dimension::DimensionX).size() );
+    const static double hx = _spaceDimensionX.step();
+    const static unsigned int N = static_cast<unsigned int> ( _spaceDimensionX.size() );
 
     double sum = 0.0;
 
@@ -495,8 +489,8 @@ double WaveEquationIBVP::integralUP(const DoubleVector &) const
 
 double WaveEquationIBVP::integralUK(const DoubleVector &) const
 {
-    const double hx = spaceDimension(Dimension::DimensionX).step();
-    const unsigned int N = static_cast<unsigned int> ( spaceDimension(Dimension::DimensionX).size() );
+    const double hx = _spaceDimensionX.step();
+    const unsigned int N = static_cast<unsigned int> ( _spaceDimensionX.size() );
 
     double sum = 0.0;
 
@@ -512,10 +506,10 @@ double WaveEquationIBVP::integralUK(const DoubleVector &) const
 
 double WaveEquationIBVP::integralUP(const DoubleMatrix &) const
 {
-    const double hx = spaceDimension(Dimension::DimensionX).step();
-    const double hy = spaceDimension(Dimension::DimensionY).step();
-    const unsigned int N = static_cast<unsigned int> ( spaceDimension(Dimension::DimensionX).size() );
-    const unsigned int M = static_cast<unsigned int> ( spaceDimension(Dimension::DimensionY).size() );
+    const double hx = _spaceDimensionX.step();
+    const double hy = _spaceDimensionY.step();
+    const unsigned int N = static_cast<unsigned int> ( _spaceDimensionX.size() );
+    const unsigned int M = static_cast<unsigned int> ( _spaceDimensionY.size() );
 
     double sum = 0.0;
 
@@ -549,10 +543,10 @@ double WaveEquationIBVP::integralUP(const DoubleMatrix &) const
 
 double WaveEquationIBVP::integralUK(const DoubleMatrix &) const
 {
-    const double hx = spaceDimension(Dimension::DimensionX).step();
-    const double hy = spaceDimension(Dimension::DimensionY).step();
-    const unsigned int N = static_cast<unsigned int> ( spaceDimension(Dimension::DimensionX).size() );
-    const unsigned int M = static_cast<unsigned int> ( spaceDimension(Dimension::DimensionY).size() );
+    const double hx = _spaceDimensionX.step();
+    const double hy = _spaceDimensionY.step();
+    const unsigned int N = static_cast<unsigned int> ( _spaceDimensionX.size() );
+    const unsigned int M = static_cast<unsigned int> ( _spaceDimensionY.size() );
 
     double sum = 0.0;
 
@@ -592,8 +586,8 @@ void ConjugateCdIHyperbolicIBVP1::Main(int argc UNUSED_PARAM, char **argv UNUSED
     chibvp.a = 1.0;
     chibvp.alpha = 0.1;
     chibvp.setTimeDimension(Dimension(0.005, 0, 200));
-    chibvp.addSpaceDimension(Dimension(0.01, 0, 100));
-    chibvp.addSpaceDimension(Dimension(0.01, 0, 100));
+    chibvp.setSpaceDimensionX(Dimension(0.01, 0, 100));
+    chibvp.setSpaceDimensionY(Dimension(0.01, 0, 100));
 
     DoubleMatrix p;
     //chibvp.explicit_calculate_D2V1(p, chibvp.a, chibvp.alpha);

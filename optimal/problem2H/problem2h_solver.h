@@ -51,13 +51,17 @@ protected:
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
 
 public:
+    void setDimension(const Dimension& dimensionX, const Dimension& dimensionY, const Dimension &timedimension);
+
     void setInitialConditionMatrix(const SpacePoint *zta, const double* q, unsigned int Nq);
     void clrInitialConditionMatrix();
 
     void initControlMeasurementDeltaGrid(unsigned int Nc, unsigned int No);
+    void distributeControlMeasurementDeltaGrid(const SpacePoint* eta, unsigned int Nc, const SpacePoint* ksi, unsigned int No);
     void prepareLayerMatrix(const DoubleMatrix &u, const TimeNodePDE& tn);
+    void clearControlMeasurementDeltaGrid();
 
-    void saveToTextF(const DoubleMatrix &, const TimeNodePDE &) const;
+    void save2TextFile(const DoubleMatrix &, const TimeNodePDE &) const;
 
 private:
     DoubleMatrix f_initialMatrix;
@@ -65,6 +69,8 @@ private:
 
     DeltaGrid2D *_deltaGridControl;
     DeltaGrid2D *_deltaGridMeasurement;
+
+    SpacePointInfo *u__info;
 };
 
 class PROBLEM2HSHARED_EXPORT Problem2HBackward : virtual public IConjugateWaveEquationIBVP, virtual public Problem2HCommon
@@ -80,15 +86,15 @@ protected:
 class PROBLEM2HSHARED_EXPORT Problem2HFunctional : virtual public Problem2HCommon {};
 
 class PROBLEM2HSHARED_EXPORT Problem2HSolver : virtual public Problem2HForward,
-                                               virtual public Problem2HBackward,
+                                               //virtual public Problem2HBackward,
                                                virtual public Problem2HFunctional
 {
 public:
-    static void Main(int argc, char** argv);
+    static void Main(int argc, char* argv[]);
 
     InitialBoundaryValueProblemPDE& ibvp() { return *(dynamic_cast<InitialBoundaryValueProblemPDE*>(this)); }
     Problem2HForward& fw()   { return *(dynamic_cast<Problem2HForward*>(this)); }
-    Problem2HBackward& bw()  { return *(dynamic_cast<Problem2HBackward*>(this)); }
+    //Problem2HBackward& bw()  { return *(dynamic_cast<Problem2HBackward*>(this)); }
 };
 
 #endif // PROBLEM2H_SOLVER1_H
