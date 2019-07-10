@@ -3,6 +3,9 @@
 
 #include <global.h>
 #include <vector>
+#include <math.h>
+#include <cstdio>
+#include <float.h>
 
 enum class FiniteDifference
 {

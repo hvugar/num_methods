@@ -149,13 +149,13 @@ double Problem2HForward::initial(const SpaceNodePDE &sn, InitialCondition condit
         return 0.0;
 }
 
-double Problem2HForward::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM, BoundaryConditionPDE &condition) const
+double Problem2HForward::boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &condition) const
 {
     condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet);
     return 0.0;
 }
 
-double Problem2HForward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+double Problem2HForward::f(const SpaceNodePDE &sn, const TimeNodePDE &) const
 {
     return f_layerMatrix[static_cast<unsigned int>(sn.j)][static_cast<unsigned int>(sn.i)];
 }
@@ -222,23 +222,20 @@ void Problem2HForward::clrInitialConditionMatrix()
     f_initialMatrix.clear();
 }
 
-void Problem2HForward::initControlMeasurementDeltaGrid(std::vector<SpacePoint> &eta, std::vector<SpacePoint> &ksi)
+void Problem2HForward::initControlMeasurementDeltaGrid(unsigned int Nc, unsigned int No)
 {
-    this->Nc = static_cast<unsigned int>(eta.size());
-    this->eta.resize(Nc);
-    for (unsigned int i=0; i<Nc; i++)
-    {
-        this->eta[i].resetGrid();
-        this->eta[i].distributeGauss(eta[i], 1, 1);
-    }
+    const Dimension &dimensionX = spaceDimension(Dimension::DimensionX);
+    const Dimension &dimensionY = spaceDimension(Dimension::DimensionY);
+    const unsigned int N = static_cast<unsigned int>(dimensionX.size());
+    const unsigned int M = static_cast<unsigned int>(dimensionY.size());
+    const double hx = dimensionX.step();
+    const double hy = dimensionY.step();
 
-    this->No = static_cast<unsigned int>(ksi.size());
-    this->ksi.resize(No);
-    for (unsigned int j=0; j<No; j++)
-    {
-        this->ksi[j].resetGrid();
-        this->ksi[j].distributeGauss(ksi[j], 1, 1);
-    }
+    _deltaGridControl = new DeltaGrid2D[Nc];
+    for (unsigned int i=0; i<Nc; i++) _deltaGridControl[i].initGrid(N, hx, M, hy);
+
+    _deltaGridMeasurement = new DeltaGrid2D[No];
+    for (unsigned int j=0; j<No; j++) _deltaGridMeasurement[j].initGrid(N, hx, M, hy);
 }
 
 void Problem2HForward::prepareLayerMatrix(const DoubleMatrix &u, const TimeNodePDE& tn)

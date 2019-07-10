@@ -31,8 +31,6 @@ public:
     DoubleMatrix k;
     DoubleMatrix z;
 
-    DoubleMatrix f_initialMatrix;
-    DoubleMatrix f_layerMatrix;
     DoubleMatrix b_initialMatrix;
     DoubleMatrix b_layerMatrix;
 
@@ -56,10 +54,17 @@ public:
     void setInitialConditionMatrix(const SpacePoint *zta, const double* q, unsigned int Nq);
     void clrInitialConditionMatrix();
 
-    void initControlMeasurementDeltaGrid(std::vector<SpacePoint> &eta, std::vector<SpacePoint> &ksi);
+    void initControlMeasurementDeltaGrid(unsigned int Nc, unsigned int No);
     void prepareLayerMatrix(const DoubleMatrix &u, const TimeNodePDE& tn);
 
     void saveToTextF(const DoubleMatrix &, const TimeNodePDE &) const;
+
+private:
+    DoubleMatrix f_initialMatrix;
+    DoubleMatrix f_crLayerMatrix;
+
+    DeltaGrid2D *_deltaGridControl;
+    DeltaGrid2D *_deltaGridMeasurement;
 };
 
 class PROBLEM2HSHARED_EXPORT Problem2HBackward : virtual public IConjugateWaveEquationIBVP, virtual public Problem2HCommon
@@ -75,12 +80,14 @@ protected:
 class PROBLEM2HSHARED_EXPORT Problem2HFunctional : virtual public Problem2HCommon {};
 
 class PROBLEM2HSHARED_EXPORT Problem2HSolver : virtual public Problem2HForward,
-                                               virtual public Problem2HBackward
+                                               virtual public Problem2HBackward,
+                                               virtual public Problem2HFunctional
 {
 public:
     static void Main(int argc, char** argv);
 
-    Problem2HForward& fw() { return *(dynamic_cast<Problem2HForward*>(this)); }
+    InitialBoundaryValueProblemPDE& ibvp() { return *(dynamic_cast<InitialBoundaryValueProblemPDE*>(this)); }
+    Problem2HForward& fw()   { return *(dynamic_cast<Problem2HForward*>(this)); }
     Problem2HBackward& bw()  { return *(dynamic_cast<Problem2HBackward*>(this)); }
 };
 
