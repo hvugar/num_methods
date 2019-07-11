@@ -526,7 +526,7 @@ const double& DoubleMatrix::operator()(unsigned int row, unsigned int col) const
 DoubleMatrix& DoubleMatrix::operator =(const DoubleMatrix &m)
 {
     // the matrix object holds reusable storage, such as a heap-allocated buffer mData
-    puts("DoubleMatrix& DoubleMatrix::operator =(const DoubleMatrix &m)");
+    //puts("DoubleMatrix& DoubleMatrix::operator =(const DoubleMatrix &m)");
 
     if (this != &m) // self-assignment check expected
     {

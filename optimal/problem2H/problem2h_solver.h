@@ -6,7 +6,11 @@
 #include <grid/hibvp.h>
 #include <deltagrid.h>
 
-struct SpacePointInfo
+namespace Problem2H {
+
+};
+
+struct PROBLEM2HSHARED_EXPORT SpacePointInfo
 {
     std::vector<double> vl;
     std::vector<double> dx;
@@ -14,87 +18,90 @@ struct SpacePointInfo
     unsigned int length;
 };
 
-class Problem2HCommon
+class PROBLEM2HSHARED_EXPORT Problem2HCommon
 {
 public:
-    //unsigned int Nq;
-    //std::vector<double> q;
-    //std::vector<DeltaGrid2D> zta;
+    virtual ~Problem2HCommon();
 
-    unsigned int Nc;
-    unsigned int No;
-    std::vector<DeltaGrid2D> eta;
-    std::vector<SpacePointInfo> p_info;
-    std::vector<DeltaGrid2D> ksi;
-    std::vector<SpacePointInfo> u_info;
-
-    DoubleMatrix k;
-    DoubleMatrix z;
-
-    DoubleMatrix b_initialMatrix;
-    DoubleMatrix b_layerMatrix;
+    virtual void setParameterCounts(unsigned int Nc, unsigned No, const Dimension &dimensionX, const Dimension &dimensionY, const Dimension &timeDimension);
+    virtual void setOptimizedParameters(const DoubleMatrix &k, const DoubleMatrix &z, const std::vector<SpacePoint> &eta, const std::vector<SpacePoint> &ksi);
+    //virtual void setOptimizedParameters(const DoubleVector &x);
+    virtual void distributeControlDeltaGrid();
+    virtual void distributeMeasurementDeltaGrid();
 
     unsigned int Nt;
     std::vector<TimeNodePDE> times;
 
-    void initMatrixes(const Dimension &dimensionX, const Dimension &dimensionY, const Dimension &timeDimension, unsigned int Nq, unsigned int Nc, unsigned No);
-    void clearMatrixes();
+protected:
+    unsigned int Nq;
+    double* q;
+    DeltaGrid2D* zta;
+
+    unsigned int Nc;
+    unsigned int No;
+    std::vector<SpacePoint> eta;
+    std::vector<SpacePoint> ksi;
+    DoubleMatrix k;
+    DoubleMatrix z;
+
+    DeltaGrid2D *_deltaGridControl;
+    SpacePointInfo *p_info;
+    DeltaGrid2D *_deltaGridMeasurement;
+    SpacePointInfo *u_info;
 };
 
-class PROBLEM2HSHARED_EXPORT Problem2HForward : virtual public IWaveEquationIBVP, virtual public Problem2HCommon
+class PROBLEM2HSHARED_EXPORT Problem2HWaveEquationIBVP : virtual public IWaveEquationIBVP, virtual public Problem2HCommon
 {
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
-
 public:
-    void setDimension(const Dimension& dimensionX, const Dimension& dimensionY, const Dimension &timedimension);
+    virtual void setSpaceDimensions(const Dimension &dimensionX, const Dimension &dimensionY);
 
     void setInitialConditionMatrix(const SpacePoint *zta, const double* q, unsigned int Nq);
     void clrInitialConditionMatrix();
 
-    void initControlMeasurementDeltaGrid(unsigned int Nc, unsigned int No);
-    void distributeControlMeasurementDeltaGrid(const SpacePoint* eta, unsigned int Nc, const SpacePoint* ksi, unsigned int No);
-    void prepareLayerMatrix(const DoubleMatrix &u, const TimeNodePDE& tn);
-    void clearControlMeasurementDeltaGrid();
-
-    void save2TextFile(const DoubleMatrix &, const TimeNodePDE &) const;
-
 private:
+    void layerInfoPrepareLayerMatrix(const DoubleMatrix &u, const TimeNodePDE& tn);
+    void layerInfoSave2TextFile(const DoubleMatrix &, const TimeNodePDE &) const;
+
     DoubleMatrix f_initialMatrix;
     DoubleMatrix f_crLayerMatrix;
-
-    DeltaGrid2D *_deltaGridControl;
-    DeltaGrid2D *_deltaGridMeasurement;
-
-    SpacePointInfo *u__info;
 };
 
-class PROBLEM2HSHARED_EXPORT Problem2HBackward : virtual public IConjugateWaveEquationIBVP, virtual public Problem2HCommon
+class PROBLEM2HSHARED_EXPORT Problem2HConjugateWaveEquationIBVP : virtual public IConjugateWaveEquationIBVP, virtual public Problem2HCommon
 {
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
+    virtual void setSpaceDimensions(const Dimension &dimensionX, const Dimension &dimensionY);
+
+private:
+    DoubleMatrix b_initialMatrix;
+    DoubleMatrix b_crLayerMatrix;
 };
 
 class PROBLEM2HSHARED_EXPORT Problem2HFunctional : virtual public Problem2HCommon {};
 
-class PROBLEM2HSHARED_EXPORT Problem2HSolver : virtual public Problem2HForward,
-                                               //virtual public Problem2HBackward,
-                                               virtual public Problem2HFunctional
+class PROBLEM2HSHARED_EXPORT Problem2HSolver : virtual protected Problem2HWaveEquationIBVP,
+                                               virtual protected Problem2HConjugateWaveEquationIBVP,
+                                               virtual protected Problem2HFunctional
 {
 public:
     static void Main(int argc, char* argv[]);
 
-    InitialBoundaryValueProblemPDE& ibvp() { return *(dynamic_cast<InitialBoundaryValueProblemPDE*>(this)); }
-    Problem2HForward& fw()   { return *(dynamic_cast<Problem2HForward*>(this)); }
-    //Problem2HBackward& bw()  { return *(dynamic_cast<Problem2HBackward*>(this)); }
+    void setDimensions(const Dimension &dimensionX, const Dimension &dimensionY, const Dimension &timeDimension);
+    void setEquationParameters(double waveSpeed, double waveDissipation);
+
+    Problem2HWaveEquationIBVP& fw()   { return *(dynamic_cast<Problem2HWaveEquationIBVP*>(this)); }
+    Problem2HConjugateWaveEquationIBVP& bw()  { return *(dynamic_cast<Problem2HConjugateWaveEquationIBVP*>(this)); }
+
+private:
+
 };
 
 #endif // PROBLEM2H_SOLVER1_H

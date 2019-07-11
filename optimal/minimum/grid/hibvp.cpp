@@ -5,6 +5,16 @@
 IWaveEquationIBVP::IWaveEquationIBVP(double waveSpeed, double waveDissipation) :
     _waveSpeed(waveSpeed), _waveDissipation(waveDissipation) {}
 
+IWaveEquationIBVP::IWaveEquationIBVP(const IWaveEquationIBVP& ibvp) :
+    _waveSpeed(ibvp._waveSpeed), _waveDissipation(ibvp._waveDissipation) {}
+
+IWaveEquationIBVP& IWaveEquationIBVP::operator =(const IWaveEquationIBVP& other)
+{
+    this->_waveSpeed = other._waveSpeed;
+    this->_waveDissipation = other._waveDissipation;
+    return *this;
+}
+
 IWaveEquationIBVP::~IWaveEquationIBVP() {}
 
 double IWaveEquationIBVP::waveSpeed() const { return _waveSpeed; }
@@ -803,16 +813,16 @@ void IWaveEquationIBVP::implicit_calculate_D2V1_border(DoubleMatrix &u05, Double
 
 //--------------------------------------------------------------------------------------------------------------//
 
-//IConjugateWaveEquationIBVP::IConjugateWaveEquationIBVP(double waveSpeed, double waveDissipation)
-//    : _waveSpeed(waveSpeed), _waveDissipation(waveDissipation) {}
+IConjugateWaveEquationIBVP::IConjugateWaveEquationIBVP(double waveSpeed, double waveDissipation)
+    : _waveSpeed(waveSpeed), _waveDissipation(waveDissipation) {}
 
-//double IConjugateWaveEquationIBVP::waveSpeed() const  { return _waveSpeed; }
+double IConjugateWaveEquationIBVP::waveSpeed() const  { return _waveSpeed; }
 
-//double IConjugateWaveEquationIBVP::waveDissipation() const { return _waveDissipation; }
+double IConjugateWaveEquationIBVP::waveDissipation() const { return _waveDissipation; }
 
-//void IConjugateWaveEquationIBVP::setWaveSpeed(double waveSpeed) { _waveSpeed = waveSpeed; }
+void IConjugateWaveEquationIBVP::setWaveSpeed(double waveSpeed) { _waveSpeed = waveSpeed; }
 
-//void IConjugateWaveEquationIBVP::setWaveDissipation(double waveDissipation) { _waveDissipation = waveDissipation; }
+void IConjugateWaveEquationIBVP::setWaveDissipation(double waveDissipation) { _waveDissipation = waveDissipation; }
 
 void IConjugateWaveEquationIBVP::explicit_calculate_D1V1() const {}
 

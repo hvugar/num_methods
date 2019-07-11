@@ -2,23 +2,22 @@
 
 void Problem2HSolver::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
 {
-    Problem2HForward ps;
-    Dimension dimensionX(0.01, 0, 100);
-    Dimension dimensionY(0.01, 0, 100);
-    Dimension dimensionT(0.01, 0, 1000);
+    Problem2HSolver ps;
+    ps.setDimensions(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, 300));
+    ps.setEquationParameters(1.0, 0.0);
 
-    //ps.setTimeDimension(dimensionT);
-    //ps.setSpaceDimensionX(dimensionX);
-    //ps.setSpaceDimensionY(dimensionY);
-    ps.initMatrixes(dimensionX, dimensionY, dimensionT, 2, 2, 2);
-
-    ps.setDimension(dimensionX, dimensionY, dimensionT);
-
-    ps.setWaveSpeed(1.0);
-    ps.setWaveDissipation(0.01);
-
-    ps.k.resize(2, 2, -1.0);
-    ps.z.resize(2, 2, +0.0);
+    ps.Nt = 10;
+    ps.times.resize(ps.Nt);
+    ps.times[0] = TimeNodePDE(30, 0.3);
+    ps.times[1] = TimeNodePDE(60, 0.6);
+    ps.times[2] = TimeNodePDE(90, 0.9);
+    ps.times[3] = TimeNodePDE(120, 1.2);
+    ps.times[4] = TimeNodePDE(150, 1.5);
+    ps.times[5] = TimeNodePDE(180, 1.8);
+    ps.times[6] = TimeNodePDE(210, 2.1);
+    ps.times[7] = TimeNodePDE(240, 2.4);
+    ps.times[8] = TimeNodePDE(270, 2.7);
+    ps.times[9] = TimeNodePDE(300, 3.0);
 
     unsigned int Nq = 2;
     SpacePoint* zta = new SpacePoint[2];
@@ -29,127 +28,128 @@ void Problem2HSolver::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
     q[1] = 0.05;
     ps.setInitialConditionMatrix(zta, q, Nq);
 
-    SpacePoint* eta = new SpacePoint[2];
+    std::vector<SpacePoint> eta(2);
     eta[0] = SpacePoint(0.65, 0.34);
     eta[1] = SpacePoint(0.25, 0.75);
 
-    SpacePoint* ksi = new SpacePoint[2];
+    std::vector<SpacePoint> ksi(2);
     ksi[0] = SpacePoint(0.22, 0.54);
     ksi[1] = SpacePoint(0.82, 0.27);
 
-    ps.initControlMeasurementDeltaGrid(2, 2);
-    ps.distributeControlMeasurementDeltaGrid(eta, 2, ksi, 2);
-    ps.implicit_calculate_D2V1();
-    ps.clearControlMeasurementDeltaGrid();
-    puts("OK");
+    DoubleMatrix k(2, 2, -1.0);
+    DoubleMatrix z(2, 2, +0.0);
+
+    ps.setParameterCounts(2, 2, ps.Problem2HWaveEquationIBVP::spaceDimensionX(),
+                                ps.Problem2HWaveEquationIBVP::spaceDimensionY(),
+                                ps.Problem2HWaveEquationIBVP::timeDimension());
+    ps.setOptimizedParameters(k, z, eta, ksi);
+    ps.distributeControlDeltaGrid();
+    ps.distributeMeasurementDeltaGrid();
+
+    ps.Problem2HWaveEquationIBVP::implicit_calculate_D2V1();
 
     delete [] q;
     delete [] zta;
+
+    puts("Finished");
 }
 
-//Problem2HForward& Problem2HSolver::forward()
-//{
-//    return *this;
-//}
-
-//Problem2HBackward& Problem2HSolver::backward()
-//{
-//    return *this;
-//}
-
-void Problem2HCommon::initMatrixes(const Dimension &dimensionX, const Dimension &dimensionY, const Dimension &timeDimension UNUSED_PARAM,
-                                   unsigned int Nq, unsigned int Nc, unsigned No)
+void Problem2HSolver::setDimensions(const Dimension &dimensionX, const Dimension &dimensionY, const Dimension &timeDimension)
 {
-    uint32_t N = static_cast<uint32_t>(dimensionX.size());
-    uint32_t M = static_cast<uint32_t>(dimensionY.size());
-    uint32_t L = static_cast<uint32_t>(timeDimension.size());
-    double hx = dimensionX.step();
-    double hy = dimensionY.step();
-    uint32_t length = 2*L + 1;
+    Problem2HWaveEquationIBVP::setTimeDimension(timeDimension);
+    Problem2HWaveEquationIBVP::setSpaceDimensions(dimensionX, dimensionY);
 
-//    f_initialMatrix.clear();
-//    f_initialMatrix.resize(M+1, N+1, 0.0);
+    Problem2HConjugateWaveEquationIBVP::setTimeDimension(timeDimension);
+    Problem2HConjugateWaveEquationIBVP::setSpaceDimensions(dimensionX, dimensionY);
+}
 
-//    f_layerMatrix.clear();
-//    f_layerMatrix.resize(M+1, N+1, 0.0);
+void Problem2HSolver::setEquationParameters(double waveSpeed, double waveDissipation)
+{
+    Problem2HWaveEquationIBVP::setWaveSpeed(waveSpeed);
+    Problem2HWaveEquationIBVP::setWaveDissipation(waveDissipation);
 
-    b_initialMatrix.clear();
-    b_initialMatrix.resize(M+1, N+1, 0.0);
+    Problem2HConjugateWaveEquationIBVP::setWaveSpeed(waveSpeed);
+    Problem2HConjugateWaveEquationIBVP::setWaveDissipation(waveDissipation);
+}
 
-    b_layerMatrix.clear();
-    b_layerMatrix.resize(M+1, N+1, 0.0);
+void Problem2HWaveEquationIBVP::setSpaceDimensions(const Dimension &dimensionX, const Dimension &dimensionY)
+{
+    IWaveEquationIBVP::setSpaceDimensions(dimensionX, dimensionY);
+    f_initialMatrix.resize(static_cast<unsigned int>(dimensionY.size())+1, static_cast<unsigned int>(dimensionX.size())+1, 0.0);
+    f_crLayerMatrix.resize(static_cast<unsigned int>(dimensionY.size())+1, static_cast<unsigned int>(dimensionX.size())+1, 0.0);
+}
 
-    //    this->Nq = Nq;
-    //    this->zta.resize(Nq);
-    //    for (unsigned int i=0; i<Nq; i++)
-    //    {
-    //        this->zta[i].cleanGrid();
-    //        this->zta[i].initGrid(N, hx, M, hy);
-    //    }
+void Problem2HConjugateWaveEquationIBVP::setSpaceDimensions(const Dimension &dimensionX, const Dimension &dimensionY)
+{
+    InitialBoundaryValueProblemPDE::setSpaceDimensions(dimensionX, dimensionY);
+    b_initialMatrix.resize(static_cast<unsigned int>(dimensionY.size())+1, static_cast<unsigned int>(dimensionX.size())+1, 0.0);
+    b_crLayerMatrix.resize(static_cast<unsigned int>(dimensionY.size())+1, static_cast<unsigned int>(dimensionX.size())+1, 0.0);
+}
 
+Problem2HCommon::~Problem2HCommon() {}
+
+void Problem2HCommon::setParameterCounts(unsigned int Nc, unsigned int No, const Dimension &dimensionX, const Dimension &dimensionY, const Dimension &timeDimension)
+{
     this->Nc = Nc;
-    this->eta.resize(Nc);
-    this->p_info.resize(Nc);
+    this->No = No;
+
+    const unsigned int N = static_cast<unsigned int>(dimensionX.size());
+    const unsigned int M = static_cast<unsigned int>(dimensionY.size());
+    const unsigned int L = static_cast<unsigned int>(timeDimension.size());
+    const double hx = dimensionX.step();
+    const double hy = dimensionY.step();
+    const unsigned int length = 2*L+1;
+
+    _deltaGridControl = new DeltaGrid2D[Nc];
+    p_info = new SpacePointInfo[Nc];
     for (unsigned int i=0; i<Nc; i++)
     {
-        this->eta[i].cleanGrid();
-        this->eta[i].initGrid(N, hx, M, hy);
-        this->p_info[i].vl.resize(length);
-        this->p_info[i].dx.resize(length);
-        this->p_info[i].dy.resize(length);
+        _deltaGridControl[i].initGrid(N, hx, M, hy);
+        p_info[i].vl.resize(length);
+        p_info[i].dx.resize(length);
+        p_info[i].dy.resize(length);
     }
 
-    this->No = No;
-    this->ksi.resize(No);
-    this->u_info.resize(No);
+    _deltaGridMeasurement = new DeltaGrid2D[No];
+    u_info = new SpacePointInfo[No];
     for (unsigned int j=0; j<No; j++)
     {
-        this->ksi[j].cleanGrid();
-        this->ksi[j].initGrid(N, hx, M, hy);
-        this->u_info[j].vl.resize(length);
-        this->u_info[j].dx.resize(length);
-        this->u_info[j].dy.resize(length);
+        _deltaGridMeasurement[j].initGrid(N, hx, M, hy);
+        u_info[j].vl.resize(length);
+        u_info[j].dx.resize(length);
+        u_info[j].dy.resize(length);
     }
-
-    k.resize(Nc, No, -1.0);
-    z.resize(Nc, No, +0.0);
 }
 
-void Problem2HCommon::clearMatrixes()
+void Problem2HCommon::setOptimizedParameters(const DoubleMatrix &k, const DoubleMatrix &z, const std::vector<SpacePoint> &eta, const std::vector<SpacePoint> &ksi)
 {
-//    f_initialMatrix.clear();
-//    f_layerMatrix.clear();
-    b_initialMatrix.clear();
-    b_layerMatrix.clear();
+    this->k = k;
+    this->z = z;
+    this->eta = eta;
+    this->ksi = ksi;
+}
 
-    //    for (unsigned int i=0; i<Nq; i++) zta[i].cleanGrid(); Nq = 0;
-
+void Problem2HCommon::distributeControlDeltaGrid()
+{
     for (unsigned int i=0; i<Nc; i++)
     {
-        eta[i].cleanGrid();
-        p_info[i].vl.clear();
-        p_info[i].dx.clear();
-        p_info[i].dy.clear();
-        Nc = 0;
+        _deltaGridControl[i].resetGrid();
+        _deltaGridControl[i].distributeGauss(eta[i], 1, 1);
     }
-    eta.clear();
-    p_info.clear();
+}
 
+void Problem2HCommon::distributeMeasurementDeltaGrid()
+{
     for (unsigned int j=0; j<No; j++)
     {
-        ksi[j].cleanGrid();
-        u_info[j].vl.clear();
-        u_info[j].dx.clear();
-        u_info[j].dy.clear();
-        No = 0;
+        _deltaGridMeasurement[j].resetGrid();
+        _deltaGridMeasurement[j].distributeGauss(ksi[j], 1, 1);
     }
-    ksi.clear();
-    u_info.clear();
 }
 
 ///////////////////////////////////
 
-double Problem2HForward::initial(const SpaceNodePDE &sn, InitialCondition condition) const
+double Problem2HWaveEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition condition) const
 {
     if (condition == InitialCondition::FirstDerivative)
         return f_initialMatrix[static_cast<uint32_t>(sn.j)][static_cast<uint32_t>(sn.i)];
@@ -157,18 +157,18 @@ double Problem2HForward::initial(const SpaceNodePDE &sn, InitialCondition condit
         return 0.0;
 }
 
-double Problem2HForward::boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &condition) const
+double Problem2HWaveEquationIBVP::boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &condition) const
 {
     condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet);
     return 0.0;
 }
 
-double Problem2HForward::f(const SpaceNodePDE &sn, const TimeNodePDE &) const
+double Problem2HWaveEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &) const
 {
     return f_crLayerMatrix[static_cast<unsigned int>(sn.j)][static_cast<unsigned int>(sn.i)];
 }
 
-void Problem2HForward::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
+void Problem2HWaveEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
     if (tn.i == 0 || tn.i == 1 || tn.i == 2 || tn.i == 3)
     {
@@ -176,21 +176,11 @@ void Problem2HForward::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
         IPrinter::printSeperatorLine();
     }
 
-    Problem2HForward* pf = const_cast<Problem2HForward*>(this);
-    for (unsigned int j=0; j<No; j++)
-    {
-        double u_vl, u_dx, u_dy;
-        u_vl = _deltaGridMeasurement[j].lumpPointGauss(u, u_dx, u_dy);
-        pf->u__info[j].vl[tn.i] = u_vl;
-        pf->u__info[j].dx[tn.i] = u_dx;
-        pf->u__info[j].dy[tn.i] = u_dy;
-    }
-    const_cast<Problem2HForward*>(this)->prepareLayerMatrix(u, tn);
-
-    //save2TextFile(u, tn);
+    const_cast<Problem2HWaveEquationIBVP*>(this)->layerInfoPrepareLayerMatrix(u, tn);
+    layerInfoSave2TextFile(u, tn);
 }
 
-void Problem2HForward::save2TextFile(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn) const
+void Problem2HWaveEquationIBVP::layerInfoSave2TextFile(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn) const
 {
     static double MIN = +100000.0;
     static double MAX = -100000.0;
@@ -204,19 +194,7 @@ void Problem2HForward::save2TextFile(const DoubleMatrix &u UNUSED_PARAM, const T
     printf("Forward: %4d %0.3f %10.8f %10.8f %10.8f %10.8f %4d %4d\n", tn.i, tn.t, u.min(), u.max(), MIN, MAX, 0, 0);
 }
 
-void Problem2HForward::setDimension(const Dimension& dimensionX, const Dimension& dimensionY, const Dimension &timeDimension)
-{
-    setSpaceDimensionX(dimensionX);
-    setSpaceDimensionY(dimensionY);
-    setTimeDimension(timeDimension);
-
-    f_initialMatrix.resize(static_cast<unsigned int>(dimensionX.size())+1,
-                           static_cast<unsigned int>(dimensionY.size())+1);
-    f_crLayerMatrix.resize(static_cast<unsigned int>(dimensionX.size())+1,
-                           static_cast<unsigned int>(dimensionY.size())+1);
-}
-
-void Problem2HForward::setInitialConditionMatrix(const SpacePoint* zta, const double* q, unsigned int Nq)
+void Problem2HWaveEquationIBVP::setInitialConditionMatrix(const SpacePoint* zta, const double* q, unsigned int Nq)
 {
     const unsigned int N = static_cast<unsigned int>(_spaceDimensionX.size());
     const unsigned int M = static_cast<unsigned int>(_spaceDimensionY.size());
@@ -246,50 +224,12 @@ void Problem2HForward::setInitialConditionMatrix(const SpacePoint* zta, const do
     }
 }
 
-void Problem2HForward::clrInitialConditionMatrix()
+void Problem2HWaveEquationIBVP::clrInitialConditionMatrix()
 {
     f_initialMatrix.clear();
 }
 
-void Problem2HForward::initControlMeasurementDeltaGrid(unsigned int Nc, unsigned int No)
-{
-    const unsigned int N = static_cast<unsigned int>(_spaceDimensionX.size());
-    const unsigned int M = static_cast<unsigned int>(_spaceDimensionY.size());
-    const unsigned int L = static_cast<unsigned int>(_timeDimension.size());
-    const double hx = _spaceDimensionX.step();
-    const double hy = _spaceDimensionY.step();
-    const unsigned int length = 2*L+1;
-
-    _deltaGridControl = new DeltaGrid2D[Nc];
-    for (unsigned int i=0; i<Nc; i++) _deltaGridControl[i].initGrid(N, hx, M, hy);
-
-    _deltaGridMeasurement = new DeltaGrid2D[No];
-    u__info = new SpacePointInfo[No];
-    for (unsigned int j=0; j<No; j++)
-    {
-        _deltaGridMeasurement[j].initGrid(N, hx, M, hy);
-
-        u__info[j].vl.resize(length);
-        u__info[j].dx.resize(length);
-        u__info[j].dy.resize(length);
-    }
-}
-
-void Problem2HForward::distributeControlMeasurementDeltaGrid(const SpacePoint *eta, unsigned int Nc, const SpacePoint *ksi, unsigned int No)
-{
-    for (unsigned int i=0; i<Nc; i++)
-    {
-        _deltaGridControl[i].resetGrid();
-        _deltaGridControl[i].distributeGauss(eta[i], 1, 1);
-    }
-    for (unsigned int j=0; j<No; j++)
-    {
-        _deltaGridMeasurement[j].resetGrid();
-        _deltaGridMeasurement[j].distributeGauss(ksi[j], 1, 1);
-    }
-}
-
-void Problem2HForward::prepareLayerMatrix(const DoubleMatrix &u, const TimeNodePDE& tn)
+void Problem2HWaveEquationIBVP::layerInfoPrepareLayerMatrix(const DoubleMatrix &u, const TimeNodePDE& tn)
 {
     //const Dimension &dimensionX = spaceDimension(Dimension::DimensionX);
     //const Dimension &dimensionY = spaceDimension(Dimension::DimensionY);
@@ -299,6 +239,15 @@ void Problem2HForward::prepareLayerMatrix(const DoubleMatrix &u, const TimeNodeP
     //unsigned int M = static_cast<unsigned int>(dimensionY.size());
     //unsigned int L = static_cast<unsigned int>(time.size());
     double ht = time.step();
+
+    for (unsigned int j=0; j<No; j++)
+    {
+        double u_vl, u_dx, u_dy;
+        u_vl = _deltaGridMeasurement[j].lumpPointGauss(u, u_dx, u_dy);
+        u_info[j].vl[tn.i] = u_vl;
+        u_info[j].dx[tn.i] = u_dx;
+        u_info[j].dy[tn.i] = u_dy;
+    }
 
     for (unsigned int s=0; s<Nt; s++)
     {
@@ -312,7 +261,7 @@ void Problem2HForward::prepareLayerMatrix(const DoubleMatrix &u, const TimeNodeP
             v[i] = 0.0;
             for (unsigned int j=0; j<No; j++)
             {
-                v[i] += k.at(i,j) * (u__info[j].vl[tn.i]-z.at(i,j));
+                v[i] += k.at(i,j) * (u_info[j].vl[tn.i]-z.at(i,j));
             }
         }
 
@@ -328,7 +277,7 @@ void Problem2HForward::prepareLayerMatrix(const DoubleMatrix &u, const TimeNodeP
                 for (unsigned int n=minX; n<=maxX; n++)
                 {
                     if (i==0) f_crLayerMatrix[m][n] = 0.0;
-                    f_crLayerMatrix[m][n] += v[i] * eta[i].weight(n, m);
+                    f_crLayerMatrix[m][n] += v[i] * _deltaGridControl[i].weight(n, m);
                 }
             }
         }
@@ -337,34 +286,23 @@ void Problem2HForward::prepareLayerMatrix(const DoubleMatrix &u, const TimeNodeP
     }
 }
 
-void Problem2HForward::clearControlMeasurementDeltaGrid()
-{
-//    for (unsigned int i=0; i<Nc; i++) _deltaGridControl[i].cleanGrid();s
-//    for (unsigned int j=0; j<No; j++) _deltaGridMeasurement[j].cleanGrid();
-
-//    delete [] _deltaGridControl;
-//    delete [] _deltaGridMeasurement;
-}
-
-///////////////////////////////////
-
-double Problem2HBackward::initial(const SpaceNodePDE &, InitialCondition) const
+double Problem2HConjugateWaveEquationIBVP::initial(const SpaceNodePDE &, InitialCondition) const
 {
     return 0.0;
 }
 
-double Problem2HBackward::boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &condition) const
+double Problem2HConjugateWaveEquationIBVP::boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &condition) const
 {
     condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet);
     return 0.0;
 }
 
-double Problem2HBackward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+double Problem2HConjugateWaveEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
-    return b_layerMatrix[static_cast<unsigned int>(sn.j)][static_cast<unsigned int>(sn.i)];
+    return b_crLayerMatrix[static_cast<unsigned int>(sn.j)][static_cast<unsigned int>(sn.i)];
 }
 
-void Problem2HBackward::layerInfo(const DoubleMatrix &, const TimeNodePDE &) const
+void Problem2HConjugateWaveEquationIBVP::layerInfo(const DoubleMatrix &, const TimeNodePDE &) const
 {
 
 }

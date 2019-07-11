@@ -17,11 +17,6 @@ InitialBoundaryValueProblemPDE& InitialBoundaryValueProblemPDE::operator =(const
 
 InitialBoundaryValueProblemPDE::~InitialBoundaryValueProblemPDE() {}
 
-//auto InitialBoundaryValueProblemPDE::dimSize() const -> unsigned int
-//{
-//    return static_cast<unsigned>(mspaceDimension.size());
-//}
-
 auto InitialBoundaryValueProblemPDE::setTimeDimension(const Dimension &dimension) -> void
 {
     _timeDimension = dimension;
@@ -62,12 +57,15 @@ auto InitialBoundaryValueProblemPDE::spaceDimensionZ() const -> const Dimension&
     return _spaceDimensionZ;
 }
 
-//auto InitialBoundaryValueProblemPDE::addSpaceDimension(const Dimension &dimension) -> void
-//{
-//    mspaceDimension.push_back(dimension);
-//}
+auto InitialBoundaryValueProblemPDE::setSpaceDimensions(const Dimension& dimensionX, const Dimension& dimensionY) -> void
+{
+    this->_spaceDimensionX = dimensionX;
+    this->_spaceDimensionY = dimensionY;
+}
 
-//auto InitialBoundaryValueProblemPDE::spaceDimension(Dimension::SpaceDimension dim) const -> const Dimension&
-//{
-//    return mspaceDimension.at(dim-1);
-//}
+auto InitialBoundaryValueProblemPDE::setSpaceDimensions(const Dimension& dimensionX, const Dimension& dimensionY, const Dimension& dimensionZ) -> void
+{
+    this->_spaceDimensionX = dimensionX;
+    this->_spaceDimensionY = dimensionY;
+    this->_spaceDimensionZ = dimensionZ;
+}

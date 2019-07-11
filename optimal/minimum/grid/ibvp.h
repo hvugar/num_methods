@@ -39,9 +39,8 @@ public:
     virtual auto setSpaceDimensionZ(const Dimension &dimension) -> void;
     virtual auto spaceDimensionZ() const -> const Dimension&;
 
-    //virtual auto addSpaceDimension(const Dimension &dimension) -> void;
-    //virtual auto spaceDimension(Dimension::SpaceDimension dim) const -> const Dimension&;
-    //virtual auto dimSize() const -> unsigned int;
+    virtual auto setSpaceDimensions(const Dimension& dimensionX, const Dimension& dimensionY) -> void;
+    virtual auto setSpaceDimensions(const Dimension& dimensionX, const Dimension& dimensionY, const Dimension& dimensionZ) -> void;
 
 protected:
     Dimension _timeDimension;
