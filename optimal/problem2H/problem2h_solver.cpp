@@ -1,5 +1,70 @@
 ﻿#include "problem2h_solver.h"
 
+SpacePointInfo::SpacePointInfo(unsigned int length)
+    : point(SpacePoint(0.0, 0.0)), length(length), vl(nullptr), dx(nullptr), dy(nullptr)
+{
+    if (length == 0) return;
+    vl = new double[length];
+    dx = new double[length];
+    dy = new double[length];
+}
+
+SpacePointInfo::SpacePointInfo(const SpacePoint &point, unsigned int length)
+    : point(point), length(length), vl(nullptr), dx(nullptr), dy(nullptr)
+{
+    if (length == 0) return;
+    vl = new double[length];
+    dx = new double[length];
+    dy = new double[length];
+}
+
+SpacePointInfo::SpacePointInfo(const SpacePointInfo& spi)
+{
+    if (length != 0) { this->~SpacePointInfo(); }
+
+    if (spi.length == 0) return;
+
+    point = spi.point;
+    length = spi.length;
+    vl = new double[length]; memcpy(vl, spi.vl, sizeof (double)*length);
+    dx = new double[length]; memcpy(dx, spi.dx, sizeof (double)*length);
+    dy = new double[length]; memcpy(dy, spi.dy, sizeof (double)*length);
+}
+
+void SpacePointInfo::clear()
+{
+    point.x = 0.0;
+    point.y = 0.0;
+    delete [] dy; dy = nullptr;
+    delete [] dx; dx = nullptr;
+    delete [] vl; vl = nullptr;
+    length = 0;
+}
+
+SpacePointInfo& SpacePointInfo::operator=(const SpacePointInfo& other)
+{
+    if (this == &other) return *this;
+
+    if (length != 0) { this->clear(); }
+
+    if (other.length == 0) return *this;
+
+    length = other.length;
+    point = other.point;
+    vl = new double[length]; memcpy(vl, other.vl, sizeof (double)*length);
+    dx = new double[length]; memcpy(dx, other.dx, sizeof (double)*length);
+    dy = new double[length]; memcpy(dy, other.dy, sizeof (double)*length);
+
+    return *this;
+}
+
+SpacePointInfo::~SpacePointInfo()
+{
+    clear();
+}
+
+/**************************************************************************************************/
+
 void Problem2HSolver::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
 {
 
@@ -7,14 +72,14 @@ void Problem2HSolver::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
     ps.L = 300;
     ps.D = 30;
     ps.setDimensions(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, static_cast<int>(ps.L+ps.D)));
-    ps.setEquationParameters(1.0, 0.0);
+    ps.setEquationParameters(1.0, 0.01);
     ps.u_list.resize(61);
 
     ps.Nt = 10;
-    ps.times.resize(ps.Nt);
-    ps.times[0] = TimeNodePDE(30, 0.3);
-    ps.times[1] = TimeNodePDE(60, 0.6);
-    ps.times[2] = TimeNodePDE(90, 0.9);
+    ps.times = new TimeNodePDE[ps.Nt];
+    ps.times[0] = TimeNodePDE(30,  0.3);
+    ps.times[1] = TimeNodePDE(60,  0.6);
+    ps.times[2] = TimeNodePDE(90,  0.9);
     ps.times[3] = TimeNodePDE(120, 1.2);
     ps.times[4] = TimeNodePDE(150, 1.5);
     ps.times[5] = TimeNodePDE(180, 1.8);
@@ -25,35 +90,127 @@ void Problem2HSolver::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
 
     const unsigned int initialPulsesCount = 2;
     InitialPulse *initialPulses = new InitialPulse[initialPulsesCount];
-    initialPulses[0] = { SpacePoint(0.25, 0.25), 0.05 };
-    initialPulses[1] = { SpacePoint(0.75, 0.75), 0.05 };
-    ps.Problem2HWaveEquationIBVP::setInitialConditionMatrix(initialPulses, initialPulsesCount);
-    //delete [] initialPulses;
+    initialPulses[0] = { SpacePoint(0.25, 0.25), 0.05, 1.0, 1.0, nullptr, 0 };
+    initialPulses[0].pulsesCount = 1;
+    initialPulses[0].pulses = new InitialPulse[initialPulses[0].pulsesCount];
+    initialPulses[0].pulses[0] = { initialPulses[0] };
 
-    std::vector<SpacePoint> eta(2);
+    initialPulses[1] = { SpacePoint(0.75, 0.75), 0.05, 1.0, 1.0, nullptr, 0 };
+    initialPulses[1].pulsesCount = 1;
+    initialPulses[1].pulses = new InitialPulse[initialPulses[0].pulsesCount];
+    initialPulses[1].pulses[0] = { initialPulses[1] };
+
+    ps.Problem2HWaveEquationIBVP::setInitialConditionMatrix(initialPulses, initialPulsesCount);
+    delete [] initialPulses;
+
+    const unsigned int No = 3;
+    SpacePoint *ksi = new SpacePoint[No];
+    ksi[0] = SpacePoint(0.22, 0.54);
+    ksi[1] = SpacePoint(0.82, 0.27);
+    ksi[2] = SpacePoint(0.53, 0.49);
+
+    const unsigned int Nc = 2;
+    SpacePoint *eta = new SpacePoint[Nc];
     eta[0] = SpacePoint(0.65, 0.34);
     eta[1] = SpacePoint(0.25, 0.75);
 
-    std::vector<SpacePoint> ksi(2);
-    ksi[0] = SpacePoint(0.22, 0.54);
-    ksi[1] = SpacePoint(0.82, 0.27);
+    DoubleMatrix k(Nc, No, +0.1000);
+    DoubleMatrix z(Nc, No, +0.0010);
 
-    DoubleMatrix k(2, 2, -0.01);
-    DoubleMatrix z(2, 2, +0.00);
+    k[0][0] = -0.5412; k[0][1] = -0.8412; k[0][2] = +0.5745;
+    k[1][0] = -0.8259; k[1][1] = +0.8482; k[1][2] = +0.3751;
 
-    ps.setParameterCounts(2, 2, ps.Problem2HWaveEquationIBVP::spaceDimensionX(),
+    z[0][0] = -0.0084; k[0][1] = -0.0075; k[0][2] = -0.0075;
+    z[1][0] = -0.0035; k[1][1] = +0.0025; k[1][2] = +0.0031;
+
+
+    //0.296510  0.226919 -0.164383  0.278036  0.249470 -0.162896
+    //0.005318  0.004234  0.002723  0.004196  0.005967  0.002715
+    //0.213261  0.403003  0.769606  0.177168  0.541237  0.509405
+    //0.680720  0.310453  0.289475  0.693594
+
+    ps.setParameterCounts(Nc, No, ps.Problem2HWaveEquationIBVP::spaceDimensionX(),
                           ps.Problem2HWaveEquationIBVP::spaceDimensionY(),
                           ps.Problem2HWaveEquationIBVP::timeDimension());
-    ps.setOptimizedParameters(k, z, eta, ksi);
+    ps.setOptimizedParameters(k, z, ksi, eta);
+    for (unsigned int i=0; i<Nc; i++) { ps.vmin[i] = -0.005; ps.vmax[i] = +0.005; }
+    ps.r = 0.0;
 
-    checkGradient3(ps);
+    k.clear();
+    z.clear();
+    delete [] ksi;
+    delete [] eta;
+
+    DoubleMatrix rk(Nc, No, +0.0);
+    DoubleMatrix rz(Nc, No, +0.0);
+
+    //0.296510  0.226919 -0.164383  0.278036  0.249470 -0.162896
+    //0.005318  0.004234  0.002723  0.004196  0.005967  0.002715
+    //0.213261  0.403003  0.769606  0.177168  0.541237  0.509405
+    //0.680720  0.310453  0.289475  0.693594
+
+    //0.296507  0.227309 -0.164533  0.278259  0.249848 -0.163175
+    //0.005301  0.004221  0.002733  0.004178  0.005951  0.002725
+    //0.213246  0.402770  0.769548  0.177138  0.541246  0.509347
+    //0.680737  0.310386  0.289555  0.693593
+
+    ps.r_k.resize(Nc, No, +0.0);
+    ps.r_k[0][0] = +0.296507; ps.r_k[0][1] = +0.227309; ps.r_k[0][2] = -0.164533;
+    ps.r_k[1][0] = +0.278259; ps.r_k[1][1] = +0.249848; ps.r_k[1][2] = -0.163175;
+
+    ps.r_z = DoubleMatrix(Nc, No, +0.0);
+    ps.r_z[0][0] = +0.005301; ps.r_z[0][1] = +0.004221; ps.r_z[0][2] = +0.002733;
+    ps.r_z[1][0] = +0.004178; ps.r_z[1][1] = +0.005951; ps.r_z[1][2] = +0.002725;
+
+    ps.r_ksi = new SpacePoint[No];
+    ps.r_ksi[0] = SpacePoint(0.213246, 0.402770);
+    ps.r_ksi[1] = SpacePoint(0.769548, 0.177138);
+    ps.r_ksi[2] = SpacePoint(0.541246, 0.509347);
+
+    ps.r_eta = new SpacePoint[Nc];
+    ps.r_eta[0] = SpacePoint(0.680737, 0.310386);
+    ps.r_eta[1] = SpacePoint(0.289555, 0.693593);
+    ps.regEpsilon1 = ps.regEpsilon2 = ps.regEpsilon3 = ps.regEpsilon4 = 0.01;
+
+    //checkGradient3(ps);
 
     //ps.distributeControlDeltaGrid();
     //ps.distributeMeasurementDeltaGrid();
 
     //ps.Problem2HWaveEquationIBVP::implicit_calculate_D2V1();
 
+    SteepestDescentGradient g;
+    //ConjugateGradient g;
+    g.setFunction(&ps);
+    g.setGradient(&ps);
+    g.setPrinter(&ps);
+    g.setProjection(&ps);
+    //g.setProjection(new ProjectionEx1);
+    //g.setGradientNormalizer(&prob);
+    g.setOptimalityTolerance(0.0);
+    g.setFunctionTolerance(0.0);
+    g.setStepTolerance(0.0);
+    g.setR1MinimizeEpsilon(0.01, 0.001);
+    g.setMaxIterations(500);
+    g.setNormalize(true);
+    g.showExitMessage(true);
+
+    DoubleVector x;
+    ps.OptimalParameterToVector(x);
+
+    IPrinter::printSeperatorLine();
+    DoubleVector pv;
+    ps.OptimalParameterToVector(pv);
+    printf("ok: "); IPrinter::print(pv.mid(0,  5), pv.mid(0,  5).length(), 9, 6);
+    printf("oz: "); IPrinter::print(pv.mid(6, 11), pv.mid(6, 11).length(), 9, 6);
+    printf("xy: "); IPrinter::print(pv.mid(12,21), pv.mid(12,21).length(), 9, 6);
+    IPrinter::printSeperatorLine();
+
+    g.calculate(x);
+
     puts("Finished");
+
+    delete [] ps.times;
 }
 
 void Problem2HSolver::checkGradient3(const Problem2HSolver &prob)
@@ -61,27 +218,25 @@ void Problem2HSolver::checkGradient3(const Problem2HSolver &prob)
     IPrinter::printSeperatorLine();
     DoubleVector pv;
     prob.OptimalParameterToVector(pv);
-    printf("ok: "); IPrinter::print(pv.mid(0,  3), pv.mid(0,  3).length(), 9, 6);
-    printf("oz: "); IPrinter::print(pv.mid(4,  7), pv.mid(4,  7).length(), 9, 6);
-    printf("xy: "); IPrinter::print(pv.mid(8, 15), pv.mid(8, 15).length(), 9, 6);
+    printf("ok: "); IPrinter::print(pv.mid(0,  5), pv.mid(0,  5).length(), 9, 6);
+    printf("oz: "); IPrinter::print(pv.mid(6, 11), pv.mid(6, 11).length(), 9, 6);
+    printf("xy: "); IPrinter::print(pv.mid(12,21), pv.mid(12,21).length(), 9, 6);
     IPrinter::printSeperatorLine();
 
-//    DoubleVector rv;
-//    prob.equaPrm.RegularParameterToVector(rv);
-//    printf("rk: "); IPrinter::print(rv.mid(0,  3), rv.mid(0,  3).length(), 9, 6);
-//    printf("rz: "); IPrinter::print(rv.mid(4,  7), rv.mid(4,  7).length(), 9, 6);
-//    printf("xy: "); IPrinter::print(rv.mid(8, 15), rv.mid(8, 15).length(), 9, 6);
-//    IPrinter::printSeperatorLine();
+    //    DoubleVector rv;
+    //    prob.equaPrm.RegularParameterToVector(rv);
+    //    printf("rk: "); IPrinter::print(rv.mid(0,  3), rv.mid(0,  3).length(), 9, 6);
+    //    printf("rz: "); IPrinter::print(rv.mid(4,  7), rv.mid(4,  7).length(), 9, 6);
+    //    printf("xy: "); IPrinter::print(rv.mid(8, 15), rv.mid(8, 15).length(), 9, 6);
+    //    IPrinter::printSeperatorLine();
 
     DoubleVector ag(pv.length());
     double functional = prob.fx(pv);
     printf("Functional: %f\n", functional);
     puts("Calculating gradients....");
-    //const_cast<Problem2HDirichletDelta&>(prob).printLayers = false;
     prob.gradient(pv, ag);
-    //const_cast<Problem2HDirichletDelta&>(prob).printLayers = false;
     puts("Gradients are calculated.");
-    //    return;
+    //return;
 
     DoubleVector ng1(pv.length(), 0.0);
     DoubleVector ng2(pv.length(), 0.0);
@@ -191,48 +346,63 @@ void Problem2HSolver::checkGradient3(const Problem2HSolver &prob)
 
 double Problem2HSolver::fx(const DoubleVector &x) const
 {
+    double SUM = 0.0;
     Problem2HSolver* solver = const_cast<Problem2HSolver*>(this);
     solver->OptimalParameterFromVector(x);
+    solver->setOptimizedParameters(k, z, ksi, eta);
+    solver->Problem2HWaveEquationIBVP::setInitialConditionMatrix(this->initialPulses, this->initialPulsesCount);
+    SUM += fx_one(x, solver);
+    return SUM;
+}
 
-    //const DoubleVector &Q1 = funcPrm.Q1;
-    //const DoubleVector &Q2 = funcPrm.Q2;
-    //std::vector<InitialPulse2D> &pulses = prob->equaPrm.pulses;
+double Problem2HSolver::fx_one(const DoubleVector &, Problem2HSolver *solver) const
+{
+    solver->u_list.clear();
+    solver->Problem2HWaveEquationIBVP::implicit_calculate_D2V1();
 
-    //const double regEpsilon = funcPrm.regEpsilon;
-    //const double r = funcPrm.r;
+    double sum = integral(u_list);
+#ifdef USE_NORM
+    sum += fx_norm();
+#endif
+#ifdef USE_PENALTY
+    sum += r*penalty();
+#endif
+    for (unsigned int i=0; i<u_list.size(); i++)
+        solver->u_list[i].clear();
+    solver->u_list.clear();
+    return sum;
+}
 
-    double SUM = 0.0;
-    //for (unsigned int q1=0; q1<Q1.length(); q1++)
+double Problem2HSolver::fx_norm() const
+{
+    double norm = 0.0;
+
+    double norm_k = 0.0;
+    double norm_z = 0.0;
+    double norm_o = 0.0;
+    double norm_c = 0.0;
+    for (unsigned int i=0; i<Nc; i++)
     {
-        //pulses[0].q = Q1[q1];
-        //for (unsigned int q2=0; q2<Q2.length(); q2++)
+        norm_c += (eta[i].x - r_eta[i].x)*(eta[i].x - r_eta[i].x);
+        norm_c += (eta[i].y - r_eta[i].y)*(eta[i].y - r_eta[i].y);
+        for (unsigned int j=0; j<No; j++)
         {
-            //pulses[1].q = Q2[q2];
-
-            solver->u_list.clear();
-            solver->Problem2HWaveEquationIBVP::setInitialConditionMatrix(initialPulses, initialPulsesCount);
-            solver->Problem2HWaveEquationIBVP::distributeControlDeltaGrid();
-            solver->Problem2HWaveEquationIBVP::distributeMeasurementDeltaGrid();
-            solver->Problem2HWaveEquationIBVP::implicit_calculate_D2V1();
-
-            double intgrl = integral(u_list);
-
-            //        double pnt = 0.0;
-            //#ifdef USE_PENALTY
-            //            pnt = penalty(u_info, equaPrm);
-            //#endif
-            //            double nrm = 0.0;
-            //#ifdef USE_NORM
-            //            nrm = norm(equaPrm);
-            //#endif
-            double sum = intgrl;// + regEpsilon*nrm + r*pnt;
-
-            for (unsigned int i=0; i<u_list.size(); i++) solver->u_list[i].clear(); solver->u_list.clear();
-
-            SUM += sum;// * (1.0/(double(Q1.length())*double(Q2.length())));
+            if (i==0)
+            {
+                norm_o += (ksi[j].x - r_ksi[j].x)*(ksi[j].x - r_ksi[j].x);
+                norm_o += (ksi[j].y - r_ksi[j].y)*(ksi[j].y - r_ksi[j].y);
+            }
+            norm_k += (k[i][j] - r_k[i][j])*(k[i][j] - r_k[i][j]);
+            norm_z += (z[i][j] - r_z[i][j])*(z[i][j] - r_z[i][j]);
         }
     }
-    return SUM;
+
+    norm += regEpsilon1*norm_k;
+    norm += regEpsilon2*norm_z;
+    norm += regEpsilon3*norm_o;
+    norm += regEpsilon4*norm_c;
+
+    return norm;
 }
 
 double Problem2HSolver::integral(const std::vector<DoubleMatrix> &vu) const
@@ -294,190 +464,186 @@ void Problem2HSolver::gradient(const DoubleVector &pv, DoubleVector &g) const
 {
     g.clear();
     g.resize(pv.length(), 0.0);
-
-    //const double regEpsilon = funcPrm.regEpsilon;
-    //const double r = funcPrm.r;
-
     Problem2HSolver* solver = const_cast<Problem2HSolver*>(this);
     solver->OptimalParameterFromVector(pv);
+    solver->setOptimizedParameters(k, z, ksi, eta);
+    solver->Problem2HWaveEquationIBVP::setInitialConditionMatrix(initialPulses, initialPulsesCount);
+    gradient_one(pv, g, solver);
+}
 
-    //    const DoubleVector &Q1 = funcPrm.Q1;
-    //    const DoubleVector &Q2 = funcPrm.Q2;
+void Problem2HSolver::gradient_one(const DoubleVector &, DoubleVector &g, Problem2HSolver* solver) const
+{
+    solver->u_list.clear();
+    solver->Problem2HWaveEquationIBVP::implicit_calculate_D2V1();
+    solver->Problem2HConjugateWaveEquationIBVP::implicit_calculate_D2V1();
+    solver->u_list.clear();
 
-    //for (unsigned int q1=0; q1<Q1.length(); q1++)
+    unsigned int gi = 0;
+
+    // k
+    if (optimizeK)
     {
-        //pulses[0].q = Q1[q1];
-        //for (unsigned int q2=0; q2<Q2.length(); q2++)
+        //puts("Calculating k gradients...");
+        for (unsigned int i=0; i<Nc; i++)
         {
-            //pulses[1].q = Q2[q2];
-
-            solver->u_list.clear();
-            solver->Problem2HWaveEquationIBVP::setInitialConditionMatrix(initialPulses, initialPulsesCount);
-            solver->Problem2HWaveEquationIBVP::distributeControlDeltaGrid();
-            solver->Problem2HWaveEquationIBVP::distributeMeasurementDeltaGrid();
-            solver->Problem2HWaveEquationIBVP::implicit_calculate_D2V1();
-
-            solver->Problem2HConjugateWaveEquationIBVP::implicit_calculate_D2V1();
-
-            unsigned int gi = 0;
-
-            // k
-            if (true)
+            const SpacePointInfo &eta_spi = eta_info[i];
+            for (unsigned int j=0; j<No; j++)
             {
-                //puts("Calculating k gradients...");
-                for (unsigned int i=0; i<Nc; i++)
+                const SpacePointInfo &ksi_spi = ksi_info[j];
+
+                double zij = z[i][j];
+
+                double grad_Kij = 0.0;
+                for (unsigned int s=0; s<Nt; s++)
                 {
-                    for (unsigned int j=0; j<No; j++)
-                    {
-                        double zij = z[i][j];
-
-                        double grad_Kij = 0.0;
-                        for (unsigned int s=0; s<Nt; s++)
-                        {
-                            const unsigned int ln = 2*solver->times[s].i;
-                            grad_Kij += -(u_info[j].vl[ln] - zij) * p_info[i].vl[ln];
+                    const unsigned int ln = 2*times[s].i;
+                    grad_Kij += -(ksi_spi.vl[ln] - zij) * eta_spi.vl[ln];
 #ifdef USE_PENALTY
-                            grad_Kij += -(uj.vl[ln] - zij) * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
+                    grad_Kij += -(ksi_spi.vl[ln] - zij) * 2.0*r*gpi(i,ln)*sgn(g0i(i,ln));
 #endif
-                        }
-
+                }
 
 #ifdef USE_NORM
-                        grad_Kij += +2.0*regEpsilon*(equaPrm.opt.k[s][i][j] - equaPrm.reg.k[s][i][j]);
+                grad_Kij += +2.0*regEpsilon1*(k[i][j] - r_k[i][j]);
 #endif
-                        g[gi++] += grad_Kij;// * (1.0/(double(Q1.length())*double(Q2.length())));
-                    }
-                }
+                g[gi++] += grad_Kij;
             }
-            else
+        }
+    }
+    else
+    {
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            for (unsigned int j=0; j<No; j++)
             {
-                for (unsigned int i=0; i<Nc; i++)
-                {
-                    for (unsigned int j=0; j<No; j++)
-                    {
-                        g[gi++] = 0.0;
-                    }
-                }
+                g[gi++] = 0.0;
             }
+        }
+    }
 
-            // z
-            if (true)
+    // z
+    if (optimizeZ)
+    {
+        //puts("Calculating z gradients...");
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            const SpacePointInfo &eta_spi = eta_info[i];
+            for (unsigned int j=0; j<No; j++)
             {
-                //puts("Calculating z gradients...");
-                for (unsigned int i=0; i<Nc; i++)
-                {
-                    for (unsigned int j=0; j<No; j++)
-                    {
-                        double grad_Zij = 0.0;
+                double grad_Zij = 0.0;
 
-                        double kij = k[i][j];
-                        for (unsigned int s=0; s<Nt; s++)
-                        {
-                            const unsigned int ln = 2*times[s].i;
-                            grad_Zij += kij * p_info[i].vl[ln];
+                double kij = k[i][j];
+                for (unsigned int s=0; s<Nt; s++)
+                {
+                    const unsigned int ln = 2*times[s].i;
+                    grad_Zij += kij * eta_spi.vl[ln];
 #ifdef USE_PENALTY
-                            grad_Zij += kij * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
+                    grad_Zij += kij * 2.0*r*gpi(i,ln)*sgn(g0i(i,ln));
 #endif
-                        }
+                }
 #ifdef USE_NORM
-                        grad_Zij += +2.0*regEpsilon*(equaPrm.opt.z[s][i][j] - equaPrm.opt.z[s][i][j]);
+                grad_Zij += +2.0*regEpsilon2*(z[i][j] - r_z[i][j]);
 #endif
-                        g[gi++] = grad_Zij;// * (1.0/(double(Q1.length())*double(Q2.length())));
-                    }
+                g[gi++] = grad_Zij;
+            }
+        }
+    }
+    else
+    {
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            for (unsigned int j=0; j<No; j++)
+            {
+                g[gi++] = 0.0;
+            }
+        }
+    }
+
+    // xi
+    if (optimizeO)
+    {
+        //puts("Calculating o gradients...");
+        for (unsigned int j=0; j<No; j++)
+        {
+            const SpacePointInfo &ksi_spi = ksi_info[j];
+
+            double gradXijX = 0.0;
+            double gradXijY = 0.0;
+
+            for (unsigned int s=0; s<Nt; s++)
+            {
+                const unsigned int ln = 2*times[s].i;
+                for (unsigned int i=0; i<Nc; i++)
+                {
+                    const SpacePointInfo &eta_spi = eta_info[i];
+
+                    double kij = k[i][j];
+
+                    gradXijX += -kij * ksi_spi.dx[ln] * eta_spi.vl[ln];
+                    gradXijY += -kij * ksi_spi.dy[ln] * eta_spi.vl[ln];
+#ifdef USE_PENALTY
+                    gradXijX += -kij * ksi_spi.dx[ln] * 2.0*r*gpi(i,ln)*sgn(g0i(i,ln));
+                    gradXijY += -kij * ksi_spi.dy[ln] * 2.0*r*gpi(i,ln)*sgn(g0i(i,ln));
+#endif
                 }
             }
-            else
-            {
-                    for (unsigned int i=0; i<Nc; i++)
-                    {
-                        for (unsigned int j=0; j<No; j++)
-                        {
-                            g[gi++] = 0.0;
-                        }
-                    }
-            }
+#ifdef USE_NORM
+            gradXijX += 2.0*regEpsilon3*(ksi[j].x - r_ksi[j].x);
+            gradXijY += 2.0*regEpsilon3*(ksi[j].y - r_ksi[j].y);
+#endif
 
-            // xi
-            if (true)
+            g[gi++] += gradXijX;
+            g[gi++] += gradXijY;
+        }
+    }
+    else
+    {
+        for (unsigned int j=0; j<No; j++)
+        {
+            g[gi++] = 0.0;
+            g[gi++] = 0.0;
+        }
+    }
+
+    // eta
+    if (optimizeC)
+    {
+        //puts("Calculating c gradients...");
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            const SpacePointInfo &eta_spi = eta_info[i];
+
+            double gradEtaiX = 0.0;
+            double gradEtaiY = 0.0;
+
+            for (unsigned int s=0; s<Nt; s++)
             {
-                //puts("Calculating o gradients...");
+                const unsigned int ln = 2*times[s].i;
                 for (unsigned int j=0; j<No; j++)
                 {
-                    double gradXijX = 0.0;
-                    double gradXijY = 0.0;
+                    const SpacePointInfo &ksi_spi = ksi_info[j];
 
-                    for (unsigned int s=0; s<Nt; s++)
-                    {
-                        const unsigned int ln = 2*solver->times[s].i;
-                        for (unsigned int i=0; i<Nc; i++)
-                        {
-                            double kij = k[i][j];
+                    double kij = k[i][j];
+                    double zij = z[i][j];
 
-                            gradXijX += kij * u_info[j].dx[ln] * p_info[i].vl[ln];
-                            gradXijY += kij * u_info[j].dy[ln] * p_info[i].vl[ln];
-#ifdef USE_PENALTY
-                            gradXijX += kij * uj.dx[ln] * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
-                            gradXijY += kij * uj.dy[ln] * 2.0*r*gpi(i,s,u_info,equaPrm)*sgn(g0i(i,s,u_info,equaPrm));
-#endif
-                        }
-                    }
+                    gradEtaiX += -kij * eta_spi.dx[ln] * (ksi_spi.vl[ln] - zij);
+                    gradEtaiY += -kij * eta_spi.dy[ln] * (ksi_spi.vl[ln] - zij);
+                }
+            }
 #ifdef USE_NORM
-                    gradXijX += 2.0*regEpsilon*(equaPrm.opt.ksi[j].x - equaPrm.reg.ksi[j].x);
-                    gradXijY += 2.0*regEpsilon*(equaPrm.opt.ksi[j].y - equaPrm.reg.ksi[j].y);
+            gradEtaiX += 2.0*regEpsilon4*(eta[i].x - r_eta[i].x);
+            gradEtaiY += 2.0*regEpsilon4*(eta[i].y - r_eta[i].y);
 #endif
-
-                    g[gi++] += gradXijX;// * (1.0/(double(Q1.length())*double(Q2.length())));
-                    g[gi++] += gradXijY;// * (1.0/(double(Q1.length())*double(Q2.length())));
-                }
-            }
-            else
-            {
-                for (unsigned int j=0; j<No; j++)
-                {
-                    g[gi++] = 0.0;
-                    g[gi++] = 0.0;
-                }
-            }
-
-            // eta
-            if (true)
-            {
-                //puts("Calculating c gradients...");
-                for (unsigned int i=0; i<Nc; i++)
-                {
-                    double gradEtaiX = 0.0;
-                    double gradEtaiY = 0.0;
-
-                    for (unsigned int s=0; s<Nt; s++)
-                    {
-                        const unsigned int ln = 2*times[s].i;
-                        for (unsigned int j=0; j<No; j++)
-                        {
-                            double kij = k[i][j];
-                            double zij = z[i][j];
-
-                            gradEtaiX += p_info[i].dx[ln] * kij * (u_info[j].vl[ln] - zij);
-                            gradEtaiY += p_info[i].dy[ln] * kij * (u_info[j].vl[ln] - zij);
-                        }
-                    }
-#ifdef USE_NORM
-                    gradEtaiX += 2.0*regEpsilon*(equaPrm.opt.eta[i].x - equaPrm.reg.eta[i].x);
-                    gradEtaiY += 2.0*regEpsilon*(equaPrm.opt.eta[i].y - equaPrm.reg.eta[i].y);
-#endif
-                    g[gi++] += gradEtaiX;// * (1.0/(double(Q1.length())*double(Q2.length())));
-                    g[gi++] += gradEtaiY;// * (1.0/(double(Q1.length())*double(Q2.length())));
-                }
-            }
-            else
-            {
-                for (unsigned int i=0; i<Nc; i++)
-                {
-                    g[gi++] = 0.0;
-                    g[gi++] = 0.0;
-                }
-            }
-
-            solver->u_list.clear();
+            g[gi++] += gradEtaiX;
+            g[gi++] += gradEtaiY;
+        }
+    }
+    else
+    {
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            g[gi++] = 0.0;
+            g[gi++] = 0.0;
         }
     }
 }
@@ -488,8 +654,12 @@ void Problem2HSolver::OptimalParameterFromVector(const DoubleVector &x)
 
     k.clear();   k.resize(Nc, No);
     z.clear();   z.resize(Nc, No);
-    ksi.clear(); ksi.resize(No);
-    eta.clear(); eta.resize(Nc);
+
+    if (ksi != nullptr) delete [] ksi;
+    if (eta != nullptr) delete [] eta;
+
+    ksi = new SpacePoint[No];
+    eta = new SpacePoint[Nc];
 
     for (unsigned int i=0; i<Nc; i++)
     {
@@ -573,64 +743,148 @@ void Problem2HSolver::setEquationParameters(double waveSpeed, double waveDissipa
     Problem2HConjugateWaveEquationIBVP::setWaveDissipation(waveDissipation);
 }
 
+void Problem2HSolver::project(DoubleVector &pv) const
+{
+    unsigned int start = 2*Nc*No;
+    unsigned int end = 2*Nc*No + 2*No + 2*Nc - 1;
+
+    for (unsigned int index = start; index <= end; index++)
+    {
+        if (pv[index] <= 0.05) pv[index] = 0.05;
+        if (pv[index] >= 0.95) pv[index] = 0.95;
+    }
+}
+
+void Problem2HSolver::project(DoubleVector &, unsigned int) {}
+
+void Problem2HSolver::print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const
+{
+    Problem2HSolver* solver = const_cast<Problem2HSolver*>(this);
+    solver->OptimalParameterFromVector(x);
+    solver->u_list.clear();
+    solver->Problem2HWaveEquationIBVP::implicit_calculate_D2V1();
+    double integr = solver->integral(u_list);
+    double nrm = solver->fx_norm();
+    double plty = solver->penalty();
+    for (unsigned int i=0; i<u_list.size(); i++)
+        solver->u_list[i].clear();
+    solver->u_list.clear();
+
+    printf("I[%d] %.8f %f %.8f %.8f %.8f\n", iteration, f, alpha, integr, nrm, plty);
+
+    printf("ok: "); IPrinter::print(x.mid(0,  5), x.mid(0,  5).length(), 9, 6);
+    printf("oz: "); IPrinter::print(x.mid(6, 11), x.mid(6, 11).length(), 9, 6);
+    printf("xy: "); IPrinter::print(x.mid(12,21), x.mid(12,21).length(), 9, 6);
+    IPrinter::printSeperatorLine();
+
+    //    if (iteration == 20)
+    //    {
+    //        Problem2HSolver *ps = const_cast<Problem2HSolver*>(this);
+    //        ps->regEpsilon1 = ps->regEpsilon2 = ps->regEpsilon3 = ps->regEpsilon4 = 0.0;
+    //    }
+}
+
+auto Problem2HSolver::penalty() const -> double
+{
+    double pnlt = 0.0;
+
+    for (unsigned int s=0; s<Nt; s++)
+    {
+        for (unsigned int i=0; i<Nc; i++)
+        {
+            double _gpi_s = gpi(i, 2*times[s].i);
+            pnlt += _gpi_s*_gpi_s;
+        }
+    }
+
+    return pnlt;
+}
+
+auto Problem2HSolver::gpi(unsigned int i, unsigned int ln) const -> double
+{
+    double gpi_ln = fabs( g0i(i, ln) ) - (vmax[i]-vmin[i])/2.0;
+    return gpi_ln > 0.0 ? gpi_ln : 0.0;
+}
+
+auto Problem2HSolver::g0i(unsigned int i, unsigned int ln) const -> double
+{
+    double vi = 0.0;
+
+    for (unsigned int j=0; j<No; j++) { vi += k[i][j] * ( ksi_info[j].vl[ln] - z[i][j] ); }
+
+    return (vmax[i]+vmin[i])/2.0 - vi;
+}
+
+/*********************************** Problem2HCommon********** ***********************************************************/
+
 Problem2HCommon::~Problem2HCommon() {}
 
-void Problem2HCommon::setParameterCounts(unsigned int Nc, unsigned int No, const Dimension &dimensionX, const Dimension &dimensionY, const Dimension &timeDimension)
+void Problem2HCommon::setParameterCounts(unsigned int Nc, unsigned int No, const Dimension &dimensionX,
+                                         const Dimension &dimensionY, const Dimension &timeDimension)
 {
+    const unsigned int length = 2*static_cast<unsigned int>(timeDimension.size())+1;
+
+    if (ksi_info != nullptr)
+    {
+        for (unsigned int j=0; j<this->No; j++) ksi_info[j].deltaGrid.cleanGrid();
+        delete [] ksi_info;
+        delete [] ksi;
+    }
+
+    if (eta_info != nullptr)
+    {
+        for (unsigned int i=0; i<this->Nc; i++) eta_info[i].deltaGrid.cleanGrid();
+        delete [] eta_info;
+        delete [] eta;
+    }
+
     this->Nc = Nc;
     this->No = No;
 
-    const unsigned int N = static_cast<unsigned int>(dimensionX.size());
-    const unsigned int M = static_cast<unsigned int>(dimensionY.size());
-    const unsigned int L = static_cast<unsigned int>(timeDimension.size());
-    const double hx = dimensionX.step();
-    const double hy = dimensionY.step();
-    const unsigned int length = 2*L+1;
+    if (vmin != nullptr) { delete [] vmin; }
+    vmin = new double[Nc];
 
-    _deltaGridControl = new DeltaGrid2D[Nc];
-    p_info = new SpacePointInfo[Nc];
-    for (unsigned int i=0; i<Nc; i++)
-    {
-        _deltaGridControl[i].initGrid(N, hx, M, hy);
-        p_info[i].vl.resize(length);
-        p_info[i].dx.resize(length);
-        p_info[i].dy.resize(length);
-    }
+    if (vmax != nullptr) { delete [] vmax; }
+    vmax = new double[Nc];
+    for (unsigned int i=0; i<Nc; i++) { vmin[i] = 0.0; vmax[i] = 0.0; }
 
-    _deltaGridMeasurement = new DeltaGrid2D[No];
-    u_info = new SpacePointInfo[No];
+    ksi = new SpacePoint[No];
+    ksi_info = new SpacePointInfo[No];
     for (unsigned int j=0; j<No; j++)
     {
-        _deltaGridMeasurement[j].initGrid(N, hx, M, hy);
-        u_info[j].vl.resize(length);
-        u_info[j].dx.resize(length);
-        u_info[j].dy.resize(length);
+        ksi_info[j] = SpacePointInfo(length);
+        ksi_info[j].deltaGrid.initGrid(dimensionX, dimensionY);
+    }
+
+    eta = new SpacePoint[Nc];
+    eta_info = new SpacePointInfo[Nc];
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        eta_info[i] = SpacePointInfo(length);
+        eta_info[i].deltaGrid.initGrid(dimensionX, dimensionY);
     }
 }
 
-void Problem2HCommon::setOptimizedParameters(const DoubleMatrix &k, const DoubleMatrix &z, const std::vector<SpacePoint> &eta, const std::vector<SpacePoint> &ksi)
+void Problem2HCommon::setOptimizedParameters(const DoubleMatrix &k, const DoubleMatrix &z,
+                                             const SpacePoint *ksi, const SpacePoint *eta)
 {
     this->k = k;
     this->z = z;
-    this->eta = eta;
-    this->ksi = ksi;
-}
 
-void Problem2HCommon::distributeControlDeltaGrid()
-{
-    for (unsigned int i=0; i<Nc; i++)
-    {
-        _deltaGridControl[i].resetGrid();
-        _deltaGridControl[i].distributeGauss(eta[i], 1, 1);
-    }
-}
-
-void Problem2HCommon::distributeMeasurementDeltaGrid()
-{
     for (unsigned int j=0; j<No; j++)
     {
-        _deltaGridMeasurement[j].resetGrid();
-        _deltaGridMeasurement[j].distributeGauss(ksi[j], 1, 1);
+        this->ksi[j] = ksi[j];
+        this->ksi_info[j].point = ksi[j];
+        //this->ksi_info[j].deltaGrid.reset();
+        this->ksi_info[j].deltaGrid.distributeGauss(ksi[j], 1, 1);
+    }
+
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        this->eta[i] = eta[i];
+        this->eta_info[i].point = eta[i];
+        //this->eta_info[i].deltaGrid.reset();
+        this->eta_info[i].deltaGrid.distributeGauss(eta[i], 1, 1);
     }
 }
 
@@ -652,6 +906,7 @@ double Problem2HWaveEquationIBVP::boundary(const SpaceNodePDE &, const TimeNodeP
 
 double Problem2HWaveEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &) const
 {
+    if (f_return_zero) return 0.0;
     return f_crLayerMatrix[static_cast<unsigned int>(sn.j)][static_cast<unsigned int>(sn.i)];
 }
 
@@ -665,14 +920,13 @@ void Problem2HWaveEquationIBVP::setSpaceDimensions(const Dimension &dimensionX, 
 void Problem2HWaveEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
     const_cast<Problem2HWaveEquationIBVP*>(this)->layerInfoPrepareLayerMatrix(u, tn);
-
-//    if (tn.i == 0 || tn.i == 1 || tn.i == 2 || tn.i == 3)
-//    {
-//        IPrinter::printMatrix(u);
-//        IPrinter::printSeperatorLine();
-//    }
-
     //layerInfoSave2TextFile(u, tn);
+
+    //    if (tn.i == 0 || tn.i == 1 || tn.i == 2 || tn.i == 3)
+    //    {
+    //        IPrinter::printMatrix(u);
+    //        IPrinter::printSeperatorLine();
+    //    }
 }
 
 void Problem2HWaveEquationIBVP::layerInfoSave2TextFile(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn) const
@@ -691,22 +945,32 @@ void Problem2HWaveEquationIBVP::layerInfoSave2TextFile(const DoubleMatrix &u UNU
 
 void Problem2HWaveEquationIBVP::setInitialConditionMatrix(InitialPulse *initialPulses, unsigned int initialPulsesCount)
 {
-    const unsigned int N = static_cast<unsigned int>(_spaceDimensionX.size());
-    const unsigned int M = static_cast<unsigned int>(_spaceDimensionY.size());
-    const double hx = _spaceDimensionX.step();
-    const double hy = _spaceDimensionY.step();
+    if (this->initialPulses == initialPulses) return;
 
-    this->initialPulses = initialPulses;
+    if (this->initialPulses != nullptr)
+    {
+        delete [] this->initialPulses;
+        this->initialPulses = nullptr;
+    }
+
     this->initialPulsesCount = initialPulsesCount;
+    this->initialPulses = new InitialPulse[initialPulsesCount];
 
     for (unsigned int s=0; s<initialPulsesCount; s++)
     {
-        InitialPulse &initialPulse = initialPulses[s];
+        this->initialPulses[s].point = initialPulses[s].point;
+        this->initialPulses[s].blow = initialPulses[s].blow;
+    }
+
+    f_initialMatrix.reset();
+
+    for (unsigned int s=0; s<initialPulsesCount; s++)
+    {
+        const InitialPulse &initialPulse = this->initialPulses[s];
 
         DeltaGrid2D deltaGrid;
-        deltaGrid.initGrid(N, hx, M, hy);
+        deltaGrid.initGrid(_spaceDimensionX, _spaceDimensionY);
         deltaGrid.distributeGauss(initialPulse.point, 5, 5);
-
         const unsigned minX = deltaGrid.minX();
         const unsigned maxX = deltaGrid.maxX();
         const unsigned minY = deltaGrid.minY();
@@ -738,16 +1002,20 @@ void Problem2HWaveEquationIBVP::layerInfoPrepareLayerMatrix(const DoubleMatrix &
     for (unsigned int j=0; j<No; j++)
     {
         double u_vl, u_dx, u_dy;
-        u_vl = _deltaGridMeasurement[j].lumpPointGauss(u, u_dx, u_dy);
-        u_info[j].vl[tn.i] = u_vl;
-        u_info[j].dx[tn.i] = u_dx;
-        u_info[j].dy[tn.i] = u_dy;
+        u_vl = ksi_info[j].deltaGrid.lumpPointGauss(u, u_dx, u_dy);
+        ksi_info[j].vl[tn.i] = u_vl;
+        ksi_info[j].dx[tn.i] = u_dx;
+        ksi_info[j].dy[tn.i] = u_dy;
     }
+
+    f_return_zero = true;
 
     for (unsigned int s=0; s<Nt; s++)
     {
         double wt = 0.0;
         if (tn.i == 2*times[s].i) { wt = 2.0/ht; } else { continue; }
+
+        if (f_return_zero) { f_crLayerMatrix.reset(); f_return_zero = false; }
 
         double* v = new double[Nc];
 
@@ -756,23 +1024,23 @@ void Problem2HWaveEquationIBVP::layerInfoPrepareLayerMatrix(const DoubleMatrix &
             v[i] = 0.0;
             for (unsigned int j=0; j<No; j++)
             {
-                v[i] += k.at(i,j) * (u_info[j].vl[tn.i]-z.at(i,j));
+                v[i] += k.at(i,j) * (ksi_info[j].vl[tn.i]-z[i][j]);
             }
         }
 
         for (unsigned int i=0; i<Nc; i++)
         {
-            const unsigned minX = _deltaGridControl[i].minX();
-            const unsigned maxX = _deltaGridControl[i].maxX();
-            const unsigned minY = _deltaGridControl[i].minY();
-            const unsigned maxY = _deltaGridControl[i].maxY();
+            const unsigned minX = eta_info[i].deltaGrid.minX();
+            const unsigned maxX = eta_info[i].deltaGrid.maxX();
+            const unsigned minY = eta_info[i].deltaGrid.minY();
+            const unsigned maxY = eta_info[i].deltaGrid.maxY();
 
             for (unsigned int m=minY; m<=maxY; m++)
             {
                 for (unsigned int n=minX; n<=maxX; n++)
                 {
                     if (i==0) f_crLayerMatrix[m][n] = 0.0;
-                    f_crLayerMatrix[m][n] += v[i] * _deltaGridControl[i].weight(n, m) * wt;
+                    f_crLayerMatrix[m][n] += v[i] * eta_info[i].deltaGrid.weight(n, m) * wt;
                 }
             }
         }
@@ -823,10 +1091,10 @@ void Problem2HConjugateWaveEquationIBVP::layerInfoPrepareLayerMatrix(const Doubl
     for (unsigned int i=0; i<Nc; i++)
     {
         double p_vl, p_dx, p_dy;
-        p_vl = _deltaGridControl[i].lumpPointGauss(p, p_dx, p_dy);
-        p_info[i].vl[tn.i] = p_vl;
-        p_info[i].dx[tn.i] = p_dx;
-        p_info[i].dy[tn.i] = p_dy;
+        p_vl = eta_info[i].deltaGrid.lumpPointGauss(p, p_dx, p_dy);
+        eta_info[i].vl[tn.i] = p_vl;
+        eta_info[i].dx[tn.i] = p_dx;
+        eta_info[i].dy[tn.i] = p_dy;
     }
 
     if (tn.i >= 600)
@@ -842,13 +1110,7 @@ void Problem2HConjugateWaveEquationIBVP::layerInfoPrepareLayerMatrix(const Doubl
     }
     else
     {
-        for (unsigned int m=0; m<=M; m++)
-        {
-            for (unsigned int n=0; n<=N; n++)
-            {
-                b_crLayerMatrix[m][n] = 0.0;
-            }
-        }
+        b_crLayerMatrix.reset();
     }
 
     for (unsigned int s=0; s<Nt; s++)
@@ -858,27 +1120,28 @@ void Problem2HConjugateWaveEquationIBVP::layerInfoPrepareLayerMatrix(const Doubl
 
         double* w = new double[No];
 
-        for (unsigned int i=0; i<No; i++)
+        for (unsigned int j=0; j<No; j++)
         {
-            w[i] = 0.0;
-            for (unsigned int j=0; j<No; j++)
+            w[j] = 0.0;
+            for (unsigned int i=0; i<Nc; i++)
             {
-                w[i] += k.at(i,j) * p_info[j].vl[tn.i];
+                w[j] += k.at(i,j) * eta_info[i].vl[tn.i];
             }
         }
 
-        for (unsigned int j=0; j<Nc; j++)
+        for (unsigned int j=0; j<No; j++)
         {
-            const unsigned minX = _deltaGridMeasurement[j].minX();
-            const unsigned maxX = _deltaGridMeasurement[j].maxX();
-            const unsigned minY = _deltaGridMeasurement[j].minY();
-            const unsigned maxY = _deltaGridMeasurement[j].maxY();
+            const unsigned minX = ksi_info[j].deltaGrid.minX();
+            const unsigned maxX = ksi_info[j].deltaGrid.maxX();
+            const unsigned minY = ksi_info[j].deltaGrid.minY();
+            const unsigned maxY = ksi_info[j].deltaGrid.maxY();
 
             for (unsigned int m=minY; m<=maxY; m++)
             {
                 for (unsigned int n=minX; n<=maxX; n++)
                 {
-                    b_crLayerMatrix[m][n] += w[j] * _deltaGridMeasurement[j].weight(n, m) * wt;
+                    if (j==0) b_crLayerMatrix[m][n] = 0.0;
+                    b_crLayerMatrix[m][n] += w[j] * ksi_info[j].deltaGrid.weight(n, m) * wt;
                 }
             }
         }

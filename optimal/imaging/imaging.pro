@@ -1,7 +1,8 @@
-TARGET = imaging
+TARGET   = imaging
 TEMPLATE = lib
-CONFIG += shared
-CONFIG -= app_bundle
+CONFIG  += shared
+CONFIG  -= app_bundle
+CONFIG  += c++11
 
 QT     += core gui widgets
 

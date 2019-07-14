@@ -1,5 +1,7 @@
 TEMPLATE = subdirs
 CONFIG += ordered
+CONFIG += -std=c++11
+CONFIG += c++11
 
 SUBDIRS += minimum
 #SUBDIRS += rnfunction
@@ -12,7 +14,7 @@ SUBDIRS += minimum
 #SUBDIRS += imager
 SUBDIRS += imaging
 SUBDIRS += border
-#SUBDIRS += problem0H
+SUBDIRS += problem0H
 #SUBDIRS += problem1
 #SUBDIRS += problem2P
 #SUBDIRS += problem1H

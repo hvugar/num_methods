@@ -1,9 +1,10 @@
-TARGET = problem2H
+TARGET  = problem2H
 TEMPLATE = lib
 CONFIG  += console
 CONFIG  -= app_bundle
 CONFIG  -= qt
 CONFIG  += shared
+CONFIG  += c++11
 
 DEFINES += PROBLEM2H_LIBRARY
 
@@ -64,13 +65,7 @@ win32-msvc* {
     CONFIG(debug, debug|release) { }
 }
 
-HEADERS += problem2h_global.h \
-           problem2h_common.h
-
-SOURCES += problem2h_common.cpp
-
-#HEADERS += problem2h_solver_delta.h
-#SOURCES += problem2h_solver_delta.cpp
+HEADERS += problem2h_global.h
 
 HEADERS += problem2h_solver.h
 SOURCES += problem2h_solver.cpp

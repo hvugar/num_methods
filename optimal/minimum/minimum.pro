@@ -4,6 +4,7 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += shared
+CONFIG += c++11
 
 DEFINES += MINIMUM_LIBRARY
 
@@ -35,6 +36,8 @@ unix {
     CONFIG(release, debug|release) {}
     CONFIG(debug, debug|release) {}
 }
+
+
 
 SOURCES += \
     function.cpp \

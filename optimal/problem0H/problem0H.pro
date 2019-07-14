@@ -1,9 +1,10 @@
-TARGET = problem0H
+TARGET   = problem0H
 TEMPLATE = lib
 CONFIG  += console
 CONFIG  -= app_bundle
 CONFIG  -= qt
 CONFIG  += shared
+CONFIG  += c++11
 
 DEFINES += PROBLEM0H_LIBRARY
 

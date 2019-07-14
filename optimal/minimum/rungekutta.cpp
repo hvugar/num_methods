@@ -148,8 +148,11 @@ void RungeKutta::calculate(R2FunctionX f, double x0, double y0, DoubleVector &y,
     }
 }
 
-void CauchyProblem2::rungeKutta(CauchyProblem2 *cp, double x0 UNUSED_PARAM, double y0 UNUSED_PARAM, double h, unsigned int N, DoubleVector &y)
+void CauchyProblem2::rungeKutta(CauchyProblem2 *cp, double x0, double y0, double h, unsigned int N, DoubleVector &y)
 {
+    C_UNUSED(x0);
+    C_UNUSED(y0);
+
     if (abs(h) < DBL_EPSILON) return;
     y.clear();
     y.resize(N+1);
@@ -197,7 +200,7 @@ void CauchyProblem2::rungeKutta(CauchyProblem2 *cp, double x0 UNUSED_PARAM, doub
 
 void CauchyProblem2::rungeKutta(std::vector<CauchyProblem2*> cps, double x0, double h, unsigned int N, DoubleMatrix &my)
 {
-    unsigned int M = cps.size();
+    unsigned int M = static_cast<unsigned int>(cps.size());
     my.clear();
     my.resize(M, N+1);
 
@@ -279,7 +282,7 @@ void CauchyProblem2::rungeKutta(std::vector<CauchyProblem2*> cps, double x0, dou
 
 void CauchyProblem2::euler1(std::vector<CauchyProblem2 *> cps, double x0, double h, unsigned int N, DoubleMatrix &m)
 {
-    unsigned int C = cps.size();
+    unsigned int C = static_cast<unsigned int>(cps.size());
     m.clear();
     m.resize(C, N+1);
 

@@ -1,15 +1,35 @@
 #include "deltagrid.h"
 
-DeltaGridException::DeltaGridException(const std::string &msg) : message(msg) {}
-
-const char* DeltaGridException::what() const noexcept
-{
-    std::string msg = "DeltaGridException: " + message;
-    return msg.data();
-}
-
 DeltaGrid2D::DeltaGrid2D() : _N(0), _M(0), _hx(0.0), _hy(0.0),
     _minX(0), _maxX(0), _minY(0), _maxY(0) {}
+
+DeltaGrid2D::DeltaGrid2D(const DeltaGrid2D& other)
+{
+    this->_N = other._N;
+    this->_M = other._M;
+    this->_hx = other._hx;
+    this->_hy = other._hy;
+    this->_minX = other._minX;
+    this->_maxX = other._maxX;
+    this->_minY = other._minY;
+    this->_maxY = other._maxY;
+
+}
+
+DeltaGrid2D& DeltaGrid2D::operator =(const DeltaGrid2D& other)
+{
+    if (this == &other) { return *this; }
+
+    this->_N = other._N;
+    this->_M = other._M;
+    this->_hx = other._hx;
+    this->_hy = other._hy;
+    this->_minX = other._minX;
+    this->_maxX = other._maxX;
+    this->_minY = other._minY;
+    this->_maxY = other._maxY;
+    return *this;
+}
 
 DeltaGrid2D::~DeltaGrid2D() { cleanGrid(); }
 
@@ -32,24 +52,41 @@ auto DeltaGrid2D::initGrid(unsigned int N, double hx, unsigned int M, double hy)
         for (unsigned int n=0; n<=N; n++) m_der_x[m][n] = 0.0;
         for (unsigned int n=0; n<=N; n++) m_der_y[m][n] = 0.0;
     }
-
-    _rows = new bool[M+1]; for (unsigned int m=0; m<=M; m++) _rows[m] = false;
-    _cols = new bool[N+1]; for (unsigned int n=0; n<=N; n++) _cols[n] = false;
 }
 
-auto DeltaGrid2D::resetGrid() -> void
+auto DeltaGrid2D::initGrid(const Dimension &dimensionX, const Dimension &dimensionY) -> void
+{
+    initGrid(static_cast<unsigned int>(dimensionX.size()), dimensionX.step(),
+             static_cast<unsigned int>(dimensionY.size()), dimensionY.step());
+}
+
+auto DeltaGrid2D::reset() -> void
 {
     for (unsigned int m=_minY; m<=_maxY; m++)
     {
         for (unsigned int n=_minX; n<=_maxX; n++)
         {
-            m_nodes[m][n] = 0.0;
+            m_nodes[m][n] = m_der_x[m][n] = m_der_y[m][n] = 0.0;
         }
     }
 }
 
+auto DeltaGrid2D::resetAll() -> void
+{
+    for (unsigned int m=0; m<=_M; m++)
+    {
+        for (unsigned int n=0; n<=_N; n++)
+        {
+            m_nodes[m][n] = m_der_x[m][n] = m_der_y[m][n] = 0.0;
+        }
+    }
+}
+
+
 auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned int nodeX_per_sigmaX, unsigned int nodeY_per_sigmaY) -> void
 {
+    reset();
+
     unsigned int kx = 4 * nodeX_per_sigmaX;
     unsigned int ky = 4 * nodeY_per_sigmaY;
 
@@ -60,9 +97,7 @@ auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned int nodeX_per_s
     _ry = static_cast<unsigned int>( round(sp.y*_M) );
 
     if (_rx < kx || _ry < ky || _rx > _N-kx || _ry > _M-ky)
-        throw DeltaGridException("Point:["+std::to_string(sp.x)+","+std::to_string(sp.y)+"]");
-
-    resetGrid();
+        throw delta_grid_exception(std::string("Point:["+std::to_string(sp.x)+","+std::to_string(sp.y)+"]"));
 
     _p = sp;
 
@@ -91,11 +126,6 @@ auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned int nodeX_per_s
     double factor = 1.0/(2.0*M_PI*sigma);
     //    double factor = 1.0/(2.0*M_PI*sigmaX*sigmaY);
 
-    for (unsigned int m=0; m<=_M; m++)
-    {
-        for (unsigned int n=0; n<=_N; n++) m_nodes[m][n] = 0.0;
-    }
-
     SpaceNodePDE sn;
     for (unsigned int m=_minY; m<=_maxY; m++)
     {
@@ -109,9 +139,6 @@ auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned int nodeX_per_s
             m_der_y[m][n] =  m_nodes[m][n] * (-(sn.y-sp.y)/(sigmaY*sigmaY));
         }
     }
-
-    for (unsigned int m=_minY; m<=_maxY; m++) _rows[m] = true;
-    for (unsigned int n=_minX; n<=_maxX; n++) _cols[n] = true;
 }
 
 auto DeltaGrid2D::lumpPointGauss(const DoubleMatrix &mx) const -> double
@@ -332,7 +359,7 @@ auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &u, unsigned int v) cons
         return pu;
     }
 
-    return NAN;
+    return pu;
 }
 
 auto DeltaGrid2D::derivativesInPoint(const DoubleMatrix &u, double &dx, double &dy, unsigned int v) const -> void
@@ -456,13 +483,10 @@ auto DeltaGrid2D::consentrateInPoint(const DoubleMatrix &m, double &dx, double &
 auto DeltaGrid2D::cleanGrid() -> void
 {
     if (_M==0 || _N == 0) return;
-    for (unsigned int m=0; m<=_M; m++) delete [] m_nodes[m];
-    for (unsigned int m=0; m<=_M; m++) { delete [] m_der_x[m]; delete [] m_der_y[m]; }
+    for (unsigned int m=0; m<=_M; m++) { delete [] m_nodes[m]; delete [] m_der_x[m]; delete [] m_der_y[m]; }
     delete [] m_nodes;
     delete [] m_der_x;
     delete [] m_der_y;
-    delete [] _rows;
-    delete [] _cols;
     _N = 0;
     _M = 0;
 }
@@ -534,7 +558,7 @@ auto DeltaGrid1D::distributeGauss(const SpacePoint& sp, unsigned sigmaXNum) -> v
 
     _rx = static_cast<unsigned int>( round(sp.x*_N) );
 
-    if (_rx < kx || _rx > _N-kx) throw DeltaGridException(std::to_string(sp.x));
+    if (_rx < kx || _rx > _N-kx) throw delta_grid_exception(std::to_string(sp.x));
 
     _p = sp;
 

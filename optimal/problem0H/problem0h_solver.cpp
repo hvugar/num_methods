@@ -216,14 +216,12 @@ Problem0HCommon::~Problem0HCommon() {}
 auto Problem0HFunctional::setDimension(const Dimension &timeDimension, const Dimension &dimensionX, const Dimension &dimensionY) -> void
 {
     Problem0HForward::setTimeDimension(timeDimension);
-    Problem0HForward::addSpaceDimension(dimensionX);
-    Problem0HForward::addSpaceDimension(dimensionY);
+    Problem0HForward::setSpaceDimensions(dimensionX, dimensionY);
 
     Problem0HBckward::setTimeDimension(timeDimension);
-    Problem0HBckward::addSpaceDimension(dimensionX);
-    Problem0HBckward::addSpaceDimension(dimensionY);
+    Problem0HBckward::setSpaceDimensions(dimensionX, dimensionY);
 
-    const unsigned int L = static_cast<unsigned int> ( timeDimension.size() );
+    //const unsigned int L = static_cast<unsigned int> ( timeDimension.size() );
     const unsigned int N = static_cast<unsigned int> ( dimensionX.size() );
     const unsigned int M = static_cast<unsigned int> ( dimensionY.size() );
 
@@ -256,8 +254,8 @@ auto Problem0HFunctional::fx(const DoubleVector &x) const -> double
 auto Problem0HFunctional::integral1(const DoubleMatrix &) const -> double
 {
     //const Dimension &time = Problem0HForward::timeDimension();
-    const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
-    const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
+    const Dimension &dimX = Problem0HForward::spaceDimensionX();
+    const Dimension &dimY = Problem0HForward::spaceDimensionY();
     //const unsigned int L = static_cast<unsigned int> ( time.size() );
     const unsigned int N = static_cast<unsigned int> ( dimX.size() );
     const unsigned int M = static_cast<unsigned int> ( dimY.size() );
@@ -299,8 +297,8 @@ auto Problem0HFunctional::integral1(const DoubleMatrix &) const -> double
 auto Problem0HFunctional::integral2(const DoubleMatrix &) const -> double
 {
     //const Dimension &time = Problem0HForward::timeDimension();
-    const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
-    const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
+    const Dimension &dimX = Problem0HForward::spaceDimensionX();
+    const Dimension &dimY = Problem0HForward::spaceDimensionY();
     //const unsigned int L = static_cast<unsigned int> ( time.size() );
     const unsigned int N = static_cast<unsigned int> ( dimX.size() );
     const unsigned int M = static_cast<unsigned int> ( dimY.size() );
@@ -371,7 +369,7 @@ auto Problem0HFunctional::gradient(const DoubleVector &x, DoubleVector &g) const
         g[offset+0] = 0.0;
         for (unsigned int ln=0; ln<=2*L; ln++)
         {
-            g[offset+ln] = -optimalParameter.psi_vl[ln];            //printf("")
+            g[offset+ln] = -optimalParameter.psi_vl[ln];
         }
 
         //---------------------------------------------------------------------------//
@@ -442,7 +440,7 @@ auto Problem0HFunctional::print(unsigned int i, const DoubleVector &x, const Dou
 
 auto Problem0HForward::initial(const SpaceNodePDE &, InitialCondition) const -> double { return 0.0; }
 
-auto Problem0HForward::boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &condition) const -> double { return 0.0; }
+auto Problem0HForward::boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &) const -> double { return 0.0; }
 
 auto Problem0HForward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
 {
@@ -484,8 +482,8 @@ auto Problem0HForward::calculateU1U2(const DoubleMatrix &u, const TimeNodePDE &t
     const unsigned int L = static_cast<unsigned int>(time.size());
     const double ht = time.step();
 
-    const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
-    const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
+    const Dimension &dimX = Problem0HForward::spaceDimensionX();
+    const Dimension &dimY = Problem0HForward::spaceDimensionY();
     const unsigned int N = static_cast<unsigned int>(dimX.size());
     const unsigned int M = static_cast<unsigned int>(dimY.size());
 
@@ -590,8 +588,8 @@ auto Problem0HForward::saveToImage(const DoubleMatrix &u UNUSED_PARAM, const Tim
 {
 #ifdef USE_LIB_IMAGING
     //const Dimension &time = Problem0HForward::timeDimension();
-    const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
-    const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
+    const Dimension &dimX = Problem0HForward::spaceDimensionX();
+    const Dimension &dimY = Problem0HForward::spaceDimensionY();
     //const unsigned int L = static_cast<unsigned int>(time.size());
     const unsigned int N = static_cast<unsigned int>(dimX.size());
     const unsigned int M = static_cast<unsigned int>(dimY.size());
@@ -640,7 +638,7 @@ auto Problem0HBckward::initial(const SpaceNodePDE &sn, InitialCondition conditio
     throw std::exception();
 }
 
-auto Problem0HBckward::boundary(const SpaceNodePDE&, const TimeNodePDE&, BoundaryConditionPDE &condition) const -> double { return 0.0; }
+auto Problem0HBckward::boundary(const SpaceNodePDE&, const TimeNodePDE&, BoundaryConditionPDE &) const -> double { return 0.0; }
 
 auto Problem0HBckward::f(const SpaceNodePDE&, const TimeNodePDE&) const -> double { return 0.0; }
 
@@ -663,8 +661,8 @@ auto Problem0HBckward::saveToImage(const DoubleMatrix &p, const TimeNodePDE &tn)
 {
 #ifdef USE_LIB_IMAGING
     //const Dimension &time = Problem0HBckward::timeDimension();
-    const Dimension &dimX = Problem0HBckward::spaceDimension(Dimension::DimensionX);
-    const Dimension &dimY = Problem0HBckward::spaceDimension(Dimension::DimensionY);
+    const Dimension &dimX = Problem0HBckward::spaceDimensionX();
+    const Dimension &dimY = Problem0HBckward::spaceDimensionY();
     //const unsigned int L = static_cast<unsigned int>(time.size());
     const unsigned int N = static_cast<unsigned int>(dimX.size());
     const unsigned int M = static_cast<unsigned int>(dimY.size());
@@ -690,11 +688,11 @@ auto Problem0HBckward::saveToImage(const DoubleMatrix &p, const TimeNodePDE &tn)
 auto Problem0HFunctional::vectorToParameter(const DoubleVector &x) const -> void
 {    
     const Dimension &time = Problem0HForward::timeDimension();
-    const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
-    const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
+    const Dimension &dimX = Problem0HForward::spaceDimensionX();
+    const Dimension &dimY = Problem0HForward::spaceDimensionY();
     const unsigned int L = static_cast<unsigned int> ( time.size() );
-    const unsigned int N = static_cast<unsigned int> ( dimX.size() );
-    const unsigned int M = static_cast<unsigned int> ( dimY.size() );
+    //const unsigned int N = static_cast<unsigned int> ( dimX.size() );
+    //const unsigned int M = static_cast<unsigned int> ( dimY.size() );
 
     Problem0HFunctional* const_this = const_cast<Problem0HFunctional*>(this);
     const_this->optimalParameters.resize(source_number);

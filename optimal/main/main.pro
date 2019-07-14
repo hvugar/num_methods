@@ -1,9 +1,11 @@
 TEMPLATE = app
-CONFIG += console
-CONFIG -= app_bundle
-#CONFIG -= qt
-QT       += core gui widgets
-TARGET = main
+CONFIG  += console
+CONFIG  -= app_bundle
+#CONFIG  -= qt
+QT      += core gui widgets
+TARGET  = main
+CONFIG  += c++11
+
 #QMAKE_CXXFLAGS += -O2
 #QMAKE_CXXFLAGS_RELEASE = -O3
 #QMAKE_CFLAGS += -O3
@@ -79,8 +81,8 @@ win32-msvc* {
         INCLUDEPATH += ../minimum
         LIBS += ../bin/minimum.lib
 
-#        INCLUDEPATH += ../problem0H
-#        LIBS += ../bin/problem0H.lib
+        INCLUDEPATH += ../problem0H
+        LIBS += ../bin/problem0H.lib
 
         INCLUDEPATH += ../problem2H
         LIBS += ../bin/problem2H.lib

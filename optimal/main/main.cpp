@@ -20,13 +20,13 @@
 #include "../problem1H/problem1h_example.h"
 #include "../problem2P/problem2p_solver.h"
 #include "../problem2H/problem2h_solver.h"
-#include "../problem2H/problem2h_solver_delta.h"
 
 #include "test/deltagrid2dext1.h"
 #include "test/nonlinearequationex1.h"
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
+    std::cout << "__cplusplus: " << __cplusplus << std::endl;
     //FirstOrderLinearODEEx1::Main(argc, argv);
     //FirstOrderNonLinearODErEx1::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);

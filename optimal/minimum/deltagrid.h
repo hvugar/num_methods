@@ -5,25 +5,23 @@
 #include <cmath>
 #include <exception>
 #include <matrix2d.h>
-
-class MINIMUMSHARED_EXPORT DeltaGridException : public std::exception
-{
-public:
-    DeltaGridException(const std::string &msg = "");
-    virtual const char* what() const noexcept;
-private:
-    std::string message;
-};
+#include "exceptions.h"
 
 class MINIMUMSHARED_EXPORT DeltaGrid2D
 {
 public:
     DeltaGrid2D();
+    DeltaGrid2D(const DeltaGrid2D&);
     virtual ~DeltaGrid2D();
 
+    DeltaGrid2D& operator =(const DeltaGrid2D& vector);
+
+
     auto initGrid(unsigned int N, double hx, unsigned int M, double hy) -> void;
+    auto initGrid(const Dimension &dimensionX, const Dimension &dimensionY) -> void;
     auto cleanGrid() -> void;
-    auto resetGrid() -> void;
+    auto reset() -> void;
+    auto resetAll() -> void;
 
     auto distributeGauss(const SpacePoint& sp, unsigned int nodeX_per_sigmaX = 1, unsigned int nodeY_per_sigmaY = 1) -> void;
     auto lumpPointGauss(const DoubleMatrix &m) const -> double;
@@ -64,9 +62,6 @@ public:
 
     double **der_x() const { return m_der_x; }
     double **der_y() const { return m_der_y; }
-
-    bool *_rows;
-    bool *_cols;
 
 private:
 

@@ -4,6 +4,7 @@
 #include "function.h"
 #include <math.h>
 #include <float.h>
+#include <stdexcept>
 
 /******************************************** DefaultNormalizer ****************************************/
 

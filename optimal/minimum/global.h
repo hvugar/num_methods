@@ -21,13 +21,31 @@
 #endif
 
 #if (defined(__cplusplus))
-#if (__cplusplus == 201103)
-#define NOEXCEPT noexcept
-#else
+
+#if (__cplusplus == 1L)
 #define NOEXCEPT
-//#define NOEXCEPT noexcept
-//#define NOEXCEPT throw()
 #endif
+
+#if (__cplusplus == 199711L)
+#define NOEXCEPT
+#endif
+
+#if (__cplusplus == 201103L)
+#define NOEXCEPT noexcept
+#endif
+
+#if (__cplusplus == 201402L)
+#define NOEXCEPT noexcept
+#endif
+
+#if (__cplusplus == 201500L)
+#define NOEXCEPT
+#endif
+
+#if (__cplusplus == 201703L)
+#define NOEXCEPT
+#endif
+
 #endif
 
 #endif // GLOBAL

@@ -5,6 +5,12 @@
 #include <stdio.h>
 #include <grid/hibvp.h>
 #include <deltagrid.h>
+#include <projection.h>
+#include <gradient_sd.h>
+#include <gradient_cjt.h>
+
+#define USE_NORM
+#define USE_PENALTY
 
 namespace Problem2H {
 
@@ -14,86 +20,133 @@ struct InitialPulse
 {
     SpacePoint point;
     double blow;
-    //DeltaGrid2D pointDeltaGrid;
+    double point_density;
+    double blow_density;
+
+    InitialPulse *pulses;
+    unsigned int pulsesCount;
 };
 
 struct PROBLEM2HSHARED_EXPORT SpacePointInfo
 {
-    std::vector<double> vl;
-    std::vector<double> dx;
-    std::vector<double> dy;
+    SpacePointInfo(unsigned int length = 0);
+    SpacePointInfo(const SpacePoint& point, unsigned int length);
+    SpacePointInfo(const SpacePointInfo& spi);
+    SpacePointInfo& operator= (const SpacePointInfo& other);
+    virtual ~SpacePointInfo();
+
+    void clear();
+
+    SpacePoint point;
     unsigned int length;
+    double *vl = nullptr;
+    double *dx = nullptr;
+    double *dy = nullptr;
+    DeltaGrid2D deltaGrid;
 };
 
-class PROBLEM2HSHARED_EXPORT Problem2HCommon
+struct Problem2HSharedData
+{
+    unsigned int Nc = 0;
+    unsigned int No = 0;
+    SpacePoint *eta = nullptr;
+    SpacePoint *ksi = nullptr;
+    DoubleMatrix k;
+    DoubleMatrix z;
+
+    SpacePoint *r_eta = nullptr;
+    SpacePoint *r_ksi = nullptr;
+    DoubleMatrix r_k;
+    DoubleMatrix r_z;
+
+    double regEpsilon1 = 0.0;
+    double regEpsilon2 = 0.0;
+    double regEpsilon3 = 0.0;
+    double regEpsilon4 = 0.0;
+
+    bool optimizeK = true;
+    bool optimizeZ = true;
+    bool optimizeO = true;
+    bool optimizeC = true;
+
+    double *vmin = nullptr, *vmax = nullptr;
+    double r = 1.0;
+
+protected:
+    SpacePointInfo *eta_info = nullptr;
+    SpacePointInfo *ksi_info = nullptr;
+    std::vector<DoubleMatrix> u_list;
+};
+
+class PROBLEM2HSHARED_EXPORT Problem2HCommon : virtual public Problem2HSharedData
 {
 public:
     virtual ~Problem2HCommon();
 
-    virtual void setParameterCounts(unsigned int Nc, unsigned No, const Dimension &dimensionX, const Dimension &dimensionY, const Dimension &timeDimension);
-    virtual void setOptimizedParameters(const DoubleMatrix &k, const DoubleMatrix &z, const std::vector<SpacePoint> &eta, const std::vector<SpacePoint> &ksi);
-    //virtual void setOptimizedParameters(const DoubleVector &x);
-    virtual void distributeControlDeltaGrid();
-    virtual void distributeMeasurementDeltaGrid();
+    virtual void setParameterCounts(unsigned int Nc, unsigned int No, const Dimension &dimensionX,
+                                    const Dimension &dimensionY, const Dimension &timeDimension);
+    virtual void setOptimizedParameters(const DoubleMatrix &k, const DoubleMatrix &z,
+                                        const SpacePoint *ksi, const SpacePoint *eta);
 
     unsigned int Nt;
-    std::vector<TimeNodePDE> times;
+    TimeNodePDE *times;
 
-protected:
-    InitialPulse *initialPulses;
-    unsigned int initialPulsesCount;
-
-    unsigned int Nc;
-    unsigned int No;
-    std::vector<SpacePoint> eta;
-    std::vector<SpacePoint> ksi;
-    DoubleMatrix k;
-    DoubleMatrix z;
-
-    DeltaGrid2D *_deltaGridControl;
-    SpacePointInfo *p_info;
-    DeltaGrid2D *_deltaGridMeasurement;
-    SpacePointInfo *u_info;
-
-    std::vector<DoubleMatrix> u_list;
+    unsigned int L;
+    unsigned int D;
 };
 
-class PROBLEM2HSHARED_EXPORT Problem2HWaveEquationIBVP : virtual public IWaveEquationIBVP, virtual public Problem2HCommon
+class PROBLEM2HSHARED_EXPORT Problem2HWaveEquationIBVP :
+        virtual public IWaveEquationIBVP,
+        virtual public Problem2HCommon
 {
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
+
 public:
     virtual void setSpaceDimensions(const Dimension &dimensionX, const Dimension &dimensionY);
     void setInitialConditionMatrix(InitialPulse *initialPulses, unsigned int initialPulsesCount);
     void clrInitialConditionMatrix();
+
+    unsigned int initialPulsesCount = 0;
+    InitialPulse *initialPulses = nullptr;
+
 private:
     void layerInfoPrepareLayerMatrix(const DoubleMatrix &u, const TimeNodePDE& tn);
     void layerInfoSave2TextFile(const DoubleMatrix &, const TimeNodePDE &) const;
     DoubleMatrix f_initialMatrix;
     DoubleMatrix f_crLayerMatrix;
+    bool f_return_zero;
 };
 
-class PROBLEM2HSHARED_EXPORT Problem2HConjugateWaveEquationIBVP : virtual public IConjugateWaveEquationIBVP, virtual public Problem2HCommon
+class PROBLEM2HSHARED_EXPORT Problem2HConjugateWaveEquationIBVP :
+        virtual public IConjugateWaveEquationIBVP,
+        virtual public Problem2HCommon
 {
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
+
 public:
     virtual void setSpaceDimensions(const Dimension &dimensionX, const Dimension &dimensionY);
+
 private:
     void layerInfoPrepareLayerMatrix(const DoubleMatrix &u, const TimeNodePDE& tn);
     void layerInfoSave2TextFile(const DoubleMatrix &u, const TimeNodePDE & tn) const;
     DoubleMatrix b_crLayerMatrix;
+    bool f_return_zero;
 };
 
 class PROBLEM2HSHARED_EXPORT Problem2HSolver : virtual protected Problem2HWaveEquationIBVP,
-                                               virtual protected Problem2HConjugateWaveEquationIBVP,
-                                               virtual protected RnFunction
+        virtual protected Problem2HConjugateWaveEquationIBVP,
+        virtual protected RnFunction,
+        virtual protected IGradient,
+        virtual protected IPrinter,
+        virtual protected IProjection
 {
 public:
     static void Main(int argc, char* argv[]);
@@ -110,16 +163,20 @@ public:
 
 protected:
     virtual double fx(const DoubleVector &x) const;
+    virtual double fx_one(const DoubleVector &x, Problem2HSolver *solver) const;
+    virtual double fx_norm() const;
     virtual void gradient(const DoubleVector &, DoubleVector &) const;
+    virtual void gradient_one(const DoubleVector &, DoubleVector &, Problem2HSolver* solver) const;
+    virtual void project(DoubleVector &x) const;
+    virtual void project(DoubleVector &x, unsigned int);
+    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const;
+
+    virtual auto penalty() const -> double;
+    virtual auto gpi(unsigned int i, unsigned int ln) const -> double;
+    virtual auto g0i(unsigned int i, unsigned int ln) const -> double;
 
     double integral(const std::vector<DoubleMatrix> &vu) const;
     double integralU(const DoubleMatrix &u) const;
-
-    unsigned int L;
-    unsigned int D;
-
-private:
-
 };
 
 #endif // PROBLEM2H_SOLVER1_H

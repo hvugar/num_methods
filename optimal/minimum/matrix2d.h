@@ -3,22 +3,6 @@
 
 #include "global.h"
 #include "vector2d.h"
-#include <exception>
-#include <string>
-
-class MINIMUMSHARED_EXPORT DoubleMatrixException : public std::exception
-{
-public:
-    DoubleMatrixException(unsigned int msgCode = 0) NOEXCEPT;
-    DoubleMatrixException(const DoubleMatrixException&) NOEXCEPT;
-    virtual ~DoubleMatrixException()  {}
-    virtual const char* what() const NOEXCEPT;
-
-    DoubleMatrixException& operator= (const DoubleMatrixException&) NOEXCEPT;
-
-private:
-    unsigned int msgCode;
-};
 
 class MINIMUMSHARED_EXPORT DoubleMatrix
 {
@@ -39,6 +23,7 @@ public:
     bool empty() const;
     void clear();
     void resize(unsigned int rows, unsigned int cols, double value=0.0);
+    void reset(double value=0.0);
 
     double& at(unsigned int row, unsigned int col);
     const double& at(unsigned int row, unsigned int col) const;

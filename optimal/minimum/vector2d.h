@@ -2,7 +2,6 @@
 #define VECTOR2D_H
 
 #include "global.h"
-#include <iostream>
 
 class DoubleMatrix;
 class IVectorNormalizer;

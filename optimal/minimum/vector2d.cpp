@@ -1,37 +1,30 @@
 #include "vector2d.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "matrix2d.h"
+#include "exceptions.h"
 #include <time.h>
 #include <math.h>
 #include <float.h>
-#include <exception>
-#include <stdexcept>
-#include "matrix2d.h"
 
-DoubleVector::DoubleVector(unsigned int size, double val) : mLength(0), mData(nullptr)
+DoubleVector::DoubleVector(unsigned int length, double val) : mLength(length), mData(nullptr)
 {
-    if (size <= 0) return;
+    if (length == 0) return;
 
-    mLength = size;
-    mData = static_cast<double*>(malloc(sizeof(double) * size));
-    for (unsigned int i=0; i<size; i++) mData[i] = val;
+    mData = static_cast<double*>(malloc(sizeof(double)*mLength));
+    for (unsigned int i=0; i<mLength; i++) mData[i] = val;
 }
 
-DoubleVector::DoubleVector(const double* data, unsigned int size) : mLength(0), mData(nullptr)
+DoubleVector::DoubleVector(const double* data, unsigned int length) : mLength(length), mData(nullptr)
 {
-    if (size <= 0) return;
+    if (length == 0) return;
 
-    mLength = size;
-    mData = static_cast<double*>(malloc(sizeof(double) * size));
-    memcpy(mData, data, sizeof(double)*size);
+    mData = static_cast<double*>(malloc(sizeof(double)*mLength));
+    memcpy(mData, data, sizeof(double)*mLength);
 }
 
-DoubleVector::DoubleVector(const DoubleVector &vector) : mLength(0), mData(nullptr)
+DoubleVector::DoubleVector(const DoubleVector &vector) : mLength(vector.mLength), mData(nullptr)
 {
     if (vector.mLength == 0) return;
 
-    mLength = vector.mLength;
     mData = static_cast<double*>(malloc(sizeof(double)*mLength));
     memcpy(mData, vector.mData, sizeof(double)*mLength);
 }
@@ -91,19 +84,13 @@ bool DoubleVector::empty() const
 
 double& DoubleVector::at(unsigned int n)
 {
-    if (n >= mLength)
-    {
-        throw std::out_of_range("out of range");
-    }
+    if (n >= mLength) { throw double_vector_exception(2); }
     return mData[n];
 }
 
 const double& DoubleVector::at(unsigned int n) const
 {
-    if (n >= mLength)
-    {
-        throw std::out_of_range("out of range");
-    }
+    if (n >= mLength) { throw double_vector_exception(2); }
     return mData[n];
 }
 
@@ -167,9 +154,9 @@ double DoubleVector::LpNorm(unsigned int p) const
         for (unsigned int i=0; i < mLength; i++)
         {
             double item = mData[i];
-            norm += pow(item, (double)p);
+            norm += pow(item, static_cast<double>(p));
         }
-        return pow(norm, 1.0/(double)p);
+        return pow(norm, 1.0/static_cast<double>(p));
     }
     return norm;
 }
@@ -218,7 +205,7 @@ DoubleVector& DoubleVector::EuclideanNormalize()
 
 double DoubleVector::min() const
 {
-    double minimum = NAN;
+    double minimum = static_cast<double>(NAN);
     if (!empty())
     {
         minimum = mData[0];
@@ -229,7 +216,7 @@ double DoubleVector::min() const
 
 double DoubleVector::max() const
 {
-    double maximum = NAN;
+    double maximum = static_cast<double>(NAN);
     if (!empty())
     {
         maximum = mData[0];
@@ -247,7 +234,7 @@ DoubleVector DoubleVector::mid(unsigned int s, unsigned int e) const
 
 double DoubleVector::EuclideanDistance(const DoubleVector &p) const
 {
-    if ( mLength != p.mLength ) return INFINITY;
+    if ( mLength != p.mLength ) return static_cast<double>(INFINITY);
 
     double distance = 0.0;
     for (unsigned int i=0; i<mLength; i++)
@@ -282,25 +269,19 @@ DoubleVector& DoubleVector::operator =(const DoubleVector& other)
 {
     // the vector object holds reusable storage, such as a heap-allocated buffer mData
 
-    if (this != &other)  // self-assignment check expected
-    {
-        clear();
-        mLength = other.mLength;
-        mData = static_cast<double*>(malloc(sizeof(double)*mLength));
-        memcpy(mData, other.mData, sizeof(double)*mLength);
-    }
+    if (this == &other) return *this; // self-assignment check expected
+
+    clear();
+    mLength = other.mLength;
+    mData = static_cast<double*>(malloc(sizeof(double)*mLength));
+    memcpy(mData, other.mData, sizeof(double)*mLength);
     return *this;
 }
 
 DoubleVector& DoubleVector::operator +=(const DoubleVector& v)
 {
-    if (mLength != v.mLength)
-    {
-        fprintf(stderr, "DoubleVector& DoubleVector::operator +=(const DoubleVector& v) this:%d v:%d\n", mLength, v.mLength);
-        fflush(stderr);
+    if (mLength != v.mLength) { throw double_vector_exception(1); }
 
-        throw DoubleMatrixException(1);
-    }
     for (unsigned int i=0; i < mLength; i++)
     {
         mData[i] += v.mData[i];
@@ -310,14 +291,8 @@ DoubleVector& DoubleVector::operator +=(const DoubleVector& v)
 
 DoubleVector& DoubleVector::operator -=(const DoubleVector& v)
 {
-    if (mLength != v.mLength)
-    {
-        fprintf(stderr, "DoubleVector& DoubleVector::operator +=(const DoubleVector& v) this:%d v:%d\n",
-                mLength, v.mLength);
-        fflush(stderr);
+    if (mLength != v.mLength) { throw double_vector_exception(1); }
 
-        throw DoubleMatrixException(1);
-    }
     for (unsigned int i=0; i < mLength; i++)
     {
         mData[i] -= v.mData[i];
@@ -327,13 +302,7 @@ DoubleVector& DoubleVector::operator -=(const DoubleVector& v)
 
 DoubleVector& DoubleVector::operator *=(const DoubleVector& v)
 {
-    if (mLength != v.mLength)
-    {
-        fprintf(stderr, "DoubleVector& DoubleVector::operator *=(const DoubleVector& v) this:%d v:%d\n",
-                mLength, v.mLength);
-        fflush(stderr);
-        throw DoubleMatrixException(3);
-    }
+    if (mLength != v.mLength) { throw double_vector_exception(1); }
 
     for (unsigned int i=0; i<v.mLength; i++)
     {
@@ -355,14 +324,7 @@ DoubleVector& DoubleVector::operator *=(double scalar)
 
 DoubleVector operator +(DoubleVector v1, const DoubleVector& v2)
 {
-    if (v1.mLength != v2.mLength)
-    {
-        fprintf(stderr, "DoubleVector operator +(DoubleVector v1, const DoubleVector& v2) v1:%d v2:%d\n",
-                v1.mLength, v2.mLength);
-        fflush(stderr);
-
-        throw DoubleMatrixException(1);
-    }
+    if (v1.mLength != v2.mLength) { throw double_vector_exception(1); }
 
     unsigned int length = v1.mLength;
     for (unsigned int i=0; i<length; i++)
@@ -374,14 +336,7 @@ DoubleVector operator +(DoubleVector v1, const DoubleVector& v2)
 
 DoubleVector operator -(DoubleVector v1, const DoubleVector& v2)
 {
-    if (v1.mLength != v2.mLength)
-    {
-        fprintf(stderr, "DoubleVector operator -(DoubleVector v1, const DoubleVector& v2) v1:%d v2:%d\n",
-                v1.mLength, v2.mLength);
-        fflush(stderr);
-
-        throw DoubleMatrixException(1);
-    }
+    if (v1.mLength != v2.mLength) { throw double_vector_exception(1); }
 
     unsigned int length = v1.mLength;
     for (unsigned int i=0; i<length; i++)
@@ -393,13 +348,7 @@ DoubleVector operator -(DoubleVector v1, const DoubleVector& v2)
 
 DoubleVector operator *(DoubleVector v1, const DoubleVector& v2)
 {
-    if (v1.mLength != v2.mLength)
-    {
-        fprintf(stderr, "DoubleVector operator *(DoubleVector v1, const DoubleVector& v2) v1:%d v2:%d\n",
-                v1.mLength, v2.mLength);
-        fflush(stderr);
-        throw DoubleMatrixException(3);
-    }
+    if (v1.mLength != v2.mLength) { throw double_vector_exception(1); }
 
     for (unsigned int i=0; i<v1.mLength; i++)
     {
@@ -410,15 +359,13 @@ DoubleVector operator *(DoubleVector v1, const DoubleVector& v2)
 
 DoubleVector operator *(double scalar, DoubleVector v)
 {
-    for (unsigned int i=0; i<v.mLength; i++)
-        v.mData[i] *= scalar;
+    for (unsigned int i=0; i<v.mLength; i++) v.mData[i] *= scalar;
     return v;
 }
 
 DoubleVector operator *(const DoubleVector v, double scalar)
 {
-    for (unsigned int i=0; i<v.mLength; i++)
-        v.mData[i] *= scalar;
+    for (unsigned int i=0; i<v.mLength; i++) v.mData[i] *= scalar;
     return v;
 }
 
@@ -428,7 +375,9 @@ bool operator ==(const DoubleVector& v1, const DoubleVector& v2)
 
     unsigned int length = v1.mLength;
     for (unsigned int i=0; i<length; i++)
-        if (v1.mData[i] != v2.mData[i]) return false;
+    {
+        if (fabs(v1.mData[i] - v2.mData[i]) >= DBL_EPSILON) return false;
+    }
 
     return true;
 }
@@ -442,7 +391,7 @@ DoubleVector& DoubleVector::operator <<(double value)
 {
     if (mData == nullptr)
     {
-        mLength = 1;
+        mLength = 1L;
         mData = static_cast<double*>(malloc(sizeof(double)*mLength));
         mData[0] = value;
     }

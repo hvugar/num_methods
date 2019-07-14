@@ -2,17 +2,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-DoubleCube::DoubleCube(unsigned int depth, unsigned int rows, unsigned int cols, double value) : mDepth(depth), mRows(rows), mCols(cols), pData(NULL)
+DoubleCube::DoubleCube(unsigned int depth, unsigned int rows, unsigned int cols, double value)
+    : mDepth(depth), mRows(rows), mCols(cols), pData(nullptr)
 {
     if (mDepth != 0 && mRows != 0 && mCols != 0)
     {
-        pData = (double***) malloc(sizeof(double**) * depth);
+        pData = static_cast<double***>(malloc(sizeof(double**)*depth));
         for (unsigned int k=0; k<depth; k++)
         {
-            pData[k] = (double**) malloc(sizeof(double*) * rows);
+            pData[k] = static_cast<double**>(malloc(sizeof(double*)*rows));
             for (unsigned int j=0; j<rows; j++)
             {
-                pData[k][j] = (double*) malloc(sizeof(double) * cols);
+                pData[k][j] = static_cast<double*>(malloc(sizeof(double)*cols));
                 for (unsigned int i=0; i<cols; i++) pData[k][j][i] = value;
             }
         }
@@ -26,20 +27,20 @@ DoubleCube::~DoubleCube()
 
 void DoubleCube::clear()
 {
-    if (pData != NULL)
+    if (pData != nullptr)
     {
         for (unsigned int k=0; k<mDepth; k++)
         {
             for (unsigned int j=0; j<mRows; j++)
             {
                 free(pData[k][j]);
-                pData[k][j] = NULL;
+                pData[k][j] = nullptr;
             }
             free(pData[k]);
-            pData[k] = NULL;
+            pData[k] = nullptr;
         }
         free(pData);
-        pData = NULL;
+        pData = nullptr;
 
         mCols = 0;
         mRows = 0;
@@ -58,15 +59,15 @@ void DoubleCube::resize(unsigned int depth, unsigned int rows, unsigned int cols
 
     if (depth > 0 && rows > 0 && cols > 0)
     {
-        if (pData == NULL)
+        if (pData == nullptr)
         {
-            pData = (double***) malloc( sizeof(double**)*depth );
+            pData = static_cast<double***>(malloc(sizeof(double**)*depth));
             for (unsigned int k=0; k<depth; k++)
             {
-                pData[k] = (double**) malloc( sizeof(double*)*rows );
+                pData[k] = static_cast<double**>(malloc(sizeof(double*)*rows));
                 for (unsigned int j=0; j<rows; j++)
                 {
-                    pData[k][j] = (double*) malloc( sizeof(double)*cols );
+                    pData[k][j] = static_cast<double*>(malloc(sizeof(double)*cols));
                     for (unsigned int i=0; i<cols; i++) pData[k][j][i] = value;
                 }
 

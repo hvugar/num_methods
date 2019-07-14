@@ -151,8 +151,8 @@ public:
     R1FxMinimizer::Callback* callback() const;
 
 private:
-    R1Function *mfunction = NULL;
-    R1FxMinimizer::Callback *mcallback = NULL;
+    R1Function *mfunction = nullptr;
+    R1FxMinimizer::Callback *mcallback = nullptr;
 };
 
 #endif // R1MINIMIZE_H

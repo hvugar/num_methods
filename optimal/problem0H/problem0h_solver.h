@@ -1,4 +1,4 @@
-#ifndef PROBLEM0H_SOLVER_H
+ #ifndef PROBLEM0H_SOLVER_H
 #define PROBLEM0H_SOLVER_H
 
 #include <float.h>
