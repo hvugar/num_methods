@@ -120,8 +120,8 @@ void Problem2HSolver::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
     k[0][0] = -0.5412; k[0][1] = -0.8412; k[0][2] = +0.5745;
     k[1][0] = -0.8259; k[1][1] = +0.8482; k[1][2] = +0.3751;
 
-    z[0][0] = -0.0084; k[0][1] = -0.0075; k[0][2] = -0.0075;
-    z[1][0] = -0.0035; k[1][1] = +0.0025; k[1][2] = +0.0031;
+    z[0][0] = -0.0084; z[0][1] = -0.0075; z[0][2] = +0.0086;
+    z[1][0] = -0.0035; z[1][1] = +0.0022; z[1][2] = +0.0031;
 
 
     //0.296510  0.226919 -0.164383  0.278036  0.249470 -0.162896
@@ -133,8 +133,8 @@ void Problem2HSolver::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
                           ps.Problem2HWaveEquationIBVP::spaceDimensionY(),
                           ps.Problem2HWaveEquationIBVP::timeDimension());
     ps.setOptimizedParameters(k, z, ksi, eta);
-    for (unsigned int i=0; i<Nc; i++) { ps.vmin[i] = -0.005; ps.vmax[i] = +0.005; }
-    ps.r = 0.0;
+    for (unsigned int i=0; i<Nc; i++) { ps.vmin[i] = -0.05; ps.vmax[i] = +0.05; }
+    ps.r = 0.01;
 
     k.clear();
     z.clear();
@@ -187,11 +187,11 @@ void Problem2HSolver::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
     g.setProjection(&ps);
     //g.setProjection(new ProjectionEx1);
     //g.setGradientNormalizer(&prob);
-    g.setOptimalityTolerance(0.0);
-    g.setFunctionTolerance(0.0);
-    g.setStepTolerance(0.0);
+    g.setOptimalityTolerance(0.00000001);
+    g.setFunctionTolerance(0.00000001);
+    g.setStepTolerance(0.00000001);
     g.setR1MinimizeEpsilon(0.01, 0.001);
-    g.setMaxIterations(500);
+    //g.setMaxIterations(500);
     g.setNormalize(true);
     g.showExitMessage(true);
 
@@ -784,7 +784,7 @@ void Problem2HSolver::print(unsigned int iteration, const DoubleVector &x, const
     //    }
 }
 
-auto Problem2HSolver::penalty() const -> double
+auto Problem2HCommon::penalty() const -> double
 {
     double pnlt = 0.0;
 
@@ -800,13 +800,13 @@ auto Problem2HSolver::penalty() const -> double
     return pnlt;
 }
 
-auto Problem2HSolver::gpi(unsigned int i, unsigned int ln) const -> double
+auto Problem2HCommon::gpi(unsigned int i, unsigned int ln) const -> double
 {
     double gpi_ln = fabs( g0i(i, ln) ) - (vmax[i]-vmin[i])/2.0;
     return gpi_ln > 0.0 ? gpi_ln : 0.0;
 }
 
-auto Problem2HSolver::g0i(unsigned int i, unsigned int ln) const -> double
+auto Problem2HCommon::g0i(unsigned int i, unsigned int ln) const -> double
 {
     double vi = 0.0;
 
@@ -1125,7 +1125,7 @@ void Problem2HConjugateWaveEquationIBVP::layerInfoPrepareLayerMatrix(const Doubl
             w[j] = 0.0;
             for (unsigned int i=0; i<Nc; i++)
             {
-                w[j] += k.at(i,j) * eta_info[i].vl[tn.i];
+                w[j] += k[i][j] * ( eta_info[i].vl[tn.i] + 2.0*r*gpi(i,2*times[s].i)*sgn(g0i(i,2*times[s].i)) );
             }
         }
 

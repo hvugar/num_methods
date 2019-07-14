@@ -88,6 +88,11 @@ public:
     virtual void setOptimizedParameters(const DoubleMatrix &k, const DoubleMatrix &z,
                                         const SpacePoint *ksi, const SpacePoint *eta);
 
+    virtual auto penalty() const -> double;
+    virtual auto gpi(unsigned int i, unsigned int ln) const -> double;
+    virtual auto g0i(unsigned int i, unsigned int ln) const -> double;
+
+
     unsigned int Nt;
     TimeNodePDE *times;
 
@@ -170,10 +175,6 @@ protected:
     virtual void project(DoubleVector &x) const;
     virtual void project(DoubleVector &x, unsigned int);
     virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const;
-
-    virtual auto penalty() const -> double;
-    virtual auto gpi(unsigned int i, unsigned int ln) const -> double;
-    virtual auto g0i(unsigned int i, unsigned int ln) const -> double;
 
     double integral(const std::vector<DoubleMatrix> &vu) const;
     double integralU(const DoubleMatrix &u) const;
