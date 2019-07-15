@@ -67,7 +67,11 @@ SpacePointInfo::~SpacePointInfo()
 
 void Problem2HSolver::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
 {
+    example1();
+}
 
+void Problem2HSolver::example1()
+{
     Problem2HSolver ps;
     ps.L = 300;
     ps.D = 30;
@@ -90,12 +94,12 @@ void Problem2HSolver::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
 
     const unsigned int initialPulsesCount = 2;
     InitialPulse *initialPulses = new InitialPulse[initialPulsesCount];
-    initialPulses[0] = { SpacePoint(0.25, 0.25), 0.05, 1.0, 1.0, nullptr, 0 };
+    initialPulses[0] = { SpacePoint(0.25, 0.25), 0.052, 1.0, 1.0, nullptr, 0 };
     initialPulses[0].pulsesCount = 1;
     initialPulses[0].pulses = new InitialPulse[initialPulses[0].pulsesCount];
     initialPulses[0].pulses[0] = { initialPulses[0] };
 
-    initialPulses[1] = { SpacePoint(0.75, 0.75), 0.05, 1.0, 1.0, nullptr, 0 };
+    initialPulses[1] = { SpacePoint(0.75, 0.75), 0.048, 1.0, 1.0, nullptr, 0 };
     initialPulses[1].pulsesCount = 1;
     initialPulses[1].pulses = new InitialPulse[initialPulses[0].pulsesCount];
     initialPulses[1].pulses[0] = { initialPulses[1] };
@@ -170,7 +174,7 @@ void Problem2HSolver::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
     ps.r_eta = new SpacePoint[Nc];
     ps.r_eta[0] = SpacePoint(0.680737, 0.310386);
     ps.r_eta[1] = SpacePoint(0.289555, 0.693593);
-    ps.regEpsilon1 = ps.regEpsilon2 = ps.regEpsilon3 = ps.regEpsilon4 = 0.01;
+    ps.regEpsilon1 = ps.regEpsilon2 = ps.regEpsilon3 = ps.regEpsilon4 = 0.1;
 
     //checkGradient3(ps);
 
@@ -187,10 +191,10 @@ void Problem2HSolver::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
     g.setProjection(&ps);
     //g.setProjection(new ProjectionEx1);
     //g.setGradientNormalizer(&prob);
-    g.setOptimalityTolerance(0.00000001);
-    g.setFunctionTolerance(0.00000001);
-    g.setStepTolerance(0.00000001);
-    g.setR1MinimizeEpsilon(0.01, 0.001);
+    g.setOptimalityTolerance(0.001);
+    g.setFunctionTolerance(0.001);
+    g.setStepTolerance(0.001);
+    g.setR1MinimizeEpsilon(0.1, 0.01);
     //g.setMaxIterations(500);
     g.setNormalize(true);
     g.showExitMessage(true);
@@ -208,9 +212,21 @@ void Problem2HSolver::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
 
     g.calculate(x);
 
+    ps.regEpsilon1 = ps.regEpsilon2 = ps.regEpsilon3 = ps.regEpsilon4 = 0.1;
+    double f1 = ps.fx(x);
+    x[0] = x[1] = x[2] = x[3] = x[4] = x[5] = 0.0;
+    double f2 = ps.fx(x);
+
+    printf("%f %f\n", f1, f2);
+
     puts("Finished");
 
     delete [] ps.times;
+}
+
+void Problem2HSolver::example2()
+{
+
 }
 
 void Problem2HSolver::checkGradient3(const Problem2HSolver &prob)
@@ -772,9 +788,9 @@ void Problem2HSolver::print(unsigned int iteration, const DoubleVector &x, const
 
     printf("I[%d] %.8f %f %.8f %.8f %.8f\n", iteration, f, alpha, integr, nrm, plty);
 
-    printf("ok: "); IPrinter::print(x.mid(0,  5), x.mid(0,  5).length(), 9, 6);
-    printf("oz: "); IPrinter::print(x.mid(6, 11), x.mid(6, 11).length(), 9, 6);
-    printf("xy: "); IPrinter::print(x.mid(12,21), x.mid(12,21).length(), 9, 6);
+    printf("ok: "); IPrinter::print(x.mid(0,  5), x.mid(0,  5).length(), 9, 4);
+    printf("oz: "); IPrinter::print(x.mid(6, 11), x.mid(6, 11).length(), 9, 4);
+    printf("xy: "); IPrinter::print(x.mid(12,21), x.mid(12,21).length(), 9, 4);
     IPrinter::printSeperatorLine();
 
     //    if (iteration == 20)

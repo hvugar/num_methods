@@ -156,6 +156,9 @@ class PROBLEM2HSHARED_EXPORT Problem2HSolver : virtual protected Problem2HWaveEq
 public:
     static void Main(int argc, char* argv[]);
     static void checkGradient3(const Problem2HSolver &prob);
+    static void example1();
+    static void example2();
+
 
     void setDimensions(const Dimension &dimensionX, const Dimension &dimensionY, const Dimension &timeDimension);
     void setEquationParameters(double waveSpeed, double waveDissipation);
