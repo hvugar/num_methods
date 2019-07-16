@@ -167,6 +167,8 @@ auto DeltaGrid2D::lumpPointGauss(const DoubleMatrix &u, double &ux, double &uy) 
             pu += _w * _hx * _hy * u[m][n];
             ux += _w * _hx * _hy * (u[m][n+1]-u[m][n-1])/(2.0*_hx);
             uy += _w * _hx * _hy * (u[m+1][n]-u[m-1][n])/(2.0*_hx);
+            //ux -= _w * _hx * _hy * u[m][n]*m_der_x[m][n];
+            //uy -= _w * _hx * _hy * u[m][n]*m_der_y[m][n];
         }
     }
     return pu;

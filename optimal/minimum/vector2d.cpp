@@ -15,7 +15,7 @@ DoubleVector::DoubleVector(unsigned int length, double val) : mLength(length), m
 
 DoubleVector::DoubleVector(const double* data, unsigned int length) : mLength(length), mData(nullptr)
 {
-    if (length == 0) return;
+    if (length == 0 || data == nullptr) return;
 
     mData = static_cast<double*>(malloc(sizeof(double)*mLength));
     memcpy(mData, data, sizeof(double)*mLength);
@@ -98,6 +98,27 @@ unsigned int DoubleVector::length() const
 {
     return mLength;
 }
+
+void DoubleVector::append(double *data, unsigned int length)
+{
+    if (length == 0 || data == nullptr) return;
+
+    if (mLength == 0)
+    {
+        mLength = length;
+        mData = static_cast<double*>(malloc(sizeof(double)*mLength));
+        memcpy(mData, data, sizeof(double)*mLength);
+    }
+    else
+    {
+        mData = static_cast<double*>(realloc(mData, sizeof(double)*(mLength+length)));
+        memcpy(mData+mLength, data, sizeof(double)*length);
+        mLength += length;
+    }
+}
+
+void DoubleVector::append(const DoubleVector &)
+{}
 
 /********************************************************************
  *                      NORM

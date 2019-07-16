@@ -45,6 +45,39 @@ struct PROBLEM2HSHARED_EXPORT SpacePointInfo
     DeltaGrid2D deltaGrid;
 };
 
+struct OptimizedParameter
+{
+    OptimizedParameter(unsigned int Nc, unsigned int No);
+    OptimizedParameter(const DoubleVector &x, unsigned int Nc, unsigned int No);
+
+    void frVector(const DoubleVector &x, unsigned int Nc, unsigned int No);
+    void toVector(DoubleVector &x, unsigned int Nc, unsigned int No);
+
+    const DoubleMatrix& k() const { return _k; }
+    DoubleMatrix& k() { return _k; }
+    const DoubleMatrix& z() const { return _z; }
+    DoubleMatrix& z() { return _z; }
+
+protected:
+    unsigned int Nc = 0;
+    unsigned int No = 0;
+    SpacePoint *eta = nullptr;
+    SpacePoint *ksi = nullptr;
+    DoubleMatrix _k;
+    DoubleMatrix _z;
+};
+
+struct RegulirizationParameter : public OptimizedParameter
+{
+    RegulirizationParameter(unsigned int Nc, unsigned int No);
+    RegulirizationParameter(const DoubleVector &x, unsigned int Nc, unsigned int No);
+
+    double regEpsilon1 = 0.0;
+    double regEpsilon2 = 0.0;
+    double regEpsilon3 = 0.0;
+    double regEpsilon4 = 0.0;
+};
+
 struct Problem2HSharedData
 {
     unsigned int Nc = 0;

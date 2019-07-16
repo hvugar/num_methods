@@ -15,6 +15,7 @@ public:
     explicit DoubleMatrix(unsigned int rows=0, unsigned int cols=0, double value=0.0);
     DoubleMatrix(const DoubleMatrix &matrix);
     DoubleMatrix(const DoubleVector &vector);
+    DoubleMatrix(const double* const data, unsigned int length, unsigned int rows, unsigned int cols);
     virtual ~DoubleMatrix();
 
     unsigned int rows() const;

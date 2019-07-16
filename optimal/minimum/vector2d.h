@@ -21,6 +21,8 @@ public:
     double& at (unsigned int n);
     const double& at (unsigned int n) const;
     unsigned int length() const;
+    void append(double *data, unsigned int length);
+    void append(const DoubleVector &v);
 
     /********************************************************************
      *                      NORM

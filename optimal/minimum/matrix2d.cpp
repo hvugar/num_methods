@@ -53,6 +53,13 @@ DoubleMatrix::DoubleMatrix(const DoubleVector &vector) : mRows(0), mCols(0), mDa
     }
 }
 
+DoubleMatrix::DoubleMatrix(const double* const data, unsigned int length, unsigned int rows, unsigned int cols) : mRows(rows), mCols(cols), mData(nullptr)
+{
+    if (data == nullptr || length) return;
+
+
+}
+
 DoubleMatrix::~DoubleMatrix()
 {
     clear();
