@@ -28,15 +28,15 @@ public:
      *                      NORM
      *******************************************************************/
 
+    double EuclideanNorm() const;
     double L1Norm() const;
     double L2Norm() const;
     double LpNorm(unsigned int p) const;
     double LInfNorm() const;
-    double EuclideanNorm() const;
 
+    DoubleVector& EuclideanNormalize();
     DoubleVector& L1Normalize();
     DoubleVector& L2Normalize();
-    DoubleVector& EuclideanNormalize();
 
     /********************************************************************
      *                      NORM

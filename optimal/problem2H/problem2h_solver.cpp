@@ -1,4 +1,29 @@
 ﻿#include "problem2h_solver.h"
+#include <time.h>
+
+class MyRnFunction : public RnFunction, public IGradient, public IPrinter
+{
+    virtual double fx(const DoubleVector &x) const
+    {
+        double a = 0.0;
+        for (unsigned int i=0; i<x.length(); i++) a += (x[i]-0.1*(i+1))*(x[i]-0.1*(i+1));
+        return a;
+    }
+
+    virtual void gradient(const DoubleVector &x, DoubleVector &g) const
+    {
+        g.resize(x.length());
+        for (unsigned int i=0; i<x.length(); i++) g[i] = 2.0*(x[i]-0.1*(i+1));
+    }
+
+    virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult) const
+    {
+        printf("%4d %10.14f %10.6f: ", i, f, alpha);
+        IPrinter::print(x, x.length());
+        //IPrinter::print(g, g.length());
+        //IPrinter::printSeperatorLine();
+    }
+};
 
 SpacePointInfo::SpacePointInfo(unsigned int length)
     : point(SpacePoint(0.0, 0.0)), length(length), vl(nullptr), dx(nullptr), dy(nullptr)
@@ -67,6 +92,26 @@ SpacePointInfo::~SpacePointInfo()
 
 void Problem2HSolver::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
 {
+//    srand(time(0));
+//    MyRnFunction f;
+
+//    //SteepestDescentGradient g;
+//    ConjugateGradient g;
+//    g.setFunction(&f);
+//    g.setGradient(&f);
+//    g.setPrinter(&f);
+//    g.setOptimalityTolerance(0.00001);
+//    g.setFunctionTolerance(0.000000001);
+//    g.setStepTolerance(0.001);
+//    g.setR1MinimizeEpsilon(0.1, 0.01);
+//    g.setMaxIterations(10);
+//    g.setNormalize(false);
+//    g.showExitMessage(true);
+
+//    DoubleVector x(2); for (unsigned int i=0; i<x.length(); i++) x[i] = rand() % 100 * 0.01;
+
+//    g.calculate(x);
+
     example2();
 }
 
@@ -113,8 +158,10 @@ void Problem2HSolver::example1()
     ps.L = 300;
     ps.D = 30;
     ps.setDimensions(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, static_cast<int>(ps.L+ps.D)));
-    ps.setEquationParameters(1.0, 0.01);
-    ps.u_list.resize(61);
+    ps.setEquationParameters(1.0, 0.0);
+    ps.u_list.resize(2*ps.D+1);
+
+    /****************************************************************************************************************/
 
     ps.Nt = 10;
     ps.times = new TimeNodePDE[ps.Nt];
@@ -129,33 +176,59 @@ void Problem2HSolver::example1()
     ps.times[8] = TimeNodePDE(270, 2.7);
     ps.times[9] = TimeNodePDE(300, 3.0);
 
+    /****************************************************************************************************************/
+
     const unsigned int initialPulsesCount = 2;
     InitialPulse *initialPulses = new InitialPulse[initialPulsesCount];
     initialPulses[0] = { SpacePoint(0.25, 0.25), 0.052, 1.0, 1.0, nullptr, 0 };
-    initialPulses[0].pulsesCount = 1;
-    initialPulses[0].pulses = new InitialPulse[initialPulses[0].pulsesCount];
-    initialPulses[0].pulses[0] = { initialPulses[0] };
-
     initialPulses[1] = { SpacePoint(0.75, 0.75), 0.048, 1.0, 1.0, nullptr, 0 };
-    initialPulses[1].pulsesCount = 1;
-    initialPulses[1].pulses = new InitialPulse[initialPulses[0].pulsesCount];
-    initialPulses[1].pulses[0] = { initialPulses[1] };
-
     ps.Problem2HWaveEquationIBVP::setInitialConditionMatrix(initialPulses, initialPulsesCount);
     delete [] initialPulses;
 
+    /****************************************************************************************************************/
 
     const unsigned int Nc = 2;
     const unsigned int No = 3;
 
-    DoubleMatrix k(Nc, No, +0.1000);
-    DoubleMatrix z(Nc, No, +0.0010);
+    DoubleMatrix k(Nc, No, +0.0);
+    DoubleMatrix z(Nc, No, +0.0);
 
-    k[0][0] = -0.5412; k[0][1] = -0.8412; k[0][2] = +0.5745; k[1][0] = -0.8259; k[1][1] = +0.8482; k[1][2] = +0.3751;
-    z[0][0] = -0.0084; z[0][1] = -0.0075; z[0][2] = +0.0086; z[1][0] = -0.0035; z[1][1] = +0.0022; z[1][2] = +0.0031;
+    //k[0][0] = -0.5412; k[0][1] = -0.8412; k[0][2] = +0.5745; k[1][0] = -0.8259; k[1][1] = +0.8482; k[1][2] = +0.3751;
+    //z[0][0] = -0.0084; z[0][1] = -0.0075; z[0][2] = +0.0086; z[1][0] = -0.0035; z[1][1] = +0.0022; z[1][2] = +0.0031;
 
-    SpacePoint ksi[] = { SpacePoint(0.1418, 0.2914), SpacePoint(0.8724, 0.1008), SpacePoint(0.6332, 0.6028) };
-    SpacePoint eta[] = { SpacePoint(0.7608, 0.2631), SpacePoint(0.3725, 0.6045) };
+    //SpacePoint ksi[] = { SpacePoint(0.1418, 0.2914), SpacePoint(0.8724, 0.1008), SpacePoint(0.6332, 0.6028) };
+    //SpacePoint eta[] = { SpacePoint(0.7608, 0.2631), SpacePoint(0.3725, 0.6045) };
+
+    /******* Optimal ********/
+    //k[0][0] = +0.2965; k[0][1] = +0.2273; k[0][2] = -0.1645; k[1][0] = +0.2783; k[1][1] = +0.2499; k[1][2] = -0.1632;
+    //z[0][0] = +0.0053; z[0][1] = +0.0042; z[0][2] = +0.0027; z[1][0] = +0.0042; z[1][1] = +0.0059; z[1][2] = +0.0027;
+    //SpacePoint ksi[] = { SpacePoint(0.2133, 0.4028), SpacePoint(0.7696, 0.1771), SpacePoint(0.5413, 0.5094) };
+    //SpacePoint eta[] = { SpacePoint(0.6807, 0.3104), SpacePoint(0.2896, 0.6936) };
+
+    //0.000090
+    //k[0][0] = +0.3068; k[0][1] = +0.3486; k[0][2] = -0.2102; k[1][0] = +0.3355; k[1][1] = +0.3874; k[1][2] = -0.2490;
+    //z[0][0] = +0.0028; z[0][1] = +0.0075; z[0][2] = -0.0026; z[1][0] = +0.0030; z[1][1] = +0.0065; z[1][2] = -0.0027;
+    //SpacePoint ksi[] = { SpacePoint(0.2059, 0.3967), SpacePoint(0.7639, 0.1825), SpacePoint(0.5215, 0.4707) };
+    //SpacePoint eta[] = { SpacePoint(0.6734, 0.2997), SpacePoint(0.2968, 0.6893) };
+
+    //0.00010313
+    //k[0][0] = -0.1231; k[0][1] = -0.2447; k[0][2] = -0.2064; k[1][0] = -0.1058; k[1][1] = -0.2694; k[1][2] = -0.1589;
+    //z[0][0] = -0.2259; z[0][1] = -0.1374; z[0][2] = +0.3021; z[1][0] = -0.4337; z[1][1] = +0.2281; z[1][2] = -0.1008;
+    //SpacePoint ksi[] = { SpacePoint(0.0637, 0.4179), SpacePoint(0.8594, 0.0500), SpacePoint(0.6546, 0.5481) };
+    //SpacePoint eta[] = { SpacePoint(0.6718, 0.2665), SpacePoint(0.3707, 0.6444) };
+
+    //-0.1231 -0.2447 -0.2064 -0.1058 -0.2694 -0.1589
+    //-0.2259 -0.1374  0.3021 -0.4337  0.2281 -0.1008
+    //0.0637  0.4179  0.8594  0.0500  0.6546  0.5481
+    //0.6718  0.2665  0.3707  0.6444
+
+    k[0][0] = +0.2965; k[0][1] = +0.2273; k[0][2] = -0.1645; k[1][0] = +0.2783; k[1][1] = +0.2499; k[1][2] = -0.1632;
+    z[0][0] = +0.0053; z[0][1] = +0.0042; z[0][2] = +0.0027; z[1][0] = +0.0042; z[1][1] = +0.0059; z[1][2] = +0.0027;
+    SpacePoint ksi[] = { SpacePoint(0.2125, 0.2548), SpacePoint(0.7696, 0.1471), SpacePoint(0.8168, 0.8694) };
+    SpacePoint eta[] = { SpacePoint(0.5807, 0.4104), SpacePoint(0.2196, 0.7936) };
+
+    ps.regEpsilon1 = ps.regEpsilon2 = ps.regEpsilon3 = ps.regEpsilon4 = 0.0;
+    ps.r = 0.0;
 
     DoubleMatrix rk(Nc, No, +0.0);
     DoubleMatrix rz(Nc, No, +0.0);
@@ -176,34 +249,43 @@ void Problem2HSolver::example1()
     ps.r_eta = new SpacePoint[Nc];
     ps.r_eta[0] = SpacePoint(0.680737, 0.310386);
     ps.r_eta[1] = SpacePoint(0.289555, 0.693593);
-    ps.regEpsilon1 = ps.regEpsilon2 = ps.regEpsilon3 = ps.regEpsilon4 = 0.1;
+    //ps.regEpsilon1 = ps.regEpsilon2 = ps.regEpsilon3 = ps.regEpsilon4 = 0.1;
 
     ps.setParameterCounts(Nc, No, ps.Problem2HWaveEquationIBVP::spaceDimensionX(),
                           ps.Problem2HWaveEquationIBVP::spaceDimensionY(),
                           ps.Problem2HWaveEquationIBVP::timeDimension());
     ps.setOptimizedParameters(k, z, ksi, eta);
     for (unsigned int i=0; i<Nc; i++) { ps.vmin[i] = -0.05; ps.vmax[i] = +0.05; }
-    ps.r = 0.01;
+    //ps.r = 0.01;
+
+//    ps.optimizeK = true;
+//    ps.optimizeZ = false;
+//    ps.optimizeO = false;
+//    ps.optimizeC = false;
 
     k.clear();
     z.clear();
 
     //checkGradient3(ps);
+//    DoubleVector x1;
+//    ps.OptimalParameterToVector(x1);
+//    printf("Optimal fx: %.8f\n", ps.fx(x1));
+//    return;
 
-    SteepestDescentGradient g;
-    //ConjugateGradient g;
+    //SteepestDescentGradient g;
+    ConjugateGradient g;
     g.setFunction(&ps);
     g.setGradient(&ps);
     g.setPrinter(&ps);
-    //g.setProjection(&ps);
-    g.setProjection(new Exampl1Projection(2, 3));
+    g.setProjection(&ps);
+    //g.setProjection(new Exampl1Projection(2, 3));
     //g.setGradientNormalizer(&prob);
     g.setOptimalityTolerance(0.0);
     g.setFunctionTolerance(0.0);
     g.setStepTolerance(0.0);
-    g.setR1MinimizeEpsilon(0.1, 0.01);
-    g.setMaxIterations(10);
-    g.setNormalize(true);
+    g.setR1MinimizeEpsilon(10.0, 0.1);
+    g.setMaxIterations(100);
+    g.setNormalize(false);
     g.showExitMessage(true);
 
     DoubleVector x;
@@ -231,13 +313,30 @@ void Problem2HSolver::example1()
     delete [] ps.times;
 }
 
+void Problem2HSolver::gradient(const DoubleVector &pv, DoubleVector &g) const
+{
+    g.clear();
+    g.resize(pv.length(), 0.0);
+    Problem2HSolver* solver = const_cast<Problem2HSolver*>(this);
+    solver->OptimalParameterFromVector(pv);
+    solver->setOptimizedParameters(k, z, ksi, eta);
+    solver->Problem2HWaveEquationIBVP::setInitialConditionMatrix(initialPulses, initialPulsesCount);
+    gradient_one(pv, g, solver);
+
+//    for (unsigned int i=0; i<g.length(); i++)
+//    {
+//        if (i<12) continue;
+//        g[i] = 0.0;
+//    }
+}
+
 void Problem2HSolver::example2()
 {
     Problem2HSolver ps;
     ps.L = 300;
     ps.D = 30;
     ps.setDimensions(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, static_cast<int>(ps.L+ps.D)));
-    ps.setEquationParameters(1.0, 0.01);
+    ps.setEquationParameters(1.0, 0.0);
     ps.u_list.resize(61);
 
     ps.Nt = 10;
@@ -253,20 +352,14 @@ void Problem2HSolver::example2()
     ps.times[8] = TimeNodePDE(270, 2.7);
     ps.times[9] = TimeNodePDE(300, 3.0);
 
+    /****************************************************************************************************************/
     const unsigned int initialPulsesCount = 2;
     InitialPulse *initialPulses = new InitialPulse[initialPulsesCount];
     initialPulses[0] = { SpacePoint(0.25, 0.25), 0.052, 1.0, 1.0, nullptr, 0 };
-    initialPulses[0].pulsesCount = 1;
-    initialPulses[0].pulses = new InitialPulse[initialPulses[0].pulsesCount];
-    initialPulses[0].pulses[0] = { initialPulses[0] };
-
     initialPulses[1] = { SpacePoint(0.75, 0.75), 0.048, 1.0, 1.0, nullptr, 0 };
-    initialPulses[1].pulsesCount = 1;
-    initialPulses[1].pulses = new InitialPulse[initialPulses[0].pulsesCount];
-    initialPulses[1].pulses[0] = { initialPulses[1] };
-
     ps.Problem2HWaveEquationIBVP::setInitialConditionMatrix(initialPulses, initialPulsesCount);
     delete [] initialPulses;
+    /****************************************************************************************************************/
 
     const unsigned int Nc = 2;
     const unsigned int No = 3;
@@ -274,8 +367,8 @@ void Problem2HSolver::example2()
     DoubleMatrix k(Nc, No, +0.0);
     DoubleMatrix z(Nc, No, +0.0);
 
-    k[0][0] = -0.1578; k[0][1] = -0.2560; k[0][2] = -0.1607; k[1][0] = -0.0915; k[1][1] = -0.2869; k[1][2] = -0.1528;
-    z[0][0] = -0.2090; z[0][1] = -0.1038; z[0][2] =  0.3300; z[1][0] = -0.4402; z[1][1] =  0.2200; z[1][2] = -0.1058;
+    //k[0][0] = -0.1578; k[0][1] = -0.2560; k[0][2] = -0.1607; k[1][0] = -0.0915; k[1][1] = -0.2869; k[1][2] = -0.1528;
+    //z[0][0] = -0.2090; z[0][1] = -0.1038; z[0][2] =  0.3300; z[1][0] = -0.4402; z[1][1] =  0.2200; z[1][2] = -0.1058;
     SpacePoint ksi[] = { SpacePoint(0.1575,  0.4800),  SpacePoint(0.8515,  0.0814),  SpacePoint(0.6214,  0.4685) };
     SpacePoint eta[] = { SpacePoint(0.7624,  0.2684),  SpacePoint(0.3802,  0.7624) };
 
@@ -335,8 +428,8 @@ void Problem2HSolver::example2()
 
     //ps.Problem2HWaveEquationIBVP::implicit_calculate_D2V1();
 
-    SteepestDescentGradient g;
-    //ConjugateGradient g;
+    //SteepestDescentGradient g;
+    ConjugateGradient g;
     g.setFunction(&ps);
     g.setGradient(&ps);
     g.setPrinter(&ps);
@@ -346,9 +439,9 @@ void Problem2HSolver::example2()
     g.setOptimalityTolerance(0.0);
     g.setFunctionTolerance(0.0);
     g.setStepTolerance(0.0);
-    g.setR1MinimizeEpsilon(0.1, 0.01);
-    g.setMaxIterations(200);
-    g.setNormalize(true);
+    g.setR1MinimizeEpsilon(10.0, 0.1);
+    g.setMaxIterations(100);
+    g.setNormalize(false);
     g.showExitMessage(true);
 
     DoubleVector x;
@@ -621,17 +714,6 @@ double Problem2HSolver::integralU(const DoubleMatrix &u) const
     }
 
     return usum*(hx*hy);
-}
-
-void Problem2HSolver::gradient(const DoubleVector &pv, DoubleVector &g) const
-{
-    g.clear();
-    g.resize(pv.length(), 0.0);
-    Problem2HSolver* solver = const_cast<Problem2HSolver*>(this);
-    solver->OptimalParameterFromVector(pv);
-    solver->setOptimizedParameters(k, z, ksi, eta);
-    solver->Problem2HWaveEquationIBVP::setInitialConditionMatrix(initialPulses, initialPulsesCount);
-    gradient_one(pv, g, solver);
 }
 
 void Problem2HSolver::gradient_one(const DoubleVector &, DoubleVector &g, Problem2HSolver* solver) const
@@ -916,6 +998,15 @@ void Problem2HSolver::project(DoubleVector &pv) const
         if (pv[index] <= 0.05) pv[index] = 0.05;
         if (pv[index] >= 0.95) pv[index] = 0.95;
     }
+
+//    for (unsigned int index = start; index <= end; index++)
+//    {
+//        if (index==12 || index==13)
+//        {
+//        if (pv[index] <= 0.05) pv[index] = 0.05;
+//        if (pv[index] >= 0.50) pv[index] = 0.50;
+//        }
+//    }
 }
 
 void Problem2HSolver::project(DoubleVector &, unsigned int) {}
@@ -933,7 +1024,7 @@ void Problem2HSolver::print(unsigned int iteration, const DoubleVector &x, const
         solver->u_list[i].clear();
     solver->u_list.clear();
 
-    printf("I[%d] %.8f %f %.8f %.8f %.8f  ", iteration, f, alpha, integr, nrm, plty);
+    printf("I[%3d] %.8f %7.4f %.8f %.8f %.8f  ", iteration, f, alpha, integr, nrm, plty);
     IPrinter::print(x, x.length(), 7, 4);
 
     //printf("k: "); IPrinter::print(x.mid(0,  5), x.mid(0,  5).length(), 9, 4);
@@ -943,9 +1034,12 @@ void Problem2HSolver::print(unsigned int iteration, const DoubleVector &x, const
 
 //    if (iteration == 10)
 //    if (fabs(alpha) <= DBL_EPSILON)
+//    if (iteration > 0 && iteration % 9 == 0)
 //    {
 //        Problem2HSolver *ps = const_cast<Problem2HSolver*>(this);
-//        ps->regEpsilon1 = ps->regEpsilon2 = ps->regEpsilon3 = ps->regEpsilon4 = 1.0;
+//        if (ps->optimizeK) { ps->optimizeZ = true; ps->optimizeK = false; } else
+//        if (ps->optimizeZ) { ps->optimizeK = true; ps->optimizeZ = false; }
+//        //ps->regEpsilon1 = ps->regEpsilon2 = ps->regEpsilon3 = ps->regEpsilon4 = 1.0;
 //    }
 }
 

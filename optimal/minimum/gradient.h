@@ -141,6 +141,8 @@ public:
      */
     auto maxFunctionEvaluations() const -> unsigned int;
 
+    auto iterationNumber() const -> unsigned int;
+
 protected:
     /**
      * @brief minimize
@@ -215,7 +217,7 @@ protected:
     bool m_show_end_message;
     bool m_normalize;
     IVectorNormalizer *m_normalizer;
-    unsigned int m_iterationCount;
+    unsigned int m_iterationNumber;
     unsigned int m_maxIterations;
     unsigned int m_maxFunctionEvaluations;
 };

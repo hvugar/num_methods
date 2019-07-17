@@ -139,15 +139,23 @@ void DoubleVector::append(const DoubleVector &)
 //    return IVectorNormalizer::
 //}
 
+double DoubleVector::EuclideanNorm() const
+{
+    double norm = 0.0;
+    for (unsigned int i=0; i<mLength; i++)
+    {
+        double item = mData[i];
+        norm += item*item;
+    }
+    return sqrt(norm);
+}
+
 double DoubleVector::L1Norm() const
 {
     double norm = 0.0;
-    if (!empty())
+    for (unsigned int i=0; i<mLength; i++)
     {
-        for (unsigned int i=0; i < mLength; i++)
-        {
-            norm += fabs(mData[i]);
-        }
+        norm += fabs(mData[i]);
     }
     return norm;
 }
@@ -155,16 +163,12 @@ double DoubleVector::L1Norm() const
 double DoubleVector::L2Norm() const
 {
     double norm = 0.0;
-    if (!empty())
+    for (unsigned int i=0; i<mLength; i++)
     {
-        for (unsigned int i=0; i < mLength; i++)
-        {
-            double item = mData[i];
-            norm += item*item;
-        }
-        return sqrt(norm);
+        double item = mData[i];
+        norm += item*item;
     }
-    return norm;
+    return sqrt(norm);
 }
 
 double DoubleVector::LpNorm(unsigned int p) const
@@ -196,10 +200,13 @@ double DoubleVector::LInfNorm() const
     return norm;
 }
 
-double DoubleVector::EuclideanNorm() const
+DoubleVector& DoubleVector::EuclideanNormalize()
 {
-    return L2Norm();
+    double norm = L2Norm();
+    if (norm > DBL_EPSILON) for (unsigned int i=0; i<mLength; i++) mData[i] /= norm;
+    return *this;
 }
+
 
 DoubleVector& DoubleVector::L1Normalize()
 {
@@ -213,11 +220,6 @@ DoubleVector& DoubleVector::L2Normalize()
     double norm = L2Norm();
     if (norm > DBL_EPSILON) for (unsigned int i=0; i<mLength; i++) mData[i] /= norm;
     return *this;
-}
-
-DoubleVector& DoubleVector::EuclideanNormalize()
-{
-    return L2Normalize();
 }
 
 /********************************************************************

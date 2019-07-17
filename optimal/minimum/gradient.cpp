@@ -46,7 +46,7 @@ GradientMethod::GradientMethod() : m_fn(nullptr), m_gr(nullptr), m_printer(nullp
     m_optimalityTolerance(0.1), m_functionTolerance(0.1), m_stepTolerance(0.1),
     min_step(0.1), min_epsilon(0.01),
     m_show_end_message(true), m_normalize(true), m_normalizer(nullptr),
-    m_iterationCount(0), m_maxIterations(UINT32_MAX)
+    m_iterationNumber(0), m_maxIterations(UINT32_MAX)
 {
     m_gr = new DefaultGradient();
     m_normalizer = new DefaultNormalizer();
@@ -137,7 +137,7 @@ void GradientMethod::setR1MinimizeEpsilon(double step, double epsilon)
 
 unsigned int GradientMethod::count() const
 {
-    return m_iterationCount;
+    return m_iterationNumber;
 }
 
 void GradientMethod::setPrinter(IPrinter *printer)
@@ -183,6 +183,11 @@ auto GradientMethod::setMaxFunctionEvaluations(unsigned int maxFunctionEvaluatio
 auto GradientMethod::maxFunctionEvaluations() const -> unsigned int
 {
     return m_maxFunctionEvaluations;
+}
+
+auto GradientMethod::iterationNumber() const -> unsigned int
+{
+    return m_iterationNumber;
 }
 
 /**
