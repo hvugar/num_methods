@@ -23,10 +23,13 @@
 
 #include "test/deltagrid2dext1.h"
 #include "test/nonlinearequationex1.h"
+#include "conjugategradinettest.h"
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     std::cout << "__cplusplus: " << __cplusplus << std::endl;
+    //ConjugateGradinetTest::Main(argc, argv);
+
     //FirstOrderLinearODEEx1::Main(argc, argv);
     //FirstOrderNonLinearODErEx1::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);

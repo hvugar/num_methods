@@ -45,10 +45,12 @@ LIBS += -L../bin -lborder
 #include(problem5/problem5.pri)
 #include(load_sys/load_sys.pri)
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    conjugategradinettest.cpp
 
 SOURCES += test/nonlinearequationex1.cpp
-HEADERS += test/nonlinearequationex1.h
+HEADERS += test/nonlinearequationex1.h \
+    conjugategradinettest.h
 
 SOURCES += test/deltagrid2dext1.cpp
 HEADERS += test/deltagrid2dext1.h

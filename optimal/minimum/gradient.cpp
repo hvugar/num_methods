@@ -46,7 +46,8 @@ GradientMethod::GradientMethod() : m_fn(nullptr), m_gr(nullptr), m_printer(nullp
     m_optimalityTolerance(0.1), m_functionTolerance(0.1), m_stepTolerance(0.1),
     min_step(0.1), min_epsilon(0.01),
     m_show_end_message(true), m_normalize(true), m_normalizer(nullptr),
-    m_iterationNumber(0), m_maxIterations(UINT32_MAX)
+    m_iterationNumber(0), m_maxIterationCount(UINT32_MAX),
+    m_functionEvaluationNumber(0), m_maxFunctionEvaluationCount(UINT32_MAX)
 {
     m_gr = new DefaultGradient();
     m_normalizer = new DefaultNormalizer();
@@ -165,29 +166,34 @@ void GradientMethod::setGradientNormalizer(IVectorNormalizer *normalizer)
     m_normalizer = normalizer;
 }
 
-auto GradientMethod::setMaxIterations(unsigned int maxIterations) -> void
+auto GradientMethod::setMaxIterationCount(unsigned int maxIterationCount) -> void
 {
-    m_maxIterations = maxIterations;
+    m_maxIterationCount = maxIterationCount;
 }
 
-auto GradientMethod::maxIterations() const -> unsigned int
+auto GradientMethod::maxIterationCount() const -> unsigned int
 {
-    return m_maxIterations;
+    return m_maxIterationCount;
 }
 
-auto GradientMethod::setMaxFunctionEvaluations(unsigned int maxFunctionEvaluations) -> void
+auto GradientMethod::setMaxFunctionEvaluationCount(unsigned int maxFunctionEvaluationCount) -> void
 {
-    m_maxFunctionEvaluations = maxFunctionEvaluations;
+    m_maxFunctionEvaluationCount = maxFunctionEvaluationCount;
 }
 
-auto GradientMethod::maxFunctionEvaluations() const -> unsigned int
+auto GradientMethod::maxFunctionEvaluationCount() const -> unsigned int
 {
-    return m_maxFunctionEvaluations;
+    return m_maxFunctionEvaluationCount;
 }
 
 auto GradientMethod::iterationNumber() const -> unsigned int
 {
     return m_iterationNumber;
+}
+
+auto GradientMethod::maxFunctionEvaluationNumber() const -> unsigned int
+{
+    return m_maxFunctionEvaluationCount;
 }
 
 /**

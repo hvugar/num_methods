@@ -124,24 +124,26 @@ public:
      * @brief Максимальное количество повторений позволено.
      * @param maxIterations
      */
-    auto setMaxIterations(unsigned int maxIterations) -> void;
+    auto setMaxIterationCount(unsigned int maxIterationCount) -> void;
     /**
      * @brief Максимальное количество повторений позволено.
      * @return
      */
-    auto maxIterations() const -> unsigned int;
+    auto maxIterationCount() const -> unsigned int;
     /**
      * @brief Максимальное количество оценок функции позволено.
      * @param maxFunctionEvaluations
      */
-    auto setMaxFunctionEvaluations(unsigned int maxFunctionEvaluations) -> void;
+    auto setMaxFunctionEvaluationCount(unsigned int maxFunctionEvaluationCount) -> void;
     /**
      * @brief Максимальное количество оценок функции позволено.
      * @return
      */
-    auto maxFunctionEvaluations() const -> unsigned int;
+    auto maxFunctionEvaluationCount() const -> unsigned int;
 
     auto iterationNumber() const -> unsigned int;
+
+    auto maxFunctionEvaluationNumber() const -> unsigned int;
 
 protected:
     /**
@@ -218,8 +220,9 @@ protected:
     bool m_normalize;
     IVectorNormalizer *m_normalizer;
     unsigned int m_iterationNumber;
-    unsigned int m_maxIterations;
-    unsigned int m_maxFunctionEvaluations;
+    unsigned int m_maxIterationCount;
+    unsigned int m_functionEvaluationNumber;
+    unsigned int m_maxFunctionEvaluationCount;
 };
 
 #endif // GRADIENT_METHOD_H

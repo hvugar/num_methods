@@ -152,7 +152,7 @@ void Problem0HFunctional::optimization()
     g.setFunctionTolerance(0.0);
     g.setStepTolerance(0.0);
     g.setR1MinimizeEpsilon(0.1, 0.01);
-    g.setMaxIterations(30);
+    g.setMaxIterationCount(30);
     g.setNormalize(true);
     g.showExitMessage(true);
     g.calculate(x);

@@ -32,12 +32,13 @@ void ConjugateGradient::calculate(DoubleVector& x)
     mx = &x;
     ms = &s;
     m_iterationNumber = 0;
-    //unsigned int m_funcEvaluationCount = 0;
+    m_functionEvaluationNumber = 0;
 
     /**************************************************************************************
      * Gradient of objective functionin on initial point.
      **************************************************************************************/
     m_gr->gradient(x, g);
+    if (m_normalize && m_normalizer != nullptr) m_normalizer->normalize(g);
 
     /**************************************************************************************
      * Checking for gradient vector norm that is less of optimality tolerance.
@@ -114,7 +115,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
         /**************************************************************************************
          * Normalization of a gradient vector
          **************************************************************************************/
-        if (m_normalize && m_normalizer != nullptr) m_normalizer->normalize(s);
+        //if (m_normalize && m_normalizer != nullptr) m_normalizer->normalize(s);
 
         /**************************************************************************************
          * One-dimensional minimization along the direction of a anti-gradient
@@ -150,6 +151,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
          * Gradient of objectiv function in next point
          **************************************************************************************/
         m_gr->gradient(x, g);
+        if (m_normalize && m_normalizer != nullptr) m_normalizer->normalize(g);
 
         /**************************************************************************************
          * Checking for gradient vector norm that is less of optimality tolerance.
@@ -172,23 +174,10 @@ void ConjugateGradient::calculate(DoubleVector& x)
          * If distance and difference is less than step tolerance then break the iteration.
          * Finish minimization.
          **************************************************************************************/
-        //if (distance < stepTolerance() && fabs(f2 - f1) < functionTolerance())
-        //{
-        //    if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
-        //    if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
-        //    break;
-        //}
-        if (distance < stepTolerance())
+        if (distance < stepTolerance() && fabs(f2 - f1) < functionTolerance())
         {
             if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
             if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
-            break;
-        }
-
-        if (fabs(f2 - f1) < functionTolerance())
-        {
-            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
-            if (m_show_end_message) puts("Optimisation ends, because previous and current function values difference less than function tolerance...");
             break;
         }
 
@@ -197,7 +186,29 @@ void ConjugateGradient::calculate(DoubleVector& x)
          *
          *
          **************************************************************************************/
-        if (m_iterationNumber >= maxIterations())
+        //if (distance <= stepTolerance())
+        //{
+        //    if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+        //    if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
+        //    break;
+        //}
+        /**************************************************************************************
+         *
+         *
+         *
+         **************************************************************************************/
+        //if (fabs(f2 - f1) <= functionTolerance())
+        //{
+        //    if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+        //    if (m_show_end_message) puts("Optimisation ends, because previous and current function values difference less than function tolerance...");
+        //    break;
+        //}
+        /**************************************************************************************
+         *
+         *
+         *
+         **************************************************************************************/
+        if (m_iterationNumber == maxIterationCount())
         {
             if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
             if (m_show_end_message) puts("Optimisation ends, because iteration count reached max allowed iterations number...");
@@ -209,7 +220,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
          *
          *
          **************************************************************************************/
-        if (maxFunctionEvaluations() != maxFunctionEvaluations())
+        if (m_functionEvaluationNumber == maxFunctionEvaluationCount())
         {
             if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
             if (m_show_end_message) puts("Optimisation ends, because max function evaluation count reached max allowed number...");
@@ -240,12 +251,9 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
     double fxa = 0.0, fxb = 0.0;
     bool unimodal = false;
 
-    callBeforeFindingLine();
     straightLineSearch(alpha0, min_step, a, b, fxa, fxb, unimodal);
     //swann(alpha0, min_step, a, b, fxa, fxb, unimodal);
-    callAftreFindingLine();
 
-    callBeforeGoldenSearch();
     if (unimodal)
     {
         goldenSectionSearch(alpha, a, b, min_epsilon);
@@ -254,7 +262,6 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
     {
         fxa < fxb ? alpha = a : alpha = b;
     }
-    callAfterGoldenSearch();
 
     if (fx(alpha) > fx(alpha0)) alpha = alpha0;
 

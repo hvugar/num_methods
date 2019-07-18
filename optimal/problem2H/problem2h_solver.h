@@ -120,6 +120,9 @@ public:
                                     const Dimension &dimensionY, const Dimension &timeDimension);
     virtual void setOptimizedParameters(const DoubleMatrix &k, const DoubleMatrix &z,
                                         const SpacePoint *ksi, const SpacePoint *eta);
+    virtual void setRegularizationParameters(const DoubleMatrix &k, const DoubleMatrix &z,
+                                    const SpacePoint *ksi, const SpacePoint *eta,
+                                    double regEpsilon1, double regEpsilon2, double regEpsilon3, double regEpsilon4);
 
     virtual auto penalty() const -> double;
     virtual auto gpi(unsigned int i, unsigned int ln) const -> double;
@@ -150,6 +153,9 @@ public:
 
     unsigned int initialPulsesCount = 0;
     InitialPulse *initialPulses = nullptr;
+    double noise = 0.0;
+    bool save = false;
+    std::vector<DoubleMatrix> save_u;
 
 private:
     void layerInfoPrepareLayerMatrix(const DoubleMatrix &u, const TimeNodePDE& tn);
@@ -201,8 +207,8 @@ public:
 
     void OptimalParameterFromVector(const DoubleVector &x);
     void OptimalParameterToVector(DoubleVector &x) const;
-//    void setOptimizationVector(double* v, unsigned int length);
-//    void setRegularizationVector(double* v, unsigned int length);
+    //    void setOptimizationVector(double* v, unsigned int length);
+    //    void setRegularizationVector(double* v, unsigned int length);
 
 protected:
     virtual double fx(const DoubleVector &x) const;

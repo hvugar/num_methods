@@ -132,7 +132,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
          *
          *
          **************************************************************************************/
-        if (m_iterationNumber >= maxIterations())
+        if (m_iterationNumber >= maxIterationCount())
         {
             if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
             if (m_show_end_message) puts("Optimisation ends, because iteration count reached max allowed iterations number...");
@@ -144,7 +144,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
          *
          *
          **************************************************************************************/
-        if (maxFunctionEvaluations() != maxFunctionEvaluations())
+        if (maxFunctionEvaluationCount() != maxFunctionEvaluationCount())
         {
             if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
             if (m_show_end_message) puts("Optimisation ends, because max function evaluation count reached max allowed number...");
