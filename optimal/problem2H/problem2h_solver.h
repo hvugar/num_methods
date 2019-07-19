@@ -80,18 +80,21 @@ struct PROBLEM2HSHARED_EXPORT SpacePointInfo
 
 struct Problem2HSharedData
 {
+protected:
     unsigned int Nc = 0;
     unsigned int No = 0;
-    SpacePoint *eta = nullptr;
-    SpacePoint *ksi = nullptr;
+
     DoubleMatrix k;
     DoubleMatrix z;
+    SpacePoint *eta = nullptr;
+    SpacePoint *ksi = nullptr;
 
-    SpacePoint *r_eta = nullptr;
-    SpacePoint *r_ksi = nullptr;
     DoubleMatrix r_k;
     DoubleMatrix r_z;
+    SpacePoint *r_eta = nullptr;
+    SpacePoint *r_ksi = nullptr;
 
+public:
     double regEpsilon1 = 0.0;
     double regEpsilon2 = 0.0;
     double regEpsilon3 = 0.0;
@@ -116,13 +119,9 @@ class PROBLEM2HSHARED_EXPORT Problem2HCommon : virtual public Problem2HSharedDat
 public:
     virtual ~Problem2HCommon();
 
-    virtual void setParameterCounts(unsigned int Nc, unsigned int No, const Dimension &dimensionX,
-                                    const Dimension &dimensionY, const Dimension &timeDimension);
-    virtual void setOptimizedParameters(const DoubleMatrix &k, const DoubleMatrix &z,
-                                        const SpacePoint *ksi, const SpacePoint *eta);
-    virtual void setRegularizationParameters(const DoubleMatrix &k, const DoubleMatrix &z,
-                                    const SpacePoint *ksi, const SpacePoint *eta,
-                                    double regEpsilon1, double regEpsilon2, double regEpsilon3, double regEpsilon4);
+    virtual void setParameters(unsigned int Nc, unsigned int No, const Dimension &dimensionX, const Dimension &dimensionY, const Dimension &timeDimension);
+    virtual void setOptimizationVector(const double *x);
+    virtual void setRegularizationVector(const double *x, double espsilon1, double epsilon2, double epsilon3, double epsilon4);
 
     virtual auto penalty() const -> double;
     virtual auto gpi(unsigned int i, unsigned int ln) const -> double;
@@ -194,21 +193,15 @@ class PROBLEM2HSHARED_EXPORT Problem2HSolver : virtual protected Problem2HWaveEq
 {
 public:
     static void Main(int argc, char* argv[]);
-    static void checkGradient3(const Problem2HSolver &prob);
+    static void checkGradient3(const Problem2HSolver &prob, const double *data, unsigned int length);
     static void example1();
     static void example2();
-
 
     void setDimensions(const Dimension &dimensionX, const Dimension &dimensionY, const Dimension &timeDimension);
     void setEquationParameters(double waveSpeed, double waveDissipation);
 
     Problem2HWaveEquationIBVP& fw()   { return *(dynamic_cast<Problem2HWaveEquationIBVP*>(this)); }
     Problem2HConjugateWaveEquationIBVP& bw()  { return *(dynamic_cast<Problem2HConjugateWaveEquationIBVP*>(this)); }
-
-    void OptimalParameterFromVector(const DoubleVector &x);
-    void OptimalParameterToVector(DoubleVector &x) const;
-    //    void setOptimizationVector(double* v, unsigned int length);
-    //    void setRegularizationVector(double* v, unsigned int length);
 
 protected:
     virtual double fx(const DoubleVector &x) const;

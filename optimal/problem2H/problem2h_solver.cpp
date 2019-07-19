@@ -145,37 +145,31 @@ void Problem2HSolver::example1()
 
     const unsigned int Nc = 2;
     const unsigned int No = 3;
-    ps.setParameterCounts(Nc, No, ps.Problem2HWaveEquationIBVP::spaceDimensionX(), ps.Problem2HWaveEquationIBVP::spaceDimensionY(), ps.Problem2HWaveEquationIBVP::timeDimension());
+    const unsigned int length = 2*Nc*No + 2*(Nc+No);
+    ps.setParameters(Nc, No, ps.Problem2HWaveEquationIBVP::spaceDimensionX(), ps.Problem2HWaveEquationIBVP::spaceDimensionY(),
+                     ps.Problem2HWaveEquationIBVP::timeDimension());
 
-    DoubleMatrix k(Nc, No, +0.0);
-    DoubleMatrix z(Nc, No, +0.0);
+    // Optimization Vector
+    double ox[] = { -0.5412, -0.8412, +0.5745, -0.8259, +0.8482, +0.3751,
+                    -0.0084, -0.0075, +0.0086, -0.0035, +0.0022, +0.0031,
+                    +0.1418, +0.2914, +0.8724, +0.1008, +0.6332, +0.6028,
+                    +0.7608, +0.2631, +0.3725, +0.6045 };
 
-    k[0][0] = -0.5412; k[0][1] = -0.8412; k[0][2] = +0.5745; k[1][0] = -0.8259; k[1][1] = +0.8482; k[1][2] = +0.3751;
-    z[0][0] = -0.0084; z[0][1] = -0.0075; z[0][2] = +0.0086; z[1][0] = -0.0035; z[1][1] = +0.0022; z[1][2] = +0.0031;
-    SpacePoint ksi[] = { SpacePoint(0.1418, 0.2914), SpacePoint(0.8724, 0.1008), SpacePoint(0.6332, 0.6028) };
-    SpacePoint eta[] = { SpacePoint(0.7608, 0.2631), SpacePoint(0.3725, 0.6045) };
+    // Regularization Vector
+    double rx[] = { +0.3068, +0.3486, -0.2102, +0.3355, +0.3874, -0.2490,
+                    +0.0028, +0.0075, -0.0026, +0.0030, +0.0065, -0.0027,
+                    +0.2059, +0.3967, +0.7639, +0.1825, +0.5215, +0.4707,
+                    +0.6734, +0.2997, +0.2968, +0.6893};
 
-    ps.setOptimizedParameters(k, z, ksi, eta);
-
-    //Regularization
-    DoubleMatrix rk(Nc, No, +0.0);
-    DoubleMatrix rz(Nc, No, +0.0);
-    rk[0][0] = +0.3068; rk[0][1] = +0.3486; rk[0][2] = -0.2102; rk[1][0] = +0.3355; rk[1][1] = +0.3874; rk[1][2] = -0.2490;
-    rz[0][0] = +0.0028; rz[0][1] = +0.0075; rz[0][2] = -0.0026; rz[1][0] = +0.0030; rz[1][1] = +0.0065; rz[1][2] = -0.0027;
-    SpacePoint rksi[] = { SpacePoint(0.2059, 0.3967), SpacePoint(0.7639, 0.1825), SpacePoint(0.5215, 0.4707) };
-    SpacePoint reta[] = { SpacePoint(0.6734, 0.2997), SpacePoint(0.2968, 0.6893) };
-
+    ps.setOptimizationVector(ox);
     const double epsilon = 0.2;
-    ps.setRegularizationParameters(rk, rz, rksi, reta, epsilon, epsilon, epsilon, epsilon);
-    ps.noise = 0.05;
+    ps.setRegularizationVector(rx, epsilon, epsilon, epsilon, epsilon);
+    ps.noise = 0.0;
 
     for (unsigned int i=0; i<Nc; i++) { ps.vmin[i] = -0.05; ps.vmax[i] = +0.05; }
     ps.r = 0.1;
 
-    k.clear();
-    z.clear();
-
-    //checkGradient3(ps);
+    //checkGradient3(ps, ox, length);
 
     //SteepestDescentGradient g;
     ConjugateGradient g;
@@ -192,40 +186,36 @@ void Problem2HSolver::example1()
     g.setNormalize(false);
     g.showExitMessage(true);
 
-    DoubleVector x;
-    ps.OptimalParameterToVector(x);
-
-    IPrinter::printSeperatorLine();
-    DoubleVector pv;
-    ps.OptimalParameterToVector(pv);
-    printf("ok: "); IPrinter::print(pv.mid(0,  5), pv.mid(0,  5).length(), 9, 6);
-    printf("oz: "); IPrinter::print(pv.mid(6, 11), pv.mid(6, 11).length(), 9, 6);
-    printf("xy: "); IPrinter::print(pv.mid(12,21), pv.mid(12,21).length(), 9, 6);
     IPrinter::printSeperatorLine();
 
+    DoubleVector x(ox, length);
+    //printf("ok: "); IPrinter::print(x.mid(0,  5), x.mid(0,  5).length(), 9, 4);
+    //printf("oz: "); IPrinter::print(x.mid(6, 11), x.mid(6, 11).length(), 9, 4);
+    //printf("xy: "); IPrinter::print(x.mid(12,21), x.mid(12,21).length(), 9, 4);
+    //IPrinter::printSeperatorLine();
     //g.calculate(x);
 
-    ps.regEpsilon1 = ps.regEpsilon2 = ps.regEpsilon3 = ps.regEpsilon4 = 0.0;
+    puts("Optimization is finished...");
+    printf("fx %10.8f\n", ps.fx(DoubleVector(rx, length)));
+
+
+    ps.setDimensions(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, 530));
+    ps.setParameters(Nc, No, ps.Problem2HWaveEquationIBVP::spaceDimensionX(), ps.Problem2HWaveEquationIBVP::spaceDimensionY(),
+                     ps.Problem2HWaveEquationIBVP::timeDimension());
+    ps.setOptimizationVector(rx);
+    ps.setRegularizationVector(rx, 0.0, 0.0, 0.0, 0.0);
     ps.r = 0.0;
-    ps.setOptimizedParameters(rk, rz, rksi, reta);
-
-
-    DoubleVector x1;puts("aa");
-    ps.OptimalParameterToVector(x1);
     ps.Problem2HWaveEquationIBVP::save = true;
+    ps.Problem2HWaveEquationIBVP::save_u.resize(1061);
+    printf("fx %10.8f\n", ps.fx(DoubleVector(rx, length)));
     ps.Problem2HWaveEquationIBVP::implicit_calculate_D2V1();
-    for (unsigned int i=0; i<300; i++)
+    std::vector<DoubleMatrix> mm(61);
+    for (unsigned int i=0; i<=600; i+=2)
     {
-        std::vector<DoubleMatrix> mm(61);
-        for (unsigned int j=i; i<=i+60; j++)
-        {
-            mm[i] = ps.save_u[j];
-            double fx = ps.fx(x1);
-            printf("%4d %10.8f %10.8f\n", i, i*0.01, fx);
-        }
+        for (unsigned int j=0; j<=60; j++) mm[j] = ps.save_u[j+i];
+        double fx = ps.integral(mm);
+        printf("%4d %10.8f %10.8f\n", i/2, i*0.005, fx);
     }
-    double fx = ps.fx(x1);
-    printf("%4d %10.8f %10.8f\n", i, i*0.01, fx);
 
     //    double f1 = ps.fx(x);
     //    x[0] = x[1] = x[2] = x[3] = x[4] = x[5] = 0.0;
@@ -243,8 +233,8 @@ void Problem2HSolver::gradient(const DoubleVector &pv, DoubleVector &g) const
     g.clear();
     g.resize(pv.length(), 0.0);
     Problem2HSolver* solver = const_cast<Problem2HSolver*>(this);
-    solver->OptimalParameterFromVector(pv);
-    solver->setOptimizedParameters(k, z, ksi, eta);
+    //solver->OptimalParameterFromVector(pv);
+    solver->setOptimizationVector(pv.data());
     solver->Problem2HWaveEquationIBVP::setInitialConditionMatrix(initialPulses, initialPulsesCount);
     gradient_one(pv, g, solver);
 
@@ -320,37 +310,31 @@ void Problem2HSolver::example2()
 
     const unsigned int Nc = 2;
     const unsigned int No = 3;
-    ps.setParameterCounts(Nc, No, ps.Problem2HWaveEquationIBVP::spaceDimensionX(), ps.Problem2HWaveEquationIBVP::spaceDimensionY(), ps.Problem2HWaveEquationIBVP::timeDimension());
+    const unsigned int length = 2*Nc*No + 2*(Nc+No);
+    ps.setParameters(Nc, No, ps.Problem2HWaveEquationIBVP::spaceDimensionX(), ps.Problem2HWaveEquationIBVP::spaceDimensionY(),
+                     ps.Problem2HWaveEquationIBVP::timeDimension());
 
-    DoubleMatrix k(Nc, No, +0.0);
-    DoubleMatrix z(Nc, No, +0.0);
+    // Optimization Vector
+    double ox[] = { +0.0000, +0.0000, +0.0000, +0.0000, +0.0000, +0.0000,
+                    +0.0000, +0.0000, +0.0000, +0.0000, +0.0000, +0.0000,
+                    +0.1575, +0.4800, +0.8515, +0.0814, +0.6214, +0.4685,
+                    +0.7624, +0.2684, +0.3802, +0.7624 };
 
-    //k[0][0] = -0.5412; k[0][1] = -0.8412; k[0][2] = +0.5745; k[1][0] = -0.8259; k[1][1] = +0.8482; k[1][2] = +0.3751;
-    //z[0][0] = -0.0084; z[0][1] = -0.0075; z[0][2] = +0.0086; z[1][0] = -0.0035; z[1][1] = +0.0022; z[1][2] = +0.0031;
-    SpacePoint ksi[] = { SpacePoint(0.1575,  0.4800),  SpacePoint(0.8515,  0.0814),  SpacePoint(0.6214,  0.4685) };
-    SpacePoint eta[] = { SpacePoint(0.7624,  0.2684),  SpacePoint(0.3802,  0.7624) };
+    // Regularization Vector
+    double rx[] = { +0.3068, +0.3486, -0.2102, +0.3355, +0.3874, -0.2490,
+                    +0.0028, +0.0075, -0.0026, +0.0030, +0.0065, -0.0027,
+                    +0.2059, +0.3967, +0.7639, +0.1825, +0.5215, +0.4707,
+                    +0.6734, +0.2997, +0.2968, +0.6893};
 
-    ps.setOptimizedParameters(k, z, ksi, eta);
-
-    //Regularization
-    DoubleMatrix rk(Nc, No, +0.0);
-    DoubleMatrix rz(Nc, No, +0.0);
-    rk[0][0] = +0.3068; rk[0][1] = +0.3486; rk[0][2] = -0.2102; rk[1][0] = +0.3355; rk[1][1] = +0.3874; rk[1][2] = -0.2490;
-    rz[0][0] = +0.0028; rz[0][1] = +0.0075; rz[0][2] = -0.0026; rz[1][0] = +0.0030; rz[1][1] = +0.0065; rz[1][2] = -0.0027;
-    SpacePoint rksi[] = { SpacePoint(0.2059, 0.3967), SpacePoint(0.7639, 0.1825), SpacePoint(0.5215, 0.4707) };
-    SpacePoint reta[] = { SpacePoint(0.6734, 0.2997), SpacePoint(0.2968, 0.6893) };
-
-    const double epsilon = 0.0;
-    ps.setRegularizationParameters(rk, rz, rksi, reta, epsilon, epsilon, epsilon, epsilon);
+    ps.setOptimizationVector(ox);
+    const double epsilon = 0.2;
+    ps.setRegularizationVector(rx, epsilon, epsilon, epsilon, epsilon);
     ps.noise = 0.0;
 
     for (unsigned int i=0; i<Nc; i++) { ps.vmin[i] = -0.05; ps.vmax[i] = +0.05; }
-    ps.r = 0.0;
+    ps.r = 0.1;
 
-    k.clear();
-    z.clear();
-
-    //checkGradient3(ps);
+    //checkGradient3(ps, ox, length);
 
     //SteepestDescentGradient g;
     ConjugateGradient g;
@@ -363,44 +347,39 @@ void Problem2HSolver::example2()
     g.setFunctionTolerance(0.0);
     g.setStepTolerance(0.0);
     g.setR1MinimizeEpsilon(1.0, 0.01);
-    g.setMaxIterationCount(200);
+    g.setMaxIterationCount(20);
     g.setNormalize(false);
     g.showExitMessage(true);
 
-    DoubleVector x;
-    ps.OptimalParameterToVector(x);
-
-    IPrinter::printSeperatorLine();
-    DoubleVector pv;
-    ps.OptimalParameterToVector(pv);
-    printf("ok: "); IPrinter::print(pv.mid(0,  5), pv.mid(0,  5).length(), 9, 6);
-    printf("oz: "); IPrinter::print(pv.mid(6, 11), pv.mid(6, 11).length(), 9, 6);
-    printf("xy: "); IPrinter::print(pv.mid(12,21), pv.mid(12,21).length(), 9, 6);
     IPrinter::printSeperatorLine();
 
+    DoubleVector x(ox, length);
+    printf("ok: "); IPrinter::print(x.mid(0,  5), x.mid(0,  5).length(), 9, 4);
+    printf("oz: "); IPrinter::print(x.mid(6, 11), x.mid(6, 11).length(), 9, 4);
+    printf("xy: "); IPrinter::print(x.mid(12,21), x.mid(12,21).length(), 9, 4);
+    IPrinter::printSeperatorLine();
     g.calculate(x);
 
-    ps.regEpsilon1 = ps.regEpsilon2 = ps.regEpsilon3 = ps.regEpsilon4 = 0.0;
-    double f1 = ps.fx(x);
-    x[0] = x[1] = x[2] = x[3] = x[4] = x[5] = 0.0;
-    double f2 = ps.fx(x);
+    //    ps.regEpsilon1 = ps.regEpsilon2 = ps.regEpsilon3 = ps.regEpsilon4 = 0.0;
+    //    double f1 = ps.fx(x);
+    //    x[0] = x[1] = x[2] = x[3] = x[4] = x[5] = 0.0;
+    //    double f2 = ps.fx(x);
 
-    printf("%f %f\n", f1, f2);
+    //    printf("%f %f\n", f1, f2);
 
-    puts("Finished");
+    //    puts("Finished");
 
     delete [] ps.times;
 
 }
 
-void Problem2HSolver::checkGradient3(const Problem2HSolver &prob)
+void Problem2HSolver::checkGradient3(const Problem2HSolver &prob, const double *data, unsigned int length)
 {
     IPrinter::printSeperatorLine();
-    DoubleVector pv;
-    prob.OptimalParameterToVector(pv);
-    printf("ok: "); IPrinter::print(pv.mid(0,  5), pv.mid(0,  5).length(), 9, 6);
-    printf("oz: "); IPrinter::print(pv.mid(6, 11), pv.mid(6, 11).length(), 9, 6);
-    printf("xy: "); IPrinter::print(pv.mid(12,21), pv.mid(12,21).length(), 9, 6);
+    DoubleVector x(data, length);
+    printf("ok: "); IPrinter::print(x.mid(0,  5), x.mid(0,  5).length(), 9, 4);
+    printf("oz: "); IPrinter::print(x.mid(6, 11), x.mid(6, 11).length(), 9, 4);
+    printf("xy: "); IPrinter::print(x.mid(12,21), x.mid(12,21).length(), 9, 4);
     IPrinter::printSeperatorLine();
 
     //    DoubleVector rv;
@@ -410,16 +389,16 @@ void Problem2HSolver::checkGradient3(const Problem2HSolver &prob)
     //    printf("xy: "); IPrinter::print(rv.mid(8, 15), rv.mid(8, 15).length(), 9, 6);
     //    IPrinter::printSeperatorLine();
 
-    DoubleVector ag(pv.length());
-    double functional = prob.fx(pv);
+    DoubleVector ag(x.length());
+    double functional = prob.fx(x);
     printf("Functional: %f\n", functional);
     puts("Calculating gradients....");
-    prob.gradient(pv, ag);
+    prob.gradient(x, ag);
     puts("Gradients are calculated.");
     //return;
 
-    DoubleVector ng1(pv.length(), 0.0);
-    DoubleVector ng2(pv.length(), 0.0);
+    DoubleVector ng1(x.length(), 0.0);
+    DoubleVector ng2(x.length(), 0.0);
 
     const unsigned int Nc = prob.Nc;
     const unsigned int No = prob.No;
@@ -427,30 +406,30 @@ void Problem2HSolver::checkGradient3(const Problem2HSolver &prob)
 
     puts("Calculating numerical gradients.... dh=0.01");
     printf("*** Calculating numerical gradients for k...... dh=0.01 ");
-    IGradient::Gradient(&prob, 0.01, pv, ng1, 0*offset, 1*offset-1);
+    IGradient::Gradient(&prob, 0.01, x, ng1, 0*offset, 1*offset-1);
     printf("Calculated.\n");
     printf("*** Calculating numerical gradients for z...... dh=0.01 ");
-    IGradient::Gradient(&prob, 0.01, pv, ng1, 1*offset, 2*offset-1);
+    IGradient::Gradient(&prob, 0.01, x, ng1, 1*offset, 2*offset-1);
     printf("Calculated.\n");
     printf("*** Calculating numerical gradients for xi..... dh=0.01 ");
-    IGradient::Gradient(&prob, 0.01, pv, ng1, 2*offset+0*No, 2*offset+2*No-1);
+    IGradient::Gradient(&prob, 0.01, x, ng1, 2*offset+0*No, 2*offset+2*No-1);
     printf("Calculated.\n");
     printf("*** Calculating numerical gradients for eta.... dh=0.01 ");
-    IGradient::Gradient(&prob, 0.01, pv, ng1, 2*offset+2*No, 2*offset+2*No+2*Nc-1);
+    IGradient::Gradient(&prob, 0.01, x, ng1, 2*offset+2*No, 2*offset+2*No+2*Nc-1);
     printf("Calculated.\n");
 
     puts("Calculating numerical gradients.... dh=0.001");
     printf("*** Calculating numerical gradients for k...... dh=0.001 ");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 0*offset, 1*offset-1);
+    IGradient::Gradient(&prob, 0.001, x, ng2, 0*offset, 1*offset-1);
     printf("Calculated.\n");
     printf("*** Calculating numerical gradients for z...... dh=0.001 ");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 1*offset, 2*offset-1);
+    IGradient::Gradient(&prob, 0.001, x, ng2, 1*offset, 2*offset-1);
     printf("Calculated.\n");
     printf("*** Calculating numerical gradients for xi..... dh=0.001 ");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 2*offset+0*No, 2*offset+2*No-1);
+    IGradient::Gradient(&prob, 0.001, x, ng2, 2*offset+0*No, 2*offset+2*No-1);
     printf("Calculated.\n");
     printf("*** Calculating numerical gradients for eta.... dh=0.001 ");
-    IGradient::Gradient(&prob, 0.001, pv, ng2, 2*offset+2*No, 2*offset+2*No+2*Nc-1);
+    IGradient::Gradient(&prob, 0.001, x, ng2, 2*offset+2*No, 2*offset+2*No+2*Nc-1);
     printf("Calculated.\n");
 
     const unsigned int N = 20;
@@ -459,7 +438,7 @@ void Problem2HSolver::checkGradient3(const Problem2HSolver &prob)
     //k------------------------------------------------------//
     {
         IPrinter::printSeperatorLine("k");
-        DoubleVector pk0 = pv.mid(0, offset-1);
+        DoubleVector pk0 = x.mid(0, offset-1);
         DoubleVector ak0 = ag.mid(0, offset-1);
         DoubleVector nk1 = ng1.mid(0, offset-1);
         DoubleVector nk2 = ng2.mid(0, offset-1);
@@ -475,7 +454,7 @@ void Problem2HSolver::checkGradient3(const Problem2HSolver &prob)
     //z------------------------------------------------------//
     {
         IPrinter::printSeperatorLine("z");
-        DoubleVector pz0 = pv.mid(offset, 2*offset-1);
+        DoubleVector pz0 = x.mid(offset, 2*offset-1);
         DoubleVector az0 = ag.mid(offset, 2*offset-1);
         DoubleVector nz1 = ng1.mid(offset, 2*offset-1);
         DoubleVector nz2 = ng2.mid(offset, 2*offset-1);
@@ -491,7 +470,7 @@ void Problem2HSolver::checkGradient3(const Problem2HSolver &prob)
     //xi------------------------------------------------------//
     {
         IPrinter::printSeperatorLine("xi");
-        DoubleVector pe0 = pv.mid(2*offset, 2*offset+2*No-1);
+        DoubleVector pe0 = x.mid(2*offset, 2*offset+2*No-1);
         DoubleVector ae0 = ag.mid(2*offset, 2*offset+2*No-1);
         DoubleVector ne1 = ng1.mid(2*offset, 2*offset+2*No-1);
         DoubleVector ne2 = ng2.mid(2*offset, 2*offset+2*No-1);
@@ -508,7 +487,7 @@ void Problem2HSolver::checkGradient3(const Problem2HSolver &prob)
     //eta------------------------------------------------------//
     {
         IPrinter::printSeperatorLine("eta");
-        DoubleVector px0 = pv.mid(2*offset+2*No, 2*offset+2*No+2*Nc-1);
+        DoubleVector px0 = x.mid(2*offset+2*No, 2*offset+2*No+2*Nc-1);
         DoubleVector ax0 = ag.mid(2*offset+2*No, 2*offset+2*No+2*Nc-1);
         DoubleVector nx1 = ng1.mid(2*offset+2*No, 2*offset+2*No+2*Nc-1);
         DoubleVector nx2 = ng2.mid(2*offset+2*No, 2*offset+2*No+2*Nc-1);
@@ -528,8 +507,8 @@ double Problem2HSolver::fx(const DoubleVector &x) const
 {
     double SUM = 0.0;
     Problem2HSolver* solver = const_cast<Problem2HSolver*>(this);
-    solver->OptimalParameterFromVector(x);
-    solver->setOptimizedParameters(k, z, ksi, eta);
+    //solver->OptimalParameterFromVector(x);
+    solver->setOptimizationVector(x.data());
     solver->Problem2HWaveEquationIBVP::setInitialConditionMatrix(this->initialPulses, this->initialPulsesCount);
     SUM += fx_one(x, solver);
     return SUM;
@@ -817,83 +796,6 @@ void Problem2HSolver::gradient_one(const DoubleVector &, DoubleVector &g, Proble
     }
 }
 
-void Problem2HSolver::OptimalParameterFromVector(const DoubleVector &x)
-{
-    unsigned int index = 0;
-
-    k.clear();   k.resize(Nc, No);
-    z.clear();   z.resize(Nc, No);
-
-    if (ksi != nullptr) delete [] ksi;
-    if (eta != nullptr) delete [] eta;
-
-    ksi = new SpacePoint[No];
-    eta = new SpacePoint[Nc];
-
-    for (unsigned int i=0; i<Nc; i++)
-    {
-        for (unsigned int j=0; j<No; j++)
-        {
-            k[i][j] = x[index++];
-        }
-    }
-
-    for (unsigned int i=0; i<Nc; i++)
-    {
-        for (unsigned int j=0; j<No; j++)
-        {
-            z[i][j] = x[index++];
-        }
-    }
-
-    for (unsigned int j=0; j<No; j++)
-    {
-        ksi[j].x = x[index++];
-        ksi[j].y = x[index++];
-    }
-
-    for (unsigned int i=0; i<Nc; i++)
-    {
-        eta[i].x = x[index++];
-        eta[i].y = x[index++];
-    }
-}
-
-void Problem2HSolver::OptimalParameterToVector(DoubleVector &x) const
-{
-    x.clear();
-    x.resize(2*Nc*No+2*No+2*Nc);
-
-    unsigned int index = 0;
-    for (unsigned int i=0; i<Nc; i++)
-    {
-        for (unsigned int j=0; j<No; j++)
-        {
-            x[index++] = k[i][j];
-        }
-    }
-
-    for (unsigned int i=0; i<Nc; i++)
-    {
-        for (unsigned int j=0; j<No; j++)
-        {
-            x[index++] = z[i][j];
-        }
-    }
-
-    for (unsigned int j=0; j<No; j++)
-    {
-        x[index++] = ksi[j].x;
-        x[index++] = ksi[j].y;
-    }
-
-    for (unsigned int i=0; i<Nc; i++)
-    {
-        x[index++] = eta[i].x;
-        x[index++] = eta[i].y;
-    }
-}
-
 void Problem2HSolver::setDimensions(const Dimension &dimensionX, const Dimension &dimensionY, const Dimension &timeDimension)
 {
     Problem2HWaveEquationIBVP::setTimeDimension(timeDimension);
@@ -938,15 +840,13 @@ void Problem2HSolver::project(DoubleVector &, unsigned int) {}
 void Problem2HSolver::print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const
 {
     Problem2HSolver* solver = const_cast<Problem2HSolver*>(this);
-    solver->OptimalParameterFromVector(x);
+    solver->setOptimizationVector(x.data());
     solver->u_list.clear();
     solver->Problem2HWaveEquationIBVP::implicit_calculate_D2V1();
     double integr = solver->integral(u_list);
     double nrm = solver->fx_norm();
     double plty = solver->penalty();
-    for (unsigned int i=0; i<u_list.size(); i++)
-        solver->u_list[i].clear();
-    solver->u_list.clear();
+    for (unsigned int i=0; i<u_list.size(); i++) solver->u_list[i].clear(); solver->u_list.clear();
 
     printf("I[%3d] %.8f %7.4f %.8f %.8f %.8f  ", iteration, f, alpha, integr, nrm, plty);
     IPrinter::print(x, x.length(), 7, 4);
@@ -1002,36 +902,22 @@ auto Problem2HCommon::g0i(unsigned int i, unsigned int ln) const -> double
 
 Problem2HCommon::~Problem2HCommon() {}
 
-void Problem2HCommon::setParameterCounts(unsigned int Nc, unsigned int No, const Dimension &dimensionX,
-                                         const Dimension &dimensionY, const Dimension &timeDimension)
+void Problem2HCommon::setParameters(unsigned int Nc, unsigned int No, const Dimension &dimensionX,
+                                    const Dimension &dimensionY, const Dimension &timeDimension)
 {
     const unsigned int length = 2*static_cast<unsigned int>(timeDimension.size())+1;
+
+    k.clear(); k.resize(Nc, No, 0.0);
+    z.clear(); z.resize(Nc, No, 0.0);
+
+    if (ksi != nullptr) { delete [] ksi; } ksi = new SpacePoint[No];
+    if (eta != nullptr) { delete [] eta; } eta = new SpacePoint[Nc];
 
     if (ksi_info != nullptr)
     {
         for (unsigned int j=0; j<this->No; j++) ksi_info[j].deltaGrid.cleanGrid();
         delete [] ksi_info;
-        delete [] ksi;
     }
-
-    if (eta_info != nullptr)
-    {
-        for (unsigned int i=0; i<this->Nc; i++) eta_info[i].deltaGrid.cleanGrid();
-        delete [] eta_info;
-        delete [] eta;
-    }
-
-    this->Nc = Nc;
-    this->No = No;
-
-    if (vmin != nullptr) { delete [] vmin; }
-    vmin = new double[Nc];
-
-    if (vmax != nullptr) { delete [] vmax; }
-    vmax = new double[Nc];
-    for (unsigned int i=0; i<Nc; i++) { vmin[i] = 0.0; vmax[i] = 0.0; }
-
-    ksi = new SpacePoint[No];
     ksi_info = new SpacePointInfo[No];
     for (unsigned int j=0; j<No; j++)
     {
@@ -1039,7 +925,11 @@ void Problem2HCommon::setParameterCounts(unsigned int Nc, unsigned int No, const
         ksi_info[j].deltaGrid.initGrid(dimensionX, dimensionY);
     }
 
-    eta = new SpacePoint[Nc];
+    if (eta_info != nullptr)
+    {
+        for (unsigned int i=0; i<this->Nc; i++) eta_info[i].deltaGrid.cleanGrid();
+        delete [] eta_info;
+    }
     eta_info = new SpacePointInfo[Nc];
     for (unsigned int i=0; i<Nc; i++)
     {
@@ -1047,44 +937,78 @@ void Problem2HCommon::setParameterCounts(unsigned int Nc, unsigned int No, const
         eta_info[i].deltaGrid.initGrid(dimensionX, dimensionY);
     }
 
-    r_ksi = new SpacePoint[No];
-    r_eta = new SpacePoint[Nc];
+    this->Nc = Nc;
+    this->No = No;
+
+    r_k.clear(); r_k.resize(Nc, No, 0.0);
+    r_z.clear(); r_z.resize(Nc, No, 0.0);
+    if (r_ksi != nullptr) { delete [] r_ksi; } r_ksi = new SpacePoint[No];
+    if (r_eta != nullptr) { delete [] r_eta; } r_eta = new SpacePoint[Nc];
+
+    if (vmin != nullptr) { delete [] vmin; } vmin = new double[Nc];
+    if (vmax != nullptr) { delete [] vmax; } vmax = new double[Nc];
+    for (unsigned int i=0; i<Nc; i++) { vmin[i] = 0.0; vmax[i] = 0.0; }
 }
 
-void Problem2HCommon::setOptimizedParameters(const DoubleMatrix &k, const DoubleMatrix &z,
-                                             const SpacePoint *ksi, const SpacePoint *eta)
+void Problem2HCommon::setOptimizationVector(const double *x)
 {
-    this->k = k;
-    this->z = z;
-
-    for (unsigned int j=0; j<No; j++)
-    {
-        this->ksi[j] = ksi[j];
-        this->ksi_info[j].point = ksi[j];
-        this->ksi_info[j].deltaGrid.distributeGauss(ksi[j], 1, 1);
-    }
+    unsigned int index = 0;
+    unsigned int offset = Nc*No;
 
     for (unsigned int i=0; i<Nc; i++)
     {
-        this->eta[i] = eta[i];
-        this->eta_info[i].point = eta[i];
-        this->eta_info[i].deltaGrid.distributeGauss(eta[i], 1, 1);
+        for (unsigned int j=0; j<No; j++)
+        {
+            k[i][j] = x[index];
+            z[i][j] = x[index+offset];
+            index++;
+        }
+    }
+
+    index = 2*Nc*No;
+
+    for (unsigned int j=0; j<No; j++)
+    {
+        ksi[j].x = x[index];
+        ksi[j].y = x[index+1];
+        index+=2;
+        ksi_info[j].point = ksi[j];
+        ksi_info[j].deltaGrid.distributeGauss(ksi[j], 1, 1);
+
+    }
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        eta[i].x = x[index];
+        eta[i].y = x[index+1];
+        index+=2;
+        eta_info[i].point = eta[i];
+        eta_info[i].deltaGrid.distributeGauss(eta[i], 1, 1);
     }
 }
 
-void Problem2HCommon::setRegularizationParameters(const DoubleMatrix &k, const DoubleMatrix &z,
-                                                  const SpacePoint *ksi, const SpacePoint *eta,
-                                                  double regEpsilon1, double regEpsilon2, double regEpsilon3, double regEpsilon4)
+void Problem2HCommon::setRegularizationVector(const double *x, double epsilon1, double epsilon2, double epsilon3, double epsilon4)
 {
-    this->regEpsilon1 = regEpsilon1;
-    this->regEpsilon2 = regEpsilon2;
-    this->regEpsilon3 = regEpsilon3;
-    this->regEpsilon4 = regEpsilon4;
+    this->regEpsilon1 = epsilon1;
+    this->regEpsilon1 = epsilon2;
+    this->regEpsilon1 = epsilon3;
+    this->regEpsilon1 = epsilon4;
 
-    this->r_k = k;
-    this->r_z = z;
-    for (unsigned int j=0; j<No; j++) { this->r_ksi[j] = ksi[j]; }
-    for (unsigned int i=0; i<Nc; i++) { this->r_eta[i] = eta[i]; }
+    unsigned int index = 0;
+    unsigned int offset = Nc*No;
+
+    for (unsigned int i=0; i<Nc; i++)
+    {
+        for (unsigned int j=0; j<No; j++)
+        {
+            r_k[i][j] = x[index];
+            r_z[i][j] = x[index+offset];
+            index++;
+        }
+    }
+    index = 2*Nc*No;
+
+    for (unsigned int j=0; j<No; j++) { r_ksi[j].x = x[index]; r_ksi[j].y = x[index+1]; index+=2; }
+    for (unsigned int i=0; i<Nc; i++) { r_eta[i].x = x[index]; r_eta[i].y = x[index+1]; index+=2; }
 }
 
 /*********************************** Problem2HWaveEquationIBVP ***********************************************************/
@@ -1354,3 +1278,80 @@ void Problem2HConjugateWaveEquationIBVP::layerInfoPrepareLayerMatrix(const Doubl
 void Problem2HConjugateWaveEquationIBVP::layerInfoSave2TextFile(const DoubleMatrix &u, const TimeNodePDE & tn) const {}
 
 /*********************************** Problem2HConjugateWaveEquationIBVP***************************************************/
+
+//void Problem2HSolver::OptimalParameterFromVector(const DoubleVector &x)
+//{
+//    unsigned int index = 0;
+
+//    k.clear();   k.resize(Nc, No);
+//    z.clear();   z.resize(Nc, No);
+
+//    if (ksi != nullptr) delete [] ksi;
+//    if (eta != nullptr) delete [] eta;
+
+//    ksi = new SpacePoint[No];
+//    eta = new SpacePoint[Nc];
+
+//    for (unsigned int i=0; i<Nc; i++)
+//    {
+//        for (unsigned int j=0; j<No; j++)
+//        {
+//            k[i][j] = x[index++];
+//        }
+//    }
+
+//    for (unsigned int i=0; i<Nc; i++)
+//    {
+//        for (unsigned int j=0; j<No; j++)
+//        {
+//            z[i][j] = x[index++];
+//        }
+//    }
+
+//    for (unsigned int j=0; j<No; j++)
+//    {
+//        ksi[j].x = x[index++];
+//        ksi[j].y = x[index++];
+//    }
+
+//    for (unsigned int i=0; i<Nc; i++)
+//    {
+//        eta[i].x = x[index++];
+//        eta[i].y = x[index++];
+//    }
+//}
+
+//void Problem2HSolver::OptimalParameterToVector(DoubleVector &x) const
+//{
+//    x.clear();
+//    x.resize(2*Nc*No+2*No+2*Nc);
+
+//    unsigned int index = 0;
+//    for (unsigned int i=0; i<Nc; i++)
+//    {
+//        for (unsigned int j=0; j<No; j++)
+//        {
+//            x[index++] = k[i][j];
+//        }
+//    }
+
+//    for (unsigned int i=0; i<Nc; i++)
+//    {
+//        for (unsigned int j=0; j<No; j++)
+//        {
+//            x[index++] = z[i][j];
+//        }
+//    }
+
+//    for (unsigned int j=0; j<No; j++)
+//    {
+//        x[index++] = ksi[j].x;
+//        x[index++] = ksi[j].y;
+//    }
+
+//    for (unsigned int i=0; i<Nc; i++)
+//    {
+//        x[index++] = eta[i].x;
+//        x[index++] = eta[i].y;
+//    }
+//}
