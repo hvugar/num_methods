@@ -68,7 +68,7 @@ SpacePointInfo::~SpacePointInfo()
 
 void Problem2HSolver::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
 {
-    example1();
+    example2();
 }
 
 class Exampl1Projection : public IProjection
@@ -193,7 +193,7 @@ void Problem2HSolver::example1()
     //printf("oz: "); IPrinter::print(x.mid(6, 11), x.mid(6, 11).length(), 9, 4);
     //printf("xy: "); IPrinter::print(x.mid(12,21), x.mid(12,21).length(), 9, 4);
     //IPrinter::printSeperatorLine();
-    //g.calculate(x);
+    g.calculate(x);
 
     puts("Optimization is finished...");
     printf("fx %10.8f\n", ps.fx(DoubleVector(rx, length)));
@@ -227,51 +227,6 @@ void Problem2HSolver::example1()
 
     delete [] ps.times;
 }
-
-void Problem2HSolver::gradient(const DoubleVector &pv, DoubleVector &g) const
-{
-    g.clear();
-    g.resize(pv.length(), 0.0);
-    Problem2HSolver* solver = const_cast<Problem2HSolver*>(this);
-    //solver->OptimalParameterFromVector(pv);
-    solver->setOptimizationVector(pv.data());
-    solver->Problem2HWaveEquationIBVP::setInitialConditionMatrix(initialPulses, initialPulsesCount);
-    gradient_one(pv, g, solver);
-
-    //    for (unsigned int i=0; i<g.length(); i++)
-    //    {
-    //        if (i<12) continue;
-    //        g[i] = 0.0;
-    //    }
-}
-
-/******* Optimal ********/
-//k[0][0] = +0.2965; k[0][1] = +0.2273; k[0][2] = -0.1645; k[1][0] = +0.2783; k[1][1] = +0.2499; k[1][2] = -0.1632;
-//z[0][0] = +0.0053; z[0][1] = +0.0042; z[0][2] = +0.0027; z[1][0] = +0.0042; z[1][1] = +0.0059; z[1][2] = +0.0027;
-//SpacePoint ksi[] = { SpacePoint(0.2133, 0.4028), SpacePoint(0.7696, 0.1771), SpacePoint(0.5413, 0.5094) };
-//SpacePoint eta[] = { SpacePoint(0.6807, 0.3104), SpacePoint(0.2896, 0.6936) };
-
-//0.000090
-//k[0][0] = +0.3068; k[0][1] = +0.3486; k[0][2] = -0.2102; k[1][0] = +0.3355; k[1][1] = +0.3874; k[1][2] = -0.2490;
-//z[0][0] = +0.0028; z[0][1] = +0.0075; z[0][2] = -0.0026; z[1][0] = +0.0030; z[1][1] = +0.0065; z[1][2] = -0.0027;
-//SpacePoint ksi[] = { SpacePoint(0.2059, 0.3967), SpacePoint(0.7639, 0.1825), SpacePoint(0.5215, 0.4707) };
-//SpacePoint eta[] = { SpacePoint(0.6734, 0.2997), SpacePoint(0.2968, 0.6893) };
-
-//0.00010313
-//k[0][0] = -0.1231; k[0][1] = -0.2447; k[0][2] = -0.2064; k[1][0] = -0.1058; k[1][1] = -0.2694; k[1][2] = -0.1589;
-//z[0][0] = -0.2259; z[0][1] = -0.1374; z[0][2] = +0.3021; z[1][0] = -0.4337; z[1][1] = +0.2281; z[1][2] = -0.1008;
-//SpacePoint ksi[] = { SpacePoint(0.0637, 0.4179), SpacePoint(0.8594, 0.0500), SpacePoint(0.6546, 0.5481) };
-//SpacePoint eta[] = { SpacePoint(0.6718, 0.2665), SpacePoint(0.3707, 0.6444) };
-
-//-0.1231 -0.2447 -0.2064 -0.1058 -0.2694 -0.1589
-//-0.2259 -0.1374  0.3021 -0.4337  0.2281 -0.1008
-//0.0637  0.4179  0.8594  0.0500  0.6546  0.5481
-//0.6718  0.2665  0.3707  0.6444
-
-//k[0][0] = +0.2965; k[0][1] = +0.2273; k[0][2] = -0.1645; k[1][0] = +0.2783; k[1][1] = +0.2499; k[1][2] = -0.1632;
-//z[0][0] = +0.0053; z[0][1] = +0.0042; z[0][2] = +0.0027; z[1][0] = +0.0042; z[1][1] = +0.0059; z[1][2] = +0.0027;
-//SpacePoint ksi[] = { SpacePoint(0.2125, 0.2548), SpacePoint(0.7696, 0.1471), SpacePoint(0.8168, 0.8694) };
-//SpacePoint eta[] = { SpacePoint(0.5807, 0.4104), SpacePoint(0.2196, 0.7936) };
 
 void Problem2HSolver::example2()
 {
@@ -315,10 +270,16 @@ void Problem2HSolver::example2()
                      ps.Problem2HWaveEquationIBVP::timeDimension());
 
     // Optimization Vector
-    double ox[] = { +0.0000, +0.0000, +0.0000, +0.0000, +0.0000, +0.0000,
-                    +0.0000, +0.0000, +0.0000, +0.0000, +0.0000, +0.0000,
-                    +0.1575, +0.4800, +0.8515, +0.0814, +0.6214, +0.4685,
-                    +0.7624, +0.2684, +0.3802, +0.7624 };
+//    double ox[] = { +0.0000, +0.0000, +0.0000, +0.0000, +0.0000, +0.0000,
+//                    +0.0000, +0.0000, +0.0000, +0.0000, +0.0000, +0.0000,
+//                    +0.1575, +0.4800, +0.8515, +0.0814, +0.6214, +0.4685,
+//                    +0.7624, +0.2684, +0.3802, +0.7624 };
+
+//0.00010923
+    double ox[] = { -0.4513, -0.1502,  0.2256, -0.3452, -0.2440,  0.4014,
+                    +0.0102,  0.0173,  0.0208,  0.0570, -0.0181,  0.0319,
+                     0.3200,  0.4778,  0.8563,  0.0655,  0.6247,  0.4500,
+                     0.5919,  0.3970,  0.3817,  0.5959 };
 
     // Regularization Vector
     double rx[] = { +0.3068, +0.3486, -0.2102, +0.3355, +0.3874, -0.2490,
@@ -326,13 +287,16 @@ void Problem2HSolver::example2()
                     +0.2059, +0.3967, +0.7639, +0.1825, +0.5215, +0.4707,
                     +0.6734, +0.2997, +0.2968, +0.6893};
 
+    ps.optimizeC = false;
+    ps.optimizeO = false;
+
     ps.setOptimizationVector(ox);
-    const double epsilon = 0.2;
+    const double epsilon = 0.0;
     ps.setRegularizationVector(rx, epsilon, epsilon, epsilon, epsilon);
     ps.noise = 0.0;
 
     for (unsigned int i=0; i<Nc; i++) { ps.vmin[i] = -0.05; ps.vmax[i] = +0.05; }
-    ps.r = 0.1;
+    ps.r = 0.0;
 
     //checkGradient3(ps, ox, length);
 
@@ -341,36 +305,45 @@ void Problem2HSolver::example2()
     g.setFunction(&ps);
     g.setGradient(&ps);
     g.setPrinter(&ps);
-    //g.setProjection(&ps);
+    g.setProjection(&ps);
     g.setProjection(new Exampl1Projection(2, 3));
     g.setOptimalityTolerance(0.0);
     g.setFunctionTolerance(0.0);
     g.setStepTolerance(0.0);
-    g.setR1MinimizeEpsilon(1.0, 0.01);
-    g.setMaxIterationCount(20);
+    g.setR1MinimizeEpsilon(10., 0.1);
+    g.setMaxIterationCount(200);
     g.setNormalize(false);
     g.showExitMessage(true);
 
     IPrinter::printSeperatorLine();
 
     DoubleVector x(ox, length);
-    printf("ok: "); IPrinter::print(x.mid(0,  5), x.mid(0,  5).length(), 9, 4);
-    printf("oz: "); IPrinter::print(x.mid(6, 11), x.mid(6, 11).length(), 9, 4);
-    printf("xy: "); IPrinter::print(x.mid(12,21), x.mid(12,21).length(), 9, 4);
-    IPrinter::printSeperatorLine();
+    //printf("ok: "); IPrinter::print(x.mid(0,  5), x.mid(0,  5).length(), 9, 4);
+    //printf("oz: "); IPrinter::print(x.mid(6, 11), x.mid(6, 11).length(), 9, 4);
+    //printf("xy: "); IPrinter::print(x.mid(12,21), x.mid(12,21).length(), 9, 4);
+    //IPrinter::printSeperatorLine();
     g.calculate(x);
 
-    //    ps.regEpsilon1 = ps.regEpsilon2 = ps.regEpsilon3 = ps.regEpsilon4 = 0.0;
-    //    double f1 = ps.fx(x);
-    //    x[0] = x[1] = x[2] = x[3] = x[4] = x[5] = 0.0;
-    //    double f2 = ps.fx(x);
-
-    //    printf("%f %f\n", f1, f2);
-
-    //    puts("Finished");
+    puts("Optimization is finished...");
 
     delete [] ps.times;
+}
 
+void Problem2HSolver::gradient(const DoubleVector &pv, DoubleVector &g) const
+{
+    g.clear();
+    g.resize(pv.length(), 0.0);
+    Problem2HSolver* solver = const_cast<Problem2HSolver*>(this);
+    //solver->OptimalParameterFromVector(pv);
+    solver->setOptimizationVector(pv.data());
+    solver->Problem2HWaveEquationIBVP::setInitialConditionMatrix(initialPulses, initialPulsesCount);
+    gradient_one(pv, g, solver);
+
+    //    for (unsigned int i=0; i<g.length(); i++)
+    //    {
+    //        if (i<12) continue;
+    //        g[i] = 0.0;
+    //    }
 }
 
 void Problem2HSolver::checkGradient3(const Problem2HSolver &prob, const double *data, unsigned int length)
@@ -989,9 +962,9 @@ void Problem2HCommon::setOptimizationVector(const double *x)
 void Problem2HCommon::setRegularizationVector(const double *x, double epsilon1, double epsilon2, double epsilon3, double epsilon4)
 {
     this->regEpsilon1 = epsilon1;
-    this->regEpsilon1 = epsilon2;
-    this->regEpsilon1 = epsilon3;
-    this->regEpsilon1 = epsilon4;
+    this->regEpsilon2 = epsilon2;
+    this->regEpsilon3 = epsilon3;
+    this->regEpsilon4 = epsilon4;
 
     unsigned int index = 0;
     unsigned int offset = Nc*No;
