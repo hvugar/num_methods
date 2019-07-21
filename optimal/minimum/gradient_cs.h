@@ -12,10 +12,15 @@ public:
     ConstStepGradient();
     virtual ~ConstStepGradient();
 
-    virtual void calculate(DoubleVector& x);
+    virtual void calculate(DoubleVector &x);
 
 protected:
     virtual double minimize(const DoubleVector &x, const DoubleVector &g) const;
+    virtual double fx(double alpha) const;
+
+private:
+    DoubleVector *mx;
+    DoubleVector *mg;
 };
 
 #endif // CONSTSTEPGRADIENT_H

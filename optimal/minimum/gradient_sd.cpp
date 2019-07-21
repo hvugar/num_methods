@@ -5,17 +5,15 @@
 #include "vectornormalizer.h"
 #include <math.h>
 
-SteepestDescentGradient::SteepestDescentGradient() : GradientMethod()
-{
-    setNormalize(true);
-}
+SteepestDescentGradient::SteepestDescentGradient() : GradientMethod(),
+    mx(nullptr), mg(nullptr)
+{}
 
 SteepestDescentGradient::~SteepestDescentGradient()
 {}
 
 void SteepestDescentGradient::calculate(DoubleVector &x)
 {
-    //double distance = 0.0;
     double alpha = 0.0;
     double f1 = 0.0;
     double f2 = 0.0;
@@ -26,7 +24,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
     mx = &x;
     mg = &g;
     m_iterationNumber = 0;
-    //unsigned int m_funcEvaluationCount = 0;
+    m_functionEvaluationNumber = 0;
 
     /**************************************************************************************
      * Gradient of objective functionin on initial point.
@@ -78,7 +76,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
             //double cx = x[i];
             x[i] = x[i] - alpha * g[i];
 
-            if (m_projection != nullptr) m_projection->project(x, i);
+            //if (m_projection != nullptr) m_projection->project(x, i);
 
             /**************************************************************************************
              * Calculating distance.
@@ -126,13 +124,34 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
             if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
             break;
         }
-
         /**************************************************************************************
          *
          *
          *
          **************************************************************************************/
-        if (m_iterationNumber >= maxIterationCount())
+        if (distance <= stepTolerance())
+        {
+            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+            if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
+            break;
+        }
+        /**************************************************************************************
+         *
+         *
+         *
+         **************************************************************************************/
+        if (fabs(f2 - f1) <= functionTolerance())
+        {
+            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+            if (m_show_end_message) puts("Optimisation ends, because previous and current function values difference less than function tolerance...");
+            break;
+        }
+        /**************************************************************************************
+         *
+         *
+         *
+         **************************************************************************************/
+        if (m_iterationNumber == maxIterationCount())
         {
             if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
             if (m_show_end_message) puts("Optimisation ends, because iteration count reached max allowed iterations number...");
@@ -144,7 +163,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
          *
          *
          **************************************************************************************/
-        if (maxFunctionEvaluationCount() != maxFunctionEvaluationCount())
+        if (m_functionEvaluationNumber == maxFunctionEvaluationCount())
         {
             if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
             if (m_show_end_message) puts("Optimisation ends, because max function evaluation count reached max allowed number...");
@@ -201,7 +220,7 @@ double SteepestDescentGradient::fx(double alpha) const
     for (unsigned int i=0; i<n; i++)
     {
         cx[i] = x[i] - alpha * g[i];
-        if (m_projection != nullptr) m_projection->project(cx, i);
+        //if (m_projection != nullptr) m_projection->project(cx, i);
     }
 
     if (m_projection != nullptr) m_projection->project(cx);

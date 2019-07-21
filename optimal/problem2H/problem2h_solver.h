@@ -8,6 +8,7 @@
 #include <projection.h>
 #include <gradient_sd.h>
 #include <gradient_cjt.h>
+#include <gradient_cs.h>
 
 #define USE_NORM
 #define USE_PENALTY

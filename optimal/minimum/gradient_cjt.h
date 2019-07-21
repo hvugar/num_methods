@@ -1,5 +1,5 @@
-#ifndef CONJUGATEGRADIENT_H
-#define CONJUGATEGRADIENT_H
+#ifndef CONJUGATE_GRADIENT_H
+#define CONJUGATE_GRADIENT_H
 
 #include "gradient.h"
 
@@ -33,12 +33,11 @@ protected:
     virtual double minimize(const DoubleVector &x, const DoubleVector &g) const;
     virtual double fx(double alpha) const;
 
+private:
     DoubleVector *mx;
     DoubleVector *ms;
-
-private:
-    Algorithm malgoritm;
-    bool mResetIteration;
+    Algorithm m_algoritm;
+    bool m_reset_iteration;
 };
 
-#endif // CONJUGATEGRADIENT_H
+#endif // CONJUGATE_GRADIENT_H

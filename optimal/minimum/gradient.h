@@ -42,49 +42,49 @@ public:
      * @brief optimalityTolerance
      * @return
      */
-    auto optimalityTolerance() const -> double;
+    double optimalityTolerance() const;
     /**
      * @brief setOptimalityTolerance
      * @param optimalityTolerance
      */
-    auto setOptimalityTolerance(double optimalityTolerance) -> void;
+    void setOptimalityTolerance(double optimalityTolerance);
     /**
      * @brief stepTolerance
      * @return
      */
-    auto stepTolerance() const -> double;
+    double stepTolerance() const;
     /**
      * @brief setStepTolerance
      * @param stepTolerance
      */
-    auto setStepTolerance(double stepTolerance) -> void;
+    void setStepTolerance(double stepTolerance);
     /**
      * @brief functionTolerance
      * @return
      */
-    auto functionTolerance() const -> double;
+    double functionTolerance() const;
     /**
      * @brief setFunctionTolerance
      * @param functionTolerance
      */
-    auto setFunctionTolerance(double functionTolerance) -> void;
+    void setFunctionTolerance(double functionTolerance);
     /**
      * @brief constraintTolerance
      * @return
      */
-    auto constraintTolerance() const -> double;
+    double constraintTolerance() const;
     /**
      * @brief setConstraintTolerance
      * @param functionTolerance
      */
-    auto setConstraintTolerance(double constraintTolerance) -> void;
+    void setConstraintTolerance(double constraintTolerance);
     /**
      * @brief setTolerance
      * @param optimalityTolerance
      * @param stepTolerance
      * @param functionTolerance
      */
-    auto setTolerance(double optimalityTolerance, double stepTolerance, double functionTolerance) -> void;
+    void setTolerance(double optimalityTolerance, double stepTolerance, double functionTolerance);
     /**
      * @brief setR1MinimizeEpsilon
      * @param step
@@ -100,7 +100,8 @@ public:
      * @brief Вывод информации о значениях параметров оптимизации на каждой итерации.
      * @param printer Интерфейс для вывода информации о значениях параметров оптимизации на каждой итерации.
      */
-    void setPrinter(IPrinter *printer);    /**
+    void setPrinter(IPrinter *printer);
+    /**
      * @brief Метод проекции для значений параметров оптимизации.
      * @param projection Интерфейс для проекции значений параметров оптимизации.
      */
@@ -124,26 +125,26 @@ public:
      * @brief Максимальное количество повторений позволено.
      * @param maxIterations
      */
-    auto setMaxIterationCount(unsigned int maxIterationCount) -> void;
+    void setMaxIterationCount(unsigned int maxIterationCount);
     /**
      * @brief Максимальное количество повторений позволено.
      * @return
      */
-    auto maxIterationCount() const -> unsigned int;
+    unsigned int maxIterationCount() const;
     /**
      * @brief Максимальное количество оценок функции позволено.
      * @param maxFunctionEvaluations
      */
-    auto setMaxFunctionEvaluationCount(unsigned int maxFunctionEvaluationCount) -> void;
+    void setMaxFunctionEvaluationCount(unsigned int maxFunctionEvaluationCount);
     /**
      * @brief Максимальное количество оценок функции позволено.
      * @return
      */
-    auto maxFunctionEvaluationCount() const -> unsigned int;
+    unsigned int maxFunctionEvaluationCount() const;
 
-    auto iterationNumber() const -> unsigned int;
+    unsigned int iterationNumber() const;
 
-    auto maxFunctionEvaluationNumber() const -> unsigned int;
+    unsigned int maxFunctionEvaluationNumber() const;
 
 protected:
     /**
@@ -204,6 +205,9 @@ protected:
      * @param epsilon  Число эпсилон для останова метода.
      */
     void halphIntervalMethod(double &x, double &a, double &b, double epsilon) const;
+
+    bool checkForExit(double step_tolerance, double optimalityTolerance, double function_tolerance,
+                      double f2, const DoubleVector &x, const DoubleVector &g, double alpha) const;
 
 protected:
     RnFunction *m_fn;

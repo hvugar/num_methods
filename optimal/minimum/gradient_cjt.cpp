@@ -5,19 +5,15 @@
 #include "vectornormalizer.h"
 #include <math.h>
 
-ConjugateGradient::ConjugateGradient() : GradientMethod()
-{
-    setNormalize(true);
-    setAlgorithm(Algorithm::FLETCHER_REEVES);
-    setResetIteration(true);
-}
+ConjugateGradient::ConjugateGradient() : GradientMethod(), mx(nullptr), ms(nullptr),
+    m_algoritm(Algorithm::FLETCHER_REEVES), m_reset_iteration(true)
+{}
 
 ConjugateGradient::~ConjugateGradient()
 {}
 
 void ConjugateGradient::calculate(DoubleVector& x)
 {
-    //double distance = 0.0;
     double alpha = 0.0;
     double f1 = 0.0;
     double f2 = 0.0;
@@ -38,7 +34,6 @@ void ConjugateGradient::calculate(DoubleVector& x)
      * Gradient of objective functionin on initial point.
      **************************************************************************************/
     m_gr->gradient(x, g);
-    if (m_normalize && m_normalizer != nullptr) m_normalizer->normalize(g);
 
     /**************************************************************************************
      * Checking for gradient vector norm that is less of optimality tolerance.
@@ -66,11 +61,13 @@ void ConjugateGradient::calculate(DoubleVector& x)
     {
         m_iterationNumber++;
 
-        if (malgoritm == Algorithm::FLETCHER_REEVES)
+        if (m_algoritm == Algorithm::FLETCHER_REEVES)
         {
             // Module of gradient
             grad_mod_cur = 0.0;
             for (unsigned int i=0; i<n; i++) grad_mod_cur += g[i]*g[i];
+
+            if (m_normalize && m_normalizer != nullptr) m_normalizer->normalize(g);
 
             if (k == 0)
             {
@@ -87,14 +84,18 @@ void ConjugateGradient::calculate(DoubleVector& x)
             }
         }
 
-        if (malgoritm == Algorithm::POLAK_RIBIERE)
+        if (m_algoritm == Algorithm::POLAK_RIBIERE)
         {
+            if (m_normalize && m_normalizer != nullptr) m_normalizer->normalize(g);
+
             if (k == 0)
             {
+                // First direction is antigradient
                 for (unsigned int i=0; i<n; i++) s[i] = -g[i];
             }
             else
             {
+                // Direction in next iteration (k != 0)
                 double w = 1.0;
                 for (unsigned int i=0; i<n; i++) s[i] = -g[i] + s[i] * w;
             }
@@ -103,14 +104,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
         /**************************************************************************************
          * Reset the direction.
          **************************************************************************************/
-        if (mResetIteration)
-        {
-            if ( k == n ) { k = 0; } else { k++; }
-        }
-        else
-        {
-            k++;
-        }
+        if (m_reset_iteration) { if ( k == n ) { k = 0; } else { k++; } } else { k++; }
 
         /**************************************************************************************
          * Normalization of a gradient vector
@@ -128,15 +122,8 @@ void ConjugateGradient::calculate(DoubleVector& x)
         DoubleVector cx = x;
         for (unsigned int i=0; i<n; i++)
         {
-            //double cx = x[i];
             x[i] = x[i] + alpha * s[i];
-
             //if (m_projection) m_projection->project(x, i);
-
-            /**************************************************************************************
-             * Calculating distance.
-             **************************************************************************************/
-            //distance += (x[i]-cx)*(x[i]-cx);
         }
         if (m_projection != nullptr) m_projection->project(x);
 
@@ -151,81 +138,82 @@ void ConjugateGradient::calculate(DoubleVector& x)
          * Gradient of objectiv function in next point
          **************************************************************************************/
         m_gr->gradient(x, g);
-        if (m_normalize && m_normalizer != nullptr) m_normalizer->normalize(g);
+        //if (m_normalize && m_normalizer != nullptr) m_normalizer->normalize(g);
 
-        /**************************************************************************************
-         * Checking for gradient vector norm that is less of optimality tolerance.
-         * If gradient vector norm in current point is less than optimality tolerance then break
-         * the iteration.
-         * Finish minimization.
-         **************************************************************************************/
-        double gradient_norm = 0.0;
-        if (m_normalizer) gradient_norm = m_normalizer->norm(g);
-        if (gradient_norm < optimalityTolerance())
-        {
-            if (m_printer) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_GRADIENT_NORM_LESS);
-            if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than optimality tolerance...");
-            break;
-        }
+        if (checkForExit(distance, 0.0, fabs(f2-f1), f2, x, g, alpha)) break;
 
-        /**************************************************************************************
-         * Calculating distance between the previous and current points.
-         * Calculating difference values of functions in previous and current points.
-         * If distance and difference is less than step tolerance then break the iteration.
-         * Finish minimization.
-         **************************************************************************************/
-        if (distance < stepTolerance() && fabs(f2 - f1) < functionTolerance())
-        {
-            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
-            if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
-            break;
-        }
+//        /**************************************************************************************
+//         * Checking for gradient vector norm that is less of optimality tolerance.
+//         * If gradient vector norm in current point is less than optimality tolerance then break
+//         * the iteration.
+//         * Finish minimization.
+//         **************************************************************************************/
+//        double gradient_norm = 0.0;
+//        if (m_normalizer) gradient_norm = m_normalizer->norm(g);
+//        if (gradient_norm < optimalityTolerance())
+//        {
+//            if (m_printer) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_GRADIENT_NORM_LESS);
+//            if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than optimality tolerance...");
+//            break;
+//        }
 
-        /**************************************************************************************
-         *
-         *
-         *
-         **************************************************************************************/
-        //if (distance <= stepTolerance())
-        //{
-        //    if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
-        //    if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
-        //    break;
-        //}
-        /**************************************************************************************
-         *
-         *
-         *
-         **************************************************************************************/
-        //if (fabs(f2 - f1) <= functionTolerance())
-        //{
-        //    if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
-        //    if (m_show_end_message) puts("Optimisation ends, because previous and current function values difference less than function tolerance...");
-        //    break;
-        //}
-        /**************************************************************************************
-         *
-         *
-         *
-         **************************************************************************************/
-        if (m_iterationNumber == maxIterationCount())
-        {
-            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
-            if (m_show_end_message) puts("Optimisation ends, because iteration count reached max allowed iterations number...");
-            break;
-        }
+//        /**************************************************************************************
+//         * Calculating distance between the previous and current points.
+//         * Calculating difference values of functions in previous and current points.
+//         * If distance and difference is less than step tolerance then break the iteration.
+//         * Finish minimization.
+//         **************************************************************************************/
+//        if (distance < stepTolerance() && fabs(f2 - f1) < functionTolerance())
+//        {
+//            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+//            if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
+//            break;
+//        }
+//        /**************************************************************************************
+//         *
+//         *
+//         *
+//         **************************************************************************************/
+//        if (distance <= stepTolerance())
+//        {
+//            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+//            if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
+//            break;
+//        }
+//        /**************************************************************************************
+//         *
+//         *
+//         *
+//         **************************************************************************************/
+//        if (fabs(f2 - f1) <= functionTolerance())
+//        {
+//            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+//            if (m_show_end_message) puts("Optimisation ends, because previous and current function values difference less than function tolerance...");
+//            break;
+//        }
+//        /**************************************************************************************
+//         *
+//         *
+//         *
+//         **************************************************************************************/
+//        if (m_iterationNumber == maxIterationCount())
+//        {
+//            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+//            if (m_show_end_message) puts("Optimisation ends, because iteration count reached max allowed iterations number...");
+//            break;
+//        }
 
-        /**************************************************************************************
-         *
-         *
-         *
-         **************************************************************************************/
-        if (m_functionEvaluationNumber == maxFunctionEvaluationCount())
-        {
-            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
-            if (m_show_end_message) puts("Optimisation ends, because max function evaluation count reached max allowed number...");
-            break;
-        }
+//        /**************************************************************************************
+//         *
+//         *
+//         *
+//         **************************************************************************************/
+//        if (m_functionEvaluationNumber == maxFunctionEvaluationCount())
+//        {
+//            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+//            if (m_show_end_message) puts("Optimisation ends, because max function evaluation count reached max allowed number...");
+//            break;
+//        }
 
         /**************************************************************************************
          * Printing iteration information.
@@ -290,10 +278,10 @@ double ConjugateGradient::fx(double alpha) const
 
 void ConjugateGradient::setAlgorithm(Algorithm algorithm)
 {
-    malgoritm = algorithm;
+    m_algoritm = algorithm;
 }
 
 void ConjugateGradient::setResetIteration(bool reset)
 {
-    mResetIteration = reset;
+    m_reset_iteration = reset;
 }

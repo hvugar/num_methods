@@ -114,7 +114,7 @@ void Problem2HSolver::example1()
     ps.L = 300;
     ps.D = 30;
     ps.setDimensions(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, static_cast<int>(ps.L+ps.D)));
-    ps.setEquationParameters(1.0, 0.01);
+    ps.setEquationParameters(1.0, 0.0);
     ps.u_list.resize(2*ps.D+1);
 
     /****************************************************************************************************************/
@@ -182,7 +182,7 @@ void Problem2HSolver::example1()
     g.setFunctionTolerance(0.0);
     g.setStepTolerance(0.0);
     g.setR1MinimizeEpsilon(1.0, 0.01);
-    g.setMaxIterationCount(20);
+    g.setMaxIterationCount(200);
     g.setNormalize(false);
     g.showExitMessage(true);
 
@@ -193,28 +193,32 @@ void Problem2HSolver::example1()
     //printf("oz: "); IPrinter::print(x.mid(6, 11), x.mid(6, 11).length(), 9, 4);
     //printf("xy: "); IPrinter::print(x.mid(12,21), x.mid(12,21).length(), 9, 4);
     //IPrinter::printSeperatorLine();
-    g.calculate(x);
+    //g.calculate(x);
+
 
     puts("Optimization is finished...");
-    printf("fx %10.8f\n", ps.fx(DoubleVector(rx, length)));
+    //printf("fx %10.8f\n", ps.fx(DoubleVector(rx, length)));
 
-
-    ps.setDimensions(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, 530));
-    ps.setParameters(Nc, No, ps.Problem2HWaveEquationIBVP::spaceDimensionX(), ps.Problem2HWaveEquationIBVP::spaceDimensionY(),
+    ps.L = 1000;
+    ps.setDimensions(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, (ps.L+ps.D)));
+    ps.setParameters(Nc, No, ps.Problem2HWaveEquationIBVP::spaceDimensionX(),
+                     ps.Problem2HWaveEquationIBVP::spaceDimensionY(),
                      ps.Problem2HWaveEquationIBVP::timeDimension());
     ps.setOptimizationVector(rx);
     ps.setRegularizationVector(rx, 0.0, 0.0, 0.0, 0.0);
     ps.r = 0.0;
+    ps.noise = 0.0;
+    ps.Problem2HWaveEquationIBVP::setWaveDissipation(0.0);
     ps.Problem2HWaveEquationIBVP::save = true;
-    ps.Problem2HWaveEquationIBVP::save_u.resize(1061);
-    printf("fx %10.8f\n", ps.fx(DoubleVector(rx, length)));
+    ps.Problem2HWaveEquationIBVP::save_u.resize(2061);
     ps.Problem2HWaveEquationIBVP::implicit_calculate_D2V1();
     std::vector<DoubleMatrix> mm(61);
-    for (unsigned int i=0; i<=600; i+=2)
+    for (unsigned int i=0; i<=2000; i+=2)
     {
         for (unsigned int j=0; j<=60; j++) mm[j] = ps.save_u[j+i];
         double fx = ps.integral(mm);
-        printf("%4d %10.8f %10.8f\n", i/2, i*0.005, fx);
+        //printf("%4d %10.8f %10.8f\n", i/2, i*0.005, fx);
+        printf("%14.10f\n", fx);
     }
 
     //    double f1 = ps.fx(x);
@@ -270,47 +274,50 @@ void Problem2HSolver::example2()
                      ps.Problem2HWaveEquationIBVP::timeDimension());
 
     // Optimization Vector
-//    double ox[] = { +0.0000, +0.0000, +0.0000, +0.0000, +0.0000, +0.0000,
-//                    +0.0000, +0.0000, +0.0000, +0.0000, +0.0000, +0.0000,
-//                    +0.1575, +0.4800, +0.8515, +0.0814, +0.6214, +0.4685,
-//                    +0.7624, +0.2684, +0.3802, +0.7624 };
+    // 0.0.00010904
+    double ox[] = { -0.0000, -0.0000, -0.0000, -0.0000, -0.0000, -0.0000,
+                    -0.0000, +0.0000, +0.0000, -0.0000, +0.0000, -0.0000,
+                    0.3048,  0.4578,  0.7263,  0.2155,  0.4882,  0.4847,
+                    0.5919,  0.3970,  0.2017,  0.7159 };
 
-//0.00010923
-    double ox[] = { -0.4513, -0.1502,  0.2256, -0.3452, -0.2440,  0.4014,
-                    +0.0102,  0.0173,  0.0208,  0.0570, -0.0181,  0.0319,
-                     0.3200,  0.4778,  0.8563,  0.0655,  0.6247,  0.4500,
-                     0.5919,  0.3970,  0.3817,  0.5959 };
+    //0.00010065
+    double rx[] = { -0.5348, -0.1824,  0.3361, -0.4665, -0.1472,  0.3638,
+                    +0.0116,  0.0178,  0.0199,  0.0462, -0.0239,  0.0423,
+                    0.3443,  0.4733,  0.8501,  0.0864,  0.6252,  0.4499,
+                    0.6063,  0.3858,  0.4038,  0.5948 };
 
     // Regularization Vector
-    double rx[] = { +0.3068, +0.3486, -0.2102, +0.3355, +0.3874, -0.2490,
-                    +0.0028, +0.0075, -0.0026, +0.0030, +0.0065, -0.0027,
-                    +0.2059, +0.3967, +0.7639, +0.1825, +0.5215, +0.4707,
-                    +0.6734, +0.2997, +0.2968, +0.6893};
+    //    double rx[] = { +0.3068, +0.3486, -0.2102, +0.3355, +0.3874, -0.2490,
+    //                    +0.0028, +0.0075, -0.0026, +0.0030, +0.0065, -0.0027,
+    //                    +0.2059, +0.3967, +0.7639, +0.1825, +0.5215, +0.4707,
+    //                    +0.6734, +0.2997, +0.2968, +0.6893};
 
-    ps.optimizeC = false;
-    ps.optimizeO = false;
+
+    //ps.optimizeK = false;
+    //ps.optimizeZ = false;
 
     ps.setOptimizationVector(ox);
-    const double epsilon = 0.0;
+    const double epsilon = 0.2;
     ps.setRegularizationVector(rx, epsilon, epsilon, epsilon, epsilon);
     ps.noise = 0.0;
 
     for (unsigned int i=0; i<Nc; i++) { ps.vmin[i] = -0.05; ps.vmax[i] = +0.05; }
-    ps.r = 0.0;
+    ps.r = 0.2;
 
     //checkGradient3(ps, ox, length);
 
     //SteepestDescentGradient g;
     ConjugateGradient g;
+    //ConstStepGradient g;
     g.setFunction(&ps);
     g.setGradient(&ps);
     g.setPrinter(&ps);
-    g.setProjection(&ps);
+    //g.setProjection(&ps);
     g.setProjection(new Exampl1Projection(2, 3));
-    g.setOptimalityTolerance(0.0);
-    g.setFunctionTolerance(0.0);
-    g.setStepTolerance(0.0);
-    g.setR1MinimizeEpsilon(10., 0.1);
+    g.setOptimalityTolerance(-0.01);
+    g.setFunctionTolerance(-0.01);
+    g.setStepTolerance(-0.01);
+    g.setR1MinimizeEpsilon(1.0, 0.1);
     g.setMaxIterationCount(200);
     g.setNormalize(false);
     g.showExitMessage(true);
@@ -821,7 +828,7 @@ void Problem2HSolver::print(unsigned int iteration, const DoubleVector &x, const
     double plty = solver->penalty();
     for (unsigned int i=0; i<u_list.size(); i++) solver->u_list[i].clear(); solver->u_list.clear();
 
-    printf("I[%3d] %.8f %7.4f %.8f %.8f %.8f  ", iteration, f, alpha, integr, nrm, plty);
+    printf("I[%3d] %.8f %7.4f %.8f %.8f %.8f  \n", iteration, f, alpha, integr, nrm, plty);
     IPrinter::print(x, x.length(), 7, 4);
 
     //printf("k: "); IPrinter::print(x.mid(0,  5), x.mid(0,  5).length(), 9, 4);
@@ -1016,7 +1023,7 @@ void Problem2HWaveEquationIBVP::setSpaceDimensions(const Dimension &dimensionX, 
 void Problem2HWaveEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
     const_cast<Problem2HWaveEquationIBVP*>(this)->layerInfoPrepareLayerMatrix(u, tn);
-    //layerInfoSave2TextFile(u, tn);
+    //if (tn.i == 600) { layerInfoSave2TextFile(u, tn); }
 
     //    if (tn.i == 0 || tn.i == 1 || tn.i == 2 || tn.i == 3)
     //    {
@@ -1091,9 +1098,9 @@ void Problem2HWaveEquationIBVP::clrInitialConditionMatrix()
 
 void Problem2HWaveEquationIBVP::layerInfoPrepareLayerMatrix(const DoubleMatrix &u, const TimeNodePDE& tn)
 {
-    if (save) save_u[tn.i] = u;
+    //if (save) { save_u[tn.i] = u; }
 
-    if (tn.i >= 600) u_list[tn.i-600] = u;
+    if (tn.i >= 2*L) u_list[tn.i-2*L] = u;
 
     const double ht = timeDimension().step();
 

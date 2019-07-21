@@ -15,10 +15,11 @@ public:
 
     virtual void calculate(DoubleVector &x);
 
-//protected:
+protected:
     virtual double minimize(const DoubleVector &x, const DoubleVector &g) const;
     virtual double fx(double alpha) const;
 
+private:
     DoubleVector *mx;
     DoubleVector *mg;
 };

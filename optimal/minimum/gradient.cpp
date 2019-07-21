@@ -43,7 +43,7 @@ public:
 /*****************************************************************************************************/
 
 GradientMethod::GradientMethod() : m_fn(nullptr), m_gr(nullptr), m_printer(nullptr), m_projection(nullptr),
-    m_optimalityTolerance(0.1), m_functionTolerance(0.1), m_stepTolerance(0.1),
+    m_optimalityTolerance(0.1), m_functionTolerance(0.1), m_stepTolerance(0.1), m_constraintTolerance(0.0),
     min_step(0.1), min_epsilon(0.01),
     m_show_end_message(true), m_normalize(true), m_normalizer(nullptr),
     m_iterationNumber(0), m_maxIterationCount(UINT32_MAX),
@@ -166,32 +166,32 @@ void GradientMethod::setGradientNormalizer(IVectorNormalizer *normalizer)
     m_normalizer = normalizer;
 }
 
-auto GradientMethod::setMaxIterationCount(unsigned int maxIterationCount) -> void
+void GradientMethod::setMaxIterationCount(unsigned int maxIterationCount)
 {
     m_maxIterationCount = maxIterationCount;
 }
 
-auto GradientMethod::maxIterationCount() const -> unsigned int
+unsigned int GradientMethod::maxIterationCount() const
 {
     return m_maxIterationCount;
 }
 
-auto GradientMethod::setMaxFunctionEvaluationCount(unsigned int maxFunctionEvaluationCount) -> void
+void GradientMethod::setMaxFunctionEvaluationCount(unsigned int maxFunctionEvaluationCount)
 {
     m_maxFunctionEvaluationCount = maxFunctionEvaluationCount;
 }
 
-auto GradientMethod::maxFunctionEvaluationCount() const -> unsigned int
+unsigned int GradientMethod::maxFunctionEvaluationCount() const
 {
     return m_maxFunctionEvaluationCount;
 }
 
-auto GradientMethod::iterationNumber() const -> unsigned int
+unsigned int GradientMethod::iterationNumber() const
 {
     return m_iterationNumber;
 }
 
-auto GradientMethod::maxFunctionEvaluationNumber() const -> unsigned int
+unsigned int GradientMethod::maxFunctionEvaluationNumber() const
 {
     return m_maxFunctionEvaluationCount;
 }
@@ -541,4 +541,82 @@ void GradientMethod::halphIntervalMethod(double &x, double &a, double &b, double
 
     //if (fa<fb) x = a;
     //if (fa>fb) x = b;
+}
+
+bool GradientMethod::checkForExit(double step_tolerance, double optimality_tolerance, double function_tolerance,
+                                  double f2, const DoubleVector &x, const DoubleVector &g, double alpha) const
+{
+    /**************************************************************************************
+     * Checking for gradient vector norm that is less of optimality tolerance.
+     * If gradient vector norm in current point is less than optimality tolerance then break
+     * the iteration.
+     * Finish minimization.
+     **************************************************************************************/
+    double gradient_norm = 0.0;
+    if (m_normalizer) gradient_norm = m_normalizer->norm(g);
+    if (gradient_norm < optimalityTolerance())
+    {
+        if (m_printer) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_GRADIENT_NORM_LESS);
+        if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than optimality tolerance...");
+        return true;
+    }
+
+
+    /**************************************************************************************
+     * Calculating distance between the previous and current points.
+     * Calculating difference values of functions in previous and current points.
+     * If distance and difference is less than step tolerance then break the iteration.
+     * Finish minimization.
+     **************************************************************************************/
+    //if (stepTolerance < stepTolerance() && fabs(f2 - f1) < functionTolerance())
+    //{
+    //    if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+    //    if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
+    //    break;
+    //}
+    /**************************************************************************************
+     *
+     *
+     *
+     **************************************************************************************/
+    if (step_tolerance <= stepTolerance())
+    {
+        if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+        if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
+        return true;
+    }
+    /**************************************************************************************
+     *
+     *
+     *
+     **************************************************************************************/
+    if (function_tolerance <= functionTolerance())
+    {
+        if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+        if (m_show_end_message) puts("Optimisation ends, because previous and current function values difference less than function tolerance...");
+        return true;
+    }
+    /**************************************************************************************
+     *
+     *
+     *
+     **************************************************************************************/
+    if (m_iterationNumber == maxIterationCount())
+    {
+        if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+        if (m_show_end_message) puts("Optimisation ends, because iteration count reached max allowed iterations number...");
+        return true;
+    }
+
+    /**************************************************************************************
+     *
+     *
+     *
+     **************************************************************************************/
+    if (m_functionEvaluationNumber == maxFunctionEvaluationCount())
+    {
+        if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+        if (m_show_end_message) puts("Optimisation ends, because max function evaluation count reached max allowed number...");
+        return true;
+    }
 }
