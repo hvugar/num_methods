@@ -68,45 +68,8 @@ SpacePointInfo::~SpacePointInfo()
 
 void Problem2HSolver::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
 {
-    example2();
+    example1();
 }
-
-class Exampl1Projection : public IProjection
-{
-public:
-    Exampl1Projection(unsigned int Nc, unsigned int No) : Nc(Nc), No(No) {}
-
-    virtual ~Exampl1Projection() {}
-
-    virtual void project(DoubleVector &, unsigned int) {}
-
-    virtual void project(DoubleVector &x) const
-    {
-        unsigned int start = 2*Nc*No;
-        unsigned int end = 2*Nc*No + 2*No + 2*Nc - 1;
-
-        for (unsigned int index = start; index <= end; index++)
-        {
-            if (x[index] <= 0.05) x[index] = 0.05;
-            if (x[index] >= 0.95) x[index] = 0.95;
-        }
-
-        if (x[start+0] <= 0.12) x[start+0] = 0.12; if (x[start+0] >= 0.32) x[start+0] = 0.32;
-        if (x[start+1] <= 0.28) x[start+1] = 0.28; if (x[start+1] >= 0.48) x[start+1] = 0.48;
-        if (x[start+2] <= 0.71) x[start+2] = 0.71; if (x[start+2] >= 0.89) x[start+2] = 0.89;
-        if (x[start+3] <= 0.05) x[start+3] = 0.05; if (x[start+3] >= 0.22) x[start+3] = 0.22;
-        if (x[start+4] <= 0.44) x[start+4] = 0.44; if (x[start+4] >= 0.64) x[start+4] = 0.64;
-        if (x[start+5] <= 0.45) x[start+5] = 0.45; if (x[start+5] >= 0.63) x[start+5] = 0.63;
-        if (x[start+6] <= 0.58) x[start+6] = 0.58; if (x[start+6] >= 0.78) x[start+6] = 0.78;
-        if (x[start+7] <= 0.25) x[start+7] = 0.25; if (x[start+7] >= 0.42) x[start+7] = 0.42;
-        if (x[start+8] <= 0.19) x[start+8] = 0.19; if (x[start+8] >= 0.39) x[start+8] = 0.39;
-        if (x[start+9] <= 0.59) x[start+9] = 0.59; if (x[start+9] >= 0.78) x[start+9] = 0.78;
-    }
-
-private:
-    unsigned int Nc;
-    unsigned int No;
-};
 
 void Problem2HSolver::example1()
 {
@@ -146,7 +109,8 @@ void Problem2HSolver::example1()
     const unsigned int Nc = 2;
     const unsigned int No = 3;
     const unsigned int length = 2*Nc*No + 2*(Nc+No);
-    ps.setParameters(Nc, No, ps.Problem2HWaveEquationIBVP::spaceDimensionX(), ps.Problem2HWaveEquationIBVP::spaceDimensionY(),
+    ps.setParameters(Nc, No, ps.Problem2HWaveEquationIBVP::spaceDimensionX(),
+                     ps.Problem2HWaveEquationIBVP::spaceDimensionY(),
                      ps.Problem2HWaveEquationIBVP::timeDimension());
 
     // Optimization Vector
@@ -176,8 +140,7 @@ void Problem2HSolver::example1()
     g.setFunction(&ps);
     g.setGradient(&ps);
     g.setPrinter(&ps);
-    //g.setProjection(&ps);
-    g.setProjection(new Exampl1Projection(2, 3));
+    g.setProjection(&ps);
     g.setOptimalityTolerance(0.0);
     g.setFunctionTolerance(0.0);
     g.setStepTolerance(0.0);
@@ -193,10 +156,11 @@ void Problem2HSolver::example1()
     //printf("oz: "); IPrinter::print(x.mid(6, 11), x.mid(6, 11).length(), 9, 4);
     //printf("xy: "); IPrinter::print(x.mid(12,21), x.mid(12,21).length(), 9, 4);
     //IPrinter::printSeperatorLine();
-    //g.calculate(x);
+    g.calculate(x);
 
 
     puts("Optimization is finished...");
+    return;
     //printf("fx %10.8f\n", ps.fx(DoubleVector(rx, length)));
 
     ps.L = 1000;
@@ -274,35 +238,28 @@ void Problem2HSolver::example2()
                      ps.Problem2HWaveEquationIBVP::timeDimension());
 
     // Optimization Vector
-    // 0.0.00010904
-    double ox[] = { -0.0000, -0.0000, -0.0000, -0.0000, -0.0000, -0.0000,
-                    -0.0000, +0.0000, +0.0000, -0.0000, +0.0000, -0.0000,
-                    0.3048,  0.4578,  0.7263,  0.2155,  0.4882,  0.4847,
-                    0.5919,  0.3970,  0.2017,  0.7159 };
+    double ox[] = { -0.0412, -0.4182, +0.7455, -0.2589, -0.7521, +0.3848,
+                    +0.4008, +0.2805, +0.3006, +0.8128, -0.2070, +0.3001,
+                    +0.3105, +0.2914, +0.7248, +0.2153, +0.4687, +0.6215,
+                    +0.7524, +0.4135, +0.2015, +0.7549 };
 
-    //0.00010065
-    double rx[] = { -0.5348, -0.1824,  0.3361, -0.4665, -0.1472,  0.3638,
-                    +0.0116,  0.0178,  0.0199,  0.0462, -0.0239,  0.0423,
-                    0.3443,  0.4733,  0.8501,  0.0864,  0.6252,  0.4499,
-                    0.6063,  0.3858,  0.4038,  0.5948 };
-
+    // 0.00009911
     // Regularization Vector
-    //    double rx[] = { +0.3068, +0.3486, -0.2102, +0.3355, +0.3874, -0.2490,
-    //                    +0.0028, +0.0075, -0.0026, +0.0030, +0.0065, -0.0027,
-    //                    +0.2059, +0.3967, +0.7639, +0.1825, +0.5215, +0.4707,
-    //                    +0.6734, +0.2997, +0.2968, +0.6893};
-
+    double rx[] = { -0.5259, -0.1830, +0.2802, -0.4922, -0.1949, +0.3130,
+                    +0.0083, +0.0167, +0.0217, +0.0415, -0.0264, +0.0457,
+                    +0.3388, +0.2948, +0.8400, +0.0840, +0.6400, +0.4634,
+                    +0.6012, +0.3929, +0.3740, +0.6324 };
 
     //ps.optimizeK = false;
     //ps.optimizeZ = false;
 
-    ps.setOptimizationVector(ox);
-    const double epsilon = 0.2;
+    ps.setOptimizationVector(rx);
+    const double epsilon = 1.0;
     ps.setRegularizationVector(rx, epsilon, epsilon, epsilon, epsilon);
     ps.noise = 0.0;
 
     for (unsigned int i=0; i<Nc; i++) { ps.vmin[i] = -0.05; ps.vmax[i] = +0.05; }
-    ps.r = 0.2;
+    ps.r = 0.1;
 
     //checkGradient3(ps, ox, length);
 
@@ -312,8 +269,7 @@ void Problem2HSolver::example2()
     g.setFunction(&ps);
     g.setGradient(&ps);
     g.setPrinter(&ps);
-    //g.setProjection(&ps);
-    g.setProjection(new Exampl1Projection(2, 3));
+    g.setProjection(&ps);
     g.setOptimalityTolerance(-0.01);
     g.setFunctionTolerance(-0.01);
     g.setStepTolerance(-0.01);
@@ -794,25 +750,30 @@ void Problem2HSolver::setEquationParameters(double waveSpeed, double waveDissipa
     Problem2HConjugateWaveEquationIBVP::setWaveDissipation(waveDissipation);
 }
 
-void Problem2HSolver::project(DoubleVector &pv) const
+void Problem2HSolver::project(DoubleVector &x) const
 {
     unsigned int start = 2*Nc*No;
     unsigned int end = 2*Nc*No + 2*No + 2*Nc - 1;
 
-    for (unsigned int index = start; index <= end; index++)
-    {
-        if (pv[index] <= 0.05) pv[index] = 0.05;
-        if (pv[index] >= 0.95) pv[index] = 0.95;
-    }
+//    for (unsigned int index = start; index <= end; index++)
+//    {
+//        if (x[index] <= 0.05) x[index] = 0.05;
+//        if (x[index] >= 0.95) x[index] = 0.95;
+//    }
 
-    //    for (unsigned int index = start; index <= end; index++)
-    //    {
-    //        if (index==12 || index==13)
-    //        {
-    //        if (pv[index] <= 0.05) pv[index] = 0.05;
-    //        if (pv[index] >= 0.50) pv[index] = 0.50;
-    //        }
-    //    }
+
+    if (x[start+0] <= 0.12) x[start+0] = 0.12; if (x[start+0] >= 0.32) x[start+0] = 0.32;
+    if (x[start+1] <= 0.28) x[start+1] = 0.28; if (x[start+1] >= 0.48) x[start+1] = 0.48;
+    if (x[start+2] <= 0.71) x[start+2] = 0.71; if (x[start+2] >= 0.89) x[start+2] = 0.89;
+    if (x[start+3] <= 0.05) x[start+3] = 0.05; if (x[start+3] >= 0.22) x[start+3] = 0.22;
+    if (x[start+4] <= 0.44) x[start+4] = 0.44; if (x[start+4] >= 0.64) x[start+4] = 0.64;
+    if (x[start+5] <= 0.45) x[start+5] = 0.45; if (x[start+5] >= 0.63) x[start+5] = 0.63;
+    if (x[start+6] <= 0.58) x[start+6] = 0.58; if (x[start+6] >= 0.78) x[start+6] = 0.78;
+    if (x[start+7] <= 0.25) x[start+7] = 0.25; if (x[start+7] >= 0.42) x[start+7] = 0.42;
+    if (x[start+8] <= 0.19) x[start+8] = 0.19; if (x[start+8] >= 0.39) x[start+8] = 0.39;
+    if (x[start+9] <= 0.59) x[start+9] = 0.59; if (x[start+9] >= 0.78) x[start+9] = 0.78;
+
+
 }
 
 void Problem2HSolver::project(DoubleVector &, unsigned int) {}
@@ -828,7 +789,7 @@ void Problem2HSolver::print(unsigned int iteration, const DoubleVector &x, const
     double plty = solver->penalty();
     for (unsigned int i=0; i<u_list.size(); i++) solver->u_list[i].clear(); solver->u_list.clear();
 
-    printf("I[%3d] %.8f %7.4f %.8f %.8f %.8f  \n", iteration, f, alpha, integr, nrm, plty);
+    printf("I[%3d] %.8f %7.4f %.8f %.8f %.8f  ", iteration, f, alpha, integr, nrm, plty);
     IPrinter::print(x, x.length(), 7, 4);
 
     //printf("k: "); IPrinter::print(x.mid(0,  5), x.mid(0,  5).length(), 9, 4);
