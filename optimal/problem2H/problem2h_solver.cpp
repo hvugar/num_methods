@@ -77,7 +77,7 @@ void Problem2HSolver::example1()
     ps.L = 300;
     ps.D = 30;
     ps.setDimensions(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, static_cast<int>(ps.L+ps.D)));
-    ps.setEquationParameters(1.0, 0.0);
+    ps.setEquationParameters(1.0, 0.01);
     ps.u_list.resize(2*ps.D+1);
 
     /****************************************************************************************************************/
@@ -109,8 +109,7 @@ void Problem2HSolver::example1()
     const unsigned int Nc = 2;
     const unsigned int No = 3;
     const unsigned int length = 2*Nc*No + 2*(Nc+No);
-    ps.setParameters(Nc, No, ps.Problem2HWaveEquationIBVP::spaceDimensionX(),
-                     ps.Problem2HWaveEquationIBVP::spaceDimensionY(),
+    ps.setParameters(Nc, No, ps.Problem2HWaveEquationIBVP::spaceDimensionX(), ps.Problem2HWaveEquationIBVP::spaceDimensionY(),
                      ps.Problem2HWaveEquationIBVP::timeDimension());
 
     // Optimization Vector
@@ -145,7 +144,7 @@ void Problem2HSolver::example1()
     g.setFunctionTolerance(0.0);
     g.setStepTolerance(0.0);
     g.setR1MinimizeEpsilon(1.0, 0.01);
-    g.setMaxIterationCount(200);
+    g.setMaxIterationCount(20);
     g.setNormalize(false);
     g.showExitMessage(true);
 
@@ -157,7 +156,6 @@ void Problem2HSolver::example1()
     //printf("xy: "); IPrinter::print(x.mid(12,21), x.mid(12,21).length(), 9, 4);
     //IPrinter::printSeperatorLine();
     g.calculate(x);
-
 
     puts("Optimization is finished...");
     return;
