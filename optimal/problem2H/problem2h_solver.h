@@ -196,6 +196,9 @@ public:
     static void Main(int argc, char* argv[]);
     static void checkGradient3(const Problem2HSolver &prob, const double *data, unsigned int length);
     static void example1();
+    static void example1_1(Problem2HSolver& ps, DoubleVector &x);
+    static void example1_2(Problem2HSolver& ps, DoubleVector &x);
+
     static void example2();
 
     void setDimensions(const Dimension &dimensionX, const Dimension &dimensionY, const Dimension &timeDimension);

@@ -103,7 +103,6 @@ void Problem2HSolver::example1()
     initialPulses[1] = { SpacePoint(0.75, 0.75), 0.048, 1.0, 1.0, nullptr, 0 };
     ps.Problem2HWaveEquationIBVP::setInitialConditionMatrix(initialPulses, initialPulsesCount);
     delete [] initialPulses;
-
     /****************************************************************************************************************/
 
     const unsigned int Nc = 2;
@@ -151,23 +150,28 @@ void Problem2HSolver::example1()
     IPrinter::printSeperatorLine();
 
     DoubleVector x(ox, length);
-    //printf("ok: "); IPrinter::print(x.mid(0,  5), x.mid(0,  5).length(), 9, 4);
-    //printf("oz: "); IPrinter::print(x.mid(6, 11), x.mid(6, 11).length(), 9, 4);
-    //printf("xy: "); IPrinter::print(x.mid(12,21), x.mid(12,21).length(), 9, 4);
-    //IPrinter::printSeperatorLine();
-    g.calculate(x);
+    //g.calculate(x);
 
     puts("Optimization is finished...");
-    return;
-    //printf("fx %10.8f\n", ps.fx(DoubleVector(rx, length)));
 
+    DoubleVector rv(rx, length);
+    //example1_1(ps, rv);
+    example1_2(ps, rv);
+
+    puts("Finished");
+
+    delete [] ps.times;
+}
+
+void Problem2HSolver::example1_1(Problem2HSolver& ps, DoubleVector &x)
+{
     ps.L = 1000;
-    ps.setDimensions(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, (ps.L+ps.D)));
-    ps.setParameters(Nc, No, ps.Problem2HWaveEquationIBVP::spaceDimensionX(),
+    ps.setDimensions(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, static_cast<int>(ps.L+ps.D)));
+    ps.setParameters(ps.Nc, ps.No, ps.Problem2HWaveEquationIBVP::spaceDimensionX(),
                      ps.Problem2HWaveEquationIBVP::spaceDimensionY(),
                      ps.Problem2HWaveEquationIBVP::timeDimension());
-    ps.setOptimizationVector(rx);
-    ps.setRegularizationVector(rx, 0.0, 0.0, 0.0, 0.0);
+    ps.setOptimizationVector(x.data());
+    ps.setRegularizationVector(x.data(), 0.0, 0.0, 0.0, 0.0);
     ps.r = 0.0;
     ps.noise = 0.0;
     ps.Problem2HWaveEquationIBVP::setWaveDissipation(0.0);
@@ -188,10 +192,60 @@ void Problem2HSolver::example1()
     //    double f2 = ps.fx(x);
 
     //    printf("%f %f\n", f1, f2);
+}
 
-    puts("Finished");
+void Problem2HSolver::example1_2(Problem2HSolver& ps, DoubleVector &x)
+{
+    const double epsilon = 0.0;
+    ps.setRegularizationVector(x.data(), epsilon, epsilon, epsilon, epsilon);
+    ps.noise = 0.0;
+    ps.r = 0.0;
 
-    delete [] ps.times;
+    double **result = static_cast<double**>(malloc(sizeof(double*)*22));
+
+//    for (unsigned int j=0; j<12; j++)
+//    {
+//        DoubleVector tx = x;
+//        result[j] = static_cast<double*>(malloc(sizeof(double)*201));
+//        for (unsigned int i=0; i<=200; i++)
+//        {
+//            tx[j] = i*0.01 - 1.0;
+//            double fx = ps.fx(tx);
+//            result[j][i] = fx;
+//        }
+//        printf("%4d finished.\n", j);
+//    }
+
+//    for (unsigned int i=0; i<=200; i++)
+//    {
+//        double a = i*0.01 - 1.0;
+//        printf("%4d %8.4f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f\n", (i-100), a,
+//               result[0][i], result[1][i], result[2][i], result[3][i], result[4][i], result[5][i],
+//               result[6][i], result[7][i], result[8][i], result[9][i], result[10][i], result[11][i]);
+//    }
+
+    for (unsigned int j=12; j<22; j++)
+    {
+        DoubleVector tx = x;
+        result[j] = static_cast<double*>(malloc(sizeof(double)*101));
+        result[j][0] = result[j][1] = result[j][2] = result[j][3] = result[j][4] = 0.0;
+        for (unsigned int i=5; i<=95; i++)
+        {
+            tx[j] = i*0.01;
+            double fx = ps.fx(tx);
+            result[j][i] = fx;
+        }
+        result[j][96] = result[j][97] = result[j][98] = result[j][99] = result[j][100] = 0.0;
+        printf("%4d finished.\n", j);
+    }
+
+    for (unsigned int i=0; i<=100; i++)
+    {
+        double a = i*0.01;
+        printf("%4d %8.4f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f %14.10f\n", i, a,
+               result[12][i], result[13][i], result[14][i], result[15][i], result[16][i], result[17][i],
+               result[18][i], result[19][i], result[20][i], result[21][i] );
+    }
 }
 
 void Problem2HSolver::example2()
@@ -236,10 +290,11 @@ void Problem2HSolver::example2()
                      ps.Problem2HWaveEquationIBVP::timeDimension());
 
     // Optimization Vector
-    double ox[] = { -0.0412, -0.4182, +0.7455, -0.2589, -0.7521, +0.3848,
-                    +0.4008, +0.2805, +0.3006, +0.8128, -0.2070, +0.3001,
-                    +0.3105, +0.2914, +0.7248, +0.2153, +0.4687, +0.6215,
-                    +0.7524, +0.4135, +0.2015, +0.7549 };
+//    double ox[] = { -0.0412, -0.4182, +0.7455, -0.2589, -0.7521, +0.3848,
+//                    +0.4008, +0.2805, +0.3006, +0.8128, -0.2070, +0.3001,
+//                    +0.3105, +0.2914, +0.7248, +0.2153, +0.4687, +0.6215,
+//                    +0.7524, +0.4135, +0.2015, +0.7549 };
+//    ox[0] = ox[1] = ox[2] = ox[3] = ox[4] = ox[5] = 0.0;
 
     // 0.00009911
     // Regularization Vector
@@ -248,16 +303,25 @@ void Problem2HSolver::example2()
                     +0.3388, +0.2948, +0.8400, +0.0840, +0.6400, +0.4634,
                     +0.6012, +0.3929, +0.3740, +0.6324 };
 
-    //ps.optimizeK = false;
-    //ps.optimizeZ = false;
+    // Regularization Vector Example1 and optimal 0.000090
+    //double rx[] = { +0.3068, +0.3486, -0.2102, +0.3355, +0.3874, -0.2490,
+    //                +0.0028, +0.0075, -0.0026, +0.0030, +0.0065, -0.0027,
+    //                +0.2059, +0.3967, +0.7639, +0.1825, +0.5215, +0.4707,
+    //                +0.6734, +0.2997, +0.2968, +0.6893};
+    //
+
+//    double rx[] = {  0.2013,  0.4131, -0.2228,  0.2543,  0.3740, -0.1758,
+//                     -0.0140,  0.0193,  0.0164,  0.0218,  0.0016,  0.0290,
+//                     0.3181,  0.3256,  0.8085,  0.1588,  0.6400,  0.4933,
+//                     0.6325,  0.2997,  0.3480,  0.7467 };
 
     ps.setOptimizationVector(rx);
-    const double epsilon = 1.0;
+    const double epsilon = 0.0;
     ps.setRegularizationVector(rx, epsilon, epsilon, epsilon, epsilon);
     ps.noise = 0.0;
 
     for (unsigned int i=0; i<Nc; i++) { ps.vmin[i] = -0.05; ps.vmax[i] = +0.05; }
-    ps.r = 0.1;
+    ps.r = 0.0;
 
     //checkGradient3(ps, ox, length);
 
@@ -271,18 +335,13 @@ void Problem2HSolver::example2()
     g.setOptimalityTolerance(-0.01);
     g.setFunctionTolerance(-0.01);
     g.setStepTolerance(-0.01);
-    g.setR1MinimizeEpsilon(1.0, 0.1);
-    g.setMaxIterationCount(200);
+    g.setR1MinimizeEpsilon(1.0, 0.01);
+    g.setMaxIterationCount(2000);
     g.setNormalize(false);
     g.showExitMessage(true);
 
     IPrinter::printSeperatorLine();
-
-    DoubleVector x(ox, length);
-    //printf("ok: "); IPrinter::print(x.mid(0,  5), x.mid(0,  5).length(), 9, 4);
-    //printf("oz: "); IPrinter::print(x.mid(6, 11), x.mid(6, 11).length(), 9, 4);
-    //printf("xy: "); IPrinter::print(x.mid(12,21), x.mid(12,21).length(), 9, 4);
-    //IPrinter::printSeperatorLine();
+    DoubleVector x(rx, length);
     g.calculate(x);
 
     puts("Optimization is finished...");
@@ -297,7 +356,7 @@ void Problem2HSolver::gradient(const DoubleVector &pv, DoubleVector &g) const
     Problem2HSolver* solver = const_cast<Problem2HSolver*>(this);
     //solver->OptimalParameterFromVector(pv);
     solver->setOptimizationVector(pv.data());
-    solver->Problem2HWaveEquationIBVP::setInitialConditionMatrix(initialPulses, initialPulsesCount);
+    //solver->Problem2HWaveEquationIBVP::setInitialConditionMatrix(initialPulses, initialPulsesCount);
     gradient_one(pv, g, solver);
 
     //    for (unsigned int i=0; i<g.length(); i++)
@@ -443,7 +502,7 @@ double Problem2HSolver::fx(const DoubleVector &x) const
     Problem2HSolver* solver = const_cast<Problem2HSolver*>(this);
     //solver->OptimalParameterFromVector(x);
     solver->setOptimizationVector(x.data());
-    solver->Problem2HWaveEquationIBVP::setInitialConditionMatrix(this->initialPulses, this->initialPulsesCount);
+    //solver->Problem2HWaveEquationIBVP::setInitialConditionMatrix(this->initialPulses, this->initialPulsesCount);
     SUM += fx_one(x, solver);
     return SUM;
 }
@@ -753,11 +812,11 @@ void Problem2HSolver::project(DoubleVector &x) const
     unsigned int start = 2*Nc*No;
     unsigned int end = 2*Nc*No + 2*No + 2*Nc - 1;
 
-//    for (unsigned int index = start; index <= end; index++)
-//    {
-//        if (x[index] <= 0.05) x[index] = 0.05;
-//        if (x[index] >= 0.95) x[index] = 0.95;
-//    }
+    //    for (unsigned int index = start; index <= end; index++)
+    //    {
+    //        if (x[index] <= 0.05) x[index] = 0.05;
+    //        if (x[index] >= 0.95) x[index] = 0.95;
+    //    }
 
 
     if (x[start+0] <= 0.12) x[start+0] = 0.12; if (x[start+0] >= 0.32) x[start+0] = 0.32;
