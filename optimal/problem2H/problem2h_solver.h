@@ -21,11 +21,6 @@ struct InitialPulse
 {
     SpacePoint point;
     double blow;
-    double point_density;
-    double blow_density;
-
-    InitialPulse *pulses;
-    unsigned int pulsesCount;
 };
 
 struct PROBLEM2HSHARED_EXPORT SpacePointInfo

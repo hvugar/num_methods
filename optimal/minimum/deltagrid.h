@@ -11,11 +11,10 @@ class MINIMUMSHARED_EXPORT DeltaGrid2D
 {
 public:
     DeltaGrid2D();
-    DeltaGrid2D(const DeltaGrid2D&);
+    DeltaGrid2D(const DeltaGrid2D &dg);
     virtual ~DeltaGrid2D();
 
-    DeltaGrid2D& operator =(const DeltaGrid2D& vector);
-
+    DeltaGrid2D& operator =(const DeltaGrid2D &dg);
 
     auto initGrid(unsigned int N, double hx, unsigned int M, double hy) -> void;
     auto initGrid(const Dimension &dimensionX, const Dimension &dimensionY) -> void;
@@ -23,16 +22,17 @@ public:
     auto reset() -> void;
     auto resetAll() -> void;
 
-    auto distributeGauss(const SpacePoint& sp, unsigned int nodeX_per_sigmaX = 1, unsigned int nodeY_per_sigmaY = 1) -> void;
+    auto distributeGauss(const SpacePoint &sp, unsigned int nodeX_per_sigmaX = 1, unsigned int nodeY_per_sigmaY = 1) -> void;
     auto lumpPointGauss(const DoubleMatrix &m) const -> double;
-    auto lumpPointGauss(const DoubleMatrix &m, double &mx, double &my) const -> double;
+    auto lumpPointGauss(const DoubleMatrix &u, double &dx, double &dy) const -> double;
+    auto lumpPointGauss1(const DoubleMatrix &u, double &dx, double &dy) const -> double;
 
     auto distributeSigle(const SpacePoint& sp) -> void;
     auto distributeRect4(const SpacePoint& sp) -> void;
 
-    auto consentrateInPoint(const DoubleMatrix &m, unsigned int v=4) const -> double;
-    auto derivativesInPoint(const DoubleMatrix &m, double &dx, double &dy, unsigned int v=4) const -> void;
-    auto consentrateInPoint(const DoubleMatrix &m, double &dx, double &dy, unsigned int v=4) const -> double;
+    auto consentrateInPoint(const DoubleMatrix &u, unsigned int v=4) const -> double;
+    auto derivativesInPoint(const DoubleMatrix &u, double &dx, double &dy, unsigned int v=4) const -> void;
+    auto consentrateInPoint(const DoubleMatrix &u, double &dx, double &dy, unsigned int v=4) const -> double;
 
     auto isCenter(const SpaceNodePDE &sn) const -> bool;
     auto isCenter(unsigned int n, unsigned int m) const -> bool;
@@ -46,8 +46,8 @@ public:
     auto rx() const -> unsigned int;
     auto ry() const -> unsigned int;
 
-    auto p() const -> const SpacePoint&;
-    auto p() -> SpacePoint&;
+    auto p() const -> const SpacePoint &;
+    auto p() -> SpacePoint &;
 
     auto minX() const -> unsigned int;
     auto maxX() const -> unsigned int;
@@ -86,17 +86,28 @@ class MINIMUMSHARED_EXPORT DeltaGrid1D
 {
 public:
     DeltaGrid1D();
+    DeltaGrid1D(const DeltaGrid1D &dg);
     virtual ~DeltaGrid1D();
 
+    DeltaGrid1D& operator =(const DeltaGrid1D &dg);
+
     auto initGrid(unsigned int N, double hx) -> void;
+    auto initGrid(const Dimension &dimension) -> void;
     auto cleanGrid() -> void;
+    auto reset() -> void;
+    auto resetAll() -> void;
 
-    auto distributeGauss(const SpacePoint& sp, unsigned int sigmaXNum = 1) -> void;
-    auto distributeSigle(const SpacePoint& sp) -> void;
-    auto distributeRect4(const SpacePoint& sp) -> void;
+    auto distributeGauss(const SpacePoint &sp, unsigned int nodeX_per_sigmaX = 1) -> void;
+    auto lumpPointGauss(const DoubleVector &u) const -> double;
+    auto lumpPointGauss(const DoubleVector &u, double &dx) const -> double;
+    auto lumpPointGauss1(const DoubleVector &u, double &dx) const -> double;
 
-    auto consentrateInPoint(const DoubleVector &m, int v) const -> double;
-    auto consentrateInPoint(const DoubleVector &m, double &dx) const -> double;
+    auto distributeSigle(const SpacePoint &sp) -> void;
+    auto distributeRect4(const SpacePoint &sp) -> void;
+
+    auto consentrateInPoint(const DoubleVector &u, unsigned int v=4) const -> double;
+    auto derivativesInPoint(const DoubleVector &u, double &dx, unsigned int v=4) const -> void;
+    auto consentrateInPoint(const DoubleVector &u, double &dx, unsigned int v=4) const -> double;
 
     auto isCenter(const SpaceNodePDE &sn) const -> bool;
     auto isCenter(unsigned int n) const -> bool;
@@ -109,8 +120,8 @@ public:
 
     auto rx() const -> unsigned int;
 
-    auto p() const -> const SpacePoint&;
-    auto p() -> SpacePoint&;
+    auto p() const -> const SpacePoint &;
+    auto p() -> SpacePoint &;
 
     auto minX() const -> unsigned int;
     auto maxX() const -> unsigned int;
@@ -118,15 +129,17 @@ public:
     double *nodes() { return m_nodes; }
     double *nodes() const { return m_nodes; }
 
+    double *der_x() const { return m_der_x; }
+
     auto hx() const -> double;
 
 private:
-
     unsigned int _N;
     double _hx;
     SpacePoint _p;
 
     double *m_nodes;
+    double *m_der_x;
     unsigned int _rx;
     unsigned int _minX;
     unsigned int _maxX;

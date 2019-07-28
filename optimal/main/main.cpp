@@ -1,4 +1,4 @@
-#include <float.h>
+ #include <float.h>
 #include <time.h>
 #include <cmethods.h>
 #include <grid/pibvp.h>
@@ -43,10 +43,12 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //TestWaveEquationEx1::Main(argc, argv);
     //WaveEquationIBVP::Main(argc, argv); return 0;
 
-    //DeltaGrid2DExt1::Main(argc, argv);
-    //DeltaGrid1DExt1::Main(argc, argv);
+    DeltaGrid2DExt1::Main(argc, argv);
+    puts("-------------------------");
+    DeltaGrid1DExt1::Main(argc, argv);
+    puts("-------------------------");
 
-    //return 0;
+    return 0;
 
     //srand(static_cast<unsigned int>(time(nullptr)));
 

@@ -68,7 +68,7 @@ SpacePointInfo::~SpacePointInfo()
 
 void Problem2HSolver::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
 {
-    example1();
+    example2();
 }
 
 void Problem2HSolver::example1()
@@ -99,8 +99,8 @@ void Problem2HSolver::example1()
 
     const unsigned int initialPulsesCount = 2;
     InitialPulse *initialPulses = new InitialPulse[initialPulsesCount];
-    initialPulses[0] = { SpacePoint(0.25, 0.25), 0.052, 1.0, 1.0, nullptr, 0 };
-    initialPulses[1] = { SpacePoint(0.75, 0.75), 0.048, 1.0, 1.0, nullptr, 0 };
+    initialPulses[0] = { SpacePoint(0.25, 0.25), 0.052 };
+    initialPulses[1] = { SpacePoint(0.75, 0.75), 0.048 };
     ps.Problem2HWaveEquationIBVP::setInitialConditionMatrix(initialPulses, initialPulsesCount);
     delete [] initialPulses;
     /****************************************************************************************************************/
@@ -276,8 +276,8 @@ void Problem2HSolver::example2()
 
     const unsigned int initialPulsesCount = 2;
     InitialPulse *initialPulses = new InitialPulse[initialPulsesCount];
-    initialPulses[0] = { SpacePoint(0.25, 0.25), 0.052, 1.0, 1.0, nullptr, 0 };
-    initialPulses[1] = { SpacePoint(0.75, 0.75), 0.048, 1.0, 1.0, nullptr, 0 };
+    initialPulses[0] = { SpacePoint(0.25, 0.25), 0.052 };
+    initialPulses[1] = { SpacePoint(0.75, 0.75), 0.048 };
     ps.Problem2HWaveEquationIBVP::setInitialConditionMatrix(initialPulses, initialPulsesCount);
     delete [] initialPulses;
 
@@ -1131,14 +1131,16 @@ void Problem2HWaveEquationIBVP::layerInfoPrepareLayerMatrix(const DoubleMatrix &
         ksi_info[j].dy[tn.i] = u_dy;
     }
 
-    f_return_zero = true;
+    f_crLayerMatrix.reset();
+
+    f_return_zero = false;
 
     for (unsigned int s=0; s<Nt; s++)
     {
         double wt = 0.0;
         if (tn.i == 2*times[s].i) { wt = 2.0/ht; } else { continue; }
 
-        if (f_return_zero) { f_crLayerMatrix.reset(); f_return_zero = false; }
+        //if (f_return_zero) { f_crLayerMatrix.reset(); f_return_zero = false; }
 
         double* v = new double[Nc];
 
