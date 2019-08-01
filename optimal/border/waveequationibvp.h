@@ -48,13 +48,13 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class BORDERSHARED_EXPORT ConjugateCdIHyperbolicIBVP1 : public IConjugateWaveEquationIBVP
+class BORDERSHARED_EXPORT ConjugateCdIHyperbolicIBVP1 : public IFinalWaveEquationIBVP
 {
 public:
     static void Main(int argc, char* argv[]);
 
 protected:
-    virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
+    virtual double final(const SpaceNodePDE &sn, FinalCondition condition) const;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 

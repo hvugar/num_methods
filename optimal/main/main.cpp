@@ -42,13 +42,14 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //TestWaveEquation::Main(argc, argv);
     //TestWaveEquationEx1::Main(argc, argv);
     //WaveEquationIBVP::Main(argc, argv); return 0;
+    ConjugateCdIHyperbolicIBVP1::Main(argc, argv); return 0;
 
-    DeltaGrid2DExt1::Main(argc, argv);
-    puts("-------------------------");
-    DeltaGrid1DExt1::Main(argc, argv);
-    puts("-------------------------");
+    //DeltaGrid2DExt1::Main(argc, argv);
+    //puts("-------------------------");
+    //DeltaGrid1DExt1::Main(argc, argv);
+    //puts("-------------------------");
 
-    return 0;
+    //return 0;
 
     //srand(static_cast<unsigned int>(time(nullptr)));
 

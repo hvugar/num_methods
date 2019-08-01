@@ -161,11 +161,11 @@ private:
 };
 
 class PROBLEM2HSHARED_EXPORT Problem2HConjugateWaveEquationIBVP :
-        virtual public IConjugateWaveEquationIBVP,
+        virtual public IFinalWaveEquationIBVP,
         virtual public Problem2HCommon
 {
 protected:
-    virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
+    virtual double final(const SpaceNodePDE &sn, FinalCondition condition) const;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;

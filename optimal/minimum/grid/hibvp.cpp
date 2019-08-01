@@ -27,7 +27,7 @@ void IWaveEquationIBVP::setWaveDissipation(double waveDissipation) { _waveDissip
 
 void IWaveEquationIBVP::explicit_calculate_D1V1() const
 {
-    const Dimension &dimX = spaceDimensionX();//spaceDimension(Dimension::DimensionX);
+    const Dimension &dimX = spaceDimensionX();
     const Dimension &time = timeDimension();
 
     const unsigned int N = static_cast<unsigned int>( dimX.size() );
@@ -72,9 +72,18 @@ void IWaveEquationIBVP::explicit_calculate_D1V1() const
         double firstDerivative = initial(sn, InitialCondition::FirstDerivative);
         u10[n] = u00[n] + ht*firstDerivative;
         double uxx = 0.0;
-        if (n==0) { uxx = aa__hxhx*(+2.0*u00[0]   -5.0*u00[1]   +4.0*u00[2]   -1.0*u00[3]); }
-        else if (n==N) { uxx = aa__hxhx*(-1.0*u00[N-3] +4.0*u00[N-2] -5.0*u00[N-1] +2.0*u00[N]); }
-        else { uxx = aa__hxhx*(u00[n-1]-2.0*u00[n]+u00[n+1]); }
+        if (n==0)
+        {
+            uxx = aa__hxhx*(+2.0*u00[0]   -5.0*u00[1]   +4.0*u00[2]   -1.0*u00[3]);
+        }
+        else if (n==N)
+        {
+            uxx = aa__hxhx*(-1.0*u00[N-3] +4.0*u00[N-2] -5.0*u00[N-1] +2.0*u00[N]);
+        }
+        else
+        {
+            uxx = aa__hxhx*(u00[n-1]-2.0*u00[n]+u00[n+1]);
+        }
         u10[n] += (uxx + f(sn,tn00) - wd*firstDerivative) * htht_05;
     }
     layerInfo(u10, tn10);
@@ -164,7 +173,7 @@ void IWaveEquationIBVP::explicit_calculate_D1V1() const
 
 void IWaveEquationIBVP::implicit_calculate_D1V1() const
 {
-    const Dimension &dimX = spaceDimensionX();//spaceDimension(Dimension::DimensionX);
+    const Dimension &dimX = spaceDimensionX();
     const Dimension &time = timeDimension();
 
     const unsigned int N = static_cast<unsigned int>( dimX.size() );
@@ -229,11 +238,20 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
         sn.i = static_cast<int>(n); sn.x = sn.i*hx;
         double firstDerivative = initial(sn, InitialCondition::FirstDerivative);
         u10[n] = u00[n] + firstDerivative*ht;
-        double uxx = 0.0;
-        if (n==0) { uxx = aa__hxhx*(+2.0*u00[0]   -5.0*u00[1]   +4.0*u00[2]   -1.0*u00[3]); } else
-            if (n==N) { uxx = aa__hxhx*(-1.0*u00[N-3] +4.0*u00[N-2] -5.0*u00[N-1] +2.0*u00[N]); } else
-            { uxx = aa__hxhx*(u00[n-1]-2.0*u00[n]+u00[n+1]); }
-        u10[n] += (uxx + f(sn,tn00) - alpha*firstDerivative) * htht_05;
+        double secndDerivative = 0.0;
+        if (n==0)
+        {
+            secndDerivative = aa__hxhx*(+2.0*u00[0]   -5.0*u00[1]   +4.0*u00[2]   -1.0*u00[3]);
+        }
+        else if (n==N)
+        {
+            secndDerivative = aa__hxhx*(-1.0*u00[N-3] +4.0*u00[N-2] -5.0*u00[N-1] +2.0*u00[N]);
+        }
+        else
+        {
+            secndDerivative = aa__hxhx*(u00[n-1]-2.0*u00[n]+u00[n+1]);
+        }
+        u10[n] += (secndDerivative + f(sn,tn00) - alpha*firstDerivative) * htht_05;
     }
     layerInfo(u10, tn10);
 
@@ -477,7 +495,24 @@ void IWaveEquationIBVP::explicit_calculate_D2V1() const
         BoundaryConditionPDE condition; double alpha, beta, gamma, value;
 
         /**************************** border conditions ****************************/
-        explicit_calculate_D2V1_border(u20, N, hx, M, hy, tn20);
+        SpaceNodePDE sn0, sn1;
+        BoundaryConditionPDE condtion;
+
+        sn0.i = static_cast<int>(0); sn0.x = 0*hx;
+        sn1.i = static_cast<int>(N); sn1.x = N*hx;
+        for (unsigned int m=0; m<=M; m++)
+        {
+            sn0.j = static_cast<int>(m); sn0.y = m*hy; u20[m][0] = boundary(sn0, tn20, condtion);
+            sn1.j = static_cast<int>(m); sn1.y = m*hy; u20[m][N] = boundary(sn1, tn20, condtion);
+        }
+
+        sn0.j = static_cast<int>(0); sn0.y = 0*hy;
+        sn1.j = static_cast<int>(M); sn1.y = M*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn0.i = static_cast<int>(n); sn0.x = n*hx; u20[0][n] = boundary(sn0, tn20, condtion);
+            sn1.i = static_cast<int>(n); sn1.x = n*hx; u20[M][n] = boundary(sn1, tn20, condtion);
+        }
         /**************************** border conditions ****************************/
 
         SpaceNodePDE sn;
@@ -521,6 +556,11 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
     const double alpha = waveDissipation();
     const double ht_ht_025 = ht*ht*0.25;
     const double alpha_ht_025 = alpha*ht*0.25;
+    const double aa__hxhx = (a*a)/(hx*hx);
+    const double aa__hyhy = (a*a)/(hy*hy);
+    const double ht_05 = ht*0.5;
+    const double htht_05 = 0.5*ht*ht;
+    const double htht_05_025 = htht_05*0.25;
 
     const double m_aa_htht__hxhx_025_lambda = -(0.25*a*a)*((ht*ht)/(hx*hx))*_lambda;
     const double b_aa_htht__hxhx = +(1.0 + 0.5*(a*a)*((ht*ht)/(hx*hx))*_lambda + alpha_ht_025);
@@ -569,10 +609,81 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
     DoubleMatrix u20(M+1, N+1);
 
     /***********************************************************************************************/
-    implicit_calculate_D2V1_initial(u00, u05, u10, N, hx, M, hy, ht, a, alpha);
     /***********************************************************************************************/
 
+    TimeNodePDE tn00; tn00.i = 0; tn00.t = 0.5*tn00.i*ht;
+    TimeNodePDE tn05; tn05.i = 1; tn05.t = 0.5*tn05.i*ht;
+    TimeNodePDE tn10; tn10.i = 2; tn10.t = 0.5*tn10.i*ht;
+
     SpaceNodePDE sn;
+    for (unsigned int m=0; m<=M; m++)
+    {
+        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
+            u00[m][n] = initial(sn, InitialCondition::InitialValue);
+        }
+    }
+    layerInfo(u00, tn00);
+
+    /***********************************************************************************************/
+
+    for (unsigned int m=0; m<=M; m++)
+    {
+        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
+            double firstDerivative = initial(sn, InitialCondition::FirstDerivative);
+
+            double secndDerivative = 0.0;
+            if (m==0) { secndDerivative += aa__hyhy*(+2.0*u00[0][n]-5.0*u00[1][n]+4.0*u00[2][n]-1.0*u00[3][n]); }
+            else
+            if (m==M) { secndDerivative += aa__hyhy*(-1.0*u00[M-3][n]+4.0*u00[M-2][n]-5.0*u00[M-1][n]+2.0*u00[M][n]); }
+            else { secndDerivative += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]); }
+
+            if (n==0) { secndDerivative += aa__hxhx*(+2.0*u00[m][0]-5.0*u00[m][1]+4.0*u00[m][2]-1.0*u00[m][3]); }
+            else
+            if (n==N) { secndDerivative += aa__hxhx*(-1.0*u00[m][N-3]+4.0*u00[m][N-2]-5.0*u00[m][N-1]+2.0*u00[m][N]); }
+            else { secndDerivative += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]); }
+
+            secndDerivative += f(sn,tn00);
+            secndDerivative -=  alpha*firstDerivative;
+
+            u05[m][n] = u00[m][n] + firstDerivative*ht_05 + secndDerivative*htht_05_025;
+            //u10[m][n] = u00[m][n] + firstDerivative*ht + secndDerivative*htht_05;
+        }
+    }
+    layerInfo(u05, tn05);
+
+    for (unsigned int m=0; m<=M; m++)
+    {
+        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
+            u10[m][n]  = 2.0*u05[m][n]-u00[m][n];
+
+            double secndDerivative = 0.0;
+            if (m==0) { secndDerivative += aa__hyhy*(+2.0*u05[0][n]-5.0*u05[1][n]+4.0*u05[2][n]-1.0*u05[3][n]); } else
+            if (m==M) { secndDerivative += aa__hyhy*(-1.0*u05[M-3][n]+4.0*u05[M-2][n]-5.0*u05[M-1][n]+2.0*u05[M][n]); }
+            else { secndDerivative += aa__hyhy*(u05[m-1][n]-2.0*u05[m][n]+u05[m+1][n]); }
+
+            if (n==0) { secndDerivative += aa__hxhx*(+2.0*u05[m][0]-5.0*u05[m][1]+4.0*u05[m][2]-1.0*u05[m][3]); } else
+            if (n==N) { secndDerivative += aa__hxhx*(-1.0*u05[m][N-3]+4.0*u05[m][N-2]-5.0*u05[m][N-1]+2.0*u05[m][N]); }
+            else { secndDerivative += aa__hxhx*(u05[m][n-1]-2.0*u05[m][n]+u05[m][n+1]); }
+
+            secndDerivative += f(sn,tn05);
+            u10[m][n] += (ht*ht*0.25)*secndDerivative;
+            u10[m][n] += (ht*0.25)*alpha*u00[m][n];
+
+            u10[m][n] /= (1.0+0.25*ht*alpha);
+        }
+    }
+    layerInfo(u10, tn10);
+    /***********************************************************************************************/
+
     for (unsigned int ln=2; ln<=L; ln++)
     {
         TimeNodePDE tn05; tn05.i = 2*ln-3; tn05.t = 0.5*tn05.i*ht;
@@ -580,7 +691,26 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
         TimeNodePDE tn15; tn15.i = 2*ln-1; tn15.t = 0.5*tn15.i*ht;
         TimeNodePDE tn20; tn20.i = 2*ln-0; tn20.t = 0.5*tn20.i*ht;
         /**************************************************** border conditions ***************************************************/
-        implicit_calculate_D2V1_border(u15, u20, N, hx, M, hy, tn15, tn20);
+
+        SpaceNodePDE sn0, sn1;
+        BoundaryConditionPDE condtion;
+
+        sn0.i = static_cast<int>(0); sn0.x = 0*hx;
+        sn1.i = static_cast<int>(N); sn1.x = N*hx;
+        for (unsigned int m=0; m<=M; m++)
+        {
+            sn0.j = static_cast<int>(m); sn0.y = m*hy; u15[m][0] = boundary(sn0, tn15, condtion); u20[m][0] = boundary(sn0, tn20, condtion);
+            sn1.j = static_cast<int>(m); sn1.y = m*hy; u15[m][N] = boundary(sn1, tn15, condtion); u20[m][N] = boundary(sn1, tn20, condtion);
+        }
+
+        sn0.j = static_cast<int>(0); sn0.y = 0*hy;
+        sn1.j = static_cast<int>(M); sn1.y = M*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn0.i = static_cast<int>(n); sn0.x = n*hx; u15[0][n] = boundary(sn0, tn15, condtion); u20[0][n] = boundary(sn0, tn20, condtion);
+            sn1.i = static_cast<int>(n); sn1.x = n*hx; u15[M][n] = boundary(sn1, tn15, condtion); u20[M][n] = boundary(sn1, tn20, condtion);
+        }
+
         /**************************************************** border conditions ***************************************************/
         /**************************************************** x direction apprx ***************************************************/
         for (unsigned int m=1; m<=M-1; m++)
@@ -658,177 +788,36 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
 
 double IWaveEquationIBVP::lambda() const { return 0.25; }
 
-void IWaveEquationIBVP::explicit_calculate_D2V1_initial(DoubleMatrix &u00, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, double ht, double a, double alpha) const
-{
-    const double aa__hxhx = (a*a)/(hx*hx);
-    const double aa__hyhy = (a*a)/(hy*hy);
-    const double htht_05 = 0.5*ht*ht;
-
-    TimeNodePDE tn00; tn00.i = 0; tn00.t = 0.0;
-    TimeNodePDE tn10; tn10.i = 1; tn10.t = ht;
-
-    /***********************************************************************************************/
-
-    SpaceNodePDE sn;
-    for (unsigned int m=0; m<=M; m++)
-    {
-        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
-        for (unsigned int n=0; n<=N; n++)
-        {
-            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
-            u00[m][n] = initial(sn, InitialCondition::InitialValue);
-        }
-    }
-    layerInfo(u00, tn00);
-
-    /***********************************************************************************************/
-
-    explicit_calculate_D2V1_border(u10, N, hx, M, hy, tn10);
-
-    for (unsigned int m=1; m<=M-1; m++)
-    {
-        sn.j = static_cast<int>(m); sn.y = m*hy;
-        for (unsigned int n=1; n<=N-1; n++)
-        {
-            sn.i = static_cast<int>(n); sn.x = n*hx;
-            u10[m][n] = u00[m][n] + ht*initial(sn, InitialCondition::FirstDerivative);
-            u10[m][n] += htht_05*(aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1])+aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n])+f(sn,tn00)-alpha*initial(sn, InitialCondition::FirstDerivative));
-        }
-    }
-    layerInfo(u10, tn10);
-
-    /***********************************************************************************************/
-}
-
-void IWaveEquationIBVP::explicit_calculate_D2V1_border(DoubleMatrix &u, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn) const
-{
-    SpaceNodePDE sn0, sn1;
-    BoundaryConditionPDE condtion;
-
-    sn0.i = static_cast<int>(0); sn0.x = 0*hx;
-    sn1.i = static_cast<int>(N); sn1.x = N*hx;
-    for (unsigned int m=0; m<=M; m++)
-    {
-        sn0.j = static_cast<int>(m); sn0.y = m*hy; u[m][0] = boundary(sn0, tn, condtion);
-        sn1.j = static_cast<int>(m); sn1.y = m*hy; u[m][N] = boundary(sn1, tn, condtion);
-    }
-
-    sn0.j = static_cast<int>(0); sn0.y = 0*hy;
-    sn1.j = static_cast<int>(M); sn1.y = M*hy;
-    for (unsigned int n=0; n<=N; n++)
-    {
-        sn0.i = static_cast<int>(n); sn0.x = n*hx; u[0][n] = boundary(sn0, tn, condtion);
-        sn1.i = static_cast<int>(n); sn1.x = n*hx; u[M][n] = boundary(sn1, tn, condtion);
-    }
-}
-
-void IWaveEquationIBVP::implicit_calculate_D2V1_initial(DoubleMatrix &u00, DoubleMatrix &u05, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, double ht, double a, double alpha) const
-{
-    const double aa__hxhx = (a*a)/(hx*hx);
-    const double aa__hyhy = (a*a)/(hy*hy);
-    const double ht_05 = ht*0.5;
-    const double htht_05 = 0.5*ht*ht;
-    const double htht_05_025 = htht_05*0.25;
-
-    TimeNodePDE tn00; tn00.i = 0; tn00.t = 0.5*tn00.i*ht;
-    TimeNodePDE tn05; tn05.i = 1; tn05.t = 0.5*tn05.i*ht;
-    TimeNodePDE tn10; tn10.i = 2; tn10.t = 0.5*tn10.i*ht;
-
-    /***********************************************************************************************/
-
-    SpaceNodePDE sn;
-    for (unsigned int m=0; m<=M; m++)
-    {
-        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
-        for (unsigned int n=0; n<=N; n++)
-        {
-            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
-            u00[m][n] = initial(sn, InitialCondition::InitialValue);
-        }
-    }
-    layerInfo(u00, tn00);
-
-    /***********************************************************************************************/
-
-    implicit_calculate_D2V1_border(u05, u10, N, hx, M, hy, tn05, tn10);
-
-    for (unsigned int m=1; m<=M-1; m++)
-    {
-        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
-        for (unsigned int n=1; n<=N-1; n++)
-        {
-            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
-            double firstDerivative = initial(sn, InitialCondition::FirstDerivative);
-            double secndDerivative = 0.0;
-            secndDerivative += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]);
-            secndDerivative += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]);
-            secndDerivative += f(sn,tn00);
-            secndDerivative -=  alpha*firstDerivative;
-
-            u05[m][n] = u00[m][n] + firstDerivative*ht_05 + secndDerivative*htht_05_025;
-            //u10[m][n] = u00[m][n] + firstDerivative*ht    + secndDerivative*htht_05;
-        }
-    }
-    layerInfo(u05, tn05);
-
-    for (unsigned int m=1; m<=M-1; m++)
-    {
-        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
-        for (unsigned int n=1; n<=N-1; n++)
-        {
-            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
-            u10[m][n]  = 2.0*u05[m][n]-u00[m][n];
-            u10[m][n] += ((a*a*ht*ht*0.25)/(hx*hx))*(u05[m][n-1]-2.0*u05[m][n]+u05[m][n+1]);
-            u10[m][n] += ((a*a*ht*ht*0.25)/(hy*hy))*(u05[m-1][n]-2.0*u05[m][n]+u05[m+1][n]);
-            u10[m][n] += (ht*ht*0.25)*f(sn,tn05);
-            u10[m][n] += (ht*0.25)*alpha*u00[m][n];
-            u10[m][n] /= (1.0+0.25*ht*alpha);
-        }
-    }
-
-    layerInfo(u10, tn10);
-}
-
-void IWaveEquationIBVP::implicit_calculate_D2V1_border(DoubleMatrix &u05, DoubleMatrix &u10, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn05, const TimeNodePDE &tn10) const
-{
-    SpaceNodePDE sn0, sn1;
-    BoundaryConditionPDE condtion;
-
-    sn0.i = static_cast<int>(0); sn0.x = 0*hx;
-    sn1.i = static_cast<int>(N); sn1.x = N*hx;
-    for (unsigned int m=0; m<=M; m++)
-    {
-        sn0.j = static_cast<int>(m); sn0.y = m*hy; u05[m][0] = boundary(sn0, tn05, condtion); u10[m][0] = boundary(sn0, tn10, condtion);
-        sn1.j = static_cast<int>(m); sn1.y = m*hy; u05[m][N] = boundary(sn1, tn05, condtion); u10[m][N] = boundary(sn1, tn10, condtion);
-    }
-
-    sn0.j = static_cast<int>(0); sn0.y = 0*hy;
-    sn1.j = static_cast<int>(M); sn1.y = M*hy;
-    for (unsigned int n=0; n<=N; n++)
-    {
-        sn0.i = static_cast<int>(n); sn0.x = n*hx; u05[0][n] = boundary(sn0, tn05, condtion); u10[0][n] = boundary(sn0, tn10, condtion);
-        sn1.i = static_cast<int>(n); sn1.x = n*hx; u05[M][n] = boundary(sn1, tn05, condtion); u10[M][n] = boundary(sn1, tn10, condtion);
-    }
-}
-
 //--------------------------------------------------------------------------------------------------------------//
 
-IConjugateWaveEquationIBVP::IConjugateWaveEquationIBVP(double waveSpeed, double waveDissipation)
+IFinalWaveEquationIBVP::IFinalWaveEquationIBVP(double waveSpeed, double waveDissipation)
     : _waveSpeed(waveSpeed), _waveDissipation(waveDissipation) {}
 
-double IConjugateWaveEquationIBVP::waveSpeed() const  { return _waveSpeed; }
+IFinalWaveEquationIBVP::IFinalWaveEquationIBVP(const IFinalWaveEquationIBVP &ibvp) :
+    _waveSpeed(ibvp._waveSpeed), _waveDissipation(ibvp._waveDissipation) {}
 
-double IConjugateWaveEquationIBVP::waveDissipation() const { return _waveDissipation; }
+IFinalWaveEquationIBVP & IFinalWaveEquationIBVP::operator =(const IFinalWaveEquationIBVP &other)
+{
+    this->_waveSpeed = other._waveSpeed;
+    this->_waveDissipation = other._waveDissipation;
+    return *this;
+}
 
-void IConjugateWaveEquationIBVP::setWaveSpeed(double waveSpeed) { _waveSpeed = waveSpeed; }
+IFinalWaveEquationIBVP::~IFinalWaveEquationIBVP() {}
 
-void IConjugateWaveEquationIBVP::setWaveDissipation(double waveDissipation) { _waveDissipation = waveDissipation; }
+double IFinalWaveEquationIBVP::waveSpeed() const  { return _waveSpeed; }
 
-void IConjugateWaveEquationIBVP::explicit_calculate_D1V1() const {}
+double IFinalWaveEquationIBVP::waveDissipation() const { return _waveDissipation; }
 
-void IConjugateWaveEquationIBVP::implicit_calculate_D1V1() const {}
+void IFinalWaveEquationIBVP::setWaveSpeed(double waveSpeed) { _waveSpeed = waveSpeed; }
 
-void IConjugateWaveEquationIBVP::explicit_calculate_D2V1() const
+void IFinalWaveEquationIBVP::setWaveDissipation(double waveDissipation) { _waveDissipation = waveDissipation; }
+
+void IFinalWaveEquationIBVP::explicit_calculate_D1V1() const {}
+
+void IFinalWaveEquationIBVP::implicit_calculate_D1V1() const {}
+
+void IFinalWaveEquationIBVP::explicit_calculate_D2V1() const
 {
     const unsigned int N = static_cast<unsigned int>( _spaceDimensionX.size() );
     const unsigned int M = static_cast<unsigned int>( _spaceDimensionY.size() );
@@ -889,7 +878,7 @@ void IConjugateWaveEquationIBVP::explicit_calculate_D2V1() const
     }
 }
 
-void IConjugateWaveEquationIBVP::implicit_calculate_D2V1() const
+void IFinalWaveEquationIBVP::implicit_calculate_D2V1() const
 {
     const unsigned int N = static_cast<unsigned int>( _spaceDimensionX.size() );
     const unsigned int M = static_cast<unsigned int>( _spaceDimensionY.size() );
@@ -904,6 +893,11 @@ void IConjugateWaveEquationIBVP::implicit_calculate_D2V1() const
     const double alpha = waveDissipation();
     const double ht_ht_025 = ht*ht*0.25;
     const double alpha_ht_025 = alpha*ht*0.25;
+    const double aa__hxhx = (a*a)/(hx*hx);
+    const double aa__hyhy = (a*a)/(hy*hy);
+    const double ht_05 = ht*0.5;
+    const double htht_05 = 0.5*ht*ht;
+    const double htht_05_025 = htht_05*0.25;
 
     const double m_aa_htht__hxhx_025_lambda = -(0.25*a*a)*((ht*ht)/(hx*hx))*_lambda;
     const double b_aa_htht__hxhx = +(1.0 + 0.5*(a*a)*((ht*ht)/(hx*hx))*_lambda + alpha_ht_025);
@@ -952,19 +946,128 @@ void IConjugateWaveEquationIBVP::implicit_calculate_D2V1() const
     DoubleMatrix p20(M+1, N+1);
 
     /***********************************************************************************************/
-    implicit_calculate_D2V1_initial(p00, p05, p10, N, hx, M, hy, ht, a, alpha, L);
     /***********************************************************************************************/
 
+    TimeNodePDE tn00; tn00.i = 2*L-0; tn00.t = 0.5*tn00.i*ht;
+    TimeNodePDE tn05; tn05.i = 2*L-1; tn05.t = 0.5*tn05.i*ht;
+    TimeNodePDE tn10; tn10.i = 2*L-2; tn10.t = 0.5*tn10.i*ht;
+
     SpaceNodePDE sn;
+    for (unsigned int m=0; m<=M; m++)
+    {
+        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
+            p00[m][n] = final(sn, FinalCondition::FinalValue);
+        }
+    }
+    layerInfo(p00, tn00);
+
+    /***********************************************************************************************/
+
+    for (unsigned int m=0; m<=M; m++)
+    {
+        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
+            double firstDerivative = final(sn, FinalCondition::FinalFirstDerivative);
+
+            double secndDerivative = 0.0;
+            if (m==0) { secndDerivative += aa__hyhy*(+2.0*p00[0][n]-5.0*p00[1][n]+4.0*p00[2][n]-1.0*p00[3][n]); }
+            else
+            if (m==M) { secndDerivative += aa__hyhy*(-1.0*p00[M-3][n]+4.0*p00[M-2][n]-5.0*p00[M-1][n]+2.0*p00[M][n]); }
+            else { secndDerivative += aa__hyhy*(p00[m-1][n]-2.0*p00[m][n]+p00[m+1][n]); }
+
+            if (n==0) { secndDerivative += aa__hxhx*(+2.0*p00[m][0]-5.0*p00[m][1]+4.0*p00[m][2]-1.0*p00[m][3]); }
+            else
+            if (n==N) { secndDerivative += aa__hxhx*(-1.0*p00[m][N-3]+4.0*p00[m][N-2]-5.0*p00[m][N-1]+2.0*p00[m][N]); }
+            else { secndDerivative += aa__hxhx*(p00[m][n-1]-2.0*p00[m][n]+p00[m][n+1]); }
+
+            secndDerivative += f(sn,tn00);
+            secndDerivative += alpha*firstDerivative;
+
+            p05[m][n] = p00[m][n] - firstDerivative*ht_05 + secndDerivative*htht_05_025;
+            //p10[m][n] = p00[m][n] - firstDerivative*ht    + secndDericative*htht_05;
+        }
+    }
+    layerInfo(p05, tn05);
+
+    for (unsigned int m=0; m<=M; m++)
+    {
+        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
+            p10[m][n]  = 2.0*p05[m][n]-p00[m][n];
+
+            double secndDerivative = 0.0;
+            if (m==0) { secndDerivative += aa__hyhy*(+2.0*p05[0][n]-5.0*p05[1][n]+4.0*p05[2][n]-1.0*p05[3][n]); } else
+            if (m==M) { secndDerivative += aa__hyhy*(-1.0*p05[M-3][n]+4.0*p05[M-2][n]-5.0*p05[M-1][n]+2.0*p05[M][n]); }
+            else { secndDerivative += aa__hyhy*(p05[m-1][n]-2.0*p05[m][n]+p05[m+1][n]); }
+
+            if (n==0) { secndDerivative += aa__hxhx*(+2.0*p05[m][0]-5.0*p05[m][1]+4.0*p05[m][2]-1.0*p05[m][3]); } else
+            if (n==N) { secndDerivative += aa__hxhx*(-1.0*p05[m][N-3]+4.0*p05[m][N-2]-5.0*p05[m][N-1]+2.0*p05[m][N]); }
+            else { secndDerivative += aa__hxhx*(p05[m][n-1]-2.0*p05[m][n]+p05[m][n+1]); }
+
+            secndDerivative += f(sn,tn05);
+            p10[m][n] += (ht*ht*0.25)*secndDerivative;
+            p10[m][n] -= (ht*0.25)*alpha*p00[m][n];
+
+            p10[m][n] /= (1.0-0.25*ht*alpha);
+        }
+    }
+    layerInfo(p10, tn10);
+    /***********************************************************************************************/
+
+
+//    for (unsigned int m=1; m<=M-1; m++)
+//    {
+//        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
+//        for (unsigned int n=1; n<=N-1; n++)
+//        {
+//            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
+//            p10[m][n]  = 2.0*p05[m][n]-p00[m][n];
+//            p10[m][n] += ((a*a*ht*ht*0.25)/(hx*hx))*(p05[m][n-1]-2.0*p05[m][n]+p05[m][n+1]);
+//            p10[m][n] += ((a*a*ht*ht*0.25)/(hy*hy))*(p05[m-1][n]-2.0*p05[m][n]+p05[m+1][n]);
+//            p10[m][n] += (ht*ht*0.25)*f(sn,tn05);
+//            p10[m][n] -= (ht*0.25)*alpha*p00[m][n];
+//            p10[m][n] /= (1.0-0.25*ht*alpha);
+//        }
+//    }
+
+//    layerInfo(p10, tn10);
+    /***********************************************************************************************/
+
     const unsigned int size_ln = static_cast<unsigned int>(0)-1;
     for (unsigned int ln=L-2; ln !=size_ln; ln--)
     {
-        TimeNodePDE tn05; tn05.i = 2*ln+3; tn05.t = 0.5*tn05.i*ht;//tn05.i*ht+0.5*ht;
-        TimeNodePDE tn10; tn10.i = 2*ln+2; tn10.t = 0.5*tn10.i*ht;//tn10.i*ht;
-        TimeNodePDE tn15; tn15.i = 2*ln+1; tn15.t = 0.5*tn15.i*ht;//tn15.i*ht-0.5*ht;
-        TimeNodePDE tn20; tn20.i = 2*ln;   tn20.t = 0.5*tn20.i*ht;//tn20.i*ht;
+        TimeNodePDE tn05; tn05.i = 2*ln+3; tn05.t = 0.5*tn05.i*ht;
+        TimeNodePDE tn10; tn10.i = 2*ln+2; tn10.t = 0.5*tn10.i*ht;
+        TimeNodePDE tn15; tn15.i = 2*ln+1; tn15.t = 0.5*tn15.i*ht;
+        TimeNodePDE tn20; tn20.i = 2*ln+0; tn20.t = 0.5*tn20.i*ht;
         /**************************************************** border conditions ***************************************************/
-        implicit_calculate_D2V1_border(p15, p20, N, hx, M, hy, tn15, tn20);
+
+        SpaceNodePDE sn0, sn1;
+        BoundaryConditionPDE condition;
+
+        sn0.i = static_cast<int>(0); sn0.x = 0*hx;
+        sn1.i = static_cast<int>(N); sn1.x = N*hx;
+        for (unsigned int m=0; m<=M; m++)
+        {
+            sn0.j = static_cast<int>(m); sn0.y = m*hy; p15[m][0] = boundary(sn0, tn15, condition); p20[m][0] = boundary(sn0, tn20, condition);
+            sn1.j = static_cast<int>(m); sn1.y = m*hy; p15[m][N] = boundary(sn1, tn15, condition); p20[m][N] = boundary(sn1, tn20, condition);
+        }
+
+        sn0.j = static_cast<int>(0); sn0.y = 0*hy;
+        sn1.j = static_cast<int>(M); sn1.y = M*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn0.i = static_cast<int>(n); sn0.x = n*hx; p15[0][n] = boundary(sn0, tn15, condition); p20[0][n] = boundary(sn0, tn20, condition);
+            sn1.i = static_cast<int>(n); sn1.x = n*hx; p15[M][n] = boundary(sn1, tn15, condition); p20[M][n] = boundary(sn1, tn20, condition);
+        }
+
         /**************************************************** border conditions ***************************************************/
         /**************************************************** x direction apprx ***************************************************/
         for (unsigned int m=1; m<=M-1; m++)
@@ -1040,9 +1143,9 @@ void IConjugateWaveEquationIBVP::implicit_calculate_D2V1() const
     free(ax);
 }
 
-double IConjugateWaveEquationIBVP::lambda() const { return 0.25; }
+double IFinalWaveEquationIBVP::lambda() const { return 0.25; }
 
-void IConjugateWaveEquationIBVP::explicit_calculate_D1V1_initial(DoubleVector &p00, DoubleVector &p10, unsigned int N, double hx, double ht, double a, double alpha) const
+void IFinalWaveEquationIBVP::explicit_calculate_D1V1_initial(DoubleVector &p00, DoubleVector &p10, unsigned int N, double hx, double ht, double a, double alpha) const
 {
     C_UNUSED(p00);
     C_UNUSED(p10);
@@ -1053,7 +1156,7 @@ void IConjugateWaveEquationIBVP::explicit_calculate_D1V1_initial(DoubleVector &p
     C_UNUSED(alpha);
 }
 
-void IConjugateWaveEquationIBVP::explicit_calculate_D1V1_border(DoubleVector &p, unsigned int N, double hx, double ht, const TimeNodePDE &tn) const
+void IFinalWaveEquationIBVP::explicit_calculate_D1V1_border(DoubleVector &p, unsigned int N, double hx, double ht, const TimeNodePDE &tn) const
 {
     C_UNUSED(p);
     C_UNUSED(N);
@@ -1062,7 +1165,7 @@ void IConjugateWaveEquationIBVP::explicit_calculate_D1V1_border(DoubleVector &p,
     C_UNUSED(tn);
 }
 
-void IConjugateWaveEquationIBVP::implicit_calculate_D1V1_initial(DoubleVector &p00, DoubleVector &p10, unsigned int N, double hx, double ht, double a, double alpha) const
+void IFinalWaveEquationIBVP::implicit_calculate_D1V1_initial(DoubleVector &p00, DoubleVector &p10, unsigned int N, double hx, double ht, double a, double alpha) const
 {
     C_UNUSED(p00);
     C_UNUSED(p10);
@@ -1073,7 +1176,7 @@ void IConjugateWaveEquationIBVP::implicit_calculate_D1V1_initial(DoubleVector &p
     C_UNUSED(alpha);
 }
 
-void IConjugateWaveEquationIBVP::implicit_calculate_D1V1_border(DoubleVector &p, unsigned int N, double hx, const TimeNodePDE &tn) const
+void IFinalWaveEquationIBVP::implicit_calculate_D1V1_border(DoubleVector &p, unsigned int N, double hx, const TimeNodePDE &tn) const
 {
     C_UNUSED(p);
     C_UNUSED(N);
@@ -1081,7 +1184,7 @@ void IConjugateWaveEquationIBVP::implicit_calculate_D1V1_border(DoubleVector &p,
     C_UNUSED(tn);
 }
 
-void IConjugateWaveEquationIBVP::explicit_calculate_D2V1_initial(DoubleMatrix &p00, DoubleMatrix &p10, unsigned int N, double hx, unsigned int M, double hy, double ht, double a, double alpha, unsigned int L) const
+void IFinalWaveEquationIBVP::explicit_calculate_D2V1_initial(DoubleMatrix &p00, DoubleMatrix &p10, unsigned int N, double hx, unsigned int M, double hy, double ht, double a, double alpha, unsigned int L) const
 {
     const double aa__hxhx = (a*a)/(hx*hx);
     const double aa__hyhy = (a*a)/(hy*hy);
@@ -1099,7 +1202,7 @@ void IConjugateWaveEquationIBVP::explicit_calculate_D2V1_initial(DoubleMatrix &p
         for (unsigned int n=0; n<=N; n++)
         {
             sn.i = static_cast<int>(n); sn.x = sn.i*hx;
-            p00[m][n] = initial(sn, InitialCondition::InitialValue);
+            p00[m][n] = final(sn, FinalCondition::FinalValue);
         }
     }
     layerInfo(p00, tn00);
@@ -1114,8 +1217,8 @@ void IConjugateWaveEquationIBVP::explicit_calculate_D2V1_initial(DoubleMatrix &p
         for (unsigned int n=1; n<=N-1; n++)
         {
             sn.i = static_cast<int>(n); sn.x = n*hx;
-            p10[m][n] = p00[m][n] + ht*initial(sn, InitialCondition::FirstDerivative);
-            p10[m][n] += htht_05*(aa__hxhx*(p00[m][n-1]-2.0*p00[m][n]+p00[m][n+1])+aa__hyhy*(p00[m-1][n]-2.0*p00[m][n]+p00[m+1][n])+f(sn,tn00)+alpha*initial(sn, InitialCondition::FirstDerivative));
+            p10[m][n] = p00[m][n] + ht*final(sn, FinalCondition::FinalFirstDerivative);
+            p10[m][n] += htht_05*(aa__hxhx*(p00[m][n-1]-2.0*p00[m][n]+p00[m][n+1])+aa__hyhy*(p00[m-1][n]-2.0*p00[m][n]+p00[m+1][n])+f(sn,tn00)+alpha*final(sn, FinalCondition::FinalFirstDerivative));
         }
     }
     layerInfo(p10, tn10);
@@ -1123,7 +1226,7 @@ void IConjugateWaveEquationIBVP::explicit_calculate_D2V1_initial(DoubleMatrix &p
     /***********************************************************************************************/
 }
 
-void IConjugateWaveEquationIBVP::explicit_calculate_D2V1_border(DoubleMatrix &p, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn) const
+void IFinalWaveEquationIBVP::explicit_calculate_D2V1_border(DoubleMatrix &p, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn) const
 {
     SpaceNodePDE sn0, sn1;
     BoundaryConditionPDE condition;
@@ -1142,95 +1245,6 @@ void IConjugateWaveEquationIBVP::explicit_calculate_D2V1_border(DoubleMatrix &p,
     {
         sn0.i = static_cast<int>(n); sn0.x = n*hx; p[0][n] = boundary(sn0, tn, condition);
         sn1.i = static_cast<int>(n); sn1.x = n*hx; p[M][n] = boundary(sn1, tn, condition);
-    }
-}
-
-void IConjugateWaveEquationIBVP::implicit_calculate_D2V1_initial(DoubleMatrix &p00, DoubleMatrix &p05, DoubleMatrix &p10, unsigned int N, double hx, unsigned int M, double hy, double ht, double a, double alpha, unsigned int L) const
-{
-    const double aa__hxhx = (a*a)/(hx*hx);
-    const double aa__hyhy = (a*a)/(hy*hy);
-    const double ht_05 = 0.5*ht;
-    const double htht_05 = 0.5*ht*ht;
-    const double htht_05_025 = 0.5*ht*ht*0.25;
-
-    TimeNodePDE tn00; tn00.i = 2*L;   tn00.t = 0.5*tn00.i*ht;
-    TimeNodePDE tn05; tn05.i = 2*L-1; tn05.t = 0.5*tn05.i*ht;
-    TimeNodePDE tn10; tn10.i = 2*L-2; tn10.t = 0.5*tn10.i*ht;
-
-    /***********************************************************************************************/
-
-    SpaceNodePDE sn;
-    for (unsigned int m=0; m<=M; m++)
-    {
-        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
-        for (unsigned int n=0; n<=N; n++)
-        {
-            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
-            p00[m][n] = initial(sn, InitialCondition::InitialValue);
-        }
-    }
-    layerInfo(p00, tn00);
-
-    /***********************************************************************************************/
-
-    implicit_calculate_D2V1_border(p05, p10, N, hx, M, hy, tn05, tn10);
-
-    for (unsigned int m=1; m<=M-1; m++)
-    {
-        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
-        for (unsigned int n=1; n<=N-1; n++)
-        {
-            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
-            double firstDerivative = initial(sn, InitialCondition::FirstDerivative);
-            double secndDericative = 0.0;
-            secndDericative += aa__hxhx*(p00[m][n-1]-2.0*p00[m][n]+p00[m][n+1]);
-            secndDericative += aa__hyhy*(p00[m-1][n]-2.0*p00[m][n]+p00[m+1][n]);
-            secndDericative += f(sn,tn00);
-            secndDericative += alpha*firstDerivative;
-
-            p05[m][n] = p00[m][n] - firstDerivative*ht_05 + secndDericative*htht_05_025;
-            //p10[m][n] = p00[m][n] - firstDerivative*ht    + secndDericative*htht_05;
-        }
-    }
-    layerInfo(p05, tn05);
-
-    for (unsigned int m=1; m<=M-1; m++)
-    {
-        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
-        for (unsigned int n=1; n<=N-1; n++)
-        {
-            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
-            p10[m][n]  = 2.0*p05[m][n]-p00[m][n];
-            p10[m][n] += ((a*a*ht*ht*0.25)/(hx*hx))*(p05[m][n-1]-2.0*p05[m][n]+p05[m][n+1]);
-            p10[m][n] += ((a*a*ht*ht*0.25)/(hy*hy))*(p05[m-1][n]-2.0*p05[m][n]+p05[m+1][n]);
-            p10[m][n] += (ht*ht*0.25)*f(sn,tn05);
-            p10[m][n] -= (ht*0.25)*alpha*p00[m][n];
-            p10[m][n] /= (1.0-0.25*ht*alpha);
-        }
-    }
-
-    layerInfo(p10, tn10);
-}
-
-void IConjugateWaveEquationIBVP::implicit_calculate_D2V1_border(DoubleMatrix &p05, DoubleMatrix &p10, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn05, const TimeNodePDE &tn10) const
-{
-    SpaceNodePDE sn0, sn1;
-    BoundaryConditionPDE condition;
-
-    sn0.i = static_cast<int>(0); sn0.x = 0*hx;
-    sn1.i = static_cast<int>(N); sn1.x = N*hx;
-    for (unsigned int m=0; m<=M; m++)
-    {
-        sn0.j = static_cast<int>(m); sn0.y = m*hy; p05[m][0] = boundary(sn0, tn05, condition); p10[m][0] = boundary(sn0, tn10, condition);
-        sn1.j = static_cast<int>(m); sn1.y = m*hy; p05[m][N] = boundary(sn1, tn05, condition); p10[m][N] = boundary(sn1, tn10, condition);
-    }
-
-    sn0.j = static_cast<int>(0); sn0.y = 0*hy;
-    sn1.j = static_cast<int>(M); sn1.y = M*hy;
-    for (unsigned int n=0; n<=N; n++)
-    {
-        sn0.i = static_cast<int>(n); sn0.x = n*hx; p05[0][n] = boundary(sn0, tn05, condition); p10[0][n] = boundary(sn0, tn10, condition);
-        sn1.i = static_cast<int>(n); sn1.x = n*hx; p05[M][n] = boundary(sn1, tn05, condition); p10[M][n] = boundary(sn1, tn10, condition);
     }
 }
 

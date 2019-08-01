@@ -1,4 +1,11 @@
 #include "ivp.h"
 
-InitialValueProblemODE::~InitialValueProblemODE()
-{}
+InitialValueProblem::~InitialValueProblem() {}
+
+InitialValueProblemODE::~InitialValueProblemODE() {}
+
+InitialValueProblemPDE::~InitialValueProblemPDE() {}
+
+FinalValueProblemODE::~FinalValueProblemODE() {}
+
+FinalValueProblemPDE::~FinalValueProblemPDE() {}

@@ -17,55 +17,129 @@ InitialBoundaryValueProblemPDE& InitialBoundaryValueProblemPDE::operator =(const
 
 InitialBoundaryValueProblemPDE::~InitialBoundaryValueProblemPDE() {}
 
-auto InitialBoundaryValueProblemPDE::setTimeDimension(const Dimension &dimension) -> void
+void InitialBoundaryValueProblemPDE::setTimeDimension(const Dimension &dimension)
 {
     _timeDimension = dimension;
 }
 
-auto InitialBoundaryValueProblemPDE::timeDimension() const -> const Dimension &
+const Dimension & InitialBoundaryValueProblemPDE::timeDimension() const
 {
     return _timeDimension;
 }
 
-auto InitialBoundaryValueProblemPDE::setSpaceDimensionX(const Dimension &dimension) -> void
+void InitialBoundaryValueProblemPDE::setSpaceDimensionX(const Dimension &dimension)
 {
     _spaceDimensionX = dimension;
 }
 
-auto InitialBoundaryValueProblemPDE::spaceDimensionX() const -> const Dimension&
+const Dimension& InitialBoundaryValueProblemPDE::spaceDimensionX() const
 {
     return _spaceDimensionX;
 }
 
-auto InitialBoundaryValueProblemPDE::setSpaceDimensionY(const Dimension &dimension) -> void
+void InitialBoundaryValueProblemPDE::setSpaceDimensionY(const Dimension &dimension)
 {
     _spaceDimensionY = dimension;
 }
 
-auto InitialBoundaryValueProblemPDE::spaceDimensionY() const -> const Dimension&
+const Dimension& InitialBoundaryValueProblemPDE::spaceDimensionY() const
 {
     return _spaceDimensionY;
 }
 
-auto InitialBoundaryValueProblemPDE::setSpaceDimensionZ(const Dimension &dimension) -> void
+void InitialBoundaryValueProblemPDE::setSpaceDimensionZ(const Dimension &dimension)
 {
     _spaceDimensionZ = dimension;
 }
 
-auto InitialBoundaryValueProblemPDE::spaceDimensionZ() const -> const Dimension&
+const Dimension& InitialBoundaryValueProblemPDE::spaceDimensionZ() const
 {
     return _spaceDimensionZ;
 }
 
-auto InitialBoundaryValueProblemPDE::setSpaceDimensions(const Dimension& dimensionX, const Dimension& dimensionY) -> void
+void InitialBoundaryValueProblemPDE::setSpaceDimensions(const Dimension& dimensionX, const Dimension& dimensionY)
 {
     this->_spaceDimensionX = dimensionX;
     this->_spaceDimensionY = dimensionY;
 }
 
-auto InitialBoundaryValueProblemPDE::setSpaceDimensions(const Dimension& dimensionX, const Dimension& dimensionY, const Dimension& dimensionZ) -> void
+void InitialBoundaryValueProblemPDE::setSpaceDimensions(const Dimension& dimensionX, const Dimension& dimensionY, const Dimension& dimensionZ)
 {
     this->_spaceDimensionX = dimensionX;
     this->_spaceDimensionY = dimensionY;
     this->_spaceDimensionZ = dimensionZ;
 }
+
+/*******************************************************************************************************************************************************/
+
+FinalBoundaryValueProblemPDE::FinalBoundaryValueProblemPDE() {}
+
+FinalBoundaryValueProblemPDE::FinalBoundaryValueProblemPDE(const FinalBoundaryValueProblemPDE &other) :
+    _timeDimension(other._timeDimension), _spaceDimensionX(other._spaceDimensionX),
+    _spaceDimensionY(other._spaceDimensionY), _spaceDimensionZ(other._spaceDimensionZ) {}
+
+FinalBoundaryValueProblemPDE & FinalBoundaryValueProblemPDE::operator =(const FinalBoundaryValueProblemPDE &other)
+{
+    this->_timeDimension = other._timeDimension;
+    this->_spaceDimensionX = other._spaceDimensionX;
+    this->_spaceDimensionY = other._spaceDimensionY;
+    this->_spaceDimensionZ = other._spaceDimensionZ;
+    return *this;
+}
+
+FinalBoundaryValueProblemPDE::~FinalBoundaryValueProblemPDE() {}
+
+auto FinalBoundaryValueProblemPDE::setTimeDimension(const Dimension &dimension) -> void
+{
+    _timeDimension = dimension;
+}
+
+auto FinalBoundaryValueProblemPDE::timeDimension() const -> const Dimension &
+{
+    return _timeDimension;
+}
+
+auto FinalBoundaryValueProblemPDE::setSpaceDimensionX(const Dimension &dimension) -> void
+{
+    _spaceDimensionX = dimension;
+}
+
+auto FinalBoundaryValueProblemPDE::spaceDimensionX() const -> const Dimension&
+{
+    return _spaceDimensionX;
+}
+
+auto FinalBoundaryValueProblemPDE::setSpaceDimensionY(const Dimension &dimension) -> void
+{
+    _spaceDimensionY = dimension;
+}
+
+auto FinalBoundaryValueProblemPDE::spaceDimensionY() const -> const Dimension&
+{
+    return _spaceDimensionY;
+}
+
+auto FinalBoundaryValueProblemPDE::setSpaceDimensionZ(const Dimension &dimension) -> void
+{
+    _spaceDimensionZ = dimension;
+}
+
+auto FinalBoundaryValueProblemPDE::spaceDimensionZ() const -> const Dimension&
+{
+    return _spaceDimensionZ;
+}
+
+auto FinalBoundaryValueProblemPDE::setSpaceDimensions(const Dimension& dimensionX, const Dimension& dimensionY) -> void
+{
+    this->_spaceDimensionX = dimensionX;
+    this->_spaceDimensionY = dimensionY;
+}
+
+auto FinalBoundaryValueProblemPDE::setSpaceDimensions(const Dimension& dimensionX, const Dimension& dimensionY, const Dimension& dimensionZ) -> void
+{
+    this->_spaceDimensionX = dimensionX;
+    this->_spaceDimensionY = dimensionY;
+    this->_spaceDimensionZ = dimensionZ;
+}
+
+

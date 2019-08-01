@@ -629,12 +629,12 @@ auto Problem0HBckward::layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) c
     //saveToImage(p, ln);
 }
 
-auto Problem0HBckward::initial(const SpaceNodePDE &sn, InitialCondition condition) const -> double
+auto Problem0HBckward::final(const SpaceNodePDE &sn, FinalCondition condition) const -> double
 {
     unsigned int n = static_cast<unsigned int>(sn.i);
     unsigned int m = static_cast<unsigned int>(sn.j);
-    if (condition == InitialCondition::InitialValue) { return -2.0*epsilon2*(u2[m][n]/*-U2[m][n]*/); }
-    if (condition == InitialCondition::FirstDerivative) { return +2.0*epsilon1*(u1[m][n]/*-U1[m][n]*/) + gamma*initial(sn, InitialCondition::InitialValue); }
+    if (condition == FinalCondition::FinalValue) { return -2.0*epsilon2*(u2[m][n]/*-U2[m][n]*/); }
+    if (condition == FinalCondition::FinalFirstDerivative) { return +2.0*epsilon1*(u1[m][n]/*-U1[m][n]*/) + gamma*final(sn, FinalCondition::FinalValue); }
     throw std::exception();
 }
 

@@ -49,8 +49,11 @@ double NewtonHeatEquationEx1::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) c
     return NAN;
 }
 
-double NewtonHeatEquationEx1::initial(const SpaceNodePDE &sn UNUSED_PARAM) const
+double NewtonHeatEquationEx1::initial(const SpaceNodePDE &sn, InitialCondition condition) const
 {
+    C_UNUSED(sn);
+    C_UNUSED(condition);
+
 #ifdef SAMPLE_1
     return 0.0;
 #endif

@@ -18,7 +18,8 @@ void WaveEquationIBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     Benchmark bm;
     bm.tick();
     //w.implicit_calculate_D1V1();
-    w.explicit_calculate_D2V1();
+    //w.explicit_calculate_D2V1();
+    w.implicit_calculate_D2V1();
     bm.tock();
     bm.printDuration();
 }
@@ -324,7 +325,7 @@ void WaveEquationIBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) c
 #endif
 }
 
-void WaveEquationIBVP::layerInfo(const DoubleMatrix& u, const TimeNodePDE& tn) const
+void WaveEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
     if (tn.i == 0 || tn.i == 1 || tn.i == 2 || tn.i == 2000) { IPrinter::printMatrix(u); IPrinter::printSeperatorLine(); }
     return;
@@ -585,31 +586,27 @@ void ConjugateCdIHyperbolicIBVP1::Main(int argc UNUSED_PARAM, char **argv UNUSED
     ConjugateCdIHyperbolicIBVP1 chibvp;
     chibvp.a = 1.0;
     chibvp.alpha = 0.1;
-    chibvp.setTimeDimension(Dimension(0.005, 0, 200));
+    chibvp.setTimeDimension(Dimension(0.01, 0, 2000));
     chibvp.setSpaceDimensionX(Dimension(0.01, 0, 100));
     chibvp.setSpaceDimensionY(Dimension(0.01, 0, 100));
 
-    DoubleMatrix p;
-    //chibvp.explicit_calculate_D2V1(p, chibvp.a, chibvp.alpha);
-    //chibvp.implicit_calculate_D2V1(p, chibvp.a, chibvp.alpha);
-    //chibvp.implicit_calculate_D2V3(p, chibvp.a, chibvp.alpha);
-    IPrinter::printSeperatorLine("******************");
-    IPrinter::printMatrix(p);
+    chibvp.implicit_calculate_D2V1();
+chibvp    IPrinter::printMatrix(p);
     IPrinter::printSeperatorLine();
 }
 
 void ConjugateCdIHyperbolicIBVP1::layerInfo(const DoubleMatrix& p, const TimeNodePDE& tn) const
 {
-    if (tn.i==200 || tn.i==199 || tn.i==198 || tn.i==2 || tn.i==1 || tn.i==0)
+    if (tn.i==2000 || tn.i==1999 || tn.i==1998 || tn.i==2 || tn.i==1 || tn.i==0)
     {
         IPrinter::printMatrix(p);
         IPrinter::printSeperatorLine();
     }
 }
 
-double ConjugateCdIHyperbolicIBVP1::initial(const SpaceNodePDE &sn UNUSED_PARAM, InitialCondition condition) const
+double ConjugateCdIHyperbolicIBVP1::final(const SpaceNodePDE &sn UNUSED_PARAM, FinalCondition condition) const
 {
-    if (condition == InitialCondition::InitialValue)
+    if (condition == FinalCondition::FinalValue)
     {
         return sn.x*sn.x + sn.y*sn.y + 1.0;
     }

@@ -39,7 +39,7 @@ void ParabolicIBVP::gridMethod(DoubleVector &u) const
     {
         isn.i = n;
         isn.x = n*hx;
-        u[i] = initial(isn);
+        u[i] = initial(isn, InitialCondition::InitialValue);
     }
     layerInfo(u, 0);
 
@@ -127,7 +127,7 @@ void ParabolicIBVP::gridMethod(DoubleVector &u, double a) const
     {
         isn.i = n;
         isn.x = n*hx;
-        u[i] = initial(isn);
+        u[i] = initial(isn, InitialCondition::InitialValue);
     }
     layerInfo(u, 0);
 
@@ -229,7 +229,7 @@ void ParabolicIBVP::calculateMVD(DoubleMatrix &u) const
         {
             sn.i = i;
             sn.x = i*h1;
-            u[j][i] = initial(sn);
+            u[j][i] = initial(sn, InitialCondition::InitialValue);
         }
     }
 
@@ -409,7 +409,7 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u) const
     {
         isn.i = n+minN;
         isn.x = isn.i*hx;
-        u[0][n] = initial(isn);
+        u[0][n] = initial(isn, InitialCondition::InitialValue);
     }
 
     TimeNodePDE tn;
@@ -528,7 +528,7 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
     {
         isn.i = n+minN;
         isn.x = isn.i*hx;
-        u[0][n] = initial(isn);
+        u[0][n] = initial(isn, InitialCondition::InitialValue);
     }
 
     TimeNodePDE tn;
@@ -795,7 +795,7 @@ void ParabolicIBVP::calculateN4L2RDX(DoubleMatrix &u) const
     {
         isn.i = n+minN;
         isn.x = isn.i*hx;
-        u[0][n] = initial(isn);
+        u[0][n] = initial(isn, InitialCondition::InitialValue);
     }
 
     TimeNodePDE tn;
@@ -1075,7 +1075,7 @@ void ParabolicIBVP::calculateN6L2RD(DoubleMatrix &u) const
     {
         isn.i = n+minN;
         isn.x = isn.i*hx;
-        u[0][n] = initial(isn);
+        u[0][n] = initial(isn, InitialCondition::InitialValue);
     }
 
     TimeNodePDE tn;
@@ -1533,7 +1533,7 @@ void NewtonHeatEquation::calculateGM1(DoubleVector &u, SweepMethodDirection dire
     {
         isn.i = n+minN;
         isn.x = isn.i*hx;
-        u[n] = initial(isn);
+        u[n] = initial(isn, InitialCondition::InitialValue);
     }
     //layerInfo(u, 0);
 
@@ -1626,7 +1626,7 @@ void NewtonHeatEquation::calculateGM2(DoubleVector &u, SweepMethodDirection dire
     {
         isn.i = n+minN;
         isn.x = isn.i*hx;
-        u[n] = initial(isn);
+        u[n] = initial(isn, InitialCondition::InitialValue);
     }
     //layerInfo(u, 0);
 
@@ -1791,7 +1791,7 @@ void NewtonHeatEquation::calculateGM3(DoubleVector &u, SweepMethodDirection dire
     {
         isn.i = n+minN;
         isn.x = isn.i*hx;
-        u[n] = initial(isn);
+        u[n] = initial(isn, InitialCondition::InitialValue);
     }
     //layerInfo(u, 0);
 

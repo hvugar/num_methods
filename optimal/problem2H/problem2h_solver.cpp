@@ -68,7 +68,7 @@ SpacePointInfo::~SpacePointInfo()
 
 void Problem2HSolver::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
 {
-    example2();
+    example1();
 }
 
 void Problem2HSolver::example1()
@@ -150,7 +150,7 @@ void Problem2HSolver::example1()
     IPrinter::printSeperatorLine();
 
     DoubleVector x(ox, length);
-    //g.calculate(x);
+    g.calculate(x);
 
     puts("Optimization is finished...");
 
@@ -1178,7 +1178,7 @@ void Problem2HWaveEquationIBVP::layerInfoPrepareLayerMatrix(const DoubleMatrix &
 
 /*********************************** Problem2HConjugateWaveEquationIBVP***************************************************/
 
-double Problem2HConjugateWaveEquationIBVP::initial(const SpaceNodePDE &, InitialCondition) const
+double Problem2HConjugateWaveEquationIBVP::final(const SpaceNodePDE &, FinalCondition) const
 {
     return 0.0;
 }
@@ -1196,7 +1196,7 @@ double Problem2HConjugateWaveEquationIBVP::f(const SpaceNodePDE &sn, const TimeN
 
 void Problem2HConjugateWaveEquationIBVP::setSpaceDimensions(const Dimension &dimensionX, const Dimension &dimensionY)
 {
-    IConjugateWaveEquationIBVP::setSpaceDimensions(dimensionX, dimensionY);
+    IFinalWaveEquationIBVP::setSpaceDimensions(dimensionX, dimensionY);
     //b_initialMatrix.resize(static_cast<unsigned int>(dimensionY.size())+1, static_cast<unsigned int>(dimensionX.size())+1, 0.0);
     b_crLayerMatrix.resize(static_cast<unsigned int>(dimensionY.size())+1, static_cast<unsigned int>(dimensionX.size())+1, 0.0);
 }

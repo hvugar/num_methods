@@ -137,13 +137,13 @@ private:
 
 //--------------------------------------------------------------------------------------------------------------//
 
-class PROBLEM0HSHARED_EXPORT Problem0HBckward : public IConjugateWaveEquationIBVP, public virtual Problem0HCommon
+class PROBLEM0HSHARED_EXPORT Problem0HBckward : public IFinalWaveEquationIBVP, public virtual Problem0HCommon
 {
 public:
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
 
 protected:
-    virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
+    virtual double final(const SpaceNodePDE &sn, FinalCondition condition) const;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 

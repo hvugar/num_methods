@@ -11,7 +11,7 @@
 class MINIMUMSHARED_EXPORT IParabolicIBVP : public InitialBoundaryValueProblemPDE
 {
 protected:
-    virtual double initial(const SpaceNodePDE &sn) const = 0;
+    virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
 };
@@ -93,7 +93,7 @@ public:
     double lambda2;
 
 protected:
-    virtual double initial(const SpaceNodePDE &sn) const = 0;
+    virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
     virtual double a(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
