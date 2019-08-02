@@ -4,7 +4,330 @@
 #include "../linearequation.h"
 #include "../printer.h"
 
-void ParabolicIBVP::gridMethod(DoubleVector &u) const
+IHeatEquationIBVP::IHeatEquationIBVP(double thermalDiffusivity) : _thermalDiffusivity(thermalDiffusivity) {}
+
+IHeatEquationIBVP::IHeatEquationIBVP(const IHeatEquationIBVP &ibvp)
+{
+    this->_timeDimension = ibvp._timeDimension;
+    this->_spaceDimensionX = ibvp._spaceDimensionX;
+    this->_spaceDimensionY = ibvp._spaceDimensionY;
+    this->_spaceDimensionZ = ibvp._spaceDimensionZ;
+    this->_thermalDiffusivity = ibvp._thermalDiffusivity;
+}
+
+IHeatEquationIBVP & IHeatEquationIBVP::operator =(const IHeatEquationIBVP &other)
+{
+    if (this == &other) { return *this; }
+
+    this->_timeDimension = other._timeDimension;
+    this->_spaceDimensionX = other._spaceDimensionX;
+    this->_spaceDimensionY = other._spaceDimensionY;
+    this->_spaceDimensionZ = other._spaceDimensionZ;
+    this->_thermalDiffusivity = other._thermalDiffusivity;
+    return *this;
+}
+
+IHeatEquationIBVP::~IHeatEquationIBVP() {}
+
+double IHeatEquationIBVP::thermalDiffusivity() const { return _thermalDiffusivity; }
+
+void IHeatEquationIBVP::setThermalDiffusivity(double thermalDiffusivity)
+{
+    this->_thermalDiffusivity = thermalDiffusivity;
+}
+
+void IHeatEquationIBVP::explicit_calculate_D1V1() const
+{}
+
+void IHeatEquationIBVP::implicit_calculate_D1V1() const
+{}
+
+void IHeatEquationIBVP::explicit_calculate_D2V1() const
+{}
+
+void IHeatEquationIBVP::implicit_calculate_D2V1() const
+{
+    const unsigned int N = static_cast<unsigned int>( _spaceDimensionX.size() );
+    const unsigned int M = static_cast<unsigned int>( _spaceDimensionY.size() );
+    const unsigned int L = static_cast<unsigned int>( _timeDimension.size() );
+
+    const double hx = _spaceDimensionX.step();
+    const double hy = _spaceDimensionY.step();
+    const double ht = _timeDimension.step();
+
+    const double _lambda = lambda();
+    const double a = thermalDiffusivity();
+    const double ht_050 = ht*0.5;
+    const double ht_ht_025 = ht*ht*0.25;
+    const double ht_ht_025_05 = ht_ht_025*0.50;
+    const double aa__hxhx = (a*a)/(hx*hx);
+    const double aa__hyhy = (a*a)/(hy*hy);
+
+    const double m_aa_htht__hxhx_025_lambda = -(0.25*a*a)*((ht*ht)/(hx*hx))*_lambda;
+    const double b_aa_htht__hxhx = +(1.0 + 0.5*(a*a)*((ht*ht)/(hx*hx))*_lambda);
+    const double p_aa_htht__hyhy_025 = +(0.25*a*a)*((ht*ht)/(hy*hy));
+    const double p_aa_htht__hxhx_025_1m2lambda = +(0.25*a*a)*((ht*ht)/(hx*hx))*(1.0-2.0*_lambda);
+    const double p_aa_htht__hxhx_025_lambda = +(0.25*a*a)*((ht*ht)/(hx*hx))*_lambda;
+
+    const double m_aa_htht__hyhy_025_lambda = -(0.25*a*a)*((ht*ht)/(hy*hy))*_lambda;
+    const double b_aa_htht__hyhy = +(1.0 + 0.5*(a*a)*((ht*ht)/(hy*hy))*_lambda);
+    const double p_aa_htht__hxhx_025 = +(0.25*a*a)*((ht*ht)/(hx*hx));
+    const double p_aa_htht__hyhy_025_1m2lambda = +(0.25*a*a)*((ht*ht)/(hy*hy))*(1.0-2.0*_lambda);
+    const double p_aa_htht__hyhy_025_lambda = +(0.25*a*a)*((ht*ht)/(hy*hy))*_lambda;
+
+    double *ax = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *bx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *cx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *dx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *rx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+
+    for (unsigned int n=0; n<=N-2; n++)
+    {
+        ax[n] = m_aa_htht__hxhx_025_lambda;
+        bx[n] = b_aa_htht__hxhx;
+        cx[n] = m_aa_htht__hxhx_025_lambda;
+    }
+    ax[0] = 0.0; cx[N-2] = 0.0;
+
+    double *ay = static_cast<double*>(malloc(sizeof(double)*(M-1)));
+    double *by = static_cast<double*>(malloc(sizeof(double)*(M-1)));
+    double *cy = static_cast<double*>(malloc(sizeof(double)*(M-1)));
+    double *dy = static_cast<double*>(malloc(sizeof(double)*(M-1)));
+    double *ry = static_cast<double*>(malloc(sizeof(double)*(M-1)));
+
+    for (unsigned int m=0; m<=M-2; m++)
+    {
+        ay[m] = m_aa_htht__hyhy_025_lambda;
+        by[m] = b_aa_htht__hyhy;
+        cy[m] = m_aa_htht__hyhy_025_lambda;
+    }
+    ay[0] = 0.0; cy[M-2] = 0.0;
+
+    DoubleMatrix u00(M+1, N+1);
+    DoubleMatrix u05(M+1, N+1);
+    DoubleMatrix u10(M+1, N+1);
+    DoubleMatrix u15(M+1, N+1);
+    DoubleMatrix u20(M+1, N+1);
+
+    /***********************************************************************************************/
+    /***********************************************************************************************/
+
+    TimeNodePDE tn00; tn00.i = 0; tn00.t = 0.5*tn00.i*ht;
+    TimeNodePDE tn05; tn05.i = 1; tn05.t = 0.5*tn05.i*ht;
+    TimeNodePDE tn10; tn10.i = 2; tn10.t = 0.5*tn10.i*ht;
+
+    SpaceNodePDE sn;
+    for (unsigned int m=0; m<=M; m++)
+    {
+        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
+            u00[m][n] = initial(sn, InitialCondition::InitialValue);
+        }
+    }
+    layerInfo(u00, tn00);
+
+    /***********************************************************************************************/
+
+    for (unsigned int m=0; m<=M; m++)
+    {
+        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
+            double firstDerivative = initial(sn, InitialCondition::FirstDerivative);
+
+            double secndDerivative = 0.0;
+            if (m==0) { secndDerivative += aa__hyhy*(+2.0*u00[0][n]-5.0*u00[1][n]+4.0*u00[2][n]-1.0*u00[3][n]); }
+            else
+            if (m==M) { secndDerivative += aa__hyhy*(-1.0*u00[M-3][n]+4.0*u00[M-2][n]-5.0*u00[M-1][n]+2.0*u00[M][n]); }
+            else { secndDerivative += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]); }
+
+            if (n==0) { secndDerivative += aa__hxhx*(+2.0*u00[m][0]-5.0*u00[m][1]+4.0*u00[m][2]-1.0*u00[m][3]); }
+            else
+            if (n==N) { secndDerivative += aa__hxhx*(-1.0*u00[m][N-3]+4.0*u00[m][N-2]-5.0*u00[m][N-1]+2.0*u00[m][N]); }
+            else { secndDerivative += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]); }
+
+            secndDerivative += f(sn,tn00);
+            secndDerivative -=  alpha*firstDerivative;
+
+            u05[m][n] = u00[m][n] + firstDerivative*ht_050 + secndDerivative*ht_ht_025_05;
+        }
+    }
+    layerInfo(u05, tn05);
+
+}
+
+void IHeatEquationIBVP::calculateU(DoubleMatrix &u, double a, double alpha, double lambda)
+{
+    const unsigned int N = static_cast<unsigned int>(_spaceDimensionX.size());
+    const unsigned int M = static_cast<unsigned int>(_spaceDimensionY.size());
+    const unsigned int L = static_cast<unsigned int>(_timeDimension.size());
+    const double hx = _spaceDimensionX.step();
+    const double hy = _spaceDimensionY.step();
+    const double ht = _timeDimension.step();
+
+    u.clear();
+    u.resize(M+1, N+1);
+
+    DoubleMatrix uh(M+1, N+1);
+
+    SpaceNodePDE sn;
+    //------------------------------------- initial conditions -------------------------------------//
+    for (unsigned int m=0; m<=M; m++)
+    {
+        sn.j = m; sn.y = m*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn.i = n; sn.x = n*hx;
+            u[m][n] = initial(sn, InitialCondition::InitialValue);
+        }
+    }
+    //layerInfo(u, 0);
+    IPrinter::printMatrix(u);
+    IPrinter::printSeperatorLine();
+    //------------------------------------- initial conditions -------------------------------------//
+
+    //double a2_ht__hx2 = ((a*a*ht)/(hx*hx));
+    //double a2_ht__hy2 = ((a*a*ht)/(hy*hy));
+    //double a2_lambda_ht__hy = (a*a*lambda*ht)/(hy);
+    //double a2_lambda_ht__hx = (a*a*lambda*ht)/(hx);
+
+    double *a1X = (double *) malloc(sizeof(double)*(N+1));
+    double *b1X = (double *) malloc(sizeof(double)*(N+1));
+    double *c1X = (double *) malloc(sizeof(double)*(N+1));
+    double *d1X = (double *) malloc(sizeof(double)*(N+1));
+    double *x1X = (double *) malloc(sizeof(double)*(N+1));
+
+    double *a1Y = (double *) malloc(sizeof(double)*(M+1));
+    double *b1Y = (double *) malloc(sizeof(double)*(M+1));
+    double *c1Y = (double *) malloc(sizeof(double)*(M+1));
+    double *d1Y = (double *) malloc(sizeof(double)*(M+1));
+    double *x1Y = (double *) malloc(sizeof(double)*(M+1));
+
+    TimeNodePDE tn;
+    for (unsigned int l=1; l<=L; l++)
+    {
+        //------------------------------------- approximatin to x direction conditions -------------------------------------//
+        tn.i = l;
+        tn.t = l*ht - 0.5*ht;
+        //--------------------------------------------------------------------------//
+        for (unsigned int m=0; m<=M; m++)
+        {
+            sn.j = m; sn.y = m*hy;
+
+            for (unsigned int n=0; n<=N; n++)
+            {
+                sn.i = n; sn.x = n*hx;
+
+                d1X[n] = 2.0*u[m][n] + alpha*ht*env0(sn, tn) + ht*f(sn, tn);
+
+                if (m==0)       d1X[n] += ((a*a*ht))*((u[0][n]   - 2.0*u[1][n]   + u[2][n])/(hy*hy));
+                if (m>0 && m<M) d1X[n] += ((a*a*ht))*((u[m-1][n] - 2.0*u[m][n]   + u[m+1][n])/(hy*hy));
+                if (m==M)       d1X[n] += ((a*a*ht))*((u[M-2][n] - 2.0*u[M-1][n] + u[M][n])/(hy*hy));
+
+                if (n == 0)
+                {
+                    a1X[0] = +0.0;
+                    b1X[0] = +2.0 + 2.0*((a*a*ht)/(hx*hx)) + alpha*ht - 2.0*(a*a*lambda*ht/hx);
+                    c1X[0] = -2.0*((a*a*ht)/(hx*hx));
+                    d1X[0] -= 2.0*(a*a*lambda*ht/hx)*env1(sn, tn);
+                }
+                else if (n == N)
+                {
+                    a1X[N] = -2.0*((a*a*ht)/(hx*hx));
+                    b1X[N] = +2.0 + 2.0*((a*a*ht)/(hx*hx)) + alpha*ht - 2.0*(a*a*lambda*ht/hx);
+                    c1X[N] = +0.0;
+                    d1X[N] -= 2.0*(a*a*lambda*ht/hx)*env1(sn, tn);
+                }
+                else // n=1,...,N-1; m=1,...,M-1.
+                {
+                    a1X[n] = -(a*a*ht)/(hx*hx);
+                    b1X[n] = +2.0 + 2.0*((a*a*ht)/(hx*hx)) + alpha*ht;
+                    c1X[n] = -(a*a*ht)/(hx*hx);
+                }
+            }
+            tomasAlgorithm(a1X, b1X, c1X, d1X, x1X, N+1);
+            for (unsigned int n=0; n<=N; n++) uh[m][n] = x1X[n];
+        }
+        //for (unsigned int n=0; n<=N; n++) uh[0][n] = n*hx*n*hx + 0.0*0.0 + tn.t;
+        //for (unsigned int n=0; n<=N; n++) uh[M][n] = n*hx*n*hx + 1.0*1.0 + tn.t;
+        if (l==1)
+        {
+            IPrinter::printMatrix(uh);
+            IPrinter::printSeperatorLine();
+        }return;
+        //------------------------------------- approximatin to x direction conditions -------------------------------------//
+
+        //------------------------------------- approximatin to y direction conditions -------------------------------------//
+        tn.i = l;
+        tn.t = l*ht;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn.i = n; sn.x = n*hx;
+
+            for (unsigned int m=0; m<=M; m++)
+            {
+                sn.j = m; sn.y = m*hy;
+
+                d1Y[m] = 2.0*uh[m][n] + alpha*ht*env0(sn, tn) + ht*f(sn, tn);
+
+                if (n==0)       d1Y[m] += ((a*a*ht))*((uh[m][0]   - 2.0*uh[m][1]   + uh[m][2])/(hx*hx));
+                if (n>0 && n<N) d1Y[m] += ((a*a*ht))*((uh[m][n-1] - 2.0*uh[m][n]   + uh[m][n+1])/(hx*hx));
+                if (n==N)       d1Y[m] += ((a*a*ht))*((uh[m][N-2] - 2.0*uh[m][N-1] + uh[m][N])/(hx*hx));
+
+                if (m == 0)
+                {
+                    a1Y[0] = +0.0;
+                    b1Y[0] = +2.0 + 2.0*((a*a*ht)/(hy*hy)) + alpha*ht - 2.0*(a*a*lambda*ht/hy);
+                    c1Y[0] = -2.0*((a*a*ht)/(hy*hy));
+                    d1Y[0] -= 2.0*(a*a*lambda*ht/hy)*env1(sn, tn);
+                }
+                else if (m == M)
+                {
+                    a1Y[M] = -2.0*((a*a*ht)/(hy*hy));
+                    b1Y[M] = +2.0 + 2.0*((a*a*ht)/(hy*hy)) + alpha*ht - 2.0*(a*a*lambda*ht/hy);
+                    c1Y[M] = +0.0;
+                    d1Y[M] -= 2.0*(a*a*lambda*ht/hy)*env1(sn, tn);
+                }
+                else // n=1,...,N-1; m=1,...,M-1.
+                {
+                    a1Y[m] = -((a*a*ht)/(hy*hy));
+                    b1Y[m] = +2.0 + 2.0*((a*a*ht)/(hy*hy)) + alpha*ht;
+                    c1Y[m] = -((a*a*ht)/(hy*hy));
+                }
+            }
+            tomasAlgorithm(a1Y, b1Y, c1Y, d1Y, x1Y, M+1);
+            for (unsigned int m=0; m<=M; m++) u[m][n] = x1Y[m];
+        }
+        //for (unsigned int m=0; m<=M; m++) u[m][0] = hy*m*hy*m + 0.0*0.0 + tn.t;
+        //for (unsigned int m=0; m<=M; m++) u[m][N] = hy*m*hy*m + 1.0*1.0 + tn.t;
+        //------------------------------------- approximatin to y direction conditions -------------------------------------//
+
+        //layerInfo(u, l);
+        if (l==1)
+        {
+            IPrinter::printMatrix(u);
+            IPrinter::printSeperatorLine();
+        }
+    }
+    uh.clear();
+
+    free(x1X);
+    free(d1X);
+    free(c1X);
+    free(b1X);
+    free(a1X);
+
+    free(x1Y);
+    free(d1Y);
+    free(c1Y);
+    free(b1Y);
+    free(a1Y);
+}
+
+void IHeatEquationIBVP::gridMethod(DoubleVector &u) const
 {
     const Dimension &dim1 = spaceDimensionX();//spaceDimension(Dimension::DimensionX);
     const Dimension &time = timeDimension();
@@ -41,7 +364,7 @@ void ParabolicIBVP::gridMethod(DoubleVector &u) const
         isn.x = n*hx;
         u[i] = initial(isn, InitialCondition::InitialValue);
     }
-    layerInfo(u, 0);
+    //layerInfo(u, 0);
 
     SpaceNodePDE lsn; lsn.i = minN; lsn.x = minN*hx;
     SpaceNodePDE rsn; rsn.i = maxN; rsn.x = maxN*hx;
@@ -59,7 +382,7 @@ void ParabolicIBVP::gridMethod(DoubleVector &u) const
             isn.i = n;
             isn.x = n*hx;
 
-            double alpha = -a(isn,tn)*h;
+            double alpha = -thermalDiffusivity()*h;
             double betta = 1.0 - 2.0*alpha;
 
             ka[i-1] = alpha;
@@ -75,14 +398,14 @@ void ParabolicIBVP::gridMethod(DoubleVector &u) const
         u[0] = boundary(lsn, tn, condition);
         u[N] = boundary(rsn, tn, condition);
 
-        kd[0]   += a(lsn,tn) * h * u[0];
-        kd[N-2] += a(rsn,tn) * h * u[N];
+        kd[0]   += thermalDiffusivity() * h * u[0];
+        kd[N-2] += thermalDiffusivity() * h * u[N];
 
         tomasAlgorithm(ka, kb, kc, kd, rx, N-1);
 
         for (unsigned int n=1; n<=N-1; n++) u[n] = rx[n-1];
 
-        layerInfo(u, m);
+        //layerInfo(u, m);
     }
 
     free(ka);
@@ -92,7 +415,7 @@ void ParabolicIBVP::gridMethod(DoubleVector &u) const
     free(rx);
 }
 
-void ParabolicIBVP::gridMethod(DoubleVector &u, double a) const
+void IHeatEquationIBVP::gridMethod(DoubleVector &u, double a) const
 {
     const Dimension &dimX = spaceDimensionX();//spaceDimension(Dimension::DimensionX);
     const Dimension &time = timeDimension();
@@ -129,7 +452,7 @@ void ParabolicIBVP::gridMethod(DoubleVector &u, double a) const
         isn.x = n*hx;
         u[i] = initial(isn, InitialCondition::InitialValue);
     }
-    layerInfo(u, 0);
+    //layerInfo(u, 0);
 
     SpaceNodePDE lsn; lsn.i = minN; lsn.x = minN*hx;
     SpaceNodePDE rsn; rsn.i = maxN; rsn.x = maxN*hx;
@@ -167,7 +490,7 @@ void ParabolicIBVP::gridMethod(DoubleVector &u, double a) const
 
         for (unsigned int n=1; n<=N-1; n++) u[n] = rx[n-1];
 
-        layerInfo(u, m);
+        //layerInfo(u, m);
     }
 
     free(ka);
@@ -177,7 +500,7 @@ void ParabolicIBVP::gridMethod(DoubleVector &u, double a) const
     free(rx);
 }
 
-void ParabolicIBVP::calculateMVD(DoubleMatrix &u) const
+void IHeatEquationIBVP::calculateMVD(DoubleMatrix &u) const
 {
     const Dimension &dimX = spaceDimensionX();//mspaceDimension.at(Dimension::DimensionX);
     const Dimension &dimY = spaceDimensionY();//mspaceDimension.at(Dimension::DimensionY);
@@ -379,7 +702,7 @@ void funcL(const double* a, const double *b, const double *c, const double *d, d
     free(e0);
 }
 
-void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u) const
+void IHeatEquationIBVP::calculateN2L2RD(DoubleMatrix &u) const
 {
     double ht = _timeDimension.step();
     unsigned int minM = _timeDimension.min();
@@ -430,7 +753,7 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u) const
         isn.i = minN+1;
         isn.x = isn.i*hx;
 
-        double alpha = a(isn,tn)*h;
+        double alpha = thermalDiffusivity()*h;
         A[0][0] = -2.0*alpha - 1.0;
         A[0][1] = alpha;
         b[0]    = -u[m-1][1] - alpha*u[m][0] - ht*f(isn,tn);
@@ -447,7 +770,7 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u) const
             isn.i = n+minN;
             isn.x = isn.i*hx;
 
-            alpha = a(isn,tn)*h;
+            alpha = thermalDiffusivity()*h;
 
             double g1 = alpha;
             double g2 = -2.0*alpha-1.0;
@@ -473,7 +796,7 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u) const
 
         isn.i = maxN-1;
         isn.x = isn.i*hx;
-        alpha = a(isn,tn)*h;
+        alpha = thermalDiffusivity()*h;
         A[1][0] = alpha;
         A[1][1] = -2.0*alpha - 1.0;
         b[1]    = -u[m-1][N-1] - alpha*u[m][N] - ht*f(isn,tn);
@@ -496,7 +819,7 @@ void ParabolicIBVP::calculateN2L2RD(DoubleMatrix &u) const
 
 #define SCHEME_2
 #define __NORMALIZE__X
-void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
+void IHeatEquationIBVP::calculateN4L2RD(DoubleMatrix &u) const
 {
     /* get parameters */
     double ht = _timeDimension.step();
@@ -549,7 +872,7 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
         /* using 2nd scheme, at point n=1 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         isn.i = minN+1;
         isn.x = isn.i*hx;
-        double alpha = a(isn,tn)*h;
+        double alpha = thermalDiffusivity()*h;
         A[0][0] = -40.0*alpha - 1.0;
         A[0][1] = +12.0*alpha;
         A[0][2] = +8.0*alpha;
@@ -616,7 +939,7 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
             isn.i = n+minN;
             isn.x = isn.i*hx;
 
-            alpha = a(isn,tn)*h;
+            alpha = thermalDiffusivity()*h;
 
 #ifdef SCHEME_1
             /* using 1nd scheme, at point n=1 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
@@ -704,7 +1027,7 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
         /* using 2nd scheme, at point N-3 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         isn.i = maxN-3;
         isn.x = isn.i*hx;
-        alpha = a(isn,tn)*h;
+        alpha = thermalDiffusivity()*h;
         A[1][0] = +22.0*alpha;
         A[1][1] = -40.0*alpha - 1.0;
         A[1][2] = +12.0*alpha;
@@ -714,7 +1037,7 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
         /* using 3rd scheme, at point N-2 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         isn.i = maxN-2;
         isn.x = isn.i*hx;
-        alpha = a(isn,tn)*h;
+        alpha = thermalDiffusivity()*h;
         A[2][0] = -2.0*alpha;
         A[2][1] = +32.0*alpha;
         A[2][2] = -60.0*alpha - 1.0;
@@ -763,7 +1086,7 @@ void ParabolicIBVP::calculateN4L2RD(DoubleMatrix &u) const
     A.clear();
 }
 
-void ParabolicIBVP::calculateN4L2RDX(DoubleMatrix &u) const
+void IHeatEquationIBVP::calculateN4L2RDX(DoubleMatrix &u) const
 {
     /* get parameters */
     double ht = _timeDimension.step();
@@ -816,7 +1139,7 @@ void ParabolicIBVP::calculateN4L2RDX(DoubleMatrix &u) const
         /* using 2nd scheme, at point n=1 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         isn.i = minN+1;
         isn.x = isn.i*hx;
-        double alpha = a(isn,tn)*h;
+        double alpha = thermalDiffusivity()*h;
         A[0][0] = -40.0*alpha - 1.0;
         A[0][1] = +12.0*alpha;
         A[0][2] = +8.0*alpha;
@@ -875,7 +1198,7 @@ void ParabolicIBVP::calculateN4L2RDX(DoubleMatrix &u) const
             isn.i = n+minN;
             isn.x = isn.i*hx;
 
-            alpha = a(isn,tn)*h;
+            alpha = thermalDiffusivity()*h;
 
 #ifdef SCHEME_1
             /* using 1nd scheme, at point n=1 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
@@ -970,7 +1293,7 @@ void ParabolicIBVP::calculateN4L2RDX(DoubleMatrix &u) const
         /* using 2nd scheme, at point N-3 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         isn.i = maxN-3;
         isn.x = isn.i*hx;
-        alpha = a(isn,tn)*h;
+        alpha = thermalDiffusivity()*h;
         A[1][0] = +22.0*alpha;
         A[1][1] = -40.0*alpha - 1.0;
         A[1][2] = +12.0*alpha;
@@ -980,7 +1303,7 @@ void ParabolicIBVP::calculateN4L2RDX(DoubleMatrix &u) const
         /* using 3rd scheme, at point N-2 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         isn.i = maxN-2;
         isn.x = isn.i*hx;
-        alpha = a(isn,tn)*h;
+        alpha = thermalDiffusivity()*h;
         A[2][0] = -2.0*alpha;
         A[2][1] = +32.0*alpha;
         A[2][2] = -60.0*alpha - 1.0;
@@ -1042,7 +1365,7 @@ void ParabolicIBVP::calculateN4L2RDX(DoubleMatrix &u) const
     A.clear();
 }
 
-void ParabolicIBVP::calculateN6L2RD(DoubleMatrix &u) const
+void IHeatEquationIBVP::calculateN6L2RD(DoubleMatrix &u) const
 {
     /* get parameters */
     double ht = _timeDimension.step();
@@ -1096,7 +1419,7 @@ void ParabolicIBVP::calculateN6L2RD(DoubleMatrix &u) const
         /* using 2nd scheme, at point n=1 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         isn.i = minN+1;
         isn.x = isn.i*hx;
-        double alpha = a(isn,tn)*h;
+        double alpha = thermalDiffusivity()*h;
         A[0][0] = -40.0*alpha - 1.0;
         A[0][1] = +12.0*alpha;
         A[0][2] = +8.0*alpha;
@@ -1158,7 +1481,7 @@ void ParabolicIBVP::calculateN6L2RD(DoubleMatrix &u) const
             isn.i = n+minN;
             isn.x = isn.i*hx;
 
-            alpha = a(isn,tn)*h;
+            alpha = thermalDiffusivity()*h;
 
 #ifdef SCHEME_1
             /* using 1nd scheme, at point n=1 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
@@ -1254,7 +1577,7 @@ void ParabolicIBVP::calculateN6L2RD(DoubleMatrix &u) const
         /* using 2nd scheme, at point N-3 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         isn.i = maxN-3;
         isn.x = isn.i*hx;
-        alpha = a(isn,tn)*h;
+        alpha = thermalDiffusivity()*h;
         A[1][0] = +22.0*alpha;
         A[1][1] = -40.0*alpha - 1.0;
         A[1][2] = +12.0*alpha;
@@ -1264,7 +1587,7 @@ void ParabolicIBVP::calculateN6L2RD(DoubleMatrix &u) const
         /* using 3rd scheme, at point N-2 Березин И.С., Жидков Н.П. - Методы вычислений (том 1) */
         isn.i = maxN-2;
         isn.x = isn.i*hx;
-        alpha = a(isn,tn)*h;
+        alpha = thermalDiffusivity()*h;
         A[2][0] = -2.0*alpha;
         A[2][1] = +32.0*alpha;
         A[2][2] = -60.0*alpha - 1.0;
@@ -1326,181 +1649,6 @@ void ParabolicIBVP::calculateN6L2RD(DoubleMatrix &u) const
     A.clear();
 }
 
-IHeatEquationIBVP::IHeatEquationIBVP(double thermalDiffusivity) : _thermalDiffusivity(thermalDiffusivity) {}
-
-void IHeatEquationIBVP::calculateU(DoubleMatrix &u, double a, double alpha, double lambda)
-{
-    unsigned int N = _spaceDimensionX.size();
-    unsigned int M = _spaceDimensionY.size();
-    unsigned int L = _timeDimension.size();
-    double hx = _spaceDimensionX.step();
-    double hy = _spaceDimensionY.step();
-    double ht = _timeDimension.step();
-
-    u.clear();
-    u.resize(M+1, N+1);
-
-    DoubleMatrix uh(M+1, N+1);
-
-    SpaceNodePDE sn;
-    //------------------------------------- initial conditions -------------------------------------//
-    for (unsigned int m=0; m<=M; m++)
-    {
-        sn.j = m; sn.y = m*hy;
-        for (unsigned int n=0; n<=N; n++)
-        {
-            sn.i = n; sn.x = n*hx;
-            u[m][n] = initial(sn);
-        }
-    }
-    layerInfo(u, 0);
-    IPrinter::printMatrix(u);
-    IPrinter::printSeperatorLine();
-    //------------------------------------- initial conditions -------------------------------------//
-
-    //double a2_ht__hx2 = ((a*a*ht)/(hx*hx));
-    //double a2_ht__hy2 = ((a*a*ht)/(hy*hy));
-    //double a2_lambda_ht__hy = (a*a*lambda*ht)/(hy);
-    //double a2_lambda_ht__hx = (a*a*lambda*ht)/(hx);
-
-    double *a1X = (double *) malloc(sizeof(double)*(N+1));
-    double *b1X = (double *) malloc(sizeof(double)*(N+1));
-    double *c1X = (double *) malloc(sizeof(double)*(N+1));
-    double *d1X = (double *) malloc(sizeof(double)*(N+1));
-    double *x1X = (double *) malloc(sizeof(double)*(N+1));
-
-    double *a1Y = (double *) malloc(sizeof(double)*(M+1));
-    double *b1Y = (double *) malloc(sizeof(double)*(M+1));
-    double *c1Y = (double *) malloc(sizeof(double)*(M+1));
-    double *d1Y = (double *) malloc(sizeof(double)*(M+1));
-    double *x1Y = (double *) malloc(sizeof(double)*(M+1));
-
-    TimeNodePDE tn;
-    for (unsigned int l=1; l<=L; l++)
-    {
-        //------------------------------------- approximatin to x direction conditions -------------------------------------//
-        tn.i = l;
-        tn.t = l*ht - 0.5*ht;
-        //--------------------------------------------------------------------------//
-        for (unsigned int m=0; m<=M; m++)
-        {
-            sn.j = m; sn.y = m*hy;
-
-            for (unsigned int n=0; n<=N; n++)
-            {
-                sn.i = n; sn.x = n*hx;
-
-                d1X[n] = 2.0*u[m][n] + alpha*ht*env0(sn, tn) + ht*f(sn, tn);
-
-                if (m==0)       d1X[n] += ((a*a*ht))*((u[0][n]   - 2.0*u[1][n]   + u[2][n])/(hy*hy));
-                if (m>0 && m<M) d1X[n] += ((a*a*ht))*((u[m-1][n] - 2.0*u[m][n]   + u[m+1][n])/(hy*hy));
-                if (m==M)       d1X[n] += ((a*a*ht))*((u[M-2][n] - 2.0*u[M-1][n] + u[M][n])/(hy*hy));
-
-                if (n == 0)
-                {
-                    a1X[0] = +0.0;
-                    b1X[0] = +2.0 + 2.0*((a*a*ht)/(hx*hx)) + alpha*ht - 2.0*(a*a*lambda*ht/hx);
-                    c1X[0] = -2.0*((a*a*ht)/(hx*hx));
-                    d1X[0] -= 2.0*(a*a*lambda*ht/hx)*env1(sn, tn);
-                }
-                else if (n == N)
-                {
-                    a1X[N] = -2.0*((a*a*ht)/(hx*hx));
-                    b1X[N] = +2.0 + 2.0*((a*a*ht)/(hx*hx)) + alpha*ht - 2.0*(a*a*lambda*ht/hx);
-                    c1X[N] = +0.0;
-                    d1X[N] -= 2.0*(a*a*lambda*ht/hx)*env1(sn, tn);
-                }
-                else // n=1,...,N-1; m=1,...,M-1.
-                {
-                    a1X[n] = -(a*a*ht)/(hx*hx);
-                    b1X[n] = +2.0 + 2.0*((a*a*ht)/(hx*hx)) + alpha*ht;
-                    c1X[n] = -(a*a*ht)/(hx*hx);
-                }
-            }
-            tomasAlgorithm(a1X, b1X, c1X, d1X, x1X, N+1);
-            for (unsigned int n=0; n<=N; n++) uh[m][n] = x1X[n];
-        }
-        //for (unsigned int n=0; n<=N; n++) uh[0][n] = n*hx*n*hx + 0.0*0.0 + tn.t;
-        //for (unsigned int n=0; n<=N; n++) uh[M][n] = n*hx*n*hx + 1.0*1.0 + tn.t;
-        if (l==1)
-        {
-            IPrinter::printMatrix(uh);
-            IPrinter::printSeperatorLine();
-        }return;
-        //------------------------------------- approximatin to x direction conditions -------------------------------------//
-
-        //------------------------------------- approximatin to y direction conditions -------------------------------------//
-        tn.i = l;
-        tn.t = l*ht;
-        for (unsigned int n=0; n<=N; n++)
-        {
-            sn.i = n; sn.x = n*hx;
-
-            for (unsigned int m=0; m<=M; m++)
-            {
-                sn.j = m; sn.y = m*hy;
-
-                d1Y[m] = 2.0*uh[m][n] + alpha*ht*env0(sn, tn) + ht*f(sn, tn);
-
-                if (n==0)       d1Y[m] += ((a*a*ht))*((uh[m][0]   - 2.0*uh[m][1]   + uh[m][2])/(hx*hx));
-                if (n>0 && n<N) d1Y[m] += ((a*a*ht))*((uh[m][n-1] - 2.0*uh[m][n]   + uh[m][n+1])/(hx*hx));
-                if (n==N)       d1Y[m] += ((a*a*ht))*((uh[m][N-2] - 2.0*uh[m][N-1] + uh[m][N])/(hx*hx));
-
-                if (m == 0)
-                {
-                    a1Y[0] = +0.0;
-                    b1Y[0] = +2.0 + 2.0*((a*a*ht)/(hy*hy)) + alpha*ht - 2.0*(a*a*lambda*ht/hy);
-                    c1Y[0] = -2.0*((a*a*ht)/(hy*hy));
-                    d1Y[0] -= 2.0*(a*a*lambda*ht/hy)*env1(sn, tn);
-                }
-                else if (m == M)
-                {
-                    a1Y[M] = -2.0*((a*a*ht)/(hy*hy));
-                    b1Y[M] = +2.0 + 2.0*((a*a*ht)/(hy*hy)) + alpha*ht - 2.0*(a*a*lambda*ht/hy);
-                    c1Y[M] = +0.0;
-                    d1Y[M] -= 2.0*(a*a*lambda*ht/hy)*env1(sn, tn);
-                }
-                else // n=1,...,N-1; m=1,...,M-1.
-                {
-                    a1Y[m] = -((a*a*ht)/(hy*hy));
-                    b1Y[m] = +2.0 + 2.0*((a*a*ht)/(hy*hy)) + alpha*ht;
-                    c1Y[m] = -((a*a*ht)/(hy*hy));
-                }
-            }
-            tomasAlgorithm(a1Y, b1Y, c1Y, d1Y, x1Y, M+1);
-            for (unsigned int m=0; m<=M; m++) u[m][n] = x1Y[m];
-        }
-        //for (unsigned int m=0; m<=M; m++) u[m][0] = hy*m*hy*m + 0.0*0.0 + tn.t;
-        //for (unsigned int m=0; m<=M; m++) u[m][N] = hy*m*hy*m + 1.0*1.0 + tn.t;
-        //------------------------------------- approximatin to y direction conditions -------------------------------------//
-
-        layerInfo(u, l);
-        if (l==1)
-        {
-            IPrinter::printMatrix(u);
-            IPrinter::printSeperatorLine();
-        }
-    }
-    uh.clear();
-
-    free(x1X);
-    free(d1X);
-    free(c1X);
-    free(b1X);
-    free(a1X);
-
-    free(x1Y);
-    free(d1Y);
-    free(c1Y);
-    free(b1Y);
-    free(a1Y);
-}
-
-/**
- * @brief Shebeke usulu
- * @param u
- * @param direction
- */
 void NewtonHeatEquation::calculateGM1(DoubleVector &u, SweepMethodDirection direction)
 {
     typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
@@ -1588,11 +1736,6 @@ void NewtonHeatEquation::calculateGM1(DoubleVector &u, SweepMethodDirection dire
     free(rx);
 }
 
-/**
- * @brief Soldan saga serti qovmaq
- * @param u
- * @param direction
- */
 void NewtonHeatEquation::calculateGM2(DoubleVector &u, SweepMethodDirection direction)
 {
     C_UNUSED(direction);
@@ -1754,11 +1897,6 @@ void NewtonHeatEquation::calculateGM2(DoubleVector &u, SweepMethodDirection dire
     free(rx);
 }
 
-/**
- * @brief Kohne shebeke usulu
- * @param u
- * @param direction
- */
 void NewtonHeatEquation::calculateGM3(DoubleVector &u, SweepMethodDirection direction)
 {
     typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
@@ -1875,7 +2013,7 @@ void NewtonHeatEquation::calculateGM3(DoubleVector &u, SweepMethodDirection dire
     free(rx);
 }
 
-void BackwardParabolicIBVP::gridMethod(DoubleVector &p, SweepMethodDirection direction) const
+void IFinalHeatEquationIBVP::gridMethod(DoubleVector &p, SweepMethodDirection direction) const
 {
     typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
     t_algorithm algorithm = &tomasAlgorithm;
@@ -1909,9 +2047,9 @@ void BackwardParabolicIBVP::gridMethod(DoubleVector &p, SweepMethodDirection dir
     {
         isn.i = n+minN;
         isn.x = isn.i*hx;
-        p[n] = initial(isn);
+        p[n] = initial(isn, InitialCondition::InitialValue);
     }
-    layerInfo(p, M);
+    //layerInfo(p, M);
 
     SpaceNodePDE lsn;
     lsn.i = minN;
@@ -1932,7 +2070,7 @@ void BackwardParabolicIBVP::gridMethod(DoubleVector &p, SweepMethodDirection dir
             isn.i = n+minN;
             isn.x = isn.i*hx;
 
-            double alpha = -a(isn,tn)*h;
+            double alpha = -thermalDiffusivity()*h;
             double betta = 1.0 - 2.0*alpha;
 
             ka[n-1] = alpha;
@@ -1945,17 +2083,17 @@ void BackwardParabolicIBVP::gridMethod(DoubleVector &p, SweepMethodDirection dir
         kc[N-2] = 0.0;
 
         /* border conditions */
-        p[0] = boundary(lsn, tn);
-        p[N] = boundary(rsn, tn);
+        //p[0] = boundary(lsn, tn);
+        //p[N] = boundary(rsn, tn);
 
-        kd[0]   -= a(lsn,tn) * h * p[0];
-        kd[N-2] -= a(rsn,tn) * h * p[N];
+        kd[0]   -= thermalDiffusivity() * h * p[0];
+        kd[N-2] -= thermalDiffusivity() * h * p[N];
 
         (*algorithm)(ka, kb, kc, kd, rx, N-1);
 
         for (unsigned int n=1; n<=N-1; n++) p[n] = rx[n-1];
 
-        layerInfo(p, m);
+        //layerInfo(p, m);
     }
 
     free(ka);
@@ -1965,7 +2103,7 @@ void BackwardParabolicIBVP::gridMethod(DoubleVector &p, SweepMethodDirection dir
     free(rx);
 }
 
-void BackwardParabolicIBVP::gridMethod(DoubleMatrix &p, SweepMethodDirection direction) const
+void IFinalHeatEquationIBVP::gridMethod(DoubleMatrix &p, SweepMethodDirection direction) const
 {
     typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
     t_algorithm algorithm = &tomasAlgorithm;
@@ -1999,9 +2137,9 @@ void BackwardParabolicIBVP::gridMethod(DoubleMatrix &p, SweepMethodDirection dir
     {
         isn.i = n+minN;
         isn.x = isn.i*hx;
-        p[M][n] = initial(isn);
+        p[M][n] = initial(isn, InitialCondition::InitialValue);
     }
-    layerInfo(p, M);
+    //layerInfo(p, M);
 
     SpaceNodePDE lsn;
     lsn.i = minN;
@@ -2022,7 +2160,7 @@ void BackwardParabolicIBVP::gridMethod(DoubleMatrix &p, SweepMethodDirection dir
             isn.i = n+minN;
             isn.x = isn.i*hx;
 
-            double alpha = -a(isn,tn)*h;
+            double alpha = -thermalDiffusivity()*h;
             double betta = 1.0 - 2.0*alpha;
 
             ka[n-1] = alpha;
@@ -2035,17 +2173,17 @@ void BackwardParabolicIBVP::gridMethod(DoubleMatrix &p, SweepMethodDirection dir
         kc[N-2] = 0.0;
 
         /* border conditions */
-        p[m][0] = boundary(lsn, tn);
-        p[m][N] = boundary(rsn, tn);
+        //p[m][0] = boundary(lsn, tn);
+        //p[m][N] = boundary(rsn, tn);
 
-        kd[0]   += a(lsn,tn) * h * p[m][0];
-        kd[N-2] += a(rsn,tn) * h * p[m][N];
+        //kd[0]   += a(lsn,tn) * h * p[m][0];
+        //kd[N-2] += a(rsn,tn) * h * p[m][N];
 
         (*algorithm)(ka, kb, kc, kd, rx, N-1);
 
         for (unsigned int n=1; n<=N-1; n++) p[m][n] = rx[n-1];
 
-        layerInfo(p, m);
+        //layerInfo(p, m);
     }
 
     free(ka);
@@ -2054,4 +2192,8 @@ void BackwardParabolicIBVP::gridMethod(DoubleMatrix &p, SweepMethodDirection dir
     free(kd);
     free(rx);
 }
+
+double IHeatEquationIBVP::lambda() const { return 0.5; }
+
+double IFinalHeatEquationIBVP::lambda() const { return 0.5; }
 

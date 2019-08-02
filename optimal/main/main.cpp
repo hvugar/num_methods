@@ -28,6 +28,9 @@
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     std::cout << "__cplusplus: " << __cplusplus << std::endl;
+
+
+
     //ConjugateGradinetTest::Main(argc, argv);
 
     //FirstOrderLinearODEEx1::Main(argc, argv);
@@ -41,8 +44,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //TestWaveEquation::Main(argc, argv);
     //TestWaveEquationEx1::Main(argc, argv);
-    //WaveEquationIBVP::Main(argc, argv); return 0;
-    ConjugateCdIHyperbolicIBVP1::Main(argc, argv); return 0;
+    //WaveEquationIBVP::Main(argc, argv);
+    //FinalHyperbolicIBVP::Main(argc, argv); return 0;
 
     //DeltaGrid2DExt1::Main(argc, argv);
     //puts("-------------------------");

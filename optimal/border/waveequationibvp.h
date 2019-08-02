@@ -48,7 +48,7 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class BORDERSHARED_EXPORT ConjugateCdIHyperbolicIBVP1 : public IFinalWaveEquationIBVP
+class BORDERSHARED_EXPORT FinalHyperbolicIBVP : public IFinalWaveEquationIBVP
 {
 public:
     static void Main(int argc, char* argv[]);
@@ -60,10 +60,7 @@ protected:
 
     virtual void layerInfo(const DoubleVector&, const TimeNodePDE&) const {}
     virtual void layerInfo(const DoubleMatrix&, const TimeNodePDE&) const;
-
 private:
-    double a = 1.0;
-    double alpha = 0.1;
     DoubleMatrix u10;
 };
 

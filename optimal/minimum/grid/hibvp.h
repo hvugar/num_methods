@@ -3,9 +3,6 @@
 
 #include "ibvp.h"
 
-/**
- * @brief The IHyperbolicIBVP class
- */
 class MINIMUMSHARED_EXPORT IHyperbolicIBVP : public InitialBoundaryValueProblemPDE
 {
 protected:
@@ -19,9 +16,6 @@ protected:
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//
 
-/**
- * @brief The IFinalIHyperbolicIBVP class
- */
 class MINIMUMSHARED_EXPORT IFinalIHyperbolicIBVP : public FinalBoundaryValueProblemPDE
 {
 protected:
@@ -39,9 +33,9 @@ class MINIMUMSHARED_EXPORT IWaveEquationIBVP : public IHyperbolicIBVP
 {
 public:
     explicit IWaveEquationIBVP(double waveSpeed = 1.0, double waveDissipation = 0.0);
+    virtual ~IWaveEquationIBVP();
     IWaveEquationIBVP(const IWaveEquationIBVP &);
     IWaveEquationIBVP & operator =(const IWaveEquationIBVP &);
-    virtual ~IWaveEquationIBVP();
 
     virtual double waveSpeed() const;
     virtual double waveDissipation() const;
@@ -55,9 +49,8 @@ public:
     void explicit_calculate_D2V1() const;
     void implicit_calculate_D2V1() const;
 
-    virtual double lambda() const;
-
 protected:
+    virtual double lambda() const;
     double _waveSpeed;
     double _waveDissipation;
 };
@@ -75,8 +68,8 @@ public:
     virtual double waveSpeed() const;
     virtual double waveDissipation() const;
 
-    void setWaveSpeed(double waveSpeed);
-    void setWaveDissipation(double waveDissipation);
+    virtual void setWaveSpeed(double waveSpeed);
+    virtual void setWaveDissipation(double waveDissipation);
 
     void explicit_calculate_D1V1() const;
     void implicit_calculate_D1V1() const;
@@ -85,15 +78,6 @@ public:
     void implicit_calculate_D2V1() const;
 
     virtual double lambda() const;
-private:
-    void explicit_calculate_D1V1_initial(DoubleVector &p00, DoubleVector &p10, unsigned int N, double hx, double ht, double a, double alpha) const;
-    void explicit_calculate_D1V1_border(DoubleVector &p, unsigned int N, double hx, double ht, const TimeNodePDE &tn) const;
-
-    void implicit_calculate_D1V1_initial(DoubleVector &p00, DoubleVector &p10, unsigned int N, double hx, double ht, double a, double alpha) const;
-    void implicit_calculate_D1V1_border(DoubleVector &p, unsigned int N, double hx, const TimeNodePDE &tn) const;
-
-    void explicit_calculate_D2V1_initial(DoubleMatrix &p00, DoubleMatrix &p10, unsigned int N, double hx, unsigned int M, double hy, double ht, double a, double alpha, unsigned int L) const;
-    void explicit_calculate_D2V1_border(DoubleMatrix &p, unsigned int N, double hx, unsigned int M, double hy, const TimeNodePDE &tn) const;
 
 protected:
     double _waveSpeed;

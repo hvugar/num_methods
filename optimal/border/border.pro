@@ -70,7 +70,8 @@ unix {
     CONFIG(debug, debug|release) {}
 }
 
-HEADERS += border_global.h
+HEADERS += border_global.h \
+    heatequationibvp.h
 
 HEADERS += \
            waveequationibvp.h \
@@ -78,7 +79,8 @@ HEADERS += \
 
 SOURCES += \
            waveequationibvp.cpp \
-           newtonheatequationex1.cpp
+           newtonheatequationex1.cpp \
+    heatequationibvp.cpp
 
 #HEADERS += \
 #           ode/firstordernonlinearodeex1.h \

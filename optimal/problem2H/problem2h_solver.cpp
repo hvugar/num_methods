@@ -68,7 +68,7 @@ SpacePointInfo::~SpacePointInfo()
 
 void Problem2HSolver::Main(int argc UNUSED_PARAM, char* argv[] UNUSED_PARAM)
 {
-    example1();
+    example2();
 }
 
 void Problem2HSolver::example1()
