@@ -54,12 +54,12 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
     const double hx = spaceDimensionX().step();
     const double ht = timeDimension().step();
 
-    const double a = thermalDiffusivity();
-    const double c = thermalConductivity();
+    const double td = thermalDiffusivity();
+    const double tc = thermalConductivity();
 
 
-    const double m_aa_ht__hxhx_05 = -((a*a*ht)/(hx*hx));
-    const double b_aa_ht__hxhx_conv = +(1.0 + (2.0*a*a*ht)/(hx*hx) + ht*c);
+    const double m_td_ht__hxhx = -((td*ht)/(hx*hx));
+    const double b_td_ht__hxhx__tcht = +(1.0 + (2.0*td*ht)/(hx*hx) + ht*tc);
 
 
     double *ax = static_cast<double*>(malloc(sizeof(double)*(N-1)));
@@ -70,9 +70,9 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
 
     for (unsigned int n=0; n<=N-2; n++)
     {
-        ax[n] = m_aa_ht__hxhx_05;
-        bx[n] = b_aa_ht__hxhx_conv;
-        cx[n] = m_aa_ht__hxhx_05;
+        ax[n] = m_td_ht__hxhx;
+        bx[n] = b_td_ht__hxhx__tcht;
+        cx[n] = m_td_ht__hxhx;
     }
     ax[0] = 0.0; cx[N-2] = 0.0;
 
@@ -114,8 +114,8 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
             dx[n-1]  = u00[n];
             dx[n-1] += ht*f(sn, tn);
         }
-        dx[0]   -= u10[0]*m_aa_ht__hxhx_05;
-        dx[N-2] -= u10[N]*m_aa_ht__hxhx_05;
+        dx[0]   -= u10[0]*m_td_ht__hxhx;
+        dx[N-2] -= u10[N]*m_td_ht__hxhx;
         tomasAlgorithm(ax, bx, cx, dx, rx, N-1);
         for (unsigned int n=1; n<=N-1; n++) u10[n] = rx[n-1];
         layerInfo(u10, tn);
@@ -145,14 +145,14 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
     const double hx = spaceDimensionX().step();
     const double ht = timeDimension().step();
 
-    const double a = thermalDiffusivity();
-    const double c = thermalConductivity();
+    const double td = thermalDiffusivity();
+    const double tc = thermalConductivity();
     const double _lambda = lambda();
 
-    const double m_aa_ht__hxhx_lambda = -((a*a*ht)/(hx*hx))*_lambda;
-    const double b_aa_ht__hxhx_lambda_conv = +(1.0 + ((2.0*a*a*ht)/(hx*hx))*_lambda + ht*c*_lambda);
-    const double p_aa_ht__hxhx_1mlambda = +((a*a*ht)/(hx*hx))*(1.0-_lambda);
-    const double ht_conv_1mlambda = +ht*c*(1.0-_lambda);
+    const double m_td_ht__hxhx_lambda = -((td*ht)/(hx*hx))*_lambda;
+    const double b_td_ht__hxhx_lambda_tcht_lambda = +(1.0 + ((2.0*td*ht)/(hx*hx))*_lambda + ht*tc*_lambda);
+    const double p_td_ht__hxhx_1mlambda = +((td*ht)/(hx*hx))*(1.0-_lambda);
+    const double ht_tc_1mlambda = +ht*tc*(1.0-_lambda);
 
     double *ax = static_cast<double*>(malloc(sizeof(double)*(N-1)));
     double *bx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
@@ -162,9 +162,9 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
 
     for (unsigned int n=0; n<=N-2; n++)
     {
-        ax[n] = m_aa_ht__hxhx_lambda;
-        bx[n] = b_aa_ht__hxhx_lambda_conv;
-        cx[n] = m_aa_ht__hxhx_lambda;
+        ax[n] = m_td_ht__hxhx_lambda;
+        bx[n] = b_td_ht__hxhx_lambda_tcht_lambda;
+        cx[n] = m_td_ht__hxhx_lambda;
     }
     ax[0] = 0.0; cx[N-2] = 0.0;
 
@@ -204,13 +204,13 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
         for (unsigned int n=1; n<=N-1; n++)
         {
             sn.i = static_cast<int>(n); sn.x = n*hx;
-            dx[n-1]  = u00[n] - u00[n] * ht_conv_1mlambda;
-            dx[n-1] += (u00[n-1] - 2.0*u00[n] + u00[n+1])*p_aa_ht__hxhx_1mlambda;
+            dx[n-1]  = u00[n] - u00[n] * ht_tc_1mlambda;
+            dx[n-1] += (u00[n-1] - 2.0*u00[n] + u00[n+1])*p_td_ht__hxhx_1mlambda;
             //dx[n-1] += ht*f(sn, tn);
             dx[n-1] += ht*(_lambda*f(sn, tn)+(1.0-_lambda)*f(sn, tn1));
         }
-        dx[0]   -= u10[0]*m_aa_ht__hxhx_lambda;
-        dx[N-2] -= u10[N]*m_aa_ht__hxhx_lambda;
+        dx[0]   -= u10[0]*m_td_ht__hxhx_lambda;
+        dx[N-2] -= u10[N]*m_td_ht__hxhx_lambda;
         tomasAlgorithm(ax, bx, cx, dx, rx, N-1);
         for (unsigned int n=1; n<=N-1; n++) u10[n] = rx[n-1];
         layerInfo(u10, tn);
@@ -237,28 +237,28 @@ void IHeatEquationIBVP::explicit_calculate_D2V1() const
 
 void IHeatEquationIBVP::implicit_calculate_D2V1() const
 {
-    const unsigned int N = static_cast<unsigned int>( _spaceDimensionX.size() );
-    const unsigned int M = static_cast<unsigned int>( _spaceDimensionY.size() );
-    const unsigned int L = static_cast<unsigned int>( _timeDimension.size() );
+    const unsigned int N = static_cast<unsigned int>( spaceDimensionX().size() );
+    const unsigned int M = static_cast<unsigned int>( spaceDimensionY().size() );
+    const unsigned int L = static_cast<unsigned int>( timeDimension().size() );
 
-    const double hx = _spaceDimensionX.step();
-    const double hy = _spaceDimensionY.step();
-    const double ht = _timeDimension.step();
+    const double hx = spaceDimensionX().step();
+    const double hy = spaceDimensionY().step();
+    const double ht = timeDimension().step();
 
-    const double a = thermalDiffusivity();
-    const double c = thermalConductivity();
+    const double td = thermalDiffusivity();
+    const double tc = thermalConductivity();
 
 
     const double ht_050 = ht*0.5;
 
-    const double m_aa_ht__hxhx_05 = -((0.5*a*a*ht)/(hx*hx));
-    const double b_aa_ht__hxhx_conv = +(1.0 + (a*a*ht)/(hx*hx)) + 0.5*ht*c;
-    const double p_aa_ht__hyhy_05 = +((0.5*a*a*ht)/(hy*hy));
+    const double m_td_ht__hxhx_05 = -((0.5*td*ht)/(hx*hx));
+    const double b_td_ht__hxhx_05tcht = +(1.0 + (td*ht)/(hx*hx)) + 0.5*ht*tc;
+    const double p_td_ht__hyhy_05 = +((0.5*td*ht)/(hy*hy));
 
 
-    const double m_aa_ht__hyhy_05 = -((0.5*a*a*ht)/(hy*hy));
-    const double b_aa_ht__hyhy_conv = +(1.0 + (a*a*ht)/(hy*hy)) + 0.5*ht*c;
-    const double p_aa_ht__hxhx_05 = +((0.5*a*a*ht)/(hx*hx));
+    const double m_td_ht__hyhy_05 = -((0.5*td*ht)/(hy*hy));
+    const double b_td_ht__hyhy_05tcht = +(1.0 + (td*ht)/(hy*hy)) + 0.5*ht*tc;
+    const double p_td_ht__hxhx_05 = +((0.5*td*ht)/(hx*hx));
 
 
     double *ax = static_cast<double*>(malloc(sizeof(double)*(N-1)));
@@ -269,9 +269,9 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
 
     for (unsigned int n=0; n<=N-2; n++)
     {
-        ax[n] = m_aa_ht__hxhx_05;
-        bx[n] = b_aa_ht__hxhx_conv;
-        cx[n] = m_aa_ht__hxhx_05;
+        ax[n] = m_td_ht__hxhx_05;
+        bx[n] = b_td_ht__hxhx_05tcht;
+        cx[n] = m_td_ht__hxhx_05;
     }
     ax[0] = 0.0; cx[N-2] = 0.0;
 
@@ -283,9 +283,9 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
 
     for (unsigned int m=0; m<=M-2; m++)
     {
-        ay[m] = m_aa_ht__hyhy_05;
-        by[m] = b_aa_ht__hyhy_conv;
-        cy[m] = m_aa_ht__hyhy_05;
+        ay[m] = m_td_ht__hyhy_05;
+        by[m] = b_td_ht__hyhy_05tcht;
+        cy[m] = m_td_ht__hyhy_05;
     }
     ay[0] = 0.0; cy[M-2] = 0.0;
 
@@ -351,11 +351,11 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             {
                 sn.i = static_cast<int>(n); sn.x = n*hx;
                 dx[n-1]  = u00[m][n];
-                dx[n-1] += (u00[m-1][n] - 2.0*u00[m][n] + u00[m+1][n])*p_aa_ht__hyhy_05;
+                dx[n-1] += (u00[m-1][n] - 2.0*u00[m][n] + u00[m+1][n])*p_td_ht__hyhy_05;
                 dx[n-1] += ht_050*f(sn, tn05);
             }
-            dx[0]   -= u05[m][0]*m_aa_ht__hxhx_05;
-            dx[N-2] -= u05[m][N]*m_aa_ht__hxhx_05;
+            dx[0]   -= u05[m][0]*m_td_ht__hxhx_05;
+            dx[N-2] -= u05[m][N]*m_td_ht__hxhx_05;
             tomasAlgorithm(ax, bx, cx, dx, rx, N-1);
             for (unsigned int n=1; n<=N-1; n++) u05[m][n] = rx[n-1];
         }
@@ -370,11 +370,11 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             {
                 sn.j = static_cast<int>(m); sn.y = m*hy;
                 dy[m-1]  = u05[m][n];
-                dy[m-1] += (u05[m][n-1] - 2.0*u05[m][n] + u05[m][n+1])*p_aa_ht__hxhx_05;
+                dy[m-1] += (u05[m][n-1] - 2.0*u05[m][n] + u05[m][n+1])*p_td_ht__hxhx_05;
                 dy[m-1] += ht_050*f(sn, tn10);
             }
-            dy[0]   -= u10[0][n]*m_aa_ht__hyhy_05;
-            dy[M-2] -= u10[M][n]*m_aa_ht__hyhy_05;
+            dy[0]   -= u10[0][n]*m_td_ht__hyhy_05;
+            dy[M-2] -= u10[M][n]*m_td_ht__hyhy_05;
             tomasAlgorithm(ay, by, cy, dy, ry, M-1);
             for (unsigned int m=1; m<=M-1; m++) u10[m][n] = ry[m-1];
         }
@@ -409,29 +409,29 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
 
 void IHeatEquationIBVP::implicit_calculate_D2V1CN() const
 {
-    const unsigned int N = static_cast<unsigned int>( _spaceDimensionX.size() );
-    const unsigned int M = static_cast<unsigned int>( _spaceDimensionY.size() );
-    const unsigned int L = static_cast<unsigned int>( _timeDimension.size() );
+    const unsigned int N = static_cast<unsigned int>( spaceDimensionX().size() );
+    const unsigned int M = static_cast<unsigned int>( spaceDimensionY().size() );
+    const unsigned int L = static_cast<unsigned int>( timeDimension().size() );
 
-    const double hx = _spaceDimensionX.step();
-    const double hy = _spaceDimensionY.step();
-    const double ht = _timeDimension.step();
+    const double hx = spaceDimensionX().step();
+    const double hy = spaceDimensionY().step();
+    const double ht = timeDimension().step();
 
-    const double a = thermalDiffusivity();
-    const double c = thermalConductivity();
-    const double _lambda = lambda();
+    const double td = thermalDiffusivity();
+    const double tc = thermalConductivity();
+    const double _lambda = 1.0;//lambda();
 
     const double ht_050 = ht*0.5;
 
-    const double m_aa_ht__hxhx_05_lambda = -((0.5*a*a*ht)/(hx*hx))*_lambda;
-    const double b_aa_ht__hxhx_lambda__conv = +(1.0 + ((a*a*ht)/(hx*hx))*_lambda) + 0.5*ht*c;
-    const double p_aa_ht__hxhx_05_1mlambda = +((0.5*a*a*ht)/(hx*hx))*(1.0-_lambda);
-    const double p_aa_ht__hyhy_05 = +((0.5*a*a*ht)/(hy*hy));
+    const double m_td_ht__hxhx_05_lambda = -(0.5*td*ht*_lambda)/(hx*hx);
+    const double b_td_ht__hxhx_lambda__05tcht = +1.0 + (td*ht*_lambda)/(hx*hx) + 0.5*ht*tc;
+    const double p_td_ht__hxhx_05_1mlambda = +(0.5*td*ht*(1.0-_lambda))/(hx*hx);
+    const double p_td_ht__hyhy_05 = +((0.5*td*ht)/(hy*hy));
 
-    const double m_aa_ht__hyhy_05_lambda = -((0.5*a*a*ht)/(hy*hy))*_lambda;
-    const double b_aa_ht__hyhy_lambda__conv = +(1.0 + ((a*a*ht)/(hy*hy))*_lambda) + 0.5*ht*c;
-    const double p_aa_ht__hyhy_05_1mlambda = +((0.5*a*a*ht)/(hy*hy))*(1.0-_lambda);
-    const double p_aa_ht__hxhx_05 = +((0.5*a*a*ht)/(hx*hx));
+    const double m_td_ht__hyhy_05_lambda = -(0.5*td*ht*_lambda)/(hy*hy);
+    const double b_td_ht__hyhy_lambda__conv = +(1.0 + (td*ht*_lambda)/(hy*hy)) + 0.5*ht*tc;
+    const double p_td_ht__hyhy_05_1mlambda = +(0.5*td*ht*(1.0-_lambda))/(hy*hy);
+    const double p_td_ht__hxhx_05 = +(0.5*td*ht)/(hx*hx);
 
     double *ax = static_cast<double*>(malloc(sizeof(double)*(N-1)));
     double *bx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
@@ -441,9 +441,9 @@ void IHeatEquationIBVP::implicit_calculate_D2V1CN() const
 
     for (unsigned int n=0; n<=N-2; n++)
     {
-        ax[n] = m_aa_ht__hxhx_05_lambda;
-        bx[n] = b_aa_ht__hxhx_lambda__conv;
-        cx[n] = m_aa_ht__hxhx_05_lambda;
+        ax[n] = m_td_ht__hxhx_05_lambda;
+        bx[n] = b_td_ht__hxhx_lambda__05tcht;
+        cx[n] = m_td_ht__hxhx_05_lambda;
     }
     ax[0] = 0.0; cx[N-2] = 0.0;
 
@@ -455,9 +455,9 @@ void IHeatEquationIBVP::implicit_calculate_D2V1CN() const
 
     for (unsigned int m=0; m<=M-2; m++)
     {
-        ay[m] = m_aa_ht__hyhy_05_lambda;
-        by[m] = b_aa_ht__hyhy_lambda__conv;
-        cy[m] = m_aa_ht__hyhy_05_lambda;
+        ay[m] = m_td_ht__hyhy_05_lambda;
+        by[m] = b_td_ht__hyhy_lambda__conv;
+        cy[m] = m_td_ht__hyhy_05_lambda;
     }
     ay[0] = 0.0; cy[M-2] = 0.0;
 
@@ -523,13 +523,13 @@ void IHeatEquationIBVP::implicit_calculate_D2V1CN() const
             {
                 sn.i = static_cast<int>(n); sn.x = n*hx;
                 dx[n-1]  = u00[m][n];
-                dx[n-1] += (u00[m][n-1] - 2.0*u00[m][n] + u00[m][n+1])*p_aa_ht__hxhx_05_1mlambda;
-                dx[n-1] += (u00[m-1][n] - 2.0*u00[m][n] + u00[m+1][n])*p_aa_ht__hyhy_05;
-                //dx[n-1] += ht_050*f(sn, tn05);
-                dx[n-1] += ht_050*(_lambda*f(sn, tn05)+(1.0-_lambda)*f(sn, tn00));
+                dx[n-1] += (u00[m][n-1] - 2.0*u00[m][n] + u00[m][n+1])*p_td_ht__hxhx_05_1mlambda;
+                dx[n-1] += (u00[m-1][n] - 2.0*u00[m][n] + u00[m+1][n])*p_td_ht__hyhy_05;
+                dx[n-1] += ht_050*f(sn, tn05);
+                //dx[n-1] += ht_050*(_lambda*f(sn, tn05)+(1.0-_lambda)*f(sn, tn00));
             }
-            dx[0]   -= u05[m][0]*m_aa_ht__hxhx_05_lambda;
-            dx[N-2] -= u05[m][N]*m_aa_ht__hxhx_05_lambda;
+            dx[0]   -= u05[m][0]*m_td_ht__hxhx_05_lambda;
+            dx[N-2] -= u05[m][N]*m_td_ht__hxhx_05_lambda;
             tomasAlgorithm(ax, bx, cx, dx, rx, N-1);
             for (unsigned int n=1; n<=N-1; n++) u05[m][n] = rx[n-1];
         }
@@ -544,13 +544,13 @@ void IHeatEquationIBVP::implicit_calculate_D2V1CN() const
             {
                 sn.j = static_cast<int>(m); sn.y = m*hy;
                 dy[m-1]  = u05[m][n];
-                dy[m-1] += (u05[m-1][n] - 2.0*u05[m][n] + u05[m+1][n])*p_aa_ht__hyhy_05_1mlambda;
-                dy[m-1] += (u05[m][n-1] - 2.0*u05[m][n] + u05[m][n+1])*p_aa_ht__hxhx_05;
-                //dy[m-1] += ht_050*f(sn, tn10);
-                dy[m-1] += ht_050*(_lambda*f(sn, tn10)+(1.0-_lambda)*f(sn, tn05));
+                dy[m-1] += (u05[m-1][n] - 2.0*u05[m][n] + u05[m+1][n])*p_td_ht__hyhy_05_1mlambda;
+                dy[m-1] += (u05[m][n-1] - 2.0*u05[m][n] + u05[m][n+1])*p_td_ht__hxhx_05;
+                dy[m-1] += ht_050*f(sn, tn10);
+                //dy[m-1] += ht_050*(_lambda*f(sn, tn10)+(1.0-_lambda)*f(sn, tn05));
             }
-            dy[0]   -= u10[0][n]*m_aa_ht__hyhy_05_lambda;
-            dy[M-2] -= u10[M][n]*m_aa_ht__hyhy_05_lambda;
+            dy[0]   -= u10[0][n]*m_td_ht__hyhy_05_lambda;
+            dy[M-2] -= u10[M][n]*m_td_ht__hyhy_05_lambda;
             tomasAlgorithm(ay, by, cy, dy, ry, M-1);
             for (unsigned int m=1; m<=M-1; m++) u10[m][n] = ry[m-1];
         }
@@ -750,94 +750,6 @@ void IHeatEquationIBVP::calculateU(DoubleMatrix &u, double a, double alpha, doub
     free(b1Y);
     free(a1Y);
 }
-
-//void IHeatEquationIBVP::gridMethod(DoubleVector &u) const
-//{
-//    const Dimension &dim1 = spaceDimensionX();//spaceDimension(Dimension::DimensionX);
-//    const Dimension &time = timeDimension();
-
-//    const double ht = time.step();
-//    const double hx = dim1.step();
-
-//    const int minM = time.min();
-//    const int maxM = time.max();
-//    const unsigned int M = static_cast<unsigned int>(maxM-minM);
-
-//    const int minN = dim1.min();
-//    const int maxN = dim1.max();
-//    const unsigned int N = static_cast<unsigned int>(maxN-minN);
-
-//    double h = ht/(hx*hx);
-
-
-//    u.clear();
-//    u.resize(N+1);
-
-//    double *ka = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-//    double *kb = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-//    double *kc = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-//    double *kd = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-//    double *rx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-
-//    /* initial condition */
-//    SpaceNodePDE isn;
-//    unsigned int i = 0;
-//    for (int n=minN; n<=maxN; n++, i++)
-//    {
-//        isn.i = n;
-//        isn.x = n*hx;
-//        u[i] = initial(isn, InitialCondition::InitialValue);
-//    }
-//    //layerInfo(u, 0);
-
-//    SpaceNodePDE lsn; lsn.i = minN; lsn.x = minN*hx;
-//    SpaceNodePDE rsn; rsn.i = maxN; rsn.x = maxN*hx;
-//    BoundaryConditionPDE condition;
-
-//    TimeNodePDE tn;
-//    for (unsigned int m=1; m<=M; m++)
-//    {
-//        tn.i = m+static_cast<unsigned int>(minM);
-//        tn.t = tn.i*ht;
-
-//        unsigned int i = 1;
-//        for (int n=minN+1; n<=maxN-1; n++, i++)
-//        {
-//            isn.i = n;
-//            isn.x = n*hx;
-
-//            double alpha = -thermalDiffusivity()*h;
-//            double betta = 1.0 - 2.0*alpha;
-
-//            ka[i-1] = alpha;
-//            kb[i-1] = betta;
-//            kc[i-1] = alpha;
-//            kd[i-1] = u[i] + ht * f(isn, tn);
-//        }
-
-//        ka[0]   = 0.0;
-//        kc[N-2] = 0.0;
-
-//        /* border conditions */
-//        u[0] = boundary(lsn, tn, condition);
-//        u[N] = boundary(rsn, tn, condition);
-
-//        kd[0]   += thermalDiffusivity() * h * u[0];
-//        kd[N-2] += thermalDiffusivity() * h * u[N];
-
-//        tomasAlgorithm(ka, kb, kc, kd, rx, N-1);
-
-//        for (unsigned int n=1; n<=N-1; n++) u[n] = rx[n-1];
-
-//        //layerInfo(u, m);
-//    }
-
-//    free(ka);
-//    free(kb);
-//    free(kc);
-//    free(kd);
-//    free(rx);
-//}
 
 void IHeatEquationIBVP::gridMethod(DoubleVector &u, double a) const
 {

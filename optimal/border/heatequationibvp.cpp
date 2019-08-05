@@ -11,13 +11,13 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
     HeatEquationIBVP w;
     w.setThermalDiffusivity(1.0);
     w.setThermalConductivity(0.0);
-    w.setTimeDimension(Dimension(0.005, 0, 200));
+    w.setTimeDimension(Dimension(0.01, 0, 100));
     w.setSpaceDimensionX(Dimension(0.01, 0, 100));
     w.setSpaceDimensionY(Dimension(0.01, 0, 100));
 
     Benchmark bm;
     bm.tick();
-    //w.implicit_calculate_D1V1();
+    //w.implicit_calculate_D1V1CN();
     w.implicit_calculate_D2V1CN();
     //IPrinter::printSeperatorLine();
     bm.tock();
@@ -38,18 +38,18 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
 
 double HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
-    const double a = thermalDiffusivity();
-    const double c = thermalConductivity();
+    const double td = thermalDiffusivity();
+    const double tc = thermalConductivity();
 
-    //return 1.0 - 6.0*a*a*sn.x + c * U(sn,tn);
-    //return 2.0*tn.t - 6.0*a*a*sn.x + c * U(sn,tn);
-    //return 3.0*tn.t*tn.t - 6.0*a*a*sn.x + c * U(sn,tn);
-    //return 4.0*tn.t*tn.t*tn.t - 6.0*a*a*sn.x + c * U(sn,tn);
-    //return 5.0*tn.t*tn.t*tn.t*tn.t - 6.0*a*a*sn.x + c * U(sn,tn);
+    //return 1.0 - 6.0*td*sn.x + tc*U(sn,tn);
+    //return 2.0*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
+    //return 3.0*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
+    //return 4.0*tn.t*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
+    //return 5.0*tn.t*tn.t*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
 
-    return 1.0 - 6.0*a*a*(sn.x+sn.y) + c * U(sn,tn);
-    //return 2.0*tn.t - 6.0*a*a*(sn.x+sn.y) + c * U(sn,tn);
-    //return 1.0 - 6.0*a*a*(sn.x+sn.y) + c * (sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t);
+    //return 1.0 - 6.0*td*(sn.x+sn.y) + tc*U(sn,tn);
+    //return 2.0*tn.t - 6.0*td*(sn.x+sn.y) + tc*U(sn,tn);
+    return 3.0*tn.t*tn.t - 6.0*td*(sn.x+sn.y) + tc*U(sn,tn);
 }
 
 double HeatEquationIBVP::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
@@ -60,9 +60,9 @@ double HeatEquationIBVP::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     //return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t*tn.t;
     //return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t*tn.t*tn.t;
 
-    return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t;
+    //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t;
     //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t*tn.t;
-    //return (sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t)*(condition.alpha()/condition.gamma());
+    return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t*tn.t*tn.t;
 }
 
 void HeatEquationIBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) const
@@ -102,14 +102,14 @@ void HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
     C_UNUSED(u);
     C_UNUSED(tn);
 
-    if (tn.i==400 || tn.i==399 || tn.i==398 || /*tn.i==397 || tn.i==396 ||*/
+    if (tn.i==200 || tn.i==199 || tn.i==198 || /*tn.i==397 || tn.i==396 ||*/
         tn.i==4   || tn.i==3   || tn.i==2   || tn.i==1 || tn.i==0)
     {
         IPrinter::printMatrix(u);
         IPrinter::printSeperatorLine();
     }
 
-    if (tn.i==400)
+    if (tn.i==200)
     {
         double norm = 0.0;
         double max = 0.0;
