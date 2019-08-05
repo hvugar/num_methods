@@ -1,7 +1,7 @@
 #include "boothfunction.h"
 #include <math.h>
 
-void BoothFunction::main(int argc, char ** argv)
+void BoothFunction::Main(int argc, char ** argv)
 {
     C_UNUSED(argc);
     C_UNUSED(argv);
@@ -22,8 +22,9 @@ void BoothFunction::main(int argc, char ** argv)
     SteepestDescentGradient g1;
     g1.setGradient(&func);
     g1.setFunction(&func);
-    g1.setEpsilon1(0.000001);
-    g1.setEpsilon2(0.000001);
+    g1.setStepTolerance(0.000001);
+    g1.setFunctionTolerance(0.000001);
+    g1.setOptimalityTolerance(0.000001);
     g1.setR1MinimizeEpsilon(0.1, 0.000001);
     g1.setPrinter(&func);
 //    g1.calculate(x0);
@@ -35,8 +36,9 @@ void BoothFunction::main(int argc, char ** argv)
     ConjugateGradient g2;
     g2.setGradient(&func);
     g2.setFunction(&func);
-    g2.setEpsilon1(0.000001);
-    g2.setEpsilon2(0.000001);
+    g2.setStepTolerance(0.000001);
+    g2.setFunctionTolerance(0.000001);
+    g2.setOptimalityTolerance(0.000001);
     g2.setR1MinimizeEpsilon(0.1, 0.000001);
     g2.setPrinter(&func);
     g2.setProjection(&func);
@@ -49,8 +51,9 @@ void BoothFunction::main(int argc, char ** argv)
     /* Minimization */
     ConstStepGradient g3;
     g3.setFunction(&func);
-    g3.setEpsilon1(0.000001);
-    g3.setEpsilon2(0.000001);
+    g3.setStepTolerance(0.000001);
+    g3.setFunctionTolerance(0.000001);
+    g3.setOptimalityTolerance(0.000001);
     g3.setR1MinimizeEpsilon(0.1, 0.000001);
     g3.setPrinter(&func);
     g3.setNormalize(false);
@@ -69,7 +72,7 @@ void BoothFunction::gradient(const DoubleVector& x, DoubleVector &g) const
     IGradient::Gradient(this, grad_step, x, g);
 }
 
-void BoothFunction::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double, GradientMethod::MethodResult) const
+void BoothFunction::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double, double, GradientMethod::MethodResult) const
 {
     if (i == 0)
     {

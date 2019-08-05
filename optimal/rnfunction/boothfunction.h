@@ -20,11 +20,11 @@ public:
     //IGradient
     virtual void gradient(const DoubleVector &x, DoubleVector &g) const;
     //Printer
-    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const;
+    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const;
     //IProjection
     virtual void project(DoubleVector &x, unsigned int index);
 
-    static void main(int argc, char ** argv);
+    static void Main(int argc, char *argv[]);
 
 private:
     double grad_step;

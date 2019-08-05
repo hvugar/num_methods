@@ -3,7 +3,7 @@
 
 #include "border_global.h"
 
-class HeatEquationIBVP : public IHeatEquationIBVP
+class BORDERSHARED_EXPORT HeatEquationIBVP : public IHeatEquationIBVP
 {
 public:
     static void Main(int argc, char *argv[]);
@@ -15,9 +15,14 @@ protected:
 
     virtual void layerInfo(const DoubleVector&, const TimeNodePDE&) const;
     virtual void layerInfo(const DoubleMatrix&, const TimeNodePDE&) const;
+
+    double U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+
+protected:
+    double lambda() const { return 0.5; }
 };
 
-class FinalHeatEquationIBVP : public IFinalHeatEquationIBVP
+class BORDERSHARED_EXPORT FinalHeatEquationIBVP : public IFinalHeatEquationIBVP
 {
 public:
     static void Main(int argc, char *argv[]);

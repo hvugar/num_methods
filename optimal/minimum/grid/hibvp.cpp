@@ -251,18 +251,9 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
         double firstDerivative = initial(sn, InitialCondition::FirstDerivative);
         u10[n] = u00[n] + firstDerivative*ht;
         double secndDerivative = 0.0;
-        if (n==0)
-        {
-            secndDerivative = aa__hxhx*(+2.0*u00[0]   -5.0*u00[1]   +4.0*u00[2]   -1.0*u00[3]);
-        }
-        else if (n==N)
-        {
-            secndDerivative = aa__hxhx*(-1.0*u00[N-3] +4.0*u00[N-2] -5.0*u00[N-1] +2.0*u00[N]);
-        }
-        else
-        {
-            secndDerivative = aa__hxhx*(u00[n-1]-2.0*u00[n]+u00[n+1]);
-        }
+        if (n==0) { secndDerivative = aa__hxhx*(+2.0*u00[0]   -5.0*u00[1]   +4.0*u00[2]   -1.0*u00[3]); }
+        else if (n==N) { secndDerivative = aa__hxhx*(-1.0*u00[N-3] +4.0*u00[N-2] -5.0*u00[N-1] +2.0*u00[N]); }
+        else { secndDerivative = aa__hxhx*(u00[n-1]-2.0*u00[n]+u00[n+1]); }
         u10[n] += (secndDerivative + f(sn,tn00) - alpha*firstDerivative) * htht_05;
     }
     layerInfo(u10, tn10);
@@ -286,7 +277,7 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
             dx[n] += (u00[n-1] - 2.0*u00[n] + u00[n+1])*p_aa_htht__hxhx_lambda;
             dx[n] += 2.0*u10[n] - u00[n] + alpha_ht_05*u00[n];
             dx[n] += ht_ht*f(sn, tn10);
-            //dx[n-1] += ht_ht*(lmbd*f(sn, tn05) + m1_2lambda*f(sn, tn10) + lmbd*f(sn, tn15));
+            //dx[n] += ht_ht*(lmbd*f(sn, tn00) + m1_2lambda*f(sn, tn10) + lmbd*f(sn, tn20));
         }
 
         sn.i = static_cast<int>(0); sn.x = 0*hx;
@@ -301,36 +292,36 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
             u20[0] = (gamma/alpha)*value;
             dx[1] -= u20[0]*m_aa_htht__hxhx_lambda;
             ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
-        } else
-            if (condition.boundaryCondition() == BoundaryCondition::Neumann)
-            {
-                s = 0;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+        {
+            s = 0;
 
-                ax[0]  = 0.0;
-                bx[0]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*lmbd + alpha_ht_05);
-                cx[0]  = beta *(-2.0*p_aa_htht__hxhx*lmbd);
+            ax[0]  = 0.0;
+            bx[0]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*lmbd + alpha_ht_05);
+            cx[0]  = beta *(-2.0*p_aa_htht__hxhx*lmbd);
 
-                dx[0]  = beta *(2.0*u10[0] - u00[0] + alpha_ht_05*u00[0]);
-                dx[0] += beta *(p_aa_htht__hxhx*(2.0*u10[0]-5.0*u10[1]+4.0*u10[2]-u10[3])*m1_2lambda);
-                dx[0] += beta *(p_aa_htht__hxhx*(2.0*u00[0]-5.0*u00[1]+4.0*u00[2]-u00[3])*lmbd);
-                dx[0] += beta *(ht_ht*f(sn,tn10));
-                dx[0] += gamma*(-2.0*p_aa_htht__hx*lmbd)*value;
-            } else
-                if (condition.boundaryCondition() == BoundaryCondition::Robin)
-                {
-                    s = 0;
+            dx[0]  = beta *(2.0*u10[0] - u00[0] + alpha_ht_05*u00[0]);
+            dx[0] += beta *(p_aa_htht__hxhx*(2.0*u10[0]-5.0*u10[1]+4.0*u10[2]-u10[3])*m1_2lambda);
+            dx[0] += beta *(p_aa_htht__hxhx*(2.0*u00[0]-5.0*u00[1]+4.0*u00[2]-u00[3])*lmbd);
+            dx[0] += beta *(ht_ht*f(sn,tn10));
+            dx[0] += gamma*(-2.0*p_aa_htht__hx*lmbd)*value;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Robin)
+        {
+            s = 0;
 
-                    ax[0]  = 0.0;
-                    bx[0]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*lmbd + alpha_ht_05);
-                    bx[0] += alpha*(-2.0*p_aa_htht__hx*lmbd);
-                    cx[0]  = beta *(-2.0*p_aa_htht__hxhx*lmbd);
+            ax[0]  = 0.0;
+            bx[0]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*lmbd + alpha_ht_05);
+            bx[0] += alpha*(-2.0*p_aa_htht__hx*lmbd);
+            cx[0]  = beta *(-2.0*p_aa_htht__hxhx*lmbd);
 
-                    dx[0]  = beta *(2.0*u10[0] - u00[0] + alpha_ht_05*u00[0]);
-                    dx[0] += beta *(p_aa_htht__hxhx*(2.0*u10[0]-5.0*u10[1]+4.0*u10[2]-u10[3])*m1_2lambda);
-                    dx[0] += beta *(p_aa_htht__hxhx*(2.0*u00[0]-5.0*u00[1]+4.0*u00[2]-u00[3])*lmbd);
-                    dx[0] += beta *(ht_ht*f(sn,tn10));
-                    dx[0] += gamma*(-2.0*p_aa_htht__hx*lmbd)*value;
-                }
+            dx[0]  = beta *(2.0*u10[0] - u00[0] + alpha_ht_05*u00[0]);
+            dx[0] += beta *(p_aa_htht__hxhx*(2.0*u10[0]-5.0*u10[1]+4.0*u10[2]-u10[3])*m1_2lambda);
+            dx[0] += beta *(p_aa_htht__hxhx*(2.0*u00[0]-5.0*u00[1]+4.0*u00[2]-u00[3])*lmbd);
+            dx[0] += beta *(ht_ht*f(sn,tn10));
+            dx[0] += gamma*(-2.0*p_aa_htht__hx*lmbd)*value;
+        }
 
         sn.i = static_cast<int>(N); sn.x = N*hx;
         value = boundary(sn, tn20, condition);
@@ -343,36 +334,36 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
             u20[N] = (gamma/alpha)*value;
             dx[N-1] -= u20[N]*m_aa_htht__hxhx_lambda;
             cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
-        } else
-            if (condition.boundaryCondition() == BoundaryCondition::Neumann)
-            {
-                e = N;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+        {
+            e = N;
 
-                ax[N]  = beta *(-2.0*p_aa_htht__hxhx*lmbd);
-                bx[N]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*lmbd + alpha_ht_05);
-                cx[N]  = 0.0;
+            ax[N]  = beta *(-2.0*p_aa_htht__hxhx*lmbd);
+            bx[N]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*lmbd + alpha_ht_05);
+            cx[N]  = 0.0;
 
-                dx[N]  = beta *(2.0*u10[N] - u00[N] + alpha_ht_05*u00[N]);
-                dx[N] += beta *(p_aa_htht__hxhx*(-u10[N-3]+4.0*u10[N-2]-5.0*u10[N-1]+2.0*u10[N])*m1_2lambda);
-                dx[N] += beta *(p_aa_htht__hxhx*(-u00[N-3]+4.0*u00[N-2]-5.0*u00[N-1]+2.0*u00[N])*lmbd);
-                dx[N] += beta *(ht_ht*f(sn,tn10));
-                dx[N] += gamma*(+2.0*p_aa_htht__hx*lmbd)*value;
-            } else
-                if (condition.boundaryCondition() == BoundaryCondition::Robin)
-                {
-                    e = N;
+            dx[N]  = beta *(2.0*u10[N] - u00[N] + alpha_ht_05*u00[N]);
+            dx[N] += beta *(p_aa_htht__hxhx*(-u10[N-3]+4.0*u10[N-2]-5.0*u10[N-1]+2.0*u10[N])*m1_2lambda);
+            dx[N] += beta *(p_aa_htht__hxhx*(-u00[N-3]+4.0*u00[N-2]-5.0*u00[N-1]+2.0*u00[N])*lmbd);
+            dx[N] += beta *(ht_ht*f(sn,tn10));
+            dx[N] += gamma*(+2.0*p_aa_htht__hx*lmbd)*value;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Robin)
+        {
+            e = N;
 
-                    ax[N]  = beta *(-2.0*p_aa_htht__hxhx*lmbd);
-                    bx[N]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*lmbd + alpha_ht_05);
-                    bx[N] += alpha*(+2.0*p_aa_htht__hx*lmbd);
-                    cx[N]  = 0.0;
+            ax[N]  = beta *(-2.0*p_aa_htht__hxhx*lmbd);
+            bx[N]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*lmbd + alpha_ht_05);
+            bx[N] += alpha*(+2.0*p_aa_htht__hx*lmbd);
+            cx[N]  = 0.0;
 
-                    dx[N]  = beta *(2.0*u10[N] - u00[N] + alpha_ht_05*u00[N]);
-                    dx[N] += beta *(p_aa_htht__hxhx*(-u10[N-3]+4.0*u10[N-2]-5.0*u10[N-1]+2.0*u10[N])*m1_2lambda);
-                    dx[N] += beta *(p_aa_htht__hxhx*(-u00[N-3]+4.0*u00[N-2]-5.0*u00[N-1]+2.0*u00[N])*lmbd);
-                    dx[N] += beta *(ht_ht*f(sn,tn10));
-                    dx[N] += gamma*(+2.0*p_aa_htht__hx*lmbd)*value;
-                }
+            dx[N]  = beta *(2.0*u10[N] - u00[N] + alpha_ht_05*u00[N]);
+            dx[N] += beta *(p_aa_htht__hxhx*(-u10[N-3]+4.0*u10[N-2]-5.0*u10[N-1]+2.0*u10[N])*m1_2lambda);
+            dx[N] += beta *(p_aa_htht__hxhx*(-u00[N-3]+4.0*u00[N-2]-5.0*u00[N-1]+2.0*u00[N])*lmbd);
+            dx[N] += beta *(ht_ht*f(sn,tn10));
+            dx[N] += gamma*(+2.0*p_aa_htht__hx*lmbd)*value;
+        }
 
         tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
         for (unsigned int n=s; n<=e; n++) u20[n] = rx[n];
@@ -441,13 +432,13 @@ void IWaveEquationIBVP::explicit_calculate_D2V1() const
             double secndDerivative = 0.0;
             if (m==0) { secndDerivative += aa__hyhy*(+2.0*u00[0][n]-5.0*u00[1][n]+4.0*u00[2][n]-1.0*u00[3][n]); }
             else
-            if (m==M) { secndDerivative += aa__hyhy*(-1.0*u00[M-3][n]+4.0*u00[M-2][n]-5.0*u00[M-1][n]+2.0*u00[M][n]); }
-            else { secndDerivative += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]); }
+                if (m==M) { secndDerivative += aa__hyhy*(-1.0*u00[M-3][n]+4.0*u00[M-2][n]-5.0*u00[M-1][n]+2.0*u00[M][n]); }
+                else { secndDerivative += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]); }
 
             if (n==0) { secndDerivative += aa__hxhx*(+2.0*u00[m][0]-5.0*u00[m][1]+4.0*u00[m][2]-1.0*u00[m][3]); }
             else
-            if (n==N) { secndDerivative += aa__hxhx*(-1.0*u00[m][N-3]+4.0*u00[m][N-2]-5.0*u00[m][N-1]+2.0*u00[m][N]); }
-            else { secndDerivative += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]); }
+                if (n==N) { secndDerivative += aa__hxhx*(-1.0*u00[m][N-3]+4.0*u00[m][N-2]-5.0*u00[m][N-1]+2.0*u00[m][N]); }
+                else { secndDerivative += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]); }
 
             secndDerivative += f(sn,tn00);
             secndDerivative -=  alpha*firstDerivative;
@@ -615,13 +606,13 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
             double secndDerivative = 0.0;
             if (m==0) { secndDerivative += aa__hyhy*(+2.0*u00[0][n]-5.0*u00[1][n]+4.0*u00[2][n]-1.0*u00[3][n]); }
             else
-            if (m==M) { secndDerivative += aa__hyhy*(-1.0*u00[M-3][n]+4.0*u00[M-2][n]-5.0*u00[M-1][n]+2.0*u00[M][n]); }
-            else { secndDerivative += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]); }
+                if (m==M) { secndDerivative += aa__hyhy*(-1.0*u00[M-3][n]+4.0*u00[M-2][n]-5.0*u00[M-1][n]+2.0*u00[M][n]); }
+                else { secndDerivative += aa__hyhy*(u00[m-1][n]-2.0*u00[m][n]+u00[m+1][n]); }
 
             if (n==0) { secndDerivative += aa__hxhx*(+2.0*u00[m][0]-5.0*u00[m][1]+4.0*u00[m][2]-1.0*u00[m][3]); }
             else
-            if (n==N) { secndDerivative += aa__hxhx*(-1.0*u00[m][N-3]+4.0*u00[m][N-2]-5.0*u00[m][N-1]+2.0*u00[m][N]); }
-            else { secndDerivative += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]); }
+                if (n==N) { secndDerivative += aa__hxhx*(-1.0*u00[m][N-3]+4.0*u00[m][N-2]-5.0*u00[m][N-1]+2.0*u00[m][N]); }
+                else { secndDerivative += aa__hxhx*(u00[m][n-1]-2.0*u00[m][n]+u00[m][n+1]); }
 
             secndDerivative += f(sn,tn00);
             secndDerivative -=  alpha*firstDerivative;
@@ -641,12 +632,12 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
 
             double secndDerivative = 0.0;
             if (m==0) { secndDerivative += aa__hyhy*(+2.0*u05[0][n]-5.0*u05[1][n]+4.0*u05[2][n]-1.0*u05[3][n]); } else
-            if (m==M) { secndDerivative += aa__hyhy*(-1.0*u05[M-3][n]+4.0*u05[M-2][n]-5.0*u05[M-1][n]+2.0*u05[M][n]); }
-            else { secndDerivative += aa__hyhy*(u05[m-1][n]-2.0*u05[m][n]+u05[m+1][n]); }
+                if (m==M) { secndDerivative += aa__hyhy*(-1.0*u05[M-3][n]+4.0*u05[M-2][n]-5.0*u05[M-1][n]+2.0*u05[M][n]); }
+                else { secndDerivative += aa__hyhy*(u05[m-1][n]-2.0*u05[m][n]+u05[m+1][n]); }
 
             if (n==0) { secndDerivative += aa__hxhx*(+2.0*u05[m][0]-5.0*u05[m][1]+4.0*u05[m][2]-1.0*u05[m][3]); } else
-            if (n==N) { secndDerivative += aa__hxhx*(-1.0*u05[m][N-3]+4.0*u05[m][N-2]-5.0*u05[m][N-1]+2.0*u05[m][N]); }
-            else { secndDerivative += aa__hxhx*(u05[m][n-1]-2.0*u05[m][n]+u05[m][n+1]); }
+                if (n==N) { secndDerivative += aa__hxhx*(-1.0*u05[m][N-3]+4.0*u05[m][N-2]-5.0*u05[m][N-1]+2.0*u05[m][N]); }
+                else { secndDerivative += aa__hxhx*(u05[m][n-1]-2.0*u05[m][n]+u05[m][n+1]); }
 
             secndDerivative += f(sn,tn05);
             u10[m][n] += ht_ht_025*secndDerivative;
@@ -851,13 +842,13 @@ void IFinalWaveEquationIBVP::explicit_calculate_D2V1() const
             double secndDerivative = 0.0;
             if (m==0) { secndDerivative += aa__hyhy*(+2.0*p00[0][n]-5.0*p00[1][n]+4.0*p00[2][n]-1.0*p00[3][n]); }
             else
-            if (m==M) { secndDerivative += aa__hyhy*(-1.0*p00[M-3][n]+4.0*p00[M-2][n]-5.0*p00[M-1][n]+2.0*p00[M][n]); }
-            else { secndDerivative += aa__hyhy*(p00[m-1][n]-2.0*p00[m][n]+p00[m+1][n]); }
+                if (m==M) { secndDerivative += aa__hyhy*(-1.0*p00[M-3][n]+4.0*p00[M-2][n]-5.0*p00[M-1][n]+2.0*p00[M][n]); }
+                else { secndDerivative += aa__hyhy*(p00[m-1][n]-2.0*p00[m][n]+p00[m+1][n]); }
 
             if (n==0) { secndDerivative += aa__hxhx*(+2.0*p00[m][0]-5.0*p00[m][1]+4.0*p00[m][2]-1.0*p00[m][3]); }
             else
-            if (n==N) { secndDerivative += aa__hxhx*(-1.0*p00[m][N-3]+4.0*p00[m][N-2]-5.0*p00[m][N-1]+2.0*p00[m][N]); }
-            else { secndDerivative += aa__hxhx*(p00[m][n-1]-2.0*p00[m][n]+p00[m][n+1]); }
+                if (n==N) { secndDerivative += aa__hxhx*(-1.0*p00[m][N-3]+4.0*p00[m][N-2]-5.0*p00[m][N-1]+2.0*p00[m][N]); }
+                else { secndDerivative += aa__hxhx*(p00[m][n-1]-2.0*p00[m][n]+p00[m][n+1]); }
 
             secndDerivative += f(sn,tn00);
             secndDerivative +=  alpha*firstDerivative;
@@ -1025,13 +1016,13 @@ void IFinalWaveEquationIBVP::implicit_calculate_D2V1() const
             double secndDerivative = 0.0;
             if (m==0) { secndDerivative += aa__hyhy*(+2.0*p00[0][n]-5.0*p00[1][n]+4.0*p00[2][n]-1.0*p00[3][n]); }
             else
-            if (m==M) { secndDerivative += aa__hyhy*(-1.0*p00[M-3][n]+4.0*p00[M-2][n]-5.0*p00[M-1][n]+2.0*p00[M][n]); }
-            else { secndDerivative += aa__hyhy*(p00[m-1][n]-2.0*p00[m][n]+p00[m+1][n]); }
+                if (m==M) { secndDerivative += aa__hyhy*(-1.0*p00[M-3][n]+4.0*p00[M-2][n]-5.0*p00[M-1][n]+2.0*p00[M][n]); }
+                else { secndDerivative += aa__hyhy*(p00[m-1][n]-2.0*p00[m][n]+p00[m+1][n]); }
 
             if (n==0) { secndDerivative += aa__hxhx*(+2.0*p00[m][0]-5.0*p00[m][1]+4.0*p00[m][2]-1.0*p00[m][3]); }
             else
-            if (n==N) { secndDerivative += aa__hxhx*(-1.0*p00[m][N-3]+4.0*p00[m][N-2]-5.0*p00[m][N-1]+2.0*p00[m][N]); }
-            else { secndDerivative += aa__hxhx*(p00[m][n-1]-2.0*p00[m][n]+p00[m][n+1]); }
+                if (n==N) { secndDerivative += aa__hxhx*(-1.0*p00[m][N-3]+4.0*p00[m][N-2]-5.0*p00[m][N-1]+2.0*p00[m][N]); }
+                else { secndDerivative += aa__hxhx*(p00[m][n-1]-2.0*p00[m][n]+p00[m][n+1]); }
 
             secndDerivative += f(sn,tn00);
             secndDerivative += alpha*firstDerivative;
@@ -1052,12 +1043,12 @@ void IFinalWaveEquationIBVP::implicit_calculate_D2V1() const
 
             double secndDerivative = 0.0;
             if (m==0) { secndDerivative += aa__hyhy*(+2.0*p05[0][n]-5.0*p05[1][n]+4.0*p05[2][n]-1.0*p05[3][n]); } else
-            if (m==M) { secndDerivative += aa__hyhy*(-1.0*p05[M-3][n]+4.0*p05[M-2][n]-5.0*p05[M-1][n]+2.0*p05[M][n]); }
-            else { secndDerivative += aa__hyhy*(p05[m-1][n]-2.0*p05[m][n]+p05[m+1][n]); }
+                if (m==M) { secndDerivative += aa__hyhy*(-1.0*p05[M-3][n]+4.0*p05[M-2][n]-5.0*p05[M-1][n]+2.0*p05[M][n]); }
+                else { secndDerivative += aa__hyhy*(p05[m-1][n]-2.0*p05[m][n]+p05[m+1][n]); }
 
             if (n==0) { secndDerivative += aa__hxhx*(+2.0*p05[m][0]-5.0*p05[m][1]+4.0*p05[m][2]-1.0*p05[m][3]); } else
-            if (n==N) { secndDerivative += aa__hxhx*(-1.0*p05[m][N-3]+4.0*p05[m][N-2]-5.0*p05[m][N-1]+2.0*p05[m][N]); }
-            else { secndDerivative += aa__hxhx*(p05[m][n-1]-2.0*p05[m][n]+p05[m][n+1]); }
+                if (n==N) { secndDerivative += aa__hxhx*(-1.0*p05[m][N-3]+4.0*p05[m][N-2]-5.0*p05[m][N-1]+2.0*p05[m][N]); }
+                else { secndDerivative += aa__hxhx*(p05[m][n-1]-2.0*p05[m][n]+p05[m][n+1]); }
 
             secndDerivative += f(sn,tn05);
             p10[m][n] += ht_ht_025*secndDerivative;

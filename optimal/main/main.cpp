@@ -14,7 +14,7 @@
 //#include <ode/firstordernonlinearodeex1.h>
 //#include <ode/secondorderlinearodeex1.h>
 #include <waveequationibvp.h>
-#include <waveequationibvp.h>
+#include <heatequationibvp.h>
 
 #include "../problem0H/problem0h_solver.h"
 #include "../problem1H/problem1h_example.h"
@@ -44,8 +44,13 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //TestWaveEquation::Main(argc, argv);
     //TestWaveEquationEx1::Main(argc, argv);
+
     //WaveEquationIBVP::Main(argc, argv);
-    //FinalHyperbolicIBVP::Main(argc, argv); return 0;
+    //FinalHyperbolicIBVP::Main(argc, argv);
+    HeatEquationIBVP::Main(argc, argv);
+    //FinalHeatEquationIBVP::Main(argc, argv);
+    return 0;
+
 
     //DeltaGrid2DExt1::Main(argc, argv);
     //puts("-------------------------");

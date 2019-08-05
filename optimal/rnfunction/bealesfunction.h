@@ -20,7 +20,7 @@ public:
     //IGradient
     virtual void gradient(const DoubleVector &x, DoubleVector &g) const;
     //Printer
-    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, GradientMethod::MethodResult result) const;
+    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const;
     //Projection
     virtual void project(DoubleVector &x, unsigned int index);
 

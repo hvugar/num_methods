@@ -4,7 +4,7 @@ CONFIG += -std=c++11
 CONFIG += c++11
 
 SUBDIRS += minimum
-#SUBDIRS += rnfunction
+SUBDIRS += rnfunction
 #SUBDIRS += control
 #SUBDIRS += third-party
 #SUBDIRS += point

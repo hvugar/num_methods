@@ -18,6 +18,8 @@ protected:
     virtual void layerInfo(const DoubleVector&, const TimeNodePDE&) const;
     virtual void layerInfo(const DoubleMatrix&, const TimeNodePDE&) const;
 
+    double U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+
 private:
     void saveToImage(const DoubleMatrix &u, const TimeNodePDE &tn) const;
     void saveToTextF(const DoubleMatrix &u, const TimeNodePDE &tn) const;

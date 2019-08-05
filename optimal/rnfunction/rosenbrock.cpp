@@ -19,9 +19,9 @@ void Rosenbrock::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     ConjugateGradient g2;
     g2.setGradient(&r);
     g2.setFunction(&r);
-    g2.setEpsilon1(0.000001);
-    g2.setEpsilon2(0.000001);
-    g2.setEpsilon3(0.000001);
+    g2.setStepTolerance(0.000001);
+    g2.setFunctionTolerance(0.000001);
+    g2.setOptimalityTolerance(0.000001);
     g2.setR1MinimizeEpsilon(0.1, 0.000001);
     g2.setPrinter(&r);
     g2.setNormalize(true);
@@ -66,7 +66,7 @@ void Rosenbrock::gradient(const DoubleVector& x, DoubleVector &g) const
     IGradient::Gradient(this, grad_step, x, g);
 }
 
-void Rosenbrock::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double, GradientMethod::MethodResult) const
+void Rosenbrock::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double, double, GradientMethod::MethodResult) const
 {
     if (i == 0)
     {
