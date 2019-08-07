@@ -1,5 +1,7 @@
 #include "pibvp.h"
 #include <limits>
+#include <exception>
+#include <stdexcept>
 #include "../cmethods.h"
 #include "../linearequation.h"
 #include "../printer.h"
@@ -215,11 +217,7 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
         for (unsigned int n=1; n<=N-1; n++) u10[n] = rx[n-1];
         layerInfo(u10, tn);
         /**************************************************** x direction apprx ***************************************************/
-
-        for (unsigned int n=0; n<=N; n++)
-        {
-            u00[n] = u10[n];
-        }
+        u00 = u10;
     }
 
     u00.clear();
@@ -233,7 +231,97 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
 }
 
 void IHeatEquationIBVP::explicit_calculate_D2V1() const
-{}
+{
+    const unsigned int N = static_cast<unsigned int>( spaceDimensionX().size() );
+    const unsigned int M = static_cast<unsigned int>( spaceDimensionY().size() );
+    const unsigned int L = static_cast<unsigned int>( timeDimension().size() );
+
+    const double hx = spaceDimensionX().step();
+    const double hy = spaceDimensionY().step();
+    const double ht = timeDimension().step();
+
+    const double td = thermalDiffusivity();
+    const double tc = thermalConductivity();
+
+    if (ht > 0.5/(1.0/(hx*hx)+1.0/(hy*hy))) throw std::runtime_error("Differential scheme not steady");
+
+    const double p_td_ht__hxhx = +((td*ht)/(hx*hx));
+    const double p_td_ht__hyhy = +((td*ht)/(hy*hy));
+    const double ht_tc = ht*tc;
+
+    DoubleMatrix u00(M+1, N+1);
+    DoubleMatrix u10(M+1, N+1);
+
+    SpaceNodePDE sn;
+    TimeNodePDE tn;
+
+    /***********************************************************************************************/
+    /***********************************************************************************************/
+
+    for (unsigned int m=0; m<=M; m++)
+    {
+        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
+            u00[m][n] = initial(sn, InitialCondition::InitialValue);
+        }
+    }
+    layerInfo(u00, tn);
+
+    /***********************************************************************************************/
+
+    for (unsigned int ln=1; ln<=L; ln++)
+    {
+        tn.i = ln; tn.t = tn.i*ht;
+
+        /**************************************************** border conditions ***************************************************/
+
+        SpaceNodePDE sn0, sn1;
+        BoundaryConditionPDE condition;
+
+        sn0.i = static_cast<int>(0); sn0.x = 0*hx;
+        sn1.i = static_cast<int>(N); sn1.x = N*hx;
+        for (unsigned int m=0; m<=M; m++)
+        {
+            sn0.j = sn1.j = static_cast<int>(m); sn0.y = sn1.y = m*hy;
+            u10[m][0] = boundary(sn0, tn, condition);
+            u10[m][N] = boundary(sn1, tn, condition);
+        }
+
+        sn0.j = static_cast<int>(0); sn0.y = 0*hy;
+        sn1.j = static_cast<int>(M); sn1.y = M*hy;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            sn0.i = sn1.i = static_cast<int>(n); sn0.x = sn1.x = n*hx;
+            u10[0][n] = boundary(sn0, tn, condition);
+            u10[M][n] = boundary(sn1, tn, condition);
+        }
+
+        /**************************************************** border conditions ***************************************************/
+
+        /**************************************************************************************************************************/
+        for (unsigned int m=1; m<=M-1; m++)
+        {
+            sn.j = static_cast<int>(m); sn.y = m*hy;
+            for (unsigned int n=1; n<=N-1; n++)
+            {
+                sn.i = static_cast<int>(n); sn.x = n*hx;
+                u10[m][n] = u00[m][n]
+                        + p_td_ht__hxhx*(u00[m][n-1] - 2.0*u00[m][n] + u00[m][n+1])
+                        + p_td_ht__hyhy*(u00[m-1][n] - 2.0*u00[m][n] + u00[m+1][n])
+                        - ht_tc*u00[m][n] + ht*f(sn, tn);
+            }
+        }
+        layerInfo(u10, tn);
+        /**************************************************************************************************************************/
+
+        u00 = u10;
+    }
+
+    u00.clear();
+    u10.clear();
+}
 
 void IHeatEquationIBVP::implicit_calculate_D2V1() const
 {
@@ -419,7 +507,9 @@ void IHeatEquationIBVP::implicit_calculate_D2V1CN() const
 
     const double td = thermalDiffusivity();
     const double tc = thermalConductivity();
-    const double _lambda = 1.0;//lambda();
+    const double _lambda = lambda();
+
+    if (_lambda >= 0.5-(0.25/ht)/(1.0/(hx*hx)+1.0/(hy*hy))) throw std::runtime_error("Differential scheme is conditionally steady.");
 
     const double ht_050 = ht*0.5;
 
