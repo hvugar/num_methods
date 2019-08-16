@@ -70,6 +70,35 @@ unix {
     CONFIG(debug, debug|release) {}
 }
 
+macx-clang {
+    CONFIG(release, debug|release) {
+        OBJECTS_DIR = release/.obj/macx-clang
+        MOC_DIR     = release/.moc/macx-clang
+
+        INCLUDEPATH += ../minimum
+        LIBS        += -L../bin -lminimum
+
+        contains(DEFINES, USE_LIB_IMAGING) {
+            CONFIG      += qt
+            QT          += core gui widgets
+            INCLUDEPATH += ../imaging
+            LIBS        += -L../bin -limaging
+        }
+
+        contains(DEFINES, USE_LIB_XLSX_WRITER) {
+            INCLUDEPATH += ../../third-party/macx/x86_64/libxlsxwriter/include
+            LIBS        += -L../../third-party/macx/x86_64/libxlsxwriter/lib -lxlsxwriter
+        }
+
+        contains(DEFINES, USE_LIB_ZLIB) {
+            INCLUDEPATH += ../../third-party/macx/x86_64/zlib/include
+            LIBS        += -L../../third-party/macx/x86_64/zlib/lib -lzlibstatic
+        }
+    }
+    CONFIG(debug, debug|release) { }
+}
+
+
 HEADERS += border_global.h \
     heatequationibvp.h
 
@@ -81,6 +110,7 @@ SOURCES += \
            waveequationibvp.cpp \
            newtonheatequationex1.cpp \
     heatequationibvp.cpp
+
 
 #HEADERS += \
 #           ode/firstordernonlinearodeex1.h \

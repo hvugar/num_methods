@@ -99,3 +99,24 @@ unix {
     CONFIG(release, debug|release) {}
     CONFIG(debug, debug|release) {}
 }
+
+macx-clang{
+    CONFIG(release, debug|release) {
+        OBJECTS_DIR = release/.obj/macx-clang
+        MOC_DIR     = release/.moc/macx-clang
+
+        INCLUDEPATH += ../minimum
+        LIBS += -L../bin -lminimum
+
+#        INCLUDEPATH += ../problem0H
+#        LIBS += -L../bin -lproblem0H
+
+#        INCLUDEPATH += ../problem2H
+#        LIBS += -L../bin -lproblem2H
+    }
+
+    CONFIG(debug, debug|release) {
+        OBJECTS_DIR = debug/.obj/macx-clang
+        MOC_DIR     = debug/.moc/macx-clang
+    }
+}

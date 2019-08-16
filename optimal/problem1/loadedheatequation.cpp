@@ -8,7 +8,7 @@ void LoadedHeatEquation::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
     Dimension time(0.1, 10, 0);
     ex1.setTimeDimension(time);
     Dimension dim1(0.001, 1000, 0);
-    ex1.addSpaceDimension(dim1);
+    ex1.setSpaceDimensionX(dim1);
 
     ex1.lambda0 = 0.001;
     ex1.lambda1 = 1000.0;
@@ -56,28 +56,36 @@ double LoadedHeatEquation::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) cons
     return x*x*t;
 }
 
-double LoadedHeatEquation::initial(const SpaceNodePDE &sn) const
+double LoadedHeatEquation::initial(const SpaceNodePDE &sn, InitialCondition condition) const
 {
     C_UNUSED(sn);
+    C_UNUSED(condition);
     return 0.0;
     //return 2.0;
 }
 
-double LoadedHeatEquation::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
+double LoadedHeatEquation::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
 {
+    C_UNUSED(sn);
+    C_UNUSED(tn);
+    C_UNUSED(condition);
     return NAN;
 }
 
-double LoadedHeatEquation::f(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
+double LoadedHeatEquation::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
+    C_UNUSED(sn);
+    C_UNUSED(tn);
 //    double t = tn.t; C_UNUSED(t);
 //    double x = sn.x; C_UNUSED(x);
 //    return x*x - 2.0*a*a*t + lambda0*(x*x*t-theta);
     return 0.0;
 }
 
-double LoadedHeatEquation::g(const TimeNodePDE &tn UNUSED_PARAM) const
+double LoadedHeatEquation::g(const TimeNodePDE &tn) const
 {
+    C_UNUSED(tn);
+
 //    double t = tn.t; C_UNUSED(t);
 //    double v = 0.0;
 
@@ -124,9 +132,7 @@ double LoadedHeatEquation::h(const TimeNodePDE &tn UNUSED_PARAM) const
     return 0.0;
 }
 
-void LoadedHeatEquation::layerInfo(const DoubleVector &u, unsigned int m) const
+void LoadedHeatEquation::layerInfo(const DoubleVector &, const TimeNodePDE &) const
 {
-    C_UNUSED(u);
-    C_UNUSED(m);
     //IPrinter::printVector(14, 10, u);
 }

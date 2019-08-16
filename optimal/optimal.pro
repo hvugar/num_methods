@@ -4,7 +4,7 @@ CONFIG += -std=c++11
 CONFIG += c++11
 
 SUBDIRS += minimum
-SUBDIRS += rnfunction
+#SUBDIRS += rnfunction
 #SUBDIRS += control
 #SUBDIRS += third-party
 #SUBDIRS += point
@@ -14,11 +14,11 @@ SUBDIRS += rnfunction
 #SUBDIRS += imager
 SUBDIRS += imaging
 SUBDIRS += border
-SUBDIRS += problem0H
-#SUBDIRS += problem1
+#SUBDIRS += problem0H
+SUBDIRS += problem1
 #SUBDIRS += problem2P
 #SUBDIRS += problem1H
-SUBDIRS += problem2H
+#SUBDIRS += problem2H
 #SUBDIRS += heightMap3d
 #SUBDIRS += kamil
 SUBDIRS += main

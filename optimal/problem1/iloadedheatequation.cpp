@@ -5,8 +5,8 @@ void ILoadedHeatEquation::getGridParameters(double &hx, unsigned int &N, double 
                                             unsigned int &minN, unsigned int &maxN,
                                             unsigned int &minM, unsigned int &maxM) const
 {
-    Dimension time = mtimeDimension;
-    Dimension dim1 = mspaceDimension.at(0);
+    Dimension time = timeDimension();
+    Dimension dim1 = spaceDimensionX();
 
     ht = time.step();
     minM = time.min();
@@ -67,9 +67,9 @@ void ILoadedHeatEquation::transferringConditions2(DoubleVector &u)
     {
         isn.i = n+minN;
         isn.x = isn.i*hx;
-        u[n] = initial(isn);
+        u[n] = initial(isn, InitialCondition::InitialValue);
     }
-    layerInfo(u, 0);
+    //layerInfo(u, 0);
 
     TimeNodePDE tn;
     for (unsigned int m=1; m<=M; m++)
@@ -214,7 +214,7 @@ void ILoadedHeatEquation::transferringConditions2(DoubleVector &u)
         ems.clear();
         free(nonZeroIndex);
 
-        layerInfo(u, m);
+        //layerInfo(u, m);
     }
 
     free(betta);
@@ -230,8 +230,8 @@ void ILoadedHeatEquation::transferringConditions4(DoubleVector &u)
 {
     /* Grid parameters */
 
-    Dimension time = mtimeDimension;
-    Dimension dim1 = mspaceDimension.at(0);
+    Dimension time = timeDimension();
+    Dimension dim1 = spaceDimensionX();
 
     double ht = time.step();
     unsigned int minM = time.min();
@@ -271,9 +271,9 @@ void ILoadedHeatEquation::transferringConditions4(DoubleVector &u)
     {
         isn.i = n+minN;
         isn.x = isn.i*hx;
-        u[n] = initial(isn);
+        u[n] = initial(isn, InitialCondition::InitialValue);
     }
-    layerInfo(u, 0);
+    //layerInfo(u, 0);
 
     TimeNodePDE tn;
     for (unsigned int m=1; m<=M; m++)
@@ -418,7 +418,7 @@ void ILoadedHeatEquation::transferringConditions4(DoubleVector &u)
         ems.clear();
         free(nonZeroIndex);
 
-        layerInfo(u, m);
+        //layerInfo(u, m);
     }
 
     free(betta);
@@ -434,8 +434,8 @@ void ILoadedHeatEquation::calculateM2(DoubleVector &u)
 {
     /* Grid parameters */
 
-    Dimension time = mtimeDimension;
-    Dimension dim1 = mspaceDimension.at(0);
+    Dimension time = timeDimension();
+    Dimension dim1 = spaceDimensionX();
 
     double ht = time.step();
     unsigned int minM = time.min();
@@ -472,9 +472,9 @@ void ILoadedHeatEquation::calculateM2(DoubleVector &u)
     {
         isn.i = n+minN;
         isn.x = isn.i*hx;
-        u[n] = initial(isn);
+        u[n] = initial(isn, InitialCondition::InitialValue);
     }
-    layerInfo(u, 0);
+    //layerInfo(u, 0);
 
     TimeNodePDE tn;
     for (unsigned int m=1; m<=M; m++)
@@ -617,7 +617,7 @@ void ILoadedHeatEquation::calculateM2(DoubleVector &u)
         free(p);
         free(q);
 
-        layerInfo(u, m);
+        //layerInfo(u, m);
     }
 
     free(rx);

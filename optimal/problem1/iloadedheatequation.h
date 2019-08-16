@@ -32,13 +32,14 @@ public:
     unsigned int L;
     std::vector<Parameter> params;
 
-    virtual void layerInfo(const DoubleVector &, unsigned int) const {}
-    virtual void layerInfo(const DoubleMatrix &, unsigned int) const {}
-
 protected:
-    virtual double initial(const SpaceNodePDE &sn) const = 0;
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
+    virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
+
+public:
+    virtual void layerInfo(const DoubleVector &, const TimeNodePDE &) const {}
+    virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const {}
 
     //virtual double a(const SpaceNode &sn, const TimeNode &tn) const;
     virtual double g(const TimeNodePDE &tn) const = 0;

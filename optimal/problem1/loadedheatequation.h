@@ -11,14 +11,17 @@ public:
     static void Main(int argc, char** argv);
     double U(const SpaceNodePDE &sn,const TimeNodePDE &tn) const;
 
-    virtual double initial(const SpaceNodePDE &sn) const;
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+protected:
+    virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+
+public:
+    virtual void layerInfo(const DoubleVector &, const TimeNodePDE &) const;
+    virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const {}
 
     virtual double g(const TimeNodePDE &tn) const;
     virtual double h(const TimeNodePDE &tn) const;
-
-    virtual void layerInfo(const DoubleVector &, unsigned int) const;
 };
 
 #endif // LOADEDHEATEQUATION_H
