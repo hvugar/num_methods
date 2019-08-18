@@ -254,11 +254,9 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
 
     for (unsigned int ln=2; ln<=L; ln++)
     {
-        TimeNodePDE tn00; tn00.i = ln-2; tn00.t = tn00.i*ht;
-        TimeNodePDE tn10; tn10.i = ln-1; tn10.t = tn10.i*ht;
+        //TimeNodePDE tn00; tn00.i = ln-2; tn00.t = tn00.i*ht;
+        //TimeNodePDE tn10; tn10.i = ln-1; tn10.t = tn10.i*ht;
         TimeNodePDE tn20; tn20.i = ln;   tn20.t = tn20.i*ht;
-        unsigned int s=0, e=N;
-        BoundaryConditionPDE condition; double alpha, beta, gamma, value;
 
         for (unsigned int n=1; n<=N-1; n++)
         {
@@ -271,6 +269,8 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
             //dx[n] += ht_ht*(lmbd*f(sn, tn00) + m1_2lambda*f(sn, tn10) + lmbd*f(sn, tn20));
         }
 
+        unsigned int s=0, e=N;
+        BoundaryConditionPDE condition; double alpha, beta, gamma, value;
         sn.i = static_cast<int>(0); sn.x = 0*hx;
         value = boundary(sn, tn20, condition);
         alpha = condition.alpha();
@@ -366,6 +366,16 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
             u10[i] = u20[i];
         }
     }
+
+    u00.clear();
+    u10.clear();
+    u20.clear();
+
+    free(rx);
+    free(dx);
+    free(cx);
+    free(bx);
+    free(ax);
 }
 
 void IWaveEquationIBVP::explicit_calculate_D2V1() const

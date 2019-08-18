@@ -153,22 +153,28 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
 
     const double m_td_ht__hxhx_lambda = -((td*ht)/(hx*hx))*_lambda;
     const double b_td_ht__hxhx_lambda_tcht_lambda = +(1.0 + ((2.0*td*ht)/(hx*hx))*_lambda + ht*tc*_lambda);
+    //const double p_td_ht__hxhx_lambda = +((td*ht)/(hx*hx))*_lambda;
+    //const double p_td_ht__hxhx = +((td*ht)/(hx*hx));
+    //const double alpha_ht_lambda = tc*ht*_lambda;
+    const double m1lambda = 1.0-_lambda;
+
+    const double p_td_ht__hx_lambda = +((td*ht)/hx)*_lambda;
     const double p_td_ht__hxhx_1mlambda = +((td*ht)/(hx*hx))*(1.0-_lambda);
     const double ht_tc_1mlambda = +ht*tc*(1.0-_lambda);
 
-    double *ax = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *bx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *cx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *dx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *rx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    double *ax = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *bx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *cx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *dx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *rx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
 
-    for (unsigned int n=0; n<=N-2; n++)
+    for (unsigned int n=0; n<=N; n++)
     {
         ax[n] = m_td_ht__hxhx_lambda;
         bx[n] = b_td_ht__hxhx_lambda_tcht_lambda;
         cx[n] = m_td_ht__hxhx_lambda;
     }
-    ax[0] = 0.0; cx[N-2] = 0.0;
+    ax[0] = 0.0; cx[N] = 0.0;
 
     DoubleVector u00(N+1);
     DoubleVector u10(N+1);
@@ -176,47 +182,109 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
     /***********************************************************************************************/
     /***********************************************************************************************/
 
-    TimeNodePDE tn, tn1;
-    SpaceNodePDE sn;
-    BoundaryConditionPDE condition;
+    TimeNodePDE tn0; tn0.i = 0; tn0.t = tn0.i*ht;
+    TimeNodePDE tn1; tn1.i = 0; tn1.t = tn1.i*ht;
 
-    tn.i = 0; tn.t = tn.i*ht;
+    SpaceNodePDE sn;
     for (unsigned int n=0; n<=N; n++)
     {
         sn.i = static_cast<int>(n); sn.x = sn.i*hx;
         u00[n] = initial(sn, InitialCondition::InitialValue);
     }
-    layerInfo(u00, tn);
+    layerInfo(u00, tn0);
 
+    /***********************************************************************************************/
     /***********************************************************************************************/
 
     for (unsigned int ln=1; ln<=M; ln++)
     {
-        tn.i = ln; tn.t = tn.i*ht;
-        tn1.i = ln-1; tn1.t = tn1.i*ht;
+        TimeNodePDE tn00; tn00.i = ln-1; tn00.t = tn00.i*ht;
+        TimeNodePDE tn10; tn10.i = ln;   tn10.t = tn10.i*ht;
 
-        /**************************************************** border conditions ***************************************************/
-
-        sn.i = static_cast<int>(0); sn.x = 0*hx; u10[0] = boundary(sn, tn, condition);
-        sn.i = static_cast<int>(N); sn.x = N*hx; u10[N] = boundary(sn, tn, condition);
-
-        /**************************************************** border conditions ***************************************************/
-
-        /**************************************************** x direction apprx ***************************************************/
         for (unsigned int n=1; n<=N-1; n++)
         {
             sn.i = static_cast<int>(n); sn.x = n*hx;
-            dx[n-1]  = u00[n] - u00[n] * ht_tc_1mlambda;
-            dx[n-1] += (u00[n-1] - 2.0*u00[n] + u00[n+1])*p_td_ht__hxhx_1mlambda;
-            //dx[n-1] += ht*f(sn, tn);
-            dx[n-1] += ht*(_lambda*f(sn, tn)+(1.0-_lambda)*f(sn, tn1));
+            dx[n] = 0.0;
+            dx[n] += u00[n] - u00[n] * ht_tc_1mlambda;
+            dx[n] += (u00[n-1] - 2.0*u00[n] + u00[n+1])*p_td_ht__hxhx_1mlambda;
+            //dx[n] += ht*f(sn, tn);
+            dx[n] += ht*(_lambda*f(sn, tn10)+m1lambda*f(sn, tn00));
         }
-        dx[0]   -= u10[0]*m_td_ht__hxhx_lambda;
-        dx[N-2] -= u10[N]*m_td_ht__hxhx_lambda;
-        tomasAlgorithm(ax, bx, cx, dx, rx, N-1);
-        for (unsigned int n=1; n<=N-1; n++) u10[n] = rx[n-1];
-        layerInfo(u10, tn);
-        /**************************************************** x direction apprx ***************************************************/
+
+        unsigned int s=0, e=N;
+        BoundaryConditionPDE condition; double alpha, beta, gamma, value;
+        sn.i = static_cast<int>(0); sn.x = 0*hx;
+        value = boundary(sn, tn10, condition);
+        alpha = condition.alpha();
+        beta  = condition.beta();
+        gamma = condition.gamma();
+        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+        {
+            s = 1;
+
+            u10[0] = (gamma/alpha)*value;
+            dx[1] -= u10[0]*m_td_ht__hxhx_lambda;
+            ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+        {
+            s = 0;
+
+            ax[0]  = 0.0;
+            bx[0]  = beta *(b_td_ht__hxhx_lambda_tcht_lambda);
+            cx[0]  = beta *(2.0*m_td_ht__hxhx_lambda);
+
+            dx[0]  = u00[0] - u00[0]*ht_tc_1mlambda;
+            dx[0] += (2.0*u00[0]-5.0*u00[1]+4.0*u00[2]-u00[3])*p_td_ht__hxhx_1mlambda;
+            dx[0] += ht*(_lambda*f(sn, tn10)+m1lambda*f(sn, tn00));
+            dx[0] *= beta;
+
+            dx[0] += gamma*(-2.0*p_td_ht__hx_lambda)*value;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Robin)
+        {
+            s = 0;
+
+            ax[0]  = 0.0;
+            bx[0]  = beta *(b_td_ht__hxhx_lambda_tcht_lambda);
+            cx[0]  = beta *(2.0*m_td_ht__hxhx_lambda);
+
+            dx[0]  = u00[0] - u00[0]*ht_tc_1mlambda;
+            dx[0] += (2.0*u00[0]-5.0*u00[1]+4.0*u00[2]-u00[3])*p_td_ht__hxhx_1mlambda;
+            dx[0] += ht*(_lambda*f(sn, tn10)+m1lambda*f(sn, tn00));
+            dx[0] *= beta;
+
+            bx[0] += alpha*(-2.0*p_td_ht__hx_lambda);
+            dx[0] += gamma*(-2.0*p_td_ht__hx_lambda)*value;
+        }
+
+        sn.i = static_cast<int>(N); sn.x = N*hx;
+        value = boundary(sn, tn10, condition);
+        alpha = condition.alpha();
+        beta  = condition.beta();
+        gamma = condition.gamma();
+        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+        {
+            e = N-1;
+            u10[N] = (gamma/alpha)*value;
+            dx[N-1] -= u10[N]*m_td_ht__hxhx_lambda;
+            cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+        {
+            e = N;
+            throw std::exception();
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Robin)
+        {
+            e = N;
+            throw std::exception();
+        }
+
+        tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
+        for (unsigned int n=s; n<=e; n++) u10[n] = rx[n];
+        layerInfo(u10, tn10);
+
         u00 = u10;
     }
 

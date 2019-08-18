@@ -33,8 +33,22 @@ double HeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition condit
 
 double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
 {
-    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-    return U(sn, tn)*(condition.alpha()/condition.gamma());
+    if (sn.i == 0)
+    {
+        //condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+        //return U(sn, tn)*(condition.alpha()/condition.gamma());
+
+        //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
+        //return (2.0*sn.x)*(condition.beta()/condition.gamma());
+
+        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
+        return (condition.alpha()*U(sn, tn)+condition.beta()*(3.0*sn.x*sn.x))/condition.gamma();
+    }
+    else
+    {
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+        return U(sn, tn)*(condition.alpha()/condition.gamma());
+    }
 }
 
 double HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
@@ -43,8 +57,8 @@ double HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     const double tc = thermalConductivity();
 
     //return 1.0 - 6.0*td*sn.x + tc*U(sn,tn);
-    //return 2.0*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
-    return 3.0*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
+    return 2.0*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
+    //return 3.0*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
     //return 4.0*tn.t*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
     //return 5.0*tn.t*tn.t*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
 
@@ -56,8 +70,8 @@ double HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 double HeatEquationIBVP::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     //return sn.x*sn.x*sn.x + tn.t;
-    //return sn.x*sn.x*sn.x + tn.t*tn.t;
-    return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t;
+    return sn.x*sn.x*sn.x + tn.t*tn.t;
+    //return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t;
     //return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t*tn.t;
     //return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t*tn.t*tn.t;
 
