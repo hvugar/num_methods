@@ -1,5 +1,5 @@
-#ifndef CONJUGATEGRADINETTEST_H
-#define CONJUGATEGRADINETTEST_H
+#ifndef CONJUGATE_GRADINET_TEST_H
+#define CONJUGATE_GRADINET_TEST_H
 
 #include <gradient_cjt.h>
 #include <function.h>
@@ -16,4 +16,4 @@ public:
     virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const;
 };
 
-#endif // CONJUGATEGRADINETTEST_H
+#endif // CONJUGATE_GRADINET_TEST_H

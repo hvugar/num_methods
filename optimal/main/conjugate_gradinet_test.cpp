@@ -1,4 +1,4 @@
-#include "conjugategradinettest.h"
+#include "conjugate_gradinet_test.h"
 
 void ConjugateGradinetTest::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {

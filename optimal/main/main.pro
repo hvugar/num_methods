@@ -46,14 +46,18 @@ LIBS += -L../bin -lborder
 #include(load_sys/load_sys.pri)
 
 SOURCES += main.cpp \
-    conjugategradinettest.cpp
+    conjugate_gradinet_test.cpp \
+    test/delta_grid_2d_ext1.cpp \
+    test/nonlinear_equation_ex1.cpp
 
-SOURCES += test/nonlinearequationex1.cpp
-HEADERS += test/nonlinearequationex1.h \
-    conjugategradinettest.h
+SOURCES +=
+HEADERS += \
+    conjugate_gradinet_test.h \
+    test/delta_grid_2d_ext1.h \
+    test/nonlinear_equation_ex1.h
 
-SOURCES += test/deltagrid2dext1.cpp
-HEADERS += test/deltagrid2dext1.h
+SOURCES +=
+HEADERS +=
 
 win32-g++ {
     CONFIG(release, debug|release) {

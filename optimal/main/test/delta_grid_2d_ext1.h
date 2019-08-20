@@ -1,5 +1,5 @@
-#ifndef DELTAGRID2D_EXT1_H
-#define DELTAGRID2D_EXT1_H
+#ifndef DELTA_GRID_2D_EXT1_H
+#define DELTA_GRID_2D_EXT1_H
 
 #include <deltagrid.h>
 
@@ -22,4 +22,4 @@ public:
     double dy(double x, double y) const;
 };
 
-#endif // DELTAGRID2D_EXT1_H
+#endif // DELTA_GRID_2D_EXT1_H

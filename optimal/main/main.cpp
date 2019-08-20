@@ -21,9 +21,9 @@
 #include "../problem2P/problem2p_solver.h"
 #include "../problem2H/problem2h_solver.h"
 
-#include "test/deltagrid2dext1.h"
-#include "test/nonlinearequationex1.h"
-#include "conjugategradinettest.h"
+#include "test/delta_grid_2d_ext1.h"
+#include "test/nonlinear_equation_ex1.h"
+#include "conjugate_gradinet_test.h"
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {

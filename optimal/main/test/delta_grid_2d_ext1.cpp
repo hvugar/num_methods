@@ -1,4 +1,4 @@
-#include "deltagrid2dext1.h"
+#include "delta_grid_2d_ext1.h"
 
 void DeltaGrid2DExt1::Main(int argc, char **argv)
 {

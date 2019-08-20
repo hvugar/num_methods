@@ -1,4 +1,4 @@
-#include "nonlinearequationex1.h"
+#include "nonlinear_equation_ex1.h"
 #include <math.h>
 
 void NonLinearEquationEx1::Main(int agrc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
