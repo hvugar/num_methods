@@ -152,7 +152,7 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
     const double _lambda = lambda();
 
     const double m_td_ht__hxhx_lambda = -((td*ht)/(hx*hx))*_lambda;
-    const double b_td_ht__hxhx_lambda_tcht_lambda = +(1.0 + ((2.0*td*ht)/(hx*hx))*_lambda + ht*tc*_lambda);
+    const double b_td_ht__hxhx_lambda_tc_ht_lambda = +(1.0 + ((2.0*td*ht)/(hx*hx))*_lambda + tc*ht*_lambda);
     //const double p_td_ht__hxhx_lambda = +((td*ht)/(hx*hx))*_lambda;
     //const double p_td_ht__hxhx = +((td*ht)/(hx*hx));
     //const double alpha_ht_lambda = tc*ht*_lambda;
@@ -171,7 +171,7 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
     for (unsigned int n=0; n<=N; n++)
     {
         ax[n] = m_td_ht__hxhx_lambda;
-        bx[n] = b_td_ht__hxhx_lambda_tcht_lambda;
+        bx[n] = b_td_ht__hxhx_lambda_tc_ht_lambda;
         cx[n] = m_td_ht__hxhx_lambda;
     }
     ax[0] = 0.0; cx[N] = 0.0;
@@ -231,7 +231,7 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
             s = 0;
 
             ax[0]  = 0.0;
-            bx[0]  = beta *(b_td_ht__hxhx_lambda_tcht_lambda);
+            bx[0]  = beta *(b_td_ht__hxhx_lambda_tc_ht_lambda);
             cx[0]  = beta *(2.0*m_td_ht__hxhx_lambda);
 
             dx[0]  = u00[0] - u00[0]*ht_tc_1mlambda;
@@ -246,10 +246,10 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
             s = 0;
 
             ax[0]  = 0.0;
-            bx[0]  = beta *(b_td_ht__hxhx_lambda_tcht_lambda);
+            bx[0]  = beta *(b_td_ht__hxhx_lambda_tc_ht_lambda);
             cx[0]  = beta *(2.0*m_td_ht__hxhx_lambda);
 
-            dx[0]  = u00[0] - u00[0]*ht_tc_1mlambda;
+            dx[0]  = u00[0]*(1.0 - ht_tc_1mlambda);
             dx[0] += (2.0*u00[0]-5.0*u00[1]+4.0*u00[2]-u00[3])*p_td_ht__hxhx_1mlambda;
             dx[0] += ht*(_lambda*f(sn, tn10)+m1lambda*f(sn, tn00));
             dx[0] *= beta;
