@@ -34,9 +34,9 @@ public:
     virtual const Dimension& spaceDimensionZ() const;
 
     virtual void setTimeDimension(const Dimension &dimension);
-    virtual void setSpaceDimensionX(const Dimension &dimension);
-    virtual void setSpaceDimensionY(const Dimension &dimension);
-    virtual void setSpaceDimensionZ(const Dimension &dimension);
+    virtual void setSpaceDimensionX(const Dimension &dimensionX);
+    virtual void setSpaceDimensionY(const Dimension &dimensionY);
+    virtual void setSpaceDimensionZ(const Dimension &dimensionZ);
 
     virtual void setSpaceDimensions(const Dimension& dimensionX, const Dimension& dimensionY);
     virtual void setSpaceDimensions(const Dimension& dimensionX, const Dimension& dimensionY, const Dimension& dimensionZ);

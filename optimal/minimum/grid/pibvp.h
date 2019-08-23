@@ -50,10 +50,10 @@ public:
     void implicit_calculate_D2V1() const;
     void implicit_calculate_D2V1CN() const;
 
-    virtual double env0(const SpaceNodePDE &sn, const TimeNodePDE &tn) const { return 0.0; }
-    virtual double env1(const SpaceNodePDE &sn, const TimeNodePDE &tn) const { return 0.0; }
+    virtual double env0(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double env1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
 
-    void calculateU(DoubleMatrix &u, double a, double alpha, double lambda);
+    void calculateU(DoubleMatrix &u, double a, double alpha, double weight);
     //void gridMethod(DoubleVector &u) const;
     void gridMethod(DoubleVector &u, double a = 1.0) const;
     void calculateMVD(DoubleMatrix &u) const;
@@ -64,9 +64,9 @@ public:
     void calculateN6L2RD(DoubleMatrix &u) const;
 
 protected:
-    virtual double lambda() const;
-    double _thermalDiffusivity;  // температуропроводность
-    double _thermalConductivity; // теплопроводность
+    virtual double weight() const;  //
+    double _thermalDiffusivity;     // температуропроводность
+    double _thermalConductivity;    // теплопроводность
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -81,8 +81,8 @@ protected:
 
     virtual double thermalDiffusivity() const;
     virtual void setThermalDiffusivity(double thermalDiffusivity);
-    virtual double convection() const;
-    virtual void setConvection(double convection);
+    virtual double thermalConductivity() const;
+    virtual void setThermalConductivity(double thermalConductivity);
 
     void gridMethod(DoubleVector &u, SweepMethodDirection direction = ForwardSweep) const;
     void gridMethod(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep) const;
@@ -90,9 +90,9 @@ protected:
     void calculate(DoubleCube &u, SweepMethodDirection direction = ForwardSweep) const;
 
 protected:
-    virtual double lambda() const;
-    double _thermalDiffusivity; // Температуропроводность
-    double _convection;
+    virtual double weight() const;  //
+    double _thermalDiffusivity;     // температуропроводность
+    double _thermalConductivity;    // теплопроводность
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//

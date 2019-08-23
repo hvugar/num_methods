@@ -19,7 +19,7 @@ protected:
     double U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
 protected:
-    double lambda() const { return 0.5; }
+    double weight() const { return 0.5; }
 };
 
 class BORDERSHARED_EXPORT FinalHeatEquationIBVP : public IFinalHeatEquationIBVP

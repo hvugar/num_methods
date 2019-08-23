@@ -149,18 +149,18 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
 
     const double td = thermalDiffusivity();
     const double tc = thermalConductivity();
-    const double _lambda = lambda();
+    const double _weight = weight();
 
-    const double m_td_ht__hxhx_lambda = -((td*ht)/(hx*hx))*_lambda;
-    const double b_td_ht__hxhx_lambda_tc_ht_lambda = +(1.0 + ((2.0*td*ht)/(hx*hx))*_lambda + tc*ht*_lambda);
+    const double m_td_ht__hxhx_weight = -((td*ht)/(hx*hx))*_weight;
+    const double b_td_ht__hxhx_weight_tc_ht_weight = +(1.0 + ((2.0*td*ht)/(hx*hx))*_weight + tc*ht*_weight);
     //const double p_td_ht__hxhx_lambda = +((td*ht)/(hx*hx))*_lambda;
     //const double p_td_ht__hxhx = +((td*ht)/(hx*hx));
     //const double alpha_ht_lambda = tc*ht*_lambda;
-    const double m1lambda = 1.0-_lambda;
+    const double m1lambda = 1.0-_weight;
 
-    const double p_td_ht__hx_lambda = +((td*ht)/hx)*_lambda;
-    const double p_td_ht__hxhx_1mlambda = +((td*ht)/(hx*hx))*(1.0-_lambda);
-    const double ht_tc_1mlambda = +ht*tc*(1.0-_lambda);
+    const double p_td_ht__hx_weight = +((td*ht)/hx)*_weight;
+    const double p_td_ht__hxhx_1mweight = +((td*ht)/(hx*hx))*(1.0-_weight);
+    const double ht_tc_1mweight = +ht*tc*(1.0-_weight);
 
     double *ax = static_cast<double*>(malloc(sizeof(double)*(N+1)));
     double *bx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
@@ -170,9 +170,9 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
 
     for (unsigned int n=0; n<=N; n++)
     {
-        ax[n] = m_td_ht__hxhx_lambda;
-        bx[n] = b_td_ht__hxhx_lambda_tc_ht_lambda;
-        cx[n] = m_td_ht__hxhx_lambda;
+        ax[n] = m_td_ht__hxhx_weight;
+        bx[n] = b_td_ht__hxhx_weight_tc_ht_weight;
+        cx[n] = m_td_ht__hxhx_weight;
     }
     ax[0] = 0.0; cx[N] = 0.0;
 
@@ -205,14 +205,15 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
         {
             sn.i = static_cast<int>(n); sn.x = n*hx;
             dx[n] = 0.0;
-            dx[n] += u00[n] - u00[n] * ht_tc_1mlambda;
-            dx[n] += (u00[n-1] - 2.0*u00[n] + u00[n+1])*p_td_ht__hxhx_1mlambda;
+            dx[n] += u00[n] - u00[n] * ht_tc_1mweight;
+            dx[n] += (u00[n-1] - 2.0*u00[n] + u00[n+1])*p_td_ht__hxhx_1mweight;
             //dx[n] += ht*f(sn, tn);
-            dx[n] += ht*(_lambda*f(sn, tn10)+m1lambda*f(sn, tn00));
+            dx[n] += ht*(_weight*f(sn, tn10)+m1lambda*f(sn, tn00));
         }
 
         unsigned int s=0, e=N;
         BoundaryConditionPDE condition; double alpha, beta, gamma, value;
+
         sn.i = static_cast<int>(0); sn.x = 0*hx;
         value = boundary(sn, tn10, condition);
         alpha = condition.alpha();
@@ -223,39 +224,39 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
             s = 1;
 
             u10[0] = (gamma/alpha)*value;
-            dx[1] -= u10[0]*m_td_ht__hxhx_lambda;
+            dx[1] -= u10[0]*m_td_ht__hxhx_weight;
             ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
         {
             s = 0;
 
-            ax[0]  = 0.0;
-            bx[0]  = beta *(b_td_ht__hxhx_lambda_tc_ht_lambda);
-            cx[0]  = beta *(2.0*m_td_ht__hxhx_lambda);
+            ax[s]  = 0.0;
+            bx[s]  = beta *(b_td_ht__hxhx_weight_tc_ht_weight);
+            cx[s]  = beta *(2.0*m_td_ht__hxhx_weight);
 
-            dx[0]  = u00[0] - u00[0]*ht_tc_1mlambda;
-            dx[0] += (2.0*u00[0]-5.0*u00[1]+4.0*u00[2]-u00[3])*p_td_ht__hxhx_1mlambda;
-            dx[0] += ht*(_lambda*f(sn, tn10)+m1lambda*f(sn, tn00));
-            dx[0] *= beta;
+            dx[s]  = u00[s]*(1.0 - ht_tc_1mweight);
+            dx[s] += (2.0*u00[s]-5.0*u00[s+1]+4.0*u00[s+2]-u00[s+3])*p_td_ht__hxhx_1mweight;
+            dx[s] += ht*(_weight*f(sn, tn10)+m1lambda*f(sn, tn00));
+            dx[s] *= beta;
 
-            dx[0] += gamma*(-2.0*p_td_ht__hx_lambda)*value;
+            dx[s] += gamma*(-2.0*p_td_ht__hx_weight)*value;
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
         {
             s = 0;
 
-            ax[0]  = 0.0;
-            bx[0]  = beta *(b_td_ht__hxhx_lambda_tc_ht_lambda);
-            cx[0]  = beta *(2.0*m_td_ht__hxhx_lambda);
+            ax[s]  = 0.0;
+            bx[s]  = beta *(b_td_ht__hxhx_weight_tc_ht_weight);
+            cx[s]  = beta *(2.0*m_td_ht__hxhx_weight);
 
-            dx[0]  = u00[0]*(1.0 - ht_tc_1mlambda);
-            dx[0] += (2.0*u00[0]-5.0*u00[1]+4.0*u00[2]-u00[3])*p_td_ht__hxhx_1mlambda;
-            dx[0] += ht*(_lambda*f(sn, tn10)+m1lambda*f(sn, tn00));
-            dx[0] *= beta;
+            dx[s]  = u00[s]*(1.0 - ht_tc_1mweight);
+            dx[s] += (2.0*u00[s]-5.0*u00[s+1]+4.0*u00[s+2]-u00[s+3])*p_td_ht__hxhx_1mweight;
+            dx[s] += ht*(_weight*f(sn, tn10)+m1lambda*f(sn, tn00));
+            dx[s] *= beta;
 
-            bx[0] += alpha*(-2.0*p_td_ht__hx_lambda);
-            dx[0] += gamma*(-2.0*p_td_ht__hx_lambda)*value;
+            bx[s] += alpha*(-2.0*p_td_ht__hx_weight);
+            dx[s] += gamma*(-2.0*p_td_ht__hx_weight)*value;
         }
 
         sn.i = static_cast<int>(N); sn.x = N*hx;
@@ -267,18 +268,39 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
         {
             e = N-1;
             u10[N] = (gamma/alpha)*value;
-            dx[N-1] -= u10[N]*m_td_ht__hxhx_lambda;
+            dx[N-1] -= u10[N]*m_td_ht__hxhx_weight;
             cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
         {
             e = N;
-            throw std::exception();
+
+            ax[e]  = beta *(2.0*m_td_ht__hxhx_weight);
+            bx[e]  = beta *(b_td_ht__hxhx_weight_tc_ht_weight);
+            cx[e]  = 0.0;
+
+            dx[e]  = u00[e]*(1.0 - ht_tc_1mweight);
+            dx[e] += (-u00[e]+4.0*u00[e-1]-5.0*u00[e-2]+2.0*u00[e-3])*p_td_ht__hxhx_1mweight;
+            dx[e] += ht*(_weight*f(sn, tn10)+m1lambda*f(sn, tn00));
+            dx[e] *= beta;
+
+            dx[e] += gamma*(+2.0*p_td_ht__hx_weight)*value;
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
         {
             e = N;
-            throw std::exception();
+
+            ax[e]  = beta *(2.0*m_td_ht__hxhx_weight);
+            bx[e]  = beta *(b_td_ht__hxhx_weight_tc_ht_weight);
+            cx[e]  = 0.0;
+
+            dx[e]  = u00[e]*(1.0 - ht_tc_1mweight);
+            dx[e] += (-u00[e]+4.0*u00[e-1]-5.0*u00[e-2]+2.0*u00[e-3])*p_td_ht__hxhx_1mweight;
+            dx[e] += ht*(_weight*f(sn, tn10)+m1lambda*f(sn, tn00));
+            dx[e] *= beta;
+
+            bx[e] += alpha*(+2.0*p_td_ht__hx_weight);
+            dx[e] += gamma*(+2.0*p_td_ht__hx_weight)*value;
         }
 
         tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
@@ -575,7 +597,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1CN() const
 
     const double td = thermalDiffusivity();
     const double tc = thermalConductivity();
-    const double _lambda = lambda();
+    const double _lambda = weight();
 
     if (_lambda >= 0.5-(0.25/ht)/(1.0/(hx*hx)+1.0/(hy*hy))) throw std::runtime_error("Differential scheme is conditionally steady.");
 
@@ -2539,11 +2561,11 @@ void IFinalHeatEquationIBVP::setThermalDiffusivity(double thermalDiffusivity)
     this->_thermalDiffusivity = thermalDiffusivity;
 }
 
-double IFinalHeatEquationIBVP::convection() const { return _convection; }
+double IFinalHeatEquationIBVP::thermalConductivity() const { return _thermalConductivity; }
 
-void IFinalHeatEquationIBVP::setConvection(double convection)
+void IFinalHeatEquationIBVP::setThermalConductivity(double convection)
 {
-    this->_convection = convection;
+    this->_thermalConductivity = convection;
 }
 
 void IFinalHeatEquationIBVP::gridMethod(DoubleVector &p, SweepMethodDirection direction) const
@@ -2726,7 +2748,7 @@ void IFinalHeatEquationIBVP::gridMethod(DoubleMatrix &p, SweepMethodDirection di
     free(rx);
 }
 
-double IHeatEquationIBVP::lambda() const { return 0.5; }
+double IHeatEquationIBVP::weight() const { return 0.5; }
 
-double IFinalHeatEquationIBVP::lambda() const { return 0.5; }
+double IFinalHeatEquationIBVP::weight() const { return 0.5; }
 

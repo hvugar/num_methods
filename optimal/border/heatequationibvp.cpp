@@ -11,7 +11,7 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
     HeatEquationIBVP w;
     w.setThermalDiffusivity(1.0);
     w.setThermalConductivity(0.0);
-    w.setTimeDimension(Dimension(0.005, 0, 200));
+    w.setTimeDimension(Dimension(0.01, 0, 100));
     w.setSpaceDimensionX(Dimension(0.01, 0, 100));
     w.setSpaceDimensionY(Dimension(0.01, 0, 100));
 
@@ -27,8 +27,10 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
 
 double HeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition condition) const
 {
-    TimeNodePDE tn; tn.t = 0.0;
-    return U(sn, tn);
+    //TimeNodePDE tn; tn.t = 0.0;
+    //return U(sn, tn);
+
+    return 0.0;
 }
 
 double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
@@ -38,16 +40,26 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
         //condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
         //return U(sn, tn)*(condition.alpha()/condition.gamma());
 
-        //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
-        //return (2.0*sn.x)*(condition.beta()/condition.gamma());
+        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
+        //return (condition.alpha()*U(sn, tn)+condition.beta()*(1.0))/condition.gamma();
+        //return (condition.alpha()*U(sn, tn)+condition.beta()*(2.0*sn.x))/condition.gamma();
+        //return (condition.alpha()*U(sn, tn)+condition.beta()*(3.0*sn.x*sn.x))/condition.gamma();
 
-        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
-        return (condition.alpha()*U(sn, tn)+condition.beta()*(3.0*sn.x*sn.x))/condition.gamma();
+        double lambda = 0.1; condition = BoundaryConditionPDE(BoundaryCondition::Robin, -lambda, +1.0, -lambda); return 2.0;
+        //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, 0.0, +1.0, 0.0); return 0.0;
     }
     else
     {
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        return U(sn, tn)*(condition.alpha()/condition.gamma());
+        //condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+        //return U(sn, tn)*(condition.alpha()/condition.gamma());
+
+        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
+        //return (condition.alpha()*U(sn, tn)+condition.beta()*(1.0))/condition.gamma();
+        //return (condition.alpha()*U(sn, tn)+condition.beta()*(2.0*sn.x))/condition.gamma();
+        //return (condition.alpha()*U(sn, tn)+condition.beta()*(3.0*sn.x*sn.x))/condition.gamma();
+
+        condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +0.0); return 0.0;
+        //double lambda = 0.1; condition = BoundaryConditionPDE(BoundaryCondition::Robin, lambda, +1.0, lambda); return +1.0;
     }
 }
 
@@ -56,22 +68,42 @@ double HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     const double td = thermalDiffusivity();
     const double tc = thermalConductivity();
 
+    //return 1.0 - 0.0*td + tc*U(sn,tn);
+    //return 2.0*tn.t - 0.0*td + tc*U(sn,tn);
+    //return 3.0*tn.t*tn.t - 0.0*td + tc*U(sn,tn);
+
+    //return 1.0 - 2.0*td + tc*U(sn,tn);
+    //return 2.0*tn.t - 2.0*td + tc*U(sn,tn);
+    //return 3.0*tn.t*tn.t - 2.0*td + tc*U(sn,tn);
+
     //return 1.0 - 6.0*td*sn.x + tc*U(sn,tn);
-    return 2.0*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
+    //return 2.0*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
     //return 3.0*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
+
     //return 4.0*tn.t*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
     //return 5.0*tn.t*tn.t*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
 
     //return 1.0 - 6.0*td*(sn.x+sn.y) + tc*U(sn,tn);
     //return 2.0*tn.t - 6.0*td*(sn.x+sn.y) + tc*U(sn,tn);
     //return 3.0*tn.t*tn.t - 6.0*td*(sn.x+sn.y) + tc*U(sn,tn);
+
+    return 0.0;
 }
 
 double HeatEquationIBVP::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
+    //return sn.x + tn.t;
+    //return sn.x + tn.t*tn.t;
+    return sn.x + tn.t*tn.t*tn.t;
+
+    //return sn.x*sn.x + tn.t;
+    //return sn.x*sn.x + tn.t*tn.t;
+    //return sn.x*sn.x + tn.t*tn.t*tn.t;
+
     //return sn.x*sn.x*sn.x + tn.t;
-    return sn.x*sn.x*sn.x + tn.t*tn.t;
+    //return sn.x*sn.x*sn.x + tn.t*tn.t;
     //return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t;
+
     //return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t*tn.t;
     //return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t*tn.t*tn.t;
 
@@ -88,24 +120,28 @@ void HeatEquationIBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) c
     //    tn.i==4   || tn.i==3   || tn.i==2   || tn.i==1 || tn.i==0)
     {
         IPrinter::printVector(u);
-        //IPrinter::printSeperatorLine();
     }
 
-    if (tn.i==200)
+    if (tn.i==100)
     {
-        double norm = 0.0;
-        double max = 0.0;
+        double L2Norm = 0.0;
+        double EuNorm = 0.0;
+        double L1Norm = 0.0;
         TimeNodePDE tn; tn.t = 1.0;
         SpaceNodePDE sn;
         for (unsigned int i=0; i<=100; i++)
         {
-            sn.x = i*0.01;
-            double k = 1.0; if (i==0 || i== 100) k = 0.5;
-            norm += 0.01*k*(u[i]-U(sn, tn))*(u[i]-U(sn, tn));
+            sn.i = static_cast<int>(i);
+            sn.x = sn.i*0.01;
 
-            if (max < fabs(u[i]-U(sn, tn))) max = fabs(u[i]-U(sn, tn));
+            double k = 1.0; if (i==0 || i== 100) k = 0.5;
+            L2Norm += 0.01*k*(u[i]-U(sn, tn))*(u[i]-U(sn, tn));
+
+            EuNorm += (u[i]-U(sn, tn))*(u[i]-U(sn, tn));
+
+            if (L1Norm < fabs(u[i]-U(sn, tn))) L1Norm = fabs(u[i]-U(sn, tn));
         }
-        printf("norm: %.10f max: %.10f\n", sqrt(norm), max);
+        printf("L2Norm: %.10f EuNorm: %.10f L1Norm: %.10f\n", sqrt(L2Norm), sqrt(EuNorm), L1Norm);
     }
 
     return;
