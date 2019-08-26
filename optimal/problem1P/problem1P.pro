@@ -1,12 +1,12 @@
-TARGET   = problem2H
-TEMPLATE = lib
-CONFIG  += console
+TARGET    = problem1P
+TEMPLATE  = lib
+CONFIG   += console
 CONFIG  -= app_bundle
-CONFIG  -= qt
-CONFIG  += shared
-CONFIG  += c++11
+CONFIG   -= qt
+CONFIG   += shared
+CONFIG   += c++11
 
-DEFINES += PROBLEM2H_LIBRARY
+DEFINES += PROBLEM1P_LIBRARY
 
 DESTDIR  = ../bin
 
@@ -65,13 +65,7 @@ win32-msvc* {
     CONFIG(debug, debug|release) { }
 }
 
-HEADERS += problem2h_global.h
+HEADERS += problem1p_global.h
 
-HEADERS += problem2h_solver.h
-SOURCES += problem2h_solver.cpp
-
-#HEADERS += problem2h_exporter.h
-#SOURCES += problem2h_exporter.cpp
-
-#OTHER_FILES += matlab/*
-#DEFINES += OLD_SOURCES
+HEADERS += problem1p_solver.h
+SOURCES += problem1p_solver.cpp

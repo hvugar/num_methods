@@ -216,4 +216,4 @@ protected:
     double integralU(const DoubleMatrix &u) const;
 };
 
-#endif // PROBLEM2H_SOLVER1_H
+#endif // PROBLEM2H_SOLVER_H
