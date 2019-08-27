@@ -16,10 +16,10 @@ protected:
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//
 
-class MINIMUMSHARED_EXPORT IFinalParabolicIBVP : public FinalBoundaryValueProblemPDE
+class MINIMUMSHARED_EXPORT IParabolicFBVP : public FinalBoundaryValueProblemPDE
 {
 protected:
-    virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
+    virtual double final(const SpaceNodePDE &sn, FinalCondition condition) const = 0;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
 
@@ -37,10 +37,23 @@ public:
     IHeatEquationIBVP(const IHeatEquationIBVP &);
     IHeatEquationIBVP & operator =(const IHeatEquationIBVP &);
 
+    virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
+
+    /**
+     * @brief f Heat energy generated per unit volume per unit time
+     * @param sn point x
+     * @param tn time t
+     * @return
+     */
+    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
+
     virtual double thermalDiffusivity() const;
     virtual void setThermalDiffusivity(double thermalDiffusivity);
     virtual double thermalConductivity() const;
     virtual void setThermalConductivity(double thermalConductivity);
+    virtual double thermalConvection() const;
+    virtual void setThermalConvection(double thermalConvection);
 
     void explicit_calculate_D1V1() const;
     void implicit_calculate_D1V1() const;
@@ -67,22 +80,27 @@ protected:
     virtual double weight() const;  //
     double _thermalDiffusivity;     // температуропроводность
     double _thermalConductivity;    // теплопроводность
+    double _thermalConvection;      //
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//
 
-class MINIMUMSHARED_EXPORT IFinalHeatEquationIBVP : public IFinalParabolicIBVP
+class MINIMUMSHARED_EXPORT IHeatEquationFBVP : public IParabolicFBVP
 {
-protected:
-    explicit IFinalHeatEquationIBVP(double thermalDiffusivity = 1.0);
-    IFinalHeatEquationIBVP(const IFinalHeatEquationIBVP &);
-    IFinalHeatEquationIBVP & operator =(const IFinalHeatEquationIBVP &);
-    virtual ~IFinalHeatEquationIBVP();
+public:
+    explicit IHeatEquationFBVP(double thermalDiffusivity = 1.0);
+    IHeatEquationFBVP(const IHeatEquationFBVP &);
+    IHeatEquationFBVP & operator =(const IHeatEquationFBVP &);
+    virtual ~IHeatEquationFBVP();
 
     virtual double thermalDiffusivity() const;
     virtual void setThermalDiffusivity(double thermalDiffusivity);
     virtual double thermalConductivity() const;
     virtual void setThermalConductivity(double thermalConductivity);
+    virtual double thermalConvection() const;
+    virtual void setThermalConvection(double thermalConvection);
+
+    void implicit_calculate_D1V1CN() const;
 
     void gridMethod(DoubleVector &u, SweepMethodDirection direction = ForwardSweep) const;
     void gridMethod(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep) const;
@@ -93,6 +111,7 @@ protected:
     virtual double weight() const;  //
     double _thermalDiffusivity;     // температуропроводность
     double _thermalConductivity;    // теплопроводность
+    double _thermalConvection;      //
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//

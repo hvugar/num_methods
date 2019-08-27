@@ -100,16 +100,16 @@ macx-clang {
 
 
 HEADERS += border_global.h \
-    heatequationibvp.h
+    heat_equation_ibvp.h \
+    wave_equation_ibvp.h
 
 HEADERS += \
-           waveequationibvp.h \
            newtonheatequationex1.h
 
 SOURCES += \
-           waveequationibvp.cpp \
+           heat_equation_ibvp.cpp \
            newtonheatequationex1.cpp \
-    heatequationibvp.cpp
+           wave_equation_ibvp.cpp
 
 
 #HEADERS += \

@@ -13,13 +13,15 @@
 //#include <ode/firstorderlinearodeex1.h>
 //#include <ode/firstordernonlinearodeex1.h>
 //#include <ode/secondorderlinearodeex1.h>
-#include <waveequationibvp.h>
-#include <heatequationibvp.h>
+#include <wave_equation_ibvp.h>
+#include <heat_equation_ibvp.h>
 
 #include "../problem0H/problem0h_solver.h"
 #include "../problem1H/problem1h_example.h"
 #include "../problem2P/problem2p_solver.h"
 #include "../problem2H/problem2h_solver.h"
+
+#include "../problem1P/problem1p_solver.h"
 
 #include "test/delta_grid_2d_ext1.h"
 #include "test/nonlinear_equation_ex1.h"
@@ -47,8 +49,13 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //WaveEquationIBVP::Main(argc, argv);
     //FinalHyperbolicIBVP::Main(argc, argv);
-    HeatEquationIBVP::Main(argc, argv);
+
+    //HeatEquationIBVP::Main(argc, argv);
+    //IPrinter::printSeperatorLine();
     //FinalHeatEquationIBVP::Main(argc, argv);
+
+    p1p::ProblemSolver::Main(argc, argv);
+
     return 0;
 
 

@@ -1,4 +1,4 @@
-#include "waveequationibvp.h"
+#include "wave_equation_ibvp.h"
 
 #define EXAMPLE_1D_4
 
