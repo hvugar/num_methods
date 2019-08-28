@@ -73,8 +73,11 @@ protected:
     Dimension _timeDimension;
     Dimension _spaceDimensionX;
 
+    DoubleVector u;
     DoubleVector U;
-    DoubleVector V;
+    DoubleVector p0;
+
+    ProblemSolver *const_this;
 
     friend class HeatEquationIBVP;
     friend class HeatEquationFBVP;

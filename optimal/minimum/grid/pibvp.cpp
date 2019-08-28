@@ -192,8 +192,6 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
     /***********************************************************************************************/
 
     TimeNodePDE tn0; tn0.i = 0; tn0.t = tn0.i*ht;
-    TimeNodePDE tn1; tn1.i = 0; tn1.t = tn1.i*ht;
-
     SpaceNodePDE sn;
     for (unsigned int n=0; n<=N; n++)
     {
@@ -2626,9 +2624,7 @@ void IHeatEquationFBVP::implicit_calculate_D1V1CN() const
     /***********************************************************************************************/
     /***********************************************************************************************/
 
-    TimeNodePDE tn0; tn0.i = 0; tn0.t = tn0.i*ht;
-    TimeNodePDE tn1; tn1.i = 0; tn1.t = tn1.i*ht;
-
+    TimeNodePDE tn0; tn0.i = M; tn0.t = tn0.i*ht;
     SpaceNodePDE sn;
     for (unsigned int n=0; n<=N; n++)
     {
