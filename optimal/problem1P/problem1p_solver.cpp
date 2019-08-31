@@ -14,9 +14,8 @@ void ProblemSolver::Main(int argc, char* argv[])
     DoubleVector ag(101, 0.0);
 
     solver.gradient(x, ag);
-    IPrinter::printVector(ag.EuclideanNormalize());
-
     IGradient::Gradient(&solver, 0.0001, x, ng);
+    IPrinter::printVector(ag.EuclideanNormalize());
     IPrinter::printVector(ng.EuclideanNormalize());
 }
 
@@ -62,8 +61,8 @@ void ProblemSolver::setSpaceDimensionX(const Dimension &spaceDimensionX)
     backward.setSpaceDimensionX(spaceDimensionX);
 
     uint32_t length = static_cast<uint32_t>(spaceDimensionX.size()+1);
-    u.resize(length);
     U.resize(length);
+    V.resize(length, 2.0);
 }
 
 void ProblemSolver::gradient(const DoubleVector &x, DoubleVector &g) const
@@ -92,12 +91,12 @@ double ProblemSolver::fx(const DoubleVector &x) const
     forward.implicit_calculate_D1V1CN();
 
     double sum = 0.0;
-    sum += 0.5*(u[0]-U[0])*(u[0]-U[0]);
+    sum += 0.5*(U[0]-V[0])*(U[0]-V[0]);
     for (unsigned int n=1; n<=N-1; n++)
     {
-        sum += (u[n]-U[n])*(u[n]-U[n]);
+        sum += (U[n]-V[n])*(U[n]-V[n]);
     }
-    sum += 0.5*(u[N]-U[N])*(u[N]-U[N]);
+    sum += 0.5*(U[N]-V[N])*(U[N]-V[N]);
     sum *= hx;
     return sum;
 }
@@ -153,10 +152,15 @@ double HeatEquationFBVP::final(const SpaceNodePDE &sn, FinalCondition condition)
 {
     C_UNUSED(sn);
     C_UNUSED(condition);
-    auto &u = solver->u;
-    auto &V = solver->U;
+    auto &U = solver->U;
+    auto &V = solver->V;
     unsigned int i = static_cast<unsigned int>(sn.i);
-    return -2.0*(u[i] - V[i]);
+
+//    IPrinter::printVector(U);
+//    IPrinter::printVector(V);
+//    IPrinter::printSeperatorLine();
+
+    return -2.0*(U[i] - V[i]);
 }
 
 double HeatEquationFBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
