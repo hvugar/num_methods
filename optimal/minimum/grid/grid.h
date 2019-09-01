@@ -62,22 +62,24 @@ struct MINIMUMSHARED_EXPORT PointNodeODE : public PointODE
 class MINIMUMSHARED_EXPORT Dimension
 {
 public:
-    enum SpaceDimension
-    {
-        DimensionX = 1,
-        DimensionY = 2,
-        DimensionZ = 3
-    };
+//    enum SpaceDimension
+//    {
+//        DimensionX = 1,
+//        DimensionY = 2,
+//        DimensionZ = 3
+//    };
 
     Dimension(double step = 0.01, int min = 0, int max = 100);
+    Dimension(const Dimension &);
+    Dimension & operator =(const Dimension &);
 
-    auto step() const -> double;
-    auto setStep(double step) -> void;
-    auto min() const -> int;
-    auto setMin(int min) -> void;
-    auto max() const -> int;
-    auto setMax(int max) -> void;
-    auto size() const -> int;
+    double step() const;
+    void setStep(double step);
+    int min() const;
+    void setMin(int min);
+    int max() const;
+    void setMax(int max);
+    unsigned int size() const;
 
 protected:
     double _step;

@@ -20,7 +20,7 @@ void R1FxMinimizer::straightLineSearch(double x, double step, double &a, double 
     unsigned int iteration = 0;
     unsigned int fx_count = 0;
 
-    if ( mfunction == NULL )
+    if ( mfunction == nullptr )
     {
         std::string msg = "in function \"stranghLineSearch\" function pointer is null.";
         throw std::runtime_error(msg);

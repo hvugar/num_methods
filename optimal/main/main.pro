@@ -67,11 +67,14 @@ win32-g++ {
         INCLUDEPATH += ../minimum
         LIBS += -L../bin -lminimum
 
-        INCLUDEPATH += ../problem0H
-        LIBS += -L../bin -lproblem0H
+#        INCLUDEPATH += ../problem0H
+#        LIBS += -L../bin -lproblem0H
 
-        INCLUDEPATH += ../problem2H
-        LIBS += -L../bin -lproblem2H
+#        INCLUDEPATH += ../problem2H
+#        LIBS += -L../bin -lproblem2H
+
+        INCLUDEPATH += ../problem1P
+        LIBS += -L../bin -lproblem1P
     }
     CONFIG(debug, debug|release) {
         OBJECTS_DIR = debug/.obj/win32-gcc
@@ -120,6 +123,9 @@ macx-clang{
 
 #        INCLUDEPATH += ../problem2H
 #        LIBS += -L../bin -lproblem2H
+
+        INCLUDEPATH += ../problem1P
+        LIBS += -L../bin -lproblem1P
     }
 
     CONFIG(debug, debug|release) {

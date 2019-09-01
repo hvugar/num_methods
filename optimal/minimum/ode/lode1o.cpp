@@ -513,7 +513,7 @@ void FirstOrderLinearODE::solveInitialValueProblemRK2(std::vector<DoubleVector> 
     const Dimension &dim = dimension();
     const int min = dim.min();
     const int max = dim.max();
-    const double h = dim.step();
+    //const double h = dim.step();
     const unsigned int size = static_cast<unsigned int>(max-min);
     const unsigned int k = count();
 
@@ -592,11 +592,11 @@ void FirstOrderLinearODE::solveInitialValueProblemRK2(std::vector<DoubleVector> 
 //    free(k1);
 }
 
-void FirstOrderLinearODE::solveInitialValueProblemRK4(std::vector<DoubleVector> &rv) const {}
+void FirstOrderLinearODE::solveInitialValueProblemRK4(std::vector<DoubleVector> &) const {}
 
-void FirstOrderLinearODE::solveInitialValueProblemRK6(std::vector<DoubleVector> &rv) const {}
+void FirstOrderLinearODE::solveInitialValueProblemRK6(std::vector<DoubleVector> &) const {}
 
-void FirstOrderLinearODE::solveInitialValueProblemEulerMod(std::vector<DoubleVector> &rv) const {}
+void FirstOrderLinearODE::solveInitialValueProblemEulerMod(std::vector<DoubleVector> &) const {}
 
 //void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const DoubleVector &bt, std::vector<DoubleVector> &x)
 //{

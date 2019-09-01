@@ -3,6 +3,7 @@
 InitialBoundaryValueProblemPDE::InitialBoundaryValueProblemPDE() {}
 
 InitialBoundaryValueProblemPDE::InitialBoundaryValueProblemPDE(const InitialBoundaryValueProblemPDE& other) :
+    InitialValueProblemPDE(other), //BoundaryValueProblemPDE(other),
     _timeDimension(other._timeDimension), _spaceDimensionX(other._spaceDimensionX),
     _spaceDimensionY(other._spaceDimensionY), _spaceDimensionZ(other._spaceDimensionZ) {}
 
@@ -75,6 +76,7 @@ void InitialBoundaryValueProblemPDE::setSpaceDimensions(const Dimension& dimensi
 FinalBoundaryValueProblemPDE::FinalBoundaryValueProblemPDE() {}
 
 FinalBoundaryValueProblemPDE::FinalBoundaryValueProblemPDE(const FinalBoundaryValueProblemPDE &other) :
+    FinalValueProblemPDE(other), BoundaryValueProblemPDE(other),
     _timeDimension(other._timeDimension), _spaceDimensionX(other._spaceDimensionX),
     _spaceDimensionY(other._spaceDimensionY), _spaceDimensionZ(other._spaceDimensionZ) {}
 

@@ -58,6 +58,9 @@ void FirstOrderNonLinearODE::cauchyProblem(double x0, double y0, DoubleVector &y
     case ODESolverMethod::RUNGE_KUTTA_4:
         calculateRK4(x0, y0, y, direction);
         break;
+    case ODESolverMethod::RUNGE_KUTTA_6:
+        calculateRK4(x0, y0, y, direction);
+        break;
     case ODESolverMethod::EULER:
         calculateEuler(x0, y0, y, direction);
         break;
@@ -69,7 +72,7 @@ void FirstOrderNonLinearODE::cauchyProblem(double x0, double y0, DoubleVector &y
 
 void FirstOrderNonLinearODE::calculateRK2(double x0, double y0, DoubleVector &y, Direction direction)
 {
-    int N = dimension().size();
+    unsigned int N = dimension().size();
     double h = dimension().step();
 
     y.clear();
@@ -115,7 +118,7 @@ void FirstOrderNonLinearODE::calculateRK2(double x0, double y0, DoubleVector &y,
 
 void FirstOrderNonLinearODE::calculateRK4(double x0, double y0, DoubleVector &y, Direction direction)
 {
-    int N = dimension().size();
+    unsigned int N = dimension().size();
     double h = dimension().step();
 
     y.clear();
@@ -258,6 +261,9 @@ void FirstOrderNonLinearODE::cauchyProblem(double x0, const DoubleVector &y0, st
     case ODESolverMethod::RUNGE_KUTTA_4:
         calculateRK4(x0, y0, ry, direction);
         break;
+    case ODESolverMethod::RUNGE_KUTTA_6:
+        //calculateRK6(x0, y0, ry, direction);
+        break;
     case ODESolverMethod::EULER:
         calculateEuler(x0, y0, ry, direction);
         break;
@@ -347,7 +353,7 @@ void FirstOrderNonLinearODE::calculateRK4(double x0, const DoubleVector &y0, std
 {
     const int min = dimension().min();
     const int max = dimension().max();
-    const unsigned int N = static_cast<unsigned int>( dimension().size() );
+    const unsigned int N = dimension().size();
     const double h = dimension().step();
     const unsigned int m = count();
 
@@ -526,6 +532,9 @@ void FirstOrderNonLinearODE::cauchyProblem(double x0, const DoubleVector &y0, Do
     case ODESolverMethod::RUNGE_KUTTA_4:
         calculateRK4(x0, y0, ry, direction);
         break;
+    case ODESolverMethod::RUNGE_KUTTA_6:
+        //calculateRK4(x0, y0, ry, direction);
+        break;
     case ODESolverMethod::EULER:
         //calculateEuler(x0, y0, y, direction);
         break;
@@ -539,17 +548,17 @@ void FirstOrderNonLinearODE::calculateRK4(double x0, const DoubleVector &y0, Dou
 {
     const int min = dimension().min();
     const int max = dimension().max();
-    const int N = dimension().size();
+    const unsigned int N = dimension().size();
     const double h = dimension().step();
     const unsigned int n = y0.length();
 
     ry.clear();
     ry.resize(n, N+1);
 
-    double *k1 = (double *)malloc(sizeof(double)*n);
-    double *k2 = (double *)malloc(sizeof(double)*n);
-    double *k3 = (double *)malloc(sizeof(double)*n);
-    double *k4 = (double *)malloc(sizeof(double)*n);
+    double *k1 = static_cast<double *>(malloc(sizeof(double)*n));
+    double *k2 = static_cast<double *>(malloc(sizeof(double)*n));
+    double *k3 = static_cast<double *>(malloc(sizeof(double)*n));
+    double *k4 = static_cast<double *>(malloc(sizeof(double)*n));
 
     if (direction == L2R)
     {

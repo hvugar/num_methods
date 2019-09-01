@@ -7,16 +7,17 @@ void ProblemSolver::Main(int argc, char* argv[])
     C_UNUSED(argc);
     C_UNUSED(argv);
 
-    ProblemSolver solver(Dimension(0.001, 0, 100), Dimension(0.001, 0, 100));
+    unsigned int length = 101;
+    ProblemSolver solver(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
 
-    DoubleVector x(101, 3.0);
-    DoubleVector ng(101, 0.0);
-    DoubleVector ag(101, 0.0);
+    DoubleVector x(length, 3.0);
+    DoubleVector ng(length, 0.0);
+    DoubleVector ag(length, 0.0);
 
     solver.gradient(x, ag);
     IGradient::Gradient(&solver, 0.0001, x, ng);
-    IPrinter::printVector(ag.EuclideanNormalize());
-    IPrinter::printVector(ng.EuclideanNormalize());
+    IPrinter::printVector(10, 6, ag.EuclideanNormalize());
+    IPrinter::printVector(10, 6, ng.EuclideanNormalize());
 }
 
 ProblemSolver::ProblemSolver(const Dimension &timeDimension, const Dimension &spaceDimensionX)
@@ -49,9 +50,10 @@ void ProblemSolver::setTimeDimension(const Dimension &timeDimension)
     forward.setTimeDimension(timeDimension);
     backward.setTimeDimension(timeDimension);
 
-    uint32_t length = static_cast<uint32_t>(timeDimension.size()+1);
+    uint32_t length = timeDimension.size();
     p0.resize(length);
     params.v =  new double [length];
+    printf("_timeDimension.size: %d length: %d\n", _timeDimension.size(), length);
 }
 
 void ProblemSolver::setSpaceDimensionX(const Dimension &spaceDimensionX)
@@ -60,9 +62,9 @@ void ProblemSolver::setSpaceDimensionX(const Dimension &spaceDimensionX)
     forward.setSpaceDimensionX(spaceDimensionX);
     backward.setSpaceDimensionX(spaceDimensionX);
 
-    uint32_t length = static_cast<uint32_t>(spaceDimensionX.size()+1);
-    U.resize(length);
-    V.resize(length, 2.0);
+    auto length = spaceDimensionX.size();
+    U.resize(length, 0.0);
+    V.resize(length, 10.0);
 }
 
 void ProblemSolver::gradient(const DoubleVector &x, DoubleVector &g) const
@@ -73,6 +75,7 @@ void ProblemSolver::gradient(const DoubleVector &x, DoubleVector &g) const
     const unsigned int length = x.length();
     for (unsigned int i=0; i<length; i++) const_this->params.v[i] = x[i];
     g.resize(length);
+    printf("gradient length %d\n", length);
 
     forward.implicit_calculate_D1V1CN();
     backward.implicit_calculate_D1V1CN();
@@ -87,7 +90,7 @@ double ProblemSolver::fx(const DoubleVector &x) const
     const_solver->params.v = const_cast<double *>(x.data());
 
     auto hx = _spaceDimensionX.step();
-    auto N = static_cast<uint32_t>(_timeDimension.size());
+    auto N  = _spaceDimensionX.size() - 1;
     forward.implicit_calculate_D1V1CN();
 
     double sum = 0.0;
@@ -98,6 +101,7 @@ double ProblemSolver::fx(const DoubleVector &x) const
     }
     sum += 0.5*(U[N]-V[N])*(U[N]-V[N]);
     sum *= hx;
+
     return sum;
 }
 
@@ -143,7 +147,8 @@ void HeatEquationIBVP::layerInfo(const DoubleVector &u, const TimeNodePDE &tn) c
     C_UNUSED(u);
     C_UNUSED(tn);
     Dimension _timeDimension = timeDimension();
-    if (_timeDimension.size() == static_cast<int>(tn.i)) const_cast<ProblemSolver*>(solver)->U = u;
+    if (_timeDimension.size() == static_cast<unsigned int>(tn.i))
+        const_cast<ProblemSolver*>(solver)->U = u;
 }
 
 /*********************************************************************************************************************************/
@@ -155,11 +160,6 @@ double HeatEquationFBVP::final(const SpaceNodePDE &sn, FinalCondition condition)
     auto &U = solver->U;
     auto &V = solver->V;
     unsigned int i = static_cast<unsigned int>(sn.i);
-
-//    IPrinter::printVector(U);
-//    IPrinter::printVector(V);
-//    IPrinter::printSeperatorLine();
-
     return -2.0*(U[i] - V[i]);
 }
 

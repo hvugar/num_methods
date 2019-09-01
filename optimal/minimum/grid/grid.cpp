@@ -27,16 +27,26 @@ PointODE::PointODE(double x) : x(x) {}
 
 Dimension::Dimension(double step, int min, int max) : _step(step), _min(min), _max(max) {}
 
-auto Dimension::step() const -> double { return _step; }
+Dimension::Dimension(const Dimension &dimension) : _step(dimension._step), _min(dimension._min), _max(dimension._max) {}
 
-auto Dimension::setStep(double step) -> void { _step = step; }
+Dimension & Dimension::operator =(const Dimension &other)
+{
+    this->_step = other._step;
+    this->_min = other._min;
+    this->_max = other._max;
+    return *this;
+}
 
-auto Dimension::min() const -> int { return _min; }
+double Dimension::step() const { return _step; }
 
-auto Dimension::setMin(int min) -> void { _min = min; }
+void Dimension::setStep(double step) { _step = step; }
 
-auto Dimension::max() const -> int { return _max; }
+int Dimension::min() const { return _min; }
 
-auto Dimension::setMax(int max) -> void { _max = max; }
+void Dimension::setMin(int min) { _min = min; }
 
-auto Dimension::size() const -> int { return _max-_min; }
+int Dimension::max() const { return _max; }
+
+void Dimension::setMax(int max) { _max = max; }
+
+unsigned int Dimension::size() const { return static_cast<unsigned int>(_max-_min)+1; }

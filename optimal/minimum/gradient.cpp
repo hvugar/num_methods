@@ -546,6 +546,7 @@ void GradientMethod::halphIntervalMethod(double &x, double &a, double &b, double
 bool GradientMethod::checkForExit(double step_tolerance, double optimality_tolerance, double function_tolerance,
                                   double f2, const DoubleVector &x, const DoubleVector &g, double alpha) const
 {
+    C_UNUSED(optimality_tolerance);
     /**************************************************************************************
      * Checking for gradient vector norm that is less of optimality tolerance.
      * If gradient vector norm in current point is less than optimality tolerance then break
@@ -619,4 +620,6 @@ bool GradientMethod::checkForExit(double step_tolerance, double optimality_toler
         if (m_show_end_message) puts("Optimisation ends, because max function evaluation count reached max allowed number...");
         return true;
     }
+
+    return false;
 }
