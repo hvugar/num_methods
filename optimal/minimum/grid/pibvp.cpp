@@ -152,7 +152,7 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
 void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
 {
     const unsigned int N = static_cast<unsigned int>(spaceDimensionX().size()) - 1;
-    const unsigned int M = static_cast<unsigned int>(timeDimension().size());
+    const unsigned int M = static_cast<unsigned int>(timeDimension().size()) - 1;
 
     const double hx = spaceDimensionX().step();
     const double ht = timeDimension().step();

@@ -1,5 +1,7 @@
 #include "problem1p_solver.h"
 
+#define PROBLEM1
+
 using namespace p1p;
 
 void ProblemSolver::Main(int argc, char* argv[])
@@ -14,10 +16,14 @@ void ProblemSolver::Main(int argc, char* argv[])
     DoubleVector ng(length, 0.0);
     DoubleVector ag(length, 0.0);
 
+    IPrinter::printVector(x);
     solver.gradient(x, ag);
-    IGradient::Gradient(&solver, 0.0001, x, ng);
-    IPrinter::printVector(10, 6, ag.EuclideanNormalize());
-    IPrinter::printVector(10, 6, ng.EuclideanNormalize());
+    IPrinter::printVector(x);
+    IGradient::Gradient(&solver, 0.01, x, ng);
+    IPrinter::printVector(ag);
+    IPrinter::printVector(ng);
+    IPrinter::printVector(ag.EuclideanNormalize());
+    IPrinter::printVector(ng.EuclideanNormalize());
 }
 
 ProblemSolver::ProblemSolver(const Dimension &timeDimension, const Dimension &spaceDimensionX)
@@ -27,6 +33,7 @@ ProblemSolver::ProblemSolver(const Dimension &timeDimension, const Dimension &sp
 
     params.initialTemperature = 0.0;
     params.environmentTemperature = 0.5;
+    params.thermalDiffusivity = 1.0;
     params.thermalConductivity0 = 0.0;
     params.thermalConductivity1 = 0.1;
     params.thermalConductivity2 = 0.001;
@@ -53,7 +60,6 @@ void ProblemSolver::setTimeDimension(const Dimension &timeDimension)
     uint32_t length = timeDimension.size();
     p0.resize(length);
     params.v =  new double [length];
-    printf("_timeDimension.size: %d length: %d\n", _timeDimension.size(), length);
 }
 
 void ProblemSolver::setSpaceDimensionX(const Dimension &spaceDimensionX)
@@ -69,30 +75,31 @@ void ProblemSolver::setSpaceDimensionX(const Dimension &spaceDimensionX)
 
 void ProblemSolver::gradient(const DoubleVector &x, DoubleVector &g) const
 {
-    C_UNUSED(x);
-    C_UNUSED(g);
-
     const unsigned int length = x.length();
     for (unsigned int i=0; i<length; i++) const_this->params.v[i] = x[i];
-    g.resize(length);
-    printf("gradient length %d\n", length);
 
     forward.implicit_calculate_D1V1CN();
     backward.implicit_calculate_D1V1CN();
 
+    g.resize(length);
+#ifdef PROBLEM1
+    for (unsigned int i=0; i<length; i++) g[i] = -params.thermalDiffusivity*params.thermalConductivity1*p0[i];
+#endif
+#ifdef PROBLEM2
     for (unsigned int i=0; i<length; i++) g[i] = -params.thermalDiffusivity*p0[i];
+#endif
     g[0] = 0.0;
 }
 
 double ProblemSolver::fx(const DoubleVector &x) const
 {
-    ProblemSolver *const_solver = const_cast<ProblemSolver *>(this);
-    const_solver->params.v = const_cast<double *>(x.data());
+    const unsigned int length = x.length();
+    for (unsigned int i=0; i<length; i++) const_this->params.v[i] = x[i];
+
+    forward.implicit_calculate_D1V1CN();
 
     auto hx = _spaceDimensionX.step();
     auto N  = _spaceDimensionX.size() - 1;
-    forward.implicit_calculate_D1V1CN();
-
     double sum = 0.0;
     sum += 0.5*(U[0]-V[0])*(U[0]-V[0]);
     for (unsigned int n=1; n<=N-1; n++)
@@ -122,15 +129,27 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
 
     if (sn.i == 0)
     {
+#ifdef PROBLEM1
         const EquationParameters &params = solver->params;
         condition = BoundaryConditionPDE(BoundaryCondition::Robin, params.thermalConductivity1, -1.0, params.thermalConductivity1);
+#endif
+#ifdef PROBLEM2
+        const EquationParameters &params = solver->params;
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+#endif
         return params.v[tn.i];
     }
     else
     {
+#ifdef PROBLEM1
         const EquationParameters &params = solver->params;
         condition = BoundaryConditionPDE(BoundaryCondition::Robin, params.thermalConductivity2, +1.0, params.thermalConductivity2);
         return params.environmentTemperature;
+#endif
+#ifdef PROBLEM2
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+        return 0.0;
+#endif
     }
 }
 
@@ -147,7 +166,7 @@ void HeatEquationIBVP::layerInfo(const DoubleVector &u, const TimeNodePDE &tn) c
     C_UNUSED(u);
     C_UNUSED(tn);
     Dimension _timeDimension = timeDimension();
-    if (_timeDimension.size() == static_cast<unsigned int>(tn.i))
+    if (_timeDimension.size()-1 == static_cast<unsigned int>(tn.i))
         const_cast<ProblemSolver*>(solver)->U = u;
 }
 
@@ -170,13 +189,25 @@ double HeatEquationFBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
     C_UNUSED(condition);
 
     if (sn.i == 0) {
+#ifdef PROBLEM1
         const EquationParameters &params = solver->params;
         condition = BoundaryConditionPDE(BoundaryCondition::Robin, params.thermalConductivity1, -1.0, 0.0);
         return 0.0;
+#endif
+#ifdef PROBLEM2
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+        return 0.0;
+#endif
     } else {
+#ifdef PROBLEM1
         const EquationParameters &params = solver->params;
         condition = BoundaryConditionPDE(BoundaryCondition::Robin, params.thermalConductivity2, +1.0, 0.0);
         return 0.0;
+#endif
+#ifdef PROBLEM2
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+        return 0.0;
+#endif
     }
 }
 
@@ -193,7 +224,15 @@ void HeatEquationFBVP::layerInfo(const DoubleVector &p, const TimeNodePDE &tn) c
     C_UNUSED(tn);
 
     auto const_solver = const_cast<ProblemSolver *>(solver);
+#ifdef PROBLEM1
     const_solver->p0[tn.i] = p[0];
+#endif
+#ifdef PROBLEM2
+    //const_solver->p0[tn.i] = (-3.0*p[0]+4.0*p[1]-p[2])/(2.0*0.01);
+    const_solver->p0[tn.i] = (p[1]-p[0])/0.01;
+#endif
+
+    printf("---- %4d %20.14f %20.14f %20.14f\n", tn.i, p[1], p[0], const_solver->p0[tn.i]);
 }
 
 /*********************************************************************************************************************************/
