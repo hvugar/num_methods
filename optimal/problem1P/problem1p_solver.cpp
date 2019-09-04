@@ -12,16 +12,17 @@ void ProblemSolver::Main(int argc, char* argv[])
     unsigned int length = 101;
     ProblemSolver solver(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
 
-    DoubleVector x(length, 3.0);
+    DoubleVector x(length, 3.0); for (unsigned int i=0; i<length; i++) x[i] = i*0.01;
+    IPrinter::printVector(x);
+
     DoubleVector ng(length, 0.0);
     DoubleVector ag(length, 0.0);
 
-    IPrinter::printVector(x);
     solver.gradient(x, ag);
-    IPrinter::printVector(x);
     IGradient::Gradient(&solver, 0.01, x, ng);
-    IPrinter::printVector(ag);
-    IPrinter::printVector(ng);
+    //IPrinter::printVector(ag);
+    //IPrinter::printVector(ng);
+    ag[100] = ng[100] = 0.0;
     IPrinter::printVector(ag.EuclideanNormalize());
     IPrinter::printVector(ng.EuclideanNormalize());
 }
@@ -70,7 +71,7 @@ void ProblemSolver::setSpaceDimensionX(const Dimension &spaceDimensionX)
 
     auto length = spaceDimensionX.size();
     U.resize(length, 0.0);
-    V.resize(length, 10.0);
+    V.resize(length, 0.8);
 }
 
 void ProblemSolver::gradient(const DoubleVector &x, DoubleVector &g) const
@@ -167,7 +168,11 @@ void HeatEquationIBVP::layerInfo(const DoubleVector &u, const TimeNodePDE &tn) c
     C_UNUSED(tn);
     Dimension _timeDimension = timeDimension();
     if (_timeDimension.size()-1 == static_cast<unsigned int>(tn.i))
+    {
         const_cast<ProblemSolver*>(solver)->U = u;
+    }
+    //printf("%4d --- ", tn.i);
+    //IPrinter::printVector(u);
 }
 
 /*********************************************************************************************************************************/
@@ -179,6 +184,9 @@ double HeatEquationFBVP::final(const SpaceNodePDE &sn, FinalCondition condition)
     auto &U = solver->U;
     auto &V = solver->V;
     unsigned int i = static_cast<unsigned int>(sn.i);
+
+    //if (sn.i == 0 || sn.i == 100) return 0.0; else
+
     return -2.0*(U[i] - V[i]);
 }
 
@@ -228,11 +236,15 @@ void HeatEquationFBVP::layerInfo(const DoubleVector &p, const TimeNodePDE &tn) c
     const_solver->p0[tn.i] = p[0];
 #endif
 #ifdef PROBLEM2
-    //const_solver->p0[tn.i] = (-3.0*p[0]+4.0*p[1]-p[2])/(2.0*0.01);
-    const_solver->p0[tn.i] = (p[1]-p[0])/0.01;
+    const_solver->p0[tn.i] = (-3.0*p[0]+4.0*p[1]-p[2])/(2.0*0.01);
+    //const_solver->p0[tn.i] = (p[1]-p[0])/0.01;
 #endif
 
-    printf("---- %4d %20.14f %20.14f %20.14f\n", tn.i, p[1], p[0], const_solver->p0[tn.i]);
+    //printf("%4d --- ", tn.i);
+    //IPrinter::printVector(p);
+
+    //IPrinter::printVector(p);
+    //printf("---- %4d %20.14f %20.14f %20.14f %20.14f %20.14f\n", tn.i, const_solver->params.v[tn.i], p[0], p[1], p[2], const_solver->p0[tn.i]);
 }
 
 /*********************************************************************************************************************************/
