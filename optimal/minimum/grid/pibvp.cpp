@@ -73,7 +73,6 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
     const double m_td_ht__hxhx = -((td*ht)/(hx*hx));
     const double b_td_ht__hxhx__tcht = +(1.0 + (2.0*td*ht)/(hx*hx) + ht*tc);
 
-
     double *ax = static_cast<double*>(malloc(sizeof(double)*(N-1)));
     double *bx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
     double *cx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
@@ -170,6 +169,7 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
     const double p_td_ht__hxhx_w2 = +((td*ht)/(hx*hx))*w2;
     const double m_cv_ht__20hx_w2 = -((cv*ht)/(2.0*hx))*w2;
     const double p_td_ht__hx_w1 = +((td*ht)/hx)*w1;
+    const double m_td_ht__hx_w1 = -((td*ht)/hx)*w1;
 
     double *ax = static_cast<double*>(malloc(sizeof(double)*(N+1)));
     double *bx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
@@ -220,9 +220,11 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
 
         unsigned int s=0, e=N;
         BoundaryConditionPDE condition; double alpha, beta, gamma, value;
+        BoundaryConditionPDE condition0; double alpha0, beta0, gamma0, value0;
 
         sn.i = static_cast<int>(0); sn.x = 0*hx;
         value = boundary(sn, tn10, condition);
+        value0 = boundary(sn, tn00, condition);
         alpha = condition.alpha();
         beta  = condition.beta();
         gamma = condition.gamma();
@@ -255,15 +257,21 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
 
             ax[s]  = 0.0;
             bx[s]  = beta *(b_td_ht__hxhx_w1_tc_ht_w1);
+            bx[s] += alpha*(2.0*m_td_ht__hx_w1);
             cx[s]  = beta *(2.0*m_td_ht__hxhx_w1);
 
-            dx[s]  = u00[s]*(1.0 - ht_tc_w2);
-            dx[s] += (2.0*u00[s]-5.0*u00[s+1]+4.0*u00[s+2]-u00[s+3])*p_td_ht__hxhx_w2;
-            dx[s] += ht*(w1*f(sn, tn10)+w2*f(sn, tn00));
-            dx[s] *= beta;
+//            dx[s]  = u00[s]*(1.0 - ht_tc_w2);
+//            dx[s] += (2.0*u00[s]-5.0*u00[s+1]+4.0*u00[s+2]-u00[s+3])*p_td_ht__hxhx_w2;
+//            dx[s] += ht*(w1*f(sn, tn10)+w2*f(sn, tn00));
+//            dx[s] *= beta;
+//            dx[s] += gamma*(-2.0*p_td_ht__hx_w1)*value;
 
-            bx[s] += alpha*(-2.0*p_td_ht__hx_w1);
-            dx[s] += gamma*(-2.0*p_td_ht__hx_w1)*value;
+            dx[s]  = beta *(1.0 - (2.0*td*ht*w2)/(hx*hx) - tc*ht*w2) * u00[s];
+            dx[s] += alpha*((2.0*td*ht*w2)/hx) * u00[s];
+            dx[s] += beta *((2.0*td*ht*w2)/(hx*hx)) * u00[s+1];
+            dx[s] += beta *(ht*(w1*f(sn, tn10)+w2*f(sn, tn00)));
+            dx[s] += gamma*((-2.0*td*ht)/hx)*(w1*value+w2*value0);
+//            dx[s] += gamma*((-2.0*td*ht)/hx)*value;
         }
 
         sn.i = static_cast<int>(N); sn.x = N*hx;
@@ -290,7 +298,6 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
             dx[e] += (-u00[e]+4.0*u00[e-1]-5.0*u00[e-2]+2.0*u00[e-3])*p_td_ht__hxhx_w2;
             dx[e] += ht*(w1*f(sn, tn10)+w2*f(sn, tn00));
             dx[e] *= beta;
-
             dx[e] += gamma*(+2.0*p_td_ht__hx_w1)*value;
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -299,14 +306,13 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
 
             ax[e]  = beta *(2.0*m_td_ht__hxhx_w1);
             bx[e]  = beta *(b_td_ht__hxhx_w1_tc_ht_w1);
+            bx[e] += alpha*(2.0*p_td_ht__hx_w1);
             cx[e]  = 0.0;
 
             dx[e]  = u00[e]*(1.0 - ht_tc_w2);
             dx[e] += (-u00[e]+4.0*u00[e-1]-5.0*u00[e-2]+2.0*u00[e-3])*p_td_ht__hxhx_w2;
             dx[e] += ht*(w1*f(sn, tn10)+w2*f(sn, tn00));
             dx[e] *= beta;
-
-            bx[e] += alpha*(+2.0*p_td_ht__hx_w1);
             dx[e] += gamma*(+2.0*p_td_ht__hx_w1)*value;
         }
 
@@ -2679,7 +2685,6 @@ void IHeatEquationFBVP::implicit_calculate_D1V1CN() const
             dx[s] += (2.0*u00[s]-5.0*u00[s+1]+4.0*u00[s+2]-u00[s+3])*m_td_ht__hxhx_w2;
             dx[s] -= ht*(w1*f(sn, tn10)+w2*f(sn, tn00));
             dx[s] *= beta;
-
             dx[s] += gamma*(-2.0*p_td_ht__hx_w1)*value;
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -2688,15 +2693,28 @@ void IHeatEquationFBVP::implicit_calculate_D1V1CN() const
 
             ax[s]  = 0.0;
             bx[s]  = beta *(b_td_ht__hxhx_w1_tc_ht_w1);
+            bx[s] += alpha*(-2.0*p_td_ht__hx_w1);
             cx[s]  = beta *(2.0*p_td_ht__hxhx_w1);
 
-            dx[s]  = u00[s]*(1.0 - ht_tc_w2);
-            dx[s] += (2.0*u00[s]-5.0*u00[s+1]+4.0*u00[s+2]-u00[s+3])*m_td_ht__hxhx_w2;
-            dx[s] -= ht*(w1*f(sn, tn10)+w2*f(sn, tn00));
-            dx[s] *= beta;
+//            dx[s]  = u00[s]*(1.0 - ht_tc_w2);
+//            dx[s] += (2.0*u00[s]-5.0*u00[s+1]+4.0*u00[s+2]-u00[s+3])*m_td_ht__hxhx_w2;
+//            dx[s] -= ht*(w1*f(sn, tn10)+w2*f(sn, tn00));
+//            dx[s] *= beta;
+//            dx[s] += gamma*(-2.0*p_td_ht__hx_w1)*value;
 
-            bx[s] += alpha*(-2.0*p_td_ht__hx_w1);
-            dx[s] += gamma*(-2.0*p_td_ht__hx_w1)*value;
+            //            dx[s]  = u00[s]*(1.0 - ht_tc_w2);
+            //            dx[s] += (2.0*u00[s]-5.0*u00[s+1]+4.0*u00[s+2]-u00[s+3])*p_td_ht__hxhx_w2;
+            //            dx[s] += ht*(w1*f(sn, tn10)+w2*f(sn, tn00));
+            //            dx[s] *= beta;
+            //            dx[s] += gamma*(-2.0*p_td_ht__hx_w1)*value;
+
+                        dx[s]  = beta *(1.0 - (2.0*td*ht*w2)/(hx*hx) - tc*ht*w2) * u00[s];
+                        dx[s] += alpha*((2.0*td*ht*w2)/hx) * u00[s];
+                        dx[s] += beta *((2.0*td*ht*w2)/(hx*hx)) * u00[s+1];
+                        dx[s] -= beta *(ht*(w1*f(sn, tn10)+w2*f(sn, tn00)));
+                        dx[s] += gamma*((-2.0*td*ht)/hx)*0.0;
+            //            dx[s] += gamma*((-2.0*td*ht)/hx)*value;
+
         }
 
         sn.i = static_cast<int>(N); sn.x = N*hx;

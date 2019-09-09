@@ -6,6 +6,7 @@
 #include <gradient.h>
 #include <printer.h>
 #include <grid/pibvp.h>
+#define SIGMA 1.0
 
 namespace p1p
 {
@@ -39,6 +40,9 @@ public:
     virtual void layerInfo(const DoubleVector &u, const TimeNodePDE &tn) const;
 
     ProblemSolver *solver;
+
+protected:
+    virtual double weight() const { return SIGMA; }
 };
 
 class PROBLEM1PSHARED_EXPORT HeatEquationFBVP : public IHeatEquationFBVP
@@ -50,6 +54,9 @@ public:
     virtual void layerInfo(const DoubleVector &u, const TimeNodePDE &tn) const;
 
     ProblemSolver *solver;
+
+protected:
+    virtual double weight() const { return SIGMA; }
 };
 
 class PROBLEM1PSHARED_EXPORT ProblemSolver : public RnFunction, public IGradient

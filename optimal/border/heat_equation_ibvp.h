@@ -36,6 +36,9 @@ protected:
     virtual void layerInfo(const DoubleMatrix&, const TimeNodePDE&) const;
 
     double U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+
+protected:
+    double weight() const { return 0.5; }
 };
 
 #endif // HEATEQUATIONIBVP_H

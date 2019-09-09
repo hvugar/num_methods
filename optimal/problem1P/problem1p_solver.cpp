@@ -22,7 +22,7 @@ void ProblemSolver::Main(int argc, char* argv[])
     IGradient::Gradient(&solver, 0.01, x, ng);
     //IPrinter::printVector(ag);
     //IPrinter::printVector(ng);
-    ag[100] = ng[100] = 0.0;
+    //ag[100] = ng[100] = 0.0;
     IPrinter::printVector(ag.EuclideanNormalize());
     IPrinter::printVector(ng.EuclideanNormalize());
 }
