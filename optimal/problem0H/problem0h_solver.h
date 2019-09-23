@@ -137,7 +137,7 @@ private:
 
 //--------------------------------------------------------------------------------------------------------------//
 
-class PROBLEM0HSHARED_EXPORT Problem0HBckward : public IFinalWaveEquationIBVP, public virtual Problem0HCommon
+class PROBLEM0HSHARED_EXPORT Problem0HBckward : public IWaveEquationFBVP, public virtual Problem0HCommon
 {
 public:
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;

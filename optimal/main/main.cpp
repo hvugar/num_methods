@@ -13,8 +13,8 @@
 //#include <ode/firstorderlinearodeex1.h>
 //#include <ode/firstordernonlinearodeex1.h>
 //#include <ode/secondorderlinearodeex1.h>
-#include <wave_equation_ibvp.h>
 #include <heat_equation_ibvp.h>
+#include <wave_equation_ibvp.h>
 
 #include "../problem0H/problem0h_solver.h"
 #include "../problem1H/problem1h_example.h"
@@ -31,8 +31,6 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     std::cout << "__cplusplus: " << __cplusplus << std::endl;
 
-
-
     //ConjugateGradinetTest::Main(argc, argv);
 
     //FirstOrderLinearODEEx1::Main(argc, argv);
@@ -42,17 +40,14 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //LinearODE1stOrderEx1::Main(argc, argv);
     //NonLinearODE1stOrderEx2::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);
-    //CdIHyperbolicIBVP1::Main(argc, argv);
-
-    //TestWaveEquation::Main(argc, argv);
-    //TestWaveEquationEx1::Main(argc, argv);
 
     //WaveEquationIBVP::Main(argc, argv);
-    //FinalHyperbolicIBVP::Main(argc, argv);
+    //IPrinter::printSeperatorLine();
+    //WaveEquationFBVP::Main(argc, argv);
 
     //HeatEquationIBVP::Main(argc, argv);
     //IPrinter::printSeperatorLine();
-    //FinalHeatEquationIBVP::Main(argc, argv);
+    //HeatEquationFBVP::Main(argc, argv);
 
     p1p::ProblemSolver::Main(argc, argv);
 
@@ -71,8 +66,6 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //NonLocalSystem::Main(argc, argv);
 
 
-    //CcIHyperbolicIBVP1::Main(argc, argv);
-    //CdIHyperbolicIBVP1::Main(argc, argv);
     //IPrinter::printSeperatorLine();
     //ConjugateCC1IHyperbolicIBVP1::Main(argc, argv);
     //Problem0HFunctional::Main(argc, argv);
@@ -83,7 +76,6 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //Problem2HDirichletDelta::Main(argc, argv);
 
     //CCParabolicIBVP1::Main(argc, argv);
-    //CCIHyperbolicIBVP1::Main(argc, argv);
     //HyperbolicIBVP2::Main(argc, argv);
     //return 0;
     //QGuiApplication app(argc, argv);

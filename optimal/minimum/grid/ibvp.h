@@ -18,7 +18,10 @@ enum SweepMethodDirection
 
 /**
  * @brief The InitialBoundaryValueProblemPDE class
- * @see ParabolicIBVP
+ * @class InitialBoundaryValueProblemPDE
+ * @see InitialValueProblemPDE
+ * @see BoundaryValueProblemPDE
+ * @copyright
  */
 class MINIMUMSHARED_EXPORT InitialBoundaryValueProblemPDE : public InitialValueProblemPDE, public BoundaryValueProblemPDE
 {
@@ -28,24 +31,10 @@ public:
     InitialBoundaryValueProblemPDE & operator = (const InitialBoundaryValueProblemPDE &);
     virtual ~InitialBoundaryValueProblemPDE();
 
-    virtual const Dimension& timeDimension() const;
-    virtual const Dimension& spaceDimensionX() const;
-    virtual const Dimension& spaceDimensionY() const;
-    virtual const Dimension& spaceDimensionZ() const;
-
-    virtual void setTimeDimension(const Dimension &dimension);
-    virtual void setSpaceDimensionX(const Dimension &dimensionX);
-    virtual void setSpaceDimensionY(const Dimension &dimensionY);
-    virtual void setSpaceDimensionZ(const Dimension &dimensionZ);
-
-    virtual void setSpaceDimensions(const Dimension& dimensionX, const Dimension& dimensionY);
-    virtual void setSpaceDimensions(const Dimension& dimensionX, const Dimension& dimensionY, const Dimension& dimensionZ);
-
-protected:
-    Dimension _timeDimension;
-    Dimension _spaceDimensionX;
-    Dimension _spaceDimensionY;
-    Dimension _spaceDimensionZ;
+    virtual const Dimension& timeDimension() const = 0;
+    virtual const Dimension& spaceDimensionX() const = 0;
+    virtual const Dimension& spaceDimensionY() const = 0;
+    virtual const Dimension& spaceDimensionZ() const = 0;
 };
 
 /**
@@ -60,24 +49,10 @@ public:
     FinalBoundaryValueProblemPDE & operator = (const FinalBoundaryValueProblemPDE &);
     virtual ~FinalBoundaryValueProblemPDE();
 
-    virtual const Dimension& timeDimension() const;
-    virtual const Dimension& spaceDimensionX() const;
-    virtual const Dimension& spaceDimensionY() const;
-    virtual const Dimension& spaceDimensionZ() const;
-
-    virtual void setTimeDimension(const Dimension &dimension);
-    virtual void setSpaceDimensionX(const Dimension &dimension);
-    virtual void setSpaceDimensionY(const Dimension &dimension);
-    virtual void setSpaceDimensionZ(const Dimension &dimension);
-
-    virtual void setSpaceDimensions(const Dimension& dimensionX, const Dimension& dimensionY);
-    virtual void setSpaceDimensions(const Dimension& dimensionX, const Dimension& dimensionY, const Dimension& dimensionZ);
-
-protected:
-    Dimension _timeDimension;
-    Dimension _spaceDimensionX;
-    Dimension _spaceDimensionY;
-    Dimension _spaceDimensionZ;
+    virtual const Dimension& timeDimension() const = 0;
+    virtual const Dimension& spaceDimensionX() const = 0;
+    virtual const Dimension& spaceDimensionY() const = 0;
+    virtual const Dimension& spaceDimensionZ() const = 0;
 };
 
 #endif // INITIAL_BOUNDARY_VALUE_PROBLEM_H

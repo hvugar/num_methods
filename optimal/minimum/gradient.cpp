@@ -208,7 +208,7 @@ unsigned int GradientMethod::maxFunctionEvaluationNumber() const
  */
 void GradientMethod::straightLineSearch(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const
 {
-    unsigned int iteration = 0; C_UNUSED(iteration)
+    unsigned int iteration = 0; C_UNUSED(iteration);
     unsigned int fx_count = 0;
 
     if ( step <= 0.0 )
@@ -303,7 +303,7 @@ void GradientMethod::straightLineSearch(double x, double step, double &a, double
  */
 void GradientMethod::swann(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const
 {
-    unsigned int iteration = 0; C_UNUSED(iteration)
+    unsigned int iteration = 0; C_UNUSED(iteration);
     unsigned int fx_count = 0;
 
     if ( step <= 0.0 )

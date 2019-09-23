@@ -46,11 +46,27 @@ private:
 
     bool calculateU = true;
     unsigned int method = 0;
+
+protected:
+    virtual const Dimension& timeDimension() const { return _timeDimension; }
+    virtual const Dimension& spaceDimensionX() const { return _spaceDimensionX; }
+    virtual const Dimension& spaceDimensionY() const { return _spaceDimensionY; }
+    virtual const Dimension& spaceDimensionZ() const { return _spaceDimensionZ; }
+
+    void setTimeDimension(const Dimension &timeDimension) { this->_timeDimension = timeDimension; }
+    void setSpaceDimensionX(const Dimension &spaceDimensionX) { this->_spaceDimensionX = spaceDimensionX; }
+    void setSpaceDimensionY(const Dimension &spaceDimensionY) { this->_spaceDimensionY = spaceDimensionY; }
+
+private:
+    Dimension _timeDimension;
+    Dimension _spaceDimensionX;
+    Dimension _spaceDimensionY;
+    Dimension _spaceDimensionZ;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class BORDERSHARED_EXPORT FinalHyperbolicIBVP : public IFinalWaveEquationIBVP
+class BORDERSHARED_EXPORT WaveEquationFBVP : public IWaveEquationFBVP
 {
 public:
     static void Main(int argc, char* argv[]);
@@ -62,8 +78,25 @@ protected:
 
     virtual void layerInfo(const DoubleVector&, const TimeNodePDE&) const {}
     virtual void layerInfo(const DoubleMatrix&, const TimeNodePDE&) const;
+
 private:
     DoubleMatrix u10;
+
+protected:
+    virtual const Dimension& timeDimension() const { return _timeDimension; }
+    virtual const Dimension& spaceDimensionX() const { return _spaceDimensionX; }
+    virtual const Dimension& spaceDimensionY() const { return _spaceDimensionY; }
+    virtual const Dimension& spaceDimensionZ() const { return _spaceDimensionZ; }
+
+    void setTimeDimension(const Dimension &timeDimension) { this->_timeDimension = timeDimension; }
+    void setSpaceDimensionX(const Dimension &spaceDimensionX) { this->_spaceDimensionX = spaceDimensionX; }
+    void setSpaceDimensionY(const Dimension &spaceDimensionY) { this->_spaceDimensionY = spaceDimensionY; }
+
+private:
+    Dimension _timeDimension;
+    Dimension _spaceDimensionX;
+    Dimension _spaceDimensionY;
+    Dimension _spaceDimensionZ;
 };
 
 #endif // WAVEEQUATIONIBVP_H

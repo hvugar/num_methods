@@ -1,6 +1,8 @@
 #include "problem1p_solver.h"
 
-#define PROBLEM1
+#define EXAMPLE_LEFT_BORDER_ROBIN
+//#define EXAMPLE_LEFT_BORDER_DIRICHLET
+//#define EXAMPLE_FXT
 
 using namespace p1p;
 
@@ -12,7 +14,9 @@ void ProblemSolver::Main(int argc, char* argv[])
     unsigned int length = 101;
     ProblemSolver solver(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
 
+#if defined (EXAMPLE_LEFT_BORDER_ROBIN) || defined(EXAMPLE_LEFT_BORDER_DIRICHLET)
     DoubleVector x(length, 3.0); for (unsigned int i=0; i<length; i++) x[i] = i*0.01;
+#endif
     IPrinter::printVector(x);
 
     DoubleVector ng(length, 0.0);
@@ -71,7 +75,7 @@ void ProblemSolver::setSpaceDimensionX(const Dimension &spaceDimensionX)
 
     auto length = spaceDimensionX.size();
     U.resize(length, 0.0);
-    V.resize(length, 0.8);
+    V.resize(length, 2.0);
 }
 
 void ProblemSolver::gradient(const DoubleVector &x, DoubleVector &g) const
@@ -83,10 +87,10 @@ void ProblemSolver::gradient(const DoubleVector &x, DoubleVector &g) const
     backward.implicit_calculate_D1V1CN();
 
     g.resize(length);
-#ifdef PROBLEM1
+#ifdef EXAMPLE_LEFT_BORDER_ROBIN
     for (unsigned int i=0; i<length; i++) g[i] = -params.thermalDiffusivity*params.thermalConductivity1*p0[i];
 #endif
-#ifdef PROBLEM2
+#ifdef EXAMPLE_LEFT_BORDER_DIRICHLET
     for (unsigned int i=0; i<length; i++) g[i] = -params.thermalDiffusivity*p0[i];
 #endif
     g[0] = 0.0;
@@ -128,27 +132,25 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
     C_UNUSED(tn);
     C_UNUSED(condition);
 
+    const EquationParameters &params = solver->params;
     if (sn.i == 0)
     {
-#ifdef PROBLEM1
-        const EquationParameters &params = solver->params;
+#ifdef EXAMPLE_LEFT_BORDER_ROBIN
         condition = BoundaryConditionPDE(BoundaryCondition::Robin, params.thermalConductivity1, -1.0, params.thermalConductivity1);
 #endif
-#ifdef PROBLEM2
-        const EquationParameters &params = solver->params;
+#ifdef EXAMPLE_LEFT_BORDER_DIRICHLET
         condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
 #endif
         return params.v[tn.i];
     }
     else
     {
-#ifdef PROBLEM1
-        const EquationParameters &params = solver->params;
+#ifdef EXAMPLE_LEFT_BORDER_ROBIN
         condition = BoundaryConditionPDE(BoundaryCondition::Robin, params.thermalConductivity2, +1.0, params.thermalConductivity2);
         return params.environmentTemperature;
 #endif
-#ifdef PROBLEM2
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+#ifdef EXAMPLE_LEFT_BORDER_DIRICHLET
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +0.0);
         return 0.0;
 #endif
     }
@@ -184,9 +186,6 @@ double HeatEquationFBVP::final(const SpaceNodePDE &sn, FinalCondition condition)
     auto &U = solver->U;
     auto &V = solver->V;
     unsigned int i = static_cast<unsigned int>(sn.i);
-
-    //if (sn.i == 0 || sn.i == 100) return 0.0; else
-
     return -2.0*(U[i] - V[i]);
 }
 
@@ -197,23 +196,23 @@ double HeatEquationFBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
     C_UNUSED(condition);
 
     if (sn.i == 0) {
-#ifdef PROBLEM1
+#ifdef EXAMPLE_LEFT_BORDER_ROBIN
         const EquationParameters &params = solver->params;
         condition = BoundaryConditionPDE(BoundaryCondition::Robin, params.thermalConductivity1, -1.0, 0.0);
         return 0.0;
 #endif
-#ifdef PROBLEM2
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+#ifdef EXAMPLE_LEFT_BORDER_DIRICHLET
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +0.0);
         return 0.0;
 #endif
     } else {
-#ifdef PROBLEM1
+#ifdef EXAMPLE_LEFT_BORDER_ROBIN
         const EquationParameters &params = solver->params;
         condition = BoundaryConditionPDE(BoundaryCondition::Robin, params.thermalConductivity2, +1.0, 0.0);
         return 0.0;
 #endif
-#ifdef PROBLEM2
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+#ifdef EXAMPLE_LEFT_BORDER_DIRICHLET
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +0.0);
         return 0.0;
 #endif
     }
@@ -232,12 +231,13 @@ void HeatEquationFBVP::layerInfo(const DoubleVector &p, const TimeNodePDE &tn) c
     C_UNUSED(tn);
 
     auto const_solver = const_cast<ProblemSolver *>(solver);
-#ifdef PROBLEM1
+#ifdef EXAMPLE_LEFT_BORDER_ROBIN
     const_solver->p0[tn.i] = p[0];
 #endif
-#ifdef PROBLEM2
-    const_solver->p0[tn.i] = (-3.0*p[0]+4.0*p[1]-p[2])/(2.0*0.01);
-    //const_solver->p0[tn.i] = (p[1]-p[0])/0.01;
+#ifdef EXAMPLE_LEFT_BORDER_DIRICHLET
+    const double hx = _spaceDimensionX.step();
+    //const_solver->p0[tn.i] = (-3.0*p[0]+4.0*p[1]-p[2])/(2.0*hx);
+    const_solver->p0[tn.i] = (p[1]-p[0])/hx;
 #endif
 
     //printf("%4d --- ", tn.i);

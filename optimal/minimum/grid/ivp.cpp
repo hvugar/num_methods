@@ -1,6 +1,6 @@
 #include "ivp.h"
 
-//**********************************************************************************************
+//**********************************************************************************************//
 
 InitialConditionODE::InitialConditionODE() {}
 
@@ -18,7 +18,7 @@ InitialConditionODE& InitialConditionODE::operator=(const InitialConditionODE &o
 
 InitialConditionODE::~InitialConditionODE() {}
 
-//**********************************************************************************************
+//**********************************************************************************************//
 
 InitialConditionPDE::InitialConditionPDE() {}
 
@@ -33,7 +33,7 @@ InitialConditionPDE & InitialConditionPDE::operator=(const InitialConditionPDE &
 InitialConditionPDE::~InitialConditionPDE()
 {}
 
-//**********************************************************************************************
+//**********************************************************************************************//
 
 InitialValueProblem::InitialValueProblem() {}
 
@@ -47,7 +47,7 @@ InitialValueProblem& InitialValueProblem::operator =(const InitialValueProblem &
 
 InitialValueProblem::~InitialValueProblem() {}
 
-//**********************************************************************************************
+//**********************************************************************************************//
 
 InitialValueProblemODE::InitialValueProblemODE() {}
 
@@ -61,7 +61,7 @@ InitialValueProblemODE& InitialValueProblemODE::operator =(const InitialValuePro
 
 InitialValueProblemODE::~InitialValueProblemODE() {}
 
-//**********************************************************************************************
+//**********************************************************************************************//
 
 InitialValueProblemPDE::InitialValueProblemPDE() {}
 
@@ -75,7 +75,7 @@ InitialValueProblemPDE & InitialValueProblemPDE::operator =(const InitialValuePr
 
 InitialValueProblemPDE::~InitialValueProblemPDE() {}
 
-//**********************************************************************************************
+//**********************************************************************************************//
 
 FinalValueProblemODE::FinalValueProblemODE() {}
 
@@ -89,7 +89,7 @@ FinalValueProblemODE& FinalValueProblemODE::operator =(const FinalValueProblemOD
 
 FinalValueProblemODE::~FinalValueProblemODE() {}
 
-//**********************************************************************************************
+//**********************************************************************************************//
 
 FinalValueProblemPDE::FinalValueProblemPDE() {}
 

@@ -6,7 +6,7 @@
 #include <gradient.h>
 #include <printer.h>
 #include <grid/pibvp.h>
-#define SIGMA 1.0
+#define SIGMA 0.5
 
 namespace p1p
 {
@@ -43,6 +43,22 @@ public:
 
 protected:
     virtual double weight() const { return SIGMA; }
+
+public:
+    virtual const Dimension& timeDimension() const { return _timeDimension; }
+    virtual const Dimension& spaceDimensionX() const { return _spaceDimensionX; }
+    virtual const Dimension& spaceDimensionY() const { return _spaceDimensionY; }
+    virtual const Dimension& spaceDimensionZ() const { return _spaceDimensionZ; }
+
+    void setTimeDimension(const Dimension &timeDimension) { this->_timeDimension = timeDimension; }
+    void setSpaceDimensionX(const Dimension &spaceDimensionX) { this->_spaceDimensionX = spaceDimensionX; }
+    void setSpaceDimensionY(const Dimension &spaceDimensionY) { this->_spaceDimensionY = spaceDimensionY; }
+
+private:
+    Dimension _timeDimension;
+    Dimension _spaceDimensionX;
+    Dimension _spaceDimensionY;
+    Dimension _spaceDimensionZ;
 };
 
 class PROBLEM1PSHARED_EXPORT HeatEquationFBVP : public IHeatEquationFBVP
@@ -57,6 +73,22 @@ public:
 
 protected:
     virtual double weight() const { return SIGMA; }
+
+public:
+    virtual const Dimension& timeDimension() const { return _timeDimension; }
+    virtual const Dimension& spaceDimensionX() const { return _spaceDimensionX; }
+    virtual const Dimension& spaceDimensionY() const { return _spaceDimensionY; }
+    virtual const Dimension& spaceDimensionZ() const { return _spaceDimensionZ; }
+
+    void setTimeDimension(const Dimension &timeDimension) { this->_timeDimension = timeDimension; }
+    void setSpaceDimensionX(const Dimension &spaceDimensionX) { this->_spaceDimensionX = spaceDimensionX; }
+    void setSpaceDimensionY(const Dimension &spaceDimensionY) { this->_spaceDimensionY = spaceDimensionY; }
+
+private:
+    Dimension _timeDimension;
+    Dimension _spaceDimensionX;
+    Dimension _spaceDimensionY;
+    Dimension _spaceDimensionZ;
 };
 
 class PROBLEM1PSHARED_EXPORT ProblemSolver : public RnFunction, public IGradient

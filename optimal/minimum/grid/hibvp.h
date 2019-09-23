@@ -3,8 +3,19 @@
 
 #include "ibvp.h"
 
+/**
+ * @brief The IHyperbolicIBVP class
+ * @class IHyperbolicIBVP
+ * @see InitialBoundaryValueProblemPDE
+ */
 class MINIMUMSHARED_EXPORT IHyperbolicIBVP : public InitialBoundaryValueProblemPDE
 {
+public:
+    IHyperbolicIBVP();
+    IHyperbolicIBVP(const IHyperbolicIBVP &);
+    IHyperbolicIBVP & operator = (const IHyperbolicIBVP &);
+    virtual ~IHyperbolicIBVP();
+
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
@@ -16,8 +27,19 @@ protected:
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//
 
-class MINIMUMSHARED_EXPORT IFinalIHyperbolicIBVP : public FinalBoundaryValueProblemPDE
+/**
+ * @brief The IFinalIHyperbolicIBVP class
+ * @class
+ * @see
+ */
+class MINIMUMSHARED_EXPORT IHyperbolicFBVP : public FinalBoundaryValueProblemPDE
 {
+public:
+    IHyperbolicFBVP();
+    IHyperbolicFBVP(const IHyperbolicFBVP &);
+    IHyperbolicFBVP & operator = (const IHyperbolicFBVP &);
+    virtual ~IHyperbolicFBVP();
+
 protected:
     virtual double final(const SpaceNodePDE &sn, FinalCondition condition) const = 0;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
@@ -37,6 +59,10 @@ public:
     IWaveEquationIBVP(const IWaveEquationIBVP &);
     IWaveEquationIBVP & operator =(const IWaveEquationIBVP &);
 
+    virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
+    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
+
     virtual double waveSpeed() const;
     virtual double waveDissipation() const;
 
@@ -50,20 +76,20 @@ public:
     void implicit_calculate_D2V1() const;
 
 protected:
-    virtual double lambda() const;
+    virtual double weight() const;
     double _waveSpeed;
     double _waveDissipation;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//
 
-class MINIMUMSHARED_EXPORT IFinalWaveEquationIBVP : public IFinalIHyperbolicIBVP
+class MINIMUMSHARED_EXPORT IWaveEquationFBVP : public IHyperbolicFBVP
 {
 public:
-    explicit IFinalWaveEquationIBVP(double waveSpeed = 1.0, double waveDissipation = 0.0);
-    IFinalWaveEquationIBVP(const IFinalWaveEquationIBVP &);
-    IFinalWaveEquationIBVP & operator =(const IFinalWaveEquationIBVP &);
-    virtual ~IFinalWaveEquationIBVP();
+    explicit IWaveEquationFBVP(double waveSpeed = 1.0, double waveDissipation = 0.0);
+    IWaveEquationFBVP(const IWaveEquationFBVP &);
+    IWaveEquationFBVP & operator =(const IWaveEquationFBVP &);
+    virtual ~IWaveEquationFBVP();
 
     virtual double waveSpeed() const;
     virtual double waveDissipation() const;
@@ -77,9 +103,8 @@ public:
     void explicit_calculate_D2V1() const;
     void implicit_calculate_D2V1() const;
 
-    virtual double lambda() const;
-
 protected:
+    virtual double weight() const;
     double _waveSpeed;
     double _waveDissipation;
 };

@@ -673,9 +673,9 @@ double WaveEquationIBVP::integralUK(const DoubleMatrix &) const
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void FinalHyperbolicIBVP::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
+void WaveEquationFBVP::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
 {
-    FinalHyperbolicIBVP chibvp;
+    WaveEquationFBVP chibvp;
     chibvp.setWaveSpeed(1.0);
     chibvp.setWaveDissipation(0.1);
     chibvp.setTimeDimension(Dimension(0.005, 0, 200));
@@ -690,7 +690,7 @@ void FinalHyperbolicIBVP::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
     bm.printDuration();
 }
 
-void FinalHyperbolicIBVP::layerInfo(const DoubleMatrix& p, const TimeNodePDE& tn) const
+void WaveEquationFBVP::layerInfo(const DoubleMatrix& p, const TimeNodePDE& tn) const
 {
     if (tn.i==200 || tn.i==199 || tn.i==198 || /*tn.i==397 || tn.i==396 ||*/ tn.i==2 || tn.i==1 || tn.i==0)
     {
@@ -699,7 +699,7 @@ void FinalHyperbolicIBVP::layerInfo(const DoubleMatrix& p, const TimeNodePDE& tn
     }
 }
 
-double FinalHyperbolicIBVP::final(const SpaceNodePDE &sn UNUSED_PARAM, FinalCondition condition) const
+double WaveEquationFBVP::final(const SpaceNodePDE &sn UNUSED_PARAM, FinalCondition condition) const
 {
     if (condition == FinalCondition::FinalValue)
     {
@@ -711,12 +711,12 @@ double FinalHyperbolicIBVP::final(const SpaceNodePDE &sn UNUSED_PARAM, FinalCond
     }
 }
 
-double FinalHyperbolicIBVP::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM, BoundaryConditionPDE &condition UNUSED_PARAM) const
+double WaveEquationFBVP::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM, BoundaryConditionPDE &condition UNUSED_PARAM) const
 {
     return sn.x*sn.x + sn.y*sn.y + tn.t*tn.t;
 }
 
-double FinalHyperbolicIBVP::f(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
+double WaveEquationFBVP::f(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
     double a = waveSpeed();
     double alpha = waveDissipation();

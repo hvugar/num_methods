@@ -8,12 +8,11 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 #endif
 
-    HeatEquationIBVP w;
+    HeatEquationIBVP w(Dimension(0.01, 0, 100),
+                      Dimension(0.01, 0, 100),
+                      Dimension(0.01, 0, 100));
     w.setThermalDiffusivity(1.0);
     w.setThermalConductivity(0.1);
-    w.setTimeDimension(Dimension(0.01, 0, 100));
-    w.setSpaceDimensionX(Dimension(0.01, 0, 100));
-    w.setSpaceDimensionY(Dimension(0.01, 0, 100));
 
     Benchmark bm;
     bm.tick();
@@ -25,7 +24,14 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
     bm.printDuration();
 }
 
-double HeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition condition) const
+HeatEquationIBVP::HeatEquationIBVP(const Dimension &timeDimension, const Dimension &spaceDimensionX, const Dimension &spaceDimensionY)
+{
+    this->_timeDimension = timeDimension;
+    this->_spaceDimensionX = spaceDimensionX;
+    this->_spaceDimensionY = spaceDimensionY;
+}
+
+double HeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition) const
 {
     TimeNodePDE tn; tn.t = 0.0;
     return U(sn, tn);
@@ -197,7 +203,7 @@ void HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
 
 //---------------------------------------------------------------------------------------------//
 
-void FinalHeatEquationIBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
+void HeatEquationFBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     C_UNUSED(argc);
     C_UNUSED(argv);
@@ -205,12 +211,11 @@ void FinalHeatEquationIBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARA
     QGuiApplication app(argc, argv);
 #endif
 
-    FinalHeatEquationIBVP w;
+    HeatEquationFBVP w(Dimension(0.01, 0, 100),
+                       Dimension(0.01, 0, 100),
+                       Dimension(0.01, 0, 100));
     w.setThermalDiffusivity(-1.0);
     w.setThermalConductivity(0.1);
-    w.setTimeDimension(Dimension(0.01, 0, 100));
-    w.setSpaceDimensionX(Dimension(0.01, 0, 100));
-    w.setSpaceDimensionY(Dimension(0.01, 0, 100));
 
     Benchmark bm;
     bm.tick();
@@ -220,30 +225,36 @@ void FinalHeatEquationIBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARA
     //IPrinter::printSeperatorLine();
     bm.tock();
     bm.printDuration();
-
 }
 
-double FinalHeatEquationIBVP::final(const SpaceNodePDE &sn, FinalCondition condition) const
+HeatEquationFBVP::HeatEquationFBVP(const Dimension &timeDimension, const Dimension &spaceDimensionX, const Dimension &spaceDimensionY)
+{
+    this->_timeDimension = timeDimension;
+    this->_spaceDimensionX = spaceDimensionX;
+    this->_spaceDimensionY = spaceDimensionY;
+}
+
+double HeatEquationFBVP::final(const SpaceNodePDE &sn, FinalCondition) const
 {
     TimeNodePDE tn; tn.t = 1.0;
     return U(sn, tn);
 }
 
-double FinalHeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
+double HeatEquationFBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
 {
     if (sn.i == 0)
     {
-        //condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        //return U(sn, tn)*(condition.alpha()/condition.gamma());
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+        return U(sn, tn)*(condition.alpha()/condition.gamma());
 
         //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(1.0))/condition.gamma();
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(2.0*sn.x))/condition.gamma();
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(3.0*sn.x*sn.x))/condition.gamma();
 
-        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
+        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(1.0))/condition.gamma();
-        return (condition.alpha()*U(sn, tn)+condition.beta()*(2.0*sn.x))/condition.gamma();
+        //return (condition.alpha()*U(sn, tn)+condition.beta()*(2.0*sn.x))/condition.gamma();
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(3.0*sn.x*sn.x))/condition.gamma();
 
         //double lambda = 0.1; condition = BoundaryConditionPDE(BoundaryCondition::Robin, -lambda, +1.0, -lambda); return 2.0;
@@ -251,17 +262,17 @@ double FinalHeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE
     }
     else
     {
-        //condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        //return U(sn, tn)*(condition.alpha()/condition.gamma());
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+        return U(sn, tn)*(condition.alpha()/condition.gamma());
 
         //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(1.0))/condition.gamma();
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(2.0*sn.x))/condition.gamma();
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(3.0*sn.x*sn.x))/condition.gamma();
 
-        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
+        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(1.0))/condition.gamma();
-        return (condition.alpha()*U(sn, tn)+condition.beta()*(2.0*sn.x))/condition.gamma();
+        //return (condition.alpha()*U(sn, tn)+condition.beta()*(2.0*sn.x))/condition.gamma();
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(3.0*sn.x*sn.x))/condition.gamma();
 
         //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +0.0); return 0.0;
@@ -269,13 +280,12 @@ double FinalHeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE
     }
 }
 
-double FinalHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+double HeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     const double td = thermalDiffusivity();
-    const double uk = 0.0;
     const double tc = thermalConductivity();
 
-    //return 1.0 - 0.0*td - 1.0*uk - tc*U(sn,tn);
+    //return 1.0 - 0.0*td - tc*U(sn,tn) - 1.0*uk;
     //return 2.0*tn.t - 0.0*td - tc*U(sn,tn);
     //return 3.0*tn.t*tn.t - 0.0*td - tc*U(sn,tn);
 
@@ -283,9 +293,9 @@ double FinalHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) c
     return 2.0*tn.t - 2.0*td - tc*U(sn,tn);
     //return 3.0*tn.t*tn.t - 2.0*td - tc*U(sn,tn);
 
-    //return 1.0 - 6.0*td*sn.x + tc*U(sn,tn);
-    //return 2.0*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
-    //return 3.0*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
+    //return 1.0 - 6.0*td*sn.x - tc*U(sn,tn);
+    //return 2.0*tn.t - 6.0*td*sn.x - tc*U(sn,tn);
+    //return 3.0*tn.t*tn.t - 6.0*td*sn.x - tc*U(sn,tn);
 
     //return 4.0*tn.t*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
     //return 5.0*tn.t*tn.t*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
@@ -295,7 +305,7 @@ double FinalHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) c
     //return 3.0*tn.t*tn.t - 6.0*td*(sn.x+sn.y) + tc*U(sn,tn);
 }
 
-double FinalHeatEquationIBVP::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+double HeatEquationFBVP::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     //return sn.x + tn.t;
     //return sn.x + tn.t*tn.t;
@@ -317,7 +327,7 @@ double FinalHeatEquationIBVP::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) c
     //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t*tn.t*tn.t;
 }
 
-void FinalHeatEquationIBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) const
+void HeatEquationFBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) const
 {
     C_UNUSED(u);
     C_UNUSED(tn);
@@ -329,7 +339,7 @@ void FinalHeatEquationIBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& 
     }
 }
 
-void FinalHeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
+void HeatEquationFBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
     C_UNUSED(u);
     C_UNUSED(tn);

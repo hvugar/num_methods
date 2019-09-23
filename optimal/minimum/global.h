@@ -11,7 +11,7 @@
 #define MINIMUMSHARED_EXPORT
 #endif
 
-#define C_UNUSED(x) (void)x;
+#define C_UNUSED(x) (void)x
 
 #ifdef __GNUC__
 #define UNUSED_PARAM __attribute__ ((unused))

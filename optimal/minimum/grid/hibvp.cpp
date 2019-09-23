@@ -1,4 +1,28 @@
 #include "hibvp.h"
+#include <limits>
+#include <exception>
+#include <stdexcept>
+#include "../cmethods.h"
+#include "../linearequation.h"
+#include "../printer.h"
+
+IHyperbolicIBVP::IHyperbolicIBVP() {}
+
+IHyperbolicIBVP::IHyperbolicIBVP(const IHyperbolicIBVP &) {}
+
+IHyperbolicIBVP & IHyperbolicIBVP::operator = (const IHyperbolicIBVP &) { return *this; }
+
+IHyperbolicIBVP::~IHyperbolicIBVP() {}
+
+//--------------------------------------------------------------------------------------------------------------//
+
+IHyperbolicFBVP::IHyperbolicFBVP() {}
+
+IHyperbolicFBVP::IHyperbolicFBVP(const IHyperbolicFBVP &) {}
+
+IHyperbolicFBVP & IHyperbolicFBVP::operator = (const IHyperbolicFBVP &) { return *this; }
+
+IHyperbolicFBVP::~IHyperbolicFBVP() {}
 
 //--------------------------------------------------------------------------------------------------------------//
 
@@ -8,20 +32,20 @@ IWaveEquationIBVP::IWaveEquationIBVP(double waveSpeed, double waveDissipation) :
 IWaveEquationIBVP::IWaveEquationIBVP(const IWaveEquationIBVP& ibvp) :
     _waveSpeed(ibvp._waveSpeed), _waveDissipation(ibvp._waveDissipation)
 {
-    this->_timeDimension = ibvp._timeDimension;
-    this->_spaceDimensionX = ibvp._spaceDimensionX;
-    this->_spaceDimensionY = ibvp._spaceDimensionY;
-    this->_spaceDimensionZ = ibvp._spaceDimensionZ;
+    //this->_timeDimension = ibvp._timeDimension;
+    //this->_spaceDimensionX = ibvp._spaceDimensionX;
+    //this->_spaceDimensionY = ibvp._spaceDimensionY;
+    //this->_spaceDimensionZ = ibvp._spaceDimensionZ;
 }
 
 IWaveEquationIBVP & IWaveEquationIBVP::operator =(const IWaveEquationIBVP &other)
 {
     if (this == &other) { return *this; }
 
-    this->_timeDimension = other._timeDimension;
-    this->_spaceDimensionX = other._spaceDimensionX;
-    this->_spaceDimensionY = other._spaceDimensionY;
-    this->_spaceDimensionZ = other._spaceDimensionZ;
+    //this->_timeDimension = other._timeDimension;
+    //this->_spaceDimensionX = other._spaceDimensionX;
+    //this->_spaceDimensionY = other._spaceDimensionY;
+    //this->_spaceDimensionZ = other._spaceDimensionZ;
     this->_waveSpeed = other._waveSpeed;
     this->_waveDissipation = other._waveDissipation;
     return *this;
@@ -187,7 +211,7 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
 
     const double alpha       = waveDissipation();
     const double a           = waveSpeed();
-    const double lmbd        = lambda();
+    const double lmbd        = weight();
     const double m1_2lambda  = 1.0-2.0*lmbd;
     const double ht_ht       = ht*ht;
     const double alpha_ht_05 = 0.5*alpha*ht;
@@ -509,6 +533,10 @@ void IWaveEquationIBVP::explicit_calculate_D2V1() const
 
 void IWaveEquationIBVP::implicit_calculate_D2V1() const
 {
+    const Dimension _spaceDimensionX = spaceDimensionX();
+    const Dimension _spaceDimensionY = spaceDimensionX();
+    const Dimension _timeDimension = timeDimension();
+
     const unsigned int N = static_cast<unsigned int>( _spaceDimensionX.size() );
     const unsigned int M = static_cast<unsigned int>( _spaceDimensionY.size() );
     const unsigned int L = static_cast<unsigned int>( _timeDimension.size() );
@@ -517,7 +545,7 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
     const double hy = _spaceDimensionY.step();
     const double ht = _timeDimension.step();
 
-    const double _lambda = lambda();
+    const double _lambda = weight();
     const double a = waveSpeed();
     const double alpha = waveDissipation();
     const double ht_050 = ht*0.5;
@@ -754,39 +782,43 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
     free(ax);
 }
 
-double IWaveEquationIBVP::lambda() const { return 0.25; }
+double IWaveEquationIBVP::weight() const { return 0.25; }
 
 //--------------------------------------------------------------------------------------------------------------//
 
-IFinalWaveEquationIBVP::IFinalWaveEquationIBVP(double waveSpeed, double waveDissipation)
+IWaveEquationFBVP::IWaveEquationFBVP(double waveSpeed, double waveDissipation)
     : _waveSpeed(waveSpeed), _waveDissipation(waveDissipation) {}
 
-IFinalWaveEquationIBVP::IFinalWaveEquationIBVP(const IFinalWaveEquationIBVP &ibvp) :
+IWaveEquationFBVP::IWaveEquationFBVP(const IWaveEquationFBVP &ibvp) :
     _waveSpeed(ibvp._waveSpeed), _waveDissipation(ibvp._waveDissipation) {}
 
-IFinalWaveEquationIBVP & IFinalWaveEquationIBVP::operator =(const IFinalWaveEquationIBVP &other)
+IWaveEquationFBVP & IWaveEquationFBVP::operator =(const IWaveEquationFBVP &other)
 {
     this->_waveSpeed = other._waveSpeed;
     this->_waveDissipation = other._waveDissipation;
     return *this;
 }
 
-IFinalWaveEquationIBVP::~IFinalWaveEquationIBVP() {}
+IWaveEquationFBVP::~IWaveEquationFBVP() {}
 
-double IFinalWaveEquationIBVP::waveSpeed() const  { return _waveSpeed; }
+double IWaveEquationFBVP::waveSpeed() const  { return _waveSpeed; }
 
-double IFinalWaveEquationIBVP::waveDissipation() const { return _waveDissipation; }
+double IWaveEquationFBVP::waveDissipation() const { return _waveDissipation; }
 
-void IFinalWaveEquationIBVP::setWaveSpeed(double waveSpeed) { _waveSpeed = waveSpeed; }
+void IWaveEquationFBVP::setWaveSpeed(double waveSpeed) { _waveSpeed = waveSpeed; }
 
-void IFinalWaveEquationIBVP::setWaveDissipation(double waveDissipation) { _waveDissipation = waveDissipation; }
+void IWaveEquationFBVP::setWaveDissipation(double waveDissipation) { _waveDissipation = waveDissipation; }
 
-void IFinalWaveEquationIBVP::explicit_calculate_D1V1() const {}
+void IWaveEquationFBVP::explicit_calculate_D1V1() const {}
 
-void IFinalWaveEquationIBVP::implicit_calculate_D1V1() const {}
+void IWaveEquationFBVP::implicit_calculate_D1V1() const {}
 
-void IFinalWaveEquationIBVP::explicit_calculate_D2V1() const
+void IWaveEquationFBVP::explicit_calculate_D2V1() const
 {
+    const Dimension _spaceDimensionX = spaceDimensionX();
+    const Dimension _spaceDimensionY = spaceDimensionX();
+    const Dimension _timeDimension = timeDimension();
+
     const unsigned int N = static_cast<unsigned int>( _spaceDimensionX.size() );
     const unsigned int M = static_cast<unsigned int>( _spaceDimensionY.size() );
     const unsigned int L = static_cast<unsigned int>( _timeDimension.size() );
@@ -917,8 +949,12 @@ void IFinalWaveEquationIBVP::explicit_calculate_D2V1() const
     p20.clear();
 }
 
-void IFinalWaveEquationIBVP::implicit_calculate_D2V1() const
+void IWaveEquationFBVP::implicit_calculate_D2V1() const
 {
+    const Dimension _spaceDimensionX = spaceDimensionX();
+    const Dimension _spaceDimensionY = spaceDimensionX();
+    const Dimension _timeDimension = timeDimension();
+
     const unsigned int N = static_cast<unsigned int>( _spaceDimensionX.size() );
     const unsigned int M = static_cast<unsigned int>( _spaceDimensionY.size() );
     const unsigned int L = static_cast<unsigned int>( _timeDimension.size() );
@@ -927,7 +963,7 @@ void IFinalWaveEquationIBVP::implicit_calculate_D2V1() const
     const double hy = _spaceDimensionY.step();
     const double ht = _timeDimension.step();
 
-    const double _lambda = lambda();
+    const double _lambda = weight();
     const double a = waveSpeed();
     const double alpha = waveDissipation();
     const double ht_050 = ht*0.50;
@@ -1165,6 +1201,6 @@ void IFinalWaveEquationIBVP::implicit_calculate_D2V1() const
     free(ax);
 }
 
-double IFinalWaveEquationIBVP::lambda() const { return 0.25; }
+double IWaveEquationFBVP::weight() const { return 0.25; }
 
 //--------------------------------------------------------------------------------------------------------------//

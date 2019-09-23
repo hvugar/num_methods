@@ -3,8 +3,19 @@
 
 #include "ibvp.h"
 
+/**
+ * @brief The IParabolicIBVP class
+ * @class IParabolicIBVP
+ * @see InitialBoundaryValueProblemPDE
+ */
 class MINIMUMSHARED_EXPORT IParabolicIBVP : public InitialBoundaryValueProblemPDE
 {
+public:
+    IParabolicIBVP();
+    IParabolicIBVP(const IParabolicIBVP &);
+    IParabolicIBVP & operator = (const IParabolicIBVP &);
+    virtual ~IParabolicIBVP();
+
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
@@ -16,8 +27,19 @@ protected:
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//
 
+/**
+ * @brief The IParabolicFBVP class
+ * @class IParabolicFBVP
+ * @see FinalBoundaryValueProblemPDE
+ */
 class MINIMUMSHARED_EXPORT IParabolicFBVP : public FinalBoundaryValueProblemPDE
 {
+public:
+    IParabolicFBVP();
+    IParabolicFBVP(const IParabolicFBVP &);
+    IParabolicFBVP & operator = (const IParabolicFBVP &);
+    virtual ~IParabolicFBVP();
+
 protected:
     virtual double final(const SpaceNodePDE &sn, FinalCondition condition) const = 0;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
@@ -39,19 +61,14 @@ public:
 
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
-
-    /**
-     * @brief f Heat energy generated per unit volume per unit time
-     * @param sn point x
-     * @param tn time t
-     * @return
-     */
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
 
     virtual double thermalDiffusivity() const;
     virtual void setThermalDiffusivity(double thermalDiffusivity);
+
     virtual double thermalConductivity() const;
     virtual void setThermalConductivity(double thermalConductivity);
+
     virtual double thermalConvection() const;
     virtual void setThermalConvection(double thermalConvection);
 
@@ -95,8 +112,10 @@ public:
 
     virtual double thermalDiffusivity() const;
     virtual void setThermalDiffusivity(double thermalDiffusivity);
+
     virtual double thermalConductivity() const;
     virtual void setThermalConductivity(double thermalConductivity);
+
     virtual double thermalConvection() const;
     virtual void setThermalConvection(double thermalConvection);
 

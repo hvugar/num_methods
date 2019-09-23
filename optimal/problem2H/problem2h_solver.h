@@ -161,7 +161,7 @@ private:
 };
 
 class PROBLEM2HSHARED_EXPORT Problem2HConjugateWaveEquationIBVP :
-        virtual public IFinalWaveEquationIBVP,
+        virtual public IWaveEquationFBVP,
         virtual public Problem2HCommon
 {
 protected:
