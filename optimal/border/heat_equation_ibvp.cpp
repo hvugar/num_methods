@@ -42,17 +42,17 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
 {
     if (sn.i == 0)
     {
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        return U(sn, tn);//*(condition.alpha()/condition.gamma());
+        //condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+        //return U(sn, tn);//*(condition.alpha()/condition.gamma());
 
         //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(1.0))/condition.gamma();
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(2.0*sn.x))/condition.gamma();
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(3.0*sn.x*sn.x))/condition.gamma();
 
-        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
+        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(1.0))/condition.gamma();
-        //return (condition.alpha()*U(sn, tn)+condition.beta()*(2.0*sn.x))/condition.gamma();
+        return (condition.alpha()*U(sn, tn)+condition.beta()*(2.0*sn.x))/condition.gamma();
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(3.0*sn.x*sn.x))/condition.gamma();
 
         //double lambda = 0.1; condition = BoundaryConditionPDE(BoundaryCondition::Robin, -lambda, +1.0, -lambda); return 2.0;

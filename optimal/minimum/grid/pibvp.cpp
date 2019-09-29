@@ -335,6 +335,7 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
 
         sn.i = static_cast<int>(N); sn.x = N*hx;
         value = boundary(sn, tn10, condition);
+        value0 = boundary(sn, tn00, condition);
         alpha = condition.alpha();
         beta  = condition.beta();
         gamma = condition.gamma();

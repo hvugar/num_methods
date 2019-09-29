@@ -6,7 +6,7 @@
 #include <gradient.h>
 #include <printer.h>
 #include <grid/pibvp.h>
-#define SIGMA 1.0
+#define SIGMA 0.5
 
 namespace p1p
 {

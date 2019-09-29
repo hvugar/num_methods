@@ -1,7 +1,7 @@
 #include "problem1p_solver.h"
 
-//#define EXAMPLE_LEFT_BORDER_ROBIN
-#define EXAMPLE_LEFT_BORDER_DIRICHLET
+#define EXAMPLE_LEFT_BORDER_ROBIN
+//#define EXAMPLE_LEFT_BORDER_DIRICHLET
 //#define EXAMPLE_FXT
 
 using namespace p1p;
