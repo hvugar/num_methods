@@ -1,7 +1,7 @@
 #include "problem1p_solver.h"
 
-#define EXAMPLE_LEFT_BORDER_ROBIN
-//#define EXAMPLE_LEFT_BORDER_DIRICHLET
+//#define EXAMPLE_LEFT_BORDER_ROBIN
+#define EXAMPLE_LEFT_BORDER_DIRICHLET
 //#define EXAMPLE_FXT
 
 using namespace p1p;
@@ -150,7 +150,7 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
         return params.environmentTemperature;
 #endif
 #ifdef EXAMPLE_LEFT_BORDER_DIRICHLET
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +0.0);
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
         return 0.0;
 #endif
     }
@@ -202,7 +202,7 @@ double HeatEquationFBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
         return 0.0;
 #endif
 #ifdef EXAMPLE_LEFT_BORDER_DIRICHLET
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +0.0);
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
         return 0.0;
 #endif
     } else {
@@ -212,7 +212,7 @@ double HeatEquationFBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
         return 0.0;
 #endif
 #ifdef EXAMPLE_LEFT_BORDER_DIRICHLET
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +0.0);
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
         return 0.0;
 #endif
     }
@@ -236,8 +236,8 @@ void HeatEquationFBVP::layerInfo(const DoubleVector &p, const TimeNodePDE &tn) c
 #endif
 #ifdef EXAMPLE_LEFT_BORDER_DIRICHLET
     const double hx = _spaceDimensionX.step();
-    //const_solver->p0[tn.i] = (-3.0*p[0]+4.0*p[1]-p[2])/(2.0*hx);
-    const_solver->p0[tn.i] = (p[1]-p[0])/hx;
+    const_solver->p0[tn.i] = (-3.0*p[0]+4.0*p[1]-p[2])/(2.0*hx);
+    //const_solver->p0[tn.i] = (p[1]-p[0])/hx;
 #endif
 
     //printf("%4d --- ", tn.i);

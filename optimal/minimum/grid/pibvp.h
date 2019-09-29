@@ -54,7 +54,7 @@ protected:
 class MINIMUMSHARED_EXPORT IHeatEquationIBVP : public IParabolicIBVP
 {
 public:
-    explicit IHeatEquationIBVP(double thermalDiffusivity = 1.0);
+    explicit IHeatEquationIBVP(double thermalDiffusivity = 1.0, double thermalConductivity = 0.0, double thermalConvection = 0.0);
     virtual ~IHeatEquationIBVP();
     IHeatEquationIBVP(const IHeatEquationIBVP &);
     IHeatEquationIBVP & operator =(const IHeatEquationIBVP &);
