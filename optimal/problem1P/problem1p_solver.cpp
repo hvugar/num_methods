@@ -47,7 +47,7 @@ ProblemSolver::ProblemSolver(const Dimension &timeDimension, const Dimension &sp
     forward.setThermalConductivity(params.thermalConductivity0);
     forward.setThermalConvection(0.0);
 
-    backward.setThermalDiffusivity(-params.thermalDiffusivity);
+    backward.setThermalDiffusivity(params.thermalDiffusivity);
     backward.setThermalConductivity(params.thermalConductivity0);
     backward.setThermalConvection(0.0);
 
