@@ -11,7 +11,7 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
     HeatEquationIBVP w(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
     w.setThermalDiffusivity(1.0);
     w.setThermalConductivity(0.1);
-    w.setThermalConvection(0.0);
+    w.setThermalConvection(0.2);
 
     Benchmark bm;
     bm.tick();
@@ -43,7 +43,7 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
     if (sn.i == 0)
     {
         //condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        //return U(sn, tn);//*(condition.alpha()/condition.gamma());
+        //return U(sn, tn)*(condition.alpha()/condition.gamma());
 
         //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(1.0))/condition.gamma();
@@ -61,7 +61,7 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
     else
     {
         //condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        //return U(sn, tn);//*(condition.alpha()/condition.gamma());
+        //return U(sn, tn)*(condition.alpha()/condition.gamma());
 
         //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(1.0))/condition.gamma();
@@ -82,18 +82,19 @@ double HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     const double td = thermalDiffusivity();
     const double tc = thermalConductivity();
+    const double tv = thermalConvection();
 
-    //return 1.0 - 0.0*td + tc*U(sn,tn);
-    //return 2.0*tn.t - 0.0*td + tc*U(sn,tn);
-    //return 3.0*tn.t*tn.t - 0.0*td + tc*U(sn,tn);
+    //return 1.0 - 0.0*td + tc*U(sn,tn) - 1.0*tv;
+    //return 2.0*tn.t - 0.0*td + tc*U(sn,tn) - 1.0*tv;
+    //return 3.0*tn.t*tn.t - 0.0*td + tc*U(sn,tn) - 1.0*tv;
 
-    //return 1.0 - 2.0*td + tc*U(sn,tn);
-    return 2.0*tn.t - 2.0*td + tc*U(sn,tn);
-    //return 3.0*tn.t*tn.t - 2.0*td + tc*U(sn,tn);
+    //return 1.0 - 2.0*td + tc*U(sn,tn) - 2.0*tv*sn.x;
+    return 2.0*tn.t - 2.0*td + tc*U(sn,tn) - 2.0*tv*sn.x;
+    //return 3.0*tn.t*tn.t - 2.0*td + tc*U(sn,tn) - 2.0*tv*sn.x;
 
-    //return 1.0 - 6.0*td*sn.x + tc*U(sn,tn);
-    //return 2.0*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
-    //return 3.0*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
+    //return 1.0 - 6.0*td*sn.x + tc*U(sn,tn) - 3.0*tv*sn.x*sn.x;
+    //return 2.0*tn.t - 6.0*td*sn.x + tc*U(sn,tn) - 3.0*tv*sn.x*sn.x;
+    //return 3.0*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn) - 3.0*tv*sn.x*sn.x;
 
     //return 4.0*tn.t*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
     //return 5.0*tn.t*tn.t*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
@@ -209,8 +210,9 @@ void HeatEquationFBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 #endif
 
     HeatEquationFBVP w(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
-    w.setThermalDiffusivity(-1.0);
+    w.setThermalDiffusivity(1.0);
     w.setThermalConductivity(0.1);
+    w.setThermalConvection(0.2);
 
     Benchmark bm;
     bm.tick();
@@ -280,17 +282,17 @@ double HeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     const double td = thermalDiffusivity();
     const double tc = thermalConductivity();
 
-    //return 1.0 - 0.0*td - tc*U(sn,tn) - 1.0*uk;
-    //return 2.0*tn.t - 0.0*td - tc*U(sn,tn);
-    //return 3.0*tn.t*tn.t - 0.0*td - tc*U(sn,tn);
+    //return 1.0 + 0.0*td - tc*U(sn,tn) - 1.0*uk;
+    //return 2.0*tn.t + 0.0*td - tc*U(sn,tn);
+    //return 3.0*tn.t*tn.t + 0.0*td - tc*U(sn,tn);
 
-    //return 1.0 - 2.0*td - tc*U(sn,tn);
-    return 2.0*tn.t - 2.0*td - tc*U(sn,tn);
-    //return 3.0*tn.t*tn.t - 2.0*td - tc*U(sn,tn);
+    //return 1.0 + 2.0*td - tc*U(sn,tn);
+    return 2.0*tn.t + 2.0*td - tc*U(sn,tn);
+    //return 3.0*tn.t*tn.t + 2.0*td - tc*U(sn,tn);
 
-    //return 1.0 - 6.0*td*sn.x - tc*U(sn,tn);
-    //return 2.0*tn.t - 6.0*td*sn.x - tc*U(sn,tn);
-    //return 3.0*tn.t*tn.t - 6.0*td*sn.x - tc*U(sn,tn);
+    //return 1.0 + 6.0*td*sn.x - tc*U(sn,tn);
+    //return 2.0*tn.t + 6.0*td*sn.x - tc*U(sn,tn);
+    //return 3.0*tn.t*tn.t + 6.0*td*sn.x - tc*U(sn,tn);
 
     //return 4.0*tn.t*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
     //return 5.0*tn.t*tn.t*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn);
