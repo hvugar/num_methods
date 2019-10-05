@@ -5,8 +5,9 @@
 #include <utils/random.h>
 #include <float.h>
 #include <math.h>
+#include "../border_global.h"
 
-class MINIMUMSHARED_EXPORT FirstOrderLinearODEEx1 : public FirstOrderLinearODE
+class BORDERSHARED_EXPORT FirstOrderLinearODEEx1 : public FirstOrderLinearODE
 {
 public:
     FirstOrderLinearODEEx1();

@@ -10,7 +10,7 @@
 
 #include <ode/nlode1o.h>
 #include <ode/lode1o.h>
-//#include <ode/firstorderlinearodeex1.h>
+#include <ode/first_order_linear_ode.h>
 //#include <ode/firstordernonlinearodeex1.h>
 //#include <ode/secondorderlinearodeex1.h>
 #include <heat_equation_ibvp.h>
@@ -33,7 +33,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //ConjugateGradinetTest::Main(argc, argv);
 
-    //FirstOrderLinearODEEx1::Main(argc, argv);
+    FirstOrderLinearODEEx1::Main(argc, argv);
     //FirstOrderNonLinearODErEx1::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);
 
@@ -49,7 +49,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //IPrinter::printSeperatorLine();
     //HeatEquationFBVP::Main(argc, argv);
 
-    p1p::ProblemSolver::Main(argc, argv);
+    //p1p::ProblemSolver::Main(argc, argv);
 
     return 0;
 

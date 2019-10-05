@@ -40,6 +40,9 @@ public:
         Step_6 = 6
     };
 
+    //FirstOrderLinearODE();
+    virtual ~FirstOrderLinearODE();
+
     /**
      * @brief solve transfer of conditions
      * @param C
@@ -105,7 +108,7 @@ protected:
 
 private:
 
-    auto discritize(const std::vector<NonLocalCondition> &co, std::vector<NonLocalCondition> &cn, unsigned int k=4) const -> void;
+    auto discritize(const std::vector<NonLocalCondition> &co, std::vector<NonLocalCondition> &cn, unsigned int k = 4) const -> void;
 
     auto solveInitialValueProblemRK2(std::vector<DoubleVector> &rv) const -> void;
     auto solveInitialValueProblemRK4(std::vector<DoubleVector> &rv) const -> void;

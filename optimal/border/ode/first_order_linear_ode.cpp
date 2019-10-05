@@ -1,4 +1,4 @@
-#include "firstorderlinearodeex1.h"
+#include "first_order_linear_ode.h"
 
 #define EXAMPLE_2
 

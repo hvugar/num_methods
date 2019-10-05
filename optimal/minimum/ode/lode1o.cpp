@@ -17,6 +17,8 @@ NonLocalCondition::~NonLocalCondition()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+FirstOrderLinearODE::~FirstOrderLinearODE() {}
+
 void FirstOrderLinearODE::discritize(const std::vector<NonLocalCondition> &co, std::vector<NonLocalCondition> &cn, unsigned int k) const
 {
     const auto cnd_size = static_cast<unsigned int>( co.size() );

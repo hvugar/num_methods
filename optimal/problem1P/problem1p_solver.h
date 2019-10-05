@@ -1,12 +1,23 @@
 #ifndef PROBLEM1P_SOLVER_H
 #define PROBLEM1P_SOLVER_H
 
+#define SIGMA 0.5
+//#define EXAMPLE_LEFT_BORDER_ROBIN
+#define EXAMPLE_LEFT_BORDER_DIRICHLET
+//#define EXAMPLE_FXT
+
 #include "problem1p_global.h"
 #include <function.h>
 #include <gradient.h>
 #include <printer.h>
 #include <grid/pibvp.h>
-#define SIGMA 1.0
+
+#include <iostream>
+#include <functional>
+#include <memory>
+
+using namespace std;
+using namespace std::placeholders;
 
 namespace p1p
 {
@@ -54,11 +65,13 @@ public:
     void setSpaceDimensionX(const Dimension &spaceDimensionX) { this->_spaceDimensionX = spaceDimensionX; }
     void setSpaceDimensionY(const Dimension &spaceDimensionY) { this->_spaceDimensionY = spaceDimensionY; }
 
+    bool showLayers = false;
+
 private:
     Dimension _timeDimension;
     Dimension _spaceDimensionX;
     Dimension _spaceDimensionY;
-    Dimension _spaceDimensionZ;
+    Dimension _spaceDimensionZ;    
 };
 
 class PROBLEM1PSHARED_EXPORT HeatEquationFBVP : public IHeatEquationFBVP
@@ -84,6 +97,8 @@ public:
     void setSpaceDimensionX(const Dimension &spaceDimensionX) { this->_spaceDimensionX = spaceDimensionX; }
     void setSpaceDimensionY(const Dimension &spaceDimensionY) { this->_spaceDimensionY = spaceDimensionY; }
 
+    bool showLayers = false;
+
 private:
     Dimension _timeDimension;
     Dimension _spaceDimensionX;
@@ -104,6 +119,16 @@ public:
     void setTimeDimension(const Dimension &timeDimension);
     void setSpaceDimensionX(const Dimension &spaceDimensionX);
 
+    virtual double frw_initial(const SpaceNodePDE &sn, InitialCondition condition) const;
+    virtual double frw_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
+    virtual double frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    virtual void frw_layerInfo(const DoubleVector &u, const TimeNodePDE &tn) const;
+
+    virtual double bcw_final(const SpaceNodePDE &sn, FinalCondition condition) const;
+    virtual double bcw_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
+    virtual double bcw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    virtual void bcw_layerInfo(const DoubleVector &u, const TimeNodePDE &tn) const;
+
 protected:
     HeatEquationIBVP forward;
     HeatEquationFBVP backward;
@@ -115,6 +140,7 @@ protected:
     DoubleVector U;
     DoubleVector V;
     DoubleVector p0;
+    DoubleVector p0x;
 
     ProblemSolver *const_this;
 

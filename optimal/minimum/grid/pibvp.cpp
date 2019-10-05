@@ -31,10 +31,6 @@ IHeatEquationIBVP::IHeatEquationIBVP(double thermalDiffusivity, double thermalCo
 
 IHeatEquationIBVP::IHeatEquationIBVP(const IHeatEquationIBVP &ibvp) : IParabolicIBVP(ibvp)
 {
-    //this->_timeDimension = ibvp._timeDimension;
-    //this->_spaceDimensionX = ibvp._spaceDimensionX;
-    //this->_spaceDimensionY = ibvp._spaceDimensionY;
-    //this->_spaceDimensionZ = ibvp._spaceDimensionZ;
     this->_thermalDiffusivity = ibvp._thermalDiffusivity;
     this->_thermalConductivity = ibvp._thermalConductivity;
     this->_thermalConvection = ibvp._thermalConvection;
@@ -43,12 +39,6 @@ IHeatEquationIBVP::IHeatEquationIBVP(const IHeatEquationIBVP &ibvp) : IParabolic
 IHeatEquationIBVP & IHeatEquationIBVP::operator =(const IHeatEquationIBVP &other)
 {
     if (this == &other) { return *this; }
-
-    //this->_timeDimension = other._timeDimension;
-    //this->_spaceDimensionX = other._spaceDimensionX;
-    //this->_spaceDimensionY = other._spaceDimensionY;
-    //this->_spaceDimensionZ = other._spaceDimensionZ;
-
     this->_thermalDiffusivity = other._thermalDiffusivity;
     this->_thermalConductivity = other._thermalConductivity;
     this->_thermalConvection = other._thermalConvection;
@@ -94,7 +84,6 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
 
     const double td = thermalDiffusivity();
     const double tc = thermalConductivity();
-
 
     const double m_td_ht__hxhx = -((td*ht)/(hx*hx));
     const double b_td_ht__hxhx__tcht = +(1.0 + (2.0*td*ht)/(hx*hx) + ht*tc);

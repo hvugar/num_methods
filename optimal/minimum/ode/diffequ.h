@@ -63,7 +63,7 @@ private:
     Dimension _dimension;
 };
 
-class MINIMUMSHARED_EXPORT CanonicalFormODE : public OrdinaryDifferentialEquation{};
+class MINIMUMSHARED_EXPORT CanonicalFormODE : public OrdinaryDifferentialEquation {};
 
 /**
  * @brief Линейное дифференциальное уравнение с переменными коэффициентами
@@ -78,16 +78,6 @@ class MINIMUMSHARED_EXPORT LinearODE : public CanonicalFormODE {};
  * @see SecondOrderNonLinearODE
  */
 class MINIMUMSHARED_EXPORT NonLinearODE : public CanonicalFormODE {};
-
-//class MINIMUMSHARED_EXPORT SystemDifferentialEquation
-//{
-//public:
-//    const Dimension& dimension() const;
-//    void setDimension(const Dimension &dimension);
-
-//protected:
-//    Dimension _dimension;
-//};
 
 class ExceptionODE : std::exception
 {

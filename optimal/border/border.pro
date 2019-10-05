@@ -101,6 +101,8 @@ macx-clang {
 
 HEADERS += border_global.h \
     heat_equation_ibvp.h \
+    #ode/first_order_nonlinear_ode.h \
+    ode/first_order_linear_ode.h \
     wave_equation_ibvp.h
 
 HEADERS += \
@@ -109,17 +111,15 @@ HEADERS += \
 SOURCES += \
            heat_equation_ibvp.cpp \
            newtonheatequationex1.cpp \
+           #ode/first_order_nonlinear_ode.cpp \
+           ode/first_order_linear_ode.cpp \
            wave_equation_ibvp.cpp
 
 
-#HEADERS += \
-#           ode/firstordernonlinearodeex1.h \
-#           ode/firstorderlinearodeex1.h \
+HEADERS +=
 #           ode/secondorderlinearodeex1.h
 
-#SOURCES += \
-#           ode/firstordernonlinearodeex1.cpp \
-#           ode/firstorderlinearodeex1.cpp \
+SOURCES +=
 #           ode/secondorderlinearodeex1.cpp
 
 # Input

@@ -1,4 +1,4 @@
-#include "firstordernonlinearodeex1.h"
+#include "first_order_nonlinear_ode.h"
 
 void FirstOrderNonLinearODErEx1::Main(int argc, char **argv)
 {
