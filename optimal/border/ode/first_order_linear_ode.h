@@ -25,6 +25,7 @@ protected:
 
     virtual double x(const PointNodeODE &node, unsigned int row = 0) const;
     virtual double dt(const PointNodeODE &node, unsigned int row = 0) const;
+    void printNorms(std::vector<DoubleVector> &x) const;
 };
 
 #endif // FIRST_ORDER_LINEAR_ODE_EX1_H

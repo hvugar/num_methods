@@ -1,36 +1,40 @@
 #include "first_order_linear_ode.h"
 
-#define EXAMPLE_5
+#define EXAMPLE_6
 
 void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
 {
     C_UNUSED(argc);
     C_UNUSED(argv);
 
-    srand(time(NULL));
+    //srand(time(NULL));
 
     FirstOrderLinearODEEx1 nl;
 
-    unsigned int N = 100;
-    unsigned int M = nl.count();
-    double h = 0.01;
+    const unsigned int M = nl.count();
+    const unsigned int N = 100;
+    const double h = 0.01;
+    const unsigned int order = 2;
 
     std::vector<NonLocalCondition> C;
 
-    C.push_back(NonLocalCondition(0, PointNodeODE(0.000, 0), DoubleMatrix(M,M,0.0)));
-    C.push_back(NonLocalCondition(1, PointNodeODE(0.250, 0), DoubleMatrix(M,M,0.0)));
-    C.push_back(NonLocalCondition(2, PointNodeODE(0.500, 0), DoubleMatrix(M,M,0.0)));
-    C.push_back(NonLocalCondition(3, PointNodeODE(0.750, 0), DoubleMatrix(M,M,0.0)));
-    C.push_back(NonLocalCondition(4, PointNodeODE(1.000, 0), DoubleMatrix(M,M,0.0)));
+    C.push_back(NonLocalCondition(0, PointNodeODE(0.000, static_cast<int>(0.00*N)), DoubleMatrix(M,M,0.0)));
+    C.push_back(NonLocalCondition(1, PointNodeODE(0.250, static_cast<int>(0.25*N)), DoubleMatrix(M,M,0.0)));
+    C.push_back(NonLocalCondition(2, PointNodeODE(0.500, static_cast<int>(0.50*N)), DoubleMatrix(M,M,0.0)));
+    C.push_back(NonLocalCondition(3, PointNodeODE(0.750, static_cast<int>(0.75*N)), DoubleMatrix(M,M,0.0)));
+    C.push_back(NonLocalCondition(4, PointNodeODE(1.000, static_cast<int>(1.00*N)), DoubleMatrix(M,M,0.0)));
 
-    for (unsigned i=0; i<C.size(); i++)
+    printf("%f %f %f %f %f\n", C[0].n.x, C[1].n.x, C[2].n.x, C[3].n.x, C[4].n.x);
+    printf("%d %d %d %d %d\n", C[0].n.i, C[1].n.i, C[2].n.i, C[3].n.i, C[4].n.i);
+
+    //for (unsigned i=0; i<C.size(); i++)
     {
         for (unsigned int r=0; r<M; r++)
         {
             for (unsigned int c=0; c<M; c++)
             {
-                //for (unsigned i=0; i<C.size(); i++)
-                    C[i].m[r][c] = 10.0*Random::value(0,1,1)-2.0;
+                for (unsigned i=0; i<C.size(); i++) C[i].m[r][c] = Random::value(0,1,2);
+                //C[i].m[r][c] = 10.0*Random::value(0,1,1)-2.0;
 
             }
         }
@@ -64,40 +68,47 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
     std::vector<DoubleVector> x;
     nl.setDimension(Dimension(h, 0, static_cast<int>(N)));
 
-    nl.transferOfCondition(C, d, x, 6);
-    //nl.solveInitialValueProblem(x, ODESolverMethod::RUNGE_KUTTA_2);
-
     for (unsigned int m=0; m<M; m++)
     {
         for (unsigned int n=0; n<=N; n++)
         {
-            if (n%(N/10)==0) printf("%14.10f ", x[n][m]);
-        }
-        puts("");
-    }
-    IPrinter::printSeperatorLine();
-
-    for (unsigned int m=0; m<M; m++)
-    {
-        for (unsigned int n=0; n<=N; n++)
-        {
+            //if (n%(N/100)==0) printf("%14.10f ", nl.x(n*h, m+1));
             if (n%(N/10)==0) printf("%14.10f ", nl.x(n*h, m+1));
+            //printf("%14.10f ", nl.x(n*h, m+1));
         }
         puts("");
     }
     IPrinter::printSeperatorLine();
 
-    double norm[] = {0.0, 0.0, 0.0, 0.0};
+    nl.transferOfCondition(C, d, x, 2);
     for (unsigned int m=0; m<M; m++)
     {
-        norm[m] = 0.0;
-        for (unsigned int n=0; n<=N; n++)
-        {
-            norm[m] += (x[n][m]-nl.x(n*h, m+1))*(x[n][m]-nl.x(n*h, m+1));
-        }
-        norm[m] = sqrt(norm[m]);
+        for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.10f ", x[n][m]);
+        puts("");
     }
-    printf("Norms: %.10f %.10f %.10f %.10f\n", norm[0], norm[1], norm[2], norm[3]);
+
+    nl.printNorms(x);
+    IPrinter::printSeperatorLine();
+
+    nl.transferOfCondition(C, d, x, 4);
+    for (unsigned int m=0; m<M; m++)
+    {
+        for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.10f ", x[n][m]);
+        puts("");
+    }
+
+    nl.printNorms(x);
+    IPrinter::printSeperatorLine();
+
+    nl.transferOfCondition(C, d, x, 6);
+    for (unsigned int m=0; m<M; m++)
+    {
+        for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.10f ", x[n][m]);
+        puts("");
+    }
+
+    nl.printNorms(x);
+    IPrinter::printSeperatorLine();
 }
 
 FirstOrderLinearODEEx1::FirstOrderLinearODEEx1()
@@ -146,6 +157,9 @@ double FirstOrderLinearODEEx1::A(const PointNodeODE &node, unsigned int r, unsig
     if (r==4 && c == 3) return +1.0;
     if (r==4 && c == 4) return +1.0;
 #endif
+#ifdef EXAMPLE_6
+    return 1.0;
+#endif
 
     throw std::exception();
 }
@@ -168,6 +182,9 @@ unsigned int FirstOrderLinearODEEx1::count() const
 #endif
 #if defined(EXAMPLE_5)
     return 4;
+#endif
+#if defined(EXAMPLE_6)
+    return 1;
 #endif
 }
 
@@ -196,6 +213,9 @@ double FirstOrderLinearODEEx1::x(const PointNodeODE &node, unsigned int r UNUSED
     if (r == 2) return 0.6*sin(4.0*t) + exp(t) + 0.8*sin(10.0*t*t*t);
     if (r == 3) return 0.8*sin(6.0*t*t);
     if (r == 4) return 0.4*exp(t)*sin(12.0*t) + 0.4;
+#endif
+#ifdef EXAMPLE_6
+    if (r == 1) return sin(4.0*M_PI*t*t*t*t) + 0.6*exp(t) - 1.4;
 #endif
 
     throw std::exception();
@@ -227,6 +247,9 @@ double FirstOrderLinearODEEx1::dt(const PointNodeODE &node, unsigned int r UNUSE
     if (r == 3) return 9.6*t*cos(6.0*t*t);
     if (r == 4) return 0.4*exp(t)*sin(12.0*t) + 4.8*exp(t)*cos(12.0*t);
 #endif
+#ifdef EXAMPLE_6
+    if (r == 1) return 16.0*M_PI*t*t*t*cos(4.0*M_PI*t*t*t*t) + 0.6*exp(t);
+#endif
 
     throw std::exception();
 }
@@ -235,4 +258,24 @@ auto FirstOrderLinearODEEx1::initial(InitialCondition, unsigned int r) const -> 
 {
     PointNodeODE node; node.i = 0; node.x = 0.0;
     return x(node, r);
+}
+
+void FirstOrderLinearODEEx1::printNorms(std::vector<DoubleVector> &_x) const
+{
+    const unsigned int M = count();
+    const unsigned int N = 100;
+    const double h = 0.01;
+
+    printf("Norms: ");
+    for (unsigned int m=0; m<M; m++)
+    {
+        double norm = 0.0;
+        for (unsigned int n=0; n<=N; n++)
+        {
+            norm += (_x[n][m]-x(n*h, m+1))*(_x[n][m]-x(n*h, m+1));
+        }
+        norm = sqrt(norm);
+        printf("%14.10f ", norm);
+    }
+    puts("");
 }
