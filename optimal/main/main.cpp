@@ -33,7 +33,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //ConjugateGradinetTest::Main(argc, argv);
 
-    FirstOrderLinearODEEx1::Main(argc, argv);
+    //FirstOrderLinearODEEx1::Main(argc, argv);
     //FirstOrderNonLinearODErEx1::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);
 
@@ -51,7 +51,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //p1p::ProblemSolver::Main(argc, argv);
 
-    return 0;
+    //return 0;
 
 
     //DeltaGrid2DExt1::Main(argc, argv);
@@ -68,10 +68,10 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //IPrinter::printSeperatorLine();
     //ConjugateCC1IHyperbolicIBVP1::Main(argc, argv);
-    //Problem0HFunctional::Main(argc, argv);
+    h0p::ProblemSolver::Main(argc, argv);
     //Problem1HDirichlet1::Main(argc, argv);
 
-    Problem2HSolver::Main(argc, argv);
+    //Problem2HSolver::Main(argc, argv);
     //Problem2HDirichlet::Main(argc, argv);
     //Problem2HDirichletDelta::Main(argc, argv);
 

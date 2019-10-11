@@ -38,6 +38,9 @@ LIBS += -L../bin -lborder
 #INCLUDEPATH += ../problem2P
 #LIBS += -L../bin -lproblem2P
 
+#INCLUDEPATH += ../problem0H
+#LIBS += -L../bin -lproblem0H
+
 #INCLUDEPATH += ../problem1H
 #LIBS += -L../bin -lproblem1H
 
@@ -67,8 +70,8 @@ win32-g++ {
         INCLUDEPATH += ../minimum
         LIBS += -L../bin -lminimum
 
-#        INCLUDEPATH += ../problem0H
-#        LIBS += -L../bin -lproblem0H
+        INCLUDEPATH += ../problem0H
+        LIBS += -L../bin -lproblem0H
 
 #        INCLUDEPATH += ../problem2H
 #        LIBS += -L../bin -lproblem2H
@@ -90,8 +93,8 @@ win32-msvc* {
         INCLUDEPATH += ../minimum
         LIBS += ../bin/minimum.lib
 
-        #INCLUDEPATH += ../problem0H
-        #LIBS += ../bin/problem0H.lib
+        INCLUDEPATH += ../problem0H
+        LIBS += ../bin/problem0H.lib
 
         #INCLUDEPATH += ../problem2H
         #LIBS += ../bin/problem2H.lib
@@ -118,8 +121,8 @@ macx-clang{
         INCLUDEPATH += ../minimum
         LIBS += -L../bin -lminimum
 
-#        INCLUDEPATH += ../problem0H
-#        LIBS += -L../bin -lproblem0H
+        INCLUDEPATH += ../problem0H
+        LIBS += -L../bin -lproblem0H
 
 #        INCLUDEPATH += ../problem2H
 #        LIBS += -L../bin -lproblem2H

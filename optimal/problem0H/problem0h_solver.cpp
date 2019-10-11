@@ -1,22 +1,40 @@
 ﻿#include "problem0h_solver.h"
 
-void Problem0HFunctional::Main(int argc, char **argv)
+using namespace h0p;
+
+void ProblemSolver::Main(int argc, char **argv)
 {
 #ifdef USE_LIB_IMAGING
     QGuiApplication app(argc, argv);
 #endif
 
     //checkingForwardProblem();
-    //compareGradients();
-    optimization();
+    compareGradients();
+    //optimization();
 }
 
-void Problem0HFunctional::checkingForwardProblem()
+ProblemSolver::ProblemSolver()
+{
+    forward = new WaveEquationIBVP(this);
+    backward = new WaveEquationFBVP(this);
+}
+
+ProblemSolver::ProblemSolver(const ProblemSolver &)
+{
+}
+
+ProblemSolver::~ProblemSolver()
+{
+    delete forward;
+    delete backward;
+}
+
+void ProblemSolver::checkingForwardProblem()
 {
     int N = 100;
     int M = 100;
 
-    Problem0HFunctional fw1;
+    ProblemSolver fw1;
     fw1.source_number = 2;
     //fw1.ksi = SpacePoint(0.25, 0.36);
     fw1.ksi = SpacePoint(0.50, 0.50);
@@ -30,9 +48,9 @@ void Problem0HFunctional::checkingForwardProblem()
     fw1.optimalParameters[0].distribute(SpacePoint(0.308, 0.608));
     fw1.optimalParameters[1].distribute(SpacePoint(0.708, 0.208));
 
-    fw1.forward().setWaveSpeed(1.0);
-    fw1.forward().setWaveDissipation(0.0);
-    fw1.forward().implicit_calculate_D2V1();
+    fw1.forward->setWaveSpeed(1.0);
+    fw1.forward->setWaveDissipation(0.0);
+    fw1.forward->implicit_calculate_D2V1();
     return;
 
     //    Problem0HForward fw2;
@@ -52,21 +70,19 @@ void Problem0HFunctional::checkingForwardProblem()
     //    IPrinter::printSeperatorLine();
 }
 
-void Problem0HFunctional::compareGradients()
+void ProblemSolver::compareGradients()
 {
-    Problem0HFunctional functional;
+    ProblemSolver functional;
     functional.ksi = SpacePoint(0.25, 0.25);
     functional.p_sigmaX = 0.05;
     functional.p_sigmaY = 0.05;
     functional.p_sigmaT = 0.01;
 
-    functional.forward().setWaveSpeed(1.0);
-    functional.forward().setWaveDissipation(0.00);
-    functional.backward().setWaveSpeed(1.0);
-    functional.backward().setWaveDissipation(0.00);
+    functional.forward->setWaveSpeed(1.0);
+    functional.forward->setWaveDissipation(0.00);
+    functional.backward->setWaveSpeed(1.0);
+    functional.backward->setWaveDissipation(0.00);
 
-//    functional.a = 1.0;
-//    functional.gamma = 0.1;
     functional.epsilon1 = 1.0;
     functional.epsilon2 = 1.0;
     functional.source_number = 2;
@@ -78,9 +94,9 @@ void Problem0HFunctional::compareGradients()
     functional.parameterToVector(x);
 
     unsigned int L = 100;
-    unsigned int s1 = 0*(2*L+1); unsigned int f1 = 0*(2*L+1)+2*L;
-    unsigned int s2 = 1*(2*L+1); unsigned int f2 = 1*(2*L+1)+2*L;
-    unsigned int s3 = 2*(2*L+1); unsigned int f3 = 2*(2*L+1)+3;
+    unsigned int s1 = 0*(2*L+1); unsigned int f1 = s1+2*L;
+    unsigned int s2 = 1*(2*L+1); unsigned int f2 = s2+2*L;
+    unsigned int s3 = 2*(2*L+1); unsigned int f3 = s3+3;
     //unsigned int start31 = 2*(2*L+1)+0; unsigned int finish31 = 2*(2*L+1)+1;
     //unsigned int start32 = 2*(2*L+1)+2; unsigned int finish32 = 2*(2*L+1)+3;
 
@@ -95,8 +111,8 @@ void Problem0HFunctional::compareGradients()
 
     DoubleVector gn;
     gn.resize(x.length());
-    IGradient::Gradient(&functional, 0.01, x, gn, s1, f1);
-    IGradient::Gradient(&functional, 0.01, x, gn, s2, f2);
+    //IGradient::Gradient(&functional, 0.01, x, gn, s1, f1);
+    //IGradient::Gradient(&functional, 0.01, x, gn, s2, f2);
     IGradient::Gradient(&functional, 0.01, x, gn, s3, f3);
     //IGradient::Gradient(&functional, 0.01, x, gn, s1, s1+10);
     //IGradient::Gradient(&functional, 0.01, x, gn, s2, s2+10);
@@ -107,9 +123,9 @@ void Problem0HFunctional::compareGradients()
     IPrinter::print(gn.mid(s3, f3).EuclideanNormalize(), 4);
     IPrinter::printSeperatorLine();
 
-    IGradient::Gradient(&functional, 0.001, x, gn, s1, f1);
-    IGradient::Gradient(&functional, 0.001, x, gn, s2, f2);
-    IGradient::Gradient(&functional, 0.001, x, gn, s3, f3);
+    //IGradient::Gradient(&functional, 0.001, x, gn, s1, f1);
+    //IGradient::Gradient(&functional, 0.001, x, gn, s2, f2);
+    //IGradient::Gradient(&functional, 0.001, x, gn, s3, f3);
     //IGradient::Gradient(&functional, 0.001, x, gn, s1, s1+10);
     //IGradient::Gradient(&functional, 0.001, x, gn, s2, s2+10);
     //IPrinter::print(gn.mid(s1, s1+10).EuclideanNormalize(), 10);
@@ -120,9 +136,9 @@ void Problem0HFunctional::compareGradients()
     IPrinter::printSeperatorLine();
 }
 
-void Problem0HFunctional::optimization()
+void ProblemSolver::optimization()
 {
-    Problem0HFunctional fw1;
+    ProblemSolver fw1;
     fw1.source_number = 2;
     fw1.ksi = SpacePoint(0.25, 0.36);
     fw1.p_sigmaX = 0.05;
@@ -158,8 +174,8 @@ void Problem0HFunctional::optimization()
     g.calculate(x);
 
     fw1.vectorToParameter(x);
-    fw1.forward().f_saveToFileTxt = true;
-    fw1.forward().implicit_calculate_D2V1();
+    fw1.f_saveToFileTxt = true;
+    fw1.forward->implicit_calculate_D2V1();
 
     unsigned int L = 100;
     unsigned int s1 = 0*(2*L+1); unsigned int f1 = 0*(2*L+1)+2*L;
@@ -174,52 +190,21 @@ void Problem0HFunctional::optimization()
 
 }
 
-Problem0HForward& Problem0HFunctional::forward() { return *this; }
+//WaveEquationIBVP& ProblemSolver::forward() { return *this; }
 
-Problem0HBckward& Problem0HFunctional::backward() { return *this; }
+//WaveEquationFBVP& ProblemSolver::backward() { return *this; }
 
-const Problem0HForward& Problem0HFunctional::forward() const { return *this; }
+//const WaveEquationIBVP& ProblemSolver::forward() const { return *this; }
 
-const Problem0HBckward& Problem0HFunctional::backward() const { return *this; }
-
-auto Problem0HForward::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void
-{
-    calculateU1U2(u, tn);
-
-    //unsigned int w = 6;
-    //unsigned int p = 3;
-    //if (abs(tn.t - 0.1) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
-    //if (abs(tn.t - 0.2) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
-    //if (abs(tn.t - 0.3) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
-    //if (abs(tn.t - 0.4) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
-    //if (abs(tn.t - 0.5) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
-    //if (abs(tn.t - 0.6) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
-    //if (abs(tn.t - 0.7) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
-    //if (abs(tn.t - 0.8) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
-    //if (abs(tn.t - 0.9) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
-    //if (abs(tn.t - 1.0) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
-
-#ifdef USE_LIB_XLSX_WRITER
-    saveToExcel(u, tn);
-#endif
-
-    if (f_saveToFilePng) saveToImage(u, tn);
-    if (f_saveToFileTxt) saveToTextF(u, tn);
-}
-
-Problem0HCommon::Problem0HCommon() {}
-
-Problem0HCommon::~Problem0HCommon() {}
+//const WaveEquationFBVP& ProblemSolver::backward() const { return *this; }
 
 //--------------------------------------------------------------------------------------------------------------//
 
-auto Problem0HFunctional::setDimension(const Dimension &timeDimension, const Dimension &dimensionX, const Dimension &dimensionY) -> void
+auto ProblemSolver::setDimension(const Dimension &timeDimension, const Dimension &dimensionX, const Dimension &dimensionY) -> void
 {
-    Problem0HForward::setTimeDimension(timeDimension);
-    Problem0HForward::setSpaceDimensions(dimensionX, dimensionY);
-
-    Problem0HBckward::setTimeDimension(timeDimension);
-    Problem0HBckward::setSpaceDimensions(dimensionX, dimensionY);
+    setTimeDimension(timeDimension);
+    setSpaceDimensionX(dimensionX);
+    setSpaceDimensionX(dimensionY);
 
     //const unsigned int L = static_cast<unsigned int> ( timeDimension.size() );
     const unsigned int N = static_cast<unsigned int> ( dimensionX.size() );
@@ -238,24 +223,27 @@ auto Problem0HFunctional::setDimension(const Dimension &timeDimension, const Dim
     }
 }
 
-auto Problem0HFunctional::fx(const DoubleVector &x) const -> double
+auto ProblemSolver::fx(const DoubleVector &x) const -> double
 {
+    IPrinter::print(x, x.length());
+    IPrinter::printSeperatorLine();
+
     vectorToParameter(x);
 
-    forward().implicit_calculate_D2V1();
+    forward->implicit_calculate_D2V1();
     double sum = 0.0;
-    sum += epsilon1 * integral1(forward().u1);
-    sum += epsilon2 * integral2(forward().u2);
+    sum += epsilon1 * integral1(u1);
+    sum += epsilon2 * integral2(u2);
     //sum += norm();
     //sum += penalty();
     return sum;
 }
 
-auto Problem0HFunctional::integral1(const DoubleMatrix &) const -> double
+auto ProblemSolver::integral1(const DoubleMatrix &) const -> double
 {
     //const Dimension &time = Problem0HForward::timeDimension();
-    const Dimension &dimX = Problem0HForward::spaceDimensionX();
-    const Dimension &dimY = Problem0HForward::spaceDimensionY();
+    const Dimension &dimX = spaceDimensionX();
+    const Dimension &dimY = spaceDimensionY();
     //const unsigned int L = static_cast<unsigned int> ( time.size() );
     const unsigned int N = static_cast<unsigned int> ( dimX.size() );
     const unsigned int M = static_cast<unsigned int> ( dimY.size() );
@@ -294,11 +282,11 @@ auto Problem0HFunctional::integral1(const DoubleMatrix &) const -> double
     return usum*(hx*hy);
 }
 
-auto Problem0HFunctional::integral2(const DoubleMatrix &) const -> double
+auto ProblemSolver::integral2(const DoubleMatrix &) const -> double
 {
     //const Dimension &time = Problem0HForward::timeDimension();
-    const Dimension &dimX = Problem0HForward::spaceDimensionX();
-    const Dimension &dimY = Problem0HForward::spaceDimensionY();
+    const Dimension &dimX = spaceDimensionX();
+    const Dimension &dimY = spaceDimensionY();
     //const unsigned int L = static_cast<unsigned int> ( time.size() );
     const unsigned int N = static_cast<unsigned int> ( dimX.size() );
     const unsigned int M = static_cast<unsigned int> ( dimY.size() );
@@ -337,17 +325,17 @@ auto Problem0HFunctional::integral2(const DoubleMatrix &) const -> double
     return usum*(hx*hy);
 }
 
-auto Problem0HFunctional::norm() const -> double { return 0.0; }
+auto ProblemSolver::norm() const -> double { return 0.0; }
 
-auto Problem0HFunctional::penalty() const -> double { return 0.0; }
+auto ProblemSolver::penalty() const -> double { return 0.0; }
 
-auto Problem0HFunctional::gradient(const DoubleVector &x, DoubleVector &g) const -> void
+auto ProblemSolver::gradient(const DoubleVector &x, DoubleVector &g) const -> void
 {
     vectorToParameter(x);
 
     g.clear(); g.resize(x.length());
 
-    const Dimension &time = Problem0HForward::timeDimension();
+    const Dimension &time = timeDimension();
     //const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
     //const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
     const unsigned int L = static_cast<unsigned int>(time.size());
@@ -357,8 +345,8 @@ auto Problem0HFunctional::gradient(const DoubleVector &x, DoubleVector &g) const
     //const double hy = dimY.step();
     const double ht = time.step();
 
-    forward().implicit_calculate_D2V1();
-    backward().implicit_calculate_D2V1();
+    forward->implicit_calculate_D2V1();
+    backward->implicit_calculate_D2V1();
 
     unsigned int length = 2*L+1;
     for (unsigned int sn=0; sn<source_number; sn++)
@@ -398,9 +386,9 @@ auto Problem0HFunctional::gradient(const DoubleVector &x, DoubleVector &g) const
     }
 }
 
-auto Problem0HFunctional::project(DoubleVector &x, unsigned int index) -> void
+auto ProblemSolver::project(DoubleVector &x, unsigned int index) -> void
 {
-    const Dimension &time = Problem0HForward::timeDimension();
+    const Dimension &time = timeDimension();
     const unsigned int L = static_cast<unsigned int>(time.size());
     if (index >= (2*L+1)*source_number)
     {
@@ -409,9 +397,9 @@ auto Problem0HFunctional::project(DoubleVector &x, unsigned int index) -> void
     }
 }
 
-auto Problem0HFunctional::project(DoubleVector &) const  -> void {}
+auto ProblemSolver::project(DoubleVector &) const  -> void {}
 
-auto Problem0HFunctional::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f,
+auto ProblemSolver::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f,
                                 double alpha, GradientMethod::MethodResult result) const -> void
 {
     C_UNUSED(i); C_UNUSED(x); C_UNUSED(g); C_UNUSED(f); C_UNUSED(alpha); C_UNUSED(result);
@@ -422,11 +410,11 @@ auto Problem0HFunctional::print(unsigned int i, const DoubleVector &x, const Dou
     if (result == GradientMethod::MethodResult::BREAK_DISTANCE_LESS)      msg = "BREAK_DISTANCE_LESS     ";
     if (result == GradientMethod::MethodResult::NEXT_ITERATION)           msg = "NEXT_ITERATION          ";
 
-    Problem0HFunctional* fw = const_cast<Problem0HFunctional*>(this);
+    ProblemSolver* fw = const_cast<ProblemSolver*>(this);
     fw->vectorToParameter(x);
-    forward().implicit_calculate_D2V1();
+    forward->implicit_calculate_D2V1();
 
-    const Dimension &time = Problem0HForward::timeDimension();
+    const Dimension &time = timeDimension();
     const unsigned int L = static_cast<unsigned int>(time.size());
     const unsigned int o = (2*L+1)*source_number;
 
@@ -438,15 +426,34 @@ auto Problem0HFunctional::print(unsigned int i, const DoubleVector &x, const Dou
 
 //--------------------------------------------------------------------------------------------------------------//
 
-auto Problem0HForward::initial(const SpaceNodePDE &, InitialCondition) const -> double { return 0.0; }
+WaveEquationIBVP::WaveEquationIBVP(ProblemSolver *solver) { this->solver = solver; }
 
-auto Problem0HForward::boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &) const -> double { return 0.0; }
+WaveEquationIBVP::~WaveEquationIBVP() {}
 
-auto Problem0HForward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
+double WaveEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition cn) const { return solver->frw_initial(sn, cn); }
+
+double WaveEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &cn) const { return solver->frw_boundary(sn, tn, cn); }
+
+double WaveEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const { return solver->frw_f(sn, tn); }
+
+void WaveEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const { return solver->frw_layerInfo(u, tn); }
+
+const Dimension& WaveEquationIBVP::timeDimension() const { return solver->timeDimension(); }
+
+const Dimension& WaveEquationIBVP::spaceDimensionX() const { return solver->spaceDimensionX(); }
+
+const Dimension& WaveEquationIBVP::spaceDimensionY() const { return solver->spaceDimensionY(); }
+
+const Dimension& WaveEquationIBVP::spaceDimensionZ() const { return solver->spaceDimensionZ(); }
+
+double ProblemSolver::frw_initial(const SpaceNodePDE &, InitialCondition) const { return 0.0; }
+
+double ProblemSolver::frw_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &) const { return 0.0; }
+
+double ProblemSolver::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     double pv = p(sn, tn);
     //return pv;
-
     unsigned int ln = static_cast<unsigned int>(tn.i);
 
     double pulse1 = optimalParameters[0].pwr_vl[ln] * optimalParameters[0].deltaGrid.weight(sn);
@@ -455,7 +462,32 @@ auto Problem0HForward::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
     return pv + pulse1 + pulse2;
 }
 
-auto Problem0HForward::p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
+void ProblemSolver::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
+{
+    calculateU1U2(u, tn);
+
+    //unsigned int w = 6;
+    //unsigned int p = 3;
+    //if (abs(tn.t - 0.1) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
+    //if (abs(tn.t - 0.2) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
+    //if (abs(tn.t - 0.3) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
+    //if (abs(tn.t - 0.4) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
+    //if (abs(tn.t - 0.5) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
+    //if (abs(tn.t - 0.6) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
+    //if (abs(tn.t - 0.7) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
+    //if (abs(tn.t - 0.8) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
+    //if (abs(tn.t - 0.9) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
+    //if (abs(tn.t - 1.0) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
+
+#ifdef USE_LIB_XLSX_WRITER
+    saveToExcel(u, tn);
+#endif
+
+    if (f_saveToFilePng) saveToImage(u, tn);
+    if (f_saveToFileTxt) saveToTextF(u, tn);
+}
+
+double ProblemSolver::p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     if (fabs(tn.i - 10.0*p_sigmaT) == 0.0) return 0.0;
 
@@ -475,15 +507,14 @@ auto Problem0HForward::p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
     return q*a*b;
 }
 
-auto Problem0HForward::calculateU1U2(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void
+void ProblemSolver::calculateU1U2(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
-    Problem0HForward *forward = const_cast<Problem0HForward*>(this);
-    const Dimension &time = Problem0HForward::timeDimension();
+    const Dimension &time = timeDimension();
     const unsigned int L = static_cast<unsigned int>(time.size());
     const double ht = time.step();
 
-    const Dimension &dimX = Problem0HForward::spaceDimensionX();
-    const Dimension &dimY = Problem0HForward::spaceDimensionY();
+    const Dimension &dimX = spaceDimensionX();
+    const Dimension &dimY = spaceDimensionY();
     const unsigned int N = static_cast<unsigned int>(dimX.size());
     const unsigned int M = static_cast<unsigned int>(dimY.size());
 
@@ -493,7 +524,7 @@ auto Problem0HForward::calculateU1U2(const DoubleMatrix &u, const TimeNodePDE &t
         {
             for (unsigned int n=0; n<=N; n++)
             {
-                forward->u2[m][n] = u[m][n];
+                u2[m][n] = u[m][n];
             }
         }
     }
@@ -504,7 +535,7 @@ auto Problem0HForward::calculateU1U2(const DoubleMatrix &u, const TimeNodePDE &t
         {
             for (unsigned int n=0; n<=N; n++)
             {
-                forward->u2[m][n] += -4.0*u[m][n];
+                u2[m][n] += -4.0*u[m][n];
             }
         }
     }
@@ -515,15 +546,15 @@ auto Problem0HForward::calculateU1U2(const DoubleMatrix &u, const TimeNodePDE &t
         {
             for (unsigned int n=0; n<=N; n++)
             {
-                forward->u1[m][n]  = u[m][n];
-                forward->u2[m][n] += 3.0*u[m][n];
-                forward->u2[m][n] /= (2.0*ht);
+                u1[m][n]  = u[m][n];
+                u2[m][n] += 3.0*u[m][n];
+                u2[m][n] /= (2.0*ht);
             }
         }
     }
 }
 
-auto Problem0HForward::saveToExcel(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const -> void
+void ProblemSolver::saveToExcel(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
 #ifdef USE_LIB_XLSX_WRITER
     //    const Dimension &time = Problem0HForward::timeDimension();
@@ -584,12 +615,12 @@ auto Problem0HForward::saveToExcel(const DoubleMatrix &u UNUSED_PARAM, const Tim
 #endif
 }
 
-auto Problem0HForward::saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const -> void
+void ProblemSolver::saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
 #ifdef USE_LIB_IMAGING
     //const Dimension &time = Problem0HForward::timeDimension();
-    const Dimension &dimX = Problem0HForward::spaceDimensionX();
-    const Dimension &dimY = Problem0HForward::spaceDimensionY();
+    const Dimension &dimX = spaceDimensionX();
+    const Dimension &dimY = spaceDimensionY();
     //const unsigned int L = static_cast<unsigned int>(time.size());
     const unsigned int N = static_cast<unsigned int>(dimX.size());
     const unsigned int M = static_cast<unsigned int>(dimY.size());
@@ -607,7 +638,7 @@ auto Problem0HForward::saveToImage(const DoubleMatrix &u UNUSED_PARAM, const Tim
 #endif
 }
 
-auto Problem0HForward::saveToTextF(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn) const -> void
+void ProblemSolver::saveToTextF(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn) const
 {
     static double MIN = +100000.0;
     static double MAX = -100000.0;
@@ -623,28 +654,49 @@ auto Problem0HForward::saveToTextF(const DoubleMatrix &u UNUSED_PARAM, const Tim
 
 //--------------------------------------------------------------------------------------------------------------//
 
-auto Problem0HBckward::layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const -> void
+WaveEquationFBVP::WaveEquationFBVP(ProblemSolver *solver) { this->solver = solver; }
+
+WaveEquationFBVP::~WaveEquationFBVP() {}
+
+double WaveEquationFBVP::final(const SpaceNodePDE &sn, FinalCondition condition) const { return solver->bcw_final(sn, condition); }
+
+double WaveEquationFBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const { return solver->bcw_boundary(sn, tn, condition); }
+
+double WaveEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const { return solver->bcw_f(sn, tn); }
+
+void WaveEquationFBVP::layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const { return solver->bcw_layerInfo(p, tn); }
+
+const Dimension& WaveEquationFBVP::timeDimension() const { return solver->timeDimension(); }
+
+const Dimension& WaveEquationFBVP::spaceDimensionX() const { return solver->spaceDimensionX(); }
+
+const Dimension& WaveEquationFBVP::spaceDimensionY() const { return solver->spaceDimensionY(); }
+
+const Dimension& WaveEquationFBVP::spaceDimensionZ() const { return solver->spaceDimensionZ(); }
+
+double ProblemSolver::bcw_final(const SpaceNodePDE &sn, FinalCondition condition) const
+{
+    unsigned int n = static_cast<unsigned int>(sn.i);
+    unsigned int m = static_cast<unsigned int>(sn.j);
+    if (condition == FinalCondition::FinalValue) { return -2.0*epsilon2*(u2[m][n]/*-U2[m][n]*/); }
+    if (condition == FinalCondition::FinalFirstDerivative) { return +2.0*epsilon1*(u1[m][n]/*-U1[m][n]*/)
+                + gamma*bcw_final(sn, FinalCondition::FinalValue); }
+    throw std::exception();
+}
+
+double ProblemSolver::bcw_boundary(const SpaceNodePDE&, const TimeNodePDE&, BoundaryConditionPDE &) const { return 0.0; }
+
+double ProblemSolver::bcw_f(const SpaceNodePDE&, const TimeNodePDE&) const { return 0.0; }
+
+void ProblemSolver::bcw_layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const
 {
     saveBackwardInformarion(p, tn);
     //saveToImage(p, ln);
 }
 
-auto Problem0HBckward::final(const SpaceNodePDE &sn, FinalCondition condition) const -> double
+void ProblemSolver::saveBackwardInformarion(const DoubleMatrix &p, const TimeNodePDE &tn) const
 {
-    unsigned int n = static_cast<unsigned int>(sn.i);
-    unsigned int m = static_cast<unsigned int>(sn.j);
-    if (condition == FinalCondition::FinalValue) { return -2.0*epsilon2*(u2[m][n]/*-U2[m][n]*/); }
-    if (condition == FinalCondition::FinalFirstDerivative) { return +2.0*epsilon1*(u1[m][n]/*-U1[m][n]*/) + gamma*final(sn, FinalCondition::FinalValue); }
-    throw std::exception();
-}
-
-auto Problem0HBckward::boundary(const SpaceNodePDE&, const TimeNodePDE&, BoundaryConditionPDE &) const -> double { return 0.0; }
-
-auto Problem0HBckward::f(const SpaceNodePDE&, const TimeNodePDE&) const -> double { return 0.0; }
-
-auto Problem0HBckward::saveBackwardInformarion(const DoubleMatrix &p, const TimeNodePDE &tn) const -> void
-{
-    Problem0HBckward* const_this = const_cast<Problem0HBckward*>(this);
+    ProblemSolver* const_this = const_cast<ProblemSolver*>(this);
 
     for (unsigned int sn=0; sn<source_number; sn++)
     {
@@ -657,12 +709,12 @@ auto Problem0HBckward::saveBackwardInformarion(const DoubleMatrix &p, const Time
     }
 }
 
-auto Problem0HBckward::saveToImage(const DoubleMatrix &p, const TimeNodePDE &tn) const -> void
+void ProblemSolver::bcw_saveToImage(const DoubleMatrix &p, const TimeNodePDE &tn) const
 {
 #ifdef USE_LIB_IMAGING
     //const Dimension &time = Problem0HBckward::timeDimension();
-    const Dimension &dimX = Problem0HBckward::spaceDimensionX();
-    const Dimension &dimY = Problem0HBckward::spaceDimensionY();
+    const Dimension &dimX = ProblemSolver::spaceDimensionX();
+    const Dimension &dimY = ProblemSolver::spaceDimensionY();
     //const unsigned int L = static_cast<unsigned int>(time.size());
     const unsigned int N = static_cast<unsigned int>(dimX.size());
     const unsigned int M = static_cast<unsigned int>(dimY.size());
@@ -685,16 +737,20 @@ auto Problem0HBckward::saveToImage(const DoubleMatrix &p, const TimeNodePDE &tn)
 
 //--------------------------------------------------------------------------------------------------------------//
 
-auto Problem0HFunctional::vectorToParameter(const DoubleVector &x) const -> void
+//--------------------------------------------------------------------------------------------------------------//
+
+//--------------------------------------------------------------------------------------------------------------//
+
+auto ProblemSolver::vectorToParameter(const DoubleVector &x) const -> void
 {    
-    const Dimension &time = Problem0HForward::timeDimension();
-    const Dimension &dimX = Problem0HForward::spaceDimensionX();
-    const Dimension &dimY = Problem0HForward::spaceDimensionY();
+    const Dimension &time = timeDimension();
+    const Dimension &dimX = spaceDimensionX();
+    const Dimension &dimY = spaceDimensionY();
     const unsigned int L = static_cast<unsigned int> ( time.size() );
     //const unsigned int N = static_cast<unsigned int> ( dimX.size() );
     //const unsigned int M = static_cast<unsigned int> ( dimY.size() );
 
-    Problem0HFunctional* const_this = const_cast<Problem0HFunctional*>(this);
+    ProblemSolver* const_this = const_cast<ProblemSolver*>(this);
     const_this->optimalParameters.resize(source_number);
 
     const unsigned int length = 2*L+1;
@@ -709,9 +765,9 @@ auto Problem0HFunctional::vectorToParameter(const DoubleVector &x) const -> void
     }
 }
 
-auto Problem0HFunctional::parameterToVector(DoubleVector &x) const -> void
+auto ProblemSolver::parameterToVector(DoubleVector &x) const -> void
 {
-    const Dimension &time = Problem0HForward::timeDimension();
+    const Dimension &time = timeDimension();
     //const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
     //const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
     const unsigned int L = static_cast<unsigned int> ( time.size() );
@@ -727,7 +783,7 @@ auto Problem0HFunctional::parameterToVector(DoubleVector &x) const -> void
 
     for (unsigned int sn=0; sn<source_number; sn++)
     {
-        Problem0HParameter &parameter = const_cast<Problem0HFunctional*>(this)->optimalParameters[sn];
+        Problem0HParameter &parameter = const_cast<ProblemSolver*>(this)->optimalParameters[sn];
         for (unsigned int ln=0; ln<length; ln++)
         {
             x[sn*length+ln] = parameter.pwr_vl[ln];
@@ -738,4 +794,7 @@ auto Problem0HFunctional::parameterToVector(DoubleVector &x) const -> void
         x[source_number*length+2*sn+0] = parameter.p.x;
         x[source_number*length+2*sn+1] = parameter.p.y;
     }
+
+    IPrinter::printSeperatorLine();
+    IPrinter::print(x, x.length());
 }

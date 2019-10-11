@@ -1,4 +1,4 @@
- #ifndef PROBLEM0H_SOLVER_H
+#ifndef PROBLEM0H_SOLVER_H
 #define PROBLEM0H_SOLVER_H
 
 #include <float.h>
@@ -11,10 +11,16 @@
 
 #include <functional>
 
+using namespace std;
+using namespace std::placeholders;
+
+namespace h0p
+{
+
 class Problem0HCommon;
-class Problem0HForward;
-class Problem0HBckward;
-class Problem0HFunctional;
+class WaveEquationIBVP;
+class WaveEquationFBVP;
+class ProblemSolver;
 
 struct Problem0HParameter
 {
@@ -70,15 +76,129 @@ void Problem0HParameter::distribute(const SpacePoint &p)
 
 //--------------------------------------------------------------------------------------------------------------//
 
-class PROBLEM0HSHARED_EXPORT Problem0HCommon
+class PROBLEM0HSHARED_EXPORT WaveEquationIBVP : virtual public IWaveEquationIBVP
 {
 public:
-    Problem0HCommon();
-    virtual ~Problem0HCommon();
+    WaveEquationIBVP(ProblemSolver *solver);
+    virtual ~WaveEquationIBVP();
+
+protected:
+    virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
+    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+
+    virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
+
+    virtual const Dimension& timeDimension() const;
+    virtual const Dimension& spaceDimensionX() const;
+    virtual const Dimension& spaceDimensionY() const;
+    virtual const Dimension& spaceDimensionZ() const;
+
+private:
+    ProblemSolver *solver;
+};
+
+//--------------------------------------------------------------------------------------------------------------//
+
+class PROBLEM0HSHARED_EXPORT WaveEquationFBVP : virtual public IWaveEquationFBVP
+{
+public:
+    WaveEquationFBVP(ProblemSolver *solver);
+    virtual ~WaveEquationFBVP();
+
+protected:
+    virtual double final(const SpaceNodePDE &sn, FinalCondition condition) const;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
+    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+
+    virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
+
+    virtual const Dimension& timeDimension() const;
+    virtual const Dimension& spaceDimensionX() const;
+    virtual const Dimension& spaceDimensionY() const;
+    virtual const Dimension& spaceDimensionZ() const;
+
+private:
+    ProblemSolver *solver;
+};
+
+//--------------------------------------------------------------------------------------------------------------//
+
+class PROBLEM0HSHARED_EXPORT ProblemSolver : public RnFunction, public IGradient, public IProjection, public IPrinter
+{
+public:
+    static void Main(int argc, char** argv);
+
+    ProblemSolver();
+    virtual ~ProblemSolver();
+
+private:
+    ProblemSolver(const ProblemSolver &solver);
+
+    WaveEquationIBVP *forward;
+    WaveEquationFBVP *backward;
+
+    static void compareGradients();
+    static void checkingForwardProblem();
+    static void optimization();
 
 public:
-    //inline auto virtual mu1(const SpaceNodePDE &) const -> double { return 1.0; }
-    //inline auto virtual mu2(unsigned int, unsigned int) const -> double { return 1.0; }
+    virtual auto fx(const DoubleVector &x) const -> double;
+    virtual auto gradient(const DoubleVector &x, DoubleVector &g) const -> void;
+
+    virtual auto project(DoubleVector &x, unsigned int index) -> void;
+    virtual auto project(DoubleVector &) const  -> void;
+
+    virtual auto print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f,
+                       double alpha, GradientMethod::MethodResult result) const -> void;
+
+    virtual auto integral1(const DoubleMatrix &u) const -> double;
+    virtual auto integral2(const DoubleMatrix &u) const -> double;
+    virtual auto norm() const -> double;
+    virtual auto penalty() const -> double;
+
+    void setDimension(const Dimension &timeDimension, const Dimension &spaceDimensionX, const Dimension &spaceDimensionY);
+
+    auto vectorToParameter(const DoubleVector &x) const -> void;
+    auto parameterToVector(DoubleVector &x) const -> void;
+
+    virtual double frw_initial(const SpaceNodePDE &sn, InitialCondition condition) const;
+    virtual double frw_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
+    virtual double frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    virtual void frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const;
+
+    virtual double bcw_final(const SpaceNodePDE &sn, FinalCondition condition) const;
+    virtual double bcw_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
+    virtual double bcw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    virtual void bcw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const;
+
+    virtual void setTimeDimension(const Dimension &timeDimension) { this->_timeDimension = timeDimension; }
+    virtual void setSpaceDimensionX(const Dimension &spaceDimensionX) { this->_spaceDimensionX = spaceDimensionX; }
+    virtual void setSpaceDimensionY(const Dimension &spaceDimensionY) { this->_spaceDimensionY = spaceDimensionY; }
+
+    virtual const Dimension& timeDimension() const { return _timeDimension; }
+    virtual const Dimension& spaceDimensionX() const { return _spaceDimensionX; }
+    virtual const Dimension& spaceDimensionY() const { return _spaceDimensionY; }
+    virtual const Dimension& spaceDimensionZ() const { return _spaceDimensionZ; }
+
+protected:
+    Dimension _timeDimension;
+    Dimension _spaceDimensionX;
+    Dimension _spaceDimensionY;
+    Dimension _spaceDimensionZ;
+
+private:
+    double p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    void calculateU1U2(const DoubleMatrix &u, const TimeNodePDE &tn) const;
+    void saveToExcel(const DoubleMatrix &u, const TimeNodePDE &tn) const;
+    void saveToImage(const DoubleMatrix &u, const TimeNodePDE &tn) const;
+    void saveToTextF(const DoubleMatrix &u, const TimeNodePDE &tn) const;
+
+    auto saveBackwardInformarion(const DoubleMatrix &p, const TimeNodePDE &tn) const -> void;
+    auto bcw_saveToImage(const DoubleMatrix &p, const TimeNodePDE &) const -> void;
+
+    bool f_saveToFileTxt = false;
+    bool f_saveToFilePng = false;
 
     double a = 1.0;
     double gamma = 0.0;
@@ -112,86 +232,6 @@ public:
     std::vector<Problem0HParameter> optimalParameters;
 };
 
-//--------------------------------------------------------------------------------------------------------------//
-
-class PROBLEM0HSHARED_EXPORT Problem0HForward : public IWaveEquationIBVP, public virtual Problem0HCommon
-{
-public:
-    virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
-
-    bool f_saveToFileTxt = false;
-    bool f_saveToFilePng = false;
-
-protected:
-    virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
-    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-
-private:
-    double p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    void calculateU1U2(const DoubleMatrix &u, const TimeNodePDE &tn) const;
-    void saveToExcel(const DoubleMatrix &u, const TimeNodePDE &tn) const;
-    void saveToImage(const DoubleMatrix &u, const TimeNodePDE &tn) const;
-    void saveToTextF(const DoubleMatrix &u, const TimeNodePDE &tn) const;
 };
-
-//--------------------------------------------------------------------------------------------------------------//
-
-class PROBLEM0HSHARED_EXPORT Problem0HBckward : public IWaveEquationFBVP, public virtual Problem0HCommon
-{
-public:
-    virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
-
-protected:
-    virtual double final(const SpaceNodePDE &sn, FinalCondition condition) const;
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
-    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-
-
-private:
-    auto saveBackwardInformarion(const DoubleMatrix &p, const TimeNodePDE &tn) const -> void;
-    auto saveToImage(const DoubleMatrix &p, const TimeNodePDE &) const -> void;
-};
-
-//--------------------------------------------------------------------------------------------------------------//
-
-class PROBLEM0HSHARED_EXPORT Problem0HFunctional : public RnFunction, public IGradient,
-        public IProjection, public IPrinter,
-        protected virtual Problem0HForward, protected virtual Problem0HBckward
-{
-public:
-    static void Main(int argc, char** argv);
-
-    static void compareGradients();
-    static void checkingForwardProblem();
-    static void optimization();
-
-    Problem0HForward& forward();
-    Problem0HBckward& backward();
-
-    const Problem0HForward& forward() const;
-    const Problem0HBckward& backward() const;
-
-public:
-    virtual auto fx(const DoubleVector &x) const -> double;
-    virtual auto gradient(const DoubleVector &x, DoubleVector &g) const -> void;
-
-    virtual auto project(DoubleVector &x, unsigned int index) -> void;
-    virtual auto project(DoubleVector &) const  -> void;
-
-    virtual auto print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f,
-                       double alpha, GradientMethod::MethodResult result) const -> void;
-
-    virtual auto integral1(const DoubleMatrix &u) const -> double;
-    virtual auto integral2(const DoubleMatrix &u) const -> double;
-    virtual auto norm() const -> double;
-    virtual auto penalty() const -> double;
-
-    void setDimension(const Dimension &timeDimension, const Dimension &spaceDimensionX, const Dimension &spaceDimensionY);
-
-    auto vectorToParameter(const DoubleVector &x) const -> void;
-    auto parameterToVector(DoubleVector &x) const -> void;
-};
-
 
 #endif // PROBLEM0H_SOLVER_H
