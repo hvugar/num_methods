@@ -84,8 +84,8 @@ void ProblemSolver::gradient(const DoubleVector &x, DoubleVector &g) const
     const unsigned int length = x.length();
     for (unsigned int i=0; i<length; i++) const_this->params.v[i] = x[i];
 
-    forward.implicit_calculate_D1V1CN();
-    backward.implicit_calculate_D1V1CN();
+    forward.implicit_calculate_D1V1();
+    backward.implicit_calculate_D1V1();
 
     g.resize(length);
 #ifdef EXAMPLE_LEFT_BORDER_ROBIN
@@ -102,7 +102,7 @@ double ProblemSolver::fx(const DoubleVector &x) const
     const unsigned int length = x.length();
     for (unsigned int i=0; i<length; i++) const_this->params.v[i] = x[i];
 
-    forward.implicit_calculate_D1V1CN();
+    forward.implicit_calculate_D1V1();
 
     auto hx = _spaceDimensionX.step();
     auto N  = _spaceDimensionX.size() - 1;

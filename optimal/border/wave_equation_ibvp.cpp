@@ -1,6 +1,6 @@
 #include "wave_equation_ibvp.h"
 
-#define EXAMPLE_1D_4
+#define EXAMPLE_1D_7
 
 void WaveEquationIBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -11,14 +11,14 @@ void WaveEquationIBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     WaveEquationIBVP w;
     w.setWaveSpeed(1.0);
     w.setWaveDissipation(0.0);
-    w.setTimeDimension(Dimension(0.005, 0, 200));
+    w.setTimeDimension(Dimension(0.01, 0, 100));
     w.setSpaceDimensionX(Dimension(0.01, 0, 100));
     w.setSpaceDimensionY(Dimension(0.01, 0, 100));
 
     Benchmark bm;
     bm.tick();
     //w.explicit_calculate_D2V1();
-    w.implicit_calculate_D1V1();
+    w.implicit_calculate_D1V1_();
     IPrinter::printSeperatorLine();
     bm.tock();
     bm.printDuration();
@@ -49,6 +49,9 @@ double WaveEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition condit
 #endif
 #ifdef EXAMPLE_1D_6
         return (1.0/sqrt(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)));
+#endif
+#ifdef EXAMPLE_1D_7
+        return sn.x*sn.x;
 #endif
 
         //--------- 2D ----------//
@@ -225,6 +228,30 @@ double WaveEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
 #ifdef EXAMPLE_1D_6
     return 0.0;
 #endif
+#ifdef EXAMPLE_1D_7
+    if ( sn.i == 0 )
+    {
+        //condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+        //return (sn.x*sn.x+tn.t*tn.t)*(condition.alpha()/condition.gamma());
+
+        //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
+        //return (2.0*sn.x)*(condition.beta()/condition.gamma());
+
+        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
+        return (condition.alpha()*(sn.x*sn.x+tn.t*tn.t)+condition.beta()*(2.0*sn.x))/condition.gamma();
+    }
+    else
+    {
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+        return (sn.x*sn.x+tn.t*tn.t)*(condition.alpha()/condition.gamma());
+
+        //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
+        //return (3.0*sn.x*sn.x)*(condition.beta()/condition.gamma());
+
+        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
+        //return (condition.alpha()*(sn.x*sn.x*sn.x+tn.t*tn.t)+condition.beta()*(3.0*sn.x*sn.x))/condition.gamma();
+    }
+#endif
 
     //--------- 2D ----------//
 #ifdef EXAMPLE_2D_1
@@ -244,15 +271,15 @@ double WaveEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
 
 double WaveEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
-    const double a = waveSpeed();
-    const double alpha = waveDissipation();
+    const double ws = waveSpeed();
+    const double wd = waveDissipation();
 
     //--------- 1D ----------//
 #ifdef EXAMPLE_1D_1
     return 0.0 - 6.0*a*a*sn.x + 1.0*_waveDissipation;
 #endif
 #ifdef EXAMPLE_1D_2
-    return 2.0 - 6.0*a*a*sn.x + 2.0*_waveDissipation*tn.t;
+    return 2.0 - 6.0*ws*ws*sn.x + 2.0*wd*tn.t;
 #endif
 #ifdef EXAMPLE_1D_3
     return 6.0*tn.t - 6.0*a*a*sn.x + 3.0*_waveDissipation*tn.t*tn.t;
@@ -265,6 +292,9 @@ double WaveEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 #endif
 #ifdef EXAMPLE_1D_6
     return 0.0;
+#endif
+#ifdef EXAMPLE_1D_7
+    return 2.0 - 2.0*ws*ws + 2.0*wd*tn.t;
 #endif
 
     //--------- 2D ----------//
@@ -302,6 +332,9 @@ double WaveEquationIBVP::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 #endif
 #ifdef EXAMPLE_1D_6
     return 0.0;
+#endif
+#ifdef EXAMPLE_1D_7
+    return sn.x*sn.x + tn.t*tn.t;
 #endif
 
     //--------- 2D ----------//

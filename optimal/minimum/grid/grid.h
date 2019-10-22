@@ -6,6 +6,16 @@
 #include <math.h>
 #include <cstdio>
 #include <float.h>
+#include <math.h>
+#include <limits>
+#include <exception>
+#include <stdexcept>
+#include "../cmethods.h"
+#include "../linearequation.h"
+#include "../printer.h"
+#include "../matrix2d.h"
+#include "../matrix3d.h"
+
 
 enum class FiniteDifference
 {

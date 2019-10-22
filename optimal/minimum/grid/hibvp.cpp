@@ -1,51 +1,27 @@
 #include "hibvp.h"
-#include <limits>
-#include <exception>
-#include <stdexcept>
-#include "../cmethods.h"
-#include "../linearequation.h"
-#include "../printer.h"
 
-IHyperbolicIBVP::IHyperbolicIBVP() {}
+void IHyperbolicIBVP::layerInfo(const DoubleVector &, const TimeNodePDE &) const {}
 
-IHyperbolicIBVP::IHyperbolicIBVP(const IHyperbolicIBVP &) {}
-
-IHyperbolicIBVP & IHyperbolicIBVP::operator = (const IHyperbolicIBVP &) { return *this; }
-
-IHyperbolicIBVP::~IHyperbolicIBVP() {}
+void IHyperbolicIBVP::layerInfo(const DoubleMatrix &, const TimeNodePDE &) const {}
 
 //--------------------------------------------------------------------------------------------------------------//
 
-IHyperbolicFBVP::IHyperbolicFBVP() {}
+void IHyperbolicFBVP::layerInfo(const DoubleVector &, const TimeNodePDE &) const {}
 
-IHyperbolicFBVP::IHyperbolicFBVP(const IHyperbolicFBVP &) {}
-
-IHyperbolicFBVP & IHyperbolicFBVP::operator = (const IHyperbolicFBVP &) { return *this; }
-
-IHyperbolicFBVP::~IHyperbolicFBVP() {}
+void IHyperbolicFBVP::layerInfo(const DoubleMatrix &, const TimeNodePDE &) const {}
 
 //--------------------------------------------------------------------------------------------------------------//
 
-IWaveEquationIBVP::IWaveEquationIBVP(double waveSpeed, double waveDissipation) :
+IWaveEquationIBVP::IWaveEquationIBVP(double waveSpeed, double waveDissipation) : IHyperbolicIBVP(),
     _waveSpeed(waveSpeed), _waveDissipation(waveDissipation) {}
 
-IWaveEquationIBVP::IWaveEquationIBVP(const IWaveEquationIBVP& ibvp) :
-    _waveSpeed(ibvp._waveSpeed), _waveDissipation(ibvp._waveDissipation)
-{
-    //this->_timeDimension = ibvp._timeDimension;
-    //this->_spaceDimensionX = ibvp._spaceDimensionX;
-    //this->_spaceDimensionY = ibvp._spaceDimensionY;
-    //this->_spaceDimensionZ = ibvp._spaceDimensionZ;
-}
+IWaveEquationIBVP::IWaveEquationIBVP(const IWaveEquationIBVP& other) : IHyperbolicIBVP(other),
+    _waveSpeed(other._waveSpeed), _waveDissipation(other._waveDissipation) {}
 
-IWaveEquationIBVP & IWaveEquationIBVP::operator =(const IWaveEquationIBVP &other)
+IWaveEquationIBVP& IWaveEquationIBVP::operator=(const IWaveEquationIBVP &other)
 {
     if (this == &other) { return *this; }
 
-    //this->_timeDimension = other._timeDimension;
-    //this->_spaceDimensionX = other._spaceDimensionX;
-    //this->_spaceDimensionY = other._spaceDimensionY;
-    //this->_spaceDimensionZ = other._spaceDimensionZ;
     this->_waveSpeed = other._waveSpeed;
     this->_waveDissipation = other._waveDissipation;
     return *this;
@@ -55,11 +31,11 @@ IWaveEquationIBVP::~IWaveEquationIBVP() {}
 
 double IWaveEquationIBVP::waveSpeed() const { return _waveSpeed; }
 
+void IWaveEquationIBVP::setWaveSpeed(double waveSpeed) { this->_waveSpeed = waveSpeed; }
+
 double IWaveEquationIBVP::waveDissipation() const { return _waveDissipation; }
 
-void IWaveEquationIBVP::setWaveSpeed(double waveSpeed) { _waveSpeed = waveSpeed; }
-
-void IWaveEquationIBVP::setWaveDissipation(double waveDissipation) { _waveDissipation = waveDissipation; }
+void IWaveEquationIBVP::setWaveDissipation(double waveDissipation) { this->_waveDissipation = waveDissipation; }
 
 void IWaveEquationIBVP::explicit_calculate_D1V1() const
 {
@@ -200,28 +176,31 @@ void IWaveEquationIBVP::explicit_calculate_D1V1() const
 
 void IWaveEquationIBVP::implicit_calculate_D1V1() const
 {
-    const Dimension &dimX = spaceDimensionX();
-    const Dimension &time = timeDimension();
+    const unsigned int N = static_cast<unsigned int>( spaceDimensionX().size() );
+    const unsigned int L = static_cast<unsigned int>( timeDimension().size() );
 
-    const unsigned int N = static_cast<unsigned int>( dimX.size() );
-    const unsigned int L = static_cast<unsigned int>( time.size() );
+    const double hx = spaceDimensionX().step();
+    const double ht = timeDimension().step();
 
-    const double hx = dimX.step();
-    const double ht = time.step();
+    const double ws = waveSpeed();
+    const double wd = waveDissipation();
+    const double w1 = weight();
+    const double w2 = 1.0 - 2.0*w1;
 
-    const double alpha       = waveDissipation();
-    const double a           = waveSpeed();
-    const double lmbd        = weight();
-    const double m1_2lambda  = 1.0-2.0*lmbd;
+    // equation parameters
+    //const double m_td_ht__hxhx_w1__p_cv_w1 = -((ws*ht)/(hx*hx))*w1 + ((cv*ht)/(2.0*hx))*w1;
+
     const double ht_ht       = ht*ht;
-    const double alpha_ht_05 = 0.5*alpha*ht;
-    const double p_aa_htht__hx   = ((a*a)*(ht*ht))/hx;
-    const double p_aa_htht__hxhx = ((a*a)*(ht*ht))/(hx*hx);
+    const double alpha_ht_05 = 0.5*wd*ht;
+    const double p_aa_htht__hx   = ((ws*ws)*(ht*ht))/hx;
+    const double p_aa_htht__hxhx = ((ws*ws)*(ht*ht))/(hx*hx);
 
-    const double m_aa_htht__hxhx_lambda = -(a*a)*((ht*ht)/(hx*hx))*lmbd;
-    const double b_aa_htht__hxhx = +(1.0 + 2.0*(a*a)*((ht*ht)/(hx*hx))*lmbd + alpha_ht_05);
-    const double p_aa_htht__hxhx_1m2lambda = +(a*a)*((ht*ht)/(hx*hx))*(1.0-2.0*lmbd);
-    const double p_aa_htht__hxhx_lambda = +(a*a)*((ht*ht)/(hx*hx))*lmbd;
+    // border condition parameters
+
+    const double m_aa_htht__hxhx_lambda = -(ws*ws)*((ht*ht)/(hx*hx))*w1;
+    const double b_aa_htht__hxhx = +(1.0 + 2.0*(ws*ws)*((ht*ht)/(hx*hx))*w1 + alpha_ht_05);
+    const double p_aa_htht__hxhx_1m2lambda = +(ws*ws)*((ht*ht)/(hx*hx))*(1.0-2.0*w1);
+    const double p_aa_htht__hxhx_lambda = +(ws*ws)*((ht*ht)/(hx*hx))*w1;
 
     double *ax = static_cast<double*>(malloc(sizeof(double)*(N+1)));
     double *bx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
@@ -237,7 +216,7 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
     }
     ax[0] = 0.0; cx[N] = 0.0;
 
-    const double aa__hxhx = (a*a)/(hx*hx);
+    const double aa__hxhx = (ws*ws)/(hx*hx);
     const double htht_05 = 0.5*ht*ht;
 
     DoubleVector u00(N+1);
@@ -269,7 +248,7 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
         if (n==0) { secndDerivative = aa__hxhx*(+2.0*u00[0]   -5.0*u00[1]   +4.0*u00[2]   -1.0*u00[3]); }
         else if (n==N) { secndDerivative = aa__hxhx*(-1.0*u00[N-3] +4.0*u00[N-2] -5.0*u00[N-1] +2.0*u00[N]); }
         else { secndDerivative = aa__hxhx*(u00[n-1]-2.0*u00[n]+u00[n+1]); }
-        u10[n] += (secndDerivative + f(sn,tn00) - alpha*firstDerivative) * htht_05;
+        u10[n] += (secndDerivative + f(sn,tn00) - wd*firstDerivative) * htht_05;
     }
     layerInfo(u10, tn10);
 
@@ -313,29 +292,29 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
             s = 0;
 
             ax[0]  = 0.0;
-            bx[0]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*lmbd + alpha_ht_05);
-            cx[0]  = beta *(-2.0*p_aa_htht__hxhx*lmbd);
+            bx[0]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*w1 + alpha_ht_05);
+            cx[0]  = beta *(-2.0*p_aa_htht__hxhx*w1);
 
             dx[0]  = beta *(2.0*u10[0] - u00[0] + alpha_ht_05*u00[0]);
-            dx[0] += beta *(p_aa_htht__hxhx*(2.0*u10[0]-5.0*u10[1]+4.0*u10[2]-u10[3])*m1_2lambda);
-            dx[0] += beta *(p_aa_htht__hxhx*(2.0*u00[0]-5.0*u00[1]+4.0*u00[2]-u00[3])*lmbd);
+            dx[0] += beta *(p_aa_htht__hxhx*(2.0*u10[0]-5.0*u10[1]+4.0*u10[2]-u10[3])*w2);
+            dx[0] += beta *(p_aa_htht__hxhx*(2.0*u00[0]-5.0*u00[1]+4.0*u00[2]-u00[3])*w1);
             dx[0] += beta *(ht_ht*f(sn,tn10));
-            dx[0] += gamma*(-2.0*p_aa_htht__hx*lmbd)*value;
+            dx[0] += gamma*(-2.0*p_aa_htht__hx*w1)*value;
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
         {
             s = 0;
 
             ax[0]  = 0.0;
-            bx[0]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*lmbd + alpha_ht_05);
-            bx[0] += alpha*(-2.0*p_aa_htht__hx*lmbd);
-            cx[0]  = beta *(-2.0*p_aa_htht__hxhx*lmbd);
+            bx[0]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*w1 + alpha_ht_05);
+            bx[0] += alpha*(-2.0*p_aa_htht__hx*w1);
+            cx[0]  = beta *(-2.0*p_aa_htht__hxhx*w1);
 
             dx[0]  = beta *(2.0*u10[0] - u00[0] + alpha_ht_05*u00[0]);
-            dx[0] += beta *(p_aa_htht__hxhx*(2.0*u10[0]-5.0*u10[1]+4.0*u10[2]-u10[3])*m1_2lambda);
-            dx[0] += beta *(p_aa_htht__hxhx*(2.0*u00[0]-5.0*u00[1]+4.0*u00[2]-u00[3])*lmbd);
+            dx[0] += beta *(p_aa_htht__hxhx*(2.0*u10[0]-5.0*u10[1]+4.0*u10[2]-u10[3])*w2);
+            dx[0] += beta *(p_aa_htht__hxhx*(2.0*u00[0]-5.0*u00[1]+4.0*u00[2]-u00[3])*w1);
             dx[0] += beta *(ht_ht*f(sn,tn10));
-            dx[0] += gamma*(-2.0*p_aa_htht__hx*lmbd)*value;
+            dx[0] += gamma*(-2.0*p_aa_htht__hx*w1)*value;
         }
 
         sn.i = static_cast<int>(N); sn.x = N*hx;
@@ -354,30 +333,289 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
         {
             e = N;
 
-            ax[N]  = beta *(-2.0*p_aa_htht__hxhx*lmbd);
-            bx[N]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*lmbd + alpha_ht_05);
+            ax[N]  = beta *(-2.0*p_aa_htht__hxhx*w1);
+            bx[N]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*w1 + alpha_ht_05);
             cx[N]  = 0.0;
 
             dx[N]  = beta *(2.0*u10[N] - u00[N] + alpha_ht_05*u00[N]);
-            dx[N] += beta *(p_aa_htht__hxhx*(-u10[N-3]+4.0*u10[N-2]-5.0*u10[N-1]+2.0*u10[N])*m1_2lambda);
-            dx[N] += beta *(p_aa_htht__hxhx*(-u00[N-3]+4.0*u00[N-2]-5.0*u00[N-1]+2.0*u00[N])*lmbd);
+            dx[N] += beta *(p_aa_htht__hxhx*(-u10[N-3]+4.0*u10[N-2]-5.0*u10[N-1]+2.0*u10[N])*w2);
+            dx[N] += beta *(p_aa_htht__hxhx*(-u00[N-3]+4.0*u00[N-2]-5.0*u00[N-1]+2.0*u00[N])*w1);
             dx[N] += beta *(ht_ht*f(sn,tn10));
-            dx[N] += gamma*(+2.0*p_aa_htht__hx*lmbd)*value;
+            dx[N] += gamma*(+2.0*p_aa_htht__hx*w1)*value;
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
         {
             e = N;
 
-            ax[N]  = beta *(-2.0*p_aa_htht__hxhx*lmbd);
-            bx[N]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*lmbd + alpha_ht_05);
-            bx[N] += alpha*(+2.0*p_aa_htht__hx*lmbd);
+            ax[N]  = beta *(-2.0*p_aa_htht__hxhx*w1);
+            bx[N]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*w1 + alpha_ht_05);
+            bx[N] += alpha*(+2.0*p_aa_htht__hx*w1);
             cx[N]  = 0.0;
 
             dx[N]  = beta *(2.0*u10[N] - u00[N] + alpha_ht_05*u00[N]);
-            dx[N] += beta *(p_aa_htht__hxhx*(-u10[N-3]+4.0*u10[N-2]-5.0*u10[N-1]+2.0*u10[N])*m1_2lambda);
-            dx[N] += beta *(p_aa_htht__hxhx*(-u00[N-3]+4.0*u00[N-2]-5.0*u00[N-1]+2.0*u00[N])*lmbd);
+            dx[N] += beta *(p_aa_htht__hxhx*(-u10[N-3]+4.0*u10[N-2]-5.0*u10[N-1]+2.0*u10[N])*w2);
+            dx[N] += beta *(p_aa_htht__hxhx*(-u00[N-3]+4.0*u00[N-2]-5.0*u00[N-1]+2.0*u00[N])*w1);
             dx[N] += beta *(ht_ht*f(sn,tn10));
-            dx[N] += gamma*(+2.0*p_aa_htht__hx*lmbd)*value;
+            dx[N] += gamma*(+2.0*p_aa_htht__hx*w1)*value;
+        }
+
+        tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
+        for (unsigned int n=s; n<=e; n++) u20[n] = rx[n];
+        layerInfo(u20, tn20);
+
+        for (unsigned int i=0; i<=N; i++)
+        {
+            u00[i] = u10[i];
+            u10[i] = u20[i];
+        }
+    }
+
+    u00.clear();
+    u10.clear();
+    u20.clear();
+
+    free(rx);
+    free(dx);
+    free(cx);
+    free(bx);
+    free(ax);
+}
+
+void IWaveEquationIBVP::implicit_calculate_D1V1_() const
+{
+    const unsigned int N = static_cast<unsigned int>( spaceDimensionX().size() ) - 1;
+    const unsigned int L = static_cast<unsigned int>( timeDimension().size() ) - 1;
+
+    const double hx = spaceDimensionX().step();
+    const double ht = timeDimension().step();
+
+    const double ws = waveSpeed();
+    const double wd = waveDissipation();
+    const double cv = 0.0;
+    const double dv = 0.0;
+    const double w1 = weight();
+    const double w2 = 1.0 - 2.0*w1;
+
+    // equation parameters
+    const double m_wsws_htht__hxhx_w1__p_cv_htht__2hx_w1 = -((ws*ws*ht*ht)/(hx*hx))*w1 + ((cv*ht*ht)/(2.0*hx))*w1;
+    const double pb_p2_wsws_htht__hxhx_w1__wd_ht__2w1_dv = +1.0 + ((2.0*ws*ws*ht*ht)/(hx*hx))*w1 + 0.5*wd*ht - dv*ht*ht*w1;
+    const double m_wsws_htht__hxhx_w1__m_cv_htht__2hx_w1 = -((ws*ws*ht*ht)/(hx*hx))*w1 - ((cv*ht*ht)/(2.0*hx))*w1;
+
+    const double p_wsws_htht__hxhx_w2__m_cv_htht__2hx_w2 = +((ws*ws*ht*ht)/(hx*hx))*w2 - ((cv*ht*ht)/(2.0*hx))*w2;
+    const double pi_m2_wsws_htht__hxhx_w2___2_dv_htht_w2 = +2.0 - ((2.0*ws*ws*ht*ht)/(hx*hx))*w2 + dv*ht*ht*w2;
+    const double p_wsws_htht__hxhx_w2__p_cv_htht__2hx_w2 = +((ws*ws*ht*ht)/(hx*hx))*w2 + ((cv*ht*ht)/(2.0*hx))*w2;
+
+    const double p_wsws_htht__hxhx_w1__m_cv_htht__2hx_w1 = +((ws*ws*ht*ht)/(hx*hx))*w1 - ((cv*ht*ht)/(2.0*hx))*w1;
+    const double mb_m2_wsws_htht__hxhx_w1__wd_ht__2w1_dv = -1.0 - ((2.0*ws*ws*ht*ht)/(hx*hx))*w1 + 0.5*wd*ht - dv*ht*ht*w1;
+    const double p_wsws_htht__hxhx_w1__p_cv_htht__2hx_w1 = +((ws*ws*ht*ht)/(hx*hx))*w1 + ((cv*ht*ht)/(2.0*hx))*w1;
+    const double ht_ht       = ht*ht;
+
+    const double ws2__hxhx = (ws*ws)/(hx*hx);
+    const double ws2 = ws*ws;
+    const double htht_05 = 0.5*ht*ht;
+
+    //const double alpha_ht_05 = 0.5*wd*ht;
+    //const double p_aa_htht__hx   = ((ws*ws)*(ht*ht))/hx;
+    //const double p_aa_htht__hxhx = ((ws*ws)*(ht*ht))/(hx*hx);
+
+    // border condition parameters
+
+    //const double m_aa_htht__hxhx_lambda = -(ws*ws)*((ht*ht)/(hx*hx))*w1;
+    //const double b_aa_htht__hxhx = +(1.0 + 2.0*(ws*ws)*((ht*ht)/(hx*hx))*w1 + alpha_ht_05);
+    //const double p_aa_htht__hxhx_1m2lambda = +(ws*ws)*((ht*ht)/(hx*hx))*(1.0-2.0*w1);
+    //const double p_aa_htht__hxhx_lambda = +(ws*ws)*((ht*ht)/(hx*hx))*w1;
+
+    double *ax = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *bx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *cx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *dx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *rx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+
+    for (unsigned int n=0; n<=N; n++)
+    {
+        ax[n] = m_wsws_htht__hxhx_w1__p_cv_htht__2hx_w1;
+        bx[n] = pb_p2_wsws_htht__hxhx_w1__wd_ht__2w1_dv;
+        cx[n] = m_wsws_htht__hxhx_w1__m_cv_htht__2hx_w1;
+    }
+    ax[0] = 0.0; cx[N] = 0.0;
+
+    DoubleVector u00(N+1);
+    DoubleVector u10(N+1);
+    DoubleVector u20(N+1);
+
+    /***********************************************************************************************/
+    /***********************************************************************************************/
+
+    TimeNodePDE tn00; tn00.i = 0; tn00.t = tn00.i*ht;
+    TimeNodePDE tn10; tn10.i = 1; tn10.t = tn10.i*ht;
+
+    SpaceNodePDE sn;
+    for (unsigned int n=0; n<=N; n++)
+    {
+        sn.i = static_cast<int>(n); sn.x = sn.i*hx;
+        u00[n] = initial(sn, InitialCondition::InitialValue);
+    }
+    layerInfo(u00, tn00);
+
+    /***********************************************************************************************/
+
+    for (unsigned int n=0; n<=N; n++)
+    {
+        sn.i = static_cast<int>(n); sn.x = sn.i*hx;
+        double firstDerivative = initial(sn, InitialCondition::FirstDerivative);
+        u10[n] = u00[n] + firstDerivative*ht;
+        double secndDerivative = 0.0;
+        if (n==0)
+        {
+            secndDerivative = ws2__hxhx*(+2.0*u00[0]   -5.0*u00[1]   +4.0*u00[2]   -1.0*u00[3]);
+            //secndDerivative = ws2*((u00[1]-u00[0])/(0.5*hx*hx) - firstDerivative/(0.5*hx));
+        }
+        else if (n==N)
+        {
+            secndDerivative = ws2__hxhx*(-1.0*u00[N-3] +4.0*u00[N-2] -5.0*u00[N-1] +2.0*u00[N]);
+            //secndDerivative = ws2*((u00[N-1]-u00[N])/(0.5*hx*hx) + firstDerivative/(0.5*hx));
+        }
+        else
+        {
+            secndDerivative = ws2__hxhx*(u00[n-1]-2.0*u00[n]+u00[n+1]);
+        }
+        u10[n] += (secndDerivative + f(sn,tn00) - wd*firstDerivative) * htht_05;
+    }
+    layerInfo(u10, tn10);
+
+    /***********************************************************************************************/
+    /***********************************************************************************************/
+
+    for (unsigned int ln=2; ln<=L; ln++)
+    {
+        //TimeNodePDE tn00; tn00.i = ln-2; tn00.t = tn00.i*ht;
+        TimeNodePDE tn10; tn10.i = ln-1; tn10.t = tn10.i*ht;
+        TimeNodePDE tn20; tn20.i = ln;   tn20.t = tn20.i*ht;
+
+        for (unsigned int n=1; n<=N-1; n++)
+        {
+            sn.i = static_cast<int>(n); sn.x = n*hx;
+            dx[n] = 0.0;
+            //dx[n] += (u10[n-1] - 2.0*u10[n] + u10[n+1])*p_aa_htht__hxhx_1m2lambda;
+            //dx[n] += (u00[n-1] - 2.0*u00[n] + u00[n+1])*p_aa_htht__hxhx_lambda;
+            //dx[n] += 2.0*u10[n] - u00[n] + alpha_ht_05*u00[n];
+            //dx[n] += ht_ht*f(sn, tn10);
+            //dx[n] += ht_ht*(lmbd*f(sn, tn00) + m1_2lambda*f(sn, tn10) + lmbd*f(sn, tn20));
+
+            dx[n] += p_wsws_htht__hxhx_w2__m_cv_htht__2hx_w2 * u10[n-1];
+            dx[n] += pi_m2_wsws_htht__hxhx_w2___2_dv_htht_w2 * u10[n];
+            dx[n] += p_wsws_htht__hxhx_w2__p_cv_htht__2hx_w2 * u10[n+1];
+
+            dx[n] += p_wsws_htht__hxhx_w1__m_cv_htht__2hx_w1 * u00[n-1];
+            dx[n] += mb_m2_wsws_htht__hxhx_w1__wd_ht__2w1_dv * u00[n];
+            dx[n] += p_wsws_htht__hxhx_w1__p_cv_htht__2hx_w1 * u00[n+1];
+
+            dx[n] += ht_ht*f(sn, tn10);
+        }
+
+        unsigned int s=0, e=N;
+        BoundaryConditionPDE condition; double alpha, beta, gamma, value;
+        sn.i = static_cast<int>(0); sn.x = 0*hx;
+        value = boundary(sn, tn20, condition);
+        alpha = condition.alpha();
+        beta  = condition.beta();
+        gamma = condition.gamma();
+        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+        {
+            s = 1;
+
+            u20[0] = (gamma/alpha)*value;
+            dx[1] -= m_wsws_htht__hxhx_w1__p_cv_htht__2hx_w1 * u20[0];
+            ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+        {
+            s = 0;
+
+//            ax[0]  = 0.0;
+//            bx[0]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*w1 + alpha_ht_05);
+//            cx[0]  = beta *(-2.0*p_aa_htht__hxhx*w1);
+
+//            dx[0]  = beta *(2.0*u10[0] - u00[0] + alpha_ht_05*u00[0]);
+//            dx[0] += beta *(p_aa_htht__hxhx*(2.0*u10[0]-5.0*u10[1]+4.0*u10[2]-u10[3])*w2);
+//            dx[0] += beta *(p_aa_htht__hxhx*(2.0*u00[0]-5.0*u00[1]+4.0*u00[2]-u00[3])*w1);
+//            dx[0] += beta *(ht_ht*f(sn,tn10));
+//            dx[0] += gamma*(-2.0*p_aa_htht__hx*w1)*value;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Robin)
+        {
+            s = 0;
+
+            ax[0] = 0.0;
+            bx[0] = beta  * pb_p2_wsws_htht__hxhx_w1__wd_ht__2w1_dv
+                  + alpha * +2.0 * m_wsws_htht__hxhx_w1__p_cv_htht__2hx_w1;
+            cx[0] = beta  * -2.0 * ((ws*ws*ht*ht)/(hx*hx)) * w1;
+
+            dx[0]  = 0.0;
+            dx[0] += beta  * pi_m2_wsws_htht__hxhx_w2___2_dv_htht_w2 * u00[0];
+            dx[0] += alpha * 2.0 * p_wsws_htht__hxhx_w2__m_cv_htht__2hx_w2 * u00[0];
+            dx[0] += beta  * 2.0 * ((ws*ws*ht*ht)/(hx*hx)) * w2 * u00[1];
+
+            dx[0] += beta  * mb_m2_wsws_htht__hxhx_w1__wd_ht__2w1_dv * u10[0];
+            dx[0] += alpha * 2.0 * p_wsws_htht__hxhx_w1__m_cv_htht__2hx_w1 * u10[0];
+            dx[0] += beta  * 2.0 * ((ws*ws*ht*ht)/(hx*hx)) * w1 * u10[1];
+
+            dx[0] += gamma * ((-2.0*ws*ws*ht*ht)/hx + cv*ht*ht) * value;
+            dx[0] += beta  * (ht_ht) * f(sn,tn10);
+
+
+//            ax[0]  = 0.0;
+//            bx[0]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*w1 + alpha_ht_05);
+//            bx[0] += alpha*(-2.0*p_aa_htht__hx*w1);
+//            cx[0]  = beta *(-2.0*p_aa_htht__hxhx*w1);
+
+//            dx[0]  = beta *(2.0*u10[0] - u00[0] + alpha_ht_05*u00[0]);
+//            dx[0] += beta *(p_aa_htht__hxhx*(2.0*u10[0]-5.0*u10[1]+4.0*u10[2]-u10[3])*w2);
+//            dx[0] += beta *(p_aa_htht__hxhx*(2.0*u00[0]-5.0*u00[1]+4.0*u00[2]-u00[3])*w1);
+//            dx[0] += beta *(ht_ht*f(sn,tn10));
+//            dx[0] += gamma*(-2.0*p_aa_htht__hx*w1)*value;
+        }
+
+        sn.i = static_cast<int>(N); sn.x = N*hx;
+        value = boundary(sn, tn20, condition);
+        alpha = condition.alpha();
+        beta  = condition.beta();
+        gamma = condition.gamma();
+        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+        {
+            e = N-1;
+            u20[N] = (gamma/alpha)*value;
+            dx[N-1] -= m_wsws_htht__hxhx_w1__m_cv_htht__2hx_w1 * u20[N];
+            cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+        {
+            e = N;
+
+//            ax[N]  = beta *(-2.0*p_aa_htht__hxhx*w1);
+//            bx[N]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*w1 + alpha_ht_05);
+//            cx[N]  = 0.0;
+
+//            dx[N]  = beta *(2.0*u10[N] - u00[N] + alpha_ht_05*u00[N]);
+//            dx[N] += beta *(p_aa_htht__hxhx*(-u10[N-3]+4.0*u10[N-2]-5.0*u10[N-1]+2.0*u10[N])*w2);
+//            dx[N] += beta *(p_aa_htht__hxhx*(-u00[N-3]+4.0*u00[N-2]-5.0*u00[N-1]+2.0*u00[N])*w1);
+//            dx[N] += beta *(ht_ht*f(sn,tn10));
+//            dx[N] += gamma*(+2.0*p_aa_htht__hx*w1)*value;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Robin)
+        {
+            e = N;
+
+//            ax[N]  = beta *(-2.0*p_aa_htht__hxhx*w1);
+//            bx[N]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*w1 + alpha_ht_05);
+//            bx[N] += alpha*(+2.0*p_aa_htht__hx*w1);
+//            cx[N]  = 0.0;
+
+//            dx[N]  = beta *(2.0*u10[N] - u00[N] + alpha_ht_05*u00[N]);
+//            dx[N] += beta *(p_aa_htht__hxhx*(-u10[N-3]+4.0*u10[N-2]-5.0*u10[N-1]+2.0*u10[N])*w2);
+//            dx[N] += beta *(p_aa_htht__hxhx*(-u00[N-3]+4.0*u00[N-2]-5.0*u00[N-1]+2.0*u00[N])*w1);
+//            dx[N] += beta *(ht_ht*f(sn,tn10));
+//            dx[N] += gamma*(+2.0*p_aa_htht__hx*w1)*value;
         }
 
         tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
@@ -537,9 +775,9 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
     const Dimension _spaceDimensionY = spaceDimensionX();
     const Dimension _timeDimension = timeDimension();
 
-    const unsigned int N = static_cast<unsigned int>( _spaceDimensionX.size() );
-    const unsigned int M = static_cast<unsigned int>( _spaceDimensionY.size() );
-    const unsigned int L = static_cast<unsigned int>( _timeDimension.size() );
+    const unsigned int N = static_cast<unsigned int>( _spaceDimensionX.size()-1 );
+    const unsigned int M = static_cast<unsigned int>( _spaceDimensionY.size()-1 );
+    const unsigned int L = static_cast<unsigned int>( _timeDimension.size()-1 );
 
     const double hx = _spaceDimensionX.step();
     const double hy = _spaceDimensionY.step();
@@ -786,14 +1024,16 @@ double IWaveEquationIBVP::weight() const { return 0.25; }
 
 //--------------------------------------------------------------------------------------------------------------//
 
-IWaveEquationFBVP::IWaveEquationFBVP(double waveSpeed, double waveDissipation)
-    : _waveSpeed(waveSpeed), _waveDissipation(waveDissipation) {}
+IWaveEquationFBVP::IWaveEquationFBVP(double waveSpeed, double waveDissipation) : IHyperbolicFBVP(),
+    _waveSpeed(waveSpeed), _waveDissipation(waveDissipation) {}
 
-IWaveEquationFBVP::IWaveEquationFBVP(const IWaveEquationFBVP &ibvp) :
-    _waveSpeed(ibvp._waveSpeed), _waveDissipation(ibvp._waveDissipation) {}
+IWaveEquationFBVP::IWaveEquationFBVP(const IWaveEquationFBVP &other) : IHyperbolicFBVP(other),
+    _waveSpeed(other._waveSpeed), _waveDissipation(other._waveDissipation) {}
 
-IWaveEquationFBVP & IWaveEquationFBVP::operator =(const IWaveEquationFBVP &other)
+IWaveEquationFBVP& IWaveEquationFBVP::operator=(const IWaveEquationFBVP &other)
 {
+    if (this == &other) { return *this; }
+
     this->_waveSpeed = other._waveSpeed;
     this->_waveDissipation = other._waveDissipation;
     return *this;
@@ -955,9 +1195,9 @@ void IWaveEquationFBVP::implicit_calculate_D2V1() const
     const Dimension _spaceDimensionY = spaceDimensionX();
     const Dimension _timeDimension = timeDimension();
 
-    const unsigned int N = static_cast<unsigned int>( _spaceDimensionX.size() );
-    const unsigned int M = static_cast<unsigned int>( _spaceDimensionY.size() );
-    const unsigned int L = static_cast<unsigned int>( _timeDimension.size() );
+    const unsigned int N = static_cast<unsigned int>( _spaceDimensionX.size() - 1 );
+    const unsigned int M = static_cast<unsigned int>( _spaceDimensionY.size() - 1 );
+    const unsigned int L = static_cast<unsigned int>( _timeDimension.size() - 1 );
 
     const double hx = _spaceDimensionX.step();
     const double hy = _spaceDimensionY.step();

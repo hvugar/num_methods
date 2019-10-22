@@ -1,13 +1,8 @@
 #ifndef INITIAL_BOUNDARY_VALUE_PROBLEM_H
 #define INITIAL_BOUNDARY_VALUE_PROBLEM_H
 
-#include "grid.h"
 #include "ivp.h"
 #include "bvp.h"
-#include <math.h>
-#include "../cmethods.h"
-#include "../linearequation.h"
-#include "../matrix3d.h"
 
 enum SweepMethodDirection
 {
@@ -28,7 +23,7 @@ class MINIMUMSHARED_EXPORT InitialBoundaryValueProblemPDE : public InitialValueP
 public:
     InitialBoundaryValueProblemPDE();
     InitialBoundaryValueProblemPDE(const InitialBoundaryValueProblemPDE &);
-    InitialBoundaryValueProblemPDE & operator = (const InitialBoundaryValueProblemPDE &);
+    InitialBoundaryValueProblemPDE & operator= (const InitialBoundaryValueProblemPDE &);
     virtual ~InitialBoundaryValueProblemPDE();
 
     virtual const Dimension& timeDimension() const = 0;

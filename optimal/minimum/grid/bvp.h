@@ -2,7 +2,6 @@
 #define BOUNDARY_VALUE_PROBLEM_H
 
 #include "grid.h"
-#include "../matrix2d.h"
 
 enum class BoundaryCondition
 {

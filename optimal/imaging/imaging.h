@@ -22,9 +22,9 @@ void MINIMUMSHARED_EXPORT visualHeatColorGradinet2(QPixmap& img, int w=256, int 
 void MINIMUMSHARED_EXPORT visualGrayScale(const DoubleMatrix &m, double min, double max, QPixmap &pxm, size_t w=0, size_t h=0);
 
 void MINIMUMSHARED_EXPORT visualString(const DoubleVector& v, double min, double max, int w, int h, QPixmap &pxm,
-                                       QColor bg = Qt::transparent, QColor fg = Qt::black, const QString &filename = QString::null);
+                                       QColor bg = Qt::transparent, QColor fg = Qt::black, const QString &filename = QString());
 void MINIMUMSHARED_EXPORT visualString1(const DoubleVector& v, double min, double max, int w, int h, QColor bg = Qt::transparent,
-                                       QColor fg = Qt::black, const QString &filename = QString::null);
+                                       QColor fg = Qt::black, const QString &filename = QString());
 
 #ifdef __cplusplus
 }

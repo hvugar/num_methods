@@ -10,19 +10,13 @@
  */
 class MINIMUMSHARED_EXPORT IParabolicIBVP : public InitialBoundaryValueProblemPDE
 {
-public:
-    IParabolicIBVP();
-    IParabolicIBVP(const IParabolicIBVP &);
-    IParabolicIBVP & operator = (const IParabolicIBVP &);
-    virtual ~IParabolicIBVP();
-
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
 
-    virtual void layerInfo(const DoubleVector &, const TimeNodePDE &) const {}
-    virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const {}
+    virtual void layerInfo(const DoubleVector &, const TimeNodePDE &) const;
+    virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -34,19 +28,13 @@ protected:
  */
 class MINIMUMSHARED_EXPORT IParabolicFBVP : public FinalBoundaryValueProblemPDE
 {
-public:
-    IParabolicFBVP();
-    IParabolicFBVP(const IParabolicFBVP &);
-    IParabolicFBVP & operator = (const IParabolicFBVP &);
-    virtual ~IParabolicFBVP();
-
 protected:
     virtual double final(const SpaceNodePDE &sn, FinalCondition condition) const = 0;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
 
-    virtual void layerInfo(const DoubleVector &, const TimeNodePDE &) const {}
-    virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const {}
+    virtual void layerInfo(const DoubleVector &, const TimeNodePDE &) const;
+    virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -57,11 +45,7 @@ public:
     explicit IHeatEquationIBVP(double thermalDiffusivity = 1.0, double thermalConductivity = 0.0, double thermalConvection = 0.0);
     virtual ~IHeatEquationIBVP();
     IHeatEquationIBVP(const IHeatEquationIBVP &);
-    IHeatEquationIBVP & operator =(const IHeatEquationIBVP &);
-
-    virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
-    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
-    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
+    IHeatEquationIBVP& operator=(const IHeatEquationIBVP &);
 
     virtual double thermalDiffusivity() const;
     virtual void setThermalDiffusivity(double thermalDiffusivity);
@@ -74,26 +58,15 @@ public:
 
     void explicit_calculate_D1V1() const;
     void implicit_calculate_D1V1() const;
-    void implicit_calculate_D1V1CN() const;
 
     void explicit_calculate_D2V1() const;
     void implicit_calculate_D2V1() const;
-    void implicit_calculate_D2V1CN() const;
-
-    virtual double env0(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-    virtual double env1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
-
-    void calculateU(DoubleMatrix &u, double a, double alpha, double weight);
-    //void gridMethod(DoubleVector &u) const;
-    void gridMethod(DoubleVector &u, double a = 1.0) const;
-    void calculateMVD(DoubleMatrix &u) const;
-    /* dirichlet conditions */
-    void calculateN2L2RD(DoubleMatrix &u) const;
-    void calculateN4L2RD(DoubleMatrix &u) const;
-    void calculateN4L2RDX(DoubleMatrix &u) const;
-    void calculateN6L2RD(DoubleMatrix &u) const;
 
 protected:
+    virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
+    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
+
     virtual double weight() const;  //
     double _thermalDiffusivity;     // температуропроводность
     double _thermalConductivity;    // теплопроводность
@@ -107,7 +80,7 @@ class MINIMUMSHARED_EXPORT IHeatEquationFBVP : public IParabolicFBVP
 public:
     explicit IHeatEquationFBVP(double thermalDiffusivity = 1.0, double thermalConductivity = 0.0, double thermalConvection = 0.0);
     IHeatEquationFBVP(const IHeatEquationFBVP &);
-    IHeatEquationFBVP & operator =(const IHeatEquationFBVP &);
+    IHeatEquationFBVP& operator=(const IHeatEquationFBVP &);
     virtual ~IHeatEquationFBVP();
 
     virtual double thermalDiffusivity() const;
@@ -119,14 +92,17 @@ public:
     virtual double thermalConvection() const;
     virtual void setThermalConvection(double thermalConvection);
 
-    void implicit_calculate_D1V1CN() const;
+    void explicit_calculate_D1V1() const;
+    void implicit_calculate_D1V1() const;
 
-    void gridMethod(DoubleVector &u, SweepMethodDirection direction = ForwardSweep) const;
-    void gridMethod(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep) const;
-
-    void calculate(DoubleCube &u, SweepMethodDirection direction = ForwardSweep) const;
+    void explicit_calculate_D2V1() const;
+    void implicit_calculate_D2V1() const;
 
 protected:
+    virtual double final(const SpaceNodePDE &sn, FinalCondition condition) const = 0;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
+    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
+
     virtual double weight() const;  //
     double _thermalDiffusivity;     // температуропроводность
     double _thermalConductivity;    // теплопроводность
@@ -134,6 +110,33 @@ protected:
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+class MINIMUMSHARED_EXPORT IHeatEquationIBVPEx : public IHeatEquationIBVP
+{
+public:
+    virtual double env0(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+    virtual double env1(const SpaceNodePDE &, const TimeNodePDE &) const { return 0.0; }
+
+    void calculateU(DoubleMatrix &u, double a, double alpha, double weight);
+    //void gridMethod(DoubleVector &u) const;
+    void gridMethod(DoubleVector &u, double a = 1.0) const;
+    void calculateMVD(DoubleMatrix &u) const;
+    /* dirichlet conditions */
+    void calculateN2L2RD(DoubleMatrix &u) const;
+    void calculateN4L2RD(DoubleMatrix &u) const;
+    void calculateN4L2RDX(DoubleMatrix &u) const;
+    void calculateN6L2RD(DoubleMatrix &u) const;
+};
+
+class MINIMUMSHARED_EXPORT IHeatEquationFBVPEx : public IHeatEquationFBVP
+{
+public:
+    void gridMethod(DoubleVector &u, SweepMethodDirection direction = ForwardSweep) const;
+    void gridMethod(DoubleMatrix &u, SweepMethodDirection direction = ForwardSweep) const;
+    void calculate(DoubleCube &u, SweepMethodDirection direction = ForwardSweep) const;
+};
 
 class MINIMUMSHARED_EXPORT NewtonHeatEquation : public IParabolicIBVP
 {

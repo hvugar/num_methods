@@ -23,7 +23,7 @@ class MINIMUMSHARED_EXPORT InitialConditionODE
 public:
     InitialConditionODE();
     InitialConditionODE(const InitialConditionODE &);
-    InitialConditionODE & operator =(const InitialConditionODE &);
+    InitialConditionODE & operator=(const InitialConditionODE &);
     virtual ~InitialConditionODE();
 
     InitialCondition initialConditionType;
@@ -35,7 +35,7 @@ class MINIMUMSHARED_EXPORT InitialConditionPDE
 public:
     InitialConditionPDE();
     InitialConditionPDE(const InitialConditionPDE &);
-    InitialConditionPDE & operator =(const InitialConditionPDE &);
+    InitialConditionPDE & operator=(const InitialConditionPDE &);
     virtual ~InitialConditionPDE();
 };
 
@@ -47,7 +47,7 @@ class MINIMUMSHARED_EXPORT InitialValueProblem
 public:
     InitialValueProblem();
     InitialValueProblem(const InitialValueProblem &);
-    InitialValueProblem & operator =(const InitialValueProblem &);
+    InitialValueProblem& operator=(const InitialValueProblem &);
     virtual ~InitialValueProblem();
 };
 
@@ -56,7 +56,7 @@ class MINIMUMSHARED_EXPORT InitialValueProblemODE : public InitialValueProblem
 public:
     InitialValueProblemODE();
     InitialValueProblemODE(const InitialValueProblemODE &);
-    InitialValueProblemODE & operator =(const InitialValueProblemODE &);
+    InitialValueProblemODE& operator=(const InitialValueProblemODE &);
     virtual ~InitialValueProblemODE();
 protected:
     virtual double initial(InitialCondition condition, unsigned int row = 1) const = 0;
@@ -82,9 +82,9 @@ class MINIMUMSHARED_EXPORT FinalValueProblemODE : public FinalValueProblem
 {
 public:
     FinalValueProblemODE();
-    FinalValueProblemODE(const FinalValueProblemODE &);
-    FinalValueProblemODE & operator =(const FinalValueProblemODE &);
-    virtual ~FinalValueProblemODE() = 0;
+    FinalValueProblemODE(const FinalValueProblemODE&);
+    FinalValueProblemODE & operator=(const FinalValueProblemODE&);
+    virtual ~FinalValueProblemODE();
 protected:
     virtual double final(FinalCondition condition, unsigned int row = 1) const = 0;
 };

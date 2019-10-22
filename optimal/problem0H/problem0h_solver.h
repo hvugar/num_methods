@@ -44,13 +44,14 @@ void Problem0HParameter::create(const Dimension &time, const Dimension &dimX, co
 
     deltaGrid.initGrid(static_cast<unsigned int>(dimX.size()), dimX.step(), static_cast<unsigned int>(dimY.size()), dimY.step());
 
-    const unsigned int L = 2*static_cast<unsigned int>(time.size());
-    pwr_vl.resize(L+1, 0.0);
-    psi_vl.resize(L+1, 0.0);
-    psi_dx.resize(L+1, 0.0);
-    psi_dy.resize(L+1, 0.0);
-    psi_x.resize(L+1, 0.0);
-    psi_y.resize(L+1, 0.0);
+    const unsigned int L = static_cast<unsigned int>(time.size());
+    const unsigned int length = 2*L-1;
+    pwr_vl.resize(length, 0.0);
+    psi_vl.resize(length, 0.0);
+    psi_dx.resize(length, 0.0);
+    psi_dy.resize(length, 0.0);
+    psi_x.resize(length, 0.0);
+    psi_y.resize(length, 0.0);
 
     //pwr_vl[0] = 0.0;
     //pwr_vl[1] = 0.0;

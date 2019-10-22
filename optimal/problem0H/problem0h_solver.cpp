@@ -9,8 +9,8 @@ void ProblemSolver::Main(int argc, char **argv)
 #endif
 
     //checkingForwardProblem();
-    compareGradients();
-    //optimization();
+    //compareGradients();
+    optimization();
 }
 
 ProblemSolver::ProblemSolver()
@@ -87,37 +87,40 @@ void ProblemSolver::compareGradients()
     functional.epsilon2 = 1.0;
     functional.source_number = 2;
     functional.setDimension(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
-    functional.optimalParameters[0].distribute(SpacePoint(0.314, 0.647));
-    functional.optimalParameters[1].distribute(SpacePoint(0.729, 0.232));
+    //functional.optimalParameters[0].distribute(SpacePoint(0.314, 0.647));
+    //functional.optimalParameters[1].distribute(SpacePoint(0.729, 0.232));
+    functional.optimalParameters[0].distribute(SpacePoint(0.310, 0.640));
+    functional.optimalParameters[1].distribute(SpacePoint(0.720, 0.230));
+    for (unsigned int n=0; n<201; n++) functional.optimalParameters[0].pwr_vl[n] = 0.001*n;
+    for (unsigned int n=0; n<201; n++) functional.optimalParameters[1].pwr_vl[n] = 0.002*n;
 
     DoubleVector x;
     functional.parameterToVector(x);
 
-    unsigned int L = 100;
-    unsigned int s1 = 0*(2*L+1); unsigned int f1 = s1+2*L;
-    unsigned int s2 = 1*(2*L+1); unsigned int f2 = s2+2*L;
-    unsigned int s3 = 2*(2*L+1); unsigned int f3 = s3+3;
-    //unsigned int start31 = 2*(2*L+1)+0; unsigned int finish31 = 2*(2*L+1)+1;
-    //unsigned int start32 = 2*(2*L+1)+2; unsigned int finish32 = 2*(2*L+1)+3;
+    const unsigned int L = functional.timeDimension().size()-1;
+    const unsigned int s1 = 0*(2*L+1); const unsigned int f1 = s1+2*L;
+    const unsigned int s2 = 1*(2*L+1); const unsigned int f2 = s2+2*L;
+    const unsigned int s3 = 2*(2*L+1); const unsigned int f3 = s3+3;
+
+    IPrinter::printSeperatorLine();
+    IPrinter::printVector(x.mid(s1, f1));
+    IPrinter::printVector(x.mid(s2, f2));
+    IPrinter::print(x.mid(s3, f3), 4);
+    IPrinter::printSeperatorLine();
 
     DoubleVector ga;
     functional.gradient(x, ga);
     IPrinter::printVector(ga.mid(s1, f1).EuclideanNormalize());
     IPrinter::printVector(ga.mid(s2, f2).EuclideanNormalize());
-    //IPrinter::print(ga.mid(s1, s1+10).EuclideanNormalize(), 10);
-    //IPrinter::print(ga.mid(s2, s2+10).EuclideanNormalize(), 10);
     IPrinter::print(ga.mid(s3, f3).EuclideanNormalize(), 4);
     IPrinter::printSeperatorLine();
 
     DoubleVector gn;
     gn.resize(x.length());
-    //IGradient::Gradient(&functional, 0.01, x, gn, s1, f1);
-    //IGradient::Gradient(&functional, 0.01, x, gn, s2, f2);
+    IGradient::Gradient(&functional, 0.01, x, gn, s1, f1);
+    IGradient::Gradient(&functional, 0.01, x, gn, s2, f2);
     IGradient::Gradient(&functional, 0.01, x, gn, s3, f3);
-    //IGradient::Gradient(&functional, 0.01, x, gn, s1, s1+10);
-    //IGradient::Gradient(&functional, 0.01, x, gn, s2, s2+10);
-    //IPrinter::print(gn.mid(s1, s1+10).EuclideanNormalize(), 10);
-    //IPrinter::print(gn.mid(s2, s2+10).EuclideanNormalize(), 10);
+    gn[s1] = gn[s2] = 0.0;
     IPrinter::printVector(gn.mid(s1, f1).EuclideanNormalize());
     IPrinter::printVector(gn.mid(s2, f2).EuclideanNormalize());
     IPrinter::print(gn.mid(s3, f3).EuclideanNormalize(), 4);
@@ -125,11 +128,7 @@ void ProblemSolver::compareGradients()
 
     //IGradient::Gradient(&functional, 0.001, x, gn, s1, f1);
     //IGradient::Gradient(&functional, 0.001, x, gn, s2, f2);
-    //IGradient::Gradient(&functional, 0.001, x, gn, s3, f3);
-    //IGradient::Gradient(&functional, 0.001, x, gn, s1, s1+10);
-    //IGradient::Gradient(&functional, 0.001, x, gn, s2, s2+10);
-    //IPrinter::print(gn.mid(s1, s1+10).EuclideanNormalize(), 10);
-    //IPrinter::print(gn.mid(s2, s2+10).EuclideanNormalize(), 10);
+    IGradient::Gradient(&functional, 0.02, x, gn, s3, f3);
     IPrinter::printVector(gn.mid(s1, f1).EuclideanNormalize());
     IPrinter::printVector(gn.mid(s2, f2).EuclideanNormalize());
     IPrinter::print(gn.mid(s3, f3).EuclideanNormalize(), 4);
@@ -158,8 +157,8 @@ void ProblemSolver::optimization()
     DoubleVector x;
     fw1.parameterToVector(x);
 
-    //ConjugateGradient g;
-    SteepestDescentGradient g;
+    ConjugateGradient g;
+    //SteepestDescentGradient g;
     g.setFunction(&fw1);
     g.setGradient(&fw1);
     g.setPrinter(&fw1);
@@ -167,8 +166,8 @@ void ProblemSolver::optimization()
     g.setOptimalityTolerance(0.0);
     g.setFunctionTolerance(0.0);
     g.setStepTolerance(0.0);
-    g.setR1MinimizeEpsilon(0.1, 0.01);
-    g.setMaxIterationCount(30);
+    g.setR1MinimizeEpsilon(1.0, 0.1);
+    g.setMaxIterationCount(100);
     g.setNormalize(true);
     g.showExitMessage(true);
     g.calculate(x);
@@ -186,8 +185,6 @@ void ProblemSolver::optimization()
     IPrinter::printVector(x.mid(s2, f2).EuclideanNormalize());
     IPrinter::print(x.mid(s3, f3).EuclideanNormalize(), 4);
     IPrinter::printSeperatorLine();
-
-
 }
 
 //WaveEquationIBVP& ProblemSolver::forward() { return *this; }
@@ -204,33 +201,29 @@ auto ProblemSolver::setDimension(const Dimension &timeDimension, const Dimension
 {
     setTimeDimension(timeDimension);
     setSpaceDimensionX(dimensionX);
-    setSpaceDimensionX(dimensionY);
+    setSpaceDimensionY(dimensionY);
 
     //const unsigned int L = static_cast<unsigned int> ( timeDimension.size() );
-    const unsigned int N = static_cast<unsigned int> ( dimensionX.size() );
-    const unsigned int M = static_cast<unsigned int> ( dimensionY.size() );
+    //const unsigned int N = static_cast<unsigned int> ( dimensionX.size() );
+    //const unsigned int M = static_cast<unsigned int> ( dimensionY.size() );
 
-    //U1.resize(M+1, N+1, 0.0);
-    //U2.resize(M+1, N+1, 0.0);
-    u1.resize(M+1, N+1, 0.0);
-    u2.resize(M+1, N+1, 0.0);
+    u1.resize(dimensionY.size(), dimensionX.size(), 0.0);
+    u2.resize(dimensionY.size(), dimensionX.size(), 0.0);
 
     optimalParameters.resize(source_number);
-
-    for (unsigned int sn=0; sn<source_number; sn++)
-    {
-        optimalParameters[sn].create(timeDimension, dimensionX, dimensionY);
-    }
+    for (unsigned int sn=0; sn<source_number; sn++) optimalParameters[sn].create(timeDimension, dimensionX, dimensionY);
 }
 
 auto ProblemSolver::fx(const DoubleVector &x) const -> double
 {
-    IPrinter::print(x, x.length());
-    IPrinter::printSeperatorLine();
+    //IPrinter::print(x, x.length());
+    //IPrinter::printSeperatorLine();
 
     vectorToParameter(x);
 
+    //const_cast<ProblemSolver*>(this)->_timeDimension.setMax(_timeDimension.max()+1);
     forward->implicit_calculate_D2V1();
+    //const_cast<ProblemSolver*>(this)->_timeDimension.setMax(_timeDimension.max()-1);
     double sum = 0.0;
     sum += epsilon1 * integral1(u1);
     sum += epsilon2 * integral2(u2);
@@ -245,8 +238,8 @@ auto ProblemSolver::integral1(const DoubleMatrix &) const -> double
     const Dimension &dimX = spaceDimensionX();
     const Dimension &dimY = spaceDimensionY();
     //const unsigned int L = static_cast<unsigned int> ( time.size() );
-    const unsigned int N = static_cast<unsigned int> ( dimX.size() );
-    const unsigned int M = static_cast<unsigned int> ( dimY.size() );
+    const unsigned int N = static_cast<unsigned int> ( dimX.size()-1 );
+    const unsigned int M = static_cast<unsigned int> ( dimY.size()-1 );
     //const double ht = time.step();
     const double hx = dimX.step();
     const double hy = dimY.step();
@@ -288,8 +281,8 @@ auto ProblemSolver::integral2(const DoubleMatrix &) const -> double
     const Dimension &dimX = spaceDimensionX();
     const Dimension &dimY = spaceDimensionY();
     //const unsigned int L = static_cast<unsigned int> ( time.size() );
-    const unsigned int N = static_cast<unsigned int> ( dimX.size() );
-    const unsigned int M = static_cast<unsigned int> ( dimY.size() );
+    const unsigned int N = static_cast<unsigned int> ( dimX.size()-1 );
+    const unsigned int M = static_cast<unsigned int> ( dimY.size()-1 );
     //const double ht = time.step();
     const double hx = dimX.step();
     const double hy = dimY.step();
@@ -338,14 +331,16 @@ auto ProblemSolver::gradient(const DoubleVector &x, DoubleVector &g) const -> vo
     const Dimension &time = timeDimension();
     //const Dimension &dimX = Problem0HForward::spaceDimension(Dimension::DimensionX);
     //const Dimension &dimY = Problem0HForward::spaceDimension(Dimension::DimensionY);
-    const unsigned int L = static_cast<unsigned int>(time.size());
+    const unsigned int L = static_cast<unsigned int>(time.size()-1);
     //const unsigned int N = static_cast<unsigned int>(dimX.size());
     //const unsigned int M = static_cast<unsigned int>(dimY.size());
     //const double hx = dimX.step();
     //const double hy = dimY.step();
     const double ht = time.step();
 
+    //const_cast<ProblemSolver*>(this)->_timeDimension.setMax(_timeDimension.max()+1);
     forward->implicit_calculate_D2V1();
+    //const_cast<ProblemSolver*>(this)->_timeDimension.setMax(_timeDimension.max()-1);
     backward->implicit_calculate_D2V1();
 
     unsigned int length = 2*L+1;
@@ -354,11 +349,12 @@ auto ProblemSolver::gradient(const DoubleVector &x, DoubleVector &g) const -> vo
         const Problem0HParameter &optimalParameter = optimalParameters[sn];
 
         unsigned int offset = sn*length;
-        g[offset+0] = 0.0;
         for (unsigned int ln=0; ln<=2*L; ln++)
         {
             g[offset+ln] = -optimalParameter.psi_vl[ln];
         }
+        g[offset+0] = 0.0;
+        g[offset+2*L] = 0.0;
 
         //---------------------------------------------------------------------------//
 
@@ -372,7 +368,7 @@ auto ProblemSolver::gradient(const DoubleVector &x, DoubleVector &g) const -> vo
         ln = 0;
         g[ix] += 0.5*optimalParameter.psi_dx[ln] * optimalParameter.pwr_vl[ln];
         g[iy] += 0.5*optimalParameter.psi_dy[ln] * optimalParameter.pwr_vl[ln];
-        for (unsigned int ln=2; ln<=2*(L-1); ln+=2)
+        for (ln=2; ln<=2*(L-1); ln+=2)
         {
             g[ix] += optimalParameter.psi_dx[ln] * optimalParameter.pwr_vl[ln];
             g[iy] += optimalParameter.psi_dy[ln] * optimalParameter.pwr_vl[ln];
@@ -389,7 +385,7 @@ auto ProblemSolver::gradient(const DoubleVector &x, DoubleVector &g) const -> vo
 auto ProblemSolver::project(DoubleVector &x, unsigned int index) -> void
 {
     const Dimension &time = timeDimension();
-    const unsigned int L = static_cast<unsigned int>(time.size());
+    const unsigned int L = static_cast<unsigned int>(time.size()-1);
     if (index >= (2*L+1)*source_number)
     {
         if (x[index] < 0.05) x[index] = 0.05;
@@ -400,7 +396,7 @@ auto ProblemSolver::project(DoubleVector &x, unsigned int index) -> void
 auto ProblemSolver::project(DoubleVector &) const  -> void {}
 
 auto ProblemSolver::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f,
-                                double alpha, GradientMethod::MethodResult result) const -> void
+                          double alpha, GradientMethod::MethodResult result) const -> void
 {
     C_UNUSED(i); C_UNUSED(x); C_UNUSED(g); C_UNUSED(f); C_UNUSED(alpha); C_UNUSED(result);
     const char* msg = nullptr; C_UNUSED(msg);
@@ -412,10 +408,12 @@ auto ProblemSolver::print(unsigned int i, const DoubleVector &x, const DoubleVec
 
     ProblemSolver* fw = const_cast<ProblemSolver*>(this);
     fw->vectorToParameter(x);
+    //const_cast<ProblemSolver*>(this)->_timeDimension.setMax(_timeDimension.max()+1);
     forward->implicit_calculate_D2V1();
+    //const_cast<ProblemSolver*>(this)->_timeDimension.setMax(_timeDimension.max()-1);
 
     const Dimension &time = timeDimension();
-    const unsigned int L = static_cast<unsigned int>(time.size());
+    const unsigned int L = static_cast<unsigned int>(time.size()-1);
     const unsigned int o = (2*L+1)*source_number;
 
     printf("I[%3d]: F:%.6f I:%.6f P:%.6f N:%.5f R:%.3f e:%.3f a:%10.6f | ", i, f, 0.0, 0.0, 0.0, 0.0, 0.0, alpha);
@@ -510,16 +508,17 @@ double ProblemSolver::p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 void ProblemSolver::calculateU1U2(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
     const Dimension &time = timeDimension();
-    const unsigned int L = static_cast<unsigned int>(time.size());
+    const unsigned int L = static_cast<unsigned int>(time.size()-1);
     const double ht = time.step();
 
     const Dimension &dimX = spaceDimensionX();
     const Dimension &dimY = spaceDimensionY();
-    const unsigned int N = static_cast<unsigned int>(dimX.size());
-    const unsigned int M = static_cast<unsigned int>(dimY.size());
+    const unsigned int N = static_cast<unsigned int>(dimX.size()-1);
+    const unsigned int M = static_cast<unsigned int>(dimY.size()-1);
 
     if (tn.i == 2*(L-2))
     {
+        //printf("1 %d %f\n", tn.i, tn.t);
         for (unsigned int m=0; m<=M; m++)
         {
             for (unsigned int n=0; n<=N; n++)
@@ -531,6 +530,7 @@ void ProblemSolver::calculateU1U2(const DoubleMatrix &u, const TimeNodePDE &tn) 
 
     if (tn.i == 2*(L-1))
     {
+        //printf("2 %d %f\n", tn.i, tn.t);
         for (unsigned int m=0; m<=M; m++)
         {
             for (unsigned int n=0; n<=N; n++)
@@ -542,6 +542,7 @@ void ProblemSolver::calculateU1U2(const DoubleMatrix &u, const TimeNodePDE &tn) 
 
     if (tn.i == 2*(L-0))
     {
+        //printf("3 %d %f\n", tn.i, tn.t);
         for (unsigned int m=0; m<=M; m++)
         {
             for (unsigned int n=0; n<=N; n++)
@@ -552,6 +553,41 @@ void ProblemSolver::calculateU1U2(const DoubleMatrix &u, const TimeNodePDE &tn) 
             }
         }
     }
+
+    //    if (tn.i == 2*(L-2))
+    //    {
+    //        for (unsigned int m=0; m<=M; m++)
+    //        {
+    //            for (unsigned int n=0; n<=N; n++)
+    //            {
+    //                u2[m][n] = 0.0;
+    //                u2[m][n] -= u[m][n];
+    //            }
+    //        }
+    //    }
+
+    //    if (tn.i == 2*(L-1))
+    //    {
+    //        for (unsigned int m=0; m<=M; m++)
+    //        {
+    //            for (unsigned int n=0; n<=N; n++)
+    //            {
+    //                u1[m][n] = u[m][n];
+    //            }
+    //        }
+    //    }
+
+    //    if (tn.i == 2*(L-0))
+    //    {
+    //        for (unsigned int m=0; m<=M; m++)
+    //        {
+    //            for (unsigned int n=0; n<=N; n++)
+    //            {
+    //                u2[m][n] += u[m][n];
+    //                u2[m][n] /= (2.0*ht);
+    //            }
+    //        }
+    //    }
 }
 
 void ProblemSolver::saveToExcel(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
@@ -679,8 +715,7 @@ double ProblemSolver::bcw_final(const SpaceNodePDE &sn, FinalCondition condition
     unsigned int n = static_cast<unsigned int>(sn.i);
     unsigned int m = static_cast<unsigned int>(sn.j);
     if (condition == FinalCondition::FinalValue) { return -2.0*epsilon2*(u2[m][n]/*-U2[m][n]*/); }
-    if (condition == FinalCondition::FinalFirstDerivative) { return +2.0*epsilon1*(u1[m][n]/*-U1[m][n]*/)
-                + gamma*bcw_final(sn, FinalCondition::FinalValue); }
+    if (condition == FinalCondition::FinalFirstDerivative) { return +2.0*epsilon1*(u1[m][n]/*-U1[m][n]*/) + gamma*bcw_final(sn, FinalCondition::FinalValue); }
     throw std::exception();
 }
 
@@ -742,7 +777,7 @@ void ProblemSolver::bcw_saveToImage(const DoubleMatrix &p, const TimeNodePDE &tn
 //--------------------------------------------------------------------------------------------------------------//
 
 auto ProblemSolver::vectorToParameter(const DoubleVector &x) const -> void
-{    
+{
     const Dimension &time = timeDimension();
     const Dimension &dimX = spaceDimensionX();
     const Dimension &dimY = spaceDimensionY();
@@ -753,14 +788,15 @@ auto ProblemSolver::vectorToParameter(const DoubleVector &x) const -> void
     ProblemSolver* const_this = const_cast<ProblemSolver*>(this);
     const_this->optimalParameters.resize(source_number);
 
-    const unsigned int length = 2*L+1;
+    const unsigned int length = 2*L-1;
+    const unsigned int points_offset = source_number*length;
     for (unsigned int sn=0; sn<source_number; sn++)
     {
         Problem0HParameter &parameter = const_this->optimalParameters[sn];
         parameter.create(time, dimX, dimY);
-        for (unsigned int ln=0; ln<length; ln++) parameter.pwr_vl[ln] = x[sn*length+ln];
-        parameter.p.x = x[source_number*length+2*sn+0];
-        parameter.p.y = x[source_number*length+2*sn+1];
+        for (unsigned int ln=0; ln<length; ln++) parameter.pwr_vl[ln] = x.at(sn*length+ln);
+        parameter.p.x = x.at(points_offset+2*sn+0);
+        parameter.p.y = x.at(points_offset+2*sn+1);
         parameter.distribute(parameter.p);
     }
 }
@@ -777,24 +813,23 @@ auto ProblemSolver::parameterToVector(DoubleVector &x) const -> void
     //const double hx = dimX.step();
     //const double hy = dimY.step();
 
-    unsigned int size = (2*L+3)*source_number;
-    x.resize(size);
-    unsigned int length = 2*L+1;
+    const unsigned int length = 2*L-1;
+    const unsigned int size = (length+2)*source_number;
+    const unsigned int points_offset = source_number*length;
 
+    x.resize(size);
     for (unsigned int sn=0; sn<source_number; sn++)
     {
         Problem0HParameter &parameter = const_cast<ProblemSolver*>(this)->optimalParameters[sn];
-        for (unsigned int ln=0; ln<length; ln++)
-        {
-            x[sn*length+ln] = parameter.pwr_vl[ln];
-        }
-        //x[sn*length+0] = 0.0;
-        //x[sn*length+1] = 0.0;
+        for (unsigned int ln=0; ln<length; ln++) x[sn*length+ln] = parameter.pwr_vl[ln];
+        //x[sn*length+0] = 1.0;
+        //x[sn*length+1] = 2.0;
         //x[sn*length+(length-1)] = 0.0;
-        x[source_number*length+2*sn+0] = parameter.p.x;
-        x[source_number*length+2*sn+1] = parameter.p.y;
+        x[points_offset+2*sn+0] = parameter.p.x;
+        x[points_offset+2*sn+1] = parameter.p.y;
     }
 
-    IPrinter::printSeperatorLine();
-    IPrinter::print(x, x.length());
+    //printf("parameterToVector << %d %d %d %d %d\n", x.length(), source_number, time.size(), length, size);
+    //IPrinter::printSeperatorLine();
+    //IPrinter::print(x, x.length());
 }

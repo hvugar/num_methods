@@ -30,8 +30,7 @@ InitialConditionPDE & InitialConditionPDE::operator=(const InitialConditionPDE &
     return *this;
 }
 
-InitialConditionPDE::~InitialConditionPDE()
-{}
+InitialConditionPDE::~InitialConditionPDE() {}
 
 //**********************************************************************************************//
 
@@ -39,7 +38,7 @@ InitialValueProblem::InitialValueProblem() {}
 
 InitialValueProblem::InitialValueProblem(const InitialValueProblem &) {}
 
-InitialValueProblem& InitialValueProblem::operator =(const InitialValueProblem &other)
+InitialValueProblem& InitialValueProblem::operator=(const InitialValueProblem &other)
 {
     if (this == &other) { return *this; }
     return *this;
@@ -53,7 +52,7 @@ InitialValueProblemODE::InitialValueProblemODE() {}
 
 InitialValueProblemODE::InitialValueProblemODE(const InitialValueProblemODE &) {}
 
-InitialValueProblemODE& InitialValueProblemODE::operator =(const InitialValueProblemODE &other)
+InitialValueProblemODE& InitialValueProblemODE::operator=(const InitialValueProblemODE &other)
 {
     if (this == &other) { return *this; }
     return *this;
@@ -67,7 +66,7 @@ InitialValueProblemPDE::InitialValueProblemPDE() {}
 
 InitialValueProblemPDE::InitialValueProblemPDE(const InitialValueProblemPDE &) {}
 
-InitialValueProblemPDE & InitialValueProblemPDE::operator =(const InitialValueProblemPDE &other)
+InitialValueProblemPDE & InitialValueProblemPDE::operator=(const InitialValueProblemPDE &other)
 {
     if (this == &other) { return *this; }
     return *this;
@@ -81,7 +80,7 @@ FinalValueProblemODE::FinalValueProblemODE() {}
 
 FinalValueProblemODE::FinalValueProblemODE(const FinalValueProblemODE &) {}
 
-FinalValueProblemODE& FinalValueProblemODE::operator =(const FinalValueProblemODE &other)
+FinalValueProblemODE& FinalValueProblemODE::operator=(const FinalValueProblemODE &other)
 {
     if (this == &other) { return *this; }
     return *this;
@@ -102,3 +101,5 @@ FinalValueProblemPDE& FinalValueProblemPDE::operator =(const FinalValueProblemPD
 }
 
 FinalValueProblemPDE::~FinalValueProblemPDE() {}
+
+//**********************************************************************************************//

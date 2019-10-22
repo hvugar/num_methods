@@ -1,44 +1,27 @@
 #include "pibvp.h"
-#include <limits>
-#include <exception>
-#include <stdexcept>
-#include "../cmethods.h"
-#include "../linearequation.h"
-#include "../printer.h"
 
-IParabolicIBVP::IParabolicIBVP() {}
+void IParabolicIBVP::layerInfo(const DoubleVector &, const TimeNodePDE &) const {}
 
-IParabolicIBVP::IParabolicIBVP(const IParabolicIBVP &) {}
-
-IParabolicIBVP & IParabolicIBVP::operator = (const IParabolicIBVP &) { return *this; }
-
-IParabolicIBVP::~IParabolicIBVP() {}
+void IParabolicIBVP::layerInfo(const DoubleMatrix &, const TimeNodePDE &) const {}
 
 //--------------------------------------------------------------------------------------------------------------//xd
 
-IParabolicFBVP::IParabolicFBVP() {}
+void IParabolicFBVP::layerInfo(const DoubleVector &, const TimeNodePDE &) const {}
 
-IParabolicFBVP::IParabolicFBVP(const IParabolicFBVP &) {}
-
-IParabolicFBVP & IParabolicFBVP::operator = (const IParabolicFBVP &) { return *this; }
-
-IParabolicFBVP::~IParabolicFBVP() {}
+void IParabolicFBVP::layerInfo(const DoubleMatrix &, const TimeNodePDE &) const {}
 
 //--------------------------------------------------------------------------------------------------------------//
 
-IHeatEquationIBVP::IHeatEquationIBVP(double thermalDiffusivity, double thermalConductivity, double thermalConvection)
-    : _thermalDiffusivity(thermalDiffusivity), _thermalConductivity(thermalConductivity), _thermalConvection(thermalConvection) {}
+IHeatEquationIBVP::IHeatEquationIBVP(double thermalDiffusivity, double thermalConductivity, double thermalConvection) : IParabolicIBVP(),
+    _thermalDiffusivity(thermalDiffusivity), _thermalConductivity(thermalConductivity), _thermalConvection(thermalConvection) {}
 
-IHeatEquationIBVP::IHeatEquationIBVP(const IHeatEquationIBVP &ibvp) : IParabolicIBVP(ibvp)
-{
-    this->_thermalDiffusivity = ibvp._thermalDiffusivity;
-    this->_thermalConductivity = ibvp._thermalConductivity;
-    this->_thermalConvection = ibvp._thermalConvection;
-}
+IHeatEquationIBVP::IHeatEquationIBVP(const IHeatEquationIBVP &other) : IParabolicIBVP(other),
+    _thermalDiffusivity(other._thermalDiffusivity), _thermalConductivity(other._thermalConductivity), _thermalConvection(other._thermalConvection) {}
 
-IHeatEquationIBVP & IHeatEquationIBVP::operator =(const IHeatEquationIBVP &other)
+IHeatEquationIBVP & IHeatEquationIBVP::operator=(const IHeatEquationIBVP &other)
 {
     if (this == &other) { return *this; }
+
     this->_thermalDiffusivity = other._thermalDiffusivity;
     this->_thermalConductivity = other._thermalConductivity;
     this->_thermalConvection = other._thermalConvection;
@@ -49,121 +32,20 @@ IHeatEquationIBVP::~IHeatEquationIBVP() {}
 
 double IHeatEquationIBVP::thermalDiffusivity() const { return _thermalDiffusivity; }
 
-void IHeatEquationIBVP::setThermalDiffusivity(double thermalDiffusivity)
-{
-    this->_thermalDiffusivity = thermalDiffusivity;
-}
+void IHeatEquationIBVP::setThermalDiffusivity(double thermalDiffusivity) { this->_thermalDiffusivity = thermalDiffusivity; }
 
 double IHeatEquationIBVP::thermalConductivity() const { return _thermalConductivity; }
 
-void IHeatEquationIBVP::setThermalConductivity(double thermalConductivity)
-{
-    this->_thermalConductivity = thermalConductivity;
-}
+void IHeatEquationIBVP::setThermalConductivity(double thermalConductivity) { this->_thermalConductivity = thermalConductivity; }
 
-double IHeatEquationIBVP::thermalConvection() const
-{
-    return _thermalConvection;
-}
+double IHeatEquationIBVP::thermalConvection() const { return _thermalConvection; }
 
-void IHeatEquationIBVP::setThermalConvection(double thermalConvection)
-{
-    this->_thermalConvection = thermalConvection;
-}
+void IHeatEquationIBVP::setThermalConvection(double thermalConvection) { this->_thermalConvection = thermalConvection; }
 
 void IHeatEquationIBVP::explicit_calculate_D1V1() const
 {}
 
 void IHeatEquationIBVP::implicit_calculate_D1V1() const
-{
-    const unsigned int N = static_cast<unsigned int>( spaceDimensionX().size() );
-    const unsigned int M = static_cast<unsigned int>( timeDimension().size() );
-
-    const double hx = spaceDimensionX().step();
-    const double ht = timeDimension().step();
-
-    const double td = thermalDiffusivity();
-    const double tc = thermalConductivity();
-
-    const double m_td_ht__hxhx = -((td*ht)/(hx*hx));
-    const double b_td_ht__hxhx__tcht = +(1.0 + (2.0*td*ht)/(hx*hx) + ht*tc);
-
-    double *ax = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *bx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *cx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *dx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *rx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-
-    for (unsigned int n=0; n<=N-2; n++)
-    {
-        ax[n] = m_td_ht__hxhx;
-        bx[n] = b_td_ht__hxhx__tcht;
-        cx[n] = m_td_ht__hxhx;
-    }
-    ax[0] = 0.0; cx[N-2] = 0.0;
-
-    DoubleVector u00(N+1);
-    DoubleVector u10(N+1);
-
-    /***********************************************************************************************/
-    /***********************************************************************************************/
-
-    TimeNodePDE tn;
-    SpaceNodePDE sn;
-    BoundaryConditionPDE condition;
-
-    tn.i = 0; tn.t = tn.i*ht;
-    for (unsigned int n=0; n<=N; n++)
-    {
-        sn.i = static_cast<int>(n); sn.x = sn.i*hx;
-        u00[n] = initial(sn, InitialCondition::InitialValue);
-    }
-    layerInfo(u00, tn);
-
-    /***********************************************************************************************/
-
-    for (unsigned int ln=1; ln<=M; ln++)
-    {
-        tn.i = ln; tn.t = tn.i*ht;
-
-        /**************************************************** border conditions ***************************************************/
-
-        sn.i = static_cast<int>(0); sn.x = 0*hx; u10[0] = boundary(sn, tn, condition);
-        sn.i = static_cast<int>(N); sn.x = N*hx; u10[N] = boundary(sn, tn, condition);
-
-        /**************************************************** border conditions ***************************************************/
-
-        /**************************************************** x direction apprx ***************************************************/
-        for (unsigned int n=1; n<=N-1; n++)
-        {
-            sn.i = static_cast<int>(n); sn.x = n*hx;
-            dx[n-1]  = u00[n];
-            dx[n-1] += ht*f(sn, tn);
-        }
-        dx[0]   -= u10[0]*m_td_ht__hxhx;
-        dx[N-2] -= u10[N]*m_td_ht__hxhx;
-        tomasAlgorithm(ax, bx, cx, dx, rx, N-1);
-        for (unsigned int n=1; n<=N-1; n++) u10[n] = rx[n-1];
-        layerInfo(u10, tn);
-        /**************************************************** x direction apprx ***************************************************/
-
-        for (unsigned int n=0; n<=N; n++)
-        {
-            u00[n] = u10[n];
-        }
-    }
-
-    u00.clear();
-    u10.clear();
-
-    free(rx);
-    free(dx);
-    free(cx);
-    free(bx);
-    free(ax);
-}
-
-void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
 {
     const unsigned int N = static_cast<unsigned int>(spaceDimensionX().size()) - 1;
     const unsigned int M = static_cast<unsigned int>(timeDimension().size()) - 1;
@@ -175,7 +57,7 @@ void IHeatEquationIBVP::implicit_calculate_D1V1CN() const
     const double tc = thermalConductivity();
     const double cv = thermalConvection();
     const double w1 = weight();
-    const double w2 = 1.0 - weight();
+    const double w2 = 1.0 - w1;
 
     // equation parameters
     const double m_td_ht__hxhx_w1__p_cv_w1 = -((td*ht)/(hx*hx))*w1 + ((cv*ht)/(2.0*hx))*w1;
@@ -453,178 +335,6 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
 
     const double td = thermalDiffusivity();
     const double tc = thermalConductivity();
-
-
-    const double ht_050 = ht*0.5;
-
-    const double m_td_ht__hxhx_05 = -((0.5*td*ht)/(hx*hx));
-    const double b_td_ht__hxhx_05tcht = +(1.0 + (td*ht)/(hx*hx)) + 0.5*ht*tc;
-    const double p_td_ht__hyhy_05 = +((0.5*td*ht)/(hy*hy));
-
-
-    const double m_td_ht__hyhy_05 = -((0.5*td*ht)/(hy*hy));
-    const double b_td_ht__hyhy_05tcht = +(1.0 + (td*ht)/(hy*hy)) + 0.5*ht*tc;
-    const double p_td_ht__hxhx_05 = +((0.5*td*ht)/(hx*hx));
-
-
-    double *ax = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *bx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *cx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *dx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *rx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-
-    for (unsigned int n=0; n<=N-2; n++)
-    {
-        ax[n] = m_td_ht__hxhx_05;
-        bx[n] = b_td_ht__hxhx_05tcht;
-        cx[n] = m_td_ht__hxhx_05;
-    }
-    ax[0] = 0.0; cx[N-2] = 0.0;
-
-    double *ay = static_cast<double*>(malloc(sizeof(double)*(M-1)));
-    double *by = static_cast<double*>(malloc(sizeof(double)*(M-1)));
-    double *cy = static_cast<double*>(malloc(sizeof(double)*(M-1)));
-    double *dy = static_cast<double*>(malloc(sizeof(double)*(M-1)));
-    double *ry = static_cast<double*>(malloc(sizeof(double)*(M-1)));
-
-    for (unsigned int m=0; m<=M-2; m++)
-    {
-        ay[m] = m_td_ht__hyhy_05;
-        by[m] = b_td_ht__hyhy_05tcht;
-        cy[m] = m_td_ht__hyhy_05;
-    }
-    ay[0] = 0.0; cy[M-2] = 0.0;
-
-    DoubleMatrix u00(M+1, N+1);
-    DoubleMatrix u05(M+1, N+1);
-    DoubleMatrix u10(M+1, N+1);
-
-    /***********************************************************************************************/
-    /***********************************************************************************************/
-
-    TimeNodePDE tn00; tn00.i = 0; tn00.t = 0.5*tn00.i*ht;
-    TimeNodePDE tn05; tn05.i = 1; tn05.t = 0.5*tn05.i*ht;
-
-    SpaceNodePDE sn;
-    for (unsigned int m=0; m<=M; m++)
-    {
-        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
-        for (unsigned int n=0; n<=N; n++)
-        {
-            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
-            u00[m][n] = initial(sn, InitialCondition::InitialValue);
-        }
-    }
-    layerInfo(u00, tn00);
-
-    /***********************************************************************************************/
-
-    for (unsigned int ln=1; ln<=L; ln++)
-    {
-        TimeNodePDE tn05; tn05.i = 2*ln-1; tn05.t = 0.5*tn05.i*ht;
-        TimeNodePDE tn10; tn10.i = 2*ln-0; tn10.t = 0.5*tn10.i*ht;
-
-        /**************************************************** border conditions ***************************************************/
-
-        SpaceNodePDE sn0, sn1;
-        BoundaryConditionPDE condition;
-
-        sn0.i = static_cast<int>(0); sn0.x = 0*hx;
-        sn1.i = static_cast<int>(N); sn1.x = N*hx;
-        for (unsigned int m=0; m<=M; m++)
-        {
-            sn0.j = sn1.j = static_cast<int>(m); sn0.y = sn1.y = m*hy;
-            u05[m][0] = boundary(sn0, tn05, condition); u10[m][0] = boundary(sn0, tn10, condition);
-            u05[m][N] = boundary(sn1, tn05, condition); u10[m][N] = boundary(sn1, tn10, condition);
-        }
-
-        sn0.j = static_cast<int>(0); sn0.y = 0*hy;
-        sn1.j = static_cast<int>(M); sn1.y = M*hy;
-        for (unsigned int n=0; n<=N; n++)
-        {
-            sn0.i = sn1.i = static_cast<int>(n); sn0.x = sn1.x = n*hx;
-            u05[0][n] = boundary(sn0, tn05, condition); u10[0][n] = boundary(sn0, tn10, condition);
-            u05[M][n] = boundary(sn1, tn05, condition); u10[M][n] = boundary(sn1, tn10, condition);
-        }
-
-        /**************************************************** border conditions ***************************************************/
-
-        /**************************************************** x direction apprx ***************************************************/
-        for (unsigned int m=1; m<=M-1; m++)
-        {
-            sn.j = static_cast<int>(m); sn.y = m*hy;
-            for (unsigned int n=1; n<=N-1; n++)
-            {
-                sn.i = static_cast<int>(n); sn.x = n*hx;
-                dx[n-1]  = u00[m][n];
-                dx[n-1] += (u00[m-1][n] - 2.0*u00[m][n] + u00[m+1][n])*p_td_ht__hyhy_05;
-                dx[n-1] += ht_050*f(sn, tn05);
-            }
-            dx[0]   -= u05[m][0]*m_td_ht__hxhx_05;
-            dx[N-2] -= u05[m][N]*m_td_ht__hxhx_05;
-            tomasAlgorithm(ax, bx, cx, dx, rx, N-1);
-            for (unsigned int n=1; n<=N-1; n++) u05[m][n] = rx[n-1];
-        }
-        layerInfo(u05, tn05);
-        /**************************************************** x direction apprx ***************************************************/
-
-        /**************************************************** y direction apprx ***************************************************/
-        for (unsigned int n=1; n<=N-1; n++)
-        {
-            sn.i = static_cast<int>(n); sn.x = n*hx;
-            for (unsigned int m=1; m<=M-1; m++)
-            {
-                sn.j = static_cast<int>(m); sn.y = m*hy;
-                dy[m-1]  = u05[m][n];
-                dy[m-1] += (u05[m][n-1] - 2.0*u05[m][n] + u05[m][n+1])*p_td_ht__hxhx_05;
-                dy[m-1] += ht_050*f(sn, tn10);
-            }
-            dy[0]   -= u10[0][n]*m_td_ht__hyhy_05;
-            dy[M-2] -= u10[M][n]*m_td_ht__hyhy_05;
-            tomasAlgorithm(ay, by, cy, dy, ry, M-1);
-            for (unsigned int m=1; m<=M-1; m++) u10[m][n] = ry[m-1];
-        }
-        layerInfo(u10, tn10);
-        /**************************************************** y direction apprx ***************************************************/
-
-        for (unsigned int m=0; m<=M; m++)
-        {
-            for (unsigned int n=0; n<=N; n++)
-            {
-                u00[m][n] = u10[m][n];
-            }
-        }
-    }
-
-    u00.clear();
-    u05.clear();
-    u10.clear();
-
-    free(ry);
-    free(dy);
-    free(cy);
-    free(by);
-    free(ay);
-
-    free(rx);
-    free(dx);
-    free(cx);
-    free(bx);
-    free(ax);
-}
-
-void IHeatEquationIBVP::implicit_calculate_D2V1CN() const
-{
-    const unsigned int N = static_cast<unsigned int>( spaceDimensionX().size() );
-    const unsigned int M = static_cast<unsigned int>( spaceDimensionY().size() );
-    const unsigned int L = static_cast<unsigned int>( timeDimension().size() );
-
-    const double hx = spaceDimensionX().step();
-    const double hy = spaceDimensionY().step();
-    const double ht = timeDimension().step();
-
-    const double td = thermalDiffusivity();
-    const double tc = thermalConductivity();
     const double _lambda = weight();
 
     if (_lambda >= 0.5-(0.25/ht)/(1.0/(hx*hx)+1.0/(hy*hy))) throw std::runtime_error("Differential scheme is conditionally steady.");
@@ -791,7 +501,236 @@ void IHeatEquationIBVP::implicit_calculate_D2V1CN() const
     free(ax);
 }
 
-void IHeatEquationIBVP::calculateU(DoubleMatrix &u, double a, double alpha, double lambda)
+double IHeatEquationIBVP::weight() const { return 0.5; }
+
+//--------------------------------------------------------------------------------------------------------------//
+
+IHeatEquationFBVP::IHeatEquationFBVP(double thermalDiffusivity, double thermalConductivity, double thermalConvection) : IParabolicFBVP(),
+    _thermalDiffusivity(thermalDiffusivity), _thermalConductivity(thermalConductivity), _thermalConvection(thermalConvection) {}
+
+IHeatEquationFBVP::IHeatEquationFBVP(const IHeatEquationFBVP &other) : IParabolicFBVP(other),
+    _thermalDiffusivity(other._thermalDiffusivity), _thermalConductivity(other._thermalConductivity), _thermalConvection(other._thermalConvection) {}
+
+IHeatEquationFBVP & IHeatEquationFBVP::operator=(const IHeatEquationFBVP &other)
+{
+    if (this == &other) { return *this; }
+
+    this->_thermalDiffusivity = other._thermalDiffusivity;
+    this->_thermalConductivity = other._thermalConductivity;
+    this->_thermalConvection = other._thermalConvection;
+    return *this;
+}
+
+IHeatEquationFBVP::~IHeatEquationFBVP() {}
+
+double IHeatEquationFBVP::thermalDiffusivity() const { return _thermalDiffusivity; }
+
+void IHeatEquationFBVP::setThermalDiffusivity(double thermalDiffusivity) { this->_thermalDiffusivity = thermalDiffusivity; }
+
+double IHeatEquationFBVP::thermalConductivity() const { return _thermalConductivity; }
+
+void IHeatEquationFBVP::setThermalConductivity(double convection) { this->_thermalConductivity = convection; }
+
+double IHeatEquationFBVP::thermalConvection() const { return _thermalConvection; }
+
+void IHeatEquationFBVP::setThermalConvection(double thermalConvection) { this->_thermalConvection = thermalConvection; }
+
+void IHeatEquationFBVP::explicit_calculate_D1V1() const {}
+
+void IHeatEquationFBVP::implicit_calculate_D1V1() const
+{
+    const unsigned int N = static_cast<unsigned int>(spaceDimensionX().size()) - 1;
+    const unsigned int M = static_cast<unsigned int>(timeDimension().size()) - 1;
+
+    const double hx = spaceDimensionX().step();
+    const double ht = timeDimension().step();
+
+    const double td = thermalDiffusivity();
+    const double tc = thermalConductivity();
+    const double cv = thermalConvection();
+    const double w1 = weight();
+    const double w2 = 1.0 - w1;
+
+    // equation parameters
+    const double m_td_ht__hxhx_w1__p_cv_w1 = -((td*ht)/(hx*hx))*w1 + ((cv*ht)/(2.0*hx))*w1;
+    const double b_p2_td_ht__hxhx_w1_tc_w1 = +(1.0 + ((2.0*td*ht)/(hx*hx))*w1 + tc*ht*w1);
+    const double m_td_ht__hxhx_w1__m_cv_w1 = -((td*ht)/(hx*hx))*w1 - ((cv*ht)/(2.0*hx))*w1;
+    const double p_td_ht__hxhx_w2__m_cv_w2 = +((td*ht)/(hx*hx))*w2 - ((cv*ht)/(2.0*hx))*w2;
+    const double b_m2_td_ht__hxhx_w2_tc_w2 = +(1.0 - ((2.0*td*ht)/(hx*hx))*w2 - tc*ht*w2);
+    const double p_td_ht__hxhx_w2__p_cv_w2 = +((td*ht)/(hx*hx))*w2 + ((cv*ht)/(2.0*hx))*w2;
+    const double ht_w1 = +ht*w1;
+    const double ht_w2 = +ht*w2;
+
+    // border condition parameters
+    const double m_2td_ht__hx_w1__m_cv_w1 = -((2.0*td*ht)/hx)*w1 - cv*ht*w1;
+    const double p_2td_ht__hx_w1__p_cv_w1 = +((2.0*td*ht)/hx)*w1 + cv*ht*w1;
+    const double m_2td_ht__hx_w2__m_cv_w2 = -((2.0*td*ht)/hx)*w2 - cv*ht*w2;
+    const double p_2td_ht__hx_w2__p_cv_w2 = +((2.0*td*ht)/hx)*w2 + cv*ht*w2;
+    const double m_2td_ht__hxhx_w1 = -((2.0*td*ht)/(hx*hx))*w1;
+    const double p_2td_ht__hxhx_w2 = +((2.0*td*ht)/(hx*hx))*w2;
+
+    double *ax = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *bx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *cx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *dx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *rx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+
+    for (unsigned int n=0; n<=N; n++)
+    {
+        ax[n] = m_td_ht__hxhx_w1__p_cv_w1;
+        bx[n] = b_p2_td_ht__hxhx_w1_tc_w1;
+        cx[n] = m_td_ht__hxhx_w1__m_cv_w1;
+    }
+    ax[0] = 0.0; cx[N] = 0.0;
+
+    DoubleVector u00(N+1);
+    DoubleVector u10(N+1);
+
+    /***********************************************************************************************/
+    /***********************************************************************************************/
+
+    TimeNodePDE tn0; tn0.i = M; tn0.t = tn0.i*ht;
+    SpaceNodePDE sn;
+    for (unsigned int n=0; n<=N; n++)
+    {
+        sn.i = static_cast<int>(n); sn.x = sn.i*hx;
+        u00[n] = final(sn, FinalCondition::FinalValue);
+    }
+    layerInfo(u00, tn0);
+
+    /***********************************************************************************************/
+    /***********************************************************************************************/
+
+    for (unsigned int ln=M-1, size_ln = static_cast<unsigned int>(0)-1; ln != size_ln; ln--)
+    {
+        TimeNodePDE tn00; tn00.i = ln+1; tn00.t = tn00.i*ht;
+        TimeNodePDE tn10; tn10.i = ln;   tn10.t = tn10.i*ht;
+
+        for (unsigned int n=1; n<=N-1; n++)
+        {
+            sn.i = static_cast<int>(n); sn.x = n*hx;
+            dx[n] = 0.0;
+            dx[n] += p_td_ht__hxhx_w2__m_cv_w2 * u00[n-1];
+            dx[n] += b_m2_td_ht__hxhx_w2_tc_w2 * u00[n];
+            dx[n] += p_td_ht__hxhx_w2__p_cv_w2 * u00[n+1];
+            dx[n] -= ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00);
+        }
+
+        unsigned int s=0, e=N;
+        BoundaryConditionPDE condition; double alpha, beta, gamma, value;
+        BoundaryConditionPDE condition0; double alpha0, beta0, gamma0, value0;
+
+        sn.i = static_cast<int>(0); sn.x = 0*hx;
+        value = boundary(sn, tn10, condition);
+        value0 = boundary(sn, tn00, condition);
+        alpha = condition.alpha();
+        beta  = condition.beta();
+        gamma = condition.gamma();
+        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+        {
+            s = 1;
+
+            u10[0] = (gamma/alpha)*value;
+            dx[1] -= m_td_ht__hxhx_w1__p_cv_w1 * u10[0];
+            ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+        {
+            s = 0;
+
+            ax[s]  = 0.0;
+            bx[s]  = beta  * b_p2_td_ht__hxhx_w1_tc_w1;
+            cx[s]  = beta  * m_2td_ht__hxhx_w1;
+
+            dx[s]  = beta  * b_m2_td_ht__hxhx_w2_tc_w2 * u00[s];
+            dx[s] += beta  * p_2td_ht__hxhx_w2 * u00[s+1];
+            dx[s] += gamma * (m_2td_ht__hx_w1__m_cv_w1*value+m_2td_ht__hx_w2__m_cv_w2*value0);
+            dx[s] -= beta  * (ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00));
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Robin)
+        {
+            s = 0;
+
+            ax[s]  = 0.0;
+            bx[s]  = beta  * b_p2_td_ht__hxhx_w1_tc_w1;
+            bx[s] += alpha * m_2td_ht__hx_w1__m_cv_w1;
+            cx[s]  = beta  * m_2td_ht__hxhx_w1;
+
+            dx[s]  = beta  * b_m2_td_ht__hxhx_w2_tc_w2 * u00[s];
+            dx[s] += alpha * p_2td_ht__hx_w2__p_cv_w2 * u00[s];
+            dx[s] += beta  * p_2td_ht__hxhx_w2 * u00[s+1];
+            dx[s] += gamma * (m_2td_ht__hx_w1__m_cv_w1*value+m_2td_ht__hx_w2__m_cv_w2*value0);
+            dx[s] -= beta  * (ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00));
+        }
+
+        sn.i = static_cast<int>(N); sn.x = N*hx;
+        value = boundary(sn, tn10, condition);
+        value0 = boundary(sn, tn00, condition);
+        alpha = condition.alpha();
+        beta  = condition.beta();
+        gamma = condition.gamma();
+        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+        {
+            e = N-1;
+            u10[N] = (gamma/alpha)*value;
+            dx[N-1] -= m_td_ht__hxhx_w1__m_cv_w1 * u10[N];
+            cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+        {
+            e = N;
+
+            ax[e]  = beta  * m_2td_ht__hxhx_w1;
+            bx[e]  = beta  * b_p2_td_ht__hxhx_w1_tc_w1;
+            cx[e]  = 0.0;
+
+            dx[e]  = beta  * b_m2_td_ht__hxhx_w2_tc_w2 * u00[e];
+            dx[e] += beta  * p_2td_ht__hxhx_w2 * u00[e-1];
+            dx[e] += gamma * (p_2td_ht__hx_w1__p_cv_w1*value+p_2td_ht__hx_w2__p_cv_w2*value0);
+            dx[e] -= beta  * (ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00));
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Robin)
+        {
+            e = N;
+
+            ax[e]  = beta  * m_2td_ht__hxhx_w1;
+            bx[e]  = beta  * b_p2_td_ht__hxhx_w1_tc_w1;
+            bx[e] += alpha * p_2td_ht__hx_w1__p_cv_w1;
+            cx[e]  = 0.0;
+
+            dx[e]  = beta  * b_m2_td_ht__hxhx_w2_tc_w2 * u00[e];
+            dx[e] += alpha * m_2td_ht__hx_w2__m_cv_w2 * u00[e];
+            dx[e] += beta  * p_2td_ht__hxhx_w2 * u00[e-1];
+            dx[e] += gamma * (p_2td_ht__hx_w1__p_cv_w1*value+p_2td_ht__hx_w2__p_cv_w2*value0);
+            dx[e] -= beta  * (ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00));
+        }
+
+        tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
+        for (unsigned int n=s; n<=e; n++) u10[n] = rx[n];
+        layerInfo(u10, tn10);
+
+        u00 = u10;
+    }
+
+    u00.clear();
+    u10.clear();
+
+    free(rx);
+    free(dx);
+    free(cx);
+    free(bx);
+    free(ax);
+}
+
+void IHeatEquationFBVP::explicit_calculate_D2V1() const {}
+
+void IHeatEquationFBVP::implicit_calculate_D2V1() const {}
+
+double IHeatEquationFBVP::weight() const { return 0.5; }
+
+//--------------------------------------------------------------------------------------------------------------//
+
+void IHeatEquationIBVPEx::calculateU(DoubleMatrix &u, double a, double alpha, double lambda)
 {
     const Dimension _spaceDimensionX = spaceDimensionX();
     const Dimension _spaceDimensionY = spaceDimensionX();
@@ -963,7 +902,7 @@ void IHeatEquationIBVP::calculateU(DoubleMatrix &u, double a, double alpha, doub
     free(a1Y);
 }
 
-void IHeatEquationIBVP::gridMethod(DoubleVector &u, double a) const
+void IHeatEquationIBVPEx::gridMethod(DoubleVector &u, double a) const
 {
     const Dimension &dimX = spaceDimensionX();//spaceDimension(Dimension::DimensionX);
     const Dimension &time = timeDimension();
@@ -1048,7 +987,7 @@ void IHeatEquationIBVP::gridMethod(DoubleVector &u, double a) const
     free(rx);
 }
 
-void IHeatEquationIBVP::calculateMVD(DoubleMatrix &u) const
+void IHeatEquationIBVPEx::calculateMVD(DoubleMatrix &u) const
 {
     const Dimension &dimX = spaceDimensionX();//mspaceDimension.at(Dimension::DimensionX);
     const Dimension &dimY = spaceDimensionY();//mspaceDimension.at(Dimension::DimensionY);
@@ -1250,7 +1189,7 @@ void funcL(const double* a, const double *b, const double *c, const double *d, d
     free(e0);
 }
 
-void IHeatEquationIBVP::calculateN2L2RD(DoubleMatrix &u) const
+void IHeatEquationIBVPEx::calculateN2L2RD(DoubleMatrix &u) const
 {
     Dimension _spaceDimensionX = spaceDimensionX();
     Dimension _spaceDimensionY = spaceDimensionX();
@@ -1371,7 +1310,7 @@ void IHeatEquationIBVP::calculateN2L2RD(DoubleMatrix &u) const
 
 #define SCHEME_2
 #define __NORMALIZE__X
-void IHeatEquationIBVP::calculateN4L2RD(DoubleMatrix &u) const
+void IHeatEquationIBVPEx::calculateN4L2RD(DoubleMatrix &u) const
 {
     const Dimension _spaceDimensionX = spaceDimensionX();
     const Dimension _spaceDimensionY = spaceDimensionX();
@@ -1642,7 +1581,7 @@ void IHeatEquationIBVP::calculateN4L2RD(DoubleMatrix &u) const
     A.clear();
 }
 
-void IHeatEquationIBVP::calculateN4L2RDX(DoubleMatrix &u) const
+void IHeatEquationIBVPEx::calculateN4L2RDX(DoubleMatrix &u) const
 {
     const Dimension _spaceDimensionX = spaceDimensionX();
     const Dimension _spaceDimensionY = spaceDimensionX();
@@ -1925,7 +1864,7 @@ void IHeatEquationIBVP::calculateN4L2RDX(DoubleMatrix &u) const
     A.clear();
 }
 
-void IHeatEquationIBVP::calculateN6L2RD(DoubleMatrix &u) const
+void IHeatEquationIBVPEx::calculateN6L2RD(DoubleMatrix &u) const
 {
     const Dimension _spaceDimensionX = spaceDimensionX();
     const Dimension _spaceDimensionY = spaceDimensionX();
@@ -2215,244 +2154,7 @@ void IHeatEquationIBVP::calculateN6L2RD(DoubleMatrix &u) const
 
 //--------------------------------------------------------------------------------------------------------------//
 
-IHeatEquationFBVP::IHeatEquationFBVP(double thermalDiffusivity, double thermalConductivity, double thermalConvection)
-    : _thermalDiffusivity(thermalDiffusivity), _thermalConductivity(thermalConductivity), _thermalConvection(thermalConvection) {}
-
-IHeatEquationFBVP::IHeatEquationFBVP(const IHeatEquationFBVP &ibvp) : IParabolicFBVP(ibvp)
-{
-    //this->_timeDimension = ibvp._timeDimension;
-    //this->_spaceDimensionX = ibvp._spaceDimensionX;
-    //this->_spaceDimensionY = ibvp._spaceDimensionY;
-    //this->_spaceDimensionZ = ibvp._spaceDimensionZ;
-    this->_thermalDiffusivity = ibvp._thermalDiffusivity;
-    this->_thermalConductivity = ibvp._thermalConductivity;
-    this->_thermalConvection = ibvp._thermalConvection;
-}
-
-IHeatEquationFBVP & IHeatEquationFBVP::operator =(const IHeatEquationFBVP &other)
-{
-    if (this == &other) { return *this; }
-
-    //this->_timeDimension = other._timeDimension;
-    //this->_spaceDimensionX = other._spaceDimensionX;
-    //this->_spaceDimensionY = other._spaceDimensionY;
-    //this->_spaceDimensionZ = other._spaceDimensionZ;
-
-    this->_thermalDiffusivity = other._thermalDiffusivity;
-    this->_thermalConductivity = other._thermalConductivity;
-    this->_thermalConvection = other._thermalConvection;
-    return *this;
-}
-
-IHeatEquationFBVP::~IHeatEquationFBVP() {}
-
-double IHeatEquationFBVP::thermalDiffusivity() const { return _thermalDiffusivity; }
-
-void IHeatEquationFBVP::setThermalDiffusivity(double thermalDiffusivity)
-{
-    this->_thermalDiffusivity = thermalDiffusivity;
-}
-
-double IHeatEquationFBVP::thermalConductivity() const { return _thermalConductivity; }
-
-void IHeatEquationFBVP::setThermalConductivity(double convection)
-{
-    this->_thermalConductivity = convection;
-}
-
-double IHeatEquationFBVP::thermalConvection() const { return _thermalConvection; }
-
-void IHeatEquationFBVP::setThermalConvection(double thermalConvection)
-{
-    this->_thermalConvection = thermalConvection;
-}
-
-void IHeatEquationFBVP::implicit_calculate_D1V1CN() const
-{
-    const unsigned int N = static_cast<unsigned int>(spaceDimensionX().size()) - 1;
-    const unsigned int M = static_cast<unsigned int>(timeDimension().size()) - 1;
-
-    const double hx = spaceDimensionX().step();
-    const double ht = timeDimension().step();
-
-    const double td = thermalDiffusivity();
-    const double tc = thermalConductivity();
-    const double cv = thermalConvection();
-    const double w1 = weight();
-    const double w2 = 1.0 - weight();
-
-    // equation parameters
-    const double m_td_ht__hxhx_w1__p_cv_w1 = -((td*ht)/(hx*hx))*w1 + ((cv*ht)/(2.0*hx))*w1;
-    const double b_p2_td_ht__hxhx_w1_tc_w1 = +(1.0 + ((2.0*td*ht)/(hx*hx))*w1 + tc*ht*w1);
-    const double m_td_ht__hxhx_w1__m_cv_w1 = -((td*ht)/(hx*hx))*w1 - ((cv*ht)/(2.0*hx))*w1;
-    const double p_td_ht__hxhx_w2__m_cv_w2 = +((td*ht)/(hx*hx))*w2 - ((cv*ht)/(2.0*hx))*w2;
-    const double b_m2_td_ht__hxhx_w2_tc_w2 = +(1.0 - ((2.0*td*ht)/(hx*hx))*w2 - tc*ht*w2);
-    const double p_td_ht__hxhx_w2__p_cv_w2 = +((td*ht)/(hx*hx))*w2 + ((cv*ht)/(2.0*hx))*w2;
-    const double ht_w1 = +ht*w1;
-    const double ht_w2 = +ht*w2;
-
-    // border condition parameters
-    const double m_2td_ht__hx_w1__m_cv_w1 = -((2.0*td*ht)/hx)*w1 - cv*ht*w1;
-    const double p_2td_ht__hx_w1__p_cv_w1 = +((2.0*td*ht)/hx)*w1 + cv*ht*w1;
-    const double m_2td_ht__hx_w2__m_cv_w2 = -((2.0*td*ht)/hx)*w2 - cv*ht*w2;
-    const double p_2td_ht__hx_w2__p_cv_w2 = +((2.0*td*ht)/hx)*w2 + cv*ht*w2;
-    const double m_2td_ht__hxhx_w1 = -((2.0*td*ht)/(hx*hx))*w1;
-    const double p_2td_ht__hxhx_w2 = +((2.0*td*ht)/(hx*hx))*w2;
-
-    double *ax = static_cast<double*>(malloc(sizeof(double)*(N+1)));
-    double *bx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
-    double *cx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
-    double *dx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
-    double *rx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
-
-    for (unsigned int n=0; n<=N; n++)
-    {
-        ax[n] = m_td_ht__hxhx_w1__p_cv_w1;
-        bx[n] = b_p2_td_ht__hxhx_w1_tc_w1;
-        cx[n] = m_td_ht__hxhx_w1__m_cv_w1;
-    }
-    ax[0] = 0.0; cx[N] = 0.0;
-
-    DoubleVector u00(N+1);
-    DoubleVector u10(N+1);
-
-    /***********************************************************************************************/
-    /***********************************************************************************************/
-
-    TimeNodePDE tn0; tn0.i = M; tn0.t = tn0.i*ht;
-    SpaceNodePDE sn;
-    for (unsigned int n=0; n<=N; n++)
-    {
-        sn.i = static_cast<int>(n); sn.x = sn.i*hx;
-        u00[n] = final(sn, FinalCondition::FinalValue);
-    }
-    layerInfo(u00, tn0);
-
-    /***********************************************************************************************/
-    /***********************************************************************************************/
-
-    for (unsigned int ln=M-1, size_ln = static_cast<unsigned int>(0)-1; ln != size_ln; ln--)
-    {
-        TimeNodePDE tn00; tn00.i = ln+1; tn00.t = tn00.i*ht;
-        TimeNodePDE tn10; tn10.i = ln;   tn10.t = tn10.i*ht;
-
-        for (unsigned int n=1; n<=N-1; n++)
-        {
-            sn.i = static_cast<int>(n); sn.x = n*hx;
-            dx[n] = 0.0;
-            dx[n] += p_td_ht__hxhx_w2__m_cv_w2 * u00[n-1];
-            dx[n] += b_m2_td_ht__hxhx_w2_tc_w2 * u00[n];
-            dx[n] += p_td_ht__hxhx_w2__p_cv_w2 * u00[n+1];
-            dx[n] -= ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00);
-        }
-
-        unsigned int s=0, e=N;
-        BoundaryConditionPDE condition; double alpha, beta, gamma, value;
-        BoundaryConditionPDE condition0; double alpha0, beta0, gamma0, value0;
-
-        sn.i = static_cast<int>(0); sn.x = 0*hx;
-        value = boundary(sn, tn10, condition);
-        value0 = boundary(sn, tn00, condition);
-        alpha = condition.alpha();
-        beta  = condition.beta();
-        gamma = condition.gamma();
-        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
-        {
-            s = 1;
-
-            u10[0] = (gamma/alpha)*value;
-            dx[1] -= m_td_ht__hxhx_w1__p_cv_w1 * u10[0];
-            ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
-        }
-        else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
-        {
-            s = 0;
-
-            ax[s]  = 0.0;
-            bx[s]  = beta  * b_p2_td_ht__hxhx_w1_tc_w1;
-            cx[s]  = beta  * m_2td_ht__hxhx_w1;
-
-            dx[s]  = beta  * b_m2_td_ht__hxhx_w2_tc_w2 * u00[s];
-            dx[s] += beta  * p_2td_ht__hxhx_w2 * u00[s+1];
-            dx[s] += gamma * (m_2td_ht__hx_w1__m_cv_w1*value+m_2td_ht__hx_w2__m_cv_w2*value0);
-            dx[s] -= beta  * (ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00));
-        }
-        else if (condition.boundaryCondition() == BoundaryCondition::Robin)
-        {
-            s = 0;
-
-            ax[s]  = 0.0;
-            bx[s]  = beta  * b_p2_td_ht__hxhx_w1_tc_w1;
-            bx[s] += alpha * m_2td_ht__hx_w1__m_cv_w1;
-            cx[s]  = beta  * m_2td_ht__hxhx_w1;
-
-            dx[s]  = beta  * b_m2_td_ht__hxhx_w2_tc_w2 * u00[s];
-            dx[s] += alpha * p_2td_ht__hx_w2__p_cv_w2 * u00[s];
-            dx[s] += beta  * p_2td_ht__hxhx_w2 * u00[s+1];
-            dx[s] += gamma * (m_2td_ht__hx_w1__m_cv_w1*value+m_2td_ht__hx_w2__m_cv_w2*value0);
-            dx[s] -= beta  * (ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00));
-        }
-
-        sn.i = static_cast<int>(N); sn.x = N*hx;
-        value = boundary(sn, tn10, condition);
-        value0 = boundary(sn, tn00, condition);
-        alpha = condition.alpha();
-        beta  = condition.beta();
-        gamma = condition.gamma();
-        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
-        {
-            e = N-1;
-            u10[N] = (gamma/alpha)*value;
-            dx[N-1] -= m_td_ht__hxhx_w1__m_cv_w1 * u10[N];
-            cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
-        }
-        else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
-        {
-            e = N;
-
-            ax[e]  = beta  * m_2td_ht__hxhx_w1;
-            bx[e]  = beta  * b_p2_td_ht__hxhx_w1_tc_w1;
-            cx[e]  = 0.0;
-
-            dx[e]  = beta  * b_m2_td_ht__hxhx_w2_tc_w2 * u00[e];
-            dx[e] += beta  * p_2td_ht__hxhx_w2 * u00[e-1];
-            dx[e] += gamma * (p_2td_ht__hx_w1__p_cv_w1*value+p_2td_ht__hx_w2__p_cv_w2*value0);
-            dx[e] -= beta  * (ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00));
-        }
-        else if (condition.boundaryCondition() == BoundaryCondition::Robin)
-        {
-            e = N;
-
-            ax[e]  = beta  * m_2td_ht__hxhx_w1;
-            bx[e]  = beta  * b_p2_td_ht__hxhx_w1_tc_w1;
-            bx[e] += alpha * p_2td_ht__hx_w1__p_cv_w1;
-            cx[e]  = 0.0;
-
-            dx[e]  = beta  * b_m2_td_ht__hxhx_w2_tc_w2 * u00[e];
-            dx[e] += alpha * m_2td_ht__hx_w2__m_cv_w2 * u00[e];
-            dx[e] += beta  * p_2td_ht__hxhx_w2 * u00[e-1];
-            dx[e] += gamma * (p_2td_ht__hx_w1__p_cv_w1*value+p_2td_ht__hx_w2__p_cv_w2*value0);
-            dx[e] -= beta  * (ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00));
-        }
-
-        tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
-        for (unsigned int n=s; n<=e; n++) u10[n] = rx[n];
-        layerInfo(u10, tn10);
-
-        u00 = u10;
-    }
-
-    u00.clear();
-    u10.clear();
-
-    free(rx);
-    free(dx);
-    free(cx);
-    free(bx);
-    free(ax);
-}
-
-void IHeatEquationFBVP::gridMethod(DoubleVector &p, SweepMethodDirection direction) const
+void IHeatEquationFBVPEx::gridMethod(DoubleVector &p, SweepMethodDirection direction) const
 {
     typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
     t_algorithm algorithm = &tomasAlgorithm;
@@ -2546,7 +2248,7 @@ void IHeatEquationFBVP::gridMethod(DoubleVector &p, SweepMethodDirection directi
     free(rx);
 }
 
-void IHeatEquationFBVP::gridMethod(DoubleMatrix &p, SweepMethodDirection direction) const
+void IHeatEquationFBVPEx::gridMethod(DoubleMatrix &p, SweepMethodDirection direction) const
 {
     typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
     t_algorithm algorithm = &tomasAlgorithm;
@@ -2639,10 +2341,6 @@ void IHeatEquationFBVP::gridMethod(DoubleMatrix &p, SweepMethodDirection directi
     free(kd);
     free(rx);
 }
-
-double IHeatEquationIBVP::weight() const { return 0.5; }
-
-double IHeatEquationFBVP::weight() const { return 0.5; }
 
 //--------------------------------------------------------------------------------------------------------------//
 

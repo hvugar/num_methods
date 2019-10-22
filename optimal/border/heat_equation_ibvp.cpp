@@ -16,7 +16,7 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
     Benchmark bm;
     bm.tick();
     //w.implicit_calculate_D1V1();
-    w.implicit_calculate_D1V1CN();
+    w.implicit_calculate_D1V1();
     //w.implicit_calculate_D2V1CN();
     //w.explicit_calculate_D2V1();
     //IPrinter::printSeperatorLine();
@@ -216,7 +216,7 @@ void HeatEquationFBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     Benchmark bm;
     bm.tick();
-    w.implicit_calculate_D1V1CN();
+    w.implicit_calculate_D1V1();
 //    w.implicit_calculate_D2V1CN();
     //w.explicit_calculate_D2V1();
     //IPrinter::printSeperatorLine();
