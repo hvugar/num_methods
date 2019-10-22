@@ -12,11 +12,11 @@ void IHyperbolicFBVP::layerInfo(const DoubleMatrix &, const TimeNodePDE &) const
 
 //--------------------------------------------------------------------------------------------------------------//
 
-IWaveEquationIBVP::IWaveEquationIBVP(double waveSpeed, double waveDissipation) : IHyperbolicIBVP(),
-    _waveSpeed(waveSpeed), _waveDissipation(waveDissipation) {}
+IWaveEquationIBVP::IWaveEquationIBVP(double waveSpeed, double waveDissipation, double unknownC, double unknownD) : IHyperbolicIBVP(),
+    _waveSpeed(waveSpeed), _waveDissipation(waveDissipation), _unknownC(unknownC), _unknownD(unknownD) {}
 
 IWaveEquationIBVP::IWaveEquationIBVP(const IWaveEquationIBVP& other) : IHyperbolicIBVP(other),
-    _waveSpeed(other._waveSpeed), _waveDissipation(other._waveDissipation) {}
+    _waveSpeed(other._waveSpeed), _waveDissipation(other._waveDissipation), _unknownC(other._unknownC), _unknownD(other._unknownD) {}
 
 IWaveEquationIBVP& IWaveEquationIBVP::operator=(const IWaveEquationIBVP &other)
 {
@@ -24,6 +24,8 @@ IWaveEquationIBVP& IWaveEquationIBVP::operator=(const IWaveEquationIBVP &other)
 
     this->_waveSpeed = other._waveSpeed;
     this->_waveDissipation = other._waveDissipation;
+    this->_unknownC = other._unknownC;
+    this->_unknownD = other._unknownD;
     return *this;
 }
 
@@ -36,6 +38,14 @@ void IWaveEquationIBVP::setWaveSpeed(double waveSpeed) { this->_waveSpeed = wave
 double IWaveEquationIBVP::waveDissipation() const { return _waveDissipation; }
 
 void IWaveEquationIBVP::setWaveDissipation(double waveDissipation) { this->_waveDissipation = waveDissipation; }
+
+void IWaveEquationIBVP::setUnknownC(double unknownC) { this->_unknownC = unknownC; }
+
+double IWaveEquationIBVP::unknownC() const { return _unknownC; }
+
+void IWaveEquationIBVP::setUnknownD(double unknownD) { this->_unknownD = unknownD; }
+
+double IWaveEquationIBVP::unknownD() const { return _unknownD; }
 
 void IWaveEquationIBVP::explicit_calculate_D1V1() const
 {
@@ -391,8 +401,8 @@ void IWaveEquationIBVP::implicit_calculate_D1V1_() const
 
     const double ws = waveSpeed();
     const double wd = waveDissipation();
-    const double cv = 0.0;
-    const double dv = 0.0;
+    const double cv = unknownC();
+    const double dv = unknownD();
     const double w1 = weight();
     const double w2 = 1.0 - 2.0*w1;
 
@@ -486,7 +496,7 @@ void IWaveEquationIBVP::implicit_calculate_D1V1_() const
     /***********************************************************************************************/
     /***********************************************************************************************/
 
-    for (unsigned int ln=2; ln<=L; ln++)
+    for (unsigned int ln=2; ln<=L+1; ln++)
     {
         //TimeNodePDE tn00; tn00.i = ln-2; tn00.t = tn00.i*ht;
         TimeNodePDE tn10; tn10.i = ln-1; tn10.t = tn10.i*ht;
@@ -496,11 +506,6 @@ void IWaveEquationIBVP::implicit_calculate_D1V1_() const
         {
             sn.i = static_cast<int>(n); sn.x = n*hx;
             dx[n] = 0.0;
-            //dx[n] += (u10[n-1] - 2.0*u10[n] + u10[n+1])*p_aa_htht__hxhx_1m2lambda;
-            //dx[n] += (u00[n-1] - 2.0*u00[n] + u00[n+1])*p_aa_htht__hxhx_lambda;
-            //dx[n] += 2.0*u10[n] - u00[n] + alpha_ht_05*u00[n];
-            //dx[n] += ht_ht*f(sn, tn10);
-            //dx[n] += ht_ht*(lmbd*f(sn, tn00) + m1_2lambda*f(sn, tn10) + lmbd*f(sn, tn20));
 
             dx[n] += p_wsws_htht__hxhx_w2__m_cv_htht__2hx_w2 * u10[n-1];
             dx[n] += pi_m2_wsws_htht__hxhx_w2___2_dv_htht_w2 * u10[n];
@@ -511,12 +516,18 @@ void IWaveEquationIBVP::implicit_calculate_D1V1_() const
             dx[n] += p_wsws_htht__hxhx_w1__p_cv_htht__2hx_w1 * u00[n+1];
 
             dx[n] += ht_ht*f(sn, tn10);
+
+            //dx[n] += (u10[n-1] - 2.0*u10[n] + u10[n+1])*p_aa_htht__hxhx_1m2lambda;
+            //dx[n] += (u00[n-1] - 2.0*u00[n] + u00[n+1])*p_aa_htht__hxhx_lambda;
+            //dx[n] += 2.0*u10[n] - u00[n] + alpha_ht_05*u00[n];
+            //dx[n] += ht_ht*f(sn, tn10);
+            //dx[n] += ht_ht*(lmbd*f(sn, tn00) + m1_2lambda*f(sn, tn10) + lmbd*f(sn, tn20));
         }
 
         unsigned int s=0, e=N;
         BoundaryConditionPDE condition; double alpha, beta, gamma, value;
         sn.i = static_cast<int>(0); sn.x = 0*hx;
-        value = boundary(sn, tn20, condition);
+        value = boundary(sn, tn10, condition);
         alpha = condition.alpha();
         beta  = condition.beta();
         gamma = condition.gamma();
@@ -547,22 +558,21 @@ void IWaveEquationIBVP::implicit_calculate_D1V1_() const
             s = 0;
 
             ax[0] = 0.0;
-            bx[0] = beta  * pb_p2_wsws_htht__hxhx_w1__wd_ht__2w1_dv
-                  + alpha * +2.0 * m_wsws_htht__hxhx_w1__p_cv_htht__2hx_w1;
-            cx[0] = beta  * -2.0 * ((ws*ws*ht*ht)/(hx*hx)) * w1;
+            bx[0] = beta  * (+1.0 + ((2.0*ws*ws*ht*ht)/(hx*hx))*w1 + 0.5*wd*ht - dv*ht*ht*w1)
+                  + alpha * (-2.0*((ws*ws*ht*ht)/(hx))*w1  + cv*ht*ht*w1);
+            cx[0] = beta  * (-2.0*((ws*ws*ht*ht)/(hx*hx)) * w1);
 
             dx[0]  = 0.0;
-            dx[0] += beta  * pi_m2_wsws_htht__hxhx_w2___2_dv_htht_w2 * u00[0];
-            dx[0] += alpha * 2.0 * p_wsws_htht__hxhx_w2__m_cv_htht__2hx_w2 * u00[0];
-            dx[0] += beta  * 2.0 * ((ws*ws*ht*ht)/(hx*hx)) * w2 * u00[1];
+            dx[0] += beta  * (+2.0 - ((2.0*ws*ws*ht*ht)/(hx*hx))*w2 + dv*ht*ht*w2) * u10[0];
+            dx[0] += alpha * (+2.0*((ws*ws*ht*ht)/(hx))*w2 - cv*ht*ht*w2) * u10[0];
+            dx[0] += beta  * (+2.0*((ws*ws*ht*ht)/(hx*hx)) * w2) * u10[1];
 
-            dx[0] += beta  * mb_m2_wsws_htht__hxhx_w1__wd_ht__2w1_dv * u10[0];
-            dx[0] += alpha * 2.0 * p_wsws_htht__hxhx_w1__m_cv_htht__2hx_w1 * u10[0];
-            dx[0] += beta  * 2.0 * ((ws*ws*ht*ht)/(hx*hx)) * w1 * u10[1];
+            dx[0] += beta  * (-1.0 - ((2.0*ws*ws*ht*ht)/(hx*hx))*w1 + 0.5*wd*ht - dv*ht*ht*w1) * u00[0];
+            dx[0] += alpha * (+2.0*((ws*ws*ht*ht)/(hx))*w1 - cv*ht*ht*w1) * u00[0];
+            dx[0] += beta  * (+2.0 * ((ws*ws*ht*ht)/(hx*hx)) * w1) * u00[1];
 
             dx[0] += gamma * ((-2.0*ws*ws*ht*ht)/hx + cv*ht*ht) * value;
             dx[0] += beta  * (ht_ht) * f(sn,tn10);
-
 
 //            ax[0]  = 0.0;
 //            bx[0]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*w1 + alpha_ht_05);
@@ -577,7 +587,7 @@ void IWaveEquationIBVP::implicit_calculate_D1V1_() const
         }
 
         sn.i = static_cast<int>(N); sn.x = N*hx;
-        value = boundary(sn, tn20, condition);
+        value = boundary(sn, tn10, condition);
         alpha = condition.alpha();
         beta  = condition.beta();
         gamma = condition.gamma();
@@ -605,6 +615,23 @@ void IWaveEquationIBVP::implicit_calculate_D1V1_() const
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
         {
             e = N;
+
+            ax[N] = beta  * (-2.0*((ws*ws*ht*ht)/(hx*hx)) * w1);
+            bx[N] = beta  * (+1.0 - ((2.0*ws*ws*ht*ht)/(hx*hx))*w1 + 0.5*wd*ht - dv*ht*ht*w1)
+                  + alpha * (-2.0*((ws*ws*ht*ht)/(hx))*w1  + cv*ht*ht*w1);
+            cx[N] = 0.0;
+
+            dx[N]  = 0.0;
+            dx[N] += beta  * (+2.0*((ws*ws*ht*ht)/(hx*hx)) * w2) * u10[N-1];
+            dx[N] += alpha * (-2.0*((ws*ws*ht*ht)/(hx))*w2 - cv*ht*ht*w2) * u10[N];
+            dx[N] += beta  * (+2.0 - ((2.0*ws*ws*ht*ht)/(hx*hx))*w2 + dv*ht*ht*w2) * u10[N];
+
+            dx[N] += beta  * (+2.0 * ((ws*ws*ht*ht)/(hx*hx)) * w1) * u00[N-1];
+            dx[N] += alpha * (-2.0*((ws*ws*ht*ht)/(hx))*w1 - cv*ht*ht*w1) * u00[N];
+            dx[N] += beta  * (-1.0 - ((2.0*ws*ws*ht*ht)/(hx*hx))*w1 - 0.5*wd*ht + dv*ht*ht*w1) * u00[N];
+
+            dx[N] += gamma * ((2.0*ws*ws*ht*ht)/hx + cv*ht*ht) * value;
+            dx[N] += beta  * (ht_ht) * f(sn,tn10);
 
 //            ax[N]  = beta *(-2.0*p_aa_htht__hxhx*w1);
 //            bx[N]  = beta *(+1.0 + 2.0*p_aa_htht__hxhx*w1 + alpha_ht_05);

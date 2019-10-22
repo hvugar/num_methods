@@ -42,16 +42,22 @@ protected:
 class MINIMUMSHARED_EXPORT IWaveEquationIBVP : public IHyperbolicIBVP
 {
 public:
-    explicit IWaveEquationIBVP(double waveSpeed = 1.0, double waveDissipation = 0.0);
+    explicit IWaveEquationIBVP(double waveSpeed = 1.0, double waveDissipation = 0.0, double unknownC = 0.0, double unknownD = 0.0);
     virtual ~IWaveEquationIBVP();
     IWaveEquationIBVP(const IWaveEquationIBVP &);
     IWaveEquationIBVP& operator=(const IWaveEquationIBVP &);
 
-    virtual double waveSpeed() const;
-    virtual double waveDissipation() const;
+    double waveSpeed() const;
+    double waveDissipation() const;
 
-    virtual void setWaveSpeed(double waveSpeed);
-    virtual void setWaveDissipation(double waveDissipation);
+    void setWaveSpeed(double waveSpeed);
+    void setWaveDissipation(double waveDissipation);
+
+    void setUnknownC(double unknownC);
+    double unknownC() const;
+
+    void setUnknownD(double unknownD);
+    double unknownD() const;
 
     void explicit_calculate_D1V1() const;
     void implicit_calculate_D1V1() const;
@@ -68,6 +74,8 @@ protected:
     virtual double weight() const;
     double _waveSpeed;
     double _waveDissipation;
+    double _unknownC;
+    double _unknownD;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//
