@@ -42,7 +42,7 @@ protected:
 class MINIMUMSHARED_EXPORT IWaveEquationIBVP : public IHyperbolicIBVP
 {
 public:
-    explicit IWaveEquationIBVP(double waveSpeed = 1.0, double waveDissipation = 0.0, double unknownC = 0.0, double unknownD = 0.0);
+    explicit IWaveEquationIBVP(double waveSpeed = 1.0, double waveDissipation = 0.0, double unknownC = 0.0, double restoration = 0.0);
     virtual ~IWaveEquationIBVP();
     IWaveEquationIBVP(const IWaveEquationIBVP &);
     IWaveEquationIBVP& operator=(const IWaveEquationIBVP &);
@@ -56,8 +56,8 @@ public:
     void setUnknownC(double unknownC);
     double unknownC() const;
 
-    void setUnknownD(double unknownD);
-    double unknownD() const;
+    void setRestoration(double restoration);
+    double restoration() const;
 
     void explicit_calculate_D1V1() const;
     void implicit_calculate_D1V1() const;
@@ -75,8 +75,12 @@ protected:
     double _waveSpeed;
     double _waveDissipation;
     double _unknownC;
-    double _unknownD;
+    double _restoration;
 };
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+class KleinGordonEquation : public IHyperbolicIBVP {};
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//
 
