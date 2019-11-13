@@ -74,8 +74,8 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
     const double b13 = +((2.0*td*ht)/hx)*w1 + cv*ht*w1;
 
     const double b21 = +((2.0*td*ht)/(hx*hx))*w2;
-    const double b22 = -((2.0*td*ht)/hx)*w2 + cv*ht*w2;
-    const double b23 = +((2.0*td*ht)/hx)*w2 - cv*ht*w2;
+    const double b22 = -((2.0*td*ht)/hx)*w2 - cv*ht*w2;
+    const double b23 = +((2.0*td*ht)/hx)*w2 + cv*ht*w2;
 
     // common parameters
     const double ht_w1 = +ht*w1;
