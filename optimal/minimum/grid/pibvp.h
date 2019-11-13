@@ -50,11 +50,11 @@ public:
     virtual double thermalDiffusivity() const;
     virtual void setThermalDiffusivity(double thermalDiffusivity);
 
-    virtual double thermalConductivity() const;
-    virtual void setThermalConductivity(double thermalConductivity);
-
     virtual double thermalConvection() const;
     virtual void setThermalConvection(double thermalConvection);
+
+    virtual double thermalConductivity() const;
+    virtual void setThermalConductivity(double thermalConductivity);
 
     void explicit_calculate_D1V1() const;
     void implicit_calculate_D1V1() const;
@@ -69,8 +69,8 @@ protected:
 
     virtual double weight() const;  //
     double _thermalDiffusivity;     // температуропроводность
-    double _thermalConductivity;    // теплопроводность
     double _thermalConvection;      //
+    double _thermalConductivity;    // теплопроводность - heat transfer coefficient
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//

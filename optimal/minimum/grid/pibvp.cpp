@@ -34,13 +34,13 @@ double IHeatEquationIBVP::thermalDiffusivity() const { return _thermalDiffusivit
 
 void IHeatEquationIBVP::setThermalDiffusivity(double thermalDiffusivity) { this->_thermalDiffusivity = thermalDiffusivity; }
 
-double IHeatEquationIBVP::thermalConductivity() const { return _thermalConductivity; }
-
-void IHeatEquationIBVP::setThermalConductivity(double thermalConductivity) { this->_thermalConductivity = thermalConductivity; }
-
 double IHeatEquationIBVP::thermalConvection() const { return _thermalConvection; }
 
 void IHeatEquationIBVP::setThermalConvection(double thermalConvection) { this->_thermalConvection = thermalConvection; }
+
+double IHeatEquationIBVP::thermalConductivity() const { return _thermalConductivity; }
+
+void IHeatEquationIBVP::setThermalConductivity(double thermalConductivity) { this->_thermalConductivity = thermalConductivity; }
 
 void IHeatEquationIBVP::explicit_calculate_D1V1() const
 {}
@@ -54,28 +54,32 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
     const double ht = timeDimension().step();
 
     const double td = thermalDiffusivity();
-    const double tc = thermalConductivity();
-    const double cv = thermalConvection();
+    const double cv = thermalConductivity();
+    const double tc = thermalConvection();
     const double w1 = weight();
     const double w2 = 1.0 - w1;
 
     // equation parameters
-    const double m_td_ht__hxhx_w1__p_cv_w1 = -((td*ht)/(hx*hx))*w1 + ((cv*ht)/(2.0*hx))*w1;
-    const double b_p2_td_ht__hxhx_w1_tc_w1 = +(1.0 + ((2.0*td*ht)/(hx*hx))*w1 + tc*ht*w1);
-    const double m_td_ht__hxhx_w1__m_cv_w1 = -((td*ht)/(hx*hx))*w1 - ((cv*ht)/(2.0*hx))*w1;
-    const double p_td_ht__hxhx_w2__m_cv_w2 = +((td*ht)/(hx*hx))*w2 - ((cv*ht)/(2.0*hx))*w2;
-    const double b_m2_td_ht__hxhx_w2_tc_w2 = +(1.0 - ((2.0*td*ht)/(hx*hx))*w2 - tc*ht*w2);
-    const double p_td_ht__hxhx_w2__p_cv_w2 = +((td*ht)/(hx*hx))*w2 + ((cv*ht)/(2.0*hx))*w2;
+    const double k11 = -((td*ht)/(hx*hx))*w1 + ((cv*ht)/(2.0*hx))*w1;
+    const double k12 = +(1.0 + ((2.0*td*ht)/(hx*hx))*w1 - tc*ht*w1);
+    const double k13 = -((td*ht)/(hx*hx))*w1 - ((cv*ht)/(2.0*hx))*w1;
+
+    const double k21 = +((td*ht)/(hx*hx))*w2 - ((cv*ht)/(2.0*hx))*w2;
+    const double k22 = +(1.0 - ((2.0*td*ht)/(hx*hx))*w2 + tc*ht*w2);
+    const double k23 = +((td*ht)/(hx*hx))*w2 + ((cv*ht)/(2.0*hx))*w2;
+    
+    // border condition parameters
+    const double b11 = -((2.0*td*ht)/(hx*hx))*w1;
+    const double b12 = -((2.0*td*ht)/hx)*w1 + cv*ht*w1;
+    const double b13 = +((2.0*td*ht)/hx)*w1 + cv*ht*w1;
+
+    const double b21 = +((2.0*td*ht)/(hx*hx))*w2;
+    const double b22 = -((2.0*td*ht)/hx)*w2 + cv*ht*w2;
+    const double b23 = +((2.0*td*ht)/hx)*w2 - cv*ht*w2;
+
+    // common parameters
     const double ht_w1 = +ht*w1;
     const double ht_w2 = +ht*w2;
-
-    // border condition parameters
-    const double m_2td_ht__hx_w1__m_cv_w1 = -((2.0*td*ht)/hx)*w1 - cv*ht*w1;
-    const double p_2td_ht__hx_w1__p_cv_w1 = +((2.0*td*ht)/hx)*w1 + cv*ht*w1;
-    const double m_2td_ht__hx_w2__m_cv_w2 = -((2.0*td*ht)/hx)*w2 - cv*ht*w2;
-    const double p_2td_ht__hx_w2__p_cv_w2 = +((2.0*td*ht)/hx)*w2 + cv*ht*w2;
-    const double m_2td_ht__hxhx_w1 = -((2.0*td*ht)/(hx*hx))*w1;
-    const double p_2td_ht__hxhx_w2 = +((2.0*td*ht)/(hx*hx))*w2;
 
     double *ax = static_cast<double*>(malloc(sizeof(double)*(N+1)));
     double *bx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
@@ -85,9 +89,9 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
 
     for (unsigned int n=0; n<=N; n++)
     {
-        ax[n] = m_td_ht__hxhx_w1__p_cv_w1;
-        bx[n] = b_p2_td_ht__hxhx_w1_tc_w1;
-        cx[n] = m_td_ht__hxhx_w1__m_cv_w1;
+        ax[n] = k11;
+        bx[n] = k12;
+        cx[n] = k13;
     }
     ax[0] = 0.0; cx[N] = 0.0;
 
@@ -118,9 +122,9 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
         {
             sn.i = static_cast<int>(n); sn.x = n*hx;
             dx[n] = 0.0;
-            dx[n] += p_td_ht__hxhx_w2__m_cv_w2 * u00[n-1];
-            dx[n] += b_m2_td_ht__hxhx_w2_tc_w2 * u00[n];
-            dx[n] += p_td_ht__hxhx_w2__p_cv_w2 * u00[n+1];
+            dx[n] += k21 * u00[n-1];
+            dx[n] += k22 * u00[n];
+            dx[n] += k23 * u00[n+1];
             dx[n] += ht_w1*f(sn, tn10)+ht_w1*f(sn, tn00);
         }
 
@@ -139,7 +143,7 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
             s = 1;
 
             u10[0] = (gamma/alpha)*value;
-            dx[1] -= m_td_ht__hxhx_w1__p_cv_w1 * u10[0];
+            dx[1] -= k11 * u10[0];
             ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
@@ -147,12 +151,12 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
             s = 0;
 
             ax[s]  = 0.0;
-            bx[s]  = beta  * b_p2_td_ht__hxhx_w1_tc_w1;
-            cx[s]  = beta  * m_2td_ht__hxhx_w1;
+            bx[s]  = beta  * k12;
+            cx[s]  = beta  * b11;
 
-            dx[s]  = beta  * b_m2_td_ht__hxhx_w2_tc_w2 * u00[s];
-            dx[s] += beta  * p_2td_ht__hxhx_w2 * u00[s+1];
-            dx[s] += gamma * (m_2td_ht__hx_w1__m_cv_w1*value+m_2td_ht__hx_w2__m_cv_w2*value0);
+            dx[s]  = beta  * k22 * u00[s];
+            dx[s] += beta  * b21 * u00[s+1];
+            dx[s] += gamma * (b12*value+b22*value0);
             dx[s] += beta  * (ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00));
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -160,14 +164,15 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
             s = 0;
 
             ax[s]  = 0.0;
-            bx[s]  = beta  * b_p2_td_ht__hxhx_w1_tc_w1;
-            bx[s] += alpha * m_2td_ht__hx_w1__m_cv_w1;
-            cx[s]  = beta  * m_2td_ht__hxhx_w1;
+            bx[s]  = beta  * k12;
+            bx[s] += alpha * b12;
+            cx[s]  = beta  * b11;
 
-            dx[s]  = beta  * b_m2_td_ht__hxhx_w2_tc_w2 * u00[s];
-            dx[s] += alpha * p_2td_ht__hx_w2__p_cv_w2 * u00[s];
-            dx[s] += beta  * p_2td_ht__hxhx_w2 * u00[s+1];
-            dx[s] += gamma * (m_2td_ht__hx_w1__m_cv_w1*value+m_2td_ht__hx_w2__m_cv_w2*value0);
+            dx[s]  = beta  * k22 * u00[s];
+            dx[s] += alpha * b23 * u00[s];
+            dx[s] += beta  * b21 * u00[s+1];
+
+            dx[s] += gamma * (b12*value+b22*value0);
             dx[s] += beta  * (ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00));
         }
 
@@ -181,35 +186,36 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
         {
             e = N-1;
             u10[N] = (gamma/alpha)*value;
-            dx[N-1] -= m_td_ht__hxhx_w1__m_cv_w1 * u10[N];
+            dx[N-1] -= k13 * u10[N];
             cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
         {
             e = N;
 
-            ax[e]  = beta  * m_2td_ht__hxhx_w1;
-            bx[e]  = beta  * b_p2_td_ht__hxhx_w1_tc_w1;
+            ax[e]  = beta  * b11;
+            bx[e]  = beta  * k12;
             cx[e]  = 0.0;
 
-            dx[e]  = beta  * b_m2_td_ht__hxhx_w2_tc_w2 * u00[e];
-            dx[e] += beta  * p_2td_ht__hxhx_w2 * u00[e-1];
-            dx[e] += gamma * (p_2td_ht__hx_w1__p_cv_w1*value+p_2td_ht__hx_w2__p_cv_w2*value0);
+            dx[e]  = beta  * k22 * u00[e];
+            dx[e] += beta  * b21 * u00[e-1];
+            dx[e] += gamma * (b13*value+b23*value0);
             dx[e] += beta  * (ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00));
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
         {
             e = N;
 
-            ax[e]  = beta  * m_2td_ht__hxhx_w1;
-            bx[e]  = beta  * b_p2_td_ht__hxhx_w1_tc_w1;
-            bx[e] += alpha * p_2td_ht__hx_w1__p_cv_w1;
+            ax[e]  = beta  * b11;
+            bx[e]  = alpha * b13;
+            bx[e] += beta  * k12;
             cx[e]  = 0.0;
 
-            dx[e]  = beta  * b_m2_td_ht__hxhx_w2_tc_w2 * u00[e];
-            dx[e] += alpha * m_2td_ht__hx_w2__m_cv_w2 * u00[e];
-            dx[e] += beta  * p_2td_ht__hxhx_w2 * u00[e-1];
-            dx[e] += gamma * (p_2td_ht__hx_w1__p_cv_w1*value+p_2td_ht__hx_w2__p_cv_w2*value0);
+            dx[e]  = beta  * b21 * u00[e-1];
+            dx[e] += alpha * b22 * u00[e];
+            dx[e] += beta  * k22 * u00[e];
+
+            dx[e] += gamma * (b13*value+b23*value0);
             dx[e] += beta  * (ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00));
         }
 
@@ -335,20 +341,23 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
 
     const double td = thermalDiffusivity();
     const double tc = thermalConductivity();
-    const double _lambda = weight();
+    const double cv = thermalConvection();
 
-    if (_lambda >= 0.5-(0.25/ht)/(1.0/(hx*hx)+1.0/(hy*hy))) throw std::runtime_error("Differential scheme is conditionally steady.");
+    const double w1 = weight();
+    const double w2 = 1.0 - w1;
+
+    if (w1 >= 0.5-(0.25/ht)/(1.0/(hx*hx)+1.0/(hy*hy))) throw std::runtime_error("Differential scheme is conditionally steady.");
 
     const double ht_050 = ht*0.5;
 
-    const double m_td_ht__hxhx_05_lambda = -(0.5*td*ht*_lambda)/(hx*hx);
-    const double b_td_ht__hxhx_lambda__05tcht = +1.0 + (td*ht*_lambda)/(hx*hx) + 0.5*ht*tc;
-    const double p_td_ht__hxhx_05_1mlambda = +(0.5*td*ht*(1.0-_lambda))/(hx*hx);
+    const double m_td_ht__hxhx_05_lambda = -(0.5*td*ht*w1)/(hx*hx);
+    const double b_td_ht__hxhx_lambda__05tcht = +1.0 + (td*ht*w1)/(hx*hx) + 0.5*ht*tc;
+    const double p_td_ht__hxhx_05_1mlambda = +(0.5*td*ht*w2)/(hx*hx);
     const double p_td_ht__hyhy_05 = +((0.5*td*ht)/(hy*hy));
 
-    const double m_td_ht__hyhy_05_lambda = -(0.5*td*ht*_lambda)/(hy*hy);
-    const double b_td_ht__hyhy_lambda__conv = +(1.0 + (td*ht*_lambda)/(hy*hy)) + 0.5*ht*tc;
-    const double p_td_ht__hyhy_05_1mlambda = +(0.5*td*ht*(1.0-_lambda))/(hy*hy);
+    const double m_td_ht__hyhy_05_lambda = -(0.5*td*ht*w1)/(hy*hy);
+    const double b_td_ht__hyhy_lambda__conv = +(1.0 + (td*ht*w1)/(hy*hy)) + 0.5*ht*tc;
+    const double p_td_ht__hyhy_05_1mlambda = +(0.5*td*ht*w2)/(hy*hy);
     const double p_td_ht__hxhx_05 = +(0.5*td*ht)/(hx*hx);
 
     double *ax = static_cast<double*>(malloc(sizeof(double)*(N-1)));

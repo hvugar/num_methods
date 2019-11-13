@@ -8,29 +8,28 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 #endif
 
-    HeatEquationIBVP w(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
+    HeatEquationIBVP w;
+    w.setTimeDimension(Dimension(0.01, 0, 100));
+    w.setSpaceDimensionX(Dimension(0.01, 0, 100));
+    w.setSpaceDimensionY(Dimension(0.01, 0, 100));
+
     w.setThermalDiffusivity(1.0);
-    w.setThermalConductivity(0.1);
-    w.setThermalConvection(0.2);
+    w.setThermalConductivity(1.0);
+    w.setThermalConvection(2.0);
 
     Benchmark bm;
     bm.tick();
     //w.implicit_calculate_D1V1();
+    //w.implicit_calculate_D1V1();
     w.implicit_calculate_D1V1();
-    //w.implicit_calculate_D2V1CN();
     //w.explicit_calculate_D2V1();
     //IPrinter::printSeperatorLine();
     bm.tock();
     bm.printDuration();
 }
 
-HeatEquationIBVP::HeatEquationIBVP(const Dimension &timeDimension, const Dimension &spaceDimensionX,
-                                   const Dimension &spaceDimensionY) : IHeatEquationIBVP()
-{
-    setTimeDimension(timeDimension);
-    setSpaceDimensionX(spaceDimensionX);
-    setSpaceDimensionY(spaceDimensionY);
-}
+HeatEquationIBVP::HeatEquationIBVP() : IHeatEquationIBVP()
+{}
 
 double HeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition) const
 {
@@ -60,17 +59,17 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
     }
     else
     {
-        //condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        //return U(sn, tn)*(condition.alpha()/condition.gamma());
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+        return U(sn, tn)*(condition.alpha()/condition.gamma());
 
         //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(1.0))/condition.gamma();
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(2.0*sn.x))/condition.gamma();
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(3.0*sn.x*sn.x))/condition.gamma();
 
-        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
+        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(1.0))/condition.gamma();
-        return (condition.alpha()*U(sn, tn)+condition.beta()*(2.0*sn.x))/condition.gamma();
+        //return (condition.alpha()*U(sn, tn)+condition.beta()*(2.0*sn.x))/condition.gamma();
         //return (condition.alpha()*U(sn, tn)+condition.beta()*(3.0*sn.x*sn.x))/condition.gamma();
 
         //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +0.0); return 0.0;
@@ -81,15 +80,15 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
 double HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     const double td = thermalDiffusivity();
-    const double tc = thermalConductivity();
-    const double tv = thermalConvection();
+    const double cv = thermalConductivity();
+    const double tc = thermalConvection();
 
     //return 1.0 - 0.0*td + tc*U(sn,tn) - 1.0*tv;
     //return 2.0*tn.t - 0.0*td + tc*U(sn,tn) - 1.0*tv;
     //return 3.0*tn.t*tn.t - 0.0*td + tc*U(sn,tn) - 1.0*tv;
 
     //return 1.0 - 2.0*td + tc*U(sn,tn) - 2.0*tv*sn.x;
-    return 2.0*tn.t - 2.0*td + tc*U(sn,tn) - 2.0*tv*sn.x;
+    return 2.0*tn.t - 2.0*td - 2.0*cv*sn.x - tc*U(sn,tn);
     //return 3.0*tn.t*tn.t - 2.0*td + tc*U(sn,tn) - 2.0*tv*sn.x;
 
     //return 1.0 - 6.0*td*sn.x + tc*U(sn,tn) - 3.0*tv*sn.x*sn.x;

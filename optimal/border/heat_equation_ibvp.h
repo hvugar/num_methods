@@ -8,7 +8,7 @@ class BORDERSHARED_EXPORT HeatEquationIBVP : public IHeatEquationIBVP
 public:
     static void Main(int argc, char *argv[]);
 
-    HeatEquationIBVP(const Dimension &timeDimension, const Dimension &spaceDimensionX, const Dimension &spaceDimensionY);
+    HeatEquationIBVP();
 
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const;

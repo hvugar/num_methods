@@ -402,23 +402,23 @@ void IWaveEquationIBVP::implicit_calculate_D1V1_() const
     const double ws = waveSpeed();
     const double wd = waveDissipation();
     const double cv = unknownC();
-    const double dv = restoration();
+    const double rs = restoration();
     const double w1 = weight();
     const double w2 = 1.0 - 2.0*w1;
 
     // equation parameters
-    const double m_wsws_htht__hxhx_w1__p_cv_htht__2hx_w1 = -((ws*ws*ht*ht)/(hx*hx))*w1 + ((cv*ht*ht)/(2.0*hx))*w1;
-    const double pb_p2_wsws_htht__hxhx_w1__wd_ht__2w1_dv = +1.0 + ((2.0*ws*ws*ht*ht)/(hx*hx))*w1 + 0.5*wd*ht - dv*ht*ht*w1;
-    const double m_wsws_htht__hxhx_w1__m_cv_htht__2hx_w1 = -((ws*ws*ht*ht)/(hx*hx))*w1 - ((cv*ht*ht)/(2.0*hx))*w1;
+    const double k11 = -((ws*ws*ht*ht)/(hx*hx))*w1 + ((cv*ht*ht)/(2.0*hx))*w1;
+    const double k12 = +1.0 + ((2.0*ws*ws*ht*ht)/(hx*hx))*w1 + 0.5*wd*ht - rs*ht*ht*w1;
+    const double k13 = -((ws*ws*ht*ht)/(hx*hx))*w1 - ((cv*ht*ht)/(2.0*hx))*w1;
 
-    const double p_wsws_htht__hxhx_w2__m_cv_htht__2hx_w2 = +((ws*ws*ht*ht)/(hx*hx))*w2 - ((cv*ht*ht)/(2.0*hx))*w2;
-    const double pi_m2_wsws_htht__hxhx_w2___2_dv_htht_w2 = +2.0 - ((2.0*ws*ws*ht*ht)/(hx*hx))*w2 + dv*ht*ht*w2;
-    const double p_wsws_htht__hxhx_w2__p_cv_htht__2hx_w2 = +((ws*ws*ht*ht)/(hx*hx))*w2 + ((cv*ht*ht)/(2.0*hx))*w2;
+    const double k21 = +((ws*ws*ht*ht)/(hx*hx))*w2 - ((cv*ht*ht)/(2.0*hx))*w2;
+    const double k22 = +2.0 - ((2.0*ws*ws*ht*ht)/(hx*hx))*w2 + rs*ht*ht*w2;
+    const double k23 = +((ws*ws*ht*ht)/(hx*hx))*w2 + ((cv*ht*ht)/(2.0*hx))*w2;
 
-    const double p_wsws_htht__hxhx_w1__m_cv_htht__2hx_w1 = +((ws*ws*ht*ht)/(hx*hx))*w1 - ((cv*ht*ht)/(2.0*hx))*w1;
-    const double mb_m2_wsws_htht__hxhx_w1__wd_ht__2w1_dv = -1.0 - ((2.0*ws*ws*ht*ht)/(hx*hx))*w1 + 0.5*wd*ht + dv*ht*ht*w1;
-    const double p_wsws_htht__hxhx_w1__p_cv_htht__2hx_w1 = +((ws*ws*ht*ht)/(hx*hx))*w1 + ((cv*ht*ht)/(2.0*hx))*w1;
-    const double ht_ht       = ht*ht;
+    const double k31 = +((ws*ws*ht*ht)/(hx*hx))*w1 - ((cv*ht*ht)/(2.0*hx))*w1;
+    const double k32 = -1.0 - ((2.0*ws*ws*ht*ht)/(hx*hx))*w1 + 0.5*wd*ht + rs*ht*ht*w1;
+    const double k33 = +((ws*ws*ht*ht)/(hx*hx))*w1 + ((cv*ht*ht)/(2.0*hx))*w1;
+    const double ht_ht = ht*ht;
 
     const double ws2__hxhx = (ws*ws)/(hx*hx);
     const double inv__20hx = 1.0/(2.0*hx);
@@ -444,9 +444,9 @@ void IWaveEquationIBVP::implicit_calculate_D1V1_() const
 
     for (unsigned int n=0; n<=N; n++)
     {
-        ax[n] = m_wsws_htht__hxhx_w1__p_cv_htht__2hx_w1;
-        bx[n] = pb_p2_wsws_htht__hxhx_w1__wd_ht__2w1_dv;
-        cx[n] = m_wsws_htht__hxhx_w1__m_cv_htht__2hx_w1;
+        ax[n] = k11;
+        bx[n] = k12;
+        cx[n] = k13;
     }
     ax[0] = 0.0; cx[N] = 0.0;
 
@@ -497,7 +497,7 @@ void IWaveEquationIBVP::implicit_calculate_D1V1_() const
             uxx = ws2__hxhx*(u00[n+1]-2.0*u00[n]+u00[n-1]);
             ux  = inv__20hx*(u00[n+1]-u00[n-1]);
         }
-        u10[n] += (uxx - wd*firstDerivative + dv*u00[n] + cv*ux + f(sn,tn00)) * htht_05;
+        u10[n] += (uxx - wd*firstDerivative + rs*u00[n] + cv*ux + f(sn,tn00)) * htht_05;
     }
     layerInfo(u10, tn10);
 
@@ -515,13 +515,13 @@ void IWaveEquationIBVP::implicit_calculate_D1V1_() const
             sn.i = static_cast<int>(n); sn.x = n*hx;
             dx[n] = 0.0;
 
-            dx[n] += p_wsws_htht__hxhx_w2__m_cv_htht__2hx_w2 * u10[n-1];
-            dx[n] += pi_m2_wsws_htht__hxhx_w2___2_dv_htht_w2 * u10[n];
-            dx[n] += p_wsws_htht__hxhx_w2__p_cv_htht__2hx_w2 * u10[n+1];
+            dx[n] += k21 * u10[n-1];
+            dx[n] += k22 * u10[n];
+            dx[n] += k23 * u10[n+1];
 
-            dx[n] += p_wsws_htht__hxhx_w1__m_cv_htht__2hx_w1 * u00[n-1];
-            dx[n] += mb_m2_wsws_htht__hxhx_w1__wd_ht__2w1_dv * u00[n];
-            dx[n] += p_wsws_htht__hxhx_w1__p_cv_htht__2hx_w1 * u00[n+1];
+            dx[n] += k31 * u00[n-1];
+            dx[n] += k32 * u00[n];
+            dx[n] += k33 * u00[n+1];
 
             dx[n] += ht_ht*f(sn, tn10);
 
@@ -544,7 +544,7 @@ void IWaveEquationIBVP::implicit_calculate_D1V1_() const
             s = 1;
 
             u20[0] = (gamma/alpha)*value;
-            dx[1] -= m_wsws_htht__hxhx_w1__p_cv_htht__2hx_w1 * u20[0];
+            dx[1] -= k11 * u20[0];
             ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
@@ -568,16 +568,16 @@ void IWaveEquationIBVP::implicit_calculate_D1V1_() const
             s = 0;
 
             ax[0] = 0.0;
-            bx[0] = beta  * (+1.0 + ((2.0*ws*ws*ht*ht)/(hx*hx))*w1 + 0.5*wd*ht - dv*ht*ht*w1)
+            bx[0] = beta  * (+1.0 + ((2.0*ws*ws*ht*ht)/(hx*hx))*w1 + 0.5*wd*ht - rs*ht*ht*w1)
                     + alpha * (-2.0*((ws*ws*ht*ht)/(hx))*w1  + cv*ht*ht*w1);
             cx[0] = beta  * (-2.0*((ws*ws*ht*ht)/(hx*hx)) * w1);
 
             dx[0]  = 0.0;
-            dx[0] += beta  * (+2.0 - ((2.0*ws*ws*ht*ht)/(hx*hx))*w2 + dv*ht*ht*w2) * u10[0];
+            dx[0] += beta  * (+2.0 - ((2.0*ws*ws*ht*ht)/(hx*hx))*w2 + rs*ht*ht*w2) * u10[0];
             dx[0] += alpha * (+2.0*((ws*ws*ht*ht)/(hx))*w2 - cv*ht*ht*w2) * u10[0];
             dx[0] += beta  * (+2.0*((ws*ws*ht*ht)/(hx*hx)) * w2) * u10[1];
 
-            dx[0] += beta  * (-1.0 - ((2.0*ws*ws*ht*ht)/(hx*hx))*w1 + 0.5*wd*ht + dv*ht*ht*w1) * u00[0];
+            dx[0] += beta  * (-1.0 - ((2.0*ws*ws*ht*ht)/(hx*hx))*w1 + 0.5*wd*ht + rs*ht*ht*w1) * u00[0];
             dx[0] += alpha * (+2.0*((ws*ws*ht*ht)/(hx))*w1 - cv*ht*ht*w1) * u00[0];
             dx[0] += beta  * (+2.0 * ((ws*ws*ht*ht)/(hx*hx)) * w1) * u00[1];
 
@@ -605,7 +605,7 @@ void IWaveEquationIBVP::implicit_calculate_D1V1_() const
         {
             e = N-1;
             u20[N] = (gamma/alpha)*value;
-            dx[N-1] -= m_wsws_htht__hxhx_w1__m_cv_htht__2hx_w1 * u20[N];
+            dx[N-1] -= k13 * u20[N];
             cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
@@ -629,18 +629,18 @@ void IWaveEquationIBVP::implicit_calculate_D1V1_() const
             e = N;
 
             ax[N] = beta  * (-2.0*((ws*ws*ht*ht)/(hx*hx)) * w1);
-            bx[N] = beta  * (+1.0 + ((2.0*ws*ws*ht*ht)/(hx*hx))*w1 + 0.5*wd*ht - dv*ht*ht*w1)
+            bx[N] = beta  * (+1.0 + ((2.0*ws*ws*ht*ht)/(hx*hx))*w1 + 0.5*wd*ht - rs*ht*ht*w1)
                     + alpha * (2.0*((ws*ws*ht*ht)/(hx))*w1  + cv*ht*ht*w1);
             cx[N] = 0.0;
 
             dx[N]  = 0.0;
             dx[N] += beta  * (+2.0*((ws*ws*ht*ht)/(hx*hx)) * w2) * u10[N-1];
             dx[N] += alpha * (-2.0*((ws*ws*ht*ht)/(hx))*w2 - cv*ht*ht*w2) * u10[N];
-            dx[N] += beta  * (+2.0 - ((2.0*ws*ws*ht*ht)/(hx*hx))*w2 + dv*ht*ht*w2) * u10[N];
+            dx[N] += beta  * (+2.0 - ((2.0*ws*ws*ht*ht)/(hx*hx))*w2 + rs*ht*ht*w2) * u10[N];
 
             dx[N] += beta  * (+2.0 * ((ws*ws*ht*ht)/(hx*hx)) * w1) * u00[N-1];
             dx[N] += alpha * (-2.0*((ws*ws*ht*ht)/(hx))*w1 - cv*ht*ht*w1) * u00[N];
-            dx[N] += beta  * (-1.0 - ((2.0*ws*ws*ht*ht)/(hx*hx))*w1 + 0.5*wd*ht + dv*ht*ht*w1) * u00[N];
+            dx[N] += beta  * (-1.0 - ((2.0*ws*ws*ht*ht)/(hx*hx))*w1 + 0.5*wd*ht + rs*ht*ht*w1) * u00[N];
 
             dx[N] += gamma * ((2.0*ws*ws*ht*ht)/hx + cv*ht*ht) * value;
             dx[N] += beta  * (ht_ht) * f(sn,tn10);

@@ -41,11 +41,11 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //NonLinearODE1stOrderEx2::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);
 
-    WaveEquationIBVP::Main(argc, argv);
+    //WaveEquationIBVP::Main(argc, argv);
     //IPrinter::printSeperatorLine();
     //WaveEquationFBVP::Main(argc, argv);
 
-    //HeatEquationIBVP::Main(argc, argv);
+    HeatEquationIBVP::Main(argc, argv);
     //IPrinter::printSeperatorLine();
     //HeatEquationFBVP::Main(argc, argv);
 
