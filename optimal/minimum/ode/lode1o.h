@@ -53,6 +53,7 @@ public:
      * @param direction
      */
     void transferOfCondition(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const;
+    void transferOfCondition1(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const;
 
     /**
      * @brief solveInitialValueProblem

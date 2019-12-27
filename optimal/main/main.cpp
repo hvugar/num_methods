@@ -30,6 +30,23 @@
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     std::cout << "__cplusplus: " << __cplusplus << std::endl;
+    srand(time(0));
+
+//    DoubleMatrix m(5,5);
+//    Random::fillMatrix(m, 1, 5, 2);
+//    IPrinter::print(m, 5, 5, 6, 2);
+//    IPrinter::printSeperatorLine();
+//    DoubleMatrix i = m;
+//    i.inverse();
+//    IPrinter::print(i, 5, 5, 6, 2);
+//    IPrinter::printSeperatorLine();
+//    DoubleMatrix e1 = i*m;
+//    IPrinter::print(e1, 5, 5, 6, 2);
+//    IPrinter::printSeperatorLine();
+//    DoubleMatrix e2 = m*i;
+//    IPrinter::print(e2, 5, 5, 6, 2);
+//    IPrinter::printSeperatorLine();
+//    return 0;
 
     //ConjugateGradinetTest::Main(argc, argv);
 
@@ -37,7 +54,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //FirstOrderNonLinearODErEx1::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);
 
-    //LinearODE1stOrderEx1::Main(argc, argv);
+    FirstOrderLinearODEEx1::Main(argc, argv);
     //NonLinearODE1stOrderEx2::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);
 
@@ -45,7 +62,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //IPrinter::printSeperatorLine();
     //WaveEquationFBVP::Main(argc, argv);
 
-    HeatEquationIBVP::Main(argc, argv);
+    //HeatEquationIBVP::Main(argc, argv);
     //IPrinter::printSeperatorLine();
     //HeatEquationFBVP::Main(argc, argv);
 

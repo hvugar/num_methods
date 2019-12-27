@@ -24,8 +24,8 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
     C.push_back(NonLocalCondition(3, PointNodeODE(0.750, static_cast<int>(0.75*N)), DoubleMatrix(M,M,0.0)));
     C.push_back(NonLocalCondition(4, PointNodeODE(1.000, static_cast<int>(1.00*N)), DoubleMatrix(M,M,0.0)));
 
-    printf("%f %f %f %f %f\n", C[0].n.x, C[1].n.x, C[2].n.x, C[3].n.x, C[4].n.x);
-    printf("%d %d %d %d %d\n", C[0].n.i, C[1].n.i, C[2].n.i, C[3].n.i, C[4].n.i);
+    //printf("%f %f %f %f %f\n", C[0].n.x, C[1].n.x, C[2].n.x, C[3].n.x, C[4].n.x);
+    //printf("%d %d %d %d %d\n", C[0].n.i, C[1].n.i, C[2].n.i, C[3].n.i, C[4].n.i);
 
     //for (unsigned i=0; i<C.size(); i++)
     {
@@ -42,11 +42,11 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
         //IPrinter::printSeperatorLine();
     }
 
-    for (unsigned i=0; i<C.size(); i++)
-    {
-        IPrinter::printMatrix(C[i].m, C[i].m.rows(), C[i].m.cols());
-        IPrinter::printSeperatorLine();
-    }
+    //for (unsigned i=0; i<C.size(); i++)
+    //{
+    //    IPrinter::printMatrix(C[i].m, C[i].m.rows(), C[i].m.cols());
+    //    IPrinter::printSeperatorLine();
+    //}
 
     DoubleVector x000; for (unsigned int m=1; m<=M; m++) x000 << nl.x(C[0].n,m);
     DoubleVector x025; for (unsigned int m=1; m<=M; m++) x025 << nl.x(C[1].n,m);
@@ -54,12 +54,12 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
     DoubleVector x075; for (unsigned int m=1; m<=M; m++) x075 << nl.x(C[3].n,m);
     DoubleVector x100; for (unsigned int m=1; m<=M; m++) x100 << nl.x(C[4].n,m);
 
-    IPrinter::printVector(x000, nullptr, x000.length());
-    IPrinter::printVector(x025, nullptr, x025.length());
-    IPrinter::printVector(x050, nullptr, x050.length());
-    IPrinter::printVector(x075, nullptr, x075.length());
-    IPrinter::printVector(x100, nullptr, x100.length());
-    IPrinter::printSeperatorLine();
+    //IPrinter::printVector(x000, nullptr, x000.length());
+    //IPrinter::printVector(x025, nullptr, x025.length());
+    //IPrinter::printVector(x050, nullptr, x050.length());
+    //IPrinter::printVector(x075, nullptr, x075.length());
+    //IPrinter::printVector(x100, nullptr, x100.length());
+    //IPrinter::printSeperatorLine();
 
     DoubleVector d = C[0].m*x000 + C[1].m*x025 + C[2].m*x050 + C[3].m*x075 + C[4].m*x100;
     IPrinter::printVector(d, nullptr, d.length());

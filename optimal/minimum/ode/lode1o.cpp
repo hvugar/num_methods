@@ -106,11 +106,15 @@ void FirstOrderLinearODE::discritize(const std::vector<NonLocalCondition> &co, s
 void FirstOrderLinearODE::transferOfCondition(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const
 {
     if (co.size() < 2) throw ExceptionODE(1);
+
     for (unsigned int i=0; i<co.size(); i++)
     {
         const DoubleMatrix &m = co[i].m;
+
         if (!m.squareMatrix()) throw ExceptionODE(2);
+
         if (m.rows() != count()) throw ExceptionODE(3);
+
         if (d.length() != count()) throw ExceptionODE(4);
     }
 
@@ -216,7 +220,7 @@ void FirstOrderLinearODE::transferOfCondition(const std::vector<NonLocalConditio
             {
                 betta[i][j] = betta[i-1][j+1] + betta[i-1][1]*alpha[j];
             }
-            betta[i][k] = D[k+(i-1)] + betta[i-1][1]*alpha[k];
+            betta[i][k] = betta[i-1][1]*alpha[k] + D[k+(i-1)];
 
             for (unsigned int j=0; j<=k; j++) alpha[j].clear();
             delete [] alpha;
@@ -421,8 +425,92 @@ void FirstOrderLinearODE::transferOfCondition(const std::vector<NonLocalConditio
     delete [] betta;
     /************************************************************************/
 
-    delete [] D;
+//    delete [] D;
     C.clear();
+}
+
+void FirstOrderLinearODE::transferOfCondition1(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const
+{
+    const int min = dimension().min();
+    const int max = dimension().max();
+    const double h = dimension().step();
+
+    const unsigned int size = static_cast<unsigned int>(max - min + 1);
+    const unsigned int end = static_cast<unsigned int>( size-k + 1 );
+    const unsigned int sze = static_cast<unsigned int>( size - k );
+    const unsigned int M = count();
+
+    DoubleMatrix **coof = new DoubleMatrix*[end+1];
+    DoubleMatrix *alpha = new DoubleMatrix[k+1];
+    DoubleMatrix mx(M, M);
+
+    DoubleMatrix * const D = new DoubleMatrix[size+1];
+    for (unsigned int i=0; i<=size; i++) D[i].resize(M,M);
+
+    for (unsigned int i=0; i<C.size(); i++)
+    {
+        unsigned int index = static_cast<unsigned int>(C[i].n.i);
+        D[index] += C[i].m;
+    }
+
+    if (k==2)
+    {
+        //betta[i][0] = d;
+        //for (unsigned int j=1; j<=k; j++) betta[i][j] = D[j-1];
+        //
+
+        coof[0][0] = d;
+        coof[0][1] = D[0];
+        coof[0][2] = D[1];
+
+        for (int i=min-1; i<=end; i++)
+        {
+            PointNodeODE node((i-1)*h,static_cast<int>(i-1));
+
+            for (unsigned int r=0; r<M; r++)
+            {
+                for (unsigned int c=0; c<M; c++)
+                {
+                    mx[r][c] = 2.0*h*A(node, r+1, c+1);
+                }
+                mx[r][r] += 3.0;
+            }
+            mx.inverse();
+            alpha[0].resize(M, 1, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[0])[m][0] = -2.0*h*B(node,m+1); } alpha[0] = mx*alpha[0];
+            alpha[1].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[1])[m][m] = +4.0; }               alpha[1] = mx*alpha[1];
+            alpha[2].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[2])[m][m] = -1.0; }               alpha[2] = mx*alpha[2];
+
+            coof[i][0] = coof[i-1][0] - coof[i-1][1]*alpha[0];
+            coof[i][1] = coof[i-1][1]*alpha[1] + coof[i-1][2];
+            coof[i][2] = coof[i-1][1]*alpha[2] + D[k+(i-1)];
+        }
+    }
+
+    if (k==4)
+    {
+
+    }
+
+    if (k==6)
+    {
+
+    }
+
+    mx.clear();
+
+
+    unsigned int n = 0;
+    for (int i=min; i<=max; i++, n++)
+    {
+    }
+
+
+    for (unsigned int i=0; i<size; i++)
+    {
+        for (unsigned int j=0; j<k; j++) coof[i][j].clear();
+        delete [] coof[i];
+    }
+    delete [] coof;
 }
 
 void FirstOrderLinearODE::solveInitialValueProblem(DoubleVector &rv) const
