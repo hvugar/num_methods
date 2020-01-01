@@ -81,33 +81,15 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
     IPrinter::printSeperatorLine();
 
     nl.transferOfCondition(C, d, x, 2);
-    for (unsigned int m=0; m<M; m++)
-    {
-        for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.10f ", x[n][m]);
-        puts("");
-    }
-
-    nl.printNorms(x);
+    for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.10f ", x[n][m]); nl.printNorms(x);
     IPrinter::printSeperatorLine();
 
     nl.transferOfCondition(C, d, x, 4);
-    for (unsigned int m=0; m<M; m++)
-    {
-        for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.10f ", x[n][m]);
-        puts("");
-    }
-
-    nl.printNorms(x);
+    for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.10f ", x[n][m]); nl.printNorms(x);
     IPrinter::printSeperatorLine();
 
     nl.transferOfCondition(C, d, x, 6);
-    for (unsigned int m=0; m<M; m++)
-    {
-        for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.10f ", x[n][m]);
-        puts("");
-    }
-
-    nl.printNorms(x);
+    for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.10f ", x[n][m]); nl.printNorms(x);
     IPrinter::printSeperatorLine();
 }
 

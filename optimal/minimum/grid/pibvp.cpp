@@ -187,7 +187,13 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
             dx[s] += alpha * b15 * u00[s];
             dx[s] += beta  * b16 * u00[s+1];
 
+<<<<<<< .mine
+            dx[s] += gamma * (b12* +b22*value0);
+||||||| .r1625
+            dx[s] += gamma * (b12*value+b22*value0);
+=======
             dx[s] += gamma * (b17*value+b18*value0);
+>>>>>>> .r1627
             dx[s] += beta  * (ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00));
         }
 
