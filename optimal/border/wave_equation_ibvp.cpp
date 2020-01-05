@@ -1,6 +1,16 @@
 #include "wave_equation_ibvp.h"
 
-#define EXAMPLE_2D_SIMPLE_1
+#define __DIRICHLET_LEFT_
+#define __DIRICHLET_RIGHT_
+//#define __NEUMANN__
+//#define __ROBIN_LEFT__
+//#define __ROBIN_RIGHT__
+#define x2_t2
+
+const double a = +1.2;
+const double b = -0.5;
+const double c = +0.3;
+const double d = +0.4;
 
 void WaveEquationIBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -9,444 +19,69 @@ void WaveEquationIBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 #endif
 
     WaveEquationIBVP w;
-    w.setWaveSpeed(1.0);
-    w.setWaveDissipation(1.0);
-    w.setUnknownC(1.0);
-    w.setRestoration(1.0);
     w.setTimeDimension(Dimension(0.01, 0, 100));
-    w.setSpaceDimensionX(Dimension(0.01, 0, 100));
-    w.setSpaceDimensionY(Dimension(0.01, 0, 100));
+    w.setSpaceDimensionX(Dimension(0.01, 100, 200));
+    //w.setSpaceDimensionY(Dimension(0.01, 0, 100));
+
+    w.setWaveSpeed(a);//a
+    w.setWaveDissipation(d);//d
+    w.setUnknownB(b);//b
+    w.setRestoration(c);//c
 
     Benchmark bm;
     bm.tick();
-    w.explicit_calculate_D2V1();
-    //w.implicit_calculate_D1V1_();
-    IPrinter::printSeperatorLine();
+    w.implicit_calculate_D1V1();
     bm.tock();
     bm.printDuration();
 }
 
 double WaveEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition condition) const
 {
-    const double hx = _spaceDimensionX.step(); const double sigmaX = 5.0 * hx;
-    const double hy = _spaceDimensionY.step(); const double sigmaY = 5.0 * hy;
-
-    if (condition == InitialCondition::InitialValue)
-    {
-        //--------- 1D ----------//
-#ifdef EXAMPLE_1D_SIMPLE_1
-        return sn.x;
-#endif
-#ifdef EXAMPLE_1D_1
-        return sn.x*sn.x*sn.x;
-#endif
-#ifdef EXAMPLE_1D_2
-        return sn.x*sn.x*sn.x;
-#endif
-#ifdef EXAMPLE_1D_3
-        return sn.x*sn.x*sn.x;
-#endif
-#ifdef EXAMPLE_1D_4
-        return sn.x*sn.x*sn.x;
-#endif
-#ifdef EXAMPLE_1D_5
-        return 0.0;
-#endif
-#ifdef EXAMPLE_1D_6
-        return (1.0/sqrt(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)));
-#endif
-#ifdef EXAMPLE_1D_7
-        return sn.x*sn.x;
-#endif
-#ifdef EXAMPLE_1D_8
-        return sn.x*sn.x;
-#endif
-
-        //--------- 2D ----------//
-#ifdef EXAMPLE_2D_SIMPLE_1
-        return sn.x*sn.x + sn.y*sn.y;
-#endif
-#ifdef EXAMPLE_2D_1
-        return sn.x*sn.x + sn.y*sn.y;
-#endif
-#ifdef EXAMPLE_2D_2
-        return sn.x*sn.x + sn.y*sn.y;
-#endif
-        //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
-        //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
-        //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y;
-        //return 0.0;
-        //return 0.0;
-        //return (1.0/(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)+((sn.y-0.5)*(sn.y-0.5))/(2.0*sigmaY*sigmaY)));
-
-        throw std::exception();
-    }
-
-    if (condition == InitialCondition::FirstDerivative)
-    {
-        //--------- 1D ----------//
-#ifdef EXAMPLE_1D_SIMPLE_1
-        return 1.0;
-#endif
-#ifdef EXAMPLE_1D_1
-        return 1.0;
-#endif
-#ifdef EXAMPLE_1D_2
-        return 0.0;
-#endif
-#ifdef EXAMPLE_1D_3
-        return 0.0;
-#endif
-#ifdef EXAMPLE_1D_4
-        return 0.0;
-#endif
-#ifdef EXAMPLE_1D_5
-        return sin(M_PI*sn.x);
-#endif
-#ifdef EXAMPLE_1D_5
-        return (1.0/sqrt(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)));
-#endif
-#ifdef EXAMPLE_1D_6
-        return 0.0;
-#endif
-#ifdef EXAMPLE_1D_7
-        return 0.0;
-#endif
-#ifdef EXAMPLE_1D_8
-        return 1.0;
-#endif
-
-        //--------- 2D ----------//
-#ifdef EXAMPLE_2D_SIMPLE_1
-    return sn.x + sn.y;
-#endif
-#ifdef EXAMPLE_2D_1
-        return 1.0;
-#endif
-#ifdef EXAMPLE_2D_2
-        return 0.0;
-#endif
-        //return 0.0;
-        //return 0.0;
-        //return 0.0;
-        //return sin(M_PI*sn.x)*sin(M_PI*sn.y);
-        //return (1.0/(2.0*M_PI*sigmaX*sigmaX)) * exp(-(((sn.x-0.5)*(sn.x-0.5))/(2.0*sigmaX*sigmaX)+((sn.y-0.5)*(sn.y-0.5))/(2.0*sigmaY*sigmaY)));
-        //return 0.0;
-
-        throw std::exception();
-    }
-
-    return 0.0;
+    TimeNodePDE tn; tn.t = 0.0;
+    if (condition == InitialCondition::InitialValue) return U(sn, tn);
+    if (condition == InitialCondition::InitialFirstDerivative) return Udt1(sn, tn);
+    throw std::exception();
 }
 
 double WaveEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
 {
-    //--------- 1D ----------//
-#ifdef EXAMPLE_1D_SIMPLE_1
-    if ( sn.i == 0 )
+    if (sn.i == spaceDimensionX().min())
     {
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        return (sn.x+tn.t)*(condition.alpha()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
-        //return (2.0*sn.x)*(condition.beta()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
-        //return (condition.alpha()*(sn.x*sn.x+tn.t*tn.t)+condition.beta()*(2.0*sn.x))/condition.gamma();
-    }
-    else
-    {
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        return (sn.x+tn.t)*(condition.alpha()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
-        //return (3.0*sn.x*sn.x)*(condition.beta()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
-        //return (condition.alpha()*(sn.x*sn.x+tn.t*tn.t)+condition.beta()*(2.0*sn.x))/condition.gamma();
-    }
-#endif
-#ifdef EXAMPLE_1D_1
-    if ( sn.i == 0 )
-    {
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        return (sn.x*sn.x*sn.x+tn.t)*(condition.alpha()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
-        //return (2.0*sn.x)*(condition.beta()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
-        //return (condition.alpha()*(sn.x*sn.x+tn.t*tn.t)+condition.beta()*(2.0*sn.x))/condition.gamma();
-    }
-    else
-    {
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        return (sn.x*sn.x*sn.x+tn.t)*(condition.alpha()/condition.gamma());
-
-        condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
-        return (2.0*sn.x)*(condition.beta()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
-        //return (condition.alpha()*(sn.x*sn.x+tn.t*tn.t)+condition.beta()*(2.0*sn.x))/condition.gamma();
-    }
-#endif
-
-#ifdef EXAMPLE_1D_2
-    if ( sn.i == 0 )
-    {
-        //condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        //return (sn.x*sn.x*sn.x+tn.t*tn.t)*(condition.alpha()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
-        //return (3.0*sn.x*sn.x)*(condition.beta()/condition.gamma());
-
-        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
-        return (condition.alpha()*(sn.x*sn.x*sn.x+tn.t*tn.t)+condition.beta()*(3.0*sn.x*sn.x))/condition.gamma();
-    }
-    else
-    {
-        //condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        //return (sn.x*sn.x*sn.x+tn.t*tn.t)*(condition.alpha()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
-        //return (3.0*sn.x*sn.x)*(condition.beta()/condition.gamma());
-
-        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
-        return (condition.alpha()*(sn.x*sn.x*sn.x+tn.t*tn.t)+condition.beta()*(3.0*sn.x*sn.x))/condition.gamma();
-    }
-#endif
-#ifdef EXAMPLE_1D_3
-    if ( sn.i == 0 )
-    {
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        return (sn.x*sn.x*sn.x+tn.t*tn.t*tn.t)*(condition.alpha()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
-        //return (3.0*sn.x*sn.x)*(condition.beta()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
-        //return (condition.alpha()*(sn.x*sn.x*sn.x+tn.t*tn.t)+condition.beta()*(3.0*sn.x*sn.x))/condition.gamma();
-    }
-    else
-    {
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        return (sn.x*sn.x*sn.x+tn.t*tn.t*tn.t)*(condition.alpha()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
-        //return (3.0*sn.x*sn.x)*(condition.beta()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
-        //return (condition.alpha()*(sn.x*sn.x*sn.x+tn.t*tn.t)+condition.beta()*(3.0*sn.x*sn.x))/condition.gamma();
-    }
-#endif
-#ifdef EXAMPLE_1D_4
-    if ( sn.i == 0 )
-    {
+#if defined(__DIRICHLET_LEFT_)
         condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
         return U(sn, tn)*(condition.alpha()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
-        //return (3.0*sn.x*sn.x)*(condition.beta()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
-        //return (condition.alpha()*(sn.x*sn.x*sn.x+tn.t*tn.t)+condition.beta()*(3.0*sn.x*sn.x))/condition.gamma();
+#endif
+#if defined(__ROBIN_LEFT__)
+        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
+        return (condition.alpha()*U(sn, tn)+condition.beta()*Udx1(sn, tn))/condition.gamma();
+#endif
     }
-    else
+
+    if (sn.i == spaceDimensionX().max())
     {
+#if defined(__DIRICHLET_RIGHT_)
         condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
         return U(sn, tn)*(condition.alpha()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
-        //return (3.0*sn.x*sn.x)*(condition.beta()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
-        //return (condition.alpha()*(sn.x*sn.x*sn.x+tn.t*tn.t)+condition.beta()*(3.0*sn.x*sn.x))/condition.gamma();
+#endif
+#if defined(__ROBIN_RIGHT__)
+        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
+        return (condition.alpha()*U(sn, tn)+condition.beta()*Udx1(sn, tn))/condition.gamma();
+#endif
     }
-#endif
-#ifdef EXAMPLE_1D_5
-    if ( sn.i == 0 )
-    {
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, 1.0, 0.0, 0.0);
-        return 0.0;
-    }
-    else
-    {
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, 1.0, 0.0, 0.0);
-        return 0.0;
-    }
-#endif
-#ifdef EXAMPLE_1D_6
-    return 0.0;
-#endif
-#ifdef EXAMPLE_1D_7
-    if ( sn.i == 0 )
-    {
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        return (sn.x*sn.x+tn.t*tn.t)*(condition.alpha()/condition.gamma());
 
-        //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
-        //return (2.0*sn.x)*(condition.beta()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
-        //return (condition.alpha()*(sn.x*sn.x+tn.t*tn.t)+condition.beta()*(2.0*sn.x))/condition.gamma();
-    }
-    else
-    {
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        return (sn.x*sn.x+tn.t*tn.t)*(condition.alpha()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
-        //return (3.0*sn.x*sn.x)*(condition.beta()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
-        //return (condition.alpha()*(sn.x*sn.x+tn.t*tn.t)+condition.beta()*(2.0*sn.x))/condition.gamma();
-    }
-#endif
-#ifdef EXAMPLE_1D_8
-    if ( sn.i == 0 )
-    {
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        return (sn.x*sn.x+tn.t)*(condition.alpha()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
-        //return (2.0*sn.x)*(condition.beta()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
-        //return (condition.alpha()*(sn.x*sn.x+tn.t*tn.t)+condition.beta()*(2.0*sn.x))/condition.gamma();
-    }
-    else
-    {
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        return (sn.x*sn.x+tn.t)*(condition.alpha()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
-        //return (3.0*sn.x*sn.x)*(condition.beta()/condition.gamma());
-
-        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +1.0, +1.0, +1.0);
-        //return (condition.alpha()*(sn.x*sn.x+tn.t*tn.t)+condition.beta()*(2.0*sn.x))/condition.gamma();
-    }
-#endif
-
-    //--------- 2D ----------//
-#ifdef EXAMPLE_2D_SIMPLE_1
-    return sn.x + sn.y + tn.t;
-#endif
-#ifdef EXAMPLE_2D_1
-    return sn.x*sn.x + sn.y*sn.y + tn.t;
-#endif
-#ifdef EXAMPLE_2D_2
-    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-    return (sn.x*sn.x + sn.y*sn.y + tn.t*tn.t)*(condition.alpha()/condition.gamma());
-#endif
-    //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t*tn.t;
-    //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t*tn.t*tn.t;
-    //return sn.x*sn.x*sn.x + sn.y*sn.y*sn.y + tn.t*tn.t*tn.t*tn.t;
-    //return 0.0;
-    //return 0.0;
-    //return 0.0;
+    throw std::exception();
 }
 
 double WaveEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
-    const double ws = waveSpeed();
-    const double wd = waveDissipation();
-    const double uc = unknownC();
-    const double rs = restoration();
+    const double a = waveSpeed();//ws
+    const double b = unknownB();//wd
+    const double c = restoration();//rs
+    const double d = waveDissipation();//wd
 
-    //--------- 1D ----------//
-#ifdef EXAMPLE_1D_SIMPLE_1
-    return 0.0 + 1.0*wd - 0.0*ws*ws - uc*(1.0) - rs*U(sn, tn);
+#if defined (x1_t1) || defined (x2_t1) || defined (x3_t1) || defined (x1_t2) || defined (x2_t2) || defined (x3_t2) || defined (x1_t3) || defined (x2_t3) || defined (x3_t3)
+    return Udt2(sn,tn)+d*Udt1(sn,tn)-a*a*Udx2(sn,tn)-b*Udx1(sn,tn)-c*U(sn,tn);
 #endif
-#ifdef EXAMPLE_1D_1
-    return 0.0 - 6.0*a*a*sn.x + 1.0*_waveDissipation;
-#endif
-#ifdef EXAMPLE_1D_2
-    return 2.0 - 6.0*ws*ws*sn.x + 2.0*wd*tn.t;
-#endif
-#ifdef EXAMPLE_1D_3
-    return 6.0*tn.t - 6.0*a*a*sn.x + 3.0*_waveDissipation*tn.t*tn.t;
-#endif
-#ifdef EXAMPLE_1D_4
-    return 12.0*tn.t*tn.t - 6.0*a*a*sn.x + 4.0*tn.t*tn.t*tn.t*_waveDissipation;
-#endif
-#ifdef EXAMPLE_1D_5
-    return 0.0;
-#endif
-#ifdef EXAMPLE_1D_6
-    return 0.0;
-#endif
-#ifdef EXAMPLE_1D_7
-    return 2.0 + 2.0*wd*tn.t - 2.0*ws*ws - uc*(2.0*sn.x) - rs*U(sn, tn);
-#endif
-#ifdef EXAMPLE_1D_8
-    return 0.0 + wd - 2.0*ws*ws - uc*(2.0*sn.x) - rs*U(sn, tn);
-#endif
-
-    //--------- 2D ----------//
-#ifdef EXAMPLE_2D_SIMPLE_1
-    return sn.x + sn.y + tn.t;
-#endif
-#ifdef EXAMPLE_2D_1
-    return 0.0 - (a*a)*(2.0+2.0);
-#endif
-#ifdef EXAMPLE_2D_2
-    return 2.0 - 4.0*a*a + 2.0*tn.t*alpha;
-#endif
-    //return 2.0 - 6.0*a*a*(sn.x+sn.y) + 2.0*alpha*tn.t;
-    //return 6.0*tn.t - 6.0*a*a*(sn.x+sn.y) + 3.0*alpha*tn.t*tn.t;
-    //return 12.0*tn.t*tn.t - 6.0*a*a*(sn.x+sn.y) + 4.0*alpha*tn.t*tn.t*tn.t;
-    //return 0.0;
-    //return 0.0;
-    //return 0.0;
-}
-
-double WaveEquationIBVP::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
-{
-    //--------- 1D ----------//
-#ifdef EXAMPLE_1D_SIMPLE_1
-    return sn.x + tn.t;
-#endif
-#ifdef EXAMPLE_1D_1
-    return sn.x*sn.x*sn.x + tn.t;
-#endif
-#ifdef EXAMPLE_1D_2
-    return sn.x*sn.x*sn.x + tn.t*tn.t;
-#endif
-#ifdef EXAMPLE_1D_3
-    return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t;
-#endif
-#ifdef EXAMPLE_1D_4
-    return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t*tn.t;
-#endif
-#ifdef EXAMPLE_1D_5
-    return 0.0;
-#endif
-#ifdef EXAMPLE_1D_6
-    return 0.0;
-#endif
-#ifdef EXAMPLE_1D_7
-    return sn.x*sn.x + tn.t*tn.t;
-#endif
-#ifdef EXAMPLE_1D_8
-    return sn.x*sn.x + tn.t;
-#endif
-
-    //--------- 2D ----------//
-#ifdef EXAMPLE_2D_SIMPLE_1
-    return sn.x + sn.y + tn.t;
-#endif
-#ifdef EXAMPLE_2D_1
-    return 0.0 - (a*a)*(2.0+2.0);
-#endif
-#ifdef EXAMPLE_2D_2
-    return 2.0 - 4.0*a*a + 2.0*tn.t*alpha;
-#endif
-    //return 2.0 - 6.0*a*a*(sn.x+sn.y) + 2.0*alpha*tn.t;
-    //return 6.0*tn.t - 6.0*a*a*(sn.x+sn.y) + 3.0*alpha*tn.t*tn.t;
-    //return 12.0*tn.t*tn.t - 6.0*a*a*(sn.x+sn.y) + 4.0*alpha*tn.t*tn.t*tn.t;
-    //return 0.0;
-    //return 0.0;
-    //return 0.0;
 }
 
 void WaveEquationIBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) const
@@ -473,7 +108,7 @@ void WaveEquationIBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) c
         printf("norm: %.10f max: %.10f\n", sqrt(norm), max);
     }
 
-//    if (tn.i == 0 || tn.i == 1 || tn.i == 2 || tn.i == 2000) IPrinter::printVector(u);
+    //    if (tn.i == 0 || tn.i == 1 || tn.i == 2 || tn.i == 2000) IPrinter::printVector(u);
 
 #ifdef USE_LIB_IMAGING1
     QPixmap pxm;
@@ -600,7 +235,7 @@ void WaveEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
                     sn.i = static_cast<int>(n); sn.x = n*hx;
                     sn.j = static_cast<int>(m); sn.y = m*hy;
                     _u1[m][n] = initial(sn, InitialCondition::InitialValue);
-                    _ut[m][n] = initial(sn, InitialCondition::FirstDerivative);
+                    _ut[m][n] = initial(sn, InitialCondition::InitialFirstDerivative);
                 }
             }
             //printf("%5d %.10f %.10f %.10f\n", ln, integralUP(u), integralUK(u), integralUP(u)+integralUK(u));
@@ -662,6 +297,94 @@ void WaveEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
     //    visualizeMatrixHeat(u10, min, max, pxm, 0, 0);
     //    pxm.save(QString(filename1), "PNG");
     //}
+}
+
+double WaveEquationIBVP::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+#if defined( x1_t1 )
+    return sn.x + tn.t;
+#elif defined( x1_t2 )
+    return sn.x + tn.t*tn.t;
+#elif defined( x1_t3 )
+    return sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x2_t1 )
+    return sn.x*sn.x + tn.t;
+#elif defined( x2_t2 )
+    return sn.x*sn.x + tn.t*tn.t;
+#elif defined( x2_t3 )
+    return sn.x*sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x3_t1 )
+    return sn.x*sn.x*sn.x + tn.t;
+#elif defined( x3_t2 )
+    return sn.x*sn.x*sn.x + tn.t*tn.t;
+#elif defined( x3_t3 )
+    return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t;
+#endif
+
+    //--------- 2D ----------//
+#ifdef EXAMPLE_2D_SIMPLE_1
+    return sn.x + sn.y + tn.t;
+#endif
+#ifdef EXAMPLE_2D_1
+    return 0.0 - (a*a)*(2.0+2.0);
+#endif
+#ifdef EXAMPLE_2D_2
+    return 2.0 - 4.0*a*a + 2.0*tn.t*alpha;
+#endif
+    //return 2.0 - 6.0*a*a*(sn.x+sn.y) + 2.0*alpha*tn.t;
+    //return 6.0*tn.t - 6.0*a*a*(sn.x+sn.y) + 3.0*alpha*tn.t*tn.t;
+    //return 12.0*tn.t*tn.t - 6.0*a*a*(sn.x+sn.y) + 4.0*alpha*tn.t*tn.t*tn.t;
+    //return 0.0;
+    //return 0.0;
+    //return 0.0;
+}
+
+double WaveEquationIBVP::Udt1(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+#if defined( x1_t1 ) ||  defined( x2_t1 ) || defined( x3_t1 )
+    return 1.0;
+#elif defined( x1_t2 ) || defined( x2_t2 ) || defined( x3_t2 )
+    return 2.0*tn.t;
+#elif defined( x1_t3 ) || defined( x2_t3 ) || defined( x3_t3 )
+    return 3.0*tn.t*tn.t;
+#endif
+}
+
+double WaveEquationIBVP::Udt2(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+#if defined( x1_t1 ) ||  defined( x2_t1 ) || defined( x3_t1 )
+    return 0.0;
+#elif defined( x1_t2 ) || defined( x2_t2 ) || defined( x3_t2 )
+    return 2.0;
+#elif defined( x1_t3 ) || defined( x2_t3 ) || defined( x3_t3 )
+    return 6.0*tn.t;
+#endif
+}
+
+double WaveEquationIBVP::Udx1(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+#if defined( x1_t1 ) || defined( x1_t2 ) || defined( x1_t3 )
+    return 1.0;
+#elif defined( x2_t1 ) || defined( x2_t2 ) || defined( x2_t3 )
+    return 2.0*sn.x;
+#elif defined( x3_t1 ) || defined( x3_t2 ) ||  defined( x3_t3 )
+    return 3.0*sn.x*sn.x;
+#endif
+}
+
+double WaveEquationIBVP::Udx2(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+#if defined( x1_t1 ) || defined( x1_t2 ) || defined( x1_t3 )
+    return 0.0;
+#elif defined( x2_t1 ) || defined( x2_t2 ) || defined( x2_t3 )
+    return 2.0;
+#elif defined( x3_t1 ) || defined( x3_t2 ) ||  defined( x3_t3 )
+    return 6.0*sn.x;
+#endif
 }
 
 void WaveEquationIBVP::saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
@@ -805,19 +528,83 @@ double WaveEquationIBVP::integralUK(const DoubleMatrix &) const
 
 void WaveEquationFBVP::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
 {
-    WaveEquationFBVP chibvp;
-    chibvp.setWaveSpeed(1.0);
-    chibvp.setWaveDissipation(0.1);
-    chibvp.setTimeDimension(Dimension(0.005, 0, 200));
-    chibvp.setSpaceDimensionX(Dimension(0.01, 0, 100));
-    chibvp.setSpaceDimensionY(Dimension(0.01, 0, 100));
+#ifdef USE_LIB_IMAGING
+    QGuiApplication app(argc, argv);
+#endif
+
+    WaveEquationFBVP w;
+    w.setTimeDimension(Dimension(0.01, 0, 100));
+    w.setSpaceDimensionX(Dimension(0.01, 100, 200));
+    //w.setSpaceDimensionY(Dimension(0.01, 0, 100));
+
+    w.setWaveSpeed(a);//a
+    w.setWaveDissipation(d);//d
+    w.setUnknownB(b);//b
+    w.setRestoration(c);//c
+
 
     Benchmark bm;
     bm.tick();
-    chibvp.explicit_calculate_D2V1();
-    IPrinter::printSeperatorLine();
+    w.implicit_calculate_D1V1();
     bm.tock();
     bm.printDuration();
+}
+
+double WaveEquationFBVP::final(const SpaceNodePDE &sn, FinalCondition condition) const
+{
+    TimeNodePDE tn; tn.t = timeDimension().max()*timeDimension().step();
+    if (condition == FinalCondition::FinalValue) return U(sn, tn);
+    if (condition == FinalCondition::FinalFirstDerivative) return Udt1(sn, tn);
+    throw std::exception();
+}
+
+double WaveEquationFBVP::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM, BoundaryConditionPDE &condition UNUSED_PARAM) const
+{
+    if (sn.i == spaceDimensionX().min())
+    {
+#if defined(__DIRICHLET_LEFT_)
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+        return U(sn, tn)*(condition.alpha()/condition.gamma());
+#endif
+#if defined(__ROBIN_LEFT__)
+        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
+        return (condition.alpha()*U(sn, tn)+condition.beta()*Udx1(sn, tn))/condition.gamma();
+#endif
+    }
+
+    if (sn.i == spaceDimensionX().max())
+    {
+#if defined(__DIRICHLET_RIGHT_)
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+        return U(sn, tn)*(condition.alpha()/condition.gamma());
+#endif
+#if defined(__ROBIN_RIGHT__)
+        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
+        return (condition.alpha()*U(sn, tn)+condition.beta()*Udx1(sn, tn))/condition.gamma();
+#endif
+    }
+
+    throw std::exception();
+}
+
+double WaveEquationFBVP::f(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
+{
+    const double a = waveSpeed();//ws
+    const double b = unknownB();//wd
+    const double c = restoration();//rs
+    const double d = waveDissipation();//wd
+
+#if defined (x1_t1) || defined (x2_t1) || defined (x3_t1) || defined (x1_t2) || defined (x2_t2) || defined (x3_t2) || defined (x1_t3) || defined (x2_t3) || defined (x3_t3)
+    return Udt2(sn,tn)+d*Udt1(sn,tn)-a*a*Udx2(sn,tn)-b*Udx1(sn,tn)-c*U(sn,tn);
+#endif
+}
+
+void WaveEquationFBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) const
+{
+    C_UNUSED(u);
+    C_UNUSED(tn);
+
+    IPrinter::printVector(u);
 }
 
 void WaveEquationFBVP::layerInfo(const DoubleMatrix& p, const TimeNodePDE& tn) const
@@ -829,28 +616,86 @@ void WaveEquationFBVP::layerInfo(const DoubleMatrix& p, const TimeNodePDE& tn) c
     }
 }
 
-double WaveEquationFBVP::final(const SpaceNodePDE &sn UNUSED_PARAM, FinalCondition condition) const
+double WaveEquationFBVP::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
-    if (condition == FinalCondition::FinalValue)
-    {
-        return sn.x*sn.x + sn.y*sn.y + 1.0;
-    }
-    else
-    {
-        return 2.0;
-    }
+#if defined( x1_t1 )
+    return sn.x + tn.t;
+#elif defined( x1_t2 )
+    return sn.x + tn.t*tn.t;
+#elif defined( x1_t3 )
+    return sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x2_t1 )
+    return sn.x*sn.x + tn.t;
+#elif defined( x2_t2 )
+    return sn.x*sn.x + tn.t*tn.t;
+#elif defined( x2_t3 )
+    return sn.x*sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x3_t1 )
+    return sn.x*sn.x*sn.x + tn.t;
+#elif defined( x3_t2 )
+    return sn.x*sn.x*sn.x + tn.t*tn.t;
+#elif defined( x3_t3 )
+    return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t;
+#endif
+
+    //--------- 2D ----------//
+#ifdef EXAMPLE_2D_SIMPLE_1
+    return sn.x + sn.y + tn.t;
+#endif
+#ifdef EXAMPLE_2D_1
+    return 0.0 - (a*a)*(2.0+2.0);
+#endif
+#ifdef EXAMPLE_2D_2
+    return 2.0 - 4.0*a*a + 2.0*tn.t*alpha;
+#endif
 }
 
-double WaveEquationFBVP::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM, BoundaryConditionPDE &condition UNUSED_PARAM) const
+double WaveEquationFBVP::Udt1(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
-    return sn.x*sn.x + sn.y*sn.y + tn.t*tn.t;
+#if defined( x1_t1 ) ||  defined( x2_t1 ) || defined( x3_t1 )
+    return 1.0;
+#elif defined( x1_t2 ) || defined( x2_t2 ) || defined( x3_t2 )
+    return 2.0*tn.t;
+#elif defined( x1_t3 ) || defined( x2_t3 ) || defined( x3_t3 )
+    return 3.0*tn.t*tn.t;
+#endif
 }
 
-double WaveEquationFBVP::f(const SpaceNodePDE &sn UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
+double WaveEquationFBVP::Udt2(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
-    double a = waveSpeed();
-    double alpha = waveDissipation();
-    return 2.0 - 4.0*a*a - 2.0*tn.t*alpha;
+#if defined( x1_t1 ) ||  defined( x2_t1 ) || defined( x3_t1 )
+    return 0.0;
+#elif defined( x1_t2 ) || defined( x2_t2 ) || defined( x3_t2 )
+    return 2.0;
+#elif defined( x1_t3 ) || defined( x2_t3 ) || defined( x3_t3 )
+    return 6.0*tn.t;
+#endif
+}
+
+double WaveEquationFBVP::Udx1(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+#if defined( x1_t1 ) || defined( x1_t2 ) || defined( x1_t3 )
+    return 1.0;
+#elif defined( x2_t1 ) || defined( x2_t2 ) || defined( x2_t3 )
+    return 2.0*sn.x;
+#elif defined( x3_t1 ) || defined( x3_t2 ) ||  defined( x3_t3 )
+    return 3.0*sn.x*sn.x;
+#endif
+}
+
+double WaveEquationFBVP::Udx2(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+#if defined( x1_t1 ) || defined( x1_t2 ) || defined( x1_t3 )
+    return 0.0;
+#elif defined( x2_t1 ) || defined( x2_t2 ) || defined( x2_t3 )
+    return 2.0;
+#elif defined( x3_t1 ) || defined( x3_t2 ) ||  defined( x3_t3 )
+    return 6.0*sn.x;
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

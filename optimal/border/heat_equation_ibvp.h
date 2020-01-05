@@ -45,7 +45,7 @@ class BORDERSHARED_EXPORT HeatEquationFBVP : public IHeatEquationFBVP
 public:
     static void Main(int argc, char *argv[]);
 
-    HeatEquationFBVP(const Dimension &timeDimension, const Dimension &spaceDimensionX, const Dimension &spaceDimensionY);
+    HeatEquationFBVP();
 
 protected:
     virtual double final(const SpaceNodePDE &sn, FinalCondition condition) const;

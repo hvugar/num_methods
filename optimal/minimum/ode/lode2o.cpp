@@ -14,7 +14,7 @@ void SecondOrderLinearODE::solveInitialValueProblem(DoubleVector &rv) const
     rv.resize(size+1);
 
     double value = initial(InitialCondition::InitialValue);
-    double derivative = initial(InitialCondition::FirstDerivative);
+    double derivative = initial(InitialCondition::InitialFirstDerivative);
 
     PointNodeODE node0(min*h, min);
     rv[0] = value;

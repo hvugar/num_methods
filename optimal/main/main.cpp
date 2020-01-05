@@ -22,6 +22,7 @@
 #include "../problem2H/problem2h_solver.h"
 
 #include "../problem1P/problem1p_solver.h"
+#include "../problem1H/problem1h_solver.h"
 
 #include "test/delta_grid_2d_ext1.h"
 #include "test/nonlinear_equation_ex1.h"
@@ -46,11 +47,13 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //IPrinter::printSeperatorLine();
     //WaveEquationFBVP::Main(argc, argv);
 
-    HeatEquationIBVP::Main(argc, argv);
+    //HeatEquationIBVP::Main(argc, argv);
     //IPrinter::printSeperatorLine();
     //HeatEquationFBVP::Main(argc, argv);
+    //IPrinter::printSeperatorLine();
 
     //p1p::ProblemSolver::Main(argc, argv);
+    h1p::ProblemSolver::Main(argc, argv);
 
     return 0;
 
@@ -69,7 +72,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //IPrinter::printSeperatorLine();
     //ConjugateCC1IHyperbolicIBVP1::Main(argc, argv);
-    h0p::ProblemSolver::Main(argc, argv);
+    //h0p::ProblemSolver::Main(argc, argv);
     //Problem1HDirichlet1::Main(argc, argv);
 
     //Problem2HSolver::Main(argc, argv);

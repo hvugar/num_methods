@@ -73,6 +73,9 @@ win32-g++ {
         INCLUDEPATH += ../problem0H
         LIBS += -L../bin -lproblem0H
 
+        INCLUDEPATH += ../problem1H
+        LIBS += -L../bin -lproblem1H
+
 #        INCLUDEPATH += ../problem2H
 #        LIBS += -L../bin -lproblem2H
 
@@ -95,6 +98,9 @@ win32-msvc* {
 
         INCLUDEPATH += ../problem0H
         LIBS += ../bin/problem0H.lib
+
+        INCLUDEPATH += ../problem1H
+        LIBS += ../bin/problem1H.lib
 
         #INCLUDEPATH += ../problem2H
         #LIBS += ../bin/problem2H.lib
@@ -126,6 +132,9 @@ macx-clang{
 
 #        INCLUDEPATH += ../problem2H
 #        LIBS += -L../bin -lproblem2H
+
+        INCLUDEPATH += ../problem1H
+        LIBS += -L../bin -lproblem1H
 
         INCLUDEPATH += ../problem1P
         LIBS += -L../bin -lproblem1P

@@ -24,8 +24,10 @@ void ProblemSolver::Main(int argc, char* argv[])
     solver.forward.showLayers = false;
     solver.backward.showLayers = false;
     IGradient::Gradient(&solver, 0.01, x, ng);
-    //IPrinter::printVector(ag);
-    //IPrinter::printVector(ng);
+    IPrinter::printVector(ag);
+    IPrinter::printVector(ng);
+    IPrinter::printSeperatorLine();
+    ag[0]   = ng[0]   = 0.0;
     ag[100] = ng[100] = 0.0;
     IPrinter::printVector(ag.EuclideanNormalize());
     IPrinter::printVector(ng.EuclideanNormalize());
@@ -39,17 +41,17 @@ ProblemSolver::ProblemSolver(const Dimension &timeDimension, const Dimension &sp
     params.initialTemperature = 0.0;
     params.environmentTemperature = 0.5;
     params.thermalDiffusivity = 1.0;
-    params.thermalConductivity0 = 0.0;
+    params.thermalConductivity0 = 0.01;
     params.thermalConductivity1 = 0.1;
     params.thermalConductivity2 = 0.001;
 
     forward.setThermalDiffusivity(params.thermalDiffusivity);
-    forward.setThermalConductivity(params.thermalConductivity0);
-    forward.setThermalConvection(0.0);
+    forward.setThermalConductivity(0.0);
+    forward.setThermalConvection(-params.thermalConductivity0);
 
-    backward.setThermalDiffusivity(params.thermalDiffusivity);
-    backward.setThermalConductivity(params.thermalConductivity0);
-    backward.setThermalConvection(0.0);
+    backward.setThermalDiffusivity(-params.thermalDiffusivity);
+    backward.setThermalConductivity(0.0);
+    backward.setThermalConvection(params.thermalConductivity0);
 
     forward.solver = this;
     backward.solver = this;
@@ -133,16 +135,13 @@ void HeatEquationIBVP::layerInfo(const DoubleVector &u, const TimeNodePDE &tn) c
 { return solver->frw_layerInfo(u, tn); }
 
 double ProblemSolver::frw_initial(const SpaceNodePDE &sn, InitialCondition condition) const
-//double HeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition condition) const
 {
     C_UNUSED(sn);
     C_UNUSED(condition);
     return params.initialTemperature;
-    //return solver->params.initialTemperature;
 }
 
 double ProblemSolver::frw_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
-//double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
 {
     C_UNUSED(sn);
     C_UNUSED(tn);
@@ -172,16 +171,13 @@ double ProblemSolver::frw_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn
 }
 
 double ProblemSolver::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
-//double HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     C_UNUSED(sn);
     C_UNUSED(tn);
-    //const EquationParameters &params = solver->params;
     return params.thermalConductivity0 * params.environmentTemperature;
 }
 
 void ProblemSolver::frw_layerInfo(const DoubleVector &u, const TimeNodePDE &tn) const
-//void HeatEquationIBVP::layerInfo(const DoubleVector &u, const TimeNodePDE &tn) const
 {
     C_UNUSED(u);
     C_UNUSED(tn);
@@ -214,18 +210,14 @@ void HeatEquationFBVP::layerInfo(const DoubleVector &p, const TimeNodePDE &tn) c
 { return solver->bcw_layerInfo(p, tn); }
 
 double ProblemSolver::bcw_final(const SpaceNodePDE &sn, FinalCondition condition) const
-//double HeatEquationFBVP::final(const SpaceNodePDE &sn, FinalCondition condition) const
 {
     C_UNUSED(sn);
     C_UNUSED(condition);
-    //auto &U = solver->U;
-    //auto &V = solver->V;
     unsigned int i = static_cast<unsigned int>(sn.i);
     return -2.0*(U[i] - V[i]);
 }
 
 double ProblemSolver::bcw_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
-//double HeatEquationFBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
 {
     C_UNUSED(sn);
     C_UNUSED(tn);
@@ -255,7 +247,6 @@ double ProblemSolver::bcw_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn
 }
 
 double ProblemSolver::bcw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
-//double HeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
     C_UNUSED(sn);
     C_UNUSED(tn);
@@ -263,7 +254,6 @@ double ProblemSolver::bcw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 }
 
 void ProblemSolver::bcw_layerInfo(const DoubleVector &p, const TimeNodePDE &tn) const
-//void HeatEquationFBVP::layerInfo(const DoubleVector &p, const TimeNodePDE &tn) const
 {
     C_UNUSED(p);
     C_UNUSED(tn);

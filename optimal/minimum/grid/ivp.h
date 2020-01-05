@@ -6,7 +6,7 @@
 enum class InitialCondition
 {
     InitialValue = 0,
-    FirstDerivative = 1,
+    InitialFirstDerivative = 1,
     SecondDerivative = 2
 };
 

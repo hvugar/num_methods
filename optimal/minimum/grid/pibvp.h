@@ -58,6 +58,7 @@ public:
 
     void explicit_calculate_D1V1() const;
     void implicit_calculate_D1V1() const;
+    void implicit_calculate_D1V1_1() const;
 
     void explicit_calculate_D2V1() const;
     void implicit_calculate_D2V1() const;
@@ -86,14 +87,15 @@ public:
     virtual double thermalDiffusivity() const;
     virtual void setThermalDiffusivity(double thermalDiffusivity);
 
-    virtual double thermalConductivity() const;
-    virtual void setThermalConductivity(double thermalConductivity);
-
     virtual double thermalConvection() const;
     virtual void setThermalConvection(double thermalConvection);
 
+    virtual double thermalConductivity() const;
+    virtual void setThermalConductivity(double thermalConductivity);
+
     void explicit_calculate_D1V1() const;
     void implicit_calculate_D1V1() const;
+    void implicit_calculate_D1V1_1() const;
 
     void explicit_calculate_D2V1() const;
     void implicit_calculate_D2V1() const;
