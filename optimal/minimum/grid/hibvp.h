@@ -79,14 +79,10 @@ protected:
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//
 
-class KleinGordonEquation : public IHyperbolicIBVP {};
-
-//------------------------------------------------------------------------------------------------------------------------------------------------------//
-
 class MINIMUMSHARED_EXPORT IWaveEquationFBVP : public IHyperbolicFBVP
 {
 public:
-    explicit IWaveEquationFBVP(double waveSpeed = 1.0, double waveDissipation = 0.0);
+    explicit IWaveEquationFBVP(double waveSpeed = 1.0, double waveDissipation = 0.0, double unknownB = 0.0, double restoration = 0.0);
     IWaveEquationFBVP(const IWaveEquationFBVP &);
     IWaveEquationFBVP& operator=(const IWaveEquationFBVP &);
     virtual ~IWaveEquationFBVP();

@@ -834,11 +834,11 @@ double IWaveEquationIBVP::weight() const { return 0.25; }
 
 //--------------------------------------------------------------------------------------------------------------//
 
-IWaveEquationFBVP::IWaveEquationFBVP(double waveSpeed, double waveDissipation) : IHyperbolicFBVP(),
-    _waveSpeed(waveSpeed), _waveDissipation(waveDissipation) {}
+IWaveEquationFBVP::IWaveEquationFBVP(double waveSpeed, double waveDissipation, double unknownB, double restoration) : IHyperbolicFBVP(),
+    _waveSpeed(waveSpeed), _waveDissipation(waveDissipation), _unknownB(unknownB), _restoration(restoration) {}
 
 IWaveEquationFBVP::IWaveEquationFBVP(const IWaveEquationFBVP &other) : IHyperbolicFBVP(other),
-    _waveSpeed(other._waveSpeed), _waveDissipation(other._waveDissipation) {}
+    _waveSpeed(other._waveSpeed), _waveDissipation(other._waveDissipation), _unknownB(other._unknownB), _restoration(other._restoration) {}
 
 IWaveEquationFBVP& IWaveEquationFBVP::operator=(const IWaveEquationFBVP &other)
 {
@@ -846,6 +846,8 @@ IWaveEquationFBVP& IWaveEquationFBVP::operator=(const IWaveEquationFBVP &other)
 
     this->_waveSpeed = other._waveSpeed;
     this->_waveDissipation = other._waveDissipation;
+    this->_unknownB = other._unknownB;
+    this->_restoration = other._restoration;
     return *this;
 }
 

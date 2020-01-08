@@ -70,8 +70,8 @@ protected:
 
     virtual double weight() const;  //
     double _thermalDiffusivity;     // температуропроводность
-    double _thermalConvection;      //
     double _thermalConductivity;    // теплопроводность - heat transfer coefficient
+    double _thermalConvection;      //
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -107,11 +107,9 @@ protected:
 
     virtual double weight() const;  //
     double _thermalDiffusivity;     // температуропроводность
-    double _thermalConductivity;    // теплопроводность
+    double _thermalConductivity;    // теплопроводность - heat transfer coefficient
     double _thermalConvection;      //
 };
-
-//------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//
 
