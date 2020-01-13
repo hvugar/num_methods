@@ -4,7 +4,7 @@
 //#define __NEUMANN__
 //#define __ROBIN__
 //#define x3_t2
-#define x2_y2_t2
+#define x1_y1_t1
 
 void HeatEquationIBVP::Main(int argc, char *argv[])
 {
@@ -20,8 +20,8 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
     h.setSpaceDimensionY(Dimension(0.01, 100, 200));
 
     h.setThermalDiffusivity(1.2);
-    h.setThermalConductivity(-0.6);
-    h.setThermalConvection(-0.8);
+    //h.setThermalConductivity(-0.6);
+    //h.setThermalConvection(-0.8);
 
 //    Benchmark bm;
 //    bm.tick();
@@ -52,8 +52,14 @@ double HeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition) const
 
 double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
 {
-    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-    return U(sn, tn)*(condition.alpha()/condition.gamma());
+#if defined (x1_y1_t1) || defined ( x2_y2_t2 ) || defined ( x2_y2_t1 )
+    //condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+    //return U(sn, tn)*(condition.alpha()/condition.gamma());
+
+    condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
+    return (condition.alpha()*U(sn, tn)+condition.beta()*Un(sn,tn))/condition.gamma();
+#else
+
 
     const int min = spaceDimensionX().min();
     const int max = spaceDimensionX().max();
@@ -125,12 +131,15 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
 #endif
 #endif
     }
+#endif
 }
 
 double HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
-    const double a = thermalDiffusivity();
-    const double b = thermalConductivity();
+    const double a1 = thermalDiffusivity();
+    const double a2 = thermalDiffusivity();
+    const double b1 = thermalConductivity();
+    const double b2 = thermalConductivity();
     const double c = thermalConvection();
 
 #if defined( x1_t1 )
@@ -157,11 +166,8 @@ double HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     return 3.0*tn.t*tn.t - 6.0*td*sn.x + tc*U(sn,tn) - 3.0*tv*sn.x*sn.x;
 #endif
 
-#if defined( x2_y2_t1 )
-    return 1.0 - 2.0*a - 2.0*a - 2.0*b*sn.x - 2.0*b*sn.y - c*U(sn,tn);
-#endif
-#if defined( x2_y2_t2 )
-    return 2.0*tn.t - 2.0*a - 2.0*a - 2.0*b*sn.x - 2.0*b*sn.y - c*U(sn,tn);
+#if defined (x1_y1_t1) || defined( x2_y2_t2 ) || defined( x2_y2_t1 )
+    return Ut(sn,tn) - (a1*Uxx(sn,tn) + a2*Uyy(sn,tn) + b1*Ux(sn,tn) + b2*Uy(sn,tn) + c*U(sn,tn));
 #endif
 }
 
@@ -191,11 +197,230 @@ double HeatEquationIBVP::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t;
 #endif
 
+#if defined( x1_y1_t1 )
+    return sn.x + sn.y + tn.t;
+#endif
 #if defined( x2_y2_t1 )
     return sn.x*sn.x + sn.y*sn.y + tn.t;
 #endif
 #if defined( x2_y2_t2 )
     return sn.x*sn.x + sn.y*sn.y + tn.t*tn.t;
+#endif
+}
+
+double HeatEquationIBVP::Ut(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+#if defined( x1_t1 )
+    return sn.x + tn.t;
+#elif defined( x1_t2 )
+    return sn.x + tn.t*tn.t;
+#elif defined( x1_t3 )
+    return sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x2_t1 )
+    return sn.x*sn.x + tn.t;
+#elif defined( x2_t2 )
+    return sn.x*sn.x + tn.t*tn.t;
+#elif defined( x2_t3 )
+    return sn.x*sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x3_t1 )
+    return sn.x*sn.x*sn.x + tn.t;
+#elif defined( x3_t2 )
+    return sn.x*sn.x*sn.x + tn.t*tn.t;
+#elif defined( x3_t3 )
+    return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x1_y1_t1 ) || defined( x2_y2_t1 )
+    return 1.0;
+#endif
+#if defined( x2_y2_t2 )
+    return 2.0*tn.t;
+#endif
+}
+
+double HeatEquationIBVP::Uxx(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+#if defined( x1_t1 )
+    return sn.x + tn.t;
+#elif defined( x1_t2 )
+    return sn.x + tn.t*tn.t;
+#elif defined( x1_t3 )
+    return sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x2_t1 )
+    return sn.x*sn.x + tn.t;
+#elif defined( x2_t2 )
+    return sn.x*sn.x + tn.t*tn.t;
+#elif defined( x2_t3 )
+    return sn.x*sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x3_t1 )
+    return sn.x*sn.x*sn.x + tn.t;
+#elif defined( x3_t2 )
+    return sn.x*sn.x*sn.x + tn.t*tn.t;
+#elif defined( x3_t3 )
+    return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x1_y1_t1 )
+    return 0.0;
+#endif
+#if defined( x2_y2_t1 ) || defined( x2_y2_t2 )
+    return 2.0;
+#endif
+}
+
+double HeatEquationIBVP::Uyy(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+#if defined( x1_t1 )
+    return sn.x + tn.t;
+#elif defined( x1_t2 )
+    return sn.x + tn.t*tn.t;
+#elif defined( x1_t3 )
+    return sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x2_t1 )
+    return sn.x*sn.x + tn.t;
+#elif defined( x2_t2 )
+    return sn.x*sn.x + tn.t*tn.t;
+#elif defined( x2_t3 )
+    return sn.x*sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x3_t1 )
+    return sn.x*sn.x*sn.x + tn.t;
+#elif defined( x3_t2 )
+    return sn.x*sn.x*sn.x + tn.t*tn.t;
+#elif defined( x3_t3 )
+    return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x1_y1_t1 )
+    return 0.0;
+#endif
+#if defined( x2_y2_t1 ) || defined( x2_y2_t2 )
+    return 2.0;
+#endif
+}
+
+double HeatEquationIBVP::Ux(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+#if defined( x1_t1 )
+    return sn.x + tn.t;
+#elif defined( x1_t2 )
+    return sn.x + tn.t*tn.t;
+#elif defined( x1_t3 )
+    return sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x2_t1 )
+    return sn.x*sn.x + tn.t;
+#elif defined( x2_t2 )
+    return sn.x*sn.x + tn.t*tn.t;
+#elif defined( x2_t3 )
+    return sn.x*sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x3_t1 )
+    return sn.x*sn.x*sn.x + tn.t;
+#elif defined( x3_t2 )
+    return sn.x*sn.x*sn.x + tn.t*tn.t;
+#elif defined( x3_t3 )
+    return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x1_y1_t1 )
+    return 1.0;
+#endif
+#if defined( x2_y2_t1 ) || defined( x2_y2_t2 )
+    return 2.0*sn.x;
+#endif
+}
+
+double HeatEquationIBVP::Uy(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+#if defined( x1_t1 )
+    return sn.x + tn.t;
+#elif defined( x1_t2 )
+    return sn.x + tn.t*tn.t;
+#elif defined( x1_t3 )
+    return sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x2_t1 )
+    return sn.x*sn.x + tn.t;
+#elif defined( x2_t2 )
+    return sn.x*sn.x + tn.t*tn.t;
+#elif defined( x2_t3 )
+    return sn.x*sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x3_t1 )
+    return sn.x*sn.x*sn.x + tn.t;
+#elif defined( x3_t2 )
+    return sn.x*sn.x*sn.x + tn.t*tn.t;
+#elif defined( x3_t3 )
+    return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x1_y1_t1 )
+    return 1.0;
+#endif
+#if defined( x2_y2_t1 ) || defined( x2_y2_t2 )
+    return 2.0*sn.y;
+#endif
+}
+
+double HeatEquationIBVP::Un(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+#if defined( x1_t1 )
+    return sn.x + tn.t;
+#elif defined( x1_t2 )
+    return sn.x + tn.t*tn.t;
+#elif defined( x1_t3 )
+    return sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x2_t1 )
+    return sn.x*sn.x + tn.t;
+#elif defined( x2_t2 )
+    return sn.x*sn.x + tn.t*tn.t;
+#elif defined( x2_t3 )
+    return sn.x*sn.x + tn.t*tn.t*tn.t;
+#endif
+
+#if defined( x3_t1 )
+    return sn.x*sn.x*sn.x + tn.t;
+#elif defined( x3_t2 )
+    return sn.x*sn.x*sn.x + tn.t*tn.t;
+#elif defined( x3_t3 )
+    return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t;
+#endif
+
+    const int xmin = spaceDimensionX().min();
+    const int xmax = spaceDimensionX().max();
+    const int ymin = spaceDimensionY().min();
+    const int ymax = spaceDimensionY().max();
+
+#if defined( x1_y1_t1 )
+    if (sn.i == xmin) return -1.0;
+    if (sn.i == xmax) return +1.0;
+    if (sn.j == ymin) return -1.0;
+    if (sn.j == ymax) return +1.0;
+#endif
+
+#if defined( x2_y2_t1 ) || defined( x2_y2_t2 )
+    if (sn.i == xmin) return -2.0*sn.x;
+    if (sn.i == xmax) return +2.0*sn.x;
+    if (sn.j == ymin) return -2.0*sn.y;
+    if (sn.j == ymax) return +2.0*sn.y;
 #endif
 }
 
@@ -417,6 +642,8 @@ double HeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 #elif defined( x3_t3 )
     return 3.0*tn.t*tn.t + 6.0*td*sn.x - tc*U(sn,tn) + 3.0*tv*sn.x*sn.x;
 #endif
+
+    return 0.0;
 }
 
 double HeatEquationFBVP::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
@@ -444,6 +671,8 @@ double HeatEquationFBVP::U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 #elif defined( x3_t3 )
     return sn.x*sn.x*sn.x + tn.t*tn.t*tn.t;
 #endif
+
+    return 0.0;
 }
 
 void HeatEquationFBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) const
