@@ -705,15 +705,393 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             {
                 sn.j = static_cast<int>(m); sn.y = m*hy;
                 dy[m-1]  = u05[m][n];
-                dy[m-1] += (u05[m-1][n] - 2.0*u05[m][n] + u05[m+1][n])*p_td_ht__hyhy_05_1mlambda;
-                dy[m-1] += (u05[m][n-1] - 2.0*u05[m][n] + u05[m][n+1])*p_td_ht__hxhx_05;
+                //dy[m-1] += (u05[m-1][n] - 2.0*u05[m][n] + u05[m+1][n])*p_td_ht__hyhy_05_1mlambda;
+                //dy[m-1] += (u05[m][n-1] - 2.0*u05[m][n] + u05[m][n+1])*p_td_ht__hxhx_05;
                 dy[m-1] += ht_050*f(sn, tn10);
                 //dy[m-1] += ht_050*(_lambda*f(sn, tn10)+(1.0-_lambda)*f(sn, tn05));
             }
-            dy[0]   -= u10[0][n]*m_td_ht__hyhy_05_lambda;
-            dy[M-2] -= u10[M][n]*m_td_ht__hyhy_05_lambda;
+            //dy[0]   -= u10[0][n]*m_td_ht__hyhy_05_lambda;
+            //dy[M-2] -= u10[M][n]*m_td_ht__hyhy_05_lambda;
             tomasAlgorithm(ay, by, cy, dy, ry, M-1);
             for (unsigned int m=1; m<=M-1; m++) u10[m][n] = ry[m-1];
+        }
+        layerInfo(u10, tn10);
+        /**************************************************** y direction apprx ***************************************************/
+
+        for (unsigned int m=0; m<=M; m++)
+        {
+            for (unsigned int n=0; n<=N; n++)
+            {
+                u00[m][n] = u10[m][n];
+            }
+        }
+    }
+
+    u00.clear();
+    u05.clear();
+    u10.clear();
+
+    free(ry);
+    free(dy);
+    free(cy);
+    free(by);
+    free(ay);
+
+    free(rx);
+    free(dx);
+    free(cx);
+    free(bx);
+    free(ax);
+}
+
+void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
+{
+    const unsigned int N = static_cast<unsigned int>(spaceDimensionX().size()) - 1;
+    const unsigned int M = static_cast<unsigned int>(spaceDimensionY().size()) - 1;
+    const unsigned int L = static_cast<unsigned int>(timeDimension().size()) - 1;
+
+    const int xmin = spaceDimensionX().min();
+    const int xmax = spaceDimensionX().max();
+    const int ymin = spaceDimensionY().min();
+    const int ymax = spaceDimensionY().max();
+    //const int tmin = timeDimension().min();
+    //const int tmax = timeDimension().max();
+
+
+    const double hx = spaceDimensionX().step();
+    const double hy = spaceDimensionY().step();
+    const double ht = timeDimension().step();
+
+    const double a1 = thermalDiffusivity();
+    const double a2 = thermalDiffusivity();
+    const double b1 = thermalConductivity();
+    const double b2 = thermalConductivity();
+    const double c = thermalConvection();
+
+    const double w1 = weight();
+    const double w2 = 1.0 - w1;
+
+    //if (w1 >= 0.5-(0.25/ht)/(1.0/(hx*hx)+1.0/(hy*hy))) throw std::runtime_error("Differential scheme is conditionally steady.");
+
+    // equation parameters
+
+    // left border condition parameters
+
+    // right border condition parameters
+
+    // common parameters
+
+    const double ht_050 = 0.5*ht;
+
+    // equation parameters
+    const double k11 = -(a1*ht)/(2.0*hx*hx) + (b1*ht)/(4.0*hx);
+    const double k12 = +1.0 + (a1*ht)/(hx*hx);
+    const double k13 = -(a1*ht)/(2.0*hx*hx) - (b1*ht)/(4.0*hx);
+    const double k14 = +(a2*ht)/(2.0*hy*hy) - (b2*ht)/(4.0*hy);
+    const double k15 = +1.0 - (a2*ht)/(hy*hy) + 0.5*c*ht;
+    const double k16 = +(a2*ht)/(2.0*hy*hy) + (b2*ht)/(4.0*hy);
+
+    const double k21 = -(a2*ht)/(2.0*hy*hy) + (b2*ht)/(4.0*hy);
+    const double k22 = +1.0 + (a2*ht)/(hy*hy) - 0.5*c*ht;
+    const double k23 = -(a2*ht)/(2.0*hy*hy) - (b2*ht)/(4.0*hy);
+    const double k24 = +(a1*ht)/(2.0*hx*hx) - (b1*ht)/(4.0*hx);
+    const double k25 = +1.0 - (a1*ht)/(hx*hx);
+    const double k26 = +(a1*ht)/(2.0*hx*hx) + (b1*ht)/(4.0*hx);
+
+    // border condition parameters
+    const double b11 = +1.0 + ((a1*ht)/(hx*hx));
+    const double b12 = +(a1*ht)/hx - 0.5*b1*ht;
+    const double b13 = -(a1*ht)/(hx*hx);
+    const double b14 = +(1.0 - ((2.0*a*ht)/(hx*hx))*w2 + c*ht*w2);
+    const double b15 = -((2.0*a*ht)/hx)*w2 + b*ht*w2;
+    const double b16 = +((2.0*a*ht)/(hx*hx))*w2;
+    const double b17 = -((2.0*a*ht)/hx)*w1 + b*ht*w1;
+    const double b21 = -((2.0*a*ht)/(hx*hx))*w1;
+    const double b22 = +((2.0*a*ht)/hx)*w1 + b*ht*w1;
+    const double b23 = +(1.0 + ((2.0*a*ht)/(hx*hx))*w1 - c*ht*w1);
+    const double b24 = +((2.0*a*ht)/(hx*hx))*w2;
+    const double b25 = +((2.0*a*ht)/hx)*w2 + b*ht*w2;
+    const double b26 = +(1.0 - ((2.0*a*ht)/(hx*hx))*w2 + c*ht*w2);
+    const double b27 = +((2.0*a*ht)/hx)*w1 + b*ht*w1;
+
+    double *ax = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *bx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *cx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *dx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *rx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+
+    for (unsigned int n=0; n<=N; n++)
+    {
+        ax[n] = k11;
+        bx[n] = k12;
+        cx[n] = k13;
+    }
+    ax[0] = 0.0; cx[N] = 0.0;
+
+    double *ay = static_cast<double*>(malloc(sizeof(double)*(M+1)));
+    double *by = static_cast<double*>(malloc(sizeof(double)*(M+1)));
+    double *cy = static_cast<double*>(malloc(sizeof(double)*(M+1)));
+    double *dy = static_cast<double*>(malloc(sizeof(double)*(M+1)));
+    double *ry = static_cast<double*>(malloc(sizeof(double)*(M+1)));
+
+    for (unsigned int m=0; m<=M; m++)
+    {
+        ay[m] = k21;
+        by[m] = k22;
+        cy[m] = k23;
+    }
+    ay[0] = 0.0; cy[M] = 0.0;
+
+    DoubleMatrix u00(M+1, N+1);
+    DoubleMatrix u05(M+1, N+1);
+    DoubleMatrix u10(M+1, N+1);
+
+    /***********************************************************************************************/
+    /***********************************************************************************************/
+
+    TimeNodePDE tn00; tn00.i = 0; tn00.t = 0.5*tn00.i*ht;
+    //TimeNodePDE tn05; tn05.i = 1; tn05.t = 0.5*tn05.i*ht;
+
+    SpaceNodePDE sn;
+
+    unsigned int i, j;
+    i = j = 0;
+    for (int m=ymin; m<=ymax; ++m, j++, i=0)
+    {
+        sn.j = m; sn.y = m*hy;
+        for (int n=xmin; n<=xmax; ++n, i++)
+        {
+            sn.i = n; sn.x = n*hx;
+            //printf("%d %d %f %f\n", sn.i, sn.j, sn.x, sn.y);
+            u00[j][i] = initial(sn, InitialCondition::InitialValue);
+        }
+    }
+    layerInfo(u00, tn00);
+
+    /***********************************************************************************************/
+
+    for (unsigned int ln=1; ln<=L; ln++)
+    {
+        TimeNodePDE tn00; tn00.i = 2*ln-2; tn00.t = 0.5*tn00.i*ht;
+        TimeNodePDE tn05; tn05.i = 2*ln-1; tn05.t = 0.5*tn05.i*ht;
+        TimeNodePDE tn10; tn10.i = 2*ln-0; tn10.t = 0.5*tn10.i*ht;
+
+        /**************************************************** border conditions ***************************************************/
+
+//        SpaceNodePDE sn0, sn1;
+//        BoundaryConditionPDE condition;
+
+//        sn0.i = xmin; sn0.x = xmin*hx;
+//        sn1.i = xmax; sn1.x = xmax*hx;
+//        for (int m=ymin; m<=ymax; m++)
+//        {
+//            sn0.j = sn1.j = m; sn0.y = sn1.y = m*hy;
+//            u05[m][0] = boundary(sn0, tn05, condition); u10[m][0] = boundary(sn0, tn10, condition);
+//            u05[m][N] = boundary(sn1, tn05, condition); u10[m][N] = boundary(sn1, tn10, condition);
+//        }
+
+//        sn0.j = ymin; sn0.y = ymin*hy;
+//        sn1.j = ymax; sn1.y = ymax*hy;
+//        for (unsigned int n=0; n<=N; n++)
+//        {
+//            sn0.i = sn1.i = n; sn0.x = sn1.x = n*hx;
+//            u05[0][n] = boundary(sn0, tn05, condition); u10[0][n] = boundary(sn0, tn10, condition);
+//            u05[M][n] = boundary(sn1, tn05, condition); u10[M][n] = boundary(sn1, tn10, condition);
+//        }
+
+        /**************************************************** border conditions ***************************************************/
+
+        /**************************************************** x direction apprx ***************************************************/
+        unsigned int i = j = 1;
+        for (int m=ymin+1; m<=ymax-1; ++m, j++, i=1)
+        {
+            sn.j = m; sn.y = m*hy;
+            for (int n=xmin+1; n<=xmax-1; ++n, i++)
+            {
+                sn.i = n; sn.x = n*hx;
+                dx[i]  = 0.0;
+                dx[i] += k14 * u00[j-1][i];
+                dx[i] += k15 * u00[j][i];
+                dx[i] += k16 * u00[j+1][i];
+                dx[i] += ht_050*f(sn, tn00);
+                //dx[n-1] += ht_050*(_lambda*f(sn, tn05)+(1.0-_lambda)*f(sn, tn00));
+            }
+
+            unsigned int s=0, e=N;
+            BoundaryConditionPDE condition; double value, alpha, beta, gamma;
+
+            sn.i = xmin; sn.x = xmin*hx;
+            value = boundary(sn, tn05, condition);
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
+
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+            {
+                s = 1;
+
+                u05[j][0] = (gamma/alpha)*value;
+                dx[1] -= k11 * u05[j][0];
+                ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+                s = 0;
+            }
+
+            sn.i = xmax; sn.x = xmax*hx;
+            value = boundary(sn, tn05, condition);
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+            {
+                e = N-1;
+                u05[j][N] = (gamma/alpha)*value;
+                dx[N-1] -= k13 * u05[j][N];
+                cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+                s = N;
+            }
+
+            tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
+            for (unsigned int i=s; i<=e; i++) u05[j][i] = rx[i];
+
+            sn.j = ymin; sn.y = ymin*hy; i = 0;
+            for (int n=xmin; n<=xmax; ++n, i++)
+            {
+                sn.i = n; sn.x = n*hx;
+                value = boundary(sn, tn05, condition);
+                alpha = condition.alpha();
+                beta  = condition.beta();
+                gamma = condition.gamma();
+
+                if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+                {
+                    u05[0][i] = (gamma/alpha)*value;
+                }
+                if (condition.boundaryCondition() == BoundaryCondition::Robin)
+                {
+                    s = 0;
+                }
+            }
+            sn.j = ymax; sn.y = ymax*hy; i = 0;
+            for (int n=xmin; n<=xmax; ++n, i++)
+            {
+                sn.i = n; sn.x = n*hx;
+                value = boundary(sn, tn05, condition);
+                alpha = condition.alpha();
+                beta  = condition.beta();
+                gamma = condition.gamma();
+
+                if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+                {
+                    u05[M][i] = (gamma/alpha)*value;
+                }
+                if (condition.boundaryCondition() == BoundaryCondition::Robin)
+                {
+                    e = M;
+                }
+            }
+        }
+        layerInfo(u05, tn05);
+
+        /**************************************************** x direction apprx ***************************************************/
+
+        /**************************************************** y direction apprx ***************************************************/
+        i = j = 1;
+        for (int n=xmin+1; n<=xmax-1; ++n, i++, j=1)
+        {
+            sn.i = n; sn.x = n*hx;
+            for (int m=ymin+1; m<=ymax-1; ++m, j++)
+            {
+                sn.j = static_cast<int>(m); sn.y = m*hy;
+                dy[j]  = 0.0;
+                dy[j] += k24 * u05[j][i-1];
+                dy[j] += k25 * u05[j][i];
+                dy[j] += k26 * u05[j][i+1];
+                dy[j] += ht_050*f(sn, tn10);
+            }
+
+            unsigned int s=0, e=N;
+            BoundaryConditionPDE condition; double value, alpha, beta, gamma;
+
+            sn.j = ymin; sn.y = ymin*hy;
+            value = boundary(sn, tn10, condition);
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+            {
+                s = 1;
+
+                u10[0][i] = (gamma/alpha)*value;
+                dy[1] -= k21 * u10[0][i];
+                ay[1] = ay[0] = by[0] = cy[0] = dy[0] = ry[0] = 0.0;
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+                s = 0;
+            }
+
+            sn.j = ymax; sn.y = ymax*hy;
+            value = boundary(sn, tn10, condition);
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+            {
+                e = M-1;
+                u10[M][i] = (gamma/alpha)*value;
+                dy[M-1] -= k23 * u10[M][i];
+                cy[M-1] = ay[M] = by[M] = cy[M] = dy[M] = ry[M] = 0.0;
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+                e = M;
+            }
+
+            tomasAlgorithm(ay+s, by+s, cy+s, dy+s, ry+s, e-s+1);
+            for (unsigned int j=s; j<=e; j++) u10[j][i] = ry[j];
+
+            sn.i = xmin; sn.x = xmin*hx; j = 0;
+            for (int m=ymin; m<=ymax; ++m, j++)
+            {
+                sn.j = m; sn.y = m*hy;
+                value = boundary(sn, tn10, condition);
+                alpha = condition.alpha();
+                beta  = condition.beta();
+                gamma = condition.gamma();
+
+                if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+                {
+                    u10[j][0] = (gamma/alpha)*value;
+                }
+                if (condition.boundaryCondition() == BoundaryCondition::Robin)
+                {
+                    s = 0;
+                }
+            }
+            sn.i = xmax; sn.x = xmax*hx; j = 0;
+            for (int m=ymin; m<=ymax; ++m, j++)
+            {
+                sn.j = m; sn.y = m*hy;
+                value = boundary(sn, tn10, condition);
+                alpha = condition.alpha();
+                beta  = condition.beta();
+                gamma = condition.gamma();
+
+                if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+                {
+                    u10[j][N] = (gamma/alpha)*value;
+                }
+                if (condition.boundaryCondition() == BoundaryCondition::Robin)
+                {
+                    e = N;
+                }
+            }
         }
         layerInfo(u10, tn10);
         /**************************************************** y direction apprx ***************************************************/

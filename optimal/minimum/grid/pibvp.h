@@ -62,6 +62,7 @@ public:
 
     void explicit_calculate_D2V1() const;
     void implicit_calculate_D2V1() const;
+    void implicit_calculate_D2V1_1() const;
 
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;

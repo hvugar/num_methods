@@ -191,6 +191,7 @@ void FirstOrderLinearODE::transferOfCondition(const std::vector<NonLocalConditio
                 alpha[3].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[3])[m][m] = +16.0; }               alpha[3] = mx*alpha[3];
                 alpha[4].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[4])[m][m] = -3.0; }                alpha[4] = mx*alpha[4];
                 mx.clear();
+
             }
 
             if (k==6)
@@ -221,6 +222,13 @@ void FirstOrderLinearODE::transferOfCondition(const std::vector<NonLocalConditio
                 betta[i][j] = betta[i-1][j+1] + betta[i-1][1]*alpha[j];
             }
             betta[i][k] = betta[i-1][1]*alpha[k] + D[k+(i-1)];
+
+            if (i%10==0)
+            {
+                //if (k==2) printf("%d %f %f\n", i, betta[i][1][0][0], betta[i][2][0][0]);
+                //if (k==4) printf("%4d %10.6f %10.6f %10.6f %10.6f\n", i, betta[i][1][0][0], betta[i][2][0][0], betta[i][3][0][0], betta[i][4][0][0]);
+                //if (k==6) printf("%d %f %f %f %f %f %f\n", i, betta[i][1][0][0], betta[i][2][0][0], betta[i][3][0][0], betta[i][4][0][0], betta[i][5][0][0], betta[i][6][0][0]);
+            }
 
             for (unsigned int j=0; j<=k; j++) alpha[j].clear();
             delete [] alpha;
@@ -425,7 +433,7 @@ void FirstOrderLinearODE::transferOfCondition(const std::vector<NonLocalConditio
     delete [] betta;
     /************************************************************************/
 
-//    delete [] D;
+    //    delete [] D;
     C.clear();
 }
 
@@ -616,70 +624,70 @@ void FirstOrderLinearODE::solveInitialValueProblemRK2(std::vector<DoubleVector> 
     }
 
 
-//    double *k1 = static_cast<double*>( malloc(sizeof(double)*m) );
-//    double *k2 = static_cast<double*>( malloc(sizeof(double)*m) );
+    //    double *k1 = static_cast<double*>( malloc(sizeof(double)*m) );
+    //    double *k2 = static_cast<double*>( malloc(sizeof(double)*m) );
 
-//    if (direction == L2R)
-//    {
-//        double h2 = h/2.0;
-//        ry[0] = y0;
+    //    if (direction == L2R)
+    //    {
+    //        double h2 = h/2.0;
+    //        ry[0] = y0;
 
-////        double xn = x0;
+    ////        double xn = x0;
 
-//        DoubleVector yn(m);
+    //        DoubleVector yn(m);
 
-//        /* initializing */
-////        for (unsigned int j=0; j<n; j++) ry[j][0] = y0[j];
+    //        /* initializing */
+    ////        for (unsigned int j=0; j<n; j++) ry[j][0] = y0[j];
 
-//        for (int i=min+1; i<=max; i++)
-//        {
-//            const unsigned int mi = static_cast<unsigned int>(i-min);
-//            const PointNodeODE node1((i-1)*h, i-1);
-//            const PointNodeODE node2((i-1)*h+h2, i-1);
+    //        for (int i=min+1; i<=max; i++)
+    //        {
+    //            const unsigned int mi = static_cast<unsigned int>(i-min);
+    //            const PointNodeODE node1((i-1)*h, i-1);
+    //            const PointNodeODE node2((i-1)*h+h2, i-1);
 
-//            // k1
-//            //for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-min];
-//            for (unsigned int j=0; j<m; j++) k1[j] = f(node1, ry[mi-1], j+1);
+    //            // k1
+    //            //for (unsigned int j=0; j<n; j++) yn[j] = ry[j][(i-1)-min];
+    //            for (unsigned int j=0; j<m; j++) k1[j] = f(node1, ry[mi-1], j+1);
 
-//            // k2
-//            for (unsigned int j=0; j<m; j++) yn[j] = ry[mi-1][j]+h2*k1[j];
-//            for (unsigned int j=0; j<m; j++) k2[j] = f(node2, yn, j+1);
+    //            // k2
+    //            for (unsigned int j=0; j<m; j++) yn[j] = ry[mi-1][j]+h2*k1[j];
+    //            for (unsigned int j=0; j<m; j++) k2[j] = f(node2, yn, j+1);
 
-//            for (unsigned int j=0; j<m; j++) ry[mi][j] = ry[mi-1][j] + h * k2[j];
-//        }
-//    }
+    //            for (unsigned int j=0; j<m; j++) ry[mi][j] = ry[mi-1][j] + h * k2[j];
+    //        }
+    //    }
 
-//    const unsigned int n = y0.length();
+    //    const unsigned int n = y0.length();
 
-//    if (direction == R2L)
-//    {
-//        double h2 = h/2.0;
+    //    if (direction == R2L)
+    //    {
+    //        double h2 = h/2.0;
 
-//        double xn = x0;
+    //        double xn = x0;
 
-//        DoubleVector yn(n);
+    //        DoubleVector yn(n);
 
-//        /* initializing */
-//        for (unsigned int j=0; j<n; j++) ry[j][N] = y0[j];
+    //        /* initializing */
+    //        for (unsigned int j=0; j<n; j++) ry[j][N] = y0[j];
 
-//        for (unsigned int i=N-1; i!=UINT32_MAX; i--)
-//        {
-//            // k1
-//            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i+1];
-//            for (unsigned int j=0; j<n; j++) k1[j] = f(xn, yn, i+1, j);
+    //        for (unsigned int i=N-1; i!=UINT32_MAX; i--)
+    //        {
+    //            // k1
+    //            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i+1];
+    //            for (unsigned int j=0; j<n; j++) k1[j] = f(xn, yn, i+1, j);
 
-//            // k2
-//            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i+1]-h2*k1[j];
-//            for (unsigned int j=0; j<n; j++) k2[j] = f(xn-h2, yn, i+1, j);
+    //            // k2
+    //            for (unsigned int j=0; j<n; j++) yn[j] = ry[j][i+1]-h2*k1[j];
+    //            for (unsigned int j=0; j<n; j++) k2[j] = f(xn-h2, yn, i+1, j);
 
-//            for (unsigned int j=0; j<n; j++) ry[j][i] = ry[j][i+1] - h * k2[j];
+    //            for (unsigned int j=0; j<n; j++) ry[j][i] = ry[j][i+1] - h * k2[j];
 
-//            xn -= h;
-//        }
-//    }
+    //            xn -= h;
+    //        }
+    //    }
 
-//    free(k2);
-//    free(k1);
+    //    free(k2);
+    //    free(k1);
 }
 
 void FirstOrderLinearODE::solveInitialValueProblemRK4(std::vector<DoubleVector> &) const {}

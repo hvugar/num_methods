@@ -2,6 +2,9 @@
 
 #define EXAMPLE_6
 
+#define _N 1000
+#define _H 0.01
+
 void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
 {
     C_UNUSED(argc);
@@ -12,17 +15,17 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
     FirstOrderLinearODEEx1 nl;
 
     const unsigned int M = nl.count();
-    const unsigned int N = 100;
-    const double h = 0.01;
-    const unsigned int order = 2;
+    const unsigned int N = _N;
+    const double h = _H;
+    //const unsigned int order = 2;
 
     std::vector<NonLocalCondition> C;
 
-    C.push_back(NonLocalCondition(0, PointNodeODE(0.000, static_cast<int>(0.00*N)), DoubleMatrix(M,M,0.0)));
-    C.push_back(NonLocalCondition(1, PointNodeODE(0.250, static_cast<int>(0.25*N)), DoubleMatrix(M,M,0.0)));
-    C.push_back(NonLocalCondition(2, PointNodeODE(0.500, static_cast<int>(0.50*N)), DoubleMatrix(M,M,0.0)));
-    C.push_back(NonLocalCondition(3, PointNodeODE(0.750, static_cast<int>(0.75*N)), DoubleMatrix(M,M,0.0)));
-    C.push_back(NonLocalCondition(4, PointNodeODE(1.000, static_cast<int>(1.00*N)), DoubleMatrix(M,M,0.0)));
+    C.push_back(NonLocalCondition(0, PointNodeODE(0.00, static_cast<int>(0.00*N)), DoubleMatrix(M,M,0.0)));
+    //C.push_back(NonLocalCondition(1, PointNodeODE(2.50, static_cast<int>(0.25*N)), DoubleMatrix(M,M,0.0)));
+    //C.push_back(NonLocalCondition(2, PointNodeODE(5.00, static_cast<int>(0.50*N)), DoubleMatrix(M,M,0.0)));
+    //C.push_back(NonLocalCondition(3, PointNodeODE(7.50, static_cast<int>(0.75*N)), DoubleMatrix(M,M,0.0)));
+    C.push_back(NonLocalCondition(1, PointNodeODE(10.0, static_cast<int>(1.00*N)), DoubleMatrix(M,M,0.0)));
 
     //printf("%f %f %f %f %f\n", C[0].n.x, C[1].n.x, C[2].n.x, C[3].n.x, C[4].n.x);
     //printf("%d %d %d %d %d\n", C[0].n.i, C[1].n.i, C[2].n.i, C[3].n.i, C[4].n.i);
@@ -33,7 +36,14 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
         {
             for (unsigned int c=0; c<M; c++)
             {
-                for (unsigned i=0; i<C.size(); i++) C[i].m[r][c] = Random::value(0,1,2);
+                for (unsigned i=0; i<C.size(); i++)
+                {
+                    C[i].m[r][c] = -Random::value(0,1,2);
+                    printf("%d %f\n", i, C[i].m[0][0]);
+                }
+
+
+
                 //C[i].m[r][c] = 10.0*Random::value(0,1,1)-2.0;
 
             }
@@ -42,6 +52,8 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
         //IPrinter::printSeperatorLine();
     }
 
+
+
     //for (unsigned i=0; i<C.size(); i++)
     //{
     //    IPrinter::printMatrix(C[i].m, C[i].m.rows(), C[i].m.cols());
@@ -49,10 +61,11 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
     //}
 
     DoubleVector x000; for (unsigned int m=1; m<=M; m++) x000 << nl.x(C[0].n,m);
-    DoubleVector x025; for (unsigned int m=1; m<=M; m++) x025 << nl.x(C[1].n,m);
-    DoubleVector x050; for (unsigned int m=1; m<=M; m++) x050 << nl.x(C[2].n,m);
-    DoubleVector x075; for (unsigned int m=1; m<=M; m++) x075 << nl.x(C[3].n,m);
-    DoubleVector x100; for (unsigned int m=1; m<=M; m++) x100 << nl.x(C[4].n,m);
+    //DoubleVector x025; for (unsigned int m=1; m<=M; m++) x025 << nl.x(C[1].n,m);
+    //DoubleVector x050; for (unsigned int m=1; m<=M; m++) x050 << nl.x(C[2].n,m);
+    //DoubleVector x075; for (unsigned int m=1; m<=M; m++) x075 << nl.x(C[3].n,m);
+    //DoubleVector x100; for (unsigned int m=1; m<=M; m++) x100 << nl.x(C[4].n,m);
+    DoubleVector x100; for (unsigned int m=1; m<=M; m++) x100 << nl.x(C[1].n,m);
 
     //IPrinter::printVector(x000, nullptr, x000.length());
     //IPrinter::printVector(x025, nullptr, x025.length());
@@ -61,7 +74,8 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
     //IPrinter::printVector(x100, nullptr, x100.length());
     //IPrinter::printSeperatorLine();
 
-    DoubleVector d = C[0].m*x000 + C[1].m*x025 + C[2].m*x050 + C[3].m*x075 + C[4].m*x100;
+    //DoubleVector d = C[0].m*x000 + C[1].m*x025 + C[2].m*x050 + C[3].m*x075 + C[4].m*x100;
+    DoubleVector d = C[0].m*x000 + C[1].m*x100;
     IPrinter::printVector(d, nullptr, d.length());
     IPrinter::printSeperatorLine();
 
@@ -73,24 +87,24 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
         for (unsigned int n=0; n<=N; n++)
         {
             //if (n%(N/100)==0) printf("%14.10f ", nl.x(n*h, m+1));
-            if (n%(N/10)==0) printf("%14.10f ", nl.x(n*h, m+1));
+            if (n%(N/10)==0) printf("%14.6f ", nl.x(n*h, m+1));
             //printf("%14.10f ", nl.x(n*h, m+1));
         }
         puts("");
     }
-    IPrinter::printSeperatorLine();
+    //IPrinter::printSeperatorLine();
 
     nl.transferOfCondition(C, d, x, 2);
-    for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.10f ", x[n][m]); nl.printNorms(x);
-    IPrinter::printSeperatorLine();
+    for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.6f ", x[n][m]); nl.printNorms(x);
+    //IPrinter::printSeperatorLine();
 
     nl.transferOfCondition(C, d, x, 4);
-    for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.10f ", x[n][m]); nl.printNorms(x);
-    IPrinter::printSeperatorLine();
+    for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.6f ", x[n][m]); nl.printNorms(x);
+    //IPrinter::printSeperatorLine();
 
     nl.transferOfCondition(C, d, x, 6);
-    for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.10f ", x[n][m]); nl.printNorms(x);
-    IPrinter::printSeperatorLine();
+    for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.6f ", x[n][m]); nl.printNorms(x);
+    //IPrinter::printSeperatorLine();
 }
 
 FirstOrderLinearODEEx1::FirstOrderLinearODEEx1()
@@ -245,8 +259,8 @@ auto FirstOrderLinearODEEx1::initial(InitialCondition, unsigned int r) const -> 
 void FirstOrderLinearODEEx1::printNorms(std::vector<DoubleVector> &_x) const
 {
     const unsigned int M = count();
-    const unsigned int N = 100;
-    const double h = 0.01;
+    const unsigned int N = _N;
+    const double h = _H;
 
     printf("Norms: ");
     for (unsigned int m=0; m<M; m++)
