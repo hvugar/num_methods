@@ -780,7 +780,6 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
     // right border condition parameters
 
     // common parameters
-
     const double ht_050 = 0.5*ht;
 
     // equation parameters
@@ -814,7 +813,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
     const double b24 = +1.0 + 0.5*c*ht;
     const double b25 = +0.5*a2*ht;
     const double b26 = +0.5*b2*ht;
-    const double b27 = +(a1*ht)/hx + 0.5*a1*ht;
+    const double b27 = +(a1*ht)/hx + 0.5*b1*ht;
 
     // bottom border condition parameters
     const double b31 = +1.0 + ((a2*ht)/(hy*hy)) - 0.5*c*ht;
@@ -823,7 +822,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
     const double b34 = +1.0;
     const double b35 = +0.5*a1*ht;
     const double b36 = +0.5*b1*ht;
-    const double b37 = +(a2*ht)/hy - 0.5*a2*ht;
+    const double b37 = +(a2*ht)/hy - 0.5*b2*ht;
 
     // top border condition parameters
     const double b41 = -(a2*ht)/(hy*hy);
@@ -926,65 +925,71 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
         unsigned int s=0, e=N;
         BoundaryConditionPDE condition; double value, alpha, beta, gamma;
 
-        sn.j = ymin; sn.y = ymin*hy; i = 0;
-        for (int n=xmin; n<=xmax; ++n, i++)
+        sn.j = ymin; sn.y = ymin*hy;
+
+        sn.i = xmin; sn.x = xmin*hx;
+        value = boundary(sn, tn05, condition);
+        alpha = condition.alpha();
+        beta  = condition.beta();
+        gamma = condition.gamma();
+
+        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
         {
-            sn.i = n; sn.x = n*hx;
-            value = boundary(sn, tn05, condition);
-            alpha = condition.alpha();
-            beta  = condition.beta();
-            gamma = condition.gamma();
+            u05[0][0] = (gamma/alpha)*value;
+        }
+        if (condition.boundaryCondition() == BoundaryCondition::Robin)
+        {
+            s = 0;
 
-            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
-            {
-                u05[0][i] = (gamma/alpha)*value;
-            }
-//            if (condition.boundaryCondition() == BoundaryCondition::Robin)
-//            {
-//                s = 0;
+            ax[s]  = 0.0;
+            bx[s]  = beta  * b11 + alpha * b12;
+            cx[s]  = beta  * b13;
 
-//                ax[s]  = 0.0;
-//                bx[s]  = beta  * b11 + alpha * b12;
-//                cx[s]  = beta  * b13;
-
-//                dx[s]  = beta * b14 * u05[s][i];
-//                dx[s] += beta * b15 * ((u05[s][i+1]-2.0*u05[s][i]+u05[s][i-1])/(hx*hx));
-//                dx[s] += beta * b16 * ((u05[s][i+1]-u05[s][i-1])/(2.0*hx));
-
-//                dx[s] += gamma * b17 * value;
-//                dx[s] += beta  * ht_050 * f(sn, tn10);
-//            }
+            dx[s]  = beta  * b14 * u00[s][s];
+            dx[s] += beta  * b15 * ((+2.0*u00[s][0]-5.0*u00[s][1]+4.0*u00[s][2]-1.0*u00[s][3])/(hy*hy));
+            dx[s] += beta  * b16 * ((-3.0*u00[s][0]+4.0*u00[s][1]-1.0*u00[s][2])/(2.0*hy));
+            dx[s] += gamma * b17 * value;
+            dx[s] += beta  * ht_050 * f(sn, tn00);
         }
 
-//        sn.j = ymax; sn.y = ymax*hy; i = 0;
-//        for (int n=xmin; n<=xmax; ++n, i++)
-//        {
-//            sn.i = n; sn.x = n*hx;
-//            value = boundary(sn, tn05, condition);
-//            alpha = condition.alpha();
-//            beta  = condition.beta();
-//            gamma = condition.gamma();
+        i=1;
+        for (int n=xmin-1; n<=xmax-1; ++n, i++)
+        {
+            sn.i = n; sn.x = n*hx;
+            dx[i]  = 0.0;
+            dx[i]  = beta  * b14 * u00[i][i];
+            dx[i] += beta  * b15 * ((u00[i][n+1]-2.0*u00[i][n]+u00[i][n-1])/(hy*hy));
+            dx[i] += beta  * b16 * ((u00[i][n+1]-u00[i][n-1])/(2.0*hy));
+            dx[i] += beta  * ht_050 * f(sn, tn00);
+        }
 
-//            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
-//            {
-//                u05[M][i] = (gamma/alpha)*value;
-//            }
-//            if (condition.boundaryCondition() == BoundaryCondition::Robin)
-//            {
-//                e = M;
+        sn.i = xmax; sn.x = xmax*hx;
+        value = boundary(sn, tn05, condition);
+        alpha = condition.alpha();
+        beta  = condition.beta();
+        gamma = condition.gamma();
 
-//                //                    ax[e]  = beta  * b21;
-//                //                    bx[e]  = beta  * b23 + alpha * b22;
-//                //                    cx[e]  = 0.0;
+        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+        {
+            u05[M][i] = (gamma/alpha)*value;
+        }
+        if (condition.boundaryCondition() == BoundaryCondition::Robin)
+        {
+            e = M;
 
-//                //                    dx[e]  = beta * b24 * u00[j][e];
-//                //                    dx[e] += beta * b25 * ((u00[j+1][e]-2.0*u00[j][e]+u00[j-1][e])/(hy*hy));
-//                //                    dx[e] += beta * b26 * ((u00[j+1][e]-u00[j-1][e])/(2.0*hy));
+            ax[e]  = beta  * b21;
+            bx[e]  = beta  * b23 + alpha * b22;
+            cx[e]  = 0.0;
 
-//                //                    dx[e] += gamma * b27 * value;
-//                //                    dx[e] += beta  * ht_050 * f(sn, tn00);
-//            }
-//        }
+            dx[e]  = beta  * b24 * u00[j][e];
+            dx[e] += beta  * b25 * ((-u00[e][M-3]+4.0*u00[e][M-2]-5.0*u00[e][M-1]+2.0*u00[e][M])/(hy*hy));
+            dx[e] += beta  * b26 * ((+u00[e][M-2]-4.0*u00[e][M-1]+3.0*u00[e][M])/(2.0*hy));
+            dx[e] += gamma * b27 * value;
+            dx[e] += beta  * ht_050 * f(sn, tn00);
+        }
+
+        tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
+        for (unsigned int i=s; i<=e; i++) u05[0][i] = rx[i];
 
         for (int m=ymin+1; m<=ymax-1; ++m, j++, i=1)
         {
@@ -1068,6 +1073,8 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
         return;
 
         /**************************************************** x direction apprx ***************************************************/
+
+
 
         /**************************************************** y direction apprx ***************************************************/
         i = j = 1;
