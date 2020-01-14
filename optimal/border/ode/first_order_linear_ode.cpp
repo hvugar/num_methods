@@ -1,6 +1,6 @@
 #include "first_order_linear_ode.h"
 
-#define EXAMPLE_6
+#define EXAMPLE_7
 
 #define _N 1000
 #define _H 0.01
@@ -38,8 +38,8 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
             {
                 for (unsigned i=0; i<C.size(); i++)
                 {
-                    C[i].m[r][c] = -Random::value(0,1,2);
-                    printf("%d %f\n", i, C[i].m[0][0]);
+                    C[i].m[r][c] = Random::value(0,1,2);
+                    //printf("%d %f\n", i, C[i].m[0][0]);
                 }
 
 
@@ -52,7 +52,10 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
         //IPrinter::printSeperatorLine();
     }
 
-
+ C[0].m[0][0] = 0.8;
+ C[1].m[0][0] = 0.5;
+ printf("%d %f\n", 0, C[0].m[0][0]);
+ printf("%d %f\n", 1, C[1].m[0][0]);
 
     //for (unsigned i=0; i<C.size(); i++)
     //{
@@ -92,7 +95,7 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
         }
         puts("");
     }
-    //IPrinter::printSeperatorLine();
+    IPrinter::printSeperatorLine();
 
     nl.transferOfCondition(C, d, x, 2);
     for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.6f ", x[n][m]); nl.printNorms(x);
@@ -154,7 +157,10 @@ double FirstOrderLinearODEEx1::A(const PointNodeODE &node, unsigned int r, unsig
     if (r==4 && c == 4) return +1.0;
 #endif
 #ifdef EXAMPLE_6
-    return 1.0;
+    return +1.0;
+#endif
+#ifdef EXAMPLE_7
+    return -1.0;
 #endif
 
     throw std::exception();
@@ -162,10 +168,12 @@ double FirstOrderLinearODEEx1::A(const PointNodeODE &node, unsigned int r, unsig
 
 double FirstOrderLinearODEEx1::B(const PointNodeODE &node, unsigned int r) const
 {
-    const unsigned int _count = count();
-    double result = dt(node, r);
-    for (unsigned int c=1; c<=_count; c++) result -= A(node,r,c)*x(node,c);
-    return result;
+    //const unsigned int _count = count();
+    //double result = dt(node, r);
+    //for (unsigned int c=1; c<=_count; c++) result -= A(node,r,c)*x(node,c);
+    //return result;
+
+    return dt(node, r) - A(node,r,1)*x(node,1);
 }
 
 unsigned int FirstOrderLinearODEEx1::count() const
@@ -180,6 +188,9 @@ unsigned int FirstOrderLinearODEEx1::count() const
     return 4;
 #endif
 #if defined(EXAMPLE_6)
+    return 1;
+#endif
+#if defined(EXAMPLE_7)
     return 1;
 #endif
 }
@@ -212,6 +223,9 @@ double FirstOrderLinearODEEx1::x(const PointNodeODE &node, unsigned int r UNUSED
 #endif
 #ifdef EXAMPLE_6
     if (r == 1) return sin(4.0*M_PI*t*t*t*t) + 0.6*exp(t) - 1.4;
+#endif
+#ifdef EXAMPLE_7
+    if (r == 1) return 6.0*t*t*t*t*t*t - 5.0*t*t*t + t*t + 2.0;
 #endif
 
     throw std::exception();
@@ -246,7 +260,9 @@ double FirstOrderLinearODEEx1::dt(const PointNodeODE &node, unsigned int r UNUSE
 #ifdef EXAMPLE_6
     if (r == 1) return 16.0*M_PI*t*t*t*cos(4.0*M_PI*t*t*t*t) + 0.6*exp(t);
 #endif
-
+#ifdef EXAMPLE_7
+    if (r == 1) return 36.0*t*t*t*t*t - 15.0*t*t + 2.0*t;
+#endif
     throw std::exception();
 }
 
