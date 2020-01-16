@@ -929,8 +929,8 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
             dx[s]  = beta  * b14 * u00[0][s];
             dx[s] += beta  * b15 * ((+2.0*u00[0][s]-5.0*u00[1][s]+4.0*u00[2][s]-u00[3][s])/(hy*hy));
             dx[s] += beta  * b16 * ((-3.0*u00[0][s]+4.0*u00[1][s]-1.0*u00[2][s])/(2.0*hy));
-            dx[s] += gamma * b17 * value;
             dx[s] += beta  * ht_050 * f(sn, tn00);
+            dx[s] += gamma * b17 * value;
         }
 
         sn.i = xmax; sn.x = xmax*hx;
@@ -1197,158 +1197,158 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
 
         /**************************************************************************************************************************/
 
-//        for (n=xmin+1, sn.i=n, sn.x=n*hx, i=1; n<=xmax-1;
-//             ++n, sn.i=n, sn.x=n*hx, ++i)
-//        {
-//            for (m=ymin+1, sn.j=m, sn.y=m*hy, j=1, dy[j]=0.0; m<=ymax-1;
-//                 ++m, sn.j=m, sn.y=m*hy, ++j, dy[j]=0.0)
-//            {
-//                dy[j] += k24 * u05[j][i-1];
-//                dy[j] += k25 * u05[j][i];
-//                dy[j] += k26 * u05[j][i+1];
-//                dy[j] += ht_050*f(sn, tn10);
-//            }
+        for (n=xmin+1, sn.i=n, sn.x=n*hx, i=1; n<=xmax-1;
+             ++n, sn.i=n, sn.x=n*hx, ++i)
+        {
+            for (m=ymin+1, sn.j=m, sn.y=m*hy, j=1, dy[j]=0.0; m<=ymax-1;
+                 ++m, sn.j=m, sn.y=m*hy, ++j, dy[j]=0.0)
+            {
+                dy[j] += k24 * u05[j][i-1];
+                dy[j] += k25 * u05[j][i];
+                dy[j] += k26 * u05[j][i+1];
+                dy[j] += ht_050*f(sn, tn10);
+            }
 
-//            sn.j = ymin; sn.y = ymin*hy;
-//            value = boundary(sn, tn10, condition);
-//            alpha = condition.alpha();
-//            beta  = condition.beta();
-//            gamma = condition.gamma();
+            sn.j = ymin; sn.y = ymin*hy;
+            value = boundary(sn, tn10, condition);
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
 
-//            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
-//            {
-//                s = 1;
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+            {
+                s = 1;
 
-//                u10[0][i] = (gamma/alpha)*value;
-//                dy[1] -= k21 * u10[0][i];
-//                ay[1] = ay[0] = by[0] = cy[0] = dy[0] = ry[0] = 0.0;
-//            }
-//            if (condition.boundaryCondition() == BoundaryCondition::Robin)
-//            {
-//                s = 0;
+                u10[0][i] = (gamma/alpha)*value;
+                dy[1] -= k21 * u10[0][i];
+                ay[1] = ay[0] = by[0] = cy[0] = dy[0] = ry[0] = 0.0;
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+                s = 0;
 
-//                ay[s]  = 0.0;
-//                by[s]  = beta  * b31 + alpha * b32;
-//                cy[s]  = beta  * b33;
+                ay[s]  = 0.0;
+                by[s]  = beta  * b31 + alpha * b32;
+                cy[s]  = beta  * b33;
 
-//                dy[s]  = beta  * b34 * u05[s][i];
-//                dy[s] += beta  * b35 * ((u05[s][i+1]-2.0*u05[s][i]+u05[s][i-1])/(hx*hx));
-//                dy[s] += beta  * b36 * ((u05[s][i+1]-u05[s][i-1])/(2.0*hx));
+                dy[s]  = beta  * b34 * u05[s][i];
+                dy[s] += beta  * b35 * ((u05[s][i+1]-2.0*u05[s][i]+u05[s][i-1])/(hx*hx));
+                dy[s] += beta  * b36 * ((u05[s][i+1]-u05[s][i-1])/(2.0*hx));
 
-//                dy[s] += gamma * b37 * value;
-//                dy[s] += beta  * ht_050 * f(sn, tn10);
-//            }
+                dy[s] += gamma * b37 * value;
+                dy[s] += beta  * ht_050 * f(sn, tn10);
+            }
 
-//            sn.j = ymax; sn.y = ymax*hy;
-//            value = boundary(sn, tn10, condition);
-//            alpha = condition.alpha();
-//            beta  = condition.beta();
-//            gamma = condition.gamma();
+            sn.j = ymax; sn.y = ymax*hy;
+            value = boundary(sn, tn10, condition);
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
 
-//            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
-//            {
-//                e = M-1;
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+            {
+                e = M-1;
 
-//                u10[M][i] = (gamma/alpha)*value;
-//                dy[M-1] -= k23 * u10[M][i];
-//                cy[M-1] = ay[M] = by[M] = cy[M] = dy[M] = ry[M] = 0.0;
-//            }
-//            if (condition.boundaryCondition() == BoundaryCondition::Robin)
-//            {
-//                e = M;
+                u10[M][i] = (gamma/alpha)*value;
+                dy[M-1] -= k23 * u10[M][i];
+                cy[M-1] = ay[M] = by[M] = cy[M] = dy[M] = ry[M] = 0.0;
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+                e = M;
 
-//                ay[e]  = beta  * b41;
-//                by[e]  = beta  * b43 + alpha * b42;
-//                cy[e]  = 0.0;
+                ay[e]  = beta  * b41;
+                by[e]  = beta  * b43 + alpha * b42;
+                cy[e]  = 0.0;
 
-//                dy[e]  = beta  * b44 * u05[e][i];
-//                dy[e] += beta  * b45 * ((u05[e][i+1]-2.0*u05[e][i]+u05[e][i-1])/(hx*hx));
-//                dy[e] += beta  * b46 * ((u05[e][i+1]-u05[e][i-1])/(2.0*hx));
+                dy[e]  = beta  * b44 * u05[e][i];
+                dy[e] += beta  * b45 * ((u05[e][i+1]-2.0*u05[e][i]+u05[e][i-1])/(hx*hx));
+                dy[e] += beta  * b46 * ((u05[e][i+1]-u05[e][i-1])/(2.0*hx));
 
-//                dy[e] += gamma * b47 * value;
-//                dy[e] += beta  * ht_050 * f(sn, tn10);
-//            }
+                dy[e] += gamma * b47 * value;
+                dy[e] += beta  * ht_050 * f(sn, tn10);
+            }
 
-//            tomasAlgorithm(ay+s, by+s, cy+s, dy+s, ry+s, e-s+1);
-//            for (unsigned int j=s; j<=e; j++) u10[j][i] = ry[j];
-//        }
+            tomasAlgorithm(ay+s, by+s, cy+s, dy+s, ry+s, e-s+1);
+            for (unsigned int j=s; j<=e; j++) u10[j][i] = ry[j];
+        }
 
         /**************************************************************************************************************************/
 
-//        sn.i = xmax; sn.x = xmax*hx;
+        sn.i = xmax; sn.x = xmax*hx;
 
-//        for (m=ymin+1, sn.j=m, sn.y=m*hy, j=1, dy[j]=0.0; m<=ymax-1;
-//             ++m, sn.j=m, sn.y=m*hy, ++j, dy[j]=0.0)
-//        {
-//            dy[j] += b34 * u05[j][N];
-//            dy[j] += b35 * ((-u05[j][N-3]+4.0*u05[j][N-2]-5.0*u05[j][N-1]+2.0*u05[j][N])/(hx*hx));
-//            dy[j] += b36 * ((+u05[j][N-2]-4.0*u05[j][N-1]+3.0*u05[j][N])/(2.0*hx));
-//            dy[j] += ht_050 * f(sn, tn10);
-//        }
+        for (m=ymin+1, sn.j=m, sn.y=m*hy, j=1, dy[j]=0.0; m<=ymax-1;
+             ++m, sn.j=m, sn.y=m*hy, ++j, dy[j]=0.0)
+        {
+            dy[j] += b34 * u05[j][N];
+            dy[j] += b35 * ((-u05[j][N-3]+4.0*u05[j][N-2]-5.0*u05[j][N-1]+2.0*u05[j][N])/(hx*hx));
+            dy[j] += b36 * ((+u05[j][N-2]-4.0*u05[j][N-1]+3.0*u05[j][N])/(2.0*hx));
+            dy[j] += ht_050 * f(sn, tn10);
+        }
 
-//        sn.j = ymin; sn.y = ymin*hy;
-//        value = boundary(sn, tn10, condition);
-//        alpha = condition.alpha();
-//        beta  = condition.beta();
-//        gamma = condition.gamma();
+        sn.j = ymin; sn.y = ymin*hy;
+        value = boundary(sn, tn10, condition);
+        alpha = condition.alpha();
+        beta  = condition.beta();
+        gamma = condition.gamma();
 
-//        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
-//        {
-//            s = 1;
+        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+        {
+            s = 1;
 
-//            u10[0][N] = (gamma/alpha)*value;
-//            dy[1] -= k21 * u10[0][N];
-//            ay[1] = ay[0] = by[0] = cy[0] = dy[0] = ry[0] = 0.0;
-//        }
-//        if (condition.boundaryCondition() == BoundaryCondition::Robin)
-//        {
-//            s = 0;
+            u10[0][N] = (gamma/alpha)*value;
+            dy[1] -= k21 * u10[0][N];
+            ay[1] = ay[0] = by[0] = cy[0] = dy[0] = ry[0] = 0.0;
+        }
+        if (condition.boundaryCondition() == BoundaryCondition::Robin)
+        {
+            s = 0;
 
-//            ay[s]  = 0.0;
-//            by[s]  = beta  * b31 + alpha * b32;
-//            cy[s]  = beta  * b33;
+            ay[s]  = 0.0;
+            by[s]  = beta  * b31 + alpha * b32;
+            cy[s]  = beta  * b33;
 
-//            dy[s]  = beta  * b34 * u05[s][N];
-//            dy[s] += beta  * b35 * ((-u05[s][N-3]+4.0*u05[s][N-2]-5.0*u05[s][N-1]+2.0*u05[s][N])/(hx*hx));
-//            dy[s] += beta  * b36 * ((+u05[s][N-2]-4.0*u05[s][N-1]+3.0*u05[s][N])/(2.0*hx));
-//            dy[s] += gamma * b37 * value;
-//            dy[s] += beta  * ht_050 * f(sn, tn10);
-//        }
+            dy[s]  = beta  * b34 * u05[s][N];
+            dy[s] += beta  * b35 * ((-u05[s][N-3]+4.0*u05[s][N-2]-5.0*u05[s][N-1]+2.0*u05[s][N])/(hx*hx));
+            dy[s] += beta  * b36 * ((+u05[s][N-2]-4.0*u05[s][N-1]+3.0*u05[s][N])/(2.0*hx));
+            dy[s] += gamma * b37 * value;
+            dy[s] += beta  * ht_050 * f(sn, tn10);
+        }
 
-//        sn.j = ymax; sn.y = ymax*hy;
-//        value = boundary(sn, tn10, condition);
-//        alpha = condition.alpha();
-//        beta  = condition.beta();
-//        gamma = condition.gamma();
+        sn.j = ymax; sn.y = ymax*hy;
+        value = boundary(sn, tn10, condition);
+        alpha = condition.alpha();
+        beta  = condition.beta();
+        gamma = condition.gamma();
 
-//        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
-//        {
-//            e = M-1;
+        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+        {
+            e = M-1;
 
-//            u10[M][N] = (gamma/alpha)*value;
-//            dy[M-1] -= k23 * u10[M][N];
-//            cy[M-1] = ay[M] = by[M] = cy[M] = dy[M] = ry[M] = 0.0;
-//        }
-//        if (condition.boundaryCondition() == BoundaryCondition::Robin)
-//        {
-//            e = M;
+            u10[M][N] = (gamma/alpha)*value;
+            dy[M-1] -= k23 * u10[M][N];
+            cy[M-1] = ay[M] = by[M] = cy[M] = dy[M] = ry[M] = 0.0;
+        }
+        if (condition.boundaryCondition() == BoundaryCondition::Robin)
+        {
+            e = M;
 
-//            ay[e]  = beta  * b41;
-//            by[e]  = beta  * b43 + alpha * b42;
-//            cy[e]  = 0.0;
+            ay[e]  = beta  * b41;
+            by[e]  = beta  * b43 + alpha * b42;
+            cy[e]  = 0.0;
 
-//            dy[e]  = beta  * b44 * u05[e][N];
-//            dy[s] += beta  * b45 * ((-u05[e][N-3]+4.0*u05[e][N-2]-5.0*u05[e][N-1]+2.0*u05[e][N])/(hx*hx));
-//            dy[s] += beta  * b46 * ((+u05[e][N-2]-4.0*u05[e][N-1]+3.0*u05[e][N])/(2.0*hx));
-//            dy[e] += gamma * b47 * value;
-//            dy[e] += beta  * ht_050 * f(sn, tn10);
-//        }
+            dy[e]  = beta  * b44 * u05[e][N];
+            dy[s] += beta  * b45 * ((-u05[e][N-3]+4.0*u05[e][N-2]-5.0*u05[e][N-1]+2.0*u05[e][N])/(hx*hx));
+            dy[s] += beta  * b46 * ((+u05[e][N-2]-4.0*u05[e][N-1]+3.0*u05[e][N])/(2.0*hx));
+            dy[e] += gamma * b47 * value;
+            dy[e] += beta  * ht_050 * f(sn, tn10);
+        }
 
-//        tomasAlgorithm(ay+s, by+s, cy+s, dy+s, ry+s, e-s+1);
-//        for (unsigned int j=s; j<=e; j++) u10[j][N] = ry[j];
+        tomasAlgorithm(ay+s, by+s, cy+s, dy+s, ry+s, e-s+1);
+        for (unsigned int j=s; j<=e; j++) u10[j][N] = ry[j];
 
         layerInfo(u10, tn10);
-        return;
+
         /**************************************************** y direction apprx ***************************************************/
 
         for (unsigned int m=0; m<=M; m++)

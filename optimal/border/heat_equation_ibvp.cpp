@@ -17,11 +17,11 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
     HeatEquationIBVP h;
     h.setTimeDimension(Dimension(0.01, 0, 100));
     h.setSpaceDimensionX(Dimension(0.010, 100, 200));
-    h.setSpaceDimensionY(Dimension(0.005, 200, 400));
+    h.setSpaceDimensionY(Dimension(0.010, 100, 200));
 
     h.setThermalDiffusivity(1.2);
-    //h.setThermalConductivity(-0.6);
-    //h.setThermalConvection(-0.8);
+//    h.setThermalConductivity(-0.6);
+//    h.setThermalConvection(-0.8);
 
 //    Benchmark bm;
 //    bm.tick();
@@ -53,11 +53,11 @@ double HeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition) const
 double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
 {
 #if defined (x1_y1_t1) || defined ( x2_y2_t2 ) || defined ( x2_y2_t1 )
-    //condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-    //return U(sn, tn)*(condition.alpha()/condition.gamma());
+    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+    return U(sn, tn)*(condition.alpha()/condition.gamma());
 
-    condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
-    return (condition.alpha()*U(sn, tn)+condition.beta()*Un(sn,tn))/condition.gamma();
+    //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
+    //return (condition.alpha()*U(sn, tn)+condition.beta()*Un(sn,tn))/condition.gamma();
 #else
 
 
@@ -463,9 +463,17 @@ void HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
     C_UNUSED(u);
     C_UNUSED(tn);
 
+    //if (tn.i==0 || tn.i==1 || tn.i==2 || tn.i==3 || tn.i==4 || tn.i==5 || tn.i==6)
+    {
+        IPrinter::printMatrix(u);
+        IPrinter::printSeperatorLine();
+        if (tn.i%2==0) IPrinter::printSeperatorLine();
+    }
+    return;
+
 //    IPrinter::printMatrix(u);
 //    IPrinter::printSeperatorLine();
-//    return;
+    return;
 
     if (tn.i==200 || /*tn.i==199 || tn.i==198 || tn.i==397 || tn.i==396 ||*/
             tn.i==4   || tn.i==3   || tn.i==2   || tn.i==1 || tn.i==0)
