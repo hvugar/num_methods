@@ -10,8 +10,17 @@ struct MINIMUMSHARED_EXPORT NonLocalCondition
     NonLocalCondition(unsigned int i, const PointNodeODE &node, const DoubleMatrix &m);
     virtual ~NonLocalCondition();
 
+    /**
+     * @brief i index of non-local condition
+     */
     unsigned int i;
+    /**
+     * @brief n point-node on grid
+     */
     PointNodeODE n;
+    /**
+     * @brief m non-local condition matrix
+     */
     DoubleMatrix m;
 };
 
@@ -54,6 +63,7 @@ public:
      */
     void transferOfCondition(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const;
     void transferOfCondition1(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const;
+    void transferOfCondition2(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const;
 
     /**
      * @brief solveInitialValueProblem

@@ -27,6 +27,12 @@ void FirstOrderLinearODE::discritize(const std::vector<NonLocalCondition> &co, s
     const auto max = dimension().max();
     //const auto sze = dimension().size();
 
+    if (k==0)
+    {
+        for (unsigned int i=0; i<co.size(); i++) cn.push_back(co[i]);
+        return;
+    }
+
     unsigned int idx = 0;
     for (unsigned int s=0; s<cnd_size; s++)
     {
@@ -519,6 +525,516 @@ void FirstOrderLinearODE::transferOfCondition1(const std::vector<NonLocalConditi
         delete [] coof[i];
     }
     delete [] coof;
+}
+
+void FirstOrderLinearODE::transferOfCondition2(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const
+{
+    const unsigned int schema = 0;
+
+    if (co.size() < 2) throw ExceptionODE(1);
+
+    for (unsigned int i=0; i<co.size(); i++)
+    {
+        const DoubleMatrix &m = co[i].m;
+
+        if (!m.squareMatrix()) throw ExceptionODE(2);
+
+        if (m.rows() != count()) throw ExceptionODE(3);
+
+        if (d.length() != count()) throw ExceptionODE(4);
+    }
+
+    const int min = dimension().min();
+    const int max = dimension().max();
+    const unsigned int sze = static_cast<unsigned int>( dimension().size() ) - 1;
+    const unsigned int end = static_cast<unsigned int>( sze-k+1 );
+    const double h = dimension().step();
+    const unsigned int M = count();
+
+    std::vector<NonLocalCondition> C;
+    discritize(co, C, 0);
+
+    puts("------------------------");
+    for (unsigned int i=1; i<k; i++)
+    {
+        if (C[i].n.i != static_cast<int>(i))
+        {
+            C.insert(C.begin()+i, NonLocalCondition(i, PointNodeODE(0.00, static_cast<int>(i)), DoubleMatrix(M,M,0.0)));
+        }
+    }
+
+    for (unsigned int i=0; i<C.size(); i++)
+    {
+        C[i].i = i;
+        printf("%4d %4d %16.12f\n", C[i].i, C[i].n.i, C[i].m.determinant());
+    }
+
+    puts("------------------------");
+
+    /************************************************************************
+     *
+     *
+     ***********************************************************************/
+
+//    double max_value = 0.0;
+//    unsigned int max_index = 0.0;
+//    for (unsigned int i=0; i<C.size(); i++)
+//    {
+//        if (fabs(C[i].m.determinant()) > max_value)
+//        {
+//            max_value = fabs(C[i].m.determinant());
+//            max_index = i;
+//        }
+//    }
+
+//    printf("max: %4d %.8f\n", max_index, max_value);
+
+//    puts("------------------------");
+//    for (unsigned int i=0; i<C.size(); i++)
+//    {
+//        C[i].i = i;
+//        printf("%4d %4d %16.12f\n", C[i].i, C[i].n.i, C[i].m.determinant());
+//    }
+//    puts("------------------------");
+//    puts("OK0");
+//    DoubleMatrix mx = C[max_index].m;
+//    printf("det11: %f %d %d\n", mx.determinant(), mx.rows(), mx.cols());
+//    mx.inverse();
+//    puts("OK1");
+//    printf("det: %f\n", mx.determinant());
+//    puts("OK2");
+
+//    for (unsigned int i=0; i<C.size(); i++)
+//    {
+//        C[i].m = mx * C[i].m;
+//    }
+//    d = mx * d;
+
+//    puts("------------------------");
+//    for (unsigned int i=0; i<C.size(); i++)
+//    {
+//        C[i].i = i;
+//        printf("%4d %4d %16.12f\n", C[i].i, C[i].n.i, C[i].m.determinant());
+//    }
+//    puts("------------------------");
+
+    DoubleMatrix * const D = new DoubleMatrix[sze+1];
+    //for (unsigned int i=0; i<=sze; i++) D[i].resize(M,M);
+
+    //for (unsigned int i=0; i<C.size(); i++)
+    //{
+    //    unsigned int index = static_cast<unsigned int>(C[i].n.i);
+    //    D[index] += C[i].m;
+    //}
+
+    DoubleMatrix **betta = new DoubleMatrix*[end+1];
+
+    unsigned int betta_count = C.size() + 1;
+
+    for (unsigned int i=0; i<=end; i++)
+    {
+        betta[i] = new DoubleMatrix[betta_count];
+
+        if (i==0)
+        {
+            betta[0][0] = d;
+            for (unsigned int j=1; j<=C.size(); j++) betta[0][j] = C[j-1].m;
+        }
+        else
+        {
+            DoubleMatrix *alpha = new DoubleMatrix[k+1];
+            PointNodeODE node((i-1)*h,static_cast<int>(i-1));
+
+            if (k==2)
+            {
+                if (schema == 0)
+                {
+                    DoubleMatrix mx(M, M);
+                    for (unsigned int r=0; r<M; r++)
+                    {
+                        for (unsigned int c=0; c<M; c++)
+                        {
+                            mx[r][c] = 2.0*h*A(node, r+1, c+1);
+                        }
+                        mx[r][r] += 3.0;
+                    }
+                    mx.inverse();
+                    alpha[0].resize(M, 1, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[0])[m][0] = -2.0*h*B(node,m+1); } alpha[0] = mx*alpha[0];
+                    alpha[1].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[1])[m][m] = +4.0; }               alpha[1] = mx*alpha[1];
+                    alpha[2].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[2])[m][m] = -1.0; }               alpha[2] = mx*alpha[2];
+                    mx.clear();
+                }
+
+                if (schema == 1)
+                {
+                    alpha[0].resize(M, 1, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[0])[m][0] = -2.0*h*B(node,m+1); }
+                    alpha[1].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[1])[m][m] = +4.0; }
+                    for (unsigned int r=0; r<M; r++)
+                    {
+                        for (unsigned int c=0; c<M; c++)
+                        {
+                            alpha[1][r][c] = -2.0*h*A(node, r+1, c+1);
+                        }
+                    }
+                    alpha[2].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[2])[m][m] = +1.0; }
+                }
+
+                if (schema == 2)
+                {
+                    alpha[0].resize(M, 1, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[0])[m][0] = +2.0*h*B(node,m+1); }
+                    alpha[1].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[1])[m][m] = +4.0; }
+                    alpha[2].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[2])[m][m] = -3.0; }
+                    for (unsigned int r=0; r<M; r++)
+                    {
+                        for (unsigned int c=0; c<M; c++)
+                        {
+                            alpha[2][r][c] = +2.0*h*A(node, r+1, c+1);
+                        }
+                    }
+                }
+            }
+
+            if (k==4)
+            {
+                DoubleMatrix mx(M, M);
+                for (unsigned int r=0; r<M; r++)
+                {
+                    for (unsigned int c=0; c<M; c++)
+                    {
+                        mx[r][c] = 12.0*h*A(node, r+1, c+1);
+                    }
+                    mx[r][r] += 25.0;
+                }
+                mx.inverse();
+                alpha[0].resize(M, 1, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[0])[m][0] = -12.0*h*B(node,m+1); } alpha[0] = mx*alpha[0];
+                alpha[1].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[1])[m][m] = +48.0; }               alpha[1] = mx*alpha[1];
+                alpha[2].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[2])[m][m] = -36.0; }               alpha[2] = mx*alpha[2];
+                alpha[3].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[3])[m][m] = +16.0; }               alpha[3] = mx*alpha[3];
+                alpha[4].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[4])[m][m] = -3.0; }                alpha[4] = mx*alpha[4];
+                mx.clear();
+
+                betta[i][0] = betta[i-1][0] - betta[i-1][1]*alpha[0];
+
+                betta[i][1] = betta[i-1][2] + betta[i-1][1]*alpha[1];
+                betta[i][2] = betta[i-1][3] + betta[i-1][1]*alpha[2];
+                betta[i][3] = betta[i-1][4] + betta[i-1][1]*alpha[3];
+                betta[i][4] =                 betta[i-1][1]*alpha[4];
+
+                //                for (unsigned int j=k+1; j<=C.size(); j++)
+                //                {
+                //                    betta[i][j] = betta[i-1][j];
+                //                }
+
+                for (unsigned int j=k+1; j<=C.size(); j++)
+                {
+                    //printf("%d %d %d\n", j, C[j-1].n.i, static_cast<int>(i+k-1));
+                    if (C[j-1].n.i == static_cast<int>(i+k-1))
+                    {
+                        printf("---------------- %d %d -----------------\n", i, j);
+                        betta[i][4] = betta[i][4] + betta[i-1][j];
+                        betta[i][j] = DoubleMatrix::ZeroMatrix(M, M);
+                    }
+                    else
+                    {
+                        betta[i][j] = betta[i-1][j];
+                    }
+                }
+
+//                printf("%4d ", i);
+//                for (unsigned int j=1; j<=C.size(); j++)
+//                {
+//                    printf("%14.6f ", betta[i][j].determinant());
+//                }
+//                printf("| %14.6f ", betta[i][0].determinant());
+//                puts("");
+            }
+
+            if (k==6)
+            {
+                DoubleMatrix mx(M, M);
+                for (unsigned int r=0; r<M; r++)
+                {
+                    for (unsigned int c=0; c<M; c++)
+                    {
+                        mx[r][c] = 60.0*h*A(node, r+1, c+1);
+                    }
+                    mx[r][r] += 147.0;
+                }
+                mx.inverse();
+                alpha[0].resize(M, 1, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[0])[m][0] = -60.0*h*B(node,m+1); } alpha[0] = mx*alpha[0];
+                alpha[1].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[1])[m][m] = +360.0; }              alpha[1] = mx*alpha[1];
+                alpha[2].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[2])[m][m] = -450.0; }              alpha[2] = mx*alpha[2];
+                alpha[3].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[3])[m][m] = +400.0; }              alpha[3] = mx*alpha[3];
+                alpha[4].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[4])[m][m] = -225.0; }              alpha[4] = mx*alpha[4];
+                alpha[5].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[5])[m][m] = +72.0;  }              alpha[5] = mx*alpha[5];
+                alpha[6].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[6])[m][m] = -10.0;  }              alpha[6] = mx*alpha[6];
+                mx.clear();
+            }
+
+            //            betta[i][0] = betta[i-1][0] - betta[i-1][1]*alpha[0];
+            //            for (unsigned int j=1; j<=k-1; j++)
+            //            {
+            //                betta[i][j] = betta[i-1][j+1] + betta[i-1][1]*alpha[j];
+            //            }
+            //            betta[i][k] = betta[i-1][1]*alpha[k];
+
+            //            for (unsigned int j=k; j<C.size(); j++)
+            //            {
+            //                if (C[j].n.i == (i+k-1))
+            //                {
+            //                    betta[i][k] = betta[i][k] + betta[i][j];
+            //                    betta[i][j] = DoubleMatrix::ZeroMatrix(M, M);
+            //                }
+            //            }
+
+            if (i%10==0)
+            {
+                //if (k==2) printf("%d %f %f\n", i, betta[i][1][0][0], betta[i][2][0][0]);
+                //if (k==4) printf("%4d %10.6f %10.6f %10.6f %10.6f\n", i, betta[i][1][0][0], betta[i][2][0][0], betta[i][3][0][0], betta[i][4][0][0]);
+                //if (k==6) printf("%d %f %f %f %f %f %f\n", i, betta[i][1][0][0], betta[i][2][0][0], betta[i][3][0][0], betta[i][4][0][0], betta[i][5][0][0], betta[i][6][0][0]);
+            }
+
+            for (unsigned int j=0; j<=k; j++) alpha[j].clear();
+            delete [] alpha;
+        }
+
+        /***************************** normalization of coefficients ******************************/
+
+        double max_betta_value = 0.0;
+        unsigned int max_betta_index = 0.0;
+        for (unsigned int j=1; j<betta_count; j++)
+        {
+            if (fabs(betta[i][j].determinant()) > max_betta_value)
+            {
+                max_betta_value = fabs(betta[i][j].determinant());
+                max_betta_index = j;
+            }
+        }
+        DoubleMatrix betta_mx = betta[i][max_betta_index];
+        betta_mx.inverse();
+        //printf("%f\n", betta_mx.determinant());
+
+        for (unsigned int j=0; j<betta_count; j++)
+        {
+            betta[i][j] = betta_mx * betta[i][j];
+        }
+
+        betta_mx.clear();
+
+        /***************************** нормализация коэффициентов *********************************/
+
+        printf("%4d ", i);
+        for (unsigned int j=1; j<=C.size(); j++)
+        {
+            printf("%14.6f ", betta[i][j].determinant());
+        }
+        printf("| %14.6f ", betta[i][0].determinant());
+        puts("");
+    }
+
+    puts("============================================================================");
+
+    DoubleMatrix F((k+1)*M, (k+1)*M);
+    DoubleVector g((k+1)*M);
+
+    if (k==2)
+    {
+        double t1 = (sze-1)*h; PointNodeODE node1(t1,static_cast<int>((sze-1)));
+        double t0 = (sze-0)*h; PointNodeODE node0(t0,static_cast<int>((sze-0)));
+        for (unsigned int r=0; r<M; r++)
+        {
+            for (unsigned int c=0; c<M; c++)
+            {
+                F[0*M+r][0*M+c] = 0.0;
+                F[0*M+r][1*M+c] = betta[end][1][r][c];
+                F[0*M+r][2*M+c] = betta[end][2][r][c];
+
+                F[1*M+r][0*M+c] = 0.0;                     if (r==c) F[1*M+r][0*M+c] += -1.0;
+                F[1*M+r][1*M+c] = -2.0*h*A(node1,r+1,c+1); if (r==c) F[1*M+r][1*M+c] += +0.0;
+                F[1*M+r][2*M+c] = 0.0;                     if (r==c) F[1*M+r][2*M+c] += +1.0;
+
+                F[2*M+r][0*M+c] = 0.0;                     if (r==c) F[2*M+r][0*M+c] += +1.0;
+                F[2*M+r][1*M+c] = 0.0;                     if (r==c) F[2*M+r][1*M+c] += -4.0;
+                F[2*M+r][2*M+c] = -2.0*h*A(node0,r+1,c+1); if (r==c) F[2*M+r][2*M+c] += +3.0;
+            }
+            g[0*M+r] = betta[end][0][r][0];
+            g[1*M+r] = 2.0*h*B(node1,r+1);
+            g[2*M+r] = 2.0*h*B(node0,r+1);
+        }
+    }
+
+    if (k==4)
+    {
+        double t3 = (sze-3)*h; PointNodeODE node3(t3,static_cast<int>((sze-3)));
+        double t2 = (sze-2)*h; PointNodeODE node2(t2,static_cast<int>((sze-2)));
+        double t1 = (sze-1)*h; PointNodeODE node1(t1,static_cast<int>((sze-1)));
+        double t0 = (sze-0)*h; PointNodeODE node0(t0,static_cast<int>((sze-0)));
+
+        for (unsigned int r=0; r<M; r++)
+        {
+            for (unsigned int c=0; c<M; c++)
+            {
+                F[0*M+r][0*M+c] = 0.0;
+                F[0*M+r][1*M+c] = betta[end][1][r][c];
+                F[0*M+r][2*M+c] = betta[end][2][r][c];
+                F[0*M+r][3*M+c] = betta[end][3][r][c];
+                F[0*M+r][4*M+c] = betta[end][4][r][c];
+
+                F[1*M+r][0*M+c] = 0.0;                       if (r==c) F[1*M+r][0*M+c] += -3.0;
+                F[1*M+r][1*M+c] = -12.0*h*A(node3, r+1,c+1); if (r==c) F[1*M+r][1*M+c] += -10.0;
+                F[1*M+r][2*M+c] = 0.0;                       if (r==c) F[1*M+r][2*M+c] += +18.0;
+                F[1*M+r][3*M+c] = 0.0;                       if (r==c) F[1*M+r][3*M+c] += -6.0;
+                F[1*M+r][4*M+c] = 0.0;                       if (r==c) F[1*M+r][4*M+c] += +1.0;
+
+                F[2*M+r][0*M+c] = 0.0;                       if (r==c) F[2*M+r][0*M+c] += +1.0;
+                F[2*M+r][1*M+c] = 0.0;                       if (r==c) F[2*M+r][1*M+c] += -8.0;
+                F[2*M+r][2*M+c] = -12.0*h*A(node2, r+1,c+1); if (r==c) F[2*M+r][2*M+c] += +0.0;
+                F[2*M+r][3*M+c] = 0.0;                       if (r==c) F[2*M+r][3*M+c] += +8.0;
+                F[2*M+r][4*M+c] = 0.0;                       if (r==c) F[2*M+r][4*M+c] += -1.0;
+
+                F[3*M+r][0*M+c] = 0.0;                       if (r==c) F[3*M+r][0*M+c] += -1.0;
+                F[3*M+r][1*M+c] = 0.0;                       if (r==c) F[3*M+r][1*M+c] += +6.0;
+                F[3*M+r][2*M+c] = 0.0;                       if (r==c) F[3*M+r][2*M+c] += -18.0;
+                F[3*M+r][3*M+c] = -12.0*h*A(node1, r+1,c+1); if (r==c) F[3*M+r][3*M+c] += +10.0;
+                F[3*M+r][4*M+c] = 0.0;                       if (r==c) F[3*M+r][4*M+c] += +3.0;
+
+                F[4*M+r][0*M+c] = 0.0;                       if (r==c) F[4*M+r][0*M+c] += +3.0;
+                F[4*M+r][1*M+c] = 0.0;                       if (r==c) F[4*M+r][1*M+c] += -16.0;
+                F[4*M+r][2*M+c] = 0.0;                       if (r==c) F[4*M+r][2*M+c] += +36.0;
+                F[4*M+r][3*M+c] = 0.0;                       if (r==c) F[4*M+r][3*M+c] += -48.0;
+                F[4*M+r][4*M+c] = -12.0*h*A(node0, r+1,c+1); if (r==c) F[4*M+r][4*M+c] += +25.0;
+            }
+            g[0*M+r] = betta[end][0][r][0];
+            g[1*M+r] = +12.0*h*B(node3, r+1);
+            g[2*M+r] = +12.0*h*B(node2, r+1);
+            g[3*M+r] = +12.0*h*B(node1, r+1);
+            g[4*M+r] = +12.0*h*B(node0, r+1);
+        }
+
+    }
+    puts("============================================================================");
+
+    if (k==6)
+    {
+        double t5 = (sze-5)*h; PointNodeODE node5(t5,static_cast<int>((sze-5)));
+        double t4 = (sze-4)*h; PointNodeODE node4(t4,static_cast<int>((sze-4)));
+        double t3 = (sze-3)*h; PointNodeODE node3(t3,static_cast<int>((sze-3)));
+        double t2 = (sze-2)*h; PointNodeODE node2(t2,static_cast<int>((sze-2)));
+        double t1 = (sze-1)*h; PointNodeODE node1(t1,static_cast<int>((sze-1)));
+        double t0 = (sze-0)*h; PointNodeODE node0(t0,static_cast<int>((sze-0)));
+
+        for (unsigned int r=0; r<M; r++)
+        {
+            for (unsigned int c=0; c<M; c++)
+            {
+                F[0*M+r][0*M+c] = 0.0;
+                F[0*M+r][1*M+c] = betta[end][1][r][c];
+                F[0*M+r][2*M+c] = betta[end][2][r][c];
+                F[0*M+r][3*M+c] = betta[end][3][r][c];
+                F[0*M+r][4*M+c] = betta[end][4][r][c];
+                F[0*M+r][5*M+c] = betta[end][5][r][c];
+                F[0*M+r][6*M+c] = betta[end][6][r][c];
+
+                F[1*M+r][0*M+c] = 0.0;                      if (r==c) F[1*M+r][0*M+c] += -10.0;
+                F[1*M+r][1*M+c] = -60.0*h*A(node5,r+1,c+1); if (r==c) F[1*M+r][1*M+c] += -77.0;
+                F[1*M+r][2*M+c] = 0.0;                      if (r==c) F[1*M+r][2*M+c] += +150.0;
+                F[1*M+r][3*M+c] = 0.0;                      if (r==c) F[1*M+r][3*M+c] += -100.0;
+                F[1*M+r][4*M+c] = 0.0;                      if (r==c) F[1*M+r][4*M+c] += +50.0;
+                F[1*M+r][5*M+c] = 0.0;                      if (r==c) F[1*M+r][5*M+c] += -15.0;
+                F[1*M+r][6*M+c] = 0.0;                      if (r==c) F[1*M+r][6*M+c] += +2.0;
+
+                F[2*M+r][0*M+c] = 0.0;                      if (r==c) F[2*M+r][0*M+c] += +2.0;
+                F[2*M+r][1*M+c] = 0.0;                      if (r==c) F[2*M+r][1*M+c] += -24.0;
+                F[2*M+r][2*M+c] = -60.0*h*A(node4,r+1,c+1); if (r==c) F[2*M+r][2*M+c] += -35.0;
+                F[2*M+r][3*M+c] = 0.0;                      if (r==c) F[2*M+r][3*M+c] += +80.0;
+                F[2*M+r][4*M+c] = 0.0;                      if (r==c) F[2*M+r][4*M+c] += -30.0;
+                F[2*M+r][5*M+c] = 0.0;                      if (r==c) F[2*M+r][5*M+c] += +8.0;
+                F[2*M+r][6*M+c] = 0.0;                      if (r==c) F[2*M+r][6*M+c] += -1.0;
+
+                F[3*M+r][0*M+c] = 0.0;                      if (r==c) F[3*M+r][0*M+c] += -1.0;
+                F[3*M+r][1*M+c] = 0.0;                      if (r==c) F[3*M+r][1*M+c] += +9.0;
+                F[3*M+r][2*M+c] = 0.0;                      if (r==c) F[3*M+r][2*M+c] += -45.0;
+                F[3*M+r][3*M+c] = -60.0*h*A(node3,r+1,c+1); if (r==c) F[3*M+r][3*M+c] += +0.0;
+                F[3*M+r][4*M+c] = 0.0;                      if (r==c) F[3*M+r][4*M+c] += +45.0;
+                F[3*M+r][5*M+c] = 0.0;                      if (r==c) F[3*M+r][5*M+c] += -9.0;
+                F[3*M+r][6*M+c] = 0.0;                      if (r==c) F[3*M+r][6*M+c] += +1.0;
+
+                F[4*M+r][0*M+c] = 0.0;                      if (r==c) F[4*M+r][0*M+c] += +1.0;
+                F[4*M+r][1*M+c] = 0.0;                      if (r==c) F[4*M+r][1*M+c] += -8.0;
+                F[4*M+r][2*M+c] = 0.0;                      if (r==c) F[4*M+r][2*M+c] += +30.0;
+                F[4*M+r][3*M+c] = 0.0;                      if (r==c) F[4*M+r][3*M+c] += -80.0;
+                F[4*M+r][4*M+c] = -60.0*h*A(node2,r+1,c+1); if (r==c) F[4*M+r][4*M+c] += +35.0;
+                F[4*M+r][5*M+c] = 0.0;                      if (r==c) F[4*M+r][5*M+c] += +24.0;
+                F[4*M+r][6*M+c] = 0.0;                      if (r==c) F[4*M+r][6*M+c] += -2.0;
+
+                F[5*M+r][0*M+c] = 0.0;                      if (r==c) F[5*M+r][0*M+c] += -2.0;
+                F[5*M+r][1*M+c] = 0.0;                      if (r==c) F[5*M+r][1*M+c] += +15.0;
+                F[5*M+r][2*M+c] = 0.0;                      if (r==c) F[5*M+r][2*M+c] += -50.0;
+                F[5*M+r][3*M+c] = 0.0;                      if (r==c) F[5*M+r][3*M+c] += +100.0;
+                F[5*M+r][4*M+c] = 0.0;                      if (r==c) F[5*M+r][4*M+c] += -150.0;
+                F[5*M+r][5*M+c] = -60.0*h*A(node1,r+1,c+1); if (r==c) F[5*M+r][5*M+c] += +77.0;
+                F[5*M+r][6*M+c] = 0.0;                      if (r==c) F[5*M+r][6*M+c] += +10.0;
+
+                F[6*M+r][0*M+c] = 0.0;                      if (r==c) F[6*M+r][0*M+c] += +10.0;
+                F[6*M+r][1*M+c] = 0.0;                      if (r==c) F[6*M+r][1*M+c] += -72.0;
+                F[6*M+r][2*M+c] = 0.0;                      if (r==c) F[6*M+r][2*M+c] += +225.0;
+                F[6*M+r][3*M+c] = 0.0;                      if (r==c) F[6*M+r][3*M+c] += -400.0;
+                F[6*M+r][4*M+c] = 0.0;                      if (r==c) F[6*M+r][4*M+c] += +450.0;
+                F[6*M+r][5*M+c] = 0.0;                      if (r==c) F[6*M+r][5*M+c] += -360.0;
+                F[6*M+r][6*M+c] = -60.0*h*A(node0,r+1,c+1); if (r==c) F[6*M+r][6*M+c] += +147.0;
+            }
+            g[0*M+r] = betta[end][0][r][0];
+            g[1*M+r] = +60.0*h*B(node5,r+1);
+            g[2*M+r] = +60.0*h*B(node4,r+1);
+            g[3*M+r] = +60.0*h*B(node3,r+1);
+            g[4*M+r] = +60.0*h*B(node2,r+1);
+            g[5*M+r] = +60.0*h*B(node1,r+1);
+            g[6*M+r] = +60.0*h*B(node0,r+1);
+        }
+    }
+
+    DoubleVector xf((k+1)*M);
+    LinearEquation::GaussianElimination(F, g, xf);
+
+    F.clear();
+    g.clear();
+
+    x.clear();
+    x.resize(sze+1); for (unsigned int n=0; n<=sze; n++) x[n].resize(M);
+
+    unsigned int s = xf.length()-M;
+    unsigned int e = xf.length()-1;
+    for (unsigned int n=sze; n>=sze-k; n--)
+    {
+        x[n] = xf.mid(s, e); IPrinter::print(x[n], x[n].length());
+        s -= M;
+        e -= M;
+    }
+    xf.clear();
+
+    /*********************** Finding previous values ************************/
+    unsigned int stop = static_cast<unsigned int>(0)-1;
+    for (unsigned int n=(sze-k)-1; n!=stop; n--)
+    {
+        x[n] = betta[n][0];
+        for (unsigned int j=2; j<=k; j++) x[n] -= betta[n][j]*x[n+j-1];
+        for (unsigned int j=n+k; j<=sze; j++) x[n] -= D[j]*x[j];
+        betta[n][1].inverse();
+        x[n] = betta[n][1]*x[n];
+    }
+    /************************************************************************/
+
+    /* Cleaning betta vector matrices */
+    for (unsigned int n=0; n<=end; n++)
+    {
+        for (unsigned int i=0; i<=k; i++) betta[n][k].clear();
+        delete [] betta[n];
+    }
+    delete [] betta;
+    /************************************************************************/
+
+    //    delete [] D;
+    C.clear();
 }
 
 void FirstOrderLinearODE::solveInitialValueProblem(DoubleVector &rv) const

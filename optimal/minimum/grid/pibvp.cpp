@@ -958,8 +958,8 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
             dx[e]  = beta  * b24 * u00[0][e];
             dx[e] += beta  * b25 * ((+2.0*u00[0][e]-5.0*u00[1][e]+4.0*u00[2][e]-u00[3][e])/(hy*hy));
             dx[e] += beta  * b26 * ((-3.0*u00[0][e]+4.0*u00[1][e]-1.0*u00[2][e])/(2.0*hy));
-            dx[e] += gamma * b27 * value;
             dx[e] += beta  * ht_050 * f(sn, tn00);
+            dx[e] += gamma * b27 * value;
         }
 
         tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
@@ -1004,9 +1004,8 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
                 dx[s]  = beta  * b14 * u00[j][s];
                 dx[s] += beta  * b15 * ((u00[j+1][s]-2.0*u00[j][s]+u00[j-1][s])/(hy*hy));
                 dx[s] += beta  * b16 * ((u00[j+1][s]-u00[j-1][s])/(2.0*hy));
-
-                dx[s] += gamma * b17 * value;
                 dx[s] += beta  * ht_050 * f(sn, tn00);
+                dx[s] += gamma * b17 * value;
             }
 
             sn.i = xmax; sn.x = xmax*hx;
@@ -1034,9 +1033,8 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
                 dx[e]  = beta  * b24 * u00[j][e];
                 dx[e] += beta  * b25 * ((u00[j+1][e]-2.0*u00[j][e]+u00[j-1][e])/(hy*hy));
                 dx[e] += beta  * b26 * ((u00[j+1][e]-u00[j-1][e])/(2.0*hy));
-
-                dx[e] += gamma * b27 * value;
                 dx[e] += beta  * ht_050 * f(sn, tn00);
+                dx[e] += gamma * b27 * value;
             }
 
             tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
@@ -1081,8 +1079,8 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
             dx[s]  = beta  * b14 * u00[M][s];
             dx[s] += beta  * b15 * ((-u00[M-3][s]+4.0*u00[M-2][s]-5.0*u00[M-1][s]+2.0*u00[M][s])/(hy*hy));
             dx[s] += beta  * b16 * ((+u00[M-2][s]-4.0*u00[M-1][s]+3.0*u00[M][s])/(2.0*hy));
-            dx[s] += gamma * b17 * value;
             dx[s] += beta  * ht_050 * f(sn, tn00);
+            dx[s] += gamma * b17 * value;
         }
 
         sn.i = xmax; sn.x = xmax*hx;
@@ -1110,8 +1108,8 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
             dx[e]  = beta  * b24 * u00[M][e];
             dx[e] += beta  * b25 * ((-u00[M-3][e]+4.0*u00[M-2][e]-5.0*u00[M-1][e]+2.0*u00[M][e])/(hy*hy));
             dx[e] += beta  * b26 * ((+u00[M-2][e]-4.0*u00[M-1][e]+3.0*u00[M][e])/(2.0*hy));
-            dx[e] += gamma * b27 * value;
             dx[e] += beta  * ht_050 * f(sn, tn00);
+            dx[e] += gamma * b27 * value;
         }
 
         tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
@@ -1159,8 +1157,8 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
             dy[s]  = beta  * b34 * u05[s][0];
             dy[s] += beta  * b35 * ((+2.0*u05[s][0]-5.0*u05[s][1]+4.0*u05[s][2]-u05[s][3])/(hx*hx));
             dy[s] += beta  * b36 * ((-3.0*u05[s][0]+4.0*u05[s][1]-1.0*u05[s][2])/(2.0*hx));
-            dy[s] += gamma * b37 * value;
             dy[s] += beta  * ht_050 * f(sn, tn10);
+            dy[s] += gamma * b37 * value;
         }
 
         sn.j = ymax; sn.y = ymax*hy;
@@ -1188,8 +1186,8 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
             dy[e]  = beta  * b44 * u05[e][0];
             dy[e] += beta  * b45 * ((+2.0*u05[e][0]-5.0*u05[e][1]+4.0*u05[e][2]-u05[e][3])/(hx*hx));
             dy[e] += beta  * b46 * ((-3.0*u05[e][0]+4.0*u05[e][1]-1.0*u05[e][2])/(2.0*hx));
-            dy[e] += gamma * b47 * value;
             dy[e] += beta  * ht_050 * f(sn, tn10);
+            dy[e] += gamma * b47 * value;
         }
 
         tomasAlgorithm(ay+s, by+s, cy+s, dy+s, ry+s, e-s+1);
@@ -1234,9 +1232,8 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
                 dy[s]  = beta  * b34 * u05[s][i];
                 dy[s] += beta  * b35 * ((u05[s][i+1]-2.0*u05[s][i]+u05[s][i-1])/(hx*hx));
                 dy[s] += beta  * b36 * ((u05[s][i+1]-u05[s][i-1])/(2.0*hx));
-
-                dy[s] += gamma * b37 * value;
                 dy[s] += beta  * ht_050 * f(sn, tn10);
+                dy[s] += gamma * b37 * value;
             }
 
             sn.j = ymax; sn.y = ymax*hy;
@@ -1264,9 +1261,8 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
                 dy[e]  = beta  * b44 * u05[e][i];
                 dy[e] += beta  * b45 * ((u05[e][i+1]-2.0*u05[e][i]+u05[e][i-1])/(hx*hx));
                 dy[e] += beta  * b46 * ((u05[e][i+1]-u05[e][i-1])/(2.0*hx));
-
-                dy[e] += gamma * b47 * value;
                 dy[e] += beta  * ht_050 * f(sn, tn10);
+                dy[e] += gamma * b47 * value;
             }
 
             tomasAlgorithm(ay+s, by+s, cy+s, dy+s, ry+s, e-s+1);
@@ -1311,8 +1307,8 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
             dy[s]  = beta  * b34 * u05[s][N];
             dy[s] += beta  * b35 * ((-u05[s][N-3]+4.0*u05[s][N-2]-5.0*u05[s][N-1]+2.0*u05[s][N])/(hx*hx));
             dy[s] += beta  * b36 * ((+u05[s][N-2]-4.0*u05[s][N-1]+3.0*u05[s][N])/(2.0*hx));
-            dy[s] += gamma * b37 * value;
             dy[s] += beta  * ht_050 * f(sn, tn10);
+            dy[s] += gamma * b37 * value;
         }
 
         sn.j = ymax; sn.y = ymax*hy;
@@ -1338,16 +1334,20 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
             cy[e]  = 0.0;
 
             dy[e]  = beta  * b44 * u05[e][N];
-            dy[s] += beta  * b45 * ((-u05[e][N-3]+4.0*u05[e][N-2]-5.0*u05[e][N-1]+2.0*u05[e][N])/(hx*hx));
-            dy[s] += beta  * b46 * ((+u05[e][N-2]-4.0*u05[e][N-1]+3.0*u05[e][N])/(2.0*hx));
-            dy[e] += gamma * b47 * value;
+            dy[e] += beta  * b45 * ((-u05[e][N-3]+4.0*u05[e][N-2]-5.0*u05[e][N-1]+2.0*u05[e][N])/(hx*hx));
+            dy[e] += beta  * b46 * ((+u05[e][N-2]-4.0*u05[e][N-1]+3.0*u05[e][N])/(2.0*hx));
             dy[e] += beta  * ht_050 * f(sn, tn10);
+            dy[e] += gamma * b47 * value;
         }
 
         tomasAlgorithm(ay+s, by+s, cy+s, dy+s, ry+s, e-s+1);
         for (unsigned int j=s; j<=e; j++) u10[j][N] = ry[j];
 
+        //sn.i = xmax; sn.x = xmax*hx;
+        //for (unsigned int j=0; j<=M; j++) { sn.j = j+ymin; sn.y = sn.j*hy; u10[j][N] = sn.x*sn.x+sn.y*sn.y+tn10.t; }
+
         layerInfo(u10, tn10);
+        //return;
 
         /**************************************************** y direction apprx ***************************************************/
 

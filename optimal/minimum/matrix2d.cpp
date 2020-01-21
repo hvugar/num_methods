@@ -283,9 +283,9 @@ bool DoubleMatrix::identityMatrix() const
 
 bool DoubleMatrix::zeroMatrix() const
 {
-    for (unsigned int row=0; row < mRows; row++)
+    for (unsigned int row=0; row<mRows; row++)
     {
-        for (unsigned int col=0; col < mCols; col++)
+        for (unsigned int col=0; col<mCols; col++)
         {
             if (fabs(mData[row][col]) >= DBL_EPSILON) return false;
         }
@@ -378,6 +378,10 @@ double DoubleMatrix::determinant() const
 {
     if (mRows != mCols) { throw double_matrix_exception(2); }
 
+    if (mRows == 0) { throw double_matrix_exception(0); }
+
+    if (mRows == 1) return mData[0][0];
+
     // Checking properties of the determinant ---------------------------------------------------------------
     for (unsigned int r=0; r<mRows; r++)
     {
@@ -456,9 +460,16 @@ void DoubleMatrix::transpose()
 void DoubleMatrix::inverse()
 {
     double det = determinant();
+
     if (fabs(det) <= DBL_EPSILON) throw double_matrix_exception(4);
 
     double idet = 1.0/det;
+
+    if (mRows == 1)
+    {
+        mData[0][0] = idet;
+        return;
+    }
 
     DoubleMatrix m = *this;
 
