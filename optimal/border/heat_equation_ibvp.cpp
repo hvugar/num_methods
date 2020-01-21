@@ -4,7 +4,7 @@
 //#define __NEUMANN__
 //#define __ROBIN__
 //#define x3_t2
-#define x2_y2_t1
+#define x2_y2_t2
 
 void HeatEquationIBVP::Main(int argc, char *argv[])
 {
@@ -20,8 +20,8 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
     h.setSpaceDimensionY(Dimension(0.005, 200, 400));
 
     h.setThermalDiffusivity(1.2);
-    h.setThermalConductivity(-0.6);
-    h.setThermalConvection(-0.8);
+//    h.setThermalConductivity(-0.6);
+//    h.setThermalConvection(-0.8);
 
     //    Benchmark bm;
     //    bm.tick();
@@ -36,9 +36,14 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
 
     Benchmark bm;
     bm.tick();
-    h.implicit_calculate_D2V1_1();
+    h.implicit_calculate_D2V1_2();
     bm.tock();
     bm.printDuration();
+
+//    bm.tick();
+//    h.implicit_calculate_D2V1();
+//    bm.tock();
+//    bm.printDuration();
 }
 
 HeatEquationIBVP::HeatEquationIBVP() : IHeatEquationIBVP()
@@ -53,11 +58,11 @@ double HeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition) const
 double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
 {
 #if defined (x1_y1_t1) || defined ( x2_y2_t2 ) || defined ( x2_y2_t1 )
-    //condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-    //return U(sn, tn)*(condition.alpha()/condition.gamma());
+    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +2.0, +0.0, +1.0);
+    return U(sn, tn)*(condition.alpha()/condition.gamma());
 
-    condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
-    return (condition.alpha()*U(sn,tn)+condition.beta()*Un(sn,tn))/condition.gamma();
+    //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
+    //return (condition.alpha()*U(sn,tn)+condition.beta()*Un(sn,tn))/condition.gamma();
 #else
 
 
