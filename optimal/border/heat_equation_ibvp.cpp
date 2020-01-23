@@ -4,7 +4,7 @@
 //#define __NEUMANN__
 //#define __ROBIN__
 //#define x3_t2
-#define x1_y1_t1
+#define x2_y2_t1
 
 void HeatEquationIBVP::Main(int argc, char *argv[])
 {
@@ -20,8 +20,8 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
     h.setSpaceDimensionY(Dimension(0.005, 200, 400));
 
     h.setThermalDiffusivity(1.2);
-//    h.setThermalConductivity(-0.6);
-//    h.setThermalConvection(-0.8);
+    h.setThermalConductivity(-0.6);
+    h.setThermalConvection(-0.8);
 
     //    Benchmark bm;
     //    bm.tick();
@@ -437,6 +437,8 @@ double HeatEquationIBVP::Un(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     {
         if (sn.i == xmin) return -2.0*sn.x;
         if (sn.i == xmax) return +2.0*sn.x;
+        if (sn.j == ymin) return -2.0*sn.y;
+        if (sn.j == ymax) return +2.0*sn.y;
     }
     if (tn.i%2==0)
     {

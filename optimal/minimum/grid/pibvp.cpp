@@ -1436,6 +1436,53 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
     const double k25 = +1.0 - (a1*ht)/(hx*hx);
     const double k26 = +(a1*ht)/(2.0*hx*hx) + (b1*ht)/(4.0*hx);
 
+    const double b111 = +1.0 + ((a1*ht)/(hx*hx));
+    const double b112 = +(a1*ht)/hx - 0.5*b1*ht;
+    const double b113 = -(a1*ht)/(hx*hx);
+    const double b114 = +1.0 + 0.5*c*ht;
+    const double b115 = +0.5*a2*ht;
+    const double b116 = +0.5*b2*ht;
+    const double b117 = +(a1*ht)/hx - 0.5*b1*ht;
+
+    const double b121 = -(a1*ht)/(hx*hx);
+    const double b122 = +(a1*ht)/hx + 0.5*b1*ht;
+    const double b123 = +1.0 + ((a1*ht)/(hx*hx));
+    const double b124 = +1.0 + 0.5*c*ht;
+    const double b125 = +0.5*a2*ht;
+    const double b126 = +0.5*b2*ht;
+    const double b127 = +(a1*ht)/hx + 0.5*b1*ht;
+
+    const double b131 = +1.0 + ((a2*ht)/(hy*hy));
+    const double b132 = +(a2*ht)/hy - 0.5*b2*ht;
+    const double b133 = +(a2*ht)/(hy*hy);
+    const double b134 = +1.0 + 0.5*c*ht;
+    const double b135 = +0.5*a1*ht;
+    const double b136 = +0.5*b1*ht;
+    const double b137 = +(a2*ht)/hy - 0.5*b2*ht;
+    const double b138 = +((a1*ht)/(hx*hx));
+    const double b139 = +1.0 + 0.5*c*ht - ((a1*ht)/(hx*hx));
+    const double b140 = +(a1*ht)/hx - 0.5*b1*ht;
+
+    const double b141 = +1.0 + ((a2*ht)/(hy*hy));
+    const double b142 = +(a2*ht)/hy + 0.5*b2*ht;
+    const double b143 = +(a2*ht)/(hy*hy);
+    const double b144 = +1.0 + 0.5*c*ht;
+    const double b145 = +0.5*a1*ht;
+    const double b146 = +0.5*b1*ht;
+    const double b147 = +(a2*ht)/hy + 0.5*b2*ht;
+    const double b148 = +((a1*ht)/(hx*hx));
+    const double b149 = +1.0 + 0.5*c*ht - ((a1*ht)/(hx*hx));
+    const double b150 = +(a1*ht)/hx - 0.5*b1*ht;
+
+
+//    const double b141 = +1.0 + ((a2*ht)/(hy*hy));
+//    const double b142 = +(a2*ht)/hy + 0.5*b2*ht;
+//    const double b143 = +(a2*ht)/(hy*hy);
+//    const double b144 = +1.0 + 0.5*c*ht;
+//    const double b145 = +0.5*a1*ht;
+//    const double b146 = +0.5*b1*ht;
+//    const double b147 = +(a2*ht)/hy + 0.5*b2*ht;
+
     // left border condition parameters
     const double b11 = +1.0 + ((a1*ht)/(hx*hx));
     const double b12 = +(a1*ht)/hx - 0.5*b1*ht;
@@ -1464,9 +1511,9 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
     const double b37 = +(a2*ht)/hy - 0.5*b2*ht;
 
     // top border condition parameters
-    const double b41 = -(a2*ht)/(hy*hy);
+    const double b41 = +1.0 + ((a2*ht)/(hy*hy));// - 0.5*c*ht;
     const double b42 = +(a2*ht)/hy + 0.5*b2*ht;
-    const double b43 = +1.0 + ((a2*ht)/(hy*hy));// - 0.5*c*ht;
+    const double b43 = -(a2*ht)/(hy*hy);
     const double b44 = +1.0;
     const double b45 = +0.5*a1*ht;
     const double b46 = +0.5*b1*ht;
@@ -1573,14 +1620,14 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
                 s = 0;
 
                 ax[s]  = 0.0;
-                bx[s]  = beta  * b11 + alpha * b12;
-                cx[s]  = beta  * b13;
+                bx[s]  = beta  * b111 + alpha * b112;
+                cx[s]  = beta  * b113;
 
-                dx[s]  = beta  * b14 * u00[j][s];
-                dx[s] += beta  * b15 * ((u00[j+1][s]-2.0*u00[j][s]+u00[j-1][s])/(hy*hy));
-                dx[s] += beta  * b16 * ((u00[j+1][s]-u00[j-1][s])/(2.0*hy));
+                dx[s]  = beta  * b114 * u00[j][s];
+                dx[s] += beta  * b115 * ((u00[j+1][s]-2.0*u00[j][s]+u00[j-1][s])/(hy*hy));
+                dx[s] += beta  * b116 * ((u00[j+1][s]-u00[j-1][s])/(2.0*hy));
                 dx[s] += beta  * ht_050 * f(sn, tn00);
-                dx[s] += gamma * b17 * value;
+                dx[s] += gamma * b117 * value;
             }
 
             sn.i = xmax; sn.x = xmax*hx;
@@ -1601,15 +1648,15 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
             {
                 e = N;
 
-                ax[e]  = beta  * b21;
-                bx[e]  = beta  * b23 + alpha * b22;
+                ax[e]  = beta  * b121;
+                bx[e]  = beta  * b123 + alpha * b122;
                 cx[e]  = 0.0;
 
-                dx[e]  = beta  * b24 * u00[j][e];
-                dx[e] += beta  * b25 * ((u00[j+1][e]-2.0*u00[j][e]+u00[j-1][e])/(hy*hy));
-                dx[e] += beta  * b26 * ((u00[j+1][e]-u00[j-1][e])/(2.0*hy));
+                dx[e]  = beta  * b124 * u00[j][e];
+                dx[e] += beta  * b125 * ((u00[j+1][e]-2.0*u00[j][e]+u00[j-1][e])/(hy*hy));
+                dx[e] += beta  * b126 * ((u00[j+1][e]-u00[j-1][e])/(2.0*hy));
                 dx[e] += beta  * ht_050 * f(sn, tn00);
-                dx[e] += gamma * b27 * value;
+                dx[e] += gamma * b127 * value;
             }
 
             tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
@@ -1618,7 +1665,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
 
         /********************************************************** ymin **********************************************************/
 
-        for (n=xmin+1, sn.i=n, sn.x=n*hx, i=1, dx[i]=0.0; n<=xmax-1; ++n, sn.i=n, sn.x=n*hx, ++i, dx[i]=0.0)
+        for (n=xmin, sn.i=n, sn.x=n*hx, i=0, dx[i]=0.0; n<=xmax; ++n, sn.i=n, sn.x=n*hx, ++i, dx[i]=0.0)
         {
             sn.i = n; sn.x = n*hx;
 
@@ -1636,13 +1683,26 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 u05[0][i]  = 0.0;
-                u05[0][i] -= beta  * b33 * u05[1][i];
-                u05[0][i] += beta  * b34 * u00[0][i];
-                u05[0][i] += beta  * b35 * ((u00[0][i+1]+u00[0][i-1]-2.0*u00[0][i])/(hx*hx));
-                u05[0][i] += beta  * b36 * ((u00[0][i+1]-u00[0][i-1])/(2.0*hx));
+                u05[0][i] += beta  * b133 * u05[1][i];
+                u05[0][i] += beta  * b134 * u00[0][i];
+                if (n==xmin)
+                {
+                    u05[0][i] += beta  * b135 * ((+2.0*u00[0][i]-5.0*u00[0][i+1]+4.0*u00[0][i+2]-u00[0][i+3])/(hx*hx));
+                    u05[0][i] += beta  * b136 * ((-3.0*u00[0][i]+4.0*u00[0][i+1]-1.0*u00[0][i+2])/(2.0*hx));
+                }
+                else if (n==xmax)
+                {
+                    u05[0][i] += beta  * b135 * ((-u00[0][i-3]+4.0*u00[0][i-2]-5.0*u00[0][i-1]+2.0*u00[0][i])/(hx*hx));
+                    u05[0][i] += beta  * b136 * ((+u00[0][i-2]-4.0*u00[0][i-1]+3.0*u00[0][i])/(2.0*hx));
+                }
+                else
+                {
+                    u05[0][i] += beta  * b135 * ((u00[0][i+1]+u00[0][i-1]-2.0*u00[0][i])/(hx*hx));
+                    u05[0][i] += beta  * b136 * ((u00[0][i+1]-u00[0][i-1])/(2.0*hx));
+                }
                 u05[0][i] += beta  * ht_050 * f(sn, tn00);
-                u05[0][i] += gamma * b37 * value;
-                u05[0][i] /= (beta * b31 + alpha * b32);
+                u05[0][i] += gamma * b137 * value;
+                u05[0][i] /= (beta * b131 + alpha * b132);
             }
 
             sn.j = ymax; sn.y = ymax*hy;
@@ -1659,13 +1719,25 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 u05[M][i]  = 0.0;
-                u05[M][i] -= beta  * b43 * u05[M-1][i];
-                u05[M][i] += beta  * b44 * u00[M][i];
-                u05[M][i] += beta  * b45 * ((u00[M][i+1]+u00[M][i-1]-2.0*u00[M][i])/(hx*hx));
-                u05[M][i] += beta  * b46 * ((u00[M][i+1]-u00[M][i-1])/(2.0*hx));
+                u05[M][i] += beta  * b143 * u05[M-1][i];
+                u05[M][i] += beta  * b144 * u00[M][i];
+                if (n==xmin)
+                {
+                    u05[M][i] += beta  * b145 * ((+2.0*u00[M][i]-5.0*u00[M][i+1]+4.0*u00[M][i+2]-u00[M][i+3])/(hx*hx));
+                    u05[M][i] += beta  * b146 * ((-3.0*u00[M][i]+4.0*u00[M][i+1]-1.0*u00[M][i+2])/(2.0*hx));
+                }
+                else if (n==xmax)
+                {
+                    u05[M][i] = 0.0;
+                }
+                else
+                {
+                    u05[M][i] += beta  * b145 * ((u00[M][i+1]+u00[M][i-1]-2.0*u00[M][i])/(hx*hx));
+                    u05[M][i] += beta  * b146 * ((u00[M][i+1]-u00[M][i-1])/(2.0*hx));
+                }
                 u05[M][i] += beta  * ht_050 * f(sn, tn00);
-                u05[M][i] += gamma * b47 * value;
-                u05[M][i] /= (beta * b41 + alpha * b42);
+                u05[M][i] += gamma * b147 * value;
+                u05[M][i] /= (beta * b141 + alpha * b142);
             }
         }
 
