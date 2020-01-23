@@ -416,11 +416,15 @@ double HeatEquationIBVP::Un(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 
 #if defined( x1_y1_t1 )
     //printf("%d %d %f %f\n",sn.i, sn.j, sn.x, sn.y);
+
     if (tn.i%2==1)
     {
         if (sn.i == xmin) return -1.0;
         if (sn.i == xmax) return +1.0;
+        if (sn.j == ymin) return -1.0;
+        if (sn.j == ymax) return +1.0;
     }
+
     if (tn.i%2==0)
     {
         if (sn.j == ymin) return -1.0;
@@ -440,6 +444,8 @@ double HeatEquationIBVP::Un(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
         if (sn.j == ymax) return +2.0*sn.y;
     }
 #endif
+
+    throw std::exception();
 }
 
 void HeatEquationIBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) const

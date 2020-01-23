@@ -1466,7 +1466,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
     // top border condition parameters
     const double b41 = -(a2*ht)/(hy*hy);
     const double b42 = +(a2*ht)/hy + 0.5*b2*ht;
-    const double b43 = +1.0 + ((a2*ht)/(hy*hy)) - 0.5*c*ht;
+    const double b43 = +1.0 + ((a2*ht)/(hy*hy));// - 0.5*c*ht;
     const double b44 = +1.0;
     const double b45 = +0.5*a1*ht;
     const double b46 = +0.5*b1*ht;
@@ -1635,15 +1635,14 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
 
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
-                u05[0][i] = (u05[1][i] + hy*(gamma/beta)*value)/(1.0+hy*(alpha/beta));
-//                u05[0][i]  = 0.0;
-//                u05[0][i] -= beta  * b33 * u05[1][i];
-//                u05[0][i] += beta  * b34 * u00[0][i];
-//                u05[0][i] += beta  * b35 * ((u00[0][i+1]+u00[0][i-1]-2.0*u00[0][i])/(hx*hx));
-//                u05[0][i] += beta  * b36 * ((u00[0][i+1]-u00[0][i-1])/(2.0*hx));
-//                u05[0][i] += beta  * ht_050 * f(sn, tn00);
-//                u05[0][i] += gamma * b37 * value;
-//                u05[0][i] /= (beta * b31 + alpha * b32);
+                u05[0][i]  = 0.0;
+                u05[0][i] -= beta  * b33 * u05[1][i];
+                u05[0][i] += beta  * b34 * u00[0][i];
+                u05[0][i] += beta  * b35 * ((u00[0][i+1]+u00[0][i-1]-2.0*u00[0][i])/(hx*hx));
+                u05[0][i] += beta  * b36 * ((u00[0][i+1]-u00[0][i-1])/(2.0*hx));
+                u05[0][i] += beta  * ht_050 * f(sn, tn00);
+                u05[0][i] += gamma * b37 * value;
+                u05[0][i] /= (beta * b31 + alpha * b32);
             }
 
             sn.j = ymax; sn.y = ymax*hy;
