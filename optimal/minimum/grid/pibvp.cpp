@@ -1682,27 +1682,30 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
 
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
-                u05[0][i]  = 0.0;
-                u05[0][i] += beta  * b133 * u05[1][i];
-                u05[0][i] += beta  * b134 * u00[0][i];
-                if (n==xmin)
-                {
-                    u05[0][i] += beta  * b135 * ((+2.0*u00[0][i]-5.0*u00[0][i+1]+4.0*u00[0][i+2]-u00[0][i+3])/(hx*hx));
-                    u05[0][i] += beta  * b136 * ((-3.0*u00[0][i]+4.0*u00[0][i+1]-1.0*u00[0][i+2])/(2.0*hx));
-                }
-                else if (n==xmax)
-                {
-                    u05[0][i] += beta  * b135 * ((-u00[0][i-3]+4.0*u00[0][i-2]-5.0*u00[0][i-1]+2.0*u00[0][i])/(hx*hx));
-                    u05[0][i] += beta  * b136 * ((+u00[0][i-2]-4.0*u00[0][i-1]+3.0*u00[0][i])/(2.0*hx));
-                }
-                else
-                {
-                    u05[0][i] += beta  * b135 * ((u00[0][i+1]+u00[0][i-1]-2.0*u00[0][i])/(hx*hx));
-                    u05[0][i] += beta  * b136 * ((u00[0][i+1]-u00[0][i-1])/(2.0*hx));
-                }
-                u05[0][i] += beta  * ht_050 * f(sn, tn00);
-                u05[0][i] += gamma * b137 * value;
-                u05[0][i] /= (beta * b131 + alpha * b132);
+                u05[0][i] = (beta*u05[1][i] + hy*gamma*value + beta*hy*hy)/(beta + alpha*hy);
+                //u05[0][i] = (beta*u05[1][i] + hy*gamma*value + beta*hy*hy)/(beta+hy*alpha);
+
+//                u05[0][i]  = 0.0;
+//                u05[0][i] += beta  * b133 * u05[1][i];
+//                u05[0][i] += beta  * b134 * u00[0][i];
+//                if (n==xmin)
+//                {
+//                    u05[0][i] += beta  * b135 * ((+2.0*u00[0][i]-5.0*u00[0][i+1]+4.0*u00[0][i+2]-u00[0][i+3])/(hx*hx));
+//                    u05[0][i] += beta  * b136 * ((-3.0*u00[0][i]+4.0*u00[0][i+1]-1.0*u00[0][i+2])/(2.0*hx));
+//                }
+//                else if (n==xmax)
+//                {
+//                    u05[0][i] += beta  * b135 * ((-u00[0][i-3]+4.0*u00[0][i-2]-5.0*u00[0][i-1]+2.0*u00[0][i])/(hx*hx));
+//                    u05[0][i] += beta  * b136 * ((+u00[0][i-2]-4.0*u00[0][i-1]+3.0*u00[0][i])/(2.0*hx));
+//                }
+//                else
+//                {
+//                    u05[0][i] += beta  * b135 * ((u00[0][i+1]+u00[0][i-1]-2.0*u00[0][i])/(hx*hx));
+//                    u05[0][i] += beta  * b136 * ((u00[0][i+1]-u00[0][i-1])/(2.0*hx));
+//                }
+//                u05[0][i] += beta  * ht_050 * f(sn, tn00);
+//                u05[0][i] += gamma * b137 * value;
+//                u05[0][i] /= (beta * b131 + alpha * b132);
             }
 
             sn.j = ymax; sn.y = ymax*hy;
