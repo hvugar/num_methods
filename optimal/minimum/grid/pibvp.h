@@ -98,6 +98,7 @@ public:
     void explicit_calculate_D1V1() const;
     void implicit_calculate_D1V1() const;
     void implicit_calculate_D1V1_1() const;
+    void implicit_calculate_D2V1_2() const;
 
     void explicit_calculate_D2V1() const;
     void implicit_calculate_D2V1() const;
