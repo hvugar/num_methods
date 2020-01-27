@@ -3,6 +3,8 @@
 
 #include "border_global.h"
 
+double u_fx(const IParabolicIBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &tn, int dt = 0, int dx = 0, int dy = 0);
+
 class BORDERSHARED_EXPORT HeatEquationIBVP : public IHeatEquationIBVP
 {
 public:
@@ -18,13 +20,12 @@ protected:
     virtual void layerInfo(const DoubleVector&, const TimeNodePDE&) const;
     virtual void layerInfo(const DoubleMatrix&, const TimeNodePDE&) const;
 
-    double U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    double Ut(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    double Uxx(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    double Uyy(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    double Ux(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    double Uy(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    double Un(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+//    double Ut(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+//    double Uxx(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+//    double Uyy(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+//    double Ux(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+//    double Uy(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+//    double Un(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
 protected:
     double weight() const { return 0.5; }

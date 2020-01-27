@@ -47,10 +47,10 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //IPrinter::printSeperatorLine();
     //WaveEquationFBVP::Main(argc, argv);
 
-    //HeatEquationIBVP::Main(argc, argv);
-    //IPrinter::printSeperatorLine();
-    HeatEquationFBVP::Main(argc, argv);
+    HeatEquationIBVP::Main(argc, argv);
     IPrinter::printSeperatorLine();
+    //HeatEquationFBVP::Main(argc, argv);
+    //IPrinter::printSeperatorLine();
 
     //p1p::ProblemSolver::Main(argc, argv);
     //h1p::ProblemSolver::Main(argc, argv);

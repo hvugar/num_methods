@@ -527,7 +527,7 @@ void IHeatEquationIBVP::explicit_calculate_D2V1() const
     u10.clear();
 }
 
-void IHeatEquationIBVP::implicit_calculate_D2V1() const
+void IHeatEquationIBVP::implicit_calculate_D2V1_0() const
 {
     const unsigned int N = static_cast<unsigned int>(spaceDimensionX().size()) - 1;
     const unsigned int M = static_cast<unsigned int>(spaceDimensionY().size()) - 1;
@@ -1393,7 +1393,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_1() const
     free(ax);
 }
 
-void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
+void IHeatEquationIBVP::implicit_calculate_D2V1() const
 {
     const unsigned int N = static_cast<unsigned int>(spaceDimensionX().size()) - 1;
     const unsigned int M = static_cast<unsigned int>(spaceDimensionY().size()) - 1;
@@ -1414,7 +1414,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
     const double a2 = thermalDiffusivity();
     const double b1 = thermalConductivity();
     const double b2 = thermalConductivity();
-    const double c = thermalConvection();
+    const double c  = thermalConvection();
 
     //if (w1 >= 0.5-(0.25/ht)/(1.0/(hx*hx)+1.0/(hy*hy))) throw std::runtime_error("Differential scheme is conditionally steady.");
 
@@ -1538,10 +1538,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
         {
             for (n=xmin+1, sn.i=n, sn.x=n*hx, i=1, dx[i]=0.0; n<=xmax-1; ++n, sn.i=n, sn.x=n*hx, ++i, dx[i]=0.0)
             {
-                dx[i] += k14 * u00[j-1][i];
-                dx[i] += k15 * u00[j][i];
-                dx[i] += k16 * u00[j+1][i];
-                dx[i] += ht05*f(sn, tn00);
+                dx[i] += k14*u00[j-1][i] + k15*u00[j][i] + k16*u00[j+1][i] + ht05*f(sn, tn00);
             }
 
             sn.i = xmin; sn.x = xmin*hx;
@@ -1553,7 +1550,6 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 s = 1;
-
                 u05[j][0] = (gamma/alpha)*value;
                 dx[1] -= k11 * u05[j][0];
                 ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
@@ -1561,11 +1557,9 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 s = 0;
-
                 ax[s]  = 0.0;
                 bx[s]  = beta  * b111 + alpha * b112;
                 cx[s]  = beta  * b113;
-
                 dx[s]  = beta  * b114 * u00[j][s];
                 dx[s] += beta  * b115 * ((u00[j+1][s]-2.0*u00[j][s]+u00[j-1][s])/(hy*hy));
                 dx[s] += beta  * b116 * ((u00[j+1][s]-u00[j-1][s])/(2.0*hy));
@@ -1582,7 +1576,6 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 e = N-1;
-
                 u05[j][N] = (gamma/alpha)*value;
                 dx[N-1] -= k13 * u05[j][N];
                 cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
@@ -1590,11 +1583,9 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 e = N;
-
                 ax[e]  = beta  * b121;
                 bx[e]  = beta  * b123 + alpha * b122;
                 cx[e]  = 0.0;
-
                 dx[e]  = beta  * b124 * u00[j][e];
                 dx[e] += beta  * b125 * ((u00[j+1][e]-2.0*u00[j][e]+u00[j-1][e])/(hy*hy));
                 dx[e] += beta  * b126 * ((u00[j+1][e]-u00[j-1][e])/(2.0*hy));
@@ -1653,10 +1644,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
         {
             for (m=ymin+1, sn.j=m, sn.y=m*hy, j=1, dy[j]=0.0; m<=ymax-1; ++m, sn.j=m, sn.y=m*hy, ++j, dy[j]=0.0)
             {
-                dy[j] += k24 * u05[j][i-1];
-                dy[j] += k25 * u05[j][i];
-                dy[j] += k26 * u05[j][i+1];
-                dy[j] += ht05*f(sn, tn10);
+                dy[j] += k24*u05[j][i-1] + k25*u05[j][i] + k26*u05[j][i+1] + ht05*f(sn, tn10);
             }
 
             sn.j = ymin; sn.y = ymin*hy;
@@ -1668,7 +1656,6 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 s = 1;
-
                 u10[0][i] = (gamma/alpha)*value;
                 dy[1] -= k21 * u10[0][i];
                 ay[1] = ay[0] = by[0] = cy[0] = dy[0] = ry[0] = 0.0;
@@ -1676,11 +1663,9 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 s = 0;
-
                 ay[s]  = 0.0;
                 by[s]  = beta  * b211 + alpha * b212;
                 cy[s]  = beta  * b213;
-
                 dy[s]  = beta  * b214 * u05[s][i];
                 dy[s] += beta  * b215 * ((u05[s][i+1]-2.0*u05[s][i]+u05[s][i-1])/(hx*hx));
                 dy[s] += beta  * b216 * ((u05[s][i+1]-u05[s][i-1])/(2.0*hx));
@@ -1697,7 +1682,6 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 e = M-1;
-
                 u10[M][i] = (gamma/alpha)*value;
                 dy[M-1] -= k23 * u10[M][i];
                 cy[M-1] = ay[M] = by[M] = cy[M] = dy[M] = ry[M] = 0.0;
@@ -1705,11 +1689,9 @@ void IHeatEquationIBVP::implicit_calculate_D2V1_2() const
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 e = M;
-
                 ay[e]  = beta  * b221;
                 by[e]  = beta  * b223 + alpha * b222;
                 cy[e]  = 0.0;
-
                 dy[e]  = beta  * b224 * u05[e][i];
                 dy[e] += beta  * b225 * ((u05[e][i+1]-2.0*u05[e][i]+u05[e][i-1])/(hx*hx));
                 dy[e] += beta  * b226 * ((u05[e][i+1]-u05[e][i-1])/(2.0*hx));
@@ -2234,7 +2216,7 @@ void IHeatEquationFBVP::implicit_calculate_D1V1_1() const
     free(ax);
 }
 
-void IHeatEquationFBVP::implicit_calculate_D2V1_2() const
+void IHeatEquationFBVP::implicit_calculate_D2V1() const
 {
     const unsigned int N = static_cast<unsigned int>(spaceDimensionX().size()) - 1;
     const unsigned int M = static_cast<unsigned int>(spaceDimensionY().size()) - 1;
@@ -2379,10 +2361,7 @@ void IHeatEquationFBVP::implicit_calculate_D2V1_2() const
         {
             for (n=xmin+1, sn.i=n, sn.x=n*hx, i=1, dx[i]=0.0; n<=xmax-1; ++n, sn.i=n, sn.x=n*hx, ++i, dx[i]=0.0)
             {
-                dx[i] += k14 * u00[j-1][i];
-                dx[i] += k15 * u00[j][i];
-                dx[i] += k16 * u00[j+1][i];
-                dx[i] += ht05*f(sn, tn00);
+                dx[i] += k14*u00[j-1][i] + k15*u00[j][i] + k16*u00[j+1][i] + ht05*f(sn, tn00);
             }
 
             sn.i = xmin; sn.x = xmin*hx;
@@ -2394,7 +2373,6 @@ void IHeatEquationFBVP::implicit_calculate_D2V1_2() const
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 s = 1;
-
                 u05[j][0] = (gamma/alpha)*value;
                 dx[1] -= k11 * u05[j][0];
                 ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
@@ -2402,11 +2380,9 @@ void IHeatEquationFBVP::implicit_calculate_D2V1_2() const
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 s = 0;
-
                 ax[s]  = 0.0;
                 bx[s]  = beta  * b111 + alpha * b112;
                 cx[s]  = beta  * b113;
-
                 dx[s]  = beta  * b114 * u00[j][s];
                 dx[s] += beta  * b115 * ((u00[j+1][s]-2.0*u00[j][s]+u00[j-1][s])/(hy*hy));
                 dx[s] += beta  * b116 * ((u00[j+1][s]-u00[j-1][s])/(2.0*hy));
@@ -2423,7 +2399,6 @@ void IHeatEquationFBVP::implicit_calculate_D2V1_2() const
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 e = N-1;
-
                 u05[j][N] = (gamma/alpha)*value;
                 dx[N-1] -= k13 * u05[j][N];
                 cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
@@ -2431,11 +2406,9 @@ void IHeatEquationFBVP::implicit_calculate_D2V1_2() const
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 e = N;
-
                 ax[e]  = beta  * b121;
                 bx[e]  = beta  * b123 + alpha * b122;
                 cx[e]  = 0.0;
-
                 dx[e]  = beta  * b124 * u00[j][e];
                 dx[e] += beta  * b125 * ((u00[j+1][e]-2.0*u00[j][e]+u00[j-1][e])/(hy*hy));
                 dx[e] += beta  * b126 * ((u00[j+1][e]-u00[j-1][e])/(2.0*hy));
@@ -2494,10 +2467,7 @@ void IHeatEquationFBVP::implicit_calculate_D2V1_2() const
         {
             for (m=ymin+1, sn.j=m, sn.y=m*hy, j=1, dy[j]=0.0; m<=ymax-1; ++m, sn.j=m, sn.y=m*hy, ++j, dy[j]=0.0)
             {
-                dy[j] += k24 * u05[j][i-1];
-                dy[j] += k25 * u05[j][i];
-                dy[j] += k26 * u05[j][i+1];
-                dy[j] += ht05*f(sn, tn10);
+                dy[j] += k24*u05[j][i-1] + k25*u05[j][i] + k26*u05[j][i+1] + ht05*f(sn, tn10);
             }
 
             sn.j = ymin; sn.y = ymin*hy;
@@ -2509,7 +2479,6 @@ void IHeatEquationFBVP::implicit_calculate_D2V1_2() const
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 s = 1;
-
                 u10[0][i] = (gamma/alpha)*value;
                 dy[1] -= k21 * u10[0][i];
                 ay[1] = ay[0] = by[0] = cy[0] = dy[0] = ry[0] = 0.0;
@@ -2517,11 +2486,9 @@ void IHeatEquationFBVP::implicit_calculate_D2V1_2() const
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 s = 0;
-
                 ay[s]  = 0.0;
                 by[s]  = beta  * b211 + alpha * b212;
                 cy[s]  = beta  * b213;
-
                 dy[s]  = beta  * b214 * u05[s][i];
                 dy[s] += beta  * b215 * ((u05[s][i+1]-2.0*u05[s][i]+u05[s][i-1])/(hx*hx));
                 dy[s] += beta  * b216 * ((u05[s][i+1]-u05[s][i-1])/(2.0*hx));
@@ -2538,7 +2505,6 @@ void IHeatEquationFBVP::implicit_calculate_D2V1_2() const
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 e = M-1;
-
                 u10[M][i] = (gamma/alpha)*value;
                 dy[M-1] -= k23 * u10[M][i];
                 cy[M-1] = ay[M] = by[M] = cy[M] = dy[M] = ry[M] = 0.0;
@@ -2546,11 +2512,9 @@ void IHeatEquationFBVP::implicit_calculate_D2V1_2() const
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 e = M;
-
                 ay[e]  = beta  * b221;
                 by[e]  = beta  * b223 + alpha * b222;
                 cy[e]  = 0.0;
-
                 dy[e]  = beta  * b224 * u05[e][i];
                 dy[e] += beta  * b225 * ((u05[e][i+1]-2.0*u05[e][i]+u05[e][i-1])/(hx*hx));
                 dy[e] += beta  * b226 * ((u05[e][i+1]-u05[e][i-1])/(2.0*hx));
@@ -2631,7 +2595,7 @@ void IHeatEquationFBVP::implicit_calculate_D2V1_2() const
 
 void IHeatEquationFBVP::explicit_calculate_D2V1() const {}
 
-void IHeatEquationFBVP::implicit_calculate_D2V1() const {}
+void IHeatEquationFBVP::implicit_calculate_D2V1_0() const {}
 
 double IHeatEquationFBVP::weight() const { return 0.5; }
 
