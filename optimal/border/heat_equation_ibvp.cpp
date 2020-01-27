@@ -26,7 +26,9 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
     HeatEquationIBVP h;
     h.setTimeDimension(Dimension(0.01, 0, 100));
     h.setSpaceDimensionX(Dimension(0.010, 100, 200));
+#ifdef __DIMENSION_2__
     h.setSpaceDimensionY(Dimension(0.005, 400, 600));
+#endif
 
     h.setThermalDiffusivity(1.2);
     h.setThermalConductivity(-0.6);
@@ -34,8 +36,12 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
 
     Benchmark bm;
     bm.tick();
-    //    h.implicit_calculate_D1V1();
+#ifdef __DIMENSION_1__
+    h.implicit_calculate_D1V1();
+#endif
+#ifdef __DIMENSION_2__
     h.implicit_calculate_D2V1();
+#endif
     bm.tock();
     bm.printDuration();
 }
@@ -51,13 +57,20 @@ double HeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition) const
 
 double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
 {
-#if defined(__DIMENSION_2__)
+#if defined(__DIMENSION_1__)
     condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +2.0, +0.0, +1.0);
-    return u_fx(this, sn, tn)*(condition.alpha()/condition.gamma());
+    return ::u_fx(this, sn, tn)*(condition.alpha()/condition.gamma());
 
     //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
-    //return (condition.alpha()*::u_fx(this, sn, tn)
-    //        +condition.beta()*::u_fx(this, sn, tn, -1, 3, 3))/condition.gamma();
+    //return (condition.alpha()*::u_fx(this, sn, tn)+condition.beta()*::u_fx(this, sn, tn, -1, 1, -1))/condition.gamma();
+#endif
+
+#if defined(__DIMENSION_2__)
+    //condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +2.0, +0.0, +1.0);
+    //return ::u_fx(this, sn, tn)*(condition.alpha()/condition.gamma());
+
+    condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
+    return (condition.alpha()*::u_fx(this, sn, tn)+condition.beta()*::u_fx(this, sn, tn, -1, 3, 3))/condition.gamma();
 #else
 
 
@@ -67,8 +80,8 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
     if (sn.i == min)
     {
 #if defined(__DIRICHLET_)
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        return ::u_fx(sn, tn)*(condition.alpha()/condition.gamma());
+        //condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+        //return ::u_fx(sn, tn)*(condition.alpha()/condition.gamma());
 #endif
 
 #if defined(__NEUMANN__)
@@ -101,8 +114,8 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
     if (sn.i == max)
     {
 #if defined(__DIRICHLET_)
-        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
-        return u_fx(sn, tn)*(condition.alpha()/condition.gamma());
+        //condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +1.0);
+        //return u_fx(sn, tn)*(condition.alpha()/condition.gamma());
 #endif
 
 #if defined(__NEUMANN__)
@@ -140,10 +153,7 @@ double HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     const double a = thermalDiffusivity();
     const double b = thermalConductivity();
     const double c = thermalConvection();
-    return ::u_fx(sn,tn,1,true,false,false)
-            -::u_fx(sn,tn,2,false,true,false)*a
-            -::u_fx(sn,tn,1,false,true,false)*b
-            -::u_fx(sn,tn,0,false,true,false)*c;
+    return ::u_fx(this,sn,tn,+1,-1,-1)-::u_fx(this,sn,tn,-1,+2,-1)*a-::u_fx(this,sn,tn,-1,+1,-1)*b-::u_fx(this,sn,tn,0,0,0)*c;
 #endif
 
 #if defined(__DIMENSION_2__)
@@ -152,12 +162,7 @@ double HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     const double b1 = thermalConductivity();
     const double b2 = thermalConductivity();
     const double c = thermalConvection();
-    return ::u_fx(this, sn,tn,1,0,0)
-            -::u_fx(this, sn,tn,-1,+2,-1)*a1
-            -::u_fx(this, sn,tn,-1,-1,+2)*a2
-            -::u_fx(this, sn,tn,-1,+1,-1)*b1
-            -::u_fx(this, sn,tn,-1,-2,+1)*b2
-            -::u_fx(this, sn,tn,+0,+0,+0)*c;
+    return ::u_fx(this, sn,tn,+1,-1,-1) - ::u_fx(this, sn,tn,-1,+2,-1)*a1 - ::u_fx(this, sn,tn,-1,-1,+2)*a2 - ::u_fx(this, sn,tn,-1,+1,-1)*b1 - ::u_fx(this, sn,tn,-1,-1,+1)*b2 - ::u_fx(this, sn,tn,+0,+0,+0)*c;
 #endif
 
 
@@ -436,6 +441,9 @@ void HeatEquationIBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) c
 
     int min = spaceDimensionX().min();
     int max = spaceDimensionX().max();
+
+    IPrinter::printVector(u);
+    return;
 
     if (tn.i==0 || tn.i==1 || tn.i==99 || tn.i==100) IPrinter::printVector(u);
 
@@ -998,68 +1006,34 @@ double u_fx(const IParabolicIBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
         const int ymin = p->spaceDimensionY().min();
         const int ymax = p->spaceDimensionY().max();
 
-        if (tn.i%2 == 1)
-        {
-            if (sn.i == xmin && (sn.j != ymin && sn.j != ymax)) res += -1.0;
-            if (sn.i == xmax && (sn.j != ymin && sn.j != ymax)) res += +1.0;
-            if (sn.j == ymin && (sn.j != ymin || sn.j != ymax)) res += -1.0;
-            if (sn.j == ymax && (sn.j != ymin || sn.j != ymax)) res += +1.0;
-        }
-        if (tn.i%2==0)
-        {
-            if (sn.j == ymin && (sn.i != xmin && sn.i != xmax)) res += -1.0;
-            if (sn.j == ymax && (sn.i != xmin && sn.i != xmax)) res += +1.0;
-            if (sn.i == xmin && (sn.i != xmin || sn.i != xmax)) res += -1.0;
-            if (sn.i == xmax && (sn.i != xmin || sn.i != xmax)) res += +1.0;
-        }
+        if (sn.i == xmin) res += -1.0;
+        if (sn.i == xmax) res += +1.0;
+        if (sn.i == xmin) res += -1.0;
+
+//        if (tn.i%2 == 1)
+//        {
+//            //throw std::exception();
+//            if (sn.i == xmin && (sn.j != ymin && sn.j != ymax)) res += -1.0;
+//            if (sn.i == xmax && (sn.j != ymin && sn.j != ymax)) res += +1.0;
+//            //if (sn.j == ymin && (sn.j != ymin || sn.j != ymax)) res += -1.0;
+//            //if (sn.j == ymax && (sn.j != ymin || sn.j != ymax)) res += +1.0;
+//        }
+//        if (tn.i%2==0)
+//        {
+//            //throw std::exception();
+//            if (sn.j == ymin && (sn.i != xmin && sn.i != xmax)) res += -1.0;
+//            if (sn.j == ymax && (sn.i != xmin && sn.i != xmax)) res += +1.0;
+//            if (sn.i == xmin && (sn.i != xmin || sn.i != xmax)) res += -1.0;
+//            if (sn.i == xmax && (sn.i != xmin || sn.i != xmax)) res += +1.0;
+//        }
     }
 #endif
 
 #if defined(x2)
-    if (x)
-    {
-        if (derivativeX == 0) res += sn.x*sn.x;
-        if (derivativeX == 1) res += 2.0*sn.x;
-        if (derivativeX == 2) res += 2.0;
-        if (derivativeX == 3)
-        {
-            const int xmin = p->spaceDimensionX().min();
-            const int xmax = p->spaceDimensionX().max();
-            const int ymin = p->spaceDimensionY().min();
-            const int ymax = p->spaceDimensionY().max();
-
-            if (tn.i%2 == 1)
-            {
-                if (sn.i == xmin && (sn.j != ymin && sn.j != ymax)) return -2.0*sn.x;
-                if (sn.i == xmax && (sn.j != ymin && sn.j != ymax)) return +2.0*sn.x;
-                if (sn.j == ymin && (sn.j != ymin || sn.j != ymax)) return -2.0*sn.y;
-                if (sn.j == ymax && (sn.j != ymin || sn.j != ymax)) return +2.0*sn.y;
-            }
-            if (tn.i%2==0)
-            {
-                if (sn.j == ymin && (sn.i != xmin && sn.i != xmax)) return -2.0*sn.y;
-                if (sn.j == ymax && (sn.i != xmin && sn.i != xmax)) return +2.0*sn.y;
-                if (sn.i == xmin && (sn.i != xmin || sn.i != xmax)) return -2.0*sn.x;
-                if (sn.i == xmax && (sn.i != xmin || sn.i != xmax)) return +2.0*sn.x;
-            }
-        }
-    }
-#endif
-
-#if defined(x3)
-    if (x)
-    {
-        if (derivativeX == 0) res += sn.x*sn.x*sn.x;
-        if (derivativeX == 1) res += 3.0*sn.x*sn.x;
-        if (derivativeX == 2) res += 6.0*sn.x;
-    }
-#endif
-
-#if defined(y1)
-    if (dy == 0) res += sn.y;
-    if (dt == 1) res += 1.0;
-    if (dy == 2) res += 0.0;
-    if (dy == 3)
+    if (dx == 0) res += sn.x*sn.x;
+    if (dx == 1) res += 2.0*sn.x;
+    if (dx == 2) res += 2.0;
+    if (dx == 3)
     {
         const int xmin = p->spaceDimensionX().min();
         const int xmax = p->spaceDimensionX().max();
@@ -1068,34 +1042,133 @@ double u_fx(const IParabolicIBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
 
         if (tn.i%2 == 1)
         {
-            if (sn.i == xmin && (sn.j != ymin && sn.j != ymax)) res += -1.0;
-            if (sn.i == xmax && (sn.j != ymin && sn.j != ymax)) res += +1.0;
-            if (sn.j == ymin && (sn.j != ymin || sn.j != ymax)) res += -1.0;
-            if (sn.j == ymax && (sn.j != ymin || sn.j != ymax)) res += +1.0;
+            if (sn.i == xmin && (sn.j != ymin && sn.j != ymax)) return -2.0*sn.x;
+            if (sn.i == xmax && (sn.j != ymin && sn.j != ymax)) return +2.0*sn.x;
+            if (sn.j == ymin && (sn.j != ymin || sn.j != ymax)) return -2.0*sn.y;
+            if (sn.j == ymax && (sn.j != ymin || sn.j != ymax)) return +2.0*sn.y;
         }
         if (tn.i%2==0)
         {
-            if (sn.j == ymin && (sn.i != xmin && sn.i != xmax)) res += -1.0;
-            if (sn.j == ymax && (sn.i != xmin && sn.i != xmax)) res += +1.0;
-            if (sn.i == xmin && (sn.i != xmin || sn.i != xmax)) res += -1.0;
-            if (sn.i == xmax && (sn.i != xmin || sn.i != xmax)) res += +1.0;
+            if (sn.j == ymin && (sn.i != xmin && sn.i != xmax)) return -2.0*sn.y;
+            if (sn.j == ymax && (sn.i != xmin && sn.i != xmax)) return +2.0*sn.y;
+            if (sn.i == xmin && (sn.i != xmin || sn.i != xmax)) return -2.0*sn.x;
+            if (sn.i == xmax && (sn.i != xmin || sn.i != xmax)) return +2.0*sn.x;
         }
     }
 #endif
-#if defined(y2)
-    if (y)
+
+#if defined(x3)
+    if (dx == 0) res += sn.x*sn.x*sn.x;
+    if (dx == 1) res += 3.0*sn.x*sn.x;
+    if (dx == 2) res += 6.0*sn.x;
+    if (dx == 3)
     {
-        if (derivativeY == 0) res += sn.y*sn.y;
-        if (derivativeY == 1) res += 2.0*sn.y;
-        if (derivativeY == 2) res += 2.0;
+        const int xmin = p->spaceDimensionX().min();
+        const int xmax = p->spaceDimensionX().max();
+        const int ymin = p->spaceDimensionY().min();
+        const int ymax = p->spaceDimensionY().max();
+
+        if (tn.i%2 == 1)
+        {
+            if (sn.i == xmin && (sn.j != ymin && sn.j != ymax)) return -6.0*sn.x*sn.x;
+            if (sn.i == xmax && (sn.j != ymin && sn.j != ymax)) return +6.0*sn.x*sn.x;
+            if (sn.j == ymin && (sn.j != ymin || sn.j != ymax)) return -6.0*sn.y*sn.y;
+            if (sn.j == ymax && (sn.j != ymin || sn.j != ymax)) return +6.0*sn.y*sn.y;
+        }
+        if (tn.i%2==0)
+        {
+            if (sn.j == ymin && (sn.i != xmin && sn.i != xmax)) return -6.0*sn.y*sn.y;
+            if (sn.j == ymax && (sn.i != xmin && sn.i != xmax)) return +6.0*sn.y*sn.y;
+            if (sn.i == xmin && (sn.i != xmin || sn.i != xmax)) return -6.0*sn.x*sn.x;
+            if (sn.i == xmax && (sn.i != xmin || sn.i != xmax)) return +6.0*sn.x*sn.x;
+        }
+    }
+#endif
+
+#if defined(y1)
+    if (dy == 0) res += sn.y;
+    if (dy == 1) res += 1.0;
+    if (dy == 2) res += 0.0;
+    if (dy == 3)
+    {
+        const int xmin = p->spaceDimensionX().min();
+        const int xmax = p->spaceDimensionX().max();
+        const int ymin = p->spaceDimensionY().min();
+        const int ymax = p->spaceDimensionY().max();
+
+        if (sn.j == ymin) res += -1.0;
+        if (sn.j == ymax) res += +1.0;
+
+        //        if (tn.i%2 == 1)
+        //        {
+        //            if (sn.i == xmin && (sn.j != ymin && sn.j != ymax)) res += -1.0;
+        //            if (sn.i == xmax && (sn.j != ymin && sn.j != ymax)) res += +1.0;
+        //            if (sn.j == ymin && (sn.j != ymin || sn.j != ymax)) res += -1.0;
+        //            if (sn.j == ymax && (sn.j != ymin || sn.j != ymax)) res += +1.0;
+        //        }
+        //        if (tn.i%2==0)
+        //        {
+        //            if (sn.j == ymin && (sn.i != xmin && sn.i != xmax)) res += -1.0;
+        //            if (sn.j == ymax && (sn.i != xmin && sn.i != xmax)) res += +1.0;
+        //            if (sn.i == xmin && (sn.i != xmin || sn.i != xmax)) res += -1.0;
+        //            if (sn.i == xmax && (sn.i != xmin || sn.i != xmax)) res += +1.0;
+        //        }
+    }
+#endif
+#if defined(y2)
+    if (dy == 0) res += sn.y*sn.y;
+    if (dy == 1) res += 2.0*sn.y;
+    if (dy == 2) res += 2.0;
+    if (dy == 3)
+    {
+        throw std::exception();
+        const int xmin = p->spaceDimensionX().min();
+        const int xmax = p->spaceDimensionX().max();
+        const int ymin = p->spaceDimensionY().min();
+        const int ymax = p->spaceDimensionY().max();
+
+        if (tn.i%2 == 1)
+        {
+            if (sn.i == xmin && (sn.j != ymin && sn.j != ymax)) res += -2.0*sn.x;
+            if (sn.i == xmax && (sn.j != ymin && sn.j != ymax)) res += +2.0*sn.x;
+            if (sn.j == ymin && (sn.j != ymin || sn.j != ymax)) res += -2.0*sn.y;
+            if (sn.j == ymax && (sn.j != ymin || sn.j != ymax)) res += +2.0*sn.y;
+        }
+        if (tn.i%2==0)
+        {
+            if (sn.j == ymin && (sn.i != xmin && sn.i != xmax)) res += -2.0*sn.y;
+            if (sn.j == ymax && (sn.i != xmin && sn.i != xmax)) res += +2.0*sn.y;
+            if (sn.i == xmin && (sn.i != xmin || sn.i != xmax)) res += -2.0*sn.x;
+            if (sn.i == xmax && (sn.i != xmin || sn.i != xmax)) res += +2.0*sn.x;
+        }
     }
 #endif
 #if defined(y3)
-    if (y)
+    if (dy == 0) res += sn.y*sn.y*sn.y;
+    if (dy == 1) res += 3.0*sn.y*sn.y;
+    if (dy == 2) res += 6.0*sn.y;
+    if (dy == 3)
     {
-        if (derivativeY == 0) res += sn.y*sn.y*sn.y;
-        if (derivativeY == 1) res += 3.0*sn.y*sn.y;
-        if (derivativeY == 2) res += 6.0*sn.y;
+        throw std::exception();
+        const int xmin = p->spaceDimensionX().min();
+        const int xmax = p->spaceDimensionX().max();
+        const int ymin = p->spaceDimensionY().min();
+        const int ymax = p->spaceDimensionY().max();
+
+        if (tn.i%2 == 1)
+        {
+            if (sn.i == xmin && (sn.j != ymin && sn.j != ymax)) res += -6.0*sn.x*sn.x;
+            if (sn.i == xmax && (sn.j != ymin && sn.j != ymax)) res += +6.0*sn.x*sn.x;
+            if (sn.j == ymin && (sn.j != ymin || sn.j != ymax)) res += -6.0*sn.y*sn.y;
+            if (sn.j == ymax && (sn.j != ymin || sn.j != ymax)) res += +6.0*sn.y*sn.y;
+        }
+        if (tn.i%2==0)
+        {
+            if (sn.j == ymin && (sn.i != xmin && sn.i != xmax)) res += -6.0*sn.y*sn.y;
+            if (sn.j == ymax && (sn.i != xmin && sn.i != xmax)) res += +6.0*sn.y*sn.y;
+            if (sn.i == xmin && (sn.i != xmin || sn.i != xmax)) res += -6.0*sn.x*sn.x;
+            if (sn.i == xmax && (sn.i != xmin || sn.i != xmax)) res += +6.0*sn.x*sn.x;
+        }
     }
 #endif
 #if defined(t1)
@@ -1104,20 +1177,14 @@ double u_fx(const IParabolicIBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
     if (dt == 2) res += 0.0;
 #endif
 #if defined(t2)
-    if (time)
-    {
-        if (derivativeT == 0) res += tn.t*tn.t;
-        if (derivativeT == 1) res += 2.0*tn.t;
-        if (derivativeT == 2) res += 2.0;
-    }
+    if (dt == 0) res += tn.t*tn.t;
+    if (dt == 1) res += 2.0*tn.t;
+    if (dt == 2) res += 2.0;
 #endif
 #if defined(t3)
-    if (time)
-    {
-        if (derivativeT == 0) res += tn.t*tn.t*tn.t;
-        if (derivativeT == 1) res += 3.0*tn.t*tn.t;
-        if (derivativeT == 2) res += 6.0*tn.t;
-    }
+    if (dt == 0) res += tn.t*tn.t*tn.t;
+    if (dt == 1) res += 3.0*tn.t*tn.t;
+    if (dt == 2) res += 6.0*tn.t;
 #endif
 #endif
 
