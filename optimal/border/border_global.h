@@ -19,6 +19,7 @@
 
 #include <grid/hibvp.h>
 #include <grid/pibvp.h>
+#include <grid/pibvpX.h>
 #include <matrix2d.h>
 #include <benchmark.h>
 #include <time.h>

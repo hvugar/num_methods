@@ -73,6 +73,7 @@ SOURCES += \
     grid/bvp.cpp \
     grid/ibvp.cpp \
     grid/pibvp.cpp \
+    grid/pibvpX.cpp \
     grid/hibvp.cpp \
     grid/grid.cpp \
     grid/integral1.cpp \
@@ -120,6 +121,7 @@ HEADERS += global.h \
     grid/bvp.h \
     grid/ibvp.h \
     grid/pibvp.h \
+    grid/pibvpX.h \
     grid/hibvp.h \
     grid/grid.h \
     grid/integral1.h \
