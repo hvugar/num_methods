@@ -1,4 +1,4 @@
- #include <float.h>
+#include <float.h>
 #include <time.h>
 #include <cmethods.h>
 #include <grid/pibvp.h>
@@ -28,10 +28,45 @@
 #include "test/nonlinear_equation_ex1.h"
 #include "conjugate_gradinet_test.h"
 
+double A(double t) { return 0.0; }
+double B(double t) { return 0.0; }
+double C(double t) { return 2.0 - 2.0*t*A(t) - t*t*B(t); }
+
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     std::cout << "__cplusplus: " << __cplusplus << std::endl;
     srand(static_cast<unsigned int>(time(nullptr)));
+
+
+    unsigned int N=100;
+    double h = 0.01;
+    double *a = new double[N+1];
+    double *b = new double[N+1];
+    double *c = new double[N+1];
+    double *d = new double[N+1];
+    double *x = new double[N+1];
+
+    for (unsigned int i=0; i<=N; i++)
+    {
+        double t = i*h;
+        a[i] = +1.0 + 0.5*h*A(t);
+        b[i] = -2.0 - h*h*B(t);
+        c[i] = +1.0 - 0.5*h*A(t);
+        d[i] = h*h*C(t);
+    }
+    x[0] = 0.0; x[N] = 1.0;
+    a[0] = +1.0 + 0.5*h*A(0.0); b[1]  -= a[0]*x[0];
+    c[N] = +1.0 - 0.5*h*A(1.0); b[99] -= c[N]*x[N];
+    tomasAlgorithmLeft2Right(a+1, b+1, c+1, d+1, x+1, 99);
+    IPrinter::printVector(x, 101);
+    tomasAlgorithmRight2Left(a+1, b+1, c+1, d+1, x+1, 99);
+    IPrinter::printVector(x, 101);
+
+    delete [] d;
+    delete [] c;
+    delete [] b;
+    delete [] a;
+    return 0.0;
 
     //ConjugateGradinetTest::Main(argc, argv);
 

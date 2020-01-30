@@ -306,6 +306,154 @@ void tomasAlgorithmR2L(const double *a, const double *b, const double *c, const 
     free(alpha); alpha=NULL;
 }
 
+void tomasAlgorithmLeft2Right(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int N)
+{
+    const unsigned int M = N-1;
+    double *alpha = (double*)malloc(sizeof(double)*N);
+    double *betta = (double*)malloc(sizeof(double)*N);
+    unsigned int i = 1;
+    double m = 0.0;
+
+    /* Прямой ход метода прогонки. Определение прогоночных коэффициентов. */
+    alpha[1] = -c[0]/b[0];
+    betta[1] = +d[0]/b[0];
+    for (i=1; i<M; i++)
+    {
+        m = b[i] + a[i]*alpha[i];
+        alpha[i+1] = -c[i]/m;
+        betta[i+1] = +(d[i]-a[i]*betta[i])/m;
+    }
+
+    /**********************************************************************/
+
+    /* Обратный ход метода прогонки. Обратный ход метода прогонки начинается
+     * с вычисления хN. */
+    /* Остальные значения неизвестных находятся рекуррентно. */
+    m = b[M] + a[M]*alpha[M];
+    x[M] = (d[M]-a[M]*betta[M])/m;
+    for (i=M; i>=1; i--)
+    {
+        x[i-1] = alpha[i]*x[i] + betta[i];
+    }
+
+    /**********************************************************************/
+
+    free(betta); betta=NULL;
+    free(alpha); alpha=NULL;
+}
+
+void tomasAlgorithmLeft2RightModefied(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int N, double *e)
+{
+    const unsigned int M = N-1;
+    double *alpha = (double*)malloc(sizeof(double)*N);
+    double *betta = (double*)malloc(sizeof(double)*N);
+    unsigned int i = 1;
+    double m = 0.0;
+    double f = d[M];
+
+    /* Прямой ход метода прогонки. Определение прогоночных коэффициентов. */
+    alpha[1] = -c[0]/b[0];
+    betta[1] = +d[0]/b[0];
+    for (i=1; i<M; i++)
+    {
+        m = b[i] + a[i]*alpha[i];
+        alpha[i+1] = -c[i]/m;
+        betta[i+1] = +(d[i]-a[i]*betta[i])/m;
+
+        e[i] += alpha[i]*e[i-1];
+        f -= betta[i]*e[i-1];
+    }
+
+    /**********************************************************************/
+
+    /* Обратный ход метода прогонки. Обратный ход метода прогонки начинается
+     * с вычисления хN. */
+    /* Остальные значения неизвестных находятся рекуррентно. */
+    m = e[M] + e[M-1]*alpha[M];
+    x[M] = (d[M]-e[M-1]*betta[M])/m;
+    for (i=M; i>=1; i--)
+    {
+        x[i-1] = alpha[i]*x[i] + betta[i];
+    }
+
+    /**********************************************************************/
+
+    free(betta); betta=NULL;
+    free(alpha); alpha=NULL;
+}
+
+void tomasAlgorithmRight2Left(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int N)
+{
+    const unsigned int M = N-1;
+    double *alpha = (double*)malloc(sizeof(double)*N);
+    double *betta = (double*)malloc(sizeof(double)*N);
+    unsigned int i = 1;
+    double m = 0.0;
+
+    /* Прямой ход метода прогонки. Определение прогоночных коэффициентов. */
+    alpha[M-1] = -a[M]/b[M];
+    betta[M-1] = +d[M]/b[M];
+    for (i=M-1; i>=1; i--)
+    {
+        m = b[i] + c[i]*alpha[i];
+        alpha[i-1] = -a[i]/m;
+        betta[i-1] = +(d[i]-c[i]*betta[i])/m;
+    }
+
+    /**********************************************************************/
+
+    /* Обратный ход метода прогонки. Обратный ход метода прогонки начинается
+     * с вычисления х0. */
+    /* Остальные значения неизвестных находятся рекуррентно. */
+    m = b[0] + c[0]*alpha[0];
+    x[0] = (d[0]-c[0]*betta[0])/m;
+    for (i=0; i<M; i++)
+    {
+        x[i+1] = alpha[i]*x[i] + betta[i];
+    }
+
+    /**********************************************************************/
+
+    free(betta); betta=NULL;
+    free(alpha); alpha=NULL;
+}
+
+void tomasAlgorithmRight2LeftModefied(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int N, double *e)
+{
+    const unsigned int M = N-1;
+    double *alpha = (double*)malloc(sizeof(double)*N);
+    double *betta = (double*)malloc(sizeof(double)*N);
+    unsigned int i = 1;
+    double m = 0.0;
+
+    /* Прямой ход метода прогонки. Определение прогоночных коэффициентов. */
+    alpha[M-1] = -a[M]/b[M];
+    betta[M-1] = +d[M]/b[M];
+    for (i=M-1; i>=1; i--)
+    {
+        m = b[i] + c[i]*alpha[i];
+        alpha[i-1] = -a[i]/m;
+        betta[i-1] = +(d[i]-c[i]*betta[i])/m;
+    }
+
+    /**********************************************************************/
+
+    /* Обратный ход метода прогонки. Обратный ход метода прогонки начинается
+     * с вычисления х0. */
+    /* Остальные значения неизвестных находятся рекуррентно. */
+    m = b[0] + c[0]*alpha[0];
+    x[0] = (d[0]-c[0]*betta[0])/m;
+    for (i=0; i<M; i++)
+    {
+        x[i+1] = alpha[i]*x[i] + betta[i];
+    }
+
+    /**********************************************************************/
+
+    free(betta); betta=NULL;
+    free(alpha); alpha=NULL;
+}
+
 void qovmaE(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e, unsigned int *E, unsigned int L)
 {
     double *p = (double*)malloc(sizeof(double)*n);

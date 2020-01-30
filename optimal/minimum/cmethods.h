@@ -30,11 +30,14 @@ double trapesium1(CR1Function fx, unsigned int n, double a, double b);
 double trapesium2(CR1Function fx, double h, double a, double b);
 
 void MINIMUMSHARED_EXPORT tomasAlgorithm(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int n);
+void MINIMUMSHARED_EXPORT tomasAlgorithmLeft2Right(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int N);// COMPLETED
+void MINIMUMSHARED_EXPORT tomasAlgorithmRight2Left(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int N);// COMPLETED
+
 void MINIMUMSHARED_EXPORT tomasAlgorithmL2R(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int n);
 void MINIMUMSHARED_EXPORT tomasAlgorithmR2L(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int n);
 
-void MINIMUMSHARED_EXPORT tomasAlgorithm1(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int n,
-                                          const double *e, const double *f);
+//void MINIMUMSHARED_EXPORT tomasAlgorithm1(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int n,
+//                                          const double *e, const double *f);
 
 void MINIMUMSHARED_EXPORT qovmaE(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e, unsigned int *E, unsigned int L);
 void MINIMUMSHARED_EXPORT qovma2(double *a, double *b, double *c, double *d, double *x, unsigned int n, double *e);
@@ -48,6 +51,7 @@ void MINIMUMSHARED_EXPORT runge_kutta_rk4(double x0, double y0, double xN, doubl
 
 void MINIMUMSHARED_EXPORT runge_kutta_rk4_system(double x0, double x1, double *y0, double **y1, size_t n, unsigned int N, double h, ODE1stOrderEquationN *eq);
 //void RungaKuttaSystem(RmFunction *f, double x0, const double *y0, double x, double *y, const int n, double h);
+
 
 #ifdef __cplusplus
 }

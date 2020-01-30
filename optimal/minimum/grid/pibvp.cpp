@@ -208,8 +208,12 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
                     + beta*(ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00)) + gamma*(b27*value+b28*value0);
         }
 
-        tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
-        for (unsigned int n=s; n<=e; n++) u10[n] = rx[n];
+        //tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
+        //for (unsigned int n=s; n<=e; n++) u10[n] = rx[n];
+
+        tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1); for (unsigned int n=s; n<=e; n++) u10[n] = rx[n];
+        //tomasAlgorithmRight2Left(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1); for (unsigned int n=s; n<=e; n++) u10[n] = rx[n];
+
         layerInfo(u10, tn10);
 
         u00 = u10;
@@ -959,8 +963,12 @@ void IHeatEquationFBVP::implicit_calculate_D1V1() const
                     + beta*(ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00)) + gamma*(b27*value+b28*value0);
         }
 
-        tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
-        for (unsigned int n=s; n<=e; n++) u10[n] = rx[n];
+        //tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
+        //for (unsigned int n=s; n<=e; n++) u10[n] = rx[n];
+
+        tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1); for (unsigned int n=s; n<=e; n++) u10[n] = rx[n];
+        //tomasAlgorithmRight2Left(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1); for (unsigned int n=s; n<=e; n++) u10[n] = rx[n];
+
         layerInfo(u10, tn10);
 
         u00 = u10;

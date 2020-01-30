@@ -1,6 +1,6 @@
 #include "heat_equation_ibvp.h"
 
-#define DIMENSION_2
+#define DIMENSION_1
 #define QUADRATIC
 
 #if defined(QUADRATIC)
