@@ -50,6 +50,7 @@ public:
     };
 
     //FirstOrderLinearODE();
+    //FirstOrderLinearODE(const FirstOrderLinearODE &ode);
     virtual ~FirstOrderLinearODE();
 
     /**
@@ -64,6 +65,7 @@ public:
     void transferOfCondition(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const;
     void transferOfCondition1(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const;
     void transferOfCondition2(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const;
+    void transferOfCondition3(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const;
 
     /**
      * @brief solveInitialValueProblem

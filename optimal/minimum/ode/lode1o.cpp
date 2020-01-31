@@ -229,13 +229,6 @@ void FirstOrderLinearODE::transferOfCondition(const std::vector<NonLocalConditio
             }
             betta[i][k] = betta[i-1][1]*alpha[k] + D[k+(i-1)];
 
-            if (i%10==0)
-            {
-                //if (k==2) printf("%d %f %f\n", i, betta[i][1][0][0], betta[i][2][0][0]);
-                if (k==4) printf("%4d %10.6f %10.6f %10.6f %10.6f\n", i, betta[i][1][0][0], betta[i][2][0][0], betta[i][3][0][0], betta[i][4][0][0]);
-                //if (k==6) printf("%d %f %f %f %f %f %f\n", i, betta[i][1][0][0], betta[i][2][0][0], betta[i][3][0][0], betta[i][4][0][0], betta[i][5][0][0], betta[i][6][0][0]);
-            }
-
             for (unsigned int j=0; j<=k; j++) alpha[j].clear();
             delete [] alpha;
         }
@@ -576,47 +569,47 @@ void FirstOrderLinearODE::transferOfCondition2(const std::vector<NonLocalConditi
      *
      ***********************************************************************/
 
-//    double max_value = 0.0;
-//    unsigned int max_index = 0.0;
-//    for (unsigned int i=0; i<C.size(); i++)
-//    {
-//        if (fabs(C[i].m.determinant()) > max_value)
-//        {
-//            max_value = fabs(C[i].m.determinant());
-//            max_index = i;
-//        }
-//    }
+    //    double max_value = 0.0;
+    //    unsigned int max_index = 0.0;
+    //    for (unsigned int i=0; i<C.size(); i++)
+    //    {
+    //        if (fabs(C[i].m.determinant()) > max_value)
+    //        {
+    //            max_value = fabs(C[i].m.determinant());
+    //            max_index = i;
+    //        }
+    //    }
 
-//    printf("max: %4d %.8f\n", max_index, max_value);
+    //    printf("max: %4d %.8f\n", max_index, max_value);
 
-//    puts("------------------------");
-//    for (unsigned int i=0; i<C.size(); i++)
-//    {
-//        C[i].i = i;
-//        printf("%4d %4d %16.12f\n", C[i].i, C[i].n.i, C[i].m.determinant());
-//    }
-//    puts("------------------------");
-//    puts("OK0");
-//    DoubleMatrix mx = C[max_index].m;
-//    printf("det11: %f %d %d\n", mx.determinant(), mx.rows(), mx.cols());
-//    mx.inverse();
-//    puts("OK1");
-//    printf("det: %f\n", mx.determinant());
-//    puts("OK2");
+    //    puts("------------------------");
+    //    for (unsigned int i=0; i<C.size(); i++)
+    //    {
+    //        C[i].i = i;
+    //        printf("%4d %4d %16.12f\n", C[i].i, C[i].n.i, C[i].m.determinant());
+    //    }
+    //    puts("------------------------");
+    //    puts("OK0");
+    //    DoubleMatrix mx = C[max_index].m;
+    //    printf("det11: %f %d %d\n", mx.determinant(), mx.rows(), mx.cols());
+    //    mx.inverse();
+    //    puts("OK1");
+    //    printf("det: %f\n", mx.determinant());
+    //    puts("OK2");
 
-//    for (unsigned int i=0; i<C.size(); i++)
-//    {
-//        C[i].m = mx * C[i].m;
-//    }
-//    d = mx * d;
+    //    for (unsigned int i=0; i<C.size(); i++)
+    //    {
+    //        C[i].m = mx * C[i].m;
+    //    }
+    //    d = mx * d;
 
-//    puts("------------------------");
-//    for (unsigned int i=0; i<C.size(); i++)
-//    {
-//        C[i].i = i;
-//        printf("%4d %4d %16.12f\n", C[i].i, C[i].n.i, C[i].m.determinant());
-//    }
-//    puts("------------------------");
+    //    puts("------------------------");
+    //    for (unsigned int i=0; i<C.size(); i++)
+    //    {
+    //        C[i].i = i;
+    //        printf("%4d %4d %16.12f\n", C[i].i, C[i].n.i, C[i].m.determinant());
+    //    }
+    //    puts("------------------------");
 
     DoubleMatrix * const D = new DoubleMatrix[sze+1];
     //for (unsigned int i=0; i<=sze; i++) D[i].resize(M,M);
@@ -740,13 +733,13 @@ void FirstOrderLinearODE::transferOfCondition2(const std::vector<NonLocalConditi
                     }
                 }
 
-//                printf("%4d ", i);
-//                for (unsigned int j=1; j<=C.size(); j++)
-//                {
-//                    printf("%14.6f ", betta[i][j].determinant());
-//                }
-//                printf("| %14.6f ", betta[i][0].determinant());
-//                puts("");
+                //                printf("%4d ", i);
+                //                for (unsigned int j=1; j<=C.size(); j++)
+                //                {
+                //                    printf("%14.6f ", betta[i][j].determinant());
+                //                }
+                //                printf("| %14.6f ", betta[i][0].determinant());
+                //                puts("");
             }
 
             if (k==6)
@@ -1035,6 +1028,331 @@ void FirstOrderLinearODE::transferOfCondition2(const std::vector<NonLocalConditi
 
     //    delete [] D;
     C.clear();
+}
+
+void FirstOrderLinearODE::transferOfCondition3(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const
+{
+    if (co.size() < 2) throw ExceptionODE(1);
+
+    for (unsigned int i=0; i<co.size(); i++)
+    {
+        const DoubleMatrix &m = co[i].m;
+
+        if (!m.squareMatrix()) throw ExceptionODE(2);
+
+        if (m.rows() != count()) throw ExceptionODE(3);
+
+        if (d.length() != count()) throw ExceptionODE(4);
+    }
+
+    const int min = dimension().min();
+    const int max = dimension().max();
+    const unsigned int size = static_cast<unsigned int>( dimension().size() );
+    const unsigned int end = static_cast<unsigned int>( size-(k+1) );
+    const double h = dimension().step();
+    const unsigned int M = count();
+
+    std::vector<NonLocalCondition> C;
+    discritize(co, C);
+
+    DoubleMatrix *betta = new DoubleMatrix[size];
+    for (unsigned int i=0; i<size; i++) betta[i].resize(M, M, 0.0);
+    DoubleMatrix gamma = d;
+
+    for (unsigned int i=0; i<C.size(); i++)
+    {
+        unsigned int j = static_cast<unsigned int>(C[i].n.i);
+        betta[j] += C[i].m;
+    }
+
+    DoubleMatrix **alpha = new DoubleMatrix*[end];
+
+    for (unsigned int i=0; i<=end-1; i++)
+    {
+        DoubleMatrix *pAlpha = alpha[i] = new DoubleMatrix[k+1];
+
+        if (k==2)
+        {
+            //                DoubleMatrix mx(M, M);
+            //                for (unsigned int r=0; r<M; r++)
+            //                {
+            //                    for (unsigned int c=0; c<M; c++)
+            //                    {
+            //                        mx[r][c] = 2.0*h*A(node, r+1, c+1);
+            //                    }
+            //                    mx[r][r] += 3.0;
+            //                }
+            //                mx.inverse();
+            //                alpha[0].resize(M, 1, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[0])[m][0] = -2.0*h*B(node,m+1); } alpha[0] = mx*alpha[0];
+            //                alpha[1].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[1])[m][m] = +4.0; }               alpha[1] = mx*alpha[1];
+            //                alpha[2].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[2])[m][m] = -1.0; }               alpha[2] = mx*alpha[2];
+            //                mx.clear();
+        }
+
+        if (k==4)
+        {
+            PointNodeODE node0((i+0)*h, static_cast<int>(i+0) );
+            PointNodeODE node1((i+1)*h, static_cast<int>(i+1) );
+            PointNodeODE node2((i+2)*h, static_cast<int>(i+2) );
+            PointNodeODE node3((i+3)*h, static_cast<int>(i+3) );
+            PointNodeODE node4((i+4)*h, static_cast<int>(i+4) );
+
+            DoubleMatrix mx(M, M);
+            for (unsigned int r=0; r<M; r++)
+            {
+                for (unsigned int c=0; c<M; c++)
+                {
+                    mx[r][c] = 12.0*h*A(node0, r+1, c+1);
+                }
+                mx[r][r] += 25.0;
+            }
+            mx.inverse();
+
+            pAlpha[0].resize(M, 1, 0.0); for (unsigned int m=0; m<M; m++) { (pAlpha[0])[m][0] = -12.0*h*(B(node0, m+1)+B(node1, m+1)+B(node2, m+1)+B(node3, m+1)+B(node4, m+1)); }
+            pAlpha[1].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (pAlpha[1])[m][m] = +20.0; }
+            pAlpha[2].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (pAlpha[2])[m][m] =  +0.0; }
+            pAlpha[3].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (pAlpha[3])[m][m] = -20.0; }
+            pAlpha[4].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (pAlpha[4])[m][m] = +25.0; }
+
+            for (unsigned int r=0; r<M; r++)
+            {
+                for (unsigned int c=0; c<M; c++)
+                {
+                    pAlpha[1][r][c] -= 12.0*h*A(node1, r+1, c+1);
+                    pAlpha[2][r][c] -= 12.0*h*A(node2, r+1, c+1);
+                    pAlpha[3][r][c] -= 12.0*h*A(node3, r+1, c+1);
+                    pAlpha[4][r][c] -= 12.0*h*A(node4, r+1, c+1);
+                }
+            }
+
+            pAlpha[0] = mx*pAlpha[0];
+            pAlpha[1] = mx*pAlpha[1];
+            pAlpha[2] = mx*pAlpha[2];
+            pAlpha[3] = mx*pAlpha[3];
+            pAlpha[4] = mx*pAlpha[4];
+        }
+
+        if (k==6)
+        {
+            //                DoubleMatrix mx(M, M);
+            //                for (unsigned int r=0; r<M; r++)
+            //                {
+            //                    for (unsigned int c=0; c<M; c++)
+            //                    {
+            //                        mx[r][c] = 60.0*h*A(node, r+1, c+1);
+            //                    }
+            //                    mx[r][r] += 147.0;
+            //                }
+            //                mx.inverse();
+            //                alpha[0].resize(M, 1, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[0])[m][0] = -60.0*h*B(node,m+1); } alpha[0] = mx*alpha[0];
+            //                alpha[1].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[1])[m][m] = +360.0; }              alpha[1] = mx*alpha[1];
+            //                alpha[2].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[2])[m][m] = -450.0; }              alpha[2] = mx*alpha[2];
+            //                alpha[3].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[3])[m][m] = +400.0; }              alpha[3] = mx*alpha[3];
+            //                alpha[4].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[4])[m][m] = -225.0; }              alpha[4] = mx*alpha[4];
+            //                alpha[5].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[5])[m][m] = +72.0;  }              alpha[5] = mx*alpha[5];
+            //                alpha[6].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[6])[m][m] = -10.0;  }              alpha[6] = mx*alpha[6];
+            //                mx.clear();
+        }
+
+        for (unsigned int j=1; j<=k; j++) { betta[i+j] += betta[i]*pAlpha[j]; }
+        gamma -= betta[i]*pAlpha[0];
+    }
+
+    DoubleMatrix F((k+1)*M, (k+1)*M);
+    DoubleVector g((k+1)*M);
+
+    if (k==2)
+    {
+        //        double t1 = (sze-1)*h; PointNodeODE node1(t1,static_cast<int>((sze-1)));
+        //        double t0 = (sze-0)*h; PointNodeODE node0(t0,static_cast<int>((sze-0)));
+        //        for (unsigned int r=0; r<M; r++)
+        //        {
+        //            for (unsigned int c=0; c<M; c++)
+        //            {
+        //                F[0*M+r][0*M+c] = 0.0;
+        //                F[0*M+r][1*M+c] = betta[end][1][r][c];
+        //                F[0*M+r][2*M+c] = betta[end][2][r][c];
+
+        //                F[1*M+r][0*M+c] = 0.0;                     if (r==c) F[1*M+r][0*M+c] += -1.0;
+        //                F[1*M+r][1*M+c] = -2.0*h*A(node1,r+1,c+1); if (r==c) F[1*M+r][1*M+c] += +0.0;
+        //                F[1*M+r][2*M+c] = 0.0;                     if (r==c) F[1*M+r][2*M+c] += +1.0;
+
+        //                F[2*M+r][0*M+c] = 0.0;                     if (r==c) F[2*M+r][0*M+c] += +1.0;
+        //                F[2*M+r][1*M+c] = 0.0;                     if (r==c) F[2*M+r][1*M+c] += -4.0;
+        //                F[2*M+r][2*M+c] = -2.0*h*A(node0,r+1,c+1); if (r==c) F[2*M+r][2*M+c] += +3.0;
+        //            }
+        //            g[0*M+r] = betta[end][0][r][0];
+        //            g[1*M+r] = 2.0*h*B(node1,r+1);
+        //            g[2*M+r] = 2.0*h*B(node0,r+1);
+        //        }
+    }
+
+    if (k==4)
+    {
+        double t3 = (size-4)*h; PointNodeODE node3(t3,static_cast<int>((size-4)));
+        double t2 = (size-3)*h; PointNodeODE node2(t2,static_cast<int>((size-3)));
+        double t1 = (size-2)*h; PointNodeODE node1(t1,static_cast<int>((size-2)));
+        double t0 = (size-1)*h; PointNodeODE node0(t0,static_cast<int>((size-1)));
+
+        for (unsigned int r=0; r<M; r++)
+        {
+            for (unsigned int c=0; c<M; c++)
+            {
+                F[0*M+r][0*M+c] = betta[size-5][r][c];
+                F[0*M+r][1*M+c] = betta[size-4][r][c];
+                F[0*M+r][2*M+c] = betta[size-3][r][c];
+                F[0*M+r][3*M+c] = betta[size-2][r][c];
+                F[0*M+r][4*M+c] = betta[size-1][r][c];
+
+                F[1*M+r][0*M+c] = 0.0;                       if (r==c) F[1*M+r][0*M+c] += -3.0;
+                F[1*M+r][1*M+c] = -12.0*h*A(node3, r+1,c+1); if (r==c) F[1*M+r][1*M+c] += -10.0;
+                F[1*M+r][2*M+c] = 0.0;                       if (r==c) F[1*M+r][2*M+c] += +18.0;
+                F[1*M+r][3*M+c] = 0.0;                       if (r==c) F[1*M+r][3*M+c] += -6.0;
+                F[1*M+r][4*M+c] = 0.0;                       if (r==c) F[1*M+r][4*M+c] += +1.0;
+
+                F[2*M+r][0*M+c] = 0.0;                       if (r==c) F[2*M+r][0*M+c] += +1.0;
+                F[2*M+r][1*M+c] = 0.0;                       if (r==c) F[2*M+r][1*M+c] += -8.0;
+                F[2*M+r][2*M+c] = -12.0*h*A(node2, r+1,c+1); if (r==c) F[2*M+r][2*M+c] += +0.0;
+                F[2*M+r][3*M+c] = 0.0;                       if (r==c) F[2*M+r][3*M+c] += +8.0;
+                F[2*M+r][4*M+c] = 0.0;                       if (r==c) F[2*M+r][4*M+c] += -1.0;
+
+                F[3*M+r][0*M+c] = 0.0;                       if (r==c) F[3*M+r][0*M+c] += -1.0;
+                F[3*M+r][1*M+c] = 0.0;                       if (r==c) F[3*M+r][1*M+c] += +6.0;
+                F[3*M+r][2*M+c] = 0.0;                       if (r==c) F[3*M+r][2*M+c] += -18.0;
+                F[3*M+r][3*M+c] = -12.0*h*A(node1, r+1,c+1); if (r==c) F[3*M+r][3*M+c] += +10.0;
+                F[3*M+r][4*M+c] = 0.0;                       if (r==c) F[3*M+r][4*M+c] += +3.0;
+
+                F[4*M+r][0*M+c] = 0.0;                       if (r==c) F[4*M+r][0*M+c] += +3.0;
+                F[4*M+r][1*M+c] = 0.0;                       if (r==c) F[4*M+r][1*M+c] += -16.0;
+                F[4*M+r][2*M+c] = 0.0;                       if (r==c) F[4*M+r][2*M+c] += +36.0;
+                F[4*M+r][3*M+c] = 0.0;                       if (r==c) F[4*M+r][3*M+c] += -48.0;
+                F[4*M+r][4*M+c] = -12.0*h*A(node0, r+1,c+1); if (r==c) F[4*M+r][4*M+c] += +25.0;
+            }
+            g[0*M+r] = gamma[0][r];
+            g[1*M+r] = +12.0*h*B(node3, r+1);
+            g[2*M+r] = +12.0*h*B(node2, r+1);
+            g[3*M+r] = +12.0*h*B(node1, r+1);
+            g[4*M+r] = +12.0*h*B(node0, r+1);
+        }
+
+    }
+
+    if (k==6)
+    {
+        double t5 = (size-6)*h; PointNodeODE node5(t5,static_cast<int>((size-5)));
+        double t4 = (size-5)*h; PointNodeODE node4(t4,static_cast<int>((size-4)));
+        double t3 = (size-4)*h; PointNodeODE node3(t3,static_cast<int>((size-3)));
+        double t2 = (size-3)*h; PointNodeODE node2(t2,static_cast<int>((size-2)));
+        double t1 = (size-2)*h; PointNodeODE node1(t1,static_cast<int>((size-1)));
+        double t0 = (size-1)*h; PointNodeODE node0(t0,static_cast<int>((size-0)));
+
+        for (unsigned int r=0; r<M; r++)
+        {
+            for (unsigned int c=0; c<M; c++)
+            {
+                F[0*M+r][0*M+c] = betta[size-7][r][c];
+                F[0*M+r][1*M+c] = betta[size-6][r][c];
+                F[0*M+r][2*M+c] = betta[size-5][r][c];
+                F[0*M+r][3*M+c] = betta[size-4][r][c];
+                F[0*M+r][4*M+c] = betta[size-3][r][c];
+                F[0*M+r][5*M+c] = betta[size-2][r][c];
+                F[0*M+r][6*M+c] = betta[size-1][r][c];
+
+                F[1*M+r][0*M+c] = 0.0;                      if (r==c) F[1*M+r][0*M+c] += -10.0;
+                F[1*M+r][1*M+c] = -60.0*h*A(node5,r+1,c+1); if (r==c) F[1*M+r][1*M+c] += -77.0;
+                F[1*M+r][2*M+c] = 0.0;                      if (r==c) F[1*M+r][2*M+c] += +150.0;
+                F[1*M+r][3*M+c] = 0.0;                      if (r==c) F[1*M+r][3*M+c] += -100.0;
+                F[1*M+r][4*M+c] = 0.0;                      if (r==c) F[1*M+r][4*M+c] += +50.0;
+                F[1*M+r][5*M+c] = 0.0;                      if (r==c) F[1*M+r][5*M+c] += -15.0;
+                F[1*M+r][6*M+c] = 0.0;                      if (r==c) F[1*M+r][6*M+c] += +2.0;
+
+                F[2*M+r][0*M+c] = 0.0;                      if (r==c) F[2*M+r][0*M+c] += +2.0;
+                F[2*M+r][1*M+c] = 0.0;                      if (r==c) F[2*M+r][1*M+c] += -24.0;
+                F[2*M+r][2*M+c] = -60.0*h*A(node4,r+1,c+1); if (r==c) F[2*M+r][2*M+c] += -35.0;
+                F[2*M+r][3*M+c] = 0.0;                      if (r==c) F[2*M+r][3*M+c] += +80.0;
+                F[2*M+r][4*M+c] = 0.0;                      if (r==c) F[2*M+r][4*M+c] += -30.0;
+                F[2*M+r][5*M+c] = 0.0;                      if (r==c) F[2*M+r][5*M+c] += +8.0;
+                F[2*M+r][6*M+c] = 0.0;                      if (r==c) F[2*M+r][6*M+c] += -1.0;
+
+                F[3*M+r][0*M+c] = 0.0;                      if (r==c) F[3*M+r][0*M+c] += -1.0;
+                F[3*M+r][1*M+c] = 0.0;                      if (r==c) F[3*M+r][1*M+c] += +9.0;
+                F[3*M+r][2*M+c] = 0.0;                      if (r==c) F[3*M+r][2*M+c] += -45.0;
+                F[3*M+r][3*M+c] = -60.0*h*A(node3,r+1,c+1); if (r==c) F[3*M+r][3*M+c] += +0.0;
+                F[3*M+r][4*M+c] = 0.0;                      if (r==c) F[3*M+r][4*M+c] += +45.0;
+                F[3*M+r][5*M+c] = 0.0;                      if (r==c) F[3*M+r][5*M+c] += -9.0;
+                F[3*M+r][6*M+c] = 0.0;                      if (r==c) F[3*M+r][6*M+c] += +1.0;
+
+                F[4*M+r][0*M+c] = 0.0;                      if (r==c) F[4*M+r][0*M+c] += +1.0;
+                F[4*M+r][1*M+c] = 0.0;                      if (r==c) F[4*M+r][1*M+c] += -8.0;
+                F[4*M+r][2*M+c] = 0.0;                      if (r==c) F[4*M+r][2*M+c] += +30.0;
+                F[4*M+r][3*M+c] = 0.0;                      if (r==c) F[4*M+r][3*M+c] += -80.0;
+                F[4*M+r][4*M+c] = -60.0*h*A(node2,r+1,c+1); if (r==c) F[4*M+r][4*M+c] += +35.0;
+                F[4*M+r][5*M+c] = 0.0;                      if (r==c) F[4*M+r][5*M+c] += +24.0;
+                F[4*M+r][6*M+c] = 0.0;                      if (r==c) F[4*M+r][6*M+c] += -2.0;
+
+                F[5*M+r][0*M+c] = 0.0;                      if (r==c) F[5*M+r][0*M+c] += -2.0;
+                F[5*M+r][1*M+c] = 0.0;                      if (r==c) F[5*M+r][1*M+c] += +15.0;
+                F[5*M+r][2*M+c] = 0.0;                      if (r==c) F[5*M+r][2*M+c] += -50.0;
+                F[5*M+r][3*M+c] = 0.0;                      if (r==c) F[5*M+r][3*M+c] += +100.0;
+                F[5*M+r][4*M+c] = 0.0;                      if (r==c) F[5*M+r][4*M+c] += -150.0;
+                F[5*M+r][5*M+c] = -60.0*h*A(node1,r+1,c+1); if (r==c) F[5*M+r][5*M+c] += +77.0;
+                F[5*M+r][6*M+c] = 0.0;                      if (r==c) F[5*M+r][6*M+c] += +10.0;
+
+                F[6*M+r][0*M+c] = 0.0;                      if (r==c) F[6*M+r][0*M+c] += +10.0;
+                F[6*M+r][1*M+c] = 0.0;                      if (r==c) F[6*M+r][1*M+c] += -72.0;
+                F[6*M+r][2*M+c] = 0.0;                      if (r==c) F[6*M+r][2*M+c] += +225.0;
+                F[6*M+r][3*M+c] = 0.0;                      if (r==c) F[6*M+r][3*M+c] += -400.0;
+                F[6*M+r][4*M+c] = 0.0;                      if (r==c) F[6*M+r][4*M+c] += +450.0;
+                F[6*M+r][5*M+c] = 0.0;                      if (r==c) F[6*M+r][5*M+c] += -360.0;
+                F[6*M+r][6*M+c] = -60.0*h*A(node0,r+1,c+1); if (r==c) F[6*M+r][6*M+c] += +147.0;
+            }
+            g[0*M+r] = gamma[0][r];
+            g[1*M+r] = +60.0*h*B(node5,r+1);
+            g[2*M+r] = +60.0*h*B(node4,r+1);
+            g[3*M+r] = +60.0*h*B(node3,r+1);
+            g[4*M+r] = +60.0*h*B(node2,r+1);
+            g[5*M+r] = +60.0*h*B(node1,r+1);
+            g[6*M+r] = +60.0*h*B(node0,r+1);
+        }
+    }
+
+    DoubleVector xf((k+1)*M);
+    LinearEquation::GaussianElimination(F, g, xf);
+
+    IPrinter::print(xf, xf.length());
+
+    F.clear();
+    g.clear();
+
+    x.clear();
+    x.resize(size); for (unsigned int n=0; n<size; n++) x[n].resize(M);
+
+    unsigned int s = xf.length()-M;
+    unsigned int e = xf.length()-1;
+
+    for (unsigned int n=size-1; n>=size-k-1; n--)
+    {
+        x[n] = xf.mid(s, e);
+        s -= M;
+        e -= M;
+    }
+    xf.clear();
+
+    for (unsigned int i=size-(k+1); i!=1; i--)
+    {
+        x[i-1] = alpha[i-1][1]*x[i] + alpha[i-1][2]*x[i+1] + alpha[i-1][3]*x[i+2] + alpha[i-1][4]*x[i+3] + alpha[i-1][0];
+    }
+
+    for (unsigned int i=0; i<=end-1; i++)
+    {
+        for (unsigned int j=0; j<=k; j++) alpha[i][j].clear();
+        delete [] alpha[i];
+    }
+    delete [] alpha;
+
+    for (unsigned int i=0; i<size; i++) betta[i].clear();
+    delete [] betta;
+    gamma.clear();
 }
 
 void FirstOrderLinearODE::solveInitialValueProblem(DoubleVector &rv) const

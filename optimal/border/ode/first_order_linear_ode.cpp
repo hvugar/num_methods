@@ -1,8 +1,8 @@
 #include "first_order_linear_ode.h"
 
-#define EXAMPLE_8
+#define EXAMPLE_9
 
-#define _N 100
+#define _N 1000
 #define _H 0.01
 
 void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
@@ -22,23 +22,23 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
     std::vector<NonLocalCondition> C;
 
     C.push_back(NonLocalCondition(0, PointNodeODE(0.00, static_cast<int>(0.00*N)), DoubleMatrix(M,M,0.0)));
-    C.push_back(NonLocalCondition(1, PointNodeODE(0.10, static_cast<int>(0.10*N)), DoubleMatrix(M,M,0.0)));
-    C.push_back(NonLocalCondition(2, PointNodeODE(0.25, static_cast<int>(0.25*N)), DoubleMatrix(M,M,0.0)));
-    C.push_back(NonLocalCondition(3, PointNodeODE(0.75, static_cast<int>(0.75*N)), DoubleMatrix(M,M,0.0)));
-    C.push_back(NonLocalCondition(4, PointNodeODE(1.00, static_cast<int>(1.00*N)), DoubleMatrix(M,M,0.0)));
+    C.push_back(NonLocalCondition(1, PointNodeODE(2.50, static_cast<int>(0.25*N)), DoubleMatrix(M,M,0.0)));
+    C.push_back(NonLocalCondition(2, PointNodeODE(5.00, static_cast<int>(0.50*N)), DoubleMatrix(M,M,0.0)));
+    C.push_back(NonLocalCondition(3, PointNodeODE(7.50, static_cast<int>(0.75*N)), DoubleMatrix(M,M,0.0)));
+    C.push_back(NonLocalCondition(4, PointNodeODE(10.0, static_cast<int>(1.00*N)), DoubleMatrix(M,M,0.0)));
 
-    C[0].m[0][0] = +10.8;
-    C[1].m[0][0] = +10.5;
-    C[2].m[0][0] = -20.5;
-    C[3].m[0][0] = +45.3;
-    C[4].m[0][0] = +34.4;
+    C[0].m[0][0] = +1.8;
+    C[1].m[0][0] = +1.5;
+    C[2].m[0][0] = -2.5;
+    C[3].m[0][0] = +4.3;
+    C[4].m[0][0] = +3.4;
 
-    puts("------------------------");
+    puts("--------------------------");
     for (unsigned int i=0; i<C.size(); i++)
     {
         printf("%4d %4d %16.12f\n", C[i].i, C[i].n.i, C[i].m.determinant());
     }
-    puts("------------------------");
+    puts("--------------------------");
 
 ////    for (unsigned i=0; i<C.size(); i++)
 //    {
@@ -83,12 +83,13 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
     //for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.6f ", x[n][m]); nl.printNorms(x);
     //IPrinter::printSeperatorLine();
 
-    nl.transferOfCondition2(C, d, x, 4);
+    puts("===== transferOfCondition =====");
+    nl.transferOfCondition3(C, d, x, 4);
     for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.6f ", x[n][m]); nl.printNorms(x);
     //IPrinter::printSeperatorLine();
 
 //    nl.transferOfCondition(C, d, x, 6);
-    for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.6f ", x[n][m]); nl.printNorms(x);
+    //for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.6f ", x[n][m]); nl.printNorms(x);
     //IPrinter::printSeperatorLine();
 }
 
@@ -139,7 +140,7 @@ double FirstOrderLinearODEEx1::A(const PointNodeODE &node, unsigned int r, unsig
     if (r==4 && c == 4) return +1.0;
 #endif
 
-#if defined(EXAMPLE_6) ||defined(EXAMPLE_7) || defined(EXAMPLE_8)
+#if defined(EXAMPLE_6) ||defined(EXAMPLE_7) || defined(EXAMPLE_8) || defined(EXAMPLE_9) || defined(EXAMPLE_10)
     return +1.0;
 #endif
 
@@ -167,7 +168,7 @@ unsigned int FirstOrderLinearODEEx1::count() const
 #if defined(EXAMPLE_5)
     return 4;
 #endif
-#if defined(EXAMPLE_6) || defined(EXAMPLE_7) || defined(EXAMPLE_8)
+#if defined(EXAMPLE_6) || defined(EXAMPLE_7) || defined(EXAMPLE_8) || defined(EXAMPLE_9) || defined(EXAMPLE_10)
     return 1;
 #endif
 }
@@ -207,6 +208,12 @@ double FirstOrderLinearODEEx1::x(const PointNodeODE &node, unsigned int r UNUSED
 #ifdef EXAMPLE_8
     if (r == 1) return t*t*t*t*t*t;
 #endif
+#ifdef EXAMPLE_9
+    if (r == 1) return t*t;
+#endif
+#ifdef EXAMPLE_10
+    if (r == 1) return t;
+#endif
 
     throw std::exception();
 }
@@ -245,6 +252,12 @@ double FirstOrderLinearODEEx1::dt(const PointNodeODE &node, unsigned int r UNUSE
 #endif
 #ifdef EXAMPLE_8
     if (r == 1) return 6.0*t*t*t*t*t;
+#endif
+#ifdef EXAMPLE_9
+    if (r == 1) return 2.0*t;
+#endif
+#ifdef EXAMPLE_10
+    if (r == 1) return 1.0;
 #endif
     throw std::exception();
 }
