@@ -342,14 +342,13 @@ void tomasAlgorithmLeft2Right(const double *a, const double *b, const double *c,
     free(alpha); alpha=NULL;
 }
 
-void tomasAlgorithmLeft2RightModefied(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int N, double *e)
+void tomasAlgorithmLeft2RightModefied(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int N, double *e, double f)
 {
     const unsigned int M = N-1;
     double *alpha = (double*)malloc(sizeof(double)*N);
     double *betta = (double*)malloc(sizeof(double)*N);
     unsigned int i = 1;
     double m = 0.0;
-    double f = d[M];
 
     /* Прямой ход метода прогонки. Определение прогоночных коэффициентов. */
     alpha[1] = -c[0]/b[0];
@@ -361,7 +360,7 @@ void tomasAlgorithmLeft2RightModefied(const double *a, const double *b, const do
         betta[i+1] = +(d[i]-a[i]*betta[i])/m;
 
         e[i] += alpha[i]*e[i-1];
-        f -= betta[i]*e[i-1];
+        f    -= betta[i]*e[i-1];
     }
 
     /**********************************************************************/
@@ -370,7 +369,7 @@ void tomasAlgorithmLeft2RightModefied(const double *a, const double *b, const do
      * с вычисления хN. */
     /* Остальные значения неизвестных находятся рекуррентно. */
     m = e[M] + e[M-1]*alpha[M];
-    x[M] = (d[M]-e[M-1]*betta[M])/m;
+    x[M] = (f-e[M-1]*betta[M])/m;
     for (i=M; i>=1; i--)
     {
         x[i-1] = alpha[i]*x[i] + betta[i];
@@ -418,7 +417,7 @@ void tomasAlgorithmRight2Left(const double *a, const double *b, const double *c,
     free(alpha); alpha=NULL;
 }
 
-void tomasAlgorithmRight2LeftModefied(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int N, double *e)
+void tomasAlgorithmRight2LeftModefied(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int N, double *e, double f)
 {
     const unsigned int M = N-1;
     double *alpha = (double*)malloc(sizeof(double)*N);
@@ -434,6 +433,9 @@ void tomasAlgorithmRight2LeftModefied(const double *a, const double *b, const do
         m = b[i] + c[i]*alpha[i];
         alpha[i-1] = -a[i]/m;
         betta[i-1] = +(d[i]-c[i]*betta[i])/m;
+
+        e[i] += alpha[i]*e[i+1];
+        f    -= betta[i]*e[i+1];
     }
 
     /**********************************************************************/
@@ -441,8 +443,8 @@ void tomasAlgorithmRight2LeftModefied(const double *a, const double *b, const do
     /* Обратный ход метода прогонки. Обратный ход метода прогонки начинается
      * с вычисления х0. */
     /* Остальные значения неизвестных находятся рекуррентно. */
-    m = b[0] + c[0]*alpha[0];
-    x[0] = (d[0]-c[0]*betta[0])/m;
+    m = e[0] + e[1]*alpha[0];
+    x[0] = (f-e[1]*betta[0])/m;
     for (i=0; i<M; i++)
     {
         x[i+1] = alpha[i]*x[i] + betta[i];

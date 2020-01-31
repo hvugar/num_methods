@@ -30,7 +30,7 @@
 
 double A(double t) { return 0.0; }
 double B(double t) { return 0.0; }
-double C(double t) { return 2.0 - 2.0*t*A(t) - t*t*B(t); }
+double C(double t) { return 6.0*t - 3.0*t*t*A(t) - t*t*t*B(t); }
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -45,6 +45,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     double *c = new double[N+1];
     double *d = new double[N+1];
     double *x = new double[N+1];
+    double *e = new double[N+1];
 
     for (unsigned int i=0; i<=N; i++)
     {
@@ -53,15 +54,37 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
         b[i] = -2.0 - h*h*B(t);
         c[i] = +1.0 - 0.5*h*A(t);
         d[i] = h*h*C(t);
+
+         e[i] = 0.0;
     }
     x[0] = 0.0; x[N] = 1.0;
-    a[0] = +1.0 + 0.5*h*A(0.0); b[1]  -= a[0]*x[0];
-    c[N] = +1.0 - 0.5*h*A(1.0); b[99] -= c[N]*x[N];
-    tomasAlgorithmLeft2Right(a+1, b+1, c+1, d+1, x+1, 99);
-    IPrinter::printVector(x, 101);
-    tomasAlgorithmRight2Left(a+1, b+1, c+1, d+1, x+1, 99);
+    a[0] = +1.0 + 0.5*h*A(0.0); d[1]  -= a[0]*x[0];
+    c[N] = +1.0 - 0.5*h*A(1.0); d[99] -= c[N]*x[N];
+
+    //e[1] = 3.5;
+    e[20] = -2003.4;
+    e[30] = -5003.4;
+    e[50] = -4.4;
+    e[70] = -934.4;
+    e[80] = +3234.4;
+    //e[99] = 428.3;
+    double f = 0.0;
+    for (unsigned int i=1; i<=99; i++)
+    {
+        double t = i*h;
+        f += e[i] * pow(t,3.0);
+    }
+
+    //tomasAlgorithmLeft2Right(a+1, b+1, c+1, d+1, x+1, 99);
+    //IPrinter::printVector(x, 101);
+    //tomasAlgorithm(a+1, b+1, c+1, d+1, x+1, 99);
+    //tomasAlgorithmRight2Left(a+1, b+1, c+1, d+1, x+1, 99);
+    //tomasAlgorithmLeft2Right(a+1, b+1, c+1, d+1, x+1, 99);
+    tomasAlgorithmLeft2RightModefied(a+1, b+1, c+1, d+1, x+1, 99, e+1, f);
+    //tomasAlgorithmRight2LeftModefied(a+1, b+1, c+1, d+1, x+1, 99, e+1, f);
     IPrinter::printVector(x, 101);
 
+    delete [] e;
     delete [] d;
     delete [] c;
     delete [] b;
