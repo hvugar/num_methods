@@ -1,6 +1,6 @@
 #include "first_order_linear_ode.h"
 
-#define EXAMPLE_9
+#define EXAMPLE_7
 
 #define _N 1000
 #define _H 0.01
@@ -20,47 +20,18 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
     //const unsigned int order = 2;
 
     std::vector<NonLocalCondition> C;
+    C.push_back(NonLocalCondition(0, PointNodeODE(0.00,   0), DoubleMatrix(M,M,+1.8)));
+    C.push_back(NonLocalCondition(1, PointNodeODE(2.5,  250), DoubleMatrix(M,M,+1.5)));
+    C.push_back(NonLocalCondition(2, PointNodeODE(5.0,  500), DoubleMatrix(M,M,-2.5)));
+    C.push_back(NonLocalCondition(3, PointNodeODE(7.5,  750), DoubleMatrix(M,M,+4.3)));
+    C.push_back(NonLocalCondition(4, PointNodeODE(10.0, 1000), DoubleMatrix(M,M,+3.4)));
+    DoubleVector d(M, 0.0);
 
-    C.push_back(NonLocalCondition(0, PointNodeODE(0.00, static_cast<int>(0.00*N)), DoubleMatrix(M,M,0.0)));
-    C.push_back(NonLocalCondition(1, PointNodeODE(2.50, static_cast<int>(0.25*N)), DoubleMatrix(M,M,0.0)));
-    C.push_back(NonLocalCondition(2, PointNodeODE(5.00, static_cast<int>(0.50*N)), DoubleMatrix(M,M,0.0)));
-    C.push_back(NonLocalCondition(3, PointNodeODE(7.50, static_cast<int>(0.75*N)), DoubleMatrix(M,M,0.0)));
-    C.push_back(NonLocalCondition(4, PointNodeODE(10.0, static_cast<int>(1.00*N)), DoubleMatrix(M,M,0.0)));
-
-    C[0].m[0][0] = +1.8;
-    C[1].m[0][0] = +1.5;
-    C[2].m[0][0] = -2.5;
-    C[3].m[0][0] = +4.3;
-    C[4].m[0][0] = +3.4;
-
-    puts("--------------------------");
-    for (unsigned int i=0; i<C.size(); i++)
+    for (unsigned int s=0; s<C.size(); s++)
     {
-        printf("%4d %4d %16.12f\n", C[i].i, C[i].n.i, C[i].m.determinant());
+        DoubleVector x; for (unsigned int m=1; m<=M; m++) x << nl.x(C[s].n, m);
+        d += C[s].m*x;
     }
-    puts("--------------------------");
-
-////    for (unsigned i=0; i<C.size(); i++)
-//    {
-//        for (unsigned int r=0; r<M; r++)
-//        {
-//            for (unsigned int c=0; c<M; c++)
-//            {
-//                for (unsigned i=0; i<C.size(); i++)
-//                {
-//                    C[i].m[r][c] = Random::value(0,1,2);
-//                }
-//            }
-//        }
-////    }
-
-    DoubleVector x000; for (unsigned int m=1; m<=M; m++) x000 << nl.x(C[0].n,m);
-    DoubleVector x025; for (unsigned int m=1; m<=M; m++) x025 << nl.x(C[1].n,m);
-    DoubleVector x050; for (unsigned int m=1; m<=M; m++) x050 << nl.x(C[2].n,m);
-    DoubleVector x075; for (unsigned int m=1; m<=M; m++) x075 << nl.x(C[3].n,m);
-    DoubleVector x100; for (unsigned int m=1; m<=M; m++) x100 << nl.x(C[4].n,m);
-
-    DoubleVector d = C[0].m*x000 + C[1].m*x025 + C[2].m*x050 + C[3].m*x075 + C[4].m*x100;
     IPrinter::printVector(d, nullptr, d.length());
     IPrinter::printSeperatorLine();
 
@@ -86,7 +57,7 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
     puts("===== transferOfCondition =====");
     nl.transferOfCondition3(C, d, x, 4);
     for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.6f ", x[n][m]); nl.printNorms(x);
-    //IPrinter::printSeperatorLine();
+    IPrinter::printSeperatorLine();
 
 //    nl.transferOfCondition(C, d, x, 6);
     //for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.6f ", x[n][m]); nl.printNorms(x);
@@ -141,7 +112,7 @@ double FirstOrderLinearODEEx1::A(const PointNodeODE &node, unsigned int r, unsig
 #endif
 
 #if defined(EXAMPLE_6) ||defined(EXAMPLE_7) || defined(EXAMPLE_8) || defined(EXAMPLE_9) || defined(EXAMPLE_10)
-    return +1.0;
+    return -1.0;
 #endif
 
     throw std::exception();

@@ -25,6 +25,7 @@ public:
     virtual ~ConjugateGradient();
 
     virtual void calculate(DoubleVector &x);
+    virtual void calculate1(DoubleVector &x);
 
     void setAlgorithm(Algorithm algorithm);
     void setResetIteration(bool reset);

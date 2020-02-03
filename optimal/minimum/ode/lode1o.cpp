@@ -1,10 +1,14 @@
 #include "lode1o.h"
 #include "nlode1o.h"
+#include <math.h>
+#include <float.h>
+
 #include "../matrix2d.h"
 #include "../printer.h"
-#include <math.h>
-#include <cmethods.h>
-#include <float.h>
+#include "../cmethods.h"
+#include "../function.h"
+#include "../gradient_cjt.h"
+#include "../gradient_sd.h"
 
 NonLocalCondition::NonLocalCondition() {}
 
@@ -1338,7 +1342,7 @@ void FirstOrderLinearODE::transferOfCondition3(const std::vector<NonLocalConditi
     }
     xf.clear();
 
-    for (unsigned int i=size-(k+1); i!=1; i--)
+    for (unsigned int i=size-(k+1); i!=0; i--)
     {
         x[i-1] = alpha[i-1][1]*x[i] + alpha[i-1][2]*x[i+1] + alpha[i-1][3]*x[i+2] + alpha[i-1][4]*x[i+3] + alpha[i-1][0];
     }
@@ -1353,6 +1357,270 @@ void FirstOrderLinearODE::transferOfCondition3(const std::vector<NonLocalConditi
     for (unsigned int i=0; i<size; i++) betta[i].clear();
     delete [] betta;
     gamma.clear();
+}
+
+void FirstOrderLinearODE::transferOfCondition4(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const
+{
+    const unsigned int size = dimension().size();
+    //const unsigned int endp = size - 1;
+    const unsigned int M = count();
+
+    struct MyRnFunction : public RnFunction, public IGradient, public IPrinter
+    {
+        virtual double fx(const DoubleVector &x) const
+        {
+            double res = 0.0;
+
+            double f = 0.0;
+            for (unsigned int i=0; i<size-k; i++) // size-k
+            {
+                PointNodeODE node0((i)*h, static_cast<int>(i));
+                f = ((-25.0-12.0*h*ode->A(node0))*x[i] + 48.0*x[i+1] - 36.0*x[i+2] + 16.0*x[i+3] - 3.0*x[i+4]) - (12.0*h*ode->B(node0));
+                res += f*f;
+            }
+
+            unsigned int i = size-k-1;
+            PointNodeODE node1((i+1)*h, static_cast<int>(i+1));
+            f = (-3.0*x[i] + (-10.0-12.0*h*ode->A(node1))*x[i+1] + 18.0*x[i+2] - 6.0*x[i+3] + x[i+4]) - (12*h*ode->B(node1));
+            res += f*f;
+
+            PointNodeODE node2((i+2)*h, static_cast<int>(i+2));
+            f = (+1.0*x[i] - 8.0*x[i+1] + (-12.0*h*ode->A(node2))*x[i+2] + 8.0*x[i+3] - 1.0*x[i+4]) - (12*h*ode->B(node2));
+            res += f*f;
+
+            PointNodeODE node3((i+3)*h, static_cast<int>(i+3));
+            f = (-1.0*x[i] + 6.0*x[i+1] - 18.0*x[i+2] + (+10.0-12.0*h*ode->A(node3))*x[i+3] + 3.0*x[i+4]) - (12*h*ode->B(node3));
+            res += f*f;
+
+            //PointNodeODE node4((i+4)*h, static_cast<int>(i+4));
+            //f = (+3.0*x[i] - 16.0*x[i+1] + 36.0*x[i+2] - 48.0*x[i+3] + (+25.0-12.0*h*ode->A(node4))*x[i+4]) - (12*h*ode->B(node4));
+
+//            f = (*co)[0].m[0][0]*x[0] + (*co)[1].m[0][0]*x[100] - (*d)[0];
+//            res += f*f;
+            double sum = -(*d)[0];
+            for (unsigned int s=0; s<co->size(); s++)
+            {
+                const NonLocalCondition &Cs = (*co)[s];
+                sum += Cs.m[0][0] * x[Cs.n.i];
+            }
+            res += sum*sum;
+
+            return res;
+        }
+
+        virtual void gradient(const DoubleVector &x, DoubleVector &g) const
+        {
+            const unsigned int N = x.length();
+            g.resize(N, 0.0);
+
+            for (unsigned int i=0; i<g.length(); i++) g[0] = 0.0;
+            //IGradient::Gradient(this, 0.01, x, g);
+
+            {
+                PointNodeODE node0(0*h, static_cast<int>(0));
+                PointNodeODE node1(1*h, static_cast<int>(1));
+                PointNodeODE node2(2*h, static_cast<int>(2));
+                PointNodeODE node3(3*h, static_cast<int>(3));
+                PointNodeODE node4(4*h, static_cast<int>(4));
+
+                g[0]  = 2.0 * (((-25.0-12.0*h*ode->A(node0))*x[0] + 48.0*x[1] - 36.0*x[2] + 16.0*x[3] - 3.0*x[4]) - (12.0*h*ode->B(node0))) * (-25.0-12.0*h*ode->A(node0));
+                //g[0] += 2.0 * ((*co)[0].m[0][0]*x[0] + (*co)[1].m[0][0]*x[100] - (*d)[0]) * (*co)[0].m[0][0];
+
+                g[1]  = 2.0 * (((-25.0-12.0*h*ode->A(node0))*x[0] + 48.0*x[1] - 36.0*x[2] + 16.0*x[3] - 3.0*x[4]) - (12.0*h*ode->B(node0))) * (+48.0);
+                g[1] += 2.0 * (((-25.0-12.0*h*ode->A(node1))*x[1] + 48.0*x[2] - 36.0*x[3] + 16.0*x[4] - 3.0*x[5]) - (12.0*h*ode->B(node1))) * (-25.0-12.0*h*ode->A(node1));
+
+                g[2]  = 2.0 * (((-25.0-12.0*h*ode->A(node0))*x[0] + 48.0*x[1] - 36.0*x[2] + 16.0*x[3] - 3.0*x[4]) - (12.0*h*ode->B(node0))) * (-36.0);
+                g[2] += 2.0 * (((-25.0-12.0*h*ode->A(node1))*x[1] + 48.0*x[2] - 36.0*x[3] + 16.0*x[4] - 3.0*x[5]) - (12.0*h*ode->B(node1))) * (+48.0);
+                g[2] += 2.0 * (((-25.0-12.0*h*ode->A(node2))*x[2] + 48.0*x[3] - 36.0*x[4] + 16.0*x[5] - 3.0*x[6]) - (12.0*h*ode->B(node2))) * (-25.0-12.0*h*ode->A(node2));
+
+                g[3]  = 2.0 * (((-25.0-12.0*h*ode->A(node0))*x[0] + 48.0*x[1] - 36.0*x[2] + 16.0*x[3] - 3.0*x[4]) - (12.0*h*ode->B(node0))) * (+16.0);
+                g[3] += 2.0 * (((-25.0-12.0*h*ode->A(node1))*x[1] + 48.0*x[2] - 36.0*x[3] + 16.0*x[4] - 3.0*x[5]) - (12.0*h*ode->B(node1))) * (-36.0);
+                g[3] += 2.0 * (((-25.0-12.0*h*ode->A(node2))*x[2] + 48.0*x[3] - 36.0*x[4] + 16.0*x[5] - 3.0*x[6]) - (12.0*h*ode->B(node2))) * (+48.0);
+                g[3] += 2.0 * (((-25.0-12.0*h*ode->A(node3))*x[3] + 48.0*x[4] - 36.0*x[5] + 16.0*x[6] - 3.0*x[7]) - (12.0*h*ode->B(node3))) * (-25.0-12.0*h*ode->A(node3));
+
+                g[4]  = 2.0 * (((-25.0-12.0*h*ode->A(node0))*x[0] + 48.0*x[1] - 36.0*x[2] + 16.0*x[3] - 3.0*x[4]) - (12.0*h*ode->B(node0))) * (-3.00);
+                g[4] += 2.0 * (((-25.0-12.0*h*ode->A(node1))*x[1] + 48.0*x[2] - 36.0*x[3] + 16.0*x[4] - 3.0*x[5]) - (12.0*h*ode->B(node1))) * (+16.0);
+                g[4] += 2.0 * (((-25.0-12.0*h*ode->A(node2))*x[2] + 48.0*x[3] - 36.0*x[4] + 16.0*x[5] - 3.0*x[6]) - (12.0*h*ode->B(node2))) * (-36.0);
+                g[4] += 2.0 * (((-25.0-12.0*h*ode->A(node3))*x[3] + 48.0*x[4] - 36.0*x[5] + 16.0*x[6] - 3.0*x[7]) - (12.0*h*ode->B(node3))) * (+48.0);
+                g[4] += 2.0 * (((-25.0-12.0*h*ode->A(node4))*x[4] + 48.0*x[5] - 36.0*x[6] + 16.0*x[7] - 3.0*x[8]) - (12.0*h*ode->B(node4))) * (-25.0-12.0*h*ode->A(node4));
+            }
+
+            for (unsigned int i=5; i<size-k-1; i++) // 5...
+            {
+                PointNodeODE node0((i-4)*h, static_cast<int>(i-4));
+                PointNodeODE node1((i-3)*h, static_cast<int>(i-3));
+                PointNodeODE node2((i-2)*h, static_cast<int>(i-2));
+                PointNodeODE node3((i-1)*h, static_cast<int>(i-1));
+                PointNodeODE node4((i-0)*h, static_cast<int>(i-0));
+                g[i]  = 2.0 * (((-25.0-12.0*h*ode->A(node0))*x[i-4] + 48.0*x[i-3] - 36.0*x[i-2] + 16.0*x[i-1] - 3.0*x[i-0]) - (12.0*h*ode->B(node0))) * (-3.00);
+                g[i] += 2.0 * (((-25.0-12.0*h*ode->A(node1))*x[i-3] + 48.0*x[i-2] - 36.0*x[i-1] + 16.0*x[i-0] - 3.0*x[i+1]) - (12.0*h*ode->B(node1))) * (+16.0);
+                g[i] += 2.0 * (((-25.0-12.0*h*ode->A(node2))*x[i-2] + 48.0*x[i-1] - 36.0*x[i-0] + 16.0*x[i+1] - 3.0*x[i+2]) - (12.0*h*ode->B(node2))) * (-36.0);
+                g[i] += 2.0 * (((-25.0-12.0*h*ode->A(node3))*x[i-1] + 48.0*x[i-0] - 36.0*x[i+1] + 16.0*x[i+2] - 3.0*x[i+3]) - (12.0*h*ode->B(node3))) * (+48.0);
+                g[i] += 2.0 * (((-25.0-12.0*h*ode->A(node4))*x[i-0] + 48.0*x[i+1] - 36.0*x[i+2] + 16.0*x[i+3] - 3.0*x[i+4]) - (12.0*h*ode->B(node4))) * (-25.0-12.0*h*ode->A(node4));
+            }
+
+            {
+                const unsigned int i=size-k-1; // 6
+                PointNodeODE node0((i-4)*h, static_cast<int>(i-4));
+                PointNodeODE node1((i-3)*h, static_cast<int>(i-3));
+                PointNodeODE node2((i-2)*h, static_cast<int>(i-2));
+                PointNodeODE node3((i-1)*h, static_cast<int>(i-1));
+                PointNodeODE node4((i-0)*h, static_cast<int>(i-0));
+                g[i]  = 2.0 * (((-25.0-12.0*h*ode->A(node0))*x[i-4] + 48.0*x[i-3] - 36.0*x[i-2] + 16.0*x[i-1] - 3.0*x[i-0]) - (12.0*h*ode->B(node0))) * (-3.00);
+                g[i] += 2.0 * (((-25.0-12.0*h*ode->A(node1))*x[i-3] + 48.0*x[i-2] - 36.0*x[i-1] + 16.0*x[i-0] - 3.0*x[i+1]) - (12.0*h*ode->B(node1))) * (+16.0);
+                g[i] += 2.0 * (((-25.0-12.0*h*ode->A(node2))*x[i-2] + 48.0*x[i-1] - 36.0*x[i-0] + 16.0*x[i+1] - 3.0*x[i+2]) - (12.0*h*ode->B(node2))) * (-36.0);
+                g[i] += 2.0 * (((-25.0-12.0*h*ode->A(node3))*x[i-1] + 48.0*x[i-0] - 36.0*x[i+1] + 16.0*x[i+2] - 3.0*x[i+3]) - (12.0*h*ode->B(node3))) * (+48.0);
+                g[i] += 2.0 * (((-25.0-12.0*h*ode->A(node4))*x[i-0] + 48.0*x[i+1] - 36.0*x[i+2] + 16.0*x[i+3] - 3.0*x[i+4]) - (12.0*h*ode->B(node4))) * (-25.0-12.0*h*ode->A(node4));
+
+                PointNodeODE node5((i+1)*h, static_cast<int>(i+1));
+                PointNodeODE node6((i+2)*h, static_cast<int>(i+2));
+                PointNodeODE node7((i+3)*h, static_cast<int>(i+3));
+                PointNodeODE node8((i+4)*h, static_cast<int>(i+4));
+                g[i] += 2.0 * (( -3.0*x[i-0] + (-10.0-12.0*h*ode->A(node5))*x[i+1] + 18.0*x[i+2] - 6.0*x[i+3] + x[i+4]) - (12*h*ode->B(node5))) * (-3.0);
+                g[i] += 2.0 * (( +1.0*x[i-0] -  8.0*x[i+1] + (-12.0*h*ode->A(node6))*x[i+2] + 8.0*x[i+3] - x[i+4]) - (12*h*ode->B(node6))) * (+1.0);
+                g[i] += 2.0 * (( -1.0*x[i-0] +  6.0*x[i+1] - 18.0*x[i+2] + (+10.0 - 12.0*h*ode->A(node7))*x[i+3] + 3.0*x[i+4]) - (12*h*ode->B(node7))) * (-1.0);
+                //g[i] += 2.0 * (( +3.0*x[i-0] - 16.0*x[i+1] + 36.0*x[i+2] - 48.0*x[i+4] + (+25.0 - 12.0*h*ode->A(node8))*x[i+3]) - (12*h*ode->B(node8))) * (+3.0);
+            }
+
+            {
+                const unsigned int i=size-k; // 7
+                PointNodeODE node0((i-4)*h, static_cast<int>(i-4));
+                PointNodeODE node1((i-3)*h, static_cast<int>(i-3));
+                PointNodeODE node2((i-2)*h, static_cast<int>(i-2));
+                PointNodeODE node3((i-1)*h, static_cast<int>(i-1));
+                g[i]  = 2.0 * (((-25.0-12.0*h*ode->A(node0))*x[i-4] + 48.0*x[i-3] - 36.0*x[i-2] + 16.0*x[i-1] - 3.0*x[i-0]) - (12.0*h*ode->B(node0))) * (-3.00);
+                g[i] += 2.0 * (((-25.0-12.0*h*ode->A(node1))*x[i-3] + 48.0*x[i-2] - 36.0*x[i-1] + 16.0*x[i-0] - 3.0*x[i+1]) - (12.0*h*ode->B(node1))) * (+16.0);
+                g[i] += 2.0 * (((-25.0-12.0*h*ode->A(node2))*x[i-2] + 48.0*x[i-1] - 36.0*x[i-0] + 16.0*x[i+1] - 3.0*x[i+2]) - (12.0*h*ode->B(node2))) * (-36.0);
+                g[i] += 2.0 * (((-25.0-12.0*h*ode->A(node3))*x[i-1] + 48.0*x[i-0] - 36.0*x[i+1] + 16.0*x[i+2] - 3.0*x[i+3]) - (12.0*h*ode->B(node3))) * (+48.0);
+
+                PointNodeODE node5((i+0)*h, static_cast<int>(i+0));
+                PointNodeODE node6((i+1)*h, static_cast<int>(i+1));
+                PointNodeODE node7((i+2)*h, static_cast<int>(i+2));
+                PointNodeODE node8((i+3)*h, static_cast<int>(i+3));
+                g[i] += 2.0 * (( -3.0*x[i-1] + (-10.0-12.0*h*ode->A(node5))*x[i-0] + 18.0*x[i+1] - 6.0*x[i+2] + x[i+3]) - (12*h*ode->B(node5))) * (-10.0-12.0*h*ode->A(node5));
+                g[i] += 2.0 * (( +1.0*x[i-1] -  8.0*x[i-0] + (-12.0*h*ode->A(node6))*x[i+1] + 8.0*x[i+2] - x[i+3]) - (12*h*ode->B(node6))) * (-8.0);
+                g[i] += 2.0 * (( -1.0*x[i-1] +  6.0*x[i-0] - 18.0*x[i+1] + (+10.0 - 12.0*h*ode->A(node7))*x[i+2] + 3.0*x[i+3]) - (12*h*ode->B(node7))) * (+6.0);
+                //g[i] += 2.0 * (( +3.0*x[i-1] - 16.0*x[i-0] + 36.0*x[i+1] - 48.0*x[i+2] + (+25.0 - 12.0*h*ode->A(node8))*x[i+3]) - (12*h*ode->B(node8))) * (-16.0);
+            }
+
+            {
+                const unsigned int i=size-k+1; // 8
+                PointNodeODE node0((i-4)*h, static_cast<int>(i-4));
+                PointNodeODE node1((i-3)*h, static_cast<int>(i-3));
+                PointNodeODE node2((i-2)*h, static_cast<int>(i-2));
+                g[i]  = 2.0 * (((-25.0-12.0*h*ode->A(node0))*x[i-4] + 48.0*x[i-3] - 36.0*x[i-2] + 16.0*x[i-1] - 3.0*x[i-0]) - (12.0*h*ode->B(node0))) * (-3.00);
+                g[i] += 2.0 * (((-25.0-12.0*h*ode->A(node1))*x[i-3] + 48.0*x[i-2] - 36.0*x[i-1] + 16.0*x[i-0] - 3.0*x[i+1]) - (12.0*h*ode->B(node1))) * (+16.0);
+                g[i] += 2.0 * (((-25.0-12.0*h*ode->A(node2))*x[i-2] + 48.0*x[i-1] - 36.0*x[i-0] + 16.0*x[i+1] - 3.0*x[i+2]) - (12.0*h*ode->B(node2))) * (-36.0);
+
+                PointNodeODE node5((i-1)*h, static_cast<int>(i-1));
+                PointNodeODE node6((i+0)*h, static_cast<int>(i+0));
+                PointNodeODE node7((i+1)*h, static_cast<int>(i+1));
+                PointNodeODE node8((i+2)*h, static_cast<int>(i+2));
+                g[i] += 2.0 * (( -3.0*x[i-2] + (-10.0-12.0*h*ode->A(node5))*x[i-1] + 18.0*x[i+0] - 6.0*x[i+1] + x[i+2]) - (12*h*ode->B(node5))) * (+18.0);
+                g[i] += 2.0 * (( +1.0*x[i-2] -  8.0*x[i-1] + (-12.0*h*ode->A(node6))*x[i+0] + 8.0*x[i+1] - x[i+2]) - (12*h*ode->B(node6))) * (-12.0*h*ode->A(node6));
+                g[i] += 2.0 * (( -1.0*x[i-2] +  6.0*x[i-1] - 18.0*x[i+0] + (+10.0 - 12.0*h*ode->A(node7))*x[i+1] + 3.0*x[i+2]) - (12*h*ode->B(node7))) * (-18.0);
+                //g[i] += 2.0 * (( +3.0*x[i-2] - 16.0*x[i-1] + 36.0*x[i+0] - 48.0*x[i+1] + (+25.0 - 12.0*h*ode->A(node8))*x[i+2]) - (12*h*ode->B(node8))) * (+36.0);
+            }
+
+            {
+                const unsigned int i=size-k+2; // 9
+                PointNodeODE node0((i-4)*h, static_cast<int>(i-4));
+                PointNodeODE node1((i-3)*h, static_cast<int>(i-3));
+                g[i]  = 2.0 * (((-25.0-12.0*h*ode->A(node0))*x[i-4] + 48.0*x[i-3] - 36.0*x[i-2] + 16.0*x[i-1] - 3.0*x[i-0]) - (12.0*h*ode->B(node0))) * (-3.00);
+                g[i] += 2.0 * (((-25.0-12.0*h*ode->A(node1))*x[i-3] + 48.0*x[i-2] - 36.0*x[i-1] + 16.0*x[i-0] - 3.0*x[i+1]) - (12.0*h*ode->B(node1))) * (+16.0);
+
+                PointNodeODE node5((i-2)*h, static_cast<int>(i-2));
+                PointNodeODE node6((i-1)*h, static_cast<int>(i-1));
+                PointNodeODE node7((i+0)*h, static_cast<int>(i+0));
+                PointNodeODE node8((i+1)*h, static_cast<int>(i+1));
+                g[i] += 2.0 * (( -3.0*x[i-3] + (-10.0-12.0*h*ode->A(node5))*x[i-2] + 18.0*x[i-1] - 6.0*x[i+0] + x[i+1]) - (12*h*ode->B(node5))) * (-6.0);
+                g[i] += 2.0 * (( +1.0*x[i-3] -  8.0*x[i-2] + (-12.0*h*ode->A(node6))*x[i-1] + 8.0*x[i-0] - x[i+1]) - (12*h*ode->B(node6))) * (+8.0);
+                g[i] += 2.0 * (( -1.0*x[i-3] +  6.0*x[i-2] - 18.0*x[i-1] + (+10.0 - 12.0*h*ode->A(node7))*x[i-0] + 3.0*x[i+1]) - (12*h*ode->B(node7))) * (+10.0 - 12.0*h*ode->A(node7));
+                //g[i] += 2.0 * (( +3.0*x[i-3] - 16.0*x[i-2] + 36.0*x[i-1] - 48.0*x[i-0] + (+25.0 - 12.0*h*ode->A(node8))*x[i+1]) - (12*h*ode->B(node8))) * (-48.0);
+            }
+
+            {
+                const unsigned int i=size-k+3; // 10
+                PointNodeODE node0((i-4)*h, static_cast<int>(i-4));
+                g[i]  = 2.0 * (((-25.0-12.0*h*ode->A(node0))*x[i-4] + 48.0*x[i-3] - 36.0*x[i-2] + 16.0*x[i-1] - 3.0*x[i]) - (12.0*h*ode->B(node0))) * (-3.00);
+
+                PointNodeODE node5((i-3)*h, static_cast<int>(i-3));
+                PointNodeODE node6((i-2)*h, static_cast<int>(i-2));
+                PointNodeODE node7((i-1)*h, static_cast<int>(i-1));
+                PointNodeODE node8((i-0)*h, static_cast<int>(i-0));
+
+                g[i] += 2.0 * (( -3.0*x[i-4] + (-10.0-12.0*h*ode->A(node5))*x[i-3] + 18.0*x[i-2] - 6.0*x[i-1] + x[i-0]) - (12*h*ode->B(node5))) * (+1.0);
+                g[i] += 2.0 * (( +1.0*x[i-4] -  8.0*x[i-3] + (-12.0*h*ode->A(node6))*x[i-2] + 8.0*x[i-1] - x[i-0]) - (12*h*ode->B(node6))) * (-1.0);
+                g[i] += 2.0 * (( -1.0*x[i-4] +  6.0*x[i-3] - 18.0*x[i-2] + (+10.0 - 12.0*h*ode->A(node7))*x[i-1] + 3.0*x[i-0]) - (12*h*ode->B(node7))) * (+3.0);
+                //g[i] += 2.0 * (( +3.0*x[i-4] - 16.0*x[i-3] + 36.0*x[i-2] - 48.0*x[i-1] + (+25.0-12.0*h*ode->A(node8))*x[i]) - (12*h*ode->B(node8))) * (+25.0-12.0*h*ode->A(node8));
+
+                //g[i] += 2.0 * ((*co)[0].m[0][0]*x[0] + (*co)[1].m[0][0]*x[100] - (*d)[0]) * (*co)[1].m[0][0];
+            }
+
+            double sum = -(*d)[0];
+            for (unsigned int s=0; s<co->size(); s++)
+            {
+                const NonLocalCondition &Cs = (*co)[s];
+                sum += Cs.m[0][0] * x[Cs.n.i];
+            }
+
+            for (unsigned int s=0; s<co->size(); s++)
+            {
+                const NonLocalCondition &Cs = (*co)[s];
+                g[Cs.n.i] += 2.0 * Cs.m[0][0] * sum;
+            }
+
+            //printf("%14.8f | %14.8f %14.8f %14.8f %14.8f %14.8f \n", g.L2Norm(), g[0], g[1], g[2], g[3], g[4]);
+            //IPrinter::print(g, g.length());
+            //exit(0);
+        }
+
+        virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double, GradientMethod::MethodResult) const
+        {
+            //printf("%4d %14.8f | %14.8f %14.8f %14.8f %14.8f %14.8f \n", i, f, x[0], x[1], x[2], x[3], x[4]);
+            //printf("%4d %14.8f | %14.8f %14.8f %14.8f %14.8f %14.8f \n", i, f, g[0], g[1], g[2], g[3], g[4]);
+            //IPrinter::printVector(x);
+        }
+
+        unsigned int k;
+        unsigned int size;
+        double h;
+        const FirstOrderLinearODE *ode;
+        const std::vector<NonLocalCondition> *co;
+        const DoubleVector *d;
+    };
+
+    MyRnFunction func;
+    func.k = k;
+    func.size = size;
+    func.h = 0.01;
+    func.ode = this;
+    func.co = &co;
+    func.d = &d;
+
+    DoubleVector X(size*M, 0.0);
+    //for (unsigned int i=0; i<=4; i++) X[i] = 1.0;
+    //for (unsigned int i=5; i<=100; i++) X[i] = (i*0.01)*(i*0.01);
+    //for (unsigned int i=0; i<=100; i++) X[i] = (i*0.01)*(i*0.01);
+
+    ConjugateGradient g;
+    g.setFunction(&func);
+    g.setGradient(&func);
+    g.setPrinter(&func);
+    //g.setProjection(&fw1);
+    g.setOptimalityTolerance(0.0000000001);
+    g.setFunctionTolerance(0.0000000001);
+    g.setStepTolerance(0.0000000001);
+    g.setR1MinimizeEpsilon(0.01, 10.0*DBL_EPSILON);
+    //g.setMaxIterationCount(200);
+    g.setNormalize(false);
+    g.setResetIteration(false);
+    g.showExitMessage(false);
+    g.calculate(X);
+
+    IPrinter::printVector(X);
+
+    //printf("%4d %14.8f | %14.8f %14.8f %14.8f %14.8f %14.8f \n", 0, 0.0, X[0], X[1], X[2], X[3], X[4]);
 }
 
 void FirstOrderLinearODE::solveInitialValueProblem(DoubleVector &rv) const
