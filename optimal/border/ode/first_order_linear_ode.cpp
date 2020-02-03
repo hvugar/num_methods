@@ -1,8 +1,8 @@
 #include "first_order_linear_ode.h"
 
-#define EXAMPLE_7
+#define EXAMPLE_9
 
-#define _N 1000
+#define _N 100
 #define _H 0.01
 
 void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
@@ -21,10 +21,10 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
 
     std::vector<NonLocalCondition> C;
     C.push_back(NonLocalCondition(0, PointNodeODE(0.00,   0), DoubleMatrix(M,M,+1.8)));
-    C.push_back(NonLocalCondition(1, PointNodeODE(2.5,  250), DoubleMatrix(M,M,+1.5)));
-    C.push_back(NonLocalCondition(2, PointNodeODE(5.0,  500), DoubleMatrix(M,M,-2.5)));
-    C.push_back(NonLocalCondition(3, PointNodeODE(7.5,  750), DoubleMatrix(M,M,+4.3)));
-    C.push_back(NonLocalCondition(4, PointNodeODE(10.0, 1000), DoubleMatrix(M,M,+3.4)));
+    C.push_back(NonLocalCondition(1, PointNodeODE(0.25,  25), DoubleMatrix(M,M,+1.5)));
+    C.push_back(NonLocalCondition(2, PointNodeODE(0.50,  50), DoubleMatrix(M,M,-2.5)));
+    C.push_back(NonLocalCondition(3, PointNodeODE(0.75,  75), DoubleMatrix(M,M,+4.3)));
+    C.push_back(NonLocalCondition(4, PointNodeODE(1.00, 100), DoubleMatrix(M,M,+3.4)));
     DoubleVector d(M, 0.0);
 
     for (unsigned int s=0; s<C.size(); s++)
@@ -55,7 +55,7 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
     //IPrinter::printSeperatorLine();
 
     puts("===== transferOfCondition =====");
-    nl.transferOfCondition3(C, d, x, 4);
+    nl.transferOfConditionM(C, d, x, 4);
     for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.6f ", x[n][m]); nl.printNorms(x);
     IPrinter::printSeperatorLine();
 
