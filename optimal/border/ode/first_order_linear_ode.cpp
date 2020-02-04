@@ -1,6 +1,6 @@
 #include "first_order_linear_ode.h"
 
-#define EXAMPLE_9
+#define EXAMPLE_1
 
 #define _N 100
 #define _H 0.01
@@ -9,8 +9,6 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
 {
     C_UNUSED(argc);
     C_UNUSED(argv);
-
-    //srand(time(NULL));
 
     FirstOrderLinearODEEx1 nl;
 
@@ -29,6 +27,8 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
 
     for (unsigned int s=0; s<C.size(); s++)
     {
+        Random::fillMatrix(C[s].m, 0, 10, 2);
+
         DoubleVector x; for (unsigned int m=1; m<=M; m++) x << nl.x(C[s].n, m);
         d += C[s].m*x;
     }
@@ -43,23 +43,26 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
         for (unsigned int n=0; n<=N; n++)
         {
             //if (n%(N/100)==0) printf("%14.10f ", nl.x(n*h, m+1));
-            if (n%(N/10)==0) printf("%14.6f ", nl.x(n*h, m+1));
+            if (n%(N/10)==0) printf("%14.8f ", nl.x(n*h, m+1));
             //printf("%14.10f ", nl.x(n*h, m+1));
         }
         puts("");
     }
     IPrinter::printSeperatorLine();
 
-    //nl.transferOfCondition2(C, d, x, 2);
-    //for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.6f ", x[n][m]); nl.printNorms(x);
+    //puts("===== transferOfCondition =====");
+    //x.clear();
+    //nl.transferOfCondition(C, d, x, 4);
+    //for (unsigned int m=0; m<M; m++) { for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); puts("");/*nl.printNorms(x);*/ }
     //IPrinter::printSeperatorLine();
 
-    puts("===== transferOfCondition =====");
+    puts("===== transferOfConditionM4 =====");
+    x.clear();
     nl.transferOfConditionM(C, d, x, 4);
-    for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.6f ", x[n][m]); nl.printNorms(x);
+    for (unsigned int m=0; m<M; m++) { for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); puts("");/*nl.printNorms(x);*/ }
     IPrinter::printSeperatorLine();
 
-//    nl.transferOfCondition(C, d, x, 6);
+    //nl.transferOfCondition(C, d, x, 6);
     //for (unsigned int m=0; m<M; m++) for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.6f ", x[n][m]); nl.printNorms(x);
     //IPrinter::printSeperatorLine();
 }
@@ -120,12 +123,12 @@ double FirstOrderLinearODEEx1::A(const PointNodeODE &node, unsigned int r, unsig
 
 double FirstOrderLinearODEEx1::B(const PointNodeODE &node, unsigned int r) const
 {
-    //const unsigned int _count = count();
-    //double result = dt(node, r);
-    //for (unsigned int c=1; c<=_count; c++) result -= A(node,r,c)*x(node,c);
-    //return result;
+    const unsigned int M = count();
+    double result = dt(node, r);
+    for (unsigned int c=1; c<=M; c++) result -= A(node,r,c)*x(node,c);
+    return result;
 
-    return dt(node, r) - A(node,r,1)*x(node,1);
+    //return dt(node, r) - A(node,r,1)*x(node,1);
 }
 
 unsigned int FirstOrderLinearODEEx1::count() const

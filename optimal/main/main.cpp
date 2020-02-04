@@ -35,7 +35,7 @@ double C(double t) { return 6.0*t - 3.0*t*t*A(t) - t*t*t*B(t); }
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     std::cout << "__cplusplus: " << __cplusplus << std::endl;
-    srand(static_cast<unsigned int>(time(nullptr)));
+    //srand(static_cast<unsigned int>(time(nullptr)));
 
     //ConjugateGradinetTest::Main(argc, argv);
 
