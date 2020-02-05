@@ -1323,8 +1323,6 @@ void FirstOrderLinearODE::transferOfCondition3(const std::vector<NonLocalConditi
     DoubleVector xf((k+1)*M);
     LinearEquation::GaussianElimination(F, g, xf);
 
-    IPrinter::print(xf, xf.length());
-
     F.clear();
     g.clear();
 
@@ -1621,11 +1619,6 @@ void FirstOrderLinearODE::transferOfCondition4(const std::vector<NonLocalConditi
     //    //printf("%4d %14.8f | %14.8f %14.8f %14.8f %14.8f %14.8f \n", 0, 0.0, X[0], X[1], X[2], X[3], X[4]);
 }
 
-#define new_version_1
-#define new_version_2
-#define new_version_3
-#define new_version_4
-#define new_version_5
 void FirstOrderLinearODE::transferOfConditionM(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const
 {
     const unsigned int size = dimension().size();
@@ -1652,140 +1645,64 @@ void FirstOrderLinearODE::transferOfConditionM(const std::vector<NonLocalConditi
         {
             double res = 0.0;
 
-#ifdef new_version_1
-            for (unsigned int i=0; i<size-k; i++) // size-k
             {
-                const double t = i*h;
-                const PointNodeODE node(t, static_cast<int>(i));
-                const unsigned int offset = i*M;
-
-                for (unsigned int r=0; r<M; r++)
+                for (unsigned int i=0; i<size-k; i++) // size-k
                 {
-                    double fr = 0.0;
-                    fr += -25.0 * x[offset+0*M + r];
-                    for (unsigned int c=0; c<M; c++) { fr += (-12.0*h*ode.A(node, r+1, c+1))*x[offset+0*M+c]; }
-                    fr += +48.0 * x[offset+1*M + r];
-                    fr += -36.0 * x[offset+2*M + r];
-                    fr += +16.0 * x[offset+3*M + r];
-                    fr +=  -3.0 * x[offset+4*M + r];
-                    fr += -12.0*h*ode.B(node, r+1);
-                    res += fr*fr;
-                }
-            }
-#else
-            for (unsigned int i=0; i<size-k; i++) // size-k
-            {
-                PointNodeODE node0((i)*h, static_cast<int>(i));
-                f = ((-25.0-12.0*h*ode.A(node0))*x[i] + 48.0*x[i+1] - 36.0*x[i+2] + 16.0*x[i+3] - 3.0*x[i+4]) - (12.0*h*ode.B(node0));
-                res += f*f;
-            }
-#endif
+                    const PointNodeODE node(i*h, static_cast<int>(i));
+                    const unsigned int offset = i*M;
 
-            const unsigned int offset = (size-(k+1))*M;
-            const unsigned int i = size-(k+1);
-
-#ifdef new_version_2
-            {
-                const double t = (i+1)*h;
-                const PointNodeODE node(t, static_cast<int>(i+1));
-
-                for (unsigned int r=0; r<M; r++)
-                {
-                    double fr = 0.0;
-                    fr -=  +3.0 * x[offset+0*M + r];
-                    fr -= +10.0 * x[offset+1*M + r];
-                    for (unsigned int c=0; c<M; c++) { fr += (-12.0*h*ode.A(node, r+1, c+1))*x[offset+1*M+c]; }
-                    fr += +18.0 * x[offset+2*M + r];
-                    fr -=  +6.0 * x[offset+3*M + r];
-                    fr +=  +1.0 * x[offset+4*M + r];
-                    fr -= +12.0*h*ode.B(node, r+1);
-                    res += fr*fr;
-                }
-            }
-#else
-            PointNodeODE node1((i+1)*h, static_cast<int>(i+1));
-            f = (-3.0*x[i] + (-10.0-12.0*h*ode.A(node1))*x[i+1] + 18.0*x[i+2] - 6.0*x[i+3] + x[i+4]) - (12*h*ode.B(node1));
-            res += f*f;
-#endif
-#ifdef new_version_3
-            {
-                const double t = (i+2)*h;
-                const PointNodeODE node(t, static_cast<int>(i+2));
-
-                for (unsigned int r=0; r<M; r++)
-                {
-                    double fr = 0.0;
-                    fr += +1.0 * x[offset+0*M + r];
-                    fr += -8.0 * x[offset+1*M + r];
-                    for (unsigned int c=0; c<M; c++) { fr += (-12.0*h*ode.A(node, r+1, c+1))*x[offset+2*M+c]; }
-                    fr += +8.0 * x[offset+3*M + r];
-                    fr += -1.0 * x[offset+4*M + r];
-                    fr += -12.0*h*ode.B(node, r+1);
-                    res += fr*fr;
-                }
-            }
-#else
-            PointNodeODE node2((i+2)*h, static_cast<int>(i+2));
-            f = (+1.0*x[i] - 8.0*x[i+1] + (-12.0*h*ode.A(node2))*x[i+2] + 8.0*x[i+3] - 1.0*x[i+4]) - (12*h*ode.B(node2));
-            res += f*f;
-#endif
-#ifdef new_version_4
-            {
-                const double t = (i+3)*h;
-                const PointNodeODE node(t, static_cast<int>(i+3));
-
-                for (unsigned int r=0; r<M; r++)
-                {
-                    double fr = 0.0;
-                    fr +=  -1.0 * x[offset+0*M + r];
-                    fr +=  +6.0 * x[offset+1*M + r];
-                    fr += -18.0 * x[offset+2*M + r];
-                    fr += +10.0 * x[offset+3*M + r];
-                    for (unsigned int c=0; c<M; c++) { fr += (-12.0*h*ode.A(node, r+1, c+1))*x[offset+3*M+c]; }
-                    fr +=  +3.0 * x[offset+4*M + r];
-                    fr += -12.0*h*ode.B(node, r+1);
-                    res += fr*fr;
-                }
-            }
-#else
-            PointNodeODE node3((i+3)*h, static_cast<int>(i+3));
-            f = (-1.0*x[i] + 6.0*x[i+1] - 18.0*x[i+2] + (+10.0-12.0*h*ode.A(node3))*x[i+3] + 3.0*x[i+4]) - (12*h*ode.B(node3));
-            res += f*f;
-#endif
-            //PointNodeODE node4((i+4)*h, static_cast<int>(i+4));
-            //f = (+3.0*x[i] - 16.0*x[i+1] + 36.0*x[i+2] - 48.0*x[i+3] + (+25.0-12.0*h*ode.A(node4))*x[i+4]) - (12*h*ode.B(node4));
-
-            //            f = (*co)[0].m[0][0]*x[0] + (*co)[1].m[0][0]*x[100] - (*d)[0];
-            //            res += f*f;
-#ifdef new_version_5
-            {
-                const double t = (i+4)*h;
-                const PointNodeODE node(t, static_cast<int>(i+4));
-
-                for (unsigned int r=0; r<M; r++)
-                {
-                    double fr = 0.0;
-
-                    for (unsigned int s=0; s<C.size(); s++)
+                    for (unsigned int r=0; r<M; r++)
                     {
-                        const NonLocalCondition &Cs = C[s];
+                        double fr = -25.0 * x[offset+0*M+r] + 48.0 * x[offset+1*M+r] - 36.0 * x[offset+2*M+r] + 16.0 * x[offset+3*M+r] - 3.0 * x[offset+4*M+r] - 12.0*h*ode.B(node, r+1);
+                        for (unsigned int c=0; c<M; c++) { fr += (-12.0*h*ode.A(node, r+1, c+1))*x[offset+0*M+c]; }
+                        res += fr*fr;
+                    }
+                }
 
-                        for (unsigned int c=0; c<M; c++) { fr += (Cs.m[r][c])*x[Cs.n.i*M+c]; }
+                const unsigned int offset = (size-(k+1))*M;
+                const unsigned int i = size-(k+1);
+
+                const PointNodeODE node1((i+1)*h, static_cast<int>(i+1));
+                const PointNodeODE node2((i+2)*h, static_cast<int>(i+2));
+                const PointNodeODE node3((i+3)*h, static_cast<int>(i+3));
+                for (unsigned int r=0; r<M; r++)
+                {
+                    double fr1 = -3.0 * x[offset+0*M+r] -10.0 * x[offset+1*M+r] + 18.0 * x[offset+2*M+r] -  6.0 * x[offset+3*M+r] +  1.0 * x[offset+4*M + r] -12.0*h*ode.B(node1, r+1);
+                    double fr2 = +1.0 * x[offset+0*M+r] - 8.0 * x[offset+1*M+r] +  8.0 * x[offset+3*M+r] -  1.0 * x[offset+4*M+r] - 12.0 *h*ode.B(node2, r+1);
+                    double fr3 = -1.0 * x[offset+0*M+r] + 6.0 * x[offset+1*M+r] - 18.0 * x[offset+2*M+r] + 10.0 * x[offset+3*M+r] +  3.0 * x[offset+4*M + r] - 12.0*h*ode.B(node3, r+1);
+
+                    for (unsigned int c=0; c<M; c++)
+                    {
+                        fr1 += (-12.0*h*ode.A(node1, r+1, c+1))*x[offset+1*M+c];
+                        fr2 += (-12.0*h*ode.A(node2, r+1, c+1))*x[offset+2*M+c];
+                        fr3 += (-12.0*h*ode.A(node3, r+1, c+1))*x[offset+3*M+c];
                     }
 
-                    fr += -d[r];
-                    res += fr*fr;
+                    res += fr1*fr1;
+                    res += fr2*fr2;
+                    res += fr3*fr3;
+
+                }
+
+                {
+                    const PointNodeODE node((i+4)*h, static_cast<int>(i+4));
+
+                    for (unsigned int r=0; r<M; r++)
+                    {
+                        double fr = 0.0;
+
+                        for (unsigned int s=0; s<C.size(); s++)
+                        {
+                            const NonLocalCondition &Cs = C[s];
+
+                            for (unsigned int c=0; c<M; c++) { fr += (Cs.m[r][c])*x[Cs.n.i*M+c]; }
+                        }
+
+                        fr += -d[r];
+                        res += fr*fr;
+                    }
                 }
             }
-#else
-            double sum = -d[0];
-            for (unsigned int s=0; s<C.size(); s++)
-            {
-                const NonLocalCondition &Cs = C[s];
-                sum += Cs.m[0][0] * x[Cs.n.i];
-            }
-            res += sum*sum;
-#endif
 
             return res;
         }
@@ -1800,93 +1717,6 @@ void FirstOrderLinearODE::transferOfConditionM(const std::vector<NonLocalConditi
 
             if (k==2)
             {
-
-                const PointNodeODE nodeP0(0.0*h, static_cast<int>(0));
-                const PointNodeODE nodeP1(1.0*h, static_cast<int>(1));
-                const PointNodeODE nodeP2(2.0*h, static_cast<int>(2));
-
-                /********************************************************* loop from 0 to 2 *********************************************************/
-                for (unsigned int r=0; r<M; r++)
-                {
-                    const unsigned int r1 = r+1;
-
-                    double fr0 = -3.0 * x[0*M+r] + 4.0 * x[1*M+r] - 1.0 * x[2*M+r] - 2.0 * h*ode.B(nodeP0, r1);
-                    double fr1 = -3.0 * x[1*M+r] + 4.0 * x[2*M+r] - 1.0 * x[3*M+r] - 2.0 * h*ode.B(nodeP1, r1);
-                    double fr2 = -3.0 * x[2*M+r] + 4.0 * x[3*M+r] - 1.0 * x[4*M+r] - 2.0 * h*ode.B(nodeP2, r1);
-
-                    for (unsigned int c=0; c<M; c++)
-                    {
-                        const unsigned int c1 = c+1;
-
-                        fr0 += (-2.0*h*ode.A(nodeP0, r1, c1)) * x[0*M+c];
-                        fr1 += (-2.0*h*ode.A(nodeP1, r1, c1)) * x[1*M+c];
-                        fr2 += (-2.0*h*ode.A(nodeP2, r1, c1)) * x[2*M+c];
-                    }
-
-                    for (unsigned int c=0; c<M; c++)
-                    {
-                        g[0*M+c] += 2.0 * (fr0 * (-4.0*E[r][c]-2.0*h*ode.A(nodeP0, r+1, c+1)));
-                        g[1*M+c] += 2.0 * (fr0 * (+4.0*E[r][c]) + fr1 * (-3.0*E[r][c]-2.0*h*ode.A(nodeP1, r+1, c+1)));
-                        g[2*M+c] += 2.0 * (fr0 * (-1.0*E[r][c]) + fr1 * (+4.0*E[r][c]) + fr2 * (-4.0*E[r][c]-2.0*h*ode.A(nodeP2, r+1, c+1)));
-                    }
-                }
-
-                /********************************************************* loop from 3 to size-4 *********************************************************/
-                for (unsigned int i=3; i<size-3; i++)
-                {
-                    PointNodeODE node2((i-2)*h, static_cast<int>(i-2));
-                    PointNodeODE node3((i-1)*h, static_cast<int>(i-1));
-                    PointNodeODE node4((i-0)*h, static_cast<int>(i-0));
-
-                    for (unsigned int r=0; r<M; r++)
-                    {
-                        const unsigned int r1 = r+1;
-
-                        double fr2 = -3.0 * x[(i-2)*M+r] + 4.0 * x[(i-1)*M+r] - 1.0 * x[(i+0)*M+r] - 2.0 * h*ode.B(node2, r1);
-                        double fr3 = -3.0 * x[(i-1)*M+r] + 4.0 * x[(i+0)*M+r] - 1.0 * x[(i+1)*M+r] - 2.0 * h*ode.B(node3, r1);
-                        double fr4 = -3.0 * x[(i-0)*M+r] + 4.0 * x[(i+1)*M+r] - 1.0 * x[(i+2)*M+r] - 2.0 * h*ode.B(node4, r1);
-
-                        for (unsigned int c=0; c<M; c++)
-                        {
-                            const unsigned int c1 = c+1;
-
-                            fr2 += (-2.0*h*ode.A(node2, r1, c1)) * x[(i-2)*M+c];
-                            fr3 += (-2.0*h*ode.A(node3, r1, c1)) * x[(i-1)*M+c];
-                            fr4 += (-2.0*h*ode.A(node4, r1, c1)) * x[(i-0)*M+c];
-                        }
-
-                        for (unsigned int c=0; c<M; c++)
-                        {
-                            g[i*M+c] += 2.0 * (fr2 * (-1.0*E[r][c]) + fr3 * (+4.0*E[r][c]) + fr4 * (-3.0*E[r][c]-12.0*h*ode.A(node4, r+1, c+1)));
-                        }
-                    }
-                }
-
-                /********************************************************* loop from size-3 to size-1 *********************************************************/
-                const unsigned int i=size-1; // 10
-                const PointNodeODE nodeM2((i-2)*h, static_cast<int>(i-2));
-                const PointNodeODE nodeM1((i-1)*h, static_cast<int>(i-1));
-
-                for (unsigned int r=0; r<M; r++)
-                {
-                    const unsigned int r1 = r+1;
-
-                    double fr1 = -3.0 * x[(i-2)*M+r] + 4.0 * x[(i-1)*M+r] - 1.0 * x[(i-0)*M+r] - 2.0 * h*ode.B(nodeM2, r1);
-                    double fr0 =  1.0 * x[(i-2)*M+r] + 0.0 * x[(i-1)*M+r] + 1.0 * x[(i-0)*M+r] - 2.0 * h*ode.B(nodeM1, r1);
-
-                    for (unsigned int c=0; c<M; c++)
-                    {
-                        const unsigned int c1 = c+1;
-
-                        fr1 += (-2.0*h*ode.A(nodeM2, r1, c1)) * x[(i-2)*M+c];
-                        fr0 += (-2.0*h*ode.A(nodeM1, r1, c1)) * x[(i-1)*M+c];
-                    }
-
-                    for (unsigned int c=0; c<M; c++)
-                    {
-                        g[(i-4)*M+c] += 2.0 * (fr1 * (+1.0*E[r][c]) + fr0 * (-1.0*E[r][c]));
-                    }
-                }
             }
 
             if (k==4)
