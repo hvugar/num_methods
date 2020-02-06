@@ -1,6 +1,6 @@
 #include "first_order_linear_ode.h"
 
-#define EXAMPLE_4
+#define EXAMPLE_1
 
 #define _N 100
 #define _H 0.01
