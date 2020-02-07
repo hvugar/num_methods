@@ -41,4 +41,24 @@ private:
     bool m_reset_iteration;
 };
 
+class MINIMUMSHARED_EXPORT ConjugateGradientSoLE  : public GradientMethod
+{
+public:
+    ConjugateGradientSoLE();
+    virtual ~ConjugateGradientSoLE();
+
+    virtual void calculate(DoubleVector &x);
+
+    void setResetIteration(bool reset);
+
+protected:
+    virtual double minimize(const DoubleVector &x, const DoubleVector &g) const;
+    virtual double fx(double alpha) const;
+
+private:
+    DoubleVector *mx;
+    DoubleVector *ms;
+    bool m_reset_iteration;
+};
+
 #endif // CONJUGATE_GRADIENT_H

@@ -541,3 +541,21 @@ void ConjugateGradient::setResetIteration(bool reset)
 {
     m_reset_iteration = reset;
 }
+
+
+ConjugateGradientSoLE::ConjugateGradientSoLE() : GradientMethod(), mx(nullptr), ms(nullptr)
+{
+
+}
+
+ConjugateGradientSoLE::~ConjugateGradientSoLE()
+{}
+
+void ConjugateGradientSoLE::calculate(DoubleVector &x)
+{}
+
+double ConjugateGradientSoLE::minimize(const DoubleVector &x, const DoubleVector &g) const
+{}
+
+double ConjugateGradientSoLE::fx(double alpha) const
+{}

@@ -58,15 +58,15 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
 
     puts("===== transferOfCondition3 =====");
     x.clear();
-    nl.transferOfCondition3(C, d, x, 4);
+    nl.transferOfCondition3(C, d, x, 2);
     for (unsigned int m=0; m<M; m++) { for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
     IPrinter::printSeperatorLine();
 
-    puts("===== transferOfConditionM4 =====");
-    x.clear();
-    nl.transferOfConditionM(C, d, x, 4);
-    for (unsigned int m=0; m<M; m++) { for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
-    IPrinter::printSeperatorLine();
+    //puts("===== transferOfConditionM4 =====");
+    //x.clear();
+    //nl.transferOfConditionM(C, d, x, 4);
+    //for (unsigned int m=0; m<M; m++) { for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
+    //IPrinter::printSeperatorLine();
 }
 
 FirstOrderLinearODEEx1::FirstOrderLinearODEEx1()
