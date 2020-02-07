@@ -440,7 +440,7 @@ void FirstOrderLinearODE::transferOfCondition(const std::vector<NonLocalConditio
     C.clear();
 }
 
-void FirstOrderLinearODE::transferOfCondition3(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const
+void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const
 {
     unsigned int schema = 1;
 
@@ -1063,7 +1063,7 @@ void FirstOrderLinearODE::transferOfConditionM(const std::vector<NonLocalConditi
 
     MyRnFunction func(*this, Cd, d, size, h, k, M);
 
-    ConjugateGradient g;
+    ConjugateGradientSLE g;
     g.setFunction(&func);
     g.setGradient(&func);
     g.setPrinter(&func);
@@ -1071,7 +1071,7 @@ void FirstOrderLinearODE::transferOfConditionM(const std::vector<NonLocalConditi
     g.setOptimalityTolerance(DBL_EPSILON);
     g.setFunctionTolerance(DBL_EPSILON);
     g.setStepTolerance(DBL_EPSILON);
-    g.setR1MinimizeEpsilon(0.1, 2.0*DBL_EPSILON);
+    g.setR1MinimizeEpsilon(1.0, 2.0*DBL_EPSILON);
     //g.setMaxIterationCount(200);
     g.setNormalize(false);
     g.setResetIteration(false);

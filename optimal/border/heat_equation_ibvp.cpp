@@ -6,7 +6,7 @@
 #if defined(QUADRATIC)
 #define x2
 #define y2
-#define t2
+#define t1
 #else
 
 #endif

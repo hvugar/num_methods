@@ -34,31 +34,31 @@ protected:
     virtual double minimize(const DoubleVector &x, const DoubleVector &g) const;
     virtual double fx(double alpha) const;
 
-private:
+protected:
     DoubleVector *mx;
     DoubleVector *ms;
     Algorithm m_algoritm;
     bool m_reset_iteration;
 };
 
-class MINIMUMSHARED_EXPORT ConjugateGradientSoLE  : public GradientMethod
+
+/**
+ * @brief Метод сопряжённых градиентов (для решения СЛАУ)
+ * Метод сопряженных градиентов — численный метод решения систем линейных алгебраических уравнений,
+ * является итерационным методом Крыловского типа.
+ */
+class MINIMUMSHARED_EXPORT ConjugateGradientSLE  : public ConjugateGradient
 {
 public:
-    ConjugateGradientSoLE();
-    virtual ~ConjugateGradientSoLE();
+    ConjugateGradientSLE();
+    virtual ~ConjugateGradientSLE();
 
     virtual void calculate(DoubleVector &x);
 
-    void setResetIteration(bool reset);
-
 protected:
     virtual double minimize(const DoubleVector &x, const DoubleVector &g) const;
-    virtual double fx(double alpha) const;
 
-private:
-    DoubleVector *mx;
-    DoubleVector *ms;
-    bool m_reset_iteration;
+    DoubleVector *mg;
 };
 
 #endif // CONJUGATE_GRADIENT_H
