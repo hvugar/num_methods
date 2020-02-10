@@ -440,10 +440,8 @@ void FirstOrderLinearODE::transferOfCondition(const std::vector<NonLocalConditio
     C.clear();
 }
 
-void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const
+void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k, unsigned int schema) const
 {
-    unsigned int schema = 1;
-
     if (co.size() < 2) throw ExceptionODE(1);
 
     for (unsigned int i=0; i<co.size(); i++)
@@ -479,7 +477,26 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
 
     DoubleMatrix **alpha = new DoubleMatrix*[end];
 
-    for (unsigned int i=0; i<=end-1; i++)
+    if (k==4 /*&& schema == 1*/)
+    {
+        IPrinter::printSeperatorLine("0");
+        for (unsigned int r=0; r<M; r++)
+        {
+            printf("%12.6f %12.6f %12.6f "
+                   "%12.6f %12.6f %12.6f "
+                   "%12.6f %12.6f %12.6f "
+                   "%12.6f %12.6f %12.6f "
+                   "%12.6f %12.6f %12.6f\n",
+                   betta[0][r][0], betta[0][r][1], betta[0][r][2],
+                    betta[1][r][0], betta[1][r][1], betta[1][r][2],
+                    betta[2][r][0], betta[2][r][1], betta[2][r][2],
+                    betta[3][r][0], betta[3][r][1], betta[3][r][2],
+                    betta[4][r][0], betta[4][r][1], betta[4][r][2]);
+        }
+        IPrinter::printSeperatorLine();
+    }
+
+    for (unsigned int i=0; i<end; i++)
     {
         alpha[i] = new DoubleMatrix[k+1];
         DoubleMatrix *pAlpha = alpha[i];
@@ -528,11 +545,11 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
                 }
                 mx.inverse();
 
-                pAlpha[0].resize(M, 1, 0.0); for (unsigned int m=0; m<M; m++) { (pAlpha[0])[m][0] = -12.0*h*(B(node0, m+1)+B(node1, m+1)+B(node2, m+1)+B(node3, m+1)+B(node4, m+1)); }
-                pAlpha[1].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (pAlpha[1])[m][m] = +20.0; }
-                pAlpha[2].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (pAlpha[2])[m][m] =  +0.0; }
-                pAlpha[3].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (pAlpha[3])[m][m] = -20.0; }
-                pAlpha[4].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (pAlpha[4])[m][m] = +25.0; }
+                pAlpha[0].resize(M, 1, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[0])[r][0] = -12.0*h*(B(node0, r+1)+B(node1, r+1)+B(node2, r+1)+B(node3, r+1)+B(node4, r+1)); }
+                pAlpha[1].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[1])[r][r] = +20.0; }
+                pAlpha[2].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[2])[r][r] =  +0.0; }
+                pAlpha[3].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[3])[r][r] = -20.0; }
+                pAlpha[4].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[4])[r][r] = +25.0; }
 
                 for (unsigned int r=0; r<M; r++)
                 {
@@ -550,31 +567,127 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
                 pAlpha[2] = mx*pAlpha[2];
                 pAlpha[3] = mx*pAlpha[3];
                 pAlpha[4] = mx*pAlpha[4];
+
+                mx.clear();
+            }
+
+            if (schema == 2)
+            {
+                DoubleMatrix mx(M, M);
+                for (unsigned int r=0; r<M; r++)
+                {
+                    mx[r][r] = 5.0;
+                }
+                mx.inverse();
+
+                pAlpha[0].resize(M, 1, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[0])[r][0] = -12.0*h*(B(node1, r+1)-B(node2, r+1)+B(node3, r+1)); }
+                pAlpha[1].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[1])[r][r] = +4.0; }
+                pAlpha[2].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[2])[r][r] = +0.0; }
+                pAlpha[3].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[3])[r][r] = -4.0; }
+                pAlpha[4].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[4])[r][r] = +5.0; }
+
+                for (unsigned int r=0; r<M; r++)
+                {
+                    for (unsigned int c=0; c<M; c++)
+                    {
+                        pAlpha[1][r][c] += -12.0*h*A(node1, r+1, c+1);
+                        pAlpha[2][r][c] += +12.0*h*A(node2, r+1, c+1);
+                        pAlpha[3][r][c] += -12.0*h*A(node3, r+1, c+1);
+                        pAlpha[4][r][c] +=   0.0;
+                    }
+                }
+
+                pAlpha[0] = mx*pAlpha[0];
+                pAlpha[1] = mx*pAlpha[1];
+                pAlpha[2] = mx*pAlpha[2];
+                pAlpha[3] = mx*pAlpha[3];
+                pAlpha[4] = mx*pAlpha[4];
+
+                mx.clear();
             }
 
             if (schema == 1)
             {
-                pAlpha[0].resize(M, 1, 0.0);
-                pAlpha[1].resize(M, M, 0.0);
-                pAlpha[2].resize(M, M, 0.0);
-                pAlpha[3].resize(M, M, 0.0);
-                pAlpha[4].resize(M, M, 0.0);
+                pAlpha[0].resize(M, 1, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[0])[r][0] = -2.4*h*(B(node1, r+1)-B(node2, r+1)+B(node3, r+1)); }
+                pAlpha[1].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[1])[r][r] = +0.8; }
+                pAlpha[2].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[2])[r][r] = +0.0; }
+                pAlpha[3].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[3])[r][r] = -0.8; }
+                pAlpha[4].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[4])[r][r] = +1.0; }
 
                 for (unsigned int r=0; r<M; r++)
                 {
-                    (pAlpha[0])[r][0] = -2.4*h*(B(node1, r+1)-B(node2, r+1)+B(node3, r+1));
-                    (pAlpha[1])[r][r] = +0.8;
-                    //(pAlpha[2])[r][r] = +0.0;
-                    (pAlpha[3])[r][r] = -0.8;
-                    (pAlpha[4])[r][r] = +1.0;
                     for (unsigned int c=0; c<M; c++)
                     {
-                        pAlpha[1][r][c] -= 2.4*h*A(node1, r+1, c+1);
-                        pAlpha[2][r][c] += 2.4*h*A(node2, r+1, c+1);
-                        pAlpha[3][r][c] -= 2.4*h*A(node3, r+1, c+1);
-                        //pAlpha[4][r][c] -= 0.0;
+                        pAlpha[1][r][c] += -2.4*h*A(node1, r+1, c+1);
+                        pAlpha[2][r][c] += +2.4*h*A(node2, r+1, c+1);
+                        pAlpha[3][r][c] += -2.4*h*A(node3, r+1, c+1);
+                        pAlpha[4][r][c] += 0.0;
                     }
                 }
+
+                //unsigned int p = 4;
+                //printf_s("%8.6f %8.6f %8.6f %8.6f %8.6f %8.6f %8.6f %8.6f %8.6f\n",
+                //         pAlpha[p][0][0], pAlpha[p][0][1], pAlpha[p][0][2],
+                //        pAlpha[p][1][0], pAlpha[p][1][1], pAlpha[p][1][2],
+                //        pAlpha[p][2][0], pAlpha[p][2][1], pAlpha[p][2][2]);
+
+                //                pAlpha[0].resize(M, 1, 0.0);
+                //                pAlpha[1].resize(M, M, 0.0);
+                //                pAlpha[2].resize(M, M, 0.0);
+                //                pAlpha[3].resize(M, M, 0.0);
+                //                pAlpha[4].resize(M, M, 0.0);
+
+
+                //                for (unsigned int r=0; r<M; r++)
+                //                {
+                //                    (pAlpha[0])[r][0] = -2.4*h*(B(node1, r+1)-B(node2, r+1)+B(node3, r+1));
+                //                    (pAlpha[1])[r][r] = +0.8;
+                //                    (pAlpha[2])[r][r] = +0.0;
+                //                    (pAlpha[3])[r][r] = -0.8;
+                //                    (pAlpha[4])[r][r] = +1.0;
+                //                    for (unsigned int c=0; c<M; c++)
+                //                    {
+                //                        pAlpha[1][r][c] -= 2.4*h*A(node1, r+1, c+1);
+                //                        pAlpha[2][r][c] += 2.4*h*A(node2, r+1, c+1);
+                //                        pAlpha[3][r][c] -= 2.4*h*A(node3, r+1, c+1);
+                //                        pAlpha[4][r][c] -= 0.0;
+                //                    }
+                //                }
+            }
+
+            if (schema == 3)
+            {
+                DoubleMatrix mx(M, M);
+                for (unsigned int r=0; r<M; r++)
+                {
+                    mx[r][r] = 5.3;
+                }
+                mx.inverse();
+
+                pAlpha[0].resize(M, 1, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[0])[r][0] = -12.0*h*(1.1*B(node1, r+1)-B(node2, r+1)+B(node3, r+1)); }
+                pAlpha[1].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[1])[r][r] = +3.0; }
+                pAlpha[2].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[2])[r][r] = +1.8; }
+                pAlpha[3].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[3])[r][r] = -4.6; }
+                pAlpha[4].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[4])[r][r] = +5.1; }
+
+                for (unsigned int r=0; r<M; r++)
+                {
+                    for (unsigned int c=0; c<M; c++)
+                    {
+                        pAlpha[1][r][c] += -13.2*h*A(node1, r+1, c+1);
+                        pAlpha[2][r][c] += +12.0*h*A(node2, r+1, c+1);
+                        pAlpha[3][r][c] += -12.0*h*A(node3, r+1, c+1);
+                        pAlpha[4][r][c] +=   0.0;
+                    }
+                }
+
+                pAlpha[0] = mx*pAlpha[0];
+                pAlpha[1] = mx*pAlpha[1];
+                pAlpha[2] = mx*pAlpha[2];
+                pAlpha[3] = mx*pAlpha[3];
+                pAlpha[4] = mx*pAlpha[4];
+
+                mx.clear();
             }
         }
 
@@ -582,7 +695,41 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
         {
         }
 
-        for (unsigned int j=1; j<=k; j++) { betta[i+j] += betta[i]*pAlpha[j]; }
+        for (unsigned int j=1; j<=k; j++)
+        {
+            betta[i+j] += betta[i]*pAlpha[j];
+        }
+
+        if (k==41 /*&& schema == 1*/)
+        {
+            IPrinter::printSeperatorLine(std::to_string(i+1).data(), '*');
+            for (unsigned int r=0; r<M; r++)
+            {
+                printf("%12.6f %12.6f %12.6f |"
+                       "%12.6f %12.6f %12.6f |"
+                       "%12.6f %12.6f %12.6f |"
+                       "%12.6f %12.6f %12.6f |"
+                       "%12.6f %12.6f %12.6f\n",
+                       betta[i+1][r][0], betta[i+1][r][1], betta[i+1][r][2],
+                        betta[i+2][r][0], betta[i+2][r][1], betta[i+2][r][2],
+                        betta[i+3][r][0], betta[i+3][r][1], betta[i+3][r][2],
+                        betta[i+4][r][0], betta[i+4][r][1], betta[i+4][r][2],
+                        betta[i+5][r][0], betta[i+5][r][1], betta[i+5][r][2]);
+            }
+            IPrinter::printSeperatorLine();
+            for (unsigned int r=0; r<M; r++)
+            {
+                printf("%12.6f %12.6f %12.6f |"
+                       "%12.6f %12.6f %12.6f |"
+                       "%12.6f %12.6f %12.6f |"
+                       "%12.6f %12.6f %12.6f \n",
+                       pAlpha[1][r][0], pAlpha[1][r][1], pAlpha[1][r][2],
+                        pAlpha[2][r][0], pAlpha[2][r][1], pAlpha[2][r][2],
+                        pAlpha[3][r][0], pAlpha[3][r][1], pAlpha[3][r][2],
+                        pAlpha[4][r][0], pAlpha[4][r][1], pAlpha[4][r][2]);
+            }
+        }
+
         gamma -= betta[i]*pAlpha[0];
     }
 
@@ -618,10 +765,11 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
 
     if (k==4)
     {
-        double t3 = (size-4)*h; PointNodeODE node3(t3,static_cast<int>((size-4)));
-        double t2 = (size-3)*h; PointNodeODE node2(t2,static_cast<int>((size-3)));
-        double t1 = (size-2)*h; PointNodeODE node1(t1,static_cast<int>((size-2)));
-        double t0 = (size-1)*h; PointNodeODE node0(t0,static_cast<int>((size-1)));
+        double t4 = (size-5)*h; PointNodeODE node4(t4, static_cast<int>((size-5)));
+        double t3 = (size-4)*h; PointNodeODE node3(t3, static_cast<int>((size-4)));
+        double t2 = (size-3)*h; PointNodeODE node2(t2, static_cast<int>((size-3)));
+        double t1 = (size-2)*h; PointNodeODE node1(t1, static_cast<int>((size-2)));
+        double t0 = (size-1)*h; PointNodeODE node0(t0, static_cast<int>((size-1)));
 
         for (unsigned int r=0; r<M; r++)
         {
@@ -633,11 +781,29 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
                 F[0*M+r][3*M+c] = betta[size-2][r][c];
                 F[0*M+r][4*M+c] = betta[size-1][r][c];
 
-                F[1*M+r][0*M+c] = 0.0;                       if (r==c) F[1*M+r][0*M+c] += -3.0;
+//                F[0*M+r][0*M+c] = 0.0;
+//                F[0*M+r][1*M+c] = betta[size-4][r][c];
+//                F[0*M+r][2*M+c] = betta[size-3][r][c];
+//                F[0*M+r][3*M+c] = betta[size-2][r][c];
+//                F[0*M+r][4*M+c] = betta[size-1][r][c];
+
+                //                F[0*M+r][0*M+c] = -12.0*h*A(node4, r+1,c+1); if (r==c) F[0*M+r][0*M+c] += -25.0;
+                //                F[0*M+r][1*M+c] = 0.0;                       if (r==c) F[0*M+r][1*M+c] += +48.0;
+                //                F[0*M+r][2*M+c] = 0.0;                       if (r==c) F[0*M+r][2*M+c] += -36.0;
+                //                F[0*M+r][3*M+c] = 0.0;                       if (r==c) F[0*M+r][3*M+c] += +16.0;
+                //                F[0*M+r][4*M+c] = 0.0;                       if (r==c) F[0*M+r][4*M+c] += -3.0;
+
+                //F[1*M+r][0*M+c] = -12.0*h*A(node4, r+1,c+1); if (r==c) F[1*M+r][0*M+c] += -25.0;
+                //F[1*M+r][1*M+c] = 0.0;                       if (r==c) F[1*M+r][1*M+c] += +48.0;
+                //F[1*M+r][2*M+c] = 0.0;                       if (r==c) F[1*M+r][2*M+c] += -36.0;
+                //F[1*M+r][3*M+c] = 0.0;                       if (r==c) F[1*M+r][3*M+c] += +16.0;
+                //F[1*M+r][4*M+c] = 0.0;                       if (r==c) F[1*M+r][4*M+c] += -3.0;
+
+                F[1*M+r][0*M+c] = 0.0;                       if (r==c) F[1*M+r][0*M+c] +=  -3.0;
                 F[1*M+r][1*M+c] = -12.0*h*A(node3, r+1,c+1); if (r==c) F[1*M+r][1*M+c] += -10.0;
                 F[1*M+r][2*M+c] = 0.0;                       if (r==c) F[1*M+r][2*M+c] += +18.0;
-                F[1*M+r][3*M+c] = 0.0;                       if (r==c) F[1*M+r][3*M+c] += -6.0;
-                F[1*M+r][4*M+c] = 0.0;                       if (r==c) F[1*M+r][4*M+c] += +1.0;
+                F[1*M+r][3*M+c] = 0.0;                       if (r==c) F[1*M+r][3*M+c] +=  -6.0;
+                F[1*M+r][4*M+c] = 0.0;                       if (r==c) F[1*M+r][4*M+c] +=  +1.0;
 
                 F[2*M+r][0*M+c] = 0.0;                       if (r==c) F[2*M+r][0*M+c] += +1.0;
                 F[2*M+r][1*M+c] = 0.0;                       if (r==c) F[2*M+r][1*M+c] += -8.0;
@@ -645,25 +811,25 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
                 F[2*M+r][3*M+c] = 0.0;                       if (r==c) F[2*M+r][3*M+c] += +8.0;
                 F[2*M+r][4*M+c] = 0.0;                       if (r==c) F[2*M+r][4*M+c] += -1.0;
 
-                F[3*M+r][0*M+c] = 0.0;                       if (r==c) F[3*M+r][0*M+c] += -1.0;
-                F[3*M+r][1*M+c] = 0.0;                       if (r==c) F[3*M+r][1*M+c] += +6.0;
+                F[3*M+r][0*M+c] = 0.0;                       if (r==c) F[3*M+r][0*M+c] +=  -1.0;
+                F[3*M+r][1*M+c] = 0.0;                       if (r==c) F[3*M+r][1*M+c] +=  +6.0;
                 F[3*M+r][2*M+c] = 0.0;                       if (r==c) F[3*M+r][2*M+c] += -18.0;
                 F[3*M+r][3*M+c] = -12.0*h*A(node1, r+1,c+1); if (r==c) F[3*M+r][3*M+c] += +10.0;
-                F[3*M+r][4*M+c] = 0.0;                       if (r==c) F[3*M+r][4*M+c] += +3.0;
+                F[3*M+r][4*M+c] = 0.0;                       if (r==c) F[3*M+r][4*M+c] +=  +3.0;
 
-                F[4*M+r][0*M+c] = 0.0;                       if (r==c) F[4*M+r][0*M+c] += +3.0;
+                F[4*M+r][0*M+c] = 0.0;                       if (r==c) F[4*M+r][0*M+c] +=  +3.0;
                 F[4*M+r][1*M+c] = 0.0;                       if (r==c) F[4*M+r][1*M+c] += -16.0;
                 F[4*M+r][2*M+c] = 0.0;                       if (r==c) F[4*M+r][2*M+c] += +36.0;
                 F[4*M+r][3*M+c] = 0.0;                       if (r==c) F[4*M+r][3*M+c] += -48.0;
                 F[4*M+r][4*M+c] = -12.0*h*A(node0, r+1,c+1); if (r==c) F[4*M+r][4*M+c] += +25.0;
             }
             g[0*M+r] = gamma[r][0];
+            //            g[0*M+r] = +12.0*h*B(node4, r+1);
             g[1*M+r] = +12.0*h*B(node3, r+1);
             g[2*M+r] = +12.0*h*B(node2, r+1);
             g[3*M+r] = +12.0*h*B(node1, r+1);
             g[4*M+r] = +12.0*h*B(node0, r+1);
         }
-
     }
 
     if (k==6)
@@ -745,11 +911,53 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
         }
     }
 
+    printf("det %14.8f\n", F.determinant());
+
+    IPrinter::printSeperatorLine();
+    IPrinter::print(F, F.rows(), F.cols(), 12, 6);
+    IPrinter::printSeperatorLine();
+
     DoubleVector xf((k+1)*M);
     LinearEquation::GaussianElimination(F, g, xf);
 
+    //    double a = 0.53582679*betta[size-5][0][0]+0.72896863*betta[size-4][0][0]+0.87630668*betta[size-3][0][0]+0.96858316*betta[size-2][0][0]+1.00000000*betta[size-1][0][0];
+    //    double c =      xf[0]*betta[size-5][0][0]+     xf[1]*betta[size-4][0][0]+     xf[2]*betta[size-3][0][0]+     xf[3]*betta[size-2][0][0]+     xf[4]*betta[size-1][0][0];
+    //    double b = gamma[0][0];
+    //    printf("----- %14.8f %14.8f %14.8f\n", a, c, b);
+    //    printf("***** %14.8f %14.8f %14.8f %14.8f %14.8f\n", xf[4], xf[3], xf[2], xf[1], xf[0]);
+
+
     F.clear();
     g.clear();
+
+    if (k==4){
+        //    xf[4] = 100.000000;
+        //    xf[3] =  99.800100;
+        //    xf[2] =  99.600400;
+        //    xf[1] =  99.400900;
+        //    xf[0] =  99.201600;
+
+        //        xf[4] = 1.000000;
+        //        xf[3] =  0.980100;
+        //        xf[2] =  0.960400;
+        //        xf[1] =  0.940900;
+        //        xf[0] =  0.921600;
+
+        //    printf("***** %14.8f %14.8f %14.8f %14.8f %14.8f\n", xf[4], xf[3], xf[2], xf[1], xf[0]);
+
+        printf("***** %14.8f %14.8f %14.8f\n", xf[2], xf[1], xf[0]);
+        printf("***** %14.8f %14.8f %14.8f\n", xf[5], xf[4], xf[3]);
+        printf("***** %14.8f %14.8f %14.8f\n", xf[8], xf[7], xf[6]);
+        printf("***** %14.8f %14.8f %14.8f\n", xf[11], xf[10], xf[9]);
+        printf("***** %14.8f %14.8f %14.8f\n", xf[14], xf[13], xf[12]);
+
+    }
+
+    //    if (k==2) {
+    //    xf[2] = 100.000000;
+    //    xf[1] =  99.800100;
+    //    xf[0] =  99.600400;
+    //}
 
     x.clear();
     x.resize(size); for (unsigned int n=0; n<size; n++) x[n].resize(M);
@@ -1063,7 +1271,7 @@ void FirstOrderLinearODE::transferOfConditionM(const std::vector<NonLocalConditi
 
     MyRnFunction func(*this, Cd, d, size, h, k, M);
 
-    ConjugateGradientSLE g;
+    ConjugateGradient g;
     g.setFunction(&func);
     g.setGradient(&func);
     g.setPrinter(&func);

@@ -39,14 +39,14 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //ConjugateGradinetTest::Main(argc, argv);
 
-    //FirstOrderLinearODEEx1::Main(argc, argv);
+    FirstOrderLinearODEEx1::Main(argc, argv);
     //FirstOrderNonLinearODErEx1::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);
 
-    HeatEquationIBVP::Main(argc, argv);
-    IPrinter::printSeperatorLine();
-    HeatEquationFBVP::Main(argc, argv);
-    IPrinter::printSeperatorLine();
+    //HeatEquationIBVP::Main(argc, argv);
+    //IPrinter::printSeperatorLine();
+    //HeatEquationFBVP::Main(argc, argv);
+    //IPrinter::printSeperatorLine();
 
     //WaveEquationIBVP::Main(argc, argv);
     //IPrinter::printSeperatorLine();

@@ -42,7 +42,107 @@ double IHeatEquationIBVP::thermalConductivity() const { return _thermalConductiv
 
 void IHeatEquationIBVP::setThermalConductivity(double thermalConductivity) { this->_thermalConductivity = thermalConductivity; }
 
-void IHeatEquationIBVP::explicit_calculate_D1V1() const {}
+void IHeatEquationIBVP::explicit_calculate_D1V1() const
+{
+    const unsigned int N = static_cast<unsigned int>(spaceDimensionX().size()) - 1;
+    const unsigned int L = static_cast<unsigned int>(timeDimension().size()) - 1;
+
+    const int xmin = spaceDimensionX().min();
+    const int xmax = spaceDimensionX().max();
+    //const int tmin = timeDimension().min();
+    //const int tmax = timeDimension().max();
+
+    const double hx = spaceDimensionX().step();
+    const double ht = timeDimension().step();
+
+    const double a = thermalDiffusivity();
+    const double b = thermalConductivity();
+    const double c = thermalConvection();
+
+    if (ht >= 0.5*(hx*hx)) throw std::runtime_error("Differential scheme not steady!");
+
+    // common parameters
+    const double k1 = (a*ht)/(hx*hx);
+    const double k2 = (b*ht)/(2.0*hx);
+    const double k3 = 1.0 + c*ht;
+
+    DoubleVector u0(N+1, 0.0);
+    DoubleVector u1(N+1, 0.0);
+
+    /***********************************************************************************************/
+    /***********************************************************************************************/
+
+    TimeNodePDE tn;
+    SpaceNodePDE sn;
+    unsigned int i=0;
+    int n = 0;
+    BoundaryConditionPDE condition; double value, alpha, beta, gamma;
+
+    for (n=xmin, sn.i=n, sn.x=n*hx, i=0; n<=xmax; ++n, sn.i=n, sn.x=n*hx, ++i)
+    {
+        u0[i] = initial(sn, InitialCondition::InitialValue);
+    }
+
+    tn.i = 0; tn.t = tn.i*ht;
+    layerInfo(u0, tn);
+
+    /***********************************************************************************************/
+
+    for (unsigned int ln=1; ln<=L; ln++)
+    {
+        tn.i = ln; tn.t = tn.i*ht;
+
+        for (n=xmin+1, sn.i=n, sn.x=n*hx, i=1; n<=xmax-1; ++n, sn.i=n, sn.x=i*hx, ++i)
+        {
+            u1[i] = k3*u0[i] + k1*(u0[i+1] - 2.0*u0[i] + u0[i-1]) + k2*(u0[i+1] - u0[i-1]) + ht*f(sn, tn);
+        }
+
+        sn.i = xmin; sn.x = xmin*hx;
+        value = boundary(sn, tn, condition);
+        alpha = condition.alpha();
+        beta  = condition.beta();
+        gamma = condition.gamma();
+
+        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+        {
+            u1[0] = (gamma/alpha)*value;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+        {
+            u1[0] = u1[1] - hx*(gamma/beta)*value;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Robin)
+        {
+            u1[0] = (beta*u1[1] - hx*gamma*value)/(beta-hx*alpha);
+        }
+
+        sn.i = xmax; sn.x = xmax*hx;
+        value = boundary(sn, tn, condition);
+        alpha = condition.alpha();
+        beta  = condition.beta();
+        gamma = condition.gamma();
+
+        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+        {
+            u1[N] = (gamma/alpha)*value;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+        {
+            u1[N] = u1[N-1] + hx*(gamma/beta)*value;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Robin)
+        {
+            u1[N] = (beta*u1[N-1] + hx*gamma*value)/(beta+hx*alpha);
+        }
+
+        layerInfo(u1, tn);
+
+        u0 = u1;
+    }
+
+    u0.clear();
+    u1.clear();
+}
 
 void IHeatEquationIBVP::implicit_calculate_D1V1() const
 {
@@ -230,48 +330,62 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
 
 void IHeatEquationIBVP::explicit_calculate_D2V1() const
 {
-    const unsigned int N = static_cast<unsigned int>( spaceDimensionX().size() );
-    const unsigned int M = static_cast<unsigned int>( spaceDimensionY().size() );
-    const unsigned int L = static_cast<unsigned int>( timeDimension().size() );
+    const unsigned int N = static_cast<unsigned int>(spaceDimensionX().size()) - 1;
+    const unsigned int M = static_cast<unsigned int>(spaceDimensionY().size()) - 1;
+    const unsigned int L = static_cast<unsigned int>(timeDimension().size()) - 1;
+
+    const int xmin = spaceDimensionX().min();
+    const int xmax = spaceDimensionX().max();
+    const int ymin = spaceDimensionY().min();
+    const int ymax = spaceDimensionY().max();
+    //const int tmin = timeDimension().min();
+    //const int tmax = timeDimension().max();
 
     const double hx = spaceDimensionX().step();
     const double hy = spaceDimensionY().step();
     const double ht = timeDimension().step();
 
-    const double td = thermalDiffusivity();
-    const double tc = thermalConductivity();
+    const double a1 = thermalDiffusivity();
+    const double a2 = thermalDiffusivity();
+    const double b1 = thermalConductivity();
+    const double b2 = thermalConductivity();
+    const double c  = thermalConvection();
 
     if (ht > 0.5/(1.0/(hx*hx)+1.0/(hy*hy))) throw std::runtime_error("Differential scheme not steady!");
 
-    const double p_td_ht__hxhx = +((td*ht)/(hx*hx));
-    const double p_td_ht__hyhy = +((td*ht)/(hy*hy));
-    const double ht_tc = ht*tc;
+    // common parameters
+    const double k1 = +((a1*ht)/(hx*hx));
+    const double k2 = +((a1*ht)/(hy*hy));
+    const double ht_tc = ht*b1;
 
     DoubleMatrix u00(M+1, N+1);
     DoubleMatrix u10(M+1, N+1);
 
+    /***********************************************************************************************/
+    /***********************************************************************************************/
+
+    TimeNodePDE tn00, tn05, tn10;
     SpaceNodePDE sn;
-    TimeNodePDE tn;
+    unsigned int i=0, j=0, s=0, e=N;
+    int n = 0, m = 0;
+    BoundaryConditionPDE condition; double value, alpha, beta, gamma;
 
-    /***********************************************************************************************/
-    /***********************************************************************************************/
-
-    for (unsigned int m=0; m<=M; m++)
+    for (m=ymin, sn.j=m, sn.y=m*hy; m<=ymax; ++m, sn.j=m, sn.y=m*hy, ++j)
     {
-        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
-        for (unsigned int n=0; n<=N; n++)
+        for (n=xmin, sn.i=n, sn.x=n*hx, i=0; n<=xmax; ++n, sn.i=n, sn.x=n*hx, ++i)
         {
-            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
-            u00[m][n] = initial(sn, InitialCondition::InitialValue);
+            u00[j][i] = initial(sn, InitialCondition::InitialValue);
         }
     }
-    layerInfo(u00, tn);
+
+    tn00.i = 0; tn00.t = 0.5*tn00.i*ht;
+    layerInfo(u00, tn00);
 
     /***********************************************************************************************/
 
     for (unsigned int ln=1; ln<=L; ln++)
     {
-        tn.i = ln; tn.t = tn.i*ht;
+        tn00.i = ln; tn00.t = tn00.i*ht;
 
         /**************************************************** border conditions ***************************************************/
 
@@ -283,8 +397,8 @@ void IHeatEquationIBVP::explicit_calculate_D2V1() const
         for (unsigned int m=0; m<=M; m++)
         {
             sn0.j = sn1.j = static_cast<int>(m); sn0.y = sn1.y = m*hy;
-            u10[m][0] = boundary(sn0, tn, condition);
-            u10[m][N] = boundary(sn1, tn, condition);
+            u10[m][0] = boundary(sn0, tn00, condition);
+            u10[m][N] = boundary(sn1, tn00, condition);
         }
 
         sn0.j = static_cast<int>(0); sn0.y = 0*hy;
@@ -292,26 +406,100 @@ void IHeatEquationIBVP::explicit_calculate_D2V1() const
         for (unsigned int n=0; n<=N; n++)
         {
             sn0.i = sn1.i = static_cast<int>(n); sn0.x = sn1.x = n*hx;
-            u10[0][n] = boundary(sn0, tn, condition);
-            u10[M][n] = boundary(sn1, tn, condition);
+            u10[0][n] = boundary(sn0, tn00, condition);
+            u10[M][n] = boundary(sn1, tn00, condition);
         }
 
         /**************************************************** border conditions ***************************************************/
 
-        /**************************************************************************************************************************/
-        for (unsigned int m=1; m<=M-1; m++)
+        sn0.j = ymin; sn0.y = ymin*hy;
+        sn1.j = ymax; sn1.y = ymax*hy;
+        for (n=xmin+1, sn.i=n, sn.x=n*hx, i=1; n<=xmax-1; ++n, sn.i=n, sn.x=i*hx, ++i)
         {
-            sn.j = static_cast<int>(m); sn.y = m*hy;
-            for (unsigned int n=1; n<=N-1; n++)
+            sn0.i = n; sn0.x = n*hx;
+            value = boundary(sn0, tn00, condition);
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
+
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
-                sn.i = static_cast<int>(n); sn.x = n*hx;
-                u10[m][n] = u00[m][n]
-                        + p_td_ht__hxhx*(u00[m][n-1] - 2.0*u00[m][n] + u00[m][n+1])
-                        + p_td_ht__hyhy*(u00[m-1][n] - 2.0*u00[m][n] + u00[m+1][n])
-                        - ht_tc*u00[m][n] + ht*f(sn, tn);
+                u10[0][i] = (gamma/alpha)*value;
+            }
+            else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+            {
+                u10[0][i] = (3.5*u10[1][i] - 2.0*u10[2][i] + 0.5*u10[3][i] + hy*(gamma/beta)*value)/(2.0);
+            }
+            else if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+                u10[0][i] = (3.5*u10[1][i] - 2.0*u10[2][i] + 0.5*u10[3][i] + hy*(gamma/beta)*value)/(2.0 + (alpha/beta)*hy);
+            }
+
+            sn1.i = n; sn1.x = n*hx;
+            value = boundary(sn1, tn00, condition);
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
+
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+            {
+                u10[M][i] = (gamma/alpha)*value;
+            }
+            else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+            {
+                u10[M][i] = (3.5*u10[M-1][i] - 2.0*u10[M-2][i] + 0.5*u10[M-3][i] + hy*(gamma/beta)*value)/(2.0);
+            }
+            else if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+                u10[M][i] = (3.5*u10[M-1][i] - 2.0*u10[M-2][i] + 0.5*u10[M-3][i] + hy*(gamma/beta)*value)/(2.0 + (alpha/beta)*hy);
             }
         }
-        layerInfo(u10, tn);
+
+        /**************************************************************************************************************************/
+        for (m=ymin+1, sn.j=m, sn.y=m*hy, j=1; m<=ymax-1; ++m, sn.j=m, sn.y=m*hy, ++j)
+        {
+            sn.i = xmin; sn.x = xmin*hx;
+            value = boundary(sn, tn05, condition);
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
+
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+            {
+                u10[j][0] = (gamma/alpha)*value;
+            }
+            else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+            {
+            }
+            else if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+
+            }
+
+            for (n=xmin+1, sn.i=m, sn.x=n*hx, i=1; n<=xmax-1; ++n, sn.i=n, sn.x=i*hx, ++i)
+            {
+                u10[j][i] = u00[j][i] + k1*(u00[j][i-1] - 2.0*u00[j][i] + u00[j][i+1])
+                        + k2*(u00[j-1][i] - 2.0*u00[j][i] + u00[j+1][i]) - ht_tc*u00[j][i] + ht*f(sn, tn00);
+            }
+
+            sn.i = xmax; sn.x = xmax*hx;
+            value = boundary(sn, tn05, condition);
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
+
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+            {
+                u10[j][N] = (gamma/alpha)*value;
+            }
+            else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+            {
+            }
+            else if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+            }
+        }
+        layerInfo(u10, tn00);
         /**************************************************************************************************************************/
 
         u00 = u10;
@@ -482,7 +670,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
                 dx[1] -= k11 * u05[j][0];
                 ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
             }
-            if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+            else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
                 s = 0;
                 ax[s]  = 0.0;
@@ -494,7 +682,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
                 dx[s] += beta  * ht05 * f(sn, tn00);
                 dx[s] += gamma * b117 * value;
             }
-            if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 s = 0;
                 ax[s]  = 0.0;
@@ -797,7 +985,107 @@ double IHeatEquationFBVP::thermalConvection() const { return _thermalConvection;
 
 void IHeatEquationFBVP::setThermalConvection(double thermalConvection) { this->_thermalConvection = thermalConvection; }
 
-void IHeatEquationFBVP::explicit_calculate_D1V1() const {}
+void IHeatEquationFBVP::explicit_calculate_D1V1() const
+{
+    const unsigned int N = static_cast<unsigned int>(spaceDimensionX().size()) - 1;
+    const unsigned int L = static_cast<unsigned int>(timeDimension().size()) - 1;
+
+    const int xmin = spaceDimensionX().min();
+    const int xmax = spaceDimensionX().max();
+    //const int tmin = timeDimension().min();
+    //const int tmax = timeDimension().max();
+
+    const double hx = spaceDimensionX().step();
+    const double ht = timeDimension().step();
+
+    const double a = thermalDiffusivity();
+    const double b = thermalConductivity();
+    const double c = thermalConvection();
+
+    if (ht >= 0.5*(hx*hx)) throw std::runtime_error("Differential scheme not steady!");
+
+    // common parameters
+    const double k1 = -(a*ht)/(hx*hx);
+    const double k2 = -(b*ht)/(2.0*hx);
+    const double k3 = 1.0 - c*ht;
+
+    DoubleVector u0(N+1, 0.0);
+    DoubleVector u1(N+1, 0.0);
+
+    /***********************************************************************************************/
+    /***********************************************************************************************/
+
+    TimeNodePDE tn;
+    SpaceNodePDE sn;
+    unsigned int i=0;
+    int n = 0;
+    BoundaryConditionPDE condition; double value, alpha, beta, gamma;
+
+    for (n=xmin, sn.i=n, sn.x=n*hx, i=0; n<=xmax; ++n, sn.i=n, sn.x=n*hx, ++i)
+    {
+        u0[i] = final(sn, FinalCondition::FinalValue);
+    }
+
+    tn.i = 0; tn.t = tn.i*ht;
+    layerInfo(u0, tn);
+
+    /***********************************************************************************************/
+
+    for (unsigned int ln=L-1, size_ln = static_cast<unsigned int>(0)-1; ln != size_ln; ln--)
+    {
+        tn.i = ln; tn.t = tn.i*ht;
+
+        for (n=xmin+1, sn.i=n, sn.x=n*hx, i=1; n<=xmax-1; ++n, sn.i=n, sn.x=i*hx, ++i)
+        {
+            u1[i] = k3*u0[i] + k1*(u0[i+1] - 2.0*u0[i] + u0[i-1]) + k2*(u0[i+1] - u0[i-1]) - ht*f(sn, tn);
+        }
+
+        sn.i = xmin; sn.x = xmin*hx;
+        value = boundary(sn, tn, condition);
+        alpha = condition.alpha();
+        beta  = condition.beta();
+        gamma = condition.gamma();
+
+        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+        {
+            u1[0] = (gamma/alpha)*value;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+        {
+            u1[0] = u1[1] - hx*(gamma/beta)*value;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Robin)
+        {
+            u1[0] = (beta*u1[1] - hx*gamma*value)/(beta-hx*alpha);
+        }
+
+        sn.i = xmax; sn.x = xmax*hx;
+        value = boundary(sn, tn, condition);
+        alpha = condition.alpha();
+        beta  = condition.beta();
+        gamma = condition.gamma();
+
+        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+        {
+            u1[N] = (gamma/alpha)*value;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+        {
+            u1[N] = u1[N-1] + hx*(gamma/beta)*value;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Robin)
+        {
+            u1[N] = (beta*u1[N-1] + hx*gamma*value)/(beta+hx*alpha);
+        }
+
+        layerInfo(u1, tn);
+
+        u0 = u1;
+    }
+
+    u0.clear();
+    u1.clear();
+}
 
 void IHeatEquationFBVP::implicit_calculate_D1V1() const
 {
@@ -962,8 +1250,6 @@ void IHeatEquationFBVP::implicit_calculate_D1V1() const
             dx[e]  = beta*b24*u00[e-1] + alpha*b25*u00[e] + beta*b26*u00[e]
                     + beta*(ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00)) + gamma*(b27*value+b28*value0);
         }
-
-        //for (unsigned int n=s; n<=e; n++) u10[n] = rx[n];
 
         tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
         //tomasAlgorithmRight2Left(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);

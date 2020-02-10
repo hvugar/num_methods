@@ -2,6 +2,7 @@
 #define PARABOLIC_IBVP_H
 
 #include "ibvp.h"
+#include <float.h>
 
 /**
  * @brief The IParabolicIBVP class
