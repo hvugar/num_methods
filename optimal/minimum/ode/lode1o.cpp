@@ -687,6 +687,23 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
         {
             betta[i+j] += betta[i]*pAlpha[j];
         }
+        gamma -= betta[i]*pAlpha[0];
+
+        double norm1 = 0.0;
+        for (unsigned int i=1; i<size; i++)
+        {
+            norm1 += betta[i][0][0]*betta[i][0][0];
+        }
+//        norm1 += gamma[0][0]*gamma[0][0];
+        norm1 = sqrt(norm1);
+
+        for (unsigned int i=1; i<size; i++)
+        {
+            betta[i][0][0] /= norm1;
+        }
+        gamma[0][0] /= norm1;
+
+
 
         //        if (k==4 /*&& schema == 1*/)
         //        {
@@ -728,8 +745,6 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
                 for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k; j++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", pAlpha[j][r][c]); } printf("|"); } puts(""); }
             }
         }
-
-        gamma -= betta[i]*pAlpha[0];
     }
 
     DoubleMatrix F((k+1)*M, (k+1)*M);
