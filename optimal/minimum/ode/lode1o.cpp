@@ -462,8 +462,8 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
     const double h = dimension().step();
     const unsigned int M = count();
 
-    std::vector<NonLocalCondition> C;
-    discritize(co, C);
+    std::vector<NonLocalCondition> C = co;
+    //discritize(co, C);
 
     DoubleMatrix *betta = new DoubleMatrix[size];
     for (unsigned int i=0; i<size; i++) betta[i].resize(M, M, 0.0);
@@ -473,6 +473,7 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
     {
         unsigned int j = static_cast<unsigned int>(C[i].n.i);
         betta[j] += C[i].m;
+        printf("**** %8d %12.6f \n", j, betta[j][0][0]);
     }
 
     DoubleMatrix **alpha = new DoubleMatrix*[end];
@@ -533,20 +534,67 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
                 }
                 mx.inverse();
 
-                pAlpha[0].resize(M, 1, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[0])[r][0] = -12.0*h*(B(node0, r+1)+B(node1, r+1)+B(node2, r+1)+B(node3, r+1)+B(node4, r+1)); }
-                pAlpha[1].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[1])[r][r] = +20.0; }
-                pAlpha[2].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[2])[r][r] =  +0.0; }
-                pAlpha[3].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[3])[r][r] = -20.0; }
-                pAlpha[4].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[4])[r][r] = +25.0; }
+                pAlpha[1].resize(M, M, 0.0);
+                pAlpha[2].resize(M, M, 0.0);
+                pAlpha[3].resize(M, M, 0.0);
+                pAlpha[4].resize(M, M, 0.0);
+                pAlpha[0].resize(M, 1, 0.0);
 
                 for (unsigned int r=0; r<M; r++)
                 {
+                    (pAlpha[1])[r][r] = +20.0;
+                    (pAlpha[2])[r][r] =  +0.0;
+                    (pAlpha[3])[r][r] = -20.0;
+                    (pAlpha[4])[r][r] = +25.0;
+                    (pAlpha[0])[r][0] = -12.0*h*(B(node0, r+1)+B(node1, r+1)+B(node2, r+1)+B(node3, r+1)+B(node4, r+1));
+
                     for (unsigned int c=0; c<M; c++)
                     {
                         pAlpha[1][r][c] -= 12.0*h*A(node1, r+1, c+1);
                         pAlpha[2][r][c] -= 12.0*h*A(node2, r+1, c+1);
                         pAlpha[3][r][c] -= 12.0*h*A(node3, r+1, c+1);
                         pAlpha[4][r][c] -= 12.0*h*A(node4, r+1, c+1);
+                    }
+                }
+
+                pAlpha[1] = mx*pAlpha[1];
+                pAlpha[2] = mx*pAlpha[2];
+                pAlpha[3] = mx*pAlpha[3];
+                pAlpha[4] = mx*pAlpha[4];
+                pAlpha[0] = mx*pAlpha[0];
+
+                mx.clear();
+            }
+
+            if (schema == 1)
+            {
+                DoubleMatrix mx(M, M);
+                for (unsigned int r=0; r<M; r++)
+                {
+                    mx[r][r] = 5.0;
+                }
+                mx.inverse();
+
+                pAlpha[0].resize(M, 1, 0.0);
+                pAlpha[1].resize(M, M, 0.0);
+                pAlpha[2].resize(M, M, 0.0);
+                pAlpha[3].resize(M, M, 0.0);
+                pAlpha[4].resize(M, M, 0.0);
+
+                for (unsigned int r=0; r<M; r++)
+                {
+                    (pAlpha[1])[r][r] = +4.0;
+                    (pAlpha[2])[r][r] = +0.0;
+                    (pAlpha[3])[r][r] = -4.0;
+                    (pAlpha[4])[r][r] = +5.0;
+                    (pAlpha[0])[r][0] = -12.0*h*(B(node1, r+1)-B(node2, r+1)+B(node3, r+1));
+
+                    for (unsigned int c=0; c<M; c++)
+                    {
+                        pAlpha[1][r][c] -= 12.0*h*A(node1, r+1, c+1);
+                        pAlpha[2][r][c] += 12.0*h*A(node2, r+1, c+1);
+                        pAlpha[3][r][c] -= 12.0*h*A(node3, r+1, c+1);
+                        pAlpha[4][r][c] +=  0.0;
                     }
                 }
 
@@ -564,102 +612,24 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
                 DoubleMatrix mx(M, M);
                 for (unsigned int r=0; r<M; r++)
                 {
-                    mx[r][r] = 5.0;
-                }
-                mx.inverse();
-
-                pAlpha[0].resize(M, 1, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[0])[r][0] = -12.0*h*(B(node1, r+1)-B(node2, r+1)+B(node3, r+1)); }
-                pAlpha[1].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[1])[r][r] = +4.0; }
-                pAlpha[2].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[2])[r][r] = +0.0; }
-                pAlpha[3].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[3])[r][r] = -4.0; }
-                pAlpha[4].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[4])[r][r] = +5.0; }
-
-                for (unsigned int r=0; r<M; r++)
-                {
-                    for (unsigned int c=0; c<M; c++)
-                    {
-                        pAlpha[1][r][c] += -12.0*h*A(node1, r+1, c+1);
-                        pAlpha[2][r][c] += +12.0*h*A(node2, r+1, c+1);
-                        pAlpha[3][r][c] += -12.0*h*A(node3, r+1, c+1);
-                        pAlpha[4][r][c] +=   0.0;
-                    }
-                }
-
-                pAlpha[0] = mx*pAlpha[0];
-                pAlpha[1] = mx*pAlpha[1];
-                pAlpha[2] = mx*pAlpha[2];
-                pAlpha[3] = mx*pAlpha[3];
-                pAlpha[4] = mx*pAlpha[4];
-
-                mx.clear();
-            }
-
-            if (schema == 1)
-            {
-                pAlpha[0].resize(M, 1, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[0])[r][0] = -2.4*h*(B(node1, r+1)-B(node2, r+1)+B(node3, r+1)); }
-                pAlpha[1].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[1])[r][r] = +0.8; }
-                pAlpha[2].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[2])[r][r] = +0.0; }
-                pAlpha[3].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[3])[r][r] = -0.8; }
-                pAlpha[4].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[4])[r][r] = +1.0; }
-
-                for (unsigned int r=0; r<M; r++)
-                {
-                    for (unsigned int c=0; c<M; c++)
-                    {
-                        pAlpha[1][r][c] += -2.4*h*A(node1, r+1, c+1);
-                        pAlpha[2][r][c] += +2.4*h*A(node2, r+1, c+1);
-                        pAlpha[3][r][c] += -2.4*h*A(node3, r+1, c+1);
-                        pAlpha[4][r][c] += 0.0;
-                    }
-                }
-
-                //unsigned int p = 4;
-                //printf_s("%8.6f %8.6f %8.6f %8.6f %8.6f %8.6f %8.6f %8.6f %8.6f\n",
-                //         pAlpha[p][0][0], pAlpha[p][0][1], pAlpha[p][0][2],
-                //        pAlpha[p][1][0], pAlpha[p][1][1], pAlpha[p][1][2],
-                //        pAlpha[p][2][0], pAlpha[p][2][1], pAlpha[p][2][2]);
-
-                //                pAlpha[0].resize(M, 1, 0.0);
-                //                pAlpha[1].resize(M, M, 0.0);
-                //                pAlpha[2].resize(M, M, 0.0);
-                //                pAlpha[3].resize(M, M, 0.0);
-                //                pAlpha[4].resize(M, M, 0.0);
-
-
-                //                for (unsigned int r=0; r<M; r++)
-                //                {
-                //                    (pAlpha[0])[r][0] = -2.4*h*(B(node1, r+1)-B(node2, r+1)+B(node3, r+1));
-                //                    (pAlpha[1])[r][r] = +0.8;
-                //                    (pAlpha[2])[r][r] = +0.0;
-                //                    (pAlpha[3])[r][r] = -0.8;
-                //                    (pAlpha[4])[r][r] = +1.0;
-                //                    for (unsigned int c=0; c<M; c++)
-                //                    {
-                //                        pAlpha[1][r][c] -= 2.4*h*A(node1, r+1, c+1);
-                //                        pAlpha[2][r][c] += 2.4*h*A(node2, r+1, c+1);
-                //                        pAlpha[3][r][c] -= 2.4*h*A(node3, r+1, c+1);
-                //                        pAlpha[4][r][c] -= 0.0;
-                //                    }
-                //                }
-            }
-
-            if (schema == 3)
-            {
-                DoubleMatrix mx(M, M);
-                for (unsigned int r=0; r<M; r++)
-                {
                     mx[r][r] = 5.3;
                 }
                 mx.inverse();
 
-                pAlpha[0].resize(M, 1, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[0])[r][0] = -12.0*h*(1.1*B(node1, r+1)-B(node2, r+1)+B(node3, r+1)); }
-                pAlpha[1].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[1])[r][r] = +3.0; }
-                pAlpha[2].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[2])[r][r] = +1.8; }
-                pAlpha[3].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[3])[r][r] = -4.6; }
-                pAlpha[4].resize(M, M, 0.0); for (unsigned int r=0; r<M; r++) { (pAlpha[4])[r][r] = +5.1; }
+                pAlpha[0].resize(M, 1, 0.0);
+                pAlpha[1].resize(M, M, 0.0);
+                pAlpha[2].resize(M, M, 0.0);
+                pAlpha[3].resize(M, M, 0.0);
+                pAlpha[4].resize(M, M, 0.0);
 
                 for (unsigned int r=0; r<M; r++)
                 {
+                    (pAlpha[1])[r][r] = +3.0;
+                    (pAlpha[2])[r][r] = +1.8;
+                    (pAlpha[3])[r][r] = -4.6;
+                    (pAlpha[4])[r][r] = +5.1;
+                    (pAlpha[0])[r][0] = -12.0*h*(1.1*B(node1, r+1)-B(node2, r+1)+B(node3, r+1));
+
                     for (unsigned int c=0; c<M; c++)
                     {
                         pAlpha[1][r][c] += -13.2*h*A(node1, r+1, c+1);
@@ -685,52 +655,55 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
 
         for (unsigned int j=1; j<=k; j++)
         {
-            betta[i+j] += betta[i]*pAlpha[j];
+            betta[i+j] = betta[i+j] + betta[i]*pAlpha[j];
         }
-        gamma -= betta[i]*pAlpha[0];
+        gamma = gamma - betta[i]*pAlpha[0];
 
 
-        if (k==4 && ( i%1000==0 || i==100000 )  /*&& schema == 1*/)
-        {
-            IPrinter::printSeperatorLine(std::to_string(i+1).data(), '-');
-            for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k+1; j++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", betta[i+j][r][c]); } printf(" | ");  }
-                printf("%12.6f\n", gamma[r][0]); }
-//            if (i==0)
-//            {
-//                IPrinter::printSeperatorLine();
-//                for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k; j++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", pAlpha[j][r][c]); } printf("|"); } puts(""); }
-//            }
-        }
+//        if (k==4 && ( i%100==0 ||  i==end-1 )  /*&& schema == 1*/)
+//        {
+//            IPrinter::printSeperatorLine(std::to_string(i+1).data(), '-');
+//            for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k+1; j++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", betta[i+j][r][c]); } printf(" | ");  }
+//                printf("%12.6f\n", gamma[r][0]); }
+////            if (i==0)
+////            {
+////                IPrinter::printSeperatorLine();
+////                for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k; j++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", pAlpha[j][r][c]); } printf(" | "); } puts(""); }
+////            }
+//        }
 
 
         //////////////////////////////////////////////////////////////////////////
 
-        double norm1 = 0.0;
-        for (unsigned int i=1; i<size; i++)
-        {
-            norm1 += betta[i][0][0]*betta[i][0][0];
-        }
-        //norm1 += gamma[0][0]*gamma[0][0];
-        norm1 = sqrt(norm1);
+        //if (betta[i+1][0][0]>100000.0)
+//        {
+//        double norm1 = 0.0;
+//        for (unsigned int i=1; i<size; i++)
+//        {
+//            norm1 += betta[i][0][0]*betta[i][0][0];
+//        }
+//        //norm1 += gamma[0][0]*gamma[0][0];
+//        norm1 = sqrt(norm1);
 
-        for (unsigned int i=1; i<size; i++)
-        {
-            betta[i][0][0] /= norm1;
-        }
-        gamma[0][0] /= norm1;
+//        for (unsigned int i=1; i<size; i++)
+//        {
+//            betta[i][0][0] /= norm1;
+//        }
+//        gamma[0][0] /= norm1;
+//        }
 
         ////////////////////////////////////////////////////////////////////////////
 
-        if (k==4 && ( i%1000==0 || i==end-1 ) /*&& schema == 1*/)
+        if (k==4 /*&& ( i%100==0 || i==end-1 ) && schema == 1*/)
         {
             IPrinter::printSeperatorLine(std::to_string(i+1).data(), '-');
             for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k+1; j++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", betta[i+j][r][c]); } printf(" | ");  }
-                printf("%12.6f\n", gamma[r][0]); }
-//            if (i==0)
-//            {
-//                IPrinter::printSeperatorLine();
-//                for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k; j++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", pAlpha[j][r][c]); } printf("|"); } puts(""); }
-//            }
+                printf("%12.6f | %20.14f\n", gamma[r][0], betta[size-1][0][0]); }
+            if (i==0)
+            {
+                IPrinter::printSeperatorLine();
+                for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k; j++) { for (unsigned int c=0; c<M; c++) { printf("%20.14f ", pAlpha[j][r][c]); } printf("|"); } puts(""); }
+            }
         }
     }
 
@@ -781,6 +754,12 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
                 F[0*M+r][2*M+c] = betta[size-3][r][c];
                 F[0*M+r][3*M+c] = betta[size-2][r][c];
                 F[0*M+r][4*M+c] = betta[size-1][r][c];
+
+                printf("*************** %8d %20.14f \n", size-5, betta[size-5][0][0]);
+                printf("*************** %8d %20.14f \n", size-4, betta[size-4][0][0]);
+                printf("*************** %8d %20.14f \n", size-3, betta[size-3][0][0]);
+                printf("*************** %8d %20.14f \n", size-2, betta[size-2][0][0]);
+                printf("*************** %8d %20.14f \n", size-1, betta[size-1][0][0]);
 
                 //                F[0*M+r][0*M+c] = 0.0;
                 //                F[0*M+r][1*M+c] = betta[size-4][r][c];
