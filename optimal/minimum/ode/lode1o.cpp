@@ -480,7 +480,7 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
     if (k==4 /*&& schema == 1*/)
     {
         IPrinter::printSeperatorLine("0");
-        for (unsigned int r=0; r<M; r++) { for (unsigned int i=0; i<=k; i++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", betta[i][r][c]); } printf("|"); } puts(""); }
+        for (unsigned int r=0; r<M; r++) { for (unsigned int i=0; i<=k; i++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", betta[i][r][c]); } printf(" | "); } printf("%12.6f\n", gamma[r][0]); }
         IPrinter::printSeperatorLine();
     }
 
@@ -689,12 +689,28 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
         }
         gamma -= betta[i]*pAlpha[0];
 
+
+        if (k==4 && ( i%1000==0 || i==100000 )  /*&& schema == 1*/)
+        {
+            IPrinter::printSeperatorLine(std::to_string(i+1).data(), '-');
+            for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k+1; j++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", betta[i+j][r][c]); } printf(" | ");  }
+                printf("%12.6f\n", gamma[r][0]); }
+//            if (i==0)
+//            {
+//                IPrinter::printSeperatorLine();
+//                for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k; j++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", pAlpha[j][r][c]); } printf("|"); } puts(""); }
+//            }
+        }
+
+
+        //////////////////////////////////////////////////////////////////////////
+
         double norm1 = 0.0;
         for (unsigned int i=1; i<size; i++)
         {
             norm1 += betta[i][0][0]*betta[i][0][0];
         }
-//        norm1 += gamma[0][0]*gamma[0][0];
+        //norm1 += gamma[0][0]*gamma[0][0];
         norm1 = sqrt(norm1);
 
         for (unsigned int i=1; i<size; i++)
@@ -703,47 +719,18 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
         }
         gamma[0][0] /= norm1;
 
+        ////////////////////////////////////////////////////////////////////////////
 
-
-        //        if (k==4 /*&& schema == 1*/)
-        //        {
-        //            IPrinter::printSeperatorLine(std::to_string(i+1).data(), '*');
-        //            for (unsigned int r=0; r<M; r++)
-        //            {
-        //                printf("%12.6f %12.6f %12.6f |"
-        //                       "%12.6f %12.6f %12.6f |"
-        //                       "%12.6f %12.6f %12.6f |"
-        //                       "%12.6f %12.6f %12.6f |"
-        //                       "%12.6f %12.6f %12.6f\n",
-        //                       betta[i+1][r][0], betta[i+1][r][1], betta[i+1][r][2],
-        //                        betta[i+2][r][0], betta[i+2][r][1], betta[i+2][r][2],
-        //                        betta[i+3][r][0], betta[i+3][r][1], betta[i+3][r][2],
-        //                        betta[i+4][r][0], betta[i+4][r][1], betta[i+4][r][2],
-        //                        betta[i+5][r][0], betta[i+5][r][1], betta[i+5][r][2]);
-        //            }
-        //            IPrinter::printSeperatorLine();
-        //            for (unsigned int r=0; r<M; r++)
-        //            {
-        //                printf("%12.6f %12.6f %12.6f |"
-        //                       "%12.6f %12.6f %12.6f |"
-        //                       "%12.6f %12.6f %12.6f |"
-        //                       "%12.6f %12.6f %12.6f \n",
-        //                       pAlpha[1][r][0], pAlpha[1][r][1], pAlpha[1][r][2],
-        //                        pAlpha[2][r][0], pAlpha[2][r][1], pAlpha[2][r][2],
-        //                        pAlpha[3][r][0], pAlpha[3][r][1], pAlpha[3][r][2],
-        //                        pAlpha[4][r][0], pAlpha[4][r][1], pAlpha[4][r][2]);
-        //            }
-        //        }
-
-        if (k==4 && i%1000==0/*&& schema == 1*/)
+        if (k==4 && ( i%1000==0 || i==end-1 ) /*&& schema == 1*/)
         {
             IPrinter::printSeperatorLine(std::to_string(i+1).data(), '-');
-            for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k+1; j++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", betta[i+j][r][c]); } printf("|"); } puts(""); }
-            if (i==0)
-            {
-                IPrinter::printSeperatorLine();
-                for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k; j++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", pAlpha[j][r][c]); } printf("|"); } puts(""); }
-            }
+            for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k+1; j++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", betta[i+j][r][c]); } printf(" | ");  }
+                printf("%12.6f\n", gamma[r][0]); }
+//            if (i==0)
+//            {
+//                IPrinter::printSeperatorLine();
+//                for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k; j++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", pAlpha[j][r][c]); } printf("|"); } puts(""); }
+//            }
         }
     }
 
