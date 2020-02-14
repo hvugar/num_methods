@@ -659,6 +659,13 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
         }
         gamma = gamma - betta[i]*pAlpha[0];
 
+//        DoubleMatrix mx = betta[i+1]; mx.inverse();
+//        for (unsigned int j=i+1; j<=size-1; j++)
+//        {
+//            betta[j] = mx*betta[j];
+//        }
+//        gamma = mx*gamma;
+
 
 //        if (k==4 && ( i%100==0 ||  i==end-1 )  /*&& schema == 1*/)
 //        {
@@ -925,11 +932,21 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
 
         //    printf("***** %14.8f %14.8f %14.8f %14.8f %14.8f\n", xf[4], xf[3], xf[2], xf[1], xf[0]);
 
-        printf("***** %14.8f %14.8f %14.8f\n", xf[2], xf[1], xf[0]);
-        printf("***** %14.8f %14.8f %14.8f\n", xf[5], xf[4], xf[3]);
-        printf("***** %14.8f %14.8f %14.8f\n", xf[8], xf[7], xf[6]);
-        printf("***** %14.8f %14.8f %14.8f\n", xf[11], xf[10], xf[9]);
-        printf("***** %14.8f %14.8f %14.8f\n", xf[14], xf[13], xf[12]);
+        for (unsigned int i=0; i<k; i++)
+        {
+            printf("***** ");
+            for (unsigned int r=1; r<=M; r++)
+            {
+                printf("%14.8f ", xf[i*M+M-r]);
+            }
+            printf("\n");
+        }
+
+//        printf("***** %14.8f %14.8f %14.8f\n", xf[2], xf[1], xf[0]);
+//        printf("***** %14.8f %14.8f %14.8f\n", xf[5], xf[4], xf[3]);
+//        printf("***** %14.8f %14.8f %14.8f\n", xf[8], xf[7], xf[6]);
+//        printf("***** %14.8f %14.8f %14.8f\n", xf[11], xf[10], xf[9]);
+//        printf("***** %14.8f %14.8f %14.8f\n", xf[14], xf[13], xf[12]);
 
     }
 
