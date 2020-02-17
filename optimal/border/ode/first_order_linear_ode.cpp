@@ -2,7 +2,7 @@
 
 #define EXAMPLE_11
 
-#define _N 1000 //1000
+#define _N 100 //1000
 #define _H 0.01
 
 void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
@@ -53,6 +53,7 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
     IPrinter::printSeperatorLine();
 
     printf("***** %14.8f %14.8f %14.8f %14.8f %14.8f\n", nl.x((N-4)*h, 1), nl.x((N-3)*h, 1), nl.x((N-2)*h, 1), nl.x((N-1)*h, 1), nl.x((N)*h, 1));
+    printf("***** %14.8f %14.8f %14.8f %14.8f %14.8f\n", nl.x((0)*h, 1),   nl.x((1)*h, 1),   nl.x((2)*h, 1),   nl.x((3)*h, 1),   nl.x((4)*h, 1));
 
 //    puts("===== transferOfCondition =====");
 //    x.clear();
@@ -68,7 +69,7 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
 
     puts("===== transferOfConditionN 4 0 =====");
     x.clear();
-    nl.transferOfConditionN(C, d, x, 4, 2);
+    nl.transferOfConditionS(C, d, x, 4, 1);
     for (unsigned int m=0; m<M; m++) { for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
     IPrinter::printSeperatorLine();
 
@@ -99,10 +100,10 @@ double FirstOrderLinearODEEx1::A(const PointNodeODE &node, unsigned int r, unsig
     C_UNUSED(c);
 
 #ifdef EXAMPLE_11
-    return 1.0;
+    return -1.0;
 #endif
 #ifdef EXAMPLE_12
-    return 1.0;
+    return -1.0;
 #endif
 #ifdef EXAMPLE_31
     return 1.0;

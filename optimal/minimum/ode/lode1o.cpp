@@ -659,59 +659,59 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
         }
         gamma = gamma - betta[i]*pAlpha[0];
 
-//        DoubleMatrix mx = betta[i+1]; mx.inverse();
-//        for (unsigned int j=i+1; j<=size-1; j++)
-//        {
-//            betta[j] = mx*betta[j];
-//        }
-//        gamma = mx*gamma;
+        //        DoubleMatrix mx = betta[i+1]; mx.inverse();
+        //        for (unsigned int j=i+1; j<=size-1; j++)
+        //        {
+        //            betta[j] = mx*betta[j];
+        //        }
+        //        gamma = mx*gamma;
 
 
-//        if (k==4 && ( i%100==0 ||  i==end-1 )  /*&& schema == 1*/)
-//        {
-//            IPrinter::printSeperatorLine(std::to_string(i+1).data(), '-');
-//            for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k+1; j++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", betta[i+j][r][c]); } printf(" | ");  }
-//                printf("%12.6f\n", gamma[r][0]); }
-////            if (i==0)
-////            {
-////                IPrinter::printSeperatorLine();
-////                for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k; j++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", pAlpha[j][r][c]); } printf(" | "); } puts(""); }
-////            }
-//        }
+        //        if (k==4 && ( i%100==0 ||  i==end-1 )  /*&& schema == 1*/)
+        //        {
+        //            IPrinter::printSeperatorLine(std::to_string(i+1).data(), '-');
+        //            for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k+1; j++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", betta[i+j][r][c]); } printf(" | ");  }
+        //                printf("%12.6f\n", gamma[r][0]); }
+        ////            if (i==0)
+        ////            {
+        ////                IPrinter::printSeperatorLine();
+        ////                for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k; j++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", pAlpha[j][r][c]); } printf(" | "); } puts(""); }
+        ////            }
+        //        }
 
 
         //////////////////////////////////////////////////////////////////////////
 
-        //if (betta[i+1][0][0]>100000.0)
-//        {
-//        double norm1 = 0.0;
-//        for (unsigned int i=1; i<size; i++)
-//        {
-//            norm1 += betta[i][0][0]*betta[i][0][0];
-//        }
-//        //norm1 += gamma[0][0]*gamma[0][0];
-//        norm1 = sqrt(norm1);
+        if (betta[i+1][0][0]>100000.0)
+        {
+            double norm1 = 0.0;
+            for (unsigned int i=1; i<size; i++)
+            {
+                norm1 += betta[i][0][0]*betta[i][0][0];
+            }
+            //norm1 += gamma[0][0]*gamma[0][0];
+            norm1 = sqrt(norm1);
 
-//        for (unsigned int i=1; i<size; i++)
-//        {
-//            betta[i][0][0] /= norm1;
-//        }
-//        gamma[0][0] /= norm1;
-//        }
+            for (unsigned int i=1; i<size; i++)
+            {
+                betta[i][0][0] /= norm1;
+            }
+            gamma[0][0] /= norm1;
+        }
 
         ////////////////////////////////////////////////////////////////////////////
 
-        if (k==4 /*&& ( i%100==0 || i==end-1 ) && schema == 1*/)
-        {
-            IPrinter::printSeperatorLine(std::to_string(i+1).data(), '-');
-            for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k+1; j++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", betta[i+j][r][c]); } printf(" | ");  }
-                printf("%12.6f | %20.14f\n", gamma[r][0], betta[size-1][0][0]); }
-            if (i==0)
-            {
-                IPrinter::printSeperatorLine();
-                for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k; j++) { for (unsigned int c=0; c<M; c++) { printf("%20.14f ", pAlpha[j][r][c]); } printf("|"); } puts(""); }
-            }
-        }
+        //        if (k==4 /*&& ( i%100==0 || i==end-1 ) && schema == 1*/)
+        //        {
+        //            IPrinter::printSeperatorLine(std::to_string(i+1).data(), '-');
+        //            for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k+1; j++) { for (unsigned int c=0; c<M; c++) { printf("%12.6f ", betta[i+j][r][c]); } printf(" | ");  }
+        //                printf("%12.6f | %20.14f\n", gamma[r][0], betta[size-1][0][0]); }
+        //            if (i==0)
+        //            {
+        //                IPrinter::printSeperatorLine();
+        //                for (unsigned int r=0; r<M; r++) { for (unsigned int j=1; j<=k; j++) { for (unsigned int c=0; c<M; c++) { printf("%20.14f ", pAlpha[j][r][c]); } printf("|"); } puts(""); }
+        //            }
+        //        }
     }
 
     DoubleMatrix F((k+1)*M, (k+1)*M);
@@ -942,11 +942,11 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
             printf("\n");
         }
 
-//        printf("***** %14.8f %14.8f %14.8f\n", xf[2], xf[1], xf[0]);
-//        printf("***** %14.8f %14.8f %14.8f\n", xf[5], xf[4], xf[3]);
-//        printf("***** %14.8f %14.8f %14.8f\n", xf[8], xf[7], xf[6]);
-//        printf("***** %14.8f %14.8f %14.8f\n", xf[11], xf[10], xf[9]);
-//        printf("***** %14.8f %14.8f %14.8f\n", xf[14], xf[13], xf[12]);
+        //        printf("***** %14.8f %14.8f %14.8f\n", xf[2], xf[1], xf[0]);
+        //        printf("***** %14.8f %14.8f %14.8f\n", xf[5], xf[4], xf[3]);
+        //        printf("***** %14.8f %14.8f %14.8f\n", xf[8], xf[7], xf[6]);
+        //        printf("***** %14.8f %14.8f %14.8f\n", xf[11], xf[10], xf[9]);
+        //        printf("***** %14.8f %14.8f %14.8f\n", xf[14], xf[13], xf[12]);
 
     }
 
@@ -1284,6 +1284,560 @@ void FirstOrderLinearODE::transferOfConditionM(const std::vector<NonLocalConditi
     g.calculate(X);
 
     for (unsigned int i=0; i<size; i++) x.push_back(X.mid(i*M, i*M+M));
+}
+
+void FirstOrderLinearODE::transferOfConditionS(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k, unsigned int schema) const
+{
+    if (co.size() < 2) throw ExceptionODE(1);
+
+    for (unsigned int i=0; i<co.size(); i++)
+    {
+        const DoubleMatrix &m = co[i].m;
+
+        if (!m.squareMatrix()) throw ExceptionODE(2);
+
+        if (m.rows() != count()) throw ExceptionODE(3);
+
+        if (d.length() != count()) throw ExceptionODE(4);
+    }
+
+    const int min = dimension().min();
+    const int max = dimension().max();
+    const unsigned int size = static_cast<unsigned int>( dimension().size() );
+    const unsigned int end = static_cast<unsigned int>( size-(k+1) );
+    const double h = dimension().step();
+    const unsigned int M = count();
+
+    std::vector<NonLocalCondition> C = co;
+    //discritize(co, C);
+
+    double **betta = static_cast<double**>(malloc(sizeof(double*)*M));
+    double *gamma = static_cast<double*>(malloc(sizeof(double)*M));
+    for (unsigned int r=0; r<M; r++)
+    {
+        betta[r] = static_cast<double*>(malloc(sizeof(double)*size));
+        for (unsigned int i=0; i<size; i++) betta[r][i] = 0.0;
+        gamma[r] = d[r];
+    }
+    for (unsigned int s=0; s<C.size(); s++)
+    {
+        unsigned int i = static_cast<unsigned int>(C[s].n.i);
+        for (unsigned int r=0; r<M; r++)
+        {
+            betta[r][i] += C[s].m[r][0];
+        }
+    }
+
+    double **alpha = static_cast<double**>(malloc(sizeof(double*)*((k+1)*M)));
+    for (unsigned int i=0; i<(k+1)*M; i++) alpha[i] = static_cast<double*>(malloc(sizeof(double)*(size*M)));
+    double *zetta = static_cast<double*>(malloc(sizeof(double)*(size*M)));
+
+    if (k==4)
+    {
+        if (schema == 1)
+        {
+            for (unsigned int i=0; i<size-5; i++)
+            {
+                const unsigned int i0 = i+0; PointNodeODE node0(i0*h, static_cast<int>(i0));
+                const unsigned int i1 = i+1; PointNodeODE node1(i1*h, static_cast<int>(i1));
+                const unsigned int i2 = i+2; PointNodeODE node2(i2*h, static_cast<int>(i2));
+                const unsigned int i3 = i+3; PointNodeODE node3(i3*h, static_cast<int>(i3));
+                const unsigned int i4 = i+4; PointNodeODE node4(i4*h, static_cast<int>(i4));
+
+                //            alpha[0][i] = 1.0;
+                //            alpha[1][i] = (+3.0 - 13.2*h*A(node1, 1, 1))/(-5.3);
+                //            alpha[2][i] = (+1.8 + 12.0*h*A(node2, 1, 1))/(-5.3);
+                //            alpha[3][i] = (-4.6 - 12.0*h*A(node3, 1, 1))/(-5.3);
+                //            alpha[4][i] = (+5.1)/(-5.3);
+                //            zetta[i] = (13.2*h*B(node1, 1) - 12.0*h*B(node2, 1) + 12.0*h*B(node3, 1))/(-5.3);
+
+                //            alpha[0][i] = 1.0;
+                //            alpha[1][i] = -0.56603773584906 + 2.49056603773585*h*A(node1, 1, 1);
+                //            alpha[2][i] = -0.33962264150943 - 2.26415094339623*h*A(node2, 1, 1);
+                //            alpha[3][i] = +0.86792452830189 + 2.26415094339623*h*A(node3, 1, 1);
+                //            alpha[4][i] = -0.96226415094340;
+                //            zetta[i]    = -2.49056603773585*h*B(node1, 1)
+                //                         + 2.26415094339623*h*B(node2, 1)
+                //                         - 2.26415094339623*h*B(node3, 1);
+
+
+                //            alpha[0][i] = 1.0;
+                //            alpha[1][i] = (+4.0 - 12.0*h*A(node1, 1, 1))/(-5.0);
+                //            alpha[2][i] = (+0.0 + 12.0*h*A(node2, 1, 1))/(-5.0);
+                //            alpha[3][i] = (-4.0 - 12.0*h*A(node3, 1, 1))/(-5.0);
+                //            alpha[4][i] = (+5.0)/(-5.0);
+                //            zetta[i] = (12.0*h*B(node1, 1) - 12.0*h*B(node2, 1) + 12.0*h*B(node3, 1))/(-5.0);
+
+                //                alpha[0][i] = +1.0;
+                //                alpha[1][i] = -0.8 + 2.4*h*A(node1, 1, 1);
+                //                alpha[2][i] = +0.0 - 2.4*h*A(node2, 1, 1);
+                //                alpha[3][i] = +0.8 + 2.4*h*A(node3, 1, 1);
+                //                alpha[4][i] = -1.0;
+                //                zetta[i] = -2.4*h*B(node1, 1) + 2.4*h*B(node2, 1) - 2.4*h*B(node3, 1);
+
+                alpha[0][i] = +1.0;
+                alpha[1][i] = +0.8 - 2.4*h*A(node1, 1, 1);
+                alpha[2][i] = +0.0 + 2.4*h*A(node2, 1, 1);
+                alpha[3][i] = -0.8 - 2.4*h*A(node3, 1, 1);
+                alpha[4][i] = +1.0;
+                zetta[i] = -2.4*h*B(node1, 1) + 2.4*h*B(node2, 1) - 2.4*h*B(node3, 1);
+            }
+
+            for (unsigned int i=0; i<size-5; i++)
+            {
+                //            if (i>99000)
+                //            {
+                //printf("%4d | %25.14f %25.14f %25.14f %25.14f %25.14f | %25.14f\n", i, alpha[0][i], alpha[1][i], alpha[2][i], alpha[3][i], alpha[4][i], zetta[i]);
+                //printf("%4d | %25.14f %25.14f %25.14f %25.14f | %25.14f\n", i, betta[0][i], betta[0][i+1], betta[0][i+2], betta[0][i+3], gamma[0]);
+                //            }
+
+                betta[0][i+1] += betta[0][i]*alpha[1][i];
+                betta[0][i+2] += betta[0][i]*alpha[2][i];
+                betta[0][i+3] += betta[0][i]*alpha[3][i];
+                betta[0][i+4] += betta[0][i]*alpha[4][i];
+                gamma[0]      -= betta[0][i]*zetta[i];
+
+                //if (fabs(betta[0][i+1])>10.0)
+                //                {
+                //                    betta[0][i+2] /= betta[0][i+1];
+                //                    betta[0][i+3] /= betta[0][i+1];
+                //                    betta[0][i+4] /= betta[0][i+1];
+                //                    gamma[0]      /= betta[0][i+1];
+                //                    betta[0][size-1] /= betta[0][i+1];
+                //                    betta[0][i+1] /= betta[0][i+1];
+                //                }
+            }
+
+            //printf("%4d | %25.14f %25.14f %25.14f %25.14f %25.14f | %25.14f\n", size-5, betta[0][size-5], betta[0][size-4], betta[0][size-3], betta[0][size-2], betta[0][size-1], gamma[0]);
+            //printf("*********  %20.14f %20.14f\n", betta[0][size-5]*(0.96)*(0.96) + betta[0][size-4]*(0.97)*(0.97) + betta[0][size-3]*(0.98)*(0.98) + betta[0][size-2]*(0.99)*(0.99)
+            //                + betta[0][size-1]*(1.00)*(1.00), gamma[0]);
+
+            double t4 = (size-5)*h; PointNodeODE node4(t4, static_cast<int>((size-5)));
+            double t3 = (size-4)*h; PointNodeODE node3(t3, static_cast<int>((size-4)));
+            double t2 = (size-3)*h; PointNodeODE node2(t2, static_cast<int>((size-3)));
+            double t1 = (size-2)*h; PointNodeODE node1(t1, static_cast<int>((size-2)));
+            double t0 = (size-1)*h; PointNodeODE node0(t0, static_cast<int>((size-1)));
+
+            DoubleMatrix F(5, 5);
+            DoubleVector f(5);
+
+            F[0][0] = betta[0][size-5];
+            F[0][1] = betta[0][size-4];
+            F[0][2] = betta[0][size-3];
+            F[0][3] = betta[0][size-2];
+            F[0][4] = betta[0][size-1];
+
+            //        F[0][0] = -25.0 - 12.0*h*A(node4, 1, 1);
+            //        F[0][1] = +48.0;
+            //        F[0][2] = -36.0;
+            //        F[0][3] = +16.0;
+            //        F[0][4] = -3.0;
+
+            F[1][0] = -3.0;
+            F[1][1] = -10.0 - 12.0*h*A(node3, 1, 1);
+            F[1][2] = +18.0;
+            F[1][3] = -6.0;
+            F[1][4] = +1.0;
+
+            F[2][0] = +1.0;
+            F[2][1] = -8.0;
+            F[2][2] = +0.0 - 12.0*h*A(node2, 1, 1);
+            F[2][3] = +8.0;
+            F[2][4] = -1.0;
+
+            F[3][0] = -1.0;
+            F[3][1] = +6.0;
+            F[3][2] = -18.0;
+            F[3][3] = +10.0 - 12.0*h*A(node1, 1, 1);
+            F[3][4] = +3.0;
+
+            F[4][0] = +3.0;
+            F[4][1] = -16.0;
+            F[4][2] = +36.0;
+            F[4][3] = -48.0;
+            F[4][4] = +25.0 - 12.0*h*A(node0, 1, 1);
+
+
+            f[0] = gamma[0];
+            //        f[0] = +12.0*h*B(node4, 1);
+            f[1] = +12.0*h*B(node3, 1);
+            f[2] = +12.0*h*B(node2, 1);
+            f[3] = +12.0*h*B(node1, 1);
+            f[4] = +12.0*h*B(node0, 1);
+
+            IPrinter::printSeperatorLine();
+            IPrinter::print(F, F.rows(), F.cols(), 12, 6);
+            IPrinter::printSeperatorLine();
+
+            DoubleVector xf((k+1)*M);
+            LinearEquation::GaussianElimination(F, f, xf);
+
+            //    double a = 0.53582679*betta[size-5][0][0]+0.72896863*betta[size-4][0][0]+0.87630668*betta[size-3][0][0]+0.96858316*betta[size-2][0][0]+1.00000000*betta[size-1][0][0];
+            //    double c =      xf[0]*betta[size-5][0][0]+     xf[1]*betta[size-4][0][0]+     xf[2]*betta[size-3][0][0]+     xf[3]*betta[size-2][0][0]+     xf[4]*betta[size-1][0][0];
+            //    double b = gamma[0][0];
+            //    printf("----- %14.8f %14.8f %14.8f\n", a, c, b);
+            //    printf("***** %14.8f %14.8f %14.8f %14.8f %14.8f\n", xf[4], xf[3], xf[2], xf[1], xf[0]);
+
+
+            F.clear();
+            f.clear();
+
+            for (unsigned int i=0; i<=k; i++)
+            {
+                printf("***** ");
+                for (unsigned int r=1; r<=M; r++)
+                {
+                    printf("%4d %14.8f ", i*M+M-r, xf[i*M+M-r]);
+                }
+                printf("\n");
+            }
+
+            x.clear();
+            x.resize(size); for (unsigned int n=0; n<size; n++) x[n].resize(M);
+
+            unsigned int s = xf.length()-M;
+            unsigned int e = xf.length()-1;
+
+            for (unsigned int n=size-1; n>=size-k-1; n--)
+            {
+                x[n] = xf.mid(s, e);
+                s -= M;
+                e -= M;
+            }
+            xf.clear();
+
+            if (k==4)
+            {
+                for (unsigned int i=size-(k+1); i!=0; i--)
+                {
+                    x[i-1][0] = alpha[1][i-1]*x[i+0][0] + alpha[2][i-1]*x[i+1][0] + alpha[3][i-1]*x[i+2][0] + alpha[4][i-1]*x[i+3][0] + zetta[i-1];
+
+                    printf("************************  %4d %14.8f \n", i-1, x[i-1][0]);
+                }
+            }
+
+        }
+
+        if (schema == 11)
+        {
+            for (unsigned int i=0; i<size-5; i++)
+            {
+                const unsigned int i0 = i+0; PointNodeODE node0(i0*h, static_cast<int>(i0));
+                const unsigned int i1 = i+1; PointNodeODE node1(i1*h, static_cast<int>(i1));
+                const unsigned int i2 = i+2; PointNodeODE node2(i2*h, static_cast<int>(i2));
+                const unsigned int i3 = i+3; PointNodeODE node3(i3*h, static_cast<int>(i3));
+                const unsigned int i4 = i+4; PointNodeODE node4(i4*h, static_cast<int>(i4));
+
+                for (unsigned int r=0; r<M; r++)
+                {
+                    for (unsigned int c=0; c<M; c++)
+                    {
+                        alpha[0*M+c][i*M+r] = +0.0;
+                        alpha[1*M+c][i*M+r] = -2.4*h*A(node1, r+1, c+1);
+                        alpha[2*M+c][i*M+r] = +2.4*h*A(node2, r+1, c+1);
+                        alpha[3*M+c][i*M+r] = -2.4*h*A(node3, r+1, c+1);
+                        alpha[4*M+c][i*M+r] = +0.0;
+                    }
+                    alpha[0*M+r][i*M+r] += +1.0;
+                    alpha[1*M+r][i*M+r] += +0.8;
+                    alpha[2*M+r][i*M+r] += +0.0;
+                    alpha[3*M+r][i*M+r] += -0.8;
+                    alpha[4*M+r][i*M+r] += +1.0;
+                           zetta[i*M+r] = -2.4*h*B(node1, r+1) + 2.4*h*B(node2, r+1) - 2.4*h*B(node3, r+1);
+                }
+
+                betta[0][i+1] += betta[0][i]*alpha[1][i];
+                betta[0][i+2] += betta[0][i]*alpha[2][i];
+                betta[0][i+3] += betta[0][i]*alpha[3][i];
+                betta[0][i+4] += betta[0][i]*alpha[4][i];
+                gamma[0]      -= betta[0][i]*zetta[i];
+            }
+
+            for (unsigned int i=0; i<size-5; i++)
+            {
+                //            if (i>99000)
+                //            {
+                //printf("%4d | %25.14f %25.14f %25.14f %25.14f %25.14f | %25.14f\n", i, alpha[0][i], alpha[1][i], alpha[2][i], alpha[3][i], alpha[4][i], zetta[i]);
+                //printf("%4d | %25.14f %25.14f %25.14f %25.14f | %25.14f\n", i, betta[0][i], betta[0][i+1], betta[0][i+2], betta[0][i+3], gamma[0]);
+                //            }
+
+                betta[0][i+1] += betta[0][i]*alpha[1][i];
+                betta[0][i+2] += betta[0][i]*alpha[2][i];
+                betta[0][i+3] += betta[0][i]*alpha[3][i];
+                betta[0][i+4] += betta[0][i]*alpha[4][i];
+                gamma[0]      -= betta[0][i]*zetta[i];
+
+                //if (fabs(betta[0][i+1])>10.0)
+                //                {
+                //                    betta[0][i+2] /= betta[0][i+1];
+                //                    betta[0][i+3] /= betta[0][i+1];
+                //                    betta[0][i+4] /= betta[0][i+1];
+                //                    gamma[0]      /= betta[0][i+1];
+                //                    betta[0][size-1] /= betta[0][i+1];
+                //                    betta[0][i+1] /= betta[0][i+1];
+                //                }
+            }
+
+            //printf("%4d | %25.14f %25.14f %25.14f %25.14f %25.14f | %25.14f\n", size-5, betta[0][size-5], betta[0][size-4], betta[0][size-3], betta[0][size-2], betta[0][size-1], gamma[0]);
+            //printf("*********  %20.14f %20.14f\n", betta[0][size-5]*(0.96)*(0.96) + betta[0][size-4]*(0.97)*(0.97) + betta[0][size-3]*(0.98)*(0.98) + betta[0][size-2]*(0.99)*(0.99)
+            //                + betta[0][size-1]*(1.00)*(1.00), gamma[0]);
+
+            double t4 = (size-5)*h; PointNodeODE node4(t4, static_cast<int>((size-5)));
+            double t3 = (size-4)*h; PointNodeODE node3(t3, static_cast<int>((size-4)));
+            double t2 = (size-3)*h; PointNodeODE node2(t2, static_cast<int>((size-3)));
+            double t1 = (size-2)*h; PointNodeODE node1(t1, static_cast<int>((size-2)));
+            double t0 = (size-1)*h; PointNodeODE node0(t0, static_cast<int>((size-1)));
+
+            DoubleMatrix F(5, 5);
+            DoubleVector f(5);
+
+            F[0][0] = betta[0][size-5];
+            F[0][1] = betta[0][size-4];
+            F[0][2] = betta[0][size-3];
+            F[0][3] = betta[0][size-2];
+            F[0][4] = betta[0][size-1];
+
+            //        F[0][0] = -25.0 - 12.0*h*A(node4, 1, 1);
+            //        F[0][1] = +48.0;
+            //        F[0][2] = -36.0;
+            //        F[0][3] = +16.0;
+            //        F[0][4] = -3.0;
+
+            F[1][0] = -3.0;
+            F[1][1] = -10.0 - 12.0*h*A(node3, 1, 1);
+            F[1][2] = +18.0;
+            F[1][3] = -6.0;
+            F[1][4] = +1.0;
+
+            F[2][0] = +1.0;
+            F[2][1] = -8.0;
+            F[2][2] = +0.0 - 12.0*h*A(node2, 1, 1);
+            F[2][3] = +8.0;
+            F[2][4] = -1.0;
+
+            F[3][0] = -1.0;
+            F[3][1] = +6.0;
+            F[3][2] = -18.0;
+            F[3][3] = +10.0 - 12.0*h*A(node1, 1, 1);
+            F[3][4] = +3.0;
+
+            F[4][0] = +3.0;
+            F[4][1] = -16.0;
+            F[4][2] = +36.0;
+            F[4][3] = -48.0;
+            F[4][4] = +25.0 - 12.0*h*A(node0, 1, 1);
+
+
+            f[0] = gamma[0];
+            //        f[0] = +12.0*h*B(node4, 1);
+            f[1] = +12.0*h*B(node3, 1);
+            f[2] = +12.0*h*B(node2, 1);
+            f[3] = +12.0*h*B(node1, 1);
+            f[4] = +12.0*h*B(node0, 1);
+
+            IPrinter::printSeperatorLine();
+            IPrinter::print(F, F.rows(), F.cols(), 12, 6);
+            IPrinter::printSeperatorLine();
+
+            DoubleVector xf((k+1)*M);
+            LinearEquation::GaussianElimination(F, f, xf);
+
+            //    double a = 0.53582679*betta[size-5][0][0]+0.72896863*betta[size-4][0][0]+0.87630668*betta[size-3][0][0]+0.96858316*betta[size-2][0][0]+1.00000000*betta[size-1][0][0];
+            //    double c =      xf[0]*betta[size-5][0][0]+     xf[1]*betta[size-4][0][0]+     xf[2]*betta[size-3][0][0]+     xf[3]*betta[size-2][0][0]+     xf[4]*betta[size-1][0][0];
+            //    double b = gamma[0][0];
+            //    printf("----- %14.8f %14.8f %14.8f\n", a, c, b);
+            //    printf("***** %14.8f %14.8f %14.8f %14.8f %14.8f\n", xf[4], xf[3], xf[2], xf[1], xf[0]);
+
+
+            F.clear();
+            f.clear();
+
+            for (unsigned int i=0; i<=k; i++)
+            {
+                printf("***** ");
+                for (unsigned int r=1; r<=M; r++)
+                {
+                    printf("%4d %14.8f ", i*M+M-r, xf[i*M+M-r]);
+                }
+                printf("\n");
+            }
+
+            x.clear();
+            x.resize(size); for (unsigned int n=0; n<size; n++) x[n].resize(M);
+
+            unsigned int s = xf.length()-M;
+            unsigned int e = xf.length()-1;
+
+            for (unsigned int n=size-1; n>=size-k-1; n--)
+            {
+                x[n] = xf.mid(s, e);
+                s -= M;
+                e -= M;
+            }
+            xf.clear();
+
+            if (k==4)
+            {
+                for (unsigned int i=size-(k+1); i!=0; i--)
+                {
+                    x[i-1][0] = alpha[1][i-1]*x[i+0][0] + alpha[2][i-1]*x[i+1][0] + alpha[3][i-1]*x[i+2][0] + alpha[4][i-1]*x[i+3][0] + zetta[i-1];
+
+                    printf("************************  %4d %14.8f \n", i-1, x[i-1][0]);
+                }
+            }
+
+        }
+
+        if (schema == 2)
+        {
+            for (unsigned int i=size-1; i>=5; i--)
+            {
+                const unsigned int i0 = i+0; PointNodeODE node0(i0*h, static_cast<int>(i0));
+                const unsigned int i1 = i-1; PointNodeODE node1(i1*h, static_cast<int>(i1));
+                const unsigned int i2 = i-2; PointNodeODE node2(i2*h, static_cast<int>(i2));
+                const unsigned int i3 = i-3; PointNodeODE node3(i3*h, static_cast<int>(i3));
+                const unsigned int i4 = i-4; PointNodeODE node4(i4*h, static_cast<int>(i4));
+
+                alpha[0][i] = +1.0;
+                alpha[1][i] = +0.8 + 2.4*h*A(node1, 1, 1);
+                alpha[2][i] = +0.0 - 2.4*h*A(node2, 1, 1);
+                alpha[3][i] = -0.8 + 2.4*h*A(node3, 1, 1);
+                alpha[4][i] = +1.0;
+                zetta[i] = +2.4*h*B(node1, 1) - 2.4*h*B(node2, 1) + 2.4*h*B(node3, 1);
+            }
+
+            for (unsigned int i=size-1; i>=5; i--)
+            {
+                //            if (i>99000)
+                //            {
+                //printf("%4d | %25.14f %25.14f %25.14f %25.14f %25.14f | %25.14f\n", i, alpha[4][i], alpha[3][i], alpha[2][i], alpha[1][i], alpha[0][i], zetta[i]);
+                //printf("%4d | %25.14f %25.14f %25.14f %25.14f|%25.14f\n", i, betta[0][i-3], betta[0][i-2], betta[0][i-1], betta[0][i-0], gamma[0]);
+                //            }
+
+                betta[0][i-1] += betta[0][i]*alpha[1][i];
+                betta[0][i-2] += betta[0][i]*alpha[2][i];
+                betta[0][i-3] += betta[0][i]*alpha[3][i];
+                betta[0][i-4] += betta[0][i]*alpha[4][i];
+                gamma[0]      -= betta[0][i]*zetta[i];
+
+                if (fabs(betta[0][i-1])>1000.0)
+                {
+                    betta[0][i-2] /= betta[0][i-1];
+                    betta[0][i-3] /= betta[0][i-1];
+                    betta[0][i-4] /= betta[0][i-1];
+                    gamma[0]      /= betta[0][i-1];
+                    betta[0][0] /= betta[0][i-1];
+                    betta[0][i-1] /= betta[0][i-1];
+                }
+            }
+
+            double t4 = (0)*h; PointNodeODE node4(t4, static_cast<int>((0)));
+            double t3 = (1)*h; PointNodeODE node3(t3, static_cast<int>((1)));
+            double t2 = (2)*h; PointNodeODE node2(t2, static_cast<int>((2)));
+            double t1 = (3)*h; PointNodeODE node1(t1, static_cast<int>((3)));
+            double t0 = (4)*h; PointNodeODE node0(t0, static_cast<int>((4)));
+
+            DoubleMatrix F(5, 5);
+            DoubleVector f(5);
+
+            F[0][0] = betta[0][0];
+            F[0][1] = betta[0][1];
+            F[0][2] = betta[0][2];
+            F[0][3] = betta[0][3];
+            F[0][4] = betta[0][4];
+
+            //F[0][0] = -25.0 - 12.0*h*A(node4, 1, 1);
+            //F[0][1] = +48.0;
+            //F[0][2] = -36.0;
+            //F[0][3] = +16.0;
+            //F[0][4] = -3.0;
+
+            F[1][0] = -3.0;
+            F[1][1] = -10.0 - 12.0*h*A(node3, 1, 1);
+            F[1][2] = +18.0;
+            F[1][3] = -6.0;
+            F[1][4] = +1.0;
+
+            F[2][0] = +1.0;
+            F[2][1] = -8.0;
+            F[2][2] = +0.0 - 12.0*h*A(node2, 1, 1);
+            F[2][3] = +8.0;
+            F[2][4] = -1.0;
+
+            F[3][0] = -1.0;
+            F[3][1] = +6.0;
+            F[3][2] = -18.0;
+            F[3][3] = +10.0 - 12.0*h*A(node1, 1, 1);
+            F[3][4] = +3.0;
+
+            F[4][0] = +3.0;
+            F[4][1] = -16.0;
+            F[4][2] = +36.0;
+            F[4][3] = -48.0;
+            F[4][4] = +25.0 - 12.0*h*A(node0, 1, 1);
+
+            f[0] = gamma[0];
+            //f[0] = +12.0*h*B(node4, 1);
+            f[1] = +12.0*h*B(node3, 1);
+            f[2] = +12.0*h*B(node2, 1);
+            f[3] = +12.0*h*B(node1, 1);
+            f[4] = +12.0*h*B(node0, 1);
+
+            IPrinter::printSeperatorLine();
+            IPrinter::print(F, F.rows(), F.cols(), 12, 6);
+            IPrinter::printSeperatorLine();
+
+            DoubleVector xf((k+1)*M);
+            LinearEquation::GaussianElimination(F, f, xf);
+
+            //    double a = 0.53582679*betta[size-5][0][0]+0.72896863*betta[size-4][0][0]+0.87630668*betta[size-3][0][0]+0.96858316*betta[size-2][0][0]+1.00000000*betta[size-1][0][0];
+            //    double c =      xf[0]*betta[size-5][0][0]+     xf[1]*betta[size-4][0][0]+     xf[2]*betta[size-3][0][0]+     xf[3]*betta[size-2][0][0]+     xf[4]*betta[size-1][0][0];
+            //    double b = gamma[0][0];
+            //    printf("----- %14.8f %14.8f %14.8f\n", a, c, b);
+            //    printf("***** %14.8f %14.8f %14.8f %14.8f %14.8f\n", xf[4], xf[3], xf[2], xf[1], xf[0]);
+
+
+            F.clear();
+            f.clear();
+
+            for (unsigned int i=0; i<=k; i++)
+            {
+                printf("***** ");
+                for (unsigned int r=1; r<=M; r++)
+                {
+                    printf("%4d %14.8f ", i*M+M-r, xf[i*M+M-r]);
+                }
+                printf("\n");
+            }
+
+            x.clear();
+            x.resize(size); for (unsigned int n=0; n<size; n++) x[n].resize(M);
+
+            unsigned int s = xf.length()-M;
+            unsigned int e = xf.length()-1;
+
+            for (unsigned int n=size-1; n>=size-k-1; n--)
+            {
+                x[n] = xf.mid(s, e);
+                s -= M;
+                e -= M;
+            }
+            xf.clear();
+
+            if (k==4)
+            {
+                for (unsigned int i=5; i!=size-5; i++)
+                {
+                    x[i][0] = alpha[1][i]*x[i-1][0]
+                            + alpha[2][i]*x[i-2][0]
+                            + alpha[3][i]*x[i-4][0]
+                            + alpha[4][i]*x[i-4][0] + zetta[i];
+                    printf("************************  %4d %14.8f \n", i, x[i][0]);
+                }
+            }
+
+        }
+    }
 }
 
 void FirstOrderLinearODE::solveInitialValueProblem(DoubleVector &rv) const
