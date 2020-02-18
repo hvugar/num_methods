@@ -1520,6 +1520,39 @@ void FirstOrderLinearODE::transferOfConditionS(const std::vector<NonLocalConditi
 
         if (schema == 11)
         {
+            unsigned int sizeM = size*M;
+            unsigned int sizeK = (k+1)*M;
+            double **alpha1 = static_cast<double**>( malloc(sizeof(double*) * sizeM ) );
+            for (unsigned int i=0; i<sizeM; i++) alpha1[i] = static_cast<double*>( malloc(sizeof(double)* sizeK) );
+            double *zetta1 = static_cast<double*>( malloc(sizeof(double) * sizeM) );
+
+            double **betta1 = static_cast<double**>(malloc(sizeof(double*)*M));
+            double *gamma1 = static_cast<double*>(malloc(sizeof(double)*M));
+
+            for (unsigned int r=0; r<M; r++)
+            {
+                betta1[r] = static_cast<double*>(malloc(sizeof(double) * sizeM ));
+                for (unsigned int i=0; i<sizeM; i++) betta1[r][i] = 0.0;
+                gamma1[r] = d[r];
+            }
+
+            for (unsigned int s=0; s<C.size(); s++)
+            {
+                unsigned int i = static_cast<unsigned int>(C[s].n.i);
+                for (unsigned int r=0; r<M; r++)
+                {
+                    for (unsigned int c=0; c<M; c++)
+                    {
+                        betta1[r][i*M+c] += C[s].m[r][c];
+                    }
+                }
+            }
+
+            //            printf("%20.14f | %20.14f\n", betta1[0][0], betta1[0][100]);
+            //            printf("%20.14f %20.14f %20.14f | %20.14f %20.14f %20.14f\n", betta1[0][0], betta1[0][1], betta1[0][2], betta1[0][300], betta1[0][301], betta1[0][302]);
+            //            printf("%20.14f %20.14f %20.14f | %20.14f %20.14f %20.14f\n", betta1[1][0], betta1[1][1], betta1[1][2], betta1[1][300], betta1[1][301], betta1[1][302]);
+            //            printf("%20.14f %20.14f %20.14f | %20.14f %20.14f %20.14f\n", betta1[2][0], betta1[2][1], betta1[2][2], betta1[2][300], betta1[2][301], betta1[2][302]);
+
             for (unsigned int i=0; i<size-5; i++)
             {
                 const unsigned int i0 = i+0; PointNodeODE node0(i0*h, static_cast<int>(i0));
@@ -1530,57 +1563,69 @@ void FirstOrderLinearODE::transferOfConditionS(const std::vector<NonLocalConditi
 
                 for (unsigned int r=0; r<M; r++)
                 {
+                    const unsigned int rw = i*M+r;
+
                     for (unsigned int c=0; c<M; c++)
                     {
-                        alpha[0*M+c][i*M+r] = +0.0;
-                        alpha[1*M+c][i*M+r] = -2.4*h*A(node1, r+1, c+1);
-                        alpha[2*M+c][i*M+r] = +2.4*h*A(node2, r+1, c+1);
-                        alpha[3*M+c][i*M+r] = -2.4*h*A(node3, r+1, c+1);
-                        alpha[4*M+c][i*M+r] = +0.0;
+                        alpha1[rw][0*M+c] = +0.0;
+                        alpha1[rw][1*M+c] = -2.4*h*A(node1, r+1, c+1);
+                        alpha1[rw][2*M+c] = +2.4*h*A(node2, r+1, c+1);
+                        alpha1[rw][3*M+c] = -2.4*h*A(node3, r+1, c+1);
+                        alpha1[rw][4*M+c] = +0.0;
                     }
-                    alpha[0*M+r][i*M+r] += +1.0;
-                    alpha[1*M+r][i*M+r] += +0.8;
-                    alpha[2*M+r][i*M+r] += +0.0;
-                    alpha[3*M+r][i*M+r] += -0.8;
-                    alpha[4*M+r][i*M+r] += +1.0;
-                           zetta[i*M+r] = -2.4*h*B(node1, r+1) + 2.4*h*B(node2, r+1) - 2.4*h*B(node3, r+1);
+
+                    alpha1[rw][0*M+r] += +1.0;
+                    alpha1[rw][1*M+r] += +0.8;
+                    alpha1[rw][2*M+r] += +0.0;
+                    alpha1[rw][3*M+r] += -0.8;
+                    alpha1[rw][4*M+r] += +1.0;
+                    zetta1[rw] = -2.4*h*B(node1, r+1) + 2.4*h*B(node2, r+1) - 2.4*h*B(node3, r+1);
+
+                    for (unsigned int r1=0; r1<M; r1++)
+                    {
+                        for (unsigned int c=0; c<M; c++)
+                        {
+                            betta1[r1][(i+1)*M+c] += betta1[r1][i*M+c]*alpha1[rw][1*M+c];
+                            betta1[r1][(i+2)*M+c] += betta1[r1][i*M+c]*alpha1[rw][2*M+c];
+                            betta1[r1][(i+3)*M+c] += betta1[r1][i*M+c]*alpha1[rw][3*M+c];
+                            betta1[r1][(i+4)*M+c] += betta1[r1][i*M+c]*alpha1[rw][4*M+c];
+                            gamma1[r1]            -= betta1[r1][i*M+c]*zetta1[rw];
+                        }
+                    }
                 }
 
-                betta[0][i+1] += betta[0][i]*alpha[1][i];
-                betta[0][i+2] += betta[0][i]*alpha[2][i];
-                betta[0][i+3] += betta[0][i]*alpha[3][i];
-                betta[0][i+4] += betta[0][i]*alpha[4][i];
-                gamma[0]      -= betta[0][i]*zetta[i];
+                IPrinter::printSeperatorLine();
+                printf("%20.14f %20.14f %20.14f | %20.14f %20.14f %20.14f\n", betta1[0][(i+1)*M+0], betta1[0][(i+1)*M+1], betta1[0][(i+1)*M+2], betta1[0][(i)*M+0], betta1[0][(i)*M+1], betta1[0][(i)*M+2]);
+                printf("%20.14f %20.14f %20.14f | %20.14f %20.14f %20.14f\n", betta1[1][(i+1)*M+0], betta1[1][(i+1)*M+1], betta1[1][(i+1)*M+2], betta1[1][(i)*M+0], betta1[1][(i)*M+1], betta1[1][(i)*M+2]);
+                printf("%20.14f %20.14f %20.14f | %20.14f %20.14f %20.14f\n", betta1[2][(i+1)*M+0], betta1[2][(i+1)*M+1], betta1[2][(i+1)*M+2], betta1[2][(i)*M+0], betta1[2][(i)*M+1], betta1[2][(i)*M+2]);
+
             }
 
-            for (unsigned int i=0; i<size-5; i++)
-            {
-                //            if (i>99000)
-                //            {
-                //printf("%4d | %25.14f %25.14f %25.14f %25.14f %25.14f | %25.14f\n", i, alpha[0][i], alpha[1][i], alpha[2][i], alpha[3][i], alpha[4][i], zetta[i]);
-                //printf("%4d | %25.14f %25.14f %25.14f %25.14f | %25.14f\n", i, betta[0][i], betta[0][i+1], betta[0][i+2], betta[0][i+3], gamma[0]);
-                //            }
+            //            for (unsigned int i=0; i<size-5; i++)
+            //            {
+            //                //            if (i>99000)
+            //                //            {
+            //                //printf("%4d | %25.14f %25.14f %25.14f %25.14f %25.14f | %25.14f\n", i, alpha[0][i], alpha[1][i], alpha[2][i], alpha[3][i], alpha[4][i], zetta[i]);
+            //                //printf("%4d | %25.14f %25.14f %25.14f %25.14f | %25.14f\n", i, betta[0][i], betta[0][i+1], betta[0][i+2], betta[0][i+3], gamma[0]);
+            //                //            }
 
-                betta[0][i+1] += betta[0][i]*alpha[1][i];
-                betta[0][i+2] += betta[0][i]*alpha[2][i];
-                betta[0][i+3] += betta[0][i]*alpha[3][i];
-                betta[0][i+4] += betta[0][i]*alpha[4][i];
-                gamma[0]      -= betta[0][i]*zetta[i];
+            //                betta[0][i+1] += betta[0][i]*alpha[1][i];
+            //                betta[0][i+2] += betta[0][i]*alpha[2][i];
+            //                betta[0][i+3] += betta[0][i]*alpha[3][i];
+            //                betta[0][i+4] += betta[0][i]*alpha[4][i];
+            //                gamma[0]      -= betta[0][i]*zetta[i];
 
-                //if (fabs(betta[0][i+1])>10.0)
-                //                {
-                //                    betta[0][i+2] /= betta[0][i+1];
-                //                    betta[0][i+3] /= betta[0][i+1];
-                //                    betta[0][i+4] /= betta[0][i+1];
-                //                    gamma[0]      /= betta[0][i+1];
-                //                    betta[0][size-1] /= betta[0][i+1];
-                //                    betta[0][i+1] /= betta[0][i+1];
-                //                }
-            }
+            //                //if (fabs(betta[0][i+1])>10.0)
+            //                //                {
+            //                //                    betta[0][i+2] /= betta[0][i+1];
+            //                //                    betta[0][i+3] /= betta[0][i+1];
+            //                //                    betta[0][i+4] /= betta[0][i+1];
+            //                //                    gamma[0]      /= betta[0][i+1];
+            //                //                    betta[0][size-1] /= betta[0][i+1];
+            //                //                    betta[0][i+1] /= betta[0][i+1];
+            //                //                }
+            //            }
 
-            //printf("%4d | %25.14f %25.14f %25.14f %25.14f %25.14f | %25.14f\n", size-5, betta[0][size-5], betta[0][size-4], betta[0][size-3], betta[0][size-2], betta[0][size-1], gamma[0]);
-            //printf("*********  %20.14f %20.14f\n", betta[0][size-5]*(0.96)*(0.96) + betta[0][size-4]*(0.97)*(0.97) + betta[0][size-3]*(0.98)*(0.98) + betta[0][size-2]*(0.99)*(0.99)
-            //                + betta[0][size-1]*(1.00)*(1.00), gamma[0]);
 
             double t4 = (size-5)*h; PointNodeODE node4(t4, static_cast<int>((size-5)));
             double t3 = (size-4)*h; PointNodeODE node3(t3, static_cast<int>((size-4)));
@@ -1588,14 +1633,95 @@ void FirstOrderLinearODE::transferOfConditionS(const std::vector<NonLocalConditi
             double t1 = (size-2)*h; PointNodeODE node1(t1, static_cast<int>((size-2)));
             double t0 = (size-1)*h; PointNodeODE node0(t0, static_cast<int>((size-1)));
 
-            DoubleMatrix F(5, 5);
-            DoubleVector f(5);
+            printf("%20.14f %20.14f %20.14f %20.14f %20.14f\n", node4.x, node3.x, node2.x, node1.x, node0.x);
 
-            F[0][0] = betta[0][size-5];
-            F[0][1] = betta[0][size-4];
-            F[0][2] = betta[0][size-3];
-            F[0][3] = betta[0][size-2];
-            F[0][4] = betta[0][size-1];
+            DoubleMatrix F(5*M, 5*M);
+            DoubleVector f(5*M);
+
+            for (unsigned int r=0; r<M; r++)
+            {
+                for (unsigned int c=0; c<M; c++)
+                {
+                    //                    F[0*M+r][0*M+c] = -12.0*h*A(node4, r+1, c+1);
+                    //                    F[0*M+r][1*M+c] = 0.0;
+                    //                    F[0*M+r][2*M+c] = 0.0;
+                    //                    F[0*M+r][3*M+c] = 0.0;
+                    //                    F[0*M+r][4*M+c] = 0.0;
+
+                    F[0*M+r][0*M+c] = betta1[r][(size-5)*M+c];
+                    F[0*M+r][1*M+c] = betta1[r][(size-4)*M+c];
+                    F[0*M+r][2*M+c] = betta1[r][(size-3)*M+c];
+                    F[0*M+r][3*M+c] = betta1[r][(size-2)*M+c];
+                    F[0*M+r][4*M+c] = betta1[r][(size-1)*M+c];
+
+                    F[1*M+r][0*M+c] = 0.0;
+                    F[1*M+r][1*M+c] = -12.0*h*A(node3, r+1, c+1);
+                    F[1*M+r][2*M+c] = 0.0;
+                    F[1*M+r][3*M+c] = 0.0;
+                    F[1*M+r][4*M+c] = 0.0;
+
+                    F[2*M+r][0*M+c] = 0.0;
+                    F[2*M+r][1*M+c] = 0.0;
+                    F[2*M+r][2*M+c] = -12.0*h*A(node2, r+1, c+1);
+                    F[2*M+r][3*M+c] = 0.0;
+                    F[2*M+r][4*M+c] = 0.0;
+
+                    F[3*M+r][0*M+c] = 0.0;
+                    F[3*M+r][1*M+c] = 0.0;
+                    F[3*M+r][2*M+c] = 0.0;
+                    F[3*M+r][3*M+c] = -12.0*h*A(node1, r+1, c+1);
+                    F[3*M+r][4*M+c] = 0.0;
+
+                    F[4*M+r][0*M+c] = 0.0;
+                    F[4*M+r][1*M+c] = 0.0;
+                    F[4*M+r][2*M+c] = 0.0;
+                    F[4*M+r][3*M+c] = 0.0;
+                    F[4*M+r][4*M+c] = -12.0*h*A(node0, r+1, c+1);
+                }
+
+                //f[0*M+r] = +12.0*h*B(node4, r+1);//gamma[r];
+                f[0*M+r] = gamma1[r];
+                f[1*M+r] = +12.0*h*B(node3, r+1);
+                f[2*M+r] = +12.0*h*B(node2, r+1);
+                f[3*M+r] = +12.0*h*B(node1, r+1);
+                f[4*M+r] = +12.0*h*B(node0, r+1);
+
+                //                F[0*M+r][0*M+r] += -25.0;
+                //                F[0*M+r][1*M+r] += +48.0;
+                //                F[0*M+r][2*M+r] += -36.0;
+                //                F[0*M+r][3*M+r] += +16.0;
+                //                F[0*M+r][4*M+r] += -3.0;
+
+                F[1*M+r][0*M+r] += -3.0;
+                F[1*M+r][1*M+r] += -10.0;
+                F[1*M+r][2*M+r] += +18.0;
+                F[1*M+r][3*M+r] += -6.0;
+                F[1*M+r][4*M+r] += +1.0;
+
+                F[2*M+r][0*M+r] += +1.0;
+                F[2*M+r][1*M+r] += -8.0;
+                F[2*M+r][2*M+r] += +0.0;
+                F[2*M+r][3*M+r] += +8.0;
+                F[2*M+r][4*M+r] += -1.0;
+
+                F[3*M+r][0*M+r] += -1.0;
+                F[3*M+r][1*M+r] += +6.0;
+                F[3*M+r][2*M+r] += -18.0;
+                F[3*M+r][3*M+r] += +10.0;
+                F[3*M+r][4*M+r] += +3.0;
+
+                F[4*M+r][0*M+r] += +3.0;
+                F[4*M+r][1*M+r] += -16.0;
+                F[4*M+r][2*M+r] += +36.0;
+                F[4*M+r][3*M+r] += -48.0;
+                F[4*M+r][4*M+r] += +25.0;
+            }
+
+            //            F[0][0] = betta[0][size-5];
+            //            F[0][1] = betta[0][size-4];
+            //            F[0][2] = betta[0][size-3];
+            //            F[0][3] = betta[0][size-2];
+            //            F[0][4] = betta[0][size-1];
 
             //        F[0][0] = -25.0 - 12.0*h*A(node4, 1, 1);
             //        F[0][1] = +48.0;
@@ -1603,37 +1729,37 @@ void FirstOrderLinearODE::transferOfConditionS(const std::vector<NonLocalConditi
             //        F[0][3] = +16.0;
             //        F[0][4] = -3.0;
 
-            F[1][0] = -3.0;
-            F[1][1] = -10.0 - 12.0*h*A(node3, 1, 1);
-            F[1][2] = +18.0;
-            F[1][3] = -6.0;
-            F[1][4] = +1.0;
+            //            F[1][0] = -3.0;
+            //            F[1][1] = -10.0 - 12.0*h*A(node3, 1, 1);
+            //            F[1][2] = +18.0;
+            //            F[1][3] = -6.0;
+            //            F[1][4] = +1.0;
 
-            F[2][0] = +1.0;
-            F[2][1] = -8.0;
-            F[2][2] = +0.0 - 12.0*h*A(node2, 1, 1);
-            F[2][3] = +8.0;
-            F[2][4] = -1.0;
+            //            F[2][0] = +1.0;
+            //            F[2][1] = -8.0;
+            //            F[2][2] = +0.0 - 12.0*h*A(node2, 1, 1);
+            //            F[2][3] = +8.0;
+            //            F[2][4] = -1.0;
 
-            F[3][0] = -1.0;
-            F[3][1] = +6.0;
-            F[3][2] = -18.0;
-            F[3][3] = +10.0 - 12.0*h*A(node1, 1, 1);
-            F[3][4] = +3.0;
+            //            F[3][0] = -1.0;
+            //            F[3][1] = +6.0;
+            //            F[3][2] = -18.0;
+            //            F[3][3] = +10.0 - 12.0*h*A(node1, 1, 1);
+            //            F[3][4] = +3.0;
 
-            F[4][0] = +3.0;
-            F[4][1] = -16.0;
-            F[4][2] = +36.0;
-            F[4][3] = -48.0;
-            F[4][4] = +25.0 - 12.0*h*A(node0, 1, 1);
+            //            F[4][0] = +3.0;
+            //            F[4][1] = -16.0;
+            //            F[4][2] = +36.0;
+            //            F[4][3] = -48.0;
+            //            F[4][4] = +25.0 - 12.0*h*A(node0, 1, 1);
 
 
-            f[0] = gamma[0];
-            //        f[0] = +12.0*h*B(node4, 1);
-            f[1] = +12.0*h*B(node3, 1);
-            f[2] = +12.0*h*B(node2, 1);
-            f[3] = +12.0*h*B(node1, 1);
-            f[4] = +12.0*h*B(node0, 1);
+            //            f[0] = gamma[0];
+            //            //        f[0] = +12.0*h*B(node4, 1);
+            //            f[1] = +12.0*h*B(node3, 1);
+            //            f[2] = +12.0*h*B(node2, 1);
+            //            f[3] = +12.0*h*B(node1, 1);
+            //            f[4] = +12.0*h*B(node0, 1);
 
             IPrinter::printSeperatorLine();
             IPrinter::print(F, F.rows(), F.cols(), 12, 6);
@@ -1680,9 +1806,9 @@ void FirstOrderLinearODE::transferOfConditionS(const std::vector<NonLocalConditi
             {
                 for (unsigned int i=size-(k+1); i!=0; i--)
                 {
-                    x[i-1][0] = alpha[1][i-1]*x[i+0][0] + alpha[2][i-1]*x[i+1][0] + alpha[3][i-1]*x[i+2][0] + alpha[4][i-1]*x[i+3][0] + zetta[i-1];
+                    x[i-1][0] = alpha1[1][i-1]*x[i+0][0] + alpha1[2][i-1]*x[i+1][0] + alpha1[3][i-1]*x[i+2][0] + alpha1[4][i-1]*x[i+3][0] + zetta1[i-1];
 
-                    printf("************************  %4d %14.8f \n", i-1, x[i-1][0]);
+                    //printf("************************  %4d %14.8f \n", i-1, x[i-1][0]);
                 }
             }
 
