@@ -1534,6 +1534,8 @@ void FirstOrderLinearODE::transferOfConditionS(const std::vector<NonLocalConditi
                 betta1[r] = static_cast<double*>(malloc(sizeof(double) * sizeM ));
                 for (unsigned int i=0; i<sizeM; i++) betta1[r][i] = 0.0;
                 gamma1[r] = d[r];
+
+                printf("%d %f %f\n", r, gamma1[r], d[r]);
             }
 
             for (unsigned int s=0; s<C.size(); s++)
@@ -1561,6 +1563,8 @@ void FirstOrderLinearODE::transferOfConditionS(const std::vector<NonLocalConditi
                 const unsigned int i3 = i+3; PointNodeODE node3(i3*h, static_cast<int>(i3));
                 const unsigned int i4 = i+4; PointNodeODE node4(i4*h, static_cast<int>(i4));
 
+                printf("------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+
                 for (unsigned int r=0; r<M; r++)
                 {
                     const unsigned int rw = i*M+r;
@@ -1581,23 +1585,54 @@ void FirstOrderLinearODE::transferOfConditionS(const std::vector<NonLocalConditi
                     alpha1[rw][4*M+r] += +1.0;
                     zetta1[rw] = -2.4*h*B(node1, r+1) + 2.4*h*B(node2, r+1) - 2.4*h*B(node3, r+1);
 
+
+//                    if (i==0)
+                    {
+//                        printf("+++++\n");
+//                        printf("%4d %4d | %12.8f %12.8f %12.8f | %12.8f %12.8f %12.8f | %12.8f %12.8f %12.8f | %12.8f %12.8f %12.8f | %12.8f %12.8f %12.8f | %12.8f\n", i, rw,
+//                               alpha1[rw][0], alpha1[rw][1], alpha1[rw][2],
+//                                alpha1[rw][3], alpha1[rw][4], alpha1[rw][5],
+//                                alpha1[rw][6], alpha1[rw][7], alpha1[rw][8],
+//                                alpha1[rw][9], alpha1[rw][10], alpha1[rw][11],
+//                                alpha1[rw][12], alpha1[rw][13], alpha1[rw][14], zetta1[rw] );
+//                        puts("-");
+                    }
+
                     for (unsigned int r1=0; r1<M; r1++)
                     {
+                        //printf("++++++++++++++++ %d ++++++++++++++\n", r1);
+                        printf("%4d %4d | %12.8f %12.8f %12.8f | %12.8f %12.8f %12.8f | %12.8f %12.8f %12.8f | %12.8f %12.8f %12.8f | %12.8f %12.8f %12.8f | %12.8f\n", i, r1,
+                               betta1[r1][i*M+0], betta1[r1][i*M+1], betta1[r1][i*M+2],
+                                betta1[r1][i*M+3], betta1[r1][i*M+4], betta1[r1][i*M+5],
+                                betta1[r1][i*M+6], betta1[r1][i*M+7], betta1[r1][i*M+8],
+                                betta1[r1][i*M+9], betta1[r1][i*M+10], betta1[r1][i*M+11],
+                                betta1[r1][i*M+12], betta1[r1][i*M+13], betta1[r1][i*M+14], gamma1[r1]);
+
                         for (unsigned int c=0; c<M; c++)
                         {
-                            betta1[r1][(i+1)*M+c] += betta1[r1][i*M+c]*alpha1[rw][1*M+c];
-                            betta1[r1][(i+2)*M+c] += betta1[r1][i*M+c]*alpha1[rw][2*M+c];
-                            betta1[r1][(i+3)*M+c] += betta1[r1][i*M+c]*alpha1[rw][3*M+c];
-                            betta1[r1][(i+4)*M+c] += betta1[r1][i*M+c]*alpha1[rw][4*M+c];
-                            gamma1[r1]            -= betta1[r1][i*M+c]*zetta1[rw];
+                            betta1[r1][(i+1)*M+c] += betta1[r1][rw]*alpha1[rw][1*M+c];
+                            betta1[r1][(i+2)*M+c] += betta1[r1][rw]*alpha1[rw][2*M+c];
+                            betta1[r1][(i+3)*M+c] += betta1[r1][rw]*alpha1[rw][3*M+c];
+                            betta1[r1][(i+4)*M+c] += betta1[r1][rw]*alpha1[rw][4*M+c];
+                            gamma1[r1] -= betta1[r1][rw]*zetta1[rw];
                         }
+                        //printf("********************* %f %f\n", zetta1[rw], gamma1[r1]);
+
+                        printf("%4d %4d | %12.8f %12.8f %12.8f | %12.8f %12.8f %12.8f | %12.8f %12.8f %12.8f | %12.8f %12.8f %12.8f | %12.8f %12.8f %12.8f | %12.8f\n", i, r1,
+                               betta1[r1][(i)*M+0], betta1[r1][(i)*M+1], betta1[r1][(i)*M+2],
+                                betta1[r1][(i)*M+3], betta1[r1][(i)*M+4], betta1[r1][(i)*M+5],
+                                betta1[r1][(i)*M+6], betta1[r1][(i)*M+7], betta1[r1][(i)*M+8],
+                                betta1[r1][(i)*M+9], betta1[r1][(i)*M+10], betta1[r1][(i)*M+11],
+                                betta1[r1][(i)*M+12], betta1[r1][(i)*M+13], betta1[r1][(i)*M+14], gamma1[r1]);
                     }
+                    puts("---");
+                   // if (i==3) exit(0);
                 }
 
-                IPrinter::printSeperatorLine();
-                printf("%20.14f %20.14f %20.14f | %20.14f %20.14f %20.14f\n", betta1[0][(i+1)*M+0], betta1[0][(i+1)*M+1], betta1[0][(i+1)*M+2], betta1[0][(i)*M+0], betta1[0][(i)*M+1], betta1[0][(i)*M+2]);
-                printf("%20.14f %20.14f %20.14f | %20.14f %20.14f %20.14f\n", betta1[1][(i+1)*M+0], betta1[1][(i+1)*M+1], betta1[1][(i+1)*M+2], betta1[1][(i)*M+0], betta1[1][(i)*M+1], betta1[1][(i)*M+2]);
-                printf("%20.14f %20.14f %20.14f | %20.14f %20.14f %20.14f\n", betta1[2][(i+1)*M+0], betta1[2][(i+1)*M+1], betta1[2][(i+1)*M+2], betta1[2][(i)*M+0], betta1[2][(i)*M+1], betta1[2][(i)*M+2]);
+                //                IPrinter::printSeperatorLine();
+                //                printf("%20.14f %20.14f %20.14f | %20.14f %20.14f %20.14f\n", betta1[0][(i+1)*M+0], betta1[0][(i+1)*M+1], betta1[0][(i+1)*M+2], betta1[0][(i)*M+0], betta1[0][(i)*M+1], betta1[0][(i)*M+2]);
+                //                printf("%20.14f %20.14f %20.14f | %20.14f %20.14f %20.14f\n", betta1[1][(i+1)*M+0], betta1[1][(i+1)*M+1], betta1[1][(i+1)*M+2], betta1[1][(i)*M+0], betta1[1][(i)*M+1], betta1[1][(i)*M+2]);
+                //                printf("%20.14f %20.14f %20.14f | %20.14f %20.14f %20.14f\n", betta1[2][(i+1)*M+0], betta1[2][(i+1)*M+1], betta1[2][(i+1)*M+2], betta1[2][(i)*M+0], betta1[2][(i)*M+1], betta1[2][(i)*M+2]);
 
             }
 
@@ -1679,7 +1714,7 @@ void FirstOrderLinearODE::transferOfConditionS(const std::vector<NonLocalConditi
                     F[4*M+r][4*M+c] = -12.0*h*A(node0, r+1, c+1);
                 }
 
-                //f[0*M+r] = +12.0*h*B(node4, r+1);//gamma[r];
+                //                f[0*M+r] = +12.0*h*B(node4, r+1);
                 f[0*M+r] = gamma1[r];
                 f[1*M+r] = +12.0*h*B(node3, r+1);
                 f[2*M+r] = +12.0*h*B(node2, r+1);
@@ -1763,6 +1798,8 @@ void FirstOrderLinearODE::transferOfConditionS(const std::vector<NonLocalConditi
 
             IPrinter::printSeperatorLine();
             IPrinter::print(F, F.rows(), F.cols(), 12, 6);
+            IPrinter::printSeperatorLine();
+            IPrinter::print(f, f.length(), 12, 6);
             IPrinter::printSeperatorLine();
 
             DoubleVector xf((k+1)*M);
