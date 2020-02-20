@@ -2,7 +2,7 @@
 
 #define EXAMPLE_31
 
-#define _N 10000 //1000
+#define _N 100 //1000
 #define _H 0.01
 
 void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)

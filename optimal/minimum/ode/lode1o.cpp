@@ -1833,6 +1833,10 @@ void FirstOrderLinearODE::transferOfConditionS(const std::vector<NonLocalConditi
             F.clear();
             f.clear();
 
+            IPrinter::printSeperatorLine();
+            IPrinter::print(xf, xf.length());
+            IPrinter::printSeperatorLine();
+
             for (unsigned int i=0; i<=k; i++)
             {
                 printf("***** ");
@@ -1849,25 +1853,93 @@ void FirstOrderLinearODE::transferOfConditionS(const std::vector<NonLocalConditi
             unsigned int s = xf.length()-M;
             unsigned int e = xf.length()-1;
 
-            for (unsigned int n=size-1; n>=size-k-1; n--)
+            IPrinter::printSeperatorLine();
+            for (unsigned int n=size-1; n>=size-(k+1); n--)
             {
                 x[n] = xf.mid(s, e);
                 s -= M;
                 e -= M;
+                printf("%4d : ", n);
+                IPrinter::print(x[n], x[n].length());
             }
+            IPrinter::printSeperatorLine();
             xf.clear();
 
             if (k==4)
             {
+                unsigned int rw;
+                rw = 285;
+                x[95][2] = zetta1[rw]
+                        + alpha1[rw][3]*x[96][0]
+                        + alpha1[rw][4]*x[96][1]
+                        + alpha1[rw][5]*x[96][2]
+
+                        + alpha1[rw][6]*x[97][0]
+                        + alpha1[rw][7]*x[97][1]
+                        + alpha1[rw][8]*x[97][2]
+
+                        + alpha1[rw][9]*x[98][0]
+                        + alpha1[rw][10]*x[98][1]
+                        + alpha1[rw][11]*x[98][2]
+
+                        + alpha1[rw][12]*x[99][0]
+                        + alpha1[rw][13]*x[99][1]
+                        + alpha1[rw][14]*x[99][2];
+                rw = 284;
+                x[95][1] = zetta1[rw]
+                        + alpha1[rw][3]*x[95][2]
+
+                        + alpha1[rw][4]*x[96][0]
+                        + alpha1[rw][5]*x[96][1]
+                        + alpha1[rw][6]*x[96][2]
+
+                        + alpha1[rw][7]*x[97][0]
+                        + alpha1[rw][8]*x[97][1]
+                        + alpha1[rw][9]*x[97][2]
+
+                        + alpha1[rw][10]*x[98][0]
+                        + alpha1[rw][11]*x[98][1]
+                        + alpha1[rw][12]*x[98][2]
+
+                        + alpha1[rw][13]*x[99][0]
+                        + alpha1[rw][14]*x[99][1];
+                rw = 283;
+                x[95][0] = zetta1[rw]
+                        + alpha1[rw][3]*x[95][1]
+                        + alpha1[rw][4]*x[95][2]
+
+                        + alpha1[rw][5]*x[96][0]
+                        + alpha1[rw][6]*x[96][1]
+                        + alpha1[rw][7]*x[96][2]
+
+                        + alpha1[rw][8]*x[97][0]
+                        + alpha1[rw][9]*x[97][1]
+                        + alpha1[rw][10]*x[97][2]
+
+                        + alpha1[rw][11]*x[98][0]
+                        + alpha1[rw][12]*x[98][1]
+                        + alpha1[rw][13]*x[98][2]
+
+                        + alpha1[rw][14]*x[99][0];
+
+                IPrinter::print(x[95], x[95].length());
+
+
                 for (unsigned int i=size-(k+1); i!=0; i--)
                 {
-                    x[i-1][0] = alpha1[1][i-1]*x[i+0][0] + alpha1[2][i-1]*x[i+1][0] + alpha1[3][i-1]*x[i+2][0] + alpha1[4][i-1]*x[i+3][0] + zetta1[i-1];
+                    unsigned int rw = (i-1)*M;
+
+                    for (unsigned int r=0; r<M; r++)
+                    {
+                        x[i-1][r] = alpha1[(i-1)][1]*x[i+0][0] + alpha1[2][i-1]*x[i+1][0] + alpha1[3][i-1]*x[i+2][0] + alpha1[4][i-1]*x[i+3][0] + zetta1[i-1];
+                    }
+
 
                     //printf("************************  %4d %14.8f \n", i-1, x[i-1][0]);
                 }
             }
 
-        }
+        } // schema == 11
 
         if (schema == 2)
         {
