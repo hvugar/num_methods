@@ -66,6 +66,7 @@ public:
     void transferOfConditionN(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k, unsigned int schema) const;
     void transferOfConditionM(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const;
     void transferOfConditionS(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k, unsigned int schema) const;
+    void transferOfConditionP(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k, unsigned int schema) const;
 
     /**
      * @brief solveInitialValueProblem

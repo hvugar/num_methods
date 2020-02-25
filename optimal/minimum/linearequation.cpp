@@ -4,6 +4,12 @@
 #include <cmethods.h>
 #include <vector>
 
+/**
+ * @brief GaussianElimination1
+ * @param m основная матрица системы
+ * @param b столбец свободных членов
+ * @param x
+ */
 void GaussianElimination1(const DoubleMatrix& m, const DoubleVector& b, DoubleVector &x)
 {
     DoubleMatrix M = m;
@@ -48,9 +54,79 @@ void GaussianElimination1(const DoubleMatrix& m, const DoubleVector& b, DoubleVe
     }
 }
 
+/**
+ * @brief Метод Гаусса с выбором главного элемента
+ * @param A - основная матрица системы
+ * @param b - вектор свободных членов
+ * @param x - вектор искомых значений
+ */
+void GaussianElimination2(const DoubleMatrix &A, const DoubleVector &b, DoubleVector &x)
+{
+    if (A.rows() == 0 || A.cols() == 0) throw double_matrix_exception(0);
+    if (A.rows() != A.cols()) throw double_matrix_exception(0);
+    if (b.length() != A.rows()) throw double_matrix_exception(0);
+
+    DoubleMatrix A1 = A;
+    DoubleVector b1 = b;
+    unsigned int size = b.length();
+
+    // Поставленная задача будет решаться методом Гаусса с выбором главного элемента по столбцу
+
+//    IPrinter::printSeperatorLine(nullptr, '=');
+//    IPrinter::print(A1, A1.rows(), A1.cols());
+//    IPrinter::printSeperatorLine(nullptr, '=');
+//
+
+//    IPrinter::print(b1, b1.length());
+
+    for (unsigned int c=0; c<size; c++)
+    {
+        unsigned int i = c;
+        double max = fabs(A1[i][c]);
+        for (unsigned int r=c; r<size; r++)
+        {
+            if (fabs(A1[r][c]) > max) { max = fabs(A1[r][c]); i = r; }
+        }
+        if (i != c)
+        {
+            A1.switchRows(i, c);
+            const double sw = b1[i]; b1[i] = b1[c]; b1[c] = sw;
+            //printf(">>> %d > %d\n", i, c);
+        }
+
+        b1[c] /= A1[c][c];
+        for (unsigned int s=c+1; s<size; s++)
+        {
+            A1[c][s] /= A1[c][c];
+        }
+        A1[c][c] = 1.0;
+
+        for (unsigned int r=c+1; r<size; r++)
+        {
+            b1[r] -= A1[r][c]*b1[c];
+            for (unsigned int s=c+1; s<size; s++)
+            {
+                A1[r][s] -= A1[r][c]*A1[c][s];
+            }
+            A1[r][c] = 0.0;
+        }
+//        IPrinter::printSeperatorLine(nullptr, '=');
+//        IPrinter::print(A1, A1.rows(), A1.cols());
+//        IPrinter::printSeperatorLine();
+//        IPrinter::print(b1, b1.length());
+    }
+
+    for (unsigned int i=0, r=size-1; i<size; i++, r--)
+    {
+        x[r] = b1[r];
+        for (unsigned int j=0, c=size-1; j<i; j++, c--) x[r] -= A1[r][c]*x[c];
+    }
+
+}
+
 void LinearEquation::GaussianElimination(const DoubleMatrix& m, const DoubleVector& b, DoubleVector& x)
 {
-    GaussianElimination1(m,b,x);
+    GaussianElimination2(m,b,x);
 }
 
 void LinearEquation::FirstRowLoaded(const double *e, double f, const double *a, const double *b, const double *c, const double *d, unsigned int N)
