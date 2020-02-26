@@ -1,8 +1,8 @@
 #include "first_order_linear_ode.h"
 
-#define EXAMPLE_11
+#define EXAMPLE_31
 
-#define _N 10000 //1000
+#define _N 100*100 //1000
 #define _H 0.01
 
 void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
@@ -69,7 +69,7 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
 
     puts("===== transferOfConditionN 4 0 =====");
     x.clear();
-    nl.transferOfConditionP(C, d, x, 4, 1);
+    nl.transferOfConditionP(C, d, x, 2, 1);
     for (unsigned int m=0; m<M; m++) { for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
     IPrinter::printSeperatorLine();
 
@@ -99,13 +99,11 @@ double FirstOrderLinearODEEx1::A(const PointNodeODE &node, unsigned int r, unsig
     C_UNUSED(r);
     C_UNUSED(c);
 
-#ifdef EXAMPLE_11
-    return -1.0;
+#if defined(EXAMPLE_11) || defined (EXAMPLE_31)
+    //return -1.0;
+    return 10.0*sin(4.0*M_PI*node.x*node.x);
 #endif
 #ifdef EXAMPLE_12
-    return -1.0;
-#endif
-#ifdef EXAMPLE_31
     return -1.0;
 #endif
 #ifdef EXAMPLE_32
