@@ -1,16 +1,16 @@
 #include "wave_equation_ibvp.h"
 
-#define __DIRICHLET_LEFT_
-#define __DIRICHLET_RIGHT_
+//#define __DIRICHLET_LEFT_
+//#define __DIRICHLET_RIGHT_
 //#define __NEUMANN__
-//#define __ROBIN_LEFT__
-//#define __ROBIN_RIGHT__
+#define __ROBIN_LEFT__
+#define __ROBIN_RIGHT__
 #define x2_t2
 
-const double a = +1.2;
-const double b = -0.5;
-const double c = +0.3;
-const double d = +0.4;
+const double a = +0.2;//+1.2;
+const double b = +0.0;//-0.5;
+const double c = +0.0;//+0.3;
+const double d = +0.0;//+0.4;
 
 void WaveEquationIBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -19,7 +19,7 @@ void WaveEquationIBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 #endif
 
     WaveEquationIBVP w;
-    w.setTimeDimension(Dimension(0.01, 0, 100));
+    w.setTimeDimension(Dimension(0.01, 0, 10000));
     w.setSpaceDimensionX(Dimension(0.01, 100, 200));
     //w.setSpaceDimensionY(Dimension(0.01, 0, 100));
 
@@ -89,24 +89,25 @@ void WaveEquationIBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) c
     C_UNUSED(u);
     C_UNUSED(tn);
 
-    IPrinter::printVector(u);
+    if (tn.i % (timeDimension().size() / 10) == 0)
+    IPrinter::printVector(16, 8, u);
 
-    if (tn.i==200)
-    {
-        double norm = 0.0;
-        double max = 0.0;
-        TimeNodePDE tn; tn.t = 1.0;
-        SpaceNodePDE sn;
-        for (unsigned int i=0; i<=100; i++)
-        {
-            sn.x = i*0.01;
-            double k = 1.0; if (i==0 || i== 100) k = 0.5;
-            norm += 0.01*k*(u[i]-U(sn, tn))*(u[i]-U(sn, tn));
+//    if (tn.i==200)
+//    {
+//        double norm = 0.0;
+//        double max = 0.0;
+//        TimeNodePDE tn; tn.t = 1.0;
+//        SpaceNodePDE sn;
+//        for (unsigned int i=0; i<=100; i++)
+//        {
+//            sn.x = i*0.01;
+//            double k = 1.0; if (i==0 || i== 100) k = 0.5;
+//            norm += 0.01*k*(u[i]-U(sn, tn))*(u[i]-U(sn, tn));
 
-            if (max < fabs(u[i]-U(sn, tn))) max = fabs(u[i]-U(sn, tn));
-        }
-        printf("norm: %.10f max: %.10f\n", sqrt(norm), max);
-    }
+//            if (max < fabs(u[i]-U(sn, tn))) max = fabs(u[i]-U(sn, tn));
+//        }
+//        printf("norm: %.10f max: %.10f\n", sqrt(norm), max);
+//    }
 
     //    if (tn.i == 0 || tn.i == 1 || tn.i == 2 || tn.i == 2000) IPrinter::printVector(u);
 

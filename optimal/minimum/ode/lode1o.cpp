@@ -2115,10 +2115,10 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
 
     const int min = dimension().min();
     const int max = dimension().max();
+    const double h = dimension().step();
     const unsigned int N = static_cast<unsigned int>(max - min);
     const unsigned int size = static_cast<unsigned int>( dimension().size() );
     const unsigned int end = static_cast<unsigned int>( size-(k+1) );
-    const double h = dimension().step();
     const unsigned int M = count();
 
     std::vector<NonLocalCondition> C = co;
@@ -2168,7 +2168,7 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
     {
         const unsigned int Mx0=0, Mx1=M, Mx2=2*M;
 
-        for (unsigned int i=0; i<size-3; i++)
+        for (unsigned int i=0; i<end; i++)
         {
             const PointNodeODE node0((i+0)*h, static_cast<int>(i+0));
             const PointNodeODE node1((i+1)*h, static_cast<int>(i+1));
@@ -2217,8 +2217,8 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
         const PointNodeODE nodeN1(N1*h, static_cast<int>(N1));
         const PointNodeODE nodeN0(N0*h, static_cast<int>(N0));
 
-        DoubleMatrix Mx(3*M, 3*M);
-        DoubleVector f(3*M);
+        DoubleMatrix Mx((k+1)*M, (k+1)*M);
+        DoubleVector f((k+1)*M);
 
         for (unsigned int r=0; r<M; r++)
         {
@@ -2245,6 +2245,10 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
             Mx[Mx1+r][Mx0+r] += -1.0; Mx[Mx1+r][Mx1+r] += +0.0; Mx[Mx1+r][Mx2+r] += +1.0;
         }
 
+
+
+
+        ///////////////////////////////////////////////////////////////////////////
         IPrinter::printSeperatorLine("Mx");
         IPrinter::print(Mx, Mx.rows(), Mx.cols(), 12, 6);
         IPrinter::printSeperatorLine("f");
@@ -2277,7 +2281,7 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
         unsigned int e = xf.length()-1;
 
         IPrinter::printSeperatorLine();
-        for (unsigned int n=size-1; n>=size-(k+1); n--)
+        for (unsigned int n=size-1; n>=end; n--)
         {
             x[n] = xf.mid(s, e);
             s -= M;
@@ -2287,7 +2291,7 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
         IPrinter::printSeperatorLine();
         xf.clear();
 
-        for (unsigned int j=0, i=N-3; j<=N-3; j++, i--)
+        for (unsigned int j=0, i=N-(k+1); j<=N-(k+1); j++, i--)
         {
             for (unsigned int r=0; r<M; r++)
             {
@@ -2302,13 +2306,14 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
             //printf("%6d : ", i); IPrinter::print(x[i], x[i].length(), 28, 16);
         }
         IPrinter::printSeperatorLine("=");
+        ///////////////////////////////////////////////////////////////////////////
     }
 
     if (k==4)
     {
         const unsigned int Mx0=0, Mx1=M, Mx2=2*M, Mx3=3*M, Mx4=4*M;
 
-        for (unsigned int i=0; i<size-5; i++)
+        for (unsigned int i=0; i<end; i++)
         {
             const PointNodeODE node0((i+0)*h, static_cast<int>(i+0));
             const PointNodeODE node1((i+1)*h, static_cast<int>(i+1));
@@ -2417,8 +2422,8 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
         const PointNodeODE nodeN1(N1*h, static_cast<int>(N1));
         const PointNodeODE nodeN0(N0*h, static_cast<int>(N0));
 
-        DoubleMatrix Mx(5*M, 5*M);
-        DoubleVector f(5*M);
+        DoubleMatrix Mx((k+1)*M, (k+1)*M);
+        DoubleVector f((k+1)*M);
 
         for (unsigned int r=0; r<M; r++)
         {
@@ -2461,6 +2466,8 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
             Mx[Mx3+r][Mx0+r] += -3.0; Mx[Mx3+r][Mx1+r] += -10.0; Mx[Mx3+r][Mx2+r] += +18.0; Mx[Mx3+r][Mx3+r] += -6.00; Mx[Mx3+r][Mx4+r] += +1.00;
         }
 
+
+        ///////////////////////////////////////////////////////////////////////////
         IPrinter::printSeperatorLine("Mx");
         IPrinter::print(Mx, Mx.rows(), Mx.cols(), 12, 6);
         IPrinter::printSeperatorLine("f");
@@ -2493,7 +2500,7 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
         unsigned int e = xf.length()-1;
 
         IPrinter::printSeperatorLine();
-        for (unsigned int n=size-1; n>=size-(k+1); n--)
+        for (unsigned int n=size-1; n>=end; n--)
         {
             x[n] = xf.mid(s, e);
             s -= M;
@@ -2503,28 +2510,30 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
         IPrinter::printSeperatorLine();
         xf.clear();
 
-        for (unsigned int j=0, i=N-5; j<=N-5; j++, i--)
+        for (unsigned int j=0, i=N-(k+1); j<=N-(k+1); j++, i--)
         {
-            for (unsigned int r=0; r<M; r++)
+            for (unsigned int eq=0; eq<M; eq++)
             {
-                unsigned int rw = i*M+r;
+                unsigned int rw = i*M+eq;
 
-                x[i][r] = betta[rw];
+                x[i][eq] = betta[rw];
                 for (unsigned int c=0; c<M; c++)
                 {
-                    x[i][r] += alpha[rw][Mx1+c]*x[i+1][c] + alpha[rw][Mx2+c]*x[i+2][c] + alpha[rw][Mx3+c]*x[i+3][c] + alpha[rw][Mx4+c]*x[i+4][c];
+                    x[i][eq] += alpha[rw][Mx1+c]*x[i+1][c] + alpha[rw][Mx2+c]*x[i+2][c]
+                             + alpha[rw][Mx3+c]*x[i+3][c] + alpha[rw][Mx4+c]*x[i+4][c];
                 }
             }
             //printf("%6d : ", i); IPrinter::print(x[i], x[i].length(), 28, 16);
         }
         IPrinter::printSeperatorLine("=");
+        ///////////////////////////////////////////////////////////////////////////
     }
 
     if (k==6)
     {
         const unsigned int Mx0=0, Mx1=M, Mx2=2*M, Mx3=3*M, Mx4=4*M, Mx5=5*M, Mx6=6*M;
 
-        for (unsigned int i=0; i<size-7; i++)
+        for (unsigned int i=0; i<end; i++)
         {
             const PointNodeODE node0((i+0)*h, static_cast<int>(i+0));
             const PointNodeODE node1((i+1)*h, static_cast<int>(i+1));
@@ -2615,8 +2624,8 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
         const PointNodeODE nodeN1(N1*h, static_cast<int>(N1));
         const PointNodeODE nodeN0(N0*h, static_cast<int>(N0));
 
-        DoubleMatrix Mx(5*M, 5*M);
-        DoubleVector f(5*M);
+        DoubleMatrix Mx((k+1)*M, (k+1));
+        DoubleVector f((k+1));
 
         for (unsigned int r=0; r<M; r++)
         {
@@ -2679,6 +2688,7 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
             Mx[Mx3+r][Mx0+r] += -3.0; Mx[Mx3+r][Mx1+r] += -10.0; Mx[Mx3+r][Mx2+r] += +18.0; Mx[Mx3+r][Mx3+r] += -6.00; Mx[Mx3+r][Mx4+r] += +1.00;
         }
 
+        ///////////////////////////////////////////////////////////////////////////
         IPrinter::printSeperatorLine("Mx");
         IPrinter::print(Mx, Mx.rows(), Mx.cols(), 12, 6);
         IPrinter::printSeperatorLine("f");
@@ -2711,42 +2721,28 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
         unsigned int e = xf.length()-1;
 
         IPrinter::printSeperatorLine();
-        for (unsigned int n=size-1; n>=size-(k+1); n--)
+        for (unsigned int n=size-1; n>=end; n--)
         {
             x[n] = xf.mid(s, e);
             s -= M;
             e -= M;
-            printf("%6d : ", n);
-            IPrinter::print(x[n], x[n].length(), 20, 16);
+            printf("%6d : ", n); IPrinter::print(x[n], x[n].length(), 20, 16);
         }
         IPrinter::printSeperatorLine();
         xf.clear();
 
-        for (unsigned int j=0, i=N-5; j<=N-5; j++, i--)
+        for (unsigned int j=0, i=N-(k+1); j<=N-(k+1); j++, i--)
         {
             for (unsigned int r=0; r<M; r++)
             {
                 unsigned int rw = i*M+r;
 
-                //                    printf("%4d %10.6f %10.6f %10.6f | %10.6f %10.6f %10.6f | %10.6f %10.6f %10.6f | %10.6f %10.6f %10.6f | %10.6f %10.6f %10.6f | %10.6f\n", rw,
-                //                             alpha[rw][0], alpha[rw][1], alpha[rw][2],
-                //                            alpha[rw][3], alpha[rw][4], alpha[rw][5],
-                //                            alpha[rw][6], alpha[rw][7], alpha[rw][8],
-                //                            alpha[rw][9], alpha[rw][10], alpha[rw][11],
-                //                            alpha[rw][12], alpha[rw][13], alpha[rw][14],
-                //                            betta[rw]);
-
-                //printf_s("%4d | %10.6f %10.6f %10.6f %10.6f %10.6f | %10.6f\n", rw, alpha[rw][0], alpha[rw][1], alpha[rw][2], alpha[rw][3], alpha[rw][4], betta[rw]);
-
                 x[i][r] = betta[rw];
                 for (unsigned int c=0; c<M; c++)
                 {
-                    x[i][r] += alpha[rw][Mx1+c]*x[i+1][c] + alpha[rw][Mx2+c]*x[i+2][c] + alpha[rw][Mx3+c]*x[i+3][c] + alpha[rw][Mx4+c]*x[i+4][c];
-
-                    //                        x[i][r] += alpha[rw][Mx1+c]*x[i+1][c];
-                    //                        x[i][r] += alpha[rw][Mx2+c]*x[i+2][c];
-                    //                        x[i][r] += alpha[rw][Mx3+c]*x[i+3][c];
-                    //                        x[i][r] += alpha[rw][Mx4+c]*x[i+4][c];
+                    x[i][r] += alpha[rw][Mx1+c]*x[i+1][c] + alpha[rw][Mx2+c]*x[i+2][c]
+                            + alpha[rw][Mx3+c]*x[i+3][c] + alpha[rw][Mx4+c]*x[i+4][c]
+                            + alpha[rw][Mx5+c]*x[i+5][c] + alpha[rw][Mx6+c]*x[i+6][c];
                 }
                 printf("%6d : %20.16f\n", i, x[i][r]);
             }
@@ -2754,7 +2750,6 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
         }
         IPrinter::printSeperatorLine("=");
     }
-
 
     // begin cleanig memory
 

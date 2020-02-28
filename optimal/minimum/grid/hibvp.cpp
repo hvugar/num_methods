@@ -197,10 +197,10 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
     const double hx = spaceDimensionX().step();
     const double ht = timeDimension().step();
 
-    const double a = waveSpeed();//ws
-    const double b = unknownB();//wd
-    const double c = restoration();//rs
-    const double d = waveDissipation();//wd
+    const double a = waveSpeed();
+    const double b = unknownB();
+    const double c = restoration();
+    const double d = waveDissipation();
     const double w = weight();
     const double w1 = w;
     const double w2 = 1.0 - 2.0*w;
@@ -325,8 +325,8 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
             dx[i] += k21 * u10[i-1] + k22 * u10[i] + k23 * u10[i+1];
             dx[i] += k31 * u00[i-1] + k32 * u00[i] + k33 * u00[i+1];
 
-            //dx[i] += ht_ht*f(sn, tn10);
-            dx[i] += ht_ht*w1*f(sn, tn20) + ht_ht*w2*f(sn, tn10) + ht_ht*w3*f(sn, tn00);
+            dx[i] += ht_ht*f(sn, tn10);
+            //dx[i] += ht_ht*w1*f(sn, tn20) + ht_ht*w2*f(sn, tn10) + ht_ht*w3*f(sn, tn00);
         }
 
         unsigned int s=0, e=N;
@@ -373,11 +373,11 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
             dx[s]  = beta * b14 * u10[s] + alpha * b15 * u10[s] + beta * b16 * u10[s+1];
             dx[s] += beta * b17 * u00[s] + alpha * b18 * u00[s] + beta * b19 * u00[s+1];
 
-            //dx[s] += gamma * b20 * boundary(sn, tn10, condition);
-            //dx[s] += beta  * ht_ht*f(sn,tn10);
+            dx[s] += gamma * b20 * boundary(sn, tn10, condition);
+            dx[s] += beta  * ht_ht*f(sn,tn10);
 
-            dx[s] += gamma * b20 * (w1*value + w2*boundary(sn, tn10, condition) + w3*boundary(sn, tn00, condition));
-            dx[s] += beta * (ht_ht*w1*f(sn, tn20) + ht_ht*w2*f(sn, tn10) + ht_ht*w3*f(sn, tn00));
+            //dx[s] += gamma * b20 * (w1*value + w2*boundary(sn, tn10, condition) + w3*boundary(sn, tn00, condition));
+            //dx[s] += beta * (ht_ht*w1*f(sn, tn20) + ht_ht*w2*f(sn, tn10) + ht_ht*w3*f(sn, tn00));
         }
 
         sn.i = xmax; sn.x = xmax*hx;
@@ -421,14 +421,14 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
             dx[e]  = beta * b24 * u10[e-1] + alpha * b25 * u10[e] + beta * b26 * u10[e];
             dx[e] += beta * b27 * u00[e-1] + alpha * b28 * u00[e] + beta * b29 * u00[e];
 
-            //dx[e] += gamma * b30 * boundary(sn, tn10, condition);
-            //dx[e] += beta  * ht_ht*f(sn,tn10);
+            dx[e] += gamma * b30 * boundary(sn, tn10, condition);
+            dx[e] += beta  * ht_ht*f(sn,tn10);
 
-            dx[e] += gamma * b30 * (w1*value + w2*boundary(sn, tn10, condition) + w3*boundary(sn, tn00, condition));
-            dx[e] += beta * (ht_ht*w1*f(sn, tn20) + ht_ht*w2*f(sn, tn10) + ht_ht*w3*f(sn, tn00));
+            //dx[e] += gamma * b30 * (w1*value + w2*boundary(sn, tn10, condition) + w3*boundary(sn, tn00, condition));
+            //dx[e] += beta * (ht_ht*w1*f(sn, tn20) + ht_ht*w2*f(sn, tn10) + ht_ht*w3*f(sn, tn00));
         }
 
-        tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
+        tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
         for (unsigned int n=s; n<=e; n++) u20[n] = rx[n];
         layerInfo(u20, tn20);
 
@@ -884,10 +884,10 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
     const double hx = spaceDimensionX().step();
     const double ht = timeDimension().step();
 
-    const double a = waveSpeed();//ws
-    const double b = unknownB();//wd
-    const double c = restoration();//rs
-    const double d = waveDissipation();//wd
+    const double a = waveSpeed();
+    const double b = unknownB();
+    const double c = restoration();
+    const double d = waveDissipation();
     const double w = weight();
     const double w1 = w;
     const double w2 = 1.0 - 2.0*w;
@@ -1012,8 +1012,8 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
             dx[i] += k21 * u10[i-1] + k22 * u10[i] + k23 * u10[i+1];
             dx[i] += k31 * u00[i-1] + k32 * u00[i] + k33 * u00[i+1];
 
-            //dx[i] += ht_ht*f(sn, tn10);
-            dx[i] += ht_ht*w1*f(sn, tn20) + ht_ht*w2*f(sn, tn10) + ht_ht*w3*f(sn, tn00);
+            dx[i] += ht_ht*f(sn, tn10);
+            //dx[i] += ht_ht*w1*f(sn, tn20) + ht_ht*w2*f(sn, tn10) + ht_ht*w3*f(sn, tn00);
         }
 
         unsigned int s=0, e=N;
@@ -1060,11 +1060,11 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
             dx[s]  = beta * b14 * u10[s] + alpha * b15 * u10[s] + beta * b16 * u10[s+1];
             dx[s] += beta * b17 * u00[s] + alpha * b18 * u00[s] + beta * b19 * u00[s+1];
 
-            //dx[s] += gamma * b20 * boundary(sn, tn10, condition);
-            //dx[s] += beta  * ht_ht*f(sn,tn10);
+            dx[s] += gamma * b20 * boundary(sn, tn10, condition);
+            dx[s] += beta  * ht_ht*f(sn,tn10);
 
-            dx[s] += gamma * b20 * (w1*value + w2*boundary(sn, tn10, condition) + w3*boundary(sn, tn00, condition));
-            dx[s] += beta * (ht_ht*w1*f(sn, tn20) + ht_ht*w2*f(sn, tn10) + ht_ht*w3*f(sn, tn00));
+            //dx[s] += gamma * b20 * (w1*value + w2*boundary(sn, tn10, condition) + w3*boundary(sn, tn00, condition));
+            //dx[s] += beta * (ht_ht*w1*f(sn, tn20) + ht_ht*w2*f(sn, tn10) + ht_ht*w3*f(sn, tn00));
         }
 
         sn.i = xmax; sn.x = xmax*hx;
@@ -1091,11 +1091,11 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
             dx[e]  = beta * b24 * u10[e-1] + beta * b26 * u10[e];
             dx[e] += beta * b27 * u00[e-1] + beta * b29 * u00[e];
 
-            //dx[e] += gamma * b30 * boundary(sn, tn10, condition);
-            //dx[e] += beta  * ht_ht*f(sn,tn10);
+            dx[e] += gamma * b30 * boundary(sn, tn10, condition);
+            dx[e] += beta  * ht_ht*f(sn,tn10);
 
-            dx[e] += gamma * b30 * (w1*value + w2*boundary(sn, tn10, condition) + w3*boundary(sn, tn00, condition));
-            dx[e] += beta * (ht_ht*w1*f(sn, tn20) + ht_ht*w2*f(sn, tn10) + ht_ht*w3*f(sn, tn00));
+            //dx[e] += gamma * b30 * (w1*value + w2*boundary(sn, tn10, condition) + w3*boundary(sn, tn00, condition));
+            //dx[e] += beta * (ht_ht*w1*f(sn, tn20) + ht_ht*w2*f(sn, tn10) + ht_ht*w3*f(sn, tn00));
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
         {
@@ -1108,14 +1108,14 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
             dx[e]  = beta * b24 * u10[e-1] + alpha * b25 * u10[e] + beta * b26 * u10[e];
             dx[e] += beta * b27 * u00[e-1] + alpha * b28 * u00[e] + beta * b29 * u00[e];
 
-            //dx[e] += gamma * b30 * boundary(sn, tn10, condition);
-            //dx[e] += beta  * ht_ht*f(sn,tn10);
+            dx[e] += gamma * b30 * boundary(sn, tn10, condition);
+            dx[e] += beta  * ht_ht*f(sn,tn10);
 
-            dx[e] += gamma * b30 * (w1*value + w2*boundary(sn, tn10, condition) + w3*boundary(sn, tn00, condition));
-            dx[e] += beta * (ht_ht*w1*f(sn, tn20) + ht_ht*w2*f(sn, tn10) + ht_ht*w3*f(sn, tn00));
+            //dx[e] += gamma * b30 * (w1*value + w2*boundary(sn, tn10, condition) + w3*boundary(sn, tn00, condition));
+            //dx[e] += beta * (ht_ht*w1*f(sn, tn20) + ht_ht*w2*f(sn, tn10) + ht_ht*w3*f(sn, tn00));
         }
 
-        tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
+        tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
         for (unsigned int n=s; n<=e; n++) u20[n] = rx[n];
         layerInfo(u20, tn20);
 

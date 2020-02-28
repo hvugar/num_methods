@@ -59,11 +59,11 @@ public:
     void setRestoration(double restoration);
     double restoration() const;
 
-    void explicit_calculate_D1V1() const;
-    void implicit_calculate_D1V1() const;
+    void explicit_calculate_D1V1() const; // TO-DO
+    void implicit_calculate_D1V1() const; // TO-DO
 
-    void explicit_calculate_D2V1() const;
-    void implicit_calculate_D2V1() const;
+    void explicit_calculate_D2V1() const; // TO-DO
+    void implicit_calculate_D2V1() const; // TO-DO
 
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
@@ -99,11 +99,11 @@ public:
     void setRestoration(double restoration);
     double restoration() const;
 
-    void explicit_calculate_D1V1() const;
-    void implicit_calculate_D1V1() const;
+    void explicit_calculate_D1V1() const; // TO-DO
+    void implicit_calculate_D1V1() const; // TO-DO
 
-    void explicit_calculate_D2V1() const;
-    void implicit_calculate_D2V1() const;
+    void explicit_calculate_D2V1() const; // TO-DO
+    void implicit_calculate_D2V1() const; // TO-DO
 
 protected:
     virtual double final(const SpaceNodePDE &sn, FinalCondition condition) const = 0;

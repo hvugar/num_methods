@@ -1,8 +1,8 @@
 #include "first_order_linear_ode.h"
 
-#define EXAMPLE_31
+#define EXAMPLE_13
 
-#define _N 100*100 //1000
+#define _N 100 //1000
 #define _H 0.01
 
 void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
@@ -99,9 +99,9 @@ double FirstOrderLinearODEEx1::A(const PointNodeODE &node, unsigned int r, unsig
     C_UNUSED(r);
     C_UNUSED(c);
 
-#if defined(EXAMPLE_11) || defined (EXAMPLE_31)
-    //return -1.0;
-    return 10.0*sin(4.0*M_PI*node.x*node.x);
+#if defined(EXAMPLE_11) || defined (EXAMPLE_13) || defined (EXAMPLE_31)
+    return -1.0;
+//    return 10.0*sin(4.0*M_PI*node.x*node.x);
 #endif
 #ifdef EXAMPLE_12
     return -1.0;
@@ -148,7 +148,7 @@ double FirstOrderLinearODEEx1::B(const PointNodeODE &node, unsigned int r) const
 
 unsigned int FirstOrderLinearODEEx1::count() const
 {
-#if defined(EXAMPLE_11) || defined(EXAMPLE_12)
+#if defined(EXAMPLE_11) || defined(EXAMPLE_12)  || defined(EXAMPLE_13)
     return 1;
 #endif
 #if defined(EXAMPLE_31) || defined(EXAMPLE_32)
@@ -173,6 +173,9 @@ double FirstOrderLinearODEEx1::x(const PointNodeODE &node, unsigned int r UNUSED
 #endif
 #ifdef EXAMPLE_12
     if (r == 1) return cos(8.0*M_PI*t);
+#endif
+#ifdef EXAMPLE_13
+    if (r == 1) return pow(fabs(t-0.5), 5);
 #endif
 #ifdef EXAMPLE_31
     if (r == 1) return t;
@@ -217,6 +220,9 @@ double FirstOrderLinearODEEx1::dt(const PointNodeODE &node, unsigned int r UNUSE
 #endif
 #ifdef EXAMPLE_12
     if (r == 1) return -8.0*M_PI*sin(8.0*M_PI*t);
+#endif
+#ifdef EXAMPLE_13
+    if (r == 1) return 5.0*fabs(t-0.5)*pow((t-0.5), 3.0);
 #endif
 #ifdef EXAMPLE_31
     if (r == 1) return 1.0;
