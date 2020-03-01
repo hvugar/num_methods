@@ -3,8 +3,6 @@
 
 #include "border_global.h"
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 class BORDERSHARED_EXPORT WaveEquationIBVP : public IWaveEquationIBVP
 {
 public:
@@ -19,14 +17,6 @@ protected:
     virtual void layerInfo(const DoubleMatrix&, const TimeNodePDE&) const;
 
     double weight() const { return 0.25; }
-
-
-    double U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    double Udt1(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    double Udt2(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    double Udx1(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    double Udx2(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-
 
 private:
     void saveToImage(const DoubleMatrix &u, const TimeNodePDE &tn) const;
@@ -88,12 +78,6 @@ protected:
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
 
     double weight() const { return 0.25; }
-
-    double U(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    double Udt1(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    double Udt2(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    double Udx1(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    double Udx2(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
 
 private:
     DoubleMatrix u10;

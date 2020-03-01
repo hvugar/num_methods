@@ -2286,7 +2286,7 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
             x[n] = xf.mid(s, e);
             s -= M;
             e -= M;
-            printf("%6d : ", n); IPrinter::print(x[n], x[n].length(), 28, 16);
+            printf("%6d : ", n); IPrinter::print(x[n], x[n].length(), 28, 8);
         }
         IPrinter::printSeperatorLine();
         xf.clear();
@@ -2303,7 +2303,7 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
                     x[i][r] += alpha[rw][Mx1+c]*x[i+1][c] + alpha[rw][Mx2+c]*x[i+2][c];
                 }
             }
-            //printf("%6d : ", i); IPrinter::print(x[i], x[i].length(), 28, 16);
+            if (i%(N/5)==0) { printf("%6d : ", i); IPrinter::print(x[i], x[i].length(), 28, 8); }
         }
         IPrinter::printSeperatorLine("=");
         ///////////////////////////////////////////////////////////////////////////
@@ -2441,10 +2441,10 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
                 //Mx[Mx0+r][Mx3+c] = gamma[r][N1*M+c];
                 //Mx[Mx0+r][Mx4+c] = gamma[r][N0*M+c];
 
-                Mx[Mx0+r][Mx0+c] = Mx[Mx0+r][Mx1+c] = Mx[Mx0+r][Mx2+c] = Mx[Mx0+r][Mx3+c] = Mx[Mx0+r][Mx4+c] = -12.0*h*A(nodeN0, r+1, c+1);
-                Mx[Mx1+r][Mx0+c] = Mx[Mx1+r][Mx1+c] = Mx[Mx1+r][Mx2+c] = Mx[Mx1+r][Mx4+c] = Mx[Mx1+r][Mx3+c] = -12.0*h*A(nodeN1, r+1, c+1);
-                Mx[Mx2+r][Mx0+c] = Mx[Mx2+r][Mx1+c] = Mx[Mx2+r][Mx3+c] = Mx[Mx2+r][Mx4+c] = Mx[Mx2+r][Mx2+c] = -12.0*h*A(nodeN2, r+1, c+1);
-                Mx[Mx3+r][Mx0+c] = Mx[Mx3+r][Mx2+c] = Mx[Mx3+r][Mx3+c] = Mx[Mx3+r][Mx4+c] = Mx[Mx3+r][Mx1+c] = -12.0*h*A(nodeN3, r+1, c+1);
+                Mx[Mx0+r][Mx0+c] = Mx[Mx0+r][Mx1+c] = Mx[Mx0+r][Mx2+c] = Mx[Mx0+r][Mx3+c] = 0.0; Mx[Mx0+r][Mx4+c] = -12.0*h*A(nodeN0, r+1, c+1);
+                Mx[Mx1+r][Mx0+c] = Mx[Mx1+r][Mx1+c] = Mx[Mx1+r][Mx2+c] = Mx[Mx1+r][Mx4+c] = 0.0; Mx[Mx1+r][Mx3+c] = -12.0*h*A(nodeN1, r+1, c+1);
+                Mx[Mx2+r][Mx0+c] = Mx[Mx2+r][Mx1+c] = Mx[Mx2+r][Mx3+c] = Mx[Mx2+r][Mx4+c] = 0.0; Mx[Mx2+r][Mx2+c] = -12.0*h*A(nodeN2, r+1, c+1);
+                Mx[Mx3+r][Mx0+c] = Mx[Mx3+r][Mx2+c] = Mx[Mx3+r][Mx3+c] = Mx[Mx3+r][Mx4+c] = 0.0; Mx[Mx3+r][Mx1+c] = -12.0*h*A(nodeN3, r+1, c+1);
 
                 Mx[Mx4+r][Mx0+c] = gamma[r][N4*M+c];
                 Mx[Mx4+r][Mx1+c] = gamma[r][N3*M+c];
@@ -2505,7 +2505,7 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
             x[n] = xf.mid(s, e);
             s -= M;
             e -= M;
-            printf("%6d : ", n); IPrinter::print(x[n], x[n].length(), 28, 16);
+            printf("%6d : ", n); IPrinter::print(x[n], x[n].length(), 28, 8);
         }
         IPrinter::printSeperatorLine();
         xf.clear();
@@ -2523,7 +2523,7 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
                              + alpha[rw][Mx3+c]*x[i+3][c] + alpha[rw][Mx4+c]*x[i+4][c];
                 }
             }
-            //printf("%6d : ", i); IPrinter::print(x[i], x[i].length(), 28, 16);
+            if (i%(N/5)==0) { printf("%6d : ", i); IPrinter::print(x[i], x[i].length(), 28, 8); }
         }
         IPrinter::printSeperatorLine("=");
         ///////////////////////////////////////////////////////////////////////////

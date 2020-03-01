@@ -23,5 +23,7 @@
 #include <matrix2d.h>
 #include <benchmark.h>
 #include <time.h>
+#include <stdexcept>
+
 
 #endif // BORDER_GLOBAL_H

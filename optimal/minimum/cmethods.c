@@ -315,10 +315,23 @@ void tomasAlgorithmLeft2Right(const double *a, const double *b, const double *c,
     double m = 0.0;
 
     /* Прямой ход метода прогонки. Определение прогоночных коэффициентов. */
+    if (fabs(b[0]) <= DBL_EPSILON) { fprintf(stderr, "ERROR: %6d b0=%20.8f\n", 0, fabs(b[0])); assert(!(fabs(b[0]) <= DBL_EPSILON)); }
+    if (fabs(b[M]) <= DBL_EPSILON) { fprintf(stderr, "ERROR: %6d bN=%20.8f\n", M, fabs(b[M])); assert(!(fabs(b[M]) <= DBL_EPSILON)); }
+
+    if (fabs(c[0]) < DBL_EPSILON) { fprintf(stderr, "ERROR: %6d c0=%20.8f<0.0\n", 0, fabs(c[0])); assert(!(fabs(c[0]) < DBL_EPSILON)); }
+    if (fabs(a[M]) < DBL_EPSILON) { fprintf(stderr, "ERROR: %6d aN=%20.8f<0.0\n", M, fabs(a[M])); assert(!(fabs(a[M]) < DBL_EPSILON)); }
+
+    if (fabs(b[0]) < fabs(c[0])) { fprintf(stderr, "ERROR: %6d %20.8f %20.8f\n", 0, fabs(b[0]), fabs(c[0])); assert(!(fabs(b[0]) < fabs(c[0]))); }
+    if (fabs(b[M]) < fabs(a[M])) { fprintf(stderr, "ERROR: %6d %20.8f %20.8f\n", M, fabs(b[M]), fabs(a[M])); assert(!(fabs(b[M]) < fabs(a[M]))); }
+
     alpha[1] = -c[0]/b[0];
     betta[1] = +d[0]/b[0];
     for (i=1; i<M; i++)
     {
+        if (fabs(b[i]) < fabs(a[i])+fabs(c[i])) { fprintf(stderr, "ERROR: %6d %20.8f %20.8f %20.8f\n", i, fabs(a[i]), fabs(b[i]), fabs(c[i])); assert(!(fabs(b[i]) < fabs(a[i])+fabs(c[i]))); }
+        if (fabs(a[i]) <= DBL_EPSILON) { fprintf(stderr, "ERROR: %6d %20.8f\n", i, fabs(a[i])); assert(!(fabs(a[i]) <= DBL_EPSILON)); }
+        if (fabs(c[i]) <= DBL_EPSILON) { fprintf(stderr, "ERROR: %6d %20.8f\n", i, fabs(c[i])); assert(!(fabs(c[i]) <= DBL_EPSILON)); }
+
         m = b[i] + a[i]*alpha[i];
         alpha[i+1] = -c[i]/m;
         betta[i+1] = +(d[i]-a[i]*betta[i])/m;
@@ -351,10 +364,23 @@ void tomasAlgorithmLeft2RightModefied(const double *a, const double *b, const do
     double m = 0.0;
 
     /* Прямой ход метода прогонки. Определение прогоночных коэффициентов. */
+    if (fabs(b[0]) <= DBL_EPSILON) { fprintf(stderr, "ERROR: %6d b0=%20.8f\n", 0, fabs(b[0])); assert(fabs(b[0]) <= 0.0); }
+    if (fabs(b[M]) <= DBL_EPSILON) { fprintf(stderr, "ERROR: %6d bN=%20.8f\n", 0, fabs(b[M])); assert(fabs(b[M]) <= 0.0); }
+
+    if (fabs(c[0]) < DBL_EPSILON) { fprintf(stderr, "ERROR: %6d c0=%20.8f<0.0\n", 0, fabs(c[0])); assert(fabs(c[0]) < 0.0); }
+    if (fabs(a[M]) < DBL_EPSILON) { fprintf(stderr, "ERROR: %6d aN=%20.8f<0.0\n", 0, fabs(a[M])); assert(fabs(a[M]) < 0.0); }
+
+    if (fabs(b[0]) < fabs(c[0])) { fprintf(stderr, "ERROR: %6d %20.8f %20.8f\n", 0, fabs(b[0]), fabs(c[0])); assert(fabs(b[0]) < fabs(c[0])); }
+    if (fabs(b[M]) < fabs(a[M])) { fprintf(stderr, "ERROR: %6d %20.8f %20.8f\n", 0, fabs(b[M]), fabs(a[M])); assert(fabs(b[M]) < fabs(a[M])); }
+
     alpha[1] = -c[0]/b[0];
     betta[1] = +d[0]/b[0];
     for (i=1; i<M; i++)
     {
+        if (fabs(b[i]) < fabs(a[i])+fabs(c[i])) { fprintf(stderr, "ERROR: %6d %20.8f %20.8f %20.8f\n", i, fabs(a[i]), fabs(b[i]), fabs(c[i])); assert(fabs(b[i]) < fabs(a[i])+fabs(c[i])); }
+        if (fabs(a[i]) <= DBL_EPSILON) { fprintf(stderr, "ERROR: %6d %20.8f\n", i, fabs(a[i])); assert(fabs(a[i]) <= 0.0); }
+        if (fabs(c[i]) <= DBL_EPSILON) { fprintf(stderr, "ERROR: %6d %20.8f\n", i, fabs(c[i])); assert(fabs(c[i]) <= 0.0); }
+
         m = b[i] + a[i]*alpha[i];
         alpha[i+1] = -c[i]/m;
         betta[i+1] = +(d[i]-a[i]*betta[i])/m;

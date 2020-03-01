@@ -1249,8 +1249,6 @@ void IHeatEquationFBVP::implicit_calculate_D1V1() const
         }
 
         tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
-        //tomasAlgorithmRight2Left(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
-        //tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
         for (unsigned int n=s; n<=e; n++) u10[n] = rx[n];
 
         layerInfo(u10, tn10);
@@ -1492,7 +1490,7 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
                 dx[e] += gamma * b127 * value;
             }
 
-            tomasAlgorithm(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
+            tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
             for (unsigned int i=s; i<=e; i++) u05[j][i] = rx[i];
         }
 
@@ -1630,7 +1628,7 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
                 dy[e] += gamma * b227 * value;
             }
 
-            tomasAlgorithm(ay+s, by+s, cy+s, dy+s, ry+s, e-s+1);
+            tomasAlgorithmLeft2Right(ay+s, by+s, cy+s, dy+s, ry+s, e-s+1);
             for (unsigned int j=s; j<=e; j++) u10[j][i] = ry[j];
         }
 

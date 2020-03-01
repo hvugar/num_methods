@@ -1,17 +1,37 @@
 #include "heat_equation_ibvp.h"
 
-#define DIMENSION_1
-#define QUADRATIC
+#define HEAT_DIMENSION_2
+#define HEAT_QUADRATIC
 
-#define ROBIN
-
-#if defined(QUADRATIC)
-#define x2
-#define y2
-#define t1
-#else
-
+#if defined(HEAT_DIMENSION_1)
+//#define HEAT_LEFT_DIRICHLET
+//#define HEAT_RGHT_DIRICHLET
+#define HEAT_LEFT_ROBIN
+#define HEAT_RGHT_ROBIN
 #endif
+
+#if defined(HEAT_DIMENSION_2)
+//#define HEAT_NORM_DIRICHLET
+#define HEAT_NORM_ROBIN
+#endif
+
+#if defined(HEAT_QUADRATIC)
+#define HEAT_X2
+#define HEAT_Y2
+#define HEAT_T2
+#else
+#endif
+
+double u_fx(const IParabolicIBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &tn, int dt = 0, int dx = 0, int dy = 0);
+double p_fx(const IParabolicFBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &tn, int dt = 0, int dx = 0, int dy = 0);
+
+const double fa = +1.2;   // must be plus for forward
+const double fb = +0.0;   // must be minus or plus for forward -  some problems on high values
+const double fc = -0.0;   // must be minus for forward
+
+const double ba = -1.2;   // must be minus for backward
+const double bb = -0.0;   // must be minus or plus for forward -  some problems on high values
+const double bc = +0.0;   // must be plus for backward
 
 void HeatEquationIBVP::Main(int argc, char *argv[])
 {
@@ -22,23 +42,55 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
 #endif
 
     HeatEquationIBVP h;
-    h.setTimeDimension(Dimension(0.000025, 0, 40000));
+    h.setTimeDimension(Dimension(0.010, 0, 10000));
     h.setSpaceDimensionX(Dimension(0.010, 100, 200));
-#ifdef __DIMENSION_2__
-    h.setSpaceDimensionY(Dimension(0.005, 400, 600));
+#ifdef HEAT_DIMENSION_2
+    h.setSpaceDimensionY(Dimension(0.010, 200, 300));
 #endif
 
-    //h.setThermalDiffusivity(1.2);
-    h.setThermalConductivity(-0.8);
-    //h.setThermalConvection(-0.6);
+    h.setThermalDiffusivity(fa);
+    h.setThermalConductivity(fb);
+    h.setThermalConvection(fc);
 
     Benchmark bm;
     bm.tick();
-#ifdef DIMENSION_1
-    //h.implicit_calculate_D1V1();
-    h.explicit_calculate_D1V1();
+#ifdef HEAT_DIMENSION_1
+    h.implicit_calculate_D1V1();
+    //h.explicit_calculate_D1V1();
 #endif
-#ifdef DIMENSION_2
+#ifdef HEAT_DIMENSION_2
+    h.implicit_calculate_D2V1();
+#endif
+    bm.tock();
+    bm.printDuration();
+}
+
+void HeatEquationFBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
+{
+    C_UNUSED(argc);
+    C_UNUSED(argv);
+#ifdef USE_LIB_IMAGING
+    QGuiApplication app(argc, argv);
+#endif
+
+    HeatEquationFBVP h;
+    h.setTimeDimension(Dimension(0.01, 0, 10000));
+    h.setSpaceDimensionX(Dimension(0.010, 100, 200));
+#ifdef HEAT_DIMENSION_2
+    h.setSpaceDimensionY(Dimension(0.010, 200, 300));
+#endif
+
+    h.setThermalDiffusivity(ba);
+    h.setThermalConductivity(bb);
+    h.setThermalConvection(bc);
+
+    Benchmark bm;
+    bm.tick();
+#ifdef HEAT_DIMENSION_1
+    h.implicit_calculate_D1V1();
+    //h.explicit_calculate_D1V1();
+#endif
+#ifdef HEAT_DIMENSION_2
     h.implicit_calculate_D2V1();
 #endif
     bm.tock();
@@ -56,39 +108,55 @@ double HeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition) const
 
 double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
 {
-#if defined(DIMENSION_1)
-#if defined(DIRICHLET)
-    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +2.0, +0.0, +1.0);
-    return ::u_fx(this, sn, tn)*(condition.alpha()/condition.gamma());
+#if defined(HEAT_DIMENSION_1)
+    if (sn.i == spaceDimensionX().min())
+    {
+#if defined(HEAT_LEFT_DIRICHLET)
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +2.0, +0.0, +1.0);
+        return ::u_fx(this, sn, tn)*(condition.alpha()/condition.gamma());
 #endif
-#if defined(ROBIN)
-    condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
-    return (condition.alpha()*::u_fx(this, sn, tn)+condition.beta()*::u_fx(this, sn, tn, -1, 1, -1))/condition.gamma();
+#if defined(HEAT_LEFT_ROBIN)
+        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, -2.0, +1.0);
+        return (condition.alpha()*::u_fx(this, sn, tn)+condition.beta()*::u_fx(this, sn, tn, -1, 1, -1))/condition.gamma();
 #endif
+    }
+    if (sn.i == spaceDimensionX().max())
+    {
+#if defined(HEAT_RGHT_DIRICHLET)
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +2.0, +0.0, +1.0);
+        return ::u_fx(this, sn, tn)*(condition.alpha()/condition.gamma());
+#endif
+#if defined(HEAT_RGHT_ROBIN)
+        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
+        return (condition.alpha()*::u_fx(this, sn, tn)+condition.beta()*::u_fx(this, sn, tn, -1, 1, -1))/condition.gamma();
+#endif
+    }
 #endif
 
-#if defined(DIMENSION_2)
-    #if defined(DIRICHLET)
+#if defined(HEAT_DIMENSION_2)
+#if defined(HEAT_NORM_DIRICHLET)
     condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +2.0, +0.0, +1.0);
     return ::u_fx(this, sn, tn)*(condition.alpha()/condition.gamma());
 #endif
-#if defined(ROBIN)
+#if defined(HEAT_NORM_ROBIN)
     condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
     return (condition.alpha()*::u_fx(this, sn, tn)+condition.beta()*::u_fx(this, sn, tn, -1, 3, 3))/condition.gamma();
 #endif
 #endif
+
+    throw std::exception();
 }
 
 double HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
-#if defined(DIMENSION_1)
+#if defined(HEAT_DIMENSION_1)
     const double a = thermalDiffusivity();
     const double b = thermalConductivity();
     const double c = thermalConvection();
     return ::u_fx(this,sn,tn,+1,-1,-1)-::u_fx(this,sn,tn,-1,+2,-1)*a-::u_fx(this,sn,tn,-1,+1,-1)*b-::u_fx(this,sn,tn,0,0,0)*c;
 #endif
 
-#if defined(DIMENSION_2)
+#if defined(HEAT_DIMENSION_2)
     const double a1 = thermalDiffusivity();
     const double a2 = thermalDiffusivity();
     const double b1 = thermalConductivity();
@@ -102,6 +170,9 @@ void HeatEquationIBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) c
 {
     C_UNUSED(u);
     C_UNUSED(tn);
+
+    if (tn.i % (timeDimension().size() / 10) == 0) IPrinter::printVector(16, 8, u); return;
+
     //IPrinter::printVector(u);
     if (tn.i==0 || tn.i==1 || tn.i==timeDimension().max()-1 || tn.i==timeDimension().max()) IPrinter::printVector(u);
     return;
@@ -140,6 +211,13 @@ void HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
     C_UNUSED(u);
     C_UNUSED(tn);
 
+    if (tn.i % (timeDimension().size() / 5) == 0)
+    {
+        IPrinter::printMatrix(16, 8, u);
+        IPrinter::printSeperatorLine();
+    }
+    return;
+
     if (tn.i==0 || tn.i==1 || tn.i==2 || tn.i==198 || tn.i==199 || tn.i==200)
     {
         IPrinter::printMatrix(u);
@@ -173,66 +251,53 @@ void HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
 
 //---------------------------------------------------------------------------------------------//
 
-void HeatEquationFBVP::Main(int argc, char *argv[])
-{
-    C_UNUSED(argc);
-    C_UNUSED(argv);
-#ifdef USE_LIB_IMAGING
-    QGuiApplication app(argc, argv);
-#endif
-
-    HeatEquationFBVP h;
-    h.setTimeDimension(Dimension(0.000025, 0, 40000));
-    h.setSpaceDimensionX(Dimension(0.010, 100, 200));
-#ifdef DIMENSION_2
-    h.setSpaceDimensionY(Dimension(0.005, 400, 600));
-#endif
-
-    h.setThermalDiffusivity(-1.2);
-    //h.setThermalConductivity(+0.8);
-    //h.setThermalConvection(+0.6);
-
-    Benchmark bm;
-    bm.tick();
-#ifdef DIMENSION_1
-    //h.implicit_calculate_D1V1();
-    h.explicit_calculate_D1V1();
-#endif
-#ifdef DIMENSION_2
-    h.implicit_calculate_D2V1();
-#endif
-    bm.tock();
-    bm.printDuration();
-}
-
 HeatEquationFBVP::HeatEquationFBVP() : IHeatEquationFBVP()
 {}
 
 double HeatEquationFBVP::final(const SpaceNodePDE &sn, FinalCondition) const
 {
-    TimeNodePDE tn; tn.t = 1.0;
+    TimeNodePDE tn; tn.t = timeDimension().max()*timeDimension().step();
     return ::p_fx(this, sn, tn);
 }
 
 double HeatEquationFBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
 {
-#if defined(DIMENSION_1)
-#if defined(DIRICHLET)
+#if defined(HEAT_DIMENSION_1)
+    if (sn.i == spaceDimensionX().min())
+    {
+#if defined(HEAT_LEFT_DIRICHLET)
     condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +2.0, +0.0, +1.0);
     return ::p_fx(this, sn, tn)*(condition.alpha()/condition.gamma());
 #endif
-#if defined(ROBIN)
+#if defined(HEAT_LEFT_ROBIN)
+    condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, -2.0, +1.0);
+    return (condition.alpha()*::p_fx(this, sn, tn)+condition.beta()*::p_fx(this, sn, tn, -1, 1, -1))/condition.gamma();
+#endif
+    }
+    if (sn.i == spaceDimensionX().max())
+    {
+#if defined(HEAT_RGHT_DIRICHLET)
+    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +2.0, +0.0, +1.0);
+    return ::p_fx(this, sn, tn)*(condition.alpha()/condition.gamma());
+#endif
+#if defined(HEAT_RGHT_ROBIN)
     condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
     return (condition.alpha()*::p_fx(this, sn, tn)+condition.beta()*::p_fx(this, sn, tn, -1, 1, -1))/condition.gamma();
 #endif
-#endif
+    }
 
-#if defined(DIMENSION_2)
-#if defined(DIRICHLET)
+#if defined(HEAT_RGHT_DIRICHLET)
     condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +2.0, +0.0, +1.0);
     return ::p_fx(this, sn, tn)*(condition.alpha()/condition.gamma());
 #endif
-#if defined(ROBIN)
+#endif
+
+#if defined(HEAT_DIMENSION_2)
+#if defined(HEAT_NORM_DIRICHLET)
+    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +2.0, +0.0, +1.0);
+    return ::p_fx(this, sn, tn)*(condition.alpha()/condition.gamma());
+#endif
+#if defined(HEAT_NORM_ROBIN)
     condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
     return (condition.alpha()*::p_fx(this, sn, tn)+condition.beta()*::p_fx(this, sn, tn, -1, 3, 3))/condition.gamma();
 #endif
@@ -241,14 +306,14 @@ double HeatEquationFBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
 
 double HeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
-#if defined(DIMENSION_1)
+#if defined(HEAT_DIMENSION_1)
     const double a = thermalDiffusivity();
     const double b = thermalConductivity();
     const double c = thermalConvection();
     return ::p_fx(this,sn,tn,+1,-1,-1)-::p_fx(this,sn,tn,-1,+2,-1)*a-::p_fx(this,sn,tn,-1,+1,-1)*b-::p_fx(this,sn,tn,0,0,0)*c;
 #endif
 
-#if defined(DIMENSION_2)
+#if defined(HEAT_DIMENSION_2)
     const double a1 = thermalDiffusivity();
     const double a2 = thermalDiffusivity();
     const double b1 = thermalConductivity();
@@ -261,7 +326,10 @@ double HeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 void HeatEquationFBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) const
 {
     C_UNUSED(u);
-    C_UNUSED(tn);;
+    C_UNUSED(tn);
+
+    if (tn.i % (timeDimension().size() / 10) == 0) IPrinter::printVector(16, 8, u); return;
+
     //IPrinter::printVector(u);
     if (tn.i==0 || tn.i==1 || tn.i==timeDimension().max()-1 || tn.i==timeDimension().max()) IPrinter::printVector(u);
 }
@@ -270,6 +338,13 @@ void HeatEquationFBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
 {
     C_UNUSED(u);
     C_UNUSED(tn);
+
+    if (tn.i % (timeDimension().size() / 5) == 0)
+    {
+        IPrinter::printMatrix(16, 8, u);
+        IPrinter::printSeperatorLine();
+    }
+    return;
 
     if (tn.i==0 || tn.i==1 || tn.i==2 || tn.i==198 || tn.i==199 || tn.i==200)
     {
@@ -283,9 +358,9 @@ double u_fx(const IParabolicIBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
 {
     double res = 0.0;
 
-#if defined(QUADRATIC)
+#if defined(HEAT_QUADRATIC)
 
-#if defined(x1)
+#if defined(HEAT_X1)
     if (dx == 0) res += sn.x;
     if (dx == 1) res += 1.0;
     if (dx == 2) res += 0.0;
@@ -309,7 +384,7 @@ double u_fx(const IParabolicIBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
     }
 #endif
 
-#if defined(x2)
+#if defined(HEAT_X2)
     if (dx == 0) res += sn.x*sn.x;
     if (dx == 1) res += 2.0*sn.x;
     if (dx == 2) res += 2.0;
@@ -333,7 +408,7 @@ double u_fx(const IParabolicIBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
     }
 #endif
 
-#if defined(x3)
+#if defined(HEAT_X3)
     if (dx == 0) res += sn.x*sn.x*sn.x;
     if (dx == 1) res += 3.0*sn.x*sn.x;
     if (dx == 2) res += 6.0*sn.x;
@@ -357,7 +432,7 @@ double u_fx(const IParabolicIBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
     }
 #endif
 
-#if defined(y1)
+#if defined(HEAT_Y1)
     if (dy == 0) res += sn.y;
     if (dy == 1) res += 1.0;
     if (dy == 2) res += 0.0;
@@ -380,7 +455,7 @@ double u_fx(const IParabolicIBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
         }
     }
 #endif
-#if defined(y2)
+#if defined(HEAT_Y2)
     if (dy == 0) res += sn.y*sn.y;
     if (dy == 1) res += 2.0*sn.y;
     if (dy == 2) res += 2.0;
@@ -403,7 +478,7 @@ double u_fx(const IParabolicIBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
         }
     }
 #endif
-#if defined(y3)
+#if defined(HEAT_Y3)
     if (dy == 0) res += sn.y*sn.y*sn.y;
     if (dy == 1) res += 3.0*sn.y*sn.y;
     if (dy == 2) res += 6.0*sn.y;
@@ -426,17 +501,17 @@ double u_fx(const IParabolicIBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
         }
     }
 #endif
-#if defined(t1)
+#if defined(HEAT_T1)
     if (dt == 0) res += tn.t;
     if (dt == 1) res += 1.0;
     if (dt == 2) res += 0.0;
 #endif
-#if defined(t2)
+#if defined(HEAT_T2)
     if (dt == 0) res += tn.t*tn.t;
     if (dt == 1) res += 2.0*tn.t;
     if (dt == 2) res += 2.0;
 #endif
-#if defined(t3)
+#if defined(HEAT_T3)
     if (dt == 0) res += tn.t*tn.t*tn.t;
     if (dt == 1) res += 3.0*tn.t*tn.t;
     if (dt == 2) res += 6.0*tn.t;
@@ -450,9 +525,9 @@ double p_fx(const IParabolicFBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
 {
     double res = 0.0;
 
-#if defined(QUADRATIC)
+#if defined(HEAT_QUADRATIC)
 
-#if defined(x1)
+#if defined(HEAT_X1)
     if (dx == 0) res += sn.x;
     if (dx == 1) res += 1.0;
     if (dx == 2) res += 0.0;
@@ -476,7 +551,7 @@ double p_fx(const IParabolicFBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
     }
 #endif
 
-#if defined(x2)
+#if defined(HEAT_X2)
     if (dx == 0) res += sn.x*sn.x;
     if (dx == 1) res += 2.0*sn.x;
     if (dx == 2) res += 2.0;
@@ -500,7 +575,7 @@ double p_fx(const IParabolicFBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
     }
 #endif
 
-#if defined(x3)
+#if defined(HEAT_X3)
     if (dx == 0) res += sn.x*sn.x*sn.x;
     if (dx == 1) res += 3.0*sn.x*sn.x;
     if (dx == 2) res += 6.0*sn.x;
@@ -524,7 +599,7 @@ double p_fx(const IParabolicFBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
     }
 #endif
 
-#if defined(y1)
+#if defined(HEAT_Y1)
     if (dy == 0) res += sn.y;
     if (dy == 1) res += 1.0;
     if (dy == 2) res += 0.0;
@@ -547,7 +622,7 @@ double p_fx(const IParabolicFBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
         }
     }
 #endif
-#if defined(y2)
+#if defined(HEAT_Y2)
     if (dy == 0) res += sn.y*sn.y;
     if (dy == 1) res += 2.0*sn.y;
     if (dy == 2) res += 2.0;
@@ -570,7 +645,7 @@ double p_fx(const IParabolicFBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
         }
     }
 #endif
-#if defined(y3)
+#if defined(HEAT_Y3)
     if (dy == 0) res += sn.y*sn.y*sn.y;
     if (dy == 1) res += 3.0*sn.y*sn.y;
     if (dy == 2) res += 6.0*sn.y;
@@ -593,17 +668,17 @@ double p_fx(const IParabolicFBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
         }
     }
 #endif
-#if defined(t1)
+#if defined(HEAT_T1)
     if (dt == 0) res += tn.t;
     if (dt == 1) res += 1.0;
     if (dt == 2) res += 0.0;
 #endif
-#if defined(t2)
+#if defined(HEAT_T2)
     if (dt == 0) res += tn.t*tn.t;
     if (dt == 1) res += 2.0*tn.t;
     if (dt == 2) res += 2.0;
 #endif
-#if defined(t3)
+#if defined(HEAT_T3)
     if (dt == 0) res += tn.t*tn.t*tn.t;
     if (dt == 1) res += 3.0*tn.t*tn.t;
     if (dt == 2) res += 6.0*tn.t;

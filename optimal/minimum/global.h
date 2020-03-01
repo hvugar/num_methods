@@ -50,4 +50,8 @@
 
 #endif
 
+#include <assert.h>
+
+//#define NDEBUG
+
 #endif // GLOBAL

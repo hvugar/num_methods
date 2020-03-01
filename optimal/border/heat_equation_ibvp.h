@@ -3,9 +3,6 @@
 
 #include "border_global.h"
 
-double u_fx(const IParabolicIBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &tn, int dt = 0, int dx = 0, int dy = 0);
-double p_fx(const IParabolicFBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &tn, int dt = 0, int dx = 0, int dy = 0);
-
 class BORDERSHARED_EXPORT HeatEquationIBVP : public IHeatEquationIBVP
 {
 public:

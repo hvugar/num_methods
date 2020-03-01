@@ -60,7 +60,7 @@ public:
     double restoration() const;
 
     void explicit_calculate_D1V1() const; // TO-DO
-    void implicit_calculate_D1V1() const; // TO-DO
+    void implicit_calculate_D1V1() const; // COMPLETED
 
     void explicit_calculate_D2V1() const; // TO-DO
     void implicit_calculate_D2V1() const; // TO-DO
@@ -100,7 +100,7 @@ public:
     double restoration() const;
 
     void explicit_calculate_D1V1() const; // TO-DO
-    void implicit_calculate_D1V1() const; // TO-DO
+    void implicit_calculate_D1V1() const; // COMPLETED
 
     void explicit_calculate_D2V1() const; // TO-DO
     void implicit_calculate_D2V1() const; // TO-DO
