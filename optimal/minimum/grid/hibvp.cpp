@@ -285,26 +285,28 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
     for (int n=xmin; n<=xmax; n++, i++)
     {
         sn.i = n; sn.x = n*hx;
-        double firstDerivativeT = initial(sn, InitialCondition::InitialFirstDerivative);
-        u10[i] = u00[i] + firstDerivativeT*ht;
-        double secndDerivativeX = 0.0;
-        double firstDerivativeX = 0.0;
+        double fdt = initial(sn, InitialCondition::InitialFirstDerivative);
+
+        double sdx = 0.0;
+        double fdx = 0.0;
         if (n==xmin)
         {
-            secndDerivativeX = aa__hxhx*(+2.0*u00[0]-5.0*u00[1]+4.0*u00[2]-1.0*u00[3]);
-            firstDerivativeX = (-3.0*u00[0]+4.0*u00[1]-u00[2])/(2.0*hx);
+            sdx = aa__hxhx*(+2.0*u00[0]-5.0*u00[1]+4.0*u00[2]-1.0*u00[3]);
+            fdx = (-3.0*u00[0]+4.0*u00[1]-u00[2])/(2.0*hx);
         }
         else if (n==xmax)
         {
-            secndDerivativeX = aa__hxhx*(-1.0*u00[N-3]+4.0*u00[N-2] -5.0*u00[N-1] +2.0*u00[N]);
-            firstDerivativeX = (u00[N-2]-4.0*u00[N-1]+3.0*u00[N])/(2.0*hx);
+            sdx = aa__hxhx*(-1.0*u00[N-3]+4.0*u00[N-2] -5.0*u00[N-1] +2.0*u00[N]);
+            fdx = (u00[N-2]-4.0*u00[N-1]+3.0*u00[N])/(2.0*hx);
         }
         else
         {
-            secndDerivativeX = aa__hxhx*(u00[i-1]-2.0*u00[i]+u00[i+1]);
-            firstDerivativeX = (u00[i+1]-u00[i-1])/(2.0*hx);
+            sdx = aa__hxhx*(u00[i-1]-2.0*u00[i]+u00[i+1]);
+            fdx = (u00[i+1]-u00[i-1])/(2.0*hx);
         }
-        u10[i] += (secndDerivativeX + b*firstDerivativeX + c*u00[i] + f(sn,tn00) - d*firstDerivativeT) * htht_05;
+
+        u10[i] = u00[i] + fdt*ht;
+        u10[i] += (sdx + b*fdx + c*u00[i] + f(sn,tn00) - d*fdt) * htht_05;
     }
     layerInfo(u10, tn10);
 
@@ -618,39 +620,67 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
     const double w3 = w1;
 
     // common parameters
-    const double htht05 = ht*ht*0.50;
-    const double ht_050 = ht*0.50;
-    const double htht25 = ht*ht*0.25;
+    const double htht_0500 = ht*ht*0.500;
+    const double htht_0250 = ht*ht*0.250;
+    const double htht_0125 = ht*ht*0.125;
+    const double ht_0500 = ht*0.500;
+    const double ht_0250 = ht*0.250;
 
     // equation parameters
-    const double k101 = -(0.25*a1*a1)*((ht*ht)/(hx*hx))*w1 /*+ (0.125*b1)*((ht*ht)/(hx))*w1*/;           // i-1
-    const double k102 = +1.0 + (0.5*a1*a1)*((ht*ht)/(hx*hx))*w1 /*- (0.25*c)*(ht*ht)*w1*/ + 0.25*d*ht;  // i
-    const double k103 = -(0.25*a1*a1)*((ht*ht)/(hx*hx))*w1 /*- (0.125*b1)*((ht*ht)/(hx))*w1*/;           // i+1
-
-    const double k104 = +(0.25*a1*a1)*((ht*ht)/(hx*hx))*w2 /*- (0.125*b1)*((ht*ht)/(hx))*w2*/;           // i-1
-    const double k105 = +2.0 - (0.5*a1*a1)*((ht*ht)/(hx*hx))*w2 /*+ (0.25*c)*(ht*ht)*w2*/;               // i
-    const double k106 = +(0.25*a1*a1)*((ht*ht)/(hx*hx))*w2 /*+ (0.125*b1)*((ht*ht)/(hx))*w2*/;           // i+1
-
-    const double k107 = +(0.25*a1*a1)*((ht*ht)/(hx*hx))*w3 /*- (0.125*b1)*((ht*ht)/(hx))*w3*/;           // i-1
-    const double k108 = -1.0 - (0.5*a1*a1)*((ht*ht)/(hx*hx))*w3 /*+ (0.25*c)*(ht*ht)*w3*/ + 0.25*d*ht;  // i
-    const double k109 = +(0.25*a1*a1)*((ht*ht)/(hx*hx))*w3 /*+ (0.125*b1)*((ht*ht)/(hx))*w3*/;           // i+1
-
-    const double k110 = +(0.25*a2*a2)*((ht*ht)/(hy*hy)) /*- (0.125*b2)*((ht*ht)/(hy))*/;                 // j-1
+    const double k101 = -(0.25*a1*a1)*((ht*ht)/(hx*hx))*w1 + (0.125*b1)*((ht*ht)/(hx))*w1;           // i-1
+    const double k102 = +1.0 + (0.5*a1*a1)*((ht*ht)/(hx*hx))*w1 - (0.25*c)*(ht*ht)*w1 + 0.25*d*ht;   // i
+    const double k103 = -(0.25*a1*a1)*((ht*ht)/(hx*hx))*w1 - (0.125*b1)*((ht*ht)/(hx))*w1;           // i+1
+    const double k104 = +(0.25*a1*a1)*((ht*ht)/(hx*hx))*w2 - (0.125*b1)*((ht*ht)/(hx))*w2;           // i-1
+    const double k105 = +2.0 - (0.5*a1*a1)*((ht*ht)/(hx*hx))*w2 + (0.25*c)*(ht*ht)*w2;               // i
+    const double k106 = +(0.25*a1*a1)*((ht*ht)/(hx*hx))*w2 + (0.125*b1)*((ht*ht)/(hx))*w2;           // i+1
+    const double k107 = +(0.25*a1*a1)*((ht*ht)/(hx*hx))*w3 - (0.125*b1)*((ht*ht)/(hx))*w3;           // i-1
+    const double k108 = -1.0 - (0.5*a1*a1)*((ht*ht)/(hx*hx))*w3 + (0.25*c)*(ht*ht)*w3 + 0.25*d*ht;   // i
+    const double k109 = +(0.25*a1*a1)*((ht*ht)/(hx*hx))*w3 + (0.125*b1)*((ht*ht)/(hx))*w3;           // i+1
+    const double k110 = +(0.25*a2*a2)*((ht*ht)/(hy*hy)) - (0.125*b2)*((ht*ht)/(hy));                 // j-1
     const double k111 = -(0.50*a2*a2)*((ht*ht)/(hy*hy));                                             // j
-    const double k112 = +(0.25*a2*a2)*((ht*ht)/(hy*hy)) /*+ (0.125*b2)*((ht*ht)/(hy))*/;                 // j+1
+    const double k112 = +(0.25*a2*a2)*((ht*ht)/(hy*hy)) + (0.125*b2)*((ht*ht)/(hy));                 // j+1
 
-    const double k201 = -(0.25*a2*a2)*((ht*ht)/(hy*hy))*w1 /*+ (0.125*b2)*((ht*ht)/(hy))*w1*/;           // j-1
-    const double k202 = +1.0 + (0.5*a2*a2)*((ht*ht)/(hy*hy))*w1 /*- (0.25*c)*(ht*ht)*w1*/ + 0.25*d*ht;  // j
-    const double k203 = -(0.25*a2*a2)*((ht*ht)/(hy*hy))*w1 /*- (0.125*b2)*((ht*ht)/(hy))*w1*/;           // j+1
-    const double k204 = +(0.25*a2*a2)*((ht*ht)/(hy*hy))*w2 /*- (0.125*b2)*((ht*ht)/(hy))*w2*/;           // j-1
-    const double k205 = +2.0 - (0.5*a2*a2)*((ht*ht)/(hy*hy))*w2 /*+ (0.25*c)*(ht*ht)*w2*/;               // j
-    const double k206 = +(0.25*a2*a2)*((ht*ht)/(hy*hy))*w2 /*+ (0.125*b2)*((ht*ht)/(hy))*w2*/;           // j+1
-    const double k207 = +(0.25*a2*a2)*((ht*ht)/(hy*hy))*w3 /*- (0.125*b2)*((ht*ht)/(hy))*w3*/;           // j-1
-    const double k208 = -1.0 - (0.5*a2*a2)*((ht*ht)/(hy*hy))*w3 /*+ (0.25*c)*(ht*ht)*w3*/ + 0.25*d*ht;  // j
-    const double k209 = +(0.25*a2*a2)*((ht*ht)/(hy*hy))*w3 /*+ (0.125*b2)*((ht*ht)/(hy))*w3*/;           // j+1
-    const double k210 = +(0.25*a1*a1)*((ht*ht)/(hx*hx)) /*- (0.125*b2)*((ht*ht)/(hx))*/;                 // i-1
+    const double k201 = -(0.25*a2*a2)*((ht*ht)/(hy*hy))*w1 + (0.125*b2)*((ht*ht)/(hy))*w1;           // j-1
+    const double k202 = +1.0 + (0.5*a2*a2)*((ht*ht)/(hy*hy))*w1 - (0.25*c)*(ht*ht)*w1 + 0.25*d*ht;   // j
+    const double k203 = -(0.25*a2*a2)*((ht*ht)/(hy*hy))*w1 - (0.125*b2)*((ht*ht)/(hy))*w1;           // j+1
+    const double k204 = +(0.25*a2*a2)*((ht*ht)/(hy*hy))*w2 - (0.125*b2)*((ht*ht)/(hy))*w2;           // j-1
+    const double k205 = +2.0 - (0.5*a2*a2)*((ht*ht)/(hy*hy))*w2 + (0.25*c)*(ht*ht)*w2;               // j
+    const double k206 = +(0.25*a2*a2)*((ht*ht)/(hy*hy))*w2 + (0.125*b2)*((ht*ht)/(hy))*w2;           // j+1
+    const double k207 = +(0.25*a2*a2)*((ht*ht)/(hy*hy))*w3 - (0.125*b2)*((ht*ht)/(hy))*w3;           // j-1
+    const double k208 = -1.0 - (0.5*a2*a2)*((ht*ht)/(hy*hy))*w3 + (0.25*c)*(ht*ht)*w3 + 0.25*d*ht;   // j
+    const double k209 = +(0.25*a2*a2)*((ht*ht)/(hy*hy))*w3 + (0.125*b2)*((ht*ht)/(hy))*w3;           // j+1
+    const double k210 = +(0.25*a1*a1)*((ht*ht)/(hx*hx)) - (0.125*b1)*((ht*ht)/(hx));                 // i-1
     const double k211 = -(0.50*a1*a1)*((ht*ht)/(hx*hx));                                             // i
-    const double k212 = +(0.25*a1*a1)*((ht*ht)/(hx*hx)) /*+ (0.125*b2)*((ht*ht)/(hx))*/;                 // i+1
+    const double k212 = +(0.25*a1*a1)*((ht*ht)/(hx*hx)) + (0.125*b1)*((ht*ht)/(hx));                 // i+1
+
+    // left border condition parameters x = xmin
+    const double b111 = +1.0 + (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w1 - ((0.25*c)*(ht*ht))*w1 + 0.25*d*ht;
+    const double b112 = +(0.25*a1*a1*(ht*ht)/(0.5*hx))*w1 - (0.25*b1*ht*ht)*w1;
+    const double b113 = -((0.25*a1*a1*ht*ht)/(0.5*hx*hx))*w1;
+    const double b114 = +2.0 - (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w2 + ((0.25*c)*(ht*ht))*w2;
+    const double b115 = -(0.25*a1*a1*(ht*ht)/(0.5*hx))*w2 + (0.25*b1*ht*ht)*w2;
+    const double b116 = +((0.25*a1*a1*ht*ht)/(0.5*hx*hx))*w2;
+    const double b117 = -1.0 - (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w3 + ((0.25*c)*(ht*ht))*w3;
+    const double b118 = -(0.25*a1*a1*(ht*ht)/(0.5*hx))*w3 + (0.25*b1*ht*ht)*w3;
+    const double b119 = +((0.25*a1*a1*ht*ht)/(0.5*hx*hx))*w3;
+    const double b120 = +((0.25*a2*a2*ht*ht)/(hy*hy));
+    const double b121 = +((0.25*b2*ht*ht)/(2.0*hy));
+    const double b122 = +(0.25*a1*a1*ht*ht)/(0.5*hx) - (0.25*b1*ht*ht);
+
+    // right border condition parameters x = xmax
+    const double b211 = -((0.25*a1*a1*ht*ht)/(0.5*hx*hx))*w1;
+    const double b212 = +(0.25*a1*a1*(ht*ht)/(0.5*hx))*w1 + (0.25*b1*ht*ht)*w1;
+    const double b213 = +1.0 + (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w1 + ((0.25*c)*(ht*ht))*w1 + 0.25*d*ht;
+    const double b214 = +((0.25*a1*a1*ht*ht)/(0.5*hx*hx))*w2;
+    const double b215 = -(0.25*a1*a1*(ht*ht)/(0.5*hx))*w2 - (0.25*b1*ht*ht)*w2;
+    const double b216 = +2.0 - (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w2 - ((0.25*c)*(ht*ht))*w2;
+    const double b217 = +((0.25*a1*a1*ht*ht)/(0.5*hx*hx))*w3;
+    const double b218 = -(0.25*a1*a1*(ht*ht)/(0.5*hx))*w3 - (0.25*b1*ht*ht)*w3;
+    const double b219 = -1.0 - (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w3 - ((0.25*c)*(ht*ht))*w3;
+    const double b220 = +((0.25*a2*a2*ht*ht)/(hy*hy));
+    const double b221 = +((0.25*b2*ht*ht)/(2.0*hy));
+    const double b222 = +(0.25*a1*a1*ht*ht)/(0.5*hx) + (0.25*b1*ht*ht);
+
 
     double *ax = static_cast<double*>(malloc(sizeof(double)*(N+1)));
     double *bx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
@@ -713,86 +743,51 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
     {
         for (n=xmin, sn.i = n, sn.x = n*hx, i=0; n<=xmax; ++n, sn.i=n, sn.x=n*hx, ++i)
         {
-            double firstDerivative = initial(sn, InitialCondition::InitialFirstDerivative);
+            double fdt = initial(sn, InitialCondition::InitialFirstDerivative);
+            double sdt = 0.0;
 
-            double secndDerivative = 0.0;
+            double sdxy = 0.0;
+            double fdxy = 0.0;
             if (j==0)
             {
-                secndDerivative += ((a2*a2)/(hy*hy))*(+2.0*u00[0][i]-5.0*u00[1][i]+4.0*u00[2][i]-1.0*u00[3][i]);
+                sdxy += ((a2*a2)/(hy*hy))*(+2.0*u00[0][i]-5.0*u00[1][i]+4.0*u00[2][i]-1.0*u00[3][i]);
+                fdxy += ((b2)/(2.0*hy))*(-3.0*u00[0][i]+4.0*u00[1][i]-1.0*u00[2][i]);
             }
             else if (j==M)
             {
-                secndDerivative += ((a2*a2)/(hy*hy))*(-1.0*u00[M-3][i]+4.0*u00[M-2][i]-5.0*u00[M-1][i]+2.0*u00[M][i]);
+                sdxy += ((a2*a2)/(hy*hy))*(-1.0*u00[M-3][i]+4.0*u00[M-2][i]-5.0*u00[M-1][i]+2.0*u00[M][i]);
+                fdxy += ((b2)/(2.0*hy))*(u00[N-2][i]-4.0*u00[N-1][i]+3.0*u00[N][i]);
             }
             else
             {
-                secndDerivative += ((a2*a2)/(hy*hy))*(u00[j-1][i]-2.0*u00[j][i]+u00[j+1][i]);
+                sdxy += ((a2*a2)/(hy*hy))*(u00[j-1][i]-2.0*u00[j][i]+u00[j+1][i]);
+                fdxy += ((b2)/(2.0*hy))*(u00[j+1][i]-u00[j-1][i]);
             }
 
             if (i==0)
             {
-                secndDerivative += ((a1*a1)/(hx*hx))*(+2.0*u00[j][0]-5.0*u00[j][1]+4.0*u00[j][2]-1.0*u00[j][3]);
+                sdxy += ((a1*a1)/(hx*hx))*(+2.0*u00[j][0]-5.0*u00[j][1]+4.0*u00[j][2]-1.0*u00[j][3]);
+                fdxy += ((b1)/(2.0*hx))*(-3.0*u00[j][0]+4.0*u00[j][1]-1.0*u00[j][2]);
             }
             else if (i==N)
             {
-                secndDerivative += ((a1*a1)/(hx*hx))*(-1.0*u00[j][N-3]+4.0*u00[j][N-2]-5.0*u00[j][N-1]+2.0*u00[j][N]);
+                sdxy += ((a1*a1)/(hx*hx))*(-1.0*u00[j][N-3]+4.0*u00[j][N-2]-5.0*u00[j][N-1]+2.0*u00[j][N]);
+                fdxy += ((b1)/(2.0*hx))*(u00[j][M-2]-4.0*u00[j][M-1]+3.0*u00[j][M]);
             }
             else
             {
-                secndDerivative += ((a1*a1)/(hx*hx))*(u00[j][i-1]-2.0*u00[j][i]+u00[j][i+1]);
+                sdxy += ((a1*a1)/(hx*hx))*(u00[j][i-1]-2.0*u00[j][i]+u00[j][i+1]);
+                fdxy += ((b1)/(2.0*hx))*(u00[j][i+1]-u00[j][i-1]);
             }
 
-            secndDerivative += f(sn,tn00);
-            secndDerivative -=  d*firstDerivative;
+            sdt = sdxy + fdxy + c*u00[j][i] + f(sn,tn00) - d*fdt;
 
-            u05[j][i] = u00[j][i] + firstDerivative*ht_050 + secndDerivative*0.5*0.25*ht*ht;
-
-            u10[j][i] = u00[j][i] + firstDerivative*ht + secndDerivative*0.5*ht*ht;
+            u05[j][i] = u00[j][i] + fdt*ht_0500 + sdt*htht_0125;
+            u10[j][i] = u00[j][i] + fdt*ht      + sdt*htht_0500;
         }
     }
 
     layerInfo(u05, tn05);
-
-//    for (m=ymin, sn.j = m, sn.y = m*hy, j=0; m<=ymax; ++m, sn.j=m, sn.y=m*hy, ++j)
-//    {
-//        for (n=xmin, sn.i = n, sn.x = n*hx, i=0; n<=xmax; ++n, sn.i=n, sn.x=n*hx, ++i)
-//        {
-//            u10[j][i] = 2.0*u05[j][i]-u00[j][i];
-
-//            double secndDerivative = 0.0;
-//            if (j==0)
-//            {
-//                secndDerivative += ((a2*a2)/(hy*hy))*(+2.0*u05[0][i]-5.0*u05[1][i]+4.0*u05[2][i]-1.0*u05[3][i]);
-//            }
-//            else if (j==M)
-//            {
-//                secndDerivative += ((a2*a2)/(hy*hy))*(-1.0*u05[M-3][i]+4.0*u05[M-2][i]-5.0*u05[M-1][i]+2.0*u05[M][i]);
-//            }
-//            else
-//            {
-//                secndDerivative += ((a2*a2)/(hy*hy))*(u05[j-1][i]-2.0*u05[j][i]+u05[j+1][i]);
-//            }
-
-//            if (i==0)
-//            {
-//                secndDerivative += ((a1*a1)/(hx*hx))*(+2.0*u05[j][0]-5.0*u05[j][1]+4.0*u05[j][2]-1.0*u05[j][3]);
-//            }
-//            else if (n==xmax)
-//            {
-//                secndDerivative += ((a1*a1)/(hx*hx))*(-1.0*u05[j][N-3]+4.0*u05[j][N-2]-5.0*u05[j][N-1]+2.0*u05[j][N]);
-//            }
-//            else
-//            {
-//                secndDerivative += ((a1*a1)/(hx*hx))*(u05[j][i-1]-2.0*u05[j][i]+u05[j][i+1]);
-//            }
-
-//            secndDerivative += f(sn,tn05);
-//            u10[j][i] += ht*ht*0.25*secndDerivative;
-//            u10[j][i] += d*ht*0.25*u00[m][n];
-
-//            u10[j][i] /= (1.0+d*ht*0.25);
-//        }
-//    }
     layerInfo(u10, tn10);
 
     /***********************************************************************************************/
@@ -814,7 +809,7 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
                 dx[i] += k104*u10[j][i-1] + k105*u10[j][i] + k106*u10[j][i+1];
                 dx[i] += k107*u05[j][i-1] + k108*u05[j][i] + k109*u05[j][i+1];
                 dx[i] += k110*u10[j-1][i] + k111*u10[j][i] + k112*u10[j+1][i];
-                dx[i] += htht25 * f(sn, tn10);
+                dx[i] += htht_0250 * f(sn, tn10);
             }
 
             sn.i = xmin; sn.x = xmin*hx;
@@ -833,7 +828,21 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
             else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {}
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
-            {}
+            {
+                s = 0;
+                ax[0]  = 0.0;
+                bx[0]  = beta  * b111 + alpha * b112;
+                cx[0]  = beta  * b113;
+
+                dx[0]  = beta  * b114 * u10[j][0] + alpha  * b115 * u10[j][0] + beta  * b116 * u10[j][1];
+                dx[0] += beta  * b117 * u05[j][0] + alpha  * b118 * u05[j][0] + beta  * b119 * u05[j][1];
+
+                dx[0] += beta  * b120 * (u10[j+1][s]-2.0*u10[j][s]+u10[j-1][s]);
+                dx[0] += beta  * b121 * (u10[j+1][s]-u10[j-1][s]);
+
+                dx[0] += beta  * htht_0250 * f(sn, tn10);
+                dx[0] += gamma * b122 * boundary(sn, tn10, condition);
+            }
 
             sn.i = xmax; sn.x = xmax*hx;
             value = boundary(sn, tn15, condition);
@@ -851,7 +860,21 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {}
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
-            {}
+            {
+                e = N;
+                ax[N]  = beta  * b211;
+                bx[N]  = beta  * b213 + alpha * b212;
+                cx[N]  = 0.0;
+
+                dx[N]  = beta  * b214 * u10[j][N] + alpha  * b215 * u10[j][N] + beta  * b216 * u10[j][N-1];
+                dx[N] += beta  * b217 * u05[j][N] + alpha  * b218 * u05[j][N] + beta  * b219 * u05[j][N-1];
+
+                dx[N] += beta  * b220 * (u10[j+1][s]-2.0*u10[j][s]+u10[j-1][s]);
+                dx[N] += beta  * b221 * (u10[j+1][s]-u10[j-1][s]);
+
+                dx[N] += beta  * htht_0250 * f(sn, tn10);
+                dx[N] += gamma * b222 * boundary(sn, tn10, condition);
+            }
 
             tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
             for (unsigned int i=s; i<=e; i++) u15[j][i] = rx[i];
@@ -902,7 +925,7 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
             }
         }
 
-        layerInfo(u15, tn15);
+        layerInfo(u15, tn15); exit(-1);
 
         /**************************************************** x direction apprx ***************************************************/
 
@@ -916,7 +939,7 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
                 dy[j] += k204*u15[j-1][i] + k205*u15[j][i] + k206*u15[j+1][i];
                 dy[j] += k207*u10[j-1][i] + k208*u10[j][i] + k209*u10[j+1][i];
                 dy[j] += k210*u15[j][i-1] + k211*u15[j][i] + k212*u15[j][i+1];
-                dy[j] += htht25 * f(sn, tn15);
+                dy[j] += htht_0250 * f(sn, tn15);
             }
 
             sn.j = ymin; sn.y = ymin*hy;

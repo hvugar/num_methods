@@ -11,14 +11,14 @@
 #endif
 
 #if defined(WAVE_DIMENSION_2)
-#define WAVE_NORM_DIRICHLET
-//#define WAVE_NORM_ROBIN
+//#define WAVE_NORM_DIRICHLET
+#define WAVE_NORM_ROBIN
 #endif
 
 #if defined(WAVE_QUADRATIC)
 #define WAVE_X2
 #define WAVE_Y2
-#define WAVE_T2
+#define WAVE_T1
 #else
 #endif
 
@@ -27,8 +27,8 @@ double p_fx(const IHyperbolicFBVP *h, const SpaceNodePDE &sn, const TimeNodePDE 
 
 const double fa = +1.0;   // must be plus for forward
 const double fb = +0.0;   // must be minus or plus for forward -  some problems on high values
-const double fc = -1.0;   // must be minus for forward
-const double fd = +1.0;   // must be plus for forward
+const double fc = -0.0;   // must be minus for forward
+const double fd = +0.0;   // must be plus for forward
 
 const double ba = +1.2;   // must be plus for backward
 const double bb = -0.0;   // must be minus or plus for forward -  some problems on high values
@@ -44,7 +44,7 @@ void WaveEquationIBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 #endif
 
     WaveEquationIBVP w;
-    w.setTimeDimension(Dimension(0.01, 0, 100));
+    w.setTimeDimension(Dimension(0.01, 0, 1000));
     w.setSpaceDimensionX(Dimension(0.01, 100, 200));
 #ifdef WAVE_DIMENSION_2
     w.setSpaceDimensionY(Dimension(0.01, 200, 300));

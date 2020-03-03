@@ -549,7 +549,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
     const double k25 = +1.0 - (a1*ht)/(hx*hx);
     const double k26 = +(a1*ht)/(2.0*hx*hx) + (b1*ht)/(4.0*hx);
 
-    // left border condition parameters
+    // left border condition parameters x = xmin
     const double b111 = +1.0 + ((a1*ht)/(hx*hx));
     const double b112 = +(a1*ht)/hx - 0.5*b1*ht;
     const double b113 = -(a1*ht)/(hx*hx);
