@@ -46,8 +46,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     WaveEquationIBVP::Main(argc, argv);
     IPrinter::printSeperatorLine();
-    WaveEquationFBVP::Main(argc, argv);
-    IPrinter::printSeperatorLine();
+    //WaveEquationFBVP::Main(argc, argv);
+    //IPrinter::printSeperatorLine();
 
     //p1p::ProblemSolver::Main(argc, argv);
     //h1p::ProblemSolver::Main(argc, argv);

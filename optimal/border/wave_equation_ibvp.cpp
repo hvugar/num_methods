@@ -25,10 +25,10 @@
 double u_fx(const IHyperbolicIBVP *h, const SpaceNodePDE &sn, const TimeNodePDE &tn, int dt = 0, int dx = 0, int dy = 0);
 double p_fx(const IHyperbolicFBVP *h, const SpaceNodePDE &sn, const TimeNodePDE &tn, int dt = 0, int dx = 0, int dy = 0);
 
-const double fa = +1.2;   // must be plus for forward
-const double fb = -0.0;   // must be minus or plus for forward -  some problems on high values
-const double fc = -0.0;   // must be minus for forward
-const double fd = +0.0;   // must be plus for forward
+const double fa = +1.0;   // must be plus for forward
+const double fb = +0.0;   // must be minus or plus for forward -  some problems on high values
+const double fc = -1.0;   // must be minus for forward
+const double fd = +1.0;   // must be plus for forward
 
 const double ba = +1.2;   // must be plus for backward
 const double bb = -0.0;   // must be minus or plus for forward -  some problems on high values
@@ -44,7 +44,7 @@ void WaveEquationIBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 #endif
 
     WaveEquationIBVP w;
-    w.setTimeDimension(Dimension(0.01, 0, 10000));
+    w.setTimeDimension(Dimension(0.01, 0, 100));
     w.setSpaceDimensionX(Dimension(0.01, 100, 200));
 #ifdef WAVE_DIMENSION_2
     w.setSpaceDimensionY(Dimension(0.01, 200, 300));
@@ -165,11 +165,11 @@ double WaveEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     const double a2 = waveSpeed();
     const double b1 = unknownB();
     const double b2 = unknownB();
-    const double c = restoration();
-    const double d = waveDissipation();
+    const double c  = restoration();
+    const double d  = waveDissipation();
     return ::u_fx(this, sn,tn,+2,-1,-1) + ::u_fx(this, sn,tn,+1,-1,-1)*d
             - ::u_fx(this, sn,tn,-1,+2,-1)*a1*a1 - ::u_fx(this, sn,tn,-1,+1,-1)*b1
-            - ::u_fx(this, sn,tn,-1,-1,+2)*a2*a2 - ::u_fx(this, sn,tn,-1,-1,+1)*b2 - ::u_fx(this, sn,tn,+0,+0,+0)*c;
+            - ::u_fx(this, sn,tn,-1,-1,+2)*a2*a2 - ::u_fx(this, sn,tn,-1,-1,+1)*b2 - ::u_fx(this, sn, tn)*c;
 #endif
 }
 
@@ -284,8 +284,8 @@ void WaveEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
 {
     if (tn.i % (timeDimension().size() / 5) == 0 || tn.i==0 || tn.i==1 || tn.i==2 || tn.i==3 || tn.i==4)
     {
+        (tn.i%2==0) ? IPrinter::printSeperatorLine(std::to_string(tn.i).data(), '-') : IPrinter::printSeperatorLine(std::to_string(tn.i).data(), '=');
         IPrinter::printMatrix(16, 8, u);
-        IPrinter::printSeperatorLine();
     }
     return;
 
